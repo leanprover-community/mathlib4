@@ -40,6 +40,16 @@ We provide basic definitions and results to support `α`-chain techniques in thi
    `corootSpace α` of `H`, we may find an integral linear combination between
    `α` and any weight `χ` of a representation.
 
+## TODO
+
+It should be possible to unify some of the definitions here such as `LieModule.chainBotCoeff`,
+`LieModule.chainTopCoeff` with corresponding definitions such as `RootPairing.chainBotCoeff`,
+`RootPairing.chainTopCoeff`. This is not quite trivial since:
+ * The definitions here allow for chains in representations of Lie algebras.
+ * The proof that the roots of a Lie algebra are a root system currently depends on these results.
+   (This can be resolved by proving the root reflection formula using the approach outlined in
+   Bourbaki Ch. VIII §2.2 Lemma 1 (page 80 of English translation, 88 of English PDF).)
+
 -/
 
 open Module Function Set
@@ -209,7 +219,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ ?_⟩
   let N : ℤ → Submodule R M := fun k ↦ genWeightSpace M (k • α + χ)
   have h₁ : iSupIndep fun (i : Finset.Ioo p q) ↦ N i := by
-    rw [← LieSubmodule.iSupIndep_iff_toSubmodule]
+    rw [LieSubmodule.iSupIndep_toSubmodule]
     refine (iSupIndep_genWeightSpace R H M).comp fun i j hij ↦ ?_
     exact SetCoe.ext <| smul_left_injective ℤ hα <| by rwa [add_left_inj] at hij
   have h₂ : ∀ i, MapsTo (toEnd R H M x) ↑(N i) ↑(N i) := fun _ _ ↦ LieSubmodule.lie_mem _

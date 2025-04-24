@@ -747,12 +747,12 @@ theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
 /-- The coercion from `Finset` to `Set` as a `MonoidHom`. -/
 @[to_additive "The coercion from `Finset` to `set` as an `AddMonoidHom`."]
 noncomputable def coeMonoidHom : Finset α →* Set α where
-  toFun := CoeTC.coe
+  toFun := (↑)
   map_one' := coe_one
   map_mul' := coe_mul
 
 @[to_additive (attr := simp)]
-theorem coe_coeMonoidHom : (coeMonoidHom : Finset α → Set α) = CoeTC.coe :=
+theorem coe_coeMonoidHom : (coeMonoidHom : Finset α → Set α) = (↑) :=
   rfl
 
 @[to_additive (attr := simp)]

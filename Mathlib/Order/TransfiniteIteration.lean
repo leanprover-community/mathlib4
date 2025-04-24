@@ -75,23 +75,23 @@ lemma monotone_transfiniteIterate (hφ : ∀ (i : I), i ≤ φ i) :
     Monotone (fun (j : J) ↦ transfiniteIterate φ j i₀) := by
   intro k j hkj
   induction j using SuccOrder.limitRecOn with
-  | hm k hk =>
-      obtain rfl := hk.eq_bot
-      obtain rfl : k = ⊥ := by simpa using hkj
-      rfl
-  | hs k' hk' hkk' =>
-      obtain hkj | rfl := hkj.lt_or_eq
-      · refine (hkk' ((Order.lt_succ_iff_of_not_isMax hk').mp hkj)).trans ?_
-        dsimp
-        rw [transfiniteIterate_succ _ _ _ hk']
-        apply hφ
-      · rfl
-  | hl k' hk' _ =>
-      obtain hkj | rfl := hkj.lt_or_eq
-      · dsimp
-        rw [transfiniteIterate_limit _ _ _ hk']
-        exact le_iSup (fun (⟨l, hl⟩ : Set.Iio k') ↦ transfiniteIterate φ l i₀) ⟨k, hkj⟩
-      · rfl
+  | isMin k hk =>
+    obtain rfl := hk.eq_bot
+    obtain rfl : k = ⊥ := by simpa using hkj
+    rfl
+  | succ k' hk' hkk' =>
+    obtain hkj | rfl := hkj.lt_or_eq
+    · refine (hkk' ((Order.lt_succ_iff_of_not_isMax hk').mp hkj)).trans ?_
+      dsimp
+      rw [transfiniteIterate_succ _ _ _ hk']
+      apply hφ
+    · rfl
+  | isSuccLimit k' hk' _ =>
+    obtain hkj | rfl := hkj.lt_or_eq
+    · dsimp
+      rw [transfiniteIterate_limit _ _ _ hk']
+      exact le_iSup (fun (⟨l, hl⟩ : Set.Iio k') ↦ transfiniteIterate φ l i₀) ⟨k, hkj⟩
+    · rfl
 
 lemma top_mem_range_transfiniteIterate
     (hφ' : ∀ i ≠ (⊤ : I), i < φ i) (φtop : φ ⊤ = ⊤)
