@@ -133,6 +133,9 @@ The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
 
+Use the `to_additive existing` syntax to use an existing additive declaration, instead of
+automatically generating the declaration.
+
 Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
 This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
 arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
