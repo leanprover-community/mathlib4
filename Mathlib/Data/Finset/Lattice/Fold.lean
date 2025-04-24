@@ -105,6 +105,9 @@ theorem le_sup {b : β} (hb : b ∈ s) : f b ≤ s.sup f :=
 lemma isLUB_sup : IsLUB (f '' s) (s.sup f) := by
   simp +contextual [IsLUB, IsLeast, upperBounds, lowerBounds, le_sup]
 
+lemma isLUB_sup_id {s : Finset α} : IsLUB s (s.sup id) := by simpa using isLUB_sup (f := id)
+
+
 theorem le_sup_of_le {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup f := h.trans <| le_sup hb
 
 theorem sup_union [DecidableEq β] : (s₁ ∪ s₂).sup f = s₁.sup f ⊔ s₂.sup f :=
@@ -351,6 +354,8 @@ theorem inf_le {b : β} (hb : b ∈ s) : s.inf f ≤ f b :=
 
 lemma isGLB_inf : IsGLB (f '' s) (s.inf f) := by
   simp +contextual [IsGLB, IsGreatest, upperBounds, lowerBounds, inf_le]
+
+lemma isGLB_inf_id {s : Finset α} : IsGLB s (s.inf id) := by simpa using isGLB_inf (f := id)
 
 theorem inf_le_of_le {b : β} (hb : b ∈ s) (h : f b ≤ a) : s.inf f ≤ a := (inf_le hb).trans h
 
