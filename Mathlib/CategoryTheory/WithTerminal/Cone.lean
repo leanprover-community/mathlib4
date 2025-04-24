@@ -109,7 +109,7 @@ there is an obvious equivalence between cones of these two functors.
 A cone of `K` is an object of `Over X`, so it has the form `t ⟶ X`.
 Equivalently, a cone of `WithTerminal K` is an object `t : C`,
 and we can recover the structure morphism as `π.app X : t ⟶ X`. -/
-@[simps]
+@[simps!]
 def coneEquiv {X : C} (K : J ⥤ Over X) : Cone K ≌ Cone (liftFromOverToWithTerminal.obj K) where
   functor := coneLift
   inverse := coneBack
