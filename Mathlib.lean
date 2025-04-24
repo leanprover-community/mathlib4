@@ -3492,6 +3492,7 @@ import Mathlib.FieldTheory.Relrank
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.FieldTheory.SeparableDegree
+import Mathlib.FieldTheory.SeparablyGenerated
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Tower
