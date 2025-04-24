@@ -405,8 +405,8 @@ theorem mem_tangentCone_of_segment_subset {s : Set G} {x y : G} (h : segment ℝ
 
 /-- In a proper space, the tangent cone at a non-isolated point is nontrivial. -/
 theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
-    {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) :
-    (tangentConeAt R s x ∩ {0}ᶜ).Nonempty := by
+    {s : Set E} {x : E} (hx : AccPt x (𝓟 s)) :
+    (tangentConeAt 𝕜 s x ∩ {0}ᶜ).Nonempty := by
   /- Take a sequence `d n` tending to `0` such that `x + d n ∈ s`. Taking `c n` of the order
   of `1 / d n`. Then `c n • d n` belongs to a fixed annulus. By compactness, one can extract
   a subsequence converging to a limit `l`. Then `l` is nonzero, and by definition it belongs to
@@ -414,9 +414,10 @@ theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
   obtain ⟨u, -, u_pos, u_lim⟩ :
       ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
-  have A n : ((s \ {x}) ∩ Metric.ball x (u n)).Nonempty := by
-    apply NeBot.nonempty_of_mem hx (inter_mem_nhdsWithin _ (Metric.ball_mem_nhds _ (u_pos n)))
-  choose v hv using A
+  have A n : ∃ y ∈ closedBall x (u n) ∩ s, y ≠ x :=
+    (accPt_iff_nhds).mp hx _ (closedBall_mem_nhds _ (u_pos n))
+  choose v hv hvx using A
+  choose hvu hvs using hv
   let d := fun n ↦ v n - x
   have M n : x + d n ∈ s \ {x} := by simpa [d] using (hv n).1
   let ⟨r, hr⟩ := exists_one_lt_norm R
@@ -430,9 +431,7 @@ theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
     have B (n : ℕ) : ‖c n‖⁻¹ ≤ 1⁻¹ * ‖r‖ * u n := by
       apply (hc n).trans
       gcongr
-      specialize hv n
-      simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, dist_eq_norm] at hv
-      simpa using hv.2.le
+      simpa [d, dist_eq_norm] using hvu n
     refine ⟨?_, 0, fun n hn ↦ by simpa using c_ne n⟩
     apply squeeze_zero (fun n ↦ by positivity) B
     simpa using u_lim.const_mul _
@@ -450,8 +449,8 @@ theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
       Metric.mem_ball, inv_pos, norm_pos_iff, ne_eq, not_not, true_and]
     contrapose! hr
     simp [hr]
-  refine ⟨c ∘ φ, d ∘ φ, ?_, ?_, hφ⟩
-  · exact Eventually.of_forall (fun n ↦ by simpa [d] using (hv (φ n)).1.1)
+  refine ⟨c ∘ φ, d ∘ φ, .of_forall fun n ↦ ?_, ?_, hφ⟩
+  · simpa [d] using hvs (φ n)
   · exact c_lim.comp φ_strict.tendsto_atTop
 
 end Normed
@@ -671,16 +670,21 @@ theorem uniqueDiffWithinAt_Ioi (a : ℝ) : UniqueDiffWithinAt ℝ (Ioi a) a :=
 theorem uniqueDiffWithinAt_Iio (a : ℝ) : UniqueDiffWithinAt ℝ (Iio a) a :=
   uniqueDiffWithinAt_convex (convex_Iio a) (by simp) (by simp)
 
+/-- In one dimension, a point is a point of unique differentiability of a set
+iff it is an accumulation point of the set. -/
+theorem uniqueDiffWithinAt_iff_accPt {s : Set 𝕜} {x : 𝕜} :
+    UniqueDiffWithinAt 𝕜 s x ↔ AccPt x (𝓟 s) :=
+  ⟨UniqueDiffWithinAt.accPt, fun h ↦
+    ⟨by simp [tangentCone_eq_univ h], mem_closure_iff_clusterPt.mpr h.clusterPt⟩⟩
+
+alias ⟨_, AccPt.uniqueDiffWithinAt⟩ := uniqueDiffWithinAt_iff_accPt
+
 /-- In one dimension, every point is either a point of unique differentiability, or isolated. -/
-theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot (s : Set R) (x : R) :
-    UniqueDiffWithinAt R s x ∨ 𝓝[s \ {x}] x = ⊥ := by
-  rcases eq_or_neBot (𝓝[s \ {x}] x) with h | h
-  · exact Or.inr h
-  refine Or.inl ⟨?_, ?_⟩
-  · simp [tangentCone_eq_univ h]
-  · simp only [mem_closure_iff_nhdsWithin_neBot]
-    apply neBot_of_le (hf := h)
-    exact nhdsWithin_mono _ diff_subset
+@[deprecated uniqueDiffWithinAt_iff_accPt (since := "2025-04-20")]
+theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot (s : Set 𝕜) (x : 𝕜) :
+    UniqueDiffWithinAt 𝕜 s x ∨ 𝓝[s \ {x}] x = ⊥ :=
+  (em (AccPt x (𝓟 s))).imp AccPt.uniqueDiffWithinAt fun h ↦ by
+    rwa [accPt_principal_iff_nhdsWithin, not_neBot] at h
 
 end Real
 
