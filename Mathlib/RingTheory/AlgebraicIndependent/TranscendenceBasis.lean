@@ -132,6 +132,39 @@ theorem isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic [Nontrivial R]
   ⟨fun h ↦ ⟨h.1, h.1.isTranscendenceBasis_iff_isAlgebraic.mp h⟩,
     fun ⟨ind, alg⟩ ↦ ind.isTranscendenceBasis_iff_isAlgebraic.mpr alg⟩
 
+lemma IsTranscendenceBasis.algebraMap_comp
+    [Nontrivial R] [NoZeroDivisors S] [Algebra.IsAlgebraic S A] [FaithfulSMul S A]
+    {x : ι → S} (hx : IsTranscendenceBasis R x) : IsTranscendenceBasis R (algebraMap S A ∘ x) := by
+  refine (hx.1.map (f := IsScalarTower.toAlgHom _ _ _)
+    (FaithfulSMul.algebraMap_injective S A).injOn).isTranscendenceBasis_iff_isAlgebraic.mpr ?_
+  rw [Set.range_comp, ← AlgHom.map_adjoin]
+  set R' := Algebra.adjoin R (Set.range x)
+  let e := R'.equivMapOfInjective (IsScalarTower.toAlgHom R S A)
+    (FaithfulSMul.algebraMap_injective S A)
+  letI := e.toRingHom.toAlgebra
+  haveI : IsScalarTower R' (R'.map (IsScalarTower.toAlgHom R S A)) A :=
+    .of_algebraMap_eq fun x ↦ rfl
+  have : Algebra.IsAlgebraic R' S := hx.isAlgebraic
+  have : Algebra.IsAlgebraic R' A := .trans _ S _
+  exact .extendScalars e.injective
+
+lemma IsTranscendenceBasis.isAlgebraic_iff [IsDomain S]
+    {ι : Type*} {v : ι → A} (hv : IsTranscendenceBasis R v) :
+    Algebra.IsAlgebraic S A ↔ ∀ i, IsAlgebraic S (v i) := by
+  have := (algebraMap R S).domain_nontrivial
+  refine ⟨fun _ ↦ fun i ↦ Algebra.IsAlgebraic.isAlgebraic (v i), fun H ↦ ?_⟩
+  have : Algebra.IsAlgebraic S (Algebra.adjoin S (Set.range v)) := by
+    simpa [← Subalgebra.isAlgebraic_iff, Algebra.isAlgebraic_adjoin_iff]
+  letI : Algebra (Algebra.adjoin R (Set.range v)) (Algebra.adjoin S (Set.range v)) :=
+    (Subalgebra.inclusion (T := (Algebra.adjoin S (Set.range v)).restrictScalars R)
+    (by rw [Algebra.Subalgebra.restrictScalars_adjoin]; exact le_sup_right)).toAlgebra
+  have : IsScalarTower (Algebra.adjoin R (Set.range v)) (Algebra.adjoin S (Set.range v)) A :=
+    .of_algebraMap_eq fun x ↦ rfl
+  have := hv.isAlgebraic
+  have : Algebra.IsAlgebraic (Algebra.adjoin S (Set.range v)) A :=
+    .extendScalars (R := Algebra.adjoin R (Set.range v)) (Subalgebra.inclusion_injective _)
+  refine .trans _ (Algebra.adjoin S (Set.range v)) _
+
 variable (ι R)
 
 theorem IsTranscendenceBasis.mvPolynomial [Nontrivial R] :

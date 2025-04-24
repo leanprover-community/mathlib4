@@ -281,6 +281,14 @@ protected theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := b
 @[simp] theorem finrank_top' : finrank F (⊤ : IntermediateField F E) = finrank F E :=
   finrank_top F E
 
+lemma finrank_eq_one_iff_eq_top {K : IntermediateField F E} :
+    Module.finrank K E = 1 ↔ K = ⊤ := by
+  refine ⟨?_, (· ▸ IntermediateField.finrank_top)⟩
+  rw [← Subalgebra.bot_eq_top_iff_finrank_eq_one, ← top_le_iff, ← top_le_iff]
+  intro H x _
+  obtain ⟨x, rfl⟩ := @H x trivial
+  exact x.2
+
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff
 
