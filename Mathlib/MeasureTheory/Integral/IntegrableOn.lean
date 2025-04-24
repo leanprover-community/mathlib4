@@ -222,6 +222,15 @@ theorem _root_.MeasurableEmbedding.integrableOn_iff_comap [MeasurableSpace β] {
   simp_rw [← he.integrableOn_map_iff, he.map_comap, IntegrableOn,
     Measure.restrict_restrict_of_subset hs]
 
+theorem _root_.MeasurableEmbedding.integrableOn_range_iff_comap [MeasurableSpace β] {e : α → β}
+    (he : MeasurableEmbedding e) {f : β → E} {μ : Measure β} :
+    IntegrableOn f (range e) μ ↔ Integrable (f ∘ e) (μ.comap e) := by
+  rw [he.integrableOn_iff_comap .rfl, preimage_range, integrableOn_univ]
+
+theorem integrableOn_iff_comap_subtypeVal (hs : MeasurableSet s) :
+    IntegrableOn f s μ ↔ Integrable (f ∘ (↑) : s → E) (μ.comap (↑)) := by
+  rw [← (MeasurableEmbedding.subtype_coe hs).integrableOn_range_iff_comap, Subtype.range_val]
+
 theorem integrableOn_map_equiv [MeasurableSpace β] (e : α ≃ᵐ β) {f : β → E} {μ : Measure α}
     {s : Set β} : IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
   simp only [IntegrableOn, e.restrict_map, integrable_map_equiv e]

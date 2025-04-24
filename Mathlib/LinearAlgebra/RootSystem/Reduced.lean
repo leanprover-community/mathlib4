@@ -200,7 +200,7 @@ section IsValuedIn
 
 open FaithfulSMul
 
-variable [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
+variable [CommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
 omit [NoZeroSMulDivisors R N]
 variable {i j}
 
