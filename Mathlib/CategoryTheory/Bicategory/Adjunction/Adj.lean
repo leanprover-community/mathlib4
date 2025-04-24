@@ -3,8 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 
 /-!
 # The bicategory of adjunctions in a bicategory
@@ -45,6 +44,8 @@ namespace Adj
 
 variable {B}
 
+abbrev obj (a : Adj B) : B := a
+
 variable (a b c d : B)
 
 /--
@@ -70,25 +71,15 @@ instance : CategoryStruct (Adj B) where
   id (a : B) := .mk' (Adjunction.id a)
   comp f g := .mk' (f.adj.comp g.adj)
 
-@[simp] lemma id_f (a : Adj B) : Hom.f (𝟙 a) = 𝟙 _ := rfl
-@[simp] lemma id_g (a : Adj B) : Hom.g (𝟙 a) = 𝟙 _ := rfl
+@[simp] lemma id_f (a : Adj B) : Hom.f (𝟙 a) = 𝟙 a.obj := rfl
+@[simp] lemma id_g (a : Adj B) : Hom.g (𝟙 a) = 𝟙 a.obj := rfl
+@[simp] lemma id_adj (a : Adj B) : Hom.adj (𝟙 a) = Adjunction.id a.obj := rfl
 
 variable {a b c d : Adj B}
 
 @[simp] lemma comp_f (α : a ⟶ b) (β : b ⟶ c) : (α ≫ β).f = α.f ≫ β.f := rfl
 @[simp] lemma comp_g (α : a ⟶ b) (β : b ⟶ c) : (α ≫ β).g = β.g ≫ α.g := rfl
-
-/--
-Given two adjunctions `α` and `β` between two objects in a bicategory, the data
-of a morphism between the left adjoints is equivalent to the data of a morphism
-in the other direction between the right adjoints.
--/
-@[simps]
-def hom₂Equiv (α β : a ⟶ b) : (α.f ⟶ β.f) ≃ (β.g ⟶ α.g) where
-  toFun τ := 𝟙 _ ⊗≫ β.g ◁ α.adj.unit ≫ β.g ◁ (τ ▷ α.g) ⊗≫ (β.adj.counit ▷ α.g) ⊗≫ 𝟙 _
-  invFun τ' := 𝟙 _ ⊗≫ β.adj.unit ▷ α.f ≫ (β.f ◁ τ') ▷ α.f ⊗≫ β.f ◁ α.adj.counit ⊗≫ 𝟙 _
-  left_inv := sorry
-  right_inv := sorry
+@[simp] lemma comp_adj (α : a ⟶ b) (β : b ⟶ c) : (α ≫ β).adj = α.adj.comp β.adj := rfl
 
 /-- A morphism between two adjunctions consists of a tuple of mate maps. -/
 @[ext]
@@ -97,23 +88,27 @@ structure Hom₂ (α β : a ⟶ b) where
   τf : α.f ⟶ β.f
   /-- the morphism in the opposite direction between right adjoints -/
   τg : β.g ⟶ α.g
-  hom₂Equiv_τf : hom₂Equiv α β τf = τg
+  conjugateEquiv_τf : conjugateEquiv β.adj α.adj τf = τg := by aesop_cat
+
+lemma Hom₂.conjugateEquiv_symm_τg {α β : a ⟶ b} (p : Hom₂ α β) :
+    (conjugateEquiv β.adj α.adj).symm p.τg = p.τf := by
+  rw [← Hom₂.conjugateEquiv_τf, Equiv.symm_apply_apply]
 
 instance : CategoryStruct (a ⟶ b) where
   Hom α β := Hom₂ α β
   id α :=
     { τf := 𝟙 _
-      τg := 𝟙 _
-      hom₂Equiv_τf := sorry }
-  comp x y :=
+      τg := 𝟙 _ }
+  comp {a b c} x y :=
     { τf := x.τf ≫ y.τf
       τg := y.τg ≫ x.τg
-      hom₂Equiv_τf := sorry }
+      conjugateEquiv_τf := by simp [← conjugateEquiv_comp c.adj b.adj a.adj y.τf x.τf,
+        Hom₂.conjugateEquiv_τf] }
 
 @[ext]
 lemma hom₂_ext {α β : a ⟶ b} {x y : α ⟶ β} (hf : x.τf = y.τf) : x = y := by
   apply Hom₂.ext hf
-  rw [← x.hom₂Equiv_τf, ← y.hom₂Equiv_τf, hf]
+  simp only [← Hom₂.conjugateEquiv_τf, hf]
 
 @[simp] lemma id_τf (α : a ⟶ b) : Hom₂.τf (𝟙 α) = 𝟙 α.f := rfl
 @[simp] lemma id_τg (α : a ⟶ b) : Hom₂.τg (𝟙 α) = 𝟙 α.g := rfl
@@ -131,16 +126,17 @@ instance : Category (a ⟶ b) where
 
 /-- Constructor for isomorphisms between 1-morphisms in the bicategory `Adj B`. -/
 @[simps]
-def iso₂Mk {α β : a ⟶ b} (ef : α.f ≅ β.f) (eg : β.g ≅ α.g) (h : hom₂Equiv α β ef.hom = eg.hom) :
+def iso₂Mk {α β : a ⟶ b} (ef : α.f ≅ β.f) (eg : β.g ≅ α.g)
+    (h : conjugateEquiv β.adj α.adj ef.hom = eg.hom) :
     α ≅ β where
   hom :=
     { τf := ef.hom
       τg := eg.hom
-      hom₂Equiv_τf := h }
+      conjugateEquiv_τf := h }
   inv :=
     { τf := ef.inv
       τg := eg.inv
-      hom₂Equiv_τf := sorry }
+      conjugateEquiv_τf := sorry }
 
 /-- The associator in the bicategory `Adj B`. -/
 @[simps!]
@@ -162,14 +158,18 @@ def rightUnitor (α : a ⟶ b) : α ≫ 𝟙 b ≅ α :=
 def whiskerLeft (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') : α ≫ β ⟶ α ≫ β' where
   τf := _ ◁ y.τf
   τg := y.τg ▷ _
-  hom₂Equiv_τf := sorry
+  conjugateEquiv_τf := by
+    dsimp
+    rw [← iterated_mateEquiv_conjugateEquiv]
+    rw [← Hom₂.conjugateEquiv_τf]
+    sorry
 
 /-- The right whiskering in the bicategory `Adj B`. -/
 @[simps]
 def whiskerRight {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) : α ≫ β ⟶ α' ≫ β where
   τf := x.τf ▷ _
   τg := _ ◁ x.τg
-  hom₂Equiv_τf := sorry
+  conjugateEquiv_τf := sorry
 
 attribute [local simp] whisker_exchange
 
