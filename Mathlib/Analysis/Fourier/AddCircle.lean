@@ -260,7 +260,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   split_ifs with h
   · simp_rw [h, add_neg_cancel]
     have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
-    rw [this, integral_const, measure_univ, ENNReal.toReal_one, Complex.real_smul,
+    rw [this, integral_const, measureReal_univ_eq_one, Complex.real_smul,
       Complex.ofReal_one, mul_one]
   have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)
@@ -393,7 +393,7 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
   have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
   rw [← integral_re] at H₃
-  · simp only [← norm_sq_eq_inner] at H₃
+  · simp only [← norm_sq_eq_re_inner] at H₃
     rw [← H₁, H₂, H₃]
   · exact L2.integrable_inner f f
 
