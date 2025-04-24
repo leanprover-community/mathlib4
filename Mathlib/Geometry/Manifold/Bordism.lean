@@ -103,8 +103,8 @@ to compute bordism groups; for the definition, this makes no difference.)
 
 This is parametrised on the universe `M` lives in; ensure `u` is the first universe argument. -/
 structure SingularManifold.{u} (X : Type*) [TopologicalSpace X] (k : WithTop ℕ∞)
-  {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where
+    {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where
   /-- The manifold `M` of a singular `n`-manifold `(M, f)` -/
   M : Type u
   /-- The manifold `M` is a topological space. -/

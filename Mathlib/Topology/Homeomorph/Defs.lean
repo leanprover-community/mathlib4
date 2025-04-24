@@ -227,8 +227,8 @@ theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.isInducing, h.injec
 @[deprecated (since := "2024-10-26")]
 alias embedding := isEmbedding
 
-protected theorem discreteTopology [DiscreteTopology X] (h : X ≃ₜ Y) :
-  DiscreteTopology Y := h.symm.isEmbedding.discreteTopology
+protected theorem discreteTopology [DiscreteTopology X] (h : X ≃ₜ Y) : DiscreteTopology Y :=
+  h.symm.isEmbedding.discreteTopology
 
 theorem discreteTopology_iff (h : X ≃ₜ Y) : DiscreteTopology X ↔ DiscreteTopology Y :=
   ⟨fun _ ↦ h.discreteTopology, fun _ ↦ h.symm.discreteTopology⟩

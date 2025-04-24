@@ -35,9 +35,9 @@ abbrev HasSubst (a : MvPowerSeries τ S) : Prop :=
   IsNilpotent (MvPowerSeries.constantCoeff τ S a)
 
 theorem hasSubst_iff {a : MvPowerSeries τ S} :
-  HasSubst a ↔ MvPowerSeries.HasSubst (Function.const Unit a) :=
+    HasSubst a ↔ MvPowerSeries.HasSubst (Function.const Unit a) :=
   ⟨fun ha ↦ MvPowerSeries.hasSubst_of_constantCoeff_nilpotent (Function.const Unit ha),
-   fun ha  ↦ (ha.const_coeff ())⟩
+   fun ha ↦ (ha.const_coeff ())⟩
 
 theorem HasSubst.const {a : MvPowerSeries τ S} (ha : HasSubst a) :
     MvPowerSeries.HasSubst (fun () ↦ a) :=
@@ -46,8 +46,8 @@ theorem HasSubst.const {a : MvPowerSeries τ S} (ha : HasSubst a) :
 theorem hasSubst_iff_hasEval_of_discreteTopology
     [TopologicalSpace S] [DiscreteTopology S] {a : MvPowerSeries τ S} :
     HasSubst a ↔ PowerSeries.HasEval a := by
-  rw [hasSubst_iff, MvPowerSeries.hasSubst_iff_hasEval_of_discreteTopology, hasEval_iff]
-  rfl
+  rw [hasSubst_iff, MvPowerSeries.hasSubst_iff_hasEval_of_discreteTopology, hasEval_iff,
+    Function.const_def]
 
 theorem HasSubst.hasEval [TopologicalSpace S] {a : MvPowerSeries τ S} (ha : HasSubst a) :
     HasEval a := by

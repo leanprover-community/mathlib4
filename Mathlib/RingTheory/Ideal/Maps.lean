@@ -1131,6 +1131,8 @@ section PrincipalIdeal
 instance {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) (I : Ideal R) [I.IsPrincipal] :
     (I.map f).IsPrincipal := by
   obtain ⟨x, rfl⟩ := Submodule.IsPrincipal.principal I
-  exact ⟨f x, by rw [← Ideal.span, ← Set.image_singleton, Ideal.map_span]; rfl⟩
+  exact ⟨f x, by
+    rw [← Ideal.span, ← Set.image_singleton, Ideal.map_span, Set.image_singleton,
+      Ideal.submodule_span_eq]⟩
 
 end PrincipalIdeal

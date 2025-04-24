@@ -685,8 +685,8 @@ def inductionOn' (motive : RelSeries r → Sort*)
     induction' n with d hd generalizing p
     · convert singleton p.head
       ext n
-      exact heq
-      simp [show n = 0 by omega, apply_zero]
+      · exact heq
+      · simp [show n = 0 by omega, apply_zero]
     · have ne0 : p.length ≠ 0 := by simp [heq]
       have len : p.eraseLast.length = d := by simp [heq]
       convert snoc p.eraseLast p.last (p.eraseLast_last_rel_last ne0)

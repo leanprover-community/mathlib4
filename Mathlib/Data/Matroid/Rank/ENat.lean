@@ -416,8 +416,9 @@ lemma eRk_insert_eq_add_one (he : e ∈ M.E \ M.closure X) : M.eRk (insert e X) 
 
 lemma exists_eRk_insert_eq_add_one_of_lt (h : M.eRk X < M.eRk Y) :
     ∃ y ∈ Y \ X, M.eRk (insert y X) = M.eRk X + 1 := by
-  by_cases hz : Y ∩ M.E ⊆ M.closure X
-  · exact False.elim <| h.not_le <| by simpa using M.eRk_mono hz
+  have hz : ¬ Y ∩ M.E ⊆ M.closure X := by
+    contrapose! h
+    simpa using M.eRk_mono h
   obtain ⟨e, ⟨heZ, heE⟩, heX⟩ := not_subset.1 hz
   refine ⟨e, ⟨heZ, fun heX' ↦ heX (mem_closure_of_mem' _ heX')⟩, eRk_insert_eq_add_one ⟨heE, heX⟩⟩
 

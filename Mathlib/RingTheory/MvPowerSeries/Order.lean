@@ -539,7 +539,7 @@ theorem weightedHomogeneousComponent_of_weightedOrder
 theorem isWeightedHomogeneous_weightedHomogeneousComponent (f : MvPowerSeries σ R) (p : ℕ) :
     IsWeightedHomogeneous w (f.weightedHomogeneousComponent w p) p := fun {d} ↦ by
   rw [not_imp_comm]
-  intro  hd
+  intro hd
   rw [coeff_weightedHomogeneousComponent, if_neg hd]
 
 variable {w} in
