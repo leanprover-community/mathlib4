@@ -37,7 +37,7 @@ namespace InvariantForm
 section ring
 
 variable {R L M : Type*}
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
+variable [CommRing R] [LieRing L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M]
 
 variable (Φ : LinearMap.BilinForm R M) (hΦ_nondeg : Φ.Nondegenerate)
@@ -50,7 +50,7 @@ for all `x : L` and `y z : M` the condition `Φ ⁅x, y⁆ z = -Φ y ⁅x, z⁆`
 def _root_.LinearMap.BilinForm.lieInvariant : Prop :=
   ∀ (x : L) (y z : M), Φ ⁅x, y⁆ z = -Φ y ⁅x, z⁆
 
-lemma _root_.LinearMap.BilinForm.lieInvariant_iff [LieModule R L M] :
+lemma _root_.LinearMap.BilinForm.lieInvariant_iff [LieAlgebra R L] [LieModule R L M] :
     Φ.lieInvariant L ↔ Φ ∈ LieModule.maxTrivSubmodule R L (LinearMap.BilinForm R M) := by
   refine ⟨fun h x ↦ ?_, fun h x y z ↦ ?_⟩
   · ext y z
@@ -61,23 +61,23 @@ lemma _root_.LinearMap.BilinForm.lieInvariant_iff [LieModule R L M] :
       LinearMap.zero_apply, sub_eq_zero] at h
     simp [← h]
 
-variable (hΦ_inv : Φ.lieInvariant L)
-
 /--
 The orthogonal complement of a Lie submodule `N` with respect to an invariant bilinear form `Φ` is
 the Lie submodule of elements `y` such that `Φ x y = 0` for all `x ∈ N`.
 -/
 @[simps!]
-def orthogonal (N : LieSubmodule R L M) : LieSubmodule R L M where
+def orthogonal (hΦ_inv : Φ.lieInvariant L) (N : LieSubmodule R L M) : LieSubmodule R L M where
   __ := Φ.orthogonal N
   lie_mem {x y} := by
     suffices (∀ n ∈ N, Φ n y = 0) → ∀ n ∈ N, Φ n ⁅x, y⁆ = 0 by
       simpa only [LinearMap.BilinForm.isOrtho_def, -- and some default simp lemmas
         AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, Submodule.mem_toAddSubmonoid,
-        LinearMap.BilinForm.mem_orthogonal_iff, LieSubmodule.mem_coeSubmodule]
+        LinearMap.BilinForm.mem_orthogonal_iff, LieSubmodule.mem_toSubmodule]
     intro H a ha
     rw [← neg_eq_zero, ← hΦ_inv]
     exact H _ <| N.lie_mem ha
+
+variable (hΦ_inv : Φ.lieInvariant L)
 
 @[simp]
 lemma orthogonal_toSubmodule (N : LieSubmodule R L M) :
@@ -86,6 +86,8 @@ lemma orthogonal_toSubmodule (N : LieSubmodule R L M) :
 lemma mem_orthogonal (N : LieSubmodule R L M) (y : M) :
     y ∈ orthogonal Φ hΦ_inv N ↔ ∀ x ∈ N, Φ x y = 0 := by
   simp [orthogonal, LinearMap.BilinForm.isOrtho_def, LinearMap.BilinForm.mem_orthogonal_iff]
+
+variable [LieAlgebra R L]
 
 lemma orthogonal_disjoint
     (Φ : LinearMap.BilinForm R L) (hΦ_nondeg : Φ.Nondegenerate) (hΦ_inv : Φ.lieInvariant L)
@@ -120,33 +122,39 @@ variable (Φ : LinearMap.BilinForm K L) (hΦ_nondeg : Φ.Nondegenerate)
 variable (hΦ_inv : Φ.lieInvariant L) (hΦ_refl : Φ.IsRefl)
 -- TODO: replace the following assumption by a typeclass assumption `[HasNonAbelianAtoms]`
 variable (hL : ∀ I : LieIdeal K L, IsAtom I → ¬IsLieAbelian I)
+include hΦ_nondeg hΦ_refl hL
 
-open FiniteDimensional Submodule in
-lemma orthogonal_isCompl_coe_submodule (I : LieIdeal K L) (hI : IsAtom I) :
+open Module Submodule in
+lemma orthogonal_isCompl_toSubmodule (I : LieIdeal K L) (hI : IsAtom I) :
     IsCompl I.toSubmodule (orthogonal Φ hΦ_inv I).toSubmodule := by
   rw [orthogonal_toSubmodule, LinearMap.BilinForm.isCompl_orthogonal_iff_disjoint hΦ_refl,
-      ← orthogonal_toSubmodule _ hΦ_inv, ← LieSubmodule.disjoint_iff_coe_toSubmodule]
+      ← orthogonal_toSubmodule _ hΦ_inv, LieSubmodule.disjoint_toSubmodule]
   exact orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL I hI
 
-open FiniteDimensional Submodule in
+@[deprecated (since := "2024-12-30")]
+alias orthogonal_isCompl_coe_submodule := orthogonal_isCompl_toSubmodule
+
+open Module Submodule in
 lemma orthogonal_isCompl (I : LieIdeal K L) (hI : IsAtom I) :
     IsCompl I (orthogonal Φ hΦ_inv I) := by
-  rw [LieSubmodule.isCompl_iff_coe_toSubmodule]
-  exact orthogonal_isCompl_coe_submodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI
+  rw [← LieSubmodule.isCompl_toSubmodule]
+  exact orthogonal_isCompl_toSubmodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI
+
+include hΦ_inv
 
 lemma restrict_nondegenerate (I : LieIdeal K L) (hI : IsAtom I) :
     (Φ.restrict I).Nondegenerate := by
   rw [LinearMap.BilinForm.restrict_nondegenerate_iff_isCompl_orthogonal hΦ_refl]
-  exact orthogonal_isCompl_coe_submodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI
+  exact orthogonal_isCompl_toSubmodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI
 
 lemma restrict_orthogonal_nondegenerate (I : LieIdeal K L) (hI : IsAtom I) :
     (Φ.restrict (orthogonal Φ hΦ_inv I)).Nondegenerate := by
   rw [LinearMap.BilinForm.restrict_nondegenerate_iff_isCompl_orthogonal hΦ_refl]
-  simp only [LieIdeal.coe_to_lieSubalgebra_to_submodule, orthogonal_toSubmodule,
+  simp only [LieIdeal.toLieSubalgebra_toSubmodule, orthogonal_toSubmodule,
     LinearMap.BilinForm.orthogonal_orthogonal hΦ_nondeg hΦ_refl]
-  exact (orthogonal_isCompl_coe_submodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI).symm
+  exact (orthogonal_isCompl_toSubmodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI).symm
 
-open FiniteDimensional Submodule in
+open Module Submodule in
 lemma atomistic : ∀ I : LieIdeal K L, sSup {J : LieIdeal K L | IsAtom J ∧ J ≤ I} = I := by
   intro I
   apply le_antisymm
@@ -199,7 +207,7 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   suffices ⁅(x : L), z⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]
   rw [← LieSubmodule.mem_bot (R := K) (L := L), ← (hJ.disjoint_of_ne hI hJI).eq_bot]
   apply lie_le_inf
-  exact lie_mem_lie _ _ x.2 hz
+  exact lie_mem_lie x.2 hz
 
 end field
 
