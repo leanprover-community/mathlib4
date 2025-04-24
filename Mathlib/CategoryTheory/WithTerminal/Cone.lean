@@ -87,8 +87,8 @@ private def coneLift {X : C} {K : J ⥤ Over X} :
 /-- This is the inverse of the previous construction: a cone of an extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C` consists of an object of `C`, together
 with morphisms. This same object is a cone of the original functor `K : J ⥤ Over X`. -/
-@[simps!]
-def coneBack {X : C} {K : J ⥤ Over X} :
+@[simps]
+private def coneBack {X : C} {K : J ⥤ Over X} :
     Cone (liftFromOverToWithTerminal.obj K) ⥤ Cone K where
   obj t := {
     pt := .mk (t.π.app star)
