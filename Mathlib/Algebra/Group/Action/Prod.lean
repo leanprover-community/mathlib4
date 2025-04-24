@@ -43,7 +43,7 @@ namespace Prod
 section
 variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (x : α × β)
 
-@[to_additive vaddAssocClass]
+@[to_additive]
 instance isScalarTower [SMul M N] [IsScalarTower M N α] [IsScalarTower M N β] :
     IsScalarTower M N (α × β) where
   smul_assoc _ _ _ := by ext <;> exact smul_assoc ..

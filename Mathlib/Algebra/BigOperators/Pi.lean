@@ -3,11 +3,14 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Ring.Pi
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Big operators for Pi Types
@@ -57,7 +60,7 @@ theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Fin
   Finset.induction_on s rfl (by simp +contextual [Prod.ext_iff])
 
 /-- decomposing `x : ι → R` as a sum along the canonical basis -/
-theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [Semiring R]
+theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [NonAssocSemiring R]
     (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
   ext
   simp

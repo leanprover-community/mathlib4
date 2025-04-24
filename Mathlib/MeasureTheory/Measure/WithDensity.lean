@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Measure with a given density with respect to another measure
@@ -628,6 +629,51 @@ theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : 
   infer_instance
 
 end SFinite
+
+section Prod
+
+variable {β : Type*} {mβ : MeasurableSpace β} {ν : Measure β} [SFinite ν]
+
+theorem prod_withDensity_left₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
+    (μ.withDensity f).prod ν = (μ.prod ν).withDensity (fun z ↦ f z.1) := by
+  refine ext_of_lintegral _ fun φ hφ ↦ ?_
+  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ hf,
+    lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable, lintegral_prod]
+  · refine lintegral_congr (fun x ↦ ?_)
+    rw [Pi.mul_apply, ← lintegral_const_mul'' _ (by fun_prop)]
+    simp
+  all_goals fun_prop (disch := intro _ hs; simp [hs])
+
+theorem prod_withDensity_left {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (μ.withDensity f).prod ν = (μ.prod ν).withDensity (fun z ↦ f z.1) :=
+  prod_withDensity_left₀ hf.aemeasurable
+
+theorem prod_withDensity_right₀ {g : β → ℝ≥0∞} (hg : AEMeasurable g ν) :
+    μ.prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ g z.2) := by
+  refine ext_of_lintegral _ fun φ hφ ↦ ?_
+  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable,
+    lintegral_prod]
+  · refine lintegral_congr (fun x ↦ ?_)
+    rw [lintegral_withDensity_eq_lintegral_mul₀ hg (by fun_prop)]
+    simp
+  all_goals fun_prop (disch := intro _ hs; simp [hs])
+
+theorem prod_withDensity_right {g : β → ℝ≥0∞} (hg : Measurable g) :
+    μ.prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ g z.2) :=
+  prod_withDensity_right₀ hg.aemeasurable
+
+theorem prod_withDensity₀ {f : α → ℝ≥0∞} {g : β → ℝ≥0∞}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) :
+    (μ.withDensity f).prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ f z.1 * g z.2) := by
+  rw [prod_withDensity_left₀ hf, prod_withDensity_right₀ hg, ← withDensity_mul₀, mul_comm]
+  · rfl
+  all_goals fun_prop (disch := intro _ hs; simp [hs])
+
+theorem prod_withDensity {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
+    (μ.withDensity f).prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ f z.1 * g z.2) :=
+  prod_withDensity₀ hf.aemeasurable hg.aemeasurable
+
+end Prod
 
 variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]
 
