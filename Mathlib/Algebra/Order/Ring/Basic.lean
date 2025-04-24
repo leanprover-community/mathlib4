@@ -285,7 +285,7 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
 lemma Odd.pow_injective {n : ℕ} (hn : Odd n) : Injective (· ^ n : R → R) :=
   hn.strictMono_pow.injective
 
-lemma Odd.pow_lt_pow {n : ℕ} (hn : Odd n) {a b : R} : a^n < b^n ↔ a < b :=
+lemma Odd.pow_lt_pow {n : ℕ} (hn : Odd n) {a b : R} : a ^ n < b ^ n ↔ a < b :=
   hn.strictMono_pow.lt_iff_lt
 
 lemma Odd.pow_le_pow {n : ℕ} (hn : Odd n) {a b : R} : a^n ≤ b^n ↔ a ≤ b :=
