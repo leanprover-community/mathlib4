@@ -25,32 +25,39 @@ open MeasureTheory.Measure
 open scoped NNReal Pointwise ENNReal
 
 namespace MeasureTheory
-variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
-  -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
-  -- assume `MeasurableSpace G` + `MeasurableSMul G A`
-  [MeasurableSpace G] [MeasurableSMul G A] [TopologicalSpace A] [BorelSpace A]
-  [IsTopologicalAddGroup A] [LocallyCompactSpace A] [ContinuousConstSMul G A] {μ ν : Measure A}
-  {g : G} [μ.IsAddHaarMeasure]
+variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [TopologicalSpace A]
+  [IsTopologicalAddGroup A] [LocallyCompactSpace A] [ContinuousConstSMul G A] {g : G}
 
 variable (A) in
 /-- The distributive Haar character of a group `G` acting distributively on a group `A` is the
 unique positive real number `Δ(g)` such that `μ (g • s) = Δ(g) * μ s` for all Haar
 measures `μ : Measure A`, set `s : Set A` and `g : G`. -/
 @[simps -isSimp]
-noncomputable def distribHaarChar : G →* ℝ≥0 where
-  toFun g := addHaarScalarFactor (DomMulAct.mk g • addHaar) (addHaar (G := A))
-  map_one' := by simp
-  map_mul' g g' := by
-    simp_rw [DomMulAct.mk_mul]
-    rw [addHaarScalarFactor_eq_mul _ (DomMulAct.mk g' • addHaar (G := A))]
-    congr 1
-    simp_rw [mul_smul]
-    rw [addHaarScalarFactor_domSMul]
+noncomputable def distribHaarChar : G →* ℝ≥0 :=
+  letI := borel A
+  have : BorelSpace A := ⟨rfl⟩
+  {
+    toFun g := addHaarScalarFactor (DomMulAct.mk g • addHaar) (addHaar (G := A))
+    map_one' := by simp
+    map_mul' g g' := by
+      simp_rw [DomMulAct.mk_mul]
+      rw [addHaarScalarFactor_eq_mul _ (DomMulAct.mk g' • addHaar (G := A))]
+      congr 1
+      simp_rw [mul_smul]
+      rw [addHaarScalarFactor_domSMul]
+  }
+
+lemma distribHaarChar_pos : 0 < distribHaarChar A g :=
+  pos_iff_ne_zero.mpr ((Group.isUnit g).map (distribHaarChar A)).ne_zero
+
+variable [MeasurableSpace A] [BorelSpace A] {μ : Measure A} [μ.IsAddHaarMeasure]
 
 variable (μ) in
 lemma addHaarScalarFactor_smul_eq_distribHaarChar (g : G) :
-    addHaarScalarFactor (DomMulAct.mk g • μ) μ = distribHaarChar A g :=
-  addHaarScalarFactor_smul_congr' ..
+    addHaarScalarFactor (DomMulAct.mk g • μ) μ = distribHaarChar A g := by
+  obtain ⟨rfl⟩ := ‹BorelSpace A›
+  letI := borel A
+  exact addHaarScalarFactor_smul_congr' ..
 
 variable (μ) in
 lemma addHaarScalarFactor_smul_inv_eq_distribHaarChar (g : G) :
@@ -63,9 +70,6 @@ variable (μ) in
 lemma addHaarScalarFactor_smul_eq_distribHaarChar_inv (g : G) :
     addHaarScalarFactor μ (DomMulAct.mk g • μ) = (distribHaarChar A g)⁻¹ := by
   rw [← map_inv, ← addHaarScalarFactor_smul_inv_eq_distribHaarChar μ, DomMulAct.mk_inv, inv_inv]
-
-lemma distribHaarChar_pos : 0 < distribHaarChar A g :=
-  pos_iff_ne_zero.mpr ((Group.isUnit g).map (distribHaarChar A)).ne_zero
 
 variable [Regular μ] {s : Set A}
 
