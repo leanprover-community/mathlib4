@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Basic
+import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+import Mathlib.Topology.Algebra.AffineSubspace
 
 /-!
 # Signed distance to an affine subspace in a Euclidean space.
@@ -39,9 +41,11 @@ variable (s : AffineSubspace ℝ P) [Nonempty s] [s.direction.HasOrthogonalProje
 This is expected to be used when `p` does not lie in `s` (in the degenerate case where `p` lies
 in `s`, this yields 0) and when the point at which the distance is evaluated lies in the affine
 span of `s` and `p` (any component of the distance orthogonal to that span is disregarded). -/
-noncomputable def signedInfDist : P →ᵃ[ℝ] ℝ :=
-  (innerₗ V (‖p -ᵥ orthogonalProjection s p‖⁻¹ • (p -ᵥ orthogonalProjection s p))).toAffineMap.comp
-    (AffineMap.id ℝ P -ᵥ s.subtype.comp (orthogonalProjection s))
+noncomputable def signedInfDist : P →ᴬ[ℝ] ℝ :=
+  (innerSL ℝ (‖p -ᵥ orthogonalProjection s p‖⁻¹ •
+      (p -ᵥ orthogonalProjection s p))).toContinuousAffineMap.comp
+    ((ContinuousAffineEquiv.refl ℝ P).toContinuousAffineMap -ᵥ
+      s.subtypeA.comp (orthogonalProjection s))
 
 lemma signedInfDist_apply (x : P) :
     s.signedInfDist p x = ⟪‖p -ᵥ orthogonalProjection s p‖⁻¹ • (p -ᵥ orthogonalProjection s p),
