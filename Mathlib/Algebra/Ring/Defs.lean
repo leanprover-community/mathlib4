@@ -384,6 +384,8 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
+#adaptation_note /-- 2025-04-24 Fix the proofs and restore this. -/
+/-
 instance CommRing.toGrindCommRing [s : CommRing α] :
     Lean.Grind.CommRing α :=
   { s with
@@ -436,6 +438,7 @@ example (s : Lean.Grind.CommRing α) : CommRing α :=
     intCast := sorry
     intCast_ofNat := sorry
     intCast_negSucc := sorry }
+-/
 
 /-- A domain is a nontrivial semiring such that multiplication by a non zero element
 is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
