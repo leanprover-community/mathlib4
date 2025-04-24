@@ -205,35 +205,35 @@ theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α →
   let ⟨_⟩ := nonempty_fintype α
   hasFiniteIntegral_of_bounded <| ae_of_all μ <| norm_le_pi_norm f
 
-theorem HasFiniteIntegral.mono_measure {f : α → β} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
+theorem HasFiniteIntegral.mono_measure {f : α → ε} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=
   lt_of_le_of_lt (lintegral_mono' hμ le_rfl) h
 
-theorem HasFiniteIntegral.add_measure {f : α → β} (hμ : HasFiniteIntegral f μ)
+theorem HasFiniteIntegral.add_measure {f : α → ε} (hμ : HasFiniteIntegral f μ)
     (hν : HasFiniteIntegral f ν) : HasFiniteIntegral f (μ + ν) := by
   simp only [HasFiniteIntegral, lintegral_add_measure] at *
   exact add_lt_top.2 ⟨hμ, hν⟩
 
-theorem HasFiniteIntegral.left_of_add_measure {f : α → β} (h : HasFiniteIntegral f (μ + ν)) :
+theorem HasFiniteIntegral.left_of_add_measure {f : α → ε} (h : HasFiniteIntegral f (μ + ν)) :
     HasFiniteIntegral f μ :=
   h.mono_measure <| Measure.le_add_right <| le_rfl
 
-theorem HasFiniteIntegral.right_of_add_measure {f : α → β} (h : HasFiniteIntegral f (μ + ν)) :
+theorem HasFiniteIntegral.right_of_add_measure {f : α → ε} (h : HasFiniteIntegral f (μ + ν)) :
     HasFiniteIntegral f ν :=
   h.mono_measure <| Measure.le_add_left <| le_rfl
 
 @[simp]
-theorem hasFiniteIntegral_add_measure {f : α → β} :
+theorem hasFiniteIntegral_add_measure {f : α → ε} :
     HasFiniteIntegral f (μ + ν) ↔ HasFiniteIntegral f μ ∧ HasFiniteIntegral f ν :=
   ⟨fun h => ⟨h.left_of_add_measure, h.right_of_add_measure⟩, fun h => h.1.add_measure h.2⟩
 
-theorem HasFiniteIntegral.smul_measure {f : α → β} (h : HasFiniteIntegral f μ) {c : ℝ≥0∞}
+theorem HasFiniteIntegral.smul_measure {f : α → ε} (h : HasFiniteIntegral f μ) {c : ℝ≥0∞}
     (hc : c ≠ ∞) : HasFiniteIntegral f (c • μ) := by
   simp only [HasFiniteIntegral, lintegral_smul_measure] at *
   exact mul_lt_top hc.lt_top h
 
 @[simp]
-theorem hasFiniteIntegral_zero_measure {m : MeasurableSpace α} (f : α → β) :
+theorem hasFiniteIntegral_zero_measure {m : MeasurableSpace α} (f : α → ε) :
     HasFiniteIntegral f (0 : Measure α) := by
   simp only [HasFiniteIntegral, lintegral_zero_measure, zero_lt_top]
 
