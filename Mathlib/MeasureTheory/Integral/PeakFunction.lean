@@ -458,7 +458,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable'
     apply tendsto_integral_comp_smul_smul_of_integrable hφ h'φ h If
     have A : ContinuousAt g (x₀ - 0) := by simpa using h'g
     exact A.comp <| by fun_prop
-  simp only [f, @_root_.sub_zero] at this
+  simp only [f, sub_zero] at this
   convert this using 2 with c
   conv_rhs => rw [← integral_add_left_eq_self x₀ (μ := μ)
     (f := fun x ↦ (c ^ finrank ℝ F * φ (c • x)) • g (x₀ - x)), ← integral_neg_eq_self]
