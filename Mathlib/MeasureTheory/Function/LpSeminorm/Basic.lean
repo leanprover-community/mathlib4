@@ -956,21 +956,12 @@ variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖) p μ :=
   h.of_le h.aestronglyMeasurable.norm (Eventually.of_forall fun x => by simp)
 
-theorem MemLp.enorm {f : α → ε} (h : MemLp f p μ) : MemLp (‖f ·‖ₑ) p μ :=
-  -- TODO: want .of_le_enorm, just requiring measurability...
-  -- so, must go deeper into the rabbit hole!
-  sorry -- TODO: should have a simple proof
-
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.norm := MemLp.norm
 
 theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
     MemLp (fun x => ‖f x‖) p μ ↔ MemLp f p μ :=
   ⟨fun h => ⟨hf, by rw [← eLpNorm_norm]; exact h.2⟩, fun h => h.norm⟩
-
-theorem memLp_enorm_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) :
-    MemLp (‖f ·‖ₑ) p μ ↔ MemLp f p μ :=
-  ⟨fun h => ⟨hf, by rw [← eLpNorm_enorm]; exact h.2⟩, fun h => h.enorm⟩
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_iff := memLp_norm_iff
@@ -1535,3 +1526,5 @@ alias Memℒp.exists_eLpNorm_indicator_compl_lt := MemLp.exists_eLpNorm_indicato
 end UnifTight
 end Lp
 end MeasureTheory
+
+set_option linter.style.longFile 1700
