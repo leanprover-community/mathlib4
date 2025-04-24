@@ -58,8 +58,7 @@ variable [MeasurableSpace A] [BorelSpace A] {μ : Measure A} [μ.IsAddHaarMeasur
 variable (μ) in
 lemma addHaarScalarFactor_smul_eq_distribHaarChar (g : G) :
     addHaarScalarFactor (DomMulAct.mk g • μ) μ = distribHaarChar A g := by
-  obtain ⟨rfl⟩ := ‹BorelSpace A›
-  letI := borel A
+  borelize A
   exact addHaarScalarFactor_smul_congr' ..
 
 variable (μ) in
