@@ -315,6 +315,18 @@ section LinearOrder
 variable [LinearOrder α] {a b c d : α}
 
 @[to_additive]
+theorem trichotomy_of_mul_eq_mul
+    [MulLeftStrictMono α] [MulRightStrictMono α]
+    (h : a * b = c * d) : (a = c ∧ b = d) ∨ a < c ∨ b < d := by
+  obtain hac | rfl | hca := lt_trichotomy a c
+  · right; left; exact hac
+  · left; simpa using mul_right_inj_of_comparable (LinearOrder.le_total d b)|>.1 h
+  · obtain hbd | rfl | hdb := lt_trichotomy b d
+    · right; right; exact hbd
+    · exact False.elim <| ne_of_lt (mul_lt_mul_right' hca b) h.symm
+    · exact False.elim <| ne_of_lt (mul_lt_mul_of_lt_of_lt hca hdb) h.symm
+
+@[to_additive]
 lemma mul_max [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
     a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
 
