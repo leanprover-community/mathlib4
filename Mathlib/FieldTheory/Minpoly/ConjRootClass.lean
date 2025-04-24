@@ -58,41 +58,55 @@ instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] : DecidableEq (C
 def carrier (c : ConjRootClass K L) : Set L :=
   mk K ⁻¹' {c}
 
+@[simp]
 theorem mem_carrier {x : L} {c : ConjRootClass K L} : x ∈ c.carrier ↔ mk K x = c :=
   Iff.rfl
 
+@[simp]
 theorem carrier_zero : (0 : ConjRootClass K L).carrier = {0} := by
   ext; rw [mem_carrier, mk_eq_zero_iff, Set.mem_singleton_iff]
+
+theorem carrier_inj: Function.Injective (carrier (K:=K) (L:=L)) := by
+  intros x y H; rw [Set.ext_iff] at H; simp at H
+  induction x; induction y; rename_i x y
+  rw [<- H]
 
 instance : Neg (ConjRootClass K L) where
   neg := Quotient.map (fun x ↦ -x) (fun _ _ ↦ IsConjRoot.neg)
 
-theorem mk_neg (x : L) : mk K (-x) = -mk K x :=
+theorem mk_neg (x : L) : - mk K x = mk K (-x) :=
   rfl
 
 instance : InvolutiveNeg (ConjRootClass K L) where
-  neg_neg c := by induction c; rw [← mk_neg, ← mk_neg, neg_neg]
+  neg_neg c := by induction c; rw [mk_neg, mk_neg, neg_neg]
+
+@[simp]
+theorem carrier_neg (c : ConjRootClass K L): carrier (- c) = - carrier c := by
+  ext; simp; rw [<- mk_neg]
+  constructor <;> intro H
+  · rw [H, neg_neg]
+  · rw [<- H, neg_neg]
 
 theorem exist_mem_carrier_add_eq_zero (x y : ConjRootClass K L) :
     (∃ᵉ (a ∈ x.carrier) (b ∈ y.carrier), a + b = 0) ↔ x = -y := by
   simp_rw [mem_carrier]
   constructor
   · rintro ⟨a, rfl, b, rfl, h⟩
-    rw [← mk_neg, mk_eq_mk, add_eq_zero_iff_eq_neg.mp h]
+    rw [mk_neg, mk_eq_mk, add_eq_zero_iff_eq_neg.mp h]
   · rintro rfl
     induction y with
     | h y => exact ⟨-y, mk_neg y, y, rfl, neg_add_cancel _⟩
 
 instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (c : ConjRootClass K L) :
     DecidablePred (· ∈ c.carrier) :=
-  fun x ↦ decidable_of_iff (mk K x = c) (by simp [mem_carrier])
+  fun x ↦ decidable_of_iff (mk K x = c) (by simp)
 
 instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (c : ConjRootClass K L) :
     Fintype c.carrier :=
   Quotient.recOnSubsingleton c fun x =>
     .ofFinset
       ((Finset.univ (α := L ≃ₐ[K] L)).image (· x))
-      (fun _ ↦ by simp [← isConjRoot_iff_exists_algEquiv, mem_carrier, ← mk_eq_mk])
+      (fun _ ↦ by simp [← isConjRoot_iff_exists_algEquiv, ← mk_eq_mk])
 
 open Polynomial
 
