@@ -538,6 +538,7 @@ end GaloisConnection
 
 namespace OrderIso
 
+section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι]
 
 theorem map_csSup (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
@@ -572,6 +573,22 @@ theorem map_ciInf_set (e : α ≃o β) {s : Set γ} {f : γ → α} (hf : BddBel
     (hne : s.Nonempty) : e (⨅ i : s, f i) = ⨅ i : s, e (f i) :=
   e.dual.map_ciSup_set hf hne
 
+end ConditionallyCompleteLattice
+
+section ConditionallyCompleteLinearOrderBot
+variable [ConditionallyCompleteLinearOrderBot α] [ConditionallyCompleteLinearOrderBot β]
+
+@[simp]
+lemma map_ciSup' (e : α ≃o β) (f : ι → α) : e (⨆ i, f i) = ⨆ i, e (f i) := by
+  cases isEmpty_or_nonempty ι
+  · simp [map_bot]
+  by_cases hf : BddAbove (range f)
+  · exact e.map_ciSup hf
+  · have hfe : ¬ BddAbove (range fun i ↦ e (f i)) := by
+      simpa [Set.Nonempty, BddAbove, upperBounds, e.surjective.forall] using hf
+    simp [map_bot, hf, hfe]
+
+end ConditionallyCompleteLinearOrderBot
 end OrderIso
 
 section WithTopBot
