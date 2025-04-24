@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Scott Morrison
+Authors: Markus Himmel, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -56,7 +56,6 @@ theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w 
 
 theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
   { mono_isIso_iff_nonzero := fun f m => by
-      haveI : Mono (f ≫ i.hom) := mono_comp _ _
       constructor
       · intro h w
         have j : IsIso (f ≫ i.hom) := by infer_instance
@@ -117,7 +116,7 @@ variable (C)
 
 /-- We don't want the definition of 'simple' to include the zero object, so we check that here. -/
 theorem zero_not_simple [Simple (0 : C)] : False :=
-  (Simple.mono_isIso_iff_nonzero (0 : (0 : C) ⟶ (0 : C))).mp ⟨⟨0, by aesop_cat⟩⟩ rfl
+  (Simple.mono_isIso_iff_nonzero (0 : (0 : C) ⟶ (0 : C))).mp ⟨⟨0, by simp⟩⟩ rfl
 
 end
 
@@ -175,7 +174,7 @@ variable [Preadditive C] [HasBinaryBiproducts C]
 -- There are another three potential variations of this lemma,
 -- but as any one suffices to prove `indecomposable_of_simple` we will not give them all.
 theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ Y) ↔ IsZero Y := by
-  rw [biprod.isIso_inl_iff_id_eq_fst_comp_inl, ← biprod.total, add_right_eq_self]
+  rw [biprod.isIso_inl_iff_id_eq_fst_comp_inl, ← biprod.total, add_eq_left]
   constructor
   · intro h
     replace h := h =≫ biprod.snd
@@ -190,7 +189,7 @@ theorem indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
     refine or_iff_not_imp_left.mpr fun h => ?_
     rw [IsZero.iff_isSplitMono_eq_zero (biprod.inl : Y ⟶ Y ⊞ Z)] at h
     change biprod.inl ≠ 0 at h
-    have : Simple (Y ⊞ Z) := Simple.of_iso i.symm -- Porting note: this instance is needed
+    have : Simple (Y ⊞ Z) := Simple.of_iso i.symm
     rw [← Simple.mono_isIso_iff_nonzero biprod.inl] at h
     rwa [Biprod.isIso_inl_iff_isZero] at h⟩
 

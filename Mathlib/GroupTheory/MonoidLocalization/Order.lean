@@ -3,6 +3,7 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
@@ -18,7 +19,8 @@ variable {α : Type*}
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α}
+  {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
 instance le : LE (Localization s) :=
@@ -59,7 +61,7 @@ theorem mk_lt_mk : mk a₁ a₂ < mk b₁ b₂ ↔ ↑b₂ * a₁ < a₂ * b₁ 
 instance partialOrder : PartialOrder (Localization s) where
   le := (· ≤ ·)
   lt := (· < ·)
-  le_refl a := Localization.induction_on a fun a => le_rfl
+  le_refl a := Localization.induction_on a fun _ => le_rfl
   le_trans a b c :=
     Localization.induction_on₃ a b c fun a b c hab hbc => by
       simp only [mk_le_mk] at hab hbc ⊢
@@ -75,10 +77,10 @@ instance partialOrder : PartialOrder (Localization s) where
       · simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
         exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
     all_goals rfl
-  lt_iff_le_not_le a b := Localization.induction_on₂ a b fun a b => lt_iff_le_not_le
+  lt_iff_le_not_le a b := Localization.induction_on₂ a b fun _ _ => lt_iff_le_not_le
 
 @[to_additive]
-instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) where
+instance isOrderedCancelMonoid : IsOrderedCancelMonoid (Localization s) where
   mul_le_mul_left := fun a b =>
     Localization.induction_on₂ a b fun a b hab c =>
       Localization.induction_on c fun c => by
@@ -90,13 +92,11 @@ instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) wher
       exact le_of_mul_le_mul_left' hab
 
 @[to_additive]
-instance decidableLE [DecidableRel ((· ≤ ·) : α → α → Prop)] :
-    DecidableRel ((· ≤ ·) : Localization s → Localization s → Prop) := fun a b =>
+instance decidableLE [DecidableLE α] : DecidableLE (Localization s) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_le_mk
 
 @[to_additive]
-instance decidableLT [DecidableRel ((· < ·) : α → α → Prop)] :
-    DecidableRel ((· < ·) : Localization s → Localization s → Prop) := fun a b =>
+instance decidableLT [DecidableLT α] : DecidableLT (Localization s) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_lt_mk
 
 /-- An ordered cancellative monoid injects into its localization by sending `a` to `a / b`. -/
@@ -105,20 +105,19 @@ sending `a` to `a - b`."]
 def mkOrderEmbedding (b : s) : α ↪o Localization s where
   toFun a := mk a b
   inj' := mk_left_injective _
-  map_rel_iff' {a b} := by simp [-mk_eq_monoidOf_mk', mk_le_mk]
+  map_rel_iff' {a b} := by simp [mk_le_mk]
 
 end OrderedCancelCommMonoid
 
 @[to_additive]
-instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
-    LinearOrderedCancelCommMonoid (Localization s) :=
-  { Localization.orderedCancelCommMonoid with
-    le_total := fun a b =>
+instance [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α} :
+    LinearOrder (Localization s) :=
+  { le_total := fun a b =>
       Localization.induction_on₂ a b fun _ _ => by
         simp_rw [mk_le_mk]
         exact le_total _ _
-    decidableLE := Localization.decidableLE
-    decidableLT := Localization.decidableLT  -- Porting note: was wrong in mathlib3
-    decidableEq := Localization.decidableEq }
+    toDecidableLE := Localization.decidableLE
+    toDecidableLT := Localization.decidableLT
+    toDecidableEq := Localization.decidableEq }
 
 end Localization

@@ -3,19 +3,19 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Lean.Linter.Util
-import Batteries.Data.Array.Basic
 import Batteries.Tactic.Lint
+import Mathlib.Tactic.DeclarationNames
 
 /-!
 # Linters for Mathlib
 
-In this file we define additional linters for mathlib.
+In this file we define additional linters for mathlib,
+which concern the *behaviour* of the linted code, and not issues of code style or formatting.
 
 Perhaps these should be moved to Batteries in the future.
 -/
 
-namespace Std.Tactic.Lint
+namespace Batteries.Tactic.Lint
 open Lean Meta
 
 /--
@@ -29,7 +29,7 @@ Linter that checks whether a structure should be in Prop.
     -- remark: using `Lean.Meta.isProp` doesn't suffice here, because it doesn't (always?)
     -- recognize predicates as propositional.
     let isProp ← forallTelescopeReducing (← inferType (← mkConstWithLevelParams declName))
-      fun _ ty => return ty == .sort .zero
+      fun _ ty ↦ return ty == .sort .zero
     if isProp then return none
     let projs := (getStructureInfo? (← getEnv) declName).get!.fieldNames
     if projs.isEmpty then return none -- don't flag empty structures
@@ -47,7 +47,7 @@ Linter that checks whether a structure should be in Prop.
     | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
     | none => return m!"`deprecated` attribute without `since` date"
 
-end Std.Tactic.Lint
+end Batteries.Tactic.Lint
 
 namespace Mathlib.Linter
 
@@ -79,83 +79,21 @@ namespace DupNamespaceLinter
 
 open Lean Parser Elab Command Meta
 
-/-- Gets the value of the `linter.dupNamespace` option. -/
-def getLinterDupNamespace (o : Options) : Bool := Linter.getLinterValue linter.dupNamespace o
-
-/-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`.
-If `stx` is an `alias` or an `export`, then it extracts an `ident`, instead of a `declId`. -/
-partial
-def getIds : Syntax → Array Syntax
-  | .node _ `Batteries.Tactic.Alias.alias args => args[2:3]
-  | .node _ ``Lean.Parser.Command.export args => (args[3:4] : Array Syntax).map (·[0])
-  | stx@(.node _ _ args) =>
-    ((args.attach.map fun ⟨a, _⟩ => getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
-  | _ => default
-
 @[inherit_doc linter.dupNamespace]
-def dupNamespace : Linter where run := withSetOptionIn fun stx => do
-  if getLinterDupNamespace (← getOptions) then
-    match getIds stx with
-      | #[id] =>
-        let ns := (← getScope).currNamespace
-        let declName := ns ++ (if id.getKind == ``declId then id[0].getId else id.getId)
-        let nm := declName.components
-        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) => x == y
-          | return
-        Linter.logLint linter.dupNamespace id
-          m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
-      | _ => return
+def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
+  if Linter.getLinterValue linter.dupNamespace (← getOptions) then
+    let mut aliases := #[]
+    if let some exp := stx.find? (·.isOfKind `Lean.Parser.Command.export) then
+      aliases ← getAliasSyntax exp
+    for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
+      let declName := id.getId
+      if declName.hasMacroScopes then continue
+      let nm := declName.components
+      let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
+        | continue
+      Linter.logLint linter.dupNamespace id
+        m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
 
 initialize addLinter dupNamespace
 
-end DupNamespaceLinter
-
-/-!
-# The "missing end" linter
-
-The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
-It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
--/
-
-open Lean Elab Command
-
-/-- The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
-It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
--/
-register_option linter.missingEnd : Bool := {
-  defValue := true
-  descr := "enable the missing end linter"
-}
-
-namespace MissingEnd
-
-/-- Gets the value of the `linter.missingEnd` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.missingEnd o
-
-@[inherit_doc Mathlib.Linter.linter.missingEnd]
-def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    -- Only run this linter at the end of a module.
-    unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
-    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
-      return
-    if getLinterHash (← getOptions) && !(← MonadState.get).messages.hasErrors then
-      let sc ← getScopes
-      -- The last scope is always the "base scope", corresponding to no active `section`s or
-      -- `namespace`s. We are interested in any *other* unclosed scopes.
-      if sc.length == 1 then return
-      let ends := sc.dropLast.map fun s ↦ (s.header, s.isNoncomputable)
-      -- If the outermost scope corresponds to a `noncomputable section`, we ignore it.
-      let ends := if ends.getLast!.2 then ends.dropLast else ends
-      -- If there are any further un-closed scopes, we emit a warning.
-      if !ends.isEmpty then
-        let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
-          a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
-        Linter.logLint linter.missingEnd stx
-         m!"unclosed sections or namespaces; expected: '{ending}'"
-
-initialize addLinter missingEndLinter
-
-end MissingEnd
-
-end Mathlib.Linter
+end Mathlib.Linter.DupNamespaceLinter

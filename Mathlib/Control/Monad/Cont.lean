@@ -7,6 +7,8 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Lawful
 import Batteries.Tactic.Congr
+import Batteries.Lean.Except
+import Batteries.Control.OptionT
 
 /-!
 # Continuation Monad
@@ -29,8 +31,8 @@ class MonadCont (m : Type u → Type v) where
 
 open MonadCont
 
-class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m]
-    extends LawfulMonad m : Prop where
+class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m] : Prop
+    extends LawfulMonad m where
   callCC_bind_right {α ω γ} (cmd : m α) (next : Label ω m γ → α → m ω) :
     (callCC fun f => cmd >>= next f) = cmd >>= fun x => callCC fun f => next f x
   callCC_bind_left {α} (β) (x : α) (dead : Label α m β → β → m α) :
@@ -49,7 +51,7 @@ namespace ContT
 
 export MonadCont (Label goto)
 
-variable {r : Type u} {m : Type u → Type v} {α β γ ω : Type w}
+variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 
 def run : ContT r m α → (α → m r) → m r :=
   id
@@ -104,7 +106,10 @@ instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
 
 end ContT
 
-variable {m : Type u → Type v} [Monad m]
+variable {m : Type u → Type v}
+
+section
+variable [Monad m]
 
 def ExceptT.mkLabel {α β ε} : Label (Except.{u, u} ε α) m β → Label α (ExceptT ε m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (Except.ok a)⟩
@@ -143,18 +148,23 @@ nonrec def OptionT.callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT 
     OptionT m α :=
   OptionT.mk (callCC fun x : Label _ m β => OptionT.run <| f (OptionT.mkLabel x) : m (Option α))
 
+@[simp]
+lemma run_callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT m) β → OptionT m α) :
+    (OptionT.callCC f).run = (callCC fun x => OptionT.run <| f (OptionT.mkLabel x)) := rfl
+
 instance [MonadCont m] : MonadCont (OptionT m) where
   callCC := OptionT.callCC
 
 instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
   callCC_bind_right := by
-    intros; simp only [callCC, OptionT.callCC, OptionT.run_bind, callCC_bind_right]; ext
-    dsimp
-    congr with ⟨⟩ <;> simp [@callCC_dummy m _]
+    refine fun _ _ => OptionT.ext ?_
+    simp [callCC, Option.elimM, callCC_bind_right]
+    exact bind_congr fun | some _ => rfl | none => by simp [@callCC_dummy m _]
   callCC_bind_left := by
     intros
-    simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, OptionT.run_bind, OptionT.run_mk,
-      bind_assoc, pure_bind, @callCC_bind_left m _]
+    simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, bind_pure_comp, OptionT.run_bind,
+      OptionT.run_mk, Option.elimM_map, Option.elim_some, Function.comp_apply,
+      @callCC_bind_left m _]
     ext; rfl
   callCC_dummy := by intros; simp only [callCC, OptionT.callCC, @callCC_dummy m _]; ext; rfl
 
@@ -183,6 +193,8 @@ def WriterT.callCC' [MonadCont m] {α β ω : Type _} [Monoid ω]
   WriterT.mk <|
     MonadCont.callCC (WriterT.run ∘ f ∘ WriterT.mkLabel' : Label (α × ω) m β → m (α × ω))
 
+end
+
 instance (ω) [Monad m] [EmptyCollection ω] [MonadCont m] : MonadCont (WriterT ω m) where
   callCC := WriterT.callCC
 
@@ -202,7 +214,7 @@ nonrec def StateT.callCC {σ} [MonadCont m] {α β : Type _}
 instance {σ} [MonadCont m] : MonadCont (StateT σ m) where
   callCC := StateT.callCC
 
-instance {σ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (StateT σ m) where
+instance {σ} [Monad m] [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (StateT σ m) where
   callCC_bind_right := by
     intros
     simp only [callCC, StateT.callCC, StateT.run_bind, callCC_bind_right]; ext; rfl
@@ -228,7 +240,7 @@ nonrec def ReaderT.callCC {ε} [MonadCont m] {α β : Type _}
 instance {ρ} [MonadCont m] : MonadCont (ReaderT ρ m) where
   callCC := ReaderT.callCC
 
-instance {ρ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ReaderT ρ m) where
+instance {ρ} [Monad m] [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ReaderT ρ m) where
   callCC_bind_right := by intros; simp only [callCC, ReaderT.callCC, ReaderT.run_bind,
                                     callCC_bind_right]; ext; rfl
   callCC_bind_left := by

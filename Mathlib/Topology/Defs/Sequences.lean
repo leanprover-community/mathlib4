@@ -3,6 +3,7 @@ Copyright (c) 2018 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
+import Mathlib.Order.Filter.AtTopBot.Defs
 import Mathlib.Topology.Defs.Filter
 
 /-!
@@ -72,9 +73,9 @@ variable (X)
 converging subsequence. -/
 @[mk_iff]
 class SeqCompactSpace : Prop where
-  seq_compact_univ : IsSeqCompact (univ : Set X)
+  isSeqCompact_univ : IsSeqCompact (univ : Set X)
 
-export SeqCompactSpace (seq_compact_univ)
+export SeqCompactSpace (isSeqCompact_univ)
 
 /-- A topological space is called a *Fréchet-Urysohn space*, if the sequential closure of any set
 is equal to its closure. Since one of the inclusions is trivial, we require only the non-trivial one

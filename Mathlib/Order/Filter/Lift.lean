@@ -3,14 +3,16 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Prod
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 # Lift filters along filter and set functions
 -/
 
-open Set Classical Filter Function
+open Set Filter Function
 
 namespace Filter
 
@@ -18,17 +20,11 @@ variable {α β γ : Type*} {ι : Sort*}
 
 section lift
 
-/-- A variant on `bind` using a function `g` taking a set instead of a member of `α`.
-This is essentially a push-forward along a function mapping each set to a filter. -/
-protected def lift (f : Filter α) (g : Set α → Filter β) :=
-  ⨅ s ∈ f, g s
-
 variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Set α → Filter β}
 
 @[simp]
 theorem lift_top (g : Set α → Filter β) : (⊤ : Filter α).lift g = g univ := by simp [Filter.lift]
 
--- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`
 /-- If `(p : ι → Prop, s : ι → Set α)` is a basis of a filter `f`, `g` is a monotone function
 `Set α → Filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → Set α)` is a basis
 of the filter `g (s i)`, then
@@ -199,11 +195,6 @@ end lift
 
 section Lift'
 
-/-- Specialize `lift` to functions `Set α → Set β`. This can be viewed as a generalization of `map`.
-This is essentially a push-forward along a function mapping each set to a set. -/
-protected def lift' (f : Filter α) (h : Set α → Set β) :=
-  f.lift (𝓟 ∘ h)
-
 variable {f f₁ f₂ : Filter α} {h h₁ h₂ : Set α → Set β}
 
 @[simp]
@@ -249,7 +240,7 @@ theorem lift'_cong (hh : ∀ s ∈ f, h₁ s = h₂ s) : f.lift' h₁ = f.lift' 
 theorem map_lift'_eq {m : β → γ} (hh : Monotone h) : map m (f.lift' h) = f.lift' (image m ∘ h) :=
   calc
     map m (f.lift' h) = f.lift (map m ∘ 𝓟 ∘ h) := map_lift_eq <| monotone_principal.comp hh
-    _ = f.lift' (image m ∘ h) := by simp only [comp, Filter.lift', map_principal]
+    _ = f.lift' (image m ∘ h) := by simp only [comp_def, Filter.lift', map_principal]
 
 theorem lift'_map_le {g : Set β → Set γ} {m : α → β} : (map m f).lift' g ≤ f.lift' (g ∘ image m) :=
   lift_map_le
@@ -259,7 +250,7 @@ theorem map_lift'_eq2 {g : Set β → Set γ} {m : α → β} (hg : Monotone g) 
   map_lift_eq2 <| monotone_principal.comp hg
 
 theorem comap_lift'_eq {m : γ → β} : comap m (f.lift' h) = f.lift' (preimage m ∘ h) := by
-  simp only [Filter.lift', comap_lift_eq, (· ∘ ·), comap_principal]
+  simp only [Filter.lift', comap_lift_eq, comp_def, comap_principal]
 
 theorem comap_lift'_eq2 {m : β → α} {g : Set β → Set γ} (hg : Monotone g) :
     (comap m f).lift' g = f.lift' (g ∘ preimage m) :=
@@ -362,7 +353,7 @@ theorem prod_same_eq : f ×ˢ f = f.lift' fun t : Set α => t ×ˢ t :=
 
 theorem tendsto_prod_self_iff {f : α × α → β} {x : Filter α} {y : Filter β} :
     Filter.Tendsto f (x ×ˢ x) y ↔ ∀ W ∈ y, ∃ U ∈ x, ∀ x x' : α, x ∈ U → x' ∈ U → f (x, x') ∈ W := by
-  simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
+  simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop]
 
 variable {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*}
 

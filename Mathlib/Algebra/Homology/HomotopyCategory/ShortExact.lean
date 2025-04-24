@@ -20,6 +20,8 @@ distinguished triangle attached to the mapping cone of `S.f`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category ComplexShape HomotopyCategory Limits
   HomologicalComplex.HomologySequence Pretriangulated Preadditive
 
@@ -110,6 +112,7 @@ open ComposableArrows
 
 set_option simprocs false
 
+include hS in
 lemma quasiIso_descShortComplex : QuasiIso (descShortComplex S) where
   quasiIsoAt n := by
     rw [quasiIsoAt_iff_isIso_homologyMap]

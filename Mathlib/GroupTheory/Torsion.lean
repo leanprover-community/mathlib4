@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Berman
 -/
 import Mathlib.GroupTheory.PGroup
+import Mathlib.LinearAlgebra.Quotient.Defs
 
 /-!
 # Torsion groups
@@ -64,8 +65,8 @@ open Monoid
 noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with
     inv := fun g => g ^ (orderOf g - 1)
-    mul_left_inv := fun g => by
-      erw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
+    inv_mul_cancel := fun g => by
+      rw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
       exact (tG g).orderOf_pos }
 
 section Group
@@ -91,7 +92,7 @@ theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG 
 theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsion H)
     (tN : IsTorsion N) : IsTorsion G := fun g => by
   obtain ⟨ngn, ngnpos, hngn⟩ := (tH <| f g).exists_pow_eq_one
-  have hmem := f.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
+  have hmem := MonoidHom.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
   lift g ^ ngn to N using hN.symm ▸ hmem with gn h
   obtain ⟨nn, nnpos, hnn⟩ := (tN gn).exists_pow_eq_one
   exact isOfFinOrder_iff_pow_eq_one.mpr <| ⟨ngn * nn, mul_pos ngnpos nnpos, by
@@ -138,7 +139,7 @@ theorem IsTorsion.module_of_torsion [Semiring R] [Module R M] (tR : IsTorsion R)
   fun f =>
   isOfFinAddOrder_iff_nsmul_eq_zero.mpr <| by
     obtain ⟨n, npos, hn⟩ := (tR 1).exists_nsmul_eq_zero
-    exact ⟨n, npos, by simp only [nsmul_eq_smul_cast R _ f, ← nsmul_one, hn, zero_smul]⟩
+    exact ⟨n, npos, by simp only [← Nat.cast_smul_eq_nsmul R _ f, ← nsmul_one, hn, zero_smul]⟩
 
 /-- A module with a finite ring of scalars is additively torsion. -/
 theorem IsTorsion.module_of_finite [Ring R] [Finite R] [Module R M] : IsTorsion M :=
@@ -161,7 +162,7 @@ namespace CommMonoid
 @[to_additive addTorsion "The torsion submonoid of an additive commutative monoid."]
 def torsion : Submonoid G where
   carrier := { x | IsOfFinOrder x }
-  one_mem' := isOfFinOrder_one
+  one_mem' := IsOfFinOrder.one
   mul_mem' hx hy := hx.mul hy
 
 variable {G}
@@ -201,7 +202,10 @@ variable {G} {p}
 @[to_additive primaryComponent.exists_orderOf_eq_prime_nsmul
   "Elements of the `p`-primary component have additive order `p^n` for some `n`"]
 theorem primaryComponent.exists_orderOf_eq_prime_pow (g : CommMonoid.primaryComponent G p) :
-    ∃ n : ℕ, orderOf g = p ^ n := by simpa [primaryComponent] using g.property
+    ∃ n : ℕ, orderOf g = p ^ n := by
+      obtain ⟨_, hn⟩ := g.property
+      rw [orderOf_submonoid g] at hn
+      exact ⟨_, hn⟩
 
 /-- The `p`- and `q`-primary components are disjoint for `p ≠ q`. -/
 @[to_additive "The `p`- and `q`-primary components are disjoint for `p ≠ q`."]
@@ -294,11 +298,17 @@ end CommGroup
 end CommGroup
 
 namespace Monoid
-
+section Monoid
 variable (G) [Monoid G]
 
-/-- A predicate on a monoid saying that only 1 is of finite order. -/
-@[to_additive "A predicate on an additive monoid saying that only 0 is of finite order."]
+/-- A predicate on a monoid saying that only 1 is of finite order.
+
+This definition is mathematically incorrect for monoids which are not groups.
+Please use `IsMulTorsionFree` instead. -/
+@[to_additive "A predicate on an additive monoid saying that only 0 is of finite order.
+
+This definition is mathematically incorrect for monoids which are not groups.
+Please use `IsAddTorsionFree` instead. "]
 def IsTorsionFree :=
   ∀ g : G, g ≠ 1 → ¬IsOfFinOrder g
 
@@ -323,22 +333,17 @@ lemma isTorsionFree_iff_torsion_eq_bot {G} [CommGroup G] :
 end Monoid
 
 section Group
-
-open Monoid
-
 variable [Group G]
 
 /-- A nontrivial torsion group is not torsion-free. -/
-@[to_additive AddMonoid.IsTorsion.not_torsion_free
-      "A nontrivial additive torsion group is not torsion-free."]
+@[to_additive "A nontrivial additive torsion group is not torsion-free."]
 theorem IsTorsion.not_torsion_free [hN : Nontrivial G] : IsTorsion G → ¬IsTorsionFree G := fun tG =>
   not_isTorsionFree_iff.mpr <| by
     obtain ⟨x, hx⟩ := (nontrivial_iff_exists_ne (1 : G)).mp hN
     exact ⟨x, hx, tG x⟩
 
 /-- A nontrivial torsion-free group is not torsion. -/
-@[to_additive AddMonoid.IsTorsionFree.not_torsion
-      "A nontrivial torsion-free additive group is not torsion."]
+@[to_additive "A nontrivial torsion-free additive group is not torsion."]
 theorem IsTorsionFree.not_torsion [hN : Nontrivial G] : IsTorsionFree G → ¬IsTorsion G := fun tfG =>
   (not_isTorsion_iff _).mpr <| by
     obtain ⟨x, hx⟩ := (nontrivial_iff_exists_ne (1 : G)).mp hN
@@ -368,11 +373,11 @@ open CommGroup (torsion)
 variable (G) [CommGroup G]
 
 /-- Quotienting a group by its torsion subgroup yields a torsion free group. -/
-@[to_additive AddIsTorsionFree.quotient_torsion
-      "Quotienting a group by its additive torsion subgroup yields an additive torsion free group."]
+@[to_additive
+"Quotienting a group by its additive torsion subgroup yields an additive torsion free group."]
 theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun g hne hfin =>
   hne <| by
-    induction' g using QuotientGroup.induction_on' with g
+    induction' g using QuotientGroup.induction_on with g
     obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one
     obtain ⟨n, npos, hn⟩ := ((QuotientGroup.eq_one_iff _).mp hm).exists_pow_eq_one
     exact
@@ -380,21 +385,46 @@ theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun
         (isOfFinOrder_iff_pow_eq_one.mpr ⟨m * n, mul_pos mpos npos, (pow_mul g m n).symm ▸ hn⟩)
 
 end CommGroup
+end Monoid
+
+namespace AddMonoid
 
 lemma isTorsionFree_iff_noZeroSMulDivisors_nat {M : Type*} [AddMonoid M] :
-    AddMonoid.IsTorsionFree M ↔ NoZeroSMulDivisors ℕ M := by
+    IsTorsionFree M ↔ NoZeroSMulDivisors ℕ M := by
   simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_nsmul_eq_zero, not_exists, not_and,
     pos_iff_ne_zero, noZeroSMulDivisors_iff, forall_swap (β := ℕ)]
   exact forall₂_congr fun _ _ ↦ by tauto
 
-lemma isTorsionFree_iff_noZeroSMulDivisors_int [AddGroup G] :
-    AddMonoid.IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
+lemma isTorsionFree_iff_noZeroSMulDivisors_int [SubtractionMonoid G] :
+    IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
   simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_zsmul_eq_zero, not_exists, not_and,
     noZeroSMulDivisors_iff, forall_swap (β := ℤ)]
   exact forall₂_congr fun _ _ ↦ by tauto
 
-@[deprecated (since := "2024-02-29")]
-alias AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors := isTorsionFree_iff_noZeroSMulDivisors_int
-
 lemma IsTorsionFree.of_noZeroSMulDivisors {M : Type*} [AddMonoid M] [NoZeroSMulDivisors ℕ M] :
-    AddMonoid.IsTorsionFree M := isTorsionFree_iff_noZeroSMulDivisors_nat.2 ‹_›
+    IsTorsionFree M := isTorsionFree_iff_noZeroSMulDivisors_nat.2 ‹_›
+
+alias ⟨IsTorsionFree.noZeroSMulDivisors_nat, _⟩ := isTorsionFree_iff_noZeroSMulDivisors_nat
+alias ⟨IsTorsionFree.noZeroSMulDivisors_int, _⟩ := isTorsionFree_iff_noZeroSMulDivisors_int
+
+end AddMonoid
+
+section AddCommGroup
+
+instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
+    Module R (M ⧸ AddCommGroup.torsion M) :=
+  letI : Submodule R M := { AddCommGroup.torsion M with smul_mem' := fun r m ⟨n, hn, hn'⟩ ↦
+    ⟨n, hn, by { simp only [Function.IsPeriodicPt, Function.IsFixedPt, add_left_iterate, add_zero,
+      Nat.isUnit_iff, smul_comm n] at hn' ⊢; simp only [hn', smul_zero] }⟩ }
+  inferInstanceAs (Module R (M ⧸ this))
+
+end AddCommGroup
+
+section
+
+variable {M : Type*} [CommMonoid M] [HasDistribNeg M]
+
+theorem neg_one_mem_torsion : -1 ∈ CommMonoid.torsion M :=
+  ⟨2, zero_lt_two, (isPeriodicPt_mul_iff_pow_eq_one _).mpr (by simp)⟩
+
+end

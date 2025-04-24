@@ -13,7 +13,7 @@ import Mathlib.Tactic.Common
 
 open Part
 
-variable {α β γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
+variable {α β γ : Type*} [Preorder α]
 
 section bind
 variable {f : α → Part β} {g : α → β → Part γ}
@@ -44,14 +44,13 @@ lemma Antitone.partMap (hg : Antitone g) : Antitone fun x ↦ (g x).map f := by
 end map
 
 section seq
-variable {β γ : Type _} [Preorder α] [Preorder β] [Preorder γ] {f : α → Part (β → γ)}
-  {g : α → Part β}
+variable {β γ : Type _} {f : α → Part (β → γ)} {g : α → Part β}
 
 lemma Monotone.partSeq (hf : Monotone f) (hg : Monotone g) : Monotone fun x ↦ f x <*> g x := by
-  simpa only [seq_eq_bind_map] using hf.partBind $ Monotone.of_apply₂ fun _ ↦ hg.partMap
+  simpa only [seq_eq_bind_map] using hf.partBind <| Monotone.of_apply₂ fun _ ↦ hg.partMap
 
 lemma Antitone.partSeq (hf : Antitone f) (hg : Antitone g) : Antitone fun x ↦ f x <*> g x := by
-  simpa only [seq_eq_bind_map] using hf.partBind $ Antitone.of_apply₂ fun _ ↦ hg.partMap
+  simpa only [seq_eq_bind_map] using hf.partBind <| Antitone.of_apply₂ fun _ ↦ hg.partMap
 
 end seq
 
@@ -62,7 +61,5 @@ namespace OrderHom
 def partBind (f : α →o Part β) (g : α →o β → Part γ) : α →o Part γ where
   toFun x := (f x).bind (g x)
   monotone' := f.2.partBind g.2
-
-@[deprecated (since := "2024-07-04")] alias bind := partBind
 
 end OrderHom

@@ -129,10 +129,10 @@ theorem toLin'_one : toLin' (1 : unitaryGroup n α) = LinearMap.id :=
 
 end CoeLemmas
 
--- Porting note (#11215): TODO: redefine `toGL`/`embeddingGL` as in this example:
+-- TODO: redefine `toGL`/`embeddingGL` as in the following example,
+-- so that we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
 example : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
   .toHomUnits ⟨⟨toLin', toLin'_one⟩, toLin'_mul⟩
--- Porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
 
 /-- `Matrix.unitaryGroup.toLinearEquiv A` is matrix multiplication of vectors by `A`, as a linear
 equivalence. -/
@@ -142,11 +142,11 @@ def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
     left_inv := fun x =>
       calc
         (toLin' A⁻¹).comp (toLin' A) x = (toLin' (A⁻¹ * A)) x := by rw [← toLin'_mul]
-        _ = x := by rw [mul_left_inv, toLin'_one, id_apply]
+        _ = x := by rw [inv_mul_cancel, toLin'_one, id_apply]
     right_inv := fun x =>
       calc
         (toLin' A).comp (toLin' A⁻¹) x = toLin' (A * A⁻¹) x := by rw [← toLin'_mul]
-        _ = x := by rw [mul_right_inv, toLin'_one, id_apply] }
+        _ = x := by rw [mul_inv_cancel, toLin'_one, id_apply] }
 
 /-- `Matrix.unitaryGroup.toGL` is the map from the unitary group to the general linear group -/
 def toGL (A : unitaryGroup n α) : GeneralLinearGroup α (n → α) :=
@@ -176,7 +176,7 @@ section specialUnitaryGroup
 variable (n) (α)
 
 /-- `Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
-is 1. (This definition is only correct if 2 is invertible.)-/
+is 1. (This definition is only correct if 2 is invertible.) -/
 abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
 variable {n} {α}
@@ -191,7 +191,7 @@ section OrthogonalGroup
 
 variable (n) (β : Type v) [CommRing β]
 
--- Porting note (#11215): TODO: will lemmas about `Matrix.orthogonalGroup` work without making
+-- TODO: will lemmas about `Matrix.orthogonalGroup` work without making
 -- `starRingOfComm` a local instance? E.g., can we talk about unitary group and orthogonal group
 -- at the same time?
 attribute [local instance] starRingOfComm
@@ -219,7 +219,7 @@ variable (n) (β : Type v) [CommRing β]
 attribute [local instance] starRingOfComm
 
 /-- `Matrix.specialOrthogonalGroup n` is the group of orthogonal `n` by `n` where the determinant
-is one. (This definition is only correct if 2 is invertible.)-/
+is one. (This definition is only correct if 2 is invertible.) -/
 abbrev specialOrthogonalGroup := specialUnitaryGroup n β
 
 variable {n} {β} {A : Matrix n n β}

@@ -2,10 +2,8 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-[`data.finset.sym`@`98e83c3d541c77cdb7da20d79611a780ff8e7d90`..`02ba8949f486ebecf93fe7460f1ed0564b5e442c`](https://leanprover-community.github.io/mathlib-port-status/file/data/finset/sym?range=98e83c3d541c77cdb7da20d79611a780ff8e7d90..02ba8949f486ebecf93fe7460f1ed0564b5e442c)
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Data.Multiset.Sym
 
@@ -109,11 +107,12 @@ theorem sym2_empty : (∅ : Finset α).sym2 = ∅ := rfl
 theorem sym2_eq_empty : s.sym2 = ∅ ↔ s = ∅ := by
   rw [← val_eq_zero, sym2_val, Multiset.sym2_eq_zero_iff, val_eq_zero]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
   rw [← not_iff_not]
   simp_rw [not_nonempty_iff_eq_empty, sym2_eq_empty]
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
 
 @[simp]
@@ -125,7 +124,10 @@ theorem card_sym2 (s : Finset α) : s.sym2.card = Nat.choose (s.card + 1) 2 := b
 
 end
 
-variable [DecidableEq α] {s t : Finset α} {a b : α}
+variable {s t : Finset α} {a b : α}
+
+section
+variable [DecidableEq α]
 
 theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image Sym2.mk := by
   ext z
@@ -148,12 +150,12 @@ theorem not_isDiag_mk_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) :
   rw [Sym2.isDiag_iff_proj_eq]
   exact (mem_offDiag.1 h).2.2
 
+end
+
 section Sym2
 
 variable {m : Sym2 α}
 
--- Porting note: add this lemma and remove simp in the next lemma since simpNF lint
--- warns that its LHS is not in normal form
 @[simp]
 theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈ s := by
   rw [← mem_sym2_iff]
@@ -161,7 +163,7 @@ theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈
 
 theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s := by simp [diag_mem_sym2_mem_iff]
 
-theorem image_diag_union_image_offDiag :
+theorem image_diag_union_image_offDiag [DecidableEq α] :
     s.diag.image Sym2.mk ∪ s.offDiag.image Sym2.mk = s.sym2 := by
   rw [← image_union, diag_union_offDiag, sym2_eq_image]
 
@@ -169,11 +171,7 @@ end Sym2
 
 section Sym
 
-variable {n : ℕ}
-
--- Porting note: instance needed
-instance : DecidableEq (Sym α n) :=
-  inferInstanceAs <| DecidableEq <| Subtype _
+variable [DecidableEq α] {n : ℕ}
 
 /-- Lifts a finset to `Sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
 with elements in `s`. -/

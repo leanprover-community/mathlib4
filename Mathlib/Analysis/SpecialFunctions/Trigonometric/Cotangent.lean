@@ -11,9 +11,9 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 This file contains lemmas about the cotangent function, including useful series expansions.
 -/
 
-open Real Complex BigOperators Filter
+open Real Complex
 
-open scoped UpperHalfPlane Topology
+open scoped UpperHalfPlane
 
 lemma Complex.cot_eq_exp_ratio (z : ℂ) :
     cot z = (Complex.exp (2 * I * z) + 1) / (I * (1 - Complex.exp (2 * I * z))) := by
@@ -43,6 +43,6 @@ theorem pi_mul_cot_pi_q_exp (z : ℍ) :
     simp only [div_mul_eq_div_mul_one_div, div_I, one_div, neg_mul, mul_neg, neg_inj]
     ring
   rw [cot_pi_eq_exp_ratio, h1, one_div, (tsum_geometric_of_norm_lt_one
-    (UpperHalfPlane.abs_exp_two_pi_I_lt_one z)).symm, add_comm, geom_series_mul_one_add
-      (Complex.exp (2 * π * I * (z : ℂ))) (UpperHalfPlane.abs_exp_two_pi_I_lt_one _)]
+    (UpperHalfPlane.norm_exp_two_pi_I_lt_one z)).symm, add_comm, geom_series_mul_one_add
+      (Complex.exp (2 * π * I * (z : ℂ))) (UpperHalfPlane.norm_exp_two_pi_I_lt_one _)]
   ring

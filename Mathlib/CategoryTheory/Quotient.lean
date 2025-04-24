@@ -21,12 +21,27 @@ relation, `functor_map_eq_iff` says that no unnecessary identifications have bee
 /-- A `HomRel` on `C` consists of a relation on every hom-set. -/
 def HomRel (C) [Quiver C] :=
   ∀ ⦃X Y : C⦄, (X ⟶ Y) → (X ⟶ Y) → Prop
+-- The `Inhabited` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting Note: `deriving Inhabited` was not able to deduce this typeclass
 instance (C) [Quiver C] : Inhabited (HomRel C) where
   default := fun _ _ _ _ ↦ PUnit
 
 namespace CategoryTheory
+
+section
+
+variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+
+/-- A functor induces a `HomRel` on its domain, relating those maps that have the same image. -/
+def Functor.homRel : HomRel C :=
+  fun _ _ f g ↦ F.map f = F.map g
+
+@[simp]
+lemma Functor.homRel_iff {X Y : C} (f g : X ⟶ Y) :
+    F.homRel f g ↔ F.map f = F.map g := Iff.rfl
+
+end
 
 variable {C : Type _} [Category C] (r : HomRel C)
 
@@ -39,6 +54,16 @@ class Congruence : Prop where
   compLeft : ∀ {X Y Z} (f : X ⟶ Y) {g g' : Y ⟶ Z}, r g g' → r (f ≫ g) (f ≫ g')
   /-- Postcomposition with an arrow respects `r`. -/
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
+
+/-- For `F : C ⥤ D`, `F.homRel` is a congruence. -/
+instance Functor.congruence_homRel {C D : Type*} [Category C] [Category D] (F : C ⥤ D) :
+    Congruence F.homRel where
+  equivalence :=
+    { refl := fun _ ↦ rfl
+      symm := by aesop
+      trans := by aesop }
+  compLeft := by aesop
+  compRight := by aesop
 
 /-- A type synonym for `C`, thought of as the objects of the quotient category. -/
 @[ext]
@@ -140,11 +165,20 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
   rw [Equivalence.quot_mk_eq_iff, compClosure_eq_self r]
   simpa only [compClosure_eq_self r] using h.equivalence
 
+theorem functor_homRel_eq_compClosure_eqvGen {X Y : C} (f g : X ⟶ Y) :
+    (functor r).homRel f g ↔ Relation.EqvGen (@CompClosure C _ r X Y) f g :=
+  Quot.eq
+
+theorem compClosure.congruence :
+    Congruence fun X Y => Relation.EqvGen (@CompClosure C _ r X Y) := by
+  convert inferInstanceAs (Congruence (functor r).homRel)
+  ext
+  rw [functor_homRel_eq_compClosure_eqvGen]
+
 variable {D : Type _} [Category D] (F : C ⥤ D)
-  (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 /-- The induced functor on the quotient category. -/
-def lift : Quotient r ⥤ D where
+def lift (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂) : Quotient r ⥤ D where
   obj a := F.obj a.as
   map := @fun a b hf ↦
     Quot.liftOn hf (fun f ↦ F.map f)
@@ -155,6 +189,8 @@ def lift : Quotient r ⥤ D where
   map_comp := by
     rintro a b c ⟨f⟩ ⟨g⟩
     exact F.map_comp f g
+
+variable (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 theorem lift_spec : functor r ⋙ lift r F H = F := by
   apply Functor.ext; rotate_left
@@ -173,7 +209,7 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
   · rintro _ _ f
     dsimp [lift, Functor]
     refine Quot.inductionOn f (fun _ ↦ ?_) -- Porting note: this line was originally an `apply`
-    simp only [Quot.liftOn_mk, Functor.comp_map]
+    simp only [heq_eq_eq]
     congr
 
 lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = functor r ⋙ F₂) :
@@ -187,7 +223,7 @@ lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = func
 
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=
-  NatIso.ofComponents fun X ↦ Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 @[simp]
 theorem lift.isLift_hom (X : C) : (lift.isLift r F H).hom.app X = 𝟙 (F.obj X) :=
@@ -210,7 +246,7 @@ variable {r}
 
 lemma natTrans_ext {F G : Quotient r ⥤ D} (τ₁ τ₂ : F ⟶ G)
     (h : whiskerLeft (Quotient.functor r) τ₁ = whiskerLeft (Quotient.functor r) τ₂) : τ₁ = τ₂ :=
-  NatTrans.ext _ _ (by ext1 ⟨X⟩; exact NatTrans.congr_app h X)
+  NatTrans.ext (by ext1 ⟨X⟩; exact NatTrans.congr_app h X)
 
 variable (r)
 

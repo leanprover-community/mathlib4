@@ -21,10 +21,7 @@ derivative, power
 
 universe u v w
 
-open scoped Classical
-open Topology Filter
-
-open Filter Asymptotics Set
+open Topology Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {E : Type v} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -46,7 +43,7 @@ theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
   · have hx : x ≠ 0 := h.resolve_right hm.not_le
     have := (hasStrictDerivAt_inv ?_).scomp _ (this (-m) (neg_pos.2 hm)) <;>
       [skip; exact zpow_ne_zero _ hx]
-    simp only [(· ∘ ·), zpow_neg, one_div, inv_inv, smul_eq_mul] at this
+    simp only [Function.comp_def, zpow_neg, one_div, inv_inv, smul_eq_mul] at this
     convert this using 1
     rw [sq, mul_inv, inv_inv, Int.cast_neg, neg_mul, neg_mul_neg, ← zpow_add₀ hx, mul_assoc, ←
       zpow_add₀ hx]
@@ -96,7 +93,7 @@ theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
     (deriv^[k] fun x : 𝕜 => x ^ m) =
       fun x => (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) := by
   induction' k with k ihk
-  · simp only [Nat.zero_eq, one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero,
+  · simp only [one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero,
       Function.iterate_zero]
   · simp only [Function.iterate_succ_apply', ihk, deriv_const_mul_field', deriv_zpow',
       Finset.prod_range_succ, Int.ofNat_succ, ← sub_sub, Int.cast_sub, Int.cast_natCast, mul_assoc]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.Clopen
 
 /-!
 # Closed sets
@@ -31,7 +32,7 @@ namespace TopologicalSpace
 structure Closeds (α : Type*) [TopologicalSpace α] where
   /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
-  closed' : IsClosed carrier
+  isClosed' : IsClosed carrier
 
 namespace Closeds
 
@@ -42,8 +43,10 @@ instance : SetLike (Closeds α) α where
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
 
-theorem closed (s : Closeds α) : IsClosed (s : Set α) :=
-  s.closed'
+theorem isClosed (s : Closeds α) : IsClosed (s : Set α) :=
+  s.isClosed'
+
+@[deprecated (since := "2025-04-20")] alias closed := isClosed
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Closeds α) : Set α := s
@@ -63,8 +66,11 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 protected def closure (s : Set α) : Closeds α :=
   ⟨closure s, isClosed_closure⟩
 
+@[simp]
+theorem mem_closure {s : Set α} {x : α} : x ∈ Closeds.closure s ↔ x ∈ closure s := .rfl
+
 theorem gc : GaloisConnection Closeds.closure ((↑) : Closeds α → Set α) := fun _ U =>
-  ⟨subset_closure.trans, fun h => closure_minimal h U.closed⟩
+  ⟨subset_closure.trans, fun h => closure_minimal h U.isClosed⟩
 
 /-- The galois coinsertion between sets and opens. -/
 def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
@@ -73,7 +79,7 @@ def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   le_l_u _ := subset_closure
   choice_eq _s hs := SetLike.coe_injective <| subset_closure.antisymm hs
 
-instance completeLattice : CompleteLattice (Closeds α) :=
+instance instCompleteLattice : CompleteLattice (Closeds α) :=
   CompleteLattice.copy
     (GaloisInsertion.liftCompleteLattice gi)
     -- le
@@ -142,8 +148,6 @@ theorem coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
     (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Closeds α) (Set α)) _ _
 
--- Porting note: Lean 3 proofs didn't work as expected, so I reordered lemmas to fix&golf the proofs
-
 @[simp]
 theorem mem_sInf {S : Set (Closeds α)} {x : α} : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := mem_iInter₂
 
@@ -162,11 +166,12 @@ theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
     (⨅ i, ⟨s i, h i⟩ : Closeds α) = ⟨⋂ i, s i, isClosed_iInter h⟩ :=
   iInf_def _
 
-instance : Coframe (Closeds α) :=
-  { inferInstanceAs (CompleteLattice (Closeds α)) with
-    sInf := sInf
-    iInf_sup_le_sup_sInf := fun a s =>
-      (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le }
+/-- Closed sets in a topological space form a coframe. -/
+def coframeMinimalAxioms : Coframe.MinimalAxioms (Closeds α) where
+  iInf_sup_le_sup_sInf a s :=
+    (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le
+
+instance instCoframe : Coframe (Closeds α) := .ofMinimalAxioms coframeMinimalAxioms
 
 /-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
 @[simps]
@@ -267,15 +272,20 @@ instance : SetLike (Clopens α) α where
 theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.isClopen'
 
+lemma isOpen (s : Clopens α) : IsOpen (s : Set α) := s.isClopen.isOpen
+
+lemma isClosed (s : Clopens α) : IsClosed (s : Set α) := s.isClopen.isClosed
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Clopens α) : Set α := s
 
-initialize_simps_projections Clopens (carrier → coe)
+initialize_simps_projections Clopens (carrier → coe, as_prefix coe)
 
 /-- Reinterpret a clopen as an open. -/
-@[simps]
-def toOpens (s : Clopens α) : Opens α :=
-  ⟨s, s.isClopen.isOpen⟩
+@[simps] def toOpens (s : Clopens α) : Opens α := ⟨s, s.isOpen⟩
+
+/-- Reinterpret a clopen as a closed. -/
+@[simps] def toCloseds (s : Clopens α) : Closeds α := ⟨s, s.isClosed⟩
 
 @[ext]
 protected theorem ext {s t : Clopens α} (h : (s : Set α) = t) : s = t :=
@@ -287,8 +297,8 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 
 @[simp] lemma mem_mk {s : Set α} {x h} : x ∈ mk s h ↔ x ∈ s := .rfl
 
-instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
-instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
+instance : Max (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
+instance : Min (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
 instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
 instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
 instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
@@ -305,10 +315,9 @@ instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 
 instance : BooleanAlgebra (Clopens α) :=
   SetLike.coe_injective.booleanAlgebra _ coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
+    coe_himp
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩
-
-variable [TopologicalSpace β]
 
 instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
   sprod s t := ⟨s ×ˢ t, s.2.prod t.2⟩
@@ -316,6 +325,18 @@ instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
 @[simp]
 protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
     x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t := .rfl
+
+@[simp]
+lemma coe_finset_sup (s : Finset ι) (U : ι → Clopens α) :
+    (↑(s.sup U) : Set α) = ⋃ i ∈ s, U i := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert _ IH => simp [IH]
+
+@[simp, norm_cast]
+lemma coe_disjoint {s t : Clopens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by
+  simp [disjoint_iff, ← SetLike.coe_set_eq]
 
 end Clopens
 
@@ -383,13 +404,13 @@ def equivSubtype' : IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsI
 
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x }` is an
-order isomorphism.-/
+order isomorphism. -/
 def orderIsoSubtype : IrreducibleCloseds α ≃o { x : Set α // IsIrreducible x ∧ IsClosed x } :=
   equivSubtype.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
 
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsIrreducible x }` is an
-order isomorphism.-/
+order isomorphism. -/
 def orderIsoSubtype' : IrreducibleCloseds α ≃o { x : Set α // IsClosed x ∧ IsIrreducible x } :=
   equivSubtype'.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
 

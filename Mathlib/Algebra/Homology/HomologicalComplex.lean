@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison
+Authors: Johan Commelin, Kim Morrison
 -/
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.CategoryTheory.Subobject.Limits
@@ -224,7 +224,7 @@ theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
   · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
 
 instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
-  ⟨{ f := fun i => 0 }⟩
+  ⟨{ f := fun _ => 0 }⟩
 
 /-- Identity chain map. -/
 def id (A : HomologicalComplex V c) : Hom A A where f _ := 𝟙 _
@@ -244,7 +244,6 @@ instance : Category (HomologicalComplex V c) where
 
 end
 
--- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {C D : HomologicalComplex V c} (f g : C ⟶ D)
     (h : ∀ i, f.f i = g.f i) : f = g := by
@@ -273,7 +272,7 @@ theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
 
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
-  ⟨{ f := fun i => 0}⟩
+  ⟨{ f := fun _ => 0}⟩
 
 @[simp]
 theorem zero_f (C D : HomologicalComplex V c) (i : ι) : (0 : C ⟶ D).f i = 0 :=
@@ -346,7 +345,7 @@ instance : (forget V c).Faithful where
 just picking out the `i`-th object. -/
 @[simps!]
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 end
 
@@ -470,7 +469,7 @@ theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) :
 theorem dFrom_comp_xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) :
     C.dFrom i ≫ (C.xNextIsoSelf h).hom = 0 := by simp [h]
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem dTo_comp_dFrom (j : ι) : C.dTo j ≫ C.dFrom j = 0 :=
   C.d_comp_d _ _ _
 
@@ -549,25 +548,23 @@ theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
   obtain rfl := c.next_eq' w
   simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 
-@[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
+@[reassoc, elementwise]
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 
-attribute [simp 1100] comm_from_assoc
 attribute [simp] comm_from_apply
 
-@[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
+@[reassoc, elementwise]
 theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
   f.comm _ _
 
-attribute [simp 1100] comm_to_assoc
 attribute [simp] comm_to_apply
 
 /-- A morphism of chain complexes
 induces a morphism of arrows of the differentials out of each object.
 -/
 def sqFrom (f : Hom C₁ C₂) (i : ι) : Arrow.mk (C₁.dFrom i) ⟶ Arrow.mk (C₂.dFrom i) :=
-  Arrow.homMk (f.comm_from i)
+  Arrow.homMk _ _ (f.comm_from i)
 
 @[simp]
 theorem sqFrom_left (f : Hom C₁ C₂) (i : ι) : (f.sqFrom i).left = f.f i :=
@@ -590,7 +587,7 @@ theorem sqFrom_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
 induces a morphism of arrows of the differentials into each object.
 -/
 def sqTo (f : Hom C₁ C₂) (j : ι) : Arrow.mk (C₁.dTo j) ⟶ Arrow.mk (C₂.dTo j) :=
-  Arrow.homMk (f.comm_to j)
+  Arrow.homMk _ _ (f.comm_to j)
 
 @[simp]
 theorem sqTo_left (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).left = f.prev j :=
@@ -771,7 +768,7 @@ variable (P Q : ChainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ Q.
       (p :
         Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
           f' ≫ Q.d (n + 1) n = P.d (n + 1) n ≫ f),
-      Σ'f'' : P.X (n + 2) ⟶ Q.X (n + 2), f'' ≫ Q.d (n + 2) (n + 1) = P.d (n + 2) (n + 1) ≫ p.2.1)
+      Σ' f'' : P.X (n + 2) ⟶ Q.X (n + 2), f'' ≫ Q.d (n + 2) (n + 1) = P.d (n + 2) (n + 1) ≫ p.2.1)
 
 /-- An auxiliary construction for `mkHom`.
 

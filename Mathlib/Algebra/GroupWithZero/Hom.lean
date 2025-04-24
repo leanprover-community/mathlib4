@@ -3,9 +3,8 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.NeZero
 
 /-!
 # Monoid with zero and group with zero homomorphisms
@@ -55,7 +54,8 @@ variable {F α β γ δ M₀ : Type*} [MulZeroOneClass α] [MulZeroOneClass β] 
 
 You should also extend this typeclass when you extend `MonoidWithZeroHom`. -/
 class MonoidWithZeroHomClass (F : Type*) (α β : outParam Type*) [MulZeroOneClass α]
-  [MulZeroOneClass β] [FunLike F α β] extends MonoidHomClass F α β, ZeroHomClass F α β : Prop
+    [MulZeroOneClass β] [FunLike F α β] : Prop
+  extends MonoidHomClass F α β, ZeroHomClass F α β
 
 /-- `α →*₀ β` is the type of functions `α → β` that preserve
 the `MonoidWithZero` structure.
@@ -141,17 +141,27 @@ protected def copy (f : α →*₀ β) (f' : α → β) (h : f' = f) : α →* �
   { f.toZeroHom.copy f' h, f.toMonoidHom.copy f' h with }
 
 @[simp]
-lemma coe_copy {_ : MulZeroOneClass α} {_ : MulZeroOneClass β} (f : α →*₀ β) (f' : α → β) (h) :
-    (f.copy f' h) = f' := rfl
+lemma coe_copy (f : α →*₀ β) (f' : α → β) (h) : (f.copy f' h) = f' := rfl
 
-lemma copy_eq {_ : MulZeroOneClass α} {_ : MulZeroOneClass β} (f : α →*₀ β) (f' : α → β) (h) :
-    f.copy f' h = f := DFunLike.ext' h
+lemma copy_eq (f : α →*₀ β) (f' : α → β) (h) : f.copy f' h = f := DFunLike.ext' h
 
 protected lemma map_one (f : α →*₀ β) : f 1 = 1 := f.map_one'
 
 protected lemma map_zero (f : α →*₀ β) : f 0 = 0 := f.map_zero'
 
 protected lemma map_mul (f : α →*₀ β) (a b : α) : f (a * b) = f a * f b := f.map_mul' a b
+
+@[simp]
+theorem map_ite_zero_one {F : Type*} [FunLike F α β] [MonoidWithZeroHomClass F α β] (f : F)
+    (p : Prop) [Decidable p] :
+    f (ite p 0 1) = ite p 0 1 := by
+  split_ifs with h <;> simp [h]
+
+@[simp]
+theorem map_ite_one_zero {F : Type*} [FunLike F α β] [MonoidWithZeroHomClass F α β] (f : F)
+    (p : Prop) [Decidable p] :
+    f (ite p 1 0) = ite p 1 0 := by
+  split_ifs with h <;> simp [h]
 
 /-- The identity map from a `MonoidWithZero` to itself. -/
 @[simps]
@@ -177,11 +187,11 @@ lemma comp_assoc (f : α →*₀ β) (g : β →*₀ γ) (h : γ →*₀ δ) :
 
 lemma cancel_right {g₁ g₂ : β →*₀ γ} {f : α →*₀ β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h ↦ ext $ hf.forall.2 (DFunLike.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ ext <| hf.forall.2 (DFunLike.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 lemma cancel_left {g : β →*₀ γ} {f₁ f₂ : α →*₀ β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h ↦ ext fun x ↦ hg $ by rw [← comp_apply, h,
+  ⟨fun h ↦ ext fun x ↦ hg <| by rw [← comp_apply, h,
     comp_apply], fun h ↦ h ▸ rfl⟩
 
 lemma toMonoidHom_injective : Injective (toMonoidHom : (α →*₀ β) → α →* β) :=
@@ -218,24 +228,3 @@ def powMonoidWithZeroHom : M₀ →*₀ M₀ :=
 @[simp] lemma powMonoidWithZeroHom_apply (a : M₀) : powMonoidWithZeroHom hn a = a ^ n := rfl
 
 end CommMonoidWithZero
-
-/-! ### Equivalences -/
-
-namespace MulEquivClass
-variable {F α β : Type*} [EquivLike F α β]
-
--- See note [lower instance priority]
-instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :
-    ZeroHomClass F α β where
-  map_zero f :=
-    calc
-      f 0 = f 0 * f (EquivLike.inv f 0) := by rw [← map_mul, zero_mul]
-        _ = 0 := by simp
-
--- See note [lower instance priority]
-instance (priority := 100) toMonoidWithZeroHomClass
-    [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
-    MonoidWithZeroHomClass F α β :=
-  { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass with }
-
-end MulEquivClass

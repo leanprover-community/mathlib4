@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.AffineSpace.Pointwise
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.SMul
 
 /-!
 # Affine bases and barycentric coordinates
@@ -39,10 +39,8 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 -/
 
-
-open Affine
-
-open Set
+open Affine Set
+open scoped Pointwise
 
 universe u₁ u₂ u₃ u₄
 
@@ -53,7 +51,7 @@ structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type
   protected ind' : AffineIndependent k toFun
   protected tot' : affineSpan k (range toFun) = ⊤
 
-variable {ι ι' k V P : Type*} [AddCommGroup V] [AffineSpace V P]
+variable {ι ι' G G' k V P : Type*} [AddCommGroup V] [AffineSpace V P]
 
 namespace AffineBasis
 
@@ -79,6 +77,7 @@ theorem ind : AffineIndependent k b :=
 theorem tot : affineSpan k (range b) = ⊤ :=
   b.tot'
 
+include b in
 protected theorem nonempty : Nonempty ι :=
   not_isEmpty_iff.mp fun hι => by
     simpa only [@range_eq_empty _ _ hι, AffineSubspace.span_empty, bot_ne_top] using b.tot
@@ -134,7 +133,6 @@ noncomputable def coord (i : ι) : P →ᵃ[k] k where
   toFun q := 1 - (b.basisOf i).sumCoords (q -ᵥ b i)
   linear := -(b.basisOf i).sumCoords
   map_vadd' q v := by
-    dsimp only
     rw [vadd_vsub_assoc, LinearMap.map_add, vadd_eq_add, LinearMap.neg_apply,
       sub_add_eq_sub_sub_swap, add_comm, sub_eq_add_neg]
 
@@ -154,10 +152,7 @@ theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
 
 @[simp]
 theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
-  -- Porting note:
-  -- in mathlib3 we didn't need to given the `fun j => j ≠ i` argument to `Subtype.coe_mk`,
-  -- but I don't think we can complain: this proof was over-golfed.
-  rw [coord, AffineMap.coe_mk, ← @Subtype.coe_mk _ (fun j => j ≠ i) j h.symm, ← b.basisOf_apply,
+  rw [coord, AffineMap.coe_mk, ← Subtype.coe_mk (p := (· ≠ i)) j h.symm, ← b.basisOf_apply,
     Basis.sumCoords_self_apply, sub_self]
 
 theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 1 else 0 := by
@@ -275,6 +270,52 @@ instance instAddAction : AddAction V (AffineBasis ι k P) :=
   congr! 1
   rw [vadd_vsub_assoc, neg_add_eq_sub, vsub_vadd_eq_vsub_sub]
 
+section SMul
+variable [Group G] [Group G']
+variable [DistribMulAction G V] [DistribMulAction G' V]
+variable [SMulCommClass G k V] [SMulCommClass G' k V]
+
+/-- In an affine space that is also a vector space, an `AffineBasis` can be scaled.
+
+TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a `VAdd`
+version of a `DistribMulAction`. -/
+instance instSMul : SMul G (AffineBasis ι k V) where
+  smul a b :=
+    { toFun := a • ⇑b,
+      ind' := b.ind'.smul,
+      tot' := by
+        rw [Pi.smul_def, ← smul_set_range, ← AffineSubspace.smul_span, b.tot,
+          AffineSubspace.smul_top (Group.isUnit a)] }
+
+@[simp, norm_cast] lemma coe_smul (a : G) (b : AffineBasis ι k V) : ⇑(a • b) = a • ⇑b := rfl
+
+/-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
+`VAdd` version of a `DistribMulAction`. -/
+instance [SMulCommClass G G' V] : SMulCommClass G G' (AffineBasis ι k V) where
+  smul_comm _g _g' _b := DFunLike.ext _ _ fun _ => smul_comm _ _ _
+
+/-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
+`VAdd` version of a `DistribMulAction`. -/
+instance [SMul G G'] [IsScalarTower G G' V] : IsScalarTower G G' (AffineBasis ι k V) where
+  smul_assoc _g _g' _b := DFunLike.ext _ _ fun _ => smul_assoc _ _ _
+
+@[simp] lemma basisOf_smul (a : G) (b : AffineBasis ι k V) (i : ι) :
+    (a • b).basisOf i = a • b.basisOf i := by ext j; simp [smul_sub]
+
+@[simp] lemma reindex_smul (a : G) (b : AffineBasis ι k V) (e : ι ≃ ι') :
+    (a • b).reindex e = a • b.reindex e :=
+  rfl
+
+@[simp] lemma coord_smul (a : G) (b : AffineBasis ι k V) (i : ι) :
+    (a • b).coord i = (b.coord i).comp (DistribMulAction.toLinearEquiv _ _ a).symm.toAffineMap := by
+  ext v; simp [map_sub, coord]
+
+/-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
+`VAdd` version of a `DistribMulAction`. -/
+instance instMulAction : MulAction G (AffineBasis ι k V) :=
+  DFunLike.coe_injective.mulAction _ coe_smul
+
+end SMul
 end Ring
 
 section DivisionRing

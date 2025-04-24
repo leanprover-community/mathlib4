@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 /-!
@@ -14,7 +14,8 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 A parametric integral is a function with shape `f = fun x : H ↦ ∫ a : α, F x a ∂μ` for some
 `F : H → α → E`, where `H` and `E` are normed spaces and `α` is a measured space with measure `μ`.
 
-We already know from `continuous_of_dominated` in `Mathlib/MeasureTheory/Integral/Bochner.lean` how
+We already know from `continuous_of_dominated`
+in `Mathlib/MeasureTheory/Integral/Bochner/Basic.lean` how
 to guarantee that `f` is continuous using the dominated convergence theorem. In this file,
 we want to express the derivative of `f` as the integral of the derivative of `F` with respect
 to `x`.
@@ -140,7 +141,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
         gcongr; exact (F' a).le_opNorm _
       _ ≤ b a + ‖F' a‖ := ?_
     simp only [← div_eq_inv_mul]
-    apply_rules [add_le_add, div_le_of_nonneg_of_le_mul] <;> first | rfl | positivity
+    apply_rules [add_le_add, div_le_of_le_mul₀] <;> first | rfl | positivity
   · exact b_int.add hF'_int.norm
   · apply h_diff.mono
     intro a ha
@@ -261,10 +262,8 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F' : α → E} (ε_pos : 0 
   replace h_diff : ∀ᵐ a ∂μ, HasFDerivAt (F · a) (L (F' a)) x₀ :=
     h_diff.mono fun x hx ↦ hx.hasFDerivAt
   have hm : AEStronglyMeasurable (L ∘ F') μ := L.continuous.comp_aestronglyMeasurable hF'_meas
-  cases'
-    hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas hF_int hm h_lipsch bound_integrable
-      h_diff with
-    hF'_int key
+  obtain ⟨hF'_int, key⟩ := hasFDerivAt_integral_of_dominated_loc_of_lip
+    ε_pos hF_meas hF_int hm h_lipsch bound_integrable h_diff
   replace hF'_int : Integrable F' μ := by
     rw [← integrable_norm_iff hm] at hF'_int
     simpa only [L, (· ∘ ·), integrable_norm_iff, hF'_meas, one_mul, norm_one,
@@ -273,8 +272,7 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F' : α → E} (ε_pos : 0 
       hF'_int
   refine ⟨hF'_int, ?_⟩
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE]
-    exact hasDerivAt_const x₀ 0
+  · simpa [integral, hE] using hasDerivAt_const x₀ 0
   simp_rw [hasDerivAt_iff_hasFDerivAt] at h_diff ⊢
   simpa only [(· ∘ ·), ContinuousLinearMap.integral_comp_comm _ hF'_int] using key
 

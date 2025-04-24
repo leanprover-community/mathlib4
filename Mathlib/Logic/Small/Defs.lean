@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.MkIffOfInductiveProp
@@ -59,8 +59,7 @@ protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink �
     (h : ∀ X, F (equivShrink _ X)) : ∀ X, F X :=
   fun X => ((equivShrink _).apply_symm_apply X) ▸ (h _)
 
--- Porting note: Priority changed to 101
-instance (priority := 101) small_self (α : Type v) : Small.{v} α :=
+instance small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 
 theorem small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
@@ -71,7 +70,9 @@ theorem small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
   let ⟨⟨_, ⟨f⟩⟩⟩ := hα
   Small.mk' <| f.trans (Equiv.ulift.{w}).symm
 
-/- This was an instance but useless due to https://github.com/leanprover/lean4/issues/2297. -/
+/-- Due to https://github.com/leanprover/lean4/issues/2297, this is useless as an instance.
+
+See however `Logic.UnivLE`, whose API is able to indirectly provide this instance. -/
 lemma small_max (α : Type v) : Small.{max w v} α :=
   small_lift.{v, w} α
 
@@ -87,8 +88,6 @@ theorem small_type : Small.{max (u + 1) v} (Type u) :=
   small_max.{max (u + 1) v} _
 
 section
-
-open scoped Classical
 
 theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩

@@ -46,8 +46,8 @@ variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 def sheafCompose : Sheaf J A ⥤ Sheaf J B where
   obj G := ⟨G.val ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.val G.2⟩
   map η := ⟨whiskerRight η.val _⟩
-  map_id _ := Sheaf.Hom.ext _ _ <| whiskerRight_id _
-  map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
+  map_id _ := Sheaf.Hom.ext <| whiskerRight_id _
+  map_comp _ _ := Sheaf.Hom.ext <| whiskerRight_comp _ _ _
 
 instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Faithful from inferInstance
@@ -75,7 +75,7 @@ If `η : F ⟶ G` is a natural transformation then we obtain a morphism of funct
 `sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
 -/
 def sheafCompose_map : sheafCompose J F ⟶ sheafCompose J G where
-  app := fun X => .mk <| whiskerLeft _ η
+  app := fun _ => .mk <| whiskerLeft _ η
 
 @[simp]
 lemma sheafCompose_id : sheafCompose_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
@@ -97,8 +97,8 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
   NatIso.ofComponents
     (fun t =>
       match t with
-      | WalkingMulticospan.left a => Iso.refl _
-      | WalkingMulticospan.right b => Iso.refl _)
+      | WalkingMulticospan.left _ => Iso.refl _
+      | WalkingMulticospan.right _ => Iso.refl _)
     (by
       rintro (a | b) (a | b) (f | f | f)
       all_goals aesop_cat)
@@ -129,10 +129,10 @@ instance hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
     exact ⟨Limits.IsLimit.postcomposeHomEquiv (S.multicospanComp F P) _ h⟩
 
 /--
-Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
+Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
 functor between sheaf categories.
 
-Note: the size of the limit that `F` is required to preserve in
+Note: the size of the limit that `F` is required to preserve in
 `hasSheafCompose_of_preservesMulticospan` is in general larger than this.
 -/
 instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, max u₁ v₁} F] :
@@ -141,13 +141,15 @@ instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, 
 
 variable {J}
 
-lemma Sheaf.isSeparated [ConcreteCategory A] [J.HasSheafCompose (forget A)]
+lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
+    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] [J.HasSheafCompose (forget A)]
     (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
   rintro X S hS x y h
   exact (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1
     ((sheafCompose J (forget A)).obj F).2) S hS).ext (fun _ _ hf => h _ _ hf)
 
-lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} [ConcreteCategory A]
+lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} {CA : A → Type*}
+    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
     [J.HasSheafCompose (forget A)] (hF : Presheaf.IsSheaf J F) :
     Presheaf.IsSeparated J F :=
   Sheaf.isSeparated ⟨F, hF⟩

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.CauSeq.Basic
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Ring.Action.Rat
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Cauchy completion
@@ -20,7 +21,7 @@ open CauSeq
 
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
 -- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Cauchy`.
@@ -133,14 +134,14 @@ theorem ofRat_mul (x y : β) :
     ofRat (x * y) = (ofRat x * ofRat y : Cauchy abv) :=
   congr_arg mk (const_mul _ _)
 
-private theorem zero_def : 0 = @mk _ _ _ _ abv _ 0 :=
+private theorem zero_def : 0 = mk (abv := abv) 0 :=
   rfl
 
-private theorem one_def : 1 = @mk _ _ _ _ abv _ 1 :=
+private theorem one_def : 1 = mk (abv := abv) 1 :=
   rfl
 
-instance Cauchy.ring : Ring (Cauchy abv) :=
-  Function.Surjective.ring mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
+instance Cauchy.ring : Ring (Cauchy abv) := fast_instance%
+  Function.Surjective.ring mk Quotient.mk'_surjective zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -161,22 +162,20 @@ end
 
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
-instance Cauchy.commRing : CommRing (Cauchy abv) :=
-  Function.Surjective.commRing mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
+instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
+  Function.Surjective.commRing mk Quotient.mk'_surjective zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
 
 end
 
-open scoped Classical
-
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance instNNRatCast : NNRatCast (Cauchy abv) where nnratCast q := ofRat q
@@ -185,6 +184,7 @@ instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 @[simp, norm_cast] lemma ofRat_nnratCast (q : ℚ≥0) : ofRat (q : β) = (q : Cauchy abv) := rfl
 @[simp, norm_cast] lemma ofRat_ratCast (q : ℚ) : ofRat (q : β) = (q : Cauchy abv) := rfl
 
+open Classical in
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
     (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
@@ -199,18 +199,16 @@ noncomputable instance : Inv (Cauchy abv) :=
         rw [mk_eq.2 fg, ← Ig] at If
         rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
   congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
 
 @[simp]
-theorem inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
+theorem inv_mk {f} (hf) : (mk (abv := abv) f)⁻¹ = mk (inv f hf) :=
   congr_arg mk <| by rw [dif_neg]
 
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
   have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
-  have : LimZero 1 := by simpa
+  have : LimZero (1 : CauSeq _ abv) := by simpa
   by apply one_ne_zero <| const_limZero.1 this
 
 theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h
@@ -240,13 +238,13 @@ lemma ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) :=
 noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   inv_zero := inv_zero
-  mul_inv_cancel x := CauSeq.Completion.mul_inv_cancel
+  mul_inv_cancel _ := CauSeq.Completion.mul_inv_cancel
   nnqsmul := (· • ·)
   qsmul := (· • ·)
   nnratCast_def q := by simp_rw [← ofRat_nnratCast, NNRat.cast_def, ofRat_div, ofRat_natCast]
   ratCast_def q := by rw [← ofRat_ratCast, Rat.cast_def, ofRat_div, ofRat_natCast, ofRat_intCast]
-  nnqsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ NNRat.smul_def _ _
-  qsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ Rat.smul_def _ _
+  nnqsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ NNRat.smul_def _ _
+  qsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ Rat.smul_def _ _
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 
@@ -263,7 +261,7 @@ end
 
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv]
 
 /-- The Cauchy completion forms a field. -/
@@ -274,7 +272,7 @@ end
 
 end CauSeq.Completion
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 namespace CauSeq
 

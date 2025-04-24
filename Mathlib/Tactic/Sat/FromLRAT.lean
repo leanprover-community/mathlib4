@@ -3,7 +3,8 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Tactic.ByContra
 
 /-!
 # `lrat_proof` command
@@ -39,8 +40,8 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 
-open Lean hiding Literal HashMap
-open Batteries
+open Lean hiding Literal
+open Std (HashMap)
 
 namespace Sat
 
@@ -69,7 +70,10 @@ instance : ToExpr Literal where
 /-- A clause is a list of literals, thought of as a disjunction like `a ∨ b ∨ ¬c`. -/
 def Clause := List Literal
 
+/-- The empty clause -/
 def Clause.nil : Clause := []
+
+/-- Append a literal to a clause. -/
 def Clause.cons : Literal → Clause → Clause := List.cons
 
 /-- A formula is a list of clauses, thought of as a conjunction like `(a ∨ b) ∧ c ∧ (¬c ∨ ¬d)`. -/
@@ -161,8 +165,9 @@ theorem Valuation.mk_implies {p} {as ps} (as₁) : as = List.reverseAux as₁ ps
     subst e; clear ih H
     suffices ∀ n n', n' = List.length as₁ + n →
       ∀ bs, mk (as₁.reverseAux bs) n' ↔ mk bs n from this 0 _ rfl (a::as)
-    induction as₁ with simp
-    | cons b as₁ ih => exact fun n bs ↦ ih (n+1) _ (Nat.succ_add ..) _
+    induction as₁ with
+    | nil => simp
+    | cons b as₁ ih => simpa using fun n bs ↦ ih (n+1) _ (Nat.succ_add ..) _
 
 /-- Asserts that `¬⟦f⟧_v` implies `p`. -/
 structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
@@ -321,7 +326,7 @@ partial def buildProofStep (db : HashMap Nat Clause)
   -- step 1
   for i in pf do
     let i := i.natAbs
-    let some cl := db.find? i | return Except.error "missing clause"
+    let some cl := db[i]? | return Except.error "missing clause"
     if !gctx.contains i then
       lams := lams.push (mkApp2 (mkConst ``Sat.Fmla.proof) ctx cl.expr)
       args := args.push cl.proof
@@ -353,7 +358,7 @@ partial def buildProofStep (db : HashMap Nat Clause)
   -- step 3
   for (step : Int) in pf do
     if step < 0 then return Except.error "unimplemented: RAT step"
-    let some cl := gctx.find? step.toNat | return Except.error "missing clause"
+    let some cl := gctx[step.toNat]? | return Except.error "missing clause"
     let mut unit := none
     for i in cl.lits do
       unless lctx.contains i do
@@ -362,7 +367,7 @@ partial def buildProofStep (db : HashMap Nat Clause)
         unit := some i
     let mut pr := mkApp2 (mkBVar (depth + n + 2 - cl.depth)) (v depth) (hv depth)
     for i in cl.lits do
-      pr := mkApp pr <| mkBVar (match lctx.find? i with | some k => depth - k | _ => 0)
+      pr := mkApp pr <| mkBVar (match lctx[i]? with | some k => depth - k | _ => 0)
     let some u := unit | return Except.ok <| f pr
     let lit := toExpr <| Sat.Literal.ofInt u
     let nlit := toExpr <| Sat.Literal.ofInt (-u)
@@ -493,30 +498,30 @@ where
 open Lean
 
 namespace Parser
-open Lean Parsec
+open Lean Std.Internal.Parsec String
 
 /-- Parse a natural number -/
-def parseNat : Parsec Nat := Json.Parser.natMaybeZero
+def parseNat : String.Parser Nat := Json.Parser.natMaybeZero
 
 /-- Parse an integer -/
-def parseInt : Parsec Int := do
+def parseInt : String.Parser Int := do
   if (← peek!) = '-' then skip; pure <| -(← parseNat) else parseNat
 
 /-- Parse a list of integers terminated by 0 -/
-partial def parseInts (arr : Array Int := #[]) : Parsec (Array Int) := do
+partial def parseInts (arr : Array Int := #[]) : String.Parser (Array Int) := do
   match ← parseInt <* ws with
   | 0 => pure arr
   | n => parseInts (arr.push n)
 
 /-- Parse a list of natural numbers terminated by 0 -/
-partial def parseNats (arr : Array Nat := #[]) : Parsec (Array Nat) := do
+partial def parseNats (arr : Array Nat := #[]) : String.Parser (Array Nat) := do
   match ← parseNat <* ws with
   | 0 => pure arr
   | n => parseNats (arr.push n)
 
 /-- Parse a DIMACS format `.cnf` file.
 This is not very robust; we assume the file has had comments stripped. -/
-def parseDimacs : Parsec (Nat × Array (Array Int)) := do
+def parseDimacs : String.Parser (Nat × Array (Array Int)) := do
   pstring "p cnf" *> ws
   let nvars ← parseNat <* ws
   let nclauses ← parseNat <* ws
@@ -526,12 +531,14 @@ def parseDimacs : Parsec (Nat × Array (Array Int)) := do
   pure (nvars, clauses)
 
 /-- Parse an LRAT file into a list of steps. -/
-def parseLRAT : Parsec (Array LRATStep) := many do
+def parseLRAT : String.Parser (Array LRATStep) := many do
   let step ← parseNat <* ws
   if (← peek!) = 'd' then skip <* ws; pure <| LRATStep.del (← parseNats)
   else ws; pure <| LRATStep.add step (← parseInts) (← parseInts)
 
 end Parser
+
+open Std.Internal
 
 /-- Core of `fromLRAT`. Constructs the context and main proof definitions,
 but not the reification theorem. Returns:
@@ -669,3 +676,7 @@ elab "from_lrat " cnf:term:max ppSpace lrat:term:max : term => do
 example : ∀ (a b : Prop), (¬a ∧ ¬b ∨ a ∧ ¬b) ∨ ¬a ∧ b ∨ a ∧ b := from_lrat
   "p cnf 2 4  1 2 0  -1 2 0  1 -2 0  -1 -2 0"
   "5 -2 0 4 3 0  5 d 3 4 0  6 1 0 5 1 0  6 d 1 0  7 0 5 2 6 0"
+
+end Sat
+
+end Mathlib.Tactic

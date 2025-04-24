@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.GaloisObjects
 import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
+import Mathlib.Data.Finite.Sum
 
 /-!
 # Decomposition of objects into connected components and applications
@@ -40,7 +41,6 @@ variable {C : Type u₁} [Category.{u₂} C]
 
 namespace PreGaloisCategory
 
-variable [GaloisCategory C]
 
 section Decomposition
 
@@ -66,9 +66,11 @@ private lemma has_decomp_connected_components_aux_initial (X : C) (h : IsInitial
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
   refine ⟨Empty, fun _ ↦ X, fun _ ↦ 𝟙 X, ?_⟩
-  use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by aesop)
+  use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by simp)
     (fun s m _ ↦ IsInitial.hom_ext h m _)
   exact ⟨by simp only [IsEmpty.forall_iff], inferInstance⟩
+
+variable [GaloisCategory C]
 
 /- Show decomposition by inducting on `Nat.card (F.obj X)`. -/
 private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
@@ -152,12 +154,14 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   have : IsIso v := IsConnected.noTrivialComponent Y v hn
   use (asIso u).symm ≪≫ asIso v
   have hu : G.map u y = a := by
-    simp only [y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv, Iso.toEquiv_comp,
-      Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply, inv_hom_id_apply]
+    simp only [u, G, y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv,
+      Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
+      inv_hom_id_apply]
     erw [Types.pullbackIsoPullback_inv_fst_apply (F.map i) (F.map j)]
   have hv : G.map v y = b := by
-    simp only [y, e, ← PreservesPullback.iso_hom_snd G, fiberPullbackEquiv, Iso.toEquiv_comp,
-      Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply, inv_hom_id_apply]
+    simp only [v, G, y, e, ← PreservesPullback.iso_hom_snd G, fiberPullbackEquiv,
+      Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
+      inv_hom_id_apply]
     erw [Types.pullbackIsoPullback_inv_snd_apply (F.map i) (F.map j)]
   rw [← hu, ← hv]
   show (F.toPrefunctor.map u ≫ F.toPrefunctor.map _) y = F.toPrefunctor.map v y
@@ -184,7 +188,7 @@ Reference: [lenstraGSchemes, 3.14]
 
 -/
 
-variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
+variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 
 section GaloisRepAux
 
@@ -206,8 +210,9 @@ private lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProd
   simp only [mkSelfProdFib, FintypeCat.inv_hom_id_apply]
   exact Concrete.productEquiv_symm_apply_π.{w, w, w+1} (fun _ : F.obj X ↦ F.obj X) id t
 
-variable {X} {A : C} [IsConnected A] (u : A ⟶ selfProd F X) [Mono u]
+variable {X} {A : C} (u : A ⟶ selfProd F X)
   (a : F.obj A) (h : F.map u a = mkSelfProdFib F X) {F}
+include h
 
 /-- For each `x : F.obj X`, this is the composition of `u` with the projection at `x`. -/
 @[simp]
@@ -219,6 +224,8 @@ private lemma selfProdProj_fiber (x : F.obj X) :
     F.map (selfProdProj u x) a = x := by
   simp only [selfProdProj, selfProd, F.map_comp, FintypeCat.comp_apply, h]
   rw [mkSelfProdFib_map_π F X x]
+
+variable [IsConnected A]
 
 /-- An element `b : F.obj A` defines a permutation of the fiber of `X` by projecting onto the
 `F.map u b` factor. -/
@@ -235,7 +242,7 @@ private noncomputable def fiberPerm (b : F.obj A) : F.obj X ≃ F.obj X := by
 private noncomputable def selfProdPermIncl (b : F.obj A) : A ⟶ selfProd F X :=
   u ≫ (Pi.whiskerEquiv (fiberPerm h b) (fun _ => Iso.refl X)).inv
 
-private instance (b : F.obj A) : Mono (selfProdPermIncl h b) := mono_comp _ _
+private instance [Mono u] (b : F.obj A) : Mono (selfProdPermIncl h b) := mono_comp _ _
 
 /-- Key technical lemma: the twisted inclusion `selfProdPermIncl h b` maps `a` to `F.map u b`. -/
 private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
@@ -256,7 +263,7 @@ private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
 `f` is obtained by considering `u` and `selfProdPermIncl h b`.
 Both are inclusions of `A` into `selfProd F X` mapping `b` respectively `a` to the same element
 in the fiber of `selfProd F X`. Applying `connected_component_unique` yields the result. -/
-private lemma subobj_selfProd_trans (b : F.obj A) : ∃ (f : A ≅ A), F.map f.hom b = a := by
+private lemma subobj_selfProd_trans [Mono u] (b : F.obj A) : ∃ (f : A ≅ A), F.map f.hom b = a := by
   apply connected_component_unique F b a u (selfProdPermIncl h b)
   exact selfProdTermIncl_fib_eq h b
 
@@ -298,10 +305,20 @@ lemma exists_hom_from_galois_of_fiber_nonempty (X : C) (h : Nonempty (F.obj X)) 
   obtain ⟨A, f, a, h1, _⟩ := exists_hom_from_galois_of_fiber F X x
   exact ⟨A, f, h1⟩
 
+include F in
 /-- Any connected object admits a hom from a Galois object. -/
 lemma exists_hom_from_galois_of_connected (X : C) [IsConnected X] :
     ∃ (A : C) (_ : A ⟶ X), IsGalois A :=
   exists_hom_from_galois_of_fiber_nonempty F X inferInstance
+
+/-- To check equality of natural transformations `F ⟶ G`, it suffices to check it on
+Galois objects. -/
+lemma natTrans_ext_of_isGalois {G : C ⥤ FintypeCat.{w}} {t s : F ⟶ G}
+    (h : ∀ (X : C) [IsGalois X], t.app X = s.app X) :
+    t = s := by
+  ext X x
+  obtain ⟨A, f, a, _, rfl⟩ := exists_hom_from_galois_of_fiber F X x
+  rw [FunctorToFintypeCat.naturality, FunctorToFintypeCat.naturality, h A]
 
 end GaloisRep
 

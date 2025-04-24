@@ -3,7 +3,7 @@ Copyright (c) 2022 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.Data.Real.Basic
 import Mathlib.Order.Interval.Finset.Nat
@@ -25,11 +25,10 @@ by the Rearrangement Inequality
 
 /- Let `n` be a natural number, `x` and `y` be as in the problem statement and `σ` be the
 permutation of natural numbers such that `z = y ∘ σ` -/
-variable (n : ℕ) (σ : Equiv.Perm ℕ) (hσ : {x | σ x ≠ x} ⊆ Finset.Icc 1 n) (x y : ℕ → ℝ)
-variable (hx : AntitoneOn x (Finset.Icc 1 n))
-variable (hy : AntitoneOn y (Finset.Icc 1 n))
+variable (n : ℕ) (σ : Equiv.Perm ℕ) (x y : ℕ → ℝ)
 
-theorem imo1975_q1 :
+theorem imo1975_q1 (hσ : {x | σ x ≠ x} ⊆ Finset.Icc 1 n)
+    (hx : AntitoneOn x (Finset.Icc 1 n)) (hy : AntitoneOn y (Finset.Icc 1 n)) :
     ∑ i ∈ Finset.Icc 1 n, (x i - y i) ^ 2 ≤ ∑ i ∈ Finset.Icc 1 n, (x i - y (σ i)) ^ 2 := by
   simp only [sub_sq, Finset.sum_add_distrib, Finset.sum_sub_distrib]
   -- a finite sum is invariant if we permute the order of summation

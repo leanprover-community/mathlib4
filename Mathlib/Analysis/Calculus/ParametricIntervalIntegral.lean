@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Derivatives of interval integrals depending on parameters
 
 In this file we restate theorems about derivatives of integrals depending on parameters for interval
-integrals.  -/
+integrals. -/
 
 
 open TopologicalSpace MeasureTheory Filter Metric
@@ -18,7 +18,7 @@ open TopologicalSpace MeasureTheory Filter Metric
 open scoped Topology Filter Interval
 
 variable {𝕜 : Type*} [RCLike 𝕜] {μ : Measure ℝ} {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E] {H : Type*} [NormedAddCommGroup H]
+  [NormedSpace ℝ E] [NormedSpace 𝕜 E] {H : Type*} [NormedAddCommGroup H]
   [NormedSpace 𝕜 H] {a b ε : ℝ} {bound : ℝ → ℝ}
 
 namespace intervalIntegral
