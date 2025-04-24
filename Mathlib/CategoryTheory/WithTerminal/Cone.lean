@@ -63,8 +63,8 @@ def extendCompose {X : C} (K : J ⥤ Over X) (F : C ⥤ D) :
 /-- A cone of a functor `K : J ⥤ Over X` consists of an object of `Over X`, together
 with morphisms. This same object is a cone of the extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C`. -/
-@[simps!]
-def coneLift {X : C} {K : J ⥤ Over X} :
+@[simps]
+private def coneLift {X : C} {K : J ⥤ Over X} :
     Cone K ⥤ Cone (liftFromOverToWithTerminal.obj K) where
   obj t := {
     pt := t.pt.left
