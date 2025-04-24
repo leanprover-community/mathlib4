@@ -394,7 +394,7 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
 
 instance [Algebra.FiniteType (𝒜 0) A] : UniversallyClosed (Proj.toSpecZero 𝒜) := by
   rw [UniversallyClosed.eq_valuativeCriterion]
-  refine ⟨valuativeCriterion_existence 𝒜, inferInstance⟩
+  exact ⟨valuativeCriterion_existence 𝒜, inferInstance⟩
 
 end UniversallyClosed
 
