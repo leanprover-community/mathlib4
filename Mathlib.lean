@@ -3693,6 +3693,7 @@ import Mathlib.GroupTheory.PushoutI
 import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.GroupTheory.QuotientGroup.Finite
+import Mathlib.GroupTheory.Rank
 import Mathlib.GroupTheory.Schreier
 import Mathlib.GroupTheory.SchurZassenhaus
 import Mathlib.GroupTheory.SemidirectProduct
