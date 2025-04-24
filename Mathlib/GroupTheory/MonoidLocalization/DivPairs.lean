@@ -19,10 +19,12 @@ namespace Submonoid
 
 variable (f s) in
 /-- Given a commutative monoid `M`, a localization map `f` to its Grothendieck group `G` and
-a submonoid `s` of `G`, `s.divPairs f` is the set of pairs `(a, b)` such that `f a / f b ∈ s`. -/
+a submonoid `s` of `G`, `s.divPairs f` is the submonoid of pairs `(a, b)`
+such that `f a / f b ∈ s`. -/
 @[to_additive
 "Given an additive commutative monoid `M`, a localization map `f` to its Grothendieck group `G` and
-a submonoid `s` of `G`, `s.subPairs f` is the set of pairs `(a, b)` such that `f a - f b ∈ s`."]
+a submonoid `s` of `G`, `s.subPairs f` is the submonoid of pairs `(a, b)`
+such that `f a - f b ∈ s`."]
 def divPairs : Submonoid (M × M) := s.comap <| divMonoidHom.comp <| f.toMap.prodMap f.toMap
 
 @[to_additive (attr := simp)]
