@@ -134,7 +134,7 @@ heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
 
 Use the `to_additive existing` syntax to use an existing additive declaration, instead of
-automatically generating the declaration.
+automatically generating it.
 
 Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
 This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
