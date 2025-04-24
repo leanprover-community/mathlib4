@@ -9,6 +9,7 @@ import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Tactic.Convert
 
 /-!
 # Semirings and rings
@@ -402,9 +403,15 @@ instance CommRing.toGrindCommRing [s : CommRing α] :
       rfl
     | n + 2 => by
       show Nat.cast (n + 2 + 1) = Nat.cast (n + 2) + 1
-      rw [← AddCommGroupWithOne.natCast_succ]
-    intCast_ofNat := sorry
-    intCast_neg := sorry }
+      rw [← AddMonoidWithOne.natCast_succ]
+    intCast_ofNat
+    | 0 => (AddGroupWithOne.intCast_ofNat (R := α) 0).trans (AddMonoidWithOne.natCast_zero (R := α))
+    | 1 => (AddGroupWithOne.intCast_ofNat (R := α) 1).trans (Nat.cast_one)
+    | n + 2 => AddGroupWithOne.intCast_ofNat (R := α) (n + 2)
+    intCast_neg
+      | (0 : ℕ) => sorry
+      | (n + 1: ℕ) => by sorry
+      | -(n + 1 : ℕ) => sorry }
 
 theorem CommRing.toGrindCommRing_ofNat [CommRing α] (n : ℕ) :
     @OfNat.ofNat α n (CommRing.toGrindCommRing.ofNat n) = n.cast := by
