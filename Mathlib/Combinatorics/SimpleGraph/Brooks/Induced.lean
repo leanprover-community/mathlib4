@@ -501,17 +501,179 @@ lemma two_colorable_of_no_odd_closed_walk (ho : ∀ u, ∀ (w : G.Walk u u), ¬ 
 
 variable {u v x: α} [DecidableEq α]
 
--- def Walk.shortTake (w : G.Walk v v) (hx : x ∈ w.support) : G.Walk v v :=
---   (w.takeUntil _ hx).append (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse
+/-- Given a vertex `x` in a walk `w : G.Walk u v` form the walk that travels along `w` from `u`
+to `x` and then back to `v` without revisiting `x` -/
+def Walk.shortTake (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk u v :=
+  (w.takeUntil _ hx).append (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse
 
--- def Walk.shortDrop (w : G.Walk v v) (hx : x ∈ w.support) (hx2 : 1 < w.support.count x) :
---   G.Walk x x :=
---   (w.dropUntil _ hx).takeUntil x (by sorry)
+/-- Given a vertex `x` in a walk `w` form the walk that travels along `w` from the first visit of
+`x` to the last visit of `x` (which may be the same in which case this is nil x) -/
+def Walk.loop (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk x x :=
+  ((w.reverse.dropUntil x (w.mem_support_reverse.2 hx)).reverse).dropUntil x (by simp)
+
+lemma Walk.shortTake_not_nil (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) :
+    ¬(w.shortTake hx).Nil := by
+  rw [shortTake]
+  simp only [nil_append_iff, nil_takeUntil, nil_reverse, not_and]
+  rintro rfl; contradiction
+
+lemma Walk.dropUntil_spec (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) : w.dropUntil x hx =
+  (w.loop hx).append (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse := by
+  rw [loop]
+  have hc := congr_arg Walk.reverse <| take_spec (w.dropUntil _ hx).reverse (end_mem_support _ )
+  rw [Walk.reverse_reverse] at *
+  rw [← hc, Walk.reverse_append]
+  congr! 1
+  · induction w with
+    | nil => rw [mem_support_nil_iff] at hx; exact (hu hx).elim
+    | @cons a b c h p ih =>
+      simp_all only [ne_eq, take_spec, reverse_reverse, forall_const, reverse_cons]
+      simp only [support_cons, List.mem_cons] at hx
+      cases hx with
+      | inl hx => contradiction
+      | inr hx =>
+        have hax := Ne.symm hu
+        by_cases hb : x = b
+        · subst b
+          simp_rw [dropUntil_append_of_mem_left p.reverse _ ((p.mem_support_reverse.2 hx))]
+          rw [dropUntil]
+          have hxdp: x ∈ (p.reverse.dropUntil x (p.mem_support_reverse.2 hx)).support :=
+            end_mem_support _
+          split_ifs with ha
+          · exact (hu ha.symm).elim
+          · simp only [Walk.reverse_append, Walk.reverse_cons, Walk.reverse_nil, Walk.nil_append,
+            Walk.cons_append, dropUntil_start]
+            conv_rhs =>
+              simp [Walk.reverse_cons, dropUntil, ha]
+        · have := ih hx hb
+          conv_rhs =>
+            enter [1]
+            rw [dropUntil_append_of_mem_left p.reverse _ ((p.mem_support_reverse.2 hx))]
+            simp only [Walk.reverse_append, Walk.reverse_cons, Walk.reverse_nil, Walk.nil_append,
+              Walk.cons_append]
+          conv_lhs =>
+            enter [1]
+            rw [dropUntil]
+            simp [hax]
+          rw [this]
+          rw [dropUntil]
+          simp [hax]
+  · congr! 1
+    induction w with
+    | nil => rw [mem_support_nil_iff] at hx; exact (hu hx).elim
+    | @cons a b c h p ih =>
+      simp_all only [ne_eq, take_spec, reverse_reverse, forall_const, reverse_cons]
+      simp only [support_cons, List.mem_cons] at hx
+      cases hx with
+      | inl hx => contradiction
+      | inr hx =>
+        have hax := (Ne.symm hu)
+        by_cases hb : x = b
+        · subst b
+          rw [takeUntil_append_of_mem_left p.reverse _ ((p.mem_support_reverse.2 hx))]
+          congr
+          rw [dropUntil]
+          split_ifs with ha
+          · exact (hu ha.symm).elim
+          · simp
+        · have := ih hx hb
+          conv_lhs =>
+            enter [1]
+            rw [dropUntil]
+            simp [hax]
+          rw [this]
+          simp [takeUntil_append_of_mem_left p.reverse _ ((p.mem_support_reverse.2 hx))]
+
+lemma Walk.not_mem_support_reverse_tail_takeUntil (w : G.Walk u v) (hx : x ∈ w.support) :
+    x ∉ (w.takeUntil x hx).support.reverse.tail := by
+  intro hx2
+  have := w.count_support_takeUntil_eq_one hx
+  rw [← List.count_pos_iff, List.count_tail (by simp)] at hx2
+  simp at hx2
+
+/-- If `x` is a repeated vertex of the walk `w` and not the first vertex then `w.loop hx` is
+a non-nil closed walk. -/
+lemma Walk.loop_not_nil_of_one_lt_count (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u)
+    (h2 : 1 < w.support.count x) : ¬(w.loop hx).Nil := by
+  intro h
+  have hs := dropUntil_spec w hx hu
+  have : w.dropUntil x hx = (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse := by
+    rw [hs, h.eq_nil]
+    exact Walk.nil_append _
+  have hw :=  congr_arg Walk.support <| take_spec w hx
+  rw [this, support_append] at hw
+  apply_fun List.count x at hw
+  rw [List.count_append] at hw
+  simp only [count_support_takeUntil_eq_one, support_reverse] at *
+  have : 0 < count x (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).support.reverse.tail := by
+    omega
+  rw [List.count_pos_iff]at this
+  exact (w.reverse.not_mem_support_reverse_tail_takeUntil _) this
+/--
+So the two walks `w.shortTake hx` and `w.loop hx` are
+-/
+lemma Walk.length_shortTake_add_loop (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) :
+    (w.shortTake hx).length + (w.loop hx).length = w.length := by
+  rw [shortTake, loop,← Walk.length_takeUntil_add_dropUntil hx]
+  rw [w.dropUntil_spec hx hu, loop]
+  simp  [Walk.length_append, Walk.length_reverse]
+  omega
+
+lemma Walk.count_support_rotate_new (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u) :
+  (w.rotate hx).support.count x = w.support.count x + 1 := by
+  nth_rw 2 [← take_spec w hx]
+  simp_rw [rotate, Walk.support_append, List.count_append]
+  rw [List.count_tail (by simp), List.count_tail (by simp)]
+  simp [if_neg (Ne.symm hne)]
+
+lemma Walk.count_support_rotate_old (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u) :
+  (w.rotate hx).support.count u = w.support.count u - 1 := by
+  nth_rw 2 [← take_spec w hx]
+  simp_rw [rotate, Walk.support_append, List.count_append]
+  rw [List.count_tail (by simp), List.count_tail (by simp)]
+  simp [head_support, beq_self_eq_true, ↓reduceIte,if_neg hne]
+  rw [← Nat.add_sub_assoc (by simp), add_comm]
+
+lemma Walk.count_support_rotate_other (w : G.Walk u u) (hx : x ∈ w.support)
+  (hvx : x ≠ v) (hvu : u ≠ v) :
+  (w.rotate hx).support.count v = w.support.count v := by
+  nth_rw 2 [← take_spec w hx]
+  simp_rw [rotate, Walk.support_append, List.count_append]
+  rw [List.count_tail (by simp), List.count_tail (by simp)]
+  simp [head_support, beq_iff_eq, if_neg hvu, if_neg hvx]
+  rw [add_comm]
 
 
-lemma exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.length) :
+lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.length) :
     ∃ x, ∃ (c : G.Walk x x), c.IsCycle ∧ Odd c.length := by
-  sorry
+  induction hn : w.length using Nat.strong_induction_on generalizing v w with
+  | h n ih =>
+  by_cases hs : ∃ x ∈ w.support , x ≠ v ∧ 1 < w.support.count x
+  · obtain ⟨x, hx, hne, h2⟩ := hs
+    have hl := w.length_shortTake_add_loop hx hne
+    rw [← hl] at ho
+    by_cases h1 : Odd (w.shortTake hx).length
+    · apply ih _ _ _ h1 rfl
+      rw [← hn, ← hl]
+      simp only [lt_add_iff_pos_right, ←  not_nil_iff_lt_length]
+      exact w.loop_not_nil_of_one_lt_count hx hne h2
+    · rw [Nat.not_odd_iff_even] at h1
+      rw [Nat.odd_add'] at ho
+      apply ih _ _ _ (ho.2 h1) rfl
+      rw [← hn, ← hl]
+      simp only [lt_add_iff_pos_left, ←  not_nil_iff_lt_length]
+      exact shortTake_not_nil w hx hne
+  · push_neg at hs
+    by_cases hcv : w.support.count v ≤ 2
+    · use v, w
+      refine ⟨?_, ho⟩
+      -- prove that if every vertex is counted once in the support
+      -- except v that occurs twice then the walk is a cycle
+      sorry
+    · push_neg at hcv
+      -- get a vertex x ≠ v in the support of w and use (w.rotate hx)
+      -- as in the first part
+      sorry
 
 end Colorings
 
