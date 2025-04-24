@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot
 -/
 import Mathlib.Combinatorics.SimpleGraph.Brooks.Induced
+import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 
 /-!
 ## Brooks' Theorem (for 3 ≤ k)
@@ -324,48 +325,5 @@ theorem colorable_of_cliqueFree_forall_degree_le [LocallyFinite G] {k : ℕ} (hk
   have h' := fun v ↦ G'.coe_degree v ▸ (Subgraph.degree_le ..).trans (hbd ..)
   haveI : Fintype ↑G'.verts := hf.fintype
   exact ((BrooksPart hk (hc.comap' G'.hom) h' univ).some.copy coe_univ).toColoring
-
-theorem two_colorable_of_no_odd_closed_walk_forall_degree_le_two [LocallyFinite G]
-    (hodd : ∀ u, ∀ w : G.Walk u u, ¬ Odd w.length) (hbd : ∀ v, G.degree v ≤ 2) (s : Finset α) :
-     G.PartColorable 2 s := by
-  induction hn : #s using Nat.strong_induction_on generalizing s with
-  | h n ih =>
-  -- Case 0 : there is `v ∈ s` with `G.degreeIn s v < 2`, so we can extend a `2` - coloring of
-  -- `s.erase v` greedily
-  classical
-  by_cases hd : ∃ v ∈ s, G.degreeIn s v < 2
-  · obtain ⟨v, hv, hlt⟩ := hd
-    obtain ⟨C⟩ := ih _ ((card_erase_lt_of_mem hv).trans_le hn.le) _ rfl
-    exact ⟨(C.greedy v (C.nonempty_of_degreeIn_lt _ (by simpa [hv] using hlt))).copy (by simp [hv])⟩
-  -- So all vertices in `s` have `G.degreeIn s v = 2` (and hence have no neighbors outside `s`)
-  push_neg at hd
-  replace hd : ∀ v ∈ s, G.degreeIn s v = 2 := fun v hv ↦ le_antisymm
-        ((degreeIn_le_degree ..).trans (hbd v)) <| hd _ hv
-  have hbd' : ∀ v, v ∈ s → G.degree v = 2 := fun v hv ↦ le_antisymm (hbd v)
-        <| hd v hv ▸ degreeIn_le_degree ..
-  have hin : ∀ {v}, v ∈ s → ∀ {w}, G.Adj v w → w ∈ s := by
-    by_contra! hf
-    obtain ⟨v, hv, w, ha, hns⟩ := hf
-    have : G.degreeIn s v < G.degree v := G.degreeIn_lt_degree ⟨ha, hns⟩
-    rw [hd _ hv] at this
-    exact this.not_le (hbd v)
-  -- `s` is either Nonempty (main case) or empty (easy)
-  by_cases hem : ¬ s.Nonempty
-  · -- `s` is empty so easy to `2`-color
-    exact ⟨fun _ ↦ ⟨0, by omega⟩, by simp_all⟩
-  obtain ⟨v, hv⟩ := by rwa [not_not] at hem
-  obtain ⟨C⟩ := ih _ ((card_erase_lt_of_mem hv).trans_le hn.le) _ rfl
-  have h: 1 < _ := (hbd' v hv).ge
-  obtain ⟨x, y, hvx, hvy, hxy⟩ := (G.one_lt_degree_iff v).1 (hbd' v hv).ge
-  have hxs := hin hv hvx
-  have hys := hin hv hvy
-  have hw : Nonempty (((⊤ : Subgraph G).induce (s.erase v)).spanningCoe.Walk x y) := by
-
-    sorry
-  have heq : C x = C y := by
-    let ⟨w⟩ := hw
-    sorry
-  exact ⟨(C.greedy v (C.nonempty_of_degreeIn_le_not_inj v
-    ((G.degreeIn_le_degree v).trans (hbd' _ hv).le) (by aesop) (by aesop) hvx hvy hxy heq)).copy
-    (by simp [hv])⟩
+  
 end SimpleGraph

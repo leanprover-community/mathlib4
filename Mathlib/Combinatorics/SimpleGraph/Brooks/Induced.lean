@@ -5,8 +5,8 @@ Authors: John Talbot
 -/
 import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
 import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Combinatorics.SimpleGraph.Acyclic
-import Mathlib.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.SimpleGraph.Matching
+import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 
 /-!
 Develop some API for induced subgraphs as `SimpleGraphs α`, i.e.
@@ -415,7 +415,7 @@ def PartColoring.of_path_not_inj {u v x y : α} {p : G.Walk u v} [LocallyFinite 
         ((degreeIn_le_degree ..).trans (hbd u p.start_mem_support)) (Or.inl hxs) (Or.inl hys)
         hux huy hne he)).copy (by ext; rw [support_eq_cons]; simp [or_left_comm])
 
-variable [DecidableEq α] in
+variable [DecidableEq α]
 lemma PartColoring.of_path_not_inj_extends {u v x y : α} {p : G.Walk u v} [LocallyFinite G]
     (C₁ : G.PartColoring n s) (hp : p.IsPath) (hbd : ∀ x, x ∈ p.support → G.degree x ≤ n)
     (disj : Disjoint s {a | a ∈ p.support}) (hxs : x ∈ s) (hys : y ∈ s) (hux : G.Adj u x)
@@ -434,4 +434,135 @@ lemma PartColoring.of_path_not_inj_extends {u v x y : α} {p : G.Walk u v} [Loca
   · nth_rw 2 [support_eq_cons]
     ext; simp [or_left_comm]
 
+
+
+section Colorings
+
+open ConnectedComponent Subgraph
+
+variable {α β : Type*} {n : ℕ} {G : SimpleGraph α}
+
+def coloringOfComponents (h : ∀ (c : G.ConnectedComponent), (G.induce c.supp).Coloring β) :
+    G.Coloring β := by
+  exact ⟨fun v ↦ h (G.connectedComponentMk v) ⟨v, rfl⟩, by
+    simp only [top_adj]
+    intro a b hab heq
+    have := connectedComponentMk_eq_of_adj hab
+    have hadj : (G.induce (G.connectedComponentMk a).supp).Adj ⟨a, rfl⟩
+       ⟨b, ((G.connectedComponentMk a).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
+    exact (h _).valid hadj (by convert heq)⟩
+
+theorem colorable_iff_forall_connectedComponents  :
+    G.Colorable n ↔ ∀ c : G.ConnectedComponent, (G.induce c.supp).Colorable n :=
+  ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v.1, fun h h1 ↦ C.valid h h1⟩,
+     fun h ↦ ⟨coloringOfComponents (fun c ↦ (h c).some)⟩⟩
+
+lemma ConnectedComponent.induce_supp_connected (c : G.ConnectedComponent) :
+    (G.induce c.supp).Connected := by
+  rw [connected_induce_iff, connected_iff_forall_exists_walk_subgraph]
+  refine ⟨c.nonempty_supp,?_⟩
+  intro u v hu hv
+  obtain ⟨w⟩ := ConnectedComponent.exact (hv ▸ hu)
+  use w
+  induction w with
+  | nil => simpa
+  | cons h p ih =>
+    simp_rw [Walk.toSubgraph, sup_le_iff]
+    constructor
+    · apply subgraphOfAdj_le_of_adj
+      simpa using ⟨hu, hu ▸ (connectedComponentMk_eq_of_adj h).symm, h⟩
+    · exact ih (hu ▸ (connectedComponentMk_eq_of_adj h).symm) hv
+
+/-- `G` is `n`-colorable if all its induced connected subgraphs are `n`-colorable -/
+theorem colorable_iff_forall_induced_connected :
+    (∀ s, (G.induce s).Connected → (G.induce s).Colorable n) ↔ G.Colorable n := by
+  constructor <;> intro h
+  · rw [colorable_iff_forall_connectedComponents]
+    exact fun c ↦ h _ c.induce_supp_connected
+  · intro s _
+    obtain ⟨C⟩ := h
+    exact ⟨fun v ↦ (C v.1), fun a ↦ Hom.map_adj C a⟩
+
+lemma two_colorable_of_no_odd_closed_walk (ho : ∀ u, ∀ (w : G.Walk u u), ¬ Odd w.length) :
+    G.Colorable 2 := by
+  rw [colorable_iff_forall_connectedComponents]
+  intro c
+  classical
+  obtain ⟨v, hv⟩ := c.nonempty_supp
+  use (fun a ↦ by
+    let wa := (c.induce_supp_connected ⟨_, hv⟩ a).some
+    exact ((wa.length : Fin 2)))
+  intro a b hab heq
+  let w' := (((c.induce_supp_connected ⟨_, hv⟩ a).some).concat hab).append
+                (c.induce_supp_connected ⟨_, hv⟩ b).some.reverse
+  apply ho v <| w'.map (Embedding.induce c.supp).toHom
+  rw [Walk.length_map, Walk.length_append, add_comm, Walk.length_concat, Walk.length_reverse,
+    ← add_assoc, Nat.odd_iff]
+  have heq' := (ZMod.natCast_eq_natCast_iff' _ _ 2).1 heq
+  omega
+
+lemma exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.length) :
+    ∃ x, ∃ (c : G.Walk x x), c.IsCycle ∧ Odd c.length := by
+  sorry
+
+end Colorings
+
 end SimpleGraph
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- variable [DecidableRel G.Adj]
+
+-- lemma isCycles_of_forall_degreeIn_eq_two [LocallyFinite G] {s : Finset α}
+--     (h : ∀ v ∈ s, G.degreeIn s v = 2) : (((⊤ : Subgraph G).induce s).spanningCoe).IsCycles := by
+--   intro v hv
+--   rw [Set.ncard_eq_toFinset_card']
+--   obtain ⟨x, hx⟩ := hv
+--   simpa using h v hx.1
+
+-- lemma two_colorable_of_isCycles_finite_no_odd_closed_walk [Finite α] (hc : G.IsCycles)
+--     (ho : ∀ u, ∀ (w : G.Walk u u), ¬ Odd w.length) : G.Colorable 2 := by
+--   rw [colorable_iff_forall_connectedComponents]
+--   intro c
+--   have : Fintype α := Fintype.ofFinite α
+--   classical
+--   obtain ⟨v, hv⟩ :=c.nonempty_supp
+--   by_cases he : (G.neighborSet v).Nonempty
+--   · obtain ⟨w, hw⟩ := hc.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp hv he
+--     have heven : Even w.length :=  Nat.not_odd_iff_even.mp (ho v w)
+--     rw [← hw.2]
+--     have hadj : ∀ x ∈ w.toSubgraph.verts, ∀ y, w.toSubgraph.Adj x y ↔ G.Adj x y := by
+--       intro x hx y;
+--       apply hw.1.adj_toSubgraph_iff_of_isCycles hc hx
+--     use (fun a ↦ by
+--       have : a.1 ∈ w.support := w.mem_verts_toSubgraph.1 a.2
+--       exact ((w.takeUntil _ this).length : Fin 2))
+--     intro a b hab heq
+--     simp only [comap_adj, Function.Embedding.subtype_apply] at hab heq ⊢
+--     let w' : G.Walk v v := ((w.takeUntil _ (w.mem_verts_toSubgraph.1 a.2)).concat hab).append
+--       (w.takeUntil _ (w.mem_verts_toSubgraph.1 b.2)).reverse
+--     apply ho v w'
+--     rw [Walk.length_append, add_comm, Walk.length_concat, Walk.length_reverse, ← add_assoc]
+--     rw [Nat.odd_iff]
+--     have heq' := (ZMod.natCast_eq_natCast_iff' _ _ 2).1 heq
+--     omega
+--   · use (fun x ↦ 0)
+--     intro a b hab heq
+--     apply he
+--     by_cases hva : a = v
+--     · subst v
+--       exact ⟨b, by simpa using hab⟩
+--     · have hva' : ⟨v, hv⟩ ≠ a := Subtype.coe_ne_coe.mp fun h ↦ hva h.symm
+--       let ⟨wa⟩ := c.induce_supp_connected ⟨v, hv⟩ a
+--       have ⟨_, h,_⟩:= wa.exists_eq_cons_of_ne hva'
+--       exact ⟨_, by simpa using h⟩

@@ -156,4 +156,8 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
     rw [← hn3]
     exact Walk.three_le_chromaticNumber_of_odd_loop w hOdd'
 
+lemma two_colorable_of_forall_degree_eq_two_ {α} {G : SimpleGraph α} [LocallyFinite G]
+    (h2 : ∀ v, G.degree v = 2) (ho : ∀ v, ∀ (w : G.Walk v v), Even w.length ): G.Colorable 2 := by
+
+  sorry
 end SimpleGraph
