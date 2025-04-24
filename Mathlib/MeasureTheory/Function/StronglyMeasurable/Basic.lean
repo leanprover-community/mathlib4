@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Function.SimpleFuncDense
 # Strongly measurable and finitely strongly measurable functions
 
 A function `f` is said to be strongly measurable if `f` is the sequential limit of simple functions.
-It is said to be finitely strongly measurable with respect to a mease `μ` if the supports
+It is said to be finitely strongly measurable with respect to a measure `μ` if the supports
 of those simple functions have finite measure.
 
 If the target space has a second countable topology, strongly measurable and measurable are
