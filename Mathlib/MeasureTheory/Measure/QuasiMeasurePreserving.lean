@@ -42,12 +42,9 @@ structure QuasiMeasurePreserving {m0 : MeasurableSpace α} (f : α → β)
   protected measurable : Measurable f
   protected absolutelyContinuous : μa.map f ≪ μb
 
-namespace QuasiMeasurePreserving
+attribute [fun_prop] QuasiMeasurePreserving.measurable
 
-/-- Theorem for fun_prop. -/
-@[fun_prop]
-theorem quasiMeasurePreserving_measurable {μ' : Measure β} (f : α → β)
-    (hf : QuasiMeasurePreserving f μ μ') : Measurable f := hf.measurable
+namespace QuasiMeasurePreserving
 
 @[fun_prop]
 protected theorem id {_m0 : MeasurableSpace α} (μ : Measure α) : QuasiMeasurePreserving id μ μ :=
