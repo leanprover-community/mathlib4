@@ -12,11 +12,11 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 -/
 
-universe w v' u' v u
+universe t w v' u' v u
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Bicategory
 
 namespace Pseudofunctor
 
@@ -35,34 +35,48 @@ lemma mapComp_rfl : F.mapComp' f g _ rfl = F.mapComp f g := rfl
 
 end
 
--- TODO: this will look slightly better after `LocallyDiscrete Cᵒᵖ`
--- is replaced by any bicategory satisfying `IsLocallyDiscrete`.
-variable {C : Type u} [Category.{v} C]
-  (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v', u'})
+variable {C : Type u} [Bicategory.{w, v} C] [IsLocallyDiscrete C]
+  (F : Pseudofunctor C Cat.{v', u'})
   {ι : Type w} (X : ι → C)
 
 structure DescentData where
-  obj (i : ι) : F.obj ⟨⟨X i⟩⟩
-  iso ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) :
-      (F.map f₁.op.toLoc).obj (obj i₁) ≅ (F.map f₂.op.toLoc).obj (obj i₂)
-  iso_comp ⦃Y' Y : C⦄ (g : Y' ⟶ Y) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) :
-      iso (g ≫ f₁) (g ≫ f₂) =
-    (F.mapComp f₁.op.toLoc g.op.toLoc).app _ ≪≫
-      Functor.mapIso (F.map g.op.toLoc) (iso f₁ f₂) ≪≫
-      (F.mapComp f₂.op.toLoc g.op.toLoc).symm.app _
-  iso_trans ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (f₃ : Y ⟶ X i₃) :
+  obj (i : ι) : F.obj (X i)
+  iso ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
+      (F.map f₁).obj (obj i₁) ≅ (F.map f₂).obj (obj i₂)
+  iso_comp ⦃Y' Y : C⦄ (g : Y ⟶ Y') ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
+      iso (f₁ ≫ g) (f₂ ≫ g) =
+        (F.mapComp f₁ g).app _ ≪≫
+          Functor.mapIso (F.map g) (iso f₁ f₂) ≪≫
+            (F.mapComp f₂ g).symm.app _ := by aesop_cat
+  iso_trans ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) (f₃ : X i₃ ⟶ Y) :
     iso f₁ f₂ ≪≫ iso f₂ f₃ = iso f₁ f₃ := by aesop_cat
 
 namespace DescentData
 
 variable {F X}
 
+def mk' (obj : ∀ i, F.obj (X i))
+    (hom : ∀ ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y),
+      (F.map f₁).obj (obj i₁) ⟶ (F.map f₂).obj (obj i₂))
+    (hom_comp : ∀ ⦃Y' Y : C⦄ (g : Y ⟶ Y') ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y),
+      hom (f₁ ≫ g) (f₂ ≫ g) =
+        (F.mapComp f₁ g).hom.app _ ≫
+          (F.map g).map (hom f₁ f₂) ≫
+            (F.mapComp f₂ g).inv.app _ := by aesop_cat)
+    (hom_self : ∀ ⦃Y : C⦄ ⦃i : ι⦄ (f : X i ⟶ Y), hom f f = 𝟙 _ := by aesop_cat)
+    (comp_hom : ∀ ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) (f₃ : X i₃ ⟶ Y),
+      hom f₁ f₂ ≫ hom f₂ f₃ = hom f₁ f₃ := by aesop_cat) : F.DescentData X where
+  obj := obj
+  iso Y i₁ i₂ f₁ f₂ :=
+    { hom := hom f₁ f₂
+      inv := hom f₂ f₁ }
+
 @[ext]
 structure Hom (D₁ D₂ : F.DescentData X) where
   hom (i : ι) : D₁.obj i ⟶ D₂.obj i
-  comm ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) :
-    (F.map f₁.op.toLoc).map (hom i₁) ≫ (D₂.iso f₁ f₂).hom =
-      (D₁.iso f₁ f₂).hom ≫ (F.map f₂.op.toLoc).map (hom i₂) := by aesop_cat
+  comm ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
+    (F.map f₁).map (hom i₁) ≫ (D₂.iso f₁ f₂).hom =
+      (D₁.iso f₁ f₂).hom ≫ (F.map f₂).map (hom i₂) := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.comm
 
@@ -77,25 +91,19 @@ instance : Category (F.DescentData X) where
 
 end DescentData
 
-def toDescentDataOfIsTerminal (X₀ : C) (hX₀ : IsTerminal X₀) :
-    F.obj ⟨⟨X₀⟩⟩ ⥤ F.DescentData X where
+def toDescentDataOfIsTerminal (X₀ : C) (hX₀ : IsInitial X₀) :
+    F.obj X₀ ⥤ F.DescentData X where
   obj A :=
-    { obj i := (F.map (hX₀.from (X i)).op.toLoc).obj A
+    { obj i := (F.map (hX₀.to (X i))).obj A
       iso Y i₁ i₂ f₁ f₂ :=
-        (F.mapComp' (hX₀.from (X i₁)).op.toLoc f₁.op.toLoc (hX₀.from Y).op.toLoc
-            (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsTerminal.comp_from])).symm.app A ≪≫
-          (F.mapComp' (hX₀.from (X i₂)).op.toLoc f₂.op.toLoc (hX₀.from Y).op.toLoc
-            (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsTerminal.comp_from])).app A
+        (F.mapComp' (hX₀.to (X i₁)) f₁ (hX₀.to Y) (by simp)).symm.app A ≪≫
+          (F.mapComp' (hX₀.to (X i₂)) f₂ (hX₀.to Y) (by simp)).app A
       iso_comp Y' Y g i₁ i₂ f₁ f₂ := by
-        ext
-        dsimp
-        simp only [Functor.map_comp, assoc]
         sorry }
   map {A B} f :=
     { hom i := (F.map _).map f
       comm Y i₁ i₂ f₁ f₂ := by
         dsimp
-        simp
         sorry }
 
 end Pseudofunctor
