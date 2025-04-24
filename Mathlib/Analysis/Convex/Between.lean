@@ -810,6 +810,8 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
     field_simp [(add_pos hr₁ hr₂).ne', hr₂.ne']
     ring
 
+/-- If `T` is an affine independent family of points,
+then any 3 distinct points form a triangle. -/
 theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
     (h : Function.Injective ![i, j, k]) {T : ι → P} (hT : AffineIndependent R T) :
     ¬ Wbtw R (T i) (T j) (T k) := by
