@@ -10,8 +10,9 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Data.Fintype.Option
 
 /-!
 # Pi types of modules
@@ -226,6 +227,11 @@ theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
     [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) :
     lsum R φ S f = ∑ i : ι, (f i).comp (proj i) := rfl
 
+theorem lsum_piSingle (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
+    [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) (i : ι) (x : φ i) :
+    lsum R φ S f (Pi.single i x) = f i x := by
+  simp_rw [lsum_apply, sum_apply, comp_apply, proj_apply, apply_single, Fintype.sum_pi_single']
+
 @[simp high]
 theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommSemiring R] {M : ι → Type*}
     [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)] :
@@ -376,25 +382,23 @@ theorem iInf_comap_proj :
   ext x
   simp
 
-theorem iSup_map_single [DecidableEq ι] [Finite ι] :
-    ⨆ i, map (LinearMap.single R φ i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
-  cases nonempty_fintype ι
-  refine (iSup_le fun i => ?_).antisymm ?_
-  · rintro _ ⟨x, hx : x ∈ p i, rfl⟩ j -
-    rcases em (j = i) with (rfl | hj) <;> simp [*]
-  · intro x hx
-    rw [← Finset.univ_sum_single x]
-    exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
-
-theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)) {i} :
-    p i ≤ Submodule.comap (LinearMap.single R φ i : φ i →ₗ[R] _) (Submodule.pi Set.univ p) := by
+theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)) {I i} :
+    p i ≤ Submodule.comap (LinearMap.single R φ i : φ i →ₗ[R] _) (Submodule.pi I p) := by
   intro x hx
   rw [Submodule.mem_comap, Submodule.mem_pi]
   rintro j -
-  by_cases h : j = i
-  · rwa [h, LinearMap.coe_single, Pi.single_eq_same]
-  · rw [LinearMap.coe_single, Pi.single_eq_of_ne h]
-    exact (p j).zero_mem
+  rcases eq_or_ne j i with rfl | hne <;> simp [*]
+
+theorem iSup_map_single_le [DecidableEq ι] :
+    ⨆ i, map (LinearMap.single R φ i) (p i) ≤ pi I p :=
+  iSup_le fun _ => map_le_iff_le_comap.mpr <| le_comap_single_pi _
+
+theorem iSup_map_single [DecidableEq ι] [Finite ι] :
+    ⨆ i, map (LinearMap.single R φ i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
+  cases nonempty_fintype ι
+  refine iSup_map_single_le.antisymm fun x hx => ?_
+  rw [← Finset.univ_sum_single x]
+  exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
 
 end Submodule
 
@@ -565,7 +569,7 @@ theorem piFinTwo_apply (M : Fin 2 → Type v)
     (piFinTwo R M : ((i : Fin 2) → M i) → M 0 × M 1) = fun f => (f 0, f 1) := rfl
 
 /-- Linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
   { finTwoArrowEquiv M, piFinTwo R fun _ => M with }
 
@@ -636,6 +640,39 @@ theorem LinearMap.vecCons_apply {n} (f : M →ₗ[R] M₂) (g : M →ₗ[R] Fin 
     f.vecCons g m = Matrix.vecCons (f m) (g m) :=
   rfl
 
+variable (R) in
+/--
+To show a property `motive` of modules holds for arbitrary finite products of modules, it suffices
+to show
+1. `motive` is stable under isomorphism.
+2. `motive` holds for the zero module.
+3. `motive` holds for `M × N` if it holds for both `M` and `N`.
+
+Since we need to apply `motive` to modules in `Type u` and in `Type (max u v)`, there is a second
+`motive'` argument which is required to be equivalent to `motive` up to universe lifting by `equiv`.
+
+See `Module.pi_induction'` for a version where `motive` assumes `AddCommGroup` instead.
+-/
+@[elab_as_elim]
+lemma Module.pi_induction {ι : Type v} [Finite ι]
+    (motive : ∀ (N : Type u) [AddCommMonoid N] [Module R N], Prop)
+    (motive' : ∀ (N : Type (max u v)) [AddCommMonoid N] [Module R N], Prop)
+    (equiv : ∀ {N : Type u} {N' : Type (max u v)} [AddCommMonoid N] [AddCommMonoid N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive N → motive' N')
+    (equiv' : ∀ {N N' : Type (max u v)} [AddCommMonoid N] [AddCommMonoid N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive' N → motive' N')
+    (unit : motive PUnit) (prod : ∀ {N : Type u} {N' : Type (max u v)} [AddCommMonoid N]
+      [AddCommMonoid N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
+    (M : ι → Type u) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+    (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
+  classical
+  cases nonempty_fintype ι
+  revert M
+  refine Fintype.induction_empty_option
+    (fun α β _ e h M _ _ hM ↦ equiv' (LinearEquiv.piCongrLeft R M e) <| h _ fun i ↦ hM _)
+    (fun M _ _ _ ↦ equiv default unit) (fun α _ h M _ _ hn ↦ ?_) ι
+  exact equiv' (LinearEquiv.piOptionEquivProd R).symm <| prod (hn _) (h _ fun i ↦ hn i)
+
 end Semiring
 
 section CommSemiring
@@ -663,5 +700,26 @@ def LinearMap.vecCons₂ {n} (f : M →ₗ[R] M₂ →ₗ[R] M₃) (g : M →ₗ
   map_smul' r x := LinearMap.ext fun z => by simp [Matrix.smul_cons r (f x z)]
 
 end CommSemiring
+
+/-- A variant of `Module.pi_induction` that assumes `AddCommGroup` instead of `AddCommMonoid`. -/
+@[elab_as_elim]
+lemma Module.pi_induction' {ι : Type v} [Finite ι] (R : Type*) [Ring R]
+    (motive : ∀ (N : Type u) [AddCommGroup N] [Module R N], Prop)
+    (motive' : ∀ (N : Type (max u v)) [AddCommGroup N] [Module R N], Prop)
+    (equiv : ∀ {N : Type u} {N' : Type (max u v)} [AddCommGroup N] [AddCommGroup N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive N → motive' N')
+    (equiv' : ∀ {N N' : Type (max u v)} [AddCommGroup N] [AddCommGroup N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive' N → motive' N')
+    (unit : motive PUnit) (prod : ∀ {N : Type u} {N' : Type (max u v)} [AddCommGroup N]
+      [AddCommGroup N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
+    (M : ι → Type u) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+    (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
+  classical
+  cases nonempty_fintype ι
+  revert M
+  refine Fintype.induction_empty_option
+    (fun α β _ e h M _ _ hM ↦ equiv' (LinearEquiv.piCongrLeft R M e) <| h _ fun i ↦ hM _)
+    (fun M _ _ _ ↦ equiv default unit) (fun α _ h M _ _ hn ↦ ?_) ι
+  exact equiv' (LinearEquiv.piOptionEquivProd R).symm <| prod (hn _) (h _ fun i ↦ hn i)
 
 end Fin

@@ -36,9 +36,6 @@ Weyl group.
  * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
  * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
-## TODO (possibly in other files)
- * Weyl-invariance
- * Faithfulness of Weyl group action, and finiteness of Weyl group, for finite root systems.
 -/
 
 open Set Function
@@ -109,11 +106,11 @@ lemma toPerfectPairing_apply_CoPolarization (x : N) :
   exact P.flip.toPerfectPairing_apply_apply_Polarization x y
 
 lemma flip_comp_polarization_eq_rootForm :
-    P.flip.toLin ∘ₗ P.Polarization = P.RootForm := by
+    P.flip.toLinearMap ∘ₗ P.Polarization = P.RootForm := by
   ext; simp [rootForm_apply_apply, RootPairing.flip]
 
 lemma self_comp_coPolarization_eq_corootForm :
-    P.toLin ∘ₗ P.CoPolarization = P.CorootForm := by
+    P.toLinearMap ∘ₗ P.CoPolarization = P.CorootForm := by
   ext; simp [corootForm_apply_apply]
 
 lemma polarization_apply_eq_zero_iff (m : M) :
@@ -208,16 +205,16 @@ theorem range_polarization_domRestrict_le_span_coroot :
   intro y hy
   obtain ⟨x, hx⟩ := hy
   rw [← hx, LinearMap.domRestrict_apply, Polarization_apply]
-  refine (mem_span_range_iff_exists_fun R).mpr ?_
+  refine (Submodule.mem_span_range_iff_exists_fun R).mpr ?_
   use fun i => (P.toPerfectPairing x) (P.coroot i)
   simp
 
 theorem corootSpan_dualAnnihilator_le_ker_rootForm :
     P.corootSpan.dualAnnihilator.map P.toDualLeft.symm ≤ LinearMap.ker P.RootForm := by
-  rw [← SetLike.coe_subset_coe, coe_corootSpan_dualAnnihilator_map]
+  rw [P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot']
   intro x hx
-  simp only [coroot', PerfectPairing.flip_apply_apply, mem_setOf_eq] at hx
   ext y
+  simp only [coroot', Submodule.mem_iInf, LinearMap.mem_ker, PerfectPairing.flip_apply_apply] at hx
   simp [rootForm_apply_apply, hx]
 
 theorem rootSpan_dualAnnihilator_le_ker_rootForm :
@@ -238,7 +235,8 @@ end Fintype
 
 section IsValuedInOrdered
 
-variable (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
+variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+  [Algebra S R] [FaithfulSMul S R]
   [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] {i j : ι}
 
 /-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a
@@ -266,13 +264,6 @@ lemma zero_lt_pairingIn_iff' [Finite ι] :
     0 < P.pairingIn S i j ↔ 0 < P.pairingIn S j i :=
   let _i : Fintype ι := Fintype.ofFinite ι
   zero_lt_pairingIn_iff (P.posRootForm S) i j
-
-omit [Module S M] [IsScalarTower S R M] in
-lemma pairingIn_zero_iff [Finite ι] [NoZeroDivisors R] :
-    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
-  let _i : Fintype ι := Fintype.ofFinite ι
-  simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn]
-  exact pairing_zero_iff (P.posRootForm S) i j
 
 end IsValuedInOrdered
 

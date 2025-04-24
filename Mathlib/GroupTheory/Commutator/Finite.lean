@@ -5,7 +5,7 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.GroupTheory.Finiteness
+import Mathlib.GroupTheory.Rank
 import Mathlib.GroupTheory.Index
 
 /-!

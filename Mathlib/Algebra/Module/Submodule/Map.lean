@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Subgroup.Map
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Module.Submodule.LinearMap
+import Mathlib.Order.Cover
 
 /-!
 # `map` and `comap` for `Submodule`s
@@ -57,6 +58,9 @@ def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
 @[simp]
 theorem map_coe (f : F) (p : Submodule R M) : (map f p : Set M₂) = f '' p :=
   rfl
+
+@[simp]
+theorem map_coe_toLinearMap (f : F) (p : Submodule R M) : map (f : M →ₛₗ[σ₁₂] M₂) p = map f p := rfl
 
 theorem map_toAddSubmonoid (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
     (p.map f).toAddSubmonoid = p.toAddSubmonoid.map (f : M →+ M₂) :=
@@ -173,6 +177,9 @@ def comap [SemilinearMapClass F σ₁₂ M M₂] (f : F) (p : Submodule R₂ M�
 @[simp]
 theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
   rfl
+
+@[simp] theorem comap_coe_toLinearMap (f : F) (p : Submodule R₂ M₂) :
+    comap (f : M →ₛₗ[σ₁₂] M₂) p = comap f p := rfl
 
 @[simp]
 theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
@@ -355,6 +362,25 @@ theorem map_le_map_iff_of_injective (p q : Submodule R M) : p.map f ≤ q.map f 
 theorem map_strictMono_of_injective : StrictMono (map f) :=
   (gciMapComap hf).strictMono_l
 
+lemma map_lt_map_iff_of_injective {p q : Submodule R M} :
+    p.map f < q.map f ↔ p < q := by
+  rw [lt_iff_le_and_ne, lt_iff_le_and_ne, map_le_map_iff_of_injective hf,
+    (map_injective_of_injective hf).ne_iff]
+
+lemma comap_lt_of_lt_map_of_injective {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : q < p.map f) : q.comap f < p := by
+  rw [← map_lt_map_iff_of_injective hf]
+  exact (map_comap_le _ _).trans_lt h
+
+lemma map_covBy_of_injective {p q : Submodule R M} (h : p ⋖ q) :
+    p.map f ⋖ q.map f := by
+  refine ⟨lt_of_le_of_ne (map_mono h.1.le) ((map_injective_of_injective hf).ne h.1.ne), ?_⟩
+  intro P h₁ h₂
+  refine h.2 ?_ (Submodule.comap_lt_of_lt_map_of_injective hf h₂)
+  rw [← Submodule.map_lt_map_iff_of_injective hf]
+  refine h₁.trans_le ?_
+  exact (Set.image_preimage_eq_of_subset (.trans h₂.le (Set.image_subset_range _ _))).superset
+
 end GaloisCoinsertion
 
 end SemilinearMap
@@ -383,6 +409,17 @@ lemma orderIsoMapComap_symm_apply [EquivLike F M M₂] [SemilinearMapClass F σ�
     (f : F) (p : Submodule R₂ M₂) :
     (orderIsoMapComap f).symm p = comap f p :=
   rfl
+
+variable [EquivLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂] {e : F}
+variable {p}
+
+@[simp] protected lemma map_eq_bot_iff : p.map e = ⊥ ↔ p = ⊥ := map_eq_bot_iff (orderIsoMapComap e)
+
+@[simp] protected lemma map_eq_top_iff : p.map e = ⊤ ↔ p = ⊤ := map_eq_top_iff (orderIsoMapComap e)
+
+protected lemma map_ne_bot_iff : p.map e ≠ ⊥ ↔ p ≠ ⊥ := by simp
+
+protected lemma map_ne_top_iff : p.map e ≠ ⊤ ↔ p ≠ ⊤ := by simp
 
 end OrderIso
 

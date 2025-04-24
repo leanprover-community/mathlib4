@@ -31,7 +31,6 @@ instance [Repr α] : Repr (WithBot α) :=
 @[coe, match_pattern] def some : α → WithBot α :=
   Option.some
 
--- Porting note: changed this from `CoeTC` to `Coe` but I am not 100% confident that's correct.
 instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 

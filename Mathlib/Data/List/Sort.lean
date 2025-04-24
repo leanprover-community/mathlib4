@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Batteries.Data.List.Pairwise
+import Batteries.Data.List.Perm
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.TakeWhile
@@ -77,7 +77,7 @@ theorem sorted_cons_cons {r : α → α → Prop} [IsTrans α r] {l : List α} {
     Sorted r (b :: a :: l) ↔ r b a ∧ Sorted r (a :: l) := by
   constructor
   · intro h
-    exact ⟨rel_of_sorted_cons h _ (mem_cons_self a _), h.of_cons⟩
+    exact ⟨rel_of_sorted_cons h _ mem_cons_self, h.of_cons⟩
   · rintro ⟨h, ha⟩
     exact ha.cons h
 
@@ -105,13 +105,14 @@ protected theorem Sorted.nodup {r : α → α → Prop} [IsIrrefl α r] {l : Lis
 
 protected theorem Sorted.filter {l : List α} (f : α → Bool) (h : Sorted r l) :
     Sorted r (filter f l) :=
-  h.sublist (filter_sublist l)
+  h.sublist filter_sublist
 
 theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ ~ l₂) (hs₁ : Sorted r l₁)
     (hs₂ : Sorted r l₂) : l₁ = l₂ := by
-  induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
-  · exact hp.nil_eq
-  · have : a ∈ l₂ := hp.subset (mem_cons_self _ _)
+  induction hs₁ generalizing l₂ with
+  | nil => exact hp.nil_eq
+  | @cons a l₁ h₁ hs₁ IH =>
+    have : a ∈ l₂ := hp.subset mem_cons_self
     rcases append_of_mem this with ⟨u₂, v₂, rfl⟩
     have hp' := (perm_cons a).1 (hp.trans perm_middle)
     obtain rfl := IH hp' (hs₂.sublist <| by simp)
@@ -119,27 +120,54 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
     rw [← append_assoc]
     congr
     have : ∀ x ∈ u₂, x = a := fun x m =>
-      antisymm ((pairwise_append.1 hs₂).2.2 _ m a (mem_cons_self _ _)) (h₁ _ (by simp [m]))
+      antisymm ((pairwise_append.1 hs₂).2.2 _ m a mem_cons_self) (h₁ _ (by simp [m]))
     rw [(@eq_replicate_iff _ a (length u₂ + 1) (a :: u₂)).2,
         (@eq_replicate_iff _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
         constructor <;>
       simp [iff_true_intro this, or_comm]
+
+theorem Sorted.eq_of_mem_iff [IsAntisymm α r] [IsIrrefl α r] {l₁ l₂ : List α}
+    (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (h : ∀ a : α, a ∈ l₁ ↔ a ∈ l₂) : l₁ = l₂ :=
+  eq_of_perm_of_sorted ((perm_ext_iff_of_nodup h₁.nodup h₂.nodup).2 h) h₁ h₂
 
 theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ <+~ l₂)
     (hs₁ : l₁.Sorted r) (hs₂ : l₂.Sorted r) : l₁ <+ l₂ := by
   let ⟨_, h, h'⟩ := hp
   rwa [← eq_of_perm_of_sorted h (hs₂.sublist h') hs₁]
 
-@[simp 1100] -- Porting note: higher priority for linter
-theorem sorted_singleton (a : α) : Sorted r [a] :=
-  pairwise_singleton _ _
+@[simp 1100] -- Higher priority shortcut lemma.
+theorem sorted_singleton (a : α) : Sorted r [a] := by
+  simp
 
 theorem sorted_lt_range (n : ℕ) : Sorted (· < ·) (range n) := by
   rw [Sorted, pairwise_iff_get]
   simp
 
+theorem sorted_replicate (n : ℕ) (a : α) : Sorted r (replicate n a) ↔ n ≤ 1 ∨ r a a :=
+  pairwise_replicate
+
+theorem sorted_le_replicate (n : ℕ) (a : α) [Preorder α] : Sorted (· ≤ ·) (replicate n a) := by
+  simp [sorted_replicate]
+
 theorem sorted_le_range (n : ℕ) : Sorted (· ≤ ·) (range n) :=
   (sorted_lt_range n).le_of_lt
+
+lemma sorted_lt_range' (a b) {s} (hs : s ≠ 0) :
+    Sorted (· < ·) (range' a b s) := by
+  induction b generalizing a with
+  | zero => simp
+  | succ n ih =>
+    rw [List.range'_succ]
+    refine List.sorted_cons.mpr ⟨fun b hb ↦ ?_, @ih (a + s)⟩
+    exact lt_of_lt_of_le (Nat.lt_add_of_pos_right (Nat.zero_lt_of_ne_zero hs))
+      (List.left_le_of_mem_range' hb)
+
+lemma sorted_le_range' (a b s) :
+    Sorted (· ≤ ·) (range' a b s) := by
+  by_cases hs : s ≠ 0
+  · exact (sorted_lt_range' a b hs).le_of_lt
+  · rw [ne_eq, Decidable.not_not] at hs
+    simpa [hs] using sorted_le_replicate b a
 
 theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length} (hab : a < b) :
     r (l.get a) (l.get b) :=
@@ -182,6 +210,10 @@ variable [Preorder α]
 strictly monotone. -/
 @[simp] theorem sorted_lt_ofFn_iff : (ofFn f).Sorted (· < ·) ↔ StrictMono f := sorted_ofFn_iff
 
+/-- The list `List.ofFn f` is strictly sorted with respect to `(· ≥ ·)` if and only if `f` is
+strictly antitone. -/
+@[simp] theorem sorted_gt_ofFn_iff : (ofFn f).Sorted (· > ·) ↔ StrictAnti f := sorted_ofFn_iff
+
 /-- The list `List.ofFn f` is sorted with respect to `(· ≤ ·)` if and only if `f` is monotone. -/
 @[simp] theorem sorted_le_ofFn_iff : (ofFn f).Sorted (· ≤ ·) ↔ Monotone f :=
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
@@ -189,7 +221,31 @@ strictly monotone. -/
 /-- The list obtained from a monotone tuple is sorted. -/
 alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
 
+/-- The list `List.ofFn f` is sorted with respect to `(· ≥ ·)` if and only if `f` is antitone. -/
+@[simp] theorem sorted_ge_ofFn_iff : (ofFn f).Sorted (· ≥ ·) ↔ Antitone f :=
+  sorted_ofFn_iff.trans antitone_iff_forall_lt.symm
+
+/-- The list obtained from an antitone tuple is sorted. -/
+alias ⟨_, _root_.Antitone.ofFn_sorted⟩ := sorted_ge_ofFn_iff
+
 end Monotone
+
+lemma Sorted.filterMap {α β : Type*} {p : α → Option β} {l : List α}
+    {r : α → α → Prop} {r' : β → β → Prop} (hl : l.Sorted r)
+    (hp : ∀ (a b : α) (c d : β), p a = some c → p b = some d → r a b → r' c d) :
+    (l.filterMap p).Sorted r' := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    rw [List.filterMap_cons]
+    cases ha : p a with
+    | none =>
+      exact ih (List.sorted_cons.mp hl).right
+    | some b =>
+      rw [List.sorted_cons]
+      refine ⟨fun x hx ↦ ?_, ih (List.sorted_cons.mp hl).right⟩
+      obtain ⟨u, hu, hu'⟩ := List.mem_filterMap.mp hx
+      exact hp a u b x ha hu' <| (List.sorted_cons.mp hl).left u hu
 
 end List
 
@@ -424,7 +480,7 @@ theorem insertionSort_cons {a : α} {l : List α} (h : ∀ b ∈ l, r a b) :
     rw [orderedInsert_of_le]
     apply h b <| (mem_insertionSort r).1 _
     rw [hi]
-    exact mem_cons_self b m
+    exact mem_cons_self
 
 theorem map_insertionSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
     (l.insertionSort r).map f = (l.map f).insertionSort s := by
@@ -446,7 +502,7 @@ theorem Sorted.insertionSort_eq : ∀ {l : List α}, Sorted r l → insertionSor
   | [_], _ => rfl
   | a :: b :: l, h => by
     rw [insertionSort, Sorted.insertionSort_eq, orderedInsert, if_pos]
-    exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
+    exacts [rel_of_sorted_cons h _ mem_cons_self, h.tail]
 
 /-- For a reflexive relation, insert then erasing is the identity. -/
 theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
@@ -532,10 +588,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
   | [], _ => sorted_singleton a
   | b :: l, h => by
     by_cases h' : a ≼ b
-    · -- Porting note: was
-      -- `simpa [orderedInsert, h', h] using fun b' bm => trans h' (rel_of_sorted_cons h _ bm)`
-      rw [List.orderedInsert, if_pos h', sorted_cons]
-      exact ⟨forall_mem_cons.2 ⟨h', fun c hc => _root_.trans h' (rel_of_sorted_cons h _ hc)⟩, h⟩
+    · simpa [orderedInsert, h', h] using fun b' bm => _root_.trans h' (rel_of_sorted_cons h _ bm)
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm
@@ -617,10 +670,9 @@ which rather than using explicit hypotheses for transitivity and totality,
 use Mathlib order typeclasses instead.
 -/
 
-unseal merge mergeSort in
 example :
     mergeSort [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12] (fun m n => m / 10 ≤ n / 10) =
-      [5, 7, 2, 17, 12, 27, 23, 43, 95, 98, 221, 567] := rfl
+      [5, 7, 2, 17, 12, 27, 23, 43, 95, 98, 221, 567] := by simp [mergeSort]
 
 section MergeSort
 

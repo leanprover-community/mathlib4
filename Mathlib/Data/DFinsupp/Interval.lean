@@ -3,11 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.DFinsupp.BigOperators
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Finite intervals of finitely supported functions
@@ -44,7 +44,7 @@ variable [∀ i, DecidableEq (α i)]
 theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
   refine mem_map.trans ⟨?_, ?_⟩
   · rintro ⟨f, hf, rfl⟩
-    rw [Function.Embedding.coeFn_mk] -- Porting note: added to avoid heartbeat timeout
+    rw [Function.Embedding.coeFn_mk]
     refine ⟨support_mk_subset, fun i hi => ?_⟩
     convert mem_pi.1 hf i hi
     exact mk_of_mem hi

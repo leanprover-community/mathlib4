@@ -232,7 +232,6 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
   map_add' := by simp [tmul, TensorProduct.add_tmul]
   map_one' := rfl
   map_mul' a₁ a₂ := by
-    dsimp
     classical
     rw [← DirectSum.sum_support_decompose 𝒜 a₂, Finset.mul_sum]
     simp_rw [tmul, sum_tmul, map_sum, Finset.mul_sum]
@@ -324,7 +323,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
 
 @[simp]
 theorem lift_tmul (f : A →ₐ[R] C) (g : B →ₐ[R] C)
-    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ)^(j * i) • (g b * f a))
+    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ) ^ (j * i) • (g b * f a))
     (a : A) (b : B) :
     lift 𝒜 ℬ f g h_anti_commutes (a ᵍ⊗ₜ b) = f a * g b :=
   rfl

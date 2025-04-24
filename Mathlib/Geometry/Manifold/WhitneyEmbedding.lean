@@ -3,6 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.PartitionOfUnity
@@ -53,7 +54,7 @@ def embeddingPiTangent : C^∞⟮I, M; 𝓘(ℝ, ι → E × ℝ), ι → E × �
   val x i := (f i x • extChartAt I (f.c i) x, f i x)
   property :=
     contMDiff_pi_space.2 fun i =>
-      ((f i).contMDiff_smul contMDiffOn_extChartAt).prod_mk_space (f i).contMDiff
+      ((f i).contMDiff_smul contMDiffOn_extChartAt).prodMk_space (f i).contMDiff
 
 @[local simp]
 theorem embeddingPiTangent_coe :
