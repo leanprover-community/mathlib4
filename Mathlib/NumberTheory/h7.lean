@@ -1390,14 +1390,70 @@ lemma exists_nonzero_iteratedFDeriv :
   · sorry
   }
 
-
-
-
-
-
-
 def l₀ : Fin (m K) :=
   (exists_nonzero_iteratedFDeriv α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).choose
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def cρ : ℤ := abs ((c₁ K α' β' γ')^(r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq) *
   (c₁ K α' β' γ')^(2*m K * q))
@@ -1592,6 +1648,57 @@ lemma eq5 :
     --   (((η K α β hirr htriv σ hd α' β' γ' habc q u t hq0 h2mq t)))
     -- sorry
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def c₆ : ℝ := sorry
 
 def c₇ : ℝ := sorry
@@ -1614,20 +1721,22 @@ lemma eq6 :
   unfold ρ
   unfold rho
 
-  calc _ ≤ (∑ t, house (
-      ↑(η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t) *
-        sys_coeffs' α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t u)) := ?_
+  calc _ ≤ (∑ t, house (↑(η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t) *
+          sys_coeffs' α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t u)) := ?_
+
        _ ≤ (∑ t, house (algebraMap (𝓞 K) K
-         (η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t)) * house (
-        sys_coeffs' α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t u)) := ?_
+        (η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t)) *
+          house (sys_coeffs' α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t u)) := ?_
+
        _ ≤ (∑ t, (c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)) ) *
           house (sys_coeffs' α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t u)) := ?_
+
        _ ≤ (∑ t : Fin (q*q), (c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)) ) *
-           (house (a + b • β') ^ r *
-           house (α') ^ (a * l₀) *
-           house (γ') ^ (b * l₀))) := ?_
+           (house (a + b • β') ^ r * house (α') ^ (a * l₀) * house (γ') ^ (b * l₀))) := ?_
+
        _ ≤  (∑ t, house (sys_coeffs' α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t u)) *
           t * ((c₄ ^ (n K q : ℝ)) * (n K q)^ ((1/2)*(n K q +1))) * (c₆* q) ^r * (c₇)^(q : ℤ) := ?_
+
        _ ≤ c₈^r * r^( r + 3/2) := ?_
 
   · apply house_sum_le_sum_house
@@ -1653,7 +1762,25 @@ lemma eq6 :
     · unfold sys_coeffs'
       trans
       · apply house_mul_le
-      · sorry
+      · rw [mul_comm]
+        nth_rw 1 [mul_assoc]
+        have : house (↑a + b • β') ^ r * (house α' ^ (a * l₀) * house γ' ^ (b * l₀)) =
+          house γ' ^ (b * l₀) * (house (↑a + b • β') ^ r * (house α' ^ (a * l₀))) := by {
+            rw [← mul_assoc]
+            rw [mul_comm (house γ' ^ (b * l₀))]
+          }
+        rw [this]
+        apply mul_le_mul
+        · sorry
+        · trans
+          · apply house_mul_le
+          · apply mul_le_mul
+            · sorry
+            · sorry
+            · apply house_nonneg
+            · sorry
+        · apply house_nonneg
+        · sorry
     · apply house_nonneg
     · simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one]
       unfold c₄
