@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
 import Lean
-import Mathlib.Order.Defs
-import Mathlib.Tactic.Core
-import Mathlib.Tactic.GCongr.ForwardAttr
 import Batteries.Lean.Except
 import Batteries.Tactic.Exact
+import Mathlib.Tactic.Core
+import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -237,19 +237,19 @@ open Elab Tactic
 @[gcongr_forward] def exactRefl : ForwardExt where
   eval h goal := do
     let m ← mkFreshExprMVar none
-    goal.assignIfDefeq (← mkAppOptM ``Eq.subst #[h, m])
+    goal.assignIfDefEq (← mkAppOptM ``Eq.subst #[h, m])
     goal.applyRfl
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
 @[gcongr_forward] def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.assignIfDefeq (← mkAppM ``le_of_lt #[h])
+  eval h goal := do goal.assignIfDefEq (← mkAppM ``le_of_lt #[h])
 
 /-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
 @[gcongr_forward] def symmExact : ForwardExt where
-  eval h goal := do (← goal.applySymm).assignIfDefeq h
+  eval h goal := do (← goal.applySymm).assignIfDefEq h
 
 @[gcongr_forward] def exact : ForwardExt where
-  eval e m := m.assignIfDefeq e
+  eval e m := m.assignIfDefEq e
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
@@ -367,7 +367,7 @@ partial def _root_.Lean.MVarId.gcongr
   for lem in (gcongrExt.getState (← getEnv)).getD (relName, lhsHead, varyingArgs) #[] do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
-      Except.ok <$> g.apply (← mkConstWithFreshMVarLevels lem.declName)
+      Except.ok <$> withReducibleAndInstances (g.apply (← mkConstWithFreshMVarLevels lem.declName))
     catch e => pure (Except.error e)
     match gs with
     | .error e =>

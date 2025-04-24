@@ -23,7 +23,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
 namespace CategoryTheory.NormalMonoCategory
 
-variable [HasFiniteProducts C] [HasKernels C] [NormalMonoCategory C]
+variable [HasFiniteProducts C] [HasKernels C] [IsNormalMonoCategory C]
 
 /-- The pullback of two monomorphisms exists. -/
 @[irreducible, nolint defLemma] -- Porting note: changed to irreducible and a def
@@ -173,7 +173,7 @@ end CategoryTheory.NormalMonoCategory
 
 namespace CategoryTheory.NormalEpiCategory
 
-variable [HasFiniteCoproducts C] [HasCokernels C] [NormalEpiCategory C]
+variable [HasFiniteCoproducts C] [HasCokernels C] [IsNormalEpiCategory C]
 
 /-- The pushout of two epimorphisms exists. -/
 @[irreducible, nolint defLemma] -- Porting note: made a def and re-added irreducible

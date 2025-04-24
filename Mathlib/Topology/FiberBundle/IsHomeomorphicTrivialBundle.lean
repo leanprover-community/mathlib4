@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Constructions.SumProd
 
 /-!
 # Maps equivariantly-homeomorphic to projection in a product
@@ -17,6 +17,7 @@ This material was formerly linked to the main definition of fiber bundles, but a
 refactors, there is no longer a direct connection.
 -/
 
+open Topology
 
 variable {B : Type*} (F : Type*) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
   [TopologicalSpace Z]

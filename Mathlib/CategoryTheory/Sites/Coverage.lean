@@ -405,7 +405,7 @@ theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
   rw [isSheaf_coverage, isSheaf_coverage] at h
   rw [isSheaf_coverage]
   intro X R hR
-  cases' hR with hR hR
+  rcases hR with hR | hR
   · exact h.1 R hR
   · exact h.2 R hR
 

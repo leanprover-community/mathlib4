@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Yoneda
 
 /-!
 # Filtered categories and limits
@@ -17,7 +17,7 @@ Furthermore, we define the type classes `HasCofilteredLimitsOfSize` and `HasFilt
 -/
 
 
-universe w' w v u
+universe w' w w₂' w₂ v u
 
 noncomputable section
 
@@ -85,6 +85,14 @@ abbrev HasFilteredColimits := HasFilteredColimitsOfSize.{v, v} C
 
 end
 
+instance (priority := 100) hasFilteredColimitsOfSize_of_hasColimitsOfSize
+    [HasColimitsOfSize.{w', w} C] : HasFilteredColimitsOfSize.{w', w} C where
+  HasColimitsOfShape _ _ _ := inferInstance
+
+instance (priority := 100) hasCofilteredLimitsOfSize_of_hasLimitsOfSize
+    [HasLimitsOfSize.{w', w} C] : HasCofilteredLimitsOfSize.{w', w} C where
+  HasLimitsOfShape _ _ _ := inferInstance
+
 instance (priority := 100) hasLimitsOfShape_of_has_cofiltered_limits
     [HasCofilteredLimitsOfSize.{w', w} C] (I : Type w) [Category.{w'} I] [IsCofiltered I] :
     HasLimitsOfShape I C :=
@@ -94,6 +102,32 @@ instance (priority := 100) hasColimitsOfShape_of_has_filtered_colimits
     [HasFilteredColimitsOfSize.{w', w} C] (I : Type w) [Category.{w'} I] [IsFiltered I] :
     HasColimitsOfShape I C :=
   HasFilteredColimitsOfSize.HasColimitsOfShape _
+
+lemma hasCofilteredLimitsOfSize_of_univLE [UnivLE.{w, w₂}] [UnivLE.{w', w₂'}]
+    [HasCofilteredLimitsOfSize.{w₂', w₂} C] :
+    HasCofilteredLimitsOfSize.{w', w} C where
+  HasLimitsOfShape J :=
+    haveI := IsCofiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
+      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J))
+    hasLimitsOfShape_of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
+      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J)).symm
+
+lemma hasCofilteredLimitsOfSize_shrink [HasCofilteredLimitsOfSize.{max w' w₂', max w w₂} C] :
+    HasCofilteredLimitsOfSize.{w', w} C :=
+  hasCofilteredLimitsOfSize_of_univLE.{w', w, max w' w₂', max w w₂}
+
+lemma hasFilteredColimitsOfSize_of_univLE [UnivLE.{w, w₂}] [UnivLE.{w', w₂'}]
+    [HasFilteredColimitsOfSize.{w₂', w₂} C] :
+    HasFilteredColimitsOfSize.{w', w} C where
+  HasColimitsOfShape J :=
+    haveI := IsFiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
+      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J))
+    hasColimitsOfShape_of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
+      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J)).symm
+
+lemma hasFilteredColimitsOfSize_shrink [HasFilteredColimitsOfSize.{max w' w₂', max w w₂} C] :
+    HasFilteredColimitsOfSize.{w', w} C :=
+  hasFilteredColimitsOfSize_of_univLE.{w', w, max w' w₂', max w w₂}
 
 end Limits
 

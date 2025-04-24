@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Notation.Pi
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Spread
@@ -23,10 +24,7 @@ comment `--pi_instance` is inserted before all fields which were previously deri
 -/
 
 -- We enforce to only import `Algebra.Group.Defs` and basic logic
-assert_not_exists Set.range
-assert_not_exists MonoidHom
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists Set.range MonoidHom MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -42,117 +40,6 @@ variable {f : I → Type v₁} {g : I → Type v₂} {h : I → Type v₃}
 variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
-
-/-! `1`, `0`, `+`, `*`, `+ᵥ`, `•`, `^`, `-`, `⁻¹`, and `/` are defined pointwise. -/
-
-@[to_additive]
-instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
-  ⟨fun _ => 1⟩
-
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
-@[to_additive (attr := simp, nolint simpNF)]
-theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
-  rfl
-
-@[to_additive]
-theorem one_def [∀ i, One <| f i] : (1 : ∀ i, f i) = fun _ => 1 :=
-  rfl
-
-@[to_additive (attr := simp)] lemma _root_.Function.const_one [One β] : const α (1 : β) = 1 := rfl
-
-@[to_additive (attr := simp)]
-theorem one_comp [One γ] (x : α → β) : (1 : β → γ) ∘ x = 1 :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem comp_one [One β] (x : β → γ) : x ∘ (1 : α → β) = const α (x 1) :=
-  rfl
-
-@[to_additive]
-instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
-  ⟨fun f g i => f i * g i⟩
-
-@[to_additive (attr := simp)]
-theorem mul_apply [∀ i, Mul <| f i] : (x * y) i = x i * y i :=
-  rfl
-
-@[to_additive]
-theorem mul_def [∀ i, Mul <| f i] : x * y = fun i => x i * y i :=
-  rfl
-
-@[to_additive (attr := simp)]
-lemma _root_.Function.const_mul [Mul β] (a b : β) : const α a * const α b = const α (a * b) := rfl
-
-@[to_additive]
-theorem mul_comp [Mul γ] (x y : β → γ) (z : α → β) : (x * y) ∘ z = x ∘ z * y ∘ z :=
-  rfl
-
-@[to_additive]
-instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
-  ⟨fun s x => fun i => s • x i⟩
-
-@[to_additive existing instSMul]
-instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
-  ⟨fun x b i => x i ^ b⟩
-
-@[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]
-theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
-  rfl
-
-@[to_additive (attr := to_additive) (reorder := 5 6) smul_def]
-theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i => x i ^ b :=
-  rfl
-
-@[to_additive (attr := simp, to_additive) (reorder := 2 3, 5 6) smul_const]
-lemma _root_.Function.const_pow [Pow α β] (a : α) (b : β) : const I a ^ b = const I (a ^ b) := rfl
-
-@[to_additive (attr := to_additive) (reorder := 6 7) smul_comp]
-theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
-  rfl
-
--- Use `Pi.ofNat_apply` instead
-
-@[to_additive]
-instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
-  ⟨fun f i => (f i)⁻¹⟩
-
-@[to_additive (attr := simp)]
-theorem inv_apply [∀ i, Inv <| f i] : x⁻¹ i = (x i)⁻¹ :=
-  rfl
-
-@[to_additive]
-theorem inv_def [∀ i, Inv <| f i] : x⁻¹ = fun i => (x i)⁻¹ :=
-  rfl
-
-@[to_additive]
-lemma _root_.Function.const_inv [Inv β] (a : β) : (const α a)⁻¹ = const α a⁻¹ := rfl
-
-@[to_additive]
-theorem inv_comp [Inv γ] (x : β → γ) (y : α → β) : x⁻¹ ∘ y = (x ∘ y)⁻¹ :=
-  rfl
-
-@[to_additive]
-instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
-  ⟨fun f g i => f i / g i⟩
-
-@[to_additive (attr := simp)]
-theorem div_apply [∀ i, Div <| f i] : (x / y) i = x i / y i :=
-  rfl
-
-@[to_additive]
-theorem div_def [∀ i, Div <| f i] : x / y = fun i => x i / y i :=
-  rfl
-
-@[to_additive]
-theorem div_comp [Div γ] (x y : β → γ) (z : α → β) : (x / y) ∘ z = x ∘ z / y ∘ z :=
-  rfl
-
-@[to_additive (attr := simp)]
-lemma _root_.Function.const_div [Div β] (a b : β) : const α a / const α b = const α (a / b) := rfl
 
 @[to_additive]
 instance semigroup [∀ i, Semigroup (f i)] : Semigroup (∀ i, f i) where
@@ -264,11 +151,11 @@ def mulSingle (i : I) (x : f i) : ∀ (j : I), f j :=
 
 @[to_additive (attr := simp)]
 theorem mulSingle_eq_same (i : I) (x : f i) : mulSingle i x i = x :=
-  Function.update_same i x _
+  Function.update_self i x _
 
 @[to_additive (attr := simp)]
 theorem mulSingle_eq_of_ne {i i' : I} (h : i' ≠ i) (x : f i) : mulSingle i x i' = 1 :=
-  Function.update_noteq h x _
+  Function.update_of_ne h x _
 
 /-- Abbreviation for `mulSingle_eq_of_ne h.symm`, for ease of use by `simp`. -/
 @[to_additive (attr := simp)
@@ -279,6 +166,15 @@ theorem mulSingle_eq_of_ne' {i i' : I} (h : i ≠ i') (x : f i) : mulSingle i x 
 @[to_additive (attr := simp)]
 theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
   Function.update_eq_self _ _
+
+@[to_additive (attr := simp)]
+theorem mulSingle_eq_one_iff {i : I} {x : f i} : mulSingle i x = 1 ↔ x = 1 := by
+  refine ⟨fun h => ?_, fun h => h.symm ▸ mulSingle_one i⟩
+  rw [← mulSingle_eq_same i x, h, one_apply]
+
+@[to_additive]
+theorem mulSingle_ne_one_iff {i : I} {x : f i} : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
+  mulSingle_eq_one_iff.ne
 
 -- Porting note:
 -- 1) Why do I have to specify the type of `mulSingle i x` explicitly?

@@ -16,10 +16,11 @@ A regular monomorphism is a morphism that is the equalizer of some parallel pair
 We give the constructions
 * `IsSplitMono → RegularMono` and
 * `RegularMono → Mono`
+
 as well as the dual constructions for regular epimorphisms. Additionally, we give the construction
 * `RegularEpi ⟶ StrongEpi`.
 
-We also define classes `RegularMonoCategory` and `RegularEpiCategory` for categories in which
+We also define classes `IsRegularMonoCategory` and `IsRegularEpiCategory` for categories in which
 every monomorphism or epimorphism is regular, and deduce that these categories are
 `StrongMonoCategory`s resp. `StrongEpiCategory`s.
 
@@ -142,24 +143,26 @@ section
 variable (C)
 
 /-- A regular mono category is a category in which every monomorphism is regular. -/
-class RegularMonoCategory where
+class IsRegularMonoCategory : Prop where
   /-- Every monomorphism is a regular monomorphism -/
-  regularMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], RegularMono f
+  regularMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], Nonempty (RegularMono f)
+
+@[deprecated (since := "2024-11-27")] alias RegularMonoCategory := IsRegularMonoCategory
 
 end
 
 /-- In a category in which every monomorphism is regular, we can express every monomorphism as
     an equalizer. This is not an instance because it would create an instance loop. -/
-def regularMonoOfMono [RegularMonoCategory C] (f : X ⟶ Y) [Mono f] : RegularMono f :=
-  RegularMonoCategory.regularMonoOfMono _
+def regularMonoOfMono [IsRegularMonoCategory C] (f : X ⟶ Y) [Mono f] : RegularMono f :=
+  (IsRegularMonoCategory.regularMonoOfMono _).some
 
 instance (priority := 100) regularMonoCategoryOfSplitMonoCategory [SplitMonoCategory C] :
-    RegularMonoCategory C where
-  regularMonoOfMono f _ := by
+    IsRegularMonoCategory C where
+  regularMonoOfMono f _ := ⟨by
     haveI := isSplitMono_of_mono f
-    infer_instance
+    infer_instance⟩
 
-instance (priority := 100) strongMonoCategory_of_regularMonoCategory [RegularMonoCategory C] :
+instance (priority := 100) strongMonoCategory_of_regularMonoCategory [IsRegularMonoCategory C] :
     StrongMonoCategory C where
   strongMono_of_mono f _ := by
     haveI := regularMonoOfMono f
@@ -278,24 +281,26 @@ section
 variable (C)
 
 /-- A regular epi category is a category in which every epimorphism is regular. -/
-class RegularEpiCategory where
+class IsRegularEpiCategory : Prop where
   /-- Everyone epimorphism is a regular epimorphism -/
-  regularEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], RegularEpi f
+  regularEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Nonempty (RegularEpi f)
+
+@[deprecated (since := "2024-11-27")] alias RegularEpiCategory := IsRegularEpiCategory
 
 end
 
 /-- In a category in which every epimorphism is regular, we can express every epimorphism as
     a coequalizer. This is not an instance because it would create an instance loop. -/
-def regularEpiOfEpi [RegularEpiCategory C] (f : X ⟶ Y) [Epi f] : RegularEpi f :=
-  RegularEpiCategory.regularEpiOfEpi _
+def regularEpiOfEpi [IsRegularEpiCategory C] (f : X ⟶ Y) [Epi f] : RegularEpi f :=
+  (IsRegularEpiCategory.regularEpiOfEpi _).some
 
 instance (priority := 100) regularEpiCategoryOfSplitEpiCategory [SplitEpiCategory C] :
-    RegularEpiCategory C where
-  regularEpiOfEpi f _ := by
+    IsRegularEpiCategory C where
+  regularEpiOfEpi f _ := ⟨by
     haveI := isSplitEpi_of_epi f
-    infer_instance
+    infer_instance⟩
 
-instance (priority := 100) strongEpiCategory_of_regularEpiCategory [RegularEpiCategory C] :
+instance (priority := 100) strongEpiCategory_of_regularEpiCategory [IsRegularEpiCategory C] :
     StrongEpiCategory C where
   strongEpi_of_epi f _ := by
     haveI := regularEpiOfEpi f

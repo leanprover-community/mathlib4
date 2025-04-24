@@ -194,6 +194,13 @@ lemma homRestrict_precomp (α : K' ⟶ K) (ψ : K ⟶ L.extend e) :
   ext i
   simp [homRestrict_f _ _ rfl, restrictionXIso]
 
+@[reassoc]
+lemma homRestrict_comp_extendMap (ψ : K ⟶ L.extend e) (β : L ⟶ L') :
+    e.homRestrict (ψ ≫ extendMap β e) =
+      e.homRestrict ψ ≫ β := by
+  ext i
+  simp [homRestrict_f _ _ rfl, extendMap_f β e rfl]
+
 variable (K L)
 
 /-- The bijection between `K ⟶ L.extend e` and the subtype of `K.restriction e ⟶ L`

@@ -10,8 +10,7 @@ import Mathlib.Data.Bracket
 # The bracket on a group given by commutator.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 /-- The commutator of two elements `g₁` and `g₂`. -/
 instance commutatorElement {G : Type*} [Group G] : Bracket G G :=

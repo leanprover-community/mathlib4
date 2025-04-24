@@ -12,8 +12,7 @@ In this file we define `InvolutiveNeg` and `ContinuousNeg` instances for spheres
 closed balls in a semi normed group.
 -/
 
-
-open Metric Set
+open Metric Set Topology
 
 variable {E : Type*} [i : SeminormedAddCommGroup E] {r : ℝ}
 

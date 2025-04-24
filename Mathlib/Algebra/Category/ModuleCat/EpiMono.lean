@@ -24,22 +24,24 @@ namespace ModuleCat
 variable {R : Type u} [Ring R] {X Y : ModuleCat.{v} R} (f : X ⟶ Y)
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
-theorem ker_eq_bot_of_mono [Mono f] : LinearMap.ker f = ⊥ :=
-  LinearMap.ker_eq_bot_of_cancel fun u v => (@cancel_mono _ _ _ _ _ f _ (↟u) (↟v)).1
+theorem ker_eq_bot_of_mono [Mono f] : LinearMap.ker f.hom = ⊥ :=
+  LinearMap.ker_eq_bot_of_cancel fun u v h => ModuleCat.hom_ext_iff.mp <|
+    (@cancel_mono _ _ _ _ _ f _ (↟u) (↟v)).1 <| ModuleCat.hom_ext_iff.mpr h
 
-theorem range_eq_top_of_epi [Epi f] : LinearMap.range f = ⊤ :=
-  LinearMap.range_eq_top_of_cancel fun u v => (@cancel_epi _ _ _ _ _ f _ (↟u) (↟v)).1
+theorem range_eq_top_of_epi [Epi f] : LinearMap.range f.hom = ⊤ :=
+  LinearMap.range_eq_top_of_cancel fun u v h => ModuleCat.hom_ext_iff.mp <|
+    (@cancel_epi _ _ _ _ _ f _ (↟u) (↟v)).1 <| ModuleCat.hom_ext_iff.mpr h
 
-theorem mono_iff_ker_eq_bot : Mono f ↔ LinearMap.ker f = ⊥ :=
+theorem mono_iff_ker_eq_bot : Mono f ↔ LinearMap.ker f.hom = ⊥ :=
   ⟨fun _ => ker_eq_bot_of_mono _, fun hf =>
     ConcreteCategory.mono_of_injective _ <| by convert LinearMap.ker_eq_bot.1 hf⟩
 
 theorem mono_iff_injective : Mono f ↔ Function.Injective f := by
   rw [mono_iff_ker_eq_bot, LinearMap.ker_eq_bot]
 
-theorem epi_iff_range_eq_top : Epi f ↔ LinearMap.range f = ⊤ :=
+theorem epi_iff_range_eq_top : Epi f ↔ LinearMap.range f.hom = ⊤ :=
   ⟨fun _ => range_eq_top_of_epi _, fun hf =>
-    ConcreteCategory.epi_of_surjective _ <| LinearMap.range_eq_top.1 hf⟩
+    ConcreteCategory.epi_of_surjective _ <| by convert LinearMap.range_eq_top.1 hf⟩
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   rw [epi_iff_range_eq_top, LinearMap.range_eq_top]
@@ -48,20 +50,22 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
 def uniqueOfEpiZero (X) [h : Epi (0 : X ⟶ of R M)] : Unique M :=
   uniqueOfSurjectiveZero X ((ModuleCat.epi_iff_surjective _).mp h)
 
-instance mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.asHomRight U.subtype) :=
+instance mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.ofHom U.subtype) :=
   (mono_iff_ker_eq_bot _).mpr (Submodule.ker_subtype U)
 
-instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (↿U.mkQ) :=
+instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (ModuleCat.ofHom U.mkQ) :=
   (epi_iff_range_eq_top _).mpr <| Submodule.range_mkQ _
 
 instance forget_preservesEpimorphisms : (forget (ModuleCat.{v} R)).PreservesEpimorphisms where
     preserves f hf := by
-      erw [CategoryTheory.epi_iff_surjective, ← epi_iff_surjective]
+      rw [CategoryTheory.epi_iff_surjective, ConcreteCategory.forget_map_eq_coe,
+        ← epi_iff_surjective]
       exact hf
 
 instance forget_preservesMonomorphisms : (forget (ModuleCat.{v} R)).PreservesMonomorphisms where
     preserves f hf := by
-      erw [CategoryTheory.mono_iff_injective, ← mono_iff_injective]
+      rw [CategoryTheory.mono_iff_injective, ConcreteCategory.forget_map_eq_coe,
+        ← mono_iff_injective]
       exact hf
 
 end ModuleCat

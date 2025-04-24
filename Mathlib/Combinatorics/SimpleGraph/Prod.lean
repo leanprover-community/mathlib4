@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Graph products
@@ -30,8 +31,6 @@ variable {α β γ : Type*}
 
 namespace SimpleGraph
 
--- Porting note: pruned variables to keep things out of local contexts, which
--- can impact how generalization works, or what aesop does.
 variable {G : SimpleGraph α} {H : SimpleGraph β}
 
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
@@ -143,6 +142,22 @@ theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b₁
     · simp [ofBoxProdLeft_boxProdRight]
     · exact ⟨h, rfl⟩
 
+lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
+    [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
+    w.length = w.ofBoxProdLeft.length + w.ofBoxProdRight.length := by
+  match w with
+  | .nil => simp [ofBoxProdLeft, ofBoxProdRight]
+  | .cons x w' => next c =>
+    unfold ofBoxProdLeft ofBoxProdRight
+    rw [length_cons, length_boxProd w']
+    have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by aesop
+    rcases disj with h₁ | h₂
+    · simp only [h₁,irrefl, false_and, and_self, ↓reduceDIte, length_cons, Or.by_cases]
+      rw [add_comm, add_comm w'.ofBoxProdLeft.length 1, add_assoc]
+      congr <;> simp [h₁.2.symm]
+    · simp only [h₂, irrefl, false_and, ↓reduceDIte, length_cons, add_assoc, Or.by_cases]
+      congr <;> simp [h₂.2.symm]
+
 end Walk
 
 variable {G H}
@@ -213,5 +228,38 @@ theorem boxProd_degree (x : α × β)
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
   rw [degree, degree, degree, boxProd_neighborFinset, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
+
+lemma boxProd_reachable {x y : α × β} :
+    (G □ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
+  classical
+  constructor
+  · intro ⟨w⟩
+    exact ⟨⟨w.ofBoxProdLeft⟩, ⟨w.ofBoxProdRight⟩⟩
+  · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
+    exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
+
+@[simp]
+lemma boxProd_edist (x y : α × β) :
+    (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
+  classical
+  -- The case `(G □ H).edist x y = ⊤` is used twice, so better to factor it out.
+  have top_case : (G □ H).edist x y = ⊤ ↔ G.edist x.1 y.1 = ⊤ ∨ H.edist x.2 y.2 = ⊤ := by
+    simp_rw [← not_ne_iff, edist_ne_top_iff_reachable, boxProd_reachable, not_and_or]
+  by_cases h : (G □ H).edist x y = ⊤
+  · rw [top_case] at h
+    aesop
+  · have rGH : G.edist x.1 y.1 ≠ ⊤ ∧ H.edist x.2 y.2 ≠ ⊤ := by rw [top_case] at h; aesop
+    have ⟨wG, hwG⟩ := exists_walk_of_edist_ne_top rGH.1
+    have ⟨wH, hwH⟩ := exists_walk_of_edist_ne_top rGH.2
+    let w_app := (wG.boxProdLeft _ _).append (wH.boxProdRight _ _)
+    have w_len : w_app.length = wG.length + wH.length := by
+      unfold w_app Walk.boxProdLeft Walk.boxProdRight; simp
+    refine le_antisymm ?_ ?_
+    ·  calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
+          _ = wG.length + wH.length := by exact_mod_cast w_len
+          _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp only [hwG, hwH]
+    · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
+      rw [← hw, Walk.length_boxProd]
+      exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)
 
 end SimpleGraph
