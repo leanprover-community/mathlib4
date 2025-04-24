@@ -18,6 +18,9 @@ and `distribHaarChar` is a group homomorphism.
 
 ## See also
 
+`MeasureTheory.Measure.modularCharacter` for the analogous definition when the action is
+multiplicative instead of distributive.
+
 [Zulip](https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/canonical.20norm.20coming.20from.20Haar.20measure/near/480050592)
 -/
 
