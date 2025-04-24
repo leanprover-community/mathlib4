@@ -36,7 +36,7 @@ theorem isReduced_nil : IsReduced ([] : List (α × Bool)) := List.chain'_nil
 theorem isReduced_singleton {a : (α × Bool)} : IsReduced [a] := List.chain'_singleton a
 
 @[to_additive (attr := simp)]
-theorem isReduced_cons {a b: (α × Bool)} :
+theorem isReduced_cons {a b : (α × Bool)} :
     IsReduced (a :: b :: L) ↔ ¬(a.1 = b.1 ∧ (!a.2) = b.2) ∧ IsReduced (b :: L) :=
   List.chain'_cons
 
@@ -46,7 +46,7 @@ theorem IsReduced.not_step (h : IsReduced L₁) : ¬ Red.Step L₁ L₂ := fun s
   simp [IsReduced] at h
 
 @[to_additive]
-theorem isReduced_not_step_iff : IsReduced L₁ ↔ ∀ L₂, ¬ Red.Step L₁ L₂ where
+theorem isReduced_iff_not_step : IsReduced L₁ ↔ ∀ L₂, ¬ Red.Step L₁ L₂ where
   mp h _ := h.not_step
   mpr hL := by
     induction L₁ with
@@ -78,7 +78,7 @@ theorem IsReduced.cons_append {x : α × Bool} {L₁ L₂ : List (α × Bool)} (
   induction L₁ <;> simp_all
 
 @[to_additive]
-theorem IsReduced.append_chain {L₁ L₂ L₃ : List (α × Bool)} (h : L₂ ≠ [])
+theorem IsReduced.append_append {L₁ L₂ L₃ : List (α × Bool)} (h : L₂ ≠ [])
   (h₁₂ : IsReduced (L₁ ++ L₂)) (h₂₃ : IsReduced (L₂ ++ L₃)) : IsReduced (L₁ ++ L₂ ++ L₃) := by
   induction L₁
   case nil => simp [h₂₃]
