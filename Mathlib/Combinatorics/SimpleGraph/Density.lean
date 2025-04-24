@@ -37,7 +37,8 @@ namespace Rel
 
 section Asymmetric
 
-variable [LinearOrderedField 𝕜] (r : α → β → Prop) [∀ a, DecidablePred (r a)] {s s₁ s₂ : Finset α}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  (r : α → β → Prop) [∀ a, DecidablePred (r a)] {s s₁ s₂ : Finset α}
   {t t₁ t₂ : Finset β} {a : α} {b : β} {δ : 𝕜}
 
 /-- Finset of edges of a relation between two finsets of vertices. -/
@@ -90,7 +91,8 @@ section DecidableEq
 variable [DecidableEq α] [DecidableEq β]
 
 lemma interedges_eq_biUnion :
-    interedges r s t = s.biUnion fun x ↦ {y ∈ t | r x y}.map ⟨(x, ·), Prod.mk.inj_left x⟩ := by
+    interedges r s t =
+      s.biUnion fun x ↦ {y ∈ t | r x y}.map ⟨(x, ·), Prod.mk_right_injective x⟩ := by
   ext ⟨x, y⟩; simp [mem_interedges_iff]
 
 theorem interedges_biUnion_left (s : Finset ι) (t : Finset β) (f : ι → Finset α) :

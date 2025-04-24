@@ -47,6 +47,15 @@ protected def subtype : S' →ₗ[R] M where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+variable {S'} in
+@[simp]
+lemma subtype_apply (x : S') :
+    SMulMemClass.subtype S' x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (SMulMemClass.subtype S') :=
+  Subtype.coe_injective
+
 @[simp]
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
@@ -75,14 +84,18 @@ protected def subtype : p →ₗ[R] M where
   map_add' := by simp [coe_smul]
   map_smul' := by simp [coe_smul]
 
+variable {p} in
+@[simp]
 theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
+
+lemma subtype_injective :
+    Function.Injective p.subtype :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype : (Submodule.subtype p : p → M) = Subtype.val :=
   rfl
-
-@[deprecated (since := "2024-09-27")] alias coeSubtype := coe_subtype
 
 theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
@@ -135,7 +148,9 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
   rfl
 
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
-linear map M₂ → p. -/
+linear map M₂ → p.
+
+See also `LinearMap.codLift`. -/
 def codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) (h : ∀ c, f c ∈ p) : M →ₛₗ[σ₁₂] p where
   toFun c := ⟨f c, h c⟩
   map_add' _ _ := by simp
@@ -155,6 +170,31 @@ theorem comp_codRestrict (p : Submodule R₃ M₃) (h : ∀ b, g b ∈ p) :
 theorem subtype_comp_codRestrict (p : Submodule R₂ M₂) (h : ∀ b, f b ∈ p) :
     p.subtype.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
+
+section
+
+variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
+(p : M₂' →ₗ[R₂] M₂) (hp : Injective p) (h : ∀ c, f c ∈ range p)
+
+/-- A linear map `f : M → M₂` whose values lie in the image of an injective linear map
+`p : M₂' → M₂` admits a unique lift to a linear map `M → M₂'`. -/
+noncomputable def codLift :
+    M →ₛₗ[σ₁₂] M₂' where
+  toFun c := (h c).choose
+  map_add' b c := by apply hp; simp_rw [map_add, (h _).choose_spec, ← map_add, (h _).choose_spec]
+  map_smul' r c := by apply hp; simp_rw [map_smul, (h _).choose_spec, LinearMap.map_smulₛₗ]
+
+@[simp] theorem codLift_apply (x : M) :
+    (f.codLift p hp h x) = (h x).choose :=
+  rfl
+
+@[simp]
+theorem comp_codLift :
+    p.comp (f.codLift p hp h) = f := by
+  ext x
+  rw [comp_apply, codLift_apply, (h x).choose_spec]
+
+end
 
 /-- Restrict domain and codomain of a linear map. -/
 def restrict (f : M →ₗ[R] M₁) {p : Submodule R M} {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :

@@ -34,7 +34,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 2. the range of the map is locally closed
 3. the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
-class IsImmersion (f : X ⟶ Y) extends IsPreimmersion f : Prop where
+class IsImmersion (f : X ⟶ Y) : Prop extends IsPreimmersion f where
   isLocallyClosed_range : IsLocallyClosed (Set.range f.base)
 
 lemma Scheme.Hom.isLocallyClosed_range (f : X.Hom Y) [IsImmersion f] :

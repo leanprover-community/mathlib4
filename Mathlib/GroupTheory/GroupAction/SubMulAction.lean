@@ -89,8 +89,8 @@ instance (priority := 50) smul : SMul R s :=
 
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
-theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α] [SMul M N]
-    [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
+@[to_additive] theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α]
+    [SMul M N] [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
     SMulMemClass S M α :=
   { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
@@ -135,6 +135,9 @@ variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
 @[to_additive "A subset closed under the additive action inherits that action."]
 instance (priority := 50) smul' : SMul M s where
   smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
+
+instance (priority := 50) : IsScalarTower M N s where
+  smul_assoc m n x := Subtype.ext (smul_assoc m n x.1)
 
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul_of_tower (r : M) (x : s) : (↑(r • x) : α) = r • (x : α) :=
@@ -244,9 +247,14 @@ protected def subtype : p →[R] M where
   toFun := Subtype.val
   map_smul' := by simp [val_smul]
 
+variable {p} in
 @[to_additive (attr := simp)]
 theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
+
+lemma subtype_injective :
+    Function.Injective p.subtype :=
+  Subtype.coe_injective
 
 @[to_additive]
 theorem subtype_eq_val : (SubMulAction.subtype p : p → M) = Subtype.val :=
@@ -269,6 +277,15 @@ instance (priority := 75) toMulAction : MulAction R S' :=
 @[to_additive "The natural `AddActionHom` over `R` from a `SubAddAction` of `M` to `M`."]
 protected def subtype : S' →[R] M where
   toFun := Subtype.val; map_smul' _ _ := rfl
+
+variable {S'} in
+@[simp]
+lemma subtype_apply (x : S') :
+    SMulMemClass.subtype S' x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (SMulMemClass.subtype S') :=
+  Subtype.coe_injective
 
 @[to_additive (attr := simp)]
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=

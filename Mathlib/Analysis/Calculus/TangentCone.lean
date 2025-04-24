@@ -94,6 +94,7 @@ theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
   eq_univ_of_forall fun _ ↦ mem_tangentConeAt_of_pow_smul (norm_pos_iff.1 hr₀) hr <|
     Eventually.of_forall fun _ ↦ mem_univ _
 
+@[gcongr]
 theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   exact ⟨c, d, mem_of_superset ds fun n hn => h hn, ctop, clim⟩
@@ -105,6 +106,23 @@ variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 variable {x y : E} {s t : Set E}
+
+@[simp]
+theorem tangentConeAt_closure : tangentConeAt 𝕜 (closure s) x = tangentConeAt 𝕜 s x := by
+  refine Subset.antisymm ?_ (tangentCone_mono subset_closure)
+  rintro y ⟨c, d, ds, ctop, clim⟩
+  obtain ⟨u, -, u_pos, u_lim⟩ :
+      ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
+    exists_seq_strictAnti_tendsto (0 : ℝ)
+  have : ∀ᶠ n in atTop, ∃ d', x + d' ∈ s ∧ dist (c n • d n) (c n • d') < u n := by
+    filter_upwards [ctop.eventually_gt_atTop 0, ds] with n hn hns
+    rcases Metric.mem_closure_iff.mp hns (u n / ‖c n‖) (div_pos (u_pos n) hn) with ⟨y, hys, hy⟩
+    refine ⟨y - x, by simpa, ?_⟩
+    rwa [dist_smul₀, ← dist_add_left x, add_sub_cancel, ← lt_div_iff₀' hn]
+  simp only [Filter.skolem, eventually_and] at this
+  rcases this with ⟨d', hd's, hd'⟩
+  exact ⟨c, d', hd's, ctop, clim.congr_dist
+    (squeeze_zero' (.of_forall fun _ ↦ dist_nonneg) (hd'.mono fun _ ↦ le_of_lt) u_lim)⟩
 
 /-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
 the sequence `d` tends to 0 at infinity. -/
@@ -155,7 +173,7 @@ theorem subset_tangentCone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t) 
   · show ∀ᶠ n in atTop, (x, y) + (d n, d' n) ∈ s ×ˢ t
     filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
-  · apply Tendsto.prod_mk_nhds hy _
+  · apply Tendsto.prodMk_nhds hy _
     refine squeeze_zero_norm (fun n => (hd' n).2.le) ?_
     exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
 
@@ -174,7 +192,7 @@ theorem subset_tangentCone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s)
   · show ∀ᶠ n in atTop, (x, y) + (d' n, d n) ∈ s ×ˢ t
     filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
-  · apply Tendsto.prod_mk_nhds _ hy
+  · apply Tendsto.prodMk_nhds _ hy
     refine squeeze_zero_norm (fun n => (hd' n).2.le) ?_
     exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
 
@@ -386,6 +404,14 @@ variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {x y : E} {s t : Set E}
 
+@[simp]
+theorem uniqueDiffWithinAt_closure :
+    UniqueDiffWithinAt 𝕜 (closure s) x ↔ UniqueDiffWithinAt 𝕜 s x := by
+  simp [uniqueDiffWithinAt_iff]
+
+protected alias ⟨UniqueDiffWithinAt.of_closure, UniqueDiffWithinAt.closure⟩ :=
+  uniqueDiffWithinAt_closure
+
 theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 t x := by
   simp only [uniqueDiffWithinAt_iff] at *
@@ -395,6 +421,10 @@ theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : �
 theorem UniqueDiffWithinAt.mono (h : UniqueDiffWithinAt 𝕜 s x) (st : s ⊆ t) :
     UniqueDiffWithinAt 𝕜 t x :=
   h.mono_nhds <| nhdsWithin_mono _ st
+
+theorem UniqueDiffWithinAt.mono_closure (h : UniqueDiffWithinAt 𝕜 s x) (st : s ⊆ closure t) :
+    UniqueDiffWithinAt 𝕜 t x :=
+  (h.mono st).of_closure
 
 theorem uniqueDiffWithinAt_congr (st : 𝓝[s] x = 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 s x ↔ UniqueDiffWithinAt 𝕜 t x :=

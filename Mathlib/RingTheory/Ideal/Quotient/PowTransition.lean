@@ -127,14 +127,14 @@ variable {R : Type*} [CommRing R] (I : Ideal R)
 lemma Ideal.map_mk_comap_factorPow {a b : ℕ} (apos : 0 < a) (le : a ≤ b) :
     (I.map (mk (I ^ a))).comap (factorPow I le) = I.map (mk (I ^ b))  := by
   apply Ideal.map_mk_comap_factor
-  exact pow_le_self (Nat.not_eq_zero_of_lt apos)
+  exact pow_le_self (Nat.ne_zero_of_lt apos)
 
 variable {I} in
 lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}
     (h : IsUnit (factorPow I n.le_succ a)) : IsUnit a := by
   rcases isUnit_iff_exists.mp h with ⟨b, hb, _⟩
   rcases factor_surjective (pow_le_pow_right n.le_succ) b with ⟨b', hb'⟩
-  rw [← hb', ← map_one (factorPow I n.le_succ), ← _root_.map_mul] at hb
+  rw [← hb', ← map_one (factorPow I n.le_succ), ← map_mul] at hb
   apply (RingHom.sub_mem_ker_iff (factorPow I n.le_succ)).mpr at hb
   rw [factor_ker (pow_le_pow_right n.le_succ)] at hb
   rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (I ^ (n + 1)))
@@ -144,7 +144,7 @@ lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I
     _ = (a * b' - 1) * (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)) +
         (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)) := by ring
     _ = 1 := by
-      rw [← eq, mul_sub, mul_one, sub_add_sub_cancel', sub_eq_self, ← _root_.map_mul,
+      rw [← eq, mul_sub, mul_one, sub_add_sub_cancel', sub_eq_self, ← map_mul,
         Ideal.Quotient.eq_zero_iff_mem, pow_add]
       apply Ideal.mul_mem_mul hc (Ideal.mul_le_left (I := I ^ (n - 1)) _)
       simpa only [← pow_add, Nat.sub_add_cancel npos] using hc

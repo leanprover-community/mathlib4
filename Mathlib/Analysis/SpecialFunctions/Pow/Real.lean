@@ -428,15 +428,6 @@ lemma rpow_sub_intCast' (hx : 0 ≤ x) {n : ℤ} (h : y - n ≠ 0) : x ^ (y - n)
 lemma rpow_sub_natCast' (hx : 0 ≤ x) (h : y - n ≠ 0) : x ^ (y - n) = x ^ y / x ^ n := by
   rw [rpow_sub' hx h, rpow_natCast]
 
-@[deprecated (since := "2024-08-28")] alias rpow_add_int := rpow_add_intCast
-@[deprecated (since := "2024-08-28")] alias rpow_add_nat := rpow_add_natCast
-@[deprecated (since := "2024-08-28")] alias rpow_sub_int := rpow_sub_intCast
-@[deprecated (since := "2024-08-28")] alias rpow_sub_nat := rpow_sub_natCast
-@[deprecated (since := "2024-08-28")] alias rpow_add_int' := rpow_add_intCast'
-@[deprecated (since := "2024-08-28")] alias rpow_add_nat' := rpow_add_natCast'
-@[deprecated (since := "2024-08-28")] alias rpow_sub_int' := rpow_sub_intCast'
-@[deprecated (since := "2024-08-28")] alias rpow_sub_nat' := rpow_sub_natCast'
-
 theorem rpow_add_one {x : ℝ} (hx : x ≠ 0) (y : ℝ) : x ^ (y + 1) = x ^ y * x := by
   simpa using rpow_add_natCast hx y 1
 

@@ -121,7 +121,7 @@ variable [Monoid M] [MulAction M α] [Monoid N] [MulAction N β]
 theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Surjective f) {B : Set α} (hB : IsTrivialBlock B) :
     IsTrivialBlock (f '' B) := by
-  cases' hB with hB hB
+  obtain hB | hB := hB
   · apply Or.intro_left; apply Set.Subsingleton.image hB
   · apply Or.intro_right; rw [hB]
     simp only [Set.top_eq_univ, Set.image_univ, Set.range_eq_univ, hf]
@@ -130,7 +130,7 @@ theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
 theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Injective f) {B : Set β} (hB : IsTrivialBlock B) :
     IsTrivialBlock (f ⁻¹' B) := by
-  cases' hB with hB hB
+  obtain hB | hB := hB
   · apply Or.intro_left; exact Set.Subsingleton.preimage hB hf
   · apply Or.intro_right; simp only [hB, Set.top_eq_univ]; apply Set.preimage_univ
 
@@ -349,10 +349,8 @@ lemma IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
   exact (hB <| ne_of_apply_ne _ hg).preimage _
 
 @[to_additive]
-theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
-    {φ : G →* H} (j : X →ₑ[φ] Y)
-    (hφ : Function.Surjective φ) (hj : Function.Injective j)
-    (hB : IsBlock G B) :
+theorem IsBlock.image {H Y : Type*} [SMul H Y] {φ : G → H} (j : X →ₑ[φ] Y)
+    (hφ : Function.Surjective φ) (hj : Function.Injective j) (hB : IsBlock G B) :
     IsBlock H (j '' B) := by
   simp only [IsBlock, hφ.forall, ← image_smul_setₛₗ]
   exact fun g₁ g₂ hg ↦ disjoint_image_of_injective hj <| hB <| ne_of_apply_ne _ hg

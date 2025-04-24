@@ -81,8 +81,9 @@ section Ring
 variable [Ring R] (S : Sequence R)
 
 /-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
-protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.range S) = ⊤ :=
-  eq_top_iff'.mpr fun P ↦ by
+protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.range S) = ⊤ := by
+  rw [eq_top_iff']
+  intro P
   -- we proceed via strong induction on the degree `n`, after getting the 0 polynomial done
   nontriviality R using Subsingleton.eq_zero P
   generalize hp : P.natDegree = n
@@ -114,7 +115,7 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
       ih tail.natDegree (natDegree_lt_iff_degree_lt tail_eq_zero |>.mpr ?_) _ rfl
     -- first we want that `P` and `head` have the same degree
     have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
-      simpa [leadingCoeff_smul_of_smul_regular _ <| IsSMulRegular.of_mul_eq_one leftinv, rightinv]
+      simpa [leadingCoeff_smul_of_smul_regular, IsSMulRegular.of_mul_eq_one leftinv, rightinv]
         using isRegular_one.right
     have u_degree_same := degree_smul_of_isRightRegular_leadingCoeff
       (left_ne_zero_of_mul_eq_one rightinv) (hCoeff n).isRegular.right
