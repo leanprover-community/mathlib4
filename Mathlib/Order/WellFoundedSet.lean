@@ -680,7 +680,8 @@ namespace Set.PartiallyWellOrderedOn
 variable {r : α → α → Prop}
 
 theorem bddAbove_preimage (s : Set α) (hs : s.PartiallyWellOrderedOn r) (f : ℕ → α)
-    (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) : BddAbove (s.preimage f) := by
+    (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
+    BddAbove (s.preimage f) := by
   contrapose! hf
   rw [not_bddAbove_iff] at hf
   obtain ⟨φ, hφm, hφs⟩ := Nat.exists_strictMono_subsequence
@@ -690,8 +691,8 @@ theorem bddAbove_preimage (s : Set α) (hs : s.PartiallyWellOrderedOn r) (f : �
   use (φ m), (φ n)
   exact ⟨hφm hmn, hr⟩
 
-theorem exists_not_mem_of_gt (r : α → α → Prop) (s : Set α)
-    (hs : s.PartiallyWellOrderedOn r) (f : ℕ → α) (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
+theorem exists_not_mem_of_gt (s : Set α) (hs : s.PartiallyWellOrderedOn r) (f : ℕ → α)
+    (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
     ∃ k : ℕ, ∀ m, k < m → ¬ (f m) ∈ s := by
   have := bddAbove_preimage s hs f hf
   contrapose! this

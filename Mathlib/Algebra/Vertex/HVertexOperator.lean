@@ -409,7 +409,7 @@ theorem exists_binomialPow_smul_support_bound {g g' : Γ} (g₁ : Γ₁) (h : g 
     (A : HVertexOperator Γ₁ R V W) (v : V) :
     ∃ (k : ℕ), ∀ (m : ℕ) (_ : k < m),
       (-(n • g) - m • (g' - g)) +ᵥ g₁ ∉ ((HahnModule.of R).symm (A v)).support :=
-  Set.PartiallyWellOrderedOn.exists_not_mem_of_gt (· ≤ ·) ((HahnModule.of R).symm (A v)).support
+  Set.PartiallyWellOrderedOn.exists_not_mem_of_gt ((HahnModule.of R).symm (A v)).support
     ((HahnModule.of R).symm (A v)).isPWO_support (fun k ↦ ((-(n • g) - k • (g' - g)) +ᵥ g₁))
     fun _ _ hkl ↦ not_le_of_lt <| VAdd.vadd_lt_vadd_of_lt_of_le
       (sub_lt_sub_left (nsmul_lt_nsmul_left (sub_pos.mpr h) hkl) (-(n • g))) <| Preorder.le_refl g₁
@@ -573,19 +573,82 @@ theorem subLeft_smul_eq_subRight_smul (A B : HVertexOperator (ℤ ×ₗ ℤ) R V
 
 end Binomial
 
-/-! A heterogeneous state-field map is a linear map from a vector space `U` to the space of
+section HStateField
+
+variable (Γ R U₀ U₁ U₂ V W : Type*) [CommRing R] [AddCommGroup U₀] [Module R U₀] [AddCommGroup U₁]
+[Module R U₁] [AddCommGroup U₂] [Module R U₂] [AddCommGroup V] [Module R V] [AddCommGroup W]
+[Module R W]
+
+/-- A heterogeneous state-field map is a linear map from a vector space `U` to the space of
 heterogeneous fields (or vertex operators) from `V` to `W`.  Equivalently, it is a bilinear map
 `U →ₗ[R] V →ₗ[R] HahnModule Γ R W`.  When `Γ = ℤ` and `U = V = W`, then the multiplication map in a
 vertex algebra has this form, but in other cases, we use this for module structures and intertwining
 operators. -/
+abbrev HStateFieldMap [PartialOrder Γ] := U₀ →ₗ[R] HVertexOperator Γ R V W
+
+/-!
+theorem CompLeftAuxPWO [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
+    (M : HahnModule Γ₁ R V) (u₂ : U₂) :
+    (fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm
+      (Y₁ (M.coeff g.1) u₂)).coeff g.2).support.IsPWO := by
+  refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
+  ·
+
+def CompLeftAux [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
+    (M : HahnModule Γ₁ R V) : HVertexOperator (Γ₁ ×ₗ Γ) R U₂ W where
+  toFun u₂ := (HahnModule.of R)
+    ⟨fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm (Y₁ (M.coeff g.1) u₂)).coeff g.2, by sorry⟩
+  map_add' _ _ := by
+    ext _
+    simp
+  map_smul' _ _ := by
+    ext _
+    simp
+
+def CompLeft [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
+    (Y₂ : HStateFieldMap Γ₁ R U₀ U₁ V) :
+    U₀ →ₗ[R] U₁ →ₗ[R] U₂ →ₗ[R] HahnModule (Γ₁ ×ₗ Γ) R W where
+  toFun u₀ :=
+  {
+    toFun := fun u₁ ↦ (CompLeftAux Γ R U₂ V W Y₁ (Y₂ u₀ u₁))
+    map_add' x y := by
+      ext
+      simp
+      sorry
+    map_smul' r x := by
+      ext
+      simp
+      sorry
+  }
+  map_add' x y := by
+    ext
+    simp
+    sorry
+  map_smul' r x := by
+    ext
+    simp
+    sorry
+
+CompRight `Y₁(u₀,x)Y₂(u₁,y)u₂` so `Y₁ : HStateFieldMap Γ R U₀ V W` and
+`Y₂ : HStateFieldMap Γ' R U₁ U₂ V`
+For each `u₀`, get a linear map `V → HahnModule
+CompLeft: `Y₁(Y₂(u₀,x)u₁,y)u₂` so `Y₁ : HStateFieldMap R V U₂ W` and `Y₂ : HStateFieldMap R U₀ U₁ V`
+For each `u₀`, have a linear map `U₁ → HahnModule Γ R V`. Send the coefficients to `Y₁` to get
+linear maps `U₂ → HahnModule Γ₁ R W`.
+
+
+-/
+
+end HStateField
 
 -- Can I just use `curry` to say this is a HVertexOperator Γ R (U ⊗[R] V) W?  So, the multiplication
 -- in a vertex algebra is just HVertexOperator ℤ R (V ⊗[R] V) V?
--- Then composition is easier.
+-- Then composition is easier, but tensor products slow everything down.
 
 open TensorProduct
 
 variable [CommRing R] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+
 /-- The standard equivalence between heterogeneous state field maps and heterogeneous vertex
 operators on the tensor product. May be unnecessary. -/
 def uncurry [PartialOrder Γ] [AddCommGroup U] [Module R U] :
