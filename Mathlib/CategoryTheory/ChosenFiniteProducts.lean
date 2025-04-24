@@ -21,6 +21,19 @@ Given a category with such an instance, we also provide the associated
 symmetric monoidal structure so that one can write `X ⊗ Y` for the explicit
 binary product and `𝟙_ C` for the explicit terminal object.
 
+## Implementation notes
+
+For cartesian monoidal categories, the oplax-monoidal/monoidal/braided structure of a functor `F`
+preserving finite products is uniquely determined. See the `ofChosenFiniteProducts` declarations.
+
+We however develop the theory for any `F.OplaxMonoidal`/`F.Monoidal`/`F.Braided` instance instead of
+requiring it to be the `ofChosenFiniteProducts` one. This is to avoid diamonds: Consider
+eg `𝟭 C` and `F ⋙ G`.
+
+In applications requiring a finite preserving functor to be oplax-monoidal/monoidal/braided,
+avoid `attribute [local instance] ofChosenFiniteProducts` but instead turn on the corresponding
+`ofChosenFiniteProducts` declaration for that functor only.
+
 # Projects
 
 - Construct an instance of chosen finite products in the category of affine scheme, using
