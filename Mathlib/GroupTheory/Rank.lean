@@ -10,6 +10,11 @@ import Mathlib.SetTheory.Cardinal.Finite
 # Rank of a group
 
 This file defines the rank of a group, namely the minimum size of a generating set.
+
+## TODO
+
+Should we define `erank G : ℕ∞` the rank of a not necessarily finitely generated group `G`,
+then redefine `rank G` as `(erank G).toNat`?
 -/
 
 open Function Group
