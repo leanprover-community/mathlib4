@@ -38,7 +38,7 @@ measures `μ : Measure A`, set `s : Set A` and `g : G`. -/
 @[simps -isSimp]
 noncomputable def distribHaarChar : G →* ℝ≥0 :=
   letI := borel A
-  have : BorelSpace A := ⟨rfl⟩
+  haveI : BorelSpace A := ⟨rfl⟩
   {
     toFun g := addHaarScalarFactor (DomMulAct.mk g • addHaar) (addHaar (G := A))
     map_one' := by simp
