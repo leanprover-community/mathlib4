@@ -785,7 +785,7 @@ protected theorem snd {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (�
   (quasiMeasurePreserving_snd (μ := ν) (ν := τ)).comp hf
 
 @[fun_prop]
-protected theorem prod_map {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure ω}
+protected theorem prodMap {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure ω}
     [SFinite μ] [SFinite τ] [SFinite υ] {f : α → β} {g : γ → ω}
     (hf : QuasiMeasurePreserving f μ ν) (hg : QuasiMeasurePreserving g τ υ) :
     QuasiMeasurePreserving (Prod.map f g) (μ.prod τ) (ν.prod υ) := by
