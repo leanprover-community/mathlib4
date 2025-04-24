@@ -856,9 +856,6 @@ theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).base := by
     TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_isIso_comp]
   exact .sigmaMk
 
-@[deprecated (since := "2024-10-18")]
-alias sigma_ι_openEmbedding := sigma_ι_isOpenEmbedding
-
 theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.obj i)) :
     (Opens.map (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) j).base).obj
         ((Opens.map (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv.base).obj

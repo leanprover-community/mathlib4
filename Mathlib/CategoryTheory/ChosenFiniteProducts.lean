@@ -597,14 +597,14 @@ end ChosenFiniteProductsComparison
 
 open Limits
 
-variable {P : C → Prop}
+variable {P : ObjectProperty C}
 
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a cartesian-monoidal category along an object property that's closed under
 finite products is cartesian-monoidal. -/
 noncomputable def fullSubcategory (hP₀ : ClosedUnderLimitsOfShape (Discrete PEmpty) P)
     (hP₂ : ClosedUnderLimitsOfShape (Discrete WalkingPair) P) :
-    ChosenFiniteProducts (FullSubcategory P) where
+    ChosenFiniteProducts P.FullSubcategory where
   product X Y := {
     cone := BinaryFan.mk
       (P := ⟨X.1 ⊗ Y.1, hP₂ (product X.obj Y.obj).isLimit <| by rintro ⟨_ | _⟩ <;> simp [X.2, Y.2]⟩)
@@ -614,7 +614,7 @@ noncomputable def fullSubcategory (hP₀ : ClosedUnderLimitsOfShape (Discrete PE
       (by rintro T f g m rfl rfl; symm; exact lift_comp_fst_snd _)
   }
   terminal.cone := asEmptyCone ⟨𝟙_ C, hP₀ terminal.isLimit <| by simp⟩
-  terminal.isLimit := IsTerminal.isTerminalOfObj (fullSubcategoryInclusion _) _ <| .ofUnique (𝟙_ C)
+  terminal.isLimit := IsTerminal.isTerminalOfObj P.ι _ <| .ofUnique (𝟙_ C)
 
 end ChosenFiniteProducts
 
