@@ -35,12 +35,20 @@ variable {X : Type*} [MeasurableSpace X]
 
 noncomputable def supOuterMeasure : OuterMeasure X where
   measureOf (s : Set X) :=
-    ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint s) ∧
-                            ⋃ n, E' n = s}, ∑' n, ENNReal.ofReal ‖μ (E n)‖
+    ⨅ t ∈ {t' : Set X | MeasurableSet t' ∧ s ⊆ t'},
+      ⨆ E ∈ {E' : ℕ → Set X | Pairwise (Function.onFun Disjoint s) ∧
+             ⋃ n, E' n = t},
+      ∑' n, ENNReal.ofReal ‖μ (E n)‖
   empty := by
-    simp only [Set.iUnion_eq_empty, Set.mem_setOf_eq, iSup_eq_zero, ENNReal.tsum_eq_zero, and_imp]
-    intro E hE hEP hEempty n
-    simp [hEempty n]
+    simp only [Set.empty_subset, and_true, Set.mem_setOf_eq]
+    apply le_antisymm
+    · apply le_trans (biInf_le _ MeasurableSet.empty)
+      simp only [Set.iUnion_eq_empty, nonpos_iff_eq_zero, iSup_eq_zero, ENNReal.tsum_eq_zero,
+        and_imp]
+      intro E hE hEempty n
+      rw [hEempty n]
+      simp
+    · simp
   mono := sorry
   iUnion_nat := sorry
 
