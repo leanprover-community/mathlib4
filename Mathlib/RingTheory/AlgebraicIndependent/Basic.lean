@@ -296,7 +296,6 @@ lemma IsTranscendenceBasis.of_comp {x : ι → A} (f : A →ₐ[R] A') (h : Func
     IsTranscendenceBasis R x := by
   refine ⟨(AlgHom.algebraicIndependent_iff f h).mp H.1, ?_⟩
   intro s hs hs'
-  have := (algebraicIndependent_image h.injOn).mp ((AlgHom.algebraicIndependent_iff f h).mpr hs)
   have := H.2 (f '' s)
     ((algebraicIndependent_image h.injOn).mp ((AlgHom.algebraicIndependent_iff f h).mpr hs))
     (by rw [Set.range_comp]; exact Set.image_mono hs')
