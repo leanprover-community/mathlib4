@@ -120,3 +120,5 @@ def coneEquiv {X : C} (K : J ⥤ Over X) : Cone K ≌ Cone (liftFromOver.obj K) 
   })
 
 end CategoryTheory.Limits.WithTerminal
+
+-- TODO The analogous theorems for WithInitial and Cocone
