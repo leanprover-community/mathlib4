@@ -214,7 +214,7 @@ theorem exists_seq_tendsto_sSup {α : Type*} [ConditionallyCompleteLinearOrder �
   rcases (isLUB_csSup hS hS').exists_seq_monotone_tendsto hS with ⟨u, hu⟩
   exact ⟨u, hu.1, hu.2.2⟩
 
-theorem Dense.exists_seq_strictMono_tendsto' [DenselyOrdered α] [FirstCountableTopology α]
+theorem Dense.exists_seq_strictMono_tendsto_of_lt [DenselyOrdered α] [FirstCountableTopology α]
     {s : Set α} (hs : Dense s) {x y : α} (hy : y < x) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ (Ioo y x ∩ s)) ∧ Tendsto u atTop (𝓝 x) := by
   have hnonempty : (Ioo y x ∩ s).Nonempty := by
@@ -228,8 +228,30 @@ theorem Dense.exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α]
     [FirstCountableTopology α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ (Iio x ∩ s)) ∧ Tendsto u atTop (𝓝 x) := by
   obtain ⟨y, hy⟩ := exists_lt x
-  apply hs.exists_seq_strictMono_tendsto' (exists_lt x).choose_spec |>.imp
+  apply hs.exists_seq_strictMono_tendsto_of_lt (exists_lt x).choose_spec |>.imp
   aesop
+
+theorem DenseRange.exists_seq_strictMono_tendsto_of_lt {β : Type*} [LinearOrder β]
+    [DenselyOrdered α] [FirstCountableTopology α] {f : β → α} {x y : α} (hf : DenseRange f)
+    (hmono : Monotone f) (hlt : y < x) :
+    ∃ u : ℕ → β, StrictMono u ∧ (∀ n, f (u n) ∈ Ioo y x) ∧ Tendsto (f ∘ u) atTop (𝓝 x) := by
+  rcases Dense.exists_seq_strictMono_tendsto_of_lt hf hlt with ⟨u, hu, huyxf, hlim⟩
+  have huyx (n : ℕ) : u n ∈ Ioo y x := (huyxf n).1
+  have huf (n : ℕ) : u n ∈ range f := (huyxf n).2
+  choose v hv using huf
+  obtain rfl : f ∘ v = u := funext hv
+  exact ⟨v, fun a b hlt ↦ hmono.reflect_lt <| hu hlt, huyx, hlim⟩
+
+theorem DenseRange.exists_seq_strictMono_tendsto {β : Type*} [LinearOrder β] [DenselyOrdered α]
+    [NoMinOrder α] [FirstCountableTopology α] {f : β → α} (hf : DenseRange f) (hmono : Monotone f)
+    (x : α):
+    ∃ u : ℕ → β, StrictMono u ∧ (∀ n, f (u n) ∈ Iio x) ∧ Tendsto (f ∘ u) atTop (𝓝 x) := by
+  rcases Dense.exists_seq_strictMono_tendsto hf x with ⟨u, hu, huxf, hlim⟩
+  have hux (n : ℕ) : u n ∈ Iio x := (huxf n).1
+  have huf (n : ℕ) : u n ∈ range f := (huxf n).2
+  choose v hv using huf
+  obtain rfl : f ∘ v = u := funext hv
+  exact ⟨v, fun a b hlt ↦ hmono.reflect_lt <| hu hlt, hux, hlim⟩
 
 theorem IsGLB.exists_seq_strictAnti_tendsto_of_not_mem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsGLB t x) (not_mem : x ∉ t) (ht : t.Nonempty) :
@@ -269,14 +291,27 @@ theorem exists_seq_tendsto_sInf {α : Type*} [ConditionallyCompleteLinearOrder �
     (hS' : BddBelow S) : ∃ u : ℕ → α, Antitone u ∧ Tendsto u atTop (𝓝 (sInf S)) ∧ ∀ n, u n ∈ S :=
   exists_seq_tendsto_sSup (α := αᵒᵈ) hS hS'
 
-theorem Dense.exists_seq_strictAnti_tendsto' [DenselyOrdered α] [FirstCountableTopology α]
+theorem Dense.exists_seq_strictAnti_tendsto_of_lt [DenselyOrdered α] [FirstCountableTopology α]
     {s : Set α} (hs : Dense s) {x y : α} (hy : x < y) :
     ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, u n ∈ (Ioo x y ∩ s)) ∧ Tendsto u atTop (𝓝 x) := by
-  simpa using hs.exists_seq_strictMono_tendsto' (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
+  simpa using hs.exists_seq_strictMono_tendsto_of_lt (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
 
 theorem Dense.exists_seq_strictAnti_tendsto [DenselyOrdered α] [NoMaxOrder α]
     [FirstCountableTopology α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, u n ∈ (Ioi x ∩ s)) ∧ Tendsto u atTop (𝓝 x) :=
   hs.exists_seq_strictMono_tendsto (α := αᵒᵈ) x
+
+theorem DenseRange.exists_seq_strictAnti_tendsto_of_lt {β : Type*} [LinearOrder β]
+    [DenselyOrdered α] [FirstCountableTopology α] {f : β → α} {x y : α} (hf : DenseRange f)
+    (hmono : Monotone f) (hlt : x < y) :
+    ∃ u : ℕ → β, StrictAnti u ∧ (∀ n, f (u n) ∈ Ioo x y) ∧ Tendsto (f ∘ u) atTop (𝓝 x) := by
+  simpa using hf.exists_seq_strictMono_tendsto_of_lt (α := αᵒᵈ) (β := βᵒᵈ) hmono.dual
+    (OrderDual.toDual_lt_toDual.2 hlt)
+
+theorem DenseRange.exists_seq_strictAnti_tendsto {β : Type*} [LinearOrder β] [DenselyOrdered α]
+    [NoMaxOrder α] [FirstCountableTopology α] {f : β → α} (hf : DenseRange f) (hmono : Monotone f)
+    (x : α):
+    ∃ u : ℕ → β, StrictAnti u ∧ (∀ n, f (u n) ∈ Ioi x) ∧ Tendsto (f ∘ u) atTop (𝓝 x) :=
+  hf.exists_seq_strictMono_tendsto (α := αᵒᵈ) (β := βᵒᵈ) hmono.dual x
 
 end OrderTopology
