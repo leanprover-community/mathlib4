@@ -204,11 +204,12 @@ end AddMonoidWithOne
 
 section CommRing
 
-#adaptation_note /-- 2025-04-19 `IsCharP` has `n` as an outparam, but `CharP` does not. -/
-set_option synthInstance.checkSynthOrder false in
-instance (α : Type*) [CommRing α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
-  ofNat_eq_zero_iff m := by
-    rw [CommRing.toGrindCommRing_ofNat]
-    simpa [← Nat.dvd_iff_mod_eq_zero] using CharP.cast_eq_zero_iff α n m
+#adaptation_note /-- 2025-04-24 Restore this after restoring the instances in Ring.Defs. -/
+-- #adaptation_note /-- 2025-04-19 `IsCharP` has `n` as an outparam, but `CharP` does not. -/
+-- set_option synthInstance.checkSynthOrder false in
+-- instance (α : Type*) [CommRing α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
+--   ofNat_eq_zero_iff m := by
+--     rw [CommRing.toGrindCommRing_ofNat]
+--     simpa [← Nat.dvd_iff_mod_eq_zero] using CharP.cast_eq_zero_iff α n m
 
 end CommRing

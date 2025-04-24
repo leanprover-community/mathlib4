@@ -9,7 +9,6 @@ import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
 import Mathlib.Tactic.StacksAttribute
-import Mathlib.Tactic.Convert
 
 /-!
 # Semirings and rings
