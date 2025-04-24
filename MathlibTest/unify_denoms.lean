@@ -21,7 +21,7 @@ example (n : ℕ) : ∑ i ∈ Icc 0 n, i ^ 2   = (n  * (n + 1) * (2* n + 1)) / 6
     unify_denoms
     ring_nf
 
-example  (a b : ℤ ) (h : a ≠ b): (a ^ 3 - b ^ 3) / (a - b) = a ^ 2 + a * b + b ^ 2 := by
+example  (a b : ℤ ) (h : a ≠ b): (a ^  3 - b ^ 3) / (a - b) = a ^ 2 + a * b + b ^ 2 := by
   unify_denoms!
   ring
   use a ^ 2 + a * b + b ^ 2
