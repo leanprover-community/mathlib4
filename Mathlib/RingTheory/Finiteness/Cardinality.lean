@@ -44,9 +44,6 @@ lemma _root_.Module.finite_of_finite [Finite R] [Module.Finite R M] : Finite M :
 
 variable {R}
 
-@[deprecated (since := "2024-10-13")]
-alias _root_.FiniteDimensional.finite_of_finite := finite_of_finite
-
 /-- A finite dimensional vector space over a finite field is finite -/
 @[deprecated (since := "2024-10-22")]
 alias _root_.FiniteDimensional.fintypeOfFintype := finite_of_finite

@@ -526,19 +526,14 @@ def insertIdx (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :
     rw [List.length_insertIdx, v.2]
     split <;> omega⟩
 
-@[deprecated (since := "2024-10-21")] alias insertNth := insertIdx
-
 theorem insertIdx_val {i : Fin (n + 1)} {v : Vector α n} :
     (v.insertIdx a i).val = v.val.insertIdx i.1 a :=
   rfl
-
-@[deprecated (since := "2024-10-21")] alias insertNth_val := insertIdx_val
 
 @[simp]
 theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v.val.eraseIdx i
   | _ => rfl
 
-@[deprecated (since := "2024-10-21")] alias eraseNth_val := eraseIdx_val
 theorem eraseIdx_insertIdx {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
   Subtype.eq (List.eraseIdx_insertIdx ..)
@@ -574,8 +569,6 @@ theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     · assumption
     · rw [hl]
       exact Nat.le_of_succ_le_succ j.2
-
-@[deprecated (since := "2024-10-21")] alias insertNth_comm := insertIdx_comm
 
 end InsertIdx
 
