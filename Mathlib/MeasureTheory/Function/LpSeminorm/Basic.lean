@@ -848,7 +848,7 @@ lemma eLpNorm_smul_measure_of_ne_top' (hp : p ≠ ∞) (c : ℝ≥0) (f : α →
   refine (eLpNorm_smul_measure_of_ne_top hp ..).trans ?_
   simp [ENNReal.smul_def, ENNReal.coe_rpow_of_nonneg, this]
 
-theorem eLpNorm_one_smul_measure {f : α → F} (c : ℝ≥0∞) :
+theorem eLpNorm_one_smul_measure {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm f 1 (c • μ) = c * eLpNorm f 1 μ := by
   rw [eLpNorm_smul_measure_of_ne_top] <;> simp
 
@@ -866,7 +866,7 @@ theorem MemLp.of_measure_le_smul {ε} [TopologicalSpace ε] [ENormedAddMonoid ε
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.of_measure_le_smul := MemLp.of_measure_le_smul
 
-theorem MemLp.smul_measure {c : ℝ≥0∞}
+theorem MemLp.smul_measure {ε} [TopologicalSpace ε] [ENormedAddMonoid ε] {f : α → ε} {c : ℝ≥0∞}
     (hf : MemLp f p μ) (hc : c ≠ ∞) : MemLp f p (c • μ) :=
   hf.of_measure_le_smul hc le_rfl
 
