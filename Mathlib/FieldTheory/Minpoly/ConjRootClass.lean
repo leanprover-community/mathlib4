@@ -190,7 +190,7 @@ theorem carrier_eq_mk_aroots_minpoly (c : ConjRootClass K L) [Fintype c.carrier]
   simp only [aroots_minpoly_eq_carrier_val]
 
 theorem minpoly.map_eq_prod [Normal K L] (c : ConjRootClass K L) [Fintype c.carrier] :
-    c.minpoly.map (algebraMap K L) = ∏ x in c.carrier.toFinset, (X - C x) := by
+    c.minpoly.map (algebraMap K L) = ∏ x ∈ c.carrier.toFinset, (X - C x) := by
   classical
   simp_rw [← rootSet_minpoly_eq_carrier, Finset.prod_eq_multiset_prod, rootSet_def,
     Finset.toFinset_coe, Multiset.toFinset_val]
