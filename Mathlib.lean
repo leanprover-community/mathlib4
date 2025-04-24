@@ -514,6 +514,7 @@ import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Algebra.Homology.Factorizations.Basic
 import Mathlib.Algebra.Homology.Functor
+import Mathlib.Algebra.Homology.GrothendieckAbelian
 import Mathlib.Algebra.Homology.HasNoLoop
 import Mathlib.Algebra.Homology.HomologicalBicomplex
 import Mathlib.Algebra.Homology.HomologicalComplex
@@ -3428,6 +3429,7 @@ import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 import Mathlib.Dynamics.TopologicalEntropy.Semiconj
+import Mathlib.Dynamics.TopologicalEntropy.Subset
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.FieldTheory.AlgebraicClosure
