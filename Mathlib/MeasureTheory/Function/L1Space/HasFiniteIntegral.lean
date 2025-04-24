@@ -237,13 +237,11 @@ theorem hasFiniteIntegral_zero_measure {m : MeasurableSpace α} (f : α → ε) 
     HasFiniteIntegral f (0 : Measure α) := by
   simp only [HasFiniteIntegral, lintegral_zero_measure, zero_lt_top]
 
-variable (α β μ)
-
+variable (α μ) in
 @[simp]
-theorem hasFiniteIntegral_zero : HasFiniteIntegral (fun _ : α => (0 : β)) μ := by
+theorem hasFiniteIntegral_zero {ε} [TopologicalSpace ε] [ENormedAddMonoid ε] :
+    HasFiniteIntegral (fun _ : α => (0 : ε)) μ := by
   simp [hasFiniteIntegral_iff_enorm]
-
-variable {α β μ}
 
 theorem HasFiniteIntegral.neg {f : α → β} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (-f) μ := by simpa [hasFiniteIntegral_iff_enorm] using hfi
@@ -255,9 +253,16 @@ theorem hasFiniteIntegral_neg_iff {f : α → β} : HasFiniteIntegral (-f) μ �
 theorem HasFiniteIntegral.norm {f : α → β} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => ‖f a‖) μ := by simpa [hasFiniteIntegral_iff_enorm] using hfi
 
+theorem HasFiniteIntegral.enorm {f : α → ε} (hfi : HasFiniteIntegral f μ) :
+    HasFiniteIntegral (fun a => ‖f a‖ₑ) μ := by simpa [hasFiniteIntegral_iff_enorm] using hfi
+
 theorem hasFiniteIntegral_norm_iff (f : α → β) :
     HasFiniteIntegral (fun a => ‖f a‖) μ ↔ HasFiniteIntegral f μ :=
   hasFiniteIntegral_congr' <| Eventually.of_forall fun x => norm_norm (f x)
+
+theorem hasFiniteIntegral_enorm_iff (f : α → ε) :
+    HasFiniteIntegral (fun a => ‖f a‖ₑ) μ ↔ HasFiniteIntegral f μ :=
+  hasFiniteIntegral_congre' <| Eventually.of_forall fun x => enorm_enorm (f x)
 
 theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
     HasFiniteIntegral (fun x ↦ (f x).toReal) μ := by
@@ -284,6 +289,8 @@ theorem isFiniteMeasure_withDensity_ofReal {f : α → ℝ} (hfi : HasFiniteInte
 section DominatedConvergence
 
 variable {F : ℕ → α → β} {f : α → β} {bound : α → ℝ}
+  {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  {F' : ℕ → α → ε} {f' : α → ε} {bound' : α → ℝ≥0∞}
 
 theorem all_ae_ofReal_F_le_bound (h : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a) :
     ∀ n, ∀ᵐ a ∂μ, ENNReal.ofReal ‖F n a‖ ≤ ENNReal.ofReal (bound a) := fun n =>
@@ -292,6 +299,10 @@ theorem all_ae_ofReal_F_le_bound (h : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bou
 theorem all_ae_tendsto_ofReal_norm (h : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop <| 𝓝 <| f a) :
     ∀ᵐ a ∂μ, Tendsto (fun n => ENNReal.ofReal ‖F n a‖) atTop <| 𝓝 <| ENNReal.ofReal ‖f a‖ :=
   h.mono fun _ h => tendsto_ofReal <| Tendsto.comp (Continuous.tendsto continuous_norm _) h
+
+theorem all_ae_tendsto_ofReal_norm' (h : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop <| 𝓝 <| f' a) :
+    ∀ᵐ a ∂μ, Tendsto (fun n ↦ ‖F' n a‖ₑ) atTop <| 𝓝 <| ‖f' a‖ₑ :=
+  h.mono fun _ h ↦ Tendsto.comp (Continuous.tendsto continuous_enorm _) h
 
 theorem all_ae_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
@@ -302,7 +313,15 @@ theorem all_ae_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ �
   intro a tendsto_norm F_le_bound
   exact le_of_tendsto' tendsto_norm F_le_bound
 
-theorem hasFiniteIntegral_of_dominated_convergence {F : ℕ → α → β} {f : α → β} {bound : α → ℝ}
+theorem all_ae_ofReal_f_le_bound' (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
+    (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop (𝓝 (f' a))) :
+    ∀ᵐ a ∂μ, ‖f' a‖ₑ ≤ bound' a := by
+  rw [← ae_all_iff] at h_bound
+  apply h_bound.mp ((all_ae_tendsto_ofReal_norm' h_lim).mono _)
+  intro a tendsto_norm h_bound
+  exact le_of_tendsto' tendsto_norm h_bound
+
+theorem hasFiniteIntegral_of_dominated_convergence
     (bound_hasFiniteIntegral : HasFiniteIntegral bound μ)
     (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) : HasFiniteIntegral f μ := by
@@ -317,7 +336,20 @@ theorem hasFiniteIntegral_of_dominated_convergence {F : ℕ → α → β} {f : 
       · exact bound_hasFiniteIntegral
       exact (h_bound 0).mono fun a h => le_trans (norm_nonneg _) h
 
-theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} {f : α → β} {bound : α → ℝ}
+theorem hasFiniteIntegral_of_dominated_convergence'
+    (bound_hasFiniteIntegral : HasFiniteIntegral bound' μ)
+    (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
+    (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop (𝓝 (f' a))) : HasFiniteIntegral f' μ := by
+  /- `‖F' n a‖ₑ ≤ bound' a` and `‖F' n a‖ₑ --> ‖f' a‖ₑ` implies `‖f a‖ₑ ≤ bound' a`,
+    and so `∫ ‖f'‖ₑ ≤ ∫ bound' < ∞` since `bound'` has finite integral -/
+  rw [hasFiniteIntegral_iff_enorm]
+  calc
+    (∫⁻ a, ‖f' a‖ₑ ∂μ) ≤ ∫⁻ a, bound' a ∂μ :=
+      lintegral_mono_ae <| all_ae_ofReal_f_le_bound' h_bound h_lim
+    _ < ∞ := bound_hasFiniteIntegral
+
+-- TODO: generalise this `f` and `F` taking values in a new class `ENormedSubMonoid`
+theorem tendsto_lintegral_norm_of_dominated_convergence
     (F_measurable : ∀ n, AEStronglyMeasurable (F n) μ)
     (bound_hasFiniteIntegral : HasFiniteIntegral bound μ)
     (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
