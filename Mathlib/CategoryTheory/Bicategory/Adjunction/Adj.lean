@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.CategoryTheory.Bicategory.Adjunction
+import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
 
 /-!
 # The bicategory of adjunctions in a bicategory
@@ -59,10 +59,16 @@ structure Hom where
   /-- the adjunction -/
   adj : f ⊣ g
 
+variable {a b} in
+def Hom.mk' {f : a ⟶ b} {g : b ⟶ a} (adj : f ⊣ g) : Hom a b where
+  f := f
+  g := g
+  adj := adj
+
 instance : CategoryStruct (Adj B) where
   Hom (a : B) b := Hom a b
-  id (a : B) := { adj := Adjunction.id a }
-  comp f g := { adj := f.adj.comp g.adj }
+  id (a : B) := .mk' (Adjunction.id a)
+  comp f g := .mk' (f.adj.comp g.adj)
 
 @[simp] lemma id_f (a : Adj B) : Hom.f (𝟙 a) = 𝟙 _ := rfl
 @[simp] lemma id_g (a : Adj B) : Hom.g (𝟙 a) = 𝟙 _ := rfl
@@ -106,7 +112,7 @@ instance : CategoryStruct (a ⟶ b) where
 
 @[ext]
 lemma hom₂_ext {α β : a ⟶ b} {x y : α ⟶ β} (hf : x.τf = y.τf) : x = y := by
-  apply Hom₂.ext _ _ hf
+  apply Hom₂.ext hf
   rw [← x.hom₂Equiv_τf, ← y.hom₂Equiv_τf, hf]
 
 @[simp] lemma id_τf (α : a ⟶ b) : Hom₂.τf (𝟙 α) = 𝟙 α.f := rfl
