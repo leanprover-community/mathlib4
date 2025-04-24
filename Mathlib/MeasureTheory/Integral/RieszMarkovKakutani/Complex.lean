@@ -33,46 +33,73 @@ variable {X : Type*} [MeasurableSpace X]
   {V 𝕜 : Type*} [SeminormedAddCommGroup V]  (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 V]
   (μ : VectorMeasure X V)
 
--- first we should prove that `supOuterMeasure μ` is countably additive on measurable sets (Rudin),
--- then it implies countable subadditivity on measurable sets, and from it one can prove
--- `iUnion_nat`.
+-- In mathlib, the notion `Measure` requires that it is defined on all sets and countable
+-- subbadditivity holds. In contrast, `VectorMeasure` requires that countable additivity holds only
+-- for `MeasurableSet`s. This is closer to the textbook notion of measure (including Rudin).
+-- We should probably proceed as follows:
+-- 1. Define `ℝ≥0∞`-valued `VectorMeasure` using sup as in Rudin. This requires essentially only
+--    countable additivity.
+-- 2. Define, by combining `MeasureTheory.inducedOuterMeasure` and `MeasureTheory.OuterMeasure.trim`
+--    a function that takes an `ℝ≥0∞`-valued `VectorMeasure` to a `Measure`. Then, by
+--    `MeasureTheory.inducedOuterMeasure_eq`, `inducedOuterMeasure` coincide on measurable sets.
+-- This seems better because many other parts of the project depends on `Measure` (concerning the
+--  L^p spaces).
 
--- probably we should first define a function `supOuterMeasure` without structure, prove `mono` and
--- `m_iUnion` on measurable sets and follow the above description. only afterwards one can define
--- `OuterMeasure`.
-
-noncomputable def supOuterMeasure : OuterMeasure X where
-  measureOf (s : Set X) :=
-    ⨅ t ∈ {t' : Set X | MeasurableSet t' ∧ s ⊆ t'},
-      ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint E') ∧
-             ⋃ n, E' n = t},
-      ∑' n, ENNReal.ofReal ‖μ (E n)‖
-  empty := by
+noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
+  measureOf' (s : Set X) := by
+    classical
+    exact if (MeasurableSet s)
+      then ⨅ t ∈ {t' : Set X | MeasurableSet t' ∧ s ⊆ t'},
+        ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint E')
+               ∧ ⋃ n, E' n = t}, ∑' n, ENNReal.ofReal ‖μ (E n)‖
+      else 0
+  empty' := by
     simp only [Set.empty_subset, and_true, Set.mem_setOf_eq]
     apply le_antisymm
-    · apply le_trans (biInf_le _ MeasurableSet.empty)
+    · simp only [MeasurableSet.empty, ↓reduceIte]
+      apply le_trans (biInf_le _ MeasurableSet.empty)
       simp only [Set.iUnion_eq_empty, nonpos_iff_eq_zero, iSup_eq_zero, ENNReal.tsum_eq_zero,
         and_imp]
       intro _ _ _ hEempty n
       simp [hEempty n]
     · simp
-  mono {s₁ s₂} h := by
-    simp only [Set.mem_setOf_eq, le_iInf_iff, and_imp]
-    intro t ht hst
-    have ht' : t ∈ {t' : Set X | MeasurableSet t' ∧ s₁ ⊆ t'} := by
-      rw [Set.setOf_and]
-      exact ⟨ht, (Set.Subset.trans h hst)⟩
-    apply le_trans (biInf_le _ ht')
-    exact le_of_eq rfl
-  iUnion_nat := by
-    sorry
+  not_measurable' s h := if_neg h
+  m_iUnion' := sorry -- countable additivity, follow Rudin
 
-noncomputable def supTotalVariation : Measure X :=
-  { (supOuterMeasure μ).trim with
-    m_iUnion := sorry
-    -- countable additivity for measurable sets, follow Rudin
-    -- use `OuterMeasure.trim_eq` for measurable sets
-    trim_le := le_of_eq (OuterMeasure.trim_trim (supOuterMeasure μ)) }
+-- obsolete
+-- noncomputable def supOuterMeasure : OuterMeasure X where
+--   measureOf (s : Set X) :=
+--     ⨅ t ∈ {t' : Set X | MeasurableSet t' ∧ s ⊆ t'},
+--       ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint E')
+--         ∧ ⋃ n, E' n = t},
+--       ∑' n, ENNReal.ofReal ‖μ (E n)‖
+--   empty := by
+--     simp only [Set.empty_subset, and_true, Set.mem_setOf_eq]
+--     apply le_antisymm
+--     · apply le_trans (biInf_le _ MeasurableSet.empty)
+--       simp only [Set.iUnion_eq_empty, nonpos_iff_eq_zero, iSup_eq_zero, ENNReal.tsum_eq_zero,
+--         and_imp]
+--       intro _ _ _ hEempty n
+--       simp [hEempty n]
+--     · simp
+--   mono {s₁ s₂} h := by
+--     simp only [Set.mem_setOf_eq, le_iInf_iff, and_imp]
+--     intro t ht hst
+--     have ht' : t ∈ {t' : Set X | MeasurableSet t' ∧ s₁ ⊆ t'} := by
+--       rw [Set.setOf_and]
+--       exact ⟨ht, (Set.Subset.trans h hst)⟩
+--     apply le_trans (biInf_le _ ht')
+--     exact le_of_eq rfl
+--   iUnion_nat := by
+--     sorry
+
+-- noncomputable def supTotalVariation : Measure X :=
+--   { (supOuterMeasure μ).trim with
+--     m_iUnion := sorry
+--     -- countable additivity for measurable sets, follow Rudin
+--     -- use `OuterMeasure.trim_eq` for measurable sets
+--     trim_le := le_of_eq (OuterMeasure.trim_trim (supOuterMeasure μ)) }
+
 
 /-- **Theorem**
 Let `Φ` be a linear functional on `C_0(X, ℂ)`. Suppsoe that `μ`, `μ'` are complex Borel measures
