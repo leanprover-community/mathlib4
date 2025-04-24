@@ -439,22 +439,16 @@ variable {R S M P M' P' : Type*}
 variable (i : M' →ₗ[S] M) (k : P' →ₗ[S] P) (hk : Injective k)
   (f : M →ₗ[R] P) (hf : ∀ m, f (i m) ∈ LinearMap.range k)
 
-include hf in
-theorem restrictScalars_in_range (m : M') : (f.restrictScalars S).comp i m ∈ Set.range k := by
-  use (hf m).choose
-  rw [(hf m).choose_spec, comp_apply, restrictScalars_apply]
-
 /-- Restrict the scalars and range of a linear map. -/
 noncomputable def restrictScalarsRange :
     M' →ₗ[S] P' :=
-  ((f.restrictScalars S).comp i).codLift k hk (restrictScalars_in_range i k f hf)
+  ((f.restrictScalars S).comp i).codLift k hk hf
 
 @[simp]
 lemma restrictScalarsRange_apply (m : M') :
     k (restrictScalarsRange i k hk f hf m) = f (i m) := by
   have : k (restrictScalarsRange i k hk f hf m) =
-      (k ∘ₗ ((f.restrictScalars S).comp i).codLift k hk
-        (restrictScalars_in_range i k f hf)) m :=
+      (k ∘ₗ ((f.restrictScalars S).comp i).codLift k hk hf) m :=
     rfl
   rw [this, comp_codLift, comp_apply, restrictScalars_apply]
 
