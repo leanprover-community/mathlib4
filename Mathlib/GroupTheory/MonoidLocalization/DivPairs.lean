@@ -18,14 +18,17 @@ variable {M G H : Type*} [CommMonoid M] [CommGroup G] [CommGroup H]
 namespace Submonoid
 
 variable (f s) in
-/-- The submonoid of pairs whose quotient lies in a submonoid of the localization. -/
-@[to_additive "The submonoid of pairs whose difference lies in a submonoid of the localization."]
+/-- Given a commutative monoid `M`, a localization map `f` to its Grothendieck group `G` and
+a submonoid `s` of `G`, `s.divPairs f` is the set of pairs `(a, b)` such that `f a / f b ∈ s`. -/
+@[to_additive
+"Given an additive commutative monoid `M`, a localization map `f` to its Grothendieck group `G` and
+a submonoid `s` of `G`, `s.subPairs f` is the set of pairs `(a, b)` such that `f a - f b ∈ s`."]
 def divPairs : Submonoid (M × M) := s.comap <| divMonoidHom.comp <| f.toMap.prodMap f.toMap
 
 @[to_additive (attr := simp)]
 lemma mem_divPairs : x ∈ divPairs f s ↔ f.toMap x.1 / f.toMap x.2 ∈ s := .rfl
 
---TODO(Yael): make simp once `LocalizationMap.toMonoidHom` is simp nf
+--TODO(Yaël): make simp once `LocalizationMap.toMonoidHom` is simp nf
 variable (f g s) in
 @[to_additive]
 lemma divPairs_comap :
