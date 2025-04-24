@@ -434,39 +434,28 @@ variable {R S M P M' P' : Type*}
   [Module S M] [Module S P]
   [IsScalarTower S R M] [IsScalarTower S R P]
   [AddCommMonoid M'] [Module S M'] [AddCommMonoid P'] [Module S P']
-  [SMulCommClass R S P]
 
 variable (i : M' →ₗ[S] M) (k : P' →ₗ[S] P) (hk : Injective k)
   (f : M →ₗ[R] P) (hf : ∀ m, f (i m) ∈ LinearMap.range k)
 
-include hf in
-omit [SMulCommClass R S P] in
-theorem restrictScalars_in_range (m : M') : (f.restrictScalars S).comp i m ∈ Set.range k := by
-  use (hf m).choose
-  rw [(hf m).choose_spec, comp_apply, restrictScalars_apply]
-
 /-- Restrict the scalars and range of a linear map. -/
 noncomputable def restrictScalarsRange :
     M' →ₗ[S] P' :=
-  ((f.restrictScalars S).comp i).codLift k hk (restrictScalars_in_range i k f hf)
+  ((f.restrictScalars S).comp i).codLift k hk hf
 
-omit [SMulCommClass R S P] in
 @[simp]
 lemma restrictScalarsRange_apply (m : M') :
     k (restrictScalarsRange i k hk f hf m) = f (i m) := by
   have : k (restrictScalarsRange i k hk f hf m) =
-      (k ∘ₗ ((f.restrictScalars S).comp i).codLift k hk
-        (restrictScalars_in_range i k f hf)) m :=
+      (k ∘ₗ ((f.restrictScalars S).comp i).codLift k hk hf) m :=
     rfl
   rw [this, comp_codLift, comp_apply, restrictScalars_apply]
 
-omit [SMulCommClass R S P] in
 @[simp]
 lemma eq_restrictScalarsRange_iff (m : M') (p : P') :
     p = restrictScalarsRange i k hk f hf m ↔ k p = f (i m) := by
   rw [← restrictScalarsRange_apply i k hk f hf m, hk.eq_iff]
 
-omit [SMulCommClass R S P] in
 @[simp]
 lemma restrictScalarsRange_apply_eq_zero_iff (m : M') :
     restrictScalarsRange i k hk f hf m = 0 ↔ f (i m) = 0 := by
