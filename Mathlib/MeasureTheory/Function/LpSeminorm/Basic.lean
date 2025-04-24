@@ -557,7 +557,8 @@ alias Memℒp.ae_eq := MemLp.ae_eq
 
 section
 
-variable {ε ε' : Type*} [TopologicalSpace ε] [TopologicalSpace ε'] [ContinuousENorm ε] [ContinuousENorm ε']
+variable {ε ε' : Type*}
+  [TopologicalSpace ε] [TopologicalSpace ε'] [ContinuousENorm ε] [ContinuousENorm ε']
 
 theorem MemLp.of_le {f : α → E} {g : α → F} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
     (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) : MemLp f p μ :=
@@ -634,15 +635,14 @@ theorem MemLp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasu
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : MemLp f p μ :=
   (memLp_const C).of_le hf (hfC.mono fun _x hx => le_trans hx (le_abs_self _))
 
-#check memLp_const_enorm
+-- #check memLp_const_enorm
 
 theorem MemLp.of_enorm_bound [IsFiniteMeasure μ] {f : α → ε} (hf : AEStronglyMeasurable f μ)
     {C : ℝ≥0∞} (hC : C ≠ ∞) (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) : MemLp f p μ := by
   have : ‖C‖ₑ < ⊤ := by simp [hC.lt_top]
   --have := memLp_const_enorm (c := C) this (μ := μ) (ε' := ε)
-  apply (memLp_const_enorm this).of_le_enorm (ε' := ε)
+  -- apply (memLp_const_enorm this).of_le_enorm (ε' := ε)
   --hf --(hfC.mono fun _x hx => le_trans hx (le_abs_self _))
-
   sorry
 
 @[deprecated (since := "2025-02-21")]
@@ -680,7 +680,7 @@ theorem eLpNorm_mono_measure (f : α → ε) (hμν : ν ≤ μ) : eLpNorm f p �
   simp_rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   exact eLpNorm'_mono_measure f hμν ENNReal.toReal_nonneg
 
-theorem MemLp.mono_measure [TopologicalSpace ε] {f : α → ε} (hμν : ν ≤ μ) (hf : MemLp f p μ) :
+theorem MemLp.mono_measure {f : α → ε} (hμν : ν ≤ μ) (hf : MemLp f p μ) :
     MemLp f p ν :=
   ⟨hf.1.mono_measure hμν, (eLpNorm_mono_measure f hμν).trans_lt hf.2⟩
 
@@ -879,7 +879,9 @@ theorem eLpNorm_restrict_eq_of_support_subset {s : Set α} {f : α → ε} (hsf 
 
 variable {ε : Type*} [ENorm ε]
 
-theorem MemLp.restrict [TopologicalSpace ε] (s : Set α) {f : α → ε} (hf : MemLp f p μ) :
+
+theorem MemLp.restrict {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+    (s : Set α) {f : α → ε} (hf : MemLp f p μ) :
     MemLp f p (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 
@@ -968,6 +970,8 @@ theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
   simp_rw [eLpNorm_one_eq_lintegral_enorm]
   rw [lintegral_add_measure _ μ ν]
+
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem eLpNorm_le_add_measure_right (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
     eLpNorm f p μ ≤ eLpNorm f p (μ + ν) :=
