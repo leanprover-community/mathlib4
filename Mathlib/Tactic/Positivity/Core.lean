@@ -229,22 +229,19 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     else -- should not be reachable, but just in case
       haveI' w : decide ($n = 0) =Q true := ⟨⟩
       pure (.nonnegative q(nonneg_of_isNNRat $p $w))
-  | .isNegNNRat _i _q _n _d _p =>
+  | .isNegNNRat _i q n d p =>
     let _a ← synthInstanceQ q(Ring $α)
     let _a ← synthInstanceQ q(LinearOrder $α)
     let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-    failure -- TODO
-    -- assumeInstancesCommute
-    -- have p : Q(NormNum.IsRat $e $n $d) := p
-    -- if 0 < q then
-    --   haveI' w : decide (0 < $n) =Q true := ⟨⟩
-    --   pure (.positive q(pos_of_isRat $p $w))
-    -- else if q = 0 then -- should not be reachable, but just in case
-    --   haveI' w : decide ($n = 0) =Q true := ⟨⟩
-    --   pure (.nonnegative q(nonneg_of_isRat $p $w))
-    -- else
-    --   haveI' w : decide ($n < 0) =Q true := ⟨⟩
-    --   pure (.nonzero q(nz_of_isRat $p $w))
+    -- failure -- TODO
+    assumeInstancesCommute
+    have p : Q(NormNum.IsRat $e (.negOfNat $n) $d) := p
+    if q < 0 then
+      haveI' w : decide (Int.negOfNat $n < 0) =Q true := ⟨⟩
+      pure (.nonzero q(nz_of_isRat $p $w))
+    else -- should not be reachable, but just in case
+      haveI' w : decide (Int.negOfNat $n = 0) =Q true := ⟨⟩
+      pure (.nonnegative q(nonneg_of_isRat $p $w))
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAdd` monoid. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
