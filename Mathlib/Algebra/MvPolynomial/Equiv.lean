@@ -411,16 +411,6 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
     optionEquivLeft_apply, Polynomial.map_X, Polynomial.eval_X, Option.elim_some, Polynomial.map_C,
     eval_X, Polynomial.eval_C, implies_true, and_self, φ]
 
-@[simp]
-lemma Finsupp.some_embDomain_some {α M : Type*} [Zero M] (f : α →₀ M) :
-    (f.embDomain .some).some = f := by
-  ext; rw [some_apply]; exact embDomain_apply _ _ _
-
-@[simp]
-lemma Finsupp.embDomain_some_none {α M : Type*} [Zero M] (f : α →₀ M) :
-    f.embDomain .some .none = 0 :=
-  embDomain_notin_range _ _ _ (by simp)
-
 lemma natDegree_optionEquivLeft (p : MvPolynomial (Option S₁) R) :
     (optionEquivLeft R S₁ p).natDegree = p.degreeOf .none := by
   apply le_antisymm
