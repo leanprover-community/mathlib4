@@ -148,7 +148,9 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
   rfl
 
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
-linear map M₂ → p. -/
+linear map M₂ → p.
+
+See also `LinearMap.codLift`. -/
 def codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) (h : ∀ c, f c ∈ p) : M →ₛₗ[σ₁₂] p where
   toFun c := ⟨f c, h c⟩
   map_add' _ _ := by simp
@@ -194,7 +196,7 @@ theorem comp_codLift :
 
 end
 
-/-- Restrict domain and codomain of a linear map. See also `LinearMap.codLift`. -/
+/-- Restrict domain and codomain of a linear map. -/
 def restrict (f : M →ₗ[R] M₁) {p : Submodule R M} {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :
     p →ₗ[R] q :=
   (f.domRestrict p).codRestrict q <| SetLike.forall.2 hf
