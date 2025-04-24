@@ -143,6 +143,9 @@ theorem eLpNorm'_measure_zero_of_exponent_zero {f : α → ε} : eLpNorm' f 0 (0
 theorem eLpNorm'_measure_zero_of_neg {f : α → ε} (hq_neg : q < 0) :
     eLpNorm' f q (0 : Measure α) = ∞ := by simp [eLpNorm', hq_neg]
 
+omit [ENormedAddMonoid ε]
+variable [ContinuousENorm ε]
+
 @[simp]
 theorem eLpNormEssSup_measure_zero {f : α → ε} : eLpNormEssSup f (0 : Measure α) = 0 := by
   simp [eLpNormEssSup]
@@ -197,7 +200,7 @@ end Neg
 
 section Const
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
 
 theorem eLpNorm'_const (c : ε) (hq_pos : 0 < q) :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
@@ -252,6 +255,7 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
   simpa [hμ, hc, hμ_top, hμ_top.lt_top] using
     ENNReal.rpow_lt_top_of_nonneg (inv_nonneg.mpr hp.le) hμ_top
 
+variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] in
 -- NB. If ‖c‖ₑ = ∞ and μ is finite, this claim is false: the right has side is true,
 -- but the left hand side is false (as the norm is infinite).
 theorem eLpNorm_const_lt_top_iff_enorm {c : ε'} (hc' : ‖c‖ₑ ≠ ∞)
@@ -309,6 +313,7 @@ theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_t
   rw [← eLpNorm_const_lt_top_iff hp_ne_zero hp_ne_top]
   exact ⟨fun h => h.2, fun h => ⟨aestronglyMeasurable_const, h⟩⟩
 
+variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] in
 theorem memLp_const_iff_enorm
     {p : ℝ≥0∞} {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun _ : α ↦ c) p μ ↔ μ Set.univ = 0 ∨ (c = 0 ∨ μ Set.univ < ∞) := by
