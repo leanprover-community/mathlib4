@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Yoneda
 import Mathlib.Util.AssertExists
 
 /-!
@@ -47,7 +47,6 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X) where
       coyoneda_obj_map, Category.id_comp]
   uniq s m w := by
     apply funext; rintro ⟨⟩
-    dsimp
     rw [← w]
     simp
 

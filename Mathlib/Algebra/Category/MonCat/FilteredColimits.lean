@@ -3,10 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.Algebra.Category.MonCat.Basic
 
 /-!
 # The forgetful functor from (commutative) (additive) monoids preserves filtered colimits.
@@ -36,7 +36,7 @@ section
 
 -- Porting note: mathlib 3 used `parameters` here, mainly so we can have the abbreviations `M` and
 -- `M.mk` below, without passing around `F` all the time.
-variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCatMax.{v, u})
+variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{max v u})
 
 /-- The colimit of `F ⋙ forget MonCat` in the category of types.
 In the following, we will construct a monoid structure on `M`.

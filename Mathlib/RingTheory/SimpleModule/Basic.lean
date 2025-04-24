@@ -117,7 +117,7 @@ theorem span_singleton_eq_top {m : M} (hm : m ≠ 0) : Submodule.span R {m} = �
   (eq_bot_or_eq_top _).resolve_left fun h ↦ hm (h.le <| Submodule.mem_span_singleton_self m)
 
 instance (S : Submodule R M) : S.IsPrincipal where
-  principal' := by
+  principal := by
     obtain rfl | rfl := eq_bot_or_eq_top S
     · exact ⟨0, Submodule.span_zero.symm⟩
     have := IsSimpleModule.nontrivial R M
@@ -370,7 +370,8 @@ theorem IsSemisimpleRing.ideal_eq_span_idempotent [IsSemisimpleRing R] (I : Idea
   obtain ⟨J, h⟩ := exists_isCompl I
   obtain ⟨f, idem, rfl⟩ := I.isIdempotentElemEquiv.symm (I.isComplEquivProj ⟨J, h⟩)
   exact ⟨f 1, LinearMap.isIdempotentElem_apply_one_iff.mpr idem, by
-    erw [LinearMap.range_eq_map, ← Ideal.span_one, LinearMap.map_span, Set.image_singleton]; rfl⟩
+    rw [LinearMap.range_eq_map, ← Ideal.span_one, ← Ideal.submodule_span_eq, LinearMap.map_span,
+      Set.image_one, Ideal.submodule_span_eq]⟩
 
 instance [IsSemisimpleRing R] : IsPrincipalIdealRing R where
   principal I := have ⟨e, _, he⟩ := IsSemisimpleRing.ideal_eq_span_idempotent I; ⟨e, he⟩

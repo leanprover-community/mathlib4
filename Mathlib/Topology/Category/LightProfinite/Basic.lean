@@ -261,7 +261,7 @@ instance (S : LightProfinite) : Countable (Clopens S) := by
   rw [TopologicalSpace.Clopens.countable_iff_secondCountable]
   infer_instance
 
-instance instCountableDiscreteQuotient (S : LightProfinite)  :
+instance instCountableDiscreteQuotient (S : LightProfinite) :
     Countable (DiscreteQuotient ((lightToProfinite.obj S))) :=
   (DiscreteQuotient.finsetClopens_inj S).countable
 

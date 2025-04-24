@@ -44,7 +44,7 @@ class IsPrecomplete : Prop where
     ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)]
 
 /-- A module `M` is `I`-adically complete if it is Hausdorff and precomplete. -/
-class IsAdicComplete extends IsHausdorff I M, IsPrecomplete I M : Prop
+class IsAdicComplete : Prop extends IsHausdorff I M, IsPrecomplete I M
 
 variable {I M}
 
@@ -85,8 +85,10 @@ abbrev Hausdorffification : Type _ :=
 to define `AdicCompletion`. -/
 abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M hmn
 
-/-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
-In fact, this is only complete if the ideal is finitely generated. -/
+/-- The completion of a module with respect to an ideal.
+
+This is Hausdorff but not necessarily complete: a classical sufficient condition for
+completeness is that `M` be finitely generated [Stacks, 0G1Q]. -/
 def AdicCompletion : Type _ :=
   { f : ∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M) //
     ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
@@ -96,14 +98,11 @@ namespace IsHausdorff
 instance bot : IsHausdorff (⊥ : Ideal R) M :=
   ⟨fun x hx => by simpa only [pow_one ⊥, bot_smul, SModEq.bot] using hx 1⟩
 
-variable {M}
-
+variable {M} in
 protected theorem subsingleton (h : IsHausdorff (⊤ : Ideal R) M) : Subsingleton M :=
   ⟨fun x y => eq_of_sub_eq_zero <| h.haus (x - y) fun n => by
     rw [Ideal.top_pow, top_smul]
     exact SModEq.top⟩
-
-variable (M)
 
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsHausdorff I M :=
   ⟨fun _ _ => Subsingleton.elim _ _⟩

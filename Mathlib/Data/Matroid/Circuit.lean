@@ -19,7 +19,7 @@ In matroids arising from graphs, circuits correspond to graphical cycles.
 * For an `Indep`endent set `I` whose closure contains an element `e ∉ I`,
   `Matroid.fundCircuit M e I` is the unique circuit contained in `insert e I`.
 * `Matroid.Indep.fundCircuit_isCircuit` states that `Matroid.fundCircuit M e I` is indeed a circuit.
-* `Circuit.eq_fundCircuit_of_subset` states that `Matroid.fundCircuit M e I` is the
+* `Matroid.IsCircuit.eq_fundCircuit_of_subset` states that `Matroid.fundCircuit M e I` is the
   unique circuit contained in `insert e I`.
 * `Matroid.dep_iff_superset_isCircuit` states that the dependent subsets of the ground set
   are precisely those that contain a circuit.
@@ -33,8 +33,8 @@ In matroids arising from graphs, circuits correspond to graphical cycles.
   or equivalently that `M.E \ C` is a hyperplane of `M`.
 * `Matroid.fundCocircuit M B e` is the unique cocircuit that intersects the base `B` precisely
   in the element `e`.
-* `Base.mem_fundCocircuit_iff_mem_fundCircuit` : `e` is in the fundamental circuit for `B` and `f`
-  iff `f` is in the fundamental cocircuit for `B` and `e`.
+* `Matroid.IsBase.mem_fundCocircuit_iff_mem_fundCircuit` : `e` is in the fundamental circuit
+  for `B` and `f` iff `f` is in the fundamental cocircuit for `B` and `e`.
 
 # Implementation Details
 
@@ -53,7 +53,7 @@ open Set
 
 namespace Matroid
 
-/-- A `Circuit` of `M` is a minimal dependent set in `M` -/
+/-- `M.IsCircuit C` means that `C` is a minimal dependent set in `M`. -/
 def IsCircuit (M : Matroid α) := Minimal M.Dep
 
 @[deprecated (since := "2025-02-14")] alias Circuit := IsCircuit
@@ -95,7 +95,7 @@ lemma isCircuit_iff_minimal_not_indep (hCE : C ⊆ M.E) : M.IsCircuit C ↔ Mini
     fun _ hJ hJC ↦ (h.eq_of_superset hJ.not_indep hJC).le⟩⟩
 
 lemma IsCircuit.diff_singleton_indep (hC : M.IsCircuit C) (he : e ∈ C) : M.Indep (C \ {e}) :=
-  hC.ssubset_indep (diff_singleton_sSubset.2 he)
+  hC.ssubset_indep (diff_singleton_ssubset.2 he)
 
 lemma isCircuit_iff_forall_ssubset : M.IsCircuit C ↔ M.Dep C ∧ ∀ ⦃I⦄, I ⊂ C → M.Indep I := by
   rw [IsCircuit, minimal_iff_forall_ssubset, and_congr_right_iff]
@@ -189,8 +189,8 @@ lemma restrict_isCircuit_iff (hR : R ⊆ M.E := by aesop_mat) :
 /-! ### Fundamental IsCircuits -/
 
 /-- For an independent set `I` and some `e ∈ M.closure I \ I`,
-`M.fundCircuit e I` is the unique isCircuit contained in `insert e I`.
-For the fact that this is a isCircuit, see `Matroid.Indep.fundCircuit_isCircuit`,
+`M.fundCircuit e I` is the unique circuit contained in `insert e I`.
+For the fact that this is a circuit, see `Matroid.Indep.fundCircuit_isCircuit`,
 and the fact that it is unique, see `Matroid.IsCircuit.eq_fundCircuit_of_subset`.
 Has the junk value `{e}` if `e ∈ I` or `e ∉ M.E`, and `insert e I` if `e ∈ M.E \ M.closure I`. -/
 def fundCircuit (M : Matroid α) (e : α) (I : Set α) : Set α :=
@@ -382,7 +382,7 @@ lemma ext_iff_isCircuit {M₁ M₂ : Matroid α} :
 
 section Elimination
 
-/-! ### IsCircuit Elimination -/
+/-! ### Circuit Elimination -/
 
 variable {ι : Type*} {J C₀ C₁ C₂ : Set α}
 
@@ -411,7 +411,7 @@ lemma IsCircuit.strong_multi_elimination_insert (x : ι → α) (I : ι → Set 
   exact union_subset_union_left _ diff_subset
 
 /-- A generalization of the strong circuit elimination axiom `Matroid.IsCircuit.strong_elimination`
-to an infinite collection of isCircuits.
+to an infinite collection of circuits.
 
 It states that, given a circuit `C₀`, a arbitrary collection `C : ι → Set α` of circuits,
 an element `x i` of `C₀ ∩ C i` for each `i`, and an element `z ∈ C₀` outside all the `C i`,
@@ -473,7 +473,7 @@ lemma IsCircuit.strong_elimination (hC₁ : M.IsCircuit C₁) (hC₂ : M.IsCircu
     (by simpa) (by simpa) (by simpa) (by simp) (by simpa) (by simpa)
   exact ⟨C, hCs.trans (diff_subset_diff (by simp) (by simp)), hC, hfC⟩
 
-/-- The circuit elimination axiom : for any pair of distinct isCircuits `C₁, C₂` and any `e`,
+/-- The circuit elimination axiom : for any pair of distinct circuits `C₁, C₂` and any `e`,
 some circuit is contained in `(C₁ ∪ C₂) \ {e}`.
 
 This is one of the axioms when defining a finitary matroid via circuits;
@@ -508,7 +508,7 @@ lemma finitary_iff_forall_isCircuit_finite : M.Finitary ↔ ∀ C, M.IsCircuit C
   simpa using (hI {x} (by simpa) (finite_singleton _)).subset_ground
 
 /-- In a finitary matroid, every element spanned by a set `X` is in fact
-spanned by a finite independent subset of `X`.  -/
+spanned by a finite independent subset of `X`. -/
 lemma exists_mem_finite_closure_of_mem_closure [M.Finitary] (he : e ∈ M.closure X) :
     ∃ I ⊆ X, I.Finite ∧ M.Indep I ∧ e ∈ M.closure I := by
   by_cases heY : e ∈ X
@@ -545,15 +545,15 @@ abbrev IsCocircuit (M : Matroid α) (K : Set α) : Prop := M✶.IsCircuit K
 
 lemma isCocircuit_def : M.IsCocircuit K ↔ M✶.IsCircuit K := Iff.rfl
 
-lemma IsCocircuit.circuit (hK : M.IsCocircuit K) : M✶.IsCircuit K :=
+lemma IsCocircuit.isCircuit (hK : M.IsCocircuit K) : M✶.IsCircuit K :=
   hK
 
-lemma Circuit.isCocircuit (hC : M.IsCircuit C) : M✶.IsCocircuit C := by
+lemma IsCircuit.isCocircuit (hC : M.IsCircuit C) : M✶.IsCocircuit C := by
   rwa [isCocircuit_def, dual_dual]
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 lemma IsCocircuit.subset_ground (hC : M.IsCocircuit C) : C ⊆ M.E :=
-  hC.circuit.subset_ground
+  hC.isCircuit.subset_ground
 
 @[simp] lemma dual_isCocircuit_iff : M✶.IsCocircuit C ↔ M.IsCircuit C := by
   rw [isCocircuit_def, dual_dual]
@@ -579,9 +579,9 @@ lemma isCocircuit_iff_minimal_compl_nonspanning :
   convert isCocircuit_iff_minimal with K
   simp_rw [spanning_iff_exists_isBase_subset (S := M.E \ K), not_exists, subset_diff, not_and,
     not_disjoint_iff_nonempty_inter, ← and_imp, and_iff_left_of_imp IsBase.subset_ground,
-      inter_comm K]
+    inter_comm K]
 
-/-- For an element `e` of a base `B`, the complement of the closure of `B \ {e}` is a cocircuit.-/
+/-- For an element `e` of a base `B`, the complement of the closure of `B \ {e}` is a cocircuit. -/
 lemma IsBase.compl_closure_diff_singleton_isCocircuit (hB : M.IsBase B) (he : e ∈ B) :
     M.IsCocircuit (M.E \ M.closure (B \ {e})) := by
   rw [isCocircuit_iff_minimal_compl_nonspanning, minimal_subset_iff,
@@ -599,8 +599,8 @@ lemma IsBase.compl_closure_diff_singleton_isCocircuit (hB : M.IsBase B) (he : e 
     apply closure_subset_ground
   exact hB.exchange_base_of_not_mem_closure he fcl
 
-/-- A version of `cocircuit_iff_minimal_compl_nonspanning` with a support assumption
-in the minimality -/
+/-- A version of `Matroid.isCocircuit_iff_minimal_compl_nonspanning` with a support assumption
+in the minimality. -/
 lemma isCocircuit_iff_minimal_compl_nonspanning' :
     M.IsCocircuit K ↔ Minimal (fun X ↦ ¬ M.Spanning (M.E \ X) ∧ X ⊆ M.E) K := by
   rw [isCocircuit_iff_minimal_compl_nonspanning]
@@ -613,7 +613,7 @@ lemma IsCircuit.inter_isCocircuit_ne_singleton (hC : M.IsCircuit C) (hK : M.IsCo
   intro he
   have heC : e ∈ C := (he.symm.subset rfl).1
   simp_rw [isCocircuit_iff_minimal_compl_nonspanning, minimal_iff_forall_ssubset, not_not] at hK
-  have' hKe := hK.2 (t := K \ {e}) (diff_singleton_sSubset.2 (he.symm.subset rfl).2)
+  have' hKe := hK.2 (t := K \ {e}) (diff_singleton_ssubset.2 (he.symm.subset rfl).2)
   apply hK.1
   rw [spanning_iff_ground_subset_closure]
   nth_rw 1 [← hKe.closure_eq, diff_diff_eq_sdiff_union]
@@ -636,24 +636,24 @@ lemma IsCircuit.isCocircuit_disjoint_or_nontrivial_inter (hC : M.IsCircuit C)
   rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ← nonempty_iff_ne_empty]
   exact hC.isCocircuit_inter_nontrivial hK
 
-lemma dual_rankPos_iff_exists_circuit : M✶.RankPos ↔ ∃ C, M.IsCircuit C := by
+lemma dual_rankPos_iff_exists_isCircuit : M✶.RankPos ↔ ∃ C, M.IsCircuit C := by
   rw [rankPos_iff, dual_isBase_iff, diff_empty, not_iff_comm, not_exists,
     ← ground_indep_iff_isBase, indep_iff_forall_subset_not_isCircuit]
   exact ⟨fun h C _ ↦ h C, fun h C hC ↦ h C hC.subset_ground hC⟩
 
 lemma IsCircuit.dual_rankPos (hC : M.IsCircuit C) : M✶.RankPos :=
-  dual_rankPos_iff_exists_circuit.mpr ⟨C, hC⟩
+  dual_rankPos_iff_exists_isCircuit.mpr ⟨C, hC⟩
 
-lemma exists_circuit [RankPos M✶] : ∃ C, M.IsCircuit C :=
-  dual_rankPos_iff_exists_circuit.1 (by assumption)
+lemma exists_isCircuit [RankPos M✶] : ∃ C, M.IsCircuit C :=
+  dual_rankPos_iff_exists_isCircuit.1 (by assumption)
 
 lemma rankPos_iff_exists_isCocircuit : M.RankPos ↔ ∃ K, M.IsCocircuit K := by
-  rw [← dual_dual M, dual_rankPos_iff_exists_circuit, dual_dual M]
+  rw [← dual_dual M, dual_rankPos_iff_exists_isCircuit, dual_dual M]
 
 /-- The fundamental cocircuit for `B` and `e`:
 that is, the unique cocircuit `K` of `M` for which `K ∩ B = {e}`.
 Should be used when `B` is a base and `e ∈ B`.
-Has the junk value `{e}` if `e ∉ B` or `e ∉ M.E`.-/
+Has the junk value `{e}` if `e ∉ B` or `e ∉ M.E`. -/
 def fundCocircuit (M : Matroid α) (e : α) (B : Set α) := M✶.fundCircuit e (M✶.E \ B)
 
 lemma fundCocircuit_isCocircuit (he : e ∈ B) (hB : M.IsBase B) :
@@ -688,7 +688,7 @@ lemma fundCocircuit_eq_of_not_mem (M : Matroid α) (heX : e ∉ X) : M.fundCocir
   rw [fundCocircuit_eq_of_not_mem_ground _ he]
 
 /-- For every element `e` of an independent set `I`,
-there is a cocircuit whose intersection with `I` is `{e}`.-/
+there is a cocircuit whose intersection with `I` is `{e}`. -/
 lemma Indep.exists_isCocircuit_inter_eq_mem (hI : M.Indep I) (heI : e ∈ I) :
     ∃ K, M.IsCocircuit K ∧ K ∩ I = {e} := by
   obtain ⟨B, hB, hIB⟩ := hI.exists_isBase_superset

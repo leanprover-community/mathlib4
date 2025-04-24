@@ -454,7 +454,7 @@ theorem S_neg (n : ℤ) : S R (-n) = -S R (n - 2) := by simpa [sub_sub] using S_
 theorem S_neg_sub_two (n : ℤ) : S R (-n - 2) = -S R n := by
   simpa [sub_eq_add_neg, add_comm] using S_neg R (n + 2)
 
-  @[simp]
+@[simp]
 theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp

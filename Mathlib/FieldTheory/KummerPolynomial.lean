@@ -28,7 +28,7 @@ lemma root_X_pow_sub_C_pow (n : ℕ) (a : K) :
 
 lemma root_X_pow_sub_C_ne_zero {n : ℕ} (hn : 1 < n) (a : K) :
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 :=
-  mk_ne_zero_of_natDegree_lt (monic_X_pow_sub_C _ (Nat.not_eq_zero_of_lt hn))
+  mk_ne_zero_of_natDegree_lt (monic_X_pow_sub_C _ (Nat.ne_zero_of_lt hn))
     X_ne_zero <| by rwa [natDegree_X_pow_sub_C, natDegree_X]
 
 lemma root_X_pow_sub_C_ne_zero' {n : ℕ} {a : K} (hn : 0 < n) (ha : a ≠ 0) :
@@ -80,7 +80,7 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
   rw [mul_comm, pow_mul, map_pow, hq] at H
   have : degree q = 0 := by
     simpa [isUnit_iff_degree_eq_zero, degree_X_pow_sub_C,
-      Nat.pos_iff_ne_zero, (mul_ne_zero_iff.mp hn).2] using H.2 _ q rfl
+      Nat.pos_iff_ne_zero, (mul_ne_zero_iff.mp hn).2] using H.2 rfl
   apply_fun degree at hq
   simp only [this, ← pow_mul, mul_comm k m, degree_X_pow_sub_C, Nat.pos_iff_ne_zero.mpr hn,
     Nat.pos_iff_ne_zero.mpr (mul_ne_zero_iff.mp hn).2, degree_mul, ← map_pow, add_zero,

@@ -27,7 +27,7 @@ section SchurZassenhausAbelian
 
 open MulOpposite MulAction Subgroup.leftTransversals MemLeftTransversals
 
-variable {G : Type*} [Group G] (H : Subgroup G) [IsCommutative H] [FiniteIndex H]
+variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteIndex H]
   (α β : H.LeftTransversal)
 
 /-- The quotient of the transversals of an abelian normal `N` by the `diff` relation. -/
@@ -64,7 +64,7 @@ noncomputable instance : MulAction G H.QuotientDiff where
     Quotient.map' (fun α => op g⁻¹ • α) fun α β h =>
       Subtype.ext
         (by
-          rwa [smul_diff_smul', coe_mk, coe_one, mul_eq_one_iff_eq_inv, mul_right_eq_self, ←
+          rwa [smul_diff_smul', coe_mk, coe_one, mul_eq_one_iff_eq_inv, mul_eq_left, ←
             coe_one, ← Subtype.ext_iff])
   mul_smul g₁ g₂ q :=
     Quotient.inductionOn' q fun T =>
@@ -82,7 +82,7 @@ theorem smul_diff' (h : H) :
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
   rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, MulOpposite.unop_op, mul_left_inj,
     ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
-  exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
+  exact left_eq_mul.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
 
 theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
     (h : H) : h • α = α → h = 1 :=
@@ -243,7 +243,7 @@ private theorem step6 : IsPGroup (Nat.card N).minFac N := by
 
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-theorem step7 : IsCommutative N := by
+theorem step7 : IsMulCommutative N := by
   haveI := N.bot_or_nontrivial.resolve_left (step0 h1 h3)
   haveI : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   exact

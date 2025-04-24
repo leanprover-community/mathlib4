@@ -86,11 +86,6 @@ universe u v w u₁ v₁
 
 section Prio
 
--- We set this priority to 0 later in this file
--- Porting note: unsupported set_option extends_priority 200
-
-/- control priority of
-`instance [Algebra R A] : SMul R A` -/
 /-- An associative unital `R`-algebra is a semiring `A` equipped with a map into its center `R → A`.
 
 See the implementation notes in this file for discussion of the details of this definition.
@@ -166,8 +161,9 @@ end CommRingRing
 
 end algebraMap
 
-/-- Creating an algebra from a morphism to the center of a semiring. -/
-def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
+/-- Creating an algebra from a morphism to the center of a semiring.
+See note [reducible non-instances]. -/
+abbrev RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) : Algebra R S where
   smul c x := i c * x
   commutes' := h
@@ -187,8 +183,9 @@ theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R
     @algebraMap R S _ _ (i.toAlgebra' h) = i :=
   rfl
 
-/-- Creating an algebra from a morphism to a commutative semiring. -/
-def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
+/-- Creating an algebra from a morphism to a commutative semiring.
+See note [reducible non-instances]. -/
+abbrev RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
 
 theorem RingHom.smul_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S)
@@ -262,9 +259,6 @@ instance (priority := 200) toModule {R A} {_ : CommSemiring R} {_ : Semiring A} 
   add_smul := by simp [smul_def', add_mul]
   zero_smul := by simp [smul_def']
 
--- Porting note: this caused deterministic timeouts later in mathlib3 but not in mathlib 4.
--- attribute [instance 0] Algebra.toSMul
-
 theorem smul_def (r : R) (x : A) : r • x = algebraMap R A r * x :=
   Algebra.smul_def' r x
 
@@ -322,10 +316,6 @@ protected theorem smul_mul_assoc (r : R) (x y : A) : r • x * y = r • (x * y)
 theorem _root_.smul_algebraMap {α : Type*} [Monoid α] [MulDistribMulAction α A]
     [SMulCommClass α R A] (a : α) (r : R) : a • algebraMap R A r = algebraMap R A r := by
   rw [algebraMap_eq_smul_one, smul_comm a r (1 : A), smul_one]
-
-section
-
-end
 
 section compHom
 

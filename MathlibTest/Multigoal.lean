@@ -123,7 +123,7 @@ example : True ∧ True := by
 -- Exclude `fail_if_success` and `success_if_fail_with_msg` from linting.
 example : True := by
   fail_if_success done
-  success_if_fail_with_msg "internal exception #4" done
+  success_if_fail_with_msg "internal exception #5" done
   exact .intro
 
 /-!

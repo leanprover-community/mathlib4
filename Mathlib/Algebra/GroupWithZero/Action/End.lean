@@ -5,7 +5,6 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Hom
 import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Units
 
 /-!
@@ -80,12 +79,3 @@ def DistribMulAction.toAddEquiv₀ {α : Type*} (β : Type*) [GroupWithZero α] 
     invFun := fun b ↦ x⁻¹ • b
     left_inv := fun b ↦ inv_smul_smul₀ hx b
     right_inv := fun b ↦ smul_inv_smul₀ hx b }
-
-variable (M A) in
-/-- Each element of the monoid defines a monoid homomorphism. -/
-@[simps]
-def MulDistribMulAction.toMonoidEnd [Monoid M] [Monoid A] [MulDistribMulAction M A] :
-    M →* Monoid.End A where
-  toFun := MulDistribMulAction.toMonoidHom A
-  map_one' := MonoidHom.ext <| one_smul M
-  map_mul' x y := MonoidHom.ext <| mul_smul x y

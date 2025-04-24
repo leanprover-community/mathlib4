@@ -27,7 +27,7 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 * Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`.
 -/
 
-variable {α R : Type*}
+variable {α β R : Type*}
 
 namespace RingCon
 
@@ -42,13 +42,25 @@ The operation of scalar multiplication `•` descends naturally to the quotient.
 
 section SMul
 
-variable [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R] (c : RingCon R)
+variable [Add R] [MulOneClass R]
+variable [SMul α R] [IsScalarTower α R R]
+variable [SMul β R] [IsScalarTower β R R]
+variable (c : RingCon R)
 
 instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
   rfl
+
+instance [SMulCommClass α β R] : SMulCommClass α β c.Quotient :=
+  inferInstanceAs (SMulCommClass α β c.toCon.Quotient)
+
+instance [SMul α β] [IsScalarTower α β R] : IsScalarTower α β c.Quotient :=
+  inferInstanceAs (IsScalarTower α β c.toCon.Quotient)
+
+instance [SMul αᵐᵒᵖ R] [IsCentralScalar α R] : IsCentralScalar α c.Quotient :=
+  inferInstanceAs (IsCentralScalar α c.toCon.Quotient)
 
 end SMul
 
