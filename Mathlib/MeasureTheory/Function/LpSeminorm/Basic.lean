@@ -848,7 +848,7 @@ lemma eLpNorm_smul_measure_of_ne_top' (hp : p ≠ ∞) (c : ℝ≥0) (f : α →
   refine (eLpNorm_smul_measure_of_ne_top hp ..).trans ?_
   simp [ENNReal.smul_def, ENNReal.coe_rpow_of_nonneg, this]
 
-theorem eLpNorm_one_smul_measure {f : α → F} (c : ℝ≥0∞) :
+theorem eLpNorm_one_smul_measure {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm f 1 (c • μ) = c * eLpNorm f 1 μ := by
   rw [eLpNorm_smul_measure_of_ne_top] <;> simp
 
@@ -866,7 +866,7 @@ theorem MemLp.of_measure_le_smul {ε} [TopologicalSpace ε] [ENormedAddMonoid ε
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.of_measure_le_smul := MemLp.of_measure_le_smul
 
-theorem MemLp.smul_measure {c : ℝ≥0∞}
+theorem MemLp.smul_measure {ε} [TopologicalSpace ε] [ENormedAddMonoid ε] {f : α → ε} {c : ℝ≥0∞}
     (hf : MemLp f p μ) (hc : c ≠ ∞) : MemLp f p (c • μ) :=
   hf.of_measure_le_smul hc le_rfl
 
@@ -906,10 +906,15 @@ theorem MemLp.right_of_add_measure [TopologicalSpace ε] {f : α → ε} (h : Me
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.right_of_add_measure := MemLp.right_of_add_measure
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖) p μ :=
   h.of_le h.aestronglyMeasurable.norm (Eventually.of_forall fun x => by simp)
+
+theorem MemLp.enorm {f : α → ε} (h : MemLp f p μ) : MemLp (‖f ·‖ₑ) p μ :=
+  -- TODO: want .of_le_enorm, just requiring measurability...
+  -- so, must go deeper into the rabbit hole!
+  sorry -- TODO: should have a simple proof
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.norm := MemLp.norm
@@ -918,8 +923,14 @@ theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
     MemLp (fun x => ‖f x‖) p μ ↔ MemLp f p μ :=
   ⟨fun h => ⟨hf, by rw [← eLpNorm_norm]; exact h.2⟩, fun h => h.norm⟩
 
+theorem memLp_enorm_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) :
+    MemLp (‖f ·‖ₑ) p μ ↔ MemLp f p μ :=
+  ⟨fun h => ⟨hf, by rw [← eLpNorm_enorm]; exact h.2⟩, fun h => h.enorm⟩
+
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_iff := memLp_norm_iff
+
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 theorem eLpNorm'_eq_zero_of_ae_zero {f : α → ε} (hq0_lt : 0 < q) (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero hq0_lt]
