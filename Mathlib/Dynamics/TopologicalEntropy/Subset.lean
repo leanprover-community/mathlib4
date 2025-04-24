@@ -7,6 +7,7 @@ import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 
 /-!
 # Topological entropy of subsets: monotonicity, closure, union
+
 This file contains general results about the topological entropy of various subsets of the same
 dynamical system `(X, T)`. We prove that:
 - the topological entropy `CoverEntropy T F` of `F` is monotone in `F`: the larger the subset,
@@ -16,21 +17,25 @@ the larger its entropy.
 the latter property to finite unions.
 
 ## Implementation notes
+
 Most results are proved using only the definition of the topological entropy by covers. Some lemmas
 of general interest are also proved for nets.
 
 ## TODO
+
 One may implement a notion of Hausdorff convergence for subsets using uniform
 spaces, and then prove the semicontinuity of the topological entropy. It would be a nice
 generalization of the lemmas on closures.
 
 ## Tags
+
 closure, entropy, subset, union
 -/
 
 namespace Dynamics
 
-open ExpGrowth Set Uniformity UniformSpace
+open ExpGrowth Set UniformSpace
+open scoped Uniformity
 
 variable {X : Type*}
 
@@ -163,7 +168,7 @@ lemma coverMincard_union_le (T : X → X) (F G : Set X) (U : Set (X × X)) (n : 
 
 lemma coverEntropyEntourage_union {T : X → X} {F G : Set X} {U : Set (X × X)} :
     coverEntropyEntourage T (F ∪ G) U
-      = coverEntropyEntourage T F U ⊔ coverEntropyEntourage T G U := by
+      = max (coverEntropyEntourage T F U) (coverEntropyEntourage T G U) := by
   refine le_antisymm ?_ ?_
   · apply le_of_le_of_eq (expGrowthSup_monotone fun n ↦ ?_) expGrowthSup_add
     rw [Pi.add_apply, ← ENat.toENNReal_add]
@@ -174,7 +179,7 @@ lemma coverEntropyEntourage_union {T : X → X} {F G : Set X} {U : Set (X × X)}
 variable {ι : Type*} [UniformSpace X]
 
 lemma coverEntropy_union {T : X → X} {F G : Set X} :
-    coverEntropy T (F ∪ G) = coverEntropy T F ⊔ coverEntropy T G := by
+    coverEntropy T (F ∪ G) = max (coverEntropy T F) (coverEntropy T G) := by
   simp only [coverEntropy, ← iSup_sup_eq, ← iSup_subtype']
   exact biSup_congr fun _ _ ↦ coverEntropyEntourage_union
 
@@ -201,11 +206,11 @@ noncomputable def coverEntropy_supBotHom (T : X → X) :
   map_sup' := fun _ _ ↦ coverEntropy_union
   map_bot' := coverEntropy_empty
 
-lemma coverEntropy_finite_iUnion [Finite ι] {T : X → X} {F : ι → Set X} :
+lemma coverEntropy_iUnion_of_finite [Finite ι] {T : X → X} {F : ι → Set X} :
     coverEntropy T (⋃ i : ι, F i) = ⨆ i : ι, coverEntropy T (F i) :=
   map_finite_iSup (coverEntropy_supBotHom T) F
 
-lemma coverEntropy_finite_biUnion {T : X → X} {F : ι → Set X} {s : Finset ι} :
+lemma coverEntropy_biUnion_finset {T : X → X} {F : ι → Set X} {s : Finset ι} :
     coverEntropy T (⋃ i ∈ s, F i) = ⨆ i ∈ s, coverEntropy T (F i) := by
   have := map_finset_sup (coverEntropy_supBotHom T) s F
   rw [s.sup_set_eq_biUnion, s.sup_eq_iSup, coverEntropy_supBotHom, SupBotHom.coe_mk,
