@@ -643,7 +643,6 @@ lemma Walk.count_support_rotate_other (w : G.Walk u u) (hx : x ∈ w.support)
   simp [head_support, beq_iff_eq, if_neg hvu, if_neg hvx]
   rw [add_comm]
 
-
 lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.length) :
     ∃ x, ∃ (c : G.Walk x x), c.IsCycle ∧ Odd c.length := by
   induction hn : w.length using Nat.strong_induction_on generalizing v w with
@@ -669,7 +668,23 @@ lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.
       refine ⟨?_, ho⟩
       -- prove that if every vertex is counted once in the support
       -- except v that occurs twice then the walk is a cycle
-      sorry
+      rw [isCycle_def ]
+      refine ⟨?_,?_,?_⟩
+      · -- take w = cons h w' then w' has no repeated vertices so no repeated edges
+        -- need to check that h is not an edge of w' (if it is then the walk has length 2)
+        sorry
+      · have : 0 < w.length := ho.pos
+        rintro rfl; simp at this
+      · rw [List.nodup_iff_count_le_one]
+        intro a
+        rw [List.count_tail (by simp)]
+        by_cases ha : a ∈ w.support
+        · simp only [head_support, beq_iff_eq, tsub_le_iff_right]
+          split_ifs with hva
+          · subst a; exact hcv
+          · exact hs a ha (Ne.symm hva)
+        · rw [List.count_eq_zero_of_not_mem ha]
+          simp
     · push_neg at hcv
       -- get a vertex x ≠ v in the support of w and use (w.rotate hx)
       -- as in the first part
