@@ -906,10 +906,15 @@ theorem MemLp.right_of_add_measure [TopologicalSpace ε] {f : α → ε} (h : Me
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.right_of_add_measure := MemLp.right_of_add_measure
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖) p μ :=
   h.of_le h.aestronglyMeasurable.norm (Eventually.of_forall fun x => by simp)
+
+theorem MemLp.enorm {f : α → ε} (h : MemLp f p μ) : MemLp (‖f ·‖ₑ) p μ :=
+  -- TODO: want .of_le_enorm, just requiring measurability...
+  -- so, must go deeper into the rabbit hole!
+  sorry -- TODO: should have a simple proof
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.norm := MemLp.norm
@@ -918,8 +923,14 @@ theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
     MemLp (fun x => ‖f x‖) p μ ↔ MemLp f p μ :=
   ⟨fun h => ⟨hf, by rw [← eLpNorm_norm]; exact h.2⟩, fun h => h.norm⟩
 
+theorem memLp_enorm_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) :
+    MemLp (‖f ·‖ₑ) p μ ↔ MemLp f p μ :=
+  ⟨fun h => ⟨hf, by rw [← eLpNorm_enorm]; exact h.2⟩, fun h => h.enorm⟩
+
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_iff := memLp_norm_iff
+
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 theorem eLpNorm'_eq_zero_of_ae_zero {f : α → ε} (hq0_lt : 0 < q) (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero hq0_lt]

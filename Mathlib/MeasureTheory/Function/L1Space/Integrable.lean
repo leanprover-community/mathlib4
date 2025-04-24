@@ -164,10 +164,12 @@ theorem MemLp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : MemLp 
   rw [← memLp_one_iff_integrable]
   exact hf.norm_rpow hp_ne_zero hp_ne_top
 
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+
 theorem MemLp.integrable_enorm_rpow {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ₑ ^ p.toReal) μ := by
   rw [← memLp_one_iff_integrable]
-  sorry -- TODO: missing lemma! exact hf.enorm_rpow hp_ne_zero hp_ne_top
+  exact hf.enorm_rpow hp_ne_zero hp_ne_top
 
 theorem MemLp.integrable_norm_rpow' [IsFiniteMeasure μ] {f : α → β} {p : ℝ≥0∞} (hf : MemLp f p μ) :
     Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
@@ -316,7 +318,7 @@ end
 
 section
 
-omit [ENorm ε] [TopologicalSpace ε]
+omit [TopologicalSpace ε]
 variable [MeasurableSpace ε]
   {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
 
