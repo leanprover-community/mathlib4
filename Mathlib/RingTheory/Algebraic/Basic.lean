@@ -299,6 +299,9 @@ end
 
 end RingHom
 
+instance [Nontrivial R] : Algebra.IsAlgebraic R R :=
+  ⟨fun x ↦ isAlgebraic_algebraMap x⟩
+
 theorem Algebra.IsAlgebraic.of_injective (f : A →ₐ[R] B) (hf : Function.Injective f)
     [Algebra.IsAlgebraic R B] : Algebra.IsAlgebraic R A :=
   ⟨fun _ ↦ (isAlgebraic_algHom_iff f hf).mp (Algebra.IsAlgebraic.isAlgebraic _)⟩
@@ -307,6 +310,12 @@ theorem Algebra.IsAlgebraic.of_injective (f : A →ₐ[R] B) (hf : Function.Inje
 theorem AlgEquiv.isAlgebraic (e : A ≃ₐ[R] B)
     [Algebra.IsAlgebraic R A] : Algebra.IsAlgebraic R B :=
   Algebra.IsAlgebraic.of_injective e.symm.toAlgHom e.symm.injective
+
+theorem Algebra.IsAlgebraic.of_surjective_algebraMap [Nontrivial R]
+    (H : Function.Surjective (algebraMap R A)) : Algebra.IsAlgebraic R A := by
+  by_cases h : Function.Injective (algebraMap R A)
+  · exact (AlgEquiv.ofBijective (Algebra.ofId R A) ⟨h, H⟩).isAlgebraic
+  · exact isAlgebraic_of_not_injective h
 
 theorem AlgEquiv.isAlgebraic_iff (e : A ≃ₐ[R] B) :
     Algebra.IsAlgebraic R A ↔ Algebra.IsAlgebraic R B :=
