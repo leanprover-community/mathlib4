@@ -36,7 +36,7 @@ variable {X : Type*} [MeasurableSpace X]
 noncomputable def supOuterMeasure : OuterMeasure X where
   measureOf (s : Set X) :=
     ⨅ t ∈ {t' : Set X | MeasurableSet t' ∧ s ⊆ t'},
-      ⨆ E ∈ {E' : ℕ → Set X | Pairwise (Function.onFun Disjoint s) ∧
+      ⨆ E ∈ {E' : ℕ → Set X | Pairwise (Function.onFun Disjoint E') ∧
              ⋃ n, E' n = t},
       ∑' n, ENNReal.ofReal ‖μ (E n)‖
   empty := by
@@ -48,15 +48,23 @@ noncomputable def supOuterMeasure : OuterMeasure X where
       intro _ _ hEempty n
       simp [hEempty n]
     · simp
-  mono := sorry
-  iUnion_nat := sorry
+  mono {s₁ s₂} h := by
+    simp only [Set.mem_setOf_eq, le_iInf_iff, and_imp]
+    intro t ht hst
+    have ht' : t ∈ {t' : Set X | MeasurableSet t' ∧ s₁ ⊆ t'} := by
+      rw [Set.setOf_and]
+      exact ⟨ht, (Set.Subset.trans h hst)⟩
+    apply le_trans (biInf_le _ ht')
+    exact le_of_eq rfl
+  iUnion_nat := by
+    sorry
 
 noncomputable def supTotalVariation : Measure X :=
   { (supOuterMeasure μ).trim with
     m_iUnion := sorry
     -- countable additivity for measurable sets, follow Rudin
     -- use `OuterMeasure.trim_eq` for measurable sets
-    trim_le := le_of_eq (OuterMeasure.trim_trim (supOuterMeasure μ))}
+    trim_le := le_of_eq (OuterMeasure.trim_trim (supOuterMeasure μ)) }
 
 /-- **Theorem**
 Let `Φ` be a linear functional on `C_0(X, ℂ)`. Suppsoe that `μ`, `μ'` are complex Borel measures
