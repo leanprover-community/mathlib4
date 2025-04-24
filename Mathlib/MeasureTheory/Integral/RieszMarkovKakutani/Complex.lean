@@ -33,7 +33,7 @@ variable {X : Type*} [MeasurableSpace X]
   {V 𝕜 : Type*} [SeminormedAddCommGroup V]  (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 V]
   (μ : VectorMeasure X V)
 
-noncomputable def supTotalVariation : Measure X where
+noncomputable def supOuterMeasure : OuterMeasure X where
   measureOf (s : Set X) :=
     ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint s) ∧
                             ⋃ n, E' n = s}, ∑' n, ENNReal.ofReal ‖μ (E n)‖
@@ -43,8 +43,16 @@ noncomputable def supTotalVariation : Measure X where
     simp [hEempty n]
   mono := sorry
   iUnion_nat := sorry
+
+noncomputable def supTotalVariation : Measure X where
+  measureOf := (supOuterMeasure μ).trim
+  empty := (supOuterMeasure μ).trim.empty
+  mono := (supOuterMeasure μ).trim.mono
+  iUnion_nat := (supOuterMeasure μ).trim.iUnion_nat
   m_iUnion := sorry
-  trim_le := sorry
+  -- countable additivity for measurable sets, follow Rudin
+  -- use `OuterMeasure.trim_eq`
+  trim_le := le_of_eq (OuterMeasure.trim_trim (supOuterMeasure μ))
 
 /-- **Theorem**
 Let `Φ` be a linear functional on `C_0(X, ℂ)`. Suppsoe that `μ`, `μ'` are complex Borel measures
