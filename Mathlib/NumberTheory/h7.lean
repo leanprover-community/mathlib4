@@ -1370,8 +1370,9 @@ lemma foo :
   · sorry
   }
 
-lemma rgeqn : let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  r ≤ n K q := by {sorry}
+lemma rgeqn :
+  let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  r ≤ n K q := sorry
 
 --on the board 1st lemma
 lemma exists_nonzero_iteratedFDeriv :
@@ -1441,7 +1442,7 @@ lemma ρ_is_int : IsIntegral ℤ (cρ α β hirr htriv K σ hd α' β' γ' habc 
   unfold sys_coeffs'
   sorry
 
-def c1ρ : (𝓞 K) := RingOfIntegers.restrict _
+def c1ρ : 𝓞 K := RingOfIntegers.restrict _
   (fun _ => (ρ_is_int α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)) ℤ
 
 #check Algebra.norm_algebraMap
@@ -1591,7 +1592,6 @@ lemma eq5 :
     --   (((η K α β hirr htriv σ hd α' β' γ' habc q u t hq0 h2mq t)))
     -- sorry
 
-
 def c₆ : ℝ := sorry
 
 def c₇ : ℝ := sorry
@@ -1603,46 +1603,72 @@ lemma eq6 :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq;
   let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq;
   let c₄ := c₄ K hd α' β' γ' q
+  let a : ℕ := (finProdFinEquiv.symm.1 t).1 + 1
+  let b : ℕ := (finProdFinEquiv.symm.1 t).2 + 1
+  let l₀ : ℕ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+
 
   house ρ ≤ c₈^r * r^(r + 3/2) := by {
 
-  intros r  ρ c₄
+  intros r  ρ c₄ a b l₀
+  unfold ρ
+  unfold rho
 
-  calc _ ≤ (c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)) ) := ?_
-       _ ≤ ((c₄ ^ (n K q : ℝ))* (n K q)^ ((1/2)*(n K q +1))) * (t * (c₆* q)^r*(c₇)^(q : ℤ)) := ?_
+  calc _ ≤ (∑ t, house (
+      ↑(η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t) *
+        sys_coeffs' α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t u)) := ?_
+       _ ≤ (∑ t, house (algebraMap (𝓞 K) K
+         (η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t)) * house (
+        sys_coeffs' α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t u)) := ?_
+       _ ≤ (∑ t, (c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)) ) *
+          house (sys_coeffs' α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t u)) := ?_
+       _ ≤ (∑ t : Fin (q*q), (c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)) ) *
+           (house (a + b • β') ^ r *
+           house (α') ^ (a * l₀) *
+           house (γ') ^ (b * l₀))) := ?_
+       _ ≤  (∑ t, house (sys_coeffs' α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t u)) *
+          t * ((c₄ ^ (n K q : ℝ)) * (n K q)^ ((1/2)*(n K q +1))) * (c₆* q) ^r * (c₇)^(q : ℤ) := ?_
        _ ≤ c₈^r * r^( r + 3/2) := ?_
 
-  · sorry--exact fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  · have : (c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)))
-           = ((c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)) )) * 1 := by {
-            simp only [Real.rpow_natCast,
-             Nat.reduceDiv, zero_mul, pow_zero, mul_one]}
-    nth_rw 1 [this]
+  · apply house_sum_le_sum_house
+  · apply sum_le_sum
+    intros i hi
+    apply house_mul_le
+  · apply sum_le_sum
+    intros i hi
+    have := fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u i hq0 h2mq
     apply mul_le_mul
-    · apply mul_le_mul
-      · simp only [Real.rpow_natCast, le_refl]
-      · simp only [Nat.reduceDiv, zero_mul, pow_zero, le_refl]
-      · simp only [Nat.reduceDiv, zero_mul, pow_zero, zero_le_one]
-      · unfold c₄
-        unfold _root_.c₄
-        simp only [Real.rpow_natCast, le_sup_iff, zero_le_one, true_or, pow_nonneg]
-    · simp only [zpow_natCast]
-      apply one_le_mul_of_one_le_of_one_le
+    unfold c₄
+    · exact this
+    · apply Preorder.le_refl
+    · apply house_nonneg
+    · unfold c₄
+      unfold _root_.c₄
+      simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one, le_sup_iff,
+        zero_le_one, true_or, pow_nonneg]
+  · apply sum_le_sum
+    intros i hi
+    apply mul_le_mul
+    · simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one, le_refl]
+    · unfold sys_coeffs'
+      trans
+      · apply house_mul_le
       · sorry
-      · sorry
-    · simp only [zero_le_one]
+    · apply house_nonneg
     · simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one]
       unfold c₄
       unfold _root_.c₄
-      simp only [Real.rpow_natCast, le_sup_iff, zero_le_one, true_or, pow_nonneg]
-  · sorry}
+      simp only [le_sup_iff, zero_le_one, true_or, pow_nonneg]
+  · sorry
+  · sorry
+}
 
 def S : ℂ → ℂ := fun z => by
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let l₀ : ℕ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let R := R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq  t
   exact
-  R z * (r.factorial)* (((z - l₀) ^ (-r:ℤ))
+  R z * (r.factorial)* (((z - l₀) ^ (-r : ℤ))
     * (∏ k ∈ range (m K) \ { l₀ }, ((l₀ - k)/ (z - k)) ^ r))
 
 lemma holS :
@@ -1678,8 +1704,7 @@ lemma hcauchy :
   let l₀ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let S := S α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
 
-  (2 * ↑Real.pi * I)⁻¹ *
-  (∮ z in C(0, m K *(1 + (r / q))), (z - l₀)⁻¹ * S z) = S l₀ := by
+  (2 * ↑Real.pi * I)⁻¹ * (∮ z in C(0, m K *(1 + (r / q))), (z - l₀)⁻¹ * S z) = S l₀ := by
 
   intros r l₀ S
 
@@ -1727,7 +1752,7 @@ lemma newρ :
 
   calc _ = (log α)^(- r : ℤ) * S l₀ := ?_
        _ = log α ^ (-r : ℤ) * ((2 * ↑Real.pi * I)⁻¹ *
-      (∮ z in C(0, m K *(1+ (r/q))), (z - l₀)⁻¹ * S z)) := ?_
+      (∮ z in C(0, m K *(1 + (r/q))), (z - l₀)⁻¹ * S z)) := ?_
   · sorry
   · rw [hcauchy]
 
@@ -1875,7 +1900,7 @@ lemma abs_z_k (k : Fin (m K)) :
   let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq
   let η := η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
 
-  ∀ (hz : z ∈ Metric.sphere 0 (m K *(1 + (r/q)))), (m K)*r/q ≤ norm (z-k : ℂ) := by
+  ∀ (hz : z ∈ Metric.sphere 0 (m K *(1 + (r/q)))), (m K) * r/q ≤ norm (z-k : ℂ) := by
 
   intros R r l₀ S ρ η hz
 
@@ -1913,7 +1938,7 @@ lemma blah :
   --let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   --let η := η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
 
-  norm (S z) ≤ (c₁₂)^r*((3-m K)/2 + 3 /2) := by
+  norm (S z) ≤ (c₁₂)^r * ( ( 3 - m K) / 2 + 3 / 2) := by
 
   intros R r l₀ S
   calc
