@@ -79,7 +79,7 @@ It is set to `0` if `X` has infinite variance. -/
 scoped notation "Var[" X "]" => Var[X; MeasureTheory.MeasureSpace.volume]
 
 theorem evariance_lt_top [IsFiniteMeasure μ] (hX : MemLp X 2 μ) : evariance X μ < ∞ := by
-  have := ENNReal.pow_lt_top (hX.sub <| memLp_const <| μ[X]).2 2
+  have := ENNReal.pow_lt_top (hX.sub <| memLp_const <| μ[X]).2 (n := 2)
   rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top, ← ENNReal.rpow_two] at this
   simp only [ENNReal.toReal_ofNat, Pi.sub_apply, ENNReal.toReal_one, one_div] at this
   rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_one] at this
@@ -137,7 +137,7 @@ theorem evariance_eq_lintegral_ofReal :
 
 lemma variance_eq_integral (hX : AEMeasurable X μ) : Var[X; μ] = ∫ ω, (X ω - μ[X]) ^ 2 ∂μ := by
   simp [variance, evariance, toReal_enorm, ← integral_toReal ((hX.sub_const _).enorm.pow_const _) <|
-    .of_forall fun _ ↦ ENNReal.pow_lt_top enorm_lt_top _]
+    .of_forall fun _ ↦ ENNReal.pow_lt_top enorm_lt_top]
 
 lemma variance_of_integral_eq_zero (hX : AEMeasurable X μ) (hXint : μ[X] = 0) :
     variance X μ = ∫ ω, X ω ^ 2 ∂μ := by

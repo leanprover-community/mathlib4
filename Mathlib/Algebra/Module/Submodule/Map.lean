@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Subgroup.Map
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Module.Submodule.LinearMap
-import Mathlib.Order.Cover
 
 /-!
 # `map` and `comap` for `Submodule`s
