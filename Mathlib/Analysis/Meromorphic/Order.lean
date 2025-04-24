@@ -95,7 +95,7 @@ The order of a meromorphic function `f` at `z₀` is finite iff f can locally be
 theorem order_ne_top_iff {f : 𝕜 → E} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) :
     hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
       f =ᶠ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ (hf.order.untop₀) • g z :=
-  ⟨fun h ↦ hf.order_eq_int_iff.1 (WithTop.coe_untop₀_of_ne_top h),
+  ⟨fun h ↦ hf.order_eq_int_iff.1 (WithTop.coe_untop₀_of_ne_top h).symm,
     fun h ↦ Option.ne_none_iff_exists'.2 ⟨hf.order.untopD 0, hf.order_eq_int_iff.2 h⟩⟩
 
 /-- Meromorphic functions that agree in a punctured neighborhood of `z₀` have the same order at
@@ -166,12 +166,14 @@ theorem order_mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/
 @[simp] theorem order_pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℕ} :
     (hf.pow n).order = n * hf.order := by
-  induction' n with n hn
-  · simp only [pow_zero, CharP.cast_eq_zero, zero_mul]
+  induction n
+  case zero =>
+    simp only [pow_zero, CharP.cast_eq_zero, zero_mul]
     rw [← WithTop.coe_zero, MeromorphicAt.order_eq_int_iff]
     use 1, analyticAt_const
     simp
-  · simp only [pow_add, pow_one, (hf.pow n).order_mul hf, hn, Nat.cast_add, Nat.cast_one]
+  case succ n hn =>
+    simp only [pow_add, pow_one, (hf.pow n).order_mul hf, hn, Nat.cast_add, Nat.cast_one]
     cases hf.order
     · aesop
     · norm_cast
@@ -198,7 +200,7 @@ theorem order_mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
     simp [hy, zero_zpow n hn]
   -- General case
   obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.order_ne_top_iff.1 h
-  rw [WithTop.coe_untop₀_of_ne_top h, ← WithTop.coe_mul, MeromorphicAt.order_eq_int_iff]
+  rw [← WithTop.coe_untop₀_of_ne_top h, ← WithTop.coe_mul, MeromorphicAt.order_eq_int_iff]
   use g ^ n, h₁g.zpow h₂g
   constructor
   · simp_all [zpow_eq_zero_iff hn]
