@@ -13,8 +13,6 @@ import Mathlib.RingTheory.Ideal.Quotient.Defs
 -/
 
 
-universe u v
-
 namespace CharP
 
 theorem ker_intAlgebraMap_eq_span
@@ -23,7 +21,7 @@ theorem ker_intAlgebraMap_eq_span
   ext a
   simp [CharP.intCast_eq_zero_iff R p, Ideal.mem_span_singleton]
 
-theorem quotient (R : Type u) [CommRing R] (p : ℕ) [hp1 : Fact p.Prime] (hp2 : ↑p ∈ nonunits R) :
+theorem quotient (R : Type*) [CommRing R] (p : ℕ) [hp1 : Fact p.Prime] (hp2 : ↑p ∈ nonunits R) :
     CharP (R ⧸ (Ideal.span ({(p : R)} : Set R) : Ideal R)) p :=
   have hp0 : (p : R ⧸ (Ideal.span {(p : R)} : Ideal R)) = 0 :=
     map_natCast (Ideal.Quotient.mk (Ideal.span {(p : R)} : Ideal R)) p ▸

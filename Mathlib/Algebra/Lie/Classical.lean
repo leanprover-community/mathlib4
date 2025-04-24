@@ -64,15 +64,13 @@ classical lie algebra, special linear, symplectic, orthogonal
 -/
 
 
-universe u₁ u₂
-
 namespace LieAlgebra
 
 open Matrix
 
 open scoped Matrix
 
-variable (n p q l : Type*) (R : Type u₂)
+variable (n p q l : Type*) (R : Type*)
 variable [DecidableEq n] [DecidableEq p] [DecidableEq q] [DecidableEq l]
 variable [CommRing R]
 

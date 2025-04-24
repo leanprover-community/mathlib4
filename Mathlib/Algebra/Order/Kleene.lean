@@ -51,13 +51,11 @@ kleene algebra, idempotent semiring
 
 open Function
 
-universe u
-
 variable {α β ι : Type*} {π : ι → Type*}
 
 /-- An idempotent semiring is a semiring with the additional property that addition is idempotent.
 -/
-class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
+class IdemSemiring (α : Type*) extends Semiring α, SemilatticeSup α where
   protected sup := (· + ·)
   protected add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
     intros
@@ -68,7 +66,7 @@ class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
 
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
-class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
+class IdemCommSemiring (α : Type*) extends CommSemiring α, IdemSemiring α
 
 /-- Notation typeclass for the Kleene star `∗`. -/
 class KStar (α : Type*) where

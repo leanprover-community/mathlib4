@@ -23,9 +23,7 @@ open Finsupp Finset
 
 namespace Polynomial
 
-universe u v w
-
-variable {R : Type u} {S : Type v} {ι : Type w} {a b : R} {m n : ℕ}
+variable {R : Type*} {S : Type*} {ι : Type*} {a b : R} {m n : ℕ}
 
 section Semiring
 

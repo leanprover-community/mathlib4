@@ -33,10 +33,7 @@ enveloping algebra of `L`, together with its universal property.
 lie algebra, universal enveloping algebra, tensor algebra
 -/
 
-
-universe u₁ u₂ u₃
-
-variable (R : Type u₁) (L : Type u₂)
+variable (R : Type*) (L : Type*)
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 local notation "ιₜ" => TensorAlgebra.ι R
@@ -87,7 +84,7 @@ def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
         rw [map_mul] at this; simp [LieRing.of_associative_ring_bracket, ← this]
       exact RingQuot.mkAlgHom_rel _ (Rel.lie_compat x y) }
 
-variable {A : Type u₃} [Ring A] [Algebra R A] (f : L →ₗ⁅R⁆ A)
+variable {A : Type*} [Ring A] [Algebra R A] (f : L →ₗ⁅R⁆ A)
 
 /-- The universal property of the universal enveloping algebra: Lie algebra morphisms into
 associative algebras lift to associative algebra morphisms from the universal enveloping algebra. -/

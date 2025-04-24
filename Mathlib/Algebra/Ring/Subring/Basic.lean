@@ -23,7 +23,7 @@ to the subring it generates, and prove that it is a Galois insertion.
 
 Notation used here:
 
-`(R : Type u) [Ring R] (S : Type u) [Ring S] (f g : R →+* S)`
+`(R : Type*) [Ring R] (S : Type*) [Ring S] (f g : R →+* S)`
 `(A : Subring R) (B : Subring S) (s : Set R)`
 
 * `instance : CompleteLattice (Subring R)` : the complete lattice structure on the subrings.
@@ -60,9 +60,7 @@ subring, subrings
 
 assert_not_exists OrderedRing
 
-universe u v w
-
-variable {R : Type u} {S : Type v} {T : Type w} [Ring R]
+variable {R : Type*} {S : Type*} {T : Type*} [Ring R]
 
 variable [Ring S] [Ring T]
 
@@ -174,7 +172,7 @@ theorem card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fin
 
 
 /-- The preimage of a subring along a ring homomorphism is a subring. -/
-def comap {R : Type u} {S : Type v} [Ring R] [Ring S] (f : R →+* S) (s : Subring S) : Subring R :=
+def comap {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) (s : Subring S) : Subring R :=
   { s.toSubmonoid.comap (f : R →* S), s.toAddSubgroup.comap (f : R →+ S) with
     carrier := f ⁻¹' s.carrier }
 
@@ -194,7 +192,7 @@ theorem comap_comap (s : Subring T) (g : S →+* T) (f : R →+* S) :
 
 
 /-- The image of a subring along a ring homomorphism is a subring. -/
-def map {R : Type u} {S : Type v} [Ring R] [Ring S] (f : R →+* S) (s : Subring R) : Subring S :=
+def map {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) (s : Subring R) : Subring S :=
   { s.toSubmonoid.map (f : R →* S), s.toAddSubgroup.map (f : R →+ S) with
     carrier := f '' s.carrier }
 
@@ -240,7 +238,7 @@ variable (g : S →+* T) (f : R →+* S)
 
 
 /-- The range of a ring homomorphism, as a subring of the target. See Note [range copy pattern]. -/
-def range {R : Type u} {S : Type v} [Ring R] [Ring S] (f : R →+* S) : Subring S :=
+def range {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) : Subring S :=
   ((⊤ : Subring R).map f).copy (Set.range f) Set.image_univ.symm
 
 @[simp]
@@ -398,7 +396,7 @@ end
 
 section DivisionRing
 
-variable {K : Type u} [DivisionRing K]
+variable {K : Type*} [DivisionRing K]
 
 instance instField : Field (center K) where
   inv a := ⟨a⁻¹, Set.inv_mem_center a.prop⟩
@@ -809,7 +807,7 @@ theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) 
 
 section eqLocus
 
-variable {S : Type v} [Semiring S]
+variable {S : Type*} [Semiring S]
 
 /-- The subring of elements `x : R` such that `f x = g x`, i.e.,
   the equalizer of f and g as a subring of R -/

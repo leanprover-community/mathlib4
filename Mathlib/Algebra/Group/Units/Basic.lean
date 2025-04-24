@@ -27,9 +27,7 @@ assert_not_exists Multiplicative MonoidWithZero DenselyOrdered
 
 open Function
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 section HasElem
 

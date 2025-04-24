@@ -24,9 +24,7 @@ lie subalgebra, normalizer, idealizer, cartan subalgebra
 -/
 
 
-universe u v w w₁ w₂
-
-variable {R : Type u} {L : Type v}
+variable {R : Type*} {L : Type*}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] (H : LieSubalgebra R L)
 
 /-- Given a Lie module `M` of a Lie algebra `L`, `LieSubmodule.IsUcsLimit` is the proposition
@@ -107,7 +105,7 @@ instance (priority := 500) [Nontrivial L] (H : LieSubalgebra R L) [H.IsCartanSub
 end LieSubalgebra
 
 @[simp]
-theorem LieIdeal.normalizer_eq_top {R : Type u} {L : Type v} [CommRing R] [LieRing L]
+theorem LieIdeal.normalizer_eq_top {R : Type*} {L : Type*} [CommRing R] [LieRing L]
     [LieAlgebra R L] (I : LieIdeal R L) : (I : LieSubalgebra R L).normalizer = ⊤ := by
   ext x
   simpa only [LieSubalgebra.mem_normalizer_iff, LieSubalgebra.mem_top, iff_true] using

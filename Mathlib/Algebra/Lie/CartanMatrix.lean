@@ -79,11 +79,9 @@ lie algebra, semi-simple, cartan matrix
 -/
 
 
-universe u v w
-
 noncomputable section
 
-variable (R : Type u) {B : Type v} [CommRing R]
+variable (R : Type*) {B : Type*} [CommRing R]
 variable (A : Matrix B B ℤ)
 
 namespace CartanMatrix

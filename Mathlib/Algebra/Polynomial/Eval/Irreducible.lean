@@ -24,9 +24,7 @@ open Polynomial
 
 namespace Polynomial
 
-universe u v w y
-
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type*} {S : Type*} {T : Type*} {ι : Type*} {a b : R} {m n : ℕ}
 
 section
 variable [CommRing R] [IsDomain R] [CommRing S] [IsDomain S] (φ : R →+* S)

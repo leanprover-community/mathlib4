@@ -35,8 +35,6 @@ assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
-universe u v w
-
 section MonoidHomClass
 
 /-- If two homomorphisms from a division monoid to a monoid are equal at a unit `x`, then they are
@@ -61,7 +59,7 @@ end MonoidHomClass
 
 namespace Units
 
-variable {α : Type*} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
+variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} [Monoid M] [Monoid N] [Monoid P]
 
 /-- The group homomorphism on units induced by a `MonoidHom`. -/
 @[to_additive "The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`."]

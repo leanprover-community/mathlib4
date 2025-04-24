@@ -13,9 +13,7 @@ import Mathlib.Data.Fintype.Card
 
 assert_not_exists MonoidWithZero MulAction
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 instance [Finite α] : Finite (Additive α) :=
   Finite.of_equiv α (by rfl)

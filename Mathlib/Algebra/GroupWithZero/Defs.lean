@@ -22,22 +22,18 @@ members.
 
 assert_not_exists DenselyOrdered
 
-universe u
-
--- We have to fix the universe of `G₀` here, since the default argument to
--- `GroupWithZero.div'` cannot contain a universe metavariable.
-variable {G₀ : Type u} {M₀ : Type*}
+variable {G₀ : Type*} {M₀ : Type*}
 
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
-class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
+class MulZeroClass (M₀ : Type*) extends Mul M₀, Zero M₀ where
   /-- Zero is a left absorbing element for multiplication -/
   zero_mul : ∀ a : M₀, 0 * a = 0
   /-- Zero is a right absorbing element for multiplication -/
   mul_zero : ∀ a : M₀, a * 0 = 0
 
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
-class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
+class IsLeftCancelMulZero (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop where
   /-- Multiplication by a nonzero element is left cancellative. -/
   protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
 
@@ -54,7 +50,7 @@ theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective (a * ·) :=
 end IsLeftCancelMulZero
 
 /-- A mixin for right cancellative multiplication by nonzero elements. -/
-class IsRightCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
+class IsRightCancelMulZero (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop where
   /-- Multiplicatin by a nonzero element is right cancellative. -/
   protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
 
@@ -71,7 +67,7 @@ theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b
 end IsRightCancelMulZero
 
 /-- A mixin for cancellative multiplication by nonzero elements. -/
-class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop
+class IsCancelMulZero (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop
   extends IsLeftCancelMulZero M₀, IsRightCancelMulZero M₀
 
 export MulZeroClass (zero_mul mul_zero)
@@ -86,14 +82,14 @@ class NoZeroDivisors (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop where
 export NoZeroDivisors (eq_zero_or_eq_zero_of_mul_eq_zero)
 /-- A type `S₀` is a "semigroup with zero” if it is a semigroup with zero element, and `0` is left
 and right absorbing. -/
-class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S₀
+class SemigroupWithZero (S₀ : Type*) extends Semigroup S₀, MulZeroClass S₀
 
 /-- A typeclass for non-associative monoids with zero elements. -/
-class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
+class MulZeroOneClass (M₀ : Type*) extends MulOneClass M₀, MulZeroClass M₀
 
 /-- A type `M₀` is a “monoid with zero” if it is a monoid with zero element, and `0` is left
 and right absorbing. -/
-class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
+class MonoidWithZero (M₀ : Type*) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 
 section MonoidWithZero
 
@@ -194,7 +190,7 @@ The type is required to come with an “inverse” function, and the inverse of 
 
 Examples include division rings and the ordered monoids that are the
 target of valuations in general valuation theory. -/
-class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
+class GroupWithZero (G₀ : Type*) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
   /-- The inverse of `0` in a group with zero is `0`. -/
   protected inv_zero : (0 : G₀)⁻¹ = 0
   /-- Every nonzero element of a group with zero is invertible. -/

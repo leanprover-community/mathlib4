@@ -18,8 +18,6 @@ assert_not_exists Submonoid Finset Star
 
 open Function
 
-universe u u' v w x y z
-
 variable {R R' S M M' : Type*}
 
 namespace LinearMap

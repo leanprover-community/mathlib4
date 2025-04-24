@@ -28,8 +28,6 @@ algebra and `B, C` nontrivial, then both `B` and `C` are central algebras.
 Central Algebras, Central Simple Algebras, Noncommutative Algebra
 -/
 
-universe u v
-
 open TensorProduct
 
 variable (K B C : Type*) [CommSemiring K] [Semiring B] [Semiring C] [Algebra K B] [Algebra K C]

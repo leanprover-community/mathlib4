@@ -16,9 +16,7 @@ This file develops some additional material on ordered monoids.
 
 open Function
 
-universe u
-
-variable {α : Type u} {β : Type*} [CommMonoid α] [PartialOrder α]
+variable {α : Type*} {β : Type*} [CommMonoid α] [PartialOrder α]
 
 /-- Pullback an `IsOrderedMonoid` under an injective map. -/
 @[to_additive "Pullback an `IsOrderedAddMonoid` under an injective map."]

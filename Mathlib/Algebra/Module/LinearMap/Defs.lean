@@ -55,15 +55,13 @@ assert_not_exists Star DomMulAct Pi.module WCovBy Field
 
 open Function
 
-universe u u' v w
-
 variable {R R₁ R₂ R₃ S S₃ T M M₁ M₂ M₃ N₂ N₃ : Type*}
 
 /-- A map `f` between modules over a semiring is linear if it satisfies the two properties
 `f (x + y) = f x + f y` and `f (c • x) = c • f x`. The predicate `IsLinearMap R f` asserts this
 property. A bundled version is available with `LinearMap`, and should be favored over
 `IsLinearMap` most of the time. -/
-structure IsLinearMap (R : Type u) {M : Type v} {M₂ : Type w} [Semiring R] [AddCommMonoid M]
+structure IsLinearMap (R : Type*) {M : Type*} {M₂ : Type*} [Semiring R] [AddCommMonoid M]
   [AddCommMonoid M₂] [Module R M] [Module R M₂] (f : M → M₂) : Prop where
   /-- A linear map preserves addition. -/
   map_add : ∀ x y, f (x + y) = f x + f y

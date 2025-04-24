@@ -12,9 +12,7 @@ import Mathlib.Algebra.Star.Basic
 
 namespace RingQuot
 
-universe u
-
-variable {R : Type u} [Semiring R] (r : R → R → Prop)
+variable {R : Type*} [Semiring R] (r : R → R → Prop)
 
 section StarRing
 
@@ -38,7 +36,7 @@ theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
     (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := star'_def _ _ _
 
 /-- Transfer a star_ring instance through a quotient, if the quotient is invariant to `star` -/
-def starRing {R : Type u} [Semiring R] [StarRing R] (r : R → R → Prop)
+def starRing {R : Type*} [Semiring R] [StarRing R] (r : R → R → Prop)
     (hr : ∀ a b, r a b → r (star a) (star b)) : StarRing (RingQuot r) where
   star := star' r hr
   star_involutive := by

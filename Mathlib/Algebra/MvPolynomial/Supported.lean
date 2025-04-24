@@ -21,11 +21,9 @@ variables, polynomial, vars
 -/
 
 
-universe u v w
-
 namespace MvPolynomial
 
-variable {σ : Type*} {R : Type u}
+variable {σ : Type*} {R : Type*}
 
 section CommSemiring
 

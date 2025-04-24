@@ -20,10 +20,8 @@ This file defines bundled homomorphisms of `R`-algebras.
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
 
-universe u v w u₁ v₁
-
 /-- Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. -/
-structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
+structure AlgHom (R : Type*) (A : Type*) (B : Type*) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 
@@ -82,7 +80,7 @@ end AlgHomClass
 
 namespace AlgHom
 
-variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁} {D : Type v₁}
+variable {R : Type*} {A : Type*} {B : Type*} {C : Type*} {D : Type*}
 
 section Semiring
 
@@ -104,7 +102,7 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   commutes f := f.commutes'
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
+def Simps.apply {R : Type*} {α : Type*} {β : Type*} [CommSemiring R]
     [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
 
 initialize_simps_projections AlgHom (toFun → apply)
@@ -381,7 +379,7 @@ end RingHom
 
 namespace Algebra
 
-variable (R : Type u) (A : Type v) (B : Type w)
+variable (R : Type*) (A : Type*) (B : Type*)
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
@@ -419,7 +417,7 @@ theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
 
 end MulDistribMulAction
 
-variable (M : Submonoid R) {B : Type w} [CommRing B] [Algebra R B] {A}
+variable (M : Submonoid R) {B : Type*} [CommRing B] [Algebra R B] {A}
 
 lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
     (algebraMapSubmonoid A M).map f = algebraMapSubmonoid B M := by

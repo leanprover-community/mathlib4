@@ -20,9 +20,7 @@ subsemiring `map`, `comap` and range (`rangeS`) of a `RingHom` etc.
 -/
 
 
-universe u v w
-
-variable {R : Type u} {S : Type v} {T : Type w} [NonAssocSemiring R] (M : Submonoid R)
+variable {R : Type*} {S : Type*} {T : Type*} [NonAssocSemiring R] (M : Submonoid R)
 
 section SubsemiringClass
 

@@ -30,7 +30,7 @@ to the subfield it generates, and prove that it is a Galois insertion.
 
 Notation used here:
 
-`(K : Type u) [DivisionRing K] (L : Type u) [DivisionRing L] (f g : K →+* L)`
+`(K : Type*) [DivisionRing K] (L : Type*) [DivisionRing L] (f g : K →+* L)`
 `(A : Subfield K) (B : Subfield L) (s : Set K)`
 
 * `instance : CompleteLattice (Subfield K)` : the complete lattice structure on the subfields.
@@ -61,9 +61,7 @@ subfield, subfields
 -/
 
 
-universe u v w
-
-variable {K : Type u} {L : Type v} {M : Type w}
+variable {K : Type*} {L : Type*} {M : Type*}
 variable [DivisionRing K] [DivisionRing L] [DivisionRing M]
 
 namespace Subfield
@@ -444,7 +442,7 @@ theorem rangeRestrictField_bijective (f : K →+* L) : Function.Bijective (range
 
 section eqLocus
 
-variable {L : Type v} [Semiring L]
+variable {L : Type*} [Semiring L]
 
 /-- The subfield of elements `x : R` such that `f x = g x`, i.e.,
 the equalizer of f and g as a subfield of R -/
@@ -515,7 +513,7 @@ theorem closure_preimage_le (f : K →+* L) (s : Set L) : closure (f ⁻¹' s) �
 
 section Commutative
 
-variable {K : Type u} [Field K] (s : Subfield K)
+variable {K : Type*} [Field K] (s : Subfield K)
 
 /-- Product of a multiset of elements in a subfield is in the subfield. -/
 protected theorem multiset_prod_mem (m : Multiset K) : (∀ a ∈ m, a ∈ s) → m.prod ∈ s :=

@@ -26,11 +26,9 @@ lie algebra, lie submodule, lie ideal, lattice structure
 -/
 
 
-universe u v w w₁ w₂
-
 section LieSubmodule
 
-variable (R : Type u) (L : Type v) (M : Type w)
+variable (R : Type*) (L : Type*) (M : Type*)
 variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M]
 variable [LieRingModule L M]
 
@@ -67,7 +65,7 @@ instance : Zero (LieSubmodule R L M) :=
 instance : Inhabited (LieSubmodule R L M) :=
   ⟨0⟩
 
-instance (priority := high) coeSort : CoeSort (LieSubmodule R L M) (Type w) where
+instance (priority := high) coeSort : CoeSort (LieSubmodule R L M) (Type _) where
   coe N := { x : M // x ∈ N }
 
 instance (priority := mid) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
@@ -240,7 +238,7 @@ end LieSubmodule
 
 namespace LieSubmodule
 
-variable {R : Type u} {L : Type v} {M : Type w}
+variable {R : Type*} {L : Type*} {M : Type*}
 variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M]
 variable [LieRingModule L M]
 variable (N N' : LieSubmodule R L M)
@@ -775,7 +773,7 @@ end LieSubmodule
 
 section LieSubmoduleMapAndComap
 
-variable {R : Type u} {L : Type v} {L' : Type w₂} {M : Type w} {M' : Type w₁}
+variable {R : Type*} {L : Type*} {L' : Type*} {M : Type*} {M' : Type*}
 variable [CommRing R] [LieRing L] [LieRing L'] [LieAlgebra R L']
 variable [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable [AddCommGroup M'] [Module R M'] [LieRingModule L M']
@@ -924,7 +922,7 @@ end LieSubmoduleMapAndComap
 
 namespace LieModuleHom
 
-variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
+variable {R : Type*} {L : Type*} {M : Type*} {N : Type*}
 variable [CommRing R] [LieRing L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable [AddCommGroup N] [Module R N] [LieRingModule L N]
@@ -1004,7 +1002,7 @@ end LieModuleHom
 
 namespace LieSubmodule
 
-variable {R : Type u} {L : Type v} {M : Type w}
+variable {R : Type*} {L : Type*} {M : Type*}
 variable [CommRing R] [LieRing L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable (N : LieSubmodule R L M)
@@ -1049,7 +1047,7 @@ end LieSubmodule
 
 section TopEquiv
 
-variable (R : Type u) (L : Type v)
+variable (R : Type*) (L : Type*)
 variable [CommRing R] [LieRing L]
 
 variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M]

@@ -30,14 +30,12 @@ lie algebra, abelian, commutative, center
 -/
 
 
-universe u v w w₁ w₂
-
 /-- A Lie (ring) module is trivial iff all brackets vanish. -/
-class LieModule.IsTrivial (L : Type v) (M : Type w) [Bracket L M] [Zero M] : Prop where
+class LieModule.IsTrivial (L : Type*) (M : Type*) [Bracket L M] [Zero M] : Prop where
   trivial : ∀ (x : L) (m : M), ⁅x, m⁆ = 0
 
 @[simp]
-theorem trivial_lie_zero (L : Type v) (M : Type w) [Bracket L M] [Zero M] [LieModule.IsTrivial L M]
+theorem trivial_lie_zero (L : Type*) (M : Type*) [Bracket L M] [Zero M] [LieModule.IsTrivial L M]
     (x : L) (m : M) : ⁅x, m⁆ = 0 :=
   LieModule.IsTrivial.trivial x m
 
@@ -50,14 +48,14 @@ instance LieModule.instIsTrivialOfSubsingleton' {L M : Type*}
   ⟨fun x m ↦ by simp_rw [Subsingleton.eq_zero m, lie_zero]⟩
 
 /-- A Lie algebra is Abelian iff it is trivial as a Lie module over itself. -/
-abbrev IsLieAbelian (L : Type v) [Bracket L L] [Zero L] : Prop :=
+abbrev IsLieAbelian (L : Type*) [Bracket L L] [Zero L] : Prop :=
   LieModule.IsTrivial L L
 
-instance LieIdeal.isLieAbelian_of_trivial (R : Type u) (L : Type v) [CommRing R] [LieRing L]
+instance LieIdeal.isLieAbelian_of_trivial (R : Type*) (L : Type*) [CommRing R] [LieRing L]
     [LieAlgebra R L] (I : LieIdeal R L) [h : LieModule.IsTrivial L I] : IsLieAbelian I where
   trivial x y := by apply h.trivial
 
-theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
+theorem Function.Injective.isLieAbelian {R : Type*} {L₁ : Type*} {L₂ : Type*} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}
     (h₁ : Function.Injective f) (_ : IsLieAbelian L₂) : IsLieAbelian L₁ :=
   { trivial := fun x y => h₁ <|
@@ -66,7 +64,7 @@ theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Typ
         _ = 0 := trivial_lie_zero _ _ _ _
         _ = f 0 := f.map_zero.symm}
 
-theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
+theorem Function.Surjective.isLieAbelian {R : Type*} {L₁ : Type*} {L₂ : Type*} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}
     (h₁ : Function.Surjective f) (h₂ : IsLieAbelian L₁) : IsLieAbelian L₂ :=
   { trivial := fun x y => by
@@ -74,12 +72,12 @@ theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Ty
       obtain ⟨v, rfl⟩ := h₁ y
       rw [← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero] }
 
-theorem lie_abelian_iff_equiv_lie_abelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
+theorem lie_abelian_iff_equiv_lie_abelian {R : Type*} {L₁ : Type*} {L₂ : Type*} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] (e : L₁ ≃ₗ⁅R⁆ L₂) :
     IsLieAbelian L₁ ↔ IsLieAbelian L₂ :=
   ⟨e.symm.injective.isLieAbelian, e.injective.isLieAbelian⟩
 
-theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
+theorem commutative_ring_iff_abelian_lie_ring {A : Type*} [Ring A] :
     Std.Commutative (α := A) (· * ·) ↔ IsLieAbelian A := by
   have h₁ : Std.Commutative (α := A) (· * ·) ↔ ∀ a b : A, a * b = b * a :=
     ⟨fun h => h.1, fun h => ⟨h⟩⟩
@@ -88,7 +86,7 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
 
 section Center
 
-variable (R : Type u) (L : Type v) (M : Type w) (N : Type w₁)
+variable (R : Type*) (L : Type*) (M : Type*) (N : Type*)
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
@@ -295,7 +293,7 @@ section IdealOperations
 
 open LieSubmodule LieSubalgebra
 
-variable {R : Type u} {L : Type v} {M : Type w}
+variable {R : Type*} {L : Type*} {M : Type*}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
 variable [LieRingModule L M] (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 

@@ -19,15 +19,13 @@ lie algebra, lie module, direct sum
 -/
 
 
-universe u v w w₁
-
 namespace DirectSum
 
 open DFinsupp
 
 open scoped DirectSum
 
-variable {R : Type u} {ι : Type v} [CommRing R]
+variable {R : Type*} {ι : Type*} [CommRing R]
 
 section Modules
 
@@ -35,7 +33,7 @@ section Modules
 structure. -/
 
 
-variable {L : Type w₁} {M : ι → Type w}
+variable {L : Type*} {M : ι → Type*}
 variable [LieRing L] [LieAlgebra R L]
 variable [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
 variable [∀ i, LieRingModule L (M i)] [∀ i, LieModule R L (M i)]
@@ -93,7 +91,7 @@ section Algebras
 /-! The direct sum of Lie algebras carries a natural Lie algebra structure. -/
 
 
-variable (L : ι → Type w)
+variable (L : ι → Type*)
 variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]
 
 instance lieRing : LieRing (⨁ i, L i) :=
@@ -171,7 +169,7 @@ variable {R L ι}
 `(⨁ i, L i) →ₗ[R] L'`. If in addition `⁅f i x, f j y⁆ = 0` for any `x ∈ L i` and `y ∈ L j` (`i ≠ j`)
 then this map is a morphism of Lie algebras. -/
 @[simps]
-def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L']
+def toLieAlgebra [DecidableEq ι] (L' : Type*) [LieRing L'] [LieAlgebra R L']
     (f : ∀ i, L i →ₗ⁅R⁆ L') (hf : Pairwise fun i j => ∀ (x : L i) (y : L j), ⁅f i x, f j y⁆ = 0) :
     (⨁ i, L i) →ₗ⁅R⁆ L' :=
   { toModule R ι L' fun i => (f i : L i →ₗ[R] L') with
@@ -208,7 +206,7 @@ end Algebras
 
 section Ideals
 
-variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
+variable {L : Type*} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 
 /-- The fact that this instance is necessary seems to be a bug in typeclass inference. See
 [this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/

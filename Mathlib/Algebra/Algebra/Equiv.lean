@@ -20,11 +20,9 @@ This file defines bundled isomorphisms of `R`-algebras.
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
 
-universe u v w u₁ v₁
-
 /-- An equivalence of algebras (denoted as `A ≃ₐ[R] B`)
 is an equivalence of rings commuting with the actions of scalars. -/
-structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
+structure AlgEquiv (R : Type*) (A : Type*) (B : Type*) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   protected commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
@@ -72,10 +70,9 @@ end AlgEquivClass
 
 namespace AlgEquiv
 
-universe uR uA₁ uA₂ uA₃ uA₁' uA₂' uA₃'
-variable {R : Type uR}
-variable {A₁ : Type uA₁} {A₂ : Type uA₂} {A₃ : Type uA₃}
-variable {A₁' : Type uA₁'} {A₂' : Type uA₂'} {A₃' : Type uA₃'}
+variable {R : Type*}
+variable {A₁ : Type*} {A₂ : Type*} {A₃ : Type*}
+variable {A₁' : Type*} {A₂' : Type*} {A₃' : Type*}
 
 section Semiring
 

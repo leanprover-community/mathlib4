@@ -49,13 +49,11 @@ lie bracket, jacobi identity, lie ring, lie algebra, lie module
 -/
 
 
-universe u v w w₁ w₂
-
 open Function
 
 /-- A Lie ring is an additive group with compatible product, known as the bracket, satisfying the
 Jacobi identity. -/
-class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
+class LieRing (L : Type*) extends AddCommGroup L, Bracket L L where
   /-- A Lie ring bracket is additive in its first component. -/
   protected add_lie : ∀ x y z : L, ⁅x + y, z⁆ = ⁅x, z⁆ + ⁅y, z⁆
   /-- A Lie ring bracket is additive in its second component. -/
@@ -67,7 +65,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
 
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
-@[ext] class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
+@[ext] class LieAlgebra (R : Type*) (L : Type*) [CommRing R] [LieRing L] extends Module R L where
   /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
 
   The compatibility in the first argument is not a class property, but follows since every
@@ -77,7 +75,7 @@ identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring.
 /-- A Lie ring module is an additive group, together with an additive action of a
 Lie ring on this group, such that the Lie bracket acts as the commutator of endomorphisms.
 (For representations of Lie *algebras* see `LieModule`.) -/
-class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] extends Bracket L M where
+class LieRingModule (L : Type*) (M : Type*) [LieRing L] [AddCommGroup M] extends Bracket L M where
   /-- A Lie ring module bracket is additive in its first component. -/
   protected add_lie : ∀ (x y : L) (m : M), ⁅x + y, m⁆ = ⁅x, m⁆ + ⁅y, m⁆
   /-- A Lie ring module bracket is additive in its second component. -/
@@ -87,7 +85,7 @@ class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] exten
 
 /-- A Lie module is a module over a commutative ring, together with a linear action of a Lie
 algebra on this module, such that the Lie bracket acts as the commutator of endomorphisms. -/
-class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
+class LieModule (R : Type*) (L : Type*) (M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] : Prop where
   /-- A Lie module bracket is compatible with scalar multiplication in its first argument. -/
   protected smul_lie : ∀ (t : R) (x : L) (m : M), ⁅t • x, m⁆ = t • ⁅x, m⁆
@@ -132,7 +130,7 @@ theorem LieAlgebra.toModule_injective (L : Type*) [LieRing L] :
 instance (L : Type*) [LieRing L] : Subsingleton (LieAlgebra ℚ L) :=
   LieAlgebra.toModule_injective L |>.subsingleton
 
-variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
+variable {R : Type*} {L : Type*} {M : Type*} {N : Type*}
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
@@ -323,7 +321,7 @@ notation:25 L " →ₗ⁅" R:25 "⁆ " L':0 => LieHom R L L'
 
 namespace LieHom
 
-variable {R : Type u} {L₁ : Type v} {L₂ : Type w} {L₃ : Type w₁}
+variable {R : Type*} {L₁ : Type*} {L₂ : Type*} {L₃ : Type*}
 variable [CommRing R]
 variable [LieRing L₁] [LieAlgebra R L₁]
 variable [LieRing L₂] [LieAlgebra R L₂]
@@ -474,7 +472,7 @@ end LieHom
 
 section ModulePullBack
 
-variable {R : Type u} {L₁ : Type v} {L₂ : Type w} (M : Type w₁)
+variable {R : Type*} {L₁ : Type*} {L₂ : Type*} (M : Type*)
 variable [CommRing R] [LieRing L₁] [LieAlgebra R L₁] [LieRing L₂] [LieAlgebra R L₂]
 variable [AddCommGroup M] [LieRingModule L₂ M]
 variable (f : L₁ →ₗ⁅R⁆ L₂)
@@ -508,7 +506,7 @@ end ModulePullBack
 which is also a linear equivalence.
 We could instead define an equivalence to be a morphism which is also a (plain) equivalence.
 However, it is more convenient to define via linear equivalence to get `.toLinearEquiv` for free. -/
-structure LieEquiv (R : Type u) (L : Type v) (L' : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
+structure LieEquiv (R : Type*) (L : Type*) (L' : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ⁅R⁆ L' where
   /-- The inverse function of an equivalence of Lie algebras -/
   invFun : L' → L
@@ -524,7 +522,7 @@ notation:50 L " ≃ₗ⁅" R "⁆ " L' => LieEquiv R L L'
 
 namespace LieEquiv
 
-variable {R : Type u} {L₁ : Type v} {L₂ : Type w} {L₃ : Type w₁}
+variable {R : Type*} {L₁ : Type*} {L₂ : Type*} {L₃ : Type*}
 variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieRing L₃]
 variable [LieAlgebra R L₁] [LieAlgebra R L₂] [LieAlgebra R L₃]
 
@@ -671,7 +669,7 @@ end LieEquiv
 
 section LieModuleMorphisms
 
-variable (R : Type u) (L : Type v) (M : Type w) (N : Type w₁) (P : Type w₂)
+variable (R : Type*) (L : Type*) (M : Type*) (N : Type*) (P : Type*)
 variable [CommRing R] [LieRing L]
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 variable [Module R M] [Module R N] [Module R P]

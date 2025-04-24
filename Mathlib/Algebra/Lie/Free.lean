@@ -49,11 +49,9 @@ adjoint functor
 -/
 
 
-universe u v w
-
 noncomputable section
 
-variable (R : Type u) (X : Type v) [CommRing R]
+variable (R : Type*) (X : Type*) [CommRing R]
 
 /- We save characters by using Bourbaki's name `lib` (as in «libre») for
 `FreeNonUnitalNonAssocAlgebra` in this file. -/
@@ -175,7 +173,7 @@ variable {X}
 `R`. -/
 def of : X → FreeLieAlgebra R X := fun x => Quot.mk _ (lib.of R x)
 
-variable {L : Type w} [LieRing L] [LieAlgebra R L]
+variable {L : Type*} [LieRing L] [LieAlgebra R L]
 
 /-- An auxiliary definition used to construct the equivalence `lift` below. -/
 def liftAux (f : X → CommutatorRing L) :=

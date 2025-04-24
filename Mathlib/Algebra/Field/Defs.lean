@@ -52,8 +52,6 @@ assert_not_exists MonoidHom Set
 
 open Function
 
-universe u
-
 variable {K : Type*}
 
 /-- The default definition of the coercion `ℚ≥0 → K` for a division semiring `K`.
@@ -173,7 +171,7 @@ See also note [forgetful inheritance].
 If the field has positive characteristic `p`, our division by zero convention forces
 `ratCast (1 / p) = 1 / 0 = 0`. -/
 @[stacks 09FD "first part"]
-class Field (K : Type u) extends CommRing K, DivisionRing K
+class Field (K : Type*) extends CommRing K, DivisionRing K
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toSemifield [Field K] : Semifield K := { ‹Field K› with }

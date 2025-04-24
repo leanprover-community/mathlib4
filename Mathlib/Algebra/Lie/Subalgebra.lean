@@ -28,11 +28,9 @@ lie algebra, lie subalgebra
 -/
 
 
-universe u v w w₁ w₂
-
 section LieSubalgebra
 
-variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R : Type*) (L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- A Lie subalgebra of a Lie algebra is submodule that is closed under the Lie bracket.
 This is a sufficient condition for the subset itself to form a Lie algebra. -/
@@ -215,8 +213,8 @@ theorem coe_toSubmodule : ((L' : Submodule R L) : Set L) = L' :=
 
 section LieModule
 
-variable {M : Type w} [AddCommGroup M] [LieRingModule L M]
-variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N]
+variable {M : Type*} [AddCommGroup M] [LieRingModule L M]
+variable {N : Type*} [AddCommGroup N] [LieRingModule L N] [Module R N]
 
 instance : Bracket L' M where
   bracket x m := ⁅(x : L), m⁆
@@ -276,7 +274,7 @@ theorem coe_incl' : ⇑L'.incl' = ((↑) : L' → L) :=
 end LieSubalgebra
 
 variable {R L}
-variable {L₂ : Type w} [LieRing L₂] [LieAlgebra R L₂]
+variable {L₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
 variable (f : L →ₗ⁅R⁆ L₂)
 
 namespace LieHom
@@ -701,7 +699,7 @@ end LieSubalgebra
 
 namespace LieEquiv
 
-variable {R : Type u} {L₁ : Type v} {L₂ : Type w}
+variable {R : Type*} {L₁ : Type*} {L₂ : Type*}
 variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂]
 
 /-- An injective Lie algebra morphism is an equivalence onto its range. -/

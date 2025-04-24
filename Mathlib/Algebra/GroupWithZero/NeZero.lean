@@ -15,8 +15,6 @@ which is a part of the algebraic hierarchy used by basic tactics.
 
 assert_not_exists DenselyOrdered
 
-universe u
-
 variable {M₀ M₀' : Type*} [MulZeroOneClass M₀] [Nontrivial M₀]
 
 /-- In a nontrivial monoid with zero, zero and one are different. -/

@@ -28,9 +28,7 @@ open scoped Nat
 
 namespace Polynomial
 
-universe u v w y z
-
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {A : Type z} {a b : R} {n : ℕ}
+variable {R : Type*} {S : Type*} {T : Type*} {ι : Type*} {A : Type*} {a b : R} {n : ℕ}
 
 section Derivative
 

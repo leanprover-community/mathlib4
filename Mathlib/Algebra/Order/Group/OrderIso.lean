@@ -14,9 +14,7 @@ import Mathlib.Order.Hom.Basic
 
 open Function
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 section Group
 

@@ -137,9 +137,7 @@ end Prod
 
 namespace Pi
 
-universe u v w
-
-variable {I : Type u} {fg : I → Type v} [∀ i, AddGroup (fg i)] {fp : I → Type w}
+variable {I : Type*} {fg : I → Type*} [∀ i, AddGroup (fg i)] {fp : I → Type*}
 
 open AddAction AddTorsor
 

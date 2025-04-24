@@ -21,9 +21,7 @@ open Finset
 
 open Finsupp hiding single mapDomain
 
-universe u₁ u₂ u₃ u₄
-
-variable (k : Type u₁) (G : Type u₂) (H : Type*) {R : Type*}
+variable (k : Type*) (G : Type*) (H : Type*) {R : Type*}
 
 /-! ### Multiplicative monoids -/
 
@@ -38,7 +36,7 @@ section NonUnitalNonAssocAlgebra
 
 variable (k) [Semiring k] [DistribSMul R k] [Mul G]
 
-variable {A : Type u₃} [NonUnitalNonAssocSemiring A]
+variable {A : Type*} [NonUnitalNonAssocSemiring A]
 
 /-- A non_unital `k`-algebra homomorphism from `MonoidAlgebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
@@ -151,7 +149,7 @@ end Algebra
 section lift
 
 variable [CommSemiring k] [Monoid G] [Monoid H]
-variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
+variable {A : Type*} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[k] B) (g : G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
@@ -295,14 +293,14 @@ section
 variable (k)
 
 /-- When `V` is a `k[G]`-module, multiplication by a group element `g` is a `k`-linear map. -/
-def GroupSMul.linearMap [Monoid G] [CommSemiring k] (V : Type u₃) [AddCommMonoid V] [Module k V]
+def GroupSMul.linearMap [Monoid G] [CommSemiring k] (V : Type*) [AddCommMonoid V] [Module k V]
     [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G) : V →ₗ[k] V where
   toFun v := single g (1 : k) • v
   map_add' x y := smul_add (single g (1 : k)) x y
   map_smul' _c _x := smul_algebra_smul_comm _ _ _
 
 @[simp]
-theorem GroupSMul.linearMap_apply [Monoid G] [CommSemiring k] (V : Type u₃) [AddCommMonoid V]
+theorem GroupSMul.linearMap_apply [Monoid G] [CommSemiring k] (V : Type*) [AddCommMonoid V]
     [Module k V] [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G)
     (v : V) : (GroupSMul.linearMap k V g) v = single g (1 : k) • v :=
   rfl
@@ -310,7 +308,7 @@ theorem GroupSMul.linearMap_apply [Monoid G] [CommSemiring k] (V : Type u₃) [A
 section
 
 variable {k}
-variable [Monoid G] [CommSemiring k] {V : Type u₃} {W : Type u₄} [AddCommMonoid V] [Module k V]
+variable [Monoid G] [CommSemiring k] {V : Type*} {W : Type*} [AddCommMonoid V] [Module k V]
   [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] [AddCommMonoid W]
   [Module k W] [Module (MonoidAlgebra k G) W] [IsScalarTower k (MonoidAlgebra k G) W]
   (f : V →ₗ[k] W)
@@ -351,7 +349,7 @@ variable {k G H}
 section NonUnitalNonAssocAlgebra
 
 variable (k) [Semiring k] [DistribSMul R k] [Add G]
-variable {A : Type u₃} [NonUnitalNonAssocSemiring A]
+variable {A : Type*} [NonUnitalNonAssocSemiring A]
 
 /-- A non_unital `k`-algebra homomorphism from `k[G]` is uniquely defined by its
 values on the functions `single a 1`. -/
@@ -427,7 +425,7 @@ end Algebra
 section lift
 
 variable [CommSemiring k] [AddMonoid G]
-variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
+variable {A : Type*} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :

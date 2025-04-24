@@ -43,11 +43,9 @@ open Set
 
 open scoped Pointwise
 
-universe u v
-
 section Defs
 
-variable (R : Type u) {A : Type v}
+variable (R : Type*) {A : Type*}
 variable [CommSemiring R] [Ring A] [Algebra R A]
 
 local notation "↑ₐ" => algebraMap R A
@@ -89,7 +87,7 @@ namespace spectrum
 
 section ScalarSemiring
 
-variable {R : Type u} {A : Type v}
+variable {R : Type*} {A : Type*}
 variable [CommSemiring R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
@@ -272,7 +270,7 @@ end ScalarSemiring
 
 section ScalarRing
 
-variable {R : Type u} {A : Type v}
+variable {R : Type*} {A : Type*}
 variable [CommRing R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
@@ -308,7 +306,7 @@ end ScalarRing
 
 section ScalarSemifield
 
-variable {R : Type u} {A : Type v} [Semifield R] [Ring A] [Algebra R A]
+variable {R : Type*} {A : Type*} [Semifield R] [Ring A] [Algebra R A]
 
 @[simp]
 lemma inv₀_mem_iff {r : R} {a : Aˣ} :
@@ -329,7 +327,7 @@ end ScalarSemifield
 
 section ScalarField
 
-variable {𝕜 : Type u} {A : Type v}
+variable {𝕜 : Type*} {A : Type*}
 variable [Field 𝕜] [Ring A] [Algebra 𝕜 A]
 
 local notation "σ" => spectrum 𝕜

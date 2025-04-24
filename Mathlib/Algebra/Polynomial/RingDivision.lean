@@ -24,9 +24,7 @@ open Finset
 
 namespace Polynomial
 
-universe u v w z
-
-variable {R : Type u} {S : Type v} {T : Type w} {a b : R} {n : ℕ}
+variable {R : Type*} {S : Type*} {T : Type*} {a b : R} {n : ℕ}
 
 section CommRing
 
@@ -220,7 +218,7 @@ theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (
     exact h.val_inv_mul⟩
 
 open scoped Function in -- required for scoped `on` notation
-theorem pairwise_coprime_X_sub_C {K} [Field K] {I : Type v} {s : I → K} (H : Function.Injective s) :
+theorem pairwise_coprime_X_sub_C {K} [Field K] {I : Type*} {s : I → K} (H : Function.Injective s) :
     Pairwise (IsCoprime on fun i : I => X - C (s i)) := fun _ _ hij =>
   isCoprime_X_sub_C_of_isUnit_sub (sub_ne_zero_of_ne <| H.ne hij).isUnit
 

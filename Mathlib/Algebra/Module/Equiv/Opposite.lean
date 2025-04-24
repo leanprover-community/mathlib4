@@ -28,9 +28,7 @@ end
 
 namespace MulOpposite
 
-universe u v
-
-variable (R : Type u) {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R : Type*) {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- The function `op` is a linear equivalence. -/
 def opLinearEquiv : M ≃ₗ[R] Mᵐᵒᵖ :=

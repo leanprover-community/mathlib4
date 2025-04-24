@@ -30,14 +30,12 @@ Note `Zero` has already been defined in core Lean.
 
 assert_not_exists One Function.Injective
 
-universe u v w
-
 
 /--
 The notation typeclass for heterogeneous additive actions.
 This enables the notation `a +ᵥ b : γ` where `a : α`, `b : β`.
 -/
-class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+class HVAdd (α : Type*) (β : Type*) (γ : outParam Type*) where
   /-- `a +ᵥ b` computes the sum of `a` and `b`.
   The meaning of this notation is type-dependent. -/
   hVAdd : α → β → γ
@@ -54,7 +52,7 @@ and it tries to insert coercions into `b` to get some `b'`
 such that `a • b'` has the same type as `b'`.
 See the module documentation near the macro for more details.
 -/
-class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+class HSMul (α : Type*) (β : Type*) (γ : outParam Type*) where
   /-- `a • b` computes the product of `a` and `b`.
   The meaning of this notation is type-dependent, but it is intended to be used for left actions. -/
   hSMul : α → β → γ
@@ -64,7 +62,7 @@ attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
 attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
 
 /-- Type class for the `+ᵥ` notation. -/
-class VAdd (G : Type u) (P : Type v) where
+class VAdd (G : Type*) (P : Type*) where
   /-- `a +ᵥ b` computes the sum of `a` and `b`. The meaning of this notation is type-dependent,
   but it is intended to be used for left actions. -/
   vadd : G → P → P
@@ -77,7 +75,7 @@ class VSub (G : outParam Type*) (P : Type*) where
 
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
 @[to_additive (attr := ext)]
-class SMul (M : Type u) (α : Type v) where
+class SMul (M : Type*) (α : Type*) where
   /-- `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent,
   but it is intended to be used for left actions. -/
   smul : M → α → α
@@ -140,7 +138,7 @@ variable {G : Type*}
 
 /-- Class of types that have an inversion operation. -/
 @[to_additive, notation_class]
-class Inv (α : Type u) where
+class Inv (α : Type*) where
   /-- Invert an element of α, denoted by `a⁻¹`. -/
   inv : α → α
 
@@ -215,7 +213,7 @@ end Div
 end ite
 
 @[to_additive]
-class One (α : Type u) where
+class One (α : Type*) where
   one : α
 
 @[to_additive existing Zero.toOfNat0]
@@ -227,7 +225,7 @@ instance (priority := 200) One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α whe
 
 attribute [to_additive_change_numeral 2] OfNat OfNat.ofNat
 
-variable {α : Type u}
+variable {α : Type*}
 
 instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α := ⟨0⟩
 instance (priority := 20) One.instNonempty [One α] : Nonempty α := ⟨1⟩

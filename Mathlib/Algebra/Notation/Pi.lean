@@ -17,15 +17,13 @@ assert_not_exists Set.range Monoid DenselyOrdered
 
 open Function
 
-universe u v₁ v₂ v₃
-
-variable {I : Type u}
+variable {I : Type*}
 
 -- The indexing type
 variable {α β γ : Type*}
 
 -- The families of types already equipped with instances
-variable {f : I → Type v₁} (x y : ∀ i, f i) (i : I)
+variable {f : I → Type*} (x y : ∀ i, f i) (i : I)
 
 namespace Pi
 

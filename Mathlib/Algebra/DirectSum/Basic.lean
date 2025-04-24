@@ -24,9 +24,7 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 
 open Function
 
-universe u v w u₁
-
-variable (ι : Type v) (β : ι → Type w)
+variable (ι : Type*) (β : ι → Type*)
 
 /-- `DirectSum ι β` is the direct sum of a family of additive commutative monoids `β i`.
 
@@ -202,7 +200,7 @@ theorem addHom_ext' {γ : Type*} [AddZeroClass γ] ⦃f g : (⨁ i, β i) →+ �
     (H : ∀ i : ι, f.comp (of _ i) = g.comp (of _ i)) : f = g :=
   addHom_ext fun i => DFunLike.congr_fun <| H i
 
-variable {γ : Type u₁} [AddCommMonoid γ]
+variable {γ : Type*} [AddCommMonoid γ]
 
 section ToAddMonoid
 
@@ -272,7 +270,7 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
   DFinsupp.uniqueOfIsEmpty
 
 /-- The natural equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
-protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι] :
+protected def id (M : Type*) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι] :
     (⨁ _ : ι, M) ≃+ M :=
   {
     DirectSum.toAddMonoid fun _ =>
@@ -303,7 +301,7 @@ end CongrLeft
 
 section Option
 
-variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)]
+variable {α : Option ι → Type*} [∀ i, AddCommMonoid (α i)]
 
 /-- Isomorphism obtained by separating the term of index `none` of a direct sum over `Option ι`. -/
 @[simps!]
@@ -314,7 +312,7 @@ end Option
 
 section Sigma
 
-variable [DecidableEq ι] {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
+variable [DecidableEq ι] {α : ι → Type*} {δ : ∀ i, α i → Type*} [∀ i j, AddCommMonoid (δ i j)]
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`. -/
 def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j where

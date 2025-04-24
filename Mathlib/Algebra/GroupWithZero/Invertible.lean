@@ -14,9 +14,7 @@ We intentionally keep imports minimal here as this file is used by `Mathlib.Tact
 
 assert_not_exists DenselyOrdered
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 theorem Invertible.ne_zero [MulZeroOneClass α] (a : α) [Nontrivial α] [Invertible a] : a ≠ 0 :=
   fun ha =>

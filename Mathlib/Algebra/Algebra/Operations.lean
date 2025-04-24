@@ -44,15 +44,13 @@ multiplication of submodules, division of submodules, submodule semiring
 -/
 
 
-universe uι u v
-
 open Algebra Set MulOpposite
 
 open Pointwise
 
 namespace SubMulAction
 
-variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : SubMulAction R A) :=
   ⟨r, (algebraMap_eq_smul_one r).symm⟩
@@ -66,7 +64,7 @@ namespace Submodule
 
 section Module
 
-variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
+variable {R : Type*} [Semiring R] {A : Type*} [Semiring A] [Module R A]
 
 -- TODO: Why is this in a file about `Algebra`?
 -- TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
@@ -276,7 +274,7 @@ lemma restrictScalars_mul {A B C} [Semiring A] [Semiring B] [Semiring C]
     (I * J).restrictScalars A = I.restrictScalars A * J.restrictScalars A :=
   rfl
 
-variable {ι : Sort uι}
+variable {ι : Sort*}
 
 theorem iSup_mul (s : ι → Submodule R A) (t : Submodule R A) : (⨆ i, s i) * t = ⨆ i, s i * t :=
   iSup_smul
@@ -343,12 +341,12 @@ lemma restrictScalars_pow {A B C : Type*} [Semiring A] [Semiring B]
 
 end Module
 
-variable {ι : Sort uι}
-variable {R : Type u} [CommSemiring R]
+variable {ι : Sort*}
+variable {R : Type*} [CommSemiring R]
 
 section AlgebraSemiring
 
-variable {A : Type v} [Semiring A] [Algebra R A]
+variable {A : Type*} [Semiring A] [Algebra R A]
 variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 theorem one_eq_range : (1 : Submodule R A) = LinearMap.range (Algebra.linearMap R A) := by
@@ -713,7 +711,7 @@ end AlgebraSemiring
 
 section AlgebraCommSemiring
 
-variable {A : Type v} [CommSemiring A] [Algebra R A]
+variable {A : Type*} [CommSemiring A] [Algebra R A]
 variable {M N : Submodule R A} {m n : A}
 
 theorem mul_mem_mul_rev (hm : m ∈ M) (hn : n ∈ N) : n * m ∈ M * N :=

@@ -36,11 +36,9 @@ forgetful functor, adjoint functor
 -/
 
 
-universe u v w
-
 noncomputable section
 
-variable (R : Type u) (X : Type v) [Semiring R]
+variable (R : Type*) (X : Type*) [Semiring R]
 
 /--
 If `α` is a type, and `R` is a semiring, then `FreeNonUnitalNonAssocAlgebra R α` is the free
@@ -69,7 +67,7 @@ variable {X}
 def of : X → FreeNonUnitalNonAssocAlgebra R X :=
   MonoidAlgebra.ofMagma R _ ∘ FreeMagma.of
 
-variable {A : Type w} [NonUnitalNonAssocSemiring A]
+variable {A : Type*} [NonUnitalNonAssocSemiring A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- The functor `X ↦ FreeNonUnitalNonAssocAlgebra R X` from the category of types to the

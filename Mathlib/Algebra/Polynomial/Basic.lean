@@ -70,9 +70,7 @@ open Function hiding Commute
 
 namespace Polynomial
 
-universe u
-
-variable {R : Type u} {a b : R} {m n : ℕ}
+variable {R : Type*} {a b : R} {m n : ℕ}
 
 section Semiring
 
@@ -102,7 +100,7 @@ section AddMonoidAlgebra
 private irreducible_def add : R[X] → R[X] → R[X]
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
-private irreducible_def neg {R : Type u} [Ring R] : R[X] → R[X]
+private irreducible_def neg {R : Type*} [Ring R] : R[X] → R[X]
   | ⟨a⟩ => ⟨-a⟩
 
 private irreducible_def mul : R[X] → R[X] → R[X]
@@ -117,10 +115,10 @@ instance one : One R[X] :=
 instance add' : Add R[X] :=
   ⟨add⟩
 
-instance neg' {R : Type u} [Ring R] : Neg R[X] :=
+instance neg' {R : Type*} [Ring R] : Neg R[X] :=
   ⟨neg⟩
 
-instance sub {R : Type u} [Ring R] : Sub R[X] :=
+instance sub {R : Type*} [Ring R] : Sub R[X] :=
   ⟨fun a b => a + -b⟩
 
 instance mul' : Mul R[X] :=
@@ -158,11 +156,11 @@ theorem ofFinsupp_add {a b} : (⟨a + b⟩ : R[X]) = ⟨a⟩ + ⟨b⟩ :=
   show _ = add _ _ by rw [add_def]
 
 @[simp]
-theorem ofFinsupp_neg {R : Type u} [Ring R] {a} : (⟨-a⟩ : R[X]) = -⟨a⟩ :=
+theorem ofFinsupp_neg {R : Type*} [Ring R] {a} : (⟨-a⟩ : R[X]) = -⟨a⟩ :=
   show _ = neg _ by rw [neg_def]
 
 @[simp]
-theorem ofFinsupp_sub {R : Type u} [Ring R] {a b} : (⟨a - b⟩ : R[X]) = ⟨a⟩ - ⟨b⟩ := by
+theorem ofFinsupp_sub {R : Type*} [Ring R] {a b} : (⟨a - b⟩ : R[X]) = ⟨a⟩ - ⟨b⟩ := by
   rw [sub_eq_add_neg, ofFinsupp_add, ofFinsupp_neg]
   rfl
 
@@ -202,12 +200,12 @@ theorem toFinsupp_add (a b : R[X]) : (a + b).toFinsupp = a.toFinsupp + b.toFinsu
   rw [← ofFinsupp_add]
 
 @[simp]
-theorem toFinsupp_neg {R : Type u} [Ring R] (a : R[X]) : (-a).toFinsupp = -a.toFinsupp := by
+theorem toFinsupp_neg {R : Type*} [Ring R] (a : R[X]) : (-a).toFinsupp = -a.toFinsupp := by
   cases a
   rw [← ofFinsupp_neg]
 
 @[simp]
-theorem toFinsupp_sub {R : Type u} [Ring R] (a b : R[X]) :
+theorem toFinsupp_sub {R : Type*} [Ring R] (a b : R[X]) :
     (a - b).toFinsupp = a.toFinsupp - b.toFinsupp := by
   rw [sub_eq_add_neg, ← toFinsupp_neg, ← toFinsupp_add]
   rfl

@@ -14,13 +14,11 @@ import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 open scoped Pointwise
 
-universe u₁ u₂ u₃
-
 namespace MonoidAlgebra
 
 open Finset Finsupp
 
-variable {k : Type u₁} {G : Type u₂} [Semiring k]
+variable {k : Type*} {G : Type*} [Semiring k]
 
 theorem support_mul [Mul G] [DecidableEq G] (a b : MonoidAlgebra k G) :
     (a * b).support ⊆ a.support * b.support := by
@@ -97,7 +95,7 @@ namespace AddMonoidAlgebra
 
 open Finset Finsupp MulOpposite
 
-variable {k : Type u₁} {G : Type u₂} [Semiring k]
+variable {k : Type*} {G : Type*} [Semiring k]
 
 theorem support_mul [DecidableEq G] [Add G] (a b : k[G]) :
     (a * b).support ⊆ a.support + b.support :=

@@ -24,7 +24,7 @@ to the subring it generates, and prove that it is a Galois insertion.
 
 Notation used here:
 
-`(R : Type u) [Ring R] (S : Type u) [Ring S] (f g : R →+* S)`
+`(R : Type*) [Ring R] (S : Type*) [Ring S] (f g : R →+* S)`
 `(A : Subring R) (B : Subring S) (s : Set R)`
 
 * `Subring R` : the type of subrings of a ring `R`.
@@ -63,23 +63,21 @@ subring, subrings
 
 assert_not_exists RelIso Even OrderedCommMonoid
 
-universe u v w
-
-variable {R : Type u} {S : Type v} {T : Type w} [Ring R]
+variable {R : Type*} {S : Type*} {T : Type*} [Ring R]
 
 section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] : Prop
+class SubringClass (S : Type*) (R : outParam (Type*)) [Ring R] [SetLike S R] : Prop
     extends SubsemiringClass S R, NegMemClass S R
 
 -- See note [lower instance priority]
-instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
+instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type*)
     [SetLike S R] [Ring R] [h : SubringClass S R] : AddSubgroupClass S R :=
   { h with }
 
-instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : Type u)
+instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : Type*)
     [SetLike S R] [Ring R] [SubringClass S R] : NonUnitalSubringClass S R where
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
@@ -147,7 +145,7 @@ variable [Ring S] [Ring T]
 /-- `Subring R` is the type of subrings of `R`. A subring of `R` is a subset `s` that is a
   multiplicative submonoid and an additive subgroup. Note in particular that it shares the
   same 0 and 1 as R. -/
-structure Subring (R : Type u) [Ring R] extends Subsemiring R, AddSubgroup R
+structure Subring (R : Type*) [Ring R] extends Subsemiring R, AddSubgroup R
 
 /-- Reinterpret a `Subring` as a `Subsemiring`. -/
 add_decl_doc Subring.toSubsemiring

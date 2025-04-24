@@ -50,8 +50,6 @@ Many of the later results in this file are only stated for the commutative `R'` 
 
 -/
 
-universe u v w
-
 /-- "Trivial Square-Zero Extension".
 
 Given a module `M` over a ring `R`, the trivial square-zero extension of `M` over `R` is defined
@@ -60,7 +58,7 @@ to be the `R`-algebra `R × M` with multiplication given by
 
 It is a square-zero extension because `M^2 = 0`.
 -/
-def TrivSqZeroExt (R : Type u) (M : Type v) :=
+def TrivSqZeroExt (R : Type*) (M : Type*) :=
   R × M
 
 local notation "tsze" => TrivSqZeroExt
@@ -73,7 +71,7 @@ open MulOpposite
 
 section Basic
 
-variable {R : Type u} {M : Type v}
+variable {R : Type*} {M : Type*}
 
 /-- The canonical inclusion `R → TrivSqZeroExt R M`. -/
 def inl [Zero M] (r : R) : tsze R M :=
@@ -168,7 +166,7 @@ Additive operators and scalar multiplication operate elementwise. -/
 
 section Additive
 
-variable {T : Type*} {S : Type*} {R : Type u} {M : Type v}
+variable {T : Type*} {S : Type*} {R : Type*} {M : Type*}
 
 instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
   instInhabitedProd
@@ -393,7 +391,7 @@ end Additive
 
 section Mul
 
-variable {R : Type u} {M : Type v}
+variable {R : Type*} {M : Type*}
 
 instance one [One R] [Zero M] : One (tsze R M) :=
   ⟨(1, 0)⟩
@@ -685,7 +683,7 @@ def inlHom [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] : R
 end Mul
 
 section Inv
-variable {R : Type u} {M : Type v}
+variable {R : Type*} {M : Type*}
 variable [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M]
 
 /-- Inversion of the trivial-square-zero extension, sending $r + m$ to $r^{-1} - r^{-1}mr^{-1}$.
@@ -704,7 +702,7 @@ end Inv
 
 /-! This section is heavily inspired by analogous results about matrices. -/
 section Invertible
-variable {R : Type u} {M : Type v}
+variable {R : Type*} {M : Type*}
 variable [AddCommGroup M] [Semiring R] [Module Rᵐᵒᵖ M] [Module R M]
 
 /-- `x.fst : R` is invertible when `x : tzre R M` is. -/
@@ -772,7 +770,7 @@ theorem isUnit_inr_iff {m : M} : IsUnit (inr m : tsze R M) ↔ Subsingleton R :=
 end Invertible
 
 section DivisionSemiring
-variable {R : Type u} {M : Type v}
+variable {R : Type*} {M : Type*}
 variable [DivisionSemiring R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M]
 
 protected theorem inv_inl (r : R) :
@@ -840,7 +838,7 @@ theorem isUnit_inv_iff {x : tsze R M} : IsUnit x⁻¹ ↔ IsUnit x := by
 end DivisionSemiring
 
 section DivisionRing
-variable {R : Type u} {M : Type v}
+variable {R : Type*} {M : Type*}
 variable [DivisionRing R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M]
 
 protected theorem inv_neg {x : tsze R M} : (-x)⁻¹ = -(x⁻¹) := by
@@ -850,7 +848,7 @@ end DivisionRing
 
 section Algebra
 
-variable (S : Type*) (R R' : Type u) (M : Type v)
+variable (S : Type*) (R R' : Type*) (M : Type*)
 variable [CommSemiring S] [Semiring R] [CommSemiring R'] [AddCommMonoid M]
 variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]

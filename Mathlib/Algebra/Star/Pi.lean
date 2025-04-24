@@ -14,12 +14,10 @@ complex conjugation of vectors.
 -/
 
 
-universe u v w
-
-variable {I : Type u}
+variable {I : Type*}
 
 -- The indexing type
-variable {f : I → Type v}
+variable {f : I → Type*}
 
 -- The family of types already equipped with instances
 namespace Pi
@@ -48,7 +46,7 @@ instance [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] : StarAddMonoid (
 instance [∀ i, NonUnitalSemiring (f i)] [∀ i, StarRing (f i)] : StarRing (∀ i, f i)
   where star_add _ _ := funext fun _ => star_add _ _
 
-instance {R : Type w} [∀ i, SMul R (f i)] [Star R] [∀ i, Star (f i)]
+instance {R : Type*} [∀ i, SMul R (f i)] [Star R] [∀ i, Star (f i)]
     [∀ i, StarModule R (f i)] : StarModule R (∀ i, f i) where
   star_smul r x := funext fun i => star_smul r (x i)
 

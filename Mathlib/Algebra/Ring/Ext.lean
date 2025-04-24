@@ -32,9 +32,7 @@ local macro:max "local_hAdd[" type:term ", " inst:term "]" : term =>
 local macro:max "local_hMul[" type:term ", " inst:term "]" : term =>
   `(term| (letI := $inst; HMul.hMul : $type → $type → $type))
 
-universe u
-
-variable {R : Type u}
+variable {R : Type*}
 
 /-! ### Distrib -/
 namespace Distrib

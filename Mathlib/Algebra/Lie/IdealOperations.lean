@@ -32,11 +32,9 @@ lie algebra, ideal operation
 -/
 
 
-universe u v w w₁ w₂
-
 namespace LieSubmodule
 
-variable {R : Type u} {L : Type v} {M : Type w} {M₂ : Type w₁}
+variable {R : Type*} {L : Type*} {M : Type*} {M₂ : Type*}
 variable [CommRing R] [LieRing L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂]
@@ -231,7 +229,7 @@ namespace LieIdeal
 
 open LieAlgebra
 
-variable {R : Type u} {L : Type v} {L' : Type w₂}
+variable {R : Type*} {L : Type*} {L' : Type*}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 variable (f : L →ₗ⁅R⁆ L') (I : LieIdeal R L) (J : LieIdeal R L')
 

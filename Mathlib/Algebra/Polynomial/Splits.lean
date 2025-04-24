@@ -27,9 +27,7 @@ noncomputable section
 
 open Polynomial
 
-universe u v w
-
-variable {R : Type*} {F : Type u} {K : Type v} {L : Type w}
+variable {R : Type*} {F : Type*} {K : Type*} {L : Type*}
 
 namespace Polynomial
 
@@ -120,7 +118,7 @@ theorem splits_X_sub_C {x : K} : (X - C x).Splits i :=
 theorem splits_X : X.Splits i :=
   splits_of_degree_le_one _ degree_X_le
 
-theorem splits_prod {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
+theorem splits_prod {ι : Type*} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, (s j).Splits i) → (∏ x ∈ t, s x).Splits i := by
   classical
   refine Finset.induction_on t (fun _ => splits_one i) fun a t hat ih ht => ?_
@@ -290,7 +288,7 @@ theorem splits_mul_iff {f g : K[X]} (hf : f ≠ 0) (hg : g ≠ 0) :
     (f * g).Splits i ↔ f.Splits i ∧ g.Splits i :=
   ⟨splits_of_splits_mul i (mul_ne_zero hf hg), fun ⟨hfs, hgs⟩ => splits_mul i hfs hgs⟩
 
-theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
+theorem splits_prod_iff {ι : Type*} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, s j ≠ 0) → ((∏ x ∈ t, s x).Splits i ↔ ∀ j ∈ t, (s j).Splits i) := by
   classical
   refine

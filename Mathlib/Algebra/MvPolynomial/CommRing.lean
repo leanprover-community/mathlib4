@@ -37,9 +37,7 @@ noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
 
-universe u v
-
-variable {R : Type u} {S : Type v}
+variable {R : Type*} {S : Type*}
 
 namespace MvPolynomial
 
@@ -148,7 +146,7 @@ theorem hom_C (f : MvPolynomial σ ℤ →+* S) (n : ℤ) : f (C n) = (n : S) :=
 /-- A ring homomorphism `f : Z[X_1, X_2, ...] → R`
 is determined by the evaluations `f(X_1)`, `f(X_2)`, ... -/
 @[simp]
-theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
+theorem eval₂Hom_X {R : Type*} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
     eval₂ c (f ∘ X) x = f x := by
   apply MvPolynomial.induction_on x
     (fun n => by

@@ -31,14 +31,12 @@ from the file `Mathlib.RingTheory.Kaehler.CotangentComplex`.
 
 -/
 
-universe w' t w u v
-
 namespace Algebra.Presentation
 
 open KaehlerDifferential
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
-  (pres : Algebra.Presentation.{t, w} R S)
+variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+  (pres : Algebra.Presentation R S)
 
 /-- The shape of the presentation by generators and relations of the `S`-module `Ω[S⁄R]`
 that is obtained from a presentation of `S` as an `R`-algebra. -/

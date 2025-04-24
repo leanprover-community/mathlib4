@@ -29,9 +29,7 @@ information about these structures (which are not that standard in informal math
 -- by asserting a random sample don't exist here:
 assert_not_exists inv_involutive div_right_inj pow_ite MonoidWithZero DenselyOrdered
 
-universe u v w
-
-variable {α : Type u}
+variable {α : Type*}
 
 /-- Add an extra element `1` to a type -/
 @[to_additive "Add an extra element `0` to a type"]

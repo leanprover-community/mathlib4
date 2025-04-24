@@ -24,8 +24,6 @@ assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
 open Function Set
 
-universe u v
-
 variable {R S M M₂ : Type*}
 
 section AddCommMonoid

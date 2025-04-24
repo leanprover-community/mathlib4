@@ -13,9 +13,7 @@ import Mathlib.Tactic.MinImports
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
 
-universe u v
-
-variable {α : Type u} {β : Type v}
+variable {α : Type*} {β : Type*}
 
 open Function
 

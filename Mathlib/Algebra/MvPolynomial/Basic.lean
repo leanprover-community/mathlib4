@@ -66,9 +66,7 @@ noncomputable section
 open Set Function Finsupp AddMonoidAlgebra
 open scoped Pointwise
 
-universe u v w x
-
-variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
+variable {R : Type*} {S₁ : Type*} {S₂ : Type*} {S₃ : Type*}
 
 /-- Multivariate polynomial, where `σ` is the index set of the variables and
   `R` is the coefficient ring -/

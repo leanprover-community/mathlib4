@@ -12,9 +12,7 @@ import Mathlib.LinearAlgebra.Basis.Defs
 
 -/
 
-universe u
-
-variable (R : Type u) [Semiring R]
+variable (R : Type*) [Semiring R]
 
 namespace Polynomial
 

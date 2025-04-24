@@ -30,9 +30,7 @@ open Multiset
 
 open Polynomial
 
-universe u w
-
-variable {R : Type u} {ι : Type w}
+variable {R : Type*} {ι : Type*}
 
 namespace Polynomial
 

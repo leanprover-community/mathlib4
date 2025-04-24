@@ -14,9 +14,7 @@ import Mathlib.Logic.Equiv.Defs
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 /-- An `Invertible` element is a unit. -/
 @[simps]

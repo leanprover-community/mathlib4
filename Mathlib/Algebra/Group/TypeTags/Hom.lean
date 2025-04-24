@@ -11,9 +11,7 @@ import Mathlib.Algebra.Group.TypeTags.Basic
 -/
 
 
-universe u v
-
-variable {α : Type u} {β : Type v}
+variable {α : Type*} {β : Type*}
 
 open Additive (ofMul toMul)
 open Multiplicative (ofAdd toAdd)

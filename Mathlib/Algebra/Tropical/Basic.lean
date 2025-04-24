@@ -47,12 +47,10 @@ most references rely on `Semiring (Tropical R)` for building up the whole theory
 
 assert_not_exists Nat.instMulOneClass
 
-universe u v
-
-variable (R : Type u)
+variable (R : Type*)
 
 /-- The tropicalization of a type `R`. -/
-def Tropical : Type u :=
+def Tropical : Type _ :=
   R
 
 variable {R}
@@ -139,7 +137,7 @@ instance [Inhabited R] : Inhabited (Tropical R) :=
 /-- Recursing on an `x' : Tropical R` is the same as recursing on an `x : R` reinterpreted
 as a term of `Tropical R` via `trop x`. -/
 @[simp]
-def tropRec {F : Tropical R → Sort v} (h : ∀ X, F (trop X)) : ∀ X, F X := fun X => h (untrop X)
+def tropRec {F : Tropical R → Sort*} (h : ∀ X, F (trop X)) : ∀ X, F X := fun X => h (untrop X)
 
 instance [DecidableEq R] : DecidableEq (Tropical R) := fun _ _ =>
   decidable_of_iff _ injective_untrop.eq_iff

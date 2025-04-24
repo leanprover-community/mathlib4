@@ -25,11 +25,9 @@ lie algebra, lie character
 -/
 
 
-universe u v w w₁
-
 namespace LieAlgebra
 
-variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R : Type*) (L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- A character of a Lie algebra is a morphism to the scalars. -/
 abbrev LieCharacter :=

@@ -30,17 +30,15 @@ an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l`
 
 open CategoryTheory
 
-universe uR uA uB
-
-variable (R : Type uR) [CommRing R]
-variable (A : Type uA) [AddCommGroup A]
+variable (R : Type*) [CommRing R]
+variable (A : Type*) [AddCommGroup A]
 variable (A' : Type*) [AddCommGroup A']
-variable (B : Type uB) [AddCommGroup B]
+variable (B : Type*) [AddCommGroup B]
 
 /--
 The character module of an abelian group `A` in the unit rational circle is `A⋆ := Hom_ℤ(A, ℚ ⧸ ℤ)`.
 -/
-def CharacterModule : Type uA := A →+ AddCircle (1 : ℚ)
+def CharacterModule : Type _ := A →+ AddCircle (1 : ℚ)
 
 namespace CharacterModule
 

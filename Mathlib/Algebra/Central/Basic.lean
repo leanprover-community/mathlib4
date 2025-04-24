@@ -19,11 +19,9 @@ In this file, we prove some basic results about central algebras over a commutat
   `K` and `k` are fields. If `D` is a nontrivial central algebra over `k`, `K` is isomorphic to `k`.
 -/
 
-universe u v
-
 namespace Algebra.IsCentral
 
-variable (K : Type u) [CommSemiring K] (D D' : Type v) [Semiring D] [Algebra K D]
+variable (K : Type*) [CommSemiring K] (D D' : Type*) [Semiring D] [Algebra K D]
   [h : IsCentral K D] [Semiring D'] [Algebra K D']
 
 @[simp]

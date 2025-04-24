@@ -33,11 +33,9 @@ lie algebra, ring commutator, adjoint action
 -/
 
 
-universe u v w w₁ w₂
-
 section OfAssociative
 
-variable {A : Type v} [Ring A]
+variable {A : Type*} [Ring A]
 
 namespace LieRing
 
@@ -60,7 +58,7 @@ end LieRing
 
 section AssociativeModule
 
-variable {M : Type w} [AddCommGroup M] [Module A M]
+variable {M : Type*} [AddCommGroup M] [Module A M]
 
 /-- We can regard a module over an associative ring `A` as a Lie ring module over `A` with Lie
 bracket equal to its ring commutator.
@@ -87,7 +85,7 @@ end AssociativeModule
 
 section LieAlgebra
 
-variable {R : Type u} [CommRing R] [Algebra R A]
+variable {R : Type*} [CommRing R] [Algebra R A]
 
 /-- An associative algebra gives rise to a Lie algebra by taking the bracket to be the ring
 commutator. -/
@@ -100,7 +98,7 @@ attribute [local instance] LieRingModule.ofAssociativeModule
 
 section AssociativeRepresentation
 
-variable {M : Type w} [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable {M : Type*} [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 /-- A representation of an associative algebra `A` is also a representation of `A`, regarded as a
 Lie algebra via the ring commutator.
@@ -123,7 +121,7 @@ end AssociativeRepresentation
 
 namespace AlgHom
 
-variable {B : Type w} {C : Type w₁} [Ring B] [Ring C] [Algebra R B] [Algebra R C]
+variable {B : Type*} {C : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra R C]
 variable (f : A →ₐ[R] B) (g : B →ₐ[R] C)
 
 /-- The map `ofAssociativeAlgebra` associating a Lie algebra to an associative algebra is
@@ -161,7 +159,7 @@ end OfAssociative
 
 section AdjointAction
 
-variable (R : Type u) (L : Type v) (M : Type w)
+variable (R : Type*) (L : Type*) (M : Type*)
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
 variable [LieRingModule L M] [LieModule R L M]
 
@@ -298,7 +296,7 @@ variable {R L M}
 
 namespace LieModule
 
-variable {M₂ : Type w₁} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
+variable {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
   (f : M →ₗ⁅R,L⁆ M₂) (k : ℕ) (x : L)
 
 lemma toEnd_pow_comp_lieHom :
@@ -347,7 +345,7 @@ end LieSubmodule
 
 open LieAlgebra
 
-theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [Algebra R A] :
+theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type*) [Ring A] [Algebra R A] :
     (ad R A : A → Module.End R A) = LinearMap.mulLeft R - LinearMap.mulRight R := by
   ext a b; simp [LieRing.of_associative_ring_bracket]
 
@@ -360,7 +358,7 @@ theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
 end AdjointAction
 
 /-- A subalgebra of an associative algebra is a Lie subalgebra of the associated Lie algebra. -/
-def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [Algebra R A]
+def lieSubalgebraOfSubalgebra (R : Type*) [CommRing R] (A : Type*) [Ring A] [Algebra R A]
     (A' : Subalgebra R A) : LieSubalgebra R A :=
   { Subalgebra.toSubmodule A' with
     lie_mem' := fun {x y} hx hy => by
@@ -372,7 +370,7 @@ def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [A
 
 namespace LinearEquiv
 
-variable {R : Type u} {M₁ : Type v} {M₂ : Type w}
+variable {R : Type*} {M₁ : Type*} {M₂ : Type*}
 variable [CommRing R] [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 variable (e : M₁ ≃ₗ[R] M₂)
 
@@ -396,7 +394,7 @@ end LinearEquiv
 
 namespace AlgEquiv
 
-variable {R : Type u} {A₁ : Type v} {A₂ : Type w}
+variable {R : Type*} {A₁ : Type*} {A₂ : Type*}
 variable [CommRing R] [Ring A₁] [Ring A₂] [Algebra R A₁] [Algebra R A₂]
 variable (e : A₁ ≃ₐ[R] A₂)
 

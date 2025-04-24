@@ -14,15 +14,13 @@ the direct sum of copies of `M` indexed by `ι`.
 -/
 
 
-universe u v w
-
 noncomputable section
 
 open DirectSum
 
 open LinearMap Submodule
 
-variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 section finsuppLequivDirectSum
 

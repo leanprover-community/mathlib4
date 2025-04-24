@@ -75,8 +75,6 @@ There is a CHSH tuple in 4-by-4 matrices such that
 -/
 
 
-universe u
-
 /-- A CHSH tuple in a *-monoid consists of 4 self-adjoint involutions `A₀ A₁ B₀ B₁` such that
 the `Aᵢ` commute with the `Bⱼ`.
 
@@ -97,7 +95,7 @@ structure IsCHSHTuple {R} [Monoid R] [StarMul R] (A₀ A₁ B₀ B₁ : R) : Pro
   A₁B₀_commutes : A₁ * B₀ = B₀ * A₁
   A₁B₁_commutes : A₁ * B₁ = B₁ * A₁
 
-variable {R : Type u}
+variable {R : Type*}
 
 theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1) (A₁_inv : A₁ ^ 2 = 1)
     (B₀_inv : B₀ ^ 2 = 1) (B₁_inv : B₁ ^ 2 = 1) :
