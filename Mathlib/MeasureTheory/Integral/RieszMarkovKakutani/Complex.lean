@@ -33,10 +33,18 @@ variable {X : Type*} [MeasurableSpace X]
   {V 𝕜 : Type*} [SeminormedAddCommGroup V]  (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 V]
   (μ : VectorMeasure X V)
 
+-- first we should prove that `supOuterMeasure μ` is countably additive on measurable sets (Rudin),
+-- then it implies countable subadditivity on measurable sets, and from it one can prove
+-- `iUnion_nat`.
+
+-- probably we should first define a function `supOuterMeasure` without structure, prove `mono` and
+-- `m_iUnion` on measurable sets and follow the above description. only afterwards one can define
+-- `OuterMeasure`.
+
 noncomputable def supOuterMeasure : OuterMeasure X where
   measureOf (s : Set X) :=
     ⨅ t ∈ {t' : Set X | MeasurableSet t' ∧ s ⊆ t'},
-      ⨆ E ∈ {E' : ℕ → Set X | Pairwise (Function.onFun Disjoint E') ∧
+      ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint E') ∧
              ⋃ n, E' n = t},
       ∑' n, ENNReal.ofReal ‖μ (E n)‖
   empty := by
@@ -45,7 +53,7 @@ noncomputable def supOuterMeasure : OuterMeasure X where
     · apply le_trans (biInf_le _ MeasurableSet.empty)
       simp only [Set.iUnion_eq_empty, nonpos_iff_eq_zero, iSup_eq_zero, ENNReal.tsum_eq_zero,
         and_imp]
-      intro _ _ hEempty n
+      intro _ _ _ hEempty n
       simp [hEempty n]
     · simp
   mono {s₁ s₂} h := by
