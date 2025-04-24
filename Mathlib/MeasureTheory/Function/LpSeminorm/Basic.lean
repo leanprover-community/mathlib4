@@ -577,9 +577,17 @@ theorem MemLp.mono' {f : α → E} {g : α → ℝ} (hg : MemLp g p μ) (hf : AE
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : MemLp f p μ :=
   hg.of_le hf <| h.mono fun _x hx => le_trans hx (le_abs_self _)
 
+-- this is a problem, right?
+-- #synth ContinuousENorm ℝ≥0∞ fails
+-- instance : ContinuousENorm ℝ≥0∞ := sorry
+
 theorem MemLp.mono'_enorm {f : α → ε} {g : α → ℝ≥0∞} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : MemLp f p μ := by
-  --apply hg.of_le_enorm hf-- <| h.mono fun _x hx => le_trans hx (le_abs_self _)
+  -- TODO: the naive proof port runs into isDefEq time-outs, fix!
+  have : ∀ᵐ (a : α) ∂μ, ‖f a‖ₑ ≤ ‖g a‖ₑ := h.mono fun _x hx ↦ le_trans hx le_rfl
+  -- this also fails: is this because of the above #synth failure?
+  -- apply MemLp.of_le_enorm hg hf this
+  --apply hg.of_le_enorm hf <| h.mono fun _x hx => le_trans hx (le_abs_self _)
   sorry
 
 @[deprecated (since := "2025-02-21")]
@@ -625,6 +633,17 @@ alias memℒp_top_of_bound := memLp_top_of_bound
 theorem MemLp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) (C : ℝ)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : MemLp f p μ :=
   (memLp_const C).of_le hf (hfC.mono fun _x hx => le_trans hx (le_abs_self _))
+
+#check memLp_const_enorm
+
+theorem MemLp.of_enorm_bound [IsFiniteMeasure μ] {f : α → ε} (hf : AEStronglyMeasurable f μ)
+    {C : ℝ≥0∞} (hC : C ≠ ∞) (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) : MemLp f p μ := by
+  have : ‖C‖ₑ < ⊤ := by simp [hC.lt_top]
+  --have := memLp_const_enorm (c := C) this (μ := μ) (ε' := ε)
+  apply (memLp_const_enorm this).of_le_enorm (ε' := ε)
+  --hf --(hfC.mono fun _x hx => le_trans hx (le_abs_self _))
+
+  sorry
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.of_bound := MemLp.of_bound
