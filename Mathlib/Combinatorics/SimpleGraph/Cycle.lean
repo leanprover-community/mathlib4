@@ -125,11 +125,10 @@ lemma cycle_walk_contains_all_vertices {p : G.Walk v v} (c : G.IsCycle) (hpc : p
     have : v ∈ cc.supp := by simp [← hcc]
     simp_all
   rw [← Walk.mem_verts_toSubgraph, hpv]
-  have hw : w ∈ (G.connectedComponentMk w) := ConnectedComponent.connectedComponentMk_mem
   have hvw : G.connectedComponentMk v = G.connectedComponentMk w := by
     apply ConnectedComponent.sound
     exact hvw_reachable
-  simp [hvw, hw]
+  simp [hvw]
 
 lemma cycle_walk_tail_contains_all_vertices {p : G.Walk v v} (c : G.IsCycle) (hpc : p.IsCycle) :
     ∀ (v : V), v ∈ p.support.tail := by
