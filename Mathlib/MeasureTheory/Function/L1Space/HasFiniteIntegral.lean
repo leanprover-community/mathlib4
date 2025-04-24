@@ -117,8 +117,7 @@ theorem HasFiniteIntegral.mono {f : α → β} {g : α → γ} (hg : HasFiniteIn
       lintegral_mono_ae (h.mono fun a h => ofReal_le_ofReal h)
     _ < ∞ := hg
 
--- XXX: this naming scheme is non-ideal!
-theorem HasFiniteIntegral.mono_e {f : α → ε} {g : α → ε'} (hg : HasFiniteIntegral g μ)
+theorem HasFiniteIntegral.mono_enorm {f : α → ε} {g : α → ε'} (hg : HasFiniteIntegral g μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ ‖g a‖ₑ) : HasFiniteIntegral f μ := by
   simp only [hasFiniteIntegral_iff_enorm] at *
   calc
@@ -129,40 +128,40 @@ theorem HasFiniteIntegral.mono' {f : α → β} {g : α → ℝ} (hg : HasFinite
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : HasFiniteIntegral f μ :=
   hg.mono <| h.mono fun _x hx => le_trans hx (le_abs_self _)
 
-theorem HasFiniteIntegral.mono_e' {f : α → ε} {g : α → ℝ≥0∞} (hg : HasFiniteIntegral g μ)
+theorem HasFiniteIntegral.mono'_enorm {f : α → ε} {g : α → ℝ≥0∞} (hg : HasFiniteIntegral g μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : HasFiniteIntegral f μ :=
-  hg.mono_e <| h.mono fun _x hx ↦ le_trans hx le_rfl
+  hg.mono_enorm <| h.mono fun _x hx ↦ le_trans hx le_rfl
 
 theorem HasFiniteIntegral.congr' {f : α → β} {g : α → γ} (hf : HasFiniteIntegral f μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) : HasFiniteIntegral g μ :=
   hf.mono <| EventuallyEq.le <| EventuallyEq.symm h
 
-theorem HasFiniteIntegral.congre' {f : α → ε} {g : α → ε'} (hf : HasFiniteIntegral f μ)
+theorem HasFiniteIntegral.congr'_enorm {f : α → ε} {g : α → ε'} (hf : HasFiniteIntegral f μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) : HasFiniteIntegral g μ :=
-  hf.mono_e  <| EventuallyEq.le <| EventuallyEq.symm h
+  hf.mono_enorm  <| EventuallyEq.le <| EventuallyEq.symm h
 
 theorem hasFiniteIntegral_congr' {f : α → β} {g : α → γ} (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) :
     HasFiniteIntegral f μ ↔ HasFiniteIntegral g μ :=
   ⟨fun hf => hf.congr' h, fun hg => hg.congr' <| EventuallyEq.symm h⟩
 
-theorem hasFiniteIntegral_congre' {f : α → ε} {g : α → ε'} (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
+theorem hasFiniteIntegral_congr'_enorm {f : α → ε} {g : α → ε'} (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
     HasFiniteIntegral f μ ↔ HasFiniteIntegral g μ :=
-  ⟨fun hf => hf.congre' h, fun hg => hg.congre' <| EventuallyEq.symm h⟩
+  ⟨fun hf => hf.congr'_enorm h, fun hg => hg.congr'_enorm <| EventuallyEq.symm h⟩
 
 theorem HasFiniteIntegral.congr {f g : α → ε} (hf : HasFiniteIntegral f μ) (h : f =ᵐ[μ] g) :
     HasFiniteIntegral g μ :=
-  hf.congre' <| h.fun_comp enorm
+  hf.congr'_enorm <| h.fun_comp enorm
 
 theorem hasFiniteIntegral_congr {f g : α → ε} (h : f =ᵐ[μ] g) :
     HasFiniteIntegral f μ ↔ HasFiniteIntegral g μ :=
-  hasFiniteIntegral_congre' <| h.fun_comp enorm
+  hasFiniteIntegral_congr'_enorm <| h.fun_comp enorm
 
 theorem hasFiniteIntegral_const_iff {c : β} :
     HasFiniteIntegral (fun _ : α => c) μ ↔ c = 0 ∨ IsFiniteMeasure μ := by
   simp [hasFiniteIntegral_iff_enorm, lintegral_const, lt_top_iff_ne_top, ENNReal.mul_eq_top,
     or_iff_not_imp_left, isFiniteMeasure_iff]
 
-theorem hasFiniteIntegral_const_iff' {c : ε} (hc : ‖c‖ₑ ≠ ⊤) :
+theorem hasFiniteIntegral_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ⊤) :
     HasFiniteIntegral (fun _ : α => c) μ ↔ ‖c‖ₑ = 0 ∨ IsFiniteMeasure μ := by
   simp [hasFiniteIntegral_iff_enorm, lintegral_const, lt_top_iff_ne_top, ENNReal.mul_eq_top,
     or_iff_not_imp_left, isFiniteMeasure_iff]
@@ -172,17 +171,17 @@ lemma hasFiniteIntegral_const_iff_isFiniteMeasure {c : β} (hc : c ≠ 0) :
     HasFiniteIntegral (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
   simp [hasFiniteIntegral_const_iff, hc, isFiniteMeasure_iff]
 
-lemma hasFiniteIntegral_const_iff_isFiniteMeasure' {c : ε} (hc : ‖c‖ₑ ≠ 0) (hc' : ‖c‖ₑ ≠ ⊤) :
+lemma hasFiniteIntegral_const_iff_isFiniteMeasure_enorm {c : ε} (hc : ‖c‖ₑ ≠ 0) (hc' : ‖c‖ₑ ≠ ⊤) :
     HasFiniteIntegral (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
-  simp [hasFiniteIntegral_const_iff' hc', hc, isFiniteMeasure_iff]
+  simp [hasFiniteIntegral_const_iff_enorm hc', hc, isFiniteMeasure_iff]
 
 theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
     HasFiniteIntegral (fun _ : α => c) μ :=
   hasFiniteIntegral_const_iff.2 <| .inr ‹_›
 
-theorem hasFiniteIntegral_const' [IsFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ⊤) :
+theorem hasFiniteIntegral_const_enorm [IsFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ⊤) :
     HasFiniteIntegral (fun _ : α ↦ c) μ :=
-  (hasFiniteIntegral_const_iff' hc).2 <| .inr ‹_›
+  (hasFiniteIntegral_const_iff_enorm hc).2 <| .inr ‹_›
 
 theorem HasFiniteIntegral.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ}
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
@@ -194,9 +193,9 @@ theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : �
     (hC : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) : HasFiniteIntegral f μ :=
   (hasFiniteIntegral_const C).mono' hC
 
-theorem hasFiniteIntegral_of_bounded' [IsFiniteMeasure μ] {f : α → ε} {C : ℝ≥0}
+theorem hasFiniteIntegral_of_bounded_enorm [IsFiniteMeasure μ] {f : α → ε} {C : ℝ≥0}
     (hC : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ C) : HasFiniteIntegral f μ :=
-  (hasFiniteIntegral_const' (enorm_ne_top (x := C))).mono_e' hC
+  (hasFiniteIntegral_const_enorm (enorm_ne_top (x := C))).mono'_enorm hC
 
 -- TODO: generalise this to f with codomain ε
 -- requires generalising norm_le_pi_norm and friends to enorms
@@ -262,7 +261,7 @@ theorem hasFiniteIntegral_norm_iff (f : α → β) :
 
 theorem hasFiniteIntegral_enorm_iff (f : α → ε) :
     HasFiniteIntegral (fun a => ‖f a‖ₑ) μ ↔ HasFiniteIntegral f μ :=
-  hasFiniteIntegral_congre' <| Eventually.of_forall fun x => enorm_enorm (f x)
+  hasFiniteIntegral_congr'_enorm <| Eventually.of_forall fun x => enorm_enorm (f x)
 
 theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
     HasFiniteIntegral (fun x ↦ (f x).toReal) μ := by
@@ -313,7 +312,7 @@ theorem all_ae_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ �
   intro a tendsto_norm F_le_bound
   exact le_of_tendsto' tendsto_norm F_le_bound
 
-theorem all_ae_ofReal_f_le_bound' (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
+theorem all_ae_ofReal_f_le_bound_enorm (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop (𝓝 (f' a))) :
     ∀ᵐ a ∂μ, ‖f' a‖ₑ ≤ bound' a := by
   rw [← ae_all_iff] at h_bound
@@ -336,7 +335,7 @@ theorem hasFiniteIntegral_of_dominated_convergence
       · exact bound_hasFiniteIntegral
       exact (h_bound 0).mono fun a h => le_trans (norm_nonneg _) h
 
-theorem hasFiniteIntegral_of_dominated_convergence'
+theorem hasFiniteIntegral_of_dominated_convergence_enorm
     (bound_hasFiniteIntegral : HasFiniteIntegral bound' μ)
     (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop (𝓝 (f' a))) : HasFiniteIntegral f' μ := by
@@ -345,7 +344,7 @@ theorem hasFiniteIntegral_of_dominated_convergence'
   rw [hasFiniteIntegral_iff_enorm]
   calc
     (∫⁻ a, ‖f' a‖ₑ ∂μ) ≤ ∫⁻ a, bound' a ∂μ :=
-      lintegral_mono_ae <| all_ae_ofReal_f_le_bound' h_bound h_lim
+      lintegral_mono_ae <| all_ae_ofReal_f_le_bound_enorm h_bound h_lim
     _ < ∞ := bound_hasFiniteIntegral
 
 -- TODO: generalise this `f` and `F` taking values in a new class `ENormedSubMonoid`
