@@ -633,7 +633,6 @@ lemma integral_antitoneOn_of_integrand_ae {β : Type*} [Preorder β] {f : α →
   filter_upwards [hf_anti] with x hx
   exact hx ha hb hab
 
-open Pointwise in
 lemma integral_convexOn_of_integrand_ae {β : Type*} [AddCommMonoid β] [PartialOrder β]
     [Module ℝ β] [IsOrderedAddMonoid β] {f : α → β → E} {s : Set β} (hs : Convex ℝ s)
     (hf_conv : ∀ᵐ x ∂μ, ConvexOn ℝ s (f x)) (hf_int : ∀ a ∈ s, Integrable (f · a) μ) :
@@ -644,13 +643,8 @@ lemma integral_convexOn_of_integrand_ae {β : Type*} [AddCommMonoid β] [Partial
                   refine integral_mono_ae ?lhs ?rhs ?ae_le
                   case lhs =>
                     refine hf_int _ ?_
-                    --rw [convex_iff_pointwise_add_subset] at hs
-
-                    --refine hs hp hq hpq ?_
-                    --apply Set.add_smul_subset
-                    --simp [hpq]
-
-                    sorry
+                    rw [convex_iff_add_mem] at hs
+                    exact hs ha hb hp hq hpq
                   case rhs =>
                     exact Integrable.add
                         (Integrable.smul _ (hf_int a ha)) (Integrable.smul _ (hf_int b hb))
@@ -661,6 +655,16 @@ lemma integral_convexOn_of_integrand_ae {β : Type*} [AddCommMonoid β] [Partial
                   exact integral_add
                     (Integrable.smul _ (hf_int a ha)) (Integrable.smul _ (hf_int b hb))
             _ = p • ∫ x, f x a ∂μ + q • ∫ x, f x b ∂μ := by simp [integral_smul]
+
+lemma integral_concaveOn_of_integrand_ae {β : Type*} [AddCommMonoid β] [PartialOrder β]
+    [Module ℝ β] [IsOrderedAddMonoid β] {f : α → β → E} {s : Set β} (hs : Convex ℝ s)
+    (hf_conc : ∀ᵐ x ∂μ, ConcaveOn ℝ s (f x)) (hf_int : ∀ a ∈ s, Integrable (f · a) μ) :
+    ConcaveOn ℝ s (fun b => ∫ x, f x b ∂μ) := by
+  simp_rw [← neg_convexOn_iff] at hf_conc ⊢
+  have hf_int' : ∀ a ∈ s,  Integrable ((-f) · a) μ := fun a ha => Integrable.neg <| hf_int a ha
+  change ConvexOn ℝ s (fun b ↦ -∫ (x : α), f x b ∂μ)
+  simp_rw [← integral_neg]
+  exact integral_convexOn_of_integrand_ae hs hf_conc hf_int'
 
 end Order
 
