@@ -1024,6 +1024,46 @@ theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
 end CommGroup
 
 section DistribMulAction
+variable {G A : Type*} [Group G] [CommGroup A] [MulDistribMulAction G A] [MeasurableSpace A]
+  [TopologicalSpace A] [BorelSpace A] [IsTopologicalGroup A] [LocallyCompactSpace A]
+  [ContinuousConstSMul G A] {μ ν : Measure A} [μ.IsHaarMeasure] [ν.IsHaarMeasure] {g : G}
+
+variable (μ ν) in
+-- TODO: Additivise `MulDistribMulAction`
+-- @[to_additive]
+lemma haarScalarFactor_domSMul (g : Gᵈᵐᵃ) :
+    haarScalarFactor (g • μ) (g • ν) = haarScalarFactor μ ν := by
+  obtain ⟨⟨f, f_cont⟩, f_comp, f_nonneg, f_zero⟩ :
+    ∃ f : C(A, ℝ), HasCompactSupport f ∧ 0 ≤ f ∧ f 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_f_ne_zero : ∫ x, f x ∂g • ν ≠ 0 :=
+    (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_zero).ne'
+  apply NNReal.coe_injective
+  rw [haarScalarFactor_eq_integral_div (g • μ) (g • ν) f_cont f_comp int_f_ne_zero,
+    integral_domSMul, integral_domSMul]
+  refine (haarScalarFactor_eq_integral_div _ _ (by fun_prop) ?_ ?_).symm
+  · exact f_comp.comp_isClosedEmbedding (Homeomorph.smul _).isClosedEmbedding
+  · rw [← integral_domSMul]
+    exact (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_zero).ne'
+
+variable (μ) in
+-- TODO: Additivise `MulDistribMulAction`
+-- @[to_additive]
+lemma haarScalarFactor_smul_congr (g : Gᵈᵐᵃ) :
+    haarScalarFactor μ (g • μ) = haarScalarFactor ν (g • ν) := by
+  rw [haarScalarFactor_eq_mul _ (g • ν), haarScalarFactor_domSMul,
+    mul_comm, ← haarScalarFactor_eq_mul]
+
+variable (μ) in
+-- TODO: Additivise `MulDistribMulAction`
+-- @[to_additive]
+lemma haarScalarFactor_smul_congr' (g : Gᵈᵐᵃ) :
+    haarScalarFactor (g • μ) μ = haarScalarFactor (g • ν) ν := by
+  rw [haarScalarFactor_eq_mul _ (g • ν), haarScalarFactor_domSMul,
+    mul_comm, ← haarScalarFactor_eq_mul]
+
+end DistribMulAction
+
+section DistribMulAction
 variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
   [TopologicalSpace A] [BorelSpace A] [IsTopologicalAddGroup A] [LocallyCompactSpace A]
   [ContinuousConstSMul G A] {μ ν : Measure A} [μ.IsAddHaarMeasure] [ν.IsAddHaarMeasure] {g : G}
