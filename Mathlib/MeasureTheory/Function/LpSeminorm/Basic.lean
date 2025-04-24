@@ -252,6 +252,24 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
   simpa [hμ, hc, hμ_top, hμ_top.lt_top] using
     ENNReal.rpow_lt_top_of_nonneg (inv_nonneg.mpr hp.le) hμ_top
 
+-- NB. If ‖c‖ₑ = ∞ and μ is finite, this claim is false: the right has side is true,
+-- but the left hand side is false (as the norm is infinite).
+theorem eLpNorm_const_lt_top_iff_enorm {c : ε'} (hc' : ‖c‖ₑ ≠ ∞)
+    {p : ℝ≥0∞} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+    eLpNorm (fun _ : α ↦ c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by
+  have hp : 0 < p.toReal := ENNReal.toReal_pos hp_ne_zero hp_ne_top
+  by_cases hμ : μ = 0
+  · simp only [hμ, Measure.coe_zero, Pi.zero_apply, or_true, ENNReal.zero_lt_top,
+      eLpNorm_measure_zero]
+  by_cases hc : c = 0
+  · simp only [hc, true_or, eq_self_iff_true, ENNReal.zero_lt_top, eLpNorm_zero']
+  rw [eLpNorm_const' c hp_ne_zero hp_ne_top]
+  obtain hμ_top | hμ_ne_top := eq_or_ne (μ .univ) ∞
+  · simp [hc, hμ_top, hp]
+  rw [ENNReal.mul_lt_top_iff]
+  simpa [hμ, hc, hμ_ne_top, hμ_ne_top.lt_top, hc, hc'.lt_top] using
+    ENNReal.rpow_lt_top_of_nonneg (inv_nonneg.mpr hp.le) hμ_ne_top
+
 theorem memLp_const (c : E) [IsFiniteMeasure μ] : MemLp (fun _ : α => c) p μ := by
   refine ⟨aestronglyMeasurable_const, ?_⟩
   by_cases h0 : p = 0
@@ -292,10 +310,10 @@ theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_t
   exact ⟨fun h => h.2, fun h => ⟨aestronglyMeasurable_const, h⟩⟩
 
 theorem memLp_const_iff_enorm
-    {p : ℝ≥0∞} {c : ε'} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
-    MemLp (fun _ : α => c) p μ ↔ μ Set.univ = 0 ∨ (‖c‖ₑ < ⊤ ∧ (c = 0 ∨ μ Set.univ < ∞)) := by
-  simp only [MemLp, aestronglyMeasurable_const, true_and]
-  sorry -- tODO! rw [eLpNorm_const_lt_top_iff_enorm hp_ne_zero hp_ne_top]
+    {p : ℝ≥0∞} {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+    MemLp (fun _ : α ↦ c) p μ ↔ μ Set.univ = 0 ∨ (c = 0 ∨ μ Set.univ < ∞) := by
+  simp_all [MemLp, aestronglyMeasurable_const,
+    eLpNorm_const_lt_top_iff_enorm hc hp_ne_zero hp_ne_top]
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_const_iff := memLp_const_iff
