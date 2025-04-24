@@ -134,6 +134,7 @@ section Algebra
 /--
 An extension of rings `R ⊆ S` is quadratic if `S` is a `R`-module of rank `2`.
 -/
+-- TODO. use this in connection with `NumberTheory.Zsqrtd`
 class IsQuadraticExtension (R S : Type*) [CommSemiring R] [Semiring S]
   extends Algebra R S where
   finrank_eq_two : Module.finrank R S = 2
