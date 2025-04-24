@@ -493,6 +493,14 @@ variable [NormedAddCommGroup E] [NormedSpace R E]
 variable [NormedAddCommGroup F] [NormedSpace R F]
 variable {x y : E} {s t : Set E}
 
+@[simp]
+theorem uniqueDiffWithinAt_closure :
+    UniqueDiffWithinAt R (closure s) x ↔ UniqueDiffWithinAt R s x := by
+  simp [uniqueDiffWithinAt_iff]
+
+protected alias ⟨UniqueDiffWithinAt.of_closure, UniqueDiffWithinAt.closure⟩ :=
+  uniqueDiffWithinAt_closure
+
 theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt R s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
     UniqueDiffWithinAt R t x := by
   simp only [uniqueDiffWithinAt_iff] at *
@@ -502,6 +510,10 @@ theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt R s x) (st : 𝓝[s
 theorem UniqueDiffWithinAt.mono (h : UniqueDiffWithinAt R s x) (st : s ⊆ t) :
     UniqueDiffWithinAt R t x :=
   h.mono_nhds <| nhdsWithin_mono _ st
+
+theorem UniqueDiffWithinAt.mono_closure (h : UniqueDiffWithinAt 𝕜 s x) (st : s ⊆ closure t) :
+    UniqueDiffWithinAt 𝕜 t x :=
+  (h.mono st).of_closure
 
 theorem uniqueDiffWithinAt_congr (st : 𝓝[s] x = 𝓝[t] x) :
     UniqueDiffWithinAt R s x ↔ UniqueDiffWithinAt R t x :=

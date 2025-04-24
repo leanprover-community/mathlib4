@@ -81,15 +81,9 @@ theorem outCLM_isUniformInducing : IsUniformInducing (outCLM K E) := by
   rw [← isUniformInducing_mk.isUniformInducing_comp_iff, mk_comp_outCLM]
   exact .id
 
-@[deprecated (since := "2024-10-05")]
-alias outCLM_uniformInducing := outCLM_isUniformInducing
-
 theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
   injective := outCLM_injective K E
   toIsUniformInducing := outCLM_isUniformInducing K E
-
-@[deprecated (since := "2024-10-01")]
-alias outCLM_uniformEmbedding := outCLM_isUniformEmbedding
 
 theorem outCLM_uniformContinuous : UniformContinuous (outCLM K E) :=
   (outCLM_isUniformInducing K E).uniformContinuous

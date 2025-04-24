@@ -44,7 +44,8 @@ local notation "Φ" => range P.root
 local notation "α" => P.root
 
 /-- SGA3 XXI Prop. 2.3.1 -/
-lemma coxeterWeightIn_le_four (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
+lemma coxeterWeightIn_le_four (S : Type*)
+    [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
     [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] (i j : ι) :
     P.coxeterWeightIn S i j ≤ 4 := by
   have : Fintype ι := Fintype.ofFinite ι
@@ -89,7 +90,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   norm_cast at this ⊢
   omega
 
-variable [NoZeroDivisors R]
+variable [IsDomain R]
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
@@ -97,8 +98,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
         (-3, -1), (4, 1), (1, 4), (-4, -1), (-1, -4), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
   refine (Int.mul_mem_zero_one_two_three_four_iff ?_).mp
     (P.coxeterWeightIn_mem_set_of_isCrystallographic i j)
-  have : Fintype ι := Fintype.ofFinite ι
-  simpa [← P.algebraMap_pairingIn ℤ] using (P.posRootForm ℤ).toInvariantForm.pairing_zero_iff i j
+  simpa [← P.algebraMap_pairingIn ℤ] using P.pairing_zero_iff' (i := i) (j := j)
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed
     [P.IsReduced] [NoZeroSMulDivisors R M] :
@@ -139,20 +139,21 @@ lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne [NoZeroSMulDivisors R M] {B
   have := P.pairingIn_pairingIn_mem_set_of_length_eq len_eq
   aesop
 
+omit [Finite ι] in
 lemma coxeterWeightIn_eq_zero_iff :
     P.coxeterWeightIn ℤ i j = 0 ↔ P.pairingIn ℤ i j = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [coxeterWeightIn, h, zero_mul]⟩
-  have : Fintype ι := Fintype.ofFinite ι
   rwa [← (algebraMap_injective ℤ R).eq_iff, map_zero, algebraMap_coxeterWeightIn,
-    (P.posRootForm ℤ).toInvariantForm.coxeterWeight_zero_iff_isOrthogonal, IsOrthogonal,
-    (P.posRootForm ℤ).toInvariantForm.pairing_zero_iff j i, and_self, ← P.algebraMap_pairingIn ℤ,
+    RootPairing.coxeterWeight_zero_iff_isOrthogonal, IsOrthogonal,
+    P.pairing_zero_iff' (i := j) (j := i), and_self, ← P.algebraMap_pairingIn ℤ,
     FaithfulSMul.algebraMap_eq_zero_iff] at h
 
-variable [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N]
 variable {i j}
 
 lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i ≠ j) :
     α i - α j ∈ Φ := by
+  have := P.reflexive_left
+  have := P.reflexive_right
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
   by_cases hli : LinearIndependent R ![α i, α j]
   · -- The case where the two roots are linearly independent
@@ -196,7 +197,6 @@ lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α 
 
 namespace InvariantForm
 
-omit [NoZeroSMulDivisors R N]
 variable [P.IsReduced] (B : P.InvariantForm)
 variable {P}
 
@@ -206,6 +206,7 @@ lemma apply_eq_or_aux (i j : ι) (h : P.pairingIn ℤ i j ≠ 0) :
     B.form (P.root i) (P.root i) = 3 * B.form (P.root j) (P.root j) ∨
     B.form (P.root j) (P.root j) = 2 * B.form (P.root i) (P.root i) ∨
     B.form (P.root j) (P.root j) = 3 * B.form (P.root i) (P.root i) := by
+  have := P.reflexive_left
   have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
   have h₂ : algebraMap ℤ R (P.pairingIn ℤ j i) * B.form (P.root i) (P.root i) =
             algebraMap ℤ R (P.pairingIn ℤ i j) * B.form (P.root j) (P.root j) := by
@@ -326,6 +327,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
       rw [contra] at hk'
       exact P.ne_zero _ hk'.choose_spec
     have aux (h : P.pairingIn ℤ i k = -2) : ¬P.pairingIn ℤ k i = -2 := by
+      have := P.reflexive_left
       contrapose! hk'; exact (P.pairingIn_neg_two_neg_two_iff ℤ i k).mp ⟨h, hk'⟩
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i k
     aesop

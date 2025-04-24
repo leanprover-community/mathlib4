@@ -185,7 +185,7 @@ on mathlib's conventions for `0 ^ s`). -/
 theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
     riemannZeta s = ∑' n : ℕ, 1 / (n + 1 : ℂ) ^ s := by
   have := zeta_eq_tsum_one_div_nat_cpow hs
-  rw [tsum_eq_zero_add] at this
+  rw [Summable.tsum_eq_zero_add] at this
   · simpa [zero_cpow (Complex.ne_zero_of_one_lt_re hs)]
   · rwa [Complex.summable_one_div_nat_cpow]
 
@@ -219,9 +219,3 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
   apply (tendsto_sub_mul_tsum_nat_cpow.comp this).congr fun s ↦ ?_
   simp only [one_div, Function.comp_apply, ofReal_mul, ofReal_sub, ofReal_one, ofReal_tsum,
     ofReal_inv, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast]
-
-/- naming scheme was changed from `riemannCompletedZeta` to `completedRiemannZeta`; add
-aliases for the old names -/
-section aliases
-
-end aliases
