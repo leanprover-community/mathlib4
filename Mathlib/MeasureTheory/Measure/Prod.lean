@@ -776,12 +776,12 @@ theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [Measu
 
 @[fun_prop]
 protected theorem fst {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (ν.prod τ)) :
-    QuasiMeasurePreserving (fun x ↦(f x).1) μ ν :=
+    QuasiMeasurePreserving (fun x ↦ (f x).1) μ ν :=
   (quasiMeasurePreserving_fst (μ := ν) (ν := τ)).comp hf
 
 @[fun_prop]
 protected theorem snd {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (ν.prod τ)) :
-    QuasiMeasurePreserving (fun x ↦(f x).2) μ τ :=
+    QuasiMeasurePreserving (fun x ↦ (f x).2) μ τ :=
   (quasiMeasurePreserving_snd (μ := ν) (ν := τ)).comp hf
 
 @[fun_prop]

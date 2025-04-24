@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Function.SimpleFuncDense
 # Strongly measurable and finitely strongly measurable functions
 
 A function `f` is said to be strongly measurable if `f` is the sequential limit of simple functions.
-It is said to be finitely strongly measurable with respect to a measure `μ` if the supports
+It is said to be finitely strongly measurable with respect to a mease `μ` if the supports
 of those simple functions have finite measure.
 
 If the target space has a second countable topology, strongly measurable and measurable are
@@ -339,20 +339,12 @@ protected theorem mono {m m' : MeasurableSpace α} [TopologicalSpace β]
   exact ⟨f_approx, hf.tendsto_approx⟩
 
 protected theorem fst {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
-    {f : α → β × γ} (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ (f x).1 := by
-  refine ⟨fun n ↦ (hf.approx n).map Prod.fst, fun x ↦ ?_⟩
-  simp only [comp_apply]
-  apply Tendsto.fst
-  rw [← nhds_prod_eq]
-  exact hf.tendsto_approx x
+    {f : α → β × γ} (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ (f x).1 :=
+  continuous_fst.comp_stronglyMeasurable hf
 
 protected theorem snd {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
-    {f : α → β × γ} (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ (f x).2 := by
-  refine ⟨fun n ↦ (hf.approx n).map Prod.snd, fun x ↦ ?_⟩
-  simp only [comp_apply]
-  apply Tendsto.snd
-  rw [← nhds_prod_eq]
-  exact hf.tendsto_approx x
+    {f : α → β × γ} (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ (f x).2 :=
+  continuous_snd.comp_stronglyMeasurable hf
 
 protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
     {f : α → β} {g : α → γ} (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :

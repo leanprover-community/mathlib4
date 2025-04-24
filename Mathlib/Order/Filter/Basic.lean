@@ -925,18 +925,6 @@ instance {l : Filter α} :
     Trans ((· =ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· =ᶠ[l] ·) (· =ᶠ[l] ·) where
   trans := EventuallyEq.trans
 
-theorem EventuallyEq.fst {l : Filter α} {f f' : α → β × γ} (hf : f =ᶠ[l] f') :
-    (fun x ↦ (f x).fst) =ᶠ[l] (fun x ↦ (f' x).fst) :=
-  hf.mono <| by
-    intros
-    simp [*]
-
-theorem EventuallyEq.snd {l : Filter α} {f f' : α → β × γ} (hf : f =ᶠ[l] f') :
-    (fun x ↦ (f x).snd) =ᶠ[l] (fun x ↦ (f' x).snd) :=
-  hf.mono <| by
-    intros
-    simp [*]
-
 theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : α → γ} (hg : g =ᶠ[l] g') :
     (fun x => (f x, g x)) =ᶠ[l] fun x => (f' x, g' x) :=
   hf.mp <|
