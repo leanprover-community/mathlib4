@@ -13,11 +13,12 @@ import Mathlib.Data.Nat.Basic
 This file proves additional properties about the *canonical* homomorphism from
 the integers into an additive group with a one (`Int.cast`).
 
-There is also `Data.Int.Cast.Lemmas`,
+There is also `Mathlib.Data.Int.Cast.Lemmas`,
 which includes lemmas stated in terms of algebraic homomorphisms,
 and results involving the order structure of `ℤ`.
 
-By contrast, this file's only import beyond `Data.Int.Cast.Defs` is `Algebra.Group.Basic`.
+By contrast, this file's only import beyond `Mathlib.Data.Int.Cast.Defs` is
+`Mathlib.Algebra.Group.Basic`.
 -/
 
 
@@ -94,15 +95,15 @@ theorem cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.
 
 @[simp, norm_cast]
 theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
-  | (m : ℕ), (n : ℕ) => by simp [-Int.natCast_add, ← Int.natCast_add]
-  | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_add_neg]
+  | (m : ℕ), (n : ℕ) => by simp [← Int.natCast_add]
+  | (m : ℕ), -[n+1] => by
+    rw [Int.ofNat_add_negSucc, cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_add_neg]
   | -[m+1], (n : ℕ) => by
-    erw [cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_iff_eq_add, add_assoc,
-      eq_neg_add_iff_add_eq, ← Nat.cast_add, ← Nat.cast_add, Nat.add_comm]
-  | -[m+1], -[n+1] =>
-    show (-[m + n + 1+1] : R) = _ by
-      rw [cast_negSucc, cast_negSucc, cast_negSucc, ← neg_add_rev, ← Nat.cast_add,
-        Nat.add_right_comm m n 1, Nat.add_assoc, Nat.add_comm]
+    rw [Int.negSucc_add_ofNat, cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_iff_eq_add,
+      add_assoc, eq_neg_add_iff_add_eq, ← Nat.cast_add, ← Nat.cast_add, Nat.add_comm]
+  | -[m+1], -[n+1] => by
+    rw [Int.negSucc_add_negSucc, succ_eq_add_one, cast_negSucc, cast_negSucc, cast_negSucc,
+      ← neg_add_rev, ← Nat.cast_add, Nat.add_right_comm m n 1, Nat.add_assoc, Nat.add_comm]
 -- type had `HasLiftT`
 
 @[simp, norm_cast]
