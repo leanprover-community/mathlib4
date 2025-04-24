@@ -633,8 +633,8 @@ lemma integral_antitoneOn_of_integrand_ae {β : Type*} [Preorder β] {f : α →
   filter_upwards [hf_anti] with x hx
   exact hx ha hb hab
 
-lemma integral_convexOn_of_integrand_ae {β : Type*} [AddCommMonoid β] [PartialOrder β]
-    [Module ℝ β] [IsOrderedAddMonoid β] {f : α → β → E} {s : Set β} (hs : Convex ℝ s)
+lemma integral_convexOn_of_integrand_ae {β : Type*} [AddCommMonoid β]
+    [Module ℝ β] {f : α → β → E} {s : Set β} (hs : Convex ℝ s)
     (hf_conv : ∀ᵐ x ∂μ, ConvexOn ℝ s (f x)) (hf_int : ∀ a ∈ s, Integrable (f · a) μ) :
     ConvexOn ℝ s (fun b => ∫ x, f x b ∂μ) := by
   refine ⟨hs, ?_⟩
@@ -656,8 +656,8 @@ lemma integral_convexOn_of_integrand_ae {β : Type*} [AddCommMonoid β] [Partial
                     (Integrable.smul _ (hf_int a ha)) (Integrable.smul _ (hf_int b hb))
             _ = p • ∫ x, f x a ∂μ + q • ∫ x, f x b ∂μ := by simp [integral_smul]
 
-lemma integral_concaveOn_of_integrand_ae {β : Type*} [AddCommMonoid β] [PartialOrder β]
-    [Module ℝ β] [IsOrderedAddMonoid β] {f : α → β → E} {s : Set β} (hs : Convex ℝ s)
+lemma integral_concaveOn_of_integrand_ae {β : Type*} [AddCommMonoid β]
+    [Module ℝ β] {f : α → β → E} {s : Set β} (hs : Convex ℝ s)
     (hf_conc : ∀ᵐ x ∂μ, ConcaveOn ℝ s (f x)) (hf_int : ∀ a ∈ s, Integrable (f · a) μ) :
     ConcaveOn ℝ s (fun b => ∫ x, f x b ∂μ) := by
   simp_rw [← neg_convexOn_iff] at hf_conc ⊢
