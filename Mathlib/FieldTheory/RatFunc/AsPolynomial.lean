@@ -218,9 +218,8 @@ variable {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ] {v : Valuation (RatFu
 
 open Valuation
 
-/--
-If a valuation is trivial on constants then the valuation of `(monomial n a)` is equal
-to `(v (RatFunc.X)) ^ n`. -/
+/-- If a valuation `v` is trivial on constants then for every `n : ℕ` the valuation of
+`(monomial n a)` is equal to `(v (RatFunc.X)) ^ n`. -/
 lemma valuation_monomial_eq_valuation_X_pow
     (hv : ∀ a : K, a ≠ 0 → v (algebraMap K (RatFunc K) a) = 1) (n : ℕ) {a : K} (ha : a ≠ 0) :
     v (monomial n a) = v RatFunc.X ^ n := by
@@ -228,8 +227,7 @@ lemma valuation_monomial_eq_valuation_X_pow
   simp only [RatFunc.coePolynomial, ← C_mul_X_pow_eq_monomial, _root_.map_mul, _root_.map_pow,
     RatFunc.algebraMap_X, h, hv a ha, one_mul]
 
-/--
-If a valuation is trivial on constants and `1 < v RatFunc.X` then
+/-- If a valuation `v` is trivial on constants and `1 < v RatFunc.X` then for every polynomial `p`,
 `v p = v RatFunc.X ^ p.natDegree`. -/
 theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X
     [Nontrivial Γ] [PosMulStrictMono Γ] (hlt : 1 < v RatFunc.X)
@@ -250,8 +248,8 @@ theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X
     exact pow_pos (lt_trans zero_lt_one hlt) p.natDegree
   simp only [h _ h0, one_mul, pow_lt_pow_right₀ hlt hi]
 
-/--
-If a valuation is trivial on constants and `v RatFunc.X ≤ 1` then `v p ≤ 1`. -/
+/-- If a valuation `v` is trivial on constants and `v RatFunc.X ≤ 1` then `for every polynomial `p`,
+`v p ≤ 1`. -/
 theorem valuation_le_one_of_valuation_X_le_one
     (h : ∀ a : K, a ≠ 0 → v (algebraMap K (RatFunc K) a) = 1) (hle : v RatFunc.X ≤ 1) (p : K[X]) :
     v p ≤ 1 := by
