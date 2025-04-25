@@ -555,8 +555,6 @@ theorem MemLp.ae_eq [TopologicalSpace ε] {f g : α → ε} (hfg : f =ᵐ[μ] g)
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.ae_eq := MemLp.ae_eq
 
-section
-
 variable {ε ε' : Type*}
   [TopologicalSpace ε] [TopologicalSpace ε'] [ContinuousENorm ε] [ContinuousENorm ε']
 
@@ -573,23 +571,13 @@ theorem MemLp.of_le_enorm {f : α → ε} {g : α → ε'} (hg : MemLp g p μ)
 alias MemLp.mono := MemLp.of_le
 @[deprecated (since := "2025-02-21")] alias Memℒp.mono := MemLp.mono
 
-
 theorem MemLp.mono' {f : α → E} {g : α → ℝ} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : MemLp f p μ :=
   hg.of_le hf <| h.mono fun _x hx => le_trans hx (le_abs_self _)
 
--- this is a problem, right?
--- #synth ContinuousENorm ℝ≥0∞ fails
--- instance : ContinuousENorm ℝ≥0∞ := sorry
-
-theorem MemLp.mono'_enorm {f : α → ε} {g : α → ℝ≥0∞} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
-    (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : MemLp f p μ := by
-  -- TODO: the naive proof port runs into isDefEq time-outs, fix!
-  have : ∀ᵐ (a : α) ∂μ, ‖f a‖ₑ ≤ ‖g a‖ₑ := h.mono fun _x hx ↦ le_trans hx le_rfl
-  -- this also fails: is this because of the above #synth failure?
-  -- apply MemLp.of_le_enorm hg hf this
-  --apply hg.of_le_enorm hf <| h.mono fun _x hx => le_trans hx (le_abs_self _)
-  sorry
+theorem MemLp.mono'_enorm {f : α → ε} {g : α → ℝ≥0∞}
+    (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : MemLp f p μ :=
+  MemLp.of_le_enorm hg hf <| h.mono fun _x hx ↦ le_trans hx le_rfl
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.mono' := MemLp.mono'
@@ -634,8 +622,6 @@ alias memℒp_top_of_bound := memLp_top_of_bound
 theorem MemLp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) (C : ℝ)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : MemLp f p μ :=
   (memLp_const C).of_le hf (hfC.mono fun _x hx => le_trans hx (le_abs_self _))
-
--- #check memLp_const_enorm
 
 theorem MemLp.of_enorm_bound [IsFiniteMeasure μ] {f : α → ε} (hf : AEStronglyMeasurable f μ)
     {C : ℝ≥0∞} (hC : C ≠ ∞) (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) : MemLp f p μ := by
@@ -987,29 +973,29 @@ lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → ε) : eLpNor
 @[simp] lemma eLpNormEssSup_count [MeasurableSingletonClass α] (f : α → ε) :
     eLpNormEssSup f .count = ⨆ a, ‖f a‖ₑ := essSup_count _
 
-theorem MemLp.left_of_add_measure [TopologicalSpace ε] {f : α → ε} (h : MemLp f p (μ + ν)) :
+theorem MemLp.left_of_add_measure {f : α → ε} (h : MemLp f p (μ + ν)) :
     MemLp f p μ :=
   h.mono_measure <| Measure.le_add_right <| le_refl _
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.left_of_add_measure := MemLp.left_of_add_measure
 
-theorem MemLp.right_of_add_measure [TopologicalSpace ε] {f : α → ε} (h : MemLp f p (μ + ν)) :
+theorem MemLp.right_of_add_measure {f : α → ε} (h : MemLp f p (μ + ν)) :
     MemLp f p ν :=
   h.mono_measure <| Measure.le_add_left <| le_refl _
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.right_of_add_measure := MemLp.right_of_add_measure
 
-variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
-
 theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖) p μ :=
   h.of_le h.aestronglyMeasurable.norm (Eventually.of_forall fun x => by simp)
 
 theorem MemLp.enorm {f : α → ε} (h : MemLp f p μ) : MemLp (‖f ·‖ₑ) p μ :=
-  -- TODO: want .of_le_enorm, just requiring measurability...
-  -- so, must go deeper into the rabbit hole!
-  sorry -- TODO: should have a simple proof
+  -- math question: .of_le_enorm cannot be directly applied:
+  -- f is a.e. strongly measurable, but its *enorm* is only ae measurable
+  -- so, how would that part even follow?
+  -- XXX: is there a simpler math proof?
+  sorry
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.norm := MemLp.norm
@@ -1061,7 +1047,7 @@ coe_nnnorm_ae_le_eLpNormEssSup := enorm_ae_le_eLpNormEssSup
 theorem eLpNormEssSup_eq_zero_iff {f : α → ε} : eLpNormEssSup f μ = 0 ↔ f =ᵐ[μ] 0 := by
   simp [EventuallyEq, eLpNormEssSup_eq_essSup_enorm]
 
-theorem eLpNorm_eq_zero_iff {f : α → E} (hf : AEStronglyMeasurable f μ) (h0 : p ≠ 0) :
+theorem eLpNorm_eq_zero_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) (h0 : p ≠ 0) :
     eLpNorm f p μ = 0 ↔ f =ᵐ[μ] 0 := by
   by_cases h_top : p = ∞
   · rw [h_top, eLpNorm_exponent_top, eLpNormEssSup_eq_zero_iff]
@@ -1344,7 +1330,7 @@ theorem MemLp.of_nnnorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg :
   ⟨hf, (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul hfg p).trans_lt <|
       ENNReal.mul_lt_top ENNReal.coe_lt_top hg.eLpNorm_lt_top⟩
 
-theorem MemLp.of_enorm_le_mul [TopologicalSpace ε']
+theorem MemLp.of_enorm_le_mul
     {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ :=
   ⟨hf, (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hfg p).trans_lt <|
@@ -1360,7 +1346,7 @@ theorem MemLp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : MemLp g p 
       ENNReal.mul_lt_top ENNReal.ofReal_lt_top hg.eLpNorm_lt_top⟩
 
 -- TODO: eventually, deprecate and remove the nnnorm version
-theorem MemLp.of_le_mul' [TopologicalSpace ε'] {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
+theorem MemLp.of_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ :=
   ⟨hf, (eLpNorm_le_mul_eLpNorm_of_ae_le_mul' hfg p).trans_lt <|
       ENNReal.mul_lt_top ENNReal.coe_lt_top hg.eLpNorm_lt_top⟩
@@ -1585,3 +1571,5 @@ alias Memℒp.exists_eLpNorm_indicator_compl_lt := MemLp.exists_eLpNorm_indicato
 end UnifTight
 end Lp
 end MeasureTheory
+
+set_option linter.style.longFile 1700
