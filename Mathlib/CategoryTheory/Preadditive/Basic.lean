@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Module.End
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -99,7 +99,7 @@ instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Preadditive.{v} (FullSubcategory Z) where
+instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory where
   homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
   add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
   comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _

@@ -120,4 +120,14 @@ theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
 
+lemma norm_sub_le_of_mem_segment {x y z : E} (hy : y ∈ segment ℝ x z) :
+    ‖y - x‖ ≤ ‖z - x‖ := by
+  rw [segment_eq_image'] at hy
+  simp only [mem_image, mem_Icc] at hy
+  obtain ⟨u, ⟨hu_nonneg, hu_le_one⟩, rfl⟩ := hy
+  simp only [add_sub_cancel_left, norm_smul, Real.norm_eq_abs]
+  rw [abs_of_nonneg hu_nonneg]
+  conv_rhs => rw [← one_mul (‖z - x‖)]
+  gcongr
+
 end SeminormedAddCommGroup

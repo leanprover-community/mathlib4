@@ -19,7 +19,7 @@ This is useful for talking about polynomials in terms of list operations. It is 
 the sense that `Polynomial` is already a `Finsupp` (of its coefficients), and `Polynomial.coeff`
 turns this into a function, and these have exactly the same data as `coeffList`. The difference is
 that `coeffList` is intended for working together with list operations: getting `List.head`,
-comparing adjacent coefficients with each other, or anything that involves induction on Pollynomials
+comparing adjacent coefficients with each other, or anything that involves induction on Polynomials
 by dropping the leading term (which is `Polynomial.eraseLead`).
 
 Note that `coeffList` _starts_ with the highest-degree terms and _ends_ with the constant term. This
