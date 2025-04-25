@@ -5,6 +5,7 @@ Authors: Loic Simon
 -/
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 import Mathlib.MeasureTheory.Measure.Sub
+import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 
 /-!
 # Jordan Decomposition from Signed Measure Subtraction
@@ -25,8 +26,6 @@ where `μ ≤ ν` and `ν ≤ μ`, and the measure difference behaves like a sig
 * `sub_toSignedMeasure_eq_toSignedMeasure_sub`:
   The signed measure `μ.toSignedMeasure - ν.toSignedMeasure` equals
   `(μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure`.
-* `setWhereLe_iff_setWhereLeSignedMeasure`:
-  The set-theoretic condition for `μ ≥ ν` is equivalent to its reformulation using signed measures.
 -/
 open scoped MeasureTheory ENNReal NNReal
 
@@ -40,93 +39,22 @@ variable {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 namespace Measure
 
-/-- The set where `μ ≤ ν`, defined via measurable set and measure restriction comparisons. -/
-structure SetWhereLe (μ ν : Measure X) (s : Set X) : Prop where
-  measurableSet : MeasurableSet s
-  le_on : μ.restrict s ≤ ν.restrict s
-  ge_on_compl : ν.restrict sᶜ ≤ μ.restrict sᶜ
-
-lemma SetWhereLe.compl {μ ν : Measure X} {s : Set X}
-    (h : SetWhereLe μ ν s) : SetWhereLe ν μ sᶜ where
-  measurableSet := h.measurableSet.compl
-  le_on := h.ge_on_compl
-  ge_on_compl := by rw [compl_compl]; exact h.le_on
-
-end Measure
-
-namespace SignedMeasure
-
-/-- The set where `μ ≥ ν`, reformulated via nonnegativity of signed measure differences. -/
-structure SetWhereLe (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] (s : Set X) : Prop
-where
-  measurableSet : MeasurableSet s
-  le_on : μ.toSignedMeasure.restrict s ≤  ν.toSignedMeasure.restrict s
-  ge_on_compl : ν.toSignedMeasure.restrict sᶜ ≤  μ.toSignedMeasure.restrict sᶜ
-
-lemma SetWhereLe.compl {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    {s : Set X} (h : SetWhereLe μ ν s) : SetWhereLe ν μ sᶜ where
-  measurableSet := h.measurableSet.compl
-  le_on := h.ge_on_compl
-  ge_on_compl := by rw [compl_compl]; exact h.le_on
-
-end SignedMeasure
-
-lemma exists_SetWhereLeSignedMeasure (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    ∃ s : Set X, SignedMeasure.SetWhereLe μ ν s := by
-  obtain ⟨s, hs, h₂, h₃⟩ := (ν.toSignedMeasure - μ.toSignedMeasure).exists_compl_positive_negative
-  simp [VectorMeasure.restrict_sub] at h₂ h₃
-  exact ⟨s, hs, h₂, h₃⟩
-
-namespace Measure
-
-lemma sub_eq_zero_of_le_on {μ ν : Measure X} (hs : SetWhereLe μ ν s) : (μ - ν) s = 0 := by
+lemma sub_eq_zero_of_le_on {μ ν : Measure X} (hs : IsHahnDecomposition μ ν s) : (μ - ν) s = 0 := by
   rw [← restrict_eq_zero, restrict_sub_eq_restrict_sub_restrict hs.measurableSet]
   exact sub_eq_zero_of_le hs.le_on
 
-lemma ofSignedMeasure_setWhereLe (hs : SignedMeasure.SetWhereLe μ ν s) : SetWhereLe μ ν s where
-  measurableSet := hs.measurableSet
-  le_on := by
-    rw [(toSignedMeasure_le_iff _ _).symm, ← sub_nonneg,
-        ← toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet,
-        ← toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet]
-    simp [hs.le_on]
-  ge_on_compl := by
-    rw [(toSignedMeasure_le_iff _ _).symm, ← sub_nonneg,
-        ← toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet.compl,
-        ← toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet.compl]
-    simp [hs.ge_on_compl]
-
-lemma toSignedMeasure_setWhereLe (hs : SetWhereLe μ ν s) : SignedMeasure.SetWhereLe μ ν s where
-  measurableSet := hs.measurableSet
-  le_on := by
-    rw [toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet,
-        toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet]
-    exact (toSignedMeasure_le_iff _ _).mpr hs.le_on
-  ge_on_compl := by
-    rw [toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet.compl,
-        toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet.compl]
-    exact (toSignedMeasure_le_iff _ _).mpr hs.ge_on_compl
-
-@[simp]
-theorem setWhereLe_iff_setWhereLeSignedMeasure :
-    SetWhereLe μ ν s ↔ SignedMeasure.SetWhereLe μ ν s :=
-      ⟨toSignedMeasure_setWhereLe, ofSignedMeasure_setWhereLe⟩
-
-lemma sub_eq_zero_of_le_on' (hs : SignedMeasure.SetWhereLe μ ν s) : (μ - ν) s = 0 :=
-  sub_eq_zero_of_le_on (ofSignedMeasure_setWhereLe hs)
-
 theorem mutually_singular_measure_sub :
     (μ - ν).MutuallySingular (ν - μ) := by
-  obtain ⟨s, hs⟩ := exists_SetWhereLeSignedMeasure μ ν
+  obtain ⟨s, hs⟩ := hahn_decomposition' μ ν
   exact ⟨s, hs.measurableSet,
-    sub_eq_zero_of_le_on' hs,
-    sub_eq_zero_of_le_on' hs.compl⟩
+    sub_eq_zero_of_le_on hs,
+    sub_eq_zero_of_le_on hs.compl⟩
 
-lemma toSignedMeasure_restrict_sub (hs : SignedMeasure.SetWhereLe μ ν s) :
+lemma toSignedMeasure_restrict_sub (hs : IsHahnDecomposition μ ν s) :
     ((ν - μ).restrict s).toSignedMeasure =
       ν.toSignedMeasure.restrict s - μ.toSignedMeasure.restrict s := by
   have hmeas := hs.measurableSet
-  have hle : μ.restrict s ≤ ν.restrict s := (setWhereLe_iff_setWhereLeSignedMeasure.2 hs).le_on
+  have hle : μ.restrict s ≤ ν.restrict s := hs.le_on
   rw [eq_sub_iff_add_eq, toSignedMeasure_restrict_eq_restrict_toSigned _ _ hmeas]
   rw [← toSignedMeasure_add]
   have h_restrict := @restrict_sub_eq_restrict_sub_restrict _ _ ν μ s hmeas
@@ -137,16 +65,14 @@ lemma toSignedMeasure_restrict_sub (hs : SignedMeasure.SetWhereLe μ ν s) :
 theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
     μ.toSignedMeasure - ν.toSignedMeasure =
       (μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure := by
-  obtain ⟨s, hs⟩ := exists_SetWhereLeSignedMeasure μ ν
+  obtain ⟨s, hs⟩ := hahn_decomposition' μ ν
   let hsc := hs.compl
 
   have h₁ := toSignedMeasure_restrict_sub hs
   have h₂ := toSignedMeasure_restrict_sub hsc
 
-  have h₁' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_le_on
-    <|ofSignedMeasure_setWhereLe hs
-  have h₂' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_le_on
-    <|ofSignedMeasure_setWhereLe hsc
+  have h₁' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_le_on hs
+  have h₂' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_le_on hsc
 
   have partition₁ := VectorMeasure.restrict_add_restrict_compl (μ - ν).toSignedMeasure
     hs.measurableSet
