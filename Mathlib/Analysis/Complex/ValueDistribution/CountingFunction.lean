@@ -203,8 +203,8 @@ theorem logCounting_add_const (hf : MeromorphicOn f univ) :
   apply logCounting_add_analyticOn hf analyticOn_const
 
 /--
-Special case of `VD.logCounting_add_analyticOn`: Subtracting a constant does not change the
-counting function counting poles.
+Special case of `VD.logCounting_add_analyticOn`: Subtracting a constant does not change the counting
+function counting poles.
 -/
 theorem logCounting_sub_const (hf : MeromorphicOn f univ) :
     logCounting (f - fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
