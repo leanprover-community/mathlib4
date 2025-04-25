@@ -54,7 +54,7 @@ namespace Function.locallyFinsuppWithin
 Shorthand notation for the restriction of a function with locally finite support within `Set.univ`
 to the closed unit ball of radius `r`.
 -/
-noncomputable def toBall (r : ℝ) :
+noncomputable def toClosedBall (r : ℝ) :
     locallyFinsuppWithin (univ : Set 𝕜) ℤ →+ locallyFinsuppWithin (closedBall (0 : 𝕜) |r|) ℤ := by
   apply restrictMonoidHom
   tauto
@@ -64,12 +64,19 @@ noncomputable def toBall (r : ℝ) :
 -/
 
 /--
-Definition of the logarithmic counting function for a function with locally finite support within
-`Set.univ`, as a group morphism.
+Definition of the logarithmic counting function, as a group morphism mapping functions `D` with
+locally finite support to maps `ℝ → ℝ`.  Given `D`, the result map `logCounting D` takes a real `r :
+ℝ` to a logarithmically weighted measure of values that `D` takes within the disk `∣z∣ ≤ r`.
+
+Implementation Note: In case where `z = 0`, the term `log (r * ‖z‖⁻¹)` evaluates to zero, which is
+typically different from `log r - log ‖z‖ = log r`. The summand `(D`0) * log r` compensates this,
+producing cleaner formulas then the logarithmic counting function is used in the main theorms of
+Value Distribution Theory.  We refer the reader to page 164 of [Lang: Introduction to Complex
+Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) for more details.
 -/
 noncomputable def logCounting [ProperSpace 𝕜] :
     locallyFinsuppWithin (univ : Set 𝕜) ℤ →+ (ℝ → ℝ) where
-  toFun D := fun r ↦ ∑ᶠ z, D.toBall r z * log (r * ‖z‖⁻¹) + (D 0) * log r
+  toFun D := fun r ↦ ∑ᶠ z, D.toClosedBall r z * log (r * ‖z‖⁻¹) + (D 0) * log r
   map_zero' := by
     simp
     rfl
@@ -79,7 +86,7 @@ noncomputable def logCounting [ProperSpace 𝕜] :
     have {A B C D : ℝ} : A + B + (C + D) = A + C + (B + D) := by ring
     rw [Pi.add_apply, this]
     congr 1
-    · have h₁s : ((D₁.toBall r).support ∪ (D₂.toBall r).support).Finite := by
+    · have h₁s : ((D₁.toClosedBall r).support ∪ (D₂.toClosedBall r).support).Finite := by
         apply Set.finite_union.2
         constructor
         <;> apply finiteSupport _ (isCompact_closedBall 0 |r|)
