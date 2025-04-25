@@ -297,26 +297,12 @@ theorem exp_add (x y : ZMod n) : exp n (x + y) = exp n x * exp n y := by
   ext
   --simp only [Subgroup.coe_mul, Units.val_mul]
   rw [exp]
-  have
-  simp_rw [ZMod.val_add]
-  rw [exp]
-  rw [exp]
-
-  simp only [ZMod.natCast_val, Units.coe_exp, Complex.ofReal_mul, Complex.ofReal_ofNat,
-    Complex.ofReal_div, Complex.ofReal_natCast, MulMemClass.mk_mul_mk, Units.val_mul]
-  rw [← Complex.exp_add]
-  simp_rw [← add_mul]
-  simp_rw [← mul_add]
-  simp_rw [← add_div]
-  simp_rw [ZMod.cast_add]
-  --simp_rw [← Units.exp_add]
-  simp_rw [ZMod.val_add]
-
-  simp_rw [mul_add]
-  simp_rw [Units.exp_add]
-  simp only [ZMod.natCast_val, Units.coe_exp, Complex.ofReal_mul, Complex.ofReal_ofNat,
-    Complex.ofReal_div, Complex.ofReal_natCast]
-
+  simp_rw [adding]
+  rw [Units.exp_add]
+  rw [exp, exp]
+  simp_all only [ZMod.natCast_val, Units.val_mul, Units.coe_exp, Complex.ofReal_mul,
+    Complex.ofReal_ofNat,
+    Complex.ofReal_div, Complex.ofReal_natCast, MulMemClass.mk_mul_mk]
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
