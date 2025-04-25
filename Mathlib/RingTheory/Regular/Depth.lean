@@ -31,20 +31,14 @@ lemma Ideal.subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
     ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ∃ i ∈ s, I ≤ f i := by
   rcases Set.Finite.exists_finset hs with ⟨t, ht⟩
   have heq : ⋃ i ∈ s, f i = ⋃ i ∈ t, (f i : Set R) := by
-    ext I
+    ext r
     simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
-    apply exists_congr
-    intro i
-    simp only [ht i]
+    exact exists_congr (fun i ↦ (and_congr_left fun a ↦ ht i).symm)
   have hmem_union : ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ((I : Set R) ⊆ ⋃ i ∈ (t : Set ι), f i) :=
-    Eq.to_iff (congrArg (Subset ↑I) heq)
-  have hexists_le: (∃ i ∈ t, I ≤ f i) ↔ ∃ i ∈ s, I ≤ f i := by
-    apply exists_congr
-    intro i
-    simp only [ht i]
-  rw [hmem_union,
-    Ideal.subset_union_prime (R := R) a b (fun i hin ↦ hp i ((ht i).mp hin)) (I := I),
-    hexists_le]
+    (congrArg _ heq).to_iff
+  have hexists_le: (∃ i ∈ t, I ≤ f i) ↔ ∃ i ∈ s, I ≤ f i :=
+    exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
+  rw [hmem_union, Ideal.subset_union_prime a b (fun i hin ↦ hp i ((ht i).mp hin)), hexists_le]
 
 lemma mem_associatePrimes_of_comap_mem_associatePrimes_localization (S : Submonoid R)
     (p : Ideal (Localization S)) [p.IsPrime]
