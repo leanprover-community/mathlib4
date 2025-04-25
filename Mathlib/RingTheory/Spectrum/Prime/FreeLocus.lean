@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.RingTheory.TensorProduct.Free
-import Mathlib.RingTheory.Tensorproduct.IsBaseChangePi
+import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 import Mathlib.RingTheory.Support
 
 /-!
