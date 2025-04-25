@@ -84,6 +84,74 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
     use i
     field_simp [hn0, mul_comm ((n : ℕ) : ℂ), mul_comm (i : ℂ)]
 
+/-
+
+/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
+def exp : C(ℝ, Circle) where
+  toFun t := ⟨(t * I).exp, by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I]⟩
+  continuous_toFun := Continuous.subtype_mk (by fun_prop)
+    (by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I])
+
+
+/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
+considered as a homomorphism of groups. -/
+@[simps]
+def expHom : ℝ →+ Additive Circle where
+  toFun := Additive.ofMul ∘ exp
+  map_zero' := exp_zero
+  map_add' := exp_add
+-/
+
+noncomputable def Units.exp : ℝ → ℂˣ := fun t =>
+  ⟨(t * I).exp, (-t * I).exp, by rw [← exp_add, neg_mul, add_neg_cancel, exp_zero],
+    by rw [← exp_add, neg_mul, neg_add_cancel, exp_zero]⟩
+
+
+nonrec theorem mem_rootsOfUnity' (n : ℕ) [NeZero n] (x : Units ℂ) :
+    x ∈ rootsOfUnity n ℂ ↔ ∃ i < n, exp ((2 * π * (i / n)) * I) = x := by
+  rw [mem_rootsOfUnity]
+  aesop?
+  --simp_all only [ofReal_ofNat]
+
+
+#check Circle.expHom
+
+noncomputable def rootsOfUnity.exp (n : ℕ) [NeZero n] : ZMod n → rootsOfUnity n ℂ :=
+  fun k => ⟨Units.exp (2 * π * (k.val / n)),by
+    rw [mem_rootsOfUnity']
+    use k.val
+    constructor
+    · exact ZMod.val_lt k
+    · rw [Units.exp]
+      simp only
+      rw [mul_assoc _ I]
+      rw [mul_comm I]
+      rw [← mul_assoc _ _ I]
+      congr
+      norm_num
+      apply Or.inl
+
+      have e2 : (2 : ℂ) = (2 : ℝ) := rfl
+      rw [e2]
+
+      --norm_cast
+      --rw [ofReal_inj]
+      norm_num
+      apply Or.inl
+      rw [ofReal_def]
+      rw [ofReal_inj]
+
+      norm_cast
+
+      rw [mul_assoc 2]
+      simp
+
+
+
+    --, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
+    sorry
+  ⟩
+
 theorem card_rootsOfUnity (n : ℕ) [NeZero n] : Fintype.card (rootsOfUnity n ℂ) = n :=
   (isPrimitiveRoot_exp n NeZero.out).card_rootsOfUnity
 
