@@ -447,17 +447,17 @@ theorem sum_congr {f : SkewMonoidAlgebra k G} {M : Type*} [AddCommMonoid M] {g�
     f.sum g₁ = f.sum g₂ := Finset.sum_congr rfl h
 
 theorem induction_on {p : SkewMonoidAlgebra k G → Prop} (f : SkewMonoidAlgebra k G)
-    (h0 : p 0) (hM : ∀ g a, p (single g a)) (hadd : ∀ f g :
+    (zero : p 0) (single : ∀ g a, p (single g a)) (add : ∀ f g :
     SkewMonoidAlgebra k G, p f → p g → p (f + g)) : p f := by
   rw [← sum_single f, sum_def']
-  exact Finset.sum_induction _ _ hadd h0 (by aesop)
+  exact Finset.sum_induction _ _ add zero (by aesop)
 
 /--
 Slightly less general but more convenient version of `SkewMonoidAlgebra.induction_on`. -/
 theorem induction_on' [instNonempty : Nonempty G] {p : SkewMonoidAlgebra k G → Prop}
-    (f : SkewMonoidAlgebra k G) (hM : ∀ g a, p (single g a)) (hadd : ∀ f g :
+    (f : SkewMonoidAlgebra k G) (single : ∀ g a, p (single g a)) (add : ∀ f g :
     SkewMonoidAlgebra k G, p f → p g → p (f + g)) : p f :=
-  induction_on _ (by simpa using hM (Classical.choice instNonempty) 0) hM hadd
+  induction_on _ (by simpa using single (Classical.choice instNonempty) 0) single add
 
 end sum
 
@@ -681,22 +681,22 @@ open MulSemiringAction
 instance : NonUnitalSemiring (SkewMonoidAlgebra k G) where
   mul_assoc f g h := by
     induction f using induction_on' with
-    | hM x a => induction g using induction_on' with
-      | hM y b => induction h using induction_on' with
-        | hM z c => simp [mul_assoc, mul_smul, mul_def]
-        | hadd => simp_all [add_mul, mul_add]
-      | hadd => simp_all [add_mul, mul_add]
-    | hadd => simp_all [add_mul]
+    | single x a => induction g using induction_on' with
+      | single y b => induction h using induction_on' with
+        | single z c => simp [mul_assoc, mul_smul, mul_def]
+        | add => simp_all [add_mul, mul_add]
+      | add => simp_all [add_mul, mul_add]
+    | add => simp_all [add_mul]
 
 instance : NonAssocSemiring (SkewMonoidAlgebra k G) where
   one_mul f := by
     induction f using induction_on' with
-    | hM g a => rw [one_def, mul_def, sum_single_index] <;> simp
-    | hadd f g _ _ => simp_all [mul_add]
+    | single g a => rw [one_def, mul_def, sum_single_index] <;> simp
+    | add f g _ _ => simp_all [mul_add]
   mul_one f := by
     induction f using induction_on' with
-    | hM g a => rw [one_def, mul_def, sum_single_index, sum_single_index] <;> simp
-    | hadd f g _ _ => simp_all [add_mul]
+    | single g a => rw [one_def, mul_def, sum_single_index, sum_single_index] <;> simp
+    | add f g _ _ => simp_all [add_mul]
 
 instance : Semiring (SkewMonoidAlgebra k G) where
   __ := instNonUnitalSemiring
