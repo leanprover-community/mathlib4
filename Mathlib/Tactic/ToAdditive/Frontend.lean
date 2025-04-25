@@ -95,11 +95,10 @@ syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
 /-- A `reorder := ...` option for `to_additive`. -/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
-syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
-/-- Options to `to_additive`. -/
-syntax toAdditiveOption := toAdditiveParenthesizedOption <|> &"existing"
+syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
 /-- Remaining arguments of `to_additive`. -/
-syntax toAdditiveRest := (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
+syntax toAdditiveRest :=
+  (ppSpace &"existing")? (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
@@ -134,6 +133,9 @@ The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
 
+Use the `to_additive existing` syntax to use an existing additive declaration, instead of
+automatically generating it.
+
 Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
 This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
 arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
@@ -165,7 +167,9 @@ The transport process generally works by taking all the names of
 identifiers appearing in the name, type, and body of a declaration and
 creating a new declaration by mapping those names to additive versions
 using a simple string-based dictionary and also using all declarations
-that have previously been labeled with `to_additive`.
+that have previously been labeled with `to_additive`. The dictionary is `ToAdditive.nameDict`
+and can be found in the `Tactic.ToAdditive.Frontend` file. If you introduce a new name which
+should be translated by `to_additive` you should add the translation to this dictionary.
 
 In the `mul_comm'` example above, `to_additive` maps:
 * `mul_comm'` to `add_comm'`,
@@ -955,45 +959,48 @@ capitalization of the input. Input and first element should therefore be lower-c
 2nd element should be capitalized properly.
 -/
 def nameDict : String → List String
-  | "one"         => ["zero"]
-  | "mul"         => ["add"]
-  | "smul"        => ["vadd"]
-  | "inv"         => ["neg"]
-  | "div"         => ["sub"]
-  | "prod"        => ["sum"]
-  | "hmul"        => ["hadd"]
-  | "hsmul"       => ["hvadd"]
-  | "hdiv"        => ["hsub"]
-  | "hpow"        => ["hsmul"]
-  | "finprod"     => ["finsum"]
-  | "tprod"       => ["tsum"]
-  | "pow"         => ["nsmul"]
-  | "npow"        => ["nsmul"]
-  | "zpow"        => ["zsmul"]
-  | "mabs"        => ["abs"]
-  | "monoid"      => ["add", "Monoid"]
-  | "submonoid"   => ["add", "Submonoid"]
-  | "group"       => ["add", "Group"]
-  | "subgroup"    => ["add", "Subgroup"]
-  | "semigroup"   => ["add", "Semigroup"]
-  | "magma"       => ["add", "Magma"]
-  | "haar"        => ["add", "Haar"]
-  | "prehaar"     => ["add", "Prehaar"]
-  | "unit"        => ["add", "Unit"]
-  | "units"       => ["add", "Units"]
-  | "cyclic"      => ["add", "Cyclic"]
-  | "rootable"    => ["divisible"]
-  | "semigrp"     => ["add", "Semigrp"]
-  | "grp"         => ["add", "Grp"]
-  | "commute"     => ["add", "Commute"]
-  | "semiconj"    => ["add", "Semiconj"]
-  | "zpowers"     => ["zmultiples"]
-  | "powers"      => ["multiples"]
-  | "multipliable"=> ["summable"]
-  | "gpfree"      => ["apfree"]
-  | "quantale"    => ["add", "Quantale"]
-  | "square"      => ["even"]
-  | x             => [x]
+  | "one"           => ["zero"]
+  | "mul"           => ["add"]
+  | "smul"          => ["vadd"]
+  | "inv"           => ["neg"]
+  | "div"           => ["sub"]
+  | "prod"          => ["sum"]
+  | "hmul"          => ["hadd"]
+  | "hsmul"         => ["hvadd"]
+  | "hdiv"          => ["hsub"]
+  | "hpow"          => ["hsmul"]
+  | "finprod"       => ["finsum"]
+  | "tprod"         => ["tsum"]
+  | "pow"           => ["nsmul"]
+  | "npow"          => ["nsmul"]
+  | "zpow"          => ["zsmul"]
+  | "mabs"          => ["abs"]
+  | "monoid"        => ["add", "Monoid"]
+  | "submonoid"     => ["add", "Submonoid"]
+  | "group"         => ["add", "Group"]
+  | "subgroup"      => ["add", "Subgroup"]
+  | "semigroup"     => ["add", "Semigroup"]
+  | "magma"         => ["add", "Magma"]
+  | "haar"          => ["add", "Haar"]
+  | "prehaar"       => ["add", "Prehaar"]
+  | "unit"          => ["add", "Unit"]
+  | "units"         => ["add", "Units"]
+  | "cyclic"        => ["add", "Cyclic"]
+  | "rootable"      => ["divisible"]
+  | "semigrp"       => ["add", "Semigrp"]
+  | "grp"           => ["add", "Grp"]
+  | "commute"       => ["add", "Commute"]
+  | "semiconj"      => ["add", "Semiconj"]
+  | "zpowers"       => ["zmultiples"]
+  | "powers"        => ["multiples"]
+  | "multipliable"  => ["summable"]
+  | "gpfree"        => ["apfree"]
+  | "quantale"      => ["add", "Quantale"]
+  | "square"        => ["even"]
+  | "mconv"         => ["conv"]
+  | "irreducible"   => ["add", "Irreducible"]
+  | "mlconvolution" => ["lconvolution"]
+  | x               => [x]
 
 /--
 Turn each element to lower-case, apply the `nameDict` and
@@ -1073,6 +1080,8 @@ def fixAbbreviation : List String → List String
   | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
   | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
   | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "is" :: "Scalar" :: "Tower" :: s  => "vaddAssocClass" :: fixAbbreviation s
+  | "Is" :: "Scalar" :: "Tower" :: s  => "VAddAssocClass" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Semiconj" :: s
                                       => "function" :: "_" :: "semiconj" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Commute" :: s
@@ -1172,18 +1181,16 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
 
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
+  | `(attr| to_additive%$tk $[?%$trace]? $[existing%$existing]?
+      $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
-    let mut existing := some false
     for stx in opts do
       match stx with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
         reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
-      | `(toAdditiveOption| existing) =>
-        existing := some true
       | _ => throwUnsupportedSyntax
     reorder := reorder.reverse
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
@@ -1193,7 +1200,7 @@ def elabToAdditive : Syntax → CoreM Config
              allowAutoName := false
              attrs
              reorder
-             existing
+             existing := some existing.isSome
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 

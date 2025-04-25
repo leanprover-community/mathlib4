@@ -15,7 +15,7 @@ import Mathlib.Topology.Bases
 
 This file defines some of the weaker separation axioms (under the Kolmogorov classification),
 notably T₀, R₀, T₁ and R₁ spaces. For T₂ (Hausdorff) spaces and other stronger
-conditions, see the file `Topology/Separation/Hausdorff.lean`.
+conditions, see the file `Mathlib/Topology/Separation/Hausdorff.lean`.
 
 ## Main definitions
 
@@ -548,9 +548,18 @@ theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ �
 theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 
+lemma Set.Subsingleton.isClosed [T1Space X] {s : Set X} (hs : s.Subsingleton) : IsClosed s := by
+  rcases hs.eq_empty_or_singleton with rfl | ⟨x, rfl⟩
+  · exact isClosed_empty
+  · exact isClosed_singleton
+
+theorem Set.Subsingleton.closure_eq [T1Space X] {s : Set X} (hs : s.Subsingleton) :
+    closure s = s :=
+  hs.isClosed.closure_eq
+
 theorem Set.Subsingleton.closure [T1Space X] {s : Set X} (hs : s.Subsingleton) :
     (closure s).Subsingleton := by
-  rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩) <;> simp
+  rwa [hs.closure_eq]
 
 @[simp]
 theorem subsingleton_closure [T1Space X] {s : Set X} : (closure s).Subsingleton ↔ s.Subsingleton :=
@@ -751,11 +760,6 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
     rw [mk_eq_mk, inseparable_iff_specializes_and]
     exact ⟨xspecy, yspecx⟩
 
-lemma Set.Subsingleton.isClosed [T1Space X] {A : Set X} (h : A.Subsingleton) : IsClosed A := by
-  rcases h.eq_empty_or_singleton with rfl | ⟨x, rfl⟩
-  · exact isClosed_empty
-  · exact isClosed_singleton
-
 lemma isClosed_inter_singleton [T1Space X] {A : Set X} {a : X} : IsClosed (A ∩ {a}) :=
   Subsingleton.inter_singleton.isClosed
 
@@ -819,9 +823,6 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
   apply isClosed_set_pi
   simp [forall_update_iff, hs, isClosed_singleton]
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_update := isClosedEmbedding_update
-
 /-! ### R₁ (preregular) spaces -/
 
 section R1Space
@@ -857,6 +858,13 @@ theorem r1Space_iff_inseparable_or_disjoint_nhds {X : Type*} [TopologicalSpace X
 theorem Inseparable.of_nhds_neBot {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) :
     Inseparable x y :=
   (r1Space_iff_inseparable_or_disjoint_nhds.mp ‹_› _ _).resolve_right fun h' => h.ne h'.eq_bot
+
+theorem r1_separation {x y : X} (h : ¬Inseparable x y) :
+    ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v := by
+  rw [← disjoint_nhds_nhds_iff_not_inseparable,
+    (nhds_basis_opens x).disjoint_iff (nhds_basis_opens y)] at h
+  obtain ⟨u, ⟨hxu, hu⟩, v, ⟨hyv, hv⟩, huv⟩ := h
+  exact ⟨u, v, hu, hv, hxu, hyv, huv⟩
 
 /-- Limits are unique up to separability.
 
