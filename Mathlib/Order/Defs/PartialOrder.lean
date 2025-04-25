@@ -14,6 +14,17 @@ import Mathlib.Tactic.TypeStar
 
 Defines classes for preorders and partial orders
 and proves some basic lemmas about them.
+
+We also define covering relations on a preorder.
+We say that `b` *covers* `a` if `a < b` and there is no element in between.
+We say that `b` *weakly covers* `a` if `a ≤ b` and there is no element between `a` and `b`.
+In a partial order this is equivalent to `a ⋖ b ∨ a = b`,
+in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
+
+## Notation
+
+* `a ⋖ b` means that `b` covers `a`.
+* `a ⩿ b` means that `b` weakly covers `a`.
 -/
 
 variable {α : Type*}
@@ -99,6 +110,22 @@ def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
       if hba : b ≤ a then isFalse fun hab' => not_le_of_gt hab' hba
       else isTrue <| lt_of_le_not_le hab hba
     else isFalse fun hab' => hab (le_of_lt hab')
+
+/-- `WCovBy a b` means that `a = b` or `b` covers `a`.
+This means that `a ≤ b` and there is no element in between.
+-/
+def WCovBy (a b : α) : Prop :=
+  a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
+
+/-- Notation for `WCovBy a b`. -/
+infixl:50 " ⩿ " => WCovBy
+
+/-- `CovBy a b` means that `b` covers `a`: `a < b` and there is no element in between. -/
+def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
+  a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
+
+/-- Notation for `CovBy a b`. -/
+infixl:50 " ⋖ " => CovBy
 
 end Preorder
 

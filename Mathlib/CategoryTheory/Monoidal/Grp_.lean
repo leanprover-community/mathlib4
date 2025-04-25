@@ -325,10 +325,7 @@ end Grp_
 
 namespace CategoryTheory.Functor
 
-variable {C} {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D)
-variable [PreservesFiniteProducts F]
-
-attribute [local instance] monoidalOfChosenFiniteProducts
+variable {C} {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D) [F.Monoidal]
 
 /-- A finite-product-preserving functor takes group objects to group objects. -/
 @[simps!]
@@ -344,6 +341,7 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
           Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] }
   map f := F.mapMon.map f
 
+attribute [local instance] Monoidal.ofChosenFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
 @[simps]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
