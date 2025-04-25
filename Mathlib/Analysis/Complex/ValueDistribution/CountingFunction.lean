@@ -137,8 +137,8 @@ lemma logCounting_finite :
   simp [logCounting]
 
 /--
-For finite values `a₀`, the logarithmic counting function `logCounting f a₀` is equals the
-logarithmic counting function for the value zero of the shifted function `f - a₀`.
+For finite values `a₀`, the logarithmic counting function `logCounting f a₀` equals the logarithmic
+counting function for the value zero of the shifted function `f - a₀`.
 -/
 lemma logCounting_finite_eq_logCounting_zero_of_shifted :
     logCounting f a₀ = logCounting (f - fun _ ↦ a₀) 0 := by
