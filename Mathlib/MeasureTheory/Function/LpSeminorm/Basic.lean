@@ -991,11 +991,8 @@ theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖
   h.of_le h.aestronglyMeasurable.norm (Eventually.of_forall fun x => by simp)
 
 theorem MemLp.enorm {f : α → ε} (h : MemLp f p μ) : MemLp (‖f ·‖ₑ) p μ :=
-  -- math question: .of_le_enorm cannot be directly applied:
-  -- f is a.e. strongly measurable, but its *enorm* is only ae measurable
-  -- so, how would that part even follow?
-  -- XXX: is there a simpler math proof?
-  sorry
+  ⟨h.aestronglyMeasurable.enorm.aestronglyMeasurable,
+    by simp_rw [MeasureTheory.eLpNorm_enorm, h.eLpNorm_lt_top]⟩
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.norm := MemLp.norm
