@@ -247,6 +247,8 @@ noncomputable def exp (n : ℕ) [NeZero n] : ZMod n → rootsOfUnity n ℂ :=
 
 variable (n : ℕ) [NeZero n]
 
+lemma nzero : n ≠ 0 := (NeZero.ne' n).symm
+
 #check rootsOfUnity.exp n ∘ Nat.cast ∘ ZMod.val
 
 /-
@@ -278,7 +280,15 @@ lemma adding (j k : ZMod n) :
     rw [add_div]
     rw [mul_add]
   · rw [ZMod.val_add_of_le h2]
-    rw [Nat.cast_sub]
+    rw [Nat.cast_sub h2]
+    rw [sub_div]
+    rw [div_self ((NeZero.ne' _).symm)]
+    rw [mul_sub]
+    rw [mul_one]
+    rw [Units.periodic_exp.sub_eq]
+    rw [Nat.cast_add]
+    rw [add_div]
+    rw [mul_add]
 
 
 
