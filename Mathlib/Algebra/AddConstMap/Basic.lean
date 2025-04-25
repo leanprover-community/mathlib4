@@ -128,7 +128,7 @@ theorem map_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F 
     f ofNat(n) = f 0 + ofNat(n) := map_nat f n
 
 @[scoped simp]
-theorem map_const_add [AddCommSemigroup G] [Add H] [AddConstMapClass F G H a b]
+theorem map_const_add [AddCommMagma G] [Add H] [AddConstMapClass F G H a b]
     (f : F) (x : G) : f (a + x) = f x + b := by
   rw [add_comm, map_add_const]
 

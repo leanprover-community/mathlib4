@@ -631,7 +631,7 @@ theorem zpow_pos (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : 0 < a ^ n := by
 
 theorem zpow_lt_top (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n < ∞ := by
   cases n
-  · simpa using ENNReal.pow_lt_top h'a.lt_top _
+  · simpa using ENNReal.pow_lt_top h'a.lt_top
   · simp only [ENNReal.pow_pos ha.bot_lt, zpow_negSucc, inv_lt_top]
 
 theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (hy : 1 < y) (h'y : y ≠ ⊤) :

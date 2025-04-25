@@ -823,9 +823,6 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
   apply isClosed_set_pi
   simp [forall_update_iff, hs, isClosed_singleton]
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_update := isClosedEmbedding_update
-
 /-! ### R₁ (preregular) spaces -/
 
 section R1Space
@@ -861,6 +858,13 @@ theorem r1Space_iff_inseparable_or_disjoint_nhds {X : Type*} [TopologicalSpace X
 theorem Inseparable.of_nhds_neBot {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) :
     Inseparable x y :=
   (r1Space_iff_inseparable_or_disjoint_nhds.mp ‹_› _ _).resolve_right fun h' => h.ne h'.eq_bot
+
+theorem r1_separation {x y : X} (h : ¬Inseparable x y) :
+    ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v := by
+  rw [← disjoint_nhds_nhds_iff_not_inseparable,
+    (nhds_basis_opens x).disjoint_iff (nhds_basis_opens y)] at h
+  obtain ⟨u, ⟨hxu, hu⟩, v, ⟨hyv, hv⟩, huv⟩ := h
+  exact ⟨u, v, hu, hv, hxu, hyv, huv⟩
 
 /-- Limits are unique up to separability.
 
