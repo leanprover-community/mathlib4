@@ -310,10 +310,18 @@ variable {p : Set α → Prop} (hp : IsCompactSystem p) (L : ℕ → Finset (Set
 -- variable (p : {n : ℕ} → ((k : Fin (n + 1)) → (β k)) → Prop)
 
 noncomputable def r (n : ℕ) (K : ℕ → Set α) : Prop :=
-  ∀ N, ⋂ (j < n), (K j) ∩ ⋂ (k < N), (⋃₀ (L (n + k)).toSet) ≠ ∅
+  ∀ N, (⋂ (j < n), (K j)) ∩ (⋂ (k < N), (⋃₀ (L (n + k)).toSet)) ≠ ∅
 
 -- h0 -> (get_element_zero hL hc)
 -- (h0 : ∃ x : (ℕ → α), x 0 ∈ β 0 ∧ p 0 x)
+
+lemma nonempty' (n : ℕ) (K : ℕ → Set α)
+    (hc : ∀ N, (⋂ (k < n), K k) ∩ (⋂ k < N, ⋃₀ (L (n + k))) ≠ ∅) : (L n).Nonempty := by
+  specialize hc 1
+  by_contra! h
+  simp only [Finset.not_nonempty_iff_eq_empty] at h
+  apply hc
+  simp [h]
 
 lemma nonempty (k : ℕ) (hc : ∀ N, ⋂ k < N, ⋃₀ (L k : Set (Set α)) ≠ ∅) : (L k).Nonempty := by
   specialize hc (k + 1)
@@ -353,31 +361,109 @@ private lemma inter_sUnion_sUnion (m n : ℕ) : (⋂ k < m, (⋃₀ L k)) ∩ �
 
 def q : ℕ → (ℕ → Set α) → Prop := fun n K ↦ (∀ k < n, K k ∈ L k) ∧ (r L n K)
 
+lemma get_element_zero (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) :
+    ∃ (K : ℕ → Set α), q L 0 K := by
+  simp [q, r, h]
+
 variable [Nonempty α]
 
-lemma get_element_zero : ∃ (K : ℕ → Set α), q L 0 K := by
-  simp [q, r]
 
 
 --  (h : ∀ (n : ℕ) (x : (ℕ → α)) (hx : p n x), ∃ y, p (n + 1) (Function.update x n y))
 
 -- p n x ↔ (∀ k < n, K k ∈ β k) ∧ (r n K)
+example (n : ℕ) (s : Set α) (K : ℕ → Set α): (⋂ j < n, K j) ∩ s = ⋂ j < n, K j ∩ s := by
+  refine Eq.symm (biInter_inter ?_ K s)
+  sorry
+
+example (k n : ℕ) (h : k < n + 1) (h' : k ≠ n) : k < n := by
+  by_contra h''
+  simp at h''
+  apply h'
+  exact Nat.eq_of_le_of_lt_succ h'' h
+
+example (a b s : Set α) (h : a = b) : a ∩ s = b ∩ s := by
+  exact congrFun (congrArg Inter.inter h) s
+
+example (s t : Set α) (L : Set (Set α)): (∀ y ∈ L, s ∩ y = ∅) → s ∩ ⋃₀ L = ∅ := by
+  refine fun a ↦ ?_
+  refine Disjoint.inter_eq ?_
+  refine disjoint_sUnion_right.mpr ?_
+  simp_rw [Disjoint]
+  sorry
+
 
 lemma get_element_succ' (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d) (n : ℕ)
   (K : ℕ → Set α) (hK : q L n K) : ∃ y, q L (n + 1) (Function.update K n y) := by
   simp_rw [q, r] at hK ⊢
   by_contra! h
   choose b hb using h
-  have hn (a : Set α) (ha : a ∈ L n) : (∀ k < n + 1, Function.update K n a k ∈ L k) := by
-    sorry
+  have hn : ∀ y ∈ L n, ∀ k < n + 1, Function.update K n y k ∈ L k := by
+    intro y hy k hk
+    by_cases d : n = k
+    · rw [d]
+      simp only [Function.update_self]
+      exact d ▸ hy
+    · have d' : k < n := by
+        by_contra h
+        apply d
+        simp only [not_lt] at h
+        apply Eq.symm
+        exact Nat.eq_of_le_of_lt_succ h hk
+      simp only [ne_eq, d'.ne, not_false_eq_true, Function.update_of_ne]
+      exact hK.1 k d'
   classical
   let b' : Set α → ℕ := fun y ↦ dite (y ∈ L n) (fun h ↦ b y (hn y h)) (fun _ ↦ 0)
-  have hc : ∀ N, ⋂ k < N, ⋃₀ (L k : Set (Set α)) ≠ ∅ := by sorry
-  obtain ⟨K0Max, ⟨hK0₁, hK0₂⟩⟩ := Finset.exists_max_image (L n) b' (nonempty L n hc)
-  apply hc (b' K0Max + 1 + 1)
+  obtain ⟨K0Max, ⟨hK0₁, hK0₂⟩⟩ := Finset.exists_max_image (L n) b' (nonempty' L n K hK.2)
+  apply hK.2 (b' K0Max + 1)
+  have hb' := fun y hy ↦ hb y (hn y hy)
+  have h₁ (y s : Set α): (⋂ j, ⋂ (_ : j < n + 1), Function.update K n y j) ∩ s = (⋂ j, ⋂ (_ : j < n), K j) ∩ y ∩ s := by
+    apply congrFun (congrArg Inter.inter _) s
+    ext x
+    refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ ?_⟩ <;> simp only [mem_iInter, mem_inter_iff] at h ⊢
+    · intro i hi
+      have h' := h i (le_trans hi (le_succ n))
+      simp only [ne_eq, hi.ne, not_false_eq_true, Function.update_of_ne] at h'
+      exact h'
+    · have h'' := h n (lt_add_one n)
+      simp only [Function.update_self] at h''
+      exact h''
+    · intro i hi
+      by_cases h₁ : i < n
+      · simp only [ne_eq, h₁.ne, not_false_eq_true, Function.update_of_ne]
+        exact h.1 i h₁
+      · simp only [not_lt] at h₁
+        have h₂ := Nat.eq_of_le_of_lt_succ h₁ hi
+        rw [h₂]
+        simp only [Function.update_self]
+        exact h.2
+  simp_rw [h₁] at hb'
 
-  have h' : ∀ a ∈ L n, ⋂ (k < n), ⋃₀ ↑(L k) ∩ a ∩ ⋂ (k < b' K0Max + 1), ⋃₀ ↑(L (n + k)) = ∅ := by
+
+
+  rw [eq_empty_iff_forall_not_mem]
+  intro x
+  simp only [mem_inter_iff, mem_iInter]
+
+
+  push_neg
+
+
+  have g : (⋂ j < n, K j) ∩ ⋂ k < b' K0Max + 1, ⋃₀ ↑(L (n + k)) =
+    ⋂ j < n, ( K j ∩ ⋂ k < b' K0Max + 1, ⋃₀ ↑(L (n + k))) := by
+    refine Eq.symm (biInter_inter ?_ K _)
     sorry
+  rw [g]
+
+  rw [iInter_inter]
+
+
+  have h' : ∀ a ∈ L n, (⋂ (k < n), K k ∩ a) ∩ (⋂ (k < b' K0Max + 1), ⋃₀ ↑(L (n + k))) = ∅ := by
+    sorry
+
+
+  simp_rw [← iUnion_eq_empty] at h'
+
 
 
 
