@@ -247,7 +247,7 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
 
 /-- If the field extension `E / F` is transcendental, then `Field.Emb F E` is infinite. -/
 instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infinite (Emb F E) := by
-  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' _ (algebraMap F E).injective
+  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' F E
   have := hx.isAlgebraic_field
   rw [← (embProdEmbOfIsAlgebraic F (adjoin F (Set.range x)) E).infinite_iff]
   refine @Prod.infinite_of_left _ _ ?_ _

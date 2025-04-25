@@ -363,8 +363,8 @@ Note we didn't require any coherence between the choice of finite products here,
 along the `prodComparison` isomorphism.
 -/
 noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [CartesianClosed C] : CartesianClosed D :=
-  letI := e.inverse.monoidalOfChosenFiniteProducts
-  MonoidalClosed.ofEquiv (e.inverse) e.symm.toAdjunction
+  letI : e.inverse.Monoidal := .ofChosenFiniteProducts _
+  MonoidalClosed.ofEquiv e.inverse e.symm.toAdjunction
 
 end Functor
 

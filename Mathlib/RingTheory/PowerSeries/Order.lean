@@ -354,24 +354,18 @@ variable [Semiring R] [NoZeroDivisors R]
 is the sum of their orders. -/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
   apply le_antisymm _ (le_order_mul _ _)
-  by_cases h : φ.order = ⊤ ∨ ψ.order = ⊤
+  by_cases h : φ = 0 ∨ ψ = 0
   · rcases h with h | h <;> simp [h]
-  · simp only [not_or, ENat.ne_top_iff_exists] at h
-    obtain ⟨m, hm⟩ := h.1
-    obtain ⟨n, hn⟩ := h.2
-    rw [← hm, ← hn, ← ENat.coe_add]
-    rw [eq_comm, order_eq_nat] at hm hn
+  · push_neg at h
+    rw [← coe_toNat_order h.1, ← coe_toNat_order h.2, ← ENat.coe_add]
     apply order_le
-    rw [coeff_mul, Finset.sum_eq_single ⟨m, n⟩]
-    · exact mul_ne_zero_iff.mpr ⟨hm.1, hn.1⟩
+    rw [coeff_mul, Finset.sum_eq_single_of_mem ⟨φ.order.toNat, ψ.order.toNat⟩ (by simp)]
+    · exact mul_ne_zero (coeff_order h.1) (coeff_order h.2)
     · intro ij hij h
       rcases trichotomy_of_add_eq_add (mem_antidiagonal.mp hij) with h' | h' | h'
       · exact False.elim (h (by simp [Prod.ext_iff, h'.1, h'.2]))
-      · rw [hm.2 ij.1 h', zero_mul]
-      · rw [hn.2 ij.2 h', mul_zero]
-    · intro h
-      apply False.elim (h _)
-      simp [mem_antidiagonal]
+      · rw [coeff_of_lt_order_toNat ij.1 h', zero_mul]
+      · rw [coeff_of_lt_order_toNat ij.2 h', mul_zero]
 
 theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
     order (φ ^ n) = n • order φ := by

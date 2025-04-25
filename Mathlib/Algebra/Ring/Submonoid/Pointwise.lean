@@ -26,6 +26,7 @@ Additionally, it provides various degrees of monoid structure:
 * `AddSubmonoid.mulOneClass`
 * `AddSubmonoid.semigroup`
 * `AddSubmonoid.monoid`
+
 which is available globally to match the monoid structure implied by `Submodule.idemSemiring`.
 
 ## Implementation notes
