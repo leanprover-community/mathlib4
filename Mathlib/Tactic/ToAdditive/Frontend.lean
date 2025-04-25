@@ -325,9 +325,9 @@ macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 * In this case, the second list should be prefix-free
   (no element can be a prefix of a later element)
 
-Todo: automate the translation from `String` to an element in this `RBMap`
+Todo: automate the translation from `String` to an element in this `TreeMap`
   (but this would require having something similar to the `rb_lmap` from Lean 3). -/
-def endCapitalNames : Lean.RBMap String (List String) compare :=
+def endCapitalNames : TreeMap String (List String) compare :=
   -- todo: we want something like
   -- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
   .ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
@@ -354,7 +354,7 @@ partial def _root_.String.splitCase (s : String) (i₀ : Pos := 0) (r : List Str
   if s.get i₀ == '_' || s.get i₁ == '_' then
     return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
   if (s.get i₁).isUpper then
-    if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
+    if let some strs := endCapitalNames[s.extract 0 i₁]? then
       if let some (pref, newS) := strs.findSome?
         fun x : String ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
