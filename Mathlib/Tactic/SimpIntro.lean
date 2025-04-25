@@ -30,8 +30,13 @@ partial def simpIntroCore (g : MVarId) (ctx : Simp.Context) (simprocs : Simp.Sim
   let n := if var.isIdent then var.getId else `_
   let withFVar := fun (fvar, g) ↦ g.withContext do
     Term.addLocalVarInfo var (mkFVar fvar)
-    let simpTheorems ← ctx.simpTheorems.addTheorem (.fvar fvar) (.fvar fvar)
-    simpIntroCore g (ctx.setSimpTheorems simpTheorems) simprocs discharge? more ids'
+    let simpContext : Simp.Context ←
+      if (← instantiateMVars <| ← inferType <| ← fvar.getType).isProp then
+        let simpTheorems ← ctx.simpTheorems.addTheorem (.fvar fvar) (.fvar fvar)
+        pure <| ctx.setSimpTheorems simpTheorems
+      else
+        pure ctx
+    simpIntroCore g simpContext simprocs discharge? more ids'
   match t with
   | .letE .. => withFVar (← g.intro n)
   | .forallE (body := body) .. =>
