@@ -58,7 +58,7 @@ lemma neg_nat_succ (n : ℕ) : -(Nat.succ n : ℤ) = pred (-n) := neg_succ n
 lemma succ_neg_natCast_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 
 @[norm_cast] lemma natCast_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
-  cases n; cases h; simp [ofNat_succ]
+  cases n; cases h; simp [natCast_succ]
 
 lemma lt_succ_self (a : ℤ) : a < succ a := by unfold succ; omega
 
@@ -81,7 +81,7 @@ It is used as the default induction principle for the `induction` tactic.
     suffices ∀ n : ℕ, p (-n) from this (i + 1)
     intro n; induction n with
     | zero => simp [hz]
-    | succ n ih => simpa [ofNat_succ, Int.neg_add, Int.sub_eq_add_neg] using hn _ ih
+    | succ n ih => simpa [natCast_succ, Int.neg_add, Int.sub_eq_add_neg] using hn _ ih
 
 section inductionOn'
 
