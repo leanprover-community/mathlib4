@@ -173,6 +173,10 @@ theorem isClosed_ball (r : Γ₀) : IsClosed (X := R) {x | v x < r} := by
     (Valuation.ltAddSubgroup v (Units.mk0 r hr))
     (isOpen_ball _ _)
 
+/-- An open ball centred at the origin in a valued ring is clopen. -/
+theorem isClopen_ball (r : Γ₀) : IsClopen (X := R) {x | v x < r} :=
+  ⟨isClosed_ball _ _, isOpen_ball _ _⟩
+
 /-- A closed ball centred at the origin in a valued ring is open. -/
 theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
@@ -191,30 +195,59 @@ theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := b
   exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| map_sub_swap v x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' (lt_of_not_ge hx))⟩
 
-/-- A sphere centred at the origin in a valued ring is open. -/
-theorem isOpen_sphere {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x = r} := by
+/-- A closed ball centred at the origin in a valued ring is clopen. -/
+theorem isClopen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x ≤ r} :=
+  ⟨isClosed_closedBall _ _, isOpen_closedball _ hr⟩
+
+/-- A sphere centred at the origin in a valued ring is clopen. -/
+theorem isClopen_sphere {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x = r} := by
   have h : {x : R | v x = r} = {x | v x ≤ r} \ {x | v x < r} := by
     ext x
     simp [← le_antisymm_iff]
   rw [h]
-  exact IsOpen.sdiff (isOpen_closedball _ hr) (isClosed_ball _ _)
+  exact IsClopen.diff (isClopen_closedBall _ hr) (isClopen_ball _ _)
+
+/-- A sphere centred at the origin in a valued ring is open. -/
+theorem isOpen_sphere {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x = r} :=
+  isClopen_sphere _ hr |>.isOpen
+
+/-- A sphere centred at the origin in a valued ring is closed. -/
+theorem isClosed_sphere (r : Γ₀) : IsClosed (X := R) {x | v x = r} := by
+  rcases eq_or_ne r 0 with rfl|hr
+  · simpa using isClosed_closedBall R 0
+  exact isClopen_sphere _ hr |>.isClosed
 
 /-- The closed unit ball in a valued ring is open. -/
-theorem integer_isOpen : IsOpen (_i.v.integer : Set R) :=
+theorem isOpen_integer : IsOpen (_i.v.integer : Set R) :=
   isOpen_closedball _ one_ne_zero
 
-/-- The valuation subring of a valued field is open. -/
-theorem valuationSubring_isOpen (K : Type u) [Field K] [hv : Valued K Γ₀] :
-    IsOpen (hv.v.valuationSubring : Set K) :=
-  integer_isOpen K
+@[deprecated (since := "2025-04-25")]
+alias integer_isOpen := isOpen_integer
 
 /-- The closed unit ball of a valued ring is closed. -/
-theorem integer_isClosed : IsClosed (_i.v.integer : Set R) :=
+theorem isClosed_integer : IsClosed (_i.v.integer : Set R) :=
   isClosed_closedBall _ _
 
+/-- The closed unit ball of a valued ring is clopen. -/
+theorem isClopen_integer : IsClopen (_i.v.integer : Set R) :=
+  ⟨isClosed_integer _, isOpen_integer _⟩
+
+/-- The valuation subring of a valued field is open. -/
+theorem isOpen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
+    IsOpen (hv.v.valuationSubring : Set K) :=
+  isOpen_integer K
+
+@[deprecated (since := "2025-04-25")]
+alias valuationSubring_isOpen := isOpen_valuationSubring
+
 /-- The valuation subring of a valued field is closed. -/
-theorem valuationSubring_isClosed (K : Type u) [Field K] [hv : Valued K Γ₀] :
+theorem isClosed_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
     IsClosed (hv.v.valuationSubring : Set K) :=
-  integer_isClosed K
+  isClosed_integer K
+
+/-- The valuation subring of a valued field is clopen. -/
+theorem isClopen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
+    IsClopen (hv.v.valuationSubring : Set K) :=
+  isClopen_integer K
 
 end Valued
