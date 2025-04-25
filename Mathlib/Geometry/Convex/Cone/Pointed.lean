@@ -16,7 +16,7 @@ as it allows us to use the `Module` API to work with convex cones.
 
 -/
 
-assert_not_exists NormedAddCommGroup
+assert_not_exists TopologicalSpace Real Cardinal
 
 variable {R E F G : Type*}
 

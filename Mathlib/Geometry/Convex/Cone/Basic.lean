@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
 -/
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Convex cones
@@ -39,7 +36,7 @@ While `Convex R` is a predicate on sets, `ConvexCone R M` is a bundled convex co
 * [Emo Welzl and Bernd Gärtner, *Cone Programming*][welzl_garter]
 -/
 
-assert_not_exists NormedAddCommGroup Real Cardinal
+assert_not_exists TopologicalSpace Real Cardinal
 
 open Set LinearMap Pointwise
 
@@ -451,11 +448,6 @@ lemma disjoint_hull_left_of_convex (hs : Convex 𝕜 s) : Disjoint (hull 𝕜 s)
 lemma disjoint_hull_right_of_convex (hs : Convex 𝕜 s) : Disjoint C (hull 𝕜 s) ↔ Disjoint ↑C s := by
   rw [disjoint_comm, disjoint_hull_left_of_convex hs, disjoint_comm]
 
-variable [TopologicalSpace M] [IsTopologicalAddGroup M] {s : Set M}
-
-lemma isOpen_hull (hs : IsOpen s) : IsOpen (hull 𝕜 s : Set M) := by
-  sorry
-
 end Field
 end ConvexCone
 
@@ -590,29 +582,6 @@ theorem blunt_strictlyPositive : Blunt (strictlyPositive R M) :=
   lt_irrefl 0
 
 end StrictlyPositiveCone
-
-section ContinuousSMul
-variable [TopologicalSpace R] [Field R] [LinearOrder R] [IsOrderedRing R] [OrderTopology R]
-  [DenselyOrdered R] [AddCommGroup M] [TopologicalSpace M] [Module R M] [ContinuousSMul R M]
-  {S : ConvexCone R M}
-
-lemma Pointed.of_nonempty_of_isClosed (hS : (S : Set M).Nonempty) (hSclos : IsClosed (S : Set M)) :
-    S.Pointed := by
-  obtain ⟨x, hx⟩ := hS
-  let f : R → M := (· • x)
-  -- The closure of `f (0, ∞)` is a subset of `K`
-  have hfS : closure (f '' Set.Ioi 0) ⊆ S :=
-    hSclos.closure_subset_iff.2 <| by rintro _ ⟨_, h, rfl⟩; exact S.smul_mem h hx
-  -- `f` is continuous at `0` from the right
-  have fc : ContinuousWithinAt f (Set.Ioi (0 : R)) 0 :=
-    (continuous_id.smul continuous_const).continuousWithinAt
-  -- `0 ∈ closure f (0, ∞) ⊆ K, 0 ∈ K`
-  simpa [f, Pointed, ← SetLike.mem_coe] using hfS <| fc.mem_closure_image <| by simp
-
-@[deprecated (since := "2025-04-18")]
-alias pointed_of_nonempty_of_isClosed := Pointed.of_nonempty_of_isClosed
-
-end ContinuousSMul
 
 end ConvexCone
 

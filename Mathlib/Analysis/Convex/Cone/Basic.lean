@@ -6,6 +6,7 @@ Authors: Apurva Nakade, Yaël Dillies
 import Mathlib.Geometry.Convex.Cone.Pointed
 import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 import Mathlib.Topology.Algebra.Order.Module
+import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Proper cones
@@ -19,7 +20,7 @@ linear programs, the results from this file can be used to prove duality theorem
 One can turn `C : PointedCone R E` + `hC : IsClosed C` into `C : ProperCone R E` in a tactic block
 by doing `lift C to ProperCone R E using hC`.
 
-One can also turn `C : PointedCone 𝕜 E` + `hC : Set.Nonempty C ∧ IsClosed C` into
+One can also turn `C : ConvexCone 𝕜 E` + `hC : Set.Nonempty C ∧ IsClosed C` into
 `C : ProperCone 𝕜 E` in a tactic block by doing `lift C to ProperCone 𝕜 E using hC`,
 assuming `𝕜` is a dense topological field.
 
@@ -40,6 +41,59 @@ The next steps are:
 
 open Filter Function Set
 
+/-!
+### Topological properties of convex cones
+
+This section proves topological results about convex cones.
+
+#### TODO
+
+Both results generalise to G-submodules.
+-/
+
+namespace ConvexCone
+variable {𝕜 M : Type*}
+
+section Module
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup M] [Module 𝕜 M]
+  [TopologicalSpace M] {C : ConvexCone 𝕜 M} {s : Set M} {x : M}
+
+-- This is necessary for the proof below but triggers the `unusedSectionVars` linter.
+-- variable [IsTopologicalAddGroup M]
+
+/-- This is true essentially by `Submodule.span_eq_iUnion_nat`, except that `Submodule` currently
+doesn't support that use case. See
+https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/G-submodules/with/514426583 -/
+proof_wanted isOpen_hull (hs : IsOpen s) : IsOpen (hull 𝕜 s : Set M)
+
+end Module
+
+section ContinuousSMul
+variable [TopologicalSpace 𝕜] [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [OrderTopology 𝕜]
+  [DenselyOrdered 𝕜] [AddCommGroup M] [TopologicalSpace M] [Module 𝕜 M] [ContinuousSMul 𝕜 M]
+  {S : ConvexCone 𝕜 M}
+
+lemma Pointed.of_nonempty_of_isClosed (hS : (S : Set M).Nonempty) (hSclos : IsClosed (S : Set M)) :
+    S.Pointed := by
+  obtain ⟨x, hx⟩ := hS
+  let f : 𝕜 → M := (· • x)
+  -- The closure of `f (0, ∞)` is a subset of `K`
+  have hfS : closure (f '' Set.Ioi 0) ⊆ S :=
+    hSclos.closure_subset_iff.2 <| by rintro _ ⟨_, h, rfl⟩; exact S.smul_mem h hx
+  -- `f` is continuous at `0` from the right
+  have fc : ContinuousWithinAt f (Set.Ioi (0 : 𝕜)) 0 :=
+    (continuous_id.smul continuous_const).continuousWithinAt
+  -- `0 ∈ closure f (0, ∞) ⊆ K, 0 ∈ K`
+  simpa [f, Pointed, ← SetLike.mem_coe] using hfS <| fc.mem_closure_image <| by simp
+
+@[deprecated (since := "2025-04-18")]
+alias pointed_of_nonempty_of_isClosed := Pointed.of_nonempty_of_isClosed
+
+end ContinuousSMul
+end ConvexCone
+
+/-! ### Proper cones -/
+
 variable {R E F : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
 variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]
 variable [AddCommMonoid F] [TopologicalSpace F] [Module R F]
@@ -52,7 +106,7 @@ abbrev ProperCone := ClosedSubmodule {r : R // 0 ≤ r} E
 
 namespace ProperCone
 section Module
-variable {C C₁ C₂ : ProperCone R E} {x : E}
+variable {C C₁ C₂ : ProperCone R E} {r : R} {x : E}
 
 /-- Alias of `ClosedSubmodule.toSubmodule` for convenience and discoverability. -/
 @[coe] abbrev toPointedCone (C : ProperCone R E) : PointedCone R E := C.toSubmodule
@@ -77,6 +131,9 @@ protected lemma pointed_toConvexCone (C : ProperCone R E) : (C : ConvexCone R E)
 protected lemma nonempty (C : ProperCone R E) : (C : Set E).Nonempty := C.toSubmodule.nonempty
 protected lemma isClosed (C : ProperCone R E) : IsClosed (C : Set E) := C.isClosed'
 protected lemma convex (C : ProperCone R E) : Convex R (C : Set E) := C.toPointedCone.convex
+
+protected nonrec lemma smul_mem (C : ProperCone R E) (hx : x ∈ C) (hr : 0 ≤ r) : r • x ∈ C :=
+  C.smul_mem ⟨r, hr⟩ hx
 
 /-- The closure of image of a proper cone under a `ℝ`-linear map is a proper cone. We
 use continuous maps here so that the comap of f is also a map between proper cones. -/

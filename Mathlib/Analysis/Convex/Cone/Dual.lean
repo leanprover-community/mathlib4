@@ -3,17 +3,26 @@ Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
+import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Geometry.Convex.Cone.Dual
+import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 /-!
-# Double dual cone and Farkas' lemma
+# The topological dual of a cone and Farkas' lemma
+
+Given a continuous bilinear pairing `p` between two `R`-modules `M` and `N` and a set `s` in `M`,
+we define `ProperCone.dual p C` to be the proper cone in `N` consisting of all points `y` such that
+for all `x ∈ s` we have `0 ≤ p x y`.
+
+When the pairing is perfect, this gives us the algebraic dual of a cone. This is developed here.
+When the pairing is continuous and perfect (as a continuous pairing), this gives us the topological
+dual instead. See `Mathlib.Analysis.Convex.Cone.Dual` for that case.
 
 We prove Farkas' lemma, which says that a proper cone `C` in a locally convex topological real
 vector space `E` and a point `x₀` not in `C` can be separated by a hyperplane. This is a geometric
 interpretation of the Hahn-Banach separation theorem.
-We also prove that the double dual of a proper cone is itself.
-
+As a corollary, we prove that the double dual of a proper cone is itself.
 
 ## Main statements
 
@@ -33,36 +42,92 @@ assert_not_exists InnerProductSpace
 
 open Set LinearMap Pointwise
 
+namespace PointedCone
+variable {R M N : Type*} [CommRing R] [PartialOrder R] [TopologicalSpace R] [ClosedIciTopology R]
+  [IsOrderedRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [TopologicalSpace N]
+  {p : M →ₗ[R] N →ₗ[R] R} {s : Set M}
+
+lemma isClosed_dual (hp : ∀ x, Continuous (p x)) : IsClosed (dual p s : Set N) := by
+  rw [← s.biUnion_of_singleton]
+  simp_rw [dual_iUnion, Submodule.iInf_coe, dual_singleton]
+  exact isClosed_biInter fun x hx ↦ isClosed_Ici.preimage <| hp _
+
+end PointedCone
+
+namespace ProperCone
+variable {R M N : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R] [TopologicalSpace R]
+  [ClosedIciTopology R]
+  [AddCommGroup M] [Module R M] [TopologicalSpace M]
+  [AddCommGroup N] [Module R N] [TopologicalSpace N]
+  {p : ContinuousPerfectPairing R M N} {s t : Set M} {y : N}
+
+variable (p s) in
+/-- The dual cone of a set `s` with respect to a perfect pairing `p` is the cone consisting of all
+points `y` such that for all points `x ∈ s` we have `0 ≤ p x y`. -/
+def dual (s : Set M) : ProperCone R N where
+  toSubmodule := PointedCone.dual p.toLinearMap s
+  isClosed' := PointedCone.isClosed_dual fun _ ↦ p.continuous_toLinearMap_left
+
+@[simp] lemma mem_dual : y ∈ dual p s ↔ ∀ ⦃x⦄, x ∈ s → 0 ≤ p x y := .rfl
+
+@[simp] lemma dual_empty : dual p ∅ = ⊤ := by ext; simp
+@[simp] lemma dual_zero : dual p 0 = ⊤ := by ext; simp
+
+@[simp] lemma dual_univ [T1Space N] : dual p univ = 0 := by
+  refine le_antisymm (fun y hy ↦ (map_eq_zero_iff p.flip p.flip.injective).1 ?_) (by simp)
+  ext x
+  exact (hy <| mem_univ x).antisymm' <| by simpa using hy <| mem_univ (-x)
+
+@[gcongr] lemma dual_le_dual (h : t ⊆ s) : dual p s ≤ dual p t := fun _y hy _x hx ↦ hy (h hx)
+
+/-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
+linear map `p x`. -/
+lemma dual_singleton [OrderClosedTopology R] (x : M) :
+    dual p {x} = (positive R R).comap (p x) := by ext; simp
+
+lemma dual_union (s t : Set M) : dual p (s ∪ t) = dual p s ⊓ dual p t := by aesop
+
+lemma dual_insert (x : M) (s : Set M) : dual p (insert x s) = dual p {x} ⊓ dual p s := by
+  rw [insert_eq, dual_union]
+
+lemma dual_iUnion {ι : Sort*} (f : ι → Set M) : dual p (⋃ i, f i) = ⨅ i, dual p (f i) := by
+  ext; simp [forall_swap (α := M)]
+
+lemma dual_sUnion (S : Set (Set M)) : dual p (⋃₀ S) = sInf (dual p '' S) := by
+  ext; simp [forall_swap (α := M)]
+
+/-- The dual cone of `s` equals the intersection of dual cones of the points in `s`. -/
+lemma dual_eq_iInter_dual_singleton (s : Set M) :
+    dual p s = ⋂ i : s, (dual p {i.val} : Set N) := by
+  ext; simp [forall_swap (α := M)]
+
+/-- Any set is a subset of its double dual cone. -/
+lemma subset_dual_dual : s ⊆ dual p.flip (dual p s) := fun _x hx _y hy ↦ hy hx
+
+end ProperCone
+
 namespace ProperCone
 variable {E F : Type*}
   [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGroup E]
   [TopologicalSpace F] [AddCommGroup F]
   [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
   [Module ℝ F]
-  {s : Set E} {x₀ : E}
+  {K : Set E} {x₀ : E}
 
 open ConvexCone in
 /-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
 **Hahn-Banach separation theorem** for proper cones. -/
-theorem hyperplane_separation
-    (C : ProperCone ℝ E) {s : Set E} (hs : Convex ℝ s) (hs' : IsCompact s) (hsC : Disjoint s C) :
-    ∃ f : E →L[ℝ] ℝ, (∀ x ∈ C, 0 ≤ f x) ∧ ∀ x ∈ s, f x < 0 := by
-  obtain rfl | ⟨x₀, hx₀⟩ := s.eq_empty_or_nonempty
+theorem hyperplane_separation (C : ProperCone ℝ E) (hKconv : Convex ℝ K) (hKcomp : IsCompact K)
+    (hKC : Disjoint K C) : ∃ f : E →L[ℝ] ℝ, (∀ x ∈ C, 0 ≤ f x) ∧ ∀ x ∈ K, f x < 0 := by
+  obtain rfl | ⟨x₀, hx₀⟩ := K.eq_empty_or_nonempty
   · exact ⟨0, by simp⟩
-  obtain ⟨U, V, hUopen, -, hUconv, -, hsU, hCV, hUV⟩ :=
-    hsC.exists_open_convexes hs hs' C.convex C.isClosed
-  obtain ⟨f, u, h₁, h₂⟩ :=
-    geometric_hahn_banach_open (E := E) (s := hull ℝ U) (t := C)
-      (hull ℝ U).convex (isOpen_hull hUopen) C.convex
-      (disjoint_coe.mpr
-      ((disjoint_hull_left_of_convex (C := C) hUconv).2 <| hUV.mono_right hCV))
-  obtain rfl : u = 0 := by
-    have hu : u ≤ 0 := by simpa using h₂ 0 (zero_mem _)
-    have hfx₀ : f x₀ < 0 := (h₁ _ <| subset_hull (hsU hx₀)).trans_le hu
-    refine hu.antisymm <| le_of_forall_lt_imp_le_of_dense fun r hr ↦ ?_
-    simpa [hfx₀.ne] using (h₁ ((r * (f x₀)⁻¹) • x₀) ((hull ℝ U).smul_mem
-      (mul_pos_of_neg_of_neg hr <| inv_neg''.2 hfx₀) <| subset_hull (hsU hx₀))).le
-  exact ⟨f, h₂, fun x hxs ↦ h₁ _ (subset_hull (hsU hxs))⟩
+  obtain ⟨f, u, v, hu, huv, hv⟩ :=
+    geometric_hahn_banach_compact_closed hKconv hKcomp C.convex C.isClosed hKC
+  have hv₀ : v < 0 := by simpa using hv 0 C.zero_mem
+  refine ⟨f, fun x hx ↦ ?_, fun x hx ↦ (hu x hx).trans_le <| huv.le.trans hv₀.le⟩
+  by_contra! hx₀
+  simpa [hx₀.ne] using hv ((v * (f x)⁻¹) • x)
+    (C.smul_mem hx <| le_of_lt <| mul_pos_of_neg_of_neg hv₀ <| inv_neg''.2 hx₀)
 
 open ConvexCone in
 /-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
