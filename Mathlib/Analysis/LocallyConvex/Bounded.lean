@@ -9,7 +9,7 @@ import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
@@ -364,10 +364,10 @@ end NormedField
 
 end Bornology
 
-section UniformAddGroup
+section IsUniformAddGroup
 
 variable (𝕜) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [UniformSpace E] [UniformAddGroup E] [ContinuousSMul 𝕜 E]
+variable [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
@@ -392,14 +392,14 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     haveI : BoundedSpace 𝕜 := ⟨Metric.isBounded_iff.2 ⟨1, by simp_all [dist_eq_norm]⟩⟩
     exact Bornology.IsVonNBounded.of_boundedSpace
 
-end UniformAddGroup
+end IsUniformAddGroup
 
 variable (𝕜) in
 theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f : ℕ → E} {x : E} (hf : Tendsto f atTop (𝓝 x)) : Bornology.IsVonNBounded 𝕜 (range f) :=
   letI := IsTopologicalAddGroup.toUniformSpace E
-  haveI := uniformAddGroup_of_addCommGroup (G := E)
+  haveI := isUniformAddGroup_of_addCommGroup (G := E)
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
 variable (𝕜) in

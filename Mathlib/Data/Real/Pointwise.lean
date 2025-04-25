@@ -30,7 +30,7 @@ open Set
 
 open Pointwise
 
-variable {ι : Sort*} {α : Type*} [LinearOrderedField α]
+variable {ι : Sort*} {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 section MulActionWithZero
 

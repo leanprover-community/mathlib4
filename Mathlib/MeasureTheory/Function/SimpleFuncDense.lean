@@ -131,7 +131,17 @@ theorem approxOn_mem {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α
   rintro (_ | n)
   exacts [h₀, Subtype.mem _]
 
+lemma approxOn_range_nonneg [Zero α] [Preorder α] {f : β → α}
+    (hf : 0 ≤ f) {hfm : Measurable f} [SeparableSpace (range f ∪ {0} : Set α)] (n : ℕ) :
+    0 ≤ approxOn f hfm (range f ∪ {0}) 0 (by simp) n := by
+  have : range f ∪ {0} ⊆ Set.Ici 0 := by
+    simp only [Set.union_singleton, Set.insert_subset_iff, Set.mem_Ici, le_refl, true_and]
+    rintro - ⟨x, rfl⟩
+    exact hf x
+  exact fun _ ↦ this <| approxOn_mem ..
+
 @[simp, nolint simpNF] -- Porting note: LHS doesn't simplify.
+-- It seems the side conditions `hf` and `hg` are not applied by `simpNF`.
 theorem approxOn_comp {γ : Type*} [MeasurableSpace γ] {f : β → α} (hf : Measurable f) {g : γ → β}
     (hg : Measurable g) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s) [SeparableSpace s] (n : ℕ) :
     approxOn (f ∘ g) (hf.comp hg) s y₀ h₀ n = (approxOn f hf s y₀ h₀ n).comp g hg :=

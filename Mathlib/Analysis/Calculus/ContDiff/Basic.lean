@@ -240,13 +240,13 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G
   · ext1 m
     rw [iteratedFDerivWithin_succ_apply_left]
     have Z : fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i (g ∘ f) s) s x =
-        fderivWithin 𝕜 (g.compContinuousMultilinearMapL (fun _ : Fin i => E) ∘
+        fderivWithin 𝕜 (g.continuousMultilinearMapCongrRight (fun _ : Fin i => E) ∘
           iteratedFDerivWithin 𝕜 i f s) s x :=
       fderivWithin_congr' (@IH) hx
     simp_rw [Z]
-    rw [(g.compContinuousMultilinearMapL fun _ : Fin i => E).comp_fderivWithin (hs x hx)]
+    rw [(g.continuousMultilinearMapCongrRight fun _ : Fin i => E).comp_fderivWithin (hs x hx)]
     simp only [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, comp_apply,
-      ContinuousLinearEquiv.compContinuousMultilinearMapL_apply,
+      ContinuousLinearEquiv.continuousMultilinearMapCongrRight_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, EmbeddingLike.apply_eq_iff_eq]
     rw [iteratedFDerivWithin_succ_apply_left]
 
@@ -397,12 +397,12 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_right (g : G ≃L[𝕜] 
       ContinuousLinearEquiv.coe_coe, iteratedFDerivWithin_succ_apply_left]
     have : fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i (f ∘ g) (g ⁻¹' s)) (g ⁻¹' s) x =
         fderivWithin 𝕜
-          (ContinuousMultilinearMap.compContinuousLinearMapEquivL _ (fun _x : Fin i => g) ∘
+          (ContinuousLinearEquiv.continuousMultilinearMapCongrLeft _ (fun _x : Fin i => g) ∘
             (iteratedFDerivWithin 𝕜 i f s ∘ g)) (g ⁻¹' s) x :=
       fderivWithin_congr' (@IH) hx
     rw [this, ContinuousLinearEquiv.comp_fderivWithin _ (g.uniqueDiffOn_preimage_iff.2 hs x hx)]
     simp only [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, comp_apply,
-      ContinuousMultilinearMap.compContinuousLinearMapEquivL_apply,
+      ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_apply,
       ContinuousMultilinearMap.compContinuousLinearMap_apply]
     rw [ContinuousLinearEquiv.comp_right_fderivWithin _ (g.uniqueDiffOn_preimage_iff.2 hs x hx),
       ContinuousLinearMap.coe_comp', coe_coe, comp_apply, tail_def, tail_def]
@@ -659,9 +659,6 @@ theorem ContDiffWithinAt.comp_of_mem_nhdsWithin_image
     (hs : t ∈ 𝓝[f '' s] f x) : ContDiffWithinAt 𝕜 n (g ∘ f) s x :=
   (hg.mono_of_mem_nhdsWithin hs).comp x hf (subset_preimage_image f s)
 
-@[deprecated (since := "2024-10-18")]
-alias ContDiffWithinAt.comp_of_mem := ContDiffWithinAt.comp_of_mem_nhdsWithin_image
-
 /-- The composition of `C^n` functions at points in domains is `C^n`,
   with a weaker condition on `s` and `t`. -/
 theorem ContDiffWithinAt.comp_of_mem_nhdsWithin_image_of_eq
@@ -689,9 +686,6 @@ theorem ContDiffWithinAt.comp_of_preimage_mem_nhdsWithin
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)
     (hs : f ⁻¹' t ∈ 𝓝[s] x) : ContDiffWithinAt 𝕜 n (g ∘ f) s x :=
   (hg.comp_inter x hf).mono_of_mem_nhdsWithin (inter_mem self_mem_nhdsWithin hs)
-
-@[deprecated (since := "2024-10-18")]
-alias ContDiffWithinAt.comp' := ContDiffWithinAt.comp_inter
 
 /-- The composition of `C^n` functions at points in domains is `C^n`,
   with a weaker condition on `s` and `t`. -/
@@ -903,8 +897,6 @@ theorem ContDiff.comp₂_contDiffOn {g : E₁ × E₂ → G} {f₁ : F → E₁}
     ContDiffOn 𝕜 n (fun x => g (f₁ x, f₂ x)) s :=
   hg.comp_contDiffOn <| hf₁.prodMk hf₂
 
-@[deprecated (since := "2024-10-10")] alias ContDiff.comp_contDiff_on₂ := ContDiff.comp₂_contDiffOn
-
 @[deprecated (since := "2024-10-30")]
 alias ContDiff.comp_contDiffOn₂ := ContDiff.comp₂_contDiffOn
 
@@ -917,8 +909,6 @@ theorem ContDiff.comp₃_contDiffOn {g : E₁ × E₂ × E₃ → G} {f₁ : F �
     {s : Set F} (hg : ContDiff 𝕜 n g) (hf₁ : ContDiffOn 𝕜 n f₁ s) (hf₂ : ContDiffOn 𝕜 n f₂ s)
     (hf₃ : ContDiffOn 𝕜 n f₃ s) : ContDiffOn 𝕜 n (fun x => g (f₁ x, f₂ x, f₃ x)) s :=
   hg.comp₂_contDiffOn hf₁ <| hf₂.prodMk hf₃
-
-@[deprecated (since := "2024-10-10")] alias ContDiff.comp_contDiff_on₃ := ContDiff.comp₃_contDiffOn
 
 @[deprecated (since := "2024-10-30")]
 alias ContDiff.comp_contDiffOn₃ := ContDiff.comp₃_contDiffOn

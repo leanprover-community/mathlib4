@@ -229,10 +229,6 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
   rw [last_eraseLast, last]
   convert s.step ⟨s.length - 1, by omega⟩; ext; simp [this]
 
-section FinLemmas
-
-end FinLemmas
-
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
     s = snoc (eraseLast s) s.last (isMaximal_eraseLast_last h) := by
   ext x
@@ -283,9 +279,9 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     intro i
     refine Fin.addCases ?_ ?_ i
     · intro i
-      simpa [-smash_toFun, e, smash_castAdd, smash_succ_castAdd] using h₁.choose_spec i
+      simpa [e, smash_castAdd, smash_succ_castAdd] using h₁.choose_spec i
     · intro i
-      simpa [-smash_toFun, e, smash_natAdd, smash_succ_natAdd] using h₂.choose_spec i⟩
+      simpa [e, smash_natAdd, smash_succ_natAdd] using h₂.choose_spec i⟩
 
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)
