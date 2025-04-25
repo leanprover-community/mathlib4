@@ -542,3 +542,15 @@ theorem mem_span_set_iff_exists_finsupp_le_finrank :
     exact mem_span_set.mpr ⟨c, hcs, hx⟩
 
 end Submodule
+
+section IsQuadraticAlgebra
+
+/--
+An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-module of rank `2`.
+-/
+-- TODO. use this in connection with `NumberTheory.Zsqrtd`
+class IsQuadraticAlgebra (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S]
+  extends StrongRankCondition R, Module.Free R S where
+  finrank_eq_two : Module.finrank R S = 2
+
+end IsQuadraticAlgebra
