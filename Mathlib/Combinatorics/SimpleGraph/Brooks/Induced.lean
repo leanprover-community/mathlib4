@@ -116,7 +116,8 @@ end withDecRel
 /--
 A `PartColoring n s` of `G : SimpleGraph α` is an `n`-coloring of all vertices of `G` that is
 a valid coloring on the set `s` -/
-abbrev PartColoring (n : ℕ) (s : Set α) := ((⊤ : Subgraph G).induce s).spanningCoe.Coloring (Fin n)
+abbrev PartColoring (n : ℕ) (s : Set α) :=
+  ((⊤ : Subgraph G).induce s).spanningCoe.Coloring (Fin n)
 
 variable {s t u : Set α} {n : ℕ} {G}
 /--
@@ -434,7 +435,7 @@ lemma PartColoring.of_path_not_inj_extends {u v x y : α} {p : G.Walk u v} [Loca
   · nth_rw 2 [support_eq_cons]
     ext; simp [or_left_comm]
 
-section Colorings
+section ColoringComponents
 
 open ConnectedComponent Subgraph
 
@@ -517,7 +518,8 @@ lemma Walk.shortCut_not_nil (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ 
 lemma Walk.dropUntil_spec (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) : w.dropUntil x hx =
   (w.shortClosed hx).append (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse := by
   rw [shortClosed]
-  have hc := congr_arg Walk.reverse <| take_spec (w.dropUntil _ hx).reverse (end_mem_support _ )
+  have hc := congr_arg Walk.reverse <| take_spec (w.dropUntil _ hx).reverse (end_mem_support _)
+  have hc' := congr_arg Walk.reverse <| take_spec (w.dropUntil _ hx) (end_mem_support _)
   rw [Walk.reverse_reverse] at *
   rw [← hc, Walk.reverse_append]
   congr! 1
@@ -556,30 +558,10 @@ lemma Walk.dropUntil_spec (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u)
           rw [dropUntil]
           simp [hax]
   · congr! 1
-    induction w with
-    | nil => rw [mem_support_nil_iff] at hx; exact (hu hx).elim
-    | @cons a b c h p ih =>
-      simp_all only [ne_eq, take_spec, reverse_reverse, forall_const, reverse_cons]
-      simp only [support_cons, List.mem_cons] at hx
-      cases hx with
-      | inl hx => contradiction
-      | inr hx =>
-        have hax := (Ne.symm hu)
-        by_cases hb : x = b
-        · subst b
-          rw [takeUntil_append_of_mem_left p.reverse _ ((p.mem_support_reverse.2 hx))]
-          congr
-          rw [dropUntil]
-          split_ifs with ha
-          · exact (hu ha.symm).elim
-          · simp
-        · have := ih hx hb
-          conv_lhs =>
-            enter [1]
-            rw [dropUntil]
-            simp [hax]
-          rw [this]
-          simp [takeUntil_append_of_mem_left p.reverse _ ((p.mem_support_reverse.2 hx))]
+    conv_rhs =>
+      enter [1]
+      rw  [← take_spec w hx, Walk.reverse_append]
+    rw [takeUntil_append_of_mem_left]
 
 lemma Walk.not_mem_support_reverse_tail_takeUntil (w : G.Walk u v) (hx : x ∈ w.support) :
     x ∉ (w.takeUntil x hx).support.reverse.tail := by
@@ -611,17 +593,17 @@ So the two walks `w.shortCut hx` and `w.shortClosed hx` are
 -/
 lemma Walk.length_shortCut_add_shortClosed (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) :
     (w.shortCut hx).length + (w.shortClosed hx).length = w.length := by
-  rw [shortCut, shortClosed,← Walk.length_takeUntil_add_dropUntil hx]
-  rw [w.dropUntil_spec hx hu, shortClosed]
-  simp  [Walk.length_append, Walk.length_reverse]
+  rw [← Walk.length_takeUntil_add_dropUntil hx]
+  rw [w.dropUntil_spec hx hu, shortClosed, shortCut]
+  simp only [length_append, length_reverse]
   omega
 
-lemma Walk.count_support_rotate_new (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u) :
-  (w.rotate hx).support.count x = w.support.count x + 1 := by
-  nth_rw 2 [← take_spec w hx]
-  simp_rw [rotate, Walk.support_append, List.count_append]
-  rw [List.count_tail (by simp), List.count_tail (by simp)]
-  simp [if_neg (Ne.symm hne)]
+-- lemma Walk.count_support_rotate_new (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u) :
+--   (w.rotate hx).support.count x = w.support.count x + 1 := by
+--   nth_rw 2 [← take_spec w hx]
+--   simp_rw [rotate, Walk.support_append, List.count_append]
+--   rw [List.count_tail (by simp), List.count_tail (by simp)]
+--   simp [if_neg (Ne.symm hne)]
 
 lemma Walk.count_support_rotate_old (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u) :
   (w.rotate hx).support.count u = w.support.count u - 1 := by
@@ -631,14 +613,14 @@ lemma Walk.count_support_rotate_old (w : G.Walk u u) (hx : x ∈ w.support) (hne
   simp [head_support, beq_self_eq_true, ↓reduceIte,if_neg hne]
   rw [← Nat.add_sub_assoc (by simp), add_comm]
 
-lemma Walk.count_support_rotate_other (w : G.Walk u u) (hx : x ∈ w.support)
-  (hvx : x ≠ v) (hvu : u ≠ v) :
-  (w.rotate hx).support.count v = w.support.count v := by
-  nth_rw 2 [← take_spec w hx]
-  simp_rw [rotate, Walk.support_append, List.count_append]
-  rw [List.count_tail (by simp), List.count_tail (by simp)]
-  simp [head_support, beq_iff_eq, if_neg hvu, if_neg hvx]
-  rw [add_comm]
+-- lemma Walk.count_support_rotate_other (w : G.Walk u u) (hx : x ∈ w.support)
+--   (hvx : x ≠ v) (hvu : u ≠ v) :
+--   (w.rotate hx).support.count v = w.support.count v := by
+--   nth_rw 2 [← take_spec w hx]
+--   simp_rw [rotate, Walk.support_append, List.count_append]
+--   rw [List.count_tail (by simp), List.count_tail (by simp)]
+--   simp [head_support, beq_iff_eq, if_neg hvu, if_neg hvx]
+--   rw [add_comm]
 
 lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.length) :
     ∃ x, ∃ (c : G.Walk x x), c.IsCycle ∧ Odd c.length := by
@@ -759,65 +741,6 @@ lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.
           simp only [lt_add_iff_pos_left, ←  not_nil_iff_lt_length]
           exact shortCut_not_nil _ hv hne
 
-
-end Colorings
+end ColoringComponents
 
 end SimpleGraph
-
-
-
-
-
-
-
-
-
-
-
-
-
--- variable [DecidableRel G.Adj]
-
--- lemma isCycles_of_forall_degreeIn_eq_two [LocallyFinite G] {s : Finset α}
---     (h : ∀ v ∈ s, G.degreeIn s v = 2) : (((⊤ : Subgraph G).induce s).spanningCoe).IsCycles := by
---   intro v hv
---   rw [Set.ncard_eq_toFinset_card']
---   obtain ⟨x, hx⟩ := hv
---   simpa using h v hx.1
-
--- lemma two_colorable_of_isCycles_finite_no_odd_closed_walk [Finite α] (hc : G.IsCycles)
---     (ho : ∀ u, ∀ (w : G.Walk u u), ¬ Odd w.length) : G.Colorable 2 := by
---   rw [colorable_iff_forall_connectedComponents]
---   intro c
---   have : Fintype α := Fintype.ofFinite α
---   classical
---   obtain ⟨v, hv⟩ :=c.nonempty_supp
---   by_cases he : (G.neighborSet v).Nonempty
---   · obtain ⟨w, hw⟩ := hc.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp hv he
---     have heven : Even w.length :=  Nat.not_odd_iff_even.mp (ho v w)
---     rw [← hw.2]
---     have hadj : ∀ x ∈ w.toSubgraph.verts, ∀ y, w.toSubgraph.Adj x y ↔ G.Adj x y := by
---       intro x hx y;
---       apply hw.1.adj_toSubgraph_iff_of_isCycles hc hx
---     use (fun a ↦ by
---       have : a.1 ∈ w.support := w.mem_verts_toSubgraph.1 a.2
---       exact ((w.takeUntil _ this).length : Fin 2))
---     intro a b hab heq
---     simp only [comap_adj, Function.Embedding.subtype_apply] at hab heq ⊢
---     let w' : G.Walk v v := ((w.takeUntil _ (w.mem_verts_toSubgraph.1 a.2)).concat hab).append
---       (w.takeUntil _ (w.mem_verts_toSubgraph.1 b.2)).reverse
---     apply ho v w'
---     rw [Walk.length_append, add_comm, Walk.length_concat, Walk.length_reverse, ← add_assoc]
---     rw [Nat.odd_iff]
---     have heq' := (ZMod.natCast_eq_natCast_iff' _ _ 2).1 heq
---     omega
---   · use (fun x ↦ 0)
---     intro a b hab heq
---     apply he
---     by_cases hva : a = v
---     · subst v
---       exact ⟨b, by simpa using hab⟩
---     · have hva' : ⟨v, hv⟩ ≠ a := Subtype.coe_ne_coe.mp fun h ↦ hva h.symm
---       let ⟨wa⟩ := c.induce_supp_connected ⟨v, hv⟩ a
---       have ⟨_, h,_⟩:= wa.exists_eq_cons_of_ne hva'
---       exact ⟨_, by simpa using h⟩
