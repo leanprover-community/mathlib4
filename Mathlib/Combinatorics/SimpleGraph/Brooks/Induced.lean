@@ -672,9 +672,57 @@ lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.
       refine ⟨?_,?_,?_⟩
       · -- take w = cons h w' then w' has no repeated vertices so no repeated edges
         -- need to check that h is not an edge of w' (if it is then the walk has length 2)
-        sorry
-      · have : 0 < w.length := ho.pos
-        rintro rfl; simp at this
+        cases w with
+        | nil => simp [ho.pos]
+        | @cons x y z h p =>
+          rw [cons_isTrail_iff]
+          refine ⟨?_,?_⟩
+          · simp only [support_cons, count_cons_self, Nat.reduceLeDiff] at hcv
+            refine ⟨edges_nodup_of_support_nodup ?_⟩
+            apply List.nodup_iff_count_le_one.2
+            intro a
+            by_cases ha : a ∈ p.support
+            · simp only [support_cons, List.mem_cons, ne_eq, forall_eq_or_imp, not_true_eq_false,
+              count_cons_self, add_le_iff_nonpos_left, nonpos_iff_eq_zero, IsEmpty.forall_iff,
+              true_and] at hs
+              by_cases h : a = v
+              · subst a; exact hcv
+              · have := hs a ha h
+                rwa [List.count_cons_of_ne (Ne.symm h)] at this
+            · rw [List.count_eq_zero_of_not_mem ha]
+              simp
+          · cases p with
+          | nil => simp
+          | @cons a b c h1 p =>
+            cases p with
+            | nil =>
+              simp only [length_cons, length_nil, zero_add, Nat.reduceAdd] at ho; contradiction
+            | @cons d e f h2 p =>
+              intro hf
+              have hvy := h.ne
+              have hyb := h1.ne
+              have hbe := h2.ne
+              simp_all only [length_cons, support_cons, List.mem_cons, ne_eq, forall_eq_or_imp,
+                not_true_eq_false, count_cons_self, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
+                IsEmpty.forall_iff, not_false_eq_true, count_cons_of_ne, true_and, edges_cons,
+                Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, and_self, Prod.swap_prod_mk, and_true,
+                false_or, and_false, or_false]
+              simp only [Nat.reduceLeDiff] at hcv
+              have hvb : b ≠ v := by
+                rintro rfl; rw [List.count_cons_of_ne (Ne.symm hvy), List.count_cons_self,
+                  add_le_iff_nonpos_left, nonpos_iff_eq_zero, count_eq_zero] at hcv
+                apply hcv p.end_mem_support
+              obtain (rfl | ⟨rfl,rfl⟩ | hf) := hf
+              · contradiction
+              · rw [List.count_cons_of_ne (Ne.symm hbe), List.count_cons_self,
+                  add_le_iff_nonpos_left, nonpos_iff_eq_zero, count_eq_zero] at hcv
+                exact hcv p.end_mem_support
+              · have := hs.1 (Ne.symm hvy)
+                rw [List.count_cons_of_ne (Ne.symm hyb), count_eq_zero] at this
+                apply this
+                exact snd_mem_support_of_mem_edges p hf
+      · rintro rfl;
+        simpa using ho.pos
       · rw [List.nodup_iff_count_le_one]
         intro a
         rw [List.count_tail (by simp)]
@@ -688,7 +736,32 @@ lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.
     · push_neg at hcv
       -- get a vertex x ≠ v in the support of w and use (w.rotate hx)
       -- as in the first part
-      sorry
+      cases w with
+      | nil =>
+        have := ho.pos
+        simp at this
+      | @cons v y _ h w  =>
+        have hne := h.ne
+        have hy : y ∈ (w.cons h).support := by simp
+        let w' := (w.cons h).rotate hy
+        have hv : v ∈ w'.support := by rw [mem_support_rotate_iff]; simp
+        have hl := w'.length_shortTake_add_loop hv hne
+        rw [length_rotate] at hl
+        rw [← hl] at ho
+        by_cases h1 : Odd (w'.shortTake hv).length
+        · apply ih _ _ _ h1 rfl
+          rw [← hn, ← hl]
+          simp only [lt_add_iff_pos_right, ←  not_nil_iff_lt_length]
+          exact w'.loop_not_nil_of_one_lt_count hv hne (by
+            rw [(w.cons h).count_support_rotate_old hy (Ne.symm hne)]
+            omega)
+        · rw [Nat.not_odd_iff_even] at h1
+          rw [Nat.odd_add'] at ho
+          apply ih _ _ _ (ho.2 h1) rfl
+          rw [← hn, ← hl]
+          simp only [lt_add_iff_pos_left, ←  not_nil_iff_lt_length]
+          exact shortTake_not_nil _ hv hne
+
 
 end Colorings
 
