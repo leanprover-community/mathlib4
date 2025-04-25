@@ -598,19 +598,21 @@ lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
         apply abs_le_abs
         simp only [le_sup_iff]
         right
-        sorry
-        simp only [le_sup_iff]
+        refine Bound.pow_le_pow_right_of_le_one_or_one_le ?_
         left
-        trans
-        · have :  -(c₁ K α' β' γ' : ℝ) ^ (n K q - 1 + m K * q + m K * q) ≤ 0 := by {
-          simp only [Left.neg_nonpos_iff]
-          apply pow_nonneg
-          simp only [Int.cast_nonneg]
-          unfold c₁
-          apply abs_nonneg
-          }
-          apply this
-        · exact zero_le_one
+        constructor
+        · sorry
+        · sorry
+        · trans
+          · have :  -(c₁ K α' β' γ' : ℝ) ^ (n K q - 1 + m K * q + m K * q) ≤ 0 := by {
+            simp only [Left.neg_nonpos_iff]
+            apply pow_nonneg
+            simp only [Int.cast_nonneg]
+            unfold c₁
+            apply abs_nonneg
+            }
+            exact this
+          · simp only [le_sup_iff, zero_le_one, true_or]
       · sorry
       · apply pow_nonneg
         apply house_nonneg
