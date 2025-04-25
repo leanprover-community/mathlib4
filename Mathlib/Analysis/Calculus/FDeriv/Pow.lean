@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
+Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
+Authors: Eric Wieser
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Comp
@@ -10,6 +10,8 @@ import Mathlib.Analysis.Calculus.FDeriv.Comp
 # Derivative of `(f x) ^ n`, `n : ℕ`
 
 In this file we prove that `(x ^ n)' = n * x ^ (n - 1)`, where `n` is a natural number.
+Additionally, we prove the case for non-commutative rings,
+where the result is instead `∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i`.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Analysis/Calculus/Deriv/Basic`.
@@ -18,8 +20,6 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative, power
 -/
-
-universe u
 
 variable {𝕜 𝔸 E : Type*}
 
@@ -51,6 +51,11 @@ theorem HasStrictFDerivAt.pow' (h : HasStrictFDerivAt f f' x) (n : ℕ) :
     simp_rw [pow_succ' _ (n + 1)]
     refine this.congr_fderiv <| aux _ _ _ _
 
+theorem hasStrictFDerivAt_pow' (n : ℕ) {x : 𝔸} :
+    HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ x ^ n)
+      (∑ i ∈ Finset.range n, x ^ (n.pred - i) •> ContinuousLinearMap.id 𝕜 _ <• x ^ i) x :=
+  hasStrictFDerivAt_id _ |>.pow' n
+
 theorem HasFDerivWithinAt.pow' (h : HasFDerivWithinAt f f' s x) (n : ℕ) :
     HasFDerivWithinAt (fun x ↦ f x ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) s x :=
@@ -62,85 +67,117 @@ theorem HasFDerivWithinAt.pow' (h : HasFDerivWithinAt f f' s x) (n : ℕ) :
     simp_rw [pow_succ' _ (n + 1)]
     exact this.congr_fderiv <| aux _ _ _ _
 
+theorem hasFDerivWithinAt_pow' (n : ℕ) {x : 𝔸} {s : Set 𝔸} :
+    HasFDerivWithinAt (𝕜 := 𝕜) (fun x ↦ x ^ n)
+      (∑ i ∈ Finset.range n, x ^ (n.pred - i) •> ContinuousLinearMap.id 𝕜 _ <• x ^ i) s x :=
+  hasFDerivWithinAt_id _ _ |>.pow' n
+
+theorem HasFDerivAt.pow' (h : HasFDerivAt f f' x) (n : ℕ) :
+    HasFDerivAt (fun x ↦ f x ^ n) (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) x :=
+  match n with
+  | 0 => by simpa using hasFDerivAt_const 1 x
+  | 1 => by simpa using h
+  | n + 1 + 1 => by
+    have := h.mul' (h.pow' (n + 1))
+    simp_rw [pow_succ' _ (n + 1)]
+    exact this.congr_fderiv <| aux _ _ _ _
+
+theorem hasFDerivAt_pow' (n : ℕ) {x : 𝔸} :
+    HasFDerivAt (𝕜 := 𝕜) (fun x ↦ x ^ n)
+      (∑ i ∈ Finset.range n, x ^ (n.pred - i) •> ContinuousLinearMap.id 𝕜 _ <• x ^ i) x :=
+  hasFDerivAt_id _ |>.pow' n
+
 @[fun_prop]
 theorem DifferentiableWithinAt.pow (hf : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
     DifferentiableWithinAt 𝕜 (fun x => f x ^ n) s x :=
   let ⟨_, hf'⟩ := hf; ⟨_, hf'.pow' n⟩
+
+theorem differentiableWithinAt_pow (n : ℕ) {x : 𝔸} {s : Set 𝔸} :
+    DifferentiableWithinAt 𝕜 (fun x : 𝔸 => x ^ n) s x :=
+  differentiableWithinAt_id.pow _
 
 @[simp, fun_prop]
 theorem DifferentiableAt.pow (hf : DifferentiableAt 𝕜 f x) (n : ℕ) :
     DifferentiableAt 𝕜 (fun x => f x ^ n) x :=
   differentiableWithinAt_univ.mp <| hf.differentiableWithinAt.pow n
 
+theorem differentiableAt_pow (n : ℕ) {x : 𝔸} : DifferentiableAt 𝕜 (fun x : 𝔸 => x ^ n) x :=
+  differentiableAt_id.pow _
+
 @[fun_prop]
 theorem DifferentiableOn.pow (ha : DifferentiableOn 𝕜 f s) (n : ℕ) :
     DifferentiableOn 𝕜 (fun x => f x ^ n) s := fun x h => (ha x h).pow n
+
+theorem differentiableOn_pow (n : ℕ) {s : Set 𝔸} : DifferentiableOn 𝕜 (fun x : 𝔸 => x ^ n) s :=
+  differentiableOn_id.pow n
 
 @[simp, fun_prop]
 theorem Differentiable.pow (ha : Differentiable 𝕜 f) (n : ℕ) : Differentiable 𝕜 fun x => f x ^ n :=
   fun x => (ha x).pow n
 
-theorem differentiableAt_pow (n : ℕ) {x : 𝔸} : DifferentiableAt 𝕜 (fun x : 𝔸 => x ^ n) x :=
-  differentiableAt_id.pow _
-
-theorem differentiableWithinAt_pow (n : ℕ) {x : 𝔸} : DifferentiableWithinAt 𝕜 (fun x : 𝔸 => x ^ n) s x :=
-  (differentiableAt_pow n).differentiableWithinAt
-
 theorem differentiable_pow (n : ℕ) : Differentiable 𝕜 fun x : 𝔸 => x ^ n :=
-  fun _ => differentiableAt_pow n
+  differentiable_id.pow _
 
-theorem differentiableOn_pow (n : ℕ) {s : Set 𝔸} : DifferentiableOn 𝕜 (fun x : 𝔸 => x ^ n) s :=
-  (differentiable_pow n).differentiableOn
+theorem fderiv_pow' (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
+    fderiv 𝕜 (fun x ↦ f x ^ n) x
+      = (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> fderiv 𝕜 f x <• f x ^ i) :=
+  hf.hasFDerivAt.pow' n |>.fderiv
+
+theorem fderivWithin_pow' (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :
+    fderivWithin 𝕜 (fun x ↦ f x ^ n) s x
+      = (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> fderivWithin 𝕜 f s x <• f x ^ i) :=
+  hf.hasFDerivWithinAt.pow' n |>.fderivWithin hxs
 
 end NormedRing
 
-variable {c : 𝕜 → 𝕜} {c' : 𝕜}
-variable (n : ℕ)
+section NormedCommRing
+variable [NontriviallyNormedField 𝕜] [NormedCommRing 𝔸] [NormedAddCommGroup E]
+variable [NormedAlgebra 𝕜 𝔸] [NormedSpace 𝕜 E] {f : E → 𝔸} {f' : E →L[𝕜] 𝔸} {x : E} {s : Set E}
 
-theorem hasStrictDerivAt_pow :
-    ∀ (n : ℕ) (x : 𝕜), HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) ((n : 𝕜) * x ^ (n - 1)) x
-  | 0, x => by simp [hasStrictDerivAt_const]
-  | 1, x => by simpa using hasStrictDerivAt_id x
-  | n + 1 + 1, x => by
-    simpa [pow_succ, add_mul, mul_assoc] using
-      (hasStrictDerivAt_pow (n + 1) x).mul (hasStrictDerivAt_id x)
+private theorem aux_sum_eq_pow (n : ℕ) :
+    ∑ i ∈ Finset.range n, MulOpposite.op (f x ^ i) • f x ^ (n.pred - i) • f' =
+      (n • f x ^ (n - 1)) • f' := by
+  simp_rw [op_smul_eq_smul, smul_smul, ← pow_add, ← Finset.sum_smul]
+  rw [Finset.sum_eq_card_nsmul, Finset.card_range, smul_assoc]
+  intros a ha
+  congr
+  exact add_tsub_cancel_of_le (Nat.le_pred_of_lt <| Finset.mem_range.1 ha)
 
-theorem hasDerivAt_pow (n : ℕ) (x : 𝕜) :
-    HasDerivAt (fun x : 𝕜 => x ^ n) ((n : 𝕜) * x ^ (n - 1)) x :=
-  (hasStrictDerivAt_pow n x).hasDerivAt
+theorem HasStrictFDerivAt.pow (h : HasStrictFDerivAt f f' x) (n : ℕ) :
+    HasStrictFDerivAt (fun x ↦ f x ^ n) ((n • f x ^ (n - 1)) • f') x :=
+  h.pow' n |>.congr_fderiv <| aux_sum_eq_pow _
 
-theorem hasDerivWithinAt_pow (n : ℕ) (x : 𝕜) (s : Set 𝕜) :
-    HasDerivWithinAt (fun x : 𝕜 => x ^ n) ((n : 𝕜) * x ^ (n - 1)) s x :=
-  (hasDerivAt_pow n x).hasDerivWithinAt
+theorem hasStrictFDerivAt_pow (n : ℕ) {x : 𝔸} :
+    HasStrictFDerivAt (𝕜 := 𝕜)
+      (fun x : 𝔸 ↦ x ^ n) ((n • x ^ (n - 1)) • ContinuousLinearMap.id 𝕜 𝔸) x :=
+  hasStrictFDerivAt_id _ |>.pow n
 
+theorem HasFDerivWithinAt.pow (h : HasFDerivWithinAt f f' s x) (n : ℕ) :
+    HasFDerivWithinAt (fun x ↦ f x ^ n) ((n • f x ^ (n - 1)) • f') s x :=
+  h.pow' n |>.congr_fderiv <| aux_sum_eq_pow _
 
-theorem deriv_pow : deriv (fun x : 𝕜 => x ^ n) x = (n : 𝕜) * x ^ (n - 1) :=
-  (hasDerivAt_pow n x).deriv
+theorem hasFDerivWithinAt_pow (n : ℕ) {x : 𝔸} {s : Set 𝔸} :
+    HasFDerivWithinAt (𝕜 := 𝕜)
+      (fun x : 𝔸 ↦ x ^ n) ((n • x ^ (n - 1)) • ContinuousLinearMap.id 𝕜 𝔸) s x :=
+  hasFDerivWithinAt_id _ _ |>.pow n
 
-@[simp]
-theorem deriv_pow' : (deriv fun x : 𝕜 => x ^ n) = fun x => (n : 𝕜) * x ^ (n - 1) :=
-  funext fun _ => deriv_pow n
+theorem HasFDerivAt.pow (h : HasFDerivAt f f' x) (n : ℕ) :
+    HasFDerivAt (fun x ↦ f x ^ n) ((n • f x ^ (n - 1)) • f') x :=
+  h.pow' n |>.congr_fderiv <| aux_sum_eq_pow _
 
-theorem derivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (fun x : 𝕜 => x ^ n) s x = (n : 𝕜) * x ^ (n - 1) :=
-  (hasDerivWithinAt_pow n x s).derivWithin hxs
+theorem hasFDerivAt_pow (n : ℕ) {x : 𝔸} :
+    HasFDerivAt (𝕜 := 𝕜)
+      (fun x : 𝔸 ↦ x ^ n) ((n • x ^ (n - 1)) • ContinuousLinearMap.id 𝕜 𝔸) x :=
+  hasFDerivAt_id _ |>.pow n
 
-theorem HasDerivWithinAt.pow (hc : HasDerivWithinAt c c' s x) :
-    HasDerivWithinAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') s x :=
-  (hasDerivAt_pow n (c x)).comp_hasDerivWithinAt x hc
+theorem fderiv_pow (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
+    fderiv 𝕜 (fun x ↦ f x ^ n) x = (n • f x ^ (n - 1)) • fderiv 𝕜 f x :=
+  hf.hasFDerivAt.pow n |>.fderiv
 
-theorem HasDerivAt.pow (hc : HasDerivAt c c' x) :
-    HasDerivAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') x := by
-  rw [← hasDerivWithinAt_univ] at *
-  exact hc.pow n
+theorem fderivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :
+    fderivWithin 𝕜 (fun x ↦ f x ^ n) s x = (n • f x ^ (n - 1)) • fderivWithin 𝕜 f s x :=
+  hf.hasFDerivWithinAt.pow n |>.fderivWithin hxs
 
-theorem derivWithin_pow' (hc : DifferentiableWithinAt 𝕜 c s x) :
-    derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hc.hasDerivWithinAt.pow n).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
-
-@[simp]
-theorem deriv_pow'' (hc : DifferentiableAt 𝕜 c x) :
-    deriv (fun x => c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
-  (hc.hasDerivAt.pow n).deriv
+end NormedCommRing

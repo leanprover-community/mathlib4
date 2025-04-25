@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Pow
 
 /-!
 # Derivative of `(f x) ^ n`, `n : ℕ`
@@ -19,70 +20,93 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, power
 -/
 
-universe u
+variable {𝕜 𝔸 : Type*}
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
+section NormedRing
+variable [NontriviallyNormedField 𝕜] [NormedRing 𝔸]
+variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s : Set 𝕜}
 
-/-! ### Derivative of `x ↦ x^n` for `n : ℕ` -/
+nonrec theorem HasStrictDerivAt.pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
+    HasStrictDerivAt (fun x ↦ f x ^ n)
+      (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x := by
+  unfold HasStrictDerivAt
+  convert h.pow' n
+  ext
+  simp
 
-variable {c : 𝕜 → 𝕜} {c' : 𝕜}
-variable (n : ℕ)
+nonrec theorem HasDerivWithinAt.pow' (h : HasDerivWithinAt f f' s x) (n : ℕ) :
+    HasDerivWithinAt (fun x ↦ f x ^ n)
+      (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) s x := by
+  simpa using h.hasFDerivWithinAt.pow' n |>.hasDerivWithinAt
 
-theorem hasStrictDerivAt_pow :
-    ∀ (n : ℕ) (x : 𝕜), HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) ((n : 𝕜) * x ^ (n - 1)) x
-  | 0, x => by simp [hasStrictDerivAt_const]
-  | 1, x => by simpa using hasStrictDerivAt_id x
-  | n + 1 + 1, x => by
-    simpa [pow_succ, add_mul, mul_assoc] using
-      (hasStrictDerivAt_pow (n + 1) x).mul (hasStrictDerivAt_id x)
+theorem HasDerivAt.pow' (h : HasDerivAt f f' x) (n : ℕ) :
+    HasDerivAt (fun x ↦ f x ^ n)
+      (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x := by
+  simpa using h.hasFDerivAt.pow' n |>.hasDerivAt
+
+@[simp]
+theorem derivWithin_pow'
+    (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
+    derivWithin (fun x => f x ^ n) s x =
+      ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * derivWithin f s x * f x ^ i :=
+  (h.hasDerivWithinAt.pow' n).derivWithin hu
+
+@[simp]
+theorem deriv_pow' (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
+    deriv (fun x => f x ^ n) x = ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * deriv f x * f x ^ i :=
+  (h.hasDerivAt.pow' n).deriv
+
+end NormedRing
+
+section NormedCommRing
+variable [NontriviallyNormedField 𝕜] [NormedCommRing 𝔸]
+variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s : Set 𝕜}
+
+open scoped RightActions
+
+nonrec theorem HasStrictDerivAt.pow (h : HasStrictDerivAt f f' x) (n : ℕ) :
+    HasStrictDerivAt (fun x ↦ f x ^ n) (n • f x ^ (n - 1) * f') x := by
+  unfold HasStrictDerivAt
+  convert h.pow n
+  ext
+  simp [mul_assoc]
+
+nonrec theorem HasDerivWithinAt.pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
+    HasDerivWithinAt (fun x ↦ f x ^ n) (n • f x ^ (n - 1) * f') s x := by
+  simpa using h.hasFDerivWithinAt.pow n |>.hasDerivWithinAt
+
+theorem HasDerivAt.pow (h : HasDerivAt f f' x) (n : ℕ) :
+    HasDerivAt (fun x ↦ f x ^ n)
+      (n • f x ^ (n - 1) * f') x := by
+  simpa using h.hasFDerivAt.pow n |>.hasDerivAt
+
+@[simp]
+theorem derivWithin_pow
+    (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
+    derivWithin (fun x => f x ^ n) s x =
+      n • f x ^ (n - 1) * derivWithin f s x :=
+  (h.hasDerivWithinAt.pow n).derivWithin hu
+
+@[simp]
+theorem deriv_pow (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
+    deriv (fun x => f x ^ n) x = ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * deriv f x * f x ^ i :=
+  (h.hasDerivAt.pow' n).deriv
+
+end NormedCommRing
+
+section NontriviallyNormedField
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
+
+theorem hasStrictDerivAt_pow (n : ℕ) (x : 𝕜) :
+    HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) (n • x ^ (n - 1)) x := by
+  simpa using (hasStrictDerivAt_id x).pow n
+
+theorem hasDerivWithinAt_pow (n : ℕ) (x : 𝕜) :
+    HasDerivWithinAt (fun x : 𝕜 ↦ x ^ n) (n • x ^ (n - 1)) s x := by
+  simpa using (hasDerivWithinAt_id x s).pow n
 
 theorem hasDerivAt_pow (n : ℕ) (x : 𝕜) :
-    HasDerivAt (fun x : 𝕜 => x ^ n) ((n : 𝕜) * x ^ (n - 1)) x :=
-  (hasStrictDerivAt_pow n x).hasDerivAt
+    HasDerivAt (fun x : 𝕜 => x ^ n) ((n : 𝕜) * x ^ (n - 1)) x := by
+  simpa using (hasStrictDerivAt_pow n x).hasDerivAt
 
-theorem hasDerivWithinAt_pow (n : ℕ) (x : 𝕜) (s : Set 𝕜) :
-    HasDerivWithinAt (fun x : 𝕜 => x ^ n) ((n : 𝕜) * x ^ (n - 1)) s x :=
-  (hasDerivAt_pow n x).hasDerivWithinAt
-
-theorem differentiableAt_pow : DifferentiableAt 𝕜 (fun x : 𝕜 => x ^ n) x :=
-  (hasDerivAt_pow n x).differentiableAt
-
-theorem differentiableWithinAt_pow :
-    DifferentiableWithinAt 𝕜 (fun x : 𝕜 => x ^ n) s x :=
-  (differentiableAt_pow n).differentiableWithinAt
-
-theorem differentiable_pow : Differentiable 𝕜 fun x : 𝕜 => x ^ n := fun _ => differentiableAt_pow n
-
-theorem differentiableOn_pow : DifferentiableOn 𝕜 (fun x : 𝕜 => x ^ n) s :=
-  (differentiable_pow n).differentiableOn
-
-theorem deriv_pow : deriv (fun x : 𝕜 => x ^ n) x = (n : 𝕜) * x ^ (n - 1) :=
-  (hasDerivAt_pow n x).deriv
-
-@[simp]
-theorem deriv_pow' : (deriv fun x : 𝕜 => x ^ n) = fun x => (n : 𝕜) * x ^ (n - 1) :=
-  funext fun _ => deriv_pow n
-
-theorem derivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (fun x : 𝕜 => x ^ n) s x = (n : 𝕜) * x ^ (n - 1) :=
-  (hasDerivWithinAt_pow n x s).derivWithin hxs
-
-theorem HasDerivWithinAt.pow (hc : HasDerivWithinAt c c' s x) :
-    HasDerivWithinAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') s x :=
-  (hasDerivAt_pow n (c x)).comp_hasDerivWithinAt x hc
-
-theorem HasDerivAt.pow (hc : HasDerivAt c c' x) :
-    HasDerivAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') x := by
-  rw [← hasDerivWithinAt_univ] at *
-  exact hc.pow n
-
-theorem derivWithin_pow' (hc : DifferentiableWithinAt 𝕜 c s x) :
-    derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hc.hasDerivWithinAt.pow n).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
-
-@[simp]
-theorem deriv_pow'' (hc : DifferentiableAt 𝕜 c x) :
-    deriv (fun x => c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
-  (hc.hasDerivAt.pow n).deriv
+end NontriviallyNormedField
