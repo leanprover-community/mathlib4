@@ -148,17 +148,12 @@ lemma coe_biUnion : (s.biUnion t : Set β) = ⋃ x ∈ (s : Set α), t x := by
   simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion, mem_coe, imp_true_iff]
 
 @[simp]
-lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a ∪ s.biUnion t :=
-  ext fun x ↦ by
-    simp only [mem_biUnion, exists_prop, mem_union, mem_insert, or_and_right, exists_or,
-      exists_eq_left]
+lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a ∪ s.biUnion t := by
+  aesop
 
-lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) : s₁.biUnion t₁ = s₂.biUnion t₂ :=
-  ext fun x ↦ by
-    -- Porting note: this entire proof was `simp [or_and_right, exists_or]`
-    simp_rw [mem_biUnion]
-    apply exists_congr
-    simp +contextual only [hs, and_congr_right_iff, ht, implies_true]
+lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) :
+    s₁.biUnion t₁ = s₂.biUnion t₂ := by
+  aesop
 
 @[simp]
 lemma disjiUnion_eq_biUnion (s : Finset α) (f : α → Finset β) (hf) :
@@ -170,7 +165,7 @@ lemma biUnion_subset {s' : Finset β} : s.biUnion t ⊆ s' ↔ ∀ x ∈ s, t x 
 
 @[simp]
 lemma singleton_biUnion {a : α} : Finset.biUnion {a} t = t a := by
-  classical rw [← insert_emptyc_eq, biUnion_insert, biUnion_empty, union_empty]
+  classical rw [← insert_empty_eq, biUnion_insert, biUnion_empty, union_empty]
 
 lemma biUnion_inter (s : Finset α) (f : α → Finset β) (t : Finset β) :
     s.biUnion f ∩ t = s.biUnion fun x ↦ f x ∩ t := by

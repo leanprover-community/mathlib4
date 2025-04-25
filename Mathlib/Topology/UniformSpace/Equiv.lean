@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton,
 Anatole Dedecker
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.Pi
 
@@ -196,15 +196,10 @@ theorem isUniformInducing (h : α ≃ᵤ β) : IsUniformInducing h :=
   IsUniformInducing.of_comp h.uniformContinuous h.symm.uniformContinuous <| by
     simp only [symm_comp_self, IsUniformInducing.id]
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing := isUniformInducing
-
 theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
   h.isUniformInducing.comap_uniformSpace
 
 lemma isUniformEmbedding (h : α ≃ᵤ β) : IsUniformEmbedding h := ⟨h.isUniformInducing, h.injective⟩
-
-@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 theorem completeSpace_iff (h : α ≃ᵤ β) : CompleteSpace α ↔ CompleteSpace β :=
   completeSpace_congr h.isUniformEmbedding
@@ -219,8 +214,6 @@ noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding 
     exact uniformContinuous_subtype_val
   toEquiv := Equiv.ofInjective f hf.injective
 
-@[deprecated (since := "2024-10-03")] alias ofUniformEmbedding := ofIsUniformEmbedding
-
 /-- If two sets are equal, then they are uniformly equivalent. -/
 def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
   uniformContinuous_toFun := uniformContinuous_subtype_val.subtype_mk _
@@ -230,10 +223,10 @@ def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
 /-- Product of two uniform isomorphisms. -/
 def prodCongr (h₁ : α ≃ᵤ β) (h₂ : γ ≃ᵤ δ) : α × γ ≃ᵤ β × δ where
   uniformContinuous_toFun :=
-    (h₁.uniformContinuous.comp uniformContinuous_fst).prod_mk
+    (h₁.uniformContinuous.comp uniformContinuous_fst).prodMk
       (h₂.uniformContinuous.comp uniformContinuous_snd)
   uniformContinuous_invFun :=
-    (h₁.symm.uniformContinuous.comp uniformContinuous_fst).prod_mk
+    (h₁.symm.uniformContinuous.comp uniformContinuous_fst).prodMk
       (h₂.symm.uniformContinuous.comp uniformContinuous_snd)
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
 
@@ -252,8 +245,8 @@ variable (α β γ)
 
 /-- `α × β` is uniformly isomorphic to `β × α`. -/
 def prodComm : α × β ≃ᵤ β × α where
-  uniformContinuous_toFun := uniformContinuous_snd.prod_mk uniformContinuous_fst
-  uniformContinuous_invFun := uniformContinuous_snd.prod_mk uniformContinuous_fst
+  uniformContinuous_toFun := uniformContinuous_snd.prodMk uniformContinuous_fst
+  uniformContinuous_invFun := uniformContinuous_snd.prodMk uniformContinuous_fst
   toEquiv := Equiv.prodComm α β
 
 @[simp]
@@ -267,12 +260,11 @@ theorem coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
 /-- `(α × β) × γ` is uniformly isomorphic to `α × (β × γ)`. -/
 def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where
   uniformContinuous_toFun :=
-    (uniformContinuous_fst.comp uniformContinuous_fst).prod_mk
-      ((uniformContinuous_snd.comp uniformContinuous_fst).prod_mk uniformContinuous_snd)
-  uniformContinuous_invFun := by -- Porting note: the `rw` was not necessary in Lean 3
-    rw [Equiv.invFun, Equiv.prodAssoc]
-    exact (uniformContinuous_fst.prod_mk (uniformContinuous_fst.comp
-    uniformContinuous_snd)).prod_mk (uniformContinuous_snd.comp uniformContinuous_snd)
+    (uniformContinuous_fst.comp uniformContinuous_fst).prodMk
+      ((uniformContinuous_snd.comp uniformContinuous_fst).prodMk uniformContinuous_snd)
+  uniformContinuous_invFun :=
+    (uniformContinuous_fst.prodMk (uniformContinuous_fst.comp
+      uniformContinuous_snd)).prodMk (uniformContinuous_snd.comp uniformContinuous_snd)
   toEquiv := Equiv.prodAssoc α β γ
 
 /-- `α × {*}` is uniformly isomorphic to `α`. -/
@@ -280,7 +272,7 @@ def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where
 def prodPunit : α × PUnit ≃ᵤ α where
   toEquiv := Equiv.prodPUnit α
   uniformContinuous_toFun := uniformContinuous_fst
-  uniformContinuous_invFun := uniformContinuous_id.prod_mk uniformContinuous_const
+  uniformContinuous_invFun := uniformContinuous_id.prodMk uniformContinuous_const
 
 /-- `{*} × α` is uniformly isomorphic to `α`. -/
 def punitProd : PUnit × α ≃ᵤ α :=
@@ -347,12 +339,11 @@ def funUnique (ι α : Type*) [Unique ι] [UniformSpace α] : (ι → α) ≃ᵤ
 @[simps! -fullyApplied]
 def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i) ≃ᵤ α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
-  uniformContinuous_toFun := (Pi.uniformContinuous_proj _ 0).prod_mk (Pi.uniformContinuous_proj _ 1)
+  uniformContinuous_toFun := (Pi.uniformContinuous_proj _ 0).prodMk (Pi.uniformContinuous_proj _ 1)
   uniformContinuous_invFun :=
     uniformContinuous_pi.mpr <| Fin.forall_fin_two.2 ⟨uniformContinuous_fst, uniformContinuous_snd⟩
 
 /-- Uniform isomorphism between `α² = Fin 2 → α` and `α × α`. -/
--- Porting note: made `α` explicit
 @[simps! -fullyApplied]
 def finTwoArrow (α : Type*) [UniformSpace α] : (Fin 2 → α) ≃ᵤ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }

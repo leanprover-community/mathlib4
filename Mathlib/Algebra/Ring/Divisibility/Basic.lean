@@ -40,7 +40,7 @@ theorem MulEquiv.decompositionMonoid (f : F) [DecompositionMonoid β] : Decompos
 If `G` is a `LeftCancelSemiGroup`, left multiplication by `g` yields an equivalence between `G`
 and the set of elements of `G` divisible by `g`.
 -/
-noncomputable def Equiv.dvd {G : Type*} [LeftCancelSemigroup G] (g : G) :
+protected noncomputable def Equiv.dvd {G : Type*} [LeftCancelSemigroup G] (g : G) :
     G ≃ {a : G // g ∣ a} where
   toFun := fun a ↦ ⟨g * a, ⟨a, rfl⟩⟩
   invFun := fun ⟨_, h⟩ ↦ h.choose

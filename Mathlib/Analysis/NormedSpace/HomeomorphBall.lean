@@ -63,7 +63,7 @@ def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
     suffices Continuous fun (x : E) => (√(1 + ‖x‖ ^ 2))⁻¹
      from (this.smul continuous_id).continuousOn
     refine Continuous.inv₀ ?_ fun x => Real.sqrt_ne_zero'.mpr (by positivity)
-    continuity
+    fun_prop
   continuousOn_invFun := by
     have : ∀ y ∈ ball (0 : E) 1, √(1 - ‖(y : E)‖ ^ 2) ≠ 0 := fun y hy ↦ by
       rw [Real.sqrt_ne_zero']

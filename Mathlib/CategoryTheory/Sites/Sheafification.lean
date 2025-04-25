@@ -73,6 +73,7 @@ instance [HasWeakSheafify J A] : (presheafToSheaf J A).IsLeftAdjoint :=
   ⟨_, ⟨sheafificationAdjunction J A⟩⟩
 
 instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
+  L := presheafToSheaf J A
   adj := sheafificationAdjunction _ _
 
 instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=

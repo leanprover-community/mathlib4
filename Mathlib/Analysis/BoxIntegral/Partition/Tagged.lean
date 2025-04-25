@@ -274,7 +274,6 @@ theorem isHenstock_single_iff (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
     IsHenstock (single I J hJ x h) ↔ x ∈ Box.Icc J :=
   forall_mem_single (fun x J => x ∈ Box.Icc J) hJ h
 
---@[simp] -- Porting note: Commented out, because `simp only [isHenstock_single_iff]` simplifies it
 theorem isHenstock_single (h : x ∈ Box.Icc I) : IsHenstock (single I I le_rfl x h) :=
   (isHenstock_single_iff (le_refl I) h).2 h
 

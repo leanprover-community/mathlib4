@@ -120,7 +120,7 @@ variable [CommMonoidWithZero R] [WfDvdMonoid R]
 
 theorem squarefree_iff_no_irreducibles {x : R} (hx₀ : x ≠ 0) :
     Squarefree x ↔ ∀ p, Irreducible p → ¬ (p * p ∣ x) := by
-  refine ⟨fun h p hp hp' ↦ hp.not_unit (h p hp'), fun h d hd ↦ by_contra fun hdu ↦ ?_⟩
+  refine ⟨fun h p hp hp' ↦ hp.not_isUnit (h p hp'), fun h d hd ↦ by_contra fun hdu ↦ ?_⟩
   have hd₀ : d ≠ 0 := ne_zero_of_dvd_ne_zero (ne_zero_of_dvd_ne_zero hx₀ hd) (dvd_mul_left d d)
   obtain ⟨p, irr, dvd⟩ := WfDvdMonoid.exists_irreducible_factor hdu hd₀
   exact h p irr ((mul_dvd_mul dvd dvd).trans hd)
@@ -134,7 +134,7 @@ theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r 
   · rintro (⟨rfl, h⟩ | h)
     · simpa using h
     intro x hx t
-    exact hx.not_unit (h x t)
+    exact hx.not_isUnit (h x t)
 
 theorem squarefree_iff_irreducible_sq_not_dvd_of_ne_zero {r : R} (hr : r ≠ 0) :
     Squarefree r ↔ ∀ x : R, Irreducible x → ¬x * x ∣ r := by
@@ -231,10 +231,11 @@ variable [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
     ∃ (y : R) (n : ℕ), Squarefree y ∧ y ∣ x ∧ x ∣ y ^ n := by
-  induction' x using WfDvdMonoid.induction_on_irreducible with u hu z p hz hp ih
-  · contradiction
-  · exact ⟨1, 0, squarefree_one, one_dvd u, hu.dvd⟩
-  · obtain ⟨y, n, hy, hyx, hy'⟩ := ih hz
+  induction x using WfDvdMonoid.induction_on_irreducible with
+  | zero => contradiction
+  | unit u hu => exact ⟨1, 0, squarefree_one, one_dvd u, hu.dvd⟩
+  | mul z p hz hp ih =>
+    obtain ⟨y, n, hy, hyx, hy'⟩ := ih hz
     rcases n.eq_zero_or_pos with rfl | hn
     · exact ⟨p, 1, hp.squarefree, dvd_mul_right p z, by simp [isUnit_of_dvd_one (pow_zero y ▸ hy')]⟩
     by_cases hp' : p ∣ y

@@ -3,9 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
+import Mathlib.Topology.ContinuousMap.Bounded.Normed
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # The Gromov-Hausdorff distance is realized
@@ -435,12 +436,6 @@ def premetricOptimalGHDist : PseudoMetricSpace (X ⊕ Y) where
   dist_self _ := candidates_refl (optimalGHDist_mem_candidatesB X Y)
   dist_comm _ _ := candidates_symm (optimalGHDist_mem_candidatesB X Y)
   dist_triangle _ _ _ := candidates_triangle (optimalGHDist_mem_candidatesB X Y)
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `edist_dist`
-  edist_dist x y := by
-    simp only
-    congr
-    simp only [left_eq_sup]
-    exact candidates_nonneg (optimalGHDist_mem_candidatesB X Y)
 
 attribute [local instance] premetricOptimalGHDist
 
