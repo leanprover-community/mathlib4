@@ -38,15 +38,12 @@ namespace AlgebraicGeometry
 variable (P P' : MorphismProperty Scheme.{u})
 
 /--
-Let `P` and `P'` be morphism properties and assume that `P'` is local at the source.
-If every surjective morphism satisfying `P'` also satisfies `P`, every quasi-compact scheme `X`
-is dominated by an affine scheme `Y` via `p : Y ⟶ X` such that `p` satisfies `P'`.
-
-Typical applications are `P` is surjective + flat (smooth, étale, unramified, etc.).
+If `P` is local at the source, every quasi compact scheme is dominated by an
+affine scheme via `p : Y ⟶ X` such that `p` satisfies `P`.
 -/
 lemma Scheme.exists_hom_isAffine_of_isLocalAtSource (X : Scheme.{u}) [CompactSpace X]
-    [IsLocalAtSource P'] [P'.ContainsIdentities] :
-    ∃ (Y : Scheme.{u}) (p : Y ⟶ X), Surjective p ∧ P' p ∧ IsAffine Y := by
+    [IsLocalAtSource P] [P.ContainsIdentities] :
+    ∃ (Y : Scheme.{u}) (p : Y ⟶ X), Surjective p ∧ P p ∧ IsAffine Y := by
   let 𝒰 := X.affineCover.finiteSubcover
   let p : ∐ (fun i : 𝒰.J ↦ 𝒰.obj i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.map i)
   have (i : 𝒰.J) : IsAffine (𝒰.obj i) := inferInstanceAs <| IsAffine (X.affineCover.obj _)
@@ -54,7 +51,7 @@ lemma Scheme.exists_hom_isAffine_of_isLocalAtSource (X : Scheme.{u}) [CompactSpa
   · obtain ⟨i, x, rfl⟩ := X.affineCover.finiteSubcover.exists_eq x
     use (Sigma.ι (fun i ↦ X.affineCover.finiteSubcover.obj i) i).base x
     rw [← Scheme.comp_base_apply, Sigma.ι_desc]
-  · rw [IsLocalAtSource.iff_of_openCover (P := P') (sigmaOpenCover _)]
+  · rw [IsLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
     exact fun i ↦ by simpa [p] using IsLocalAtSource.of_isOpenImmersion _
 
 /-- If `P` is local at the target, to show `P` descends along `P'` we may assume
@@ -106,8 +103,9 @@ lemma of_pullback_fst_Spec_of_codescendsAlong [P.RespectsIso]
   refine hQQ'.algebraMap_tensorProduct (R := R) (S := T) (T := S) _ _ (H₁ h) ?_
   rwa [← pullbackSpecIso_hom_fst R T S, P.cancel_left_of_respectsIso, H₂] at hf
 
-/-- If `X` admits a morphism `p : T ⟶ X` from an affine scheme, to
-show a property descends along a morphism `f : X ⟶ Z`, `X` may assumed to be affine. -/
+/-- If `X` admits a morphism `p : T ⟶ X` from an affine scheme satisfying `P', to
+show a property descends along a morphism `f : X ⟶ Z` satisfying `P'`, `X` may assumed to
+be affine. -/
 lemma IsStableUnderBaseChange.of_pullback_fst_of_isAffine [P'.RespectsIso]
     [P'.IsStableUnderComposition] [P.IsStableUnderBaseChange]
     (H : ∀ {R : CommRingCat.{u}} {S X : Scheme.{u}} (f : Spec R ⟶ S) (g : X ⟶ S),
