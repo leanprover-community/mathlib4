@@ -30,7 +30,6 @@ The `unify_denoms!` tactic extends `unify_denoms` to work also on
 (in)equalities. In the case of inequalities, it assumes denominators are positive.
 --/
 
-
 open Lean Meta Elab Tactic Parser Tactic
 
 /--

@@ -63,16 +63,10 @@ macro_rules
 
 /-These two lemmas are also used as rewriting rules later.-/
 lemma Nat.sub_sub_of_le (m n k : ℕ) (h : k ≤ n) : m - (n - k) = m + k - n := by
-  have haux := Nat.le.dest h
-  cases haux with
-  | intro d hd =>
-    · rw [←hd,add_comm m k,add_tsub_cancel_left,Nat.add_sub_add_left]
+  omega
 
 lemma Nat.add_sub_comm_of_le (m n k : ℕ) (h : k ≤ n) : m + (n - k) = (m + n) - k := by
-  have haux := Nat.le.dest h
-  cases haux with
-  | intro d hd =>
-    · rw [← hd,add_comm k d,←add_assoc,add_tsub_cancel_right,add_tsub_cancel_right]
+  omega
 
 /--
 The `collect_signs!` tactic extends `collect_signs`, trying to cancel additions and
