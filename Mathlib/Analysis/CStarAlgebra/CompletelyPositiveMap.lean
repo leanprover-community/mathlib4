@@ -10,7 +10,7 @@ import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 /-! # Completely positive maps
 
 A linear map `φ : A₁ →ₗ[ℂ] A₂` (where `A₁` and `A₂` are C⋆-algebras) is called
-*completely positive (CP)* if `CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all
+*completely positive (CP)* if `CStarMatrix.map (Fin k) (Fin k) φ` (i.e. applying `φ` to all
 entries of a k × k matrix) is also positive for every `k ∈ ℕ`.
 
 This file defines completely positive maps and develops their basic API.
