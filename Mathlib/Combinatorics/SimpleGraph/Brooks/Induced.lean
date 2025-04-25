@@ -63,7 +63,7 @@ lemma neighborFinsetIn_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)
     Subgraph.top_adj, true_and, Finset.mem_filter]
   constructor <;> intro h
   · cases h.1 with
-    | inl h' => subst x; exact (G.loopless _ h.2).elim
+    | inl h' => subst x; exact (G.shortClosedless _ h.2).elim
     | inr h' => exact ⟨h.2, h'⟩
   · exact ⟨Or.inr h.2, h.1⟩
 
@@ -188,10 +188,10 @@ def partColoringOfNotAdj {n : ℕ} {a b : α} (h : ¬ G.Adj a b) (c : Fin n) :
   map_rel':= by
     intro x y hadj he
     cases hadj.1 <;> cases hadj.2.1 <;> subst_vars
-    · exact G.loopless _ hadj.2.2
+    · exact G.shortClosedless _ hadj.2.2
     · exact h hadj.2.2
     · exact h hadj.2.2.symm
-    · exact G.loopless _ hadj.2.2
+    · exact G.shortClosedless _ hadj.2.2
 
 /-- `G.PartColorable n s` is the predicate for existence of a `PartColoring n s` of `G`. -/
 abbrev PartColorable (n : ℕ) (s : Set α) := Nonempty (G.PartColoring n s)
@@ -503,23 +503,23 @@ variable {u v x: α} [DecidableEq α]
 
 /-- Given a vertex `x` in a walk `w : G.Walk u v` form the walk that travels along `w` from `u`
 to `x` and then back to `v` without revisiting `x` -/
-def Walk.shortTake (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk u v :=
-  (w.takeUntil _ hx).append (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse
+def Walk.shortCut (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk u v :=
+  (w.takeUntil _ hx).append (w.reverse.takeUntil _ (w.mem_support_reverse.2 hx)).reverse
 
 /-- Given a vertex `x` in a walk `w` form the walk that travels along `w` from the first visit of
-`x` to the last visit of `x` (which may be the same in which case this is nil x) -/
-def Walk.loop (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk x x :=
-  ((w.reverse.dropUntil x (w.mem_support_reverse.2 hx)).reverse).dropUntil x (by simp)
+`x` to the last visit of `x` (which may be the same in which case this is `nil' x`) -/
+def Walk.shortClosed (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk x x :=
+  ((w.reverse.dropUntil _ (w.mem_support_reverse.2 hx)).reverse).dropUntil _ (by simp)
 
-lemma Walk.shortTake_not_nil (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) :
-    ¬(w.shortTake hx).Nil := by
-  rw [shortTake]
+lemma Walk.shortCut_not_nil (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) :
+    ¬(w.shortCut hx).Nil := by
+  rw [shortCut]
   simp only [nil_append_iff, nil_takeUntil, nil_reverse, not_and]
   rintro rfl; contradiction
 
 lemma Walk.dropUntil_spec (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) : w.dropUntil x hx =
-  (w.loop hx).append (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse := by
-  rw [loop]
+  (w.shortClosed hx).append (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse := by
+  rw [shortClosed]
   have hc := congr_arg Walk.reverse <| take_spec (w.dropUntil _ hx).reverse (end_mem_support _ )
   rw [Walk.reverse_reverse] at *
   rw [← hc, Walk.reverse_append]
@@ -591,10 +591,10 @@ lemma Walk.not_mem_support_reverse_tail_takeUntil (w : G.Walk u v) (hx : x ∈ w
   rw [← List.count_pos_iff, List.count_tail (by simp)] at hx2
   simp at hx2
 
-/-- If `x` is a repeated vertex of the walk `w` and not the first vertex then `w.loop hx` is
+/-- If `x` is a repeated vertex of the walk `w` and not the first vertex then `w.shortClosed hx` is
 a non-nil closed walk. -/
-lemma Walk.loop_not_nil_of_one_lt_count (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u)
-    (h2 : 1 < w.support.count x) : ¬(w.loop hx).Nil := by
+lemma Walk.shortClosed_not_nil_of_one_lt_count (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u)
+    (h2 : 1 < w.support.count x) : ¬(w.shortClosed hx).Nil := by
   intro h
   have hs := dropUntil_spec w hx hu
   have : w.dropUntil x hx = (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse := by
@@ -610,12 +610,12 @@ lemma Walk.loop_not_nil_of_one_lt_count (w : G.Walk u v) (hx : x ∈ w.support) 
   rw [List.count_pos_iff]at this
   exact (w.reverse.not_mem_support_reverse_tail_takeUntil _) this
 /--
-So the two walks `w.shortTake hx` and `w.loop hx` are
+So the two walks `w.shortCut hx` and `w.shortClosed hx` are
 -/
-lemma Walk.length_shortTake_add_loop (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) :
-    (w.shortTake hx).length + (w.loop hx).length = w.length := by
-  rw [shortTake, loop,← Walk.length_takeUntil_add_dropUntil hx]
-  rw [w.dropUntil_spec hx hu, loop]
+lemma Walk.length_shortCut_add_shortClosed (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) :
+    (w.shortCut hx).length + (w.shortClosed hx).length = w.length := by
+  rw [shortCut, shortClosed,← Walk.length_takeUntil_add_dropUntil hx]
+  rw [w.dropUntil_spec hx hu, shortClosed]
   simp  [Walk.length_append, Walk.length_reverse]
   omega
 
@@ -649,19 +649,19 @@ lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.
   | h n ih =>
   by_cases hs : ∃ x ∈ w.support , x ≠ v ∧ 1 < w.support.count x
   · obtain ⟨x, hx, hne, h2⟩ := hs
-    have hl := w.length_shortTake_add_loop hx hne
+    have hl := w.length_shortCut_add_shortClosed hx hne
     rw [← hl] at ho
-    by_cases h1 : Odd (w.shortTake hx).length
+    by_cases h1 : Odd (w.shortCut hx).length
     · apply ih _ _ _ h1 rfl
       rw [← hn, ← hl]
       simp only [lt_add_iff_pos_right, ←  not_nil_iff_lt_length]
-      exact w.loop_not_nil_of_one_lt_count hx hne h2
+      exact w.shortClosed_not_nil_of_one_lt_count hx hne h2
     · rw [Nat.not_odd_iff_even] at h1
       rw [Nat.odd_add'] at ho
       apply ih _ _ _ (ho.2 h1) rfl
       rw [← hn, ← hl]
       simp only [lt_add_iff_pos_left, ←  not_nil_iff_lt_length]
-      exact shortTake_not_nil w hx hne
+      exact shortCut_not_nil w hx hne
   · push_neg at hs
     by_cases hcv : w.support.count v ≤ 2
     · use v, w
@@ -721,7 +721,7 @@ lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.
                 rw [List.count_cons_of_ne (Ne.symm hyb), count_eq_zero] at this
                 apply this
                 exact snd_mem_support_of_mem_edges p hf
-      · rintro rfl;
+      · rintro rfl
         simpa using ho.pos
       · rw [List.nodup_iff_count_le_one]
         intro a
@@ -745,14 +745,14 @@ lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.
         have hy : y ∈ (w.cons h).support := by simp
         let w' := (w.cons h).rotate hy
         have hv : v ∈ w'.support := by rw [mem_support_rotate_iff]; simp
-        have hl := w'.length_shortTake_add_loop hv hne
+        have hl := w'.length_shortCut_add_shortClosed hv hne
         rw [length_rotate] at hl
         rw [← hl] at ho
-        by_cases h1 : Odd (w'.shortTake hv).length
+        by_cases h1 : Odd (w'.shortCut hv).length
         · apply ih _ _ _ h1 rfl
           rw [← hn, ← hl]
           simp only [lt_add_iff_pos_right, ←  not_nil_iff_lt_length]
-          exact w'.loop_not_nil_of_one_lt_count hv hne (by
+          exact w'.shortClosed_not_nil_of_one_lt_count hv hne (by
             rw [(w.cons h).count_support_rotate_old hy (Ne.symm hne)]
             omega)
         · rw [Nat.not_odd_iff_even] at h1
@@ -760,7 +760,7 @@ lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.
           apply ih _ _ _ (ho.2 h1) rfl
           rw [← hn, ← hl]
           simp only [lt_add_iff_pos_left, ←  not_nil_iff_lt_length]
-          exact shortTake_not_nil _ hv hne
+          exact shortCut_not_nil _ hv hne
 
 
 end Colorings
