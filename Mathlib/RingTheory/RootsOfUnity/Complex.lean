@@ -102,55 +102,39 @@ def expHom : ℝ →+ Additive Circle where
   map_add' := exp_add
 -/
 
+#check Units
+
+/-- The map `fun t => exp (t * I)` from `ℝ` to `ℂˣ`. -/
 noncomputable def Units.exp : ℝ → ℂˣ := fun t =>
   ⟨(t * I).exp, (-t * I).exp, by rw [← exp_add, neg_mul, add_neg_cancel, exp_zero],
     by rw [← exp_add, neg_mul, neg_add_cancel, exp_zero]⟩
 
 
 nonrec theorem mem_rootsOfUnity' (n : ℕ) [NeZero n] (x : Units ℂ) :
-    x ∈ rootsOfUnity n ℂ ↔ ∃ i < n, exp ((2 * π * (i / n)) * I) = x := by
+    x ∈ rootsOfUnity n ℂ ↔ ∃ i < n, Units.exp (2 * π * (i / n)) = x := by
   rw [mem_rootsOfUnity]
-  aesop?
-  --simp_all only [ofReal_ofNat]
+  simp_rw [Units.exp]
+  simp only [ofReal_mul, ofReal_ofNat, ofReal_div, ofReal_natCast]
+  simp_rw [← Units.eq_iff]
+  constructor
+  · intro ⟨i, hi1, hi2⟩
+    use i
+    constructor
+    · exact hi1
+    · rw [← hi2]
+      ring_nf
+  · intro ⟨i, hi1, hi2⟩
+    use i
+    constructor
+    · exact hi1
+    · rw [← hi2]
+      ring_nf
 
-
-#check Circle.expHom
-
+/-- The map `fun t => exp (t * I)` from `ℝ` to the `n`th roots of unity in `ℂ`. -/
 noncomputable def rootsOfUnity.exp (n : ℕ) [NeZero n] : ZMod n → rootsOfUnity n ℂ :=
   fun k => ⟨Units.exp (2 * π * (k.val / n)),by
     rw [mem_rootsOfUnity']
-    use k.val
-    constructor
-    · exact ZMod.val_lt k
-    · rw [Units.exp]
-      simp only
-      rw [mul_assoc _ I]
-      rw [mul_comm I]
-      rw [← mul_assoc _ _ I]
-      congr
-      norm_num
-      apply Or.inl
-
-      have e2 : (2 : ℂ) = (2 : ℝ) := rfl
-      rw [e2]
-
-      --norm_cast
-      --rw [ofReal_inj]
-      norm_num
-      apply Or.inl
-      rw [ofReal_def]
-      rw [ofReal_inj]
-
-      norm_cast
-
-      rw [mul_assoc 2]
-      simp
-
-
-
-    --, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
-    sorry
-  ⟩
+    exact ⟨k.val, ⟨k.val_lt, by congr⟩⟩⟩
 
 theorem card_rootsOfUnity (n : ℕ) [NeZero n] : Fintype.card (rootsOfUnity n ℂ) = n :=
   (isPrimitiveRoot_exp n NeZero.out).card_rootsOfUnity
