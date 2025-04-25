@@ -40,10 +40,6 @@ Approximation](https://link.springer.com/book/10.1007/978-4-431-54571-2) for a d
 
 open MeromorphicOn Metric Real Set
 
-variable
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜}
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
-
 /-!
 ## Supporting Notation
 -/
@@ -54,8 +50,8 @@ namespace Function.locallyFinsuppWithin
 Shorthand notation for the restriction of a function with locally finite support within `Set.univ`
 to the closed unit ball of radius `r`.
 -/
-noncomputable def toClosedBall (r : ℝ) :
-    locallyFinsuppWithin (univ : Set 𝕜) ℤ →+ locallyFinsuppWithin (closedBall (0 : 𝕜) |r|) ℤ := by
+noncomputable def toClosedBall {E : Type*} [NormedAddCommGroup E] (r : ℝ) :
+    locallyFinsuppWithin (univ : Set E) ℤ →+ locallyFinsuppWithin (closedBall (0 : E) |r|) ℤ := by
   apply restrictMonoidHom
   tauto
 
@@ -74,12 +70,10 @@ producing cleaner formulas then the logarithmic counting function is used in the
 Value Distribution Theory.  We refer the reader to page 164 of [Lang: Introduction to Complex
 Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) for more details.
 -/
-noncomputable def logCounting [ProperSpace 𝕜] :
-    locallyFinsuppWithin (univ : Set 𝕜) ℤ →+ (ℝ → ℝ) where
+noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E] :
+    locallyFinsuppWithin (univ : Set E) ℤ →+ (ℝ → ℝ) where
   toFun D := fun r ↦ ∑ᶠ z, D.toClosedBall r z * log (r * ‖z‖⁻¹) + (D 0) * log r
-  map_zero' := by
-    simp
-    rfl
+  map_zero' := by aesop
   map_add' D₁ D₂ := by
     simp only [Set.top_eq_univ, map_add, coe_add, Pi.add_apply, Int.cast_add]
     ext r
@@ -102,8 +96,8 @@ noncomputable def logCounting [ProperSpace 𝕜] :
 /--
 Evaluation of the logarithmic counting function at zero yields zero.
 -/
-@[simp] lemma logCounting_eval_zero [ProperSpace 𝕜]
-    (D : locallyFinsuppWithin (univ : Set 𝕜) ℤ) :
+@[simp] lemma logCounting_eval_zero {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+    (D : locallyFinsuppWithin (univ : Set E) ℤ) :
     logCounting D 0 = 0 := by
   rw [logCounting]
   simp
@@ -117,8 +111,9 @@ end Function.locallyFinsuppWithin
 namespace VD
 
 variable
-  [ProperSpace 𝕜]
-  {f g : 𝕜 → E} {a : WithTop E} {a₀ : E}
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
+  {U : Set 𝕜} {f g : 𝕜 → E} {a : WithTop E} {a₀ : E}
 
 variable (f a) in
 /--
