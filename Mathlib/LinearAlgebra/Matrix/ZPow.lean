@@ -158,13 +158,13 @@ theorem zpow_add_of_nonpos {A : M} {m n : ℤ} (hm : m ≤ 0) (hn : n ≤ 0) :
   · exact zpow_add (isUnit_det_of_left_inverse h) m n
   · obtain ⟨k, rfl⟩ := exists_eq_neg_ofNat hm
     obtain ⟨l, rfl⟩ := exists_eq_neg_ofNat hn
-    simp_rw [← neg_add, ← Int.ofNat_add, zpow_neg_natCast, ← inv_pow', h, pow_add]
+    simp_rw [← neg_add, ← Int.natCast_add, zpow_neg_natCast, ← inv_pow', h, pow_add]
 
 theorem zpow_add_of_nonneg {A : M} {m n : ℤ} (hm : 0 ≤ m) (hn : 0 ≤ n) :
     A ^ (m + n) = A ^ m * A ^ n := by
   obtain ⟨k, rfl⟩ := eq_ofNat_of_zero_le hm
   obtain ⟨l, rfl⟩ := eq_ofNat_of_zero_le hn
-  rw [← Int.ofNat_add, zpow_natCast, zpow_natCast, zpow_natCast, pow_add]
+  rw [← Int.natCast_add, zpow_natCast, zpow_natCast, zpow_natCast, pow_add]
 
 theorem zpow_one_add {A : M} (h : IsUnit A.det) (i : ℤ) : A ^ (1 + i) = A * A ^ i := by
   rw [zpow_add h, zpow_one]

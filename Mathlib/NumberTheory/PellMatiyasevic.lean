@@ -458,10 +458,10 @@ theorem yn_succ_succ (n) : yn a1 (n + 2) + yn a1 n = 2 * a * yn a1 (n + 1) :=
   (xy_succ_succ a1 n).2
 
 theorem xz_succ_succ (n) : xz a1 (n + 2) = (2 * a : ℕ) * xz a1 (n + 1) - xz a1 n :=
-  eq_sub_of_add_eq <| by delta xz; rw [← Int.ofNat_add, ← Int.natCast_mul, xn_succ_succ]
+  eq_sub_of_add_eq <| by delta xz; rw [← Int.natCast_add, ← Int.natCast_mul, xn_succ_succ]
 
 theorem yz_succ_succ (n) : yz a1 (n + 2) = (2 * a : ℕ) * yz a1 (n + 1) - yz a1 n :=
-  eq_sub_of_add_eq <| by delta yz; rw [← Int.ofNat_add, ← Int.natCast_mul, yn_succ_succ]
+  eq_sub_of_add_eq <| by delta yz; rw [← Int.natCast_add, ← Int.natCast_mul, yn_succ_succ]
 
 theorem yn_modEq_a_sub_one : ∀ n, yn a1 n ≡ n [MOD a - 1]
   | 0 => by simp [Nat.ModEq.refl]
@@ -870,7 +870,7 @@ theorem eq_pow_of_pell {m n k} :
     lift (2 * a * n - n * n - 1 : ℤ) to ℕ using (Nat.cast_nonneg _).trans nt.le with t te
     have tm : x ≡ y * (a - n) + n ^ k [MOD t] := by
       apply modEq_of_dvd
-      rw [Int.ofNat_add, Int.natCast_mul, Int.ofNat_sub na, te]
+      rw [Int.natCast_add, Int.natCast_mul, Int.ofNat_sub na, te]
       exact x_sub_y_dvd_pow a1 n k
     have ta : 2 * a * n = t + (n * n + 1) := by
       zify

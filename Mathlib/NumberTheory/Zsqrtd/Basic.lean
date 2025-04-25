@@ -389,7 +389,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
       refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
       convert this using 1
-      simp only [one_mul, Int.ofNat_add, Int.natCast_mul]
+      simp only [one_mul, Int.natCast_add, Int.natCast_mul]
       ring
 
 open Int in
