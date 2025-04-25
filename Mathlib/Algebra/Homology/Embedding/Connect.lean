@@ -90,7 +90,8 @@ lemma d_comp_d (n m p : ℤ) : h.d n m ≫ h.d m p = 0 := by
   obtain n | (_ | _ | n) := n
   · obtain rfl : m = .ofNat (n + 1) := by simp [← hnm]
     obtain rfl : p = .ofNat (n + 2) := by simp [← hmp]; omega
-    simp
+    #adaptation_note /-- Prior to nightly-2025-04-25 this was just `simp`. -/
+    simp_rw [Int.ofNat_eq_coe, X_ofNat, d_ofNat, HomologicalComplex.d_comp_d]
   · obtain rfl : m = 0 := by omega
     obtain rfl : p = 1 := by omega
     simp
