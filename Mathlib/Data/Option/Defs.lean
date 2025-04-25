@@ -25,9 +25,6 @@ protected def traverse.{u, v}
 
 variable {α : Type*} {β : Type*}
 
--- Porting note: Would need to add the attribute directly in `Init.Prelude`.
--- attribute [inline] Option.isSome Option.isNone
-
 /-- An elimination principle for `Option`. It is a nondependent version of `Option.rec`. -/
 protected def elim' (b : β) (f : α → β) : Option α → β
   | some a => f a
@@ -35,11 +32,14 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 
 @[simp]
 theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
+
 @[simp]
 theorem elim'_some {a : α} (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
 
--- Porting note: this lemma was introduced because it is necessary
--- in `CategoryTheory.Category.PartialFun`
+@[simp]
+theorem elim'_none_some (f : Option α → β) : (Option.elim' (f none) (f ∘ some)) = f :=
+  funext fun o ↦ by cases o <;> rfl
+
 lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
     Option.elim' b f a = Option.elim a b f := by
   cases a <;> rfl

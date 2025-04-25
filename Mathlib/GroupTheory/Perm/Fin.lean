@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.Option
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Logic.Equiv.Fintype
 
 /-!
@@ -124,7 +124,6 @@ theorem isCycle_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : IsCycle (finRotate n) 
 @[simp]
 theorem cycleType_finRotate {n : ℕ} : cycleType (finRotate (n + 2)) = {n + 2} := by
   rw [isCycle_finRotate.cycleType, support_finRotate, ← Fintype.card, Fintype.card_fin]
-  rfl
 
 theorem cycleType_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : cycleType (finRotate n) = {n} := by
   obtain ⟨m, rfl⟩ := exists_add_of_le h
@@ -154,10 +153,9 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
   have : j = (Fin.castLE (Nat.succ_le_of_lt i.is_lt))
     ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ := by simp
   ext
-  erw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
-    Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_image, Function.Embedding.coeFn_mk,
-    coe_castLE, coe_finRotate]
+  rw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
+    Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding, ← coe_castLEEmb,
+    viaFintypeEmbedding_apply_image, coe_castLEEmb, coe_castLE, coe_finRotate]
   simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLE_mk]
   split_ifs with heq
   · rfl
@@ -281,3 +279,56 @@ theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Per
 end Fin
 
 end CycleRange
+
+section Sign
+
+variable {n : ℕ}
+
+theorem Equiv.Perm.sign_eq_prod_prod_Iio (σ : Equiv.Perm (Fin n)) :
+    σ.sign = ∏ j, ∏ i ∈ Finset.Iio j, (if σ i < σ j then 1 else -1) := by
+  suffices h : σ.sign = σ.signAux by
+    rw [h, Finset.prod_sigma', Equiv.Perm.signAux]
+    convert rfl using 2 with x hx
+    · simp [Finset.ext_iff, Equiv.Perm.mem_finPairsLT]
+    simp [not_lt, ← ite_not (p := _ ≤ _)]
+  refine σ.swap_induction_on (by simp) fun π i j hne h_eq ↦ ?_
+  rw [Equiv.Perm.signAux_mul, Equiv.Perm.sign_mul, h_eq, Equiv.Perm.sign_swap hne,
+    Equiv.Perm.signAux_swap hne]
+
+theorem Equiv.Perm.sign_eq_prod_prod_Ioi (σ : Equiv.Perm (Fin n)) :
+    σ.sign = ∏ i, ∏ j ∈ Finset.Ioi i, (if σ i < σ j then 1 else -1) := by
+  rw [σ.sign_eq_prod_prod_Iio]
+  apply Finset.prod_comm' (by simp)
+
+theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
+    (σ : Equiv.Perm (Fin n)) {f : Fin n → Fin n → R} (hf : ∀ i j, f i j = -f j i) :
+    ∏ j, ∏ i ∈ Finset.Iio j, f (σ i) (σ j) = σ.sign * ∏ j, ∏ i ∈ Finset.Iio j, f i j := by
+  simp_rw [← σ.sign_inv, σ⁻¹.sign_eq_prod_prod_Iio, Finset.prod_sigma', Units.coe_prod,
+    Int.cast_prod, ← Finset.prod_mul_distrib]
+  set D := (Finset.univ : Finset (Fin n)).sigma Finset.Iio with hD
+  have hφD : D.image (fun x ↦ ⟨σ x.1 ⊔ σ x.2, σ x.1 ⊓ σ x.2⟩) = D := by
+    ext ⟨x1, x2⟩
+    suffices (∃ a, ∃ b < a, σ a ⊔ σ b = x1 ∧ σ a ⊓ σ b = x2) ↔ x2 < x1 by simpa [hD]
+    refine ⟨?_, fun hlt ↦ ?_⟩
+    · rintro ⟨i, j, hij, rfl, rfl⟩
+      exact inf_le_sup.lt_of_ne <| by simp [hij.ne.symm]
+    obtain hlt' | hle := lt_or_le (σ.symm x1) (σ.symm x2)
+    · exact ⟨_, _, hlt', by simp [hlt.le]⟩
+    exact ⟨_, _, hle.lt_of_ne (by simp [hlt.ne]), by simp [hlt.le]⟩
+  nth_rw 2 [← hφD]
+  rw [Finset.prod_image fun x hx y hy ↦ Finset.injOn_of_card_image_eq (by rw [hφD]) hx hy]
+  refine Finset.prod_congr rfl fun ⟨x₁, x₂⟩ hx ↦ ?_
+  replace hx : x₂ < x₁ := by simpa [hD] using hx
+  obtain hlt | hle := lt_or_le (σ x₁) (σ x₂)
+  · simp [inf_eq_left.2 hlt.le, sup_eq_right.2 hlt.le, hx.not_lt, ← hf]
+  simp [inf_eq_right.2 hle, sup_eq_left.2 hle, hx]
+
+theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
+    (σ : Equiv.Perm (Fin n)) {f : Fin n → Fin n → R} (hf : ∀ i j, f i j = -f j i) :
+    ∏ i, ∏ j ∈ Finset.Ioi i, f (σ i) (σ j) = σ.sign * ∏ i, ∏ j ∈ Finset.Ioi i, f i j := by
+  convert σ.prod_Iio_comp_eq_sign_mul_prod hf using 1
+  · apply Finset.prod_comm' (by simp)
+  convert rfl using 2
+  apply Finset.prod_comm' (by simp)
+
+end Sign

@@ -20,7 +20,8 @@ variable {ι : Sort*} {𝕜 E : Type*}
 
 section OrderedSemiring
 
-variable (𝕜) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] {s t s₁ s₂ t₁ t₂ u : Set E}
+variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+  {s t s₁ s₂ t₁ t₂ u : Set E}
   {x y : E}
 
 /-- The join of two sets is the union of the segments joining them. This can be interpreted as the
@@ -85,6 +86,8 @@ theorem convexJoin_iUnion_right (s : Set E) (t : ι → Set E) :
 theorem segment_subset_convexJoin (hx : x ∈ s) (hy : y ∈ t) : segment 𝕜 x y ⊆ convexJoin 𝕜 s t :=
   subset_iUnion₂_of_subset x hx <| subset_iUnion₂ (s := fun y _ ↦ segment 𝕜 x y) y hy
 
+variable [IsOrderedRing 𝕜]
+
 theorem subset_convexJoin_left (h : t.Nonempty) : s ⊆ convexJoin 𝕜 s t := fun _x hx =>
   let ⟨_y, hy⟩ := h
   segment_subset_convexJoin hx hy <| left_mem_segment _ _ _
@@ -104,7 +107,8 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E} {x : E}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] {s t : Set E} {x : E}
 
 theorem convexJoin_assoc_aux (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u ⊆ convexJoin 𝕜 s (convexJoin 𝕜 t u) := by
@@ -139,7 +143,6 @@ theorem convexJoin_convexJoin_convexJoin_comm (s t u v : Set E) :
       convexJoin 𝕜 (convexJoin 𝕜 s u) (convexJoin 𝕜 t v) := by
   simp_rw [← convexJoin_assoc, convexJoin_right_comm]
 
--- Porting note: moved 3 lemmas from below to golf
 protected theorem Convex.convexJoin (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) :
     Convex 𝕜 (convexJoin 𝕜 s t) := by
   simp only [Convex, StarConvex, convexJoin, mem_iUnion]
@@ -180,7 +183,5 @@ theorem convexJoin_segment_singleton (a b c : E) :
 theorem convexJoin_singleton_segment (a b c : E) :
     convexJoin 𝕜 {a} (segment 𝕜 b c) = convexHull 𝕜 {a, b, c} := by
   rw [← segment_same 𝕜, convexJoin_segments, insert_idem]
-
--- Porting note: moved 3 lemmas up to golf
 
 end LinearOrderedField

@@ -38,7 +38,7 @@ open GradedRing DirectSum SetLike Finset
 
 variable {ι σ A : Type*}
 variable [CommRing A]
-variable [LinearOrderedCancelAddCommMonoid ι]
+variable [AddCommMonoid ι] [LinearOrder ι] [IsOrderedCancelAddMonoid ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
 
 -- Porting note: This proof needs a long time to elaborate
@@ -99,7 +99,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         rw [eq_sub_of_add_eq eq_add_sum.symm]
         refine Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => ?_)
         rcases z with ⟨i, j⟩
-        simp only [antidiag, mem_erase, Prod.mk.inj_iff, Ne, mem_filter, mem_product] at H
+        simp only [antidiag, mem_erase, Prod.mk_inj, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
           rcases lt_trichotomy max₁ i with (h | rfl | h)

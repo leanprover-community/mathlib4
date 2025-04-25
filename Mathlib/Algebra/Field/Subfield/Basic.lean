@@ -6,6 +6,7 @@ Authors: Anne Baanen
 
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Subfield.Defs
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.RingTheory.SimpleRing.Basic
 
@@ -336,16 +337,13 @@ theorem closure_induction {s : Set K} {p : ∀ x ∈ closure s, Prop}
       inv_mem' := by rintro _ ⟨_, hx⟩; exact ⟨_, inv _ _ hx⟩ }
   ((closure_le (t := this)).2 (fun x hx ↦ ⟨_, mem x hx⟩) h).2
 
-variable (K)
-
+variable (K) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure K _) (↑) where
   choice s _ := closure s
   gc _ _ := closure_le
   le_l_u _ := subset_closure
   choice_eq _ _ := rfl
-
-variable {K}
 
 /-- Closure of a subfield `S` equals `S`. -/
 @[simp]
@@ -440,6 +438,9 @@ def rangeRestrictField (f : K →+* L) : K →+* f.fieldRange :=
 @[simp]
 theorem coe_rangeRestrictField (f : K →+* L) (x : K) : (f.rangeRestrictField x : L) = f x :=
   rfl
+
+theorem rangeRestrictField_bijective (f : K →+* L) : Function.Bijective (rangeRestrictField f) :=
+  (Equiv.ofInjective f f.injective).bijective
 
 section eqLocus
 

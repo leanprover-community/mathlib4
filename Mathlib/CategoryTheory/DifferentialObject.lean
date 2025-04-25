@@ -273,8 +273,9 @@ def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C whe
     { f := f.f⟦n⟧'
       comm := by
         dsimp
-        erw [Category.assoc, shiftComm_hom_comp, ← Functor.map_comp_assoc, f.comm,
-          Functor.map_comp_assoc]
+        rw [Category.assoc]
+        erw [shiftComm_hom_comp]
+        rw [← Functor.map_comp_assoc, f.comm, Functor.map_comp_assoc]
         rfl }
   map_id X := by ext1; dsimp; rw [Functor.map_id]
   map_comp f g := by ext1; dsimp; rw [Functor.map_comp]
