@@ -5082,7 +5082,6 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Invariant
 import Mathlib.RingTheory.IsAdjoinRoot
-import Mathlib.RingTheory.IsBaseChangePi
 import Mathlib.RingTheory.IsPrimary
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Jacobson.Artinian
