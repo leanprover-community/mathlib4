@@ -65,26 +65,26 @@ variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s
 open scoped RightActions
 
 nonrec theorem HasStrictDerivAt.pow (h : HasStrictDerivAt f f' x) (n : ℕ) :
-    HasStrictDerivAt (fun x ↦ f x ^ n) (n • f x ^ (n - 1) * f') x := by
+    HasStrictDerivAt (fun x ↦ f x ^ n) (n * f x ^ (n - 1) * f') x := by
   unfold HasStrictDerivAt
   convert h.pow n
   ext
   simp [mul_assoc]
 
 nonrec theorem HasDerivWithinAt.pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
-    HasDerivWithinAt (fun x ↦ f x ^ n) (n • f x ^ (n - 1) * f') s x := by
+    HasDerivWithinAt (fun x ↦ f x ^ n) (n * f x ^ (n - 1) * f') s x := by
   simpa using h.hasFDerivWithinAt.pow n |>.hasDerivWithinAt
 
 theorem HasDerivAt.pow (h : HasDerivAt f f' x) (n : ℕ) :
     HasDerivAt (fun x ↦ f x ^ n)
-      (n • f x ^ (n - 1) * f') x := by
+      (n * f x ^ (n - 1) * f') x := by
   simpa using h.hasFDerivAt.pow n |>.hasDerivAt
 
 @[simp]
 theorem derivWithin_pow
     (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
     derivWithin (fun x => f x ^ n) s x =
-      n • f x ^ (n - 1) * derivWithin f s x :=
+      n * f x ^ (n - 1) * derivWithin f s x :=
   (h.hasDerivWithinAt.pow n).derivWithin hu
 
 @[simp]
@@ -98,11 +98,11 @@ section NontriviallyNormedField
 variable [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
 
 theorem hasStrictDerivAt_pow (n : ℕ) (x : 𝕜) :
-    HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) (n • x ^ (n - 1)) x := by
+    HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) (n * x ^ (n - 1)) x := by
   simpa using (hasStrictDerivAt_id x).pow n
 
 theorem hasDerivWithinAt_pow (n : ℕ) (x : 𝕜) :
-    HasDerivWithinAt (fun x : 𝕜 ↦ x ^ n) (n • x ^ (n - 1)) s x := by
+    HasDerivWithinAt (fun x : 𝕜 ↦ x ^ n) (n * x ^ (n - 1)) s x := by
   simpa using (hasDerivWithinAt_id x s).pow n
 
 theorem hasDerivAt_pow (n : ℕ) (x : 𝕜) :
