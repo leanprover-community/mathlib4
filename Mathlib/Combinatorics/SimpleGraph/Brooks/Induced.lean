@@ -63,7 +63,7 @@ lemma neighborFinsetIn_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)
     Subgraph.top_adj, true_and, Finset.mem_filter]
   constructor <;> intro h
   · cases h.1 with
-    | inl h' => subst x; exact (G.shortClosedless _ h.2).elim
+    | inl h' => subst x; exact (G.loopless _ h.2).elim
     | inr h' => exact ⟨h.2, h'⟩
   · exact ⟨Or.inr h.2, h.1⟩
 
@@ -188,10 +188,10 @@ def partColoringOfNotAdj {n : ℕ} {a b : α} (h : ¬ G.Adj a b) (c : Fin n) :
   map_rel':= by
     intro x y hadj he
     cases hadj.1 <;> cases hadj.2.1 <;> subst_vars
-    · exact G.shortClosedless _ hadj.2.2
+    · exact G.loopless _ hadj.2.2
     · exact h hadj.2.2
     · exact h hadj.2.2.symm
-    · exact G.shortClosedless _ hadj.2.2
+    · exact G.loopless _ hadj.2.2
 
 /-- `G.PartColorable n s` is the predicate for existence of a `PartColoring n s` of `G`. -/
 abbrev PartColorable (n : ℕ) (s : Set α) := Nonempty (G.PartColoring n s)
