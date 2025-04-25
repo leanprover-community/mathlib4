@@ -331,7 +331,7 @@ lemma two_colorable_of_no_odd_cycle (ho : ∀ u, ∀ (w : G.Walk u u), w.IsCycle
   apply two_colorable_of_no_odd_closed_walk
   intro v w hw
   classical
-  obtain ⟨x, c, hc, hco⟩ := w.exists_odd_cycle_of_odd_closed_walk hw
+  obtain ⟨_, _, hc, hco⟩ := w.exists_odd_cycle_of_odd_closed_walk hw
   exact ho _ _ hc hco
 
 

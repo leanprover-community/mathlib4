@@ -487,16 +487,13 @@ lemma two_colorable_of_no_odd_closed_walk (ho : ∀ u, ∀ (w : G.Walk u u), ¬ 
   intro c
   classical
   obtain ⟨v, hv⟩ := c.nonempty_supp
-  use (fun a ↦ by
-    let wa := (c.induce_supp_connected ⟨_, hv⟩ a).some
-    exact ((wa.length : Fin 2)))
+  use fun a ↦ ((c.induce_supp_connected ⟨_, hv⟩ a).some.length : Fin 2)
   intro a b hab heq
-  let w' := (((c.induce_supp_connected ⟨_, hv⟩ a).some).concat hab).append
-                (c.induce_supp_connected ⟨_, hv⟩ b).some.reverse
-  apply ho v <| w'.map (Embedding.induce c.supp).toHom
+  apply ho v <| ((((c.induce_supp_connected ⟨_, hv⟩ a).some).concat hab).append
+               (c.induce_supp_connected ⟨_, hv⟩ b).some.reverse).map (Embedding.induce c.supp).toHom
   rw [Walk.length_map, Walk.length_append, add_comm, Walk.length_concat, Walk.length_reverse,
     ← add_assoc, Nat.odd_iff]
-  have heq' := (ZMod.natCast_eq_natCast_iff' _ _ 2).1 heq
+  have := (ZMod.natCast_eq_natCast_iff' _ _ 2).1 heq
   omega
 
 variable {u v x: α} [DecidableEq α]
