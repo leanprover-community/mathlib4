@@ -33,7 +33,7 @@ namespace MeromorphicAt
 The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
 unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic
 and does not vanish at `z₀`. See `MeromorphicAt.order_eq_top_iff` and
-`MeromorphicAt.order_eq_nat_iff` for these equivalences. -/
+`MeromorphicAt.order_eq_int_iff` for these equivalences. -/
 noncomputable def order (hf : MeromorphicAt f x) : WithTop ℤ :=
   (hf.choose_spec.order.map (↑· : ℕ → ℤ)) - hf.choose
 
@@ -86,6 +86,34 @@ lemma order_eq_int_iff {n : ℤ} (hf : MeromorphicAt f x) : hf.order = n ↔
         zpow_natCast]
     exact ⟨fun h ↦ ⟨g, hg_an, hg_ne, h ▸ hg_eq⟩,
       AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
+
+lemma order_neg_iff_tendsto_cobounded (hf : MeromorphicAt f x) :
+    hf.order < 0 ↔ Tendsto f (𝓝[≠] x) (Bornology.cobounded E) := by
+  rcases lt_or_le hf.order 0 with h'f | h'f
+  · simp only [h'f, ← tendsto_norm_atTop_iff_cobounded, true_iff]
+    have : hf.order ≠ ⊤ := h'f.ne_top
+    obtain ⟨m, ho⟩ := WithTop.ne_top_iff_exists.mp this
+    have m_neg : m < 0 := by simpa [← ho] using h'f
+    rcases hf.order_eq_int_iff.1 ho.symm with ⟨g, g_an, gx, hg⟩
+    have A : Tendsto (fun z ↦ ‖(z - x) ^ m • g z‖) (𝓝[≠] x) atTop := by
+      simp only [norm_smul]
+      apply Filter.Tendsto.atTop_mul_pos (C := ‖g x‖) (by simp [gx]) _
+        g_an.continuousAt.continuousWithinAt.tendsto.norm
+      have : Tendsto (fun z ↦ (z - x)) (𝓝[≠] x) (𝓝[≠] 0) := by
+        refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
+        · have : ContinuousWithinAt (fun z ↦ z - x) ({x}ᶜ) x :=
+            ContinuousAt.continuousWithinAt (by fun_prop)
+          simpa using this.tendsto
+        · filter_upwards [self_mem_nhdsWithin] with y hy
+          simpa [sub_eq_zero] using hy
+      apply Tendsto.comp (NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop m_neg) this
+    apply A.congr'
+    filter_upwards [hg] with z hz using by simp [hz]
+  · simp only [lt_iff_not_ge, ge_iff_le, h'f, not_true_eq_false, false_iff]
+
+
+
+#exit
 
 /-- Meromorphic functions that agree in a punctured neighborhood of `z₀` have the same order at
 `z₀`. -/
@@ -245,11 +273,15 @@ protected theorem analyticAt {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x)
     AnalyticAt 𝕜 f x := by
   cases ho : h.order with
   | top =>
+    /- If the order is infinite, then `f` vanishes on a pointed neighborhood of `x`. By continuity,
+    it also vanishes at `x`.-/
     have : AnalyticAt 𝕜 (fun _ ↦ (0 : E)) x := analyticAt_const
     apply this.congr
     rw [← ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE continuousAt_const h']
     filter_upwards [h.order_eq_top_iff.1 ho] with y hy using by simp [hy]
   | coe n =>
+    /- If the order is finite, then the order has to be nonnegative, as otherwise the norm of `f`
+    would tend to infinity at `x`.-/
     rcases h.order_eq_int_iff.1 ho with ⟨g, g_an, gx, hg⟩
     have : 0 ≤ n := by
       by_contra! hn
