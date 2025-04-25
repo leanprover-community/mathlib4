@@ -98,7 +98,7 @@ theorem span_insert_zero : span R (insert (0 : M) s) = span R s := by
 @[simp]
 lemma span_sdiff_singleton_zero : span R (s \ {0}) = span R s := by
   by_cases h : 0 ∈ s
-  · rw [←span_insert_zero, (by simp [h] : insert 0 (s \ {0}) = s)]
+  · rw [←span_insert_zero, show insert 0 (s \ {0}) = s by simp [h]]
   · simp [h]
 
 theorem closure_subset_span {s : Set M} : (AddSubmonoid.closure s : Set M) ⊆ span R s :=
