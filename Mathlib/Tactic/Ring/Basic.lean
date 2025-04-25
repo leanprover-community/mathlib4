@@ -996,7 +996,8 @@ def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd sα
   match va with
   | .const c hc =>
     let ra := Result.ofRawRat c a hc
-    match ← (Lean.observing? <| NormNum.evalInv.core q($a⁻¹) a ra dα czα :) with
+    match ← (Lean.observing? <|
+      NormNum.evalInv.core q($a⁻¹) a ra q(DivisionRing.toDivisionSemiring) czα :) with
     | some rc =>
       let ⟨zc, hc⟩ := rc.toRatNZ.get!
       let ⟨c, pc⟩ := rc.toRawEq
