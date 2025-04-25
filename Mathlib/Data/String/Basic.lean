@@ -96,8 +96,8 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
         apply ltb_cons_addChar
       · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
         cases e <;> rename_i h'
-        · contradiction
         · assumption
+        · contradiction
 
 instance LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
@@ -148,7 +148,9 @@ instance : LinearOrder String where
   le_total a b := by
     simp only [le_iff_toList_le]
     apply le_total
-  decidableLE := String.decidableLE
+  toDecidableLE := String.decidableLE
+  toDecidableEq := inferInstance
+  toDecidableLT := String.decidableLT'
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt, toList]
     split_ifs <;>
