@@ -304,11 +304,11 @@ theorem mul_smul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [D
     M * (a • N) = a • (M * N) := Matrix.mul_smul M a N
 
 @[simp]
-protected theorem mul_zero {o : Type*} [Fintype n] [Fintype o] [NonUnitalNonAssocSemiring A]
+protected theorem mul_zero {o : Type*} [Fintype n] [NonUnitalNonAssocSemiring A]
     (M : CStarMatrix m n A) : M * (0 : CStarMatrix n o A) = 0 := Matrix.mul_zero _
 
 @[simp]
-protected theorem zero_mul {l : Type*} [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring A]
+protected theorem zero_mul {l : Type*} [Fintype m] [NonUnitalNonAssocSemiring A]
     (M : CStarMatrix m n A) : (0 : CStarMatrix l m A) * M = 0 := Matrix.zero_mul _
 
 protected theorem mul_add {o : Type*} [Fintype n] [NonUnitalNonAssocSemiring A]
@@ -376,9 +376,8 @@ lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [St
 
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
-def reindexₗ {l o : Type*} [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A]
-    [Module R A] [Star A] (eₘ : m ≃ l) (eₙ : n ≃ o) :
-    CStarMatrix m n A ≃ₗ[R] CStarMatrix l o A :=
+def reindexₗ {l o : Type*} [Semiring R] [AddCommMonoid A] [Module R A]
+    (eₘ : m ≃ l) (eₙ : n ≃ o) : CStarMatrix m n A ≃ₗ[R] CStarMatrix l o A :=
   { Matrix.reindex eₘ eₙ with
     map_add' M N := by ext; simp
     map_smul' r M := by ext; simp }
@@ -441,6 +440,7 @@ theorem algebraMap_apply [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring 
     (algebraMap R (CStarMatrix n n A) r) i j = if i = j then algebraMap R A r else 0 := rfl
 
 variable (R) (A) in
+/-- The ⋆-algebra equivalence between `A` and 1×1 matrices with its entry in `A`. -/
 def toOneByOne [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Module R A] :
     A ≃⋆ₐ[R] CStarMatrix (Fin 1) (Fin 1) A where
   toFun a := fun x y => a
