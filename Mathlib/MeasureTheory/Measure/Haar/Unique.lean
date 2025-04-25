@@ -996,11 +996,8 @@ end CommGroup
 
 section DistribMulAction
 variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
-  -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
-  -- assume `MeasurableSpace G` + `MeasurableSMul G A`
-  [MeasurableSpace G] [MeasurableSMul G A] [TopologicalSpace A] [BorelSpace A]
-  [IsTopologicalAddGroup A] [LocallyCompactSpace A] [ContinuousConstSMul G A] {μ ν : Measure A}
-  [μ.IsAddHaarMeasure] [ν.IsAddHaarMeasure] {g : G}
+  [TopologicalSpace A] [BorelSpace A] [IsTopologicalAddGroup A] [LocallyCompactSpace A]
+  [ContinuousConstSMul G A] {μ ν : Measure A} [μ.IsAddHaarMeasure] [ν.IsAddHaarMeasure] {g : G}
 
 variable (μ ν) in
 lemma addHaarScalarFactor_domSMul (g : Gᵈᵐᵃ) :

@@ -695,8 +695,6 @@ protected theorem eq' {s₁ : Setoid α} {a b : α} :
 protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b ↔ s₁ a b :=
   Quotient.eq
 
-@[deprecated (since := "2024-10-19")] alias out' := out
-
 theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out = q :=
   q.out_eq
 
