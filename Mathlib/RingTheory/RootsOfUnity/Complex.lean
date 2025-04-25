@@ -219,24 +219,53 @@ theorem Complex.conj_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n] (hζ : ζ �
   rw [← Units.mul_eq_one_iff_eq_inv, conj_mul', norm_eq_one_of_mem_rootsOfUnity hζ, ofReal_one,
     one_pow]
 
+namespace rootsOfUnity
+
 open Real in
 /-- The map `fun t => exp (t * I)` from `ℝ` to the `n`th roots of unity in `ℂ`. -/
-noncomputable def rootsOfUnity.exp (n : ℕ) [NeZero n] : ZMod n → rootsOfUnity n ℂ :=
+noncomputable def exp (n : ℕ) [NeZero n] : ZMod n → rootsOfUnity n ℂ :=
   fun k => ⟨Units.exp (2 * π * (k.val / n)),by
     rw [Complex.mem_rootsOfUnity']
     exact ⟨k.val, ⟨k.val_lt, by congr⟩⟩⟩
 
 variable (n : ℕ) [NeZero n]
 
+#check rootsOfUnity.exp n ∘ Nat.cast ∘ ZMod.val
 
-#check Units.expHom ∘ Additive.ofMul ∘ (ZMod.castHom (m := 0) (Nat.zero_dvd.mpr rfl) ℝ)
+/-
+open Real in
+--@[simp, norm_cast]
+theorem coe_exp (k : ZMod n) :
+    (exp n k).val = Complex.exp ((2 * π * (k.val / n)) * Complex.I) := by
+  simp only [ZMod.natCast_val]
+  rw [exp]
+  simp only [ZMod.natCast_val, Units.coe_exp, Complex.ofReal_mul, Complex.ofReal_ofNat,
+    Complex.ofReal_div, Complex.ofReal_natCast]
+  aesop
+-/
 
+@[simp]
+theorem exp_zero : exp n 0 = 1 := by
+  ext : 1
+  rw [exp]
+  simp only [ZMod.val_zero, CharP.cast_eq_zero, zero_div, mul_zero, Units.exp_zero,
+    OneMemClass.coe_one]
+
+@[simp]
+theorem exp_add (x y : ZMod n) : exp n (x + y) = exp n x * exp n y := by
+  ext
+  simp only [Subgroup.coe_mul, Units.val_mul]
+  rw [exp]
+  simp only [ZMod.natCast_val, Units.coe_exp, Complex.ofReal_mul, Complex.ofReal_ofNat,
+    Complex.ofReal_div, Complex.ofReal_natCast]
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
 @[simps]
-noncomputable def rootsOfUnity.expHom (n : ℕ): ZMod n  →+ Additive (rootsOfUnity n ℂ) where
-  toFun := fun k => Additive.ofMul ∘ Units.expHom ∘ (ZMod.castHom (m := 0) (Nat.zero_dvd.mpr rfl) ℝ)
+noncomputable def expHom (n : ℕ) [NeZero n] :
+    ZMod n  →+ Additive (rootsOfUnity n ℂ) where
+  toFun :=  rootsOfUnity.exp n
+  map_zero' := exp_zero n
+  map_add' := exp_add n
 
-  map_zero' := exp_zero
-  map_add' := exp_add
+end rootsOfUnity
