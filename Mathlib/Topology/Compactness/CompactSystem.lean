@@ -304,121 +304,13 @@ end ClosedCompact
 
 section Union
 
-example (s t : Set α) (hst : s ⊆ t) (ht : Finite t) : Finite s := by
-  exact Finite.Set.subset t hst
-
-lemma l1 (p : ℕ → Prop) (hp : ∀ n, p (n+1) → p n) (hi : Infinite (p⁻¹' {True})) (n : ℕ) : p n := by
-  have hp' (n : ℕ): ¬(p n) → ¬(p (n+1)) := by
-    exact fun a b ↦ a (hp n b)
-  by_contra h
-  have hp'' (m : ℕ) : ¬(p (n + m)) := by
-    induction m with
-    | zero => exact (add_zero n) ▸ h
-    | succ m hm => exact hp' (n+m) hm
-  rw [← not_finite_iff_infinite] at hi
-  apply hi
-  have hf : (p ⁻¹' {True}) ⊆ {k | k ≤ n} := by
-    intro x hx
-    simp only [preimage_singleton_true, mem_setOf_eq] at hx
-    refine mem_setOf.mpr ?_
-    by_contra h
-    simp only [not_le] at h
-    have h' := hp'' (x - n)
-    rw [add_sub_of_le h.le] at h'
-    exact h' hx
-  apply Finite.Set.subset {k | k ≤ n} hf
-
--- theorem fin (p : α → Prop) (s : Set α) (hp : p ⋃₀ s)
-
-lemma l2 [Fintype α] (p : α → ℕ → Prop) (h : ∀ a, Finite { n | p a n }) : ∃ n, ∀ a, ¬(p a n) := by
-  by_contra! h₁
-  have h' : Finite (⋃ a, {n | p a n}) := by
-    exact Finite.Set.finite_iUnion (fun (a : α) ↦ {n | p a n})
-  obtain ⟨k, hk⟩ := Finite.exists_not_mem h'
-  obtain ⟨a, ha⟩ := h₁ k
-  apply hk
-  simp only [mem_iUnion]
-  use a
-  exact ha
-
-lemma l2a [Fintype α] (q : α → ℕ → Prop) (h₁ : ∀ (n : ℕ), ∃ (K : α), q K n) :
-    ∃ (K : α), Infinite ((q K)⁻¹' {True}) := by
-  by_contra! h
-  simp only [preimage_singleton_true, not_infinite_iff_finite] at h
-  have h' : Finite (⋃ K, { a | q K a }) := by
-    apply Finite.Set.finite_iUnion fun i ↦ {a | q i a}
-  have h₁' : ⋃ K, { a | q K a } = univ:= by
-    rw [← Set.univ_subset_iff]
-    intro n hn
-    simp only [mem_iUnion, mem_setOf_eq]
-    exact h₁ n
-  rw [h₁'] at h'
-  revert h'
-  simp only [imp_false, not_finite_iff_infinite]
-  exact infinite_coe_iff.mpr infinite_univ
-
-
-lemma l3 [Fintype α] (q : α → ℕ → Prop) (h₁ : ∀ (n : ℕ), ∃ (K : α), q K n)
-    (h₂ : ∀ (K : α) (n : ℕ), (q K (n + 1) → q K n)) : ∃ (K : α), ∀ (n : ℕ), q K n := by
-  have h₃ : ∃ (K : α), Infinite ((q K)⁻¹' {True}) := l2a q h₁
-  obtain ⟨K, hK⟩ := h₃
-  use K
-  exact l1 (q K) (h₂ K) hK
-
-example (K : ℕ → Set α) (s : Set α) : (∀ n, (K n) ∩ s = ∅) ↔ ⋃ n, (K n) ∩ s = ∅ := by
-  exact Iff.symm iUnion_eq_empty
-
-example (K : ℕ → Set α) (s : Set α) : ⋃ n, (K n) ∩ s = (⋃ n, (K n)) ∩ s := by
-  exact Eq.symm (iUnion_inter s K)
-
-example (s t : Set α) : t ⊆ s → s ∩ t = t := by
-  exact inter_eq_self_of_subset_right
-
-example (K : ℕ → Set α) : ∀ m, ⋂ n, K n ⊆ K m := by
-  apply iInter_subset
-
-example (n : ℕ) : 0 ≤ n := by exact Nat.zero_le n
-
-example (K : ℕ → Set α) (n : ℕ) : ⋂ (k ≤ n), K k ⊆ K 0 := by
-  refine biInter_subset_of_mem (Nat.zero_le n)
-
-example (s : Set (Set α)) : ⋃ (x : s), x = ⋃₀ s := by
-  exact Eq.symm sUnion_eq_iUnion
-
-example (n : ℕ) (s : Set α) (K : ℕ → Set α) :
-    s ∩ ⋂ k, ⋂ (_ : k ≤ n + 1 ), K n ⊆ s ∩ ⋂ k, ⋂ (_ : k ≤ n), K n := by
-  refine inter_subset_inter_right s ?_
-  apply antitone_dissipate (le_succ n)
-
-example (s : Set α) : s = ∅ ↔ s ⊆ ∅ := by
-  exact Iff.symm subset_empty_iff
-
-example : 0 ≤ 0 := by exact Nat.zero_le 0
-
-example (s : ℕ → Set α) : ⋂ (j : Fin 0),  s j = univ := by
-  refine iInter_eq_univ.mpr (fun ⟨i, hi⟩  ↦ ?_)
-  exfalso
-  exact not_succ_le_zero i hi
-
-
 variable {p : Set α → Prop} (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
-  (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
-  (hc : ∀ (n : ℕ), ⋂ (k : Fin (n + 1)), (⋃₀ (L k).toSet) ≠ ∅)
+  (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n : Set (Set α))), p d)
 
 -- variable (p : {n : ℕ} → ((k : Fin (n + 1)) → (β k)) → Prop)
 
-variable [Nonempty α]
-
 noncomputable def r (n : ℕ) (K : ℕ → Set α) : Prop :=
   ∀ N, ⋂ (j < n), (K j) ∩ ⋂ (k < N), (⋃₀ (L (n + k)).toSet) ≠ ∅
-
-example (p : ℕ → Prop) : ∀ k < 0, p k := by
-  exact fun k hk ↦ (by cases hk)
-
-
-lemma l5 (K : ℕ → Set α) : r L 0 K := by
-  simp [r]
-
 
 -- h0 -> (get_element_zero hL hc)
 -- (h0 : ∃ x : (ℕ → α), x 0 ∈ β 0 ∧ p 0 x)
@@ -435,35 +327,12 @@ lemma nonempty (k : ℕ) (hc : ∀ N, ⋂ k < N, ⋃₀ (L k : Set (Set α)) ≠
     simp only [Finset.coe_empty, sUnion_empty]
   exact of_eq_false (congrFun hg x)
 
--- (h0 : ∃ x : (ℕ → α), x 0 ∈ β 0 ∧ p 0 x)
--- (h0 : ∃ x : (ℕ → α), x 0 ∈ β 0 ∧ p 0 x)
-
-
-private lemma l (n : ℕ) : (⋃₀ L 0) ∩ ⋂ (k < n), ⋃₀ L (1 + k) = ⋂ (k < n + 1), ⋃₀ (L k).toSet := by
-  ext x
-  rw [mem_inter_iff, mem_iInter₂, mem_iInter₂]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · intro i hi
-    by_cases h' : i = 0
-    · rw [h']
-      exact h.1
-    · let j := i - 1
-      have h₁ : j < n := Nat.sub_lt_right_of_lt_add (one_le_iff_ne_zero.mpr h') hi
-      have h₂ : 1 + j = i := (add_comm 1 j) ▸ succ_pred_eq_of_ne_zero h'
-      exact h₂ ▸ h.2 j h₁
-  · refine ⟨h 0 (zero_lt_succ n), fun i hi ↦ ?_⟩
-    exact (add_comm 1 i) ▸ h (i + 1) (Nat.add_lt_add_right hi 1)
-
-example (j m n : ℕ) (hj : j < m) : j < m + n:= by
-  exact Nat.lt_add_right n hj
-
-private lemma l6 (m n : ℕ) : (⋂ k < m, (⋃₀ L k)) ∩ ⋂ (k < n), ⋃₀ L (m + k) =
+private lemma inter_sUnion_sUnion (m n : ℕ) : (⋂ k < m, (⋃₀ L k)) ∩ ⋂ (k < n), ⋃₀ L (m + k) =
     ⋂ (k < m + n), ⋃₀ (L k).toSet := by
   ext x
   rw [mem_inter_iff, mem_iInter₂, mem_iInter₂, mem_iInter₂]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · intro i hi
-    by_cases h' : i < m
+  refine ⟨fun h i hi ↦ ?_, fun h ↦ ?_⟩
+  · by_cases h' : i < m
     · exact h.1 i h'
     · have hj : ∃ j, j < n ∧ i = m + j := by
         use i - m
@@ -484,16 +353,38 @@ private lemma l6 (m n : ℕ) : (⋂ k < m, (⋃₀ L k)) ∩ ⋂ (k < n), ⋃₀
 
 def q : ℕ → (ℕ → Set α) → Prop := fun n K ↦ (∀ k < n, K k ∈ L k) ∧ (r L n K)
 
+variable [Nonempty α]
+
 lemma get_element_zero : ∃ (K : ℕ → Set α), q L 0 K := by
   simp [q, r]
+
 
 --  (h : ∀ (n : ℕ) (x : (ℕ → α)) (hx : p n x), ∃ y, p (n + 1) (Function.update x n y))
 
 -- p n x ↔ (∀ k < n, K k ∈ β k) ∧ (r n K)
 
-
 lemma get_element_succ' (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d) (n : ℕ)
   (K : ℕ → Set α) (hK : q L n K) : ∃ y, q L (n + 1) (Function.update K n y) := by
+  simp_rw [q, r] at hK ⊢
+  by_contra! h
+  choose b hb using h
+  have hn (a : Set α) (ha : a ∈ L n) : (∀ k < n + 1, Function.update K n a k ∈ L k) := by
+    sorry
+  classical
+  let b' : Set α → ℕ := fun y ↦ dite (y ∈ L n) (fun h ↦ b y (hn y h)) (fun _ ↦ 0)
+  have hc : ∀ N, ⋂ k < N, ⋃₀ (L k : Set (Set α)) ≠ ∅ := by sorry
+  obtain ⟨K0Max, ⟨hK0₁, hK0₂⟩⟩ := Finset.exists_max_image (L n) b' (nonempty L n hc)
+  apply hc (b' K0Max + 1 + 1)
+
+  have h' : ∀ a ∈ L n, ⋂ (k < n), ⋃₀ ↑(L k) ∩ a ∩ ⋂ (k < b' K0Max + 1), ⋃₀ ↑(L (n + k)) = ∅ := by
+    sorry
+
+
+
+
+
+
+
   sorry
 
 noncomputable def m' : (n : ℕ) → ((K : ℕ → Set α) ×' (q L n K))
@@ -507,15 +398,15 @@ noncomputable def m' : (n : ℕ) → ((K : ℕ → Set α) ×' (q L n K))
 
 lemma get_element_zero' (hL : ∀ n d (hd : d ∈ (L n : Set (Set α))), p d)
     (hc : ∀ N, ⋂ k < N, ⋃₀ ((L k) : Set (Set α)) ≠ ∅) :
-      ∃ (K : ℕ → Set α) (hK : ∀ k < 1, K k ∈ L k), r 1 K := by
+      ∃ (K : ℕ → Set α) (hK : ∀ k < 1, K k ∈ L k), r L 1 K := by
   have hKfun {K : Set α} (hK' : K ∈ L 0) (k : ℕ) (hk : k < 1) : (fun _ ↦ K) k ∈ L k :=
     (lt_one_iff.mp hk) ▸ hK'
   simp_rw [r]
-  have d : ∃ (K : Set α) (hK' : K ∈ L 0), r 1 (fun _ ↦ K) (hKfun hK') := by
+  have d : ∃ (K : Set α) (hK' : K ∈ L 0), r L 1 (fun _ ↦ K) := by
     simp_rw [r]
     by_contra! h
     choose! b ha using h
-    obtain ⟨K0Max, ⟨hK0₁, hK0₂⟩⟩ := Finset.exists_max_image (L 0) b (nonempty 0 hc)
+    obtain ⟨K0Max, ⟨hK0₁, hK0₂⟩⟩ := Finset.exists_max_image (L 0) b (nonempty L 0 hc)
     apply hc (b K0Max + 1 + 1)
     -- refine Set.iInter_eq_empty_iff.mpr fun x ↦ ?_
     have h' : ∀ a ∈ L 0, a ∩ ⋂ k < 1, ⋂ (k < b K0Max + 1), ⋃₀ ↑(L (1 + k)) = ∅ := by
@@ -545,116 +436,6 @@ lemma get_element_zero' (hL : ∀ n d (hd : d ∈ (L n : Set (Set α))), p d)
   obtain ⟨K, ⟨hK₁, hK₂⟩⟩ := d
   refine ⟨fun _ ↦ K, hKfun hK₁, hK₂⟩
 
-
-lemma element_0_has_r (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
-    (hc : ∀ (N : ℕ), ⋂ (k : Fin (N + 1)), (⋃₀ (L k).toSet) ≠ ∅) (K : (k : Fin 1) → (L k))
-    (hK : K = (get_element_zero hL hc).choose) : r K := by
-  exact hK ▸ (get_element_zero hL hc).choose_spec
-
-example (n : ℕ) : n < n.succ := by exact lt_add_one n
-
-
-def join {n : ℕ} (K' : (k : ℕ) → (L k)) (K : L (n + 1)) {k : ℕ} (hk : k < n + 2) :
-    (L k) := by
-  let K'' (k : ℕ) (hk₁ : k < n + 2) (hk₂ : ¬ k < n + 1) : L k := by
-    have h : k = n + 1 := by linarith
-    exact h ▸ K
-  exact dite (k < n + 1) (fun c ↦ K' k) (fun c ↦ K'' k hk c)
-
-lemma join_of_lt_succ {n : ℕ} (K' : (k : ℕ)  → (L k)) (K : L (n + 1)) {j : ℕ} (hj : j < n + 1) :
-    join K' K (lt_trans hj (lt_add_one (n + 1))) = K' j := by
-  simp only [join, dite_eq_left_iff, not_lt]
-  intro h
-  linarith
-
-lemma join_of_eq_succ {n : ℕ} (K' : (k : ℕ)  → (L k)) (K : L (n + 1)) :
-    join K' K (lt_add_one (n + 1)) = K := by
-  simp [join]
-
-example (K : ℕ → Set α) (s : Set α) : ⋂ k, (K k) ∩ s = (⋂ k, (K k)) ∩ s := by
-  exact Eq.symm (iInter_inter s K)
-example (n : ℕ) : 0 < n + 1 := by exact zero_lt_succ n
-
-example (x : α) (n : ℕ) (s : ℕ → Finset (Set α)) (u : (n : ℕ) → (s n)) (hs : ∀ i < n + 1, (x ∈ ((u i) : Set α) ∧ ∃ t ∈ s n, x ∈ t)) :
-    ∃ t ∈ s (n + 1), x ∈ t := by
-  obtain h₂ := (hs 0 (zero_lt_succ n)).2
-  rcases h₂ with ⟨t, ht, h⟩
-  use t, ht, h
-
-lemma iUnion_join {n : ℕ} (K' : (k : ℕ) → (L k)) (s : Set α) :
-  ⋃ (a : L (n + 1)), ⋂ (k : ℕ) (hk : k < n + 2), (join K' a hk) ∩ s =
-    ⋂ (k : ℕ) (hk : k < n + 1), (K' k) ∩ ⋃₀ (L (n + 1)) ∩ s := by
-  ext x
-  simp only [mem_iUnion, mem_iInter, mem_inter_iff, Subtype.exists, mem_sUnion, Finset.mem_coe]
-  refine ⟨fun h i hi ↦ ⟨⟨?_, ?_⟩, ?_⟩ , fun h ↦ ⟨?_, ?_, ?_⟩⟩
-  · obtain ⟨K, ⟨hK, h'⟩⟩ := h
-    specialize h' i (lt_trans hi <| lt_add_one (n + 1))
-    rw [join_of_lt_succ K' ⟨K, hK⟩ hi] at h'
-    exact h'.1
-  · obtain ⟨K, ⟨hK, h'⟩⟩ := h
-    specialize h' (n + 1) (lt_add_one (n + 1))
-    rw [join_of_eq_succ] at h'
-    use K
-    exact ⟨hK, h'.1⟩
-  · obtain ⟨K, ⟨hK, h'⟩⟩ := h
-    refine (h' 0 (zero_lt_succ (n + 1))).2
-  · obtain h₁ : ∀ i < n + 1, (x ∈ ((K' i) : Set α)) := by exact fun i hi ↦ (h i hi).1.1
-    obtain h₂ : ∃ t ∈ (L (n + 1) : Set (Set α)), x ∈ t:= (h 0 (zero_lt_succ n)).1.2
-    rcases h₂ with ⟨t, ht, j⟩
-    sorry
-  · sorry
-  · sorry
-
-example (s : ℕ → (Set α)) (b : Set α) : ⋂ k, (s k) ∩ b = (⋂ k, (s k)) ∩ b := by
-  exact Eq.symm (iInter_inter b s)
-
-example (s : ℕ → Set α) : (∀ n, s n = ∅) ↔ (⋃ n, s n = ∅) := by
-  exact iUnion_eq_empty.symm
-
-example {s t u : Set α} (htu : t = u) : t ∩ s = u ∩ s := by
-  exact congrFun (congrArg Inter.inter htu) s
-
-example (i : ℕ) (hi : i ≠ 0) : ∃ j, i = j + 1 := by
-  exact exists_eq_succ_of_ne_zero hi
-
-example (i : ℕ) : (¬i = 0) ↔ i ≠ 0 := by
-  exact Eq.to_iff rfl
-
-
-private lemma l4 {n : ℕ} (L : Fin (n + 1) → Set (Set α)) : ⋂ (k : Fin (n + 1)), ⋃₀ (L k) =
-    ⋃₀ (L 0) ∩ ⋂ (k : Fin n), ⋃₀ (L ((k + 1) : Fin (n + 1))) := by
-  refine Eq.symm (ext fun x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩) <;>
-  simp only [mem_inter_iff, mem_sUnion, mem_iInter] at h ⊢
-  · intro i
-    by_cases g : i = 0
-    · obtain ⟨t, ht⟩ := h.1
-      use t
-      exact g.symm ▸ ht
-    · have h' : ∃ (j : ℕ), j < n ∧ i = j + 1 := by
-        have g' : i.val ≠ 0 := by
-          exact Fin.val_ne_zero_iff.mpr g
-        obtain ⟨j, hj⟩ := exists_eq_succ_of_ne_zero g'
-        use j
-        refine ⟨?_, ?_⟩
-        · sorry
-        · simp [hj]
-
-
-
-
-        sorry
-      obtain ⟨j, ⟨hj1, hj2⟩⟩ := h'
-      obtain ⟨t, ⟨ht1, ht2⟩⟩ := h.2 ⟨j, hj1⟩
-      use t
-      simp only at ht1
-      rw [← hj2] at ht1
-      exact ⟨ht1, ht2⟩
-  · sorry
-
--- h : ∀ (n : ℕ) (x : (ℕ → α)) (hx : x n ∈ β n ∧ p n x), ∃ y ∈ β (n + 1), p (n + 1) (Function.update x (n + 1) y)
-
-lemma get_element_succ' (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d) (n : ℕ) (K : ℕ → Set α) (hK : K n ∈ L n ∧ r n K) : ∃ K' ∈ L (n + 1), r (n + 1) (Function.update K (n + 1) K') := by
-  sorry
 
 
 lemma get_element_succ (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
@@ -697,173 +478,14 @@ lemma get_element_succ (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet)
     exact ht1
 
 
-noncomputable def main : (n : ℕ) → ((K' : (k : Fin (n + 1)) → (L k)) ×' (r K'))
-  | 0 => ⟨(get_element_zero hL hc).choose, (get_element_zero hL hc).choose_spec⟩
-  | n + 1 => by
-      let g := ((get_element_succ hL hc) n (main n).1 (main n).2)
-      exact ⟨join (main n).1 g.choose, g.choose_spec⟩
-
-noncomputable def main' : (j : ℕ) → (L j) := by
-  have hj (j : ℕ) : j = ((j : Fin (j + 1)) : ℕ) := by
-    simp only [Fin.natCast_eq_last, Fin.val_last]
-  exact fun j ↦ (hj j).symm ▸ (main hL hc j).1 j
-
-lemma has_r (n : ℕ) : r (main hL hc n).1 := by
-  exact (main hL hc n).2
-
-lemma has_r' (n : ℕ) : r (main' hL hc n).1 := by
-  exact (main hL hc n).2
-
-
 
 theorem main' (p : Set α → Prop) (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
     (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
     (hc : ∀ (n : ℕ), ⋂ (k : Fin (n + 1)), (⋃₀ (L k).toSet) ≠ ∅) :
     ∃ (K : (j : ℕ) → (L j)), (∀ n N, ⋂ (j : Fin (n + 1)), (K j) ∩ ⋂ (k < N),
       ⋃₀ (L (n + 1 + k)).toSet ≠ ∅) := by
-  use (main' hL hc n).1
-
-  exact has_r hL hc
   sorry
 
-def ack : Nat → Nat → Nat
-  | 0,      n      => n + 1
-  | m + 1, 0      => ack m 1
-  | m + 1, n + 1  => ack m (ack (m + 1) n)
-
-
-def myMax (a b : Nat) : Nat :=
-  if a < b then myMax b a else a
-
-
-
-
-
-
-
-
-
-  have hq (K : (L 0)) (n : ℕ) : q K n := by
-    specialize hc 0
-    simp? at hc
-    sorry
-  have h'' (K : L 0) := Finite.exists_infinite_fiber (fun n ↦ q K n)
-  have h''' : ∃ (K : L 0), Infinite ((fun n ↦ q K n) ⁻¹' {True}) := by
-    by_contra! h
-    simp only [preimage_singleton_true, coe_setOf, not_infinite_iff_finite, Subtype.forall] at h
-
-
-
-    -- apply hc 0
-    simp only [nonpos_iff_eq_zero, iInter_iInter_eq_left, sUnion_eq_empty, Finset.mem_coe]
-
-    sorry
-
-  have h : ∃ (K : L 0), ∀ n, q K n:= by
-    by_contra h'
-    push_neg at h'
-
-      sorry
-
-    simp_rw [q] at h'
-  -- Finite.exists_infinite_fiber
-    sorry
-  sorry
-theorem main (p : Set α → Prop) (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
-    (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
-    (hc : ∀ (n : ℕ), ⋂ (k ≤ n), (⋃₀ (L k).toSet) ≠ ∅) :
-    ∃ (K : (n : ℕ) → (L n)), (∀ N k, ⋂ (j : ℕ) (hj : j ≤ N), (K j) ∩ ⋂ (j ≤ k),
-      ⋃₀ (L (N + j + 1)).toSet ≠ ∅) := by
-  -- `q K n` is true, if `K ∩ ⋂ (k ≤ n), ⋃₀ (L k) ≠ ∅`
-  let q : (L 0) → ℕ → Prop := fun (K : (L 0)) n ↦ (K : Set α) ∩ ⋂ (k ≤ n), (⋃₀ (L k).toSet) ≠ ∅
-
-  have hq (n : ℕ) : ∃ (K : (L 0)), q K n := by
-    by_contra! h
-    push_neg at h
-    rw [← iUnion_eq_empty] at h
-    have f : ⋃ (i : { x // x ∈ L 0 }), ↑i ∩ ⋂ k, ⋂ (_ : k ≤ n), ⋃₀ ↑(L k) = (⋃ (i : { x // x ∈ L 0 }), ↑i) ∩ ⋂ k, ⋂ (_ : k ≤ n), ⋃₀ (L k).toSet := by
-      rw [iUnion_inter]
-    rw [f] at h
-    have g : (⋃ (i : { x // x ∈ L 0 }), ↑i) ∩ ⋂ k, ⋂ (_ : k ≤ n), ⋃₀ (L k).toSet = ⋂ k, ⋂ (_ : k ≤ n), ⋃₀ (L k).toSet := by
-      apply inter_eq_self_of_subset_right
-      have f : ⋃ (i : { x // x ∈ (L 0) }), ↑i = ⋃₀ (L 0).toSet := by
-        rw [biUnion_eq_iUnion]
-        simp only [Finset.coe_sort_coe]
-        sorry
-      rw [f]
-      refine biInter_subset_of_mem (Nat.zero_le n)
-    rw [g] at h
-    apply (hc n) h
-
-
-    sorry
-
-
-    sorry
-  have h'' (K : L 0) := Finite.exists_infinite_fiber (fun n ↦ q K n)
-  have h''' : ∃ (K : L 0), Infinite ((fun n ↦ q K n) ⁻¹' {True}) := by
-    by_contra! h
-    simp only [preimage_singleton_true, coe_setOf, not_infinite_iff_finite, Subtype.forall] at h
-
-
-
-
-  let q' : (n : ℕ) → ((j : ℕ) → (hj : j ≤ n) → (L j)) → ℕ → Prop :=
-    fun n K N ↦ ⋂ (j : ℕ) (hj : j ≤ n), (K j hj : Set α) ∩ ⋂ (k ≤ N), (⋃₀ (L (n + k + 1)).toSet) ≠ ∅
-  have hq'' : q' = fun n K N ↦ ⋂ (j : ℕ) (hj : j ≤ n), (K j hj : Set α) ∩ ⋂ (k ≤ N),
-      (⋃₀ (L (n + k + 1)).toSet) ≠ ∅ := by
-    rfl
-  have hq' (n : ℕ) (K : ((j : ℕ) → (hj : j ≤ n) → (L j))) (N : ℕ) : (q' n K N) ↔
-      (⋂ (j : ℕ) (hj : j ≤ n), (K j hj : Set α) ∩ ⋂ (k ≤ N), (⋃₀ (L (n + k + 1)).toSet) ≠ ∅) := by
-    rfl
-  simp_rw [← hq']
-
-  have h₀ (n : ℕ) : ∃ (K : ((j : ℕ) → (hj : j ≤ n) → (L j))), ∀ N, q' N (fun j hj ↦ K j) k := by sorry
-
-
-
-  sorry
-
-
-
-
-
-    sorry
-
-  rfl
-
-
-
-  have hq (K : (L 0)) (n : ℕ) : q K n := by
-    specialize hc 0
-    simp? at hc
-    sorry
-  have h'' (K : L 0) := Finite.exists_infinite_fiber (fun n ↦ q K n)
-  have h''' : ∃ (K : L 0), Infinite ((fun n ↦ q K n) ⁻¹' {True}) := by
-    by_contra! h
-    simp only [preimage_singleton_true, coe_setOf, not_infinite_iff_finite, Subtype.forall] at h
-
-
-
-    -- apply hc 0
-    simp only [nonpos_iff_eq_zero, iInter_iInter_eq_left, sUnion_eq_empty, Finset.mem_coe]
-
-    sorry
-
-  have h : ∃ (K : L 0), ∀ n, q K n:= by
-    by_contra h'
-    push_neg at h'
-
-      sorry
-
-    simp_rw [q] at h'
-  -- Finite.exists_infinite_fiber
-    sorry
-  sorry
-
-open Classical in
-example (x : α) (H : Finset (Set α)) : x ∉ ⋃₀ ↑H ↔ ∀ h ∈ H, x ∉ h := by
-  simp only [mem_sUnion, Finset.mem_coe, not_exists, not_and]
 
 theorem union (h : IsCompactSystem p) : IsCompactSystem (fun s ↦ ∃ (D : Finset (Set (α))),
     (∀ d ∈ D, p d) ∧ s = ⋃₀ (D : Set (Set α))) := by
