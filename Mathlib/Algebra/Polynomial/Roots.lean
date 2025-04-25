@@ -616,8 +616,9 @@ omit [IsDomain R]
 theorem monic_prod_multiset_X_sub_C (s : Multiset R) : Monic (s.map fun a => X - C a).prod :=
   monic_multiset_prod_of_monic _ _ fun a _ => monic_X_sub_C a
 
-theorem monic_finset_prod_X_sub_C (s : Finset R) : Monic (∏ a ∈ s, (X - C a)) :=
-  monic_prod_of_monic _ _ fun a _ => monic_X_sub_C a
+theorem monic_finset_prod_X_sub_C {α : Type*} (b : α → R) (s : Finset α) :
+    Monic (∏ a ∈ s, (X - C (b a))) :=
+  monic_prod_of_monic _ _ fun a _ => monic_X_sub_C (b a)
 
 theorem monic_finprod_X_sub_C {α : Type*} (b : α → R) : Monic (∏ᶠ k, (X - C (b k))) :=
   monic_finprod_of_monic _ _ fun a _ => monic_X_sub_C (b a)
