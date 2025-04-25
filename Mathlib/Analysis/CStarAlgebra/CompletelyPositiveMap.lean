@@ -9,7 +9,7 @@ import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 
 /-! # Completely positive maps
 
-A positive linear map `φ : A₁ →ₗ[ℂ] A₂` (where `A₁` and `A₂` are C⋆-algebras) is called
+A linear map `φ : A₁ →ₗ[ℂ] A₂` (where `A₁` and `A₂` are C⋆-algebras) is called
 *completely positive (CP)* if `CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all
 entries of a k × k matrix) is also positive for every `k ∈ ℕ`.
 
@@ -17,24 +17,41 @@ This file defines completely positive maps and develops their basic API.
 
 ## Main results
 
-+ Non-unital star algebra homomorphisms are completely positive.
++ `NonUnitalStarAlgHomClass.instCompletelyPositiveMapClass`: Non-unital star algebra
+  homomorphisms are completely positive.
 
 ## Notation
 
 + `A₁ →CP A₂` denotes the type of CP maps from `A₁` to `A₂`.
+
+## Implementation notes
+
+The morphism class `CompletelyPositiveMapClass` is designed to be part of the order hierarchy,
+and only includes the order property; linearity is not mentioned at all. It is therefore meant
+to be used in conjunction with `LinearMapClass`. This is meant to avoid mixing order and algebra
+as much as possible.
 -/
 
+/--
+A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called *completely positive (CP)* if
+`CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
+positive for every `k ∈ ℕ`.
+-/
 structure CompletelyPositiveMap (A₁ : Type*) (A₂ : Type*) [NonUnitalCStarAlgebra A₁]
     [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
     [StarOrderedRing A₂] extends A₁ →ₗ[ℂ] A₂ where
   map_cstarMatrix_nonneg' (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
-      0 ≤ M.mapₗ toLinearMap
+      0 ≤ M.map toLinearMap
 
+/--
+A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called *completely positive (CP)* if
+`CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
+positive for every `k ∈ ℕ`.
+-/
 class CompletelyPositiveMapClass (F : Type*) (A₁ : Type*) (A₂ : Type*)
     [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
-    [PartialOrder A₂] [StarOrderedRing A₁] [StarOrderedRing A₂] [FunLike F A₁ A₂]
-    extends OrderHomClass F A₁ A₂ where
-  map_cstarMatrix_nonneg' (k : ℕ) (φ : F) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
+    [PartialOrder A₂] [StarOrderedRing A₁] [StarOrderedRing A₂] [FunLike F A₁ A₂] where
+  map_cstarMatrix_nonneg' (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
     0 ≤ M.map φ
 
 /-- Notation for a `CompletelyPositiveMap`. -/
@@ -50,7 +67,7 @@ variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   map. -/
 def toCompletelyPositiveLinearMap [CompletelyPositiveMapClass F A₁ A₂] (f : F) : A₁ →CP A₂ :=
   { (f : A₁ →ₗ[ℂ] A₂) with
-    map_cstarMatrix_nonneg' k M hM := CompletelyPositiveMapClass.map_cstarMatrix_nonneg' k f M hM }
+    map_cstarMatrix_nonneg' := CompletelyPositiveMapClass.map_cstarMatrix_nonneg' f }
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
   map. -/
@@ -59,32 +76,53 @@ instance instCoeToCompletelyPositiveMap [CompletelyPositiveMapClass F A₁ A₂]
   coe f := toCompletelyPositiveLinearMap f
 
 open CStarMatrix in
-/-- A completely positive map is also an order homomorphism. -/
+/-- A completely positive map is also an order homomorphism (i.e. it is a positive map). -/
 lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg
-    (h : ∀ (k : ℕ) (f : F) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map f) :
+    (h : ∀ (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map φ) :
     OrderHomClass F A₁ A₂ := .ofLinear <| by
-  intro f a ha
+  intro φ a ha
   let Ma := toOneByOne ℂ A₁ a
   have h₁ : 0 ≤ Ma := map_nonneg (toOneByOne ℂ A₁) ha
-  have h₂ : 0 ≤ Ma.map f := h 1 f Ma h₁
-  have h₃ : f a = (toOneByOne ℂ A₂).symm (toOneByOne ℂ A₂ (f a)) := rfl
+  have h₂ : 0 ≤ Ma.map φ := h φ 1 Ma h₁
+  have h₃ : φ a = (toOneByOne ℂ A₂).symm (toOneByOne ℂ A₂ (φ a)) := rfl
   rw [h₃]
   exact map_nonneg (toOneByOne ℂ A₂).symm h₂
 
-open CStarMatrix in
-lemma of_map_cstarMatrix_nonneg
-    (h : ∀ (k : ℕ) (f : F) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map f) :
-    CompletelyPositiveMapClass F A₁ A₂ :=
-  { OrderHomClass.of_map_cstarMatrix_nonneg h with
-    map_cstarMatrix_nonneg' := h }
+instance [CompletelyPositiveMapClass F A₁ A₂] : OrderHomClass F A₁ A₂ :=
+  .of_map_cstarMatrix_nonneg CompletelyPositiveMapClass.map_cstarMatrix_nonneg'
+
+end CompletelyPositiveMapClass
+
+namespace CompletelyPositiveMap
+
+variable {A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
+  [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
+  [StarOrderedRing A₂]
+
+instance : FunLike (A₁ →CP A₂) A₁ A₂ where
+  coe f := f.toFun
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+    apply DFunLike.coe_injective'
+    exact h
+
+instance : LinearMapClass (A₁ →CP A₂) ℂ A₁ A₂ where
+  map_add f := map_add f.toLinearMap
+  map_smulₛₗ f := map_smulₛₗ f.toLinearMap
+
+instance : CompletelyPositiveMapClass (A₁ →CP A₂) A₁ A₂ where
+  map_cstarMatrix_nonneg' f := f.map_cstarMatrix_nonneg'
 
 open CStarMatrix in
-lemma map_cstarMatrix_nonneg [CompletelyPositiveMapClass F A₁ A₂] {n : Type*} [Fintype n]
-    (φ : F) (M : CStarMatrix n n A₁) (hM : 0 ≤ M) : 0 ≤ M.map φ := by
+lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] (φ : A₁ →CP A₂) (M : CStarMatrix n n A₁)
+    (hM : 0 ≤ M) : 0 ≤ M.map φ := by
   let k := Fintype.card n
   let e := Fintype.equivFinOfCardEq (rfl : Fintype.card n = k)
-  have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (φ : A₁ →ₗ[ℂ] A₂) :=
-    CompletelyPositiveMapClass.map_cstarMatrix_nonneg' k _ _ (map_nonneg _ hM)
+  have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
+    simp only [mapₗ, LinearMap.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
+    exact CompletelyPositiveMapClass.map_cstarMatrix_nonneg' _ k _ (map_nonneg _ hM)
   rw [← mapₗ_reindexₐ] at hmain
   have hrw :
       reindexₐ ℂ A₂ e.symm ((reindexₐ ℂ A₂ e) (M.map (φ : A₁ → A₂))) = M.map (φ : A₁ → A₂) := by
@@ -92,18 +130,19 @@ lemma map_cstarMatrix_nonneg [CompletelyPositiveMapClass F A₁ A₂] {n : Type*
   rw [← hrw]
   exact map_nonneg _ hmain
 
-end CompletelyPositiveMapClass
+end CompletelyPositiveMap
 
 namespace NonUnitalStarAlgHomClass
 
-variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
-  [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
-  [StarOrderedRing A₂] [FunLike F A₁ A₂] [NonUnitalAlgHomClass F ℂ A₁ A₂] [StarHomClass F A₁ A₂]
+variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
+  [PartialOrder A₂] [StarOrderedRing A₁] [StarOrderedRing A₂] [FunLike F A₁ A₂]
+  [NonUnitalAlgHomClass F ℂ A₁ A₂] [StarHomClass F A₁ A₂]
 
 open CStarMatrix CFC in
+/-- Non-unital star algebra homomorphisms are completely positive. -/
 instance instCompletelyPositiveMapClass : CompletelyPositiveMapClass F A₁ A₂ where
-  map_cstarMatrix_nonneg' k f M hM := by
-    change 0 ≤ (mapₙₐ (f : A₁ →⋆ₙₐ[ℂ] A₂)) M
+  map_cstarMatrix_nonneg' φ k M hM := by
+    change 0 ≤ (mapₙₐ (φ : A₁ →⋆ₙₐ[ℂ] A₂)) M
     exact map_nonneg _ hM
 
 end NonUnitalStarAlgHomClass
