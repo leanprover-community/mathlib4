@@ -623,7 +623,7 @@ theorem prod_multiset_root_eq_finset_root [DecidableEq R] :
 
 omit [IsDomain R] in
 theorem monic_finprod_X_sub_C {α : Type*} (b : α → R):
-    Monic (finprod fun k ↦ X - C (b k)) := by
+    Monic (∏ᶠ k, (X - C (b k))) := by
   apply monic_finprod_of_monic _ _ fun a _ => monic_X_sub_C (b a)
 
 /-- The product `∏ (X - a)` for `a` inside the multiset `p.roots` divides `p`. -/
