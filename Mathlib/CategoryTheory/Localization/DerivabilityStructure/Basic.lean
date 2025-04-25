@@ -72,6 +72,9 @@ structure if it has right resolutions and the 2-square where the left and right 
 are localizations functors for `W₁` and `W₂` are Guitart exact. -/
 class IsRightDerivabilityStructure : Prop where
   hasRightResolutions : Φ.HasRightResolutions := by infer_instance
+  /-- Do not use this field directly: use the more general
+  `guitartExact_of_isRightDerivabilityStructure` instead,
+  see also the lemma `isRightDerivabilityStructure_iff`. -/
   guitartExact' : TwoSquare.GuitartExact ((Φ.catCommSq W₁.Q W₂.Q).iso).hom
 
 attribute [instance] IsRightDerivabilityStructure.hasRightResolutions
@@ -131,6 +134,9 @@ structure if it has left resolutions and the 2-square where the top and bottom f
 are localizations functors for `W₁` and `W₂` is Guitart exact. -/
 class IsLeftDerivabilityStructure : Prop where
   hasLeftResolutions : Φ.HasLeftResolutions := by infer_instance
+  /-- Do not use this field directly: use the more general
+  `guitartExact_of_isLeftDerivabilityStructure` instead,
+  see also the lemma `isLeftDerivabilityStructure_iff`. -/
   guitartExact' : TwoSquare.GuitartExact ((Φ.catCommSq W₁.Q W₂.Q).iso).inv
 
 attribute [instance] IsLeftDerivabilityStructure.hasLeftResolutions
