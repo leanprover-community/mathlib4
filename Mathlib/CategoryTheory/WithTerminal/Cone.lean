@@ -113,14 +113,8 @@ and we can recover the structure morphism as `π.app X : t ⟶ X`. -/
 def coneEquiv {X : C} (K : J ⥤ Over X) : Cone K ≌ Cone (liftFromOverToWithTerminal.obj K) where
   functor := coneLift
   inverse := coneBack
-  unitIso := NatIso.ofComponents (fun t ↦ {
-    hom.hom := 𝟙 t.pt
-    inv.hom := 𝟙 t.pt
-  })
-  counitIso := NatIso.ofComponents (fun t ↦ {
-    hom.hom := 𝟙 t.pt
-    inv.hom := 𝟙 t.pt
-  })
+  unitIso := .refl _
+  counitIso := NatIso.ofComponents fun t ↦ Cones.ext <| .refl _
 
 end CategoryTheory.Limits.WithTerminal
 
