@@ -108,7 +108,7 @@ end Function.locallyFinsuppWithin
 ## The Logarithmic Counting Function of a Meromorphic Function
 -/
 
-namespace VD
+namespace ValueDistribution
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
@@ -123,8 +123,7 @@ If `f : 𝕜 → E` is meromorphic and `a : WithTop E` is any value, this is a l
 measure of the number of times the function `f` takes a given value `a` within the disk `∣z∣ ≤ r`,
 counting multiplicities.  In the special case where `a = ⊤`, it counts the poles of `f`.
 -/
-noncomputable def logCounting :
-    ℝ → ℝ := by
+noncomputable def logCounting : ℝ → ℝ := by
   by_cases h : a = ⊤
   · exact (divisor f univ)⁻.logCounting
   · exact (divisor (fun z ↦ f z - a.untop₀) univ)⁺.logCounting
@@ -183,36 +182,36 @@ theorem log_counting_zero_sub_logCounting_top {f : 𝕜 → E} :
 /--
 Relation between the logarithmic counting function of `f` and of `f⁻¹`.
 -/
-theorem logCounting_inv [CompleteSpace 𝕜] {f : 𝕜 → 𝕜} :
+theorem logCounting_inv {f : 𝕜 → 𝕜} :
     logCounting f 0 = logCounting f⁻¹ ⊤ := by
   simp [logCounting_zero, logCounting_top]
 
 /--
 Adding an analytic function does not change the counting function counting poles.
 -/
-theorem logCounting_add_analyticOn_right (hf : MeromorphicOn f univ) (hg : AnalyticOn 𝕜 g univ) :
+theorem logCounting_add_analyticOn (hf : MeromorphicOn f univ) (hg : AnalyticOn 𝕜 g univ) :
     logCounting (f + g) ⊤ = logCounting f ⊤ := by
   simp only [logCounting, ↓reduceDIte]
   rw [hf.negPart_divisor_add_of_analyticNhdOn_right (isOpen_univ.analyticOn_iff_analyticOnNhd.1 hg)]
 
 /--
-Special case of `VD.logCounting_add_analyticOn_right`: Adding a constant does not change the
-counting function counting poles.
+Special case of `VD.logCounting_add_analyticOn`: Adding a constant does not change the counting
+function counting poles.
 -/
-theorem logCounting_add_const_right (hf : MeromorphicOn f univ) :
+theorem logCounting_add_const (hf : MeromorphicOn f univ) :
     logCounting (f + fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
-  apply logCounting_add_analyticOn_right hf analyticOn_const
+  apply logCounting_add_analyticOn hf analyticOn_const
 
 /--
-Special case of `VD.logCounting_add_analyticOn_right`: Subtracting a constant does not change the
+Special case of `VD.logCounting_add_analyticOn`: Subtracting a constant does not change the
 counting function counting poles.
 -/
-theorem logCounting_sub_const_right (hf : MeromorphicOn f univ) :
+theorem logCounting_sub_const (hf : MeromorphicOn f univ) :
     logCounting (f - fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
   have : f - (fun x ↦ a₀) = f + fun x ↦ -a₀ := by
     funext x
     simp [sub_eq_add_neg]
   rw [this]
-  apply logCounting_add_analyticOn_right hf analyticOn_const
+  apply logCounting_add_analyticOn hf analyticOn_const
 
-end VD
+end ValueDistribution
