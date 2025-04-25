@@ -22,6 +22,42 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
 -/
 
 
+section Units.exp
+
+namespace Units
+
+open Complex in
+/-- The map `fun t => exp (t * I)` from `ℝ` to `ℂˣ`. -/
+noncomputable def exp : ℝ → ℂˣ := fun t =>
+  ⟨(t * I).exp, (-t * I).exp, by rw [← exp_add, neg_mul, add_neg_cancel, exp_zero],
+    by rw [← exp_add, neg_mul, neg_add_cancel, exp_zero]⟩
+
+@[simp, norm_cast]
+theorem coe_exp (t : ℝ) : exp t = Complex.exp (t * Complex.I) := rfl
+
+@[simp]
+theorem exp_zero : exp 0 = 1 := by
+  ext : 1
+  rw [coe_exp, Complex.ofReal_zero, zero_mul, Complex.exp_zero, val_one]
+
+@[simp]
+theorem exp_add (x y : ℝ) : exp (x + y) = exp x * exp y := by
+  ext
+  simp only [coe_exp, Submonoid.coe_mul, Complex.ofReal_add, add_mul, Complex.exp_add, val_mul,
+    coe_exp]
+
+/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
+considered as a homomorphism of groups. -/
+@[simps]
+noncomputable def expHom : ℝ →+ Additive ℂˣ where
+  toFun := Additive.ofMul ∘ _root_.Units.exp
+  map_zero' := exp_zero
+  map_add' := exp_add
+
+end Units
+
+end Units.exp
+
 namespace Complex
 
 open Polynomial Real
@@ -84,44 +120,12 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
     use i
     field_simp [hn0, mul_comm ((n : ℕ) : ℂ), mul_comm (i : ℂ)]
 
-/-
-
-/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
-def exp : C(ℝ, Circle) where
-  toFun t := ⟨(t * I).exp, by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I]⟩
-  continuous_toFun := Continuous.subtype_mk (by fun_prop)
-    (by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I])
-
-
-/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
-considered as a homomorphism of groups. -/
-@[simps]
-def expHom : ℝ →+ Additive Circle where
-  toFun := Additive.ofMul ∘ exp
-  map_zero' := exp_zero
-  map_add' := exp_add
--/
-
-#check Units
-
-/-- The map `fun t => exp (t * I)` from `ℝ` to `ℂˣ`. -/
-noncomputable def Units.exp : ℝ → ℂˣ := fun t =>
-  ⟨(t * I).exp, (-t * I).exp, by rw [← exp_add, neg_mul, add_neg_cancel, exp_zero],
-    by rw [← exp_add, neg_mul, neg_add_cancel, exp_zero]⟩
-
-
 -- Rework `mem_rootsOfUnity` into a more usable form
 nonrec theorem mem_rootsOfUnity' (n : ℕ) [NeZero n] (x : Units ℂ) :
     x ∈ rootsOfUnity n ℂ ↔ ∃ i < n, Units.exp (2 * π * (i / n)) = x := by
   simp_rw [mem_rootsOfUnity, Units.exp, ofReal_mul, ofReal_ofNat, ofReal_div, ofReal_natCast,
     ← Units.eq_iff]
   constructor <;> ({ intro ⟨i, hi1, hi2⟩; exact ⟨i, ⟨hi1, by rw [← hi2]; ring_nf⟩ ⟩})
-
-/-- The map `fun t => exp (t * I)` from `ℝ` to the `n`th roots of unity in `ℂ`. -/
-noncomputable def rootsOfUnity.exp (n : ℕ) [NeZero n] : ZMod n → rootsOfUnity n ℂ :=
-  fun k => ⟨Units.exp (2 * π * (k.val / n)),by
-    rw [mem_rootsOfUnity']
-    exact ⟨k.val, ⟨k.val_lt, by congr⟩⟩⟩
 
 theorem card_rootsOfUnity (n : ℕ) [NeZero n] : Fintype.card (rootsOfUnity n ℂ) = n :=
   (isPrimitiveRoot_exp n NeZero.out).card_rootsOfUnity
@@ -214,3 +218,25 @@ theorem Complex.conj_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n] (hζ : ζ �
     (starRingEnd ℂ) ζ = ζ⁻¹ := by
   rw [← Units.mul_eq_one_iff_eq_inv, conj_mul', norm_eq_one_of_mem_rootsOfUnity hζ, ofReal_one,
     one_pow]
+
+open Real in
+/-- The map `fun t => exp (t * I)` from `ℝ` to the `n`th roots of unity in `ℂ`. -/
+noncomputable def rootsOfUnity.exp (n : ℕ) [NeZero n] : ZMod n → rootsOfUnity n ℂ :=
+  fun k => ⟨Units.exp (2 * π * (k.val / n)),by
+    rw [Complex.mem_rootsOfUnity']
+    exact ⟨k.val, ⟨k.val_lt, by congr⟩⟩⟩
+
+variable (n : ℕ) [NeZero n]
+
+
+#check Units.expHom ∘ Additive.ofMul ∘ (ZMod.castHom (m := 0) (Nat.zero_dvd.mpr rfl) ℝ)
+
+
+/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
+considered as a homomorphism of groups. -/
+@[simps]
+noncomputable def rootsOfUnity.expHom (n : ℕ): ZMod n  →+ Additive (rootsOfUnity n ℂ) where
+  toFun := fun k => Additive.ofMul ∘ Units.expHom ∘ (ZMod.castHom (m := 0) (Nat.zero_dvd.mpr rfl) ℝ)
+
+  map_zero' := exp_zero
+  map_add' := exp_add
