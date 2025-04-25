@@ -129,23 +129,4 @@ theorem Real.iInf_mul_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (⨅ i, f i) *
 theorem Real.iSup_mul_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (⨆ i, f i) * r = ⨅ i, f i * r := by
   simp only [Real.mul_iSup_of_nonpos ha, mul_comm]
 
-/-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative and `∀ i j, f i * g j ≤ r`, then
- `iSup f * iSup g ≤ r`. -/
-theorem Real.iSup_mul_iSup_le_of_nonneg [Nonempty ι] {f g : ι → ℝ}
-    (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i) (H : ∀ i j, f i * g j ≤ r) :
-    iSup f * iSup g ≤ r := by
-  rw [Real.iSup_mul_of_nonneg (Real.iSup_nonneg hg_nn)]
-  apply ciSup_le
-  intro i
-  rw [Real.mul_iSup_of_nonneg (hf_nn i)]
-  exact ciSup_le fun j ↦ H i j
-
-/-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative, then `iSup (f * g) ≤ iSup f * iSup g`. -/
-theorem Real.iSup_mul_le_mul_iSup_of_nonneg' {ι : Type*} [Nonempty ι] {f g : ι → ℝ}
-    (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i)
-    (hf_bdd : BddAbove (range f)) (hg_bdd : BddAbove (range g)) :
-    ⨆ i, f i * g i ≤ (⨆ i, f i) * ⨆ i, g i :=
-  ciSup_le fun x ↦ mul_le_mul (le_ciSup hf_bdd x)
-    (le_ciSup hg_bdd x) (hg_nn x) (Real.iSup_nonneg hf_nn)
-
 end Mul

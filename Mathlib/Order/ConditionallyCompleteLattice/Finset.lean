@@ -231,10 +231,6 @@ lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :
     (Finset.sup_le fun _ _ => le_ciSup (finite_range _).bddAbove _)
     (ciSup_le' fun _ => Finset.le_sup (mem_univ _))
 
-theorem sup_eq_ciSup (s : Finset β) (f : β → α) :
-    s.sup f = ⨆ b : s, f b :=
-  Finset.isLUB_sup.unique <| isLUB_ciSup_set' (s.finite_toSet.image _).bddAbove
-
 end ConditionallyCompleteLinearOrderBot
 
 end Finset
