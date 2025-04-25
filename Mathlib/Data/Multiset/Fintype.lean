@@ -189,7 +189,6 @@ theorem map_univ_coe (m : Multiset α) :
   simpa only [Finset.map_val, Multiset.coeEmbedding_apply, Multiset.map_map,
     Function.comp_apply] using this
 
-@[simp]
 theorem map_univ_comp_coe {β : Type*} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map (f ∘ (fun x : m ↦ (x : α)))) = m.map f := by
   rw [← Multiset.map_map, Multiset.map_univ_coe]
