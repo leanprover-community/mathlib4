@@ -15,20 +15,36 @@ for Sigma types `(x : Sigma A) (y : T x.fst → A m) : Sigma A`. In both of thes
 `A : ι → Type*` is the carrier. A prototypical could have `ι := ℕ`, `T := Fin`, and `A i`
 as some `i`-arity functions.
 
-This also defines the `OneGradedOne` type class, which gives a graded `One (A 1)`.
+This also defines the `OneGradedOne` type class, which gives a graded `One (A 1)`. This
+lets us write "1" for the unary projector of a `Clone`, which is a two-sided identity.
+
+The primary application of this will be in describing
+[Post's Lattice](https://en.wikipedia.org/wiki/Post's_lattice), which classifies
+Boolean functions closed under composition. This is one particular Clone. Another example
+of a Clone is `List`, where the superposition operation is inserting `k` new Lists between
+the `k-1` elements of another given List; and the `One` would be the empty list. Clones
+are in Galois correspondence to relational invariants, which leads to their importance in the
+[CSP Dichotomy Theorem](https://www.math.uwaterloo.ca/~rdwillar/documents/Slides/willard-BLAST19-tut1-handout.pdf).
+Closely related objects are operads,
+[minions](https://www.sciencedirect.com/science/article/pii/S0012365X01002977), and
+[clonoids](https://arxiv.org/abs/1403.7938).
 
 Classes:
 - `Superposable`: A `superpose` operation `A n → (T n → A m) → A m`. This is the type of
   operation used in Clones.
 - `OneGradedOne`: There is a distinguished `1` element at grade 1, a notion of identity.
 
-Definitions:.
+Definitions:
 - `superpose` bundles the action of `Superposable.superpose` into `Sigma A`.
 
 Notations:
 - `x ∘⚟ y` for `Superposable.superpose x y`. The typography is meant to suggest
   "many arguments into one".
 - `x ∘∈ y` for `superpose x y`, the variant for Sigma types.
+
+## References
+- Wikipedia: ["Post's Lattice"](https://en.wikipedia.org/wiki/Post%27s_lattice)
+- D. Lau, [Function algebras on finite sets: Basic course on many-valued logic and clone theory](https://link.springer.com/book/10.1007/3-540-36023-9)
 -/
 
 /-- A Superposable is a structure that allows "superposition": given an n-arity object
