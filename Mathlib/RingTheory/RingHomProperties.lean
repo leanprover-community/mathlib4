@@ -30,7 +30,7 @@ open CategoryTheory Opposite CategoryTheory.Limits
 
 namespace RingHom
 
-variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
+variable (P Q : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop) {Q}
 
 section RespectsIso
 
@@ -87,6 +87,14 @@ theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S :
 @[deprecated (since := "2025-03-01")]
 alias RespectsIso.is_localization_away_iff := RespectsIso.isLocalization_away_iff
 
+lemma RespectsIso.and (hP : RespectsIso P) (hQ : RespectsIso Q) :
+    RespectsIso (fun f ↦ P f ∧ Q f) := by
+  refine ⟨?_, ?_⟩
+  · introv hf
+    exact ⟨hP.1 f e hf.1, hQ.1 f e hf.2⟩
+  · introv hf
+    exact ⟨hP.2 f e hf.1, hQ.2 f e hf.2⟩
+
 end RespectsIso
 
 section StableUnderComposition
@@ -109,6 +117,11 @@ theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition 
   · introv H
     apply hP
     exacts [hP' e, H]
+
+lemma StableUnderComposition.and (hP : StableUnderComposition P) (hQ : StableUnderComposition Q) :
+    StableUnderComposition (fun f ↦ P f ∧ Q f) := by
+  introv R hf hg
+  exact ⟨hP f g hf.1 hg.1, hQ f g hf.2 hg.2⟩
 
 end StableUnderComposition
 
@@ -168,6 +181,12 @@ theorem IsStableUnderBaseChange.pushout_inl (hP : RingHom.IsStableUnderBaseChang
   dsimp only [CommRingCat.pushoutCocone_inl, PushoutCocone.ι_app_left]
   apply hP R T S (TensorProduct R S T)
   exact H
+
+lemma IsStableUnderBaseChange.and (hP : IsStableUnderBaseChange P)
+    (hQ : IsStableUnderBaseChange Q) :
+    IsStableUnderBaseChange (fun f ↦ P f ∧ Q f) := by
+  introv R _ h
+  exact ⟨hP R S R' S' h.1, hQ R S R' S' h.2⟩
 
 end IsStableUnderBaseChange
 
