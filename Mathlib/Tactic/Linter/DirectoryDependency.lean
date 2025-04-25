@@ -627,15 +627,26 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
         let mut msg := m!"Module {mainModule} depends on {imported},\n\
         but is only allowed to import modules starting with one of {allRules.toArray.qsort (·.toString < ·.toString)}.\n\
         Note: module {imported}"
+        let mut superseded := false
         match importPath.toList with
         | [] => msg := msg ++ " is directly imported by this module"
         | a :: rest =>
-          msg := msg ++ s!" is imported by {a},\n"
-          for dep in rest do
-            msg := msg ++ m!"which is imported by {dep},\n"
-          msg := msg ++ m!"which is imported by this module."
-          msg := msg ++ "(Exceptions can be added to `allowedImportDirs`.)"
-        messages := messages.push msg
+          -- Only add messages about imports that aren't themselves transitive imports of
+          -- forbidden imports.
+          -- This should prevent redundant messages.
+          if !allowedImportDirs.contains mainModule a then
+            superseded := true
+          else
+            msg := msg ++ s!" is imported by {a},\n"
+            for dep in rest do
+              if !allowedImportDirs.contains mainModule dep then
+                superseded := true
+                break
+              msg := msg ++ m!"which is imported by {dep},\n"
+            msg := msg ++ m!"which is imported by this module."
+            msg := msg ++ "(Exceptions can be added to `allowedImportDirs`.)"
+        if !superseded then
+          messages := messages.push msg
     return messages
 
 end Mathlib.Linter
