@@ -168,9 +168,7 @@ theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
   refine Summable.mul_left _ <| .of_norm ?_
   have : (fun x : ℤ => ‖1 / (x : ℂ) ^ k‖) = fun x : ℤ => |1 / (x : ℝ) ^ k| := by
     ext1 x
-    rw [norm_eq_abs, ← Complex.abs_ofReal]
-    congr 1
-    norm_cast
+    simp only [one_div, norm_inv, norm_pow, norm_intCast, pow_abs, abs_inv]
   simp_rw [this]
   rwa [summable_abs_iff, Real.summable_one_div_int_pow]
 

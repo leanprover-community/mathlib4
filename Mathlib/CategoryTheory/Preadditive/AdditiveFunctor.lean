@@ -52,7 +52,6 @@ variable {C D E : Type*} [Category C] [Category D] [Category E]
 theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
   Functor.Additive.map_add
 
--- Porting note: it was originally @[simps (config := .asFn)]
 /-- `F.mapAddHom` is an additive homomorphism whose underlying function is `F.map`. -/
 @[simps!]
 def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=
@@ -157,9 +156,9 @@ instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
   preserves :=
     { preserves :=
       { preserves := fun hb =>
-          isBilimitOfTotal _ (by
+          ⟨isBilimitOfTotal _ (by
             simp_rw [F.mapBicone_π, F.mapBicone_ι, ← F.map_comp]
-            erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])} }
+            erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])⟩ } }
 
 theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
     [PreservesBinaryBiproducts F] : Additive F where
@@ -172,7 +171,7 @@ lemma additive_of_preserves_binary_products
     [HasBinaryProducts C] [PreservesLimitsOfShape (Discrete WalkingPair) F]
     [F.PreservesZeroMorphisms] : F.Additive := by
   have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
-  have := preservesBinaryBiproductsOfPreservesBinaryProducts F
+  have := preservesBinaryBiproducts_of_preservesBinaryProducts F
   exact Functor.additive_of_preservesBinaryBiproducts F
 
 end
@@ -194,7 +193,6 @@ section
 
 variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=
   FullSubcategory fun F : C ⥤ D => F.Additive
@@ -254,9 +252,9 @@ variable [Preadditive D] [HasZeroObject C] [HasZeroObject D] [HasBinaryBiproduct
 
 section
 
-attribute [local instance] preservesBinaryBiproductsOfPreservesBinaryProducts
+attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts
 
-attribute [local instance] preservesBinaryBiproductsOfPreservesBinaryCoproducts
+attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
 
 /-- Turn a left exact functor into an additive functor. -/
 def AdditiveFunctor.ofLeftExact : (C ⥤ₗ D) ⥤ C ⥤+ D :=

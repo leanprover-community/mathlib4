@@ -84,12 +84,14 @@ noncomputable def discreteUnderlyingAdj : discrete C ⊣ underlying C :=
 
 end LightCondensed
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- A version of `LightCondensed.discrete` in the `LightCondSet` namespace -/
 noncomputable abbrev LightCondSet.discrete := LightCondensed.discrete (Type u)
 
 /-- A version of `LightCondensed.underlying` in the `LightCondSet` namespace -/
 noncomputable abbrev LightCondSet.underlying := LightCondensed.underlying (Type u)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- A version of `LightCondensed.discrete_underlying_adj` in the `LightCondSet` namespace -/
 noncomputable abbrev LightCondSet.discreteUnderlyingAdj : discrete ⊣ underlying :=
   LightCondensed.discreteUnderlyingAdj _

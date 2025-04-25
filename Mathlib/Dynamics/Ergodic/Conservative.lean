@@ -190,7 +190,7 @@ theorem ae_frequently_mem_of_mem_nhds [TopologicalSpace α] [SecondCountableTopo
 /-- Iteration of a conservative system is a conservative system. -/
 protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n] μ := by
   -- Discharge the trivial case `n = 0`
-  cases' n with n
+  rcases n with - | n
   · exact Conservative.id μ
   refine ⟨hf.1.iterate _, fun s hs hs0 => ?_⟩
   rcases (hf.frequently_ae_mem_and_frequently_image_mem hs.nullMeasurableSet hs0).exists

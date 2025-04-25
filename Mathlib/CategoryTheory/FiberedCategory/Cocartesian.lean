@@ -60,9 +60,8 @@ a --φ--> b        b'
 v        v        v
 R --f--> S --g--> S'
 ```
-such that `φ'` lifts `f ≫ g`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`.
-
-See <https://stacks.math.columbia.edu/tag/02XK>. -/
+such that `φ'` lifts `f ≫ g`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`. -/
+@[stacks 02XK]
 class IsStronglyCocartesian extends IsHomLift p f φ : Prop where
   universal_property' {b' : 𝒳} (g : S ⟶ p.obj b') (φ' : a ⟶ b') [IsHomLift p (f ≫ g) φ'] :
       ∃! χ : b ⟶ b', IsHomLift p g χ ∧ φ ≫ χ = φ'

@@ -17,6 +17,7 @@ variable {F ι α β : Type*}
 namespace Rat
 variable [DivisionRing α] [CharZero α] {p q : ℚ}
 
+@[stacks 09FR "Characteristic zero case."]
 lemma cast_injective : Injective ((↑) : ℚ → α)
   | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩, h => by
     have d₁a : (d₁ : α) ≠ 0 := Nat.cast_ne_zero.2 d₁0
@@ -52,8 +53,6 @@ def castHom : ℚ →+* α where
   map_add' := cast_add
 
 @[simp] lemma coe_castHom : ⇑(castHom α) = ((↑) : ℚ → α) := rfl
-
-@[deprecated (since := "2024-07-22")] alias coe_cast_hom := coe_castHom
 
 @[simp, norm_cast] lemma cast_inv (p : ℚ) : ↑(p⁻¹) = (p⁻¹ : α) := map_inv₀ (castHom α) _
 @[simp, norm_cast] lemma cast_div (p q : ℚ) : ↑(p / q) = (p / q : α) := map_div₀ (castHom α) ..

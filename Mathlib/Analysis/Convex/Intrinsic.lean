@@ -43,9 +43,7 @@ The main results are:
 * `x ∈ s → y ∈ intrinsicInterior 𝕜 s → openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 s`
 -/
 
-
-open AffineSubspace Set
-
+open AffineSubspace Set Topology
 open scoped Pointwise
 
 variable {𝕜 V W Q P : Type*}

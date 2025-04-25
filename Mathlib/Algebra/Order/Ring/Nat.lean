@@ -5,8 +5,8 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Ring.Parity
 import Mathlib.Data.Set.Basic
 
 /-!
@@ -35,12 +35,6 @@ instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero �
   __ := instLinearOrderedCommSemiring
   __ : CommMonoidWithZero ℕ := inferInstance
   mul_le_mul_left _ _ h c := Nat.mul_le_mul_left c h
-
-instance instCanonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ where
-  __ := instLinearOrderedCommSemiring
-  exists_add_of_le h := (Nat.le.dest h).imp fun _ => Eq.symm
-  le_self_add := Nat.le_add_right
-  eq_zero_or_eq_zero_of_mul_eq_zero := Nat.mul_eq_zero.mp
 
 /-!
 ### Extra instances to short-circuit type class resolution

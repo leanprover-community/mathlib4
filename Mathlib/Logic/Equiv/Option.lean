@@ -177,10 +177,7 @@ def optionSubtype [DecidableEq β] (x : β) :
     ext a
     cases a
     · simpa using e.property.symm
-    -- Porting note: this cases had been by `simpa`,
-    -- but `simp` here is mysteriously slow, even after squeezing.
-    -- `rfl` closes the goal quickly, so we use that.
-    · rfl
+    · simp
   right_inv e := by
     ext a
     rfl

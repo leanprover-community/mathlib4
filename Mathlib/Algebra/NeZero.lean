@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Logic.Basic
-import Mathlib.Algebra.Group.ZeroOne
-import Mathlib.Order.Defs
+import Mathlib.Data.One.Defs
+import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # `NeZero` typeclass

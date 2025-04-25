@@ -121,13 +121,13 @@ instance ULiftHom.category : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
   id _ := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
 
-/-- One half of the quivalence between `C` and `ULiftHom C`. -/
+/-- One half of the equivalence between `C` and `ULiftHom C`. -/
 @[simps]
 def ULiftHom.up : C ⥤ ULiftHom C where
   obj := ULiftHom.objUp
   map f := ⟨f⟩
 
-/-- One half of the quivalence between `C` and `ULiftHom C`. -/
+/-- One half of the equivalence between `C` and `ULiftHom C`. -/
 @[simps]
 def ULiftHom.down : ULiftHom C ⥤ C where
   obj := ULiftHom.objDown
@@ -173,6 +173,16 @@ def AsSmall.up : C ⥤ AsSmall C where
 def AsSmall.down : AsSmall C ⥤ C where
   obj X := ULift.down X
   map f := f.down
+
+@[reassoc]
+theorem down_comp {X Y Z : AsSmall C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).down = f.down ≫ g.down :=
+  rfl
+
+@[simp]
+theorem eqToHom_down {X Y : AsSmall C} (h : X = Y) :
+    (eqToHom h).down = eqToHom (congrArg ULift.down h) := by
+  subst h
+  rfl
 
 /-- The equivalence between `C` and `AsSmall C`. -/
 @[simps]

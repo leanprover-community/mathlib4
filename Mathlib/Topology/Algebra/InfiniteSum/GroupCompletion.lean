@@ -30,7 +30,7 @@ sums is Cauchy and its sum in `Completion α` lies in the range of `toCompl : α
 (The condition that the net of partial sums is Cauchy can be checked using
 `cauchySeq_finset_iff_sum_vanishing` or `cauchySeq_finset_iff_tsum_vanishing`.) -/
 theorem summable_iff_cauchySeq_finset_and_tsum_mem (f : β → α) :
-    Summable f ↔ CauchySeq (fun s : Finset β ↦ ∑ b in s, f b) ∧
+    Summable f ↔ CauchySeq (fun s : Finset β ↦ ∑ b ∈ s, f b) ∧
       ∑' i, toCompl (f i) ∈ Set.range toCompl := by
   classical
   constructor

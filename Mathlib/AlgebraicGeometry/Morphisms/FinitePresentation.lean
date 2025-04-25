@@ -38,7 +38,7 @@ and `V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is of finite pre
 class LocallyOfFinitePresentation : Prop where
   finitePresentation_of_affine_subset :
     ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1),
-      (f.appLE U V e).FinitePresentation
+      (f.appLE U V e).hom.FinitePresentation
 
 instance : HasRingHomProperty @LocallyOfFinitePresentation RingHom.FinitePresentation where
   isLocal_ringHomProperty := RingHom.finitePresentation_isLocal
@@ -59,8 +59,8 @@ instance locallyOfFinitePresentation_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g 
     LocallyOfFinitePresentation (f ≫ g) :=
   MorphismProperty.comp_mem _ f g hf hg
 
-lemma locallyOfFinitePresentation_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @LocallyOfFinitePresentation :=
-  HasRingHomProperty.stableUnderBaseChange RingHom.finitePresentation_stableUnderBaseChange
+instance locallyOfFinitePresentation_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @LocallyOfFinitePresentation :=
+  HasRingHomProperty.isStableUnderBaseChange RingHom.finitePresentation_isStableUnderBaseChange
 
 end AlgebraicGeometry

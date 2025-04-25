@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Data.ENNReal.Basic
-import Mathlib.RingTheory.Finiteness
+import Mathlib.RingTheory.Finiteness.Defs
 
 /-! # The `WithLp` type synonym
 
@@ -56,6 +56,7 @@ protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
 instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
 instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
+instance instDecidableEq [DecidableEq V] : DecidableEq (WithLp p V) := ‹DecidableEq V›
 
 variable [Semiring K] [Semiring K'] [AddCommGroup V]
 

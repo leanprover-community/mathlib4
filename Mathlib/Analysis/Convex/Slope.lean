@@ -38,9 +38,9 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
   rw [hy] at key
   replace key := mul_le_mul_of_nonneg_left key hxz.le
   field_simp [a, b, mul_comm (z - x) _] at key ⊢
-  rw [div_le_div_right]
+  rw [div_le_div_iff_of_pos_right]
   · linarith
-  · nlinarith
+  · positivity
 
 /-- If `f : 𝕜 → 𝕜` is concave, then for any three points `x < y < z` the slope of the secant line of
 `f` on `[x, y]` is greater than the slope of the secant line of `f` on `[y, z]`. -/
@@ -71,9 +71,9 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
   rw [hy] at key
   replace key := mul_lt_mul_of_pos_left key hxz
   field_simp [mul_comm (z - x) _] at key ⊢
-  rw [div_lt_div_right]
+  rw [div_lt_div_iff_of_pos_right]
   · linarith
-  · nlinarith
+  · positivity
 
 /-- If `f : 𝕜 → 𝕜` is strictly concave, then for any three points `x < y < z` the slope of the
 secant line of `f` on `[x, y]` is strictly greater than the slope of the secant line of `f` on
@@ -100,7 +100,7 @@ theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
       rw [← one_mul z, ← hab, add_mul]
       exact add_lt_add_right ((mul_lt_mul_left ha).2 hxz) _
     have : (f y - f x) * (z - y) ≤ (f z - f y) * (y - x) :=
-      (div_le_div_iff (sub_pos.2 hxy) (sub_pos.2 hyz)).1 (hf hx hz hxy hyz)
+      (div_le_div_iff₀ (sub_pos.2 hxy) (sub_pos.2 hyz)).1 (hf hx hz hxy hyz)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)
     have ha : (z - y) / (z - x) = a := by
       rw [eq_comm, ← sub_eq_iff_eq_add'] at hab
@@ -145,7 +145,7 @@ theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
       rw [← one_mul z, ← hab, add_mul]
       exact add_lt_add_right ((mul_lt_mul_left ha).2 hxz) _
     have : (f y - f x) * (z - y) < (f z - f y) * (y - x) :=
-      (div_lt_div_iff (sub_pos.2 hxy) (sub_pos.2 hyz)).1 (hf hx hz hxy hyz)
+      (div_lt_div_iff₀ (sub_pos.2 hxy) (sub_pos.2 hyz)).1 (hf hx hz hxy hyz)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)
     have ha : (z - y) / (z - x) = a := by
       rw [eq_comm, ← sub_eq_iff_eq_add'] at hab
@@ -238,14 +238,14 @@ theorem ConvexOn.secant_mono_aux2 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
     (hxy : x < y) (hyz : y < z) : (f y - f x) / (y - x) ≤ (f z - f x) / (z - x) := by
   have hxy' : 0 < y - x := by linarith
   have hxz' : 0 < z - x := by linarith
-  rw [div_le_div_iff hxy' hxz']
+  rw [div_le_div_iff₀ hxy' hxz']
   linarith only [hf.secant_mono_aux1 hx hz hxy hyz]
 
 theorem ConvexOn.secant_mono_aux3 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
     (hxy : x < y) (hyz : y < z) : (f z - f x) / (z - x) ≤ (f z - f y) / (z - y) := by
   have hyz' : 0 < z - y := by linarith
   have hxz' : 0 < z - x := by linarith
-  rw [div_le_div_iff hxz' hyz']
+  rw [div_le_div_iff₀ hxz' hyz']
   linarith only [hf.secant_mono_aux1 hx hz hxy hyz]
 
 /-- If `f : 𝕜 → 𝕜` is convex, then for any point `a` the slope of the secant line of `f` through `a`
@@ -255,8 +255,8 @@ theorem ConvexOn.secant_mono (hf : ConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈
     (f x - f a) / (x - a) ≤ (f y - f a) / (y - a) := by
   rcases eq_or_lt_of_le hxy with (rfl | hxy)
   · simp
-  cases' lt_or_gt_of_ne hxa with hxa hxa
-  · cases' lt_or_gt_of_ne hya with hya hya
+  rcases lt_or_gt_of_ne hxa with hxa | hxa
+  · rcases lt_or_gt_of_ne hya with hya | hya
     · convert hf.secant_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;> field_simp
     · convert hf.slope_mono_adjacent hx hy hxa hya using 1
       rw [← neg_div_neg_eq]; field_simp
@@ -284,14 +284,14 @@ theorem StrictConvexOn.secant_strict_mono_aux2 (hf : StrictConvexOn 𝕜 s f) {x
     (hz : z ∈ s) (hxy : x < y) (hyz : y < z) : (f y - f x) / (y - x) < (f z - f x) / (z - x) := by
   have hxy' : 0 < y - x := by linarith
   have hxz' : 0 < z - x := by linarith
-  rw [div_lt_div_iff hxy' hxz']
+  rw [div_lt_div_iff₀ hxy' hxz']
   linarith only [hf.secant_strict_mono_aux1 hx hz hxy hyz]
 
 theorem StrictConvexOn.secant_strict_mono_aux3 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
     (hz : z ∈ s) (hxy : x < y) (hyz : y < z) : (f z - f x) / (z - x) < (f z - f y) / (z - y) := by
   have hyz' : 0 < z - y := by linarith
   have hxz' : 0 < z - x := by linarith
-  rw [div_lt_div_iff hxz' hyz']
+  rw [div_lt_div_iff₀ hxz' hyz']
   linarith only [hf.secant_strict_mono_aux1 hx hz hxy hyz]
 
 /-- If `f : 𝕜 → 𝕜` is strictly convex, then for any point `a` the slope of the secant line of `f`
@@ -299,8 +299,8 @@ through `a` and `b` is strictly monotone with respect to `b`. -/
 theorem StrictConvexOn.secant_strict_mono (hf : StrictConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈ s)
     (hx : x ∈ s) (hy : y ∈ s) (hxa : x ≠ a) (hya : y ≠ a) (hxy : x < y) :
     (f x - f a) / (x - a) < (f y - f a) / (y - a) := by
-  cases' lt_or_gt_of_ne hxa with hxa hxa
-  · cases' lt_or_gt_of_ne hya with hya hya
+  rcases lt_or_gt_of_ne hxa with hxa | hxa
+  · rcases lt_or_gt_of_ne hya with hya | hya
     · convert hf.secant_strict_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;>
         field_simp
     · convert hf.slope_strict_mono_adjacent hx hy hxa hya using 1

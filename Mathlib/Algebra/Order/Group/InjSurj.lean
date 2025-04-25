@@ -29,7 +29,7 @@ abbrev Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [O
 See note [reducible non-instances]. -/
 @[to_additive "Pullback a `LinearOrderedAddCommGroup` under an injective map."]
 abbrev Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : Type*} [One β]
-    [Mul β] [Inv β] [Div β] [Pow β ℕ] [Pow β ℤ] [Sup β] [Inf β] (f : β → α)
+    [Mul β] [Inv β] [Div β] [Pow β ℕ] [Pow β ℤ] [Max β] [Min β] (f : β → α)
     (hf : Function.Injective f) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)

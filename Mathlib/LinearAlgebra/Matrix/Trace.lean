@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
+import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.RowCol
 import Mathlib.Data.Matrix.Notation
@@ -180,13 +181,13 @@ section CommSemiring
 
 variable [DecidableEq m] [CommSemiring R]
 
--- TODO(mathlib4#6607): fix elaboration so that the ascription isn't needed
+-- TODO(https://github.com/leanprover-community/mathlib4/issues/6607): fix elaboration so that the ascription isn't needed
 theorem trace_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     trace ((M : Matrix _ _ _) * N * (↑M⁻¹ : Matrix _ _ _)) = trace N := by
   rw [trace_mul_cycle, Units.inv_mul, one_mul]
 
 set_option linter.docPrime false in
--- TODO(mathlib4#6607): fix elaboration so that the ascription isn't needed
+-- TODO(https://github.com/leanprover-community/mathlib4/issues/6607): fix elaboration so that the ascription isn't needed
 theorem trace_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     trace ((↑M⁻¹ : Matrix _ _ _) * N * (↑M : Matrix _ _ _)) = trace N :=
   trace_units_conj M⁻¹ N
@@ -228,5 +229,22 @@ theorem trace_fin_three_of (a b c d e f g h i : R) :
   trace_fin_three _
 
 end Fin
+
+namespace StdBasisMatrix
+
+variable {l m n : Type*} {R α : Type*} [DecidableEq l] [DecidableEq m] [DecidableEq n]
+variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
+
+@[simp]
+theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
+  -- Porting note: added `-diag_apply`
+  simp [trace, -diag_apply, h]
+
+@[simp]
+theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
+  -- Porting note: added `-diag_apply`
+  simp [trace, -diag_apply]
+
+end StdBasisMatrix
 
 end Matrix

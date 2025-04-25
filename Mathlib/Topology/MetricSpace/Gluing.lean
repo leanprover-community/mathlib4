@@ -3,6 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
@@ -167,7 +168,7 @@ theorem Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X
     · exact absurd h.2 (le_glueDist_inr_inl _ _ _ _ _).not_lt
     · exact hY h.1.2
   · rintro ⟨ε, ε0, H⟩
-    constructor <;> exact ⟨ε, ε0, fun h => H _ _ h⟩
+    constructor <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
 
 /-- Given two maps `Φ` and `Ψ` intro metric spaces `X` and `Y` such that the distances between
 `Φ p` and `Φ q`, and between `Ψ p` and `Ψ q`, coincide up to `2 ε` where `ε > 0`, one can almost
@@ -243,7 +244,7 @@ private theorem Sum.mem_uniformity (s : Set ((X ⊕ Y) × (X ⊕ Y))) :
     · cases not_le_of_lt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inr_inl
     · exact hY (lt_of_lt_of_le h (le_trans (min_le_left _ _) (min_le_right _ _)))
   · rintro ⟨ε, ε0, H⟩
-    constructor <;> rw [Filter.mem_map, mem_uniformity_dist] <;> exact ⟨ε, ε0, fun h => H _ _ h⟩
+    constructor <;> rw [Filter.mem_map, mem_uniformity_dist] <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
 
 /-- The distance on the disjoint union indeed defines a metric space. All the distance properties
 follow from our choice of the distance. The harder work is to show that the uniform structure
@@ -265,7 +266,7 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | .inr p, .inr q, .inr r => dist_triangle p q r
   eq_of_dist_eq_zero {p q} h := by
-    cases' p with p p <;> cases' q with q q
+    rcases p with p | p <;> rcases q with q | q
     · rw [eq_of_dist_eq_zero h]
     · exact eq_of_glueDist_eq_zero _ _ _ one_pos _ _ ((Sum.dist_eq_glueDist p q).symm.trans h)
     · exact eq_of_glueDist_eq_zero _ _ _ one_pos _ _ ((Sum.dist_eq_glueDist q p).symm.trans h)
@@ -532,7 +533,7 @@ theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σn, X n) 
     ∀ m (hx : x.1 ≤ m) (hy : y.1 ≤ m), inductiveLimitDist f x y =
       dist (leRecOn hx (f _) x.2 : X m) (leRecOn hy (f _) y.2 : X m)
   | 0, hx, hy => by
-    cases' x with i x; cases' y with j y
+    obtain ⟨i, x⟩ := x; obtain ⟨j, y⟩ := y
     obtain rfl : i = 0 := nonpos_iff_eq_zero.1 hx
     obtain rfl : j = 0 := nonpos_iff_eq_zero.1 hy
     rfl

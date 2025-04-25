@@ -5,7 +5,8 @@ Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.SingleObj
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # (Co)limits of functors out of `SingleObj M`
@@ -21,6 +22,8 @@ We characterise (co)limits of shape `SingleObj M`. Currently only in the categor
   quotient of `J.obj (SingleObj.star G)` by the induced action.
 
 -/
+
+assert_not_exists MonoidWithZero
 
 universe u v
 

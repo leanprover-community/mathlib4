@@ -76,6 +76,9 @@ instance [Inhabited C] : Inhabited (Skeleton C) :=
 noncomputable instance : Category (Skeleton C) := by
   apply InducedCategory.category
 
+noncomputable instance {α} [CoeSort C α] : CoeSort (Skeleton C) α :=
+  inferInstanceAs (CoeSort (InducedCategory _ _) _)
+
 /-- The functor from the skeleton of `C` to `C`. -/
 @[simps!]
 noncomputable def fromSkeleton : Skeleton C ⥤ C :=
@@ -92,9 +95,33 @@ instance : (fromSkeleton C).EssSurj where mem_essImage X := ⟨Quotient.mk' X, Q
 -- Porting note: named this instance
 noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence where
 
+variable {C}
+
+/-- The class of an object in the skeleton. -/
+abbrev toSkeleton (X : C) : Skeleton C := ⟦X⟧
+
+/-- The isomorphism between `⟦X⟧.out` and `X`. -/
+noncomputable def preCounitIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅ X :=
+  Nonempty.some (Quotient.mk_out X)
+
+variable (C)
+
+/-- An inverse to `fromSkeleton C` that forms an equivalence with it. -/
+@[simps] noncomputable def toSkeletonFunctor : C ⥤ Skeleton C where
+  obj := toSkeleton
+  map {X Y} f := by apply (preCounitIso X).hom ≫ f ≫ (preCounitIso Y).inv
+  map_id _ := by aesop
+  map_comp _ _ := by change _ = CategoryStruct.comp (obj := C) _ _; simp
+
 /-- The equivalence between the skeleton and the category itself. -/
-noncomputable def skeletonEquivalence : Skeleton C ≌ C :=
-  (fromSkeleton C).asEquivalence
+@[simps] noncomputable def skeletonEquivalence : Skeleton C ≌ C where
+  functor := fromSkeleton C
+  inverse := toSkeletonFunctor C
+  unitIso := NatIso.ofComponents
+    (fun X ↦ InducedCategory.isoMk (Nonempty.some <| Quotient.mk_out X.out).symm)
+    fun _ ↦ .symm <| Iso.inv_hom_id_assoc _ _
+  counitIso := NatIso.ofComponents preCounitIso
+  functor_unitIso_comp _ := Iso.inv_hom_id _
 
 theorem skeleton_skeletal : Skeletal (Skeleton C) := by
   rintro X Y ⟨h⟩

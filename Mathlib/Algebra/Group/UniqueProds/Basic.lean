@@ -3,9 +3,10 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Defs
 
 /-!
@@ -46,11 +47,7 @@ about the grading type and then a generic statement of the form "look at the coe
 The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
 
-assert_not_exists Cardinal
-assert_not_exists Subsemiring
-assert_not_exists Algebra
-assert_not_exists Submodule
-assert_not_exists StarModule
+assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule
 
 open Finset
 
@@ -105,8 +102,6 @@ theorem set_subsingleton (h : UniqueMul A B a0 b0) :
   rcases h hy.1 hy.2.1 hy.2.2 with ⟨rfl, rfl⟩
   rfl
 
--- Porting note: mathport warning: expanding binder collection
---  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/
 @[to_additive]
 theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
     UniqueMul A B a0 b0 ↔ ∃! ab, ab ∈ A ×ˢ B ∧ ab.1 * ab.2 = a0 * b0 :=
@@ -132,8 +127,6 @@ theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
 @[deprecated (since := "2024-09-23")]
 alias _root_.UniqueAdd.iff_card_nonpos := UniqueAdd.iff_card_le_one
 
--- Porting note: mathport warning: expanding binder collection
---  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/
 @[to_additive]
 theorem exists_iff_exists_existsUnique :
     (∃ a0 b0 : G, a0 ∈ A ∧ b0 ∈ B ∧ UniqueMul A B a0 b0) ↔
@@ -141,7 +134,7 @@ theorem exists_iff_exists_existsUnique :
   ⟨fun ⟨_, _, hA, hB, h⟩ ↦ ⟨_, (iff_existsUnique hA hB).mp h⟩, fun ⟨g, h⟩ ↦ by
     have h' := h
     rcases h' with ⟨⟨a, b⟩, ⟨hab, rfl, -⟩, -⟩
-    cases' Finset.mem_product.mp hab with ha hb
+    obtain ⟨ha, hb⟩ := Finset.mem_product.mp hab
     exact ⟨a, b, ha, hb, (iff_existsUnique ha hb).mpr h⟩⟩
 
 /-- `UniqueMul` is preserved by inverse images under injective, multiplicative maps. -/
@@ -623,23 +616,6 @@ instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
   of_mulOpposite of_covariant_right
 
 end TwoUniqueProds
-
-@[deprecated (since := "2024-02-04")]
-alias UniqueProds.mulHom_image_of_injective := UniqueProds.of_injective_mulHom
-@[deprecated (since := "2024-02-04")]
-alias UniqueSums.addHom_image_of_injective := UniqueSums.of_injective_addHom
-@[deprecated (since := "2024-02-04")]
-alias UniqueProds.mulHom_image_iff := MulEquiv.uniqueProds_iff
-@[deprecated (since := "2024-02-04")]
-alias UniqueSums.addHom_image_iff := AddEquiv.uniqueSums_iff
-@[deprecated (since := "2024-02-04")]
-alias TwoUniqueProds.mulHom_image_of_injective := TwoUniqueProds.of_injective_mulHom
-@[deprecated (since := "2024-02-04")]
-alias TwoUniqueSums.addHom_image_of_injective := TwoUniqueSums.of_injective_addHom
-@[deprecated (since := "2024-02-04")]
-alias TwoUniqueProds.mulHom_image_iff := MulEquiv.twoUniqueProds_iff
-@[deprecated (since := "2024-02-04")]
-alias TwoUniqueSums.addHom_image_iff := AddEquiv.twoUniqueSums_iff
 
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSums (G i)] :
     TwoUniqueSums (Π₀ i, G i) :=

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Action.Faithful
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Data.Set.Function
 
 /-!
@@ -36,7 +37,6 @@ lemma smul_def' [∀ i, SMul (α i) (β i)] (s : ∀ i, α i) (x : ∀ i, β i) 
 lemma smul_apply' [∀ i, SMul (α i) (β i)] (s : ∀ i, α i) (x : ∀ i, β i) : (s • x) i = s i • x i :=
   rfl
 
--- Porting note: `to_additive` fails to correctly translate name
 @[to_additive Pi.vaddAssocClass]
 instance isScalarTower [SMul M N] [∀ i, SMul N (α i)] [∀ i, SMul M (α i)]
     [∀ i, IsScalarTower M N (α i)] : IsScalarTower M N (∀ i, α i) where

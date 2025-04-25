@@ -34,6 +34,6 @@ theorem Ordinal.univLE_of_injective {f : Ordinal.{u} → Ordinal.{v}} (h : f.Inj
     UnivLE.{u, v} :=
   univLE_iff_exists_embedding.2 ⟨f, h⟩
 
-/-- Together with transitivity, this shows UnivLE "IsTotalPreorder". -/
+/-- Together with transitivity, this shows `UnivLE` is a total preorder. -/
 theorem univLE_total : UnivLE.{u, v} ∨ UnivLE.{v, u} := by
   simp_rw [univLE_iff_cardinal_le]; apply le_total

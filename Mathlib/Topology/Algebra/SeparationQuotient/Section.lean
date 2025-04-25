@@ -15,11 +15,13 @@ In this file we construct a section of the quotient map `E → SeparationQuotien
 linear map `SeparationQuotient E →L[K] E`.
 -/
 
+open Topology
+
 namespace SeparationQuotient
 section VectorSpace
 
 variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
-  [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul K E]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul K E]
 
 /-- There exists a continuous `K`-linear map from `SeparationQuotient E` to `E`
 such that `mk (outCLM x) = x` for all `x`.
@@ -31,7 +33,7 @@ theorem exists_out_continuousLinearMap :
   rcases (mkCLM K E).toLinearMap.exists_rightInverse_of_surjective
     (LinearMap.range_eq_top.mpr surjective_mk) with ⟨f, hf⟩
   replace hf : mk ∘ f = id := congr_arg DFunLike.coe hf
-  exact ⟨⟨f, inducing_mk.continuous_iff.2 (by continuity)⟩, DFunLike.ext' hf⟩
+  exact ⟨⟨f, isInducing_mk.continuous_iff.2 (by continuity)⟩, DFunLike.ext' hf⟩
 
 /-- A continuous `K`-linear map from `SeparationQuotient E` to `E`
 such that `mk (outCLM x) = x` for all `x`. -/
@@ -59,11 +61,14 @@ theorem postcomp_mkCLM_surjective {L : Type*} [Semiring L] (σ : L →+* K)
   rw [← ContinuousLinearMap.comp_assoc, mkCLM_comp_outCLM, ContinuousLinearMap.id_comp]
 
 /-- The `SeparationQuotient.outCLM K E` map is a topological embedding. -/
-theorem outCLM_embedding : Embedding (outCLM K E) :=
-  Function.LeftInverse.embedding (mk_outCLM K) continuous_mk (map_continuous _)
+theorem isEmbedding_outCLM : IsEmbedding (outCLM K E) :=
+  Function.LeftInverse.isEmbedding (mk_outCLM K) continuous_mk (map_continuous _)
+
+@[deprecated (since := "2024-10-26")]
+alias outCLM_embedding := isEmbedding_outCLM
 
 theorem outCLM_injective : Function.Injective (outCLM K E) :=
-  (outCLM_embedding K E).injective
+  (isEmbedding_outCLM K E).injective
 
 end VectorSpace
 
@@ -80,7 +85,7 @@ theorem outCLM_isUniformInducing : IsUniformInducing (outCLM K E) := by
 alias outCLM_uniformInducing := outCLM_isUniformInducing
 
 theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
-  inj := outCLM_injective K E
+  injective := outCLM_injective K E
   toIsUniformInducing := outCLM_isUniformInducing K E
 
 @[deprecated (since := "2024-10-01")]

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.CategoryTheory.Linear.LinearFunctor
@@ -15,6 +14,8 @@ is the left adjoint of
 the forgetful functor from `R`-modules to types.
 -/
 
+
+assert_not_exists Cardinal
 
 noncomputable section
 
@@ -35,9 +36,9 @@ free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
-  map {_ _} f := Finsupp.lmapDomain _ _ f
-  map_id := by intros; exact Finsupp.lmapDomain_id _ _
-  map_comp := by intros; exact Finsupp.lmapDomain_comp _ _ _ _
+  map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ f
+  map_id := by intros; ext : 1; exact Finsupp.lmapDomain_id _ _
+  map_comp := by intros; ext : 1; exact Finsupp.lmapDomain_comp _ _ _ _
 
 variable {R}
 
@@ -48,13 +49,13 @@ noncomputable def freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single
 lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
     (h : ∀ (x : X), f (freeMk x) = g (freeMk x)) :
     f = g :=
-  (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
+  ModuleCat.hom_ext (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
 
 /-- The morphism of modules `(free R).obj X ⟶ M` corresponding
 to a map `f : X ⟶ M`. -/
 noncomputable def freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
     (free R).obj X ⟶ M :=
-  Finsupp.lift M R X f
+  ofHom <| Finsupp.lift M R X f
 
 @[simp]
 lemma freeDesc_apply {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
@@ -96,163 +97,110 @@ instance : (forget (ModuleCat.{u} R)).IsRightAdjoint  :=
 
 end
 
-namespace Free
+section Free
 
 open MonoidalCategory
 
 variable [CommRing R]
 
-attribute [local ext] TensorProduct.ext
+namespace FreeMonoidal
 
-/-- (Implementation detail) The unitor for `Free R`. -/
-def ε : 𝟙_ (ModuleCat.{u} R) ⟶ (free R).obj (𝟙_ (Type u)) :=
-  Finsupp.lsingle PUnit.unit
+/-- The canonical isomorphism `𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u))`.
+(This should not be used directly: it is part of the implementation of the
+monoidal structure on the functor `free R`.) -/
+def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
+  hom := ofHom <| Finsupp.lsingle PUnit.unit
+  inv := ofHom <| Finsupp.lapply PUnit.unit
+  hom_inv_id := by
+    ext
+    simp [free]
+  inv_hom_id := by
+    ext ⟨⟩
+    dsimp [freeMk]
+    erw [Finsupp.lapply_apply, Finsupp.lsingle_apply]
+    rw [Finsupp.single_eq_same]
 
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF]
-theorem ε_apply (r : R) : ε R r = Finsupp.single PUnit.unit r :=
-  rfl
+@[simp]
+lemma εIso_hom_one : (εIso R).hom 1 = freeMk PUnit.unit := rfl
 
-/-- (Implementation detail) The tensorator for `Free R`. -/
-def μ (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (α ⊗ β) :=
-  (finsuppTensorFinsupp' R α β).toModuleIso
+@[simp]
+lemma εIso_inv_freeMk (x : PUnit) : (εIso R).inv (freeMk x) = 1 := by
+  dsimp [εIso, freeMk]
+  erw [Finsupp.lapply_apply]
+  rw [Finsupp.single_eq_same]
 
-theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').hom = (μ R X X').hom ≫ (free R).map (f ⊗ g) := by
-  -- Porting note (#11041): broken ext
-  apply TensorProduct.ext
-  apply Finsupp.lhom_ext'
-  intro x
-  apply LinearMap.ext_ring
-  apply Finsupp.lhom_ext'
-  intro x'
-  apply LinearMap.ext_ring
-  apply Finsupp.ext
-  intro ⟨y, y'⟩
-  -- Porting note (#10934): used to be dsimp [μ]
-  change (finsuppTensorFinsupp' R Y Y')
-    (Finsupp.mapDomain f (Finsupp.single x 1) ⊗ₜ[R] Finsupp.mapDomain g (Finsupp.single x' 1)) _
-    = (Finsupp.mapDomain (f ⊗ g) (finsuppTensorFinsupp' R X X'
-    (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single x' 1))) _
+/-- The canonical isomorphism `(free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y)`
+for two types `X` and `Y`.
+(This should not be used directly: it is is part of the implementation of the
+monoidal structure on the functor `free R`.) -/
+def μIso (X Y : Type u) :
+    (free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y) :=
+  (finsuppTensorFinsupp' R _ _).toModuleIso
 
-  -- extra `rfl` after leanprover/lean4#2466
-  simp_rw [Finsupp.mapDomain_single, finsuppTensorFinsupp'_single_tmul_single, mul_one,
-    Finsupp.mapDomain_single, CategoryTheory.tensor_apply]; rfl
+@[simp]
+lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
+    (μIso R X Y).hom (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
+  dsimp [μIso, freeMk]
+  erw [finsuppTensorFinsupp'_single_tmul_single]
+  rw [mul_one]
 
-theorem left_unitality (X : Type u) :
-    (λ_ ((free R).obj X)).hom =
-      (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).hom ≫ map (free R).obj (λ_ X).hom := by
-  -- Porting note (#11041): broken ext
-  apply TensorProduct.ext
-  apply LinearMap.ext_ring
-  apply Finsupp.lhom_ext'
-  intro x
-  apply LinearMap.ext_ring
-  apply Finsupp.ext
-  intro x'
-  -- Porting note (#10934): used to be dsimp [ε, μ]
-  let q : X →₀ R := ((λ_ (of R (X →₀ R))).hom) (1 ⊗ₜ[R] Finsupp.single x 1)
-  change q x' = Finsupp.mapDomain (λ_ X).hom (finsuppTensorFinsupp' R (𝟙_ (Type u)) X
-    (Finsupp.single PUnit.unit 1 ⊗ₜ[R] Finsupp.single x 1)) x'
-  simp_rw [q, finsuppTensorFinsupp'_single_tmul_single,
-    ModuleCat.MonoidalCategory.leftUnitor_hom_apply, mul_one,
-    Finsupp.mapDomain_single, CategoryTheory.leftUnitor_hom_apply, one_smul]
+@[simp]
+lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
+    (μIso R X Y).inv (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
+  dsimp [μIso, freeMk]
+  erw [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
-theorem right_unitality (X : Type u) :
-    (ρ_ ((free R).obj X)).hom =
-      (𝟙 ((free R).obj X) ⊗ ε R) ≫ (μ R X (𝟙_ (Type u))).hom ≫ map (free R).obj (ρ_ X).hom := by
-  -- Porting note (#11041): broken ext
-  apply TensorProduct.ext
-  apply Finsupp.lhom_ext'
-  intro x
-  apply LinearMap.ext_ring
-  apply LinearMap.ext_ring
-  apply Finsupp.ext
-  intro x'
-  -- Porting note (#10934): used to be dsimp [ε, μ]
-  let q : X →₀ R := ((ρ_ (of R (X →₀ R))).hom) (Finsupp.single x 1 ⊗ₜ[R] 1)
-  change q x' = Finsupp.mapDomain (ρ_ X).hom (finsuppTensorFinsupp' R X (𝟙_ (Type u))
-    (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single PUnit.unit 1)) x'
-  simp_rw [q, finsuppTensorFinsupp'_single_tmul_single,
-    ModuleCat.MonoidalCategory.rightUnitor_hom_apply, mul_one,
-    Finsupp.mapDomain_single, CategoryTheory.rightUnitor_hom_apply, one_smul]
+end FreeMonoidal
 
-theorem associativity (X Y Z : Type u) :
-    ((μ R X Y).hom ⊗ 𝟙 ((free R).obj Z)) ≫ (μ R (X ⊗ Y) Z).hom ≫ map (free R).obj (α_ X Y Z).hom =
-      (α_ ((free R).obj X) ((free R).obj Y) ((free R).obj Z)).hom ≫
-        (𝟙 ((free R).obj X) ⊗ (μ R Y Z).hom) ≫ (μ R X (Y ⊗ Z)).hom := by
-  -- Porting note (#11041): broken ext
-  apply TensorProduct.ext
-  apply TensorProduct.ext
-  apply Finsupp.lhom_ext'
-  intro x
-  apply LinearMap.ext_ring
-  apply Finsupp.lhom_ext'
-  intro y
-  apply LinearMap.ext_ring
-  apply Finsupp.lhom_ext'
-  intro z
-  apply LinearMap.ext_ring
-  apply Finsupp.ext
-  intro a
-  -- Porting note (#10934): used to be dsimp [μ]
-  change Finsupp.mapDomain (α_ X Y Z).hom (finsuppTensorFinsupp' R (X ⊗ Y) Z
-    (finsuppTensorFinsupp' R X Y
-    (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single y 1) ⊗ₜ[R] Finsupp.single z 1)) a =
-    finsuppTensorFinsupp' R X (Y ⊗ Z)
-    (Finsupp.single x 1 ⊗ₜ[R]
-      finsuppTensorFinsupp' R Y Z (Finsupp.single y 1 ⊗ₜ[R] Finsupp.single z 1)) a
-  -- extra `rfl` after leanprover/lean4#2466
-  simp_rw [finsuppTensorFinsupp'_single_tmul_single, Finsupp.mapDomain_single, mul_one,
-    CategoryTheory.associator_hom_apply]; rfl
+open FreeMonoidal in
+/-- The free functor `Type u ⥤ ModuleCat R` is a monoidal functor. -/
+instance : (free R).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := εIso R
+      μIso := μIso R
+      μIso_hom_natural_left := fun {X Y} f X' ↦ by
+        rw [← cancel_epi (μIso R X X').inv]
+        aesop
+      μIso_hom_natural_right := fun {X Y} X' f ↦ by
+        rw [← cancel_epi (μIso R X' X).inv]
+        aesop
+      associativity := fun X Y Z ↦ by
+        rw [← cancel_epi ((μIso R X Y).inv ▷ _), ← cancel_epi (μIso R _ _).inv]
+        ext ⟨⟨x, y⟩, z⟩
+        dsimp
+        rw [μIso_inv_freeMk, MonoidalCategory.whiskerRight_apply, μIso_inv_freeMk,
+          MonoidalCategory.whiskerRight_apply, μIso_hom_freeMk_tmul_freeMk,
+          μIso_hom_freeMk_tmul_freeMk, free_map_apply,
+          CategoryTheory.associator_hom_apply, MonoidalCategory.associator_hom_apply,
+          MonoidalCategory.whiskerLeft_apply, μIso_hom_freeMk_tmul_freeMk,
+          μIso_hom_freeMk_tmul_freeMk]
+      left_unitality := fun X ↦ by
+        rw [← cancel_epi (λ_ _).inv, Iso.inv_hom_id]
+        aesop
+      right_unitality := fun X ↦ by
+        rw [← cancel_epi (ρ_ _).inv, Iso.inv_hom_id]
+        aesop }
 
--- In fact, it's strong monoidal, but we don't yet have a typeclass for that.
-/-- The free R-module functor is lax monoidal. -/
-@[simps]
-instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
-  -- Send `R` to `PUnit →₀ R`
-  (ε := ε R)
-  -- Send `(α →₀ R) ⊗ (β →₀ R)` to `α × β →₀ R`
-  (μ := fun X Y => (μ R X Y).hom)
-  (μ_natural := fun {_} {_} {_} {_} f g ↦ μ_natural R f g)
-  (left_unitality := left_unitality R)
-  (right_unitality := right_unitality R)
-  (associativity := associativity R)
+open Functor.LaxMonoidal Functor.OplaxMonoidal
 
-instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
-  refine ⟨⟨Finsupp.lapply PUnit.unit, ⟨?_, ?_⟩⟩⟩
-  · -- Porting note (#11041): broken ext
-    apply LinearMap.ext_ring
-    -- Porting note (#10959): simp used to be able to close this goal
-    dsimp
-    erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
-      Finsupp.single_eq_same, id_apply]
-  · -- Porting note (#11041): broken ext
-    apply Finsupp.lhom_ext'
-    intro ⟨⟩
-    apply LinearMap.ext_ring
-    apply Finsupp.ext
-    intro ⟨⟩
-    -- Porting note (#10959): simp used to be able to close this goal
-    dsimp
-    erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
-      Finsupp.single_eq_same]
+@[simp]
+lemma free_ε_one : ε (free R) 1 = freeMk PUnit.unit := rfl
+
+@[simp]
+lemma free_η_freeMk (x : PUnit) : η (free R) (freeMk x) = 1 := by
+  apply FreeMonoidal.εIso_inv_freeMk
+
+@[simp]
+lemma free_μ_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
+    μ (free R) _ _ (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
+  apply FreeMonoidal.μIso_hom_freeMk_tmul_freeMk
+
+@[simp]
+lemma free_δ_freeMk {X Y : Type u} (z : X ⊗ Y) :
+    δ (free R) _ _ (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
+  apply FreeMonoidal.μIso_inv_freeMk
 
 end Free
-
-open MonoidalCategory
-
-variable [CommRing R]
-
-/-- The free functor `Type u ⥤ ModuleCat R`, as a monoidal functor. -/
-def monoidalFree : MonoidalFunctor (Type u) (ModuleCat.{u} R) :=
-  { LaxMonoidalFunctor.of (free R).obj with
-    -- Porting note (#10934): used to be dsimp
-    ε_isIso := (by infer_instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _))
-    μ_isIso := fun X Y => by dsimp; infer_instance }
-
-example (X Y : Type u) : (free R).obj (X × Y) ≅ (free R).obj X ⊗ (free R).obj Y :=
-  ((monoidalFree R).μIso X Y).symm
 
 end ModuleCat
 
@@ -264,7 +212,6 @@ universe v u
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/
--- Porting note(#5171): Removed has_nonempty_instance nolint; linter not ported yet
 @[nolint unusedArguments]
 def Free (_ : Type*) (C : Type u) :=
   C
@@ -299,9 +246,6 @@ instance categoryFree : Category (Free R C) where
 namespace Free
 
 section
-
--- Porting note: removed local reducible attribute for categoryFree, adjusted dsimp invocations
--- accordingly
 
 instance : Preadditive (Free R C) where
   homGroup _ _ := Finsupp.instAddCommGroup
@@ -341,8 +285,7 @@ def embedding : C ⥤ Free R C where
   map {_ _} f := Finsupp.single f 1
   map_id _ := rfl
   map_comp {X Y Z} f g := by
-    -- Porting note (#10959): simp used to be able to close this goal
-    dsimp only []
+    -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): simp used to be able to close this goal
     rw [single_comp_single, one_mul]
 
 variable {C} {D : Type u} [Category.{v} D] [Preadditive D] [Linear R D]

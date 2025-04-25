@@ -133,7 +133,6 @@ lemma neg_pow' (a : R) (n : ℕ) : (-a) ^ n = a ^ n * (-1) ^ n :=
 
 lemma neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 
--- Porting note: removed the simp attribute to please the simpNF linter
 lemma neg_one_sq : (-1 : R) ^ 2 = 1 := by simp [neg_sq, one_pow]
 
 alias neg_pow_two := neg_sq
@@ -192,6 +191,9 @@ alias sub_pow_two := sub_sq
 
 lemma sub_sq' (a b : R) : (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b := by
   rw [sub_eq_add_neg, add_sq', neg_sq, mul_neg, ← sub_eq_add_neg]
+
+lemma sub_sq_comm (a b : R) : (a - b) ^ 2 = (b - a) ^ 2 := by
+  rw [sub_sq', mul_right_comm, add_comm, sub_sq']
 
 variable [NoZeroDivisors R] {a b : R}
 

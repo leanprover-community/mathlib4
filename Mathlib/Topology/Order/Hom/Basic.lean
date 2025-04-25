@@ -36,7 +36,7 @@ structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [Topolo
   [TopologicalSpace β] extends OrderHom α β where
   continuous_toFun : Continuous toFun
 
-infixr:25 " →Co " => ContinuousOrderHom
+@[inherit_doc] infixr:25 " →Co " => ContinuousOrderHom
 
 section
 
@@ -56,7 +56,7 @@ variable [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
   [FunLike F α β] [ContinuousOrderHomClass F α β]
 
 -- See note [lower instance priority]
-instance (priority := 100) toOrderHomClass  :
+instance (priority := 100) toOrderHomClass :
     OrderHomClass F α β :=
   { ‹ContinuousOrderHomClass F α β› with
     map_rel := ContinuousOrderHomClass.map_monotone }
@@ -132,7 +132,7 @@ protected def id : α →Co α :=
 instance : Inhabited (α →Co α) :=
   ⟨ContinuousOrderHom.id _⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(ContinuousOrderHom.id α) = id :=
   rfl
 

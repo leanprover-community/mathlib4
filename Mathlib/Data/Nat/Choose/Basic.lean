@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Monotone.Defs
 
 /-!
 # Binomial coefficients
@@ -290,13 +290,13 @@ private theorem choose_le_middle_of_le_half_left {n r : ℕ} (hr : r ≤ n / 2) 
 
 /-- `choose n r` is maximised when `r` is `n/2`. -/
 theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
-  cases' le_or_gt r n with b b
+  rcases le_or_gt r n with b | b
   · rcases le_or_lt r (n / 2) with a | h
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      rw [div_lt_iff_lt_mul' Nat.zero_lt_two] at h
-      rw [le_div_iff_mul_le' Nat.zero_lt_two, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
+      rw [div_lt_iff_lt_mul Nat.zero_lt_two] at h
+      rw [le_div_iff_mul_le Nat.zero_lt_two, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
         ← Nat.sub_le_iff_le_add', Nat.mul_two, Nat.add_sub_cancel]
       exact le_of_lt h
   · rw [choose_eq_zero_of_lt b]

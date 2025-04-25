@@ -8,7 +8,7 @@ import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.Real.Defs
 
 /-!
 # The completion of a metric space
@@ -45,7 +45,7 @@ protected theorem uniformContinuous_dist :
 /-- The new distance is continuous. -/
 protected theorem continuous_dist [TopologicalSpace β] {f g : β → Completion α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x ↦ dist (f x) (g x) :=
-  Completion.uniformContinuous_dist.continuous.comp (hf.prod_mk hg : _)
+  Completion.uniformContinuous_dist.continuous.comp (hf.prod_mk hg :)
 
 /-- The new distance is an extension of the original distance. -/
 @[simp]
@@ -143,7 +143,7 @@ protected theorem uniformity_dist' :
   · simp [Completion.mem_uniformity_dist, subset_def]
   · rintro ⟨r, hr⟩ ⟨p, hp⟩
     use ⟨min r p, lt_min hr hp⟩
-    simp (config := { contextual := true }) [lt_min_iff]
+    simp +contextual [lt_min_iff]
 
 protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _
@@ -157,10 +157,6 @@ instance instMetricSpace : MetricSpace (Completion α) :=
       dist := dist
       toUniformSpace := inferInstance
       uniformity_dist := Completion.uniformity_dist } _
-
-@[deprecated eq_of_dist_eq_zero (since := "2024-03-10")]
-protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y :=
-  eq_of_dist_eq_zero h
 
 /-- The embedding of a metric space in its completion is an isometry. -/
 theorem coe_isometry : Isometry ((↑) : α → Completion α) :=

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 -/
 import Mathlib.Order.Notation
-import Mathlib.Data.Nat.Notation
 
 /-!
 # Order-related type synonyms
@@ -103,49 +102,3 @@ theorem recTopCoe_coe {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C 
   rfl
 
 end WithTop
-
-/-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
-def ENat : Type := WithTop ℕ deriving Top, Inhabited
-
-@[inherit_doc] notation "ℕ∞" => ENat
-
-namespace ENat
-
-instance instNatCast : NatCast ℕ∞ := ⟨WithTop.some⟩
-
--- Porting note (#11445): new definition copied from `WithTop`
-/-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
-  | none => top
-  | Option.some a => coe a
-
-@[simp]
-theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
-    @recTopCoe C d f ⊤ = d :=
-  rfl
-
-@[simp]
-theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
-    @recTopCoe C d f ↑x = f x :=
-  rfl
-
-end ENat
-
-/-- `ℕ+` is the type of positive natural numbers. It is defined as a subtype,
-  and the VM representation of `ℕ+` is the same as `ℕ` because the proof
-  is not stored. -/
-def PNat := { n : ℕ // 0 < n } deriving DecidableEq
-
-@[inherit_doc]
-notation "ℕ+" => PNat
-
-/-- The underlying natural number -/
-@[coe]
-def PNat.val : ℕ+ → ℕ := Subtype.val
-
-instance coePNatNat : Coe ℕ+ ℕ :=
-  ⟨PNat.val⟩
-
-instance : Repr ℕ+ :=
-  ⟨fun n n' => reprPrec n.1 n'⟩

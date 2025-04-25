@@ -99,8 +99,6 @@ in which multiplication is cancellative and monotone. -/
 class LinearOrderedCancelCommMonoid (α : Type*) extends OrderedCancelCommMonoid α,
     LinearOrderedCommMonoid α
 
-attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
-
 variable [LinearOrderedCommMonoid α] {a : α}
 
 @[to_additive (attr := simp)]

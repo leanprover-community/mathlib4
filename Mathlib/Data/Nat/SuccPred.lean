@@ -3,9 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Fin.Basic
+import Mathlib.Order.Nat
 import Mathlib.Order.SuccPred.Archimedean
 
 /-!

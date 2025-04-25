@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
 import Mathlib.LinearAlgebra.Contraction
+import Mathlib.Algebra.Group.Equiv.TypeTags
 
 /-!
 # Monoid representations
@@ -49,28 +50,33 @@ namespace Representation
 
 section trivial
 
-variable (k : Type*) {G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k G V : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
 /-- The trivial representation of `G` on a `k`-module V.
 -/
 def trivial : Representation k G V :=
   1
 
--- Porting note: why is `V` implicit
-theorem trivial_def (g : G) (v : V) : trivial k (V := V) g v = v :=
+variable {G V}
+
+@[simp]
+theorem trivial_apply (g : G) (v : V) : trivial k G V g v = v :=
   rfl
 
 variable {k}
 
 /-- A predicate for representations that fix every element. -/
 class IsTrivial (ρ : Representation k G V) : Prop where
-  out : ∀ g x, ρ g x = x := by aesop
+  out : ∀ g, ρ g = LinearMap.id := by aesop
 
-instance : IsTrivial (trivial k (G := G) (V := V)) where
+instance : IsTrivial (trivial k G V) where
 
-@[simp] theorem apply_eq_self
-    (ρ : Representation k G V) (g : G) (x : V) [h : IsTrivial ρ] :
-    ρ g x = x := h.out g x
+@[simp]
+theorem isTrivial_def (ρ : Representation k G V) [IsTrivial ρ] (g : G) :
+    ρ g = LinearMap.id := IsTrivial.out g
+
+theorem isTrivial_apply (ρ : Representation k G V) [IsTrivial ρ] (g : G) (x : V) :
+    ρ g x = x := congr($(isTrivial_def ρ g) x)
 
 end trivial
 
@@ -257,6 +263,7 @@ variable {k G H}
 theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
   rfl
 
+@[simp]
 theorem ofMulAction_single (g : G) (x : H) (r : k) :
     ofMulAction k G H g (Finsupp.single x r) = Finsupp.single (g • x) r :=
   Finsupp.mapDomain_single
@@ -292,7 +299,7 @@ def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
     ((monoidEndToAdditive G : _ →* _).comp (MulDistribMulAction.toMonoidEnd M G))
 
 @[simp] theorem ofMulDistribMulAction_apply_apply (g : M) (a : Additive G) :
-    ofMulDistribMulAction M G g a = Additive.ofMul (g • Additive.toMul a) := rfl
+    ofMulDistribMulAction M G g a = Additive.ofMul (g • a.toMul) := rfl
 
 end MulDistribMulAction
 section Group
@@ -413,11 +420,11 @@ def linHom : Representation k G (V →ₗ[k] W) where
       map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
   map_one' :=
     LinearMap.ext fun x => by
-      dsimp -- Porting note (#11227):now needed
+      dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
       simp_rw [inv_one, map_one, one_eq_id, comp_id, id_comp]
   map_mul' g h :=
     LinearMap.ext fun x => by
-      dsimp -- Porting note (#11227):now needed
+      dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
       simp_rw [mul_inv_rev, map_mul, mul_eq_comp, comp_assoc]
 
 @[simp]
@@ -436,11 +443,11 @@ def dual : Representation k G (Module.Dual k V) where
         simp only [coe_comp, Function.comp_apply, smul_apply, RingHom.id_apply] }
   map_one' := by
     ext
-    dsimp -- Porting note (#11227):now needed
+    dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
     simp only [coe_comp, Function.comp_apply, map_one, inv_one, coe_mk, one_apply]
   map_mul' g h := by
     ext
-    dsimp -- Porting note (#11227):now needed
+    dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
     simp only [coe_comp, Function.comp_apply, mul_inv_rev, map_mul, coe_mk, mul_apply]
 
 @[simp]

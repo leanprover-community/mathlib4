@@ -21,10 +21,12 @@ The approach taken here is identical to (and copied from) the development in `No
 
 -/
 
+assert_not_exists RelIso
+
 set_option autoImplicit true
 
 namespace Mathlib
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 
 namespace Meta.NormNum

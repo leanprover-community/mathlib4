@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Grade
+import Mathlib.Data.Finset.Powerset
 import Mathlib.Order.Interval.Finset.Basic
 
 /-!

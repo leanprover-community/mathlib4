@@ -282,7 +282,7 @@ protected def id : HeytingHom α α :=
     toLatticeHom := LatticeHom.id _
     map_himp' := fun _ _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(HeytingHom.id α) = id :=
   rfl
 
@@ -388,7 +388,7 @@ protected def id : CoheytingHom α α :=
     toLatticeHom := LatticeHom.id _
     map_sdiff' := fun _ _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(CoheytingHom.id α) = id :=
   rfl
 
@@ -492,7 +492,7 @@ variable (α)
 protected def id : BiheytingHom α α :=
   { HeytingHom.id _, CoheytingHom.id _ with toLatticeHom := LatticeHom.id _ }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BiheytingHom.id α) = id :=
   rfl
 

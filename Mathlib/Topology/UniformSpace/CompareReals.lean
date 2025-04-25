@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Topology.UniformSpace.AbsoluteValue
-import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Comparison of Cauchy reals and Bourbaki reals

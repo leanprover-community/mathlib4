@@ -54,6 +54,7 @@ def evalFinsetDens : PositivityExt where eval {u 𝕜} _ _ e := do
     return .positive q(@Nonempty.dens_pos $α $instα $s $ps)
   | _, _, _ => throwError "not Finset.dens"
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `positivity` extension which proves that `∑ i ∈ s, f i` is nonnegative if `f` is, and
 positive if each `f i` is and `s` is nonempty.
 

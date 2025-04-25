@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Init
-import Lean
 
 /-!
 ## `funProp` missing function from standard library
@@ -36,7 +35,7 @@ def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bo
 private def letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
     MetaM α :=
   lambdaLetTelescope e fun xs b ↦ do
-    if let .some i ← xs.findIdxM? (fun x ↦ do pure ¬(← x.fvarId!.isLetVar)) then
+    if let .some i ← xs.findIdxM? (fun x ↦ do pure !(← x.fvarId!.isLetVar)) then
       k xs[0:i] (← mkLambdaFVars xs[i:] b)
     else
       k xs b
@@ -47,13 +46,13 @@ def letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
   map2MetaM (fun k => letTelescopeImpl e k) k
 
 /--
-  Swaps bvars indices `i` and `j`
+Swaps bvars indices `i` and `j`
 
-  NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
-  they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
+NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
+they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
 
-  TODO: This has to have a better implementation, but I'm still beyond confused with how bvar
-  indices work
+TODO: This has to have a better implementation, but I'm still beyond confused with how bvar
+indices work
 -/
 def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 

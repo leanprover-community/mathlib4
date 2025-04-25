@@ -201,7 +201,7 @@ attribute [local instance] Sym2.Rel.setoid
 def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a b : α) :
     C a b := by
-  -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.
+  -- Porting note: this was refactored for https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta), and could perhaps be cleaned up.
   have := hr.sym2_gameAdd
   dsimp only [GameAdd, lift₂, DFunLike.coe, EquivLike.coe] at this
   exact @WellFounded.fix (α × α) (fun x => C x.1 x.2) _ this.of_quotient_lift₂
@@ -210,7 +210,7 @@ def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
 theorem GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a b : α) :
     GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' := by
-  -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.
+  -- Porting note: this was refactored for https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta), and could perhaps be cleaned up.
   dsimp [GameAdd.fix]
   exact WellFounded.fix_eq _ _ _
 

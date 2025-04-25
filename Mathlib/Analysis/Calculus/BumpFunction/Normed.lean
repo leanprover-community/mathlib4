@@ -142,7 +142,7 @@ theorem normed_le_div_measure_closedBall_rOut [IsAddHaarMeasure μ] (K : ℝ) (h
     · exact f.integral_pos.le
     · exact f.le_one
   apply this.trans
-  rw [div_le_div_iff f.integral_pos, one_mul, ← div_le_iff₀' (pow_pos K_pos _)]
+  rw [div_le_div_iff₀ f.integral_pos, one_mul, ← div_le_iff₀' (pow_pos K_pos _)]
   · exact f.measure_closedBall_div_le_integral μ K h
   · exact ENNReal.toReal_pos (measure_closedBall_pos _ _ f.rOut_pos).ne'
       measure_closedBall_lt_top.ne

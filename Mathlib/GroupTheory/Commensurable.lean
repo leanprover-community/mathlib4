@@ -8,19 +8,23 @@ import Mathlib.GroupTheory.Index
 /-!
 # Commensurability for subgroups
 
-This file defines commensurability for subgroups of a group `G`. It then goes on to prove that
-commensurability defines an equivalence relation and finally defines the commensurator of a subgroup
-of `G`.
+Two subgroups `H` and `K` of a group `G` are commensurable if `H ∩ K` has finite index in both `H`
+and `K`.
+
+This file defines commensurability for subgroups of a group `G`. It goes on to prove that
+commensurability defines an equivalence relation on subgroups of `G` and finally defines the
+commensurator of a subgroup `H` of `G`, which is the elements `g` of `G` such that `gHg⁻¹` is
+commensurable with `H`.
 
 ## Main definitions
 
-* `Commensurable`: defines commensurability for two subgroups `H`, `K` of `G`
-* `commensurator`: defines the commensurator of a subgroup `H` of `G`.
+* `Commensurable H K`: the statement that the subgroups `H` and `K` of `G` are commensurable.
+* `commensurator H`: the commensurator of a subgroup `H` of `G`.
 
 ## Implementation details
 
 We define the commensurator of a subgroup `H` of `G` by first defining it as a subgroup of
-`(conjAct G)`, which we call commensurator' and then taking the pre-image under
+`(conjAct G)`, which we call `commensurator'` and then taking the pre-image under
 the map `G → (conjAct G)` to obtain our commensurator as a subgroup of `G`.
 -/
 
@@ -51,7 +55,7 @@ theorem trans {H K L : Subgroup G} (hhk : Commensurable H K) (hkl : Commensurabl
 theorem equivalence : Equivalence (@Commensurable G _) :=
   ⟨Commensurable.refl, fun h => Commensurable.symm h, fun h₁ h₂ => Commensurable.trans h₁ h₂⟩
 
-/-- Equivalence of `K/H ⊓ K` with `gKg⁻¹/gHg⁻¹ ⊓ gKg⁻¹`-/
+/-- Equivalence of `K/H ⊓ K` with `gKg⁻¹/gHg⁻¹ ⊓ gKg⁻¹` -/
 def quotConjEquiv (H K : Subgroup G) (g : ConjAct G) :
     K ⧸ H.subgroupOf K ≃ (g • K).1 ⧸ (g • H).subgroupOf (g • K) :=
   Quotient.congr (K.equivSMul g).toEquiv fun a b => by

@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -132,7 +132,9 @@ theorem prodComm_trans_prodEquivOfIsCompl (h : IsCompl p q) :
     LinearEquiv.prodComm R q p ≪≫ₗ prodEquivOfIsCompl p q h = prodEquivOfIsCompl q p h.symm :=
   LinearEquiv.ext fun _ => add_comm _ _
 
-/-- Projection to a submodule along its complement. -/
+/-- Projection to a submodule along a complement.
+
+See also `LinearMap.linearProjOfIsCompl`. -/
 def linearProjOfIsCompl (h : IsCompl p q) : E →ₗ[R] p :=
   LinearMap.fst R p q ∘ₗ ↑(prodEquivOfIsCompl p q h).symm
 
@@ -191,6 +193,26 @@ end Submodule
 namespace LinearMap
 
 open Submodule
+
+/-- Projection to the image of an injection along a complement.
+
+This has an advantage over `Submodule.linearProjOfIsCompl` in that it allows the user better
+definitional control over the type. -/
+def linearProjOfIsCompl {F : Type*} [AddCommGroup F] [Module R F]
+    (i : F →ₗ[R] E) (hi : Function.Injective i)
+    (h : IsCompl (LinearMap.range i) q) : E →ₗ[R] F :=
+  (LinearEquiv.ofInjective i hi).symm ∘ₗ (LinearMap.range i).linearProjOfIsCompl q h
+
+@[simp]
+theorem linearProjOfIsCompl_apply_left {F : Type*} [AddCommGroup F] [Module R F]
+    (i : F →ₗ[R] E) (hi : Function.Injective i)
+    (h : IsCompl (LinearMap.range i) q) (x : F) :
+    linearProjOfIsCompl q i hi h (i x) = x := by
+  let ix : LinearMap.range i := ⟨i x, mem_range_self i x⟩
+  change linearProjOfIsCompl q i hi h ix = x
+  rw [linearProjOfIsCompl, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    LinearEquiv.symm_apply_eq, Submodule.linearProjOfIsCompl_apply_left, Subtype.ext_iff,
+    LinearEquiv.ofInjective_apply]
 
 /-- Given linear maps `φ` and `ψ` from complement submodules, `LinearMap.ofIsCompl` is
 the induced linear map over the entire module. -/
@@ -345,12 +367,11 @@ structure IsProj {F : Type*} [FunLike F M M] (f : F) : Prop where
   map_mem : ∀ x, f x ∈ m
   map_id : ∀ x ∈ m, f x = x
 
-theorem isProj_iff_idempotent (f : M →ₗ[S] M) : (∃ p : Submodule S M, IsProj p f) ↔ f ∘ₗ f = f := by
+theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
+    (∃ p : Submodule S M, IsProj p f) ↔ IsIdempotentElem f := by
   constructor
-  · intro h
-    obtain ⟨p, hp⟩ := h
+  · intro ⟨p, hp⟩
     ext x
-    rw [comp_apply]
     exact hp.map_id (f x) (hp.map_mem x)
   · intro h
     use range f
@@ -359,7 +380,9 @@ theorem isProj_iff_idempotent (f : M →ₗ[S] M) : (∃ p : Submodule S M, IsPr
       exact mem_range_self f x
     · intro x hx
       obtain ⟨y, hy⟩ := mem_range.1 hx
-      rw [← hy, ← comp_apply, h]
+      rw [← hy, ← mul_apply, h]
+
+@[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
 
 namespace IsProj
 

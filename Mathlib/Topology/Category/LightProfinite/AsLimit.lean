@@ -20,8 +20,6 @@ noncomputable section
 
 open CategoryTheory Limits CompHausLike
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 namespace LightProfinite
 
 universe u
@@ -79,7 +77,7 @@ abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
-  simp only [toCompHausLike_obj, Functor.comp_obj, toCompHausLike_map, coe_of]
+  simp only [Functor.comp_obj, toCompHausLike_map, coe_of]
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   exact liftedLimitMapsToOriginal_inv_map_π hc _

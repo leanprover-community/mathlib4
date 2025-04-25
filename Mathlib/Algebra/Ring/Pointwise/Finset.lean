@@ -58,11 +58,11 @@ variable [Ring α] [AddCommGroup β] [Module α β] [DecidableEq β] {s : Finset
 
 @[simp]
 lemma neg_smul_finset : -a • t = -(a • t) := by
-  simp only [← image_smul, ← image_neg, image_image, neg_smul, Function.comp_def]
+  simp only [← image_smul, ← image_neg_eq_neg, image_image, neg_smul, Function.comp_def]
 
 @[simp]
 protected lemma neg_smul [DecidableEq α] : -s • t = -(s • t) := by
-  simp_rw [← image_neg]
+  simp_rw [← image_neg_eq_neg]
   exact image₂_image_left_comm neg_smul
 
 end Ring

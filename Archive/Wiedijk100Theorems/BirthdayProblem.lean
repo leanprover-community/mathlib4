@@ -76,12 +76,9 @@ theorem birthday_measure :
     · rw [Fintype.card_embedding_eq, Fintype.card_fin, Fintype.card_fin]
       rfl
   rw [this, ENNReal.lt_div_iff_mul_lt, mul_comm, mul_div, ENNReal.div_lt_iff]
-  rotate_left
-  iterate 2 right; norm_num
-  · decide
-  iterate 2 left; norm_num
-  simp only [Fintype.card_pi]
-  norm_num
+  all_goals
+    simp only [Fintype.card_pi, Fintype.card_fin, Finset.prod_const, Finset.card_univ]
+    norm_num
 
 end MeasureTheory
 

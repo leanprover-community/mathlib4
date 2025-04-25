@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Order.Partition.Equipartition
@@ -110,8 +110,6 @@ theorem not_isUniform_iff :
   unfold IsUniform
   simp only [not_forall, not_lt, exists_prop, exists_and_left, Rat.cast_abs, Rat.cast_sub]
 
-open scoped Classical
-
 variable (G)
 
 /-- An arbitrary pair of subsets witnessing the non-uniformity of `(s, t)`. If `(s, t)` is uniform,
@@ -149,6 +147,7 @@ theorem nonuniformWitnesses_spec (h : ¬G.IsUniform ε s t) :
   rw [nonuniformWitnesses, dif_pos h]
   exact (not_isUniform_iff.1 h).choose_spec.2.choose_spec.2.2.2
 
+open scoped Classical in
 /-- Arbitrary witness of non-uniformity. `G.nonuniformWitness ε s t` and
 `G.nonuniformWitness ε t s` form a pair of subsets witnessing the non-uniformity of `(s, t)`. If
 `(s, t)` is uniform, returns `s`. -/

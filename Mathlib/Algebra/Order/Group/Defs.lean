@@ -60,7 +60,7 @@ example (α : Type u) [OrderedAddCommGroup α] : AddRightStrictMono α :=
   inferInstance
 
 -- Porting note: this instance is not used,
--- and causes timeouts after lean4#2210.
+-- and causes timeouts after https://github.com/leanprover/lean4/pull/2210.
 -- It was introduced in https://github.com/leanprover-community/mathlib/pull/17564
 -- but without the motivation clearly explained.
 /-- A choice-free shortcut instance. -/
@@ -70,7 +70,7 @@ theorem OrderedCommGroup.toMulLeftReflectLE (α : Type u) [OrderedCommGroup α] 
       elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 
 -- Porting note: this instance is not used,
--- and causes timeouts after lean4#2210.
+-- and causes timeouts after https://github.com/leanprover/lean4/pull/2210.
 -- See further explanation on `OrderedCommGroup.toMulLeftReflectLE`.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]

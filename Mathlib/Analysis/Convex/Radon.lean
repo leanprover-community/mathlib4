@@ -6,7 +6,7 @@ Authors: Vasily Nesterov
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Radon's theorem on convex sets
@@ -189,7 +189,7 @@ theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set 
     (⋂ i, F i).Nonempty := by
   classical
   /- If `ι` is empty the statement is trivial. -/
-  cases' isEmpty_or_nonempty ι with _ h_nonempty
+  rcases isEmpty_or_nonempty ι with _ | h_nonempty
   · simp only [iInter_of_empty, Set.univ_nonempty]
   /- By the finite version of theorem, every finite subfamily has an intersection. -/
   have h_fin (I : Finset ι) : (⋂ i ∈ I, F i).Nonempty := by
@@ -212,7 +212,7 @@ If `F` is a (possibly infinite) family of more than `d + 1` compact convex sets 
 finite dimension `d`, and any `d + 1` sets of `F` intersect nontrivially,
 then all sets of `F` intersect nontrivially. -/
 theorem helly_theorem_compact [TopologicalSpace E] [T2Space E] {F : ι → Set E}
-    (h_card : finrank 𝕜 E + 1 ≤ PartENat.card ι)
+    (h_card : finrank 𝕜 E + 1 ≤ ENat.card ι)
     (h_convex : ∀ i, Convex 𝕜 (F i)) (h_compact : ∀ i, IsCompact (F i))
     (h_inter : ∀ I : Finset ι, #I = finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
     (⋂ i, F i).Nonempty := by
@@ -224,7 +224,7 @@ theorem helly_theorem_compact [TopologicalSpace E] [T2Space E] {F : ι → Set E
     · have : Finite ι := Finite.of_not_infinite h
       have : Fintype ι := Fintype.ofFinite ι
       apply exists_superset_card_eq hI_card
-      simp only [PartENat.card_eq_coe_fintype_card] at h_card
+      simp only [ENat.card_eq_coe_fintype_card] at h_card
       rwa [← Nat.cast_one, ← Nat.cast_add, Nat.cast_le] at h_card
   obtain ⟨J, hJ_ss, hJ_card⟩ := hJ
   apply Set.Nonempty.mono <| biInter_mono hJ_ss (by intro _ _; rfl)

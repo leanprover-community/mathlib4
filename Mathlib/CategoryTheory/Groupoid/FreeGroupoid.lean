@@ -121,7 +121,7 @@ instance _root_.CategoryTheory.FreeGroupoid.instGroupoid : Groupoid (FreeGroupoi
   inv_comp p := Quot.inductionOn p fun pp => congr_reverse_comp pp
   comp_inv p := Quot.inductionOn p fun pp => congr_comp_reverse pp
 
-/-- The inclusion of the quiver on `V` to the underlying quiver on `FreeGroupoid V`-/
+/-- The inclusion of the quiver on `V` to the underlying quiver on `FreeGroupoid V` -/
 def of (V) [Quiver V] : V ⥤q FreeGroupoid V where
   obj X := ⟨X⟩
   map f := Quot.mk _ f.toPosPath

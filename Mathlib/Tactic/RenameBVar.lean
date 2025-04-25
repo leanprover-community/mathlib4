@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Patrick Massot
 -/
 
-import Lean
+import Lean.Elab.Tactic.Location
 import Mathlib.Util.Tactic
 import Mathlib.Lean.Expr.Basic
 
@@ -42,6 +42,7 @@ Note: name clashes are resolved automatically.
 -/
 elab "rename_bvar " old:ident " → " new:ident loc?:(location)? : tactic => do
   let mvarId ← getMainGoal
+  instantiateMVarDeclMVars mvarId
   match loc? with
   | none => renameBVarTarget mvarId old.getId new.getId
   | some loc =>

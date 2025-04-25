@@ -60,7 +60,7 @@ scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 open Interval
 
 @[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
-  -- Note: needed to hint `(α := α)` after #8386 (elaboration order?)
+  -- Note: needed to hint `(α := α)` after https://github.com/leanprover-community/mathlib4/pull/8386 (elaboration order?)
   dual_Icc (α := α)
 
 @[simp]
@@ -303,6 +303,54 @@ lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
 
 lemma uIoc_injective_left (a : α) : Injective (Ι a) := by
   simpa only [uIoc_comm] using uIoc_injective_right a
+
+section uIoo
+
+/-- `uIoo a b` is the set of elements lying between `a` and `b`, with `a` and `b` not included.
+Note that we define it more generally in a lattice as `Set.Ioo (a ⊓ b) (a ⊔ b)`. In a product type,
+`uIoo` corresponds to the bounding box of the two elements. -/
+def uIoo (a b : α) : Set α := Ioo (a ⊓ b) (a ⊔ b)
+
+@[simp] lemma dual_uIoo (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b :=
+  dual_Ioo (α := α)
+
+@[simp] lemma uIoo_of_le (h : a ≤ b) : uIoo a b = Ioo a b := by
+  rw [uIoo, inf_eq_left.2 h, sup_eq_right.2 h]
+
+@[simp] lemma uIoo_of_ge (h : b ≤ a) : uIoo a b = Ioo b a := by
+  rw [uIoo, inf_eq_right.2 h, sup_eq_left.2 h]
+
+lemma uIoo_comm (a b : α) : uIoo a b = uIoo b a := by simp_rw [uIoo, inf_comm, sup_comm]
+
+lemma uIoo_of_lt (h : a < b) : uIoo a b = Ioo a b := uIoo_of_le h.le
+
+lemma uIoo_of_gt (h : b < a) : uIoo a b = Ioo b a := uIoo_of_ge h.le
+
+lemma uIoo_self : uIoo a a = ∅ := by simp [uIoo]
+
+lemma Ioo_subset_uIoo : Ioo a b ⊆ uIoo a b := Ioo_subset_Ioo inf_le_left le_sup_right
+
+/-- Same as `Ioo_subset_uIoo` but with `Ioo a b` replaced by `Ioo b a`. -/
+lemma Ioo_subset_uIoo' : Ioo b a ⊆ uIoo a b := Ioo_subset_Ioo inf_le_right le_sup_left
+
+variable {x : α}
+
+lemma mem_uIoo_of_lt (ha : a < x) (hb : x < b) : x ∈ uIoo a b := Ioo_subset_uIoo ⟨ha, hb⟩
+
+lemma mem_uIoo_of_gt (hb : b < x) (ha : x < a) : x ∈ uIoo a b := Ioo_subset_uIoo' ⟨hb, ha⟩
+
+variable {a b : α}
+
+theorem Ioo_min_max : Ioo (min a b) (max a b) = uIoo a b := rfl
+
+lemma uIoo_of_not_le (h : ¬a ≤ b) : uIoo a b = Ioo b a := uIoo_of_gt <| lt_of_not_ge h
+
+lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| lt_of_not_ge h
+
+theorem uIoo_subset_uIcc {α : Type*} [LinearOrder α] (a : α) (b : α) : uIoo a b ⊆ uIcc a b := by
+  simp [uIoo, uIcc, Ioo_subset_Icc_self]
+
+end uIoo
 
 end LinearOrder
 

@@ -29,14 +29,14 @@ universe v₅ u₅ v₄ u₄ v₃ u₃ v₂ u₂ v₁ u₁
 
 namespace CategoryTheory
 
-open CategoryTheory Functor Category NatTrans IsHomLift
+open Functor Category NatTrans IsHomLift
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 
 /-- A based category over `𝒮` is a category `𝒳` together with a functor `p : 𝒳 ⥤ 𝒮`. -/
 @[nolint checkUnivs]
 structure BasedCategory (𝒮 : Type u₁) [Category.{v₁} 𝒮] where
-  /-- The type of objects in a `BasedCategory`-/
+  /-- The type of objects in a `BasedCategory` -/
   obj : Type u₂
   /-- The underlying category of a `BasedCategory`. -/
   category : Category.{v₂} obj := by infer_instance

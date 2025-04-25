@@ -5,7 +5,6 @@ Authors: Bolton Bailey
 -/
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Pi
-import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Fin-indexed tuples of finsets

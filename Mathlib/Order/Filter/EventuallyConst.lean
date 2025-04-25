@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Floris van Doorn
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Order.Filter.Subsingleton
 /-!
 # Functions that are eventually constant along a filter

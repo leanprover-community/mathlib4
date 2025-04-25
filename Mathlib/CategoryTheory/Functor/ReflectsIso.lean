@@ -36,10 +36,8 @@ morphism `f : A ⟶ B`, if `F.map f` is an isomorphism then `f` is as well.
 Note that we do not assume or require that `F` is faithful.
 -/
 class Functor.ReflectsIsomorphisms (F : C ⥤ D) : Prop where
-  /-- For any `f`, if `F.map f` is an iso, then so was `f`-/
+ /-- For any `f`, if `F.map f` is an iso, then so was `f`. -/
   reflects : ∀ {A B : C} (f : A ⟶ B) [IsIso (F.map f)], IsIso f
-
-@[deprecated (since := "2024-04-06")] alias ReflectsIsomorphisms := Functor.ReflectsIsomorphisms
 
 /-- If `F` reflects isos and `F.map f` is an iso, then `f` is an iso. -/
 theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.map f)]

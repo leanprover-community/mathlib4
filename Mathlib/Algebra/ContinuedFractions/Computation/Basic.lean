@@ -58,6 +58,7 @@ with a head term (`seq1`) is then transformed to a generalized continued fractio
 numerics, number theory, approximations, fractions
 -/
 
+assert_not_exists Finset
 
 namespace GenContFract
 
@@ -98,7 +99,6 @@ section coe
 -- Fix another type `β` which we will convert to.
 variable {β : Type*} [Coe K β]
 
--- Porting note: added so we can add the `@[coe]` attribute
 /-- The coercion between integer-fraction pairs happens componentwise. -/
 @[coe]
 def coeFn : IntFractPair K → IntFractPair β := mapFr (↑)

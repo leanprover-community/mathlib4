@@ -142,12 +142,14 @@ lemma isBounded_mul [Bornology R] [Mul R] [BoundedMul R] {s t : Set R}
 lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set R}
     (s_bdd : Bornology.IsBounded s) (n : ℕ) :
     Bornology.IsBounded ((fun x ↦ x ^ n) '' s) := by
-  induction' n with n hn
-  · by_cases s_empty : s = ∅
+  induction n with
+  | zero =>
+    by_cases s_empty : s = ∅
     · simp [s_empty]
     simp_rw [← nonempty_iff_ne_empty] at s_empty
     simp [s_empty]
-  · have obs : ((fun x ↦ x ^ (n + 1)) '' s) ⊆ ((fun x ↦ x ^ n) '' s) * s := by
+  | succ n hn =>
+    have obs : ((fun x ↦ x ^ (n + 1)) '' s) ⊆ ((fun x ↦ x ^ n) '' s) * s := by
       intro x hx
       simp only [mem_image] at hx
       obtain ⟨y, y_in_s, ypow_eq_x⟩ := hx

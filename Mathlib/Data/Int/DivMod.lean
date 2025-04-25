@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 
+import Mathlib.Init
+
 /-!
 # Basic lemmas about division and modulo for integers
 
@@ -18,3 +20,5 @@ theorem emod_eq_sub_self_emod {a b : Int} : a % b = (a - b) % b :=
 
 theorem emod_eq_add_self_emod {a b : Int} : a % b = (a + b) % b :=
   add_emod_self.symm
+
+end Int

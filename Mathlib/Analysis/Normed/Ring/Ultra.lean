@@ -65,7 +65,7 @@ lemma norm_natCast_le_one (n : ℕ) :
 
 lemma nnnorm_intCast_le_one (z : ℤ) :
     ‖(z : R)‖₊ ≤ 1 := by
-  induction z <;>
+  cases z <;>
   simpa only [Int.ofNat_eq_coe, Int.cast_natCast, Int.cast_negSucc, Nat.cast_one, nnnorm_neg]
     using nnnorm_natCast_le_one _ _
 

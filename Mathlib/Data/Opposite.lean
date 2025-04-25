@@ -26,9 +26,8 @@ variable (α : Sort u)
 -- example {X Y : C} (f : X ⟶ Y): op Y ⟶ op X := f
 /-- The type of objects of the opposite of `α`; used to define the opposite category.
 
-  Now that Lean 4 supports definitional eta equality for records,
-  both `unop (op X) = X` and `op (unop X) = X` are definitional equalities.
-
+Now that Lean 4 supports definitional eta equality for records,
+both `unop (op X) = X` and `op (unop X) = X` are definitional equalities.
 -/
 structure Opposite where
   /-- The canonical map `α → αᵒᵖ`. -/

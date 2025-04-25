@@ -10,7 +10,6 @@ import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Triangles in graphs
@@ -35,8 +34,7 @@ open Fintype (card)
 
 namespace SimpleGraph
 
-variable {α β 𝕜 : Type*} [LinearOrderedField 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜} {n : ℕ}
-  {s : Finset α}
+variable {α β 𝕜 : Type*} [LinearOrderedField 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜}
 
 section LocallyLinear
 

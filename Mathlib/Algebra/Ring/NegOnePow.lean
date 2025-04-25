@@ -3,7 +3,8 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.ZMod.IntUnitsPower
 
 /-!
@@ -15,6 +16,9 @@ The definition of `negOnePow` and some lemmas first appeared in contributions by
 Johan Commelin to the Liquid Tensor Experiment.
 
 -/
+
+assert_not_exists Field
+assert_not_exists TwoSidedIdeal
 
 namespace Int
 
@@ -100,14 +104,6 @@ lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
 @[simp]
 lemma negOnePow_mul_self (n : ℤ) : (n * n).negOnePow = n.negOnePow := by
   simpa [mul_sub, negOnePow_eq_iff] using n.even_mul_pred_self
-
-lemma cast_negOnePow (K : Type*) (n : ℤ) [Field K] : n.negOnePow = (-1 : K) ^ n := by
-  rcases even_or_odd' n with ⟨k, rfl | rfl⟩
-  · simp [zpow_mul, zpow_ofNat]
-  · rw [zpow_add_one₀ (by norm_num), zpow_mul, zpow_ofNat]
-    simp
-
-@[deprecated (since := "2024-10-20")] alias coe_negOnePow := cast_negOnePow
 
 lemma cast_negOnePow_natCast (R : Type*) [Ring R] (n : ℕ) : negOnePow n = (-1 : R) ^ n := by
   obtain ⟨k, rfl | rfl⟩ := Nat.even_or_odd' n <;> simp [pow_succ, pow_mul]

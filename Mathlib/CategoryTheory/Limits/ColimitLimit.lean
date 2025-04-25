@@ -104,7 +104,7 @@ noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G
     colim.mapCone (limit.cone G) ⟶ limit.cone (G ⋙ colim) where
   hom :=
     colim.map (limitIsoSwapCompLim G).hom ≫
-      colimitLimitToLimitColimit (uncurry.obj G : _) ≫
+      colimitLimitToLimitColimit (uncurry.obj G :) ≫
         lim.map (whiskerRight (currying.unitIso.app G).inv colim)
   w j := by
     dsimp

@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Batteries.Data.List.Pairwise
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.TakeWhile
 import Mathlib.Order.Fin.Basic
 
 /-!
@@ -103,6 +104,10 @@ protected theorem Sorted.nodup {r : α → α → Prop} [IsIrrefl α r] {l : Lis
     Nodup l :=
   Pairwise.nodup h
 
+protected theorem Sorted.filter {l : List α} (f : α → Bool) (h : Sorted r l) :
+    Sorted r (filter f l) :=
+  h.sublist (filter_sublist l)
+
 theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ ~ l₂) (hs₁ : Sorted r l₁)
     (hs₂ : Sorted r l₂) : l₁ = l₂ := by
   induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
@@ -129,6 +134,13 @@ theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp
 @[simp 1100] -- Porting note: higher priority for linter
 theorem sorted_singleton (a : α) : Sorted r [a] :=
   pairwise_singleton _ _
+
+theorem sorted_lt_range (n : ℕ) : Sorted (· < ·) (range n) := by
+  rw [Sorted, pairwise_iff_get]
+  simp
+
+theorem sorted_le_range (n : ℕ) : Sorted (· ≤ ·) (range n) :=
+  (sorted_lt_range n).le_of_lt
 
 theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length} (hab : a < b) :
     r (l.get a) (l.get b) :=
@@ -160,6 +172,7 @@ section Monotone
 
 variable {n : ℕ} {α : Type u} {f : Fin n → α}
 
+open scoped Relator in
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
   simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
   exact Iff.symm (Fin.rightInverse_cast _).surjective.forall₂
@@ -415,7 +428,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm
-      cases' (mem_orderedInsert r).mp bm with be bm
+      rcases (mem_orderedInsert r).mp bm with be | bm
       · subst b'
         exact (total_of r _ _).resolve_left h'
       · exact rel_of_sorted_cons h _ bm
@@ -515,25 +528,22 @@ theorem Sorted.merge {l l' : List α} (h : Sorted r l) (h' : Sorted r l') :
 
 variable (r)
 
-/-- Variant of `sorted_mergeSort` using order typeclasses. -/
-theorem sorted_mergeSort' [Preorder α] [DecidableRel ((· : α) ≤ ·)] [IsTotal α (· ≤ ·)]
-    (l : List α) : Sorted (· ≤ ·) (mergeSort l) := by
-  simpa using sorted_mergeSort (le := fun a b => a ≤ b)
-    (fun a b c h₁ h₂ => by simpa using le_trans (by simpa using h₁) (by simpa using h₂))
-    (fun a b => by simpa using IsTotal.total a b)
+/-- Variant of `sorted_mergeSort` using relation typeclasses. -/
+theorem sorted_mergeSort' (l : List α) : Sorted r (mergeSort l (r · ·)) := by
+  simpa using sorted_mergeSort (le := (r · ·))
+    (fun _ _ _ => by simpa using trans_of r)
+    (by simpa using total_of r)
     l
 
-theorem mergeSort_eq_self [LinearOrder α] {l : List α} : Sorted (· ≤ ·) l → mergeSort l = l :=
-  eq_of_perm_of_sorted (mergeSort_perm _ _) (sorted_mergeSort' l)
+variable [IsAntisymm α r]
 
-theorem mergeSort_eq_insertionSort [IsAntisymm α r] (l : List α) :
+theorem mergeSort_eq_self {l : List α} : Sorted r l → mergeSort l (r · ·) = l :=
+  eq_of_perm_of_sorted (mergeSort_perm _ _) (sorted_mergeSort' _ l)
+
+theorem mergeSort_eq_insertionSort (l : List α) :
     mergeSort l (r · ·) = insertionSort r l :=
   eq_of_perm_of_sorted ((mergeSort_perm l _).trans (perm_insertionSort r l).symm)
-    (sorted_mergeSort (le := (r · ·))
-      (fun a b c h₁ h₂ => by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
-      (fun a b => by simpa using IsTotal.total a b)
-      l)
-    (sorted_insertionSort r l).decide
+    (sorted_mergeSort' r l) (sorted_insertionSort r l)
 
 end TotalAndTransitive
 

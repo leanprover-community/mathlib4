@@ -17,7 +17,7 @@ just like the `exists` tactic, but they can be a little more flexible.
 that more closely matches `use` from mathlib3.
 
 Note: The `use!` tactic is almost exactly the mathlib3 `use` except that it does not try
-applying `exists_prop`. See the failing test in `test/Use.lean`.
+applying `exists_prop`. See the failing test in `MathlibTest/Use.lean`.
 -/
 
 namespace Mathlib.Tactic

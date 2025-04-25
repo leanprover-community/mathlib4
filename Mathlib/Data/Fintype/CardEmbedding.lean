@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Logic.Equiv.Embedding
 
 /-!

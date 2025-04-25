@@ -14,9 +14,7 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 -/
 
 
-assert_not_exists Submonoid
-assert_not_exists Finset
-assert_not_exists Star
+assert_not_exists Submonoid Finset Star
 
 open Function
 

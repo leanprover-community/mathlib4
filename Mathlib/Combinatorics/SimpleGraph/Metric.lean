@@ -32,6 +32,7 @@ graph metric, distance
 
 -/
 
+assert_not_exists Field
 
 namespace SimpleGraph
 

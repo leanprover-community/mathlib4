@@ -101,6 +101,16 @@ theorem midpoint_pointReflection_right (x y : P) :
   midpoint_eq_iff.2 rfl
 
 @[simp]
+nonrec lemma AffineEquiv.midpoint_pointReflection_left (x y : P) :
+    midpoint R (pointReflection R x y) y = x :=
+  midpoint_pointReflection_left x y
+
+@[simp]
+nonrec lemma AffineEquiv.midpoint_pointReflection_right (x y : P) :
+    midpoint R y (pointReflection R x y) = x :=
+  midpoint_pointReflection_right x y
+
+@[simp]
 theorem midpoint_vsub_left (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₁ = (⅟ 2 : R) • (p₂ -ᵥ p₁) :=
   lineMap_vsub_left _ _ _
 

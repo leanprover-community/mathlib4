@@ -7,7 +7,6 @@ import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
@@ -116,3 +115,116 @@ instance : LinearOrderedAddCommGroupWithTop (WithTop α) where
 end LinearOrderedAddCommGroup
 
 end WithTop
+
+namespace LinearOrderedAddCommGroupWithTop
+
+variable [LinearOrderedAddCommGroupWithTop α] {a b : α}
+
+attribute [simp] LinearOrderedAddCommGroupWithTop.neg_top
+
+lemma add_neg_cancel_of_ne_top {α : Type*} [LinearOrderedAddCommGroupWithTop α]
+    {a : α} (h : a ≠ ⊤) :
+    a + -a = 0 :=
+  LinearOrderedAddCommGroupWithTop.add_neg_cancel a h
+
+@[simp]
+lemma add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
+  constructor
+  · intro h
+    by_contra nh
+    rw [not_or] at nh
+    replace h := congrArg (-a + ·) h
+    dsimp only at h
+    rw [add_top, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top,
+      zero_add] at h
+    · exact nh.2 h
+    · exact nh.1
+  · rintro (rfl | rfl)
+    · simp
+    · simp
+
+@[simp]
+lemma top_ne_zero :
+    (⊤ : α) ≠ 0 := by
+  intro nh
+  have ⟨a, b, h⟩ := Nontrivial.exists_pair_ne (α := α)
+  have : a + 0 ≠ b + 0 := by simpa
+  rw [← nh] at this
+  simp at this
+
+@[simp] lemma neg_eq_top {a : α} : -a = ⊤ ↔ a = ⊤ where
+  mp h := by
+    by_contra nh
+    replace nh := add_neg_cancel_of_ne_top nh
+    rw [h, add_top] at nh
+    exact top_ne_zero nh
+  mpr h := by simp [h]
+
+instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
+  neg_neg a := by
+    by_cases h : a = ⊤
+    · simp [h]
+    · have h2 : ¬ -a = ⊤ := fun nh ↦ h <| neg_eq_top.mp nh
+      replace h2 : a + (-a + - -a) = a + 0 := congrArg (a + ·) (add_neg_cancel_of_ne_top h2)
+      rw [← add_assoc, add_neg_cancel_of_ne_top h] at h2
+      simp only [zero_add, add_zero] at h2
+      exact h2
+  neg_add_rev a b := by
+    by_cases ha : a = ⊤
+    · simp [ha]
+    by_cases hb : b = ⊤
+    · simp [hb]
+    apply (_ : Function.Injective (a + b + ·))
+    · dsimp
+      rw [add_neg_cancel_of_ne_top, ← add_assoc, add_assoc a,
+        add_neg_cancel_of_ne_top hb, add_zero,
+        add_neg_cancel_of_ne_top ha]
+      simp [ha, hb]
+    · apply Function.LeftInverse.injective (g := (-(a + b) + ·))
+      intro x
+      dsimp only
+      rw [← add_assoc, add_comm (-(a + b)), add_neg_cancel_of_ne_top, zero_add]
+      simp [ha, hb]
+  neg_eq_of_add a b h := by
+    have oh := congrArg (-a + ·) h
+    dsimp only at oh
+    rw [add_zero, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top, zero_add] at oh
+    · exact oh.symm
+    intro v
+    simp [v] at h
+
+lemma injective_add_left_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective (fun x ↦ x + b) := by
+  intro x y h2
+  replace h2 : x + (b + -b) = y + (b + -b) := by simp [← add_assoc, h2]
+  simpa only [LinearOrderedAddCommGroupWithTop.add_neg_cancel _ h, add_zero] using h2
+
+lemma injective_add_right_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective (fun x ↦ b + x) := by
+  simpa [add_comm] using injective_add_left_of_ne_top b h
+
+lemma strictMono_add_left_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono (fun x ↦ x + b) := by
+  apply Monotone.strictMono_of_injective
+  · apply Monotone.add_const monotone_id
+  · apply injective_add_left_of_ne_top _ h
+
+lemma strictMono_add_right_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono (fun x ↦ b + x) := by
+  simpa [add_comm] using strictMono_add_left_of_ne_top b h
+
+lemma sub_pos (a b : α) : 0 < a - b ↔ b < a ∨ b = ⊤ where
+  mp h := by
+    refine or_iff_not_imp_right.mpr fun h2 ↦ ?_
+    replace h := strictMono_add_left_of_ne_top _ h2 h
+    simp only [zero_add] at h
+    rw [sub_eq_add_neg, add_assoc, add_comm (-b),
+      add_neg_cancel_of_ne_top h2, add_zero] at h
+    exact h
+  mpr h := by
+    rcases h with h | h
+    · convert strictMono_add_left_of_ne_top (-b) (by simp [h.ne_top]) h using 1
+      · simp [add_neg_cancel_of_ne_top h.ne_top]
+      · simp [sub_eq_add_neg]
+    · rw [h]
+      simp only [sub_eq_add_neg, LinearOrderedAddCommGroupWithTop.neg_top, add_top]
+      apply lt_of_le_of_ne le_top
+      exact Ne.symm top_ne_zero
+
+end LinearOrderedAddCommGroupWithTop

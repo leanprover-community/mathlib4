@@ -6,8 +6,10 @@ Authors: Yakov Pechersky
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Hom.Basic
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 
 /-!
 

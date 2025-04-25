@@ -25,7 +25,8 @@ jobs:
       - name: Get sha of branch
         id: sha
         run: |
-          echo "sha=$(git rev-parse --verify origin/update-dependencies-bot-use-only)" >> "$GITHUB_OUTPUT"
+          SHA="$(git rev-parse --verify origin/update-dependencies-bot-use-only)"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
 
       - name: Get PR and labels
         if: ${{ steps.sha.outputs.sha }}
@@ -38,6 +39,13 @@ jobs:
           sha: ${{ steps.sha.outputs.sha }}
           # Only return if PR is still open
           filterOutClosed: true
+
+      - name: Print PR, if found
+        run: echo "Found PR ${prNumber} at ${prUrl}"
+        if: steps.PR.outputs.pr_found == 'true'
+        env:
+          prNumber: ${{ steps.PR.outputs.number }}
+          prUrl: ${{ steps.PR.outputs.pr_url }}
 
       - name: Configure Git User
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}

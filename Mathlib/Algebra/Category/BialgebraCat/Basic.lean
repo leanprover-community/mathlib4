@@ -24,10 +24,13 @@ universe v u
 variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-bialgebras. -/
-structure BialgebraCat extends Bundled Ring.{v} where
-  [instBialgebra : Bialgebra R α]
+structure BialgebraCat where
+  /-- The underlying type. -/
+  carrier : Type v
+  [instRing : Ring carrier]
+  [instBialgebra : Bialgebra R carrier]
 
-attribute [instance] BialgebraCat.instBialgebra
+attribute [instance] BialgebraCat.instBialgebra BialgebraCat.instRing
 
 variable {R}
 
@@ -36,17 +39,14 @@ namespace BialgebraCat
 open Bialgebra
 
 instance : CoeSort (BialgebraCat.{v} R) (Type v) :=
-  ⟨(·.α)⟩
+  ⟨(·.carrier)⟩
 
-variable (R)
-
+variable (R) in
 /-- The object in the category of `R`-bialgebras associated to an `R`-bialgebra. -/
 @[simps]
 def of (X : Type v) [Ring X] [Bialgebra R X] :
     BialgebraCat R where
-  instBialgebra := (inferInstance : Bialgebra R X)
-
-variable {R}
+  carrier := X
 
 @[simp]
 lemma of_comul {X : Type v} [Ring X] [Bialgebra R X] :
@@ -61,28 +61,36 @@ algebraic spellings of composition. -/
 @[ext]
 structure Hom (V W : BialgebraCat.{v} R) where
   /-- The underlying `BialgHom` -/
-  toBialgHom : V →ₐc[R] W
-
-lemma Hom.toBialgHom_injective (V W : BialgebraCat.{v} R) :
-    Function.Injective (Hom.toBialgHom : Hom V W → _) :=
-  fun ⟨f⟩ ⟨g⟩ _ => by congr
+  toBialgHom' : V →ₐc[R] W
 
 instance category : Category (BialgebraCat.{v} R) where
   Hom X Y := Hom X Y
   id X := ⟨BialgHom.id R X⟩
-  comp f g := ⟨BialgHom.comp g.toBialgHom f.toBialgHom⟩
+  comp f g := ⟨BialgHom.comp g.toBialgHom' f.toBialgHom'⟩
+
+instance concreteCategory : ConcreteCategory (BialgebraCat.{v} R) (· →ₐc[R] ·) where
+  hom f := f.toBialgHom'
+  ofHom f := ⟨f⟩
+
+/-- Turn a morphism in `BialgebraCat` back into a `BialgHom`. -/
+abbrev Hom.toBialgHom {X Y : BialgebraCat R} (f : Hom X Y) :=
+  ConcreteCategory.hom (C := BialgebraCat R) f
+
+/-- Typecheck a `BialgHom` as a morphism in `BialgebraCat R`. -/
+abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
+    [Bialgebra R X] [Bialgebra R Y] (f : X →ₐc[R] Y) :
+    of R X ⟶ of R Y :=
+  ConcreteCategory.ofHom f
+
+lemma Hom.toBialgHom_injective (V W : BialgebraCat.{v} R) :
+    Function.Injective (Hom.toBialgHom : Hom V W → _) :=
+  fun ⟨f⟩ ⟨g⟩ _ => by congr
 
 -- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
 @[ext]
 lemma hom_ext {X Y : BialgebraCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBialgHom) :
     f = g :=
   Hom.ext h
-
-/-- Typecheck a `BialgHom` as a morphism in `BialgebraCat R`. -/
-abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
-    [Bialgebra R X] [Bialgebra R Y] (f : X →ₐc[R] Y) :
-    of R X ⟶ of R Y :=
-  ⟨f⟩
 
 @[simp] theorem toBialgHom_comp {X Y Z : BialgebraCat.{v} R} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).toBialgHom = g.toBialgHom.comp f.toBialgHom :=
@@ -92,7 +100,7 @@ abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
     Hom.toBialgHom (𝟙 M) = BialgHom.id _ _ :=
   rfl
 
-instance concreteCategory : ConcreteCategory.{v} (BialgebraCat.{v} R) where
+instance hasForget : HasForget.{v} (BialgebraCat.{v} R) where
   forget :=
     { obj := fun M => M
       map := fun f => f.toBialgHom }
@@ -102,7 +110,7 @@ instance concreteCategory : ConcreteCategory.{v} (BialgebraCat.{v} R) where
 instance hasForgetToAlgebra : HasForget₂ (BialgebraCat R) (AlgebraCat R) where
   forget₂ :=
     { obj := fun X => AlgebraCat.of R X
-      map := fun {X Y} f => (f.toBialgHom : X →ₐ[R] Y) }
+      map := fun {X Y} f => AlgebraCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_algebra_obj (X : BialgebraCat R) :
@@ -111,7 +119,7 @@ theorem forget₂_algebra_obj (X : BialgebraCat R) :
 
 @[simp]
 theorem forget₂_algebra_map (X Y : BialgebraCat R) (f : X ⟶ Y) :
-    (forget₂ (BialgebraCat R) (AlgebraCat R)).map f = (f.toBialgHom : X →ₐ[R] Y) :=
+    (forget₂ (BialgebraCat R) (AlgebraCat R)).map f = AlgebraCat.ofHom f.toBialgHom :=
   rfl
 
 instance hasForgetToCoalgebra : HasForget₂ (BialgebraCat R) (CoalgebraCat R) where

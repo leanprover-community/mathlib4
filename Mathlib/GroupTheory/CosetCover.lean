@@ -3,7 +3,7 @@ Copyright (c) 2024 Antoine Chambert-Loir, Richard Copley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Richard Copley
 -/
-
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.GroupTheory.Complement
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
@@ -30,7 +30,7 @@ of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
 
 A corollary of `Subgroup.exists_finiteIndex_of_leftCoset_cover` is:
 
-* `Subspace.union_ne_univ_of_lt_top` :
+* `Subspace.biUnion_ne_univ_of_ne_top` :
   a vector space over an infinite field cannot be a finite union of proper subspaces.
 
 This can be used to show that an algebraic extension of fields is determined by the
@@ -54,10 +54,10 @@ section leftCoset_cover_const
 theorem exists_leftTransversal_of_FiniteIndex
     {D H : Subgroup G} [D.FiniteIndex] (hD_le_H : D ≤ H) :
     ∃ t : Finset H,
-      (t : Set H) ∈ leftTransversals (D.subgroupOf H) ∧
+      IsComplement (t : Set H) (D.subgroupOf H) ∧
         ⋃ g ∈ t, (g : G) • (D : Set G) = H := by
-  have ⟨t, ht⟩ := exists_left_transversal (D.subgroupOf H) 1
-  have hf : t.Finite := (MemLeftTransversals.finite_iff ht.1).mpr inferInstance
+  have ⟨t, ht⟩ := (D.subgroupOf H).exists_isComplement_left 1
+  have hf : t.Finite := ht.1.finite_left_iff.mpr inferInstance
   refine ⟨hf.toFinset, hf.coe_toFinset.symm ▸ ht.1, ?_⟩
   ext x
   suffices (∃ y ∈ t, ∃ d ∈ D, y * d = x) ↔ x ∈ H by simpa using this
@@ -65,8 +65,8 @@ theorem exists_leftTransversal_of_FiniteIndex
   · rintro ⟨⟨y, hy⟩, -, d, h, rfl⟩
     exact H.mul_mem hy (hD_le_H h)
   · intro hx
-    exact ⟨_, (MemLeftTransversals.toFun ht.1 ⟨x, hx⟩).2, _,
-      MemLeftTransversals.inv_toFun_mul_mem ht.1 ⟨x, hx⟩, mul_inv_cancel_left _ _⟩
+    exact ⟨_, (ht.1.toLeftFun ⟨x, hx⟩).2, _,
+      ht.1.inv_toLeftFun_mul_mem ⟨x, hx⟩, mul_inv_cancel_left _ _⟩
 
 variable {ι : Type*} {s : Finset ι} {H : Subgroup G} {g : ι → G}
 
@@ -238,7 +238,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
   have ⟨k, hkfi, hk⟩ : ∃ k, (H k.1.1).FiniteIndex ∧ K k = D :=
     have ⟨j, hj, hjfi⟩ := exists_finiteIndex_of_leftCoset_cover hcovers
     have ⟨x, hx⟩ : (t j hj hjfi).Nonempty := Finset.nonempty_coe_sort.mp
-      (MemLeftTransversals.toEquiv (ht j hj hjfi).1).symm.nonempty
+      (ht j hj hjfi).1.leftQuotientEquiv.symm.nonempty
     ⟨⟨⟨j, hj⟩, ⟨x, dif_pos hjfi ▸ hx⟩⟩, hjfi, if_pos hjfi⟩
   -- Since `D` is the unique subgroup of finite index whose cosets occur in the new covering,
   -- the cosets of the other subgroups can be omitted.
@@ -260,7 +260,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     by_cases hfi : (H i).FiniteIndex
     · rw [← relindex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
         mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr hfi.finiteIndex)]
-      simpa [K, hfi] using card_left_transversal (ht i.1 i.2 hfi).1
+      simpa [K, hfi] using (ht i.1 i.2 hfi).1.card_left
     · rw [of_not_not (FiniteIndex.mk.mt hfi), Nat.cast_zero, inv_zero, zero_mul]
       simpa [K, hfi] using hHD i hfi
   refine ⟨?_, ?_, ?_⟩
@@ -370,19 +370,31 @@ variable {k E : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k 
     {s : Finset (Subspace k E)}
 
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
-theorem Subspace.biUnion_ne_univ_of_ne_top (hs : ∀ p ∈ s, p ≠ ⊤) :
+theorem Subspace.biUnion_ne_univ_of_top_nmem (hs : ⊤ ∉ s) :
     ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
   intro hcovers
   have ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
   have : Finite (E ⧸ p) := AddSubgroup.finite_quotient_of_finiteIndex _
-  have : Nontrivial (E ⧸ p) := Submodule.Quotient.nontrivial_of_lt_top p (hs p hp).lt_top
+  have : Nontrivial (E ⧸ p) :=
+    Submodule.Quotient.nontrivial_of_lt_top p (ne_of_mem_of_not_mem hp hs).lt_top
   have : Infinite (E ⧸ p) := Module.Free.infinite k (E ⧸ p)
   exact not_finite (E ⧸ p)
 
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
-theorem Subspace.exists_eq_top_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) = Set.univ) :
-    ∃ p ∈ s, p = ⊤ := by
+theorem Subspace.top_mem_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) = Set.univ) :
+    ⊤ ∈ s := by
   contrapose! hcovers
-  exact Subspace.biUnion_ne_univ_of_ne_top hcovers
+  exact Subspace.biUnion_ne_univ_of_top_nmem hcovers
+
+@[deprecated (since := "2024-10-29")]
+alias Subspace.biUnion_ne_univ_of_ne_top := Subspace.biUnion_ne_univ_of_top_nmem
+@[deprecated (since := "2024-10-29")]
+alias Subspace.exists_eq_top_of_biUnion_eq_univ := Subspace.top_mem_of_biUnion_eq_univ
+
+theorem Subspace.exists_eq_top_of_iUnion_eq_univ {ι} [Finite ι] {p : ι → Subspace k E}
+    (hcovers : ⋃ i, (p i : Set E) = Set.univ) : ∃ i, p i = ⊤ := by
+  have := Fintype.ofFinite (Set.range p)
+  simp_rw [← Set.biUnion_range (f := p), ← Set.mem_toFinset] at hcovers
+  apply Set.mem_toFinset.mp (Subspace.top_mem_of_biUnion_eq_univ hcovers)
 
 end Subspace

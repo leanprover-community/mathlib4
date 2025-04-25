@@ -17,7 +17,7 @@ with respect to the neighbourhood filter `𝓝 x`.
 * `Filter.Germ.value φ f`: value associated to the germ `φ` at a point `x`, w.r.t. the
 neighbourhood filter at `x`. This is the common value of all representatives of `φ` at `x`.
 * `Filter.Germ.valueOrderRingHom` and friends: the map `Germ (𝓝 x) E → E` is a
-monoid homomorphism, 𝕜-module homomorphism, ring homomorphism, monotone ring homomorphism
+monoid homomorphism, 𝕜-linear map, ring homomorphism, monotone ring homomorphism
 
 * `RestrictGermPredicate`: given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and
 `A : set X`, build a new predicate on germs `restrictGermPredicate P A` such that

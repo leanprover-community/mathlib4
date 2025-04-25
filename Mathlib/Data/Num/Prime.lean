@@ -37,7 +37,6 @@ def minFacAux (n : PosNum) : ℕ → PosNum → PosNum
   | fuel + 1, k =>
     if n < k.bit1 * k.bit1 then n else if k.bit1 ∣ n then k.bit1 else minFacAux n fuel k.succ
 
-set_option linter.deprecated false in
 theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.bit1) :
     (minFacAux n fuel k : ℕ) = Nat.minFacAux n k.bit1 := by
   induction' fuel with fuel ih generalizing k <;> rw [minFacAux, Nat.minFacAux]
@@ -58,7 +57,7 @@ def minFac : PosNum → PosNum
 
 @[simp]
 theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
-  cases' n with n
+  obtain - | n := n
   · rfl
   · rw [minFac, Nat.minFac_eq, if_neg]
     swap

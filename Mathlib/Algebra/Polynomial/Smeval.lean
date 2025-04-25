@@ -5,6 +5,7 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Scalar-multiple polynomial evaluation
@@ -26,7 +27,8 @@ is a generalization of `Algebra.Polynomial.Eval`.
 * `smeval_monomial`: monomials evaluate as we expect.
 * `smeval_add`, `smeval_smul`: linearity of evaluation, given an `R`-module.
 * `smeval_mul`, `smeval_comp`: multiplicativity of evaluation, given power-associativity.
-* `eval₂_eq_smeval`, `leval_eq_smeval.linearMap`, `aeval = smeval.algebraMap`, etc.: comparisons
+* `eval₂_smulOneHom_eq_smeval`, `leval_eq_smeval.linearMap`,
+  `aeval_eq_smeval`, etc.: comparisons
 
 ## TODO
 
@@ -64,12 +66,12 @@ theorem eval_eq_smeval : p.eval r = p.smeval r := by
   rw [eval_eq_sum, smeval_eq_sum]
   rfl
 
-theorem eval₂_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] (f : R →+* S) (p : R[X])
-    (x : S) : letI : Module R S := RingHom.toModule f
-    p.eval₂ f x = p.smeval x := by
-  letI : Module R S := RingHom.toModule f
+theorem eval₂_smulOneHom_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] [Module R S]
+    [IsScalarTower R S S] (p : R[X]) (x : S) :
+    p.eval₂ RingHom.smulOneHom x = p.smeval x := by
   rw [smeval_eq_sum, eval₂_eq_sum]
-  rfl
+  congr 1 with e a
+  simp only [RingHom.smulOneHom_apply, smul_one_mul, smul_pow]
 
 variable (R)
 
@@ -110,9 +112,6 @@ theorem smeval_natCast (n : ℕ) : (n : R[X]).smeval x = n • x ^ 0 := by
   induction n with
   | zero => simp only [smeval_zero, Nat.cast_zero, zero_smul]
   | succ n ih => rw [n.cast_succ, smeval_add, ih, smeval_one, ← add_nsmul]
-
-@[deprecated (since := "2024-04-17")]
-alias smeval_nat_cast := smeval_natCast
 
 @[simp]
 theorem smeval_smul (r : R) : (r • p).smeval x = r • p.smeval x := by
@@ -200,9 +199,6 @@ theorem smeval_at_natCast (q : ℕ[X]) : ∀(n : ℕ), q.smeval (n : S) = q.smev
   | h_monomial n a =>
     intro n
     rw [smeval_monomial, smeval_monomial, nsmul_eq_mul, smul_eq_mul, Nat.cast_mul, Nat.cast_npow]
-
-@[deprecated (since := "2024-04-17")]
-alias smeval_at_nat_cast := smeval_at_natCast
 
 theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
   induction p using Polynomial.induction_on' with
