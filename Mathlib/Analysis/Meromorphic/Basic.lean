@@ -266,21 +266,6 @@ lemma const (e : E) {U : Set 𝕜} : MeromorphicOn (fun _ ↦ e) U :=
 
 section arithmetic
 
-theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜}
-    (h : MeromorphicOn f U) : ∀ᶠ y in 𝓝[U \ {x}] x, AnalyticAt 𝕜 f y := by
-
-
-include hf in
-/-- Meromorphic functions on `U` are analytic on `U`, outside of a discrete subset. -/
-theorem analyticAt_mem_codiscreteWithin :
-    { x | AnalyticAt 𝕜 f x } ∈ Filter.codiscreteWithin U := by
-  rw [mem_codiscreteWithin]
-  intro x hx
-  rw [Filter.disjoint_principal_right, ← Filter.eventually_mem_set]
-  apply (hf x hx).eventually_analyticAt.mono
-  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, not_not]
-  tauto
-
 include hf in
 lemma mono_set {V : Set 𝕜} (hv : V ⊆ U) : MeromorphicOn f V := fun x hx ↦ hf x (hv hx)
 

@@ -240,6 +240,44 @@ theorem order_add_of_unequal_order (hf₁ : MeromorphicAt f₁ x) (hf₂ : Merom
   · simpa [h.le] using hf₁.order_add_of_order_lt_order hf₂ h
   · simpa [h.le, add_comm] using hf₂.order_add_of_order_lt_order hf₁ h
 
+/-- If a function is both meromorphic and continuous at a point, then it is analytic there. -/
+protected theorem analyticAt {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) (h' : ContinuousAt f x) :
+    AnalyticAt 𝕜 f x := by
+  cases ho : h.order with
+  | top =>
+    have : AnalyticAt 𝕜 (fun _ ↦ (0 : E)) x := analyticAt_const
+    apply this.congr
+    rw [← ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE continuousAt_const h']
+    filter_upwards [h.order_eq_top_iff.1 ho] with y hy using by simp [hy]
+  | coe n =>
+    rcases h.order_eq_int_iff.1 ho with ⟨g, g_an, gx, hg⟩
+    have : 0 ≤ n := by
+      by_contra! hn
+      have A : Tendsto (fun z ↦ ‖(z - x) ^ n • g z‖) (𝓝[≠] x) atTop := by
+        simp only [norm_smul]
+        apply Filter.Tendsto.atTop_mul_pos (C := ‖g x‖) (by simp [gx]) _
+          g_an.continuousAt.continuousWithinAt.tendsto.norm
+        have : Tendsto (fun z ↦ (z - x)) (𝓝[≠] x) (𝓝[≠] 0) := by
+          refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
+          · have : ContinuousWithinAt (fun z ↦ z - x) ({x}ᶜ) x :=
+              ContinuousAt.continuousWithinAt (by fun_prop)
+            simpa using this.tendsto
+          · filter_upwards [self_mem_nhdsWithin] with y hy
+            simpa [sub_eq_zero] using hy
+        apply Tendsto.comp (NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop hn) this
+      have A' : Tendsto (fun z ↦ ‖f z‖) (𝓝[≠] x) atTop := by
+        apply A.congr'
+        filter_upwards [hg] with z hz using by simp [hz]
+      have B : Tendsto (fun z ↦ ‖f z‖) (𝓝[≠] x) (𝓝 (‖f x‖)) :=
+        h'.continuousWithinAt.tendsto.norm
+      exact not_tendsto_atTop_of_tendsto_nhds B A'
+    lift n to ℕ using this
+    have A : ∀ᶠ (z : 𝕜) in 𝓝 x, (z - x) ^ n • g z = f z := by
+      apply (ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE (by fun_prop) h').1
+      filter_upwards [hg] with z hz using by simpa using hz.symm
+    have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ n • g z) x := by fun_prop
+    apply this.congr A
+
 end MeromorphicAt
 
 /-!
@@ -325,9 +363,50 @@ theorem order_ne_top_of_isPreconnected {y : 𝕜} (hU : IsPreconnected U) (h₁x
     (hf y hy).order ≠ ⊤ :=
   (hf.exists_order_ne_top_iff_forall ⟨nonempty_of_mem h₁x, hU⟩).1 (by use ⟨x, h₁x⟩) ⟨y, hy⟩
 
-/-- If the target is a complete space, then the set where a mermorphic function has zero or infinite
-order is discrete within its domain of meromorphicity. -/
-theorem codiscrete_setOf_order_eq_zero_or_top [CompleteSpace E] :
+theorem eventually_analyticAt {f : 𝕜 → E} {x : 𝕜}
+    (h : MeromorphicOn f U) (hx : x ∈ U) : ∀ᶠ y in 𝓝[U \ {x}] x, AnalyticAt 𝕜 f y := by
+  rcases h x hx with ⟨n, g, r, hgr⟩
+  have : U \ {x} ∩ EMetric.ball x r ∈ 𝓝[U \ {x}] x :=
+    inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds _ hgr.r_pos)
+  filter_upwards [this] with y ⟨hy, h'y⟩
+  have hyx : y ≠ x := by simpa using hy.2
+  have : ContinuousAt f y := by
+    have A : ContinuousAt (fun z ↦ (z - x) ^ n • f z) y := by
+      apply hgr.continuousOn.continuousAt
+      exact EMetric.isOpen_ball.mem_nhds h'y
+    have B : ContinuousAt (fun z ↦ (z - x) ^ (-(n : ℤ))) y := by
+      apply ContinuousAt.zpow₀ (by fun_prop)
+      simp [sub_eq_zero, hyx]
+    apply (B.smul A).congr
+    have : {x}ᶜ ∈ 𝓝 y := by simp [hyx]
+    filter_upwards [this] with z hz
+    rw [smul_smul, ← zpow_natCast, ← zpow_add₀]
+    · simp
+    · simpa [sub_eq_zero] using hz
+  exact (h y hy.1).analyticAt this
+
+theorem eventually_analyticAt_or_mem_compl {f : 𝕜 → E} {x : 𝕜}
+    (h : MeromorphicOn f U) (hx : x ∈ U) : ∀ᶠ y in 𝓝[≠] x, AnalyticAt 𝕜 f y ∨ y ∈ Uᶜ := by
+  have : {x}ᶜ = (U \ {x}) ∪ (Uᶜ) := by aesop (add simp Classical.em)
+  rw [this, nhdsWithin_union]
+  simp only [mem_compl_iff, eventually_sup]
+  refine ⟨?_, ?_⟩
+  · filter_upwards [h.eventually_analyticAt hx] with y hy using Or.inl hy
+  · filter_upwards [self_mem_nhdsWithin] with y hy using Or.inr hy
+
+/-- Meromorphic functions on `U` are analytic on `U`, outside of a discrete subset. -/
+theorem analyticAt_mem_codiscreteWithin (hf : MeromorphicOn f U) :
+    { x | AnalyticAt 𝕜 f x } ∈ Filter.codiscreteWithin U := by
+  rw [mem_codiscreteWithin]
+  intro x hx
+  rw [Filter.disjoint_principal_right, ← Filter.eventually_mem_set]
+  filter_upwards [hf.eventually_analyticAt_or_mem_compl hx] with y hy
+  simp
+  tauto
+
+/-- The set where a mermorphic function has zero or infinite
+order is codiscrete within its domain of meromorphicity. -/
+theorem codiscrete_setOf_order_eq_zero_or_top :
     {u : U | (hf u u.2).order = 0 ∨ (hf u u.2).order = ⊤} ∈ Filter.codiscrete U := by
   rw [mem_codiscrete_subtype_iff_mem_codiscreteWithin, mem_codiscreteWithin]
   intro x hx
@@ -342,7 +421,11 @@ theorem codiscrete_setOf_order_eq_zero_or_top [CompleteSpace E] :
     obtain ⟨t, h₁t, h₂t, h₃t⟩ := h₁a
     use t \ {x}, fun y h₁y _ ↦ h₁t y h₁y.1 h₁y.2
     exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_diff_of_mem h₃t hax⟩
-  · filter_upwards [(hf x hx).eventually_analyticAt, h₁f] with a h₁a
-    simp +contextual [h₁a.meromorphicAt_order, h₁a.order_eq_zero_iff.2]
+  · filter_upwards [hf.eventually_analyticAt_or_mem_compl hx, h₁f] with a h₁a h'₁a
+    simp only [mem_compl_iff, mem_diff, mem_image, mem_setOf_eq, Subtype.exists, exists_and_right,
+      exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
+    rcases h₁a with h' | h'
+    · simp +contextual [h'.meromorphicAt_order, h'.order_eq_zero_iff.2, h'₁a]
+    · exact fun ha ↦ (h' ha).elim
 
 end MeromorphicOn
