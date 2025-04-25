@@ -9,14 +9,27 @@ import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 
 /-!
-Develop some API for induced subgraphs as `SimpleGraphs α`, i.e.
-`(⊤ : Subgraph G).induce s).spanningCoe` and partial colorings of `G` as colorings of these.
+Develop some API for induced subgraphs and partial colorings as `SimpleGraphs α`,
+we do this via `(⊤ : Subgraph G).induce s).spanningCoe` since this easier to work with.
+
+If  `H := (⊤ : Subgraph G).induce s).spanningCoe` then `H.Adj a b` is
+definitionally `a ∈ s ∧ b ∈ s ∧ G.Adj a b`
+
+While if `H := (G.induce s).spanningCoe` then `H` is
+`(G.comap (Function.Embedding.subtype s)).map (Function.Embedding.subtype _)`
 -/
 
 namespace SimpleGraph
 open Subgraph
 
 variable {α : Type*} (G : SimpleGraph α)
+
+lemma induce_spanningCoe_adj (s : Set α) (a b : α) : (G.induce s).spanningCoe.Adj a b ↔
+  ((G.comap (Function.Embedding.subtype s)).map (Function.Embedding.subtype _)).Adj a b := by rfl
+
+lemma induce_spanningCoe_adj' (s : Set α) (a b : α) :
+  ((⊤ : Subgraph G).induce s).spanningCoe.Adj a b ↔ a ∈ s ∧ b ∈ s ∧ G.Adj a b := by rfl
+
 /- The neighbors of `a` in `G.induce s` as a `SimpleGraph α` -/
 @[simp]
 def neighborSetIn (s : Set α) (a : α) :=
