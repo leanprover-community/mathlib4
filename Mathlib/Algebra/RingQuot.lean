@@ -400,7 +400,7 @@ theorem mkRingHom_surjective (r : R → R → Prop) : Function.Surjective (mkRin
   simp
 
 @[ext 1100]
-theorem ringQuot_ext [Semiring T] {r : R → R → Prop} (f g : RingQuot r →+* T)
+theorem ringQuot_ext [NonAssocSemiring T] {r : R → R → Prop} (f g : RingQuot r →+* T)
     (w : f.comp (mkRingHom r) = g.comp (mkRingHom r)) : f = g := by
   ext x
   rcases mkRingHom_surjective r x with ⟨x, rfl⟩
