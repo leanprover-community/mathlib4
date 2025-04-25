@@ -398,7 +398,7 @@ theorem prod_Ici_succ (f : Fin (n + 1) → M) (a : Fin n) :
     ∏ i ≥ a.succ, f i = ∏ i ≥ a, f (i.succ) := by
   simp [← map_succEmb_Ici]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem prod_Ioi_succ (f : Fin (n + 1) → M) (a : Fin n) :
     ∏ i > a.succ, f i = ∏ i > a, f (i.succ) := by
   simp [← map_succEmb_Ioi]
