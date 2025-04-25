@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Daniel Weber
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Algebra.Order.Hom.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 
 /-!
 # Big operators on a list in ordered groups with zeros
@@ -58,19 +58,21 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : List ι} (f : ι → R) (g : �
       simp [ha]
     · apply (h0 _ _).trans (h _ _) <;> simp
 
-theorem prod_map_le_pow_lenght {F L : Type*} [MulPosMono R] [FunLike F L R] [NonnegHomClass F L R]
-    {f : F} {y : L} {t : List L} (hf : ∀ x : R, x ∈ List.map f t → x ≤ f y) :
-    (List.map f t).prod ≤ f y ^ length t := by
+theorem prod_map_le_pow_lenght {F L : Type*} [MulPosMono R] [FunLike F L R] {f : F} {r : R}
+    {t : List L} (hf0 : ∀ x : L, 0 ≤ f x) (hf : ∀ x : R, x ∈ List.map f t → x ≤ r) :
+    (List.map f t).prod ≤ r ^ length t := by
   induction t with
   | nil => simp
   | cons a s ih =>
     simp only [map_cons, prod_cons, length_cons, length_map, pow_succ']
+    have har : f a ≤ r := by
+      apply hf
+      simp
     gcongr
-    · apply prod_nonneg
-      simp
-    · simp
-    · apply hf
-      simp
+    · apply prod_nonneg (fun _ ha ↦ ?_)
+      obtain ⟨j, hj, rfl⟩ := mem_map.mp ha
+      exact hf0 j
+    · exact le_trans (hf0 a) har
     · simp_all
 
 omit [PosMulMono R]
