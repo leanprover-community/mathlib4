@@ -110,25 +110,12 @@ noncomputable def Units.exp : ℝ → ℂˣ := fun t =>
     by rw [← exp_add, neg_mul, neg_add_cancel, exp_zero]⟩
 
 
+-- Rework `mem_rootsOfUnity` into a more usable form
 nonrec theorem mem_rootsOfUnity' (n : ℕ) [NeZero n] (x : Units ℂ) :
     x ∈ rootsOfUnity n ℂ ↔ ∃ i < n, Units.exp (2 * π * (i / n)) = x := by
-  rw [mem_rootsOfUnity]
-  simp_rw [Units.exp]
-  simp only [ofReal_mul, ofReal_ofNat, ofReal_div, ofReal_natCast]
-  simp_rw [← Units.eq_iff]
-  constructor
-  · intro ⟨i, hi1, hi2⟩
-    use i
-    constructor
-    · exact hi1
-    · rw [← hi2]
-      ring_nf
-  · intro ⟨i, hi1, hi2⟩
-    use i
-    constructor
-    · exact hi1
-    · rw [← hi2]
-      ring_nf
+  simp_rw [mem_rootsOfUnity, Units.exp, ofReal_mul, ofReal_ofNat, ofReal_div, ofReal_natCast,
+    ← Units.eq_iff]
+  constructor <;> ({ intro ⟨i, hi1, hi2⟩; exact ⟨i, ⟨hi1, by rw [← hi2]; ring_nf⟩ ⟩})
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the `n`th roots of unity in `ℂ`. -/
 noncomputable def rootsOfUnity.exp (n : ℕ) [NeZero n] : ZMod n → rootsOfUnity n ℂ :=
