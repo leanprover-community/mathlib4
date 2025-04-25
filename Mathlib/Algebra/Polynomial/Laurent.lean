@@ -349,7 +349,7 @@ theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f'
   · rcases n with n | n
     · exact ⟨0, Polynomial.C a * X ^ n, by simp⟩
     · refine ⟨n + 1, Polynomial.C a, ?_⟩
-      simp only [Int.negSucc_eq, Polynomial.toLaurent_C, Int.ofNat_succ, mul_T_assoc,
+      simp only [Int.negSucc_eq, Polynomial.toLaurent_C, Int.natCast_succ, mul_T_assoc,
         neg_add_cancel, T_zero, mul_one]
 
 /-- This is a version of `exists_T_pow` stated as an induction principle. -/
