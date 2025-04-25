@@ -95,11 +95,10 @@ syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
 /-- A `reorder := ...` option for `to_additive`. -/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
-syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
-/-- Options to `to_additive`. -/
-syntax toAdditiveOption := toAdditiveParenthesizedOption <|> &"existing"
+syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
 /-- Remaining arguments of `to_additive`. -/
-syntax toAdditiveRest := (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
+syntax toAdditiveRest :=
+  (ppSpace &"existing")? (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
@@ -133,6 +132,9 @@ theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemi
 The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
+
+Use the `to_additive existing` syntax to use an existing additive declaration, instead of
+automatically generating it.
 
 Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
 This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
@@ -1179,18 +1181,16 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
 
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
+  | `(attr| to_additive%$tk $[?%$trace]? $[existing%$existing]?
+      $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
-    let mut existing := some false
     for stx in opts do
       match stx with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
         reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
-      | `(toAdditiveOption| existing) =>
-        existing := some true
       | _ => throwUnsupportedSyntax
     reorder := reorder.reverse
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
@@ -1200,7 +1200,7 @@ def elabToAdditive : Syntax → CoreM Config
              allowAutoName := false
              attrs
              reorder
-             existing
+             existing := some existing.isSome
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
