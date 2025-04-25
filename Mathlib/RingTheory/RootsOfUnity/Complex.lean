@@ -48,20 +48,17 @@ theorem exp_add (x y : ℝ) : exp (x + y) = exp x * exp y := by
 
 lemma exp_iff (t s : ℝ) :
     exp s = exp t ↔ Complex.exp (t * Complex.I) = Complex.exp (s * Complex.I) := by
-  constructor
-  · intro h
-    rw [exp, exp] at h
-    simp at h
+  constructor <;> intro h
+  · simp [exp, exp] at h
     simp_all only
-  · intro h
-    ext : 1
+  · ext : 1
     simp_all only [coe_exp]
 
 open Real in
 /-- `circleMap` is `2π`-periodic. -/
 theorem periodic_exp : Function.Periodic (exp) (2 * π) := fun θ => by
-  rw [exp_iff]
-  simp [add_mul, Complex.exp_periodic _]
+  simp only [exp_iff, Complex.ofReal_add, Complex.ofReal_mul, Complex.ofReal_ofNat, add_mul,
+    Complex.exp_periodic _]
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
@@ -247,62 +244,25 @@ noncomputable def exp (n : ℕ) [NeZero n] : ZMod n → rootsOfUnity n ℂ :=
 
 variable (n : ℕ) [NeZero n]
 
-lemma nzero : n ≠ 0 := (NeZero.ne' n).symm
-
-#check rootsOfUnity.exp n ∘ Nat.cast ∘ ZMod.val
-
-/-
-open Real in
---@[simp, norm_cast]
-theorem coe_exp (k : ZMod n) :
-    (exp n k).val = Complex.exp ((2 * π * (k.val / n)) * Complex.I) := by
-  simp only [ZMod.natCast_val]
-  rw [exp]
-  simp only [ZMod.natCast_val, Units.coe_exp, Complex.ofReal_mul, Complex.ofReal_ofNat,
-    Complex.ofReal_div, Complex.ofReal_natCast]
-  aesop
--/
-
 @[simp]
 theorem exp_zero : exp n 0 = 1 := by
   ext : 1
-  rw [exp]
-  simp only [ZMod.val_zero, CharP.cast_eq_zero, zero_div, mul_zero, Units.exp_zero,
+  simp only [exp, ZMod.val_zero, CharP.cast_eq_zero, zero_div, mul_zero, Units.exp_zero,
     OneMemClass.coe_one]
 
 open Real in
 lemma adding (j k : ZMod n) :
   Units.exp (2 * π * ((j + k).val / n)) = Units.exp (2 * π * (j.val/n) + 2 * π * (k.val/n)) := by
-  have e1 : j.val + k.val < n ∨ n ≤ j.val + k.val := Nat.lt_or_ge (j.val + k.val) n
-  rcases e1 with h1 | h2
-  · rw [ZMod.val_add_of_lt h1]
-    rw [Nat.cast_add]
-    rw [add_div]
-    rw [mul_add]
-  · rw [ZMod.val_add_of_le h2]
-    rw [Nat.cast_sub h2]
-    rw [sub_div]
-    rw [div_self ((NeZero.ne' _).symm)]
-    rw [mul_sub]
-    rw [mul_one]
-    rw [Units.periodic_exp.sub_eq]
-    rw [Nat.cast_add]
-    rw [add_div]
-    rw [mul_add]
-
-
+  rcases (Nat.lt_or_ge _ _) with h1 | h2
+  · rw [ZMod.val_add_of_lt h1, Nat.cast_add, add_div, mul_add]
+  · rw [ZMod.val_add_of_le h2, Nat.cast_sub h2, sub_div, div_self ((NeZero.ne' _).symm), mul_sub,
+      mul_one, Units.periodic_exp.sub_eq, Nat.cast_add, add_div, mul_add]
 
 @[simp]
 theorem exp_add (x y : ZMod n) : exp n (x + y) = exp n x * exp n y := by
-  ext
-  --simp only [Subgroup.coe_mul, Units.val_mul]
-  rw [exp]
-  simp_rw [adding]
-  rw [Units.exp_add]
-  rw [exp, exp]
-  simp_all only [ZMod.natCast_val, Units.val_mul, Units.coe_exp, Complex.ofReal_mul,
-    Complex.ofReal_ofNat,
-    Complex.ofReal_div, Complex.ofReal_natCast, MulMemClass.mk_mul_mk]
+  simp_rw [exp, adding]
+  simp_all only [Units.exp_add, ZMod.natCast_val, Units.val_mul, Units.coe_exp, Complex.ofReal_mul,
+    Complex.ofReal_ofNat, Complex.ofReal_div, Complex.ofReal_natCast, MulMemClass.mk_mul_mk]
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
