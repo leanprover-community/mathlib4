@@ -44,14 +44,14 @@ theorem HasDerivAt.pow' (h : HasDerivAt f f' x) (n : ℕ) :
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x := by
   simpa using h.hasFDerivAt.pow' n |>.hasDerivAt
 
-@[simp]
+@[simp low]
 theorem derivWithin_pow'
     (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
     derivWithin (fun x => f x ^ n) s x =
       ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * derivWithin f s x * f x ^ i :=
   (h.hasDerivWithinAt.pow' n).derivWithin hu
 
-@[simp]
+@[simp low]
 theorem deriv_pow' (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
     deriv (fun x => f x ^ n) x = ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * deriv f x * f x ^ i :=
   (h.hasDerivAt.pow' n).deriv
