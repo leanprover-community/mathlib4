@@ -105,6 +105,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, f i k hik x + f j k hjk y, by
           rw [LinearMap.map_add, of_f, of_f, ihx, ihy]
+          -- Submodule.Quotient.mk_add no longer works because this was generalized to AddCommMonoid
           rfl ⟩
 
 theorem exists_of₂ [Nonempty ι] [IsDirected ι (· ≤ ·)] (z w : DirectLimit G f) :
