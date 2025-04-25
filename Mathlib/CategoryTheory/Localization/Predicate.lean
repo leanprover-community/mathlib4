@@ -201,7 +201,7 @@ theorem essSurj (W) [L.IsLocalization W] : L.EssSurj :=
 /-- The functor `(D ⥤ E) ⥤ W.functors_inverting E` induced by the composition
 with a localization functor `L : C ⥤ D` with respect to `W : morphism_property C`. -/
 def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
-  FullSubcategory.lift _ ((whiskeringLeft _ _ E).obj L)
+  ObjectProperty.lift _ ((whiskeringLeft _ _ E).obj L)
     (MorphismProperty.IsInvertedBy.of_comp W L (inverts L W))
 
 instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
