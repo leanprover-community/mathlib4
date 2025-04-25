@@ -46,6 +46,23 @@ theorem exp_add (x y : ℝ) : exp (x + y) = exp x * exp y := by
   simp only [coe_exp, Submonoid.coe_mul, Complex.ofReal_add, add_mul, Complex.exp_add, val_mul,
     coe_exp]
 
+lemma exp_iff (t s : ℝ) :
+    exp s = exp t ↔ Complex.exp (t * Complex.I) = Complex.exp (s * Complex.I) := by
+  constructor
+  · intro h
+    rw [exp, exp] at h
+    simp at h
+    simp_all only
+  · intro h
+    ext : 1
+    simp_all only [coe_exp]
+
+open Real in
+/-- `circleMap` is `2π`-periodic. -/
+theorem periodic_exp : Function.Periodic (exp) (2 * π) := fun θ => by
+  rw [exp_iff]
+  simp [add_mul, Complex.exp_periodic _]
+
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
 @[simps]
@@ -251,13 +268,45 @@ theorem exp_zero : exp n 0 = 1 := by
   simp only [ZMod.val_zero, CharP.cast_eq_zero, zero_div, mul_zero, Units.exp_zero,
     OneMemClass.coe_one]
 
+open Real in
+lemma adding (j k : ZMod n) :
+  Units.exp (2 * π * ((j + k).val / n)) = Units.exp (2 * π * (j.val/n) + 2 * π * (k.val/n)) := by
+  have e1 : j.val + k.val < n ∨ n ≤ j.val + k.val := Nat.lt_or_ge (j.val + k.val) n
+  rcases e1 with h1 | h2
+  · rw [ZMod.val_add_of_lt h1]
+    rw [Nat.cast_add]
+    rw [add_div]
+    rw [mul_add]
+  · rw [ZMod.val_add_of_le h2]
+    rw [Nat.cast_sub]
+
+
+
 @[simp]
 theorem exp_add (x y : ZMod n) : exp n (x + y) = exp n x * exp n y := by
   ext
-  simp only [Subgroup.coe_mul, Units.val_mul]
+  --simp only [Subgroup.coe_mul, Units.val_mul]
   rw [exp]
+  have
+  simp_rw [ZMod.val_add]
+  rw [exp]
+  rw [exp]
+
+  simp only [ZMod.natCast_val, Units.coe_exp, Complex.ofReal_mul, Complex.ofReal_ofNat,
+    Complex.ofReal_div, Complex.ofReal_natCast, MulMemClass.mk_mul_mk, Units.val_mul]
+  rw [← Complex.exp_add]
+  simp_rw [← add_mul]
+  simp_rw [← mul_add]
+  simp_rw [← add_div]
+  simp_rw [ZMod.cast_add]
+  --simp_rw [← Units.exp_add]
+  simp_rw [ZMod.val_add]
+
+  simp_rw [mul_add]
+  simp_rw [Units.exp_add]
   simp only [ZMod.natCast_val, Units.coe_exp, Complex.ofReal_mul, Complex.ofReal_ofNat,
     Complex.ofReal_div, Complex.ofReal_natCast]
+
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
