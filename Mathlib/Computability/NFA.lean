@@ -212,9 +212,6 @@ section Union
 
 variable {σ1 : Type v} {σ2 : Type v}
 
-private instance Language.instUnion : Union (Language α) := by
-  apply Set.instUnion
-
 /-- `stepSum M₁ M₂` computes the transition for `M₁ ∪ M₂`. -/
 def stepSum (M1 : NFA α σ1) (M2 : NFA α σ2)
   (s : σ1 ⊕ σ2) (a : α) : Set (σ1 ⊕ σ2) :=
@@ -251,13 +248,13 @@ lemma union_acceptsFrom
  {S1 : Set σ1} {S2 : Set σ2} {M1 : NFA α σ1} {M2 : NFA α σ2} :
     acceptsFrom (union M1 M2)
       { s : σ1 ⊕ σ2 | s.casesOn S1 S2 }
-    = M1.acceptsFrom S1 ∪ M2.acceptsFrom S2 := by
+    = M1.acceptsFrom S1 + M2.acceptsFrom S2 := by
   apply Set.ext
   intros xs
   dsimp [acceptsFrom, evalFrom, union, accept]
   unfold stepSet
   dsimp [NFA.step]
-  rw [Set.mem_union, Set.mem_setOf, Set.mem_setOf]
+  rw [Language.add_def, Set.mem_union, Set.mem_setOf, Set.mem_setOf]
   induction xs generalizing S1 S2
   case nil =>
     simp
@@ -268,7 +265,7 @@ lemma union_acceptsFrom
     simp [←Set.mem_def (s:=⋃ (s : σ2) (_ : s ∈ S2), M2.step s x)]
 
 theorem union_accepts {M1 : NFA α σ1} {M2 : NFA α σ2} :
-    accepts (union M1 M2) = M1.accepts ∪ M2.accepts := by
+    accepts (union M1 M2) = M1.accepts + M2.accepts := by
   rw [accepts_acceptsFrom, accepts_acceptsFrom, accepts_acceptsFrom,
     union_start_spec, union_acceptsFrom]
 
@@ -277,9 +274,6 @@ end Union
 section Intersection
 
 variable {σ1 : Type v} {σ2 : Type v}
-
-private instance Language.instIntersect : Inter (Language α) := by
-  apply Set.instInter
 
 /-- `stepProd M₁ M₂` computes the transition for `M₁ ∩ M₂`. -/
 def stepProd (M1 : NFA α σ1) (M2 : NFA α σ2)
@@ -306,8 +300,7 @@ lemma intersect_biUnion_spec
       s'.1 ∈ (⋃ s1 ∈ S1, M1.step s1 a) ∧
       s'.2 ∈ (⋃ s2 ∈ S2, M2.step s2 a) } := by
   ext ⟨s1', s2'⟩
-  rw [Set.mem_setOf, Set.mem_iUnion₂, Set.mem_iUnion₂]
-  simp [stepProd]
+  simp [Set.mem_setOf, Set.mem_iUnion₂, Set.mem_iUnion₂, stepProd]
   tauto
 
 lemma intersect_acceptsFrom
