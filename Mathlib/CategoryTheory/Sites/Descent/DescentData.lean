@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.Functor.Strict
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 /-!
@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 -/
 
-universe t w v' u' v u
+universe t w v v' u u'
 
 namespace CategoryTheory
 
@@ -21,32 +21,10 @@ open Category Limits Bicategory
 
 namespace Pseudofunctor
 
-section
+/-set_option linter.unusedTactic false
 
-variable {B C : Type*} [Bicategory B] [Bicategory C]
-  (F : Pseudofunctor B C)
-  {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c) (hfg : f ≫ g = fg := by aesop_cat)
-
-def mapComp' : F.map fg ≅ F.map f ≫ F.map g := by
-  subst hfg
-  exact F.mapComp f g
-
-@[simp]
-lemma mapComp_rfl : F.mapComp' f g _ rfl = F.mapComp f g := rfl
-
-lemma mapComp'_def (hfg : f ≫ g = fg) : F.mapComp' f g fg hfg =
-    eqToIso (by rw [hfg]) ≪≫ F.mapComp f g := by
-  subst hfg
-  simp
-
-lemma mapComp_comp_mapComp {a b c d : B}
-    (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    (F.mapComp (f ≫ g) h).hom ≫ (F.mapComp f g).hom ▷ F.map h =
-      F.map₂ (α_ _ _ _).hom ≫ (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom ≫
-      (α_ _ _ _).inv := by
-  simp
-
-set_option linter.unusedTactic false
+--variable {B C : Type*} [Bicategory B] [Bicategory C] (F : Pseudofunctor B C)
+--  {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c) (hfg : f ≫ g = fg := by aesop_cat)
 
 section
 
@@ -108,21 +86,20 @@ lemma mapComp'_inv_of_comp_eq :
 
 end
 
-end
+end-/
 
 variable {C : Type u} [Bicategory.{w, v} C] [IsLocallyDiscrete C]
-  (F : Pseudofunctor C Cat.{v', u'})
-  {ι : Type w} (X : ι → C)
+  (F : Pseudofunctor C Cat.{v', u'}) {ι : Type t} (X : ι → C)
 
 structure DescentData where
   obj (i : ι) : F.obj (X i)
   iso ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
       (F.map f₁).obj (obj i₁) ≅ (F.map f₂).obj (obj i₂)
-  iso_comp ⦃Y' Y : C⦄ (g : Y ⟶ Y') ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
-      iso (f₁ ≫ g) (f₂ ≫ g) =
-        (F.mapComp f₁ g).app _ ≪≫
-          Functor.mapIso (F.map g) (iso f₁ f₂) ≪≫
-            (F.mapComp f₂ g).symm.app _ := by aesop_cat
+  iso_comp' ⦃Y' Y : C⦄ (g : Y ⟶ Y') ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y)
+      (f₁g : X i₁ ⟶ Y') (f₂g : X i₂ ⟶ Y') (hf₁g : f₁ ≫ g = f₁g) (hf₂g : f₂ ≫ g = f₂g) :
+      iso f₁g f₂g =
+        (F.mapComp' f₁ g f₁g).app (obj i₁) ≪≫ Functor.mapIso (F.map g) (iso f₁ f₂) ≪≫
+          (F.mapComp' f₂ g f₂g).symm.app (obj i₂)
   iso_trans ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) (f₃ : X i₃ ⟶ Y) :
     iso f₁ f₂ ≪≫ iso f₂ f₃ = iso f₁ f₃ := by aesop_cat
 
@@ -130,14 +107,16 @@ namespace DescentData
 
 variable {F X}
 
+@[simps]
 def mk' (obj : ∀ i, F.obj (X i))
     (hom : ∀ ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y),
       (F.map f₁).obj (obj i₁) ⟶ (F.map f₂).obj (obj i₂))
-    (hom_comp : ∀ ⦃Y' Y : C⦄ (g : Y ⟶ Y') ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y),
-      hom (f₁ ≫ g) (f₂ ≫ g) =
-        (F.mapComp f₁ g).hom.app _ ≫
+    (hom_comp' : ∀ ⦃Y' Y : C⦄ (g : Y ⟶ Y') ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y)
+      (f₁g : X i₁ ⟶ Y') (f₂g : X i₂ ⟶ Y') (hf₁g : f₁ ≫ g = f₁g) (hf₂g : f₂ ≫ g = f₂g),
+      hom f₁g f₂g =
+        (F.mapComp' f₁ g f₁g).hom.app _ ≫
           (F.map g).map (hom f₁ f₂) ≫
-            (F.mapComp f₂ g).inv.app _ := by aesop_cat)
+            (F.mapComp' f₂ g f₂g).inv.app _ := by aesop_cat)
     (hom_self : ∀ ⦃Y : C⦄ ⦃i : ι⦄ (f : X i ⟶ Y), hom f f = 𝟙 _ := by aesop_cat)
     (comp_hom : ∀ ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) (f₃ : X i₃ ⟶ Y),
       hom f₁ f₂ ≫ hom f₂ f₃ = hom f₁ f₃ := by aesop_cat) : F.DescentData X where
@@ -145,21 +124,63 @@ def mk' (obj : ∀ i, F.obj (X i))
   iso Y i₁ i₂ f₁ f₂ :=
     { hom := hom f₁ f₂
       inv := hom f₂ f₁ }
+  iso_comp' Y' Y g i₁ i₂ f₁ f₂ f₁g f₂g hf₁g hf₂g := by
+    ext
+    exact hom_comp' g f₁ f₂ f₁g f₂g hf₁g hf₂g
+
+
+@[ext]
+structure Hom (D₁ D₂ : F.DescentData X) where
+  hom (i : ι) : D₁.obj i ⟶ D₂.obj i
+  comm ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
+    (F.map f₁).map (hom i₁) ≫ (D₂.iso f₁ f₂).hom =
+      (D₁.iso f₁ f₂).hom ≫ (F.map f₂).map (hom i₂) := by aesop_cat
+
+attribute [reassoc (attr := simp)] Hom.comm
+
+instance : Category (F.DescentData X) where
+  Hom := Hom
+  id D := { hom i := 𝟙 _ }
+  comp {D₁ D₂ D₃} φ ψ :=
+    { hom i := φ.hom i ≫ ψ.hom i
+      comm Y i₁ i₂ f₁ f₂ := by
+        simp only [Functor.map_comp, assoc]
+        rw [ψ.comm, φ.comm_assoc] }
+
+end DescentData
+
+def toDescentDataOfIsTerminal (X₀ : C) (hX₀ : IsInitial X₀) :
+    F.obj X₀ ⥤ F.DescentData X where
+  obj A :=
+    { obj i := (F.map (hX₀.to (X i))).obj A
+      iso Y i₁ i₂ f₁ f₂ :=
+        (F.mapComp' (hX₀.to (X i₁)) f₁ (hX₀.to Y) (by simp)).symm.app A ≪≫
+          (F.mapComp' (hX₀.to (X i₂)) f₂ (hX₀.to Y) (by simp)).app A
+      iso_comp' Y' Y g i₁ i₂ f₁ f₂ f₁g f₂g hf₁g hf₂g := by
+        dsimp
+        sorry
+      iso_trans := by sorry } -- `aesop_cat` works
+  map {A B} f :=
+    { hom i := (F.map _).map f
+      comm Y i₁ i₂ f₁ f₂ := by
+        dsimp
+        simp only [assoc]
+        sorry }
+
+namespace DescentData
 
 section Unique
 
 variable (X : C)
 
-set_option maxHeartbeats 0 in
+/-set_option maxHeartbeats 0 in
 def mk'' (obj : F.obj X) (c : BinaryCofan X X)
     (hc : IsColimit c) (map : c.pt ⟶ X)
     (heq : map = hc.desc (BinaryCofan.mk (𝟙 _) (𝟙 _)))
     {Z : C} {ι₁₂ ι₂₃ : c.pt ⟶ Z}
     (h : IsPushout c.inl c.inr ι₂₃ ι₁₂)
     (p₁ p₂ p₃ : X ⟶ Z)
-    (hp₁ : c.inl ≫ ι₁₂ = p₁)
-    (hp₂ : c.inr ≫ ι₁₂ = p₂)
-    (hp₃ : c.inr ≫ ι₂₃ = p₃)
+    (hp₁ : c.inl ≫ ι₁₂ = p₁) (hp₂ : c.inr ≫ ι₁₂ = p₂) (hp₃ : c.inr ≫ ι₂₃ = p₃)
     (hom : (F.map c.inl).obj obj ⟶ (F.map c.inr).obj obj)
     (hom_self : (F.map map).map hom =
       (F.mapComp' c.inl map (𝟙 _) (by aesop_cat)).inv.app obj ≫
@@ -230,44 +251,12 @@ def mk'' (obj : F.obj X) (c : BinaryCofan X X)
     simp
   · intro Y _ _ _ f₁ f₂ f₃
     dsimp
-    sorry
+    sorry-/
+
 
 end Unique
 
-@[ext]
-structure Hom (D₁ D₂ : F.DescentData X) where
-  hom (i : ι) : D₁.obj i ⟶ D₂.obj i
-  comm ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
-    (F.map f₁).map (hom i₁) ≫ (D₂.iso f₁ f₂).hom =
-      (D₁.iso f₁ f₂).hom ≫ (F.map f₂).map (hom i₂) := by aesop_cat
-
-attribute [reassoc (attr := simp)] Hom.comm
-
-instance : Category (F.DescentData X) where
-  Hom := Hom
-  id D := { hom i := 𝟙 _ }
-  comp {D₁ D₂ D₃} φ ψ :=
-    { hom i := φ.hom i ≫ ψ.hom i
-      comm Y i₁ i₂ f₁ f₂ := by
-        simp only [Functor.map_comp, assoc]
-        rw [ψ.comm, φ.comm_assoc] }
-
 end DescentData
-
-def toDescentDataOfIsTerminal (X₀ : C) (hX₀ : IsInitial X₀) :
-    F.obj X₀ ⥤ F.DescentData X where
-  obj A :=
-    { obj i := (F.map (hX₀.to (X i))).obj A
-      iso Y i₁ i₂ f₁ f₂ :=
-        (F.mapComp' (hX₀.to (X i₁)) f₁ (hX₀.to Y) (by simp)).symm.app A ≪≫
-          (F.mapComp' (hX₀.to (X i₂)) f₂ (hX₀.to Y) (by simp)).app A
-      iso_comp Y' Y g i₁ i₂ f₁ f₂ := by
-        sorry }
-  map {A B} f :=
-    { hom i := (F.map _).map f
-      comm Y i₁ i₂ f₁ f₂ := by
-        dsimp
-        sorry }
 
 end Pseudofunctor
 
