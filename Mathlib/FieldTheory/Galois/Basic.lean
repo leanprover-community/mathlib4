@@ -521,15 +521,16 @@ section IsQuadraticAlgebra
 /--
 A quadratic separable extension is Galois.
 -/
-instance (F K : Type*) [Field F] [Field K] [Algebra F K] [IsQuadraticAlgebra F K]
-    [Algebra.IsSeparable F K] : IsGalois F K where
+instance IsQuadraticAlgebra.isGalois (F K : Type*) [Field F] [Field K] [Algebra F K]
+    [IsQuadraticAlgebra F K] [Algebra.IsSeparable F K] : IsGalois F K where
 
 /--
 A quadratic extension has cyclic Galois group.
 -/
-instance (F K : Type*) [Field F] [Field K] [Algebra F K] [h : IsQuadraticAlgebra F K] :
+instance IsQuadraticAlgebra.isCyclic (F K : Type*) [Field F] [Field K] [Algebra F K]
+    [IsQuadraticAlgebra F K] :
     IsCyclic (K ≃ₐ[F] K) := by
-  have := h.finrank_eq_two ▸ AlgEquiv.card_le
+  have := finrank_eq_two F K ▸ AlgEquiv.card_le
   interval_cases h : Fintype.card (K ≃ₐ[F] K)
   · simp_all
   · exact @isCyclic_of_subsingleton _ _ (Fintype.card_le_one_iff_subsingleton.mp h.le)
@@ -539,7 +540,8 @@ instance (F K : Type*) [Field F] [Field K] [Algebra F K] [h : IsQuadraticAlgebra
 /--
 A quadratic extension has abelian Galois group.
 -/
-instance (F K : Type*) [Field F] [Field K] [Algebra F K] [h : IsQuadraticAlgebra F K] :
+instance IsQuadraticAlgebra.isMulCommutative_galoisGroup (F K : Type*) [Field F] [Field K]
+    [Algebra F K] [IsQuadraticAlgebra F K] :
     IsMulCommutative (K ≃ₐ[F] K) := ⟨IsCyclic.commutative⟩
 
 end IsQuadraticAlgebra

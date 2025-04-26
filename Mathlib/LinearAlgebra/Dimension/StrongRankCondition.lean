@@ -551,6 +551,10 @@ An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-module of rank
 -- TODO. use this in connection with `NumberTheory.Zsqrtd`
 class IsQuadraticAlgebra (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S]
   extends StrongRankCondition R, Module.Free R S where
-  finrank_eq_two : Module.finrank R S = 2
+  finrank_eq_two' : Module.finrank R S = 2
+
+theorem IsQuadraticAlgebra.finrank_eq_two (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S]
+    [IsQuadraticAlgebra R S] :
+    Module.finrank R S = 2 := finrank_eq_two'
 
 end IsQuadraticAlgebra

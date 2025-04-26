@@ -284,11 +284,11 @@ end minpoly
 A quadratic extension is normal.
 -/
 instance IsQuadraticAlgebra.Normal (F K : Type*) [Field F] [Field K] [Algebra F K]
-    [h : IsQuadraticAlgebra F K] :
+    [IsQuadraticAlgebra F K] :
     Normal F K where
   splits' := by
     intro x
-    obtain h | h := le_iff_lt_or_eq.mp (h.finrank_eq_two ▸ minpoly.natDegree_le x)
+    obtain h | h := le_iff_lt_or_eq.mp (finrank_eq_two F K ▸ minpoly.natDegree_le x)
     · exact splits_of_natDegree_le_one _ (by rwa [Nat.le_iff_lt_add_one])
     · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
 
