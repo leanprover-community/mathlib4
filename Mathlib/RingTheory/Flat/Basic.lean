@@ -510,8 +510,8 @@ lemma map_injective_of_flat_flat'
 independent under some flatness conditions.
 
 The flatness condition could be removed over domains.
-See `LinearIndependent.tensorProduct_of_isDomain`. -/
-lemma _root_.LinearIndependent.tensorProduct_of_flat_left [Module.Flat R M]
+See `LinearIndependent.tmul_of_isDomain`. -/
+lemma _root_.LinearIndependent.tmul_of_flat_left [Module.Flat R M]
     {ι ι' : Type*} {v : ι → M} (hv : LinearIndependent R v)
     {w : ι' → N} (hw : LinearIndependent R w) :
     LinearIndependent R fun i : ι × ι' ↦ v i.1 ⊗ₜ[R] w i.2 := by
@@ -527,8 +527,8 @@ lemma _root_.LinearIndependent.tensorProduct_of_flat_left [Module.Flat R M]
 independent under some flatness conditions.
 
 The flatness condition could be removed over domains.
-See `LinearIndependent.tensorProduct_of_isDomain`. -/
-lemma _root_.LinearIndependent.tensorProduct_of_flat_right [Module.Flat R N]
+See `LinearIndependent.tmul_of_isDomain`. -/
+lemma _root_.LinearIndependent.tmul_of_flat_right [Module.Flat R N]
     {ι ι' : Type*} {v : ι → M} (hv : LinearIndependent R v)
     {w : ι' → N} (hw : LinearIndependent R w) :
     LinearIndependent R fun i : ι × ι' ↦ v i.1 ⊗ₜ[R] w i.2 :=
