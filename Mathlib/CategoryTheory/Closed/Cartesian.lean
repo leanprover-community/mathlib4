@@ -27,9 +27,9 @@ Show that exponential forms a difunctor and define the exponential comparison mo
 
 ## Implementation Details
 
-Cartesian closed categories require a `ChosenFiniteProducts` instance.
-If one whishes to state that a category that `hasFiniteProducts` is cartesian closed,
-they should first promote the `hasFiniteProducts` instance to a `ChosenFiniteProducts` one
+Cartesian closed categories require a `ChosenFiniteProducts` instance. If one whishes to state that
+a category that `hasFiniteProducts` is cartesian closed, they should first promote the
+`hasFiniteProducts` instance to a `ChosenFiniteProducts` one
 using `CategoryTheory.ChosenFiniteProducts.ofFiniteProducts`.
 
 ## TODO
@@ -364,8 +364,7 @@ Note we didn't require any coherence between the choice of finite products here,
 along the `prodComparison` isomorphism.
 -/
 noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [CartesianClosed C] : CartesianClosed D :=
-  letI : e.inverse.OplaxMonoidal := .ofChosenFiniteProducts _
-  letI : e.inverse.Monoidal := .ofChosenFiniteProducts _
+  letI : e.inverse.Monoidal := .ofChosenFiniteProducts' _
   MonoidalClosed.ofEquiv e.inverse e.symm.toAdjunction
 
 end Functor

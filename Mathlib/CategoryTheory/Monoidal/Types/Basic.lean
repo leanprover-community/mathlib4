@@ -23,8 +23,7 @@ namespace CategoryTheory
 instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) :=
   .ofChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
 
-instance : BraidedCategory (Type u) :=
-  ChosenFiniteProducts.braidedCategory
+instance : BraidedCategory (Type u) := ChosenFiniteProducts.braidedCategory
 
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :

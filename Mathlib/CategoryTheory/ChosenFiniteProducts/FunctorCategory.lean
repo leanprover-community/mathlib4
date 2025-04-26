@@ -62,7 +62,6 @@ end chosenProd
 
 end
 
-noncomputable
 instance chosenFiniteProducts :
     ChosenFiniteProducts (J ⥤ C) :=
   .ofChosenFiniteProducts ⟨_, chosenTerminalIsTerminal J C⟩

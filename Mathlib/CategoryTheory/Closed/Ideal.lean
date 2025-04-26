@@ -153,8 +153,7 @@ def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
         · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc, snd] }
 
-variable [ChosenFiniteProducts C] [Reflective i] [CartesianClosed C]
-  [ChosenFiniteProducts D]
+variable [ChosenFiniteProducts C] [Reflective i] [CartesianClosed C] [ChosenFiniteProducts D]
 
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
 This is the converse of `preservesBinaryProductsOfExponentialIdeal`.

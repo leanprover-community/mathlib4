@@ -60,8 +60,7 @@ noncomputable instance chosenFiniteProducts : ChosenFiniteProducts (Sheaf J A) :
                   cond := tensorProd_isSheaf J X Y})
           ⟨(ChosenFiniteProducts.fst _ _)⟩ ⟨(ChosenFiniteProducts.snd _ _)⟩
       isLimit :=
-        { lift := fun f ↦ ⟨ChosenFiniteProducts.lift
-            (BinaryFan.fst f).val (BinaryFan.snd f).val⟩
+        { lift := fun f ↦ ⟨ChosenFiniteProducts.lift (BinaryFan.fst f).val (BinaryFan.snd f).val⟩
           fac := by rintro s ⟨⟨j⟩⟩ <;> apply Sheaf.hom_ext <;> simp
           uniq := by
             intro x f h
