@@ -182,9 +182,11 @@ theorem lcm_def (i j : ℤ) : lcm i j = Nat.lcm (natAbs i) (natAbs j) :=
 protected theorem coe_nat_lcm (m n : ℕ) : Int.lcm ↑m ↑n = Nat.lcm m n :=
   rfl
 
-theorem dvd_gcd {i j k : ℤ} (h1 : k ∣ i) (h2 : k ∣ j) : k ∣ gcd i j :=
+theorem dvd_coe_gcd {i j k : ℤ} (h1 : k ∣ i) (h2 : k ∣ j) : k ∣ gcd i j :=
   natAbs_dvd.1 <|
     natCast_dvd_natCast.2 <| Nat.dvd_gcd (natAbs_dvd_natAbs.2 h1) (natAbs_dvd_natAbs.2 h2)
+
+@[deprecated (since := "2025-04-27")] alias dvd_gcd := dvd_coe_gcd
 
 theorem gcd_mul_lcm (i j : ℤ) : gcd i j * lcm i j = natAbs (i * j) := by
   rw [Int.gcd, Int.lcm, Nat.gcd_mul_lcm, natAbs_mul]
@@ -233,10 +235,10 @@ theorem gcd_div_gcd_div_gcd {i j : ℤ} (H : 0 < gcd i j) : gcd (i / gcd i j) (j
   rw [gcd_div gcd_dvd_left gcd_dvd_right, natAbs_ofNat, Nat.div_self H]
 
 theorem gcd_dvd_gcd_of_dvd_left {i k : ℤ} (j : ℤ) (H : i ∣ k) : gcd i j ∣ gcd k j :=
-  Int.natCast_dvd_natCast.1 <| dvd_gcd (gcd_dvd_left.trans H) gcd_dvd_right
+  Int.natCast_dvd_natCast.1 <| dvd_coe_gcd (gcd_dvd_left.trans H) gcd_dvd_right
 
 theorem gcd_dvd_gcd_of_dvd_right {i k : ℤ} (j : ℤ) (H : i ∣ k) : gcd j i ∣ gcd j k :=
-  Int.natCast_dvd_natCast.1 <| dvd_gcd gcd_dvd_left (gcd_dvd_right.trans H)
+  Int.natCast_dvd_natCast.1 <| dvd_coe_gcd gcd_dvd_left (gcd_dvd_right.trans H)
 
 theorem gcd_dvd_gcd_mul_left (i j k : ℤ) : gcd i j ∣ gcd (k * i) j :=
   gcd_dvd_gcd_of_dvd_left _ (dvd_mul_left _ _)
@@ -295,7 +297,7 @@ theorem gcd_dvd_iff {a b : ℤ} {n : ℕ} : gcd a b ∣ n ↔ ∃ x y : ℤ, ↑
 
 theorem gcd_greatest {a b d : ℤ} (hd_pos : 0 ≤ d) (hda : d ∣ a) (hdb : d ∣ b)
     (hd : ∀ e : ℤ, e ∣ a → e ∣ b → e ∣ d) : d = gcd a b :=
-  dvd_antisymm hd_pos (ofNat_zero_le (gcd a b)) (dvd_gcd hda hdb)
+  dvd_antisymm hd_pos (ofNat_zero_le (gcd a b)) (dvd_coe_gcd hda hdb)
     (hd _ gcd_dvd_left gcd_dvd_right)
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a c = 1` then `a ∣ b`.
