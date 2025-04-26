@@ -90,17 +90,17 @@ section Preorder
 
 variable [Preorder α] {a b c d : α}
 
-theorem ge_of_ge_of_eq : b ≤ a → b = c → c ≤ a :=
-  fun h₁ h₂ ↦ h₂ ▸ h₁
+theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c :=
+  flip le_of_eq_of_le
 
-theorem ge_of_eq_of_ge : a = b → c ≤ b → c ≤ a :=
-  fun h₁ h₂ ↦ h₁ ▸ h₂
+theorem le_of_eq_of_le' : b = c → a ≤ b → a ≤ c :=
+  flip le_of_le_of_eq
 
-theorem gt_of_gt_of_eq : b < a → b = c → c < a :=
-  fun h₁ h₂ ↦ h₂ ▸ h₁
+theorem lt_of_lt_of_eq' : b < c → a = b → a < c :=
+  flip lt_of_eq_of_lt
 
-theorem gt_of_eq_of_gt : a = b → c < b → c < a :=
-  fun h₁ h₂ ↦ h₁ ▸ h₂
+theorem lt_of_eq_of_lt' : b = c → a < b → a < c :=
+  flip lt_of_lt_of_eq
 
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_le, Classical.not_and_iff_not_or_not, Classical.not_not]
@@ -122,13 +122,13 @@ alias LE.le.trans_lt' := gt_of_ge_of_gt
 alias LT.lt.trans_le := lt_of_lt_of_le
 alias LT.lt.trans_le' := gt_of_gt_of_ge
 alias LE.le.trans_eq := le_of_le_of_eq
-alias LE.le.trans_eq' := ge_of_ge_of_eq
+alias LE.le.trans_eq' := le_of_le_of_eq'
 alias LT.lt.trans_eq := lt_of_lt_of_eq
-alias LT.lt.trans_eq' := gt_of_gt_of_eq
+alias LT.lt.trans_eq' := lt_of_lt_of_eq'
 alias Eq.trans_le := le_of_eq_of_le
-alias Eq.trans_ge := ge_of_eq_of_ge
+alias Eq.trans_ge := le_of_eq_of_le'
 alias Eq.trans_lt := lt_of_eq_of_lt
-alias Eq.trans_gt := gt_of_eq_of_gt
+alias Eq.trans_gt := lt_of_eq_of_lt'
 alias LE.le.lt_of_not_le := lt_of_le_not_le
 alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 alias LT.lt.le := le_of_lt
