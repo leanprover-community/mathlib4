@@ -269,9 +269,18 @@ Constructs the expression corresponding to `.const q h` for `q = n / d`
 and `h` a proof that `(d : α) ≠ 0`.
 (The `.const` constructor does not check that the expression is correct.)
 -/
-def ExProd.mkRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℤ)) (d : Q(ℕ)) (h : Expr) :
+def ExProd.mkNNRat (_ : Q(DivisionSemiring $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(ℕ)) (h : Expr) :
     (e : Q($α)) × ExProd sα e :=
-  ⟨q(Rat.rawCast $n $d : $α), .const q h⟩
+  ⟨q(NNRat.rawCast $n $d : $α), .const q h⟩
+
+/--
+Constructs the expression corresponding to `.const q h` for `q = -(n / d)`
+and `h` a proof that `(d : α) ≠ 0`.
+(The `.const` constructor does not check that the expression is correct.)
+-/
+def ExProd.mkNegNNRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(ℕ)) (h : Expr) :
+    (e : Q($α)) × ExProd sα e :=
+  ⟨q(Rat.rawCast (.negOfNat $n) $d : $α), .const q h⟩
 
 section
 
@@ -925,6 +934,7 @@ theorem cast_rat {n : ℤ} {d : ℕ} {R} [DivisionRing R] {a : R} :
 * `e = 0` if `norm_num` returns `IsNat e 0`
 * `e = Nat.rawCast n + 0` if `norm_num` returns `IsNat e n`
 * `e = Int.rawCast n + 0` if `norm_num` returns `IsInt e n`
+* `e = NNRat.rawCast n d + 0` if `norm_num` returns `IsNNRat e n d`
 * `e = Rat.rawCast n d + 0` if `norm_num` returns `IsRat e n d`
 -/
 def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
@@ -938,11 +948,11 @@ def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
   | .isNegNat rα lit p =>
     pure ⟨_, (ExProd.mkNegNat _ rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
   | .isNNRat dsα q n d p =>
-    pure ⟨_, (ExProd.mkRat sα dsα q
-      q(.ofNat $n) d q(IsNNRat.den_nz $p)).2.toSum, (q(cast_nnrat $p) : Expr)⟩
+    pure ⟨_, (ExProd.mkNNRat sα dsα q
+      n d q(IsNNRat.den_nz $p)).2.toSum, (q(cast_nnrat $p) : Expr)⟩
   | .isNegNNRat dα q n d p =>
-    pure ⟨_, (ExProd.mkRat sα dα q
-      q(.negOfNat $n) d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
+    pure ⟨_, (ExProd.mkNegNNRat sα dα q
+      n d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
   | _ => none
 
 theorem toProd_pf (p : (a : R) = a') :
