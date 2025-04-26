@@ -201,7 +201,7 @@ lemma order_add_of_order_lt_order (hf₁ : AnalyticAt 𝕜 f₁ z₀) (hf₂ : A
 
 /-- If two functions have unequal orders, then the order of their sum is exactly the minimum
 of the orders of the summands. -/
-theorem order_add_of_unequal_order (hf₁ : AnalyticAt 𝕜 f₁ z₀) (hf₂ : AnalyticAt 𝕜 f₂ z₀)
+theorem order_add_of_order_ne_order (hf₁ : AnalyticAt 𝕜 f₁ z₀) (hf₂ : AnalyticAt 𝕜 f₂ z₀)
     (h : hf₁.order ≠ hf₂.order) :
     (hf₁.add hf₂).order = min hf₁.order hf₂.order := by
   rcases min_cases hf₁.order hf₂.order with (⟨hm, h₁⟩ | ⟨hm, h₁⟩)
