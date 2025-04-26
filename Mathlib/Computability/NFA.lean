@@ -88,7 +88,7 @@ theorem eval_singleton (a : α) : M.eval [a] = M.stepSet M.start a :=
 theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.stepSet (M.eval x) a :=
   evalFrom_append_singleton _ _ _ _
 
-/-- `M.acceptsFrom S` is the language of `x` such that `M.evalFrom S x` is an accept state. -/
+/-- `M.acceptsFrom S` is the language of `x` such that there is an accept state in `M.evalFrom S x`. -/
 def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
 
 theorem mem_acceptsFrom {S : Set σ} {x : List α} :
@@ -195,13 +195,12 @@ lemma reverse_rewindFrom_evalFrom {xs : List α} {S1 S2 : Set σ} {M : NFA α σ
     simp [ih, unstepSet, stepSet, Set.mem_iUnion]
     tauto
 
-lemma reverse_rewindsToStart_acceptsFrom {xs : List α} {M : NFA α σ} :
-    xs ∈ M.rewindsToStart M.reverse.start ↔ xs.reverse ∈ M.acceptsFrom M.start := by
-  rw [mem_rewindsToStart, mem_acceptsFrom]
-  apply reverse_rewindFrom_evalFrom
+lemma mem_rewindsToStart_iff_reverse_mem_acceptsFrom {xs : List α} {M : NFA α σ} :
+    xs ∈ M.rewindsToStart M.accept ↔ xs.reverse ∈ M.acceptsFrom M.start := by
+  simp [mem_rewindsToStart, mem_acceptsFrom, rewindFrom_iff_evalFrom_reverse]
 
 theorem reverse_accepts {M : NFA α σ} :
-    M.reverse.accepts = { xs : List α | xs.reverse ∈ M.accepts } := by
+    M.reverse.accepts = M.accepts.reverse := by
   ext xs
   rw [accepts_acceptsFrom, accepts_acceptsFrom, reverse_acceptsFrom_rewindsToStart, Set.mem_setOf]
   apply reverse_rewindsToStart_acceptsFrom
@@ -284,7 +283,7 @@ def stepProd (M1 : NFA α σ1) (M2 : NFA α σ2)
   Given NFAs `M₁` and `M₂`, `M₁ ∩ M₂` is a NFA such that
   `L(M₁ ∩ M₂) = L(M₁) ∩ L(M₂)`. -/
 def intersect (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 × σ2) where
-  start : Set (σ1 × σ2) := { s : σ1 × σ2 | s.1 ∈ M1.start ∧ s.2 ∈ M2.start }
+  start : Set (σ1 × σ2) := M1.start ×ˢ M2.start
   step : σ1 × σ2 → α → Set (σ1 × σ2) := stepProd M1 M2
   accept : Set (σ1 × σ2) := { s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept }
 
