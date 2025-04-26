@@ -79,7 +79,7 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le
   obtain ⟨I, rfl, hI⟩ := exists_ideal_in_class_of_norm_le C
   simpa [← ClassGroup.mk0_eq_one_iff] using h _ hI
 
-theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_prime
+theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_isPrime_of_norm_le
     (h : ∀ (I : (Ideal (𝓞 K))⁰), (I : Ideal (𝓞 K)).IsPrime →
       absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
         ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|) →
