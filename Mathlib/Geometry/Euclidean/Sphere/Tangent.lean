@@ -59,14 +59,14 @@ variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [Norme
 
 /-- The affine subspace orthogonal to the radius vector of the sphere `s` at the point `p` (in
 the typical cases, `p` lies in `s` and this is the tangent space). -/
-def orthRadius (s : Sphere P) (p : P) : AffineSubspace ℝ P := .mk' p (ℝ ∙ (p -ᵥ s.center))ᗮ
+def orthRadius (s : Sphere P) (p : P) : AffineSubspace ℝ P := (ℝ ∙ (p -ᵥ s.center))ᗮ.shift p
 
 lemma self_mem_orthRadius (s : Sphere P) (p : P) : p ∈ s.orthRadius p :=
-  self_mem_mk' _ _
+  Submodule.self_mem_shift _ _
 
 lemma mem_orthRadius_iff_inner_left {s : Sphere P} {p x : P} :
     x ∈ s.orthRadius p ↔ ⟪x -ᵥ p, p -ᵥ s.center⟫ = 0 := by
-  rw [orthRadius, mem_mk'_iff_vsub_mem, Submodule.mem_orthogonal_singleton_iff_inner_left]
+  rw [orthRadius, Submodule.mem_shift, Submodule.mem_orthogonal_singleton_iff_inner_left]
 
 lemma mem_orthRadius_iff_inner_right {s : Sphere P} {p x : P} :
     x ∈ s.orthRadius p ↔ ⟪p -ᵥ s.center, x -ᵥ p⟫ = 0 := by
@@ -74,7 +74,7 @@ lemma mem_orthRadius_iff_inner_right {s : Sphere P} {p x : P} :
 
 @[simp] lemma direction_orthRadius (s : Sphere P) (p : P) :
     (s.orthRadius p).direction = (ℝ ∙ (p -ᵥ s.center))ᗮ := by
-  rw [orthRadius, direction_mk']
+  rw [orthRadius, Submodule.direction_shift]
 
 @[simp] lemma orthRadius_center (s : Sphere P) : s.orthRadius s.center = ⊤ := by
   simp [orthRadius]
