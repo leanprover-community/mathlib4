@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Group.Pointwise
 import Mathlib.MeasureTheory.Integral.Lebesgue.Map
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Fundamental domain of a group action

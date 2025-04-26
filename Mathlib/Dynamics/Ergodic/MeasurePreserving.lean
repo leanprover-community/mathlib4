@@ -124,6 +124,10 @@ theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s :
   rw [← hf.map_eq] at hs ⊢
   rw [map_apply₀ hf.1.aemeasurable hs]
 
+theorem measureReal_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : NullMeasurableSet s μb) : μa.real (f ⁻¹' s) = μb.real s := by
+  simp [measureReal_def, measure_preimage hf hs]
+
 theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (hfe : MeasurableEmbedding f) (s : Set β) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq, hfe.map_apply]
