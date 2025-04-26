@@ -20,6 +20,7 @@ namespace Option
 -- Pending rename in core.
 alias map_eq_none_iff := map_eq_none'
 alias map_eq_some_iff := map_eq_some'
+alias forall_ne_none := ball_ne_none
 
 /-- Traverse an object of `Option α` with a function `f : α → F β` for an applicative `F`. -/
 protected def traverse.{u, v}
