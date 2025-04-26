@@ -1096,6 +1096,23 @@ lemma inv_lt_iff_one_lt_mul₀ (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := by
 
 lemma one_le_div₀ (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff₀ hb, one_mul]
 lemma div_le_one₀ (hb : 0 < b) : a / b ≤ 1 ↔ a ≤ b := by rw [div_le_iff₀ hb, one_mul]
+lemma one_lt_div₀ (hb : 0 < b) : 1 < a / b ↔ b < a := by rw [lt_div_iff₀ hb, one_mul]
+lemma div_lt_one₀ (hb : 0 < b) : a / b < 1 ↔ a < b := by rw [div_lt_iff₀ hb, one_mul]
+
+@[deprecated (since := "2025-04-25")]
+alias one_le_div := one_le_div₀
+
+@[deprecated (since := "2025-04-25")]
+alias one_lt_div := one_lt_div₀
+
+@[deprecated (since := "2025-04-25")]
+alias div_le_one := div_le_one₀
+
+@[deprecated (since := "2025-04-25")]
+alias div_lt_one := div_lt_one₀
+
+@[bound] alias ⟨_, Bound.one_lt_div_of_pos_of_lt⟩ := one_lt_div₀
+@[bound] alias ⟨_, Bound.div_lt_one_of_pos_of_lt⟩ := div_lt_one₀
 
 /-- One direction of `le_mul_inv_iff₀` where `c` is allowed to be `0` (but `b` must be nonnegative).
 -/
@@ -1150,24 +1167,52 @@ attribute [local instance] PosMulReflectLT.toPosMulStrictMono PosMulReflectLT.to
 lemma inv_le_inv₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by
   rw [inv_le_iff_one_le_mul₀' ha, le_mul_inv_iff₀ hb, one_mul]
 
+/-- For the single implications with fewer assumptions, see `one_div_le_one_div_of_le` and
+  `le_of_one_div_le_one_div` -/
+theorem one_div_le_one_div (ha : 0 < a) (hb : 0 < b) : 1 / a ≤ 1 / b ↔ b ≤ a := by
+  simpa using inv_le_inv₀ ha hb
+
 /-- See `inv_strictAnti₀` for the implication from right-to-left with one fewer assumption. -/
 lemma inv_lt_inv₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b⁻¹ ↔ b < a := by
   rw [inv_lt_iff_one_lt_mul₀' ha, lt_mul_inv_iff₀ hb, one_mul]
 
+/-- For the single implications with fewer assumptions, see `one_div_lt_one_div_of_lt` and
+  `lt_of_one_div_lt_one_div` -/
+theorem one_div_lt_one_div (ha : 0 < a) (hb : 0 < b) : 1 / a < 1 / b ↔ b < a := by
+  simpa using inv_lt_inv₀ ha hb
+
 @[gcongr, bound]
 lemma inv_anti₀ (hb : 0 < b) (hba : b ≤ a) : a⁻¹ ≤ b⁻¹ := (inv_le_inv₀ (hb.trans_le hba) hb).2 hba
+
+theorem one_div_le_one_div_of_le (ha : 0 < a) (h : a ≤ b) : 1 / b ≤ 1 / a := by
+  simpa using inv_anti₀ ha h
+
+theorem le_of_one_div_le_one_div (ha : 0 < a) (h : 1 / a ≤ 1 / b) : b ≤ a := by
+  simpa using inv_anti₀ (by simpa) h
 
 @[gcongr, bound]
 lemma inv_strictAnti₀ (hb : 0 < b) (hba : b < a) : a⁻¹ < b⁻¹ :=
   (inv_lt_inv₀ (hb.trans hba) hb).2 hba
 
+theorem one_div_lt_one_div_of_lt (ha : 0 < a) (h : a < b) : 1 / b < 1 / a := by
+  simpa using inv_strictAnti₀ ha h
+
+theorem lt_of_one_div_lt_one_div (ha : 0 < a) (h : 1 / a < 1 / b) : b < a := by
+  simpa using inv_strictAnti₀ (by simpa) h
+
 /-- See also `inv_le_of_inv_le₀` for a one-sided implication with one fewer assumption. -/
 lemma inv_le_comm₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b ↔ b⁻¹ ≤ a := by
   rw [← inv_le_inv₀ hb (inv_pos.2 ha), inv_inv]
 
+theorem one_div_le (ha : 0 < a) (hb : 0 < b) : 1 / a ≤ b ↔ 1 / b ≤ a := by
+  simpa using inv_le_comm₀ ha hb
+
 /-- See also `inv_lt_of_inv_lt₀` for a one-sided implication with one fewer assumption. -/
 lemma inv_lt_comm₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b ↔ b⁻¹ < a := by
   rw [← inv_lt_inv₀ hb (inv_pos.2 ha), inv_inv]
+
+theorem one_div_lt (ha : 0 < a) (hb : 0 < b) : 1 / a < b ↔ 1 / b < a := by
+  simpa using inv_lt_comm₀ ha hb
 
 lemma inv_le_of_inv_le₀ (ha : 0 < a) (h : a⁻¹ ≤ b) : b⁻¹ ≤ a :=
   (inv_le_comm₀ ha <| (inv_pos.2 ha).trans_le h).1 h
@@ -1179,9 +1224,21 @@ lemma inv_lt_of_inv_lt₀ (ha : 0 < a) (h : a⁻¹ < b) : b⁻¹ < a :=
 lemma le_inv_comm₀ (ha : 0 < a) (hb : 0 < b) : a ≤ b⁻¹ ↔ b ≤ a⁻¹ := by
   rw [← inv_le_inv₀ (inv_pos.2 hb) ha, inv_inv]
 
+theorem le_one_div (ha : 0 < a) (hb : 0 < b) : a ≤ 1 / b ↔ b ≤ 1 / a := by
+  simpa using le_inv_comm₀ ha hb
+
 /-- See also `lt_inv_of_lt_inv₀` for a one-sided implication with one fewer assumption. -/
 lemma lt_inv_comm₀ (ha : 0 < a) (hb : 0 < b) : a < b⁻¹ ↔ b < a⁻¹ := by
   rw [← inv_lt_inv₀ (inv_pos.2 hb) ha, inv_inv]
+
+theorem lt_one_div (ha : 0 < a) (hb : 0 < b) : a < 1 / b ↔ b < 1 / a := by
+  simpa using lt_inv_comm₀ ha hb
+
+theorem one_lt_one_div (h1 : 0 < a) (h2 : a < 1) : 1 < 1 / a := by
+  rwa [lt_one_div (h1.trans h2) h1, div_one]
+
+theorem one_le_one_div (h1 : 0 < a) (h2 : a ≤ 1) : 1 ≤ 1 / a := by
+  rwa [le_one_div (h1.trans_le h2) h1, one_div_one]
 
 lemma le_inv_of_le_inv₀ (ha : 0 < a) (h : a ≤ b⁻¹) : b ≤ a⁻¹ :=
   (le_inv_comm₀ ha <| inv_pos.1 <| ha.trans_le h).1 h
@@ -1224,6 +1281,20 @@ lemma div_lt_div₀' (hac : a ≤ c) (hdb : d < b) (hc : 0 < c) (hd : 0 < d) : a
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact mul_lt_mul' hac ((inv_lt_inv₀ (hd.trans hdb) hd).2 hdb)
     (inv_nonneg.2 <| hd.le.trans hdb.le) hc
+
+@[bound]
+theorem le_div_self (ha : 0 ≤ a) (hb₀ : 0 < b) (hb₁ : b ≤ 1) : a ≤ a / b := by
+  simpa only [div_one] using div_le_div_of_nonneg_left ha hb₀ hb₁
+
+variable [ZeroLEOneClass G₀]
+
+@[bound]
+theorem div_le_self (ha : 0 ≤ a) (hb : 1 ≤ b) : a / b ≤ a := by
+  simpa only [div_one] using div_le_div_of_nonneg_left ha zero_lt_one hb
+
+@[bound]
+theorem div_lt_self (ha : 0 < a) (hb : 1 < b) : a / b < a := by
+  simpa only [div_one] using div_lt_div_of_pos_left ha zero_lt_one hb
 
 end Both
 
