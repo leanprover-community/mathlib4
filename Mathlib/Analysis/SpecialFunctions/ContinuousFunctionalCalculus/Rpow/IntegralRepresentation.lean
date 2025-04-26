@@ -36,11 +36,12 @@ relevant in applications, and would needlessly complicate the proof.
 ## TODO
 
 + Show operator monotonicity and concavity of `rpow` over `Icc 0 1` as outlined above
-+ Give analogous representations for the ranges `Icc (-1) 0` and `Icc 1 2`.
++ Give analogous representations for the ranges `Ioo (-1) 0` and `Ioo 1 2`.
 
 ## References
 
 + [carlen2010] Eric A. Carlen, "Trace inequalities and quantum entropies: An introductory course"
+  (see Lemma 2.8)
 -/
 
 open MeasureTheory Set Filter
@@ -138,10 +139,12 @@ lemma rpowIntegrand₀₁_apply_mul' (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0
     simp [hx_zero, Real.zero_rpow this]
 
 lemma rpowIntegrand₀₁_apply_mul_eqOn_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
-    EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x) (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p) (Ici 0) :=
+    EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x)
+      (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p) (Ici 0) :=
   fun _ ht => rpowIntegrand₀₁_apply_mul' hp ht hx
 
-lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) : ContinuousOn (rpowIntegrand₀₁ p · x) (Ioi 0) := by
+lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
+    ContinuousOn (rpowIntegrand₀₁ p · x) (Ioi 0) := by
   refine ContinuousOn.congr ?_ <| rpowIntegrand₀₁_eqOn_pow_div hp hx
   refine ContinuousOn.mul ?_ ?_
   · refine ContinuousOn.mul ?_ continuousOn_const
@@ -189,11 +192,13 @@ lemma rpowIntegrand₀₁_one_ge_rpow_sub_two (hp : p ∈ Ioo 0 1) (ht : 1 ≤ t
             ring
   _ ≤ t ^ (p - 1) * (1 / (t + 1)) := by
             gcongr t ^ (p - 1) * ?_
-            rw [mul_div_assoc, one_div_mul_one_div, one_div_le_one_div (by positivity) (by positivity)]
+            rw [mul_div_assoc, one_div_mul_one_div,
+              one_div_le_one_div (by positivity) (by positivity)]
             linarith
-  _ = rpowIntegrand₀₁ p t 1 := by rw [rpowIntegrand₀₁_eq_pow_div hp (by linarith) zero_le_one, mul_div_assoc]
+  _ = rpowIntegrand₀₁ p t 1 := by
+            rw [rpowIntegrand₀₁_eq_pow_div hp (by linarith) zero_le_one, mul_div_assoc]
 
--- First piece : `Ioc 0 1`
+/- This lemma is private because it is strictly weaker than `integrableOn_rpowIntegrand₀₁_Ioi` -/
 private lemma integrableOn_rpowIntegrand₀₁_Ioc (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₀₁ p · x) (Ioc 0 1) := by
   refine IntegrableOn.congr_set_ae (t := Ioo 0 1) ?_ (Filter.EventuallyEq.symm Ioo_ae_eq_Ioc)
@@ -215,7 +220,7 @@ private lemma integrableOn_rpowIntegrand₀₁_Ioc (hp : p ∈ Ioo 0 1) (hx : 0 
       rw [Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg hp.1 (le_of_lt ht.1) hx)]
       exact rpowIntegrand₀₁_le_rpow_sub_one hp (le_of_lt ht.1) hx
 
--- Second piece: `Ioi 1`
+/- This lemma is private because it is strictly weaker than `integrableOn_rpowIntegrand₀₁_Ioi` -/
 private lemma integrableOn_rpowIntegrand₀₁_Ioi_one (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₀₁ p · x) (Ioi 1) := by
   refine ⟨?meas, ?finite⟩
@@ -240,9 +245,10 @@ private lemma integrableOn_rpowIntegrand₀₁_Ioi_one (hp : p ∈ Ioo 0 1) (hx 
       rw [Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg hp.1 ht' hx)]
       exact rpowIntegrand₀₁_le_rpow_sub_two_mul_self hp (zero_lt_one.trans ht) hx
 
--- Need to break the integral into 0 to 1 and 1 to ∞, with two separate bounds. Very annoying
 lemma integrableOn_rpowIntegrand₀₁_Ioi (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₀₁ p · x) (Ioi 0) := by
+  /- The integral converges because it is `O(t ^ (p-1))` at the origin and `O(t ^ (p-2))` at
+  infinity. Hence we break the integral into two parts. -/
   have hunion : Ioi (0 : ℝ) = Ioc 0 1 ∪ Ioi 1 := by
     ext t
     refine ⟨fun ht => ?_, fun ht => ?_⟩
@@ -250,18 +256,20 @@ lemma integrableOn_rpowIntegrand₀₁_Ioi (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
       by_cases ht' : t ≤ 1
       · exact Or.inl ⟨ht, ht'⟩
       · push_neg at ht'
-        refine Or.inr ht'
+        exact Or.inr ht'
     · rw [Set.mem_union] at ht
       rcases ht with ht|ht
       · exact ht.1
       · calc (0 : ℝ) < 1 := zero_lt_one
           _ < t := ht
   rw [hunion]
-  refine IntegrableOn.union (integrableOn_rpowIntegrand₀₁_Ioc hp hx) (integrableOn_rpowIntegrand₀₁_Ioi_one hp hx)
+  exact IntegrableOn.union (integrableOn_rpowIntegrand₀₁_Ioc hp hx)
+    (integrableOn_rpowIntegrand₀₁_Ioi_one hp hx)
 
 lemma integrableOn_rpowIntegrand₀₁_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₀₁ p · x) (Ici 0) :=
-  IntegrableOn.congr_set_ae (t := Ioi 0) (integrableOn_rpowIntegrand₀₁_Ioi hp hx) (EventuallyEq.symm Ioi_ae_eq_Ici)
+  IntegrableOn.congr_set_ae (integrableOn_rpowIntegrand₀₁_Ioi hp hx)
+    (EventuallyEq.symm Ioi_ae_eq_Ici)
 
 lemma integral_rpowIntegrand₀₁_eq_rpow_mul_const (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     (∫ t in Ioi 0, rpowIntegrand₀₁ p t x) = x ^ p * (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1) := by
@@ -330,18 +338,20 @@ lemma integral_rpowIntegrand₀₁_eq_rpow_mul_const (hp : p ∈ Ioo 0 1) (hx : 
       simp [g, f]
     rw [hrw, ← integral_comp_mul_deriv_Ioi hf hft hff' hg_cont hg1 hg2]
     simp only [f, g, f', Function.comp]
-    have heqOn : EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x) (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p) (Ioi 0) :=
+    have heqOn : EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x)
+        (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p) (Ioi 0) :=
       EqOn.mono Ioi_subset_Ici_self (rpowIntegrand₀₁_apply_mul_eqOn_Ici hp hx)
     rw [setIntegral_congr_fun measurableSet_Ioi heqOn]
     simp only [← smul_eq_mul (b := x ^ p), integral_smul_const]
     rw [smul_eq_mul, mul_comm]
 
-lemma le_integral_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) : -1 / (2 * (p - 1)) ≤ ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := calc
+lemma le_integral_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) :
+    -1 / (2 * (p - 1)) ≤ ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := calc
   _ = (1 / 2) * -((1 : ℝ) ^ (p - 1)) / (p - 1) := by rw [← div_div]; simp [neg_div]
   _ = (1 / 2) * ∫ t in Ioi 1, t ^ (p - 2) := by
         simp only [mem_Ioo] at hp
         rw [integral_Ioi_rpow_of_lt (by linarith) zero_lt_one]
-        ring_nf   -- ring alone spits out a warning
+        ring_nf   -- ring alone succeeds but gives a warning
   _ = ∫ t in Ioi 1, (1 / 2) * t ^ (p - 2) := by
         exact Eq.symm (integral_mul_left (1 / 2) fun a => a ^ (p - 2))
   _ ≤ ∫ t in Ioi 1, rpowIntegrand₀₁ p t 1 := by
@@ -362,7 +372,8 @@ lemma le_integral_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) : -1 / (2 * (p - 
           simp only [mem_Ioi] at *
           linarith
 
-lemma integral_rpowIntegrand₀₁_one_pos (hp : p ∈ Ioo 0 1) : 0 < ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := calc
+lemma integral_rpowIntegrand₀₁_one_pos (hp : p ∈ Ioo 0 1) :
+    0 < ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := calc
   0 < -1 / (2 * (p - 1)) := by
       rw [neg_div, neg_pos, one_div_neg]
       simp only [mem_Ioo] at hp
@@ -377,17 +388,22 @@ lemma rpow_eq_const_mul_integral (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     simp only [mem_Ioo] at hp
     simp [hx_zero, Real.zero_rpow (by linarith)]
   case inr =>
-    have : ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 ≠ 0 := ne_of_gt <| integral_rpowIntegrand₀₁_one_pos hp
-    rw [integral_rpowIntegrand₀₁_eq_rpow_mul_const hp hx, mul_comm, mul_assoc, mul_inv_cancel₀ this, mul_one]
+    have : ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 ≠ 0 :=
+      ne_of_gt <| integral_rpowIntegrand₀₁_one_pos hp
+    rw [integral_rpowIntegrand₀₁_eq_rpow_mul_const hp hx, mul_comm, mul_assoc, mul_inv_cancel₀
+      this, mul_one]
 
-lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
-    ∃ μ : Measure ℝ, x ^ p = ∫ t, rpowIntegrand₀₁ p t x ∂μ := by
+/-- The integral representation of the function `x ↦ x^p` (where `p ∈ (0, 1)`) . -/
+lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
+    ∃ μ : Measure ℝ, ∀ x, 0 ≤ x → x ^ p = ∫ t, rpowIntegrand₀₁ p t x ∂μ := by
   let C : ℝ≥0 := ⟨(∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹, by
       rw [inv_nonneg]
       exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos hp⟩
   let μ : Measure ℝ := C • volume.restrict (Ioi 0)
-  refine ⟨μ, ?_⟩
+  refine ⟨μ, fun x hx => ?_⟩
   have : C • ∫ t in Ioi 0, rpowIntegrand₀₁ p t x = (C : ℝ) • ∫ t in Ioi 0, rpowIntegrand₀₁ p t x :=
     rfl
   rw [integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx, this]
   rfl
+
+end Real
