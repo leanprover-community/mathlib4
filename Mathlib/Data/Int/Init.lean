@@ -24,6 +24,10 @@ upstreamed to Batteries easily.
 open Nat
 
 namespace Int
+
+-- Pending rename in core.
+alias add_mul_emod_self_right := add_mul_emod_self
+
 variable {a b c d m n : ℤ}
 
 section Order
