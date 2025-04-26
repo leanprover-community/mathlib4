@@ -1107,23 +1107,9 @@ theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 <
   rw [← indicator_comp_right, preimage_const_mul_Ioi _ hb, mul_div_cancel_left₀ _ hb.ne']
   rfl
 
-theorem integral_comp_mul_left_Iio (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
-    ∫ (x : ℝ) in Set.Iio a, g (b * x) = b⁻¹ • ∫ (x : ℝ) in Set.Iio (b * a), g x := by
-  have : ∀ c : ℝ, MeasurableSet (Iio c) := fun c => measurableSet_Iio
-  rw [← integral_indicator (this a), ← integral_indicator (this (b * a)),
-    ← abs_of_pos (inv_pos.mpr hb), ← Measure.integral_comp_mul_left]
-  congr
-  ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Iio _ hb, mul_div_cancel_left₀ _ hb.ne']
-  rfl
-
 theorem integral_comp_mul_right_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
     (∫ x in Ioi a, g (x * b)) = b⁻¹ • ∫ x in Ioi (a * b), g x := by
   simpa only [mul_comm] using integral_comp_mul_left_Ioi g a hb
-
-theorem integral_comp_mul_right_Iio (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
-    ∫ (x : ℝ) in Set.Iio a, g (x * b) = b⁻¹ • ∫ (x : ℝ) in Set.Iio (a * b), g x := by
-  simpa only [mul_comm] using integral_comp_mul_left_Iio g a hb
 
 end IoiChangeVariables
 
@@ -1177,23 +1163,9 @@ theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (
     mul_div_cancel_right₀ _ ha.ne']
   rfl
 
-theorem integrableOn_Iio_comp_mul_left_iff (f : ℝ → E)  (c : ℝ)  {a : ℝ} (ha : 0 < a) :
-    IntegrableOn (fun (x : ℝ) => f (a * x)) (Set.Iio c) ↔ IntegrableOn f (Set.Iio (a * c)) := by
-  rw [← integrable_indicator_iff (measurableSet_Iio : MeasurableSet <| Iio c)]
-  rw [← integrable_indicator_iff (measurableSet_Iio : MeasurableSet <| Iio <| a * c)]
-  convert integrable_comp_mul_left_iff ((Iio (a * c)).indicator f) ha.ne' using 2
-  ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Iio _ ha, mul_comm a c,
-    mul_div_cancel_right₀ _ ha.ne']
-  rfl
-
 theorem integrableOn_Ioi_comp_mul_right_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :
     IntegrableOn (fun x => f (x * a)) (Ioi c) ↔ IntegrableOn f (Ioi <| c * a) := by
   simpa only [mul_comm, mul_zero] using integrableOn_Ioi_comp_mul_left_iff f c ha
-
-theorem integrableOn_Iio_comp_mul_right_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :
-    IntegrableOn (fun x => f (x * a)) (Iio c) ↔ IntegrableOn f (Iio <| c * a) := by
-  simpa only [mul_comm, mul_zero] using integrableOn_Iio_comp_mul_left_iff f c ha
 
 end IoiIntegrability
 
