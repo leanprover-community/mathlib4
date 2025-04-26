@@ -11,6 +11,7 @@ import Mathlib.Algebra.Exact
 import Mathlib.Topology.ContinuousMap.ZeroAtBot
 import Mathlib.Analysis.Normed.Ring.Lemmas2
 import Mathlib.RingTheory.AdicCompletion.Lemma
+import Mathlib.RingTheory.AdicCompletion.Algebra
 
 set_option maxHeartbeats 10000000000000
 set_option synthInstance.maxHeartbeats 10000000000000

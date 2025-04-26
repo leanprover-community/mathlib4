@@ -3,13 +3,16 @@ Copyright (c) 2025 Hanliu Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shanwen Wang, Hanliu Jiang
 -/
+
 import Mathlib.NumberTheory.Padics.PSAC2
+import Mathlib.RingTheory.Kaehler.Basic
+
 
 set_option maxHeartbeats 10000000000000
 set_option synthInstance.maxHeartbeats 10000000000000
 
 
-open Finset IsUltrametricDist NNReal Filter  CauSeq  zero_atBot
+open Finset IsUltrametricDist NNReal Filter  CauSeq  zero_atBot KaehlerDifferential
 open scoped fwdDiff ZeroAtInfty Topology  LaurentSeries PowerSeries
 variable {p : ℕ} [hp : Fact p.Prime]
 
@@ -71,8 +74,42 @@ noncomputable def Adic_Complection_equiv_srmm: (AdicCompletion (Ideal.span {(p:�
     ext n
     exact ds4  m n
 
+#check HahnSeries.coeff_mul
+#check  Set.Elem
+
+lemma  help6 (f:(AdicCompletion.AdicCauchySequence (Ideal.span {(p:ℤ_[p]⸨X⸩)}) (ℤ_[p]⸨X⸩))):
+     ((AdicCompletion.mk (Ideal.span {(p:ℤ_[p]⸨X⸩)}) ℤ_[p]⸨X⸩) f)=
+     ((AdicCompletion.mkₐ (Ideal.span {(p:ℤ_[p]⸨X⸩)})) f) :=by rfl
+theorem p_sequence_coeff_mul (n:ℤ)
+(f g:(AdicCompletion (Ideal.span {(p:ℤ_[p]⸨X⸩)}) (ℤ_[p]⸨X⸩))):
+p_sequence_coeff (p:=p) n (f*g) =∑' ( a : (Set.mulAntidiagonal ⊤ ⊤ n) ),
+p_sequence_coeff (p:=p) a.1.1 f* p_sequence_coeff (p:=p) a.1.2 g :=by
+  have:=by
+      exact AdicCompletion.mk_surjective (Ideal.span {(p:ℤ_[p]⸨X⸩)}) ℤ_[p]⸨X⸩
+  unfold Function.Surjective at this
+  rcases (this (f)) with ⟨f1,f2⟩
+  rcases (this (g)) with ⟨g1,g2⟩
+  have le:
+  ((AdicCompletion.mk (Ideal.span {(p:ℤ_[p]⸨X⸩)}) ℤ_[p]⸨X⸩) (f1*g1))=f*g :=by
+    rw[help6,map_mul,← help6,← help6,f2,g2]
+  have( a : (Set.mulAntidiagonal ⊤ ⊤ n) ):
+p_sequence_coeff (p:=p) a.1.1 f* p_sequence_coeff (p:=p) a.1.2 g =
+    cauchy_sequence_coeff (p:=p) a.1.1 f1* cauchy_sequence_coeff (p:=p) a.1.2 g1 :=by
+     rw[esg a.1.1 f f1 f2,esg a.1.2 g g1 g2]
+  rw[tsum_congr this,esg _ _  _ le]
+  unfold cauchy_sequence_coeff AdicCompletion.mapAlg
+   Cauchy.seq_map Cauchy_p_adic  HahnSeries.coeff_map_0
+  simp
+  have:(fun m =>(f1 m * g1 m).coeff n)=fun m => (∑ ij ∈ addAntidiagonal (f1 m).isPWO_support
+    (g1 m).isPWO_support n,
+   (f1 m).coeff ij.1 * (g1 m).coeff ij.2 ):=by rfl
+  simp[this]
+  
+
+
+  sorry
 
 
 
-#check Ring  (AdicCompletion (Ideal.span {(p:ℤ_[p]⸨X⸩)}) (ℤ_[p]⸨X⸩))
+
 end PadicInt
