@@ -3,7 +3,6 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
