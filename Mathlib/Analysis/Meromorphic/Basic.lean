@@ -218,12 +218,19 @@ lemma zpow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) :
     MeromorphicAt (fun z ↦ (f z) ^ n) x :=
   hf.zpow n
 
+/-- If a function is meromorphic at a point, then it is continuous at nearby points. -/
 theorem eventually_continuousAt {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicAt f x) : ∀ᶠ y in 𝓝[≠] x, ContinuousAt f y := by
   obtain ⟨n, h⟩ := h
-  apply AnalyticAt.eventually_continuousAt at h
-
-
+  have : ∀ᶠ y in 𝓝[≠] x, ContinuousAt (fun z ↦ (z - x) ^ n • f z) y :=
+    nhdsWithin_le_nhds h.eventually_continuousAt
+  filter_upwards [this, self_mem_nhdsWithin] with y hy h'y
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at h'y
+  have : ContinuousAt (fun z ↦ ((z - x)^n)⁻¹) y :=
+    ContinuousAt.inv₀ (by fun_prop) (by simp [sub_eq_zero, h'y])
+  apply (this.smul hy).congr
+  filter_upwards [eventually_ne_nhds h'y] with z hz
+  simp [smul_smul, hz, sub_eq_zero]
 
 /-- In a complete space, a function which is meromorphic at a point is analytic at all nearby
 points. The completeness assumption can be dispensed with if one assumes that `f` is meromorphic

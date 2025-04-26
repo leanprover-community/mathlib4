@@ -87,8 +87,8 @@ lemma order_eq_int_iff {n : ℤ} (hf : MeromorphicAt f x) : hf.order = n ↔
     exact ⟨fun h ↦ ⟨g, hg_an, hg_ne, h ▸ hg_eq⟩,
       AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
 
-/-- If the order of a meromorphic is negative, then this function converges to infinity at this
-point. See also the iff version `tendsto_cobounded_iff_order_neg`. -/
+/-- If the order of a meromorphic function is negative, then this function converges to infinity
+at this point. See also the iff version `tendsto_cobounded_iff_order_neg`. -/
 lemma tendsto_cobounded_of_order_neg (hf : MeromorphicAt f x) (ho : hf.order < 0) :
     Tendsto f (𝓝[≠] x) (Bornology.cobounded E) := by
   simp only [← tendsto_norm_atTop_iff_cobounded]
@@ -112,7 +112,7 @@ lemma tendsto_cobounded_of_order_neg (hf : MeromorphicAt f x) (ho : hf.order < 0
   filter_upwards [hg] with z hz using by simp [hz]
 
 /-- If the order of a meromorphic function is zero, then this function converges to a nonzero
-constant at this point. See also the iff version `tendsto_ne_zero_iff_order_eq_zero`. -/
+limit at this point. See also the iff version `tendsto_ne_zero_iff_order_eq_zero`. -/
 lemma tendsto_ne_zero_of_order_eq_zero (hf : MeromorphicAt f x) (ho : hf.order = 0) :
     ∃ c ≠ 0, Tendsto f (𝓝[≠] x) (𝓝 c) := by
   rcases hf.order_eq_int_iff.1 ho with ⟨g, g_an, gx, hg⟩
@@ -157,7 +157,7 @@ lemma tendsto_cobounded_iff_order_neg (hf : MeromorphicAt f x) :
     obtain ⟨c, hc⟩ := hf.tendsto_nhds_of_order_nonneg ho
     exact not_tendsto_atTop_of_tendsto_nhds hc.norm
 
-/-- A meromorphic function converges to a point iff its is order if nonnegative. -/
+/-- A meromorphic function converges to a limit iff its is order if nonnegative. -/
 lemma tendsto_nhds_iff_order_nonneg (hf : MeromorphicAt f x) :
     (∃ c, Tendsto f (𝓝[≠] x) (𝓝 c)) ↔ 0 ≤ hf.order := by
   rcases lt_or_le hf.order 0 with ho | ho
@@ -168,7 +168,7 @@ lemma tendsto_nhds_iff_order_nonneg (hf : MeromorphicAt f x) :
     exact hf.tendsto_cobounded_of_order_neg ho
   · simp [ho, hf.tendsto_nhds_of_order_nonneg ho]
 
-/-- A meromorphic function converges to a nonzero point iff its order is zero. -/
+/-- A meromorphic function converges to a nonzero limit iff its order is zero. -/
 lemma tendsto_ne_zero_iff_order_eq_zero (hf : MeromorphicAt f x) :
     (∃ c ≠ 0, Tendsto f (𝓝[≠] x) (𝓝 c)) ↔ hf.order = 0 := by
   rcases eq_or_ne hf.order 0 with ho | ho
@@ -460,30 +460,19 @@ theorem order_ne_top_of_isPreconnected {y : 𝕜} (hU : IsPreconnected U) (h₁x
     (hf y hy).order ≠ ⊤ :=
   (hf.exists_order_ne_top_iff_forall ⟨nonempty_of_mem h₁x, hU⟩).1 (by use ⟨x, h₁x⟩) ⟨y, hy⟩
 
+/-- If a function is meromorphic on a set `U`, then for each point in `U`, it is analytic at nearby
+points in `U`. When the target space is complete, this can be strengthened to analyticity at all
+nearby points, see `MeromorphicAt.eventually_analyticAt`. -/
 theorem eventually_analyticAt {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicOn f U) (hx : x ∈ U) : ∀ᶠ y in 𝓝[U \ {x}] x, AnalyticAt 𝕜 f y := by
-  /- At neighboring points in `U`, the function `f` is both meromorphic (by meromorphy on `U`)
+  /- At neighboring points in `U`, the function `f` is both meromorphic (by meromorphicity on `U`)
   and continuous (thanks to the formula for a meromorphic function around the point `x`), so it is
   analytic. -/
-  rcases h x hx with ⟨n, g, r, hgr⟩
-  have : U \ {x} ∩ EMetric.ball x r ∈ 𝓝[U \ {x}] x :=
-    inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds _ hgr.r_pos)
-  filter_upwards [this] with y ⟨hy, h'y⟩
-  have hyx : y ≠ x := by simpa using hy.2
-  have : ContinuousAt f y := by
-    have A : ContinuousAt (fun z ↦ (z - x) ^ n • f z) y := by
-      apply hgr.continuousOn.continuousAt
-      exact EMetric.isOpen_ball.mem_nhds h'y
-    have B : ContinuousAt (fun z ↦ (z - x) ^ (-(n : ℤ))) y := by
-      apply ContinuousAt.zpow₀ (by fun_prop)
-      simp [sub_eq_zero, hyx]
-    apply (B.smul A).congr
-    have : {x}ᶜ ∈ 𝓝 y := by simp [hyx]
-    filter_upwards [this] with z hz
-    rw [smul_smul, ← zpow_natCast, ← zpow_add₀]
-    · simp
-    · simpa [sub_eq_zero] using hz
-  exact (h y hy.1).analyticAt this
+  have : ∀ᶠ y in 𝓝[U \ {x}] x, ContinuousAt f y := by
+    have : U \ {x} ⊆ {x}ᶜ := by simp
+    exact nhdsWithin_mono _ this (h x hx).eventually_continuousAt
+  filter_upwards [this, self_mem_nhdsWithin] with y hy h'y
+  exact (h y h'y.1).analyticAt hy
 
 theorem eventually_analyticAt_or_mem_compl {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicOn f U) (hx : x ∈ U) : ∀ᶠ y in 𝓝[≠] x, AnalyticAt 𝕜 f y ∨ y ∈ Uᶜ := by
