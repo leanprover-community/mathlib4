@@ -6,6 +6,7 @@ Authors: Kenny Lau, Devon Tuma, Wojciech Nawrocki
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
+import Mathlib.RingTheory.Jacobson.Radical
 
 /-!
 # Jacobson radical
@@ -71,6 +72,9 @@ theorem jacobson_idem : jacobson (jacobson I) = jacobson I :=
 theorem jacobson_top : jacobson (⊤ : Ideal R) = ⊤ :=
   eq_top_iff.2 le_jacobson
 
+theorem jacobson_bot : jacobson (⊥ : Ideal R) = Ring.jacobson R := by
+  simp_rw [jacobson, Ring.jacobson, Module.jacobson, bot_le, true_and, isMaximal_def]
+
 @[simp]
 theorem jacobson_eq_top_iff : jacobson I = ⊤ ↔ I = ⊤ :=
   ⟨fun H =>
@@ -113,7 +117,7 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
 
 theorem exists_mul_add_sub_mem_of_mem_jacobson {I : Ideal R} (r : R) (h : r ∈ jacobson I) :
     ∃ s, s * (r + 1) - 1 ∈ I := by
-  cases' mem_jacobson_iff.1 h 1 with s hs
+  obtain ⟨s, hs⟩ := mem_jacobson_iff.1 h 1
   use s
   rw [mul_add, mul_one]
   simpa using hs
@@ -132,7 +136,7 @@ theorem eq_jacobson_iff_sInf_maximal :
   refine le_antisymm (fun x hx => ?_) le_jacobson
   rw [hInf, mem_sInf]
   intro I hI
-  cases' hM I hI with is_max is_top
+  rcases hM I hI with is_max | is_top
   · exact (mem_sInf.1 hx) ⟨le_sInf_iff.1 (le_of_eq hInf) I hI, is_max⟩
   · exact is_top.symm ▸ Submodule.mem_top
 
@@ -182,7 +186,7 @@ theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) 
     exact comap_isMaximal_of_surjective f hf
   · refine sInf_le_sInf_of_subset_insert_top fun j hj => hj.recOn fun J hJ => ?_
     rw [← hJ.2]
-    cases' map_eq_top_or_isMaximal_of_surjective f hf hJ.left.right with htop hmax
+    rcases map_eq_top_or_isMaximal_of_surjective f hf hJ.left.right with htop | hmax
     · exact htop.symm ▸ Set.mem_insert ⊤ _
     · exact Set.mem_insert_of_mem ⊤ ⟨map_mono hJ.1.1, hmax⟩
 
@@ -205,7 +209,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
       Trans.trans (comap_map_of_surjective f hf J)
         (le_antisymm (sup_le_iff.2 ⟨le_of_eq rfl, le_trans (comap_mono bot_le) hJ.left⟩)
           le_sup_left)
-    cases' map_eq_top_or_isMaximal_of_surjective _ hf hJ.right with htop hmax
+    rcases map_eq_top_or_isMaximal_of_surjective _ hf hJ.right with htop | hmax
     · exact ⟨⊤, Set.mem_insert ⊤ _, htop ▸ this⟩
     · exact ⟨map f J, Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩,
         this⟩
@@ -217,7 +221,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
 @[mono]
 theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson := by
   intro h x hx
-  erw [mem_sInf] at hx ⊢
+  rw [jacobson, mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
 
 /-- The Jacobson radical of a two-sided ideal is two-sided.
@@ -275,7 +279,7 @@ lemma isRadical_jacobson (I : Ideal R) : I.jacobson.IsRadical :=
 
 theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ : Ideal R)) :
     IsUnit r := by
-  cases' exists_mul_sub_mem_of_sub_one_mem_jacobson r h with s hs
+  obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r h
   rw [mem_bot, sub_eq_zero, mul_comm] at hs
   exact isUnit_of_mul_eq_one _ _ hs
 

@@ -10,9 +10,9 @@ import Lean.Elab.Command
 import Mathlib.Tactic.Linter.Header
 
 /-!
-# The `oldObtain` linter, against stream-of-conciousness `obtain`
+# The `oldObtain` linter, against stream-of-consciousness `obtain`
 
-The `oldObtain` linter flags any occurrences of "stream-of-conciousness" `obtain`,
+The `oldObtain` linter flags any occurrences of "stream-of-consciousness" `obtain`,
 i.e. uses of the `obtain` tactic which do not immediately provide a proof.
 
 ## Example
@@ -64,7 +64,7 @@ def isObtainWithoutProof : Syntax → Bool
 @[deprecated isObtainWithoutProof (since := "2024-12-07")]
 def is_obtain_without_proof := @isObtainWithoutProof
 
-/-- The `oldObtain` linter emits a warning upon uses of the "stream-of-conciousness" variants
+/-- The `oldObtain` linter emits a warning upon uses of the "stream-of-consciousness" variants
 of the `obtain` tactic, i.e. with the proof postponed. -/
 register_option linter.oldObtain : Bool := {
   defValue := false
@@ -78,7 +78,7 @@ def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
     if (← MonadState.get).messages.hasErrors then
       return
     if let some head := stx.find? isObtainWithoutProof then
-      Linter.logLint linter.oldObtain head m!"Please remove stream-of-conciousness `obtain` syntax"
+      Linter.logLint linter.oldObtain head m!"Please remove stream-of-consciousness `obtain` syntax"
 
 initialize addLinter oldObtainLinter
 

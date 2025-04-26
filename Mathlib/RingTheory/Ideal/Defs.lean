@@ -42,6 +42,10 @@ namespace Ideal
 
 variable [Semiring α] (I : Ideal α) {a b : α}
 
+/-- A left ideal `I : Ideal R` is two-sided if it is also a right ideal. -/
+class IsTwoSided : Prop where
+  mul_mem_of_left {a : α} (b : α) : a ∈ I → a * b ∈ I
+
 protected theorem zero_mem : (0 : α) ∈ I :=
   Submodule.zero_mem I
 
@@ -52,6 +56,10 @@ variable (a)
 
 theorem mul_mem_left : b ∈ I → a * b ∈ I :=
   Submodule.smul_mem I a
+
+theorem mul_mem_right {α} {a : α} (b : α) [Semiring α] (I : Ideal α) [I.IsTwoSided]
+    (h : a ∈ I) : a * b ∈ I :=
+  IsTwoSided.mul_mem_of_left b h
 
 variable {a}
 
@@ -97,16 +105,12 @@ namespace Ideal
 
 variable [CommSemiring α] (I : Ideal α)
 
+instance : I.IsTwoSided := ⟨fun b ha ↦ mul_comm b _ ▸ I.smul_mem _ ha⟩
+instance {α} [CommRing α] (I : Ideal α) : I.IsTwoSided := inferInstance
+
 @[simp]
 theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ I :=
   mul_comm y x ▸ unit_mul_mem_iff_mem I hy
-
-variable (b)
-
-theorem mul_mem_right (h : a ∈ I) : a * b ∈ I :=
-  mul_comm b a ▸ I.mul_mem_left b h
-
-variable {b}
 
 lemma mem_of_dvd (hab : a ∣ b) (ha : a ∈ I) : b ∈ I := by
   obtain ⟨c, rfl⟩ := hab; exact I.mul_mem_right _ ha
@@ -119,7 +123,7 @@ section Ring
 
 namespace Ideal
 
-variable [Ring α] (I : Ideal α) {a b : α}
+variable [Ring α] (I : Ideal α) {a b c d : α}
 
 protected theorem neg_mem_iff : -a ∈ I ↔ a ∈ I :=
   Submodule.neg_mem_iff I
@@ -133,19 +137,11 @@ protected theorem add_mem_iff_right : a ∈ I → (a + b ∈ I ↔ b ∈ I) :=
 protected theorem sub_mem : a ∈ I → b ∈ I → a - b ∈ I :=
   Submodule.sub_mem I
 
-end Ideal
-
-end Ring
-
-section CommRing
-
-namespace Ideal
-
-theorem mul_sub_mul_mem {R : Type*} [CommRing R] (I : Ideal R) {a b c d : R} (h1 : a - b ∈ I)
-    (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
+theorem mul_sub_mul_mem [I.IsTwoSided]
+    (h1 : a - b ∈ I) (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
   rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
 
 end Ideal
 
-end CommRing
+end Ring

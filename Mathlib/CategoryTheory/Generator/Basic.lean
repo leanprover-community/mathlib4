@@ -158,13 +158,9 @@ theorem IsDetecting.isSeparating [HasEqualizers C] {𝒢 : Set C} (h𝒢 : IsDet
   have : IsIso (equalizer.ι f g) := h𝒢 _ fun _ hG _ => equalizer.existsUnique _ (hfg _ hG _)
   eq_of_epi_equalizer
 
-section
-
 theorem IsCodetecting.isCoseparating [HasCoequalizers C] {𝒢 : Set C} :
     IsCodetecting 𝒢 → IsCoseparating 𝒢 := by
   simpa only [← isSeparating_op_iff, ← isDetecting_op_iff] using IsDetecting.isSeparating
-
-end
 
 theorem IsSeparating.isDetecting [Balanced C] {𝒢 : Set C} (h𝒢 : IsSeparating 𝒢) :
     IsDetecting 𝒢 := by
@@ -176,6 +172,34 @@ theorem IsSeparating.isDetecting [Balanced C] {𝒢 : Set C} (h𝒢 : IsSeparati
   · refine h𝒢 _ _ fun G hG i => ?_
     obtain ⟨t, rfl, -⟩ := hf G hG i
     rw [Category.assoc, hgh, Category.assoc]
+
+lemma IsDetecting.isIso_iff_of_mono {𝒢 : Set C} (h𝒢 : IsDetecting 𝒢)
+    {X Y : C} (f : X ⟶ Y) [Mono f] :
+    IsIso f ↔ ∀ s ∈ 𝒢, Function.Surjective ((coyoneda.obj (op s)).map f) := by
+  constructor
+  · intro h
+    rw [isIso_iff_yoneda_map_bijective] at h
+    intro A _
+    exact (h A).2
+  · intro hf
+    refine h𝒢 _ (fun A hA g ↦ existsUnique_of_exists_of_unique ?_ ?_)
+    · exact hf A hA g
+    · intro l₁ l₂ h₁ h₂
+      rw [← cancel_mono f, h₁, h₂]
+
+lemma IsCodetecting.isIso_iff_of_epi {𝒢 : Set C} (h𝒢 : IsCodetecting 𝒢)
+    {X Y : C} (f : X ⟶ Y) [Epi f] :
+    IsIso f ↔ ∀ s ∈ 𝒢, Function.Surjective ((yoneda.obj s).map f.op) := by
+  constructor
+  · intro h
+    rw [isIso_iff_coyoneda_map_bijective] at h
+    intro A _
+    exact (h A).2
+  · intro hf
+    refine h𝒢 _ (fun A hA g ↦ existsUnique_of_exists_of_unique ?_ ?_)
+    · exact hf A hA g
+    · intro l₁ l₂ h₁ h₂
+      rw [← cancel_epi f, h₁, h₂]
 
 section
 
@@ -527,15 +551,21 @@ theorem isSeparator_coprod_of_isSeparator_right (G H : C) [HasBinaryCoproduct G 
     (hH : IsSeparator H) : IsSeparator (G ⨿ H) :=
   (isSeparator_coprod _ _).2 <| IsSeparating.mono hH <| by simp
 
+lemma isSeparator_of_isColimit_cofan {β : Type w} {f : β → C}
+    (hf : IsSeparating (Set.range f)) {c : Cofan f} (hc : IsColimit c) : IsSeparator c.pt := by
+  refine (isSeparator_def _).2 fun X Y u v huv => hf _ _ fun Z hZ g => ?_
+  obtain ⟨b, rfl⟩ := Set.mem_range.1 hZ
+  classical simpa using c.ι.app ⟨b⟩ ≫= huv (hc.desc (Cofan.mk _ (Pi.single b g)))
+
 theorem isSeparator_sigma {β : Type w} (f : β → C) [HasCoproduct f] :
     IsSeparator (∐ f) ↔ IsSeparating (Set.range f) := by
-  refine
-    ⟨fun h X Y u v huv => ?_, fun h =>
-      (isSeparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => ?_⟩
-  · refine h.def _ _ fun g => colimit.hom_ext fun b => ?_
-    simpa using huv (f b.as) (by simp) (colimit.ι (Discrete.functor f) _ ≫ g)
-  · obtain ⟨b, rfl⟩ := Set.mem_range.1 hZ
-    classical simpa using Sigma.ι f b ≫= huv (Sigma.desc (Pi.single b g))
+  refine ⟨fun h X Y u v huv => ?_, fun h => isSeparator_of_isColimit_cofan h (colimit.isColimit _)⟩
+  refine h.def _ _ fun g => colimit.hom_ext fun b => ?_
+  simpa using huv (f b.as) (by simp) (colimit.ι (Discrete.functor f) _ ≫ g)
+
+theorem IsSeparating.isSeparator_coproduct {β : Type w} {f : β → C} [HasCoproduct f]
+    (hS : IsSeparating (Set.range f)) : IsSeparator (∐ f) :=
+  (isSeparator_sigma _).2 hS
 
 theorem isSeparator_sigma_of_isSeparator {β : Type w} (f : β → C) [HasCoproduct f] (b : β)
     (hb : IsSeparator (f b)) : IsSeparator (∐ f) :=
@@ -601,8 +631,6 @@ theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
 
 theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) :
     WellPowered.{v₁} C :=
-  -- Porting note: added the following `haveI` to prevent universe issues
-  haveI := small_subsingleton ({G} : Set C)
   wellPowered_of_isDetecting hG
 
 theorem wellPowered_of_isSeparator [HasPullbacks C] [Balanced C] (G : C) (hG : IsSeparator G) :

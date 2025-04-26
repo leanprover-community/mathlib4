@@ -3,6 +3,7 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
+import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.Analysis.Normed.MulAction
 
 /-!
@@ -47,7 +48,7 @@ lemma isClosed_nullSubgroup : IsClosed (nullSubgroup M : Set M) := by
 lemma mem_nullSubgroup_iff {x : M} : x ∈ nullSubgroup M ↔ ‖x‖ = 0 := Iff.rfl
 
 variable {𝕜 E : Type*}
-variable [SeminormedAddCommGroup E] [SeminormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [SeminormedAddCommGroup E] [SeminormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 variable (𝕜 E) in
 /-- The null space with respect to the norm. -/

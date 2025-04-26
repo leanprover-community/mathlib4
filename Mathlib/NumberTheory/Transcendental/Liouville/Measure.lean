@@ -58,8 +58,8 @@ theorem setOf_liouvilleWith_subset_aux :
       _ ≤ (b : ℝ) ^ (2 + 1 / (n + 1 : ℕ) : ℝ) :=
         rpow_le_rpow_of_exponent_le hb (one_le_two.trans ?_)
     simpa using n.cast_add_one_pos.le
-  rw [sub_div' _ _ _ hb0.ne', abs_div, abs_of_pos hb0, div_lt_div_iff_of_pos_right hb0,
-    abs_sub_lt_iff, sub_lt_iff_lt_add, sub_lt_iff_lt_add, ← sub_lt_iff_lt_add'] at hlt
+  rw [sub_div' hb0.ne', abs_div, abs_of_pos hb0, div_lt_div_iff_of_pos_right hb0, abs_sub_lt_iff,
+    sub_lt_iff_lt_add, sub_lt_iff_lt_add, ← sub_lt_iff_lt_add'] at hlt
   rw [Finset.mem_Icc, ← Int.lt_add_one_iff, ← Int.lt_add_one_iff, ← neg_lt_iff_pos_add, add_comm, ←
     @Int.cast_lt ℝ, ← @Int.cast_lt ℝ]
   push_cast

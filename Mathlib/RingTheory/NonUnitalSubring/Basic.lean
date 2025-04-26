@@ -342,6 +342,17 @@ instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
   { NonUnitalSubsemiring.center.instNonUnitalCommSemiring R,
     inferInstanceAs <| NonUnitalNonAssocRing (center R) with }
 
+variable {R}
+
+/-- The center of isomorphic (not necessarily unital or associative) rings are isomorphic. -/
+@[simps!] def centerCongr {S} [NonUnitalNonAssocRing S] (e : R ≃+* S) : center R ≃+* center S :=
+  NonUnitalSubsemiring.centerCongr e
+
+/-- The center of a (not necessarily uintal or associative) ring
+is isomorphic to the center of its opposite. -/
+@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
+  NonUnitalSubsemiring.centerToMulOpposite
+
 end NonUnitalNonAssocRing
 
 section NonUnitalRing
@@ -418,21 +429,6 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
       zero_mem' := ⟨_, zero⟩ }
   closure_le (t := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
-/-- The difference with `NonUnitalSubring.closure_induction` is that this acts on the
-subtype. -/
-@[elab_as_elim, deprecated closure_induction (since := "2024-10-11")]
-theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
-    (mem : ∀ (x) (hx : x ∈ s), p ⟨x, subset_closure hx⟩) (zero : p 0)
-    (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x, p x → p (-x))
-    (mul : ∀ x y, p x → p y → p (x * y)) : p a :=
-  Subtype.recOn a fun b hb => by
-    induction hb using closure_induction with
-    | mem x hx => exact mem x hx
-    | zero => exact zero
-    | add x y hx hy h₁ h₂ => exact add _ _ h₁ h₂
-    | neg x hx h => exact neg _ h
-    | mul x y hx hy h₁ h₂ => exact mul _ _ h₁ h₂
-
 /-- An induction principle for closure membership, for predicates with two arguments. -/
 @[elab_as_elim]
 theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → y ∈ closure s → Prop}
@@ -503,16 +499,13 @@ def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
       | neg_left _ _ _ _ h => exact Commute.neg_left h
       | neg_right _ _ _ _ h => exact Commute.neg_right h }
 
-variable (R)
-
+variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure R _) SetLike.coe where
   choice s _ := closure s
   gc _s _t := closure_le
   le_l_u _s := subset_closure
   choice_eq _s _h := rfl
-
-variable {R}
 
 /-- Closure of a `NonUnitalSubring` `S` equals `S`. -/
 @[simp]

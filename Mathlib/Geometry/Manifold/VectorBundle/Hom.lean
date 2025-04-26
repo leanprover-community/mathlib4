@@ -56,7 +56,7 @@ theorem contMDiffOn_continuousLinearMapCoordChange
 @[deprecated (since := "2024-11-21")]
 alias smoothOn_continuousLinearMapCoordChange := contMDiffOn_continuousLinearMapCoordChange
 
-variable [∀ x, TopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
+variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
 theorem hom_chart (y₀ y : LE₁E₂) :
     chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
@@ -134,7 +134,7 @@ using smoothness of `ϕ` read in coordinates.
 Version for `ContMDiffWithinAt`. We also give a version for `ContMDiffAt`, but no version for
 `ContMDiffOn` or `ContMDiff` as our assumption, written in coordinates, only makes sense around
 a point.
- -/
+-/
 lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
     (hϕ : ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
       (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) s m₀)
@@ -172,7 +172,7 @@ using smoothness of `ϕ` read in coordinates.
 Version for `ContMDiffAt`. We also give a version for `ContMDiffWithinAt`, but no version for
 `ContMDiffOn` or `ContMDiff` as our assumption, written in coordinates, only makes sense around
 a point.
- -/
+-/
 lemma ContMDiffAt.clm_apply_of_inCoordinates
     (hϕ : ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
       (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)

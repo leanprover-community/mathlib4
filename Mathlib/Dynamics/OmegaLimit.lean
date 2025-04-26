@@ -135,7 +135,8 @@ theorem mem_omegaLimit_iff_frequently₂ (y : β) :
     neighbourhood of `y`. -/
 theorem mem_omegaLimit_singleton_iff_map_cluster_point (x : α) (y : β) :
     y ∈ ω f ϕ {x} ↔ MapClusterPt y f fun t ↦ ϕ t x := by
-  simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff, singleton_inter_nonempty, mem_preimage]
+  simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff_frequently, singleton_inter_nonempty,
+    mem_preimage]
 
 /-!
 ### Set operations and omega limits
@@ -226,7 +227,8 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
     apply Subset.trans hg₃
     simp only [j, iUnion_subset_iff, compl_subset_compl]
     intros u hu
-    mono
+    unfold w
+    gcongr
     refine iInter_subset_of_subset u (iInter_subset_of_subset hu ?_)
     all_goals exact Subset.rfl
   have hw₄ : kᶜ ⊆ (closure (image2 ϕ w s))ᶜ := by
@@ -321,7 +323,7 @@ end Flow
 -/
 namespace Flow
 
-variable {τ : Type*} [TopologicalSpace τ] [AddCommGroup τ] [TopologicalAddGroup τ] {α : Type*}
+variable {τ : Type*} [TopologicalSpace τ] [AddCommGroup τ] [IsTopologicalAddGroup τ] {α : Type*}
   [TopologicalSpace α] (f : Filter τ) (ϕ : Flow τ α) (s : Set α)
 
 open omegaLimit

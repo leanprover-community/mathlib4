@@ -110,7 +110,8 @@ For instance, when used as
 instance instSemiring : Semiring X := sorry
 instance instRing : Ring X := fast_instance% Function.Injective.ring ..
 ```
-this will define `instRing` as a nested constructor application that refers to `instSemiring`.
+this will define `instRing` as a nested constructor application that refers to `instSemiring`
+rather than applications of `Function.Injective.ring` or other non-canonical constructors.
 The advantage is then that `instRing.toSemiring` unifies almost immediately with `instSemiring`,
 rather than having to break it down into smaller pieces.
 -/

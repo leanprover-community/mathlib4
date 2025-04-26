@@ -21,6 +21,8 @@ extension of scalars.
 ## TODO
 
  * Extension of scalars
+ * Crystallographic root systems are isomorphic to base changes of root systems over `ℤ`: Take
+   `M₀` and `N₀` to be the `ℤ`-span of roots and coroots.
 
 -/
 
@@ -68,14 +70,14 @@ def restrictScalars' :
       (injective_subtype _) (injective_subtype _) (by simpa using IsBalanced.isPerfectCompl)
       (fun x y ↦ LinearMap.BilinMap.apply_apply_mem_of_mem_span
         (LinearMap.range (Algebra.linearMap K L)) (range P.root) (range P.coroot)
-        ((LinearMap.restrictScalarsₗ K L _ _ _) ∘ₗ (P.toPerfectPairing.toLin.restrictScalars K))
+        (LinearMap.restrictScalarsₗ K L _ _ _ ∘ₗ P.toPerfectPairing.toLinearMap.restrictScalars K)
         (by rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩; exact hP i j) _ _ x.property y.property))
     root := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
     coroot := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
     root_coroot_two i := by
       have : algebraMap K L 2 = 2 := by
         rw [← Int.cast_two (R := K), ← Int.cast_two (R := L), map_intCast]
-      exact NoZeroSMulDivisors.algebraMap_injective K L <| by simp [this]
+      exact FaithfulSMul.algebraMap_injective K L <| by simp [this]
     reflection_perm := P.reflection_perm
     reflection_perm_root i j := by
       ext; simpa [algebra_compatible_smul L] using P.reflection_perm_root i j
@@ -115,7 +117,7 @@ end SubfieldValued
 /-- Restriction of scalars for a crystallographic root pairing. -/
 abbrev restrictScalars [P.IsCrystallographic] :
     RootSystem ι K (span K (range P.root)) (span K (range P.coroot)) :=
-  P.restrictScalars' K <| IsCrystallographic.mem_range_algebraMap P K
+  P.restrictScalars' K (IsValuedIn.trans P K ℤ).exists_value
 
 /-- Restriction of scalars to `ℚ` for a crystallographic root pairing in characteristic zero. -/
 abbrev restrictScalarsRat [CharZero L] [P.IsCrystallographic] :=

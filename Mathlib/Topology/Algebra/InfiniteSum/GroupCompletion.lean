@@ -12,7 +12,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Group
 
 open UniformSpace.Completion
 
-variable {α β : Type*} [AddCommGroup α] [UniformSpace α] [UniformAddGroup α]
+variable {α β : Type*} [AddCommGroup α] [UniformSpace α] [IsUniformAddGroup α]
 
 /-- A function `f` has a sum in an uniform additive group `α` if and only if it has that sum in the
 completion of `α`. -/
@@ -30,7 +30,7 @@ sums is Cauchy and its sum in `Completion α` lies in the range of `toCompl : α
 (The condition that the net of partial sums is Cauchy can be checked using
 `cauchySeq_finset_iff_sum_vanishing` or `cauchySeq_finset_iff_tsum_vanishing`.) -/
 theorem summable_iff_cauchySeq_finset_and_tsum_mem (f : β → α) :
-    Summable f ↔ CauchySeq (fun s : Finset β ↦ ∑ b in s, f b) ∧
+    Summable f ↔ CauchySeq (fun s : Finset β ↦ ∑ b ∈ s, f b) ∧
       ∑' i, toCompl (f i) ∈ Set.range toCompl := by
   classical
   constructor

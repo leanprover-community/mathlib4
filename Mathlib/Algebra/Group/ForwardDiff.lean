@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Giulio Caflisch, David Loeffler
 -/
 import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Abel
@@ -57,7 +58,7 @@ lemma fwdDiff_smul {R : Type} [Ring R] [Module R G] (f : M → R) (g : M → G) 
 
 -- Note `fwdDiff_const_smul` is more general than `fwdDiff_smul` since it allows `R` to be a
 -- semiring, rather than a ring; in particular `R = ℕ` is allowed.
-@[simp] lemma fwdDiff_const_smul {R : Type*} [Semiring R] [Module R G] (r : R) (f : M → G) :
+@[simp] lemma fwdDiff_const_smul {R : Type*} [Monoid R] [DistribMulAction R G] (r : R) (f : M → G) :
     Δ_[h] (r • f) = r • Δ_[h] f :=
   funext fun _ ↦ (smul_sub ..).symm
 
@@ -82,7 +83,7 @@ version.
 variable (M G) in
 /-- Linear-endomorphism version of the forward difference operator. -/
 @[simps]
-def fwdDiffₗ  : Module.End ℤ (M → G) where
+def fwdDiffₗ : Module.End ℤ (M → G) where
   toFun := fwdDiff h
   map_add' := fwdDiff_add h
   map_smul' := fwdDiff_const_smul h
@@ -118,7 +119,7 @@ open fwdDiff_aux
     Δ_[h]^[n] (f + g) = Δ_[h]^[n] f + Δ_[h]^[n] g := by
   simpa only [coe_fwdDiffₗ_pow] using map_add (fwdDiffₗ M G h ^ n) f g
 
-@[simp] lemma fwdDiff_iter_const_smul {R : Type*} [Semiring R] [Module R G]
+@[simp] lemma fwdDiff_iter_const_smul {R : Type*} [Monoid R] [DistribMulAction R G]
     (r : R) (f : M → G) (n : ℕ) : Δ_[h]^[n] (r • f) = r • Δ_[h]^[n] f := by
   induction' n with n IH generalizing f
   · simp only [iterate_zero, id_eq]
@@ -135,7 +136,7 @@ Express the `n`-th forward difference of `f` at `y` in terms of the values `f (y
 `0 ≤ k ≤ n`.
 -/
 theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
-    Δ_[h]^[n] f y = ∑ k in range (n + 1), ((-1 : ℤ) ^ (n - k) * n.choose k) • f (y + k • h) := by
+    Δ_[h]^[n] f y = ∑ k ∈ range (n + 1), ((-1 : ℤ) ^ (n - k) * n.choose k) • f (y + k • h) := by
   -- rewrite in terms of `(shiftₗ - 1) ^ n`
   have : fwdDiffₗ M G h = shiftₗ M G h - 1 := by simp only [shiftₗ, add_sub_cancel_right]
   rw [← coe_fwdDiffₗ, this, ← LinearMap.pow_apply]
@@ -155,7 +156,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
 of `f` at `y`.
 -/
 theorem shift_eq_sum_fwdDiff_iter (f : M → G) (n : ℕ) (y : M) :
-    f (y + n • h) = ∑ k in range (n + 1), n.choose k • Δ_[h]^[k] f y := by
+    f (y + n • h) = ∑ k ∈ range (n + 1), n.choose k • Δ_[h]^[k] f y := by
   convert congr_fun (LinearMap.congr_fun
       ((Commute.one_right (fwdDiffₗ M G h)).add_pow n) f) y using 1
   · rw [← shiftₗ_pow_apply h f, shiftₗ]
@@ -188,3 +189,11 @@ lemma fwdDiff_iter_choose_zero (m n : ℕ) :
     simp_rw [hnm.ne, if_false, add_assoc n k 1, fwdDiff_iter_choose, choose_zero_succ, cast_zero]
 
 end choose
+
+lemma fwdDiff_addChar_eq {M R : Type*} [AddCommMonoid M] [Ring R]
+    (φ : AddChar M R) (x h : M) (n : ℕ) : Δ_[h]^[n] φ x = (φ h - 1) ^ n * φ x := by
+  induction n generalizing x with
+  | zero => simp
+  | succ n IH =>
+    simp only [pow_succ, Function.iterate_succ_apply', fwdDiff, IH, ← mul_sub, mul_assoc]
+    rw [sub_mul, ← AddChar.map_add_eq_mul, add_comm h x, one_mul]

@@ -61,7 +61,15 @@ def fst : A × B →ₐ[R] A :=
 def snd : A × B →ₐ[R] B :=
   { RingHom.snd A B with commutes' := fun _r => rfl }
 
-variable {R A B}
+variable {A B}
+
+@[simp]
+theorem fst_apply (a) : fst R A B a = a.1 := rfl
+
+@[simp]
+theorem snd_apply (a) : snd R A B a = a.2 := rfl
+
+variable {R}
 
 /-- The `Pi.prod` of two morphisms is a morphism. -/
 @[simps!]
@@ -81,8 +89,11 @@ theorem fst_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (fst R B C).comp (pro
 theorem snd_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (snd R B C).comp (prod f g) = g := by ext; rfl
 
 @[simp]
-theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  DFunLike.coe_injective Pi.prod_fst_snd
+theorem prod_fst_snd : prod (fst R A B) (snd R A B) = AlgHom.id R _ := rfl
+
+theorem prod_comp {C' : Type*} [Semiring C'] [Algebra R C']
+    (f : A →ₐ[R] B) (g : B →ₐ[R] C) (g' : B →ₐ[R] C') :
+    (g.prod g').comp f = (g.comp f).prod (g'.comp f) := rfl
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
