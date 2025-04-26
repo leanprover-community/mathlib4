@@ -19,7 +19,7 @@ import Mathlib.Topology.MetricSpace.Dilation
 In this file we continue building the theory of (semi)normed rings.
 -/
 
-variable {α : Type*} {β : Type*} {ι : Type*}
+variable {α β ι : Type*}
 
 open Filter Bornology
 open scoped Topology NNReal Pointwise

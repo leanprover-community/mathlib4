@@ -42,7 +42,7 @@ definitions for them.
 open NormedSpace
 
 section general_exponential
-variable {𝕜 : Type*} {α : Type*} [RCLike 𝕜] [TopologicalSpace α] [CompactSpace α]
+variable {𝕜 α : Type*} [RCLike 𝕜] [TopologicalSpace α] [CompactSpace α]
 
 lemma NormedSpace.exp_continuousMap_eq (f : C(α, 𝕜)) :
     exp 𝕜 f = (⟨exp 𝕜 ∘ f, exp_continuous.comp f.continuous⟩ : C(α, 𝕜)) := by
@@ -57,7 +57,7 @@ end general_exponential
 namespace CFC
 section RCLikeNormed
 
-variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
+variable {𝕜 A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
   [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
   [ContinuousFunctionalCalculus 𝕜 A p]
 

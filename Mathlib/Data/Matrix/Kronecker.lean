@@ -47,7 +47,7 @@ namespace Matrix
 open scoped RightActions
 
 variable {R α α' β β' γ γ' : Type*}
-variable {l m n p : Type*} {q r : Type*} {l' m' n' p' : Type*}
+variable {l m n p q r l' m' n' p' : Type*}
 
 section KroneckerMap
 

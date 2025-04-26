@@ -85,7 +85,7 @@ to normalize terms.
 
 If you declare an unbundled subclass of `SetLike`, for example:
 ```
-class MulMemClass (S : Type*) (M : Type*) [Mul M] [SetLike S M] where
+class MulMemClass (S M : Type*) [Mul M] [SetLike S M] where
   ...
 ```
 Then you should *not* repeat the `outParam` declaration so `SetLike` will supply the value instead.
@@ -102,7 +102,7 @@ class SetLike (A : Type*) (B : outParam Type*) where
 attribute [coe] SetLike.coe
 namespace SetLike
 
-variable {A : Type*} {B : Type*} [i : SetLike A B]
+variable {A B : Type*} [i : SetLike A B]
 
 instance : CoeTC A (Set B) where coe := SetLike.coe
 

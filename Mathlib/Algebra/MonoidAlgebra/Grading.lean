@@ -36,7 +36,7 @@ noncomputable section
 
 namespace AddMonoidAlgebra
 
-variable {M : Type*} {ι : Type*} {R : Type*}
+variable {M ι R : Type*}
 
 section
 

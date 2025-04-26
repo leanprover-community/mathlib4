@@ -130,7 +130,7 @@ end
 
 section InducedCategory
 
-variable {C : Type*} {D : Type*} [Category D] [Preadditive D] (F : C → D)
+variable {C D : Type*} [Category D] [Preadditive D] (F : C → D)
 
 instance inducedFunctor_additive : Functor.Additive (inducedFunctor F) where
 

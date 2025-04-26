@@ -101,7 +101,7 @@ end Complex
 
 section
 
-variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
+variable {ι ι' ι'' : Type*}
 variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 variable {E'' : Type*} [SeminormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
 

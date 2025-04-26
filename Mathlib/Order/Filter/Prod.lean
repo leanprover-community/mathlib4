@@ -320,7 +320,7 @@ theorem prod_map_map_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β₁ : 
         by rwa [prod_image_image_eq, image_subset_iff])
     ((tendsto_map.comp tendsto_fst).prodMk (tendsto_map.comp tendsto_snd))
 
-theorem prod_map_map_eq' {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*} (f : α₁ → α₂)
+theorem prod_map_map_eq' {α₁ α₂ β₁ β₂ : Type*} (f : α₁ → α₂)
     (g : β₁ → β₂) (F : Filter α₁) (G : Filter β₁) :
     map f F ×ˢ map g G = map (Prod.map f g) (F ×ˢ G) :=
   prod_map_map_eq

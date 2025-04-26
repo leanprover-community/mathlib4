@@ -55,7 +55,7 @@ still involve this definition.
 -/
 
 
-variable {ι : Type*} {R : Type*} {M : Type*} {A : Type*}
+variable {ι R M A : Type*}
 
 open DirectSum
 

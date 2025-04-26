@@ -522,7 +522,7 @@ end TopologicalSpace
 
 open TopologicalSpace
 
-protected theorem IsTopologicalBasis.iInf {β : Type*} {ι : Type*} {t : ι → TopologicalSpace β}
+protected theorem IsTopologicalBasis.iInf {β ι : Type*} {t : ι → TopologicalSpace β}
     {T : ι → Set (Set β)} (h_basis : ∀ i, IsTopologicalBasis (t := t i) (T i)) :
     IsTopologicalBasis (t := ⨅ i, t i)
       { S | ∃ (U : ι → Set β) (F : Finset ι), (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ i ∈ F, U i } := by
@@ -540,7 +540,7 @@ protected theorem IsTopologicalBasis.iInf {β : Type*} {ι : Type*} {t : ι → 
     · exact fun i hi ↦ (hU i hi).2
     · exact hUu
 
-theorem IsTopologicalBasis.iInf_induced {β : Type*} {ι : Type*} {X : ι → Type*}
+theorem IsTopologicalBasis.iInf_induced {β ι : Type*} {X : ι → Type*}
     [t : Π i, TopologicalSpace (X i)] {T : Π i, Set (Set (X i))}
     (cond : ∀ i, IsTopologicalBasis (T i)) (f : Π i, β → X i) :
     IsTopologicalBasis (t := ⨅ i, induced (f i) (t i))

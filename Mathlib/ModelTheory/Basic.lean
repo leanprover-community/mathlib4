@@ -814,7 +814,7 @@ open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
 open FirstOrder
 
-variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
+variable {L : Language} {M N : Type*} [L.Structure M]
 
 /-- A structure induced by a bijection. -/
 @[simps!]

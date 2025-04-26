@@ -57,7 +57,7 @@ instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
         continuous_swap.comp <| Continuous.prodMap MulOpposite.continuous_unop continuous_id⟩
 
 @[to_additive]
-theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Mul α]
+theorem ContinuousMul.induced {α β F : Type*} [FunLike F α β] [Mul α]
     [Mul β] [MulHomClass F α β] [tβ : TopologicalSpace β] [ContinuousMul β] (f : F) :
     @ContinuousMul α (tβ.induced f) _ := by
   let tα := tβ.induced f

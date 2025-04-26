@@ -51,7 +51,7 @@ namespace MvPolynomial
 
 open Finsupp
 
-variable {σ : Type*} {τ : Type*}
+variable {σ τ : Type*}
 variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
 
 /--

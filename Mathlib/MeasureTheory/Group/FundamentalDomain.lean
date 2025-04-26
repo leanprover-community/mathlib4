@@ -671,7 +671,7 @@ class HasAddFundamentalDomain (G α : Type*) [Zero G] [VAdd G α] [MeasurableSpa
 
 /-- We say a quotient of `α` by `G` `HasFundamentalDomain` if there is a measurable set `s` for
   which `IsFundamentalDomain G s` holds. -/
-class HasFundamentalDomain (G : Type*) (α : Type*) [One G] [SMul G α] [MeasurableSpace α]
+class HasFundamentalDomain (G α : Type*) [One G] [SMul G α] [MeasurableSpace α]
     (ν : Measure α := by volume_tac) : Prop where
   ExistsIsFundamentalDomain : ∃ (s : Set α), IsFundamentalDomain G s ν
 

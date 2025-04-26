@@ -40,7 +40,7 @@ lemmas from the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
 
 assert_not_exists Ideal
 
-variable {α : Type*} {R : Type*} {M : Type*}
+variable {α R M : Type*}
 
 open Pointwise
 

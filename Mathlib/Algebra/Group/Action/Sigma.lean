@@ -22,7 +22,7 @@ This file defines instances for arbitrary sum of additive and multiplicative act
 assert_not_exists MonoidWithZero
 
 
-variable {ι : Type*} {M N : Type*} {α : ι → Type*}
+variable {ι M N : Type*} {α : ι → Type*}
 
 namespace Sigma
 

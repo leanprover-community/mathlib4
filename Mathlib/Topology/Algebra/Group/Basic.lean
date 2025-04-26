@@ -137,7 +137,7 @@ section ContinuousInv
 variable [TopologicalSpace G] [Inv G] [ContinuousInv G]
 
 @[to_additive]
-theorem ContinuousInv.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Group α]
+theorem ContinuousInv.induced {α β F : Type*} [FunLike F α β] [Group α]
     [DivisionMonoid β] [MonoidHomClass F α β] [tβ : TopologicalSpace β] [ContinuousInv β] (f : F) :
     @ContinuousInv α (tβ.induced f) _ := by
   let _tα := tβ.induced f

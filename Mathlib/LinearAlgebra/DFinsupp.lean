@@ -34,7 +34,7 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
-variable {ι : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
+variable {ι R S : Type*} {M : ι → Type*} {N : Type*}
 
 namespace DFinsupp
 
@@ -105,8 +105,8 @@ section Lsum
 variable (S)
 variable [DecidableEq ι]
 
-instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
-    {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
+instance {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+    {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M M₂ : Type*)
     [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :
     EquivLike (LinearEquiv σ M M₂) M M₂ :=
   inferInstance
@@ -625,8 +625,8 @@ namespace LinearMap
 
 section AddCommMonoid
 
-variable {R : Type*} {R₂ : Type*}
-variable {M : Type*} {M₂ : Type*}
+variable {R R₂ : Type*}
+variable {M M₂ : Type*}
 variable {ι : Type*}
 variable [Semiring R] [Semiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
@@ -679,7 +679,7 @@ end LinearMap
 
 namespace LinearEquiv
 
-variable {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} {ι : Type*}
+variable {R R₂ M M₂ ι : Type*}
 
 section DFinsupp
 

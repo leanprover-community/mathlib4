@@ -28,7 +28,7 @@ open scoped Pointwise
 
 section
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 variable [AffineSpace V P]
 
 @[simp] lemma vectorSpan_vadd (s : Set P) (v : V) : vectorSpan k (v +ᵥ s) = vectorSpan k s := by
@@ -122,7 +122,7 @@ theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module 
 
 namespace AffineSubspace
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [S : AffineSpace V P]
 
 variable (k V) {p₁ p₂ : P}
@@ -194,7 +194,7 @@ end AffineSubspace
 
 section AffineSpace'
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 variable {ι : Type*}
@@ -412,7 +412,7 @@ end AffineSpace'
 
 namespace AffineSubspace
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 /-- The direction of the sup of two nonempty affine subspaces is the sup of the two directions and
@@ -741,7 +741,7 @@ namespace AffineSubspace
 
 open AffineEquiv
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 variable [AffineSpace V P]
 
 /-- Two affine subspaces are parallel if one is related to the other by adding the same vector

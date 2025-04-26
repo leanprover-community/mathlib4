@@ -15,7 +15,7 @@ This file provides versions of `LinearMap.mulLeft` and `LinearMap.mulRight` whic
 heterogeneous multiplication of matrices.
 -/
 
-variable {l m n o : Type*} {R A : Type*}
+variable {l m n o R A : Type*}
 
 section NonUnitalNonAssocSemiring
 variable (R) [Fintype m]

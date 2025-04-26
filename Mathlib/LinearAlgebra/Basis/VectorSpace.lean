@@ -30,7 +30,7 @@ basis, bases
 
 open Function Set Submodule
 
-variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
+variable {ι ι' K V V' : Type*}
 
 section DivisionRing
 

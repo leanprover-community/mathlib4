@@ -26,11 +26,11 @@ open Set Filter
 
 universe u v
 
-variable {α : Type u} {β : Type*} {γ : Type*} {δ : Type*}
+variable {α : Type u} {β γ δ : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Uniform isomorphism between `α` and `β` -/
-structure UniformEquiv (α : Type*) (β : Type*) [UniformSpace α] [UniformSpace β] extends
+structure UniformEquiv (α β : Type*) [UniformSpace α] [UniformSpace β] extends
   α ≃ β where
   /-- Uniform continuity of the function -/
   uniformContinuous_toFun : UniformContinuous toFun

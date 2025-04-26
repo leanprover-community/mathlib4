@@ -634,7 +634,7 @@ theorem srangeRestrict_surjective (f : M →ₙ* N) : Function.Surjective f.sran
   fun ⟨_, ⟨x, rfl⟩⟩ => ⟨x, rfl⟩
 
 @[to_additive prod_map_comap_prod']
-theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [Mul M'] [Mul N'] (f : M →ₙ* N)
+theorem prod_map_comap_prod' {M' N' : Type*} [Mul M'] [Mul N'] (f : M →ₙ* N)
     (g : M' →ₙ* N') (S : Subsemigroup N) (S' : Subsemigroup N') :
     (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _

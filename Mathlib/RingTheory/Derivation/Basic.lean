@@ -38,7 +38,7 @@ equality. We also require that `D 1 = 0`. See `Derivation.mk'` for a constructor
 assumption from the Leibniz rule when `M` is cancellative.
 
 TODO: update this when bimodules are defined. -/
-structure Derivation (R : Type*) (A : Type*) (M : Type*)
+structure Derivation (R A M : Type*)
     [CommSemiring R] [CommSemiring A] [AddCommMonoid M] [Algebra R A] [Module A M] [Module R M]
     extends A →ₗ[R] M where
   protected map_one_eq_zero' : toLinearMap 1 = 0
@@ -51,7 +51,7 @@ namespace Derivation
 
 section
 
-variable {R : Type*} {A : Type*} {B : Type*} {M : Type*}
+variable {R A B M : Type*}
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B] [AddCommMonoid M]
 variable [Algebra R A] [Algebra R B]
 variable [Module A M] [Module B M] [Module R M]
@@ -340,7 +340,7 @@ end
 
 section Lift
 
-variable {R : Type*} {A : Type*} {M : Type*}
+variable {R A M : Type*}
 variable [CommSemiring R] [CommRing A] [CommRing M]
 variable [Algebra R A] [Algebra R M]
 variable {F : Type*} [FunLike F A M] [AlgHomClass F R A M]

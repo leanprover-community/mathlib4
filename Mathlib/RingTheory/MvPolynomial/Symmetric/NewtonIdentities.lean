@@ -51,7 +51,7 @@ open Finset Nat
 
 namespace NewtonIdentities
 
-variable (σ : Type*) (R : Type*) [CommRing R]
+variable (σ R : Type*) [CommRing R]
 
 section DecidableEq
 

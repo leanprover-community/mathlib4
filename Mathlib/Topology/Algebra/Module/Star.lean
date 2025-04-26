@@ -45,7 +45,7 @@ def starL' (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [TrivialStar R]
         continuous_invFun := continuous_id } :
       A ≃L⋆[R] A)
 
-variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
+variable (R A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A] [Invertible (2 : R)] [TopologicalSpace A]
 
 theorem continuous_selfAdjointPart [ContinuousAdd A] [ContinuousStar A] [ContinuousConstSMul R A] :

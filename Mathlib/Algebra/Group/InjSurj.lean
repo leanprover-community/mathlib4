@@ -46,7 +46,7 @@ assert_not_exists MonoidWithZero DenselyOrdered
 
 namespace Injective
 
-variable {M₁ : Type*} {M₂ : Type*} [Mul M₁]
+variable {M₁ M₂ : Type*} [Mul M₁]
 
 /-- A type endowed with `*` is a semigroup, if it admits an injective map that preserves `*` to
 a semigroup. See note [reducible non-instances]. -/
@@ -339,7 +339,7 @@ end Injective
 
 namespace Surjective
 
-variable {M₁ : Type*} {M₂ : Type*} [Mul M₂]
+variable {M₁ M₂ : Type*} [Mul M₂]
 
 /-- A type endowed with `*` is a semigroup, if it admits a surjective map that preserves `*` from a
 semigroup. See note [reducible non-instances]. -/

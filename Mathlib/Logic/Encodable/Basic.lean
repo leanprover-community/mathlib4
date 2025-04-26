@@ -54,7 +54,7 @@ attribute [simp] Encodable.encodek
 
 namespace Encodable
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
 universe u
 
@@ -528,7 +528,7 @@ namespace Directed
 
 open Encodable
 
-variable {α : Type*} {β : Type*} [Encodable α] [Inhabited α]
+variable {α β : Type*} [Encodable α] [Inhabited α]
 
 /-- Given a `Directed r` function `f : α → β` defined on an encodable inhabited type,
 construct a noncomputable sequence such that `r (f (x n)) (f (x (n + 1)))`

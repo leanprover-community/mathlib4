@@ -36,7 +36,7 @@ end Basis
 
 namespace Matrix
 
-variable (R : Type*) (m n : Type*) [Fintype m] [Finite n] [Semiring R]
+variable (R m n : Type*) [Fintype m] [Finite n] [Semiring R]
 
 /-- The standard basis of `Matrix m n R`. -/
 noncomputable def stdBasis : Basis (m × n) R (Matrix m n R) :=

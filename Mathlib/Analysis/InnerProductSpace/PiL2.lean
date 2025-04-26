@@ -101,7 +101,7 @@ space use `EuclideanSpace 𝕜 (Fin n)`.
 
 For the case when `n = Fin _`, there is `!₂[x, y, ...]` notation for building elements of this type,
 analogous to `![x, y, ...]` notation. -/
-abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
+abbrev EuclideanSpace (𝕜 n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 
 section Notation

@@ -46,7 +46,7 @@ class DifferentialAlgebra (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
 export DifferentialAlgebra (deriv_algebraMap)
 
 @[norm_cast]
-lemma algebraMap.coe_deriv {A : Type*} {B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+lemma algebraMap.coe_deriv {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
     [Differential A] [Differential B] [DifferentialAlgebra A B] (a : A) :
     (a′ : A) = (a : B)′ :=
   (DifferentialAlgebra.deriv_algebraMap _).symm

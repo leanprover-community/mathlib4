@@ -19,7 +19,7 @@ namespace exteriorPower
 
 open TensorProduct PiTensorProduct
 
-variable (R : Type*) (M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
 
 /-- The linear map from the `n`th exterior power to the `n`th tensor power obtained by
 `MultilinearMap.alternatization`. -/

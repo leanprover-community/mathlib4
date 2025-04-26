@@ -353,7 +353,7 @@ end CompHoms
 
 section Norm
 
-variable {α : Type*} {𝕜 : Type*} {R : Type*} [TopologicalSpace α] [CompactSpace α] [Zero α]
+variable {α 𝕜 R : Type*} [TopologicalSpace α] [CompactSpace α] [Zero α]
 
 noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
   ContinuousMapZero.isUniformEmbedding_toContinuousMap.comapMetricSpace _

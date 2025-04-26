@@ -30,7 +30,7 @@ literature, and we introduce it as part of the formalization of Liouville's theo
 
 open Differential algebraMap IntermediateField Finset Polynomial
 
-variable (F : Type*) (K : Type*) [Field F] [Field K] [Differential F] [Differential K]
+variable (F K : Type*) [Field F] [Field K] [Differential F] [Differential K]
 variable [Algebra F K] [DifferentialAlgebra F K]
 
 /--

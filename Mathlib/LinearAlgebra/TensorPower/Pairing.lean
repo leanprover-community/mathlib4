@@ -19,7 +19,7 @@ open TensorProduct PiTensorProduct
 
 namespace TensorPower
 
-variable (R : Type*) (M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
   (n : ℕ)
 
 open BigOperators

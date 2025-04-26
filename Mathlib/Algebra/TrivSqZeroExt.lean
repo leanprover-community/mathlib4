@@ -168,7 +168,7 @@ Additive operators and scalar multiplication operate elementwise. -/
 
 section Additive
 
-variable {T : Type*} {S : Type*} {R : Type u} {M : Type v}
+variable {T S : Type*} {R : Type u} {M : Type v}
 
 instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
   instInhabitedProd

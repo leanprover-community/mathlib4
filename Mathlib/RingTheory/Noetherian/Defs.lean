@@ -62,7 +62,7 @@ attribute [inherit_doc IsNoetherian] IsNoetherian.noetherian
 
 section
 
-variable {R : Type*} {M : Type*} {P : Type*}
+variable {R M P : Type*}
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid P]
 variable [Module R M] [Module R P]
 

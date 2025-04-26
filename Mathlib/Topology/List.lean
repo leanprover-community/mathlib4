@@ -18,7 +18,7 @@ open TopologicalSpace Set Filter
 
 open Topology Filter
 
-variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 instance : TopologicalSpace (List α) :=
   TopologicalSpace.mkOfNhds (traverse nhds)

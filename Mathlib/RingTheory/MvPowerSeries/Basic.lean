@@ -80,7 +80,7 @@ open Finset (antidiagonal mem_antidiagonal)
 
 /-- Multivariate formal power series, where `σ` is the index set of the variables
 and `R` is the coefficient ring. -/
-def MvPowerSeries (σ : Type*) (R : Type*) :=
+def MvPowerSeries (σ R : Type*) :=
   (σ →₀ ℕ) → R
 
 namespace MvPowerSeries
@@ -779,7 +779,7 @@ namespace MvPolynomial
 
 open Finsupp
 
-variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : MvPolynomial σ R)
+variable {σ R : Type*} [CommSemiring R] (φ ψ : MvPolynomial σ R)
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
@@ -916,7 +916,7 @@ theorem _root_.MvPowerSeries.monomial_eq (e : σ →₀ ℕ) (r : σ → R) :
   rw [MvPowerSeries.prod_smul_X_eq_smul_monomial_one, ← map_smul, smul_eq_mul, mul_one]
 
 theorem _root_.MvPowerSeries.monomial_smul_const
-    {σ : Type*} {R : Type*} [CommSemiring R]
+    {σ R : Type*} [CommSemiring R]
     (e : σ →₀ ℕ) (r : R) :
     MvPowerSeries.monomial R e (r ^ (e.sum fun _ n => n))
       = (e.prod fun s e => (r • MvPowerSeries.X s) ^ e) := by

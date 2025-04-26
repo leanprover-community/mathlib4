@@ -34,7 +34,7 @@ attribute [refl, simp] Setoid.refl
 attribute [symm] Setoid.symm
 attribute [trans] Setoid.trans
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
 namespace Setoid
 

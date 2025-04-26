@@ -52,7 +52,7 @@ open scoped Pointwise
 
 section
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 variable [AffineSpace V P]
 
 /-- The submodule spanning the differences of a (possibly empty) set of points. -/
@@ -401,7 +401,7 @@ end Submodule
 
 section affineSpan
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 /-- The affine span of a set of points is the smallest affine subspace containing those points.
@@ -470,7 +470,7 @@ end affineSpan
 
 namespace AffineSubspace
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [S : AffineSpace V P]
 
 instance : CompleteLattice (AffineSubspace k P) :=
@@ -824,7 +824,7 @@ end AffineSubspace
 
 section AffineSpace'
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 variable {ι : Type*}

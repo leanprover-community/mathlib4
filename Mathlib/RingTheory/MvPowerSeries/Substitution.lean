@@ -58,11 +58,9 @@ the kernel of `algebraMap R S` is a nilideal.
 
 namespace MvPowerSeries
 
-variable {σ : Type*}
-  {A : Type*} [CommSemiring A]
+variable {σ A : Type*} [CommSemiring A]
   {R : Type*} [CommRing R] [Algebra A R]
-  {τ : Type*}
-  {S : Type*} [CommRing S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
+  {τ S : Type*} [CommRing S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
 
 open WithPiTopology
 
@@ -321,8 +319,7 @@ theorem eval₂_subst
     AlgHom.coe_restrictScalars, RingHom.coe_coe, ε, coe_aeval]
     using comp_subst_apply ha hε f
 
-variable {υ : Type*}
-  {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {υ T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   {b : τ → MvPowerSeries υ T}
 
 theorem IsNilpotent_subst (ha : HasSubst a)

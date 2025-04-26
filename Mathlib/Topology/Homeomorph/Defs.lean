@@ -36,7 +36,7 @@ open Set Topology Filter
 variable {X Y W Z : Type*}
 
 /-- Homeomorphism between `X` and `Y`, also called topological isomorphism -/
-structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
+structure Homeomorph (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     extends X ≃ Y where
   /-- The forward map of a homeomorphism is a continuous function. -/
   continuous_toFun : Continuous toFun := by continuity

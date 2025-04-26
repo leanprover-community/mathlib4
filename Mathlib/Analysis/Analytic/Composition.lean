@@ -66,7 +66,7 @@ in more details below in the paragraph on associativity.
 
 noncomputable section
 
-variable {𝕜 : Type*} {E F G H : Type*}
+variable {𝕜 E F G H : Type*}
 
 open Filter List
 

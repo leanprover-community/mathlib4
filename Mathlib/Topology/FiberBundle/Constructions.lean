@@ -33,7 +33,7 @@ namespace Bundle
 
 namespace Trivial
 
-variable (B : Type*) (F : Type*)
+variable (B F : Type*)
 
 -- TODO: use `TotalSpace.toProd`
 instance topologicalSpace [t₁ : TopologicalSpace B]

@@ -85,7 +85,7 @@ namespace presentation
 
 /-- The index type for the relations in the standard presentation of `⋀[R]^n M`,
 in the particular case `ι` is `Fin n`. -/
-inductive Rels (ι : Type*) (M : Type*)
+inductive Rels (ι M : Type*)
   | add (m : ι → M) (i : ι) (x y : M)
   | smul (m : ι → M) (i : ι) (r : R) (x : M)
   | alt (m : ι → M) (i j : ι) (hm : m i = m j) (hij : i ≠ j)

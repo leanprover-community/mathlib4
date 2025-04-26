@@ -26,7 +26,7 @@ As in other polynomial files, we typically use the notation:
 
 namespace MvPolynomial
 
-variable {σ : Type*} {τ : Type*} {υ : Type*} {R : Type*} [CommSemiring R]
+variable {σ τ υ R : Type*} [CommSemiring R]
 
 /-- Given an algebra hom `f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R`
 and a variable evaluation `v : τ → R`,

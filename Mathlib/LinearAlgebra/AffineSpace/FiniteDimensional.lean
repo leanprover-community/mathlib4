@@ -28,7 +28,7 @@ open scoped Finset
 
 section AffineSpace'
 
-variable (k : Type*) {V : Type*} {P : Type*}
+variable (k : Type*) {V P : Type*}
 variable {ι : Type*}
 
 open AffineSubspace Module
@@ -669,7 +669,7 @@ end AffineSpace'
 
 section DivisionRing
 
-variable {k : Type*} {V : Type*} {P : Type*}
+variable {k V P : Type*}
 
 open AffineSubspace Module Module
 

@@ -35,7 +35,7 @@ open Set Function Filter
 -/
 section Invariant
 
-variable {τ : Type*} {α : Type*}
+variable {τ α : Type*}
 
 /-- A set `s ⊆ α` is invariant under `ϕ : τ → α → α` if
     `ϕ t s ⊆ s` for all `t` in `τ`. -/

@@ -48,7 +48,7 @@ def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
   m → n → α
 
 variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
+variable {R S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
 

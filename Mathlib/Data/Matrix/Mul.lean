@@ -51,7 +51,7 @@ assert_not_exists Algebra Field Star
 universe u u' v w
 
 variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
+variable {R S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 open Matrix
 

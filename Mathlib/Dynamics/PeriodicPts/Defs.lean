@@ -52,7 +52,7 @@ namespace Function
 
 open Function (Commute)
 
-variable {α : Type*} {β : Type*} {f fa : α → α} {fb : β → β} {x y : α} {m n : ℕ}
+variable {α β : Type*} {f fa : α → α} {fb : β → β} {x y : α} {m n : ℕ}
 
 /-- A point `x` is a periodic point of `f : α → α` of period `n` if `f^[n] x = x`.
 Note that we do not require `0 < n` in this definition. Many theorems about periodic points

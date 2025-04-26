@@ -52,7 +52,7 @@ variable {A : Type*} [AddGroup A]
 
 namespace MonoidHom
 
-variable {N : Type*} {P : Type*} [Group N] [Group P] (K : Subgroup G)
+variable {N P : Type*} [Group N] [Group P] (K : Subgroup G)
 
 open Subgroup
 

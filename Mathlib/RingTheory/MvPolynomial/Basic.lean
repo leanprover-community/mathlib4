@@ -46,7 +46,7 @@ variable (σ : Type u) (R : Type v) [CommSemiring R] (p m : ℕ)
 
 namespace MvPolynomial
 
-instance {σ : Type*} {R : Type*} [CommSemiring R]
+instance {σ R : Type*} [CommSemiring R]
     [Small.{u} R] [Small.{u} σ] :
     Small.{u} (MvPolynomial σ R) :=
   inferInstanceAs (Small.{u} ((σ →₀ ℕ) →₀ R))

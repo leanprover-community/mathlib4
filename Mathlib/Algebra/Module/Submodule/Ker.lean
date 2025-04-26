@@ -30,10 +30,10 @@ open Function
 
 open Pointwise
 
-variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {R R₂ R₃ : Type*}
 variable {K : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
-variable {V : Type*} {V₂ : Type*}
+variable {M M₁ M₂ M₃ : Type*}
+variable {V V₂ : Type*}
 
 /-! ### Properties of linear maps -/
 

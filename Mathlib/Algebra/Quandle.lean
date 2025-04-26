@@ -108,7 +108,7 @@ class UnitalShelf (α : Type u) extends Shelf α, One α where
 This is also the notion of rack and quandle homomorphisms.
 -/
 @[ext]
-structure ShelfHom (S₁ : Type*) (S₂ : Type*) [Shelf S₁] [Shelf S₂] where
+structure ShelfHom (S₁ S₂ : Type*) [Shelf S₁] [Shelf S₂] where
   /-- The function under the Shelf Homomorphism -/
   toFun : S₁ → S₂
   /-- The homomorphism property of a Shelf Homomorphism -/
@@ -316,7 +316,7 @@ end Rack
 
 namespace ShelfHom
 
-variable {S₁ : Type*} {S₂ : Type*} {S₃ : Type*} [Shelf S₁] [Shelf S₂] [Shelf S₃]
+variable {S₁ S₂ S₃ : Type*} [Shelf S₁] [Shelf S₂] [Shelf S₃]
 
 instance : FunLike (S₁ →◃ S₂) S₁ S₂ where
   coe := toFun
@@ -400,7 +400,7 @@ theorem conj_swap {G : Type*} [Group G] (x y : Conj G) : x ◃ y = y ↔ y ◃ x
 
 /-- `Conj` is functorial
 -/
-def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G →◃ Conj H where
+def Conj.map {G H : Type*} [Group G] [Group H] (f : G →* H) : Conj G →◃ Conj H where
   toFun := f
   map_act' := by simp
 

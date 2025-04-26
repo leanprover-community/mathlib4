@@ -31,7 +31,7 @@ open Mathlib
 
 universe u v
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α β γ : Type*}
 
 namespace Fintype
 
@@ -238,7 +238,7 @@ section
 
 open Finset
 
-variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
+variable {α₁ α₂ M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
 
 @[to_additive]
 theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :

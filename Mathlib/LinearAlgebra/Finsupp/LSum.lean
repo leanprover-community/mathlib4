@@ -32,7 +32,7 @@ namespace Finsupp
 
 section SMul
 
-variable {α : Type*} {β : Type*} {R : Type*} {M : Type*} {M₂ : Type*}
+variable {α β R M M₂ : Type*}
 
 theorem smul_sum [Zero β] [AddCommMonoid M] [DistribSMul R M] {v : α →₀ β} {c : R} {h : α → β → M} :
     c • v.sum h = v.sum fun a b => c • h a b :=
@@ -49,7 +49,7 @@ theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [A
 
 end SMul
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
+variable {α M N P R S : Type*}
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P]
@@ -172,7 +172,7 @@ protected def domLCongr {α₁ α₂ : Type*} (e : α₁ ≃ α₂) : (α₁ →
     simpa only [equivMapDomain_eq_mapDomain, domCongr_apply] using (lmapDomain M R e).map_smul
 
 @[simp]
-theorem domLCongr_apply {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (v : α₁ →₀ M) :
+theorem domLCongr_apply {α₁ α₂ : Type*} (e : α₁ ≃ α₂) (v : α₁ →₀ M) :
     (Finsupp.domLCongr e : _ ≃ₗ[R] _) v = Finsupp.domCongr e v :=
   rfl
 
@@ -190,7 +190,7 @@ theorem domLCongr_symm {α₁ α₂ : Type*} (f : α₁ ≃ α₂) :
     ((Finsupp.domLCongr f).symm : (_ →₀ M) ≃ₗ[R] _) = Finsupp.domLCongr f.symm :=
   LinearEquiv.ext fun _ => rfl
 
-theorem domLCongr_single {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (i : α₁) (m : M) :
+theorem domLCongr_single {α₁ α₂ : Type*} (e : α₁ ≃ α₂) (i : α₁) (m : M) :
     (Finsupp.domLCongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
   simp
 
@@ -221,7 +221,7 @@ theorem lcongr_symm {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) :
 
 end Finsupp
 
-variable {R : Type*} {M : Type*} {N : Type*}
+variable {R M N : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 open Finsupp
@@ -272,7 +272,7 @@ namespace LinearMap
 
 section AddCommMonoid
 
-variable {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} {ι : Type*}
+variable {R R₂ M M₂ ι : Type*}
 variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂] {σ₁₂ : R →+* R₂}
 variable [Module R M] [Module R₂ M₂]
 variable {γ : Type*} [Zero γ]

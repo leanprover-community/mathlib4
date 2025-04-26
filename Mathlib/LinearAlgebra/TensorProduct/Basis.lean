@@ -24,7 +24,7 @@ open scoped TensorProduct
 
 section CommSemiring
 
-variable {R : Type*} {S : Type*} {M : Type*} {N : Type*} {ι : Type*} {κ : Type*}
+variable {R S M N ι κ : Type*}
   [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M] [Module S M]
   [IsScalarTower R S M] [AddCommMonoid N] [Module R N]
 

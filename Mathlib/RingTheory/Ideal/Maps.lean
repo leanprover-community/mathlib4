@@ -647,7 +647,7 @@ variable {R : Type u} {S : Type v} {T : Type w}
 
 section Semiring
 
-variable {F : Type*} {G : Type*} [Semiring R] [Semiring S] [Semiring T]
+variable {F G : Type*} [Semiring R] [Semiring S] [Semiring T]
 variable [FunLike F R S] [rcf : RingHomClass F R S] [FunLike G T S] [rcg : RingHomClass G T S]
 variable (f : F) (g : G)
 
@@ -897,7 +897,7 @@ end annihilator
 
 namespace Ideal
 
-variable {R : Type*} {S : Type*} {F : Type*}
+variable {R S F : Type*}
 
 section Semiring
 

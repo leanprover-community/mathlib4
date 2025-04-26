@@ -213,7 +213,7 @@ end Module
 
 namespace LinearMap
 
-variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B]
 
 /-- An alternate statement of `LinearMap.map_smul` for when `algebraMap` is more convenient to

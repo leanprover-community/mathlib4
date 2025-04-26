@@ -26,7 +26,7 @@ namespace Finsupp
 
 section Semiring
 
-variable {R : Type*} {M : Type*} {ι : Type*}
+variable {R M ι : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 theorem linearIndependent_single {φ : ι → Type*} (f : ∀ ι, φ ι → M)
@@ -137,7 +137,7 @@ end Ring
 end Finsupp
 
 namespace DFinsupp
-variable {ι : Type*} {R : Type*} {M : ι → Type*}
+variable {ι R : Type*} {M : ι → Type*}
 variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 /-- The direct sum of free modules is free.

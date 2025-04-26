@@ -325,7 +325,7 @@ instance instInhabited [Inhabited β] : Inhabited (Germ l β) := ⟨↑(default 
 
 section Monoid
 
-variable {M : Type*} {G : Type*}
+variable {M G : Type*}
 
 @[to_additive] instance instMul [Mul M] : Mul (Germ l M) := ⟨map₂ (· * ·)⟩
 

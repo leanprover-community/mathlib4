@@ -16,7 +16,7 @@ We also prove trivial `simp` lemmas:
 
 assert_not_exists Monoid DenselyOrdered
 
-variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
+variable {G H M N P : Type*}
 
 namespace Prod
 

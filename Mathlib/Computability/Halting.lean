@@ -61,7 +61,7 @@ end Nat.Partrec
 
 namespace Partrec
 
-variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
+variable {α β γ σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable Part

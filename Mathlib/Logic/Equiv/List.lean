@@ -118,7 +118,7 @@ end Encodable
 
 namespace Denumerable
 
-variable {α : Type*} {β : Type*} [Denumerable α] [Denumerable β]
+variable {α β : Type*} [Denumerable α] [Denumerable β]
 
 open Encodable
 

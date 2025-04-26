@@ -33,7 +33,7 @@ noncomputable section
 
 /-- The skew monoid algebra of `G` over `k` is the type of finite formal `k`-linear
 combinations of terms of `G`, endowed with a skewed convolution product. -/
-structure SkewMonoidAlgebra (k : Type*) (G : Type*) [Zero k] where
+structure SkewMonoidAlgebra (k G : Type*) [Zero k] where
   /-- The natural map from `G →₀ k` to `SkewMonoidAlgebra k G`. -/
   ofFinsupp ::
   /-- The natural map from `SkewMonoidAlgebra k G` to `G →₀ k`. -/
@@ -415,7 +415,7 @@ theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoi
       if a ∈ f.support then b a (f.coeff a) else 0 := by
   simp only [sum_def', Finsupp.sum, f.toFinsupp.support.sum_ite_eq', support]
 
-theorem smul_sum {M : Type*} {R : Type*} [AddCommMonoid M] [DistribSMul R M]
+theorem smul_sum {M R : Type*} [AddCommMonoid M] [DistribSMul R M]
     {v : SkewMonoidAlgebra k G} {c : R} {h : G → k → M} :
     c • v.sum h = v.sum fun a b ↦ c • h a b := Finsupp.smul_sum
 

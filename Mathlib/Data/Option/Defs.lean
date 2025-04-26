@@ -23,7 +23,7 @@ protected def traverse.{u, v}
   | none => pure none
   | some x => some <$> f x
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
 /-- An elimination principle for `Option`. It is a nondependent version of `Option.rec`. -/
 protected def elim' (b : β) (f : α → β) : Option α → β

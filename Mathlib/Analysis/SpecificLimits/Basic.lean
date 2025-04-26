@@ -24,7 +24,7 @@ noncomputable section
 
 open Set Function Filter Finset Metric Topology Nat uniformity NNReal ENNReal
 
-variable {α : Type*} {β : Type*} {ι : Type*}
+variable {α β ι : Type*}
 
 theorem tendsto_inverse_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop

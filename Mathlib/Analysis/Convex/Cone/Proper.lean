@@ -35,7 +35,7 @@ open ContinuousLinearMap Filter Set
 /-- A proper cone is a pointed cone `K` that is closed. Proper cones have the nice property that
 they are equal to their double dual, see `ProperCone.dual_dual`.
 This makes them useful for defining cone programs and proving duality theorems. -/
-structure ProperCone (𝕜 : Type*) (E : Type*)
+structure ProperCone (𝕜 E : Type*)
     [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
     [TopologicalSpace E] [Module 𝕜 E] extends Submodule {c : 𝕜 // 0 ≤ c} E where
   isClosed' : IsClosed (carrier : Set E)

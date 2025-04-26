@@ -407,7 +407,7 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
+variable {ι γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
   [TopologicalSpace γ] [OrderTopology γ]
 
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
@@ -904,7 +904,7 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
+variable {ι γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
   [TopologicalSpace γ] [OrderTopology γ]
 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an

@@ -40,7 +40,7 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 -/
 
 
-variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {R₁ R₂ R₃ : Type*}
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 
 /-- Class that expresses that a ring homomorphism is in fact the identity. -/

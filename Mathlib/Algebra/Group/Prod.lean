@@ -38,7 +38,7 @@ assert_not_exists MonoidWithZero DenselyOrdered
 -- TODO:
 -- assert_not_exists AddMonoidWithOne
 
-variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
+variable {G H M N P : Type*}
 
 namespace Prod
 
@@ -242,7 +242,7 @@ end Prod
 
 section prodMap
 
-variable {M' : Type*} {N' : Type*} [Mul M] [Mul N] [Mul M'] [Mul N'] [Mul P] (f : M →ₙ* M')
+variable {M' N' : Type*} [Mul M] [Mul N] [Mul M'] [Mul N'] [Mul P] (f : M →ₙ* M')
   (g : N →ₙ* N')
 
 /-- `Prod.map` as a `MonoidHom`. -/
@@ -409,7 +409,7 @@ end Prod
 
 section prodMap
 
-variable {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] [MulOneClass P]
+variable {M' N' : Type*} [MulOneClass M'] [MulOneClass N'] [MulOneClass P]
   (f : M →* M') (g : N →* N')
 
 /-- `Prod.map` as a `MonoidHom`. -/
@@ -515,7 +515,7 @@ theorem coe_prodAssoc_symm :
     ⇑(prodAssoc : (M × N) × P ≃* M × (N × P)).symm = (Equiv.prodAssoc M N P).symm :=
   rfl
 
-variable {M' : Type*} {N' : Type*} [MulOneClass N'] [MulOneClass M']
+variable {M' N' : Type*} [MulOneClass N'] [MulOneClass M']
 
 section
 

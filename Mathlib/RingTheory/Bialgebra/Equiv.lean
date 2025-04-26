@@ -203,7 +203,7 @@ def Simps.apply {R : Type u} [CommSemiring R] {α : Type v} {β : Type w}
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply {R : Type*} [CommSemiring R]
-    {A : Type*} {B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    {A B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B]
     (e : A ≃ₐc[R] B) : B → A :=
   e.symm

@@ -344,7 +344,7 @@ noncomputable def equiv : L ≃ₐ[R] M :=
 
 end
 
-variable (K : Type*) (J : Type*) (R : Type u) (S : Type*) (L : Type v) (M : Type w)
+variable (K J : Type*) (R : Type u) (S : Type*) (L : Type v) (M : Type w)
   [Field K] [Field J] [CommRing R] [CommRing S] [Field L] [Field M]
   [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M] [Algebra K M] [IsAlgClosure K M]
   [Algebra S L] [NoZeroSMulDivisors S L] [IsAlgClosure S L]

@@ -29,7 +29,7 @@ quotient monoid, isomorphism theorems
 -/
 
 
-variable (M : Type*) {N : Type*} {P : Type*}
+variable (M : Type*) {N P : Type*}
 
 open Function Setoid
 

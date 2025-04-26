@@ -114,7 +114,7 @@ open TopologicalSpace Topology
 
 universe u
 
-variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
+variable {H : Type u} {H' M M' M'' : Type*}
 
 /- Notational shortcut for the composition of partial homeomorphisms and partial equivs, i.e.,
 `PartialHomeomorph.trans` and `PartialEquiv.trans`.
@@ -573,7 +573,7 @@ lemma chart_mem_atlas (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalS
     [ChartedSpace H M] (x : M) : chartAt H x ∈ atlas H M :=
   ChartedSpace.chart_mem_atlas x
 
-lemma nonempty_of_chartedSpace {H : Type*} {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
+lemma nonempty_of_chartedSpace {H M : Type*} [TopologicalSpace H] [TopologicalSpace M]
     [ChartedSpace H M] (x : M) : Nonempty H :=
   ⟨chartAt H x x⟩
 
@@ -803,7 +803,7 @@ solves this problem. -/
 
 /-- Same thing as `H × H'`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/
-def ModelProd (H : Type*) (H' : Type*) :=
+def ModelProd (H H' : Type*) :=
   H × H'
 
 /-- Same thing as `∀ i, H i`. We introduce it for technical reasons,
@@ -824,7 +824,7 @@ instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
 
 -- Next lemma shows up often when dealing with derivatives, so we register it as simp lemma.
 @[simp, mfld_simps]
-theorem modelProd_range_prod_id {H : Type*} {H' : Type*} {α : Type*} (f : H → α) :
+theorem modelProd_range_prod_id {H H' α : Type*} (f : H → α) :
     (range fun p : ModelProd H H' ↦ (f p.1, p.2)) = range f ×ˢ (univ : Set H') := by
   rw [prod_range_univ_eq]
   rfl
@@ -1353,7 +1353,7 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
-structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
+structure Structomorph (G : StructureGroupoid H) (M M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
   mem_groupoid : ∀ c : PartialHomeomorph M H, ∀ c' : PartialHomeomorph M' H, c ∈ atlas H M →
     c' ∈ atlas H M' → c.symm ≫ₕ toHomeomorph.toPartialHomeomorph ≫ₕ c' ∈ G

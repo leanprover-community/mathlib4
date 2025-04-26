@@ -69,7 +69,7 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
 
 namespace LinearMap
 
-variable {k : Type*} {V₁ : Type*} {V₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
+variable {k V₁ V₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddCommGroup V₂] [Module k V₂] (f : V₁ →ₗ[k] V₂)
 
 /-- Reinterpret a linear map as an affine map. -/
@@ -90,8 +90,7 @@ end LinearMap
 
 namespace AffineMap
 
-variable {k : Type*} {V1 : Type*} {P1 : Type*} {V2 : Type*} {P2 : Type*} {V3 : Type*}
-  {P3 : Type*} {V4 : Type*} {P4 : Type*} [Ring k] [AddCommGroup V1] [Module k V1]
+variable {k V1 P1 V2 P2 V3 P3 V4 P4 : Type*} [Ring k] [AddCommGroup V1] [Module k V1]
   [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2] [AffineSpace V2 P2] [AddCommGroup V3]
   [Module k V3] [AffineSpace V3 P3] [AddCommGroup V4] [Module k V4] [AffineSpace V4 P4]
 

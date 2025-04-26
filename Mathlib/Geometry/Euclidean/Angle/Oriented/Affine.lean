@@ -28,7 +28,7 @@ open scoped Affine EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 
 namespace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 /-- A fixed choice of positive orientation of Euclidean space `ℝ²` -/

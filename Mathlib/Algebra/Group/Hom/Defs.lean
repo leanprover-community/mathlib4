@@ -63,7 +63,7 @@ open Function
 variable {ι α β M N P : Type*}
 
 -- monoids
-variable {G : Type*} {H : Type*}
+variable {G H : Type*}
 
 -- groups
 variable {F : Type*}
@@ -78,7 +78,7 @@ you should parametrize over `(F : Type*) [ZeroHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to also extend `ZeroHomClass`.
 -/
-structure ZeroHom (M : Type*) (N : Type*) [Zero M] [Zero N] where
+structure ZeroHom (M N : Type*) [Zero M] [Zero N] where
   /-- The underlying function -/
   protected toFun : M → N
   /-- The proposition that the function preserves 0 -/
@@ -107,7 +107,7 @@ you should parametrize over `(F : Type*) [AddHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `AddHomClass`.
 -/
-structure AddHom (M : Type*) (N : Type*) [Add M] [Add N] where
+structure AddHom (M N : Type*) [Add M] [Add N] where
   /-- The underlying function -/
   protected toFun : M → N
   /-- The proposition that the function preserves addition -/
@@ -137,7 +137,7 @@ you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `AddMonoidHomClass`.
 -/
-structure AddMonoidHom (M : Type*) (N : Type*) [AddZeroClass M] [AddZeroClass N] extends
+structure AddMonoidHom (M N : Type*) [AddZeroClass M] [AddZeroClass N] extends
   ZeroHom M N, AddHom M N
 
 attribute [nolint docBlame] AddMonoidHom.toAddHom
@@ -170,7 +170,7 @@ you should parametrize over `(F : Type*) [OneHomClass F M N] (f : F)`.
 When you extend this structure, make sure to also extend `OneHomClass`.
 -/
 @[to_additive]
-structure OneHom (M : Type*) (N : Type*) [One M] [One N] where
+structure OneHom (M N : Type*) [One M] [One N] where
   /-- The underlying function -/
   protected toFun : M → N
   /-- The proposition that the function preserves 1 -/
@@ -276,7 +276,7 @@ you should parametrize over `(F : Type*) [MulHomClass F M N] (f : F)`.
 When you extend this structure, make sure to extend `MulHomClass`.
 -/
 @[to_additive]
-structure MulHom (M : Type*) (N : Type*) [Mul M] [Mul N] where
+structure MulHom (M N : Type*) [Mul M] [Mul N] where
   /-- The underlying function -/
   protected toFun : M → N
   /-- The proposition that the function preserves multiplication -/
@@ -348,7 +348,7 @@ you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
 When you extend this structure, make sure to extend `MonoidHomClass`.
 -/
 @[to_additive]
-structure MonoidHom (M : Type*) (N : Type*) [MulOneClass M] [MulOneClass N] extends
+structure MonoidHom (M N : Type*) [MulOneClass M] [MulOneClass N] extends
   OneHom M N, M →ₙ* N
 
 attribute [nolint docBlame] MonoidHom.toMulHom

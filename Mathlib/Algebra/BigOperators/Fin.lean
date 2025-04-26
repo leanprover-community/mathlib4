@@ -27,7 +27,7 @@ assert_not_exists Field
 
 open Finset
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
 namespace Finset
 

@@ -62,7 +62,7 @@ protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink �
 instance small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 
-theorem small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
+theorem small_map {α β : Type*} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
   let ⟨_, ⟨f⟩⟩ := hβ.equiv_small
   Small.mk' (e.trans f)
 
@@ -89,7 +89,7 @@ theorem small_type : Small.{max (u + 1) v} (Type u) :=
 
 section
 
-theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
+theorem small_congr {α β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩
 
 instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :

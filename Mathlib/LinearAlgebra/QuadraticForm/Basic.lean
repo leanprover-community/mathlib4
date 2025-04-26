@@ -78,7 +78,7 @@ quadratic map, homogeneous polynomial, quadratic polynomial
 universe u v w
 
 variable {S T : Type*}
-variable {R : Type*} {M N P A : Type*}
+variable {R M N P A : Type*}
 
 open LinearMap (BilinMap BilinForm)
 

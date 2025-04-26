@@ -20,7 +20,7 @@ assert_not_exists RelIso
 
 namespace Submonoid
 
-variable {M' : Type*} {α β : Type*}
+variable {M' α β : Type*}
 
 section SetLike
 

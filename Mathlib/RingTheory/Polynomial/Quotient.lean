@@ -189,7 +189,7 @@ end Ideal
 
 namespace MvPolynomial
 
-variable {R : Type*} {σ : Type*} [CommRing R] {r : R}
+variable {R σ : Type*} [CommRing R] {r : R}
 
 theorem quotient_map_C_eq_zero {I : Ideal R} {i : R} (hi : i ∈ I) :
     (Ideal.Quotient.mk (Ideal.map (C : R →+* MvPolynomial σ R) I :

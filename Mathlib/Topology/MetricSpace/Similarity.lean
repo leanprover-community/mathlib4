@@ -25,7 +25,7 @@ Let `P₁` and `P₂` be metric spaces, let `ι` be an index set, and let `v₁ 
 
 open scoped NNReal
 
-variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
+variable {ι ι' P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
 
 section PseudoEMetricSpace
 

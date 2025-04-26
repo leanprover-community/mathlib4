@@ -19,24 +19,24 @@ midpoint
 
 open AffineMap AffineEquiv
 
-theorem lineMap_inv_two {R : Type*} {V P : Type*} [DivisionRing R] [CharZero R] [AddCommGroup V]
+theorem lineMap_inv_two {R V P : Type*} [DivisionRing R] [CharZero R] [AddCommGroup V]
     [Module R V] [AddTorsor V P] (a b : P) : lineMap a b (2⁻¹ : R) = midpoint R a b :=
   rfl
 
-theorem lineMap_one_half {R : Type*} {V P : Type*} [DivisionRing R] [CharZero R] [AddCommGroup V]
+theorem lineMap_one_half {R V P : Type*} [DivisionRing R] [CharZero R] [AddCommGroup V]
     [Module R V] [AddTorsor V P] (a b : P) : lineMap a b (1 / 2 : R) = midpoint R a b := by
   rw [one_div, lineMap_inv_two]
 
-theorem homothety_invOf_two {R : Type*} {V P : Type*} [CommRing R] [Invertible (2 : R)]
+theorem homothety_invOf_two {R V P : Type*} [CommRing R] [Invertible (2 : R)]
     [AddCommGroup V] [Module R V] [AddTorsor V P] (a b : P) :
     homothety a (⅟ 2 : R) b = midpoint R a b :=
   rfl
 
-theorem homothety_inv_two {k : Type*} {V P : Type*} [Field k] [CharZero k] [AddCommGroup V]
+theorem homothety_inv_two {k V P : Type*} [Field k] [CharZero k] [AddCommGroup V]
     [Module k V] [AddTorsor V P] (a b : P) : homothety a (2⁻¹ : k) b = midpoint k a b :=
   rfl
 
-theorem homothety_one_half {k : Type*} {V P : Type*} [Field k] [CharZero k] [AddCommGroup V]
+theorem homothety_one_half {k V P : Type*} [Field k] [CharZero k] [AddCommGroup V]
     [Module k V] [AddTorsor V P] (a b : P) : homothety a (1 / 2 : k) b = midpoint k a b := by
   rw [one_div, homothety_inv_two]
 

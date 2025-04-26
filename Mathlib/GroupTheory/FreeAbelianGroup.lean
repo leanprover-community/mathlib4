@@ -24,7 +24,7 @@ file, but the category-theoretic adjunction statement is in
 
 ## Main definitions
 
-Here we use the following variables: `(α β : Type*) (A : Type*) [AddCommGroup A]`
+Here we use the following variables: `(α β A : Type*) [AddCommGroup A]`
 
 * `FreeAbelianGroup α` : the free abelian group on a type `α`. As an abelian
 group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely

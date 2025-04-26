@@ -50,7 +50,7 @@ submonoid, submonoids
 
 assert_not_exists MonoidWithZero
 
-variable {M : Type*} {N : Type*}
+variable {M N : Type*}
 variable {A : Type*}
 
 section NonAssoc

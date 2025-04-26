@@ -81,7 +81,7 @@ instance : ContinuousSMul (ULift M) X :=
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
   continuous_const_smul _ := continuous_smul.comp (continuous_const.prodMk continuous_id)
 
-theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*} [FunLike F α β]
+theorem ContinuousSMul.induced {R α β F : Type*} [FunLike F α β]
     [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
     [TopologicalSpace R] [LinearMapClass F R α β] [tβ : TopologicalSpace β] [ContinuousSMul R β]
     (f : F) : @ContinuousSMul R α _ _ (tβ.induced f) := by
@@ -276,7 +276,7 @@ end LatticeOps
 
 section AddTorsor
 
-variable (G : Type*) (P : Type*) [AddGroup G] [AddTorsor G P] [TopologicalSpace G]
+variable (G P : Type*) [AddGroup G] [AddTorsor G P] [TopologicalSpace G]
 variable [PreconnectedSpace G] [TopologicalSpace P] [ContinuousVAdd G P]
 
 include G in

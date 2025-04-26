@@ -82,7 +82,7 @@ namespace AffineIsometry
 
 open AffineMap
 
-variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField 𝕜] [NormedAddCommGroup V₁]
+variable {𝕜 V₁ V₂ P₁ P₂ : Type*} [NormedField 𝕜] [NormedAddCommGroup V₁]
   [SeminormedAddCommGroup V₂] [NormedSpace 𝕜 V₁] [NormedSpace 𝕜 V₂] [MetricSpace P₁]
   [PseudoMetricSpace P₂] [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
 

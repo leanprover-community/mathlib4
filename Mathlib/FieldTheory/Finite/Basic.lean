@@ -48,7 +48,7 @@ diamonds, as `Fintype` carries data.
 -/
 
 
-variable {K : Type*} {R : Type*}
+variable {K R : Type*}
 
 local notation "q" => Fintype.card K
 

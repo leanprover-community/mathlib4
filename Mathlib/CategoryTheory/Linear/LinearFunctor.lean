@@ -68,7 +68,7 @@ end
 
 section InducedCategory
 
-variable {C : Type*} {D : Type*} [Category D] [Preadditive D] [CategoryTheory.Linear R D]
+variable {C D : Type*} [Category D] [Preadditive D] [CategoryTheory.Linear R D]
   (F : C → D)
 
 instance inducedFunctorLinear : Functor.Linear R (inducedFunctor F) where

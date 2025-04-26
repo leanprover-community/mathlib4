@@ -17,8 +17,8 @@ linear algebra, vector space, module
 
 -/
 
-variable {R : Type*} {R₂ : Type*}
-variable {M : Type*} {M₂ : Type*}
+variable {R R₂ : Type*}
+variable {M M₂ : Type*}
 
 /-! ### Properties of linear maps -/
 

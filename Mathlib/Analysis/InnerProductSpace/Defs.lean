@@ -98,7 +98,7 @@ Note that `NormedSpace` does not assume that `‖x‖=0` implies `x=0` (it is ra
 
 To construct a seminorm from an inner product, see `PreInnerProductSpace.ofCore`.
 -/
-class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddCommGroup E] extends
+class InnerProductSpace (𝕜 E : Type*) [RCLike 𝕜] [SeminormedAddCommGroup E] extends
   NormedSpace 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/
   norm_sq_eq_re_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
@@ -128,7 +128,7 @@ instance defined on it, otherwise this will create a second non-defeq norm insta
 -/
 
 /-- A structure requiring that a scalar product is positive semidefinite and symmetric. -/
-structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
+structure PreInnerProductSpace.Core (𝕜 F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends Inner 𝕜 F where
   /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
   conj_inner_symm x y : conj (inner y x) = inner x y
@@ -149,7 +149,7 @@ attribute [class] PreInnerProductSpace.Core
 
 /-- A structure requiring that a scalar product is positive definite. Some theorems that
 require this assumptions are put under section `InnerProductSpace.Core`. -/
-structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
+structure InnerProductSpace.Core (𝕜 F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends PreInnerProductSpace.Core 𝕜 F where
   /-- The inner product is positive definite. -/
   definite : ∀ x, inner x x = 0 → x = 0
@@ -159,7 +159,7 @@ of the normed space structure that it produces. However, all the instances we wi
 local to this proof. -/
 attribute [class] InnerProductSpace.Core
 
-instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
+instance (𝕜 F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] [cd : InnerProductSpace.Core 𝕜 F] : PreInnerProductSpace.Core 𝕜 F where
   inner := cd.inner
   conj_inner_symm := cd.conj_inner_symm

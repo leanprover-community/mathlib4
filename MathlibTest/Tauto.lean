@@ -151,7 +151,7 @@ end tauto₃
 /-
 section closer
 
-example {α : Type*} {β : Type*} (a : α) {s_1 : Set α} :
+example {α β : Type*} (a : α) {s_1 : Set α} :
     (∃ (a_1 : α), a_1 = a ∨ a_1 ∈ s_1) := by
   tauto {closer := `[simp]}
 

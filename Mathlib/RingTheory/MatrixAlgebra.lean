@@ -24,7 +24,7 @@ suppress_compilation
 
 open TensorProduct Algebra.TensorProduct Matrix
 
-variable {l m n p : Type*} {R A B M N : Type*}
+variable {l m n p R A B M N : Type*}
 section Module
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Semiring A] [Semiring B]

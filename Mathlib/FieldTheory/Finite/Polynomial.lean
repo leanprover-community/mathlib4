@@ -48,7 +48,7 @@ noncomputable section
 
 open Set LinearMap Submodule
 
-variable {K : Type*} {σ : Type*}
+variable {K σ : Type*}
 
 section Indicator
 

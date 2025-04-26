@@ -29,7 +29,7 @@ open Set LinearMap Submodule
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
+variable {α M N P R S : Type*}
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P]
@@ -185,7 +185,7 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 
 section LMapDomain
 
-variable {α' : Type*} {α'' : Type*} (M R)
+variable {α' α'' : Type*} (M R)
 
 theorem supported_comap_lmapDomain (f : α → α') (s : Set α') :
     supported M R (f ⁻¹' s) ≤ (supported M R s).comap (lmapDomain M R f) := by
