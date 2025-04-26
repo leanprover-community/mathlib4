@@ -70,17 +70,17 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     exact cast_pos.mpr <| pos_of_ne_zero <| absNorm_ne_zero_of_nonZeroDivisors J
 
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le
-    (h : ∀ I : (Ideal (𝓞 K))⁰, absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
+    (h : ∀ ⦃I : (Ideal (𝓞 K))⁰⦄, absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
         ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|) →
         Submodule.IsPrincipal (I : Ideal (𝓞 K))) :
     IsPrincipalIdealRing (𝓞 K) := by
   rw [← classNumber_eq_one_iff, classNumber, Fintype.card_eq_one_iff]
   refine ⟨1, fun C ↦ ?_⟩
   obtain ⟨I, rfl, hI⟩ := exists_ideal_in_class_of_norm_le C
-  simpa [← ClassGroup.mk0_eq_one_iff] using h _ hI
+  simpa [← ClassGroup.mk0_eq_one_iff] using h hI
 
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_isPrime_of_norm_le
-    (h : ∀ (I : (Ideal (𝓞 K))⁰), (I : Ideal (𝓞 K)).IsPrime →
+    (h : ∀ ⦃I : (Ideal (𝓞 K))⁰⦄, (I : Ideal (𝓞 K)).IsPrime →
       absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
         ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|) →
       Submodule.IsPrincipal (I : Ideal (𝓞 K))) :
@@ -92,8 +92,7 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_isPrime_of_
   by_cases hJ0 : J = 0
   · simpa [hJ0] using bot_isPrincipal
   rw [← Subtype.coe_mk J (mem_nonZeroDivisors_of_ne_zero hJ0)]
-  refine h _ ?_ ?_
-  · exact ((mem_normalizedFactors_iff (nonZeroDivisors.coe_ne_zero I)).mp hJ).1
+  refine h (((mem_normalizedFactors_iff (nonZeroDivisors.coe_ne_zero I)).mp hJ).1) ?_
   · exact (cast_le.mpr <| le_of_dvd (absNorm_pos_of_nonZeroDivisors I) <|
       absNorm_dvd_absNorm_of_le (le_of_dvd (UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors
       hJ))).trans hI
