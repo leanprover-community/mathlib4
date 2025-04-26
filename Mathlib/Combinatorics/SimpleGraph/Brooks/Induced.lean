@@ -9,14 +9,23 @@ import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 
 /-!
-Develop some API for induced subgraphs and partial colorings as `SimpleGraphs α`,
-we do this via `(⊤ : Subgraph G).induce s).spanningCoe` since this easier to work with.
+Develop some API for partial colorings of a `G : SimpleGraph α`. Ideally we would like to reuse the
+`SimpleGraph.Coloring` API.
+
+We want a partial `n`-coloring of `G` to be a map `C : α → Fin n` that is valid on a
+subset of the vertices `s : Set α`. Where valid means `∀ a b ∈ s, G.Adj a b → C a ≠ C b`.
+
+So given `G` and `s` we need a `SimpleGraph α` on which colorings look like this.
+
+The obvious choice is `(G.induce s).spanningCoe` but an alternative choice is
+`(⊤ : Subgraph G).induce s).spanningCoe`.
+
+Propositionally these are the same thing but `(⊤ : Subgraph G).induce s).spanningCoe` has nicer
+definitional properties.
 
 If  `H := (⊤ : Subgraph G).induce s).spanningCoe` then `H.Adj a b` is
-definitionally `a ∈ s ∧ b ∈ s ∧ G.Adj a b`
-
-While if `H := (G.induce s).spanningCoe` then `H` is
-`(G.comap (Function.Embedding.subtype s)).map (Function.Embedding.subtype _)`
+definitionally `a ∈ s ∧ b ∈ s ∧ G.Adj a b` while if `H := (G.induce s).spanningCoe` then `H.Adj a b`
+is `(G.comap (Function.Embedding.subtype s)).map (Function.Embedding.subtype _).Adj a b`.
 -/
 
 namespace SimpleGraph
@@ -24,15 +33,19 @@ open Subgraph
 
 variable {α : Type*} (G : SimpleGraph α)
 
-lemma induce_spanningCoe_adj (s : Set α) (a b : α) : (G.induce s).spanningCoe.Adj a b ↔
-  ((G.comap (Function.Embedding.subtype s)).map (Function.Embedding.subtype _)).Adj a b := by rfl
+lemma induce_spanningCoe_eq_top_subgraph_induce_spanningCoe (s : Set α) :
+    (G.induce s).spanningCoe = ((⊤ : Subgraph G).induce s).spanningCoe := by
+  ext; simp [and_left_comm]
 
-lemma induce_spanningCoe_adj' (s : Set α) (a b : α) :
-  ((⊤ : Subgraph G).induce s).spanningCoe.Adj a b ↔ a ∈ s ∧ b ∈ s ∧ G.Adj a b := by rfl
+lemma induce_spanningCoe_adj (s : Set α) (a b : α) : (G.induce s).spanningCoe.Adj a b ↔
+    ((G.comap (Function.Embedding.subtype s)).map (Function.Embedding.subtype _)).Adj a b := Iff.rfl
+
+lemma top_subgraph_induce_spanningCoe_adj (s : Set α) (a b : α) :
+    ((⊤ : Subgraph G).induce s).spanningCoe.Adj a b ↔ a ∈ s ∧ b ∈ s ∧ G.Adj a b := Iff.rfl
 
 /- The neighbors of `a` in `G.induce s` as a `SimpleGraph α` -/
 @[simp]
-def neighborSetIn (s : Set α) (a : α) :=
+abbrev neighborSetIn (s : Set α) (a : α) :=
   ((⊤ : Subgraph G).induce s).spanningCoe.neighborSet a
 
 @[simp]
@@ -49,24 +62,24 @@ lemma neighborSetIn_insert_eq (s : Set α) (a : α) :
   rw [neighborSetIn_eq_inter_of_mem _ (Set.mem_insert ..)]
   aesop
 
-
 section withDecRel
 
 variable [DecidableRel G.Adj] {s : Set α} [DecidablePred (· ∈ s)]
 
-/-- If a graph is locally finite at a vertex, then so is a spanningCoe of a
-subgraph of that graph. -/
+/-- If a graph is locally finite at a vertex, then so is any subgraph of that graph. -/
 instance finiteAt {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
     [Fintype (G.neighborSet v)] : Fintype (G'.neighborSet v) := by
   apply Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
 
+
+/-- If a graph is locally finite at a vertex, then so is any spanningCoe of a
+subgraph of that graph. -/
 instance finiteAtCoe {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
     [Fintype (G.neighborSet v)] : Fintype (G'.spanningCoe.neighborSet v) := by
   apply Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
 
 abbrev neighborFinsetIn (s : Set α) (a : α) [DecidablePred (· ∈ s)] [Fintype (G.neighborSet a)] :=
   ((⊤ : Subgraph G).induce s).spanningCoe.neighborFinset a
-
 
 @[simp]
 lemma neighborFinsetIn_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)] [DecidableEq α]
