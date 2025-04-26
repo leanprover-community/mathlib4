@@ -87,7 +87,7 @@ instance : Mul (Language α) :=
 
 /-- The intersection of two languages `l` and `m` is the language made of the
 strings `x` where `x ∈ l` and `x ∈ m`. -/
-instance instInter : Inter (Language α) :=
+instance : Inter (Language α) :=
   ⟨((· ∩ ·) : Set (List α) → Set (List α) → Set (List α))⟩
 
 theorem zero_def : (0 : Language α) = (∅ : Set _) :=

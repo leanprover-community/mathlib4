@@ -88,7 +88,8 @@ theorem eval_singleton (a : α) : M.eval [a] = M.stepSet M.start a :=
 theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.stepSet (M.eval x) a :=
   evalFrom_append_singleton _ _ _ _
 
-/-- `M.acceptsFrom S` is the language of `x` such that there is an accept state in `M.evalFrom S x`. -/
+/-- `M.acceptsFrom S` is the language of `x` such that there is an accept state
+   in `M.evalFrom S x`. -/
 def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
 
 theorem mem_acceptsFrom {S : Set σ} {x : List α} :
@@ -197,13 +198,13 @@ lemma reverse_rewindFrom_evalFrom {xs : List α} {S1 S2 : Set σ} {M : NFA α σ
 
 lemma mem_rewindsToStart_iff_reverse_mem_acceptsFrom {xs : List α} {M : NFA α σ} :
     xs ∈ M.rewindsToStart M.accept ↔ xs.reverse ∈ M.acceptsFrom M.start := by
-  simp [mem_rewindsToStart, mem_acceptsFrom, rewindFrom_iff_evalFrom_reverse]
+  simp [mem_rewindsToStart, mem_acceptsFrom, reverse_rewindFrom_evalFrom]
 
 theorem reverse_accepts {M : NFA α σ} :
     M.reverse.accepts = M.accepts.reverse := by
   ext xs
-  rw [accepts_acceptsFrom, accepts_acceptsFrom, reverse_acceptsFrom_rewindsToStart, Set.mem_setOf]
-  apply reverse_rewindsToStart_acceptsFrom
+  rw [accepts_acceptsFrom, accepts_acceptsFrom, reverse_acceptsFrom_rewindsToStart]
+  simp [NFA.reverse, mem_rewindsToStart_iff_reverse_mem_acceptsFrom]
 
 end Reversal
 
