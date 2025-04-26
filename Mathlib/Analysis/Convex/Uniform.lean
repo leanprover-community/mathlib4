@@ -106,7 +106,7 @@ theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : �
       h.trans <| (norm_sub_le _ _).trans <| add_nonpos (hx.trans hr) (hy.trans hr)).elim⟩
   obtain ⟨δ, hδ, h⟩ := exists_forall_closed_ball_dist_add_le_two_sub E (div_pos hε hr)
   refine ⟨δ * r, mul_pos hδ hr, fun x hx y hy hxy => ?_⟩
-  rw [← div_le_one hr, div_eq_inv_mul, ← norm_smul_of_nonneg (inv_nonneg.2 hr.le)] at hx hy
+  rw [← div_le_one₀ hr, div_eq_inv_mul, ← norm_smul_of_nonneg (inv_nonneg.2 hr.le)] at hx hy
   have := h hx hy
   simp_rw [← smul_add, ← smul_sub, norm_smul_of_nonneg (inv_nonneg.2 hr.le), ← div_eq_inv_mul,
     div_le_div_iff_of_pos_right hr, div_le_iff₀ hr, sub_mul] at this

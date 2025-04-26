@@ -181,7 +181,7 @@ theorem isLittleO_of_lt_radius (h : ↑r < p.radius) :
   rcases h with ⟨t, C, hC, rt⟩
   rw [ENNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at rt
   have : 0 < (t : ℝ) := r.coe_nonneg.trans_lt rt
-  rw [← div_lt_one this] at rt
+  rw [← div_lt_one₀ this] at rt
   refine ⟨_, rt, C, Or.inr zero_lt_one, fun n => ?_⟩
   calc
     |‖p n‖ * (r : ℝ) ^ n| = ‖p n‖ * (t : ℝ) ^ n * (r / t : ℝ) ^ n := by

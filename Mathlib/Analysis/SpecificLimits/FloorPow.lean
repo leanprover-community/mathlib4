@@ -270,7 +270,7 @@ theorem mul_pow_le_nat_floor_pow {c : ℝ} (hc : 1 < c) (i : ℕ) : (1 - c⁻¹)
     (1 - c⁻¹) * c ^ i = c ^ i - c ^ i * c⁻¹ := by ring
     _ ≤ c ^ i - 1 := by
       gcongr
-      simpa only [← div_eq_mul_inv, one_le_div cpos, pow_one] using le_self_pow₀ hc.le hi
+      simpa only [← div_eq_mul_inv, one_le_div₀ cpos, pow_one] using le_self_pow₀ hc.le hi
     _ ≤ ⌊c ^ i⌋₊ := (Nat.sub_one_lt_floor _).le
 
 /-- The sum of `1/⌊c^i⌋₊^2` above a threshold `j` is comparable to `1/j^2`, up to a multiplicative

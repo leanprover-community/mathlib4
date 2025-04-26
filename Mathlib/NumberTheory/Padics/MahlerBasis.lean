@@ -71,7 +71,7 @@ noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
   nsmul_right_injective n := smul_right_injective ℤ_[p]
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
   multichoose x k := ⟨(ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]), by
-    rw [norm_div, div_le_one (by simpa using k.factorial_ne_zero)]
+    rw [norm_div, div_le_one₀ (by simpa using k.factorial_ne_zero)]
     exact x.norm_ascPochhammer_le k⟩
   factorial_nsmul_multichoose x k := by rw [← Subtype.coe_inj, nsmul_eq_mul, PadicInt.coe_mul,
     PadicInt.coe_natCast, mul_div_cancel₀ _ (mod_cast k.factorial_ne_zero), Subtype.coe_inj,

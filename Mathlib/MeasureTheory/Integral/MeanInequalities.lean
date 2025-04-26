@@ -461,7 +461,7 @@ theorem lintegral_Lp_add_le_of_le_one {p : ℝ} {f g : α → ℝ≥0∞} (hf : 
       gcongr with a
       exact rpow_add_le_add_rpow _ _ hp0 hp1
     _ ≤ (2 : ℝ≥0∞) ^ (1 / p - 1) * ((∫⁻ a, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a, g a ^ p ∂μ) ^ (1 / p)) :=
-      rpow_add_le_mul_rpow_add_rpow _ _ ((one_le_div hp).2 hp1)
+      rpow_add_le_mul_rpow_add_rpow _ _ ((one_le_div₀ hp).2 hp1)
 
 end ENNReal
 

@@ -98,7 +98,7 @@ theorem angle_add_pos_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x = 
   rw [angle_add_eq_arccos_of_inner_eq_zero h, Real.arccos_pos,
     norm_add_eq_sqrt_iff_real_inner_eq_zero.2 h]
   by_cases hx : x = 0; · simp [hx]
-  rw [div_lt_one (Real.sqrt_pos.2 (Left.add_pos_of_pos_of_nonneg (mul_self_pos.2
+  rw [div_lt_one₀ (Real.sqrt_pos.2 (Left.add_pos_of_pos_of_nonneg (mul_self_pos.2
     (norm_ne_zero_iff.2 hx)) (mul_self_nonneg _))), Real.lt_sqrt (norm_nonneg _), pow_two]
   simpa [hx] using h0
 

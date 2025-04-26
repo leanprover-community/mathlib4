@@ -162,7 +162,7 @@ theorem exists_dist_le_le (hδ : 0 ≤ δ) (hε : 0 ≤ ε) (h : dist x z ≤ ε
       rw [← add_div, div_self hεδ.ne']).imp
     fun y hy => ?_
   rw [hy.1, hy.2, div_mul_comm, div_mul_comm ε]
-  rw [← div_le_one hεδ] at h
+  rw [← div_le_one₀ hεδ] at h
   exact ⟨mul_le_of_le_one_left hδ h, mul_le_of_le_one_left hε h⟩
 
 -- This is also true for `ℚ`-normed spaces
@@ -173,7 +173,7 @@ theorem exists_dist_le_lt (hδ : 0 ≤ δ) (hε : 0 < ε) (h : dist x z < ε + �
       rw [← add_div, div_self (add_pos_of_pos_of_nonneg hε hδ).ne']).imp
     fun y hy => ?_
   rw [hy.1, hy.2, div_mul_comm, div_mul_comm ε]
-  rw [← div_lt_one (add_pos_of_pos_of_nonneg hε hδ)] at h
+  rw [← div_lt_one₀ (add_pos_of_pos_of_nonneg hε hδ)] at h
   exact ⟨mul_le_of_le_one_left hδ h.le, mul_lt_of_lt_one_left hε h⟩
 
 -- This is also true for `ℚ`-normed spaces
@@ -191,7 +191,7 @@ theorem exists_dist_lt_lt (hδ : 0 < δ) (hε : 0 < ε) (h : dist x z < ε + δ)
       rw [← add_div, div_self (add_pos hε hδ).ne']).imp
     fun y hy => ?_
   rw [hy.1, hy.2, div_mul_comm, div_mul_comm ε]
-  rw [← div_lt_one (add_pos hε hδ)] at h
+  rw [← div_lt_one₀ (add_pos hε hδ)] at h
   exact ⟨mul_lt_of_lt_one_left hδ h, mul_lt_of_lt_one_left hε h⟩
 
 -- This is also true for `ℚ`-normed spaces

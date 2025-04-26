@@ -46,7 +46,7 @@ def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
   map_source' x _ := by
     have : 0 < 1 + ‖x‖ ^ 2 := by positivity
     rw [mem_ball_zero_iff, norm_smul, Real.norm_eq_abs, abs_inv, ← _root_.div_eq_inv_mul,
-      div_lt_one (abs_pos.mpr <| Real.sqrt_ne_zero'.mpr this), ← abs_norm x, ← sq_lt_sq,
+      div_lt_one₀ (abs_pos.mpr <| Real.sqrt_ne_zero'.mpr this), ← abs_norm x, ← sq_lt_sq,
       abs_norm, Real.sq_sqrt this.le]
     exact lt_one_add _
   map_target' _ _ := trivial

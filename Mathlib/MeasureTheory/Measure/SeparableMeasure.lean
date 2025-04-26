@@ -493,7 +493,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
         _ ≤ ε / 3 := by
             rw [← mul_one (ε / 3), div_mul_eq_div_mul_one_div, mul_assoc, one_div_mul_eq_div]
             exact mul_le_mul_of_nonneg_left
-              ((div_le_one (by linarith [μs_pow_nonneg])).2 (by linarith))
+              ((div_le_one₀ (by linarith [μs_pow_nonneg])).2 (by linarith))
               (by linarith [ε_pos])
     · -- Now we have to show that the closure of `D` is closed by sum. Let `f` and `g` be two
       -- functions in `Lᵖ` which are also in the closure of `D`.

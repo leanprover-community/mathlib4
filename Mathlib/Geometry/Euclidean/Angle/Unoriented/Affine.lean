@@ -275,7 +275,7 @@ theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ 
   rw [angle, angle_eq_pi_iff]
   rintro ⟨hp₁p₂, r, hr, hp₃p₂⟩
   refine ⟨⟨1 / (1 - r), ⟨div_nonneg zero_le_one (sub_nonneg.2 (hr.le.trans zero_le_one)),
-    (div_le_one (sub_pos.2 (hr.trans zero_lt_one))).2 ((le_sub_self_iff 1).2 hr.le)⟩, ?_⟩,
+    (div_le_one₀ (sub_pos.2 (hr.trans zero_lt_one))).2 ((le_sub_self_iff 1).2 hr.le)⟩, ?_⟩,
     (vsub_ne_zero.1 hp₁p₂).symm, ?_⟩
   · rw [← eq_vadd_iff_vsub_eq] at hp₃p₂
     rw [AffineMap.lineMap_apply, hp₃p₂, vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev p₂ p₁, smul_neg, ←

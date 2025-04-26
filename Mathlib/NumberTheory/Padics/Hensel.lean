@@ -126,7 +126,7 @@ private theorem deriv_ne_zero : F.derivative.eval a ≠ 0 :=
 
 
 private theorem T_lt_one : T < 1 := by
-  have h := (div_lt_one (deriv_sq_norm_pos hnorm)).2 hnorm
+  have h := (div_lt_one₀ (deriv_sq_norm_pos hnorm)).2 hnorm
   rw [T_def]; exact h
 
 private theorem T_pow {n : ℕ} (hn : n ≠ 0) : T ^ n < 1 := pow_lt_one₀ T_nonneg (T_lt_one hnorm) hn

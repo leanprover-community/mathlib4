@@ -286,7 +286,7 @@ theorem log_two_mul_two_le_sqrt_log_eight : log 2 * 2 ≤ √(log 8) := by
 theorem two_div_one_sub_two_div_e_le_eight : 2 / (1 - 2 / exp 1) ≤ 8 := by
   rw [div_le_iff₀, mul_sub, mul_one, mul_div_assoc', le_sub_comm, div_le_iff₀ (exp_pos _)]
   · linarith [exp_one_gt_d9]
-  rw [sub_pos, div_lt_one] <;> exact exp_one_gt_d9.trans' (by norm_num)
+  rw [sub_pos, div_lt_one₀] <;> exact exp_one_gt_d9.trans' (by norm_num)
 
 theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ √(log ↑N) := by
   have : (12 : ℕ) * log 2 ≤ log N := by
@@ -295,7 +295,7 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
   refine (mul_le_mul_of_nonneg_right (log_le_log ?_ two_div_one_sub_two_div_e_le_eight) <| by
     norm_num1).trans ?_
   · refine div_pos zero_lt_two ?_
-    rw [sub_pos, div_lt_one (exp_pos _)]
+    rw [sub_pos, div_lt_one₀ (exp_pos _)]
     exact exp_one_gt_d9.trans_le' (by norm_num1)
   have l8 : log 8 = (3 : ℕ) * log 2 := by
     rw [← log_rpow zero_lt_two, rpow_natCast]
@@ -322,10 +322,10 @@ theorem exp_neg_two_mul_le {x : ℝ} (hx : 0 < x) : exp (-2 * x) < exp (2 - ⌈x
 theorem div_lt_floor {x : ℝ} (hx : 2 / (1 - 2 / exp 1) ≤ x) : x / exp 1 < (⌊x / 2⌋₊ : ℝ) := by
   apply lt_of_le_of_lt _ (sub_one_lt_floor _)
   have : 0 < 1 - 2 / exp 1 := by
-    rw [sub_pos, div_lt_one (exp_pos _)]
+    rw [sub_pos, div_lt_one₀ (exp_pos _)]
     exact lt_of_le_of_lt (by norm_num) exp_one_gt_d9
   rwa [le_sub_comm, div_eq_mul_one_div x, div_eq_mul_one_div x, ← mul_sub, div_sub', ←
-    div_eq_mul_one_div, mul_div_assoc', one_le_div, ← div_le_iff₀ this]
+    div_eq_mul_one_div, mul_div_assoc', one_le_div₀, ← div_le_iff₀ this]
   · exact zero_lt_two
   · exact two_ne_zero
 
@@ -334,7 +334,7 @@ theorem ceil_lt_mul {x : ℝ} (hx : 50 / 19 ≤ x) : (⌈x⌉₊ : ℝ) < 1.38 *
   rw [← le_sub_iff_add_le', ← sub_one_mul]
   have : (1.38 : ℝ) = 69 / 50 := by norm_num
   rwa [this, show (69 / 50 - 1 : ℝ) = (50 / 19)⁻¹ by norm_num1, ←
-    div_eq_inv_mul, one_le_div]
+    div_eq_inv_mul, one_le_div₀]
   norm_num1
 
 end NumericalBounds
@@ -420,7 +420,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
   · rw [cast_pos]
     exact hN.trans_lt' (by norm_num1)
   · refine div_pos zero_lt_two ?_
-    rw [sub_pos, div_lt_one (exp_pos _)]
+    rw [sub_pos, div_lt_one₀ (exp_pos _)]
     exact lt_of_le_of_lt (by norm_num1) exp_one_gt_d9
   positivity
 

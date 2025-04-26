@@ -154,7 +154,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
       rw [le_sub_iff_add_le, norm_neg]
       refine le_trans ?_ hv.le
       rw [add_le_add_iff_left, hw'_nm, ← div_div]
-      refine (div_le_one <| norm_pos_iff.mpr hw_ne).mpr ?_
+      refine (div_le_one₀ <| norm_pos_iff.mpr hw_ne).mpr ?_
       refine le_trans (le_add_of_nonneg_right <| one_div_nonneg.mpr <| ?_) hw_bd
       exact (mul_pos (zero_lt_two' ℝ) hδ1).le
     · exact (le_add_of_nonneg_right zero_le_one).trans hv.le

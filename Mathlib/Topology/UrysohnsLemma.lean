@@ -186,7 +186,7 @@ theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
     simp only [approx, midpoint_eq_smul_add, invOf_eq_inv, smul_eq_mul, ← div_eq_inv_mul]
     have := add_le_add (ihn (left c)) (ihn (right c))
     norm_num at this
-    exact Iff.mpr (div_le_one zero_lt_two) this
+    exact Iff.mpr (div_le_one₀ zero_lt_two) this
 
 theorem bddAbove_range_approx (c : CU P) (x : X) : BddAbove (range fun n => c.approx n x) :=
   ⟨1, fun _ ⟨n, hn⟩ => hn ▸ c.approx_le_one n x⟩

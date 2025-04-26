@@ -433,7 +433,7 @@ theorem y_smooth : ContDiffOn ℝ ∞ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
     contrapose! hx
     have : p⁻¹ • x ∈ support u := mem_support.2 hx
     simp only [u_support, norm_smul, mem_ball_zero_iff, Real.norm_eq_abs, abs_inv,
-      abs_of_nonneg hp.1.le, ← div_eq_inv_mul, div_lt_one hp.1] at this
+      abs_of_nonneg hp.1.le, ← div_eq_inv_mul, div_lt_one₀ hp.1] at this
     rw [mem_closedBall_zero_iff]
     exact this.le.trans hp.2.le
   · exact (locallyIntegrable_const _).indicator measurableSet_closedBall
@@ -500,7 +500,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
             linarith
         · rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
           have A : 0 < (R - 1) / (R + 1) := by apply div_pos <;> linarith
-          have B : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
+          have B : (R - 1) / (R + 1) < 1 := by apply (div_lt_one₀ _).2 <;> linarith
           simp only [mem_preimage, prodMk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true, A, B]
       eq_one := fun R hR x hx => by
         have A : 0 < R + 1 := by linarith
@@ -513,7 +513,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           _ = 1 - (R - 1) / (R + 1) := by field_simp; ring
       support := fun R hR => by
         have A : 0 < (R + 1) / 2 := by linarith
-        have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
+        have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one₀ _).2 <;> linarith
         simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
         refine congr (congr_arg ball (Eq.refl 0)) ?_

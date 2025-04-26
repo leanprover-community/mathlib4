@@ -168,7 +168,7 @@ theorem rpow_add_rpow_le {p q : ℝ} (a b : ℝ≥0) (hp_pos : 0 < p) (hpq : p �
   have h_rpow_add_rpow_le_add :
     ((a ^ p) ^ (q / p) + (b ^ p) ^ (q / p)) ^ (1 / (q / p)) ≤ a ^ p + b ^ p := by
     refine rpow_add_rpow_le_add (a ^ p) (b ^ p) ?_
-    rwa [one_le_div hp_pos]
+    rwa [one_le_div₀ hp_pos]
   rw [h_rpow a, h_rpow b, one_div p, NNReal.le_rpow_inv_iff hp_pos, ← NNReal.rpow_mul, mul_comm,
     mul_one_div]
   rwa [one_div_div] at h_rpow_add_rpow_le_add
@@ -306,7 +306,7 @@ theorem rpow_add_rpow_le {p q : ℝ} (a b : ℝ≥0∞) (hp_pos : 0 < p) (hpq : 
   have h_rpow_add_rpow_le_add :
     ((a ^ p) ^ (q / p) + (b ^ p) ^ (q / p)) ^ (1 / (q / p)) ≤ a ^ p + b ^ p := by
     refine rpow_add_rpow_le_add (a ^ p) (b ^ p) ?_
-    rwa [one_le_div hp_pos]
+    rwa [one_le_div₀ hp_pos]
   rw [h_rpow a, h_rpow b, one_div p, ENNReal.le_rpow_inv_iff hp_pos, ← ENNReal.rpow_mul, mul_comm,
     mul_one_div]
   rwa [one_div_div] at h_rpow_add_rpow_le_add
