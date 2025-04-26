@@ -110,7 +110,7 @@ theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (h
 
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
-  (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
+  (h ha hb hne).imp hne.lt_of_le hne.gt_of_ge
 
 section Total
 

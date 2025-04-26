@@ -592,7 +592,7 @@ theorem cliqueSet_map (hn : n ≠ 1) (G : SimpleGraph α) (f : α ↪ β) :
       classical
       rw [map_eq_image, image_preimage, filter_true_of_mem]
       rintro a ha
-      obtain ⟨b, hb, hba⟩ := exists_mem_ne (hn.lt_of_le' <| Finset.card_pos.2 ⟨a, ha⟩) a
+      obtain ⟨b, hb, hba⟩ := exists_mem_ne (hn.gt_of_ge <| Finset.card_pos.2 ⟨a, ha⟩) a
       obtain ⟨c, _, _, hc, _⟩ := hs ha hb hba.symm
       exact ⟨c, hc⟩
     refine ⟨s.preimage f f.injective.injOn, ⟨?_, by rw [← card_map f, hs']⟩, hs'⟩

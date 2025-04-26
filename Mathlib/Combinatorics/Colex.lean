@@ -390,7 +390,7 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (h
       rintro b hb
       rw [mem_erase] at hb ⊢
       exact ⟨(haw.trans_le <| min'_le _ _ hb.2).ne',
-        (hw <| hb.1.lt_of_le' <| min'_le _ _ hb.2).2 hb.2⟩
+        (hw <| hb.1.gt_of_ge <| min'_le _ _ hb.2).2 hb.2⟩
     rw [eq_of_subset_of_card_le this]
     rw [card_erase_of_mem ha, card_erase_of_mem (min'_mem _ _)]
     exact tsub_le_tsub_right hcard _

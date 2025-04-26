@@ -149,7 +149,7 @@ theorem isRightInversion_mul_left_iff {w : W} :
   simp only [mul_assoc, ht.inv, ht.mul_self, mul_one, ht, true_and, not_lt]
   constructor
   · exact le_of_lt
-  · exact (lt_of_le_of_ne' · (ht.length_mul_left_ne w))
+  · exact (gt_of_ge_of_ne · (ht.length_mul_left_ne w))
 
 theorem not_isRightInversion_mul_left_iff {w : W} :
     ¬cs.IsRightInversion (w * t) t ↔ cs.IsRightInversion w t :=

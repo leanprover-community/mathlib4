@@ -117,9 +117,6 @@ initialize registerBuiltinAttribute {
 
 variable {A : Type*} {e : A}
 
-lemma lt_of_le_of_ne' {a b : A} [PartialOrder A] :
-    (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
-
 lemma pos_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A] [Nontrivial A]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
@@ -313,12 +310,12 @@ def orElse {e : Q($α)} (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness 
   | .nonnegative p₁ =>
     match ← catchNone t₂ with
     | p@(.positive _) => pure p
-    | .nonzero p₂ => pure (.positive q(lt_of_le_of_ne' $p₁ $p₂))
+    | .nonzero p₂ => pure (.positive q(gt_of_ge_of_ne $p₁ $p₂))
     | _ => pure (.nonnegative p₁)
   | .nonzero p₁ =>
     match ← catchNone t₂ with
     | p@(.positive _) => pure p
-    | .nonnegative p₂ => pure (.positive q(lt_of_le_of_ne' $p₂ $p₁))
+    | .nonnegative p₂ => pure (.positive q(gt_of_ge_of_ne $p₂ $p₁))
     | _ => pure (.nonzero p₁)
 
 /-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/

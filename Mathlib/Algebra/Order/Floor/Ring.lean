@@ -367,7 +367,7 @@ theorem fract_neg {x : R} (hx : fract x ≠ 0) : fract (-x) = 1 - fract x := by
   constructor
   · rw [le_sub_iff_add_le, zero_add]
     exact (fract_lt_one x).le
-  refine ⟨sub_lt_self _ (lt_of_le_of_ne' (fract_nonneg x) hx), -⌊x⌋ - 1, ?_⟩
+  refine ⟨sub_lt_self _ (gt_of_ge_of_ne (fract_nonneg x) hx), -⌊x⌋ - 1, ?_⟩
   simp only [sub_sub_eq_add_sub, cast_sub, cast_neg, cast_one, sub_left_inj]
   conv in -x => rw [← floor_add_fract x]
   simp [-floor_add_fract]

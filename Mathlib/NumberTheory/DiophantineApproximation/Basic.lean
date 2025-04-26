@@ -426,7 +426,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
     exact mod_cast this.trans h
   have huv_cop : IsCoprime (u - ⌊ξ⌋ * v) v := by
     rwa [sub_eq_add_neg, ← neg_mul, IsCoprime.add_mul_right_left_iff]
-  refine ⟨lt_of_le_of_ne' hu₀ fun hf => ?_, lt_of_le_of_ne hu₁ fun hf => ?_⟩ <;>
+  refine ⟨gt_of_ge_of_ne hu₀ fun hf => ?_, lt_of_le_of_ne hu₁ fun hf => ?_⟩ <;>
     · rw [hf] at huv_cop
       simp only [isCoprime_zero_left, isCoprime_self, isUnit_iff] at huv_cop
       rcases huv_cop with huv_cop | huv_cop <;> linarith only [hv, huv_cop]

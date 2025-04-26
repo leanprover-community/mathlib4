@@ -415,7 +415,7 @@ private theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux
     · rw [← hA, Set.mem_preimage, normAtAllPlaces_normAtAllPlaces]
       exact Set.mem_image_of_mem normAtAllPlaces ha
     · intro w
-      refine lt_of_le_of_ne' (normAtPlace_nonneg _ _) (Set.mem_iInter.mp ha₂ w)
+      refine gt_of_ge_of_ne (normAtPlace_nonneg _ _) (Set.mem_iInter.mp ha₂ w)
     · rw [normAtComplexPlaces_normAtAllPlaces]
   · rintro ⟨a, ⟨ha₁, ha₂⟩, rfl⟩
     refine ⟨⟨a, ha₁, funext fun w ↦ ?_⟩, Set.mem_iInter.mpr fun w ↦ ?_⟩
