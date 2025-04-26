@@ -9,6 +9,7 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.SMulWithZero
+import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Adjunctions regarding the category of monoids
@@ -29,8 +30,7 @@ open CategoryTheory
 
 namespace MonCat
 
-/-- The functor of adjoining a neutral element `one` to a semigroup.
- -/
+/-- The functor of adjoining a neutral element `one` to a semigroup. -/
 @[to_additive (attr := simps) "The functor of adjoining a neutral element `zero` to a semigroup"]
 def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
   obj S := MonCat.of (WithOne S)

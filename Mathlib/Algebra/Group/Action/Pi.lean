@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Data.Set.Function
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Data.Set.Piecewise
 
 /-!
 # Pi instances for multiplicative actions
@@ -36,17 +37,17 @@ lemma smul_def' [∀ i, SMul (α i) (β i)] (s : ∀ i, α i) (x : ∀ i, β i) 
 lemma smul_apply' [∀ i, SMul (α i) (β i)] (s : ∀ i, α i) (x : ∀ i, β i) : (s • x) i = s i • x i :=
   rfl
 
-@[to_additive Pi.vaddAssocClass]
+@[to_additive]
 instance isScalarTower [SMul M N] [∀ i, SMul N (α i)] [∀ i, SMul M (α i)]
     [∀ i, IsScalarTower M N (α i)] : IsScalarTower M N (∀ i, α i) where
   smul_assoc x y z := funext fun i ↦ smul_assoc x y (z i)
 
-@[to_additive Pi.vaddAssocClass']
+@[to_additive]
 instance isScalarTower' [∀ i, SMul M (α i)] [∀ i, SMul (α i) (β i)] [∀ i, SMul M (β i)]
     [∀ i, IsScalarTower M (α i) (β i)] : IsScalarTower M (∀ i, α i) (∀ i, β i) where
   smul_assoc x y z := funext fun i ↦ smul_assoc x (y i) (z i)
 
-@[to_additive Pi.vaddAssocClass'']
+@[to_additive]
 instance isScalarTower'' [∀ i, SMul (α i) (β i)] [∀ i, SMul (β i) (γ i)] [∀ i, SMul (α i) (γ i)]
     [∀ i, IsScalarTower (α i) (β i) (γ i)] : IsScalarTower (∀ i, α i) (∀ i, β i) (∀ i, γ i) where
   smul_assoc x y z := funext fun i ↦ smul_assoc (x i) (y i) (z i)

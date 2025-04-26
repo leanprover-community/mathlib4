@@ -102,11 +102,11 @@ protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
 end IsQF
 
 theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
-  cases' con with _ con
+  obtain - | con := con
   exact φ.not_all_isAtomic con
 
 theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con => by
-  cases' con with _ con _ _ con
+  obtain - | con | con := con
   · exact φ.not_ex_isAtomic con
   · exact not_all_isQF _ con
 

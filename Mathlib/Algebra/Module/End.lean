@@ -14,7 +14,7 @@ In this file, we define `Module.toAddMonoidEnd`, which is `(•)` as a monoid ho
 We use this to prove some results on scalar multiplication by integers.
 -/
 
-assert_not_exists Multiset Set.indicator Pi.single_smul₀ Field
+assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Field
 
 open Function Set
 

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.Tape
-import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Option
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.PFun
 
 /-!
@@ -198,10 +198,12 @@ def Respects {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ → Opt
 
 theorem tr_reaches₁ {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : Respects f₁ f₂ tr) {a₁ a₂}
     (aa : tr a₁ a₂) {b₁} (ab : Reaches₁ f₁ a₁ b₁) : ∃ b₂, tr b₁ b₂ ∧ Reaches₁ f₂ a₂ b₂ := by
-  induction' ab with c₁ ac c₁ d₁ _ cd IH
-  · have := H aa
+  induction ab with
+  | single ac =>
+    have := H aa
     rwa [show f₁ a₁ = _ from ac] at this
-  · rcases IH with ⟨c₂, cc, ac₂⟩
+  | @tail c₁ d₁ _ cd IH =>
+    rcases IH with ⟨c₂, cc, ac₂⟩
     have := H cc
     rw [show f₁ c₁ = _ from cd] at this
     rcases this with ⟨d₂, dd, cd₂⟩
@@ -217,9 +219,10 @@ theorem tr_reaches {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : 
 theorem tr_reaches_rev {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : Respects f₁ f₂ tr) {a₁ a₂}
     (aa : tr a₁ a₂) {b₂} (ab : Reaches f₂ a₂ b₂) :
     ∃ c₁ c₂, Reaches f₂ b₂ c₂ ∧ tr c₁ c₂ ∧ Reaches f₁ a₁ c₁ := by
-  induction' ab with c₂ d₂ _ cd IH
-  · exact ⟨_, _, ReflTransGen.refl, aa, ReflTransGen.refl⟩
-  · rcases IH with ⟨e₁, e₂, ce, ee, ae⟩
+  induction ab with
+  | refl => exact ⟨_, _, ReflTransGen.refl, aa, ReflTransGen.refl⟩
+  | tail _ cd IH =>
+    rcases IH with ⟨e₁, e₂, ce, ee, ae⟩
     rcases ReflTransGen.cases_head ce with (rfl | ⟨d', cd', de⟩)
     · have := H ee
       revert this
@@ -779,7 +782,7 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
     · apply Finset.mem_univ
   · intro q a q' s h₁ h₂
     rcases q with ⟨_ | q, v⟩; · cases h₁
-    cases' q' with q' v'
+    obtain ⟨q', v'⟩ := q'
     simp only [trStmts, Finset.mem_coe] at h₂ ⊢
     rw [Finset.mem_product] at h₂ ⊢
     simp only [Finset.mem_univ, and_true] at h₂ ⊢
@@ -845,14 +848,14 @@ variable {Γ : Type*}
 
 theorem exists_enc_dec [Inhabited Γ] [Finite Γ] :
     ∃ (n : ℕ) (enc : Γ → List.Vector Bool n) (dec : List.Vector Bool n → Γ),
-      enc default = Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
+      enc default = List.Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
   rcases Finite.exists_equiv_fin Γ with ⟨n, ⟨e⟩⟩
   letI : DecidableEq Γ := e.decidableEq
   let G : Fin n ↪ Fin n → Bool :=
     ⟨fun a b ↦ a = b, fun a b h ↦
       Bool.of_decide_true <| (congr_fun h b).trans <| Bool.decide_true rfl⟩
   let H := (e.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
-  let enc := H.setValue default (Vector.replicate n false)
+  let enc := H.setValue default (List.Vector.replicate n false)
   exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
 
 variable (Γ)
@@ -935,7 +938,7 @@ theorem supportsStmt_read {S : Finset (Λ' Γ Λ σ)} :
 variable (M : Λ → TM1.Stmt Γ Λ σ)
 
 section
-variable [Inhabited Γ] (enc0 : enc default = Vector.replicate n false)
+variable [Inhabited Γ] (enc0 : enc default = List.Vector.replicate n false)
 
 section
 variable {enc}
@@ -945,7 +948,8 @@ def trTape' (L R : ListBlank Γ) : Tape Bool := by
   refine
       Tape.mk' (L.flatMap (fun x ↦ (enc x).toList.reverse) ⟨n, ?_⟩)
         (R.flatMap (fun x ↦ (enc x).toList) ⟨n, ?_⟩) <;>
-    simp only [enc0, Vector.replicate, List.reverse_replicate, Bool.default_bool, Vector.toList_mk]
+    simp only [enc0, List.Vector.replicate, List.reverse_replicate, Bool.default_bool,
+      Vector.toList_mk]
 
 /-- The low level tape corresponding to the given tape over alphabet `Γ`. -/
 def trTape (T : Tape Γ) : Tape Bool :=
@@ -1006,7 +1010,7 @@ theorem stepAux_write (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L R
   clear a b L R
   intro L' R' l₁ l₂ l₂' e
   induction' l₂ with a l₂ IH generalizing l₁ l₂'
-  · cases List.length_eq_zero.1 e
+  · cases List.length_eq_zero_iff.1 e
     rfl
   rcases l₂' with - | ⟨b, l₂'⟩ <;>
     simp only [List.length_nil, List.length_cons, Nat.succ_inj', reduceCtorEq] at e
@@ -1215,7 +1219,7 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
     have : TM1.step (tr M) ⟨some (Λ'.act s q'), (), T⟩ = some ⟨some (Λ'.normal q'), (), match s with
         | TM0.Stmt.move d => T.move d
         | TM0.Stmt.write a => T.write a⟩ := by
-      cases' s with d a <;> rfl
+      cases s <;> rfl
     intro e
     refine TransGen.head ?_ (TransGen.head' this ?_)
     · simp only [TM1.step, TM1.stepAux, tr]

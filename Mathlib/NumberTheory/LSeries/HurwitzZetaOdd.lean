@@ -304,6 +304,7 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
     measurableSet_Ioi
   k := 3 / 2
   hk := by norm_num
+  ε := 1
   hε := one_ne_zero
   f₀ := 0
   hf₀ := rfl
@@ -445,7 +446,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 -/
 
 /-- The odd part of the Hurwitz zeta function, i.e. the meromorphic function of `s` which agrees
-with `1 / 2 * ∑' (n : ℤ), sign (n + a) / |n + a| ^ s` for `1 < re s`-/
+with `1 / 2 * ∑' (n : ℤ), sign (n + a) / |n + a| ^ s` for `1 < re s` -/
 noncomputable def hurwitzZetaOdd (a : UnitAddCircle) (s : ℂ) :=
   completedHurwitzZetaOdd a s / Gammaℝ (s + 1)
 

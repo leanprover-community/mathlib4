@@ -3,17 +3,19 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
+import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.Antisymmetrization
 
 /-!
 # The covering relation
 
-This file defines the covering relation in an order. `b` is said to cover `a` if `a < b` and there
-is no element in between. We say that `b` weakly covers `a` if `a ≤ b` and there is no element
-between `a` and `b`. In a partial order this is equivalent to `a ⋖ b ∨ a = b`, in a preorder this
-is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
+This file proves properties of the covering relation in an order.
+We say that `b` *covers* `a` if `a < b` and there is no element in between.
+We say that `b` *weakly covers* `a` if `a ≤ b` and there is no element between `a` and `b`.
+In a partial order this is equivalent to `a ⋖ b ∨ a = b`,
+in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 
 ## Notation
 
@@ -31,15 +33,6 @@ section WeaklyCovers
 section Preorder
 
 variable [Preorder α] [Preorder β] {a b c : α}
-
-/-- `WCovBy a b` means that `a = b` or `b` covers `a`.
-This means that `a ≤ b` and there is no element in between.
--/
-def WCovBy (a b : α) : Prop :=
-  a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
-
-/-- Notation for `WCovBy a b`. -/
-infixl:50 " ⩿ " => WCovBy
 
 theorem WCovBy.le (h : a ⩿ b) : a ≤ b :=
   h.1
@@ -195,13 +188,6 @@ end WeaklyCovers
 section LT
 
 variable [LT α] {a b : α}
-
-/-- `CovBy a b` means that `b` covers `a`: `a < b` and there is no element in between. -/
-def CovBy (a b : α) : Prop :=
-  a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
-
-/-- Notation for `CovBy a b`. -/
-infixl:50 " ⋖ " => CovBy
 
 theorem CovBy.lt (h : a ⋖ b) : a < b :=
   h.1
@@ -439,6 +425,19 @@ lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
     exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
 
 end LinearOrder
+
+namespace Bool
+
+@[simp] theorem wcovBy_iff : ∀ {a b : Bool}, a ⩿ b ↔ a ≤ b := by unfold WCovBy; decide
+@[simp] theorem covBy_iff : ∀ {a b : Bool}, a ⋖ b ↔ a < b := by unfold CovBy; decide
+
+instance instDecidableRelWCovBy : DecidableRel (· ⩿ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ wcovBy_iff.symm
+
+instance instDecidableRelCovBy : DecidableRel (· ⋖ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ covBy_iff.symm
+
+end Bool
 
 namespace Set
 variable {s t : Set α} {a : α}
