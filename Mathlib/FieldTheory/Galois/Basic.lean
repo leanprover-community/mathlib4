@@ -542,6 +542,9 @@ A quadratic extension has abelian Galois group.
 instance IsQuadraticAlgebra.isMulCommutative_galoisGroup :
     IsMulCommutative (K ≃ₐ[F] K) := ⟨IsCyclic.commutative⟩
 
+/--
+The isomorphism between the Galois group of a quadratic separable extension and `ℤ/2ℤ`.
+-/
 def IsQuadraticAlgebra.mulEquivZModTwo [Algebra.IsSeparable F K] :
     (K ≃ₐ[F] K) ≃* Multiplicative (ZMod 2) := by
   refine (mulEquivOfCyclicCardEq ?_).symm
