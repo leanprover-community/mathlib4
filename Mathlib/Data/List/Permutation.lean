@@ -520,11 +520,4 @@ theorem nodup_permutations_iff {s : List α} : Nodup s.permutations ↔ Nodup s 
 
 -- TODO: `count s s.permutations = (zipWith count s s.tails).prod`
 
-lemma splits3_l_r_Perm (l : List α) : l.splits3_l ~ l.splits3_r := by
-  rw [List.perm_ext_iff_of_nodup]
-  · rintro ⟨x, y, z⟩
-    simp only [List.splits3_l_spec, List.splits3_r_spec]
-  · apply Nodup.splits3_l_nodup
-  · apply Nodup.splits3_r_nodup
-
 end List

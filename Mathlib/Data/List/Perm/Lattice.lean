@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
+Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro, Rudy Peterson
 -/
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.TakeDrop
@@ -23,6 +23,76 @@ namespace List
 variable {α : Type*}
 
 open Perm (swap)
+
+lemma Nodup.splits_nodup (l : List α) : l.splits.Nodup := by
+  simp [List.splits]
+  apply List.Nodup.map_on
+  · simp
+    intro n1 hn1 n2 hn2 hmin hdrop
+    omega
+  · apply List.nodup_range
+
+lemma Disjoint_self (l : List α) :
+    (∃ a, a ∈ l) → ¬ l.Disjoint l := by simp [Disjoint]
+
+lemma Nodup.splits3_l_nodup (l : List α) : l.splits3_l.Nodup := by
+  simp [List.splits3_l, List.nodup_flatMap]
+  constructor
+  · intros t d htd_splits
+    apply List.Nodup.map_on
+    · rintro ⟨ta1, ta2⟩ hta_splits ⟨tb1, tb2⟩ htb_splits
+      simp
+    · apply Nodup.splits_nodup
+  · induction l <;> simp
+    case cons a l ihl =>
+      constructor
+      · clear ihl
+        rintro b c x1 x2 hx1x2_l_splits rfl rfl
+        simp [Function.onFun]
+      · refine (List.Pairwise.map ?_ ?_ ihl); clear ihl
+        rintro ⟨x1, x2⟩ ⟨y1, y2⟩
+        simp [Function.onFun]
+        intro hdisj_map
+        constructor
+        · rintro rfl rfl
+          apply List.Disjoint.of_map at hdisj_map
+          apply List.Disjoint_self _ (List.splits_non_empty _) at hdisj_map
+          assumption
+        · unfold Function.comp; simp
+          simp [Disjoint] at *
+          rintro z1 z2 z3 z4 z5 hx1_splits rfl rfl rfl z6 z7 hy1_splits ⟨_,rfl⟩ rfl rfl
+          specialize hdisj_map _ _ _ _ _ hx1_splits rfl rfl rfl _ _ hy1_splits rfl rfl rfl
+          assumption
+
+lemma Nodup.splits3_r_nodup (l : List α) : l.splits3_r.Nodup := by
+  simp [List.splits3_r, List.nodup_flatMap]
+  constructor
+  · intros t d htd_l_splits
+    apply List.Nodup.map_on
+    · rintro ⟨d1, d2⟩ hd_splits ⟨d1', d2'⟩ hd'_splits ⟨_, rfl, rfl⟩
+      rfl
+    · apply Nodup.splits_nodup
+  · induction l
+    case nil =>
+      simp
+    case cons a l ihl =>
+      simp
+      constructor
+      · clear ihl
+        rintro b c l1 l2 hl_splits rfl rfl
+        simp [Function.onFun, Function.comp, List.Disjoint]
+        rintro y1 y2 b y1' y2' hy' rfl rfl rfl z1 z2 hz ⟨⟩
+      · refine (List.Pairwise.map ?_ ?_ ihl); clear ihl
+        rintro ⟨x1, x2⟩ ⟨y1, y2⟩
+        simp [Function.onFun]
+        intro hdisj_map
+        rintro ⟨t, d1, d2⟩ hx2_splits hy2_splits
+        simp [List.mem_map] at hx2_splits hy2_splits
+        rcases hx2_splits with ⟨hx2_splits, rfl⟩
+        rcases hy2_splits with ⟨hy2_splits, ⟨_, rfl⟩⟩
+        apply List.Disjoint.of_map at hdisj_map
+        specialize hdisj_map hx2_splits hy2_splits
+        contradiction
 
 variable [DecidableEq α]
 
