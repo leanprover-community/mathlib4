@@ -233,12 +233,10 @@ lemma rankAtStalk_eq_zero_of_subsingleton [Subsingleton M] :
   ext p
   exact Module.finrank_zero_of_subsingleton
 
-lemma nontrivial_of_rankAtStalk_pos (p : PrimeSpectrum R) (h : 0 < rankAtStalk (R := R) M) :
+lemma nontrivial_of_rankAtStalk_pos (h : 0 < rankAtStalk (R := R) M) :
     Nontrivial M := by
   by_contra! hn
   have : Subsingleton M := not_nontrivial_iff_subsingleton.mp hn
-  have := finrank_zero_of_subsingleton (R := Localization.AtPrime p.asIdeal)
-    (M := LocalizedModule p.asIdeal.primeCompl M)
   simp [rankAtStalk, this] at h
 
 lemma rankAtStalk_eq_of_equiv {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
@@ -256,9 +254,8 @@ lemma rankAtStalk_eq_finrank_of_free [Module.Free R M] :
   simp [rankAtStalk, finrank_of_isLocalizedModule_of_free _ p.asIdeal.primeCompl
     (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M)]
 
-@[simp]
 lemma rankAtStalk_self [Nontrivial R] : rankAtStalk (R := R) R = 1 := by
-  simp [rankAtStalk_eq_finrank_of_free]
+  simp
 
 open LocalizedModule Localization
 
