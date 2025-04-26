@@ -158,6 +158,21 @@ section Fintype
 
 open Option Finset Fin Fintype Equiv Function
 
+/-- `Fin.snoc` for `r`-ordered tuples. -/
+@[simp]
+def RelHom.snoc {s : β → β → Prop} {n : ℕ} {r : Fin (n + 1) → Fin (n + 1) → Prop}
+  (xs : castSucc ⁻¹'o r →r s) (x : β)
+  (hx : r (last n) (last n) → s x x)
+  (h : ∀ (a : Fin n), (r a.castSucc (last n) → s (xs a) x) ∧ (r (last n) a.castSucc → s x (xs a))) :
+    r →r s where
+  toFun := Fin.snoc xs x
+  map_rel' {v w} hs := by
+    cases v using Fin.lastCases <;> cases w using Fin.lastCases
+    · simpa using hx hs
+    · simpa using (h _).right hs
+    · simpa using (h _).left hs
+    · simpa using xs.map_rel hs
+
 -- We show a `Fintype` instance for a hom from `Fin n` to `Fin m`,
 -- and then transfer this to arbitrary finite types using
 -- `Fintype.truncFinBijection` and `Fintype.truncEquivFin`.
@@ -177,21 +192,13 @@ private def finHomFintype {n m} {r : Fin n → Fin n → Prop} {s : Fin m → Fi
     refine ⟨(@univ _ (@instFintypeProd _ _ finHomFintype _)).filterMap
       (fun p : (castSucc ⁻¹'o r →r s) × Fin m ↦ ?_) ?_, ?_⟩
     · -- case on whether this is a valid hom
-      refine
+      exact
         if h : (r (Fin.last n) (Fin.last n) → s p.snd p.snd) ∧
-          ∀ a, (r a.castSucc (Fin.last n) → s (p.fst a) p.snd) ∧
-          (r (Fin.last n) a.castSucc → s p.snd (p.fst a)) then ?_ else ?_
-      · -- valid, so add
-        apply some
-        apply RelHom.mk (snoc p.fst p.snd)
-        intro v w hs
-        cases v using lastCases <;> cases w using lastCases
-        · simpa using h.left hs
-        · simpa using (h.right _).right hs
-        · simpa using (h.right _).left hs
-        · simpa using p.fst.map_rel hs
-      · -- not valid, so drop
-        exact none
+            ∀ a, (r a.castSucc (Fin.last n) → s (p.fst a) p.snd) ∧
+                (r (Fin.last n) a.castSucc → s p.snd (p.fst a)) then
+          some (p.fst.snoc p.snd h.1 h.2)
+        else
+          none
     · -- show this map is injective
       intro v w _ hbv hbw
       simp_rw [Option.mem_def, dite_none_right_eq_some] at hbv hbw
