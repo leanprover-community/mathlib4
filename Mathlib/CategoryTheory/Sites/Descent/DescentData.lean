@@ -253,16 +253,16 @@ variable {X : C} (obj : F.obj X) (c : BinaryCofan X X)
     (hp₁ : c.inl ≫ ι₁₂ = p₁) (hp₂ : c.inr ≫ ι₁₂ = p₂) (hp₃ : c.inr ≫ ι₂₃ = p₃)
     (hom : (F.map c.inl).obj obj ⟶ (F.map c.inr).obj obj)
     (hom_self : (F.map map).map hom =
-      (F.mapComp' c.inl map (𝟙 _)).inv.app obj ≫
-      (F.mapComp' c.inr map (𝟙 _)).hom.app obj)
+      (F.mapComp' c.inl map (𝟙 X)).inv.app obj ≫
+      (F.mapComp' c.inr map (𝟙 X)).hom.app obj)
 
 section
 
 def mk''Hom {Y : C} (f₁ f₂ : X ⟶ Y) :
-    (F.map f₁).obj obj ⟶ (F.map f₂).obj obj := by
-  let p : c.pt ⟶ Y := hc.desc <| BinaryCofan.mk f₁ f₂
-  exact (F.mapComp' c.inl p f₁ (by simp [p])).hom.app obj ≫ (F.map p).map hom ≫
-    (F.mapComp' c.inr p f₂ (by simp [p])).inv.app obj
+    (F.map f₁).obj obj ⟶ (F.map f₂).obj obj :=
+  (F.mapComp' c.inl _ f₁ (by simp)).hom.app obj ≫
+    (F.map (hc.desc (BinaryCofan.mk f₁ f₂))).map hom ≫
+      (F.mapComp' c.inr _ f₂ (by simp)).inv.app obj
 
 lemma mk''Hom_eq {Y : C} (f₁ f₂ : X ⟶ Y) (p : c.pt ⟶ Y) (hp₁ : c.inl ≫ p = f₁)
     (hp₂ : c.inr ≫ p = f₂) :
@@ -273,12 +273,48 @@ lemma mk''Hom_eq {Y : C} (f₁ f₂ : X ⟶ Y) (p : c.pt ⟶ Y) (hp₁ : c.inl �
     apply BinaryCofan.IsColimit.hom_ext hc <;> simp [hp₁, hp₂]
   rfl
 
+@[simp]
+lemma mk''Hom_inl_inr :
+    mk''Hom F obj c hc hom c.inl c.inr = hom := by
+  simp [mk''Hom_eq F obj c hc hom c.inl c.inr (𝟙 _) (by simp) (by simp),
+    mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app]
+
+lemma mk''Hom_comp' {Y' Y : C} (g : Y ⟶ Y') (f₁ f₂ : X ⟶ Y)
+      (f₁g : X ⟶ Y') (f₂g : X ⟶ Y') (hf₁g : f₁ ≫ g = f₁g) (hf₂g : f₂ ≫ g = f₂g) :
+    mk''Hom F obj c hc hom f₁g f₂g =
+      (F.mapComp' f₁ g f₁g hf₁g).hom.app obj ≫
+        (F.map g).map (mk''Hom F obj c hc hom f₁ f₂) ≫
+          (F.mapComp' f₂ g f₂g hf₂g).inv.app obj := by
+  let p : c.pt ⟶ Y := hc.desc (BinaryCofan.mk f₁ f₂)
+  dsimp
+  rw [mk''Hom_eq _ _ _ _ _ _ _ p (by simp [p]) (by simp [p]),
+    mk''Hom_eq _ _ _ _ _ _ _ (p ≫ g) (by aesop_cat) (by aesop_cat)]
+  dsimp
+  simp only [Functor.map_comp, assoc]
+  rw [← F.mapComp'_hom_app_comp_mapComp'_hom_app_map_obj_assoc
+    _ _ _ _ (p ≫ g) _ (by aesop_cat) (by aesop_cat) (by aesop_cat),
+    F.map_map_mapComp'_inv_app_comp_mapComp'_inv_app
+    _ _ _ _ (p ≫ g) _ (by aesop_cat) (by aesop_cat) (by aesop_cat),
+    ← F.mapComp'_hom_naturality_assoc, Iso.hom_inv_id_app_assoc]
+
 def mk'' : F.DescentData (fun _ : PUnit.{t + 1} ↦ X) :=
-  mk' (fun _ ↦ obj) (fun Y _ _ f₁ f₂ ↦ mk''Hom F obj c hc hom f₁ f₂)
-    (by
-      rintro Y' Y g ⟨_⟩ ⟨_⟩ f₁ f₂ f₁g f₂g hf₁g hf₂g
+  mk' (fun _ ↦ obj) (fun _ _ _ ↦ mk''Hom F obj c hc hom)
+    (fun _ _ _ _ _ ↦ mk''Hom_comp' _ _ _ _ _ _) (by
+      rintro Y ⟨_⟩ f
       dsimp
-      sorry) sorry sorry
+      rw [mk''Hom_comp' F obj c hc hom (map ≫ f) c.inl c.inr f f
+          (by aesop_cat) (by aesop_cat), mk''Hom_inl_inr,
+        ← F.mapComp'_naturality_2_assoc map f (map ≫ f) rfl hom,
+        hom_self, Functor.map_comp_assoc,
+        F.mapComp'_inv_app_map_obj_comp_mapComp'_inv_app _ _ _
+          (𝟙 X) _ _ (by aesop_cat) (by aesop_cat) (by aesop_cat),
+        ← Functor.map_comp_assoc, ← Functor.map_comp_assoc, assoc,
+        Iso.hom_inv_id_app, comp_id,
+        F.mapComp'_hom_app_comp_mapComp'_hom_app_map_obj_assoc
+          _ _ _ (𝟙 X) _ _ (by aesop_cat) (by aesop_cat) (by aesop_cat),
+        ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
+        Functor.map_id, id_comp, Iso.hom_inv_id_app])
+    sorry
 
 end
 
