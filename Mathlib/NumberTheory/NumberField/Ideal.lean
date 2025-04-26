@@ -73,9 +73,9 @@ theorem ideal.tendsto_norm_le_and_mk_eq_div_atop (C : ClassGroup (𝓞 K)) :
   have h₁ : ∀ s : ℝ,
     {x | x ∈ toMixed K ⁻¹' fundamentalCone K ∧ mixedEmbedding.norm (toMixed K x) ≤ s} =
       toMixed K ⁻¹' {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ s} := fun _ ↦ rfl
+  have h₂ : {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1} = normLeOne K := by ext; simp
   obtain ⟨J, hJ⟩ := ClassGroup.mk0_surjective C⁻¹
-  have h₂ : (absNorm J.1 : ℝ) ≠ 0 := (Nat.cast_ne_zero.mpr (absNorm_ne_zero_of_nonZeroDivisors J))
-  have h₃ : {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1} = normLeOne K := by ext; simp
+  have h₃ : (absNorm J.1 : ℝ) ≠ 0 := (Nat.cast_ne_zero.mpr (absNorm_ne_zero_of_nonZeroDivisors J))
   convert ((ZLattice.covolume.tendsto_card_le_div'
     (ZLattice.comap ℝ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
       (toMixed K).toLinearMap)
@@ -89,9 +89,9 @@ theorem ideal.tendsto_norm_le_and_mk_eq_div_atop (C : ClassGroup (𝓞 K)) :
       Nat.card_congr (ideal.tendsto_norm_le_and_mk_eq_div_atop_aux₂ K J _),
       ← card_isPrincipal_dvd_norm_le, Function.comp_def, Nat.cast_mul, div_eq_mul_inv, mul_inv,
       ← mul_assoc, mul_comm _ (torsionOrder K : ℝ)⁻¹, mul_comm _ (torsionOrder K : ℝ), mul_assoc]
-    rw [inv_mul_cancel_left₀ (Nat.cast_ne_zero.mpr (torsionOrder K).ne_zero), inv_mul_cancel₀ h₂,
+    rw [inv_mul_cancel_left₀ (Nat.cast_ne_zero.mpr (torsionOrder K).ne_zero), inv_mul_cancel₀ h₃,
       mul_one]
-  · rw [h₁, h₃, MeasureTheory.measureReal_def, (volumePreserving_toMixed K).measure_preimage
+  · rw [h₁, h₂, MeasureTheory.measureReal_def, (volumePreserving_toMixed K).measure_preimage
       (measurableSet_normLeOne K).nullMeasurableSet, volume_normLeOne, ZLattice.covolume_comap
       _ _ _ (volumePreserving_toMixed K), covolume_idealLattice, ENNReal.toReal_mul,
       ENNReal.toReal_mul, ENNReal.toReal_pow, ENNReal.toReal_pow, ENNReal.toReal_ofNat,
@@ -99,14 +99,14 @@ theorem ideal.tendsto_norm_le_and_mk_eq_div_atop (C : ClassGroup (𝓞 K)) :
       FractionalIdeal.coe_mk0, FractionalIdeal.coeIdeal_absNorm, Rat.cast_natCast, div_eq_mul_inv,
       div_eq_mul_inv, mul_inv, mul_inv, mul_inv, inv_pow, inv_inv]
     ring_nf
-    rw [mul_inv_cancel_right₀ h₂]
+    rw [mul_inv_cancel_right₀ h₃]
   · rwa [Set.mem_preimage, map_smul, smul_mem_iff_mem h.ne']
   · dsimp only
     rw [map_smul, mixedEmbedding.norm_smul, euclidean.finrank, abs_of_nonneg h]
   · exact (toMixed K).continuous.measurable (measurableSet_normLeOne K)
   · rw [h₁, ← (toMixed K).coe_toHomeomorph, ← Homeomorph.preimage_frontier,
       (toMixed K).coe_toHomeomorph, (volumePreserving_toMixed K).measure_preimage
-      measurableSet_frontier.nullMeasurableSet, h₃, volume_frontier_normLeOne]
+      measurableSet_frontier.nullMeasurableSet, h₂, volume_frontier_normLeOne]
 
 theorem ideal.tendsto_norm_le_div_atop₀ :
     Tendsto (fun s : ℝ ↦
