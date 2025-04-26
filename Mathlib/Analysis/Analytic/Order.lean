@@ -76,25 +76,6 @@ lemma order_ne_top_iff (hf : AnalyticAt 𝕜 f z₀) :
 @[deprecated (since := "2025-02-03")]
 alias order_neq_top_iff := order_ne_top_iff
 
-/-- If two functions agree in a neighborhood of `z₀`, then their orders at `z₀` agree. -/
-theorem order_congr (hf₁ : AnalyticAt 𝕜 f₁ z₀) (h : f₁ =ᶠ[𝓝 z₀] f₂) :
-    (hf₁.congr h).order = hf₁.order := by
-  -- Trivial case: f₁ vanishes identially around z₀
-  by_cases h₁f₁ : hf₁.order = ⊤
-  · rw [h₁f₁, order_eq_top_iff]
-    filter_upwards [hf₁.order_eq_top_iff.1 h₁f₁, h]
-    intro a h₁a h₂a
-    rwa [← h₂a]
-  -- General case
-  lift hf₁.order to ℕ using h₁f₁ with n hn
-  rw [eq_comm] at hn
-  rw [AnalyticAt.order_eq_nat_iff] at *
-  obtain ⟨g, h₁g, h₂g, h₃g⟩ := hn
-  use g, h₁g, h₂g
-  filter_upwards [h, h₃g]
-  intro a h₁a h₂a
-  rw [← h₂a, h₁a]
-
 /-- The order of an analytic function `f` at `z₀` is zero iff `f` does not vanish at `z₀`. -/
 lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order = 0 ↔ f z₀ ≠ 0 := by
@@ -132,6 +113,13 @@ lemma natCast_le_order_iff (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
         rw [← inv_smul_eq_iff₀ (pow_ne_zero _ <| sub_ne_zero_of_ne hz), hf'', smul_comm,
           ← mul_smul] at hf'
         rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by omega), ← hf']
+
+/-- If two functions agree in a neighborhood of `z₀`, then their orders at `z₀` agree. -/
+theorem order_congr (hf₁ : AnalyticAt 𝕜 f₁ z₀) (h : f₁ =ᶠ[𝓝 z₀] f₂) :
+    (hf₁.congr h).order = hf₁.order := by
+  refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ?_
+  simpa only [natCast_le_order_iff] using ⟨fun ⟨g, hg, hfg⟩ ↦ ⟨g, hg, h.trans hfg⟩,
+    fun ⟨g, hg, hfg⟩ ↦ ⟨g, hg, h.symm.trans hfg⟩⟩
 
 /-!
 ## Vanishing Order at a Point: Elementary Computations
@@ -220,89 +208,34 @@ theorem order_pow {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
   case succ n hn =>
     simp [add_mul, pow_add, (hf.pow n).order_mul hf, hn]
 
-/-- Helper lemma for AnalyticAt.order_add: adding a locally vanishing function does not
-affect the order. -/
-lemma order_add_top (hf₁ : AnalyticAt 𝕜 f₁ z₀) (hf₂ : AnalyticAt 𝕜 f₂ z₀) (h : hf₂.order = ⊤) :
-    (hf₁.add hf₂).order = hf₁.order := by
-  apply hf₁.order_congr
-  filter_upwards [hf₂.order_eq_top_iff.1 h]
-  intro a h₁a
-  simp [h₁a]
-
-/-- The order of a sub at least the minimum of the orders of the summands. -/
+/-- The order of a sum is at least the minimum of the orders of the summands. -/
 theorem order_add (hf₁ : AnalyticAt 𝕜 f₁ z₀) (hf₂ : AnalyticAt 𝕜 f₂ z₀) :
     min hf₁.order hf₂.order ≤ (hf₁.add hf₂).order := by
-  -- Trivial case: f₁ vanishes identically around z₀
-  by_cases h₁f₁ : hf₁.order = ⊤
-  · rw [h₁f₁]
-    simp only [le_top, inf_of_le_right]
-    simp_rw [AddCommMagma.add_comm f₁ f₂]
-    rw [hf₂.order_add_top hf₁ h₁f₁]
-  -- Trivial case: f₂ vanishes identically around z₀
-  by_cases h₁f₂ : hf₂.order = ⊤
-  · rw [h₁f₂]
-    simp only [le_top, inf_of_le_left]
-    rw [hf₁.order_add_top hf₂ h₁f₂]
-  -- General case
-  lift hf₁.order to ℕ using h₁f₁ with n₁ hn₁
-  lift hf₂.order to ℕ using h₁f₂ with n₂ hn₂
-  rw [eq_comm, AnalyticAt.order_eq_nat_iff] at *
-  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hn₁
-  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hn₂
-  let m := min n₁ n₂
-  let G := fun z ↦ (z - z₀) ^ (n₁ - m) • g₁ z + (z - z₀) ^ (n₂ - m) • g₂ z
-  have hG : AnalyticAt 𝕜 G z₀ := by fun_prop
-  have : f₁ + f₂ =ᶠ[𝓝 z₀] (· - z₀) ^ m • G := by
-    dsimp [G]
-    filter_upwards [h₃g₁, h₃g₂]
-    intro a h₁a h₂a
-    simp only [Pi.add_apply, h₁a, h₂a, Pi.smul_apply', Pi.pow_apply, smul_add, G]
-    congr 1
-    repeat
-      simp [← smul_assoc, smul_eq_mul, ← pow_add, m]
-  rw [← (hf₁.add hf₂).order_congr this, AnalyticAt.order_smul _ hG,
-    analyticAt_order_centeredMonomial]
-  simp only [m, G]
-  exact le_self_add
+  refine ENat.forall_natCast_le_iff_le.mp fun n ↦ ?_
+  simp only [le_min_iff, natCast_le_order_iff]
+  refine fun ⟨⟨F, hF, hF'⟩, ⟨G, hG, hG'⟩⟩ ↦ ⟨F + G, hF.add hG, ?_⟩
+  filter_upwards [hF', hG'] with z using by simp +contextual
 
 /-- Helper lemma for AnalyticAt.order_add_of_unequal_order -/
 lemma order_add_of_order_lt_order (hf₁ : AnalyticAt 𝕜 f₁ z₀) (hf₂ : AnalyticAt 𝕜 f₂ z₀)
     (h : hf₁.order < hf₂.order) :
     (hf₁.add hf₂).order = hf₁.order := by
-  -- Trivial case: f₂ vanishes identically around z₀
-  by_cases h₁f₂ : hf₂.order = ⊤
-  · apply hf₁.order_congr
-    filter_upwards [hf₂.order_eq_top_iff.1 h₁f₂]
-    intro a h₁a
-    simp [h₁a]
-  -- General case
-  lift hf₂.order to ℕ using h₁f₂ with n₂ hn₂
   lift hf₁.order to ℕ using h.ne_top with n₁ hn₁
-  rw [Nat.cast_lt] at h
-  rw [eq_comm] at hn₁ hn₂
-  rw [AnalyticAt.order_eq_nat_iff] at *
+  simp only [eq_comm (a := (n₁ : ℕ∞)), order_eq_nat_iff] at hn₁ ⊢
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hn₁
-  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hn₂
-  use g₁ + (· - z₀) ^ (n₂ - n₁) • g₂, by fun_prop
-  constructor
-  · simpa [Nat.sub_ne_zero_iff_lt.mpr h]
-  · filter_upwards [h₃g₁, h₃g₂]
-    intro a h₁a h₂a
-    simp only [Pi.add_apply, h₁a, h₂a, Pi.smul_apply', Pi.pow_apply, smul_add, ← smul_assoc,
-      smul_eq_mul, add_right_inj]
-    rw [← pow_add, add_comm, eq_comm, Nat.sub_add_cancel (Nat.le_of_succ_le h)]
+  obtain ⟨g₂, h₁g₂, h₂g₂⟩ := hf₂.natCast_le_order_iff.mp (Order.add_one_le_of_lt h)
+  refine ⟨g₁ + (· - z₀) • g₂, by fun_prop, by simpa using h₂g₁, ?_⟩
+  filter_upwards [h₃g₁, h₂g₂] with a h₁a h₂a
+  simp [mul_smul, pow_succ, h₁a, h₂a]
 
 /-- If two functions have unequal orders, then the order of their sum is exactly the minimum
 of the orders of the summands. -/
 theorem order_add_of_unequal_order (hf₁ : AnalyticAt 𝕜 f₁ z₀) (hf₂ : AnalyticAt 𝕜 f₂ z₀)
     (h : hf₁.order ≠ hf₂.order) :
     (hf₁.add hf₂).order = min hf₁.order hf₂.order := by
-  by_cases h₁ : hf₁.order < hf₂.order
-  · rw [min_eq_left (le_of_lt h₁)]
-    exact hf₁.order_add_of_order_lt_order hf₂ h₁
-  · rw [min_eq_right (le_of_not_lt h₁)]
-    simp_rw [AddCommMagma.add_comm f₁ f₂]
-    exact hf₂.order_add_of_order_lt_order hf₁ (lt_of_le_of_ne (le_of_not_lt h₁) h.symm)
+  rcases min_cases hf₁.order hf₂.order with (⟨hm, h₁⟩ | ⟨hm, h₁⟩)
+  · simpa [hm] using hf₁.order_add_of_order_lt_order hf₂ (h₁.lt_of_ne h)
+  · simpa [hm, add_comm] using hf₂.order_add_of_order_lt_order hf₁ h₁
 
 end AnalyticAt
 
