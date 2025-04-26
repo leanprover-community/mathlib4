@@ -40,21 +40,21 @@ variable {K}
 theorem classNumber_eq_one_iff : classNumber K = 1 ↔ IsPrincipalIdealRing (𝓞 K) :=
   card_classGroup_eq_one_iff
 
-open Module NumberField.InfinitePlace
+open Module NumberField.InfinitePlace Ideal Nat
 
 open scoped nonZeroDivisors Real
 
 theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     ∃ I : (Ideal (𝓞 K))⁰, ClassGroup.mk0 I = C ∧
-      Ideal.absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
+      absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
         ((finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K|) := by
   obtain ⟨J, hJ⟩ := ClassGroup.mk0_surjective C⁻¹
   obtain ⟨_, ⟨a, ha, rfl⟩, h_nz, h_nm⟩ :=
     exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K (FractionalIdeal.mk0 K J)
-  obtain ⟨I₀, hI⟩ := Ideal.dvd_iff_le.mpr ((Ideal.span_singleton_le_iff_mem J).mpr (by convert ha))
+  obtain ⟨I₀, hI⟩ := dvd_iff_le.mpr ((span_singleton_le_iff_mem J).mpr (by convert ha))
   have : I₀ ≠ 0 := by
     contrapose! h_nz
-    rw [h_nz, mul_zero, show 0 = (⊥ : Ideal (𝓞 K)) by rfl, Ideal.span_singleton_eq_bot] at hI
+    rw [h_nz, mul_zero, show 0 = (⊥ : Ideal (𝓞 K)) by rfl, span_singleton_eq_bot] at hI
     rw [Algebra.linearMap_apply, hI, map_zero]
   let I := (⟨I₀, mem_nonZeroDivisors_iff_ne_zero.mpr this⟩ : (Ideal (𝓞 K))⁰)
   refine ⟨I, ?_, ?_⟩
@@ -62,15 +62,15 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     exact ClassGroup.mk0_eq_mk0_inv_iff.mpr ⟨a, Subtype.coe_ne_coe.1 h_nz, by rw [mul_comm, hI]⟩
   · rw [← FractionalIdeal.absNorm_span_singleton (𝓞 K), Algebra.linearMap_apply,
       ← FractionalIdeal.coeIdeal_span_singleton, FractionalIdeal.coeIdeal_absNorm, hI, map_mul,
-      Nat.cast_mul, Rat.cast_mul, show Ideal.absNorm I₀ = Ideal.absNorm (I : Ideal (𝓞 K)) by rfl,
+      cast_mul, Rat.cast_mul, show absNorm I₀ = Ideal.absNorm (I : Ideal (𝓞 K)) by rfl,
       Rat.cast_natCast, Rat.cast_natCast, FractionalIdeal.coe_mk0,
       FractionalIdeal.coeIdeal_absNorm, Rat.cast_natCast, mul_div_assoc, mul_assoc, mul_assoc]
       at h_nm
     refine le_of_mul_le_mul_of_pos_left h_nm ?_
-    exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero <| Ideal.absNorm_ne_zero_of_nonZeroDivisors J
+    exact cast_pos.mpr <| pos_of_ne_zero <| absNorm_ne_zero_of_nonZeroDivisors J
 
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le
-    (h : ∀ I : (Ideal (𝓞 K))⁰, Ideal.absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
+    (h : ∀ I : (Ideal (𝓞 K))⁰, absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
         ((finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K|) →
         Submodule.IsPrincipal (I : Ideal (𝓞 K))) :
     IsPrincipalIdealRing (𝓞 K) := by
@@ -88,9 +88,8 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
     mul_inv, ← inv_pow, inv_div, inv_div, mul_assoc, Int.cast_abs] at h
   refine RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le (fun I hI ↦ ?_)
   convert top_isPrincipal
-  exact Ideal.absNorm_eq_one_iff.mp (le_antisymm (Nat.lt_succ.mp ((Nat.cast_lt (α := ℝ)).mp
-    (lt_of_le_of_lt hI h))) (Nat.one_le_iff_ne_zero.mpr
-    (Ideal.absNorm_ne_zero_of_nonZeroDivisors I)))
+  exact absNorm_eq_one_iff.mp <| le_antisymm (lt_succ.mp (cast_lt.mp
+    (lt_of_le_of_lt hI h))) <| one_le_iff_ne_zero.mpr (absNorm_ne_zero_of_nonZeroDivisors I)
 
 end NumberField
 
