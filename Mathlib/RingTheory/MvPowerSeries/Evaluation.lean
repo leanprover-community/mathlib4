@@ -117,6 +117,7 @@ theorem mem_hasEvalIdeal_iff {a : σ → S} :
 /-- The inclusion of polynomials into power series has dense image -/
 theorem _root_.MvPolynomial.toMvPowerSeries_denseRange :
     DenseRange (toMvPowerSeries (R := R) (σ := σ)) := fun f => by
+  classical
   have : Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
     rw [tendsto_iff_coeff_tendsto]
     refine fun d ↦ tendsto_atTop_of_eventually_const fun n (hdn : d ≤ n) ↦ ?_
@@ -160,6 +161,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
     [IsUniformAddGroup R] [IsUniformAddGroup S] [IsLinearTopology S S]
     (hφ : Continuous φ) (ha : HasEval a) :
     UniformContinuous (MvPolynomial.eval₂Hom φ a) := by
+  classical
   apply uniformContinuous_of_continuousAt_zero
   rw [ContinuousAt, map_zero, IsLinearTopology.hasBasis_ideal.tendsto_right_iff]
   intro I hI

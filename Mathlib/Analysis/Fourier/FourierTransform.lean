@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
@@ -184,7 +184,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
   _ = ∫ x, (∫ ξ, M.flip (g ξ) (e (-L x ξ) • f x) ∂ν) ∂μ := by
     rw [integral_integral_swap]
     have : Integrable (fun (p : W × V) ↦ ‖M‖ * (‖g p.1‖ * ‖f p.2‖)) (ν.prod μ) :=
-      (hg.norm.prod_mul hf.norm).const_mul _
+      (hg.norm.mul_prod hf.norm).const_mul _
     apply this.mono
     · -- This proof can be golfed but becomes very slow; breaking it up into steps
       -- speeds up compilation.

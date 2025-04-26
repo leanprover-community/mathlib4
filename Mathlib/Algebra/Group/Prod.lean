@@ -24,7 +24,7 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * `f.prod g` : `M →* N × P`: sends `x` to `(f x, g x)`;
 * When `P` is commutative, `f.coprod g : M × N →* P` sends `(x, y)` to `f x * g y`
   (without the commutativity assumption on `P`, see `MonoidHom.noncommPiCoprod`);
-* `f.prodMap g : M × N → M' × N'`: `prod.map f g` as a `MonoidHom`,
+* `f.prodMap g : M × N → M' × N'`: `Prod.map f g` as a `MonoidHom`,
   sends `(x, y)` to `(f x, g y)`.
 
 ## Main declarations
@@ -412,8 +412,8 @@ section prodMap
 variable {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] [MulOneClass P]
   (f : M →* M') (g : N →* N')
 
-/-- `prod.map` as a `MonoidHom`. -/
-@[to_additive prodMap "`prod.map` as an `AddMonoidHom`."]
+/-- `Prod.map` as a `MonoidHom`. -/
+@[to_additive prodMap "`Prod.map` as an `AddMonoidHom`."]
 def prodMap : M × N →* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 
