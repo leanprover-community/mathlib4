@@ -233,7 +233,6 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     let _a ← synthInstanceQ q(Ring $α)
     let _a ← synthInstanceQ q(LinearOrder $α)
     let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-    -- failure -- TODO
     assumeInstancesCommute
     have p : Q(NormNum.IsRat $e (.negOfNat $n) $d) := p
     if q < 0 then
