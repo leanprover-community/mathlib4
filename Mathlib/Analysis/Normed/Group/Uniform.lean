@@ -3,6 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.MetricSpace.Algebra
@@ -69,6 +70,16 @@ theorem lipschitzOnWith_iff_norm_div_le {f : E → F} {C : ℝ≥0} :
 alias ⟨LipschitzOnWith.norm_div_le, _⟩ := lipschitzOnWith_iff_norm_div_le
 
 attribute [to_additive] LipschitzOnWith.norm_div_le
+
+--TODO clean up variables maybe?
+/-- A version of `lipschitzOnWith_iff_norm_sub_le` stated for functions on `NormedAddTorsor`. -/
+theorem lipschitzOnWith_iff_norm_vsub_le {E F : Type*} [SeminormedAddCommGroup E]
+  [SeminormedAddCommGroup F] {P Q : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
+  [PseudoMetricSpace Q] [NormedAddTorsor F Q] {s : Set P} {f : P → Q} {C : ℝ≥0} :
+    LipschitzOnWith C f s ↔ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ‖f x -ᵥ f y‖ ≤ C * ‖x -ᵥ y‖ := by
+  simp only [lipschitzOnWith_iff_dist_le_mul, dist_eq_norm_vsub]
+
+alias ⟨LipschitzOnWith.norm_vsub_le, _⟩ := lipschitzOnWith_iff_norm_vsub_le
 
 @[to_additive]
 theorem LipschitzOnWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} (h : LipschitzOnWith C f s)

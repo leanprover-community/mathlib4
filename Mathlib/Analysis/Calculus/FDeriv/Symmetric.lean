@@ -275,7 +275,8 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
           refine ⟨?_, xt_mem t ⟨ht.1, ht.2.le⟩⟩
           rw [add_assoc, add_mem_ball_iff_norm]
           exact I.trans_lt hδ
-        simpa only [mem_setOf_eq, add_assoc x, add_sub_cancel_left] using sδ H
+        simpa only [add_assoc x, map_add, map_smul, ge_iff_le, vsub_eq_sub, map_sub, mem_setOf_eq,
+          add_sub_cancel_left] using sδ H
       _ ≤ ε * (‖h • v‖ + ‖h • w‖) * ‖h • w‖ := by
         gcongr
         apply (norm_add_le _ _).trans

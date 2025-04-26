@@ -66,6 +66,13 @@ theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < 
     Continuous.tendsto' (by fun_prop) _ _ (by simp)
   this.eventually (gt_mem_nhds h)
 
+lemma eventually_nhds_norm_smul_vsub_lt {F : Type*} [PseudoMetricSpace F] [NormedAddTorsor E F]
+    (c : 𝕜) (x : F) {ε : ℝ} (h : 0 < ε) :
+    ∀ᶠ (y : F) in nhds x, ‖c • (y -ᵥ x)‖ < ε := by
+  have : Tendsto (fun y ↦ ‖c • (y -ᵥ x)‖) (𝓝 x) (𝓝 0) :=
+    Continuous.tendsto' (by fun_prop) _ _ (by simp)
+  exact this.eventually (gt_mem_nhds h)
+
 theorem Filter.Tendsto.zero_smul_isBoundedUnder_le {f : α → 𝕜} {g : α → E} {l : Filter α}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) :
     Tendsto (fun x => f x • g x) l (𝓝 0) :=

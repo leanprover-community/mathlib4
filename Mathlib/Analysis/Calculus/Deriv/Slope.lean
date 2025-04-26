@@ -47,8 +47,8 @@ theorem hasDerivAtFilter_iff_tendsto_slope {x : 𝕜} {L : Filter 𝕜} :
     HasDerivAtFilter f f' x L ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') :=
   calc HasDerivAtFilter f f' x L
     ↔ Tendsto (fun y ↦ slope f x y - (y - x)⁻¹ • (y - x) • f') L (𝓝 0) := by
-        simp only [hasDerivAtFilter_iff_tendsto, ← norm_inv, ← norm_smul,
-          ← tendsto_zero_iff_norm_tendsto_zero, slope_def_module, smul_sub]
+        simp only [hasDerivAtFilter_iff_tendsto, vsub_eq_sub, ← norm_inv, ← norm_smul,
+          smul_sub, ← tendsto_zero_iff_norm_tendsto_zero, slope_def_module]
   _ ↔ Tendsto (fun y ↦ slope f x y - (y - x)⁻¹ • (y - x) • f') (L ⊓ 𝓟 {x}ᶜ) (𝓝 0) :=
         .symm <| tendsto_inf_principal_nhds_iff_of_forall_eq <| by simp
   _ ↔ Tendsto (fun y ↦ slope f x y - f') (L ⊓ 𝓟 {x}ᶜ) (𝓝 0) := tendsto_congr' <| by

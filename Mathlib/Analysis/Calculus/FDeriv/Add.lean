@@ -110,13 +110,13 @@ section Add
 nonrec theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x)
     (hg : HasStrictFDerivAt g g' x) : HasStrictFDerivAt (fun y => f y + g y) (f' + g') x :=
    .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun y => by
-    simp only [LinearMap.sub_apply, LinearMap.add_apply, map_sub, map_add, add_apply]
+    simp only [vsub_eq_sub, map_sub, add_apply]
     abel
 
 theorem HasFDerivAtFilter.add (hf : HasFDerivAtFilter f f' x L)
     (hg : HasFDerivAtFilter g g' x L) : HasFDerivAtFilter (fun y => f y + g y) (f' + g') x L :=
   .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun _ => by
-    simp only [LinearMap.sub_apply, LinearMap.add_apply, map_sub, map_add, add_apply]
+    simp only [vsub_eq_sub, map_sub, add_apply]
     abel
 
 @[fun_prop]

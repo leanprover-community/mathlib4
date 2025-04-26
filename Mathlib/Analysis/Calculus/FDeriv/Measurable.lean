@@ -333,8 +333,8 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
         _ ≤ 4 * (1 / 2) ^ e * ‖y‖ := by gcongr
     -- use the previous estimates to see that `f (x + y) - f x - f' y` is small.
     calc
-      ‖f (x + y) - f x - f' y‖ = ‖f (x + y) - f x - L e (n e) m y + (L e (n e) m - f') y‖ :=
-        congr_arg _ (by simp)
+      ‖f (y + x) - f x - f' y‖ = ‖f (x + y) - f x - L e (n e) m y + (L e (n e) m - f') y‖ :=
+        congr_arg _ (by simp [add_comm y x])
       _ ≤ 4 * (1 / 2) ^ e * ‖y‖ + 12 * ‖c‖ * (1 / 2) ^ e * ‖y‖ :=
         norm_add_le_of_le J2 <| (le_opNorm _ _).trans <| by gcongr; exact Lf' _ _ m_ge
       _ = (4 + 12 * ‖c‖) * ‖y‖ * (1 / 2) ^ e := by ring
@@ -631,7 +631,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     -- We need to show that `f y - f x - f' (y - x)` is small. For this, we will work at scale
     -- `k` where `k` is chosen with `‖y - x‖ ∼ 2 ^ (-k)`.
     rcases eq_or_lt_of_le hy.1 with (rfl | xy)
-    · simp only [sub_self, zero_smul, norm_zero, mul_zero, le_rfl]
+    · simp only [vsub_eq_sub, sub_self, zero_smul, norm_zero, mul_zero, le_refl]
     have yzero : 0 < y - x := sub_pos.2 xy
     have y_le : y - x ≤ (1 / 2) ^ (n e + 1) := by linarith [hy.2]
     have yone : y - x ≤ 1 := le_trans y_le (pow_le_one₀ (by norm_num) (by norm_num))

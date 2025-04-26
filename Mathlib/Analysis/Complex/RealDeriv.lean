@@ -98,7 +98,7 @@ theorem HasDerivAt.comp_ofReal (hf : HasDerivAt e e' ↑z) : HasDerivAt (fun y :
 /-- If a function `f : ℝ → ℝ` is differentiable at a (real) point `x`, then it is also
 differentiable as a function `ℝ → ℂ`. -/
 theorem HasDerivAt.ofReal_comp {f : ℝ → ℝ} {u : ℝ} (hf : HasDerivAt f u z) :
-    HasDerivAt (fun y : ℝ => ↑(f y) : ℝ → ℂ) u z := by
+    HasDerivAt (fun y : ℝ => ↑(f y) : ℝ → ℂ) (u : ℂ) z := by
   simpa only [ofRealCLM_apply, ofReal_one, real_smul, mul_one] using
     ofRealCLM.hasDerivAt.scomp z hf
 

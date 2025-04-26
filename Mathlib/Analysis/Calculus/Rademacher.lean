@@ -295,10 +295,12 @@ theorem hasFDerivAt_of_hasLineDerivAt_of_closure
   have rho_pos : 0 ≤ ρ := by simp [hρ]
   obtain ⟨y, yq, hy⟩ : ∃ y ∈ q, ‖w - y‖ < δ := by simpa [← dist_eq_norm] using hq w_mem
   have : ‖y - w‖ < δ := by rwa [norm_sub_rev]
-  calc  ‖f (x + v) - f x - L v‖
-      = ‖f (x + ρ • w) - f x - ρ • L w‖ := by simp [hvw]
+  -- dsimp
+  -- rw [add_comm v x]
+  calc  ‖f (v + x) - f x - L v‖
+      = ‖f (ρ • w + x) - f x - ρ • L w‖ := by simp [hvw]
     _ = ‖(f (x + ρ • w) - f (x + ρ • y)) + (ρ • L y - ρ • L w)
-          + (f (x + ρ • y) - f x - ρ • L y)‖ := by congr; abel
+          + (f (x + ρ • y) - f x - ρ • L y)‖ := by congr; abel_nf
     _ ≤ ‖f (x + ρ • w) - f (x + ρ • y)‖ + ‖ρ • L y - ρ • L w‖
           + ‖f (x + ρ • y) - f x - ρ • L y‖ := norm_add₃_le
     _ ≤ C * ‖(x + ρ • w) - (x + ρ • y)‖ + ρ * (‖L‖ * ‖y - w‖) + δ * ρ := by

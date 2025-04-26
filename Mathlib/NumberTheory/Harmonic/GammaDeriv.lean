@@ -119,13 +119,13 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
         (differentiableAt_id.const_mul _)
     · exact (differentiableAt_const _).rpow (by fun_prop) two_ne_zero
   _ = √π * (deriv (fun s ↦ Gamma (2 * s)) (1 / 2) +
-              deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
+              deriv (fun s : ℝ ↦ (2 : ℝ) ^ (1 - 2 * s)) (1 / 2) + γ) := by
     congr 2
     rw [deriv_mul]
     · congr 1 <;> norm_num
     · exact h_diff' one_half_pos
     · exact DifferentiableAt.rpow (by fun_prop) (by fun_prop) two_ne_zero
-  _ = √π * (-2 * γ + deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
+  _ = √π * (-2 * γ + deriv (fun s : ℝ ↦ (2 : ℝ) ^ (1 - 2 * s)) (1 / 2) + γ) := by
     congr 3
     change deriv (Gamma ∘ fun s ↦ 2 * s) _ = _
     rw [deriv_comp, deriv_const_mul, mul_one_div, div_self two_ne_zero, deriv_id''] <;>
@@ -166,7 +166,7 @@ lemma differentiable_at_Gamma_nat_add_one (n : ℕ) :
   positivity
 
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
-    HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) := by
+    HasDerivAt Gamma (n ! * (-γ + harmonic n) : ℂ) (n + 1) := by
   exact_mod_cast HasDerivAt.complex_of_real
     (by exact_mod_cast differentiable_at_Gamma_nat_add_one n)
     (Real.hasDerivAt_Gamma_nat n) Gamma_ofReal
@@ -177,7 +177,7 @@ lemma deriv_Gamma_nat (n : ℕ) :
     deriv Gamma (n + 1) = n ! * (-γ + harmonic n) :=
   (hasDerivAt_Gamma_nat n).deriv
 
-lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ) 1 := by
+lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ : ℂ) 1 := by
   simpa only [factorial_zero, cast_one, harmonic_zero, Rat.cast_zero, add_zero, mul_neg, one_mul,
     cast_zero, zero_add] using hasDerivAt_Gamma_nat 0
 

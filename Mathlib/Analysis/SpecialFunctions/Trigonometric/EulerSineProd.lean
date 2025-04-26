@@ -61,7 +61,7 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
       x ∈ uIcc 0 (π / 2) →
         HasDerivAt (fun y : ℝ => (cos y : ℂ) ^ n) (-n * sin x * (cos x : ℂ) ^ (n - 1)) x := by
     intro x _
-    have b : HasDerivAt (fun y : ℝ => (cos y : ℂ)) (-sin x) x := by
+    have b : HasDerivAt (fun y : ℝ => (cos y : ℂ)) (-sin x : ℂ) x := by
       simpa using (hasDerivAt_cos x).ofReal_comp
     convert HasDerivAt.comp x (hasDerivAt_pow _ _) b using 1
     ring

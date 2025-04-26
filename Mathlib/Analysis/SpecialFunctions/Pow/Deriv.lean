@@ -221,7 +221,7 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
 line, it is still real-differentiable, and the derivative is what one would formally expect.
 See `hasDerivAt_ofReal_cpow_const` for an alternate formulation. -/
 theorem hasDerivAt_ofReal_cpow_const' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
-    HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1) / (r + 1)) (x ^ r) x := by
+    HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1) / (r + 1)) (x ^ r : ℂ) x := by
   rw [Ne, ← add_eq_zero_iff_eq_neg, ← Ne] at hr
   rcases lt_or_gt_of_ne hx.symm with (hx | hx)
   · -- easy case : `0 < x`

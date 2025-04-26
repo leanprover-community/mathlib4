@@ -120,7 +120,9 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       ← ContinuousLinearMap.integral_apply hF'_int]
     exacts [hF_int' x x_in, hF_int, (hF_int' x x_in).sub hF_int,
       hF'_int.apply_continuousLinearMap _]
-  rw [hasFDerivAt_iff_tendsto, tendsto_congr' this, ← tendsto_zero_iff_norm_tendsto_zero, ←
+  rw [hasFDerivAt_iff_tendsto]
+  simp_rw [vsub_eq_sub]
+  rw [tendsto_congr' this, ← tendsto_zero_iff_norm_tendsto_zero, ←
     show (∫ a : α, ‖x₀ - x₀‖⁻¹ • (F x₀ a - F x₀ a - (F' a) (x₀ - x₀)) ∂μ) = 0 by simp]
   apply tendsto_integral_filter_of_dominated_convergence
   · filter_upwards [h_ball] with _ x_in
@@ -151,7 +153,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
         ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀))‖ := by
       ext x
       rw [norm_smul_of_nonneg (nneg _)]
-    rwa [hasFDerivAt_iff_tendsto, this] at ha
+    simpa only [hasFDerivAt_iff_tendsto, vsub_eq_sub, this] using ha
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
 `F x₀` is integrable, `x ↦ F x a` is locally Lipschitz on a ball around `x₀` for ae `a`

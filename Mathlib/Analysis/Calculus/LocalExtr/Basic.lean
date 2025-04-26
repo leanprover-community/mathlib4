@@ -73,14 +73,14 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
 is that we require `c n → ∞` instead of `‖c n‖ → ∞`. One can think about `posTangentConeAt`
 as `tangentConeAt NNReal` but we have no theory of normed semifields yet. -/
 def posTangentConeAt (s : Set E) (x : E) : Set E :=
-  { y : E | ∃ (c : ℕ → ℝ) (d : ℕ → E), (∀ᶠ n in atTop, x + d n ∈ s) ∧
+  { y : E | ∃ (c : ℕ → ℝ) (d : ℕ → E), (∀ᶠ n in atTop, d n + x ∈ s) ∧
     Tendsto c atTop atTop ∧ Tendsto (fun n => c n • d n) atTop (𝓝 y) }
 
 theorem posTangentConeAt_mono : Monotone fun s => posTangentConeAt s a := by
   rintro s t hst y ⟨c, d, hd, hc, hcd⟩
   exact ⟨c, d, mem_of_superset hd fun h hn => hst hn, hc, hcd⟩
 
-theorem mem_posTangentConeAt_of_frequently_mem (h : ∃ᶠ t : ℝ in 𝓝[>] 0, x + t • y ∈ s) :
+theorem mem_posTangentConeAt_of_frequently_mem (h : ∃ᶠ t : ℝ in 𝓝[>] 0, t • y + x ∈ s) :
     y ∈ posTangentConeAt s x := by
   obtain ⟨a, ha, has⟩ := Filter.exists_seq_forall_of_frequently h
   refine ⟨a⁻¹, (a · • y), Eventually.of_forall has, tendsto_inv_nhdsGT_zero.comp ha, ?_⟩
@@ -99,7 +99,7 @@ theorem mem_posTangentConeAt_of_segment_subset (h : [x -[ℝ] x + y] ⊆ s) :
   rw [eventually_nhdsWithin_iff]
   filter_upwards [ge_mem_nhds one_pos] with t ht₁ ht₀
   apply h
-  rw [segment_eq_image', add_sub_cancel_left]
+  rw [segment_eq_image', add_sub_cancel_left, add_comm]
   exact mem_image_of_mem _ ⟨le_of_lt ht₀, ht₁⟩
 
 theorem sub_mem_posTangentConeAt_of_segment_subset (h : segment ℝ x y ⊆ s) :
@@ -120,11 +120,11 @@ theorem IsLocalMaxOn.hasFDerivWithinAt_nonpos (h : IsLocalMaxOn f s a)
     (hf : HasFDerivWithinAt f f' s a) (hy : y ∈ posTangentConeAt s a) : f' y ≤ 0 := by
   rcases hy with ⟨c, d, hd, hc, hcd⟩
   have hc' : Tendsto (‖c ·‖) atTop atTop := tendsto_abs_atTop_atTop.comp hc
-  suffices ∀ᶠ n in atTop, c n • (f (a + d n) - f a) ≤ 0 from
+  suffices ∀ᶠ n in atTop, c n • (f (d n + a) - f a) ≤ 0 from
     le_of_tendsto (hf.lim atTop hd hc' hcd) this
-  replace hd : Tendsto (fun n => a + d n) atTop (𝓝[s] (a + 0)) :=
-    tendsto_nhdsWithin_iff.2 ⟨tendsto_const_nhds.add (tangentConeAt.lim_zero _ hc' hcd), hd⟩
-  rw [add_zero] at hd
+  replace hd : Tendsto (fun n => d n + a) atTop (𝓝[s] (0 + a)) :=
+    tendsto_nhdsWithin_iff.2 ⟨(tangentConeAt.lim_zero _ hc' hcd).add tendsto_const_nhds, hd⟩
+  rw [zero_add] at hd
   filter_upwards [hd.eventually h, hc.eventually_ge_atTop 0] with n hfn hcn
   exact mul_nonpos_of_nonneg_of_nonpos hcn (sub_nonpos.2 hfn)
 
@@ -231,9 +231,10 @@ lemma one_mem_posTangentConeAt_iff_mem_closure :
     1 ∈ posTangentConeAt s a ↔ a ∈ closure (Ioi a ∩ s) := by
   constructor
   · rintro ⟨c, d, hs, hc, hcd⟩
-    have : Tendsto (a + d ·) atTop (𝓝 a) := by
-      simpa only [add_zero] using tendsto_const_nhds.add
-        (tangentConeAt.lim_zero _ (tendsto_abs_atTop_atTop.comp hc) hcd)
+    have : Tendsto (d · + a) atTop (𝓝 a) := by
+      simpa only [zero_add] using
+        (tangentConeAt.lim_zero _ (tendsto_abs_atTop_atTop.comp hc) hcd).add
+        tendsto_const_nhds
     apply mem_closure_of_tendsto this
     filter_upwards [hc.eventually_gt_atTop 0, hcd.eventually (lt_mem_nhds one_pos), hs]
       with n hcn hcdn hdn
@@ -241,7 +242,7 @@ lemma one_mem_posTangentConeAt_iff_mem_closure :
   · intro h
     apply mem_posTangentConeAt_of_frequently_mem
     rw [mem_closure_iff_frequently, ← map_add_left_nhds_zero, frequently_map] at h
-    simpa [nhdsWithin, frequently_inf_principal] using h
+    simpa [nhdsWithin, frequently_inf_principal, add_comm a] using h
 
 lemma one_mem_posTangentConeAt_iff_frequently :
     1 ∈ posTangentConeAt s a ↔ ∃ᶠ x in 𝓝[>] a, x ∈ s := by

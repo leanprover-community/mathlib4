@@ -914,9 +914,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
 
-instance : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
-instance : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
-instance : IsTopologicalAddGroup (TangentSpace I x) := inferInstanceAs (IsTopologicalAddGroup E)
+instance : NormedAddCommGroup (TangentSpace I x) := inferInstanceAs (NormedAddCommGroup E)
+instance : NormedSpace 𝕜 (TangentSpace I x) := inferInstanceAs (NormedSpace 𝕜 E)
 instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 
