@@ -72,7 +72,7 @@ lemma getElemsInNF (α β γ : ℂ) (hα : IsAlgebraic ℚ α)
     adjoin_simple_le_iff.1 fun _ hx =>
     hac ((adjoin_le_adjoin_more α γ hα hγ).2 hx)⟩
 
-open Differentiable
+open Differentiable AnalyticAt
 
 theorem zero_if_order_inf : ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z),
   (∀ z, f z = 0) → AnalyticAt.order (hf z) = ⊤ := by
@@ -84,7 +84,7 @@ theorem zero_if_order_inf : ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ 
     · intros x
       exact h0 x
 
-theorem order_inf_if_zero: ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z),
+theorem order_inf_if_zero : ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z),
  AnalyticAt.order (hf z) = ⊤ → (∀ z, f z = 0) := by
   intros f z hf hr
   have := AnalyticAt.order_eq_top_iff (hf z)
@@ -100,21 +100,18 @@ theorem order_inf_if_zero: ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f
   · exact trivial
   · exact analyticAt_const
 
+lemma zero_iff_order_inf : ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z),
+  (∀ z, f z = 0) ↔ AnalyticAt.order (hf z) = ⊤ := by
+  intros f z hf
+  constructor
+  · exact zero_if_order_inf f z hf
+  · exact order_inf_if_zero f z hf
+
 lemma analytic_iter_deriv (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z) :
   ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z := by
   intro z
-  have H : AnalyticAt ℂ (iteratedDeriv 0 f) z := hf z
-  simp only at H
-  have := AnalyticAt.iterated_deriv (hf z) k
-  unfold deriv at this
-  unfold iteratedDeriv
-  conv => enter [2]; ext x;  rw [← iteratedDeriv_eq_iteratedFDeriv]
-  simp [iteratedDeriv] at this
-  have h : ((fun f x ↦ deriv f x)^[k] f) = (iteratedDeriv k f) := by {
-    exact Eq.symm iteratedDeriv_eq_iterate
-  }
-  rw [← h]
-  exact this
+  rw [← Eq.symm iteratedDeriv_eq_iterate]
+  exact AnalyticAt.iterated_deriv (hf z) k
 
 lemma eq_order_sub_one (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
  (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z) :
@@ -123,6 +120,10 @@ lemma eq_order_sub_one (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f
     have := AnalyticAt.iterated_deriv (hf z) k
     sorry
   }
+
+-- have hfoo : ∀ (z : ℂ), AnalyticAt ℂ (iteratedDeriv k f) z :=
+ -- by {exact fun z ↦ analytic_iter_deriv k f hf z}
+-- have := order_inf_if_zero (iteratedDeriv k f) z hfoo
 
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
   ∀ n (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z) (ho : AnalyticAt.order (hf z) ≠ ⊤),
@@ -138,31 +139,49 @@ lemma iterated_deriv_eq_zero_iff_order_eq_n :
     constructor
     · intros k hk
       sorry
-    · sorry
+    · by_contra H
+      sorry
+      -- have hfoo : ∀ (z : ℂ), AnalyticAt ℂ (iteratedDeriv k f) z :=
+       -- by {exact fun z ↦ analytic_iter_deriv k f hf z}
+      -- have := order_inf_if_zero (iteratedDeriv k f) z hfoo
 
-lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ (f : ℂ → ℂ) z₀ (hf : ∀ z, AnalyticAt ℂ f z),
- (∀ k < n, iteratedDeriv k f z₀ = 0) → n ≤ AnalyticAt.order (hf z₀) := by sorry
+lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ (f : ℂ → ℂ) z₀ (hf : ∀ z, AnalyticAt ℂ f z)
+   (ho : ∀z, AnalyticAt.order (hf z) ≠ ⊤),
+ (∀ k < n, iteratedDeriv k f z₀ = 0) → n ≤ AnalyticAt.order (hf z₀) := by
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+intros f z hf ho hd
+rw [le_iff_eq_or_lt]
+left
+apply Eq.symm
+rw [← iterated_deriv_eq_zero_iff_order_eq_n]
+constructor
+· apply hd
+· sorry
+· exact ho z
+· sorry
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#exit
 lemma cexp_mul : deriv (fun x => cexp (c * x)) x = c * cexp (c * x) := by
   change deriv (fun x => exp ((fun x => c * x) x)) x = c * exp (c * x)
   rw [deriv_cexp]
