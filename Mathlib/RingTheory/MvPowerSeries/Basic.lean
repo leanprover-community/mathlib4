@@ -387,6 +387,15 @@ theorem coeff_zero_X (s : σ) : coeff R (0 : σ →₀ ℕ) (X s : MvPowerSeries
 theorem commute_X (φ : MvPowerSeries σ R) (s : σ) : Commute φ (X s) :=
   φ.commute_monomial.mpr fun _m => Commute.one_right _
 
+theorem X_mul {φ : MvPowerSeries σ R} {s : σ} : X s * φ = φ * X s :=
+  φ.commute_X s |>.symm.eq
+
+theorem commute_X_pow (φ : MvPowerSeries σ R) (s : σ) (n : ℕ) : Commute φ (X s ^ n) :=
+  φ.commute_X s |>.pow_right _
+
+theorem X_pow_mul {φ : MvPowerSeries σ R} {s : σ} {n : ℕ} : X s ^ n * φ = φ * X s ^ n :=
+  φ.commute_X_pow s n |>.symm.eq
+
 theorem X_def (s : σ) : X s = monomial R (single s 1) 1 :=
   rfl
 
