@@ -83,9 +83,9 @@ theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : 
       simp_rw [mul_one]
       congr! 2; ring
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x * |x| ^ q * rexp (-|x| ^ p) := by
-      simp_rw [integral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter,
-        volume_Ioo, sub_neg_eq_add, ← two_mul, ENNReal.toReal_ofReal (by positivity : 0 ≤ 2 * π),
-        smul_eq_mul, mul_one, mul_comm]
+      simp_rw [integral_const, measureReal_restrict_apply MeasurableSet.univ, Set.univ_inter,
+        volume_real_Ioo_of_le (a := -π) (b := π) (by linarith [pi_nonneg]),
+        sub_neg_eq_add, ← two_mul, smul_eq_mul, mul_one, mul_comm]
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x ^ (q + 1) * rexp (-x ^ p) := by
       congr 1
       refine setIntegral_congr_fun measurableSet_Ioi (fun x hx => ?_)
@@ -110,9 +110,9 @@ theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) 
       simp_rw [mul_one]
       congr! 2; ring
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x * |x| ^ q * rexp (- b * |x| ^ p) := by
-      simp_rw [integral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter,
-        volume_Ioo, sub_neg_eq_add, ← two_mul, ENNReal.toReal_ofReal (by positivity : 0 ≤ 2 * π),
-        smul_eq_mul, mul_one, mul_comm]
+      simp_rw [integral_const, measureReal_restrict_apply MeasurableSet.univ, Set.univ_inter,
+        volume_real_Ioo_of_le (a := -π) (b := π) (by linarith [pi_nonneg]),
+        sub_neg_eq_add, ← two_mul, smul_eq_mul, mul_one, mul_comm]
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x ^ (q + 1) * rexp (-b * x ^ p) := by
       congr 1
       refine setIntegral_congr_fun measurableSet_Ioi (fun x hx => ?_)

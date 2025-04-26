@@ -269,7 +269,10 @@ theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : Meas
 
 section
 
-/-- The Lebesgue integral is zero iff the function is a.e. zero. -/
+/-- The Lebesgue integral is zero iff the function is a.e. zero.
+
+The measurability assumption is necessary, otherwise there are counterexamples: for instance, the
+conclusion fails if `f` is the characteristic function of a Vitali set. -/
 @[simp]
 theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
     ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 := by
@@ -294,10 +297,14 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
   have res := measure_iUnion_null_iff.mpr fun n ↦ meas_levels_0 _ (bu n).1
   rwa [← u_union] at res
 
+/-- The measurability assumption is necessary, otherwise there are counterexamples: for instance,
+the conclusion fails if `f` is the characteristic function of a Vitali set. -/
 @[simp]
 theorem lintegral_eq_zero_iff {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
   lintegral_eq_zero_iff' hf.aemeasurable
 
+/-- The measurability assumption is necessary, otherwise there are counterexamples: for instance,
+the conclusion fails if `s = univ` and `f` is the characteristic function of a Vitali set. -/
 theorem setLIntegral_eq_zero_iff' {s : Set α} (hs : MeasurableSet s)
     {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.restrict s)) :
     ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
@@ -311,9 +318,11 @@ theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
     (0 < ∫⁻ a, f a ∂μ) ↔ 0 < μ (Function.support f) := by
   simp [pos_iff_ne_zero, hf, Filter.EventuallyEq, ae_iff, Function.support]
 
-theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Set α} :
+theorem setLIntegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Set α} :
     0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
   rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
+
+@[deprecated (since := "2025-04-22")] alias setLintegral_pos_iff := setLIntegral_pos_iff
 
 end
 
@@ -591,10 +600,12 @@ lemma lintegral_piecewise (hs : MeasurableSet s) (f g : α → ℝ≥0∞) [∀ 
   · exact setLIntegral_congr_fun hs <| ae_of_all μ fun _ ↦ Set.piecewise_eq_of_mem _ _ _
   · exact setLIntegral_congr_fun hs.compl <| ae_of_all μ fun _ ↦ Set.piecewise_eq_of_not_mem _ _ _
 
-theorem setLintegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
+theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
     (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ := by
   rw [← lintegral_add_compl (μ := μ) f hsm, ENNReal.add_sub_cancel_left hfs]
+
+@[deprecated (since := "2025-04-22")] alias setLintegral_compl := setLIntegral_compl
 
 theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
     (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
