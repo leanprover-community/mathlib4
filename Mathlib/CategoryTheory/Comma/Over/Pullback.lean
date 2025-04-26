@@ -31,13 +31,14 @@ Show `star X` itself has a right adjoint provided `C` is cartesian closed and ha
 
 noncomputable section
 
-universe v u
+universe v v₂ u u₂
 
 namespace CategoryTheory
 
 open Category Limits Comonad
 
 variable {C : Type u} [Category.{v} C] (X : C)
+variable {D : Type u₂} [Category.{v₂} D]
 
 
 namespace Over
@@ -82,8 +83,27 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
   conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
     (Over.mapComp _ _).symm
 
-instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAdjoint  :=
+instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAdjoint :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
+
+open pullback in
+/-- A functor `F : T ⥤ D` induces a functor `Over X ⥤ Over (F.obj X)` in the obvious way. -/
+@[simps]
+def postAdjunctionLeft {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
+    post F ⊣ post G ⋙ pullback (a.unit.app X) where
+  unit.app A := homMk <| lift (a.unit.app A.left) A.hom (by aesop_cat)
+  counit.app A := homMk (F.map (fst _ _) ≫ a.counit.app A.left) <| by
+    simp only [Functor.comp_obj, post_obj, Functor.id_obj, pullback_obj_left, mk_left, mk_hom,
+      pullback_obj_hom, Functor.const_obj_obj, assoc]
+    calc
+          F.map (fst (G.map A.hom) (a.unit.app X)) ≫ a.counit.app A.left ≫ A.hom
+      _ = F.map (fst (G.map A.hom) (a.unit.app X) ≫ G.map A.hom) ≫ a.counit.app (F.obj X) := by
+        simp
+      _ = F.map (snd (G.map A.hom) (a.unit.app X) ≫ a.unit.app X) ≫ a.counit.app (F.obj X) := by
+        rw [condition]
+      _ = F.map (snd (G.map A.hom) (a.unit.app X)) := by simp
+  counit.naturality {A B} f := by ext; simp [← Functor.map_comp_assoc, -Functor.map_comp]; simp
+  left_triangle_components A := by ext; simp [← Functor.map_comp_assoc, -Functor.map_comp]
 
 open Limits
 
@@ -166,8 +186,29 @@ def pushoutComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pushout (f ≫ g) ≅ 
 @[deprecated (since := "2025-04-15")]
 noncomputable alias pullbackComp := pushoutComp
 
-instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint  :=
+instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
+
+omit [HasPushouts C] in
+open pushout in
+/-- If `F` is left adjoint and its source category has pullbacks, then so is
+`post F : Over X ⥤ Over (F X)`. -/
+@[simps]
+def postAdjunctionRight [HasPushouts D] {Y : D} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
+    post F ⋙ pushout (a.counit.app Y) ⊣ post G where
+  counit.app A := homMk <| desc (a.counit.app A.right) A.hom (by aesop_cat)
+  unit.app A := homMk (a.unit.app A.right ≫ G.map (inl _ _)) <| by
+    simp only [Functor.id_obj, Functor.const_obj_obj, Functor.comp_obj, post_obj, pushout_obj,
+      mk_right, mk_hom]
+    calc
+          A.hom ≫ a.unit.app A.right ≫ G.map (inl (F.map A.hom) (a.counit.app Y))
+      _ = a.unit.app (G.obj Y) ≫ G.map (F.map A.hom ≫ inl (F.map A.hom) (a.counit.app Y)) := by
+        simp
+      _ = a.unit.app (G.obj Y) ≫ G.map (a.counit.app Y ≫ inr (F.map A.hom) (a.counit.app Y)) := by
+        rw [condition]
+      _ = G.map (inr (F.map A.hom) (a.counit.app Y)) := by simp
+  unit.naturality {A B} f := by ext; simp [← Functor.map_comp]; simp
+  right_triangle_components A := by ext; simp [← Functor.map_comp]
 
 /-- The category under any object `X` factors through the category under the initial object `I`. -/
 @[simps!]
