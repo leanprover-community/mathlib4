@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.Finite
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Class numbers of number fields
@@ -77,6 +78,25 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le
   refine ⟨1, fun C ↦ ?_⟩
   obtain ⟨I, rfl, hI⟩ := exists_ideal_in_class_of_norm_le C
   simpa [← ClassGroup.mk0_eq_one_iff] using h _ hI
+
+theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_prime
+    (h : ∀ (I : (Ideal (𝓞 K))⁰), (I : Ideal (𝓞 K)).IsPrime →
+      absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
+        ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|) →
+      Submodule.IsPrincipal (I : Ideal (𝓞 K))) :
+    IsPrincipalIdealRing (𝓞 K) := by
+  refine RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le (fun I hI ↦ ?_)
+  rw [← mem_isPrincipalSubmonoid_iff,
+    ← prod_normalizedFactors_eq_self (nonZeroDivisors.coe_ne_zero I)]
+  refine Submonoid.multiset_prod_mem _ _ (fun J hJ ↦ mem_isPrincipalSubmonoid_iff.mp ?_)
+  by_cases hJ0 : J = 0
+  · simpa [hJ0] using bot_isPrincipal
+  rw [← Subtype.coe_mk J (mem_nonZeroDivisors_of_ne_zero hJ0)]
+  refine h _ ?_ ?_
+  · exact ((mem_normalizedFactors_iff (nonZeroDivisors.coe_ne_zero I)).mp hJ).1
+  · exact (cast_le.mpr <| le_of_dvd (absNorm_pos_of_nonZeroDivisors I) <|
+      absNorm_dvd_absNorm_of_le (le_of_dvd (UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors
+      hJ))).trans hI
 
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ nrComplexPlaces K *
