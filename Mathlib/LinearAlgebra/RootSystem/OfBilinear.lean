@@ -144,8 +144,8 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
         dsimp only
         rw [h2x z, ← h2y z, hxy, h2xy] }
   root_coroot_two x := by
-    dsimp only [coe_setOf, Embedding.coe_subtype, PerfectPairing.toLin_apply, mem_setOf_eq, id_eq,
-      eq_mp_eq_cast, RingHom.id_apply, eq_mpr_eq_cast, cast_eq, LinearMap.sub_apply,
+    dsimp only [coe_setOf, Embedding.coe_subtype, PerfectPairing.toLinearMap_apply, mem_setOf_eq,
+      id_eq, eq_mp_eq_cast, RingHom.id_apply, eq_mpr_eq_cast, cast_eq, LinearMap.sub_apply,
       Embedding.coeFn_mk, PerfectPairing.flip_apply_apply]
     exact coroot_apply_self B x.2
   reflection_perm x :=
