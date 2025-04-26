@@ -329,6 +329,7 @@ public import Mathlib.Algebra.GCDMonoid.PUnit
 public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.GradedMulAction
 public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Action.BigOperators
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Equidecomp
