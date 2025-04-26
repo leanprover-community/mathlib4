@@ -50,16 +50,19 @@ lemma preparation_lift_triv {n : ℕ} (neq0 : n = 0) [m.IsMaximal] (f : (R ⧸ m
   have order_eq : f.order = k := by
     rw [Eq.comm, PowerSeries.order_eq]
     refine ⟨fun i hi ↦ ?_, fun i hi ↦ ?_⟩
-    · have : i = f.order.lift (order_finite_iff_ne_zero.mpr ne0) := by simp [← hi]
-      simpa [eq_zero_iff_mem, eq_bot', this] using coeff_order (order_finite_iff_ne_zero.mpr ne0)
+    · have : i = f.order.toNat := by simp [← hi]
+      simpa [this, eq_zero_iff_mem, eq_bot'] using coeff_order ne0
     · simpa [eq_zero_iff_mem, eq_bot'] using coeff_of_lt_order i hi
   let max' : (m ^ (n + 1)).IsMaximal := by simpa only [neq0, zero_add, pow_one]
   let hField : Field (R ⧸ m ^ (n + 1)) := Ideal.Quotient.field (m ^ (n + 1))
   have muleq : f = ((Polynomial.X (R := (R ⧸ m ^ (n + 1))) ^ k') : (R ⧸ m ^ (n + 1))[X]) *
     f.Unit_of_divided_by_X_pow_order := by
     rw [Unit_of_divided_by_X_pow_order_nonzero ne0]
-    convert (self_eq_X_pow_order_mul_divided_by_X_pow_order ne0).symm
-    simp [order_eq, k']
+    convert (X_pow_order_mul_divXPowOrder (f := f)).symm
+    simp only [Polynomial.coe_pow, Polynomial.coe_X, order_eq, k']
+    congr
+    rw [← ENat.coe_inj]
+    simpa using (coe_toNat_order ntriv).symm
   use Unit_of_divided_by_X_pow_order f
   constructor
   · use Polynomial.X ^ k'
