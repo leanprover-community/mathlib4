@@ -316,15 +316,15 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 
 /-! Test a permutation that is too big for the list of arguments. -/
 /--
-info: reorderForall tried to reorder a list that was too small:
-{α : Type u_1} → [inst : Mul α] → α → α → α → α
-[α, inst✝, x, y, z]
-[[2, 3, 50]]
+info: the permutation [[2,
+  3,
+  50]] provided by the reorder config option is too large, the type {α : Type u_1} →
+  [inst : Mul α] → α → α → α → α has only 5 arguments
 ---
-info: reorderLambda tried to reorder a list that was too small:
-fun {α} [Mul α] x y z => x * y * z
-[α, inst✝, x, y, z]
-[[2, 3, 50]]
+info: the permutation [[2,
+  3,
+  50]] provided by the reorder config option is too large, the type fun {α} [Mul α] x y z =>
+  x * y * z has only 5 arguments
 -/
 #guard_msgs in
 @[to_additive (reorder := 3 4 51)]
