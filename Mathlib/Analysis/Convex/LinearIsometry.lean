@@ -11,14 +11,26 @@ import Mathlib.Analysis.Normed.Operator.LinearIsometry
 
 In this file we prove some basic lemmas about (strict) convexity and linear isometries.
 
-## TODO
-
-- generalize `StrictConvex.linearIsometry_preimage` etc to `LinearMapClass`;
-
 -/
 
 open Function Set Metric
 open scoped Convex
+
+section SeminormedAddCommGroup
+
+variable {𝕜 E F : Type*}
+  [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+  [SeminormedAddCommGroup F] [NormedSpace ℝ F]
+
+@[simp]
+lemma LinearIsometryEquiv.strictConvex_preimage {s : Set F} (e : E ≃ₗᵢ[𝕜] F) :
+    StrictConvex ℝ (e ⁻¹' s) ↔ StrictConvex ℝ s :=
+  ⟨fun h ↦ LeftInverse.preimage_preimage e.right_inv s ▸
+    h.linear_preimage e.symm.toLinearIsometry.toLinearMap e.symm.continuous e.symm.injective,
+    fun h ↦ h.linear_preimage e.toLinearIsometry.toLinearMap e.continuous e.injective⟩
+
+
+end SeminormedAddCommGroup
 
 variable {E E' F F' : Type*}
   [SeminormedAddCommGroup E] [NormedSpace ℝ E]
@@ -29,13 +41,6 @@ variable {E E' F F' : Type*}
 lemma StrictConvex.linearIsometry_preimage {s : Set F} (hs : StrictConvex ℝ s) (e : E' →ₗᵢ[ℝ] F) :
     StrictConvex ℝ (e ⁻¹' s) :=
   hs.linear_preimage _ e.continuous e.injective
-
-@[simp]
-lemma LinearIsometryEquiv.strictConvex_preimage {s : Set F} (e : E ≃ₗᵢ[ℝ] F) :
-    StrictConvex ℝ (e ⁻¹' s) ↔ StrictConvex ℝ s :=
-  ⟨fun h ↦ LeftInverse.preimage_preimage e.right_inv s ▸
-    h.linear_preimage e.symm.toLinearIsometry.toLinearMap e.symm.continuous e.symm.injective,
-    fun h ↦ h.linear_preimage e.toLinearIsometry.toLinearMap e.continuous e.injective⟩
 
 @[simp]
 lemma LinearIsometryEquiv.strictConvex_image {s : Set E} (e : E ≃ₗᵢ[ℝ] F) :
