@@ -101,7 +101,7 @@ lemma mapComp'_inv_comp_mapComp'_hom :
   simp
 
 @[reassoc]
-lemma mapComp'_hom_comp_whiskerRight_mapComp'_hom :
+lemma mapComp'_hom_comp_mapComp'_hom_whiskerRight :
     (F.mapComp' f₀₂ f₂₃ f (by rw [hf, h₀₂, h₁₃, Category.assoc])).hom ≫
       (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom ▷ F.map f₂₃ =
     (F.mapComp' f₀₁ f₁₃ f hf).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
@@ -118,7 +118,7 @@ lemma whiskerLeft_mapComp'_inv_comp_mapComp'_inv :
     F.mapComp'_inv_comp_mapComp'_hom _ _ _ _ _ _ h₀₂ h₁₃ hf]
 
 @[reassoc]
-lemma whiskerRight_mapComp'_inv_comp_mapComp'_inv :
+lemma mapComp'_inv_whiskerRight_comp_mapComp'_inv :
     (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ ≫
       (F.mapComp' f₀₂ f₂₃ f (by rw [hf, h₀₂, h₁₃, Category.assoc])).inv =
     (α_ _ _ _).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv ≫
