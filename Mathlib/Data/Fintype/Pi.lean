@@ -164,16 +164,15 @@ open Option Finset Fin Fintype Equiv Function
 
 -- For performance reasons, the fintype of colorings is constructed inductively
 -- instead of simply filtering all coloring for valid ones.
+-- Note: `inst` is not a typeclass argument because `match` does not generalize these correctly.
 private def finHomFintype {n m} {r : Fin n → Fin n → Prop} {s : Fin m → Fin m → Prop}
-    [DecidableRel r] [DecidableRel s] : Fintype (r →r s) :=
+    (inst : DecidableRel r := by infer_instance) [DecidableRel s] : Fintype (r →r s) :=
   -- induct on the number of vertices
-  r |> match (motive :=
-    ∀ n (r : Fin n → Fin n → Prop) [DecidableRel r],
-      Fintype (r →r s)) n with
+  match n with
   | 0 =>
     -- empty rel hom
-    fun r _ ↦ ⟨{(RelEmbedding.ofIsEmpty r s).toRelHom}, by simp [RelHom.ext_iff]⟩
-  | n + 1 => fun r _ ↦ by
+    ⟨{(RelEmbedding.ofIsEmpty r s).toRelHom}, by simp [RelHom.ext_iff]⟩
+  | n + 1 => by
     -- pair the valid homs previously obtained with all possible choices for the new target
     refine ⟨(@univ _ (@instFintypeProd _ _ finHomFintype _)).filterMap
       (fun p : (castSucc ⁻¹'o r →r s) × Fin m ↦ ?_) ?_, ?_⟩
