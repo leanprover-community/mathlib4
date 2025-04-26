@@ -854,4 +854,3 @@ instance isMonoidal_of_ChosenFiniteProducts (α : F ⟶ G) : IsMonoidal α where
 end NatTrans
 
 end CategoryTheory
-#min_imports
