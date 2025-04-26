@@ -56,7 +56,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   haveI' : $e =Q ($a = $b) := ⟨⟩
   guard <|← withNewMCtxDepth <| isDefEq f q(Eq (α := $α))
   let ra ← derive a; let rb ← derive b
-  let rec intArm (rα : Q(Ring $α)) := do
+  let intArm (rα : Q(Ring $α)) := do
     let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
     if za = zb then
       haveI' : $na =Q $nb := ⟨⟩
@@ -66,7 +66,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isFalse q(isInt_eq_false $pa $pb $r)
     else
       failure --TODO: nonzero characteristic ≠
-  let rec nnratArm (dsα : Q(DivisionSemiring $α)) := do
+  let nnratArm (dsα : Q(DivisionSemiring $α)) := do
     let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dsα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dsα
     if qa = qb then
       haveI' : $na =Q $nb := ⟨⟩
@@ -78,7 +78,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isFalse q(isNNRat_eq_false $pa $pb $r)
     else
       failure --TODO: nonzero characteristic ≠
-  let rec ratArm (dα : Q(DivisionRing $α)) := do
+  let ratArm (dα : Q(DivisionRing $α)) := do
     let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
     if qa = qb then
       haveI' : $na =Q $nb := ⟨⟩

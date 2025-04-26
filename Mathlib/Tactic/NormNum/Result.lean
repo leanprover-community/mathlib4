@@ -205,15 +205,27 @@ inductive IsNNRat [Semiring α] (a : α) (num : ℕ) (denom : ℕ) : Prop
   | mk (inv : Invertible (denom : α)) (eq : a = num * ⅟(denom : α))
 
 /--
+A "raw nnrat cast" is an expression of the form:
+
+* `(Nat.rawCast lit : α)` where `lit` is a raw natural number literal
+* `(NNRat.rawCast n d : α)` where `n` is a raw nat literal, `d` is a raw nat literal, and `d` is not
+  `1` or `0`.
+
+This representation is used by tactics like `ring` to decrease the number of typeclass arguments
+required in each use of a number literal at type `α`.
+-/
+@[simp]
+def _root_.NNRat.rawCast [DivisionSemiring α] (n : ℕ) (d : ℕ) : α := n / d
+
+/--
 A "raw rat cast" is an expression of the form:
 
 * `(Nat.rawCast lit : α)` where `lit` is a raw natural number literal
 * `(Int.rawCast (Int.negOfNat lit) : α)` where `lit` is a nonzero raw natural number literal
-* `(Rat.rawCast n d : α)` where `n` is a raw int literal, `d` is a raw nat literal, and `d` is not
+* `(NNRat.rawCast n d : α)` where `n` is a raw nat literal, `d` is a raw nat literal, and `d` is not
   `1` or `0`.
-
-(where a raw int literal is of the form `Int.ofNat lit` or `Int.negOfNat nzlit` where `lit` is a raw
-nat literal)
+* `(Rat.rawCast (Int.negOfNat n) d : α)` where `n` is a raw nat literal,
+  `d` is a raw nat literal, `n` is not `0`, and `d` is not `1` or `0`.
 
 This representation is used by tactics like `ring` to decrease the number of typeclass arguments
 required in each use of a number literal at type `α`.
@@ -221,20 +233,17 @@ required in each use of a number literal at type `α`.
 @[simp]
 def _root_.Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
 
-@[simp]
-def _root_.NNRat.rawCast [DivisionSemiring α] (n : ℕ) (d : ℕ) : α := n / d
-
 theorem IsNNRat.to_isNat {α} [Semiring α] : ∀ {a : α} {n}, IsNNRat a (n) (nat_lit 1) → IsNat a n
   | _, num, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
 
 theorem IsRat.to_isNNRat {α} [Ring α] : ∀ {a : α} {n d}, IsRat a (.ofNat n) (d) → IsNNRat a n d
-  | _, _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨inv, by simp⟩
+  | _, _, _, ⟨inv, rfl⟩ => ⟨inv, by simp⟩
 
 theorem IsNat.to_isNNRat {α} [Semiring α] : ∀ {a : α} {n}, IsNat a n → IsNNRat a (n) (nat_lit 1)
   | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
 
 theorem IsNNRat.to_isRat {α} [Ring α] : ∀ {a : α} {n d}, IsNNRat a n d → IsRat a (.ofNat n) d
-  | _, _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨inv, by simp⟩
+  | _, _, _, ⟨inv, rfl⟩ => ⟨inv, by simp⟩
 
 theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n (nat_lit 1) → IsInt a n
   | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
