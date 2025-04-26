@@ -282,7 +282,7 @@ variable {σ1 : Type v} {σ2 : Type v}
 /-- `stepProd M₁ M₂` computes the transition for `M₁ ∩ M₂`. -/
 def stepProd (M1 : NFA α σ1) (M2 : NFA α σ2)
   (s : σ1 × σ2) (a : α) : Set (σ1 × σ2) :=
-    { s' : σ1 × σ2 | s'.1 ∈ M1.step s.1 a ∧ s'.2 ∈ M2.step s.2 a }
+    M1.step s.1 a ×ˢ M2.step s.2 a
 
 /-- NFAs are closed under intersection:
   Given NFAs `M₁` and `M₂`, `M₁ ∩ M₂` is a NFA such that
@@ -290,27 +290,24 @@ def stepProd (M1 : NFA α σ1) (M2 : NFA α σ2)
 def intersect (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 × σ2) where
   start : Set (σ1 × σ2) := M1.start ×ˢ M2.start
   step : σ1 × σ2 → α → Set (σ1 × σ2) := stepProd M1 M2
-  accept : Set (σ1 × σ2) := { s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept }
+  accept : Set (σ1 × σ2) := M1.accept ×ˢ M2.accept
 
 lemma intersect_start_spec {M1 : NFA α σ1} {M2 : NFA α σ2} :
-    (intersect M1 M2).start = { s : σ1 × σ2 | s.1 ∈ M1.start ∧ s.2 ∈ M2.start } := by rfl
+    (intersect M1 M2).start = M1.start ×ˢ M2.start := by rfl
 
 lemma intersect_biUnion_spec
   {a : α} {S1 : Set σ1} {S2 : Set σ2} {M1 : NFA α σ1} {M2 : NFA α σ2} :
     (⋃ s : σ1 × σ2,
       ⋃ (_ : s.1 ∈ S1 ∧ s.2 ∈ S2),
         stepProd M1 M2 s a) =
-    { s' : σ1 × σ2 |
-      s'.1 ∈ (⋃ s1 ∈ S1, M1.step s1 a) ∧
-      s'.2 ∈ (⋃ s2 ∈ S2, M2.step s2 a) } := by
+      (⋃ s1 ∈ S1, M1.step s1 a) ×ˢ (⋃ s2 ∈ S2, M2.step s2 a) := by
   ext ⟨s1', s2'⟩
   simp [Set.mem_setOf, Set.mem_iUnion₂, Set.mem_iUnion₂, stepProd]
   tauto
 
 lemma intersect_acceptsFrom
   {S1 : Set σ1} {S2 : Set σ2} {M1 : NFA α σ1} {M2 : NFA α σ2} :
-    acceptsFrom (intersect M1 M2)
-      { s : σ1 × σ2 | s.1 ∈ S1 ∧ s.2 ∈ S2 }
+    acceptsFrom (intersect M1 M2) (S1 ×ˢ S2)
     = M1.acceptsFrom S1 ∩ M2.acceptsFrom S2 := by
   ext xs
   dsimp [acceptsFrom, evalFrom, intersect, accept]
