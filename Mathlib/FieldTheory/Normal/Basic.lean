@@ -17,7 +17,7 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
 
 ## Additional Results
 
-* `IsQuadraticAlgebra.Normal`: a quadratic extension, given as a class
+* `IsQuadraticAlgebra.normal`: a quadratic extension, given as a class
   `IsQuadraticAlgebra`, is normal.
 
 -/
@@ -283,7 +283,7 @@ end minpoly
 /--
 A quadratic extension is normal.
 -/
-instance IsQuadraticAlgebra.Normal (F K : Type*) [Field F] [Field K] [Algebra F K]
+instance IsQuadraticAlgebra.normal (F K : Type*) [Field F] [Field K] [Algebra F K]
     [IsQuadraticAlgebra F K] :
     Normal F K where
   splits' := by
