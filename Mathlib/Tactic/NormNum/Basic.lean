@@ -545,7 +545,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let .app (.app f (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let dsα ← inferDivisionSemiring α
   haveI' : $e =Q $a / $b := ⟨⟩
-  guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := $α))
+  guard <| ← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := $α))
   let rab ← derive (q($a * $b⁻¹) : Q($α))
   if let some ⟨qa, na, da, pa⟩ := rab.toNNRat' dsα then
     assumeInstancesCommute
