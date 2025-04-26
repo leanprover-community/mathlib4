@@ -101,16 +101,17 @@ lemma Brooks1 [DecidableRel G.Adj] [LocallyFinite G] [DecidableEq α] (hk : 3 �
     G.PartColorable k ({a | a ∈ p.support} ∪ {x₃, x₂, x₁}) := by
   have htp := ((concat_isPath_iff _ hj2).2 ⟨hp.takeUntil hj,
               fun a ↦ h2 ((p.support_takeUntil_subset hj) a)⟩).reverse
-  have hdis1 : Disjoint {x₁, x₃} {a | a ∈ (p.dropUntil xⱼ hj).support} := by
+  have hd1 : Disjoint {x₁, x₃} {a | a ∈ (p.dropUntil xⱼ hj).support} := by
     simp only [Set.disjoint_insert_left, Set.mem_setOf_eq, Set.disjoint_singleton_left]
     exact ⟨fun h ↦ h1 (p.support_dropUntil_subset hj h) ,
           fun h ↦ h3 (p.support_dropUntil_subset hj h)⟩
-  let C₀ := (G.partColoringOfNotAdj h13 ⟨0, show 0 < k by omega⟩)
-  let C₁ := C₀.of_tail_path (hp.dropUntil hj) (fun _ _ ↦ hbd _) hdis1
+  let C₀ := (G.partColoringOfNotAdj h13 (β := Fin k) ⟨0, show 0 < k by omega⟩)
+  let C₁ := C₀.of_tail_path (hp.dropUntil hj) (fun _ _ ↦ ((Fintype.card_fin k).symm ▸ (hbd _))) hd1
   have hj213 : C₁ x₁ = C₁ x₃ := by
-    have := (C₀.of_tail_path_extends (hp.dropUntil hj) (fun _ _ ↦ hbd _) hdis1)
+    have := (C₀.of_tail_path_extends (hp.dropUntil hj)
+            (fun _ _ ↦ (Fintype.card_fin k).symm ▸ (hbd _)) hd1)
     rw [this.2 (by simp), this.2 (by simp)]; rfl
-  exact ⟨(C₁.of_path_not_inj htp (fun _ _ ↦ hbd _) (by
+  exact ⟨(C₁.of_path_not_inj htp (fun _ _ ↦ (Fintype.card_fin k).symm ▸ (hbd _)) (by
     apply Set.disjoint_union_left.2
     simp only [Walk.reverse_concat, support_cons, support_reverse, List.mem_cons, mem_reverse,
       Set.disjoint_insert_left, Set.mem_setOf_eq, not_or, Set.disjoint_singleton_left]
@@ -303,8 +304,8 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
       -- more that `k` colors along the path.
       have hex : C₂ d.toProd.2 = C₂ y := by
         rw [C₁.insert_def , if_pos rfl, C₁.insert_def, if_neg hne.symm]
-      exact ⟨(C₂.of_path_not_inj hp.reverse (fun v hv ↦ hbd v) hdisj (by simp)
-        (by norm_cast; apply mem_insert_of_mem hy1) d.adj hd1 hne hex).copy
+      exact ⟨(C₂.of_path_not_inj hp.reverse (fun v hv ↦ (Fintype.card_fin k).symm ▸ (hbd v)) hdisj
+        (by simp) (by norm_cast; apply mem_insert_of_mem hy1) d.adj hd1 hne hex).copy
         (by rw [← List.coe_toFinset]; nth_rw 2 [← heq]; norm_cast)⟩
     · -- The cycle `c` has no edges into `s \ c` and so we can now color
       -- `c` and `s \ c` by induction and then join the colorings together
