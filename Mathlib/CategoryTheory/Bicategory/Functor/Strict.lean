@@ -56,7 +56,7 @@ lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶
 variable [Strict B]
 
 lemma mapComp'_comp_id {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
-    F.mapComp' f (𝟙 b₁) f (by nth_rw 1 [← Category.comp_id f]) =
+    F.mapComp' f (𝟙 b₁) f (by simp) =
     (ρ_ _).symm ≪≫ whiskerLeftIso _ (F.mapId b₁).symm := by
   ext
   rw [mapComp'_def]
@@ -66,7 +66,7 @@ lemma mapComp'_comp_id {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     Category.id_comp]
 
 lemma mapComp'_id_comp {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
-    F.mapComp' (𝟙 b₀) f f (by nth_rw 1 [← Category.id_comp f]) =
+    F.mapComp' (𝟙 b₀) f f (by simp) =
       (λ_ _).symm ≪≫ whiskerRightIso (F.mapId b₀).symm _ := by
   ext
   rw [mapComp'_def]
