@@ -392,15 +392,19 @@ lemma rpow_eq_const_mul_integral (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
 
 /-- The integral representation of the function `x ↦ x^p` (where `p ∈ (0, 1)`) . -/
 lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
-    ∃ μ : Measure ℝ, ∀ x, 0 ≤ x → x ^ p = ∫ t, rpowIntegrand₀₁ p t x ∂μ := by
+    ∃ μ : Measure ℝ, (∀ᵐ t ∂μ, 0 < t) ∧ ∀ x, 0 ≤ x → x ^ p = ∫ t, rpowIntegrand₀₁ p t x ∂μ := by
   let C : ℝ≥0 := ⟨(∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹, by
       rw [inv_nonneg]
       exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos hp⟩
   let μ : Measure ℝ := C • volume.restrict (Ioi 0)
-  refine ⟨μ, fun x hx => ?_⟩
-  have : C • ∫ t in Ioi 0, rpowIntegrand₀₁ p t x = (C : ℝ) • ∫ t in Ioi 0, rpowIntegrand₀₁ p t x :=
+  refine ⟨μ, ?_, fun x hx => ?_⟩
+  · refine Measure.ae_smul_measure ?_ _
+    filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
+    exact ht
+  · have : C • ∫ t in Ioi 0, rpowIntegrand₀₁ p t x
+        = (C : ℝ) • ∫ t in Ioi 0, rpowIntegrand₀₁ p t x :=
+      rfl
+    rw [integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx, this]
     rfl
-  rw [integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx, this]
-  rfl
 
 end Real
