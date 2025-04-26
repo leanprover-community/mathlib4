@@ -1,0 +1,15 @@
+name = "my_lean_project"
+version = "0.1.0"
+keywords = ["math"]
+defaultTargets = ["MyLeanProject"]
+
+[leanOptions]
+pp.unicode.fun = true # pretty-prints `fun a ↦ b`
+autoImplicit = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+
+[[lean_lib]]
+name = "MyLeanProject"
