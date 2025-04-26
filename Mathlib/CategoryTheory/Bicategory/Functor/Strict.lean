@@ -57,7 +57,7 @@ variable [Strict B]
 
 lemma mapComp'_comp_id {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     F.mapComp' f (𝟙 b₁) f (by simp) =
-    (ρ_ _).symm ≪≫ whiskerLeftIso _ (F.mapId b₁).symm := by
+      (ρ_ _).symm ≪≫ whiskerLeftIso _ (F.mapId b₁).symm := by
   ext
   rw [mapComp'_def]
   dsimp
