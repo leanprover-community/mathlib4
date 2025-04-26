@@ -218,9 +218,18 @@ lemma zpow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) :
     MeromorphicAt (fun z ↦ (f z) ^ n) x :=
   hf.zpow n
 
+theorem eventually_continuousAt {f : 𝕜 → E} {x : 𝕜}
+    (h : MeromorphicAt f x) : ∀ᶠ y in 𝓝[≠] x, ContinuousAt f y := by
+  obtain ⟨n, h⟩ := h
+  apply AnalyticAt.eventually_continuousAt at h
+
+
+
+/-- In a complete space, a function which is meromorphic at a point is analytic at all nearby
+points. The completeness assumption can be dispensed with if one assumes that `f` is meromorphic
+on a set around `x`, see `MeromorphicOn.eventually_analyticAt`. -/
 theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicAt f x) : ∀ᶠ y in 𝓝[≠] x, AnalyticAt 𝕜 f y := by
-  rw [MeromorphicAt] at h
   obtain ⟨n, h⟩ := h
   apply AnalyticAt.eventually_analyticAt at h
   refine (h.filter_mono ?_).mp ?_

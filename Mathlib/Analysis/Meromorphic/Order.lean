@@ -87,33 +87,115 @@ lemma order_eq_int_iff {n : ℤ} (hf : MeromorphicAt f x) : hf.order = n ↔
     exact ⟨fun h ↦ ⟨g, hg_an, hg_ne, h ▸ hg_eq⟩,
       AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
 
-lemma order_neg_iff_tendsto_cobounded (hf : MeromorphicAt f x) :
-    hf.order < 0 ↔ Tendsto f (𝓝[≠] x) (Bornology.cobounded E) := by
-  rcases lt_or_le hf.order 0 with h'f | h'f
-  · simp only [h'f, ← tendsto_norm_atTop_iff_cobounded, true_iff]
-    have : hf.order ≠ ⊤ := h'f.ne_top
-    obtain ⟨m, ho⟩ := WithTop.ne_top_iff_exists.mp this
-    have m_neg : m < 0 := by simpa [← ho] using h'f
-    rcases hf.order_eq_int_iff.1 ho.symm with ⟨g, g_an, gx, hg⟩
-    have A : Tendsto (fun z ↦ ‖(z - x) ^ m • g z‖) (𝓝[≠] x) atTop := by
-      simp only [norm_smul]
-      apply Filter.Tendsto.atTop_mul_pos (C := ‖g x‖) (by simp [gx]) _
-        g_an.continuousAt.continuousWithinAt.tendsto.norm
-      have : Tendsto (fun z ↦ (z - x)) (𝓝[≠] x) (𝓝[≠] 0) := by
-        refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
-        · have : ContinuousWithinAt (fun z ↦ z - x) ({x}ᶜ) x :=
-            ContinuousAt.continuousWithinAt (by fun_prop)
-          simpa using this.tendsto
-        · filter_upwards [self_mem_nhdsWithin] with y hy
-          simpa [sub_eq_zero] using hy
-      apply Tendsto.comp (NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop m_neg) this
-    apply A.congr'
-    filter_upwards [hg] with z hz using by simp [hz]
-  · simp only [lt_iff_not_ge, ge_iff_le, h'f, not_true_eq_false, false_iff]
+/-- If the order of a meromorphic is negative, then this function converges to infinity at this
+point. See also the iff version `tendsto_cobounded_iff_order_neg`. -/
+lemma tendsto_cobounded_of_order_neg (hf : MeromorphicAt f x) (ho : hf.order < 0) :
+    Tendsto f (𝓝[≠] x) (Bornology.cobounded E) := by
+  simp only [← tendsto_norm_atTop_iff_cobounded]
+  have : hf.order ≠ ⊤ := ho.ne_top
+  obtain ⟨m, hm⟩ := WithTop.ne_top_iff_exists.mp this
+  have m_neg : m < 0 := by simpa [← hm] using ho
+  rcases hf.order_eq_int_iff.1 hm.symm with ⟨g, g_an, gx, hg⟩
+  have A : Tendsto (fun z ↦ ‖(z - x) ^ m • g z‖) (𝓝[≠] x) atTop := by
+    simp only [norm_smul]
+    apply Filter.Tendsto.atTop_mul_pos (C := ‖g x‖) (by simp [gx]) _
+      g_an.continuousAt.continuousWithinAt.tendsto.norm
+    have : Tendsto (fun z ↦ (z - x)) (𝓝[≠] x) (𝓝[≠] 0) := by
+      refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
+      · have : ContinuousWithinAt (fun z ↦ z - x) ({x}ᶜ) x :=
+          ContinuousAt.continuousWithinAt (by fun_prop)
+        simpa using this.tendsto
+      · filter_upwards [self_mem_nhdsWithin] with y hy
+        simpa [sub_eq_zero] using hy
+    apply Tendsto.comp (NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop m_neg) this
+  apply A.congr'
+  filter_upwards [hg] with z hz using by simp [hz]
 
+/-- If the order of a meromorphic function is zero, then this function converges to a nonzero
+constant at this point. See also the iff version `tendsto_ne_zero_iff_order_eq_zero`. -/
+lemma tendsto_ne_zero_of_order_eq_zero (hf : MeromorphicAt f x) (ho : hf.order = 0) :
+    ∃ c ≠ 0, Tendsto f (𝓝[≠] x) (𝓝 c) := by
+  rcases hf.order_eq_int_iff.1 ho with ⟨g, g_an, gx, hg⟩
+  refine ⟨g x, gx, ?_⟩
+  apply g_an.continuousAt.continuousWithinAt.tendsto.congr'
+  filter_upwards [hg] with y hy using by simp [hy]
 
+/-- If the order of a meromorphic function is positive, then this function converges to zero
+at this point. See also the iff version `tendsto_zero_iff_order_pos`. -/
+lemma tendsto_zero_of_order_pos (hf : MeromorphicAt f x) (ho : 0 < hf.order) :
+    Tendsto f (𝓝[≠] x) (𝓝 0) := by
+  cases h'o : hf.order with
+  | top =>
+    apply tendsto_const_nhds.congr'
+    filter_upwards [hf.order_eq_top_iff.1 h'o] with y hy using hy.symm
+  | coe n =>
+    rcases hf.order_eq_int_iff.1 h'o with ⟨g, g_an, gx, hg⟩
+    lift n to ℕ using by simpa [h'o] using ho.le
+    have : (0 : E) = (x - x) ^ n • g x := by
+      have : 0 < n := by simpa [h'o] using ho
+      simp [zero_pow_eq_zero.2 this.ne']
+    rw [this]
+    have : ContinuousAt (fun z ↦ (z - x) ^ n • g z) x := by fun_prop
+    apply this.continuousWithinAt.tendsto.congr'
+    filter_upwards [hg] with y hy using by simp [hy]
 
-#exit
+/-- If the order of a meromorphic function is nonnegative, then this function converges
+at this point. See also the iff version `tendsto_nhds_iff_order_nonneg`. -/
+lemma tendsto_nhds_of_order_nonneg (hf : MeromorphicAt f x) (ho : 0 ≤ hf.order) :
+    ∃ c, Tendsto f (𝓝[≠] x) (𝓝 c) := by
+  rcases ho.eq_or_lt with ho | ho
+  · rcases hf.tendsto_ne_zero_of_order_eq_zero ho.symm with ⟨c, -, hc⟩
+    exact ⟨c, hc⟩
+  · exact ⟨0, hf.tendsto_zero_of_order_pos ho⟩
+
+/-- A meromorphic function converges to infinity iff its order is negative. -/
+lemma tendsto_cobounded_iff_order_neg (hf : MeromorphicAt f x) :
+    Tendsto f (𝓝[≠] x) (Bornology.cobounded E) ↔ hf.order < 0 := by
+  rcases lt_or_le hf.order 0 with ho | ho
+  · simp [ho, hf.tendsto_cobounded_of_order_neg]
+  · simp only [lt_iff_not_le, ho, not_true_eq_false, iff_false, ← tendsto_norm_atTop_iff_cobounded]
+    obtain ⟨c, hc⟩ := hf.tendsto_nhds_of_order_nonneg ho
+    exact not_tendsto_atTop_of_tendsto_nhds hc.norm
+
+/-- A meromorphic function converges to a point iff its is order if nonnegative. -/
+lemma tendsto_nhds_iff_order_nonneg (hf : MeromorphicAt f x) :
+    (∃ c, Tendsto f (𝓝[≠] x) (𝓝 c)) ↔ 0 ≤ hf.order := by
+  rcases lt_or_le hf.order 0 with ho | ho
+  · simp only [← not_lt, ho, not_true_eq_false, iff_false, not_exists]
+    intro c hc
+    apply not_tendsto_atTop_of_tendsto_nhds hc.norm
+    rw [tendsto_norm_atTop_iff_cobounded]
+    exact hf.tendsto_cobounded_of_order_neg ho
+  · simp [ho, hf.tendsto_nhds_of_order_nonneg ho]
+
+/-- A meromorphic function converges to a nonzero point iff its order is zero. -/
+lemma tendsto_ne_zero_iff_order_eq_zero (hf : MeromorphicAt f x) :
+    (∃ c ≠ 0, Tendsto f (𝓝[≠] x) (𝓝 c)) ↔ hf.order = 0 := by
+  rcases eq_or_ne hf.order 0 with ho | ho
+  · simp [ho, hf.tendsto_ne_zero_of_order_eq_zero ho]
+  simp only [ne_eq, ho, iff_false, not_exists, not_and]
+  intro c c_ne hc
+  rcases ho.lt_or_lt with ho | ho
+  · apply not_tendsto_atTop_of_tendsto_nhds hc.norm
+    rw [tendsto_norm_atTop_iff_cobounded]
+    exact hf.tendsto_cobounded_of_order_neg ho
+  · apply c_ne
+    exact tendsto_nhds_unique hc (hf.tendsto_zero_of_order_pos ho)
+
+/-- A meromorphic function converges to zero iff its order is positive. -/
+lemma tendsto_zero_iff_order_pos (hf : MeromorphicAt f x) :
+    (Tendsto f (𝓝[≠] x) (𝓝 0)) ↔ 0 < hf.order := by
+  rcases lt_or_le 0 hf.order with ho | ho
+  · simp [ho, hf.tendsto_zero_of_order_pos ho]
+  simp only [← not_le, ho, not_true_eq_false, iff_false]
+  intro hc
+  rcases ho.eq_or_lt with ho | ho
+  · obtain ⟨c, c_ne, h'c⟩ := hf.tendsto_ne_zero_of_order_eq_zero ho
+    apply c_ne
+    exact tendsto_nhds_unique h'c hc
+  · apply not_tendsto_atTop_of_tendsto_nhds hc.norm
+    rw [tendsto_norm_atTop_iff_cobounded]
+    exact hf.tendsto_cobounded_of_order_neg ho
 
 /-- Meromorphic functions that agree in a punctured neighborhood of `z₀` have the same order at
 `z₀`. -/
@@ -147,6 +229,31 @@ When seen as meromorphic functions, analytic functions have nonnegative order.
 theorem _root_.AnalyticAt.meromorphicAt_order_nonneg (hf : AnalyticAt 𝕜 f x) :
     0 ≤ hf.meromorphicAt.order := by
   simp [hf.meromorphicAt_order]
+
+/-- If a function is both meromorphic and continuous at a point, then it is analytic there. -/
+protected theorem analyticAt {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) (h' : ContinuousAt f x) :
+    AnalyticAt 𝕜 f x := by
+  cases ho : h.order with
+  | top =>
+    /- If the order is infinite, then `f` vanishes on a pointed neighborhood of `x`. By continuity,
+    it also vanishes at `x`.-/
+    have : AnalyticAt 𝕜 (fun _ ↦ (0 : E)) x := analyticAt_const
+    apply this.congr
+    rw [← ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE continuousAt_const h']
+    filter_upwards [h.order_eq_top_iff.1 ho] with y hy using by simp [hy]
+  | coe n =>
+    /- If the order is finite, then the order has to be nonnegative, as otherwise the norm of `f`
+    would tend to infinity at `x`.-/
+    rcases h.order_eq_int_iff.1 ho with ⟨g, g_an, gx, hg⟩
+    have : 0 ≤ h.order := by
+      apply h.tendsto_nhds_iff_order_nonneg.1
+      exact ⟨f x, h'.continuousWithinAt.tendsto⟩
+    lift n to ℕ using by simpa [ho] using this
+    have A : ∀ᶠ (z : 𝕜) in 𝓝 x, (z - x) ^ n • g z = f z := by
+      apply (ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE (by fun_prop) h').1
+      filter_upwards [hg] with z hz using by simpa using hz.symm
+    have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ n • g z) x := by fun_prop
+    apply this.congr A
 
 /-!
 ## Order at a Point: Behaviour under Ring Operations
@@ -268,48 +375,6 @@ theorem order_add_of_unequal_order (hf₁ : MeromorphicAt f₁ x) (hf₂ : Merom
   · simpa [h.le] using hf₁.order_add_of_order_lt_order hf₂ h
   · simpa [h.le, add_comm] using hf₂.order_add_of_order_lt_order hf₁ h
 
-/-- If a function is both meromorphic and continuous at a point, then it is analytic there. -/
-protected theorem analyticAt {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) (h' : ContinuousAt f x) :
-    AnalyticAt 𝕜 f x := by
-  cases ho : h.order with
-  | top =>
-    /- If the order is infinite, then `f` vanishes on a pointed neighborhood of `x`. By continuity,
-    it also vanishes at `x`.-/
-    have : AnalyticAt 𝕜 (fun _ ↦ (0 : E)) x := analyticAt_const
-    apply this.congr
-    rw [← ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE continuousAt_const h']
-    filter_upwards [h.order_eq_top_iff.1 ho] with y hy using by simp [hy]
-  | coe n =>
-    /- If the order is finite, then the order has to be nonnegative, as otherwise the norm of `f`
-    would tend to infinity at `x`.-/
-    rcases h.order_eq_int_iff.1 ho with ⟨g, g_an, gx, hg⟩
-    have : 0 ≤ n := by
-      by_contra! hn
-      have A : Tendsto (fun z ↦ ‖(z - x) ^ n • g z‖) (𝓝[≠] x) atTop := by
-        simp only [norm_smul]
-        apply Filter.Tendsto.atTop_mul_pos (C := ‖g x‖) (by simp [gx]) _
-          g_an.continuousAt.continuousWithinAt.tendsto.norm
-        have : Tendsto (fun z ↦ (z - x)) (𝓝[≠] x) (𝓝[≠] 0) := by
-          refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
-          · have : ContinuousWithinAt (fun z ↦ z - x) ({x}ᶜ) x :=
-              ContinuousAt.continuousWithinAt (by fun_prop)
-            simpa using this.tendsto
-          · filter_upwards [self_mem_nhdsWithin] with y hy
-            simpa [sub_eq_zero] using hy
-        apply Tendsto.comp (NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop hn) this
-      have A' : Tendsto (fun z ↦ ‖f z‖) (𝓝[≠] x) atTop := by
-        apply A.congr'
-        filter_upwards [hg] with z hz using by simp [hz]
-      have B : Tendsto (fun z ↦ ‖f z‖) (𝓝[≠] x) (𝓝 (‖f x‖)) :=
-        h'.continuousWithinAt.tendsto.norm
-      exact not_tendsto_atTop_of_tendsto_nhds B A'
-    lift n to ℕ using this
-    have A : ∀ᶠ (z : 𝕜) in 𝓝 x, (z - x) ^ n • g z = f z := by
-      apply (ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE (by fun_prop) h').1
-      filter_upwards [hg] with z hz using by simpa using hz.symm
-    have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ n • g z) x := by fun_prop
-    apply this.congr A
-
 end MeromorphicAt
 
 /-!
@@ -397,6 +462,9 @@ theorem order_ne_top_of_isPreconnected {y : 𝕜} (hU : IsPreconnected U) (h₁x
 
 theorem eventually_analyticAt {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicOn f U) (hx : x ∈ U) : ∀ᶠ y in 𝓝[U \ {x}] x, AnalyticAt 𝕜 f y := by
+  /- At neighboring points in `U`, the function `f` is both meromorphic (by meromorphy on `U`)
+  and continuous (thanks to the formula for a meromorphic function around the point `x`), so it is
+  analytic. -/
   rcases h x hx with ⟨n, g, r, hgr⟩
   have : U \ {x} ∩ EMetric.ball x r ∈ 𝓝[U \ {x}] x :=
     inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds _ hgr.r_pos)
