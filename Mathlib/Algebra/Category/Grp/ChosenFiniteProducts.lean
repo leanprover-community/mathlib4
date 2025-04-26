@@ -26,10 +26,15 @@ def binaryProductLimitCone (G H : Grp.{u}) : LimitCone (pair G H) where
 
 /-- We choose `Grp.of (G × H)` as the product of `G` and `H` and `Grp.of PUnit` as
 the terminal object. -/
-noncomputable instance chosenFiniteProductsGrp : ChosenFiniteProducts Grp.{u} where
-  product G H := binaryProductLimitCone G H
-  terminal := ⟨_, (isZero_of_subsingleton (Grp.of PUnit.{u + 1})).isTerminal⟩
+noncomputable instance chosenFiniteProductsGrp : ChosenFiniteProducts Grp.{u} :=
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (Grp.of PUnit.{u + 1})).isTerminal⟩
+    fun G H ↦ binaryProductLimitCone G H
 
+noncomputable instance : BraidedCategory Grp.{u} :=
+  ChosenFiniteProducts.braidedCategory
+
+noncomputable instance : (forget Grp.{u}).OplaxMonoidal := .ofChosenFiniteProducts _
+noncomputable instance : (forget Grp.{u}).Monoidal := .ofChosenFiniteProducts _
 noncomputable instance : (forget Grp.{u}).Braided := .ofChosenFiniteProducts _
 
 theorem tensorObj_eq (G H : Grp.{u}) : (G ⊗ H) = of (G × H) := rfl
@@ -54,10 +59,15 @@ def binaryProductLimitCone (G H : AddGrp.{u}) : LimitCone (pair G H) where
 
 /-- We choose `AddGrp.of (G × H)` as the product of `G` and `H` and `AddGrp.of PUnit` as
 the terminal object. -/
-noncomputable instance chosenFiniteProductsAddGrp : ChosenFiniteProducts AddGrp.{u} where
-  product G H := binaryProductLimitCone G H
-  terminal := ⟨_, (isZero_of_subsingleton (AddGrp.of PUnit.{u + 1})).isTerminal⟩
+noncomputable instance chosenFiniteProductsAddGrp : ChosenFiniteProducts AddGrp.{u} :=
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddGrp.of PUnit.{u + 1})).isTerminal⟩
+    fun G H ↦ binaryProductLimitCone G H
 
+noncomputable instance : BraidedCategory AddGrp.{u} :=
+  ChosenFiniteProducts.braidedCategory
+
+noncomputable instance : (forget AddGrp.{u}).OplaxMonoidal := .ofChosenFiniteProducts _
+noncomputable instance : (forget AddGrp.{u}).Monoidal := .ofChosenFiniteProducts _
 noncomputable instance : (forget AddGrp.{u}).Braided := .ofChosenFiniteProducts _
 
 theorem tensorObj_eq (G H : AddGrp.{u}) : (G ⊗ H) = of (G × H) := rfl
@@ -82,10 +92,15 @@ def binaryProductLimitCone (G H : CommGrp.{u}) : LimitCone (pair G H) where
 
 /-- We choose `CommGrp.of (G × H)` as the product of `G` and `H` and `CommGrp.of PUnit` as
 the terminal object. -/
-noncomputable instance chosenFiniteProductsCommGrp : ChosenFiniteProducts CommGrp.{u} where
-  product G H := binaryProductLimitCone G H
-  terminal := ⟨_, (isZero_of_subsingleton (CommGrp.of PUnit.{u + 1})).isTerminal⟩
+noncomputable instance chosenFiniteProductsCommGrp : ChosenFiniteProducts CommGrp.{u} :=
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (CommGrp.of PUnit.{u + 1})).isTerminal⟩
+    fun G H ↦ binaryProductLimitCone G H
 
+noncomputable instance : BraidedCategory CommGrp.{u} :=
+  ChosenFiniteProducts.braidedCategory
+
+noncomputable instance : (forget CommGrp.{u}).OplaxMonoidal := .ofChosenFiniteProducts _
+noncomputable instance : (forget CommGrp.{u}).Monoidal := .ofChosenFiniteProducts _
 noncomputable instance : (forget CommGrp.{u}).Braided := .ofChosenFiniteProducts _
 
 theorem tensorObj_eq (G H : CommGrp.{u}) : (G ⊗ H) = of (G × H) := rfl
@@ -103,12 +118,17 @@ namespace AddCommGrp
 
 /-- We choose `AddCommGrp.of (G × H)` as the product of `G` and `H` and `AddGrp.of PUnit` as
 the terminal object. -/
-noncomputable def chosenFiniteProductsAddCommGrp : ChosenFiniteProducts AddCommGrp.{u} where
-  product G H := binaryProductLimitCone G H
-  terminal := ⟨_, (isZero_of_subsingleton (AddCommGrp.of PUnit.{u + 1})).isTerminal⟩
+noncomputable def chosenFiniteProductsAddCommGrp : ChosenFiniteProducts AddCommGrp.{u} :=
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddCommGrp.of PUnit.{u + 1})).isTerminal⟩
+    fun G H ↦ binaryProductLimitCone G H
 
 attribute [local instance] chosenFiniteProductsAddCommGrp
 
+noncomputable instance : BraidedCategory AddCommGrp.{u} :=
+  ChosenFiniteProducts.braidedCategory
+
+noncomputable instance : (forget AddCommGrp.{u}).OplaxMonoidal := .ofChosenFiniteProducts _
+noncomputable instance : (forget AddCommGrp.{u}).Monoidal := .ofChosenFiniteProducts _
 noncomputable instance : (forget AddCommGrp.{u}).Braided := .ofChosenFiniteProducts _
 
 theorem tensorObj_eq (G H : AddCommGrp.{u}) : (G ⊗ H) = of (G × H) := rfl

@@ -45,6 +45,9 @@ attribute [local instance] AddCommGrp.chosenFiniteProductsAddCommGrp
 private noncomputable local instance : ChosenFiniteProducts C :=
   ChosenFiniteProducts.ofFiniteProducts _
 
+private noncomputable local instance : BraidedCategory C :=
+  ChosenFiniteProducts.braidedCategory
+
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverseAux : (C ⥤ₗ Type v) ⥤ C ⥤ AddCommGrp.{v} :=
   Functor.mapCommGrpFunctor ⋙ (whiskeringLeft _ _ _).obj Preadditive.commGrpEquivalence.functor ⋙
@@ -66,10 +69,15 @@ attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 This is the complicated bit, where we show that forgetting the group structure in the image of
 `F` and then reconstructing it recovers the group structure we started with. -/
 noncomputable def unitIsoAux (F : C ⥤ AddCommGrp.{v}) [PreservesFiniteLimits F] (X : C) :
+    letI : (F ⋙ forget AddCommGrp).OplaxMonoidal := .ofChosenFiniteProducts _
+    letI : (F ⋙ forget AddCommGrp).Monoidal := .ofChosenFiniteProducts _
     letI : (F ⋙ forget AddCommGrp).Braided := .ofChosenFiniteProducts _
     commGrpTypeEquivalenceCommGrp.inverse.obj (AddCommGrp.toCommGrp.obj (F.obj X)) ≅
       (F ⋙ forget AddCommGrp).mapCommGrp.obj (Preadditive.commGrpEquivalence.functor.obj X) := by
+  letI : (F ⋙ forget AddCommGrp).OplaxMonoidal := .ofChosenFiniteProducts _
+  letI : (F ⋙ forget AddCommGrp).Monoidal := .ofChosenFiniteProducts _
   letI : (F ⋙ forget AddCommGrp).Braided := .ofChosenFiniteProducts _
+  letI : F.OplaxMonoidal := .ofChosenFiniteProducts _
   letI : F.Monoidal := .ofChosenFiniteProducts _
   refine CommGrp_.mkIso Multiplicative.toAdd.toIso (by aesop_cat) ?_
   dsimp [-Functor.comp_map, -ConcreteCategory.forget_map_eq_coe, -forget_map]

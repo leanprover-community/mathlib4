@@ -37,8 +37,7 @@ def Mon_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
     simp only [whiskerRight_fst, whiskerRight_snd]
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp
-    rfl
+    simp [leftUnitor_hom]
   mul_one' := by
     apply α.homEquiv.injective
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
@@ -46,8 +45,7 @@ def Mon_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
     simp only [whiskerLeft_fst, whiskerLeft_snd]
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp
-    rfl
+    simp [rightUnitor_hom]
   mul_assoc' := by
     apply α.homEquiv.injective
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
@@ -80,12 +78,12 @@ alias Mon_ClassOfRepresentableBy := Mon_Class.ofRepresentableBy
   one_mul f := by
     show lift (toUnit _ ≫ η) f ≫ μ = f
     rw [← Category.comp_id f, ← lift_map_assoc, tensorHom_id, Mon_Class.one_mul,
-      Category.comp_id]
+      Category.comp_id, leftUnitor_hom]
     exact lift_snd _ _
   mul_one f := by
     show lift f (toUnit _ ≫ η) ≫ μ = f
     rw [← Category.comp_id f, ← lift_map_assoc, id_tensorHom, Mon_Class.mul_one,
-      Category.comp_id]
+      Category.comp_id, rightUnitor_hom]
     exact lift_fst _ _
 
 attribute [local instance] monoidOfMon_Class
@@ -204,7 +202,7 @@ end Mon_
 section CommMon_
 
 /-- If `X` represents a presheaf of commutative groups, then `X` is a commutative group object. -/
-lemma IsCommMon.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat)
+lemma IsCommMon.ofRepresentableBy [BraidedCategory C] (F : Cᵒᵖ ⥤ CommMonCat)
     (α : (F ⋙ forget _).RepresentableBy X) :
     letI := Mon_Class.ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
     IsCommMon X := by

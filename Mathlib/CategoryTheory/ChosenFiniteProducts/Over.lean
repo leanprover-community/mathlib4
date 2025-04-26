@@ -24,13 +24,22 @@ variable {C : Type*} [Category C] [HasPullbacks C]
 /-- A choice of finite products of `Over X` given by `Limits.pullback`. -/
 @[reducible]
 noncomputable
-def chosenFiniteProducts (X : C) : ChosenFiniteProducts (Over X) where
-  product Y Z := ⟨pullbackConeEquivBinaryFan.functor.obj (pullback.cone Y.hom Z.hom),
+def chosenFiniteProducts (X : C) : ChosenFiniteProducts (Over X) :=
+  .ofChosenFiniteProducts
+    ⟨asEmptyCone (Over.mk (𝟙 X)), IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
+      fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
+    fun Y Z ↦ ⟨pullbackConeEquivBinaryFan.functor.obj (pullback.cone Y.hom Z.hom),
     (pullback.isLimit _ _).pullbackConeEquivBinaryFanFunctor⟩
-  terminal := ⟨asEmptyCone (Over.mk (𝟙 X)), IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
-    fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
 
 attribute [local instance] chosenFiniteProducts
+
+/-- `Over X` is braided wrt the cartesian monoidal structure given by `Limits.pullback`. -/
+@[reducible]
+noncomputable
+def braidedCategory (X : C) : BraidedCategory (Over X) :=
+  ChosenFiniteProducts.braidedCategory
+
+attribute [local instance] braidedCategory
 
 open MonoidalCategory
 

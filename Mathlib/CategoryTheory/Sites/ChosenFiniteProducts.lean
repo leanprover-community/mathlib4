@@ -31,26 +31,37 @@ variable (X Y : Sheaf J A)
 
 lemma tensorProd_isSheaf : Presheaf.IsSheaf J (X.val ⊗ Y.val) := by
   apply isSheaf_of_isLimit (E := (Cones.postcompose (pairComp X Y (sheafToPresheaf J A)).inv).obj
-    (ChosenFiniteProducts.product X.val Y.val).cone)
-  exact (IsLimit.postcomposeInvEquiv _ _).invFun (ChosenFiniteProducts.product X.val Y.val).isLimit
+    (BinaryFan.mk (ChosenFiniteProducts.fst X.val Y.val) (ChosenFiniteProducts.snd _ _)))
+  exact (IsLimit.postcomposeInvEquiv _ _).invFun
+    (ChosenFiniteProducts.tensorProductIsBinaryProduct X.val Y.val)
 
 lemma tensorUnit_isSheaf : Presheaf.IsSheaf J (𝟙_ (Cᵒᵖ ⥤ A)) := by
   apply isSheaf_of_isLimit (E := (Cones.postcompose (Functor.uniqueFromEmpty _).inv).obj
-    ChosenFiniteProducts.terminal.cone)
-  · exact (IsLimit.postcomposeInvEquiv _ _).invFun ChosenFiniteProducts.terminal.isLimit
+    (asEmptyCone (𝟙_ _)))
+  · exact (IsLimit.postcomposeInvEquiv _ _).invFun ChosenFiniteProducts.isTerminalTensorUnit
   · exact Functor.empty _
 
-/-- Any `ChosenFiniteProducts` on `A` induce a `ChosenFiniteProducts` structures on `A`-valued
-sheaves. -/
-@[simps! product_cone_pt_val terminal_cone_pt_val_obj terminal_cone_pt_val_map]
-noncomputable instance chosenFiniteProducts : ChosenFiniteProducts (Sheaf J A) where
-  product X Y :=
+/-- Any `ChosenFiniteProducts` on `A` induce a
+`ChosenFiniteProducts` structure on `A`-valued sheaves. -/
+noncomputable instance chosenFiniteProducts : ChosenFiniteProducts (Sheaf J A) :=
+  .ofChosenFiniteProducts
+   ({ cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A)
+                            cond := tensorUnit_isSheaf _}
+      isLimit :=
+        { lift := fun f ↦ ⟨ChosenFiniteProducts.toUnit f.pt.val⟩
+          fac := by intro s ⟨e⟩; cases e
+          uniq := by
+            intro x f h
+            apply Sheaf.hom_ext
+            exact ChosenFiniteProducts.toUnit_unique f.val _} })
+  fun X Y ↦
     { cone := BinaryFan.mk
           (P := { val := X.val ⊗ Y.val
                   cond := tensorProd_isSheaf J X Y})
           ⟨(ChosenFiniteProducts.fst _ _)⟩ ⟨(ChosenFiniteProducts.snd _ _)⟩
       isLimit :=
-        { lift := fun f ↦ ⟨ChosenFiniteProducts.lift (BinaryFan.fst f).val (BinaryFan.snd f).val⟩
+        { lift := fun f ↦ ⟨ChosenFiniteProducts.lift
+            (BinaryFan.fst f).val (BinaryFan.snd f).val⟩
           fac := by rintro s ⟨⟨j⟩⟩ <;> apply Sheaf.hom_ext <;> simp
           uniq := by
             intro x f h
@@ -62,16 +73,6 @@ noncomputable instance chosenFiniteProducts : ChosenFiniteProducts (Sheaf J A) w
             · specialize h ⟨WalkingPair.right⟩
               rw [Sheaf.hom_ext_iff] at h
               simpa using h } }
-  terminal :=
-    { cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A)
-                            cond := tensorUnit_isSheaf _}
-      isLimit :=
-        { lift := fun f ↦ ⟨ChosenFiniteProducts.toUnit f.pt.val⟩
-          fac := by intro s ⟨e⟩; cases e
-          uniq := by
-            intro x f h
-            apply Sheaf.hom_ext
-            exact ChosenFiniteProducts.toUnit_unique f.val _} }
 
 @[simp]
 lemma chosenFiniteProducts_fst_val : (ChosenFiniteProducts.fst X Y).val =

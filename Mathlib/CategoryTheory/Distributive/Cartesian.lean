@@ -61,6 +61,7 @@ namespace IsCartesianDistributive
 /-- To show a category is cartesian distributive it is enough to show it is left distributive.
 The right distributivity is inferred from symmetry of the cartesian monoidal structure. -/
 lemma of_isMonoidalLeftDistrib [IsMonoidalLeftDistrib C] : IsCartesianDistributive C :=
+  letI : BraidedCategory C := Nonempty.some inferInstance
   SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
 
 /-- The coproduct coprojections are monic in a cartesian distributive category. -/
