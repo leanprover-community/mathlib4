@@ -300,7 +300,7 @@ lemma mk''Hom_comp' {Y' Y : C} (g : Y ⟶ Y') (f₁ f₂ : X ⟶ Y)
 def mk'' : F.DescentData (fun _ : PUnit.{t + 1} ↦ X) :=
   mk' (fun _ ↦ obj) (fun _ _ _ ↦ mk''Hom F obj c hc hom)
     (fun _ _ _ _ _ ↦ mk''Hom_comp' _ _ _ _ _ _) (by
-      rintro Y ⟨_⟩ f
+      rintro Y ⟨⟩ f
       dsimp
       rw [mk''Hom_comp' F obj c hc hom (map ≫ f) c.inl c.inr f f
           (by aesop_cat) (by aesop_cat), mk''Hom_inl_inr,
@@ -313,8 +313,10 @@ def mk'' : F.DescentData (fun _ : PUnit.{t + 1} ↦ X) :=
         F.mapComp'_hom_app_comp_mapComp'_hom_app_map_obj_assoc
           _ _ _ (𝟙 X) _ _ (by aesop_cat) (by aesop_cat) (by aesop_cat),
         ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
-        Functor.map_id, id_comp, Iso.hom_inv_id_app])
-    sorry
+        Functor.map_id, id_comp, Iso.hom_inv_id_app]) (by
+      rintro Y ⟨⟩ ⟨⟩ ⟨⟩ f₁ f₂ f₃
+      dsimp
+      sorry)
 
 end
 
