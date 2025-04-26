@@ -514,6 +514,7 @@ import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Algebra.Homology.Factorizations.Basic
 import Mathlib.Algebra.Homology.Functor
+import Mathlib.Algebra.Homology.GrothendieckAbelian
 import Mathlib.Algebra.Homology.HasNoLoop
 import Mathlib.Algebra.Homology.HomologicalBicomplex
 import Mathlib.Algebra.Homology.HomologicalComplex
@@ -1264,6 +1265,7 @@ import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Analysis.Asymptotics.Completion
 import Mathlib.Analysis.Asymptotics.Defs
 import Mathlib.Analysis.Asymptotics.ExpGrowth
 import Mathlib.Analysis.Asymptotics.Lemmas
@@ -2004,7 +2006,6 @@ import Mathlib.CategoryTheory.Filtered.Small
 import Mathlib.CategoryTheory.FinCategory.AsType
 import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Const
@@ -2070,6 +2071,7 @@ import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 import Mathlib.CategoryTheory.Idempotents.Karoubi
 import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 import Mathlib.CategoryTheory.Idempotents.SimplicialObject
+import Mathlib.CategoryTheory.InducedCategory
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.IsomorphismClasses
@@ -2349,6 +2351,7 @@ import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 import Mathlib.CategoryTheory.ObjectProperty.Extensions
+import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.PEmpty
@@ -3426,6 +3429,7 @@ import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 import Mathlib.Dynamics.TopologicalEntropy.Semiconj
+import Mathlib.Dynamics.TopologicalEntropy.Subset
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.FieldTheory.AlgebraicClosure
@@ -3691,6 +3695,7 @@ import Mathlib.GroupTheory.PushoutI
 import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.GroupTheory.QuotientGroup.Finite
+import Mathlib.GroupTheory.Rank
 import Mathlib.GroupTheory.Schreier
 import Mathlib.GroupTheory.SchurZassenhaus
 import Mathlib.GroupTheory.SemidirectProduct
@@ -4261,6 +4266,7 @@ import Mathlib.MeasureTheory.Measure.FiniteMeasureProd
 import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Measure.Haar.Disintegration
+import Mathlib.MeasureTheory.Measure.Haar.DistribChar
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis

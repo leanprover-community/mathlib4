@@ -179,9 +179,8 @@ theorem prod_univ_add {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) �
 @[to_additive]
 theorem prod_trunc {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M)
     (hf : ∀ j : Fin b, f (natAdd a j) = 1) :
-    (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castLE (Nat.le.intro rfl) i) := by
+    (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castAdd b i) := by
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
-  rfl
 
 lemma sum_neg_one_pow (R : Type*) [Ring R] (m : ℕ) :
     (∑ n : Fin m, (-1) ^ n.1 : R) = if Even m then 0 else 1 := by
@@ -454,7 +453,7 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i :=
 end CommMonoid
 
 @[to_additive]
-theorem alternatingProd_eq_finset_prod {G : Type*} [CommGroup G] :
+theorem alternatingProd_eq_finset_prod {G : Type*} [DivisionCommMonoid G] :
     ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ)
   | [] => by
     rw [alternatingProd, Finset.prod_eq_one]
