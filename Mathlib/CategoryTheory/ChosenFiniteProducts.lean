@@ -3,11 +3,11 @@ Copyright (c) 2024 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
 
 /-!
 # Cartesian-monoidal categories
@@ -43,12 +43,13 @@ object and the tensor product `X ⊗ Y` is the cartesian product of `X` and `Y`.
 
 A cartesian-monoidal category is always braided and symmetric -/
 class ChosenFiniteProducts extends MonoidalCategory C where
-  /-- A choice of a limit binary fan for any two objects of the category. -/
+  /-- The tensor unit is a terminal object. -/
   isTerminalTensorUnit : IsTerminal (𝟙_ C)
   /-- The first projection from the product. -/
   fst (X Y : C) : X ⊗ Y ⟶ X
   /-- The second projection from the product. -/
   snd (X Y : C) : X ⊗ Y ⟶ Y
+  /-- The monoidal product is the categorical product. -/
   tensorProductIsBinaryProduct (X Y : C) : IsLimit <| BinaryFan.mk (fst X Y) (snd X Y)
   fst_def (X Y : C) : fst X Y = X ◁ isTerminalTensorUnit.from Y ≫ (ρ_ X).hom
   snd_def (X Y : C) : snd X Y = isTerminalTensorUnit.from X ▷ Y ≫ (λ_ Y).hom
@@ -853,3 +854,4 @@ instance isMonoidal_of_ChosenFiniteProducts (α : F ⟶ G) : IsMonoidal α where
 end NatTrans
 
 end CategoryTheory
+#min_imports
