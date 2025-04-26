@@ -35,6 +35,11 @@ For modules over rings with invariant basis number
 * `mk_eq_mk_of_basis`: the dimension theorem, any two bases of the same vector space have the same
   cardinality.
 
+## Additional definition
+
+* `IsQuadraticAlgebra`: An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-algebra
+  of rank `2`.
+
 -/
 
 
@@ -542,6 +547,7 @@ theorem mem_span_set_iff_exists_finsupp_le_finrank :
     exact mem_span_set.mpr ⟨c, hcs, hx⟩
 
 end Submodule
+
 section IsQuadraticAlgebra
 
 /--
