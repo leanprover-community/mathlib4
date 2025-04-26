@@ -329,8 +329,9 @@ end LT.lt
 
 -- TODO: deprecate
 alias Ne.lt_or_gt := lt_or_gt_of_ne
-alias not_lt_iff_lt_imp_le := not_lt_iff_le_imp_ge
+alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
 alias LE.le.lt_of_not_le := LE.le.lt_of_not_ge
+alias LT.lt.not_lt := LT.lt.not_gt
 alias Eq.ge := Eq.le'
 alias Eq.not_gt := Eq.not_lt'
 alias le_imp_eq_iff_le_imp_le := le_imp_eq_iff_le_imp_ge'
