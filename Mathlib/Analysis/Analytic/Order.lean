@@ -152,16 +152,14 @@ lemma order_smul_of_order_eq_top₁ {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : A
     (hg : AnalyticAt 𝕜 g z₀) (h₁f : hf.order = ⊤) :
     (hf.smul hg).order = ⊤ := by
   rw [AnalyticAt.order_eq_top_iff] at *
-  filter_upwards [h₁f]
-  exact fun _ ha ↦ by simp [ha]
+  filter_upwards [h₁f] with _ ha using by simp [ha]
 
 /-- Helper lemma for `AnalyticAt.order_smul` -/
 lemma order_smul_of_order_eq_top₂ {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : AnalyticAt 𝕜 f z₀)
     (hg : AnalyticAt 𝕜 g z₀) (h₁g : hg.order = ⊤) :
     (hf.smul hg).order = ⊤ := by
   rw [AnalyticAt.order_eq_top_iff] at *
-  filter_upwards [h₁g]
-  exact fun _ ha ↦ by simp [ha]
+  filter_upwards [h₁g] with _ ha using by simp [ha]
 
 /-- The order is additive when scalar multiplying analytic functions. -/
 theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : AnalyticAt 𝕜 f z₀)
@@ -176,28 +174,14 @@ theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : AnalyticAt 𝕜 f 
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf.order_ne_top_iff.1 h₂f
   obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hg.order_ne_top_iff.1 h₂g
   rw [← ENat.coe_toNat h₂f, ← ENat.coe_toNat h₂g, ← ENat.coe_add, (hf.smul hg).order_eq_nat_iff]
-  use g₁ • g₂, by exact h₁g₁.smul h₁g₂
-  constructor
-  · simp only [Pi.smul_apply', ne_eq, smul_eq_zero, not_or]
-    tauto
-  · filter_upwards [h₃g₁, h₃g₂]
-    intro a h₁a h₂a
-    rw [Pi.smul_apply', Pi.smul_apply', h₂a, ← smul_assoc, ← smul_assoc]
-    congr 1
-    rw [h₁a, smul_eq_mul, smul_eq_mul, smul_eq_mul]
-    ring
-
-/-- Helper lemma for `AnalyticAt.order_mul` -/
-lemma order_mul_of_order_eq_top {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀)
-    (hg : AnalyticAt 𝕜 g z₀) (h'f : hf.order = ⊤) :
-    (hf.mul hg).order = ⊤ := by
-  rw [AnalyticAt.order_eq_top_iff, eventually_nhds_iff] at *
-  obtain ⟨t, h₁t, h₂t, h₃t⟩ := h'f
-  exact ⟨t, fun y hy ↦ (by simp [h₁t y hy]), h₂t, h₃t⟩
+  refine ⟨g₁ • g₂, h₁g₁.smul h₁g₂, by simp [h₂g₁, h₂g₂], ?_⟩
+  filter_upwards [h₃g₁, h₃g₂] with a h₁a h₂a
+  simp_rw [Pi.smul_apply', h₂a, ← smul_assoc, h₁a, smul_eq_mul, pow_add, mul_right_comm]
 
 /-- The order is additive when multiplying analytic functions. -/
 theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
-    (hf.mul hg).order = hf.order + hg.order := by apply hf.order_smul
+    (hf.mul hg).order = hf.order + hg.order :=
+  hf.order_smul hg
 
 /-- The order multiplies by `n` when taking an analytic function to its `n`th power. -/
 theorem order_pow {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
