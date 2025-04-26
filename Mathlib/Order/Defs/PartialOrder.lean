@@ -94,7 +94,7 @@ lemma le_of_eq_or_lt (h : a = b ∨ a < b) : a ≤ b := h.elim le_of_eq le_of_lt
 lemma le_of_eq_or_lt' (h : b = a ∨ a < b) : a ≤ b := h.elim le_of_eq' le_of_lt
 
 -- TODO: deprecate
-alias lt_iff_le_not_ge := lt_iff_le_not_ge
+alias lt_iff_le_not_le := lt_iff_le_not_ge
 alias lt_of_le_not_le := lt_of_le_not_ge
 alias not_le_of_lt := not_le_of_gt
 alias not_lt_of_le := not_lt_of_ge
