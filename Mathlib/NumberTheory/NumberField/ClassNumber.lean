@@ -47,7 +47,7 @@ open scoped nonZeroDivisors Real
 theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     ∃ I : (Ideal (𝓞 K))⁰, ClassGroup.mk0 I = C ∧
       absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
-        ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K|) := by
+        ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|) := by
   obtain ⟨J, hJ⟩ := ClassGroup.mk0_surjective C⁻¹
   obtain ⟨_, ⟨a, ha, rfl⟩, h_nz, h_nm⟩ :=
     exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K (FractionalIdeal.mk0 K J)
@@ -70,7 +70,7 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
 
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le
     (h : ∀ I : (Ideal (𝓞 K))⁰, absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
-        ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K|) →
+        ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|) →
         Submodule.IsPrincipal (I : Ideal (𝓞 K))) :
     IsPrincipalIdealRing (𝓞 K) := by
   rw [← classNumber_eq_one_iff, classNumber, Fintype.card_eq_one_iff]
