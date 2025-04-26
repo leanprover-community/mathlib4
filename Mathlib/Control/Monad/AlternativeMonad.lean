@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon
+Authors: Simon Hudon, Eric Wieser
 -/
 import Mathlib.Control.Lawful
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Finset.Functor
+import Batteries.Control.AlternativeMonad
 
 /-!
 # Laws for Monads with Failure
@@ -34,88 +35,18 @@ monad, alternative, failure
 
 universe u v w
 
-/-- `AlternativeMonad m` means that `m` has both a `Monad` and `Alternative` instance,
-which both share the same underlying `Applicative` instance.
-The main example is `Option`, but many monad transformers also preserve or add this structure. -/
-class AlternativeMonad (m : Type u → Type v) extends Alternative m, Monad m
-
-/-- `LawfulAlternative m` means that the `failure` operation on `m` behaves naturally
-with respect to the `bind` and `orElse` operators. -/
-class LawfulAlternative (m : Type u → Type v) [AlternativeMonad m] extends LawfulMonad m where
-  failure_bind {α β : Type u} (g : α → m β) : failure >>= g = failure
-  mapConst_failure {α β : Type u} (y : β) : Functor.mapConst y (failure : m α) = failure
-  orElse_failure {α : Type u} (x : m α) : (x <|> failure) = x
-  failure_orElse {α : Type u} (y : m α) : (failure <|> y) = y
-
-export LawfulAlternative (failure_bind mapConst_failure orElse_failure failure_orElse)
-attribute [simp] failure_bind mapConst_failure orElse_failure failure_orElse
-
-section LawfulAlternative
-
-variable {m : Type u → Type v} [AlternativeMonad m] [LawfulAlternative m]
-    {n : Type → Type v} [AlternativeMonad n] [LawfulAlternative n]
-
-
-@[simp] lemma map_failure {α β} (f : α → β) : f <$> (failure : m α) = failure := by
-  rw [map_eq_bind_pure_comp, failure_bind]
-
-@[simp] lemma failure_seq {α β} (x : m α) : (failure : m (α → β)) <*> x = failure := by
-  rw [seq_eq_bind, failure_bind]
-
-@[simp] lemma succeeds_failure {α} : (succeeds (failure : n α)) = pure false := by
-  rw [succeeds, mapConst_failure, failure_orElse]
-
-@[simp] lemma tryM_failure {α} : tryM (failure : n α) = pure () := by
-  rw [tryM, mapConst_failure, failure_orElse]
-
-@[simp] lemma try?_failure {α} : try? (failure : n α) = pure none := by
-  rw [try?, map_failure, failure_orElse]
-
-end LawfulAlternative
-
-namespace Option
-
-instance : AlternativeMonad Option.{u} where
-
-instance : LawfulAlternative Option.{u} where
-  failure_bind _ := rfl
-  mapConst_failure _ := rfl
-  orElse_failure := Option.orElse_none
-  failure_orElse := Option.none_orElse
-
-end Option
-
-namespace OptionT
-
-variable {m : Type u → Type v} [Monad m] {α β : Type u}
-
-@[simp] lemma run_failure : (failure : OptionT m α).run = pure none := rfl
-
-@[simp] lemma run_orElse (x : OptionT m α) (y : OptionT m α) : (x <|> y).run =
-    (do match ← x.run with | some a => pure (some a) | _  => y.run) := rfl
-
-instance : AlternativeMonad (OptionT m) where
-
-instance [LawfulMonad m] : LawfulAlternative (OptionT m) where
-  failure_bind _ := OptionT.ext (pure_bind _ _)
-  mapConst_failure y := OptionT.ext (by simp)
-  orElse_failure x := OptionT.ext
-    ((bind_congr (fun | some _ => rfl | none => rfl)).trans (bind_pure x))
-  failure_orElse _ := pure_bind _ _
-
-end OptionT
 
 namespace StateT
 
 variable {m : Type u → Type v} [AlternativeMonad m] {σ : Type u}
 
-instance : AlternativeMonad (StateT σ m) where
-
-instance [LawfulAlternative m] : LawfulAlternative (StateT σ m) where
-  failure_bind _ := StateT.ext fun _ => failure_bind _
-  mapConst_failure _ := StateT.ext fun _ => (run_mapConst _ _ _).trans (map_failure _)
+instance  [LawfulMonad m] [LawfulAlternative m] : LawfulAlternative (StateT σ m) where
+  map_failure _ := StateT.ext fun _ => by rw [map_failure _]
+  failure_seq _ := StateT.ext fun _ => by rw [failure_seq _]
   orElse_failure _ := StateT.ext fun _ => orElse_failure _
   failure_orElse _ := StateT.ext fun _ => failure_orElse _
+  orElse_assoc _ _ _ := StateT.ext fun _ => orElse_assoc _ _ _
+  map_orElse _ _ _ := StateT.ext fun _ => by rw [map_orElse _ _ _]
 
 end StateT
 
@@ -126,10 +57,12 @@ variable [∀ P, Decidable P]
 instance : AlternativeMonad Finset where
 
 instance : LawfulAlternative Finset where
-  failure_bind _ := rfl
-  mapConst_failure _ := rfl
-  orElse_failure := Finset.union_empty
-  failure_orElse := Finset.empty_union
+  map_failure _ := Finset.image_empty _
+  failure_seq _ := Finset.sup_empty
+  orElse_failure _ := Finset.union_empty _
+  failure_orElse _ := Finset.empty_union _
+  orElse_assoc _ _ _ := Finset.union_assoc _ _ _ |>.symm
+  map_orElse _ _ _ := Finset.image_union _ _
 
 end Finset
 
@@ -140,10 +73,12 @@ attribute [local instance] Set.monad
 instance : AlternativeMonad Set where
 
 instance : LawfulAlternative Set where
-  failure_bind := biUnion_empty
-  mapConst_failure _ := image_eq_empty.mpr rfl
-  orElse_failure := union_empty
-  failure_orElse := empty_union
+  map_failure _ := Set.image_empty _
+  failure_seq _ := Set.image2_empty_left
+  orElse_failure _ := Set.union_empty _
+  failure_orElse _ := Set.empty_union _
+  orElse_assoc _ _ _ := Set.union_assoc _ _ _ |>.symm
+  map_orElse _ _ _ := Set.image_union _ _ _
 
 end Set
 
@@ -152,9 +87,11 @@ namespace List
 instance : AlternativeMonad List where
 
 instance : LawfulAlternative List where
-  failure_bind _ := rfl
-  mapConst_failure _ := rfl
-  orElse_failure := List.append_nil
-  failure_orElse := List.nil_append
+  map_failure _ := List.map_nil
+  failure_seq _ := List.flatMap_nil
+  orElse_failure _ := List.append_nil _
+  failure_orElse _ := List.nil_append _
+  orElse_assoc _ _ _ := List.append_assoc _ _ _ |>.symm
+  map_orElse _ _ _ := List.map_append
 
 end List
