@@ -9,6 +9,7 @@ public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Lattice
 public import Mathlib.Data.List.Nodup
+public import Batteries.Data.List.Perm
 
 /-!
 # List Permutations and list lattice operations.
@@ -97,6 +98,13 @@ lemma Nodup.splits3_r_nodup (l : List α) : l.splits3_r.Nodup := by
         apply List.Disjoint.of_map at hdisj_map
         specialize hdisj_map hx2_splits hy2_splits
         contradiction
+
+lemma Perm.splits3_l_r_perm (l : List α) : l.splits3_l ~ l.splits3_r := by
+  rw [List.perm_ext_iff_of_nodup]
+  · rintro ⟨x, y, z⟩
+    simp only [List.splits3_l_spec, List.splits3_r_spec]
+  · apply Nodup.splits3_l_nodup
+  · apply Nodup.splits3_r_nodup
 
 variable [DecidableEq α]
 
