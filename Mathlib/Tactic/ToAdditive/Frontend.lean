@@ -724,7 +724,7 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) 
 
 /-- Abstracts the nested proofs in the value of `decl` if it's not a theorem. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
-  if decl.isTheorem || !decl.hasValue then
+  if getOriginalConstKind? (← getEnv) decl.name == some .thm || !decl.hasValue then
     return decl
   else
     return decl.updateValue <| ← Meta.abstractNestedProofs decl.name decl.value!
