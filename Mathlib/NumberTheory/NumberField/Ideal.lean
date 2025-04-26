@@ -23,16 +23,19 @@ We prove results about integral ideals of a number field.
 
 noncomputable section
 
+open Ideal
+
 variable (K : Type*) [Field K] [NumberField K]
 
-namespace NumberField
+namespace NumberField.Ideal
 
 open scoped nonZeroDivisors Real
 
-open Filter Ideal InfinitePlace mixedEmbedding euclidean fundamentalCone Submodule Topology Units
+open Filter InfinitePlace mixedEmbedding euclidean fundamentalCone Submodule Topology Units
 
-private theorem ideal.tendsto_norm_le_and_mk_eq_div_atop_aux₁ {C : ClassGroup (𝓞 K)}
-    {J : (Ideal (𝓞 K))⁰} (hJ : ClassGroup.mk0 J = C⁻¹) (s : ℝ) :
+variable {C : ClassGroup (𝓞 K)} {J : (Ideal (𝓞 K))⁰} {s : ℝ}
+
+private theorem tendsto_norm_le_and_mk_eq_div_atop_aux₁ (hJ : ClassGroup.mk0 J = C⁻¹) :
     Nat.card {I : (Ideal (𝓞 K))⁰ // absNorm (I : Ideal (𝓞 K)) ≤ s ∧ ClassGroup.mk0 I = C}
       = Nat.card {I : (Ideal (𝓞 K))⁰ // (J : Ideal (𝓞 K)) ∣ I ∧ IsPrincipal (I : Ideal (𝓞 K)) ∧
         absNorm (I : Ideal (𝓞 K)) ≤ s * absNorm (J : Ideal (𝓞 K))} := by
@@ -47,7 +50,7 @@ private theorem ideal.tendsto_norm_le_and_mk_eq_div_atop_aux₁ {C : ClassGroup 
     (mul_le_mul_iff_of_pos_left (Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J))).symm
 
 open Classical in
-private def ideal.tendsto_norm_le_and_mk_eq_div_atop_aux₂ (J : (Ideal (𝓞 K))⁰) (s : ℝ) :
+private def tendsto_norm_le_and_mk_eq_div_atop_aux₂ :
     ↑({x | x ∈ (toMixed K) ⁻¹' fundamentalCone K ∧ mixedEmbedding.norm ((toMixed K) x) ≤ s} ∩
       (ZLattice.comap ℝ (idealLattice K ((FractionalIdeal.mk0 K) J)) (toMixed K).toLinearMap))
         ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
@@ -63,7 +66,12 @@ private def ideal.tendsto_norm_le_and_mk_eq_div_atop_aux₂ (J : (Ideal (𝓞 K)
   · rintro ⟨⟨hx₁, ⟨x, hx₂, rfl⟩⟩, hx₃⟩
     exact ⟨(toMixed K).symm (mixedEmbedding K x), ⟨⟨hx₁, hx₃⟩, ⟨(x : K), by simp [hx₂], rfl⟩⟩, rfl⟩
 
-theorem ideal.tendsto_norm_le_and_mk_eq_div_atop (C : ClassGroup (𝓞 K)) :
+variable (C) in
+/--
+The limit of the number of nonzero integral ideals of norm `≤ s` in a fixed class `C` of the
+classgroup divided by `s` when `s → +∞`.
+-/
+theorem tendsto_norm_le_and_mk_eq_div_atop :
     Tendsto (fun s : ℝ ↦
       (Nat.card {I : (Ideal (𝓞 K))⁰ //
         absNorm (I : Ideal (𝓞 K)) ≤ s ∧ ClassGroup.mk0 I = C} : ℝ) / s) atTop
@@ -84,8 +92,8 @@ theorem ideal.tendsto_norm_le_and_mk_eq_div_atop (C : ClassGroup (𝓞 K)) :
       (x := (absNorm (J : Ideal (𝓞 K)) : ℝ) * (torsionOrder K : ℝ)⁻¹))).comp
     (tendsto_id.atTop_mul_const' <| Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J))
     using 2 with s
-  · simp_rw [ideal.tendsto_norm_le_and_mk_eq_div_atop_aux₁ K hJ, id_eq,
-      Nat.card_congr (ideal.tendsto_norm_le_and_mk_eq_div_atop_aux₂ K J _),
+  · simp_rw [Ideal.tendsto_norm_le_and_mk_eq_div_atop_aux₁ K hJ, id_eq,
+      Nat.card_congr (Ideal.tendsto_norm_le_and_mk_eq_div_atop_aux₂ K),
       ← card_isPrincipal_dvd_norm_le, Function.comp_def, Nat.cast_mul, div_eq_mul_inv, mul_inv,
       ← mul_assoc, mul_comm _ (torsionOrder K : ℝ)⁻¹, mul_comm _ (torsionOrder K : ℝ), mul_assoc]
     rw [inv_mul_cancel_left₀ (Nat.cast_ne_zero.mpr (torsionOrder K).ne_zero), inv_mul_cancel₀ h₂,
@@ -106,14 +114,17 @@ theorem ideal.tendsto_norm_le_and_mk_eq_div_atop (C : ClassGroup (𝓞 K)) :
       (toMixed K).coe_toHomeomorph, (volumePreserving_toMixed K).measure_preimage
       measurableSet_frontier.nullMeasurableSet, volume_frontier_normLeOne]
 
-theorem ideal.tendsto_norm_le_div_atop₀ :
+/--
+The limit of the number of nonzero integral ideals of norm `≤ s` divided by `s` when `s → +∞`.
+-/
+theorem tendsto_norm_le_div_atop₀ :
     Tendsto (fun s : ℝ ↦
       (Nat.card {I : (Ideal (𝓞 K))⁰ // absNorm (I : Ideal (𝓞 K)) ≤ s} : ℝ) / s) atTop
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
             (torsionOrder K *  Real.sqrt |discr K|))) := by
   classical
   convert Filter.Tendsto.congr' ?_
-    (tendsto_finset_sum Finset.univ (fun C _  ↦ ideal.tendsto_norm_le_and_mk_eq_div_atop K C))
+    (tendsto_finset_sum Finset.univ (fun C _  ↦ tendsto_norm_le_and_mk_eq_div_atop K C))
   · rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, classNumber]
     ring
   · filter_upwards [eventually_ge_atTop 0] with s hs
@@ -126,15 +137,18 @@ theorem ideal.tendsto_norm_le_div_atop₀ :
     rw [Fintype.card, Finset.card_eq_sum_card_fiberwise (f := fun I ↦ ClassGroup.mk0 I.1)
       (t := Finset.univ) (fun _ _ ↦ Finset.mem_univ _), Nat.cast_sum, Finset.sum_div]
 
-theorem ideal.tendsto_norm_le_div_atop :
+/--
+The limit of the number of integral ideals of norm `≤ s` divided by `s` when `s → +∞`.
+-/
+theorem tendsto_norm_le_div_atop :
     Tendsto (fun s : ℝ ↦ (Nat.card {I : Ideal (𝓞 K) // absNorm I ≤ s} : ℝ) / s) atTop
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
             (torsionOrder K *  Real.sqrt |discr K|))) := by
-  have := (ideal.tendsto_norm_le_div_atop₀ K).add tendsto_inv_atTop_zero
+  have := (tendsto_norm_le_div_atop₀ K).add tendsto_inv_atTop_zero
   rw [add_zero] at this
   refine Tendsto.congr' ?_ this
   filter_upwards [eventually_ge_atTop 0] with s hs
   simp_rw [← Nat.le_floor_iff hs]
   rw [Ideal.card_norm_le_eq_card_norm_le_add_one, Nat.cast_add, Nat.cast_one, add_div, one_div]
 
-end NumberField
+end NumberField.Ideal
