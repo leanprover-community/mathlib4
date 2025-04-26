@@ -225,7 +225,8 @@ end Module
 
 section IsQuadraticAlgebra
 
-instance (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] [IsQuadraticAlgebra R S] :
+instance (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
+    [IsQuadraticAlgebra R S] :
     Module.Finite R S := finite_of_finrank_eq_succ <| IsQuadraticAlgebra.finrank_eq_two R S
 
 end IsQuadraticAlgebra
