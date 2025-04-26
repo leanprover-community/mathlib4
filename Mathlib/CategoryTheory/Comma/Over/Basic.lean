@@ -401,7 +401,7 @@ def postAdjunctionRight {Y : D} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
 
 instance post.instIsRightAdjoint {Y : D} {G : D ⥤ T} [G.IsRightAdjoint] :
     (post (X := Y) G).IsRightAdjoint :=
-  let ⟨F, ⟨e⟩⟩ := ‹G.IsRightAdjoint›; ⟨_, ⟨postAdjunctionRight e⟩⟩
+  let ⟨F, ⟨a⟩⟩ := ‹G.IsRightAdjoint›; ⟨_, ⟨postAdjunctionRight a⟩⟩
 
 /-- An equivalence of categories induces an equivalence on over categories. -/
 @[simps]
