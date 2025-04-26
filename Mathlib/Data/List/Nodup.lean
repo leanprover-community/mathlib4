@@ -370,3 +370,78 @@ end List
 theorem Option.toList_nodup : ∀ o : Option α, o.toList.Nodup
   | none => List.nodup_nil
   | some x => List.nodup_singleton x
+
+lemma Nodup.splits_nodup (l : List α) : l.splits.Nodup := by
+  simp [List.splits]
+  apply List.Nodup.map_on
+  · simp
+    intro n1 hn1 n2 hn2 hmin hdrop
+    omega
+  · apply List.nodup_range
+
+lemma List.Disjoint_self (l : List α) :
+    (∃ a, a ∈ l) → ¬ l.Disjoint l := by simp [Disjoint]
+
+lemma Nodup.splits3_l_nodup (l : List α) : l.splits3_l.Nodup := by
+  simp [List.splits3_l, List.nodup_flatMap]
+  constructor
+  · intros t d htd_splits
+    apply List.Nodup.map_on
+    · rintro ⟨ta1, ta2⟩ hta_splits ⟨tb1, tb2⟩ htb_splits
+      simp
+    · apply List.splits_Nodup
+  · induction l
+    case nil =>
+      simp
+    case cons a l ihl =>
+      simp
+      constructor
+      · clear ihl
+        rintro b c x1 x2 hx1x2_l_splits rfl rfl
+        simp [Function.onFun]
+      · refine (List.Pairwise.map ?_ ?_ ihl); clear ihl
+        rintro ⟨x1, x2⟩ ⟨y1, y2⟩
+        simp [Function.onFun]
+        intro hdisj_map
+        constructor
+        · rintro rfl rfl
+          apply List.Disjoint.of_map at hdisj_map
+          apply List.Disjoint_self _ (List.splits_non_empty _) at hdisj_map
+          assumption
+        · rintro ⟨xx1, xx2, x2'⟩ hx1_splits hy1_splits
+          simp [List.mem_map] at hx1_splits hy1_splits
+          rcases hx1_splits with ⟨xx1', xx2', hx1_splits, rfl, rfl, rfl⟩
+          rcases hy1_splits with ⟨yy1', yy2', hy1_splits, ⟨_, rfl⟩, rfl, rfl⟩
+          simp [Disjoint] at hdisj_map
+          specialize hdisj_map _ _ _ _ _ hx1_splits rfl rfl rfl _ _ hy1_splits rfl rfl
+          contradiction
+
+lemma Nodup.splits3_r_nodup (l : List α) : l.splits3_r.Nodup := by
+  simp [List.splits3_r, List.nodup_flatMap]
+  constructor
+  · intros t d htd_l_splits
+    apply List.Nodup.map_on
+    · rintro ⟨d1, d2⟩ hd_splits ⟨d1', d2'⟩ hd'_splits ⟨_, rfl, rfl⟩
+      rfl
+    · apply List.splits_Nodup
+  · induction l
+    case nil =>
+      simp
+    case cons a l ihl =>
+      simp
+      constructor
+      · clear ihl
+        rintro b c l1 l2 hl_splits rfl rfl
+        simp [Function.onFun, Function.comp, List.Disjoint]
+        rintro y1 y2 b y1' y2' hy' rfl rfl rfl z1 z2 hz ⟨⟩
+      · refine (List.Pairwise.map ?_ ?_ ihl); clear ihl
+        rintro ⟨x1, x2⟩ ⟨y1, y2⟩
+        simp [Function.onFun]
+        intro hdisj_map
+        rintro ⟨t, d1, d2⟩ hx2_splits hy2_splits
+        simp [List.mem_map] at hx2_splits hy2_splits
+        rcases hx2_splits with ⟨hx2_splits, rfl⟩
+        rcases hy2_splits with ⟨hy2_splits, ⟨_, rfl⟩⟩
+        apply List.Disjoint.of_map at hdisj_map
+        specialize hdisj_map hx2_splits hy2_splits
+        contradiction
