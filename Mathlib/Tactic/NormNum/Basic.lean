@@ -370,7 +370,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ra ← derive a; let rb ← derive b
   haveI' _e_eq : $e =Q $a - $b := ⟨⟩
   let rec
-  /-- Main part of `evalAdd`. -/
+  /-- Main part of `evalSub`. -/
   core : MetaM (Result e) := do
     let intArm (rα : Q(Ring $α)) := do
       assumeInstancesCommute
