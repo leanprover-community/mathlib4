@@ -288,7 +288,7 @@ instance IsQuadraticExtension.Normal (F K : Type*) [Field F] [Field K]
     Normal F K where
   splits' := by
     intro x
-    obtain h | h := le_iff_lt_or_eq.mp (h.finrank_eq_two ▸ minpoly.natDegree_le x)
+    obtain h | h := lt_or_eq_of_le (h.finrank_eq_two ▸ minpoly.natDegree_le x)
     · exact splits_of_natDegree_le_one _ (by rwa [Nat.le_iff_lt_add_one])
     · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
 

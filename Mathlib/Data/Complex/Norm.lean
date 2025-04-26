@@ -406,7 +406,7 @@ lemma ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : s ≠ 0 :=
   ne_zero_of_re_pos <| zero_lt_one.trans hs
 
 lemma re_neg_ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : (-s).re ≠ 0 :=
-  ne_iff_lt_or_gt.mpr <| Or.inl <| neg_re s ▸ (neg_lt_zero.mpr hs)
+  neg_re s ▸ (neg_ne_zero.mpr hs.ne')
 
 lemma re_neg_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : (-s).re ≠ 0 :=
   re_neg_ne_zero_of_re_pos <| zero_lt_one.trans hs

@@ -182,7 +182,7 @@ private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
   intro a
   rw [← filter_or, mem_filter]
   refine ⟨fun ha ↦ by tauto, fun ha ↦ ?_⟩
-  have hacard := le_iff_lt_or_eq.mp ha.2.1
+  have hacard := lt_or_eq_of_le ha.2.1
   tauto
 
 end DecidableEq

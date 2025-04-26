@@ -157,7 +157,7 @@ lemma nz_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] [IsStrictOrderedR
     have neg_n : ((n : A) < 0) := Int.cast_lt_zero (n := n) |>.2 (of_decide_eq_true h)
     have neg := mul_neg_of_neg_of_pos neg_n pos_invOf_d
     rw [eq]
-    exact ne_iff_lt_or_gt.2 (Or.inl neg)
+    exact ne_of_lt neg
 
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can fail

@@ -69,7 +69,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
       intro q h
       simp only [s, f, Preimage, Embedding.coeFn_mk, Prod.lex_def, typein_lt_typein,
         typein_inj, mem_setOf_eq] at h
-      exact max_le_iff.1 (le_iff_lt_or_eq.2 <| h.imp_right And.left)
+      exact max_le_iff.1 (le_of_lt_or_eq <| h.imp_right And.left)
     suffices H : (insert (g p) { x | r x (g p) } : Set α) ≃ { x | r x (g p) } ⊕ PUnit from
       ⟨(Set.embeddingOfSubset _ _ this).trans
         ((Equiv.Set.prod _ _).trans (H.prodCongr H)).toEmbedding⟩

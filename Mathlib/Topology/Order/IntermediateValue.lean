@@ -611,7 +611,7 @@ theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → 
       rw [hf_i hu.2] at hu
       exact (hab.trans hu.1.2).false
     · push_neg at ha hb
-      replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
+      replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (gt_of_gt_of_ge hab bot_le).ne'
       obtain ⟨u, hu⟩ := intermediate_value_Ioo' hab.le hf_c.continuousOn ⟨hb, ha⟩
       have : u = ⊥ := hf_i hu.2
       aesop

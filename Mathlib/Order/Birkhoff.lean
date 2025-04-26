@@ -200,7 +200,7 @@ noncomputable def OrderIso.lowerSetSupIrred [OrderBot α] : α ≃o LowerSet {a 
           exact s.lower ha (Set.mem_toFinset.1 hi)
         · dsimp
           exact le_sup (Set.mem_toFinset.2 ha) }
-    (fun _ _ hbc _ ↦ le_trans' hbc) fun _ _ hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
+    (fun _ _ hbc _ ↦ ge_trans hbc) fun _ _ hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
 
 namespace OrderEmbedding
 

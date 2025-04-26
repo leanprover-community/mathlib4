@@ -52,37 +52,37 @@ lemma le_rfl : a ≤ a := le_refl a
 
 /-- The relation `≤` on a preorder is transitive. -/
 lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
+lemma ge_trans : b ≤ a → c ≤ b → c ≤ a := fun h₁ h₂ => le_trans h₂ h₁
 
 lemma lt_iff_le_not_le : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_not_le _ _
+alias lt_iff_le_not_ge := lt_iff_le_not_le
 
 lemma lt_of_le_not_le (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_not_le.2 ⟨hab, hba⟩
+alias lt_of_le_not_ge := lt_of_le_not_le
 
 lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
+lemma ge_of_eq (hab : a = b) : b ≤ a := by rw [hab]
 lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_le.1 hab).1
 lemma not_le_of_lt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_le.1 hab).2
-lemma not_le_of_gt (hab : a > b) : ¬a ≤ b := not_le_of_lt hab
 lemma not_lt_of_le (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_lt hab
-lemma not_lt_of_ge (hab : a ≥ b) : ¬a < b := not_lt_of_le hab
 
+alias not_le_of_gt := not_le_of_lt
+alias not_lt_of_ge := not_lt_of_le
 alias LT.lt.not_le := not_le_of_lt
 alias LE.le.not_lt := not_lt_of_le
 
-lemma ge_trans : a ≥ b → b ≥ c → a ≥ c := fun h₁ h₂ => le_trans h₂ h₁
-
 lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_lt h le_rfl
-lemma gt_irrefl (a : α) : ¬a > a := lt_irrefl _
 
 lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
   lt_of_le_not_le (le_trans (le_of_lt hab) hbc) fun hca ↦ not_le_of_lt hab (le_trans hbc hca)
+lemma gt_of_ge_of_gt (h₁ : b ≤ a) (h₂ : c < b) : c < a := lt_of_lt_of_le h₂ h₁
 
 lemma lt_of_le_of_lt (hab : a ≤ b) (hbc : b < c) : a < c :=
   lt_of_le_not_le (le_trans hab (le_of_lt hbc)) fun hca ↦ not_le_of_lt hbc (le_trans hca hab)
-
-lemma gt_of_gt_of_ge (h₁ : a > b) (h₂ : b ≥ c) : a > c := lt_of_le_of_lt h₂ h₁
-lemma gt_of_ge_of_gt (h₁ : a ≥ b) (h₂ : b > c) : a > c := lt_of_lt_of_le h₂ h₁
+lemma gt_of_gt_of_ge (h₁ : b < a) (h₂ : c ≤ b) : c < a := lt_of_le_of_lt h₂ h₁
 
 lemma lt_trans (hab : a < b) (hbc : b < c) : a < c := lt_of_lt_of_le hab (le_of_lt hbc)
-lemma gt_trans : a > b → b > c → a > c := fun h₁ h₂ => lt_trans h₂ h₁
+lemma gt_trans : b < a → c < b → c < a := fun h₁ h₂ => lt_trans h₂ h₁
 
 lemma ne_of_lt (h : a < b) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
 lemma ne_of_gt (h : b < a) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
@@ -142,14 +142,21 @@ class PartialOrder (α : Type*) extends Preorder α where
 variable [PartialOrder α] {a b : α}
 
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
+lemma ge_antisymm : b ≤ a → a ≤ b → a = b := fun h₁ h₂ ↦ le_antisymm h₂ h₁
 
 alias eq_of_le_of_le := le_antisymm
 
 lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun e => ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
 
+lemma ge_antisymm_iff : a = b ↔ b ≤ a ∧ a ≤ b :=
+  le_antisymm_iff.trans and_comm
+
 lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_le h₁ <| mt (le_antisymm h₁) h₂
+
+lemma gt_of_ge_of_ne : a ≤ b → b ≠ a → a < b := fun h₁ h₂ =>
+  lt_of_le_not_le h₁ <| mt (ge_antisymm h₁) h₂
 
 /-- Equality is decidable if `≤` is. -/
 def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
@@ -158,22 +165,7 @@ def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
       if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
     else isFalse fun heq => hab (heq ▸ le_refl _)
 
-namespace Decidable
-
-variable [DecidableLE α]
-
-lemma lt_or_eq_of_le (hab : a ≤ b) : a < b ∨ a = b :=
+lemma Decidable.lt_or_eq_of_le [DecidableLE α] (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_le hab hba)
-
-lemma eq_or_lt_of_le (hab : a ≤ b) : a = b ∨ a < b :=
-  (lt_or_eq_of_le hab).symm
-
-lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b :=
-  ⟨lt_or_eq_of_le, le_of_lt_or_eq⟩
-
-end Decidable
-
-lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
-lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq
 
 end PartialOrder

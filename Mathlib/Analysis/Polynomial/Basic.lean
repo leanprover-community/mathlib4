@@ -211,7 +211,7 @@ theorem isBigO_of_degree_le (h : P.degree ≤ Q.degree) :
   · have hq : Q ≠ 0 := ne_zero_of_degree_ge_degree h hp
     have hPQ : ∀ᶠ x : 𝕜 in atTop, eval x Q = 0 → eval x P = 0 :=
       Filter.mem_of_superset (Polynomial.eventually_no_roots Q hq) fun x h h' => absurd h' h
-    rcases le_iff_lt_or_eq.mp h with h | h
+    rcases lt_or_eq_of_le h with h | h
     · exact isBigO_of_div_tendsto_nhds hPQ 0 (div_tendsto_zero_of_degree_lt P Q h)
     · exact isBigO_of_div_tendsto_nhds hPQ _ (div_tendsto_leadingCoeff_div_of_degree_eq P Q h)
 
