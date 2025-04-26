@@ -167,7 +167,7 @@ def ListBlank.tail {Γ} [Inhabited Γ] (l : ListBlank Γ) : ListBlank Γ := by
   rintro a _ ⟨i, rfl⟩
   refine Quotient.sound' (Or.inl ?_)
   cases a
-  · cases' i with i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
+  · rcases i with - | i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
   exact ⟨i, rfl⟩
 
 @[simp]
@@ -250,7 +250,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
   · simp only [Nat.add_sub_cancel' h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
   rcases lt_or_le i l₁.length with h' | h'
-  · simp [h', List.getElem_append _ h₂, ← List.getI_eq_getElem _ h, ← List.getI_eq_getElem _ h', H]
+  · simp [h', List.getElem_append h₂, ← List.getI_eq_getElem _ h, ← List.getI_eq_getElem _ h', H]
   · rw [List.getElem_append_right h', List.getElem_replicate,
       ← List.getI_eq_default _ h', H, List.getI_eq_getElem _ h]
 
@@ -378,22 +378,18 @@ element is sent to a sequence of default elements. -/
 def ListBlank.flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f : Γ → List Γ')
     (hf : ∃ n, f default = List.replicate n default) : ListBlank Γ' := by
   apply l.liftOn (fun l ↦ ListBlank.mk (l.flatMap f))
-  rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
+  rintro l _ ⟨i, rfl⟩; obtain ⟨n, e⟩ := hf; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
   rw [List.flatMap_append, mul_comm]; congr
   induction' i with i IH
   · rfl
   simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ,
     List.flatMap_cons]
 
-@[deprecated (since := "2024-10-16")] alias ListBlank.bind := ListBlank.flatMap
-
 @[simp]
 theorem ListBlank.flatMap_mk
     {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : List Γ) (f : Γ → List Γ') (hf) :
     (ListBlank.mk l).flatMap f hf = ListBlank.mk (l.flatMap f) :=
   rfl
-
-@[deprecated (since := "2024-10-16")] alias ListBlank.bind_mk := ListBlank.flatMap_mk
 
 @[simp]
 theorem ListBlank.cons_flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l : ListBlank Γ)
@@ -402,8 +398,6 @@ theorem ListBlank.cons_flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) 
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices ((mk l).cons a).flatMap f hf = ((mk l).flatMap f hf).append (f a) by exact this
   simp only [ListBlank.append_mk, ListBlank.flatMap_mk, ListBlank.cons_mk, List.flatMap_cons]
-
-@[deprecated (since := "2024-10-16")] alias ListBlank.cons_bind := ListBlank.cons_flatMap
 
 end ListBlank
 

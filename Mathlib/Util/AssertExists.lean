@@ -40,7 +40,7 @@ then the command logs an info. Otherwise, it emits a warning.
 The variant `#check_assertions!` only prints declarations/imports that are not present in the
 environment.  In particular, it is silent if everything is imported, making it useful for testing.
 -/
-elab "#check_assertions" tk:("!")?: command => do
+elab "#check_assertions" tk:("!")? : command => do
   let env ← getEnv
   let entries := env.getSortedAssertExists
   if entries.isEmpty && tk.isNone then logInfo "No assertions made." else
@@ -98,8 +98,6 @@ You should *not* delete the `assert_not_exists` statement without careful discus
 elab "assert_not_exists " ns:ident+ : command => do
   let env ← getEnv
   let modNames := env.header.moduleNames
-  let modData := env.header.moduleData
-  let modDataSize := modData.size
   for n in ns do
     let decl ←
       try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
@@ -112,10 +110,8 @@ elab "assert_not_exists " ns:ident+ : command => do
         | pure m!"Declaration {c} is defined in this file."
       let mut msg := m!"Declaration {c} is not allowed to be imported by this file.\n\
         It is defined in {modNames[idx.toNat]!},"
-      for i in [idx.toNat+1:modDataSize] do
-        if modData[i]!.imports.any (·.module == modNames[idx.toNat]!) then
-          idx := i
-          msg := msg ++ m!"\n  which is imported by {modNames[i]!},"
+      for mod in env.importPath modNames[idx.toNat]! do
+        msg := msg ++ m!"\n  which is imported by {mod},"
       pure <| msg ++ m!"\n  which is imported by this file.")
     logErrorAt n m!"{msg}\n\n\
       These invariants are maintained by `assert_not_exists` statements, \

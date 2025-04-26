@@ -52,8 +52,8 @@ noncomputable def mvPolynomialSupportLEEquiv
   { toFun := fun p i => (p.1 i.1).coeff i.2,
     invFun := fun p => ⟨fun i =>
       { toFun := fun m => if hm : m ∈ monoms i then p ⟨i, ⟨m, hm⟩⟩ else 0
-        support := (monoms i).filter (fun m => ∃ hm : m ∈ monoms i, p ⟨i, ⟨m, hm⟩⟩ ≠ 0),
-        mem_support_toFun := by simp (config := {contextual := true}) },
+        support := {m ∈ monoms i | ∃ hm : m ∈ monoms i, p ⟨i, ⟨m, hm⟩⟩ ≠ 0},
+        mem_support_toFun := by simp },
       fun i => Finset.filter_subset _ _⟩,
     left_inv := fun p => by
       ext i m

@@ -114,7 +114,7 @@ theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1)
     · calc
         powHalf n.succ + 0 ≈ powHalf n.succ := add_zero_equiv _
         _ < powHalf n := powHalf_succ_lt_powHalf n
-  · cases' n with n
+  · rcases n with - | n
     · rintro ⟨⟩
     rintro ⟨⟩
     apply lf_of_moveRight_le

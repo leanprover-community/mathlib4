@@ -63,7 +63,7 @@ end Diagonal
 section Diag
 
 @[simp]
-theorem diag_conjTranspose [AddMonoid α] [StarAddMonoid α] (A : Matrix n n α) :
+theorem diag_conjTranspose [Star α] (A : Matrix n n α) :
     diag Aᴴ = star (diag A) :=
   rfl
 
@@ -150,30 +150,31 @@ theorem conjTranspose_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n 
   rw [← conjTranspose_inj (A := M), conjTranspose_zero]
 
 @[simp]
-theorem conjTranspose_one [DecidableEq n] [Semiring α] [StarRing α] : (1 : Matrix n n α)ᴴ = 1 := by
+theorem conjTranspose_one [DecidableEq n] [NonAssocSemiring α] [StarRing α] :
+    (1 : Matrix n n α)ᴴ = 1 := by
   simp [conjTranspose]
 
 @[simp]
-theorem conjTranspose_eq_one [DecidableEq n] [Semiring α] [StarRing α] {M : Matrix n n α} :
+theorem conjTranspose_eq_one [DecidableEq n] [NonAssocSemiring α] [StarRing α] {M : Matrix n n α} :
     Mᴴ = 1 ↔ M = 1 :=
   (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
     by rw [conjTranspose_one]
 
 @[simp]
-theorem conjTranspose_natCast [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ) :
+theorem conjTranspose_natCast [DecidableEq n] [NonAssocSemiring α] [StarRing α] (d : ℕ) :
     (d : Matrix n n α)ᴴ = d := by
   simp [conjTranspose, Matrix.map_natCast, diagonal_natCast]
 
 @[simp]
-theorem conjTranspose_eq_natCast [DecidableEq n] [Semiring α] [StarRing α]
+theorem conjTranspose_eq_natCast [DecidableEq n] [NonAssocSemiring α] [StarRing α]
     {M : Matrix n n α} {d : ℕ} :
     Mᴴ = d ↔ M = d :=
   (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
     by rw [conjTranspose_natCast]
 
 @[simp]
-theorem conjTranspose_ofNat [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ) [d.AtLeastTwo] :
-    (ofNat(d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
+theorem conjTranspose_ofNat [DecidableEq n] [NonAssocSemiring α] [StarRing α] (d : ℕ)
+    [d.AtLeastTwo] : (ofNat(d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
   conjTranspose_natCast _
 
 @[simp]
@@ -282,7 +283,7 @@ theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ 
   Matrix.ext <| by simp
 
 @[simp]
-theorem conjTranspose_mul [Fintype n] [NonUnitalSemiring α] [StarRing α] (M : Matrix m n α)
+theorem conjTranspose_mul [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] (M : Matrix m n α)
     (N : Matrix n l α) : (M * N)ᴴ = Nᴴ * Mᴴ :=
   Matrix.ext <| by simp [mul_apply]
 
@@ -399,7 +400,7 @@ instance [Fintype n] [NonUnitalSemiring α] [StarRing α] : StarRing (Matrix n n
   star_mul := conjTranspose_mul
 
 /-- A version of `star_mul` for `*` instead of `*`. -/
-theorem star_mul [Fintype n] [NonUnitalSemiring α] [StarRing α] (M N : Matrix n n α) :
+theorem star_mul [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] (M N : Matrix n n α) :
     star (M * N) = star N * star M :=
   conjTranspose_mul _ _
 

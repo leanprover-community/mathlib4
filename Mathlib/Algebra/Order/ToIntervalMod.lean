@@ -32,7 +32,8 @@ noncomputable section
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type*} [LinearOrderedAddCommGroup α] [hα : Archimedean α] {p : α} (hp : 0 < p)
+variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [hα : Archimedean α]
+  {p : α} (hp : 0 < p)
   {a b c : α} {n : ℤ}
 
 section
@@ -522,7 +523,7 @@ theorem tfae_modEq :
         ((toIocMod_eq_iff hp).2 ⟨Set.Ioo_subset_Ioc_self hi, i, (sub_add_cancel b _).symm⟩).symm
   tfae_have 4 → 3
   | h => by
-    rw [← h, Ne, eq_comm, add_right_eq_self]
+    rw [← h, Ne, eq_comm, add_eq_left]
     exact hp.ne'
   tfae_have 1 → 4
   | h => by
@@ -853,7 +854,8 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedField
 
-variable {α : Type*} [LinearOrderedField α] [FloorRing α] {p : α} (hp : 0 < p)
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
+  {p : α} (hp : 0 < p)
 
 theorem toIcoDiv_eq_floor (a b : α) : toIcoDiv hp a b = ⌊(b - a) / p⌋ := by
   refine toIcoDiv_eq_of_sub_zsmul_mem_Ico hp ?_
@@ -902,7 +904,8 @@ open Set Int
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
+variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [Archimedean α]
+  {p : α} (hp : 0 < p) (a : α)
 include hp
 
 theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
@@ -936,7 +939,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedRing
 
-variable {α : Type*} [LinearOrderedRing α] [Archimedean α] (a : α)
+variable {α : Type*} [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Archimedean α] (a : α)
 
 theorem iUnion_Ioc_add_intCast : ⋃ n : ℤ, Ioc (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using

@@ -5,10 +5,7 @@ Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Tree.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
@@ -189,7 +186,7 @@ theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = c
     · apply sum_congr rfl
       rintro ⟨i, j⟩ H
       rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]
-    · simp_rw [disjoint_left]
+    · simp_rw [Set.PairwiseDisjoint, Set.Pairwise, disjoint_left]
       aesop
 
 end Tree

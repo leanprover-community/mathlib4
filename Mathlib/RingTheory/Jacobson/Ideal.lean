@@ -117,7 +117,7 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
 
 theorem exists_mul_add_sub_mem_of_mem_jacobson {I : Ideal R} (r : R) (h : r ∈ jacobson I) :
     ∃ s, s * (r + 1) - 1 ∈ I := by
-  cases' mem_jacobson_iff.1 h 1 with s hs
+  obtain ⟨s, hs⟩ := mem_jacobson_iff.1 h 1
   use s
   rw [mul_add, mul_one]
   simpa using hs
@@ -221,7 +221,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
 @[mono]
 theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson := by
   intro h x hx
-  erw [mem_sInf] at hx ⊢
+  rw [jacobson, mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
 
 /-- The Jacobson radical of a two-sided ideal is two-sided.
@@ -279,7 +279,7 @@ lemma isRadical_jacobson (I : Ideal R) : I.jacobson.IsRadical :=
 
 theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ : Ideal R)) :
     IsUnit r := by
-  cases' exists_mul_sub_mem_of_sub_one_mem_jacobson r h with s hs
+  obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r h
   rw [mem_bot, sub_eq_zero, mul_comm] at hs
   exact isUnit_of_mul_eq_one _ _ hs
 

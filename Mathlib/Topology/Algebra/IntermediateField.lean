@@ -15,7 +15,7 @@ in earlier file `Mathlib.Topology.Algebra.Field` as the subspace topology.
 -/
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [TopologicalSpace L] [TopologicalRing L]
+    [TopologicalSpace L] [IsTopologicalRing L]
 
 variable (X : Type*) [TopologicalSpace X] [MulAction L X] [ContinuousSMul L X]
 variable (M : IntermediateField K L)

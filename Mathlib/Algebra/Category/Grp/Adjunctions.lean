@@ -5,7 +5,7 @@ Authors: Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -130,19 +130,17 @@ instance : (forget Grp.{u}).IsRightAdjoint  :=
 section Abelianization
 
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
- -/
+-/
 def abelianize : Grp.{u} ⥤ CommGrp.{u} where
   obj G := CommGrp.of (Abelianization G)
   map f := CommGrp.ofHom (Abelianization.lift (Abelianization.of.comp f.hom))
   map_id := by
     intros
-    simp only [coe_id]
     ext : 1
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
     rfl
   map_comp := by
     intros
-    simp only [coe_comp]
     ext : 1
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
     rfl

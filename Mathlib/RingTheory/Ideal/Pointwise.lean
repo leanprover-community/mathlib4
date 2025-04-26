@@ -3,7 +3,7 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Aut
+import Mathlib.Algebra.Ring.Action.End
 import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Pointwise instances on `Ideal`s

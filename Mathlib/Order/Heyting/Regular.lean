@@ -95,7 +95,6 @@ variable {α}
 
 namespace Regular
 
--- Porting note: `val` and `prop` are new
 /-- The coercion `Regular α → α` -/
 @[coe] def val : Regular α → α :=
   Subtype.val

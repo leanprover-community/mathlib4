@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Bounds.Image
-import Mathlib.Order.CompleteLattice
-import Mathlib.Order.GaloisConnection.Defs
+import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.Order.WithBot
 
 /-!
 # Galois connections, insertions and coinsertions
@@ -206,6 +206,24 @@ namespace OrderIso
 
 variable [Preorder α] [Preorder β]
 
+/-- Makes a Galois connection from an order-preserving bijection. -/
+lemma to_galoisConnection (e : α ≃o β) : GaloisConnection e e.symm :=
+  fun _ _ => e.rel_symm_apply.symm
+
+/-- Makes a Galois insertion from an order-preserving bijection. -/
+protected def toGaloisInsertion (e : α ≃o β) : GaloisInsertion e e.symm where
+  choice b _ := e b
+  gc := e.to_galoisConnection
+  le_l_u g := le_of_eq (e.right_inv g).symm
+  choice_eq _ _ := rfl
+
+/-- Makes a Galois coinsertion from an order-preserving bijection. -/
+protected def toGaloisCoinsertion (e : α ≃o β) : GaloisCoinsertion e e.symm where
+  choice b _ := e.symm b
+  gc := e.to_galoisConnection
+  u_l_le g := le_of_eq (e.left_inv g)
+  choice_eq _ _ := rfl
+
 @[simp]
 theorem bddAbove_image (e : α ≃o β) {s : Set α} : BddAbove (e '' s) ↔ BddAbove s :=
   e.to_galoisConnection.bddAbove_l_image
@@ -354,8 +372,8 @@ abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : Com
       gi.choice (sInf (u '' s)) <|
         (isGLB_sInf _).2 <|
           gi.gc.monotone_u.mem_lowerBounds_image (gi.isGLB_of_u_image <| isGLB_sInf _).1
-    sInf_le := fun s => by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
-    le_sInf := fun s => by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
+    sInf_le := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
+    le_sInf := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
 
 end lift
 
@@ -414,22 +432,16 @@ section lift
 
 variable [PartialOrder α]
 
--- Porting note: In `liftSemilatticeInf` and `liftSemilatticeSup` below, the elaborator
--- seems to struggle with αᵒᵈ vs α; the `by exact`s are not present in Lean 3, but without
--- them the declarations compile much more slowly for some reason.
--- Possibly related to the issue discussed at
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Performance.20issue.20with.20.60CompleteBooleanAlgebra.60/near/316760798
-
 -- See note [reducible non instances]
 /-- Lift the infima along a Galois coinsertion -/
 abbrev liftSemilatticeInf [SemilatticeInf β] (gi : GaloisCoinsertion l u) : SemilatticeInf α :=
   { ‹PartialOrder α› with
-    inf_le_left := fun a b => by
-      exact (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_left a b
-    inf_le_right := fun a b => by
-      exact (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_right a b
-    le_inf := fun a b c => by
-      exact (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).le_inf a b c
+    inf_le_left := fun a b =>
+      (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_left a b
+    inf_le_right := fun a b =>
+      (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_right a b
+    le_inf := fun a b c =>
+      (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).le_inf a b c
     inf := fun a b => u (l a ⊓ l b) }
 
 -- See note [reducible non instances]
@@ -440,12 +452,12 @@ abbrev liftSemilatticeSup [SemilatticeSup β] (gi : GaloisCoinsertion l u) : Sem
       gi.choice (l a ⊔ l b) <|
         sup_le (gi.gc.monotone_l <| gi.gc.le_u <| le_sup_left)
           (gi.gc.monotone_l <| gi.gc.le_u <| le_sup_right)
-    le_sup_left := fun a b => by
-      exact (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_left a b
-    le_sup_right := fun a b => by
-      exact (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_right a b
-    sup_le := fun a b c => by
-      exact (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).sup_le a b c }
+    le_sup_left := fun a b =>
+      (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_left a b
+    le_sup_right := fun a b =>
+      (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_right a b
+    sup_le := fun a b c =>
+      (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).sup_le a b c }
 
 -- See note [reducible non instances]
 /-- Lift the suprema and infima along a Galois coinsertion -/

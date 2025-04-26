@@ -117,7 +117,7 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
         sub_eq_add_neg, sub_eq_zero, Finset.sum_congr rfl]
       rintro ⟨i, j⟩ hij
       rw [Finset.mem_erase, mem_antidiagonal] at hij
-      cases' hij with h₁ h₂
+      obtain ⟨h₁, h₂⟩ := hij
       subst n
       rw [if_pos]
       suffices 0 + j < i + j by simpa
@@ -183,9 +183,6 @@ theorem map.isLocalHom : IsLocalHom (map σ f) :=
     rw [h] at this
     rcases isUnit_of_map_unit f _ this with ⟨c, hc⟩
     exact isUnit_of_mul_eq_one φ (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩
-
-@[deprecated (since := "2024-10-10")]
-alias map.isLocalRingHom := map.isLocalHom
 
 end IsLocalRing
 

@@ -54,7 +54,9 @@ This typeclass captures properties shared by ℝ and ℂ, with an API that close
 -/
 class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
+  /-- The real part as an additive monoid homomorphism -/
   re : K →+ ℝ
+  /-- The imaginary part as an additive monoid homomorphism -/
   im : K →+ ℝ
   /-- Imaginary unit in `K`. Meant to be set to `0` for `K = ℝ`. -/
   I : K
@@ -187,7 +189,7 @@ theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_finsupp_sum {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.sum fun a b => g a b : ℝ) : K) = f.sum fun a b => (g a b : K) :=
-  map_finsupp_sum (algebraMap ℝ K) f g
+  map_finsuppSum (algebraMap ℝ K) f g
 
 @[rclike_simps, norm_cast]
 theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : K) = r * s :=
@@ -203,9 +205,11 @@ theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
   map_prod (algebraMap ℝ K) _ _
 
 @[simp, rclike_simps, norm_cast]
-theorem ofReal_finsupp_prod {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
+theorem ofReal_finsuppProd {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
-  map_finsupp_prod _ f g
+  map_finsuppProd _ f g
+
+@[deprecated (since := "2025-04-06")] alias ofReal_finsupp_prod := ofReal_finsuppProd
 
 @[simp, norm_cast, rclike_simps]
 theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
@@ -519,8 +523,14 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 
 @[simp, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
 
+@[simp, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
+
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
+
+instance : StarModule ℝ K where
+  star_smul r a := by
+    apply RCLike.ext <;> simp [RCLike.smul_re, RCLike.smul_im]
 
 /-! ### Cast lemmas -/
 
@@ -656,7 +666,7 @@ theorem im_le_norm (z : K) : im z ≤ ‖z‖ :=
   (abs_le.1 (abs_im_le_norm _)).2
 
 theorem im_eq_zero_of_le {a : K} (h : ‖a‖ ≤ re a) : im a = 0 := by
-  simpa only [mul_self_norm a, normSq_apply, self_eq_add_right, mul_self_eq_zero]
+  simpa only [mul_self_norm a, normSq_apply, left_eq_add, mul_self_eq_zero]
     using congr_arg (fun z => z * z) ((re_le_norm a).antisymm h)
 
 theorem re_eq_self_of_le {a : K} (h : ‖a‖ ≤ re a) : (re a : K) = a := by
@@ -826,18 +836,25 @@ lemma toStarOrderedRing : StarOrderedRing K :=
 
 scoped[ComplexOrder] attribute [instance] RCLike.toStarOrderedRing
 
+lemma toZeroLEOneClass : ZeroLEOneClass K where
+  zero_le_one := by simp [@RCLike.le_iff_re_im K]
+
+scoped[ComplexOrder] attribute [instance] RCLike.toZeroLEOneClass
+
+lemma toIsOrderedAddMonoid : IsOrderedAddMonoid K where
+  add_le_add_left _ _ := add_le_add_left
+
+scoped[ComplexOrder] attribute [instance] RCLike.toIsOrderedAddMonoid
+
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings.
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
-def toStrictOrderedCommRing : StrictOrderedCommRing K where
-  zero_le_one := by simp [@RCLike.le_iff_re_im K]
-  add_le_add_left _ _ := add_le_add_left
-  mul_pos z w hz hw := by
+lemma toIsStrictOrderedRing : IsStrictOrderedRing K :=
+  .of_mul_pos fun z w hz hw ↦ by
     rw [lt_iff_re_im, map_zero] at hz hw ⊢
     simp [mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-  mul_comm := by intros; apply ext <;> ring_nf
 
-scoped[ComplexOrder] attribute [instance] RCLike.toStrictOrderedCommRing
+scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedRing
 
 theorem toOrderedSMul : OrderedSMul ℝ K :=
   OrderedSMul.mk' fun a b r hab hr => by
@@ -879,16 +896,17 @@ theorem ofReal_mul_neg_iff (x : ℝ) (z : K) :
     x * z < 0 ↔ (x < 0 ∧ 0 < z) ∨ (0 < x ∧ z < 0) := by
   simpa only [mul_neg, neg_pos, neg_neg_iff_pos] using ofReal_mul_pos_iff x (-z)
 
-lemma instPosMulReflectLE : PosMulReflectLE K := by
-  constructor
-  intro a b c (h : _ * _ ≤ _ * _)
-  obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
-  rw [← sub_nonneg]
-  rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
-  rcases h with h | h
-  · rw [ofReal_mul_pos_iff] at h
-    exact le_of_lt <| h.rec (False.elim <| not_lt_of_gt ·.1 ha1) (·.2)
-  · exact ((mul_eq_zero_iff_left <| ofReal_ne_zero.mpr ha1.ne').mp h.symm).ge
+lemma instPosMulReflectLE : PosMulReflectLE K where
+  elim a b c h := by
+    obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
+    rw [← sub_nonneg]
+    #adaptation_note /-- 2025-03-29 need beta reduce for lean4#7717 -/
+    beta_reduce at h
+    rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
+    rcases h with h | h
+    · rw [ofReal_mul_pos_iff] at h
+      exact le_of_lt <| h.rec (False.elim <| not_lt_of_gt ·.1 ha1) (·.2)
+    · exact ((mul_eq_zero_iff_left <| ofReal_ne_zero.mpr ha1.ne').mp h.symm).ge
 
 scoped[ComplexOrder] attribute [instance] RCLike.instPosMulReflectLE
 
@@ -1056,6 +1074,23 @@ theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
 theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
 
+theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
+  ofRealLI.lipschitz
+
+lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
+  intro x y
+  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  calc ‖re x - re y‖ₑ
+  _ = ‖re (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub re x y]
+  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
+
+lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
+  intro x y
+  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  calc ‖im x - im y‖ₑ
+  _ = ‖im (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub im x y]
+  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
+
 end LinearMaps
 
 /-!
@@ -1106,7 +1141,7 @@ section
 
 /-- A mixin over a normed field, saying that the norm field structure is the same as `ℝ` or `ℂ`.
 To endow such a field with a compatible `RCLike` structure in a proof, use
-`letI := IsRCLikeNormedField.rclike 𝕜`.-/
+`letI := IsRCLikeNormedField.rclike 𝕜`. -/
 class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop where
   out : ∃ h : RCLike 𝕜, hk = h.toNormedField
 

@@ -100,11 +100,14 @@ If one tactic succeeds and closes the goal, we don't look at subsequent tactics.
 -- TODO We could run the tactics in parallel.
 -- TODO With widget support, could we run the tactics in parallel
 --      and do live updates of the widget as results come in?
-def hint (stx : Syntax) : TacticM Unit := do
+def hint (stx : Syntax) : TacticM Unit := withMainContext do
   let tacs := Nondet.ofList (← getHints)
   let results := tacs.filterMapM fun t : TSyntax `tactic => do
     if let some msgs ← observing? (withMessageLog (withoutInfoTrees (evalTactic t))) then
-      return some (← getGoals, ← suggestion t msgs)
+      if msgs.hasErrors then
+        return none
+      else
+        return some (← getGoals, ← suggestion t msgs)
     else
       return none
   let results ← (results.toMLList.takeUpToFirst fun r => r.1.1.isEmpty).asArray

@@ -141,7 +141,7 @@ theorem _root_.aemeasurable_union_iff {s t : Set α} :
   simp only [union_eq_iUnion, aemeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
 
 @[measurability]
-theorem smul_measure [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+theorem smul_measure [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (h : AEMeasurable f μ) (c : R) : AEMeasurable f (c • μ) :=
   ⟨h.mk f, h.measurable_mk, ae_smul_measure h.ae_eq_mk c⟩
 
@@ -169,10 +169,13 @@ theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurab
     map_apply_of_aemeasurable (hg.comp_aemeasurable hf) hs, preimage_comp]
 
 @[fun_prop, measurability]
-theorem prod_mk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+theorem prodMk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun x => (f x, g x)) μ :=
-  ⟨fun a => (hf.mk f a, hg.mk g a), hf.measurable_mk.prod_mk hg.measurable_mk,
-    EventuallyEq.prod_mk hf.ae_eq_mk hg.ae_eq_mk⟩
+  ⟨fun a => (hf.mk f a, hg.mk g a), hf.measurable_mk.prodMk hg.measurable_mk,
+    hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
+
+@[deprecated (since := "2025-03-05")]
+alias prod_mk := prodMk
 
 theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀ᵐ x ∂μ, f x ∈ t)
     (h₀ : t.Nonempty) : ∃ g, Measurable g ∧ range g ⊆ t ∧ f =ᵐ[μ] g := by
