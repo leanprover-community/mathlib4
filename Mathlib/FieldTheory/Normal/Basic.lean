@@ -293,4 +293,4 @@ instance IsQuadraticAlgebra.normal (F K : Type*) [Field F] [Field K] [Algebra F 
     · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
 
 @[deprecated (since := "2025-04-17")] alias normal_of_finrank_eq_two :=
-  IsQuadraticAlgebra.Normal
+  IsQuadraticAlgebra.normal
