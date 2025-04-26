@@ -98,7 +98,7 @@ alias ⟨_, ExcenterExists.sum_excenterWeights_eq_one⟩ := sum_excenterWeights_
 lemma sum_excenterWeightsUnnorm_empty_pos : 0 < ∑ i, s.excenterWeightsUnnorm ∅ i := by
   refine Finset.sum_pos ?_ (by simp)
   rintro i -
-  simp [excenterWeightsUnnorm, orthogonalProjectionSpan]
+  simp [excenterWeightsUnnorm]
 
 /-- The existence of the incenter, expressed in terms of `ExcenterExists`. -/
 lemma excenterExists_empty : s.ExcenterExists ∅ :=
@@ -188,9 +188,9 @@ lemma sum_inv_dist_orthogonalProjection_faceOpposite_sq_smul_vsub_eq_zero :
       suffices ⟪vii + vi + vi0 - v0 - v00, ‖v00‖⁻¹ ^ 2 • v00 + ‖vii‖⁻¹ ^ 2 • vii⟫ = 0 by
         simpa [vii, vi, v00, v0, vi0] using this
       have h00 : 0 < ‖v00‖ := by
-        simp [v00, p00, orthogonalProjectionSpan]
+        simp [v00, p00]
       have hii : 0 < ‖vii‖ := by
-        simp [vii, pii, orthogonalProjectionSpan]
+        simp [vii, pii]
       suffices ⟪vii + vi + vi0 - v0 - v00, ‖vii‖ ^ 2 • v00 + ‖v00‖ ^ 2 • vii⟫ = 0 by
         apply_fun (‖v00‖⁻¹ ^ 2 * ‖vii‖⁻¹ ^ 2 * ·) at this
         rw [← inner_smul_right, smul_add, smul_smul, smul_smul] at this
@@ -284,7 +284,7 @@ lemma inv_dist_orthogonalProjection_faceOpposite_eq_sum_mul_inv_dist (i : Fin (n
   simp_rw [neg_div, neg_mul, Finset.sum_neg_distrib, sub_neg_eq_add, Finset.filter_ne',
     Finset.sum_erase_eq_sub (Finset.mem_univ _), real_inner_self_eq_norm_mul_norm,
     ← dist_eq_norm_vsub]
-  simp only [orthogonalProjectionSpan, ne_eq, mul_eq_zero, dist_eq_zero,
+  simp only [ne_eq, mul_eq_zero, dist_eq_zero,
     ne_orthogonalProjection_faceOpposite, or_self, not_false_eq_true, div_self, one_mul,
     add_sub_cancel]
   have h := s.sum_inv_dist_orthogonalProjection_faceOpposite_sq_smul_vsub_eq_zero
@@ -304,7 +304,6 @@ lemma inv_dist_orthogonalProjection_faceOpposite_eq_sum_mul_inv_dist (i : Fin (n
   simp only [mul_inv_rev, pow_two]
   nth_rw 1 [mul_comm]
   rw [mul_assoc]
-  rfl
 
 /-- The inverse of the distance from one vertex to the opposite face is less than the sum of that
 quantity for the other vertices. This implies the existence of the excenter opposite that vertex;
@@ -323,7 +322,7 @@ lemma inv_dist_orthogonalProjection_faceOpposite_lt_sum_inv_dist (hn : 1 < n) (i
     exact NeZero.ne _
   · rintro j hj
     refine mul_lt_of_lt_one_left ?_ ?_
-    · simp [orthogonalProjectionSpan]
+    · simp
     · apply lt_of_abs_lt
       rw [abs_div, abs_neg, div_lt_one]
       · apply LE.le.lt_of_ne
@@ -336,7 +335,7 @@ lemma inv_dist_orthogonalProjection_faceOpposite_lt_sum_inv_dist (hn : 1 < n) (i
             · intro h
               rcases h with ⟨r, hr, h⟩
               suffices s.points j -ᵥ (s.faceOpposite j).orthogonalProjectionSpan (s.points j) = 0 by
-                simp [orthogonalProjectionSpan] at this
+                simp at this
               rw [← Submodule.mem_bot ℝ,
                 ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
               refine ⟨vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
@@ -381,10 +380,10 @@ lemma inv_dist_orthogonalProjection_faceOpposite_lt_sum_inv_dist (hn : 1 < n) (i
                     (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
                 · rw [← direction_affineSpan]
                   exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
-            · simp [orthogonalProjectionSpan]
-            · simp [orthogonalProjectionSpan]
+            · simp
+            · simp
           · positivity
-      · simp [orthogonalProjectionSpan]
+      · simp
 
 lemma sum_excenterWeightsUnnorm_singleton_pos (hn : 1 < n) (i : Fin (n + 1)) :
     0 < ∑ j, s.excenterWeightsUnnorm {i} j := by
@@ -516,7 +515,7 @@ lemma ExcenterExists.signedInfDist_excenter_eq_mul_sum_inv {signs : Finset (Fin 
   simp_rw [excenter_eq_affineCombination,
     signedInfDist_affineCombination _ _ h.sum_excenterWeights_eq_one, excenterWeights,
     Pi.smul_apply, ← dist_eq_norm_vsub, excenterWeightsUnnorm]
-  simp [orthogonalProjectionSpan]
+  simp
 
 variable {s} in
 lemma ExcenterExists.signedInfDist_excenter {signs : Finset (Fin (n + 1))}
@@ -536,8 +535,7 @@ lemma ExcenterExists.dist_excenter {signs : Finset (Fin (n + 1))} (h : s.Excente
     (i : Fin (n + 1)) :
     dist (s.excenter signs) ((s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)) =
       s.exradius signs := by
-  rw [orthogonalProjectionSpan,
-    ← abs_signedInfDist_eq_dist_of_mem_affineSpan_range i h.excenter_mem_affineSpan_range,
+  rw [← abs_signedInfDist_eq_dist_of_mem_affineSpan_range i h.excenter_mem_affineSpan_range,
     h.signedInfDist_excenter, abs_mul, abs_mul, abs_of_nonneg (s.exradius_nonneg signs)]
   simp only [abs_ite, abs_neg, abs_one, ite_self, one_mul]
   rcases lt_trichotomy 0 (∑ i, s.excenterWeightsUnnorm signs i) with h' | h' | h'
@@ -556,15 +554,14 @@ lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
         (s.faceOpposite i).orthogonalProjectionSpan (s.points i)‖ =
           (if i ∈ signs then -1 else 1) * r := by
       intro i
-      rw [orthogonalProjectionSpan, ← s.signedInfDist_affineCombination i h1]
+      rw [← s.signedInfDist_affineCombination i h1]
       exact h i
     simp_rw [← dist_eq_norm_vsub] at h'
     have h'' : ∀ i, w i = r * s.excenterWeightsUnnorm signs i := by
       simp_rw [excenterWeightsUnnorm]
       intro i
       replace h' := h' i
-      rw [orthogonalProjectionSpan,
-        ← eq_div_iff (s.dist_orthogonalProjection_faceOpposite_pos i).ne'] at h'
+      rw [← eq_div_iff (s.dist_orthogonalProjection_faceOpposite_pos i).ne'] at h'
       rw [h', mul_comm, div_eq_mul_inv, mul_assoc, orthogonalProjectionSpan]
     have hw : w = s.excenterWeights signs := by
       simp_rw [h'', ← Finset.mul_sum] at h1
@@ -589,7 +586,7 @@ lemma exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) :
     (∃ r : ℝ, ∀ i, dist p ((s.faceOpposite i).orthogonalProjectionSpan p) = r) ↔
       ∃ signs, s.ExcenterExists signs ∧ p = s.excenter signs := by
-  simp_rw [orthogonalProjectionSpan, ← abs_signedInfDist_eq_dist_of_mem_affineSpan_range _ hp]
+  simp_rw [← abs_signedInfDist_eq_dist_of_mem_affineSpan_range _ hp]
   refine ⟨?_, ?_⟩
   · rintro ⟨r, h⟩
     have h' : ∀ i, s.signedInfDist i p = r ∨ s.signedInfDist i p = -r :=
