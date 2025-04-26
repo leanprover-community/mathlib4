@@ -273,8 +273,8 @@ lemma integral_rpowIntegrand₀₁_eq_rpow_mul_const (hp : p ∈ Ioo 0 1) (hx : 
   -- We use the change of variables formula with `f t = x * t`. Here `g = rpowIntegrand₀₁ p · x`.
   by_cases hx_zero : x = 0
   case pos =>
-    simp only [rpowIntegrand₀₁, one_div, hx_zero, add_zero, sub_self, mul_zero, integral_zero, zero_eq_mul,
-      le_refl]
+    simp only [rpowIntegrand₀₁, one_div, hx_zero, add_zero, sub_self, mul_zero, integral_zero,
+      zero_eq_mul, le_refl]
     apply Or.inl
     refine Real.zero_rpow ?_
     rw [mem_Ioo] at hp
