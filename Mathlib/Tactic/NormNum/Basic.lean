@@ -265,7 +265,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r1 : Q(Nat.add (Nat.mul $na $db) (Nat.mul $nb $da) = Nat.mul $k $nc) :=
         (q(Eq.refl $t1) : Expr)
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      return .isNNRat dsα qc nc dc q(isNNRat_add (f := $f) (.refl $f) $pa $pb $r1 $r2)
+      return .isNNRat' dsα qc nc dc q(isNNRat_add (f := $f) (.refl $f) $pa $pb $r1 $r2)
     let rec ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
       haveI' : $e =Q $a + $b := ⟨⟩
       haveI' : $f =Q HAdd.hAdd := ⟨⟩
@@ -341,7 +341,7 @@ such that `norm_num` successfully recognises `a`. -/
     | .isBool _ .. => failure
     | .isNat _ .. => intArm rα
     | .isNegNat rα .. => intArm rα
-    | .isNNRat _dsα .. => ratArm (←synthInstanceQ q(DivisionRing $α))
+    | .isNNRat _dsα .. => ratArm (← synthInstanceQ q(DivisionRing $α))
     | .isNegNNRat dα .. => ratArm dα
   core
 
@@ -487,7 +487,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
         (q(Eq.refl (Nat.mul $na $nb)) : Expr)
       have t2 : Q(ℕ) := mkRawNatLit dd
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      return .isNNRat dsα qc nc dc q(isNNRat_mul (f := $f) (.refl $f) $pa $pb $r1 $r2)
+      return .isNNRat' dsα qc nc dc q(isNNRat_mul (f := $f) (.refl $f) $pa $pb $r1 $r2)
     let rec ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
       assumeInstancesCommute
       let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
