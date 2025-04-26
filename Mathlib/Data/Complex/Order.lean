@@ -34,7 +34,7 @@ Complex numbers with different imaginary parts are incomparable.
 protected def partialOrder : PartialOrder ℂ where
   le z w := z.re ≤ w.re ∧ z.im = w.im
   lt z w := z.re < w.re ∧ z.im = w.im
-  lt_iff_le_not_le z w := by
+  lt_iff_le_not_ge z w := by
     rw [lt_iff_le_not_le]
     tauto
   le_refl _ := ⟨le_rfl, rfl⟩

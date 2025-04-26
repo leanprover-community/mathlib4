@@ -382,7 +382,7 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
 
 instance linearOrder : LinearOrder ZNum where
   lt := (· < ·)
-  lt_iff_le_not_le := by
+  lt_iff_le_not_ge := by
     intro a b
     transfer_rw
     apply lt_iff_le_not_le

@@ -148,7 +148,7 @@ instance linearOrder : LinearOrder ℚ where
   toDecidableEq := inferInstance
   toDecidableLE := inferInstance
   toDecidableLT := inferInstance
-  lt_iff_le_not_le _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
+  lt_iff_le_not_ge _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
 
 /-!
 ### Extra instances to short-circuit type class resolution

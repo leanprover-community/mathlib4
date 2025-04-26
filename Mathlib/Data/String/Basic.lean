@@ -140,7 +140,7 @@ instance : LinearOrder String where
   le_trans a b c := by
     simp only [le_iff_toList_le]
     apply le_trans
-  lt_iff_le_not_le a b := by
+  lt_iff_le_not_ge a b := by
     simp only [lt_iff_toList_lt, le_iff_toList_le, lt_iff_le_not_le]
   le_antisymm a b := by
     simp only [le_iff_toList_le, ← toList_inj]
