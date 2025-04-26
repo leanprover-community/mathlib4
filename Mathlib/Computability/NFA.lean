@@ -187,30 +187,11 @@ lemma reverse_rewindFrom_evalFrom {xs : List α} {S1 S2 : Set σ} {M : NFA α σ
     (∃ s2 ∈ S2, s2 ∈ M.evalFrom S1 xs.reverse) := by
   dsimp [evalFrom, rewindFrom]
   rw [List.foldl_reverse]
-  revert S1 S2
-  induction xs <;> intros S1 S2 <;> simp
-  case nil =>
-    constructor <;> rintro ⟨s, h1, h2⟩ <;> exists s
+  induction xs generalizing S1 S2
+  case nil => tauto
   case cons x xs ih =>
-    rw [ih]
-    clear ih
-    unfold unstepSet
-    unfold stepSet
-    constructor
-    · rintro ⟨s3, h, h1⟩
-      simp [Set.mem_iUnion] at h
-      rcases h with ⟨s2,h2,h3⟩
-      exists s2
-      constructor <;> try assumption
-      simp [Set.mem_iUnion]
-      exists s3
-    · rintro ⟨s2, h2, h⟩
-      simp [Set.mem_iUnion] at h
-      rcases h with ⟨s3, h1, h3⟩
-      exists s3
-      simp [Set.mem_iUnion]
-      constructor <;> try assumption
-      exists s2
+    simp [ih, unstepSet, stepSet, Set.mem_iUnion]
+    tauto
 
 lemma reverse_rewindsToStart_acceptsFrom {xs : List α} {M : NFA α σ} :
     xs ∈ M.rewindsToStart M.reverse.start ↔ xs.reverse ∈ M.acceptsFrom M.start := by
