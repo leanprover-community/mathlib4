@@ -1036,7 +1036,10 @@ def checkDeclType (b : BundledExtensions)
     decl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let exp ← applyReplacementFun b <| ← reorderForall reorder
     <| ← expand b <| ← unfoldAuxLemmas decl_type
-  return ⟨exp, ← withReducible <| isDefEq exp tgtDecl.type⟩
+  -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
+  let tgtDecl_type := tgtDecl.type.instantiateLevelParams
+    tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
+  return (exp, exp == tgtDecl_type)
 
 /-- Abstracts the nested proofs in the value of `decl` if it's not a theorem. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
@@ -1747,7 +1750,7 @@ partial def addToAdditiveAttr (b : BundledExtensions)
   if b.attrName = `to_dual && alreadyExists then
     let tgtDecl ← getConstInfo tgt
     let srcDecl ← getConstInfo src
-    let ⟨genType, defEqResult⟩ ←
+    let (genType, defEqResult) ←
       MetaM.run' <| checkDeclType b `_to_dual_private srcDecl tgtDecl cfg.reorder
     if !defEqResult then
       throwError m!"to_dual failed validation\ntgt type:{indentExpr tgtDecl.type},\

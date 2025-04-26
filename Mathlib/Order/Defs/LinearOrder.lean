@@ -76,14 +76,17 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
 
 attribute [to_dual existing] LinearOrder.toMax
 attribute [to_dual self (reorder := 3 4)] LinearOrder.le_total
-attribute [to_dual self (reorder := 3 4)] LinearOrder.toDecidableLT
-attribute [to_dual self (reorder := 3 4)] LinearOrder.toDecidableLE
 
 variable [LinearOrder α] {a b c : α}
 
 attribute [instance 900] LinearOrder.toDecidableLT
 attribute [instance 900] LinearOrder.toDecidableLE
 attribute [instance 900] LinearOrder.toDecidableEq
+
+@[to_dual existing toDecidableLT]
+def LinearOrder.toDecidableGT : DecidableGT α := fun a b => toDecidableLT b a
+@[to_dual existing toDecidableLE]
+def LinearOrder.toDecidableGE : DecidableGE α := fun a b => toDecidableLE b a
 
 @[to_dual self (reorder := 3 4)]
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
