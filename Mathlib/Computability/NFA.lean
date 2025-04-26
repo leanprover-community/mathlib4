@@ -126,9 +126,11 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
 
 section Closure
 
-/-! ### NFA Closure Properties:
-    Properties relating operations on NFAs to their
-    languages. -/
+/-!
+### NFA Closure Properties
+
+Constructions of NFAs corresponding to operations on languages.
+-/
 
 section Reversal
 
@@ -173,8 +175,8 @@ lemma mem_rewindsToStart {S : Set σ} {x : List α} :
 end Auxilary
 
 /-- NFAs are closed under reversal:
-  Given NFA `M`, there is an NFA `reverse(M)` such that
-  `L(reverse(M)) = reverse(L(M))`. -/
+Given NFA `M`, there is an NFA `M.reverse` such that
+`M.reverse.accepts = M.accepts.reverse`. -/
 def reverse (M : NFA α σ) : NFA α σ where
   step := M.unstep
   start := M.accept
