@@ -81,8 +81,6 @@ theorem piecewise_mono {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α}
     (h₂ : ∀ i ∉ s, f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
   apply piecewise_le <;> intros <;> simp [*]
 
-@[deprecated (since := "2024-10-06")] alias piecewise_le_piecewise := piecewise_mono
-
 @[simp]
 theorem piecewise_insert_of_ne {i j : α} (h : i ≠ j) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g i = s.piecewise f g i := by simp [piecewise, h]
