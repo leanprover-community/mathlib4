@@ -74,7 +74,7 @@ theorem mellinInv_eq_fourierIntegralInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx
     = (x : ℂ) ^ (-σ : ℂ) •
       (∫ (y : ℝ), Complex.exp (2 * π * (y * (-Real.log x)) * I) • f (σ + 2 * π * y * I)) := by
     rw [mellinInv, one_div, ← abs_of_pos (show 0 < (2 * π)⁻¹ by norm_num; exact pi_pos)]
-    have hx0 : (x : ℂ) ≠ 0 := ofReal_ne_zero.mpr (ne_of_gt hx)
+    have hx0 : (x : ℂ) ≠ 0 := ofReal_ne_zero.mpr (ne_of_lt' hx)
     simp_rw [neg_add, cpow_add _ _ hx0, mul_smul, integral_smul]
     rw [smul_comm, ← Measure.integral_comp_mul_left]
     congr! 3
@@ -119,4 +119,4 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
       rw [mul_comm σ, ← rpow_def_of_pos hx, Real.exp_log hx, ← Complex.ofReal_cpow hx.le]
       norm_cast
       rw [← smul_assoc, smul_eq_mul, Real.rpow_neg hx.le,
-        inv_mul_cancel₀ (ne_of_gt (rpow_pos_of_pos hx σ)), one_smul]
+        inv_mul_cancel₀ (ne_of_lt' (rpow_pos_of_pos hx σ)), one_smul]

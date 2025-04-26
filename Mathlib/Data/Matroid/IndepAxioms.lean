@@ -370,7 +370,7 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
       suffices hcard : I.encard < B.encard by
         obtain ⟨e, heB, heI, hi⟩ := indep_aug hI hBmax.prop hcard
         exact ⟨e, ⟨heB, heI⟩, hi⟩
-      refine lt_of_not_le fun hle ↦ ?_
+      refine lt_of_not_ge fun hle ↦ ?_
       obtain ⟨x, hxnot, hxI⟩ := exists_insert_of_not_maximal indep_subset hI hImax
       have hlt : B.encard < (insert x I).encard := by
         rwa [encard_insert_of_not_mem hxnot, ← not_le, ENat.add_one_le_iff, not_lt]

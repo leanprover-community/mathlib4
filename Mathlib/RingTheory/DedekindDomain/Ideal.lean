@@ -614,7 +614,7 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
         hunit),
     fun h =>
     dvdNotUnit_of_dvd_of_not_dvd (Ideal.dvd_iff_le.mpr (le_of_lt h))
-      (mt Ideal.dvd_iff_le.mp (not_le_of_lt h))⟩
+      (mt Ideal.dvd_iff_le.mp (not_le_of_gt h))⟩
 
 instance : WfDvdMonoid (Ideal A) where
   wf := by

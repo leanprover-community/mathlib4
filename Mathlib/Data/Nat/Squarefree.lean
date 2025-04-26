@@ -151,7 +151,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
   · refine squarefree_iff_prime_squarefree.2 fun p pp d => ?_
     have := ih p pp (dvd_trans ⟨_, rfl⟩ d)
     have := Nat.mul_le_mul this this
-    exact not_le_of_lt h (le_trans this (le_of_dvd n0 d))
+    exact not_le_of_gt h (le_trans this (le_of_dvd n0 d))
   have k2 : 2 ≤ k := by omega
   have k0 : 0 < k := lt_of_lt_of_le (by decide) k2
   have IH : ∀ n', n' ∣ n → ¬k ∣ n' → MinSqFacProp n' (n'.minSqFacAux (k + 2)) := by
@@ -174,7 +174,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     exact absurd this (by omega)
   have pk : k ∣ n → Prime k := by
     refine fun dk => prime_def_minFac.2 ⟨k2, le_antisymm (minFac_le k0) ?_⟩
-    exact ih _ (minFac_prime (ne_of_gt k2)) (dvd_trans (minFac_dvd _) dk)
+    exact ih _ (minFac_prime (ne_of_lt' k2)) (dvd_trans (minFac_dvd _) dk)
   split_ifs with dk dkk
   · exact ⟨pk dk, (Nat.dvd_div_iff_mul_dvd dk).1 dkk, fun p pp d => ih p pp (dvd_trans ⟨_, rfl⟩ d)⟩
   · specialize IH (n / k) (div_dvd_of_dvd dk) dkk
@@ -216,7 +216,7 @@ theorem minSqFac_le_of_dvd {n d : ℕ} (h : n.minSqFac = some d) {m} (m2 : 2 ≤
   have := minSqFac_has_prop n; rw [h] at this
   have fd := minFac_dvd m
   exact
-    le_trans (this.2.2 _ (minFac_prime <| ne_of_gt m2) (dvd_trans (mul_dvd_mul fd fd) md))
+    le_trans (this.2.2 _ (minFac_prime <| ne_of_lt' m2) (dvd_trans (mul_dvd_mul fd fd) md))
       (minFac_le <| lt_of_lt_of_le (by decide) m2)
 
 theorem squarefree_iff_minSqFac {n : ℕ} : Squarefree n ↔ n.minSqFac = none := by
@@ -449,7 +449,7 @@ theorem squarefreeHelper_1 (n k k' : ℕ) (e : k + 1 = k')
 theorem squarefreeHelper_2 (n k k' c : ℕ) (e : k + 1 = k') (hc : bit1 n % bit1 k = c) (c0 : 0 < c)
     (h : SquarefreeHelper n k') : SquarefreeHelper n k := by
   refine' squarefree_helper_1 _ _ _ e (fun _ => _) h
-  refine' mt _ (ne_of_gt c0); intro e₁
+  refine' mt _ (ne_of_lt' c0); intro e₁
   rwa [← hc, ← Nat.dvd_iff_mod_eq_zero]
 
 theorem squarefreeHelper_3 (n n' k k' c : ℕ) (e : k + 1 = k') (hn' : bit1 n' * bit1 k = bit1 n)
@@ -463,10 +463,10 @@ theorem squarefreeHelper_3 (n n' k k' c : ℕ) (e : k + 1 = k') (hn' : bit1 n' *
   have k2 : 2 ≤ bit1 k := Nat.succ_le_succ (bit0_pos k0)
   have pk : (bit1 k).Prime := by
     refine' Nat.prime_def_minFac.2 ⟨k2, le_antisymm (Nat.minFac_le k0') _⟩
-    exact ih _ (Nat.minFac_prime (ne_of_gt k2)) (dvd_trans (Nat.minFac_dvd _) dk)
+    exact ih _ (Nat.minFac_prime (ne_of_lt' k2)) (dvd_trans (Nat.minFac_dvd _) dk)
   have dkk' : ¬bit1 k ∣ bit1 n' := by
     rw [Nat.dvd_iff_mod_eq_zero, hc]
-    exact ne_of_gt c0
+    exact ne_of_lt' c0
   have dkk : ¬bit1 k * bit1 k ∣ bit1 n := by rwa [← Nat.dvd_div_iff_mul_dvd dk, this]
   refine' @Nat.minSqFacProp_div _ _ pk dk dkk none _
   rw [this]
@@ -483,17 +483,17 @@ theorem squarefreeHelper_4 (n k k' : ℕ) (e : bit1 k * bit1 k = k') (hd : bit1 
   subst e
   refine' fun k0 ih => Irreducible.squarefree (Nat.prime_def_le_sqrt.2 ⟨bit1_lt_bit1.2 h, _⟩)
   intro m m2 hm md
-  obtain ⟨p, pp, hp⟩ := Nat.exists_prime_and_dvd (ne_of_gt m2)
+  obtain ⟨p, pp, hp⟩ := Nat.exists_prime_and_dvd (ne_of_lt' m2)
   have :=
     (ih p pp (dvd_trans hp md)).trans
       (le_trans (Nat.le_of_dvd (lt_of_lt_of_le (by decide) m2) hp) hm)
   rw [Nat.le_sqrt] at this
-  exact not_le_of_lt hd this
+  exact not_le_of_gt hd this
 
 theorem not_squarefree_mul (a aa b n : ℕ) (ha : a * a = aa) (hb : aa * b = n) (h₁ : 1 < a) :
     ¬Squarefree n := by
   rw [← hb, ← ha]
-  exact fun H => ne_of_gt h₁ (Nat.isUnit_iff.1 <| H _ ⟨_, rfl⟩)
+  exact fun H => ne_of_lt' h₁ (Nat.isUnit_iff.1 <| H _ ⟨_, rfl⟩)
 
 /-- Given `e` a natural numeral and `a : ℕ` with `a^2 ∣ n`, return `⊢ ¬ Squarefree e`. -/
 unsafe def prove_non_squarefree (e : expr) (n a : ℕ) : tactic expr := do

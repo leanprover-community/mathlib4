@@ -561,7 +561,7 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   unfold fastJacobiSym
   split_ifs with hb0 hb2 ha2 hb1 hab
   · rw [hb0, zero_right]
-  · refine eq_zero_iff.mpr ⟨hb0, ne_of_gt ?_⟩
+  · refine eq_zero_iff.mpr ⟨hb0, ne_of_lt' ?_⟩
     refine Nat.le_of_dvd (Int.gcd_pos_iff.mpr (mod_cast .inr hb0)) ?_
     refine Nat.dvd_gcd (Int.ofNat_dvd_left.mp (Int.dvd_of_emod_eq_zero ha2)) ?_
     exact Int.ofNat_dvd_left.mp (Int.dvd_of_emod_eq_zero (mod_cast hb2))

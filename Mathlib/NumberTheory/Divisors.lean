@@ -393,7 +393,7 @@ theorem perfect_iff_sum_divisors_eq_two_mul (h : 0 < n) :
 
 theorem mem_divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ} :
     x ∈ divisors (p ^ k) ↔ ∃ j ≤ k, x = p ^ j := by
-  rw [mem_divisors, Nat.dvd_prime_pow pp, and_iff_left (ne_of_gt (pow_pos pp.pos k))]
+  rw [mem_divisors, Nat.dvd_prime_pow pp, and_iff_left (ne_of_lt' (pow_pos pp.pos k))]
 
 theorem Prime.divisors {p : ℕ} (pp : p.Prime) : divisors p = {1, p} := by
   ext

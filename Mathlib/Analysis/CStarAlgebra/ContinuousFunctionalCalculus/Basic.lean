@@ -334,7 +334,7 @@ open ComplexOrder in
 instance CStarAlgebra.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
   quasispectrum_nonneg_of_nonneg a ha x := by
     rw [mem_quasispectrum_iff]
-    refine (Or.elim · ge_of_eq fun hx ↦ ?_)
+    refine (Or.elim · le_of_eq' fun hx ↦ ?_)
     obtain ⟨y, hy, rfl⟩ := (IsSelfAdjoint.of_nonneg ha).spectrumRestricts.algebraMap_image ▸ hx
     simpa using spectrum_nonneg_of_nonneg ha hy
 

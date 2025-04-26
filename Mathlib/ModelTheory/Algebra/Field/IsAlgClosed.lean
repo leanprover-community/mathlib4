@@ -95,7 +95,7 @@ instance [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] [IsAlgClosed K] :
   rintro _ n hn0 rfl
   simp only [realize_genericMonicPolyHasRoot]
   rintro ⟨p, _, rfl⟩
-  exact IsAlgClosed.exists_root p (ne_of_gt
+  exact IsAlgClosed.exists_root p (ne_of_lt'
     (natDegree_pos_iff_degree_pos.1 hn0))
 
 theorem modelField_of_modelACF (p : ℕ) (K : Type*) [Language.ring.Structure K]

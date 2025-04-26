@@ -124,7 +124,7 @@ theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s 
     rw [biUnion_lt_succ, Finset.sum_range_succ, Set.union_comm, isCaratheodory_sum h hd,
       m.measure_inter_union _ (h n), add_comm]
     intro a
-    simpa using fun (h₁ : a ∈ s n) i (hi : i < n) h₂ => (hd (ne_of_gt hi)).le_bot ⟨h₁, h₂⟩
+    simpa using fun (h₁ : a ∈ s n) i (hi : i < n) h₂ => (hd (ne_of_lt' hi)).le_bot ⟨h₁, h₂⟩
 
 /-- Use `isCaratheodory_iUnion` instead, which does not require the disjoint assumption. -/
 theorem isCaratheodory_iUnion_of_disjoint {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
@@ -138,7 +138,7 @@ theorem isCaratheodory_iUnion_of_disjoint {s : ℕ → Set α} (h : ∀ i, IsCar
       refine le_trans (add_le_add_right hp _) ?_
       rw [ENNReal.iSup_add]
       refine iSup_le fun n => le_trans (add_le_add_left ?_ _)
-        (ge_of_eq (isCaratheodory_iUnion_lt m (fun i _ => h i) _))
+        (le_of_eq' (isCaratheodory_iUnion_lt m (fun i _ => h i) _))
       refine m.mono (diff_subset_diff_right ?_)
       exact iUnion₂_subset fun i _ => subset_iUnion _ i
 

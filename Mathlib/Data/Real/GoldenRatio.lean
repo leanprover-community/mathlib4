@@ -39,7 +39,7 @@ open Real goldenRatio
 
 /-- The inverse of the golden ratio is the opposite of its conjugate. -/
 theorem inv_gold : φ⁻¹ = -ψ := by
-  have : 1 + √5 ≠ 0 := ne_of_gt (add_pos (by norm_num) <| Real.sqrt_pos.mpr (by norm_num))
+  have : 1 + √5 ≠ 0 := ne_of_lt' (add_pos (by norm_num) <| Real.sqrt_pos.mpr (by norm_num))
   field_simp [sub_mul, mul_add]
   norm_num
 
@@ -92,7 +92,7 @@ theorem gold_pos : 0 < φ :=
   mul_pos (by apply add_pos <;> norm_num) <| inv_pos.2 zero_lt_two
 
 theorem gold_ne_zero : φ ≠ 0 :=
-  ne_of_gt gold_pos
+  ne_of_lt' gold_pos
 
 theorem one_lt_gold : 1 < φ := by
   refine lt_of_mul_lt_mul_left ?_ (le_of_lt gold_pos)

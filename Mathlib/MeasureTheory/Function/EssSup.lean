@@ -322,6 +322,6 @@ lemma essSup_restrict_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} 
   rw [essSup_eq_sInf]
   apply le_sInf (fun b hb ↦ ?_)
   contrapose! hb
-  exact ne_of_gt (B.trans_le (measure_mono (fun x hx ↦ hb.trans hx)))
+  exact ne_of_lt' (B.trans_le (measure_mono (fun x hx ↦ hb.trans hx)))
 
 end ENNReal

@@ -202,7 +202,7 @@ protected theorem one_mul (a : Nimber) : 1 * a = a := by
     exact hy.ne
   · by_contra! h
     replace h := h -- needed to remind `termination_by`
-    exact (mul_left_cancel₀ one_ne_zero <| Nimber.one_mul _).not_lt h
+    exact (mul_left_cancel₀ one_ne_zero <| Nimber.one_mul _).not_gt h
 termination_by a
 
 protected theorem mul_one (a : Nimber) : a * 1 = a := by

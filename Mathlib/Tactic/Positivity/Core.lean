@@ -56,7 +56,7 @@ def Strictness.toNonneg {e} : Strictness zα pα e → Option Q(0 ≤ $e)
 
 /-- Extract a proof that `e` is nonzero, if possible, from `Strictness` information about `e`. -/
 def Strictness.toNonzero {e} : Strictness zα pα e → Option Q($e ≠ 0)
-  | .positive pf => some q(ne_of_gt $pf)
+  | .positive pf => some q(ne_of_lt' $pf)
   | .nonzero pf => some pf
   | _ => .none
 
@@ -117,6 +117,9 @@ initialize registerBuiltinAttribute {
 
 variable {A : Type*} {e : A}
 
+lemma lt_of_le_of_ne' {a b : A} [PartialOrder A] :
+    (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
+
 lemma pos_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A] [Nontrivial A]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
@@ -132,7 +135,7 @@ lemma nz_of_isNegNat {n : ℕ} [Ring A] [PartialOrder A] [IsStrictOrderedRing A]
     (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   simp only [ne_eq, neg_eq_zero]
-  apply ne_of_gt
+  apply ne_of_lt'
   simpa using w
 
 lemma pos_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] [IsStrictOrderedRing A] :
@@ -283,7 +286,7 @@ def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) :
     | .notDefEq =>
       let .defEq _ ← isDefEqQ e lhs | pure .none
       match rhs with
-      | ~q(0) => pure <| .nonnegative q(ge_of_eq $p)
+      | ~q(0) => pure <| .nonnegative q(le_of_eq' $p)
       | _ => compareHypEq zα pα e rhs q(Eq.symm $p)
   | ~q(@Ne.{u + 1} $α' $lhs $rhs) =>
     let .defEq (_ : $α =Q $α') ← isDefEqQ α α' | pure .none
@@ -310,12 +313,12 @@ def orElse {e : Q($α)} (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness 
   | .nonnegative p₁ =>
     match ← catchNone t₂ with
     | p@(.positive _) => pure p
-    | .nonzero p₂ => pure (.positive q(gt_of_ge_of_ne $p₁ $p₂))
+    | .nonzero p₂ => pure (.positive q(lt_of_le_of_ne' $p₁ $p₂))
     | _ => pure (.nonnegative p₁)
   | .nonzero p₁ =>
     match ← catchNone t₂ with
     | p@(.positive _) => pure p
-    | .nonnegative p₂ => pure (.positive q(gt_of_ge_of_ne $p₂ $p₁))
+    | .nonnegative p₂ => pure (.positive q(lt_of_le_of_ne' $p₂ $p₁))
     | _ => pure (.nonzero p₁)
 
 /-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/
@@ -383,7 +386,7 @@ def solve (t : Q(Prop)) : MetaM Expr := do
     | .le, .nonnegative p
     | .ne, .nonzero p => pure p
     | .le, .positive p => pure q(le_of_lt $p)
-    | .ne, .positive p => pure q(ne_of_gt $p)
+    | .ne, .positive p => pure q(ne_of_lt' $p)
     | .ne', .positive p => pure q(ne_of_lt $p)
     | .ne', .nonzero p => pure q(Ne.symm $p)
     | .lt, .nonnegative _ => throw "strict positivity" "nonnegativity"

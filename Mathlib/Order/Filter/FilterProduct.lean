@@ -63,7 +63,7 @@ instance instField [Field β] : Field β* where
   __ := instDivisionRing
 
 theorem coe_lt [Preorder β] {f g : α → β} : (f : β*) < g ↔ ∀* x, f x < g x := by
-  simp only [lt_iff_le_not_le, eventually_and, coe_le, eventually_not, EventuallyLE]
+  simp only [lt_iff_le_not_ge, eventually_and, coe_le, eventually_not, EventuallyLE]
 
 theorem coe_pos [Preorder β] [Zero β] {f : α → β} : 0 < (f : β*) ↔ ∀* x, 0 < f x :=
   coe_lt

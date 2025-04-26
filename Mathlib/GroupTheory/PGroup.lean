@@ -136,7 +136,7 @@ theorem nontrivial_iff_card [Finite G] : Nontrivial G ↔ ∃ n > 0, Nat.card G 
       hk⟩,
     fun ⟨_, hk0, hk⟩ =>
     Finite.one_lt_card_iff_nontrivial.1 <|
-      hk.symm ▸ one_lt_pow₀ (Fact.out (p := p.Prime)).one_lt (ne_of_gt hk0)⟩
+      hk.symm ▸ one_lt_pow₀ (Fact.out (p := p.Prime)).one_lt (ne_of_lt' hk0)⟩
 
 variable {α : Type*} [MulAction G α]
 
@@ -215,7 +215,7 @@ theorem center_nontrivial [Nontrivial G] [Finite G] : Nontrivial (Subgroup.cente
     rw [ConjAct.fixedPoints_eq_center] at this
     have dvd : p ∣ Nat.card G := by
       obtain ⟨n, hn0, hn⟩ := hG.nontrivial_iff_card.mp inferInstance
-      exact hn.symm ▸ dvd_pow_self _ (ne_of_gt hn0)
+      exact hn.symm ▸ dvd_pow_self _ (ne_of_lt' hn0)
     obtain ⟨g, hg⟩ := this dvd (Subgroup.center G).one_mem
     exact ⟨⟨1, ⟨g, hg.1⟩, mt Subtype.ext_iff.mp hg.2⟩⟩
 

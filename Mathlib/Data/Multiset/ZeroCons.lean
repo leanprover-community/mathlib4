@@ -379,7 +379,7 @@ theorem cons_le_of_not_mem (hs : a ∉ s) : a ::ₘ s ≤ t ↔ a ∈ t ∧ s �
 
 @[simp]
 theorem singleton_ne_zero (a : α) : ({a} : Multiset α) ≠ 0 :=
-  ne_of_gt (lt_cons_self _ _)
+  ne_of_lt' (lt_cons_self _ _)
 
 @[simp]
 theorem zero_ne_singleton (a : α) : 0 ≠ ({a} : Multiset α) := singleton_ne_zero _ |>.symm

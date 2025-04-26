@@ -130,7 +130,7 @@ theorem toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂) :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset := by
   intro p
   simp only [Multiset.mem_toEnumFinset]
-  exact gt_of_ge_of_gt (Multiset.le_iff_count.mp h p.1)
+  exact lt_of_le_of_lt' (Multiset.le_iff_count.mp h p.1)
 
 @[simp]
 theorem toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :

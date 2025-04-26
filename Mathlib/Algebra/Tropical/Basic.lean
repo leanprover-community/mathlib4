@@ -168,7 +168,7 @@ instance instPreorderTropical [Preorder R] : Preorder (Tropical R) :=
   { instLETropical, instLTTropical with
     le_refl := fun x => le_refl (untrop x)
     le_trans := fun _ _ _ h h' => le_trans (α := R) h h'
-    lt_iff_le_not_le := fun _ _ => lt_iff_le_not_le (α := R) }
+    lt_iff_le_not_ge := fun _ _ => lt_iff_le_not_ge (α := R) }
 
 /-- Reinterpret `x : R` as an element of `Tropical R`, preserving the order. -/
 def tropOrderIso [Preorder R] : R ≃o Tropical R :=

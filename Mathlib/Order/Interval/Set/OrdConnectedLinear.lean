@@ -62,9 +62,9 @@ lemma Set.ordConnected_iff_disjoint_Ioo_empty [LinearOrder α] [LocallyFiniteOrd
     have hxz : x' < z := lt_of_le_of_ne hx''.1.2.2 (ne_of_mem_of_not_mem hx''.1.1 hz')
     obtain ⟨y', hy', hy''⟩ :=
       ((finite_Icc z y).inter_of_right I).exists_minimal_le ⟨hy, hz.2.le, le_refl _⟩
-    have hzy : z < y' := gt_of_ge_of_ne hy''.1.2.1 (ne_of_mem_of_not_mem hy''.1.1 hz')
+    have hzy : z < y' := lt_of_le_of_ne' hy''.1.2.1 (ne_of_mem_of_not_mem hy''.1.1 hz')
     have h₃ : Ioc x' z ⊆ Iᶜ := fun t ht ht' ↦ hx''.not_gt (⟨ht', le_trans hx' ht.1.le, ht.2⟩) ht.1
-    have h₄ : Ico z y' ⊆ Iᶜ := fun t ht ht' ↦ hy''.not_lt (⟨ht', ht.1, le_trans ht.2.le hy'⟩) ht.2
+    have h₄ : Ico z y' ⊆ Iᶜ := fun t ht ht' ↦ hy''.not_gt (⟨ht', ht.1, le_trans ht.2.le hy'⟩) ht.2
     have h₅ : Ioo x' y' ⊆ Iᶜ := by
       simp only [← Ioc_union_Ico_eq_Ioo hxz hzy, union_subset_iff, and_true, h₃, h₄]
     exact eq_empty_iff_forall_not_mem.1 (h' x' hx''.prop.1 y' hy''.prop.1 h₅) z ⟨hxz, hzy⟩

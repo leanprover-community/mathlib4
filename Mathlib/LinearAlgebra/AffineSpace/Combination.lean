@@ -751,7 +751,7 @@ theorem sum_centroidWeights_eq_one_of_card_ne_zero [CharZero k] (h : #s ≠ 0) :
 to 1 if the set is nonempty. -/
 theorem sum_centroidWeights_eq_one_of_nonempty [CharZero k] (h : s.Nonempty) :
     ∑ i ∈ s, s.centroidWeights k i = 1 :=
-  s.sum_centroidWeights_eq_one_of_card_ne_zero k (ne_of_gt (card_pos.2 h))
+  s.sum_centroidWeights_eq_one_of_card_ne_zero k (ne_of_lt' (card_pos.2 h))
 
 /-- In the characteristic zero case, the weights in the centroid sum
 to 1 if the number of points is `n + 1`. -/

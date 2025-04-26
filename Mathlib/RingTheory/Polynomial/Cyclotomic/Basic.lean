@@ -400,7 +400,7 @@ theorem X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd (R) [CommRing R] {
   congr 1
   rw [← Nat.insert_self_properDivisors hdn.ne_bot, insert_sdiff_of_not_mem, prod_insert]
   · exact Finset.not_mem_sdiff_of_not_mem_left Nat.properDivisors.not_self_mem
-  · exact fun hk => hdn.not_le <| Nat.divisor_le hk
+  · exact fun hk => hdn.not_ge <| Nat.divisor_le hk
 
 section ArithmeticFunction
 
@@ -424,7 +424,7 @@ theorem cyclotomic_eq_prod_X_pow_sub_one_pow_moebius {n : ℕ} (R : Type*) [Comm
   · simp [cyclotomic_ne_zero]
   · intro n hn
     apply Monic.ne_zero
-    apply monic_X_pow_sub_C _ (ne_of_gt hn)
+    apply monic_X_pow_sub_C _ (ne_of_lt' hn)
 
 end ArithmeticFunction
 

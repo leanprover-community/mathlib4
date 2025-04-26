@@ -187,7 +187,7 @@ theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg :
 
 theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : 0 < g)
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g :=
-  v.map_sum_lt (ne_of_gt hg) hf
+  v.map_sum_lt (ne_of_lt' hg) hf
 
 protected theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
@@ -314,7 +314,7 @@ theorem map_sub_eq_of_lt_left (h : v y < v x) : v (x - y) = v x := by
   rwa [map_neg]
 
 theorem map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x := by
-  have := Valuation.map_add_of_distinct_val v (ne_of_gt h).symm
+  have := Valuation.map_add_of_distinct_val v (ne_of_lt' h).symm
   rw [max_eq_right (le_of_lt h)] at this
   simpa using this
 
@@ -367,7 +367,7 @@ theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} : v x = 1 ↔ v x⁻¹ = 
 theorem val_le_one_or_val_inv_lt_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ < 1 := by
   by_cases h : x = 0
   · simp only [h, map_zero, zero_le', inv_zero, zero_lt_one, or_self]
-  · simp only [← one_lt_val_iff v h, le_or_lt]
+  · simp only [← one_lt_val_iff v h, le_or_gt]
 
 /--
 This theorem is a weaker version of `Valuation.val_le_one_or_val_inv_lt_one`, but more symmetric
@@ -537,14 +537,14 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
       | inl h_2 => simpa [hh, lt_self_iff_false] using h.2 h_2
       | inr h_2 =>
           rw [← inv_one, ← inv_eq_iff_eq_inv, ← map_inv₀] at hh
-          exact hh.not_lt (h.2 ((one_lt_val_iff v' hx).1 h_2))
+          exact hh.not_gt (h.2 ((one_lt_val_iff v' hx).1 h_2))
     · intro hh
       by_contra h_1
       cases lt_or_gt_of_ne h_1 with
       | inl h_2 => simpa [hh, lt_self_iff_false] using h.1 h_2
       | inr h_2 =>
         rw [← inv_one, ← inv_eq_iff_eq_inv, ← map_inv₀] at hh
-        exact hh.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
+        exact hh.not_gt (h.1 ((one_lt_val_iff v hx).1 h_2))
 
 alias ⟨IsEquiv.lt_one_iff_lt_one, _⟩ := isEquiv_iff_val_lt_one
 

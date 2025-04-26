@@ -179,7 +179,7 @@ instance (priority := 100) OrderDual.borelSpace {α : Type*} [TopologicalSpace �
 /-- In a `BorelSpace` all open sets are measurable. -/
 instance (priority := 100) BorelSpace.opensMeasurable {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] : OpensMeasurableSpace α :=
-  ⟨ge_of_eq <| BorelSpace.measurable_eq⟩
+  ⟨le_of_eq' <| BorelSpace.measurable_eq⟩
 
 instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     [hα : BorelSpace α] (s : Set α) : BorelSpace s :=

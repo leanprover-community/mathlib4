@@ -341,7 +341,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     replace hn : ∀ i : Fin d, ‖(φ - (v.constrL <| u ∘ n)) (v i)‖ ≤ ε / (2 * C) := by simp [hn]
     have : C * (ε / (2 * C)) = ε / 2 := by
       rw [eq_div_iff (two_ne_zero : (2 : ℝ) ≠ 0), mul_comm, ← mul_assoc,
-        mul_div_cancel₀ _ (ne_of_gt h_2C)]
+        mul_div_cancel₀ _ (ne_of_lt' h_2C)]
     specialize hC (le_of_lt hε2C) hn
     rwa [this] at hC
   choose n hn using this
@@ -441,7 +441,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
       conv_lhs => rw [← mul_one ‖c‖]
       simp only [g, dist_eq_norm, ← smul_sub, norm_smul]
       gcongr
-      apply lef (ne_of_gt _)
+      apply lef (ne_of_lt' _)
       exact φmono (Nat.lt_succ_self N)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
 
@@ -482,7 +482,7 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
   rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have hC : ∀ n, IsCompact (closedBall (0 : E) (‖c‖^n * r)) := fun n ↦ by
-    have : c ^ n ≠ 0 := pow_ne_zero _ <| fun h ↦ by simp [h, zero_le_one.not_lt] at hc
+    have : c ^ n ≠ 0 := pow_ne_zero _ <| fun h ↦ by simp [h, zero_le_one.not_gt] at hc
     simpa [_root_.smul_closedBall' this] using hr.smul (c ^ n)
   have hTop : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
@@ -588,7 +588,7 @@ theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type*} [NormedAddCommGrou
   rcases Metric.exists_mem_closure_infDist_eq_dist (nonempty_compl.2 hs) x with ⟨y, hys, hyd⟩
   rw [closure_compl] at hys
   refine ⟨y, ⟨Metric.closedBall_infDist_compl_subset_closure hx <|
-    Metric.mem_closedBall.2 <| ge_of_eq ?_, hys⟩, hyd⟩
+    Metric.mem_closedBall.2 <| le_of_eq' ?_, hys⟩, hyd⟩
   rwa [dist_comm]
 
 /-- If `K` is a compact set in a nontrivial real normed space and `x ∈ K`, then there exists a point

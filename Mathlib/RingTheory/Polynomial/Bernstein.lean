@@ -182,7 +182,7 @@ theorem iterate_derivative_at_0_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n)
   simp only [Int.natCast_eq_zero, bernsteinPolynomial.iterate_derivative_at_0, Ne, Nat.cast_eq_zero]
   simp only [← ascPochhammer_eval_cast]
   norm_cast
-  apply ne_of_gt
+  apply ne_of_lt'
   obtain rfl | h' := Nat.eq_zero_or_pos ν
   · simp
   · rw [← Nat.succ_pred_eq_of_pos h'] at h

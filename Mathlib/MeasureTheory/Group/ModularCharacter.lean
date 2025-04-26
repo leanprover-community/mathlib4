@@ -56,7 +56,7 @@ lemma modularCharacterFun_eq_haarScalarFactor [MeasurableSpace G] [BorelSpace G]
   obtain ⟨⟨f, f_cont⟩, f_comp, f_nonneg, f_one⟩ :
     ∃ f : C(G, ℝ), HasCompactSupport f ∧ 0 ≤ f ∧ f 1 ≠ 0 := exists_continuous_nonneg_pos 1
   have int_f_ne_zero (μ₀ : Measure G) [IsHaarMeasure μ₀] : ∫ x, f x ∂μ₀ ≠ 0 :=
-    ne_of_gt (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_one)
+    ne_of_lt' (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_one)
   apply NNReal.coe_injective
   have t : (∫ x, f (x * g) ∂ν) = (∫ x, f (x * g) ∂(haarScalarFactor ν μ • μ)) := by
     refine integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport ν μ ?_ ?_

@@ -55,6 +55,6 @@ theorem one_div_cast_pos {n : ℕ} (hn : n ≠ 0) : 0 < 1 / (n : α) :=
 theorem one_div_cast_nonneg (n : ℕ) : 0 ≤ 1 / (n : α) := one_div_nonneg.mpr (cast_nonneg' n)
 
 theorem one_div_cast_ne_zero {n : ℕ} (hn : n ≠ 0) : 1 / (n : α) ≠ 0 :=
-  _root_.ne_of_gt (one_div_cast_pos hn)
+  _root_.ne_of_lt' (one_div_cast_pos hn)
 
 end Nat

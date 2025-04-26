@@ -48,7 +48,7 @@ theorem succ_eq_bot (a : WithBot α) : WithBot.succ a = ⊥ ↔ a = ⊥ := by
   cases a
   · simp
   · simp only [WithBot.succ_coe, WithBot.coe_ne_bot, iff_false]
-    apply ne_of_gt
+    apply ne_of_lt'
     by_contra! h
     have h₂ : _ = ⊥ := le_bot_iff.mp ((Order.le_succ _).trans h)
     exact not_isMax_bot (h₂ ▸ Order.max_of_succ_le (h.trans bot_le))

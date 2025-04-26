@@ -165,7 +165,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
         let oα ← synthInstanceQ q(LinearOrder $α)
         let iα ← synthInstanceQ q(IsStrictOrderedRing $α)
         orElse (← catchNone (ofNonneg q(le_of_lt $pa) sα oα iα))
-          (ofNonzero q(ne_of_gt $pa) q(inferInstance))
+          (ofNonzero q(ne_of_lt' $pa) q(inferInstance))
     | .nonnegative pa =>
       ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
                   (← synthInstanceQ (_ : Q(Type u))) (← synthInstanceQ (_ : Q(Prop)))

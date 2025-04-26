@@ -75,7 +75,7 @@ lemma hasColimitsOfShape_of_initialSeg
     induction i using SuccOrder.limitRecOn with
     | isMin i hi =>
       subst hi₀
-      exact (hi.not_lt (s.lt_top (Classical.arbitrary _))).elim
+      exact (hi.not_gt (s.lt_top (Classical.arbitrary _))).elim
     | succ i hi _ =>
       obtain ⟨a, rfl⟩ := (s.mem_range_iff_rel (b := i)).2 (by
         simpa only [← hi₀] using Order.lt_succ_of_not_isMax hi)

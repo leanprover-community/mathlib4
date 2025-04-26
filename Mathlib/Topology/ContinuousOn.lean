@@ -948,7 +948,7 @@ theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image {g : β → γ} {t : Set
     (hs : t ∈ 𝓝[f '' s] f x) : ContinuousWithinAt (g ∘ f) s x :=
   (hg.mono_of_mem_nhdsWithin hs).comp hf (mapsTo_image f s)
 
-theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image_of_eq {g : β → γ} {t : Set β} {y : β}
+theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_imale_of_eq' {g : β → γ} {t : Set β} {y : β}
     (hg : ContinuousWithinAt g t y) (hf : ContinuousWithinAt f s x)
     (hs : t ∈ 𝓝[f '' s] y) (hy : f x = y) : ContinuousWithinAt (g ∘ f) s x := by
   subst hy; exact hg.comp_of_mem_nhdsWithin_image hf hs

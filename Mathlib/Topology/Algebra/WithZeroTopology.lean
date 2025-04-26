@@ -127,7 +127,7 @@ theorem isClosed_iff {s : Set Γ₀} : IsClosed s ↔ (0 : Γ₀) ∈ s ∨ ∃ 
     compl_subset_compl]
 
 theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
-  isOpen_iff.mpr <| imp_iff_not_or.mp fun ha => ⟨a, ne_of_gt ha, Subset.rfl⟩
+  isOpen_iff.mpr <| imp_iff_not_or.mp fun ha => ⟨a, ne_of_lt' ha, Subset.rfl⟩
 
 /-!
 ### Instances
@@ -160,7 +160,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
     simp only [continuous_iff_continuousAt, ContinuousAt]
     rintro ⟨x, y⟩
     wlog hle : x ≤ y generalizing x y
-    · have := (this y x (le_of_not_le hle)).comp (continuous_swap.tendsto (x, y))
+    · have := (this y x (le_of_not_ge hle)).comp (continuous_swap.tendsto (x, y))
       simpa only [mul_comm, Function.comp_def, Prod.swap] using this
     rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip]
     · rw [zero_mul]

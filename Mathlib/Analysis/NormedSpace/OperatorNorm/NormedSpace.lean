@@ -108,7 +108,7 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
 theorem norm_id [Nontrivial E] : ‖id 𝕜 E‖ = 1 := by
   refine norm_id_of_nontrivial_seminorm ?_
   obtain ⟨x, hx⟩ := exists_ne (0 : E)
-  exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
+  exact ⟨x, ne_of_lt' (norm_pos_iff.2 hx)⟩
 
 @[simp]
 lemma nnnorm_id [Nontrivial E] : ‖id 𝕜 E‖₊ = 1 := NNReal.eq norm_id

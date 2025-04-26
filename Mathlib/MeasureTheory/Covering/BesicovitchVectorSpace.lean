@@ -178,7 +178,7 @@ theorem exists_goodδ :
     ∀ δ : ℝ, 0 < δ → ∃ f : Fin N → E, (∀ i : Fin N, ‖f i‖ ≤ 2) ∧
       Pairwise fun i j => 1 - δ ≤ ‖f i - f j‖ := by
     intro δ hδ
-    rcases lt_or_le δ 1 with (hδ' | hδ')
+    rcases lt_or_ge δ 1 with (hδ' | hδ')
     · rcases h δ hδ hδ' with ⟨s, hs, h's, s_card⟩
       obtain ⟨f, f_inj, hfs⟩ : ∃ f : Fin N → E, Function.Injective f ∧ range f ⊆ ↑s := by
         have : Fintype.card (Fin N) ≤ s.card := by simp only [Fintype.card_fin]; exact s_card
@@ -348,7 +348,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
   have D : 0 ≤ 1 - δ / 4 := by linarith only [hδ2]
   have hcrj : ‖a.c j‖ ≤ a.r j + 1 := by simpa only [lastc, lastr, dist_zero_right] using a.inter' j
   have I : a.r i ≤ 2 := by
-    rcases lt_or_le i (last N) with (H | H)
+    rcases lt_or_ge i (last N) with (H | H)
     · apply (a.hlast i H).1.trans
       simpa only [dist_eq_norm, lastc, sub_zero] using hi
     · have : i = last N := top_le_iff.1 H
@@ -457,14 +457,14 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
   refine ⟨c', fun n => norm_c'_le n, fun i j inej => ?_⟩
   -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j
-  · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_le hij)
-  rcases le_or_lt ‖a.c j‖ 2 with (Hj | Hj)
+  · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_ge hij)
+  rcases le_or_gt ‖a.c j‖ 2 with (Hj | Hj)
   -- case `‖c j‖ ≤ 2` (and therefore also `‖c i‖ ≤ 2`)
   · simp_rw [c', Hj, hij.trans Hj, if_true]
     exact exists_normalized_aux1 a lastr hτ δ hδ1 hδ2 i j inej
   -- case `2 < ‖c j‖`
   · have H'j : ‖a.c j‖ ≤ 2 ↔ False := by simpa only [not_le, iff_false] using Hj
-    rcases le_or_lt ‖a.c i‖ 2 with (Hi | Hi)
+    rcases le_or_gt ‖a.c i‖ 2 with (Hi | Hi)
     · -- case `‖c i‖ ≤ 2`
       simp_rw [c', Hi, if_true, H'j, if_false]
       exact exists_normalized_aux2 a lastc lastr hτ δ hδ1 hδ2 i j inej Hi Hj

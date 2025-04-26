@@ -159,7 +159,7 @@ lemma mulIndicator_iUnion_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α
     rw [mem_iUnion] at hx
     refine le_antisymm ?_ (iSup_le fun i ↦ mulIndicator_le_self' (fun x _ ↦ h1 ▸ bot_le) x)
     rcases hx with ⟨i, hi⟩
-    exact le_iSup_of_le i (ge_of_eq <| mulIndicator_of_mem hi _)
+    exact le_iSup_of_le i (le_of_eq' <| mulIndicator_of_mem hi _)
   · rw [mulIndicator_of_not_mem hx]
     simp only [mem_iUnion, not_exists] at hx
     simp [hx, ← h1]

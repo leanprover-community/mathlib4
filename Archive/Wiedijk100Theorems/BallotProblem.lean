@@ -238,7 +238,7 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
 theorem ballot_same (p : ℕ) : uniformOn (countedSequence (p + 1) (p + 1)) staysPositive = 0 := by
   rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_not_mem]
   rintro x ⟨hx, t⟩
-  apply ne_of_gt (t x _ x.suffix_refl)
+  apply ne_of_lt' (t x _ x.suffix_refl)
   · simpa using sum_of_mem_countedSequence hx
   · refine List.ne_nil_of_length_pos ?_
     rw [length_of_mem_countedSequence hx]
@@ -329,14 +329,14 @@ theorem ballot_problem' :
       ENNReal.toReal_div, ENNReal.toReal_div, ENNReal.toReal_natCast, ENNReal.toReal_natCast,
       ENNReal.toReal_natCast, h₁, h₂]
     · have h₄ : (p + 1 : ℝ) + (q + 1 : ℝ) ≠ (0 : ℝ) := by
-        apply ne_of_gt
+        apply ne_of_lt'
         assumption_mod_cast
       have h₅ : (p + 1 : ℝ) + ↑q ≠ (0 : ℝ) := by
-        apply ne_of_gt
+        apply ne_of_lt'
         norm_cast
         linarith
       have h₆ : ↑p + (q + 1 : ℝ) ≠ (0 : ℝ) := by
-        apply ne_of_gt
+        apply ne_of_lt'
         norm_cast
         linarith
       field_simp [h₄, h₅, h₆] at *

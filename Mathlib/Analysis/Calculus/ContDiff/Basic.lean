@@ -661,7 +661,7 @@ theorem ContDiffWithinAt.comp_of_mem_nhdsWithin_image
 
 /-- The composition of `C^n` functions at points in domains is `C^n`,
   with a weaker condition on `s` and `t`. -/
-theorem ContDiffWithinAt.comp_of_mem_nhdsWithin_image_of_eq
+theorem ContDiffWithinAt.comp_of_mem_nhdsWithin_imale_of_eq'
     {s : Set E} {t : Set F} {g : F → G} {f : E → F} {y : F} (x : E)
     (hg : ContDiffWithinAt 𝕜 n g t y) (hf : ContDiffWithinAt 𝕜 n f s x)
     (hs : t ∈ 𝓝[f '' s] f x) (hy : f x = y) : ContDiffWithinAt 𝕜 n (g ∘ f) s x := by

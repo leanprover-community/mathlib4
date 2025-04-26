@@ -87,7 +87,7 @@ theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f
   obtain ⟨s, s_nhds, hs⟩ : ∃ s ∈ 𝓝 a, ApproximatesLinearOn f f' s c :=
     hf.approximates_deriv_on_nhds (Or.inr cpos)
   apply hs.map_nhds_eq f'symm s_nhds (Or.inr (NNReal.half_lt_self _))
-  simp [ne_of_gt f'symm_pos]
+  simp [ne_of_lt' f'symm_pos]
 
 variable {f : E → F} {f' : E ≃L[𝕜] F} {a : E}
 
@@ -111,7 +111,7 @@ def toPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : Par
   ApproximatesLinearOn.toPartialHomeomorph f (Classical.choose hf.approximates_deriv_on_open_nhds)
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.2
     (f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' =>
-      NNReal.half_lt_self <| ne_of_gt <| inv_pos.2 hf')
+      NNReal.half_lt_self <| ne_of_lt' <| inv_pos.2 hf')
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.1
 
 variable {f}

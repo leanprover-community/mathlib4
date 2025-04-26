@@ -96,7 +96,7 @@ private lemma aux₁
       (Frequently.of_forall fun _ ↦ lt_irrefl <| 1 - ENNReal.ofReal (4⁻¹ ^ Fintype.card ι))
       ((Filter.Tendsto.eventually_lt tendsto_const_nhds (H.comp hε₀) <|
             ENNReal.sub_lt_self ENNReal.one_ne_top one_ne_zero ?_).mono
-        fun n ↦ gt_of_ge_of_gt ?_)
+        fun n ↦ lt_of_le_of_lt' ?_)
   on_goal 2 =>
     calc
       volume (closure s ∩ closedBall x (ε n)) / volume (closedBall x (ε n))

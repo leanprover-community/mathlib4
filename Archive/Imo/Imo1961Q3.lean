@@ -58,7 +58,7 @@ theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
           exact absurd (pow_eq_zero h) hsinx
         | (n + 1 + 2) =>
           set m := n + 1
-          refine absurd ?_ h.not_lt
+          refine absurd ?_ h.not_gt
           calc
             (cos x) ^ (m + 2) - (sin x) ^ (m + 2) ≤ |cos x| ^ (m + 2) + |sin x| ^ (m + 2) := by
               simp only [← abs_pow, sub_eq_add_neg]

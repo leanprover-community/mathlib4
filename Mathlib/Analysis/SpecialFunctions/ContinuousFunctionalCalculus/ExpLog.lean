@@ -135,7 +135,7 @@ lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr :
   rw [log, ← cfc_smul_id (R := ℝ) r a, ← cfc_comp Real.log (r • ·) a, log]
   calc
     _ = cfc (fun z => Real.log r + Real.log z) a :=
-      cfc_congr (Real.log_mul hr.ne' <| ne_of_gt <| ha₂ · ·)
+      cfc_congr (Real.log_mul hr.ne' <| ne_of_lt' <| ha₂ · ·)
     _ = _ := by rw [cfc_const_add _ _ _]
 
 -- TODO: Relate the hypothesis to a notion of strict positivity

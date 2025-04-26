@@ -323,7 +323,7 @@ protected lemma _root_.MDifferentiableWithinAt.mpullback_vectorField_preimage
 
 /-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
 differentiable. Version within a set at a point, but with full pullback. -/
-protected lemma _root_.MDifferentiableWithinAt.mpullback_vectorField_preimage_of_eq
+protected lemma _root_.MDifferentiableWithinAt.mpullback_vectorField_preimale_of_eq'
     (hV : MDifferentiableWithinAt I' I'.tangent (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
     (hf : ContMDiffAt I I' n f x₀) (hf' : (mfderiv I I' f x₀).IsInvertible) (hmn : 2 ≤ n)
     (hy₀ : y₀ = f x₀) :
@@ -561,7 +561,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_preimage
 /-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
 with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, but with full pullback. -/
-protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_preimage_of_eq
+protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_preimale_of_eq'
     (hV : ContMDiffWithinAt I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
     (hf : ContMDiffAt I I' n f x₀) (hf' : (mfderiv I I' f x₀).IsInvertible) (hmn : m + 1 ≤ n)
     (hy₀ : y₀ = f x₀) :

@@ -27,7 +27,7 @@ theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ 
     ∃ a : α, #(f ⁻¹' {a}) = #β := by
   have : ∃ a, #β ≤ #(f ⁻¹' {a}) := by
     by_contra! h
-    apply mk_univ.not_lt
+    apply mk_univ.not_gt
     rw [← preimage_univ, ← iUnion_of_singleton, preimage_iUnion]
     exact
       mk_iUnion_le_sum_mk.trans_lt
@@ -54,7 +54,7 @@ theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ
     exact hx
   · refine
       ha.trans
-        (ge_of_eq <|
+        (le_of_eq' <|
           Quotient.sound ⟨Equiv.trans ?_ (Equiv.subtypeSubtypeEquivSubtypeExists _ _).symm⟩)
     simp only [coe_eq_subtype, mem_singleton_iff, mem_preimage, mem_setOf_eq]
     rfl

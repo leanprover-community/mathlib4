@@ -93,7 +93,7 @@ theorem reduce_to_p_prime {P : Prop} :
       have q_zero :=
         congr_arg (Ideal.Quotient.factor h_IM) (CharP.cast_eq_zero (R ⧸ I) q)
       simp only [map_natCast, map_zero] at q_zero
-      apply ne_zero_of_dvd_ne_zero (ne_of_gt q_pos)
+      apply ne_zero_of_dvd_ne_zero (ne_of_lt' q_pos)
       exact (CharP.cast_eq_zero_iff (R ⧸ M) r q).mp q_zero
     have r_prime : Nat.Prime r :=
       or_iff_not_imp_right.1 (CharP.char_is_prime_or_zero (R ⧸ M) r) r_pos
@@ -250,7 +250,7 @@ theorem to_not_mixedCharZero (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
   by_contra hp_mixedChar
   rcases hp_mixedChar.charP_quotient with ⟨I, hI_ne_top, hI_p⟩
   replace hI_zero : CharP (R ⧸ I) 0 := @CharP.ofCharZero _ _ (h I hI_ne_top)
-  exact absurd (CharP.eq (R ⧸ I) hI_p hI_zero) (ne_of_gt p_pos)
+  exact absurd (CharP.eq (R ⧸ I) hI_p hI_zero) (ne_of_lt' p_pos)
 
 /--
 A ring of characteristic zero has equal characteristic iff it does not

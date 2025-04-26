@@ -263,7 +263,7 @@ lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
     Xor' (∃ T > 0, Periodic γ T) (Injective γ) := by
   rw [xor_iff_iff_not]
-  refine ⟨fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT), ?_⟩
+  refine ⟨fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_lt' hT), ?_⟩
   intro h
   rw [Injective] at h
   push_neg at h

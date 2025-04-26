@@ -162,7 +162,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       d < (n : ℝ)⁻¹ * n * (l - ε * (1 + l)) := by
         rw [inv_mul_cancel₀, one_mul]
         · linarith only [hε]
-        · exact Nat.cast_ne_zero.2 (ne_of_gt npos)
+        · exact Nat.cast_ne_zero.2 (ne_of_lt' npos)
       _ = (n : ℝ)⁻¹ * (n * l - ε * (1 + l) * n) := by ring
       _ ≤ (n : ℝ)⁻¹ * u n := by gcongr; linarith only [hn]
   · obtain ⟨ε, hε, εpos⟩ : ∃ ε : ℝ, l + ε * (1 + ε + l) < d ∧ 0 < ε := by

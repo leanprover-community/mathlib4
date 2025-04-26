@@ -42,7 +42,7 @@ theorem sSup_def {s : Set ℕ} (h : ∃ n, ∀ a ∈ s, a ≤ n) :
 theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sSup s = 0 :=
   dif_neg fun ⟨n, hn⟩ ↦
     let ⟨k, hks, hk⟩ := h.exists_gt n
-    (hn k hks).not_lt hk
+    (hn k hks).not_gt hk
 
 @[simp]
 theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
@@ -86,7 +86,7 @@ protected theorem sInf_le {s : Set ℕ} {m : ℕ} (hm : m ∈ s) : sInf s ≤ m 
 theorem nonempty_of_pos_sInf {s : Set ℕ} (h : 0 < sInf s) : s.Nonempty := by
   by_contra contra
   rw [Set.not_nonempty_iff_eq_empty] at contra
-  have h' : sInf s ≠ 0 := ne_of_gt h
+  have h' : sInf s ≠ 0 := ne_of_lt' h
   apply h'
   rw [Nat.sInf_eq_zero]
   right
@@ -167,7 +167,7 @@ theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
   obtain ⟨m, hm⟩ := nonempty_of_pos_sInf h
   refine
     le_csInf ⟨m + n, ?_⟩ fun b hb ↦
-      le_of_not_lt fun hbn ↦
+      le_of_not_gt fun hbn ↦
         ne_of_mem_of_not_mem ?_ (not_mem_of_lt_sInf h) (Nat.sub_eq_zero_of_le hbn.le)
   · dsimp
     rwa [Nat.add_sub_cancel_right]

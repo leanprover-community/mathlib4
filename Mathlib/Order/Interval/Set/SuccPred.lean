@@ -43,7 +43,7 @@ variable [SuccOrder α] {a b : α}
 
 lemma Ico_succ_left_eq_Ioo (a b : α) : Ico (succ a) b = Ioo a b := by
   by_cases ha : IsMax a
-  · rw [Ico_eq_empty (ha.mono <| le_succ _).not_lt, Ioo_eq_empty ha.not_lt]
+  · rw [Ico_eq_empty (ha.mono <| le_succ _).not_gt, Ioo_eq_empty ha.not_gt]
   · ext x
     rw [mem_Ico, mem_Ioo, succ_le_iff_of_not_isMax ha]
 
@@ -133,7 +133,7 @@ variable [PredOrder α] {a b : α}
 
 lemma Ioc_pred_right_eq_Ioo (a b : α) : Ioc a (pred b) = Ioo a b := by
   by_cases hb : IsMin b
-  · rw [Ioc_eq_empty (hb.mono <| pred_le _).not_lt, Ioo_eq_empty hb.not_lt]
+  · rw [Ioc_eq_empty (hb.mono <| pred_le _).not_gt, Ioo_eq_empty hb.not_gt]
   · ext x
     rw [mem_Ioc, mem_Ioo, le_pred_iff_of_not_isMin hb]
 
@@ -217,7 +217,7 @@ variable [SuccOrder α] [PredOrder α] [Nontrivial α]
 
 lemma Icc_succ_pred_eq_Ioo (a b : α) : Icc (succ a) (pred b) = Ioo a b := by
   by_cases hb : IsMin b
-  · rw [Icc_eq_empty, Ioo_eq_empty hb.not_lt]
+  · rw [Icc_eq_empty, Ioo_eq_empty hb.not_gt]
     exact fun h ↦ not_isMin_succ _ <| hb.mono <| h.trans <| pred_le _
   · rw [Icc_pred_right_eq_Ico_of_not_isMin hb, Ico_succ_left_eq_Ioo]
 

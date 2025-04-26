@@ -62,8 +62,8 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
         exact lt_add_of_pos_right _ (Nat.pos_of_ne_zero hdeg)
 
 theorem exists_irreducible_of_degree_pos (hf : 0 < f.degree) : ∃ g, Irreducible g ∧ g ∣ f :=
-  WfDvdMonoid.exists_irreducible_factor (fun huf => ne_of_gt hf <| degree_eq_zero_of_isUnit huf)
-    fun hf0 => not_lt_of_lt hf <| hf0.symm ▸ (@degree_zero R _).symm ▸ WithBot.bot_lt_coe _
+  WfDvdMonoid.exists_irreducible_factor (fun huf => ne_of_lt' hf <| degree_eq_zero_of_isUnit huf)
+    fun hf0 => not_lt_of_gt hf <| hf0.symm ▸ (@degree_zero R _).symm ▸ WithBot.bot_lt_coe _
 
 theorem exists_irreducible_of_natDegree_pos (hf : 0 < f.natDegree) : ∃ g, Irreducible g ∧ g ∣ f :=
   exists_irreducible_of_degree_pos <| by

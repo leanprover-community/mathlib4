@@ -47,7 +47,7 @@ theorem toLipschitzWith (hf : ContractingWith K f) : LipschitzWith K f := hf.2
 theorem one_sub_K_pos' (hf : ContractingWith K f) : (0 : ℝ≥0∞) < 1 - K := by simp [hf.1]
 
 theorem one_sub_K_ne_zero (hf : ContractingWith K f) : (1 : ℝ≥0∞) - K ≠ 0 :=
-  ne_of_gt hf.one_sub_K_pos'
+  ne_of_lt' hf.one_sub_K_pos'
 
 theorem one_sub_K_ne_top : (1 : ℝ≥0∞) - K ≠ ∞ := by
   norm_cast

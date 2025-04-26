@@ -139,7 +139,7 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
       rw [sub_lt_comm]; norm_num at *; linarith (config := { splitNe := true })
     rw [← binEntropy_one_sub]
     exact this hp.ne hp
-  obtain hp₀ | hp₀ := le_or_lt p 0
+  obtain hp₀ | hp₀ := le_or_gt p 0
   · exact (binEntropy_nonpos_of_nonpos hp₀).trans_lt <| log_pos <| by norm_num
   have hp₁ : 0 < 1 - p := sub_pos.2 <| hp.trans <| by norm_num
   calc
@@ -383,10 +383,10 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
       · have qpos : 0 < (q : ℝ) := by positivity
         have : q * p < q - 1 := by
           convert (mul_lt_mul_left qpos).2 hp.2 using 1
-          simp only [mul_sub, mul_one, isUnit_iff_ne_zero, ne_eq, ne_of_gt qpos, not_false_eq_true,
+          simp only [mul_sub, mul_one, isUnit_iff_ne_zero, ne_eq, ne_of_lt' qpos, not_false_eq_true,
             IsUnit.mul_inv_cancel]
         linarith
-    exact (ne_of_gt (lt_add_neg_iff_lt.mp this : p < 1)).symm
+    exact (ne_of_lt' (lt_add_neg_iff_lt.mp this : p < 1)).symm
 
 /-- Qary entropy is strictly decreasing in the interval [1 - q⁻¹, 1]. -/
 lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
@@ -418,7 +418,7 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
               not_false_eq_true, IsUnit.inv_mul_cancel]
           rwa [asdfasfd] at tmp
         nlinarith
-    exact (ne_of_gt (lt_add_neg_iff_lt.mp zero_lt_1_sub_p : p < 1)).symm
+    exact (ne_of_lt' (lt_add_neg_iff_lt.mp zero_lt_1_sub_p : p < 1)).symm
 
 /-- Binary entropy is strictly increasing in interval [0, 1/2]. -/
 lemma binEntropy_strictMonoOn : StrictMonoOn binEntropy (Icc 0 2⁻¹) := by

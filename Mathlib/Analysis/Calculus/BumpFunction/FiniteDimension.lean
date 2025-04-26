@@ -171,7 +171,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     · intro x hx
       obtain ⟨n, hn⟩ : ∃ n, x ∈ support (g n) := s_g x hx
       have I : 0 < r n * g n x := mul_pos (rpos n) (lt_of_le_of_ne (g_nonneg n x) (Ne.symm hn))
-      exact ne_of_gt ((S x).tsum_pos (fun i => mul_nonneg (rpos i).le (g_nonneg i x)) n I)
+      exact ne_of_lt' ((S x).tsum_pos (fun i => mul_nonneg (rpos i).le (g_nonneg i x)) n I)
   · refine
       contDiff_tsum_of_eventually (fun n => (g_smooth n).const_smul (r n))
         (fun k _ => (NNReal.hasSum_coe.2 δc).summable) ?_
@@ -221,7 +221,7 @@ theorem u_exists :
     · linarith [(B x).1, (B (-x)).1]
     · linarith [(B x).2, (B (-x)).2]
   · refine support_eq_iff.2 ⟨fun x hx => ?_, fun x hx => ?_⟩
-    · apply ne_of_gt
+    · apply ne_of_lt'
       have : 0 < f x := by
         apply lt_of_le_of_ne (B x).1 (Ne.symm _)
         rwa [← f_support] at hx
@@ -441,14 +441,14 @@ theorem y_smooth : ContDiffOn ℝ ∞ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
     · norm_cast
       refine
         (contDiffOn_const.mul ?_).inv fun x hx =>
-          ne_of_gt (mul_pos (u_int_pos E) (pow_pos (abs_pos_of_pos hx.1.1) (finrank ℝ E)))
+          ne_of_lt' (mul_pos (u_int_pos E) (pow_pos (abs_pos_of_pos hx.1.1) (finrank ℝ E)))
       apply ContDiffOn.pow
       simp_rw [← Real.norm_eq_abs]
       apply ContDiffOn.norm ℝ
       · exact contDiffOn_fst
-      · intro x hx; exact ne_of_gt hx.1.1
+      · intro x hx; exact ne_of_lt' hx.1.1
     · apply (u_smooth E).comp_contDiffOn
-      exact ContDiffOn.smul (contDiffOn_fst.inv fun x hx => ne_of_gt hx.1.1) contDiffOn_snd
+      exact ContDiffOn.smul (contDiffOn_fst.inv fun x hx => ne_of_lt' hx.1.1) contDiffOn_snd
 
 theorem y_support {D : ℝ} (Dpos : 0 < D) (D_lt_one : D < 1) :
     support (y D : E → ℝ) = ball (0 : E) (1 + D) :=
@@ -489,13 +489,13 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           · refine
               (contDiffOn_fst.sub contDiffOn_const).div (contDiffOn_fst.add contDiffOn_const) ?_
             rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
-            apply ne_of_gt
+            apply ne_of_lt'
             dsimp only
             linarith
           · apply ContDiffOn.smul _ contDiffOn_snd
             refine ((contDiffOn_fst.add contDiffOn_const).div_const _).inv ?_
             rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
-            apply ne_of_gt
+            apply ne_of_lt'
             dsimp only
             linarith
         · rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩

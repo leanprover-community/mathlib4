@@ -61,6 +61,8 @@ variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
 
 @[simp] theorem default_eq_zero : default = 0 := rfl
 
+-- protected alias ne_of_lt' := Nat.ne_of_gt
+
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
   Nat.min_eq_left Nat.min_eq_right Nat.max_eq_left Nat.max_eq_right
   -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
@@ -284,9 +286,9 @@ lemma mul_eq_left (ha : a ≠ 0) : a * b = a ↔ b = 1 := by simpa using Nat.mul
 lemma mul_eq_right (hb : b ≠ 0) : a * b = b ↔ a = 1 := by simpa using Nat.mul_left_inj hb (c := 1)
 
 -- TODO: Deprecate
-lemma mul_right_eq_self_iff (ha : 0 < a) : a * b = a ↔ b = 1 := mul_eq_left <| ne_of_gt ha
+lemma mul_right_eq_self_iff (ha : 0 < a) : a * b = a ↔ b = 1 := mul_eq_left <| Nat.ne_of_lt' ha
 
-lemma mul_left_eq_self_iff (hb : 0 < b) : a * b = b ↔ a = 1 := mul_eq_right <| ne_of_gt hb
+lemma mul_left_eq_self_iff (hb : 0 < b) : a * b = b ↔ a = 1 := mul_eq_right <| Nat.ne_of_lt' hb
 
 /-- The product of two natural numbers is greater than 1 if and only if
   at least one of them is greater than 1 and both are positive. -/
@@ -297,7 +299,7 @@ lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
     obtain rfl | rfl | h' := h'
     · simp at h
     · simp at h
-    · exact Nat.not_lt_of_le (Nat.mul_le_mul h'.1 h'.2) h
+    · exact Nat.not_lt_of_ge (Nat.mul_le_mul h'.1 h'.2) h
   · obtain hm | hn := h.2.2
     · exact Nat.mul_lt_mul_of_lt_of_le' hm h.2.1 Nat.zero_lt_one
     · exact Nat.mul_lt_mul_of_le_of_lt h.1 hn h.1
@@ -327,9 +329,9 @@ lemma mul_lt_mul'' (hac : a < c) (hbd : b < d) : a * b < c * d :=
 
 protected lemma lt_iff_lt_of_mul_eq_mul (ha : a ≠ 0) (hbd : a = b * d) (hce : a = c * e) :
     c < b ↔ d < e where
-  mp hcb := Nat.lt_of_not_le fun hed ↦ Nat.not_lt_of_le (Nat.le_of_eq <| hbd.symm.trans hce) <|
+  mp hcb := Nat.lt_of_not_le fun hed ↦ Nat.not_lt_of_ge (Nat.le_of_eq <| hbd.symm.trans hce) <|
     Nat.mul_lt_mul_of_lt_of_le hcb hed <| by simp [hbd, Nat.mul_eq_zero] at ha; omega
-  mpr hde := Nat.lt_of_not_le fun hbc ↦ Nat.not_lt_of_le (Nat.le_of_eq <| hce.symm.trans hbd) <|
+  mpr hde := Nat.lt_of_not_le fun hbc ↦ Nat.not_lt_of_ge (Nat.le_of_eq <| hce.symm.trans hbd) <|
     Nat.mul_lt_mul_of_le_of_lt hbc hde <| by simp [hce, Nat.mul_eq_zero] at ha; omega
 
 lemma mul_self_lt_mul_self (h : m < n) : m * m < n * n := mul_lt_mul'' h h
@@ -393,7 +395,7 @@ protected lemma div_le_div_right (h : a ≤ b) : a / c ≤ b / c :=
     (le_div_iff_mul_le hc).2 <| Nat.le_trans (Nat.div_mul_le_self _ _) h
 
 lemma lt_of_div_lt_div (h : a / c < b / c) : a < b :=
-  Nat.lt_of_not_le fun hab ↦ Nat.not_le_of_lt h <| Nat.div_le_div_right hab
+  Nat.lt_of_not_le fun hab ↦ Nat.not_le_of_gt h <| Nat.div_le_div_right hab
 
 @[simp] protected lemma div_eq_zero_iff : a / b = 0 ↔ b = 0 ∨ a < b where
   mp h := by
@@ -990,7 +992,7 @@ lemma eq_of_dvd_of_lt_two_mul (ha : a ≠ 0) (hdvd : b ∣ a) (hlt : a < 2 * b) 
   · simp at ha
   · exact Nat.mul_one _
   · rw [Nat.mul_comm] at hlt
-    cases Nat.not_le_of_lt hlt (Nat.mul_le_mul_right _ (by omega))
+    cases Nat.not_le_of_gt hlt (Nat.mul_le_mul_right _ (by omega))
 
 lemma mod_eq_iff_lt (hn : n ≠ 0) : m % n = m ↔ m < n :=
   ⟨fun h ↦ by rw [← h]; exact mod_lt _ <| Nat.pos_iff_ne_zero.2 hn, mod_eq_of_lt⟩
@@ -1053,12 +1055,12 @@ protected lemma dvd_add_right (h : a ∣ b) : a ∣ b + c ↔ a ∣ c := (Nat.dv
 /-- special case of `mul_dvd_mul_iff_left` for `ℕ`.
 Duplicated here to keep simple imports for this file. -/
 protected lemma mul_dvd_mul_iff_left (ha : 0 < a) : a * b ∣ a * c ↔ b ∣ c :=
-  exists_congr fun d ↦ by rw [Nat.mul_assoc, Nat.mul_right_inj <| ne_of_gt ha]
+  exists_congr fun d ↦ by rw [Nat.mul_assoc, Nat.mul_right_inj <| Nat.ne_of_lt' ha]
 
 /-- special case of `mul_dvd_mul_iff_right` for `ℕ`.
 Duplicated here to keep simple imports for this file. -/
 protected lemma mul_dvd_mul_iff_right (hc : 0 < c) : a * c ∣ b * c ↔ a ∣ b :=
-  exists_congr fun d ↦ by rw [Nat.mul_right_comm, Nat.mul_left_inj <| ne_of_gt hc]
+  exists_congr fun d ↦ by rw [Nat.mul_right_comm, Nat.mul_left_inj <| Nat.ne_of_lt' hc]
 
 -- Moved to Batteries
 

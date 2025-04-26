@@ -123,7 +123,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
   have PQprim : IsPrimitive (P * Q) := Pmonic.isPrimitive.mul Qmonic.isPrimitive
   have prod : P * Q ∣ X ^ n - 1 := by
     rw [IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (P * Q) (X ^ n - 1) PQprim
-        (monic_X_pow_sub_C (1 : ℤ) (ne_of_gt hpos)).isPrimitive,
+        (monic_X_pow_sub_C (1 : ℤ) (ne_of_lt' hpos)).isPrimitive,
       Polynomial.map_mul]
     refine IsCoprime.mul_dvd ?_ ?_ ?_
     · have aux := IsPrimitive.Int.irreducible_iff_irreducible_map_cast Pmonic.isPrimitive
@@ -151,7 +151,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
         one_ne_zero).squarefree
   rcases (squarefree_iff_emultiplicity_le_one (X ^ n - 1)).1 hfree
       (map (Int.castRingHom (ZMod p)) P) with hle | hunit
-  · rw [Nat.cast_one] at habs; exact hle.not_lt habs
+  · rw [Nat.cast_one] at habs; exact hle.not_gt habs
   · replace hunit := degree_eq_zero_of_isUnit hunit
     rw [degree_map_eq_of_leadingCoeff_ne_zero (Int.castRingHom (ZMod p)) _] at hunit
     · exact (minpoly.degree_pos (isIntegral h hpos)).ne' hunit

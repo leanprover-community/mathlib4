@@ -89,7 +89,7 @@ theorem ext_iff_natDegree_le {p q : R[X]} {n : ℕ} (hp : p.natDegree ≤ n) (hq
     p = q ↔ ∀ i ≤ n, p.coeff i = q.coeff i := by
   refine Iff.trans Polynomial.ext_iff ?_
   refine forall_congr' fun i => ⟨fun h _ => h, fun h => ?_⟩
-  refine (le_or_lt i n).elim h fun k => ?_
+  refine (le_or_gt i n).elim h fun k => ?_
   exact
     (coeff_eq_zero_of_natDegree_lt (hp.trans_lt k)).trans
       (coeff_eq_zero_of_natDegree_lt (hq.trans_lt k)).symm
@@ -222,7 +222,7 @@ theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingC
 lemma natDegree_eq_of_natDegree_add_lt_left (p q : R[X])
     (H : natDegree (p + q) < natDegree p) : natDegree p = natDegree q := by
   by_contra h
-  cases Nat.lt_or_lt_of_ne h with
+  cases Nat.lt_or_gt_of_ne h with
   | inl h => exact lt_asymm h (by rwa [natDegree_add_eq_right_of_natDegree_lt h] at H)
   | inr h =>
     rw [natDegree_add_eq_left_of_natDegree_lt h] at H
@@ -442,9 +442,9 @@ theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {f g : R[X]}
   rw [coeff_mul, Finset.sum_eq_single_of_mem (df, dg)]
   · rw [mem_antidiagonal]
   rintro ⟨df', dg'⟩ hmem hne
-  obtain h | hdf' := lt_or_le df df'
+  obtain h | hdf' := lt_or_ge df df'
   · rw [coeff_eq_zero_of_natDegree_lt (hdf.trans_lt h), zero_mul]
-  obtain h | hdg' := lt_or_le dg dg'
+  obtain h | hdg' := lt_or_ge dg dg'
   · rw [coeff_eq_zero_of_natDegree_lt (hdg.trans_lt h), mul_zero]
   obtain ⟨rfl, rfl⟩ :=
     (add_eq_add_iff_eq_and_eq hdf' hdg').mp (mem_antidiagonal.1 hmem)

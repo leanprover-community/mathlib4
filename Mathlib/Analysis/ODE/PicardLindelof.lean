@@ -384,7 +384,7 @@ theorem exists_isPicardLindelof_const_of_contDiffAt (hv : ContDiffAt ℝ 1 v x�
         (Metric.ball_subset_ball <| min_le_right _ _).trans (subset_refl _)
       C_mul_le_R := by
         rw [add_sub_cancel_left, sub_sub_cancel, max_self, hε, mul_div_left_comm, div_self, mul_one]
-        exact ne_of_gt <| add_pos_of_pos_of_nonneg zero_lt_one <| norm_nonneg _ }
+        exact ne_of_lt' <| add_pos_of_pos_of_nonneg zero_lt_one <| norm_nonneg _ }
 
 variable [CompleteSpace E]
 

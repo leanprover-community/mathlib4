@@ -185,7 +185,7 @@ protected theorem continuous (hf : IsLocalHomeomorph f) : Continuous f :=
 
 /-- A local homeomorphism is an open map. -/
 protected theorem isOpenMap (hf : IsLocalHomeomorph f) : IsOpenMap f :=
-  IsOpenMap.of_nhds_le fun x ↦ ge_of_eq (hf.map_nhds_eq x)
+  IsOpenMap.of_nhds_le fun x ↦ le_of_eq' (hf.map_nhds_eq x)
 
 /-- The composition of local homeomorphisms is a local homeomorphism. -/
 protected theorem comp (hg : IsLocalHomeomorph g) (hf : IsLocalHomeomorph f) :

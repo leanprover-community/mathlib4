@@ -151,7 +151,7 @@ theorem innerContent_mono ⦃U V : Set G⦄ (hU : IsOpen U) (hV : IsOpen V) (h2 
 theorem innerContent_exists_compact {U : Opens G} (hU : μ.innerContent U ≠ ∞) {ε : ℝ≥0}
     (hε : ε ≠ 0) : ∃ K : Compacts G, (K : Set G) ⊆ U ∧ μ.innerContent U ≤ μ K + ε := by
   have h'ε := ENNReal.coe_ne_zero.2 hε
-  rcases le_or_lt (μ.innerContent U) ε with h | h
+  rcases le_or_gt (μ.innerContent U) ε with h | h
   · exact ⟨⊥, empty_subset _, le_add_left h⟩
   have h₂ := ENNReal.sub_lt_self hU h.ne_bot h'ε
   conv at h₂ => rhs; rw [innerContent]
@@ -353,7 +353,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
     simp only [Compacts.coe_sup, union_subset_iff, hL'U', true_and]
     exact hM'.trans diff_subset
   rw [μ.outerMeasure_of_isOpen (↑U') U'.2]
-  refine le_trans (ge_of_eq ?_) (μ.le_innerContent _ _ this)
+  refine le_trans (le_of_eq' ?_) (μ.le_innerContent _ _ this)
   exact μ.sup_disjoint L' M' (subset_diff.1 hM').2.symm isClosed_closure isClosed_closure
 
 /-- The measure induced by the outer measure coming from a content, on the Borel sigma-algebra. -/

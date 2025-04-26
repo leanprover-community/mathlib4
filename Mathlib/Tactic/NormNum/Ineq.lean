@@ -60,7 +60,7 @@ theorem isNat_le_true [Semiring α] [PartialOrder α] [IsOrderedRing α] : {a b 
 
 theorem isNat_lt_false [Semiring α] [PartialOrder α] [IsOrderedRing α] {a b : α} {a' b' : ℕ}
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
-  not_lt_of_le (isNat_le_true hb ha h)
+  not_lt_of_ge (isNat_le_true hb ha h)
 
 theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℤ} → {da db : ℕ} →
@@ -89,12 +89,12 @@ theorem isRat_lt_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontr
 theorem isRat_le_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
     {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
-  not_le_of_lt (isRat_lt_true hb ha h)
+  not_le_of_gt (isRat_lt_true hb ha h)
 
 theorem isRat_lt_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
-  not_lt_of_le (isRat_le_true hb ha h)
+  not_lt_of_ge (isRat_le_true hb ha h)
 
 /-! # (In)equalities -/
 
@@ -107,7 +107,7 @@ theorem isNat_lt_true [Semiring α] [PartialOrder α] [IsOrderedRing α] [CharZe
 theorem isNat_le_false [Semiring α] [PartialOrder α] [IsOrderedRing α] [CharZero α]
     {a b : α} {a' b' : ℕ}
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble a' b' = false) : ¬a ≤ b :=
-  not_le_of_lt (isNat_lt_true hb ha h)
+  not_le_of_gt (isNat_lt_true hb ha h)
 
 theorem isInt_le_true [Ring α] [PartialOrder α] [IsOrderedRing α] : {a b : α} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → decide (a' ≤ b') → a ≤ b
@@ -121,11 +121,11 @@ theorem isInt_lt_true [Ring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial
 theorem isInt_le_false [Ring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
     {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' < a')) : ¬a ≤ b :=
-  not_le_of_lt (isInt_lt_true hb ha h)
+  not_le_of_gt (isInt_lt_true hb ha h)
 
 theorem isInt_lt_false [Ring α] [PartialOrder α] [IsOrderedRing α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
-  not_lt_of_le (isInt_le_true hb ha h)
+  not_lt_of_ge (isInt_le_true hb ha h)
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,

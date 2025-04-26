@@ -214,7 +214,7 @@ theorem normSq_denom_pos (g : GL(2, ℝ)⁺) (z : ℍ) : 0 < Complex.normSq (den
   Complex.normSq_pos.mpr (denom_ne_zero g z)
 
 theorem normSq_denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : Complex.normSq (denom g z) ≠ 0 :=
-  ne_of_gt (normSq_denom_pos g z)
+  ne_of_lt' (normSq_denom_pos g z)
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
 def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=

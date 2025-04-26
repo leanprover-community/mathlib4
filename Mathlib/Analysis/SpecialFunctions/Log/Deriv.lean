@@ -33,7 +33,7 @@ variable {x : ℝ}
 theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x := by
   have : HasStrictDerivAt log (exp <| log x)⁻¹ x :=
     (hasStrictDerivAt_exp <| log x).of_local_left_inverse (continuousAt_log hx.ne')
-        (ne_of_gt <| exp_pos _) <|
+        (ne_of_lt' <| exp_pos _) <|
       Eventually.mono (lt_mem_nhds hx) @exp_log
   rwa [exp_log hx] at this
 

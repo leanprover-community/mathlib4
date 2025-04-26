@@ -167,7 +167,7 @@ lemma inter_add_distrib (s t u : Multiset α) : s ∩ t + u = (s + u) ∩ (t + u
   obtain ⟨a, ha⟩ := lt_iff_cons_le.1 <| h.lt_of_le <| le_inter
     (Multiset.add_le_add_right inter_le_left) (Multiset.add_le_add_right inter_le_right)
   rw [← cons_add] at ha
-  exact (lt_cons_self (s ∩ t) a).not_le <| le_inter
+  exact (lt_cons_self (s ∩ t) a).not_ge <| le_inter
     (Multiset.le_of_add_le_add_right (ha.trans inter_le_left))
     (Multiset.le_of_add_le_add_right (ha.trans inter_le_right))
 
@@ -207,7 +207,7 @@ lemma count_inter (a : α) (s t : Multiset α) : count a (s ∩ t) = min (count 
 lemma coe_inter (s t : List α) : (s ∩ t : Multiset α) = (s.bagInter t : List α) := by ext; simp
 
 instance instDistribLattice : DistribLattice (Multiset α) where
-  le_sup_inf s t u := ge_of_eq <| ext.2 fun a ↦ by
+  le_sup_inf s t u := le_of_eq' <| ext.2 fun a ↦ by
     simp only [max_min_distrib_left, Multiset.count_inter, Multiset.sup_eq_union,
       Multiset.count_union, Multiset.inf_eq_inter]
 

@@ -80,7 +80,7 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
   /- For small balls, there is the difficulty that `r` could be large but still the ball could be
     small, if the annulus `{y | ε ≤ dist y x ≤ R/4}` is empty. We split between the cases `r ≤ R`
     and `r > R`, and use the doubling for the former and rough estimates for the latter. -/
-  rcases le_or_lt r R with (hr | hr)
+  rcases le_or_gt r R with (hr | hr)
   · refine ⟨(K + 1) * r, ?_⟩
     constructor
     · apply closedBall_subset_closedBall'

@@ -589,7 +589,7 @@ lemma _root_.Monotone.expGrowthInf_comp {a : EReal} (h : Monotone u)
     apply le_antisymm _ (expGrowthInf_comp_nonneg h u_0 v_top)
     refine (expGrowthInf_monotone fun n ↦ ?_).trans_eq (expGrowthInf_const one_ne_zero one_ne_top)
     rw [comp_apply]; exact h' (v n)
-  · replace h' := (not_frequently.1 h1).mono fun _ hn ↦ le_of_not_le hn
+  · replace h' := (not_frequently.1 h1).mono fun _ hn ↦ le_of_not_ge hn
     apply le_antisymm
     · rw [← hv.limsup_eq] at ha ha' ⊢
       exact h.expGrowthInf_comp_le ha ha'
@@ -616,7 +616,7 @@ lemma _root_.Monotone.expGrowthSup_comp {a : EReal} (hu : Monotone u)
     apply le_antisymm _ (expGrowthSup_comp_nonneg hu u_0 v_top)
     apply (expGrowthSup_eventually_monotone (v_top.eventually u_1)).trans_eq
     exact expGrowthSup_const one_ne_zero one_ne_top
-  · replace h' := (not_eventually.1 u_1).mono fun x hx ↦ (lt_of_not_le hx).le
+  · replace h' := (not_eventually.1 u_1).mono fun x hx ↦ (lt_of_not_ge hx).le
     apply le_antisymm
     · rw [← hv.limsup_eq] at ha ha' ⊢
       exact expGrowthSup_comp_le h' ha ha' v_top

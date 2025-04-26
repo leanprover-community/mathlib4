@@ -216,7 +216,7 @@ theorem ppred : Partrec fun n => ppred n :=
       simp only [mem_rfind, not_true, IsEmpty.forall_iff, decide_true, mem_some_iff,
         false_eq_decide_iff, true_and]
       intro m h
-      simp [ne_of_gt h]
+      simp [ne_of_lt' h]
 
 end Partrec
 

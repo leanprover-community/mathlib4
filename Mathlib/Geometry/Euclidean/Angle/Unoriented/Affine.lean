@@ -344,7 +344,7 @@ theorem angle_eq_zero_iff_ne_and_wbtw {p₁ p₂ p₃ : P} :
   constructor
   · rw [angle, angle_eq_zero_iff]
     rintro ⟨hp₁p₂, r, hr0, hp₃p₂⟩
-    rcases le_or_lt 1 r with (hr1 | hr1)
+    rcases le_or_gt 1 r with (hr1 | hr1)
     · refine Or.inl ⟨vsub_ne_zero.1 hp₁p₂, r⁻¹, ⟨(inv_pos.2 hr0).le, inv_le_one_of_one_le₀ hr1⟩, ?_⟩
       rw [AffineMap.lineMap_apply, hp₃p₂, smul_smul, inv_mul_cancel₀ hr0.ne.symm, one_smul,
         vsub_vadd]
@@ -463,7 +463,7 @@ theorem sin_pos_of_not_collinear {p₁ p₂ p₃ : P} (h : ¬Collinear ℝ ({p�
 /-- If three points are not collinear, the sine of the angle between them is nonzero. -/
 theorem sin_ne_zero_of_not_collinear {p₁ p₂ p₃ : P} (h : ¬Collinear ℝ ({p₁, p₂, p₃} : Set P)) :
     Real.sin (∠ p₁ p₂ p₃) ≠ 0 :=
-  ne_of_gt (sin_pos_of_not_collinear h)
+  ne_of_lt' (sin_pos_of_not_collinear h)
 
 /-- If the sine of the angle between three points is 0, they are collinear. -/
 theorem collinear_of_sin_eq_zero {p₁ p₂ p₃ : P} (h : Real.sin (∠ p₁ p₂ p₃) = 0) :

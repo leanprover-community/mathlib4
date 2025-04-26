@@ -70,7 +70,7 @@ lemma multipliable_of_summable_log' (hfn : ∀ᶠ i in cofinite, 0 < f i)
     refine multipliable_of_summable_log (fun i ↦ ?_) this
     split_ifs with h <;> simp [h]
   refine this.congr_cofinite₀ (fun i ↦ ?_) ?_
-  · split_ifs with h <;> simp [h, ne_of_gt]
+  · split_ifs with h <;> simp [h, ne_of_lt']
   · filter_upwards [hfn] with i hi using by simp [hi]
 
 /-- The exponential of a convergent sum of real logs is the corresponding infinite product. -/

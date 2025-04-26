@@ -46,7 +46,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     rwa [emultiplicity_pow_self_of_prime Int.prime_two,
       emultiplicity_pow_self_of_prime Int.prime_two, Nat.cast_lt, ← mem_range]
   rw [← not_le]; intro hn
-  apply _root_.ne_of_gt _ h
+  apply _root_.ne_of_lt' _ h
   calc ∏ i ∈ range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ __ ∈ range n, (2:ℤ) ^ n := ?_
     _ < ↑ k ! := ?_
   · gcongr

@@ -54,7 +54,7 @@ theorem oscillationWithin_eq_zero [TopologicalSpace E] {f : E → F} {D : Set E}
     {x : E} (hf : ContinuousWithinAt f D x) : oscillationWithin f D x = 0 := by
   refine le_antisymm (_root_.le_of_forall_pos_le_add fun ε hε ↦ ?_) (zero_le _)
   rw [zero_add]
-  have : ball (f x) (ε / 2) ∈ (𝓝[D] x).map f := hf <| ball_mem_nhds _ (by simp [ne_of_gt hε])
+  have : ball (f x) (ε / 2) ∈ (𝓝[D] x).map f := hf <| ball_mem_nhds _ (by simp [ne_of_lt' hε])
   refine (biInf_le diam this).trans (le_of_le_of_eq diam_ball ?_)
   exact (ENNReal.mul_div_cancel (by norm_num) (by norm_num))
 
@@ -123,7 +123,7 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
       exact image_mono (inter_subset_inter_left D (ball_subset_ball hr'))
     by_cases r_top : r = ⊤
     · use 1, one_pos, 2, one_lt_two, this 2 (by simp only [r_top, le_top])
-    · obtain ⟨r', hr'⟩ := exists_between (toReal_pos (ne_of_gt r0) r_top)
+    · obtain ⟨r', hr'⟩ := exists_between (toReal_pos (ne_of_lt' r0) r_top)
       use r', hr'.1, r.toReal, hr'.2, this r.toReal ofReal_toReal_le
   have S_antitone : ∀ (r₁ r₂ : ℝ), r₁ ≤ r₂ → S r₂ ⊆ S r₁ :=
     fun r₁ r₂ hr x ⟨a, ar₂, ha⟩ ↦ ⟨a, lt_of_le_of_lt hr ar₂, ha⟩

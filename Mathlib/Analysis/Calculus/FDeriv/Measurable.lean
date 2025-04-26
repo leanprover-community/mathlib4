@@ -339,7 +339,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
         norm_add_le_of_le J2 <| (le_opNorm _ _).trans <| by gcongr; exact Lf' _ _ m_ge
       _ = (4 + 12 * ‖c‖) * ‖y‖ * (1 / 2) ^ e := by ring
       _ ≤ (4 + 12 * ‖c‖) * ‖y‖ * (ε / (4 + 12 * ‖c‖)) := by gcongr
-      _ = ε * ‖y‖ := by field_simp [ne_of_gt pos]; ring
+      _ = ε * ‖y‖ := by field_simp [ne_of_lt' pos]; ring
   rw [← this.fderiv] at f'K
   exact ⟨this.differentiableAt, f'K⟩
 

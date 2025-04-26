@@ -51,7 +51,7 @@ theorem mul {a b c k : ℤ} (hk0 : k ≠ 0) :
     linear_combination f42.2.2
 
 theorem ne_zero {a b c : ℤ} (h : Fermat42 a b c) : c ≠ 0 := by
-  apply ne_zero_pow two_ne_zero _; apply ne_of_gt
+  apply ne_zero_pow two_ne_zero _; apply ne_of_lt'
   rw [← h.2.2, (by ring : a ^ 4 + b ^ 4 = (a ^ 2) ^ 2 + (b ^ 2) ^ 2)]
   exact
     add_pos (sq_pos_of_ne_zero (pow_ne_zero 2 h.1)) (sq_pos_of_ne_zero (pow_ne_zero 2 h.2.1))
@@ -219,7 +219,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     apply ne_zero_pow two_ne_zero
     rw [hs]
     apply mul_ne_zero
-    · exact ne_of_gt h4
+    · exact ne_of_lt' h4
     · exact hrsz
   obtain ⟨i, hi⟩ := Int.sq_of_gcd_eq_one hcp hs.symm
   -- use m is positive to exclude m = - i ^ 2
@@ -274,14 +274,14 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have hic : Int.natAbs i < Int.natAbs c := by
     apply Int.ofNat_lt.mp
     rw [← Int.eq_natAbs_of_nonneg (le_of_lt hc)]
-    apply gt_of_gt_of_ge _ (Int.natAbs_le_self_sq i)
+    apply lt_of_lt_of_le' _ (Int.natAbs_le_self_sq i)
     rw [← hi, ht3]
-    apply gt_of_gt_of_ge _ (Int.le_self_sq m)
+    apply lt_of_lt_of_le' _ (Int.le_self_sq m)
     exact lt_add_of_pos_right (m ^ 2) (sq_pos_of_ne_zero hn)
   have hic' : Int.natAbs c ≤ Int.natAbs i := by
     apply h.2 j k i
     exact ⟨hj0, hk0, hh.symm⟩
-  apply absurd (not_le_of_lt hic) (not_not.mpr hic')
+  apply absurd (not_le_of_gt hic) (not_not.mpr hic')
 
 end Fermat42
 

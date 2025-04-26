@@ -196,7 +196,7 @@ that `I = J.comap f`. This can be useful when `I` is not definitionally equal to
 -/
 noncomputable def localRingHom (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f) :
     Localization.AtPrime I →+* Localization.AtPrime J :=
-  IsLocalization.map (Localization.AtPrime J) f (le_comap_primeCompl_iff.mpr (ge_of_eq hIJ))
+  IsLocalization.map (Localization.AtPrime J) f (le_comap_primeCompl_iff.mpr (le_of_eq' hIJ))
 
 theorem localRingHom_to_map (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f)
     (x : R) : localRingHom I J f hIJ (algebraMap _ _ x) = algebraMap _ _ (f x) :=
@@ -206,7 +206,7 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
     (y : I.primeCompl) :
     localRingHom I J f hIJ (IsLocalization.mk' _ x y) =
       IsLocalization.mk' (Localization.AtPrime J) (f x)
-        (⟨f y, le_comap_primeCompl_iff.mpr (ge_of_eq hIJ) y.2⟩ : J.primeCompl) :=
+        (⟨f y, le_comap_primeCompl_iff.mpr (le_of_eq' hIJ) y.2⟩ : J.primeCompl) :=
   map_mk' _ _ _
 
 @[instance]

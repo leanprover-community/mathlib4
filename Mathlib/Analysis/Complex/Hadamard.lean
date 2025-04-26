@@ -122,11 +122,11 @@ lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : ε > 0) :
   · apply Differentiable.const_cpow (Differentiable.sub_const (differentiable_id') 1) _
     left
     rw [← ofReal_add, ofReal_ne_zero]
-    simp only [ne_eq, ne_of_gt (sSupNormIm_eps_pos f hε 0), not_false_eq_true]
+    simp only [ne_eq, ne_of_lt' (sSupNormIm_eps_pos f hε 0), not_false_eq_true]
   · apply Differentiable.const_cpow (Differentiable.neg differentiable_id')
     apply Or.inl
     rw [← ofReal_add, ofReal_ne_zero]
-    exact (ne_of_gt (sSupNormIm_eps_pos f hε 1))
+    exact (ne_of_lt' (sSupNormIm_eps_pos f hε 1))
 
 /-- If `f` is bounded on the unit vertical strip, then `f` is bounded by `sSupNormIm` there. -/
 lemma norm_le_sSupNormIm (f : ℂ → E) (z : ℂ) (hD : z ∈ verticalClosedStrip 0 1)
@@ -252,7 +252,7 @@ noncomputable def interpStrip (z : ℂ) : ℂ :=
 /-- Rewrite for `InterpStrip` when `0 < sSupNormIm f 0` and `0 < sSupNormIm f 1`. -/
 lemma interpStrip_eq_of_pos (z : ℂ) (h0 : 0 < sSupNormIm f 0) (h1 : 0 < sSupNormIm f 1) :
     interpStrip f z = sSupNormIm f 0 ^ (1 - z) * sSupNormIm f 1 ^ z := by
-  simp only [ne_of_gt h0, ne_of_gt h1, interpStrip, if_false, or_false]
+  simp only [ne_of_lt' h0, ne_of_lt' h1, interpStrip, if_false, or_false]
 
 /-- Rewrite for `InterpStrip` when `0 = sSupNormIm f 0` or `0 = sSupNormIm f 1`. -/
 lemma interpStrip_eq_of_zero (z : ℂ) (h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0) :

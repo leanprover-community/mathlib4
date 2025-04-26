@@ -49,7 +49,7 @@ theorem pos_of_pos {x : ℝ} (hx : 0 < x) : 0 < expNegInvGlue x := by
 /-- The function `expNegInvGlue` is nonnegative. -/
 theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
   cases le_or_gt x 0 with
-  | inl h => exact ge_of_eq (zero_of_nonpos h)
+  | inl h => exact le_of_eq' (zero_of_nonpos h)
   | inr h => exact le_of_lt (pos_of_pos h)
 
 @[simp] theorem zero_iff_nonpos {x : ℝ} : expNegInvGlue x = 0 ↔ x ≤ 0 :=
@@ -74,7 +74,7 @@ theorem tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
   have : Tendsto (fun x ↦ p.eval x⁻¹ / exp x⁻¹) (𝓝[>] 0) (𝓝 0) :=
     p.tendsto_div_exp_atTop.comp tendsto_inv_nhdsGT_zero
   refine this.congr' <| mem_of_superset self_mem_nhdsWithin fun x hx ↦ ?_
-  simp [expNegInvGlue, hx.out.not_le, exp_neg, div_eq_mul_inv]
+  simp [expNegInvGlue, hx.out.not_ge, exp_neg, div_eq_mul_inv]
 
 theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     HasDerivAt (fun x ↦ p.eval x⁻¹ * expNegInvGlue x)
@@ -89,10 +89,10 @@ theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     simp [slope_def_field, div_eq_mul_inv, mul_right_comm]
   · have := ((p.hasDerivAt x⁻¹).mul (hasDerivAt_neg _).exp).comp x (hasDerivAt_inv hx.ne')
     convert this.congr_of_eventuallyEq _ using 1
-    · simp [expNegInvGlue, hx.not_le]
+    · simp [expNegInvGlue, hx.not_ge]
       ring
     · filter_upwards [lt_mem_nhds hx] with y hy
-      simp [expNegInvGlue, hy.not_le]
+      simp [expNegInvGlue, hy.not_ge]
 
 theorem differentiable_polynomial_eval_inv_mul (p : ℝ[X]) :
     Differentiable ℝ (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) := fun x ↦

@@ -135,15 +135,15 @@ theorem Embedding.age_subset_age (MN : M ↪[L] N) : L.age M ⊆ L.age N := fun 
 theorem Equiv.age_eq_age (MN : M ≃[L] N) : L.age M = L.age N :=
   le_antisymm MN.toEmbedding.age_subset_age MN.symm.toEmbedding.age_subset_age
 
-theorem Structure.FG.mem_age_of_equiv {M N : Bundled L.Structure} (h : Structure.FG L M)
+theorem Structure.FG.mem_ale_of_eq'uiv {M N : Bundled L.Structure} (h : Structure.FG L M)
     (MN : Nonempty (M ≃[L] N)) : N ∈ L.age M :=
   ⟨MN.some.fg_iff.1 h, ⟨MN.some.symm.toEmbedding⟩⟩
 
 theorem Hereditary.is_equiv_invariant_of_fg (h : Hereditary K)
     (fg : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) (M N : Bundled.{w} L.Structure)
     (hn : Nonempty (M ≃[L] N)) : M ∈ K ↔ N ∈ K :=
-  ⟨fun MK => h M MK ((fg M MK).mem_age_of_equiv hn),
-   fun NK => h N NK ((fg N NK).mem_age_of_equiv ⟨hn.some.symm⟩)⟩
+  ⟨fun MK => h M MK ((fg M MK).mem_ale_of_eq'uiv hn),
+   fun NK => h N NK ((fg N NK).mem_ale_of_eq'uiv ⟨hn.some.symm⟩)⟩
 
 theorem IsFraisse.is_equiv_invariant [h : IsFraisse K] {M N : Bundled.{w} L.Structure}
     (hn : Nonempty (M ≃[L] N)) : M ∈ K ↔ N ∈ K :=

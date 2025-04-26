@@ -55,7 +55,7 @@ def toValued : Valued K ℝ≥0 :=
     is_topological_valuation := fun U => by
       rw [Metric.mem_nhds_iff]
       exact ⟨fun ⟨ε, hε, h⟩  =>
-          ⟨Units.mk0 ⟨ε, le_of_lt hε⟩ (ne_of_gt hε), fun x hx ↦ h (mem_ball_zero_iff.mpr hx)⟩,
+          ⟨Units.mk0 ⟨ε, le_of_lt hε⟩ (ne_of_lt' hε), fun x hx ↦ h (mem_ball_zero_iff.mpr hx)⟩,
         fun ⟨ε, hε⟩ => ⟨(ε : ℝ), NNReal.coe_pos.mpr (Units.zero_lt _),
           fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩⟩ }
 

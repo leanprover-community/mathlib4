@@ -244,9 +244,9 @@ theorem mod_coprime {a b : ℕ} (hab : Nat.Coprime a b) : ∃ y : ℤ, a * y ≡
 
 theorem existsUnique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
     ∃ z : ℤ, 0 ≤ z ∧ z < b ∧ z ≡ a [ZMOD b] :=
-  ⟨a % b, emod_nonneg _ (ne_of_gt hb),
+  ⟨a % b, emod_nonneg _ (ne_of_lt' hb),
     by
-      have : a % b < |b| := emod_lt_abs _ (ne_of_gt hb)
+      have : a % b < |b| := emod_lt_abs _ (ne_of_lt' hb)
       rwa [abs_of_pos hb] at this, by simp [ModEq]⟩
 
 @[deprecated (since := "2024-12-17")] alias exists_unique_equiv := existsUnique_equiv

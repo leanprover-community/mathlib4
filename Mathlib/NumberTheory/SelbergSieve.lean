@@ -144,7 +144,7 @@ theorem nu_pos_of_dvd_prodPrimes {d : ℕ} (hd : d ∣ P) : 0 < ν d := by
     _ = ν d := prod_primeFactors_nu hd
 
 theorem nu_ne_zero {d : ℕ} (hd : d ∣ P) : ν d ≠ 0 := by
-  apply _root_.ne_of_gt
+  apply _root_.ne_of_lt'
   exact nu_pos_of_dvd_prodPrimes hd
 
 theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ P) (hd_ne_one : d ≠ 1) : ν d < 1 := by

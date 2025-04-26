@@ -592,7 +592,7 @@ theorem one_lt_card_support_of_ne_one {f : Perm α} (h : f ≠ 1) : 1 < #f.suppo
 theorem card_support_ne_one (f : Perm α) : #f.support ≠ 1 := by
   by_cases h : f = 1
   · exact ne_of_eq_of_ne (card_support_eq_zero.mpr h) zero_ne_one
-  · exact ne_of_gt (one_lt_card_support_of_ne_one h)
+  · exact ne_of_lt' (one_lt_card_support_of_ne_one h)
 
 @[simp]
 theorem card_support_le_one {f : Perm α} : #f.support ≤ 1 ↔ f = 1 := by

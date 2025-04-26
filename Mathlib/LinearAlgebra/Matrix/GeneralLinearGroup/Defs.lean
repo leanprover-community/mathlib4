@@ -229,7 +229,7 @@ theorem mem_glpos (A : GL n R) : A ∈ GLPos n R ↔ 0 < (Matrix.GeneralLinearGr
   Iff.rfl
 
 theorem GLPos.det_ne_zero (A : GLPos n R) : ((A : GL n R) : Matrix n n R).det ≠ 0 :=
-  ne_of_gt A.prop
+  ne_of_lt' A.prop
 
 end
 

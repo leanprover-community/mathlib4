@@ -310,7 +310,7 @@ theorem ODE_solution_unique_of_mem_Ioo
     (heq : f t₀ = g t₀) :
     EqOn f g (Ioo a b) := by
   intros t' ht'
-  rcases lt_or_le t' t₀ with (h | h)
+  rcases lt_or_ge t' t₀ with (h | h)
   · have hss : Icc t' t₀ ⊆ Ioo a b :=
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht'.1 ht''.1, lt_of_le_of_lt ht''.2 ht.2⟩
     exact ODE_solution_unique_of_mem_Icc_left

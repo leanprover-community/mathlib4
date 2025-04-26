@@ -347,7 +347,7 @@ lemma nonempty_inter_of_coverMincard {T : X → X} {F : Set X} {U : Set (X × X)
     rw [← ball_empt]
     rw [z_x] at hz
     exact mem_inter y_F hz
-  apply smaller_cover.coverMincard_le_card.not_lt
+  apply smaller_cover.coverMincard_le_card.not_gt
   rw [← h']
   exact_mod_cast s.card_erase_lt_of_mem x_s
 

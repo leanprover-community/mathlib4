@@ -355,7 +355,7 @@ theorem eq_zero_of_sameRay_neg_smul_right [NoZeroSMulDivisors R M] {r : R} (hr :
   · rfl
   · simpa [hr.ne] using h₀
   · rw [← sub_eq_zero, smul_smul, ← sub_smul, smul_eq_zero] at h
-    refine h.resolve_left (ne_of_gt <| sub_pos.2 ?_)
+    refine h.resolve_left (ne_of_lt' <| sub_pos.2 ?_)
     exact (mul_neg_of_pos_of_neg hr₂ hr).trans hr₁
 
 /-- If a vector is in the same ray as its negation, that vector is zero. -/

@@ -431,7 +431,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   set 𝒜₀ := {s | s ∈ 𝒜 ∧ μ s ≠ ∞}
   have count_𝒜₀ : 𝒜₀.Countable := count_𝒜.mono fun _ ⟨h, _⟩ ↦ h
   -- `1 ≤ p` so `p ≠ 0`, we prove it now as it is often needed.
-  have p_ne_zero : p ≠ 0 := ne_of_gt <| lt_of_lt_of_le (by norm_num) one_le_p.elim
+  have p_ne_zero : p ≠ 0 := ne_of_lt' <| lt_of_lt_of_le (by norm_num) one_le_p.elim
   -- `E` is second-countable, therefore separable and admits a countable and dense subset `u`.
   rcases exists_countable_dense E with ⟨u, countable_u, dense_u⟩
   -- The countable and dense subset of `Lᵖ` we are going to build is the set of finite sums of

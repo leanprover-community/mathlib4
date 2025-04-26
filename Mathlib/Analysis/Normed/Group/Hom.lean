@@ -313,7 +313,7 @@ instance inhabited : Inhabited (NormedAddGroupHom V₁ V₂) :=
 theorem opNorm_zero : ‖(0 : NormedAddGroupHom V₁ V₂)‖ = 0 :=
   le_antisymm
     (csInf_le bounds_bddBelow
-      ⟨ge_of_eq rfl, fun _ =>
+      ⟨le_of_eq' rfl, fun _ =>
         le_of_eq
           (by
             rw [zero_mul]
@@ -371,7 +371,7 @@ theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V�
 theorem norm_id {V : Type*} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 := by
   refine norm_id_of_nontrivial_seminorm V ?_
   obtain ⟨x, hx⟩ := exists_ne (0 : V)
-  exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
+  exact ⟨x, ne_of_lt' (norm_pos_iff.2 hx)⟩
 
 theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
   rfl

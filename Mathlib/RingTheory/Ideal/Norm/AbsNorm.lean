@@ -354,7 +354,7 @@ theorem finite_setOf_absNorm_eq [CharZero S] (n : ℕ) :
         exact Set.Finite.subset Set.finite_univ (Set.subset_univ _)
       rw [← absNorm_ne_zero_iff, absNorm_span_singleton]
       simpa only [Ne, Int.natAbs_eq_zero, Algebra.norm_eq_zero_iff, Nat.cast_eq_zero] using
-        ne_of_gt hn
+        ne_of_lt' hn
     · intro I hI J hJ h
       rw [← comap_map_mk (span_singleton_absNorm_le I), ← hI.symm, ←
         comap_map_mk (span_singleton_absNorm_le J), ← hJ.symm]

@@ -244,7 +244,7 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
       _ < C * (ε / C) := by
         apply mul_lt_mul_of_pos_left _ Cpos
         rwa [mem_ball, dist_eq_norm] at hz
-      _ = ε := mul_div_cancel₀ _ (ne_of_gt Cpos)
+      _ = ε := mul_div_cancel₀ _ (ne_of_lt' Cpos)
 
   exact Set.mem_image_of_mem _ (hε this)
 

@@ -281,7 +281,7 @@ protected theorem IsMin.not_isMax [IsDirected β (· ≥ ·)] {b : β} (hb : IsM
   obtain ⟨a, c, hac⟩ := exists_lt_of_directed_ge β
   have := hb.isBot a
   obtain rfl := (hb' <| this).antisymm this
-  exact hb'.not_lt hac
+  exact hb'.not_gt hac
 
 protected theorem IsMin.not_isMax' [IsDirected β (· ≤ ·)] {b : β} (hb : IsMin b) : ¬ IsMax b :=
   fun hb' ↦ hb'.toDual.not_isMax hb.toDual

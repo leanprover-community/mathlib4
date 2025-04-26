@@ -103,21 +103,21 @@ lemma Int.eq_of_pow_sub_le {d : ℕ} {m n : ℤ} (hd1 : 1 < d)
   replace h : |(1 : ℝ) - d ^ (n - m)| < (d : ℝ)⁻¹ := by
     rw [← mul_lt_mul_iff_of_pos_left (a := (d : ℝ) ^ (-n)) (zpow_pos _ _),
       ← abs_of_nonneg (a := (d : ℝ) ^ (-n)) (le_of_lt <| zpow_pos _ _), ← abs_mul, mul_sub, mul_one,
-      ← zpow_add₀ <| Nat.cast_ne_zero.mpr (ne_of_gt hd0), sub_eq_add_neg (b := m),
+      ← zpow_add₀ <| Nat.cast_ne_zero.mpr (ne_of_lt' hd0), sub_eq_add_neg (b := m),
       neg_add_cancel_left, ← abs_neg, neg_sub,
       abs_of_nonneg (a := (d : ℝ) ^ (-n)) (le_of_lt <| zpow_pos _ _), ← zpow_neg_one,
-      ← zpow_add₀ <| Nat.cast_ne_zero.mpr (ne_of_gt hd0), ← sub_eq_add_neg]
+      ← zpow_add₀ <| Nat.cast_ne_zero.mpr (ne_of_lt' hd0), ← sub_eq_add_neg]
     exact h
     all_goals exact Nat.cast_pos'.mpr hd0
   by_cases H : (m : ℤ) ≤ n
   · obtain ⟨a, ha⟩ := Int.eq_ofNat_of_zero_le (sub_nonneg.mpr H)
     rw [ha, ← mul_lt_mul_iff_of_pos_left (a := (d : ℝ)) <| Nat.cast_pos'.mpr hd0,
-      mul_inv_cancel₀ <| Nat.cast_ne_zero.mpr (ne_of_gt hd0),
+      mul_inv_cancel₀ <| Nat.cast_ne_zero.mpr (ne_of_lt' hd0),
       ← abs_of_nonneg (a := (d : ℝ)) <| Nat.cast_nonneg' d, ← abs_mul,
       show |(d : ℝ) * (1 - |(d : ℝ)| ^ (a : ℤ))| = |(d : ℤ) * (1 - |(d : ℤ)| ^ a)| by norm_cast,
       ← Int.cast_one (R := ℝ), Int.cast_lt, Int.abs_lt_one_iff, Int.mul_eq_zero,
       sub_eq_zero, eq_comm (a := 1), pow_eq_one_iff_cases] at h
-    simp only [Nat.cast_eq_zero, ne_of_gt hd0, Nat.abs_cast, Nat.cast_eq_one, ne_of_gt hd1,
+    simp only [Nat.cast_eq_zero, ne_of_lt' hd0, Nat.abs_cast, Nat.cast_eq_one, ne_of_lt' hd1,
       Int.reduceNeg, reduceCtorEq, false_and, or_self, or_false, false_or] at h
     rwa [h, Nat.cast_zero, sub_eq_zero, eq_comm] at ha
   · have h1 : (d : ℝ) ^ (n - m) ≤ 1 - (d : ℝ)⁻¹ := calc
@@ -126,7 +126,7 @@ lemma Int.eq_of_pow_sub_le {d : ℕ} {m n : ℤ} (hd1 : 1 < d)
         apply zpow_right_mono₀ <| Nat.one_le_cast.mpr hd0
         linarith
       _ ≤ 1 - (d : ℝ)⁻¹ := by
-        rw [inv_eq_one_div, one_sub_div <| Nat.cast_ne_zero.mpr (ne_of_gt hd0),
+        rw [inv_eq_one_div, one_sub_div <| Nat.cast_ne_zero.mpr (ne_of_lt' hd0),
           div_le_div_iff_of_pos_right <| Nat.cast_pos'.mpr hd0, le_sub_iff_add_le]
         norm_cast
     linarith [sub_lt_of_abs_sub_lt_right (a := (1 : ℝ)) (b := d ^ (n - m)) (c := d⁻¹) h]

@@ -108,7 +108,7 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
 
 theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
-  have h' : (n : ℝ) ≠ 0 := ne_of_gt h
+  have h' : (n : ℝ) ≠ 0 := ne_of_lt' h
   apply_fun fun x : ℝ => x * n using GroupWithZero.mul_left_injective h'
   apply_fun fun x : ℝ => x * n using GroupWithZero.mul_left_injective h'
   dsimp

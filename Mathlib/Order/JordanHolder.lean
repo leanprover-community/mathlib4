@@ -239,7 +239,7 @@ theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
 theorem snoc_eraseLast_last {s : CompositionSeries X} (h : IsMaximal s.eraseLast.last s.last) :
     s.eraseLast.snoc s.last h = s :=
   have h : 0 < s.length :=
-    Nat.pos_of_ne_zero (fun hs => ne_of_gt (lt_of_isMaximal h) <| by simp [last, Fin.ext_iff, hs])
+    Nat.pos_of_ne_zero (fun hs => ne_of_lt' (lt_of_isMaximal h) <| by simp [last, Fin.ext_iff, hs])
   (eq_snoc_eraseLast h).symm
 
 /-- Two `CompositionSeries X`, `s₁` and `s₂` are equivalent if there is a bijection
@@ -373,7 +373,7 @@ theorem exists_last_eq_snoc_equivalent (s : CompositionSeries X) (x : X) (hm : I
         Equivalent s (snoc t s.last (show IsMaximal t.last _ from htx.symm ▸ hm)) := by
   induction' hn : s.length with n ih generalizing s x
   · exact
-      (ne_of_gt (lt_of_le_of_lt hb (lt_of_isMaximal hm))
+      (ne_of_lt' (lt_of_le_of_lt hb (lt_of_isMaximal hm))
           (subsingleton_of_length_eq_zero hn s.last_mem s.head_mem)).elim
   · have h0s : 0 < s.length := hn.symm ▸ Nat.succ_pos _
     by_cases hetx : s.eraseLast.last = x

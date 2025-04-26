@@ -512,7 +512,7 @@ theorem one_lt_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCa
   rcases h' with ⟨i, hi⟩
   rw [finprod_eq_prod _ hf]
   refine Finset.one_lt_prod' (fun i _ ↦ h i) ⟨i, ?_, hi⟩
-  simpa only [Finite.mem_toFinset, mem_mulSupport] using ne_of_gt hi
+  simpa only [Finite.mem_toFinset, mem_mulSupport] using ne_of_lt' hi
 
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication

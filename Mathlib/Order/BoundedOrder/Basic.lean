@@ -83,7 +83,7 @@ theorem isMax_top : IsMax (⊤ : α) :=
 
 @[simp]
 theorem not_top_lt : ¬⊤ < a :=
-  isMax_top.not_lt
+  isMax_top.not_gt
 
 theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
   (h.trans_le le_top).ne
@@ -257,7 +257,7 @@ theorem isMin_bot : IsMin (⊥ : α) :=
 
 @[simp]
 theorem not_lt_bot : ¬a < ⊥ :=
-  isMin_bot.not_lt
+  isMin_bot.not_gt
 
 theorem ne_bot_of_gt (h : a < b) : b ≠ ⊥ :=
   (bot_le.trans_lt h).ne'
@@ -422,7 +422,7 @@ theorem subsingleton_of_top_le_bot (h : (⊤ : α) ≤ (⊥ : α)) : Subsingleto
     (le_trans le_top <| le_trans h bot_le) (le_trans le_top <| le_trans h bot_le)⟩
 
 theorem subsingleton_of_bot_eq_top (hα : (⊥ : α) = (⊤ : α)) : Subsingleton α :=
-  subsingleton_of_top_le_bot (ge_of_eq hα)
+  subsingleton_of_top_le_bot (le_of_eq' hα)
 
 theorem subsingleton_iff_bot_eq_top : (⊥ : α) = (⊤ : α) ↔ Subsingleton α :=
   ⟨subsingleton_of_bot_eq_top, fun _ => Subsingleton.elim ⊥ ⊤⟩

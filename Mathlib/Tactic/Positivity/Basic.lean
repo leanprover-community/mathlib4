@@ -185,12 +185,12 @@ private theorem mul_nonneg_of_nonneg_of_pos [Semiring α] [PartialOrder α] [IsO
 private theorem mul_ne_zero_of_ne_zero_of_pos [Semiring α] [PartialOrder α] [IsOrderedRing α]
     [NoZeroDivisors α]
     {a b : α} (ha : a ≠ 0) (hb : 0 < b) : a * b ≠ 0 :=
-  mul_ne_zero ha (ne_of_gt hb)
+  mul_ne_zero ha (ne_of_lt' hb)
 
 private theorem mul_ne_zero_of_pos_of_ne_zero [Semiring α] [PartialOrder α] [IsOrderedRing α]
     [NoZeroDivisors α]
     {a b : α} (ha : 0 < a) (hb : b ≠ 0) : a * b ≠ 0 :=
-  mul_ne_zero (ne_of_gt ha) hb
+  mul_ne_zero (ne_of_lt' ha) hb
 
 /-- The `positivity` extension which identifies expressions of the form `a * b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
@@ -313,7 +313,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
         trace[Tactic.positivity.failure] "{e.toMessageData}"
         let rα ← synthInstanceQ q(Semiring $α)
         let oα ← synthInstanceQ q(IsOrderedRing $α)
-        orElse (← catchNone (ofNonneg q(le_of_lt $pa) rα oα)) (ofNonzero q(ne_of_gt $pa) rα oα)
+        orElse (← catchNone (ofNonneg q(le_of_lt $pa) rα oα)) (ofNonzero q(ne_of_lt' $pa) rα oα)
     | .nonnegative pa =>
         let sα ← synthInstanceQ q(Semiring $α)
         let oα ← synthInstanceQ q(IsOrderedRing $α)

@@ -31,7 +31,7 @@ lemma isEquivalent_descFactorial (k : ℕ) :
     simp_rw [descFactorial_succ, cast_mul, _root_.pow_succ']
     refine IsEquivalent.mul ?_ h
     have hz : ∀ᶠ (x : ℕ) in atTop, (x : ℝ) ≠ 0 :=
-      eventually_atTop.mpr ⟨1, fun n hn ↦ ne_of_gt (mod_cast hn)⟩
+      eventually_atTop.mpr ⟨1, fun n hn ↦ ne_of_lt' (mod_cast hn)⟩
     rw [isEquivalent_iff_tendsto_one hz, ← tendsto_add_atTop_iff_nat k]
     simpa using tendsto_natCast_div_add_atTop (k : ℝ)
 

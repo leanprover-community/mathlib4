@@ -569,7 +569,7 @@ theorem comp_sup_eq_sup_comp_of_is_total [SemilatticeSup β] [OrderBot β] (g : 
 protected theorem le_sup_iff (ha : ⊥ < a) : a ≤ s.sup f ↔ ∃ b ∈ s, a ≤ f b := by
   apply Iff.intro
   · induction s using cons_induction with
-    | empty => exact (absurd · (not_le_of_lt ha))
+    | empty => exact (absurd · (not_le_of_gt ha))
     | cons c t hc ih =>
       rw [sup_cons, le_sup_iff]
       exact fun

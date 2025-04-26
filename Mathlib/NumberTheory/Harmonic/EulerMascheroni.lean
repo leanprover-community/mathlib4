@@ -54,7 +54,7 @@ lemma strictMono_eulerMascheroniSeq : StrictMono eulerMascheroniSeq := by
     ← log_div (by positivity) (by positivity), add_div, Nat.cast_add_one,
     Nat.cast_add_one, div_self (by positivity), sub_pos, one_div, Rat.cast_inv, Rat.cast_add,
     Rat.cast_one, Rat.cast_natCast]
-  refine (log_lt_sub_one_of_pos ?_ (ne_of_gt <| lt_add_of_pos_right _ ?_)).trans_le (le_of_eq ?_)
+  refine (log_lt_sub_one_of_pos ?_ (ne_of_lt' <| lt_add_of_pos_right _ ?_)).trans_le (le_of_eq ?_)
   · positivity
   · positivity
   · simp only [add_sub_cancel_left]

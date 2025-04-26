@@ -114,8 +114,8 @@ theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaInteg
   rw [GammaIntegral, GammaIntegral, ← integral_conj]
   refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
   dsimp only
-  rw [RingHom.map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
-    cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, RingHom.map_mul, ←
+  rw [RingHom.map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_lt' hx)),
+    cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_lt' hx)), ← exp_conj, RingHom.map_mul, ←
     ofReal_log (le_of_lt hx), conj_ofReal, RingHom.map_sub, RingHom.map_one]
 
 theorem GammaIntegral_ofReal (s : ℝ) :

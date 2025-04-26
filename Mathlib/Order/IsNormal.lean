@@ -49,7 +49,7 @@ theorem of_succ_lt [SuccOrder α] [WellFoundedLT α]
     IsNormal f := by
   refine ⟨fun a b ↦ ?_, hl⟩
   induction b using SuccOrder.limitRecOn with
-  | isMin b hb => exact hb.not_lt.elim
+  | isMin b hb => exact hb.not_gt.elim
   | succ b hb IH =>
     intro hab
     obtain rfl | h := (lt_succ_iff_eq_or_lt_of_not_isMax hb).1 hab
@@ -76,7 +76,7 @@ theorem map_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) : IsSuccLimit (f 
   · obtain ⟨c, hc, hc'⟩ := (hf.lt_iff_exists_lt ha).1 hb.lt
     have hc' := hb.ge_of_gt hc'
     rw [hf.strictMono.le_iff_le] at hc'
-    exact hc.not_le hc'
+    exact hc.not_ge hc'
 
 theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty) :
     IsLUB (f '' s) (f a) := by

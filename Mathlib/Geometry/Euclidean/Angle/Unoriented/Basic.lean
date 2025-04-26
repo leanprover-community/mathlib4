@@ -136,7 +136,7 @@ theorem angle_neg_self_of_nonzero {x : V} (hx : x ≠ 0) : angle (-x) x = π := 
 theorem angle_smul_right_of_pos (x y : V) {r : ℝ} (hr : 0 < r) : angle x (r • y) = angle x y := by
   unfold angle
   rw [inner_smul_right, norm_smul, Real.norm_eq_abs, abs_of_nonneg (le_of_lt hr), ← mul_assoc,
-    mul_comm _ r, mul_assoc, mul_div_mul_left _ _ (ne_of_gt hr)]
+    mul_comm _ r, mul_assoc, mul_div_mul_left _ _ (ne_of_lt' hr)]
 
 /-- The angle between a positive multiple of a vector and a vector. -/
 @[simp]

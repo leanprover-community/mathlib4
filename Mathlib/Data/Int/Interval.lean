@@ -178,7 +178,7 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
     exact ⟨emod_nonneg i ha.ne', emod_lt_of_pos i ha⟩
   intro hia
   have hn := Int.emod_add_ediv n a
-  obtain hi | hi := lt_or_le i (n % a)
+  obtain hi | hi := lt_or_ge i (n % a)
   · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
     · rw [add_comm (n / a), mul_add, mul_one, ← add_assoc]
       refine hn.symm.le.trans (add_le_add_right ?_ _)
@@ -191,7 +191,7 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
     · rw [add_comm n a]
       refine add_lt_add_of_lt_of_le hia.right (le_trans ?_ hn.le)
       simp only [Nat.zero_le, le_add_iff_nonneg_left]
-      exact Int.emod_nonneg n (ne_of_gt ha)
+      exact Int.emod_nonneg n (ne_of_lt' ha)
     · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
 
 end Int

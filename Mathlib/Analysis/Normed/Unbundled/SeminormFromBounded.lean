@@ -132,7 +132,7 @@ theorem seminormFromBounded_ge (f_nonneg : 0 ≤ f)
     rw [mul_one, h1, mul_zero] at f_mul
     have hx0 : f x = 0 := f_mul.antisymm (f_nonneg _)
     rw [hx0, h1, zero_mul]
-  · rw [mul_comm, ← div_le_iff₀ (gt_of_ge_of_ne (f_nonneg _) h1)]
+  · rw [mul_comm, ← div_le_iff₀ (lt_of_le_of_ne' (f_nonneg _) h1)]
     conv_lhs => rw [← mul_one x]
     exact le_ciSup (seminormFromBounded_bddAbove_range f_nonneg f_mul x) (1 : R)
 
@@ -179,22 +179,22 @@ theorem seminormFromBounded_mul (f_nonneg : 0 ≤ f)
     exact mul_nonneg (seminormFromBounded_nonneg f_nonneg f_mul x)
       (seminormFromBounded_nonneg f_nonneg f_mul y)
   · intro z
-    rw [← div_le_iff₀ (gt_of_ge_of_ne (seminormFromBounded_nonneg f_nonneg f_mul _) hy)]
+    rw [← div_le_iff₀ (lt_of_le_of_ne' (seminormFromBounded_nonneg f_nonneg f_mul _) hy)]
     apply le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul x) z
-    rw [div_le_iff₀ (gt_of_ge_of_ne (seminormFromBounded_nonneg f_nonneg f_mul _) hy),
+    rw [div_le_iff₀ (lt_of_le_of_ne' (seminormFromBounded_nonneg f_nonneg f_mul _) hy),
       div_mul_eq_mul_div]
     by_cases hz : f z = 0
     · have hxyz : f (z * (x * y)) = 0 := map_mul_zero_of_map_zero f_nonneg f_mul hz _
       simp_rw [mul_comm, hxyz, zero_div]
       exact div_nonneg (mul_nonneg (seminormFromBounded_nonneg f_nonneg f_mul y) (f_nonneg _))
         (f_nonneg _)
-    · rw [div_le_div_iff_of_pos_right (gt_of_ge_of_ne (f_nonneg _) hz), mul_comm (f (x * z))]
+    · rw [div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), mul_comm (f (x * z))]
       by_cases hxz : f (x * z) = 0
       · rw [mul_comm x y, mul_assoc, mul_comm y, map_mul_zero_of_map_zero f_nonneg f_mul hxz y]
         exact mul_nonneg (seminormFromBounded_nonneg f_nonneg f_mul y) (f_nonneg _)
-      · rw [← div_le_iff₀ (gt_of_ge_of_ne (f_nonneg _) hxz)]
+      · rw [← div_le_iff₀ (lt_of_le_of_ne' (f_nonneg _) hxz)]
         apply le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul y) (x * z)
-        rw [div_le_div_iff_of_pos_right (gt_of_ge_of_ne (f_nonneg _) hxz), mul_comm x y, mul_assoc]
+        rw [div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hxz), mul_comm x y, mul_assoc]
 
 /-- If `f : R → ℝ` is a nonzero, nonnegative, multiplicatively bounded function, then
   `seminormFromBounded' f 1 = 1`. -/
@@ -241,7 +241,7 @@ theorem seminormFromBounded_add (f_nonneg : 0 ≤ f)
       (le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul y) z (le_refl _)))
   by_cases hz : f z = 0
   · simp only [hz, div_zero, zero_add, le_refl, or_self_iff]
-  · rw [div_add_div_same, div_le_div_iff_of_pos_right (gt_of_ge_of_ne (f_nonneg _) hz), add_mul]
+  · rw [div_add_div_same, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
     exact f_add _ _
 
 /-- `seminormFromBounded'` is a ring seminorm on `R`. -/
@@ -267,8 +267,8 @@ theorem seminormFromBounded_isNonarchimedean (f_nonneg : 0 ≤ f)
     · exact Or.inr <| le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul y) z hfy
   by_cases hz : f z = 0
   · simp only [hz, div_zero, le_refl, or_self_iff]
-  · rw [div_le_div_iff_of_pos_right (gt_of_ge_of_ne (f_nonneg _) hz),
-      div_le_div_iff_of_pos_right (gt_of_ge_of_ne (f_nonneg _) hz), add_mul, ← le_max_iff]
+  · rw [div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz),
+      div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul, ← le_max_iff]
     exact hna _ _
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function and `x : R` is
@@ -304,7 +304,7 @@ theorem seminormFromBounded_of_mul_le (f_nonneg : 0 ≤ f) {x : R}
   · refine ciSup_le (fun y ↦ ?_)
     by_cases hy : f y = 0
     · rw [hy, div_zero]; exact f_nonneg _
-    · rw [div_le_iff₀ (gt_of_ge_of_ne (f_nonneg _) hy)]; exact hx _
+    · rw [div_le_iff₀ (lt_of_le_of_ne' (f_nonneg _) hy)]; exact hx _
   · have h_bdd : BddAbove (Set.range fun y ↦ f (x * y) / f y) := by
       use f x
       rintro r ⟨y, rfl⟩
@@ -312,7 +312,7 @@ theorem seminormFromBounded_of_mul_le (f_nonneg : 0 ≤ f) {x : R}
       · simp only [hy0, div_zero]
         exact f_nonneg _
       · rw [← mul_one (f x), ← div_self hy0, ← mul_div_assoc,
-          div_le_iff₀ (gt_of_ge_of_ne (f_nonneg _) hy0), mul_div_assoc, div_self hy0, mul_one]
+          div_le_iff₀ (lt_of_le_of_ne' (f_nonneg _) hy0), mul_div_assoc, div_self hy0, mul_one]
         exact hx y
     convert le_ciSup h_bdd (1 : R)
     by_cases h0 : f x = 0

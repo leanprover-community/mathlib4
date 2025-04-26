@@ -371,7 +371,7 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ} (hs :
   have hC'₀ : 0 ≤ C' := (le_max' _ _ (mem_insert.mpr (Or.inl rfl))).trans <| le_max_right ..
   have hCC' : C ≤ C' := le_max_left ..
   refine LSeriesSummable_of_le_const_mul_rpow hs ⟨C', fun n hn₀ ↦ ?_⟩
-  rcases le_or_lt m n with hn | hn
+  rcases le_or_gt m n with hn | hn
   · refine (hm n hn).trans ?_
     have hn₀ : (0 : ℝ) ≤ n := cast_nonneg _
     gcongr

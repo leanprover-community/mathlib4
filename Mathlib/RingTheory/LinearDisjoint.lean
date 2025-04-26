@@ -569,7 +569,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
       ((Subalgebra.inclusion_injective key2).comp (AlgEquiv.injective _))
   have := lift_uzero.{u} _ ▸ (basisMonomials R).mk_eq_rank.symm
   simp only [this, mk_eq_aleph0, lift_aleph0, aleph0_le_lift] at key3
-  exact (key3.trans key1).not_lt one_lt_aleph0
+  exact (key3.trans key1).not_gt one_lt_aleph0
 
 variable (R) in
 /-- If `A` and `B` are flat `R`-algebras, such that `A ⊗[R] B` is a field, then one of `A` and `B`

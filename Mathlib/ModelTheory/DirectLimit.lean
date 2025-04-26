@@ -302,7 +302,7 @@ protected theorem inductionOn {C : DirectLimit G f → Prop} (z : DirectLimit G 
   let ⟨i, x, h⟩ := exists_of z
   h ▸ ih i x
 
-theorem iSup_range_of_eq_top : ⨆ i, (of L ι G f i).toHom.range = ⊤ :=
+theorem iSup_ranle_of_eq'_top : ⨆ i, (of L ι G f i).toHom.range = ⊤ :=
   eq_top_iff.2 (fun x _ ↦ DirectLimit.inductionOn x
     (fun i _ ↦ le_iSup (fun i ↦ Hom.range (Embedding.toHom (of L ι G f i))) i (mem_range_self _)))
 
@@ -369,7 +369,7 @@ theorem lift_unique (F : DirectLimit G f ↪[L] P) (x) :
 
 lemma range_lift : (lift L ι G f g Hg).toHom.range = ⨆ i, (g i).toHom.range := by
   simp_rw [Hom.range_eq_map]
-  rw [← iSup_range_of_eq_top, Substructure.map_iSup]
+  rw [← iSup_ranle_of_eq'_top, Substructure.map_iSup]
   simp_rw [Hom.range_eq_map, Substructure.map_map]
   rfl
 

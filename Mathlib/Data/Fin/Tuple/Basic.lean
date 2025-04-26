@@ -570,7 +570,7 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) i.castSucc y := 
         rw [← E, castSucc_castLT]
       simp [h', this, snoc, h]
   · rw [eq_last_of_not_lt h]
-    simp [Fin.ne_of_gt i.castSucc_lt_last]
+    simp [Fin.ne_of_lt' i.castSucc_lt_last]
 
 /-- Adding an element at the beginning of a tuple and then updating it amounts to adding it
 directly. -/
@@ -767,7 +767,7 @@ def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
   else
     if hlt : j < i then @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_castPred_of_lt _ _ hlt) (p _)
     else @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_pred_of_lt _ _ <|
-    (Fin.lt_or_lt_of_ne hj).resolve_left hlt) (p _)
+    (Fin.lt_or_gt_of_ne hj).resolve_left hlt) (p _)
 
 -- This is a duplicate of `Fin.exists_fin_succ` in Core. We should upstream the name change.
 alias forall_iff_succ := forall_fin_succ
@@ -891,7 +891,7 @@ theorem insertNth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
     i.insertNth x p j = @Eq.recOn _ _ (fun x _ ↦ α x) _
     (succAbove_pred_of_lt _ _ h) (p <| j.pred _) := by
-  rw [insertNth, succAboveCases, dif_neg (Fin.ne_of_gt h), dif_neg (Fin.lt_asymm h)]
+  rw [insertNth, succAboveCases, dif_neg (Fin.ne_of_lt' h), dif_neg (Fin.lt_asymm h)]
 
 theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
     insertNth 0 x p =

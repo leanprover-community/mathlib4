@@ -57,7 +57,7 @@ theorem minFacHelper_0 (n : ℕ)
     (h1 : Nat.ble (nat_lit 2) n = true) (h2 : nat_lit 1 = n % (nat_lit 2)) :
     MinFacHelper n (nat_lit 3) := by
   refine ⟨by norm_num, by norm_num, ?_⟩
-  refine (le_minFac'.mpr fun p hp hpn ↦ ?_).resolve_left (Nat.ne_of_gt (Nat.le_of_ble_eq_true h1))
+  refine (le_minFac'.mpr fun p hp hpn ↦ ?_).resolve_left (Nat.ne_of_lt' (Nat.le_of_ble_eq_true h1))
   rcases hp.eq_or_lt with rfl|h
   · simp [(Nat.dvd_iff_mod_eq_zero ..).1 hpn] at h2
   · exact h

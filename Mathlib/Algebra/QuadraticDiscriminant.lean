@@ -130,7 +130,7 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim
         (tendsto_atBot_add_const_right _ b (tendsto_id.const_mul_atTop_of_neg ha)).atBot_mul_atTop₀
           tendsto_id
     rcases (this.eventually (eventually_lt_atBot 0)).exists with ⟨x, hx⟩
-    exact False.elim ((h x).not_lt <| by rwa [← mul_assoc, ← add_mul])
+    exact False.elim ((h x).not_gt <| by rwa [← mul_assoc, ← add_mul])
   -- if a = 0
   · rcases eq_or_ne b 0 with (rfl | hb)
     · simp

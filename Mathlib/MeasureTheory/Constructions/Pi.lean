@@ -558,7 +558,7 @@ instance pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosM
   constructor
   rintro U U_open ⟨a, ha⟩
   obtain ⟨s, ⟨hs, hsU⟩⟩ := isOpen_pi_iff'.1 U_open a ha
-  refine ne_of_gt (lt_of_lt_of_le ?_ (measure_mono hsU))
+  refine ne_of_lt' (lt_of_lt_of_le ?_ (measure_mono hsU))
   simp only [pi_pi]
   rw [CanonicallyOrderedAdd.prod_pos]
   intro i _

@@ -167,7 +167,7 @@ theorem Convex.centerMass_mem (hs : Convex R s) :
     have wz : ∑ j ∈ t, w j • z j = 0 := sum_eq_zero fun i hi => by simp [ws i hi]
     simp only [centerMass, sum_insert hi, wz, hsum_t, add_zero]
     simp only [hsum_t, add_zero] at hpos
-    rw [← mul_smul, inv_mul_cancel₀ (ne_of_gt hpos), one_smul]
+    rw [← mul_smul, inv_mul_cancel₀ (ne_of_lt' hpos), one_smul]
     exact zi
   · rw [Finset.centerMass_insert _ _ _ hi hsum_t]
     refine convex_iff_div.1 hs zi (ht hs₀ ?_ ?_) ?_ (sum_nonneg hs₀) hpos

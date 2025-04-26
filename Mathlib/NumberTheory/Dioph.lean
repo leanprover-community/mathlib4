@@ -648,7 +648,7 @@ theorem div_dioph : DiophFn fun v => f v / g v :=
                 exact ⟨fun o => (o.resolve_right fun ⟨_, h2⟩ => Nat.not_lt_zero _ h2).right,
                   fun z0 => Or.inl ⟨rfl, z0⟩⟩)
               fun ypos =>
-                Iff.trans ⟨fun o => o.resolve_left fun ⟨h1, _⟩ => Nat.ne_of_gt ypos h1, Or.inr⟩
+                Iff.trans ⟨fun o => o.resolve_left fun ⟨h1, _⟩ => Nat.ne_of_lt' ypos h1, Or.inr⟩
                   (le_antisymm_iff.trans <| and_congr (Nat.le_div_iff_mul_le ypos) <|
                     Iff.trans ⟨lt_succ_of_le, le_of_lt_succ⟩ (div_lt_iff_lt_mul ypos)).symm
 

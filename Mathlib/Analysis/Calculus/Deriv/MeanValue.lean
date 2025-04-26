@@ -189,7 +189,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
       filter_upwards [h₀, h₁, eventually_mem_nhdsWithin] with b hb hslope (hab : a < b)
       have hdiff' : DifferentiableOn ℝ f (Ioc a b) := fun z hz => by
         refine DifferentiableWithinAt.mono (t := Ioi a) ?_ Ioc_subset_Ioi_self
-        have : derivWithin f (Ioi a) z ≠ 0 := ne_of_gt <| by
+        have : derivWithin f (Ioi a) z ≠ 0 := ne_of_lt' <| by
           simp_all only [mem_Ioo, and_imp, mem_Ioc, max_lt_iff]
         exact differentiableWithinAt_of_derivWithin_ne_zero this
       have hcont_Ioc : ∀ z ∈ Ioc a b, ContinuousWithinAt f (Icc a b) z := by

@@ -402,8 +402,8 @@ lemma strictMono_div_right_of_pos (h : 0 < b) (h' : b ≠ ⊤) : StrictMono fun 
   apply lt_of_le_of_ne <| div_le_div_right_of_nonneg (le_of_lt h) (le_of_lt a_lt_a')
   intro hyp
   apply ne_of_lt a_lt_a'
-  rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h), hyp,
-    @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_lt' h), hyp,
+    @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' (ne_of_lt' h)]
 
 lemma div_lt_div_right_of_pos (h₁ : 0 < c) (h₂ : c ≠ ⊤) (h₃ : a < b) : a / c < b / c :=
   strictMono_div_right_of_pos h₁ h₂ h₃
@@ -432,22 +432,22 @@ lemma div_lt_div_right_of_neg (h₁ : c < 0) (h₂ : c ≠ ⊥) (h₃ : a < b) :
   strictAnti_div_right_of_neg h₁ h₂ h₃
 
 lemma le_div_iff_mul_le (h : b > 0) (h' : b ≠ ⊤) : a ≤ c / b ↔ a * b ≤ c := by
-  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_lt' h)]
   rw [mul_div b a b, mul_comm a b]
   exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
 
 lemma div_le_iff_le_mul (h : 0 < b) (h' : b ≠ ⊤) : a / b ≤ c ↔ a ≤ b * c := by
-  nth_rw 1 [← @mul_div_cancel c b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel c b (ne_bot_of_gt h) h' (ne_of_lt' h)]
   rw [mul_div b c b, mul_comm b]
   exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
 
 lemma lt_div_iff (h : 0 < b) (h' : b ≠ ⊤) : a < c / b ↔ a * b < c := by
-  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_lt' h)]
   rw [EReal.mul_div b a b, mul_comm a b]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
 
 lemma div_lt_iff (h : 0 < c) (h' : c ≠ ⊤) :  b / c < a ↔ b < a * c := by
-  nth_rw 1 [← @mul_div_cancel a c (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel a c (ne_bot_of_gt h) h' (ne_of_lt' h)]
   rw [EReal.mul_div c a c, mul_comm a c]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
 
@@ -471,7 +471,7 @@ private lemma exists_lt_mul_left_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c 
   rcases eq_or_ne b ⊤ with rfl | b_top
   · rcases eq_or_lt_of_le ha with rfl | ha
     · rw [zero_mul] at h
-      exact (not_le_of_lt h hc).rec
+      exact (not_le_of_gt h hc).rec
     · obtain ⟨a', a0', aa'⟩ := exists_between ha
       use a', mem_Ioo.2 ⟨a0', aa'⟩
       rw [mul_top_of_pos ha] at h
@@ -490,7 +490,7 @@ private lemma exists_mul_left_lt (h₁ : a ≠ 0 ∨ b ≠ ⊤) (h₂ : a ≠ �
     ∃ a' ∈ Ioo a ⊤, a' * b < c := by
   rcases eq_top_or_lt_top a with rfl | a_top
   · rw [ne_self_iff_false, false_or] at h₂; rw [top_mul_of_pos h₂] at hc; exact (not_top_lt hc).rec
-  rcases le_or_lt b 0 with b0 | b0
+  rcases le_or_gt b 0 with b0 | b0
   · obtain ⟨a', aa', a_top'⟩ := exists_between a_top
     exact ⟨a', mem_Ioo.2 ⟨aa', a_top'⟩, lt_of_le_of_lt (mul_le_mul_of_nonpos_right aa'.le b0) hc⟩
   rcases eq_top_or_lt_top b with rfl | b_top
@@ -511,7 +511,7 @@ private lemma exists_mul_right_lt (h₁ : 0 < a ∨ b ≠ ⊤) (h₂ : a ≠ ⊤
 lemma le_mul_of_forall_lt (h₁ : 0 < a ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ 0 < b)
     (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') : c ≤ a * b := by
   refine le_of_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
-  obtain ⟨a', aa', hd⟩ := exists_mul_left_lt (h₁.imp_left ne_of_gt) h₂ hd
+  obtain ⟨a', aa', hd⟩ := exists_mul_left_lt (h₁.imp_left ne_of_lt') h₂ hd
   replace h₁ : 0 < a' ∨ b ≠ ⊤ := h₁.imp_left fun a0 ↦ a0.trans (mem_Ioo.1 aa').1
   replace h₂ : a' ≠ ⊤ ∨ b ≠ 0 := Or.inl (mem_Ioo.1 aa').2.ne
   obtain ⟨b', bb', hd⟩ := exists_mul_right_lt h₁ h₂ hd
@@ -520,7 +520,7 @@ lemma le_mul_of_forall_lt (h₁ : 0 < a ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ 0 <
 lemma mul_le_of_forall_lt_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c)
     (h : ∀ a' ∈ Ioo 0 a, ∀ b' ∈ Ioo 0 b, a' * b' ≤ c) : a * b ≤ c := by
   refine le_of_forall_lt_imp_le_of_dense fun d dab ↦ ?_
-  rcases lt_or_le d 0 with d0 | d0
+  rcases lt_or_ge d 0 with d0 | d0
   · exact d0.le.trans hc
   obtain ⟨a', aa', dab⟩ := exists_lt_mul_left_of_nonneg ha d0 dab
   obtain ⟨b', bb', dab⟩ := exists_lt_mul_right_of_nonneg aa'.1.le d0 dab

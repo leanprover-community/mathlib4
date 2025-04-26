@@ -68,7 +68,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- First of all, we may assume that x ≤ y.
   -- We justify this using H_symm.
   wlog hxy : x ≤ y
-  · rw [H_symm] at h₀; apply this y x h₀ B C base _ _ _ _ _ _ (le_of_not_le hxy); assumption'
+  · rw [H_symm] at h₀; apply this y x h₀ B C base _ _ _ _ _ _ (le_of_not_ge hxy); assumption'
   -- In fact, we can easily deal with the case x = y.
   by_cases x_eq_y : x = y
   · subst x_eq_y; exact H_diag h₀
@@ -237,7 +237,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
       replace hpos : z * x ≥ 0 := Int.le_of_lt_add_one hpos
       apply nonneg_of_mul_nonneg_left hpos (mod_cast hx)
     · contrapose! hV₀ with x_lt_z
-      apply ne_of_gt
+      apply ne_of_lt'
       calc
         z * y > x * x := by apply mul_lt_mul' <;> omega
         _ ≥ x * x - k := sub_le_self _ (Int.ofNat_zero_le k)
@@ -278,7 +278,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
       apply nonneg_of_mul_nonneg_left zy_pos
       omega
     · contrapose! hV₀ with x_lt_z
-      apply ne_of_gt
+      apply ne_of_lt'
       push_neg at h_base
       calc
         z * y > x * y := by apply mul_lt_mul_of_pos_right <;> omega

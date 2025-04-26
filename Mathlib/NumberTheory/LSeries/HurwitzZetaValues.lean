@@ -124,7 +124,7 @@ theorem hurwitzZetaEven_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : 
   have h1 (n : ℕ) : (2 * k : ℂ) ≠ -n := by
     rw [← Int.cast_ofNat, ← Int.cast_natCast, ← Int.cast_mul, ← Int.cast_natCast n, ← Int.cast_neg,
       Ne, Int.cast_inj, ← Ne]
-    refine ne_of_gt ((neg_nonpos_of_nonneg n.cast_nonneg).trans_lt (mul_pos two_pos ?_))
+    refine ne_of_lt' ((neg_nonpos_of_nonneg n.cast_nonneg).trans_lt (mul_pos two_pos ?_))
     exact Nat.cast_pos.mpr (Nat.pos_of_ne_zero hk)
   have h2 : (2 * k : ℂ) ≠ 1 := by norm_cast; simp
   have h3 : Gammaℂ (2 * k) ≠ 0 := by
@@ -144,7 +144,7 @@ theorem hurwitzZetaOdd_neg_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 
   have h1 (n : ℕ) : (2 * k + 1 : ℂ) ≠ -n := by
     rw [← Int.cast_ofNat, ← Int.cast_natCast, ← Int.cast_mul, ← Int.cast_natCast n, ← Int.cast_neg,
       ← Int.cast_one, ← Int.cast_add, Ne, Int.cast_inj, ← Ne]
-    refine ne_of_gt ((neg_nonpos_of_nonneg n.cast_nonneg).trans_lt ?_)
+    refine ne_of_lt' ((neg_nonpos_of_nonneg n.cast_nonneg).trans_lt ?_)
     positivity
   have h3 : Gammaℂ (2 * k + 1) ≠ 0 := by
     refine mul_ne_zero (mul_ne_zero two_ne_zero ?_) (Gamma_ne_zero h1)

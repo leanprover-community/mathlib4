@@ -530,7 +530,7 @@ theorem relabelAux_sumInl (k : ℕ) :
 /-- Relabels a bounded formula's variables along a particular function. -/
 def relabel (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α k) : L.BoundedFormula β (n + k) :=
   φ.mapTermRel (fun _ t => t.relabel (relabelAux g _)) (fun _ => id) fun _ =>
-    castLE (ge_of_eq (add_assoc _ _ _))
+    castLE (le_of_eq' (add_assoc _ _ _))
 
 /-- Relabels a bounded formula's free variables along a bijection. -/
 def relabelEquiv (g : α ≃ β) {k} : L.BoundedFormula α k ≃ L.BoundedFormula β k :=
@@ -567,7 +567,7 @@ theorem relabel_ex (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α (k 
 
 @[simp]
 theorem relabel_sumInl (φ : L.BoundedFormula α n) :
-    (φ.relabel Sum.inl : L.BoundedFormula α (0 + n)) = φ.castLE (ge_of_eq (zero_add n)) := by
+    (φ.relabel Sum.inl : L.BoundedFormula α (0 + n)) = φ.castLE (le_of_eq' (zero_add n)) := by
   simp only [relabel, relabelAux_sumInl]
   induction φ with
   | falsum => rfl

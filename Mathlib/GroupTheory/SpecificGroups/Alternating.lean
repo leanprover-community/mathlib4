@@ -323,7 +323,7 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
     obtain ⟨⟨g, gA⟩, gH, g1⟩ : ∃ x : ↥(alternatingGroup (Fin 5)), x ∈ H ∧ x ≠ 1 := Hb
     -- `g` is a non-identity alternating permutation in a normal subgroup `H` of $A_5$.
     rw [← SetLike.mem_coe, ← Set.singleton_subset_iff] at gH
-    refine eq_top_iff.2 (le_trans (ge_of_eq ?_) (normalClosure_le_normal gH))
+    refine eq_top_iff.2 (le_trans (le_of_eq' ?_) (normalClosure_le_normal gH))
     -- It suffices to show that the normal closure of `g` in $A_5$ is $A_5$.
     by_cases h2 : ∀ n ∈ g.cycleType, n = 2
     -- If the cycle decomposition of `g` consists entirely of swaps, then the cycle type is $(2,2)$.

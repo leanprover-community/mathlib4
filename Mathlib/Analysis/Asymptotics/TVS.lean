@@ -286,7 +286,7 @@ lemma isLittleOTVS_iff_isLittleO {f : α → E} {g : α → F} {l : Filter α} :
       _ ≤ ↑(δ / ‖c‖₊) * egauge 𝕜 (ball 0 ↑δ) (g x) := hx
       _ ≤ (δ / ‖c‖₊) * (‖c‖₊ * ‖g x‖₊ / δ) := by
         gcongr
-        exacts [ENNReal.coe_div_le, egauge_ball_le_of_one_lt_norm hc (.inl <| ne_of_gt hδ₀)]
+        exacts [ENNReal.coe_div_le, egauge_ball_le_of_one_lt_norm hc (.inl <| ne_of_lt' hδ₀)]
       _ = (δ / δ) * (‖c‖₊ / ‖c‖₊) * ‖g x‖₊ := by simp only [div_eq_mul_inv]; ring
       _ ≤ 1 * 1 * ‖g x‖₊ := by gcongr <;> exact ENNReal.div_self_le_one
       _ = ‖g x‖₊ := by simp
@@ -294,7 +294,7 @@ lemma isLittleOTVS_iff_isLittleO {f : α → E} {g : α → F} {l : Filter α} :
     lift ε to ℝ≥0 using hε.le
     calc
       egauge 𝕜 (ball 0 ε) (f x) ≤ ‖c‖₊ * ‖f x‖₊ / ε :=
-        egauge_ball_le_of_one_lt_norm hc (.inl <| ne_of_gt hε)
+        egauge_ball_le_of_one_lt_norm hc (.inl <| ne_of_lt' hε)
       _ ≤ ‖c‖₊ * (↑(ε * δ / ‖c‖₊) * ‖g x‖₊) / ε := by gcongr; exact_mod_cast hx
       _ = (‖c‖₊ / ‖c‖₊) * (ε / ε) * δ * ‖g x‖₊ := by
         simp only [div_eq_mul_inv, ENNReal.coe_inv hc₀.ne', ENNReal.coe_mul]; ring

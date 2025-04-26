@@ -89,7 +89,7 @@ theorem exists_root [IsAlgClosed k] (p : k[X]) (hp : p.degree ≠ 0) : ∃ x, Is
 theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z, z ^ n = x := by
   have : degree (X ^ n - C x) ≠ 0 := by
     rw [degree_X_pow_sub_C hn x]
-    exact ne_of_gt (WithBot.coe_lt_coe.2 hn)
+    exact ne_of_lt' (WithBot.coe_lt_coe.2 hn)
   obtain ⟨z, hz⟩ := exists_root (X ^ n - C x) this
   use z
   simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def] at hz
@@ -102,7 +102,7 @@ theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
-  rcases le_or_lt (degree p) 0 with hd | hd
+  rcases le_or_gt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
@@ -150,7 +150,7 @@ theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
   intro p hmp hp
   have hpe : degree (p.map e.symm.toRingHom) ≠ 0 := by
     rw [degree_map]
-    exact ne_of_gt (degree_pos_of_irreducible hp)
+    exact ne_of_lt' (degree_pos_of_irreducible hp)
   rcases IsAlgClosed.exists_root (k := k) (p.map e.symm.toRingHom) hpe with ⟨x, hx⟩
   use e x
   rw [IsRoot] at hx

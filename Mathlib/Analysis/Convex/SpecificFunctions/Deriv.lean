@@ -75,7 +75,7 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
     rw [← two_mul, mul_add, mul_one, ← one_add_one_eq_two, ← add_assoc,
       Finset.prod_range_succ, Finset.prod_range_succ, mul_assoc]
     refine mul_nonneg ihn ?_; generalize (1 + 1) * n = k
-    rcases le_or_lt m k with hmk | hmk
+    rcases le_or_gt m k with hmk | hmk
     · have : m ≤ k + 1 := hmk.trans (lt_add_one (k : ℤ)).le
       convert mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
       convert sub_nonpos_of_le this
@@ -93,7 +93,7 @@ theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 
 theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
     StrictConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m := by
   apply strictConvexOn_of_deriv2_pos' (convex_Ioi 0)
-  · exact (continuousOn_zpow₀ m).mono fun x hx => ne_of_gt hx
+  · exact (continuousOn_zpow₀ m).mono fun x hx => ne_of_lt' hx
   intro x hx
   rw [mem_Ioi] at hx
   rw [iter_deriv_zpow]
@@ -114,7 +114,7 @@ theorem hasDerivAt_sqrt_mul_log {x : ℝ} (hx : x ≠ 0) :
 
 theorem deriv_sqrt_mul_log (x : ℝ) :
     deriv (fun x => √x * log x) x = (2 + log x) / (2 * √x) := by
-  rcases lt_or_le 0 x with hx | hx
+  rcases lt_or_ge 0 x with hx | hx
   · exact (hasDerivAt_sqrt_mul_log hx.ne').deriv
   · rw [sqrt_eq_zero_of_nonpos hx, mul_zero, div_zero]
     refine HasDerivWithinAt.deriv_eq_zero ?_ (uniqueDiffOn_Iic 0 x hx)
@@ -128,7 +128,7 @@ theorem deriv_sqrt_mul_log' :
 theorem deriv2_sqrt_mul_log (x : ℝ) :
     deriv^[2] (fun x => √x * log x) x = -log x / (4 * √x ^ 3) := by
   simp only [Nat.iterate, deriv_sqrt_mul_log']
-  rcases le_or_lt x 0 with hx | hx
+  rcases le_or_gt x 0 with hx | hx
   · rw [sqrt_eq_zero_of_nonpos hx, zero_pow three_ne_zero, mul_zero, div_zero]
     refine HasDerivWithinAt.deriv_eq_zero ?_ (uniqueDiffOn_Iic 0 x hx)
     refine (hasDerivWithinAt_const _ _ 0).congr_of_mem (fun x hx => ?_) hx
@@ -145,7 +145,7 @@ theorem strictConcaveOn_sqrt_mul_log_Ioi :
     StrictConcaveOn ℝ (Set.Ioi 1) fun x => √x * log x := by
   apply strictConcaveOn_of_deriv2_neg' (convex_Ioi 1) _ fun x hx => ?_
   · exact continuous_sqrt.continuousOn.mul
-      (continuousOn_log.mono fun x hx => ne_of_gt (zero_lt_one.trans hx))
+      (continuousOn_log.mono fun x hx => ne_of_lt' (zero_lt_one.trans hx))
   · rw [deriv2_sqrt_mul_log x]
     exact div_neg_of_neg_of_pos (neg_neg_of_pos (log_pos hx))
       (mul_pos four_pos (pow_pos (sqrt_pos.mpr (zero_lt_one.trans hx)) 3))

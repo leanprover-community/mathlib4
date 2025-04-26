@@ -112,7 +112,7 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
   apply Coprime.symm
   apply (coprime_or_dvd_of_prime hp_prime.1 _).resolve_right
   rw [← Int.natCast_dvd_natCast, ← norm_int_lt_one_iff_dvd, not_lt]
-  apply ge_of_eq
+  apply le_of_eq'
   rw [← isUnit_iff]
   exact isUnit_den r h
 

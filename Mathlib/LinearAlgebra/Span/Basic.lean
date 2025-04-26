@@ -448,7 +448,7 @@ theorem isCoatom_comap_or_eq_top (f : F) {p : Submodule R₂ M₂} (hp : IsCoato
     IsCoatom (comap f p) ∨ comap f p = ⊤ :=
   or_iff_not_imp_right.mpr fun h ↦ ⟨h, fun q lt ↦ by
     rw [← comap_map_sup_of_comap_le lt.le, hp.2 (map f q ⊔ p), comap_top]
-    simpa only [right_lt_sup, map_le_iff_le_comap] using lt.not_le⟩
+    simpa only [right_lt_sup, map_le_iff_le_comap] using lt.not_ge⟩
 
 theorem isCoatom_comap_iff {f : F} (hf : Surjective f) {p : Submodule R₂ M₂} :
     IsCoatom (comap f p) ↔ IsCoatom p := by
@@ -540,7 +540,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {s : Submodule K V} {x :
 
 /-- There is no vector subspace between `s` and `(K ∙ x) ⊔ s`, `WCovBy` version. -/
 theorem wcovBy_span_singleton_sup (x : V) (s : Submodule K V) : WCovBy s ((K ∙ x) ⊔ s) := by
-  refine ⟨le_sup_right, fun q hpq hqp ↦ hqp.not_le ?_⟩
+  refine ⟨le_sup_right, fun q hpq hqp ↦ hqp.not_ge ?_⟩
   rcases SetLike.exists_of_lt hpq with ⟨y, hyq, hyp⟩
   obtain ⟨c, z, hz, rfl⟩ : ∃ c : K, ∃ z ∈ s, c • x + z = y := by
     simpa [mem_sup, mem_span_singleton] using hqp.le hyq
@@ -600,7 +600,7 @@ theorem map_le_map_iff' {f : F} (hf : ker f = ⊥) {p p'} : map f p ≤ map f p'
   rw [LinearMap.map_le_map_iff, hf, sup_bot_eq]
 
 theorem map_injective {f : F} (hf : ker f = ⊥) : Injective (map f) := fun _ _ h =>
-  le_antisymm ((map_le_map_iff' hf).1 (le_of_eq h)) ((map_le_map_iff' hf).1 (ge_of_eq h))
+  le_antisymm ((map_le_map_iff' hf).1 (le_of_eq h)) ((map_le_map_iff' hf).1 (le_of_eq' h))
 
 theorem map_eq_top_iff {f : F} (hf : range f = ⊤) {p : Submodule R M} :
     p.map f = ⊤ ↔ p ⊔ LinearMap.ker f = ⊤ := by

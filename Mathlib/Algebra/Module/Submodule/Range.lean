@@ -193,7 +193,7 @@ theorem comap_le_comap_iff {f : F} (hf : range f = ⊤) {p p'} : comap f p ≤ c
   ⟨fun H ↦ by rwa [SetLike.le_def, (range_eq_top.1 hf).forall], comap_mono⟩
 
 theorem comap_injective {f : F} (hf : range f = ⊤) : Injective (comap f) := fun _ _ h =>
-  le_antisymm ((comap_le_comap_iff hf).1 (le_of_eq h)) ((comap_le_comap_iff hf).1 (ge_of_eq h))
+  le_antisymm ((comap_le_comap_iff hf).1 (le_of_eq h)) ((comap_le_comap_iff hf).1 (le_of_eq' h))
 
 -- TODO (?): generalize to semilinear maps with `f ∘ₗ g` bijective.
 theorem ker_eq_range_of_comp_eq_id {M P} [AddCommGroup M] [Module R M]

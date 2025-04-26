@@ -173,7 +173,7 @@ theorem dvd_prime {p m : ℕ} (pp : Prime p) : m ∣ p ↔ m = 1 ∨ m = p :=
     h.elim (fun e => e.symm ▸ one_dvd _) fun e => e.symm ▸ dvd_rfl⟩
 
 theorem dvd_prime_two_le {p m : ℕ} (pp : Prime p) (H : 2 ≤ m) : m ∣ p ↔ m = p :=
-  (dvd_prime pp).trans <| or_iff_right_of_imp <| Not.elim <| ne_of_gt H
+  (dvd_prime pp).trans <| or_iff_right_of_imp <| Not.elim <| ne_of_lt' H
 
 theorem prime_dvd_prime_iff_eq {p q : ℕ} (pp : p.Prime) (qp : q.Prime) : p ∣ q ↔ p = q :=
   dvd_prime_two_le qp (Prime.two_le pp)
@@ -302,16 +302,16 @@ theorem le_minFac {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, Prime p → 
 
 theorem le_minFac' {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, 2 ≤ p → p ∣ n → m ≤ p :=
   ⟨fun h p (pp : 1 < p) d =>
-    h.elim (by rintro rfl; cases not_le_of_lt pp (le_of_dvd (by decide) d)) fun h =>
+    h.elim (by rintro rfl; cases not_le_of_gt pp (le_of_dvd (by decide) d)) fun h =>
       le_trans h <| minFac_le_of_dvd pp d,
     fun H => le_minFac.2 fun p pp d => H p pp.two_le d⟩
 
 theorem prime_def_minFac {p : ℕ} : Prime p ↔ 2 ≤ p ∧ minFac p = p :=
   ⟨fun pp =>
     ⟨pp.two_le,
-      let ⟨f2, fd, _⟩ := minFac_has_prop <| ne_of_gt pp.one_lt
-      ((dvd_prime pp).1 fd).resolve_left (ne_of_gt f2)⟩,
-    fun ⟨p2, e⟩ => e ▸ minFac_prime (ne_of_gt p2)⟩
+      let ⟨f2, fd, _⟩ := minFac_has_prop <| ne_of_lt' pp.one_lt
+      ((dvd_prime pp).1 fd).resolve_left (ne_of_lt' f2)⟩,
+    fun ⟨p2, e⟩ => e ▸ minFac_prime (ne_of_lt' p2)⟩
 
 @[simp]
 theorem Prime.minFac_eq {p : ℕ} (hp : Prime p) : minFac p = p :=
@@ -380,11 +380,11 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     have := le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')
     rw [eq_comm, Nat.minFac_eq_one_iff] at this
     subst this
-    exact not_lt_of_le (le_of_dvd lb h) h'
+    exact not_lt_of_ge (le_of_dvd lb h) h'
 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
-      apply Nat.ne_of_gt
+      apply Nat.ne_of_lt'
       apply Nat.succ_lt_succ
       apply Nat.zero_lt_succ
       )).one_lt

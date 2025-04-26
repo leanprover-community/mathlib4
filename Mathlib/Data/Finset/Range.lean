@@ -96,7 +96,7 @@ theorem mem_range_le {n x : ℕ} (hx : x ∈ range n) : x ≤ n :=
   (mem_range.1 hx).le
 
 theorem mem_range_sub_ne_zero {n x : ℕ} (hx : x ∈ range n) : n - x ≠ 0 :=
-  _root_.ne_of_gt <| Nat.sub_pos_of_lt <| mem_range.1 hx
+  _root_.ne_of_lt' <| Nat.sub_pos_of_lt <| mem_range.1 hx
 
 @[simp]
 theorem nonempty_range_iff : (range n).Nonempty ↔ n ≠ 0 :=

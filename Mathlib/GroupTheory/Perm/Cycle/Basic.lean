@@ -284,7 +284,7 @@ theorem IsCycle.exists_pow_eq (hf : IsCycle f) (hx : f x ≠ x) (hy : f y ≠ y)
   let ⟨n, hn⟩ := hf.exists_zpow_eq hx hy
   classical exact
       ⟨(n % orderOf f).toNat, by
-        {have := n.emod_nonneg (Int.natCast_ne_zero.mpr (ne_of_gt (orderOf_pos f)))
+        {have := n.emod_nonneg (Int.natCast_ne_zero.mpr (ne_of_lt' (orderOf_pos f)))
          rwa [← zpow_natCast, Int.toNat_of_nonneg this, zpow_mod_orderOf]}⟩
 
 end Finite
@@ -596,7 +596,7 @@ theorem IsCycle.pow_eq_pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {a b :
       exact ⟨x, hx, by simp [h]⟩
     · rintro ⟨x, hx, hx'⟩
       wlog hab : a ≤ b generalizing a b
-      · exact (this hx'.symm (le_of_not_le hab)).symm
+      · exact (this hx'.symm (le_of_not_ge hab)).symm
       suffices f ^ (b - a) = 1 by
         rw [pow_sub _ hab, mul_inv_eq_one] at this
         rw [this]

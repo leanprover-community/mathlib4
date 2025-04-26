@@ -113,7 +113,7 @@ private theorem deriv_sq_norm_pos : 0 < ‖F.derivative.eval a‖ ^ 2 :=
   lt_of_le_of_lt (norm_nonneg _) hnorm
 
 private theorem deriv_sq_norm_ne_zero : ‖F.derivative.eval a‖ ^ 2 ≠ 0 :=
-  ne_of_gt (deriv_sq_norm_pos hnorm)
+  ne_of_lt' (deriv_sq_norm_pos hnorm)
 
 private theorem deriv_norm_ne_zero : ‖F.derivative.eval a‖ ≠ 0 := fun h =>
   deriv_sq_norm_ne_zero hnorm (by simp [*, sq])
@@ -140,7 +140,7 @@ private def ih_gen (n : ℕ) (z : ℤ_[p]) : Prop :=
 local notation "ih" => @ih_gen p _ F a
 
 private theorem ih_0 : ih 0 a :=
-  ⟨rfl, by simp [T_def, mul_div_cancel₀ _ (ne_of_gt (deriv_sq_norm_pos hnorm))]⟩
+  ⟨rfl, by simp [T_def, mul_div_cancel₀ _ (ne_of_lt' (deriv_sq_norm_pos hnorm))]⟩
 
 private theorem calc_norm_le_one {n : ℕ} {z : ℤ_[p]} (hz : ih n z) :
     ‖(↑(F.eval z) : ℚ_[p]) / ↑(F.derivative.eval z)‖ ≤ 1 :=

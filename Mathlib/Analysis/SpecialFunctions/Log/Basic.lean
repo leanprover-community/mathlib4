@@ -74,13 +74,13 @@ theorem exp_one_mul_le_exp {x : ℝ} : exp 1 * x ≤ exp x := by
   by_cases hx0 : x ≤ 0
   · apply le_trans (mul_nonpos_of_nonneg_of_nonpos (exp_pos 1).le hx0) (exp_nonneg x)
   · have h := add_one_le_exp (log x)
-    rwa [← exp_le_exp, exp_add, exp_log (lt_of_not_le hx0), mul_comm] at h
+    rwa [← exp_le_exp, exp_add, exp_log (lt_of_not_ge hx0), mul_comm] at h
 
 theorem two_mul_le_exp {x : ℝ} : 2 * x ≤ exp x := by
   by_cases hx0 : x < 0
   · exact le_trans (mul_nonpos_of_nonneg_of_nonpos (by simp only [Nat.ofNat_nonneg]) hx0.le)
       (exp_nonneg x)
-  · apply le_trans (mul_le_mul_of_nonneg_right _ (le_of_not_lt hx0)) exp_one_mul_le_exp
+  · apply le_trans (mul_le_mul_of_nonneg_right _ (le_of_not_gt hx0)) exp_one_mul_le_exp
     have := Real.add_one_le_exp 1
     rwa [one_add_one_eq_two] at this
 
@@ -354,7 +354,7 @@ theorem continuous_log : Continuous fun x : { x : ℝ // x ≠ 0 } => log x :=
 /-- The real logarithm is continuous as a function from positive reals. -/
 @[fun_prop]
 theorem continuous_log' : Continuous fun x : { x : ℝ // 0 < x } => log x :=
-  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
+  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx => ne_of_lt' hx
 
 theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=
   (continuousOn_log x hx).continuousAt <| isOpen_compl_singleton.mem_nhds hx
@@ -418,7 +418,7 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   open_source := isOpen_univ
   open_target := isOpen_Ioi
   continuousOn_toFun := continuousOn_exp
-  continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
+  continuousOn_invFun x hx := (continuousAt_log (ne_of_lt' hx)).continuousWithinAt
 
 end Real
 

@@ -161,9 +161,9 @@ lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
     have hap : a < a * b := lt_mul_of_one_lt_right (by omega) (by omega)
     have hbp : b < a * b := lt_mul_of_one_lt_left (by omega) (by omega)
     have ha :=
-      le_of_not_lt <| not_and.mp ((hmin a).mt hap.not_le) (map_pos_of_ne_zero f (mod_cast ha₀))
+      le_of_not_gt <| not_and.mp ((hmin a).mt hap.not_ge) (map_pos_of_ne_zero f (mod_cast ha₀))
     have hb :=
-      le_of_not_lt <| not_and.mp ((hmin b).mt hbp.not_le) (map_pos_of_ne_zero f (mod_cast hb₀))
+      le_of_not_gt <| not_and.mp ((hmin b).mt hbp.not_ge) (map_pos_of_ne_zero f (mod_cast hb₀))
     rw [Nat.cast_mul, map_mul] at hp1
     exact ((one_le_mul_of_one_le_of_one_le ha hb).trans_lt hp1).false
 
@@ -375,7 +375,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * f m ^ i).sum := apply_le_sum_digits n hm
     _ = m * ((Nat.digits m n).mapIdx fun i _ ↦ f m ^ i).sum := list_mul_sum (m.digits n) (f m) m
     _ = m * ((f m ^ (d + 1) - 1) / (f m - 1)) := by
-      rw [list_geom _ (ne_of_gt (one_lt_of_not_bounded notbdd hm)),
+      rw [list_geom _ (ne_of_lt' (one_lt_of_not_bounded notbdd hm)),
         ← Nat.digits_len m n hm (ne_zero_of_lt hn)]
     _ ≤ m * ((f m ^ (d + 1)) / (f m - 1)) := by
       gcongr

@@ -268,7 +268,7 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
 @[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
   induction n using Nat.strongRecOn with
   | ind n h_ind =>
-    cases lt_or_le n R.n₀ with
+    cases lt_or_ge n R.n₀ with
     | inl hn => exact R.T_gt_zero' n hn -- n < R.n₀
     | inr hn => -- R.n₀ ≤ n
       rw [R.h_rec n hn]
@@ -360,7 +360,7 @@ lemma eventually_one_sub_smoothingFn_r_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0
 
 @[aesop safe apply]
 lemma differentiableAt_smoothingFn {x : ℝ} (hx : 1 < x) : DifferentiableAt ℝ ε x := by
-  have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_gt hx)
+  have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_lt' hx)
   show DifferentiableAt ℝ (fun z => 1 / log z) x
   simp_rw [one_div]
   exact DifferentiableAt.inv (differentiableAt_log (by positivity)) this
@@ -382,7 +382,7 @@ lemma differentiableOn_one_add_smoothingFn : DifferentiableOn ℝ (fun z => 1 + 
   fun _ hx => (differentiableAt_one_add_smoothingFn hx).differentiableWithinAt
 
 lemma deriv_smoothingFn {x : ℝ} (hx : 1 < x) : deriv ε x = -x⁻¹ / (log x ^ 2) := by
-  have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_gt hx)
+  have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_lt' hx)
   show deriv (fun z => 1 / log z) x = -x⁻¹ / (log x ^ 2)
   rw [deriv_div] <;> aesop
 
@@ -513,7 +513,7 @@ namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
 @[continuity]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
   refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by fun_prop) ?_
-  exact Continuous.rpow continuous_const continuous_id (fun x => Or.inl (ne_of_gt (R.b_pos i)))
+  exact Continuous.rpow continuous_const continuous_id (fun x => Or.inl (ne_of_lt' (R.b_pos i)))
 
 lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
   rw [← Finset.sum_fn]
@@ -628,7 +628,7 @@ lemma eventually_atTop_sumTransform_le :
   intro i
   have hrpos_i := hrpos i
   have g_nonneg : 0 ≤ g n := R.g_nonneg n (by positivity)
-  cases le_or_lt 0 (p a b + 1) with
+  cases le_or_gt 0 (p a b + 1) with
   | inl hp => -- 0 ≤ p a b + 1
     calc sumTransform (p a b) g (r i n) n
            = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := by rfl
@@ -983,7 +983,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
         differentiableOn_one_sub_smoothingFn
     rw [Set.mem_compl_singleton_iff]
     rw [Set.mem_Ioi] at hz
-    exact ne_of_gt <| zero_lt_one.trans hz
+    exact ne_of_lt' <| zero_lt_one.trans hz
   have h_deriv_q : deriv q =O[atTop] fun x => x ^ ((p a b) - 1) := calc
     deriv q = deriv fun x => (fun z => z ^ (p a b)) x * (fun z => 1 - ε z) x := by rfl
           _ =ᶠ[atTop] fun x => deriv (fun z => z ^ (p a b)) x * (1 - ε x) +
@@ -1078,7 +1078,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
         differentiableOn_one_add_smoothingFn
     rw [Set.mem_compl_singleton_iff]
     rw [Set.mem_Ioi] at hz
-    exact ne_of_gt <| zero_lt_one.trans hz
+    exact ne_of_lt' <| zero_lt_one.trans hz
   have h_deriv_q : deriv q =O[atTop] fun x => x ^ ((p a b) - 1) := calc
     deriv q = deriv fun x => (fun z => z ^ (p a b)) x * (fun z => 1 + ε z) x := by rfl
           _ =ᶠ[atTop] fun x => deriv (fun z => z ^ (p a b)) x * (1 + ε x)
@@ -1392,7 +1392,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
             -- Apply the induction hypothesis, or use the base case depending on how large `n` is
               gcongr (∑ i, a i * ?_) + g n with i _
               · exact le_of_lt <| R.a_pos _
-              · cases lt_or_le (r i n) n₀ with
+              · cases lt_or_ge (r i n) n₀ with
                 | inl ri_lt_n₀ => exact h_base _ <| Finset.mem_Ico.mpr ⟨b_mul_n₀_le_ri i, ri_lt_n₀⟩
                 | inr n₀_le_ri =>
                   exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) n₀_le_ri

@@ -156,7 +156,7 @@ lemma StrictConvexOn.eq_of_le_map_sum (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s)
     (h_eq : ∑ i ∈ t, w i • f (p i) ≤ f (∑ i ∈ t, w i • p i)) :
     ∀ ⦃j⦄, j ∈ t → ∀ ⦃k⦄, k ∈ t → p j = p k := by
-  by_contra!; exact h_eq.not_lt <| hf.map_sum_lt h₀ h₁ hmem this
+  by_contra!; exact h_eq.not_gt <| hf.map_sum_lt h₀ h₁ hmem this
 
 /-- A form of the **equality case of Jensen's equality**.
 
@@ -168,7 +168,7 @@ lemma StrictConcaveOn.eq_of_map_sum_eq (hf : StrictConcaveOn 𝕜 s f) (h₀ : �
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s)
     (h_eq : f (∑ i ∈ t, w i • p i) ≤ ∑ i ∈ t, w i • f (p i)) :
     ∀ ⦃j⦄, j ∈ t → ∀ ⦃k⦄, k ∈ t → p j = p k := by
-  by_contra!; exact h_eq.not_lt <| hf.lt_map_sum h₀ h₁ hmem this
+  by_contra!; exact h_eq.not_gt <| hf.lt_map_sum h₀ h₁ hmem this
 
 /-- Canonical form of the **equality case of Jensen's equality**.
 

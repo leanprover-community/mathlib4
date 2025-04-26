@@ -43,7 +43,7 @@ lemma deriv_Gamma_nat (n : ℕ) :
       Gamma_add_one hx.ne', log_mul hx.ne' (Gamma_pos_of_pos hx).ne', add_comm]
   have hder {x : ℝ} (hx : 0 < x) : DifferentiableAt ℝ f x := by
     refine ((differentiableAt_Gamma ?_).log (Gamma_ne_zero ?_)) <;>
-    exact fun m ↦ ne_of_gt (by linarith)
+    exact fun m ↦ ne_of_lt' (by linarith)
   -- Express derivative at general `n` in terms of value at `1` using recurrence relation
   have hder_rec (x : ℝ) (hx : 0 < x) : deriv f (x + 1) = deriv f x + 1 / x := by
     rw [← deriv_comp_add_const, one_div, ← deriv_log,

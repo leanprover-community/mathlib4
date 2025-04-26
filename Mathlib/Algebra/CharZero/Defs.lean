@@ -81,7 +81,7 @@ theorem cast_ne_one {n : ℕ} : (n : R) ≠ 1 ↔ n ≠ 1 :=
   cast_eq_one.not
 
 instance (priority := 100) AtLeastTwo.toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
-  ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
+  ⟨Nat.ne_of_lt' (Nat.le_of_lt one_lt)⟩
 
 end Nat
 

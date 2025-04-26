@@ -516,7 +516,7 @@ lemma traceForm_dualSubmodule_adjoin
       · exact zero_mem _
       rw [← pb.natDegree_minpoly, pbgen, ← natDegree_minpolyDiv_succ hKx,
         ← Nat.succ_eq_add_one] at hi
-      exact le_of_not_lt hi
+      exact le_of_not_gt hi
 
 end
 

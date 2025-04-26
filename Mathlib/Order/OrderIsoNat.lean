@@ -263,7 +263,7 @@ noncomputable def monotonicSequenceLimit [Preorder α] (a : ℕ →o α) :=
 theorem WellFoundedGT.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
     [WellFoundedGT α] (a : ℕ →o α) : iSup a = monotonicSequenceLimit a := by
   refine (iSup_le fun m => ?_).antisymm (le_iSup a _)
-  rcases le_or_lt m (monotonicSequenceLimitIndex a) with hm | hm
+  rcases le_or_gt m (monotonicSequenceLimitIndex a) with hm | hm
   · exact a.monotone hm
   · obtain ⟨n, hn⟩ := WellFoundedGT.monotone_chain_condition' a
     have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)

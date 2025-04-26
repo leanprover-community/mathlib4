@@ -215,7 +215,7 @@ instance dnsq : Zsqrtd.Nonsquare (d a1) :=
     have : (n + 1) * (n + 1) ≤ n * n + 1 := by rw [this]; exact Nat.mul_self_le_mul_self na
     have : n + n ≤ 0 :=
       @Nat.le_of_add_le_add_right _ (n * n + 1) _ (by ring_nf at this ⊢; assumption)
-    Nat.ne_of_gt (d_pos a1) <| by
+    Nat.ne_of_lt' (d_pos a1) <| by
       rwa [Nat.eq_zero_of_le_zero ((Nat.le_add_left _ _).trans this)] at h⟩
 
 theorem xn_ge_a_pow : ∀ n : ℕ, a ^ n ≤ xn a1 n
@@ -644,12 +644,12 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
                       rw [n1, j2] at j2n; exact absurd j2n (by decide))
                 s)
             fun h => by rw [h]; exact s
-        lem1 (_root_.ne_of_gt jn) <|
+        lem1 (_root_.ne_of_lt' jn) <|
           Int.lt_of_ofNat_lt_ofNat <| by
             rw [lem2 j jn (le_of_lt j2n), lem2 (j + 1) (Nat.le_succ_of_le jn) j2n]
             refine sub_lt_sub_left (Int.ofNat_lt_ofNat_of_lt <| strictMono_x _ ?_) _
             rw [Nat.sub_succ]
-            exact Nat.pred_lt (_root_.ne_of_gt <| tsub_pos_of_lt j2n)
+            exact Nat.pred_lt (_root_.ne_of_lt' <| tsub_pos_of_lt j2n)
 
 theorem eq_of_xn_modEq_le {i j n} (ij : i ≤ j) (j2n : j ≤ 2 * n)
     (h : xn a1 i ≡ xn a1 j [MOD xn a1 n])
@@ -658,7 +658,7 @@ theorem eq_of_xn_modEq_le {i j n} (ij : i ≤ j) (j2n : j ≤ 2 * n)
   else
     (lt_or_eq_of_le ij).resolve_left fun ij' =>
       if jn : j = n then by
-        refine _root_.ne_of_gt ?_ h
+        refine _root_.ne_of_lt' ?_ h
         rw [jn, Nat.mod_self]
         have x0 : 0 < xn a1 0 % xn a1 n := by
           rw [Nat.mod_eq_of_lt (strictMono_x a1 (Nat.pos_of_ne_zero npos))]
@@ -688,7 +688,7 @@ theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * 
     (fun j2n : j ≤ 2 * n =>
       eq_of_xn_modEq a1 j2n i2n h fun _ n1 =>
         ⟨fun _ i2 => by rw [n1, i2] at hin; exact absurd hin (by decide), fun _ i0 =>
-          _root_.ne_of_gt ipos i0⟩)
+          _root_.ne_of_lt' ipos i0⟩)
     fun j2n : 2 * n < j =>
     suffices i = 4 * n - j by rw [this, add_tsub_cancel_of_le j4n]
     have j42n : 4 * n - j ≤ 2 * n := by omega

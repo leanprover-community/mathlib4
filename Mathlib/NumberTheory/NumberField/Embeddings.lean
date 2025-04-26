@@ -443,7 +443,7 @@ theorem mult_pos {w : InfinitePlace K} : 0 < mult w := by
   split_ifs <;> norm_num
 
 @[simp]
-theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := ne_of_gt mult_pos
+theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := ne_of_lt' mult_pos
 
 theorem mult_coe_ne_zero {w : InfinitePlace K} : (mult w : ℝ) ≠ 0 :=
   Nat.cast_ne_zero.mpr mult_ne_zero
@@ -557,7 +557,7 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
       rw [conjugate_embedding_eq_of_isReal hw, or_self] at main
       exact congr_arg RingHom.toRatAlgHom main
     | inr hw =>
-      refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_le ?_)
+      refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_ge ?_)
       have : (embedding w x).im = 0 := by
         rw [← Complex.conj_eq_iff_im]
         have := RingHom.congr_fun h' x

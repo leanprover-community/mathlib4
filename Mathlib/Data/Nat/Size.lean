@@ -70,7 +70,7 @@ theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
     rw [shiftLeft'_tt_eq_mul_pow] at this
     obtain rfl := succ.inj (eq_one_of_dvd_one ⟨_, this.symm⟩)
     simp only [zero_add, one_mul] at this
-    obtain rfl : n = 0 := not_ne_iff.1 fun hn ↦ ne_of_gt (Nat.one_lt_pow hn (by decide)) this
+    obtain rfl : n = 0 := not_ne_iff.1 fun hn ↦ ne_of_lt' (Nat.one_lt_pow hn (by decide)) this
     rw [add_zero]
 
 @[simp]

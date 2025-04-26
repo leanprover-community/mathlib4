@@ -328,7 +328,7 @@ theorem _root_.tendsto_riemannZeta_sub_one_div :
     · exact (Complex.continuous_ofReal.tendsto 1).mono_left (nhdsWithin_le_nhds ..)
     · filter_upwards [self_mem_nhdsWithin] with a ha
       rw [mem_compl_singleton_iff, ← Complex.ofReal_one, Ne, Complex.ofReal_inj]
-      exact ne_of_gt ha
+      exact ne_of_lt' ha
   refine ⟨_, Complex.tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO ?_ ?_⟩
   · filter_upwards [self_mem_nhdsWithin] with s hs
     refine (differentiableAt_riemannZeta hs).sub ((differentiableAt_const _).div ?_ ?_)

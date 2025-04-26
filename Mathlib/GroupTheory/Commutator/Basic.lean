@@ -156,7 +156,7 @@ variable {H₁ H₂}
 
 theorem commutator_le_map_commutator {f : G →* G'} {K₁ K₂ : Subgroup G'} (h₁ : K₁ ≤ H₁.map f)
     (h₂ : K₂ ≤ H₂.map f) : ⁅K₁, K₂⁆ ≤ ⁅H₁, H₂⁆.map f :=
-  (commutator_mono h₁ h₂).trans (ge_of_eq (map_commutator H₁ H₂ f))
+  (commutator_mono h₁ h₂).trans (le_of_eq' (map_commutator H₁ H₂ f))
 
 variable (H₁ H₂)
 

@@ -85,7 +85,7 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
       exact max_le_max_left _ le_self_add
     · rw [ne_eq, card_eq_zero, opow_eq_zero]
       rintro ⟨rfl, -⟩
-      cases omega0_pos.not_le ha
+      cases omega0_pos.not_ge ha
     · rwa [aleph0_le_card]
   · intro b hb IH
     rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isLimit hb]

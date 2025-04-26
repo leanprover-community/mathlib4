@@ -413,7 +413,7 @@ lemma isMax_iff {x : PrimeSpectrum R} :
   refine ⟨fun hx ↦ ⟨⟨x.2.ne_top, fun I hI ↦ ?_⟩⟩, fun hx y e ↦ (hx.eq_of_le y.2.ne_top e).ge⟩
   by_contra e
   obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
-  exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
+  exact hx.not_gt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
 
 lemma isMin_iff {x : PrimeSpectrum R} :
     IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by

@@ -629,7 +629,7 @@ instance preorder : Preorder (ℤ√d) where
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
   lt := (· < ·)
-  lt_iff_le_not_le _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
+  lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
@@ -844,7 +844,7 @@ protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b 
   Or.elim
     (eq_zero_or_eq_zero_of_mul_eq_zero
       (le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
-    (fun e => ne_of_gt a0 e) fun e => ne_of_gt b0 e
+    (fun e => ne_of_lt' a0 e) fun e => ne_of_lt' b0 e
 
 instance : ZeroLEOneClass (ℤ√d) :=
   { zero_le_one := by trivial }

@@ -29,14 +29,14 @@ variable {a b c d m n : ℤ}
 section Order
 
 protected lemma le_rfl : a ≤ a := a.le_refl
-protected lemma lt_or_lt_of_ne : a ≠ b → a < b ∨ b < a := Int.lt_or_gt_of_ne
-protected lemma lt_or_le (a b : ℤ) : a < b ∨ b ≤ a := by rw [← Int.not_lt]; exact Decidable.em _
-protected lemma le_or_lt (a b : ℤ) : a ≤ b ∨ b < a := (b.lt_or_le a).symm
+protected lemma lt_or_ge (a b : ℤ) : a < b ∨ b ≤ a := by rw [← Int.not_lt]; exact Decidable.em _
+protected lemma le_or_gt (a b : ℤ) : a ≤ b ∨ b < a := (b.lt_or_ge a).symm
 protected lemma lt_asymm : a < b → ¬ b < a := by rw [Int.not_lt]; exact Int.le_of_lt
 protected lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]; exact Int.le_rfl
-protected lemma ge_of_eq (hab : a = b) : b ≤ a := Int.le_of_eq hab.symm
+protected lemma le_of_eq' (hab : a = b) : b ≤ a := Int.le_of_eq hab.symm
+protected lemma ne_of_lt' (hab : a < b) : b ≠ a := Int.ne_of_gt hab
 protected lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
-  ⟨fun h ↦ ⟨Int.le_of_eq h, Int.ge_of_eq h⟩, fun h ↦ Int.le_antisymm h.1 h.2⟩
+  ⟨fun h ↦ ⟨Int.le_of_eq h, Int.le_of_eq' h⟩, fun h ↦ Int.le_antisymm h.1 h.2⟩
 protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by omega
 
 protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt, or_comm]
@@ -370,25 +370,25 @@ lemma add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
 @[simp] lemma neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by omega
 
 lemma div_le_iff_of_dvd_of_pos (hb : 0 < b) (hba : b ∣ a) : a / b ≤ c ↔ a ≤ b * c := by
-  obtain ⟨x, rfl⟩ := hba; simp [*, Int.ne_of_gt]
+  obtain ⟨x, rfl⟩ := hba; simp [*, Int.ne_of_lt']
 
 lemma div_le_iff_of_dvd_of_neg (hb : b < 0) (hba : b ∣ a) : a / b ≤ c ↔ b * c ≤ a := by
   obtain ⟨x, rfl⟩ := hba; simp [*, Int.ne_of_lt]
 
 lemma div_lt_iff_of_dvd_of_pos (hb : 0 < b) (hba : b ∣ a) : a / b < c ↔ a < b * c := by
-  obtain ⟨x, rfl⟩ := hba; simp [*, Int.ne_of_gt]
+  obtain ⟨x, rfl⟩ := hba; simp [*, Int.ne_of_lt']
 
 lemma div_lt_iff_of_dvd_of_neg (hb : b < 0) (hba : b ∣ a) : a / b < c ↔ b * c < a := by
   obtain ⟨x, rfl⟩ := hba; simp [*, Int.ne_of_lt]
 
 lemma le_div_iff_of_dvd_of_pos (hc : 0 < c) (hcb : c ∣ b) : a ≤ b / c ↔ c * a ≤ b := by
-  obtain ⟨x, rfl⟩ := hcb; simp [*, Int.ne_of_gt]
+  obtain ⟨x, rfl⟩ := hcb; simp [*, Int.ne_of_lt']
 
 lemma le_div_iff_of_dvd_of_neg (hc : c < 0) (hcb : c ∣ b) : a ≤ b / c ↔ b ≤ c * a := by
   obtain ⟨x, rfl⟩ := hcb; simp [*, Int.ne_of_lt]
 
 lemma lt_div_iff_of_dvd_of_pos (hc : 0 < c) (hcb : c ∣ b) : a < b / c ↔ c * a < b := by
-  obtain ⟨x, rfl⟩ := hcb; simp [*, Int.ne_of_gt]
+  obtain ⟨x, rfl⟩ := hcb; simp [*, Int.ne_of_lt']
 
 lemma lt_div_iff_of_dvd_of_neg (hc : c < 0) (hcb : c ∣ b) : a < b / c ↔ b < c * a := by
   obtain ⟨x, rfl⟩ := hcb; simp [*, Int.ne_of_lt]
@@ -396,42 +396,42 @@ lemma lt_div_iff_of_dvd_of_neg (hc : c < 0) (hcb : c ∣ b) : a < b / c ↔ b < 
 lemma div_le_div_iff_of_dvd_of_pos_of_pos (hb : 0 < b) (hd : 0 < d) (hba : b ∣ a)
     (hdc : d ∣ c) : a / b ≤ c / d ↔ d * a ≤ c * b := by
   obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
-  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+  simp [*, Int.ne_of_lt, Int.ne_of_lt', d.mul_assoc, b.mul_comm]
 
 lemma div_le_div_iff_of_dvd_of_pos_of_neg (hb : 0 < b) (hd : d < 0) (hba : b ∣ a) (hdc : d ∣ c) :
     a / b ≤ c / d ↔ c * b ≤ d * a := by
   obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
-  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+  simp [*, Int.ne_of_lt, Int.ne_of_lt', d.mul_assoc, b.mul_comm]
 
 lemma div_le_div_iff_of_dvd_of_neg_of_pos (hb : b < 0) (hd : 0 < d) (hba : b ∣ a)  (hdc : d ∣ c) :
     a / b ≤ c / d ↔ c * b ≤ d * a := by
   obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
-  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+  simp [*, Int.ne_of_lt, Int.ne_of_lt', d.mul_assoc, b.mul_comm]
 
 lemma div_le_div_iff_of_dvd_of_neg_of_neg (hb : b < 0) (hd : d < 0) (hba : b ∣ a) (hdc : d ∣ c) :
     a / b ≤ c / d ↔ d * a ≤ c * b := by
   obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
-  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+  simp [*, Int.ne_of_lt, Int.ne_of_lt', d.mul_assoc, b.mul_comm]
 
 lemma div_lt_div_iff_of_dvd_of_pos (hb : 0 < b) (hd : 0 < d) (hba : b ∣ a) (hdc : d ∣ c) :
     a / b < c / d ↔ d * a < c * b := by
   obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
-  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+  simp [*, Int.ne_of_lt, Int.ne_of_lt', d.mul_assoc, b.mul_comm]
 
 lemma div_lt_div_iff_of_dvd_of_pos_of_neg (hb : 0 < b) (hd : d < 0) (hba : b ∣ a) (hdc : d ∣ c) :
     a / b < c / d ↔ c * b < d * a := by
   obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
-  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+  simp [*, Int.ne_of_lt, Int.ne_of_lt', d.mul_assoc, b.mul_comm]
 
 lemma div_lt_div_iff_of_dvd_of_neg_of_pos (hb : b < 0) (hd : 0 < d) (hba : b ∣ a) (hdc : d ∣ c) :
     a / b < c / d ↔ c * b < d * a := by
   obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
-  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+  simp [*, Int.ne_of_lt, Int.ne_of_lt', d.mul_assoc, b.mul_comm]
 
 lemma div_lt_div_iff_of_dvd_of_neg_of_neg (hb : b < 0) (hd : d < 0) (hba : b ∣ a) (hdc : d ∣ c) :
     a / b < c / d ↔ d * a < c * b := by
   obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
-  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+  simp [*, Int.ne_of_lt, Int.ne_of_lt', d.mul_assoc, b.mul_comm]
 
 /-! ### properties of `/` and `%` -/
 
@@ -493,7 +493,7 @@ lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
   · rw [dvd_iff_emod_eq_zero, ← Ne] at h
     rw [← emod_add_ediv m n]
     refine ⟨m / n, Int.lt_add_of_pos_left _ ?_, ?_⟩
-    · have := emod_nonneg m (Int.ne_of_gt hn)
+    · have := emod_nonneg m (Int.ne_of_lt' hn)
       omega
     · rw [Int.add_comm _ (1 : ℤ), Int.mul_add, Int.mul_one]
       exact Int.add_lt_add_right (emod_lt_of_pos _ hn) _

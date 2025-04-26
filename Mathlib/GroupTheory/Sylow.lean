@@ -116,7 +116,7 @@ def comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : P ≤ ϕ.range) : Sylow p 
     isPGroup' := P.2.comap_of_ker_isPGroup ϕ hϕ
     is_maximal' := fun {Q} hQ hle => by
       show Q = P.1.comap ϕ
-      rw [← P.3 (hQ.map ϕ) (le_trans (ge_of_eq (map_comap_eq_self h)) (map_mono hle))]
+      rw [← P.3 (hQ.map ϕ) (le_trans (le_of_eq' (map_comap_eq_self h)) (map_mono hle))]
       exact (comap_map_eq_self ((P.1.ker_le_comap ϕ).trans hle)).symm }
 
 @[simp]
@@ -285,7 +285,7 @@ instance Sylow.isPretransitive_of_finite [hp : Fact p.Prime] [Finite (Sylow p G)
           S ∈ fixedPoints R (orbit G P) ↔ S.1 ∈ fixedPoints R (Sylow p G) :=
             forall_congr' fun a => Subtype.ext_iff
           _ ↔ R.1 ≤ S := R.2.sylow_mem_fixedPoints_iff
-          _ ↔ S.1.1 = R := ⟨fun h => R.3 S.1.2 h, ge_of_eq⟩
+          _ ↔ S.1.1 = R := ⟨fun h => R.3 S.1.2 h, le_of_eq'⟩
       suffices Set.Nonempty (fixedPoints Q (orbit G P)) by
         exact Exists.elim this fun R hR => by
           rw [← Sylow.ext (H.mp hR)]
@@ -312,7 +312,7 @@ theorem card_sylow_modEq_one [Fact p.Prime] [Finite (Sylow p G)] :
     Set.ext fun Q : Sylow p G =>
       calc
         Q ∈ fixedPoints P (Sylow p G) ↔ P.1 ≤ Q := P.2.sylow_mem_fixedPoints_iff
-        _ ↔ Q.1 = P.1 := ⟨P.3 Q.2, ge_of_eq⟩
+        _ ↔ Q.1 = P.1 := ⟨P.3 Q.2, le_of_eq'⟩
         _ ↔ Q ∈ {P} := Sylow.ext_iff.symm.trans Set.mem_singleton_iff.symm
   have : Nat.card (fixedPoints P.1 (Sylow p G)) = 1 := by simp [this]
   exact (P.2.card_modEq_card_fixedPoints (Sylow p G)).trans (by rw [this])

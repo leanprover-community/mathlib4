@@ -63,7 +63,7 @@ theorem W_eq_factorial_ratio (n : ℕ) :
   · unfold W at IH ⊢
     rw [prod_range_succ, IH, _root_.div_mul_div_comm, _root_.div_mul_div_comm]
     refine (div_eq_div_iff ?_ ?_).mpr ?_
-    any_goals exact ne_of_gt (by positivity)
+    any_goals exact ne_of_lt' (by positivity)
     simp_rw [Nat.mul_succ, Nat.factorial_succ, pow_succ]
     push_cast
     ring_nf
@@ -93,7 +93,7 @@ theorem tendsto_W_nhds_pi_div_two : Tendsto W atTop (𝓝 <| π / 2) := by
   refine Tendsto.mul ?_ tendsto_const_nhds
   have h : ∀ n : ℕ, ((2 : ℝ) * n + 1) / (2 * n + 2) = 1 - 1 / (2 * n + 2) := by
     intro n
-    rw [sub_div' (ne_of_gt (add_pos_of_nonneg_of_pos (mul_nonneg
+    rw [sub_div' (ne_of_lt' (add_pos_of_nonneg_of_pos (mul_nonneg
       (two_pos : 0 < (2 : ℝ)).le (Nat.cast_nonneg _)) two_pos)), one_mul]
     congr 1; ring
   simp_rw [h]

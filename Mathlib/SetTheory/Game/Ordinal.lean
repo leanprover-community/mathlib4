@@ -127,7 +127,7 @@ theorem toPGame_le_iff {a b : Ordinal} : a.toPGame ≤ b.toPGame ↔ a ≤ b :=
 
 @[simp]
 theorem toPGame_lt_iff {a b : Ordinal} : a.toPGame < b.toPGame ↔ a < b :=
-  ⟨by contrapose; rw [not_lt]; exact fun h => not_lt_of_le (toPGame_le h), toPGame_lt⟩
+  ⟨by contrapose; rw [not_lt]; exact fun h => not_lt_of_ge (toPGame_le h), toPGame_lt⟩
 
 @[simp]
 theorem toPGame_equiv_iff {a b : Ordinal} : (a.toPGame ≈ b.toPGame) ↔ a = b := by
@@ -230,7 +230,7 @@ theorem toPGame_nmul (a b : Ordinal) : (a ⨳ b).toPGame ≈ a.toPGame * b.toPGa
   · apply leftMoves_mul_cases i _ isEmptyElim
     intro i j
     rw [mul_moveLeft_inl, toPGame_moveLeft', toPGame_moveLeft', lf_iff_game_lf,
-      quot_sub, quot_add, ← Game.not_le, le_sub_iff_add_le]
+      quot_sub, quot_add, ← Game.not_ge, le_sub_iff_add_le]
     repeat rw [← game_eq (toPGame_nmul _ _)]
     simp_rw [mk_toPGame, ← toGame_nadd]
     apply toPGame_lf (nmul_nadd_lt _ _) <;>

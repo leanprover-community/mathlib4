@@ -478,7 +478,7 @@ theorem mem_range_iff_mem_finset_range_of_mod_eq [DecidableEq α] {f : ℤ → �
   have hn' : 0 < (n : ℤ) := Int.ofNat_lt.mpr hn
   Iff.intro
     (fun ⟨i, hi⟩ =>
-      have : 0 ≤ i % ↑n := Int.emod_nonneg _ (ne_of_gt hn')
+      have : 0 ≤ i % ↑n := Int.emod_nonneg _ (ne_of_lt' hn')
       ⟨Int.toNat (i % n), by
         rw [← Int.ofNat_lt, Int.toNat_of_nonneg this]; exact ⟨Int.emod_lt_of_pos i hn', hi⟩⟩)
     fun ⟨i, hi, ha⟩ =>

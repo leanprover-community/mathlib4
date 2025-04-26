@@ -116,7 +116,7 @@ theorem imp_fib {n : ℕ} : ∀ m : ℕ, NatPredicate N m n → ∃ k : ℕ, m =
     have h5 : 1 ≤ m := succ_le_iff.mpr h2.m_pos
     simpa [fib_one, fib_two, (by decide : 1 + 1 = 2)] using (h3.antisymm h5 : m = 1)
   · obtain (rfl : m = n) | (h6 : m < n) := h3.eq_or_lt
-    · exact absurd h2.eq_imp_1 (Nat.ne_of_gt h4)
+    · exact absurd h2.eq_imp_1 (Nat.ne_of_lt' h4)
     · have h7 : NatPredicate N (n - m) m := h2.reduction h4
       obtain ⟨k : ℕ, hnm : n - m = fib k, rfl : m = fib (k + 1)⟩ := h1 m h6 (n - m) h7
       use k + 1, rfl
@@ -151,7 +151,7 @@ theorem m_n_bounds {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ fib K ∧ n ≤
         _ ≤ fib (k + 1) := fib_mono h8
         _ = n := hn.symm
     have h9 : n ≤ N := h1.n_le_N
-    exact absurd h7 h9.not_lt
+    exact absurd h7 h9.not_gt
 
 /-
 We spell out the consequences of this result for `specifiedSet N` here.

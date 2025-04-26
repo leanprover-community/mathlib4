@@ -20,7 +20,7 @@ open Lean Expr Meta
 
 section Lemmas
 
-lemma not_lt_of_not_le {α : Type u} [Preorder α] {x y : α} (h : ¬(x ≤ y)) : ¬(x < y) :=
+lemma not_lt_of_not_ge {α : Type u} [Preorder α] {x y : α} (h : ¬(x ≤ y)) : ¬(x < y) :=
   (h ·.le)
 
 lemma le_of_not_lt_le {α : Type u} [Preorder α] {x y : α} (h1 : ¬(x < y)) (h2 : x ≤ y) :
@@ -41,10 +41,10 @@ def preprocessFactsPreorder (g : MVarId) (facts : Array AtomicFact) :
     match fact with
     | .lt lhs rhs proof =>
       res := res.push <| .le lhs rhs (← mkAppM ``le_of_lt #[proof])
-      res := res.push <| .nle rhs lhs (← mkAppM ``not_le_of_lt #[proof])
+      res := res.push <| .nle rhs lhs (← mkAppM ``not_le_of_gt #[proof])
     | .eq lhs rhs proof =>
       res := res.push <| .le lhs rhs (← mkAppM ``le_of_eq #[proof])
-      res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
+      res := res.push <| .le rhs lhs (← mkAppM ``le_of_eq' #[proof])
     | .ne _ _ _ =>
       continue
     | _ =>
@@ -63,10 +63,10 @@ def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact) :
       res := res.push <| .le lhs rhs (← mkAppM ``LT.lt.le #[proof])
     | .nle lhs rhs proof =>
       res := res.push <| .ne lhs rhs (← mkAppM ``ne_of_not_le #[proof])
-      res := res.push <| .nlt lhs rhs (← mkAppM ``not_lt_of_not_le #[proof])
+      res := res.push <| .nlt lhs rhs (← mkAppM ``not_lt_of_not_ge #[proof])
     | .eq lhs rhs proof =>
       res := res.push <| .le lhs rhs (← mkAppM ``le_of_eq #[proof])
-      res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
+      res := res.push <| .le rhs lhs (← mkAppM ``le_of_eq' #[proof])
     | _ =>
       res := res.push fact
   return res
@@ -83,12 +83,12 @@ def preprocessFactsLinear (g : MVarId) (facts : Array AtomicFact) :
       res := res.push <| .le lhs rhs (← mkAppM ``LT.lt.le #[proof])
     | .nle lhs rhs proof =>
       res := res.push <| .ne lhs rhs (← mkAppM ``ne_of_not_le #[proof])
-      res := res.push <| .le rhs lhs (← mkAppM ``le_of_not_le #[proof])
+      res := res.push <| .le rhs lhs (← mkAppM ``le_of_not_ge #[proof])
     | .nlt lhs rhs proof =>
-      res := res.push <| .le rhs lhs (← mkAppM ``le_of_not_lt #[proof])
+      res := res.push <| .le rhs lhs (← mkAppM ``le_of_not_gt #[proof])
     | .eq lhs rhs proof =>
       res := res.push <| .le lhs rhs (← mkAppM ``le_of_eq #[proof])
-      res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
+      res := res.push <| .le rhs lhs (← mkAppM ``le_of_eq' #[proof])
     | _ =>
       res := res.push fact
   return res

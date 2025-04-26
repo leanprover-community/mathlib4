@@ -222,7 +222,7 @@ theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpe
     ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
   refine fun i ↦ by_contra fun hi ↦ ?_
   rcases v.exists_gt hs i hi with ⟨v', hlt⟩
-  exact hv.not_lt hlt
+  exact hv.not_gt hlt
 
 /-- **Shrinking lemma**. A point-finite open cover of a closed subset of a normal space can be
 "shrunk" to a new closed cover so that each new closed set is contained in the corresponding
@@ -353,7 +353,7 @@ theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀
   · intro i
     by_contra! hi
     rcases exists_gt_t2space v hs i hi with ⟨v', hlt, _⟩
-    exact hv.not_lt hlt
+    exact hv.not_gt hlt
 
 /-- **Shrinking lemma**. A point-finite open cover of a compact subset of a locally compact T2 space
 can be "shrunk" to a new closed cover so that each new closed set is contained in the corresponding

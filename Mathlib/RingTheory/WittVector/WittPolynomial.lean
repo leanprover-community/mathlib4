@@ -124,7 +124,7 @@ theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   rintro i _
   rw [if_neg]
   rw [Finsupp.single_eq_zero]
-  exact ne_of_gt (pow_pos hp.1.pos _)
+  exact ne_of_lt' (pow_pos hp.1.pos _)
 
 @[simp]
 theorem wittPolynomial_zero : wittPolynomial p R 0 = X 0 := by

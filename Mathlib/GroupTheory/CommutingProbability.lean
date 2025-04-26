@@ -122,7 +122,7 @@ variable (G)
 
 theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ ≤ commProb G :=
   (inv_le_iff_one_le_mul₀ (Nat.cast_pos.mpr Finite.card_pos)).mpr
-    (le_trans (ge_of_eq (commProb_eq_one_iff.mpr ⟨(Abelianization.commGroup G).mul_comm⟩))
+    (le_trans (le_of_eq' (commProb_eq_one_iff.mpr ⟨(Abelianization.commGroup G).mul_comm⟩))
       (commutator G).commProb_quotient_le)
 
 -- Construction of group with commuting probability 1/n
