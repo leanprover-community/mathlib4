@@ -12,6 +12,9 @@ import Mathlib.Analysis.Meromorphic.Basic
 This file defines the order of a meromorphic function `f` at a point `z₀`, as an element of
 `ℤ ∪ {∞}`.
 
+We characterize the order being `< 0`, or `= 0`, or `> 0`, as the convergence of the function
+to infinity, resp. a nonzero constant, resp. zero.
+
 TODO: Uniformize API between analytic and meromorphic functions
 -/
 
@@ -92,15 +95,14 @@ at this point. See also the iff version `tendsto_cobounded_iff_order_neg`. -/
 lemma tendsto_cobounded_of_order_neg (hf : MeromorphicAt f x) (ho : hf.order < 0) :
     Tendsto f (𝓝[≠] x) (Bornology.cobounded E) := by
   simp only [← tendsto_norm_atTop_iff_cobounded]
-  have : hf.order ≠ ⊤ := ho.ne_top
-  obtain ⟨m, hm⟩ := WithTop.ne_top_iff_exists.mp this
+  obtain ⟨m, hm⟩ := WithTop.ne_top_iff_exists.mp ho.ne_top
   have m_neg : m < 0 := by simpa [← hm] using ho
   rcases hf.order_eq_int_iff.1 hm.symm with ⟨g, g_an, gx, hg⟩
   have A : Tendsto (fun z ↦ ‖(z - x) ^ m • g z‖) (𝓝[≠] x) atTop := by
     simp only [norm_smul]
     apply Filter.Tendsto.atTop_mul_pos (C := ‖g x‖) (by simp [gx]) _
       g_an.continuousAt.continuousWithinAt.tendsto.norm
-    have : Tendsto (fun z ↦ (z - x)) (𝓝[≠] x) (𝓝[≠] 0) := by
+    have : Tendsto (fun z ↦ z - x) (𝓝[≠] x) (𝓝[≠] 0) := by
       refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
       · have : ContinuousWithinAt (fun z ↦ z - x) ({x}ᶜ) x :=
           ContinuousAt.continuousWithinAt (by fun_prop)
@@ -243,7 +245,9 @@ protected theorem analyticAt {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x)
     filter_upwards [h.order_eq_top_iff.1 ho] with y hy using by simp [hy]
   | coe n =>
     /- If the order is finite, then the order has to be nonnegative, as otherwise the norm of `f`
-    would tend to infinity at `x`.-/
+    would tend to infinity at `x`. Then the local expression of `f` coming from its meromorphicity
+    shows that it coincides with an analytic function close to `x`, except maybe at `x`. By
+    continuity of `f`, the two functions also coincide at `x`. -/
     rcases h.order_eq_int_iff.1 ho with ⟨g, g_an, gx, hg⟩
     have : 0 ≤ h.order := by
       apply h.tendsto_nhds_iff_order_nonneg.1
@@ -252,8 +256,7 @@ protected theorem analyticAt {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x)
     have A : ∀ᶠ (z : 𝕜) in 𝓝 x, (z - x) ^ n • g z = f z := by
       apply (ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE (by fun_prop) h').1
       filter_upwards [hg] with z hz using by simpa using hz.symm
-    have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ n • g z) x := by fun_prop
-    apply this.congr A
+    exact AnalyticAt.congr (by fun_prop) A
 
 /-!
 ## Order at a Point: Behaviour under Ring Operations
@@ -476,7 +479,7 @@ theorem eventually_analyticAt {f : 𝕜 → E} {x : 𝕜}
 
 theorem eventually_analyticAt_or_mem_compl {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicOn f U) (hx : x ∈ U) : ∀ᶠ y in 𝓝[≠] x, AnalyticAt 𝕜 f y ∨ y ∈ Uᶜ := by
-  have : {x}ᶜ = (U \ {x}) ∪ (Uᶜ) := by aesop (add simp Classical.em)
+  have : {x}ᶜ = (U \ {x}) ∪ Uᶜ := by aesop (add simp Classical.em)
   rw [this, nhdsWithin_union]
   simp only [mem_compl_iff, eventually_sup]
   refine ⟨?_, ?_⟩
@@ -493,7 +496,7 @@ theorem analyticAt_mem_codiscreteWithin (hf : MeromorphicOn f U) :
   simp
   tauto
 
-/-- The set where a mermorphic function has zero or infinite
+/-- The set where a meromorphic function has zero or infinite
 order is codiscrete within its domain of meromorphicity. -/
 theorem codiscrete_setOf_order_eq_zero_or_top :
     {u : U | (hf u u.2).order = 0 ∨ (hf u u.2).order = ⊤} ∈ Filter.codiscrete U := by

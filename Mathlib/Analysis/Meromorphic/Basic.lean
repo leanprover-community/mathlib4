@@ -226,7 +226,7 @@ theorem eventually_continuousAt {f : 𝕜 → E} {x : 𝕜}
     nhdsWithin_le_nhds h.eventually_continuousAt
   filter_upwards [this, self_mem_nhdsWithin] with y hy h'y
   simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at h'y
-  have : ContinuousAt (fun z ↦ ((z - x)^n)⁻¹) y :=
+  have : ContinuousAt (fun z ↦ ((z - x) ^ n)⁻¹) y :=
     ContinuousAt.inv₀ (by fun_prop) (by simp [sub_eq_zero, h'y])
   apply (this.smul hy).congr
   filter_upwards [eventually_ne_nhds h'y] with z hz
