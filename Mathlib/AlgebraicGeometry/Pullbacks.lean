@@ -693,7 +693,7 @@ end Spec
 section ChosenFiniteProducts
 variable {S : Scheme}
 
-noncomputable instance : ChosenFiniteProducts (Over S) := Over.cartesianMonoidalCategory _
+noncomputable instance : ChosenFiniteProducts (Over S) := Over.chosenFiniteProducts _
 
 end ChosenFiniteProducts
 
