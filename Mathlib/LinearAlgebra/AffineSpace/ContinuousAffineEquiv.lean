@@ -295,6 +295,7 @@ lemma constVAdd_coe [ContinuousConstVAdd V₁ P₁] (v : V₁) :
 
 /-- The map `v ↦ v +ᵥ b` as an a continuous affine equivalence
 between a module `V` and an affine space `P` with tangent space `V`. -/
+@[simps]
 def vaddConst [TopologicalSpace V₁] [ContinuousVAddConst V₁ P₁]
     [ContinuousVSubConst V₁ P₁] (v : P₁) : V₁ ≃ᵃL[k] P₁ where
   toAffineEquiv := .vaddConst k v
@@ -303,7 +304,7 @@ def vaddConst [TopologicalSpace V₁] [ContinuousVAddConst V₁ P₁]
 
 /-- `p' ↦ p -ᵥ p'` as an a continuous affine equivalence. -/
 def constVSub [TopologicalSpace V₁] [ContinuousConstVSub V₁ P₁]
-    [ContinuousVAddConst V₁ P₁] [ContinuousNeg V₁] (p : P₁): P₁ ≃ᵃL[k] V₁ where
+    [ContinuousVAddConst V₁ P₁] [ContinuousNeg V₁] (p : P₁) : P₁ ≃ᵃL[k] V₁ where
   toAffineEquiv := .constVSub k p
   continuous_toFun := continuous_const_vsub p
   continuous_invFun := (continuous_vadd_const p).comp continuous_neg
