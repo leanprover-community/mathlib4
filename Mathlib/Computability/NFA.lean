@@ -215,7 +215,7 @@ variable {σ1 : Type v} {σ2 : Type v}
 private instance Language.instUnion : Union (Language α) := by
   apply Set.instUnion
 
-/--`stepSum M₁ M₂` computes the transition for `M₁ ∪ M₂`. -/
+/-- `stepSum M₁ M₂` computes the transition for `M₁ ∪ M₂`. -/
 def stepSum (M1 : NFA α σ1) (M2 : NFA α σ2)
   (s : σ1 ⊕ σ2) (a : α) : Set (σ1 ⊕ σ2) :=
     { s' : σ1 ⊕ σ2 |
