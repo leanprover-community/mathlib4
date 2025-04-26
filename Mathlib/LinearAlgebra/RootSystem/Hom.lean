@@ -609,9 +609,9 @@ def reflection (P : RootPairing ι R M N) (i : ι) : Aut P where
       PerfectPairing.toDualRight_apply, LinearMap.dualMap_apply, PerfectPairing.flip_apply_apply,
       LinearEquiv.comp_coe, LinearEquiv.trans_apply]
     rw [RootPairing.reflection_apply, RootPairing.coreflection_apply]
-    simp only [← PerfectPairing.toLin_apply, map_sub, map_smul, LinearMap.sub_apply,
-      toLin_toPerfectPairing, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
-    simp only [PerfectPairing.toLin_apply, PerfectPairing.flip_apply_apply, mul_comm]
+    simp only [← PerfectPairing.toLinearMap_apply, map_sub, map_smul, LinearMap.sub_apply,
+      toLinearMap_eq_toPerfectPairing, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
+    simp [mul_comm]
   root_weightMap := by ext; simp
   coroot_coweightMap := by ext; simp
   bijective_weightMap := by

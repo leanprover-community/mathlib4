@@ -95,18 +95,17 @@ lemma Irreducible.of_map [FunLike F M N] [MonoidHomClass F M N] [IsLocalHom f]
   isUnit_or_isUnit := by
     rintro p q rfl; exact (hfx.isUnit_or_isUnit <| map_mul f p q).imp (.of_map f _) (.of_map f _)
 
-end Monoid
-
-section CommMonoid
-variable [CommMonoid M] {x : M}
-
 @[to_additive]
-lemma Irreducible.not_square (ha : Irreducible x) : ¬IsSquare x := by
+lemma Irreducible.not_isSquare (ha : Irreducible x) : ¬IsSquare x := by
   rw [isSquare_iff_exists_sq]
   rintro ⟨y, rfl⟩
   exact not_irreducible_pow (by decide) ha
 
-@[to_additive]
-lemma IsSquare.not_irreducible (ha : IsSquare x) : ¬Irreducible x := fun h => h.not_square ha
+set_option linter.existingAttributeWarning false in
+@[deprecated (since := "2025-04-17"), to_additive existing]
+alias Irreducible.not_square := Irreducible.not_isSquare
 
-end CommMonoid
+@[to_additive]
+lemma IsSquare.not_irreducible (ha : IsSquare x) : ¬Irreducible x := fun h => h.not_isSquare ha
+
+end Monoid

@@ -1038,10 +1038,8 @@ theorem restrict_of_measure_ne_top [R1Space α] [BorelSpace α] [Regular μ]
 end Regular
 
 instance Regular.domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
-    -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
-    -- assume `MeasurableSpace G` + `MeasurableSMul G A`
-    [MeasurableSpace A] [MeasurableSpace G] [MeasurableSMul G A] [TopologicalSpace A] [BorelSpace A]
-    [ContinuousConstSMul G A] {μ : Measure A} (g : Gᵈᵐᵃ) [Regular μ] : Regular (g • μ) :=
+    [MeasurableSpace A] [TopologicalSpace A] [BorelSpace A] [ContinuousConstSMul G A]
+    {μ : Measure A} (g : Gᵈᵐᵃ) [Regular μ] : Regular (g • μ) :=
   .map <| .smul ((DomMulAct.mk.symm g : G)⁻¹)
 
 -- see Note [lower instance priority]
