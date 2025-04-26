@@ -665,14 +665,14 @@ def bypass {u v : V} : G.Walk u v → G.Walk u v
     else
       cons ha p'
 -/
-def Walk.shorterOdd {u : α} (p : G.Walk u u) (x : α) (hx : x ∈ p.support) : G.Walk x x :=
+def Walk.shorterOdd {u : α} (p : G.Walk u u) {x : α} (hx : x ∈ p.support) : G.Walk x x :=
   if ho : Odd (p.shortClosed hx).length then
     p.shortClosed hx
   else
     (p.shortCut hx).rotate (by simp)
 
 lemma Walk.length_shorterOdd_lt_length {p : G.Walk u u} {x : α} (hx : x ∈ p.support) (hne : x ≠ u)
-    (h2 : 1 < p.support.count x) : (p.shorterOdd x hx).length < p.length := by
+    (h2 : 1 < p.support.count x) : (p.shorterOdd hx).length < p.length := by
   rw [shorterOdd, ← p.length_shortCut_add_shortClosed hx hne]
   split_ifs with ho
   · rw [lt_add_iff_pos_left, ← not_nil_iff_lt_length]
@@ -681,7 +681,7 @@ lemma Walk.length_shorterOdd_lt_length {p : G.Walk u u} {x : α} (hx : x ∈ p.s
     exact p.shortClosed_not_nil_of_one_lt_count hx hne h2
 
 lemma Walk.length_shorterOdd_odd {p : G.Walk u u} {x : α} (hx : x ∈ p.support) (hne : x ≠ u)
-    (ho : Odd p.length) : Odd (p.shorterOdd _ hx).length := by
+    (ho : Odd p.length) : Odd (p.shorterOdd hx).length := by
   rw [← p.length_shortCut_add_shortClosed hx hne] at ho
   rw [shorterOdd]
   split_ifs with h1
@@ -689,16 +689,22 @@ lemma Walk.length_shorterOdd_odd {p : G.Walk u u} {x : α} (hx : x ∈ p.support
   · rw [Walk.length_rotate]
     exact (Nat.odd_add.1 ho).2 (Nat.not_odd_iff_even.1 h1)
 
-def shortestOdd (u : α) (p : G.Walk u u) : Σ v, G.Walk v v :=
+/-- Return an almost minimal odd closed subwalk from an odd length closed walk
+(if p.length is not odd then just returns some closed subwalk).
+
+-/
+def Walk.minOdd {u : α} (p : G.Walk u u) : Σ v, G.Walk v v :=
   match (p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x)).attach with
-  | [] => ⟨u, p⟩
+  | [] => ⟨_, p⟩
   | x :: _ => by
-    simp only [ List.mem_filter, decide_eq_false_iff_not, decide_eq_true_eq] at x
-    have ⟨hx, hne, h2⟩:= x.2
+    simp_rw [List.mem_filter, decide_eq_true_eq] at x
+    have ⟨hx, hne, h2⟩ := x.2
     have := p.length_shorterOdd_lt_length hx hne h2
-    exact shortestOdd x (p.shorterOdd x hx)
+    exact (p.shorterOdd hx).minOdd
     termination_by p.length
 
+def Walk.oddCycle {u : α} (p : G.Walk u u) : Σ v, G.Walk v v :=
+  if 2 < p.minOdd.2.support.count (p.minOdd.1) then sorry else p.minOdd
 
 lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.length) :
     ∃ x, ∃ (c : G.Walk x x), c.IsCycle ∧ Odd c.length := by
