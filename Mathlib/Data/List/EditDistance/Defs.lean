@@ -279,6 +279,12 @@ theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
 theorem levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
   dsimp (config := { unfoldPartialApp := true }) [levenshtein, suffixLevenshtein, impl]
+  #adaptation_note
+  /--
+  2025-04-26 This `rw` was previously handled by the `dsimp`.
+  Is this a consequence of https://github.com/leanprover/lean4/pull/8090 be relevant?
+  -/
+  rw [List.getElem_cons_zero]
   congr
   rw [List.getLast_eq_getElem]
   congr
