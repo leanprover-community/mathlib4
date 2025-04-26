@@ -327,26 +327,6 @@ lemma lt_or_lt (h : a < b) (c : α) : a < c ∨ c < b := (le_or_gt b c).imp h.tr
 
 end LT.lt
 
--- TODO: deprecate
-alias Ne.lt_or_gt := lt_or_gt_of_ne
-alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
-alias LE.le.lt_of_not_le := LE.le.lt_of_not_ge
-alias LT.lt.not_lt := LT.lt.not_gt
-alias Eq.ge := Eq.le'
-alias Eq.not_gt := Eq.not_lt'
-alias le_imp_eq_iff_le_imp_le := le_imp_eq_iff_le_imp_ge'
-alias ge_imp_eq_iff_le_imp_le := le_imp_eq_iff_le_imp_ge
-alias eq_or_gt_of_le := eq_or_lt_of_le'
-alias gt_or_eq_of_le := lt_or_eq_of_le'
-alias LE.le.eq_or_gt := LE.le.eq_or_lt'
-alias LE.le.gt_or_eq := LE.le.lt_or_eq'
-alias Ne.not_le_or_not_le := Ne.not_le_or_not_ge
-alias LE.le.lt_or_le := LE.le.lt_or_ge
-alias LE.le.le_or_lt := LE.le.le_or_gt
-alias lt_of_not_le := lt_of_not_ge
-alias lt_iff_not_le := lt_iff_not_ge
-alias Ne.lt_or_lt := Ne.lt_or_gt
-
 /-- A version of `ne_iff_lt_or_gt` with LHS and RHS reversed. -/
 @[simp]
 theorem lt_or_lt_iff_ne : a < b ∨ b < a ↔ a ≠ b :=
@@ -354,7 +334,6 @@ theorem lt_or_lt_iff_ne : a < b ∨ b < a ↔ a ≠ b :=
 
 theorem not_lt_iff_eq_or_lt : ¬a < b ↔ a = b ∨ b < a :=
   not_lt.trans <| Decidable.le_iff_eq_or_lt.trans <| or_congr eq_comm Iff.rfl
-
 
 theorem exists_ge_of_linear (a b : α) : ∃ c, a ≤ c ∧ b ≤ c :=
   match le_total a b with
@@ -384,6 +363,28 @@ theorem eq_of_forall_lt_iff (h : ∀ c, c < a ↔ c < b) : a = b :=
 
 theorem eq_of_forall_gt_iff (h : ∀ c, a < c ↔ b < c) : a = b :=
   (le_of_forall_gt fun _ ↦ (h _).2).antisymm <| le_of_forall_gt fun _ ↦ (h _).1
+
+-- TODO: deprecate
+alias Ne.lt_or_gt := lt_or_gt_of_ne
+alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
+alias LE.le.lt_of_not_le := LE.le.lt_of_not_ge
+alias LT.lt.not_lt := LT.lt.not_gt
+alias Eq.ge := Eq.le'
+alias Eq.not_gt := Eq.not_lt'
+alias le_imp_eq_iff_le_imp_le := le_imp_eq_iff_le_imp_ge'
+alias ge_imp_eq_iff_le_imp_le := le_imp_eq_iff_le_imp_ge
+alias eq_or_gt_of_le := eq_or_lt_of_le'
+alias gt_or_eq_of_le := lt_or_eq_of_le'
+alias LE.le.eq_or_gt := LE.le.eq_or_lt'
+alias LE.le.gt_or_eq := LE.le.lt_or_eq'
+alias Ne.not_le_or_not_le := Ne.not_le_or_not_ge
+alias LE.le.lt_or_le := LE.le.lt_or_ge
+alias LE.le.le_or_lt := LE.le.le_or_gt
+alias lt_of_not_le := lt_of_not_ge
+alias lt_iff_not_le := lt_iff_not_ge
+alias Ne.lt_or_lt := Ne.lt_or_gt
+alias le_of_forall_lt' := le_of_forall_gt
+alias forall_lt_iff_le' := forall_gt_iff_le
 
 section ltByCases
 variable {P : Sort*} {x y : α}
