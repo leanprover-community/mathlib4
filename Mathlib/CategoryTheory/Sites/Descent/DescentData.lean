@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Bicategory.Functor.Strict
+import Mathlib.CategoryTheory.Bicategory.Functor.Cat
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 /-!
@@ -88,7 +88,7 @@ end
 
 end-/
 
-variable {C : Type u} [Bicategory.{w, v} C] [IsLocallyDiscrete C]
+variable {C : Type u} [Bicategory.{w, v} C]
   (F : Pseudofunctor C Cat.{v', u'}) {ι : Type t} (X : ι → C)
 
 structure DescentData where
@@ -128,6 +128,35 @@ def mk' (obj : ∀ i, F.obj (X i))
     ext
     exact hom_comp' g f₁ f₂ f₁g f₂g hf₁g hf₂g
 
+section
+
+variable (D : F.DescentData X)
+
+@[simp]
+lemma iso_hom_iso_hom ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι⦄
+    (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) (f₃ : X i₃ ⟶ Y) :
+    (D.iso f₁ f₂).hom ≫ (D.iso f₂ f₃).hom = (D.iso f₁ f₃).hom := by
+  simp [← D.iso_trans f₁ f₂ f₃]
+
+@[simp]
+lemma iso_self ⦃Y : C⦄ ⦃i : ι⦄ (f : X i ⟶ Y) :
+    D.iso f f = Iso.refl _ := by
+  ext
+  simp [← cancel_epi (D.iso f f).hom]
+
+@[simp]
+lemma iso_symm ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄
+    (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
+    (D.iso f₁ f₂).symm = D.iso f₂ f₁ := by
+  ext
+  simp [← cancel_epi (D.iso f₁ f₂).hom]
+
+lemma iso_inv ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄
+    (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
+    (D.iso f₁ f₂).inv = (D.iso f₂ f₁).hom :=
+  congr_arg Iso.hom (D.iso_symm f₁ f₂)
+
+end
 
 @[ext]
 structure Hom (D₁ D₂ : F.DescentData X) where
@@ -147,9 +176,42 @@ instance : Category (F.DescentData X) where
         simp only [Functor.map_comp, assoc]
         rw [ψ.comm, φ.comm_assoc] }
 
+@[ext]
+lemma hom_ext {D₁ D₂ : F.DescentData X} {f g : D₁ ⟶ D₂}
+    (h : ∀ i, f.hom i = g.hom i) : f = g :=
+  Hom.ext (funext h)
+
+@[simp]
+lemma id_hom (D : F.DescentData X) (i : ι) : Hom.hom (𝟙 D) i = 𝟙 _ := rfl
+
+@[simp, reassoc]
+lemma comp_hom {D₁ D₂ D₃ : F.DescentData X} (f : D₁ ⟶ D₂) (g : D₂ ⟶ D₃) (i : ι) :
+    (f ≫ g).hom i = f.hom i ≫ g.hom i := rfl
+
+
+namespace Hom
+
+variable {D₁ D₂ : F.DescentData X} (f : D₁ ⟶ D₂)
+
+@[reassoc]
+lemma map_map ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
+    (F.map f₁).map (f.hom i₁) =
+      (D₁.iso f₁ f₂).hom ≫ (F.map f₂).map (f.hom i₂) ≫ (D₂.iso f₁ f₂).inv := by
+  rw [← comm_assoc, Iso.hom_inv_id, comp_id]
+
+@[reassoc]
+lemma map_map' ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
+    (F.map f₂).map (f.hom i₂) =
+      (D₁.iso f₁ f₂).inv ≫ (F.map f₁).map (f.hom i₁) ≫ (D₂.iso f₁ f₂).hom := by
+  simp
+
+end Hom
+
 end DescentData
 
-def toDescentDataOfIsTerminal (X₀ : C) (hX₀ : IsInitial X₀) :
+variable [Strict C]
+
+def toDescentDataOfIsInitial (X₀ : C) (hX₀ : IsInitial X₀) :
     F.obj X₀ ⥤ F.DescentData X where
   obj A :=
     { obj i := (F.map (hX₀.to (X i))).obj A
@@ -157,15 +219,27 @@ def toDescentDataOfIsTerminal (X₀ : C) (hX₀ : IsInitial X₀) :
         (F.mapComp' (hX₀.to (X i₁)) f₁ (hX₀.to Y) (by simp)).symm.app A ≪≫
           (F.mapComp' (hX₀.to (X i₂)) f₂ (hX₀.to Y) (by simp)).app A
       iso_comp' Y' Y g i₁ i₂ f₁ f₂ f₁g f₂g hf₁g hf₂g := by
+        ext
         dsimp
-        sorry
-      iso_trans := by sorry } -- `aesop_cat` works
+        simp only [Functor.map_comp, assoc]
+        rw [F.mapComp'₀₁₃_inv_app_assoc (hX₀.to (X i₁))
+          f₁ g (hX₀.to Y) f₁g (hX₀.to Y') (by simp) hf₁g (by simp) A,
+          F.mapComp'₀₁₃_hom_app (hX₀.to (X i₂))
+            f₂ g (hX₀.to Y) f₂g (hX₀.to Y') (by simp) hf₂g (by simp) A,
+            Iso.inv_hom_id_app_assoc]
+      iso_trans := by
+        intros
+        ext
+        dsimp
+        rw [assoc, Iso.hom_inv_id_app_assoc] }
   map {A B} f :=
     { hom i := (F.map _).map f
-      comm Y i₁ i₂ f₁ f₂ := by
+      comm := by
+        intros
         dsimp
-        simp only [assoc]
-        sorry }
+        rw [mapComp'_inv_naturality_assoc, NatTrans.naturality, assoc, Cat.comp_map] }
+  map_id := by intros; ext; dsimp; simp only [Functor.map_id]
+  map_comp := by intros; ext; dsimp; simp only [Functor.map_comp]
 
 namespace DescentData
 
