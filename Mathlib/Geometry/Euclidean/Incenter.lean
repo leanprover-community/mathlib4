@@ -569,11 +569,7 @@ lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
     have hw : w = s.excenterWeights signs := by
       simp_rw [h'', ← Finset.mul_sum] at h1
       ext j
-      have hs : ∑ i, s.excenterWeightsUnnorm signs i ≠ 0 := by
-        intro h0
-        simp_all
-      rw [mul_eq_one_iff_eq_inv₀ hs] at h1
-      rw [h'', h1]
+      rw [h'', eq_inv_of_mul_eq_one_left h1]
       rfl
     subst hw
     exact ⟨s.sum_excenterWeights_eq_one_iff.1 h1, rfl⟩
