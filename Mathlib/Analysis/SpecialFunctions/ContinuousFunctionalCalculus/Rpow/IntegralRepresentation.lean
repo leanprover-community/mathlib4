@@ -46,20 +46,12 @@ relevant in applications, and would needlessly complicate the proof.
 open MeasureTheory Set Filter
 open scoped NNReal Topology
 
-lemma MeasureTheory.integral_mul_const {X : Type*} {E : Type*} [MeasurableSpace X] {μ : Measure X}
-    [NonUnitalNormedRing E] [CompleteSpace E] [NormedSpace ℝ E] [IsScalarTower ℝ E E] [SMulCommClass ℝ E E]
-    (f : X → E) (hf : Integrable f μ) (c : E) : ∫ x, c * f x ∂μ = c * ∫ x, f x ∂μ := by
-  show ∫ x, ContinuousLinearMap.mul ℝ E c (f x) ∂μ = ContinuousLinearMap.mul ℝ E c (∫ x, f x ∂μ)
-  rw [ContinuousLinearMap.integral_comp_comm _ hf]
-
-#find_home MeasureTheory.integral_mul_const
-
 namespace Real
 
 /-- Integrand for representing `x ↦ x^p` for `p ∈ (0,1)` -/
 noncomputable def rpowIntegrand₀₁ (p t x : ℝ) : ℝ := t ^ p * (t⁻¹ - (t + x)⁻¹)
 
-variable {p t : ℝ}
+variable {p t x : ℝ}
 
 @[simp]
 lemma rpowIntegrand₀₁_zero_right : rpowIntegrand₀₁ p t 0 = 0 := by simp [rpowIntegrand₀₁]
@@ -149,58 +141,6 @@ lemma rpowIntegrand₀₁_apply_mul_eqOn_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x)
     EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x) (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p) (Ici 0) :=
   fun _ ht => rpowIntegrand₀₁_apply_mul' hp ht hx
 
---lemma strictAntiOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 < x) : StrictAntiOn (rpowIntegrand₀₁ p · x) (Ioi 0):= by
---  intro t ht C hC htC
---  simp only [rpowIntegrand₀₁_eq_pow_div hp (le_of_lt hC) (le_of_lt hx), rpowIntegrand₀₁_eq_pow_div hp (le_of_lt ht) (le_of_lt hx), mul_div_assoc]
---  simp only [mem_Ioi] at ht hC
---  simp only [mem_Ioo] at hp
---  gcongr ?_ * ?_
---  · refine Real.rpow_lt_rpow_of_exponent_neg ht htC ?_
---    linarith
---  · gcongr
-
---lemma antitoneOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) : AntitoneOn (rpowIntegrand₀₁ p · x) (Ioi 0):= by
---  intro t ht C hC htC
---  simp only [rpowIntegrand₀₁_eq_pow_div hp (le_of_lt hC) hx, rpowIntegrand₀₁_eq_pow_div hp (le_of_lt ht) hx, mul_div_assoc]
---  simp only [mem_Ioi] at ht hC
---  simp only [mem_Ioo] at hp
---  gcongr ?_ * ?_
---  · refine Real.rpow_le_rpow_of_exponent_nonpos ht htC ?_
---    linarith
---  · gcongr
-
---lemma monotoneOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) : MonotoneOn (rpowIntegrand₀₁ p t) (Ici 0) := by
---  intro x hx y hy hxy
---  by_cases h : x = 0 ∧ t = 0
---  case pos => simp [h, rpowIntegrand₀₁_nonneg hp.1 le_rfl hy]
---  case neg =>
---    simp only [rpowIntegrand₀₁, one_div]
---    gcongr
---    rw [not_and_or] at h
---    rcases h with (h : x ≠ 0)|(h : t ≠ 0)
---    · have : 0 < x := by exact lt_of_le_of_ne hx (id (Ne.symm h))
---      positivity
---    · have : 0 < t := by exact lt_of_le_of_ne ht (id (Ne.symm h))
---      rw [mem_Ici] at hx
---      positivity
-
---lemma continuous_rpowIntegrand₀₁_restrict (hp : p ∈ Ioo 0 1) :
---    Continuous (fun t : Ioi (0 : ℝ) => (Ioi (0 : ℝ)).restrict (rpowIntegrand₀₁ p t)).uncurry := by
---  let g : Ioi (0 : ℝ) × Ioi (0 : ℝ) → ℝ := fun q => q.1 ^ (p - 1) * q.2 / (q.1 + q.2)
---  unfold Function.uncurry
---  simp only [restrict_apply]
---  refine Continuous.congr (f := g) ?_ fun q => ?_
---  · simp only [g]
---    refine Continuous.mul ?_ ?_
---    · refine Continuous.mul ?_ (by fun_prop)
---      exact Continuous.rpow_const (by fun_prop) fun _ => Or.inl (by aesop)
---    · refine Continuous.inv₀ (by fun_prop) fun t ht => ?_
---      simp only [mem_Ioo] at *
---      have h₁ : (0 : ℝ) < t.1 := t.1.2
---      have h₁ : (0 : ℝ) < t.2 := t.2.2
---      linarith
---  · simp only [g, rpowIntegrand₀₁_eq_pow_div hp (le_of_lt q.1.2) (le_of_lt q.2.2)]
-
 lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) : ContinuousOn (rpowIntegrand₀₁ p · x) (Ioi 0) := by
   refine ContinuousOn.congr ?_ <| rpowIntegrand₀₁_eqOn_pow_div hp hx
   refine ContinuousOn.mul ?_ ?_
@@ -216,25 +156,6 @@ lemma aestronglyMeasurable_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ 
     AEStronglyMeasurable (rpowIntegrand₀₁ p · x) (volume.restrict (Ioi 0)) :=
   (continuousOn_rpowIntegrand₀₁ hp hx).aestronglyMeasurable measurableSet_Ioi
 
---lemma rpowIntegrand₀₁_nonneg (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0 ≤ x) : 0 ≤ rpowIntegrand₀₁ p x t := by
---  rw [rpowIntegrand₀₁_eq_pow_div hp ht hx]
---  positivity
-
---lemma rpowIntegrand₀₁_le_rpow_sub_two (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
---    ∀ᵐ t ∂(volume.restrict (Ioi 0)), rpowIntegrand₀₁ p x t ≤ t ^ (p - 2) * x := by
---  rw [ae_restrict_iff_subtype measurableSet_Ioi]
---  refine Filter.eventually_of_forall ?_
---  intro ⟨t, (ht : 0 < t)⟩
---  calc
---    _ = t ^ (p - 1) * x / (t + x) := by rw [rpowIntegrand₀₁_eq_pow_div hp (le_of_lt ht) hx]
---    _ ≤ t ^ (p - 1) * x / t := by gcongr; linarith
---    _ = t ^ (p - 1) / t * x := by ring
---    _ = t ^ (p - 2) * x := by
---      congr
---      rw [← Real.rpow_sub_one (by positivity)]
---      congr 1
---      ring
-
 lemma rpowIntegrand₀₁_le_rpow_sub_two_mul_self (hp : p ∈ Ioo 0 1) (ht : 0 < t) (hx : 0 ≤ x) :
     rpowIntegrand₀₁ p t x ≤ t ^ (p - 2) * x := calc
   _ = t ^ (p - 1) * x / (t + x) := by rw [rpowIntegrand₀₁_eq_pow_div hp (le_of_lt ht) hx]
@@ -245,23 +166,6 @@ lemma rpowIntegrand₀₁_le_rpow_sub_two_mul_self (hp : p ∈ Ioo 0 1) (ht : 0 
     rw [← Real.rpow_sub_one (by positivity)]
     congr 1
     ring
-
---lemma rpowIntegrand₀₁_le_rpow_sub_one (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
---    ∀ᵐ t ∂(volume.restrict (Ici 0)), rpowIntegrand₀₁ p x t ≤ t ^ (p - 1) := by
---  rw [ae_restrict_iff_subtype measurableSet_Ici]
---  refine Filter.eventually_of_forall ?_
---  intro ⟨t, (ht : 0 ≤ t)⟩
---  by_cases hx_zero : x = 0
---  case pos =>
---    simp only [rpowIntegrand₀₁, one_div, hx_zero, add_zero, sub_self, mul_zero]
---    positivity
---  case neg =>
---    calc
---    _ = t ^ (p - 1) * x / (t + x) := by rw [rpowIntegrand₀₁_eq_pow_div hp ht hx]
---    _ ≤ t ^ (p - 1) * x / x := by gcongr; linarith
---    _ = t ^ (p - 1) * (x / x) := by ring
---    _ = t ^ (p - 1) * 1 := by congr; exact (div_eq_one_iff_eq hx_zero).mpr rfl
---    _ = _ := by simp
 
 lemma rpowIntegrand₀₁_le_rpow_sub_one (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0 ≤ x) :
     rpowIntegrand₀₁ p t x ≤ t ^ (p - 1) := by
@@ -290,7 +194,7 @@ lemma rpowIntegrand₀₁_one_ge_rpow_sub_two (hp : p ∈ Ioo 0 1) (ht : 1 ≤ t
   _ = rpowIntegrand₀₁ p t 1 := by rw [rpowIntegrand₀₁_eq_pow_div hp (by linarith) zero_le_one, mul_div_assoc]
 
 -- First piece : `Ioc 0 1`
-lemma integrableOn_rpowIntegrand₀₁_Ioc (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
+private lemma integrableOn_rpowIntegrand₀₁_Ioc (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₀₁ p · x) (Ioc 0 1) := by
   refine IntegrableOn.congr_set_ae (t := Ioo 0 1) ?_ (Filter.EventuallyEq.symm Ioo_ae_eq_Ioc)
   refine ⟨?meas, ?finite⟩
@@ -312,7 +216,7 @@ lemma integrableOn_rpowIntegrand₀₁_Ioc (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
       exact rpowIntegrand₀₁_le_rpow_sub_one hp (le_of_lt ht.1) hx
 
 -- Second piece: `Ioi 1`
-lemma integrableOn_rpowIntegrand₀₁_Ioi_one (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
+private lemma integrableOn_rpowIntegrand₀₁_Ioi_one (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₀₁ p · x) (Ioi 1) := by
   refine ⟨?meas, ?finite⟩
   case meas =>
@@ -358,10 +262,6 @@ lemma integrableOn_rpowIntegrand₀₁_Ioi (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
 lemma integrableOn_rpowIntegrand₀₁_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₀₁ p · x) (Ici 0) :=
   IntegrableOn.congr_set_ae (t := Ioi 0) (integrableOn_rpowIntegrand₀₁_Ioi hp hx) (EventuallyEq.symm Ioi_ae_eq_Ici)
-
-
---lemma integrableOn_rpowIntegrand₀₁ (hx : 0 ≤ x) (ha : 0 < a) : IntegrableOn (rpowIntegrand₀₁ p x) (Ioi 0) :=
---  (continuousOn_rpowIntegrand₀₁ hx ha).integrableOn_compact isCompact_Icc
 
 lemma integral_rpowIntegrand₀₁_eq_rpow_mul_const (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     (∫ t in Ioi 0, rpowIntegrand₀₁ p t x) = x ^ p * (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1) := by
