@@ -128,20 +128,14 @@ theorem tendsto_insertIdx' {a : α} :
       (tendsto_fst.comp tendsto_snd).cons
         ((@tendsto_insertIdx' _ n l).comp <| tendsto_fst.prodMk <| tendsto_snd.comp tendsto_snd)
 
-@[deprecated (since := "2024-10-21")] alias tendsto_insertNth' := tendsto_insertIdx'
-
 theorem tendsto_insertIdx {β} {n : ℕ} {a : α} {l : List α} {f : β → α} {g : β → List α}
     {b : Filter β} (hf : Tendsto f b (𝓝 a)) (hg : Tendsto g b (𝓝 l)) :
     Tendsto (fun b : β => (g b).insertIdx n (f b)) b (𝓝 (l.insertIdx n a)) :=
   tendsto_insertIdx'.comp (hf.prodMk hg)
 
-@[deprecated (since := "2024-10-21")] alias tendsto_insertNth := tendsto_insertIdx'
-
 theorem continuous_insertIdx {n : ℕ} : Continuous fun p : α × List α => p.2.insertIdx n p.1 :=
   continuous_iff_continuousAt.mpr fun ⟨a, l⟩ => by
     rw [ContinuousAt, nhds_prod_eq]; exact tendsto_insertIdx'
-
-@[deprecated (since := "2024-10-21")] alias continuous_insertNth := continuous_insertIdx
 
 theorem tendsto_eraseIdx :
     ∀ {n : ℕ} {l : List α}, Tendsto (eraseIdx · n) (𝓝 l) (𝓝 (eraseIdx l n))
@@ -156,7 +150,7 @@ theorem continuous_eraseIdx {n : ℕ} : Continuous fun l : List α => eraseIdx l
   continuous_iff_continuousAt.mpr fun _a => tendsto_eraseIdx
 
 @[to_additive]
-theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
+theorem tendsto_prod [MulOneClass α] [ContinuousMul α] {l : List α} :
     Tendsto List.prod (𝓝 l) (𝓝 l.prod) := by
   induction l with
   | nil => simp +contextual [nhds_nil, mem_of_mem_nhds, tendsto_pure_left]
@@ -167,7 +161,7 @@ theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
     exact this.comp (tendsto_id.prodMap ih)
 
 @[to_additive]
-theorem continuous_prod [Monoid α] [ContinuousMul α] : Continuous (prod : List α → α) :=
+theorem continuous_prod [MulOneClass α] [ContinuousMul α] : Continuous (prod : List α → α) :=
   continuous_iff_continuousAt.mpr fun _l => tendsto_prod
 
 end List
@@ -192,21 +186,15 @@ theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
     simp only [insertIdx_val]
     exact List.tendsto_insertIdx tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
 
-@[deprecated (since := "2024-10-21")] alias tendsto_insertNth := tendsto_insertIdx'
-
 /-- Continuity of `Vector.insertIdx`. -/
 theorem continuous_insertIdx' {n : ℕ} {i : Fin (n + 1)} :
     Continuous fun p : α × Vector α n => Vector.insertIdx p.1 i p.2 :=
   continuous_iff_continuousAt.mpr fun ⟨a, l⟩ => by
     rw [ContinuousAt, nhds_prod_eq]; exact tendsto_insertIdx
 
-@[deprecated (since := "2024-10-21")] alias continuous_insertNth' := continuous_insertIdx'
-
 theorem continuous_insertIdx {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → Vector α n}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertIdx (f b) i (g b) :=
   continuous_insertIdx'.comp (hf.prodMk hg)
-
-@[deprecated (since := "2024-10-21")] alias continuous_insertNth := continuous_insertIdx
 
 theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     ∀ {l : Vector α (n + 1)}, ContinuousAt (Vector.eraseIdx i) l

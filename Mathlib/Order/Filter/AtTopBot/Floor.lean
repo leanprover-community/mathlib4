@@ -13,7 +13,7 @@ import Mathlib.Order.Filter.AtTopBot.Finite
 open Filter
 open scoped Nat
 
-variable {K : Type*} [LinearOrderedRing K] [FloorSemiring K]
+variable {K : Type*} [Ring K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K]
 
 theorem FloorSemiring.eventually_mul_pow_lt_factorial_sub (a c : K) (d : ℕ) :
     ∀ᶠ n in atTop, a * c ^ n < (n - d)! := by

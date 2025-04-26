@@ -1058,7 +1058,7 @@ theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (
 
 end ZMod
 
-theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [Semiring R] (f g : ZMod n →+* R) : f = g := by
+theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [NonAssocSemiring R] (f g : ZMod n →+* R) : f = g := by
   ext a
   obtain ⟨k, rfl⟩ := ZMod.intCast_surjective a
   let φ : ℤ →+* R := f.comp (Int.castRingHom (ZMod n))
@@ -1079,19 +1079,19 @@ instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
     apply RingHom.ext_zmod _ _⟩
 
 @[simp]
-theorem ringHom_map_cast [Ring R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k) = k := by
+theorem ringHom_map_cast [NonAssocRing R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k) = k := by
   cases n
   · dsimp [ZMod, ZMod.cast] at f k ⊢; simp
   · dsimp [ZMod.cast]
     rw [map_natCast, natCast_zmod_val]
 
 /-- Any ring homomorphism into `ZMod n` has a right inverse. -/
-theorem ringHom_rightInverse [Ring R] (f : R →+* ZMod n) :
+theorem ringHom_rightInverse [NonAssocRing R] (f : R →+* ZMod n) :
     Function.RightInverse (cast : ZMod n → R) f :=
   ringHom_map_cast f
 
 /-- Any ring homomorphism into `ZMod n` is surjective. -/
-theorem ringHom_surjective [Ring R] (f : R →+* ZMod n) : Function.Surjective f :=
+theorem ringHom_surjective [NonAssocRing R] (f : R →+* ZMod n) : Function.Surjective f :=
   (ringHom_rightInverse f).surjective
 
 @[simp]
@@ -1243,13 +1243,13 @@ section Group
 variable {α : Type*} [Group α] {n : ℕ}
 
 -- TODO: Without the `existing`, `to_additive` chokes on `Inv (ZMod n)`.
-@[to_additive (attr := simp) existing nsmul_zmod_val_inv_nsmul]
+@[to_additive existing (attr := simp) nsmul_zmod_val_inv_nsmul]
 lemma pow_zmod_val_inv_pow (hn : (Nat.card α).Coprime n) (a : α) :
     (a ^ (n⁻¹ : ZMod (Nat.card α)).val) ^ n = a := by
   rw [← pow_mul', ← pow_mod_natCard, ← ZMod.val_natCast, Nat.cast_mul, ZMod.mul_val_inv hn.symm,
     ZMod.val_one_eq_one_mod, pow_mod_natCard, pow_one]
 
-@[to_additive (attr := simp) existing zmod_val_inv_nsmul_nsmul]
+@[to_additive existing (attr := simp) zmod_val_inv_nsmul_nsmul]
 lemma pow_pow_zmod_val_inv (hn : (Nat.card α).Coprime n) (a : α) :
     (a ^ n) ^ (n⁻¹ : ZMod (Nat.card α)).val = a := by rw [pow_right_comm, pow_zmod_val_inv_pow hn]
 

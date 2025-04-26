@@ -86,7 +86,7 @@ lemma prod_lt_prod_of_ne_nil [Preorder M] [MulLeftStrictMono M]
 lemma prod_le_pow_card [Preorder M] [MulRightMono M]
     [MulLeftMono M] (l : List M) (n : M) (h : ∀ x ∈ l, x ≤ n) :
     l.prod ≤ n ^ l.length := by
-      simpa only [map_id', map_const', prod_replicate] using prod_le_prod' h
+  simpa only [map_id', map_const', prod_replicate] using prod_le_prod' h
 
 @[to_additive card_nsmul_le_sum]
 lemma pow_card_le_prod [Preorder M] [MulRightMono M]
@@ -140,7 +140,7 @@ lemma prod_min_le [LinearOrder M] [MulLeftMono M]
 end Monoid
 
 -- TODO: develop theory of tropical rings
-lemma sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → N) (h0 : f 0 ≤ 0)
+lemma sum_le_foldr_max [AddZeroClass M] [Zero N] [LinearOrder N] (f : M → N) (h0 : f 0 ≤ 0)
     (hadd : ∀ x y, f (x + y) ≤ max (f x) (f y)) (l : List M) : f l.sum ≤ (l.map f).foldr max 0 := by
   induction' l with hd tl IH
   · simpa using h0

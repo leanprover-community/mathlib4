@@ -36,7 +36,7 @@ noncomputable section
 
 section OrderedCommSemiring
 
-variable (R : Type*) [StrictOrderedCommSemiring R]
+variable (R : Type*) [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable (M : Type*) [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable (ι ι' : Type*)
@@ -122,7 +122,7 @@ end OrderedCommSemiring
 
 section OrderedCommRing
 
-variable {R : Type*} [StrictOrderedCommRing R]
+variable {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 @[simp]
@@ -190,7 +190,7 @@ end OrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type*} [LinearOrderedCommRing R]
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {ι : Type*}
 
@@ -303,7 +303,7 @@ theorem det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
     rfl
   · right
     simp only [e.det_unitsSMul, ne_eq, Finset.mem_univ, Finset.prod_update_of_mem, not_true,
-      Pi.one_apply, Finset.prod_const_one, mul_one, inv_neg', inv_one, Units.val_neg, Units.val_one]
+      Pi.one_apply, Finset.prod_const_one, mul_one, inv_neg, inv_one, Units.val_neg, Units.val_one]
     ext
     simp
 
@@ -318,7 +318,7 @@ end LinearOrderedCommRing
 
 section LinearOrderedField
 
-variable {R : Type*} [LinearOrderedField R]
+variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {ι : Type*}
 
