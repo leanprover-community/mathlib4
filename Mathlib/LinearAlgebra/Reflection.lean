@@ -126,19 +126,28 @@ lemma bijOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) (h' : MapsTo (reflec
     BijOn (reflection h) Φ Φ :=
   (invOn_reflection_of_mapsTo h).bijOn h' h'
 
--- If `reflection` instead demanded a linear form `f` such that `f x = 1` rather than `f x = 2`,
--- (and was thus defined as `y ↦ y - (2 * f y) • x`) then we could avoid `Invertible (2 : R)` here.
-lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem [Invertible (2 : R)] (h : f x = 2)
+lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem (h : f x = 2)
     (p : Submodule R M) (hx : x ∈ p) :
     p ∈ End.invtSubmodule (reflection h) := by
   suffices ∀ y ∈ p, reflection h y ∈ p from
     (End.mem_invtSubmodule _).mpr fun y hy ↦ by simpa using this y hy
   intro y hy
-  set z := (2 : R) • y - f y • x with hz₀
-  have hz₁ : z ∈ p := sub_mem (p.smul_mem _ hy) (p.smul_mem _ hx)
-  have hz₂ : (2 : R) • reflection h y = z - f y • x := by simp only [reflection_apply, hz₀]; module
-  rw [← p.smul_mem_iff'' (r := (2 : R)), hz₂]
-  exact sub_mem hz₁ <| p.smul_mem _ hx
+  simpa only [reflection_apply, p.sub_mem_iff_right hy] using p.smul_mem (f y) hx
+
+lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M]
+    (h : f x = 2) {p : Submodule R M} (hp : Disjoint p (R ∙ x)) :
+    p ∈ End.invtSubmodule (reflection h) ↔ p ≤ LinearMap.ker f := by
+  refine ⟨fun h' y hy ↦ ?_, fun h' y hy ↦ ?_⟩
+  · have hx : x ≠ 0 := by rintro rfl; exact two_ne_zero (α := R) <| by simp [← h]
+    suffices f y • x ∈ p by
+      have aux : f y • x ∈ p ⊓ (R ∙ x) := ⟨this, Submodule.mem_span_singleton.mpr ⟨f y, rfl⟩⟩
+      rw [hp.eq_bot, Submodule.mem_bot, smul_eq_zero] at aux
+      exact aux.resolve_right hx
+    specialize h' hy
+    simp only [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply] at h'
+    simpa using p.sub_mem h' hy
+  · have hy' : f y = 0 := by simpa using h' hy
+    simpa [reflection_apply, hy']
 
 /-! ### Powers of the product of two reflections
 

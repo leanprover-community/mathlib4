@@ -48,7 +48,7 @@ We could instead define this matroid to always be 'smaller' than `M` by setting
 
 This makes it possible to actually restrict a matroid 'upwards'; for instance, if `M : Matroid α`
 satisfies `M.E = ∅`, then `M ↾ Set.univ` is the matroid on `α` whose ground set is all of `α`,
-where the empty set is only the independent set.
+where the empty set is the only independent set.
 (In general, elements of `R \ M.E` are all 'loops' of the matroid `M ↾ R`;
 see `Matroid.loops` and `Matroid.restrict_loops_eq'` for a precise version of this statement.)
 This is mathematically strange, but is useful for API building.
@@ -61,7 +61,7 @@ can often be automatically provided by `aesop_mat`.
 
 We define the restriction order `≤r` to give a `PartialOrder` instance on the type synonym
 `Matroidᵣ α` rather than `Matroid α` itself, because the `PartialOrder (Matroid α)` instance is
-reserved for the more mathematically important 'minor' order.
+reserved for the more mathematically important 'minor' order; see `Matroid.IsMinor`.
 -/
 
 assert_not_exists Field

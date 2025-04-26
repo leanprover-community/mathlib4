@@ -1166,25 +1166,11 @@ is a subset of `ℝ`. -/
 @[mk_iff] class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
   isReal : ∀ v : InfinitePlace K, v.IsReal
 
-variable (F : Type*) {K : Type*} [Field K] [NumberField K]
+variable {K : Type*} [Field K] [NumberField K]
 
 theorem nrComplexPlaces_eq_zero_iff :
     nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
-  classical
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
-
-variable (K) in
-theorem IsTotally.of_algebra [IsTotallyReal K] [Field F] [NumberField F] [Algebra F K]  :
-    IsTotallyReal F where
-  isReal w := by
-    obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
-    exact IsReal.comap _ (IsTotallyReal.isReal W)
-
-instance [IsTotallyReal K] (F : IntermediateField ℚ K)  :
-    IsTotallyReal F := IsTotally.of_algebra F K
-
-instance [IsTotallyReal K] (F : Subfield K) :
-    IsTotallyReal F := IsTotally.of_algebra F K
 
 variable (K)
 
@@ -1207,9 +1193,7 @@ end TotallyRealField
 section TotallyComplexField
 
 /-
-
 ## Totally complex number fields
-
 -/
 
 open InfinitePlace
@@ -1224,7 +1208,6 @@ variable {K : Type*} [Field K] [NumberField K]
 
 theorem nrRealPlaces_eq_zero_iff :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
-  classical
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyComplex_iff]
 
 variable (K)
