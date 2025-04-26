@@ -9,24 +9,7 @@ import Mathlib.Data.Finset.Functor
 import Batteries.Control.AlternativeMonad
 
 /-!
-# Laws for Monads with Failure
-
-Definitions for monads that also have an `Alternative` instance while sharing the underlying
-`Applicative` instance, and a class `LawfulAlternative` for types where the failure and monad
-structures are compatible in a natural way. More specifically they satisfy:
-
-* `failure >>= g = failure`
-* `x <|> failure = x`
-* `failure <|> y = y`
-
-`Option`/`OptionT` are the most basic examples, but transformers like `StateT` also preserve
-the lawfullness of this on the underlying monad.
-
-We also include an additional condition for `mapConst`, as it is not necessarilly equal to the
-composition of map with a constant function, and is used in definitions like `success`.
-The law `do _ ← x; failure = failure` is true for monads like `Option` and `List` that don't
-have any "side effects" to execution, but not for something like `OptionT` on some monads,
-so we don't include this condition.
+# Instances of `LawfulAlternative`
 
 ## Tags
 
@@ -35,20 +18,6 @@ monad, alternative, failure
 
 universe u v w
 
-
-namespace StateT
-
-variable {m : Type u → Type v} [AlternativeMonad m] {σ : Type u}
-
-instance  [LawfulMonad m] [LawfulAlternative m] : LawfulAlternative (StateT σ m) where
-  map_failure _ := StateT.ext fun _ => by rw [map_failure _]
-  failure_seq _ := StateT.ext fun _ => by rw [failure_seq _]
-  orElse_failure _ := StateT.ext fun _ => orElse_failure _
-  failure_orElse _ := StateT.ext fun _ => failure_orElse _
-  orElse_assoc _ _ _ := StateT.ext fun _ => orElse_assoc _ _ _
-  map_orElse _ _ _ := StateT.ext fun _ => by rw [map_orElse _ _ _]
-
-end StateT
 
 namespace Finset
 
