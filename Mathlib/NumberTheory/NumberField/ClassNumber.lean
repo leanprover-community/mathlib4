@@ -97,8 +97,7 @@ namespace Rat
 open NumberField
 
 theorem classNumber_eq : NumberField.classNumber ℚ = 1 :=
-  classNumber_eq_one_iff.mpr <| by
-    convert IsPrincipalIdealRing.of_surjective
-      (Rat.ringOfIntegersEquiv.symm : ℤ →+* 𝓞 ℚ) Rat.ringOfIntegersEquiv.symm.surjective
+  classNumber_eq_one_iff.mpr <| IsPrincipalIdealRing.of_surjective
+    Rat.ringOfIntegersEquiv.symm Rat.ringOfIntegersEquiv.symm.surjective
 
 end Rat
