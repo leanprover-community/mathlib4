@@ -19,12 +19,13 @@ open scoped Convex
 section SeminormedAddCommGroup
 
 variable {𝕜 E F : Type*}
-  [SeminormedAddCommGroup E] [NormedSpace ℝ E]
-  [SeminormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedField 𝕜]
+  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 @[simp]
 lemma LinearIsometryEquiv.strictConvex_preimage {s : Set F} (e : E ≃ₗᵢ[𝕜] F) :
-    StrictConvex ℝ (e ⁻¹' s) ↔ StrictConvex ℝ s :=
+    StrictConvex 𝕜 (e ⁻¹' s) ↔ StrictConvex 𝕜 s :=
   ⟨fun h ↦ LeftInverse.preimage_preimage e.right_inv s ▸
     h.linear_preimage e.symm.toLinearIsometry.toLinearMap e.symm.continuous e.symm.injective,
     fun h ↦ h.linear_preimage e.toLinearIsometry.toLinearMap e.continuous e.injective⟩
