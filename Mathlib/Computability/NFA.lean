@@ -237,37 +237,12 @@ lemma union_biUnion_spec
     (⋃ s, ⋃ (_ : Sum.rec S1 S2 s), stepSum M1 M2 s x)
     =
     {s' | Sum.rec
-      (fun s1' ↦ (⋃ (s1 : σ1) (_ : s1 ∈ S1), M1.step s1 x) s1')
-      (fun s2' ↦ (⋃ (s2 : σ2) (_ : s2 ∈ S2), M2.step s2 x) s2') s'} := by
+      (fun s1' ↦ s1' ∈ ⋃ (s1 ∈ S1), M1.step s1 x)
+      (fun s2' ↦ s2' ∈ ⋃ (s2 ∈ S2), M2.step s2 x) s'} := by
   ext s'
   rw [Set.mem_iUnion, Set.mem_setOf]
   dsimp [stepSum]
-  cases s'
-  case inl s1' =>
-    simp
-    rw [←Set.mem_def (a := s1') (s := (⋃ (s1 : σ1) (_ : s1 ∈ S1), M1.step s1 x))]
-    rw [Set.mem_iUnion]
-    constructor
-    · rintro ⟨s1, hs1, h1⟩
-      exists s1
-      rw [Set.mem_iUnion]
-      exists hs1
-    · rintro ⟨s1, hs1⟩
-      rw [Set.mem_iUnion] at hs1
-      rcases hs1 with ⟨hs1,h1⟩
-      exists s1
-  case inr s2' =>
-    simp
-    rw [←Set.mem_def (a:=s2') (s:=(⋃ (s2 : σ2) (_ : s2 ∈ S2), M2.step s2 x)), Set.mem_iUnion]
-    constructor
-    · rintro ⟨s2, hs2, h2⟩
-      exists s2
-      rw [Set.mem_iUnion]
-      exists hs2
-    · rintro ⟨s2, hs2⟩
-      rw [Set.mem_iUnion] at hs2
-      rcases hs2 with ⟨hs2,h2⟩
-      exists s2
+  cases s' <;> simp <;> tauto
 
 lemma union_start_spec {M1 : NFA α σ1} {M2 : NFA α σ2} :
     (union M1 M2).start = { s : σ1 ⊕ σ2 | s.casesOn M1.start M2.start } := by rfl
@@ -289,6 +264,8 @@ lemma union_acceptsFrom
     simp [Set.mem_def]
   case cons x xs ih =>
     simp [List.foldl_cons, List.foldl_cons, List.foldl_cons, ←ih, union_biUnion_spec]
+    simp [←Set.mem_def (s:=⋃ (s : σ1) (_ : s ∈ S1), M1.step s x)]
+    simp [←Set.mem_def (s:=⋃ (s : σ2) (_ : s ∈ S2), M2.step s x)]
 
 theorem union_accepts {M1 : NFA α σ1} {M2 : NFA α σ2} :
     accepts (union M1 M2) = M1.accepts ∪ M2.accepts := by
@@ -329,18 +306,9 @@ lemma intersect_biUnion_spec
       s'.1 ∈ (⋃ s1 ∈ S1, M1.step s1 a) ∧
       s'.2 ∈ (⋃ s2 ∈ S2, M2.step s2 a) } := by
   ext ⟨s1', s2'⟩
-  rw [Set.mem_setOf, Set.mem_iUnion₂, Set.mem_iUnion₂,]
+  rw [Set.mem_setOf, Set.mem_iUnion₂, Set.mem_iUnion₂]
   simp [stepProd]
-  constructor
-  · rintro ⟨s1, h1, s2, ⟨hS1, hS2⟩, h2⟩
-    constructor
-    · exists s1
-    · exists s2
-  · rintro ⟨⟨s1, hS1, h1⟩, ⟨s2, hS2, h2⟩⟩
-    exists s1
-    constructor
-    · assumption
-    · exists s2
+  tauto
 
 lemma intersect_acceptsFrom
   {S1 : Set σ1} {S2 : Set σ2} {M1 : NFA α σ1} {M2 : NFA α σ2} :
