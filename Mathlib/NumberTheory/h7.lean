@@ -100,6 +100,22 @@ theorem order_inf_if_zero: ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f
   · exact trivial
   · exact analyticAt_const
 
+lemma analytic_iter_deriv (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z) :
+  ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z := by
+  intro z
+  have H : AnalyticAt ℂ (iteratedDeriv 0 f) z := hf z
+  simp only at H
+  have := AnalyticAt.iterated_deriv (hf z) k
+  unfold deriv at this
+  unfold iteratedDeriv
+  conv => enter [2]; ext x;  rw [← iteratedDeriv_eq_iteratedFDeriv]
+  simp [iteratedDeriv] at this
+  have h : ((fun f x ↦ deriv f x)^[k] f) = (iteratedDeriv k f) := by {
+    exact Eq.symm iteratedDeriv_eq_iterate
+  }
+  rw [← h]
+  exact this
+
 lemma eq_order_sub_one (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
  (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z) :
   ∀ z : ℂ, AnalyticAt.order (hfdev z) = AnalyticAt.order (hf z) - 1 := by {
@@ -118,27 +134,33 @@ lemma iterated_deriv_eq_zero_iff_order_eq_n :
     obtain ⟨H1, H2⟩ := H
     refine (AnalyticAt.order_eq_nat_iff (hf z)).mpr ?_
     sorry
-  · sorry
-
+  · intros H
+    constructor
+    · intros k hk
+      sorry
+    · sorry
 
 lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ (f : ℂ → ℂ) z₀ (hf : ∀ z, AnalyticAt ℂ f z),
  (∀ k < n, iteratedDeriv k f z₀ = 0) → n ≤ AnalyticAt.order (hf z₀) := by sorry
 
--- lemma analytic_iter_deriv_eq_order_sub_one (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z) :
---   ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z := by
---   intro z
---   induction' k with k ih
---   · simp only [iteratedDeriv_zero]
---     exact hf z
---   · unfold iteratedDeriv at ih
---     have := AnalyticAt.iterated_deriv (hf z) k
---     unfold deriv at this
---     unfold iteratedDeriv
 
 
-  -- intro z
-  -- have : AnalyticOnNhd ℂ f univ := by {exact fun x a ↦ hf x}
-  -- have := AnalyticAt.iterated_deriv (hf z) k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 lemma cexp_mul : deriv (fun x => cexp (c * x)) x = c * cexp (c * x) := by
@@ -1120,7 +1142,8 @@ lemma iteratedDeriv_vanishes :
   rw [mul_sum]
   simp only [zpow_natCast, mul_zero]
   conv => enter [1,2]; ext x; rw [mul_assoc, mul_comm, mul_assoc];
-  conv => enter [1,2]; ext x; rw [sys_coeffs_bar α β htriv K σ α' β' γ' habc q u x]; rw [← map_mul]
+  --conv => enter [1,2]; ext x; rw [sys_coeffs_bar α β htriv K σ α' β' γ' habc q u x];
+    --rw [← map_mul]
   have hMt0 :=
     (applylemma82 α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).choose_spec.2.1
   unfold A at hMt0
@@ -1139,8 +1162,8 @@ lemma iteratedDeriv_vanishes :
       norm_cast
       exact c_coeffs_neq_zero K α' β' γ' q
      }
-  rw [this]
-  rw [mul_sum]
+  --rw [this]
+  --rw [mul_sum]
   have h0 : ∑ x, ⟨(c_coeffs K α' β' γ' q) * sys_coeffs K α' β' γ' q x u, (by {
     refine (mem_integralClosure_iff ℤ K).mpr ?_
     have := c₁IsInt K α' β' γ' q u x hq0 h2mq
@@ -1302,7 +1325,7 @@ lemma iteratedDeriv_vanishes :
 
 /-need this for order-/
 lemma R_analyt_at_point (point : ℕ) :
- AnalyticAt ℂ (R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq  t) point := by
+ AnalyticAt ℂ (R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t) point := by
   apply Differentiable.analyticAt (sum fun _ _ =>
   (differentiable_const _).mul
     (differentiable_exp.comp ((differentiable_const _).mul differentiable_id')))
@@ -1663,7 +1686,6 @@ lemma eq5 :
 --     (house (α') ^ (2*m K^2)) * house (γ') ^(2*m K^2))
 
 
-
 def c₆ : ℝ := sorry
 
 def c₇ : ℝ := sorry
@@ -1839,6 +1861,20 @@ lemma eq6 :
   · sorry
 }
 
+lemma for_def_of_S (hl : l ∈ Finset.range (m K)) :
+  let R := R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t
+  let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq;
+  ∃ (R' : ℂ → ℂ), (∀ z, AnalyticAt ℂ R' z) ∧ ∀ x, R x = (x - l : ℂ) ^ r * R' x := sorry
+
+
+
+
+
+
+
+
+
+
 def S : ℂ → ℂ := fun z => by
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let l₀ : ℕ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
@@ -1872,8 +1908,7 @@ lemma holS :
         intros x HX
         rw [sub_eq_zero] at HX
         sorry
-    · sorry
-}
+    · sorry}
 
 lemma hcauchy :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
@@ -1912,6 +1947,7 @@ lemma hcauchy :
     apply holS
     simp only [mem_diff, Metric.mem_ball, dist_zero_right, mem_singleton_iff]
     simp only [Metric.mem_closedBall, dist_zero_right] at hx
+    rw [le_iff_eq_or_lt] at hx
     sorry
   · apply holS
 
@@ -1953,7 +1989,7 @@ lemma abs_R :
           * ‖cexp (_root_.ρ α β q t * z)‖) := ?_
        _ ≤ ∑ t : Fin (q*q), ((c₄)^(n K q : ℝ) * (n K q) ^((1/2)*(n K q +1)) *
          (Real.exp ((q+q*(norm β))* m K *(1+r/q))*(norm α))) := ?_
-       _ ≤ (q^2) * ((c₄)^(n K q : ℝ) * (n K q) ^((1/2)*(n K q +1))*(c₉)^(r+q)) := ?_
+       _ ≤ (q*q) * ((c₄)^(n K q : ℝ) * (n K q) ^((1/2)*(n K q +1))*(c₉)^(r+q)) := ?_
        _ ≤ (c₁₀)^r * r^(1/2*(r+3)) := ?_
   · unfold R
     unfold _root_.R
@@ -1963,9 +1999,13 @@ lemma abs_R :
   · apply sum_le_sum
     intros i hi
     apply mul_le_mul
-    · have := fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+    · have lemma82 := fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
       unfold c₄
-      sorry
+      have : house ((algebraMap (𝓞 K) K)
+        (_root_.η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t)) =
+        ‖σ ↑(_root_.η α β hirr htriv K σ hd α' β' γ' habc q u i hq0 h2mq i)‖ := sorry
+      rw [← this]
+      exact lemma82
     · have : ∀ i, ‖cexp (_root_.ρ α β q i * z)‖ ≤
          (Real.exp ((q+q*(norm β))* m K *(1+r/q))*(norm α)) := sorry
       apply this
@@ -1977,7 +2017,6 @@ lemma abs_R :
   · simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero,
     mul_one, sum_const, card_univ,
     Fintype.card_fin, nsmul_eq_mul, Nat.cast_mul]
-    rw [sq]
     apply mul_le_mul
     · simp only [le_refl]
     · apply mul_le_mul
@@ -2125,9 +2164,10 @@ lemma blah :
             norm (∏ k ∈ Finset.range ((m K)) \
                 {(l₀)}, ((l₀ - k) / (z - k)) ^ r)) := ?_
 
-      _ ≤ r.factorial * ((c₁₀)^r * r^((r+3)/2) * (c₁₁)^r * (q/r)^(m K *r)) := ?_
+      _ ≤ r.factorial * ((c₁₀)^r * r^(1/2*(r+3)) * (c₁₁)^r * (q/r)^(m K *r)) := ?_
 
       _ ≤ (c₁₂)^r*((3-m K)/2 + 3 /2) := ?_
+
   · unfold S
     unfold _root_.S
     rfl
@@ -2139,10 +2179,19 @@ lemma blah :
       pow_eq_zero_iff', norm_eq_zero, ne_eq]
     left
     exact Eq.symm (Nat.cast_comm r.factorial ‖R z‖)
-  · --simp only [one_div, norm_inv, norm_pow, norm_prod, Complex.norm_div]
-    apply mul_le_mul
+  · apply mul_le_mul
     · simp only [le_refl]
-    · sorry
+    · rw [mul_assoc]
+      rw [mul_assoc]
+      · apply mul_le_mul
+        · have : norm (R z) ≤ (c₁₀)^r * r^(1/2*(r+3)) :=
+          abs_R α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+          exact this
+        · sorry
+        · apply mul_nonneg
+          · apply norm_nonneg
+          · apply norm_nonneg
+        · sorry
     · apply mul_nonneg
       · apply mul_nonneg
         · simp only [norm_nonneg]
@@ -2202,16 +2251,15 @@ lemma use6and8 :
 
   intros r l₀ S
 
-  have : ((h K -1) * (r + 3/2) + (3-m K) * r * 1/2 + 3/2) =
+  have : (((h K -1) : ℤ) * (r + 3/2 : ℤ) + (3-m K) * r * 1/2 + 3/2) =
     ((-r : ℤ)/2 + 3 * h K/2) := by {
       sorry
     }
 
-  calc _ ≤ ((c₁₄)^r) * r^ ((h K -1) * (r + 3/2) + (3-m K) * r * 1/2 + 3/2) := ?_
+  calc _ ≤ ((c₁₄)^r) * r^ ((h K -1) * (r + 3/2 : ℤ) + (3-m K) * r * 1/2 + 3/2) := ?_
        _ = ((c₁₄)^r) * r^ ((-r : ℤ)/2 + 3 * h K/2) := ?_
   · sorry
   · rw [← this]
-    sorry
 
 def c₁₅ : ℝ := c₁₄ * c₅ K α' β' γ' q
 
@@ -2220,7 +2268,8 @@ theorem main : ∃ r ≥ n K q, r ^ ((r - 3 * (h K)) / 2) ≥ c₁₅ K α' β' 
 
   use (r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)
   constructor
-  sorry
+  · have := rgeqn α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+    sorry
   --use r_geq_n K α β hirr htriv σ hd α' β' γ' habc q u t hq0 h2mq
   sorry
 
@@ -2229,7 +2278,7 @@ lemma use5 :
   let l₀ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let S := S α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
 
-  r^(r/2 - 3* h K /2) < c₁₅ K α' β' γ' q ^r := by
+  r^((r - 3 * (h K)) / 2) < c₁₅ K α' β' γ' q ^r := by
 
   intros r l₀ S
 
