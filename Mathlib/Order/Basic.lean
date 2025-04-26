@@ -227,27 +227,27 @@ lemma ge_imp_eq_iff_le_imp_le : (a ≤ b → a = b) ↔ (a ≤ b → b ≤ a) wh
 
 namespace LE.le
 
-@[order_dual lt_iff_neOD]
+-- @[order_dual lt_iff_neOD]
 theorem lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b :=
   ⟨fun h ↦ h.ne, h.lt_of_ne⟩
 
-@[order_dual gt_iff_neOD]
+-- @[order_dual gt_iff_neOD]
 theorem gt_iff_ne (h : a ≤ b) : a < b ↔ b ≠ a :=
   ⟨fun h ↦ h.ne.symm, h.lt_of_ne'⟩
 
-@[order_dual not_lt_iff_eqOD]
+-- @[order_dual not_lt_iff_eqOD]
 theorem not_lt_iff_eq (h : a ≤ b) : ¬a < b ↔ a = b :=
   h.lt_iff_ne.not_left
 
-@[order_dual not_gt_iff_eqOD]
+-- @[order_dual not_gt_iff_eqOD]
 theorem not_gt_iff_eq (h : a ≤ b) : ¬a < b ↔ b = a :=
   h.gt_iff_ne.not_left
 
-@[order_dual le_iff_eqOD]
+-- @[order_dual le_iff_eqOD]
 theorem le_iff_eq (h : a ≤ b) : b ≤ a ↔ b = a :=
   ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
 
-@[order_dual ge_iff_eqOD]
+-- @[order_dual ge_iff_eqOD]
 theorem ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b :=
   ⟨h.antisymm, Eq.ge⟩
 
@@ -260,14 +260,14 @@ protected theorem Decidable.le_iff_eq_or_lt [DecidableLE α] : a ≤ b ↔ a = b
 @[order_dual le_iff_eq_or_ltOD]
 theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans or_comm
 
-@[order_dual lt_iff_le_and_neOD]
+-- @[order_dual lt_iff_le_and_neOD]
 theorem lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 
-@[order_dual eq_iff_not_lt_of_leOD]
+-- @[order_dual eq_iff_not_lt_of_leOD]
 lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := by simp [hab, lt_iff_le_and_ne]
 
-@[order_dual eq_iff_not_ltOD]
+-- @[order_dual eq_iff_not_ltOD]
 alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]

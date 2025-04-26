@@ -43,7 +43,7 @@ The inverse morphism is bundled.
 
 See also `CategoryTheory.Core` for the category with the same objects and isomorphisms playing
 the role of morphisms. -/
-@[stacks 0017]
+@[stacks 0017, order_dual self (reorder := 3 4)]
 structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   /-- The forward direction of an isomorphism. -/
   hom : X ⟶ Y
@@ -56,6 +56,12 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   inv_hom_id : inv ≫ hom = 𝟙 Y := by aesop_cat
 
 attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
+attribute [order_dual self (reorder := 3 4, 7 8)] Iso.mk
+attribute [order_dual self (reorder := 3 4)] Iso.hom Iso.inv
+attribute [order_dual existing (reorder := 3 4) inv_hom_id] Iso.hom_inv_id
+
+-- TODO: deal with projections in `order_dual`
+-- attribute [order_dual bla] Iso.hom_inv_id_assoc
 
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
@@ -64,11 +70,10 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 namespace Iso
 
-@[ext]
+@[ext, order_dual self (reorder := 3 4)]
 theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   suffices α.inv = β.inv by
     cases α
-    cases β
     cases w
     cases this
     rfl
@@ -78,35 +83,37 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
     _     = β.inv                    := by rw [Iso.inv_hom_id, Category.id_comp]
 
 /-- Inverse isomorphism. -/
-@[symm]
+@[symm, order_dual self (reorder := 3 4)]
 def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
 
-@[simp]
+@[simp, order_dual self (reorder := 3 4)]
 theorem symm_hom (α : X ≅ Y) : α.symm.hom = α.inv :=
   rfl
 
-@[simp]
+@[simp, order_dual self (reorder := 3 4)]
 theorem symm_inv (α : X ≅ Y) : α.symm.inv = α.hom :=
   rfl
 
-@[simp]
+@[simp, order_dual self (reorder := 3 4, 7 8)]
 theorem symm_mk {X Y : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id) :
     Iso.symm { hom, inv, hom_inv_id := hom_inv_id, inv_hom_id := inv_hom_id } =
       { hom := inv, inv := hom, hom_inv_id := inv_hom_id, inv_hom_id := hom_inv_id } :=
   rfl
 
-@[simp]
+@[simp, order_dual self (reorder := 3 4)]
 theorem symm_symm_eq {X Y : C} (α : X ≅ Y) : α.symm.symm = α := rfl
 
+@[order_dual self (reorder := 3 4)]
 theorem symm_bijective {X Y : C} : Function.Bijective (symm : (X ≅ Y) → _) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm_eq, symm_symm_eq⟩
 
-@[simp]
+@[simp, order_dual self (reorder := 3 4)]
 theorem symm_eq_iff {X Y : C} {α β : X ≅ Y} : α.symm = β.symm ↔ α = β :=
   symm_bijective.injective.eq_iff
 
+@[order_dual self (reorder := 3 4)]
 theorem nonempty_iso_symm (X Y : C) : Nonempty (X ≅ Y) ↔ Nonempty (Y ≅ X) :=
   ⟨fun h => ⟨h.some.symm⟩, fun h => ⟨h.some.symm⟩⟩
 
@@ -124,26 +131,26 @@ theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 
 /-- Composition of two isomorphisms -/
-@[simps]
+@[simps, order_dual self (reorder := 3 5, 6 7)]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
 
-@[simps]
+@[simps, order_dual instTransIsoOP]
 instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
   trans := trans
 
 /-- Notation for composition of isomorphisms. -/
 infixr:80 " ≪≫ " => Iso.trans -- type as `\ll \gg`.
 
-@[simp]
+@[simp, order_dual self (reorder := 3 5, 6 10, 7 11, 8 13, 9 12, 14 15)]
 theorem trans_mk {X Y Z : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id)
     (hom' : Y ⟶ Z) (inv' : Z ⟶ Y) (hom_inv_id') (inv_hom_id') (hom_inv_id'') (inv_hom_id'') :
     Iso.trans ⟨hom, inv, hom_inv_id, inv_hom_id⟩ ⟨hom', inv', hom_inv_id', inv_hom_id'⟩ =
      ⟨hom ≫ hom', inv' ≫ inv, hom_inv_id'', inv_hom_id''⟩ :=
   rfl
 
-@[simp]
+@[simp, order_dual self (reorder := 3 5, 6 7)]
 theorem trans_symm (α : X ≅ Y) (β : Y ≅ Z) : (α ≪≫ β).symm = β.symm ≪≫ α.symm :=
   rfl
 
@@ -152,28 +159,27 @@ theorem trans_assoc {Z' : C} (α : X ≅ Y) (β : Y ≅ Z) (γ : Z ≅ Z') :
     (α ≪≫ β) ≪≫ γ = α ≪≫ β ≪≫ γ := by
   ext; simp only [trans_hom, Category.assoc]
 
-@[simp]
+@[order_dual existing trans_assoc]
+theorem trans_assoc_rev {Z' : C} (γ : Y ≅ X) (β : Z ≅ Y) (α : Z' ≅ Z) :
+    α ≪≫ β ≪≫ γ = (α ≪≫ β) ≪≫ γ := (trans_assoc α β γ).symm
+
+@[order_dual (attr := simp) trans_refl]
 theorem refl_trans (α : X ≅ Y) : Iso.refl X ≪≫ α = α := by ext; apply Category.id_comp
 
-@[simp]
-theorem trans_refl (α : X ≅ Y) : α ≪≫ Iso.refl Y = α := by ext; apply Category.comp_id
-
-@[simp]
+@[order_dual (attr := simp) self_symm_id]
 theorem symm_self_id (α : X ≅ Y) : α.symm ≪≫ α = Iso.refl Y :=
   ext α.inv_hom_id
 
-@[simp]
-theorem self_symm_id (α : X ≅ Y) : α ≪≫ α.symm = Iso.refl X :=
-  ext α.hom_inv_id
-
-@[simp]
+@[order_dual (attr := simp) self_symm_id_revAssoc]
 theorem symm_self_id_assoc (α : X ≅ Y) (β : Y ≅ Z) : α.symm ≪≫ α ≪≫ β = β := by
   rw [← trans_assoc, symm_self_id, refl_trans]
 
-@[simp]
+@[order_dual (attr := simp) symm_self_id_revAssoc]
 theorem self_symm_id_assoc (α : X ≅ Y) (β : X ≅ Z) : α ≪≫ α.symm ≪≫ β = β := by
   rw [← trans_assoc, self_symm_id, refl_trans]
 
+-- problem: proof uses `assoc` lemma, which isn't tagged.
+-- @[order_dual comp_inv_eq]
 theorem inv_comp_eq (α : X ≅ Y) {f : X ⟶ Z} {g : Y ⟶ Z} : α.inv ≫ f = g ↔ f = α.hom ≫ g :=
   ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
 
