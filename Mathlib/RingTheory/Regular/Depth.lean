@@ -379,18 +379,14 @@ noncomputable def addEquivHomQuotientRegularExt {rs : List R} (hr : IsWeaklyRegu
         apply hn (M := M) (rs := rs.take n)
         · refine (RingTheory.Sequence.isWeaklyRegular_iff M _).mpr (fun i hi ↦ ?_)
           have : i < rs.length := lt_of_lt_of_le hi (List.length_take_le' n rs)
-          have h1 : (List.take n rs)[i] = rs[i] := List.getElem_take
-          have h2 : List.take i (List.take n rs) = List.take i rs := by
-            rw [List.take_take]
-            congr 1
-            simpa [inf_eq_left, ← Nat.lt_succ_iff, h'] using this
-          rw [h1, h2]
+          rw [List.getElem_take, List.take_take,
+            inf_eq_left.mpr (Nat.lt_succ_iff.mp (Nat.lt_of_lt_of_eq this h'))]
           exact (RingTheory.Sequence.isWeaklyRegular_iff M rs).mp hr _ _
         · intro _ h''
           exact h _ (List.mem_of_mem_take h'')
         · apply List.length_take_of_le
           simp [h']
-      rw [equiv.symm.toEquiv.subsingleton_congr]
+      rw [equiv.symm.subsingleton_congr]
       apply hom_subsingleton_of_mem_ann_isSMulRegular (r := rs[n])
       · exact (RingTheory.Sequence.isWeaklyRegular_iff M rs).mp hr ..
       · exact h _ <| List.getElem_mem _
