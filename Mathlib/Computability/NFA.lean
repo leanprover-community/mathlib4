@@ -125,7 +125,9 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
 
 section Closure
 
-/-! ### NFA Closure Properties -/
+/-! ### NFA Closure Properties:
+    Properties relating operations on NFAs to their
+    languages. -/
 
 section Reversal
 
