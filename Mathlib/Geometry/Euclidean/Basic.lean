@@ -363,6 +363,17 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
   rw [orthogonalProjection_eq_self_iff]
   exact p.2
 
+instance : HasOrthogonalProjection (⊤ : AffineSubspace ℝ P).direction := by
+  rw [direction_top]
+  infer_instance
+
+@[simp]
+theorem orthogonalProjection_top :
+    orthogonalProjection (⊤ : AffineSubspace ℝ P) = (topEquiv ℝ V P).symm := by
+  ext p
+  lift p to (⊤ : AffineSubspace ℝ P) using trivial
+  simp
+
 /-- Orthogonal projection is idempotent. -/
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
