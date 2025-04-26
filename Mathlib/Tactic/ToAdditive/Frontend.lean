@@ -1446,7 +1446,7 @@ Todo: A lot of abbreviations here are manual fixes and there might be room to
       improve the naming logic to reduce the size of `fixAbbreviation`.
 -/
 def orderDualFixAbbreviation : List String → List String
-  | x :: s                            => x :: additiveFixAbbreviation s
+  | x :: s                            => x :: orderDualFixAbbreviation s
   | []                                => []
 
 /--
