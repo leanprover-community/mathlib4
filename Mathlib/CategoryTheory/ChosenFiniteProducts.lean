@@ -33,7 +33,7 @@ avoid `attribute [local instance] ofChosenFiniteProducts` but instead turn on th
 `ofChosenFiniteProducts` declaration for that functor only.
 
 # Projects
-
+f
 - Construct an instance of chosen finite products in the category of affine scheme, using
   the tensor product.
 - Construct chosen finite products in other categories appearing "in nature".
@@ -776,9 +776,11 @@ lemma μ_of_ChosenFiniteProducts (X Y : C) : μ F X Y = (prodComparisonIso F X Y
 omit [F.Monoidal] in
 /-- A finite-product-preserving functor between cartesian monoidal categories is monoidal.
 
+This is the variant where `F.OplaxMonoidal` is an argument instead.
+
 This is not made an instance because it would create a diamond for the monoidal structure on
 the identity and composition of functors. -/
-noncomputable def ofChosenFiniteProducts
+noncomputable def ofChosenFiniteProducts'
     (F : C ⥤ D) [PreservesFiniteProducts F] [F.OplaxMonoidal] : F.Monoidal :=
   .ofOplaxMonoidal F
 
@@ -786,11 +788,9 @@ attribute [local instance] Functor.OplaxMonoidal.ofChosenFiniteProducts in
 omit [F.Monoidal] in
 /-- A finite-product-preserving functor between cartesian monoidal categories is monoidal.
 
-This is the variant where `F.OplaxMonoidal` also comes from the cartesian monoidal structure.
-
 This is not made an instance because it would create a diamond for the monoidal structure on
 the identity and composition of functors. -/
-noncomputable def ofChosenFiniteProducts' (F : C ⥤ D) [PreservesFiniteProducts F] : F.Monoidal :=
+noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts F] : F.Monoidal :=
   .ofOplaxMonoidal F
 
 instance : Subsingleton F.Monoidal := (toOplaxMonoidal_injective F).subsingleton
@@ -824,20 +824,20 @@ variable [BraidedCategory C] [BraidedCategory D]
 
 /-- A finite-product-preserving functor between cartesian monoidal categories is braided.
 
+This is the variant where `F.Monoidal` is an argument instead.
+
 This is not made an instance because it would create a diamond for the braided structure on
 the identity and composition of functors. -/
-noncomputable def ofChosenFiniteProducts [F.Monoidal] : F.Braided where
+noncomputable def ofChosenFiniteProducts' [F.Monoidal] : F.Braided where
   braided X Y := by rw [← cancel_mono (Monoidal.μIso _ _ _).inv]; ext <;> simp [← F.map_comp]
 
-attribute [local instance] Functor.Monoidal.ofChosenFiniteProducts' in
+attribute [local instance] Functor.Monoidal.ofChosenFiniteProducts in
 /-- A finite-product-preserving functor between cartesian monoidal categories is braided.
-
-This is the variant where `F.Monoidal` also comes from the cartesian monoidal structure.
 
 This is not made an instance because it would create a diamond for the monoidal structure on
 the identity and composition of functors. -/
-noncomputable def ofChosenFiniteProducts' (F : C ⥤ D) [PreservesFiniteProducts F] : F.Braided :=
-  .ofChosenFiniteProducts F
+noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts F] : F.Braided :=
+  .ofChosenFiniteProducts' F
 
 instance : Subsingleton F.Braided := (Braided.toMonoidal_injective F).subsingleton
 

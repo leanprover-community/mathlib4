@@ -341,7 +341,7 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
           Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] }
   map f := F.mapMon.map f
 
-attribute [local instance] Monoidal.ofChosenFiniteProducts' in
+attribute [local instance] Monoidal.ofChosenFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
 @[simps]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where

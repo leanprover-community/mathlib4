@@ -32,7 +32,7 @@ noncomputable instance chosenFiniteProductsGrp : ChosenFiniteProducts Grp.{u} :=
 
 noncomputable instance : BraidedCategory Grp.{u} := ChosenFiniteProducts.braidedCategory
 
-noncomputable instance : (forget Grp.{u}).Braided := .ofChosenFiniteProducts' _
+noncomputable instance : (forget Grp.{u}).Braided := .ofChosenFiniteProducts _
 
 theorem tensorObj_eq (G H : Grp.{u}) : (G ⊗ H) = of (G × H) := rfl
 
@@ -62,7 +62,7 @@ noncomputable instance chosenFiniteProductsAddGrp : ChosenFiniteProducts AddGrp.
 
 noncomputable instance : BraidedCategory AddGrp.{u} := ChosenFiniteProducts.braidedCategory
 
-noncomputable instance : (forget AddGrp.{u}).Braided := .ofChosenFiniteProducts' _
+noncomputable instance : (forget AddGrp.{u}).Braided := .ofChosenFiniteProducts _
 
 theorem tensorObj_eq (G H : AddGrp.{u}) : (G ⊗ H) = of (G × H) := rfl
 
@@ -92,7 +92,7 @@ noncomputable instance chosenFiniteProductsCommGrp : ChosenFiniteProducts CommGr
 
 noncomputable instance : BraidedCategory CommGrp.{u} := ChosenFiniteProducts.braidedCategory
 
-noncomputable instance : (forget CommGrp.{u}).Braided := .ofChosenFiniteProducts' _
+noncomputable instance : (forget CommGrp.{u}).Braided := .ofChosenFiniteProducts _
 
 theorem tensorObj_eq (G H : CommGrp.{u}) : (G ⊗ H) = of (G × H) := rfl
 
@@ -117,7 +117,7 @@ attribute [local instance] chosenFiniteProductsAddCommGrp
 
 noncomputable instance : BraidedCategory AddCommGrp.{u} := ChosenFiniteProducts.braidedCategory
 
-noncomputable instance : (forget AddCommGrp.{u}).Braided := .ofChosenFiniteProducts' _
+noncomputable instance : (forget AddCommGrp.{u}).Braided := .ofChosenFiniteProducts _
 
 theorem tensorObj_eq (G H : AddCommGrp.{u}) : (G ⊗ H) = of (G × H) := rfl
 
