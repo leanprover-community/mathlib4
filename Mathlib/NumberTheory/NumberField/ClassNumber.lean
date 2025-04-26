@@ -69,6 +69,17 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     refine le_of_mul_le_mul_of_pos_left h_nm ?_
     exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero <| Ideal.absNorm_ne_zero_of_nonZeroDivisors J
 
+theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le
+    (h : ∀ I : (Ideal (𝓞 K))⁰, Ideal.absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
+        ((finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K|) →
+        Submodule.IsPrincipal (I : Ideal (𝓞 K))) :
+    IsPrincipalIdealRing (𝓞 K) := by
+  rw [← classNumber_eq_one_iff, classNumber, Fintype.card_eq_one_iff]
+  refine ⟨1, fun C ↦ ?_⟩
+  obtain ⟨I, rfl, hI⟩ := exists_ideal_in_class_of_norm_le C
+  rw [ClassGroup.mk0_eq_one_iff]
+  exact h _ hI
+
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ nrComplexPlaces K *
       ((finrank ℚ K) ^ (finrank ℚ K) / (finrank ℚ K).factorial)) ^ 2) :
@@ -76,15 +87,11 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
   have : 0 < finrank ℚ K := finrank_pos -- Lean needs to know that for positivity to succeed
   rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff₀' (by positivity),
     mul_inv, ← inv_pow, inv_div, inv_div, mul_assoc, Int.cast_abs] at h
-  rw [← classNumber_eq_one_iff, classNumber, Fintype.card_eq_one_iff]
-  refine ⟨1, fun C ↦ ?_⟩
-  obtain ⟨I, rfl, hI⟩ := exists_ideal_in_class_of_norm_le C
-  have : Ideal.absNorm I.1 = 1 := by
-    refine le_antisymm (Nat.lt_succ.mp ?_) (Nat.one_le_iff_ne_zero.mpr
-      (Ideal.absNorm_ne_zero_of_nonZeroDivisors I))
-    exact Nat.cast_lt.mp <| lt_of_le_of_lt hI h
-  rw [ClassGroup.mk0_eq_one_iff, Ideal.absNorm_eq_one_iff.mp this]
-  exact top_isPrincipal
+  refine RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le (fun I hI ↦ ?_)
+  convert top_isPrincipal
+  exact Ideal.absNorm_eq_one_iff.mp (le_antisymm (Nat.lt_succ.mp ((Nat.cast_lt (α := ℝ)).mp
+    (lt_of_le_of_lt hI h))) (Nat.one_le_iff_ne_zero.mpr
+    (Ideal.absNorm_ne_zero_of_nonZeroDivisors I)))
 
 end NumberField
 
