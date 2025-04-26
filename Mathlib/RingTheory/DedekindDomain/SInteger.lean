@@ -32,7 +32,7 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 ## References
 
  * [D Marcus, *Number Fields*][marcus1977number]
- * [J W S Cassels, A Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+ * [J W S Cassels, A Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
  * [J Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags

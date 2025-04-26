@@ -128,8 +128,6 @@ theorem nodupKeys_flatten {L : List (List (Sigma β))} :
   apply iff_of_eq; congr! with (l₁ l₂)
   simp [keys, disjoint_iff_ne, Sigma.forall]
 
-@[deprecated (since := "2024-10-15")] alias nodupKeys_join := nodupKeys_flatten
-
 theorem nodup_zipIdx_map_snd (l : List α) : (l.zipIdx.map Prod.snd).Nodup := by
   simp [List.nodup_range']
 

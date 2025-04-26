@@ -193,7 +193,7 @@ lemma deriv_cgf (h : v ∈ interior (integrableExpSet X μ)) :
   _ = μ[fun ω ↦ X ω * exp (v * X ω)] / mgf X μ v := by rw [deriv_mgf h]
 
 lemma deriv_cgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) :
-    deriv (cgf X μ) 0 = μ[X] / (μ Set.univ).toReal := by simp [deriv_cgf h]
+    deriv (cgf X μ) 0 = μ[X] / μ.real Set.univ := by simp [deriv_cgf h]
 
 lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
     iteratedDeriv 2 (cgf X μ) v
