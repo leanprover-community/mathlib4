@@ -177,8 +177,7 @@ def prodUnivManyImp {u : Level} {α : Q(Type u)} (inst : Q(CommMonoid $α)) (n :
     (f : Q(Fin $n → $α)) :
     MetaM <| (val : Q($α)) × Q(∏ i, $f i = $val) := do
   match n with
-  | 0 =>
-    return ⟨q((1 : $α)), q(Fin.prod_univ_zero $f)⟩
+  | 0 => return ⟨q((1 : $α)), q(Fin.prod_univ_zero $f)⟩
   | m + 1 =>
     let nezero : Q(NeZero ($m + 1)) := q(⟨Nat.succ_ne_zero _⟩)
     let val ← makeRHS (m + 1) f nezero (m + 1)
@@ -191,8 +190,7 @@ where
     (k : ℕ) : MetaM Q($α) := do
   match k with
   | 0 => failure
-  | 1 =>
-    pure q($f 0)
+  | 1 => pure q($f 0)
   | m + 1 =>
     let pre ← makeRHS n f nezero m
     let mRaw : Q(ℕ) := mkRawNatLit m
@@ -211,8 +209,45 @@ simproc_decl prod_univ_many (Finset.prod (α := Fin _) Finset.univ _) := .ofQ fu
       return .visit {expr := res, proof? := pf}
   | _, _ => return .continue
 
+/-- Implementation of the `prod_univ_many` simproc. -/
+def sumUnivManyImp {u : Level} {α : Q(Type u)} (inst : Q(AddCommMonoid $α)) (n : ℕ)
+    (f : Q(Fin $n → $α)) :
+    MetaM <| (val : Q($α)) × Q(∑ i, $f i = $val) := do
+  match n with
+  | 0 => return ⟨q((0 : $α)), q(Fin.sum_univ_zero $f)⟩
+  | m + 1 =>
+    let nezero : Q(NeZero ($m + 1)) := q(⟨Nat.succ_ne_zero _⟩)
+    let val ← makeRHS (m + 1) f nezero (m + 1)
+    let _ : $val =Q FinVec.sum $f := ⟨⟩
+    let pf := q(FinVec.sum_eq $f |>.symm)
+    return ⟨val, pf⟩
+where
+  /-- Creates the expression `f 0 * f 1 * ... * f (n - 1)`. -/
+  makeRHS (n : ℕ) (f : Q(Fin $n → $α)) (nezero : Q(NeZero $n))
+    (k : ℕ) : MetaM Q($α) := do
+  match k with
+  | 0 => failure
+  | 1 => pure q($f 0)
+  | m + 1 =>
+    let pre ← makeRHS n f nezero m
+    let mRaw : Q(ℕ) := mkRawNatLit m
+    -- without explicit OfNat.ofNat we get `f ↑(2 : ℕ)` instead of `f (2 : Fin n)`
+    pure q($pre + $f (OfNat.ofNat $mRaw))
+
+/-- Rewrites `∑ (i : Fin n), f i` as `f 0 + f 1 * ... + f (n - 1)`. -/
+simproc_decl sum_univ_many (Finset.sum (α := Fin _) Finset.univ _) := .ofQ fun u _ e => do
+  match u, e with
+  | .succ _, ~q(@Finset.sum (Fin $n) _ $inst Finset.univ $f) => do
+    match (generalizing := false) n.nat? with
+    | .none =>
+      return .continue
+    | .some nVal =>
+      let ⟨res, pf⟩ ← ProdUnivMany.sumUnivManyImp inst nVal f
+      return .visit {expr := res, proof? := pf}
+  | _, _ => return .continue
+
 end ProdUnivMany
 
-export ProdUnivMany (prod_univ_many)
+export ProdUnivMany (prod_univ_many sum_univ_many)
 
 end Fin
