@@ -1246,13 +1246,13 @@ section Group
 variable {α : Type*} [Group α] {n : ℕ}
 
 -- TODO: Without the `existing`, `to_additive` chokes on `Inv (ZMod n)`.
-@[to_additive (attr := simp) existing nsmul_zmod_val_inv_nsmul]
+@[to_additive existing (attr := simp) nsmul_zmod_val_inv_nsmul]
 lemma pow_zmod_val_inv_pow (hn : (Nat.card α).Coprime n) (a : α) :
     (a ^ (n⁻¹ : ZMod (Nat.card α)).val) ^ n = a := by
   rw [← pow_mul', ← pow_mod_natCard, ← ZMod.val_natCast, Nat.cast_mul, ZMod.mul_val_inv hn.symm,
     ZMod.val_one_eq_one_mod, pow_mod_natCard, pow_one]
 
-@[to_additive (attr := simp) existing zmod_val_inv_nsmul_nsmul]
+@[to_additive existing (attr := simp) zmod_val_inv_nsmul_nsmul]
 lemma pow_pow_zmod_val_inv (hn : (Nat.card α).Coprime n) (a : α) :
     (a ^ n) ^ (n⁻¹ : ZMod (Nat.card α)).val = a := by rw [pow_right_comm, pow_zmod_val_inv_pow hn]
 

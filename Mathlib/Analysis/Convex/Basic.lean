@@ -149,7 +149,7 @@ theorem Convex.starConvex_iff (hs : Convex 𝕜 s) (h : s.Nonempty) : StarConvex
 protected theorem Set.Subsingleton.convex {s : Set E} (h : s.Subsingleton) : Convex 𝕜 s :=
   convex_iff_pairwise_pos.mpr (h.pairwise _)
 
-theorem convex_singleton (c : E) : Convex 𝕜 ({c} : Set E) :=
+@[simp] theorem convex_singleton (c : E) : Convex 𝕜 ({c} : Set E) :=
   subsingleton_singleton.convex
 
 theorem convex_zero : Convex 𝕜 (0 : Set E) :=
@@ -480,9 +480,9 @@ end AddCommGroup
 
 end OrderedRing
 
-section LinearOrderedRing
+section LinearOrderedSemiring
 
-variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommMonoid E]
 
 theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (x + y) ≤ (f x) + (f y))
     (hf2 : ∀ ⦃c⦄ x, 0 ≤ c → f (c • x) ≤ c * f x) (B : 𝕜) :
@@ -495,7 +495,12 @@ theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (
         add_le_add (smul_le_smul_of_nonneg_left hx ha) (smul_le_smul_of_nonneg_left hy hb)
     _ ≤ B := by rw [← add_smul, hs, one_smul]
 
-end LinearOrderedRing
+end LinearOrderedSemiring
+
+theorem Convex.midpoint_mem [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [AddCommGroup E] [Module 𝕜 E] [Invertible (2 : 𝕜)] {s : Set E} {x y : E}
+    (h : Convex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s) : midpoint 𝕜 x y ∈ s :=
+  h.segment_subset hx hy <| midpoint_mem_segment x y
 
 section LinearOrderedField
 
