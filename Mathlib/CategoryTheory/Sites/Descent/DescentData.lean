@@ -221,8 +221,7 @@ def toDescentDataOfIsInitial (X₀ : C) (hX₀ : IsInitial X₀) :
       iso_comp' Y' Y g i₁ i₂ f₁ f₂ f₁g f₂g hf₁g hf₂g := by
         ext
         dsimp
-        simp only [Functor.map_comp, assoc]
-        rw [F.mapComp'₀₁₃_inv_app_assoc (hX₀.to (X i₁))
+        rw [Functor.map_comp, assoc, F.mapComp'₀₁₃_inv_app_assoc (hX₀.to (X i₁))
           f₁ g (hX₀.to Y) f₁g (hX₀.to Y') (by simp) hf₁g (by simp) A,
           F.mapComp'₀₁₃_hom_app (hX₀.to (X i₂))
             f₂ g (hX₀.to Y) f₂g (hX₀.to Y') (by simp) hf₂g (by simp) A,
@@ -245,7 +244,43 @@ namespace DescentData
 
 section Unique
 
-variable (X : C)
+variable {X : C} (obj : F.obj X) (c : BinaryCofan X X)
+    (hc : IsColimit c) (map : c.pt ⟶ X)
+    (heq : map = hc.desc (BinaryCofan.mk (𝟙 _) (𝟙 _)))
+    {Z : C} {ι₁₂ ι₂₃ : c.pt ⟶ Z}
+    (h : IsPushout c.inl c.inr ι₂₃ ι₁₂)
+    (p₁ p₂ p₃ : X ⟶ Z)
+    (hp₁ : c.inl ≫ ι₁₂ = p₁) (hp₂ : c.inr ≫ ι₁₂ = p₂) (hp₃ : c.inr ≫ ι₂₃ = p₃)
+    (hom : (F.map c.inl).obj obj ⟶ (F.map c.inr).obj obj)
+    (hom_self : (F.map map).map hom =
+      (F.mapComp' c.inl map (𝟙 _)).inv.app obj ≫
+      (F.mapComp' c.inr map (𝟙 _)).hom.app obj)
+
+section
+
+def mk''Hom {Y : C} (f₁ f₂ : X ⟶ Y) :
+    (F.map f₁).obj obj ⟶ (F.map f₂).obj obj := by
+  let p : c.pt ⟶ Y := hc.desc <| BinaryCofan.mk f₁ f₂
+  exact (F.mapComp' c.inl p f₁ (by simp [p])).hom.app obj ≫ (F.map p).map hom ≫
+    (F.mapComp' c.inr p f₂ (by simp [p])).inv.app obj
+
+lemma mk''Hom_eq {Y : C} (f₁ f₂ : X ⟶ Y) (p : c.pt ⟶ Y) (hp₁ : c.inl ≫ p = f₁)
+    (hp₂ : c.inr ≫ p = f₂) :
+    mk''Hom F obj c hc hom f₁ f₂ =
+      (F.mapComp' c.inl p f₁ hp₁).hom.app obj ≫ (F.map p).map hom ≫
+        (F.mapComp' c.inr p f₂ hp₂).inv.app obj := by
+  obtain rfl : p = (hc.desc <| BinaryCofan.mk f₁ f₂) := by
+    apply BinaryCofan.IsColimit.hom_ext hc <;> simp [hp₁, hp₂]
+  rfl
+
+def mk'' : F.DescentData (fun _ : PUnit.{t + 1} ↦ X) :=
+  mk' (fun _ ↦ obj) (fun Y _ _ f₁ f₂ ↦ mk''Hom F obj c hc hom f₁ f₂)
+    (by
+      rintro Y' Y g ⟨_⟩ ⟨_⟩ f₁ f₂ f₁g f₂g hf₁g hf₂g
+      dsimp
+      sorry) sorry sorry
+
+end
 
 /-set_option maxHeartbeats 0 in
 def mk'' (obj : F.obj X) (c : BinaryCofan X X)
