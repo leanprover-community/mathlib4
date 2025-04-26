@@ -77,8 +77,7 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le
   rw [← classNumber_eq_one_iff, classNumber, Fintype.card_eq_one_iff]
   refine ⟨1, fun C ↦ ?_⟩
   obtain ⟨I, rfl, hI⟩ := exists_ideal_in_class_of_norm_le C
-  rw [ClassGroup.mk0_eq_one_iff]
-  exact h _ hI
+  simpa [← ClassGroup.mk0_eq_one_iff] using h _ hI
 
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ nrComplexPlaces K *
