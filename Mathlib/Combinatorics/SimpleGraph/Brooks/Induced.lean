@@ -689,6 +689,17 @@ lemma Walk.length_shorterOdd_odd {p : G.Walk u u} {x : α} (hx : x ∈ p.support
   · rw [Walk.length_rotate]
     exact (Nat.odd_add.1 ho).2 (Nat.not_odd_iff_even.1 h1)
 
+def shortestOdd (u : α) (p : G.Walk u u) : Σ v, G.Walk v v :=
+  match (p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x)).attach with
+  | [] => ⟨u, p⟩
+  | x :: _ => by
+    simp only [ List.mem_filter, decide_eq_false_iff_not, decide_eq_true_eq] at x
+    have ⟨hx, hne, h2⟩:= x.2
+    have := p.length_shorterOdd_lt_length hx hne h2
+    exact shortestOdd x (p.shorterOdd x hx)
+    termination_by p.length
+
+
 lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.length) :
     ∃ x, ∃ (c : G.Walk x x), c.IsCycle ∧ Odd c.length := by
   induction hn : w.length using Nat.strong_induction_on generalizing v w with
