@@ -1,0 +1,4 @@
+Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Unital.lean:6:0: error: object file '././.lake/build/lib/lean/Mathlib/Algebra/Algebra/Quasispectrum.olean' of module Mathlib.Algebra.Algebra.Quasispectrum does not exist
+cumulative profiling times:
+	import 11.6ms
+	initialization 18ms

@@ -231,7 +231,7 @@ theorem suffixLevenshtein_cons₁
         (suffixLevenshtein C xs ys).1, by simp⟩ := by
   induction ys with
   | nil =>
-    dsimp [levenshtein, suffixLevenshtein]
+    simp [levenshtein, suffixLevenshtein, List.getElem_zero]
   | cons y ys ih =>
     apply suffixLevenshtein_cons₁_aux
     · rfl
