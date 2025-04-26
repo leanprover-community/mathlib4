@@ -147,6 +147,69 @@ theorem span_eq_takeWhile_dropWhile (l : List α) : span p l = (takeWhile p l, d
 
 end Filter
 
+section Splits
+
+/-! ### Generate splits of a list. -/
+
+/-- Pairs of prefixes and suffixes of a list. -/
+def splits (xs : List α) : List (List α × List α) :=
+  List.map xs.splitAt (range (xs.length + 1))
+
+@[simp]
+lemma splits_nil : (List.nil (α:=α)).splits= [([], [])] := by rfl
+
+@[simp]
+lemma splits_cons (x : α) (xs : List α) :
+    List.splits (x :: xs) =
+    ([], x :: xs) :: List.map (fun td ↦ (x :: td.1, td.2)) (List.splits xs) := by
+  simp [List.splits, List.range_succ_eq_map]
+
+lemma splits_spec (x y l : List α) :
+    (x, y) ∈ l.splits ↔ l = x ++ y := by
+  simp [List.splits]
+  constructor
+  · rintro ⟨n, hn, htake, hdrop⟩
+    rw [←htake, ←hdrop, List.take_append_drop]
+  · rintro rfl
+    exists x.length
+    constructor
+    · simp; omega
+    · constructor
+      · rw [List.take_left]
+      · rw [List.drop_left]
+
+lemma splits_non_empty (l : List α) : ∃ td, td ∈ l.splits := by
+  exists ([], l)
+  simp [List.splits_spec]
+
+/-- Left-associative triple splits of a list. -/
+def splits3_l : List α → List (List α × List α × List α) :=
+  List.flatMap
+  (fun td ↦
+    td.1
+    |> List.splits
+    |> List.map (fun t ↦ (t.1, t.2, td.2)))
+  ∘ List.splits
+
+lemma splits3_l_spec (x y z l : List α) :
+    (x, y, z) ∈ l.splits3_l ↔ l = x ++ y ++ z := by
+  simp [splits3_l, splits_spec]
+
+/-- Right-associative triple splits of a list. -/
+def splits3_r : List α → List (List α × List α × List α) :=
+  List.flatMap
+  (fun td ↦
+    td.2
+    |> List.splits
+    |> List.map (fun d ↦ (td.1, d.1, d.2)))
+  ∘ List.splits
+
+lemma splits3_r_spec (x y z l : List α) :
+    (x, y, z) ∈ l.splits3_r ↔ l = x ++ y ++ z := by
+  simp [splits3_r, splits_spec]
+
+end Splits
+
 /-! ### Miscellaneous lemmas -/
 
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
