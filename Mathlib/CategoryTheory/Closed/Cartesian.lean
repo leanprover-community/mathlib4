@@ -29,8 +29,8 @@ Show that exponential forms a difunctor and define the exponential comparison mo
 
 Cartesian closed categories require a `ChosenFiniteProducts` instance. If one whishes to state that
 a category that `hasFiniteProducts` is cartesian closed, they should first promote the
-`hasFiniteProducts` instance to a `ChosenFiniteProducts` one
-using `CategoryTheory.ChosenFiniteProducts.ofFiniteProducts`.
+`hasFiniteProducts` instance to a `ChosenFiniteProducts` one using
+`CategoryTheory.ChosenFiniteProducts.ofFiniteProducts`.
 
 ## TODO
 Some of the results here are true more generally for closed objects and
