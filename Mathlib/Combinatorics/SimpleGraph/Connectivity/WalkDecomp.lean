@@ -80,8 +80,13 @@ def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
 @[simp] theorem dropUntil_nil {u : V} {h} : dropUntil (nil : G.Walk u u) u h = nil := rfl
 
 @[simp]
-lemma dropUntil_start (p : G.Walk u v) :
-    p.dropUntil u p.start_mem_support = p := by cases p <;> simp [Walk.dropUntil]
+lemma dropUntil_start (p : G.Walk v w) :
+    p.dropUntil v p.start_mem_support = p := by cases p <;> simp [Walk.dropUntil]
+
+@[simp]
+lemma dropUntil_cons_ne_start {x : V} {h : G.Adj v x} {p : G.Walk x w} (hu : u ∈ (p.cons h).support)
+    (hn : u ≠ v) : (p.cons h).dropUntil _ hu = p.dropUntil _ (by aesop)  := by
+  simp [dropUntil, Ne.symm hn]
 
 @[simp]
 lemma not_nil_dropUntil (p : G.Walk u v) (hwp : w ∈ p.support) (hne : w ≠ v) :
