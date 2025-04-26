@@ -154,19 +154,28 @@ section
 variable {H : Type*} [Group H] [TopologicalSpace H]
 
 /-- The product of two open subgroups as an open subgroup of the product group. -/
-@[to_additive "The product of two open subgroups as an open subgroup of the product group."]
+@[to_additive prod "The product of two open subgroups as an open subgroup of the product group."]
 def prod (U : OpenSubgroup G) (V : OpenSubgroup H) : OpenSubgroup (G × H) :=
   ⟨.prod U V, U.isOpen.prod V.isOpen⟩
 
-@[to_additive (attr := simp, norm_cast)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.OpenAddSubgroup.sum := OpenAddSubgroup.prod
+
+@[to_additive (attr := simp, norm_cast) coe_prod]
 theorem coe_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Set (G × H)) = (U : Set G) ×ˢ (V : Set H) :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.OpenAddSubgroup.coe_sum := OpenAddSubgroup.coe_prod
+
+@[to_additive (attr := simp, norm_cast) toAddSubgroup_prod]
 theorem toSubgroup_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Subgroup (G × H)) = (U : Subgroup G).prod V :=
   rfl
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.OpenAddSubgroup.toAddSubgroup_sum := OpenAddSubgroup.toAddSubgroup_prod
 
 end
 
@@ -193,7 +202,7 @@ theorem mem_inf {x} : x ∈ U ⊓ V ↔ x ∈ U ∧ x ∈ V :=
 @[to_additive]
 instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferInstance
 
--- Porting note: we override `toPartialorder` to get better `le`
+-- We override `toPartialorder` to get better `le`
 @[to_additive]
 instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
   { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ ↦ rfl with
@@ -259,7 +268,8 @@ theorem isOpen_mono [ContinuousMul G] {H₁ H₂ : Subgroup G} (h : H₁ ≤ H�
   isOpen_of_mem_nhds _ <| Filter.mem_of_superset (h₁.mem_nhds <| one_mem H₁) h
 
 @[to_additive]
-theorem isOpen_of_openSubgroup [ContinuousMul G] (H: Subgroup G) {U : OpenSubgroup G} (h : ↑U ≤ H) :
+theorem isOpen_of_openSubgroup
+    [ContinuousMul G] (H : Subgroup G) {U : OpenSubgroup G} (h : ↑U ≤ H) :
     IsOpen (H : Set G) :=
   isOpen_mono h U.isOpen
 
@@ -333,7 +343,7 @@ instance : Max (OpenSubgroup G) :=
 @[to_additive (attr := simp, norm_cast)]
 theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = ↑U ⊔ ↑V := rfl
 
--- Porting note: we override `toPartialorder` to get better `le`
+-- We override `toPartialorder` to get better `le`
 @[to_additive]
 instance : Lattice (OpenSubgroup G) :=
   { instSemilatticeInfOpenSubgroup,

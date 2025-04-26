@@ -6,7 +6,7 @@ Authors: Bryan Gin-ge Chen, Yaël Dillies
 import Mathlib.Algebra.Group.Idempotent
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.PUnit
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.BoundedLattice
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 
@@ -66,7 +66,7 @@ theorem add_self : a + a = 0 := by
       a + a = (a + a) * (a + a) := by rw [mul_self]
       _ = a * a + a * a + (a * a + a * a) := by rw [add_mul, mul_add]
       _ = a + a + (a + a) := by rw [mul_self]
-  rwa [self_eq_add_left] at this
+  rwa [right_eq_add] at this
 
 @[scoped simp]
 theorem neg_eq : -a = a :=
@@ -88,7 +88,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       _ = a * a + a * b + (b * a + b * b) := by rw [add_mul, mul_add, mul_add]
       _ = a + a * b + (b * a + b) := by simp only [mul_self]
       _ = a + b + (a * b + b * a) := by abel
-  rwa [self_eq_add_right] at this
+  rwa [left_eq_add] at this
 
 @[scoped simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]

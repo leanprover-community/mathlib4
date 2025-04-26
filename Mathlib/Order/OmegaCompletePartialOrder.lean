@@ -5,9 +5,10 @@ Authors: Simon Hudon, Ira Fesefeldt
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Order.Chain
+import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.Part
+import Mathlib.Order.Preorder.Chain
 import Mathlib.Order.ScottContinuity
 
 /-!
@@ -153,8 +154,6 @@ end Chain
 end OmegaCompletePartialOrder
 
 open OmegaCompletePartialOrder
-
--- Porting note: removed "set_option extends_priority 50"
 
 /-- An omega-complete partial order is a partial order with a supremum
 operation on increasing sequences indexed by natural numbers (which we
@@ -310,10 +309,6 @@ theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : s
   rcases le_total i j with hij | hji
   · have := c.monotone hij _ ha; apply mem_unique this hb
   · have := c.monotone hji _ hb; apply Eq.symm; apply mem_unique this ha
-  -- Porting note: Old proof
-  -- wlog h : i ≤ j := le_total i j using a b i j, b a j i
-  -- rw [eq_some_iff] at ha hb
-  -- have := c.monotone h _ ha; apply mem_unique this hb
 
 open Classical in
 /-- The (noncomputable) `ωSup` definition for the `ω`-CPO structure on `Part α`. -/
@@ -451,7 +446,7 @@ instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α w
   ωSup c := ⨆ i, c i
   ωSup_le := fun ⟨c, _⟩ s hs => by
     simp only [iSup_le_iff, OrderHom.coe_mk] at hs ⊢; intro i; apply hs i
-  le_ωSup := fun ⟨c, _⟩ i => by simp only [OrderHom.coe_mk]; apply le_iSup_of_le i; rfl
+  le_ωSup := fun ⟨c, _⟩ i => by apply le_iSup_of_le i; rfl
 
 variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
 
@@ -546,9 +541,6 @@ instance : FunLike (α →𝒄 β) α β where
 instance : OrderHomClass (α →𝒄 β) α β where
   map_rel f _ _ h := f.mono h
 
--- Porting note: removed to avoid conflict with the generic instance
--- instance : Coe (α →𝒄 β) (α →o β) where coe := ContinuousHom.toOrderHom
-
 instance : PartialOrder (α →𝒄 β) :=
   (PartialOrder.lift fun f => f.toOrderHom.toFun) <| by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ h; congr
 
@@ -633,13 +625,10 @@ theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.m
 
 /-- Construct a continuous function from a bare function, a continuous function, and a proof that
 they are equal. -/
--- Porting note: removed `@[reducible]`
 @[simps!]
 def copy (f : α → β) (g : α →𝒄 β) (h : f = g) : α →𝒄 β where
   toOrderHom := g.1.copy f h
   map_ωSup' := by rw [OrderHom.copy_eq]; exact g.map_ωSup'
-
--- Porting note: `of_mono` now defeq `mk`
 
 /-- The identity as a continuous function. -/
 @[simps!]
@@ -763,14 +752,14 @@ def flip {α : Type*} (f : α → β →𝒄 γ) : β →𝒄 α → γ where
   map_ωSup' _ := by ext x; change f _ _ = _; rw [(f _).continuous]; rfl
 
 /-- `Part.bind` as a continuous function. -/
-@[simps! apply] -- Porting note: removed `(config := { rhsMd := reducible })`
+@[simps! apply]
 noncomputable def bind {β γ : Type v} (f : α →𝒄 Part β) (g : α →𝒄 β → Part γ) : α →𝒄 Part γ :=
   .mk (OrderHom.partBind f g.toOrderHom) fun c => by
     rw [ωSup_bind, ← f.continuous, g.toOrderHom_eq_coe, ← g.continuous]
     rfl
 
 /-- `Part.map` as a continuous function. -/
-@[simps! apply] -- Porting note: removed `(config := { rhsMd := reducible })`
+@[simps! apply]
 noncomputable def map {β γ : Type v} (f : β → γ) (g : α →𝒄 Part β) : α →𝒄 Part γ :=
   .copy (fun x => f <$> g x) (bind g (const (pure ∘ f))) <| by
     ext1
@@ -778,7 +767,7 @@ noncomputable def map {β γ : Type v} (f : β → γ) (g : α →𝒄 Part β) 
       coe_toOrderHom, const_apply, Part.bind_eq_bind]
 
 /-- `Part.seq` as a continuous function. -/
-@[simps! apply] -- Porting note: removed `(config := { rhsMd := reducible })`
+@[simps! apply]
 noncomputable def seq {β γ : Type v} (f : α →𝒄 Part (β → γ)) (g : α →𝒄 Part β) : α →𝒄 Part γ :=
   .copy (fun x => f x <*> g x) (bind f <| flip <| _root_.flip map g) <| by
       ext

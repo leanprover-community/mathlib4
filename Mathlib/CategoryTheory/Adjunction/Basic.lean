@@ -80,9 +80,6 @@ open Category
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
--- Porting Note: `elab_without_expected_type` cannot be a local attribute
--- attribute [local elab_without_expected_type] whiskerLeft whiskerRight
-
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 /-- `F ⊣ G` represents the data of an adjunction between two functors

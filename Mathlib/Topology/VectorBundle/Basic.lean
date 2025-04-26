@@ -246,7 +246,7 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
       by_cases hb : b ∈ e.baseSet ∩ e'.baseSet
       · rw [dif_pos hb]
         refine (e'.continuousOn.comp_continuous ?_ ?_).snd
-        · exact e.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
+        · exact e.continuousOn_symm.comp_continuous (Continuous.prodMk_right b) fun y =>
             mk_mem_prod hb.1 (mem_univ y)
         · exact fun y => e'.mem_source.mpr hb.2
       · rw [dif_neg hb]
@@ -255,7 +255,7 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
       by_cases hb : b ∈ e.baseSet ∩ e'.baseSet
       · rw [dif_pos hb]
         refine (e.continuousOn.comp_continuous ?_ ?_).snd
-        · exact e'.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
+        · exact e'.continuousOn_symm.comp_continuous (Continuous.prodMk_right b) fun y =>
             mk_mem_prod hb.2 (mem_univ y)
         exact fun y => e.mem_source.mpr hb.1
       · rw [dif_neg hb]
@@ -370,7 +370,6 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
   { e.linearMapAt R b with
     toFun := e.linearMapAt R b -- given explicitly to help `simps`
     cont := by
-      dsimp
       rw [e.coe_linearMapAt b]
       classical
       refine continuous_if_const _ (fun hb => ?_) fun _ => continuous_zero
@@ -385,7 +384,7 @@ def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b
     cont := by
       by_cases hb : b ∈ e.baseSet
       · rw [(FiberBundle.totalSpaceMk_isInducing F E b).continuous_iff]
-        exact e.continuousOn_symm.comp_continuous (continuous_const.prod_mk continuous_id) fun x ↦
+        exact e.continuousOn_symm.comp_continuous (.prodMk_right _) fun x ↦
           mk_mem_prod hb (mem_univ x)
       · refine continuous_zero.congr fun x => (e.symm_apply_of_not_mem hb x).symm }
 
@@ -508,9 +507,9 @@ def toFiberBundleCore : FiberBundleCore ι B F :=
     coordChange := fun i j b => Z.coordChange i j b
     continuousOn_coordChange := fun i j =>
       isBoundedBilinearMap_apply.continuous.comp_continuousOn
-        ((Z.continuousOn_coordChange i j).prod_map continuousOn_id) }
+        ((Z.continuousOn_coordChange i j).prodMap continuousOn_id) }
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore coercion
+-- TODO: restore coercion?
 -- instance toFiberBundleCoreCoe : Coe (VectorBundleCore R B F ι) (FiberBundleCore ι B F) :=
 --   ⟨toFiberBundleCore⟩
 
@@ -538,7 +537,6 @@ def Fiber : B → Type _ :=
 instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
   Z.toFiberBundleCore.topologicalSpaceFiber x
 
--- Porting note: fixed: used to assume both `[NormedAddCommGroup F]` and `[AddCommGrp F]`
 instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
   inferInstanceAs (AddCommGroup F)
 
@@ -581,7 +579,6 @@ considering this in particular as a fiber bundle constructed from core. -/
 def localTriv (i : ι) : Trivialization F (π F Z.Fiber) :=
   Z.toFiberBundleCore.localTriv i
 
--- Porting note: moved from below to fix the next instance
 @[simp, mfld_simps]
 theorem localTriv_apply {i : ι} (p : Z.TotalSpace) :
     (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
@@ -782,9 +779,9 @@ def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
       have : ContinuousOn (fun x : B × F ↦ a.coordChange he' he x.1 x.2)
           ((e'.baseSet ∩ e.baseSet) ×ˢ univ) :=
         isBoundedBilinearMap_apply.continuous.comp_continuousOn
-          ((a.continuousOn_coordChange he' he).prod_map continuousOn_id)
+          ((a.continuousOn_coordChange he' he).prodMap continuousOn_id)
       rw [e.target_inter_preimage_symm_source_eq e', inter_comm]
-      refine (continuousOn_fst.prod this).congr ?_
+      refine (continuousOn_fst.prodMk this).congr ?_
       rintro ⟨b, f⟩ ⟨hb, -⟩
       dsimp only [Function.comp_def, Prod.map]
       rw [a.mk_coordChange _ _ hb, e'.mk_symm hb.1] }
@@ -843,7 +840,6 @@ theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology 
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
       refine (a.continuousOn_coordChange he he').congr fun b hb ↦ ?_
       ext v
-      -- Porting note: help `rw` find instances
       haveI h₁ := a.linear_trivializationOfMemPretrivializationAtlas he
       haveI h₂ := a.linear_trivializationOfMemPretrivializationAtlas he'
       rw [trivializationOfMemPretrivializationAtlas] at h₁ h₂

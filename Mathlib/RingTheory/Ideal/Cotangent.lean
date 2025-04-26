@@ -3,13 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Filtration
+import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Nakayama
 
 /-!
@@ -32,9 +32,11 @@ universe u v w
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
--- Porting note: instances that were derived automatically need to be proved by hand (see below)
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
+-- The `AddCommGroup, Module (R ⧸ I), Inhabited, Module S, IsScalarTower, IsNoetherian` instances
+-- should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance : AddCommGroup I.Cotangent := by delta Cotangent; infer_instance
 
@@ -216,7 +218,7 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
     convert (Submodule.smul_mem_smul (M := I₂) (r := f a)
       (n := ⟨f b, h hb⟩) (h ha) (Submodule.mem_top)) using 1
     ext
-    exact _root_.map_mul f a b
+    exact map_mul f a b
 
 @[simp]
 lemma mapCotangent_toCotangent

@@ -326,9 +326,8 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
   -- see `IsPoly₂.map` for a slightly more general proof strategy
   obtain ⟨φ, hf⟩ := hf
   ext n
-  simp only [map_coeff, hf, map_aeval]
-  apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-  rfl
+  simp_rw [map_coeff, hf, map_aeval, funext (map_coeff g _), RingHom.ext_int _ (algebraMap ℤ S),
+    aeval_eq_eval₂Hom]
 
 namespace IsPoly₂
 

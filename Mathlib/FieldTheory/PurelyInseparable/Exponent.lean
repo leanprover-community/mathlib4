@@ -24,6 +24,11 @@ it gives cleaner API. To use the results in a context with `[ExpChar K p]`, cons
 - `IsPurelyInseparable.exponent`: the exponent of a purely inseparable field extension.
 - `IsPurelyInseparable.elemExponent`: the exponent of an element of a purely inseparable
   field extension, that is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`.
+- `IsPurelyInseparable.iterateFrobenius`: the iterated Frobenius map (ring homomorphism) `L →+* K`
+  for purely inseparable field extension `L / K` with exponent; for `n ≥ exponent K L`, it acts like
+  `x ↦ x ^ p ^ n` but the codomain is the base field `K`.
+- `IsPurelyInseparable.iterateFrobeniusₛₗ`: version of `iterateFrobenius` as a semilinear map over
+   a subfield `F` of `K`, wrt the iterated Frobenius homomorphism on `F`.
 
 ## Tags
 
@@ -33,7 +38,7 @@ purely inseparable
 
 namespace IsPurelyInseparable
 
-variable (K L : Type*)
+variable (F K L : Type*)
 
 section Ring
 
@@ -218,5 +223,124 @@ instance hasExponent_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimen
       Nat.add_sub_cancel' (h_elemexp_bound a)]
 
 end Field
+
+section Frobenius
+
+/-
+This section defines the iterated Frobenius map `x ↦ x ^ p ^ n` for a purely inseparable
+field extension `L / K` with exponent, with the base field `K` as a codomain, when
+`n ≥ exponent K L`.
+We define it both as a ring homomorphism and a semilinear map over a subfield `F` of `K`.
+
+Implementation note: the API exposes arguments `{n : ℕ} (hn : exponent K L ≤ n)` to define the
+action `x ↦ x ^ p ^ n` instead of just `(n : ℕ)` with action `x ↦ x ^ p ^ (exponent K L + n)`
+to avoid problems with definitional equality when using the semilinear map version.
+-/
+
+variable [Field K] [Field L] [Algebra K L] [HasExponent K L]
+variable (p : ℕ) [ExpChar K p]
+
+private noncomputable def iterateFrobeniusAux (n : ℕ) : L → K :=
+  fun a ↦ elemReduct K a ^ p ^ (n - elemExponent K a)
+
+variable {L} in
+/-- Action of `iterateFrobeniusAux` on the top field. -/
+private theorem algebraMap_iterateFrobeniusAux {n : ℕ} (hn : exponent K L ≤ n) (a : L) :
+    algebraMap K L (iterateFrobeniusAux K L p n a) = a ^ p ^ n := by
+  rw [iterateFrobeniusAux, RingHom.map_pow, algebraMap_elemReduct_eq' K p, ← pow_mul, ← pow_add,
+    Nat.add_sub_cancel' <| (elemExponent_le_exponent K a).trans hn]
+
+section RingHom
+
+/-- Iterated Frobenius map (ring homomorphism) for purely inseparable field extension with exponent.
+If `n ≥ exponent K L`, it acts like `x ↦ x ^ p ^ n` but the codomain is the base field `K`. -/
+noncomputable def iterateFrobenius {n : ℕ} (hn : exponent K L ≤ n) : L →+* K where
+  toFun := iterateFrobeniusAux K L p n
+  map_zero' := by
+    apply (algebraMap K L).injective
+    rw [(algebraMap K L).map_zero,
+      algebraMap_iterateFrobeniusAux K p hn 0,
+      zero_pow]
+    exact Nat.pos_iff_ne_zero.mp <| expChar_pow_pos K p n
+  map_add' a b := by
+    have inj := (algebraMap K L).injective
+    have : ExpChar L p := expChar_of_injective_ringHom inj p
+    apply inj
+    rw [(algebraMap K L).map_add,
+      algebraMap_iterateFrobeniusAux K p hn a,
+      algebraMap_iterateFrobeniusAux K p hn b,
+      algebraMap_iterateFrobeniusAux K p hn (a + b),
+      add_pow_expChar_pow a b]
+  map_one' := by
+    apply (algebraMap K L).injective
+    rw [(algebraMap K L).map_one,
+      algebraMap_iterateFrobeniusAux K p hn 1,
+      one_pow]
+  map_mul' a b := by
+    apply (algebraMap K L).injective
+    rw [(algebraMap K L).map_mul,
+      algebraMap_iterateFrobeniusAux K p hn a,
+      algebraMap_iterateFrobeniusAux K p hn b,
+      algebraMap_iterateFrobeniusAux K p hn (a * b),
+      mul_pow]
+
+variable {L} in
+/-- Action of `iterateFrobenius` on the top field. -/
+theorem algebraMap_iterateFrobenius {n : ℕ} (hn : exponent K L ≤ n) (a : L) :
+    algebraMap K L (iterateFrobenius K L p hn a) = a ^ p ^ n :=
+  algebraMap_iterateFrobeniusAux K p hn a
+
+variable {K} in
+/-- Action of `iterateFrobenius` on the bottom field. -/
+theorem iterateFrobenius_algebraMap {n : ℕ} (hn : exponent K L ≤ n) (a : K) :
+    iterateFrobenius K L p hn (algebraMap K L a) = a ^ p ^ n := by
+  apply (algebraMap K L).injective
+  rw [map_pow, algebraMap_iterateFrobenius K p hn]
+
+end RingHom
+
+section Semilinear
+
+variable [Field F] [Algebra F K] [Algebra F L] [IsScalarTower F K L]
+variable [ExpChar F p]
+
+/-- Version of `iterateFrobenius` as a semilinear map over a subfield `F` of `K`, wrt the
+iterated Frobenius homomorphism on `F`. -/
+noncomputable def iterateFrobeniusₛₗ {n : ℕ} (hn : exponent K L ≤ n) :
+    L →ₛₗ[_root_.iterateFrobenius F p n] K where
+  __ := iterateFrobenius K L p hn
+  map_smul' r a := by
+    dsimp [iterateFrobenius]
+    rw [Algebra.smul_def _ (iterateFrobeniusAux K L p n a)]
+    apply (algebraMap K L).injective
+    rw [(algebraMap K L).map_mul,
+      ← IsScalarTower.algebraMap_apply,
+      algebraMap_iterateFrobeniusAux K p hn a,
+      algebraMap_iterateFrobeniusAux K p hn (r • a),
+      iterateFrobenius_def,
+      map_pow,
+      Algebra.smul_def,
+      mul_pow]
+
+/-- Action of `iterateFrobeniusₛₗ` on the top field. -/
+theorem algebraMap_iterateFrobeniusₛₗ {n : ℕ} (hn : exponent K L ≤ n) (a : L) :
+    algebraMap K L (iterateFrobeniusₛₗ F K L p hn a) = a ^ p ^ n :=
+  algebraMap_iterateFrobenius K p hn a
+
+/-- Action of `iterateFrobeniusₛₗ` on the bottom field. -/
+theorem iterateFrobeniusₛₗ_algebraMap {n : ℕ} (hn : exponent K L ≤ n) (a : K) :
+    iterateFrobeniusₛₗ F K L p hn (algebraMap K L a) = a ^ p ^ n :=
+  iterateFrobenius_algebraMap L p hn a
+
+/-- Action of `iterateFrobeniusₛₗ` on the base field. -/
+theorem iterateFrobeniusₛₗ_algebraMap_base {n : ℕ} (hn : exponent K L ≤ n) (a : F) :
+    iterateFrobeniusₛₗ F K L p hn (algebraMap F L a) = (algebraMap F K a) ^ p ^ n := by
+  apply (algebraMap K L).injective
+  rw [← map_pow, ← IsScalarTower.algebraMap_apply, map_pow,
+    algebraMap_iterateFrobeniusₛₗ F K L p hn]
+
+end Semilinear
+
+end Frobenius
 
 end IsPurelyInseparable

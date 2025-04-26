@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -900,8 +901,8 @@ def prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
     PartialHomeomorph (X × Y) (X' × Y') where
   open_source := eX.open_source.prod eY.open_source
   open_target := eX.open_target.prod eY.open_target
-  continuousOn_toFun := eX.continuousOn.prod_map eY.continuousOn
-  continuousOn_invFun := eX.continuousOn_symm.prod_map eY.continuousOn_symm
+  continuousOn_toFun := eX.continuousOn.prodMap eY.continuousOn
+  continuousOn_invFun := eX.continuousOn_symm.prodMap eY.continuousOn_symm
   toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
 
 @[simp, mfld_simps]
@@ -1112,7 +1113,7 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/
 @[simps (config := mfld_cfg) apply symm_apply]
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a `PartialEquiv` version
+-- TODO: add a `PartialEquiv` version
 def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' : e.target = univ) :
     X ≃ₜ Y where
   toFun := e
@@ -1137,17 +1138,11 @@ theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) := by
   exact e.isOpen_image_of_subset_source (e.open_source.isOpenMap_subtype_val V hV)
     fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_restrict := isOpenEmbedding_restrict
-
 /-- A partial homeomorphism whose source is all of `X` defines an open embedding of `X` into `Y`.
 The converse is also true; see `IsOpenEmbedding.toPartialHomeomorph`. -/
 theorem to_isOpenEmbedding (h : e.source = Set.univ) : IsOpenEmbedding e :=
   e.isOpenEmbedding_restrict.comp
     ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.isOpenEmbedding
-
-@[deprecated (since := "2024-10-18")]
-alias to_openEmbedding := to_isOpenEmbedding
 
 end PartialHomeomorph
 
