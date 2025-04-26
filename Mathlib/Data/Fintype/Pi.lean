@@ -159,19 +159,32 @@ section Fintype
 open Option Finset Fin Fintype Equiv Function
 
 /-- `Fin.snoc` for `r`-ordered tuples. -/
-@[simp]
 def RelHom.snoc {s : β → β → Prop} {n : ℕ} {r : Fin (n + 1) → Fin (n + 1) → Prop}
   (xs : castSucc ⁻¹'o r →r s) (x : β)
   (hx : r (last n) (last n) → s x x)
-  (h : ∀ (a : Fin n), (r a.castSucc (last n) → s (xs a) x) ∧ (r (last n) a.castSucc → s x (xs a))) :
+  (hxs : ∀ a : Fin n, (r a.castSucc (last n) → s (xs a) x) ∧ (r (last n) a.castSucc → s x (xs a))) :
     r →r s where
   toFun := Fin.snoc xs x
   map_rel' {v w} hs := by
     cases v using Fin.lastCases <;> cases w using Fin.lastCases
     · simpa using hx hs
-    · simpa using (h _).right hs
-    · simpa using (h _).left hs
+    · simpa using (hxs _).right hs
+    · simpa using (hxs _).left hs
     · simpa using xs.map_rel hs
+
+@[simp]
+theorem RelHom.coe_snoc
+    {s : β → β → Prop} {n : ℕ} {r : Fin (n + 1) → Fin (n + 1) → Prop}
+    (xs : castSucc ⁻¹'o r →r s) (x : β) (hx hxs) :
+    ⇑(xs.snoc x hx hxs) = Fin.snoc xs x :=
+  rfl
+
+theorem RelHom.snoc_inj
+    {s : β → β → Prop} {n : ℕ} {r : Fin (n + 1) → Fin (n + 1) → Prop}
+    (xs : castSucc ⁻¹'o r →r s) (x : β) (hx hxs)
+    (ys : castSucc ⁻¹'o r →r s) (y : β) (hy hys) :
+    xs.snoc x hx hxs = ys.snoc y hy hys ↔ xs = ys ∧ x = y := by
+  simp_rw [← DFunLike.coe_injective.eq_iff, coe_snoc, Fin.snoc_injective2.eq_iff]
 
 -- We show a `Fintype` instance for a hom from `Fin n` to `Fin m`,
 -- and then transfer this to arbitrary finite types using
@@ -180,42 +193,37 @@ def RelHom.snoc {s : β → β → Prop} {n : ℕ} {r : Fin (n + 1) → Fin (n +
 -- For performance reasons, the fintype of colorings is constructed inductively
 -- instead of simply filtering all coloring for valid ones.
 -- Note: `inst` is not a typeclass argument because `match` does not generalize these correctly.
-private def finHomFintype {n m} {r : Fin n → Fin n → Prop} {s : Fin m → Fin m → Prop}
+private def finHomFintype {n m} [Fintype m] {r : Fin n → Fin n → Prop} {s : m → m → Prop}
     (inst : DecidableRel r := by infer_instance) [DecidableRel s] : Fintype (r →r s) :=
   -- induct on the number of vertices
   match n with
   | 0 =>
     -- empty rel hom
     ⟨{(RelEmbedding.ofIsEmpty r s).toRelHom}, by simp [RelHom.ext_iff]⟩
-  | n + 1 => by
+  | n + 1 =>
+    letI : Fintype (castSucc ⁻¹'o r →r s) := finHomFintype
     -- pair the valid homs previously obtained with all possible choices for the new target
-    refine ⟨(@univ _ (@instFintypeProd _ _ finHomFintype _)).filterMap
-      (fun p : (castSucc ⁻¹'o r →r s) × Fin m ↦ ?_) ?_, ?_⟩
-    · -- case on whether this is a valid hom
-      exact
-        if h : (r (Fin.last n) (Fin.last n) → s p.snd p.snd) ∧
-            ∀ a, (r a.castSucc (Fin.last n) → s (p.fst a) p.snd) ∧
-                (r (Fin.last n) a.castSucc → s p.snd (p.fst a)) then
-          some (p.fst.snoc p.snd h.1 h.2)
-        else
-          none
-    · -- show this map is injective
-      intro v w _ hbv hbw
-      simp_rw [Option.mem_def, dite_none_right_eq_some] at hbv hbw
-      obtain ⟨_, hv⟩ := hbv
-      obtain ⟨_, hw⟩ := hbw
-      have hvw := hv.trans hw.symm
-      rw [some_inj] at hvw
-      ext i
-      · simpa using congr(($hvw i.castSucc).val)
-      · simpa using congr(($hvw (last n)).val)
-    · -- show this map is surjective
-      intro C
-      rw [mem_filterMap]
-      use (C.comp (.preimage castSucc r), C (last n)), @mem_univ ..
-      rw [dif_pos ⟨C.map_rel, fun _ => ⟨C.map_rel, C.map_rel⟩⟩, some_inj]
-      ext i
-      cases i using Fin.lastCases <;> simp
+    { elems := univ.filterMap
+        (fun p : (castSucc ⁻¹'o r →r s) × m ↦
+          if h : (r (Fin.last n) (Fin.last n) → s p.snd p.snd) ∧
+              ∀ a, (r a.castSucc (Fin.last n) → s (p.fst a) p.snd) ∧
+                   (r (Fin.last n) a.castSucc → s p.snd (p.fst a)) then
+            some (p.fst.snoc p.snd h.1 h.2)
+          else
+            none)
+        fun v w _ hbv hbw => by
+          simp_rw [Option.mem_def, dite_none_right_eq_some] at hbv hbw
+          obtain ⟨_, hv⟩ := hbv
+          obtain ⟨_, hw⟩ := hbw
+          have hvw := hv.trans hw.symm
+          rwa [some_inj, RelHom.snoc_inj, ← Prod.eq_iff_fst_eq_snd_eq] at hvw,
+      complete C := by
+        -- show this map is surjective
+        rw [mem_filterMap]
+        use (C.comp (.preimage castSucc r), C (last n)), @mem_univ ..
+        rw [dif_pos ⟨C.map_rel, fun _ => ⟨C.map_rel, C.map_rel⟩⟩, some_inj]
+        ext i
+        cases i using Fin.lastCases <;> simp }
 
 instance RelHom.instFintype {α β} {r : α → α → Prop} {s : β → β → Prop}
     [Fintype α] [Fintype β] [DecidableEq α] [DecidableRel r]
@@ -223,10 +231,8 @@ instance RelHom.instFintype {α β} {r : α → α → Prop} {s : β → β → 
     Fintype (r →r s) :=
   (truncFinBijection β).recOnSubsingleton fun ⟨b, hb⟩ ↦
     (truncEquivFin α).recOnSubsingleton fun a ↦
-      haveI : ∀ x y, Decidable (b x = b y) := fun x y =>
-        decidable_of_iff (x = y) hb.injective.eq_iff.symm
-      haveI : DecidableRel (b ⁻¹'o s) := fun x y =>
-        inferInstanceAs (Decidable (s (b x) (b y)))
+      haveI (x y) : Decidable (b x = b y) := decidable_of_iff (x = y) hb.injective.eq_iff.symm
+      haveI : DecidableRel (b ⁻¹'o s) := fun x y => inferInstanceAs (Decidable (s (b x) (b y)))
       ⟨(@univ _ finHomFintype).map ⟨fun f ↦
         (RelHom.preimage b s).comp
           (f.comp (RelIso.preimage a.symm r).symm.toRelEmbedding.toRelHom),
