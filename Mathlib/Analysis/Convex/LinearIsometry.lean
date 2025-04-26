@@ -19,7 +19,7 @@ open scoped Convex
 section SeminormedAddCommGroup
 
 variable {𝕜 E F : Type*}
-  [NormedField 𝕜]
+  [NormedField 𝕜] [PartialOrder 𝕜]
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
   [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
@@ -30,43 +30,45 @@ lemma LinearIsometryEquiv.strictConvex_preimage {s : Set F} (e : E ≃ₗᵢ[�
     h.linear_preimage e.symm.toLinearIsometry.toLinearMap e.symm.continuous e.symm.injective,
     fun h ↦ h.linear_preimage e.toLinearIsometry.toLinearMap e.continuous e.injective⟩
 
+@[simp]
+lemma LinearIsometryEquiv.strictConvex_image {s : Set E} (e : E ≃ₗᵢ[𝕜] F) :
+    StrictConvex 𝕜 (e '' s) ↔ StrictConvex 𝕜 s := by
+  rw [e.image_eq_preimage, e.symm.strictConvex_preimage]
 
 end SeminormedAddCommGroup
 
-variable {E E' F F' : Type*}
-  [SeminormedAddCommGroup E] [NormedSpace ℝ E]
-  [SeminormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup E'] [NormedSpace ℝ E']
-  [NormedAddCommGroup F'] [NormedSpace ℝ F']
+variable {𝕜 E F : Type*} [NormedField 𝕜] [PartialOrder 𝕜]
 
-lemma StrictConvex.linearIsometry_preimage {s : Set F} (hs : StrictConvex ℝ s) (e : E' →ₗᵢ[ℝ] F) :
-    StrictConvex ℝ (e ⁻¹' s) :=
+lemma StrictConvex.linearIsometry_preimage [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] {s : Set F}
+    (hs : StrictConvex 𝕜 s) (e : E →ₗᵢ[𝕜] F) : StrictConvex 𝕜 (e ⁻¹' s) :=
   hs.linear_preimage _ e.continuous e.injective
 
-@[simp]
-lemma LinearIsometryEquiv.strictConvex_image {s : Set E} (e : E ≃ₗᵢ[ℝ] F) :
-    StrictConvex ℝ (e '' s) ↔ StrictConvex ℝ s := by
-  rw [e.image_eq_preimage, e.symm.strictConvex_preimage]
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-protected lemma LinearIsometryEquiv.strictConvexSpace_iff (e : E' ≃ₗᵢ[ℝ] F') :
-    StrictConvexSpace ℝ E' ↔ StrictConvexSpace ℝ F' := by
+protected lemma LinearIsometryEquiv.strictConvexSpace_iff (e : E ≃ₗᵢ[𝕜] F) :
+    StrictConvexSpace 𝕜 E ↔ StrictConvexSpace 𝕜 F := by
   simp only [strictConvexSpace_iff, ← map_zero e, ← e.image_closedBall, e.strictConvex_image]
 
-lemma LinearIsometry.strictConvexSpace_range_iff (e : E' →ₗᵢ[ℝ] F') :
-    StrictConvexSpace ℝ (LinearMap.range e) ↔ StrictConvexSpace ℝ E' :=
+lemma LinearIsometry.strictConvexSpace_range_iff (e : E →ₗᵢ[𝕜] F) :
+    StrictConvexSpace 𝕜 (LinearMap.range e) ↔ StrictConvexSpace 𝕜 E :=
   e.equivRange.strictConvexSpace_iff.symm
 
-instance LinearIsometry.strictConvexSpace_range [StrictConvexSpace ℝ E'] (e : E' →ₗᵢ[ℝ] F') :
-    StrictConvexSpace ℝ (LinearMap.range e) :=
+instance LinearIsometry.strictConvexSpace_range [StrictConvexSpace 𝕜 E] (e : E →ₗᵢ[𝕜] F) :
+    StrictConvexSpace 𝕜 (LinearMap.range e) :=
   e.strictConvexSpace_range_iff.mpr ‹_›
+
+lemma LinearIsometry.strictConvexSpace [StrictConvexSpace 𝕜 F] (f : E →ₗᵢ[𝕜] F) :
+    StrictConvexSpace 𝕜 E where
+  strictConvex_closedBall r hr := by
+    rw [← f.isometry.preimage_closedBall]
+    exact (strictConvex_closedBall _ _ _).linearIsometry_preimage _
 
 /-- A vector subspace of a strict convex space is a strict convex space.
 
 This instance has priority 900
 to make sure that instances like `LinearIsometry.strictConvexSpace_range`
 are tried before this one. -/
-instance (priority := 900) Submodule.instStrictConvexSpace [StrictConvexSpace ℝ E']
-    (p : Submodule ℝ E') : StrictConvexSpace ℝ p where
-  strictConvex_closedBall r hr := by
-    rw [← p.subtypeₗᵢ.isometry.preimage_closedBall]
-    exact (strictConvex_closedBall _ _ _).linearIsometry_preimage _
+instance (priority := 900) Submodule.instStrictConvexSpace [StrictConvexSpace 𝕜 E]
+    (p : Submodule 𝕜 E) : StrictConvexSpace 𝕜 p :=
+  p.subtypeₗᵢ.strictConvexSpace
