@@ -19,7 +19,7 @@ structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{
   /-- The action of a (pre)functor on edges/arrows/morphisms. -/
   map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
 
-attribute [order_dual self (reorder := 6 7)] Prefunctor.map
+attribute [to_dual self (reorder := 6 7)] Prefunctor.map
 -- TODO: tag `Prefunctor.mk`
 namespace Prefunctor
 

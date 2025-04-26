@@ -90,19 +90,19 @@ section Preorder
 
 variable [Preorder α] {a b c d : α}
 
-@[order_dual le_transOD]
+@[to_dual le_transOD]
 theorem le_trans' : b ≤ c → a ≤ b → a ≤ c :=
   flip le_trans
 
-@[order_dual lt_transOD]
+@[to_dual lt_transOD]
 theorem lt_trans' : b < c → a < b → a < c :=
   flip lt_trans
 
-@[order_dual lt_of_le_of_ltOD]
+@[to_dual lt_of_le_of_ltOD]
 theorem lt_of_le_of_lt' : b ≤ c → a < b → a < c :=
   flip lt_of_lt_of_le
 
-@[order_dual lt_of_lt_of_leOD]
+@[to_dual lt_of_lt_of_leOD]
 theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
   flip lt_of_le_of_lt
 
@@ -131,7 +131,7 @@ lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
 
 @[simp] lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
 
-@[order_dual self (reorder := 3 5, 6 7)]
+@[to_dual self (reorder := 3 5, 6 7)]
 alias LE.le.trans := le_trans
 alias LE.le.trans' := le_trans'
 alias LT.lt.trans := lt_trans
@@ -227,27 +227,27 @@ lemma ge_imp_eq_iff_le_imp_le : (a ≤ b → a = b) ↔ (a ≤ b → b ≤ a) wh
 
 namespace LE.le
 
--- @[order_dual lt_iff_neOD]
+-- @[to_dual lt_iff_neOD]
 theorem lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b :=
   ⟨fun h ↦ h.ne, h.lt_of_ne⟩
 
--- @[order_dual gt_iff_neOD]
+-- @[to_dual gt_iff_neOD]
 theorem gt_iff_ne (h : a ≤ b) : a < b ↔ b ≠ a :=
   ⟨fun h ↦ h.ne.symm, h.lt_of_ne'⟩
 
--- @[order_dual not_lt_iff_eqOD]
+-- @[to_dual not_lt_iff_eqOD]
 theorem not_lt_iff_eq (h : a ≤ b) : ¬a < b ↔ a = b :=
   h.lt_iff_ne.not_left
 
--- @[order_dual not_gt_iff_eqOD]
+-- @[to_dual not_gt_iff_eqOD]
 theorem not_gt_iff_eq (h : a ≤ b) : ¬a < b ↔ b = a :=
   h.gt_iff_ne.not_left
 
--- @[order_dual le_iff_eqOD]
+-- @[to_dual le_iff_eqOD]
 theorem le_iff_eq (h : a ≤ b) : b ≤ a ↔ b = a :=
   ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
 
--- @[order_dual ge_iff_eqOD]
+-- @[to_dual ge_iff_eqOD]
 theorem ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b :=
   ⟨h.antisymm, Eq.ge⟩
 
@@ -257,17 +257,17 @@ end LE.le
 protected theorem Decidable.le_iff_eq_or_lt [DecidableLE α] : a ≤ b ↔ a = b ∨ a < b :=
   Decidable.le_iff_lt_or_eq.trans or_comm
 
-@[order_dual le_iff_eq_or_ltOD]
+@[to_dual le_iff_eq_or_ltOD]
 theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans or_comm
 
--- @[order_dual lt_iff_le_and_neOD]
+-- @[to_dual lt_iff_le_and_neOD]
 theorem lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 
--- @[order_dual eq_iff_not_lt_of_leOD]
+-- @[to_dual eq_iff_not_lt_of_leOD]
 lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := by simp [hab, lt_iff_le_and_ne]
 
--- @[order_dual eq_iff_not_ltOD]
+-- @[to_dual eq_iff_not_ltOD]
 alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]

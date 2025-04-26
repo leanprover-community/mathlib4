@@ -67,9 +67,9 @@ class HImp (α : Type*) where
   /-- Heyting implication `⇨` -/
   himp : α → α → α
 
-attribute [order_dual existing (reorder := 3 4) HImp.himp] HImp.himp
+attribute [to_dual existing (reorder := 3 4) HImp.himp] HImp.himp
 
-attribute [order_dual existing (reorder := 3 4) SDiff.sdiff] SDiff.sdiff
+attribute [to_dual existing (reorder := 3 4) SDiff.sdiff] SDiff.sdiff
 
 /-- Syntax typeclass for Heyting negation `￢`.
 
@@ -106,7 +106,7 @@ class Bot (α : Type*) where
   /-- The bot (`⊥`, `\bot`) element -/
   bot : α
 
-attribute [order_dual existing] Top
+attribute [to_dual existing] Top
 
 /-- The top (`⊤`, `\top`) element -/
 notation "⊤" => Top.top
@@ -114,7 +114,7 @@ notation "⊤" => Top.top
 /-- The bot (`⊥`, `\bot`) element -/
 notation "⊥" => Bot.bot
 
-@[order_dual]
+@[to_dual]
 instance (priority := 100) top_nonempty (α : Type*) [Top α] : Nonempty α :=
   ⟨⊤⟩
 

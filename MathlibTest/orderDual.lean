@@ -29,11 +29,11 @@ run_cmd do
   logInfo m!"{orderDualBundle.reorderAttr.find? (← getEnv) `LE.le}"
   logInfo m!"{orderDualBundle.reorderAttr.find? (← getEnv) `LE.le}"
 
-@[order_dual?]
+@[to_dual?]
 def maxDefault' [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then b else a
 
-@[order_dual? blah]
+@[to_dual? blah]
 def blub {p : Type} [LE p] [DecidableRel ((· ≤ ·) : p → p → Prop)] (a b : p) (h : a ≤ b) :=
   a ≤ b
 

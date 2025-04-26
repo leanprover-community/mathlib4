@@ -88,7 +88,7 @@ class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v + 1} 
   /-- Composition of morphisms in a category, written `f ≫ g`. -/
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 
-attribute [order_dual self (reorder := 3 5, 6 7)] CategoryStruct.comp
+attribute [to_dual self (reorder := 3 5, 6 7)] CategoryStruct.comp
 
 initialize_simps_projections CategoryStruct (-toQuiver_Hom)
 
@@ -173,8 +173,8 @@ class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} ob
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
 attribute [trans] CategoryStruct.comp
 set_option linter.existingAttributeWarning false in
-attribute [order_dual existing (reorder := 3 4) Category.comp_id] Category.id_comp
--- attribute [order_dual self (reorder := 3)] Category.assoc
+attribute [to_dual existing (reorder := 3 4) Category.comp_id] Category.id_comp
+-- attribute [to_dual self (reorder := 3)] Category.assoc
 
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
@@ -195,13 +195,13 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 initialize_simps_projections Category (-Hom)
 
-@[order_dual existing CategoryTheory.Category.assoc]
+@[to_dual existing CategoryTheory.Category.assoc]
 theorem assoc_rev {W X Y Z : C} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y) :
     h ≫ g ≫ f = (h ≫ g) ≫ f :=
   (Category.assoc h g f).symm
 
 /-- postcompose an equation between morphisms by another morphism -/
-@[order_dual (reorder := 8 9) whisker_eq
+@[to_dual (reorder := 8 9) whisker_eq
   "precompose an equation between morphisms by another morphism"]
 theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h := by rw [w]
 
@@ -217,26 +217,26 @@ If `g h : Y ⟶ Z` and `w : g = h` and `f : X ⟶ Y`, then `f ≫= w : f ≫ g =
 -/
 scoped infixr:80 " ≫= " => whisker_eq
 
-@[order_dual]
+@[to_dual]
 theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
     f = g := by
   convert w (𝟙 Y) <;> simp
 
-@[order_dual]
+@[to_dual]
 theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
     (w : (fun {Z} (h : Y ⟶ Z) => f ≫ h) = fun {Z} (h : Y ⟶ Z) => g ≫ h) : f = g :=
   eq_of_comp_left_eq @fun Z h => by convert congr_fun (congr_fun w Z) h
 
-@[order_dual]
+@[to_dual]
 theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
   convert w (𝟙 X)
   simp
 
-@[order_dual (reorder := 8 9 10) comp_ite]
+@[to_dual (reorder := 8 9 10) comp_ite]
 theorem ite_comp {P : Prop} [Decidable P] {X Y Z : C} (f f' : X ⟶ Y) (g : Y ⟶ Z) :
     (if P then f else f') ≫ g = if P then f ≫ g else f' ≫ g := by aesop
 
-@[order_dual (reorder := 8 9 10) comp_dite]
+@[to_dual (reorder := 8 9 10) comp_dite]
 theorem dite_comp {P : Prop} [Decidable P]
     {X Y Z : C} (f : P → (X ⟶ Y)) (f' : ¬P → (X ⟶ Y)) (g : Y ⟶ Z) :
     (if h : P then f h else f' h) ≫ g = if h : P then f h ≫ g else f' h ≫ g := by aesop
@@ -250,34 +250,34 @@ class Epi (f : X ⟶ Y) : Prop where
 
 /-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed:
 `g ≫ f = h ≫ f` implies `g = h`. -/
-@[stacks 003B, order_dual existing (reorder := 3 4)] -- TODO: generate name
+@[stacks 003B, to_dual existing (reorder := 3 4)] -- TODO: generate name
 class Mono (f : X ⟶ Y) : Prop where
   /-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed. -/
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
 
-attribute [order_dual existing (reorder := 3 4)] Mono.right_cancellation Mono.mk
+attribute [to_dual existing (reorder := 3 4)] Mono.right_cancellation Mono.mk
 
-@[order_dual]
+@[to_dual]
 instance (X : C) : Epi (𝟙 X) :=
   ⟨fun g h w => by aesop⟩
 
-@[order_dual]
+@[to_dual]
 theorem cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=
   ⟨fun p => Epi.left_cancellation g h p, congr_arg _⟩
 
-@[order_dual]
+@[to_dual]
 theorem cancel_epi_assoc_iff (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} {W : C} {k l : Z ⟶ W} :
     (f ≫ g) ≫ k = (f ≫ h) ≫ l ↔ g ≫ k = h ≫ l :=
   ⟨fun p => (cancel_epi f).1 <| by simpa using p, fun p => by simp only [Category.assoc, p]⟩
 
-@[order_dual]
+@[to_dual]
 theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {g : Y ⟶ Y} : f ≫ g = f ↔ g = 𝟙 Y := by
   convert cancel_epi f
   simp
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
 as typeclass arguments. For a version taking them as explicit arguments, see `epi_comp'`. -/
-@[order_dual
+@[to_dual
 "The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and `Mono g`
 as typeclass arguments. For a version taking them as explicit arguments, see `mono_comp'`."]
 instance epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) :=
@@ -285,22 +285,22 @@ instance epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi 
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
 as explicit arguments. For a version taking them as typeclass arguments, see `epi_comp`. -/
-@[order_dual
+@[to_dual
 "The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
 `Mono g` as explicit arguments. For a version taking them as typeclass arguments, see `mono_comp`."]
 theorem epi_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Epi f) (hg : Epi g) : Epi (f ≫ g) :=
   inferInstance
 
-@[order_dual (reorder := 6 7)]
+@[to_dual (reorder := 6 7)]
 theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi g :=
   ⟨fun _ _ w => (cancel_epi (f ≫ g)).1 <| by simp only [Category.assoc, w]⟩
 
-@[order_dual (reorder := 6 7)]
+@[to_dual (reorder := 6 7)]
 theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h]
     (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
 
-@[order_dual]
+@[to_dual]
 instance [Quiver.IsThin C] (f : X ⟶ Y) : Epi f where
   left_cancellation _ _ _ := Subsingleton.elim _ _
 
