@@ -399,7 +399,7 @@ def postAdjunctionRight {Y : D} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
   unit.app A := homMk <| a.unit.app A.left
   counit.app A := homMk <| a.counit.app A.left
 
-instance post.instIsRightAdjoint {Y : D} {G : D ⥤ T} [G.IsRightAdjoint] :
+instance isRightAdjoint_post {Y : D} {G : D ⥤ T} [G.IsRightAdjoint] :
     (post (X := Y) G).IsRightAdjoint :=
   let ⟨F, ⟨a⟩⟩ := ‹G.IsRightAdjoint›; ⟨_, ⟨postAdjunctionRight a⟩⟩
 
@@ -766,7 +766,7 @@ def postAdjunctionLeft {X : T}{F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
   unit.app A := homMk <| a.unit.app A.right
   counit.app A := homMk <| a.counit.app A.right
 
-instance post.instIsLeftAdjoint [F.IsLeftAdjoint] : (post (X := X) F).IsLeftAdjoint :=
+instance isLeftAdjoint_post [F.IsLeftAdjoint] : (post (X := X) F).IsLeftAdjoint :=
   let ⟨G, ⟨a⟩⟩ := ‹F.IsLeftAdjoint›; ⟨_, ⟨postAdjunctionLeft a⟩⟩
 
 /-- An equivalence of categories induces an equivalence on under categories. -/

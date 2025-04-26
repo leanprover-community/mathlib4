@@ -94,7 +94,7 @@ def postAdjunctionLeft {X : C} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
   ((mapPullbackAdj (a.unit.app X)).comp (postAdjunctionRight a)).ofNatIsoLeft <|
     NatIso.ofComponents fun Y ↦ isoMk (.refl _)
 
-instance post.instIsLeftAdjoint {F : C ⥤ D} [F.IsLeftAdjoint] : (post (X := X) F).IsLeftAdjoint :=
+instance isLeftAdjoint_post {F : C ⥤ D} [F.IsLeftAdjoint] : (post (X := X) F).IsLeftAdjoint :=
   let ⟨G, ⟨a⟩⟩ := ‹F.IsLeftAdjoint›; ⟨_, ⟨postAdjunctionLeft a⟩⟩
 
 open Limits
@@ -193,7 +193,7 @@ def postAdjunctionRight [HasPushouts D] {Y : D} {F : C ⥤ D} {G : D ⥤ C} (a :
 
 omit [HasPushouts C] in
 open pushout in
-instance post.instIsRightAdjoint [HasPushouts D] {Y : D} {G : D ⥤ C} [G.IsRightAdjoint] :
+instance isRightAdjoint_post [HasPushouts D] {Y : D} {G : D ⥤ C} [G.IsRightAdjoint] :
     (post (X := Y) G).IsRightAdjoint :=
   let ⟨F, ⟨a⟩⟩ := ‹G.IsRightAdjoint›; ⟨_, ⟨postAdjunctionRight a⟩⟩
 
