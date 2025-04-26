@@ -232,7 +232,7 @@ simproc_decl prod_univ_ofNat (Finset.prod (α := Fin _) Finset.univ _) := .ofQ f
       return .visit <| .mk q($res) <| some q($pf)
   | _, _ => return .continue
 
-/-- Rewrites `∑ (i : Fin n), f i` as `f 0 + f 1 + ... + f (n - 1)` when `n` is a numeral. -/
+/-- Rewrites `∑ i : Fin n, f i` as `f 0 + f 1 + ... + f (n - 1)` when `n` is a numeral. -/
 simproc_decl sum_univ_ofNat (Finset.sum (α := Fin _) Finset.univ _) := .ofQ fun u _ e => do
   match u, e with
   | .succ _, ~q(@Finset.sum (Fin $n) _ $inst (@Finset.univ _ $instF) $f) => do
