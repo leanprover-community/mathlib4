@@ -155,13 +155,15 @@ theorem mem_unstepSet_step {s : σ} {S : Set σ} {a : α} :
     s ∈ M.unstepSet S a ↔ ∃ t ∈ S, t ∈ M.step s a := by
   simp [mem_unstepSet, mem_unstep]
 
-/-- Reseversed analog of `M.evalFrom S x`:
+/-- Reversed analog of `M.evalFrom S x`:
   `M.rewindFrom S x` computes all possible reversed paths through `M` with
-  input `x` starting at an element of `S`. -/
+  input `x` starting at an element of `S`.
+  Even though `M.rewindFrom S x` voyages across `M` in reverse, `x` is processed
+  forward, from left to right. -/
 def rewindFrom : Set σ → List α → Set σ := List.foldl M.unstepSet
 
-/-- `M.rewind x` computes all possible paths through `M` with input `x` ending at an element of
-  `M.accept`. -/
+/-- `M.rewind x` computes all possible reversed paths through `M` with input `x`
+    starting at an element of `M.accept`. -/
 def rewind : List α → Set σ := M.rewindFrom M.accept
 
 /-- `M.rewindsToStart S` is the language of `x`
@@ -187,7 +189,7 @@ lemma reverse_acceptsFrom_rewindsToStart {M : NFA α σ} :
   ext xs
   rfl
 
-lemma reverse_rewindFrom_evalFrom {xs : List α} {S1 S2 : Set σ} {M : NFA α σ} :
+lemma rewindFrom_iff_evalFrom_reverse {xs : List α} {S1 S2 : Set σ} {M : NFA α σ} :
     (∃ s1 ∈ S1, s1 ∈ M.rewindFrom S2 xs) ↔
     (∃ s2 ∈ S2, s2 ∈ M.evalFrom S1 xs.reverse) := by
   dsimp [evalFrom, rewindFrom]
@@ -200,7 +202,7 @@ lemma reverse_rewindFrom_evalFrom {xs : List α} {S1 S2 : Set σ} {M : NFA α σ
 
 lemma mem_rewindsToStart_iff_reverse_mem_acceptsFrom {xs : List α} {M : NFA α σ} :
     xs ∈ M.rewindsToStart M.accept ↔ xs.reverse ∈ M.acceptsFrom M.start := by
-  simp [mem_rewindsToStart, mem_acceptsFrom, reverse_rewindFrom_evalFrom]
+  simp [mem_rewindsToStart, mem_acceptsFrom, rewindFrom_iff_evalFrom_reverse]
 
 theorem reverse_accepts {M : NFA α σ} :
     M.reverse.accepts = M.accepts.reverse := by
