@@ -22,11 +22,68 @@ open Bicategory
 
 namespace Pseudofunctor
 
-variable {B : Type*} [Bicategory B] [Strict B] (F : Pseudofunctor B Cat)
+variable {B : Type*} [Bicategory B] (F : Pseudofunctor B Cat)
 
 attribute [local simp] Cat.leftUnitor_hom_app Cat.rightUnitor_hom_app
   Cat.leftUnitor_inv_app Cat.rightUnitor_inv_app
   Cat.associator_hom_app Cat.associator_inv_app
+
+section naturality
+
+variable {b₀ b₁ b₂ : B} {X Y : F.obj b₀}
+
+section
+
+variable (f : b₀ ⟶ b₀) (hf : f = 𝟙 b₀) (a : X ⟶ Y)
+
+@[reassoc (attr := simp)]
+lemma mapId'_hom_naturality :
+    (F.map f).map a ≫ (F.mapId' f hf).hom.app Y = (F.mapId' f hf).hom.app X ≫ a :=
+  (F.mapId' f hf).hom.naturality a
+
+@[reassoc]
+lemma mapId'_inv_naturality :
+    (F.mapId' f hf).inv.app X ≫ (F.map f).map a = a ≫ (F.mapId' f hf).inv.app Y :=
+  ((F.mapId' f hf).inv.naturality a).symm
+
+end
+
+section
+
+variable (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
+  (hfg : f ≫ g = fg) (a : X ⟶ Y)
+
+@[reassoc (attr := simp)]
+lemma mapComp'_hom_naturality :
+    (F.map fg).map a ≫ (F.mapComp' f g fg hfg).hom.app Y =
+      (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) :=
+  (F.mapComp' f g fg hfg).hom.naturality a
+
+@[reassoc (attr := simp)]
+lemma mapComp'_inv_naturality :
+    (F.map g).map ((F.map f).map a) ≫ (F.mapComp' f g fg hfg).inv.app Y =
+    (F.mapComp' f g fg hfg).inv.app X ≫ (F.map fg).map a :=
+  (F.mapComp' f g fg hfg).inv.naturality a
+
+@[reassoc (attr := simp)]
+lemma mapComp'_naturality_1 :
+    (F.mapComp' f g fg hfg).inv.app X ≫
+      (F.map fg).map a ≫ (F.mapComp' f g fg hfg).hom.app Y =
+      (F.map g).map ((F.map f).map a) :=
+  NatIso.naturality_1 (F.mapComp' f g fg hfg) a
+
+@[reassoc (attr := simp)]
+lemma mapComp'_naturality_2 :
+    (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) ≫
+      (F.mapComp' f g fg hfg).inv.app Y =
+      (F.map fg).map a :=
+  NatIso.naturality_2 (F.mapComp' f g fg hfg) a
+
+end
+
+end naturality
+
+variable [Strict B]
 
 section unitality
 
@@ -96,6 +153,24 @@ lemma map_map_mapComp'_inv_app_comp_mapComp'_inv_app (hf : f₀₂ ≫ f₂₃ =
       (F.mapComp' f₀₁ f₁₃ f).inv.app X := by
   simpa using NatTrans.congr_app (F.mapComp'_inv_whiskerRight_comp_mapComp'_inv
     f₀₁ f₁₂ f₂₃ f₀₂ f₁₃ f h₀₂ h₁₃ hf) X
+
+@[reassoc]
+lemma mapComp'₀₁₃_inv_app (hf : f₀₁ ≫ f₁₃ = f) (X : F.obj b₀) :
+    (F.mapComp' f₀₁ f₁₃ f hf).inv.app X =
+      (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom.app ((F.map f₀₁).obj X) ≫
+        (F.map f₂₃).map ((F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv.app X) ≫
+          (F.mapComp' f₀₂ f₂₃ f).inv.app X := by
+  rw [← F.mapComp'_inv_app_comp_mapComp'_hom_app_assoc _ _ _ _ _ _ _ _ hf X,
+    Iso.hom_inv_id_app, Category.comp_id]
+
+@[reassoc]
+lemma mapComp'₀₁₃_hom_app (hf : f₀₁ ≫ f₁₃ = f) (X : F.obj b₀) :
+    (F.mapComp' f₀₁ f₁₃ f hf).hom.app X =
+      (F.mapComp' f₀₂ f₂₃ f).hom.app X ≫
+        (F.map f₂₃).map ((F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom.app X) ≫
+          (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv.app ((F.map f₀₁).obj X) := by
+  rw [← F.mapComp'_hom_app_comp_mapComp'_hom_app_map_obj_assoc _ _ _ _ _ _ h₀₂ h₁₃ hf X]
+  simp
 
 end associativity
 
