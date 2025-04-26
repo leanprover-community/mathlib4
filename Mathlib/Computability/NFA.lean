@@ -275,19 +275,18 @@ lemma union_acceptsFrom
     acceptsFrom (union M1 M2)
       { s : σ1 ⊕ σ2 | s.casesOn S1 S2 }
     = M1.acceptsFrom S1 ∪ M2.acceptsFrom S2 := by
-    apply Set.ext
-    intros xs
-    dsimp [acceptsFrom, evalFrom, union, accept]
-    unfold stepSet
-    dsimp [NFA.step]
-    rw [Set.mem_union, Set.mem_setOf, Set.mem_setOf]
-    revert S1 S2
-    induction xs <;> intro S1 S2
-    case nil =>
-      simp
-      simp [Set.mem_def]
-    case cons x xs ih =>
-      simp [List.foldl_cons, List.foldl_cons, List.foldl_cons, ←ih, union_biUnion_spec]
+  apply Set.ext
+  intros xs
+  dsimp [acceptsFrom, evalFrom, union, accept]
+  unfold stepSet
+  dsimp [NFA.step]
+  rw [Set.mem_union, Set.mem_setOf, Set.mem_setOf]
+  induction xs generalizing S1 S2
+  case nil =>
+    simp
+    simp [Set.mem_def]
+  case cons x xs ih =>
+    simp [List.foldl_cons, List.foldl_cons, List.foldl_cons, ←ih, union_biUnion_spec]
 
 theorem union_accepts {M1 : NFA α σ1} {M2 : NFA α σ2} :
     accepts (union M1 M2) = M1.accepts ∪ M2.accepts := by
@@ -346,23 +345,15 @@ lemma intersect_acceptsFrom
     acceptsFrom (intersect M1 M2)
       { s : σ1 × σ2 | s.1 ∈ S1 ∧ s.2 ∈ S2 }
     = M1.acceptsFrom S1 ∩ M2.acceptsFrom S2 := by
-    ext xs
-    dsimp [acceptsFrom, evalFrom, intersect, accept]
-    unfold stepSet
-    dsimp [NFA.step]
-    rw [Set.mem_inter_iff, Set.mem_setOf, Set.mem_setOf, Set.mem_setOf]
-    revert S1 S2
-    induction xs <;> intros S1 S2 <;> simp at *
-    case nil =>
-      constructor
-      · rintro ⟨x1, x2, ⟨h1, h2⟩, hS1, hS2⟩
-        constructor
-        · exists x1
-        · exists x2
-      · rintro ⟨⟨x1, h1, hS1⟩, ⟨x2, h2, hS2⟩⟩
-        exists x1, x2
-    case cons x xs ih =>
-      rw [intersect_biUnion_spec, ih]
+  ext xs
+  dsimp [acceptsFrom, evalFrom, intersect, accept]
+  unfold stepSet
+  dsimp [NFA.step]
+  rw [Set.mem_inter_iff, Set.mem_setOf, Set.mem_setOf, Set.mem_setOf]
+  induction xs generalizing S1 S2 <;> simp at *
+  case nil => tauto
+  case cons x xs ih =>
+    rw [intersect_biUnion_spec, ih]
 
 theorem intersect_accepts {M1 : NFA α σ1} {M2 : NFA α σ2} :
     (intersect M1 M2).accepts = M1.accepts ∩ M2.accepts := by
