@@ -147,36 +147,23 @@ under multiplication and taking powers. The theorem `AnalyticAt.order_add` estab
 under addition.
 -/
 
-/-- Helper lemma for `AnalyticAt.order_smul` -/
-lemma order_smul_of_order_eq_top₁ {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : AnalyticAt 𝕜 f z₀)
-    (hg : AnalyticAt 𝕜 g z₀) (h₁f : hf.order = ⊤) :
-    (hf.smul hg).order = ⊤ := by
-  rw [AnalyticAt.order_eq_top_iff] at *
-  filter_upwards [h₁f] with _ ha using by simp [ha]
-
-/-- Helper lemma for `AnalyticAt.order_smul` -/
-lemma order_smul_of_order_eq_top₂ {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : AnalyticAt 𝕜 f z₀)
-    (hg : AnalyticAt 𝕜 g z₀) (h₁g : hg.order = ⊤) :
-    (hf.smul hg).order = ⊤ := by
-  rw [AnalyticAt.order_eq_top_iff] at *
-  filter_upwards [h₁g] with _ ha using by simp [ha]
-
 /-- The order is additive when scalar multiplying analytic functions. -/
-theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : AnalyticAt 𝕜 f z₀)
-    (hg : AnalyticAt 𝕜 g z₀) :
+theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
     (hf.smul hg).order = hf.order + hg.order := by
   -- Trivial cases: one of the functions vanishes around z₀
   by_cases h₂f : hf.order = ⊤
-  · simp [hf.order_smul_of_order_eq_top₁ hg h₂f, h₂f]
+  · rw [h₂f, top_add, order_eq_top_iff]
+    filter_upwards [hf.order_eq_top_iff.mp h₂f] using by simp +contextual
   by_cases h₂g : hg.order = ⊤
-  · simp [hf.order_smul_of_order_eq_top₂ hg h₂g, h₂g]
+  · rw [h₂g, add_top, order_eq_top_iff]
+    filter_upwards [hg.order_eq_top_iff.mp h₂g] using by simp +contextual
   -- Non-trivial case: both functions do not vanish around z₀
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf.order_ne_top_iff.1 h₂f
   obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hg.order_ne_top_iff.1 h₂g
   rw [← ENat.coe_toNat h₂f, ← ENat.coe_toNat h₂g, ← ENat.coe_add, (hf.smul hg).order_eq_nat_iff]
-  refine ⟨g₁ • g₂, h₁g₁.smul h₁g₂, by simp [h₂g₁, h₂g₂], ?_⟩
+  refine ⟨_, h₁g₁.smul h₁g₂, by simp [h₂g₁, h₂g₂], ?_⟩
   filter_upwards [h₃g₁, h₃g₂] with a h₁a h₂a
-  simp_rw [Pi.smul_apply', h₂a, ← smul_assoc, h₁a, smul_eq_mul, pow_add, mul_right_comm]
+  simp [h₁a, h₂a, ← smul_assoc, pow_add, mul_right_comm]
 
 /-- The order is additive when multiplying analytic functions. -/
 theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
