@@ -96,12 +96,10 @@ theorem mem_acceptsFrom {S : Set σ} {x : List α} :
     x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := Iff.rfl
 
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
-def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
+def accepts : Language α :=  M.acceptsFrom M.start
 
 theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
   rfl
-
-lemma accepts_acceptsFrom : M.accepts = M.acceptsFrom M.start := rfl
 
 /-- `M.toDFA` is a `DFA` constructed from an `NFA` `M` using the subset construction. The
   states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
@@ -207,7 +205,7 @@ lemma mem_rewindsToStart_iff_reverse_mem_acceptsFrom {xs : List α} {M : NFA α 
 theorem reverse_accepts {M : NFA α σ} :
     M.reverse.accepts = M.accepts.reverse := by
   ext xs
-  rw [accepts_acceptsFrom, accepts_acceptsFrom, reverse_acceptsFrom_rewindsToStart]
+  simp [NFA.accepts, reverse_acceptsFrom_rewindsToStart]
   simp [NFA.reverse, mem_rewindsToStart_iff_reverse_mem_acceptsFrom]
 
 end Reversal
@@ -270,8 +268,8 @@ lemma union_acceptsFrom
 
 theorem union_accepts {M1 : NFA α σ1} {M2 : NFA α σ2} :
     accepts (union M1 M2) = M1.accepts + M2.accepts := by
-  rw [accepts_acceptsFrom, accepts_acceptsFrom, accepts_acceptsFrom,
-    union_start_spec, union_acceptsFrom]
+    simp only [NFA.accepts, union_start_spec]
+    rw [union_acceptsFrom]
 
 end Union
 
@@ -321,8 +319,8 @@ lemma intersect_acceptsFrom
 
 theorem intersect_accepts {M1 : NFA α σ1} {M2 : NFA α σ2} :
     (intersect M1 M2).accepts = M1.accepts ∩ M2.accepts := by
-  rw [NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom,
-      intersect_start_spec, intersect_acceptsFrom]
+  simp only [NFA.accepts]
+  rw [intersect_start_spec, intersect_acceptsFrom]
 
 end Intersection
 
