@@ -490,12 +490,12 @@ def Result.ofRawInt {α : Q(Type u)} (n : ℤ) (e : Q($α)) : Result e :=
 /-- Constructs a `Result` out of a raw rat cast.
 Assumes `e` is a raw rat cast expression denoting `n`. -/
 def Result.ofRawNNRat
-    {α : Q(Type u)} (q : NNRat) (e : Q($α)) (hyp : Option Expr := none) : Result e :=
-  if q.val.den = 1 then
-    Result.ofRawInt q.val.num e
+    {α : Q(Type u)} (q : ℚ) (e : Q($α)) (hyp : Option Expr := none) : Result e :=
+  if q.den = 1 then
+    Result.ofRawNat e
   else Id.run do
     let .app (.app (.app _ (dα : Q(DivisionSemiring $α))) (n : Q(ℕ))) (d : Q(ℕ)) := e
-      | panic! "not a raw rat cast"
+      | panic! "not a raw nnrat cast"
     let hyp : Q(($d : $α) ≠ 0) := hyp.get!
     .isNNRat dα q n d (q(IsNNRat.of_raw $α $n $d $hyp) : Expr)
 
@@ -504,8 +504,8 @@ Assumes `e` is a raw rat cast expression denoting `n`. -/
 def Result.ofRawRat {α : Q(Type u)} (q : ℚ) (e : Q($α)) (hyp : Option Expr := none) : Result e :=
   if q.den = 1 then
     Result.ofRawInt q.num e
-  else if hq : 0 ≤ q then
-    Result.ofRawNNRat ⟨q, hq⟩ e
+  else if 0 ≤ q then
+    Result.ofRawNNRat q e hyp
   else Id.run do
     let .app (.app (.app _ (dα : Q(DivisionRing $α))) (.app _ (n : Q(ℕ)))) (d : Q(ℕ)) := e
       | panic! "not a raw rat cast"

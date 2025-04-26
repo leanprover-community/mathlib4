@@ -938,9 +938,11 @@ def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
   | .isNegNat rα lit p =>
     pure ⟨_, (ExProd.mkNegNat _ rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
   | .isNNRat dsα q n d p =>
-    pure ⟨_, (ExProd.mkRat sα dsα q n d q(IsNNRat.den_nz $p)).2.toSum, (q(cast_nnrat $p) : Expr)⟩
+    pure ⟨_, (ExProd.mkRat sα dsα q
+      q(.ofNat $n) d q(IsNNRat.den_nz $p)).2.toSum, (q(cast_nnrat $p) : Expr)⟩
   | .isNegNNRat dα q n d p =>
-    pure ⟨_, (ExProd.mkRat sα dα q n d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
+    pure ⟨_, (ExProd.mkRat sα dα q
+      q(.negOfNat $n) d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
   | _ => none
 
 theorem toProd_pf (p : (a : R) = a') :
