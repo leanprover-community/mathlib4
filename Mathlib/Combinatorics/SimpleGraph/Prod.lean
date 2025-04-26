@@ -257,7 +257,7 @@ lemma edist_boxProd (x y : α × β) :
   classical
   -- The case `(G □ H).edist x y = ⊤` is used twice, so better to factor it out.
   have top_case : (G □ H).edist x y = ⊤ ↔ G.edist x.1 y.1 = ⊤ ∨ H.edist x.2 y.2 = ⊤ := by
-    simp_rw [← not_ne_iff, edist_ne_top_iff_reachable, boxProd_reachable, not_and_or]
+    simp_rw [← not_ne_iff, edist_ne_top_iff_reachable, reachable_boxProd, not_and_or]
   by_cases h : (G □ H).edist x y = ⊤
   · rw [top_case] at h
     aesop
