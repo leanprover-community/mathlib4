@@ -285,7 +285,8 @@ theorem levenshtein_nil_cons (y) (ys) :
   #adaptation_note
   /--
   2025-04-26 This `rw` was previously handled by the `dsimp`.
-  Is this a consequence of https://github.com/leanprover/lean4/pull/8090 be relevant?
+  Is this a consequence of https://github.com/leanprover/lean4/pull/8090?
+  This is fixed as of nightly-2025-04-27.
   -/
   rw [List.getElem_cons_zero]
   congr
