@@ -69,10 +69,10 @@ theorem ker_id : ker (LinearMap.id : M →ₗ[R] M) = ⊥ :=
 theorem map_coe_ker (f : F) (x : ker f) : f x = 0 :=
   mem_ker.1 x.2
 
-theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : f.ker.toAddSubmonoid = (AddMonoidHom.mker f) :=
+theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubmonoid = (AddMonoidHom.mker f) :=
   rfl
 
-theorem comp_ker_subtype (f : M →ₛₗ[τ₁₂] M₂) : f.comp f.ker.subtype = 0 :=
+theorem comp_ker_subtype (f : M →ₛₗ[τ₁₂] M₂) : f.comp (ker f).subtype = 0 :=
   LinearMap.ext fun x => mem_ker.1 x.2
 
 theorem ker_comp (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ₂₃] M₃) :
@@ -122,6 +122,7 @@ theorem ker_restrict [AddCommMonoid M₁] [Module R M₁] {p : Submodule R M} {q
 theorem ker_zero : ker (0 : M →ₛₗ[τ₁₂] M₂) = ⊤ :=
   eq_top_iff'.2 fun x => by simp
 
+@[simp]
 theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
   ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
 

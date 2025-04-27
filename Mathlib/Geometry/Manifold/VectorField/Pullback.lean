@@ -365,10 +365,7 @@ end MDifferentiability
 
 section ContMDiff
 
-variable [IsManifold I n M] [IsManifold I' n M'] [CompleteSpace E]
-  -- If `1 < n` then `IsManifold.of_le` shows the following assumptions are redundant.
-  -- We include them since they are necessary to make the statement.
-  [IsManifold I 1 M] [IsManifold I' 1 M']
+variable [CompleteSpace E] [IsManifold I 1 M] [IsManifold I' 1 M']
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
 `m + 1 ≤ n` is `C^m`.
@@ -635,7 +632,7 @@ lemma contMDiffWithinAt_mpullbackWithin_extChartAt_symm
         TangentBundle 𝓘(𝕜, E) E))
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x x) :=
   ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq' hV
-    (contMDiffWithinAt_extChartAt_symm_range (n := n) _ (mem_extChartAt_target x))
+    (contMDiffWithinAt_extChartAt_symm_range_self (n := n) x)
     (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x))
     (by simp [hx]) (UniqueMDiffOn.uniqueMDiffOn_target_inter hs x) hmn
     ((mapsTo_preimage _ _).mono_left inter_subset_right).preimage_mem_nhdsWithin
