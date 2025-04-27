@@ -533,6 +533,14 @@ variable {u v x: α} [DecidableEq α]
 to `x` and then back to `v` without revisiting `x` -/
 def Walk.shortCut (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk u v :=
   (w.takeUntil _ hx).append (w.reverse.takeUntil _ (w.mem_support_reverse.2 hx)).reverse
+
+@[simp]
+lemma Walk.shortCut_of_eq {y: α} (w : G.Walk u v) (hx : x ∈ w.support) (hy : y ∈ w.support)
+    (h : y = x) : w.shortCut hx = (w.shortCut hy) := by
+  subst h
+  rfl
+
+
 @[simp]
 lemma Walk.mem_support_shortCut (w : G.Walk u v) (hx : x ∈ w.support) :
     x ∈ (w.shortCut hx).support := by
@@ -542,6 +550,13 @@ lemma Walk.mem_support_shortCut (w : G.Walk u v) (hx : x ∈ w.support) :
 `x` to the last visit of `x` (which may be the same in which case this is `nil' x`) -/
 def Walk.shortClosed (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk x x :=
   (w.reverse.dropUntil _ (w.mem_support_reverse.2 hx)).reverse.dropUntil _ (by simp)
+
+
+@[simp]
+lemma Walk.shortClosed_of_eq {y: α} (w : G.Walk u v) (hx : x ∈ w.support) (hy : y ∈ w.support)
+    (h : y = x) : w.shortClosed hx = (w.shortClosed hy).copy h h := by
+  subst h
+  rfl
 
 lemma Walk.shortCut_not_nil (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) :
     ¬(w.shortCut hx).Nil := by
@@ -655,21 +670,25 @@ lemma Walk.count_support_rotate_other (w : G.Walk u u) (hx : x ∈ w.support)
   simp_rw [rotate, Walk.support_append, List.count_append]
   rw [List.count_tail (by simp), List.count_tail (by simp)]
   simp [head_support, beq_iff_eq, if_neg hvu, if_neg hvx, add_comm]
-/-
-def bypass {u v : V} : G.Walk u v → G.Walk u v
-  | nil => nil
-  | cons ha p =>
-    let p' := p.bypass
-    if hs : u ∈ p'.support then
-      p'.dropUntil u hs
-    else
-      cons ha p'
--/
+
 def Walk.shorterOdd {u : α} (p : G.Walk u u) {x : α} (hx : x ∈ p.support) : G.Walk x x :=
   if ho : Odd (p.shortClosed hx).length then
     p.shortClosed hx
   else
     (p.shortCut hx).rotate (by simp)
+/-
+
+
+@[simp]
+lemma Walk.shortClosed_of_eq {y: α} (w : G.Walk u v) (hx : x ∈ w.support) (hy : y ∈ w.support)
+    (h : y = x) : w.shortClosed hx = (w.shortClosed hy).copy h h := by
+  subst h
+  rfl-/
+@[simp]
+lemma Walk.shorterOdd_of_eq (p : G.Walk u u) {x y : α} (hx : x ∈ p.support) (hy : y ∈ p.support)
+    (h : y = x) : (p.shorterOdd hy).copy h h = p.shorterOdd hx := by
+  subst h
+  rfl
 
 lemma Walk.length_shorterOdd_lt_length {p : G.Walk u u} {x : α} (hx : x ∈ p.support) (hne : x ≠ u)
     (h2 : 1 < p.support.count x) : (p.shorterOdd hx).length < p.length := by
@@ -691,17 +710,32 @@ lemma Walk.length_shorterOdd_odd {p : G.Walk u u} {x : α} (hx : x ∈ p.support
 
 /-- Return an almost minimal odd closed subwalk from an odd length closed walk
 (if p.length is not odd then just returns some closed subwalk).
-
 -/
-def Walk.minOdd {u : α} (p : G.Walk u u) : Σ v, G.Walk v v :=
-  match (p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x)).attach with
-  | [] => ⟨_, p⟩
-  | x :: _ => by
-    simp_rw [List.mem_filter, decide_eq_true_eq] at x
-    have ⟨hx, hne, h2⟩ := x.2
-    have := p.length_shorterOdd_lt_length hx hne h2
-    exact (p.shorterOdd hx).minOdd
-    termination_by p.length
+def Walk.minOdd {u : α} (p : G.Walk u u) : Σ v, G.Walk v v := by
+  if h : p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x) = []
+    then exact ⟨_,p⟩
+  else
+  have hm := List.head_mem h;
+  rw [List.mem_filter, decide_eq_true_eq] at hm
+  have := p.length_shorterOdd_lt_length hm.1 hm.2.1 hm.2.2
+  exact (p.shorterOdd (head_filter_mem _ _ h)).minOdd
+  termination_by p.length
+
+
+
+
+lemma Walk.minOdd_nil {u : α} (p : G.Walk u u)
+    (hx : ∀ v, v ∈ p.support ∧ v ≠ u → p.support.count v ≤ 1) : p.minOdd = ⟨_, p⟩ := by
+  have h : (p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x)) = [] := by
+    simp_all
+  rw [minOdd, dif_pos h]
+
+lemma Walk.minOdd_cons {u : α} (p : G.Walk u u)
+    (h : (p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x)) ≠ []) :
+    p.minOdd = (p.shorterOdd ((head_filter_mem _ _ h))).minOdd := by
+  rw [minOdd, dif_neg h]
+
+
 
 def Walk.oddCycle {u : α} (p : G.Walk u u) : Σ v, G.Walk v v :=
   if 2 < p.minOdd.2.support.count (p.minOdd.1) then sorry else p.minOdd
@@ -712,7 +746,7 @@ lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.
   | h n ih =>
   by_cases hs : ∃ x ∈ w.support , x ≠ v ∧ 1 < w.support.count x
   · obtain ⟨x, hx, hne, h2⟩ := hs
-    exact ih _ (hn.symm ▸ (w.length_shorterOdd_lt_length hx hne h2)) (w.shorterOdd _ hx)
+    exact ih _ (hn.symm ▸ (w.length_shorterOdd_lt_length hx hne h2)) (w.shorterOdd hx)
           (w.length_shorterOdd_odd hx hne ho) rfl
   · push_neg at hs
     by_cases hcv : w.support.count v ≤ 2
