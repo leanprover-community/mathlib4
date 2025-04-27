@@ -38,7 +38,10 @@ theorem mulSupport_eq_preimage (f : α → M) : mulSupport f = f ⁻¹' {1}ᶜ :
 theorem not_mem_mulSupport {f : α → M} {x : α} : x ∉ mulSupport f ↔ f x = 1 :=
   not_not
 
-@[deprecated (since := "2025-04-27")] alias nmem_mulSupport := not_mem_mulSupport
+@[deprecated (since := "2025-04-27")] alias nmem_support := not_mem_support
+
+@[to_additive existing, deprecated (since := "2025-04-27")]
+alias nmem_mulSupport := not_mem_mulSupport
 
 @[to_additive]
 theorem compl_mulSupport {f : α → M} : (mulSupport f)ᶜ = { x | f x = 1 } :=

@@ -57,10 +57,14 @@ theorem mulTSupport_eq_empty_iff {f : X → α} : mulTSupport f = ∅ ↔ f = 1 
   rw [mulTSupport, closure_empty_iff, mulSupport_eq_empty_iff]
 
 @[to_additive]
-theorem image_eq_one_of_not_mem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
+theorem image_eq_one_of_not_mem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) :
+    f x = 1 :=
   mulSupport_subset_iff'.mp (subset_mulTSupport f) x hx
 
 @[deprecated (since := "2025-04-27")]
+alias image_eq_zero_of_nmem_tsupport := image_eq_zero_of_not_mem_tsupport
+
+@[to_additive existing, deprecated (since := "2025-04-27")]
 alias image_eq_one_of_nmem_mulTSupport := image_eq_one_of_not_mem_mulTSupport
 
 @[to_additive]

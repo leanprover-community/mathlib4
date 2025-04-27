@@ -500,10 +500,7 @@ theorem HasFDerivWithinAt.of_not_mem_closure (h : x ∉ closure s) : HasFDerivWi
   .of_not_accPt (h ·.clusterPt.mem_closure)
 
 @[deprecated (since := "2025-04-20")]
-alias hasFDerivWithinAt_of_not_mem_closure := HasFDerivWithinAt.of_not_mem_closure
-
-@[deprecated (since := "2025-04-27")]
-alias hasFDerivWithinAt_of_nmem_closure := hasFDerivWithinAt_of_not_mem_closure
+alias hasFDerivWithinAt_of_nmem_closure := HasFDerivWithinAt.of_not_mem_closure
 
 theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : fderivWithin 𝕜 f s x = 0 := by
   rw [fderivWithin, if_pos (.of_not_accPt h)]
