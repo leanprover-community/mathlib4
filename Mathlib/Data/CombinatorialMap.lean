@@ -158,15 +158,15 @@ abbrev Face (M : CombinatorialMap D) :=
   Quotient (Equiv.Perm.SameCycle.setoid M.facePerm)
 
 /-- The vertex corresponding to a dart `d`. -/
-abbrev Vertex.mk (M : CombinatorialMap D) (d : D) : M.Vertex :=
+abbrev Vertex_mk (M : CombinatorialMap D) (d : D) : M.Vertex :=
   Quotient.mk (Equiv.Perm.SameCycle.setoid M.vertexPerm) d
 
 /-- The edge corresponding to a dart `d`. -/
-abbrev Edge.mk (M : CombinatorialMap D) (d : D) : M.Edge :=
+abbrev Edge_mk (M : CombinatorialMap D) (d : D) : M.Edge :=
   Quotient.mk (Equiv.Perm.SameCycle.setoid M.edgePerm) d
 
 /-- The face corresponding to a dart `d`. -/
-abbrev Face.mk (M : CombinatorialMap D) (d : D) : M.Face :=
+abbrev Face_mk (M : CombinatorialMap D) (d : D) : M.Face :=
   Quotient.mk (Equiv.Perm.SameCycle.setoid M.facePerm) d
 
 noncomputable instance [Fintype D] [DecidableEq D] {w : D} :

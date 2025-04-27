@@ -19,7 +19,7 @@ variable {V D : Type*}
 
 /-- A `CombinatorialMap` induces a `SimpleGraph`. -/
 def fromCombinatorialMap (M : CombinatorialMap D) : SimpleGraph M.Vertex where
-  Adj v₁ v₂ := ∃ d₁ d₂ : D, M.dartVertex d₁ = v₁ ∧ M.dartVertex d₂ = v₂ ∧ M.edgePerm d₁ = d₂ ∧
+  Adj v₁ v₂ := ∃ d₁ d₂ : D, M.Vertex_mk d₁ = v₁ ∧ M.Vertex_mk d₂ = v₂ ∧ M.edgePerm d₁ = d₂ ∧
     v₁ ≠ v₂
   symm := by
     intro v₁ v₂ ⟨d₁, d₂, h₁, h₂, h₃, h₄⟩
