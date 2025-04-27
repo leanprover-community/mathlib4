@@ -193,17 +193,16 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
           Function.comp_apply]
       refine ⟨?_, ⟨?_⟩⟩
       · exact fun a => (fun i => (Option.rec (pOrder hM (s j)) k i : ℕ)) (finSuccEquiv d a)
-      · refine (((lequivProdOfRightSplitExact
-          (g := f.toLinearMap.comp <| mkQ _)
-          (f := (DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton (p ^ k i)
-              (LinearMap.toSpanSingleton _ _ _) (this i).choose_spec.left : R ⧸ _ →ₗ[R] _)))
-            (R ∙ s j).injective_subtype ?_ ?_).symm.trans
-          (((quotTorsionOfEquivSpanSingleton R M (s j)).symm.trans
-          (quotEquivOfEq (torsionOf R M (s j)) _
-          (Ideal.torsionOf_eq_span_pow_pOrder hp hM (s j)))).prodCongr
-          (.refl _ _))).trans
+      · refine
+          (lequivProdOfRightSplitExact
+            (g := f.toLinearMap.comp <| mkQ _)
+            (f := (DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton (p ^ k i)
+                (LinearMap.toSpanSingleton _ _ _) (this i).choose_spec.left : R ⧸ _ →ₗ[R] _)))
+              (R ∙ s j).injective_subtype ?_ ?_).symm ≪≫ₗ
+          (((quotTorsionOfEquivSpanSingleton R M (s j)).symm ≪≫ₗ
+            (quotEquivOfEq (torsionOf R M (s j)) _  (Ideal.torsionOf_eq_span_pow_pOrder hp hM (s j)))).prodCongr (.refl _ _)) ≪≫ₗ
           (@DirectSum.lequivProdDirectSum R _ _
-          (fun i => R ⧸ R ∙ p ^ @Option.rec _ (fun _ => ℕ) (pOrder hM <| s j) k i) _ _).symm).trans
+            (fun i => R ⧸ R ∙ p ^ @Option.rec _ (fun _ => ℕ) (pOrder hM <| s j) k i) _ _).symm ≪≫ₗ
           (DirectSum.lequivCongrLeft R (finSuccEquiv d).symm)
         · rw [range_subtype, LinearEquiv.ker_comp, ker_mkQ]
         · rw [LinearMap.comp_assoc]
