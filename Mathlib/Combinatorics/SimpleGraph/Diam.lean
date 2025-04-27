@@ -415,28 +415,23 @@ lemma center_eq_univ_iff_radius_eq_ediam [Nonempty α] :
     exact le_antisymm (le_iInf fun u ↦ (h u).ge) ((h Classical.ofNonempty) ▸ radius_le_eccent)
 
 lemma center_eq_univ_of_subsingleton [Subsingleton α] : G.center = Set.univ := by
-  rw [← Set.univ_subset_iff]
-  intro u h
-  rw [mem_center_iff, eccent_eq_zero_of_subsingleton u]
-  cases isEmpty_or_nonempty α
-  · rw [Set.univ_eq_empty_iff.mpr ‹_›] at h
-    exact h.elim
-  · symm
-    rw [radius_eq_zero_iff]
-    tauto
+  rw [Set.eq_univ_iff_forall]
+  intro u
+  rw [mem_center_iff, eccent_eq_zero_of_subsingleton u, eq_comm, radius_eq_zero_iff]
+  tauto
 
 lemma center_bot : (⊥ : SimpleGraph α).center = Set.univ := by
   cases subsingleton_or_nontrivial α
   · exact center_eq_univ_of_subsingleton
-  · rw [← Set.univ_subset_iff]
-    intro u h
+  · rw [Set.eq_univ_iff_forall]
+    intro u
     rw [mem_center_iff, eccent_bot, radius_bot]
 
 lemma center_top : (⊤ : SimpleGraph α).center = Set.univ := by
   cases subsingleton_or_nontrivial α
   · exact center_eq_univ_of_subsingleton
-  · rw [← Set.univ_subset_iff]
-    intro u h
+  · rw [Set.eq_univ_iff_forall]
+    intro u
     rw [mem_center_iff, eccent_top, radius_top]
 
 end center
