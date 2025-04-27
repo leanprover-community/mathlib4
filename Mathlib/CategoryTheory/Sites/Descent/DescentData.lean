@@ -242,7 +242,8 @@ lemma mk''Hom_self {Y : C} (f : X ⟶ Y) :
     F.mapComp'_hom_app_comp_mapComp'_hom_app_map_obj_assoc
       _ _ _ (𝟙 X) _ _ (by aesop_cat) (by aesop_cat) (by aesop_cat),
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
-    Functor.map_id, id_comp, Iso.hom_inv_id_app]
+    Functor.map_id]
+  simp only [id_comp, Iso.hom_inv_id_app]
 
 /-- Constructor for `Pseudofunctor.DescentData` for a family consisting
 of only one object `X` equipped with a chosen binary and ternary coproduct. -/
