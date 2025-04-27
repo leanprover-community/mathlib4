@@ -89,22 +89,22 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
         not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
-irreducible_def Lex.decidableLE : DecidableRel (α := Lex (Π₀ i, α i)) (· ≤ ·) :=
+irreducible_def Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
     (fun h ↦ isTrue <| Or.inl <| congr_arg _ h)
     fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
 
 /-- The less-than relation for the lexicographic ordering is decidable. -/
-irreducible_def Lex.decidableLT : DecidableRel (α := Lex (Π₀ i, α i)) (· < ·) :=
+irreducible_def Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
 
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
   __ := Lex.partialOrder
   le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
-  decidableLT := decidableLT
-  decidableLE := decidableLE
-  decidableEq := inferInstance
+  toDecidableLT := decidableLT
+  toDecidableLE := decidableLE
+  toDecidableEq := inferInstance
 
 end LinearOrder
 
@@ -171,24 +171,15 @@ instance Lex.orderBot [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
   bot := 0
   bot_le _ := DFinsupp.toLex_monotone bot_le
 
-instance Lex.orderedAddCancelCommMonoid [∀ i, OrderedCancelAddCommMonoid (α i)] :
-    OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
+instance Lex.isOrderedCancelAddMonoid [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedCancelAddMonoid (α i)] :
+    IsOrderedCancelAddMonoid (Lex (Π₀ i, α i)) where
   add_le_add_left _ _ h _ := add_le_add_left (α := Lex (∀ i, α i)) h _
   le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (∀ i, α i))
 
-instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
-    OrderedAddCommGroup (Lex (Π₀ i, α i)) where
-  add_le_add_left _ _ := add_le_add_left
-
-instance Lex.linearOrderedCancelAddCommMonoid
-    [∀ i, LinearOrderedCancelAddCommMonoid (α i)] :
-    LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
-  __ : LinearOrder (Lex (Π₀ i, α i)) := inferInstance
-  __ : OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) := inferInstance
-
-instance Lex.linearOrderedAddCommGroup [∀ i, LinearOrderedAddCommGroup (α i)] :
-    LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) where
-  __ : LinearOrder (Lex (Π₀ i, α i)) := inferInstance
+instance Lex.isOrderedAddMonoid [∀ i, AddCommGroup (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedAddMonoid (α i)] :
+    IsOrderedAddMonoid (Lex (Π₀ i, α i)) where
   add_le_add_left _ _ := add_le_add_left
 
 end OrderedAddMonoid

@@ -407,7 +407,7 @@ theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f'
   refine ((hf.implicitToPartialHomeomorph f f' hf').tendsto_symm
     (hf.mem_implicitToPartialHomeomorph_source hf')).comp ?_
   rw [implicitToPartialHomeomorph_self]
-  exact h₁.prod_mk_nhds h₂
+  exact h₁.prodMk_nhds h₂
 
 alias _root_.Filter.Tendsto.implicitFunction := tendsto_implicitFunction
 

@@ -7,6 +7,7 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
@@ -408,8 +409,8 @@ end big_operators
 
 section floor
 
-variable (R : Type*) [LinearOrderedRing R] [FloorRing R]
-variable (K : Type*) [LinearOrderedField K] [FloorRing K]
+variable (R : Type*) [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+variable (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
 example : ⌊(-1 : R)⌋ = -1 := by norm_num
 example : ⌊(2 : R)⌋ = 2 := by norm_num
@@ -493,3 +494,26 @@ example : Real.sqrt 0 = 0 := by norm_num
 example : NNReal.sqrt 0 = 0 := by norm_num
 
 end real_sqrt
+
+section Factorial
+
+open Nat
+
+example : 0! = 1 := by norm_num1
+example : 1! = 1 := by norm_num1
+example : 2! = 2 := by norm_num1
+example : 3! = 6 := by norm_num1
+example : 4! = 24 := by norm_num1
+
+example : 10! = 3628800 := by norm_num1
+example : 1000! / 999! = 1000 := by norm_num1
+example : (Nat.sqrt 1024)! = 32! := by norm_num1
+example : (1 : ℚ) / 0 ! + 1 / 1 ! + 1 / 2 ! + 1 / 3! + 1 / 4! = 65 / 24 := by norm_num1
+
+example : (4 + 2).ascFactorial 3 = 336 := by norm_num1
+example : (5 + 5).descFactorial 2 = 90 := by norm_num1
+example : (1000000).descFactorial 1000001 = 0 := by norm_num1
+
+example : (200 : ℕ) ! / (10 ^ 370) = 78865 := by norm_num1
+
+end Factorial

@@ -33,7 +33,7 @@ We define `FDRep R G` for any ring `R` and monoid `G`,
 as the category of finitely generated `R`-linear representations of `G`.
 
 The main case of interest is when `R = k` is a field and `G` is a group,
-and this is reflected in the documentaton.
+and this is reflected in the documentation.
 
 ## TODO
 * `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`

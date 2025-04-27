@@ -258,6 +258,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 -- but triggers https://github.com/leanprover/lean4/issues/2055
 -- We set it as a local instance instead.
 -- instance (priority := 100)
+-- Turning it into a global instance breaks `Mathlib.Algebra.Category.ModuleCat.Sheaf.Free`.
 /-- An abelian category has finite biproducts. -/
 theorem hasFiniteBiproducts : HasFiniteBiproducts C :=
   Limits.HasFiniteBiproducts.of_hasFiniteProducts

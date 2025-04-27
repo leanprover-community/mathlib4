@@ -56,6 +56,7 @@ abbrev Exponentiable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] (X :
 abbrev Exponentiable.mk {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] (X : C)
     (exp : C ⥤ C) (adj : MonoidalCategory.tensorLeft X ⊣ exp) :
     Exponentiable X where
+  rightAdj := exp
   adj := adj
 
 /-- If `X` and `Y` are exponentiable then `X ⨯ Y` is.
@@ -196,11 +197,9 @@ theorem uncurry_curry (f : A ⊗ X ⟶ Y) : uncurry (curry f) = f :=
 theorem curry_uncurry (f : X ⟶ A ⟹ Y) : curry (uncurry f) = f :=
   (Closed.adj.homEquiv _ _).right_inv f
 
--- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem curry_eq_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟹ X) : curry f = g ↔ f = uncurry g :=
   Adjunction.homEquiv_apply_eq (exp.adjunction A) f g
 
--- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟹ X) : g = curry f ↔ uncurry g = f :=
   Adjunction.eq_homEquiv_apply (exp.adjunction A) f g
 
@@ -364,8 +363,8 @@ Note we didn't require any coherence between the choice of finite products here,
 along the `prodComparison` isomorphism.
 -/
 noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [CartesianClosed C] : CartesianClosed D :=
-  letI := e.inverse.monoidalOfChosenFiniteProducts
-  MonoidalClosed.ofEquiv (e.inverse) e.symm.toAdjunction
+  letI : e.inverse.Monoidal := .ofChosenFiniteProducts _
+  MonoidalClosed.ofEquiv e.inverse e.symm.toAdjunction
 
 end Functor
 

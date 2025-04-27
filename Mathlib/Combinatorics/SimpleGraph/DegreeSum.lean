@@ -111,7 +111,7 @@ See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version. -/
 theorem sum_degrees_support_eq_twice_card_edges :
     ∑ v ∈ G.support, G.degree v = 2 * #G.edgeFinset := by
   simp_rw [← sum_degrees_eq_twice_card_edges,
-    ← sum_add_sum_compl G.support.toFinset, self_eq_add_right]
+    ← sum_add_sum_compl G.support.toFinset, left_eq_add]
   apply Finset.sum_eq_zero
   intro v hv
   rw [degree_eq_zero_iff_not_mem_support]
@@ -126,7 +126,7 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
     simp only [ZMod.natCast_self, zero_mul, Nat.cast_mul] at h
     rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
-    rw [@sum_congr _ _ _ _ (fun v => (G.degree v : ZMod 2)) (fun _v => (1 : ZMod 2)) _ rfl] at h
+    rw [sum_congr (g := fun _v ↦ (1 : ZMod 2)) rfl] at h
     · simp only [filter_congr, mul_one, nsmul_eq_mul, sum_const, Ne] at h
       rw [← ZMod.eq_zero_iff_even]
       convert h

@@ -90,7 +90,7 @@ class MonoidalCategoryStruct (C : Type u) [𝒞 : Category.{v} C] where
   tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂) :=
     whiskerRight f X₂ ≫ whiskerLeft Y₁ g
   /-- The tensor unity in the monoidal structure `𝟙_ C` -/
-  tensorUnit : C
+  tensorUnit (C) : C
   /-- The associator isomorphism `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
   associator : ∀ X Y Z : C, tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z)
   /-- The left unitor: `𝟙_ C ⊗ X ≃ X` -/
@@ -120,16 +120,7 @@ scoped infixl:81 " ▷ " => MonoidalCategoryStruct.whiskerRight
 scoped infixr:70 " ⊗ " => MonoidalCategoryStruct.tensorHom
 
 /-- Notation for `tensorUnit`, the two-sided identity of `⊗` -/
-scoped notation "𝟙_ " C:max => (MonoidalCategoryStruct.tensorUnit : C)
-
-open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Used to ensure that `𝟙_` notation is used, as the ascription makes this not automatic. -/
-@[app_delab CategoryTheory.MonoidalCategoryStruct.tensorUnit]
-def delabTensorUnit : Delab := whenPPOption getPPNotation <| withOverApp 3 do
-  let e ← getExpr
-  guard <| e.isAppOfArity ``MonoidalCategoryStruct.tensorUnit 3
-  let C ← withNaryArg 0 delab
-  `(𝟙_ $C)
+scoped notation "𝟙_ " C:arg => MonoidalCategoryStruct.tensorUnit C
 
 /-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
 scoped notation "α_" => MonoidalCategoryStruct.associator
@@ -710,11 +701,11 @@ abbrev ofTensorHom [MonoidalCategoryStruct C]
             aesop_cat)
     (leftUnitor_naturality :
       ∀ {X Y : C} (f : X ⟶ Y),
-        tensorHom (𝟙 tensorUnit) f ≫ (leftUnitor Y).hom = (leftUnitor X).hom ≫ f := by
+        tensorHom (𝟙 (𝟙_ C)) f ≫ (leftUnitor Y).hom = (leftUnitor X).hom ≫ f := by
           aesop_cat)
     (rightUnitor_naturality :
       ∀ {X Y : C} (f : X ⟶ Y),
-        tensorHom f (𝟙 tensorUnit) ≫ (rightUnitor Y).hom = (rightUnitor X).hom ≫ f := by
+        tensorHom f (𝟙 (𝟙_ C)) ≫ (rightUnitor Y).hom = (rightUnitor X).hom ≫ f := by
           aesop_cat)
     (pentagon :
       ∀ W X Y Z : C,
@@ -724,7 +715,7 @@ abbrev ofTensorHom [MonoidalCategoryStruct C]
             aesop_cat)
     (triangle :
       ∀ X Y : C,
-        (associator X tensorUnit Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
+        (associator X (𝟙_ C) Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
           tensorHom (rightUnitor X).hom (𝟙 Y) := by
             aesop_cat) :
       MonoidalCategory C where

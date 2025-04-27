@@ -135,9 +135,6 @@ theorem hasFiniteLimits_of_hasEqualizers_and_finite_products [HasFiniteProducts 
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-/- Porting note: Removed this and made whatever necessary noncomputable -/
--- noncomputable section
-
 section
 
 variable [HasLimitsOfShape (Discrete J) C] [HasLimitsOfShape (Discrete (Σ p : J × J, p.1 ⟶ p.2)) C]
@@ -185,15 +182,9 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
       apply equalizerIsEqualizer
     · refine Cones.ext (Iso.refl _) ?_
       intro j; dsimp [P, Q, I, i]; simp
--- See note [dsimp, simp].
 
 end
 
-/- Porting note: the original parameter [∀ (J) [Fintype J], PreservesColimitsOfShape
-(Discrete.{0} J) G] triggered the error "invalid parametric local instance, parameter
-with type Fintype J does not have forward dependencies, type class resolution cannot
-use this kind of local instance because it will not be able to infer a value for this
-parameter." Factored out this as new class in `CategoryTheory.Limits.Preserves.Finite` -/
 /-- If G preserves equalizers and finite products, it preserves finite limits. -/
 lemma preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts [HasEqualizers C]
     [HasFiniteProducts C] (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
@@ -275,15 +266,13 @@ theorem hasFiniteLimits_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbac
 lemma preservesFiniteLimits_of_preservesTerminal_and_pullbacks [HasTerminal C]
     [HasPullbacks C] (G : C ⥤ D) [PreservesLimitsOfShape (Discrete.{0} PEmpty) G]
     [PreservesLimitsOfShape WalkingCospan G] : PreservesFiniteLimits G := by
-  haveI : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
-  haveI : PreservesLimitsOfShape (Discrete WalkingPair) G :=
+  have : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
+  have : PreservesLimitsOfShape (Discrete WalkingPair) G :=
     preservesBinaryProducts_of_preservesTerminal_and_pullbacks G
-  haveI : PreservesLimitsOfShape WalkingParallelPair G :=
-      preservesEqualizers_of_preservesPullbacks_and_binaryProducts G
-  apply
-    @preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts _ _ _ _ _ _ G _ ?_
-  refine ⟨fun n ↦ ?_⟩
-  apply preservesFiniteProducts_of_preserves_binary_and_terminal G
+  have : PreservesLimitsOfShape WalkingParallelPair G :=
+    preservesEqualizers_of_preservesPullbacks_and_binaryProducts G
+  have : PreservesFiniteProducts G := .of_preserves_binary_and_terminal _
+  exact preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts G
 
 attribute [local instance] preservesFiniteLimits_of_preservesTerminal_and_pullbacks in
 /-- If a functor creates terminal objects and pullbacks, it creates finite limits.
@@ -410,8 +399,6 @@ theorem hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts [HasFiniteCop
     [HasCoequalizers C] : HasFiniteColimits C where
   out _ := { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
 
--- Porting note: removed and added individually
--- noncomputable section
 section
 
 variable [HasColimitsOfShape (Discrete.{w} J) C]
@@ -461,15 +448,9 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     intro j
     dsimp [P, Q, I, i]
     simp
--- See note [dsimp, simp].
 
 end
 
-/- Porting note: the original parameter [∀ (J) [Fintype J], PreservesColimitsOfShape
-(Discrete.{0} J) G] triggered the error "invalid parametric local instance, parameter
-with type Fintype J does not have forward dependencies, type class resolution cannot use
-this kind of local instance because it will not be able to infer a value for this parameter."
-Factored out this as new class in `CategoryTheory.Limits.Preserves.Finite` -/
 /-- If G preserves coequalizers and finite coproducts, it preserves finite colimits. -/
 lemma preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts
     [HasCoequalizers C] [HasFiniteCoproducts C] (G : C ⥤ D)
