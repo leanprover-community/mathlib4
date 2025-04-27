@@ -52,11 +52,11 @@ namespace CombinatorialMap
 variable {D D' : Type*} {M : CombinatorialMap D} {M' : CombinatorialMap D'}
 
 lemma edge_mul_vertex_mul_face_eq_one : M.edgePerm * M.vertexPerm * M.facePerm = 1 := by
-  rw [← mul_right_eq_self (a := M.facePerm), ← mul_assoc, ← mul_assoc,
+  rw [← mul_eq_left (a := M.facePerm), ← mul_assoc, ← mul_assoc,
     M.face_mul_edge_mul_vertex_eq_one, one_mul]
 
 lemma vertex_mul_face_mul_edge_eq_one : M.vertexPerm * M.facePerm * M.edgePerm = 1 := by
-  rw [← mul_right_eq_self (a := M.edgePerm), ← mul_assoc, ← mul_assoc,
+  rw [← mul_eq_left (a := M.edgePerm), ← mul_assoc, ← mul_assoc,
     M.edge_mul_vertex_mul_face_eq_one, one_mul]
 
 /-- `facePerm` expressed in terms of `vertexPerm` and `edgePerm`. -/
