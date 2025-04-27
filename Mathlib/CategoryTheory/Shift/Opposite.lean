@@ -3,11 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Shift.CommShift
-=======
 import Mathlib.CategoryTheory.Shift.Adjunction
->>>>>>> origin/jriou_localization_bump_deps
 import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
@@ -141,29 +137,6 @@ lemma oppositeShiftFunctorAdd'_hom_app :
   subst h
   simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_hom_app]
 
-<<<<<<< HEAD
-namespace Functor
-
-variable {D} (A)
-variable [F.CommShift A]
-
-def opShift : OppositeShift C A ⥤ OppositeShift D A := F.op
-
-instance : (F.opShift A).CommShift A where
-  iso a := (NatIso.op (F.commShiftIso a)).symm
-  zero := by
-    ext X
-    dsimp
-    simp only [F.commShiftIso_zero, CommShift.isoZero_inv_app, op_comp, opShift,
-      CommShift.isoZero_hom_app, op_obj, op_map]
-    erw [oppositeShiftFunctorZero_hom_app]
-    rfl
-  add a b := by
-    ext X
-    dsimp
-    simp [F.commShiftIso_add]
-    erw [oppositeShiftFunctorAdd_hom_app]
-=======
 end
 
 variable {C D : Type*} [Category C] [Category D] (A : Type*) [AddMonoid A]
@@ -235,13 +208,10 @@ noncomputable def commShiftUnop
       CommShift.isoAdd_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, Category.assoc,
       CommShift.isoAdd_hom_app]
     erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
->>>>>>> origin/jriou_localization_bump_deps
     rfl
 
 end Functor
 
-<<<<<<< HEAD
-=======
 namespace NatTrans
 
 variable {F} {G : C ⥤ D} [F.CommShift A] [G.CommShift A]
@@ -337,5 +307,4 @@ instance commShift_op [F.CommShift A] [G.CommShift A]  [adj.CommShift A] :
 
 end Adjunction
 
->>>>>>> origin/jriou_localization_bump_deps
 end CategoryTheory

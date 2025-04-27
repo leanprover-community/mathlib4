@@ -3,11 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Shift.CommShift
-=======
 import Mathlib.CategoryTheory.Shift.Adjunction
->>>>>>> origin/jriou_localization_bump_deps
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
@@ -140,78 +136,6 @@ lemma pullbackShiftFunctorAdd'_hom_app :
     ← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
   rfl
 
-<<<<<<< HEAD
-namespace Functor
-
-variable {D}
-variable [F.CommShift B]
-
-def pullbackShift : PullbackShift C φ ⥤ PullbackShift D φ := F
-
-namespace pullbackShiftCommShift
-
-def iso (a : A) :
-    shiftFunctor (PullbackShift C φ) a ⋙ pullbackShift F φ ≅
-      pullbackShift F φ ⋙ shiftFunctor (PullbackShift D φ) a :=
-  F.commShiftIso (φ a)
-
-lemma iso_eq (a : A) (b : B) (h : b = φ a) :
-    iso F φ a =
-      isoWhiskerRight (pullbackShiftIso C φ a b h) _ ≪≫ F.commShiftIso b ≪≫
-        isoWhiskerLeft _ (pullbackShiftIso D φ a b h).symm := by
-  ext X
-  subst h
-  dsimp [pullbackShiftIso]
-  rw [map_id]
-  erw [id_comp, comp_id]
-  rfl
-
-end pullbackShiftCommShift
-
-open pullbackShiftCommShift in
-instance : (F.pullbackShift φ).CommShift A where
-  iso a := iso F φ a
-  zero := by
-    ext X
-    dsimp
-    rw [iso_eq F φ 0 0 (by simp), F.commShiftIso_zero, CommShift.isoZero_hom_app]
-    dsimp
-    rw [CommShift.isoZero_hom_app, assoc,
-      pullbackShiftFunctorZero_hom_app, pullbackShiftFunctorZero_inv_app,
-      map_comp, assoc]
-    rfl
-  add a b := by
-    ext X
-    dsimp
-    rw [iso_eq F φ (a + b) (φ a + φ b) (by simp), CommShift.isoAdd_hom_app,
-      F.commShiftIso_add]
-    dsimp
-    simp only [CommShift.isoAdd_hom_app, comp_obj, assoc,
-      iso_eq F φ a (φ a) rfl, iso_eq F φ b (φ b) rfl]
-    dsimp
-    conv_rhs => rw [← shiftFunctorAdd'_eq_shiftFunctorAdd]
-    rw [pullbackShiftFunctorAdd'_hom_app φ X a b (a + b) rfl (φ a) (φ b) (φ a + φ b)
-      rfl rfl (by simp)]
-    conv_rhs => rw [shiftFunctorAdd'_eq_shiftFunctorAdd]
-    dsimp
-    simp only [map_comp, assoc]
-    congr 2
-    dsimp [pullbackShiftIso]
-    simp only [eqToHom_app, map_id]
-    erw [Functor.map_id, Functor.map_id, Functor.map_id, Functor.map_id, Functor.map_id,
-      id_comp, id_comp, id_comp, id_comp, id_comp, id_comp]
-    congr 2
-    conv_rhs => rw [← shiftFunctorAdd'_eq_shiftFunctorAdd]
-    erw [pullbackShiftFunctorAdd'_inv_app φ (F.obj X) a b (a + b) rfl (φ a) (φ b) (φ a + φ b)
-      rfl rfl (by simp)]
-    rw [shiftFunctorAdd'_eq_shiftFunctorAdd]
-    dsimp [pullbackShiftIso]
-    simp only [map_id, eqToHom_app, id_comp]
-    rfl
-
-end Functor
-
-=======
 variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
 
 /--
@@ -377,5 +301,4 @@ instance commShiftPullback [adj.CommShift B] : (PullbackShift.adjunction φ adj)
 
 end Adjunction
 
->>>>>>> origin/jriou_localization_bump_deps
 end CategoryTheory
