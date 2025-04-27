@@ -1625,15 +1625,36 @@ lemma eq5 :
         rw [norm_pos_iff]
         simp only [ne_eq, pow_eq_zero_iff', Algebra.norm_eq_zero_iff, Int.cast_eq_zero, not_and,
           Decidable.not_not]
-        sorry
+        intros H
+        by_contra H1
+        apply cρ_ne_zero α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+        exact H
         }
 
       rw [← mul_le_mul_left this]
 
       · rw [mul_inv_cancel₀]
-        · sorry
-        · sorry
-        }
+        · simp_all only [norm_pow, ρ]
+        · simp only [norm_pow, ne_eq, pow_eq_zero_iff', norm_eq_zero, not_and, Decidable.not_not,
+          ρ]
+          intros H
+          rw [H] at this
+          simp only [norm_pow, norm_zero, ρ] at this
+          rw [zero_pow] at this
+          by_contra H1
+          simp_all only [norm_pow, lt_self_iff_false, ρ]
+          · simp_all only [norm_pow, lt_self_iff_false, ρ]
+            have : 0 < Module.finrank ℚ K := by {
+            exact Module.finrank_pos}
+            simp_all only [norm_zero, ne_eq, ρ]
+            obtain ⟨left, right⟩ := htriv
+            obtain ⟨left_1, right_1⟩ := habc
+            obtain ⟨left_2, right_1⟩ := right_1
+            subst left_2 left_1
+            apply Aesop.BuiltinRules.not_intro
+            intro a
+            simp_all only [pow_zero, zero_lt_one, lt_self_iff_false]
+            }
 
   calc _ = _ := ?_
        c₅ ^ ((-r : ℤ)) < c₁^ ((- h K : ℤ) * (r + 2 * m K * q) ) := ?_
