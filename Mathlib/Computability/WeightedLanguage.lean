@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rudy Peterson
 -/
 import Mathlib.Data.List.Perm.Lattice
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Computability.Language
 
 /-!
