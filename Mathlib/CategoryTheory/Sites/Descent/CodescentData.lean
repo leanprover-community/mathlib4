@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 -/
 
-universe t w v v' u u'
+universe t t' w v v' u u'
 
 namespace CategoryTheory
 
@@ -80,7 +80,7 @@ section
 
 variable (D : F.CodescentData X)
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma iso_hom_iso_hom ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι⦄
     (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) (f₃ : X i₃ ⟶ Y) :
     (D.iso f₁ f₂).hom ≫ (D.iso f₂ f₃).hom = (D.iso f₁ f₃).hom := by
@@ -154,6 +154,73 @@ lemma map_map' ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X 
   simp
 
 end Hom
+
+variable {ι' : Type t'} {X' : ι' → C} {p : ι' → ι} (π : ∀ i', X (p i') ⟶ X' i')
+
+abbrev pullbackObjObj (D : F.CodescentData X) (i' : ι') : F.obj (X' i') :=
+  (F.map (π i')).obj (D.obj (p i'))
+
+def pullbackObjIso
+    (D : F.CodescentData X) ⦃Y : C⦄ ⦃i₁ i₂ : ι'⦄ (f₁ : X' i₁ ⟶ Y) (f₂ : X' i₂ ⟶ Y) :
+    (F.map f₁).obj (pullbackObjObj π D i₁) ≅ (F.map f₂).obj (pullbackObjObj π D i₂) :=
+  (F.mapComp' (π i₁) f₁ _ rfl).symm.app _ ≪≫
+      D.iso _ _ ≪≫ (F.mapComp' (π i₂) f₂ _ rfl).app _
+
+def pullbackObjIso_eq
+    (D : F.CodescentData X) ⦃Y : C⦄ ⦃i₁ i₂ : ι'⦄ (f₁ : X' i₁ ⟶ Y) (f₂ : X' i₂ ⟶ Y)
+    (g₁ : X (p i₁) ⟶ Y) (g₂ : X (p i₂) ⟶ Y) (hg₁ : g₁ = π i₁ ≫ f₁) (hg₂ : g₂ = π i₂ ≫ f₂) :
+    pullbackObjIso π D f₁ f₂ = (F.mapComp' (π i₁) f₁ g₁).symm.app _ ≪≫
+      D.iso g₁ g₂ ≪≫ (F.mapComp' (π i₂) f₂ g₂).app _ := by
+  subst hg₁ hg₂
+  rfl
+
+@[reassoc (attr := simp)]
+lemma pullbackObjIso_hom_comp
+    (D : F.CodescentData X) ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι'⦄
+    (f₁ : X' i₁ ⟶ Y) (f₂ : X' i₂ ⟶ Y) (f₃ : X' i₃ ⟶ Y)
+    (g₁ : X (p i₁) ⟶ Y) (g₂ : X (p i₂) ⟶ Y) (g₃ : X (p i₃) ⟶ Y)
+    (hg₁ : g₁ = π i₁ ≫ f₁) (hg₂ : g₂ = π i₂ ≫ f₂) (hg₃ : g₃ = π i₃ ≫ f₃) :
+    (pullbackObjIso π D f₁ f₂).hom ≫ (pullbackObjIso π D f₂ f₃).hom =
+      (pullbackObjIso π D f₁ f₃).hom := by
+  simp [pullbackObjIso_eq π D _ _ g₁ g₂ hg₁ hg₂, pullbackObjIso_eq π D _ _ g₂ g₃ hg₂ hg₃,
+    pullbackObjIso_eq π D _ _ g₁ g₃ hg₁ hg₃]
+
+variable [Strict C]
+
+@[simps]
+def pullbackObj (D : F.CodescentData X) : F.CodescentData X' where
+  obj := pullbackObjObj π D
+  iso := pullbackObjIso π D
+  iso_comp' Y' Y g i₁ i₂ f₁ f₂ f₁g f₂g hf₁g hf₂g := by
+    ext
+    dsimp
+    rw [pullbackObjIso_eq π D f₁ f₂ _ _ rfl rfl,
+      pullbackObjIso_eq π D f₁g f₂g _ _ rfl rfl,
+      D.iso_comp' g (π i₁ ≫ f₁) (π i₂ ≫ f₂) (π i₁ ≫ f₁g) (π i₂ ≫ f₂g)
+        (by aesop_cat) (by aesop_cat)]
+    dsimp [pullbackObjObj]
+    simp only [assoc, Functor.map_comp_assoc]
+    rw [F.mapComp'_inv_app_comp_mapComp'_hom_app_assoc _ _ _ _ _ _ rfl hf₁g rfl,
+      F.mapComp'_inv_app_comp_mapComp'_hom_app' _ _ _ _ _ _ rfl hf₂g rfl]
+  iso_trans Y i₁ i₂ i₃ f₁ f₂ f₃ := by ext; simp
+
+abbrev pullbackMapHom {D₁ D₂ : F.CodescentData X} (f : D₁ ⟶ D₂) (i' : ι'):
+    pullbackObjObj π D₁ i' ⟶ pullbackObjObj π D₂ i' :=
+  (F.map (π i')).map (f.hom (p i'))
+
+attribute [local simp] pullbackObjIso pullbackMapHom
+
+@[simps]
+def pullbackMap {D₁ D₂ : F.CodescentData X} (f : D₁ ⟶ D₂) :
+    pullbackObj π D₁ ⟶ pullbackObj π D₂ where
+  hom i' := pullbackMapHom π f i'
+
+-- note: up to a natural isomorphism, this should not depend on the choice of `p` or `π`,
+-- but only that any object `X' i'` is a target of a map from some `X i`
+@[simps]
+def pullback : F.CodescentData X ⥤ F.CodescentData X' where
+  obj := pullbackObj π
+  map f := pullbackMap π f
 
 end CodescentData
 
