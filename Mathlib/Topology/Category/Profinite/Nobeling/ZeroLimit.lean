@@ -188,9 +188,8 @@ theorem smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ 
   · use ⟨l, Products.isGood_mono C h gl⟩
     ext x
     rw [eval, ← Products.eval_πs' _ h (Products.prop_of_isGood C _ gl), eval]
-  · rw [← LocallyConstant.coe_inj, coe_πs C o₂, ← LocallyConstant.toFun_eq_coe, coe_πs',
-      Function.comp_assoc, projRestricts_comp_projRestrict C _, coe_πs]
-    rfl
+  · rw [← LocallyConstant.coe_inj, coe_πs C o₂, coe_πs', Function.comp_assoc,
+      projRestricts_comp_projRestrict C _, coe_πs]
 
 end GoodProducts
 
