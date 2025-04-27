@@ -530,10 +530,10 @@ noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
     NormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
     { inner := fun x y => dotProduct (M *ᵥ y) (star x)
-      conj_symm := fun x y => by
+      conj_inner_symm := fun x y => by
         rw [dotProduct_comm, star_dotProduct, starRingEnd_apply, star_star,
           star_mulVec, dotProduct_comm (M *ᵥ y), dotProduct_mulVec, hM.isHermitian.eq]
-      nonneg_re := fun x => by
+      re_inner_nonneg := fun x => by
         by_cases h : x = 0
         · simp [h]
         · exact (dotProduct_comm _ (M *ᵥ x) ▸ hM.re_dotProduct_pos h).le

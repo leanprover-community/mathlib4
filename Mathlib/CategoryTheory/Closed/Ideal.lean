@@ -302,11 +302,13 @@ lemma preservesBinaryProducts_of_exponentialIdeal :
 /--
 If a reflective subcategory is an exponential ideal, then the reflector preserves finite products.
 -/
-lemma preservesFiniteProducts_of_exponentialIdeal (J : Type) [Finite J] :
-    PreservesLimitsOfShape (Discrete J) (reflector i) := by
-  letI := preservesBinaryProducts_of_exponentialIdeal i
-  letI : PreservesLimitsOfShape _ (reflector i) := leftAdjoint_preservesTerminal_of_reflective.{0} i
-  apply preservesFiniteProducts_of_preserves_binary_and_terminal (reflector i) J
+lemma Limits.PreservesFiniteProducts.of_exponentialIdeal : PreservesFiniteProducts (reflector i) :=
+  have := preservesBinaryProducts_of_exponentialIdeal i
+  have : PreservesLimitsOfShape _ (reflector i) := leftAdjoint_preservesTerminal_of_reflective.{0} i
+  .of_preserves_binary_and_terminal _
+
+@[deprecated (since := "2025-04-22")]
+alias preservesFiniteProducts_of_exponentialIdeal := PreservesFiniteProducts.of_exponentialIdeal
 
 end
 
