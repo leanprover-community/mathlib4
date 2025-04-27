@@ -276,7 +276,7 @@ theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
   | succ n IH =>
     intro ifp_succ_n stream_succ_nth_eq
     suffices ifp_succ_n.fr.num + 1 ≤ (IntFractPair.of q).fr.num - n by
-      rw [Int.ofNat_succ, sub_add_eq_sub_sub]
+      rw [Int.natCast_succ, sub_add_eq_sub_sub]
       solve_by_elim [le_sub_right_of_add_le]
     rcases succ_nth_stream_eq_some_iff.mp stream_succ_nth_eq with ⟨ifp_n, stream_nth_eq, -⟩
     have : ifp_succ_n.fr.num < ifp_n.fr.num :=

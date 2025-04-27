@@ -383,10 +383,13 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
+#adaptation_note /-- 2025-04-24 Fix the proofs and restore this. -/
+/-
 instance CommRing.toGrindCommRing [s : CommRing α] :
     Lean.Grind.CommRing α :=
   { s with
     ofNat | 0 | 1 | n + 2 => inferInstance
+    intCast := inferInstance
     add_zero := by simp [add_zero]
     neg_add_cancel := by simp [neg_add_cancel]
     mul_one := by simp [mul_one]
@@ -401,7 +404,15 @@ instance CommRing.toGrindCommRing [s : CommRing α] :
       rfl
     | n + 2 => by
       show Nat.cast (n + 2 + 1) = Nat.cast (n + 2) + 1
-      rw [← AddCommGroupWithOne.natCast_succ] }
+      rw [← AddMonoidWithOne.natCast_succ]
+    intCast_ofNat
+    | 0 => (AddGroupWithOne.intCast_ofNat (R := α) 0).trans (AddMonoidWithOne.natCast_zero (R := α))
+    | 1 => (AddGroupWithOne.intCast_ofNat (R := α) 1).trans (Nat.cast_one)
+    | n + 2 => AddGroupWithOne.intCast_ofNat (R := α) (n + 2)
+    intCast_neg
+      | (0 : ℕ) => sorry
+      | (n + 1: ℕ) => by sorry
+      | -(n + 1 : ℕ) => sorry }
 
 theorem CommRing.toGrindCommRing_ofNat [CommRing α] (n : ℕ) :
     @OfNat.ofNat α n (CommRing.toGrindCommRing.ofNat n) = n.cast := by
@@ -422,7 +433,11 @@ example (s : Lean.Grind.CommRing α) : CommRing α :=
     one_mul := Lean.Grind.CommRing.one_mul
     nsmul := nsmulRec
     zsmul := zsmulRec
-    natCast_succ n := Lean.Grind.CommRing.natCast_succ n }
+    natCast_succ n := Lean.Grind.CommRing.natCast_succ n
+    intCast := sorry
+    intCast_ofNat := sorry
+    intCast_negSucc := sorry }
+-/
 
 /-- A domain is a nontrivial semiring such that multiplication by a non zero element
 is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying

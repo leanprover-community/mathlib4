@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Util.AssertExists
+import Mathlib.Data.List.Induction
 
 /-!
 # Join of a list of lists
