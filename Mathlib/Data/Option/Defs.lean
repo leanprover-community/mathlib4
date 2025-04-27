@@ -75,9 +75,4 @@ instance merge_isId (f : α → α → α) : Std.LawfulIdentity (merge f) none w
   merge_isIdempotent
 @[deprecated (since := "2025-04-04")] alias liftOrGet_isId := merge_isId
 
-/-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
-def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
-  | .some a => some a
-  | _ => none
-
 end Option
