@@ -674,7 +674,7 @@ def empty.{u} : uBordismClass X k I :=
 
 -- TODO: better name!
 /-- The disjoint union of singular manifolds descends to bordism classes. -/
-lemma aux.{u} {a₁ b₁ a₂ b₂ : SingularNManifold.{u} X k I}
+private lemma aux.{u} {a₁ b₁ a₂ b₂ : SingularNManifold.{u} X k I}
     (h : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) a₁ a₂)
     (h' : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) b₁ b₂) :
     unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (a₁.sum b₁) (a₂.sum b₂) := by
@@ -683,6 +683,8 @@ lemma aux.{u} {a₁ b₁ a₂ b₂ : SingularNManifold.{u} X k I}
   choose ψ _ using h'
   use φ.sum ψ
 
+/-- The group operation on unoriented bordism classes: lifting the sum of singular manifolds
+to bordism classes, i.e. lifting `SingularNManifold.sum` to `unorientedBordismSetoid` -/
 def sum.{u} :
     (uBordismClass.{_, _, _, u} X k I) → (uBordismClass X k I) → uBordismClass X k I :=
   letI sum := Quotient.lift₂
@@ -703,7 +705,6 @@ instance : Zero (uBordismClass X k I) where
   zero := empty X k I
 
 instance : Neg (uBordismClass X k I) where
-  -- XXX: better name for the variable?
   neg Φ := Φ
 
 instance : Add (uBordismClass X k I) where
@@ -769,21 +770,19 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
   {f : X → Y} {g : Y → Z}
 
 /-- If `s` and `t` are cobordant, so are `s.map hf` and `t.map hf`. -/
-def map_aux (hf : Continuous f) {s t: SingularNManifold X k I}
+lemma map_aux (hf : Continuous f) {s t: SingularNManifold X k I}
     (h : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) s t) :
     unorientedBordismRelation Y k I (I.prod (𝓡∂ 1)) (s.map hf) (t.map hf) := by
   choose φ _ using h
   use φ.map hf
 
+/-- Map an unoriented bordism class under a continuous map -/
 def map (hf : Continuous f) : (uBordismClass X k I) → (uBordismClass Y k I) :=
   Quotient.lift (fun s ↦ Quotient.mk _ (s.map hf)) (fun _ _ h ↦ Quotient.sound (map_aux hf h))
 
 lemma mk_map (hf : Continuous f) {s : SingularNManifold X k I} :
     uBordismClass.map hf (Quotient.mk _ s) = Quotient.mk _ (s.map hf) := by
   dsimp only [uBordismClass.map, Quotient.lift_mk]
-
--- is there a tactic for this already?
-lemma foo {α : Type*} (a : α) : ∃ _ : α, True := by use a
 
 theorem map_id (Φ : uBordismClass X k I) : Φ.map continuous_id = Φ := by
   set φ := Φ.out with φ_eq
