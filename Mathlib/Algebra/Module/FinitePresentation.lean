@@ -198,7 +198,7 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     obtain ⟨y, hy⟩ := H (l x)
     rw [← hf, LinearMap.comp_apply, eq_comm, ← sub_eq_zero, ← map_sub] at hy
     exact ⟨_, hy, by simp⟩
-  apply Submodule.fg_of_fg_map_of_fg_inf_ker f.range.mkQ
+  apply Submodule.fg_of_fg_map_of_fg_inf_ker (LinearMap.range f).mkQ
   · rw [this]
     exact Module.Finite.fg_top
   · rw [Submodule.ker_mkQ, inf_comm, ← Submodule.map_comap_eq, ← LinearMap.ker_comp, hf]

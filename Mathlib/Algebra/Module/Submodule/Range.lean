@@ -60,7 +60,7 @@ theorem range_coe [RingHomSurjective τ₁₂] (f : F) : (range f : Set M₂) = 
   rfl
 
 theorem range_toAddSubmonoid [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) :
-    f.range.toAddSubmonoid = AddMonoidHom.mrange f :=
+    (range f).toAddSubmonoid = AddMonoidHom.mrange f :=
   rfl
 
 @[simp]
@@ -125,7 +125,7 @@ lemma _root_.Submodule.map_comap_eq_of_le [RingHomSurjective τ₁₂] {f : F} {
 
 lemma range_restrictScalars [SMul R R₂] [Module R₂ M] [Module R M₂] [CompatibleSMul M M₂ R R₂]
     [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) :
-  LinearMap.range (f.restrictScalars R) = f.range.restrictScalars R := rfl
+  LinearMap.range (f.restrictScalars R) = (LinearMap.range f).restrictScalars R := rfl
 
 end
 
@@ -364,7 +364,7 @@ theorem ker_eq_bot_of_cancel {f : M →ₛₗ[τ₁₂] M₂}
     (h : ∀ u v : ker f →ₗ[R] M, f.comp u = f.comp v → u = v) : ker f = ⊥ := by
   have h₁ : f.comp (0 : ker f →ₗ[R] M) = 0 := comp_zero _
   rw [← Submodule.range_subtype (ker f),
-    ← h 0 f.ker.subtype (Eq.trans h₁ (comp_ker_subtype f).symm)]
+    ← h 0 (ker f).subtype (Eq.trans h₁ (comp_ker_subtype f).symm)]
   exact range_zero
 
 theorem range_comp_of_range_eq_top [RingHomSurjective τ₁₂] [RingHomSurjective τ₂₃]
