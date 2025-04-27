@@ -53,7 +53,6 @@ universe u v
 
 variable {R : Type u} [CommRing R] [IsPrincipalIdealRing R]
 variable {M : Type v} [AddCommGroup M] [Module R M]
-variable {N : Type v} [AddCommGroup N] [Module R N]
 
 open scoped DirectSum
 
@@ -163,21 +162,22 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
 
 open Finset Multiset
 
+omit dec in
 /-- A finitely generated `p ^ ∞`-torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R ∙ (p ^ e i)` for some `e i`. -/
-theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoid.powers p))
-    [h' : Module.Finite R N] :
-    ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
+theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoid.powers p))
+    [h' : Module.Finite R M] :
+    ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| M ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
   suffices H : ∀ {N : Type max u v} [AddCommGroup N] [Module R N]
       (hN : Module.IsTorsion' N (Submonoid.powers p)) [Module.Finite R N],
       ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) by
-    have := Module.Finite.equiv (ULift.moduleEquiv.{u, v, u} (R := R) (M := N)).symm
-    have hN' : Module.IsTorsion' (ULift.{u} N) (Submonoid.powers p) := by
-      rw [IsTorsion'] at hN ⊢
+    have := Module.Finite.equiv (ULift.moduleEquiv.{u, v, u} (R := R) (M := M)).symm
+    have hM' : Module.IsTorsion' (ULift.{u} M) (Submonoid.powers p) := by
+      rw [IsTorsion'] at hM ⊢
       rintro ⟨x⟩
-      obtain ⟨a, ha⟩ := @hN x
+      obtain ⟨a, ha⟩ := @hM x
       exact ⟨a, by ext1; exact ha⟩
-    obtain ⟨d, k, ⟨f⟩⟩ := H hN'
+    obtain ⟨d, k, ⟨f⟩⟩ := H hM'
     exact ⟨d, k, ⟨ULift.moduleEquiv.symm ≪≫ₗ f⟩⟩
   intro N _ _ hN h'
   obtain ⟨d, s, hs⟩ := @Module.Finite.exists_fin _ _ _ _ _ h'; use d; clear h'
@@ -241,16 +241,16 @@ end PTorsion
 
 /-- A finitely generated torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
-theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTorsion R N) :
+theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTorsion R M) :
     ∃ (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
-      Nonempty <| N ≃ₗ[R] ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
-  obtain ⟨I, fI, _, p, hp, e, h⟩ := Submodule.exists_isInternal_prime_power_torsion_of_pid hN
+      Nonempty <| M ≃ₗ[R] ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
+  obtain ⟨I, fI, _, p, hp, e, h⟩ := Submodule.exists_isInternal_prime_power_torsion_of_pid hM
   haveI := fI
   have :
     ∀ i,
       ∃ (d : ℕ) (k : Fin d → ℕ),
-        Nonempty <| torsionBy R N (p i ^ e i) ≃ₗ[R] ⨁ j, R ⧸ R ∙ p i ^ k j := by
-    haveI := fun i => isNoetherian_submodule' (torsionBy R N <| p i ^ e i)
+        Nonempty <| torsionBy R M (p i ^ e i) ≃ₗ[R] ⨁ j, R ⧸ R ∙ p i ^ k j := by
+    haveI := fun i => isNoetherian_submodule' (torsionBy R M <| p i ^ e i)
     exact fun i =>
       torsion_by_prime_power_decomposition.{u, v} (hp i)
         ((isTorsion'_powers_iff <| p i).mpr fun x => ⟨e i, smul_torsionBy _ _⟩)
@@ -268,19 +268,19 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated
   module over a PID is isomorphic to the product of a free module and a direct sum of some
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
-theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
+theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
     ∃ (n : ℕ) (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
-      Nonempty <| N ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
-  haveI := isNoetherian_submodule' (torsion R N)
-  haveI := Module.Finite.of_surjective _ (torsion R N).mkQ_surjective
+      Nonempty <| M ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
+  haveI := isNoetherian_submodule' (torsion R M)
+  haveI := Module.Finite.of_surjective _ (torsion R M).mkQ_surjective
   obtain ⟨I, fI, p, hp, e, ⟨h⟩⟩ :=
-    equiv_directSum_of_isTorsion.{u, v} (@torsion_isTorsion R N _ _ _)
-  obtain ⟨n, ⟨g⟩⟩ := @Module.basisOfFiniteTypeTorsionFree' R _ (N ⧸ torsion R N) _ _ _ _ _ _
-  haveI : Module.Projective R (N ⧸ torsion R N) := Module.Projective.of_basis ⟨g⟩
-  obtain ⟨f, hf⟩ := Module.projective_lifting_property _ LinearMap.id (torsion R N).mkQ_surjective
+    equiv_directSum_of_isTorsion.{u, v} (@torsion_isTorsion R M _ _ _)
+  obtain ⟨n, ⟨g⟩⟩ := @Module.basisOfFiniteTypeTorsionFree' R _ (M ⧸ torsion R M) _ _ _ _ _ _
+  haveI : Module.Projective R (M ⧸ torsion R M) := Module.Projective.of_basis ⟨g⟩
+  obtain ⟨f, hf⟩ := Module.projective_lifting_property _ LinearMap.id (torsion R M).mkQ_surjective
   refine
     ⟨n, I, fI, p, hp, e,
-      ⟨(lequivProdOfRightSplitExact (torsion R N).injective_subtype ?_ hf).symm.trans <|
+      ⟨(lequivProdOfRightSplitExact (torsion R M).injective_subtype ?_ hf).symm.trans <|
           (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
 
