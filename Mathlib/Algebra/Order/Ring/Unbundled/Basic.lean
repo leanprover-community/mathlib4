@@ -822,5 +822,26 @@ lemma mul_self_le_mul_self_of_le_of_neg_le
     (neg_mul_neg a a).symm.trans_le <|
       mul_le_mul h₂ h₂ (neg_nonneg.2 h) <| (neg_nonneg.2 h).trans h₂
 
+lemma sub_mul_sub_nonneg_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
+    (x : R) (h : a ≤ b) : 0 ≤ (x - a) * (x - b) ↔ x ≤ a ∨ b ≤ x := by
+  rw [mul_nonneg_iff, sub_nonneg, sub_nonneg, sub_nonpos, sub_nonpos,
+    and_iff_right_of_imp (fun h' ↦ Preorder.le_trans a b x h h'),
+    and_iff_left_of_imp (fun h' ↦ Preorder.le_trans x a b h' h), or_comm]
+
+lemma sub_mul_sub_nonpos_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
+    (x : R) (h : a ≤ b) :  (x - a) * (x - b) ≤ 0 ↔ a ≤ x ∧ x ≤ b := by
+  rw [mul_nonpos_iff, sub_nonneg, sub_nonneg, sub_nonpos, sub_nonpos, or_iff_left_iff_imp]
+  exact fun ⟨hxa, hbx⟩ ↦ ⟨Preorder.le_trans a b x h hbx, Preorder.le_trans x a b hxa h⟩
+
+lemma sub_mul_sub_pos_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
+    (x : R) (h : a ≤ b) : 0 < (x - a) * (x - b) ↔ x < a ∨ b < x := by
+  rw [mul_pos_iff, sub_pos, sub_pos, sub_neg, sub_neg, and_iff_right_of_imp (lt_of_le_of_lt h),
+    and_iff_left_of_imp (gt_of_ge_of_gt h), or_comm]
+
+lemma sub_mul_sub_neg_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
+    (x : R) (h : a ≤ b) : (x - a) * (x - b) < 0 ↔ a < x ∧ x < b := by
+  rw [mul_neg_iff, sub_pos, sub_pos, sub_neg, sub_neg, or_iff_left_iff_imp]
+  exact fun ⟨hxa, hbx⟩ ↦ ⟨lt_of_le_of_lt h hbx, gt_of_ge_of_gt h hxa⟩
+
 end LinearOrderedRing
 end OrderedCommRing
