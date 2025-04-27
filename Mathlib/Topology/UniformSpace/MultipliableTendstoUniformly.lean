@@ -14,7 +14,7 @@ the form `∏' i, (1 + f i x)` for a sequence `f` of functions.
 
 open Filter Function Complex Finset
 
-variable {α β ι : Type*} [UniformSpace β] [AddGroup β] [UniformAddGroup β] [LinearOrder β]
+variable {α β ι : Type*} [UniformSpace β] [AddGroup β] [IsUniformAddGroup β] [LinearOrder β]
   [OrderTopology β] [AddLeftMono β] [AddRightMono β]
 
 lemma TendstoUniformlyOn.eventually_forall_lt {f : ι → α → β} {p : Filter ι} {g : α → β}
@@ -51,7 +51,7 @@ lemma tendstoUniformlyOn_tprod_of_clog {f : ι → α → ℂ} {K : Set α}
   suffices H : TendstoUniformlyOn (fun s a => ∏ i ∈ s, f i a)
        (cexp ∘ fun a ↦ ∑' i, log (f i a)) atTop K by
         apply TendstoUniformlyOn.congr_right H
-        exact fun x hx ↦ (cexp_tsum_eq_tprod (fun n ↦ f n x) (hfn x hx) (h x hx))
+        exact fun x hx ↦ (cexp_tsum_eq_tprod (hfn x hx) (h x hx))
   apply TendstoUniformlyOn.congr (hf.comp_cexp hg)
   filter_upwards with s i hi using by simp [exp_sum, fun y ↦ exp_log (hfn i hi y)]
 
