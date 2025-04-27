@@ -131,6 +131,7 @@ variable [Module R A] [SMulCommClass R A A]
 theorem mulLeftLinearMap_one : mulLeftLinearMap n R (1 : Matrix m m A) = LinearMap.id :=
   LinearMap.ext fun _ => Matrix.one_mul _
 
+omit [DecidableEq m] in
 /-- A version of `LinearMap.mulLeft_eq_zero_iff` for matrix multiplication. -/
 @[simp]
 theorem mulLeftLinearMap_eq_zero_iff [Nonempty n] (a : Matrix l m A) :
@@ -163,6 +164,7 @@ variable [Module R A] [IsScalarTower R A A]
 theorem mulRightLinearMap_one : mulRightLinearMap l R (1 : Matrix m m A) = LinearMap.id :=
   LinearMap.ext fun _ => Matrix.mul_one _
 
+omit [DecidableEq m] in
 /-- A version of `LinearMap.mulRight_eq_zero_iff` for matrix multiplication. -/
 @[simp]
 theorem mulRightLinearMap_eq_zero_iff (a : Matrix m n A) [Nonempty l] :

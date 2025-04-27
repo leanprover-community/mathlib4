@@ -35,15 +35,6 @@ theorem IsUniformEmbedding.isClosedEmbedding [UniformSpace α] [UniformSpace β]
 @[deprecated (since := "2024-10-30")]
 alias IsUniformEmbedding.toIsClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
 
-@[deprecated (since := "2024-10-20")]
-alias IsUniformEmbedding.toClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
-
-@[deprecated (since := "2024-10-01")]
-alias UniformEmbedding.toIsClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
-
-@[deprecated (since := "2024-10-20")]
-alias UniformEmbedding.toClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
-
 namespace IsDenseInducing
 
 open Filter

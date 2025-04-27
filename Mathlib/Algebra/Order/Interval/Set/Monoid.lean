@@ -21,7 +21,8 @@ The lemmas in this file state that addition maps intervals bijectively. The type
 
 namespace Set
 
-variable {M : Type*} [OrderedCancelAddCommMonoid M] [ExistsAddOfLE M] (a b c d : M)
+variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedCancelAddMonoid M]
+  [ExistsAddOfLE M] (a b c d : M)
 
 theorem Ici_add_bij : BijOn (· + d) (Ici a) (Ici (a + d)) := by
   refine
