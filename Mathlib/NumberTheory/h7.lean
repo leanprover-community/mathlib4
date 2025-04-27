@@ -1673,7 +1673,6 @@ lemma eq5 :
     sorry
   · exact h2
 
-#exit
 
 def c₆ : ℝ := sorry
 
