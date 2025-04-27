@@ -603,7 +603,7 @@ lemma exists_forall_antisymmRel_of_wcovBy [Nonempty ι] (h : a ⩿ b) :
 A characterisation of the `WCovBy` relation in products of preorders. See `Pi.wcovBy_iff` for the
 (more common) version in products of partial orders.
 -/
-lemma wcovBy_iff' [Nonempty ι] :
+lemma wcovBy_iff_antisymmRel [Nonempty ι] :
     a ⩿ b ↔ ∃ i, a i ⩿ b i ∧ ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
   constructor
   · intro h
@@ -625,7 +625,8 @@ lemma wcovBy_iff' [Nonempty ι] :
 A characterisation of the `CovBy` relation in products of preorders. See `Pi.covBy_iff` for the
 (more common) version in products of partial orders.
 -/
-lemma covBy_iff' : a ⋖ b ↔ ∃ i, a i ⋖ b i ∧ ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
+lemma covBy_iff_antisymmRel :
+    a ⋖ b ↔ ∃ i, a i ⋖ b i ∧ ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
   constructor
   · intro h
     obtain ⟨j, hj⟩ := (Pi.lt_def.1 h.1).2
@@ -635,7 +636,7 @@ lemma covBy_iff' : a ⋖ b ↔ ∃ i, a i ⋖ b i ∧ ∀ j ≠ i, AntisymmRel (
     exact ⟨i, covBy_iff_wcovBy_and_lt.2 ⟨h.wcovBy.eval i, hj⟩, hi⟩
   rintro ⟨i, hi, h⟩
   have : Nonempty ι := ⟨i⟩
-  refine covBy_iff_wcovBy_and_lt.2 ⟨wcovBy_iff'.2 ⟨i, hi.wcovBy, h⟩, ?_⟩
+  refine covBy_iff_wcovBy_and_lt.2 ⟨wcovBy_iff_antisymmRel.2 ⟨i, hi.wcovBy, h⟩, ?_⟩
   exact Pi.lt_def.2 ⟨fun j ↦ (eq_or_ne j i).elim (· ▸ hi.1.le) (h j · |>.1), i, hi.1⟩
 
 end Preorder
@@ -653,10 +654,10 @@ lemma exists_forall_eq_of_wcovBy [Nonempty ι] (h : a ⩿ b) : ∃ i, ∀ j ≠ 
   exact ⟨i, fun j hj ↦ AntisymmRel.eq (hi _ hj)⟩
 
 lemma wcovBy_iff [Nonempty ι] : a ⩿ b ↔ ∃ i, a i ⩿ b i ∧ ∀ j ≠ i, a j = b j := by
-  simp [wcovBy_iff']
+  simp [wcovBy_iff_antisymmRel]
 
 lemma covBy_iff : a ⋖ b ↔ ∃ i, a i ⋖ b i ∧ ∀ j ≠ i, a j = b j := by
-  simp [covBy_iff']
+  simp [covBy_iff_antisymmRel]
 
 lemma wcovBy_iff_exists_right_eq [Nonempty ι] [DecidableEq ι] :
     a ⩿ b ↔ ∃ i x, a i ⩿ x ∧ b = Function.update a i x := by
