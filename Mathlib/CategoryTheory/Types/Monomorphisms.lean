@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
-# Stability properties of monomorphisms in Type
+# Stability properties of monomorphisms in `Type`
 
 In this file, we show that in the category `Type u`, monomorphisms
 are stable under cobase change, filtered colimits and
