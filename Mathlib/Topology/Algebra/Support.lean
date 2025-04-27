@@ -57,8 +57,11 @@ theorem mulTSupport_eq_empty_iff {f : X → α} : mulTSupport f = ∅ ↔ f = 1 
   rw [mulTSupport, closure_empty_iff, mulSupport_eq_empty_iff]
 
 @[to_additive]
-theorem image_eq_one_of_nmem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
+theorem image_eq_one_of_not_mem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
   mulSupport_subset_iff'.mp (subset_mulTSupport f) x hx
+
+@[deprecated (since := "2025-04-27")]
+alias image_eq_one_of_nmem_mulTSupport := image_eq_one_of_not_mem_mulTSupport
 
 @[to_additive]
 theorem range_subset_insert_image_mulTSupport (f : X → α) :
@@ -143,7 +146,7 @@ theorem hasCompactMulSupport_def : HasCompactMulSupport f ↔ IsCompact (closure
 @[to_additive]
 theorem exists_compact_iff_hasCompactMulSupport [R1Space α] :
     (∃ K : Set α, IsCompact K ∧ ∀ x, x ∉ K → f x = 1) ↔ HasCompactMulSupport f := by
-  simp_rw [← nmem_mulSupport, ← mem_compl_iff, ← subset_def, compl_subset_compl,
+  simp_rw [← not_mem_mulSupport, ← mem_compl_iff, ← subset_def, compl_subset_compl,
     hasCompactMulSupport_def, exists_isCompact_superset_iff]
 
 namespace HasCompactMulSupport
@@ -275,7 +278,7 @@ theorem is_one_at_infty {f : α → γ} [TopologicalSpace γ]
   refine ⟨mulTSupport f, h.isCompact, ?_⟩
   rw [compl_subset_comm]
   intro v hv
-  rw [mem_preimage, image_eq_one_of_nmem_mulTSupport hv]
+  rw [mem_preimage, image_eq_one_of_not_mem_mulTSupport hv]
   exact mem_of_mem_nhds hN
 
 end HasCompactMulSupport

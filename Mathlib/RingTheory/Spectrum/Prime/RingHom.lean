@@ -111,7 +111,7 @@ variable [Infinite ι] [∀ i, Nontrivial (R i)]
 range of `sigmaToPi`, i.e. is not of the form `πᵢ⁻¹(𝔭)` for some prime `𝔭 ⊂ R i`, where
 `πᵢ : (Π i, R i) →+* R i` is the projection. For a complete description of all prime ideals,
 see https://math.stackexchange.com/a/1563190. -/
-theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
+theorem exists_maximal_not_mem_range_sigmaToPi_of_infinite :
     ∃ (I : Ideal (Π i, R i)) (_ : I.IsMaximal), ⟨I, inferInstance⟩ ∉ Set.range (sigmaToPi R) := by
   classical
   let J : Ideal (Π i, R i) := -- `J := Π₀ i, R i` is an ideal in `Π i, R i`
@@ -134,8 +134,12 @@ theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
   rw [eq] at this
   exact this (le ⟨.single i 1, rfl⟩)
 
+@[deprecated (since := "2025-04-27")]
+alias exists_maximal_nmem_range_sigmaToPi_of_infinite :=
+  exists_maximal_not_mem_range_sigmaToPi_of_infinite
+
 theorem sigmaToPi_not_surjective_of_infinite : ¬ (sigmaToPi R).Surjective := fun surj ↦
-  have ⟨_, _, nmem⟩ := exists_maximal_nmem_range_sigmaToPi_of_infinite R
+  have ⟨_, _, nmem⟩ := exists_maximal_not_mem_range_sigmaToPi_of_infinite R
   (Set.range_eq_univ.mpr surj ▸ nmem) ⟨⟩
 
 lemma exists_comap_evalRingHom_eq

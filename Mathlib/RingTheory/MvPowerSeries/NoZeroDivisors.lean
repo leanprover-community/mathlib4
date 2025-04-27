@@ -23,7 +23,7 @@ If `R` has `NoZeroDivisors`, then so does `MvPowerSeries σ R`.
 
 ## Remark
 
-The analogue of `Polynomial.nmem_nonZeroDivisors_iff`
+The analogue of `Polynomial.not_mem_nonZeroDivisors_iff`
 (McCoy theorem) holds for power series over a noetherian ring,
 but not in general. See [Fields1971]
 -/

@@ -44,9 +44,12 @@ def nonZeroDivisorsLeft : Submonoid M₀ where
 @[simp]
 lemma mem_nonZeroDivisorsLeft_iff : x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, y * x = 0 → y = 0 := .rfl
 
-lemma nmem_nonZeroDivisorsLeft_iff :
+lemma not_mem_nonZeroDivisorsLeft_iff :
     x ∉ nonZeroDivisorsLeft M₀ ↔ {y | y * x = 0 ∧ y ≠ 0}.Nonempty := by
   simpa [mem_nonZeroDivisorsLeft_iff] using Set.nonempty_def.symm
+
+@[deprecated (since := "2025-04-27")]
+alias nmem_nonZeroDivisorsLeft_iff := not_mem_nonZeroDivisorsLeft_iff
 
 /-- The collection of elements of a `MonoidWithZero` that are not right zero divisors form a
 `Submonoid`. -/
@@ -58,9 +61,12 @@ def nonZeroDivisorsRight : Submonoid M₀ where
 @[simp]
 lemma mem_nonZeroDivisorsRight_iff : x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, x * y = 0 → y = 0 := .rfl
 
-lemma nmem_nonZeroDivisorsRight_iff :
+lemma not_mem_nonZeroDivisorsRight_iff :
     x ∉ nonZeroDivisorsRight M₀ ↔ {y | x * y = 0 ∧ y ≠ 0}.Nonempty := by
   simpa [mem_nonZeroDivisorsRight_iff] using Set.nonempty_def.symm
+
+@[deprecated (since := "2025-04-27")]
+alias nmem_nonZeroDivisorsRight_iff := not_mem_nonZeroDivisorsRight_iff
 
 lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
@@ -122,8 +128,10 @@ lemma nonZeroDivisorsRight_eq_nonZeroSMulDivisors :
 
 theorem mem_nonZeroDivisors_iff : r ∈ M₀⁰ ↔ ∀ x, x * r = 0 → x = 0 := Iff.rfl
 
-lemma nmem_nonZeroDivisors_iff : r ∉ M₀⁰ ↔ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
+lemma not_mem_nonZeroDivisors_iff : r ∉ M₀⁰ ↔ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
   simpa [mem_nonZeroDivisors_iff] using Set.nonempty_def.symm
+
+@[deprecated (since := "2025-04-27")] alias nmem_nonZeroDivisors_iff := not_mem_nonZeroDivisors_iff
 
 theorem mul_right_mem_nonZeroDivisors_eq_zero_iff (hr : r ∈ M₀⁰) : x * r = 0 ↔ x = 0 :=
   ⟨hr _, by simp +contextual⟩
