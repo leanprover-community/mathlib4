@@ -37,10 +37,8 @@ end SemiOps
 
 universe u k
 
-/--
-A weighted language is a map from strings over an alphabet to
-elements of a semiring.
--/
+/-- A weighted language is a map from strings over an alphabet to
+elements of a semiring. -/
 def WeightedLanguage (α : Type u) (κ : Type k) : Type (max u k) :=
   List α → κ
 
@@ -55,6 +53,7 @@ instance instZero : Zero (WeightedLanguage α κ) := ⟨fun _ ↦ 0⟩
 lemma zero_def_eq : (0 : WeightedLanguage α κ) = fun (_ : List α) ↦ (0 : κ) := by
   rfl
 
+/-- `onlyNil x` gives `1` when `x = []` and `0` otherwise. -/
 def onlyNil : List α → κ
   | [] => 1
   | _  => 0
@@ -76,6 +75,7 @@ lemma one_gives_zero (x : List α) :
   simp [one_def_eq]
   cases x <;> simp [onlyNil] at *
 
+/-- The weighte language [f.add_def g] assigns the pointwise sum `f x + g x` for all strings `x`. -/
 def add_def (f g : WeightedLanguage α κ) : WeightedLanguage α κ :=
   fun x ↦ f x + g x
 
@@ -108,6 +108,7 @@ lemma add_def_zero (f : WeightedLanguage α κ) :
   funext x
   simp [add_def_eq, add_def, zero_def_eq]
 
+/-- The weighted language [f.cauchy_prod g] documentation needs to be better. -/
 def cauchy_prod (f g : WeightedLanguage α κ) : WeightedLanguage α κ :=
   List.sum ∘ (List.map (fun x ↦ f x.1 * g x.2)) ∘ splits
 
@@ -292,21 +293,26 @@ lemma mul_def_assoc (f g h : WeightedLanguage α κ) :
   (f * g) * h = f * (g * h) := by
   simp [mul_def_eq, cauchy_prod_assoc]
 
+/-- `f.pointwise_prod g` represents the Hadmard product of `f` and `g`. -/
 def pointwise_prod (f g : WeightedLanguage α κ) : WeightedLanguage α κ :=
   fun x ↦ f x * g x
 
+/-- `(x, w) ∈ f` when `f x = w`. -/
 def mem_def (f : WeightedLanguage α κ) (xw : List α × κ) : Prop :=
   f xw.1 = xw.2
 
 instance instMem : Membership (List α × κ) (WeightedLanguage α κ) where
   mem := mem_def
 
+/-- `scalar_prodl w f` assigns `w * f x` for all `x`. -/
 def scalar_prodl (w : κ) (f : WeightedLanguage α κ) : WeightedLanguage α κ :=
   fun x ↦ w * f x
 
+/-- `scalar_prodr f w` assigns `f x * w` for all `x`. -/
 def scalar_prodr (f : WeightedLanguage α κ) (w : κ) : WeightedLanguage α κ :=
   fun x ↦ f x * w
 
+/-- `natCast_def n` assigns a weighted language for `n`. -/
 def natCast_def : ℕ → WeightedLanguage α κ
   | 0 => 0
   | n + 1 => natCast_def n + 1
@@ -323,6 +329,7 @@ lemma natCast_def_succ (n : ℕ) : ↑ ((n + 1) : ℕ) = (((↑ n) + 1) : Weight
   simp [natCast_def_eq, add_def_eq, one_def_eq]
   dsimp [natCast_def, add_def_eq, add_def, one_def_eq]
 
+/-- `npow_def n f` raises `f` to the `n`th power. -/
 def npow_def (n : ℕ) (f : WeightedLanguage α κ) : WeightedLanguage α κ :=
   match n with
   | 0 => 1
@@ -334,6 +341,7 @@ lemma npow_def_succ (n : ℕ) (f : WeightedLanguage α κ) :
     npow_def (n + 1) f = npow_def n f * f := by
   rw (occs := [1]) [npow_def]
 
+/-- `nsmul_def n f` adds `f` with itself `n` times. -/
 def nsmul_def (n : ℕ) (f : WeightedLanguage α κ) :=
   match n with
   | 0 => 0
