@@ -89,9 +89,9 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
   if fs.isEmpty then fs.push f else
   let back := fs.back!
   -- If the latest error is of a different kind that then new one, we simply add the new one.
-  if back.msg != f.msg then fs.push f else
+  if back.msg != f.msg || back.srcNat - back.length != f.srcNat then fs.push f else
   -- Otherwise, we are adding a further error of the same kind and we therefore merge the two.
-  fs.push {back with length := back.length + f.length}
+  fs.pop.push {back with length := back.length + f.length}
 
 partial
 def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
@@ -103,20 +103,20 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
     if m.isWhitespace then
       parallelScanAux as ls ms.trimLeft
     else
-      parallelScanAux (as.push (mkFormatError L M "extra space")) ls M
+      parallelScanAux (pushFormatError as (mkFormatError L M "extra space")) ls M
   | '\n', m =>
     if m.isWhitespace then
       parallelScanAux as ls.trimLeft ms.trimLeft
     else
-      parallelScanAux (as.push (mkFormatError L M "remove line break")) ls.trimLeft M
+      parallelScanAux (pushFormatError as (mkFormatError L M "remove line break")) ls.trimLeft M
   | l, m => -- `l` is not whitespace
     if l == m then
       parallelScanAux as ls ms
     else
       if m.isWhitespace then
-        parallelScanAux (as.push (mkFormatError L M "missing space")) L ms.trimLeft
+        parallelScanAux (pushFormatError as (mkFormatError L M "missing space")) L ms.trimLeft
     else
-      as.push (mkFormatError ls ms "Oh no! (Unreachable?)")
+      pushFormatError as (mkFormatError ls ms "Oh no! (Unreachable?)")
 
 
 def parallelScan (src fmt : String) : Array FormatError :=
