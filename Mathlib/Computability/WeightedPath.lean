@@ -8,12 +8,28 @@ import Mathlib.Tactic.Ring
 /-!
 # Weighted Paths
 
-TODO: explain stuff.
+A path `π` is a finite sequence of transitions/arcs in a state machine. This file defines weighted
+paths for weighted finite state machines (FSMs). A transition in a weighted state machine is
+comprised of the incoming state `s₁ ∈ σ`, a character `a ∈ α`, a weight `w ∈ κ`, and the outgoing
+state `s₂ ∈ σ`.
+
+## Implementation details
+
+`WeightedPath α κ s₁ s₂` is a dependent type representing paths from `s₁ ∈ σ` to `s₂ ∈ σ`. The
+indices ensure that the other constructions and operations (concatenation, reversal, etc.) are still
+valid paths.
+
+## References
+
+* [R. Cotterell, A. Steve, A. Butoi, A. Opedal, and F. Nowak, *Advanced Formal Language Theory:
+  Regular Languages*][cotterell]
+* <https://drive.google.com/file/d/1wXv-e5tL6WxwK7vzBuVSDySYjkuoGW7f/view>
 -/
 
 universe k u v
 
-/-- A weighted path `π` represents a sequence of transitions in a weighted FSM. -/
+/-- A weighted path `π : WeightedPath α κ s₁ s₂` represents a sequence of transitions in a weighted
+FSM starting from `s₁ ∈ σ` ending at `s₂ ∈ σ`. -/
 inductive WeightedPath (α : Type u) (κ : Type k) {σ : Type v} : σ → σ → Type (max u v k) where
   | last (s : σ) : WeightedPath α κ s s
   | arc (s₁ s₂ s₃ : σ) (a : α) (w : κ) (π : WeightedPath α κ s₂ s₃) : WeightedPath α κ s₁ s₃
@@ -40,11 +56,11 @@ def reverse {s₁ s₃ : σ} : WeightedPath α κ s₁ s₃ → WeightedPath α 
   | last _ => last _
   | arc s₁ s₂ s₃ a w π => concat π.reverse (arc s₂ s₁ s₁ a w (last s₁))
 
-/-- `π.string` computes the string of the path `π`. -/
+/-- `π.yield` computes the string of the path `π`. -/
 @[simp]
-def string {s₁ s₃ : σ} : WeightedPath α κ s₁ s₃ → List α
+def yield {s₁ s₃ : σ} : WeightedPath α κ s₁ s₃ → List α
   | last _ => []
-  | arc _ _ _ a _ π => a :: π.string
+  | arc _ _ _ a _ π => a :: π.yield
 
 lemma concat_assoc {s₁ s₂ s₃ s₄ : σ}
   (π₁ : WeightedPath α κ s₁ s₂) (π₂ : WeightedPath α κ s₂ s₃) (π₃ : WeightedPath α κ s₃ s₄) :
@@ -100,8 +116,8 @@ lemma reverse_involutive {s₁ s₃ : σ} (π : WeightedPath α κ s₁ s₃) : 
     rw [h]
     simp [reverse_concat, ih]
 
-lemma string_concat {s₁ s₂ s₃ : σ} (π₁ : WeightedPath α κ s₁ s₂) (π₂ : WeightedPath α κ s₂ s₃) :
-    (π₁.concat π₂).string = π₁.string ++ π₂.string := by
+lemma yield_concat {s₁ s₂ s₃ : σ} (π₁ : WeightedPath α κ s₁ s₂) (π₂ : WeightedPath α κ s₂ s₃) :
+    (π₁.concat π₂).yield = π₁.yield ++ π₂.yield := by
   revert π₂
   induction π₁ <;> intros π₂
   case last _ =>
@@ -109,13 +125,13 @@ lemma string_concat {s₁ s₂ s₃ : σ} (π₁ : WeightedPath α κ s₁ s₂)
   case arc _ s _ a w ih =>
     simp [ih]
 
-lemma string_reverse {s₁ s₃ : σ} (π : WeightedPath α κ s₁ s₃) :
-    π.reverse.string = π.string.reverse := by
+lemma yield_reverse {s₁ s₃ : σ} (π : WeightedPath α κ s₁ s₃) :
+    π.reverse.yield = π.yield.reverse := by
   induction π
   case last _ =>
     simp
   case arc _ s₂ _ a w π ih =>
-    simp [string_concat, ih]
+    simp [yield_concat, ih]
 
 /-- `π.innerWeight` multiplies the weights in order of all transitions in `π`. -/
 @[simp]
@@ -164,8 +180,8 @@ lemma foldr_length {s₁ s₃ : σ} (π : WeightedPath α κ s₁ s₃) :
     simp [ih]
     ring
 
-lemma foldr_string {s₁ s₃ : σ} (π : WeightedPath α κ s₁ s₃) :
-    foldr (fun _ a _ _ ↦ List.cons a) [] π = π.string := by
+lemma foldr_yield {s₁ s₃ : σ} (π : WeightedPath α κ s₁ s₃) :
+    foldr (fun _ a _ _ ↦ List.cons a) [] π = π.yield := by
   induction π
   case last _ =>
     simp
