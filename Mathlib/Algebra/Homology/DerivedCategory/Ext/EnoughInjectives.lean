@@ -98,7 +98,7 @@ lemma eq_zero_of_injective [HasExt.{w} C] {X I : C} {n : ℕ} [Injective I]
   apply homEquiv.injective
   simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (-(n + 1)) 0
     (by omega)).hom.app _), zero_hom, Limits.zero_comp]
-  exact to_singleFunctor_obj_injective_eq_zero (K := K) (n := -n) _ (by omega)
+  exact to_singleFunctor_obj_eq_zero_of_injective (K := K) (n := -n) _ (by omega)
 
 end Abelian.Ext
 
@@ -106,6 +106,13 @@ variable (C)
 
 open Abelian
 
+/-- If `C` is a locally `w`-small abelian category with enough injectives,
+then `HasExt.{w} C` holds. We do not make this an instance though:
+for a given category `C`, there may be different reasonable choices for
+the universe `w`, and if we have two `HasExt.{w₁} C` and `HasExt.{w₂} C`
+instances, we would have to specify the universe explicitly almost
+everywhere, which would be an inconvenience. Then, we must be
+very selective regarding `HasExt` instances. -/
 lemma hasExt_of_enoughInjectives [LocallySmall.{w} C] [EnoughInjectives C] :
   HasExt.{w} C := by
     letI := HasDerivedCategory.standard C
