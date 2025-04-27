@@ -410,6 +410,10 @@ theorem fst_apply (κ : Kernel α (β × γ)) (a : α) : fst κ a = (κ a).map P
 theorem fst_apply' (κ : Kernel α (β × γ)) (a : α) {s : Set β} (hs : MeasurableSet s) :
     fst κ a s = κ a {p | p.1 ∈ s} := by rw [fst_apply, Measure.map_apply measurable_fst hs]; rfl
 
+theorem fst_real_apply (κ : Kernel α (β × γ)) (a : α) {s : Set β} (hs : MeasurableSet s) :
+    (fst κ a).real s = (κ a).real {p | p.1 ∈ s} := by
+  simp [fst_apply', hs, measureReal_def]
+
 @[simp]
 lemma fst_zero : fst (0 : Kernel α (β × γ)) = 0 := by simp [fst]
 

@@ -334,7 +334,7 @@ theorem trans_toLinearEquiv (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃S
 /-- Product of two continuous linear equivalences. The map comes from `Equiv.prodCongr`. -/
 def prod [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂) (e' : M₃ ≃L[R₁] M₄) :
     (M₁ × M₃) ≃L[R₁] M₂ × M₄ :=
-  { e.toLinearEquiv.prod e'.toLinearEquiv with
+  { e.toLinearEquiv.prodCongr e'.toLinearEquiv with
     continuous_toFun := e.continuous_toFun.prodMap e'.continuous_toFun
     continuous_invFun := e.continuous_invFun.prodMap e'.continuous_invFun }
 
@@ -1028,15 +1028,17 @@ variable [AddCommGroup M] [Module R M]
 variable [AddCommGroup M₂] [Module R M₂]
 
 @[simp]
-theorem ring_inverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M →L[R] M) := by
+theorem ringInverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M →L[R] M) := by
   suffices Ring.inverse ((ContinuousLinearEquiv.unitsEquiv _ _).symm e : M →L[R] M) = inverse ↑e by
     convert this
   simp
   rfl
 
+@[deprecated (since := "2025-04-22")] alias ring_inverse_equiv := ringInverse_equiv
+
 /-- The function `ContinuousLinearEquiv.inverse` can be written in terms of `Ring.inverse` for the
 ring of self-maps of the domain. -/
-theorem to_ring_inverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
+theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     inverse f = Ring.inverse ((e.symm : M₂ →L[R] M).comp f) ∘L e.symm := by
   by_cases h₁ : f.IsInvertible
   · obtain ⟨e', he'⟩ := h₁
@@ -1053,12 +1055,17 @@ theorem to_ring_inverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     rw [hF]
     simp
 
-theorem ring_inverse_eq_map_inverse : Ring.inverse = @inverse R M M _ _ _ _ _ _ _ := by
+@[deprecated (since := "2025-04-22")] alias to_ring_inverse := inverse_eq_ringInverse
+
+theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
   ext
-  simp [to_ring_inverse (ContinuousLinearEquiv.refl R M)]
+  simp [inverse_eq_ringInverse (ContinuousLinearEquiv.refl R M)]
+
+@[deprecated (since := "2025-04-22")]
+alias ring_inverse_eq_map_inverse := ringInverse_eq_inverse
 
 @[simp] theorem inverse_id : (id R M).inverse = id R M := by
-  rw [← ring_inverse_eq_map_inverse]
+  rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
 
 end
