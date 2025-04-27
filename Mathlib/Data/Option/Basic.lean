@@ -330,7 +330,7 @@ lemma eq_none_iff_forall_some_ne {o : Option α} : o = none ↔ ∀ a : α, some
 
 open Function in
 @[simp]
-lemma _root_.Option.elim'_update {α : Type*} {β : Type*} [DecidableEq α]
+lemma elim'_update {α : Type*} {β : Type*} [DecidableEq α]
     (f : β) (g : α → β) (a : α) (x : β) :
     Option.elim' f (update g a x) = update (Option.elim' f g) (.some a) x :=
   -- Can't reuse `Option.rec_update` as `Option.elim'` is not defeq.
