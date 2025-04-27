@@ -41,7 +41,7 @@ instance : ChosenFiniteProducts Cat :=
   .ofChosenFiniteProducts ⟨_, chosenTerminalIsTerminal⟩ fun X Y ↦
     { cone := X.prodCone Y, isLimit := isLimitProdCone X Y }
 
-instance : BraidedCategory Cat := ChosenFiniteProducts.braidedCategory
+instance : BraidedCategory Cat := .ofChosenFiniteProducts
 
 /-- A monoidal instance for Cat is provided through monoidalOfChosenFiniteProducts -/
 example : MonoidalCategory Cat := by infer_instance

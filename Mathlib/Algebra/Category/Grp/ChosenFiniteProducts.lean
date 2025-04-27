@@ -30,7 +30,7 @@ noncomputable instance chosenFiniteProductsGrp : ChosenFiniteProducts Grp.{u} :=
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (Grp.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-noncomputable instance : BraidedCategory Grp.{u} := ChosenFiniteProducts.braidedCategory
+noncomputable instance : BraidedCategory Grp.{u} := .ofChosenFiniteProducts
 
 noncomputable instance : (forget Grp.{u}).Braided := .ofChosenFiniteProducts _
 
@@ -60,7 +60,7 @@ noncomputable instance chosenFiniteProductsAddGrp : ChosenFiniteProducts AddGrp.
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddGrp.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-noncomputable instance : BraidedCategory AddGrp.{u} := ChosenFiniteProducts.braidedCategory
+noncomputable instance : BraidedCategory AddGrp.{u} := .ofChosenFiniteProducts
 
 noncomputable instance : (forget AddGrp.{u}).Braided := .ofChosenFiniteProducts _
 
@@ -90,7 +90,7 @@ noncomputable instance chosenFiniteProductsCommGrp : ChosenFiniteProducts CommGr
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (CommGrp.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-noncomputable instance : BraidedCategory CommGrp.{u} := ChosenFiniteProducts.braidedCategory
+noncomputable instance : BraidedCategory CommGrp.{u} := .ofChosenFiniteProducts
 
 noncomputable instance : (forget CommGrp.{u}).Braided := .ofChosenFiniteProducts _
 
@@ -115,7 +115,7 @@ noncomputable def chosenFiniteProductsAddCommGrp : ChosenFiniteProducts AddCommG
 
 attribute [local instance] chosenFiniteProductsAddCommGrp
 
-noncomputable instance : BraidedCategory AddCommGrp.{u} := ChosenFiniteProducts.braidedCategory
+noncomputable instance : BraidedCategory AddCommGrp.{u} := .ofChosenFiniteProducts
 
 noncomputable instance : (forget AddCommGrp.{u}).Braided := .ofChosenFiniteProducts _
 

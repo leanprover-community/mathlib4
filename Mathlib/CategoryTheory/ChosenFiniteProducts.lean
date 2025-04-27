@@ -303,11 +303,11 @@ instance (priority := low) [BraidedCategory C] : SymmetricCategory C where
 
 /-- `ChosenFiniteProducts` implies `BraidedCategory`.
 This is not an instance to prevent diamonds. -/
-def braidedCategory : BraidedCategory C where
+def _root_.CategoryTheory.BraidedCategory.ofChosenFiniteProducts : BraidedCategory C where
   braiding X Y := { hom := lift (snd _ _) (fst _ _), inv := lift (snd _ _) (fst _ _) }
 
 instance : Nonempty (BraidedCategory C) :=
-  ⟨braidedCategory⟩
+  ⟨.ofChosenFiniteProducts⟩
 
 instance : Subsingleton (BraidedCategory C) where
   allEq

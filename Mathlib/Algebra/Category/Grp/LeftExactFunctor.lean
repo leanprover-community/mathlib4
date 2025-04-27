@@ -45,7 +45,7 @@ attribute [local instance] AddCommGrp.chosenFiniteProductsAddCommGrp
 private noncomputable local instance : ChosenFiniteProducts C :=
   ChosenFiniteProducts.ofFiniteProducts _
 
-private noncomputable local instance : BraidedCategory C := ChosenFiniteProducts.braidedCategory
+private noncomputable local instance : BraidedCategory C := .ofChosenFiniteProducts
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverseAux : (C ⥤ₗ Type v) ⥤ C ⥤ AddCommGrp.{v} :=

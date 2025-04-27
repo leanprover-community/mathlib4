@@ -37,7 +37,7 @@ attribute [local instance] chosenFiniteProducts
 @[reducible]
 noncomputable
 def braidedCategory (X : C) : BraidedCategory (Over X) :=
-  ChosenFiniteProducts.braidedCategory
+  .ofChosenFiniteProducts
 
 attribute [local instance] braidedCategory
 
