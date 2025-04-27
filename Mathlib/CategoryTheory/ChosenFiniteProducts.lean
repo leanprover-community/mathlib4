@@ -274,7 +274,7 @@ theorem braiding_hom_fst (X Y : C) : (β_ X Y).hom ≫ fst _ _ = snd _ _ := by
   simp [fst_def, snd_def, ← BraidedCategory.braiding_naturality_left_assoc]
 
 @[reassoc (attr := simp)]
-theorem braiding_hom_snd  (X Y : C) : (β_ X Y).hom ≫ snd _ _ = fst _ _ := by
+theorem braiding_hom_snd (X Y : C) : (β_ X Y).hom ≫ snd _ _ = fst _ _ := by
   simp [fst_def, snd_def, ← BraidedCategory.braiding_naturality_right_assoc]
 
 @[reassoc (attr := simp)]
@@ -328,8 +328,7 @@ end BraidedCategory
 Construct an instance of `ChosenFiniteProducts C` given
 a terminal object and limit cones over arbitrary pairs of objects.
 -/
-@[reducible]
-def ofChosenFiniteProducts
+abbrev ofChosenFiniteProducts
     (𝒯 : Limits.LimitCone (Functor.empty C)) (ℬ : (X Y : C) → Limits.LimitCone (Limits.pair X Y)) :
     ChosenFiniteProducts C where
   __ := monoidalOfChosenFiniteProducts 𝒯 ℬ
