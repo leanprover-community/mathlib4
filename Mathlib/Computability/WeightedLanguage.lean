@@ -203,7 +203,7 @@ lemma cauchy_prod_right_distrib (f g h : WeightedLanguage α κ) :
     simp [W.right_distrib]
   · simp only [List.length_map]
 
--- Left-associative cauchy product between three languages.
+/-- Left-associative cauchy product between three languages. -/
 def cauchy_triple_l (f g h : WeightedLanguage α κ) : WeightedLanguage α κ :=
   List.sum ∘ (List.map (fun x ↦ (f x.1 * g x.2.1) * h x.2.2)) ∘ List.splits3_l
 
@@ -217,7 +217,7 @@ lemma cauchy_prod_triple_l (f g h : WeightedLanguage α κ) :
   unfold Function.comp; simp
   unfold Function.comp; simp
 
--- Right-associative cauchy product between three languages.
+/-- Right-associative cauchy product between three languages. -/
 def cauchy_triple_r (f g h : WeightedLanguage α κ) : WeightedLanguage α κ :=
   List.sum ∘ (List.map (fun x ↦ f x.1 * (g x.2.1 * h x.2.2))) ∘ List.splits3_r
 
@@ -285,8 +285,6 @@ instance instNatCast : NatCast (WeightedLanguage α κ) where
   natCast := natCast_def
 
 lemma natCast_def_eq (n : ℕ) : (↑ n : WeightedLanguage α κ) = natCast_def n := by rfl
-
-lemma natCast_def_zero : ↑ 0 = (0 : WeightedLanguage α κ) := by simp
 
 lemma natCast_def_succ (n : ℕ) : ↑ ((n + 1) : ℕ) = (((↑ n) + 1) : WeightedLanguage α κ) := by
   simp [natCast_def_eq, add_def_eq, one_def_eq]
