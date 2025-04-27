@@ -3,6 +3,7 @@ Copyright (c) 2025 Rudy Peterson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rudy Peterson
 -/
+import Mathlib.Data.List.Perm.Lattice
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Computability.Language
 
@@ -13,178 +14,6 @@ TODO: explain
 -/
 
 open List Computability
-
--- section Lists
-
--- universe a b
-
--- variable {α : Type a} {β : Type b} (f g : α → β)
-
--- -- Is this not already a lemma?
--- lemma List.Disjoint_self (l : List α) :
---     (∃ a, a ∈ l) → ¬ l.Disjoint l := by simp [Disjoint]
-
--- def List.splits (x : List α) : List (List α × List α) :=
---   List.map x.splitAt (range (x.length + 1))
-
--- @[simp]
--- lemma List.splits_nil : (List.nil (α:=α)).splits= [([], [])] := by rfl
-
--- @[simp]
--- lemma List.splits_cons (x : α) (xs : List α) :
---     List.splits (x :: xs) =
---     ([], x :: xs) :: List.map (fun td ↦ (x :: td.1, td.2)) (List.splits xs) := by
---   simp [List.splits]
---   rw [List.range_succ_eq_map]
---   simp
-
--- lemma List.splits_Nodup (l : List α) : l.splits.Nodup := by
---   simp [List.splits]
---   apply List.Nodup.map_on
---   · simp
---     intro n1 hn1 n2 hn2 hmin hdrop
---     omega
---   · apply List.nodup_range
-
--- lemma List.splits_spec (x y l : List α) :
---     (x, y) ∈ l.splits ↔ l = x ++ y := by
---   simp [List.splits]
---   constructor
---   · rintro ⟨n, hn, htake, hdrop⟩
---     rw [←htake, ←hdrop, List.take_append_drop]
---   · rintro rfl
---     exists x.length
---     constructor
---     · simp; omega
---     · constructor
---       · rw [List.take_left]
---       · rw [List.drop_left]
-
--- lemma List.splits_non_empty (l : List α) : ∃ td, td ∈ l.splits := by
---   exists ([], l)
---   simp [List.splits_spec]
-
--- lemma List.splits_exists_Perm (l : List α) : ∃ l', l.splits ~ l' := by
---  exists l.splits
-
--- lemma List.map_get? (n : Nat) (l : List α) :
---   (List.map f l).get? n = Option.map f (l.get? n) := by
---   revert n
---   induction l <;> intros n <;> simp only [List.map]
---   case nil =>
---     simp
---   case cons h t ih =>
---     cases n <;> simp
-
--- /-- Left-associative triple splits of a list. -/
--- def List.splits3_l : List α → List (List α × List α × List α) :=
---   List.flatMap
---   (fun td ↦
---     td.1
---     |> List.splits
---     |> List.map (fun t ↦ (t.1, t.2, td.2)))
---   ∘ List.splits
-
--- lemma List.splits3_l_Nodup (l : List α) : l.splits3_l.Nodup := by
---   simp [List.splits3_l, List.nodup_flatMap]
---   constructor
---   · intros t d htd_splits
---     apply List.Nodup.map_on
---     · rintro ⟨ta1, ta2⟩ hta_splits ⟨tb1, tb2⟩ htb_splits
---       simp
---     · apply List.splits_Nodup
---   · induction l
---     case nil =>
---       simp
---     case cons a l ihl =>
---       simp
---       constructor
---       · clear ihl
---         rintro b c x1 x2 hx1x2_l_splits rfl rfl
---         simp [Function.onFun]
---       · refine (List.Pairwise.map ?_ ?_ ihl); clear ihl
---         rintro ⟨x1, x2⟩ ⟨y1, y2⟩
---         simp [Function.onFun]
---         intro hdisj_map
---         constructor
---         · rintro rfl rfl
---           apply List.Disjoint.of_map at hdisj_map
---           apply List.Disjoint_self _ (List.splits_non_empty _) at hdisj_map
---           assumption
---         · rintro ⟨xx1, xx2, x2'⟩ hx1_splits hy1_splits
---           simp [List.mem_map] at hx1_splits hy1_splits
---           rcases hx1_splits with ⟨xx1', xx2', hx1_splits, rfl, rfl, rfl⟩
---           rcases hy1_splits with ⟨yy1', yy2', hy1_splits, ⟨_, rfl⟩, rfl, rfl⟩
---           simp [Disjoint] at hdisj_map
---           specialize hdisj_map _ _ _ _ _ hx1_splits rfl rfl rfl _ _ hy1_splits rfl rfl
---           contradiction
-
--- lemma List.splits3_l_spec (x y z l : List α) :
---     (x, y, z) ∈ l.splits3_l ↔ l = x ++ y ++ z := by
---   simp [List.splits3_l, List.splits_spec]
---   constructor
---   · rintro ⟨a, b, rfl, a', b', rfl, rfl, rfl, rfl⟩
---     simp [List.append_assoc]
---   · rintro rfl
---     exists (x ++ y), z
---     simp [List.append_assoc]
-
--- /-- Right-associative triple splits of a list. -/
--- def List.splits3_r : List α → List (List α × List α × List α) :=
---   List.flatMap
---   (fun td ↦
---     td.2
---     |> List.splits
---     |> List.map (fun d ↦ (td.1, d.1, d.2)))
---   ∘ List.splits
-
--- lemma List.splits3_r_Nodup (l : List α) : l.splits3_r.Nodup := by
---   simp [List.splits3_r, List.nodup_flatMap]
---   constructor
---   · intros t d htd_l_splits
---     apply List.Nodup.map_on
---     · rintro ⟨d1, d2⟩ hd_splits ⟨d1', d2'⟩ hd'_splits ⟨_, rfl, rfl⟩
---       rfl
---     · apply List.splits_Nodup
---   · induction l
---     case nil =>
---       simp
---     case cons a l ihl =>
---       simp
---       constructor
---       · clear ihl
---         rintro b c l1 l2 hl_splits rfl rfl
---         simp [Function.onFun, Function.comp, List.Disjoint]
---         rintro y1 y2 b y1' y2' hy' rfl rfl rfl z1 z2 hz ⟨⟩
---       · refine (List.Pairwise.map ?_ ?_ ihl); clear ihl
---         rintro ⟨x1, x2⟩ ⟨y1, y2⟩
---         simp [Function.onFun]
---         intro hdisj_map
---         rintro ⟨t, d1, d2⟩ hx2_splits hy2_splits
---         simp [List.mem_map] at hx2_splits hy2_splits
---         rcases hx2_splits with ⟨hx2_splits, rfl⟩
---         rcases hy2_splits with ⟨hy2_splits, ⟨_, rfl⟩⟩
---         apply List.Disjoint.of_map at hdisj_map
---         specialize hdisj_map hx2_splits hy2_splits
---         contradiction
-
--- lemma List.splits3_r_spec (x y z l : List α) :
---     (x, y, z) ∈ l.splits3_r ↔ l = x ++ y ++ z := by
---   simp [List.splits3_r, List.splits_spec]
---   constructor
---   · rintro ⟨a, b, rfl, rfl, rfl⟩
---     rfl
---   · rintro rfl
---     exists x, (y ++ z)
-
--- lemma List.splits3_l_r_Perm (l : List α) : l.splits3_l ~ l.splits3_r := by
---   rw [List.perm_ext_iff_of_nodup]
---   · rintro ⟨x, y, z⟩
---     simp only [List.splits3_l_spec, List.splits3_r_spec]
---   · apply List.splits3_l_Nodup
---   · apply List.splits3_r_Nodup
-
--- end Lists
 
 section SemiOps
 
@@ -286,14 +115,14 @@ lemma zero_cauchy_prod (f : WeightedLanguage α κ) :
   (0 : WeightedLanguage α κ).cauchy_prod f = 0 := by
   funext x
   simp only [zero_def_eq, Function.comp, cauchy_prod]
-  simp only [splits, List.map_map, List.splitAt_eq]
+  simp only [List.splits,  List.map_map, List.splitAt_eq]
   conv_lhs => {
     arg 1
     arg 1
     ext n
     simp
   }
-  simp [List.map_const']
+  simp only [List.map_const', List.length_range, List.sum_replicate, nsmul_zero]
 
 lemma cauchy_prod_zero (f : WeightedLanguage α κ) :
   f.cauchy_prod 0 = 0 := by
@@ -306,7 +135,7 @@ lemma cauchy_prod_zero (f : WeightedLanguage α κ) :
     ext n
     simp
   }
-  simp [List.map_const']
+  simp only [List.map_const', List.length_range, List.sum_replicate, nsmul_zero]
 
 lemma one_cauchy_prod (f : WeightedLanguage α κ) :
   (1 : WeightedLanguage α κ).cauchy_prod f = f := by
@@ -332,7 +161,7 @@ lemma one_cauchy_prod (f : WeightedLanguage α κ) :
   congr
   cases x <;> simp
   case cons a x =>
-    simp [onlyNil]
+    simp [onlyNil, nsmul_zero]
 
 lemma cauchy_prod_one (f : WeightedLanguage α κ) :
   f.cauchy_prod 1 = f := by
@@ -358,7 +187,7 @@ lemma cauchy_prod_one (f : WeightedLanguage α κ) :
   rw (occs := [2]) [←W.add_zero (f x)]
   rw [W.add_comm (f x) 0]
   congr
-  have hsilly : (0 : κ) = (List.replicate x.length 0).sum := by simp
+  have hsilly : (0 : κ) = (List.replicate x.length 0).sum := by simp [nsmul_zero]
   rw [hsilly]; clear hsilly
   congr
   simp [←List.map_const']
@@ -439,7 +268,7 @@ lemma cauchy_triple_l_r (f g h : WeightedLanguage α κ) :
     cauchy_triple_l f g h = cauchy_triple_r f g h := by
   funext l
   simp [cauchy_triple_l, cauchy_triple_r, Function.comp, W.mul_assoc]
-  apply_rules [List.Perm.sum_eq, List.Perm.map, List.splits3_l_r_Perm]
+  apply_rules [List.Perm.sum_eq, List.Perm.map, Perm.splits3_l_r_perm]
 
 lemma cauchy_prod_assoc (f g h : WeightedLanguage α κ) :
   (f.cauchy_prod g).cauchy_prod h = f.cauchy_prod (g.cauchy_prod h) := by
