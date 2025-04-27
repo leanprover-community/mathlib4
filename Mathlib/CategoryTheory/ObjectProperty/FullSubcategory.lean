@@ -63,7 +63,7 @@ theorem ι_map {X Y} {f : X ⟶ Y} : P.ι.map f = f :=
   rfl
 
 /-- The inclusion of a full subcategory is fully faithful. -/
-abbrev fullyFaithfulι  :
+abbrev fullyFaithfulι :
     P.ι.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
@@ -167,8 +167,8 @@ end ObjectProperty
 
 @[deprecated (since := "2025-03-04")] alias FullSubcategory := ObjectProperty.FullSubcategory
 @[deprecated (since := "2025-03-04")] alias fullSubcategoryInclusion := ObjectProperty.ι
-@[deprecated  (since := "2025-03-04")] alias fullSubcategoryInclusion.obj := ObjectProperty.ι_obj
-@[deprecated  (since := "2025-03-04")] alias fullSubcategoryInclusion.map := ObjectProperty.ι_map
+@[deprecated (since := "2025-03-04")] alias fullSubcategoryInclusion.obj := ObjectProperty.ι_obj
+@[deprecated (since := "2025-03-04")] alias fullSubcategoryInclusion.map := ObjectProperty.ι_map
 @[deprecated (since := "2025-03-04")] alias fullyFaithfulFullSubcategoryInclusion :=
   ObjectProperty.fullyFaithfulι
 @[deprecated (since := "2025-03-04")] alias FullSubcategory.map := ObjectProperty.ιOfLE

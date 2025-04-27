@@ -506,7 +506,7 @@ theorem tendsto_condExp_unique (fs gs : ℕ → α → E) (f g : α → E)
 
 @[deprecated (since := "2025-01-21")] alias tendsto_condexp_unique := tendsto_condExp_unique
 
-variable [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] [OrderedSMul ℝ E]
+variable [PartialOrder E] [OrderClosedTopology E] [IsOrderedAddMonoid E] [OrderedSMul ℝ E]
 
 lemma condExp_mono (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     μ[f|m] ≤ᵐ[μ] μ[g|m] := by

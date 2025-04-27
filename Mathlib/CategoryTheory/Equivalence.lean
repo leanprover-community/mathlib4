@@ -619,19 +619,20 @@ noncomputable instance inducedFunctorOfEquiv {C' : Type*} (e : C' ≃ D) :
 noncomputable instance fullyFaithfulToEssImage (F : C ⥤ D) [F.Full] [F.Faithful] :
     IsEquivalence F.toEssImage where
 
+end Equivalence
+
 /-- An equality of properties of objects of a category `C` induces an equivalence of the
 respective induced full subcategories of `C`. -/
 @[simps]
-def ofObjectPropertyEq {P P' : ObjectProperty C} (h : P = P') :
+def ObjectProperty.fullSubcategoryCongr {P P' : ObjectProperty C} (h : P = P') :
     P.FullSubcategory ≌ P'.FullSubcategory where
   functor := ObjectProperty.ιOfLE h.le
   inverse := ObjectProperty.ιOfLE h.symm.le
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-@[deprecated (since := "2025-03-04")] alias ofFullSubcategory := ofObjectPropertyEq
-
-end Equivalence
+@[deprecated (since := "2025-03-04")]
+alias Equivalence.ofFullSubcategory := ObjectProperty.fullSubcategoryCongr
 
 namespace Iso
 
