@@ -233,16 +233,16 @@ instance RelHom.instFintype {α β} {r : α → α → Prop} {s : β → β → 
     (truncEquivFin α).recOnSubsingleton fun a ↦
       haveI (x y) : Decidable (b x = b y) := decidable_of_iff (x = y) hb.injective.eq_iff.symm
       haveI : DecidableRel (b ⁻¹'o s) := fun x y => inferInstanceAs (Decidable (s (b x) (b y)))
-      ⟨(@univ _ finHomFintype).map ⟨fun f ↦
-        (RelHom.preimage b s).comp
-          (f.comp (RelIso.preimage a.symm r).symm.toRelEmbedding.toRelHom),
-        fun x y hxy => RelHom.ext fun i => hb.injective (by simpa using congr($hxy (a.symm i)))⟩, by
-      intro f
-      rw [Finset.mem_map]
-      use (RelIso.preimage (Equiv.ofBijective b hb) s).symm.toRelEmbedding.toRelHom.comp
-        (f.comp (RelIso.preimage a.symm r).toRelEmbedding.toRelHom), @mem_univ ..
-      apply RelHom.ext
-      simp [ofBijective_apply_symm_apply]⟩
+      { elems := (@univ _ finHomFintype).map ⟨fun f ↦
+          (RelHom.preimage b s).comp
+            (f.comp (RelIso.preimage a.symm r).symm.toRelEmbedding.toRelHom),
+          fun x y hxy => RelHom.ext fun i => hb.injective (by simpa using congr($hxy (a.symm i)))⟩
+        complete f := by
+          rw [Finset.mem_map]
+          use (RelIso.preimage (Equiv.ofBijective b hb) s).symm.toRelEmbedding.toRelHom.comp
+            (f.comp (RelIso.preimage a.symm r).toRelEmbedding.toRelHom), @mem_univ ..
+          apply RelHom.ext
+          simp [ofBijective_apply_symm_apply] }
 
 end Fintype
 
