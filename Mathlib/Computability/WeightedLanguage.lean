@@ -10,7 +10,23 @@ import Mathlib.Algebra.BigOperators.Group.List.Basic
 /-!
 # Weigted Languages
 
-TODO: explain
+A weighted language `f` over a semiring `W` for `κ` generalizes formal languages where, instead of
+indicating whether a string `x` is in `f`, we assign every string `x ∈ List α` a weight
+that is an element in `κ`. Thus a weighted formal language `f` is a function `List α → κ`
+rather than a set `Set (List α)`.
+
+A weighted language `f` may be thought of as a formal power series `∑ f(x) x` where we "sum" over
+`x ∈ List α` with coefficients `f x`, i.e. the weights of `x` via `f`. This file does not
+attempt to provide nor use a formal notion of formal power series, but it may provide a
+high-level intuition.
+
+The main result in this file is the construction of a semiring for weighted languages.
+
+## References
+
+* [R. Cotterell, A. Steve, A. Butoi, A. Opedal, and F. Nowak, *Advanced Formal Language Theory:
+  Regular Languages*][cotterell]
+* <https://drive.google.com/file/d/1wXv-e5tL6WxwK7vzBuVSDySYjkuoGW7f/view>
 -/
 
 open List
@@ -46,12 +62,14 @@ variable {α : Type u} {κ : Type k} [W : Semiring κ]
 
 instance instInhabited : Inhabited (WeightedLanguage α κ) := ⟨fun _ ↦ 0⟩
 
+/-- The "zero" element of a weighted language: `0ₗ := x ↦ 0`. -/
 instance instZero : Zero (WeightedLanguage α κ) := ⟨fun _ ↦ 0⟩
 
-lemma zero_def_eq : (0 : WeightedLanguage α κ) = fun (_ : List α) ↦ (0 : κ) := by
-  rfl
+lemma zero_def_eq : (0 : WeightedLanguage α κ) = fun (_ : List α) ↦ (0 : κ) := by rfl
 
-/-- `onlyNil x` gives `1` when `x = []` and `0` otherwise. -/
+/-- `onlyNil x` gives `1` when `x = []` and `0` otherwise.
+This is the "one" element of a weighted language:
+`1ₗ := x ↦ 1` if `x = ε`, and `1ₗ := x ↦ 0` otherwise. -/
 def onlyNil : List α → κ
   | [] => 1
   | _  => 0
@@ -72,8 +90,7 @@ lemma onlyNil_eq (xs : List α) :  onlyNil xs = if xs.length > 0 then (0 : κ) e
 
 instance instOne : One (WeightedLanguage α κ) := ⟨onlyNil⟩
 
-lemma one_def_eq : (1 : WeightedLanguage α κ) = onlyNil := by
-  rfl
+lemma one_def_eq : (1 : WeightedLanguage α κ) = onlyNil := by rfl
 
 lemma one_gives_zero (x : List α) :
     0 < x.length → (1 : WeightedLanguage α κ) x = 0 := by
@@ -81,7 +98,8 @@ lemma one_gives_zero (x : List α) :
   simp [one_def_eq]
   cases x <;> simp [onlyNil] at *
 
-/-- The weighte language [f.add_def g] assigns the pointwise sum `f x + g x` for all strings `x`. -/
+/-- The weighted language [f.add_def g] assigns the pointwise sum `f x + g x` for all strings `x`.
+`(f +ₗ g)(x) = f(x) + g(x)`. -/
 def add_def (f g : WeightedLanguage α κ) : WeightedLanguage α κ :=
   fun x ↦ f x + g x
 
@@ -107,7 +125,8 @@ lemma add_def_zero (f : WeightedLanguage α κ) : f + 0 = f := by
   funext x
   simp [add_def_eq, add_def, zero_def_eq]
 
-/-- The weighted language [f.cauchy_prod g] documentation needs to be better. -/
+/-- The weighted language [f.cauchy_prod g] represents the multiplication of `f` and `g`.
+`(f ×ₗ g)(x) = ∑ f(x₁) × g(x₂)` for all `x₁, x₂` such that `x = x₁ ++ x₂`. -/
 def cauchy_prod (f g : WeightedLanguage α κ) : WeightedLanguage α κ :=
   List.sum ∘ (List.map (fun x ↦ f x.1 * g x.2)) ∘ List.splits
 
@@ -123,6 +142,7 @@ lemma cauchy_prod_zero (f : WeightedLanguage α κ) : f.cauchy_prod 0 = 0 := by
   funext x
   simp only [zero_def_eq, Function.comp, cauchy_prod]
   simp only [splits, List.map_map, List.splitAt_eq]
+  unfold Function.comp
   conv_lhs => {
     arg 1
     arg 1
@@ -135,21 +155,9 @@ lemma one_cauchy_prod (f : WeightedLanguage α κ) :
     (1 : WeightedLanguage α κ).cauchy_prod f = f := by
   funext x
   simp only [one_def_eq, cauchy_prod, Function.comp, splits, List.map_map, List.splitAt_eq]
-  conv_lhs => {
-    arg 1
-    arg 1
-    ext n
-    simp
-  }
+  unfold Function.comp
   simp [List.range_succ_eq_map]
-  conv_lhs => {
-    congr
-    · simp [onlyNil]
-    · arg 1
-      arg 1
-      ext n
-      simp
-  }
+  unfold Function.comp
   rw (occs := [2]) [←W.add_zero (f x)]
   congr
   cases x <;> simp
