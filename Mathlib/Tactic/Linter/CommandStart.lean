@@ -231,6 +231,10 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let scan := parallelScan orig st
     --dbg_trace scan.map (·.srcPos)
 
+    let some upTo := lintUpTo stx | return
+    let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
+    let docStringEnd := docStringEnd.getTailPos? |>.getD default
+    dbg_trace docStringEnd
     for s in scan do
       --let mut (center', orig') := (origSubstring.stopPos, orig)
       --for i in [:orig.length - s.srcPos] do
@@ -240,6 +244,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       --let center := center' + origSubstring.stopPos - origSubstring.startPos
       let center := origSubstring.stopPos - s.srcEndPos
       let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
+      unless rg.stop ≤ upTo do return
+      unless docStringEnd ≤ rg.start do return
+
       let ctx := 5 -- the number of characters before and after of the mismatch that linter prints
       let srcWindow :=
         orig.takeRight (s.srcNat + ctx) |>.take (s.length + 2 * ctx -  1) |>.replace "\n" "⏎"
