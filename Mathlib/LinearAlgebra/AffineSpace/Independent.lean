@@ -712,10 +712,9 @@ end DivisionRing
 
 section Ordered
 
-variable {k : Type*} {V : Type*} {P : Type*} [LinearOrderedRing k] [AddCommGroup V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
+  [AddCommGroup V]
 variable [Module k V] [AffineSpace V P] {ι : Type*}
-
-attribute [local instance] LinearOrderedRing.decidableLT
 
 /-- Given an affinely independent family of points, suppose that an affine combination lies in
 the span of two points given as affine combinations, and suppose that, for two indices, the
@@ -964,7 +963,7 @@ namespace Affine
 
 namespace Simplex
 
-variable {k V P : Type*} [OrderedRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {k V P : Type*} [Ring k] [PartialOrder k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- The interior of a simplex is the set of points that can be expressed as an affine combination
 of the vertices with weights strictly between 0 and 1. This is equivalent to the intrinsic

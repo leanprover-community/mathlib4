@@ -36,11 +36,13 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The dimension of a strict submodule is strictly bounded by the dimension of the ambient
-space. -/
-theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s < ⊤) :
+space.
+
+See also `Submodule.length_lt`. -/
+theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s ≠ ⊤) :
     finrank K s < finrank K V := by
   rw [← s.finrank_quotient_add_finrank, add_comm]
-  exact Nat.lt_add_of_pos_right (finrank_pos_iff.mpr (Quotient.nontrivial_of_lt_top _ h))
+  exact Nat.lt_add_of_pos_right (finrank_pos_iff.mpr (Quotient.nontrivial_of_lt_top _ h.lt_top))
 
 /-- The sum of the dimensions of s + t and s ∩ t is the sum of the dimensions of s and t -/
 theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional K s]
@@ -191,7 +193,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
     finrank K s < finrank K t :=
   (comapSubtypeEquivOfLe hst.le).finrank_eq.symm.trans_lt <|
-    finrank_lt (le_top.lt_of_ne <| hst.not_le ∘ comap_subtype_eq_top.1)
+    finrank_lt <| by simp [not_le_of_lt hst]
 
 theorem finrank_strictMono [FiniteDimensional K V] :
     StrictMono fun s : Submodule K V => finrank K s := fun _ _ => finrank_lt_finrank_of_lt
@@ -217,7 +219,7 @@ theorem LinearIndependent.span_eq_top_of_card_eq_finrank' {ι : Type*}
     (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ := by
   by_contra ne_top
   rw [← finrank_span_eq_card lin_ind] at card_eq
-  exact ne_of_lt (Submodule.finrank_lt <| lt_top_iff_ne_top.2 ne_top) card_eq
+  exact ne_of_lt (Submodule.finrank_lt ne_top) card_eq
 
 theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty ι]
     [Fintype ι] {b : ι → V} (lin_ind : LinearIndependent K b)
