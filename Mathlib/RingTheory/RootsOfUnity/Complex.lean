@@ -277,6 +277,45 @@ theorem exp_add (x y : ZMod n) : exp n (x + y) = exp n x * exp n y := by
   simp_all only [Units.exp_add, ZMod.natCast_val, Units.val_mul, Units.coe_exp, Complex.ofReal_mul,
     Complex.ofReal_ofNat, Complex.ofReal_div, Complex.ofReal_natCast, MulMemClass.mk_mul_mk]
 
+open Real in
+theorem exp_inj : Function.Injective (exp n) := by
+  intro i j hij
+  have e1 : Set.InjOn Units.exp (Set.Ico 0 (2 * π)) :=
+    Units.injOn_exp_of_abs_sub_le' (by rw [sub_zero])
+  rw [Set.InjOn] at e1
+  rw [exp, exp] at hij
+  simp only [Subtype.mk.injEq] at hij
+  have e2 : 2 * π * (i.val / n) = 2 * π * (j.val / n) := by
+    apply e1
+    rw [Set.mem_Ico]
+    constructor
+    · apply (mul_nonneg_iff_of_pos_left two_pi_pos).mpr
+      apply div_nonneg
+      exact Nat.cast_nonneg' i.val
+      exact Nat.cast_nonneg' n
+    · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
+      apply (div_lt_one _).mpr
+      norm_cast
+      apply ZMod.val_lt
+      simp only [Nat.cast_pos]
+      apply Nat.pos_of_ne_zero
+      exact (NeZero.ne' n).symm
+
+
+
+
+      --have jgg (a b :ℝ) (h : 0 < b) : a/b <1 ↔ a < b := by exact div_lt_one h
+
+
+      have e1 (a b c : ℝ) (h : 0 < c) : a < 1 ↔ c*a < c := by exact
+        Iff.symm (mul_lt_iff_lt_one_right h)
+      --Iff.symm (mul_lt_mul_left h)
+
+
+
+    sorry
+
+
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
 @[simps]
