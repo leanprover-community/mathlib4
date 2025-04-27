@@ -168,20 +168,6 @@ constructor
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-#exit
 lemma cexp_mul : deriv (fun x => cexp (c * x)) x = c * cexp (c * x) := by
   change deriv (fun x => exp ((fun x => c * x) x)) x = c * exp (c * x)
   rw [deriv_cexp]
@@ -1377,7 +1363,6 @@ def order := AnalyticAt.order
 
 lemma order_neq_top :
   order α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq ≠ ⊤ := by {
-  unfold order
   sorry
 }
 
@@ -1411,7 +1396,8 @@ lemma foo :
   unfold _root_.order
   apply iterated_deriv_eq_zero_imp_n_leq_order
   · intros z
-    apply analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+    sorry
+    --apply analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   · have := iteratedDeriv_vanishes α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
     intros k hk
     specialize this k hk
@@ -1503,10 +1489,6 @@ lemma rho_nonzero :
   intros H
   sorry
 
-  --intros t ht
-  --rw [← ne_eq]
-  --unfold η
-
 lemma cρ_ne_zero : cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq ≠ 0 := by
   unfold cρ
   intros H
@@ -1534,51 +1516,72 @@ lemma ρ_is_int : IsIntegral ℤ (cρ α β hirr htriv K σ hd α' β' γ' habc 
 def c1ρ : 𝓞 K := RingOfIntegers.restrict _
   (fun _ => (ρ_is_int α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)) ℤ
 
-#check Algebra.norm_algebraMap
-#check Algebra.norm_algebraMap_of_basis (house.newBasis K)
--- #check RingOfIntegers.rank
--- #check house.newBasis
-def c₅ : ℝ := c₁ K α' β' γ' ^ ((h K : ℤ) * (2 * m K * q))
-
--- The norm of an algebraic integer is again an integer,
--- because it is equal (up to sign)
--- to the constant term of the characteristic polynomial.
-
-lemma eq5first :
+lemma eq5zero :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq
-  let c₁ := (c₁ K α' β' γ')
+  let c₁ := c₁ K α' β' γ'
   let c1ρ := c1ρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let cρ := cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
 
-  norm (Algebra.norm ℤ c1ρ) = (cρ ^ h K : ℤ)• (Algebra.norm ℤ ρ)  := by {
+  1 ≤ norm (Algebra.norm ℚ ((algebraMap (𝓞 K) K) c1ρ))   := by {
   intros r ρ c₁ c1ρ cρ
   unfold c1ρ
   unfold _root_.c1ρ
-  -- rw [le_iff_eq_or_lt]
-  -- left
-  have H := Algebra.norm_algebraMap_of_basis (house.newBasis K)
-  specialize H cρ
-  simp only [algebraMap_int_eq, eq_intCast] at H
-  rw [Embeddings.card] at H
-  --simp only [Int.cast_natCast] at H
-  rw [← H]
-  simp only [nsmul_eq_mul, zsmul_eq_mul]
-  sorry
+  unfold RingOfIntegers.restrict
+  simp only [zsmul_eq_mul]
+  simp only [RingOfIntegers.map_mk, map_mul, norm_mul]
 
+  have := @Algebra.norm_algebraMap ℚ _ K _ _
+    (_root_.cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)
+  simp only [map_intCast] at this
+  rw [this]
+  simp only [norm_pow, Int.norm_cast_rat, ge_iff_le]
 
-  -- have hnorm : norm ((c ^ h K : ℝ)) = (c ^ h K : ℝ) := by {
-  --   simp only [norm_pow, Real.norm_natCast]
-  -- }
-  -- rw [← hnorm]
+  have : ‖(Algebra.norm ℚ) (rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq)‖ ≠ 0 := by {
+    rw [norm_ne_zero_iff]
+    rw [Algebra.norm_ne_zero_iff]
+    exact rho_nonzero α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq}
 
-  --rw [← hnorm] at this
-  -- have : (cρ ^ h K : ℝ) = cρ ^ h K := by {
-  --   simp only [norm_pow, Real.norm_natCast]
-  -- }
-  --simp only [Int.cast_natCast] at H
-  }
+  have h0 : 0 < ‖_root_.cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq‖ := by {
+    rw [norm_pos_iff]
+    have := cρ_ne_zero α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+    unfold cρ at this
+    exact this}
 
+  have h1 : 1 ≤ ‖_root_.cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq‖
+    ^ Module.finrank ℚ K := by {
+      rw [one_le_pow_iff_of_nonneg]
+      · rw [Int.norm_eq_abs]
+        rw [Int.norm_eq_abs] at h0
+        sorry
+      · apply norm_nonneg
+      · have : 0 < Module.finrank ℚ K  := by {exact Module.finrank_pos}
+        simp_all only [ne_eq, norm_eq_zero, Algebra.norm_eq_zero_iff, norm_pos_iff]
+        intro a
+        simp_all only [lt_self_iff_false]}
+
+  have h2 : 0 < ‖(Algebra.norm ℚ) (rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq)‖ := by {
+    rw [norm_pos_iff]
+    rw [Algebra.norm_ne_zero_iff]
+    exact rho_nonzero α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq}
+
+  calc 1 ≤ ‖_root_.cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq‖ ^ Module.finrank ℚ K := h1
+       _ ≤ ‖_root_.cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq‖ ^ Module.finrank ℚ K *
+         ‖(Algebra.norm ℚ) (rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq)‖ := ?_
+
+  · nth_rw 1 [← mul_one (‖_root_.cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq‖
+       ^ Module.finrank ℚ K)]
+    rw [mul_le_mul_left]
+    · sorry
+    · rw [le_iff_eq_or_lt] at h1
+      cases' h1 with h1 h1
+      · rw [← h1]
+        simp only [zero_lt_one]
+      · trans
+        · apply zero_lt_one
+        · exact h1}
+
+def c₅ : ℝ := max 2 (c₁ K α' β' γ' ^ ((h K : ℤ) * (2 * m K * q)))
 
 lemma eq5 :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq;
@@ -1586,16 +1589,57 @@ lemma eq5 :
   let c₁ := (c₁ K α' β' γ')
   let c1ρ := c1ρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq;
   let cρ := cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq;
+  let c₅ := c₅ K α' β' γ' q
 
-  c₅ K α' β' γ' q ^ (- r : ℤ) < norm (Algebra.norm ℚ ρ) := by
+  c₅ ^ (- r : ℤ) < norm (Algebra.norm ℚ ρ) := by
 
-  intros r ρ c₁ c1ρ cρ
+  intros r ρ c₁ c1ρ cρ c₅
 
   simp only [zpow_neg, zpow_natCast, gt_iff_lt]
 
+  have h1 : 1 ≤
+    ‖(_root_.cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)^ Module.finrank ℚ K‖ *
+    ‖(Algebra.norm ℚ) (rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq)‖ := by {
+
+  have := eq5zero α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  unfold c1ρ at this
+  unfold _root_.c1ρ at this
+  unfold RingOfIntegers.restrict at this
+  simp only [zsmul_eq_mul] at this
+  simp only [RingOfIntegers.map_mk, map_mul, norm_mul] at this
+
+  have h := @Algebra.norm_algebraMap ℚ _ K _ _
+    (_root_.cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)
+  simp only [map_intCast] at h
+  simp only [norm_pow, Int.norm_cast_rat, ge_iff_le]
+  rw [h] at this
+  simp only [norm_pow, Int.norm_cast_rat] at this
+  exact this}
+
+  have h2 :
+    ‖(_root_.cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)^ Module.finrank ℚ K‖⁻¹ ≤
+     norm (Algebra.norm ℚ ρ) := by {
+
+      have : 0 < ‖ (_root_.cρ α β hirr
+           htriv K σ hd α' β' γ' habc q u t hq0 h2mq)^ Module.finrank ℚ K‖ := by {
+        rw [norm_pos_iff]
+        simp only [ne_eq, pow_eq_zero_iff', Algebra.norm_eq_zero_iff, Int.cast_eq_zero, not_and,
+          Decidable.not_not]
+        sorry
+        }
+
+      rw [← mul_le_mul_left this]
+
+      · rw [mul_inv_cancel₀]
+        · sorry
+        · sorry
+        }
+
   calc _ = _ := ?_
-       c₅ K α' β' γ' q ^ ((-r : ℤ)) < c₁^ ((- h K : ℤ) * (r + 2 * m K * q) ) := ?_
-       _ < abs (Algebra.norm ℤ ρ) := ?_
+       c₅ ^ ((-r : ℤ)) < c₁^ ((- h K : ℤ) * (r + 2 * m K * q) ) := ?_
+       _ < ‖(_root_.cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)
+          ^ Module.finrank ℚ K‖⁻¹ := ?_
+       _ ≤ norm (Algebra.norm ℚ ρ) := ?_
 
   · simp only [zpow_neg, zpow_natCast]
   · simp only [zpow_neg, zpow_natCast, neg_mul]
@@ -1604,106 +1648,32 @@ lemma eq5 :
       have : (h K : ℤ) * r + h K * (2 * m K * ↑q) = h K* r + h K * 2 * m K * ↑q := by
         rw [mul_assoc, mul_assoc, mul_assoc]
       rw [this]
-      unfold c₁ c₅
-      norm_cast
       sorry
     · unfold c₅
-      unfold _root_.c₁
+      --unfold _root_.c₁
       trans
       · have : (0 : ℝ) < 1 := by {simp only [zero_lt_one]}
         apply this
-      · sorry--apply one_lt_pow₀
-        -- · apply one_lt_pow₀
-        --   · sorry
-        --   · simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, false_or, not_or]
-        --     constructor
-        --     · have : h K > 0 := by {
-        --         unfold h
-        --         exact Module.finrank_pos}
-        --       simp_all only [gt_iff_lt, ne_eq]
-        --       obtain ⟨left, right⟩ := htriv
-        --       obtain ⟨left_1, right_1⟩ := habc
-        --       obtain ⟨left_2, right_1⟩ := right_1
-        --       subst left_2 left_1
-        --       apply Aesop.BuiltinRules.not_intro
-        --       intro a
-        --       simp_all only [lt_self_iff_false]
-        --     · constructor
-        --       have : m K > 0 := by {
-        --         unfold m
-        --         simp only [gt_iff_lt, lt_add_iff_pos_left, add_pos_iff, Nat.ofNat_pos,
-        --           mul_pos_iff_of_pos_left, or_true]}
-        --       simp_all only [gt_iff_lt, ne_eq]
-        --       obtain ⟨left, right⟩ := htriv
-        --       obtain ⟨left_1, right_1⟩ := habc
-        --       obtain ⟨left_2, right_1⟩ := right_1
-        --       subst left_2 left_1
-        --       apply Aesop.BuiltinRules.not_intro
-        --       intro a
-        --       simp_all only [lt_self_iff_false]
-        --       · exact Nat.ne_zero_of_lt hq0
-        -- · have : r > 0 := sorry
-        --   simp_all only [gt_iff_lt, ne_eq, r]
-        --   obtain ⟨left, right⟩ := htriv
-        --   obtain ⟨left_1, right_1⟩ := habc
-        --   obtain ⟨left_2, right_1⟩ := right_1
-        --   subst left_1 left_2
-        --   apply Aesop.BuiltinRules.not_intro
-        --   intro a
-        --   simp_all only [lt_self_iff_false]
-    · sorry
-  · --simp only [RingOfIntegers.restrict, zsmul_eq_mul, RingOfIntegers.map_mk]
-    --rw [Algebra.norm_algebraMap]
-    have := Algebra.norm_algebraMap_of_basis (house.newBasis K)
-    specialize this cρ
-    simp only [algebraMap_int_eq, eq_intCast] at this
-    rw [Embeddings.card] at this
-    --exact this
-    -- have : abs (Algebra.norm ℤ c1ρ) = abs (Algebra.norm ℚ cρ) * abs (Algebra.norm ℤ ρ) := by {
-    --   simp (config := { unfoldPartialApp := true }) only [c1ρ, _root_.c1ρ]
-    --   --simp only [RingOfIntegers.restrict, zsmul_eq_mul, RingOfIntegers.map_mk]
-    --   rw [← abs_mul]
-    --   unfold Algebra.norm
-    --   simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe,
-    -- AlgHom.toRingHom_toMonoidHom,
-    --     MonoidHom.coe_comp, MonoidHom.coe_coe, Algebra.coe_lmul_eq_mul, Function.comp_apply,
-    --     LinearMap.det_ring, LinearMap.mul_apply_apply, mul_one, c1ρ]
-      --sorry
-      --rw [← LinearMap.mul_apply]
-      --rw [LinearMap.det.map_mul]
-    -- }
+      · unfold _root_.c₅
+        apply one_lt_pow₀
+        simp only [lt_sup_iff, Nat.one_lt_ofNat, true_or]
+        sorry
+    · trans
+      · have : (0 : ℝ) < 1 := by {simp only [zero_lt_one]}
+        apply this
+      · apply one_lt_pow₀
+        · sorry
+        · sorry
+  · unfold _root_.cρ
+    rw [← pow_add]
+    simp only [neg_mul, zpow_neg, abs_pow, norm_pow]
+    rw [Int.norm_eq_abs]
+    simp only [Int.cast_abs, abs_abs]
+    rw [← pow_mul]
     sorry
-  simp only [Int.cast_abs, c1ρ]
-  sorry
-   --have := Algebra.norm_algebraMap ((algebraMap (𝓞 K) K) c1ρ)
-    --rw [Algebra.norm_algebraMap]
-    -- have := Algebra.norm_algebraMap_of_basis (house.newBasis K)
-    --   (((η K α β hirr htriv σ hd α' β' γ' habc q u t hq0 h2mq t)))
-    -- sorry
+  · exact h2
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- Nat.sqrt (2*m K)* (1 + house (β'))*
---     (house (α') ^ (2*m K^2)) * house (γ') ^(2*m K^2))
-
+#exit
 
 def c₆ : ℝ := sorry
 
@@ -1889,11 +1859,6 @@ lemma for_def_of_S (hl : l ∈ Finset.range (m K)) :
 
 
 
-
-
-
-
-
 def S : ℂ → ℂ := fun z => by
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let l₀ : ℕ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
@@ -1911,13 +1876,13 @@ lemma holS :
   intros r S l₀ z hz
   unfold S
   unfold _root_.S
-  apply mul
-  · apply mul
+  apply Differentiable.mul
+  · apply Differentiable.mul
     · exact (sum fun _ _ =>
   (differentiable_const _).mul
     (differentiable_exp.comp ((differentiable_const _).mul differentiable_id')))
     · simp only [differentiable_const]
-  · apply mul
+  · apply Differentiable.mul
     · apply Differentiable.zpow
       · simp only [differentiable_id',
           differentiable_const, Differentiable.sub]
