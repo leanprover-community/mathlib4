@@ -389,7 +389,7 @@ def _root_.CategoryTheory.Functor.FullyFaithful.over (h : F.FullyFaithful) :
     (post (X := X) F).FullyFaithful where
   preimage {A B} f := Over.homMk (h.preimage f.left) <| h.map_injective (by simpa using Over.w f)
 
-/-- If `G` is right adjoint, then so is `post G : Over Y ⥤ Over (G Y)`.
+/-- If `G` is a right adjoint, then so is `post G : Over Y ⥤ Over (G Y)`.
 
 If the left adjoint of `G` is `F`, then the left adjoint of `post G` is given by
 `(X ⟶ G Y) ↦ (F X ⟶ F G Y ⟶ Y)`. -/
@@ -756,12 +756,12 @@ def _root_.CategoryTheory.Functor.FullyFaithful.under (h : F.FullyFaithful) :
     (post (X := X) F).FullyFaithful where
   preimage {A B} f := Under.homMk (h.preimage f.right) <| h.map_injective (by simpa using Under.w f)
 
-/-- If `F` is left adjoint, then so is `post F : Under X ⥤ Under (F X)`.
+/-- If `F` is a left adjoint, then so is `post F : Under X ⥤ Under (F X)`.
 
 If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given by
 `(F X ⟶ Y) ↦ (X ⟶ G F X ⟶ G Y)`. -/
 @[simps]
-def postAdjunctionLeft {X : T}{F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
+def postAdjunctionLeft {X : T} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
     post F ⊣ post G ⋙ map (a.unit.app X) where
   unit.app A := homMk <| a.unit.app A.right
   counit.app A := homMk <| a.counit.app A.right

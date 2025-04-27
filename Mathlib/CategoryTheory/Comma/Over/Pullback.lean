@@ -87,7 +87,11 @@ instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAd
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 
 open pullback in
-/-- A functor `F : T ⥤ D` induces a functor `Over X ⥤ Over (F.obj X)` in the obvious way. -/
+/-- If `F` is a left adjoint and its source category has pullbacks, then so is
+`post F : Over Y ⥤ Over (G Y)`.
+
+If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given by
+`(Y ⟶ F X) ↦ (G Y ⟶ X ×_{G F X} G Y ⟶ X)`. -/
 @[simps!]
 def postAdjunctionLeft {X : C} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
     post F ⊣ post G ⋙ pullback (a.unit.app X) :=
@@ -183,8 +187,11 @@ instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoin
 
 omit [HasPushouts C] in
 open pushout in
-/-- If `F` is left adjoint and its source category has pullbacks, then so is
-`post F : Over X ⥤ Over (F X)`. -/
+/-- If `G` is a right adjoint and its source category has pushouts, then so is
+`post G : Under Y ⥤ Under (G Y)`.
+
+If the left adjoint of `G` is `F`, then the left adjoint of `post G` is given by
+`(G Y ⟶ X) ↦ (Y ⟶ Y ⨿_{F G Y} F X ⟶ F X)`. -/
 @[simps!]
 def postAdjunctionRight [HasPushouts D] {Y : D} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
     post F ⋙ pushout (a.counit.app Y) ⊣ post G :=
