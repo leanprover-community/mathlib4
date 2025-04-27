@@ -60,16 +60,38 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
   else none
 
 structure FormatError where
+  /-- The distance to the end of the source string, as number of characters. -/
   srcNat : Nat
+  /-- The distance to the end of the source string, as number of string positions. -/
   srcPos : String.Pos
+  /-- The distance to the end of the formatted string, as number of characters. -/
   fmtPos : Nat
+  /-- The kind of formatting error: `extra space`, `remove line break` or `missing space`. -/
   msg : String
+  /-- The number of characters that the error spans. -/
+  length : Nat
+  deriving Inhabited
 
-def mkFormatError (ls ms : String) (msg : String) : FormatError where
+instance : ToString FormatError where
+  toString f :=
+    s!"srcNat: {f.srcNat}, srcPos: {f.srcPos}, fmtPos: {f.fmtPos}, \
+      msg: {f.msg}, length: {f.length}\n"
+
+def mkFormatError (ls ms : String) (msg : String) (length : Nat := 1) : FormatError where
   srcNat := ls.length
   srcPos := ls.endPos
   fmtPos := ms.length
   msg := msg
+  length := length
+
+def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatError :=
+  -- If there are no errors already, we simply add the new one.
+  if fs.isEmpty then fs.push f else
+  let back := fs.back!
+  -- If the latest error is of a different kind that then new one, we simply add the new one.
+  if back.msg != f.msg then fs.push f else
+  -- Otherwise, we are adding a further error of the same kind and we therefore merge the two.
+  fs.push {back with length := back.length + f.length}
 
 partial
 def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
