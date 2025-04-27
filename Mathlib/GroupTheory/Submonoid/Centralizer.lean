@@ -39,15 +39,9 @@ def centralizer : Submonoid M where
 theorem coe_centralizer : ↑(centralizer S) = S.centralizer :=
   rfl
 
+@[to_additive AddSubmonoid.centralizer_toAddSubsemigroup]
 theorem centralizer_toSubsemigroup : (centralizer S).toSubsemigroup = Subsemigroup.centralizer S :=
   rfl
-
-theorem _root_.AddSubmonoid.centralizer_toAddSubsemigroup {M} [AddMonoid M] (S : Set M) :
-    (AddSubmonoid.centralizer S).toAddSubsemigroup = AddSubsemigroup.centralizer S :=
-  rfl
-
-attribute [to_additive existing AddSubmonoid.centralizer_toAddSubsemigroup]
-  Submonoid.centralizer_toSubsemigroup
 
 variable {S}
 

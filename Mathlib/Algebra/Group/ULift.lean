@@ -19,9 +19,9 @@ We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
-universe u v
+universe u v w
 
-variable {α : Type u} {β : Type*} {x y : ULift.{v} α}
+variable {α : Type u} {β : Type v} {x y : ULift.{w} α}
 
 namespace ULift
 
@@ -62,15 +62,15 @@ instance smul [SMul α β] : SMul α (ULift β) :=
   ⟨fun n x => up (n • x.down)⟩
 
 @[to_additive (attr := simp)]
-theorem smul_down [SMul α β] (a : α) (b : ULift.{v} β) : (a • b).down = a • b.down :=
+theorem smul_down [SMul α β] (a : α) (b : ULift.{w} β) : (a • b).down = a • b.down :=
   rfl
 
 @[to_additive existing (reorder := 1 2) smul]
 instance pow [Pow α β] : Pow (ULift α) β :=
   ⟨fun x n => up (x.down ^ n)⟩
 
-@[to_additive existing (attr := simp) (reorder := 1 2) smul_down]
-theorem pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down ^ b :=
+@[to_additive existing (attr := simp) (reorder := 1 2, 4 5) smul_down]
+theorem pow_down [Pow α β] (a : ULift.{w} α) (b : β) : (a ^ b).down = a.down ^ b :=
   rfl
 
 /-- The multiplicative equivalence between `ULift α` and `α`.

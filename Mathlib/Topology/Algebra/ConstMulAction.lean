@@ -372,8 +372,6 @@ theorem HasCompactSupport.comp_smul {β : Type*} [Zero β] {f : α → β} (h : 
     {c : G₀} (hc : c ≠ 0) : HasCompactSupport fun x => f (c • x) :=
   h.comp_homeomorph (Homeomorph.smulOfNeZero c hc)
 
-attribute [to_additive existing HasCompactSupport.comp_smul] HasCompactMulSupport.comp_smul
-
 end GroupWithZero
 
 namespace IsUnit
