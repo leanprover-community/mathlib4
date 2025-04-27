@@ -58,21 +58,20 @@ def TStructure.t : TStructure (DerivedCategory C) where
     exact ⟨K, e, K.isStrictlyGE_of_ge 0 1 (by omega)⟩
   exists_triangle_zero_one X := by
     obtain ⟨K, ⟨e₂⟩⟩ : ∃ K, Nonempty (Q.obj K ≅ X) := ⟨_, ⟨Q.objObjPreimageIso X⟩⟩
-    sorry
-    --have h := K.shortComplexTruncLE_shortExact 0
-    --refine ⟨Q.obj (K.truncLE 0), Q.obj (K.truncGE 1),
-    --  ⟨_, Iso.refl _, inferInstance⟩, ⟨_, Iso.refl _, inferInstance⟩,
-    --  Q.map (K.ιTruncLE 0) ≫ e₂.hom, e₂.inv ≫ Q.map (K.πTruncGE 1),
-    --  inv (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega))) ≫ (triangleOfSES h).mor₃,
-    --  isomorphic_distinguished _ (triangleOfSES_distinguished h) _ (Iso.symm ?_)⟩
-    --refine Triangle.isoMk _ _ (Iso.refl _) e₂
-    --  (asIso (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega)))) ?_ ?_ (by simp)
-    --· dsimp
-    --  rw [id_comp]
-    --  rfl
-    --· dsimp
-    --  rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE,
-    --    Iso.hom_inv_id_assoc]
+    have h := K.shortComplexTruncLE_shortExact 0
+    refine ⟨Q.obj (K.truncLE 0), Q.obj (K.truncGE 1),
+      ⟨_, Iso.refl _, inferInstance⟩, ⟨_, Iso.refl _, inferInstance⟩,
+      Q.map (K.ιTruncLE 0) ≫ e₂.hom, e₂.inv ≫ Q.map (K.πTruncGE 1),
+      inv (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega))) ≫ (triangleOfSES h).mor₃,
+      isomorphic_distinguished _ (triangleOfSES_distinguished h) _ (Iso.symm ?_)⟩
+    refine Triangle.isoMk _ _ (Iso.refl _) e₂
+      (asIso (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega)))) ?_ ?_ (by simp)
+    · dsimp
+      rw [id_comp]
+      rfl
+    · dsimp
+      rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE,
+        Iso.hom_inv_id_assoc]
 
 /-- Given `X : DerivedCategory C` and `n : ℤ`, this property means
 that `X` is `≤ n` for the canonical t-structure. -/
