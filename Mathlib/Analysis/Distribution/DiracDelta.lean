@@ -1,7 +1,7 @@
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 open MeasureTheory MeasureTheory.Measure Filter Topology BoundedContinuousFunction
 
