@@ -231,6 +231,9 @@ theorem suffixLevenshtein_cons₁
         (suffixLevenshtein C xs ys).1, by simp⟩ := by
   induction ys with
   | nil =>
+    #adaptation_note
+    /-- 2024-04-26: This should go back to `dsimp [levenshtein, suffixLevenshtein]`
+    after nightly-2024-04-27. -/
     simp [levenshtein, suffixLevenshtein, List.getElem_zero]
   | cons y ys ih =>
     apply suffixLevenshtein_cons₁_aux
