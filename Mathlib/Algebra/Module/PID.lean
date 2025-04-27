@@ -168,17 +168,7 @@ omit dec in
 theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoid.powers p))
     [h' : Module.Finite R M] :
     ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| M ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
-  suffices H : ∀ {N : Type max u v} [AddCommGroup N] [Module R N]
-      (hN : Module.IsTorsion' N (Submonoid.powers p)) [Module.Finite R N],
-      ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) by
-    have := Module.Finite.equiv (ULift.moduleEquiv.{u, v, u} (R := R) (M := M)).symm
-    have hM' : Module.IsTorsion' (ULift.{u} M) (Submonoid.powers p) := by
-      rw [IsTorsion'] at hM ⊢
-      rintro ⟨x⟩
-      obtain ⟨a, ha⟩ := @hM x
-      exact ⟨a, by ext1; exact ha⟩
-    obtain ⟨d, k, ⟨f⟩⟩ := H hM'
-    exact ⟨d, k, ⟨ULift.moduleEquiv.symm ≪≫ₗ f⟩⟩
+  revert M
   intro N _ _ hN h'
   obtain ⟨d, s, hs⟩ := @Module.Finite.exists_fin _ _ _ _ _ h'; use d; clear h'
   induction' d with d IH generalizing N
