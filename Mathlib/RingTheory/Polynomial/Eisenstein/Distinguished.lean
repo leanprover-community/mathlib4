@@ -29,9 +29,9 @@ structure Polynomial.IsDistinguishedAt (f : R[X]) (I : Ideal R) : Prop
     extends f.IsWeaklyEisensteinAt I where
   monic : f.Monic
 
-namespace IsDistinguishedAt
+namespace Polynomial.IsDistinguishedAt
 
-lemma map_eq_X_pow (f : R[X]) {I : Ideal R} (distinguish : f.IsDistinguishedAt I) :
+lemma map_eq_X_pow {f : R[X]} {I : Ideal R} (distinguish : f.IsDistinguishedAt I) :
     f.map (Ideal.Quotient.mk I) = Polynomial.X ^ f.natDegree := by
   ext i
   by_cases ne : i = f.natDegree
@@ -41,9 +41,9 @@ lemma map_eq_X_pow (f : R[X]) {I : Ideal R} (distinguish : f.IsDistinguishedAt I
     · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
 
 lemma degree_eq_order_map {I : Ideal R} (f : PowerSeries R)
-    (h : R⟦X⟧) (g : R[X]) (distinguish : g.IsDistinguishedAt I) (nmem : ¬ constantCoeff R h ∈ I)
+    (h : R⟦X⟧) {g : R[X]} (distinguish : g.IsDistinguishedAt I) (nmem : ¬ constantCoeff R h ∈ I)
     (eq : f = g * h) : g.degree = (f.map (Ideal.Quotient.mk I)).order := by
-  let _ : Nontrivial R := nontrivial_iff.mpr
+  have : Nontrivial R := nontrivial_iff.mpr
     ⟨0, constantCoeff R h, ne_of_mem_of_not_mem I.zero_mem nmem⟩
   rw [Polynomial.degree_eq_natDegree distinguish.monic.ne_zero, Eq.comm, PowerSeries.order_eq_nat]
   have mapf : f.map (Ideal.Quotient.mk I) = (Polynomial.X ^ g.natDegree : (R ⧸ I)[X]) *
@@ -54,4 +54,4 @@ lemma degree_eq_order_map {I : Ideal R} (f : PowerSeries R)
   · intro i hi
     simp [mapf, coeff_X_pow_mul', hi]
 
-end IsDistinguishedAt
+end Polynomial.IsDistinguishedAt
