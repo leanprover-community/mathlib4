@@ -300,20 +300,23 @@ theorem exp_inj : Function.Injective (exp n) := by
       simp only [Nat.cast_pos]
       apply Nat.pos_of_ne_zero
       exact (NeZero.ne' n).symm
-
-
-
-
-      --have jgg (a b :ℝ) (h : 0 < b) : a/b <1 ↔ a < b := by exact div_lt_one h
-
-
-      have e1 (a b c : ℝ) (h : 0 < c) : a < 1 ↔ c*a < c := by exact
-        Iff.symm (mul_lt_iff_lt_one_right h)
-      --Iff.symm (mul_lt_mul_left h)
-
-
-
-    sorry
+    constructor
+    · apply (mul_nonneg_iff_of_pos_left two_pi_pos).mpr
+      apply div_nonneg
+      exact Nat.cast_nonneg' j.val
+      exact Nat.cast_nonneg' n
+    · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
+      apply (div_lt_one _).mpr
+      norm_cast
+      apply ZMod.val_lt
+      simp only [Nat.cast_pos]
+      apply Nat.pos_of_ne_zero
+      exact (NeZero.ne' n).symm
+  rw [mul_right_inj' two_pi_ne_zero] at e2
+  rw [div_left_inj' (by rw [Nat.cast_ne_zero]; exact (NeZero.ne' n).symm)] at e2
+  apply ZMod.val_injective
+  rw [Nat.cast_inj] at e2
+  rw [e2]
 
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
