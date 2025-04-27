@@ -55,24 +55,6 @@ lemma exp_iff (t s : ℝ) :
   · ext : 1
     simp_all only [coe_exp]
 
-lemma exp_eq_circleMap_origin_unit : val ∘ exp = circleMap 0 1 := by
-  ext
-  unfold circleMap
-  rw [Function.comp_apply, coe_exp, Complex.ofReal_one, one_mul, zero_add]
-
-#check Complex.exp_inj_of_neg_pi_lt_of_le_pi
-
---lemma test (a b c : ℂ) (h : b = c) : a*b = a*c := by exact congrArg (HMul.hMul a) h
-
-open Complex in
-lemma test (a b : ℝ)  : a = b ↔ a * I = b* I := by simp_all only [mul_eq_mul_right_iff, ofReal_inj, I_ne_zero,
-  or_false]
-
-#check Complex.ofReal
-
--- theorem injOn_circleMap_of_abs_sub_le {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (_ : |a - b| ≤ 2 * π) :
---    (Ι a b).InjOn (circleMap c R) := by
-
 open Real in
 lemma injOn_exp_of_abs_sub_le {x y : ℝ} (hxy : |x - y| ≤ 2 * π) : (Ι x y).InjOn exp :=
     fun t₁ ht₁ t₂ ht₂ h => injOn_circleMap_of_abs_sub_le (c := 0) (zero_ne_one' ℝ).symm hxy ht₁ ht₂
