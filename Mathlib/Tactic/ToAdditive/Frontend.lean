@@ -1297,7 +1297,7 @@ partial def transformDecl (cfg : Config) (src tgt : Name) : CoreM (Array Name) :
   copyMetaData cfg src tgt
 
 /-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
-partial def checkExistingType (src tgt : Name) (reorder : List (List Nat) := []) :
+partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) :
     MetaM (Expr × Bool) := do
   let mut srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
@@ -1314,7 +1314,7 @@ partial def checkExistingType (src tgt : Name) (reorder : List (List Nat) := [])
   let type ←
     applyReplacementFun <| ← reorderForall reorder <| ← expand <| ← unfoldAuxLemmas type
   -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
-  return (type, type == tgtType)
+  return (type, ← withReducible <| isDefEq type tgtType)
 
 /-- `addToAdditiveAttr src cfg` adds a `@[to_additive]` attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details.
@@ -1335,7 +1335,7 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
       else
         "The additive declaration doesn't exist. Please remove the option `existing`."
   if alreadyExists then
-    let (e, isCorrect) ← MetaM.run' <| checkExistingType src tgt
+    let (e, isCorrect) ← MetaM.run' <| checkExistingType src tgt cfg.reorder
     if !isCorrect then
       logWarning m!"`to_additive` validation failed: expected{indentExpr e}\n
         but {tgt} has type{indentExpr (← getConstInfo tgt).type}"
