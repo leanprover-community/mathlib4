@@ -36,8 +36,8 @@ instance (X : Type u) : Projective ((free R).obj X) where
 projective `R`-module. -/
 noncomputable def projectiveResolutions :
     LeftResolutions
-      (fullSubcategoryInclusion (fun (M : ModuleCat.{u} R) ↦ Projective M)) where
-  F := FullSubcategory.lift _ (forget _ ⋙ free R) (by dsimp; infer_instance)
+      (ObjectProperty.ι (fun (M : ModuleCat.{u} R) ↦ Projective M)) where
+  F := ObjectProperty.lift _ (forget _ ⋙ free R) (by dsimp; infer_instance)
   π := (adj R).counit
 
 end ModuleCat
