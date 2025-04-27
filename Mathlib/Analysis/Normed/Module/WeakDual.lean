@@ -12,8 +12,8 @@ import Mathlib.Topology.Algebra.Module.WeakDual
 
 Let `E` be a normed space over a field `𝕜`. This file is concerned with properties of the weak-*
 topology on the dual of `E`. By the dual, we mean either of the type synonyms
-`NormedSpace.Dual 𝕜 E` or `WeakDual 𝕜 E`, depending on whether it is viewed as equipped with its
-usual operator norm topology or the weak-* topology.
+`ContinuousLinearMap.Dual 𝕜 E` or `WeakDual 𝕜 E`, depending on whether it is viewed as equipped with
+its usual operator norm topology or the weak-* topology.
 
 It is shown that the canonical mapping `NormedSpace.Dual 𝕜 E → WeakDual 𝕜 E` is continuous, and
 as a consequence the weak-* topology is coarser than the topology obtained from the operator norm
@@ -27,10 +27,10 @@ topology.
 
 The main definitions concern the canonical mapping `Dual 𝕜 E → WeakDual 𝕜 E`.
 
-* `NormedSpace.Dual.toWeakDual` and `WeakDual.toNormedDual`: Linear equivalences from
-  `dual 𝕜 E` to `WeakDual 𝕜 E` and in the converse direction.
-* `NormedSpace.Dual.continuousLinearMapToWeakDual`: A continuous linear mapping from
-  `Dual 𝕜 E` to `WeakDual 𝕜 E` (same as `NormedSpace.Dual.toWeakDual` but different bundled
+* `ContinuousLinearMap.Dual.toWeakDual` and `WeakDual.toNormedDual`: Linear equivalences from
+  `Dual 𝕜 E` to `WeakDual 𝕜 E` and in the converse direction.
+* `ContinuousLinearMap.Dual.continuousLinearMapToWeakDual`: A continuous linear mapping from
+  `Dual 𝕜 E` to `WeakDual 𝕜 E` (same as `ContinuousLinearMap.Dual.toWeakDual` but different bundled
   data).
 
 ## Main results
