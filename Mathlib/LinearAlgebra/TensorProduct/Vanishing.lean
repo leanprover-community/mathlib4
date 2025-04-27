@@ -196,7 +196,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective
     rfl
   have hm'n : ∑ i, m' i ⊗ₜ n i = (0 : span R (Set.range m) ⊗[R] N) := by
     apply hm
-    simp only [m'_eq, map_sum, rTensor_tmul, coe_subtype, Subtype.coind_coe, _root_.map_zero, hmn]
+    simp only [m'_eq, map_sum, rTensor_tmul, coe_subtype, Subtype.coind_coe, map_zero, hmn]
   have : VanishesTrivially R m' n := vanishesTrivially_of_sum_tmul_eq_zero R hm' hm'n
   unfold VanishesTrivially at this ⊢
   convert this with κ _ a y j

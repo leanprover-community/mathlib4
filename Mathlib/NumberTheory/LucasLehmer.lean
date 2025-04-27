@@ -139,7 +139,7 @@ theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <
 
 theorem sMod_lt (p : ℕ) (hp : p ≠ 0) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
   rw [← sMod_mod]
-  refine (Int.emod_lt _ (mersenne_int_ne_zero p hp)).trans_eq ?_
+  refine (Int.emod_lt_abs _ (mersenne_int_ne_zero p hp)).trans_eq ?_
   exact abs_of_nonneg (mersenne_int_pos hp).le
 
 theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
@@ -185,13 +185,6 @@ the Lucas-Lehmer residue `s p (p-2) % (2^p - 1)` is zero.
 -/
 def LucasLehmerTest (p : ℕ) : Prop :=
   lucasLehmerResidue p = 0
-
--- Porting note: We have a fast `norm_num` extension, and we would rather use that than accidentally
--- have `simp` use `decide`!
-/-
-instance : DecidablePred LucasLehmerTest :=
-  inferInstanceAs (DecidablePred (lucasLehmerResidue · = 0))
--/
 
 /-- `q` is defined as the minimum factor of `mersenne p`, bundled as an `ℕ+`. -/
 def q (p : ℕ) : ℕ+ :=

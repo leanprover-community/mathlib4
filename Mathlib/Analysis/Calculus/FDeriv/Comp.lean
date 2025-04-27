@@ -81,9 +81,6 @@ theorem HasFDerivWithinAt.comp_of_tendsto {g : F → G} {g' : F →L[𝕜] G} {t
     (hst : Tendsto f (𝓝[s] x) (𝓝[t] f x)) : HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
   HasFDerivAtFilter.comp x hg hf hst
 
-@[deprecated (since := "2024-10-18")]
-alias HasFDerivWithinAt.comp_of_mem := HasFDerivWithinAt.comp_of_tendsto
-
 /-- The chain rule. -/
 @[fun_prop]
 theorem HasFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAt g g' (f x))
@@ -232,7 +229,6 @@ protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
 protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasFDerivAt f^[n] (f' ^ n) x := by
   refine HasFDerivAtFilter.iterate hf ?_ hx n
-  -- Porting note: was `convert hf.continuousAt`
   convert hf.continuousAt.tendsto
   exact hx.symm
 
@@ -241,7 +237,7 @@ protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivWithinAt f f' s x) (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) :
     HasFDerivWithinAt f^[n] (f' ^ n) s x := by
   refine HasFDerivAtFilter.iterate hf ?_ hx n
-  rw [_root_.nhdsWithin] -- Porting note: Added `rw` to get rid of an error
+  rw [nhdsWithin]
   convert tendsto_inf.2 ⟨hf.continuousWithinAt, _⟩
   exacts [hx.symm, (tendsto_principal_principal.2 hs).mono_left inf_le_right]
 

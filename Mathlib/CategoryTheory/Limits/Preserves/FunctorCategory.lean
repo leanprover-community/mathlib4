@@ -188,7 +188,6 @@ instance whiskeringRightPreservesColimits {C : Type*} [Category C] {D : Type*} [
     PreservesColimitsOfSize.{w, w'} ((whiskeringRight C D E).obj F) :=
   ⟨inferInstance⟩
 
--- Porting note: fixed spelling mistake in def
 /-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
 lemma preservesLimit_of_lan_preservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]

@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
@@ -30,8 +30,13 @@ variable {α β : Type*}
 namespace Set
 
 lemma smul_set_pi₀ {M ι : Type*} {α : ι → Type*} [GroupWithZero M] [∀ i, MulAction M (α i)]
-    {c : M} (hc : c ≠ 0) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s ·) :=
+    {c : M} (hc : c ≠ 0) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) :=
   smul_set_pi_of_isUnit (.mk0 _ hc) I s
+
+/-- A slightly more general version of `Set.smul_set_pi₀`. -/
+lemma smul_set_pi₀' {M ι : Type*} {α : ι → Type*} [GroupWithZero M] [∀ i, MulAction M (α i)]
+    {c : M} {I : Set ι} (h : c ≠ 0 ∨ I = univ) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) :=
+  h.elim (fun hc ↦ smul_set_pi_of_isUnit (.mk0 _ hc) I s) (fun hI ↦ hI ▸ smul_set_univ_pi ..)
 
 section SMulZeroClass
 variable [Zero β] [SMulZeroClass α β] {s : Set α} {t : Set β} {a : α}
