@@ -174,9 +174,9 @@ jobs:
 
       - name: build mathlib
         id: build
-        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
+        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
-          linters: gcc
+          linters: lean
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
@@ -294,15 +294,15 @@ jobs:
 
       - name: test mathlib
         id: test
-        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
+        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
-          linters: gcc
+          linters: lean
           run:
             lake --iofail test
 
       - name: check for unused imports
         id: shake
-        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
+        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
@@ -310,7 +310,7 @@ jobs:
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
-        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
+        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
