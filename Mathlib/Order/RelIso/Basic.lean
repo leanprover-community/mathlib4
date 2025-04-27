@@ -733,6 +733,19 @@ instance IsWellOrder.ulift {α : Type u} (r : α → α → Prop) [IsWellOrder �
 noncomputable def ofSurjective (f : r ↪r s) (H : Surjective f) : r ≃r s :=
   ⟨Equiv.ofBijective f ⟨f.injective, H⟩, f.map_rel_iff⟩
 
+/-- Transport a `RelHom` across a pair of `RelIso`s, by pre- and post-composition.
+
+This is `Equiv.arrowCongr` for `RelHom`. -/
+@[simps]
+def relHomCongr {α₁ β₁ α₂ β₂}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂):
+    (r₁ →r s₁) ≃ (r₂ →r s₂) where
+  toFun f₁ := e₂.toRelEmbedding.toRelHom.comp <| f₁.comp e₁.symm.toRelEmbedding.toRelHom
+  invFun f₂ := e₂.symm.toRelEmbedding.toRelHom.comp <| f₂.comp e₁.toRelEmbedding.toRelHom
+  left_inv f₁ := by ext; simp
+  right_inv f₂ := by ext; simp
+
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the sum.
 -/
