@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Cat
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 /-!
-# Descent data
+# Codescent data
 
 -/
 
@@ -24,7 +24,22 @@ namespace Pseudofunctor
 variable {C : Type u} [Bicategory.{w, v} C]
   (F : Pseudofunctor C Cat.{v', u'}) {ι : Type t} (X : ι → C)
 
-structure DescentData where
+/-
+Let us use `CodescentData` for a "covariant" pseudofunctor `F` to `Cat`.
+The "codescent" property for `F`, a family of objects `X : ι → C` and
+an initial object `X₀`, there is an equivalence of categories
+(induced by `toCodescentDataOfIsInitial`) from `F.obj X₀` to
+`F.CodescentData X`.
+
+We shall use the name `DescentData` for the case of a pseudofunctor
+from the locally discrete bicategory associated to the opposite category
+of `C`, especially when `C` is endowed with a Grothendieck topology, and
+for this we shall apply `CodescentData` to the restriction of the
+pseudofunctor to `LocallyDiscrete (Over X)ᵒᵖ` for `X : C`.
+
+-/
+
+structure CodescentData where
   obj (i : ι) : F.obj (X i)
   iso ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
       (F.map f₁).obj (obj i₁) ≅ (F.map f₂).obj (obj i₂)
@@ -36,7 +51,7 @@ structure DescentData where
   iso_trans ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) (f₃ : X i₃ ⟶ Y) :
     iso f₁ f₂ ≪≫ iso f₂ f₃ = iso f₁ f₃ := by aesop_cat
 
-namespace DescentData
+namespace CodescentData
 
 variable {F X}
 
@@ -52,7 +67,7 @@ def mk' (obj : ∀ i, F.obj (X i))
             (F.mapComp' f₂ g f₂g).inv.app _ := by aesop_cat)
     (hom_self : ∀ ⦃Y : C⦄ ⦃i : ι⦄ (f : X i ⟶ Y), hom f f = 𝟙 _ := by aesop_cat)
     (comp_hom : ∀ ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) (f₃ : X i₃ ⟶ Y),
-      hom f₁ f₂ ≫ hom f₂ f₃ = hom f₁ f₃ := by aesop_cat) : F.DescentData X where
+      hom f₁ f₂ ≫ hom f₂ f₃ = hom f₁ f₃ := by aesop_cat) : F.CodescentData X where
   obj := obj
   iso Y i₁ i₂ f₁ f₂ :=
     { hom := hom f₁ f₂
@@ -63,7 +78,7 @@ def mk' (obj : ∀ i, F.obj (X i))
 
 section
 
-variable (D : F.DescentData X)
+variable (D : F.CodescentData X)
 
 @[simp]
 lemma iso_hom_iso_hom ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι⦄
@@ -92,7 +107,7 @@ lemma iso_inv ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄
 end
 
 @[ext]
-structure Hom (D₁ D₂ : F.DescentData X) where
+structure Hom (D₁ D₂ : F.CodescentData X) where
   hom (i : ι) : D₁.obj i ⟶ D₂.obj i
   comm ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
     (F.map f₁).map (hom i₁) ≫ (D₂.iso f₁ f₂).hom =
@@ -100,7 +115,7 @@ structure Hom (D₁ D₂ : F.DescentData X) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-instance : Category (F.DescentData X) where
+instance : Category (F.CodescentData X) where
   Hom := Hom
   id D := { hom i := 𝟙 _ }
   comp {D₁ D₂ D₃} φ ψ :=
@@ -110,21 +125,21 @@ instance : Category (F.DescentData X) where
         rw [ψ.comm, φ.comm_assoc] }
 
 @[ext]
-lemma hom_ext {D₁ D₂ : F.DescentData X} {f g : D₁ ⟶ D₂}
+lemma hom_ext {D₁ D₂ : F.CodescentData X} {f g : D₁ ⟶ D₂}
     (h : ∀ i, f.hom i = g.hom i) : f = g :=
   Hom.ext (funext h)
 
 @[simp]
-lemma id_hom (D : F.DescentData X) (i : ι) : Hom.hom (𝟙 D) i = 𝟙 _ := rfl
+lemma id_hom (D : F.CodescentData X) (i : ι) : Hom.hom (𝟙 D) i = 𝟙 _ := rfl
 
 @[simp, reassoc]
-lemma comp_hom {D₁ D₂ D₃ : F.DescentData X} (f : D₁ ⟶ D₂) (g : D₂ ⟶ D₃) (i : ι) :
+lemma comp_hom {D₁ D₂ D₃ : F.CodescentData X} (f : D₁ ⟶ D₂) (g : D₂ ⟶ D₃) (i : ι) :
     (f ≫ g).hom i = f.hom i ≫ g.hom i := rfl
 
 
 namespace Hom
 
-variable {D₁ D₂ : F.DescentData X} (f : D₁ ⟶ D₂)
+variable {D₁ D₂ : F.CodescentData X} (f : D₁ ⟶ D₂)
 
 @[reassoc]
 lemma map_map ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X i₂ ⟶ Y) :
@@ -140,12 +155,12 @@ lemma map_map' ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : X i₁ ⟶ Y) (f₂ : X 
 
 end Hom
 
-end DescentData
+end CodescentData
 
 variable [Strict C]
 
-def toDescentDataOfIsInitial (X₀ : C) (hX₀ : IsInitial X₀) :
-    F.obj X₀ ⥤ F.DescentData X where
+def toCodescentDataOfIsInitial (X₀ : C) (hX₀ : IsInitial X₀) :
+    F.obj X₀ ⥤ F.CodescentData X where
   obj A :=
     { obj i := (F.map (hX₀.to (X i))).obj A
       iso Y i₁ i₂ f₁ f₂ :=
@@ -173,7 +188,7 @@ def toDescentDataOfIsInitial (X₀ : C) (hX₀ : IsInitial X₀) :
   map_id := by intros; ext; dsimp; simp only [Functor.map_id]
   map_comp := by intros; ext; dsimp; simp only [Functor.map_comp]
 
-namespace DescentData
+namespace CodescentData
 
 section Unique
 
@@ -245,11 +260,11 @@ lemma mk''Hom_self {Y : C} (f : X ⟶ Y) :
     Functor.map_id]
   simp only [id_comp, Iso.hom_inv_id_app]
 
-/-- Constructor for `Pseudofunctor.DescentData` for a family consisting
+/-- Constructor for `Pseudofunctor.CodescentData` for a family consisting
 of only one object `X` equipped with a chosen binary and ternary coproduct. -/
 def mk''
     (hom_comp : mk''Hom F obj c hc hom p₁ p₂ ≫ mk''Hom F obj c hc hom p₂ p₃ =
-      mk''Hom F obj c hc hom p₁ p₃) : F.DescentData (fun _ : PUnit.{t + 1} ↦ X) :=
+      mk''Hom F obj c hc hom p₁ p₃) : F.CodescentData (fun _ : PUnit.{t + 1} ↦ X) :=
   mk' (fun _ ↦ obj) (fun _ _ _ ↦ mk''Hom F obj c hc hom)
     (fun _ _ _ _ _ ↦ mk''Hom_comp' _ _ _ _ _ _) (by
       rintro Y ⟨⟩ f
@@ -267,7 +282,7 @@ def mk''
 
 end Unique
 
-end DescentData
+end CodescentData
 
 end Pseudofunctor
 
