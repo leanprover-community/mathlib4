@@ -278,46 +278,34 @@ theorem exp_add (x y : ZMod n) : exp n (x + y) = exp n x * exp n y := by
     Complex.ofReal_ofNat, Complex.ofReal_div, Complex.ofReal_natCast, MulMemClass.mk_mul_mk]
 
 open Real in
-theorem exp_inj : Function.Injective (exp n) := by
-  intro i j hij
-  have e1 : Set.InjOn Units.exp (Set.Ico 0 (2 * π)) :=
-    Units.injOn_exp_of_abs_sub_le' (by rw [sub_zero])
-  rw [Set.InjOn] at e1
-  rw [exp, exp] at hij
-  simp only [Subtype.mk.injEq] at hij
-  have e2 : 2 * π * (i.val / n) = 2 * π * (j.val / n) := by
-    apply e1
-      (by
-        constructor
-        · exact (mul_nonneg_iff_of_pos_left two_pi_pos).mpr
-            (div_nonneg (Nat.cast_nonneg' i.val) (Nat.cast_nonneg' n))
-        · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
-          apply (div_lt_one _).mpr
-          norm_cast
-          apply ZMod.val_lt
-          simp only [Nat.cast_pos]
-          apply Nat.pos_of_ne_zero
-          exact (NeZero.ne' n).symm
-      )
-      (by
-        constructor
-        · exact (mul_nonneg_iff_of_pos_left two_pi_pos).mpr
-            (div_nonneg (Nat.cast_nonneg' j.val) (Nat.cast_nonneg' n))
-        · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
-          apply (div_lt_one _).mpr
-          norm_cast
-          apply ZMod.val_lt
-          simp only [Nat.cast_pos]
-          apply Nat.pos_of_ne_zero
-          exact (NeZero.ne' n).symm
-      )
-      hij
-  rw [mul_right_inj' two_pi_ne_zero] at e2
-  rw [div_left_inj' (by rw [Nat.cast_ne_zero]; exact (NeZero.ne' n).symm)] at e2
-  apply ZMod.val_injective
-  rw [Nat.cast_inj] at e2
-  rw [e2]
-
+theorem exp_inj : Function.Injective (exp n) := fun i j hij => by
+  simp only [exp, Subtype.mk.injEq] at hij
+  have e2 : 2 * π * (i.val / n) = 2 * π * (j.val / n) := Units.injOn_exp_of_abs_sub_le'
+    (by rw [sub_zero])
+    (by
+      constructor
+      · exact (mul_nonneg_iff_of_pos_left two_pi_pos).mpr
+          (div_nonneg (Nat.cast_nonneg' i.val) (Nat.cast_nonneg' n))
+      · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
+        apply (div_lt_one _).mpr
+        norm_cast
+        apply ZMod.val_lt
+        exact (Nat.cast_pos.mpr (Nat.pos_of_ne_zero (NeZero.ne' n).symm))
+    )
+    (by
+      constructor
+      · exact (mul_nonneg_iff_of_pos_left two_pi_pos).mpr
+          (div_nonneg (Nat.cast_nonneg' j.val) (Nat.cast_nonneg' n))
+      · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
+        apply (div_lt_one _).mpr
+        norm_cast
+        apply ZMod.val_lt
+        exact Nat.cast_pos.mpr (Nat.pos_of_ne_zero (NeZero.ne' n).symm)
+    )
+    hij
+  rw [mul_right_inj' two_pi_ne_zero,
+    div_left_inj' (by rw [Nat.cast_ne_zero]; exact (NeZero.ne' n).symm), Nat.cast_inj] at e2
+  exact ZMod.val_injective _ e2
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
