@@ -9,6 +9,17 @@ import Mathlib.Computability.WeightedPath
 /-!
 # Weighted Deterministic Finite Automata
 
+A Weighted Deterministic Finite Automata (WDFA) is a state machine that describes a weighted
+language by assinging an input string a weight. The weight of the string is determined by
+the path it takes through the state machine.
+
+Every transition in a WDFA produces a weight, which is an element of a semiring.
+The weight of a path, a sequence of transitions, is the in-order multiplication of all of its
+constituent transitions.
+
+Note that this definition allows for automata with infinite states,
+a `Fintype` instance must be supplied for true DFAs.
+
 TODO: explain stuff.
 -/
 
