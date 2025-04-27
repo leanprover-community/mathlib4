@@ -39,6 +39,9 @@ namespace NatTrans
 variable {C D : Type*} [Category C] [Category D] {F G : C ⥤ D}
   (τ : F ⟶ G) {X Y : C} (h : Retract X Y)
 
+-- to be moved
+/-- If `X` is a retract of `Y`, then for any natural transformation `τ`,
+the natural transformation `τ.app X` is a retract of `τ.app Y`. -/
 @[simps]
 def retractArrowApp : RetractArrow (τ.app X) (τ.app Y) where
   i := Arrow.homMk (F.map h.i) (G.map h.i) (by simp)
@@ -47,15 +50,18 @@ def retractArrowApp : RetractArrow (τ.app X) (τ.app Y) where
 
 end NatTrans
 
+-- to be moved
 namespace Idempotents
 
 variable {C D : Type*} [Category C] [Category D]
 
+/-- If `X : Karoubi C`, then `X` is a retract of `((toKaroubi C).obj X.X)`. -/
 @[simps]
 def Karoubi.retract (X : Karoubi C) : Retract X ((toKaroubi C).obj X.X) where
   i := ⟨X.p, by simp⟩
   r := ⟨X.p, by simp⟩
 
+/-- The precomposition of functors with `toKaroubi C` is fully faithful. -/
 def whiskeringLeftObjToKaroubiFullyFaithful :
     ((whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)).FullyFaithful where
   preimage {F G} τ :=
@@ -104,17 +110,20 @@ namespace LeftResolutions
 
 variable [Preadditive C] [Preadditive A] [ι.Additive]
 
+/-- Auxiliary definition for `LeftResolutions.karoubi`. -/
 @[simps]
 def karoubi.F' : A ⥤ Karoubi C where
   obj X := ⟨Λ.F.obj X, 𝟙 _ - Λ.F.map 0, by simp [← Functor.map_comp]⟩
   map {X Y} f := ⟨Λ.F.map f - Λ.F.map 0, by simp [← Functor.map_comp]⟩
   map_comp _ _ := by simp [← Functor.map_comp]
 
+/-- Auxiliary definition for `LeftResolutions.karoubi`. -/
 @[simps!]
 def karoubi.F : Karoubi A ⥤ Karoubi C := (functorExtension₁ A C).obj (karoubi.F' Λ)
 
 instance : (karoubi.F Λ).PreservesZeroMorphisms where
 
+/-- Auxiliary definition for `LeftResolutions.karoubi`. -/
 @[simps]
 def karoubi.π' : toKaroubi A ⋙ F Λ ⋙ (functorExtension₂ C A).obj ι ⟶ toKaroubi A where
   app X := ⟨Λ.π.app X, by simp⟩
@@ -131,6 +140,7 @@ instance (X : A) : Epi ((karoubi.π' Λ).app X) := by
         · simp }
   exact of_retract (P := epimorphisms _) h (epimorphisms.infer_property _)
 
+/-- Auxiliary definition for `LeftResolutions.karoubi`. -/
 def karoubi.π : karoubi.F Λ ⋙ (functorExtension₂ C A).obj ι ⟶ 𝟭 (Karoubi A) :=
   whiskeringLeftObjToKaroubiFullyFaithful.preimage (karoubi.π' Λ)
 
@@ -148,6 +158,9 @@ instance (X : Karoubi A) : Epi ((karoubi.π Λ).app X) :=
   of_retract (P := epimorphisms _) (NatTrans.retractArrowApp (karoubi.π Λ) X.retract)
     (epimorphisms.infer_property _)
 
+/-- Given `ι : C ⥤ A`, this is the extension of `Λ : LeftResolutions ι` to
+`LeftResolutions ((functorExtension₂ C A).obj ι)`, where
+`(functorExtension₂ C A).obj ι : Karoubi C ⥤ Karoubi A` is the extension of `ι`. -/
 @[simps]
 noncomputable def karoubi : LeftResolutions ((functorExtension₂ C A).obj ι) where
   F := karoubi.F Λ
@@ -159,6 +172,9 @@ section
 
 variable [IsIdempotentComplete A] [IsIdempotentComplete C]
 
+/-- Given an additive functor `ι : C ⥤ A` between idempotent complete,
+any `Λ : LeftResolutions ι` induces a term `Λ.reduced : LeftResolutions ι`
+such that `Λ.reduced.F` preserves zero morphisms. -/
 noncomputable def reduced : LeftResolutions ι :=
   Λ.karoubi.transport (toKaroubiEquivalence A) (toKaroubiEquivalence C)
      ((karoubiUniversal₁ C A).unitIso.app _)
