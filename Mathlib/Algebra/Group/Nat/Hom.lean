@@ -79,6 +79,7 @@ lemma MonoidHom.apply_mnat (f : Multiplicative ℕ →* M) (n : Multiplicative �
     f n = f (Multiplicative.ofAdd 1) ^ n.toAdd := by
   rw [← powersHom_symm_apply, ← powersHom_apply, Equiv.apply_symm_apply]
 
+@[ext]
 lemma MonoidHom.ext_mnat ⦃f g : Multiplicative ℕ →* M⦄
     (h : f (Multiplicative.ofAdd 1) = g (Multiplicative.ofAdd 1)) : f = g :=
   MonoidHom.ext fun n ↦ by rw [f.apply_mnat, g.apply_mnat, h]
