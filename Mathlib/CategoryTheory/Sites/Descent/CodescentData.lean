@@ -25,7 +25,7 @@ variable {C : Type u} [Bicategory.{w, v} C]
   (F : Pseudofunctor C Cat.{v', u'}) {ι : Type t} (X : ι → C)
 
 /-
-Let us use `CodescentData` for a "covariant" pseudofunctor `F` to `Cat`.
+Let us use `CodescentData` for a "covariant" pseudofunctor from `F` to `Cat`.
 The "codescent" property for `F`, a family of objects `X : ι → C` and
 an initial object `X₀`, there is an equivalence of categories
 (induced by `toCodescentDataOfIsInitial`) from `F.obj X₀` to
