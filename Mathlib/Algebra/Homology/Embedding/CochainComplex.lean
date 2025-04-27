@@ -341,6 +341,7 @@ section Abelian
 
 variable [Abelian C] (K L : CochainComplex C ℤ)
 
+/-- The cokernel sequence of the monomorphism `K.ιTruncLE n`. -/
 noncomputable abbrev shortComplexTruncLE (n : ℤ) : ShortComplex (CochainComplex C ℤ) :=
   HomologicalComplex.shortComplexTruncLE K (embeddingUpIntLE n)
 
@@ -350,12 +351,13 @@ lemma shortComplexTruncLE_shortExact (n : ℤ) :
 
 variable (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
+/-- The canonical morphism `(K.shortComplexTruncLE n₀).X₃ ⟶ K.truncGE n₁`. -/
 noncomputable abbrev shortComplexTruncLEX₃ToTruncGE :
     (K.shortComplexTruncLE n₀).X₃ ⟶ K.truncGE n₁ :=
   HomologicalComplex.shortComplexTruncLEX₃ToTruncGE K
     (Embedding.embeddingUpInt_areComplementary n₀ n₁ h)
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma g_shortComplexTruncLEX₃ToTruncGE :
     (K.shortComplexTruncLE n₀).g ≫ K.shortComplexTruncLEX₃ToTruncGE n₀ n₁ h = K.πTruncGE n₁ := by
   apply HomologicalComplex.g_shortComplexTruncLEX₃ToTruncGE
