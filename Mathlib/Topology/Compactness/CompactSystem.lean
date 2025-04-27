@@ -304,6 +304,26 @@ end ClosedCompact
 
 section Union
 
+example (L : ℕ → Set α) (h : ∀ n, L n = ∅) : ⋃ n, L n = ∅ := by exact iUnion_eq_empty.mpr h
+
+example (a s t :  Set α) (hst : s ⊆ t) : a ∩ s ⊆ a ∩ t := by
+  exact inter_subset_inter (fun ⦃a_1⦄ a ↦ a) hst
+
+lemma l2 {ι : Type*} (s t : Set α) (u : Set ι) (L : (i : ι) → (hi : i ∈ u) → Set α)
+  (h : s ⊆ ⋃ (n : ι) (hn : n ∈ u), L n hn) (h' : ∀ (n : ι) (hn : n ∈ u), t ∩ (L n hn) = ∅) :
+    t ∩ s = ∅ := by
+  have j : ⋃ (n : ι) (hn : n ∈ u), t ∩ (L n hn) = ∅ := by
+    simp_rw [iUnion_eq_empty]
+    exact h'
+  simp_rw [← subset_empty_iff] at h' j ⊢
+  have j' : ⋃ (n : u), t ∩ L n.val n.prop = ⋃ n, ⋃ (hn : n ∈ u), t ∩ L n hn := by
+    exact iUnion_coe_set u fun i ↦ t ∩ L (↑i) (Subtype.prop i)
+  rw [← j', ← inter_iUnion, iUnion_coe_set] at j
+  have gf := inter_subset_inter (t₁ := t) (fun ⦃a_1⦄ a ↦ a) h
+  apply le_trans gf j
+
+
+
 variable {p : Set α → Prop} (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
   (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n : Set (Set α))), p d)
 
@@ -365,34 +385,6 @@ lemma get_element_zero (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet �
     ∃ (K : ℕ → Set α), q L 0 K := by
   simp [q, r, h]
 
-variable [Nonempty α]
-
-
-
---  (h : ∀ (n : ℕ) (x : (ℕ → α)) (hx : p n x), ∃ y, p (n + 1) (Function.update x n y))
-
--- p n x ↔ (∀ k < n, K k ∈ β k) ∧ (r n K)
-example (n : ℕ) (s : Set α) (K : ℕ → Set α): (⋂ j < n, K j) ∩ s = ⋂ j < n, K j ∩ s := by
-  refine Eq.symm (biInter_inter ?_ K s)
-  sorry
-
-example (k n : ℕ) (h : k < n + 1) (h' : k ≠ n) : k < n := by
-  by_contra h''
-  simp at h''
-  apply h'
-  exact Nat.eq_of_le_of_lt_succ h'' h
-
-example (a b s : Set α) (h : a = b) : a ∩ s = b ∩ s := by
-  exact congrFun (congrArg Inter.inter h) s
-
-example (s t : Set α) (L : Set (Set α)): (∀ y ∈ L, s ∩ y = ∅) → s ∩ ⋃₀ L = ∅ := by
-  refine fun a ↦ ?_
-  refine Disjoint.inter_eq ?_
-  refine disjoint_sUnion_right.mpr ?_
-  simp_rw [Disjoint]
-  sorry
-
-
 lemma get_element_succ' (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d) (n : ℕ)
   (K : ℕ → Set α) (hK : q L n K) : ∃ y, q L (n + 1) (Function.update K n y) := by
   simp_rw [q, r] at hK ⊢
@@ -413,11 +405,14 @@ lemma get_element_succ' (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet
       simp only [ne_eq, d'.ne, not_false_eq_true, Function.update_of_ne]
       exact hK.1 k d'
   classical
-  let b' : Set α → ℕ := fun y ↦ dite (y ∈ L n) (fun h ↦ b y (hn y h)) (fun _ ↦ 0)
+  let b' := fun y ↦ dite (y ∈ L n) (fun hy ↦ (b y (hn y hy))) (fun _ ↦ 0)
+  have hb' := fun y hy ↦ hb y (hn y hy)
+  have hb'' (y : Set α) (hy : y ∈ L n) : b y (hn y hy) = b' y  := by
+    simp [b', hy]
   obtain ⟨K0Max, ⟨hK0₁, hK0₂⟩⟩ := Finset.exists_max_image (L n) b' (nonempty' L n K hK.2)
   apply hK.2 (b' K0Max + 1)
-  have hb' := fun y hy ↦ hb y (hn y hy)
-  have h₁ (y s : Set α): (⋂ j, ⋂ (_ : j < n + 1), Function.update K n y j) ∩ s = (⋂ j, ⋂ (_ : j < n), K j) ∩ y ∩ s := by
+  have h₁ (y s : Set α): (⋂ j, ⋂ (_ : j < n + 1), Function.update K n y j) ∩ s =
+      (⋂ j, ⋂ (_ : j < n), K j) ∩ y ∩ s := by
     apply congrFun (congrArg Inter.inter _) s
     ext x
     refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ ?_⟩ <;> simp only [mem_iInter, mem_inter_iff] at h ⊢
@@ -439,129 +434,40 @@ lemma get_element_succ' (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet
         exact h.2
   simp_rw [h₁] at hb'
 
+  have h₂ : ⋂ k < b' K0Max + 1, ⋃₀ (L (n + k)).toSet ⊆
+    ⋃ (y : Set α) (hy : y ∈ L n), y ∩ ⋂ (k < b y (hn y hy)), ⋃₀ (L (n + 1 + k)).toSet := by
+    obtain ⟨y, hy⟩ := nonempty' L n K hK.2
+    intro x hx
+    simp only [mem_iInter, mem_sUnion, Finset.mem_coe, mem_iUnion, mem_inter_iff,
+      exists_and_left] at hx ⊢
+    obtain ⟨i, hi⟩ := hx 0 (zero_lt_succ (b' K0Max))
+    rw [add_zero] at hi
+    use i, hi.2, hi.1
+    intro k hk
+    have hk' : 1 + k < b' K0Max + 1:= by
+      rw [add_comm]
+      simp only [add_lt_add_iff_right]
+      apply lt_of_lt_of_le hk
+      rw [hb'']
+      apply hK0₂ i hi.1
+      exact hi.1
+    obtain ⟨t, ht⟩ := hx (1 + k) hk'
+    rw [← add_assoc] at ht
+    use t, ht.1, ht.2
+  simp_rw [inter_assoc] at hb'
+  apply l2 (s := ⋂ k < b' K0Max + 1, ⋃₀ (L (n + k)).toSet) (t := (⋂ j < n, K j)) (u := L n)
+    (L := fun (y : Set α) (hy : y ∈ L n) ↦ (y ∩ ⋂ k, ⋂ (hk : k < b y (hn y hy)),
+      ⋃₀ (L (n + 1 + k)).toSet)) h₂ hb'
 
-
-  rw [eq_empty_iff_forall_not_mem]
-  intro x
-  simp only [mem_inter_iff, mem_iInter]
-
-
-  push_neg
-
-
-  have g : (⋂ j < n, K j) ∩ ⋂ k < b' K0Max + 1, ⋃₀ ↑(L (n + k)) =
-    ⋂ j < n, ( K j ∩ ⋂ k < b' K0Max + 1, ⋃₀ ↑(L (n + k))) := by
-    refine Eq.symm (biInter_inter ?_ K _)
-    sorry
-  rw [g]
-
-  rw [iInter_inter]
-
-
-  have h' : ∀ a ∈ L n, (⋂ (k < n), K k ∩ a) ∩ (⋂ (k < b' K0Max + 1), ⋃₀ ↑(L (n + k))) = ∅ := by
-    sorry
-
-
-  simp_rw [← iUnion_eq_empty] at h'
-
-
-
-
-
-
-
-
-  sorry
-
-noncomputable def m' : (n : ℕ) → ((K : ℕ → Set α) ×' (q L n K))
-  | 0 => ⟨(get_element_zero L).choose, (get_element_zero L).choose_spec⟩
+noncomputable def m' (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) :
+    (n : ℕ) → ((K : ℕ → Set α) ×' (q L n K))
+  | 0 => ⟨(get_element_zero L h).choose, (get_element_zero L h).choose_spec⟩
   | n + 1 => by
-    have g := (get_element_succ' L hL) n (m' n).1 (m' n).2
-    refine ⟨Function.update (m' n).1 n g.choose, g.choose_spec⟩
+    have g := (get_element_succ' L hL) n (m' h n).1 (m' h n).2
+    exact ⟨Function.update (m' h n).1 n g.choose, g.choose_spec⟩
 
 
 
-
-lemma get_element_zero' (hL : ∀ n d (hd : d ∈ (L n : Set (Set α))), p d)
-    (hc : ∀ N, ⋂ k < N, ⋃₀ ((L k) : Set (Set α)) ≠ ∅) :
-      ∃ (K : ℕ → Set α) (hK : ∀ k < 1, K k ∈ L k), r L 1 K := by
-  have hKfun {K : Set α} (hK' : K ∈ L 0) (k : ℕ) (hk : k < 1) : (fun _ ↦ K) k ∈ L k :=
-    (lt_one_iff.mp hk) ▸ hK'
-  simp_rw [r]
-  have d : ∃ (K : Set α) (hK' : K ∈ L 0), r L 1 (fun _ ↦ K) := by
-    simp_rw [r]
-    by_contra! h
-    choose! b ha using h
-    obtain ⟨K0Max, ⟨hK0₁, hK0₂⟩⟩ := Finset.exists_max_image (L 0) b (nonempty L 0 hc)
-    apply hc (b K0Max + 1 + 1)
-    -- refine Set.iInter_eq_empty_iff.mpr fun x ↦ ?_
-    have h' : ∀ a ∈ L 0, a ∩ ⋂ k < 1, ⋂ (k < b K0Max + 1), ⋃₀ ↑(L (1 + k)) = ∅ := by
-      intro a' h'
-      have f := (ha a' h')
-      simp only [lt_one_iff, iInter_iInter_eq_left] at f
-      refine subset_eq_empty (inter_subset_inter (fun ⦃a⦄ a ↦ a)  (iInter_mono' (fun j ↦ ?_))) f
-      use 0
-      intro k
-      simp only [lt_one_iff, pos_of_gt, iInter_true, mem_iInter, mem_sUnion, Finset.mem_coe]
-      intro hk hj
-      exact hk j (le_trans hj (le_trans (hK0₂ a' h') (le_succ (b K0Max))))
-    simp only [lt_one_iff, iInter_iInter_eq_left] at h'
-    have h'' : ∀ (a : L 0), a.val ∩ ⋂ k, ⋂ (_ : k < b K0Max + 1), ⋃₀ (L (1 + k) : Set (Set α)) = ∅ := by
-      rw [Subtype.forall]
-      simp only
-      exact h'
-    rw [← iUnion_eq_empty] at h''
-    have h''' : (⋃ a : L 0, a.val) ∩ (⋂ k, ⋂ (_ : k < b K0Max + 1), ⋃₀ (L (1 + k) : Set (Set α))) = ∅ := by
-      rw [iUnion_inter]
-      exact h''
-    have h'''': ⋃₀ L 0 ∩ ⋂ k, ⋂ (_ : k < b K0Max + 1), ⋃₀ (L (1 + k) : Set (Set α)) = ∅ := by
-      rw [sUnion_eq_iUnion]
-      exact h'''
-    rw [l] at h''''
-    exact h''''
-  obtain ⟨K, ⟨hK₁, hK₂⟩⟩ := d
-  refine ⟨fun _ ↦ K, hKfun hK₁, hK₂⟩
-
-
-
-lemma get_element_succ (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
-    (hc : ∀ (n : ℕ), ⋂ (k : Fin (n + 1)), (⋃₀ (L k).toSet) ≠ ∅) : ∀
-    (n : ℕ) (K' : (k : Fin (n + 1)) → (L k)), r K' →
-      ∃ (K : (L (n + 1))), r (join K' K) := by
-  intro n K' hK'
-  simp only [r, ne_eq, Subtype.exists]
-  by_contra! h
-  choose! b ha using h
-  classical
-  obtain ⟨aMax, ⟨ha1, ha2⟩⟩ := Finset.exists_max_image (L (n + 1)) b (nonempty (n + 1) hc)
-  have h' : ∀ (a : L (n + 1)), ⋂ k, ↑(join K' a k) ∩
-      ⋂ (k : Fin (b aMax)), ⋃₀ (L (n + 1 + 1 + ↑k) : Set (Set α)) = ∅ := by
-    intro a'
-    refine subset_eq_empty ?_ (ha a'.val a'.prop)
-    rw [← iInter_inter, ← iInter_inter]
-    apply (inter_subset_inter (fun ⦃a⦄ a ↦ a)  (iInter_mono' (fun j ↦ ?_)))
-    use ⟨j.val, le_trans j.prop (ha2 a'.val a'.prop)⟩
-  simp only [r] at hK'
-  apply hK' (b aMax + 1)
-  rw [← iUnion_eq_empty] at h'
-  rw [iUnion_join] at h'
-  rw [← h']
-  refine iInter_congr fun i ↦ ?_
-  rw [inter_assoc]
-  refine congrArg (Inter.inter _)  ?_
-  rw [l4]
-  simp only [Fin.val_zero, add_zero, Fin.coe_eq_castSucc]
-  apply congrArg (Inter.inter _)
-  refine iInter_congr fun i ↦ ?_
-  ext x
-  simp only [Fin.coeSucc_eq_succ, Fin.val_succ, mem_sUnion, Finset.mem_coe]
-  refine ⟨fun ⟨t, ⟨ht1, ht2⟩⟩ ↦ ⟨t, ⟨?_, ht2⟩⟩, fun ⟨t, ⟨ht1, ht2⟩⟩ ↦ ⟨t, ⟨?_, ht2⟩⟩⟩
-  · rw [add_assoc]
-    nth_rewrite 3 [add_comm]
-    exact ht1
-  · rw [add_assoc] at ht1
-    nth_rewrite 3 [add_comm] at ht1
-    exact ht1
 
 
 
@@ -572,19 +478,31 @@ theorem main' (p : Set α → Prop) (hp : IsCompactSystem p) (L : ℕ → Finset
       ⋃₀ (L (n + 1 + k)).toSet ≠ ∅) := by
   sorry
 
+example (s : Set α) : s ≠ ∅ ↔ s.Nonempty := by
+  exact Iff.symm nonempty_iff_ne_empty
 
 theorem union (h : IsCompactSystem p) : IsCompactSystem (fun s ↦ ∃ (D : Finset (Set (α))),
     (∀ d ∈ D, p d) ∧ s = ⋃₀ (D : Set (Set α))) := by
   intro q hq h_empty
   simp only at hq
-  choose f hf1 hf2 using hq
-  simp_rw [Dissipate, hf2] at h_empty ⊢
+  choose L hL1 hL2 using hq
+  simp_rw [Dissipate, hL2] at h_empty ⊢
   -- simp_rw [sUnion_eq_iUnion, iInter_iUnion_distr] at h_empty
-  simp_rw [iInter_eq_empty_iff, mem_sUnion, Finset.mem_coe, not_exists, not_and] at h_empty ⊢
-  by_contra h
+  -- simp_rw [iInter_eq_empty_iff, mem_sUnion, Finset.mem_coe, not_exists, not_and] at h_empty ⊢
+  by_contra! h
+  apply (imp_false (a := ⋂ i, ⋃₀ (L i).toSet = ∅)).mpr
+  simp_rw [nonempty_iff_ne_empty] at h
+  let m := m' L hL1 h
+
+
   revert h_empty
   simp only [imp_false]
-  push_neg at h ⊢
+  push_neg
+
+
+
+
+
 
   simp only [nonempty_iInter, mem_sUnion, Finset.mem_coe] at h ⊢
   simp_rw [Dissipate, nonempty_iInter] at h
