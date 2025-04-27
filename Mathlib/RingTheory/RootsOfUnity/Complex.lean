@@ -56,9 +56,16 @@ lemma exp_iff (t s : ℝ) :
     simp_all only [coe_exp]
 
 open Real in
+/-- `exp` is injective on `Ι a b` if the distance between `a` and `b` is at most `2π`. -/
 lemma injOn_exp_of_abs_sub_le {x y : ℝ} (hxy : |x - y| ≤ 2 * π) : (Ι x y).InjOn exp :=
     fun t₁ ht₁ t₂ ht₂ h => injOn_circleMap_of_abs_sub_le (c := 0) (zero_ne_one' ℝ).symm hxy ht₁ ht₂
     (by rw [circleMap_origin_unit, circleMap_origin_unit]; exact (exp_iff t₁ t₂).mp h.symm)
+
+open Real in
+/-- `exp` is injective on `Ico a b` if the distance between `a` and `b` is at most `2π`. -/
+theorem injOn_exp_of_abs_sub_le' {x y : ℝ} (hxy : y - x ≤ 2 * π) : (Set.Ico x y).InjOn exp :=
+  fun t₁ ht₁ t₂ ht₂ h => injOn_circleMap_of_abs_sub_le' (c := 0) (zero_ne_one' ℝ).symm hxy ht₁ ht₂
+     (by rw [circleMap_origin_unit, circleMap_origin_unit]; exact (exp_iff t₁ t₂).mp h.symm)
 
 open Real in
 /-- `exp` is `2π`-periodic. -/
