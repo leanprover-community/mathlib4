@@ -184,7 +184,8 @@ lemma commProb_cons (n : ℕ) (l : List ℕ) :
   #adaptation_note
   /--
   2025-04-26 Why do we need to add `List.getElem_cons_zero` and `List.getElem_cons_succ` here?
-  They are already `@[simp]` lemmas!]
+  They are already `@[simp]` lemmas!
+  (This will be fixed on nightly-2025-04-27.)
   -/
   simp [commProb_pi, Fin.prod_univ_succ, Fin.val_zero, List.getElem_cons_zero,
     List.getElem_cons_succ]
