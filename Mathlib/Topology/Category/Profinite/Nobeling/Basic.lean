@@ -580,7 +580,7 @@ def πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) :
     (continuous_projRestricts _ _)⟩
 
 theorem coe_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) (f : LocallyConstant (π C (ord I · < o₁)) ℤ) :
-    (πs' C h f).toFun = f.toFun ∘ (ProjRestricts C (fun _ hh ↦ lt_of_lt_of_le hh h)) := by
+    ⇑(πs' C h f) = ⇑f ∘ (ProjRestricts C (fun _ hh ↦ lt_of_lt_of_le hh h)) := by
   rfl
 
 theorem injective_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : Function.Injective (πs' C h) :=
