@@ -1123,6 +1123,7 @@ lemma sys_coeffs_foo :
   left
   exact sys_coeffs_bar α β htriv K σ α' β' γ' habc q u t}
 
+
 include α β σ hq0 h2mq hd hirr htriv σ α' β' γ' habc h2mq  in
 lemma iteratedDeriv_vanishes :
   let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
@@ -1402,6 +1403,7 @@ lemma foo :
     intros k hk
     specialize this k hk
     sorry
+  · exact fun z ↦ analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq z
   }
 
 lemma rgeqn :
@@ -1695,6 +1697,26 @@ lemma eq5 :
   · exact h2
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def c₆ : ℝ := sorry
 
 def c₇ : ℝ := sorry
@@ -1870,14 +1892,24 @@ lemma eq6 :
   · sorry
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 lemma for_def_of_S (hl : l ∈ Finset.range (m K)) :
   let R := R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq;
   ∃ (R' : ℂ → ℂ), (∀ z, AnalyticAt ℂ R' z) ∧ ∀ x, R x = (x - l : ℂ) ^ r * R' x := sorry
-
-
-
-
 
 def S : ℂ → ℂ := fun z => by
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
@@ -2204,6 +2236,25 @@ lemma blah :
     · simp only [Nat.cast_nonneg]
   · sorry
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def c₁₃ : ℝ := sorry
 
 def hρ :
@@ -2213,6 +2264,7 @@ def hρ :
   let S := S α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq
   let η := η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+
   σ ρ  = ((2 * Real.pi)⁻¹ * ∮ (z : ℂ) in
     C(0, m K* (1 + ↑r / ↑q)), (z - ↑l₀)⁻¹ * S z) := sorry
 
@@ -2268,14 +2320,13 @@ lemma use6and8 :
 def c₁₅ : ℝ := c₁₄ * c₅ K α' β' γ' q
 
 include α β σ hq0 h2mq hd hirr htriv K σ α' β' γ' habc h2mq u t in
-theorem main : ∃ r ≥ n K q, r ^ ((r - 3 * (h K)) / 2) ≥ c₁₅ K α' β' γ' q ^ r := by
+theorem main :
+  let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  r ^ ((r - 3 * (h K)) / 2) ≥ c₁₅ K α' β' γ' q ^ r := by
 
-  use (r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)
-  constructor
-  · have := rgeqn α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-    sorry
-  --use r_geq_n K α β hirr htriv σ hd α' β' γ' habc q u t hq0 h2mq
+  have := rgeqn α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   sorry
+  --use r_geq_n K α β hirr htriv σ hd α' β' γ' habc q u t hq0 h2mq
 
 lemma use5 :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
@@ -2299,37 +2350,31 @@ theorem hilbert7 (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ
 
   obtain ⟨K, hK, hNK, σ, hd, α', β', γ', habc⟩ := getElemsInNF α β (α^β) hα hβ hγ
 
-  have main := main α β hirr htriv K σ hd α' β' γ' habc
+  let q : ℕ := 5
 
-  have use5 := use5 α β hirr htriv K σ hd α' β' γ' habc
+  let t : Fin (q * q) := sorry
 
-  sorry
+  have hq0 : 0 < q := Nat.zero_lt_succ 4
 
+  let m : ℕ := m K
 
-  --have hq0 : 0 < q := sorry
-    -- only now you define t
+  let u : Fin (m * n K q) := sorry
 
+  have h2mq : 2 * m ∣ q ^ 2 := by {
+    refine Dvd.dvd.pow ?_ ?_
+    · sorry
+    · simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true]
+    }
 
+  have main := main α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
 
+  have use5 := use5 α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
 
+  simp only at use5
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  apply absurd main
+  simp only [ge_iff_le, not_le]
+  exact use5
 
 
 
