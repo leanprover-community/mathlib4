@@ -40,6 +40,9 @@ lemma map_eq_X_pow {f : R[X]} {I : Ideal R} (distinguish : f.IsDistinguishedAt I
     · simpa [ne, eq_zero_iff_mem] using (distinguish.mem lt)
     · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
 
+@[deprecated (since := "2025-04-27")]
+alias _root_.IsDistinguishedAt.map_eq_X_pow := map_eq_X_pow
+
 lemma degree_eq_order_map {I : Ideal R} (f : PowerSeries R)
     (h : R⟦X⟧) {g : R[X]} (distinguish : g.IsDistinguishedAt I)
     (nmem : PowerSeries.constantCoeff R h ∉ I)
@@ -54,5 +57,8 @@ lemma degree_eq_order_map {I : Ideal R} (f : PowerSeries R)
   · simp [mapf, PowerSeries.coeff_X_pow_mul', eq_zero_iff_mem, nmem]
   · intro i hi
     simp [mapf, PowerSeries.coeff_X_pow_mul', hi]
+
+@[deprecated (since := "2025-04-27")]
+alias _root_.IsDistinguishedAt.degree_eq_order_map := degree_eq_order_map
 
 end Polynomial.IsDistinguishedAt
