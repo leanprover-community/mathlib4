@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Localization.Preadditive
 import Mathlib.CategoryTheory.Center.Localization
 import Mathlib.CategoryTheory.Center.Linear
 import Mathlib.CategoryTheory.Linear.LinearFunctor
