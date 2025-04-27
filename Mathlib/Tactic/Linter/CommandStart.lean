@@ -94,7 +94,6 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
   -- If the latest error is of a different kind that then new one, we simply add the new one.
   if back.msg != f.msg || back.srcNat - back.length != f.srcNat then fs.push f else
   -- Otherwise, we are adding a further error of the same kind and we therefore merge the two.
-  dbg_trace "{back.srcEndPos} - {f.srcStartPos}, {f.srcEndPos}"
   fs.pop.push {back with length := back.length + f.length, srcStartPos := f.srcEndPos}
 
 partial
