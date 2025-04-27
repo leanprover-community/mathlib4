@@ -338,7 +338,7 @@ def sum_equiv (hsC : contained C (Order.succ o)) (ho : o < Ordinal.type (· < ·
   calc _ ≃ Set.range (sum_to C ho) := Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho)
        _ ≃ _ := Equiv.setCongr <| by rw [sum_to_range C ho, union_succ C hsC ho]
 
-theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
+theorem sum_equiv_comp_eval_eq_elim : eval C ∘ ⇑(sum_equiv C hsC ho) =
     (Sum.elim (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.1)
     (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
   ext ⟨_, _⟩ <;> [rfl; rfl]
@@ -376,14 +376,12 @@ theorem linearIndependent_iff_sum :
     LinearIndependent ℤ (eval C) ↔ LinearIndependent ℤ (SumEval C ho) := by
   rw [← linearIndependent_equiv (sum_equiv C hsC ho), SumEval,
     ← sum_equiv_comp_eval_eq_elim C hsC ho]
-  exact Iff.rfl
 
 include hsC in
 theorem span_sum : Set.range (eval C) = Set.range (Sum.elim
     (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.1)
     (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
-  rw [← sum_equiv_comp_eval_eq_elim C hsC ho, Equiv.toFun_as_coe,
-    EquivLike.range_comp (e := sum_equiv C hsC ho)]
+  rw [← sum_equiv_comp_eval_eq_elim C hsC ho, EquivLike.range_comp (e := sum_equiv C hsC ho)]
 
 
 theorem square_commutes : SumEval C ho ∘ Sum.inl =
