@@ -566,6 +566,10 @@ theorem update_comp_eq_of_injective {β : Sort*} (g : α' → β) {f : α → α
 
 /-- Recursors can be pushed inside `Function.update`.
 
+The `ctor` argument should be a one-argument constructor like `Sum.inl`,
+and `recursor` should be an inductive recursor partially applied in all but that constructor,
+such as `(Sum.rec · g)`.
+
 In future, we should build some automation to generate applications like `Option.rec_update` for all
 inductive types. -/
 lemma rec_update {ι κ : Sort*} {α : κ → Sort*} [DecidableEq ι] [DecidableEq κ]
