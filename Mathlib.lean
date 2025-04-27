@@ -2754,7 +2754,6 @@ import Mathlib.Data.Bracket
 import Mathlib.Data.Bundle
 import Mathlib.Data.Char
 import Mathlib.Data.CombinatorialMap
-import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Complex.Cardinality
