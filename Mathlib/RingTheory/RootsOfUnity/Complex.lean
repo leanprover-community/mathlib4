@@ -55,7 +55,7 @@ lemma exp_iff (t s : ℝ) :
     simp_all only [coe_exp]
 
 open Real in
-/-- `circleMap` is `2π`-periodic. -/
+/-- `exp` is `2π`-periodic. -/
 theorem periodic_exp : Function.Periodic (exp) (2 * π) := fun θ => by
   simp only [exp_iff, Complex.ofReal_add, Complex.ofReal_mul, Complex.ofReal_ofNat, add_mul,
     Complex.exp_periodic _]
