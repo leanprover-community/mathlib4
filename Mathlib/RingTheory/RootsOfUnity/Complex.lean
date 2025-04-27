@@ -61,7 +61,7 @@ lemma injOn_exp_of_abs_sub_le {x y : ℝ} (hxy : |x - y| ≤ 2 * π) : (Ι x y).
     (by rw [circleMap_origin_unit, circleMap_origin_unit]; exact (exp_iff t₁ t₂).mp h.symm)
 
 open Real in
-/-- `circleMap` is `2π`-periodic. -/
+/-- `exp` is `2π`-periodic. -/
 theorem periodic_exp : Function.Periodic (exp) (2 * π) := fun θ => by
   simp only [exp_iff, Complex.ofReal_add, Complex.ofReal_mul, Complex.ofReal_ofNat, add_mul,
     Complex.exp_periodic _]
