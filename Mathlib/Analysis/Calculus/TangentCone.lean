@@ -98,6 +98,18 @@ theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeA
   rintro y ⟨c, d, ds, ctop, clim⟩
   exact ⟨c, d, mem_of_superset ds fun n hn => h hn, ctop, clim⟩
 
+/-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
+the sequence `d` tends to 0 at infinity. -/
+theorem tangentConeAt.lim_zero [ContinuousSMul 𝕜 E]
+    {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
+    (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
+    Tendsto d l (𝓝 0) := by
+  rw [tendsto_norm_atTop_iff_cobounded] at hc
+  have A : Tendsto c⁻¹ l (𝓝 0) := tendsto_inv₀_cobounded.comp hc
+  have B : ∀ᶠ n in l, (c n)⁻¹ • c n • d n = d n :=
+    (hc.eventually_ne_cobounded 0).mono fun n hn ↦ by simp [hn]
+  simpa using (A.smul hd).congr' B
+
 end TVS
 
 section Normed
@@ -122,23 +134,6 @@ theorem tangentConeAt_closure : tangentConeAt 𝕜 (closure s) x = tangentConeAt
   rcases this with ⟨d', hd's, hd'⟩
   exact ⟨c, d', hd's, ctop, clim.congr_dist
     (squeeze_zero' (.of_forall fun _ ↦ dist_nonneg) (hd'.mono fun _ ↦ le_of_lt) u_lim)⟩
-
-/-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
-the sequence `d` tends to 0 at infinity. -/
-theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
-    (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
-    Tendsto d l (𝓝 0) := by
-  have A : Tendsto (fun n => ‖c n‖⁻¹) l (𝓝 0) := tendsto_inv_atTop_zero.comp hc
-  have B : Tendsto (fun n => ‖c n • d n‖) l (𝓝 ‖y‖) := (continuous_norm.tendsto _).comp hd
-  have C : Tendsto (fun n => ‖c n‖⁻¹ * ‖c n • d n‖) l (𝓝 (0 * ‖y‖)) := A.mul B
-  rw [zero_mul] at C
-  have : ∀ᶠ n in l, ‖c n‖⁻¹ * ‖c n • d n‖ = ‖d n‖ := by
-    refine (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun n hn => ?_
-    rw [norm_smul, ← mul_assoc, inv_mul_cancel₀, one_mul]
-    rwa [Ne, norm_eq_zero]
-  have D : Tendsto (fun n => ‖d n‖) l (𝓝 0) := Tendsto.congr' this C
-  rw [tendsto_zero_iff_norm_tendsto_zero]
-  exact D
 
 theorem tangentCone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
