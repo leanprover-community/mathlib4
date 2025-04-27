@@ -147,16 +147,15 @@ theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i)
 theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) =
-      ∑ ij ∈ (r.support ×ˢ r'.support).filter (fun ij : ι × ι => ij.1 + ij.2 = n),
-        (r ij.1 * r' ij.2 : R) := by
+      ∑ ij ∈ r.support ×ˢ r'.support with ij.1 + ij.2 = n, (r ij.1 * r' ij.2 : R) := by
   rw [mul_eq_sum_support_ghas_mul, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
   simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
 
-theorem coe_mul_apply_eq_dfinsupp_sum [AddMonoid ι] [SetLike.GradedMonoid A]
+theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) = r.sum fun i ri => r'.sum fun j rj => if i + j = n then (ri * rj : R)
       else 0 := by
-  rw [mul_eq_dfinsupp_sum]
+  rw [mul_eq_dfinsuppSum]
   iterate 2 rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]; congr; ext
   dsimp only
   split_ifs with h
@@ -166,11 +165,14 @@ theorem coe_mul_apply_eq_dfinsupp_sum [AddMonoid ι] [SetLike.GradedMonoid A]
   · rw [of_eq_of_ne _ _ _ h]
     rfl
 
+@[deprecated (since := "2025-04-06")]
+alias coe_mul_apply_eq_dfinsupp_sum := coe_mul_apply_eq_dfinsuppSum
+
 theorem coe_of_mul_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r : A i)
     (r' : ⨁ i, A i) {j n : ι} (H : ∀ x : ι, i + x = n ↔ x = j) :
     ((of (fun i => A i) i r * r') n : R) = r * r' j := by
   classical
-    rw [coe_mul_apply_eq_dfinsupp_sum]
+    rw [coe_mul_apply_eq_dfinsuppSum]
     apply (DFinsupp.sum_single_index _).trans
     swap
     · simp_rw [ZeroMemClass.coe_zero, zero_mul, ite_self]
@@ -184,7 +186,7 @@ theorem coe_mul_of_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] (r : ⨁ i,
     (r' : A i) {j n : ι} (H : ∀ x : ι, x + i = n ↔ x = j) :
     ((r * of (fun i => A i) i r') n : R) = r j * r' := by
   classical
-    rw [coe_mul_apply_eq_dfinsupp_sum, DFinsupp.sum_comm]
+    rw [coe_mul_apply_eq_dfinsuppSum, DFinsupp.sum_comm]
     apply (DFinsupp.sum_single_index _).trans
     swap
     · simp_rw [ZeroMemClass.coe_zero, mul_zero, ite_self]
@@ -220,7 +222,7 @@ variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι] [SetLik
 theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : ¬i ≤ n) :
     ((of (fun i => A i) i r * r') n : R) = 0 := by
   classical
-    rw [coe_mul_apply_eq_dfinsupp_sum]
+    rw [coe_mul_apply_eq_dfinsuppSum]
     apply (DFinsupp.sum_single_index _).trans
     swap
     · simp_rw [ZeroMemClass.coe_zero, zero_mul, ite_self]
@@ -231,7 +233,7 @@ theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι)
 theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : ¬i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = 0 := by
   classical
-    rw [coe_mul_apply_eq_dfinsupp_sum, DFinsupp.sum_comm]
+    rw [coe_mul_apply_eq_dfinsuppSum, DFinsupp.sum_comm]
     apply (DFinsupp.sum_single_index _).trans
     swap
     · simp_rw [ZeroMemClass.coe_zero, mul_zero, ite_self]

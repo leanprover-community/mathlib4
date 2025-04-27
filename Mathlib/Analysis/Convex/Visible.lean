@@ -29,7 +29,8 @@ open scoped Cardinal Pointwise Topology
 variable {𝕜 V P : Type*}
 
 section AddTorsor
-variable [LinearOrderedField 𝕜] [AddCommGroup V] [Module 𝕜 V] [AddTorsor V P]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup V] [Module 𝕜 V] [AddTorsor V P]
   {s t : Set P} {x y z : P}
 
 variable (𝕜) in
@@ -56,7 +57,8 @@ lemma isVisible_iff_lineMap (hxy : x ≠ y) :
 end AddTorsor
 
 section Module
-variable [LinearOrderedField 𝕜] [AddCommGroup V] [Module 𝕜 V] {s : Set V} {x y z : V}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup V] [Module 𝕜 V] {s : Set V} {x y z : V}
 
 /-- If a point `x` sees a convex combination of points of a set `s` through `convexHull ℝ s ∌ x`,
 then it sees all terms of that combination.
