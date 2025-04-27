@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
-import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 
 /-!
 # Complementary truncations
@@ -21,9 +20,10 @@ namespace ComplexShape
 namespace Embedding
 
 variable {C : Type*} [Category C] [HasZeroMorphisms C]
+  (e₁ : Embedding c₁ c) (e₂ : Embedding c₂ c)
 
-variable (e₁ : Embedding c₁ c) (e₂ : Embedding c₂ c)
-
+/-- Two embedding `e₁` and `e₂` into a complex shape `c : ComplexShape ι`
+are complementary when the range of `e₁.f` and `e₂.f` form a partition of `ι`. -/
 structure AreComplementary : Prop where
   disjoint (i₁ : ι₁) (i₂ : ι₂) : e₁.f i₁ ≠ e₂.f i₂
   union (i : ι) : (∃ i₁, e₁.f i₁ = i) ∨ ∃ i₂, e₂.f i₂ = i
@@ -51,6 +51,10 @@ lemma exists_i₂ (i : ι) (hi : ∀ i₁, e₁.f i₁ ≠ i) :
   ac.symm.exists_i₁ i hi
 
 variable (e₁ e₂) in
+/-- Given complementary embeddings of complex shapes
+`e₁ : Embedding c₁ c` and `e₂ : Embedding c₂ c`, this is
+the obvious map `ι₁ ⊕ ι₂ → ι` from the sum of the index
+types of `c₁` and `c₂` to the index type of `c`. -/
 @[simp]
 def fromSum : ι₁ ⊕ ι₂ → ι
   | Sum.inl i₁ => e₁.f i₁
@@ -61,10 +65,8 @@ lemma fromSum_bijective : Function.Bijective (fromSum e₁ e₂) := by
   · rintro (i₁ | i₂) (j₁ | j₂) h
     · obtain rfl := e₁.injective_f h
       rfl
-    · exfalso
-      exact ac.disjoint _ _ h
-    · exfalso
-      exact ac.disjoint _ _ h.symm
+    · exact (ac.disjoint _ _ h).elim
+    · exact (ac.disjoint _ _ h.symm).elim
     · obtain rfl := e₂.injective_f h
       rfl
   · intro n
@@ -72,6 +74,10 @@ lemma fromSum_bijective : Function.Bijective (fromSum e₁ e₂) := by
     · exact ⟨Sum.inl i₁, rfl⟩
     · exact ⟨Sum.inr i₂, rfl⟩
 
+/-- Given complementary embeddings of complex shapes
+`e₁ : Embedding c₁ c` and `e₂ : Embedding c₂ c`, this is
+the obvious bijection `ι₁ ⊕ ι₂ ≃ ι` from the sum of the index
+types of `c₁` and `c₂` to the index type of `c`. -/
 noncomputable def equiv : ι₁ ⊕ ι₂ ≃ ι := Equiv.ofBijective _ (ac.fromSum_bijective)
 
 @[simp] lemma equiv_inl (i₁ : ι₁) : ac.equiv (Sum.inl i₁) = e₁.f i₁ := rfl
@@ -82,14 +88,15 @@ section
 variable {X : ι → Type*} (x₁ : ∀ i₁, X (e₁.f i₁)) (x₂ : ∀ i₂, X (e₂.f i₂))
 
 variable (X) in
-def aux (i j : ι) (hij : i = j) : X i ≃ X j := by
+/-- Auxiliary definition for `desc`. -/
+def desc.aux (i j : ι) (hij : i = j) : X i ≃ X j := by
   subst hij
   rfl
 
 omit ac in
 @[simp]
-lemma aux_trans {i j k : ι} (hij : i = j) (hjk : j = k) (x : X i):
-    aux X j k hjk (aux X i j hij x) = aux X i k (hij.trans hjk) x := by
+lemma desc.aux_trans {i j k : ι} (hij : i = j) (hjk : j = k) (x : X i):
+    desc.aux X j k hjk (aux X i j hij x) = desc.aux X i k (hij.trans hjk) x := by
   subst hij hjk
   rfl
 
@@ -99,22 +106,24 @@ def desc' : ∀ (i : ι₁ ⊕ ι₂), X (ac.equiv i)
   | Sum.inr i₂ => x₂ i₂
 
 lemma desc'_inl (i : ι₁ ⊕ ι₂) (i₁ : ι₁) (h : Sum.inl i₁ = i) :
-    ac.desc' x₁ x₂ i = aux _ _ _ (by subst h; simp) (x₁ i₁) := by subst h; rfl
+    ac.desc' x₁ x₂ i = desc.aux _ _ _ (by subst h; simp) (x₁ i₁) := by subst h; rfl
 
 lemma desc'_inr (i : ι₁ ⊕ ι₂) (i₂ : ι₂) (h : Sum.inr i₂ = i) :
-    ac.desc' x₁ x₂ i = aux _ _ _ (by subst h; simp) (x₂ i₂) := by subst h; rfl
+    ac.desc' x₁ x₂ i = desc.aux _ _ _ (by subst h; simp) (x₂ i₂) := by subst h; rfl
 
-
-noncomputable def desc (i : ι) : X i := aux _ _ _ (by simp) (ac.desc' x₁ x₂ (ac.equiv.symm i))
+/-- If `ι₁` and `ι₂` are the index types of complementary embeddings into a
+complex shape of index type `ι`, this is a constructor for (dependent) maps from `ι`,
+which takes as inputs the "restrictions" to `ι₁` and `ι₂`. -/
+noncomputable def desc (i : ι) : X i := desc.aux _ _ _ (by simp) (ac.desc' x₁ x₂ (ac.equiv.symm i))
 
 lemma desc_inl (i₁ : ι₁) : ac.desc x₁ x₂ (e₁.f i₁) = x₁ i₁ := by
   dsimp [desc]
-  rw [ac.desc'_inl _ _ _ i₁ (ac.equiv.injective (by simp)), aux_trans]
+  rw [ac.desc'_inl _ _ _ i₁ (ac.equiv.injective (by simp)), desc.aux_trans]
   rfl
 
 lemma desc_inr (i₂ : ι₂) : ac.desc x₁ x₂ (e₂.f i₂) = x₂ i₂ := by
   dsimp [desc]
-  rw [ac.desc'_inr _ _ _ i₂ (ac.equiv.injective (by simp)), aux_trans]
+  rw [ac.desc'_inr _ _ _ i₂ (ac.equiv.injective (by simp)), desc.aux_trans]
   rfl
 
 end
@@ -170,6 +179,8 @@ lemma hom_ext [K.IsStrictlySupported e₁] [L.IsStrictlySupported e₂] (φ : K 
   · rw [ac.isStrictlySupportedOutside₁_iff]
     infer_instance
 
+/-- If `e₁` and `e₂` are complementary embeddings into a complex shape `c`,
+indices `i₁` and `i₂` are at the boundary if `c.Rel (e₁.f i₁) (e₂.f i₂)`. -/
 @[nolint unusedArguments]
 def Boundary (_ : AreComplementary e₁ e₂) (i₁ : ι₁) (i₂ : ι₂) : Prop :=
   c.Rel (e₁.f i₁) (e₂.f i₂)
@@ -216,18 +227,26 @@ lemma exists₂ {i₂ : ι₂} (h : e₂.BoundaryGE i₂) :
     (fun i₂' hi₂' => h₂ i₂' (by simpa only [← hi₂'] using h₁))
   exact ⟨i₁, by simpa only [hi₁] using h₁⟩
 
+/-- If `ac : AreComplementary e₁ e₂` (with `e₁ : ComplexShape.Embedding c₁ c` and
+`e₂ : ComplexShape.Embedding c₂ c`), and `i₁` belongs to `e₁.BoundaryLE`,
+then this is the (unique) index `i₂` of `c₂` such that `ac.Boundary i₁ i₂`. -/
 noncomputable def indexOfBoundaryLE {i₁ : ι₁} (h : e₁.BoundaryLE i₁) : ι₂ :=
     (exists₁ ac h).choose
 
 lemma of_boundaryLE {i₁ : ι₁} (h : e₁.BoundaryLE i₁) :
     ac.Boundary i₁ (indexOfBoundaryLE ac h) := (exists₁ ac h).choose_spec
 
+/-- If `ac : AreComplementary e₁ e₂` (with `e₁ : ComplexShape.Embedding c₁ c` and
+`e₂ : ComplexShape.Embedding c₂ c`), and `i₂` belongs to `e₂.BoundaryGE`,
+then this is the (unique) index `i₁` of `c₁` such that `ac.Boundary i₁ i₂`. -/
 noncomputable def indexOfBoundaryGE {i₂ : ι₂} (h : e₂.BoundaryGE i₂) : ι₁ :=
     (exists₂ ac h).choose
 
 lemma of_boundaryGE {i₂ : ι₂} (h : e₂.BoundaryGE i₂) :
     ac.Boundary (indexOfBoundaryGE ac h) i₂ := (exists₂ ac h).choose_spec
 
+/-- The bijection `Subtype e₁.BoundaryLE ≃ Subtype e₂.BoundaryGE` when
+`e₁` and `e₂` are complementary embeddings of complex shapes. -/
 noncomputable def equiv : Subtype e₁.BoundaryLE ≃ Subtype e₂.BoundaryGE where
   toFun := fun ⟨i₁, h⟩ => ⟨_, (of_boundaryLE ac h).snd⟩
   invFun := fun ⟨i₂, h⟩ => ⟨_, (of_boundaryGE ac h).fst⟩
@@ -265,10 +284,13 @@ namespace HomologicalComplex
 section
 
 variable {C : Type*} [Category C] [Abelian C]
-
-variable (K : HomologicalComplex C c) {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c}
+  (K : HomologicalComplex C c) {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c}
   [e₁.IsTruncLE] [e₂.IsTruncGE] (ac : e₁.AreComplementary e₂)
 
+/-- When `e₁` and `e₂` are complementary embeddings of complex shapes, with
+`e₁.IsTruncLE` and `e₂.IsTruncGE`, then this is the canonical quasi-isomorphism
+`(K.shortComplexTruncLE e₁).X₃ ⟶ K.truncGE e₂` where
+`(K.shortComplexTruncLE e₁).X₃` is the cokernel of `K.ιTruncLE e₁ : K.truncLE e₁ ⟶ K`. -/
 noncomputable def shortComplexTruncLEX₃ToTruncGE :
     (K.shortComplexTruncLE e₁).X₃ ⟶ K.truncGE e₂ :=
   cokernel.desc _ (K.πTruncGE e₂) (ac.hom_ext _)
@@ -289,7 +311,6 @@ instance : QuasiIso (K.shortComplexTruncLEX₃ToTruncGE ac) where
         (K.shortComplexTruncLEX₃ToTruncGE ac), g_shortComplexTruncLEX₃ToTruncGE]
       dsimp
       infer_instance
-
 
 end
 
