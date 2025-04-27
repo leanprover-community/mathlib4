@@ -107,7 +107,7 @@ lemma eq_zero_of_double_le (h : 2 * n ≤ n) : n = 0 := eq_zero_of_two_mul_le h
 /-! ### `div` -/
 
 lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ n := by
-  rw [Nat.le_div_iff_mul_le Nat.zero_lt_two, ← Int.ofNat_le, Int.ofNat_mul, Int.ofNat_two]
+  rw [Nat.le_div_iff_mul_le Nat.zero_lt_two, ← Int.ofNat_le, Int.natCast_mul, Int.ofNat_two]
 
 /-- A version of `Nat.div_lt_self` using successors, rather than additional hypotheses. -/
 lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=

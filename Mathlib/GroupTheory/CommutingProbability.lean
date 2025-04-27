@@ -181,7 +181,14 @@ lemma commProb_nil : commProb (Product []) = 1 := by
 
 lemma commProb_cons (n : ℕ) (l : List ℕ) :
     commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
-  simp [Product, commProb_pi, Fin.prod_univ_succ]
+  #adaptation_note
+  /--
+  2025-04-26 Why do we need to add `List.getElem_cons_zero` and `List.getElem_cons_succ` here?
+  They are already `@[simp]` lemmas!
+  (This will be fixed on nightly-2025-04-27.)
+  -/
+  simp [commProb_pi, Fin.prod_univ_succ, Fin.val_zero, List.getElem_cons_zero,
+    List.getElem_cons_succ]
 
 /-- Construction of a group with commuting probability `1 / n`. -/
 theorem commProb_reciprocal (n : ℕ) :

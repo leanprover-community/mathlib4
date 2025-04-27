@@ -231,7 +231,10 @@ theorem suffixLevenshtein_cons₁
         (suffixLevenshtein C xs ys).1, by simp⟩ := by
   induction ys with
   | nil =>
-    dsimp [levenshtein, suffixLevenshtein]
+    #adaptation_note
+    /-- 2024-04-26: This should go back to `dsimp [levenshtein, suffixLevenshtein]`
+    after nightly-2024-04-27. -/
+    simp [levenshtein, suffixLevenshtein, List.getElem_zero]
   | cons y ys ih =>
     apply suffixLevenshtein_cons₁_aux
     · rfl
@@ -279,6 +282,13 @@ theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
 theorem levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
   dsimp (config := { unfoldPartialApp := true }) [levenshtein, suffixLevenshtein, impl]
+  #adaptation_note
+  /--
+  2025-04-26 This `rw` was previously handled by the `dsimp`.
+  Is this a consequence of https://github.com/leanprover/lean4/pull/8090?
+  This is fixed as of nightly-2025-04-27.
+  -/
+  rw [List.getElem_cons_zero]
   congr
   rw [List.getLast_eq_getElem]
   congr

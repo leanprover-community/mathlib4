@@ -504,7 +504,7 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
   have h2 : 1 ≤ 2 ^ p := by omega
   induction k with
   | zero =>
-    rw [sModNat, sMod, Int.ofNat_emod]
+    rw [sModNat, sMod, Int.natCast_emod]
     simp [h2]
   | succ k ih =>
     rw [sModNat, sMod, ← ih]
