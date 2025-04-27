@@ -30,14 +30,14 @@ namespace Types
 instance : (monomorphisms (Type u)).IsStableUnderCobaseChange where
   of_isPushout {X₁ X₂ X₃ X₄ t l r b} sq ht := by
     simp only [monomorphisms.iff, mono_iff_injective] at ht ⊢
-    exact Limits.Types.pushoutCocone_injective_inr_of_isColimit sq.flip.isColimit ht
+    exact Limits.Types.pushoutCocone_inr_injective_of_isColimit sq.flip.isColimit ht
 
 lemma isStableUnderColimitsOfShape_monomorphisms_of_isFiltered
     (J : Type u') [Category.{v'} J] [IsFiltered J] :
     (monomorphisms (Type u)).IsStableUnderColimitsOfShape J := by
   intro F₁ F₂ c₁ c₂ hc₁ hc₂ f hf
   simp only [functorCategory, monomorphisms.iff, mono_iff_injective] at hf
-  let φ : c₁.pt ⟶ c₂.pt := hc₁.desc { ι := f ≫ c₂.ι }
+  let φ : c₁.pt ⟶ c₂.pt := hc₁.desc { ι := f ≫ c₂.ι, .. }
   have hφ (j : J) : c₁.ι.app j ≫ φ = f.app j ≫ c₂.ι.app j := hc₁.fac _ j
   replace hφ (j : J) := congr_fun (hφ j)
   dsimp at hφ
@@ -68,14 +68,14 @@ attribute [local instance] IsCofiltered.isConnected
 
 instance (j : J) : Mono (h.F.map (homOfLE bot_le : ⊥ ⟶ j)) := by
   induction j using SuccOrder.limitRecOn with
-  | hm j hj =>
+  | isMin j hj =>
     obtain rfl := hj.eq_bot
     exact inferInstanceAs (Mono (h.F.map (𝟙 _)))
-  | hs j hj hj' =>
+  | succ j hj hj' =>
     have : Mono _ := h.map_mem j hj
     rw [← homOfLE_comp bot_le (Order.le_succ j), Functor.map_comp]
     infer_instance
-  | hl j hj hj' =>
+  | isSuccLimit j hj hj' =>
     have : OrderBot (Set.Iio j) :=
       { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj ⟩
         bot_le _ := bot_le }
