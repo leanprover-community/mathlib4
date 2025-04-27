@@ -158,15 +158,15 @@ abbrev Face (M : CombinatorialMap D) :=
   Quotient (Equiv.Perm.SameCycle.setoid M.facePerm)
 
 /-- The vertex corresponding to a dart `d`. -/
-abbrev dartVertex (M : CombinatorialMap D) (d : D) : M.Vertex :=
+abbrev Vertex.mk (M : CombinatorialMap D) (d : D) : M.Vertex :=
   Quotient.mk (Equiv.Perm.SameCycle.setoid M.vertexPerm) d
 
 /-- The edge corresponding to a dart `d`. -/
-abbrev dartEdge (M : CombinatorialMap D) (d : D) : M.Edge :=
+abbrev Edge.mk (M : CombinatorialMap D) (d : D) : M.Edge :=
   Quotient.mk (Equiv.Perm.SameCycle.setoid M.edgePerm) d
 
 /-- The face corresponding to a dart `d`. -/
-abbrev dartFace (M : CombinatorialMap D) (d : D) : M.Face :=
+abbrev Face.mk (M : CombinatorialMap D) (d : D) : M.Face :=
   Quotient.mk (Equiv.Perm.SameCycle.setoid M.facePerm) d
 
 /-- The degree of a vertex is the number of incident darts. -/
