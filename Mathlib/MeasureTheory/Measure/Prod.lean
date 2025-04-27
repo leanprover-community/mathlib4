@@ -757,7 +757,7 @@ protected theorem prod [SFinite μa] [SFinite μc] {f : α → β} {g : γ → �
 
 end MeasurePreserving
 
-namespace QuasiMeasurePreserving
+namespace Measure.QuasiMeasurePreserving
 
 theorem prod_of_right {f : α × β → γ} {μ : Measure α} {ν : Measure β} {τ : Measure γ}
     (hf : Measurable f) [SFinite ν]
@@ -797,7 +797,7 @@ protected theorem prodMap {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure 
   rw[← map_prod_map _ _ (by fun_prop) (by fun_prop)]
   exact hf.absolutelyContinuous.prod hg.absolutelyContinuous
 
-end QuasiMeasurePreserving
+end Measure.QuasiMeasurePreserving
 
 end MeasureTheory
 

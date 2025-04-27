@@ -139,7 +139,7 @@ theorem measurePreserving_mul_prod_inv [IsMulLeftInvariant ν] :
   ext1 ⟨x, y⟩
   simp_rw [Function.comp_apply, mul_inv_rev, inv_mul_cancel_right]
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem quasiMeasurePreserving_inv : QuasiMeasurePreserving (Inv.inv : G → G) μ μ := by
   refine ⟨measurable_inv, AbsolutelyContinuous.mk fun s hsm hμs => ?_⟩
   rw [map_apply measurable_inv hsm, inv_preimage]
@@ -397,36 +397,46 @@ end RightInvariant
 section QuasiMeasurePreserving
 
 /-- The map `(x, y) ↦ x * y` is quasi-measure-preserving. -/
-@[to_additive "The map `(x, y) ↦ x + y` is quasi-measure-preserving."]
+@[to_additive (attr := fun_prop) "The map `(x, y) ↦ x + y` is quasi-measure-preserving."]
 theorem quasiMeasurePreserving_mul [IsMulLeftInvariant ν] :
-    QuasiMeasurePreserving (fun p : G × G => p.1 * p.2) (μ.prod ν) ν :=
-  Measure.QuasiMeasurePreserving.comp quasiMeasurePreserving_snd
-  (measurePreserving_prod_mul μ ν).quasiMeasurePreserving
+    QuasiMeasurePreserving (fun p => p.1 * p.2) (μ.prod ν) ν :=
+  quasiMeasurePreserving_snd.comp (measurePreserving_prod_mul _ _).quasiMeasurePreserving
+
+-- @[to_additive (attr := fun_prop)]
+-- theorem quasiMeasurePreserving_fun_mul {X : Type*} {mX : MeasurableSpace X} {τ τ' : Measure X}
+--     [SFinite τ] [SFinite τ'] [IsMulLeftInvariant ν] {f g : X → G}
+--     (hf : QuasiMeasurePreserving f τ ν) (hg : QuasiMeasurePreserving g τ' ν) :
+--     QuasiMeasurePreserving (fun p ↦ f p.1 * g p.2) (τ.prod τ') ν :=
+--   (quasiMeasurePreserving_mul _ _).comp (hf.prodMap hg)
 
 /-- The map `(x, y) ↦ y * x` is quasi-measure-preserving. -/
-@[to_additive "The map `(x, y) ↦ y + x` is quasi-measure-preserving."]
+@[to_additive (attr := fun_prop) "The map `(x, y) ↦ y + x` is quasi-measure-preserving."]
 theorem quasiMeasurePreserving_mul_swap [IsMulLeftInvariant μ] :
-    QuasiMeasurePreserving (fun p : G × G => p.2 * p.1) (μ.prod ν) μ :=
-  Measure.QuasiMeasurePreserving.comp quasiMeasurePreserving_snd
-  (measurePreserving_prod_mul_swap μ ν).quasiMeasurePreserving
+    QuasiMeasurePreserving (fun p => p.2 * p.1) (μ.prod ν) μ :=
+  quasiMeasurePreserving_snd.comp (measurePreserving_prod_mul_swap μ ν).quasiMeasurePreserving
+
+-- @[to_additive (attr := fun_prop)]
+-- theorem quasiMeasurePreserving_fun_mul_swap {τ : Measure G} [SFinite τ] [IsMulLeftInvariant ν]
+--     {f g : G → G} (hf : QuasiMeasurePreserving f τ ν) (hg : QuasiMeasurePreserving g μ ν) :
+--     QuasiMeasurePreserving (fun p ↦ f p.2 * g p.1) (μ.prod τ) ν := by
+--   apply (quasiMeasurePreserving_mul_swap _ _).comp (hg.prodMap hf)
 
 section MeasurableInv
 
 variable [MeasurableInv G]
 
+
 /-- The map `(x, y) ↦ x⁻¹ * y` is quasi-measure-preserving. -/
-@[to_additive "The map `(x, y) ↦ -x + y` is quasi-measure-preserving."]
+@[to_additive (attr := fun_prop) "The map `(x, y) ↦ -x + y` is quasi-measure-preserving."]
 theorem quasiMeasurePreserving_inv_mul [IsMulLeftInvariant ν] :
-    QuasiMeasurePreserving (fun p : G × G => p.1⁻¹ * p.2) (μ.prod ν) ν :=
-  Measure.QuasiMeasurePreserving.comp quasiMeasurePreserving_snd
-  (measurePreserving_prod_inv_mul μ ν).quasiMeasurePreserving
+    QuasiMeasurePreserving (fun p => p.1⁻¹ * p.2) (μ.prod ν) ν :=
+  quasiMeasurePreserving_snd.comp (measurePreserving_prod_inv_mul μ ν).quasiMeasurePreserving
 
 /-- The map `(x, y) ↦ y⁻¹ * x` is quasi-measure-preserving. -/
-@[to_additive "The map `(x, y) ↦ -y + x` is quasi-measure-preserving."]
+@[to_additive (attr := fun_prop) "The map `(x, y) ↦ -y + x` is quasi-measure-preserving."]
 theorem quasiMeasurePreserving_inv_mul_swap [IsMulLeftInvariant μ] :
-    QuasiMeasurePreserving (fun p : G × G => p.2⁻¹ * p.1) (μ.prod ν) μ :=
-  Measure.QuasiMeasurePreserving.comp quasiMeasurePreserving_snd
-  (measurePreserving_prod_inv_mul_swap μ ν).quasiMeasurePreserving
+    QuasiMeasurePreserving (fun p => p.2⁻¹ * p.1) (μ.prod ν) μ :=
+  quasiMeasurePreserving_snd.comp (measurePreserving_prod_inv_mul_swap μ ν).quasiMeasurePreserving
 
 @[to_additive]
 theorem quasiMeasurePreserving_inv_of_right_invariant [IsMulRightInvariant μ] :
@@ -465,7 +475,7 @@ theorem quasiMeasurePreserving_div [IsMulLeftInvariant μ] :
 
 /-- A *left*-invariant measure is quasi-preserved by *right*-multiplication.
 This should not be confused with `(measurePreserving_mul_right μ g).quasiMeasurePreserving`. -/
-@[to_additive
+@[to_additive (attr := fun_prop)
 "A *left*-invariant measure is quasi-preserved by *right*-addition.
 This should not be confused with `(measurePreserving_add_right μ g).quasiMeasurePreserving`. "]
 theorem quasiMeasurePreserving_mul_right [IsMulLeftInvariant μ] (g : G) :
@@ -475,7 +485,7 @@ theorem quasiMeasurePreserving_mul_right [IsMulLeftInvariant μ] (g : G) :
 
 /-- A *right*-invariant measure is quasi-preserved by *left*-multiplication.
 This should not be confused with `(measurePreserving_mul_left μ g).quasiMeasurePreserving`. -/
-@[to_additive
+@[to_additive (attr := fun_prop)
 "A *right*-invariant measure is quasi-preserved by *left*-addition.
 This should not be confused with `(measurePreserving_add_left μ g).quasiMeasurePreserving`. "]
 theorem quasiMeasurePreserving_mul_left [IsMulRightInvariant μ] (g : G) :
