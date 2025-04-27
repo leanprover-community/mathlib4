@@ -121,9 +121,8 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual
 
 variable (𝕜 E) in
 /-- The coercion `WeakDual 𝕜 E → (E → 𝕜)` is an embedding. -/
-theorem embedding : Embedding fun (x : WeakDual 𝕜 E) y ↦ x y :=
-  Function.Injective.embedding_induced <| LinearMap.coe_injective.comp
-    ContinuousLinearMap.coe_injective
+theorem isEmbedding : IsEmbedding fun (x : WeakDual 𝕜 E) y ↦ x y :=
+  WeakBilin.isEmbedding ContinuousLinearMap.coe_injective
 
 theorem tendsto_iff_forall_eval_tendsto_dualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
     {x : WeakDual 𝕜 E} :
@@ -132,7 +131,7 @@ theorem tendsto_iff_forall_eval_tendsto_dualPairing {l : Filter α} {f : α → 
   WeakBilin.tendsto_iff_forall_eval_tendsto _ ContinuousLinearMap.coe_injective
 
 instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
-   (WeakDual.embedding _ _).t2Space
+   (WeakDual.isEmbedding _ _).t2Space
 
 end Semiring
 
