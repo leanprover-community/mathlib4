@@ -675,7 +675,7 @@ open Submodule
 theorem range_dualMap_eq_dualAnnihilator_ker_of_surjective (f : M →ₗ[R] M')
     (hf : Function.Surjective f) : LinearMap.range f.dualMap = (LinearMap.ker f).dualAnnihilator :=
   ((f.quotKerEquivOfSurjective hf).dualMap.range_comp _).trans
-  (LinearMap.ker f).range_dualMap_mkQ_eq
+    (LinearMap.ker f).range_dualMap_mkQ_eq
 
 -- Note, this can be specialized to the case where `R` is an injective `R`-module, or when
 -- `f.coker` is a projective `R`-module.

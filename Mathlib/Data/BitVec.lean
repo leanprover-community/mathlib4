@@ -19,6 +19,9 @@ can either be PR'd to Lean, or kept downstream if it also relies on Mathlib.
 
 namespace BitVec
 
+-- Pending rename in core.
+alias neg_one_eq_allOnes := negOne_eq_allOnes
+
 variable {w : Nat}
 
 /-!
