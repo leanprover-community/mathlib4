@@ -240,11 +240,16 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       --let center := center' + origSubstring.stopPos - origSubstring.startPos
       let center := origSubstring.stopPos - s.srcEndPos
       let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
+      let ctx := 5 -- the number of characters before and after of the mismatch that linter prints
+      let srcWindow :=
+        orig.takeRight (s.srcNat + ctx) |>.take (s.length + 2 * ctx -  1) |>.replace "\n" "⏎"
+      let expectedWindow :=
+        st.takeRight (s.fmtPos + ctx) |>.take (2 * ctx) |>.replace "\n" "⏎"
       Linter.logLint linter.style.commandStart (.ofRange rg)
         m!"{s.msg}\n\n\
-          Current syntax:  '{orig.takeRight (s.srcNat + 5) |>.take (s.length + 9) |>.replace "\n" "⏎"}'\n\
-          Expected syntax: '{st.takeRight (s.fmtPos + 5) |>.take 10 |>.replace "\n" "⏎"}'\n"
-      Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg) --(stx.getHead?.getD stx)
+          Current syntax:  '{srcWindow}'\n\
+          Expected syntax: '{expectedWindow}'\n"
+      Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
 
   ---- We only lint up to the position given by `lintUpTo`
