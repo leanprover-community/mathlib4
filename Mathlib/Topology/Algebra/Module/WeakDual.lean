@@ -119,8 +119,20 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual
     (h : ∀ y, Continuous fun a => (g a) y) : Continuous g :=
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 
+variable (𝕜 E) in
+/-- The coercion `WeakDual 𝕜 E → (E → 𝕜)` is an embedding. -/
+theorem embedding : Embedding fun (x : WeakDual 𝕜 E) y ↦ x y :=
+  Function.Injective.embedding_induced <| LinearMap.coe_injective.comp
+    ContinuousLinearMap.coe_injective
+
+theorem tendsto_iff_forall_eval_tendsto_dualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
+    {x : WeakDual 𝕜 E} :
+    Tendsto f l (𝓝 x) ↔
+      ∀ y, Tendsto (fun i => dualPairing 𝕜 E (f i) y) l (𝓝 (dualPairing 𝕜 E x y)) :=
+  WeakBilin.tendsto_iff_forall_eval_tendsto _ ContinuousLinearMap.coe_injective
+
 instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
-   (WeakBilin.isEmbedding ContinuousLinearMap.coe_injective).t2Space
+   (WeakDual.embedding _ _).t2Space
 
 end Semiring
 
@@ -190,11 +202,5 @@ theorem isOpenMap_toWeakSpace_symm : IsOpenMap (toWeakSpace 𝕜 E).symm :=
 theorem WeakSpace.isOpen_of_isOpen (V : Set E)
     (hV : IsOpen ((toWeakSpaceCLM 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
   simpa [Set.image_image] using isOpenMap_toWeakSpace_symm _ hV
-
-theorem tendsto_iff_forall_eval_tendsto_dualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
-    {x : WeakDual 𝕜 E} :
-    Tendsto f l (𝓝 x) ↔
-      ∀ y, Tendsto (fun i => dualPairing 𝕜 E (f i) y) l (𝓝 (dualPairing 𝕜 E x y)) :=
-  WeakBilin.tendsto_iff_forall_eval_tendsto _ ContinuousLinearMap.coe_injective
 
 end Semiring
