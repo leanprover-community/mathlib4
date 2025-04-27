@@ -2689,6 +2689,8 @@ import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.Tape
 import Mathlib.Computability.TuringMachine
 import Mathlib.Computability.WeightedLanguage
+import Mathlib.Computability.WeightedPath
+import Mathlib.Computability.WeightedDFA
 import Mathlib.Condensed.AB
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.CartesianClosed
