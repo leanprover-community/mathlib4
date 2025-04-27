@@ -51,7 +51,8 @@ structure ParametrizedAdjunction where
   /-- a family of adjunctions -/
   adj (X₁ : C₁) : F.obj X₁ ⊣ G.obj (op X₁)
   unit_whiskerRight_map  {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) :
-    (adj X₁).unit ≫ whiskerRight (F.map f) _ = (adj Y₁).unit ≫ whiskerLeft _ (G.map f.op)
+    (adj X₁).unit ≫ whiskerRight (F.map f) _ = (adj Y₁).unit ≫ whiskerLeft _ (G.map f.op) :=
+      by aesop_cat
 
 /-- The notation `F ⊣₂ G` stands for `Adjunction₂ F G`
 representing that the bifunctor `F` is the left adjoint to `G`

@@ -269,13 +269,12 @@ def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
 
-/-- The adjunction between `curriedTensor C : C ⥤ C ⥤ C`
+/-- The parametrized adjunction between `curriedTensor C : C ⥤ C ⥤ C`
 and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
 @[simps!]
 def internalHomAdjunction₂ [MonoidalClosed C] :
     curriedTensor C ⊣₂ internalHom where
   adj _ := ihom.adjunction _
-  naturality' _ _ _ _ := (curry_pre_app _ _).symm
 
 section OfEquiv
 
