@@ -676,14 +676,7 @@ def Walk.shorterOdd {u : α} (p : G.Walk u u) {x : α} (hx : x ∈ p.support) : 
     p.shortClosed hx
   else
     (p.shortCut hx).rotate (by simp)
-/-
 
-
-@[simp]
-lemma Walk.shortClosed_of_eq {y: α} (w : G.Walk u v) (hx : x ∈ w.support) (hy : y ∈ w.support)
-    (h : y = x) : w.shortClosed hx = (w.shortClosed hy).copy h h := by
-  subst h
-  rfl-/
 @[simp]
 lemma Walk.shorterOdd_of_eq (p : G.Walk u u) {x y : α} (hx : x ∈ p.support) (hy : y ∈ p.support)
     (h : y = x) : (p.shorterOdd hy).copy h h = p.shorterOdd hx := by
@@ -715,25 +708,81 @@ def Walk.minOdd {u : α} (p : G.Walk u u) : Σ v, G.Walk v v := by
   if h : p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x) = []
     then exact ⟨_,p⟩
   else
-  have hm := List.head_mem h;
-  rw [List.mem_filter, decide_eq_true_eq] at hm
-  have := p.length_shorterOdd_lt_length hm.1 hm.2.1 hm.2.2
-  exact (p.shorterOdd (head_filter_mem _ _ h)).minOdd
+    have hm := List.head_mem h;
+    rw [List.mem_filter, decide_eq_true_eq] at hm
+    have := p.length_shorterOdd_lt_length hm.1 hm.2.1 hm.2.2
+    exact (p.shorterOdd (head_filter_mem _ _ h)).minOdd
   termination_by p.length
 
-
-
-
 lemma Walk.minOdd_nil {u : α} (p : G.Walk u u)
-    (hx : ∀ v, v ∈ p.support ∧ v ≠ u → p.support.count v ≤ 1) : p.minOdd = ⟨_, p⟩ := by
+    (hx : ∀ v ∈ p.support, v ≠ u → p.support.count v ≤ 1) : p.minOdd = ⟨_, p⟩ := by
   have h : (p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x)) = [] := by
     simp_all
   rw [minOdd, dif_pos h]
 
-lemma Walk.minOdd_cons {u : α} (p : G.Walk u u)
-    (h : (p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x)) ≠ []) :
-    p.minOdd = (p.shorterOdd ((head_filter_mem _ _ h))).minOdd := by
-  rw [minOdd, dif_neg h]
+lemma Walk.minOdd_ne_nil_aux {u v : α} (p : G.Walk u u)
+  (hv : v ∈ p.support ∧ v ≠ u ∧ 1 < p.support.count v) :
+  (p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x)) ≠ [] := by
+  simpa using ⟨v, hv⟩
+
+lemma Walk.minOdd_ne_nil {u v : α} (p : G.Walk u u)
+    (hv : v ∈ p.support ∧ v ≠ u ∧ 1 < p.support.count v) :
+    p.minOdd = (p.shorterOdd ((head_filter_mem _ _ (p.minOdd_ne_nil_aux hv)))).minOdd := by
+  rw [minOdd, dif_neg (p.minOdd_ne_nil_aux hv)]
+
+lemma Walk.minOdd_minOdd {u : α} (p : G.Walk u u) : p.minOdd.2.minOdd = p.minOdd := by
+  induction hn : p.length using Nat.strong_induction_on generalizing p u with
+  | h n ih =>
+    by_cases hv : ∃ v ∈ p.support, v ≠ u ∧ 1 < p.support.count v
+    · obtain ⟨v, hv⟩ := hv
+      rw [p.minOdd_ne_nil hv]
+      have hne_nil := (p.minOdd_ne_nil_aux hv)
+      have hm := List.head_mem hne_nil
+      rw [List.mem_filter, decide_eq_true_eq] at hm
+      let q := (p.shorterOdd (head_filter_mem _ _ hne_nil))
+      have hlt : q.length < n := by
+        rw [← hn]
+        apply p.length_shorterOdd_lt_length hm.1 hm.2.1 hm.2.2
+      apply ih _ hlt q rfl
+    · push_neg at hv
+      rw [minOdd_nil _ hv]
+      dsimp
+      rw [minOdd_nil _ hv]
+
+lemma Walk.minOdd_length_le {u : α} (p : G.Walk u u) : p.minOdd.2.length ≤ p.length := by
+  induction hn : p.length using Nat.strong_induction_on generalizing p u with
+  | h n ih =>
+    by_cases hv : ∃ v ∈ p.support, v ≠ u ∧ 1 < p.support.count v
+    · obtain ⟨v, hv⟩ := hv
+      rw [p.minOdd_ne_nil hv]
+      have hne_nil := (p.minOdd_ne_nil_aux hv)
+      have hm := List.head_mem hne_nil
+      rw [List.mem_filter, decide_eq_true_eq] at hm
+      have : (p.shorterOdd (head_filter_mem _ _ hne_nil)).length ≤ p.length := by
+        sorry
+      let q := (p.shorterOdd (head_filter_mem _ _ hne_nil))
+      have hlt : (p.shorterOdd (head_filter_mem _ _ hne_nil)).length < n := by
+        rw [← hn]
+        apply p.length_shorterOdd_lt_length hm.1 hm.2.1 hm.2.2
+      apply (ih _ hlt _ rfl).trans hlt.le
+    · push_neg at hv
+      rw [minOdd_nil _ hv, hn]
+
+
+lemma Walk.minOdd_spec  {u v : α} (p : G.Walk u u) :
+    v ∈ p.minOdd.2.support ∧ v ≠ p.minOdd.1 → p.minOdd.2.support.count v ≤ 1 := by
+    intro hv
+    by_contra! hc
+    have := p.minOdd.2.minOdd_ne_nil ⟨hv.1, hv.2, hc⟩
+    rw [minOdd_minOdd] at this
+    have hne_nil := (p.minOdd.2.minOdd_ne_nil_aux ⟨hv.1, hv.2, hc⟩)
+    have hm := List.head_mem hne_nil
+    rw [List.mem_filter, decide_eq_true_eq] at hm
+    have : (p.minOdd.2.shorterOdd (head_filter_mem _ _ hne_nil)).minOdd = p.minOdd:= this.symm
+    have ht :=(p.minOdd.2.shorterOdd (head_filter_mem _ _ hne_nil)).minOdd_length_le
+    rw [this] at ht
+    have := (p.minOdd.2).length_shorterOdd_lt_length hm.1 hm.2.1 hm.2.2
+    omega
 
 
 
