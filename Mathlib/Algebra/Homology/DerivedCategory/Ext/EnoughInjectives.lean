@@ -62,7 +62,7 @@ namespace DerivedCategory
 
 variable [HasDerivedCategory.{w} C]
 
-lemma to_singleFunctor_obj_injective_eq_zero {I : C} [Injective I]
+lemma to_singleFunctor_obj_eq_zero_of_injective {I : C} [Injective I]
     {K : CochainComplex C ℤ} {i : ℤ}
     (φ : Q.obj K ⟶ Q.obj ((CochainComplex.singleFunctor C i).obj I))
     (n : ℤ) (hn : i < n) [K.IsStrictlyGE n] :
