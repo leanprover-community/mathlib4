@@ -761,6 +761,7 @@ instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
 instance (priority := 100) [Countable α] [FirstCountableTopology α] :
     SecondCountableTopology α where
   is_open_generated_countable := by
+    -- The countable union of the countable neighborhood bases at each point is a countable basis.
     choose b hxb hbb using fun x : α => (nhds_basis_opens x).exists_antitone_subbasis
     use range b.uncurry, countable_range b.uncurry
     apply le_antisymm
