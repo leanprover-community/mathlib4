@@ -39,7 +39,7 @@ section UniformSpace
 variable [UniformSpace α]
 
 private noncomputable def descend (s : { s : Set (α × α) // s ∈ 𝓤 α }) :
-    { s : Set (α × α) // s ∈ 𝓤 α} :=
+    { s : Set (α × α) // s ∈ 𝓤 α } :=
   ⟨_, (comp_open_symm_mem_uniformity_sets (mem_uniformity_isClosed
     (comp_open_symm_mem_uniformity_sets s.2).choose_spec.1).choose_spec.1).choose_spec.1⟩
 
