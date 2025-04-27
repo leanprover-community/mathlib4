@@ -437,7 +437,6 @@ def lift : S →+* 𝕎 R := by
             map_add' := ?_
             map_mul' := ?_ } <;>
   ( intros
-    dsimp only
     rw [← sub_eq_zero, ← Ideal.mem_bot, ← iInf_ker_truncate, Ideal.mem_iInf]
     simp [RingHom.mem_ker, f_compat])
 

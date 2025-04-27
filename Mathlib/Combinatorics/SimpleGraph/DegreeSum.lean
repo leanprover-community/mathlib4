@@ -87,7 +87,7 @@ theorem dart_card_eq_twice_card_edges : Fintype.card G.Dart = 2 * #G.edgeFinset 
   classical
   rw [← card_univ]
   rw [@card_eq_sum_card_fiberwise _ _ _ Dart.edge _ G.edgeFinset fun d _h =>
-      by rw [mem_edgeFinset]; apply Dart.edge_mem]
+      by rw [mem_coe, mem_edgeFinset]; apply Dart.edge_mem]
   rw [← mul_comm, sum_const_nat]
   intro e h
   apply G.dart_edge_fiber_card e
@@ -103,6 +103,20 @@ lemma two_mul_card_edgeFinset : 2 * #G.edgeFinset = #(univ.filter fun (x, y) ↦
   refine card_bij' (fun d _ ↦ (d.fst, d.snd)) (fun xy h ↦ ⟨xy, (mem_filter.1 h).2⟩) ?_ ?_ ?_ ?_
     <;> simp
 
+variable [DecidableEq V]
+
+/-- The degree-sum formula only counting over the vertices that form edges.
+
+See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version. -/
+theorem sum_degrees_support_eq_twice_card_edges :
+    ∑ v ∈ G.support, G.degree v = 2 * #G.edgeFinset := by
+  simp_rw [← sum_degrees_eq_twice_card_edges,
+    ← sum_add_sum_compl G.support.toFinset, left_eq_add]
+  apply Finset.sum_eq_zero
+  intro v hv
+  rw [degree_eq_zero_iff_not_mem_support]
+  rwa [mem_compl, Set.mem_toFinset] at hv
+
 end DegreeSum
 
 /-- The handshaking lemma.  See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
@@ -112,7 +126,7 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
     simp only [ZMod.natCast_self, zero_mul, Nat.cast_mul] at h
     rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
-    rw [@sum_congr _ _ _ _ (fun v => (G.degree v : ZMod 2)) (fun _v => (1 : ZMod 2)) _ rfl] at h
+    rw [sum_congr (g := fun _v ↦ (1 : ZMod 2)) rfl] at h
     · simp only [filter_congr, mul_one, nsmul_eq_mul, sum_const, Ne] at h
       rw [← ZMod.eq_zero_iff_even]
       convert h

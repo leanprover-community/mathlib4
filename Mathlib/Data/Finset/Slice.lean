@@ -59,7 +59,7 @@ theorem sized_iUnion {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀
   simp_rw [Set.Sized, Set.mem_iUnion, forall_exists_index]
   exact forall_swap
 
--- @[simp] -- Porting note: left hand side is not simp-normal form.
+-- `simp` normal form is `sized_iUnion`.
 theorem sized_iUnion₂ {f : ∀ i, κ i → Set (Finset α)} :
     (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r := by
  simp only [Set.sized_iUnion]
@@ -112,7 +112,6 @@ variable {𝒜 : Finset (Finset α)} {A A₁ A₂ : Finset α} {r r₁ r₂ : �
 /-- The `r`-th slice of a set family is the subset of its elements which have cardinality `r`. -/
 def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) := {A ∈ 𝒜 | #A = r}
 
--- Porting note: old code: scoped[FinsetFamily]
 @[inherit_doc]
 scoped[Finset] infixl:90 " # " => Finset.slice
 

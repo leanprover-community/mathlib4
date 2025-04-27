@@ -35,7 +35,6 @@ protected def partialOrder : PartialOrder ℂ where
   le z w := z.re ≤ w.re ∧ z.im = w.im
   lt z w := z.re < w.re ∧ z.im = w.im
   lt_iff_le_not_le z w := by
-    dsimp
     rw [lt_iff_le_not_le]
     tauto
   le_refl _ := ⟨le_rfl, rfl⟩
@@ -44,7 +43,6 @@ protected def partialOrder : PartialOrder ℂ where
 
 namespace _root_.ComplexOrder
 
--- Porting note: made section into namespace to allow scoping
 scoped[ComplexOrder] attribute [instance] Complex.partialOrder
 
 end _root_.ComplexOrder

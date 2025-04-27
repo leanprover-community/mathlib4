@@ -160,18 +160,18 @@ graph. We repeat adding edges using this until no more edges can be added. -/
 def updateGraphWithNlt (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
     (facts : Array AtomicFact) : MetaM Graph := do
   let nltFacts := facts.filter fun fact => match fact with | .nlt _ _ _ => true | _ => false
-  let mut usedNltFacts : Array Bool := mkArray nltFacts.size false
+  let mut usedNltFacts : Vector Bool _ := .replicate nltFacts.size false
   let mut g := g
   while true do
     let mut changed : Bool := false
-    for i in [:nltFacts.size] do
-      if usedNltFacts[i]! then
+    for h : i in [:nltFacts.size] do
+      if usedNltFacts[i] then
         continue
-      let .nlt lhs rhs proof := nltFacts[i]! | throwError "Bug: Non-nlt fact in nltFacts."
+      let .nlt lhs rhs proof := nltFacts[i] | throwError "Bug: Non-nlt fact in nltFacts."
       let .some pf ← g.buildTransitiveLeProof idxToAtom lhs rhs | continue
       g := g.addEdge ⟨rhs, lhs, ← mkAppM ``le_of_not_lt_le #[proof, pf]⟩
       changed := true
-      usedNltFacts := usedNltFacts.set! i true
+      usedNltFacts := usedNltFacts.set i true
     if !changed then
       break
   return g

@@ -199,6 +199,15 @@ theorem mk_mem_periodicPts (hn : 0 < n) (hx : IsPeriodicPt f n x) : x ∈ period
 theorem mem_periodicPts : x ∈ periodicPts f ↔ ∃ n > 0, IsPeriodicPt f n x :=
   Iff.rfl
 
+theorem periodicPts_subset_image : periodicPts f ⊆ range f := by
+  intro x h
+  rw [mem_periodicPts] at h
+  rcases h with ⟨n, _, h⟩
+  use f^[n - 1] x
+  nth_rw 1 [← iterate_one f]
+  rw [← iterate_add_apply, Nat.add_sub_cancel' (by omega)]
+  exact h
+
 theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ periodicPts f)
     (hm : IsPeriodicPt f m (f^[n] x)) : IsPeriodicPt f m x := by
   rcases hx with ⟨r, hr, hr'⟩
@@ -426,7 +435,7 @@ theorem self_mem_periodicOrbit (hx : x ∈ periodicPts f) : x ∈ periodicOrbit 
   iterate_mem_periodicOrbit hx 0
 
 theorem nodup_periodicOrbit : (periodicOrbit f x).Nodup := by
-  rw [periodicOrbit, Cycle.nodup_coe_iff, List.nodup_map_iff_inj_on (List.nodup_range _)]
+  rw [periodicOrbit, Cycle.nodup_coe_iff, List.nodup_map_iff_inj_on List.nodup_range]
   intro m hm n hn hmn
   rw [List.mem_range] at hm hn
   rwa [iterate_eq_iterate_iff_of_lt_minimalPeriod hm hn] at hmn
@@ -476,14 +485,28 @@ namespace Function
 variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
 
 @[simp]
-theorem isFixedPt_prod_map (x : α × β) :
+theorem isFixedPt_prodMap (x : α × β) :
     IsFixedPt (Prod.map f g) x ↔ IsFixedPt f x.1 ∧ IsFixedPt g x.2 :=
   Prod.ext_iff
 
+@[deprecated (since := "2025-04-18")]
+alias isFixedPt_prod_map := isFixedPt_prodMap
+
+theorem IsFixedPt.prodMap (ha : IsFixedPt f a) (hb : IsFixedPt g b) :
+    IsFixedPt (Prod.map f g) (a, b) :=
+  (isFixedPt_prodMap _).mpr ⟨ha, hb⟩
+
 @[simp]
-theorem isPeriodicPt_prod_map (x : α × β) :
+theorem isPeriodicPt_prodMap (x : α × β) :
     IsPeriodicPt (Prod.map f g) n x ↔ IsPeriodicPt f n x.1 ∧ IsPeriodicPt g n x.2 := by
   simp [IsPeriodicPt]
+
+@[deprecated (since := "2025-04-18")]
+alias isPeriodicPt_prod_map := isPeriodicPt_prodMap
+
+theorem IsPeriodicPt.prodMap (ha : IsPeriodicPt f n a) (hb : IsPeriodicPt g n b) :
+    IsPeriodicPt (Prod.map f g) n (a, b) :=
+  (isPeriodicPt_prodMap _).mpr ⟨ha, hb⟩
 
 end Function
 
@@ -536,10 +559,11 @@ theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α} :
 @[to_additive]
 theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
     g ^ j • a = a ↔ (period g a : ℤ) ∣ j := by
-  rcases j with n | n
-  · rw [Int.ofNat_eq_coe, zpow_natCast, Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
-  · rw [Int.negSucc_coe, zpow_neg, zpow_natCast, inv_smul_eq_iff, eq_comm, Int.dvd_neg,
-      Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
+  match j with
+  | (n : ℕ) => rw [zpow_natCast, Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
+  | -(n + 1 : ℕ) =>
+    rw [zpow_neg, zpow_natCast, inv_smul_eq_iff, eq_comm, Int.dvd_neg, Int.natCast_dvd_natCast,
+      pow_smul_eq_iff_period_dvd]
 
 @[to_additive (attr := simp)]
 theorem pow_mod_period_smul (n : ℕ) {m : M} {a : α} :

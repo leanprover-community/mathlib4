@@ -5,7 +5,7 @@ Authors: Peter Nelson
 -/
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.List.Sort
 import Mathlib.Data.Nat.Bitwise
@@ -110,7 +110,7 @@ termination_by L.length
 
 theorem two_pow_le_of_mem_bitIndices (ha : a ∈ n.bitIndices) : 2^a ≤ n := by
   rw [← twoPowSum_bitIndices n]
-  exact List.single_le_sum (by simp) _ <| mem_map_of_mem _ ha
+  exact List.single_le_sum (by simp) _ <| mem_map_of_mem ha
 
 theorem not_mem_bitIndices_self (n : ℕ) : n ∉ n.bitIndices :=
   fun h ↦ (n.lt_two_pow_self).not_le <| two_pow_le_of_mem_bitIndices h

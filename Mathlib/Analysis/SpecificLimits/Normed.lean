@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
@@ -187,7 +187,7 @@ theorem tendsto_self_mul_const_pow_of_lt_one {r : ℝ} (hr : 0 ≤ r) (h'r : r <
   simpa only [pow_one] using tendsto_pow_const_mul_const_pow_of_lt_one 1 hr h'r
 
 /-- In a normed ring, the powers of an element x with `‖x‖ < 1` tend to zero. -/
-theorem tendsto_pow_atTop_nhds_zero_of_norm_lt_one {R : Type*} [NormedRing R] {x : R}
+theorem tendsto_pow_atTop_nhds_zero_of_norm_lt_one {R : Type*} [SeminormedRing R] {x : R}
     (h : ‖x‖ < 1) :
     Tendsto (fun n : ℕ ↦ x ^ n) atTop (𝓝 0) := by
   apply squeeze_zero_norm' (eventually_norm_pow_le x)
@@ -196,6 +196,18 @@ theorem tendsto_pow_atTop_nhds_zero_of_norm_lt_one {R : Type*} [NormedRing R] {x
 theorem tendsto_pow_atTop_nhds_zero_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) :=
   tendsto_pow_atTop_nhds_zero_of_norm_lt_one h
+
+lemma tendsto_pow_atTop_nhds_zero_iff_norm_lt_one {R : Type*} [SeminormedRing R] [NormMulClass R]
+    {x : R} : Tendsto (fun n : ℕ ↦ x ^ n) atTop (𝓝 0) ↔ ‖x‖ < 1 := by
+  -- this proof is slightly fiddly since `‖x ^ n‖ = ‖x‖ ^ n` might not hold for `n = 0`
+  refine ⟨?_, tendsto_pow_atTop_nhds_zero_of_norm_lt_one⟩
+  rw [← abs_of_nonneg (norm_nonneg _), ← tendsto_pow_atTop_nhds_zero_iff,
+    tendsto_zero_iff_norm_tendsto_zero]
+  apply Tendsto.congr'
+  filter_upwards [eventually_ge_atTop 1] with n hn
+  induction n, hn using Nat.le_induction with
+  | base => simp
+  | succ n hn IH => simp [norm_pow, pow_succ, IH]
 
 /-! ### Geometric series -/
 
@@ -226,7 +238,7 @@ normed ring satisfies the axiom `‖1‖ = 1`. -/
 theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     ‖∑' n : ℕ, x ^ n‖ ≤ ‖(1 : R)‖ - 1 + (1 - ‖x‖)⁻¹ := by
   by_cases hx : Summable (fun n ↦ x ^ n)
-  · rw [tsum_eq_zero_add hx]
+  · rw [hx.tsum_eq_zero_add]
     simp only [_root_.pow_zero]
     refine le_trans (norm_add_le _ _) ?_
     have : ‖∑' b : ℕ, (fun n ↦ x ^ (n + 1)) b‖ ≤ (1 - ‖x‖)⁻¹ - 1 := by
@@ -259,7 +271,7 @@ theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, 
   rw [← mul_neg_geom_sum, Finset.mul_sum]
 
 theorem geom_series_succ (x : R) (h : ‖x‖ < 1) : ∑' i : ℕ, x ^ (i + 1) = ∑' i : ℕ, x ^ i - 1 := by
-  rw [eq_sub_iff_add_eq, tsum_eq_zero_add (summable_geometric_of_norm_lt_one h),
+  rw [eq_sub_iff_add_eq, (summable_geometric_of_norm_lt_one h).tsum_eq_zero_add,
     pow_zero, add_comm]
 
 theorem geom_series_mul_shift (x : R) (h : ‖x‖ < 1) :
@@ -729,7 +741,8 @@ end
 
 section
 
-variable {E : Type*} [OrderedRing E] [TopologicalSpace E] [OrderClosedTopology E]
+variable {E : Type*} [Ring E] [PartialOrder E] [IsOrderedRing E]
+  [TopologicalSpace E] [OrderClosedTopology E]
   {l : E} {f : ℕ → E}
 
 /-- Partial sums of an alternating monotone series with an even number of terms provide
@@ -812,9 +825,3 @@ theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / 
       rw [_root_.pow_succ', Nat.factorial_succ, Nat.cast_mul, ← _root_.div_mul_div_comm, norm_mul,
         norm_div, Real.norm_natCast, Nat.cast_succ]
     _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / (n !)‖ := by gcongr
-
-@[deprecated "`Real.tendsto_pow_div_factorial_atTop` has been deprecated, use
-`FloorSemiring.tendsto_pow_div_factorial_atTop` instead" (since := "2024-10-05")]
-theorem Real.tendsto_pow_div_factorial_atTop (x : ℝ) :
-    Tendsto (fun n ↦ x ^ n / n ! : ℕ → ℝ) atTop (𝓝 0) :=
-  (Real.summable_pow_div_factorial x).tendsto_atTop_zero

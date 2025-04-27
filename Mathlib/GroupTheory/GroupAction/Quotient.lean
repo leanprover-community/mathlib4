@@ -104,29 +104,6 @@ theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸
   rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out,
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
 
-@[to_additive]
-alias Quotient.mk_smul_out' := Quotient.mk_smul_out
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated Quotient.mk_smul_out (since := "2024-10-19")] Quotient.mk_smul_out'
-attribute [deprecated AddAction.Quotient.mk_vadd_out (since := "2024-10-19")]
-AddAction.Quotient.mk_vadd_out'
-
-@[to_additive]
-alias Quotient.coe_smul_out' := Quotient.coe_smul_out
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated Quotient.coe_smul_out (since := "2024-10-19")] Quotient.coe_smul_out'
-attribute [deprecated AddAction.Quotient.coe_vadd_out (since := "2024-10-19")]
-AddAction.Quotient.coe_vadd_out'
-
-
-@[deprecated (since := "2024-10-19")]
-alias _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem :=
-  QuotientGroup.out_conj_pow_minimalPeriod_mem
-
 end QuotientAction
 
 open QuotientGroup
@@ -231,7 +208,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
     β ≃ Σω : Ω, orbitRel.Quotient.orbit ω := selfEquivSigmaOrbits' α β
     _ ≃ Σω : Ω, α ⧸ stabilizer α (φ ω) :=
       Equiv.sigmaCongrRight fun ω =>
-        (Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
+        (Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
           orbitEquivQuotientStabilizer α (φ ω)
 
 /-- **Class formula** for a finite group acting on a finite type. See
@@ -430,7 +407,7 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
 /-- If `α` acts on `β` with trivial stabilizers, `β` is equivalent
 to the product of the quotient of `β` by `α` and `α`.
 See `MulAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/
-@[to_additive "If `α` acts freely on `β`, `β` is equivalent
+@[to_additive selfEquivOrbitsQuotientProd' "If `α` acts freely on `β`, `β` is equivalent
 to the product of the quotient of `β` by `α` and `α`.
 See `AddAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`."]
 noncomputable def selfEquivOrbitsQuotientProd'
@@ -442,13 +419,20 @@ noncomputable def selfEquivOrbitsQuotientProd'
       (Subgroup.quotientEquivOfEq (h _)).trans (QuotientGroup.quotientEquivSelf α)).trans <|
     Equiv.sigmaEquivProd _ _
 
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddAction.selfEquivOrbitsQuotientSum' := AddAction.selfEquivOrbitsQuotientProd'
+
 /-- If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by `α` and
 `α`. -/
-@[to_additive "If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by
+@[to_additive selfEquivOrbitsQuotientProd
+  "If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by
 `α` and `α`."]
 noncomputable def selfEquivOrbitsQuotientProd (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
     β ≃ Quotient (MulAction.orbitRel α β) × α :=
   MulAction.selfEquivOrbitsQuotientProd' Quotient.out_eq' h
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddAction.selfEquivOrbitsQuotientSum := AddAction.selfEquivOrbitsQuotientProd
 
 end MulAction
 

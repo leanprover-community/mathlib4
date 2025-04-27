@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Data.Set.Countable
-import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Bases.Finite
 
 /-!
 # Countably generated filters
@@ -213,10 +213,7 @@ theorem isCountablyGenerated_bot : IsCountablyGenerated (⊥ : Filter α) :=
 theorem isCountablyGenerated_top : IsCountablyGenerated (⊤ : Filter α) :=
   @principal_univ α ▸ isCountablyGenerated_principal _
 
--- Porting note: without explicit `Sort u` and `Type v`, Lean 4 uses `ι : Prop`
-universe u v
-
-instance iInf.isCountablyGenerated {ι : Sort u} {α : Type v} [Countable ι] (f : ι → Filter α)
+instance iInf.isCountablyGenerated {ι : Sort*} {α : Type*} [Countable ι] (f : ι → Filter α)
     [∀ i, IsCountablyGenerated (f i)] : IsCountablyGenerated (⨅ i, f i) := by
   choose s hs using fun i => exists_antitone_basis (f i)
   rw [← PLift.down_surjective.iInf_comp]

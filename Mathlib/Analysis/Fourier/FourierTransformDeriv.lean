@@ -197,7 +197,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
   have aux0 : Continuous fun p : (W →L[ℝ] ℝ) × E ↦ p.1.smulRight p.2 :=
     (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
   have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
-    L.continuous.aestronglyMeasurable.prod_mk hf
+    L.continuous.aestronglyMeasurable.prodMk hf
   -- Elaboration without the expected type is faster here:
   exact (aux0.comp_aestronglyMeasurable aux1 :)
 
@@ -758,23 +758,23 @@ lemma hasDerivAt_fourierIntegral
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) (w : ℝ) :
     HasDerivAt (𝓕 f) (𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) w) w := by
   have hf'' : Integrable (fun v : ℝ ↦ ‖v‖ * ‖f v‖) := by simpa only [norm_smul] using hf'.norm
-  let L := ContinuousLinearMap.mul ℝ ℝ
+  let L := ContinuousLinearMap.mul ℝ ℝ |>.flip
   have h_int : Integrable fun v ↦ fourierSMulRight L f v := by
     suffices Integrable fun v ↦ ContinuousLinearMap.smulRight (L v) (f v) by
       simpa only [fourierSMulRight, neg_smul, neg_mul, Pi.smul_apply] using this.smul (-2 * π * I)
     convert ((ContinuousLinearMap.ring_lmap_equiv_self ℝ
       E).symm.toContinuousLinearEquiv.toContinuousLinearMap).integrable_comp hf' using 2 with v
     apply ContinuousLinearMap.ext_ring
-    rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.mul_apply', mul_one,
-      ContinuousLinearMap.map_smul]
+    rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.flip_apply,
+      ContinuousLinearMap.mul_apply', one_mul, ContinuousLinearMap.map_smul]
     exact congr_arg (fun x ↦ v • x) (one_smul ℝ (f v)).symm
   rw [← VectorFourier.fourierIntegral_convergent_iff continuous_fourierChar L.continuous₂ w]
     at h_int
   convert (VectorFourier.hasFDerivAt_fourierIntegral L hf hf'' w).hasDerivAt using 1
   erw [ContinuousLinearMap.integral_apply h_int]
   simp_rw [ContinuousLinearMap.smul_apply, fourierSMulRight, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.smulRight_apply, L, ContinuousLinearMap.mul_apply', mul_one,
-    ← neg_mul, mul_smul]
+    ContinuousLinearMap.smulRight_apply, L, ContinuousLinearMap.flip_apply,
+    ContinuousLinearMap.mul_apply', one_mul, ← neg_mul, mul_smul]
   rfl
 
 theorem deriv_fourierIntegral
@@ -795,13 +795,13 @@ theorem fourierIntegral_deriv
     simp only [fourierIntegral_continuousLinearMap_apply I, fderiv_deriv]
   rw [this, fourierIntegral_fderiv hf h'f I]
   simp only [fourierSMulRight_apply, ContinuousLinearMap.neg_apply, innerSL_apply, smul_smul,
-    RCLike.inner_apply, conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, ← coe_smul]
+    RCLike.inner_apply', conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, ← coe_smul]
 
 theorem iteratedDeriv_fourierIntegral {f : ℝ → E} {N : ℕ∞} {n : ℕ}
-    (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x^n • f x)) (hn : n ≤ N) :
+    (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x ^ n • f x)) (hn : n ≤ N) :
     iteratedDeriv n (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) ^ n • f x) := by
   ext x : 1
-  have A (n : ℕ) (hn : n ≤ N) : Integrable (fun v ↦ ‖v‖^n * ‖f v‖) := by
+  have A (n : ℕ) (hn : n ≤ N) : Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖) := by
     convert (hf n hn).norm with x
     simp [norm_smul]
   have B : AEStronglyMeasurable f := by simpa using (hf 0 (zero_le _)).1
