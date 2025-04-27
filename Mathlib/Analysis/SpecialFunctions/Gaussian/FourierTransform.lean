@@ -185,7 +185,7 @@ theorem _root_.integral_cexp_quadratic (hb : b.re < 0) (c d : ℂ) :
     congr 1
     field_simp
     ring_nf
-  simp_rw [h, integral_mul_right]
+  simp_rw [h, integral_mul_const]
   rw [← re_add_im (c / (2 * b))]
   simp_rw [← add_assoc, ← ofReal_add]
   rw [integral_add_right_eq_self fun a : ℝ ↦ cexp (- -b * (↑a + ↑(c / (2 * b)).im * I) ^ 2),
