@@ -24,7 +24,7 @@ if these presheaves are all sheaves (typeclass `F.HasDescentForMorphisms J`).
 * Relate this notion to the property that for any covering family `f i : X i ⟶ S`
 for `J`, the functor `F.obj S` to the category of objects in `F.obj (X i)` for all `i`
 equipped with a descent datum is fully faithful.
-* Define a typeclass `HasEffectiveDescent` extending `HasDescentForMorphisms`
+* Define a typeclass `HasEffectiveDescent` extending `HasDescentOfMorphisms`
 by saying that the functors mentionned above are essentially surjective.
 
 -/
@@ -86,11 +86,11 @@ def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
 
 /-- The property that a pseudofunctor `F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat`
 satisfies the descent property for morphisms. -/
-class HasDescentForMorphisms (J : GrothendieckTopology C) : Prop where
+class HasDescentOfMorphisms (J : GrothendieckTopology C) : Prop where
   isSheaf {S : C} (M N : F.obj (.mk (op S))) :
     Presheaf.IsSheaf (J.over S) (F.presheafHom M N)
 
-variable (J : GrothendieckTopology C) [F.HasDescentForMorphisms J]
+variable (J : GrothendieckTopology C) [F.HasDescentOfMorphisms J]
 
 /-- If `F` is a pseudofunctor from `Cᵒᵖ` to `Cat` which satisfies the descent
 of morphisms for a Grothendieck topology `J`, and `M` and `N` are to objects in
@@ -100,7 +100,7 @@ of morphisms $$p^* M ⟶ p^* N$$. -/
 @[simps]
 def sheafHom : Sheaf (J.over S) (Type v') where
   val := F.presheafHom M N
-  cond := HasDescentForMorphisms.isSheaf _ _
+  cond := HasDescentOfMorphisms.isSheaf _ _
 
 end Pseudofunctor
 
