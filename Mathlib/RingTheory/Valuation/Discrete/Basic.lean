@@ -40,7 +40,7 @@ nontrivial cyclic, a valuation `v : A → Γ` on a ring `A` is *discrete*, if
 `genLTOne Γˣ` belongs to the image. Note that the latter is equivalent to
 asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
 class IsDiscrete [IsCyclic Γˣ] [Nontrivial Γˣ] : Prop where
-  exists_generator_lt_one : ∃ (γ :Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v
+  exists_generator_lt_one : ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v
 
 variable {K : Type*} [Field K]
 variable [IsCyclic Γˣ] [Nontrivial Γˣ]
