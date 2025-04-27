@@ -291,8 +291,8 @@ protected theorem IsEquivalent.pow (h : t ~[l] u) (n : ℕ) : t ^ n ~[l] u ^ n :
   | zero => simpa using IsEquivalent.refl
   | succ _ ih => simpa [pow_succ] using ih.mul h
 
-protected theorem IsEquivalent.zpow (h : t ~[l] u) (n : ℤ) : t ^ n ~[l] u ^ n := by
-  match n with
+protected theorem IsEquivalent.zpow (h : t ~[l] u) (z : ℤ) : t ^ z ~[l] u ^ z := by
+  match z with
   | Int.ofNat _ => simpa using h.pow _
   | Int.negSucc _ => simpa using (h.pow _).inv
 
