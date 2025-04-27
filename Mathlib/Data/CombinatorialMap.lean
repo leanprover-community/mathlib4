@@ -76,6 +76,7 @@ A homomorphism of `CombinatorialMap`s is a function that commutes with each of t
 permutations.
 -/
 structure Hom (M : CombinatorialMap D) (M' : CombinatorialMap D') where
+  /-- The function inducing the homomorphism. -/
   toFun : D → D'
   vertex_comm : toFun ∘ M.vertexPerm = M'.vertexPerm ∘ toFun
   edge_comm : toFun ∘ M.edgePerm = M'.edgePerm ∘ toFun
@@ -119,6 +120,7 @@ def op (M : CombinatorialMap D) : CombinatorialMap D where
   edgePerm_involutive := M.edgePerm_involutive
   isEmpty_fixedPoints_edgePerm := M.isEmpty_fixedPoints_edgePerm
 
+/-- `CombinatorialMap.op` results in an automorphism. -/
 def opIso (M : CombinatorialMap D) : Iso M M.op where
   toEquiv := M.edgePerm
   vertex_comm := by
@@ -169,9 +171,9 @@ abbrev Edge_mk (M : CombinatorialMap D) (d : D) : M.Edge :=
 abbrev Face_mk (M : CombinatorialMap D) (d : D) : M.Face :=
   Quotient.mk (Equiv.Perm.SameCycle.setoid M.facePerm) d
 
-noncomputable instance [Fintype D] [DecidableEq D] {w : D} :
+private noncomputable instance [Fintype D] [DecidableEq D] {w : D} :
     Fintype {u | M.vertexPerm.SameCycle w u} :=
-  Fintype.ofFinite ↑{u | M.vertexPerm.SameCycle w u}
+  Fintype.ofFinite {u | M.vertexPerm.SameCycle w u}
 
 /-- The degree of a vertex is the number of incident darts. -/
 noncomputable def Vertex.deg [Fintype D] [DecidableEq D] (v : M.Vertex) : ℕ :=
