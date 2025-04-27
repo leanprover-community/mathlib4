@@ -36,7 +36,7 @@ section
 
 variable (f : b₀ ⟶ b₀) (hf : f = 𝟙 b₀) (a : X ⟶ Y)
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma mapId'_hom_naturality :
     (F.map f).map a ≫ (F.mapId' f hf).hom.app Y = (F.mapId' f hf).hom.app X ≫ a :=
   (F.mapId' f hf).hom.naturality a
@@ -53,26 +53,26 @@ section
 variable (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
   (hfg : f ≫ g = fg) (a : X ⟶ Y)
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma mapComp'_hom_naturality :
     (F.map fg).map a ≫ (F.mapComp' f g fg hfg).hom.app Y =
       (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) :=
   (F.mapComp' f g fg hfg).hom.naturality a
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma mapComp'_inv_naturality :
     (F.map g).map ((F.map f).map a) ≫ (F.mapComp' f g fg hfg).inv.app Y =
     (F.mapComp' f g fg hfg).inv.app X ≫ (F.map fg).map a :=
   (F.mapComp' f g fg hfg).inv.naturality a
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma mapComp'_naturality_1 :
     (F.mapComp' f g fg hfg).inv.app X ≫
       (F.map fg).map a ≫ (F.mapComp' f g fg hfg).hom.app Y =
       (F.map g).map ((F.map f).map a) :=
   NatIso.naturality_1 (F.mapComp' f g fg hfg) a
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma mapComp'_naturality_2 :
     (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) ≫
       (F.mapComp' f g fg hfg).inv.app Y =
