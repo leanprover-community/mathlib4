@@ -109,9 +109,6 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   have := (diagonal_eq_diagonal_iff).mp h2
   refine RCLike.ofReal_eq_zero.mp (this i)
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_cfcAux := isClosedEmbedding_cfcAux
-
 lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
   conv_rhs => rw [hA.spectral_theorem]
   congr!
@@ -119,7 +116,7 @@ lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
 /-- Instance of the continuous functional calculus for a Hermitian matrix over `𝕜` with
 `RCLike 𝕜`. -/
 instance instContinuousFunctionalCalculus :
-    ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : Matrix n n 𝕜 → Prop) where
+    ContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
   exists_cfc_of_predicate a ha := by
     replace ha : IsHermitian a := ha
     refine ⟨ha.cfcAux, ha.isClosedEmbedding_cfcAux, ha.cfcAux_id, fun f ↦ ?map_spec,

@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Opposites
+import Mathlib.Util.Superscript
 
 /-!
 # Simplicial objects in a category.
@@ -22,6 +23,12 @@ The following notations can be enabled via `open Simplicial`.
 
 - `X _⦋n⦌` denotes the `n`-th term of a simplicial object `X`, where `n : ℕ`.
 - `X ^⦋n⦌` denotes the `n`-th term of a cosimplicial object `X`, where `n : ℕ`.
+
+The following notations can be enabled via
+`open CategoryTheory.SimplicialObject.Truncated`.
+
+- `X _⦋m⦌ₙ` denotes the `m`-th term of an `n`-truncated simplicial object `X`.
+- `X ^⦋m⦌ₙ` denotes the `m`-th term of an `n`-truncated cosimplicial object `X`.
 -/
 
 open Opposite
@@ -241,6 +248,28 @@ variable (C) in
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
+open Mathlib.Tactic (subscriptTerm) in
+/-- For `X : Truncated C n` and `m ≤ n`, `X _⦋m⦌ₙ` is the `m`-th term of X. The
+proof `p : m ≤ n` can also be provided using the syntax `X _⦋m, p⦌ₙ`. -/
+scoped syntax:max (name := mkNotation)
+  term " _⦋" term ("," term)? "⦌" noWs subscriptTerm : term
+
+open scoped SimplexCategory.Truncated in
+scoped macro_rules
+  | `($X:term _⦋$m:term⦌$n:subscript) =>
+    `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
+      (Opposite.op ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      fail "Failed to prove truncation property. Try writing `X _⦋m, by ...⦌ₙ`."⟩))
+  | `($X:term _⦋$m:term, $p:term⦌$n:subscript) =>
+    `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
+      (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
+
+variable (C) in
+/-- Further truncation of truncated simplicial objects. -/
+@[simps!]
+def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
+  (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.incl m n).op
+
 end Truncated
 
 section Truncation
@@ -248,6 +277,11 @@ section Truncation
 /-- The truncation functor from simplicial objects to truncated simplicial objects. -/
 def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n).op
+
+/-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
+def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
+    truncation n ⋙ Truncated.trunc C n m ≅ truncation m :=
+  Iso.refl _
 
 end Truncation
 
@@ -678,6 +712,27 @@ variable (C) in
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
+open Mathlib.Tactic (subscriptTerm) in
+/-- For `X : Truncated C n` and `m ≤ n`, `X ^⦋m⦌ₙ` is the `m`-th term of X. The
+proof `p : m ≤ n` can also be provided using the syntax `X ^⦋m, p⦌ₙ`. -/
+scoped syntax:max (name := mkNotation)
+  term " ^⦋" term ("," term)? "⦌" noWs subscriptTerm : term
+
+open scoped SimplexCategory.Truncated in
+scoped macro_rules
+  | `($X:term ^⦋$m:term⦌$n:subscript) =>
+    `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
+      ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      fail "Failed to prove truncation property. Try writing `X ^⦋m, by ...⦌ₙ`."⟩)
+  | `($X:term ^⦋$m:term, $p:term⦌$n:subscript) =>
+    `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
+      ⟨SimplexCategory.mk $m, $p⟩)
+
+variable (C) in
+/-- Further truncation of truncated cosimplicial objects. -/
+def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
+  (whiskeringLeft _ _ _).obj <| SimplexCategory.Truncated.incl m n
+
 end Truncated
 
 section Truncation
@@ -685,6 +740,11 @@ section Truncation
 /-- The truncation functor from cosimplicial objects to truncated cosimplicial objects. -/
 def truncation (n : ℕ) : CosimplicialObject C ⥤ CosimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n)
+
+/-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
+def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
+    truncation n ⋙ Truncated.trunc C n m ≅ truncation m :=
+  Iso.refl _
 
 end Truncation
 

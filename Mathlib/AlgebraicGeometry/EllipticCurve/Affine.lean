@@ -202,7 +202,7 @@ lemma equation_zero : W'.Equation 0 0 ↔ W'.a₆ = 0 := by
   rw [Equation, evalEval_polynomial_zero, neg_eq_zero]
 
 lemma equation_iff_variableChange (x y : R) :
-    W'.Equation x y ↔ (W'.variableChange ⟨1, x, 0, y⟩).toAffine.Equation 0 0 := by
+    W'.Equation x y ↔ (VariableChange.mk 1 x 0 y • W').toAffine.Equation 0 0 := by
   rw [equation_iff', ← neg_eq_zero, equation_zero, variableChange_a₆, inv_one, Units.val_one]
   congr! 1
   ring1
@@ -271,10 +271,10 @@ lemma nonsingular_zero : W'.Nonsingular 0 0 ↔ W'.a₆ = 0 ∧ (W'.a₃ ≠ 0 �
     or_comm]
 
 lemma nonsingular_iff_variableChange (x y : R) :
-    W'.Nonsingular x y ↔ (W'.variableChange ⟨1, x, 0, y⟩).toAffine.Nonsingular 0 0 := by
+    W'.Nonsingular x y ↔ (VariableChange.mk 1 x 0 y • W').toAffine.Nonsingular 0 0 := by
   rw [nonsingular_iff', equation_iff_variableChange, equation_zero, ← neg_ne_zero, or_comm,
     nonsingular_zero, variableChange_a₃, variableChange_a₄, inv_one, Units.val_one]
-  simp only [variableChange]
+  simp only [variableChange_def]
   congr! 3 <;> ring1
 
 private lemma equation_zero_iff_nonsingular_zero_of_Δ_ne_zero (hΔ : W'.Δ ≠ 0) :
@@ -335,9 +335,11 @@ lemma negY_negY (x y : R) : W'.negY x (W'.negY x y) = y := by
   simp only [negY]
   ring1
 
-lemma eval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY x y := by
+lemma evalEval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY x y := by
   rw [negY, sub_sub, negPolynomial]
   eval_simp
+
+@[deprecated (since := "2025-03-05")] alias eval_negPolynomial := evalEval_negPolynomial
 
 /-- The line polynomial `ℓ(X - x) + y` associated to the line `Y = ℓ(X - x) + y` that passes through
 a nonsingular affine point `(x, y)` on a Weierstrass curve `W` with a slope of `ℓ`.
@@ -473,12 +475,14 @@ lemma slope_of_X_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ ≠ x₂) :
     W.slope x₁ x₂ y₁ y₂ = (y₁ - y₂) / (x₁ - x₂) := by
   rw [slope, if_neg hx]
 
-lemma slope_of_Y_ne_eq_eval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
+lemma slope_of_Y_ne_eq_evalEval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
     W.slope x₁ x₂ y₁ y₂ = -W.polynomialX.evalEval x₁ y₁ / W.polynomialY.evalEval x₁ y₁ := by
   rw [slope_of_Y_ne hx hy, evalEval_polynomialX, neg_sub]
   congr 1
   rw [negY, evalEval_polynomialY]
   ring1
+
+@[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_eval := slope_of_Y_ne_eq_evalEval
 
 lemma Y_eq_of_X_eq {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W.negY x₂ y₂ := by
@@ -739,9 +743,12 @@ lemma map_polynomial : (W'.map f).toAffine.polynomial = W'.polynomial.map (mapRi
   simp only [polynomial]
   map_simp
 
-lemma evalEval_baseChange_polynomial_X_Y :
+lemma evalEval_baseChange_polynomial :
     (W'.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W'.polynomial := by
   rw [map_polynomial, evalEval, eval_map, eval_C_X_eval₂_map_C_X]
+
+@[deprecated (since := "2025-03-05")] alias evalEval_baseChange_polynomial_X_Y :=
+  evalEval_baseChange_polynomial
 
 variable {x y} in
 lemma Equation.map {x y : R} (h : W'.Equation x y) : (W'.map f).toAffine.Equation (f x) (f y) := by

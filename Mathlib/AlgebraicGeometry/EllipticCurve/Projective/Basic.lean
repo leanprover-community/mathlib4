@@ -55,7 +55,7 @@ While `erw` is often an indication of a problem, in this case it is self-contain
 cause any issues. It would alternatively be possible to add some automation to assist here.
 
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
-mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean`.
+mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Basic.lean`.
 
 ## References
 
@@ -516,6 +516,12 @@ variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebr
 lemma baseChange_polynomial : (W'.baseChange B).toProjective.polynomial =
     MvPolynomial.map f (W'.baseChange A).toProjective.polynomial := by
   rw [← map_polynomial, map_baseChange]
+
+variable {P} in
+lemma Equation.baseChange (h : (W'.baseChange A).toProjective.Equation P) :
+    (W'.baseChange B).toProjective.Equation (f ∘ P) := by
+  convert Equation.map f.toRingHom h using 1
+  rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
 lemma baseChange_equation (hf : Function.Injective f) :
