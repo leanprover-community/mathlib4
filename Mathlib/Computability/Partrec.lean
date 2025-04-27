@@ -13,7 +13,14 @@ import Mathlib.Data.PFun
 The partial recursive functions are defined similarly to the primitive
 recursive functions, but now all functions are partial, implemented
 using the `Part` monad, and there is an additional operation, called
-μ-recursion, which performs unbounded minimization.
+μ-recursion, which performs unbounded minimization: `μ f` returns the
+least natural number `n` for which `f n = 0`, or diverges if such `n` doesn't exist.
+
+## Main definitions
+
+- `Nat.Partrec f`: `f` is partial recursive, for functions `f : ℕ →. ℕ`
+- `Partrec f`: `f` is partial recursive, for partial functions between `Primcodable` types
+- `Computable f`: `f` is partial recursive, for total functions between `Primcodable` types
 
 ## References
 
@@ -45,6 +52,8 @@ private def wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFoun
 
 variable (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom)
 
+/-- Find the smallest `n` satisfying `p n`, where all `p k` for `k < n` are defined as false.
+Returns a subtype. -/
 def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
   suffices ∀ k, (∀ n < k, false ∈ p n) → { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } from
     this 0 fun _ => (Nat.not_lt_zero _).elim
@@ -69,6 +78,8 @@ def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
 
 end Rfind
 
+/-- Find the smallest `n` satisfying `p n`, where all `p k` for `k < n` are defined as false.
+Returns a `Part`. -/
 def rfind (p : ℕ →. Bool) : Part ℕ :=
   ⟨_, fun h => (rfindX p h).1⟩
 
@@ -110,6 +121,8 @@ theorem rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = P
     let ⟨_, _, h₂⟩ := rfind_dom'.1 h.fst
     (p0 ▸ h₂ (zero_le _) : (@Part.none Bool).Dom)
 
+/-- Find the smallest `n` satisfying `f n`, where all `f k` for `k < n` are defined as false.
+Returns a `Part`. -/
 def rfindOpt {α} (f : ℕ → Option α) : Part α :=
   (rfind fun n => (f n).isSome).bind fun n => f n
 
@@ -135,7 +148,7 @@ theorem rfindOpt_mono {α} {f : ℕ → Option α} (H : ∀ {a m n}, m ≤ n →
     have := (H (le_max_left _ _) h).symm.trans (H (le_max_right _ _) hk)
     simp at this; simp [this, get_mem]⟩
 
-/-- `PartRec f` means that the partial function `f : ℕ → ℕ` is partially recursive. -/
+/-- `Partrec f` means that the partial function `f : ℕ → ℕ` is partially recursive. -/
 inductive Partrec : (ℕ →. ℕ) → Prop
   | zero : Partrec (pure 0)
   | succ : Partrec succ

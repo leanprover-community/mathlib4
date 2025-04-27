@@ -78,8 +78,12 @@ theorem contMDiffAt_extChartAt' {x' : M} (h : x' ∈ (chartAt H x).source) :
     ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x' :=
   contMDiffAt_extend (chart_mem_maximalAtlas x) h
 
-theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x :=
-  contMDiffAt_extChartAt' <| mem_chart_source H x
+omit [IsManifold I n M] in
+theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x := by
+  rw [contMDiffAt_iff_source]
+  apply contMDiffWithinAt_id.congr_of_eventuallyEq_of_mem _ (by simp)
+  filter_upwards [extChartAt_target_mem_nhdsWithin x] with y hy
+  exact PartialEquiv.right_inv (extChartAt I x) hy
 
 theorem contMDiffOn_extChartAt : ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (chartAt H x).source :=
   fun _x' hx' => (contMDiffAt_extChartAt' hx').contMDiffWithinAt
@@ -108,6 +112,25 @@ theorem contMDiffWithinAt_extChartAt_symm_range
     ContMDiffWithinAt 𝓘(𝕜, E) I n (extChartAt I x).symm (range I) y :=
   (contMDiffWithinAt_extChartAt_symm_target x hy).mono_of_mem_nhdsWithin
     (extChartAt_target_mem_nhdsWithin_of_mem hy)
+
+omit [IsManifold I n M] in
+theorem contMDiffWithinAt_extChartAt_symm_target_self (x : M) :
+    ContMDiffWithinAt 𝓘(𝕜, E) I n (extChartAt I x).symm (extChartAt I x).target
+      (extChartAt I x x) := by
+  rw [contMDiffWithinAt_iff_target]
+  constructor
+  · apply ContinuousAt.continuousWithinAt
+    apply ContinuousAt.comp _ I.continuousAt_symm
+    exact (chartAt H x).symm.continuousAt (by simp)
+  · apply contMDiffWithinAt_id.congr_of_mem (fun y hy ↦ ?_) (by simp)
+    convert PartialEquiv.right_inv (extChartAt I x) hy
+    simp
+
+omit [IsManifold I n M] in
+theorem contMDiffWithinAt_extChartAt_symm_range_self (x : M) :
+    ContMDiffWithinAt 𝓘(𝕜, E) I n (extChartAt I x).symm (range I) (extChartAt I x x) :=
+  (contMDiffWithinAt_extChartAt_symm_target_self x).mono_of_mem_nhdsWithin
+    (extChartAt_target_mem_nhdsWithin x)
 
 /-- An element of `contDiffGroupoid n I` is `C^n`. -/
 theorem contMDiffOn_of_mem_contDiffGroupoid {e' : PartialHomeomorph H H}

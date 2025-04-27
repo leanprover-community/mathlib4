@@ -3,8 +3,8 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Data.Real.EReal
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Data.EReal.Basic
 
 /-!
 # Extended Nonnegative Real Logarithm
@@ -169,7 +169,7 @@ theorem log_pow {x : ℝ≥0∞} {n : ℕ} : log (x ^ n) = n * log x := by
   · simp [n_zero, pow_zero x]
   rcases ENNReal.trichotomy x with (rfl | rfl | x_real)
   · rw [zero_pow n_pos.ne', log_zero, EReal.mul_bot_of_pos (Nat.cast_pos'.2 n_pos)]
-  · rw [ENNReal.top_pow n_pos, log_top, EReal.mul_top_of_pos (Nat.cast_pos'.2 n_pos)]
+  · rw [ENNReal.top_pow n_pos.ne', log_top, EReal.mul_top_of_pos (Nat.cast_pos'.2 n_pos)]
   · replace x_real := ENNReal.toReal_pos_iff.1 x_real
     simp only [log, pow_eq_zero_iff', x_real.1.ne', false_and, ↓reduceIte, pow_eq_top_iff,
       x_real.2.ne, toReal_pow, Real.log_pow, EReal.coe_mul, EReal.coe_coe_eq_natCast]
