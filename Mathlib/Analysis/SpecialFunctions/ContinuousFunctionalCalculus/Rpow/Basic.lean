@@ -515,11 +515,10 @@ lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2
   by_cases htriv : 0 ≤ a
   case neg => simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a htriv]
   case pos =>
-    by_cases hx : x = 0
-    case pos => simp [hx, rpow_zero _ htriv]
-    case neg =>
-      have h₁ : 0 < x := lt_of_le_of_ne (by simp) (Ne.symm hx)
-      have h₂ : (x : ℝ) / 2 = NNReal.toReal (x / 2) := rfl
+    cases eq_zero_or_pos x with
+    | inl hx => simp [hx, rpow_zero _ htriv]
+    | inr h₁ =>
+      have h₂ : (x : ℝ) / 2 = NNReal.toReal (x / 2) := by simp
       have h₃ : 0 < x / 2 := by positivity
       rw [← nnrpow_eq_rpow h₁, h₂, ← nnrpow_eq_rpow h₃, sqrt_nnrpow (A := A)]
 

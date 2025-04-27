@@ -117,14 +117,11 @@ instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasu
 theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
     [SFinite ν] [SFinite ρ] :
     (μ ∗ ν) ∗ ρ = μ ∗ (ν ∗ ρ) := by
-  apply ext_of_lintegral
-  intro f hf
-  repeat
-    rw [lintegral_mconv (by first | fun_prop | apply Measurable.lintegral_prod_right; fun_prop)]
+  refine ext_of_lintegral _ fun f hf ↦ ?_
+  repeat rw [lintegral_mconv (by fun_prop)]
   refine lintegral_congr fun x ↦ ?_
   rw [lintegral_mconv (by fun_prop)]
   repeat refine lintegral_congr fun x ↦ ?_
-  apply congr_arg
   simp [mul_assoc]
 
 @[to_additive]
