@@ -1883,7 +1883,6 @@ import Mathlib.Combinatorics.Additive.FreimanHom
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Colex
-import Mathlib.Combinatorics.CombinatorialMap
 import Mathlib.Combinatorics.Configuration
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Combinatorics.Derangements.Exponential
@@ -2049,6 +2048,7 @@ import Mathlib.Data.Bracket
 import Mathlib.Data.Bundle
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
+import Mathlib.Data.CombinatorialMap
 import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Complex.BigOperators
