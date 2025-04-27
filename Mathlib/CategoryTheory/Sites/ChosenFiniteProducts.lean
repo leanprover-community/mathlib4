@@ -45,15 +45,11 @@ lemma tensorUnit_isSheaf : Presheaf.IsSheaf J (𝟙_ (Cᵒᵖ ⥤ A)) := by
 `ChosenFiniteProducts` structure on `A`-valued sheaves. -/
 noncomputable instance chosenFiniteProducts : ChosenFiniteProducts (Sheaf J A) :=
   .ofChosenFiniteProducts
-   ({ cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A)
-                            cond := tensorUnit_isSheaf _}
+   ({ cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A), cond := tensorUnit_isSheaf _}
       isLimit :=
         { lift := fun f ↦ ⟨ChosenFiniteProducts.toUnit f.pt.val⟩
-          fac := by intro s ⟨e⟩; cases e
-          uniq := by
-            intro x f h
-            apply Sheaf.hom_ext
-            exact ChosenFiniteProducts.toUnit_unique f.val _} })
+          fac := by rintro _ ⟨⟨⟩⟩
+          uniq x f h := Sheaf.hom_ext _ _ (ChosenFiniteProducts.toUnit_unique f.val _) } })
   fun X Y ↦
     { cone := BinaryFan.mk
           (P := { val := X.val ⊗ Y.val
