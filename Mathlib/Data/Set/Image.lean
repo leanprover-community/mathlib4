@@ -5,8 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Batteries.Tactic.Congr
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.SymmDiff
+import Mathlib.Data.Set.Inclusion
 
 /-!
 # Images and preimages of sets
@@ -184,8 +186,6 @@ section Image
 
 variable {f : α → β} {s t : Set α}
 
--- Porting note: `Set.image` is already defined in `Data.Set.Defs`
-
 theorem image_eta (f : α → β) : f '' s = (fun x => f x) '' s :=
   rfl
 
@@ -203,11 +203,9 @@ theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
 theorem exists_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp
 
--- Porting note: used to be `safe`
 @[congr]
 theorem image_congr {f g : α → β} {s : Set α} (h : ∀ a ∈ s, f a = g a) : f '' s = g '' s := by
-  ext x
-  exact exists_congr fun a ↦ and_congr_right fun ha ↦ by rw [h a ha]
+  aesop
 
 /-- A common special case of `image_congr` -/
 theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) : f '' s = g '' s :=
@@ -291,7 +289,6 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   simp only [eq_empty_iff_forall_not_mem]
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
--- Porting note: `compl` is already defined in `Data.Set.Defs`
 theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (S : Set α) :
     HasCompl.compl ⁻¹' S = HasCompl.compl '' S :=
   Set.ext fun x =>
@@ -734,13 +731,11 @@ theorem preimage_eq_preimage' {s t : Set α} {f : β → α} (hs : s ⊆ range f
     · rw [← preimage_subset_preimage_iff ht, h]
   rintro rfl; rfl
 
--- Porting note:
--- @[simp] `simp` can prove this
+-- Not `@[simp]` since `simp` can prove this.
 theorem preimage_inter_range {f : α → β} {s : Set β} : f ⁻¹' (s ∩ range f) = f ⁻¹' s :=
   Set.ext fun x => and_iff_left ⟨x, rfl⟩
 
--- Porting note:
--- @[simp] `simp` can prove this
+-- Not `@[simp]` since `simp` can prove this.
 theorem preimage_range_inter {f : α → β} {s : Set β} : f ⁻¹' (range f ∩ s) = f ⁻¹' s := by
   rw [inter_comm, preimage_inter_range]
 
@@ -986,8 +981,7 @@ theorem compl_range_some (α : Type*) : (range (some : α → Option α))ᶜ = {
 theorem range_some_inter_none (α : Type*) : range (some : α → Option α) ∩ {none} = ∅ :=
   (isCompl_range_some_none α).inf_eq_bot
 
--- Porting note:
--- @[simp] `simp` can prove this
+-- Not `@[simp]` since `simp` can prove this.
 theorem range_some_union_none (α : Type*) : range (some : α → Option α) ∪ {none} = univ :=
   (isCompl_range_some_none α).sup_eq_top
 
@@ -1126,12 +1120,6 @@ theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
 
 alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_existsUnique
 
-@[deprecated (since := "2024-09-25")]
-alias Injective.mem_range_iff_exists_unique := Injective.mem_range_iff_existsUnique
-
-@[deprecated (since := "2024-09-25")]
-alias Injective.exists_unique_of_mem_range := Injective.existsUnique_of_mem_range
-
 theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     (f '' s)ᶜ = f '' sᶜ ∪ (range f)ᶜ := by
   ext y
@@ -1224,8 +1212,7 @@ theorem preimage_coe_self_inter (s t : Set α) :
     ((↑) : s → α) ⁻¹' (s ∩ t) = ((↑) : s → α) ⁻¹' t := by
   rw [preimage_coe_eq_preimage_coe_iff, ← inter_assoc, inter_self]
 
--- Porting note:
--- @[simp] `simp` can prove this
+-- Not `@[simp]` since `simp` can prove this.
 theorem preimage_coe_inter_self (s t : Set α) :
     ((↑) : s → α) ⁻¹' (t ∩ s) = ((↑) : s → α) ⁻¹' t := by
   rw [inter_comm, preimage_coe_self_inter]
@@ -1257,8 +1244,7 @@ theorem preimage_coe_nonempty {s t : Set α} :
 theorem preimage_coe_eq_empty {s t : Set α} : ((↑) : s → α) ⁻¹' t = ∅ ↔ s ∩ t = ∅ := by
   simp [← not_nonempty_iff_eq_empty, preimage_coe_nonempty]
 
--- Porting note:
--- @[simp] `simp` can prove this
+-- Not `@[simp]` since `simp` can prove this.
 theorem preimage_coe_compl (s : Set α) : ((↑) : s → α) ⁻¹' sᶜ = ∅ :=
   preimage_coe_eq_empty.2 (inter_compl_self s)
 

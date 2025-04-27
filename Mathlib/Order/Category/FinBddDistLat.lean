@@ -173,9 +173,6 @@ def dual : FinBddDistLat ⥤ FinBddDistLat where
   obj X := of Xᵒᵈ
   map f := ofHom f.hom.dual
 
-#adaptation_note /-- nightly-2025-02-12
-This apparently became slower. (Possibly due to changes in `simp +arith`?) -/
-set_option maxHeartbeats 400000 in
 /-- The equivalence between `FinBddDistLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
 def dualEquiv : FinBddDistLat ≌ FinBddDistLat where

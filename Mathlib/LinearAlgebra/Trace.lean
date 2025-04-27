@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labe
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.RingTheory.Finiteness.Prod
-import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
@@ -186,18 +186,20 @@ theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose
 theorem trace_prodMap :
     trace R (M × N) ∘ₗ prodMapLinear R M N M N R =
       (coprod id id : R × R →ₗ[R] R) ∘ₗ prodMap (trace R M) (trace R N) := by
-  let e := (dualTensorHomEquiv R M M).prod (dualTensorHomEquiv R N N)
+  let e := (dualTensorHomEquiv R M M).prodCongr (dualTensorHomEquiv R N N)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine (cancel_right h).1 ?_
   ext
-  · simp only [e, dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
-      AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inl,
-      Function.comp_apply, prodMap_apply, map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero,
-      trace_eq_contract_apply, contractLeft_apply, fst_apply, coprod_apply, id_coe, id_eq, add_zero]
-  · simp only [e, dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
-      AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inr,
-      Function.comp_apply, prodMap_apply, map_zero, prodMapLinear_apply, zero_prodMap_dualTensorHom,
-      trace_eq_contract_apply, contractLeft_apply, snd_apply, coprod_apply, id_coe, id_eq, zero_add]
+  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
+      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply, restrictScalars_comp,
+      curry_apply, coe_comp, coe_restrictScalars, coe_inl, Function.comp_apply, prodMap_apply,
+      map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero, trace_eq_contract_apply,
+      contractLeft_apply, coe_fst, coprod_apply, id_coe, id_eq, add_zero, e]
+  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
+      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply, restrictScalars_comp,
+      curry_apply, coe_comp, coe_restrictScalars, coe_inr, Function.comp_apply, prodMap_apply,
+      map_zero, prodMapLinear_apply, zero_prodMap_dualTensorHom, trace_eq_contract_apply,
+      contractLeft_apply, coe_snd, coprod_apply, id_coe, id_eq, zero_add, e]
 
 variable {R M N P}
 
@@ -282,7 +284,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
   · rw [trace, trace, dif_neg hM, dif_neg ?_, zero_apply, zero_apply]
     rintro ⟨s, ⟨b⟩⟩
     exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
-      ((e.symm.toEquiv.image s).trans (Equiv.Set.ofEq Finset.coe_image.symm))⟩⟩
+      ((e.symm.toEquiv.image s).trans (Equiv.setCongr Finset.coe_image.symm))⟩⟩
 
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
     [Module.Finite R p] [Module.Free R (ker f)] [Module.Finite R (ker f)] :

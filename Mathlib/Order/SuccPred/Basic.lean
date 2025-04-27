@@ -322,6 +322,11 @@ theorem succ_eq_iff_isMax : succ a = a ↔ IsMax a :=
 
 alias ⟨_, _root_.IsMax.succ_eq⟩ := succ_eq_iff_isMax
 
+lemma le_iff_eq_or_succ_le : a ≤ b ↔ a = b ∨ succ a ≤ b := by
+  by_cases ha : IsMax a
+  · simpa [ha.succ_eq] using le_of_eq
+  · rw [succ_le_iff_of_not_isMax ha, le_iff_eq_or_lt]
+
 theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
   refine
     ⟨fun h =>
@@ -498,6 +503,15 @@ theorem Ico_succ_right_eq_insert (h : a ≤ b) : Ico a (succ b) = insert b (Ico 
 
 theorem Ioo_succ_right_eq_insert (h : a < b) : Ioo a (succ b) = insert b (Ioo a b) :=
   Ioo_succ_right_eq_insert_of_not_isMax h <| not_isMax b
+
+@[simp]
+theorem Ioo_eq_empty_iff_le_succ : Ioo a b = ∅ ↔ b ≤ succ a := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    exact ⟨succ a, lt_succ_iff_not_isMax.mpr (not_isMax a), h⟩
+  · ext x
+    suffices a < x → b ≤ x by simpa
+    exact fun hx ↦ le_of_lt_succ <| lt_of_le_of_lt h <| succ_strictMono hx
 
 end NoMaxOrder
 
@@ -702,6 +716,11 @@ theorem pred_eq_iff_isMin : pred a = a ↔ IsMin a :=
 
 alias ⟨_, _root_.IsMin.pred_eq⟩ := pred_eq_iff_isMin
 
+lemma le_iff_eq_or_le_pred : a ≤ b ↔ a = b ∨ a ≤ pred b := by
+  by_cases hb : IsMin b
+  · simpa [hb.pred_eq] using le_of_eq
+  · rw [le_pred_iff_of_not_isMin hb, le_iff_eq_or_lt]
+
 theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = pred a := by
   refine
     ⟨fun h =>
@@ -869,6 +888,15 @@ theorem Ico_pred_right_eq_insert (h : a ≤ b) : Ioc (pred a) b = insert a (Ioc 
 
 theorem Ioo_pred_right_eq_insert (h : a < b) : Ioo (pred a) b = insert a (Ioo a b) := by
   simp_rw [← Ioi_inter_Iio, Ioi_pred_eq_insert, insert_inter_of_mem (mem_Iio.2 h)]
+
+@[simp]
+theorem Ioo_eq_empty_iff_pred_le : Ioo a b = ∅ ↔ pred b ≤ a := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    exact ⟨pred b, h, pred_lt_iff_not_isMin.mpr (not_isMin b)⟩
+  · ext x
+    suffices a < x → b ≤ x by simpa
+    exact fun hx ↦ le_of_pred_lt <| lt_of_le_of_lt h hx
 
 end NoMinOrder
 

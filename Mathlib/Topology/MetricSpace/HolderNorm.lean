@@ -201,11 +201,11 @@ variable {r : ℝ≥0} {f g : X → Y}
 lemma MemHolder.add (hf : MemHolder r f) (hg : MemHolder r g) : MemHolder r (f + g) :=
   (hf.holderWith.add hg.holderWith).memHolder
 
-lemma MemHolder.smul {𝕜} [NormedDivisionRing 𝕜] [Module 𝕜 Y] [BoundedSMul 𝕜 Y]
+lemma MemHolder.smul {𝕜} [NormedDivisionRing 𝕜] [Module 𝕜 Y] [IsBoundedSMul 𝕜 Y]
     {c : 𝕜} (hf : MemHolder r f) : MemHolder r (c • f) :=
   (hf.holderWith.smul c).memHolder
 
-lemma MemHolder.nsmul [Module ℝ Y] [BoundedSMul ℝ Y] (n : ℕ) (hf : MemHolder r f) :
+lemma MemHolder.nsmul [Module ℝ Y] [IsBoundedSMul ℝ Y] (n : ℕ) (hf : MemHolder r f) :
     MemHolder r (n • f) := by
   simp [← Nat.cast_smul_eq_nsmul (R := ℝ), hf.smul]
 
@@ -221,11 +221,11 @@ lemma eHolderNorm_add_le :
     rw [← hf.coe_nnHolderNorm_eq_eHolderNorm, ← hg.coe_nnHolderNorm_eq_eHolderNorm,
       ← (hf.add hg).coe_nnHolderNorm_eq_eHolderNorm, ← coe_add, ENNReal.coe_le_coe]
     exact hf.nnHolderNorm_add_le hg
-  · rw [Classical.not_and_iff_or_not_not, ← eHolderNorm_eq_top, ← eHolderNorm_eq_top] at hfg
+  · rw [Classical.not_and_iff_not_or_not, ← eHolderNorm_eq_top, ← eHolderNorm_eq_top] at hfg
     obtain (h | h) := hfg
     all_goals simp [h]
 
-lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul α Y] (c : α) :
+lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [IsBoundedSMul α Y] (c : α) :
     eHolderNorm r (c • f) = ‖c‖₊ * eHolderNorm r f := by
   by_cases hc : ‖c‖₊ = 0
   · rw [nnnorm_eq_zero] at hc
@@ -248,17 +248,17 @@ lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul �
     rw [inv_smul_smul₀ hc] at this
     exact this.eHolderNorm_lt_top.ne hf
 
-lemma MemHolder.nnHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul α Y]
+lemma MemHolder.nnHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [IsBoundedSMul α Y]
     (hf : MemHolder r f) (c : α) :
     nnHolderNorm r (c • f) = ‖c‖₊ * nnHolderNorm r f := by
   rw [← ENNReal.coe_inj, coe_mul, hf.coe_nnHolderNorm_eq_eHolderNorm,
     hf.smul.coe_nnHolderNorm_eq_eHolderNorm, eHolderNorm_smul]
 
-lemma eHolderNorm_nsmul [Module ℝ Y] [BoundedSMul ℝ Y] (n : ℕ) :
+lemma eHolderNorm_nsmul [Module ℝ Y] [IsBoundedSMul ℝ Y] (n : ℕ) :
     eHolderNorm r (n • f) = n • eHolderNorm r f := by
   simp [← Nat.cast_smul_eq_nsmul (R := ℝ), eHolderNorm_smul]
 
-lemma MemHolder.nnHolderNorm_nsmul [Module ℝ Y] [BoundedSMul ℝ Y] (n : ℕ) (hf : MemHolder r f) :
+lemma MemHolder.nnHolderNorm_nsmul [Module ℝ Y] [IsBoundedSMul ℝ Y] (n : ℕ) (hf : MemHolder r f) :
     nnHolderNorm r (n • f) = n • nnHolderNorm r f := by
   simp [← Nat.cast_smul_eq_nsmul (R := ℝ), hf.nnHolderNorm_smul]
 

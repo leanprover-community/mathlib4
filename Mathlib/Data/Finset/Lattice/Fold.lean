@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Fold
+import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Multiset.Lattice
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Order.Hom.BoundedLattice
 import Mathlib.Order.Nat
 
 /-!
@@ -101,8 +102,10 @@ theorem sup_const_le : (s.sup fun _ => a) ≤ a :=
 theorem le_sup {b : β} (hb : b ∈ s) : f b ≤ s.sup f :=
   Finset.sup_le_iff.1 le_rfl _ hb
 
-theorem isLUB_sup (s : Finset α) : IsLUB s (sup s id) :=
-  ⟨fun x h => id_eq x ▸ le_sup h, fun _ h => Finset.sup_le h⟩
+lemma isLUB_sup : IsLUB (f '' s) (s.sup f) := by
+  simp +contextual [IsLUB, IsLeast, upperBounds, lowerBounds, le_sup]
+
+lemma isLUB_sup_id {s : Finset α} : IsLUB s (s.sup id) := by simpa using isLUB_sup (f := id)
 
 theorem le_sup_of_le {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup f := h.trans <| le_sup hb
 
@@ -191,10 +194,12 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
     (hs : s.Nonempty) (hdir : DirectedOn (· ≤ ·) s) (t : Finset α) :
     (∀ x ∈ t, ∃ y ∈ s, x ≤ y) → ∃ x ∈ s, t.sup id ≤ x := by
   classical
-    induction' t using Finset.induction_on with a r _ ih h
-    · simpa only [forall_prop_of_true, and_true, forall_prop_of_false, bot_le, not_false_iff,
+    induction t using Finset.induction_on with
+    | empty =>
+      simpa only [forall_prop_of_true, and_true, forall_prop_of_false, bot_le, not_false_iff,
         sup_empty, forall_true_iff, not_mem_empty]
-    · intro h
+    | @insert a r _ ih =>
+      intro h
       have incs : (r : Set α) ⊆ ↑(insert a r) := by
         rw [Finset.coe_subset]
         apply Finset.subset_insert
@@ -219,9 +224,28 @@ protected theorem sup_eq_bot_iff (f : β → α) (S : Finset β) : S.sup f = ⊥
   classical induction' S using Finset.induction with a S _ hi <;> simp [*]
 
 @[simp]
+lemma sup_disjSum (s : Finset β) (t : Finset γ) (f : β ⊕ γ → α) :
+    (s.disjSum t).sup f = (s.sup fun x ↦ f (.inl x)) ⊔ (t.sup fun x ↦ f (.inr x)) :=
+  congr(fold _ $(bot_sup_eq _ |>.symm) _ _).trans (fold_disjSum _ _ _ _ _ _)
+
+@[simp]
 theorem sup_eq_bot_of_isEmpty [IsEmpty β] (f : β → α) (S : Finset β) : S.sup f = ⊥ := by
   rw [Finset.sup_eq_bot_iff]
   exact fun x _ => False.elim <| IsEmpty.false x
+
+theorem le_sup_dite_pos (p : β → Prop) [DecidablePred p]
+    {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : p b) :
+    f b h₁ ≤ s.sup fun i ↦ if h : p i then f i h else g i h := by
+  have : f b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
+  rw [this]
+  apply le_sup h₀
+
+theorem le_sup_dite_neg (p : β → Prop) [DecidablePred p]
+    {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : ¬p b) :
+    g b h₁ ≤ s.sup fun i ↦ if h : p i then f i h else g i h := by
+  have : g b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
+  rw [this]
+  apply le_sup h₀
 
 end Sup
 
@@ -327,8 +351,10 @@ theorem le_inf_const_le : a ≤ s.inf fun _ => a :=
 theorem inf_le {b : β} (hb : b ∈ s) : s.inf f ≤ f b :=
   Finset.le_inf_iff.1 le_rfl _ hb
 
-theorem isGLB_inf (s : Finset α) : IsGLB s (inf s id) :=
-  ⟨fun x h => id_eq x ▸ inf_le h, fun _ h => Finset.le_inf h⟩
+lemma isGLB_inf : IsGLB (f '' s) (s.inf f) := by
+  simp +contextual [IsGLB, IsGreatest, upperBounds, lowerBounds, inf_le]
+
+lemma isGLB_inf_id {s : Finset α} : IsGLB s (s.inf id) := by simpa using isGLB_inf (f := id)
 
 theorem inf_le_of_le {b : β} (hb : b ∈ s) (h : f b ≤ a) : s.inf f ≤ a := (inf_le hb).trans h
 
@@ -390,6 +416,25 @@ theorem inf_mem (s : Set α) (w₁ : ⊤ ∈ s) (w₂ : ∀ᵉ (x ∈ s) (y ∈ 
 @[simp]
 protected theorem inf_eq_top_iff (f : β → α) (S : Finset β) : S.inf f = ⊤ ↔ ∀ s ∈ S, f s = ⊤ :=
   @Finset.sup_eq_bot_iff αᵒᵈ _ _ _ _ _
+
+@[simp]
+lemma inf_disjSum (s : Finset β) (t : Finset γ) (f : β ⊕ γ → α) :
+    (s.disjSum t).inf f = (s.inf fun x ↦ f (.inl x)) ⊓ (t.inf fun x ↦ f (.inr x)) :=
+  congr(fold _ $(top_inf_eq _ |>.symm) _ _).trans (fold_disjSum _ _ _ _ _ _)
+
+theorem inf_dite_pos_le (p : β → Prop) [DecidablePred p]
+    {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : p b) :
+    (s.inf fun i ↦ if h : p i then f i h else g i h) ≤ f b h₁ := by
+  have : f b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
+  rw [this]
+  apply inf_le h₀
+
+theorem inf_dite_neg_le (p : β → Prop) [DecidablePred p]
+    {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : ¬p b) :
+    (s.inf fun i ↦ if h : p i then f i h else g i h) ≤ g b h₁ := by
+  have : g b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
+  rw [this]
+  apply inf_le h₀
 
 end Inf
 

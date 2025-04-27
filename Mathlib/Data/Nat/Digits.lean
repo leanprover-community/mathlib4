@@ -96,7 +96,7 @@ theorem digits_zero_succ' : ∀ {n : ℕ}, n ≠ 0 → digits 0 n = [n]
 theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 :=
   rfl
 
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
+-- no `@[simp]`: dsimp can prove this
 theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 
@@ -222,7 +222,7 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
       · intro h
         rw [List.getLast_cons h] at w₂
         convert w₂
-    · exact w₁ d (List.mem_cons_self _ _)
+    · exact w₁ d List.mem_cons_self
     · by_cases h' : L = []
       · rcases h' with rfl
         left
@@ -351,8 +351,8 @@ lemma ofDigits_inj_of_len_eq {b : ℕ} (hb : 1 < b) {L1 L2 : List ℕ}
   simp only [ofDigits_cons] at h
   have eqd : D = d := by
     have H : (D + b * ofDigits b L) % b = (d + b * ofDigits b l) % b := by rw [h]
-    simpa [mod_eq_of_lt (w2 d <| List.mem_cons_self d l),
-      mod_eq_of_lt (w1 D <| List.mem_cons_self D L)] using H
+    simpa [mod_eq_of_lt (w2 d List.mem_cons_self),
+      mod_eq_of_lt (w1 D List.mem_cons_self)] using H
   simp only [eqd, add_right_inj, mul_left_cancel_iff_of_pos (zero_lt_of_lt hb)] at h
   have := ih len (fun a ha ↦ w1 a <| List.mem_cons_of_mem D ha)
     (fun a ha ↦ w2 a <| List.mem_cons_of_mem d ha) h
@@ -383,9 +383,7 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- base b+2 expansion of 0 has no digits
   rw [digits_add_two_add_one] at hd
   cases hd
-  · exact n.succ.mod_lt (by simp)
-  -- Porting note: Previous code (single line) contained linarith.
-  -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
+  · exact n.succ.mod_lt (by linarith)
   · apply IH ((n + 1) / (b + 2))
     · apply Nat.div_lt_self <;> omega
     · assumption
@@ -405,7 +403,7 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
       mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
         (Nat.zero_le _)
     suffices ↑hd < b + 2 by linarith
-    exact hl hd (List.mem_cons_self _ _)
+    exact hl hd List.mem_cons_self
 
 /-- an n-digit number in base b is less than b^n if b > 1 -/
 theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : ∀ x ∈ l, x < b) :
@@ -527,7 +525,7 @@ lemma ofDigits_div_eq_ofDigits_tail {p : ℕ} (hpos : 0 < p) (digits : List ℕ)
   induction' digits with hd tl
   · simp [ofDigits]
   · refine Eq.trans (add_mul_div_left hd _ hpos) ?_
-    rw [Nat.div_eq_of_lt <| w₁ _ <| List.mem_cons_self _ _, zero_add]
+    rw [Nat.div_eq_of_lt <| w₁ _ List.mem_cons_self, zero_add]
     rfl
 
 /-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
@@ -779,43 +777,39 @@ lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n /
   exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
 
 /-- The String representation produced by toDigitsCore has the proper length relative to
-the number of digits in `n < e` for some base `b`. Since this works with any base greater
-than one, it can be used for binary, decimal, and hex. -/
-lemma toDigitsCore_length (b : Nat) (h : 2 <= b) (f n e : Nat)
-    (hlt : n < b ^ e) (h_e_pos : 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
+the number of digits in `n < e` for some base `b`. Since this works with any base,
+it can be used for binary, decimal, and hex. -/
+lemma toDigitsCore_length (b f n e : Nat) (h_e_pos : 0 < e) (hlt : n < b ^ e) :
+    (Nat.toDigitsCore b f n []).length ≤ e := by
   induction f generalizing n e hlt h_e_pos with
-    simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
+  | zero => simp only [toDigitsCore, List.length, zero_le]
   | succ f ih =>
+    simp only [toDigitsCore]
     cases e with
     | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
     | succ e =>
-      if h_pred_pos : 0 < e then
-        have _ : 0 < b := Nat.lt_trans (by decide) h
-        specialize ih (n / b) e (nat_repr_len_aux n b e ‹0 < b› hlt) h_pred_pos
-        if hdiv_ten : n / b = 0 then
-          simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
-        else
-          simp only [hdiv_ten,
-            toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b), if_false]
-          exact Nat.succ_le_succ ih
-      else
-        obtain rfl : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
-        have _ : b ^ 1 = b := by simp only [Nat.pow_succ, pow_zero, Nat.one_mul]
-        have _ : n < b := ‹b ^ 1 = b› ▸ hlt
-        simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
+      cases e with
+      | zero =>
+        rw [zero_add, pow_one] at hlt
+        simp [Nat.div_eq_of_lt hlt]
+      | succ e =>
+        specialize ih (n / b) _ (add_one_pos e) (Nat.div_lt_of_lt_mul <| by rwa [← pow_add_one'])
+        split_ifs
+        · simp only [List.length_singleton, _root_.zero_le, succ_le_succ]
+        · simp only [toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b),
+            Nat.succ_le_succ_iff, ih]
+
+/-- The core implementation of `Nat.toDigits` returns a String with length less than or equal to the
+number of digits in the base-`b` number (represented by `e`). For example, the string
+representation of any number less than `b ^ 3` has a length less than or equal to 3. -/
+lemma toDigits_length (b n e : Nat) : 0 < e → n < b ^ e → (Nat.toDigits b n).length ≤ e :=
+  toDigitsCore_length _ _ _ _
 
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string
 representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
-lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= e := by
-  cases n with
-    (intro e0 he; simp only [Nat.repr, Nat.toDigits, String.length, List.asString])
-  | zero => assumption
-  | succ n =>
-    if hterm : n.succ / 10 = 0 then
-      simp only [hterm, Nat.toDigitsCore]; assumption
-    else
-      exact toDigitsCore_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
+lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e :=
+  toDigits_length _ _ _
 
 /-! ### `norm_digits` tactic -/
 

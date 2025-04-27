@@ -4,12 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Covering.Differentiation
-import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.MeasureTheory.Integral.Lebesgue
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # Besicovitch covering theorems

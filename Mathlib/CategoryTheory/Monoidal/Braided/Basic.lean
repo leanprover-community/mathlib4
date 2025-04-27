@@ -135,6 +135,14 @@ theorem braiding_inv_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     (f ⊗ g) ≫ (β_ Y' Y).inv = (β_ X' X).inv ≫ (g ⊗ f) :=
   CommSq.w <| .vert_inv <| .mk <| braiding_naturality g f
 
+/-- In a braided monoidal category, the functors `tensorLeft X` and
+`tensorRight X` are isomorphic. -/
+@[simps]
+def tensorLeftIsoTensorRight (X : C) :
+    tensorLeft X ≅ tensorRight X where
+  hom := { app Y := (β_ X Y).hom }
+  inv := { app Y := (β_ X Y).inv }
+
 @[reassoc]
 theorem yang_baxter (X Y Z : C) :
     (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
@@ -476,6 +484,7 @@ end
 /-- A braided functor between braided monoidal categories is a monoidal functor
 which preserves the braiding.
 -/
+@[ext]
 class Functor.Braided (F : C ⥤ D) extends F.Monoidal, F.LaxBraided where
 
 @[simp, reassoc]
@@ -497,6 +506,9 @@ namespace Functor.Braided
 instance : (𝟭 C).Braided where
 
 instance (F : C ⥤ D) (G : D ⥤ E) [F.Braided] [G.Braided] : (F ⋙ G).Braided where
+
+lemma toMonoidal_injective (F : C ⥤ D) : Function.Injective
+    (@Braided.toMonoidal _ _ _ _ _ _ _ _ _ : F.Braided → F.Monoidal) := by rintro ⟨⟩ ⟨⟩ rfl; rfl
 
 end Functor.Braided
 
