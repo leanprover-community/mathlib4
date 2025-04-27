@@ -3,13 +3,12 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Module.Torsion
 import Mathlib.FieldTheory.Perfect
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-import Mathlib.Order.CompleteSublattice
-import Mathlib.RingTheory.Artinian
-import Mathlib.RingTheory.QuotientNilpotent
-import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.Artinian.Instances
+import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Semisimple linear endomorphisms
@@ -49,22 +48,60 @@ namespace Module.End
 
 section CommRing
 
-variable (f g : End R M)
+variable (f : End R M)
 
 /-- A linear endomorphism of an `R`-module `M` is called *semisimple* if the induced `R[X]`-module
 structure on `M` is semisimple. This is equivalent to saying that every `f`-invariant `R`-submodule
 of `M` has an `f`-invariant complement: see `Module.End.isSemisimple_iff`. -/
-abbrev IsSemisimple := IsSemisimpleModule R[X] (AEval' f)
+def IsSemisimple := IsSemisimpleModule R[X] (AEval' f)
 
-variable {f g}
+/-- A weaker version of semisimplicity that only prescribes behaviour on finitely-generated
+submodules. -/
+def IsFinitelySemisimple : Prop :=
+  ∀ p (hp : p ∈ invtSubmodule f), Module.Finite R p → IsSemisimple (LinearMap.restrict f hp)
+
+variable {f}
+
+/-- A linear endomorphism is semisimple if every invariant submodule has in invariant complement.
+
+See also `Module.End.isSemisimple_iff`. -/
+lemma isSemisimple_iff' :
+    f.IsSemisimple ↔ ∀ p : invtSubmodule f, ∃ q : invtSubmodule f, IsCompl p q := by
+  rw [IsSemisimple, IsSemisimpleModule, (AEval.mapSubmodule R M f).symm.complementedLattice_iff,
+    complementedLattice_iff]
+  rfl
 
 lemma isSemisimple_iff :
-    f.IsSemisimple ↔ ∀ p : Submodule R M, p ≤ p.comap f → ∃ q, q ≤ q.comap f ∧ IsCompl p q := by
-  set s := (AEval.comapSubmodule R M f).range
-  have h : s = {p : Submodule R M | p ≤ p.comap f} := AEval.range_comapSubmodule R M f
-  let e := CompleteLatticeHom.toOrderIsoRangeOfInjective _ (AEval.injective_comapSubmodule R M f)
-  simp_rw [Module.End.IsSemisimple, IsSemisimpleModule, e.complementedLattice_iff,
-    s.isComplemented_iff, ← SetLike.mem_coe, h, mem_setOf_eq]
+    f.IsSemisimple ↔ ∀ p ∈ invtSubmodule f, ∃ q ∈ invtSubmodule f, IsCompl p q := by
+  simp [isSemisimple_iff']
+
+lemma isSemisimple_restrict_iff (p) (hp : p ∈ invtSubmodule f) :
+    IsSemisimple (LinearMap.restrict f hp) ↔
+    ∀ q ∈ f.invtSubmodule, q ≤ p → ∃ r ≤ p, r ∈ f.invtSubmodule ∧ Disjoint q r ∧ q ⊔ r = p := by
+  let e : Submodule R[X] (AEval' (f.restrict hp)) ≃o Iic (AEval.mapSubmodule R M f ⟨p, hp⟩) :=
+    (Submodule.orderIsoMapComap <| AEval.restrict_equiv_mapSubmodule f p hp).trans
+      (Submodule.mapIic _)
+  simp_rw [IsSemisimple, IsSemisimpleModule, e.complementedLattice_iff, disjoint_iff,
+    ← (OrderIso.Iic _ _).complementedLattice_iff, Iic.complementedLattice_iff, Subtype.forall,
+    Subtype.exists, Subtype.mk_le_mk, Sublattice.mk_inf_mk, Sublattice.mk_sup_mk, Subtype.mk.injEq,
+    exists_and_left, exists_and_right, invtSubmodule.mk_eq_bot_iff, exists_prop, and_assoc]
+  rfl
+
+/-- A linear endomorphism is finitely semisimple if it is semisimple on every finitely-generated
+invariant submodule.
+
+See also `Module.End.isFinitelySemisimple_iff`. -/
+lemma isFinitelySemisimple_iff' :
+    f.IsFinitelySemisimple ↔ ∀ p (hp : p ∈ invtSubmodule f),
+      Module.Finite R p → IsSemisimple (LinearMap.restrict f hp) :=
+  Iff.rfl
+
+/-- A characterisation of `Module.End.IsFinitelySemisimple` using only the lattice of submodules of
+`M` (thus avoiding submodules of submodules). -/
+lemma isFinitelySemisimple_iff :
+    f.IsFinitelySemisimple ↔ ∀ p ∈ invtSubmodule f, Module.Finite R p → ∀ q ∈ invtSubmodule f,
+      q ≤ p → ∃ r, r ≤ p ∧ r ∈ invtSubmodule f ∧ Disjoint q r ∧ q ⊔ r = p := by
+  simp_rw [isFinitelySemisimple_iff', isSemisimple_restrict_iff]
 
 @[simp]
 lemma isSemisimple_zero [IsSemisimpleModule R M] : IsSemisimple (0 : Module.End R M) := by
@@ -74,32 +111,91 @@ lemma isSemisimple_zero [IsSemisimpleModule R M] : IsSemisimple (0 : Module.End 
 lemma isSemisimple_id [IsSemisimpleModule R M] : IsSemisimple (LinearMap.id : Module.End R M) := by
   simpa [isSemisimple_iff] using exists_isCompl
 
-@[simp] lemma isSemisimple_neg : (-f).IsSemisimple ↔ f.IsSemisimple := by simp [isSemisimple_iff]
+@[simp] lemma isSemisimple_neg : (-f).IsSemisimple ↔ f.IsSemisimple := by
+  simp [isSemisimple_iff, mem_invtSubmodule]
+
+variable (f) in
+protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup M₂] [Module R M₂]
+    (g : End R M₂) (e : M ≃ₗ[R] M₂) (he : e ∘ₗ f = g ∘ₗ e) :
+    f.IsSemisimple ↔ g.IsSemisimple := by
+  let e : AEval' f ≃ₗ[R[X]] AEval' g := LinearEquiv.ofAEval _ (e.trans (AEval'.of g)) fun x ↦ by
+    simpa [AEval'.X_smul_of] using LinearMap.congr_fun he x
+  exact (Submodule.orderIsoMapComap e).complementedLattice_iff
 
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
   have ⟨n, h0⟩ := hn
   rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
-  exact hs.annihilator_isRadical ⟨n, h0⟩
+  exact hs.annihilator_isRadical _ _ ⟨n, h0⟩
+
+lemma eq_zero_of_isNilpotent_of_isFinitelySemisimple
+    (hn : IsNilpotent f) (hs : IsFinitelySemisimple f) : f = 0 := by
+  have (p) (hp₁ : p ∈ f.invtSubmodule) (hp₂ : Module.Finite R p) : f.restrict hp₁ = 0 := by
+    specialize hs p hp₁ hp₂
+    replace hn : IsNilpotent (f.restrict hp₁) := isNilpotent.restrict hp₁ hn
+    exact eq_zero_of_isNilpotent_isSemisimple hn hs
+  ext x
+  obtain ⟨k : ℕ, hk : f ^ k = 0⟩ := hn
+  let p := Submodule.span R {(f ^ i) x | (i : ℕ) (_ : i ≤ k)}
+  have hp₁ : p ∈ f.invtSubmodule := by
+    simp only [mem_invtSubmodule, p, Submodule.span_le]
+    rintro - ⟨i, hi, rfl⟩
+    apply Submodule.subset_span
+    rcases lt_or_eq_of_le hi with hik | rfl
+    · exact ⟨i + 1, hik, by simpa [LinearMap.pow_apply] using iterate_succ_apply' f i x⟩
+    · exact ⟨i, by simp [hk]⟩
+  have hp₂ : Module.Finite R p := by
+    let g : ℕ → M := fun i ↦ (f ^ i) x
+    have hg : {(f ^ i) x | (i : ℕ) (_ : i ≤ k)} = g '' Iic k := by ext; simp [g]
+    exact Module.Finite.span_of_finite _ <| hg ▸ toFinite (g '' Iic k)
+  simpa [LinearMap.restrict_apply, Subtype.ext_iff] using
+    LinearMap.congr_fun (this p hp₁ hp₂) ⟨x, Submodule.subset_span ⟨0, k.zero_le, rfl⟩⟩
 
 @[simp]
 lemma isSemisimple_sub_algebraMap_iff {μ : R} :
     (f - algebraMap R (End R M) μ).IsSemisimple ↔ f.IsSemisimple := by
   suffices ∀ p : Submodule R M, p ≤ p.comap (f - algebraMap R (Module.End R M) μ) ↔ p ≤ p.comap f by
-    simp [isSemisimple_iff, this]
+    simp [mem_invtSubmodule, isSemisimple_iff, this]
   refine fun p ↦ ⟨fun h x hx ↦ ?_, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
   simpa using p.add_mem (h hx) (p.smul_mem μ hx)
 
-lemma IsSemisimple.restrict {p : Submodule R M} {hp : MapsTo f p p} (hf : f.IsSemisimple) :
+lemma IsSemisimple.restrict {p : Submodule R M} (hp : p ∈ f.invtSubmodule) (hf : f.IsSemisimple) :
     IsSemisimple (f.restrict hp) := by
-  simp only [isSemisimple_iff] at hf ⊢
-  intro q hq
-  replace hq : MapsTo f (q.map p.subtype) (q.map p.subtype) := by
-    rintro - ⟨⟨x, hx⟩, hx', rfl⟩; exact ⟨⟨f x, hp hx⟩, by simpa using hq hx', rfl⟩
-  obtain ⟨r, hr₁, hr₂⟩ := hf _ hq
-  refine ⟨r.comap p.subtype, fun x hx ↦ hr₁ hx, ?_⟩
-  rw [← q.comap_map_eq_of_injective p.injective_subtype]
-  exact p.isCompl_comap_subtype_of_isCompl_of_le hr₂ <| p.map_subtype_le q
+  rw [IsSemisimple] at hf ⊢
+  let e : Submodule R[X] (AEval' (LinearMap.restrict f hp)) ≃o
+      Iic (AEval.mapSubmodule R M f ⟨p, hp⟩) :=
+    (Submodule.orderIsoMapComap <| AEval.restrict_equiv_mapSubmodule f p hp).trans <|
+      Submodule.mapIic _
+  exact e.complementedLattice_iff.mpr inferInstance
+
+lemma IsSemisimple.isFinitelySemisimple (hf : f.IsSemisimple) :
+    f.IsFinitelySemisimple :=
+  isFinitelySemisimple_iff'.mp fun _ _ _ ↦ hf.restrict _
+
+@[simp]
+lemma isFinitelySemisimple_iff_isSemisimple [Module.Finite R M] :
+    f.IsFinitelySemisimple ↔ f.IsSemisimple := by
+  refine ⟨fun hf ↦ isSemisimple_iff.mpr fun p hp ↦ ?_, IsSemisimple.isFinitelySemisimple⟩
+  obtain ⟨q, -, hq₁, hq₂, hq₃⟩ :=
+    isFinitelySemisimple_iff.mp hf ⊤ (invtSubmodule.top_mem f) inferInstance p hp le_top
+  exact ⟨q, hq₁, hq₂, codisjoint_iff.mpr hq₃⟩
+
+@[simp]
+lemma isFinitelySemisimple_sub_algebraMap_iff {μ : R} :
+    (f - algebraMap R (End R M) μ).IsFinitelySemisimple ↔ f.IsFinitelySemisimple := by
+  suffices ∀ p : Submodule R M, p ≤ p.comap (f - algebraMap R (Module.End R M) μ) ↔ p ≤ p.comap f by
+    simp_rw [isFinitelySemisimple_iff, mem_invtSubmodule, this]
+  refine fun p ↦ ⟨fun h x hx ↦ ?_, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
+  simpa using p.add_mem (h hx) (p.smul_mem μ hx)
+
+lemma IsFinitelySemisimple.restrict {p : Submodule R M} (hp : p ∈ f.invtSubmodule)
+    (hf : f.IsFinitelySemisimple) :
+    IsFinitelySemisimple (f.restrict hp) := by
+  intro q hq₁ hq₂
+  have := invtSubmodule.map_subtype_mem_of_mem_invtSubmodule f hp hq₁
+  let e : q ≃ₗ[R] q.map p.subtype := p.equivSubtypeMap q
+  rw [e.isSemisimple_iff ((LinearMap.restrict f hp).restrict hq₁) (LinearMap.restrict f this) rfl]
+  exact hf _ this (Finite.map q p.subtype)
 
 end CommRing
 
@@ -109,7 +205,7 @@ variable {K : Type*} [Field K] [Module K M] {f g : End K M}
 
 lemma IsSemisimple_smul_iff {t : K} (ht : t ≠ 0) :
     (t • f).IsSemisimple ↔ f.IsSemisimple := by
-  simp [isSemisimple_iff, Submodule.comap_smul f (h := ht)]
+  simp [isSemisimple_iff, mem_invtSubmodule, Submodule.comap_smul f (h := ht)]
 
 lemma IsSemisimple_smul (t : K) (h : f.IsSemisimple) :
     (t • f).IsSemisimple := by
@@ -145,7 +241,7 @@ theorem IsSemisimple.minpoly_squarefree : Squarefree (minpoly K f) :=
 
 protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
   let R := K[X] ⧸ Ideal.span {minpoly K f}
-  have : Finite K R :=
+  have : Module.Finite K R :=
     (AdjoinRoot.powerBasis' <| minpoly.monic <| Algebra.IsIntegral.isIntegral f).finite
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
     span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
@@ -174,20 +270,12 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
     a.IsSemisimple := by
   let R := K[X] ⧸ Ideal.span {minpoly K f}
   let S := AdjoinRoot ((minpoly K g).map <| algebraMap K R)
-  have : Finite K R :=
+  have : Module.Finite K R :=
     (AdjoinRoot.powerBasis' <| minpoly.monic <| Algebra.IsIntegral.isIntegral f).finite
-  have : Finite R S :=
+  have : Module.Finite R S :=
     (AdjoinRoot.powerBasis' <| (minpoly.monic <| Algebra.IsIntegral.isIntegral g).map _).finite
-  #adaptation_note
-  /--
-  After https://github.com/leanprover/lean4/pull/4119 we either need
-  to specify the `(S := R)` argument, or use `set_option maxSynthPendingDepth 2 in`.
-
-  In either case this step is too slow!
-  -/
-  set_option maxSynthPendingDepth 2 in
   have : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
-  have : Finite K S := .trans R S
+  have : Module.Finite K S := .trans R S
   have : IsArtinianRing R := .of_finite K R
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
     span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
@@ -199,7 +287,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   rotate_left 1
   · rw [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly]; exact id
   · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [R, Algebra.commute_algebraMap_left])
-      (fun p q hp hq ↦ by simpa using hp.add_left hq)
+      (fun p q hp hq ↦ by simpa [R] using hp.add_left hq)
       fun n k ↦ by simpa [R, pow_succ, ← mul_assoc _ _ X] using (·.mul_left comm)
   · simpa only [RingHom.mem_ker, eval₂AlgHom'_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
       using minpoly.aeval K g

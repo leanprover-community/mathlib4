@@ -3,17 +3,19 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
+import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.Antisymmetrization
 
 /-!
 # The covering relation
 
-This file defines the covering relation in an order. `b` is said to cover `a` if `a < b` and there
-is no element in between. We say that `b` weakly covers `a` if `a ≤ b` and there is no element
-between `a` and `b`. In a partial order this is equivalent to `a ⋖ b ∨ a = b`, in a preorder this
-is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
+This file proves properties of the covering relation in an order.
+We say that `b` *covers* `a` if `a < b` and there is no element in between.
+We say that `b` *weakly covers* `a` if `a ≤ b` and there is no element between `a` and `b`.
+In a partial order this is equivalent to `a ⋖ b ∨ a = b`,
+in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 
 ## Notation
 
@@ -31,15 +33,6 @@ section WeaklyCovers
 section Preorder
 
 variable [Preorder α] [Preorder β] {a b c : α}
-
-/-- `WCovBy a b` means that `a = b` or `b` covers `a`.
-This means that `a ≤ b` and there is no element in between.
--/
-def WCovBy (a b : α) : Prop :=
-  a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
-
-/-- Notation for `WCovBy a b`. -/
-infixl:50 " ⩿ " => WCovBy
 
 theorem WCovBy.le (h : a ⩿ b) : a ≤ b :=
   h.1
@@ -80,7 +73,7 @@ theorem wcovBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c �
 
 /-- If `a ≤ b`, then `b` does not cover `a` iff there's an element in between. -/
 theorem not_wcovBy_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
-  simp_rw [WCovBy, h, true_and_iff, not_forall, exists_prop, not_not]
+  simp_rw [WCovBy, h, true_and, not_forall, exists_prop, not_not]
 
 instance WCovBy.isRefl : IsRefl α (· ⩿ ·) :=
   ⟨WCovBy.refl⟩
@@ -126,6 +119,19 @@ theorem ofDual_wcovBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b 
 alias ⟨_, WCovBy.toDual⟩ := toDual_wcovBy_toDual_iff
 
 alias ⟨_, WCovBy.ofDual⟩ := ofDual_wcovBy_ofDual_iff
+
+theorem OrderEmbedding.wcovBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ↪o β) {x y : α} (h : f x ⩿ f y) : x ⩿ y := by
+  use f.le_iff_le.1 h.1
+  intro a
+  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
+  apply h.2
+
+theorem OrderIso.map_wcovBy {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ≃o β) {x y : α} : f x ⩿ f y ↔ x ⩿ y := by
+  use f.toOrderEmbedding.wcovBy_of_apply
+  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
+  exact f.symm.toOrderEmbedding.wcovBy_of_apply
 
 end Preorder
 
@@ -183,19 +189,12 @@ section LT
 
 variable [LT α] {a b : α}
 
-/-- `CovBy a b` means that `b` covers `a`: `a < b` and there is no element in between. -/
-def CovBy (a b : α) : Prop :=
-  a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
-
-/-- Notation for `CovBy a b`. -/
-infixl:50 " ⋖ " => CovBy
-
 theorem CovBy.lt (h : a ⋖ b) : a < b :=
   h.1
 
 /-- If `a < b`, then `b` does not cover `a` iff there's an element in between. -/
 theorem not_covBy_iff (h : a < b) : ¬a ⋖ b ↔ ∃ c, a < c ∧ c < b := by
-  simp_rw [CovBy, h, true_and_iff, not_forall, exists_prop, not_not]
+  simp_rw [CovBy, h, true_and, not_forall, exists_prop, not_not]
 
 alias ⟨exists_lt_lt_of_not_covBy, _⟩ := not_covBy_iff
 
@@ -209,9 +208,6 @@ theorem not_covBy [DenselyOrdered α] : ¬a ⋖ b := fun h =>
 theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α, ¬a ⋖ b :=
   ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
-
-@[deprecated (since := "2024-04-04")]
-alias densely_ordered_iff_forall_not_covBy := denselyOrdered_iff_forall_not_covBy
 
 @[simp]
 theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
@@ -313,6 +309,19 @@ theorem apply_covBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E �
 theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 
+theorem OrderEmbedding.covBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ↪o β) {x y : α} (h : f x ⋖ f y) : x ⋖ y := by
+  use f.lt_iff_lt.1 h.1
+  intro a
+  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
+  apply h.2
+
+theorem OrderIso.map_covBy {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ≃o β) {x y : α} : f x ⋖ f y ↔ x ⋖ y := by
+  use f.toOrderEmbedding.covBy_of_apply
+  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
+  exact f.symm.toOrderEmbedding.covBy_of_apply
+
 end Preorder
 
 section PartialOrder
@@ -386,6 +395,26 @@ theorem CovBy.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < 
     x = b :=
   le_antisymm (le_of_not_lt fun h => hbc.2 h hxc) (le_of_not_lt <| hab.2 hax)
 
+theorem covBy_iff_lt_iff_le_left {x y : α} : x ⋖ y ↔ ∀ {z}, z < y ↔ z ≤ x where
+  mp := fun hx _z ↦ ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
+  mpr := fun H ↦ ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_lt hx⟩
+
+theorem covBy_iff_le_iff_lt_left {x y : α} : x ⋖ y ↔ ∀ {z}, z ≤ x ↔ z < y := by
+  simp_rw [covBy_iff_lt_iff_le_left, iff_comm]
+
+theorem covBy_iff_lt_iff_le_right {x y : α} : x ⋖ y ↔ ∀ {z}, x < z ↔ y ≤ z := by
+  trans ∀ {z}, ¬ z ≤ x ↔ ¬ z < y
+  · simp_rw [covBy_iff_le_iff_lt_left, not_iff_not]
+  · simp
+
+theorem covBy_iff_le_iff_lt_right {x y : α} : x ⋖ y ↔ ∀ {z}, y ≤ z ↔ x < z := by
+  simp_rw [covBy_iff_lt_iff_le_right, iff_comm]
+
+alias ⟨CovBy.lt_iff_le_left, _⟩ := covBy_iff_lt_iff_le_left
+alias ⟨CovBy.le_iff_lt_left, _⟩ := covBy_iff_le_iff_lt_left
+alias ⟨CovBy.lt_iff_le_right, _⟩ := covBy_iff_lt_iff_le_right
+alias ⟨CovBy.le_iff_lt_right, _⟩ := covBy_iff_le_iff_lt_right
+
 /-- If `a < b` then there exist `a' > a` and `b' < b` such that `Set.Iio a'` is strictly to the left
 of `Set.Ioi b'`. -/
 lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
@@ -396,6 +425,19 @@ lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
     exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
 
 end LinearOrder
+
+namespace Bool
+
+@[simp] theorem wcovBy_iff : ∀ {a b : Bool}, a ⩿ b ↔ a ≤ b := by unfold WCovBy; decide
+@[simp] theorem covBy_iff : ∀ {a b : Bool}, a ⋖ b ↔ a < b := by unfold CovBy; decide
+
+instance instDecidableRelWCovBy : DecidableRel (· ⩿ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ wcovBy_iff.symm
+
+instance instDecidableRelCovBy : DecidableRel (· ⋖ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ covBy_iff.symm
+
+end Bool
 
 namespace Set
 variable {s t : Set α} {a : α}
@@ -565,3 +607,19 @@ variable [Preorder α] {a b : α}
   simp only [wcovBy_iff_Ioo_eq, ← image_coe_Iio, bot_le, image_eq_empty, true_and, Iio_eq_empty_iff]
 
 end WithBot
+
+section WellFounded
+
+variable [Preorder α]
+
+lemma exists_covBy_of_wellFoundedLT [wf : WellFoundedLT α] ⦃a : α⦄ (h : ¬ IsMax a) :
+    ∃ a', a ⋖ a' := by
+  rw [not_isMax_iff] at h
+  exact ⟨_, wellFounded_lt.min_mem _ h, fun a' ↦ wf.wf.not_lt_min _ h⟩
+
+lemma exists_covBy_of_wellFoundedGT [wf : WellFoundedGT α] ⦃a : α⦄ (h : ¬ IsMin a) :
+    ∃ a', a' ⋖ a := by
+  rw [not_isMin_iff] at h
+  exact ⟨_, wf.wf.min_mem _ h, fun a' h₁ h₂ ↦ wf.wf.not_lt_min _ h h₂ h₁⟩
+
+end WellFounded

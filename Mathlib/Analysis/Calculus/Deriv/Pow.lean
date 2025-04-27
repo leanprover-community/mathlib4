@@ -19,21 +19,9 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, power
 -/
 
-universe u v w
+universe u
 
-open scoped Classical
-open Topology Filter ENNReal
-
-open Filter Asymptotics Set
-
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {f f₀ f₁ g : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
-variable {x : 𝕜}
-variable {s t : Set 𝕜}
-variable {L L₁ L₂ : Filter 𝕜}
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
 
 /-! ### Derivative of `x ↦ x^n` for `n : ℕ` -/
 
@@ -88,9 +76,11 @@ theorem HasDerivAt.pow (hc : HasDerivAt c c' x) :
   rw [← hasDerivWithinAt_univ] at *
   exact hc.pow n
 
-theorem derivWithin_pow' (hc : DifferentiableWithinAt 𝕜 c s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x :=
-  (hc.hasDerivWithinAt.pow n).derivWithin hxs
+theorem derivWithin_pow' (hc : DifferentiableWithinAt 𝕜 c s x) :
+    derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hc.hasDerivWithinAt.pow n).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[simp]
 theorem deriv_pow'' (hc : DifferentiableAt 𝕜 c x) :

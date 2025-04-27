@@ -101,7 +101,7 @@ instance (priority := 100) IsCommJordan.toIsJordan [CommMagma A] [IsCommJordan A
     rw [mul_comm b a, IsCommJordan.lmul_comm_rmul_rmul, mul_comm]
 
 -- see Note [lower instance priority]
-/-- Semigroup multiplication satisfies the (non-commutative) Jordan axioms-/
+/-- Semigroup multiplication satisfies the (non-commutative) Jordan axioms -/
 instance (priority := 100) Semigroup.isJordan [Semigroup A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_assoc]
   lmul_lmul_comm_lmul a b := by rw [mul_assoc, mul_assoc]
@@ -216,7 +216,7 @@ private theorem aux3 {a b c : A} :
     (2 • ⁅L a, L (b * c)⁆ + 2 • ⁅L b, L (c * a)⁆ + 2 • ⁅L c, L (a * b)⁆)
     =
     2 • ⁅L a, L (b * c)⁆ + 2 • ⁅L b, L (c * a)⁆ + 2 • ⁅L c, L (a * b)⁆ := by
-  rw [add_left_eq_self]
+  rw [add_eq_right]
   -- Porting note: was `nth_rw` instead of `conv_lhs`
   conv_lhs => enter [1, 1, 2, 2, 2]; rw [mul_comm a b]
   conv_lhs => enter [1, 2, 2, 2, 1]; rw [mul_comm c a]

@@ -3,6 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Topology.Bornology.Basic
 
 /-!
@@ -77,7 +78,7 @@ theorem isBounded_prod_of_nonempty (hne : Set.Nonempty (s ×ˢ t)) :
 theorem isBounded_prod : IsBounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ IsBounded s ∧ IsBounded t := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
   rcases t.eq_empty_or_nonempty with (rfl | ht); · simp
-  simp only [hs.ne_empty, ht.ne_empty, isBounded_prod_of_nonempty (hs.prod ht), false_or_iff]
+  simp only [hs.ne_empty, ht.ne_empty, isBounded_prod_of_nonempty (hs.prod ht), false_or]
 
 theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
@@ -109,7 +110,7 @@ theorem isBounded_pi_of_nonempty (hne : (pi univ S).Nonempty) :
 theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, IsBounded (S i) := by
   by_cases hne : ∃ i, S i = ∅
   · simp [hne, univ_pi_eq_empty_iff.2 hne]
-  · simp only [hne, false_or_iff]
+  · simp only [hne, false_or]
     simp only [not_exists, ← Ne.eq_def, ← nonempty_iff_ne_empty, ← univ_pi_nonempty_iff] at hne
     exact isBounded_pi_of_nonempty hne
 
@@ -143,8 +144,7 @@ instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := by
 
 theorem boundedSpace_induced_iff {α β : Type*} [Bornology β] {f : α → β} :
     @BoundedSpace α (Bornology.induced f) ↔ IsBounded (range f) := by
-  rw [← @isBounded_univ _ (Bornology.induced f), isBounded_induced, image_univ]
--- Porting note: had to explicitly provided the bornology to `isBounded_univ`.
+  rw [← @isBounded_univ, isBounded_induced, image_univ]
 
 theorem boundedSpace_subtype_iff {p : α → Prop} :
     BoundedSpace (Subtype p) ↔ IsBounded { x | p x } := by

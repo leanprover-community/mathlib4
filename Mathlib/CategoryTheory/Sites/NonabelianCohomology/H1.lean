@@ -48,7 +48,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace PresheafOfGroups
 
-variable (G : Cᵒᵖ ⥤ Grp.{w}) {X : C} {I : Type w'} (U : I → C)
+variable (G : Cᵒᵖ ⥤ Grp.{w}) {I : Type w'} (U : I → C)
 
 /-- A zero cochain consists of a family of sections. -/
 def ZeroCochain := ∀ (i : I), G.obj (Opposite.op (U i))
@@ -57,12 +57,7 @@ instance : Group (ZeroCochain G U) := Pi.group
 
 namespace Cochain₀
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
-@[simp, nolint simpNF]
+@[simp]
 lemma one_apply (i : I) : (1 : ZeroCochain G U) i = 1 := rfl
 
 @[simp]
@@ -99,14 +94,14 @@ lemma one_ev (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
 variable {G U}
 
 instance : Mul (OneCochain G U) where
-  mul γ₁ γ₂ := { ev := fun i j T a b ↦ γ₁.ev i j a b * γ₂.ev i j a b }
+  mul γ₁ γ₂ := { ev := fun i j _ a b ↦ γ₁.ev i j a b * γ₂.ev i j a b }
 
 @[simp]
 lemma mul_ev (γ₁ γ₂ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
     (γ₁ * γ₂).ev i j a b = γ₁.ev i j a b * γ₂.ev i j a b := rfl
 
 instance : Inv (OneCochain G U) where
-  inv γ := { ev := fun i j T a b ↦ (γ.ev i j a b) ⁻¹}
+  inv γ := { ev := fun i j _ a b ↦ (γ.ev i j a b) ⁻¹}
 
 @[simp]
 lemma inv_ev (γ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :

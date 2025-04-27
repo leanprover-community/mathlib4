@@ -3,9 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Order.Positive.Ring
-import Mathlib.Algebra.Order.Field.Unbundled.Basic
 
 /-!
 # Algebraic structures on the set of positive numbers
@@ -15,26 +14,25 @@ ordered commutative group.
 -/
 
 
-variable {K : Type*} [LinearOrderedField K]
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
 namespace Positive
 
-instance Subtype.inv : Inv { x : K // 0 < x } :=
-  ⟨fun x => ⟨x⁻¹, inv_pos (α := K)|>.2 x.2⟩⟩
+instance Subtype.inv : Inv { x : K // 0 < x } := ⟨fun x => ⟨x⁻¹, inv_pos.2 x.2⟩⟩
 
 @[simp]
 theorem coe_inv (x : { x : K // 0 < x }) : ↑x⁻¹ = (x⁻¹ : K) :=
   rfl
 
 instance : Pow { x : K // 0 < x } ℤ :=
-  ⟨fun x n => ⟨(x : K) ^ n, zpow_pos_of_pos x.2 _⟩⟩
+  ⟨fun x n => ⟨(x : K) ^ n, zpow_pos x.2 _⟩⟩
 
 @[simp]
 theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :=
   rfl
 
-instance : LinearOrderedCommGroup { x : K // 0 < x } :=
-  { Positive.Subtype.inv, Positive.linearOrderedCancelCommMonoid with
+instance : CommGroup { x : K // 0 < x } :=
+  { Positive.commMonoid with
     inv_mul_cancel := fun a => Subtype.ext <| inv_mul_cancel₀ a.2.ne' }
 
 end Positive

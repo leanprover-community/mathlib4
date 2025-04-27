@@ -16,7 +16,7 @@ a morphism `f` is in `W` iff `f⟦a⟧'` is. When this compatibility is satisfie
 then the corresponding localized category can be equipped with
 a shift by `A`, and the localization functor is compatible with the shift.
 
---/
+-/
 
 universe v₁ v₂ v₃ u₁ u₂ u₃ w
 
@@ -32,7 +32,7 @@ namespace MorphismProperty
 /-- A morphism property `W` on a category `C` is compatible with the shift by a
 monoid `A` when for all `a : A`, a morphism `f` belongs to `W`
 if and only if `f⟦a⟧'` does. -/
-class IsCompatibleWithShift : Prop :=
+class IsCompatibleWithShift : Prop where
   /-- the condition that for all `a : A`, the morphism property `W` is not changed when
   we take its inverse image by the shift functor by `a` -/
   condition : ∀ (a : A), W.inverseImage (shiftFunctor C a) = W
@@ -90,7 +90,7 @@ noncomputable def Functor.CommShift.localized :
 
 attribute [irreducible] HasShift.localized Functor.CommShift.localized
 
-/-- The localized category `W.Localization` is endowed with the induced shift.  -/
+/-- The localized category `W.Localization` is endowed with the induced shift. -/
 noncomputable instance HasShift.localization :
     HasShift W.Localization A :=
   HasShift.localized W.Q W A
@@ -104,7 +104,7 @@ attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q
 
 variable [W.HasLocalization]
 
-/-- The localized category `W.Localization'` is endowed with the induced shift.  -/
+/-- The localized category `W.Localization'` is endowed with the induced shift. -/
 noncomputable instance HasShift.localization' :
     HasShift W.Localization' A :=
   HasShift.localized W.Q' W A
@@ -165,7 +165,7 @@ end commShiftOfLocalization
 
 /-- In the context of localization of categories, if a functor
 is induced by a functor which commutes with the shift, then
-this functor commutes with the shift.  -/
+this functor commutes with the shift. -/
 noncomputable def commShiftOfLocalization : F'.CommShift A where
   iso := commShiftOfLocalization.iso L W F F'
   zero := by

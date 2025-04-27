@@ -39,7 +39,7 @@ end Category
 -/
 def isomorphismClasses : Cat.{v, u} ⥤ Type u where
   obj C := Quotient (isIsomorphicSetoid C.α)
-  map {C D} F := Quot.map F.obj fun X Y ⟨f⟩ => ⟨F.mapIso f⟩
+  map {_ _} F := Quot.map F.obj fun _ _ ⟨f⟩ => ⟨F.mapIso f⟩
   map_id {C} := by  -- Porting note: this used to be `tidy`
     dsimp; apply funext; intro x
     apply @Quot.recOn _ _ _ x

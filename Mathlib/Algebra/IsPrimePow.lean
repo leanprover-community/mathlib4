@@ -3,15 +3,16 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.NumberTheory.Divisors
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.Nat
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Prime powers
 
 This file deals with prime powers: numbers which are positive integer powers of a single prime.
 -/
-
+assert_not_exists Nat.divisors
 
 variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 
@@ -27,7 +28,7 @@ theorem isPrimePow_def : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime p ∧ 0 <
 natural `k` such that `n` can be written as `p^(k+1)`. -/
 theorem isPrimePow_iff_pow_succ : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime p ∧ p ^ (k + 1) = n :=
   (isPrimePow_def _).trans
-    ⟨fun ⟨p, k, hp, hk, hn⟩ => ⟨p, k - 1, hp, by rwa [Nat.sub_add_cancel hk]⟩, fun ⟨p, k, hp, hn⟩ =>
+    ⟨fun ⟨p, k, hp, hk, hn⟩ => ⟨p, k - 1, hp, by rwa [Nat.sub_add_cancel hk]⟩, fun ⟨_, _, hp, hn⟩ =>
       ⟨_, _, hp, Nat.succ_pos', hn⟩⟩
 
 theorem not_isPrimePow_zero [NoZeroDivisors R] : ¬IsPrimePow (0 : R) := by
@@ -71,7 +72,7 @@ theorem isPrimePow_nat_iff_bounded (n : ℕ) :
   rw [isPrimePow_nat_iff]
   refine Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, ?_⟩
   rintro ⟨p, k, hp, hk, rfl⟩
-  refine ⟨p, ?_, k, (Nat.lt_pow_self hp.one_lt _).le, hp, hk, rfl⟩
+  refine ⟨p, ?_, k, (Nat.lt_pow_self hp.one_lt).le, hp, hk, rfl⟩
   conv => { lhs; rw [← (pow_one p)] }
   exact Nat.pow_le_pow_right hp.one_lt.le hk
 
@@ -86,12 +87,6 @@ theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m
   apply Nat.pos_of_ne_zero
   rintro rfl
   simp only [pow_zero, ne_eq, not_true_eq_false] at hm₁
-
-theorem Nat.disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
-    Disjoint (a.divisors.filter IsPrimePow) (b.divisors.filter IsPrimePow) := by
-  simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
-  rintro n han _ha hn hbn _hb -
-  exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
 
 theorem IsPrimePow.two_le : ∀ {n : ℕ}, IsPrimePow n → 2 ≤ n
   | 0, h => (not_isPrimePow_zero h).elim

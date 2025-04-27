@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Fin2
-import Mathlib.Init.Logic
 import Mathlib.Util.Notation3
 import Mathlib.Tactic.TypeStar
 
@@ -47,15 +46,15 @@ def cons (a : α) (v : Vector3 α n) : Vector3 α (n + 1) := fun i => by
 section
 open Lean
 
--- Porting note: was
--- scoped notation3 "["(l", "* => foldr (h t => cons h t) nil)"]" => l
 scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofElems l),*])
 
 -- this is copied from `src/Init/NotationExtra.lean`
+/-- Unexpander for `Vector3.nil` -/
 @[app_unexpander Vector3.nil] def unexpandNil : Lean.PrettyPrinter.Unexpander
   | `($(_)) => `([])
 
 -- this is copied from `src/Init/NotationExtra.lean`
+/-- Unexpander for `Vector3.cons` -/
 @[app_unexpander Vector3.cons] def unexpandCons : Lean.PrettyPrinter.Unexpander
   | `($(_) $x [])      => `([$x])
   | `($(_) $x [$xs,*]) => `([$x, $xs,*])
@@ -97,12 +96,12 @@ theorem cons_head_tail (v : Vector3 α (n + 1)) : (head v :: tail v) = v :=
   funext fun i => Fin2.cases' rfl (fun _ => rfl) i
 
 /-- Eliminator for an empty vector. -/
-@[elab_as_elim]  -- Porting note: add `elab_as_elim`
+@[elab_as_elim]
 def nilElim {C : Vector3 α 0 → Sort u} (H : C []) (v : Vector3 α 0) : C v := by
   rw [eq_nil v]; apply H
 
 /-- Recursion principle for a nonempty vector. -/
-@[elab_as_elim]  -- Porting note: add `elab_as_elim`
+@[elab_as_elim]
 def consElim {C : Vector3 α (n + 1) → Sort u} (H : ∀ (a : α) (t : Vector3 α n), C (a :: t))
     (v : Vector3 α (n + 1)) : C v := by rw [← cons_head_tail v]; apply H
 
@@ -147,13 +146,13 @@ theorem append_cons (a : α) (v : Vector3 α m) (w : Vector3 α n) : (a :: v) +-
 @[simp]
 theorem append_left :
     ∀ {m} (i : Fin2 m) (v : Vector3 α m) {n} (w : Vector3 α n), (v +-+ w) (left n i) = v i
-  | _, @fz m, v, n, w => v.consElim fun a _t => by simp [*, left]
+  | _, @fz m, v, _, _ => v.consElim fun a _t => by simp [*, left]
   | _, @fs m i, v, n, w => v.consElim fun _a t => by simp [append_left, left]
 
 @[simp]
 theorem append_add :
     ∀ {m} (v : Vector3 α m) {n} (w : Vector3 α n) (i : Fin2 n), (v +-+ w) (add i m) = w i
-  | 0, v, n, w, i => rfl
+  | 0, _, _, _, _ => rfl
   | m + 1, v, n, w, i => v.consElim fun _a t => by simp [append_add, add]
 
 /-- Insert `a` into `v` at index `i`. -/
@@ -206,7 +205,7 @@ theorem exists_vector_zero (f : Vector3 α 0 → Prop) : Exists f ↔ f [] :=
   ⟨fun ⟨v, fv⟩ => by rw [← eq_nil v]; exact fv, fun f0 => ⟨[], f0⟩⟩
 
 theorem exists_vector_succ (f : Vector3 α (succ n) → Prop) : Exists f ↔ ∃ x v, f (x :: v) :=
-  ⟨fun ⟨v, fv⟩ => ⟨_, _, by rw [cons_head_tail v]; exact fv⟩, fun ⟨x, v, fxv⟩ => ⟨_, fxv⟩⟩
+  ⟨fun ⟨v, fv⟩ => ⟨_, _, by rw [cons_head_tail v]; exact fv⟩, fun ⟨_, _, fxv⟩ => ⟨_, fxv⟩⟩
 
 theorem vectorEx_iff_exists : ∀ {n} (f : Vector3 α n → Prop), VectorEx n f ↔ Exists f
   | 0, f => (exists_vector_zero f).symm
@@ -236,7 +235,7 @@ theorem vectorAllP_singleton (p : α → Prop) (x : α) : VectorAllP p (cons x [
 @[simp]
 theorem vectorAllP_cons (p : α → Prop) (x : α) (v : Vector3 α n) :
     VectorAllP p (x :: v) ↔ p x ∧ VectorAllP p v :=
-  Vector3.recOn v (and_true_iff _).symm fun _ _ _ => Iff.rfl
+  Vector3.recOn v (iff_of_eq (and_true _)).symm fun _ _ _ => Iff.rfl
 
 theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
     VectorAllP p v ↔ ∀ i, p (v i) := by

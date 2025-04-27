@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Data.Fintype.Basic
 import Mathlib.Control.EquivFunctor
+import Mathlib.Data.Fintype.OfMap
 
 /-!
 # `EquivFunctor` instances
@@ -38,6 +38,6 @@ instance EquivFunctorFinset : EquivFunctor Finset where
       simp [h']
 
 instance EquivFunctorFintype : EquivFunctor Fintype where
-  map e s := Fintype.ofBijective e e.bijective
+  map e _ := Fintype.ofBijective e e.bijective
   map_refl' α := by ext; simp [eq_iff_true_of_subsingleton]
   map_trans' := by simp [eq_iff_true_of_subsingleton]

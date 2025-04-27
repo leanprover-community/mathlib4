@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Logic.Equiv.Basic
 
@@ -15,8 +16,6 @@ universe u v w x
 
 namespace Function
 
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 /-- `α ↪ β` is a bundled injective function. -/
 structure Embedding (α : Sort*) (β : Sort*) where
   /-- An embedding as a function. Use coercion instead. -/
@@ -36,8 +35,7 @@ instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
 
 initialize_simps_projections Embedding (toFun → apply)
 
--- Porting note: this needs `tactic.lift`.
---instance {α β : Sort*} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
+instance {α β : Sort*} : CanLift (α → β) (α ↪ β) (↑) Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
 theorem exists_surjective_iff {α β : Sort*} :
     (∃ f : α → β, Surjective f) ↔ Nonempty (α → β) ∧ Nonempty (β ↪ α) :=
@@ -132,6 +130,11 @@ protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
 
 instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
+@[simp] lemma mk_id {α} : mk id injective_id = .refl α := rfl
+
+@[simp] lemma mk_trans_mk {α β γ} (f : α → β) (g : β → γ) (hf hg) :
+    (mk f hf).trans (mk g hg) = mk (g ∘ f) (hg.comp hf) := rfl
+
 @[simp]
 theorem equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort*} (e : α ≃ β) :
     e.toEmbedding.trans e.symm.toEmbedding = Embedding.refl _ := by
@@ -180,22 +183,35 @@ theorem setValue_eq_iff {α β} (f : α ↪ β) {a a' : α} {b : β} [∀ a', De
     [∀ a', Decidable (f a' = b)] : setValue f a b a' = b ↔ a' = a :=
   (setValue f a b).injective.eq_iff' <| setValue_eq ..
 
+lemma setValue_eq_of_ne {α β} {f : α ↪ β} {a : α} {b : β} {c : α} [∀ a', Decidable (a' = a)]
+    [∀ a', Decidable (f a' = b)] (hc : c ≠ a) (hb : f c ≠ b) : setValue f a b c = f c := by
+  simp [setValue, hc, hb]
+
+@[simp]
+lemma setValue_right_apply_eq {α β} (f : α ↪ β) (a c : α) [∀ a', Decidable (a' = a)]
+    [∀ a', Decidable (f a' = f c)] : setValue f a (f c) c = f a := by
+  simp [setValue]
+
 /-- Embedding into `Option α` using `some`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def some {α} : α ↪ Option α :=
   ⟨some, Option.some_injective α⟩
 
--- Porting note: Lean 4 unfolds coercion `α → Option α` to `some`, so there is no separate
--- `Function.Embedding.coeOption`.
-
 /-- A version of `Option.map` for `Function.Embedding`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def optionMap {α β} (f : α ↪ β) : Option α ↪ Option β :=
   ⟨Option.map f, Option.map_injective f.injective⟩
 
 /-- Embedding of a `Subtype`. -/
 def subtype {α} (p : α → Prop) : Subtype p ↪ α :=
   ⟨Subtype.val, fun _ _ => Subtype.ext⟩
+
+@[simp]
+theorem subtype_apply {α} {p : α → Prop} (x : Subtype p) : subtype p x = x :=
+  rfl
+
+theorem subtype_injective {α} (p : α → Prop) : Function.Injective (subtype p) :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype {α} (p : α → Prop) : ↑(subtype p) = Subtype.val :=
@@ -217,13 +233,18 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
-def sectl (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
+def sectL (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
   ⟨fun a => (a, b), fun _ _ h => congr_arg Prod.fst h⟩
 
 /-- Fixing an element `a : α` gives an embedding `β ↪ α × β`. -/
 @[simps]
-def sectr {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
+def sectR {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
   ⟨fun b => (a, b), fun _ _ h => congr_arg Prod.snd h⟩
+
+@[deprecated (since := "2024-11-12")] alias sectl := sectL
+@[deprecated (since := "2024-11-12")] alias sectr := sectR
+@[deprecated (since := "2024-11-12")] alias sectl_apply := sectL_apply
+@[deprecated (since := "2024-11-12")] alias sectr_apply := sectR_apply
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
 def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
@@ -245,7 +266,7 @@ open Sum
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Sum.map e₁ e₂`. -/
 def sumMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α ⊕ γ ↪ β ⊕ δ :=
-  ⟨Sum.map e₁ e₂, e₁.injective.sum_map e₂.injective⟩
+  ⟨Sum.map e₁ e₂, e₁.injective.sumMap e₂.injective⟩
 
 @[simp]
 theorem coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap e₁ e₂ = Sum.map e₁ e₂ :=
@@ -343,7 +364,6 @@ def subtypeInjectiveEquivEmbedding (α β : Sort*) :
   left_inv _ := rfl
   right_inv _ := rfl
 
--- Porting note: in Lean 3 this had `@[congr]`
 /-- If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then the type of embeddings `α₁ ↪ β₁`
 is equivalent to the type of embeddings `α₂ ↪ β₂`. -/
 @[simps apply]

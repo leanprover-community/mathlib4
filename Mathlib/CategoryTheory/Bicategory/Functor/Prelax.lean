@@ -76,12 +76,6 @@ def mkOfHomPrefunctors (F : B → C) (F' : (a : B) → (b : B) → Prefunctor (a
   map {a b} := (F' a b).obj
   map₂ {a b} := (F' a b).map
 
-variable (F : PrelaxFunctorStruct B C)
-
--- Porting note: deleted syntactic tautologies `toPrefunctor_eq_coe : F.toPrefunctor = F`
--- and `to_prefunctor_obj : (F : Prefunctor B C).obj = F.obj`
--- and `to_prefunctor_map`
-
 /-- The identity lax prefunctor. -/
 @[simps]
 def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)] :

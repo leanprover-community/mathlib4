@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
 import Mathlib.Data.Set.Operations
 import Mathlib.Order.Heyting.Basic
@@ -40,7 +40,7 @@ Given `[EstimatorData a ε]`
 * we can ask for an improved lower bound via `improve a e : Option ε`.
 
 The value `a` in `α` that we are estimating is hidden inside a `Thunk` to avoid evaluation.
- -/
+-/
 class EstimatorData (a : Thunk α) (ε : Type*) where
   /-- The value of the bound for `a` representation by a term of `ε`. -/
   bound : ε → α
@@ -74,10 +74,10 @@ abbrev Estimator.trivial.{u} {α : Type u} (a : α) : Type u := { b : α // b = 
 instance {a : α} : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
 
 instance : WellFoundedGT Unit where
-  wf := ⟨fun .unit => ⟨.unit, nofun⟩⟩
+  wf := ⟨fun .unit => ⟨Unit.unit, nofun⟩⟩
 
 instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
-  let f : Estimator.trivial a ≃o Unit := RelIso.relIsoOfUniqueOfRefl _ _
+  let f : Estimator.trivial a ≃o Unit := RelIso.ofUniqueOfRefl _ _
   let f' : Estimator.trivial a ↪o Unit := f.toOrderEmbedding
   f'.wellFoundedGT
 
@@ -207,7 +207,7 @@ instance {a : Thunk α} [Estimator a ε] : WellFoundedGT (range (bound a : ε �
     Subtype.orderEmbedding (by rintro _ ⟨e, rfl⟩; exact Estimator.bound_le e)
   f.wellFoundedGT
 
-instance [DecidableRel ((· : α) < ·)] {a : Thunk α} {b : Thunk β}
+instance [DecidableLT α] {a : Thunk α} {b : Thunk β}
     (ε : Type*) [Estimator (a.prod b) ε] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }] :
     EstimatorData a (Estimator.fst (a.prod b) ε) where
   bound e := (bound (a.prod b) e.inner).1
@@ -219,7 +219,7 @@ instance [DecidableRel ((· : α) < ·)] {a : Thunk α} {b : Thunk β}
 /-- Given an estimator for a pair, we can extract an estimator for the first factor. -/
 -- This isn't an instance as at the sole use case we need to provide
 -- the instance arguments by hand anyway.
-def Estimator.fstInst [DecidableRel ((· : α) < ·)] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }]
+def Estimator.fstInst [DecidableLT α] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }]
     (a : Thunk α) (b : Thunk β) (i : Estimator (a.prod b) ε) :
     Estimator a (Estimator.fst (a.prod b) ε) where
   bound_le e := (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1

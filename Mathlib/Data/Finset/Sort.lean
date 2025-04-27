@@ -3,16 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.RelIso.Set
+import Mathlib.Data.Finset.Max
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Multiset.Sort
-import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Data.Finset.Lattice
-import Mathlib.Data.Fintype.Card
+import Mathlib.Order.RelIso.Set
 
 /-!
 # Construct a sorted list from a finset.
 -/
-
 
 namespace Finset
 
@@ -31,6 +29,13 @@ variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α
   (Uses merge sort algorithm.) -/
 def sort (s : Finset α) : List α :=
   Multiset.sort r s.1
+
+@[simp]
+theorem sort_val (s : Finset α) : Multiset.sort r s.val = sort r s :=
+  rfl
+
+@[simp]
+theorem sort_mk {s : Multiset α} (h : s.Nodup) : sort r ⟨s, h⟩ = s.sort r := rfl
 
 @[simp]
 theorem sort_sorted (s : Finset α) : List.Sorted r (sort r s) :=
@@ -64,10 +69,30 @@ theorem sort_empty : sort r ∅ = [] :=
 theorem sort_singleton (a : α) : sort r {a} = [a] :=
   Multiset.sort_singleton r a
 
+theorem sort_cons {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
+    sort r (cons a s h₂) = a :: sort r s := by
+  rw [sort, cons_val, Multiset.sort_cons r a _ h₁, sort_val]
+
+theorem sort_insert [DecidableEq α] {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
+    sort r (insert a s) = a :: sort r s := by
+  rw [← cons_eq_insert _ _ h₂, sort_cons r h₁]
+
+@[simp]
+theorem sort_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
+  Multiset.sort_range n
+
 open scoped List in
 theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
   rw [← Multiset.coe_eq_coe]
   simp only [coe_toList, sort_eq]
+
+theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) :
+    sort r l.toFinset = l ↔ l.Sorted r := by
+  refine ⟨?_, List.eq_of_perm_of_sorted ((sort_perm_toList r _).trans (List.toFinset_toList hl))
+    (sort_sorted r _)⟩
+  intro h
+  rw [← h]
+  exact sort_sorted r _
 
 end sort
 
@@ -89,7 +114,7 @@ theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).le
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.min' H := List.mem_iff_get.1 this
     rw [← hi]
     exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.zero_le i)
-  · have : l.get ⟨0, h⟩ ∈ s := (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l 0 h)
+  · have : l.get ⟨0, h⟩ ∈ s := (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _)
     exact s.min'_le _ this
 
 theorem sorted_zero_eq_min' {s : Finset α} {h : 0 < (s.sort (· ≤ ·)).length} :
@@ -106,7 +131,7 @@ theorem sorted_last_eq_max'_aux (s : Finset α)
   let l := s.sort (· ≤ ·)
   apply le_antisymm
   · have : l.get ⟨(s.sort (· ≤ ·)).length - 1, h⟩ ∈ s :=
-      (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _ h)
+      (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _)
     exact s.le_max' _ this
   · have : s.max' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.max'_mem H)
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.max' H := List.mem_iff_get.1 this
@@ -146,7 +171,7 @@ theorem coe_orderIsoOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : 
   rfl
 
 theorem orderIsoOfFin_symm_apply (s : Finset α) {k : ℕ} (h : s.card = k) (x : s) :
-    ↑((s.orderIsoOfFin h).symm x) = (s.sort (· ≤ ·)).indexOf ↑x :=
+    ↑((s.orderIsoOfFin h).symm x) = (s.sort (· ≤ ·)).idxOf ↑x :=
   rfl
 
 theorem orderEmbOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :
@@ -163,8 +188,25 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
     Set.range (s.orderEmbOfFin h) = s := by
   simp only [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
   RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
-    OrderEmbedding.subtype_apply, OrderIso.coe_toOrderEmbedding, eq_self_iff_true,
+    OrderEmbedding.coe_subtype, OrderIso.coe_toOrderEmbedding, eq_self_iff_true,
     Subtype.range_coe_subtype, Finset.setOf_mem, Finset.coe_inj]
+
+@[simp]
+theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
+    Finset.image (s.orderEmbOfFin h) Finset.univ = s := by
+  apply Finset.coe_injective
+  simp
+
+@[simp]
+theorem map_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
+    Finset.map (s.orderEmbOfFin h).toEmbedding Finset.univ = s := by
+  simp [map_eq_image]
+
+@[simp]
+theorem listMap_orderEmbOfFin_finRange (s : Finset α) {k : ℕ} (h : s.card = k) :
+    (List.finRange k).map (s.orderEmbOfFin h) = s.sort (· ≤ ·) := by
+  obtain rfl : k = (s.sort (· ≤ ·)).length := by simp [h]
+  exact List.finRange_map_getElem (s.sort (· ≤ ·))
 
 /-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
 theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
@@ -188,8 +230,8 @@ theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
 the increasing bijection `orderEmbOfFin s h`. -/
 theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin k → α}
     (hfs : ∀ x, f x ∈ s) (hmono : StrictMono f) : f = s.orderEmbOfFin h := by
-  apply Fin.strictMono_unique hmono (s.orderEmbOfFin h).strictMono
-  rw [range_orderEmbOfFin, ← Set.image_univ, ← coe_univ, ← coe_image, coe_inj]
+  rw [← hmono.range_inj (s.orderEmbOfFin h).strictMono, range_orderEmbOfFin, ← Set.image_univ,
+    ← coe_univ, ← coe_image, coe_inj]
   refine eq_of_subset_of_card_le (fun x hx => ?_) ?_
   · rcases mem_image.1 hx with ⟨x, _, rfl⟩
     exact hfs x
@@ -199,7 +241,7 @@ theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin
 the increasing bijection `orderEmbOfFin s h`. -/
 theorem orderEmbOfFin_unique' {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin k ↪o α}
     (hfs : ∀ x, f x ∈ s) : f = s.orderEmbOfFin h :=
-  RelEmbedding.ext <| Function.funext_iff.1 <| orderEmbOfFin_unique h hfs f.strictMono
+  RelEmbedding.ext <| funext_iff.1 <| orderEmbOfFin_unique h hfs f.strictMono
 
 /-- Two parametrizations `orderEmbOfFin` of the same set take the same value on `i` and `j` if
 and only if `i = j`. Since they can be defined on a priori not defeq types `Fin k` and `Fin l`

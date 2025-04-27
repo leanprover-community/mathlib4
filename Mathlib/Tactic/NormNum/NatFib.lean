@@ -103,7 +103,7 @@ theorem isNat_fib : {x nx z : ℕ} → IsNat x nx → Nat.fib nx = z → IsNat (
 
 /-- Evaluates the `Nat.fib` function. -/
 @[norm_num Nat.fib _]
-def evalNatFib : NormNumExt where eval {u α} e := do
+def evalNatFib : NormNumExt where eval {_ _} e := do
   let .app _ (x : Q(ℕ)) ← Meta.whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨ex, p⟩ ← deriveNat x sℕ

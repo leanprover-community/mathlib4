@@ -3,69 +3,80 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Pointwise.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
+import Mathlib.Data.Real.Basic
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Ruzsa's covering lemma
 
-This file proves the Ruzsa covering lemma. This says that, for `s`, `t` finsets, we can cover `s`
-with at most `(s + t).card / t.card` copies of `t - t`.
-
-## TODO
-
-Merge this file with other prerequisites to Freiman's theorem once we have them.
+This file proves the Ruzsa covering lemma. This says that, for `A`, `B` finsets, we can cover `A`
+with at most `#(A + B) / #B` copies of `B - B`.
 -/
 
+open scoped Pointwise
 
-open Pointwise
+variable {G : Type*} [Group G] {K : ℝ}
 
 namespace Finset
-
-variable {α : Type*} [DecidableEq α] [CommGroup α] (s : Finset α) {t : Finset α}
+variable [DecidableEq G] {A B : Finset G}
 
 /-- **Ruzsa's covering lemma**. -/
 @[to_additive "**Ruzsa's covering lemma**"]
-theorem exists_subset_mul_div (ht : t.Nonempty) :
-    ∃ u : Finset α, u.card * t.card ≤ (s * t).card ∧ s ⊆ u * t / t := by
-  haveI : ∀ u, Decidable ((u : Set α).PairwiseDisjoint (· • t)) := fun u ↦ Classical.dec _
-  set C := s.powerset.filter fun u ↦ u.toSet.PairwiseDisjoint (· • t)
-  obtain ⟨u, hu, hCmax⟩ := C.exists_maximal (filter_nonempty_iff.2
-    ⟨∅, empty_mem_powerset _, by rw [coe_empty]; exact Set.pairwiseDisjoint_empty⟩)
-  rw [mem_filter, mem_powerset] at hu
-  refine ⟨u,
-    (card_mul_iff.2 <| pairwiseDisjoint_smul_iff.1 hu.2).ge.trans
-      (card_le_card <| mul_subset_mul_right hu.1),
-    fun a ha ↦ ?_⟩
-  rw [mul_div_assoc]
-  by_cases hau : a ∈ u
-  · exact subset_mul_left _ ht.one_mem_div hau
-  by_cases H : ∀ b ∈ u, Disjoint (a • t) (b • t)
-  · refine (hCmax _ ?_ <| ssubset_insert hau).elim
+theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :
+    ∃ F ⊆ A, #F ≤ K ∧ A ⊆ F * (B / B) := by
+  haveI : ∀ F, Decidable ((F : Set G).PairwiseDisjoint (· • B)) := fun F ↦ Classical.dec _
+  set C := {F ∈ A.powerset | F.toSet.PairwiseDisjoint (· • B)}
+  obtain ⟨F, hF, hFmax⟩ := C.exists_maximal <| filter_nonempty_iff.2
+    ⟨∅, empty_mem_powerset _, by rw [coe_empty]; exact Set.pairwiseDisjoint_empty⟩
+  rw [mem_filter, mem_powerset] at hF
+  obtain ⟨hFA, hF⟩ := hF
+  refine ⟨F, hFA, le_of_mul_le_mul_right ?_ (by positivity : (0 : ℝ) < #B), fun a ha ↦ ?_⟩
+  · calc
+      (#F * #B : ℝ) = #(F * B) := by
+        rw [card_mul_iff.2 <| pairwiseDisjoint_smul_iff.1 hF, Nat.cast_mul]
+      _ ≤ #(A * B) := by gcongr
+      _ ≤ K * #B := hK
+  by_cases hau : a ∈ F
+  · exact subset_mul_left _ hB.one_mem_div hau
+  by_cases H : ∀ b ∈ F, Disjoint (a • B) (b • B)
+  · refine (hFmax _ ?_ <| ssubset_insert hau).elim
     rw [mem_filter, mem_powerset, insert_subset_iff, coe_insert]
-    exact ⟨⟨ha, hu.1⟩, hu.2.insert fun _ hb _ ↦ H _ hb⟩
+    exact ⟨⟨ha, hFA⟩, hF.insert fun _ hb _ ↦ H _ hb⟩
   push_neg at H
   simp_rw [not_disjoint_iff, ← inv_smul_mem_iff] at H
   obtain ⟨b, hb, c, hc₁, hc₂⟩ := H
-  refine mem_mul.2 ⟨b, hb, a / b, ?_, by simp⟩
-  exact mem_div.2 ⟨_, hc₂, _, hc₁, by simp [inv_mul_eq_div]⟩
+  exact mem_mul.2 ⟨b, hb, b⁻¹ * a, mem_div.2 ⟨_, hc₂, _, hc₁, by simp⟩, by simp⟩
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+@[to_additive]
+alias exists_subset_mul_div := ruzsa_covering_mul
+attribute [deprecated ruzsa_covering_mul (since := "2024-11-26")] exists_subset_mul_div
+attribute [deprecated ruzsa_covering_add (since := "2024-11-26")] exists_subset_add_sub
 
 end Finset
 
 namespace Set
-variable {α : Type*} [CommGroup α] {s t : Set α}
+variable {A B : Set G}
 
-/-- **Ruzsa's covering lemma** for sets. See also `Finset.exists_subset_mul_div`. -/
-@[to_additive "**Ruzsa's covering lemma**. Version for sets. For finsets,
-see `Finset.exists_subset_add_sub`."]
-lemma exists_subset_mul_div (hs : s.Finite) (ht' : t.Finite) (ht : t.Nonempty) :
-    ∃ u : Set α, Nat.card u * Nat.card t ≤ Nat.card (s * t) ∧ s ⊆ u * t / t ∧ u.Finite := by
-  lift s to Finset α using hs
-  lift t to Finset α using ht'
+/-- **Ruzsa's covering lemma** for sets. See also `Finset.ruzsa_covering_mul`. -/
+@[to_additive "**Ruzsa's covering lemma** for sets. See also `Finset.ruzsa_covering_add`."]
+lemma ruzsa_covering_mul (hA : A.Finite) (hB : B.Finite) (hB₀ : B.Nonempty)
+    (hK : Nat.card (A * B) ≤ K * Nat.card B) :
+    ∃ F ⊆ A, Nat.card F ≤ K ∧ A ⊆ F * (B / B) ∧ F.Finite := by
+  lift A to Finset G using hA
+  lift B to Finset G using hB
   classical
-  obtain ⟨u, hu, hsut⟩ := Finset.exists_subset_mul_div s ht
-  refine ⟨u, ?_⟩
-  norm_cast
-  simp [*]
+  obtain ⟨F, hFA, hF, hAF⟩ := Finset.ruzsa_covering_mul hB₀ (by simpa [← Finset.coe_mul] using hK)
+  exact ⟨F, by norm_cast; simp [*]⟩
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+@[to_additive]
+alias exists_subset_mul_div := ruzsa_covering_mul
+attribute [deprecated ruzsa_covering_mul (since := "2024-11-26")] exists_subset_mul_div
+attribute [deprecated ruzsa_covering_add (since := "2024-11-26")] exists_subset_add_sub
 
 end Set

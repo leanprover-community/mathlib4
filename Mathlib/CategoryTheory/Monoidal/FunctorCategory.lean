@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Functor.Category
@@ -34,7 +34,7 @@ variable (F G F' G' : C ⥤ D)
 
 /-- (An auxiliary definition for `functorCategoryMonoidal`.)
 Tensor product of functors `C ⥤ D`, when `D` is monoidal.
- -/
+-/
 @[simps]
 def tensorObj : C ⥤ D where
   obj X := F.obj X ⊗ G.obj X
@@ -165,7 +165,7 @@ the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also braided.
 -/
 instance functorCategoryBraided : BraidedCategory (C ⥤ D) where
-  braiding F G := NatIso.ofComponents fun X => β_ _ _
+  braiding F G := NatIso.ofComponents fun _ => β_ _ _
   hexagon_forward F G H := by ext X; apply hexagon_forward
   hexagon_reverse F G H := by ext X; apply hexagon_reverse
 

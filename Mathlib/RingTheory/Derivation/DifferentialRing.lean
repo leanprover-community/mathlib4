@@ -13,8 +13,9 @@ use the x′ notation for the derivative of x.
 -/
 
 /-- A derivation from a ring to itself, as a typeclass. -/
+@[ext]
 class Differential (R : Type*) [CommRing R] where
-  /-- The `Derivation` assosiated with the ring. -/
+  /-- The `Derivation` associated with the ring. -/
   deriv : Derivation ℤ R R
 
 @[inherit_doc]
@@ -27,7 +28,7 @@ open Lean PrettyPrinter Delaborator SubExpr in
 A delaborator for the x′ notation. This is required because it's not direct function application,
 so the default delaborator doesn't work.
 -/
-@[delab app.DFunLike.coe]
+@[app_delab DFunLike.coe]
 def delabDeriv : Delab := do
   let e ← getExpr
   guard <| e.isAppOfArity' ``DFunLike.coe 6
@@ -70,7 +71,7 @@ instance (A : Type*) [CommRing A] [Differential A] : DifferentialAlgebra A A whe
 instance (A : Type*) [CommRing A] [Differential A] : Differential.ContainConstants A A where
   mem_range_of_deriv_eq_zero {x} _ := ⟨x, rfl⟩
 
-/-- Transfer a `Differential` instance accross a `RingEquiv`. -/
+/-- Transfer a `Differential` instance across a `RingEquiv`. -/
 @[reducible]
 def Differential.equiv {R R₂ : Type*} [CommRing R] [CommRing R₂] [Differential R₂]
     (h : R ≃+* R₂) : Differential R :=
@@ -78,7 +79,7 @@ def Differential.equiv {R R₂ : Type*} [CommRing R] [CommRing R₂] [Differenti
     Differential.deriv.toLinearMap ∘ₗ h.toAddMonoidHom.toIntLinearMap) (by simp)⟩
 
 /--
-Transfer a `DifferentialAlgebra` instance accross a `AlgEquiv`.
+Transfer a `DifferentialAlgebra` instance across a `AlgEquiv`.
 -/
 lemma DifferentialAlgebra.equiv {A : Type*} [CommRing A] [Differential A]
     {R R₂ : Type*} [CommRing R] [CommRing R₂] [Differential R₂] [Algebra A R]

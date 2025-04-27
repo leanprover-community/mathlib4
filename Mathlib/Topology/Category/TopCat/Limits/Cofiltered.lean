@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Filtered.Basic
@@ -15,7 +15,7 @@ of sets in the limit is, in fact, a topological basis.
 -/
 
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open CategoryTheory
 
@@ -29,7 +29,7 @@ namespace TopCat
 
 section CofilteredLimit
 
-variable {J : Type v} [SmallCategory J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
+variable {J : Type v} [Category.{w} J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
 
 /-- Given a *compatible* collection of topological bases for the factors in a cofiltered limit
 which contain `Set.univ` and are closed under intersections, the induced *naive* collection
@@ -42,25 +42,8 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
     IsTopologicalBasis
       {U : Set C.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = C.π.app j ⁻¹' V} := by
   classical
-  -- The limit cone for `F` whose topology is defined as an infimum.
-  let D := limitConeInfi F
-  -- The isomorphism between the cone point of `C` and the cone point of `D`.
-  let E : C.pt ≅ D.pt := hC.conePointUniqueUpToIso (limitConeInfiIsLimit _)
-  have hE : Inducing E.hom := (TopCat.homeoOfIso E).inducing
-  -- Reduce to the assertion of the theorem with `D` instead of `C`.
-  suffices
-    IsTopologicalBasis
-      {U : Set D.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V} by
-    convert this.inducing hE
-    ext U0
-    constructor
-    · rintro ⟨j, V, hV, rfl⟩
-      exact ⟨D.π.app j ⁻¹' V, ⟨j, V, hV, rfl⟩, rfl⟩
-    · rintro ⟨W, ⟨j, V, hV, rfl⟩, rfl⟩
-      exact ⟨j, V, hV, rfl⟩
-  -- Using `D`, we can apply the characterization of the topological basis of a
-  -- topology defined as an infimum...
-  convert IsTopologicalBasis.iInf_induced hT fun j (x : D.pt) => D.π.app j x using 1
+  convert IsTopologicalBasis.iInf_induced hT fun j (x : C.pt) => C.π.app j x using 1
+  · exact induced_of_isLimit C hC
   ext U0
   constructor
   · rintro ⟨j, V, hV, rfl⟩
@@ -100,21 +83,17 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       exact compat j e (g e he) (U e) (h1 e he)
     · -- conclude...
       rw [h2]
-      change _ = (D.π.app j)⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
+      change _ = (C.π.app j)⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 e
-      erw [Set.preimage_iInter]
+      rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
       -- Porting note: needed more hand holding here
-      change (D.π.app e)⁻¹' U e =
-        (D.π.app j) ⁻¹' if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
-      rw [dif_pos he, ← Set.preimage_comp]
-      apply congrFun
-      apply congrArg
-      erw [← coe_comp, D.w] -- now `erw` after #13170
-      rfl
+      change (C.π.app e)⁻¹' U e =
+        (C.π.app j) ⁻¹' if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
+      simp [he, ← Set.preimage_comp, ← coe_comp]
 
 end CofilteredLimit
 
