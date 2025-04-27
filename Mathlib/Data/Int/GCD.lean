@@ -360,10 +360,12 @@ theorem lcm_one_right (i : ℤ) : lcm i 1 = natAbs i := by
   rw [Int.lcm]
   apply Nat.lcm_one_right
 
-theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k := by
+theorem coe_lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k := by
   rw [Int.lcm]
   intro hi hj
   exact natCast_dvd.mpr (Nat.lcm_dvd (natAbs_dvd_natAbs.mpr hi) (natAbs_dvd_natAbs.mpr hj))
+
+@[deprecated (since := "2025-04-27")] alias lcm_dvd := coe_lcm_dvd
 
 theorem lcm_mul_left {m n k : ℤ} : (m * n).lcm (m * k) = natAbs m * n.lcm k := by
   simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_left]
