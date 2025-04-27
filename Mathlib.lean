@@ -2640,6 +2640,7 @@ import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
+import Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Orthogonal
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Rotate

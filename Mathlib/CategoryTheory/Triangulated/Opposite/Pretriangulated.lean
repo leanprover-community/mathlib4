@@ -179,6 +179,16 @@ lemma op_distinguished (T : Triangle C) (hT : T ∈ distTriang C) :
 lemma unop_distinguished (T : Triangle Cᵒᵖ) (hT : T ∈ distTriang Cᵒᵖ) :
     ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C := hT
 
+lemma distinguished_iff_op (T : Triangle C) :
+    (T ∈ distTriang C) ↔
+      ((triangleOpEquivalence C).functor.obj (Opposite.op T)) ∈ distTriang Cᵒᵖ := by
+  constructor
+  · intro hT
+    exact op_distinguished _ hT
+  · intro hT'
+    exact isomorphic_distinguished _ (unop_distinguished _ hT') _
+      (((triangleOpEquivalence C).unitIso.app (Opposite.op T)).unop.symm)
+
 end Pretriangulated
 
 namespace Functor

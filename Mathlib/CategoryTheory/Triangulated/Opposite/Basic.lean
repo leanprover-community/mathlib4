@@ -3,20 +3,17 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD:Mathlib/CategoryTheory/Triangulated/Opposite.lean
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Shift.Opposite
-import Mathlib.CategoryTheory.Shift.Pullback
-import Mathlib.CategoryTheory.Triangulated.Subcategory
-import Mathlib.CategoryTheory.Triangulated.Triangulated
-import Mathlib.CategoryTheory.Triangulated.Adjunction
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
-import Mathlib.Tactic.Linarith
-=======
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
->>>>>>> origin/jriou_localization_bump_deps:Mathlib/CategoryTheory/Triangulated/Opposite/Basic.lean
+--import Mathlib.CategoryTheory.Limits.Opposites
+--import Mathlib.CategoryTheory.Shift.Opposite
+--import Mathlib.CategoryTheory.Shift.Pullback
+--import Mathlib.CategoryTheory.Triangulated.Subcategory
+--import Mathlib.CategoryTheory.Triangulated.Triangulated
+--import Mathlib.CategoryTheory.Triangulated.Adjunction
+--import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+--import Mathlib.Tactic.Linarith
 
 /-!
 # The shift on the opposite category of a pretriangulated category
@@ -87,12 +84,6 @@ noncomputable scoped instance : HasShift Cᵒᵖ ℤ :=
 instance [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) :
     (shiftFunctor Cᵒᵖ n).Additive :=
   (inferInstance : (shiftFunctor (OppositeShiftAux C) n).Additive)
-
-noncomputable scoped instance {D : Type*} [Category D] [HasShift D ℤ] (F : C ⥤ D) [F.CommShift ℤ] :
-    F.op.CommShift ℤ := by
-  change ((F.opShift ℤ).pullbackShift
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))).CommShift ℤ
-  infer_instance
 
 end Opposite
 
@@ -252,30 +243,30 @@ lemma opShiftFunctorEquivalence_unitIso_inv_app_eq (X : Cᵒᵖ) (m n p : ℤ) (
 
 lemma opShiftFunctorEquivalence_unitIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
     (opShiftFunctorEquivalence C n).unitIso.hom.app X =
-      ((shiftFunctorCompIsoId C m n (by linarith)).hom.app X.unop).op ≫
+      ((shiftFunctorCompIsoId C m n (by omega)).hom.app X.unop).op ≫
         ((shiftFunctorOpIso C n m hnm).inv.app X).unop⟦n⟧'.op := by
-  obtain rfl : m = -n := by linarith
+  obtain rfl : m = -n := by omega
   rfl
 
 lemma opShiftFunctorEquivalence_unitIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
     (opShiftFunctorEquivalence C n).unitIso.inv.app X =
       ((shiftFunctorOpIso C n m hnm).hom.app X).unop⟦n⟧'.op ≫
-      ((shiftFunctorCompIsoId C m n (by linarith)).inv.app X.unop).op := by
-  obtain rfl : m = -n := by linarith
+      ((shiftFunctorCompIsoId C m n (by omega)).inv.app X.unop).op := by
+  obtain rfl : m = -n := by omega
   rfl
 
 lemma opShiftFunctorEquivalence_counitIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
     (opShiftFunctorEquivalence C n).counitIso.hom.app X =
       ((shiftFunctorOpIso C n m hnm).hom.app (Opposite.op (X.unop⟦n⟧))) ≫
         ((shiftFunctorCompIsoId C n m hnm).inv.app X.unop).op := by
-  obtain rfl : m = -n := by linarith
+  obtain rfl : m = -n := by omega
   rfl
 
 lemma opShiftFunctorEquivalence_counitIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
     (opShiftFunctorEquivalence C n).counitIso.inv.app X =
       ((shiftFunctorCompIsoId C n m hnm).hom.app X.unop).op ≫
       ((shiftFunctorOpIso C n m hnm).inv.app (Opposite.op (X.unop⟦n⟧))) := by
-  obtain rfl : m = -n := by linarith
+  obtain rfl : m = -n := by omega
   rfl
 
 lemma shift_unop_opShiftFunctorEquivalence_counitIso_inv_app (X : Cᵒᵖ) (n : ℤ) :
@@ -301,10 +292,10 @@ lemma opShiftFunctorEquivalence_counitIso_hom_app_shift (X : Cᵒᵖ) (n : ℤ) 
 lemma shiftFunctorCompIsoId_op_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
     (shiftFunctorCompIsoId Cᵒᵖ n m hnm).hom.app X =
       ((shiftFunctorOpIso C n m hnm).hom.app X)⟦m⟧' ≫
-        (shiftFunctorOpIso C m n (by linarith)).hom.app (Opposite.op (X.unop⟦m⟧)) ≫
-          ((shiftFunctorCompIsoId C m n (by linarith)).inv.app X.unop).op := by
+        (shiftFunctorOpIso C m n (by omega)).hom.app (Opposite.op (X.unop⟦m⟧)) ≫
+          ((shiftFunctorCompIsoId C m n (by omega)).inv.app X.unop).op := by
   dsimp [shiftFunctorCompIsoId]
-  simp only [shiftFunctorAdd'_op_inv_app X n m 0 hnm m n 0 hnm (by linarith) (add_zero 0),
+  simp only [shiftFunctorAdd'_op_inv_app X n m 0 hnm m n 0 hnm (by omega) (add_zero 0),
     shiftFunctorZero_op_hom_app X]
   simp only [Functor.op_obj, Opposite.unop_op, Functor.comp_obj,
     NatTrans.naturality_assoc, Functor.op_map, Functor.id_obj,
@@ -312,11 +303,11 @@ lemma shiftFunctorCompIsoId_op_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 
 
 lemma shiftFunctorCompIsoId_op_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
     (shiftFunctorCompIsoId Cᵒᵖ n m hnm).inv.app X =
-      ((shiftFunctorCompIsoId C m n (by linarith)).hom.app X.unop).op ≫
-      (shiftFunctorOpIso C m n (by linarith)).inv.app (Opposite.op (X.unop⟦m⟧)) ≫
+      ((shiftFunctorCompIsoId C m n (by omega)).hom.app X.unop).op ≫
+      (shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op (X.unop⟦m⟧)) ≫
       ((shiftFunctorOpIso C n m hnm).inv.app X)⟦m⟧' := by
   dsimp [shiftFunctorCompIsoId]
-  simp only [shiftFunctorAdd'_op_hom_app X n m 0 hnm m n 0 hnm (by linarith) (add_zero 0),
+  simp only [shiftFunctorAdd'_op_hom_app X n m 0 hnm m n 0 hnm (by omega) (add_zero 0),
     shiftFunctorZero_op_inv_app X]
   simp only [Functor.id_obj, Opposite.op_unop, Functor.op_obj, Functor.comp_obj, assoc,
     Iso.inv_hom_id_app_assoc]
@@ -326,7 +317,7 @@ lemma opShiftFunctorEquivalence_inv_app_shift (X : Cᵒᵖ) (n m : ℤ) (hnm : n
       ((shiftFunctorCompIsoId Cᵒᵖ n m hnm).hom.app X).unop⟦m⟧'.op ≫
       ((shiftFunctorOpIso C n m hnm).inv.app X) := by
   rw [shiftFunctorCompIsoId_op_hom_app,
-    opShiftFunctorEquivalence_unitIso_inv_app _ m n (by linarith)]
+    opShiftFunctorEquivalence_unitIso_inv_app _ m n (by omega)]
   simp only [opShiftFunctorEquivalence_functor, opShiftFunctorEquivalence_inverse,
     Functor.comp_obj, Functor.op_obj,
     Functor.id_obj, Opposite.unop_op, Opposite.op_unop, NatTrans.naturality_assoc,
@@ -334,7 +325,7 @@ lemma opShiftFunctorEquivalence_inv_app_shift (X : Cᵒᵖ) (n m : ℤ) (hnm : n
     Quiver.Hom.unop_op, assoc, Functor.map_comp, op_comp]
   apply Quiver.Hom.unop_inj
   simp only [Opposite.op_unop, Opposite.unop_op, Quiver.Hom.unop_op, unop_comp, assoc]
-  rw [shift_shiftFunctorCompIsoId_inv_app m n (by linarith) X.unop]
+  rw [shift_shiftFunctorCompIsoId_inv_app m n (by omega) X.unop]
   erw [← NatTrans.naturality_assoc]
   dsimp
   rw [← unop_comp_assoc, Iso.hom_inv_id_app, unop_id, id_comp]
@@ -363,362 +354,8 @@ lemma opShiftFunctorEquivalence_symm_homEquiv_left_inv
 <<<<<<< HEAD:Mathlib/CategoryTheory/Triangulated/Opposite.lean
 variable (C)
 
-namespace TriangleOpEquivalence
-
-/-- The functor which sends a triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` in `C` to the triangle
-`op Z ⟶ op Y ⟶ op X ⟶ (op Z)⟦1⟧` in `Cᵒᵖ` (without introducing signs). -/
-@[simps]
-noncomputable def functor : (Triangle C)ᵒᵖ ⥤ Triangle Cᵒᵖ where
-  obj T := Triangle.mk T.unop.mor₂.op T.unop.mor₁.op
-      ((opShiftFunctorEquivalence C 1).counitIso.inv.app (Opposite.op T.unop.obj₁) ≫
-        T.unop.mor₃.op⟦(1 : ℤ)⟧')
-  map {T₁ T₂} φ :=
-    { hom₁ := φ.unop.hom₃.op
-      hom₂ := φ.unop.hom₂.op
-      hom₃ := φ.unop.hom₁.op
-      comm₁ := Quiver.Hom.unop_inj φ.unop.comm₂.symm
-      comm₂ := Quiver.Hom.unop_inj φ.unop.comm₁.symm
-      comm₃ := by
-        dsimp
-        rw [assoc, ← Functor.map_comp, ← op_comp, ← φ.unop.comm₃, op_comp, Functor.map_comp,
-          opShiftFunctorEquivalence_counitIso_inv_naturality_assoc]
-        rfl }
-
-/-- The functor which sends a triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` in `Cᵒᵖ` to the triangle
-`Z.unop ⟶ Y.unop ⟶ X.unop ⟶ Z.unop⟦1⟧` in `C` (without introducing signs). -/
-@[simps]
-noncomputable def inverse : Triangle Cᵒᵖ ⥤ (Triangle C)ᵒᵖ where
-  obj T := Opposite.op (Triangle.mk T.mor₂.unop T.mor₁.unop
-      (((opShiftFunctorEquivalence C 1).unitIso.inv.app T.obj₁).unop ≫ T.mor₃.unop⟦(1 : ℤ)⟧'))
-  map {T₁ T₂} φ := Quiver.Hom.op
-    { hom₁ := φ.hom₃.unop
-      hom₂ := φ.hom₂.unop
-      hom₃ := φ.hom₁.unop
-      comm₁ := Quiver.Hom.op_inj φ.comm₂.symm
-      comm₂ := Quiver.Hom.op_inj φ.comm₁.symm
-      comm₃ := Quiver.Hom.op_inj (by
-        dsimp
-        rw [assoc, ← opShiftFunctorEquivalence_unitIso_inv_naturality,
-          ← op_comp_assoc, ← Functor.map_comp, ← unop_comp, ← φ.comm₃,
-          unop_comp, Functor.map_comp, op_comp, assoc]) }
-
-/-- The unit isomorphism of the
-equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` . -/
-@[simps!]
-noncomputable def unitIso : 𝟭 _ ≅ functor C ⋙ inverse C :=
-  NatIso.ofComponents (fun T => Iso.op
-    (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
-      (Quiver.Hom.op_inj
-        (by simp [shift_unop_opShiftFunctorEquivalence_counitIso_inv_app]))))
-    (fun {T₁ T₂} f => Quiver.Hom.unop_inj (by aesop_cat))
-
-/-- The counit isomorphism of the
-equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` . -/
-@[simps!]
-noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun T => by
-    refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_
-    · aesop_cat
-    · aesop_cat
-    · dsimp
-      rw [Functor.map_id, comp_id, id_comp, Functor.map_comp,
-        ← opShiftFunctorEquivalence_counitIso_inv_naturality_assoc,
-        opShiftFunctorEquivalence_counitIso_inv_app_shift, ← Functor.map_comp,
-        Iso.hom_inv_id_app, Functor.map_id]
-      simp only [Functor.id_obj, comp_id])
-    (by aesop_cat)
-
-end TriangleOpEquivalence
-
-/-- An anti-equivalence between the categories of triangles in `C` and in `Cᵒᵖ`.
-A triangle in `Cᵒᵖ` shall be distinguished iff it correspond to a distinguished
-triangle in `C` via this equivalence. -/
-@[simps]
-noncomputable def triangleOpEquivalence :
-    (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ where
-  functor := TriangleOpEquivalence.functor C
-  inverse := TriangleOpEquivalence.inverse C
-  unitIso := TriangleOpEquivalence.unitIso C
-  counitIso := TriangleOpEquivalence.counitIso C
-
-variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
-  [Pretriangulated C]
 
 namespace Opposite
-
-/-- A triangle in `Cᵒᵖ` shall be distinguished iff it corresponds to a distinguished
-triangle in `C` via the equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ`. -/
-def distinguishedTriangles : Set (Triangle Cᵒᵖ) :=
-  fun T => ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C
-
-variable {C}
-
-lemma mem_distinguishedTriangles_iff (T : Triangle Cᵒᵖ) :
-    T ∈ distinguishedTriangles C ↔
-      ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C := by
-  rfl
-
-lemma mem_distinguishedTriangles_iff' (T : Triangle Cᵒᵖ) :
-    T ∈ distinguishedTriangles C ↔
-      ∃ (T' : Triangle C) (_ : T' ∈ distTriang C),
-        Nonempty (T ≅ (triangleOpEquivalence C).functor.obj (Opposite.op T')) := by
-  rw [mem_distinguishedTriangles_iff]
-  constructor
-  · intro hT
-    exact ⟨_ ,hT, ⟨(triangleOpEquivalence C).counitIso.symm.app T⟩⟩
-  · rintro ⟨T', hT', ⟨e⟩⟩
-    refine isomorphic_distinguished _ hT' _ ?_
-    exact Iso.unop ((triangleOpEquivalence C).unitIso.app (Opposite.op T') ≪≫
-      (triangleOpEquivalence C).inverse.mapIso e.symm)
-
-lemma isomorphic_distinguished (T₁ : Triangle Cᵒᵖ)
-    (hT₁ : T₁ ∈ distinguishedTriangles C) (T₂ : Triangle Cᵒᵖ)
-    (e : T₂ ≅ T₁) :
-    T₂ ∈ distinguishedTriangles C := by
-  simp only [mem_distinguishedTriangles_iff] at hT₁ ⊢
-  exact Pretriangulated.isomorphic_distinguished _ hT₁ _
-    ((triangleOpEquivalence C).inverse.mapIso e).unop.symm
-
-/-- Up to rotation, the contractible triangle `X ⟶ X ⟶ 0 ⟶ X⟦1⟧` for `X : Cᵒᵖ` corresponds
-to the contractible triangle for `X.unop` in `C`. -/
-@[simps!]
-noncomputable def contractibleTriangleIso (X : Cᵒᵖ) :
-    contractibleTriangle X ≅ (triangleOpEquivalence C).functor.obj
-      (Opposite.op (contractibleTriangle X.unop).invRotate) :=
-  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-    (IsZero.iso (isZero_zero _) (by
-      dsimp
-      rw [IsZero.iff_id_eq_zero]
-      change (𝟙 ((0 : C)⟦(-1 : ℤ)⟧)).op = 0
-      rw [← Functor.map_id, id_zero, Functor.map_zero, op_zero]))
-    (by aesop_cat) (by
-      dsimp
-      simp only [zero_comp, comp_neg, id_comp, zero_eq_neg, IsIso.comp_left_eq_zero]
-      rw [Functor.map_zero, op_zero]) (by aesop_cat)
-
-lemma contractible_distinguished (X : Cᵒᵖ) :
-    contractibleTriangle X ∈ distinguishedTriangles C := by
-  rw [mem_distinguishedTriangles_iff']
-  exact ⟨_, inv_rot_of_distTriang _ (Pretriangulated.contractible_distinguished X.unop),
-    ⟨contractibleTriangleIso X⟩⟩
-
-/-- Isomorphism expressing a compatibility of the equivalence `triangleOpEquivalence C`
-with the rotation of triangles. -/
-noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnopIso (T : Triangle Cᵒᵖ) :
-    ((triangleOpEquivalence C).inverse.obj T.rotate).unop.rotate ≅
-      ((triangleOpEquivalence C).inverse.obj T).unop :=
-  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-      (-((opShiftFunctorEquivalence C 1).unitIso.app T.obj₁).unop) (by simp)
-        (Quiver.Hom.op_inj (by aesop_cat)) (by aesop_cat)
-
-lemma rotate_distinguished_triangle (T : Triangle Cᵒᵖ) :
-    T ∈ distinguishedTriangles C ↔ T.rotate ∈ distinguishedTriangles C := by
-  simp only [mem_distinguishedTriangles_iff, Pretriangulated.rotate_distinguished_triangle
-    ((triangleOpEquivalence C).inverse.obj (T.rotate)).unop]
-  exact distinguished_iff_of_iso (rotateTriangleOpEquivalenceInverseObjRotateUnopIso T).symm
-
-lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    ∃ (Z : Cᵒᵖ) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
-      Triangle.mk f g h ∈ distinguishedTriangles C := by
-  obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle₁ f.unop
-  refine ⟨_, g.op, (opShiftFunctorEquivalence C 1).counitIso.inv.app (Opposite.op Z) ≫
-    (shiftFunctor Cᵒᵖ (1 : ℤ)).map h.op, ?_⟩
-  simp only [mem_distinguishedTriangles_iff]
-  refine Pretriangulated.isomorphic_distinguished _ H _ ?_
-  exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
-    (Quiver.Hom.op_inj (by simp [shift_unop_opShiftFunctorEquivalence_counitIso_inv_app]))
-
-lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
-    (hT₁ : T₁ ∈ distinguishedTriangles C) (hT₂ : T₂ ∈ distinguishedTriangles C)
-    (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
-    ∃ (c : T₁.obj₃ ⟶ T₂.obj₃), T₁.mor₂ ≫ c = b ≫ T₂.mor₂ ∧
-      T₁.mor₃ ≫ a⟦1⟧' = c ≫ T₂.mor₃ := by
-  rw [mem_distinguishedTriangles_iff] at hT₁ hT₂
-  obtain ⟨c, hc₁, hc₂⟩ :=
-    Pretriangulated.complete_distinguished_triangle_morphism₁ _ _ hT₂ hT₁
-      b.unop a.unop (Quiver.Hom.op_inj comm.symm)
-  dsimp at c hc₁ hc₂
-  replace hc₂ := ((opShiftFunctorEquivalence C 1).unitIso.hom.app T₂.obj₁).unop ≫= hc₂
-  dsimp at hc₂
-  simp only [assoc, Iso.unop_hom_inv_id_app_assoc] at hc₂
-  refine ⟨c.op, Quiver.Hom.unop_inj hc₁.symm, Quiver.Hom.unop_inj ?_⟩
-  apply (shiftFunctor C (1 : ℤ)).map_injective
-  rw [unop_comp, unop_comp, Functor.map_comp, Functor.map_comp,
-    Quiver.Hom.unop_op, hc₂, ← unop_comp_assoc, ← unop_comp_assoc,
-    ← opShiftFunctorEquivalence_unitIso_inv_naturality]
-  simp
-
-/-- The pretriangulated structure on the opposite category of
-a pretriangulated category. It is a scoped instance, so that we need to
-`open CategoryTheory.Pretriangulated.Opposite` in order to be able
-to use it: the reason is that it relies on the definition of the shift
-on the opposite category `Cᵒᵖ`, for which it is unclear whether it should
-be a global instance or not. -/
-scoped instance : Pretriangulated Cᵒᵖ where
-  distinguishedTriangles := distinguishedTriangles C
-  isomorphic_distinguished := isomorphic_distinguished
-  contractible_distinguished := contractible_distinguished
-  distinguished_cocone_triangle := distinguished_cocone_triangle
-  rotate_distinguished_triangle := rotate_distinguished_triangle
-  complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism
-
-end Opposite
-
-variable {C}
-
-lemma mem_distTriang_op_iff (T : Triangle Cᵒᵖ) :
-    (T ∈ distTriang Cᵒᵖ) ↔ ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C := by
-  rfl
-
-lemma mem_distTriang_op_iff' (T : Triangle Cᵒᵖ) :
-    (T ∈ distTriang Cᵒᵖ) ↔ ∃ (T' : Triangle C) (_ : T' ∈ distTriang C),
-      Nonempty (T ≅ (triangleOpEquivalence C).functor.obj (Opposite.op T')) :=
-  Opposite.mem_distinguishedTriangles_iff' T
-
-lemma op_distinguished (T : Triangle C) (hT : T ∈ distTriang C) :
-    ((triangleOpEquivalence C).functor.obj (Opposite.op T)) ∈ distTriang Cᵒᵖ := by
-  rw [mem_distTriang_op_iff']
-  exact ⟨T, hT, ⟨Iso.refl _⟩⟩
-
-lemma unop_distinguished (T : Triangle Cᵒᵖ) (hT : T ∈ distTriang Cᵒᵖ) :
-    ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C := hT
-
-lemma distinguished_iff_op (T : Triangle C) :
-    (T ∈ distTriang C) ↔
-      ((triangleOpEquivalence C).functor.obj (Opposite.op T)) ∈ distTriang Cᵒᵖ := by
-  constructor
-  · intro hT
-    exact op_distinguished _ hT
-  · intro hT'
-    exact isomorphic_distinguished _ (unop_distinguished _ hT') _
-      (((triangleOpEquivalence C).unitIso.app (Opposite.op T)).unop.symm)
-
-namespace Opposite
-
-set_option maxHeartbeats 600000 in
-scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ := by
-  have : ∀ ⦃X₁ X₂ X₃ : C⦄ (u₁₂ : X₁ ⟶ X₂) (u₂₃ : X₂ ⟶ X₃),
-    ∃ (Z₁₂ Z₂₃ Z₁₃ : C)
-      (v₁₂ : Z₁₂ ⟶ X₁) (w₁₂ : X₂ ⟶ Z₁₂⟦(1 : ℤ)⟧) (h₁₂ : Triangle.mk v₁₂ u₁₂ w₁₂ ∈ distTriang C)
-      (v₂₃ : Z₂₃ ⟶ X₂) (w₂₃ : X₃ ⟶ Z₂₃⟦(1 : ℤ)⟧) (h₂₃ : Triangle.mk v₂₃ u₂₃ w₂₃ ∈ distTriang C)
-      (v₁₃ : Z₁₃ ⟶ X₁) (w₁₃ : X₃ ⟶ Z₁₃⟦(1 : ℤ)⟧)
-        (h₁₃ : Triangle.mk v₁₃ (u₁₂ ≫ u₂₃) w₁₃ ∈ distTriang C),
-        Nonempty (Triangulated.Octahedron rfl (rot_of_distTriang _ h₁₂)
-          (rot_of_distTriang _ h₂₃) (rot_of_distTriang _ h₁₃)) := by
-    intro X₁ X₂ X₃ u₁₂ u₂₃
-    obtain ⟨Z₁₂, v₁₂, w₁₂, h₁₂⟩ := distinguished_cocone_triangle₁ u₁₂
-    obtain ⟨Z₂₃, v₂₃, w₂₃, h₂₃⟩ := distinguished_cocone_triangle₁ u₂₃
-    obtain ⟨Z₁₃, v₁₃, w₁₃, h₁₃⟩ := distinguished_cocone_triangle₁ (u₁₂ ≫ u₂₃)
-    exact ⟨_, _, _, _, _, h₁₂, _, _, h₂₃, _, _, h₁₃, ⟨Triangulated.someOctahedron _ _ _ _⟩⟩
-  apply IsTriangulated.mk'
-  intros X₁ X₂ X₃ u₁₂ u₂₃
-  obtain ⟨Z₁₂, Z₂₃, Z₁₃, v₁₂, w₁₂, h₁₂, v₂₃, w₂₃, h₂₃, v₁₃, w₁₃, h₁₃, ⟨H⟩⟩ :=
-    this u₂₃.unop u₁₂.unop
-  refine ⟨X₁, X₂, X₃, _, _, _, u₁₂, u₂₃, Iso.refl _, Iso.refl _, Iso.refl _, by simp, by simp,
-    v₂₃.op, opShiftFunctorEquivalence_symm_homEquiv 1 _ _ w₂₃.op, ?_,
-    v₁₂.op, opShiftFunctorEquivalence_symm_homEquiv 1 _ _ w₁₂.op, ?_,
-    v₁₃.op, opShiftFunctorEquivalence_symm_homEquiv 1 _ _ w₁₃.op, ?_, ?_⟩
-  · rw [mem_distTriang_op_iff]
-    refine Pretriangulated.isomorphic_distinguished _ h₂₃ _ ?_
-    refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) ?_
-    simpa using opShiftFunctorEquivalence_symm_homEquiv_left_inv w₂₃.op
-  · rw [mem_distTriang_op_iff]
-    refine Pretriangulated.isomorphic_distinguished _ h₁₂ _ ?_
-    refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) ?_
-    simpa using opShiftFunctorEquivalence_symm_homEquiv_left_inv w₁₂.op
-  · rw [mem_distTriang_op_iff]
-    refine Pretriangulated.isomorphic_distinguished _ h₁₃ _ ?_
-    refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) ?_
-    simpa using opShiftFunctorEquivalence_symm_homEquiv_left_inv w₁₃.op
-  · obtain ⟨m₁, hm₁⟩ := (shiftFunctor C (1 : ℤ)).map_surjective H.m₃
-    obtain ⟨m₃, hm₃⟩ := (shiftFunctor C (1 : ℤ)).map_surjective H.m₁
-    exact
-     ⟨{ m₁ := m₁.op
-        m₃ := m₃.op
-        comm₁ := by
-          apply Quiver.Hom.unop_inj
-          apply (shiftFunctor C (1 : ℤ)).map_injective
-          simpa [← hm₁] using H.comm₄.symm
-        comm₂ := by
-          have eq := H.comm₃
-          dsimp at eq
-          rw [← eq, ← hm₁, op_comp, opShiftFunctorEquivalence_symm_homEquiv_apply,
-            opShiftFunctorEquivalence_symm_homEquiv_apply]
-          simp only [Functor.id_obj, opShiftFunctorEquivalence_inverse,
-            opShiftFunctorEquivalence_functor,
-            Functor.comp_obj, Functor.op_obj, Functor.map_comp]
-          erw [← NatTrans.naturality_assoc]
-          rfl
-        comm₃ := by
-          apply Quiver.Hom.unop_inj
-          apply (shiftFunctor C (1 : ℤ)).map_injective
-          simpa [← hm₃] using H.comm₂
-        comm₄ := by
-          have eq := congr_arg Quiver.Hom.op H.comm₁
-          dsimp at eq
-          simp only [Opposite.op_unop, Triangle.mk_obj₁]
-          rw [opShiftFunctorEquivalence_symm_homEquiv_apply,
-            opShiftFunctorEquivalence_symm_homEquiv_apply, assoc, ← Functor.map_comp,
-            ← eq, ← hm₃, Functor.map_comp]
-          erw [← NatTrans.naturality_assoc]
-          rfl
-        mem := by
-          rw [← Triangle.shift_distinguished_iff _ (-1), mem_distTriang_op_iff']
-          refine ⟨_, H.mem, ⟨?_⟩⟩
-          refine Triangle.isoMk _ _
-            ((shiftFunctorOpIso C _ _ (neg_add_cancel 1)).app _)
-            (-((shiftFunctorOpIso C _ _ (neg_add_cancel 1)).app _))
-            ((shiftFunctorOpIso C _ _ (neg_add_cancel 1)).app _) ?_ ?_ ?_
-          · dsimp
-            simp [← hm₁]
-          · dsimp
-            simp [← hm₃]
-          · dsimp
-            simp only [Int.negOnePow_neg, Int.negOnePow_one, Functor.map_comp, assoc,
-              one_smul, neg_comp, comp_neg, Functor.map_neg, neg_inj, Units.neg_smul]
-            erw [(shiftFunctorComm Cᵒᵖ 1 (-1)).hom.naturality_assoc v₂₃.op]
-            dsimp
-            rw [shiftFunctor_op_map _ _ (neg_add_cancel 1) v₂₃.op]
-            erw [opShiftFunctorEquivalence_symm_homEquiv_apply]
-            simp
-            nth_rewrite 1 [← Functor.map_comp]
-            rw [Iso.inv_hom_id_app]
-            simp
-            have eq := (shiftFunctorComm Cᵒᵖ 1 (-1)).hom.naturality w₁₂.op
-            dsimp at eq
-            rw [reassoc_of% eq]
-            rw [shiftFunctor_op_map _ _ (neg_add_cancel 1) w₁₂.op]
-            simp only [← Functor.map_comp_assoc, ← Functor.map_comp, assoc]
-            erw [Iso.inv_hom_id_app_assoc]
-            simp only [Functor.op_obj, Opposite.unop_op, Opposite.op_unop,
-              Quiver.Hom.unop_op, Functor.map_comp, ← assoc]
-            congr 2
-            simp only [assoc]
-            rw [shiftFunctorComm_hom_app_of_add_eq_zero _ _ (add_neg_cancel 1)]
-            simp only [Functor.comp_obj, Functor.id_obj, assoc]
-            rw [shiftFunctorCompIsoId_op_hom_app]
-            rw [shiftFunctorCompIsoId_op_inv_app]
-            simp only [shiftFunctor_op_map _ _ (neg_add_cancel 1)]
-            simp only [shiftFunctor_op_map _ _ (add_neg_cancel 1)]
-            simp
-            rw [opShiftFunctorEquivalence_counitIso_inv_app _ _ _ (add_neg_cancel 1)]
-            rw [opShiftFunctorEquivalence_counitIso_inv_app _ _ _ (add_neg_cancel 1)]
-            simp only [Functor.id_obj, Functor.comp_obj, unop_comp, Opposite.unop_op,
-              Quiver.Hom.unop_op, Functor.map_comp, op_comp, assoc]
-            simp only [← op_comp, ← op_comp_assoc, assoc, ← Functor.map_comp,
-              ← Functor.map_comp_assoc, ← unop_comp, ← unop_comp_assoc]
-            rw [Iso.inv_hom_id_app]
-            rw [Iso.inv_hom_id_app]
-            simp only [Functor.op_obj, Opposite.unop_op, unop_id, Functor.map_id, id_comp,
-              op_comp, assoc]
-            simp only [← assoc];congr 1; simp only [assoc]
-            rw [shift_shiftFunctorCompIsoId_add_neg_cancel_hom_app]
-            simp only [← op_comp_assoc, ← op_comp, assoc, Iso.inv_hom_id_app,
-              Functor.id_obj, comp_id]
-            simp
-            rw [← op_comp]
-            erw [(shiftFunctorCompIsoId C (1 : ℤ) (-1) (by linarith)).hom.naturality]
-            rfl }⟩
 
 variable (C)
 
@@ -744,16 +381,16 @@ omit [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangul
 
 lemma iso_hom_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
     (iso C n).hom.app X =
-      ((shiftFunctorOpIso C m n (by linarith)).hom.app (Opposite.op X)).op ≫
+      ((shiftFunctorOpIso C m n (by omega)).hom.app (Opposite.op X)).op ≫
         (shiftFunctorOpIso Cᵒᵖ _ _ hnm).inv.app (Opposite.op (Opposite.op X)) := by
-  obtain rfl : m = -n := by linarith
+  obtain rfl : m = -n := by omega
   rfl
 
 lemma iso_inv_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
     (iso C n).inv.app X =
       (shiftFunctorOpIso Cᵒᵖ _ _ hnm).hom.app (Opposite.op (Opposite.op X)) ≫
-        ((shiftFunctorOpIso C m n (by linarith)).inv.app (Opposite.op X)).op := by
-  obtain rfl : m = -n := by linarith
+        ((shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op X)).op := by
+  obtain rfl : m = -n := by omega
   rfl
 
 end OpOpCommShift
@@ -788,7 +425,7 @@ noncomputable instance : (opOp C).CommShift ℤ where
     simp only [← op_comp_assoc, ← op_comp, assoc, ← Functor.map_comp, ← unop_comp,
       Iso.inv_hom_id_app]
     simp only [Functor.op_obj, Opposite.unop_op, unop_id, id_comp, op_comp, assoc]
-    rw [shiftFunctorAdd'_op_hom_app (Opposite.op X) (-a) (-b) (-(a+b)) (by linarith)
+    rw [shiftFunctorAdd'_op_hom_app (Opposite.op X) (-a) (-b) (-(a+b)) (by omega)
       _ _ _ (neg_add_cancel a) (neg_add_cancel b) (neg_add_cancel (a + b))]
     simp only [Functor.op_obj, Opposite.unop_op, Functor.comp_obj, op_comp, assoc]
     simp only [← op_comp_assoc, ← op_comp, assoc]
@@ -806,14 +443,14 @@ omit [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangul
 
 lemma opOp_commShiftIso_hom_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
     ((opOp C).commShiftIso n).hom.app X =
-      ((shiftFunctorOpIso C m n (by linarith)).hom.app (Opposite.op X)).op ≫
+      ((shiftFunctorOpIso C m n (by omega)).hom.app (Opposite.op X)).op ≫
         (shiftFunctorOpIso Cᵒᵖ _ _ hnm).inv.app (Opposite.op (Opposite.op X)) :=
   OpOpCommShift.iso_hom_app _ _ _ hnm
 
 lemma opOp_commShiftIso_inv_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
     ((opOp C).commShiftIso n).inv.app X =
       (shiftFunctorOpIso Cᵒᵖ _ _ hnm).hom.app (Opposite.op (Opposite.op X)) ≫
-        ((shiftFunctorOpIso C m n (by linarith)).inv.app (Opposite.op X)).op :=
+        ((shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op X)).op :=
   OpOpCommShift.iso_inv_app _ _ _ hnm
 
 instance : (opOp C).IsTriangulated where
@@ -1080,4 +717,5 @@ end Triangulated
 end Pretriangulated
 
 >>>>>>> origin/jriou_localization_bump_deps:Mathlib/CategoryTheory/Triangulated/Opposite/Basic.lean
+
 end CategoryTheory
