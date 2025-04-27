@@ -3,10 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Prime
 import Mathlib.Tactic.NormNum.Basic
-
-#align_import data.nat.prime_norm_num from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # `norm_num` extensions on natural numbers
@@ -52,14 +50,14 @@ theorem MinFacHelper.one_lt {n k : ℕ} (h : MinFacHelper n k) : 1 < n := by
   obtain rfl | h := n.eq_zero_or_pos
   · contradiction
   rcases (succ_le_of_lt h).eq_or_lt with rfl|h
-  · contradiction
+  · simp_all
   exact h
 
 theorem minFacHelper_0 (n : ℕ)
     (h1 : Nat.ble (nat_lit 2) n = true) (h2 : nat_lit 1 = n % (nat_lit 2)) :
     MinFacHelper n (nat_lit 3) := by
   refine ⟨by norm_num, by norm_num, ?_⟩
-  refine (le_minFac'.mpr λ p hp hpn ↦ ?_).resolve_left (Nat.ne_of_gt (Nat.le_of_ble_eq_true h1))
+  refine (le_minFac'.mpr fun p hp hpn ↦ ?_).resolve_left (Nat.ne_of_gt (Nat.le_of_ble_eq_true h1))
   rcases hp.eq_or_lt with rfl|h
   · simp [(Nat.dvd_iff_mod_eq_zero ..).1 hpn] at h2
   · exact h
@@ -83,13 +81,13 @@ theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
 
 theorem minFacHelper_2 {n k k' : ℕ} (e : k + 2 = k') (nk : ¬ Nat.Prime k)
     (h : MinFacHelper n k) : MinFacHelper n k' := by
-  refine minFacHelper_1 e h λ h2 ↦ ?_
+  refine minFacHelper_1 e h fun h2 ↦ ?_
   rw [← h2] at nk
   exact nk <| minFac_prime h.one_lt.ne'
 
 theorem minFacHelper_3 {n k k' : ℕ} (e : k + 2 = k') (nk : (n % k).beq 0 = false)
     (h : MinFacHelper n k) : MinFacHelper n k' := by
-  refine minFacHelper_1 e h λ h2 ↦ ?_
+  refine minFacHelper_1 e h fun h2 ↦ ?_
   have nk := Nat.ne_of_beq_eq_false nk
   rw [← Nat.dvd_iff_mod_eq_zero, ← h2] at nk
   exact nk <| minFac_dvd n
@@ -111,7 +109,7 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
   | n, _, k, ⟨rfl⟩, h1, h2 => by
     refine ⟨(Nat.prime_def_minFac.mp ?_).2⟩
     rw [Nat.prime_def_le_sqrt]
-    refine ⟨h1.one_lt, λ m hm hmn h2mn ↦ ?_⟩
+    refine ⟨h1.one_lt, fun m hm hmn h2mn ↦ ?_⟩
     exact lt_irrefl m <| calc
       m ≤ sqrt n   := hmn
       _ < k        := sqrt_lt.mpr (ble_eq_false.mp h2)
@@ -120,7 +118,7 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
 @[norm_num Nat.minFac _] partial def evalMinFac :
-  NormNumExt where eval {u α} e := do
+  NormNumExt where eval {_ _} e := do
   let .app (.const ``Nat.minFac _) (n : Q(ℕ)) ← whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨nn, pn⟩ ← deriveNat n sℕ
@@ -177,7 +175,7 @@ theorem isNat_prime_2 : {n n' : ℕ} →
 theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime := isNat.natElim h
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.Prime n`. -/
-@[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {u α} e := do
+@[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {_ _} e := do
   let .app (.const `Nat.Prime _) (n : Q(ℕ)) ← whnfR e | failure
   let ⟨nn, pn⟩ ← deriveNat n _
   let n' := nn.natLit!
@@ -234,3 +232,9 @@ theorem factorsHelper_end (n : ℕ) (l : List ℕ) (H : FactorsHelper n 2 l) : N
   have := List.chain'_iff_pairwise.1 (@List.Chain'.tail _ _ (_ :: _) h₁)
   (List.eq_of_perm_of_sorted (Nat.factors_unique h₃ h₂) this (Nat.factors_sorted _)).symm
 -/
+
+end NormNum
+
+end Meta
+
+end Mathlib
