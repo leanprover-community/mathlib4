@@ -1,11 +1,13 @@
 /-
-Copyright © 2024 Frédéric Marbach. All rights reserved.
+Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
-import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
+import Mathlib.RingTheory.Nilpotent.Exp
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations
@@ -14,8 +16,9 @@ This file defines *Lie derivations* and establishes some basic properties.
 
 ## Main definitions
 
-- `LieDerivation` : A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an
+- `LieDerivation`: A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an
 `R`-linear map that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`.
+- `LieDerivation.inner`: The natural map from a Lie module to the derivations taking values in it.
 
 ## Main statements
 
@@ -102,23 +105,44 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
 
 /-- Two Lie derivations equal on a set are equal on its Lie span. -/
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
-    Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) :=
-    fun z hz =>
-      have zero : D1 0 = D2 0 :=
-        by simp only [map_zero]
-      have smul : ∀ (r : R), ∀ {x : L}, D1 x = D2 x → D1 (r • x) = D2 (r • x) :=
-        fun _ _ hx => by simp only [map_smul, hx]
-      have add : ∀ x y, D1 x = D2 x → D1 y = D2 y → D1 (x + y) = D2 (x + y) :=
-        fun _ _ hx hy => by simp only [map_add, hx, hy]
-      have lie : ∀ x y, D1 x = D2 x → D1 y = D2 y → D1 ⁅x, y⁆ = D2 ⁅x, y⁆ :=
-        fun _ _ hx hy => by simp only [apply_lie_eq_sub, hx, hy]
-      LieSubalgebra.lieSpan_induction R (p := fun x => D1 x = D2 x) hz h zero smul add lie
+    Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) := by
+  intro _ hx
+  induction hx using LieSubalgebra.lieSpan_induction with
+  | mem x hx => exact h hx
+  | zero => simp
+  | add x y _ _ hx hy => simp [hx, hy]
+  | smul t x _ hx => simp [hx]
+  | lie x y _ _ hx hy => simp [hx, hy]
 
 /-- If the Lie span of a set is the whole Lie algebra, then two Lie derivations equal on this set
 are equal on the whole Lie algebra. -/
 theorem ext_of_lieSpan_eq_top (s : Set L) (hs : LieSubalgebra.lieSpan R L s = ⊤)
     (h : Set.EqOn D1 D2 s) : D1 = D2 :=
   ext fun _ => eqOn_lieSpan h <| hs.symm ▸ trivial
+
+section
+
+open Finset Nat
+
+/-- The general Leibniz rule for Lie derivatives. -/
+theorem iterate_apply_lie (D : LieDerivation R L L) (n : ℕ) (a b : L) :
+    D^[n] ⁅a, b⁆ = ∑ ij ∈ antidiagonal n, choose n ij.1 • ⁅D^[ij.1] a, D^[ij.2] b⁆ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [sum_antidiagonal_choose_succ_nsmul (M := L) (fun i j => ⁅D^[i] a, D^[j] b⁆) n]
+    simp only [Function.iterate_succ_apply', ih, map_sum, map_nsmul, apply_lie_eq_add, smul_add,
+      sum_add_distrib, add_right_inj]
+    refine sum_congr rfl fun ⟨i, j⟩ hij ↦ ?_
+    rw [n.choose_symm_of_eq_add (mem_antidiagonal.1 hij).symm]
+
+/-- Alternate version of the general Leibniz rule for Lie derivatives. -/
+theorem iterate_apply_lie' (D : LieDerivation R L L) (n : ℕ) (a b : L) :
+    D^[n] ⁅a, b⁆ = ∑ i ∈ range (n + 1), n.choose i • ⁅D^[i] a, D^[n - i] b⁆ := by
+  rw [iterate_apply_lie D n a b]
+  exact sum_antidiagonal_eq_sum_range_succ (fun i j ↦ n.choose i • ⁅D^[i] a, D^[j] b⁆) n
+
+end
 
 instance instZero : Zero (LieDerivation R L M) where
   zero :=
@@ -224,6 +248,8 @@ theorem coe_smul_linearMap (r : S) (D : LieDerivation R L M) : ↑(r • D) = r 
 theorem smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :=
   rfl
 
+instance instSMulBase : SMulBracketCommClass R L M := ⟨fun s l a ↦ (lie_smul s l a).symm⟩
+
 instance instSMulNat : SMulBracketCommClass ℕ L M := ⟨fun s l a => (lie_nsmul l a s).symm⟩
 
 instance instSMulInt : SMulBracketCommClass ℤ L M := ⟨fun s l a => (lie_zsmul l a s).symm⟩
@@ -236,6 +262,9 @@ def coeFnAddMonoidHom : LieDerivation R L M →+ L → M where
   toFun := (↑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+lemma coeFnAddMonoidHom_apply (D : LieDerivation R L M) : coeFnAddMonoidHom D = D := rfl
 
 instance : DistribMulAction S (LieDerivation R L M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
@@ -265,7 +294,7 @@ instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
       LinearMap.sub_apply, LinearMap.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
     abel)
 
-variable (D : LieDerivation R L L) {D1 D2 : LieDerivation R L L}
+variable {D1 D2 : LieDerivation R L L}
 
 @[simp]
 lemma commutator_coe_linear_map : ↑⁅D1, D2⁆ = ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ :=
@@ -284,11 +313,13 @@ instance : LieRing (LieDerivation R L L) where
   leibniz_lie d e f := by
     ext a; simp only [commutator_apply, add_apply, sub_apply, map_sub]; abel
 
-instance : SMulBracketCommClass R L L := ⟨fun s x y => (lie_smul s x y).symm⟩
-
 /-- The set of Lie derivations from a Lie algebra `L` to itself is a Lie algebra. -/
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
   lie_smul := fun r d e => by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
+
+@[simp] lemma lie_apply (D₁ D₂ : LieDerivation R L L) (x : L) :
+    ⁅D₁, D₂⁆ x = D₁ (D₂ x) - D₂ (D₁ x) :=
+  rfl
 
 end
 
@@ -312,5 +343,77 @@ instance instNoetherian [IsNoetherian R L] : IsNoetherian R (LieDerivation R L L
   isNoetherian_of_linearEquiv (LinearEquiv.ofInjective _ (toLinearMapLieHom_injective R L)).symm
 
 end
+
+section Inner
+
+variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+    [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+
+/-- The natural map from a Lie module to the derivations taking values in it. -/
+@[simps!]
+def inner : M →ₗ[R] LieDerivation R L M where
+  toFun m :=
+    { __ := (LieModule.toEnd R L M : L →ₗ[R] Module.End R M).flip m
+      leibniz' := by simp }
+  map_add' m n := by ext; simp
+  map_smul' t m := by ext; simp
+
+instance instLieRingModule : LieRingModule L (LieDerivation R L M) where
+  bracket x D := inner R L M (D x)
+  add_lie x y D := by simp
+  lie_add x D₁ D₂ := by simp
+  leibniz_lie x y D := by simp
+
+@[simp] lemma lie_lieDerivation_apply (x y : L) (D : LieDerivation R L M) :
+    ⁅x, D⁆ y = ⁅y, D x⁆ :=
+  rfl
+
+@[simp] lemma lie_coe_lieDerivation_apply (x : L) (D : LieDerivation R L M) :
+    ⁅x, (D : L →ₗ[R] M)⁆ = ⁅x, D⁆ := by
+  ext; simp
+
+instance instLieModule : LieModule R L (LieDerivation R L M) where
+  smul_lie t x D := by ext; simp
+  lie_smul t x D := by ext; simp
+
+protected lemma leibniz_lie (x : L) (D₁ D₂ : LieDerivation R L L) :
+    ⁅x, ⁅D₁, D₂⁆⁆ = ⁅⁅x, D₁⁆, D₂⁆ + ⁅D₁, ⁅x, D₂⁆⁆ := by
+  ext y
+  simp [-lie_skew, ← lie_skew (D₁ x) (D₂ y), ← lie_skew (D₂ x) (D₁ y), sub_eq_neg_add]
+
+end Inner
+
+section ExpNilpotent
+
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra ℚ L]
+  (D : LieDerivation R L L)
+
+/-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
+automorphism. -/
+noncomputable def exp (h : IsNilpotent D.toLinearMap) :
+    L ≃ₗ⁅R⁆ L :=
+  { toLinearMap := IsNilpotent.exp D.toLinearMap
+    map_lie' := by
+      let _i := LieRing.toNonUnitalNonAssocRing L
+      have : SMulCommClass R L L := LieAlgebra.smulCommClass R L
+      have : IsScalarTower R L L := LieAlgebra.isScalarTower R L
+      exact Module.End.exp_mul_of_derivation R L D.toLinearMap D.apply_lie_eq_add h
+    invFun x := IsNilpotent.exp (- D.toLinearMap) x
+    left_inv x := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
+        ← LinearMap.mul_eq_comp, h.exp_neg_mul_exp_self, LinearMap.one_apply]
+    right_inv x := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
+        ← LinearMap.mul_eq_comp, h.exp_mul_exp_neg_self, LinearMap.one_apply] }
+
+lemma exp_apply (h : IsNilpotent D.toLinearMap) :
+    exp D h = IsNilpotent.exp D.toLinearMap :=
+  rfl
+
+lemma exp_map_apply (h : IsNilpotent D.toLinearMap) (l : L) :
+    exp D h l = IsNilpotent.exp D.toLinearMap l :=
+  DFunLike.congr_fun (exp_apply D h) l
+
+end ExpNilpotent
 
 end LieDerivation

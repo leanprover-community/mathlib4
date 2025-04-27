@@ -5,9 +5,8 @@ Authors: Artur Szafarczyk, Suraj Krishna M S, Jean-Baptiste Stiegler, Isabelle D
 Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken,
 Filippo A. E. Nuccio
 -/
-import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Ternary Cantor Set
@@ -17,14 +16,14 @@ This file defines the Cantor ternary set and proves a few properties.
 ## Main Definitions
 
 * `preCantorSet n`: The order `n` pre-Cantor set, defined inductively as the union of the images
-  under the functions `(· / 3)` and `(2 * · / 3)`, with `preCantorSet 0 := Set.Icc 0 1`, i.e.
+  under the functions `(· / 3)` and `((2 + ·) / 3)`, with `preCantorSet 0 := Set.Icc 0 1`, i.e.
   `preCantorSet 0` is the unit interval [0,1].
 * `cantorSet`: The ternary Cantor set, defined as the intersection of all pre-Cantor sets.
 -/
 
 /-- The order `n` pre-Cantor set, defined starting from `[0, 1]` and successively removing the
     middle third of each interval. Formally, the order `n + 1` pre-Cantor set is the
-    union of the images under the functions `(· / 3)` and `(2 * · / 3)` of `preCantorSet n`.
+    union of the images under the functions `(· / 3)` and `((2 + ·) / 3)` of `preCantorSet n`.
 -/
 def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
@@ -79,15 +78,15 @@ lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 :=
   Set.iInter_subset _ 0
 
 /-- The preCantor sets are closed. -/
-lemma isClosed_preCantorSet (n : ℕ): IsClosed (preCantorSet n) := by
+lemma isClosed_preCantorSet (n : ℕ) : IsClosed (preCantorSet n) := by
   let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by norm_num)
   let g := (Homeomorph.addLeft (2 : ℝ)).trans f
   induction n with
   | zero => exact isClosed_Icc
   | succ n ih =>
     refine IsClosed.union ?_ ?_
-    · simpa [f, div_eq_inv_mul] using f.closedEmbedding.closed_iff_image_closed.mp ih
-    · simpa [g, f, div_eq_inv_mul] using g.closedEmbedding.closed_iff_image_closed.mp ih
+    · simpa [f, div_eq_inv_mul] using f.isClosedEmbedding.isClosed_iff_image_isClosed.mp ih
+    · simpa [g, f, div_eq_inv_mul] using g.isClosedEmbedding.isClosed_iff_image_isClosed.mp ih
 
 /-- The ternary Cantor set is closed. -/
 lemma isClosed_cantorSet : IsClosed cantorSet :=
