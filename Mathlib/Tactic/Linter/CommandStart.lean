@@ -215,10 +215,10 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       --let center := center' + origSubstring.stopPos - origSubstring.startPos
       let center := origSubstring.stopPos - s.srcPos
       let rg : String.Range := ⟨center, center + ⟨1⟩⟩
-      logInfoAt (.ofRange rg)
+      Linter.logLint linter.style.commandStart (.ofRange rg)
         m!"{s.msg}\n\n\
-          Original: '{orig.takeRight (s.srcNat + 2) |>.take 5 |>.replace "\n" "⏎"}'\n\
-          Expected: '{st.takeRight (s.fmtPos + 2) |>.take 5 |>.replace "\n" "⏎"}'"
+          Current syntax:  '{orig.takeRight (s.srcNat + 5) |>.take 10 |>.replace "\n" "⏎"}'\n\
+          Expected syntax: '{st.takeRight (s.fmtPos + 5) |>.take 10 |>.replace "\n" "⏎"}'\n"
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg) --(stx.getHead?.getD stx)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
 

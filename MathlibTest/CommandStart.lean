@@ -62,8 +62,24 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 
 
 /--
-warning: Current syntax:  'mple  '
+warning: extra space
+
+Current syntax:  'mple  :  T'
 Expected syntax: 'mple : Tru'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space
+
+Current syntax:  'e  :  True'
+Expected syntax: 'le : True '
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: missing space
+
+Current syntax:  'ue :=trivi'
+Expected syntax: 'ue :=⏎  tr'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -71,7 +87,9 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 example  :  True :=trivial
 
 /--
-warning: Current syntax:  'le (a: Nat'
+warning: missing space
+
+Current syntax:  'le (a: Nat'
 Expected syntax: 'le (a : Na'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
@@ -80,19 +98,20 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 variable (a: Nat)
 
 /--
-warning: unused variable `a`
-note: this linter can be disabled with `set_option linter.unusedVariables false`
----
-warning: Current syntax:  'le (a: Nat'
-Expected syntax: 'le (a : Na'
+warning: missing space
+
+Current syntax:  'e (_a: Nat'
+Expected syntax: 'e (_a : Na'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-example (a: Nat) : True := trivial
+example (_a: Nat) : True := trivial
 
 /--
-warning: Current syntax:  'le {a: Nat'
+warning: missing space
+
+Current syntax:  'le {a: Nat'
 Expected syntax: 'le {a : Na'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
@@ -132,7 +151,9 @@ d -/
 example (a : Nat) (b : Int) : True := trivial
 
 /--
-warning: Current syntax:  ' {a :Nat} '
+warning: missing space
+
+Current syntax:  ' {a :Nat} '
 Expected syntax: ' {a : Nat}'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
@@ -141,8 +162,17 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 example {a :Nat} : a = a := rfl
 
 /--
-warning: Current syntax:  'mple  {a :'
+warning: extra space
+
+Current syntax:  'mple  {a :'
 Expected syntax: 'mple {a : '
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: missing space
+
+Current syntax:  ' {a :Nat} '
+Expected syntax: ' {a : Nat}'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -153,7 +183,9 @@ example  {a :Nat} : a = a := rfl
 warning: unused variable `b`
 note: this linter can be disabled with `set_option linter.unusedVariables false`
 ---
-warning: Current syntax:  ' Nat}{b : '
+warning: missing space
+
+Current syntax:  ' Nat}{b : '
 Expected syntax: ' Nat} {b :'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
@@ -162,7 +194,9 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 example {a : Nat}{b : Nat} : a = a := rfl
 
 /--
-warning: Current syntax:  'Nat}  '
+warning: extra space
+
+Current syntax:  'Nat}  : a '
 Expected syntax: 'Nat} : a ='
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
@@ -171,7 +205,23 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 example {a : Nat}  : a = a := rfl
 
 /--
-warning: Current syntax:  'alpha   ] '
+warning: extra space
+
+Current syntax:  'alpha   ] '
+Expected syntax: 'alpha] {a '
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space
+
+Current syntax:  'lpha   ] {'
+Expected syntax: 'alpha] {a '
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space
+
+Current syntax:  'pha   ] {a'
 Expected syntax: 'alpha] {a '
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
@@ -206,7 +256,9 @@ def Prop.Hello := 0
 def Type.Hello := 0
 
 /--
-warning: Current syntax:  'mple  '
+warning: extra space
+
+Current syntax:  'mple  : Tr'
 Expected syntax: 'mple : Tru'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
