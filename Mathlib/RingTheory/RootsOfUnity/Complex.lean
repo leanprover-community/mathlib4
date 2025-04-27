@@ -287,31 +287,31 @@ theorem exp_inj : Function.Injective (exp n) := by
   simp only [Subtype.mk.injEq] at hij
   have e2 : 2 * π * (i.val / n) = 2 * π * (j.val / n) := by
     apply e1
-    rw [Set.mem_Ico]
-    constructor
-    · apply (mul_nonneg_iff_of_pos_left two_pi_pos).mpr
-      apply div_nonneg
-      exact Nat.cast_nonneg' i.val
-      exact Nat.cast_nonneg' n
-    · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
-      apply (div_lt_one _).mpr
-      norm_cast
-      apply ZMod.val_lt
-      simp only [Nat.cast_pos]
-      apply Nat.pos_of_ne_zero
-      exact (NeZero.ne' n).symm
-    constructor
-    · apply (mul_nonneg_iff_of_pos_left two_pi_pos).mpr
-      apply div_nonneg
-      exact Nat.cast_nonneg' j.val
-      exact Nat.cast_nonneg' n
-    · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
-      apply (div_lt_one _).mpr
-      norm_cast
-      apply ZMod.val_lt
-      simp only [Nat.cast_pos]
-      apply Nat.pos_of_ne_zero
-      exact (NeZero.ne' n).symm
+      (by
+        constructor
+        · exact (mul_nonneg_iff_of_pos_left two_pi_pos).mpr
+            (div_nonneg (Nat.cast_nonneg' i.val) (Nat.cast_nonneg' n))
+        · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
+          apply (div_lt_one _).mpr
+          norm_cast
+          apply ZMod.val_lt
+          simp only [Nat.cast_pos]
+          apply Nat.pos_of_ne_zero
+          exact (NeZero.ne' n).symm
+      )
+      (by
+        constructor
+        · exact (mul_nonneg_iff_of_pos_left two_pi_pos).mpr
+            (div_nonneg (Nat.cast_nonneg' j.val) (Nat.cast_nonneg' n))
+        · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
+          apply (div_lt_one _).mpr
+          norm_cast
+          apply ZMod.val_lt
+          simp only [Nat.cast_pos]
+          apply Nat.pos_of_ne_zero
+          exact (NeZero.ne' n).symm
+      )
+      hij
   rw [mul_right_inj' two_pi_ne_zero] at e2
   rw [div_left_inj' (by rw [Nat.cast_ne_zero]; exact (NeZero.ne' n).symm)] at e2
   apply ZMod.val_injective
