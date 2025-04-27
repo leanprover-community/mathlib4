@@ -8,7 +8,6 @@ import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.Algebra.Module.LinearMapPiProd
-import Mathlib.Topology.DerivedSet
 
 /-!
 # Tangent cone
@@ -67,23 +66,30 @@ def UniqueDiffOn (s : Set E) : Prop :=
 
 end Defs
 
-variable {R E F G : Type*}
-
 section TangentCone
 
 section SMul
 
-variable [AddCommMonoid E] [SMul R E] [TopologicalSpace E] {s t : Set E} {x y : E}
+variable {R : Type u} {E : Type v} [AddCommMonoid E] [SMul R E] [TopologicalSpace E]
+  {s t : Set E} {x y : E}
 
 theorem isClosed_tangentConeAt : IsClosed (tangentConeAt R s x) :=
   isClosed_setOf_clusterPt
 
 theorem mem_tangentConeAt_of_seq {α : Type*} {l : Filter α} [l.NeBot] {c : α → R} {d : α → E}
     (hd₀ : Tendsto d l (𝓝 0)) (hd : ∀ᶠ n in l, x + d n ∈ s)
-    (hcd : Tendsto (fun n ↦ c n • d n) l (𝓝 y)) : y ∈ tangentConeAt R s x := by
-  refine .of_comp (tendsto_top.prodMk <| tendsto_nhdsWithin_iff.mpr ⟨hd₀, ?_⟩)
+    (hcd : Tendsto (fun n ↦ c n • d n) l (𝓝 y)) : y ∈ tangentConeAt R s x :=
+  .of_comp (tendsto_top.prodMk <| tendsto_nhdsWithin_iff.mpr ⟨hd₀, hd⟩)
     (by simpa [comp_def] using hcd.mapClusterPt)
-  simpa [← preimage_vadd] using hd
+
+theorem exists_tendsto_of_mem_tangentConeAt (h : y ∈ tangentConeAt R s x) :
+    ∃ (α : Type (max u v)) (l : Filter α), l.NeBot ∧ ∃ (c : α → R) (d : α → E),
+      Tendsto d l (𝓝 0) ∧ (∀ n, x + d n ∈ s) ∧ Tendsto (fun n ↦ c n • d n) l (𝓝 y) := by
+  rw [tangentConeAt, mem_setOf_eq, MapClusterPt, ClusterPt, ← neBot_inf_comap_iff_map',
+    top_prod, nhdsWithin, comap_inf, comap_principal, ← inf_assoc, preimage_preimage,
+    ← map_comap_setCoe_val, map_neBot_iff, comap_inf, comap_comap, comap_comap] at h
+  exact ⟨_, _, h, fun cd ↦ cd.1.1, fun cd ↦ cd.1.2, tendsto_comap.mono_left inf_le_right,
+    Subtype.property, tendsto_comap.mono_left inf_le_left⟩
 
 @[gcongr]
 theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt R s x ⊆ tangentConeAt R t x :=
@@ -145,6 +151,8 @@ theorem tangentConeAt_of_not_mem_closure (h : x ∉ closure s) : tangentConeAt R
   exact mem_closure_of_tangentConeAt_nonempty h
 
 end SMul
+
+variable {R E F : Type*}
 
 section AddCommMonoid
 
@@ -315,29 +323,41 @@ theorem UniqueDiffOn.prod (hs : UniqueDiffOn R s) (ht : UniqueDiffOn R t) :
 
 end TVSSemiring
 
-section TVSDivisionRing
+/-
+section TVSNormedField
 
-variable [NormedDivisionRing R] [TopologicalSpace R]
-  [AddCommGroup E] [Module R E] [TopologicalSpace E] [ContinuousSMul R E] [ContinuousAdd E]
-  [AddCommGroup F] [Module R F] [TopologicalSpace F] [ContinuousConstSMul R F] [ContinuousAdd F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+  [AddCommGroup F] [TopologicalSpace F] [ContinuousAdd F] [Module 𝕜 F] [ContinuousSMul 𝕜 F]
   {s : Set E} {x : E} {t : Set F} {y : F}
 
-theorem IsCompact.rescale_to_shell (hs : IsCompact s) (hs₀ : s ∈ 𝓝 0) {c : R} (hc : 1 < ‖c‖)
+theorem IsCompact.rescale_to_shell (hs : IsCompact s) (hs₀ : s ∈ 𝓝 0) {c : 𝕜} (hc : 1 < ‖c‖)
     (hx : x ≠ 0) : ∃ m : ℤ, c ^ m • x ∈ s \ c⁻¹ • s := by
-  have : Tendsto (c ^ · • x : ℤ → E) atBot (𝓝 0) := by
-    
+  have H₁ : Tendsto (c ^ · • x : ℤ → E) atBot (𝓝 0) := by
+    sorry -- TODO: 
+  have hc₀ : c ≠ 0 := by rintro rfl; simp [one_pos.not_lt] at hc
+  have H₂ : Set.Nonempty {m : ℤ | c ^ m • x ∈ s} :=
+    Filter.nonempty_of_mem (H₁.eventually hs₀)
+  suffices BddAbove {m : ℤ | c ^ m • x ∈ s} by
+    use sSup {m : ℤ | c ^ m • x ∈ s}, Int.csSup_mem H₂ this
+    rw [mem_inv_smul_set_iff₀ hc₀, smul_smul, Commute.self_zpow₀, ← zpow_add_one₀ hc₀]
+    intro h
+    simpa using le_csSup this h
+  
   sorry
 
+
 end TVSDivisionRing
+-/
 
 section Pi
 
-variable {ι : Type*} [DecidableEq ι] {E : ι → Type*} [Semiring R]
+variable {ι : Type*} {E : ι → Type*} [Semiring R]
     [∀ i, AddCommGroup (E i)] [∀ i, Module R (E i)] [∀ i, TopologicalSpace (E i)]
     [∀ i, ContinuousAdd (E i)]
 
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
-theorem mapsTo_tangentConeAt_pi [∀ i, ContinuousConstSMul R (E i)]
+theorem mapsTo_tangentConeAt_pi [DecidableEq ι] [∀ i, ContinuousConstSMul R (E i)]
     {s : ∀ i, Set (E i)} {x : ∀ i, E i} {i : ι} (hi : ∀ j ≠ i, x j ∈ closure (s j)) :
     MapsTo (Pi.single i) (tangentConeAt R (s i) (x i))
       (tangentConeAt R (Set.pi univ s) x) := by
@@ -354,6 +374,7 @@ theorem UniqueDiffWithinAt.univ_pi [∀ i, ContinuousConstSMul R (E i)]
     {s : ∀ i, Set (E i)} {x : ∀ i, E i} (h : ∀ i, UniqueDiffWithinAt R (s i) (x i)) :
     UniqueDiffWithinAt R (.pi univ s) x where
   dense_tangentCone := by
+    classical
     have := dense_pi univ fun i _ ↦ (h i).dense_tangentCone
     simp only [dense_iff_closure_eq, closure_pi_set, ← Submodule.closure_coe_iSup_map_single,
       ← univ_subset_iff, Submodule.map_span] at this ⊢
