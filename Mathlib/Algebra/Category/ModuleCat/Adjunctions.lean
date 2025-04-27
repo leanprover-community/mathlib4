@@ -15,6 +15,8 @@ the forgetful functor from `R`-modules to types.
 -/
 
 
+assert_not_exists Cardinal
+
 noncomputable section
 
 open CategoryTheory
@@ -34,9 +36,9 @@ free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
-  map {_ _} f := Finsupp.lmapDomain _ _ f
-  map_id := by intros; exact Finsupp.lmapDomain_id _ _
-  map_comp := by intros; exact Finsupp.lmapDomain_comp _ _ _ _
+  map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ f
+  map_id := by intros; ext : 1; exact Finsupp.lmapDomain_id _ _
+  map_comp := by intros; ext : 1; exact Finsupp.lmapDomain_comp _ _ _ _
 
 variable {R}
 
@@ -47,13 +49,13 @@ noncomputable def freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single
 lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
     (h : ∀ (x : X), f (freeMk x) = g (freeMk x)) :
     f = g :=
-  (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
+  ModuleCat.hom_ext (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
 
 /-- The morphism of modules `(free R).obj X ⟶ M` corresponding
 to a map `f : X ⟶ M`. -/
 noncomputable def freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
     (free R).obj X ⟶ M :=
-  Finsupp.lift M R X f
+  ofHom <| Finsupp.lift M R X f
 
 @[simp]
 lemma freeDesc_apply {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
@@ -107,12 +109,11 @@ namespace FreeMonoidal
 (This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
 def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
-  hom := Finsupp.lsingle PUnit.unit
-  inv := Finsupp.lapply PUnit.unit
+  hom := ofHom <| Finsupp.lsingle PUnit.unit
+  inv := ofHom <| Finsupp.lapply PUnit.unit
   hom_inv_id := by
-    ext x
-    dsimp
-    erw [Finsupp.lapply_apply, Finsupp.lsingle_apply, Finsupp.single_eq_same]
+    ext
+    simp [free]
   inv_hom_id := by
     ext ⟨⟩
     dsimp [freeMk]
@@ -211,7 +212,6 @@ universe v u
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/pull/5171): Removed has_nonempty_instance nolint; linter not ported yet
 @[nolint unusedArguments]
 def Free (_ : Type*) (C : Type u) :=
   C
@@ -237,7 +237,6 @@ instance categoryFree : Category (Free R C) where
   comp {X _ Z : C} f g :=
     (f.sum (fun f' s => g.sum (fun g' t => Finsupp.single (f' ≫ g') (s * t))) : (X ⟶ Z) →₀ R)
   assoc {W X Y Z} f g h := by
-    dsimp
     -- This imitates the proof of associativity for `MonoidAlgebra`.
     simp only [sum_sum_index, sum_single_index, single_zero, single_add, eq_self_iff_true,
       forall_true_iff, forall₃_true_iff, add_mul, mul_add, Category.assoc, mul_assoc,
@@ -246,9 +245,6 @@ instance categoryFree : Category (Free R C) where
 namespace Free
 
 section
-
--- Porting note: removed local reducible attribute for categoryFree, adjusted dsimp invocations
--- accordingly
 
 instance : Preadditive (Free R C) where
   homGroup _ _ := Finsupp.instAddCommGroup
@@ -289,7 +285,6 @@ def embedding : C ⥤ Free R C where
   map_id _ := rfl
   map_comp {X Y Z} f g := by
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): simp used to be able to close this goal
-    dsimp only []
     rw [single_comp_single, one_mul]
 
 variable {C} {D : Type u} [Category.{v} D] [Preadditive D] [Linear R D]
@@ -304,30 +299,28 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
   map {_ _} f := f.sum fun f' r => r • F.map f'
   map_id := by dsimp [CategoryTheory.categoryFree]; simp
   map_comp {X Y Z} f g := by
-    apply Finsupp.induction_linear f
-    · simp
-    · intro f₁ f₂ w₁ w₂
+    induction f using Finsupp.induction_linear with
+    | zero => simp
+    | add f₁ f₂ w₁ w₂ =>
       rw [add_comp]
-      dsimp at *
       rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
       · simp only [w₁, w₂, add_comp]
       · intros; rw [zero_smul]
       · intros; simp only [add_smul]
       · intros; rw [zero_smul]
       · intros; simp only [add_smul]
-    · intro f' r
-      apply Finsupp.induction_linear g
-      · simp
-      · intro f₁ f₂ w₁ w₂
+    | single f' r =>
+      induction g using Finsupp.induction_linear with
+      | zero => simp
+      | add f₁ f₂ w₁ w₂ =>
         rw [comp_add]
-        dsimp at *
         rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
         · simp only [w₁, w₂, comp_add]
         · intros; rw [zero_smul]
         · intros; simp only [add_smul]
         · intros; rw [zero_smul]
         · intros; simp only [add_smul]
-      · intro g' s
+      | single g' s =>
         rw [single_comp_single _ _ f' g' r s]
         simp [mul_comm r s, mul_smul]
 
@@ -358,12 +351,11 @@ def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear 
   NatIso.ofComponents (fun X => α.app X)
     (by
       intro X Y f
-      apply Finsupp.induction_linear f
-      · simp
-      · intro f₁ f₂ w₁ w₂
-        -- Porting note: Using rw instead of simp
+      induction f using Finsupp.induction_linear with
+      | zero => simp
+      | add f₁ f₂ w₁ w₂ =>
         rw [Functor.map_add, add_comp, w₁, w₂, Functor.map_add, comp_add]
-      · intro f' r
+      | single f' r =>
         rw [Iso.app_hom, Iso.app_hom, ← smul_single_one, F.map_smul, G.map_smul, smul_comp,
           comp_smul]
         change r • (embedding R C ⋙ F).map f' ≫ _ = r • _ ≫ (embedding R C ⋙ G).map f'

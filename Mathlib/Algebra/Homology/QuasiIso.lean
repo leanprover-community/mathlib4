@@ -4,8 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+=======
+import Mathlib.Algebra.Homology.ShortComplex.Retract
+import Mathlib.CategoryTheory.MorphismProperty.Composition
+>>>>>>> origin/jriou_localization_bump_deps
 
 /-!
 # Quasi-isomorphisms
@@ -52,6 +57,15 @@ lemma quasiIsoAt_iff' (f : K ⟶ L) (i j k : ι) (hi : c.prev j = i) (hk : c.nex
   rw [quasiIsoAt_iff]
   exact ShortComplex.quasiIso_iff_of_arrow_mk_iso _ _
     (Arrow.isoOfNatIso (natIsoSc' C c i j k hi hk) (Arrow.mk f))
+
+lemma quasiIsoAt_of_retract {f : K ⟶ L} {f' : K' ⟶ L'}
+    (h : RetractArrow f f') (i : ι) [K.HasHomology i] [L.HasHomology i]
+    [K'.HasHomology i] [L'.HasHomology i] [hf' : QuasiIsoAt f' i] :
+    QuasiIsoAt f i := by
+  rw [quasiIsoAt_iff] at hf' ⊢
+  have : RetractArrow ((shortComplexFunctor C c i).map f)
+    ((shortComplexFunctor C c i).map f') := h.map (shortComplexFunctor C c i).mapArrow
+  exact ShortComplex.quasiIso_of_retract this
 
 lemma quasiIsoAt_iff_isIso_homologyMap (f : K ⟶ L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] :
@@ -216,10 +230,8 @@ lemma quasiIso_iff_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.m
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     [∀ i, K'.HasHomology i] [∀ i, L'.HasHomology i] :
     QuasiIso φ ↔ QuasiIso φ' := by
-  rw [← quasiIso_iff_comp_left (show K' ⟶ K from e.inv.left) φ,
+  simp [← quasiIso_iff_comp_left (show K' ⟶ K from e.inv.left) φ,
     ← quasiIso_iff_comp_right φ' (show L' ⟶ L from e.inv.right)]
-  erw [Arrow.w e.inv]
-  rfl
 
 lemma quasiIso_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ ≅ Arrow.mk φ')
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
@@ -227,6 +239,7 @@ lemma quasiIso_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ
     [hφ : QuasiIso φ] : QuasiIso φ' := by
   simpa only [← quasiIso_iff_of_arrow_mk_iso φ φ' e]
 
+<<<<<<< HEAD
 lemma quasiIso_iff_acyclic (f : K ⟶ L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     (hK : K.Acyclic) :
     QuasiIso f ↔ L.Acyclic := by
@@ -237,6 +250,13 @@ lemma quasiIso_iff_acyclic' (f : K ⟶ L) [∀ i, K.HasHomology i] [∀ i, L.Has
     (hL : L.Acyclic) :
     QuasiIso f ↔ K.Acyclic := by
   simp only [quasiIso_iff, acyclic_iff, fun i => quasiIsoAt_iff_exactAt' f i (hL i)]
+=======
+lemma quasiIso_of_retractArrow {f : K ⟶ L} {f' : K' ⟶ L'}
+    (h : RetractArrow f f') [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+    [∀ i, K'.HasHomology i] [∀ i, L'.HasHomology i] [QuasiIso f'] :
+    QuasiIso f where
+  quasiIsoAt i := quasiIsoAt_of_retract h i
+>>>>>>> origin/jriou_localization_bump_deps
 
 namespace HomologicalComplex
 
@@ -289,10 +309,35 @@ variable (C c)
 def quasiIso [CategoryWithHomology C] :
     MorphismProperty (HomologicalComplex C c) := fun _ _ f => QuasiIso f
 
-variable {C c}
+variable {C c} [CategoryWithHomology C]
 
 @[simp]
-lemma mem_quasiIso_iff [CategoryWithHomology C] (f : K ⟶ L) : quasiIso C c f ↔ QuasiIso f := by rfl
+lemma mem_quasiIso_iff (f : K ⟶ L) : quasiIso C c f ↔ QuasiIso f := by rfl
+
+instance : (quasiIso C c).IsMultiplicative where
+  id_mem _ := by
+    rw [mem_quasiIso_iff]
+    infer_instance
+  comp_mem _ _ hf hg := by
+    rw [mem_quasiIso_iff] at hf hg ⊢
+    infer_instance
+
+instance : (quasiIso C c).HasTwoOutOfThreeProperty where
+  of_postcomp f g hg hfg := by
+    rw [mem_quasiIso_iff] at hg hfg ⊢
+    rwa [← quasiIso_iff_comp_right f g]
+  of_precomp f g hf hfg := by
+    rw [mem_quasiIso_iff] at hf hfg ⊢
+    rwa [← quasiIso_iff_comp_left f g]
+
+instance : (quasiIso C c).IsStableUnderRetracts where
+  of_retract h hg := by
+    rw [mem_quasiIso_iff] at hg ⊢
+    exact quasiIso_of_retractArrow h
+
+instance : (quasiIso C c).RespectsIso :=
+  MorphismProperty.respectsIso_of_isStableUnderComposition
+    (fun _ _ _ (_ : IsIso _) ↦ by rw [mem_quasiIso_iff]; infer_instance)
 
 end HomologicalComplex
 

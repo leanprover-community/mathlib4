@@ -3,8 +3,8 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Logic.Basic
-import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Order.Defs.PartialOrder
 
 /-!

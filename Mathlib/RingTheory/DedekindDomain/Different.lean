@@ -120,7 +120,7 @@ variable [IsFractionRing A K]
 
 variable (A K) in
 lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
-    [NoZeroSMulDivisors A B] (I : Submodule B (FractionRing B)) :
+    [FaithfulSMul A B] (I : Submodule B (FractionRing B)) :
     (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L) =
       traceDual A K (I.map (FractionRing.algEquiv B L)) := by
   show Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
@@ -142,7 +142,7 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
       RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
     rw [IsScalarTower.algebraMap_apply A B (FractionRing B), AlgEquiv.commutes,
       ← IsScalarTower.algebraMap_apply]
-  simp only [AlgEquiv.toRingEquiv_eq_coe, _root_.map_mul, AlgEquiv.coe_ringEquiv,
+  simp only [AlgEquiv.toRingEquiv_eq_coe, map_mul, AlgEquiv.coe_ringEquiv,
     AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, mem_one, AlgEquiv.algebraMap_eq_apply]
 
 variable [IsIntegrallyClosed A]
@@ -188,7 +188,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   rw [cramer_apply]
   apply IsIntegral.det
   intros j k
-  rw [updateColumn_apply]
+  rw [updateCol_apply]
   split
   · rw [mul_assoc]
     rw [mem_traceDual_iff_isIntegral] at hx
@@ -200,12 +200,11 @@ lemma isIntegral_discr_mul_of_mem_traceDual
 
 variable (A K)
 
-open scoped Classical
-
 variable [IsDomain A] [IsFractionRing B L] [Nontrivial B] [NoZeroDivisors B]
 
 namespace FractionalIdeal
 
+open scoped Classical in
 /-- The dual of a non-zero fractional ideal is the dual of the submodule under the traceform. -/
 noncomputable
 def dual (I : FractionalIdeal B⁰ L) :
@@ -237,8 +236,6 @@ namespace FractionalIdeal
 variable [IsFractionRing B L] [IsIntegrallyClosed A]
 
 open Submodule
-
-open scoped Classical
 
 local notation:max I:max "ᵛ" => Submodule.traceDual A K I
 
@@ -322,8 +319,9 @@ lemma le_dual_iff (hJ : J ≠ 0) :
 variable (I)
 
 lemma inv_le_dual :
-    I⁻¹ ≤ dual A K I :=
-  if hI : I = 0 then by simp [hI] else le_dual_inv_aux A K hI (le_of_eq (mul_inv_cancel₀ hI))
+    I⁻¹ ≤ dual A K I := by
+  classical
+  exact if hI : I = 0 then by simp [hI] else le_dual_inv_aux A K hI (le_of_eq (mul_inv_cancel₀ hI))
 
 lemma dual_inv_le :
     (dual A K I)⁻¹ ≤ I := by
@@ -464,7 +462,7 @@ open Submodule
 
 lemma differentialIdeal_le_fractionalIdeal_iff
     {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) [NoZeroSMulDivisors A B] :
-    differentIdeal A B ≤ I ↔ (((I⁻¹ : _) : Submodule B L).restrictScalars A).map
+    differentIdeal A B ≤ I ↔ (((I⁻¹ :) : Submodule B L).restrictScalars A).map
       ((Algebra.trace K L).restrictScalars A) ≤ 1 := by
   rw [coeIdeal_differentIdeal A K L B, FractionalIdeal.inv_le_comm (by simp) hI,
     ← FractionalIdeal.coe_le_coe, FractionalIdeal.coe_dual_one]
@@ -562,7 +560,7 @@ lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
     FractionalIdeal.mem_one_iff, forall_exists_index, forall_apply_eq_imp_iff]
   simp_rw [← IsScalarTower.toAlgHom_apply A B L x, ← AlgHom.map_adjoin_singleton]
   simp only [Subalgebra.mem_map, IsScalarTower.coe_toAlgHom', Submodule.one_eq_range,
-    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, ← _root_.map_mul]
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, ← map_mul]
   exact ⟨fun H b ↦ (mul_one b) ▸ H b 1 (one_mem _), fun H _ _ _ ↦ H _⟩
 
 open Polynomial Pointwise in
@@ -582,7 +580,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux [IsFractionRing B L] [IsDedekindDomain 
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
   obtain ⟨a, ha⟩ := (pow_dvd_pow _ (Nat.sub_le e 1)).trans hP
   have hp' := (Ideal.map_eq_bot_iff_of_injective
-    (NoZeroSMulDivisors.algebraMap_injective A B)).not.mpr hp
+    (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
   have habot : a ≠ ⊥ := fun ha' ↦ hp' (by simpa [ha'] using ha)
   have hPbot : P ≠ ⊥ := by
     rintro rfl; apply hp'
@@ -596,7 +594,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux [IsFractionRing B L] [IsDedekindDomain 
     rw [pow_add, hb, mul_assoc, mul_right_inj' (pow_ne_zero _ hPbot), pow_one, mul_comm] at ha
     exact ⟨_, ha.symm⟩
   suffices ∀ x ∈ a, intTrace A B x ∈ p by
-    have hP : ((P ^ (e - 1) : _)⁻¹ : FractionalIdeal B⁰ L) = a / p.map (algebraMap A B) := by
+    have hP : ((P ^ (e - 1) :)⁻¹ : FractionalIdeal B⁰ L) = a / p.map (algebraMap A B) := by
       apply inv_involutive.injective
       simp only [inv_inv, ha, FractionalIdeal.coeIdeal_mul, inv_div, ne_eq,
           FractionalIdeal.coeIdeal_eq_zero, mul_div_assoc]

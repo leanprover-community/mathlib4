@@ -210,10 +210,7 @@ def KernelFork.isLimitOfIsLimitOfIff {X Y : C} {g : X ⟶ Y} {c : KernelFork g} 
   KernelFork.IsLimit.ofι _ _
     (fun s hs ↦ hc.lift (KernelFork.ofι (ι := s ≫ e.inv)
       (by rw [iff, Category.assoc, Iso.inv_hom_id_assoc, hs])))
-    (fun s hs ↦ by
-      rw [← cancel_mono e.inv, Category.assoc, Category.assoc, e.hom_inv_id]
-      dsimp
-      rw [Category.comp_id, Fork.IsLimit.lift_ι, Fork.ι_ofι])
+    (fun s hs ↦ by simp [← cancel_mono e.inv])
     (fun s hs m hm ↦ Fork.IsLimit.hom_ext hc (by simpa [← cancel_mono e.hom] using hm))
 
 /-- If `c` is a limit kernel fork for `g : X ⟶ Y`, and `g' : X ⟶ Y'` is a another morphism,
@@ -278,7 +275,7 @@ theorem kernel.condition : kernel.ι f ≫ f = 0 :=
 
 /-- The kernel built from `kernel.ι f` is limiting. -/
 def kernelIsKernel : IsLimit (Fork.ofι (kernel.ι f) ((kernel.condition f).trans comp_zero.symm)) :=
-  IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by aesop_cat))
+  IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
 
 /-- Given any morphism `k : W ⟶ X` satisfying `k ≫ f = 0`, `k` factors through `kernel.ι f`
     via `kernel.lift : W ⟶ kernel f`. -/
@@ -309,6 +306,11 @@ abbrev kernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q 
     (w : f ≫ q = p ≫ f') : kernel f ⟶ kernel f' :=
   kernel.lift f' (kernel.ι f ≫ p) (by simp [← w])
 
+@[simp]
+lemma kernel.map_id {X Y : C} (f : X ⟶ Y) [HasKernel f] (q : Y ⟶ Y)
+    (w : f ≫ q = 𝟙 _ ≫ f) : kernel.map f f (𝟙 _) q w = 𝟙 _ := by
+  aesop
+
 /-- Given a commutative diagram
     X --f--> Y --g--> Z
     |        |        |
@@ -329,6 +331,11 @@ theorem kernel.lift_map {X Y Z X' Y' Z' : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasKer
     (r : Z ⟶ Z') (h₁ : f ≫ q = p ≫ f') (h₂ : g ≫ r = q ≫ g') :
     kernel.lift g f w ≫ kernel.map g g' q r h₂ = p ≫ kernel.lift g' f' w' := by
   ext; simp [h₁]
+
+@[simp]
+lemma kernel.map_zero {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel f] [HasKernel f']
+    (q : Y ⟶ Y') (w : f ≫ q = 0 ≫ f') : kernel.map f f' 0 q w = 0 := by
+  aesop
 
 /-- A commuting square of isomorphisms induces an isomorphism of kernels. -/
 @[simps]
@@ -423,13 +430,14 @@ def kernelCompMono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasKernel f] [Mono g
         simp)
   inv := kernel.lift _ (kernel.ι _) (by simp)
 
-#adaptation_note /-- nightly-2024-04-01 The `symm` wasn't previously necessary. -/
+#adaptation_note /-- nightly-2024-04-01
+The `symm` wasn't previously necessary. -/
 instance hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [HasKernel g] :
     HasKernel (f ≫ g) where
   exists_limit :=
     ⟨{  cone := KernelFork.ofι (kernel.ι g ≫ inv f) (by simp)
-        isLimit := isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by aesop_cat))
-            (by aesop_cat) fun s m w => by
+        isLimit := isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by simp))
+            (by simp) fun s m w => by
           simp_rw [← w]
           symm
           apply equalizer.hom_ext
@@ -442,6 +450,12 @@ def kernelIsIsoComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [HasKernel
     kernel (f ≫ g) ≅ kernel g where
   hom := kernel.lift _ (kernel.ι _ ≫ f) (by simp)
   inv := kernel.lift _ (kernel.ι _ ≫ inv f) (by simp)
+
+/-- Equal maps have isomorphic kernels. -/
+@[simps] def kernel.congr {X Y : C} (f g : X ⟶ Y) [HasKernel f] [HasKernel g]
+    (h : f = g) : kernel f ≅ kernel g where
+  hom := kernel.lift _ (kernel.ι f) (by simp [← h])
+  inv := kernel.lift _ (kernel.ι g) (by simp [h])
 
 end
 
@@ -658,7 +672,7 @@ lemma CokernelCofork.IsColimit.isIso_π {X Y : C} {f : X ⟶ Y} (c : CokernelCof
     infer_instance
   exact IsIso.of_isIso_comp_right c.π e.hom
 
-/-- If `c` is a colimit cokernel fork for `f : X ⟶ Y`, `e : Y ≅ Y'` and `f' : X' ⟶ Y` is a
+/-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, `e : Y ≅ Y'` and `f' : X' ⟶ Y` is a
 morphism, then there is a colimit cokernel cofork for `f'` with the same point as `c` if for any
 morphism `φ : Y ⟶ W`, there is an equivalence `f ≫ φ = 0 ↔ f' ≫ e.hom ≫ φ = 0`. -/
 def CokernelCofork.isColimitOfIsColimitOfIff {X Y : C} {f : X ⟶ Y} {c : CokernelCofork f}
@@ -668,12 +682,10 @@ def CokernelCofork.isColimitOfIsColimitOfIff {X Y : C} {f : X ⟶ Y} {c : Cokern
   CokernelCofork.IsColimit.ofπ _ _
     (fun s hs ↦ hc.desc (CokernelCofork.ofπ (π := e.inv ≫ s)
       (by rw [iff, e.hom_inv_id_assoc, hs])))
-    (fun s hs ↦ by
-      rw [← cancel_epi e.inv, Category.assoc, e.inv_hom_id_assoc,
-        Cofork.IsColimit.π_desc, Cofork.π_ofπ])
+    (fun s hs ↦ by simp [← cancel_epi e.inv])
     (fun s hs m hm ↦ Cofork.IsColimit.hom_ext hc (by simpa [← cancel_epi e.hom] using hm))
 
-/-- If `c` is a colimit cokernel fork for `f : X ⟶ Y`, and `f' : X' ⟶ Y is another
+/-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, and `f' : X' ⟶ Y is another
 morphism, then there is a colimit cokernel cofork for `f'` with the same point as `c` if for any
 morphism `φ : Y ⟶ W`, there is an equivalence `f ≫ φ = 0 ↔ f' ≫ φ = 0`. -/
 def CokernelCofork.isColimitOfIsColimitOfIff' {X Y : C} {f : X ⟶ Y} {c : CokernelCofork f}
@@ -756,7 +768,7 @@ lemma colimit_ι_zero_cokernel_desc {C : Type*} [Category C]
     [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f] :
     colimit.ι (parallelPair f 0) WalkingParallelPair.zero ≫ cokernel.desc f g h = 0 := by
   rw [(colimit.w (parallelPair f 0) WalkingParallelPairHom.left).symm]
-  aesop_cat
+  simp
 
 @[simp]
 theorem cokernel.desc_zero {W : C} {h} : cokernel.desc f (0 : Y ⟶ W) h = 0 := by
@@ -784,6 +796,11 @@ abbrev cokernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ⟶ X')
       apply congrArg (· ≫ π f') w
     simp [this])
 
+@[simp]
+lemma cokernel.map_id {X Y : C} (f : X ⟶ Y) [HasCokernel f] (q : X ⟶ X)
+    (w : f ≫ 𝟙 _ = q ≫ f) : cokernel.map f f q (𝟙 _) w = 𝟙 _ := by
+  aesop
+
 /-- Given a commutative diagram
     X --f--> Y --g--> Z
     |        |        |
@@ -804,6 +821,12 @@ theorem cokernel.map_desc {X Y Z X' Y' Z' : C} (f : X ⟶ Y) [HasCokernel f] (g 
     (q : Y ⟶ Y') (r : Z ⟶ Z') (h₁ : f ≫ q = p ≫ f') (h₂ : g ≫ r = q ≫ g') :
     cokernel.map f f' p q h₁ ≫ cokernel.desc f' g' w' = cokernel.desc f g w ≫ r := by
   ext; simp [h₂]
+
+@[simp]
+lemma cokernel.map_zero {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y')
+    [HasCokernel f] [HasCokernel f'] (q : X ⟶ X') (w : f ≫ 0 = q ≫ f') :
+    cokernel.map f f' q 0 w = 0 := by
+  aesop
 
 /-- A commuting square of isomorphisms induces an isomorphism of cokernels. -/
 @[simps]
@@ -879,7 +902,8 @@ theorem cokernel_not_mono_of_nonzero (w : f ≠ 0) : ¬Mono (cokernel.π f) := f
 theorem cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → False := fun _ =>
   cokernel_not_mono_of_nonzero w inferInstance
 
-#adaptation_note /-- nightly-2024-04-01 The `symm` wasn't previously necessary. -/
+#adaptation_note /-- nightly-2024-04-01
+The `symm` wasn't previously necessary. -/
 -- TODO the remainder of this section has obvious generalizations to `HasCoequalizer f g`.
 instance hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokernel f] [IsIso g] :
     HasCokernel (f ≫ g) where
@@ -889,7 +913,7 @@ instance hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokern
           isColimitAux _
             (fun s =>
               cokernel.desc _ (g ≫ s.π) (by rw [← Category.assoc, CokernelCofork.condition]))
-            (by aesop_cat) fun s m w => by
+            (by simp) fun s m w => by
             simp_rw [← w]
             symm
             apply coequalizer.hom_ext
@@ -919,6 +943,12 @@ def cokernelEpiComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi f] [HasCokernel
       (by
         rw [← cancel_epi f, ← Category.assoc]
         simp)
+
+/-- Equal maps have isomorphic cokernels. -/
+@[simps] def cokernel.congr {X Y : C} (f g : X ⟶ Y) [HasCokernel f] [HasCokernel g]
+    (h : f = g) : cokernel f ≅ cokernel g where
+  hom := cokernel.desc _ (cokernel.π g) (by simp [h])
+  inv := cokernel.desc _ (cokernel.π f) (by simp [← h])
 
 end
 
@@ -994,6 +1024,26 @@ def cokernelImageι {X Y : C} (f : X ⟶ Y) [HasImage f] [HasCokernel (image.ι 
           congr
           rw [← image.fac f]
         rw [Category.assoc, cokernel.condition, HasZeroMorphisms.comp_zero])
+
+section
+
+variable (f : X ⟶ Y) [HasKernel f] [HasImage f] [HasKernel (factorThruImage f)]
+
+/-- The kernel of the morphism `X ⟶ image f` is just the kernel of `f`. -/
+def kernelFactorThruImage : kernel (factorThruImage f) ≅ kernel f :=
+  (kernelCompMono (factorThruImage f) (image.ι f)).symm ≪≫ (kernel.congr _ _ (by simp))
+
+@[reassoc (attr := simp)]
+theorem kernelFactorThruImage_hom_comp_ι :
+    (kernelFactorThruImage f).hom ≫ kernel.ι f = kernel.ι (factorThruImage f) := by
+  simp [kernelFactorThruImage]
+
+@[reassoc (attr := simp)]
+theorem kernelFactorThruImage_inv_comp_ι :
+    (kernelFactorThruImage f).inv ≫ kernel.ι (factorThruImage f) = kernel.ι f := by
+  simp [kernelFactorThruImage]
+
+end
 
 end HasImage
 

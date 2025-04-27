@@ -49,7 +49,7 @@ open Measure
 /-- We say that a non-singular (`MeasureTheory.QuasiMeasurePreserving`) self-map is
 *conservative* if for any measurable set `s` of positive measure there exists `x ∈ s` such that `x`
 returns back to `s` under some iteration of `f`. -/
-structure Conservative (f : α → α) (μ : Measure α) extends QuasiMeasurePreserving f μ μ : Prop where
+structure Conservative (f : α → α) (μ : Measure α) : Prop extends QuasiMeasurePreserving f μ μ where
   /-- If `f` is a conservative self-map and `s` is a measurable set of nonzero measure,
   then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/
   exists_mem_iterate_mem' : ∀ ⦃s⦄, MeasurableSet s → μ s ≠ 0 → ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s
@@ -77,6 +77,15 @@ theorem measureRestrict (h : Conservative f μ) (hs : MapsTo f s s) :
     Conservative f (μ.restrict s) :=
   .of_absolutelyContinuous h (absolutelyContinuous_of_le restrict_le_self) <|
     h.toQuasiMeasurePreserving.restrict hs
+
+theorem congr_ae {ν : Measure α} (hf : Conservative f μ) (h : ae μ = ae ν) :
+    Conservative f ν :=
+  .of_absolutelyContinuous hf h.ge.absolutelyContinuous_of_ae <|
+    hf.toQuasiMeasurePreserving.mono h.ge.absolutelyContinuous_of_ae h.le.absolutelyContinuous_of_ae
+
+theorem _root_.MeasureTheory.conservative_congr {ν : Measure α} (h : ae μ = ae ν) :
+    Conservative f μ ↔ Conservative f ν :=
+  ⟨(congr_ae · h), (congr_ae · h.symm)⟩
 
 /-- If `f` is a conservative self-map and `s` is a null measurable set of nonzero measure,
 then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/
@@ -190,7 +199,7 @@ theorem ae_frequently_mem_of_mem_nhds [TopologicalSpace α] [SecondCountableTopo
 /-- Iteration of a conservative system is a conservative system. -/
 protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n] μ := by
   -- Discharge the trivial case `n = 0`
-  cases' n with n
+  rcases n with - | n
   · exact Conservative.id μ
   refine ⟨hf.1.iterate _, fun s hs hs0 => ?_⟩
   rcases (hf.frequently_ae_mem_and_frequently_image_mem hs.nullMeasurableSet hs0).exists

@@ -1,13 +1,19 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Center.Basic
-import Mathlib.CategoryTheory.Localization.Preadditive
+import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Localization of the center of a category
+
+Given a localization functor `L : C ⥤ D` with respect to `W : MorphismProperty C`,
+we define a localization map `CatCenter C → CatCenter D` for the centers
+of these categories. In case `L` is an additive functors between preadditive
+categories, we promote this to a ring morphism `CatCenter C →+* CatCenter D`.
 
 -/
 
@@ -15,13 +21,14 @@ universe w v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Limits
-
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   (r s : CatCenter C) (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
 
 namespace CatCenter
 
+/-- Given `r : CatCenter C` and `L : C ⥤ D` a localization functor with respect
+to `W : MorphismProperty D`, this is the induced element in `CatCenter D`
+obtained by localization. -/
 noncomputable def localization : CatCenter D :=
   Localization.liftNatTrans L W L L (𝟭 D) (𝟭 D) (whiskerRight r L)
 
@@ -36,7 +43,7 @@ include W
 
 lemma ext_of_localization (r s : CatCenter D)
     (h : ∀ (X : C), r.app (L.obj X) = s.app (L.obj X)) : r = s :=
-  Localization.natTrans_ext L W _ _ h
+  Localization.natTrans_ext L W h
 
 lemma localization_one :
     (1 : CatCenter C).localization L W = 1 :=
@@ -60,7 +67,9 @@ lemma localization_add :
     rw [localization_app, NatTrans.app_add, NatTrans.app_add, L.map_add,
       localization_app, localization_app])
 
-noncomputable def localizationRingMorphism : CatCenter C →+* CatCenter D where
+/-- The morphism of rings `CatCenter C →+* CatCenter D` when `L : C ⥤ D`
+is an additive localization functor between preadditive categories. -/
+noncomputable def localizationRingHom : CatCenter C →+* CatCenter D where
   toFun r := r.localization L W
   map_zero' := localization_zero L W
   map_one' := localization_one L W

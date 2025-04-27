@@ -237,6 +237,8 @@ lemma comp_assoc {X Y Z T : C} {a₁ a₂ a₃ a₁₂ a₂₃ a : M}
 
 end
 
+section ChangeOfUniverse
+
 variable {W}
 
 /-- Up to an equivalence, the type `SmallShiftedHom.{w} W X Y m` does
@@ -255,6 +257,8 @@ lemma equiv_chgUniv (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M] {X Y : C}
   dsimp [equiv]
   congr
   apply SmallHom.equiv_chgUniv
+
+end ChangeOfUniverse
 
 end SmallShiftedHom
 

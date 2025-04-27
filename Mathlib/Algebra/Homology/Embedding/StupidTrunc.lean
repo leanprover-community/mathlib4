@@ -3,12 +3,30 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.Algebra.Homology.Embedding.Restriction
 import Mathlib.CategoryTheory.Idempotents.Basic
 
 /-!
 # The stupid filtration on complexes
+=======
+
+import Mathlib.Algebra.Homology.Embedding.Extend
+import Mathlib.Algebra.Homology.Embedding.IsSupported
+import Mathlib.Algebra.Homology.Embedding.Restriction
+
+/-!
+# The stupid truncation of homological complexes
+
+Given an embedding `e : c.Embedding c'` of complex shapes, we define
+a functor `stupidTruncFunctor : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
+which sends `K` to `K.stupidTrunc e` which is defined as `(K.restriction e).extend e`.
+
+## TODO (@joelriou)
+* define the inclusion `e.stupidTruncFunctor C ⟶ 𝟭 _` when `[e.IsTruncGE]`;
+* define the projection `𝟭 _ ⟶ e.stupidTruncFunctor C` when `[e.IsTruncLE]`.
+>>>>>>> origin/jriou_localization_bump_deps
 
 -/
 
@@ -20,17 +38,29 @@ namespace HomologicalComplex
 
 variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
+<<<<<<< HEAD
 section
 
 variable (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
   (e : c.Embedding c') [e.IsRelIff]
 
+=======
+variable (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
+  (e : c.Embedding c') [e.IsRelIff]
+
+/-- The stupid truncation of a complex `K : HomologicalComplex C c'` relatively to
+an embedding `e : c.Embedding c'` of complex shapes. -/
+>>>>>>> origin/jriou_localization_bump_deps
 noncomputable def stupidTrunc : HomologicalComplex C c' := ((K.restriction e).extend e)
 
 instance : IsStrictlySupported (K.stupidTrunc e) e := by
   dsimp [stupidTrunc]
   infer_instance
 
+<<<<<<< HEAD
+=======
+/-- The isomorphism `(K.stupidTrunc e).X i' ≅ K.X i'` when `i` is in the image of `e.f`. -/
+>>>>>>> origin/jriou_localization_bump_deps
 noncomputable def stupidTruncXIso {i : ι} {i' : ι'} (hi' : e.f i = i') :
     (K.stupidTrunc e).X i' ≅ K.X i' :=
   (K.restriction e).extendXIso e hi' ≪≫ eqToIso (by subst hi'; rfl)
@@ -52,14 +82,20 @@ instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
 lemma isZero_stupidTrunc_iff :
     IsZero (K.stupidTrunc e) ↔ K.IsStrictlySupportedOutside e := by
   constructor
+<<<<<<< HEAD
   · intro h
     constructor
     intro i
     exact ((eval _ _ (e.f i)).map_isZero h).of_iso (K.stupidTruncXIso e rfl).symm
+=======
+  · exact fun h ↦ ⟨fun i ↦
+      ((eval _ _ (e.f i)).map_isZero h).of_iso (K.stupidTruncXIso e rfl).symm⟩
+>>>>>>> origin/jriou_localization_bump_deps
   · intro h
     rw [isZero_iff_isStrictlySupported_and_isStrictlySupportedOutside _ e]
     constructor
     · infer_instance
+<<<<<<< HEAD
     · constructor
       intro i
       exact (h.isZero i).of_iso (K.stupidTruncXIso e rfl)
@@ -84,11 +120,29 @@ variable {K}
 lemma stupidTruncMap_comp_f (i' : ι') :
     (stupidTruncMap (φ ≫ φ') e).f i' = (stupidTruncMap φ e).f i' ≫
       (stupidTruncMap φ' e).f i' := by
+=======
+    · exact ⟨fun i ↦ (h.isZero i).of_iso (K.stupidTruncXIso e rfl)⟩
+
+variable {K L M}
+
+/-- The morphism `K.stupidTrunc e ⟶ L.stupidTrunc e` induced by a morphism `K ⟶ L`. -/
+noncomputable def stupidTruncMap : K.stupidTrunc e ⟶ L.stupidTrunc e :=
+  extendMap (restrictionMap φ e) e
+
+variable (K) in
+@[simp]
+lemma stupidTruncMap_id : stupidTruncMap (𝟙 K) e = 𝟙 _ := by
+>>>>>>> origin/jriou_localization_bump_deps
   simp [stupidTruncMap, stupidTrunc]
 
 @[simp, reassoc]
 lemma stupidTruncMap_comp :
+<<<<<<< HEAD
     stupidTruncMap (φ ≫ φ') e = stupidTruncMap φ e ≫ stupidTruncMap φ' e := by aesop_cat
+=======
+    stupidTruncMap (φ ≫ φ') e = stupidTruncMap φ e ≫ stupidTruncMap φ' e := by
+  simp [stupidTruncMap, stupidTrunc]
+>>>>>>> origin/jriou_localization_bump_deps
 
 @[reassoc (attr := simp)]
 lemma stupidTruncMap_stupidTruncXIso_hom {i : ι} {i' : ι'} (hi : e.f i = i') :
@@ -97,6 +151,7 @@ lemma stupidTruncMap_stupidTruncXIso_hom {i : ι} {i' : ι'} (hi : e.f i = i') :
   subst hi
   simp [stupidTruncMap, stupidTruncXIso, extendMap_f _ _ rfl]
 
+<<<<<<< HEAD
 end
 
 section
@@ -311,18 +366,26 @@ noncomputable def stupidTruncDirectFactor :
 
 end
 
+=======
+>>>>>>> origin/jriou_localization_bump_deps
 end HomologicalComplex
 
 namespace ComplexShape.Embedding
 
 variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
+<<<<<<< HEAD
+=======
+/-- The stupid truncation functor `HomologicalComplex C c' ⥤ HomologicalComplex C c'`
+given by an embedding `e : Embedding c c'` of complex shapes. -/
+>>>>>>> origin/jriou_localization_bump_deps
 @[simps]
 noncomputable def stupidTruncFunctor [e.IsRelIff] :
     HomologicalComplex C c' ⥤ HomologicalComplex C c' where
   obj K := K.stupidTrunc e
   map φ := HomologicalComplex.stupidTruncMap φ e
 
+<<<<<<< HEAD
 @[simps]
 noncomputable def ιStupidTruncNatTrans [e.IsTruncGE] :
     e.stupidTruncFunctor C ⟶ 𝟭 _ where
@@ -333,4 +396,6 @@ noncomputable def πStupidTruncNatTrans [e.IsTruncLE] :
     𝟭 _ ⟶ e.stupidTruncFunctor C  where
   app K := K.πStupidTrunc e
 
+=======
+>>>>>>> origin/jriou_localization_bump_deps
 end ComplexShape.Embedding

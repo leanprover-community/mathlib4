@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Functor.TwoSquare
 
 /-!
 # Guitart exact squares
@@ -71,24 +72,9 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
   (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ⥤ C₄)
 
-/-- A `2`-square consists of a natural transformation `T ⋙ R ⟶ L ⋙ B`
-involving fours functors `T`, `L`, `R`, `B` that are on the
-top/left/right/bottom sides of a square of categories. -/
-def TwoSquare := T ⋙ R ⟶ L ⋙ B
-
 namespace TwoSquare
 
-/-- Constructor for `TwoSquare`. -/
-abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
-
-variable {T L R B}
-
-@[ext]
-lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.app X = w'.app X) :
-    w = w' :=
-  NatTrans.ext (funext h)
-
-variable (w : TwoSquare T L R B)
+variable {T L R B} (w : TwoSquare T L R B)
 
 /-- Given `w : TwoSquare T L R B` and `X₃ : C₃`, this is the obvious functor
 `CostructuredArrow L X₃ ⥤ CostructuredArrow R (B.obj X₃)`. -/
@@ -299,48 +285,6 @@ instance [L.IsEquivalence] [R.IsEquivalence] [IsIso w] : GuitartExact w := by
   dsimp only [structuredArrowDownwards]
   infer_instance
 
-@[simps!]
-def whiskerVertical {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄} (α : L ⟶ L') (β : R' ⟶ R) :
-    TwoSquare T L' R' B :=
-  whiskerLeft _ β ≫ w ≫ whiskerRight α _
-
-namespace GuitartExact
-
-lemma whiskerVertical [w.GuitartExact] {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄}
-    (α : L ≅ L') (β : R ≅ R') : (w.whiskerVertical α.hom β.inv).GuitartExact := by
-  rw [guitartExact_iff_initial]
-  intro X₂
-  let e : structuredArrowDownwards (w.whiskerVertical α.hom β.inv) X₂ ≅
-      w.structuredArrowDownwards X₂ ⋙ (StructuredArrow.mapIso (β.app X₂) ).functor :=
-    NatIso.ofComponents (fun f => StructuredArrow.isoMk (α.symm.app f.right) (by
-      dsimp
-      simp only [NatTrans.naturality_assoc, assoc, NatIso.cancel_natIso_inv_left, ← B.map_comp,
-        Iso.hom_inv_id_app, B.map_id, comp_id])) (by aesop_cat)
-  rw [Functor.initial_natIso_iff e]
-  infer_instance
-
-@[simp]
-lemma whiskerVertical_iff {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄}
-    (α : L ≅ L') (β : R ≅ R') :
-    (w.whiskerVertical α.hom β.inv).GuitartExact ↔ w.GuitartExact := by
-  constructor
-  · intro h
-    have : w = TwoSquare.whiskerVertical
-        (TwoSquare.whiskerVertical w α.hom β.inv) α.inv β.hom := by
-      ext X₁
-      simp only [Functor.comp_obj, whiskerVertical_app, assoc, Iso.hom_inv_id_app_assoc,
-        ← B.map_comp, Iso.hom_inv_id_app, B.map_id, comp_id]
-    rw [this]
-    exact whiskerVertical (w.whiskerVertical α.hom β.inv) α.symm β.symm
-  · intro h
-    exact whiskerVertical w α β
-
-instance [w.GuitartExact] {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄} (α : L ⟶ L') (β : R' ⟶ R)
-    [IsIso α] [IsIso β] : (w.whiskerVertical α β).GuitartExact :=
-  whiskerVertical w (asIso α) (asIso β).symm
-
-end GuitartExact
-
 section prod
 
 variable {C₁' : Type u₁'} {C₂' : Type u₂'} {C₃' : Type u₃'} {C₄' : Type u₄'}
@@ -369,15 +313,13 @@ def functor : StructuredArrowRightwards (w.prod w') g ⥤
     (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2) where
   obj X := functorObj w w' g X
   map {X Y} f :=
-    ⟨StructuredArrow.homMk (CostructuredArrow.homMk f.right.left.1
-        (by simpa using congr_arg _root_.Prod.fst f.right.w)) (by
+    ⟨StructuredArrow.homMk (CostructuredArrow.homMk f.right.left.1) (by
           ext
           have eq := StructuredArrow.w f
           dsimp at eq ⊢
           rw [← eq]
           rfl),
-      StructuredArrow.homMk (CostructuredArrow.homMk f.right.left.2
-        (by simpa using congr_arg _root_.Prod.snd f.right.w)) (by
+      StructuredArrow.homMk (CostructuredArrow.homMk f.right.left.2) (by
           ext
           have eq := StructuredArrow.w f
           dsimp at eq ⊢
@@ -421,7 +363,6 @@ def inverse : (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w'
 
 end JRightwardsProdEquivalence
 
-set_option maxHeartbeats 400000 in
 @[simps]
 def StructuredArrowRightwardsProdEquivalence :
     StructuredArrowRightwards (w.prod w') g ≌

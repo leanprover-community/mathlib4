@@ -41,15 +41,12 @@ instance : CoeSort (CoalgebraCat.{v} R) (Type v) :=
     ModuleCat.of R X.toModuleCat = X.toModuleCat :=
   rfl
 
-variable (R)
-
+variable (R) in
 /-- The object in the category of `R`-coalgebras associated to an `R`-coalgebra. -/
-@[simps]
-def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
-    CoalgebraCat R where
-  instCoalgebra := (inferInstance : Coalgebra R X)
-
-variable {R}
+abbrev of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
+    CoalgebraCat R :=
+  { ModuleCat.of R X with
+    instCoalgebra := (inferInstance : Coalgebra R X) }
 
 @[simp]
 lemma of_comul {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
@@ -64,28 +61,35 @@ algebraic spellings of composition. -/
 @[ext]
 structure Hom (V W : CoalgebraCat.{v} R) where
   /-- The underlying `CoalgHom` -/
-  toCoalgHom : V →ₗc[R] W
-
-lemma Hom.toCoalgHom_injective (V W : CoalgebraCat.{v} R) :
-    Function.Injective (Hom.toCoalgHom : Hom V W → _) :=
-  fun ⟨f⟩ ⟨g⟩ _ => by congr
+  toCoalgHom' : V →ₗc[R] W
 
 instance category : Category (CoalgebraCat.{v} R) where
   Hom M N := Hom M N
   id M := ⟨CoalgHom.id R M⟩
-  comp f g := ⟨CoalgHom.comp g.toCoalgHom f.toCoalgHom⟩
+  comp f g := ⟨CoalgHom.comp g.toCoalgHom' f.toCoalgHom'⟩
 
--- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
-@[ext]
-lemma hom_ext {M N : CoalgebraCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.toCoalgHom) :
-    f = g :=
-  Hom.ext h
+instance concreteCategory : ConcreteCategory (CoalgebraCat.{v} R) (· →ₗc[R] ·) where
+  hom f := f.toCoalgHom'
+  ofHom f := ⟨f⟩
+
+/-- Turn a morphism in `CoalgebraCat` back into a `CoalgHom`. -/
+abbrev Hom.toCoalgHom {X Y : CoalgebraCat.{v} R} (f : Hom X Y) : X →ₗc[R] Y :=
+  ConcreteCategory.hom (C := CoalgebraCat.{v} R) f
 
 /-- Typecheck a `CoalgHom` as a morphism in `CoalgebraCat R`. -/
 abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
     [Coalgebra R X] [Coalgebra R Y] (f : X →ₗc[R] Y) :
     of R X ⟶ of R Y :=
-  ⟨f⟩
+  ConcreteCategory.ofHom f
+
+lemma Hom.toCoalgHom_injective (V W : CoalgebraCat.{v} R) :
+    Function.Injective (Hom.toCoalgHom' : Hom V W → _) :=
+  fun ⟨f⟩ ⟨g⟩ _ => by congr
+
+@[ext]
+lemma hom_ext {M N : CoalgebraCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.toCoalgHom) :
+    f = g :=
+  Hom.ext h
 
 @[simp] theorem toCoalgHom_comp {M N U : CoalgebraCat.{v} R} (f : M ⟶ N) (g : N ⟶ U) :
     (f ≫ g).toCoalgHom = g.toCoalgHom.comp f.toCoalgHom :=
@@ -95,17 +99,10 @@ abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
     Hom.toCoalgHom (𝟙 M) = CoalgHom.id _ _ :=
   rfl
 
-instance concreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
-  forget :=
-    { obj := fun M => M
-      map := fun f => f.toCoalgHom }
-  forget_faithful :=
-    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
-
 instance hasForgetToModule : HasForget₂ (CoalgebraCat R) (ModuleCat R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => f.toCoalgHom.toLinearMap }
+      map := fun f => ModuleCat.ofHom f.toCoalgHom.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : CoalgebraCat R) :
@@ -114,7 +111,7 @@ theorem forget₂_obj (X : CoalgebraCat R) :
 
 @[simp]
 theorem forget₂_map (X Y : CoalgebraCat R) (f : X ⟶ Y) :
-    (forget₂ (CoalgebraCat R) (ModuleCat R)).map f = (f.toCoalgHom : X →ₗ[R] Y) :=
+    (forget₂ (CoalgebraCat R) (ModuleCat R)).map f = ModuleCat.ofHom (f.toCoalgHom : X →ₗ[R] Y) :=
   rfl
 
 end CoalgebraCat

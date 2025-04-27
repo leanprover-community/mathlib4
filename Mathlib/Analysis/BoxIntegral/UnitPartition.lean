@@ -3,6 +3,8 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.Algebra.Module.ZLattice.Basic
+import Mathlib.Analysis.BoxIntegral.Integrability
 import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 
@@ -11,20 +13,19 @@ import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 
 Fix `n` a positive integer. `BoxIntegral.unitPartition.box` are boxes in `ι → ℝ` obtained by
 dividing the unit box uniformly into boxes of side length `1 / n` and translating the boxes by
-the lattice `ι → ℤ` so that they cover the whole space. For fixed `n`, there are indexed by
 vectors `ν : ι → ℤ`.
 
 Let `B` be a `BoxIntegral`. A `unitPartition.box` is admissible for `B` (more precisely its index is
 admissible) if it is contained in `B`. There are finitely many admissible `unitPartition.box` for
-`B` and thus we can form the corresponing tagged prepartition, see
-`BoxIntegral.unitPartition.prepartition` (note that each `unitPartition.Box` comes with its
+`B` and thus we can form the corresponding tagged prepartition, see
+`BoxIntegral.unitPartition.prepartition` (note that each `unitPartition.box` comes with its
 tag situated at its "upper most" vertex). If `B` satisfies `hasIntegralVertices`, that
 is its vertices are in `ι → ℤ`, then the corresponding prepartition is actually a partition.
 
 ## Main definitions and results
 
 * `BoxIntegral.hasIntegralVertices`: a `Prop` that states that the vertices of the box have
-coordinates in `ℤ`
+  coordinates in `ℤ`
 
 * `BoxIntegral.unitPartition.box`: a `BoxIntegral`, indexed by `ν : ι → ℤ`, with vertices
 `ν i / n` and of side length `1 / n`.
@@ -33,13 +34,29 @@ coordinates in `ℤ`
 `unitPartition.box` that are subsets of `B`. This is a finite set.
 
 * `BoxIntegral.unitPartition.prepartition_isPartition`: For `B : BoxIntegral.Box`, if `B`
-has integral vertices, then the prepartition of `unitPartition.box` admissible for `B` is a
-partition of `B`.
+  has integral vertices, then the prepartition of `unitPartition.box` admissible for `B` is a
+  partition of `B`.
+
+* `tendsto_tsum_div_pow_atTop_integral`: let `s` be a bounded, measurable set of `ι → ℝ`
+  whose frontier has zero volume and let `F` be a continuous function. Then the limit as `n → ∞`
+  of `∑ F x / n ^ card ι`, where the sum is over the points in `s ∩ n⁻¹ • (ι → ℤ)`, tends to the
+  integral of `F` over `s`.
+
+* `tendsto_card_div_pow_atTop_volume`: let `s` be a bounded, measurable set of `ι → ℝ` whose
+  frontier has zero volume. Then the limit as `n → ∞` of `card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι`
+  tends to the volume of `s`.
+
+* `tendsto_card_div_pow_atTop_volume'`: a version of `tendsto_card_div_pow_atTop_volume` where we
+  assume in addition that `x • s ⊆ y • s` whenever `0 < x ≤ y`. Then we get the same limit
+  `card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι → volume s` but the limit is over a real variable `x`.
+
 -/
 
 noncomputable section
 
 variable {ι : Type*}
+
+open scoped Topology
 
 section hasIntegralVertices
 
@@ -58,13 +75,14 @@ theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι
   let C : ℕ := ⌈R⌉₊
   have hC := Nat.ceil_pos.mpr hR₁
   let I : Box ι := Box.mk (fun _ ↦ - C) (fun _ ↦ C )
-    (fun _ ↦ by simp only [neg_lt_self_iff, Nat.cast_pos, hC])
+    (fun _ ↦ by simp [C, neg_lt_self_iff, Nat.cast_pos, hC])
   refine ⟨I, ⟨fun _ ↦ - C, fun _ ↦ C, fun i ↦ (Int.cast_neg_natCast C).symm, fun _ ↦ rfl⟩,
     le_trans hR₂ ?_⟩
   suffices Metric.ball (0 : ι → ℝ) C ≤ I from
     le_trans (Metric.ball_subset_ball (Nat.le_ceil R)) this
   intro x hx
-  simp_rw [mem_ball_zero_iff, pi_norm_lt_iff (Nat.cast_pos.mpr hC), Real.norm_eq_abs, abs_lt] at hx
+  simp_rw [C, mem_ball_zero_iff, pi_norm_lt_iff (Nat.cast_pos.mpr hC),
+    Real.norm_eq_abs, abs_lt] at hx
   exact fun i ↦ ⟨(hx i).1, le_of_lt (hx i).2⟩
 
 end hasIntegralVertices
@@ -88,7 +106,7 @@ theorem box_lower [NeZero n] (ν : ι → ℤ) :
 
 @[simp]
 theorem box_upper [NeZero n] (ν : ι → ℤ) :
-    (box n ν).upper = fun i ↦ ((ν i + 1)/ n : ℝ) := rfl
+    (box n ν).upper = fun i ↦ ((ν i + 1) / n : ℝ) := rfl
 
 variable {n} in
 @[simp]
@@ -186,7 +204,7 @@ theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs
       (by simp only [Set.iUnion_subset_iff, Set.inter_subset_right, implies_true]) hs₂
   · rw [Set.mem_setOf, Set.inter_eq_self_of_subset_left hν, volume_box]
 
-/-- For `B : BoxIntegral.Box`, the set of indices of `unitPartition.Box` that are subsets of `B`.
+/-- For `B : BoxIntegral.Box`, the set of indices of `unitPartition.box` that are subsets of `B`.
 This is a finite set. These boxes cover `B` if it has integral vertices, see
 `unitPartition.prepartition_isPartition`. -/
 def admissibleIndex (B : Box ι) : Finset (ι → ℤ) := by
@@ -292,5 +310,182 @@ theorem prepartition_isPartition {B : Box ι} (hB : hasIntegralVertices B) :
   refine fun x hx ↦ ⟨box n (index n x), ?_, mem_box_iff_index.mpr rfl⟩
   rw [TaggedPrepartition.mem_toPrepartition, mem_prepartition_iff]
   exact ⟨index n x, mem_admissibleIndex_of_mem_box n hB hx, rfl⟩
+
+open Submodule Pointwise BigOperators
+
+open scoped Pointwise
+
+variable (c : ℝ) (s : Set (ι → ℝ)) (F : (ι → ℝ) → ℝ)
+
+-- The image of `ι → ℤ` inside `ι → ℝ`
+local notation "L" => span ℤ (Set.range (Pi.basisFun ℝ ι))
+
+variable {n} in
+theorem mem_smul_span_iff {v : ι → ℝ} :
+    v ∈ (n : ℝ)⁻¹ • L ↔ ∀ i, n * v i ∈ Set.range (algebraMap ℤ ℝ) := by
+  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Basis.mem_span_iff_repr_mem]
+  simp_rw [Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
+    IsUnit.unit_spec, inv_inv, smul_eq_mul]
+
+theorem tag_mem_smul_span (ν : ι → ℤ) :
+    tag n ν ∈ (n : ℝ)⁻¹ • L := by
+  refine mem_smul_span_iff.mpr fun i ↦ ⟨ν i + 1, ?_⟩
+  rw [tag_apply, div_eq_inv_mul, ← mul_assoc, mul_inv_cancel_of_invertible, one_mul, map_add,
+    map_one, eq_intCast]
+
+theorem tag_index_eq_self_of_mem_smul_span {x : ι → ℝ} (hx : x ∈ (n : ℝ)⁻¹ • L) :
+    tag n (index n x) = x := by
+  rw [mem_smul_span_iff] at hx
+  ext i
+  obtain ⟨a, ha⟩ : ∃ a : ℤ, a = n * x i := hx i
+  rwa [tag_apply, index_apply, Int.cast_sub, Int.cast_one, sub_add_cancel, ← ha, Int.ceil_intCast,
+    div_eq_iff (NeZero.ne _), mul_comm]
+
+theorem eq_of_mem_smul_span_of_index_eq_index {x y : ι → ℝ} (hx : x ∈ (n : ℝ)⁻¹ • L)
+    (hy : y ∈ (n : ℝ)⁻¹ • L) (h : index n x = index n y) : x = y := by
+  rw [← tag_index_eq_self_of_mem_smul_span n hx, ← tag_index_eq_self_of_mem_smul_span n hy, h]
+
+theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀ : s ≤ B) :
+    integralSum (Set.indicator s F) (BoxAdditiveMap.toSMul (Measure.toBoxAdditive volume))
+      (prepartition n B) = (∑' x : ↑(s ∩ (n : ℝ)⁻¹ • L), F x) / n ^ card ι := by
+  classical
+  unfold integralSum
+  have : Fintype ↑(s ∩ (n : ℝ)⁻¹ • L) := by
+    apply Set.Finite.fintype
+    rw [← coe_pointwise_smul, ZSpan.smul _ (inv_ne_zero (NeZero.ne _))]
+    exact ZSpan.setFinite_inter _ (B.isBounded.subset hs₀)
+  rw [tsum_fintype, Finset.sum_set_coe, Finset.sum_div, eq_comm]
+  simp_rw [Set.indicator_apply, apply_ite, BoxAdditiveMap.toSMul_apply, Measure.toBoxAdditive_apply,
+    smul_eq_mul, mul_zero, Finset.sum_ite, Finset.sum_const_zero, add_zero]
+  refine Finset.sum_bij (fun x _ ↦ box n (index n x)) (fun _ hx ↦ Finset.mem_filter.mpr ?_)
+    (fun _ hx _ hy h ↦ ?_) (fun I hI ↦ ?_) (fun _ hx ↦ ?_)
+  · rw [Set.mem_toFinset] at hx
+    refine ⟨mem_prepartition_boxes_iff.mpr
+      ⟨index n _, mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1), rfl⟩, ?_⟩
+    simp_rw [prepartition_tag n (mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1)),
+      tag_index_eq_self_of_mem_smul_span n hx.2, hx.1]
+  · rw [Set.mem_toFinset] at hx hy
+    exact eq_of_mem_smul_span_of_index_eq_index n hx.2 hy.2 (box_injective n h)
+  · rw [Finset.mem_filter] at hI
+    refine ⟨(prepartition n B).tag I, Set.mem_toFinset.mpr ⟨hI.2, ?_⟩, box_index_tag_eq_self n hI.1⟩
+    rw [← box_index_tag_eq_self n hI.1, prepartition_tag n
+      (mem_admissibleIndex_of_mem_box n hB (hs₀ hI.2))]
+    exact tag_mem_smul_span _ _
+  · rw [Set.mem_toFinset] at hx
+    rw [measureReal_def, volume_box,
+      prepartition_tag n (mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1)),
+      tag_index_eq_self_of_mem_smul_span n hx.2, ENNReal.toReal_div,
+      ENNReal.toReal_one, ENNReal.toReal_pow, ENNReal.toReal_natCast, mul_comm_div, one_mul]
+
+open Filter
+
+/-- Let `s` be a bounded, measurable set of `ι → ℝ` whose frontier has zero volume and let `F`
+be a continuous function. Then the limit as `n → ∞` of `∑ F x / n ^ card ι`, where the sum is
+over the points in `s ∩ n⁻¹ • (ι → ℤ)`, tends to the integral of `F` over `s`. -/
+theorem _root_.tendsto_tsum_div_pow_atTop_integral (hF : Continuous F) (hs₁ : IsBounded s)
+    (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0) :
+    Tendsto (fun n : ℕ ↦ (∑' x : ↑(s ∩ (n : ℝ)⁻¹ • L), F x) / n ^ card ι)
+      atTop (nhds (∫ x in s, F x)) := by
+  obtain ⟨B, hB, hs₀⟩ := le_hasIntegralVertices_of_isBounded hs₁
+  refine Metric.tendsto_atTop.mpr fun ε hε ↦ ?_
+  have h₁ : ∃ C, ∀ x ∈ Box.Icc B, ‖Set.indicator s F x‖ ≤ C := by
+    obtain ⟨C₀, h₀⟩ := (Box.isCompact_Icc B).exists_bound_of_continuousOn hF.continuousOn
+    refine ⟨max 0 C₀, fun x hx ↦ ?_⟩
+    rw [Set.indicator]
+    split_ifs with hs
+    · exact le_max_of_le_right (h₀ x hx)
+    · exact norm_zero.trans_le <|le_max_left 0 _
+  have h₂ : ∀ᵐ x, ContinuousAt (s.indicator F) x := by
+    filter_upwards [compl_mem_ae_iff.mpr hs₃] with _ h
+      using (hF.continuousOn).continuousAt_indicator h
+  obtain ⟨r, hr₁, hr₂⟩ := (hasIntegral_iff.mp <|
+      AEContinuous.hasBoxIntegral (volume : Measure (ι → ℝ)) h₁ h₂
+        IntegrationParams.Riemann) (ε / 2) (half_pos hε)
+  refine ⟨⌈(r 0 0 : ℝ)⁻¹⌉₊, fun n hn ↦ lt_of_le_of_lt ?_ (half_lt_self_iff.mpr hε)⟩
+  have : NeZero n :=
+    ⟨Nat.ne_zero_iff_zero_lt.mpr <| (Nat.ceil_pos.mpr (inv_pos.mpr (r 0 0).prop)).trans_le hn⟩
+  rw [← integralSum_eq_tsum_div _ s F hB hs₀, ← Measure.restrict_restrict_of_subset hs₀,
+    ← integral_indicator hs₂]
+  refine hr₂ 0 _ ⟨?_, fun _ ↦ ?_, fun h ↦ ?_, fun h ↦ ?_⟩ (prepartition_isPartition _ hB)
+  · rw [show r 0 = fun _ ↦ r 0 0 from funext_iff.mpr (hr₁ 0 rfl)]
+    apply prepartition_isSubordinate n B
+    rw [one_div, inv_le_comm₀ (mod_cast (Nat.pos_of_neZero n)) (r 0 0).prop]
+    exact le_trans (Nat.le_ceil _) (Nat.cast_le.mpr hn)
+  · exact prepartition_isHenstock n B
+  · simp only [IntegrationParams.Riemann, Bool.false_eq_true] at h
+  · simp only [IntegrationParams.Riemann, Bool.false_eq_true] at h
+
+/-- Let `s` be a bounded, measurable set of `ι → ℝ` whose frontier has zero volume. Then the limit
+as `n → ∞` of `card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι` tends to the volume of `s`. This is a
+special case of `tendsto_card_div_pow` with `F = 1`. -/
+theorem _root_.tendsto_card_div_pow_atTop_volume (hs₁ : IsBounded s)
+    (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0) :
+    Tendsto (fun n : ℕ ↦ (Nat.card ↑(s ∩ (n : ℝ)⁻¹ • L) : ℝ) / n ^ card ι)
+      atTop (𝓝 (volume.real s)) := by
+  convert tendsto_tsum_div_pow_atTop_integral s (fun _ ↦ 1) continuous_const hs₁ hs₂ hs₃
+  · rw [tsum_const, nsmul_eq_mul, mul_one, Nat.cast_inj]
+  · rw [setIntegral_const, smul_eq_mul, mul_one]
+
+private def tendsto_card_div_pow₁ {c : ℝ} (hc : c ≠ 0) :
+    ↑(s ∩ c⁻¹ • L) ≃ ↑(c • s ∩ L) :=
+  Equiv.subtypeEquiv (Equiv.smulRight hc) (fun x ↦ by
+    simp_rw [Set.mem_inter_iff, Equiv.smulRight_apply, Set.smul_mem_smul_set_iff₀ hc,
+      ← Set.mem_inv_smul_set_iff₀ hc])
+
+private theorem tendsto_card_div_pow₂ (hs₁ : IsBounded s)
+    (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) {x y : ℝ} (hx : 0 < x) (hy : x ≤ y) :
+    Nat.card ↑(s ∩ x⁻¹ • L) ≤ Nat.card ↑(s ∩ y⁻¹ • L) := by
+  rw [Nat.card_congr (tendsto_card_div_pow₁ s hx.ne'),
+      Nat.card_congr (tendsto_card_div_pow₁ s (hx.trans_le hy).ne')]
+  refine Nat.card_mono ?_ ?_
+  · exact ZSpan.setFinite_inter _ (IsBounded.smul₀ hs₁ y)
+  · exact Set.inter_subset_inter_left _ <| hs₄ hx hy
+
+private theorem tendsto_card_div_pow₃ (hs₁ : IsBounded s)
+    (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
+    ∀ᶠ x : ℝ in atTop, (Nat.card ↑(s ∩ (⌊x⌋₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι ≤
+      (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι := by
+  filter_upwards [eventually_ge_atTop 1] with x hx
+  gcongr
+  exact tendsto_card_div_pow₂ s hs₁ hs₄ (Nat.cast_pos.mpr (Nat.floor_pos.mpr hx))
+    (Nat.floor_le (zero_le_one.trans hx))
+
+private theorem tendsto_card_div_pow₄ (hs₁ : IsBounded s)
+    (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
+    ∀ᶠ x : ℝ in atTop, (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι ≤
+      (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι := by
+  filter_upwards [eventually_gt_atTop 0] with x hx
+  gcongr
+  exact tendsto_card_div_pow₂ s hs₁ hs₄ hx (Nat.le_ceil _)
+
+private theorem tendsto_card_div_pow₅ :
+    (fun x ↦ (Nat.card ↑(s ∩ (⌊x⌋₊ : ℝ)⁻¹ • L) : ℝ) / ⌊x⌋₊ ^ card ι * (⌊x⌋₊ / x) ^ card ι)
+      =ᶠ[atTop] (fun x ↦ (Nat.card ↑(s ∩ (⌊x⌋₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι) := by
+  filter_upwards [eventually_ge_atTop 1] with x hx
+  have : 0 < ⌊x⌋₊ := Nat.floor_pos.mpr hx
+  rw [div_pow, mul_div, div_mul_cancel₀ _ (by positivity)]
+
+private theorem tendsto_card_div_pow₆ :
+    (fun x ↦ (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / ⌈x⌉₊ ^ card ι * (⌈x⌉₊ / x) ^ card ι)
+          =ᶠ[atTop] (fun x ↦ (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι) := by
+  filter_upwards [eventually_ge_atTop 1] with x hx
+  have : 0 < ⌊x⌋₊ := Nat.floor_pos.mpr hx
+  rw [div_pow, mul_div, div_mul_cancel₀ _ (by positivity)]
+
+/-- A version of `tendsto_card_div_pow_atTop_volume` for a real variable. -/
+theorem _root_.tendsto_card_div_pow_atTop_volume' (hs₁ : IsBounded s)
+    (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0)
+    (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
+    Tendsto (fun x : ℝ ↦ (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι)
+      atTop (𝓝 (volume.real s)) := by
+  rw [show volume.real s = volume.real s * 1 ^ card ι by ring]
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le' ?_ ?_
+    (tendsto_card_div_pow₃ s hs₁ hs₄) (tendsto_card_div_pow₄ s hs₁ hs₄)
+  · refine Tendsto.congr' (tendsto_card_div_pow₅ s) (Tendsto.mul ?_ (Tendsto.pow ?_ _))
+    · exact Tendsto.comp (tendsto_card_div_pow_atTop_volume s hs₁ hs₂ hs₃) tendsto_nat_floor_atTop
+    · exact tendsto_nat_floor_div_atTop
+  · refine Tendsto.congr' (tendsto_card_div_pow₆ s) (Tendsto.mul ?_ (Tendsto.pow ?_ _))
+    · exact Tendsto.comp (tendsto_card_div_pow_atTop_volume s hs₁ hs₂ hs₃) tendsto_nat_ceil_atTop
+    · exact tendsto_nat_ceil_div_atTop
 
 end BoxIntegral.unitPartition

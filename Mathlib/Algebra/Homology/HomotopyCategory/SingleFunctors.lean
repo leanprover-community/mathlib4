@@ -18,6 +18,8 @@ Similarly, we define
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe v' u' v u
 
 open CategoryTheory Category Limits
@@ -67,6 +69,7 @@ consisting of `X` in degree `n : ℤ` and zero otherwise.
 but `singleFunctor C n` is the preferred term when interactions with shifts are relevant.) -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
+<<<<<<< HEAD
 variable {C}
 
 lemma singleFunctors_shiftIso_hom_app_f
@@ -84,6 +87,13 @@ lemma singleFunctors_shiftIso_inv_app_f
       (singleObjXIsoOfEq (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).inv := by
   dsimp [singleObjXIsoOfEq, singleFunctors]
   rw [eqToHom_trans]
+=======
+instance (n : ℤ) : (singleFunctor C n).Full :=
+  inferInstanceAs (single _ _ _).Full
+
+instance (n : ℤ) : (singleFunctor C n).Faithful :=
+  inferInstanceAs (single _ _ _).Faithful
+>>>>>>> origin/jriou_localization_bump_deps
 
 end CochainComplex
 

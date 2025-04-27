@@ -11,8 +11,7 @@ import Mathlib.Algebra.Group.Hom.Defs
 # Multiplicative homomorphisms respect semiconjugation and commutation.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 section Commute
 

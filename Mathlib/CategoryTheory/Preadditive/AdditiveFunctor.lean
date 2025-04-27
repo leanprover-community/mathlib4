@@ -52,7 +52,6 @@ variable {C D E : Type*} [Category C] [Category D] [Category E]
 theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
   Functor.Additive.map_add
 
--- Porting note: it was originally @[simps (config := .asFn)]
 /-- `F.mapAddHom` is an additive homomorphism whose underlying function is `F.map`. -/
 @[simps!]
 def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=
@@ -142,7 +141,7 @@ instance inducedFunctor_additive : Functor.Additive (inducedFunctor F) where
 end InducedCategory
 
 instance fullSubcategoryInclusion_additive {C : Type*} [Category C] [Preadditive C]
-    (Z : C → Prop) : (fullSubcategoryInclusion Z).Additive where
+    (Z : ObjectProperty C) : Z.ι.Additive where
 
 section
 
@@ -180,10 +179,8 @@ lemma additive_of_preserves_binary_products
   exact Functor.additive_of_preservesBinaryBiproducts F
 
 lemma additive_of_preserves_finite_products
-    [HasFiniteProducts C] [PreservesFiniteProducts F] : F.Additive := by
-  have : PreservesLimitsOfShape (Discrete WalkingPair) F := PreservesFiniteProducts.preserves _
-  have : PreservesLimitsOfShape (Discrete PEmpty) F := PreservesFiniteProducts.preserves _
-  exact F.additive_of_preserves_binary_products
+    [HasFiniteProducts C] [PreservesFiniteProducts F] : F.Additive :=
+  F.additive_of_preserves_binary_products
 
 section
 
@@ -243,13 +240,10 @@ end
 
 instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
     PreservesFiniteProducts F where
-  preserves J _ :=
+  preserves _ :=
     { preservesLimit := fun {K} => by
         have : PreservesLimit (Discrete.functor (K.obj ∘ Discrete.mk)) F := by
           refine ⟨fun {c : Fan _} hc => ?_⟩
-          have : DecidableEq J := by
-            classical
-            infer_instance
           let e : Discrete.functor (F.obj ∘ K.obj ∘ Discrete.mk) ≅
               Discrete.functor (K.obj ∘ Discrete.mk) ⋙ F :=
             Discrete.natIso (fun j => Iso.refl _)
@@ -261,13 +255,10 @@ instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
 
 instance (priority := 100) preservesFiniteCoproductsOfAdditive [Additive F] :
     PreservesFiniteCoproducts F where
-  preserves J _ :=
+  preserves n :=
     { preservesColimit := fun {K} => by
         have : PreservesColimit (Discrete.functor (K.obj ∘ Discrete.mk)) F := by
           refine ⟨fun {c : Cofan _} hc => ?_⟩
-          have : DecidableEq J := by
-            classical
-            infer_instance
           let e : Discrete.functor (F.obj ∘ K.obj ∘ Discrete.mk) ≅
               Discrete.functor (K.obj ∘ Discrete.mk) ⋙ F :=
             Discrete.natIso (fun j => Iso.refl _)
@@ -296,13 +287,12 @@ section
 
 variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=
-  FullSubcategory fun F : C ⥤ D => F.Additive
+  ObjectProperty.FullSubcategory fun F : C ⥤ D => F.Additive
 
 instance : Category (AdditiveFunctor C D) :=
-  FullSubcategory.category _
+  ObjectProperty.FullSubcategory.category _
 
 /-- the category of additive functors is denoted `C ⥤+ D` -/
 infixr:26 " ⥤+ " => AdditiveFunctor
@@ -312,10 +302,13 @@ instance : Preadditive (C ⥤+ D) :=
 
 /-- An additive functor is in particular a functor. -/
 def AdditiveFunctor.forget : (C ⥤+ D) ⥤ C ⥤ D :=
-  fullSubcategoryInclusion _
+  ObjectProperty.ι _
 
 instance : (AdditiveFunctor.forget C D).Full :=
-  FullSubcategory.full _
+  ObjectProperty.full_ι _
+
+instance : (AdditiveFunctor.forget C D).Faithful :=
+  ObjectProperty.faithful_ι _
 
 variable {C D}
 
@@ -362,27 +355,27 @@ attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproduct
 
 /-- Turn a left exact functor into an additive functor. -/
 def AdditiveFunctor.ofLeftExact : (C ⥤ₗ D) ⥤ C ⥤+ D :=
-  FullSubcategory.map fun F ⟨_⟩ =>
+  ObjectProperty.ιOfLE fun F ⟨_⟩ =>
     Functor.additive_of_preservesBinaryBiproducts F
 
-instance : (AdditiveFunctor.ofLeftExact C D).Full := FullSubcategory.full_map _
-instance : (AdditiveFunctor.ofLeftExact C D).Faithful := FullSubcategory.faithful_map _
+instance : (AdditiveFunctor.ofLeftExact C D).Full := ObjectProperty.full_ιOfLE _
+instance : (AdditiveFunctor.ofLeftExact C D).Faithful := ObjectProperty.faithful_ιOfLE _
 
 /-- Turn a right exact functor into an additive functor. -/
 def AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
-  FullSubcategory.map fun F ⟨_⟩ =>
+  ObjectProperty.ιOfLE fun F ⟨_⟩ =>
     Functor.additive_of_preservesBinaryBiproducts F
 
-instance : (AdditiveFunctor.ofRightExact C D).Full := FullSubcategory.full_map _
-instance : (AdditiveFunctor.ofRightExact C D).Faithful := FullSubcategory.faithful_map _
+instance : (AdditiveFunctor.ofRightExact C D).Full := ObjectProperty.full_ιOfLE _
+instance : (AdditiveFunctor.ofRightExact C D).Faithful := ObjectProperty.faithful_ιOfLE _
 
 /-- Turn an exact functor into an additive functor. -/
 def AdditiveFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤+ D :=
-  FullSubcategory.map fun F ⟨⟨_⟩, _⟩ =>
+  ObjectProperty.ιOfLE fun F ⟨⟨_⟩, _⟩ =>
     Functor.additive_of_preservesBinaryBiproducts F
 
-instance : (AdditiveFunctor.ofExact C D).Full := FullSubcategory.full_map _
-instance : (AdditiveFunctor.ofExact C D).Faithful := FullSubcategory.faithful_map _
+instance : (AdditiveFunctor.ofExact C D).Full := ObjectProperty.full_ιOfLE _
+instance : (AdditiveFunctor.ofExact C D).Faithful := ObjectProperty.faithful_ιOfLE _
 
 end
 

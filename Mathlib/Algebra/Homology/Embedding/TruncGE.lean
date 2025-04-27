@@ -35,7 +35,11 @@ We also construct the canonical epimorphism `K.πTruncGE e : K ⟶ K.truncGE e`.
 
 ## TODO
 * show that `K.πTruncGE e : K ⟶ K.truncGE e` induces an isomorphism
+<<<<<<< HEAD
 in homology in degrees in the image of `e.f`.
+=======
+  in homology in degrees in the image of `e.f`.
+>>>>>>> origin/jriou_localization_bump_deps
 
 -/
 
@@ -59,12 +63,12 @@ noncomputable def X (i : ι) : C :=
   then K.opcycles (e.f i)
   else K.X (e.f i)
 
-/-- The isomorphism `truncGE'.X K e i ≅ K.opcycles (e.f i)` when `e.BoundaryGE i` holds.-/
+/-- The isomorphism `truncGE'.X K e i ≅ K.opcycles (e.f i)` when `e.BoundaryGE i` holds. -/
 noncomputable def XIsoOpcycles {i : ι} (hi : e.BoundaryGE i) :
     X K e i ≅ K.opcycles (e.f i) :=
   eqToIso (if_pos hi)
 
-/-- The isomorphism `truncGE'.X K e i ≅ K.X (e.f i)` when `e.BoundaryGE i` does not hold.-/
+/-- The isomorphism `truncGE'.X K e i ≅ K.X (e.f i)` when `e.BoundaryGE i` does not hold. -/
 noncomputable def XIso {i : ι} (hi : ¬ e.BoundaryGE i) :
     X K e i ≅ K.X (e.f i) :=
   eqToIso (if_neg hi)
@@ -167,7 +171,10 @@ noncomputable def truncGE'Map : K.truncGE' e ⟶ L.truncGE' e where
     else
       (K.truncGE'XIso e rfl hi).hom ≫ φ.f (e.f i) ≫ (L.truncGE'XIso e rfl hi).inv
   comm' i j hij := by
+<<<<<<< HEAD
     dsimp
+=======
+>>>>>>> origin/jriou_localization_bump_deps
     rw [dif_neg (e.not_boundaryGE_next hij)]
     by_cases hi : e.BoundaryGE i
     · rw [dif_pos hi]

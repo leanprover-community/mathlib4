@@ -3,7 +3,7 @@ Copyright (c) 2024 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
 /-!
 # Delta-generated topological spaces
@@ -87,10 +87,7 @@ lemma DeltaGeneratedSpace.continuous_iff [DeltaGeneratedSpace X] {f : X → Y} :
     Continuous f ↔ ∀ (n : ℕ) (p : C(((Fin n) → ℝ), X)), Continuous (f ∘ p) := by
   simp_rw [continuous_iff_coinduced_le]
   nth_rewrite 1 [eq_deltaGenerated (X := X), deltaGenerated]
-  simp [coinduced_compose]
-  constructor
-  · intro h n p; apply h ⟨n, p⟩
-  · rintro h ⟨n, p⟩; apply h n p
+  simp [coinduced_compose, Sigma.forall]
 
 /-- A map out of a delta-generated space is continuous iff it is continuous with respect
   to the delta-generated topology on the codomain. -/

@@ -94,6 +94,7 @@ instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (quotient V c)).
 
 variable {V c}
 
+<<<<<<< HEAD
 instance : (quotient V c).Full where
   map_surjective f := by
     obtain ⟨f⟩ := f
@@ -109,6 +110,13 @@ lemma quotient_obj_surjective (C : HomotopyCategory V c) : ∃ (K : HomologicalC
   exact ⟨K, rfl⟩
 
 -- porting note: removed @[simp] attribute because it hinders the automatic application of the
+=======
+lemma quotient_obj_surjective (X : HomotopyCategory V c) :
+    ∃ (K : HomologicalComplex V c), (quotient _ _).obj K = X :=
+  ⟨_, rfl⟩
+
+-- Porting note: removed @[simp] attribute because it hinders the automatic application of the
+>>>>>>> origin/jriou_localization_bump_deps
 -- more useful `quotient_map_out`
 theorem quotient_obj_as (C : HomologicalComplex V c) : ((quotient V c).obj C).as = C :=
   rfl
@@ -138,7 +146,6 @@ def homotopyOutMap {C D : HomologicalComplex V c} (f : C ⟶ D) :
   apply homotopyOfEq
   simp
 
-@[simp 1100]
 theorem quotient_map_out_comp_out {C D E : HomotopyCategory V c} (f : C ⟶ D) (g : D ⟶ E) :
     (quotient V c).map (Quot.out f ≫ Quot.out g) = f ≫ g := by simp
 

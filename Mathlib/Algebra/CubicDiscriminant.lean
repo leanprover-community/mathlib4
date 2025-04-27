@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Cubics and discriminants
@@ -36,7 +37,14 @@ noncomputable section
 /-- The structure representing a cubic polynomial. -/
 @[ext]
 structure Cubic (R : Type*) where
-  (a b c d : R)
+  /-- The degree-3 coefficient -/
+  a : R
+  /-- The degree-2 coefficient -/
+  b : R
+  /-- The degree-1 coefficient -/
+  c : R
+  /-- The degree-0 coefficient -/
+  d : R
 
 namespace Cubic
 
@@ -80,7 +88,7 @@ private theorem coeffs : (∀ n > 3, P.toPoly.coeff n = 0) ∧ P.toPoly.coeff 3 
   norm_num
   intro n hn
   repeat' rw [if_neg]
-  any_goals linarith only [hn]
+  any_goals omega
   repeat' rw [zero_add]
 
 @[simp]
@@ -237,13 +245,11 @@ def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   invFun f := ⟨coeff f 3, coeff f 2, coeff f 1, coeff f 0⟩
   left_inv P := by ext <;> simp only [Subtype.coe_mk, coeffs]
   right_inv f := by
-    -- Porting note: Added `simp only [Nat.succ_eq_add_one] <;> ring_nf`
-    -- There's probably a better way to do this.
-    ext (_ | _ | _ | _ | n) <;> simp only [Nat.succ_eq_add_one] <;> ring_nf
-      <;> try simp only [coeffs]
-    have h3 : 3 < 4 + n := by linarith only
-    rw [coeff_eq_zero h3,
-      (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2 _ <| WithBot.coe_lt_coe.mpr (by exact h3)]
+    ext n
+    obtain hn | hn := le_or_lt n 3
+    · interval_cases n <;> simp only [Nat.succ_eq_add_one] <;> ring_nf <;> try simp only [coeffs]
+    · rw [coeff_eq_zero hn, (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2]
+      simpa using hn
 
 @[simp]
 theorem degree_of_a_ne_zero (ha : P.a ≠ 0) : P.toPoly.degree = 3 :=
@@ -468,12 +474,8 @@ def disc {R : Type*} [Ring R] (P : Cubic R) : R :=
 
 theorem disc_eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     φ P.disc = (φ P.a * φ P.a * (x - y) * (x - z) * (y - z)) ^ 2 := by
-  simp only [disc, RingHom.map_add, RingHom.map_sub, RingHom.map_mul, map_pow]
-  -- Porting note: Replaced `simp only [RingHom.map_one, map_bit0, map_bit1]` with f4, f18, f27
-  have f4 : φ 4 = 4 := map_natCast φ 4
-  have f18 : φ 18 = 18 := map_natCast φ 18
-  have f27 : φ 27 = 27 := map_natCast φ 27
-  rw [f4, f18, f27, b_eq_three_roots ha h3, c_eq_three_roots ha h3, d_eq_three_roots ha h3]
+  simp only [disc, RingHom.map_add, RingHom.map_sub, RingHom.map_mul, map_pow, map_ofNat]
+  rw [b_eq_three_roots ha h3, c_eq_three_roots ha h3, d_eq_three_roots ha h3]
   ring1
 
 theorem disc_ne_zero_iff_roots_ne (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :

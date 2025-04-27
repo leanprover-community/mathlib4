@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.NoetherianSpace
 
 /-!
@@ -25,8 +26,7 @@ of compact open subsets are still compact.
   a quasi-separated space, then so is `α`.
 -/
 
-
-open TopologicalSpace Topology
+open Set TopologicalSpace Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 
@@ -90,9 +90,6 @@ theorem Topology.IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s
     H (f '' U) (f '' V) (Set.image_subset _ hU) (h.isOpenMap _ hU') (hU''.image h.continuous)
       (Set.image_subset _ hV) (h.isOpenMap _ hV') (hV''.image h.continuous)
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.isQuasiSeparated_iff := IsOpenEmbedding.isQuasiSeparated_iff
-
 theorem isQuasiSeparated_iff_quasiSeparatedSpace (s : Set α) (hs : IsOpen s) :
     IsQuasiSeparated s ↔ QuasiSeparatedSpace s := by
   rw [← isQuasiSeparated_univ_iff]
@@ -111,14 +108,33 @@ instance (priority := 100) NoetherianSpace.to_quasiSeparatedSpace [NoetherianSpa
     QuasiSeparatedSpace α :=
   ⟨fun _ _ _ _ _ _ => NoetherianSpace.isCompact _⟩
 
-theorem IsQuasiSeparated.of_quasiSeparatedSpace (s : Set α) [QuasiSeparatedSpace α] :
-    IsQuasiSeparated s :=
+lemma QuasiSeparatedSpace.of_isTopologicalBasis {ι : Type*} {b : ι → Set α}
+    (basis : IsTopologicalBasis (range b)) (isCompact_inter : ∀ i j, IsCompact (b i ∩ b j)) :
+    QuasiSeparatedSpace α where
+  inter_isCompact U V hUopen hUcomp hVopen hVcomp := by
+    have aux := isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis b basis fun i ↦ by
+      simpa using isCompact_inter i i
+    obtain ⟨s, hs, rfl⟩ := (aux _).1 ⟨hUcomp, hUopen⟩
+    obtain ⟨t, ht, rfl⟩ := (aux _).1 ⟨hVcomp, hVopen⟩
+    rw [iUnion₂_inter_iUnion₂]
+    exact hs.isCompact_biUnion fun i hi ↦ ht.isCompact_biUnion fun j hj ↦ isCompact_inter ..
+
+section QuasiSeparatedSpace
+variable [QuasiSeparatedSpace α] {U V : Set α}
+
+lemma IsQuasiSeparated.of_quasiSeparatedSpace (s : Set α) : IsQuasiSeparated s :=
   isQuasiSeparated_univ.of_subset (Set.subset_univ _)
 
-theorem QuasiSeparatedSpace.of_isOpenEmbedding (h : IsOpenEmbedding f) [QuasiSeparatedSpace β] :
-    QuasiSeparatedSpace α :=
-  isQuasiSeparated_univ_iff.mp
-    (h.isQuasiSeparated_iff.mpr <| IsQuasiSeparated.of_quasiSeparatedSpace _)
+lemma QuasiSeparatedSpace.of_isOpenEmbedding {f : β → α} (h : IsOpenEmbedding f) :
+    QuasiSeparatedSpace β :=
+  isQuasiSeparated_univ_iff.mp (h.isQuasiSeparated_iff.mpr <| .of_quasiSeparatedSpace _)
 
-@[deprecated (since := "2024-10-18")]
-alias QuasiSeparatedSpace.of_openEmbedding := QuasiSeparatedSpace.of_isOpenEmbedding
+lemma IsCompact.inter_of_isOpen (hUcomp : IsCompact U) (hVcomp : IsCompact V) (hUopen : IsOpen U)
+    (hVopen : IsOpen V) : IsCompact (U ∩ V) :=
+  QuasiSeparatedSpace.inter_isCompact _ _ hUopen hUcomp hVopen hVcomp
+
+end QuasiSeparatedSpace
+
+lemma quasiSeparatedSpace_congr (e : α ≃ₜ β) : QuasiSeparatedSpace α ↔ QuasiSeparatedSpace β where
+  mp _ := .of_isOpenEmbedding e.symm.isOpenEmbedding
+  mpr _ := .of_isOpenEmbedding e.isOpenEmbedding

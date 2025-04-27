@@ -22,7 +22,7 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 ## Main definitions
 
 * `Matrix.transposeᵣ`
-* `Matrix.dotProductᵣ`
+* `dotProductᵣ`
 * `Matrix.mulᵣ`
 * `Matrix.mulVecᵣ`
 * `Matrix.vecMulᵣ`
@@ -42,7 +42,7 @@ def Forall : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
   | 0, _, P => P (of ![])
   | _ + 1, _, P => FinVec.Forall fun r => Forall fun A => P (of (Matrix.vecCons r A))
 
-/-- This can be use to prove
+/-- This can be used to prove
 ```lean
 example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
   (∀ x, P x) ↔ ∀ a b c d e f, P !![a, b, c; d, e, f] :=
@@ -64,7 +64,7 @@ def Exists : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
   | 0, _, P => P (of ![])
   | _ + 1, _, P => FinVec.Exists fun r => Exists fun A => P (of (Matrix.vecCons r A))
 
-/-- This can be use to prove
+/-- This can be used to prove
 ```lean
 example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
   (∃ x, P x) ↔ ∃ a b c d e f, P !![a, b, c; d, e, f] :=
@@ -107,7 +107,7 @@ theorem transposeᵣ_eq : ∀ {m n} (A : Matrix (Fin m) (Fin n) α), transpose�
 example (a b c d : α) : transpose !![a, b; c, d] = !![a, c; b, d] :=
   (transposeᵣ_eq _).symm
 
-/-- `Matrix.dotProduct` with better defeq for `Fin` -/
+/-- `dotProduct` with better defeq for `Fin` -/
 def dotProductᵣ [Mul α] [Add α] [Zero α] {m} (a b : Fin m → α) : α :=
   FinVec.sum <| FinVec.seq (FinVec.map (· * ·) a) b
 

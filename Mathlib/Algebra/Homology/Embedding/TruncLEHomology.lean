@@ -21,6 +21,12 @@ quasi-isomorphism in degree `e.f i` for all `i`. (Note that the complex
 
 All the results are obtained by dualising the results in the file `Embedding.TruncGEHomology`.
 
+<<<<<<< HEAD
+=======
+Moreover, if `C` is an abelian category, we introduce the cokernel
+sequence `K.shortComplexTruncLE e` of the monomorphism `K.ιTruncLE e`.
+
+>>>>>>> origin/jriou_localization_bump_deps
 -/
 
 open CategoryTheory Category Limits
@@ -28,12 +34,21 @@ open CategoryTheory Category Limits
 namespace HomologicalComplex
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
+<<<<<<< HEAD
   {C : Type*} [Category C] [HasZeroMorphisms C]
   (K L : HomologicalComplex C c') (φ : K ⟶ L) (e : c.Embedding c') [e.IsTruncLE]
 
 section
 
 variable [∀ i', K.HasHomology i'] [∀ i', L.HasHomology i']
+=======
+  {C : Type*} [Category C]
+
+section
+
+variable [HasZeroMorphisms C] (K L : HomologicalComplex C c') (φ : K ⟶ L) (e : c.Embedding c')
+  [e.IsTruncLE] [∀ i', K.HasHomology i'] [∀ i', L.HasHomology i']
+>>>>>>> origin/jriou_localization_bump_deps
 
 namespace truncLE'
 
@@ -86,9 +101,15 @@ end
 
 section
 
+<<<<<<< HEAD
 variable {C : Type*} [Category C] [Abelian C]
   (K L : HomologicalComplex C c') (e : c.Embedding c') [e.IsTruncLE]
 
+=======
+variable [Abelian C] (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsTruncLE]
+
+/-- The cokernel sequence of the monomorphism `K.ιTruncLE e`. -/
+>>>>>>> origin/jriou_localization_bump_deps
 @[simps X₁ X₂ f]
 noncomputable def shortComplexTruncLE : ShortComplex (HomologicalComplex C c') :=
   ShortComplex.mk (K.ιTruncLE e) _ (cokernel.condition _)
@@ -113,12 +134,21 @@ lemma mono_homologyMap_shortComplexTruncLE_g (i' : ι') (hi' : ∀ i, e.f i ≠ 
 @[simp]
 lemma shortComplexTruncLE_shortExact_δ_eq_zero (i' j' : ι') (hij' : c'.Rel i' j') :
     (K.shortComplexTruncLE_shortExact e).δ i' j' hij' = 0 := by
+<<<<<<< HEAD
   by_cases hj'': ∃ j, e.f j = j'
   · obtain ⟨j, rfl⟩ := hj''
     rw [← cancel_mono (homologyMap (K.ιTruncLE e) (e.f j)), zero_comp]
     exact (K.shortComplexTruncLE_shortExact e).δ_comp i' _ hij'
   · apply ((K.truncLE e).exactAt_of_isSupported e j'
       (by simpa using hj'')).isZero_homology.eq_of_tgt
+=======
+  by_cases hj : ∃ j, e.f j = j'
+  · obtain ⟨j, rfl⟩ := hj
+    rw [← cancel_mono (homologyMap (K.ιTruncLE e) (e.f j)), zero_comp]
+    exact (K.shortComplexTruncLE_shortExact e).δ_comp i' _ hij'
+  · apply ((K.truncLE e).exactAt_of_isSupported e j'
+      (by simpa using hj)).isZero_homology.eq_of_tgt
+>>>>>>> origin/jriou_localization_bump_deps
 
 instance epi_homologyMap_shortComplexTruncLE_g (i' : ι') :
     Epi (homologyMap (K.shortComplexTruncLE e).g i') := by
@@ -154,6 +184,7 @@ lemma shortComplexTruncLE_X₃_isSupportedOutside :
         comp_id, comp_zero, ← cancel_epi (homologyMap (K.shortComplexTruncLE e).f (e.f i)),
         comp_zero, ← homologyMap_comp, ShortComplex.zero, homologyMap_zero]
 
+<<<<<<< HEAD
 lemma acyclic_ιTruncLE_iff_isSupportedOutside :
     (K.truncLE e).Acyclic ↔ K.IsSupportedOutside e := by
   constructor
@@ -166,6 +197,8 @@ lemma acyclic_ιTruncLE_iff_isSupportedOutside :
       simpa only [exactAt_iff_of_quasiIsoAt (K.ιTruncLE e)] using hK.exactAt i
     · exact exactAt_of_isSupported _ e i' (by simpa using hi')
 
+=======
+>>>>>>> origin/jriou_localization_bump_deps
 end
 
 end HomologicalComplex

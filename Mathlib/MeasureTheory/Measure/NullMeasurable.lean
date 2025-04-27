@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
+import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.Measure.AEDisjoint
 
@@ -168,6 +168,11 @@ protected theorem diff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t �
   MeasurableSet.diff hs ht
 
 @[simp]
+protected theorem symmDiff {s₁ s₂ : Set α} (h₁ : NullMeasurableSet s₁ μ)
+    (h₂ : NullMeasurableSet s₂ μ) : NullMeasurableSet (symmDiff s₁ s₂) μ :=
+  (h₁.diff h₂).union (h₂.diff h₁)
+
+@[simp]
 protected theorem disjointed {f : ℕ → Set α} (h : ∀ i, NullMeasurableSet (f i) μ) (n) :
     NullMeasurableSet (disjointed f n) μ :=
   MeasurableSet.disjointed h n
@@ -206,6 +211,8 @@ theorem exists_measurable_subset_ae_eq (h : NullMeasurableSet s μ) :
 end NullMeasurableSet
 
 open NullMeasurableSet
+
+open scoped Function -- required for scoped `on` notation
 
 /-- If `sᵢ` is a countable family of (null) measurable pairwise `μ`-a.e. disjoint sets, then there
 exists a subordinate family `tᵢ ⊆ sᵢ` of measurable pairwise disjoint sets such that

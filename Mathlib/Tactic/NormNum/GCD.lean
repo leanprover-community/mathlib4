@@ -16,14 +16,6 @@ Note that `Nat.coprime` is reducible and defined in terms of `Nat.gcd`, so the `
 also indirectly provides a `Nat.coprime` extension.
 -/
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
-
 namespace Tactic
 
 namespace NormNum
@@ -67,7 +59,7 @@ theorem nat_lcm_helper (x y d m : ℕ) (hd : Nat.gcd x y = d)
     (d0 : Nat.beq d 0 = false)
     (dm : x * y = d * m) : Nat.lcm x y = m :=
   mul_right_injective₀ (Nat.ne_of_beq_eq_false d0) <| by
-    dsimp only -- Porting note: the `dsimp only` was not necessary in Lean3.
+    dsimp only
     rw [← dm, ← hd, Nat.gcd_mul_lcm]
 
 theorem int_gcd_helper {x y : ℤ} {x' y' d : ℕ}
@@ -133,6 +125,7 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
           have pt : Q($ey * $eb' = $ex * $ea' + $ed) := (q(Eq.refl ($ey * $eb')) : Expr)
           ⟨ed, q(nat_gcd_helper_1 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
 
+/-- Evaluate the `Nat.gcd` function. -/
 @[norm_num Nat.gcd _ _]
 def evalNatGCD : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure

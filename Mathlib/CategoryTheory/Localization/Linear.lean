@@ -1,15 +1,19 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Preadditive
+import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Center.Localization
 import Mathlib.CategoryTheory.Center.Linear
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # Localization of linear categories
+
+If `L : C ⥤ D` is an additive localization functor between preadditive categories,
+and `C` is `R`-linear, we show that `D` can also be equipped with a `R`-linear
+structure such that `L` is a `R`-linear functor.
 
 -/
 
@@ -24,8 +28,10 @@ variable (R : Type w) [Ring R] {C : Type u₁} [Category.{v₁} C] {D : Type u�
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
   [L.Additive] [Linear R C]
 
+/-- If `L : C ⥤ D` is a localization functor and `C` is `R`-linear, then `D` is
+`R`-linear if we already know that `D` is preadditive and `L` is additive. -/
 noncomputable def linear : Linear R D := Linear.ofRingMorphism
-  ((CatCenter.localizationRingMorphism L W).comp (Linear.toCatCenter R C))
+  ((CatCenter.localizationRingHom L W).comp (Linear.toCatCenter R C))
 
 lemma functor_linear :
     letI := linear R L W
@@ -59,14 +65,12 @@ end
 
 section
 
-variable {E : Type _} [Category E]
-  (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
-  [Preadditive E] [L.Additive]
-  (R : Type _) [Ring R]
+variable {E : Type*} [Category E]
+  (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [Preadditive E]
+  (R : Type*) [Ring R]
   [Linear R C] [Linear R D] [Linear R E] [L.Linear R]
 
-lemma functor_linear_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G]
-    [F.Additive] [G.Additive] :
+lemma functor_linear_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G] :
     F.Linear R ↔ G.Linear R := by
   constructor
   · intro

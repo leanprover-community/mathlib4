@@ -76,11 +76,13 @@ lemma mk_goursatFst_eq_iff_mk_goursatSnd_eq {x y : G × H} (hx : x ∈ I) (hy : 
   · simpa [Prod.mul_def, Prod.div_def] using div_mem (mul_mem h hx) hy
   · simpa [Prod.mul_def, Prod.div_def] using div_mem (mul_mem h hy) hx
 
+variable (I) in
+@[to_additive AddSubgroup.goursatFst_prod_goursatSnd_le]
 lemma goursatFst_prod_goursatSnd_le : I.goursatFst.prod I.goursatSnd ≤ I := by
   rintro ⟨g, h⟩ ⟨hg, hh⟩
   simpa using mul_mem (mem_goursatFst.1 hg) (mem_goursatSnd.1 hh)
 
-/-- **Goursat's lemma** for a subgroup of with surjective projections.
+/-- **Goursat's lemma** for a subgroup of a product with surjective projections.
 
 If `I` is a subgroup of `G × H` which projects fully on both factors, then there exist normal
 subgroups `M ≤ G` and `N ≤ H` such that `G' × H' ≤ I` and the image of `I` in `G ⧸ M × H ⧸ N` is the
@@ -88,7 +90,7 @@ graph of an isomorphism `G ⧸ M ≃ H ⧸ N'`.
 
 `G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively. -/
 @[to_additive
-"**Goursat's lemma** for a subgroup of with surjective projections.
+"**Goursat's lemma** for a subgroup of a product with surjective projections.
 
 If `I` is a subgroup of `G × H` which projects fully on both factors, then there exist normal
 subgroups `M ≤ G` and `N ≤ H` such that `G' × H' ≤ I` and the image of `I` in `G ⧸ M × H ⧸ N` is the
@@ -111,8 +113,8 @@ lemma goursat_surjective :
 /-- **Goursat's lemma** for an arbitrary subgroup.
 
 If `I` is a subgroup of `G × H`, then there exist subgroups `G' ≤ G`, `H' ≤ H` and normal subgroups
-`M ≤ G'` and `N ≤ H'` such that `M × N ≤ I` and the image of `I` in `G' ⧸ M × H' ⧸ N` is the graph
-of an isomorphism `G ⧸ G' ≃ H ⧸ H'`. -/
+`M ⊴ G'` and `N ⊴ H'` such that `M × N ≤ I` and the image of `I` in `G' ⧸ M × H' ⧸ N` is the graph
+of an isomorphism `G' ⧸ M ≃ H' ⧸ N`. -/
 @[to_additive
 "**Goursat's lemma** for an arbitrary subgroup.
 
@@ -150,29 +152,21 @@ lemma goursat :
   · ext ⟨g, h⟩
     constructor
     · intro hgh
-      simpa only [mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists, Prod.exists,
-        MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply, MonoidHom.coe_snd,
-        exists_eq_right, exists_and_right, exists_eq_right_right, MonoidHom.coe_fst]
+      simpa only [G', H', mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
+        Prod.exists, MonoidHom.coe_prodMap, coe_subtype, Prod.mk.injEq, Prod.map_apply,
+        MonoidHom.coe_snd, exists_eq_right, exists_and_right, exists_eq_right_right,
+        MonoidHom.coe_fst]
         using ⟨⟨h, hgh⟩, ⟨g, hgh⟩, g, h, hgh, ⟨rfl, rfl⟩⟩
-    · simp only [mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists, Prod.exists,
-        MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply, MonoidHom.coe_snd,
-        exists_eq_right, exists_and_right, exists_eq_right_right, MonoidHom.coe_fst,
-        forall_exists_index, and_imp]
+    · simp only [G', H', mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
+        Prod.exists, MonoidHom.coe_prodMap, coe_subtype, Prod.mk.injEq, Prod.map_apply,
+        MonoidHom.coe_snd, exists_eq_right, exists_and_right, exists_eq_right_right,
+        MonoidHom.coe_fst, forall_exists_index, and_imp]
       rintro h₁ hgh₁ g₁ hg₁h g₂ h₂ hg₂h₂ hP hQ
       simp only [Subtype.ext_iff] at hP hQ
       rwa [← hP, ← hQ]
-  · rintro ⟨⟨g, _⟩, ⟨h, _⟩⟩ hgh
-    simp only [MonoidHom.prodMap, MonoidHom.mem_ker, MonoidHom.prod_apply, MonoidHom.coe_comp,
-      QuotientGroup.coe_mk', MonoidHom.coe_fst, comp_apply, MonoidHom.coe_snd, Prod.mk_eq_one,
-      QuotientGroup.eq_one_iff, mem_goursatFst, MonoidHom.mem_range, Prod.mk.injEq, Subtype.exists,
-      Prod.exists, mem_goursatSnd] at hgh
-    rcases hgh with ⟨⟨g₁, h₁, hg₁h₁, hPQ₁⟩, ⟨g₂, h₂, hg₂h₂, hPQ₂⟩⟩
-    simp only [Subtype.ext_iff] at hPQ₁ hPQ₂
-    rcases hPQ₁ with ⟨rfl, rfl⟩
-    rcases hPQ₂ with ⟨rfl, rfl⟩
-    simp only [MonoidHom.mem_range, MonoidHom.prod_apply, Prod.mk.injEq, Subtype.exists,
-      Prod.exists]
-    refine ⟨g₁, h₂, ?_, rfl, rfl⟩
-    simpa only [OneMemClass.coe_one, Prod.mk_mul_mk, mul_one, one_mul] using mul_mem hg₁h₁ hg₂h₂
+  · convert goursatFst_prod_goursatSnd_le (P.prod Q).range
+    ext ⟨g, h⟩
+    simp_rw [G', H', MonoidHom.mem_ker, MonoidHom.coe_prodMap, Prod.map_apply, Subgroup.mem_prod,
+      Prod.one_eq_mk, Prod.ext_iff, ← MonoidHom.mem_ker, QuotientGroup.ker_mk']
 
 end Subgroup
