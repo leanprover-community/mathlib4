@@ -55,10 +55,20 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 
 
 #eval
+  let s := "example        f   g"
+  let t := "example fg"
+  Mathlib.Linter.parallelScan s t
+
+
+#eval
   let s := "example  :   True :=trivial"
   let t := "example : True :=
     trivial"
   Mathlib.Linter.parallelScan s t
+
+
+example    : True := trivial
+example      /-dαακdαακdαακκ-/     :  True :=trivial
 
 
 /--
@@ -207,21 +217,7 @@ example {a : Nat}  : a = a := rfl
 /--
 warning: extra space
 
-Current syntax:  'alpha   ] '
-Expected syntax: 'alpha] {a '
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: extra space
-
-Current syntax:  'lpha   ] {'
-Expected syntax: 'alpha] {a '
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: extra space
-
-Current syntax:  'pha   ] {a'
+Current syntax:  'alpha   ] {a'
 Expected syntax: 'alpha] {a '
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`

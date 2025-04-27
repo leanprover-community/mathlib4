@@ -63,26 +63,29 @@ structure FormatError where
   /-- The distance to the end of the source string, as number of characters. -/
   srcNat : Nat
   /-- The distance to the end of the source string, as number of string positions. -/
-  srcPos : String.Pos
+  srcEndPos : String.Pos
   /-- The distance to the end of the formatted string, as number of characters. -/
   fmtPos : Nat
   /-- The kind of formatting error: `extra space`, `remove line break` or `missing space`. -/
   msg : String
-  /-- The number of characters that the error spans. -/
+  /-- The length of the mismatch, as number of characters. -/
   length : Nat
+  /-- The length of the mismatch, as a `String.pos`. -/
+  srcStartPos : String.Pos
   deriving Inhabited
 
 instance : ToString FormatError where
   toString f :=
-    s!"srcNat: {f.srcNat}, srcPos: {f.srcPos}, fmtPos: {f.fmtPos}, \
+    s!"srcNat: {f.srcNat}, srcPos: {f.srcEndPos}, fmtPos: {f.fmtPos}, \
       msg: {f.msg}, length: {f.length}\n"
 
 def mkFormatError (ls ms : String) (msg : String) (length : Nat := 1) : FormatError where
   srcNat := ls.length
-  srcPos := ls.endPos
+  srcEndPos := ls.endPos
   fmtPos := ms.length
   msg := msg
   length := length
+  srcStartPos := ls.endPos
 
 def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatError :=
   -- If there are no errors already, we simply add the new one.
@@ -91,7 +94,8 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
   -- If the latest error is of a different kind that then new one, we simply add the new one.
   if back.msg != f.msg || back.srcNat - back.length != f.srcNat then fs.push f else
   -- Otherwise, we are adding a further error of the same kind and we therefore merge the two.
-  fs.pop.push {back with length := back.length + f.length}
+  dbg_trace "{back.srcEndPos} - {f.srcStartPos}, {f.srcEndPos}"
+  fs.pop.push {back with length := back.length + f.length, srcStartPos := f.srcEndPos}
 
 partial
 def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
@@ -235,11 +239,11 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       --  center' := orig'.next center' -- ⟨1⟩
       --  orig' := orig'.dropRight 1
       --let center := center' + origSubstring.stopPos - origSubstring.startPos
-      let center := origSubstring.stopPos - s.srcPos
-      let rg : String.Range := ⟨center, center + ⟨1⟩⟩
+      let center := origSubstring.stopPos - s.srcEndPos
+      let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
       Linter.logLint linter.style.commandStart (.ofRange rg)
         m!"{s.msg}\n\n\
-          Current syntax:  '{orig.takeRight (s.srcNat + 5) |>.take 10 |>.replace "\n" "⏎"}'\n\
+          Current syntax:  '{orig.takeRight (s.srcNat + 5) |>.take (s.length + 9) |>.replace "\n" "⏎"}'\n\
           Expected syntax: '{st.takeRight (s.fmtPos + 5) |>.take 10 |>.replace "\n" "⏎"}'\n"
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg) --(stx.getHead?.getD stx)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
