@@ -25,6 +25,25 @@ proof which depends on 6.12)
 - 6.16: Duality of `L^1` and `L^∞` (not in Mathlib [https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Lp.20duality/near/495207025])
 -/
 
+section CompleteLinearOrder
+
+variable {α : Type*}{ι : Type*} [CompleteLinearOrder α] {s : Set α} {a b : α}
+
+theorem lt_biSup_iff {s : Set ι} {f : ι → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
+  constructor
+  · intro h
+    obtain ⟨i, hi⟩ := lt_iSup_iff.mp h
+    obtain ⟨his, ha⟩ := lt_iSup_iff.mp hi
+    exact ⟨i, ⟨his, ha⟩⟩
+  · intro h
+    obtain ⟨i, hi⟩ := h
+    apply lt_iSup_iff.mpr
+    use i
+    apply lt_iSup_iff.mpr
+    simpa [exists_prop]
+
+end CompleteLinearOrder
+
 section TotalVariation
 
 open MeasureTheory BigOperators ENNReal
@@ -45,26 +64,49 @@ variable {X : Type*} [MeasurableSpace X]
 -- This seems better because many other parts of the project depends on `Measure` (concerning the
 --  L^p spaces).
 
+lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞): HasSum f a ↔
+    (∀ (n : ℕ), ∑ i ∈ Finset.range n, f i ≤ a) ∧
+    (∀ b < a, ∃ (n : ℕ), b < ∑ i ∈ Finset.range n, f i) := by
+  rw [ENNReal.hasSum_iff_tendsto_nat]
+  constructor
+  · intro h
+    constructor
+    · sorry
+    · sorry
+  · intro h O hO
+    simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage]
+    sorry
+
 noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
   measureOf' (s : Set X) := by
     classical
     exact if (MeasurableSet s)
-      then ⨅ t ∈ {t' : Set X | MeasurableSet t' ∧ s ⊆ t'},
-        ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint E')
-               ∧ ⋃ n, E' n = t}, ∑' n, ENNReal.ofReal ‖μ (E n)‖
+      then ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧
+                  Pairwise (Function.onFun Disjoint E') ∧ ⋃ n, E' n = s},
+            ∑' n, ENNReal.ofReal ‖μ (E n)‖
       else 0
   empty' := by
-    simp only [Set.empty_subset, and_true, Set.mem_setOf_eq]
-    apply le_antisymm
-    · simp only [MeasurableSet.empty, ↓reduceIte]
-      apply le_trans (biInf_le _ MeasurableSet.empty)
-      simp only [Set.iUnion_eq_empty, nonpos_iff_eq_zero, iSup_eq_zero, ENNReal.tsum_eq_zero,
-        and_imp]
-      intro _ _ _ hEempty n
-      simp [hEempty n]
-    · simp
+    simp only [MeasurableSet.empty, ↓reduceIte, Set.iUnion_eq_empty, Set.mem_setOf_eq,
+      iSup_eq_zero, ENNReal.tsum_eq_zero, and_imp]
+    intro E Emeasurable Edisjoint Eempty n
+    rw [Eempty n]
+    simp
   not_measurable' s h := if_neg h
-  m_iUnion' := sorry -- countable additivity, follow Rudin
+  m_iUnion' E Emeasurable Edisjoint := by
+    simp_rw [Emeasurable, MeasurableSet.iUnion Emeasurable]
+    simp only [↓reduceIte, Set.mem_setOf_eq]
+    rw [ENNReal.hasSum_iff_XXX]
+    -- countable additivity, follow Rudin
+    constructor
+    · intro m
+      sorry
+    · intro b hb
+      obtain ⟨F, hF⟩ := lt_biSup_iff.mp hb
+      rw [Set.mem_def] at hF
+      -- take intersection of `F` and `E i` to get a refined partition,
+      -- have : ∀ i, ∃ (A : ℕ → Set X), (∀ n, MeasurableSet A n) ∧ Pairwise (Function.onFun Disjoint A)
+      --     ∧ ⋃ n, A n = E i ∧ ∑' n, ENNReal.ofReal ‖μ (A n)‖
+      sorry
 
 -- obsolete
 -- noncomputable def supOuterMeasure : OuterMeasure X where
