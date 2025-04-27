@@ -23,7 +23,7 @@ The `commandStart` linter emits a warning if
 * a command does not start at the beginning of a line;
 * the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 
-In practice, this makes sure that the spacing in a typical declaration look like
+In practice, this makes sure that the spacing in a typical declaration looks like
 ```lean
 example (a : Nat) {R : Type} [Add R] : <not linted part>
 ```
@@ -37,7 +37,7 @@ register_option linter.style.commandStart : Bool := {
   descr := "enable the commandStart linter"
 }
 
-/-- If the `linter.style.commandStart.verbose` is `true`< the `commandStart` linter
+/-- If the `linter.style.commandStart.verbose` is `true`, the `commandStart` linter
 reports some helpful diagnostic information. -/
 register_option linter.style.commandStart.verbose : Bool := {
   defValue := false
@@ -155,7 +155,7 @@ def trimComments (s : String) (compressDocs : Bool) : String :=
 
 /--
 These are some replacements that we do to align the input syntax with the pretty-printed one,
-mostly in cases where there is not real rule for what style to use.
+mostly in cases where there is no real rule for what style to use.
 -/
 def furtherFormatting (s : String) : String :=
   s |>.replace "¬ " "¬"
