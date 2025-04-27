@@ -87,6 +87,9 @@ An isomorphism of `CombinatorialMap`s is a homomorphism that is also an equivale
 -/
 structure Iso (M : CombinatorialMap D) (M' : CombinatorialMap D') extends (D ≃ D'), Hom M M'
 
+/-- Interpret an `Iso` as a `Hom`. -/
+add_decl_doc Iso.toHom
+
 private lemma hom_inv_is_hom_aux {p₁ : Equiv.Perm D} {p₂ : Equiv.Perm D'} {f : Equiv D D'}
     (h : f ∘ p₁ = p₂ ∘ f) : f.symm ∘ p₂ = p₁ ∘ f.symm :=
   calc f.symm ∘ p₂ = f.symm ∘ p₂ ∘ id := rfl

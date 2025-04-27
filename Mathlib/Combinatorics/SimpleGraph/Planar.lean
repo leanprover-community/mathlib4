@@ -19,12 +19,10 @@ variable {V D : Type*}
 
 /-- A `CombinatorialMap` induces a `SimpleGraph`. -/
 def fromCombinatorialMap (M : CombinatorialMap D) : SimpleGraph M.Vertex where
-  Adj v₁ v₂ := ∃ d₁ d₂ : D, M.Vertex_mk d₁ = v₁ ∧ M.Vertex_mk d₂ = v₂ ∧ M.edgePerm d₁ = d₂ ∧
-    v₁ ≠ v₂
+  Adj v₁ v₂ := v₁ ≠ v₂ ∧ ∃ d₁ d₂ : D, M.Vertex_mk d₁ = v₁ ∧ M.Vertex_mk d₂ = v₂ ∧ M.edgePerm d₁ = d₂
   symm := by
-    intro v₁ v₂ ⟨d₁, d₂, h₁, h₂, h₃, h₄⟩
-    use d₂, d₁
-    exact ⟨h₂, h₁, (M.edgePerm_involutive.eq_iff.mp h₃).symm, h₄.symm⟩
+    intro v₁ v₂ ⟨h₁, d₁, d₂, h₂, h₃, h₄⟩
+    use h₁.symm, d₂, d₁, h₃, h₂, (M.edgePerm_involutive.eq_iff.mp h₄).symm
   loopless := by tauto
 
 /-- A `SimpleGraph` is planar if it is induced by a planar `CombinatorialMap`. -/
