@@ -135,9 +135,10 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
     DominatedFinMeasAdditive μ (weightedSMul μ : Set α → F →L[ℝ] F) 1 :=
   ⟨weightedSMul_union, fun s _ _ => (norm_weightedSMul_le s).trans (one_mul _).symm.le⟩
 
-theorem weightedSMul_nonneg (s : Set α) (x : ℝ) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
+theorem weightedSMul_nonneg [PartialOrder F] [OrderedSMul ℝ F]
+    (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
   simp only [weightedSMul, Algebra.id.smul_eq_mul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
-  exact mul_nonneg toReal_nonneg hx
+  exact smul_nonneg toReal_nonneg hx
 
 end WeightedSMul
 
@@ -354,10 +355,9 @@ lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν 
   · suffices ν (f ⁻¹' {f x}) = 0 by
       have A : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
       simp [measureReal_def, A, this]
-    rw [← nonpos_iff_eq_zero]
-    refine le_of_le_of_eq (measure_mono fun y hy ↦ ?_) (ae_iff.mp hf)
-    simp only [Set.mem_preimage, mem_singleton_iff, mem_setOf_eq] at hy ⊢
-    exact hy ▸ hx
+    rw [← nonpos_iff_eq_zero, ← ae_iff.mp hf]
+    refine measure_mono fun y hy ↦ ?_
+    simp_all
 
 end Order
 
