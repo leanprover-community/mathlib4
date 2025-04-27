@@ -9,7 +9,7 @@ import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 /-!
 #  Riesz–Markov–Kakutani representation theorem for `NNReal`
 
-This file will prove the Riesz-Markov-Kakutani representation theorem on a locally compact
+This file proves the Riesz-Markov-Kakutani representation theorem on a locally compact
 T2 space `X` for `NNReal`-linear functionals `Λ`.
 
 ## Implementation notes
