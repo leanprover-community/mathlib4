@@ -40,7 +40,7 @@ theorem snd_one : (1 : M × N).2 = 1 :=
 theorem one_eq_mk : (1 : M × N) = (1, 1) :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mk_one_one : ((1 : M), (1 : N)) = 1 := rfl
 
 @[to_additive (attr := simp)]
