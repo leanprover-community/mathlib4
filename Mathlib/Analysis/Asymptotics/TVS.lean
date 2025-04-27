@@ -237,7 +237,7 @@ protected theorem _root_.Filter.HasBasis.isBigOTVS_iff
     {sE : ιE → Set E} {sF : ιF → Set F} (hE : HasBasis (𝓝 (0 : E)) pE sE)
     (hF : HasBasis (𝓝 (0 : F)) pF sF) :
     f =O[𝕜;l] g ↔ ∀ i, pE i → ∃ j, pF j ∧
-      ∀ᶠ x in l, egauge 𝕜 (sE i) (f x) ≤  egauge 𝕜 (sF j) (g x) := by
+      ∀ᶠ x in l, egauge 𝕜 (sE i) (f x) ≤ egauge 𝕜 (sF j) (g x) := by
   rw [isBigOTVS_iff]
   refine (hE.forall_iff ?_).trans <| forall₂_congr fun _ _ ↦ hF.exists_iff ?_
   · rintro s t hsub ⟨V, hV₀, hV⟩
@@ -480,6 +480,32 @@ lemma isLittleOTVS_iff_tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜
   refine ⟨IsLittleOTVS.tendsto_inv_smul, fun h ↦ ?_⟩
   refine (((isLittleOTVS_one (𝕜 := 𝕜)).mpr h).smul_left f).congr' (h₀.mono fun x hx ↦ ?_) (by simp)
   by_cases h : f x = 0 <;> simp [h, hx]
+
+variable (𝕜) in
+/-- If `f` converges along `l` to a finite limit `x`, then `f =O[𝕜, l] 1`. -/
+lemma Filter.Tendsto.isBigOTVS_one [ContinuousAdd E] [ContinuousSMul 𝕜 E] {x : E}
+    (h : Tendsto f l (𝓝 x)) : f =O[𝕜; l] (fun _ ↦ 1 : α → 𝕜) := by
+  replace h : Tendsto (f · - x) l (𝓝 0) := by
+    simpa [sub_eq_add_neg] using h.add (tendsto_const_nhds (x := -x))
+  rw [(nhds_basis_balanced 𝕜 E).add_self.isBigOTVS_iff nhds_basis_ball]
+  rintro U ⟨hU₀, hUb⟩
+  obtain ⟨r, hr₀, hr₁, hr⟩ : ∃ r : ℝ≥0, 0 < r ∧ r ≤ 1 ∧ (r : ℝ≥0∞) ≤ (egauge 𝕜 U x)⁻¹ := by
+    apply Eventually.exists_gt
+    refine .and (eventually_le_nhds one_pos) ?_
+    refine (ENNReal.tendsto_coe.mpr tendsto_id).eventually_le_const ?_
+    suffices ∃ c : 𝕜, x ∈ c • U by simpa [egauge_eq_top]
+    simpa using (absorbent_nhds_zero (𝕜 := 𝕜) hU₀ x).exists
+  use r, by positivity
+  filter_upwards [h.eventually_mem hU₀] with a ha
+  calc
+    egauge 𝕜 (U + U) (f a) ≤ max (egauge 𝕜 U (f a - x)) (egauge 𝕜 U x) := by
+      simpa using egauge_add_add_le hUb hUb (f a - x) x
+    _ ≤ (r : ℝ≥0∞)⁻¹ := by
+      apply max_le
+      · refine (egauge_le_one _ ha).trans ?_
+        simp [one_le_inv₀ hr₀, hr₁]
+      · rwa [ENNReal.le_inv_iff_le_inv]
+    _ ≤ egauge 𝕜 (ball (0 : 𝕜) _) 1 := by simpa using div_le_egauge_ball 𝕜 r (1 : 𝕜)
 
 end TopologicalSpace
 
