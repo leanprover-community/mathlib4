@@ -393,7 +393,7 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
   have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
   rw [← integral_re] at H₃
-  · simp only [← norm_sq_eq_inner] at H₃
+  · simp only [← norm_sq_eq_re_inner] at H₃
     rw [← H₁, H₂, H₃]
   · exact L2.integrable_inner f f
 

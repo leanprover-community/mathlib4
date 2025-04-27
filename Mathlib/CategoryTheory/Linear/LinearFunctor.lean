@@ -87,8 +87,8 @@ instance inducedFunctorLinear (F : C → D) : Functor.Linear R (inducedFunctor F
 
 end InducedCategory
 
-instance fullSubcategoryInclusionLinear (Z : C → Prop) :
-    (fullSubcategoryInclusion Z).Linear R where
+instance fullSubcategoryInclusionLinear {C : Type*} [Category C] [Preadditive C]
+    [CategoryTheory.Linear R C] (Z : ObjectProperty C) : Z.ι.Linear R where
 
 section
 
