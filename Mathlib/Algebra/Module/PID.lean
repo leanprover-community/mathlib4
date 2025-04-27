@@ -24,8 +24,6 @@ import Mathlib.RingTheory.SimpleModule.Basic
 
 * `R` is a PID and `M` is a (finitely generated for main statements) `R`-module, with additional
   torsion hypotheses in the intermediate lemmas.
-* `N` is an `R`-module lying over a higher type universe than `R`. This assumption is needed on the
-  final statement for technical reasons.
 * `p` is an irreducible element of `R` or a tuple of these.
 
 ## Implementation details
@@ -55,7 +53,7 @@ universe u v
 
 variable {R : Type u} [CommRing R] [IsPrincipalIdealRing R]
 variable {M : Type v} [AddCommGroup M] [Module R M]
-variable {N : Type max u v} [AddCommGroup N] [Module R N]
+variable {N : Type v} [AddCommGroup N] [Module R N]
 
 open scoped DirectSum
 
@@ -170,6 +168,18 @@ open Finset Multiset
 theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoid.powers p))
     [h' : Module.Finite R N] :
     ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
+  suffices H : ∀ {N : Type max u v} [AddCommGroup N] [Module R N]
+      (hN : Module.IsTorsion' N (Submonoid.powers p)) [Module.Finite R N],
+      ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) by
+    have := Module.Finite.equiv (ULift.moduleEquiv.{u, v, u} (R := R) (M := N)).symm
+    have hN' : Module.IsTorsion' (ULift.{u} N) (Submonoid.powers p) := by
+      rw [IsTorsion'] at hN ⊢
+      rintro ⟨x⟩
+      obtain ⟨a, ha⟩ := @hN x
+      exact ⟨a, by ext1; exact ha⟩
+    obtain ⟨d, k, ⟨f⟩⟩ := H hN'
+    exact ⟨d, k, ⟨ULift.moduleEquiv.symm ≪≫ₗ f⟩⟩
+  intro N _ _ hN h'
   obtain ⟨d, s, hs⟩ := @Module.Finite.exists_fin _ _ _ _ _ h'; use d; clear h'
   induction' d with d IH generalizing N
   · use finZeroElim
