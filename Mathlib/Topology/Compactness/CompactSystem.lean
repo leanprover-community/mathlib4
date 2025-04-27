@@ -481,7 +481,33 @@ theorem main' (p : Set α → Prop) (hp : IsCompactSystem p) (L : ℕ → Finset
 example (s : Set α) : s ≠ ∅ ↔ s.Nonempty := by
   exact Iff.symm nonempty_iff_ne_empty
 
-theorem union (h : IsCompactSystem p) : IsCompactSystem (fun s ↦ ∃ (D : Finset (Set (α))),
+def ofUnion {p : Set α → Prop} (hp : IsCompactSystem p) : Set α → Prop :=
+  (sUnion '' ({ L : Set (Set α) | L.Finite ∧ ∀ K ∈ L, p K}))
+
+lemma union_mem_iff (s : Set α) : ofUnion hp s ↔ ∃ L : Finset (Set α), s = ⋃₀ L ∧ ∀ K ∈ L, p K := by
+  refine ⟨fun ⟨L, hL⟩ ↦ ?_, fun h ↦ ?_⟩
+  · simp only [mem_setOf_eq] at hL
+    let L' := (hL.1.1).toFinset
+    use L'
+    rw [← hL.2, Finite.coe_toFinset]
+    refine ⟨rfl, fun K hK ↦ ?_⟩
+    rw [Finite.mem_toFinset] at hK
+    apply hL.1.2 K hK
+  · obtain ⟨L, hL⟩ := h
+    use L
+    simp only [mem_setOf_eq, Finset.finite_toSet, Finset.mem_coe, true_and]
+    refine ⟨hL.2, hL.1.symm⟩
+
+
+
+theorem unionIsCompactSystem : IsCompactSystem union := by sorry
+
+
+
+(L : ℕ → Finset (Set α))
+    (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
+
+theorem unionIsCompactSystem' (h : IsCompactSystem p) : IsCompactSystem (fun s ↦ ∃ (D : Finset (Set (α))),
     (∀ d ∈ D, p d) ∧ s = ⋃₀ (D : Set (Set α))) := by
   intro q hq h_empty
   simp only at hq
