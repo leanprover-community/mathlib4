@@ -172,6 +172,13 @@ lemma mapComp'₀₁₃_hom_app (hf : f₀₁ ≫ f₁₃ = f) (X : F.obj b₀) 
   rw [← F.mapComp'_hom_app_comp_mapComp'_hom_app_map_obj_assoc _ _ _ _ _ _ h₀₂ h₁₃ hf X]
   simp
 
+@[reassoc]
+lemma mapComp'_inv_app_comp_mapComp'_hom_app' (hf : f₀₁ ≫ f₁₃ = f) (X : F.obj b₀) :
+    (F.mapComp' f₀₂ f₂₃ f).inv.app X ≫ (F.mapComp' f₀₁ f₁₃ f).hom.app X =
+    (F.map f₂₃).map ((F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom.app X) ≫
+      (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv.app ((F.map f₀₁).obj X) := by
+  simp [F.mapComp'₀₁₃_hom_app f₀₁ f₁₂ f₂₃ f₀₂ f₁₃ f h₀₂ h₁₃ hf]
+
 end associativity
 
 end Pseudofunctor
