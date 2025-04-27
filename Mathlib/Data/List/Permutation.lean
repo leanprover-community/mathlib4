@@ -406,7 +406,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
   · rw [permutations'Aux, count_cons_self]
     by_cases hx : x = y
     · subst hx
-      simpa [takeWhile, Nat.succ_inj', DecEq_eq] using IH _
+      simpa [takeWhile, Nat.succ_inj, DecEq_eq] using IH _
     · rw [takeWhile]
       simp only [mem_map, cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
         not_false_iff, count_eq_zero_of_not_mem, Nat.zero_add, hx, decide_false, length_nil]
