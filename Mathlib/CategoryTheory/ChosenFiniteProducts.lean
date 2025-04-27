@@ -33,7 +33,7 @@ avoid `attribute [local instance] ofChosenFiniteProducts` but instead turn on th
 `ofChosenFiniteProducts` declaration for that functor only.
 
 # Projects
-f
+
 - Construct an instance of chosen finite products in the category of affine scheme, using
   the tensor product.
 - Construct chosen finite products in other categories appearing "in nature".
