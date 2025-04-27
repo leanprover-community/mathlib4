@@ -436,7 +436,7 @@ Topology:
   Hilbert spaces:
     Hilbert projection theorem: 'exists_norm_eq_iInf_of_complete_convex'
     orthogonal projection onto closed vector subspaces: 'Submodule.orthogonalProjection'
-    dual space: 'NormedSpace.Dual'
+    dual space: 'ContinuousLinearMap.Dual'
     Riesz representation theorem: 'InnerProductSpace.toDual'
     inner product space $l^2$: 'lp.instInnerProductSpace'
     completeness of $l^2$: 'lp.completeSpace'
