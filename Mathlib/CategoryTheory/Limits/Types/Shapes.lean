@@ -922,7 +922,7 @@ lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : Is
   have := (mono_iff_injective f).2 h₁
   apply Pushout.inl_eq_inr_iff
 
-lemma pushoutCocone_injective_inr_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
+lemma pushoutCocone_inr_injective_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
     (h₁ : Function.Injective f) : Function.Injective c.inr := by
   rw [← mono_iff_injective] at h₁
   rintro x₂ y₂ hxy
