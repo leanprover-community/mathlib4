@@ -169,11 +169,18 @@ abbrev Edge.mk (M : CombinatorialMap D) (d : D) : M.Edge :=
 abbrev Face.mk (M : CombinatorialMap D) (d : D) : M.Face :=
   Quotient.mk (Equiv.Perm.SameCycle.setoid M.facePerm) d
 
+noncomputable instance [Fintype D] [DecidableEq D] {w : D} :
+    Fintype {u | M.vertexPerm.SameCycle w u} :=
+  Fintype.ofFinite ↑{u | M.vertexPerm.SameCycle w u}
+
 /-- The degree of a vertex is the number of incident darts. -/
-def Vertex.deg [Fintype D] [DecidableEq D] (v : M.Vertex) : ℕ :=
-  Quotient.lift (fun w ↦ Fintype.card {u | M.vertexPerm.SameCycle w u}) (fun _ _ h ↦ by
-    simp_rw [Set.coe_setOf, Set.mem_setOf_eq]
-    apply Fintype.card_congr' <| congrArg Subtype ?_
+noncomputable def Vertex.deg [Fintype D] [DecidableEq D] (v : M.Vertex) : ℕ :=
+  Quotient.lift (fun w ↦ Fintype.card {u | M.vertexPerm.SameCycle w u}) (fun w u h ↦ by
+    simp [Set.coe_setOf, Set.mem_setOf_eq]
+    suffices M.vertexPerm.SameCycle w = M.vertexPerm.SameCycle u by
+      classical
+      simp_all only
+      convert rfl
     ext
     exact ⟨h.symm.trans, h.trans⟩) v
 
