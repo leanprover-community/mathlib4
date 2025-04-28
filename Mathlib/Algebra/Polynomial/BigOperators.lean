@@ -106,13 +106,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
       refine List.sum_le_card_nsmul _ _ ?_
       simpa using hl'
     have hdn : natDegree hd ≤ n := hl _ List.mem_cons_self
-    rcases hdn.eq_or_lt with (rfl | hdn')
-    · rcases h.eq_or_lt with h' | h'
-      · rw [← h', coeff_mul_degree_add_degree, leadingCoeff, leadingCoeff]
-      · rw [coeff_eq_zero_of_natDegree_lt, coeff_eq_zero_of_natDegree_lt h', mul_zero]
-        exact natDegree_mul_le.trans_lt (add_lt_add_left h' _)
-    · rw [coeff_eq_zero_of_natDegree_lt hdn', coeff_eq_zero_of_natDegree_lt, zero_mul]
-      exact natDegree_mul_le.trans_lt (add_lt_add_of_lt_of_le hdn' h)
+    exact coeff_mul_add_eq_of_natDegree_le hdn h
 
 end Semiring
 
