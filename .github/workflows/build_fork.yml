@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: leanprover-community/lint-style-action@fc42b61cf23533eea179f33099eea894af197177 # 2025-04-28
         with:
-          mode: fix
+          mode: check
           lint-bib-file: true
 
   build:
