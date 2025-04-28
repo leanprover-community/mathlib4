@@ -420,38 +420,38 @@ end AntitoneMonotone
 
 end Image2
 
-section Dominated
+section IsCofinalFor
 variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α} {f : α → β}
 
-lemma Dominated.image_of_monotone (hst : Dominated s t) (hf : Monotone f) :
-    Dominated (f '' s) (f '' t) := by
-  simp only [Dominated, forall_mem_image, exists_mem_image]
+lemma IsCofinalFor.image_of_monotone (hst : IsCofinalFor s t) (hf : Monotone f) :
+    IsCofinalFor (f '' s) (f '' t) := by
+  simp only [IsCofinalFor, forall_mem_image, exists_mem_image]
   rintro a ha
   obtain ⟨b, hb, hab⟩ := hst ha
   exact ⟨b, hb, hf hab⟩
 
-lemma Dominated.image_of_antitone (hst : Dominated s t) (hf : Antitone f) :
-    Codominated (f '' s) (f '' t) := by
-  simp only [Codominated, forall_mem_image, exists_mem_image]
+lemma IsCofinalFor.image_of_antitone (hst : IsCofinalFor s t) (hf : Antitone f) :
+    IsCoinitialFor (f '' s) (f '' t) := by
+  simp only [IsCoinitialFor, forall_mem_image, exists_mem_image]
   rintro a ha
   obtain ⟨b, hb, hab⟩ := hst ha
   exact ⟨b, hb, hf hab⟩
 
-lemma Codominated.image_of_monotone (hst : Codominated s t) (hf : Monotone f) :
-    Codominated (f '' s) (f '' t) := by
-  simp only [Codominated, forall_mem_image, exists_mem_image]
+lemma IsCoinitialFor.image_of_monotone (hst : IsCoinitialFor s t) (hf : Monotone f) :
+    IsCoinitialFor (f '' s) (f '' t) := by
+  simp only [IsCoinitialFor, forall_mem_image, exists_mem_image]
   rintro a ha
   obtain ⟨b, hb, hba⟩ := hst ha
   exact ⟨b, hb, hf hba⟩
 
-lemma Codominated.image_of_antitone (hst : Codominated s t) (hf : Antitone f) :
-    Dominated (f '' s) (f '' t) := by
-  simp only [Dominated, forall_mem_image, exists_mem_image]
+lemma IsCoinitialFor.image_of_antitone (hst : IsCoinitialFor s t) (hf : Antitone f) :
+    IsCofinalFor (f '' s) (f '' t) := by
+  simp only [IsCofinalFor, forall_mem_image, exists_mem_image]
   rintro a ha
   obtain ⟨b, hb, hba⟩ := hst ha
   exact ⟨b, hb, hf hba⟩
 
-end Dominated
+end IsCofinalFor
 
 section Prod
 
