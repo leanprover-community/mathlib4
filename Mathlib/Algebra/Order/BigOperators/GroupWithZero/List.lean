@@ -59,7 +59,7 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : List ι} (f : ι → R) (g : �
     · apply (h0 _ _).trans (h _ _) <;> simp
 
 theorem prod_map_le_pow_length {F L : Type*} [MulPosMono R] [FunLike F L R] {f : F} {r : R}
-    {t : List L} (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x : R, x ∈ List.map f t → x ≤ r) :
+    {t : List L} (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x ∈ t, f x ≤ r) :
     (List.map f t).prod ≤ r ^ length t := by
   induction t with
   | nil => simp
