@@ -102,7 +102,7 @@ lemma lintegral_paretoPDF_eq_one (ht : 0 < t) (hr : 0 < r) :
     setLIntegral_congr_fun measurableSet_Ici (ae_of_all _ (fun _ ↦ paretoPDF_of_le))
   rw [← ENNReal.toReal_eq_one_iff, ← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
     leftSide, rightSide, add_zero, ← integral_eq_lintegral_of_nonneg_ae]
-  · rw [integral_Ici_eq_integral_Ioi, integral_mul_left, integral_Ioi_rpow_of_lt _ ht]
+  · rw [integral_Ici_eq_integral_Ioi, integral_const_mul, integral_Ioi_rpow_of_lt _ ht]
     · field_simp [hr]
       rw [mul_assoc, ← rpow_add ht]
       simp
