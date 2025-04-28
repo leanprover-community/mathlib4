@@ -59,7 +59,12 @@ lemma IsDiscrete.infinite_value_group [IsDiscrete v] : Infinite Γˣ := by sorry
 lemma IsDiscrete.exists_mem_val_eq_genLTOne [IsDiscrete v] :
     haveI := IsDiscrete.cyclic_value_group v
     haveI := IsDiscrete.nontrivial_value_group v
-    ∃ a : A, v a = LinearOrderedCommGroup.Subgroup.genLTOne (G := Γˣ) ⊤ := sorry
+    ∃ a : A, v a = LinearOrderedCommGroup.Subgroup.genLTOne (G := Γˣ) ⊤ := by
+  obtain ⟨a, ha⟩ := (v.exists_generator_lt_one.choose_spec).2.2
+  have ha' := (v.exists_generator_lt_one.choose_spec).1
+  use a
+  rw [ha]
+  sorry
 
 lemma heq (B : Type*) [DivisionRing B] (w : Valuation B Γ) [IsDiscrete w] :
     MonoidHom.mrange w = ⊤ := by
@@ -97,8 +102,8 @@ noncomputable def OrderMonoidIso.withZeroUnits {α : Type*} [GroupWithZero α] [
 
 
 open scoped Multiplicative in
-def forYakov (B : Type*) [DivisionRing B] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    {w : Valuation B Γ₀} [IsDiscrete w] : MonoidHom.mrange w ≃*o ℤₘ₀ := by
+noncomputable def forYakov (B : Type*) [DivisionRing B] {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] {w : Valuation B Γ₀} [IsDiscrete w] : MonoidHom.mrange w ≃*o ℤₘ₀ := by
   let ω := MulEquiv.submonoidCongr (heq B w)
   let ω' : (MonoidHom.mrange w) ≃*o (⊤ : Submonoid Γ₀) := by
     use ω
