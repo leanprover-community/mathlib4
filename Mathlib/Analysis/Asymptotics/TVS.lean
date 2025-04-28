@@ -31,7 +31,7 @@ In a normed space, we can use balls of positive radius as both `U` and `V`,
 thus reducing the definition to the classical one.
 
 This frees the user from having to chose a canonical norm, at the expense of having to pick a
-specific base ring.
+specific base field.
 This is exactly the tradeoff we want in `HasFDerivAtFilter`,
 as there the base ring is already chosen,
 and this removes the choice of norm being part of the statement.
