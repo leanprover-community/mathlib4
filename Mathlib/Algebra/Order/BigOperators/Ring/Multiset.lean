@@ -26,13 +26,15 @@ lemma CanonicallyOrderedAdd.multiset_prod_pos {R : Type*}
 
 section OrderedCommSemiring
 
-variable {α β : Type*} [CommMonoid α] [OrderedCommSemiring β]
+variable {α β : Type*} [CommMonoid α] [CommSemiring β] [PartialOrder β] [IsOrderedRing β]
 
 theorem map_multiset_prod_le_of_submultiplicative_of_nonneg {f : α → β} (h0 : ∀ a, 0 ≤ f a)
     (h_one : f 1 = 1) (h_mul : ∀ a b, f (a * b) ≤ f a * f b) (s : Multiset α) :
     f s.prod ≤ (s.map f).prod := by
   set g : α → {b : β // 0 ≤ b} := fun x : α ↦ ⟨f x, h0 _⟩
   have hg_le : g s.prod ≤ (s.map g).prod := by
+    have : IsOrderedMonoid {b : β // 0 ≤ b} :=
+      { mul_le_mul_left (a b hab c) := by gcongr; exact c.2 }
     apply Multiset.le_prod_of_submultiplicative
     · ext
       simp [g, Nonneg.coe_one, h_one]

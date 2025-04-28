@@ -118,7 +118,7 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
 theorem le_prod_of_submultiplicative_of_nonneg {M : Type*} [CommMonoid M]
     (f : M → R) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1)
     (h_mul : ∀ x y : M, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
-    f (s.prod fun i : ι ↦ g i) ≤ s.prod fun i : ι ↦ f (g i) :=
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
   le_trans (Multiset.le_prod_of_submultiplicative_of_nonneg f h_nonneg h_one h_mul _)
     (by simp [Multiset.map_map])
 
