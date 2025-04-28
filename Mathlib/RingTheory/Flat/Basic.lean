@@ -534,7 +534,7 @@ lemma _root_.LinearIndependent.tmul_of_flat_right [Module.Flat R N]
     LinearIndependent R fun i : ι × ι' ↦ v i.1 ⊗ₜ[R] w i.2 :=
   (((TensorProduct.comm R N M).toLinearMap.linearIndependent_iff_of_injOn
     (TensorProduct.comm R N M).injective.injOn).mpr
-      (hw.tensorProduct_of_flat_left hv)).comp Prod.swap Prod.swap_bijective.injective
+      (hw.tmul_of_flat_left hv)).comp Prod.swap Prod.swap_bijective.injective
 
 variable (p : Submodule R M) (q : Submodule R N)
 
