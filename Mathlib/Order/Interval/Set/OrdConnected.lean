@@ -263,7 +263,7 @@ end PartialOrder
 
 section LinearOrder
 
-open scoped uIcc
+open scoped Interval
 
 variable {α : Type*} [LinearOrder α] {s : Set α} {x : α}
 

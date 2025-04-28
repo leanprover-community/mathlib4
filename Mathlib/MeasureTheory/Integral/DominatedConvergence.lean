@@ -36,7 +36,7 @@ open MeasureTheory Metric
 section DominatedConvergenceTheorem
 
 open Set Filter TopologicalSpace ENNReal
-open scoped Topology uIcc
+open scoped Topology Interval
 
 
 namespace MeasureTheory

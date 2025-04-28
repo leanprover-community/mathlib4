@@ -242,9 +242,9 @@ def uIoc : α → α → Set α := fun a b => Ioc (min a b) (max a b)
 -- Below is a capital iota
 /-- `Ι a b` denotes the open-closed interval with unordered bounds. Here, `Ι` is a capital iota,
 distinguished from a capital `i`. -/
-scoped[uIcc] notation "Ι" => Set.uIoc
+scoped[Interval] notation "Ι" => Set.uIoc
 
-open scoped uIcc
+open scoped Interval
 
 @[simp] lemma uIoc_of_le (h : a ≤ b) : Ι a b = Ioc a b := by simp [uIoc, h]
 @[simp] lemma uIoc_of_ge (h : b ≤ a) : Ι a b = Ioc b a := by simp [uIoc, h]
