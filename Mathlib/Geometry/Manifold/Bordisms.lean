@@ -201,12 +201,14 @@ variable (X) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
 def empty.{u} (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [IsManifold I k M] [IsEmpty M] : SingularNManifold X k I where
+    (I : ModelWithCorners ℝ E H) [IsManifold I k M] [IsEmpty M] : SingularNManifold.{u} X k I where
   M := M
   f x := (IsEmpty.false x).elim
   hf := by
     rw [continuous_iff_continuousAt]
     exact fun x ↦ (IsEmpty.false x).elim
+
+#check empty
 
 omit [CompactSpace M] [BoundarylessManifold I M] in
 @[simp, mfld_simps]
@@ -614,7 +616,10 @@ variable (X k I) in
 /-- The "unordered bordism" equivalence relation: two singular n-manifolds modelled on `I`
 are equivalent iff there exists an unoriented bordism between them. -/
 -- FIXME: what is needed to remove the E' and H' arguments below?
-def unorientedBordismRelation.{u, v} (J : ModelWithCorners ℝ E' H') :
+def unorientedBordismRelation.{u, v} (X : Type u_1) [TopologicalSpace X] (k : WithTop ℕ∞)
+    {E E' H H' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup E']
+    [NormedSpace ℝ E'] [TopologicalSpace H] [TopologicalSpace H']
+    (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (J : ModelWithCorners ℝ E' H') :
     SingularNManifold.{u} X k I → SingularNManifold.{v} X k I → Prop :=
   -- XXX: shall we demand a relation between I and J here? for the equivalence, we need to!
   fun s t ↦ ∃ _φ : UnorientedBordism k s t J, True
@@ -643,7 +648,7 @@ end unorientedBordismRelation
 -- TODO: does this hold for general models J, as opposed to just I.prod 𝓡∂ 1?
 variable (X k I) in
 lemma uBordismRelation.{u} :
-  Equivalence (unorientedBordismRelation.{_, _, _, _, _, u, u} X k I (I.prod (𝓡∂ 1))) := by
+  Equivalence (unorientedBordismRelation.{_, u, u} X k I (I.prod (𝓡∂ 1))) := by
   apply Equivalence.mk
   · intro s; use UnorientedBordism.refl s
   · intro s t h
@@ -710,6 +715,9 @@ instance : Neg (uBordismClass X k I) where
 instance : Add (uBordismClass X k I) where
   add := sum
 
+lemma foo {α : Type*} (a : α) : ∃ _ : α, True := by use a
+
+
 variable (X k I J) in
 private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u} X k I) := by
   apply AddGroup.ofLeftAxioms
@@ -722,7 +730,8 @@ private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u
     simp only [sum_eq_out_sum_out]
     rw [← φ_eq, ← ψ_eq, ← δ_eq, Quotient.eq]
     dsimp
-    -- why does this do nothing? trans ((φ.sum ψ).sum δ)
+    -- why does this do nothing?
+    --trans ((φ.sum ψ).sum δ)
 
     -- have almost : unorientedBordismRelation X k I (I.prod (𝓡∂ 1))
     --   ((⟦φ.sum ψ⟧ : uBordismClass X _ I).out.sum δ) (φ.sum (⟦ψ.sum δ⟧ : uBordismClass ..).out) := by
