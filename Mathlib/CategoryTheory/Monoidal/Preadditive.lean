@@ -113,6 +113,7 @@ theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
 -- In any case it is true in any preadditive category.
 instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
   preserves {J} :=
+    let ⟨_⟩ := nonempty_fintype J
     { preserves := fun {f} =>
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
@@ -122,6 +123,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
 
 instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
   preserves {J} :=
+    let ⟨_⟩ := nonempty_fintype J
     { preserves := fun {f} =>
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
