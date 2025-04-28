@@ -120,20 +120,20 @@ def toContinuousAffineMap (e : P₁ ≃ᵃL[k] P₂) : P₁ →ᴬ[k] P₂ where
   cont := e.continuous_toFun
 
 @[simp]
-lemma coe_toContinuousAffineMap (e : P₁ ≃ᵃL[k] P₂) : ⇑e.toContinuousAffineMap = e :=
+lemma coe_toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toContinuousAffineMap = e :=
   rfl
 
 lemma toContinuousAffineMap_injective :
-    Function.Injective (toContinuousAffineMap : (P₁ ≃ᵃL[k] P₂) → (P₁ →ᴬ[k] P₂)) := by
+    Function.Injective (toContinuousAffineMap : (P₁ ≃ᴬ[k] P₂) → (P₁ →ᴬ[k] P₂)) := by
   intro e e' h
   ext p
   simp_rw [← coe_toContinuousAffineMap, h]
 
-lemma toContinuousAffineMap_toAffineMap (e : P₁ ≃ᵃL[k] P₂) :
+lemma toContinuousAffineMap_toAffineMap (e : P₁ ≃ᴬ[k] P₂) :
     e.toContinuousAffineMap.toAffineMap = e.toAffineEquiv.toAffineMap :=
   rfl
 
-lemma toContinuousAffineMap_toContinuousMap (e : P₁ ≃ᵃL[k] P₂) :
+lemma toContinuousAffineMap_toContinuousMap (e : P₁ ≃ᴬ[k] P₂) :
     e.toContinuousAffineMap.toContinuousMap = toContinuousMap e.toHomeomorph :=
   rfl
 
@@ -288,7 +288,7 @@ theorem self_trans_symm (e : P₁ ≃ᴬ[k] P₂) : e.trans e.symm = refl k P₁
 theorem symm_trans_self (e : P₁ ≃ᴬ[k] P₂) : e.symm.trans e = refl k P₂ :=
   ext e.apply_symm_apply
 
-lemma trans_toContinuousAffineMap (e : P₁ ≃ᵃL[k] P₂) (e' : P₂ ≃ᵃL[k] P₃) :
+lemma trans_toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) (e' : P₂ ≃ᴬ[k] P₃) :
     (e.trans e').toContinuousAffineMap = e'.toContinuousAffineMap.comp e.toContinuousAffineMap :=
   rfl
 
