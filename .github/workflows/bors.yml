@@ -36,56 +36,10 @@ jobs:
     name: Lint style
     runs-on: bors
     steps:
-      - name: cleanup
-        run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
-
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      # Run the case checker action
-      - name: Check Case Sensitivity
-        uses: credfeto/action-case-checker@cb652aeab29ed363bbdb7d9ee1bfcc010c46cac5 # v1.3.0
-
-      - name: Look for ignored files
-        uses: credfeto/action-no-ignored-files@4fccae50720d89bef0cd9dc99a85a19b765d2e70 # v1.2.0
-
-      - name: "Check for Lean files with the executable bit set"
-        shell: bash
-        run: |
-          executable_files="$(find . -name '*.lean' -type f \( -perm -u=x -o -perm -g=x -o -perm -o=x \))"
-          if [[ -n "$executable_files" ]]
-          then
-            echo "ERROR: The following Lean files have the executable bit set."
-            echo "$executable_files"
-            exit 1
-          fi
-
-      - name: install Python
-        if: ${{ 'bors' == 'ubuntu-latest' }}
-        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+      - uses: leanprover-community/lint-style-action@43f7f1b5f2fa1e29dc054ca8c2ce65edf38b8e80 # 2025-04-28
         with:
-          python-version: 3.8
-
-      - name: Configure Lean
-        uses: leanprover/lean-action@e18f2df7f0d4f30d11a4b963bff9b1140999480c # 2025-04-22
-        with:
-          auto-config: false
-          use-github-cache: false
-          use-mathlib-cache: false
-
-      - name: "run style linters"
-        run: |
-          lake exe lint-style
-
-      - name: Install bibtool
-        if: ${{ 'bors' == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y bibtool
-
-      - name: lint references.bib
-        run: |
-          ./scripts/lint-bib.sh
+          mode: fix
+          lint-bib-file: true
 
   build:
     if: github.repository == 'leanprover-community/mathlib4'

@@ -27,7 +27,7 @@ jobs:
     # && (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
     runs-on: ubuntu-latest
     steps:
-      - uses: leanprover-community/lint-style-action@38d8a9a837fb62a7c870654ce30aa2bd70f79b49 # 2025-04-28
+      - uses: leanprover-community/lint-style-action@43f7f1b5f2fa1e29dc054ca8c2ce65edf38b8e80 # 2025-04-28
         with:
           mode: fix
           lint-bib-file: true
