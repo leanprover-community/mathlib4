@@ -248,7 +248,7 @@ theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p
   · rw [map_id] at this
     exact this hr
   · rw [map_id]
-    exact mul_ne_zero monic_prod_multiset_X_sub_C.ne_zero hq
+    exact mul_ne_zero (monic_multisetProd_X_sub_C _).ne_zero hq
 
 theorem degree_eq_card_roots' {p : K[X]} {i : K →+* L} (p_ne_zero : p.map i ≠ 0)
     (hsplit : Splits i p) : (p.map i).degree = Multiset.card (p.map i).roots := by

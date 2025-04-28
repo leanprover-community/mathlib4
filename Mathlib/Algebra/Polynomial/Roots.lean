@@ -613,7 +613,7 @@ section
 
 omit [IsDomain R]
 
-theorem monic_prod_multiset_X_sub_C (s : Multiset R) : Monic (s.map fun a => X - C a).prod :=
+theorem monic_multisetProd_X_sub_C (s : Multiset R) : Monic (s.map fun a => X - C a).prod :=
   monic_multiset_prod_of_monic _ _ fun a _ => monic_X_sub_C a
 
 theorem monic_prod_X_sub_C {α : Type*} (b : α → R) (s : Finset α) :
@@ -634,7 +634,7 @@ theorem prod_multiset_root_eq_finset_root [DecidableEq R] :
 theorem prod_multiset_X_sub_C_dvd (p : R[X]) : (p.roots.map fun a => X - C a).prod ∣ p := by
   classical
   rw [← map_dvd_map _ (IsFractionRing.injective R <| FractionRing R)
-    (monic_prod_multiset_X_sub_C p.roots)]
+    (monic_multisetProd_X_sub_C p.roots)]
   rw [prod_multiset_root_eq_finset_root, Polynomial.map_prod]
   refine Finset.prod_dvd_of_coprime (fun a _ b _ h => ?_) fun a _ => ?_
   · simp_rw [Polynomial.map_pow, Polynomial.map_sub, map_C, map_X]
@@ -665,17 +665,17 @@ theorem exists_prod_multiset_X_sub_C_mul (p : R[X]) :
     simp
   constructor
   · conv_rhs => rw [he]
-    rw [(monic_prod_multiset_X_sub_C p.roots).natDegree_mul' hq,
+    rw [(monic_multisetProd_X_sub_C p.roots).natDegree_mul' hq,
       natDegree_multiset_prod_X_sub_C_eq_card]
   · replace he := congr_arg roots he.symm
     rw [roots_mul, roots_multiset_prod_X_sub_C] at he
-    exacts [add_eq_left.1 he, mul_ne_zero (monic_prod_multiset_X_sub_C p.roots).ne_zero hq]
+    exacts [add_eq_left.1 he, mul_ne_zero (monic_multisetProd_X_sub_C p.roots).ne_zero hq]
 
 /-- A polynomial `p` that has as many roots as its degree
 can be written `p = p.leadingCoeff * ∏(X - a)`, for `a` in `p.roots`. -/
 theorem C_leadingCoeff_mul_prod_multiset_X_sub_C (hroots : Multiset.card p.roots = p.natDegree) :
     C p.leadingCoeff * (p.roots.map fun a => X - C a).prod = p :=
-  (eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le (monic_prod_multiset_X_sub_C p.roots)
+  (eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le (monic_multisetProd_X_sub_C p.roots)
       p.prod_multiset_X_sub_C_dvd
       ((natDegree_multiset_prod_X_sub_C_eq_card _).trans hroots).ge).symm
 
