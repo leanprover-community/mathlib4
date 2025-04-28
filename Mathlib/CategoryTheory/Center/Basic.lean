@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -16,7 +16,7 @@ type of endomorphisms of the identity functor of `C`.
 * https://ncatlab.org/nlab/show/center+of+a+category
 
 -/
-universe v u w
+universe v u
 
 namespace CategoryTheory
 
@@ -36,8 +36,10 @@ variable {C}
 lemma ext (x y : CatCenter C) (h : ∀ (X : C), x.app X = y.app X) : x = y :=
   NatTrans.ext (funext h)
 
+@[reassoc]
 lemma mul_app' (x y : CatCenter C) (X : C) : (x * y).app X = y.app X ≫ x.app X := rfl
 
+@[reassoc]
 lemma mul_app (x y : CatCenter C) (X : C) : (x * y).app X = x.app X ≫ y.app X := by
   rw [mul_app']
   exact x.naturality (y.app X)
