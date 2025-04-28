@@ -98,6 +98,12 @@ variable (obj : ∀ i, (F.obj (.mk (op (X i)))))
   (sq : ∀ i j, ChosenPullback (f i) (f j))
   (hom : ∀ (i j : ι), (F.map (sq i j).p₁.op.toLoc).obj (obj i) ⟶
     (F.map (sq i j).p₂.op.toLoc).obj (obj j))
+  (diag : ∀ i, (sq i i).Diagonal)
+  (hom_self : ∀ i, (F.map (diag i).f.op.toLoc).map (hom i i) =
+    (F.mapComp' (sq i i).p₁.op.toLoc (diag i).f.op.toLoc (𝟙 _)
+        (by simp [← Quiver.Hom.comp_toLoc, ← op_comp])).inv.app _ ≫
+      (F.mapComp' (sq i i).p₂.op.toLoc (diag i).f.op.toLoc (𝟙 _)
+        (by simp [← Quiver.Hom.comp_toLoc, ← op_comp])).hom.app _)
 
 noncomputable def mk''Hom ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
     (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
@@ -120,10 +126,26 @@ lemma mk''Hom_eq ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X 
     apply (sq i₁ i₂).isPullback.hom_ext <;> aesop
   rfl
 
+lemma mk''Hom_comp' ⦃Y Y' : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
+    ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q)
+    (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂) (hgf₁ : g ≫ f₁ = gf₁) (hgf₂ : g ≫ f₂ = gf₂) :
+    mk''Hom obj sq hom q' gf₁ gf₂ (by aesop) (by aesop) =
+      (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by aesop)).hom.app (obj i₁) ≫
+        (F.map g.op.toLoc).map (mk''Hom obj sq hom q f₁ f₂ hf₁ hf₂) ≫
+          (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).inv.app (obj i₂) := by
+  sorry
+
+include hom_self in
+lemma mk''Hom_self ⦃Y : C⦄ (q : Y ⟶ S) ⦃i : ι⦄ (g : Y ⟶ X i) (hg : g ≫ f i = q) :
+    mk''Hom obj sq hom q g g hg hg = 𝟙 _ := by
+  have := hom_self
+  sorry
+
 noncomputable def mk'' : F.DescentData f :=
-  DescentData.mk' obj
-    (fun Y q i₁ i₂ f₁ f₂ hf₁ hf₂ ↦ mk''Hom obj sq hom q f₁ f₂ hf₁ hf₂)
-    sorry sorry sorry
+  DescentData.mk' obj (fun _ _ _ _ _ _ ↦ mk''Hom _ _ _ _ _ _)
+    (fun _ _ _ _ _ hq _ _ _ _ _ _ _ _ ↦ mk''Hom_comp' _ _ _ _ _ _ hq _ _ _ _ _ _)
+    (fun _ _ _ _ hg ↦ mk''Hom_self obj sq hom diag hom_self _ _ hg)
+    sorry
 
 end DescentData
 
