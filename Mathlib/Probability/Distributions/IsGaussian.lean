@@ -255,7 +255,7 @@ lemma integral_continuousLinearMap_prod (L : E × F →L[ℝ] ℝ) :
     · rw [integral_prod _ (integrable_comp_inr_prod L)]
       simp
 
-lemma variance_continuousLinearMap_prod [SecondCountableTopologyEither E F] (L : E × F →L[ℝ] ℝ) :
+lemma variance_continuousLinearMap_prod (L : E × F →L[ℝ] ℝ) :
     Var[L ; μ.prod ν] = Var[L.comp (.inl ℝ E F) ; μ] + Var[L.comp (.inr ℝ E F) ; ν] := by
   rw [variance_def' (memLp_prod L (by simp)), integral_continuousLinearMap_prod L,
     variance_def', variance_def']
@@ -1096,7 +1096,6 @@ def covarianceOperator (μ : Measure E) [IsGaussian μ] : (E →L[ℝ] ℝ) →L
 
 lemma covarianceOperator_apply {μ : Measure E} [IsGaussian μ] (L₁ L₂ : E →L[ℝ] ℝ) :
     covarianceOperator μ L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
-  have : Fact (1 ≤ 2) := ⟨by simp⟩
   simp only [covarianceOperator, ContinuousLinearMap.bilinearComp_apply,
     ContinuousLinearMap.toLp_apply,
     continuousBilinFormOfInner_apply, L2.inner_def,
