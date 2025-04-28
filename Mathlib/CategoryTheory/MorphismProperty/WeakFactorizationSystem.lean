@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
 In this file, we introduce the notion of weak factorization system,
 which is a property of two classes of morphisms `W₁` and `W₂` in
 a category `C`. The type class `IsWeakFactorizationSystem W₁ W₂` asserts
-that`W₁` is exactly `W₂.llp`, `W₂` is exactly `W₁.rlp`,
+that `W₁` is exactly `W₂.llp`, `W₂` is exactly `W₁.rlp`,
 and any morphism in `C` can be factored a `i ≫ p` with `W₁ i` and `W₂ p`.
 
 ## References

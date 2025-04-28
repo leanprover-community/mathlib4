@@ -102,23 +102,6 @@ theorem lapply_comp_lsingle_of_ne [DecidableEq ι] (i i' : ι) (h : i ≠ i') :
 
 section Lsum
 
--- Porting note: Unclear how true these docstrings are in lean 4
-/-- Typeclass inference can't find `DFinsupp.addCommMonoid` without help for this case.
-This instance allows it to be found where it is needed on the LHS of the colon in
-`DFinsupp.moduleOfLinearMap`. -/
-instance addCommMonoidOfLinearMap : AddCommMonoid (Π₀ i : ι, M i →ₗ[R] N) :=
-  inferInstance
-
-/-- Typeclass inference can't find `DFinsupp.module` without help for this case.
-This is needed to define `DFinsupp.lsum` below.
-
-The cause seems to be an inability to unify the `∀ i, AddCommMonoid (M i →ₗ[R] N)` instance that
-we have with the `∀ i, Zero (M i →ₗ[R] N)` instance which appears as a parameter to the
-`DFinsupp` type. -/
-instance moduleOfLinearMap [Semiring S] [Module S N] [SMulCommClass R S N] :
-    Module S (Π₀ i : ι, M i →ₗ[R] N) :=
-  DFinsupp.module
-
 variable (S)
 variable [DecidableEq ι]
 
@@ -175,7 +158,7 @@ theorem lsum_lsingle [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass 
 theorem iSup_range_lsingle : ⨆ i, LinearMap.range (lsingle (R := R) (M := M) i) = ⊤ :=
   top_le_iff.mp fun m _ ↦ by
     rw [← LinearMap.id_apply (R := R) m, ← lsum_lsingle ℕ]
-    exact dfinsupp_sumAddHom_mem _ _ _ fun i _ ↦ Submodule.mem_iSup_of_mem i ⟨_, rfl⟩
+    exact dfinsuppSumAddHom_mem _ _ _ fun i _ ↦ Submodule.mem_iSup_of_mem i ⟨_, rfl⟩
 
 end Lsum
 
@@ -332,15 +315,19 @@ section DecidableEq
 
 variable [DecidableEq ι]
 
-theorem dfinsupp_sum_mem {β : ι → Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
+theorem dfinsuppSum_mem {β : ι → Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     (S : Submodule R N) (f : Π₀ i, β i) (g : ∀ i, β i → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) :
     f.sum g ∈ S :=
-  _root_.dfinsupp_sum_mem S f g h
+  _root_.dfinsuppSum_mem S f g h
 
-theorem dfinsupp_sumAddHom_mem {β : ι → Type*} [∀ i, AddZeroClass (β i)] (S : Submodule R N)
+@[deprecated (since := "2025-04-06")] alias dfinsupp_sum_mem := dfinsuppSum_mem
+
+theorem dfinsuppSumAddHom_mem {β : ι → Type*} [∀ i, AddZeroClass (β i)] (S : Submodule R N)
     (f : Π₀ i, β i) (g : ∀ i, β i →+ N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) :
     DFinsupp.sumAddHom g f ∈ S :=
-  _root_.dfinsupp_sumAddHom_mem S f g h
+  _root_.dfinsuppSumAddHom_mem S f g h
+
+@[deprecated (since := "2025-04-06")] alias dfinsupp_sumAddHom_mem := dfinsuppSumAddHom_mem
 
 /-- The supremum of a family of submodules is equal to the range of `DFinsupp.lsum`; that is
 every element in the `iSup` can be produced from taking a finite number of non-zero elements
@@ -353,7 +340,7 @@ theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
     simp only [LinearMap.mem_range, lsum_apply_apply]
     exact ⟨DFinsupp.single i ⟨y, hy⟩, DFinsupp.sumAddHom_single _ _ _⟩
   · rintro x ⟨v, rfl⟩
-    exact dfinsupp_sumAddHom_mem _ v _ fun i _ => (le_iSup p i : p i ≤ _) (v i).2
+    exact dfinsuppSumAddHom_mem _ v _ fun i _ => (le_iSup p i : p i ≤ _) (v i).2
 
 /-- The bounded supremum of a family of commutative additive submonoids is equal to the range of
 `DFinsupp.sumAddHom` composed with `DFinsupp.filter_add_monoid_hom`; that is, every element in the
@@ -370,7 +357,7 @@ theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι
     rw [LinearMap.comp_apply, filterLinearMap_apply, filter_single_pos _ _ hi]
     simp only [lsum_apply_apply, sumAddHom_single, LinearMap.toAddMonoidHom_coe, coe_subtype]
   · rintro x ⟨v, rfl⟩
-    refine dfinsupp_sumAddHom_mem _ _ _ fun i _ => ?_
+    refine dfinsuppSumAddHom_mem _ _ _ fun i _ => ?_
     refine mem_iSup_of_mem i ?_
     by_cases hp : p i
     · simp [hp]
@@ -490,13 +477,16 @@ alias independent_of_dfinsupp_lsum_injective := iSupIndep_of_dfinsupp_lsum_injec
 
 /- If `DFinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
 submonoids are independent. -/
-theorem iSupIndep_of_dfinsupp_sumAddHom_injective (p : ι → AddSubmonoid N)
+theorem iSupIndep_of_dfinsuppSumAddHom_injective (p : ι → AddSubmonoid N)
     (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : iSupIndep p := by
   rw [← iSupIndep_map_orderIso_iff (AddSubmonoid.toNatSubmodule : AddSubmonoid N ≃o _)]
   exact iSupIndep_of_dfinsupp_lsum_injective _ h
 
+@[deprecated (since := "2025-04-06")]
+alias iSupIndep_of_dfinsupp_sumAddHom_injective := iSupIndep_of_dfinsuppSumAddHom_injective
+
 @[deprecated (since := "2024-11-24")]
-alias independent_of_dfinsupp_sumAddHom_injective := iSupIndep_of_dfinsupp_sumAddHom_injective
+alias independent_of_dfinsupp_sumAddHom_injective := iSupIndep_of_dfinsuppSumAddHom_injective
 
 /-- Combining `DFinsupp.lsum` with `LinearMap.toSpanSingleton` is the same as
 `Finsupp.linearCombination` -/
@@ -518,13 +508,16 @@ variable [DecidableEq ι] [Ring R] [AddCommGroup N] [Module R N]
 
 /-- If `DFinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
 subgroups are independent. -/
-theorem iSupIndep_of_dfinsupp_sumAddHom_injective' (p : ι → AddSubgroup N)
+theorem iSupIndep_of_dfinsuppSumAddHom_injective' (p : ι → AddSubgroup N)
     (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : iSupIndep p := by
   rw [← iSupIndep_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)]
   exact iSupIndep_of_dfinsupp_lsum_injective _ h
 
+@[deprecated (since := "2025-04-06")]
+alias iSupIndep_of_dfinsupp_sumAddHom_injective' := iSupIndep_of_dfinsuppSumAddHom_injective'
+
 @[deprecated (since := "2024-11-24")]
-alias independent_of_dfinsupp_sumAddHom_injective' := iSupIndep_of_dfinsupp_sumAddHom_injective'
+alias independent_of_dfinsupp_sumAddHom_injective' := iSupIndep_of_dfinsuppSumAddHom_injective'
 
 /-- The canonical map out of a direct sum of a family of submodules is injective when the submodules
 are `iSupIndep`.
@@ -556,13 +549,16 @@ alias Independent.dfinsupp_lsum_injective := iSupIndep.dfinsupp_lsum_injective
 
 /-- The canonical map out of a direct sum of a family of additive subgroups is injective when the
 additive subgroups are `iSupIndep`. -/
-theorem iSupIndep.dfinsupp_sumAddHom_injective {p : ι → AddSubgroup N} (h : iSupIndep p) :
+theorem iSupIndep.dfinsuppSumAddHom_injective {p : ι → AddSubgroup N} (h : iSupIndep p) :
     Function.Injective (sumAddHom fun i => (p i).subtype) := by
   rw [← iSupIndep_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)] at h
   exact h.dfinsupp_lsum_injective
 
+@[deprecated (since := "2025-04-06")]
+alias iSupIndep.dfinsupp_sumAddHom_injective := iSupIndep.dfinsuppSumAddHom_injective
+
 @[deprecated (since := "2024-11-24")]
-alias Independent.dfinsupp_sumAddHom_injective := iSupIndep.dfinsupp_sumAddHom_injective
+alias Independent.dfinsupp_sumAddHom_injective := iSupIndep.dfinsuppSumAddHom_injective
 
 /-- A family of submodules over an additive group are independent if and only iff `DFinsupp.lsum`
 applied with `Submodule.subtype` is injective.
@@ -578,12 +574,15 @@ alias independent_iff_dfinsupp_lsum_injective := iSupIndep_iff_dfinsupp_lsum_inj
 
 /-- A family of additive subgroups over an additive group are independent if and only if
 `DFinsupp.sumAddHom` applied with `AddSubgroup.subtype` is injective. -/
-theorem iSupIndep_iff_dfinsupp_sumAddHom_injective (p : ι → AddSubgroup N) :
+theorem iSupIndep_iff_dfinsuppSumAddHom_injective (p : ι → AddSubgroup N) :
     iSupIndep p ↔ Function.Injective (sumAddHom fun i => (p i).subtype) :=
-  ⟨iSupIndep.dfinsupp_sumAddHom_injective, iSupIndep_of_dfinsupp_sumAddHom_injective' p⟩
+  ⟨iSupIndep.dfinsuppSumAddHom_injective, iSupIndep_of_dfinsuppSumAddHom_injective' p⟩
+
+@[deprecated (since := "2025-04-06")]
+alias iSupIndep_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
 
 @[deprecated (since := "2024-11-24")]
-alias independent_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsupp_sumAddHom_injective
+alias independent_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
 
 /-- If a family of submodules is independent, then a choice of nonzero vector from each submodule
 forms a linearly independent family.
@@ -646,13 +645,16 @@ section Sum
 
 variable [∀ i, Zero (γ i)] [∀ (i) (x : γ i), Decidable (x ≠ 0)]
 
-theorem coe_dfinsupp_sum (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) :
+theorem coe_dfinsuppSum (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) :
     ⇑(t.sum g) = t.sum fun i d => g i d := rfl
 
+@[deprecated (since := "2025-04-06")] alias coe_dfinsupp_sum := coe_dfinsuppSum
 @[simp]
-theorem dfinsupp_sum_apply (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) (b : M) :
+theorem dfinsuppSum_apply (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (t.sum g) b = t.sum fun i d => g i d b :=
   sum_apply _ _ _
+
+@[deprecated (since := "2025-04-06")] alias dfinsupp_sum_apply := dfinsuppSum_apply
 
 end Sum
 
@@ -661,9 +663,11 @@ section SumAddHom
 variable [∀ i, AddZeroClass (γ i)]
 
 @[simp]
-theorem map_dfinsupp_sumAddHom (f : M →ₛₗ[σ₁₂] M₂) {t : Π₀ i, γ i} {g : ∀ i, γ i →+ M} :
+theorem map_dfinsuppSumAddHom (f : M →ₛₗ[σ₁₂] M₂) {t : Π₀ i, γ i} {g : ∀ i, γ i →+ M} :
     f (sumAddHom g t) = sumAddHom (fun i => f.toAddMonoidHom.comp (g i)) t :=
-  f.toAddMonoidHom.map_dfinsupp_sumAddHom _ _
+  f.toAddMonoidHom.map_dfinsuppSumAddHom _ _
+
+@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
 end SumAddHom
 
@@ -689,10 +693,12 @@ variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
 variable {γ : ι → Type*} [DecidableEq ι]
 
 @[simp]
-theorem map_dfinsupp_sumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ₁₂] M₂) (t : Π₀ i, γ i)
+theorem map_dfinsuppSumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ₁₂] M₂) (t : Π₀ i, γ i)
     (g : ∀ i, γ i →+ M) :
     f (sumAddHom g t) = sumAddHom (fun i => f.toAddEquiv.toAddMonoidHom.comp (g i)) t :=
-  f.toAddEquiv.map_dfinsupp_sumAddHom _ _
+  f.toAddEquiv.map_dfinsuppSumAddHom _ _
+
+@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
 end DFinsupp
 

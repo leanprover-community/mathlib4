@@ -3,6 +3,7 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 /-!
@@ -333,7 +334,7 @@ lemma IsIntTangentAt.isIntTangent {s₁ s₂ : Sphere P} {p : P} (h : s₁.IsInt
     s.IsIntTangent s ↔ 0 ≤ s.radius := by
   simp_rw [IsIntTangent, isIntTangentAt_self_iff_mem]
   rw [← nonempty_iff]
-  rfl
+  simp [Set.Nonempty]
 
 lemma IsExtTangent.dist_center {s₁ s₂ : Sphere P} (h : s₁.IsExtTangent s₂) :
     dist s₁.center s₂.center = s₁.radius + s₂.radius := by
