@@ -18,11 +18,19 @@ variable {C : Type u} [Category.{v} C]
 
 namespace Limits
 
-structure ChosenPullback {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S) where
+variable {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S)
+
+structure ChosenPullback  where
   pullback : C
   p₁ : pullback ⟶ X₁
   p₂ : pullback ⟶ X₂
   isPullback : IsPullback p₁ p₂ f₁ f₂
+
+variable {f₁ f₂}
+
+@[reassoc]
+lemma ChosenPullback.w (h : ChosenPullback f₁ f₂) : h.p₁ ≫ f₁ = h.p₂ ≫ f₂ :=
+  h.isPullback.w
 
 end Limits
 
