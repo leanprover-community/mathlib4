@@ -35,10 +35,10 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : Multiset ι} (f : ι → R) (g
   apply List.prod_map_le_prod_map₀ f g h0 h
 
 theorem prod_map_le_pow_card {F L : Type*} [MulPosMono R] [FunLike F L R] {f : F} {r : R}
-    (hf0 : ∀ x : L, 0 ≤ f x) {t : Multiset L} (hf : ∀ x : R, x ∈ Multiset.map f t → x ≤ r) :
+ {t : Multiset L}(hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x : R, x ∈ Multiset.map f t → x ≤ r) :
     (map f t).prod ≤ r ^ card t := by
   induction t using Quotient.inductionOn
-  simp_all [List.prod_map_le_pow_lenght]
+  simp_all [List.prod_map_le_pow_length]
 
 omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]
