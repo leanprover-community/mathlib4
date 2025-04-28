@@ -38,7 +38,6 @@ section DominatedConvergenceTheorem
 open Set Filter TopologicalSpace ENNReal
 open scoped Topology Interval
 
-
 namespace MeasureTheory
 
 variable {α E G : Type*}
