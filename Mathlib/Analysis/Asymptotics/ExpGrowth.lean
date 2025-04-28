@@ -367,16 +367,16 @@ section composition
 variable {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ}
 
 lemma le_expGrowthInf_comp (hu : 1 ≤ᶠ[atTop] u) (hv : Tendsto v atTop atTop) :
-    (liminf (fun n ↦ (v n : EReal) / n) atTop) * expGrowthInf u ≤ expGrowthInf (u ∘ v) := by
+    (linGrowthInf fun n ↦ v n : EReal) * expGrowthInf u ≤ expGrowthInf (u ∘ v) := by
   rw [expGrowthInf_linGrowthInf, expGrowthInf_linGrowthInf]
   apply le_linGrowthInf_comp (hu.mono fun n h ↦ ?_) hv
   rw [Pi.one_apply] at h
   rwa [Pi.zero_apply, comp_apply, zero_le_log_iff]
 
 lemma expGrowthSup_comp_le (hu : ∃ᶠ n in atTop, 1 ≤ u n)
-    (hv₀ : limsup (fun n ↦ (v n : EReal) / n) atTop ≠ 0)
-    (hv₁ : limsup (fun n ↦ (v n : EReal) / n) atTop ≠ ⊤) (hv₂ : Tendsto v atTop atTop) :
-    expGrowthSup (u ∘ v) ≤ (limsup (fun n ↦ (v n : EReal) / n) atTop) * expGrowthSup u := by
+    (hv₀ : (linGrowthSup fun n ↦ v n : EReal) ≠ 0)
+    (hv₁ : (linGrowthSup fun n ↦ v n : EReal) ≠ ⊤) (hv₂ : Tendsto v atTop atTop) :
+    expGrowthSup (u ∘ v) ≤ (linGrowthSup fun n ↦ v n : EReal) * expGrowthSup u := by
   rw [expGrowthSup_linGrowthSup, expGrowthSup_linGrowthSup]
   apply linGrowthSup_comp_le (u := log ∘ u) (hu.mono fun n h ↦ ?_) hv₀ hv₁ hv₂
   rwa [comp_apply, zero_le_log_iff]
@@ -406,15 +406,14 @@ lemma expGrowthSup_comp_nonneg (h : Monotone u) (h' : u ≠ 0) (hv : Tendsto v a
   (expGrowthInf_comp_nonneg h h' hv).trans expGrowthInf_le_expGrowthSup
 
 lemma _root_.Monotone.expGrowthInf_comp_le (h : Monotone u)
-    (hv₀ : limsup (fun n ↦ (v n : EReal) / n) atTop ≠ 0)
-    (hv₁ : limsup (fun n ↦ (v n : EReal) / n) atTop ≠ ⊤) :
-    expGrowthInf (u ∘ v) ≤ (limsup (fun n ↦ (v n : EReal) / n) atTop) * expGrowthInf u := by
+    (hv₀ : (linGrowthSup fun n ↦ v n : EReal) ≠ 0) (hv₁ : (linGrowthSup fun n ↦ v n : EReal) ≠ ⊤) :
+    expGrowthInf (u ∘ v) ≤ (linGrowthSup fun n ↦ v n : EReal) * expGrowthInf u := by
   rw [expGrowthInf_linGrowthInf, expGrowthInf_linGrowthInf]
   exact (log_monotone.comp h).linGrowthInf_comp_le hv₀ hv₁
 
 lemma _root_.Monotone.le_expGrowthSup_comp (h : Monotone u)
-    (hv : liminf (fun n ↦ (v n : EReal) / n) atTop ≠ 0) :
-    (liminf (fun n ↦ (v n : EReal) / n) atTop) * expGrowthSup u ≤ expGrowthSup (u ∘ v) := by
+    (hv : (linGrowthInf fun n ↦ v n : EReal) ≠ 0) :
+    (linGrowthInf fun n ↦ v n : EReal) * expGrowthSup u ≤ expGrowthSup (u ∘ v) := by
   rw [expGrowthSup_linGrowthSup, expGrowthSup_linGrowthSup]
   exact (log_monotone.comp h).le_linGrowthSup_comp hv
 

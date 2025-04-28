@@ -345,7 +345,7 @@ lemma EReal.eventually_atTop_exists_nat_between {a b : EReal} (h : a < b) (hb : 
       simp only [← coe_coe_eq_natCast, ← EReal.coe_mul, EReal.coe_le_coe_iff]
       exact hx k (x_n.trans (Nat.cast_le.2 n_k))
 
-lemma tendsto_atTop_of_linGrowthInf_pos (h : liminf (fun n ↦ (v n : EReal) / n) atTop ≠ 0) :
+lemma tendsto_atTop_of_linGrowthInf_pos (h : (linGrowthInf fun n ↦ v n : EReal) ≠ 0) :
     Tendsto v atTop atTop := by
   refine tendsto_atTop_atTop.2 fun M ↦ eventually_atTop.1 ?_
   obtain ⟨a, a_0, a_v⟩ := exists_between (h.symm.lt_of_le (linGrowthInf_nonneg v))
@@ -362,7 +362,7 @@ lemma tendsto_atTop_of_linGrowthInf_pos (h : liminf (fun n ↦ (v n : EReal) / n
   exact Nat.cast_le.1 (M_a.trans a_vn)
 
 lemma le_linGrowthInf_comp (hu : 0 ≤ᶠ[atTop] u) (hv : Tendsto v atTop atTop) :
-    (liminf (fun n ↦ (v n : EReal) / n) atTop) * linGrowthInf u ≤ linGrowthInf (u ∘ v) := by
+    (linGrowthInf fun n ↦ v n : EReal) * linGrowthInf u ≤ linGrowthInf (u ∘ v) := by
   have uv_0 : 0 ≤ linGrowthInf (u ∘ v) := by
     rw [← linGrowthInf_const zero_ne_bot zero_ne_top]
     exact linGrowthInf_eventually_monotone (hv.eventually hu)
@@ -376,8 +376,8 @@ lemma le_linGrowthInf_comp (hu : 0 ≤ᶠ[atTop] u) (hv : Tendsto v atTop atTop)
   exact b_uvn.trans' (mul_le_mul_of_nonneg_left a_vn b_0.le)
 
 lemma linGrowthSup_comp_le (hu : ∃ᶠ n in atTop, 0 ≤ u n)
-    (hv₀ : limsup (fun n ↦ (v n : EReal) / n) atTop ≠ 0)
-    (hv₁ : limsup (fun n ↦ (v n : EReal) / n) atTop ≠ ⊤) (hv₂ : Tendsto v atTop atTop) :
+    (hv₀ : (linGrowthSup fun n ↦ v n : EReal) ≠ 0) (hv₁ : (linGrowthSup fun n ↦ v n : EReal) ≠ ⊤)
+    (hv₂ : Tendsto v atTop atTop) :
     linGrowthSup (u ∘ v) ≤ (limsup (fun n ↦ (v n : EReal) / n) atTop) * linGrowthSup u := by
   have v_0 := hv₀.symm.lt_of_le <| (linGrowthInf_nonneg v).trans (liminf_le_limsup)
   refine le_mul_of_forall_lt (.inl v_0) (.inl hv₁) fun a v_a b u_b ↦ Eventually.linGrowthSup_le ?_
@@ -426,9 +426,8 @@ lemma linGrowthSup_comp_nonneg (h : Monotone u) (h' : u ≠ ⊥) (hv : Tendsto v
   (linGrowthInf_comp_nonneg h h' hv).trans linGrowthInf_le_linGrowthSup
 
 lemma _root_.Monotone.linGrowthInf_comp_le (h : Monotone u)
-    (hv₀ : limsup (fun n ↦ (v n : EReal) / n) atTop ≠ 0)
-    (hv₁ : limsup (fun n ↦ (v n : EReal) / n) atTop ≠ ⊤) :
-    linGrowthInf (u ∘ v) ≤ (limsup (fun n ↦ (v n : EReal) / n) atTop) * linGrowthInf u := by
+    (hv₀ : (linGrowthSup fun n ↦ v n : EReal) ≠ 0) (hv₁ : (linGrowthSup fun n ↦ v n : EReal) ≠ ⊤) :
+    linGrowthInf (u ∘ v) ≤ (linGrowthSup fun n ↦ v n : EReal) * linGrowthInf u := by
   -- First we apply `le_mul_of_forall_lt`.
   by_cases u_0 : u = ⊥
   · rw [u_0, Pi.bot_comp, linGrowthInf_bot]; exact bot_le
@@ -470,8 +469,8 @@ lemma _root_.Monotone.linGrowthInf_comp_le (h : Monotone u)
     exact (h vk_n).trans <| un_bn.trans (mul_le_mul_of_nonneg_left an_k b_0.le)
 
 lemma _root_.Monotone.le_linGrowthSup_comp (h : Monotone u)
-    (hv : liminf (fun n ↦ (v n : EReal) / n) atTop ≠ 0) :
-    (liminf (fun n ↦ (v n : EReal) / n) atTop) * linGrowthSup u ≤ linGrowthSup (u ∘ v) := by
+    (hv : (linGrowthInf fun n ↦ v n : EReal) ≠ 0) :
+    (linGrowthInf fun n ↦ v n : EReal) * linGrowthSup u ≤ linGrowthSup (u ∘ v) := by
   have v_0 := hv.symm.lt_of_le (linGrowthInf_nonneg v)
   -- WLOG, `u` is non-bot, and we can apply `mul_le_of_forall_lt_of_nonneg`.
   by_cases u_0 : u = ⊥
