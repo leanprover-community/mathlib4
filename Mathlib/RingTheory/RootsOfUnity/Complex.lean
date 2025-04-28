@@ -291,9 +291,9 @@ theorem exp_inj : Function.Injective (exp n) := fun i j hij => by
       (mul_lt_iff_lt_one_right two_pi_pos).mpr ((div_lt_one (Nat.cast_pos.mpr
           (Nat.pos_of_ne_zero (NeZero.ne' n).symm))).mpr (Nat.strictMono_cast (ZMod.val_lt _)))⟩
     hij
-  rw [mul_right_inj' two_pi_ne_zero,
-    (div_left_inj' (Nat.cast_ne_zero.mpr (NeZero.ne' n).symm))] at e2
-  exact ZMod.val_injective _ ( (Nat.cast_inj.mp e2))
+  rw [mul_right_inj' two_pi_ne_zero] at e2
+  exact ZMod.val_injective _
+    ((Nat.cast_inj.mp ((div_left_inj' (Nat.cast_ne_zero.mpr (NeZero.ne' n).symm)).mp e2)))
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
