@@ -296,12 +296,10 @@ theorem exp_inj : Function.Injective (exp n) := fun i j hij => by
       constructor
       · exact (mul_nonneg_iff_of_pos_left two_pi_pos).mpr
           (div_nonneg (Nat.cast_nonneg' j.val) (Nat.cast_nonneg' n))
-      · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
-        apply (div_lt_one _).mpr
-        apply Nat.strictMono_cast _
-        apply ZMod.val_lt
-        exact Nat.cast_pos.mpr (Nat.pos_of_ne_zero (NeZero.ne' n).symm)
-    )
+      · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr ((div_lt_one (Nat.cast_pos.mpr
+          (Nat.pos_of_ne_zero (NeZero.ne' n).symm))).mpr (by
+            apply Nat.strictMono_cast _
+            exact ZMod.val_lt _)))
     hij
   rw [mul_right_inj' two_pi_ne_zero,
     div_left_inj' (by rw [Nat.cast_ne_zero]; exact (NeZero.ne' n).symm), Nat.cast_inj] at e2
