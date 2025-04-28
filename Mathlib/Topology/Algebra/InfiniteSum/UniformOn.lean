@@ -5,7 +5,6 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 import Mathlib.Analysis.NormedSpace.FunctionSeries
-import Mathlib.Analysis.SpecialFunctions.Log.Summable
 
 /-!
 # Infinite sum and products that converge uniformly on a set
