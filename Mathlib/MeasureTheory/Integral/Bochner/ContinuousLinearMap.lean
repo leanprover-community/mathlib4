@@ -45,8 +45,8 @@ theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E}
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
   · intro e s s_meas _
-    rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ s).toReal e,
-      ContinuousLinearMap.map_smul, @smul_one_smul F ℝ 𝕜 _ _ _ _ _ (μ s).toReal (L e), ←
+    rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ.real s) e,
+      ContinuousLinearMap.map_smul, @smul_one_smul F ℝ 𝕜 _ _ _ _ _ (μ.real s) (L e), ←
       integral_indicator_const (L e) s_meas]
     congr 1 with a
     rw [← Function.comp_def L, Set.indicator_comp_of_zero L.map_zero, Function.comp_apply]
@@ -216,6 +216,27 @@ theorem integral_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [C
     rw [integrable_smul_const hc]
     simp_rw [hf, not_false_eq_true]
 
+/-
+Note that the integrability hypothesis in the two lemmas below is necessary: consider the case
+where `A = ℝ × ℝ`, `c = (1,0)`, and `f` is only integrable on the first component.
+-/
+lemma integral_const_mul_of_integrable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
+    [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
+    ∫ x, c * f x ∂μ = c * ∫ x, f x ∂μ := by
+  by_cases hA : CompleteSpace A
+  · show ∫ x, ContinuousLinearMap.mul ℝ _ c (f x) ∂μ = ContinuousLinearMap.mul ℝ _ c (∫ x, f x ∂μ)
+    rw [ContinuousLinearMap.integral_comp_comm _ hf]
+  · simp [integral, hA]
+
+lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
+    [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
+    ∫ x, f x * c ∂μ = (∫ x, f x ∂μ) * c := by
+  by_cases hA : CompleteSpace A
+  · show ∫ x, (ContinuousLinearMap.mul ℝ _).flip c (f x) ∂μ
+      = (ContinuousLinearMap.mul ℝ _).flip c (∫ x, f x ∂μ)
+    rw [ContinuousLinearMap.integral_comp_comm _ hf]
+  · simp [integral, hA]
+
 theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Measurable f) (g : X → E) :
     ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ := by
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
@@ -227,7 +248,8 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
   · intro c s s_meas hs
     rw [integral_indicator s_meas]
     simp_rw [← Set.indicator_smul_apply, integral_indicator s_meas]
-    simp only [s_meas, integral_const, Measure.restrict_apply', Set.univ_inter, withDensity_apply]
+    simp only [s_meas, integral_const, Measure.restrict_apply', Set.univ_inter, withDensity_apply,
+      measureReal_def]
     rw [lintegral_coe_eq_integral, ENNReal.toReal_ofReal, ← integral_smul_const]
     · rfl
     · exact integral_nonneg fun x => NNReal.coe_nonneg _
