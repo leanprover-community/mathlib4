@@ -304,7 +304,6 @@ theorem exp_sur : Function.Surjective (exp n) := fun ⟨w,hw⟩ =>  by
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the nth roots of unity in `ℂ`,
 considered as a isomomorphism of groups. -/
-@[simps!]
 noncomputable def expHom (n : ℕ) [NeZero n] :
     ZMod n  ≃+ Additive (rootsOfUnity n ℂ) :=
       AddEquiv.mk' (Equiv.ofBijective (Additive.ofMul ∘ exp n)  ⟨exp_inj n, exp_sur n⟩ ) (exp_add n)
