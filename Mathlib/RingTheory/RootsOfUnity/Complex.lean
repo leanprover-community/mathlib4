@@ -288,7 +288,7 @@ theorem exp_inj : Function.Injective (exp n) := fun i j hij => by
           (div_nonneg (Nat.cast_nonneg' i.val) (Nat.cast_nonneg' n))
       · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
         apply (div_lt_one _).mpr
-        norm_cast
+        apply Nat.strictMono_cast _
         apply ZMod.val_lt
         exact (Nat.cast_pos.mpr (Nat.pos_of_ne_zero (NeZero.ne' n).symm))
     )
@@ -298,7 +298,7 @@ theorem exp_inj : Function.Injective (exp n) := fun i j hij => by
           (div_nonneg (Nat.cast_nonneg' j.val) (Nat.cast_nonneg' n))
       · apply (mul_lt_iff_lt_one_right two_pi_pos).mpr
         apply (div_lt_one _).mpr
-        norm_cast
+        apply Nat.strictMono_cast _
         apply ZMod.val_lt
         exact Nat.cast_pos.mpr (Nat.pos_of_ne_zero (NeZero.ne' n).symm)
     )
