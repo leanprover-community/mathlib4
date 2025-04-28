@@ -34,22 +34,6 @@ variable (F I) in
 lemma UniformOnFun.ofFun_prod : ∏ i ∈ I, ofFun 𝔖 (f i) = ofFun 𝔖 (∏ i ∈ I, f i) :=
   rfl
 
--- XXX move this to `Topology.UniformSpace.LocallyUniformConvergence`
-/-- If every `x ∈ s` has a neighbourhood within `s` on which `f i` tends uniformly to `g`, then
-`f i` tends locally uniformly on `s` to `g`.
-
-Note this is **not** a tautology, since our definition of `TendstoLocallyUniformlyOn` is slightly
-more general (although the conditions are equivalent if `β` is locally compact and `s` is open). -/
-lemma tendstoLocallyUniformlyOn_of_forall_exists_nhd
-    {ι α β : Type*} [UniformSpace α] [TopologicalSpace β] {f : ι → β → α} {g : β → α}
-    {l : Filter ι} {s : Set β} (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, TendstoUniformlyOn f g l t) :
-    TendstoLocallyUniformlyOn f g l s := by
-  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto]
-  intro x hx
-  obtain ⟨t, ht, htr⟩ := h x hx
-  simp only [tendstoUniformlyOn_iff_tendsto] at htr
-  exact htr.mono_left (prod_mono_right _ (le_principal_iff.mpr ht))
-
 end prelim
 
 variable [UniformSpace α]
@@ -218,7 +202,7 @@ lemma SummableLocallyUniformlyOn.of_locally_bounded (f : ι → 𝕜 → 𝕜') 
 
 /-This is just a test of the defns -/
 theorem derivWithin_tsum {ι F E : Type*} [NontriviallyNormedField E] [IsRCLikeNormedField E]
-    [LocallyCompactSpace E] [NormedField F] [NormedSpace E F] (f : ι → E → F) {s : Set E}
+    [NormedField F] [NormedSpace E F] (f : ι → E → F) {s : Set E}
     (hs : IsOpen s) {x : E} (hx : x ∈ s) (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
     (h : SummableLocallyUniformlyOn (fun n ↦ (derivWithin (fun z ↦ f n z) s)) s)
     (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
