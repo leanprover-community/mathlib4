@@ -75,7 +75,7 @@ theorem integral_bernoulliFun_eq_zero {k : ℕ} (hk : k ≠ 0) :
       ((Polynomial.continuous _).intervalIntegrable _ _)]
   rw [bernoulliFun_eval_one]
   split_ifs with h
-  · exfalso; exact hk (Nat.succ_inj'.mp h)
+  · exfalso; exact hk (Nat.succ_inj.mp h)
   · simp
 
 end BernoulliFunProps
