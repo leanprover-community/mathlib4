@@ -452,7 +452,7 @@ theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop
 section NeBot
 variable [Preorder β] {l : Filter α} [NeBot l] {f : α → β}
 
-theorem unbounded_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto f l atTop) :
+theorem not_bddAbove_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto f l atTop) :
     ¬BddAbove (range f) := by
   rintro ⟨M, hM⟩
   have : ∀ x, f x ≤ M := by aesop
@@ -460,14 +460,20 @@ theorem unbounded_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto f l atTop) :
   apply Filter.empty_not_mem l
   aesop (add safe Ioi_mem_atTop)
 
-theorem unbounded_of_tendsto_atBot [NoMinOrder β] (h : Tendsto f l atBot) :
-    ¬BddBelow (range f) := unbounded_of_tendsto_atTop (β := βᵒᵈ) h
+theorem not_bddBelow_of_tendsto_atBot [NoMinOrder β] (h : Tendsto f l atBot) :
+    ¬BddBelow (range f) := not_bddAbove_of_tendsto_atTop (β := βᵒᵈ) h
 
-@[deprecated (since := "2025-04-01")]
-alias unbounded_of_tendsto_atTop' := unbounded_of_tendsto_atTop
+@[deprecated (since := "2025-04-28")]
+alias unbounded_of_tendsto_atTop := not_bddAbove_of_tendsto_atTop
 
-@[deprecated (since := "2025-04-01")]
-alias unbounded_of_tendsto_atBot' := unbounded_of_tendsto_atBot
+@[deprecated (since := "2025-04-28")]
+alias unbounded_of_tendsto_atBot := not_bddBelow_of_tendsto_atBot
+
+@[deprecated (since := "2025-04-28")]
+alias unbounded_of_tendsto_atTop' := not_bddAbove_of_tendsto_atTop
+
+@[deprecated (since := "2025-04-28")]
+alias unbounded_of_tendsto_atBot' := not_bddBelow_of_tendsto_atBot
 
 end NeBot
 
