@@ -515,7 +515,7 @@ lemma _root_.Monotone.linGrowthInf_comp {a : EReal} (h : Monotone u)
     · rw [← hv.liminf_eq]
       exact le_linGrowthInf_comp h' v_top
 
-lemma _root_.Monotone.linGrowthSup_comp {a : EReal} (hu : Monotone u)
+lemma _root_.Monotone.linGrowthSup_comp {a : EReal} (h : Monotone u)
     (hv : Tendsto (fun n ↦ (v n : EReal) / n) atTop (𝓝 a)) (ha : a ≠ 0) (ha' : a ≠ ⊤) :
     linGrowthSup (u ∘ v) = a * linGrowthSup u := by
   have hv₁ : 0 < liminf (fun n ↦ (v n : EReal) / n) atTop := by
@@ -528,11 +528,11 @@ lemma _root_.Monotone.linGrowthSup_comp {a : EReal} (hu : Monotone u)
   · rw [u_0, Pi.bot_comp, linGrowthSup_bot, ← hv.liminf_eq, mul_bot_of_pos hv₁]
   by_cases u_1 : ∀ᶠ n : ℕ in atTop, u n ≤ 0
   · have u_0' : linGrowthSup u = 0 := by
-      apply le_antisymm _ (hu.linGrowthSup_nonneg u_0)
+      apply le_antisymm _ (h.linGrowthSup_nonneg u_0)
       apply (linGrowthSup_eventually_monotone u_1).trans_eq
       exact (linGrowthSup_const zero_ne_bot zero_ne_top)
     rw [u_0', mul_zero]
-    apply le_antisymm _ (linGrowthSup_comp_nonneg hu u_0 v_top)
+    apply le_antisymm _ (linGrowthSup_comp_nonneg h u_0 v_top)
     apply (linGrowthSup_eventually_monotone (v_top.eventually u_1)).trans_eq
     exact linGrowthSup_const zero_ne_bot zero_ne_top
   · replace h' := (not_eventually.1 u_1).mono fun x hx ↦ (lt_of_not_le hx).le
@@ -540,23 +540,23 @@ lemma _root_.Monotone.linGrowthSup_comp {a : EReal} (hu : Monotone u)
     · rw [← hv.limsup_eq] at ha ha' ⊢
       exact linGrowthSup_comp_le h' ha ha' v_top
     · rw [← hv.liminf_eq]
-      exact hu.le_linGrowthSup_comp hv₁.ne.symm
+      exact h.le_linGrowthSup_comp hv₁.ne.symm
 
-lemma _root_.Monotone.linGrowthInf_comp_mul {m : ℕ} (hu : Monotone u) (hm : m ≠ 0) :
+lemma _root_.Monotone.linGrowthInf_comp_mul {m : ℕ} (h : Monotone u) (hm : m ≠ 0) :
     linGrowthInf (fun n ↦ u (m * n)) = m * linGrowthInf u := by
-  have h : Tendsto (fun n : ℕ ↦ ((m * n : ℕ) : EReal) / n) atTop (𝓝 m) := by
+  have : Tendsto (fun n : ℕ ↦ ((m * n : ℕ) : EReal) / n) atTop (𝓝 m) := by
     refine tendsto_nhds_of_eventually_eq ((eventually_gt_atTop 0).mono fun x hx ↦ ?_)
     rw [mul_comm, natCast_mul x m, ← mul_div]
     exact mul_div_cancel (natCast_ne_bot x) (natCast_ne_top x) (Nat.cast_ne_zero.2 hx.ne.symm)
-  exact hu.linGrowthInf_comp h (Nat.cast_ne_zero.2 hm) (natCast_ne_top m)
+  exact h.linGrowthInf_comp this (Nat.cast_ne_zero.2 hm) (natCast_ne_top m)
 
-lemma _root_.Monotone.linGrowthSup_comp_mul {m : ℕ} (hu : Monotone u) (hm : m ≠ 0) :
+lemma _root_.Monotone.linGrowthSup_comp_mul {m : ℕ} (h : Monotone u) (hm : m ≠ 0) :
     linGrowthSup (fun n ↦ u (m * n)) = m * linGrowthSup u := by
-  have h : Tendsto (fun n : ℕ ↦ ((m * n : ℕ) : EReal) / n) atTop (𝓝 m) := by
+  have : Tendsto (fun n : ℕ ↦ ((m * n : ℕ) : EReal) / n) atTop (𝓝 m) := by
     refine tendsto_nhds_of_eventually_eq ((eventually_gt_atTop 0).mono fun x hx ↦ ?_)
     rw [mul_comm, natCast_mul x m, ← mul_div]
     exact mul_div_cancel (natCast_ne_bot x) (natCast_ne_top x) (Nat.cast_ne_zero.2 hx.ne.symm)
-  exact hu.linGrowthSup_comp h (Nat.cast_ne_zero.2 hm) (natCast_ne_top m)
+  exact h.linGrowthSup_comp this (Nat.cast_ne_zero.2 hm) (natCast_ne_top m)
 
 end composition
 
