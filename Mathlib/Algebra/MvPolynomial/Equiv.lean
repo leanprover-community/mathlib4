@@ -411,6 +411,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
     optionEquivLeft_apply, Polynomial.map_X, Polynomial.eval_X, Option.elim_some, Polynomial.map_C,
     eval_X, Polynomial.eval_C, implies_true, and_self, φ]
 
+@[simp]
 lemma natDegree_optionEquivLeft (p : MvPolynomial (Option S₁) R) :
     (optionEquivLeft R S₁ p).natDegree = p.degreeOf .none := by
   apply le_antisymm
