@@ -133,23 +133,6 @@ instance [e.IsTruncGE] : e.op.IsTruncLE where
 instance [e.IsTruncLE] : e.op.IsTruncGE where
   mem_next h := e.mem_prev h
 
-<<<<<<< HEAD
-lemma next_f [e.IsTruncGE] {j k : ι} (hjk : c.next j = k) : c'.next (e.f j) = e.f k := by
-  by_cases hj : c'.Rel (e.f j) (c'.next (e.f j))
-  · obtain ⟨k', hk'⟩ := e.mem_next hj
-    rw [← hk', e.rel_iff] at hj
-    rw [← hk', ← c.next_eq' hj, hjk]
-  · rw [c'.next_eq_self _ hj, ← hjk, c.next_eq_self j]
-    intro hj'
-    apply hj
-    rw [← e.rel_iff] at hj'
-    simpa only [c'.next_eq' hj'] using hj'
-
-lemma prev_f [e.IsTruncLE] {i j : ι} (hij : c.prev j = i) : c'.prev (e.f j) = e.f i :=
-  e.op.next_f hij
-
-=======
->>>>>>> origin/jriou_localization_bump_deps
 open Classical in
 /-- The map `ι' → Option ι` which sends `e.f i` to `some i` and the other elements to `none`. -/
 noncomputable def r (i' : ι') : Option ι :=
@@ -238,12 +221,7 @@ lemma not_mem_range_embeddingUpIntLE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-<<<<<<< HEAD
-    obtain ⟨k, rfl⟩ := Int.le.dest this
-    exact (h k) (by simp)
-=======
     exact h (p - n).natAbs (by simp; omega)
->>>>>>> origin/jriou_localization_bump_deps
   · intros
     dsimp
     omega
@@ -253,12 +231,7 @@ lemma not_mem_range_embeddingUpIntGE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-<<<<<<< HEAD
-    obtain ⟨k, rfl⟩ := Int.le.dest this
-    exact (h k) (by simp)
-=======
     exact h (n - p).natAbs (by simp; omega)
->>>>>>> origin/jriou_localization_bump_deps
   · intros
     dsimp
     omega

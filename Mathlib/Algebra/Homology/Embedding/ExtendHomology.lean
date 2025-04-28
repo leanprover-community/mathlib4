@@ -79,10 +79,7 @@ variable (cocone : CokernelCofork (hcone.lift (KernelFork.ofι (K.d i j) (K.d_co
   (hcocone : IsColimit cocone)
 
 include hi hi' hcone in
-<<<<<<< HEAD
-=======
 /-- Auxiliary lemma for `lift_d_comp_eq_zero_iff`. -/
->>>>>>> origin/jriou_localization_bump_deps
 lemma lift_d_comp_eq_zero_iff' ⦃W : C⦄ (f' : K.X i ⟶ cone.pt)
     (hf' : f' ≫ cone.ι = K.d i j)
     (f'' : (K.extend e).X i' ⟶ cone.pt)
@@ -244,11 +241,7 @@ noncomputable def rightHomologyData (h : (K.sc' i j k).RightHomologyData) :
     exact h.wι
   hι := isLimitKernelFork K e hj' hi hi' hk hk' _ h.hp _ h.hι
 
-<<<<<<< HEAD
-/-- Computation of the `g'` field of `rightHomologyData`. -/
-=======
 /-- Computation of the `g'` field of `extend.rightHomologyData`. -/
->>>>>>> origin/jriou_localization_bump_deps
 lemma rightHomologyData_g' (h : (K.sc' i j k).RightHomologyData) (hk'' : e.f k = k') :
     (rightHomologyData K e hj' hi hi' hk hk' h).g' = h.g' ≫ (K.extendXIso e hk'').inv := by
   rw [← cancel_epi h.p, ← cancel_epi (extendXIso K e hj').hom]
@@ -275,15 +268,8 @@ noncomputable def homologyData' (h : (K.sc' i j k).HomologyData) :
 
 end HomologyData
 
-<<<<<<< HEAD
-variable {j : ι} {j' : ι'} (hj' : e.f j = j')
-
-include hj' in
-lemma hasHomology [K.HasHomology j] : (K.extend e).HasHomology j' :=
-=======
 lemma hasHomology {j : ι} {j' : ι'} (hj' : e.f j = j') [K.HasHomology j] :
     (K.extend e).HasHomology j' :=
->>>>>>> origin/jriou_localization_bump_deps
   ShortComplex.HasHomology.mk'
     (homologyData' K e hj' rfl rfl ((K.sc j).homologyData))
 
@@ -338,21 +324,11 @@ lemma extendCyclesIso_hom_iCycles :
     (K.extendCyclesIso e hj').hom ≫ K.iCycles j =
       (K.extend e).iCycles j' ≫ (K.extendXIso e hj').hom := by
   rw [← cancel_epi (K.extendCyclesIso e hj').inv, Iso.inv_hom_id_assoc]
-<<<<<<< HEAD
-  dsimp [extendCyclesIso]
-  rw [assoc]
-  erw [ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles_assoc]
-  dsimp
-  rw [assoc, Iso.inv_hom_id, comp_id]
-  erw [ShortComplex.LeftHomologyData.cyclesIso_hom_comp_i]
-  rfl
-=======
   dsimp [extendCyclesIso, iCycles]
   rw [assoc, ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles_assoc]
   dsimp
   rw [assoc, Iso.inv_hom_id, comp_id,
     ShortComplex.LeftHomologyData.cyclesIso_hom_comp_i]
->>>>>>> origin/jriou_localization_bump_deps
 
 @[reassoc (attr := simp)]
 lemma extendCyclesIso_inv_iCycles :
@@ -365,19 +341,11 @@ lemma extendCyclesIso_inv_iCycles :
 lemma homologyπ_extendHomologyIso_hom :
     (K.extend e).homologyπ j' ≫ (K.extendHomologyIso e hj').hom =
       (K.extendCyclesIso e hj').hom ≫ K.homologyπ j := by
-<<<<<<< HEAD
-  dsimp [extendHomologyIso]
-  erw [ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom_assoc]
-  rw [← cancel_mono (K.sc j).homologyData.left.homologyIso.hom,
-    assoc, assoc, assoc, Iso.inv_hom_id, comp_id]
-  erw [ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom]
-=======
   dsimp [extendHomologyIso, homologyπ]
   rw [ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom_assoc,
     ← cancel_mono (K.sc j).homologyData.left.homologyIso.hom,
     assoc, assoc, assoc, Iso.inv_hom_id, comp_id,
     ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom]
->>>>>>> origin/jriou_localization_bump_deps
   dsimp [extendCyclesIso]
   simp only [assoc, Iso.inv_hom_id_assoc]
 
@@ -393,18 +361,10 @@ lemma pOpcycles_extendOpcyclesIso_inv :
     K.pOpcycles j ≫ (K.extendOpcyclesIso e hj').inv =
       (K.extendXIso e hj').inv ≫ (K.extend e).pOpcycles j' := by
   rw [← cancel_mono (K.extendOpcyclesIso e hj').hom, assoc, assoc, Iso.inv_hom_id, comp_id]
-<<<<<<< HEAD
-  dsimp [extendOpcyclesIso]
-  erw [ShortComplex.RightHomologyData.pOpcycles_comp_opcyclesIso_hom_assoc]
-  dsimp
-  rw [assoc, Iso.inv_hom_id_assoc]
-  erw [ShortComplex.RightHomologyData.p_comp_opcyclesIso_inv]
-=======
   dsimp [extendOpcyclesIso, pOpcycles]
   rw [ShortComplex.RightHomologyData.pOpcycles_comp_opcyclesIso_hom_assoc]
   dsimp
   rw [assoc, Iso.inv_hom_id_assoc, ShortComplex.RightHomologyData.p_comp_opcyclesIso_inv]
->>>>>>> origin/jriou_localization_bump_deps
   rfl
 
 @[reassoc (attr := simp)]

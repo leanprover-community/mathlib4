@@ -3,13 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
-import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
-=======
 import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
 import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
->>>>>>> origin/jriou_localization_bump_deps
 import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 

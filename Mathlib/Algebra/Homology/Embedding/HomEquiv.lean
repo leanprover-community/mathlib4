@@ -294,7 +294,6 @@ lemma homRestrict_comp_extendMap (ψ : K ⟶ L.extend e) (β : L ⟶ L') :
   ext i
   simp [homRestrict_f _ _ rfl, extendMap_f β e rfl]
 
-<<<<<<< HEAD
 namespace homRestrict'
 
 variable {e}
@@ -365,8 +364,6 @@ lemma extend_comp_homRestrict' (ψ : L.extend e ⟶ K) (β : L' ⟶ L) :
   simp [homRestrict'_f _ _ rfl, extendMap_f β e rfl]
 
 
-=======
->>>>>>> origin/jriou_localization_bump_deps
 variable (K L)
 
 /-- The bijection between `K ⟶ L.extend e` and the subtype of `K.restriction e ⟶ L`
