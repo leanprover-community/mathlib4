@@ -40,7 +40,7 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
   { DistribMulAction.toAddMonoidEnd R M with
     map_zero' := AddMonoidHom.ext fun r => by simp
     map_add' x y :=
-      AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
+      AddMonoidHom.ext fun r => by simp [(AddMonoidHom.add_apply), add_smul] }
 
 /-- A convenience alias for `Module.toAddMonoidEnd` as an `AddMonoidHom`, usually to allow the
 use of `AddMonoidHom.flip`. -/
