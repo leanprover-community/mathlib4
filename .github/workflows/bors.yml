@@ -36,7 +36,7 @@ jobs:
     name: Lint style
     runs-on: bors
     steps:
-      - uses: leanprover-community/lint-style-action@43f7f1b5f2fa1e29dc054ca8c2ce65edf38b8e80 # 2025-04-28
+      - uses: leanprover-community/lint-style-action@684dc237cbcdcb8b6b290639c794c21ac7a19e4b # 2025-04-28
         with:
           mode: fix
           lint-bib-file: true
