@@ -172,25 +172,23 @@ noncomputable def tilde : (Spec (CommRingCat.of R)).Modules where
 This is `M^~` as a sheaf of `R`-modules.
 -/
 noncomputable def tildeInModuleCat :
-    TopCat.Presheaf (ModuleCat R) (PrimeSpectrum.Top R) :=
-  (PresheafOfModules.forgetToPresheafModuleCat (op ⊤) <|
-    Limits.initialOpOfTerminal Limits.isTerminalTop).obj (tilde M).1 ⋙
-  ModuleCat.restrictScalars (StructureSheaf.globalSectionsIso R).hom.hom
+    TopCat.Sheaf (ModuleCat R) (PrimeSpectrum.Top R) :=
+  (SpecModulesToSheaf R).obj (tilde M)
 
 namespace Tilde
 
 @[simp]
 theorem res_apply (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U)
-    (s : (tildeInModuleCat M).obj (op U)) (x : V) :
-    ((tildeInModuleCat M).map i.op s).1 x = (s.1 (i x) :) :=
+    (s : (tildeInModuleCat M).presheaf.obj (op U)) (x : V) :
+    ((tildeInModuleCat M).presheaf.map i.op s).1 x = (s.1 (i x) :) :=
   rfl
 
 lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
-    (s : (tildeInModuleCat M).1.obj (op U)) (x : U) :
+    (s : (tildeInModuleCat M).presheaf.obj (op U)) (x : U) :
     (r • s).1 x = r • (s.1 x) := rfl
 
 lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
-    (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
+    (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).presheaf.stalk x) (hst : r.1 • st = 0) :
     st = 0 := by
   refine Limits.Concrete.colimit_no_zero_smul_divisor
     _ _ _ ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq <| funext fun pt ↦ ?_⟩
@@ -218,7 +216,7 @@ def toOpen (U : Opens (PrimeSpectrum.Top R)) :
 
 @[simp]
 theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
-    toOpen M U ≫ (tildeInModuleCat M).map i.op = toOpen M V :=
+    toOpen M U ≫ (tildeInModuleCat M).presheaf.map i.op = toOpen M V :=
   rfl
 
 /--
@@ -226,18 +224,18 @@ If `x` is a point of `Spec R`, this is the morphism of `R`-modules from `M` to t
 `M^~` at `x`.
 -/
 noncomputable def toStalk (x : PrimeSpectrum.Top R) :
-    ModuleCat.of R M ⟶ TopCat.Presheaf.stalk (tildeInModuleCat M) x :=
-  (toOpen M ⊤ ≫ TopCat.Presheaf.germ (tildeInModuleCat M) ⊤ x (by trivial))
+    ModuleCat.of R M ⟶ (tildeInModuleCat M).presheaf.stalk x :=
+  toOpen M ⊤ ≫ (tildeInModuleCat M).presheaf.germ ⊤ x (by trivial)
 
 open LocalizedModule TopCat.Presheaf in
 lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
-    IsUnit ((algebraMap R (Module.End R ((tildeInModuleCat M).stalk x))) r) := by
+    IsUnit ((algebraMap R (Module.End R ((tildeInModuleCat M).presheaf.stalk x))) r) := by
   rw [Module.End_isUnit_iff]
   refine ⟨LinearMap.ker_eq_bot.1 <| eq_bot_iff.2 fun st (h : r.1 • st = 0) ↦
     smul_stalk_no_nonzero_divisor M r st h, fun st ↦ ?_⟩
-  obtain ⟨U, mem, s, rfl⟩ := germ_exist (F := M.tildeInModuleCat) x st
+  obtain ⟨U, mem, s, rfl⟩ := germ_exist (F := M.tildeInModuleCat.presheaf) x st
   let O := U ⊓ (PrimeSpectrum.basicOpen r)
-  refine ⟨germ M.tildeInModuleCat O x ⟨mem, r.2⟩
+  refine ⟨M.tildeInModuleCat.presheaf.germ O x ⟨mem, r.2⟩
     ⟨fun q ↦ (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
       ⟨q.1, q.2.1⟩, fun q ↦ ?_⟩, by
         simpa only [Module.algebraMap_end_apply, ← map_smul] using
@@ -258,7 +256,7 @@ to the stalk of `M^~` at `x`.
 -/
 noncomputable def localizationToStalk (x : PrimeSpectrum.Top R) :
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) ⟶
-    (TopCat.Presheaf.stalk (tildeInModuleCat M) x) :=
+    (tildeInModuleCat M).presheaf.stalk x :=
   ModuleCat.ofHom <| LocalizedModule.lift _ (toStalk M x).hom <| isUnit_toStalk M x
 
 
@@ -266,12 +264,12 @@ noncomputable def localizationToStalk (x : PrimeSpectrum.Top R) :
 implemented as a subtype of dependent functions to localizations at prime ideals, and evaluates
 the section on the point corresponding to a given prime ideal. -/
 def openToLocalization (U : Opens (PrimeSpectrum R)) (x : PrimeSpectrum R) (hx : x ∈ U) :
-    (tildeInModuleCat M).obj (op U) ⟶
+    (tildeInModuleCat M).presheaf.obj (op U) ⟶
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) :=
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)` and `(Y := ...)`
   -- This suggests `restrictScalars` needs to be redesigned.
   ModuleCat.ofHom
-    (X := (tildeInModuleCat M).obj (op U))
+    (X := (tildeInModuleCat M).presheaf.obj (op U))
     (Y := ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M))
   { toFun := fun s => (s.1 ⟨x, hx⟩ :)
     map_add' := fun _ _ => rfl
@@ -282,16 +280,16 @@ The morphism of `R`-modules from the stalk of `M^~` at `x` to the localization o
 prime ideal of `R` corresponding to `x`.
 -/
 noncomputable def stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
-    (tildeInModuleCat M).stalk  x ⟶
+    (tildeInModuleCat M).presheaf.stalk x ⟶
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) :=
-  Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (tildeInModuleCat M))
+  Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (tildeInModuleCat M).presheaf)
     { pt := _
       ι :=
       { app := fun U => openToLocalization M ((OpenNhds.inclusion _).obj U.unop) x U.unop.2 } }
 
 @[simp]
 theorem germ_comp_stalkToFiberLinearMap (U : Opens (PrimeSpectrum.Top R)) (x) (hx : x ∈ U) :
-    (tildeInModuleCat M).germ U x hx ≫ stalkToFiberLinearMap M x =
+    (tildeInModuleCat M).presheaf.germ U x hx ≫ stalkToFiberLinearMap M x =
     openToLocalization M U x hx :=
   Limits.colimit.ι_desc _ _
 
@@ -299,12 +297,12 @@ theorem germ_comp_stalkToFiberLinearMap (U : Opens (PrimeSpectrum.Top R)) (x) (h
 theorem stalkToFiberLinearMap_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
     (hx : x ∈ U) (s : (tildeInModuleCat M).1.obj (op U)) :
     (stalkToFiberLinearMap M x).hom
-      (TopCat.Presheaf.germ (tildeInModuleCat M) U x hx s) = (s.1 ⟨x, hx⟩ :) :=
+      ((tildeInModuleCat M).presheaf.germ U x hx s) = (s.1 ⟨x, hx⟩ :) :=
   DFunLike.ext_iff.1 (ModuleCat.hom_ext_iff.mp (germ_comp_stalkToFiberLinearMap M U x hx)) s
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem toOpen_germ (U : Opens (PrimeSpectrum.Top R)) (x) (hx : x ∈ U) :
-    toOpen M U ≫ M.tildeInModuleCat.germ U x hx = toStalk M x := by
+    toOpen M U ≫ M.tildeInModuleCat.presheaf.germ U x hx = toStalk M x := by
   rw [← toOpen_res M ⊤ U (homOfLE le_top : U ⟶ ⊤), Category.assoc, Presheaf.germ_res]; rfl
 
 @[reassoc (attr := simp)]
@@ -325,7 +323,7 @@ in `U`), this is `m / r` seen as a section of `M^~` over `U`.
 -/
 def const (m : M) (r : R) (U : Opens (PrimeSpectrum.Top R))
     (hu : ∀ x ∈ U, r ∈ (x : PrimeSpectrum.Top R).asIdeal.primeCompl) :
-    (tildeInModuleCat M).obj (op U) :=
+    (tildeInModuleCat M).presheaf.obj (op U) :=
   ⟨fun x => LocalizedModule.mk m ⟨r, hu x x.2⟩, fun x =>
     ⟨U, x.2, 𝟙 _, m, r, fun y => ⟨hu _ y.2, by
       simpa only [LocalizedModule.mkLinearMap_apply, LocalizedModule.smul'_mk,
@@ -337,10 +335,10 @@ theorem const_apply (m : M) (r : R) (U : Opens (PrimeSpectrum.Top R))
     (const M m r U hu).1 x = LocalizedModule.mk m ⟨r, hu x x.2⟩ :=
   rfl
 
-theorem exists_const (U) (s : (tildeInModuleCat M).obj (op U)) (x : PrimeSpectrum.Top R)
+theorem exists_const (U) (s : (tildeInModuleCat M).presheaf.obj (op U)) (x : PrimeSpectrum.Top R)
     (hx : x ∈ U) :
     ∃ (V : Opens (PrimeSpectrum.Top R)) (_ : x ∈ V) (i : V ⟶ U) (f : M) (g : R) (hg : _),
-      const M f g V hg = (tildeInModuleCat M).map i.op s :=
+      const M f g V hg = (tildeInModuleCat M).presheaf.map i.op s :=
   let ⟨V, hxV, iVU, f, g, hfg⟩ := s.2 ⟨x, hx⟩
   ⟨V, hxV, iVU, f, g, fun y hyV => (hfg ⟨y, hyV⟩).1, Subtype.eq <| funext fun y => by
     obtain ⟨h1, (h2 : g • s.1 ⟨y, _⟩ = LocalizedModule.mk f 1)⟩ := hfg y
@@ -354,21 +352,21 @@ theorem exists_const (U) (s : (tildeInModuleCat M).obj (op U)) (x : PrimeSpectru
 
 @[simp]
 theorem res_const (f : M) (g : R) (U hu V hv i) :
-    (tildeInModuleCat M).map i (const M f g U hu) = const M f g V hv :=
+    (tildeInModuleCat M).presheaf.map i (const M f g U hu) = const M f g V hv :=
   rfl
 
 @[simp]
 theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.primeCompl) :
     (localizationToStalk M x).hom (LocalizedModule.mk f s) =
-      (tildeInModuleCat M).germ (PrimeSpectrum.basicOpen (s : R)) x s.2
+      (tildeInModuleCat M).presheaf.germ (PrimeSpectrum.basicOpen (s : R)) x s.2
         (const M f s (PrimeSpectrum.basicOpen s) fun _ => id) :=
   (Module.End_isUnit_iff _ |>.1 (isUnit_toStalk M x s)).injective <| by
   erw [← LinearMap.mul_apply]
   simp only [IsUnit.mul_val_inv, LinearMap.one_apply, Module.algebraMap_end_apply]
-  show (M.tildeInModuleCat.germ ⊤ x ⟨⟩) ((toOpen M ⊤) f) = _
+  show (M.tildeInModuleCat.presheaf.germ ⊤ x ⟨⟩) ((toOpen M ⊤) f) = _
   rw [← map_smul]
   fapply TopCat.Presheaf.germ_ext (W := PrimeSpectrum.basicOpen s.1) (hxW := s.2)
-    (F := M.tildeInModuleCat)
+    (F := M.tildeInModuleCat.presheaf)
   · exact homOfLE le_top
   · exact 𝟙 _
   refine Subtype.eq <| funext fun y => show LocalizedModule.mk f 1 = _ from ?_
@@ -385,14 +383,14 @@ prime ideal corresponding to `x`.
 -/
 @[simps]
 noncomputable def stalkIso (x : PrimeSpectrum.Top R) :
-    TopCat.Presheaf.stalk (tildeInModuleCat M) x ≅
-    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) where
+    (tildeInModuleCat M).presheaf.stalk x ≅
+      ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) where
   hom := stalkToFiberLinearMap M x
   inv := localizationToStalk M x
   hom_inv_id := TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ModuleCat.hom_ext <|
       LinearMap.ext fun s ↦ by
-    show localizationToStalk M x (stalkToFiberLinearMap M x (M.tildeInModuleCat.germ U x hxU s)) =
-      M.tildeInModuleCat.germ U x hxU s
+    show localizationToStalk M x (stalkToFiberLinearMap M x
+      (M.tildeInModuleCat.presheaf.germ U x hxU s)) = M.tildeInModuleCat.presheaf.germ U x hxU s
     rw [stalkToFiberLinearMap_germ]
     obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=
       exists_const _ _ s x hxU
@@ -400,7 +398,7 @@ noncomputable def stalkIso (x : PrimeSpectrum.Top R) :
     dsimp only [isLocallyFraction_pred, Opens.val_apply, LocalizedModule.mkLinearMap_apply,
       Opens.apply_mk] at this
     rw [← this, ← hs, const_apply, localizationToStalk_mk]
-    exact (tildeInModuleCat M).germ_ext V hxV (homOfLE hg) iVU <| hs ▸ rfl
+    exact (tildeInModuleCat M).presheaf.germ_ext V hxV (homOfLE hg) iVU <| hs ▸ rfl
   inv_hom_id := by ext x; exact x.induction_on (fun _ _ => by
     simp only [hom_comp, LinearMap.coe_comp, Function.comp_apply, hom_id, LinearMap.id_coe, id_eq]
     rw [localizationToStalk_mk, stalkToFiberLinearMap_germ]
@@ -415,6 +413,24 @@ instance (x : PrimeSpectrum.Top R) :
   simp only [of_coe,
     show (stalkIso M x).symm.toLinearEquiv.toLinearMap = (stalkIso M x).inv.hom by rfl]
   erw [LocalizedModule.lift_comp]
+
+/-- The tilde construction is functorial. -/
+noncomputable
+def map {M N : ModuleCat R} (f : M ⟶ N) : M.tilde ⟶ N.tilde where
+  val.app U := ModuleCat.ofHom
+    { toFun s := ⟨fun x ↦ LocalizedModule.map x.1.asIdeal.primeCompl f.hom (s.1 x), by
+        intro x
+        obtain ⟨V, hxV, i, m, t, H⟩ := s.2 x
+        refine ⟨V, hxV, i, f m, t, fun y ↦ ⟨(H y).1, ?_⟩⟩
+        dsimp only at H ⊢
+        refine (LinearMap.map_smul_of_tower _ _ _).symm.trans ?_
+        rw [(H y).2]
+        exact LocalizedModule.map_mk _ _ _ _⟩
+      map_add' x y := Subtype.ext <| funext fun x ↦
+        map_add (LocalizedModule.map x.1.asIdeal.primeCompl f.hom) _ _
+      map_smul' r m := Subtype.ext <| funext fun x ↦
+        map_smul (LocalizedModule.map x.1.asIdeal.primeCompl f.hom) _ _ }
+  val.naturality {U V} i := rfl
 
 end Tilde
 
