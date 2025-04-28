@@ -10,26 +10,20 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 /-!
 # Circle Averages
 
-For a function `f` on the complex plane, this file introduces the notation
-`circleAverage f c R` as a shorthand for the average of `f` on the circle with
-center `c` and radius `R`. Averages of this form are typically used in analysis
-of one complex variable. Like `IntervalAverage`, this notion exists as a
-convenience. It avoids the hassle to manually elemininate `2 * π` every time an
-average is computed.
+For a function `f` on the complex plane, this file introduces the notation `circleAverage f c R` as
+a shorthand for the average of `f` on the circle with center `c` and radius `R`. Averages of this
+form are typically used in analysis of one complex variable. Like `IntervalAverage`, this notion
+exists as a convenience. It avoids the hassle to manually elemininate `2 * π` every time an average
+is computed.
 
 Note: The relevant integrability property is `CircleIntegrable`, as defined in
 `Mathlib.MeasureTheory.Integral.CircleIntegral`.
 
-Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative
-radii. The theorem `circleAverage_congr_negRadius` shows that the average is
-independent of the radius' sign.
+Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative radii. The theorem
+`circleAverage_congr_negRadius` shows that the average is independent of the radius' sign.
 -/
 
 open Filter Metric Real
-
-lemma circleMap_neg {r x : ℝ} {c : ℂ} :
-    circleMap c (-r) x = circleMap c r (x + π) := by
-  simp [circleMap, add_mul, Complex.exp_add]
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -42,8 +36,8 @@ variable
 
 variable (f c R) in
 /--
-Define `circleAverage f c R` as the average value of `f` on the circle with
-center `c` and radius `R`.
+Define `circleAverage f c R` as the average value of `f` on the circle with center `c` and radius
+`R`.
 -/
 noncomputable def circleAverage : E :=
   (2 * π)⁻¹ • ∫ θ in (0)..2 * π, f (circleMap c R θ)
@@ -63,8 +57,7 @@ lemma circleAverage_eq_intervalAverage :
     one_smul]
 
 /--
-Expression of `circleAverage´ with arbitrary center in terms of `circleAverage`
-with center zero.
+Expression of `circleAverage´ with arbitrary center in terms of `circleAverage` with center zero.
 -/
 lemma circleAverage_shiftCenter :
     circleAverage f c R = circleAverage (fun z ↦ f (z + c)) 0 R := by
@@ -83,7 +76,7 @@ theorem circleAverage_congr_negRadius :
     circleAverage f c R = circleAverage f c (-R) := by
   unfold circleAverage
   congr 1
-  simp_rw [circleMap_neg]
+  simp_rw [circleMap_negRadius]
   have t₀ : (fun θ ↦ f (circleMap c R θ)).Periodic (2 * π) :=
     fun x ↦ by simp [periodic_circleMap c R x]
   rw [intervalIntegral.integral_comp_add_right (fun θ ↦ f (circleMap c R θ))]
@@ -91,19 +84,14 @@ theorem circleAverage_congr_negRadius :
   rw [zero_add, add_comm] at this
   simp_all
 
-/--
-Circle averages do not change when replacing the radius by its absolute value.
--/
+/-- Circle averages do not change when replacing the radius by its absolute value. -/
 theorem circleAverage_congr_absRadius :
     circleAverage f c R = circleAverage f c |R| := by
   by_cases hR : 0 ≤ R
   · rw [abs_of_nonneg hR]
   · rw [abs_of_neg (not_le.1 hR), circleAverage_congr_negRadius]
 
-/--
-If two functions agree outside of a discrete set in the circle, then their
-averages agree.
--/
+/-- If two functions agree outside of a discrete set in the circle, then their averages agree. -/
 theorem circleAverage_congr_codiscreteWithin
     (hf : f₁ =ᶠ[codiscreteWithin (sphere c |R|)] f₂) (hR : R ≠ 0) :
     circleAverage f₁ c R = circleAverage f₂ c R := by
