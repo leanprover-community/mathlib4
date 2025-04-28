@@ -914,6 +914,15 @@ lemma not_isUnramified_iff_card_stabilizer_eq_two [IsGalois k K] :
   rw [isUnramified_iff_card_stabilizer_eq_one]
   obtain (e|e) := nat_card_stabilizer_eq_one_or_two k w <;> rw [e] <;> decide
 
+lemma exists_isConj_of_not_isUnramified [IsGalois k K] {φ : K →+* ℂ} (h : ¬IsUnramified k (mk φ)) :
+    ∃ σ : K ≃ₐ[k] K, ComplexEmbedding.IsConj φ σ := by
+  rw [not_isUnramified_iff_card_stabilizer_eq_two, Nat.card_eq_two_iff] at h
+  obtain ⟨⟨x, hx⟩, ⟨y, hy⟩, h₁, -⟩ := h
+  rw [mem_stabilizer_mk_iff ] at hx hy
+  by_cases h : x = 1
+  · exact ⟨y, hy.resolve_left (by rwa [ne_eq, Subtype.mk_eq_mk.not, h, eq_comm] at h₁)⟩
+  · exact ⟨x, hx.resolve_left h⟩
+
 open scoped Classical in
 lemma card_stabilizer [IsGalois k K] :
     Nat.card (Stab w) = if IsUnramified k w then 1 else 2 := by
@@ -1196,7 +1205,7 @@ section TotallyComplexField
 ## Totally complex number fields
 -/
 
-open InfinitePlace
+open ComplexEmbedding InfinitePlace
 
 /--
 A number field `K` is totally complex if all of its infinite places are complex.
@@ -1204,11 +1213,17 @@ A number field `K` is totally complex if all of its infinite places are complex.
 @[mk_iff] class IsTotallyComplex (K : Type*) [Field K] [NumberField K] where
   isComplex : ∀ v : InfinitePlace K, v.IsComplex
 
-variable {K : Type*} [Field K] [NumberField K]
+variable {F : Type*} [Field F] {K : Type*} [Field K] [NumberField K] [Algebra F K]
 
 theorem nrRealPlaces_eq_zero_iff :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyComplex_iff]
+
+theorem IsTotallyComplex.isConj_ne_one [IsTotallyComplex K] {φ : K →+* ℂ} {σ : K ≃ₐ[F] K}
+    (hφ : IsConj φ σ) : σ ≠ 1 := by
+  by_contra h
+  rw [h, isConj_one_iff, ← isReal_mk_iff] at hφ
+  exact not_isComplex_iff_isReal.mpr hφ (IsTotallyComplex.isComplex _)
 
 variable (K)
 

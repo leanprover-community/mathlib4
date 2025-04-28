@@ -8,12 +8,11 @@ import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 /-!
 # CM-extension of number fields
 
-A CM-extension of number fields is a totally complex number field that is a quadratic extension of
-a totally real number field.
+A CM-extension `K/F` of number fields is an extension where `K` is totally complex, `F` is
+totally real and `K` is a quadratic extension of `F`. In this situation, the totally real
+subfield `F` is (isomorphic to) the maximal real subfield of `K`.
 
 ## Main definitions
-
-* `IsCMExtension`: a Prop on two number fields `F` and `K` stating that `K/F` is a CM-extension.
 
 -/
 
@@ -21,50 +20,46 @@ open NumberField InfinitePlace ComplexEmbedding
 
 namespace NumberField
 
-/--
-An extension `K/F` of number fields is a `CM`-extension if `K` is totally complex, `F` is totally
-real and the extension `K/F` is of degree `2`.
--/
-class IsCMExtension (F K : Type*) [Field F] [NumberField F] [Field K] [NumberField K]
-    [Algebra F K] : Prop
-  extends IsTotallyReal F, IsTotallyComplex K where
-  finrank_eq_two' : Module.finrank F K = 2
+namespace CMExtension
 
-namespace IsCMExtension
-
-variable (F K : Type*) [Field F] [NumberField F] [Field K] [NumberField K] [Algebra F K]
-
-theorem isTotallyComplex [IsCMExtension F K] :
-    IsTotallyComplex K := toIsTotallyComplex F
-
-theorem isTotallyReal [IsCMExtension F K] :
-    IsTotallyReal F := toIsTotallyReal K
-
-theorem finrank_eq_two [IsCMExtension F K] :
-    Module.finrank F K = 2 := finrank_eq_two'
-
-section FirstResults
-
-variable [IsCMExtension F K]
-
-instance : IsGalois F K :=
-{ to_isSeparable := Algebra.IsSeparable.of_integral _ _
-  to_normal := normal_of_finrank_eq_two _ _ (finrank_eq_two F K) }
+variable (F K : Type*) [Field F] [NumberField F] [IsTotallyReal F] [Field K] [NumberField K]
+  [IsTotallyComplex K] [Algebra F K] [IsQuadraticAlgebra F K]
 
 theorem card_infinitePlace_eq_card_infinitePlace :
     Fintype.card (InfinitePlace K) = Fintype.card (InfinitePlace F) := by
   rw [card_eq_nrRealPlaces_add_nrComplexPlaces, card_eq_nrRealPlaces_add_nrComplexPlaces,
-    nrRealPlaces_eq_zero_iff.mpr (isTotallyComplex F K), zero_add,
-    nrComplexPlaces_eq_zero_iff.mpr (isTotallyReal F K), add_zero, ← IsTotallyReal.finrank,
-    ← Nat.mul_left_cancel_iff zero_lt_two, ← IsTotallyComplex.finrank,
-    ← Module.finrank_mul_finrank ℚ F K, finrank_eq_two F K, mul_comm]
+    IsTotallyComplex.nrRealPlaces_eq_zero K, IsTotallyReal.nrComplexPlaces_eq_zero F, zero_add,
+    add_zero, ← IsTotallyReal.finrank, ← Nat.mul_left_cancel_iff zero_lt_two,
+    ← IsTotallyComplex.finrank, ← Module.finrank_mul_finrank ℚ F K, mul_comm,
+    IsQuadraticAlgebra.finrank_eq_two F K]
 
 theorem units_rank_eq_units_rank :
     Units.rank K = Units.rank F := by
   rw [Units.rank, Units.rank, card_infinitePlace_eq_card_infinitePlace F K]
 
-end FirstResults
+theorem exists_isConj (φ : K →+* ℂ) :
+    ∃ σ : K ≃ₐ[F] K, IsConj φ σ :=
+  exists_isConj_of_not_isUnramified <|
+    not_isUnramified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
 
-end IsCMExtension
+omit [IsTotallyReal F] in
+/--
+All the conjugations of a `CM`-extension are the same.
+-/
+theorem isConj_eq_isConj {φ ψ : K →+* ℂ} {σ τ : K ≃ₐ[F] K} (hφ : IsConj φ σ) (hψ : IsConj ψ τ) :
+    σ = τ := by
+  have : Fintype.card (K ≃ₐ[F] K) = 2 :=
+    (IsQuadraticAlgebra.finrank_eq_two F K) ▸ IsGalois.card_aut_eq_finrank F K
+  rw [← Nat.card_eq_fintype_card, Nat.card_eq_two_iff' 1] at this
+  exact ExistsUnique.unique this (IsTotallyComplex.isConj_ne_one hφ)
+    (IsTotallyComplex.isConj_ne_one hψ)
+
+/--
+The complex conjugation of a `CM`-extension.
+-/
+noncomputable def complexConj : K ≃ₐ[F] K :=
+  (exists_isConj F K (Classical.choice (inferInstance : Nonempty _))).choose
+
+end CMExtension
 
 end NumberField
