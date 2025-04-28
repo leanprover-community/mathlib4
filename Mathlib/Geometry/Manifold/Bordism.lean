@@ -30,8 +30,8 @@ is a compact smooth `n+1`-dimensional manifold `W` whose boundary is (diffeomorp
 union of `s` and `t`, together with a map `W → X` which restricts to the maps on `s` and `t`.
 We call `s` and `t` bordant if there exists a bordism between them: again, this defines an
 equivalence relation. The `n`-th bordism group of `X` is the set of bordism classes of
-`n`-dimensional singular manifolds on `X`. If `X` is a single point, this recovers the bordism groups
-from the preceding paragraph.
+`n`-dimensional singular manifolds on `X`. If `X` is a single point, this recovers the bordism
+groups from the preceding paragraph.
 
 These absolute bordism groups can be generalised further to relative bordism groups, for each
 topological pair `(X, A)`; in fact, these define an extra-ordinary homology theory.
