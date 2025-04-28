@@ -99,7 +99,7 @@ def leftRegular : Representation k G (G → k) where
 @[simp]
 lemma leftRegular_apply (s t : G) (f : G → k) : leftRegular s f t = f (s⁻¹ * t) := rfl
 
-variable [Fintype G]
+variable [Finite G]
 
 /-- The right regular representation `rightRegular` on `G → k` as a `FDRep k G`. -/
 @[simp]
@@ -107,7 +107,7 @@ def rightFDRep : FDRep k G := FDRep.of rightRegular
 
 end definitions
 
-variable [Fintype G]
+variable [Finite G]
 
 lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom k G) := by
   intro s t h
