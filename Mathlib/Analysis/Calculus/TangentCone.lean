@@ -97,10 +97,14 @@ theorem tangentConeAt_univ : tangentConeAt 𝕜 univ x = univ :=
   eq_univ_of_forall fun _ ↦ mem_tangentConeAt_of_pow_smul (norm_pos_iff.1 hr₀) hr <|
     Eventually.of_forall fun _ ↦ mem_univ _
 
+@[deprecated (since := "2025-04-27")] alias tangentCone_univ := tangentConeAt_univ
+
 @[gcongr]
 theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   exact ⟨c, d, mem_of_superset ds fun n hn => h hn, ctop, clim⟩
+
+@[deprecated (since := "2025-04-27")] alias tangentCone_mono := tangentConeAt_mono
 
 end TVS
 
@@ -153,13 +157,19 @@ theorem tangentConeAt_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
   refine (tendsto_inf.2 ⟨?_, tendsto_principal.2 ds⟩).mono_right h
   simpa only [add_zero] using tendsto_const_nhds.add (tangentConeAt.lim_zero atTop ctop clim)
 
+@[deprecated (since := "2025-04-27")] alias tangentCone_mono_nhds := tangentConeAt_mono_nhds
+
 /-- Tangent cone of `s` at `x` depends only on `𝓝[s] x`. -/
 theorem tangentConeAt_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x = tangentConeAt 𝕜 t x :=
   Subset.antisymm (tangentConeAt_mono_nhds h.le) (tangentConeAt_mono_nhds h.ge)
 
+@[deprecated (since := "2025-04-27")] alias tangentCone_congr := tangentConeAt_congr
+
 /-- Intersecting with a neighborhood of the point does not change the tangent cone. -/
 theorem tangentConeAt_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
   tangentConeAt_congr (nhdsWithin_restrict' _ ht).symm
+
+@[deprecated (since := "2025-04-27")] alias tangentCone_inter_nhds := tangentConeAt_inter_nhds
 
 /-- The tangent cone of a product contains the tangent cone of its left factor. -/
 theorem subset_tangentConeAt_prod_left {t : Set F} {y : F} (ht : y ∈ closure t) :
@@ -180,6 +190,9 @@ theorem subset_tangentConeAt_prod_left {t : Set F} {y : F} (ht : y ∈ closure t
     refine squeeze_zero_norm (fun n => (hd' n).2.le) ?_
     exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
 
+@[deprecated (since := "2025-04-27")]
+alias subset_tangentCone_prod_left := subset_tangentConeAt_prod_left
+
 /-- The tangent cone of a product contains the tangent cone of its right factor. -/
 theorem subset_tangentConeAt_prod_right {t : Set F} {y : F} (hs : x ∈ closure s) :
     LinearMap.inr 𝕜 E F '' tangentConeAt 𝕜 t y ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
@@ -198,6 +211,9 @@ theorem subset_tangentConeAt_prod_right {t : Set F} {y : F} (hs : x ∈ closure 
   · apply Tendsto.prodMk_nhds _ hy
     refine squeeze_zero_norm (fun n => (hd' n).2.le) ?_
     exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
+
+@[deprecated (since := "2025-04-27")]
+alias subset_tangentCone_prod_right := subset_tangentConeAt_prod_right
 
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
 theorem mapsTo_tangentConeAt_pi {ι : Type*} [DecidableEq ι] {E : ι → Type*}
@@ -221,6 +237,8 @@ theorem mapsTo_tangentConeAt_pi {ι : Type*} [DecidableEq ι] {E : ι → Type*}
       refine squeeze_zero_norm (fun n => (hcd' n j hj).le) ?_
       exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
 
+@[deprecated (since := "2025-04-27")] alias mapsTo_tangentCone_pi := mapsTo_tangentConeAt_pi
+
 /-- If a subset of a real vector space contains an open segment, then the direction of this
 segment belongs to the tangent cone at its endpoints. -/
 theorem mem_tangentConeAt_of_openSegment_subset {s : Set G} {x y : G} (h : openSegment ℝ x y ⊆ s) :
@@ -233,11 +251,17 @@ theorem mem_tangentConeAt_of_openSegment_subset {s : Set G} {x y : G} (h : openS
   · exact pow_lt_one₀ one_half_pos.le one_half_lt_one hn
   · simp only [sub_smul, one_smul, smul_sub]; abel
 
+@[deprecated (since := "2025-04-27")]
+alias mem_tangentCone_of_openSegment_subset := mem_tangentConeAt_of_openSegment_subset
+
 /-- If a subset of a real vector space contains a segment, then the direction of this
 segment belongs to the tangent cone at its endpoints. -/
 theorem mem_tangentConeAt_of_segment_subset {s : Set G} {x y : G} (h : segment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ s x :=
   mem_tangentConeAt_of_openSegment_subset ((openSegment_subset_segment ℝ x y).trans h)
+
+@[deprecated (since := "2025-04-27")]
+alias mem_tangentCone_of_segment_subset := mem_tangentConeAt_of_segment_subset
 
 /-- The tangent cone at a non-isolated point contains `0`. -/
 theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : x ∈ closure s) :
@@ -339,6 +363,9 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
   · simpa [d] using hvs (φ n)
   · exact c_lim.comp φ_strict.tendsto_atTop
 
+@[deprecated (since := "2025-04-27")]
+alias tangentCone_nonempty_of_properSpace := tangentConeAt_nonempty_of_properSpace
+
 /-- The tangent cone at a non-isolated point in dimension 1 is the whole space. -/
 theorem tangentConeAt_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) :
     tangentConeAt 𝕜 s x = univ := by
@@ -371,6 +398,8 @@ theorem tangentConeAt_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) 
     exact squeeze_zero (fun n ↦ by positivity) B u_lim
   · convert tendsto_const_nhds (α := ℕ) (x := y) with n
     simp [mul_assoc, inv_mul_cancel₀ (d_ne n)]
+
+@[deprecated (since := "2025-04-27")] alias tangentCone_eq_univ := tangentConeAt_eq_univ
 
 end Normed
 
