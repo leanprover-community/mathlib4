@@ -132,26 +132,6 @@ lemma _root_.Frequently.le_linGrowthSup (h : ∃ᶠ n : ℕ in atTop, a * n ≤ 
 
 /-! ### Special cases -/
 
-lemma linGrowthSup_zero : linGrowthSup 0 = 0 := by
-  nth_rw 2 [← limsup_const (f := atTop (α := ℕ)) 0]
-  refine limsup_congr (Eventually.of_forall fun n ↦ ?_)
-  rw [Pi.zero_apply, zero_div]
-
-lemma linGrowthInf_zero : linGrowthInf 0 = 0 := by
-  nth_rw 2 [← liminf_const (f := atTop (α := ℕ)) 0]
-  refine liminf_congr (Eventually.of_forall fun n ↦ ?_)
-  rw [Pi.zero_apply, zero_div]
-
-lemma linGrowthInf_top : linGrowthInf ⊤ = ⊤ := by
-  nth_rw 2 [← liminf_const (f := atTop (α := ℕ)) ⊤]
-  refine liminf_congr (eventually_atTop.2 ?_)
-  exact ⟨1, fun n n_pos ↦ top_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)⟩
-
-lemma linGrowthSup_top : linGrowthSup ⊤ = ⊤ := by
-  apply top_le_iff.1
-  rw [← linGrowthInf_top]
-  exact linGrowthInf_le_linGrowthSup
-
 lemma linGrowthSup_bot : linGrowthSup ⊥ = ⊥ := by
   nth_rw 2 [← limsup_const (f := atTop (α := ℕ)) ⊥]
   refine limsup_congr (eventually_atTop.2 ?_)
@@ -162,11 +142,29 @@ lemma linGrowthInf_bot : linGrowthInf ⊥ = ⊥ := by
   rw [← linGrowthSup_bot]
   exact linGrowthInf_le_linGrowthSup
 
+  lemma linGrowthInf_top : linGrowthInf ⊤ = ⊤ := by
+  nth_rw 2 [← liminf_const (f := atTop (α := ℕ)) ⊤]
+  refine liminf_congr (eventually_atTop.2 ?_)
+  exact ⟨1, fun n n_pos ↦ top_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)⟩
+
+lemma linGrowthSup_top : linGrowthSup ⊤ = ⊤ := by
+  apply top_le_iff.1
+  rw [← linGrowthInf_top]
+  exact linGrowthInf_le_linGrowthSup
+
 lemma linGrowthInf_const (h : b ≠ ⊥) (h' : b ≠ ⊤) : linGrowthInf (fun _ ↦ b) = 0 :=
   (tendsto_const_div_atTop_nhds_zero_nat h h').liminf_eq
 
 lemma linGrowthSup_const (h : b ≠ ⊥) (h' : b ≠ ⊤) : linGrowthSup (fun _ ↦ b) = 0 :=
   (tendsto_const_div_atTop_nhds_zero_nat h h').limsup_eq
+
+lemma linGrowthInf_zero : linGrowthInf 0 = 0 := by
+  rw [Pi.zero_def]
+  exact linGrowthInf_const zero_ne_bot zero_ne_top
+
+lemma linGrowthSup_zero : linGrowthSup 0 = 0 := by
+  rw [Pi.zero_def]
+  exact linGrowthSup_const zero_ne_bot zero_ne_top
 
 lemma linGrowthInf_mul : linGrowthInf (fun n ↦ a * n) = a :=
   le_antisymm (Frequently.linGrowthInf_le (Frequently.of_forall fun _ ↦ le_refl _))
