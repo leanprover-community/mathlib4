@@ -224,6 +224,29 @@ lemma linGrowthSup_inv : linGrowthSup (- u) = - linGrowthInf u := by
   refine limsup_congr (Eventually.of_forall fun n ↦ ?_)
   rw [Pi.neg_apply, Pi.neg_apply, div_eq_mul_inv, div_eq_mul_inv, ← neg_mul]
 
+
+/-! ### Affine bounds -/
+
+lemma linGrowthInf_le_of_eventually_le (hb : b ≠ ⊤) (h : ∀ᶠ n in atTop, u n ≤ v n + b) :
+    linGrowthInf u ≤ linGrowthInf v := by
+  apply (linGrowthInf_eventually_monotone h).trans
+  rcases eq_bot_or_bot_lt b with rfl | b_bot
+  · simp only [add_bot, ← Pi.bot_def, linGrowthInf_bot, bot_le]
+  · apply (linGrowthInf_add_le' _ _).trans_eq <;> rw [linGrowthSup_const b_bot.ne' hb]
+    · exact add_zero (linGrowthInf v)
+    · exact Or.inr EReal.zero_ne_top
+    · exact Or.inr EReal.zero_ne_bot
+
+lemma linGrowthSup_le_of_eventually_le (hb : b ≠ ⊤) (h : ∀ᶠ n in atTop, u n ≤ v n + b) :
+    linGrowthSup u ≤ linGrowthSup v := by
+  apply (linGrowthSup_eventually_monotone h).trans
+  rcases eq_bot_or_bot_lt b with rfl | b_bot
+  · simp only [add_bot, ← Pi.bot_def, linGrowthSup_bot, bot_le]
+  · apply (linGrowthSup_add_le _ _).trans_eq <;> rw [linGrowthSup_const b_bot.ne' hb]
+    · exact add_zero (linGrowthSup v)
+    · exact Or.inr EReal.zero_ne_top
+    · exact Or.inr EReal.zero_ne_bot
+
 /-! ### Infimum and supremum -/
 
 lemma linGrowthInf_inf : linGrowthInf (u ⊓ v) = min (linGrowthInf u) (linGrowthInf v) := by
