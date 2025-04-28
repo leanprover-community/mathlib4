@@ -207,19 +207,37 @@ theorem dpow_of_two_le {n : ℕ} (hn : 2 ≤ n) (a : A) :
 
 end OfSquareZero
 
-namespace CharP
+namespace IsNilpotent
 
-variable {A : Type*} [CommRing A] {p : ℕ} [Fact (Nat.Prime p)] [CharP A p]
+variable {A : Type*} [CommRing A] {p : ℕ} [Fact (Nat.Prime p)] (hp : IsNilpotent (p : A))
   {I : Ideal A} [DecidablePred (fun x ↦ x ∈ I)] (hIp : I ^ p = 0)
 
 /-- If `A` is a commutative ring of prime characteristic `p` and `I` is an ideal such that
   `I^p = 0`, then `I` admits a divided power structure. -/
 noncomputable def dividedPowers : DividedPowers I :=
-  OfInvertibleFactorial.dividedPowers
-    ((IsUnit.natCast_factorial_iff_of_charP p).mpr (Nat.sub_one_lt (NeZero.ne' p).symm)) hIp
+  OfInvertibleFactorial.dividedPowers (n := p)
+    (IsUnit.natCast_factorial_of_isNilpotent hp (Nat.sub_one_lt (NeZero.ne' p).symm)) hIp
 
-theorem dpow_of_prime_le {n : ℕ} (hn : p ≤ n) (a : A) : (dividedPowers hIp) n a = 0 := by
+theorem dpow_of_prime_le {n : ℕ} (hn : p ≤ n) (a : A) : (dividedPowers hp hIp) n a = 0 := by
   simp only [dividedPowers, OfInvertibleFactorial.dpow_apply, ite_eq_right_iff]
+  intro ha
+  rw [Ideal.pow_eq_zero_of_mem hIp hn ha, mul_zero]
+
+end IsNilpotent
+
+namespace CharP
+
+variable (A : Type*) [CommRing A] (p : ℕ) [CharP A p] [Fact (Nat.Prime p)]
+  {I : Ideal A} [DecidablePred (fun x ↦ x ∈ I)] (hIp : I ^ p = 0)
+
+/-- If `A` is a commutative ring of prime characteristic `p` and `I` is an ideal such that
+  `I^p = 0`, then `I` admits a divided power structure. -/
+noncomputable def dividedPowers : DividedPowers I :=
+  IsNilpotent.dividedPowers ((CharP.cast_eq_zero A p) ▸ IsNilpotent.zero) hIp
+
+theorem dpow_of_prime_le {n : ℕ} (hn : p ≤ n) (a : A) : (dividedPowers A p hIp) n a = 0 := by
+  simp only [dividedPowers, IsNilpotent.dividedPowers, OfInvertibleFactorial.dpow_apply,
+    ite_eq_right_iff]
   intro ha
   rw [Ideal.pow_eq_zero_of_mem hIp hn ha, mul_zero]
 
