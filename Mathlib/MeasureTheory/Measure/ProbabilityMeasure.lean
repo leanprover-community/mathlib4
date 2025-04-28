@@ -230,8 +230,8 @@ lemma measurableSet_isProbabilityMeasure :
   apply isProbabilityMeasure_iff
 
 /-- The monoidal product is a measurable function from the product of probability spaces over
-`α` and `β` into the type of probability spaces over `α × β`. Lemma 4.1 of
-https://doi.org/10.1016/j.aim.2020.107239. -/
+`α` and `β` into the type of probability spaces over `α × β`. Lemma 4.1 of [A synthetic approach to
+Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]. -/
 theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
@@ -320,6 +320,15 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
         Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫ ω, f ω ∂(μ : Measure Ω))) := by
   rw [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds]
   rw [FiniteMeasure.tendsto_iff_forall_integral_tendsto]
+  rfl
+
+theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [RCLike 𝕜]
+    {F : Filter γ} {μs : γ → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω} :
+    Tendsto μs F (𝓝 μ) ↔
+      ∀ f : Ω →ᵇ 𝕜,
+        Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫ ω, f ω ∂(μ : Measure Ω))) := by
+  rw [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds]
+  rw [FiniteMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜]
   rfl
 
 lemma continuous_integral_boundedContinuousFunction

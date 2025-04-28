@@ -22,9 +22,9 @@ We show that if `r` is well-founded, so too is the shortlex order over `r`
 ## See also
 
 Related files are:
-* `Mathlib/Data/List/Lex`: Lexicographic order on `List α`.
-* `Mathlib/Data/DFinsupp/WellFounded`: Well-foundedness of lexicographic orders on `DFinsupp` and
-  `Pi`.
+* `Mathlib/Data/List/Lex.lean`: Lexicographic order on `List α`.
+* `Mathlib/Data/DFinsupp/WellFounded.lean`: Well-foundedness of lexicographic orders on `DFinsupp`
+  and `Pi`.
 -/
 
 /-! ### shortlex ordering -/

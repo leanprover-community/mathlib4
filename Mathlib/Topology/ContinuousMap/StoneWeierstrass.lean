@@ -150,7 +150,8 @@ theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
   convert sup_mem_subalgebra_closure A f g
   apply SetLike.ext'
   symm
-  erw [closure_eq_iff_isClosed]
+  dsimp
+  rw [closure_eq_iff_isClosed]
   exact h
 
 open scoped Topology
@@ -188,7 +189,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   have U_nhd_y : ∀ x y, U x y ∈ 𝓝 y := by
     intro x y
     refine IsOpen.mem_nhds ?_ ?_
-    · apply isOpen_lt <;> continuity
+    · apply isOpen_lt <;> fun_prop
     · rw [Set.mem_setOf_eq, w₂]
       exact sub_lt_self _ pos
   -- Fixing `x` for a moment, we have a family of functions `fun y ↦ g x y`
@@ -377,7 +378,7 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
     simp only [coe_smul, coe_one, smul_apply, one_apply, Algebra.id.smul_eq_mul, mul_one,
       const_apply]
   -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
-  refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by continuity⟩, ?_, rfl⟩, ?_⟩
+  refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by fun_prop⟩, ?_, rfl⟩, ?_⟩
   · -- This is also an element of the subalgebra, and takes only real values
     rw [SetLike.mem_coe, Subalgebra.mem_comap]
     convert (A.restrictScalars ℝ).mul_mem hFA (star_mem hFA : star F ∈ A)
@@ -489,7 +490,7 @@ theorem ContinuousMap.induction_on_of_compact {𝕜 : Type*} [RCLike 𝕜] {s : 
 /-- Continuous algebra homomorphisms from `C(s, ℝ)` into an `ℝ`-algebra `A` which agree
 at `X : 𝕜[X]` (interpreted as a continuous map) are, in fact, equal. -/
 @[ext (iff := false)]
-theorem ContinuousMap.algHom_ext_map_X {A : Type*} [Ring A]
+theorem ContinuousMap.algHom_ext_map_X {A : Type*} [Semiring A]
     [Algebra ℝ A] [TopologicalSpace A] [T2Space A] {s : Set ℝ} [CompactSpace s]
     {φ ψ : C(s, ℝ) →ₐ[ℝ] A} (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) : φ = ψ := by
@@ -624,7 +625,7 @@ lemma ContinuousMapZero.adjoin_id_dense {s : Set 𝕜} [Zero s] (h0 : ((0 : s) :
   apply Set.eq_univ_of_forall fun f ↦ ?_
   simp only [Set.mem_preimage, toContinuousMapHom_apply, SetLike.mem_coe, RingHom.mem_ker,
     ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
-  rw [show ⟨0, h0'⟩ = (0 : s) by ext; exact h0.symm, _root_.map_zero f]
+  rw [show ⟨0, h0'⟩ = (0 : s) by ext; exact h0.symm, map_zero f]
 
 /-- An induction principle for `C(s, 𝕜)₀`. -/
 @[elab_as_elim]
@@ -659,8 +660,8 @@ theorem ContinuousMapZero.induction_on_of_compact {s : Set 𝕜} [Zero s] (h0 : 
   exact mem_closure_iff_frequently.mp this |>.mp <| .of_forall h
 
 lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [IsTopologicalSemiring A]
-    [T2Space A] [Module 𝕜 A] [IsScalarTower 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
+    [RCLike 𝕜] [NonUnitalSemiring A] [Star A] [TopologicalSpace A] [ContinuousMul A]
+    [T2Space A] [DistribMulAction 𝕜 A] [IsScalarTower 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
     (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : φ (.id h0) * a = 0)
     (hmul_star_id : φ (star (.id h0)) * a = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :
     φ f * a = 0 := by
@@ -674,8 +675,8 @@ lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
   | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
 
 lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [IsTopologicalSemiring A]
-    [T2Space A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
+    [RCLike 𝕜] [NonUnitalSemiring A] [Star A] [TopologicalSpace A] [ContinuousMul A]
+    [T2Space A] [DistribMulAction 𝕜 A] [SMulCommClass 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
     (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : a * φ (.id h0) = 0)
     (hmul_star_id : a * φ (star (.id h0)) = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :
     a * φ f = 0 := by

@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Order.UpperLower.Basic

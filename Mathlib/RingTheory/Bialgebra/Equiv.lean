@@ -112,6 +112,7 @@ theorem toBialgHom_injective : Function.Injective (toBialgHom : (A ≃ₐc[R] B)
   fun _ _ H => toEquiv_injective <| Equiv.ext <| BialgHom.congr_fun H
 
 instance : EquivLike (A ≃ₐc[R] B) A B where
+  coe f := f.toFun
   inv := fun f => f.invFun
   coe_injective' _ _ h _ := toBialgHom_injective (DFunLike.coe_injective h)
   left_inv := fun f => f.left_inv

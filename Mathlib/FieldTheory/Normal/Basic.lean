@@ -15,6 +15,11 @@ In this file we prove that for a finite extension, being normal
 is the same as being a splitting field (`Normal.of_isSplittingField` and
 `Normal.exists_isSplittingField`).
 
+## Additional Results
+
+* `IsQuadraticExtension.Normal`: a quadratic extension, given as a class
+  `IsQuadraticExtension`, is normal.
+
 -/
 
 
@@ -274,3 +279,18 @@ theorem exists_algEquiv_of_root' [Normal K L]{x y : L} (hy : IsAlgebraic K y)
   rw [← hσ, symm_apply_apply]
 
 end minpoly
+
+/--
+A quadratic extension is normal.
+-/
+instance IsQuadraticExtension.Normal (F K : Type*) [Field F] [Field K]
+    [h : IsQuadraticExtension F K] :
+    Normal F K where
+  splits' := by
+    intro x
+    obtain h | h := le_iff_lt_or_eq.mp (h.finrank_eq_two ▸ minpoly.natDegree_le x)
+    · exact splits_of_natDegree_le_one _ (by rwa [Nat.le_iff_lt_add_one])
+    · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
+
+@[deprecated (since := "2025-04-17")] alias normal_of_finrank_eq_two :=
+  IsQuadraticExtension.Normal

@@ -83,12 +83,6 @@ theorem quotientKerEquivOfRightInverse.Symm.apply {g : S → R} (hf : Function.R
     (x : S) : (quotientKerEquivOfRightInverse hf).symm x = Ideal.Quotient.mk (ker f) (g x) :=
   rfl
 
-variable (R) in
-/-- The quotient of a ring by he zero ideal is isomorphic to the ring itself. -/
-def _root_.RingEquiv.quotientBot : R ⧸ (⊥ : Ideal R) ≃+* R :=
-  (Ideal.quotEquivOfEq (RingHom.ker_coe_equiv <| .refl _).symm).trans <|
-    quotientKerEquivOfRightInverse (f := .id R) (g := _root_.id) fun _ ↦ rfl
-
 /-- The **first isomorphism theorem** for commutative rings, surjective case. -/
 noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R ⧸ (ker f) ≃+* S :=
   quotientKerEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
@@ -130,7 +124,7 @@ theorem map_mk_eq_bot_of_le {I J : Ideal R} [J.IsTwoSided] (h : I ≤ J) :
 
 theorem ker_quotient_lift {I : Ideal R} [I.IsTwoSided] (f : R →+* S)
     (H : I ≤ ker f) :
-    ker (Ideal.Quotient.lift I f H) = f.ker.map (Quotient.mk I) := by
+    ker (Ideal.Quotient.lift I f H) = (RingHom.ker f).map (Quotient.mk I) := by
   apply Ideal.ext
   intro x
   constructor
@@ -675,6 +669,45 @@ noncomputable def quotientKerEquivRange
 end QuotientAlgebra
 
 end Ideal
+
+section quotientBot
+
+variable {R S : Type*}
+
+variable (R) in
+/-- The quotient of a ring by he zero ideal is isomorphic to the ring itself. -/
+def RingEquiv.quotientBot [Ring R] : R ⧸ (⊥ : Ideal R) ≃+* R :=
+  (Ideal.quotEquivOfEq (RingHom.ker_coe_equiv <| .refl _).symm).trans <|
+    RingHom.quotientKerEquivOfRightInverse (f := .id R) (g := _root_.id) fun _ ↦ rfl
+
+@[simp]
+lemma RingEquiv.quotientBot_mk [Ring R] (r : R) :
+    RingEquiv.quotientBot R (Ideal.Quotient.mk ⊥ r) = r :=
+  rfl
+
+@[simp]
+lemma RingEquiv.quotientBot_symm_mk [Ring R] (r : R) :
+    (RingEquiv.quotientBot R).symm r = r :=
+  rfl
+
+variable (R S) in
+/-- `RingEquiv.quotientBot` as an algebra isomorphism. -/
+def AlgEquiv.quotientBot [CommSemiring R] [Ring S] [Algebra R S] :
+    (S ⧸ (⊥ : Ideal S)) ≃ₐ[R] S where
+  __ := RingEquiv.quotientBot S
+  commutes' x := by simp [← Ideal.Quotient.mk_algebraMap]
+
+@[simp]
+lemma AlgEquiv.quotientBot_mk [CommSemiring R] [CommRing S] [Algebra R S] (s : S) :
+    AlgEquiv.quotientBot R S (Ideal.Quotient.mk ⊥ s) = s :=
+  rfl
+
+@[simp]
+lemma AlgEquiv.quotientBot_symm_mk [CommSemiring R] [CommRing S] [Algebra R S]
+    (s : S) : (AlgEquiv.quotientBot R S).symm s = s :=
+  rfl
+
+end quotientBot
 
 namespace DoubleQuot
 

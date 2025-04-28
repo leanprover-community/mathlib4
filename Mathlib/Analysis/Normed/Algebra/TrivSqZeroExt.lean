@@ -204,7 +204,7 @@ example :
 
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
   rw [WithLp.prod_norm_eq_add (by norm_num)]
-  simp only [ENNReal.one_toReal, Real.rpow_one, div_one]
+  simp only [ENNReal.toReal_one, Real.rpow_one, div_one]
   rfl
 
 theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by

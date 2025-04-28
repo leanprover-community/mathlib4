@@ -3,8 +3,8 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
-import Mathlib.Data.Set.Lattice
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Theory of sieves
@@ -47,7 +47,7 @@ noncomputable instance : Inhabited (Presieve X) :=
 /-- The full subcategory of the over category `C/X` consisting of arrows which belong to a
     presieve on `X`. -/
 abbrev category {X : C} (P : Presieve X) :=
-  FullSubcategory fun f : Over X => P f.hom
+  ObjectProperty.FullSubcategory fun f : Over X => P f.hom
 
 /-- Construct an object of `P.category`. -/
 abbrev categoryMk {X : C} (P : Presieve X) {Y : C} (f : Y ⟶ X) (hf : P f) : P.category :=
@@ -57,12 +57,12 @@ abbrev categoryMk {X : C} (P : Presieve X) {Y : C} (f : Y ⟶ X) (hf : P f) : P.
     the natural functor from the full subcategory of the over category `C/X` consisting
     of arrows in `S` to `C`. -/
 abbrev diagram (S : Presieve X) : S.category ⥤ C :=
-  fullSubcategoryInclusion _ ⋙ Over.forget X
+  ObjectProperty.ι _ ⋙ Over.forget X
 
 /-- Given a sieve `S` on `X : C`, its associated cocone `S.cocone` is defined to be
     the natural cocone over the diagram defined above with cocone point `X`. -/
 abbrev cocone (S : Presieve X) : Cocone S.diagram :=
-  (Over.forgetCocone X).whisker (fullSubcategoryInclusion _)
+  (Over.forgetCocone X).whisker (ObjectProperty.ι _)
 
 /-- Given a set of arrows `S` all with codomain `X`, and a set of arrows with codomain `Y` for each
 `f : Y ⟶ X` in `S`, produce a set of arrows with codomain `X`:
@@ -93,7 +93,7 @@ noncomputable def bind.bindStruct {S : Presieve X} {R : ∀ ⦃Y⦄ ⦃f : Y ⟶
     {Z : C} {h : Z ⟶ X} (H : bind S R h) : BindStruct S R h :=
   Nonempty.some (by
     obtain ⟨Y, g, f, hf, hg, fac⟩ := H
-    exact ⟨{ hf := hf, hg := hg, fac := fac }⟩)
+    exact ⟨{ hf := hf, hg := hg, fac := fac, .. }⟩)
 
 lemma BindStruct.bind {S : Presieve X} {R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y}
     {Z : C} {h : Z ⟶ X} (b : BindStruct S R h) : bind S R h :=

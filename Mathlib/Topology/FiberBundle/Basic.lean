@@ -275,9 +275,6 @@ theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
 
-@[deprecated (since := "2024-10-20")]
-alias totalSpaceMk_closedEmbedding := totalSpaceMk_isClosedEmbedding
-
 variable {E F}
 
 @[simp, mfld_simps]
@@ -462,7 +459,7 @@ def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
 @[simp, mfld_simps]
 theorem mem_trivChange_source (i j : ι) (p : B × F) :
     p ∈ (Z.trivChange i j).source ↔ p.1 ∈ Z.baseSet i ∩ Z.baseSet j := by
-  erw [mem_prod]
+  rw [trivChange, mem_prod]
   simp
 
 /-- Associate to a trivialization index `i : ι` the corresponding trivialization, i.e., a bijection
@@ -501,7 +498,7 @@ theorem mem_localTrivAsPartialEquiv_source (p : Z.TotalSpace) :
 
 theorem mem_localTrivAsPartialEquiv_target (p : B × F) :
     p ∈ (Z.localTrivAsPartialEquiv i).target ↔ p.1 ∈ Z.baseSet i := by
-  erw [mem_prod]
+  rw [localTrivAsPartialEquiv, mem_prod]
   simp only [and_true, mem_univ]
 
 theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :

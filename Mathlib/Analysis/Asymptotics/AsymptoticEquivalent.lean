@@ -3,9 +3,7 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Asymptotics.Theta
-import Mathlib.Analysis.Normed.Order.Basic
 
 /-!
 # Asymptotic equivalence
@@ -288,16 +286,27 @@ protected theorem IsEquivalent.div (htu : t ~[l] u) (hvw : v ~[l] w) :
     (fun x ↦ t x / v x) ~[l] fun x ↦ u x / w x := by
   simpa only [div_eq_mul_inv] using htu.mul hvw.inv
 
+protected theorem IsEquivalent.pow (h : t ~[l] u) (n : ℕ) : t ^ n ~[l] u ^ n := by
+  induction n with
+  | zero => simpa using IsEquivalent.refl
+  | succ _ ih => simpa [pow_succ] using ih.mul h
+
+protected theorem IsEquivalent.zpow (h : t ~[l] u) (z : ℤ) : t ^ z ~[l] u ^ z := by
+  match z with
+  | Int.ofNat _ => simpa using h.pow _
+  | Int.negSucc _ => simpa using (h.pow _).inv
+
 end mul_inv
 
 section NormedLinearOrderedField
 
-variable {α β : Type*} [NormedLinearOrderedField β] {u v : α → β} {l : Filter α}
+variable {α β : Type*} [NormedField β] [LinearOrder β] [IsStrictOrderedRing β]
+  {u v : α → β} {l : Filter α}
 
 theorem IsEquivalent.tendsto_atTop [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atTop) :
     Tendsto v l atTop :=
   let ⟨φ, hφ, h⟩ := huv.symm.exists_eq_mul
-  Tendsto.congr' h.symm (mul_comm u φ ▸ hu.atTop_mul zero_lt_one hφ)
+  Tendsto.congr' h.symm (mul_comm u φ ▸ hu.atTop_mul_pos zero_lt_one hφ)
 
 theorem IsEquivalent.tendsto_atTop_iff [OrderTopology β] (huv : u ~[l] v) :
     Tendsto u l atTop ↔ Tendsto v l atTop :=

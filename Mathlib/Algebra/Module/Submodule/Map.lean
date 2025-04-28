@@ -202,11 +202,11 @@ theorem comap_comp (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃
 theorem comap_mono {f : F} {q q' : Submodule R₂ M₂} : q ≤ q' → comap f q ≤ comap f q' :=
   preimage_mono
 
-theorem le_comap_pow_of_le_comap (p : Submodule R M) {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ) :
-    p ≤ p.comap (f ^ k) := by
+theorem le_comap_pow_of_le_comap (p : Submodule R M) {f : M →ₗ[R] M}
+    (h : p ≤ p.comap f) (k : ℕ) : p ≤ p.comap (f ^ k) := by
   induction k with
-  | zero => simp [LinearMap.one_eq_id]
-  | succ k ih => simp [LinearMap.iterate_succ, comap_comp, h.trans (comap_mono ih)]
+  | zero => simp [Module.End.one_eq_id]
+  | succ k ih => simp [Module.End.iterate_succ, comap_comp, h.trans (comap_mono ih)]
 
 section
 
@@ -360,6 +360,25 @@ theorem map_le_map_iff_of_injective (p q : Submodule R M) : p.map f ≤ q.map f 
 
 theorem map_strictMono_of_injective : StrictMono (map f) :=
   (gciMapComap hf).strictMono_l
+
+lemma map_lt_map_iff_of_injective {p q : Submodule R M} :
+    p.map f < q.map f ↔ p < q := by
+  rw [lt_iff_le_and_ne, lt_iff_le_and_ne, map_le_map_iff_of_injective hf,
+    (map_injective_of_injective hf).ne_iff]
+
+lemma comap_lt_of_lt_map_of_injective {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : q < p.map f) : q.comap f < p := by
+  rw [← map_lt_map_iff_of_injective hf]
+  exact (map_comap_le _ _).trans_lt h
+
+lemma map_covBy_of_injective {p q : Submodule R M} (h : p ⋖ q) :
+    p.map f ⋖ q.map f := by
+  refine ⟨lt_of_le_of_ne (map_mono h.1.le) ((map_injective_of_injective hf).ne h.1.ne), ?_⟩
+  intro P h₁ h₂
+  refine h.2 ?_ (Submodule.comap_lt_of_lt_map_of_injective hf h₂)
+  rw [← Submodule.map_lt_map_iff_of_injective hf]
+  refine h₁.trans_le ?_
+  exact (Set.image_preimage_eq_of_subset (.trans h₂.le (Set.image_subset_range _ _))).superset
 
 end GaloisCoinsertion
 
