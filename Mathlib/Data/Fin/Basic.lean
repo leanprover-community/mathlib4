@@ -206,11 +206,6 @@ def factorial {n : ℕ} : Fin n → ℕ
 instance {n : ℕ} : WellFoundedRelation (Fin n) :=
   measure (val : Fin n → ℕ)
 
-/-- Given a positive `n`, `Fin.ofNat' i` is `i % n` as an element of `Fin n`. -/
-@[deprecated Fin.ofNat' (since := "2024-10-15")]
-def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
-  ⟨i % n, mod_lt _ n.pos_of_neZero⟩
-
 @[deprecated (since := "2025-02-24")]
 alias val_zero' := val_zero
 
@@ -1003,6 +998,7 @@ lemma succAbove_castPred_self (p : Fin (n + 1)) (h : p ≠ last n) :
 
 /-- Embedding `i : Fin n` into `Fin (n + 1)` with a hole around `p : Fin (n + 1)`
 never results in `p` itself -/
+@[simp]
 lemma succAbove_ne (p : Fin (n + 1)) (i : Fin n) : p.succAbove i ≠ p := by
   rcases p.castSucc_lt_or_lt_succ i with (h | h)
   · rw [succAbove_of_castSucc_lt _ _ h]
@@ -1010,6 +1006,7 @@ lemma succAbove_ne (p : Fin (n + 1)) (i : Fin n) : p.succAbove i ≠ p := by
   · rw [succAbove_of_lt_succ _ _ h]
     exact Fin.ne_of_gt h
 
+@[simp]
 lemma ne_succAbove (p : Fin (n + 1)) (i : Fin n) : p ≠ p.succAbove i := (succAbove_ne _ _).symm
 
 /-- Given a fixed pivot `p : Fin (n + 1)`, `p.succAbove` is injective. -/
@@ -1058,7 +1055,7 @@ lemma succAbove_zero_apply (i : Fin n) : succAbove 0 i = succ i := by rw [succAb
 
 lemma succAbove_eq_last_iff {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) :
     a.succAbove b = last _ ↔ b = last _ := by
-  simp [← succAbove_ne_last_last ha, succAbove_right_inj]
+  rw [← succAbove_ne_last_last ha, succAbove_right_inj]
 
 lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) (hb : b ≠ last _) :
     a.succAbove b ≠ last _ := mt (succAbove_eq_last_iff ha).mp hb
@@ -1406,8 +1403,10 @@ protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
-lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by
-  fin_omega
+lemma eq_one_of_ne_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by fin_omega
+
+@[deprecated (since := "2025-04-27")]
+alias eq_one_of_neq_zero := eq_one_of_ne_zero
 
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by

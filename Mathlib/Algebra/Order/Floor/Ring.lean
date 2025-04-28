@@ -472,7 +472,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     simp [m₁]
   · congr 2
     simp only [m₁]
-    rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self]
+    rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self_right]
 
 end LinearOrderedField
 

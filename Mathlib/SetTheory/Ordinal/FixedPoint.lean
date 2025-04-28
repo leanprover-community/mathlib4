@@ -51,11 +51,6 @@ least `a`, and `Ordinal.nfpFamily_le_fp` shows this is the least ordinal with th
 def nfpFamily (f : ι → Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) : Ordinal :=
   ⨆ i, List.foldr f a i
 
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem nfpFamily_eq_sup (f : ι → Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
-    nfpFamily f a = ⨆ i, List.foldr f a i :=
-  rfl
-
 theorem foldr_le_nfpFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) (a l) :
     List.foldr f a l ≤ nfpFamily f a :=
   Ordinal.le_iSup _ _
@@ -162,9 +157,6 @@ theorem isNormal_derivFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.
     exact le_nfpFamily _ _
   · simp_rw [derivFamily_limit _ h, Ordinal.iSup_le_iff, Subtype.forall, Set.mem_Iio]
 
-@[deprecated isNormal_derivFamily (since := "2024-10-11")]
-alias derivFamily_isNormal := isNormal_derivFamily
-
 theorem derivFamily_strictMono [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
     StrictMono (derivFamily f) :=
   (isNormal_derivFamily f).strictMono
@@ -224,193 +216,6 @@ theorem derivFamily_eq_enumOrd [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
     exact derivFamily_fp (H i) a
   rw [Set.mem_iInter] at ha
   rwa [← fp_iff_derivFamily H]
-
-end
-
-/-! ### Fixed points of ordinal-indexed families of ordinals -/
-
-section
-
-variable {o : Ordinal.{u}} {f : ∀ b < o, Ordinal.{max u v} → Ordinal.{max u v}}
-
-/-- The next common fixed point, at least `a`, for a family of normal functions indexed by ordinals.
-
-This is defined as `Ordinal.nfpFamily` of the type-indexed family associated to `f`. -/
-@[deprecated nfpFamily (since := "2024-10-14")]
-def nfpBFamily (o : Ordinal.{u}) (f : ∀ b < o, Ordinal.{max u v} → Ordinal.{max u v}) :
-    Ordinal.{max u v} → Ordinal.{max u v} :=
-  nfpFamily (familyOfBFamily o f)
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem nfpBFamily_eq_nfpFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Ordinal) :
-    nfpBFamily.{u, v} o f = nfpFamily (familyOfBFamily o f) :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem foldr_le_nfpBFamily {o : Ordinal}
-    (f : ∀ b < o, Ordinal → Ordinal) (a l) :
-    List.foldr (familyOfBFamily o f) a l ≤ nfpBFamily.{u, v} o f a :=
-  Ordinal.le_iSup _ _
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem le_nfpBFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Ordinal) (a) :
-    a ≤ nfpBFamily.{u, v} o f a :=
-  Ordinal.le_iSup (fun _ ↦ List.foldr _ a _) []
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem lt_nfpBFamily {a b} :
-    a < nfpBFamily.{u, v} o f b ↔ ∃ l, a < List.foldr (familyOfBFamily o f) b l :=
-  Ordinal.lt_iSup_iff
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem nfpBFamily_le_iff {o : Ordinal} {f : ∀ b < o, Ordinal → Ordinal} {a b} :
-    nfpBFamily.{u, v} o f a ≤ b ↔ ∀ l, List.foldr (familyOfBFamily o f) a l ≤ b :=
-  Ordinal.iSup_le_iff
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem nfpBFamily_le {o : Ordinal} {f : ∀ b < o, Ordinal → Ordinal} {a b} :
-    (∀ l, List.foldr (familyOfBFamily o f) a l ≤ b) → nfpBFamily.{u, v} o f a ≤ b :=
-  Ordinal.iSup_le
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem nfpBFamily_monotone (hf : ∀ i hi, Monotone (f i hi)) : Monotone (nfpBFamily.{u, v} o f) :=
-  nfpFamily_monotone fun _ => hf _ _
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem apply_lt_nfpBFamily (H : ∀ i hi, IsNormal (f i hi)) {a b} (hb : b < nfpBFamily.{u, v} o f a)
-    (i hi) : f i hi b < nfpBFamily.{u, v} o f a := by
-  rw [← familyOfBFamily_enum o f]
-  apply apply_lt_nfpFamily (fun _ => H _ _) hb
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem apply_lt_nfpBFamily_iff (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
-    (∀ i hi, f i hi b < nfpBFamily.{u, v} o f a) ↔ b < nfpBFamily.{u, v} o f a :=
-  ⟨fun h => by
-    haveI := toType_nonempty_iff_ne_zero.2 ho
-    refine (apply_lt_nfpFamily_iff ?_).1 fun _ => h _ _
-    exact fun _ => H _ _, apply_lt_nfpBFamily H⟩
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem nfpBFamily_le_apply (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
-    (∃ i hi, nfpBFamily.{u, v} o f a ≤ f i hi b) ↔ nfpBFamily.{u, v} o f a ≤ b := by
-  rw [← not_iff_not]
-  push_neg
-  exact apply_lt_nfpBFamily_iff.{u, v} ho H
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem nfpBFamily_le_fp (H : ∀ i hi, Monotone (f i hi)) {a b} (ab : a ≤ b)
-    (h : ∀ i hi, f i hi b ≤ b) : nfpBFamily.{u, v} o f a ≤ b :=
-  nfpFamily_le_fp (fun _ => H _ _) ab fun _ => h _ _
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem nfpBFamily_fp {i hi} (H : IsNormal (f i hi)) (a) :
-    f i hi (nfpBFamily.{u, v} o f a) = nfpBFamily.{u, v} o f a := by
-  rw [← familyOfBFamily_enum o f]
-  apply nfpFamily_fp
-  rw [familyOfBFamily_enum]
-  exact H
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem apply_le_nfpBFamily (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
-    (∀ i hi, f i hi b ≤ nfpBFamily.{u, v} o f a) ↔ b ≤ nfpBFamily.{u, v} o f a := by
-  refine ⟨fun h => ?_, fun h i hi => ?_⟩
-  · have ho' : 0 < o := Ordinal.pos_iff_ne_zero.2 ho
-    exact (H 0 ho').le_apply.trans (h 0 ho')
-  · rw [← nfpBFamily_fp (H i hi)]
-    exact (H i hi).monotone h
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem nfpBFamily_eq_self {a} (h : ∀ i hi, f i hi a = a) : nfpBFamily.{u, v} o f a = a :=
-  nfpFamily_eq_self fun _ => h _ _
-
-set_option linter.deprecated false in
-/-- A generalization of the fixed point lemma for normal functions: any family of normal functions
-    has an unbounded set of common fixed points. -/
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem not_bddAbove_fp_bfamily (H : ∀ i hi, IsNormal (f i hi)) :
-    ¬ BddAbove (⋂ (i) (hi), Function.fixedPoints (f i hi)) := by
-  rw [not_bddAbove_iff]
-  refine fun a ↦ ⟨nfpBFamily _ f (succ a), ?_, (lt_succ a).trans_le (le_nfpBFamily f _)⟩
-  rw [Set.mem_iInter₂]
-  exact fun i hi ↦ nfpBFamily_fp (H i hi) _
-
-/-- The derivative of a family of normal functions is the sequence of their common fixed points.
-
-This is defined as `Ordinal.derivFamily` of the type-indexed family associated to `f`. -/
-@[deprecated derivFamily (since := "2024-10-14")]
-def derivBFamily (o : Ordinal.{u}) (f : ∀ b < o, Ordinal.{max u v} → Ordinal.{max u v}) :
-    Ordinal.{max u v} → Ordinal.{max u v} :=
-  derivFamily (familyOfBFamily o f)
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem derivBFamily_eq_derivFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Ordinal) :
-    derivBFamily.{u, v} o f = derivFamily (familyOfBFamily o f) :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem isNormal_derivBFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Ordinal) :
-    IsNormal (derivBFamily o f) :=
-  isNormal_derivFamily _
-
-@[deprecated isNormal_derivBFamily (since := "2024-10-11")]
-alias derivBFamily_isNormal := isNormal_derivBFamily
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem derivBFamily_fp {i hi} (H : IsNormal (f i hi)) (a : Ordinal) :
-    f i hi (derivBFamily.{u, v} o f a) = derivBFamily.{u, v} o f a := by
-  rw [← familyOfBFamily_enum o f]
-  apply derivFamily_fp
-  rw [familyOfBFamily_enum]
-  exact H
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem le_iff_derivBFamily (H : ∀ i hi, IsNormal (f i hi)) {a} :
-    (∀ i hi, f i hi a ≤ a) ↔ ∃ b, derivBFamily.{u, v} o f b = a := by
-  unfold derivBFamily
-  rw [← le_iff_derivFamily]
-  · refine ⟨fun h i => h _ _, fun h i hi => ?_⟩
-    rw [← familyOfBFamily_enum o f]
-    apply h
-  · exact fun _ => H _ _
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem fp_iff_derivBFamily (H : ∀ i hi, IsNormal (f i hi)) {a} :
-    (∀ i hi, f i hi a = a) ↔ ∃ b, derivBFamily.{u, v} o f b = a := by
-  rw [← le_iff_derivBFamily H]
-  refine ⟨fun h i hi => le_of_eq (h i hi), fun h i hi => ?_⟩
-  rw [← (H i hi).le_iff_eq]
-  exact h i hi
-
-set_option linter.deprecated false in
-/-- For a family of normal functions, `Ordinal.derivBFamily` enumerates the common fixed points. -/
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-theorem derivBFamily_eq_enumOrd (H : ∀ i hi, IsNormal (f i hi)) :
-    derivBFamily.{u, v} o f = enumOrd (⋂ (i) (hi), Function.fixedPoints (f i hi)) := by
-  rw [eq_comm, eq_enumOrd _ (not_bddAbove_fp_bfamily H)]
-  use (isNormal_derivBFamily f).strictMono
-  rw [Set.range_eq_iff]
-  refine ⟨fun a => Set.mem_iInter₂.2 fun i hi => derivBFamily_fp (H i hi) a, fun a ha => ?_⟩
-  rw [Set.mem_iInter₂] at ha
-  rwa [← fp_iff_derivBFamily H]
 
 end
 
@@ -516,9 +321,6 @@ theorem deriv_limit (f) {o} : IsLimit o → deriv f o = ⨆ a : {a // a < o}, de
 
 theorem isNormal_deriv (f) : IsNormal (deriv f) :=
   isNormal_derivFamily _
-
-@[deprecated isNormal_deriv (since := "2024-10-11")]
-alias deriv_isNormal := isNormal_deriv
 
 theorem deriv_strictMono (f) : StrictMono (deriv f) :=
   derivFamily_strictMono _
