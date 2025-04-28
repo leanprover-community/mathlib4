@@ -234,6 +234,9 @@ def ker (f : G →* M) : Subgroup G :=
         _ = 1 := by rw [← map_mul, mul_inv_cancel, map_one] }
 
 @[to_additive (attr := simp)]
+theorem ker_toSubmonoid (f : G →* M) : f.ker.toSubmonoid = MonoidHom.mker f := rfl
+
+@[to_additive (attr := simp)]
 theorem mem_ker {f : G →* M} {x : G} : x ∈ f.ker ↔ f x = 1 :=
   Iff.rfl
 

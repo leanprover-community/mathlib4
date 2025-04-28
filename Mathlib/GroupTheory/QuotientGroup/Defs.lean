@@ -239,6 +239,11 @@ theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk 
 -- TODO: replace `mk` with `mk'`)
 
 @[to_additive (attr := simp)]
+theorem lift_comp_mk' (φ : G →* M) (HN : N ≤ φ.ker) :
+    (QuotientGroup.lift N φ HN).comp (QuotientGroup.mk' N) = φ :=
+  rfl
+
+@[to_additive (attr := simp)]
 theorem lift_quot_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) :
     lift N φ HN (Quot.mk _ g : Q) = φ g :=
   rfl
@@ -251,11 +256,9 @@ theorem lift_surjective_of_surjective (φ : G →* M) (hφ : Function.Surjective
 @[to_additive]
 theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
     (QuotientGroup.lift N φ HN).ker = Subgroup.map (QuotientGroup.mk' N) φ.ker := by
-  ext x
-  obtain ⟨a, rfl⟩ := QuotientGroup.mk_surjective x
-  simp_rw [Subgroup.mem_map, MonoidHom.mem_ker, lift_mk, mk'_apply]
-  exact ⟨fun ha ↦ ⟨a, ha, rfl⟩, fun ⟨b, h₁, h₂⟩ ↦ by
-    rwa [show φ a = φ b from congr_arg (lift N φ HN) h₂.symm]⟩
+  rw [← Subgroup.toSubmonoid_inj, Subgroup.map_toSubmonoid, MonoidHom.ker_toSubmonoid,
+    MonoidHom.ker_toSubmonoid, ← congr_arg MonoidHom.mker (lift_comp_mk' N φ HN),
+    ← MonoidHom.comap_mker, Submonoid.map_comap_eq_self_of_surjective (mk'_surjective N)]
 
 /-- A group homomorphism `f : G →* H` induces a map `G/N →* H/M` if `N ⊆ f⁻¹(M)`. -/
 @[to_additive
