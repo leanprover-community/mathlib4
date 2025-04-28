@@ -107,9 +107,9 @@ def algNorm_of_galois (hna : IsNonarchimedean (norm : K → ℝ)) : AlgebraNorm 
       (le_ciSup_of_le (Set.finite_range _).bddAbove σ (apply_nonneg _ _)))
   eq_zero_of_map_eq_zero' x := by
     contrapose!
-    exact fun hx ↦ ne_of_gt (lt_ciSup_of_lt
-      (Set.range fun σ : L ≃ₐ[K] L ↦ algNorm_of_auto h_fin hna σ x).toFinite.bddAbove
-      AlgEquiv.refl (map_pos_of_ne_zero _ hx))
+    exact fun hx ↦ ne_of_gt (lt_of_lt_of_le (map_pos_of_ne_zero _ hx)
+      (le_ciSup (Set.range fun σ : L ≃ₐ[K] L ↦ algNorm_of_auto h_fin hna σ x).toFinite.bddAbove
+        AlgEquiv.refl))
   smul' r x := by
     simp only [AlgebraNormClass.map_smul_eq_mul, NormedRing.toRingNorm_apply,
       Real.mul_iSup_of_nonneg (norm_nonneg _)]
