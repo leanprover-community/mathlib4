@@ -280,20 +280,19 @@ theorem exp_add (x y : ZMod n) : exp n (x + y) = exp n x * exp n y := by
 open Real in
 theorem exp_inj : Function.Injective (exp n) := fun i j hij => by
   simp only [exp, Subtype.mk.injEq] at hij
-  have e2 : 2 * π * (i.val / n) = 2 * π * (j.val / n) := Units.injOn_exp_of_abs_sub_le'
-    (by rw [sub_zero])
-    ⟨(mul_nonneg_iff_of_pos_left two_pi_pos).mpr
-      (div_nonneg (Nat.cast_nonneg' _) n.cast_nonneg'),
-      (mul_lt_iff_lt_one_right two_pi_pos).mpr ((div_lt_one (Nat.cast_pos.mpr
-          (Nat.pos_of_ne_zero (NeZero.ne' n).symm))).mpr (Nat.strictMono_cast (ZMod.val_lt _)))⟩
-    ⟨(mul_nonneg_iff_of_pos_left two_pi_pos).mpr
-      (div_nonneg (Nat.cast_nonneg' _) n.cast_nonneg'),
-      (mul_lt_iff_lt_one_right two_pi_pos).mpr ((div_lt_one (Nat.cast_pos.mpr
-          (Nat.pos_of_ne_zero (NeZero.ne' n).symm))).mpr (Nat.strictMono_cast (ZMod.val_lt _)))⟩
-    hij
   exact ZMod.val_injective _
     ((Nat.cast_inj.mp ((div_left_inj' (Nat.cast_ne_zero.mpr (NeZero.ne' n).symm)).mp
-      ((mul_right_inj' two_pi_ne_zero).mp e2))))
+      ((mul_right_inj' two_pi_ne_zero).mp (Units.injOn_exp_of_abs_sub_le'
+        (by rw [sub_zero])
+        ⟨(mul_nonneg_iff_of_pos_left two_pi_pos).mpr
+          (div_nonneg (Nat.cast_nonneg' _) n.cast_nonneg'),
+          (mul_lt_iff_lt_one_right two_pi_pos).mpr ((div_lt_one (Nat.cast_pos.mpr
+              (Nat.pos_of_ne_zero (NeZero.ne' n).symm))).mpr (Nat.strictMono_cast (ZMod.val_lt _)))⟩
+        ⟨(mul_nonneg_iff_of_pos_left two_pi_pos).mpr
+          (div_nonneg (Nat.cast_nonneg' _) n.cast_nonneg'),
+          (mul_lt_iff_lt_one_right two_pi_pos).mpr ((div_lt_one (Nat.cast_pos.mpr
+              (Nat.pos_of_ne_zero (NeZero.ne' n).symm))).mpr (Nat.strictMono_cast (ZMod.val_lt _)))⟩
+        hij)))))
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
