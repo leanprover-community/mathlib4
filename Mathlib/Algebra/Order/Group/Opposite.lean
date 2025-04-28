@@ -3,8 +3,8 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Order instances for `MulOpposite`/`AddOpposite`
@@ -29,9 +29,9 @@ end Preorder
 @[to_additive] instance [PartialOrder α] : PartialOrder αᵐᵒᵖ := PartialOrder.lift _ unop_injective
 
 section OrderedCommMonoid
-variable [OrderedCommMonoid α]
+variable [CommMonoid α] [PartialOrder α]
 
-@[to_additive] instance : OrderedCommMonoid αᵐᵒᵖ where
+@[to_additive] instance [IsOrderedMonoid α] : IsOrderedMonoid αᵐᵒᵖ where
   mul_le_mul_left a b hab c := mul_le_mul_right' (by simpa) c.unop
 
 @[to_additive (attr := simp)] lemma unop_le_one {a : αᵐᵒᵖ} : unop a ≤ 1 ↔ a ≤ 1 := .rfl
@@ -41,14 +41,10 @@ variable [OrderedCommMonoid α]
 
 end OrderedCommMonoid
 
-@[to_additive] instance [OrderedCommGroup α] : OrderedCommGroup αᵐᵒᵖ where
-  __ := instCommGroup
-  __ := instOrderedCommMonoid
-
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid α]
+variable [AddCommMonoid α] [PartialOrder α]
 
-instance : OrderedAddCommMonoid αᵐᵒᵖ where
+instance [IsOrderedAddMonoid α] : IsOrderedAddMonoid αᵐᵒᵖ where
   add_le_add_left a b hab c := add_le_add_left (by simpa) c.unop
 
 @[simp] lemma unop_nonpos {a : αᵐᵒᵖ} : unop a ≤ 0 ↔ a ≤ 0 := .rfl
@@ -58,17 +54,13 @@ instance : OrderedAddCommMonoid αᵐᵒᵖ where
 
 end OrderedAddCommMonoid
 
-instance [OrderedAddCommGroup α] : OrderedAddCommGroup αᵐᵒᵖ where
-  __ := instAddCommGroup
-  __ := instOrderedAddCommMonoid
-
 end MulOpposite
 
 namespace AddOpposite
 section OrderedCommMonoid
-variable [OrderedCommMonoid α]
+variable [CommMonoid α] [PartialOrder α]
 
-instance : OrderedCommMonoid αᵃᵒᵖ where
+instance [IsOrderedMonoid α] : IsOrderedMonoid αᵃᵒᵖ where
   mul_le_mul_left a b hab c := mul_le_mul_left' (by simpa) c.unop
 
 @[simp] lemma unop_le_one {a : αᵃᵒᵖ} : unop a ≤ 1 ↔ a ≤ 1 := .rfl
@@ -77,9 +69,5 @@ instance : OrderedCommMonoid αᵃᵒᵖ where
 @[simp] lemma one_le_op {a : α} : 1 ≤ op a ↔ 1 ≤ a := .rfl
 
 end OrderedCommMonoid
-
-instance [OrderedCommGroup α] : OrderedCommGroup αᵃᵒᵖ where
-  __ := instCommGroup
-  __ := instOrderedCommMonoid
 
 end AddOpposite
