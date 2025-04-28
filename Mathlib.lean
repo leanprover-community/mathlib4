@@ -4806,6 +4806,7 @@ import Mathlib.Probability.Distributions.Exponential
 import Mathlib.Probability.Distributions.Gamma
 import Mathlib.Probability.Distributions.Gaussian
 import Mathlib.Probability.Distributions.Geometric
+import Mathlib.Probability.Distributions.IsGaussian
 import Mathlib.Probability.Distributions.Pareto
 import Mathlib.Probability.Distributions.Poisson
 import Mathlib.Probability.Distributions.Uniform
