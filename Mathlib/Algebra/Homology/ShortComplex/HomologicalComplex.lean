@@ -45,8 +45,6 @@ complex `K` to the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. 
 noncomputable def shortComplexFunctor (i : ι) :=
   shortComplexFunctor' C c (c.prev i) i (c.next i)
 
-<<<<<<< HEAD
-=======
 /-- The natural isomorphism `shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k`
 when `c.prev j = i` and `c.next j = k`. -/
 @[simps!]
@@ -55,7 +53,6 @@ noncomputable def natIsoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
   NatIso.ofComponents (fun K => ShortComplex.isoMk (K.XIsoOfEq hi) (Iso.refl _) (K.XIsoOfEq hk)
     (by simp) (by simp)) (by aesop_cat)
 
->>>>>>> origin/jriou_localization_bump_deps
 variable {C c}
 
 variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (ψ : L ⟶ M) (i j k : ι)
@@ -65,18 +62,6 @@ abbrev sc' := (shortComplexFunctor' C c i j k).obj K
 
 /-- The short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. -/
 noncomputable abbrev sc := (shortComplexFunctor C c i).obj K
-
-variable (C c)
-
-/-- The natural isomorphism `shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k`
-when `c.prev j = i` and `c.next j = k`. -/
-@[simps!]
-noncomputable def natIsoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
-    shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k :=
-  NatIso.ofComponents (fun K => ShortComplex.isoMk (K.XIsoOfEq hi) (Iso.refl _) (K.XIsoOfEq hk)
-    (by aesop_cat) (by aesop_cat)) (by aesop_cat)
-
-variable {C c}
 
 /-- The canonical isomorphism `K.sc j ≅ K.sc' i j k` when `c.prev j = i` and `c.next j = k`. -/
 noncomputable abbrev isoSc' (hi : c.prev j = i) (hk : c.next j = k) :
@@ -708,16 +693,10 @@ lemma exactAt_iff_isZero_homology [K.HasHomology i] :
 
 variable {K i} in
 lemma ExactAt.isZero_homology [K.HasHomology i] (h : K.ExactAt i) :
-<<<<<<< HEAD
-    IsZero (K.homology i) :=
-  (K.exactAt_iff_isZero_homology i).1 h
-
-=======
     IsZero (K.homology i) := by
   rwa [← exactAt_iff_isZero_homology]
 
 /-- A homological complex `K` is acyclic if it is exact at `i` for any `i`. -/
->>>>>>> origin/jriou_localization_bump_deps
 def Acyclic := ∀ i, K.ExactAt i
 
 lemma acyclic_iff :
@@ -728,15 +707,7 @@ lemma acyclic_of_isZero (hK : IsZero K) :
   rw [acyclic_iff]
   intro i
   apply ShortComplex.exact_of_isZero_X₂
-<<<<<<< HEAD
-  dsimp
-  rw [IsZero.iff_id_eq_zero]
-  change 𝟙 ((eval _ _ i).obj K) = 0
-  rw [← CategoryTheory.Functor.map_id, hK.eq_of_src (𝟙 K) 0]
-  simp
-=======
   exact (eval _ _ i).map_isZero hK
->>>>>>> origin/jriou_localization_bump_deps
 
 end HomologicalComplex
 

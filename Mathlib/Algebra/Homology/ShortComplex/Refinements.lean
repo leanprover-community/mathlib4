@@ -41,7 +41,7 @@ lemma Limits.CokernelCofork.IsColimit.comp_π_eq_zero_iff_up_to_refinements {f :
   · intro hy
     let T := ShortComplex.mk _ _ c.condition
     have hT := T.exact_of_g_is_cokernel
-      (IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by simp)))
+      (IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by simp [T])))
     rw [T.exact_iff_exact_up_to_refinements] at hT
     obtain ⟨A', π, hπ, x₁, fac⟩ := hT y hy
     exact ⟨A', π, hπ, x₁, fac⟩

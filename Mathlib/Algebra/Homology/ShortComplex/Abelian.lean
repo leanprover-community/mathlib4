@@ -200,10 +200,10 @@ noncomputable def
   change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
   rw [comp_id, id_comp]
 
-noncomputable instance : NormalMonoCategory (ShortComplex C) := ⟨fun i _ => by
+noncomputable instance : IsNormalMonoCategory (ShortComplex C) := ⟨fun i _ => ⟨by
   refine NormalMono.mk _ (cokernel.π i) (cokernel.condition _)
     (isLimitOfIsLimitπ _ ?_ ?_ ?_)
-  all_goals apply isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono⟩
+  all_goals apply isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono⟩⟩
 
 noncomputable def
     _root_.CategoryTheory.Limits.isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi
@@ -219,10 +219,10 @@ noncomputable def
   change F.map p ≫ 𝟙 _ = 𝟙 _ ≫ F.map p
   rw [comp_id, id_comp]
 
-noncomputable instance : NormalEpiCategory (ShortComplex C) := ⟨fun p _ => by
+noncomputable instance : IsNormalEpiCategory (ShortComplex C) := ⟨fun p _ => ⟨by
   refine NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
     (isColimitOfIsColimitπ _ ?_ ?_ ?_)
-  all_goals apply isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi⟩
+  all_goals apply isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi⟩⟩
 
 noncomputable instance : Abelian (ShortComplex C) where
 

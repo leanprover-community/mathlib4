@@ -487,18 +487,18 @@ def map : Cochain ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComple
 lemma map_v (p q : ℤ) (hpq : p + n = q) : (z.map Φ).v p q hpq = Φ.map (z.v p q hpq) := rfl
 
 @[simp]
-lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by aesop_cat
+protected lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by aesop_cat
 
 @[simp]
-lemma map_neg : (-z).map Φ = -z.map Φ := by aesop_cat
+protected lemma map_neg : (-z).map Φ = -z.map Φ := by aesop_cat
 
 @[simp]
-lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by aesop_cat
+protected lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by aesop_cat
 
 variable (K L n)
 
 @[simp]
-lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by aesop_cat
+protected lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by aesop_cat
 
 @[simp]
 lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
@@ -907,7 +907,6 @@ lemma single_v {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (hpq : p + n = q) :
   rw [if_pos, id_comp, comp_id]
   tauto
 
-<<<<<<< HEAD
 lemma single_v_eq_zero {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ) (hpq' : p' + n = q')
     (hp' : p' ≠ p) :
     (single f n).v p' q' hpq' = 0 := by
@@ -955,33 +954,6 @@ lemma δ_single {p q : ℤ} (f : K.X p ⟶ L.X q) (n m : ℤ) (hm : n + 1 = m)
         apply h
         linarith
     · simp only [single_v_eq_zero' _ _ _ _ _ h, comp_zero, smul_zero]
-=======
-@[simp]
-protected lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by aesop_cat
-
-@[simp]
-protected lemma map_neg : (-z).map Φ = -z.map Φ := by aesop_cat
-
-@[simp]
-protected lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by aesop_cat
-
-variable (K L n)
-
-@[simp]
-protected lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by aesop_cat
-
-@[simp]
-lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
-    (Φ : C ⥤ D) [Φ.Additive] :
-    (Cochain.comp z₁ z₂ h).map Φ = Cochain.comp (z₁.map Φ) (z₂.map Φ) h := by
-  ext p q hpq
-  dsimp
-  simp only [map_v, comp_v _ _ h p _ q rfl (by omega), Φ.map_comp]
-
-@[simp]
-lemma map_ofHom :
-    (Cochain.ofHom f).map Φ = Cochain.ofHom ((Φ.mapHomologicalComplex _).map f) := by aesop_cat
->>>>>>> origin/jriou_localization_bump_deps
 
 end Cochain
 

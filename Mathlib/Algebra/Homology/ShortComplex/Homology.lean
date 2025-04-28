@@ -1172,12 +1172,9 @@ instance epi_homologyMap_of_epi_cyclesMap
     Epi (homologyMap φ) :=
   epi_homologyMap_of_epi_cyclesMap' φ inferInstance
 
-<<<<<<< HEAD
-=======
 /-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
 left homology data for `S` whose `K` and `H` fields are
 respectively `S.cycles` and `S.homology`. -/
->>>>>>> origin/jriou_localization_bump_deps
 @[simps!]
 noncomputable def LeftHomologyData.canonical [S.HasHomology] : S.LeftHomologyData where
   K := S.cycles
@@ -1189,21 +1186,14 @@ noncomputable def LeftHomologyData.canonical [S.HasHomology] : S.LeftHomologyDat
   wπ := S.toCycles_comp_homologyπ
   hπ := S.homologyIsCokernel
 
-<<<<<<< HEAD
-/-- Equational lemma for `canonical.f'`. -/
-=======
 /-- Computation of the `f'` field of `LeftHomologyData.canonical`. -/
->>>>>>> origin/jriou_localization_bump_deps
 @[simp]
 lemma LeftHomologyData.canonical_f' [S.HasHomology] :
     (LeftHomologyData.canonical S).f' = S.toCycles := rfl
 
-<<<<<<< HEAD
-=======
 /-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
 right homology data for `S` whose `Q` and `H` fields are
 respectively `S.opcycles` and `S.homology`. -/
->>>>>>> origin/jriou_localization_bump_deps
 @[simps!]
 noncomputable def RightHomologyData.canonical [S.HasHomology] : S.RightHomologyData where
   Q := S.opcycles
@@ -1215,21 +1205,14 @@ noncomputable def RightHomologyData.canonical [S.HasHomology] : S.RightHomologyD
   wι := S.homologyι_comp_fromOpcycles
   hι := S.homologyIsKernel
 
-<<<<<<< HEAD
-/-- Equational lemma for `canonical.g'`. -/
-=======
 /-- Computation of the `g'` field of `RightHomologyData.canonical`. -/
->>>>>>> origin/jriou_localization_bump_deps
 @[simp]
 lemma RightHomologyData.canonical_g' [S.HasHomology] :
     (RightHomologyData.canonical S).g' = S.fromOpcycles := rfl
 
-<<<<<<< HEAD
-=======
 /-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
 homology data for `S` whose `left.K`, `left/right.H` and `right.Q` fields are
 respectively `S.cycles`, `S.homology` and `S.opcycles`. -/
->>>>>>> origin/jriou_localization_bump_deps
 @[simps!]
 noncomputable def HomologyData.canonical [S.HasHomology] : S.HomologyData where
   left := LeftHomologyData.canonical S

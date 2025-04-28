@@ -246,7 +246,6 @@ lemma homologySequence_mono_shift_map_mor₂_iff :
     Mono ((F.shift n₀).map T.mor₂) ↔ (F.shift n₀).map T.mor₁ = 0 :=
   (F.homologySequence_exact₂ T hT n₀).mono_g_iff
 
-<<<<<<< HEAD
 lemma homologySequence_isIso_shift_map_mor₁_iff :
     IsIso ((F.shift n₁).map T.mor₁) ↔
       F.homologySequenceδ T n₀ n₁ h = 0 ∧ (F.shift n₁).map T.mor₂ = 0 := by
@@ -269,13 +268,10 @@ lemma homologySequence_isIso_shift_map_mor₂_iff :
   · rintro ⟨_, _⟩
     apply isIso_of_mono_of_epi
 
-omit hT in
-lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
-    F.homologicalKernel.W f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
-=======
+end
+
 lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
     F.homologicalKernel.trW f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
->>>>>>> origin/jriou_localization_bump_deps
   obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f
   apply (F.homologicalKernel.trW_iff_of_distinguished _ hT).trans
   have h₁ := fun n => (F.homologySequence_exact₃ _ hT n _ rfl).isZero_X₂_iff
@@ -310,8 +306,6 @@ lemma homologySequenceComposableArrows₅_exact :
     (exact_of_δ₀ (F.homologySequence_exact₃ T hT n₀ n₁ h).exact_toComposableArrows
       (exact_of_δ₀ (F.homologySequence_exact₁ T hT n₀ n₁ h).exact_toComposableArrows
         (F.homologySequence_exact₂ T hT n₁).exact_toComposableArrows))
-
-end
 
 end
 

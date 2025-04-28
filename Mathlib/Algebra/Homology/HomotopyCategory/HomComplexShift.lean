@@ -363,13 +363,13 @@ lemma leftUnshift_units_smul {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : �
 lemma rightShift_comp {m : ℤ} (γ' : Cochain L M m) {nm : ℤ} (hnm : n + m = nm) (a nm' : ℤ)
     (hnm' : nm' + a = nm) (n' : ℤ) (hn' : n' + a = n) :
     (γ.comp γ' hnm).rightShift a nm' hnm' =
-      (γ.rightShift a n' hn').comp (γ'.shift a) (by linarith) := by
+      (γ.rightShift a n' hn').comp (γ'.shift a) (by omega) := by
   ext p q hpq
-  rw [rightShift_v (γ.comp γ' hnm) a nm' hnm' p q (by linarith) (q + a) (by linarith),
-    comp_v γ γ' hnm p (p + n) (q + a) rfl (by linarith),
-    comp_v _ _ (show n' + m = nm' by linarith) p (p + n') q (by linarith) (by linarith),
+  rw [rightShift_v (γ.comp γ' hnm) a nm' hnm' p q (by omega) (q + a) (by omega),
+    comp_v γ γ' hnm p (p + n) (q + a) rfl (by omega),
+    comp_v _ _ (show n' + m = nm' by omega) p (p + n') q (by omega) (by omega),
     γ.rightShift_v a n' hn' p (p + n') rfl (p + n) rfl,
-    γ'.shift_v a (p + n') q (by linarith) (p + n) _ (by linarith) rfl]
+    γ'.shift_v a (p + n') q (by omega) (p + n) _ (by omega) rfl]
   simp
 
 lemma rightUnshift_comp {m : ℤ} {a : ℤ} (γ' : Cochain L (M⟦a⟧) m) {nm : ℤ} (hnm : n + m = nm)

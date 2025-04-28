@@ -26,7 +26,7 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 namespace ObjectProperty
 
-variable (P : ObjectProperty C)
+variable (P Q : ObjectProperty C)
 
 /-- Given `P : ObjectProperty C`, we say that `P.ContainsZero` if there exists
 a zero object for which `P` holds. When `P` is closed under isomorphisms,
@@ -71,6 +71,12 @@ instance [P.ContainsZero] : P.isoClosure.ContainsZero where
   exists_zero := by
     obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero
     exact ⟨Z, hZ, P.le_isoClosure _ hP⟩
+
+instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms] [Q.ContainsZero] :
+    (P ⊓ Q).ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, hQ⟩ := Q.exists_prop_of_containsZero
+    exact ⟨Z, hZ, P.prop_of_isZero hZ, hQ⟩
 
 end ObjectProperty
 

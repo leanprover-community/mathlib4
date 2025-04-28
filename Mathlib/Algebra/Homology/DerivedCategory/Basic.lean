@@ -95,7 +95,7 @@ lemma quotient_obj_mem_subcategoryAcyclic_iff_exactAt (K : CochainComplex C ℤ)
   exact ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app K).isZero_iff
 
 lemma quotient_obj_mem_subcategoryAcyclic_iff_acyclic (K : CochainComplex C ℤ) :
-    (subcategoryAcyclic C).P ((quotient _ _).obj K) ↔ K.Acyclic := by
+    (subcategoryAcyclic C) ((quotient _ _).obj K) ↔ K.Acyclic := by
   apply quotient_obj_mem_subcategoryAcyclic_iff_exactAt
 
 variable (C)
@@ -109,9 +109,9 @@ instance : (quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ := by
   rw [quasiIso_eq_subcategoryAcyclic_W]
   infer_instance
 
-lemma quasiIso_respectsIso : (quasiIso C (ComplexShape.up ℤ)).RespectsIso := by
+instance quasiIso_respectsIso : (quasiIso C (ComplexShape.up ℤ)).RespectsIso := by
   rw [quasiIso_eq_subcategoryAcyclic_W]
-  apply Triangulated.Subcategory.respectsIso_W
+  infer_instance
 
 end HomotopyCategory
 
@@ -213,7 +213,7 @@ noncomputable instance : IsTriangulated (DerivedCategory C) :=
     Qh (HomotopyCategory.subcategoryAcyclic C).trW
 
 noncomputable instance (n : ℤ) :
-  Localization.Lifting Qh (HomotopyCategory.subcategoryAcyclic C).W
+  Localization.Lifting Qh (HomotopyCategory.subcategoryAcyclic C).trW
     (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n ⋙ Qh)
     (shiftFunctor (DerivedCategory C) n) := ⟨(Qh.commShiftIso n).symm⟩
 
@@ -228,7 +228,6 @@ instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (Qh (C := C))).F
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Faithful
 
-<<<<<<< HEAD
 instance : (Q : _ ⥤ DerivedCategory C).mapArrow.EssSurj where
   mem_essImage φ := by
     obtain ⟨⟨K⟩, ⟨L⟩, f, ⟨e⟩⟩ :
@@ -245,8 +244,6 @@ instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasRightCalculusO
   rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
   infer_instance
 
-=======
->>>>>>> origin/jriou_localization_bump_deps
 instance : (Qh : _ ⥤ DerivedCategory C).EssSurj :=
   Localization.essSurj _ (HomotopyCategory.quasiIso _ _)
 
@@ -324,10 +321,7 @@ lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
   erw [Category.id_comp, Category.id_comp]
   rfl
 
-<<<<<<< HEAD
-=======
 /-- The isomorphism `singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q`. -/
->>>>>>> origin/jriou_localization_bump_deps
 noncomputable def singleFunctorIsoCompQ (n : ℤ) :
     singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q := Iso.refl _
 
@@ -335,7 +329,6 @@ lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔ QuasiIso φ := by
   apply HomologicalComplexUpToQuasiIso.isIso_Q_map_iff_mem_quasiIso
 
-<<<<<<< HEAD
 /- to be moved to TStructure.Basic
 noncomputable def DerivedCategory.singleFunctorCompHomologyFunctorIso (n : ℤ) :
     singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 C :=
@@ -416,6 +409,4 @@ lemma isZero_iff (K : DerivedCategory C) :
 
 -/
 
-=======
->>>>>>> origin/jriou_localization_bump_deps
 end DerivedCategory

@@ -12,6 +12,8 @@ import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
 namespace CategoryTheory
 
+open Category Preadditive Limits
+
 namespace Pretriangulated
 
 variable (C : Type*) [Category C] [HasShift C ℤ]
@@ -20,7 +22,8 @@ variable (C : Type*) [Category C] [HasShift C ℤ]
 
 namespace Opposite
 
-set_option maxHeartbeats 600000 in
+set_option maxHeartbeats 400000 in
+-- this is very slow
 scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ := by
   have : ∀ ⦃X₁ X₂ X₃ : C⦄ (u₁₂ : X₁ ⟶ X₂) (u₂₃ : X₂ ⟶ X₃),
     ∃ (Z₁₂ Z₂₃ Z₁₃ : C)
@@ -144,7 +147,6 @@ scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ := by
             rw [← op_comp]
             erw [(shiftFunctorCompIsoId C (1 : ℤ) (-1) (by omega)).hom.naturality]
             rfl }⟩
-
 
 end Opposite
 

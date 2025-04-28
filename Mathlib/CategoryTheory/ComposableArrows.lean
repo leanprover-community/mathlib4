@@ -913,6 +913,7 @@ def composableArrows₀Equivalence : ComposableArrows C 0 ≌ C where
   counitIso := Iso.refl _
 
 set_option maxHeartbeats 600000 in
+-- this is a slow proof
 @[simps]
 def composableArrows₁Equivalence : ComposableArrows C 1 ≌ Arrow C where
   functor :=

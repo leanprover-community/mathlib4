@@ -4,13 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.SingleHomology
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-=======
 import Mathlib.Algebra.Homology.ShortComplex.Retract
 import Mathlib.CategoryTheory.MorphismProperty.Composition
->>>>>>> origin/jriou_localization_bump_deps
 
 /-!
 # Quasi-isomorphisms
@@ -239,7 +234,6 @@ lemma quasiIso_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ
     [hφ : QuasiIso φ] : QuasiIso φ' := by
   simpa only [← quasiIso_iff_of_arrow_mk_iso φ φ' e]
 
-<<<<<<< HEAD
 lemma quasiIso_iff_acyclic (f : K ⟶ L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     (hK : K.Acyclic) :
     QuasiIso f ↔ L.Acyclic := by
@@ -250,13 +244,12 @@ lemma quasiIso_iff_acyclic' (f : K ⟶ L) [∀ i, K.HasHomology i] [∀ i, L.Has
     (hL : L.Acyclic) :
     QuasiIso f ↔ K.Acyclic := by
   simp only [quasiIso_iff, acyclic_iff, fun i => quasiIsoAt_iff_exactAt' f i (hL i)]
-=======
+
 lemma quasiIso_of_retractArrow {f : K ⟶ L} {f' : K' ⟶ L'}
     (h : RetractArrow f f') [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     [∀ i, K'.HasHomology i] [∀ i, L'.HasHomology i] [QuasiIso f'] :
     QuasiIso f where
   quasiIsoAt i := quasiIsoAt_of_retract h i
->>>>>>> origin/jriou_localization_bump_deps
 
 namespace HomologicalComplex
 

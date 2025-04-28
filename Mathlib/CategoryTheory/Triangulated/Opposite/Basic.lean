@@ -12,6 +12,7 @@ import Mathlib.CategoryTheory.Shift.Pullback
 --import Mathlib.CategoryTheory.Triangulated.Subcategory
 --import Mathlib.CategoryTheory.Triangulated.Triangulated
 --import Mathlib.CategoryTheory.Triangulated.Adjunction
+import Mathlib.CategoryTheory.Triangulated.Functor
 --import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 --import Mathlib.Tactic.Linarith
 
@@ -351,10 +352,6 @@ lemma opShiftFunctorEquivalence_symm_homEquiv_left_inv
       (opShiftFunctorEquivalence_symm_homEquiv n X Y f).unop⟦n⟧' = f.unop :=
   Quiver.Hom.op_inj ((opShiftFunctorEquivalence_symm_homEquiv n X Y).left_inv f)
 
-<<<<<<< HEAD:Mathlib/CategoryTheory/Triangulated/Opposite.lean
-variable (C)
-
-
 namespace Opposite
 
 variable (C)
@@ -375,9 +372,6 @@ noncomputable def iso (n : ℤ) :
       rw [op_comp, assoc])
 
 variable {C}
-
-omit [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-  [Preadditive C]
 
 lemma iso_hom_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
     (iso C n).hom.app X =
@@ -438,9 +432,6 @@ noncomputable instance : (opOp C).CommShift ℤ where
 
 variable {C}
 
-omit [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-  [Preadditive C]
-
 lemma opOp_commShiftIso_hom_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
     ((opOp C).commShiftIso n).hom.app X =
       ((shiftFunctorOpIso C m n (by omega)).hom.app (Opposite.op X)).op ≫
@@ -453,59 +444,10 @@ lemma opOp_commShiftIso_inv_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
         ((shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op X)).op :=
   OpOpCommShift.iso_inv_app _ _ _ hnm
 
-instance : (opOp C).IsTriangulated where
-  map_distinguished T hT := by
-    rw [mem_distTriang_op_iff']
-    refine ⟨_, op_distinguished T hT, ⟨?_⟩⟩
-    refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_
-    · aesop_cat
-    · aesop_cat
-    · dsimp
-      simp only [Functor.map_id, comp_id, id_comp,
-        opOp_commShiftIso_hom_app T.obj₁ _ _ (add_neg_cancel 1),
-        opShiftFunctorEquivalence_counitIso_inv_app _ _ _ (add_neg_cancel 1),
-        shiftFunctorCompIsoId_op_hom_app _ _ _ (add_neg_cancel 1),
-        shiftFunctor_op_map _ _ (add_neg_cancel 1),
-        shiftFunctor_op_map _ _ (neg_add_cancel 1)]
-      simp only [Functor.op_obj, Opposite.unop_op, unop_id, Functor.map_id, op_id, id_comp,
-        Iso.hom_inv_id_app, comp_id,
-        Functor.id_obj, Functor.comp_obj, assoc, Iso.inv_hom_id_app_assoc, op_comp,
-        Quiver.Hom.unop_op,
-        Iso.op_hom_inv_id_app_assoc, unop_comp, Functor.map_comp]
-      slice_rhs 2 3 =>
-        rw [← op_comp, ← op_comp, ← Functor.map_comp, ← unop_comp, Iso.inv_hom_id_app]
-      simp only [Functor.op_obj, Opposite.unop_op, unop_id, Functor.map_id, op_id, id_comp, assoc]
-      slice_rhs 1 2 =>
-        rw [← op_comp, ← op_comp]
-        erw [← NatTrans.naturality]
-      dsimp
-      simp only [assoc, shift_shiftFunctorCompIsoId_add_neg_cancel_hom_app]
-      slice_rhs 2 3 =>
-        rw [← op_comp, ← op_comp, Iso.inv_hom_id_app]
-      simp
-
-noncomputable instance : (opOpEquivalence C).inverse.CommShift ℤ :=
-  (inferInstance : (opOp C).CommShift ℤ)
-
-noncomputable instance : (opOpEquivalence C).functor.CommShift ℤ :=
-  (opOpEquivalence C).commShiftFunctor ℤ
-
-noncomputable instance : (unopUnop C).CommShift ℤ :=
-  (inferInstance : (opOpEquivalence C).functor.CommShift ℤ)
-
-instance : (opOpEquivalence C).CommShift ℤ := (opOpEquivalence C).commShift_of_inverse ℤ
-
-instance : (opOpEquivalence C).IsTriangulated :=
-  Equivalence.IsTriangulated.mk'' _ (inferInstance : (opOp C).IsTriangulated)
-
-instance : (opOp C).IsTriangulated := inferInstance
-
-instance : (unopUnop C).IsTriangulated :=
-  (inferInstance : (opOpEquivalence C).functor.IsTriangulated)
 
 end Opposite
 
-section
+/-section
 
 variable {J : Type*} (T : J → Triangle C)
   [HasCoproduct (fun j => (T j).obj₁)] [HasCoproduct (fun j => (T j).obj₂)]
@@ -712,10 +654,8 @@ lemma W_op (S : Subcategory C) : S.op.W = S.W.op := by
 end Subcategory
 
 end Triangulated
+-/
 
-=======
 end Pretriangulated
-
->>>>>>> origin/jriou_localization_bump_deps:Mathlib/CategoryTheory/Triangulated/Opposite/Basic.lean
 
 end CategoryTheory
