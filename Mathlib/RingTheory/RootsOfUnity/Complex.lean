@@ -294,7 +294,6 @@ theorem exp_add (x y : ZMod n) : exp n (x + y) = exp n x * exp n y := by
   simp_all only [Units.exp_add, ZMod.natCast_val, Units.val_mul, Units.coe_exp, Complex.ofReal_mul,
     Complex.ofReal_ofNat, Complex.ofReal_div, Complex.ofReal_natCast, MulMemClass.mk_mul_mk]
 
-open Real in
 theorem exp_inj : Function.Injective (exp n) := fun i j hij => by
   simp only [exp, Subtype.mk.injEq] at hij
   exact Units.exp_two_pi_mul_div_inj_ZMod _ _ _ hij
@@ -303,13 +302,11 @@ theorem exp_sur : Function.Surjective (exp n) := fun ⟨w,hw⟩ =>  by
   obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity' n w).mp hw
   exact ⟨j, by simp_rw [exp, ZMod.val_natCast_of_lt hj1, ← hj2]⟩
 
-/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
-considered as a homomorphism of groups. -/
-@[simps]
+/-- The map `fun t => exp (t * I)` from `ℝ` to the nth roots of unity in `ℂ`,
+considered as a isomomorphism of groups. -/
+@[simps!]
 noncomputable def expHom (n : ℕ) [NeZero n] :
-    ZMod n  →+ Additive (rootsOfUnity n ℂ) where
-  toFun :=  rootsOfUnity.exp n
-  map_zero' := exp_zero n
-  map_add' := exp_add n
+    ZMod n  ≃+ Additive (rootsOfUnity n ℂ) :=
+      AddEquiv.mk' (Equiv.ofBijective (Additive.ofMul ∘ exp n)  ⟨exp_inj n, exp_sur n⟩ ) (exp_add n)
 
 end rootsOfUnity
