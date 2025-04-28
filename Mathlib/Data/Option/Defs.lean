@@ -17,12 +17,6 @@ Other basic operations on `Option` are defined in the core library.
 
 namespace Option
 
--- Pending rename in core.
-alias map_eq_none_iff := map_eq_none'
-alias map_eq_some_iff := map_eq_some'
-alias forall_ne_none := ball_ne_none
-alias bind_eq_some_iff := bind_eq_some
-
 /-- Traverse an object of `Option α` with a function `f : α → F β` for an applicative `F`. -/
 protected def traverse.{u, v}
     {F : Type u → Type v} [Applicative F] {α : Type*} {β : Type u} (f : α → F β) :
@@ -80,10 +74,5 @@ instance merge_isId (f : α → α → α) : Std.LawfulIdentity (merge f) none w
 @[deprecated (since := "2025-04-04")] alias liftOrGet_isIdempotent :=
   merge_isIdempotent
 @[deprecated (since := "2025-04-04")] alias liftOrGet_isId := merge_isId
-
-/-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
-def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
-  | .some a => some a
-  | _ => none
 
 end Option
