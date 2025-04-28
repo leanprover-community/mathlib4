@@ -6,7 +6,7 @@ Authors: Damien Thomine
 import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
-# Exponential growth
+# Linear growth
 
 This file defines the linear growth of a sequence `u : ℕ → EReal`. This notion comes in two
 versions, using a `liminf` and a `limsup` respectively.
@@ -177,7 +177,7 @@ lemma linGrowthSup_mul : linGrowthSup (fun n ↦ a * n) = a :=
 lemma linGrowthInf_nonneg (v : ℕ → ℕ) : 0 ≤ liminf (fun n ↦ (v n : EReal) / n) atTop :=
   (le_liminf_of_le) (Eventually.of_forall fun n ↦ div_nonneg (v n).cast_nonneg' n.cast_nonneg')
 
-/-! ### Multiplication and inversion -/
+/-! ### Addition and negation -/
 
 lemma le_linGrowthInf_add :
     linGrowthInf u + linGrowthInf v ≤ linGrowthInf (u + v) := by
@@ -232,7 +232,7 @@ lemma linGrowthInf_inf : linGrowthInf (u ⊓ v) = min (linGrowthInf u) (linGrowt
   rw [Pi.inf_apply]
   exact (monotone_div_right_of_nonneg n.cast_nonneg').map_min
 
-/-- Lower exponential growth as an `InfTopHom`. -/
+/-- Lower linear growth as an `InfTopHom`. -/
 noncomputable def linGrowthInfTopHom : InfTopHom (ℕ → EReal) EReal where
   toFun := linGrowthInf
   map_inf' _ _ := linGrowthInf_inf
@@ -254,7 +254,7 @@ lemma linGrowthSup_sup : linGrowthSup (u ⊔ v) = max (linGrowthSup u) (linGrowt
   rw [Pi.sup_apply]
   exact (monotone_div_right_of_nonneg n.cast_nonneg').map_max
 
-/-- Upper exponential growth as a `SupBotHom`. -/
+/-- Upper linear growth as a `SupBotHom`. -/
 noncomputable def linGrowthSupBotHom : SupBotHom (ℕ → EReal) EReal where
   toFun := linGrowthSup
   map_sup' _ _ := linGrowthSup_sup
