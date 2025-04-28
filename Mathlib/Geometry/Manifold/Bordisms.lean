@@ -730,6 +730,22 @@ private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u
          ((φ.sum ψ).sum δ) (φ.sum (ψ.sum δ)) := by
       symm
       use UnorientedBordism.sumAssoc (X := X) (s := φ) (t := ψ) (u := δ)
+    letI left := Quotient.mk (s := unorientedBordismSetoid X k I) (φ.sum ψ)
+    have h₁ :
+        unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (left.out.sum δ) ((φ.sum ψ).sum δ) := by
+      sorry
+    letI right := Quotient.mk (s := unorientedBordismSetoid X k I) (ψ.sum δ)
+    have h₂ :
+        unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (φ.sum (ψ.sum δ)) (φ.sum (Quotient.mk (s := unorientedBordismSetoid X k I) (ψ.sum δ)).out) := by
+      let almost := UnorientedBordism.refl (φ.sum (ψ.sum δ))
+      apply foo
+      -- issue: this does not work yet, as the underlying *manifolds* are not defeq!
+      -- both inferring it and putting (φ.M ⊕ (ψ.M ⊕ δ.M)) fails,
+      -- as φ.sum (ψ.sum δ) and ⟦ψ.sum δ⟧.out have different domains
+      -- need to think harder!
+      -- apply almost.copy_map_snd (eq := Diffeomorph.refl I _ k)
+      sorry
+    -- now, chain h₁, almost and h₂ together: want some trans instances
     sorry
   · intro S
     change sum (empty X k I) S = S
@@ -746,10 +762,12 @@ private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u
     set s := S.out with s_eq
     rw [sum_eq_out_sum_out, ← s_eq, empty, Quotient.eq]
     -- But sum_self is precisely a bordism between those.
-    -- haveI := ChartedSpace.empty
     dsimp
-    -- TODO: this fails, investigate why!
-    sorry -- use UnorientedBordism.sum_self (M := PEmpty.{u + 1})
+    -- TODO: this fails to find the charted space instance I need, not sure why
+    -- different universes, somehow?
+    apply foo
+    --haveI : ChartedSpace H PEmpty.{u + 1} := by sorry
+    sorry -- apply UnorientedBordism.sum_self --(M := PEmpty.{u + 1})
 
 instance instAddCommGroup : AddCommGroup (uBordismClass X k I) where
   __ := unorientedBordismGroup_aux X k I
