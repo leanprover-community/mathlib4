@@ -452,7 +452,7 @@ variable [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
 
 @[simp]
 theorem LinearMap.ker_restrictScalars (f : M →ₗ[S] N) :
-    LinearMap.ker (f.restrictScalars R) = f.ker.restrictScalars R :=
+    LinearMap.ker (f.restrictScalars R) = (LinearMap.ker f).restrictScalars R :=
   rfl
 
 end Module
