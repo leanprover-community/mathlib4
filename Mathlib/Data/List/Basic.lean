@@ -543,7 +543,7 @@ theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a 
     · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
     · simp only [Ne.symm h, false_or]
       rw [← ih]
-      exact succ_inj'
+      exact succ_inj
 
 @[simp]
 theorem idxOf_of_not_mem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=

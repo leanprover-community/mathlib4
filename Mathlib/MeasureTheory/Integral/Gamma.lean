@@ -33,7 +33,7 @@ theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : -1 < q) :
       ring_nf
     _ = (1 / p) * Gamma ((q + 1) / p) := by
       rw [Gamma_eq_integral (div_pos (neg_lt_iff_pos_add.mp hq) hp)]
-      simp_rw [show 1 / p - 1 + q / p = (q + 1) / p - 1 by field_simp; ring, ← integral_mul_left,
+      simp_rw [show 1 / p - 1 + q / p = (q + 1) / p - 1 by field_simp; ring, ← integral_const_mul,
         ← mul_assoc]
 
 theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : -1 < q) (hb : 0 < b) :
@@ -51,7 +51,7 @@ theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : -1 <
         mul_zero, smul_eq_mul]
       all_goals positivity
     _ = b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by
-      rw [integral_mul_left, integral_rpow_mul_exp_neg_rpow _ hq, mul_assoc, ← mul_assoc,
+      rw [integral_const_mul, integral_rpow_mul_exp_neg_rpow _ hq, mul_assoc, ← mul_assoc,
         ← rpow_neg_one, ← rpow_mul, ← rpow_add]
       · congr; ring
       all_goals positivity
