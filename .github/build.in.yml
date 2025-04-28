@@ -26,7 +26,7 @@ jobs:
     name: Lint styleJOB_NAME
     runs-on: STYLE_LINT_RUNNER
     steps:
-      - uses: leanprover-community/lint-style-action@684dc237cbcdcb8b6b290639c794c21ac7a19e4b # 2025-04-28
+      - uses: leanprover-community/lint-style-action@fc42b61cf23533eea179f33099eea894af197177 # 2025-04-28
         with:
           mode: fix
           lint-bib-file: true
