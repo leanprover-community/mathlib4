@@ -99,12 +99,12 @@ theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT
 @[aesop 30% apply]
 lemma IsSymmetric.mul_of_commute {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : T.IsSymmetric)
     (hST : Commute S T) : (S * T).IsSymmetric :=
-  fun _ _ ↦ by rw [mul_apply, hS, hT, hST, mul_apply]
+  fun _ _ ↦ by rw [Module.End.mul_apply, hS, hT, hST, Module.End.mul_apply]
 
 @[aesop safe apply]
 lemma IsSymmetric.pow {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
-  refine Nat.le_induction (by simp [one_eq_id]) (fun k _ ih ↦ ?_) n n.zero_le
-  rw [iterate_succ, ← mul_eq_comp]
+  refine Nat.le_induction (by simp [Module.End.one_eq_id]) (fun k _ ih ↦ ?_) n n.zero_le
+  rw [Module.End.iterate_succ, ← Module.End.mul_eq_comp]
   exact ih.mul_of_commute hT <| .pow_left rfl k
 
 /-- For a symmetric operator `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
