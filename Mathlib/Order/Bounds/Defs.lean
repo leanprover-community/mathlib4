@@ -67,11 +67,3 @@ def IsCoinitialFor (s t : Set α) := ∀ ⦃a⦄, a ∈ s → ∃ b ∈ t, b ≤
 /-- A set is cofinal when for every `x : α` there exists `y ∈ s` with `x ≤ y`. -/
 def IsCofinal (s : Set α) : Prop :=
   ∀ x, ∃ y ∈ s, x ≤ y
-
-/-- A set `s` is said to be dominated by a set `t` if, for all `a` in `s` there exists `b` in
-`t` such that `a ≤ b`. -/
-def Dominated (s t : Set α) := ∀  ⦃a⦄, a ∈ s → ∃ b ∈ t, a ≤ b
-
-/-- A set `s` is said to be dominated by a set `t` if, for all `a` in `s` there exists `b` in
-`t` such that `b ≤ a`. -/
-def Codominated (s t : Set α) := ∀ ⦃a⦄, a ∈ s → ∃ b ∈ t, b ≤ a

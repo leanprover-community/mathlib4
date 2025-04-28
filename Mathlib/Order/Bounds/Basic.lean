@@ -157,8 +157,8 @@ protected lemma IsCofinalFor.mono_right (htu : t ⊆ u) (hst : IsCofinalFor s t)
 protected lemma IsCoinitialFor.mono_right (htu : t ⊆ u) (hst : IsCoinitialFor s t) :
     IsCoinitialFor s u := hst.trans htu.iscoinitialfor
 
-lemma DirectedOn.dominated_fst_image_prod_snd_image {β : Type*} [Preorder β] {s : Set (α × β)}
-    (hs : DirectedOn (· ≤ ·) s) : Dominated ((Prod.fst '' s) ×ˢ (Prod.snd '' s)) s := by
+lemma DirectedOn.IsCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β] {s : Set (α × β)}
+    (hs : DirectedOn (· ≤ ·) s) : IsCofinalFor ((Prod.fst '' s) ×ˢ (Prod.snd '' s)) s := by
   rintro ⟨_, _⟩ ⟨⟨x, hx, rfl⟩, y, hy, rfl⟩
   obtain ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
   exact ⟨z, hz, hxz.1, hyz.2⟩
