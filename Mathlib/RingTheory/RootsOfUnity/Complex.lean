@@ -19,7 +19,10 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
   complex numbers of the form `exp (2 * π * I * (i / n))` for some `i < n`.
 * `Complex.card_rootsOfUnity`: the number of `n`-th roots of unity is exactly `n`.
 * `Complex.norm_rootOfUnity_eq_one`: A complex root of unity has norm `1`.
-
+* `Units.expHom`: The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂˣ`,
+  considered as a homomorphism of groups.
+* `rootsOfUnity.expHom`: The map `fun k => exp ((2 * π * (k.val / n)) * I)` from `ZMod n` to the
+  `n`th roots of unity in `ℂ`, considered as a homomorphism of groups.
 -/
 
 
@@ -98,7 +101,7 @@ lemma exp_two_pi_mul_div_inj_ZMod (n : ℕ) [NeZero n] (j k : ZMod n)
               (Nat.pos_of_ne_zero (NeZero.ne' n).symm))).mpr (Nat.strictMono_cast (ZMod.val_lt _)))⟩
         h)))))
 
-/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
+/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂˣ`,
 considered as a homomorphism of groups. -/
 @[simps]
 noncomputable def expHom : ℝ →+ Additive ℂˣ where
@@ -274,7 +277,8 @@ theorem Complex.conj_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n] (hζ : ζ �
 namespace rootsOfUnity
 
 open Real in
-/-- The map `fun t => exp (t * I)` from `ℝ` to the `n`th roots of unity in `ℂ`. -/
+/-- The map `fun k => exp ((2 * π * (k.val / n)) * I)` from `ZMod n` to the `n`th roots of unity in
+`ℂ`. -/
 noncomputable def exp (n : ℕ) [NeZero n] : ZMod n → rootsOfUnity n ℂ :=
   fun k => ⟨Units.exp (2 * π * (k.val / n)),by
     rw [Complex.mem_rootsOfUnity']
@@ -302,8 +306,8 @@ theorem exp_sur : Function.Surjective (exp n) := fun ⟨w,hw⟩ =>  by
   obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity' n w).mp hw
   exact ⟨j, by simp_rw [exp, ZMod.val_natCast_of_lt hj1, ← hj2]⟩
 
-/-- The map `fun t => exp (t * I)` from `ℝ` to the nth roots of unity in `ℂ`,
-considered as a isomomorphism of groups. -/
+/-- The map `fun k => exp ((2 * π * (k.val / n)) * I)` from `ZMod n` to the `n`th roots of unity in
+`ℂ`, considered as a homomorphism of groups. -/
 noncomputable def expHom (n : ℕ) [NeZero n] :
     ZMod n  ≃+ Additive (rootsOfUnity n ℂ) :=
       AddEquiv.mk' (Equiv.ofBijective (Additive.ofMul ∘ exp n)  ⟨exp_inj n, exp_sur n⟩ ) (exp_add n)
