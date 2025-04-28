@@ -292,6 +292,7 @@ lemma takeUntil_takeUntil (p : G.Walk u v) (hw : w ∈ p.support)
   rw [← takeUntil_append_of_mem_left _ (p.dropUntil w hw) hx]
   simp_rw [take_spec]
 
+@[simp]
 lemma dropUntil_append_of_mem_left (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
     (p.append q).dropUntil x (subset_support_append_left _ _ hx) = (p.dropUntil x hx).append q := by
   induction p with
@@ -304,6 +305,7 @@ lemma dropUntil_append_of_mem_left (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈
     · simp_rw [dif_neg hxu]
       simpa using ih _ (List.mem_of_ne_of_mem (fun hf ↦ hxu hf.symm) hx)
 
+@[simp]
 lemma dropUntil_append_of_mem_right  (p : G.Walk u v) (q : G.Walk v w) (hxn : x ∉ p.support)
     (hx : x ∈ q.support) :
     (p.append q).dropUntil x (subset_support_append_right _ _ hx) = q.dropUntil _ hx := by
