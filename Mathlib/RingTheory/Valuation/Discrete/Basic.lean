@@ -39,18 +39,20 @@ variable {A : Type*} [Ring A] (v : Valuation A Γ)
 nontrivial cyclic, a valuation `v : A → Γ` on a ring `A` is *discrete*, if
 `genLTOne Γˣ` belongs to the image. Note that the latter is equivalent to
 asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
-class IsDiscrete [IsCyclic Γˣ] [Nontrivial Γˣ] : Prop where
+class IsDiscrete : Prop where
   exists_generator_lt_one : ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v
 
+lemma exists_generator_lt_one [IsDiscrete v] :
+  ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v := IsDiscrete.exists_generator_lt_one
+
 variable {K : Type*} [Field K]
-variable [IsCyclic Γˣ] [Nontrivial Γˣ]
 
 /-- A discrete valuation on a field `K` is surjective. -/
-lemma IsDiscrete.surj (w : Valuation K Γ) [hv : IsDiscrete w] : Surjective w := by
+lemma IsDiscrete.surj (w : Valuation K Γ) [IsDiscrete w] : Surjective w := by
   intro c
   by_cases hc : c = 0
   · exact ⟨0, by simp [hc]⟩
-  obtain ⟨π, hπ_gen, hπ_lt_one, a, ha⟩ := hv
+  obtain ⟨π, hπ_gen, hπ_lt_one, a, ha⟩ := w.exists_generator_lt_one
   set u : Γˣ := Units.mk0 c hc with hu
   obtain ⟨k, hk⟩ := Subgroup.mem_zpowers_iff.mp (hπ_gen ▸ Subgroup.mem_top u)
   use a^k
@@ -58,7 +60,8 @@ lemma IsDiscrete.surj (w : Valuation K Γ) [hv : IsDiscrete w] : Surjective w :=
   norm_cast
   rw [hk, hu, Units.val_mk0]
 
-/-- A `ℤₘ₀`-valued valuation on a field `K` is discrete if and only if it is surjective. -/
+variable [IsCyclic Γˣ] [Nontrivial Γˣ]
+/-- A valuation on a field `K` is discrete if and only if it is surjective. -/
 lemma isDiscrete_iff_surjective (w : Valuation K Γ) :
     IsDiscrete w ↔ Surjective w := by
   refine ⟨fun _ ↦ IsDiscrete.surj w, fun h ↦ ⟨LinearOrderedCommGroup.genLTOne Γˣ,
