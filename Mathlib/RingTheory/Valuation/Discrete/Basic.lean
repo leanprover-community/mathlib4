@@ -45,6 +45,13 @@ class IsDiscrete : Prop where
 lemma exists_generator_lt_one [IsDiscrete v] :
   ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v := IsDiscrete.exists_generator_lt_one
 
+lemma IsDiscrete.cyclic_value_group [IsDiscrete v] : IsCyclic Γˣ := by
+  rw [isCyclic_iff_exists_zpowers_eq_top]
+  exact ⟨_, (v.exists_generator_lt_one.choose_spec).1⟩
+
+lemma IsDiscrete.nontrivial_value_group [IsDiscrete v] : Nontrivial Γˣ :=
+  ⟨1, v.exists_generator_lt_one.choose, ne_of_gt <| (v.exists_generator_lt_one.choose_spec).2.1⟩
+
 variable {K : Type*} [Field K]
 
 /-- A discrete valuation on a field `K` is surjective. -/
