@@ -522,7 +522,6 @@ theorem totalDegree_rename_le (f : σ → τ) (p : MvPolynomial σ R) :
     rcases h' with ⟨s, hs, rfl⟩
     exact (sum_mapDomain_index (fun _ => rfl) (fun _ _ _ => rfl)).trans_le (le_totalDegree hs)
 
-@[simp]
 lemma totalDegree_renameEquiv (f : σ ≃ τ) (p : MvPolynomial σ R) :
     (renameEquiv R f p).totalDegree = p.totalDegree :=
   (totalDegree_rename_le f p).antisymm (le_trans (by simp) (totalDegree_rename_le f.symm _))
