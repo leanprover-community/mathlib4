@@ -63,8 +63,8 @@ class ChosenFiniteProducts (C : Type u) [Category.{v} C] extends MonoidalCategor
   snd (X Y : C) : X ⊗ Y ⟶ Y
   /-- The monoidal product is the categorical product. -/
   tensorProductIsBinaryProduct (X Y : C) : Limits.IsLimit <| Limits.BinaryFan.mk (fst X Y) (snd X Y)
-  fst_def (X Y : C) : fst X Y = X ◁ isTerminalTensorUnit.from Y ≫ (ρ_ X).hom
-  snd_def (X Y : C) : snd X Y = isTerminalTensorUnit.from X ▷ Y ≫ (λ_ Y).hom
+  fst_def (X Y : C) : fst X Y = X ◁ isTerminalTensorUnit.from Y ≫ (ρ_ X).hom := by aesop_cat
+  snd_def (X Y : C) : snd X Y = isTerminalTensorUnit.from X ▷ Y ≫ (λ_ Y).hom := by aesop_cat
 
 namespace ChosenFiniteProducts
 
