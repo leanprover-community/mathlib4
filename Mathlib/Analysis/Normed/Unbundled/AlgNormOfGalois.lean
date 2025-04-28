@@ -10,14 +10,14 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 # algNorm_of_auto and algNorm_of_galois
 
 Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extension. In the comments,
-`‖ ⬝ ‖` denotes any power-multiplicative algebra norm on `L` extending the norm  on `K`.
+`‖ ⬝ ‖` denotes any power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
 
 ## Main Definitions
 
 * `algNorm_of_auto` : given `σ : L ≃ₐ[K] L`, the function `L → ℝ` sending `x : L` to `‖ σ x ‖` is
-  an algebra norm on `K`.
+  a `K`-algebra norm on `L`.
 * `algNorm_of_galois` : the function `L → ℝ` sending `x : L` to the maximum of `‖ σ x ‖` over
-  all `σ : L ≃ₐ[K] L` is an algebra norm on `L`.
+  all `σ : L ≃ₐ[K] L` is a `K`-algebra norm on `L`.
 
 ## Main Results
 * `isPowMul_algNorm_of_auto` : `algNorm_of_auto` is power-multiplicative.
@@ -34,9 +34,6 @@ Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extensi
 
 algNorm_of_auto, algNorm_of_galois, norm, nonarchimedean
 -/
-
-
-
 
 open scoped NNReal
 
