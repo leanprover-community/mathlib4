@@ -1,0 +1,1 @@
+def someTrailingWhitespace := 1         

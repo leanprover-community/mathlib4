@@ -1,5 +1,6 @@
 import Std
 import Batteries
+import Mathlib.Bar
 import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.AddConstMap.Equiv
 import Mathlib.Algebra.AddTorsor.Basic
