@@ -486,6 +486,7 @@ import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
@@ -514,6 +515,7 @@ import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Algebra.Homology.Factorizations.Basic
 import Mathlib.Algebra.Homology.Functor
+import Mathlib.Algebra.Homology.GrothendieckAbelian
 import Mathlib.Algebra.Homology.HasNoLoop
 import Mathlib.Algebra.Homology.HomologicalBicomplex
 import Mathlib.Algebra.Homology.HomologicalComplex
@@ -1909,6 +1911,7 @@ import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.Center.Basic
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
@@ -2242,6 +2245,7 @@ import Mathlib.CategoryTheory.Localization.Bousfield
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
@@ -3428,6 +3432,7 @@ import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 import Mathlib.Dynamics.TopologicalEntropy.Semiconj
+import Mathlib.Dynamics.TopologicalEntropy.Subset
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.FieldTheory.AlgebraicClosure
@@ -3512,6 +3517,7 @@ import Mathlib.Geometry.Euclidean.Inversion.Calculus
 import Mathlib.Geometry.Euclidean.Inversion.ImageHyperplane
 import Mathlib.Geometry.Euclidean.MongePoint
 import Mathlib.Geometry.Euclidean.PerpBisector
+import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.Geometry.Euclidean.SignedDist
 import Mathlib.Geometry.Euclidean.Simplex
 import Mathlib.Geometry.Euclidean.Sphere.Basic
@@ -4264,6 +4270,7 @@ import Mathlib.MeasureTheory.Measure.FiniteMeasureProd
 import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Measure.Haar.Disintegration
+import Mathlib.MeasureTheory.Measure.Haar.DistribChar
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis

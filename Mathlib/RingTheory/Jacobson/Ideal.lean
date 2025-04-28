@@ -193,7 +193,7 @@ theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) 
 theorem map_jacobson_of_bijective {f : R →+* S} (hf : Function.Bijective f) :
     map f I.jacobson = (map f I).jacobson :=
   map_jacobson_of_surjective hf.right
-    (le_trans (le_of_eq (f.injective_iff_ker_eq_bot.1 hf.left)) bot_le)
+    (le_trans (le_of_eq ((RingHom.injective_iff_ker_eq_bot f).1 hf.left)) bot_le)
 
 theorem comap_jacobson {f : R →+* S} {K : Ideal S} :
     comap f K.jacobson = sInf (comap f '' { J : Ideal S | K ≤ J ∧ J.IsMaximal }) :=
