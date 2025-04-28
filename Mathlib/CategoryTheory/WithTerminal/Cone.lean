@@ -15,14 +15,15 @@ object to `X`. These two functors have equivalent categories of cones (`coneEqui
 As a corollary, the limit of `K` is the limit of `liftFromOver K`, and viceversa.
 -/
 
-open CategoryTheory CategoryTheory.Limits CategoryTheory.WithTerminal
+open CategoryTheory Limits
 
 universe w w' v₁ v₂ u₁ u₂
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {J : Type w} [Category.{w'} J]
 
-namespace CategoryTheory.Limits.WithTerminal
+namespace CategoryTheory.WithTerminal
+variable {X : C} {K : J ⥤ Over X} {F : C ⥤ D} {t : Cone K}
 
 /-- The category of functors `J ⥤ Over X` can be seen as part of a comma category,
 namely the comma category constructed from the identity of the category of functors
@@ -31,7 +32,7 @@ namely the comma category constructed from the identity of the category of funct
 Given a functor `K : J ⥤ Over X`, it is mapped to a natural transformation from the
 obvious functor `J ⥤ C` to the constant functor `X`. -/
 @[simps]
-def commaFromFunctorToOver {X : C} : (J ⥤ Over X) ⥤ Comma (𝟭 (J ⥤ C)) (Functor.const J) where
+def commaFromOver : (J ⥤ Over X) ⥤ Comma (𝟭 (J ⥤ C)) (Functor.const J) where
   obj K := {
     left := K ⋙ Over.forget X
     right := X
@@ -45,27 +46,19 @@ def commaFromFunctorToOver {X : C} : (J ⥤ Over X) ⥤ Comma (𝟭 (J ⥤ C)) (
 /-- For any functor `K : J ⥤ Over X`, there is a canonical extension
 `WithTerminal J ⥤ C`, that sends `star` to `X`. -/
 @[simps!]
-def liftFromOverToWithTerminal {X : C} : (J ⥤ Over X) ⥤ WithTerminal J ⥤ C :=
-  commaFromFunctorToOver ⋙ equivComma.inverse
+def liftFromOver : (J ⥤ Over X) ⥤ WithTerminal J ⥤ C := commaFromOver ⋙ equivComma.inverse
 
 /-- The extension of a functor to over categories behaves well with compositions. -/
 @[simps]
-def extendCompose {X : C} (K : J ⥤ Over X) (F : C ⥤ D) :
-    liftFromOverToWithTerminal.obj K ⋙ F ≅
-    liftFromOverToWithTerminal.obj (K ⋙ Over.post F) where
-  hom.app
-  | star => 𝟙 _
-  | of a => 𝟙 _
-  inv.app
-  | star => 𝟙 _
-  | of a => 𝟙 _
+def liftFromOverComp : liftFromOver.obj (K ⋙ Over.post F) ≅ liftFromOver.obj K ⋙ F where
+  hom.app | star | of a => 𝟙 _
+  inv.app | star | of a => 𝟙 _
 
 /-- A cone of a functor `K : J ⥤ Over X` consists of an object of `Over X`, together
 with morphisms. This same object is a cone of the extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C`. -/
 @[simps]
-private def coneLift {X : C} {K : J ⥤ Over X} :
-    Cone K ⥤ Cone (liftFromOverToWithTerminal.obj K) where
+private def coneLift : Cone K ⥤ Cone (liftFromOver.obj K) where
   obj t := {
     pt := t.pt.left
     π.app
@@ -74,7 +67,6 @@ private def coneLift {X : C} {K : J ⥤ Over X} :
     π.naturality
     | star, star, _
     | of a, star, _ => by aesop
-    | star, of _, _ => by contradiction
     | of a, of b, f => by simp [← Comma.comp_left]
   }
   map {t₁ t₂} f := {
@@ -88,8 +80,7 @@ private def coneLift {X : C} {K : J ⥤ Over X} :
 `liftFromOver.obj K : WithTerminal J ⥤ C` consists of an object of `C`, together
 with morphisms. This same object is a cone of the original functor `K : J ⥤ Over X`. -/
 @[simps]
-private def coneBack {X : C} {K : J ⥤ Over X} :
-    Cone (liftFromOverToWithTerminal.obj K) ⥤ Cone K where
+private def coneBack : Cone (liftFromOver.obj K) ⥤ Cone K where
   obj t := {
     pt := .mk (t.π.app star)
     π.app a := {
@@ -97,8 +88,7 @@ private def coneBack {X : C} {K : J ⥤ Over X} :
       right := 𝟙 _
       w := by simpa using t.w (homFrom a)
     }
-    π.naturality a b f := by
-      ext; simpa using t.π.naturality (incl.map f)
+    π.naturality a b f := by ext; simpa using t.π.naturality (incl.map f)
   }
   map {t₁ t₂ f} := {
     hom := Over.homMk f.hom
@@ -110,12 +100,106 @@ A cone of `K` is an object of `Over X`, so it has the form `t ⟶ X`.
 Equivalently, a cone of `WithTerminal K` is an object `t : C`,
 and we can recover the structure morphism as `π.app X : t ⟶ X`. -/
 @[simps!]
-def coneEquiv {X : C} (K : J ⥤ Over X) : Cone K ≌ Cone (liftFromOverToWithTerminal.obj K) where
+def coneEquiv : Cone K ≌ Cone (liftFromOver.obj K) where
   functor := coneLift
   inverse := coneBack
   unitIso := .refl _
   counitIso := NatIso.ofComponents fun t ↦ Cones.ext <| .refl _
 
-end CategoryTheory.Limits.WithTerminal
+/-- A cone `t` of `K : J ⥤ Over X` is a limit if and only if the corresponding cone
+`coneLift t` of `liftFromOver.obj K : WithTerminal K ⥤ C` is a limit. -/
+@[simps!]
+def limitEquiv : IsLimit (coneLift.obj t) ≃ IsLimit t := IsLimit.ofConeEquiv coneEquiv
 
--- TODO The analogous theorems for WithInitial and Cocone
+end WithTerminal
+
+namespace WithInitial
+variable {X : C} {K : J ⥤ Under X} {F : C ⥤ D} {t : Cocone K}
+
+/-- The category of functors `J ⥤ Under X` can be seen as part of a comma category,
+namely the comma category constructed from the identity of the category of functors
+`J ⥤ C` and the functor that maps `X : C` to the constant functor `J ⥤ C`.
+
+Given a functor `K : J ⥤ Under X`, it is mapped to a natural transformation from the
+obvious functor `J ⥤ C` to the constant functor `X`. -/
+@[simps]
+def commaFromUnder : (J ⥤ Under X) ⥤ Comma (Functor.const J) (𝟭 (J ⥤ C)) where
+  obj K := {
+    left := X
+    right := K ⋙ Under.forget X
+    hom.app a := (K.obj a).hom
+  }
+  map f := {
+    left := 𝟙 X
+    right := whiskerRight f (Under.forget X)
+  }
+
+/-- For any functor `K : J ⥤ Under X`, there is a canonical extension
+`WithInitial J ⥤ C`, that sends `star` to `X`. -/
+@[simps!]
+def liftFromUnder : (J ⥤ Under X) ⥤ WithInitial J ⥤ C := commaFromUnder ⋙ equivComma.inverse
+
+/-- The extension of a functor to over categories behaves well with compositions. -/
+@[simps]
+def liftFromUnderComp : liftFromUnder.obj (K ⋙ Under.post F) ≅ liftFromUnder.obj K ⋙ F where
+  hom.app | star | of a => 𝟙 _
+  inv.app | star | of a => 𝟙 _
+
+/-- A cocone of a functor `K : J ⥤ Under X` consists of an object of `Under X`, together
+with morphisms. This same object is a cocone of the extended functor
+`liftFromUnder.obj K : WithInitial J ⥤ C`. -/
+@[simps]
+private def coconeLift : Cocone K ⥤ Cocone (liftFromUnder.obj K) where
+  obj t := {
+    pt := t.pt.right
+    ι.app
+    | of a => (t.ι.app a).right
+    | star => t.pt.hom
+    ι.naturality
+    | star, star, _
+    | star, of b, _ => by aesop
+    | of a, of b, f => by simp [← Comma.comp_right]
+  }
+  map {t₁ t₂} f := {
+    hom := f.hom.right
+    w
+    | star => by aesop_cat
+    | of a => by simp [← Comma.comp_right]
+  }
+
+/-- This is the inverse of the previous construction: a cocone of an extended functor
+`liftFromUnder.obj K : WithInitial J ⥤ C` consists of an object of `C`, together
+with morphisms. This same object is a cocone of the original functor `K : J ⥤ Under X`. -/
+@[simps]
+private def coconeBack : Cocone (liftFromUnder.obj K) ⥤ Cocone K where
+  obj t := {
+    pt := .mk (t.ι.app star)
+    ι.app a := {
+      left := 𝟙 _
+      right := t.ι.app (of a)
+      w := by simpa using (t.w (homTo a)).symm
+    }
+    ι.naturality a b f := by ext; simpa using t.ι.naturality (incl.map f)
+  }
+  map {t₁ t₂ f} := {
+    hom := Under.homMk f.hom
+  }
+
+/-- Given a functor `K : J ⥤ Under X` and its extension `liftFromUnder K : WithInitial J ⥤ C`,
+there is an obvious equivalence between cocones of these two functors.
+A cocone of `K` is an object of `Under X`, so it has the form `X ⟶ t`.
+Equivalently, a cocone of `WithInitial K` is an object `t : C`,
+and we can recover the structure morphism as `ι.app X : X ⟶ t`. -/
+@[simps!]
+def coconeEquiv : Cocone K ≌ Cocone (liftFromUnder.obj K) where
+  functor := coconeLift
+  inverse := coconeBack
+  unitIso := .refl _
+  counitIso := NatIso.ofComponents fun t ↦ Cocones.ext <| .refl _
+
+/-- A cocone `t` of `K : J ⥤ Under X` is a colimit if and only if the corresponding cocone
+`coconeLift t` of `liftFromUnder.obj K : WithInitial K ⥤ C` is a colimit. -/
+@[simps!]
+def colimitEquiv : IsColimit (coconeLift.obj t) ≃ IsColimit t := IsColimit.ofCoconeEquiv coconeEquiv
+
+end CategoryTheory.WithInitial
