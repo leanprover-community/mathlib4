@@ -223,10 +223,10 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
 
 end Module
 
-section IsQuadraticAlgebra
+section IsQuadraticModule
 
-instance (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
-    [IsQuadraticAlgebra R S] :
-    Module.Finite R S := finite_of_finrank_eq_succ <| IsQuadraticAlgebra.finrank_eq_two R S
+instance (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S] [Module R S]
+    [IsQuadraticModule R S] :
+    Module.Finite R S := finite_of_finrank_eq_succ <| IsQuadraticModule.finrank_eq_two R S
 
-end IsQuadraticAlgebra
+end IsQuadraticModule

@@ -33,7 +33,7 @@ Together, these two results prove the Galois correspondence.
 
 ## Additional results
 
-- Instances for `IsQuadraticAlgebra`: a quadratic extension is Galois (if separable) with cyclic
+- Instances for `IsQuadraticModule`: a quadratic extension is Galois (if separable) with cyclic
   and thus abelian Galois group.
 
 -/
@@ -516,19 +516,19 @@ instance (priority := 100) IsAlgClosure.isGalois (k K : Type*) [Field k] [Field 
 
 end IsAlgClosure
 
-noncomputable section IsQuadraticAlgebra
+noncomputable section IsQuadraticModule
 
-variable (F K : Type*) [Field F] [Field K] [Algebra F K] [IsQuadraticAlgebra F K]
+variable (F K : Type*) [Field F] [Field K] [Algebra F K] [IsQuadraticModule F K]
 
 /--
 A quadratic separable extension is Galois.
 -/
-instance IsQuadraticAlgebra.isGalois[Algebra.IsSeparable F K] : IsGalois F K where
+instance IsQuadraticModule.isGalois [Algebra.IsSeparable F K] : IsGalois F K where
 
 /--
 A quadratic extension has cyclic Galois group.
 -/
-instance IsQuadraticAlgebra.isCyclic : IsCyclic (K ≃ₐ[F] K) := by
+instance IsQuadraticModule.isCyclic : IsCyclic (K ≃ₐ[F] K) := by
   have := finrank_eq_two F K ▸ AlgEquiv.card_le
   interval_cases h : Fintype.card (K ≃ₐ[F] K)
   · simp_all
@@ -539,7 +539,7 @@ instance IsQuadraticAlgebra.isCyclic : IsCyclic (K ≃ₐ[F] K) := by
 /--
 A quadratic extension has abelian Galois group.
 -/
-instance IsQuadraticAlgebra.isMulCommutative_galoisGroup :
+instance IsQuadraticModule.isMulCommutative_galoisGroup :
     IsMulCommutative (K ≃ₐ[F] K) := ⟨IsCyclic.commutative⟩
 
-end IsQuadraticAlgebra
+end IsQuadraticModule

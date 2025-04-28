@@ -37,7 +37,7 @@ For modules over rings with invariant basis number
 
 ## Additional definition
 
-* `IsQuadraticAlgebra`: An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-algebra
+* `IsQuadraticModule`: An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-module
   of rank `2`.
 
 -/
@@ -548,18 +548,18 @@ theorem mem_span_set_iff_exists_finsupp_le_finrank :
 
 end Submodule
 
-section IsQuadraticAlgebra
+section IsQuadraticModule
 
 /--
-An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-algebra of rank `2`.
+An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-module of rank `2`.
 -/
 -- TODO. use this in connection with `NumberTheory.Zsqrtd`
-class IsQuadraticAlgebra (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
-    [Algebra R S] extends Module.Free R S where
+class IsQuadraticModule (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
+    [Module R S] extends Module.Free R S where
   finrank_eq_two' : Module.finrank R S = 2
 
-theorem IsQuadraticAlgebra.finrank_eq_two (R S : Type*) [CommSemiring R] [StrongRankCondition R]
-    [Semiring S] [Algebra R S] [IsQuadraticAlgebra R S] :
+theorem IsQuadraticModule.finrank_eq_two (R S : Type*) [CommSemiring R] [StrongRankCondition R]
+    [Semiring S] [Module R S] [IsQuadraticModule R S] :
     Module.finrank R S = 2 := finrank_eq_two'
 
-end IsQuadraticAlgebra
+end IsQuadraticModule
