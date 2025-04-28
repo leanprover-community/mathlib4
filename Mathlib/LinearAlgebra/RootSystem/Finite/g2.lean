@@ -167,7 +167,7 @@ lemma allRoots_eq_map_allCoeffs :
 
 lemma allRoots_nodup : (allRoots P).Nodup := by
   have hli : Injective (Fintype.linearCombination ℤ ![shortRoot P, longRoot P]) := by
-    rw [← Fintype.linearIndependent_iff_injective]
+    rw [← linearIndependent_iff_injective_fintypeLinearCombination]
     exact (linearIndependent_short_long P).restrict_scalars' ℤ
   rw [allRoots_eq_map_allCoeffs, nodup_map_iff hli]
   decide
@@ -379,9 +379,7 @@ private lemma isOrthogonal_short_and_long_aux {a b c d e f a' b' c' d' e' f' : �
 lemma isOrthogonal_short_and_long {i : ι} (hi : P.root i ∉ allRoots P) :
     P.IsOrthogonal i (short P) ∧ P.IsOrthogonal i (long P) := by
   suffices P.pairingIn ℤ i (short P) = 0 ∧ P.pairingIn ℤ i (long P) = 0 by
-    have : Fintype ι := Fintype.ofFinite ι
-    have B := (P.posRootForm ℤ).toInvariantForm
-    simpa [B.isOrthogonal_iff_pairing_eq_zero, ← P.algebraMap_pairingIn ℤ]
+    simpa [isOrthogonal_iff_pairing_eq_zero, ← P.algebraMap_pairingIn ℤ]
   simp only [mem_cons, not_mem_nil, or_false, not_or] at hi
   obtain ⟨h₁, h₂, h₃, h₄, h₅, h₆, h₇, h₈, h₉, h₁₀, h₁₁, h₁₂⟩ := hi
   have ha := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (short P) ‹_› ‹_›
@@ -399,7 +397,7 @@ variable [P.IsIrreducible]
 @[simp] lemma span_eq_top :
     span R {longRoot P, shortRoot P} = ⊤ := by
   have := P.span_root_image_eq_top_of_forall_orthogonal {long P, short P} (by simp)
-  rw [show P.root '' {long P, short P} = {longRoot P, shortRoot P} from by aesop] at this
+  rw [show P.root '' {long P, short P} = {longRoot P, shortRoot P} by aesop] at this
   refine this fun k hk ij hij ↦ ?_
   replace hk : P.root k ∉ allRoots P :=
     fun contra ↦ hk <| span_subset_span ℤ _ _ <| mem_span_of_mem_allRoots P contra
@@ -412,7 +410,7 @@ lemma mem_allRoots (i : ι) :
   obtain ⟨h₁, h₂⟩ := isOrthogonal_short_and_long P hi
   have : Fintype ι := Fintype.ofFinite ι
   have B := (P.posRootForm ℤ).toInvariantForm
-  rw [B.isOrthogonal_iff_pairing_eq_zero, ← B.apply_root_root_zero_iff] at h₁ h₂
+  rw [isOrthogonal_iff_pairing_eq_zero, ← B.apply_root_root_zero_iff] at h₁ h₂
   have key : B.form (P.root i) = 0 := by
     ext x
     have hx : x ∈ span R {longRoot P, shortRoot P} := by simp

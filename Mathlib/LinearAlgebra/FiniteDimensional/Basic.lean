@@ -80,7 +80,7 @@ section
 
 open Finset
 
-variable {L : Type*} [LinearOrderedField L]
+variable {L : Type*} [Field L] [LinearOrder L] [IsStrictOrderedRing L]
 variable {W : Type v} [AddCommGroup W] [Module L W]
 
 /-- A slight strengthening of `exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card`
@@ -582,3 +582,10 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
 end End
 
 end Module
+
+section IsQuadraticExtension
+
+instance (R : Type*) [Field K] [CommRing R] [h : IsQuadraticExtension K R] :
+    FiniteDimensional K R := Module.finite_of_finrank_eq_succ h.finrank_eq_two
+
+end IsQuadraticExtension

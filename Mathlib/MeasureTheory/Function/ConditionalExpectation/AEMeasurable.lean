@@ -67,7 +67,7 @@ theorem add [Add β] [ContinuousAdd β] (hf : AEStronglyMeasurable[m] f μ)
   AEStronglyMeasurable.add hf hg
 
 @[deprecated AEStronglyMeasurable.neg (since := "2025-01-23")]
-theorem neg [AddGroup β] [IsTopologicalAddGroup β] {f : α → β} (hfm : AEStronglyMeasurable[m] f μ) :
+theorem neg [Neg β] [ContinuousNeg β] {f : α → β} (hfm : AEStronglyMeasurable[m] f μ) :
     AEStronglyMeasurable[m] (-f) μ :=
   AEStronglyMeasurable.neg hfm
 

@@ -200,7 +200,11 @@ theorem mapAlgEquiv_coe_ringHom (f : A ≃ₐ[R] B) :
   rfl
 
 @[simp]
-theorem mapAlgEquiv_comp (C : Type z) [Semiring C] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
+theorem mapAlgEquiv_toAlgHom (f : A ≃ₐ[R] B) :
+    (mapAlgEquiv f : Polynomial A →ₐ[R] Polynomial B) = mapAlgHom f := rfl
+
+@[simp]
+theorem mapAlgEquiv_comp (C : Type*) [Semiring C] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
     (mapAlgEquiv f).trans (mapAlgEquiv g) = mapAlgEquiv (f.trans g) := by
   apply AlgEquiv.ext
   intro x
@@ -596,7 +600,7 @@ lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
 
 lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
   let _ := invertibleOne (α := R)
-  let _ := invertibleNeg (α := R) 1
+  let _ := invertibleNeg (R := R) 1
   simpa using dvd_comp_C_mul_X_add_C_iff p q (-1) 0
 
 variable [IsDomain R]

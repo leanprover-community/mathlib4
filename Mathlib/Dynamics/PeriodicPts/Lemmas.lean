@@ -119,14 +119,17 @@ namespace Function
 
 variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
 
-theorem minimalPeriod_prod_map (f : α → α) (g : β → β) (x : α × β) :
+theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
     minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=
   eq_of_forall_dvd <| by cases x; simp [← isPeriodicPt_iff_minimalPeriod_dvd, Nat.lcm_dvd_iff]
 
+@[deprecated (since := "2025-04-18")]
+alias minimalPeriod_prod_map := minimalPeriod_prodMap
+
 theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map f g) x := by
-  rw [minimalPeriod_prod_map]; exact Nat.dvd_lcm_left _ _
+  rw [minimalPeriod_prodMap]; exact Nat.dvd_lcm_left _ _
 
 theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map f g) x := by
-  rw [minimalPeriod_prod_map]; exact Nat.dvd_lcm_right _ _
+  rw [minimalPeriod_prodMap]; exact Nat.dvd_lcm_right _ _
 
 end Function
