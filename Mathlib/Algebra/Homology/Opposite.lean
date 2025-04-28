@@ -222,10 +222,7 @@ instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
 
 variable {V c}
 
-<<<<<<< HEAD
-=======
 @[simp]
->>>>>>> origin/jriou_localization_bump_deps
 lemma quasiIsoAt_opFunctor_map_iff
     {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] :
@@ -233,10 +230,7 @@ lemma quasiIsoAt_opFunctor_map_iff
   simp only [quasiIsoAt_iff]
   exact ShortComplex.quasiIso_opMap_iff ((shortComplexFunctor V c i).map φ)
 
-<<<<<<< HEAD
-=======
 @[simp]
->>>>>>> origin/jriou_localization_bump_deps
 lemma quasiIsoAt_unopFunctor_map_iff
     {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] :
@@ -256,20 +250,14 @@ instance {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L) (i : ι)
   rw [quasiIsoAt_unopFunctor_map_iff]
   infer_instance
 
-<<<<<<< HEAD
-=======
 @[simp]
->>>>>>> origin/jriou_localization_bump_deps
 lemma quasiIso_opFunctor_map_iff
     {K L : HomologicalComplex V c} (φ : K ⟶ L)
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
     QuasiIso ((opFunctor _ _).map φ.op) ↔ QuasiIso φ := by
   simp only [quasiIso_iff, quasiIsoAt_opFunctor_map_iff]
 
-<<<<<<< HEAD
-=======
 @[simp]
->>>>>>> origin/jriou_localization_bump_deps
 lemma quasiIso_unopFunctor_map_iff
     {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L)
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
@@ -296,10 +284,7 @@ lemma ExactAt.unop {K : HomologicalComplex Vᵒᵖ c} {i : ι} (h : K.ExactAt i)
     K.unop.ExactAt i :=
   ShortComplex.Exact.unop h
 
-<<<<<<< HEAD
-=======
 @[simp]
->>>>>>> origin/jriou_localization_bump_deps
 lemma exactAt_op_iff (K : HomologicalComplex V c) {i : ι} :
     K.op.ExactAt i ↔ K.ExactAt i :=
   ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
@@ -312,10 +297,7 @@ lemma Acyclic.unop {K : HomologicalComplex Vᵒᵖ c} (h : K.Acyclic) :
     K.unop.Acyclic :=
   fun i ↦ (h i).unop
 
-<<<<<<< HEAD
-=======
 @[simp]
->>>>>>> origin/jriou_localization_bump_deps
 lemma acyclic_op_iff (K : HomologicalComplex V c) :
     K.op.Acyclic ↔ K.Acyclic :=
   ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
