@@ -58,9 +58,9 @@ lemma IsDiscrete.surj (w : Valuation K Γ) [hv : IsDiscrete w] : Surjective w :=
 /-- A `ℤₘ₀`-valued valuation on a field `K` is discrete if and only if it is surjective. -/
 lemma isDiscrete_iff_surjective (w : Valuation K Γ) :
     IsDiscrete w ↔ Surjective w := by
-  refine ⟨fun _ ↦ IsDiscrete.surj w, fun h ↦ ⟨LinearOrderedCommGroup.gen_lt_one Γˣ,
+  refine ⟨fun _ ↦ IsDiscrete.surj w, fun h ↦ ⟨LinearOrderedCommGroup.genLTOne Γˣ,
     by simp, ?_, by apply h⟩⟩
-  simpa using (⊤ : Subgroup Γˣ).gen_lt_one_lt_one
+  simpa using (⊤ : Subgroup Γˣ).genLTOne_lt_one
 
 
 end Valuation
