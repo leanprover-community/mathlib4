@@ -200,6 +200,9 @@ theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
 
 end LocallyUniformlyOn
 
+-- XXX move examples elsewhere and remove this before merging
+set_option linter.directoryDependency false
+
 variable {𝕜 𝕜': Type*} [NormedAddCommGroup 𝕜'] [CompleteSpace 𝕜'] [TopologicalSpace 𝕜]
   [LocallyCompactSpace 𝕜]
 
