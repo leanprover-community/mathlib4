@@ -798,7 +798,8 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
       have : ∫ (y : α), g i y ∂μ = ∫ (y : α), 0 ∂μ := by congr; ext y; exact h'i y
       simp [this] at hi_int
     apply (norm_integral_le_integral_norm _).trans
-    simp_rw [average_eq, smul_eq_mul, ← integral_mul_left, norm_smul, ← mul_assoc, ← div_eq_mul_inv]
+    simp_rw [average_eq, smul_eq_mul, ← integral_const_mul, norm_smul, ← mul_assoc,
+      ← div_eq_mul_inv]
     have : ∀ x, x ∉ a i → ‖g i x‖ * ‖(f x - c)‖ = 0 := by
       intro x hx
       have : g i x = 0 := by rw [← Function.nmem_support]; exact fun h ↦ hx (hi h)
