@@ -628,7 +628,7 @@ theorem nat_lt : PrimrecRel ((· < ·) : ℕ → ℕ → Prop) :=
 
 theorem option_guard {p : α → β → Prop} [∀ a b, Decidable (p a b)] (hp : PrimrecRel p) {f : α → β}
     (hf : Primrec f) : Primrec fun a => Option.guard (p a) (f a) :=
-  ite (hp.comp Primrec.id hf) (option_some_iff.2 hf) (const none)
+  ite (by simpa using hp.comp Primrec.id hf) (option_some_iff.2 hf) (const none)
 
 theorem option_orElse : Primrec₂ ((· <|> ·) : Option α → Option α → Option α) :=
   (option_casesOn fst snd (fst.comp fst).to₂).of_eq fun ⟨o₁, o₂⟩ => by cases o₁ <;> cases o₂ <;> rfl
@@ -1118,7 +1118,7 @@ theorem mem_range_encode : PrimrecPred (fun n => n ∈ Set.range (encode : α �
     .not
       (Primrec.eq.comp
         (.option_bind .decode
-          (.ite (Primrec.eq.comp (Primrec.encode.comp .snd) .fst)
+          (.ite (by simpa using Primrec.eq.comp (Primrec.encode.comp .snd) .fst)
             (Primrec.option_some.comp .snd) (.const _)))
         (.const _))
   this.of_eq fun _ => decode₂_ne_none_iff
