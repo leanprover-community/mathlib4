@@ -551,7 +551,8 @@ lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
   norm_num
 
 -- todo: remove IsCentered (once we know that `∫ x, x ∂μ` is a thing)
-lemma eq_dirac_of_variance_eq_zero (hμ : IsCentered μ) (h : ∀ (L : E →L[ℝ] ℝ), Var[L; μ] = 0) :
+lemma eq_dirac_of_variance_eq_zero_of_isCentered (hμ : IsCentered μ)
+    (h : ∀ (L : E →L[ℝ] ℝ), Var[L; μ] = 0) :
     μ = Measure.dirac 0 := by
   refine ext_of_charFunCLM ?_
   ext L
@@ -563,7 +564,7 @@ lemma IsGaussian.noAtoms_of_isCentered (hμ : IsCentered μ) (h : μ ≠ Measure
   measure_singleton x := by
     obtain ⟨L, hL⟩ : ∃ L : E →L[ℝ] ℝ, Var[L; μ] ≠ 0 := by
       contrapose! h
-      exact eq_dirac_of_variance_eq_zero hμ h
+      exact eq_dirac_of_variance_eq_zero_of_isCentered hμ h
     have hL_zero : μ.map L {L x} = 0 := by
       have : NoAtoms (μ.map L) := by
         rw [IsGaussian.map_eq_gaussianReal L]
@@ -580,7 +581,7 @@ lemma IsGaussian.measure_closedBall_lt_one (hμ : IsCentered μ) (h : μ ≠ Mea
     μ {x | ‖x‖ ≤ a} < 1 := by
   obtain ⟨L, hL⟩ : ∃ L : E →L[ℝ] ℝ, Var[L; μ] ≠ 0 := by
     contrapose! h
-    exact eq_dirac_of_variance_eq_zero hμ h
+    exact eq_dirac_of_variance_eq_zero_of_isCentered hμ h
   by_contra! h_eq_one
   replace h_eq_one : μ {x | ‖x‖ ≤ a} = 1 :=
     le_antisymm ((measure_mono (Set.subset_univ _)).trans_eq (by simp)) h_eq_one
@@ -1047,8 +1048,9 @@ end ToLp
 
 section Mean
 
-lemma IsGaussian.integral_continuousLinearMap [SecondCountableTopology E] [CompleteSpace E]
-    {μ : Measure E} [IsGaussian μ] (L : E →L[ℝ] ℝ) :
+variable [SecondCountableTopology E] [CompleteSpace E] {μ : Measure E} [IsGaussian μ]
+
+lemma IsGaussian.integral_continuousLinearMap (L : E →L[ℝ] ℝ) :
     μ[L] = L (∫ x, x ∂μ) := by
   have h_Lp := IsGaussian.memLp_id μ 1 (by simp)
   have h := L.integral_comp_L1_comm (h_Lp.toLp id)
@@ -1060,6 +1062,30 @@ lemma IsGaussian.integral_continuousLinearMap [SecondCountableTopology E] [Compl
     refine integral_congr_ae ?_
     filter_upwards [MemLp.coeFn_toLp h_Lp] with x hx
     rw [hx, id_eq]
+
+lemma eq_dirac_of_variance_eq_zero (h : ∀ (L : E →L[ℝ] ℝ), Var[L; μ] = 0) :
+    μ = Measure.dirac (∫ x, x ∂μ) := by
+  refine ext_of_charFunCLM ?_
+  ext L
+  rw [charFunCLM_dirac, IsGaussian.charFunCLM_eq L, h L, integral_complex_ofReal,
+    IsGaussian.integral_continuousLinearMap L]
+  simp
+
+lemma IsGaussian.noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
+  measure_singleton x := by
+    obtain ⟨L, hL⟩ : ∃ L : E →L[ℝ] ℝ, Var[L; μ] ≠ 0 := by
+      contrapose! h
+      exact ⟨_, eq_dirac_of_variance_eq_zero h⟩
+    have hL_zero : μ.map L {L x} = 0 := by
+      have : NoAtoms (μ.map L) := by
+        rw [IsGaussian.map_eq_gaussianReal L]
+        refine noAtoms_gaussianReal _ _ ?_
+        simp only [ne_eq, Real.toNNReal_eq_zero, not_le]
+        exact lt_of_le_of_ne (variance_nonneg _ _) hL.symm
+      rw [measure_singleton]
+    rw [Measure.map_apply (by fun_prop) (measurableSet_singleton _)] at hL_zero
+    refine measure_mono_null ?_ hL_zero
+    exact fun ⦃a⦄ ↦ congrArg ⇑L
 
 end Mean
 
