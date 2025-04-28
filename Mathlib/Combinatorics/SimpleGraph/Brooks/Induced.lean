@@ -837,8 +837,8 @@ and `(w.rotate hx).shorterOdd hu` `IsCycleLike` (where `hu : u ∈ (w.rotate hx)
 
 Hence define `Walk.oddCycle` below to be either `p.minOdd` or
   `⟨_(p.minOdd.2.rotate hx).shorterOdd hu⟩`. To be an odd cycle in the odd closed walk `p`.
-
 -/
+
 def Walk.oddCycle {u : α} (p : G.Walk u u) : Σ v, G.Walk v v :=
   if 2 < p.minOdd.2.support.count (p.minOdd.1) then sorry else p.minOdd
 
