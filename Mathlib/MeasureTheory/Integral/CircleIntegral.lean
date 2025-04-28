@@ -3,11 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
-import Mathlib.Analysis.Calculus.Deriv.ZPow
-import Mathlib.Analysis.NormedSpace.Pointwise
-import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
+import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 
 /-!
 # Integral over a circle in `ℂ`
@@ -64,7 +62,6 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 integral, circle, Cauchy integral
 -/
 
-
 variable {E : Type*} [NormedAddCommGroup E]
 
 noncomputable section
@@ -74,15 +71,8 @@ open scoped Real NNReal Interval Pointwise Topology
 open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptotics
 
 /-!
-### `circleMap`, a parametrization of a circle
+### Facts about `circleMap`
 -/
-
-theorem circleMap_not_mem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
-  simp [dist_eq, le_abs_self]
-
-theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R) (θ : ℝ) :
-    circleMap c R θ ≠ w :=
-  (ne_of_mem_of_not_mem hw (circleMap_not_mem_ball _ _ _)).symm
 
 /-- The range of `circleMap c R` is the circle with center `c` and radius `|R|`. -/
 @[simp]
@@ -90,9 +80,9 @@ theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |
   calc
     range (circleMap c R) = c +ᵥ R • range fun θ : ℝ => exp (θ * I) := by
       simp (config := { unfoldPartialApp := true }) only [← image_vadd, ← image_smul, ← range_comp,
-        vadd_eq_add, circleMap, Function.comp_def, real_smul]
+        vadd_eq_add, circleMap, comp_def, real_smul]
     _ = sphere c |R| := by
-      rw [Complex.range_exp_mul_I, smul_sphere R 0 zero_le_one]
+      rw [range_exp_mul_I, smul_sphere R 0 zero_le_one]
       simp
 
 /-- The image of `(0, 2π]` under `circleMap c R` is the circle with center `c` and radius `|R|`. -/
@@ -167,7 +157,6 @@ theorem circleMap_preimage_codiscrete {c : ℂ} {R : ℝ} (hR : R ≠ 0) :
 /-!
 ### Integrability of a function on a circle
 -/
-
 
 /-- We say that a function `f : ℂ → E` is integrable on the circle with center `c` and radius `R` if
 the function `f ∘ circleMap c R` is integrable on `[0, 2π]`.
