@@ -507,7 +507,7 @@ lemma integral_id_gaussianReal :
   · simp
 
 @[simp]
-lemma variance_id_gaussianReal : Var[fun x ↦ x ; gaussianReal μ v] = v := by
+lemma variance_id_gaussianReal : Var[fun x ↦ x; gaussianReal μ v] = v := by
   rw [variance_eq_integral measurable_id'.aemeasurable]
   simp only [integral_id_gaussianReal]
   calc ∫ ω, (ω - μ) ^ 2 ∂gaussianReal μ v
@@ -537,7 +537,7 @@ lemma variance_id_gaussianReal : Var[fun x ↦ x ; gaussianReal μ v] = v := by
     simp
 
 @[simp]
-lemma variance_id_gaussianReal' : Var[id ; gaussianReal μ v] = v :=
+lemma variance_id_gaussianReal' : Var[id; gaussianReal μ v] = v :=
   variance_id_gaussianReal _ _
 
 lemma memLp_id_gaussianReal (p : ℝ≥0) : MemLp id p (gaussianReal μ v) :=
@@ -580,14 +580,14 @@ lemma integral_continuousLinearMap_gaussianReal (L : ℝ →L[ℝ] ℝ) :
 
 @[simp]
 lemma variance_linearMap_gaussianReal (L : ℝ →ₗ[ℝ] ℝ) :
-    Var[L ; gaussianReal μ v] = (L 1 ^ 2).toNNReal * v := by
+    Var[L; gaussianReal μ v] = (L 1 ^ 2).toNNReal * v := by
   rw [← variance_id_map, gaussianReal_map_linearMap, variance_id_gaussianReal']
   · simp only [NNReal.coe_mul, Real.coe_toNNReal']
   · fun_prop
 
 @[simp]
 lemma variance_continuousLinearMap_gaussianReal (L : ℝ →L[ℝ] ℝ) :
-    Var[L ; gaussianReal μ v] = (L 1 ^ 2).toNNReal * v :=
+    Var[L; gaussianReal μ v] = (L 1 ^ 2).toNNReal * v :=
   variance_linearMap_gaussianReal _ _ L
 
 lemma noAtoms_gaussianReal (h : v ≠ 0) : NoAtoms (gaussianReal μ v) := by

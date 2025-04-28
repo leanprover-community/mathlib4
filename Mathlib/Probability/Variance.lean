@@ -201,13 +201,13 @@ theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2
 
 @[simp]
 lemma variance_dirac [MeasurableSingletonClass Ω] (x : Ω) :
-    Var[X ; Measure.dirac x] = 0 := by
+    Var[X; Measure.dirac x] = 0 := by
   rw [variance_eq_integral]
   · simp
   · exact aemeasurable_dirac
 
 lemma variance_id_map (hX : AEMeasurable X μ) :
-    Var[id ; μ.map X] = Var[X ; μ] := by
+    Var[id; μ.map X] = Var[X; μ] := by
   rw [variance_eq_integral measurable_id.aemeasurable, integral_map hX]
   swap; · exact Measurable.aestronglyMeasurable <| by fun_prop
   simp only [id_eq]

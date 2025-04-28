@@ -48,7 +48,7 @@ namespace ProbabilityTheory
 /-- A measure is Gaussian if its map by every continuous linear form is a real Gaussian measure. -/
 class IsGaussian {E : Type*} [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
   {mE : MeasurableSpace E} (μ : Measure E) : Prop where
-  map_eq_gaussianReal (L : E →L[ℝ] ℝ) : μ.map L = gaussianReal (μ[L]) (Var[L ; μ]).toNNReal
+  map_eq_gaussianReal (L : E →L[ℝ] ℝ) : μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal
 
 instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianReal m v) where
   map_eq_gaussianReal L := by
@@ -130,12 +130,12 @@ end Centered
 section CharFunCLM
 
 lemma IsGaussian.charFunCLM_eq {μ : Measure E} [IsGaussian μ] (L : E →L[ℝ] ℝ) :
-    charFunCLM μ L = cexp (μ[L] * I - Var[L ; μ] / 2) := by
+    charFunCLM μ L = cexp (μ[L] * I - Var[L; μ] / 2) := by
   calc charFunCLM μ L
   _ = charFun (μ.map L) 1 := by rw [charFunCLM_eq_charFun_map_one]
-  _ = charFun (gaussianReal (μ[L]) (Var[L ; μ]).toNNReal) 1 := by
+  _ = charFun (gaussianReal (μ[L]) (Var[L; μ]).toNNReal) 1 := by
     rw [IsGaussian.map_eq_gaussianReal L]
-  _ = cexp (μ[L] * I - Var[L ; μ] / 2) := by
+  _ = cexp (μ[L] * I - Var[L; μ] / 2) := by
     rw [charFun_gaussianReal]
     simp only [ofReal_one, one_mul, Real.coe_toNNReal', one_pow, mul_one]
     congr
@@ -145,12 +145,12 @@ lemma IsGaussian.charFunCLM_eq {μ : Measure E} [IsGaussian μ] (L : E →L[ℝ]
 
 lemma IsGaussian.charFunCLM_eq_of_isCentered {μ : Measure E} [IsGaussian μ]
     (hμ : IsCentered μ) (L : E →L[ℝ] ℝ) :
-    charFunCLM μ L = cexp (- Var[L ; μ] / 2) := by
+    charFunCLM μ L = cexp (- Var[L; μ] / 2) := by
   rw [IsGaussian.charFunCLM_eq L, integral_complex_ofReal, hμ L]
   simp [neg_div]
 
 theorem isGaussian_iff_charFunCLM_eq {μ : Measure E} [IsFiniteMeasure μ] :
-    IsGaussian μ ↔ ∀ L : E →L[ℝ] ℝ, charFunCLM μ L = cexp (μ[L] * I - Var[L ; μ] / 2) := by
+    IsGaussian μ ↔ ∀ L : E →L[ℝ] ℝ, charFunCLM μ L = cexp (μ[L] * I - Var[L; μ] / 2) := by
   refine ⟨fun h ↦ h.charFunCLM_eq, fun h ↦ ⟨fun L ↦ ?_⟩⟩
   refine Measure.ext_of_charFun ?_
   ext u
@@ -256,7 +256,7 @@ lemma integral_continuousLinearMap_prod (L : E × F →L[ℝ] ℝ) :
       simp
 
 lemma variance_continuousLinearMap_prod (L : E × F →L[ℝ] ℝ) :
-    Var[L ; μ.prod ν] = Var[L.comp (.inl ℝ E F) ; μ] + Var[L.comp (.inr ℝ E F) ; ν] := by
+    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] := by
   rw [variance_def' (memLp_prod L (by simp)), integral_continuousLinearMap_prod L,
     variance_def', variance_def']
   rotate_left
@@ -319,8 +319,8 @@ instance [SecondCountableTopologyEither E F] : IsGaussian (μ.prod ν) := by
   congr
   let L₁ := L.comp (.inl ℝ E F)
   let L₂ := L.comp (.inr ℝ E F)
-  suffices μ[L₁] * I - Var[L₁ ; μ] / 2 +(ν[L₂] * I - Var[L₂ ; ν] / 2)
-      = (μ.prod ν)[L] * I - Var[L ; μ.prod ν] / 2 by convert this
+  suffices μ[L₁] * I - Var[L₁; μ] / 2 +(ν[L₂] * I - Var[L₂; ν] / 2)
+      = (μ.prod ν)[L] * I - Var[L; μ.prod ν] / 2 by convert this
   rw [sub_add_sub_comm, ← add_mul]
   congr
   · simp_rw [integral_complex_ofReal]
@@ -370,9 +370,9 @@ lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace
   rw [← add_div, ← add_div, ← neg_add, ← neg_add]
   congr 3
   norm_cast
-  show Var[(L.comp (.rotation θ)).comp (.inl ℝ E E) ; μ]
-        + Var[(L.comp (.rotation θ)).comp (.inr ℝ E E) ; μ]
-      = Var[L.comp (.inl ℝ E E) ; μ] + Var[L.comp (.inr ℝ E E) ; μ]
+  show Var[(L.comp (.rotation θ)).comp (.inl ℝ E E); μ]
+        + Var[(L.comp (.rotation θ)).comp (.inr ℝ E E); μ]
+      = Var[L.comp (.inl ℝ E E); μ] + Var[L.comp (.inr ℝ E E); μ]
   have h1 : (L.comp (.rotation θ)).comp (.inl ℝ E E)
       = Real.cos θ • L.comp (.inl ℝ E E) - Real.sin θ • L.comp (.inr ℝ E E) := by
     ext x
@@ -551,7 +551,7 @@ lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
   norm_num
 
 -- todo: remove IsCentered (once we know that `∫ x, x ∂μ` is a thing)
-lemma eq_dirac_of_variance_eq_zero (hμ : IsCentered μ) (h : ∀ (L : E →L[ℝ] ℝ), Var[L ; μ] = 0) :
+lemma eq_dirac_of_variance_eq_zero (hμ : IsCentered μ) (h : ∀ (L : E →L[ℝ] ℝ), Var[L; μ] = 0) :
     μ = Measure.dirac 0 := by
   refine ext_of_charFunCLM ?_
   ext L
@@ -561,7 +561,7 @@ lemma eq_dirac_of_variance_eq_zero (hμ : IsCentered μ) (h : ∀ (L : E →L[�
 lemma IsGaussian.noAtoms_of_isCentered (hμ : IsCentered μ) (h : μ ≠ Measure.dirac 0) :
     NoAtoms μ where
   measure_singleton x := by
-    obtain ⟨L, hL⟩ : ∃ L : E →L[ℝ] ℝ, Var[L ; μ] ≠ 0 := by
+    obtain ⟨L, hL⟩ : ∃ L : E →L[ℝ] ℝ, Var[L; μ] ≠ 0 := by
       contrapose! h
       exact eq_dirac_of_variance_eq_zero hμ h
     have hL_zero : μ.map L {L x} = 0 := by
@@ -578,7 +578,7 @@ lemma IsGaussian.noAtoms_of_isCentered (hμ : IsCentered μ) (h : μ ≠ Measure
 lemma IsGaussian.measure_closedBall_lt_one (hμ : IsCentered μ) (h : μ ≠ Measure.dirac 0)
     (a : ℝ) :
     μ {x | ‖x‖ ≤ a} < 1 := by
-  obtain ⟨L, hL⟩ : ∃ L : E →L[ℝ] ℝ, Var[L ; μ] ≠ 0 := by
+  obtain ⟨L, hL⟩ : ∃ L : E →L[ℝ] ℝ, Var[L; μ] ≠ 0 := by
     contrapose! h
     exact eq_dirac_of_variance_eq_zero hμ h
   by_contra! h_eq_one
@@ -692,7 +692,7 @@ lemma IsGaussian.exists_integrable_exp_sq_of_isCentered (hμ : IsCentered μ) :
   refine ⟨Measurable.aestronglyMeasurable <| by fun_prop, ?_⟩
   simp only [HasFiniteIntegral, ← ofReal_norm_eq_enorm, Real.norm_eq_abs, Real.abs_exp]
   -- `⊢ ∫⁻ (a : E), ENNReal.ofReal (rexp (C * ‖a‖ ^ 2)) ∂μ < ⊤`
-  let t : ℕ → ℝ := Nat.rec a fun n tn ↦ a + √2 * tn -- t 0 = a ; t (n + 1) = a + √2 * t n
+  let t : ℕ → ℝ := Nat.rec a fun n tn ↦ a + √2 * tn -- t 0 = a; t (n + 1) = a + √2 * t n
   have ht_succ_def n : t (n + 1) = a + √2 * t n := rfl
   have ht_nonneg n : 0 ≤ t n := by
     induction n with
