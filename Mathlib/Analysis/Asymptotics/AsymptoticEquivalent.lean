@@ -286,6 +286,16 @@ protected theorem IsEquivalent.div (htu : t ~[l] u) (hvw : v ~[l] w) :
     (fun x ↦ t x / v x) ~[l] fun x ↦ u x / w x := by
   simpa only [div_eq_mul_inv] using htu.mul hvw.inv
 
+protected theorem IsEquivalent.pow (h : t ~[l] u) (n : ℕ) : t ^ n ~[l] u ^ n := by
+  induction n with
+  | zero => simpa using IsEquivalent.refl
+  | succ _ ih => simpa [pow_succ] using ih.mul h
+
+protected theorem IsEquivalent.zpow (h : t ~[l] u) (z : ℤ) : t ^ z ~[l] u ^ z := by
+  match z with
+  | Int.ofNat _ => simpa using h.pow _
+  | Int.negSucc _ => simpa using (h.pow _).inv
+
 end mul_inv
 
 section NormedLinearOrderedField
