@@ -123,7 +123,8 @@ end congr
 variable {l l₁ l₂ : Filter α} {f : α → E} {g : α → F}
 
 @[trans]
-theorem IsLittleOTVS.trans {k : α → G} (hfg : f =o[𝕜; l] g) (hgk : g =o[𝕜; l] k) : f =o[𝕜; l] k := by
+theorem IsLittleOTVS.trans {k : α → G} (hfg : f =o[𝕜; l] g) (hgk : g =o[𝕜; l] k) :
+    f =o[𝕜; l] k := by
   intros U hU
   obtain ⟨V, hV0, hV⟩ := hfg U hU
   obtain ⟨W, hW0, hW⟩ := hgk V hV0
@@ -246,8 +247,8 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] : f =o[𝕜; l] (1 : α → 𝕜)
         apply le_mul_of_one_le_right'
         simpa using le_egauge_ball_one 𝕜 (1 : 𝕜)
 
-lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} (h : g =o[𝕜; l] f) :
-    Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
+lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E}
+    (h : g =o[𝕜; l] f) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
   rw [← isLittleOTVS_one (𝕜 := 𝕜)]
   intro U hU
   rcases h.smul_left f⁻¹ U hU with ⟨V, hV₀, hV⟩
