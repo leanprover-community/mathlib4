@@ -274,17 +274,22 @@ theorem integral_smul [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G] (c : 𝕜)
     exact setToFun_smul (dominatedFinMeasAdditive_weightedSMul μ) weightedSMul_smul c f
   · simp [integral, hG]
 
-theorem integral_mul_left {L : Type*} [RCLike L] (r : L) (f : α → L) :
+theorem integral_const_mul {L : Type*} [RCLike L] (r : L) (f : α → L) :
     ∫ a, r * f a ∂μ = r * ∫ a, f a ∂μ :=
   integral_smul r f
 
-theorem integral_mul_right {L : Type*} [RCLike L] (r : L) (f : α → L) :
-    ∫ a, f a * r ∂μ = (∫ a, f a ∂μ) * r := by
-  simp only [mul_comm]; exact integral_mul_left r f
+@[deprecated (since := "2025-04-27")]
+alias integral_mul_left := integral_const_mul
+
+theorem integral_mul_const {L : Type*} [RCLike L] (r : L) (f : α → L) :
+    ∫ a, f a * r ∂μ = (∫ a, f a ∂μ) * r := by simp only [mul_comm]; exact integral_const_mul r f
+
+@[deprecated (since := "2025-04-27")]
+alias integral_mul_right := integral_mul_const
 
 theorem integral_div {L : Type*} [RCLike L] (r : L) (f : α → L) :
     ∫ a, f a / r ∂μ = (∫ a, f a ∂μ) / r := by
-  simpa only [← div_eq_mul_inv] using integral_mul_right r⁻¹ f
+  simpa only [← div_eq_mul_inv] using integral_mul_const r⁻¹ f
 
 theorem integral_congr_ae {f g : α → G} (h : f =ᵐ[μ] g) : ∫ a, f a ∂μ = ∫ a, g a ∂μ := by
   by_cases hG : CompleteSpace G
