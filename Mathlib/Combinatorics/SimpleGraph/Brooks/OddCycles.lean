@@ -231,12 +231,12 @@ lemma Walk.length_shortCut_add_shortClosed (w : G.Walk u v) (hx : x ∈ w.suppor
     rw [w.shortClosed_of_eq  _ w.start_mem_support hu.symm, length_copy]
     simp
 
--- lemma Walk.count_support_rotate_new (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u) :
---   (w.rotate hx).support.count x = w.support.count x + 1 := by
---   nth_rw 2 [← take_spec w hx]
---   simp_rw [rotate, Walk.support_append, List.count_append]
---   rw [List.count_tail (by simp), List.count_tail (by simp)]
---   simp [if_neg (Ne.symm hne)]
+lemma Walk.count_support_rotate_new (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u) :
+  (w.rotate hx).support.count x = w.support.count x + 1 := by
+  nth_rw 2 [← take_spec w hx]
+  simp_rw [rotate, Walk.support_append, List.count_append]
+  rw [List.count_tail (by simp), List.count_tail (by simp)]
+  simp [if_neg (Ne.symm hne)]
 
 lemma Walk.count_support_rotate_old (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u) :
   (w.rotate hx).support.count u = w.support.count u - 1 := by
@@ -246,9 +246,8 @@ lemma Walk.count_support_rotate_old (w : G.Walk u u) (hx : x ∈ w.support) (hne
   simp [head_support, beq_self_eq_true, ↓reduceIte,if_neg hne]
   rw [← Nat.add_sub_assoc (by simp), add_comm]
 
-lemma Walk.count_support_rotate_other (w : G.Walk u u) (hx : x ∈ w.support)
-  (hvx : x ≠ v) (hvu : u ≠ v) :
-  (w.rotate hx).support.count v = w.support.count v := by
+lemma Walk.count_support_rotate_other (w : G.Walk u u) (hx : x ∈ w.support) (hvx : x ≠ v)
+  (hvu : u ≠ v) : (w.rotate hx).support.count v = w.support.count v := by
   nth_rw 2 [← take_spec w hx]
   simp_rw [rotate, Walk.support_append, List.count_append]
   rw [List.count_tail (by simp), List.count_tail (by simp)]
@@ -300,7 +299,7 @@ lemma Walk.count_shorterOdd {p : G.Walk u u} {x : α} (hx : x ∈ p.support) (hn
   · rw [shortClosed]
     rw []
     sorry
-  · 
+  ·
     sorry
 
 lemma Walk.length_shorterOdd_lt_length {p : G.Walk u u} {x : α} (hx : x ∈ p.support) (hne : x ≠ u)
