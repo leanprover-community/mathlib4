@@ -200,7 +200,8 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
                 (LinearMap.toSpanSingleton _ _ _) (this i).choose_spec.left : R ⧸ _ →ₗ[R] _)))
               (R ∙ s j).injective_subtype ?_ ?_).symm ≪≫ₗ
           (((quotTorsionOfEquivSpanSingleton R M (s j)).symm ≪≫ₗ
-            (quotEquivOfEq (torsionOf R M (s j)) _  (Ideal.torsionOf_eq_span_pow_pOrder hp hM (s j)))).prodCongr (.refl _ _)) ≪≫ₗ
+            (quotEquivOfEq (torsionOf R M (s j)) _
+              (Ideal.torsionOf_eq_span_pow_pOrder hp hM (s j)))).prodCongr (.refl _ _)) ≪≫ₗ
           (@DirectSum.lequivProdDirectSum R _ _
             (fun i => R ⧸ R ∙ p ^ @Option.rec _ (fun _ => ℕ) (pOrder hM <| s j) k i) _ _).symm ≪≫ₗ
           (DirectSum.lequivCongrLeft R (finSuccEquiv d).symm)
