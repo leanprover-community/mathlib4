@@ -5005,6 +5005,7 @@ import Mathlib.RingTheory.Finiteness.Subalgebra
 import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.Flat.CategoryTheory
+import Mathlib.RingTheory.Flat.Domain
 import Mathlib.RingTheory.Flat.Equalizer
 import Mathlib.RingTheory.Flat.EquationalCriterion
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
