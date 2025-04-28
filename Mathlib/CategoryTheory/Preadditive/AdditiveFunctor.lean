@@ -153,7 +153,8 @@ open CategoryTheory.Preadditive
 
 instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
     PreservesFiniteBiproducts F where
-  preserves :=
+  preserves := fun {J} _ =>
+    let ⟨_⟩ := nonempty_fintype J
     { preserves :=
       { preserves := fun hb =>
           ⟨isBilimitOfTotal _ (by
