@@ -11,10 +11,10 @@ import Mathlib.RepresentationTheory.FDRep
 In this file we prove Tannaka duality for finite groups.
 
 The theorem can be formulated as follows: for any integral domain `k`, a finite group `G` can be
-recovered from `FDRep k G`, the monoidal category of finite dimensional `k`-linear representations
+recovered from `FDRep k G`, the monoidal category of finitely generated `k`-linear representations
 of `G`, and the monoidal forgetful functor `forget : FDRep k G ⥤ FGModuleCat k`.
 
-More specifically, the main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
+The main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
 
 ## Reference
 
@@ -208,8 +208,7 @@ lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
     ∃ (s : G), (η.hom.hom.app rightFDRep).hom = rightRegular s := by
   classical
   obtain ⟨s, hs⟩ := AlgHom.eq_piEvalAlgHom ((evalAlgHom _ _ 1).comp (algHomOfRightFDRepComp η))
-  use s
-  refine Basis.ext (basisFun k G) (fun u ↦ ?_)
+  refine ⟨s, Basis.ext (basisFun k G) (fun u ↦ ?_)⟩
   simp only [rightFDRep, forget_obj]
   ext t
   have nat := η.hom.hom.naturality (leftRegularFDRepHom t⁻¹)
@@ -225,13 +224,12 @@ lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
 lemma equivHom_surjective [IsDomain k] : Function.Surjective (equivHom k G) := by
   intro η
   obtain ⟨s, h⟩ := toRightFDRepComp_in_rightRegular η
-  use s
-  exact toRightFDRepComp_injective (hom_ext h.symm)
+  exact ⟨s, toRightFDRepComp_injective (hom_ext h.symm)⟩
 
 variable (k G) in
 /-- Tannaka duality for finite groups:
 
-A group `G` is isomorphic to `Aut (forget k G)`, where `k` is any integral domain,
+A finite group `G` is isomorphic to `Aut (forget k G)`, where `k` is any integral domain,
 and `forget k G` is the monoidal forgetful functor `FDRep k G ⥤ FGModuleCat k G`. -/
 def equiv [IsDomain k] : G ≃* Aut (forget k G) :=
   MulEquiv.ofBijective (equivHom k G) ⟨equivHom_injective, equivHom_surjective⟩
