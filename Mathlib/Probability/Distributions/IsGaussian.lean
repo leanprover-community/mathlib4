@@ -121,6 +121,7 @@ instance isGaussian_conv [SecondCountableTopology E]
 
 section Centered
 
+/-- A Gaussian distribution `μ` is centered if `μ[L] = 0` for all continuous linear forms `L`. -/
 def IsCentered (μ : Measure E) : Prop := ∀ L : E →L[ℝ] ℝ, μ[L] = 0
 
 lemma isCentered_dirac_zero : IsCentered (Measure.dirac (0 : E)) := by intro L; simp
@@ -330,6 +331,7 @@ instance [SecondCountableTopologyEither E F] : IsGaussian (μ.prod ν) := by
     rw [variance_continuousLinearMap_prod]
     norm_cast
 
+/-- The rotation in `E × E` with angle `θ`, as a continuous linear map. -/
 noncomputable
 def _root_.ContinuousLinearMap.rotation (θ : ℝ) :
     E × E →L[ℝ] E × E where
@@ -1097,6 +1099,7 @@ open scoped RealInnerProductSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
+/-- The inner product as a continuous bilinear form. -/
 noncomputable
 def continuousBilinFormOfInner : E →L[ℝ] E →L[ℝ] ℝ :=
   (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
