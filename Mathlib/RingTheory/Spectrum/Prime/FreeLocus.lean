@@ -59,7 +59,7 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
   refine { __ := IsLocalizedModule.iso p.asIdeal.primeCompl f, map_smul' := ?_ }
   intro r x
   obtain ⟨r, s, rfl⟩ := IsLocalization.mk'_surjective p.asIdeal.primeCompl r
-  apply ((Module.End_isUnit_iff _).mp (IsLocalizedModule.map_units f s)).1
+  apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units f s)).1
   simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
     algebraMap_end_apply, AlgEquiv.toRingEquiv_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_coe, IsLocalization.algEquiv_apply,
