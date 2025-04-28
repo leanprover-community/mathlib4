@@ -156,7 +156,7 @@ end LocallyDiscrete
 
 /-- The pseudofunctor from `LocallyDiscrete B` to `LocallyDiscrete C`
 induced by a functor `F : B ⥤ C`. -/
-@[simps!]
+@[simps! obj map mapId mapComp]
 def mapLocallyDiscrete {B C : Type*} [Category B] [Category C] (F : B ⥤ C):
     Pseudofunctor (LocallyDiscrete B) (LocallyDiscrete C) :=
   LocallyDiscrete.mkPseudofunctor

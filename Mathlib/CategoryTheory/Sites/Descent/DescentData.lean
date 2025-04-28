@@ -6,6 +6,7 @@ Authors: Joël Riou, Christian Merten
 import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 import Mathlib.CategoryTheory.Sites.Descent.Morphisms
 import Mathlib.CategoryTheory.Sites.Descent.CodescentData
+import Mathlib.CategoryTheory.Sites.Descent.PullbackStruct
 
 /-!
 # Descent data
@@ -19,6 +20,23 @@ namespace CategoryTheory
 open Opposite Limits
 
 namespace Pseudofunctor
+
+section
+
+@[simp]
+lemma mapComp'_mapLocallyDiscrete_comp
+    {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+    (G : Pseudofunctor (LocallyDiscrete D) Cat)
+    {X Y Z : LocallyDiscrete C} (f : X ⟶ Y) (g : Y ⟶ Z) (fg : X ⟶ Z) (hfg : f ≫ g = fg) :
+      ((mapLocallyDiscrete F).comp G).mapComp' f g fg hfg =
+      G.mapComp' ((mapLocallyDiscrete F).map f) ((mapLocallyDiscrete F).map g)
+        ((mapLocallyDiscrete F).map fg) (by aesop) := by
+  ext
+  subst hfg
+  rw [mapComp'_eq_mapComp]
+  rfl
+
+end
 
 variable {C : Type u} [Category.{v} C] (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v', u'})
   {ι : Type t} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
@@ -40,6 +58,39 @@ def toDescentData : F.obj (.mk (op S)) ⥤ F.DescentData f :=
           congr
           ext
           simpa using Over.w m))
+
+namespace DescentData
+
+def mk' (obj : ∀ i, F.obj (.mk (op (X i))))
+    (hom : ∀ ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
+      (hp₁ : f₁ ≫ f i₁ = q) (hp₂ : f₂ ≫ f i₂ = q),
+        (F.map f₁.op.toLoc).obj (obj i₁) ⟶ (F.map f₂.op.toLoc).obj (obj i₂))
+    (hom_comp' : ∀ ⦃Y Y' : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
+      ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q)
+      (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂) (hgf₁ : g ≫ f₁ = gf₁) (hgf₂ : g ≫ f₂ = gf₂),
+      hom q' gf₁ gf₂ (by aesop_cat) (by aesop_cat) =
+        (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc
+          (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, hgf₁])).hom.app _ ≫
+          (F.map (.toLoc g.op)).map (hom q f₁ f₂ hf₁ hf₂) ≫
+          (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc
+          (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, hgf₂])).inv.app _) :
+    F.DescentData f :=
+  CodescentData.mk' obj
+    (fun Y i₁ i₂ f₁ f₂ ↦ hom Y.as.unop.hom f₁.as.unop.left f₂.as.unop.left
+      (Over.w f₁.as.unop) (Over.w f₂.as.unop))
+    (fun Y' Y g i₁ i₂ f₁ f₂ f₁g f₂g hf₁g hf₂g ↦ by
+      simpa using hom_comp' g.as.unop.left Y.as.unop.hom Y'.as.unop.hom
+        (Over.w g.as.unop) f₁.as.unop.left f₂.as.unop.left
+        (Over.w f₁.as.unop) (Over.w f₂.as.unop) f₁g.as.unop.left f₂g.as.unop.left
+        (by simp [← hf₁g]) (by simp [← hf₂g]))
+      sorry sorry
+
+--variable (obj : ∀ i, (F.obj (.mk (op (X i)))))
+--  (sq : ∀ i j, ChosenPullback (f i) (f j))
+--  (hom : ∀ (i j : ι), (F.map (sq i j).p₁.op.toLoc).obj (obj i) ⟶
+--    (F.map (sq i j).p₂.op.toLoc).obj (obj j))
+
+end DescentData
 
 end Pseudofunctor
 
