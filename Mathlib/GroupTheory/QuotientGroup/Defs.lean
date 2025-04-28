@@ -246,7 +246,7 @@ theorem lift_quot_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) :
 @[to_additive]
 theorem lift_surjective_of_surjective (φ : G →* M) (hφ : Function.Surjective φ) (HN : N ≤ φ.ker) :
     Function.Surjective (QuotientGroup.lift N φ HN) :=
-  fun x ↦ ⟨mk (hφ x).choose, by rw [lift_mk, (hφ x).choose_spec]⟩
+  Quotient.lift_surjective _ _ hφ
 
 @[to_additive]
 theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
