@@ -109,10 +109,15 @@ end definitions
 
 variable [Finite G]
 
-lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom k G) := by
+lemma equivHom_injective [Nontrivial k] : Function.Injective (equivHom k G) := by
   intro s t h
+  classical
   apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
+
+@[simp]
+lemma equivHom_inj [Nontrivial k] {s t} : equivHom k G s = equivHom k G t ↔ s = t :=
+  equivHom_injective.eq_iff
 
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
 def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
