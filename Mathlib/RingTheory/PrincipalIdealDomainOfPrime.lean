@@ -53,13 +53,13 @@ theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPr
       (span_singleton_mul_span_singleton a b).ge.trans ?_
   · have hisup : i ∈ I ⊔ span {y} := Ideal.mem_sup_left hi
     have : y ∈ I ⊔ span {y} := Ideal.mem_sup_right (Ideal.mem_span_singleton_self y)
-    erw [ha, mem_span_singleton'] at hisup this
+    rw [ha, Ideal.submodule_span_eq, mem_span_singleton'] at hisup this
     obtain ⟨v, rfl⟩ := this
     obtain ⟨u, rfl⟩ := hisup
     have hucolon : u ∈ I.colon (span {v * a}) := by
       rw [Ideal.mem_colon_singleton, mul_comm v, ← mul_assoc]
       exact mul_mem_right _ _ hi
-    erw [hb, mem_span_singleton'] at hucolon
+    rw [hb, Ideal.submodule_span_eq, mem_span_singleton'] at hucolon
     obtain ⟨z, rfl⟩ := hucolon
     exact mem_span_singleton'.2 ⟨z, by ring⟩
   · rw [← Ideal.submodule_span_eq, ← ha, Ideal.sup_mul, sup_le_iff,

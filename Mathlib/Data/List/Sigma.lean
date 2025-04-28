@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
 -/
+import Batteries.Data.List.Perm
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Lookmap
+import Mathlib.Data.Sigma.Basic
 
 /-!
 # Utilities for lists of sigmas
@@ -49,7 +51,7 @@ theorem keys_cons {s} {l : List (Sigma β)} : (s :: l).keys = s.1 :: l.keys :=
   rfl
 
 theorem mem_keys_of_mem {s : Sigma β} {l : List (Sigma β)} : s ∈ l → s.1 ∈ l.keys :=
-  mem_map_of_mem Sigma.fst
+  mem_map_of_mem
 
 theorem exists_of_mem_keys {a} {l : List (Sigma β)} (h : a ∈ l.keys) :
     ∃ b : β a, Sigma.mk a b ∈ l :=
@@ -62,10 +64,13 @@ theorem mem_keys {a} {l : List (Sigma β)} : a ∈ l.keys ↔ ∃ b : β a, Sigm
 theorem not_mem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, Sigma.mk a b ∉ l :=
   (not_congr mem_keys).trans not_exists
 
-theorem not_eq_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 :=
+theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 :=
   Iff.intro (fun h₁ s h₂ e => absurd (mem_keys_of_mem h₂) (by rwa [e] at h₁)) fun f h₁ =>
     let ⟨_, h₂⟩ := exists_of_mem_keys h₁
     f _ h₂ rfl
+
+@[deprecated (since := "2025-04-27")]
+alias not_eq_key := ne_key
 
 /-! ### `NodupKeys` -/
 
@@ -123,10 +128,8 @@ theorem nodupKeys_flatten {L : List (List (Sigma β))} :
     NodupKeys (flatten L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
   rw [nodupKeys_iff_pairwise, pairwise_flatten, pairwise_map]
   refine and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) ?_
-  apply iff_of_eq; congr with (l₁ l₂)
+  apply iff_of_eq; congr! with (l₁ l₂)
   simp [keys, disjoint_iff_ne, Sigma.forall]
-
-@[deprecated (since := "2024-10-15")] alias nodupKeys_join := nodupKeys_flatten
 
 theorem nodup_zipIdx_map_snd (l : List α) : (l.zipIdx.map Prod.snd).Nodup := by
   simp [List.nodup_range']
@@ -141,8 +144,6 @@ variable [DecidableEq α] [DecidableEq α']
 
 /-! ### `dlookup` -/
 
-
--- Porting note: renaming to `dlookup` since `lookup` already exists
 /-- `dlookup a l` is the first value in `l` corresponding to the key `a`,
   or `none` if no such element exists. -/
 def dlookup (a : α) : List (Sigma β) → Option (β a)
@@ -390,7 +391,7 @@ theorem kerase_of_not_mem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : ke
   | cons _ _ ih => simp [not_or] at h; simp [h.1, ih h.2]
 
 theorem kerase_sublist (a : α) (l : List (Sigma β)) : kerase a l <+ l :=
-  eraseP_sublist _
+  eraseP_sublist
 
 theorem kerase_keys_subset (a) (l : List (Sigma β)) : (kerase a l).keys ⊆ l.keys :=
   ((kerase_sublist a l).map _).subset

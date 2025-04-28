@@ -87,7 +87,6 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
   right_inv s := by
     simp only [map_map, comp_apply, ← Fin.castSucc_zero, Fin.predAbove_succAbove, map_id']
 
--- Porting note: use eqn compiler instead of `pincerRecursion` to make cases more readable
 theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
   | n, 0 => by simp
   | 0, k + 1 => by rw [multichoose_zero_succ]; exact card_eq_zero
@@ -103,9 +102,7 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
 theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
     card (Sym α k) = multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
-  -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
-  -- deprecated?
-  exact Fintype.card_congr (equivCongr (equivFin α))
+  exact card_congr (equivCongr (equivFin α))
 
 /-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
 `Nat.choose (card α + k - 1) k`. -/

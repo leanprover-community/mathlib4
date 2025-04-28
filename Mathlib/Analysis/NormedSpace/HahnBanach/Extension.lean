@@ -42,7 +42,7 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
     ∃ g : E →L[ℝ] ℝ, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   rcases exists_extension_of_le_sublinear ⟨p, f⟩ (fun x => ‖f‖ * ‖x‖)
       (fun c hc x => by simp only [norm_smul c x, Real.norm_eq_abs, abs_of_pos hc, mul_left_comm])
-      (fun x y => by -- Porting note: placeholder filled here
+      (fun x y => by
         rw [← left_distrib]
         exact mul_le_mul_of_nonneg_left (norm_add_le x y) (@norm_nonneg _ _ f))
       fun x => le_trans (le_abs_self _) (f.le_opNorm _) with ⟨g, g_eq, g_le⟩
@@ -83,8 +83,12 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
   -- It is an extension of `f`.
   have h : ∀ x : p, g.extendTo𝕜 x = f x := by
     intro x
+    rw [ContinuousLinearMap.extendTo𝕜_apply, ← Submodule.coe_smul]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [ContinuousLinearMap.extendTo𝕜_apply, ← Submodule.coe_smul, hextends, hextends]
+    -- The goal has a coercion from `RestrictScalars ℝ 𝕜 E →L[ℝ] ℝ`, but
+    -- `hextends` involves a coercion from `E →L[ℝ] ℝ`.
+    erw [hextends]
+    erw [hextends]
     have :
         (fr x : 𝕜) - I * ↑(fr ((I : 𝕜) • x)) = (re (f x) : 𝕜) - (I : 𝕜) * re (f ((I : 𝕜) • x)) := by
       rfl

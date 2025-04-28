@@ -273,11 +273,11 @@ theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
 
 theorem head_eq_some {s : Seq α} {x : α} (h : s.head = some x) :
     s = cons x s.tail := by
-  cases' s with x' tl <;> simp at h
+  cases s <;> simp at h
   simpa [cons_eq_cons]
 
 theorem head_eq_none {s : Seq α} (h : s.head = none) : s = nil := by
-  cases' s with x tl
+  cases s
   · rfl
   · simp at h
 
@@ -299,7 +299,6 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
-  -- Porting note: had to reshuffle `intro`
   cases s with
   | nil => injection e
   | cons b s' =>
@@ -339,9 +338,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
   dsimp [corec, destruct, get]
-  -- Porting note: next two lines were `change`...`with`...
-  have h : Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
-  rw [h]
+  rw [show Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 from rfl]
   dsimp [Corec.f]
   induction' h : f b with s; · rfl
   obtain ⟨a, b'⟩ := s; dsimp [Corec.f]
@@ -918,7 +915,7 @@ theorem terminatedAt_map_iff {f : α → β} {s : Seq α} {n : ℕ} :
   simp [TerminatedAt]
 
 @[simp]
-theorem terminates_map_iff {f : α → β} {s : Seq α}  :
+theorem terminates_map_iff {f : α → β} {s : Seq α} :
     (map f s).Terminates ↔ s.Terminates := by
   simp [Terminates]
 
@@ -1053,7 +1050,7 @@ theorem take_drop {s : Seq α} {n m : ℕ} :
   induction m generalizing n s with
   | zero => simp [drop]
   | succ k ih =>
-    cases' s with x tl
+    cases s
     · simp
     cases n with
     | zero => simp
@@ -1141,7 +1138,7 @@ theorem zipWith_nil_right {f : α → β → γ} {s} :
 theorem zipWith_cons_cons {f : α → β → γ} {x s x' s'} :
     zipWith f (cons x s) (cons x' s') = cons (f x x') (zipWith f s s') := by
   ext1 n
-  cases' n <;> simp
+  cases n <;> simp
 
 @[simp]
 theorem zip_nil_left {s : Seq α} :
@@ -1319,8 +1316,6 @@ theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
   rw [map_comp _ join]
   generalize Seq.map (map g ∘ f) s = SS
   rcases map g (f a) with ⟨⟨a, s⟩, S⟩
-  -- Porting note: Instead of `apply recOn s <;> intros`, `induction'` are used to
-  --   give names to variables.
   induction' s using recOn with x s_1 <;> induction' S using recOn with x_1 s_2 <;> simp
   · obtain ⟨x, t⟩ := x_1
     cases t <;> simp

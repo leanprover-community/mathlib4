@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Iso
+import Mathlib.Order.Basic
 
 /-!
 # Properties of objects in a category
@@ -34,6 +35,9 @@ namespace ObjectProperty
 
 variable {C : Type u} {D : Type u'} [Category.{v} C] [Category.{v'} D]
 
+lemma le_def {P Q : ObjectProperty C} :
+    P ≤ Q ↔ ∀ (X : C), P X → Q X := Iff.rfl
+
 /-- The inverse image of a property of objects by a functor. -/
 def inverseImage (P : ObjectProperty D) (F : C ⥤ D) : ObjectProperty C :=
   fun X ↦ P (F.obj X)
@@ -52,6 +56,15 @@ lemma prop_map_iff (P : ObjectProperty C) (F : C ⥤ D) (Y : D) :
 lemma prop_map_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
     P.map F (F.obj X) :=
   ⟨X, hX, ⟨Iso.refl _⟩⟩
+
+/-- The typeclass associated to `P : ObjectProperty C`. -/
+@[mk_iff]
+class Is (P : ObjectProperty C) (X : C) : Prop where
+  prop : P X
+
+lemma prop_of_is (P : ObjectProperty C) (X : C) [P.Is X] : P X := by rwa [← P.is_iff]
+
+lemma is_of_prop (P : ObjectProperty C) {X : C} (hX : P X) : P.Is X := by rwa [P.is_iff]
 
 end ObjectProperty
 

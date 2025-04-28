@@ -192,9 +192,8 @@ theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
 lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} {p : G.Walk u v} (h : G ≤ G') :
     (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x := by
   simp only [toSubgraph_map, Subgraph.map_adj]
-  nth_rewrite 1 [← Hom.mapSpanningSubgraphs_apply h w, ← Hom.mapSpanningSubgraphs_apply h x]
-  rw [Relation.map_apply_apply (Hom.mapSpanningSubgraphs_injective h)
-    (Hom.mapSpanningSubgraphs_injective h)]
+  nth_rewrite 1 [← Hom.ofLE_apply h w, ← Hom.ofLE_apply h x]
+  simp
 
 @[simp]
 theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborSet w).Finite := by
@@ -382,7 +381,7 @@ lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycl
     exact Set.ncard_pair hpc.snd_ne_penultimate
   push_neg at he
   rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by omega)]
-  exact Set.ncard_pair (hpc.getVert_sub_one_neq_getVert_add_one (by omega))
+  exact Set.ncard_pair (hpc.getVert_sub_one_ne_getVert_add_one (by omega))
 
 lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toSubgraph.Adj v w) :
     ∃ (p' : G.Walk v v), p'.IsCycle ∧ p'.snd = w ∧ p'.toSubgraph.verts = p.toSubgraph.verts := by
@@ -396,6 +395,47 @@ lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toS
     exact ⟨h.reverse, hr.symm, by rw [toSubgraph_reverse _]⟩
 
 end IsCycle
+
+open Finset
+
+variable [DecidableEq V] {u v : V} {p : G.Walk u v}
+
+/-- This lemma states that given some finite set of vertices, of which at least one is in the
+support of a given walk, one of them is the first to be encountered. This consequence is encoded
+as the set of vertices, restricted to those in the support, execept for the first, being empty.
+You could interpret this as being `takeUntilSet`, but defining this is slightly involved due to
+not knowing what the final vertex is. This could be done by defining a function to obtain the
+first encountered vertex and then use that to define `takeUntilSet`. That direction could be
+worthwhile if this concept is used more widely. -/
+lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
+    (h : {x ∈ s | x ∈ p.support}.Nonempty) :
+    ∃ x ∈ s, ∃ hx : x ∈ p.support, {t ∈ s.erase x | t ∈ (p.takeUntil x hx).support} = ∅ := by
+  simp only [← Finset.subset_empty]
+  induction' hp : p.length + #s using Nat.strong_induction_on with n ih generalizing s v
+  simp only [Finset.Nonempty, mem_filter] at h
+  obtain ⟨x, hxs, hx⟩ := h
+  obtain h | h := Finset.eq_empty_or_nonempty {t ∈ s.erase x | t ∈ (p.takeUntil x hx).support}
+  · use x, hxs, hx, h.le
+  have : (p.takeUntil x hx).length + #(s.erase x) < n := by
+    rw [← card_erase_add_one hxs] at hp
+    have := p.length_takeUntil_le hx
+    omega
+  obtain ⟨y, hys, hyp, h⟩ := ih _ this (s.erase x) h rfl
+  use y, mem_of_mem_erase hys, support_takeUntil_subset p hx hyp
+  rwa [takeUntil_takeUntil, erase_right_comm, filter_erase, erase_eq_of_not_mem] at h
+  simp only [mem_filter, mem_erase, ne_eq, not_and, and_imp]
+  rintro hxy -
+  exact not_mem_support_takeUntil_support_takeUntil_subset (Ne.symm hxy) hx hyp
+
+lemma exists_mem_support_forall_mem_support_imp_eq (s : Finset V)
+    (h : {x ∈ s | x ∈ p.support}.Nonempty) :
+    ∃ x ∈ s, ∃ (hx : x ∈ p.support),
+      ∀ t ∈ s, t ∈ (p.takeUntil x hx).support → t = x := by
+  obtain ⟨x, hxs, hx, h⟩ := p.exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty s h
+  use x, hxs, hx
+  suffices {t ∈ s | t ∈ (p.takeUntil x hx).support} ⊆ {x} by simpa [Finset.subset_iff] using this
+  rwa [Finset.filter_erase, ← Finset.subset_empty, ← Finset.subset_insert_iff,
+    LawfulSingleton.insert_empty_eq] at h
 
 end Walk
 

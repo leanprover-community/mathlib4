@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
 import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Equidecompositions
@@ -50,7 +50,7 @@ We take this as our definition as it is easier to work with. It is implemented a
 
 -/
 
-variable {X G : Type*} {A B C: Set X}
+variable {X G : Type*} {A B C : Set X}
 
 open Function Set Pointwise PartialEquiv
 
