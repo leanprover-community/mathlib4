@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Combinatorics.Enumerative.Bell
 import Mathlib.Data.Nat.Choose.Multinomial
+import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Divided powers
 

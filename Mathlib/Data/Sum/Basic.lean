@@ -112,6 +112,34 @@ theorem update_inr_apply_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α 
   rw [← update_inr_comp_inr, Function.comp_apply]
 
 @[simp]
+lemma rec_update_left {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
+    (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (a : α) (x : γ (.inl a)) :
+    Sum.rec (update f a x) g = update (Sum.rec f g) (.inl a) x :=
+  Function.rec_update Sum.inl_injective (Sum.rec · g) (fun _ _ => rfl) (fun
+    | _, _, .inl _, h => (h _ rfl).elim
+    | _, _, .inr _, _ => rfl) _ _ _
+
+@[simp]
+lemma rec_update_right {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
+    (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (b : β) (x : γ (.inr b)) :
+    Sum.rec f (update g b x) = update (Sum.rec f g) (.inr b) x :=
+  Function.rec_update Sum.inr_injective (Sum.rec f) (fun _ _ => rfl) (fun
+    | _, _, .inr _, h => (h _ rfl).elim
+    | _, _, .inl _, _ => rfl) _ _ _
+
+@[simp]
+lemma elim_update_left {γ : Sort*} [DecidableEq α] [DecidableEq β]
+    (f : α → γ) (g : β → γ) (a : α) (x : γ) :
+    Sum.elim (update f a x) g = update (Sum.elim f g) (.inl a) x :=
+  rec_update_left _ _ _ _
+
+@[simp]
+lemma elim_update_right {γ : Sort*} [DecidableEq α] [DecidableEq β]
+    (f : α → γ) (g : β → γ) (b : β) (x : γ) :
+    Sum.elim f (update g b x) = update (Sum.elim f g) (.inr b) x :=
+  rec_update_right _ _ _ _
+
+@[simp]
 theorem swap_leftInverse : Function.LeftInverse (@swap α β) swap :=
   swap_swap
 
@@ -154,10 +182,6 @@ theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
   exists_of_isRight_left h₁ ((isRight_congr h₁).mpr h₂)
 
 end LiftRel
-
-section Lex
-
-end Lex
 
 end Sum
 
@@ -230,26 +254,6 @@ theorem map_surjective {f : α → γ} {g : β → δ} :
 theorem map_bijective {f : α → γ} {g : β → δ} :
     Bijective (Sum.map f g) ↔ Bijective f ∧ Bijective g :=
   (map_injective.and map_surjective).trans <| and_and_and_comm
-
-theorem elim_update_left [DecidableEq α] [DecidableEq β] (f : α → γ) (g : β → γ) (i : α) (c : γ) :
-    Sum.elim (Function.update f i c) g = Function.update (Sum.elim f g) (inl i) c := by
-  ext x
-  rcases x with x | x
-  · by_cases h : x = i
-    · subst h
-      simp
-    · simp [h]
-  · simp
-
-theorem elim_update_right [DecidableEq α] [DecidableEq β] (f : α → γ) (g : β → γ) (i : β) (c : γ) :
-    Sum.elim f (Function.update g i c) = Function.update (Sum.elim f g) (inr i) c := by
-  ext x
-  rcases x with x | x
-  · simp
-  · by_cases h : x = i
-    · subst h
-      simp
-    · simp [h]
 
 end Sum
 
