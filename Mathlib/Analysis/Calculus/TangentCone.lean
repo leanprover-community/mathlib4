@@ -79,6 +79,8 @@ section TangentCone
 open NormedField
 section TVS
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable [AddCommGroup G] [Module ℝ G] [TopologicalSpace G]
 variable {x y : E} {s t : Set E}
 
 theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
@@ -98,13 +100,7 @@ theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeA
   rintro y ⟨c, d, ds, ctop, clim⟩
   exact ⟨c, d, mem_of_superset ds fun n hn => h hn, ctop, clim⟩
 
-end TVS
-
-section Normed
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable [NormedAddCommGroup G] [NormedSpace ℝ G]
-variable {x y : E} {s t : Set E}
+variable [ContinuousSMul 𝕜 E]
 
 @[simp]
 theorem tangentConeAt_closure : tangentConeAt 𝕜 (closure s) x = tangentConeAt 𝕜 s x := by
@@ -128,17 +124,12 @@ the sequence `d` tends to 0 at infinity. -/
 theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
     Tendsto d l (𝓝 0) := by
-  have A : Tendsto (fun n => ‖c n‖⁻¹) l (𝓝 0) := tendsto_inv_atTop_zero.comp hc
-  have B : Tendsto (fun n => ‖c n • d n‖) l (𝓝 ‖y‖) := (continuous_norm.tendsto _).comp hd
-  have C : Tendsto (fun n => ‖c n‖⁻¹ * ‖c n • d n‖) l (𝓝 (0 * ‖y‖)) := A.mul B
-  rw [zero_mul] at C
-  have : ∀ᶠ n in l, ‖c n‖⁻¹ * ‖c n • d n‖ = ‖d n‖ := by
-    refine (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun n hn => ?_
-    rw [norm_smul, ← mul_assoc, inv_mul_cancel₀, one_mul]
-    rwa [Ne, norm_eq_zero]
-  have D : Tendsto (fun n => ‖d n‖) l (𝓝 0) := Tendsto.congr' this C
-  rw [tendsto_zero_iff_norm_tendsto_zero]
-  exact D
+  rw [tendsto_norm_atTop_iff_cobounded] at hc
+  have : ∀ᶠ n in l, (c n)⁻¹ • c n • d n = d n := by
+    filter_upwards [hc.eventually_ne_cobounded 0] with n hn using inv_smul_smul₀ hn _
+  simpa only [zero_smul] using (tendsto_inv₀_cobounded.comp hc |>.smul hd).congr' this
+
+variable [ContinuousAdd E]
 
 theorem tangentCone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
@@ -156,6 +147,14 @@ theorem tangentCone_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x =
 /-- Intersecting with a neighborhood of the point does not change the tangent cone. -/
 theorem tangentCone_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
   tangentCone_congr (nhdsWithin_restrict' _ ht).symm
+
+end TVS
+
+section Normed
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable {x y : E} {s t : Set E}
 
 /-- The tangent cone of a product contains the tangent cone of its left factor. -/
 theorem subset_tangentCone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t) :
@@ -217,6 +216,14 @@ theorem mapsTo_tangentCone_pi {ι : Type*} [DecidableEq ι] {E : ι → Type*}
       refine squeeze_zero_norm (fun n => (hcd' n j hj).le) ?_
       exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
 
+end Normed
+
+section TVS
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable [AddCommGroup G] [Module ℝ G] [TopologicalSpace G]
+variable {x y : E} {s t : Set E}
+
 /-- If a subset of a real vector space contains an open segment, then the direction of this
 segment belongs to the tangent cone at its endpoints. -/
 theorem mem_tangentCone_of_openSegment_subset {s : Set G} {x y : G} (h : openSegment ℝ x y ⊆ s) :
@@ -234,6 +241,14 @@ segment belongs to the tangent cone at its endpoints. -/
 theorem mem_tangentCone_of_segment_subset {s : Set G} {x y : G} (h : segment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ s x :=
   mem_tangentCone_of_openSegment_subset ((openSegment_subset_segment ℝ x y).trans h)
+
+end TVS
+
+section Normed
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable {x y : E} {s t : Set E}
 
 /-- The tangent cone at a non-isolated point contains `0`. -/
 theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : x ∈ closure s) :
@@ -335,6 +350,14 @@ theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
   · simpa [d] using hvs (φ n)
   · exact c_lim.comp φ_strict.tendsto_atTop
 
+end Normed
+
+section TVS
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable [AddCommGroup G] [Module ℝ G] [TopologicalSpace G]
+variable {x y : E} {s t : Set E}
+
 /-- The tangent cone at a non-isolated point in dimension 1 is the whole space. -/
 theorem tangentCone_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) :
     tangentConeAt 𝕜 s x = univ := by
@@ -368,7 +391,7 @@ theorem tangentCone_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) :
   · convert tendsto_const_nhds (α := ℕ) (x := y) with n
     simp [mul_assoc, inv_mul_cancel₀ (d_ne n)]
 
-end Normed
+end TVS
 
 end TangentCone
 
@@ -381,6 +404,7 @@ This section is devoted to properties of the predicates `UniqueDiffWithinAt` and
 
 section TVS
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 variable {x y : E} {s t : Set E}
 
 theorem UniqueDiffOn.uniqueDiffWithinAt {s : Set E} {x} (hs : UniqueDiffOn 𝕜 s) (h : x ∈ s) :
@@ -400,12 +424,7 @@ theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
 theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
     UniqueDiffWithinAt 𝕜 s y := hy ▸ h
 
-end TVS
-
-section Normed
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {x y : E} {s t : Set E}
+variable [ContinuousAdd E] [ContinuousSMul 𝕜 E]
 
 @[simp]
 theorem uniqueDiffWithinAt_closure :
@@ -461,6 +480,13 @@ theorem UniqueDiffOn.inter (hs : UniqueDiffOn 𝕜 s) (ht : IsOpen t) : UniqueDi
 theorem IsOpen.uniqueDiffOn (hs : IsOpen s) : UniqueDiffOn 𝕜 s :=
   fun _ hx => IsOpen.uniqueDiffWithinAt hs hx
 
+end TVS
+
+section Normed
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {x y : E} {s t : Set E}
+
 /-- The product of two sets of unique differentiability at points `x` and `y` has unique
 differentiability at `(x, y)`. -/
 theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt 𝕜 s x)
@@ -514,8 +540,9 @@ theorem UniqueDiffOn.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
 
 end Normed
 
-section RealNormed
-variable [NormedAddCommGroup G] [NormedSpace ℝ G]
+section RealTVS
+variable [AddCommGroup G] [Module ℝ G] [TopologicalSpace G]
+variable [TopologicalAddGroup G] [ContinuousSMul ℝ G]
 
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
 differentiability at every point of its closure. -/
@@ -539,7 +566,7 @@ theorem uniqueDiffOn_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s)
     UniqueDiffOn ℝ s :=
   fun _ xs => uniqueDiffWithinAt_convex conv hs (subset_closure xs)
 
-end RealNormed
+end RealTVS
 
 section Real
 
