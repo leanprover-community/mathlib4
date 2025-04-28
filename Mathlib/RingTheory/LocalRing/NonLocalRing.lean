@@ -39,8 +39,9 @@ theorem not_isLocalRing_def {R : Type*} [Semiring R] {a b : R} (ha : ¬IsUnit a)
 
 /-- For an index type `ι` with at least two elements and an indexed family of (semi)rings
 `R : ι → Type*`, the indexed product (semi)ring `Π i, R i` is not local. -/
-theorem not_isLocalRing_of_nontrivial_pi {ι : Type*} [Nontrivial ι] [DecidableEq ι] (R : ι → Type*)
+theorem not_isLocalRing_of_nontrivial_pi {ι : Type*} [Nontrivial ι] (R : ι → Type*)
     [∀ i, Semiring (R i)] [∀ i, Nontrivial (R i)] : ¬IsLocalRing (Π i, R i) :=
+  classical
   let ⟨i₁, i₂, hi⟩ := exists_pair_ne ι
   have ha : ¬IsUnit (fun i ↦ if i = i₁ then 0 else 1 : Π i, R i) :=
     fun h ↦ not_isUnit_zero (M₀ := R i₁) (by simpa using h.map (Pi.evalRingHom R i₁))
