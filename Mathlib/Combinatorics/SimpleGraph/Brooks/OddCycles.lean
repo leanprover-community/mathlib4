@@ -297,7 +297,7 @@ lemma Walk.count_shorterOdd {p : G.Walk u u} {x : α} (hx : x ∈ p.support) (hn
   rw [shorterOdd]
   split_ifs with ho
   · rw [shortClosed]
-    rw []
+    
     sorry
   ·
     sorry
@@ -317,6 +317,45 @@ lemma Walk.length_shorterOdd_lt_length' {p : G.Walk u u}
   have hm := List.head_mem h
   rw [List.mem_filter, decide_eq_true_eq] at hm
   exact p.length_shorterOdd_lt_length hm.1 hm.2.1 hm.2.2
+
+def Walk.shorterOdd2 {u : α} (p : G.Walk u u) : G.Walk u u  :=
+  match p with
+  | Walk.nil' u => nil' u
+  | Walk.cons h p => by
+    have hx : (p.cons h).snd ∈ (p.cons h).support := by simp
+    have hu : u ∈ ((p.cons h).rotate hx).support := by
+      exact (mem_support_rotate_iff hx).2 (p.cons h).start_mem_support
+    exact ((p.cons h).rotate hx).shorterOdd hu
+
+lemma Walk.length_shorterOdd2 {u : α} (p : G.Walk u u) (hp : 2 < p.support.count u):
+    p.shorterOdd2.length < p.length := by
+  cases p with
+  | nil => simp at hp
+  | cons h p =>
+    have hx : (p.cons h).snd ∈ (p.cons h).support := by simp
+    have hu : u ∈ ((p.cons h).rotate hx).support := by
+      exact (mem_support_rotate_iff hx).2 (p.cons h).start_mem_support
+    rw [shorterOdd2]
+    have : ((p.cons h).rotate hx).length = (p.cons h).length := by simp
+    rw [← this]
+    have : u ≠ (p.cons h).snd := by simpa using h.ne
+    apply length_shorterOdd_lt_length hu this
+    rw [count_support_rotate_old _ hx (Ne.symm this)]
+    omega
+
+lemma Walk.count_le_shorterOdd2 {u x : α} (p : G.Walk u u) (h : x ≠ u) :
+    p.shorterOdd2.support.count x ≤ p.support.count x := by
+
+  sorry
+
+def Walk.cutvert {u : α} (w : G.Walk u u) : G.Walk u u  :=
+  if h : w.support.count u ≤ 2 then w
+  else
+    have := w.length_shorterOdd2 (by rwa [not_le] at h)
+    w.shorterOdd2.cutvert
+  termination_by w.length
+
+
 
 /-- Return an almost minimal odd closed subwalk from an odd length closed walk
 (if p.length is not odd then this just returns some closed subwalk).
