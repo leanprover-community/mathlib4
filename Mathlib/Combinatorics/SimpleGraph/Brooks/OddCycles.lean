@@ -294,8 +294,14 @@ lemma Walk.length_shorterOdd_le {u : α} (p : G.Walk u u) {x : α} (hx : x ∈ p
 
 
 lemma Walk.count_shorterOdd {p : G.Walk u u} {x : α} (hx : x ∈ p.support) (hne : x ≠ u) :
-    (p.shorterOdd hx).support.count u ≤ 1 := by
-  sorry
+    (p.shorterOdd hx).support.count u ≤ p.support.count u := by
+  rw [shorterOdd]
+  split_ifs with ho
+  · rw [shortClosed]
+    rw []
+    sorry
+  · 
+    sorry
 
 lemma Walk.length_shorterOdd_lt_length {p : G.Walk u u} {x : α} (hx : x ∈ p.support) (hne : x ≠ u)
     (h2 : 1 < p.support.count x) : (p.shorterOdd hx).length < p.length := by
@@ -412,10 +418,11 @@ def Walk.oddCycle {u : α} (p : G.Walk u u) : Σ v, G.Walk v v :=
   then
     p.minOdd_aux
   else
-  -- we rotate to the first vertex ≠ p.minOdd_aux.1 and apply `shorterOdd hx` to the rotated walk
+  -- in this case every vertex occurs at most once in the p.minOdd except the first, which
+  -- occurs more than twice. So we rotate to the first vertex `x ≠ p.minOdd_aux.1`
+  -- and apply `minOdd` to the rotated walk
   have hx := head_filter_mem _ _ (p.minOdd_aux.2.filter_ne_nil_of_one_lt_count (by omega))
-  ⟨_, (p.minOdd_aux.2.rotate hx).shorterOdd (by rwa [← mem_support_rotate_iff] at hx)⟩
-
+  (p.minOdd_aux.2.rotate hx).minOdd_aux
 
 
 lemma Walk.exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.length) :
