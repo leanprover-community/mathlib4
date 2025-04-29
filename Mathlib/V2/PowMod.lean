@@ -13,6 +13,8 @@ import Mathlib.Tactic.NormNum.PowMod
 
 Note that `Mathlib.Tactic.NormNum.PowMod` contains a similar tactic, but that runs significantly
 slower and less efficiently than the one here.
+
+TODO: add Anand's optimisation
 -/
 
 open Nat
@@ -45,7 +47,7 @@ lemma powModAux_odd_eq {a a' b b' c c' n m : ℕ}
 lemma powMod_eq {a b n m : ℕ} (h : powModAux a b 1 n = m) : powMod a b n = m := by
   simp_all [powModAux, powMod]
 
-lemma powMod_ne {a b n m m' : ℕ} (hm : bne m' m) (h : powMod a b n = m') :
+lemma powMod_ne {a b n m : ℕ} (m' : ℕ) (hm : bne m' m) (h : powMod a b n = m') :
     powMod a b n ≠ m := by
   simp_all
 
