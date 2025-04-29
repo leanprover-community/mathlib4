@@ -27,6 +27,7 @@ We provide
 * `def pullback [HasPullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
 * `def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y`
 * `def «exists_» [HasImages C] (f : X ⟶ Y) : Subobject X ⥤ Subobject Y`
+
 and prove their basic properties and relationships.
 These are all easy consequences of the earlier development
 of the corresponding functors for `MonoOver`.

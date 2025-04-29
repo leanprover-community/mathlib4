@@ -75,9 +75,9 @@ instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     [∀ i, NormedAddCommGroup (f i)] [∀ i, InnerProductSpace 𝕜 (f i)] :
     InnerProductSpace 𝕜 (PiLp 2 f) where
   inner x y := ∑ i, inner (x i) (y i)
-  norm_sq_eq_inner x := by
-    simp only [PiLp.norm_sq_eq_of_L2, map_sum, ← norm_sq_eq_inner, one_div]
-  conj_symm := by
+  norm_sq_eq_re_inner x := by
+    simp only [PiLp.norm_sq_eq_of_L2, map_sum, ← norm_sq_eq_re_inner, one_div]
+  conj_inner_symm := by
     intro x y
     unfold inner
     rw [map_sum]
@@ -438,7 +438,7 @@ protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E)
 
 lemma sum_sq_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     ∑ i, ‖⟪b i, x⟫‖ ^ 2 = ‖x‖ ^ 2 := by
-  rw [@norm_eq_sqrt_inner 𝕜, ← OrthonormalBasis.sum_inner_mul_inner b x x, map_sum]
+  rw [@norm_eq_sqrt_re_inner 𝕜, ← OrthonormalBasis.sum_inner_mul_inner b x x, map_sum]
   simp_rw [inner_mul_symm_re_eq_norm, norm_mul, ← inner_conj_symm x, starRingEnd_apply,
     norm_star, ← pow_two]
   rw [Real.sq_sqrt]
@@ -461,9 +461,9 @@ lemma norm_le_card_mul_iSup_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) 
 
 protected theorem orthogonalProjection_eq_sum {U : Submodule 𝕜 E} [CompleteSpace U]
     (b : OrthonormalBasis ι 𝕜 U) (x : E) :
-    orthogonalProjection U x = ∑ i, ⟪(b i : E), x⟫ • b i := by
+    U.orthogonalProjection x = ∑ i, ⟪(b i : E), x⟫ • b i := by
   simpa only [b.repr_apply_apply, inner_orthogonalProjection_eq_of_mem_left] using
-    (b.sum_repr (orthogonalProjection U x)).symm
+    (b.sum_repr (U.orthogonalProjection x)).symm
 
 /-- Mapping an orthonormal basis along a `LinearIsometryEquiv`. -/
 protected def map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
@@ -968,8 +968,8 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
   -- Project onto S and Sᗮ
   haveI : CompleteSpace S := FiniteDimensional.complete 𝕜 S
   haveI : CompleteSpace V := FiniteDimensional.complete 𝕜 V
-  let p1 := (orthogonalProjection S).toLinearMap
-  let p2 := (orthogonalProjection Sᗮ).toLinearMap
+  let p1 := S.orthogonalProjection.toLinearMap
+  let p2 := Sᗮ.orthogonalProjection.toLinearMap
   -- Build a linear map from the isometries on S and Sᗮ
   let M := L.toLinearMap.comp p1 + L3.toLinearMap.comp p2
   -- Prove that M is an isometry

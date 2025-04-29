@@ -176,7 +176,7 @@ section Group
 variable [AddGroup G]
 
 theorem AEStronglyMeasurable.convolution_integrand' [MeasurableAdd₂ G]
-    [MeasurableNeg G] [SFinite ν] (hf : AEStronglyMeasurable f ν)
+    [MeasurableNeg G] (hf : AEStronglyMeasurable f ν)
     (hg : AEStronglyMeasurable g <| map (fun p : G × G => p.1 - p.2) (μ.prod ν)) :
     AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
   L.aestronglyMeasurable_comp₂ hf.snd <| hg.comp_measurable measurable_sub
@@ -288,7 +288,7 @@ theorem Integrable.convolution_integrand (hf : Integrable f ν) (hg : Integrable
       (Eventually.of_forall fun t => (?_ : _ ≤ ‖L‖ * ‖f t‖ * ∫ x, ‖g (x - t)‖ ∂μ))
   · simp only [integral_sub_right_eq_self (‖g ·‖)]
     exact (hf.norm.const_mul _).mul_const _
-  · simp_rw [← integral_mul_left]
+  · simp_rw [← integral_const_mul]
     rw [Real.norm_of_nonneg (by positivity)]
     exact integral_mono_of_nonneg (Eventually.of_forall fun t => norm_nonneg _)
       ((hg.comp_sub_right t).norm.const_mul _) (Eventually.of_forall fun t => L.le_opNorm₂ _ _)
@@ -765,13 +765,13 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
   rw [← integral_sub hfg.integrable]; swap; · exact (L.flip z₀).integrable_comp hif
   refine (norm_integral_le_of_norm_le ((L.integrable_comp hif).norm.mul_const ε)
     (Eventually.of_forall h2)).trans ?_
-  rw [integral_mul_right]
+  rw [integral_mul_const]
   refine mul_le_mul_of_nonneg_right ?_ hε
   have h3 : ∀ t, ‖L (f t)‖ ≤ ‖L‖ * ‖f t‖ := by
     intro t
     exact L.le_opNorm (f t)
   refine (integral_mono (L.integrable_comp hif).norm (hif.norm.const_mul _) h3).trans_eq ?_
-  rw [integral_mul_left]
+  rw [integral_const_mul]
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ E'] [CompleteSpace E']
 
@@ -930,7 +930,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     (L₃ (f t)).integrable_comp <| ht.of_norm L₄ hg hk, ?_⟩
   refine (hfgk.const_mul (‖L₃‖ * ‖L₄‖)).mono' h2_meas
     (((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht => ?_)
-  simp_rw [convolution_def, mul_apply', mul_mul_mul_comm ‖L₃‖ ‖L₄‖, ← integral_mul_left]
+  simp_rw [convolution_def, mul_apply', mul_mul_mul_comm ‖L₃‖ ‖L₄‖, ← integral_const_mul]
   rw [Real.norm_of_nonneg (by positivity)]
   refine integral_mono_of_nonneg (Eventually.of_forall fun t => norm_nonneg _)
     ((ht.const_mul _).const_mul _) (Eventually.of_forall fun s => ?_)

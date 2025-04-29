@@ -150,19 +150,15 @@ theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ AntisymmRel (· ≤ ·)
   rw [lt_iff_le_not_le, AntisymmRel]
   tauto
 
-@[trans]
 theorem le_of_le_of_antisymmRel (h₁ : a ≤ b) (h₂ : AntisymmRel (· ≤ ·) b c) : a ≤ c :=
   h₁.trans h₂.le
 
-@[trans]
 theorem le_of_antisymmRel_of_le (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b ≤ c) : a ≤ c :=
   h₁.le.trans h₂
 
-@[trans]
 theorem lt_of_lt_of_antisymmRel (h₁ : a < b) (h₂ : AntisymmRel (· ≤ ·) b c) : a < c :=
   h₁.trans_le h₂.le
 
-@[trans]
 theorem lt_of_antisymmRel_of_lt (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b < c) : a < c :=
   h₁.le.trans_lt h₂
 

@@ -146,9 +146,8 @@ open Complex NumberField
 
 open scoped ComplexConjugate
 
-variable {K : Type*} [Field K] {k : Type*} [Field k]
+variable (K : Type*) [Field K] {k : Type*} [Field k]
 
-variable (K) in
 /--
 A (random) lift of the complex embedding `φ : k →+* ℂ` to an extension `K` of `k`.
 -/
@@ -156,13 +155,19 @@ noncomputable def lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ
   letI := φ.toAlgebra
   exact (IsAlgClosed.lift (R := k)).toRingHom
 
-variable (K) in
 @[simp]
 theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
     (lift K φ).comp (algebraMap k K) = φ := by
   unfold lift
   letI := φ.toAlgebra
   rw [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.algebraMap_toAlgebra']
+
+@[simp]
+theorem lift_algebraMap_apply [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) (x : k) :
+    lift K φ (algebraMap k K x) = φ x :=
+  RingHom.congr_fun (lift_comp_algebraMap K φ) x
+
+variable {K}
 
 /-- The conjugate of a complex embedding as a complex embedding. -/
 abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
@@ -1250,10 +1255,9 @@ instance isTotallyReal_maximalRealSubfield :
     IsTotallyReal (maximalRealSubfield K) where
   isReal w := by
     rw [InfinitePlace.isReal_iff, ComplexEmbedding.isReal_iff]
-    have hφ {x} : w.embedding x = lift K w.embedding x :=
-      (RingHom.congr_fun (lift_comp_algebraMap K w.embedding) x).symm
     ext x
-    rw [RingHom.star_apply, hφ, x.prop]
+    rw [RingHom.star_apply, ← lift_algebraMap_apply K w.embedding]
+    exact x.prop _
 
 variable {K}
 
@@ -1269,10 +1273,12 @@ theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} :
   ⟨fun h ↦ h.le_maximalRealSubfield, fun h ↦ IsTotallyReal.ofRingEquiv
     (RingEquiv.ofBijective _ (Subfield.inclusion h).rangeRestrictField_bijective).symm⟩
 
+-- Note sure if this should be an instance or a theorem
 instance isTotallyReal_sup {E F : Subfield K} [hE : IsTotallyReal E] [hF : IsTotallyReal F] :
     IsTotallyReal (E ⊔ F : Subfield K) := by
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
 
+-- Note sure if this should be an instance or a theorem 
 instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [h : ∀ i, IsTotallyReal (k i)] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
