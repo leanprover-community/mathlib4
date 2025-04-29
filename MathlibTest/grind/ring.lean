@@ -29,12 +29,3 @@ example {α} [CommRing α] (a b c d e : α) :
 
 example {α} [CommRing α] (x y z : α) (h₁ : x^2 = y) (h₂ : x^3 = z) : y^3 = z^2 := by grind +ring
 example (x y : ℝ) (h₁ : x^2 = x * y^3) (h₂ : x^3 * y^2 = y) : y^2 = x^4 := by grind +ring
-
--- example {α} [Lean.Grind.CommRing α] [Lean.Grind.IsCharP α 0] (d t c : α) (d_inv PSO3_inv : α)
---   (Δ40 : d^2 * (d + t - d * t - 2) *
---     (d + t + d * t) = 0)
---   (Δ41 : -d^4 * (d + t - d * t - 2) *
---     (2 * d + 2 * d * t - 4 * d * t^2 + 2 * d * t^4 + 2 * d^2 * t^4 - c * (d + t + d * t)) = 0)
---   (_ : d * d_inv = 1)
---   (_ : (d + t - d * t - 2) * PSO3_inv = 1) :
---   t^2 = t + 1 := by grind +ring
