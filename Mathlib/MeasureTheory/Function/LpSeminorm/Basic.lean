@@ -817,6 +817,8 @@ alias Memℒp.piecewise := MemLp.piecewise
 
 end Indicator
 
+section ENormedAddMonoid
+
 variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 /-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
@@ -834,7 +836,7 @@ theorem eLpNorm_restrict_eq_of_support_subset {s : Set α} {f : α → ε} (hsf 
     have : ¬(p.toReal ≤ 0) := by simpa only [not_le] using ENNReal.toReal_pos hp0 hp_top
     simpa [this] using hsf
 
-variable {ε : Type*} [ENorm ε]
+end ENormedAddMonoid
 
 theorem MemLp.restrict [TopologicalSpace ε] (s : Set α) {f : α → ε} (hf : MemLp f p μ) :
     MemLp f p (μ.restrict s) :=
@@ -954,6 +956,8 @@ theorem MemLp.right_of_add_measure [TopologicalSpace ε] {f : α → ε} (h : Me
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.right_of_add_measure := MemLp.right_of_add_measure
 
+section
+
 variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖) p μ :=
@@ -968,6 +972,8 @@ theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_iff := memLp_norm_iff
+
+end
 
 variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
