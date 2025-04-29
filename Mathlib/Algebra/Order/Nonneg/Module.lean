@@ -95,7 +95,7 @@ instance isFiniteOver : Module.Finite {c : 𝕜 // 0 ≤ c} 𝕜 := by
     exact Submodule.smul_mem _ _ (Submodule.subset_span (Set.mem_insert 1 {-1}))
   · have x_eq_smul : x = (⟨-x, neg_nonneg.mpr (not_le.mp hx).le⟩ : {c : 𝕜 // 0 ≤ c}) • -1 := by simp
     rw [x_eq_smul]
-    refine Submodule.smul_mem _ _ (Submodule.subset_span (Set.mem_insert_of_mem 1 rfl))
+    exact Submodule.smul_mem _ _ (Submodule.subset_span (Set.mem_insert_of_mem 1 rfl))
 
 /-- If a module is finite over a linearly ordered ring, then it is also finite over the non-negative
 scalars. -/
