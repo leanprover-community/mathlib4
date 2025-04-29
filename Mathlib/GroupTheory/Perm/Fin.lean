@@ -281,20 +281,20 @@ end Fin
 
 end CycleRange
 
-section
+section cycleIcc
 
 /-! ### `cycleIcc` section
 
 * `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
-unchanged.
+unchanged. In other words, it rotate elements in `[i, j]` one step to the right.
 -/
 
 namespace Fin
 
 local instance {n : ℕ} {i: Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
 
-/-- `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m` , `natAdd_castLEEmb m hmn i`
-adds `m - n` to `i`, generalizes `addNatEmb`.
+/-- `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m` at the end,
+`natAdd_castLEEmb m hmn i` maps `i : Fin m` to `i + (m - n) : Fin n` by adds `m - n` to `i`
 -/
 @[simps!]
 def natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m): Fin n ↪ Fin (m) :=
@@ -312,9 +312,6 @@ lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
     fun xin ↦ ⟨subNat (m := m - n) (Fin.cast (Nat.add_sub_of_le hmn).symm y)
     (Nat.sub_le_of_le_add xin), by simp⟩⟩
 
-/-- `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
-unchanged.
--/
 lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).1 < n - i.1 := by
   simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
 
@@ -323,6 +320,9 @@ lemma sub_le_right {n : ℕ} (i : Fin n) : n - i.1 ≤ n := by
 
 variable {n : ℕ} {i j k : Fin n}
 
+/-- `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
+unchanged. In other words, it rotate elements in `[i, j]` one step to the right.
+-/
 def cycleIcc (hij : i ≤ j): Perm (Fin n) :=
   (cycleRange (Fin.castLT (j - i) (sub_val_lt_sub hij))).extendDomain
   (natAdd_castLEEmb n (sub_le_right i)).toEquivRange
@@ -356,8 +356,7 @@ theorem cycleIcc_of_le (hij : i ≤ j) (h : j < k) : (cycleIcc hij) k = k := by
     exact lt_def.mpr (by simp [sub_val_of_le hij]; omega)
   simpa only [natAdd_castLEEmb, this] using eq_of_val_eq (by simp; omega)
 
-theorem cycleIcc_of (h1 : i ≤ k) (h2 : k ≤ j) [NeZero n]:
-    haveI hij : i ≤ j := by omega
+theorem cycleIcc_of (h1 : i ≤ k) (h2 : k ≤ j) [NeZero n] : haveI hij : i ≤ j := by omega
     (cycleIcc hij) k = if k = j then i else k + 1 := by
   have hij : i ≤ j := by omega
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (sub_le_right i)) := by simp; omega
@@ -376,13 +375,12 @@ theorem cycleIcc_of (h1 : i ≤ k) (h2 : k ≤ j) [NeZero n]:
     rw [Nat.mod_eq_of_lt (by omega)]
     omega
 
-theorem cycleIcc_of_lt (h1 : i ≤ k) (h2 : k < j) [NeZero n] :
-    haveI hij : i ≤ j := by omega
+theorem cycleIcc_of_lt (h1 : i ≤ k) (h2 : k < j) [NeZero n] : haveI hij : i ≤ j := by omega
     (cycleIcc hij) k = k + 1 := by
   simp [cycleIcc_of h1 (Fin.le_of_lt h2), Fin.ne_of_lt h2]
 
 @[simp]
-theorem cycleIcc_of_eq (hij : i ≤ j) [NeZero n] : (cycleIcc hij) j = i := by
+theorem cycleIcc_of_last (hij : i ≤ j) [NeZero n] : (cycleIcc hij) j = i := by
   simp [cycleIcc_of hij (Fin.ge_of_eq rfl)]
 
 @[simp]
@@ -390,7 +388,7 @@ theorem sign_cycleIcc (hij : i ≤ j) : Perm.sign (cycleIcc hij) = (-1) ^ (j - i
   simp [cycleIcc, sub_val_of_le hij]
 
 private lemma nezero_simp_lemma (hij : i < j) :
-   (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
+    (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
   simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by omega
 
@@ -405,7 +403,7 @@ theorem cycleType_cycleIcc (hij : i < j) :
 
 end Fin
 
-end
+end cycleIcc
 
 section Sign
 
