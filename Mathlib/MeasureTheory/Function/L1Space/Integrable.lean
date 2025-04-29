@@ -504,9 +504,15 @@ theorem Integrable.sub' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
     Integrable (fun a ↦ f a - g a) μ := by simpa only [sub_eq_add_neg] using hf.add hg.neg
 
 @[fun_prop]
+theorem Integrable.enorm {f : α → ε''} (hf : Integrable f μ) : Integrable (‖f ·‖ₑ) μ :=
+  ⟨hf.aestronglyMeasurable.enorm.aestronglyMeasurable, hf.hasFiniteIntegral.enorm⟩
+
+@[fun_prop]
 theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun a => ‖f a‖) μ :=
   ⟨hf.aestronglyMeasurable.norm, hf.hasFiniteIntegral.norm⟩
 
+-- TODO: generalise these to suitable enormed spaces: requires defining an enorm analogue
+-- of `HasSolidNorm` first
 @[fun_prop]
 theorem Integrable.inf {β}
     [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
@@ -531,6 +537,7 @@ theorem Integrable.abs {β}
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.abs
 
+-- TODO: generalise this to enorms, once there is an `ENormedDivisionRing` class
 theorem Integrable.bdd_mul {F : Type*} [NormedDivisionRing F] {f g : α → F} (hint : Integrable g μ)
     (hm : AEStronglyMeasurable f μ) (hfbdd : ∃ C, ∀ x, ‖f x‖ ≤ C) :
     Integrable (fun x => f x * g x) μ := by
@@ -579,6 +586,11 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZe
         (p := 1) (q := ∞)
     _ < ∞ := ENNReal.mul_lt_top hf.2 hg'.lt_top
 
+theorem integrable_enorm_iff {f : α → ε''} (hf : AEStronglyMeasurable f μ) :
+    Integrable (‖f ·‖ₑ) μ ↔ Integrable f μ := by
+  simp_rw [Integrable, and_iff_right hf, and_iff_right hf.enorm.aestronglyMeasurable,
+    hasFiniteIntegral_enorm_iff]
+
 theorem integrable_norm_iff {f : α → β} (hf : AEStronglyMeasurable f μ) :
     Integrable (fun a => ‖f a‖) μ ↔ Integrable f μ := by
   simp_rw [Integrable, and_iff_right hf, and_iff_right hf.norm, hasFiniteIntegral_norm_iff]
@@ -609,6 +621,7 @@ lemma integrable_of_le_of_le {f g₁ g₂ : α → ℝ} (hf : AEStronglyMeasurab
     exact max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)
   exact Integrable.mono (h_int₁.norm.add h_int₂.norm) hf h_le_add
 
+-- TODO: generalising this to enorms requires defining a product instance for enormed X first
 @[fun_prop]
 theorem Integrable.prodMk {f : α → β} {g : α → γ} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (fun x => (f x, g x)) μ :=
@@ -622,7 +635,7 @@ theorem Integrable.prodMk {f : α → β} {g : α → γ} (hf : Integrable f μ)
 @[deprecated (since := "2025-03-05")]
 alias Integrable.prod_mk := Integrable.prodMk
 
-theorem MemLp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → β} [IsFiniteMeasure μ]
+theorem MemLp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → ε''} [IsFiniteMeasure μ]
     (hfq : MemLp f q μ) : Integrable f μ :=
   memLp_one_iff_integrable.mp (hfq.mono_exponent hq1)
 
