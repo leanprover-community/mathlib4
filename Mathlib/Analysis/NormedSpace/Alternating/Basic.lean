@@ -32,7 +32,14 @@ We use the following type variables in this file:
 * `E`, `F`, `G`: (semi)normed vector spaces over `𝕜`.
 -/
 
-/-- Applying a continuous alternating map to a vector is continuous in both coordinates. -/
+/-- Applying a continuous alternating map to a vector is continuous
+in the pair (map, vector).
+
+Continuity in in the vector holds by definition
+and continuity in the map holds if both the domain and the codomain are topological vector spaces.
+However, continuity in the pair (map, vector) needs the domain to be a locally bounded TVS.
+We have no typeclass for a locally bounded TVS,
+so we require it to be a seminormed space instead. -/
 instance ContinuousAlternatingMap.instContinuousEval {𝕜 ι E F : Type*}
     [NormedField 𝕜] [Finite ι] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
     [TopologicalSpace F] [AddCommGroup F] [IsTopologicalAddGroup F] [Module 𝕜 F] :
@@ -59,9 +66,10 @@ namespace AlternatingMap
 /-- If `f` is a continuous alternating map on `E`
 and `m` is an element of `ι → E` such that one of the `m i` has norm `0`, then `f m` has norm `0`.
 
-Note that we cannot drop the continuity assumption because `f (m : Unit → E) = f (m ())`,
-where the domain has zero norm and the codomain has a nonzero norm
-does not satisfy this condition. -/
+Note that we cannot drop the continuity assumption.
+Indeed, let `ℝ₀` be a copy or `ℝ` with zero norm and indiscrete topology.
+Then `f : (Unit → ℝ₀) → ℝ` given by `f x = x ()`
+sends vector `1` with zero norm to number `1` with nonzero norm. -/
 nonrec theorem norm_map_coord_zero (f : E [⋀^ι]→ₗ[𝕜] F) (hf : Continuous f)
     {m : ι → E} {i : ι} (hi : ‖m i‖ = 0) : ‖f m‖ = 0 :=
   f.norm_map_coord_zero hf hi
@@ -75,8 +83,8 @@ for some positive numbers `ε i` and elements `c i : 𝕜`, `1 < ‖c i‖`,
 then it satisfies this inequality for all `m`.
 
 The first assumption is automatically satisfied on normed spaces, see `bound_of_shell` below.
-For seminormed spaces, it follows from continuity of `f`, see next lemma,
-see `bound_of_shell_of_continuous` below. -/
+For seminormed spaces, it follows from continuity of `f`,
+see lemma `bound_of_shell_of_continuous` below. -/
 theorem bound_of_shell_of_norm_map_coord_zero (f : E [⋀^ι]→ₗ[𝕜] F)
     (hf₀ : ∀ {m i}, ‖m i‖ = 0 → ‖f m‖ = 0)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
