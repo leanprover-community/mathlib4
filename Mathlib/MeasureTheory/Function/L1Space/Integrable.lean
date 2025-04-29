@@ -367,17 +367,12 @@ theorem lintegral_edist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : In
       simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_edist]
       exact ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩)
 
-end ENormedAddMonoid
-
-variable (α β μ)
-
+variable (α ε' μ) in
 @[simp]
-theorem integrable_zero : Integrable (fun _ => (0 : β)) μ := by
+theorem integrable_zero : Integrable (fun _ => (0 : ε')) μ := by
   simp [Integrable, aestronglyMeasurable_const]
 
-variable {α β μ}
-
-theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
+theorem Integrable.add' {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
     HasFiniteIntegral (f + g) μ :=
   calc
     ∫⁻ a, ‖f a + g a‖ₑ ∂μ ≤ ∫⁻ a, ‖f a‖ₑ + ‖g a‖ₑ ∂μ := lintegral_mono fun _ ↦ enorm_add_le _ _
@@ -385,16 +380,24 @@ theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
     _ < ∞ := add_lt_top.2 ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩
 
 @[fun_prop]
-theorem Integrable.add {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
+theorem Integrable.add [ContinuousAdd ε']
+    {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (f + g) μ :=
   ⟨hf.aestronglyMeasurable.add hg.aestronglyMeasurable, hf.add' hg⟩
 
 @[fun_prop]
-theorem Integrable.add'' {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
+theorem Integrable.add'' [ContinuousAdd ε']
+    {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (fun x ↦ f x + g x) μ := hf.add hg
 
+end ENormedAddMonoid
+
+section ENormedAddCommMonoid
+
+variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddCommMonoid ε'] [ContinuousAdd ε']
+
 @[fun_prop]
-theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → β}
+theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → ε'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (∑ i ∈ s, f i) μ :=
   Finset.sum_induction f (fun g => Integrable g μ) (fun _ _ => Integrable.add)
     (integrable_zero _ _ _) hf
@@ -403,6 +406,10 @@ theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → β}
 theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → β}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using integrable_finset_sum' s hf
+
+end ENormedAddCommMonoid
+
+-- TODO: generalise these lemmas to an `ENormedAddCommSubMonoid`
 
 /-- If `f` is integrable, then so is `-f`.
 See `Integrable.neg'` for the same statement, but formulated with `x ↦ - f x` instead of `-f`. -/
