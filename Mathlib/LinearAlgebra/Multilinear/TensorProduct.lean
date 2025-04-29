@@ -50,11 +50,16 @@ def domCoprodDep (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁)
 /-- A more bundled version of `MultilinearMap.domCoprodDep`, as a linear map
 from the tensor product of spaces of multilinear maps. -/
 def domCoprodDep' :
-    MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁ ⊗[R]
-      MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂ →ₗ[R]
+    MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁ ⊗[R] MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂ →ₗ[R]
         MultilinearMap R N (N₁ ⊗[R] N₂) :=
   TensorProduct.lift (LinearMap.mk₂ R domCoprodDep
     (by aesop) (by aesop) (by aesop) (by aesop))
+
+@[simp]
+theorem domCoprodDep'_apply (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁)
+    (b : MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂) :
+    domCoprodDep' (a ⊗ₜ b) = domCoprodDep a b := by
+  rfl
 
 end
 

@@ -860,7 +860,7 @@ def tmulEquivDep :
     (⨂[R] i₁, N (.inl i₁)) ⊗[R] (⨂[R] i₂, N (.inr i₂)) ≃ₗ[R] ⨂[R] i, N i :=
   LinearEquiv.ofLinear
     (TensorProduct.lift
-      { toFun := fun a ↦ PiTensorProduct.lift (PiTensorProduct.lift
+      { toFun a := PiTensorProduct.lift (PiTensorProduct.lift
           (MultilinearMap.currySumEquiv (tprod R)) a)
         map_add' := by simp
         map_smul' := by simp })
