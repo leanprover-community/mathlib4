@@ -341,6 +341,8 @@ theorem kreplace_self {a : α} {b : β a} {l : List (Sigma β)} (nd : NodupKeys 
     split_ifs
     · subst a'
       simp [nd.eq_of_mk_mem h h']
+    · simp_all
+    · simp_all
     · rfl
   · rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩
     dsimp [Option.guard]
