@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
 import Mathlib.Data.Set.Order
-import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Interval.Set.Image
+import Mathlib.Order.Interval.Set.LinearOrder
 import Mathlib.Tactic.Common
 
 /-!
@@ -238,11 +239,12 @@ lemma monotoneOn_or_antitoneOn_iff_uIcc :
 /-- The open-closed uIcc with unordered bounds. -/
 def uIoc : α → α → Set α := fun a b => Ioc (min a b) (max a b)
 
--- Porting note: removed `scoped[uIcc]` temporarily before a workaround is found
 -- Below is a capital iota
 /-- `Ι a b` denotes the open-closed interval with unordered bounds. Here, `Ι` is a capital iota,
 distinguished from a capital `i`. -/
-notation "Ι" => Set.uIoc
+scoped[Interval] notation "Ι" => Set.uIoc
+
+open scoped Interval
 
 @[simp] lemma uIoc_of_le (h : a ≤ b) : Ι a b = Ioc a b := by simp [uIoc, h]
 @[simp] lemma uIoc_of_ge (h : b ≤ a) : Ι a b = Ioc b a := by simp [uIoc, h]
@@ -306,6 +308,13 @@ lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
 
 lemma uIoc_injective_left (a : α) : Injective (Ι a) := by
   simpa only [uIoc_comm] using uIoc_injective_right a
+
+lemma uIoc_union_uIoc (h : b ∈ [[a, c]]) : Ι a b ∪ Ι b c = Ι a c := by
+  wlog hac : a ≤ c generalizing a c
+  · rw [uIoc_comm, union_comm, uIoc_comm, this _ (le_of_not_le hac), uIoc_comm]
+    rwa [uIcc_comm]
+  rw [uIcc_of_le hac] at h
+  rw [uIoc_of_le h.1, uIoc_of_le h.2, uIoc_of_le hac, Ioc_union_Ioc_eq_Ioc h.1 h.2]
 
 section uIoo
 

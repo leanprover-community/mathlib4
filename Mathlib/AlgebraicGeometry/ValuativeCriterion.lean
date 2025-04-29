@@ -122,7 +122,7 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
       ← Scheme.Spec_map_stalkSpecializes_fromSpecStalk h]
     simp_rw [← Spec.map_comp_assoc]
     rfl
-  obtain ⟨l, hl₁, hl₂⟩ := (H { R := A, K := X.residueField x', commSq := ⟨w⟩ }).exists_lift
+  obtain ⟨l, hl₁, hl₂⟩ := (H { R := A, K := X.residueField x', commSq := ⟨w⟩, .. }).exists_lift
   dsimp only at hl₁ hl₂
   refine ⟨l.base (closedPoint A), ?_, ?_⟩
   · simp_rw [← Scheme.fromSpecResidueField_apply x' (closedPoint (X.residueField x')), ← hl₁]

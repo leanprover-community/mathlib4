@@ -171,7 +171,7 @@ theorem normSq_ne_zero (z : ℍ) : Complex.normSq (z : ℂ) ≠ 0 :=
   (normSq_pos z).ne'
 
 theorem im_inv_neg_coe_pos (z : ℍ) : 0 < (-z : ℂ)⁻¹.im := by
-  simpa using div_pos z.property (normSq_pos z)
+  simpa [neg_div] using div_pos z.property (normSq_pos z)
 
 lemma ne_nat (z : ℍ) : ∀ n : ℕ, z.1 ≠ n := by
   intro n
@@ -385,7 +385,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
       (g • · : ℍ → ℍ) =
         (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
   have h_denom := denom_ne_zero g
-  induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h
+  induction g using Matrix.SpecialLinearGroup.fin_two_induction with | _ a b c d h => ?_
   replace hc : c ≠ 0 := by simpa using hc
   refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩
   ext1 ⟨z, hz⟩; ext1

@@ -421,19 +421,17 @@ def stWrite {k : K} (v : σ) (l : List (Γ k)) : StAct K Γ σ k → List (Γ k)
 of the stack, and all other actions, which do not. This is a modified recursor which lumps the
 stack actions into one. -/
 @[elab_as_elim]
-def stmtStRec.{l} {C : TM2.Stmt Γ Λ σ → Sort l}
-    (stack : ∀ (k) (s : StAct K Γ σ k) (q) (_ : C q), C (stRun s q))
-    (load : ∀ (a q) (_ : C q), C (TM2.Stmt.load a q))
-    (branch : ∀ (p q₁ q₂) (_ : C q₁) (_ : C q₂), C (TM2.Stmt.branch p q₁ q₂))
-    (goto : ∀ l, C (TM2.Stmt.goto l)) (halt : C TM2.Stmt.halt) : ∀ n, C n
-  | TM2.Stmt.push _ f q => stack _ (push f) _ (stmtStRec stack load branch goto halt q)
-  | TM2.Stmt.peek _ f q => stack _ (peek f) _ (stmtStRec stack load branch goto halt q)
-  | TM2.Stmt.pop _ f q => stack _ (pop f) _ (stmtStRec stack load branch goto halt q)
-  | TM2.Stmt.load _ q => load _ _ (stmtStRec stack load branch goto halt q)
+def stmtStRec.{l} {motive : TM2.Stmt Γ Λ σ → Sort l}
+    (run : ∀ (k) (s : StAct K Γ σ k) (q) (_ : motive q), motive (stRun s q))
+    (load : ∀ (a q) (_ : motive q), motive (TM2.Stmt.load a q))
+    (branch : ∀ (p q₁ q₂) (_ : motive q₁) (_ : motive q₂), motive (TM2.Stmt.branch p q₁ q₂))
+    (goto : ∀ l, motive (TM2.Stmt.goto l)) (halt : motive TM2.Stmt.halt) : ∀ n, motive n
+  | TM2.Stmt.push _ f q => run _ (push f) _ (stmtStRec run load branch goto halt q)
+  | TM2.Stmt.peek _ f q => run _ (peek f) _ (stmtStRec run load branch goto halt q)
+  | TM2.Stmt.pop _ f q => run _ (pop f) _ (stmtStRec run load branch goto halt q)
+  | TM2.Stmt.load _ q => load _ _ (stmtStRec run load branch goto halt q)
   | TM2.Stmt.branch _ q₁ q₂ =>
-    branch _ _ _
-      (stmtStRec stack load branch goto halt q₁)
-      (stmtStRec stack load branch goto halt q₂)
+    branch _ _ _ (stmtStRec run load branch goto halt q₁) (stmtStRec run load branch goto halt q₂)
   | TM2.Stmt.goto _ => goto _
   | TM2.Stmt.halt => halt
 
@@ -665,7 +663,7 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
   obtain ⟨T', hT', hrun⟩ := tr_respects_aux₂ (Λ := Λ) hT o
   have := hgo.tail' rfl
   rw [tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_snd,
-    stk_nth_val _ (hT k), List.getElem?_eq_none (le_of_eq (List.length_reverse _)),
+    stk_nth_val _ (hT k), List.getElem?_eq_none (le_of_eq List.length_reverse),
     Option.isNone, cond, hrun, TM1.stepAux] at this
   obtain ⟨c, gc, rc⟩ := IH hT'
   refine ⟨c, gc, (this.to₀.trans (tr_respects_aux₃ M _) c (TransGen.head' rfl ?_)).to_reflTransGen⟩
@@ -683,7 +681,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   simp only [tr]
   generalize M l = N
   induction N using stmtStRec generalizing v S L hT with
-  | stack k s q IH => exact tr_respects_aux M hT s @IH
+  | run k s q IH => exact tr_respects_aux M hT s @IH
   | load a _ IH => exact IH _ hT
   | branch p q₁ q₂ IH₁ IH₂ =>
     unfold TM2.stepAux trNormal TM1.stepAux

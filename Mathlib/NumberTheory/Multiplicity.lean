@@ -96,9 +96,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
           mk (span {s}) (∑ x ∈ Finset.range p, a ^ (x + (p - 1 - x))) := by
       ring_nf
-      simp only [← pow_add, map_add, Finset.sum_add_distrib, ← map_sum]
-      congr
-      simp [pow_add a, mul_assoc]
+      simp_rw [← map_sum, sum_add_distrib, map_add]
     _ =
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
@@ -279,7 +277,7 @@ theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   unfold Odd at hx
   rcases hx with ⟨_, rfl⟩
   ring_nf
-  rw [add_assoc, ← add_mul, Int.add_mul_emod_self]
+  rw [add_assoc, ← add_mul, Int.add_mul_emod_self_right]
   decide
 
 theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hxy : 4 ∣ x - y) (i : ℕ) :

@@ -160,7 +160,7 @@ graph. We repeat adding edges using this until no more edges can be added. -/
 def updateGraphWithNlt (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
     (facts : Array AtomicFact) : MetaM Graph := do
   let nltFacts := facts.filter fun fact => match fact with | .nlt _ _ _ => true | _ => false
-  let mut usedNltFacts : Vector Bool _ := .mkVector nltFacts.size false
+  let mut usedNltFacts : Vector Bool _ := .replicate nltFacts.size false
   let mut g := g
   while true do
     let mut changed : Bool := false

@@ -225,10 +225,9 @@ theorem tendsto_iSup_iSup {f : α → β} {x : ι → Filter α} {y : ι → Fil
     Tendsto f l (𝓟 s) ↔ ∀ᶠ a in l, f a ∈ s := by
   simp only [Tendsto, le_principal_iff, mem_map', Filter.Eventually]
 
--- Porting note: was a `simp` lemma
 theorem tendsto_principal_principal {f : α → β} {s : Set α} {t : Set β} :
     Tendsto f (𝓟 s) (𝓟 t) ↔ ∀ a ∈ s, f a ∈ t := by
-  simp only [tendsto_principal, eventually_principal]
+  simp
 
 @[simp] theorem tendsto_pure {f : α → β} {a : Filter α} {b : β} :
     Tendsto f a (pure b) ↔ ∀ᶠ x in a, f x = b := by
