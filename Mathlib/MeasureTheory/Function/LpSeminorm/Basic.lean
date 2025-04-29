@@ -316,7 +316,7 @@ theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_t
 variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] in
 theorem memLp_const_iff_enorm
     {p : ℝ≥0∞} {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
-    MemLp (fun _ : α ↦ c) p μ ↔ μ Set.univ = 0 ∨ (c = 0 ∨ μ Set.univ < ∞) := by
+    MemLp (fun _ : α ↦ c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   simp_all [MemLp, aestronglyMeasurable_const,
     eLpNorm_const_lt_top_iff_enorm hc hp_ne_zero hp_ne_top]
 
