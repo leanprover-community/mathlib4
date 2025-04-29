@@ -12,7 +12,7 @@ import Mathlib.Topology.Algebra.RestrictedProduct
 We define the ring of finite adèles of a Dedekind domain `R`.
 
 ## Main definitions
-- `DedekindDomain.FiniteAdeleRing` : The finite adèle ring of `R`, defined as the
+- `IsDedekindDomain.FiniteAdeleRing` : The finite adèle ring of `R`, defined as the
   restricted product `Πʳ_v K_v`. We give this ring a `K`-algebra structure.
 
 ## Implementation notes
@@ -20,7 +20,7 @@ We are only interested on Dedekind domains of Krull dimension 1 (i.e., not field
 field, its finite adèle ring is just defined to be the trivial ring.
 
 ## References
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 
 ## Tags
 finite adèle ring, dedekind domain
@@ -127,10 +127,10 @@ instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion 
 section Topology
 
 instance : IsTopologicalRing (FiniteAdeleRing R K) :=
-    haveI : Fact (∀ (v : HeightOneSpectrum R),
+  haveI : Fact (∀ v : HeightOneSpectrum R,
       IsOpen (v.adicCompletionIntegers K : Set (v.adicCompletion K))) :=
     ⟨fun _ ↦ Valued.valuationSubring_isOpen _⟩
-    RestrictedProduct.isTopologicalRing (fun (v : HeightOneSpectrum R) ↦ v.adicCompletion K)
+  RestrictedProduct.isTopologicalRing (fun (v : HeightOneSpectrum R) ↦ v.adicCompletion K)
 
 end Topology
 
