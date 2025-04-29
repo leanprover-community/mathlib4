@@ -658,7 +658,7 @@ lemma integral_pow_mul_le_of_le_of_pow_mul_le
     (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂) :
     ∫ x, ‖x‖ ^ k * ‖f x‖ ∂μ ≤ 2 ^ μ.integrablePower *
       (∫ x, (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ)) ∂μ) * (C₁ + C₂) := by
-  rw [← integral_mul_left, ← integral_mul_right]
+  rw [← integral_const_mul, ← integral_mul_const]
   apply integral_mono_of_nonneg
   · filter_upwards with v using by positivity
   · exact ((integrable_pow_neg_integrablePower μ).const_mul _).mul_const _
@@ -764,8 +764,6 @@ def mkCLMtoNormedSpace [RingHomIsometric σ] (A : 𝓢(D, E) → G)
       apply Seminorm.cont_withSeminorms_normedSpace G (schwartz_withSeminorms 𝕜 D E)
       rcases hbound with ⟨s, C, hC, h⟩
       exact ⟨s, ⟨C, hC⟩, h⟩ }
-
-
 
 end CLM
 
@@ -1122,7 +1120,7 @@ def integralCLM : 𝓢(D, V) →L[𝕜] V := by
     rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff₀' (by positivity), rpow_natCast]
     simpa using one_add_le_sup_seminorm_apply (m := m) (k := n) (n := 0) le_rfl le_rfl f x
   apply (integral_mono (by simpa using f.integrable_pow_mul μ 0) _ h').trans
-  · rw [integral_mul_right, ← mul_assoc, mul_comm (2 ^ n)]
+  · rw [integral_mul_const, ← mul_assoc, mul_comm (2 ^ n)]
     rfl
   apply h.mul_const
 
