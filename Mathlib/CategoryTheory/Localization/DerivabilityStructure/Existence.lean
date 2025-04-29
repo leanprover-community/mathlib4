@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Pointwise
-import Mathlib.CategoryTheory.Functor.Derived.Pointwise
+import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
 
 /-!
 # Existence of a right derived functor
