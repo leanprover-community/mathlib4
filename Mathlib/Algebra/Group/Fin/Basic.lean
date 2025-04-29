@@ -111,6 +111,12 @@ lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
 lemma sub_le_iff {n : ℕ} {a b : Fin n} : a - b ≤ a ↔ b ≤ a := by
   rw [← not_iff_not, Fin.not_le, Fin.not_le, lt_sub_iff]
 
+lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).1 < n - i.1 := by
+  simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
+
+lemma sub_le_right {n : ℕ} (i : Fin n) : n - i.1 ≤ n := by
+  simp
+
 @[simp]
 lemma lt_one_iff {n : ℕ} (x : Fin (n + 2)) : x < 1 ↔ x = 0 := by
   simp [lt_iff_val_lt_val]

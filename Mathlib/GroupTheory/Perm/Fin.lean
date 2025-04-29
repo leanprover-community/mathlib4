@@ -292,12 +292,6 @@ namespace Fin
 
 local instance {n : ℕ} {i: Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
 
-lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).1 < n - i.1 := by
-  simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
-
-lemma sub_le_right {n : ℕ} (i : Fin n) : n - i.1 ≤ n := by
-  simp
-
 variable {n : ℕ} {i j k : Fin n}
 
 /-- `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
