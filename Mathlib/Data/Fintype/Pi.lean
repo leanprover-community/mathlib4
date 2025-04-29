@@ -269,8 +269,9 @@ def RelHom.equivSubtype {α β} {r : α → α → Prop} {s : β → β → Prop
   right_inv _ := rfl
 
 instance RelHom.instFintype {α β} {r : α → α → Prop} {s : β → β → Prop}
-    [Fintype α] [Fintype β] [DecidableEq α] [DecidableRel r] [DecidableRel s] :
-    Fintype (r →r s) :=
+    [Fintype α] [Fintype β] [DecidableEq α] [DecidableRel r]
+    -- this odd typeclass argument is so I can use it in `SimpleGraph.instFintypeColoring`
+    [∀ a b [Decidable (a = b)], Decidable (s a b)] : Fintype (r →r s) :=
   (pairRelFintype fun a b x y _ => r a b → s x y).ofEquiv
     (f := (RelHom.equivSubtype.trans (Equiv.subtypeEquivRight (by simp))).symm)
 

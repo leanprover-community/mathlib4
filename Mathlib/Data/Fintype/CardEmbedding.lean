@@ -35,6 +35,7 @@ theorem card_embedding_eq_of_unique {α β : Type*} [Unique α] [Fintype β] [Fi
 @[simp]
 theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Fintype (α ↪ β)] :
     ‖α ↪ β‖ = ‖β‖.descFactorial ‖α‖ := by
+  classical
   rw [Subsingleton.elim emb Embedding.fintype]
   refine Fintype.induction_empty_option (P := fun t ↦ ‖t ↪ β‖ = ‖β‖.descFactorial ‖t‖)
         (fun α₁ α₂ h₂ e ih ↦ ?_) (?_) (fun γ h ih ↦ ?_) α <;> dsimp only at * <;> clear! α
@@ -42,9 +43,8 @@ theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Finty
     rw [← card_congr (Equiv.embeddingCongr e (Equiv.refl β)), ih, card_congr e]
   · rw [card_pempty, Nat.descFactorial_zero, card_eq_one_iff]
     exact ⟨Embedding.ofIsEmpty, fun x ↦ DFunLike.ext _ _ isEmptyElim⟩
-  · classical
-    rw [card_option, Nat.descFactorial_succ, card_congr (Embedding.optionEmbeddingEquiv γ β),
-        card_sigma, ← ih]
+  · rw [card_option, Nat.descFactorial_succ,
+      @card_congr (f := Embedding.optionEmbeddingEquiv γ β), card_sigma, ← ih]
     simp only [Fintype.card_compl_set, Fintype.card_range, Finset.sum_const, Finset.card_univ,
       Nat.nsmul_eq_mul, mul_comm]
 
