@@ -24,6 +24,8 @@ variable
   {U : Set 𝕜}
   {z : 𝕜}
 
+open Set
+
 namespace Function.FactorizedRational
 
 /--
@@ -113,7 +115,7 @@ theorem meromorphicNFOn (d : 𝕜 → ℤ) (U : Set 𝕜) :
 The order of the factorized rational function `(∏ᶠ u, fun z ↦ (z - u) ^ d u)` at `z` equals `d z`.
 -/
 theorem order {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : d.support.Finite) :
-    (meromorphicNFOn_univ d (trivial : z ∈ ⊤)).meromorphicAt.order = d z := by
+    (meromorphicNFOn_univ d (mem_univ z)).meromorphicAt.order = d z := by
   classical
   rw [MeromorphicAt.order_eq_int_iff]
   use ∏ᶠ u, (· - u) ^ update d z 0 u
@@ -126,7 +128,7 @@ theorem order {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : d.support.Finite) :
 Factorized rational functions are nowhere locally constant zero.
 -/
 theorem order_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
-    (meromorphicNFOn_univ d (trivial : z ∈ ⊤)).meromorphicAt.order ≠ ⊤ := by
+    (meromorphicNFOn_univ d (mem_univ z)).meromorphicAt.order ≠ ⊤ := by
   by_cases hd : d.support.Finite
   · simp [order d hd]
   · rw [← mulSupport] at hd
