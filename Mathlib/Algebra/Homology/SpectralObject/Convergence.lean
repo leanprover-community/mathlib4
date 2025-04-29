@@ -584,9 +584,9 @@ instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℤ) :
     rintro i j hij pq hpq _ _ _ rfl rfl rfl h
     exfalso
     apply ne_of_lt h
-    obtain _|i := i
-    · simp at hij
-    · exact (mkDataE₂Cohomological_i₁_eq_i₂ n i j hij pq hpq).symm
+    induction i using WithBot.recBotCoe with
+    | bot => simp at hij
+    | coe i => exact (mkDataE₂Cohomological_i₁_eq_i₂ n i j hij pq hpq).symm
 
 instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℕ) :
     X.ConvergesInDegree mkDataE₂CohomologicalNatCompatibility n where

@@ -68,13 +68,13 @@ end CochainComplex
 
 namespace HomotopyCategory
 
-variable (S : Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)))
-  [ClosedUnderIsomorphisms S.P]
+variable (S : ObjectProperty (HomotopyCategory C (ComplexShape.up ℤ))) [S.IsTriangulated]
+  [S.IsClosedUnderIsomorphisms]
 
 lemma mem_subcategory_of_strictly_bounded (K : CochainComplex C ℤ) (a b : ℤ)
     [ha : K.IsStrictlyGE a] [hb : K.IsStrictlyLE b]
-    (hK : ∀ (n : ℤ), a ≤ n → n ≤ b → S.P ((singleFunctor C 0).obj (K.X n))) :
-    S.P ((quotient C _).obj K) := by
+    (hK : ∀ (n : ℤ), a ≤ n → n ≤ b → S ((singleFunctor C 0).obj (K.X n))) :
+    S ((quotient C _).obj K) := by
   by_cases h₀ : a ≤ b; swap
   · simp only [not_le] at h₀
     have hK' : 𝟙 K = 0 := by
@@ -84,7 +84,7 @@ lemma mem_subcategory_of_strictly_bounded (K : CochainComplex C ℤ) (a b : ℤ)
       · apply K.isZero_of_isStrictlyLE b _ (by omega)
       · simp only [not_le] at hn
         exact K.isZero_of_isStrictlyGE a _ hn
-    apply S.mem_of_isZero
+    apply S.prop_of_isZero
     rw [IsZero.iff_id_eq_zero, ← CategoryTheory.Functor.map_id, hK', Functor.map_zero]
   · replace h₀ := Int.le.dest h₀
     obtain ⟨n, hn⟩ := h₀
@@ -93,12 +93,13 @@ lemma mem_subcategory_of_strictly_bounded (K : CochainComplex C ℤ) (a b : ℤ)
     | zero =>
         intro K a b _ _ hK ha
         obtain rfl : a = b := by simpa using ha
-        exact mem_of_iso S.P (((singleFunctors C).shiftIso (-a) a 0 (neg_add_cancel a)).app _ ≪≫
+        exact S.prop_of_iso (((singleFunctors C).shiftIso (-a) a 0 (neg_add_cancel a)).app _ ≪≫
           (singleFunctorPostcompQuotientIso C a).app _ ≪≫
-          ((quotient _ _).mapIso (K.isoSingle a)).symm) (S.shift _ (-a) (hK a (by rfl) (by rfl)))
+          ((quotient _ _).mapIso (K.isoSingle a)).symm)
+            (S.le_shift (-a) _ (hK a (by rfl) (by rfl)))
     | succ n h =>
         intro K a b _ _ hK hab
-        apply S.ext₂ _ (trianglehOfDegreewiseSplit_distinguished _
+        apply S.ext_of_isTriangulatedClosed₂ _ (trianglehOfDegreewiseSplit_distinguished _
           (K.shortComplexStupidTruncSplitting
             (ComplexShape.Embedding.embeddingUpInt_areComplementary (a + n) b (by omega))))
         · dsimp
@@ -106,18 +107,18 @@ lemma mem_subcategory_of_strictly_bounded (K : CochainComplex C ℤ) (a b : ℤ)
             inferInstance (fun m h₁ h₂ => ?_) (by omega)
           dsimp
           obtain h₃ | rfl := h₂.lt_or_eq
-          · apply S.mem_of_isZero
+          · apply S.prop_of_isZero
             apply Functor.map_isZero
             exact CochainComplex.isZero_of_isStrictlyGE _ b _ h₃
           · obtain ⟨k, hk⟩ := Int.le.dest h₂
-            exact mem_of_iso _ ((singleFunctor C 0).mapIso
+            exact S.prop_of_iso ((singleFunctor C 0).mapIso
               ((asIso' (K.isIso_ιStupidTrunc_f (ComplexShape.embeddingUpIntGE m) (i := k)
                   (by dsimp; omega))).symm))
                 (hK m (by omega) h₂)
         · dsimp
           refine @h _ a (a + n) inferInstance inferInstance (fun m h₁ h₂ => ?_) rfl
           obtain ⟨k, hk⟩ := Int.le.dest h₂
-          exact mem_of_iso _ ((singleFunctor C 0).mapIso
+          exact S.prop_of_iso ((singleFunctor C 0).mapIso
             (asIso' (K.isIso_πStupidTrunc_f (ComplexShape.embeddingUpIntLE (a + n)) (i := k)
             (by dsimp; omega)))) (hK m h₁ (by omega))
 

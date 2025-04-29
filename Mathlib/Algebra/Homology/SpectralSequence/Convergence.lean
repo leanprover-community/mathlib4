@@ -40,10 +40,8 @@ variable {α}
 def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ) where
   stripe pq := pq.1 + pq.2
   position n i := ⟨n + 1 - i, i - 1⟩
-  pred n i := some (i - 1)
-  pred_lt := by
-    dsimp [WithBot.some]
-    aesop
+  pred n i := WithBot.some (i - 1)
+  pred_lt n i := by aesop
   finite_segment _ i j := by
     rw [Set.finite_def]
     by_cases hij : i ≤ j
@@ -63,7 +61,7 @@ def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ
 def cohomomologicalStripesFin (l : ℕ) : ConvergenceStripes (ℤ × Fin l) (fun (_ : ℤ) => Fin l) where
   stripe pq := pq.1 + pq.2.1
   pred _ j := match j with
-    | ⟨0, _⟩   => none
+    | ⟨0, _⟩   => ⊥
     | ⟨j+1, _⟩ => WithBot.some ⟨j, by linarith⟩
   pred_lt n := by rintro ⟨_|i, _⟩ <;> simp
   position n i := ⟨n - i.1, i⟩
@@ -161,8 +159,9 @@ lemma pred'_some (n : σ) (i : α n) :
 
 lemma pred'_le (n : σ) (i : WithBot (α n)) :
     s.pred' n i ≤ i := by
-  cases' i with i
+  obtain _ | ⟨i⟩ := i
   · erw [pred'_bot]
+    simp
   · erw [pred'_some]
     exact s.pred_le n i
 
@@ -179,21 +178,24 @@ lemma pred_injective (n : σ) (i j : α n) (hij : s.pred n i = s.pred n j) :
 
 lemma pred'_monotone (n : σ) (i j : WithBot (α n)) (hij : i ≤ j) :
     s.pred' n i ≤ s.pred' n j := by
-  obtain _ | j := j
-  · obtain rfl :=le_bot_iff.1 hij
+  induction j using WithBot.recBotCoe with
+  | bot =>
+    obtain rfl := le_bot_iff.1 hij
     rfl
-  · obtain _ | i := i
-    · exact bot_le
-    · exact s.pred_monotone _ _ _ (by simpa using hij)
+  | coe j =>
+    induction i using WithBot.recBotCoe with
+    | bot => exact bot_le
+    | coe i => exact s.pred_monotone _ _ _ (by simpa using hij)
 
 lemma le_pred'_of_lt (n : σ) (i j : WithBot (α n)) (hi : i < j) :
     i ≤ s.pred' n j := by
-  obtain _ | i := i
-  · simp
-  · obtain _ | j := j
-    · simp at hi
-    · by_contra!
-      simp only [not_le] at this
+  induction i using WithBot.recBotCoe with
+  | bot => simp
+  | coe i =>
+    induction j using WithBot.recBotCoe with
+    | bot => simp at hi
+    | coe j =>
+      by_contra!
       have := lt_of_le_of_lt (s.discrete n j i this) (WithBot.coe_lt_coe.1 hi)
       simp at this
 
@@ -323,15 +325,14 @@ lemma exists_sub_eq (n : σ) (i j : α n) (hij : i ≤ j) :
 
 lemma exists_sub_le (n : σ) (i : WithBot (α n)) (j : α n) :
     ∃ (k : ℕ), s.sub n i k ≤ WithBot.some j := by
-  obtain _ | i := i
-  · exact ⟨0, by simp⟩
-  · obtain hij | hij := le_total i j
+  induction i using WithBot.recBotCoe with
+  | bot => exact ⟨0, by simp⟩
+  | coe i =>
+    obtain hij | hij := le_total i j
     · use 0
       simpa only [sub_zero] using WithBot.coe_le_coe.2 hij
     · obtain ⟨k, hk⟩ := s.exists_sub_eq n j i hij
-      use k
-      rw [← hk]
-      rfl
+      exact ⟨k, by rw [← hk]⟩
 
 end ConvergenceStripes
 

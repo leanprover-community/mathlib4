@@ -386,8 +386,6 @@ instance GuitartExact.prod [w.GuitartExact] [w'.GuitartExact] :
 
 end prod
 
-namespace GuitartExact
-
 /-- When the left and right functors of a 2-square are equivalences, and the natural
 transformation of the 2-square is an isomorphism, then the 2-square is Guitart exact. -/
 instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
@@ -401,7 +399,7 @@ instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
   dsimp only [structuredArrowDownwards]
   infer_instance
 
-instance id (F : C₁ ⥤ C₂) :
+instance guitartExact_id (F : C₁ ⥤ C₂) :
     GuitartExact (TwoSquare.mk (𝟭 C₁) F F (𝟭 C₂) (𝟙 F)) := by
   rw [guitartExact_iff_isConnected_rightwards]
   intro X₂ X₃ (g : F.obj X₂ ⟶ X₃)
@@ -414,8 +412,6 @@ instance id (F : C₁ ⥤ C₂) :
   apply zigzag_isConnected
   intro X Y
   exact Zigzag.of_inv_hom (φ X) (φ Y)
-
-end GuitartExact
 
 end TwoSquare
 

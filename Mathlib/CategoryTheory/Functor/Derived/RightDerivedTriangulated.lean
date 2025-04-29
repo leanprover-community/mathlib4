@@ -50,7 +50,7 @@ lemma isTriangulated_of_isRightDerivedFunctor
     dsimp
     rw [assoc]
     erw [← NatTrans.naturality_assoc]
-    rw [NatTrans.CommShift.comm_app]
+    rw [NatTrans.shift_app_comm]
 
 end Functor
 

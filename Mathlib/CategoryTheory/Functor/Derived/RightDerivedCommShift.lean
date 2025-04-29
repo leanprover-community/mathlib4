@@ -144,9 +144,9 @@ instance natTrans_commShift :
     letI := commShift RF α W A
     NatTrans.CommShift α A :=
   letI := commShift RF α W A
-  { comm' := fun a => by
+  { shift_comm := fun a => by
       ext X
-      simp [commShiftIso_comp_hom_app]}
+      simp [commShiftIso_comp_hom_app] }
 
 end IsRightDerivedFunctor
 

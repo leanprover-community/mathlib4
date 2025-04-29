@@ -86,15 +86,15 @@ namespace HomologicalComplex
 
 variable {C ι : Type*} {c : ComplexShape ι} [Category C] [Abelian C]
 
-noncomputable instance : NormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
-  NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
+noncomputable instance : IsNormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
+  ⟨NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
     (isColimitOfEval _ _ (fun _ =>
-      isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi _ _))⟩
+      isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi _ _))⟩⟩
 
-noncomputable instance : NormalMonoCategory (HomologicalComplex C c) := ⟨fun p _ =>
-  NormalMono.mk _ (cokernel.π p) (cokernel.condition _)
+noncomputable instance : IsNormalMonoCategory (HomologicalComplex C c) := ⟨fun p _ =>
+  ⟨NormalMono.mk _ (cokernel.π p) (cokernel.condition _)
     (isLimitOfEval _ _ (fun _ =>
-      isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono _ _))⟩
+      isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono _ _))⟩⟩
 
 noncomputable instance : Abelian (HomologicalComplex C c) where
 
@@ -312,7 +312,6 @@ noncomputable def toDouble : K ⟶ double _ _ h h' f where
             ((double _ _ h h' f).XIsoOfEq h₁).inv
           else 0
   comm' i j hij := by
-    dsimp
     by_cases h₀ : i = n₀
     · subst h₀
       rw [dif_pos rfl]
@@ -524,15 +523,15 @@ namespace HomFactorization
 
 /-- mk' -/
 @[simps]
-def mk' {I : C} {i : X ⟶ I} {p : I ⟶ Y} (fac : i ≫ p = f) : HomFactorization f where
-  fac := fac
+def mk' {I : C} {i : X ⟶ I} {p : I ⟶ Y} (fac : i ≫ p = f) : HomFactorization f :=
+  { fac := fac, ..}
 
 attribute [reassoc (attr := simp)] fac
 
 variable (F₁ F₂ F₃ : HomFactorization f)
 
 @[ext]
-  structure Hom where
+structure Hom where
   φ : F₁.I ⟶ F₂.I
   commi : F₁.i ≫ φ = F₂.i := by aesop_cat
   commp : φ ≫ F₂.p = F₁.p := by aesop_cat
@@ -587,7 +586,7 @@ structure IsCofFibFactorization (F : HomFactorization f) : Prop where
 
 variable (f)
 
-def CofFibFactorization := FullSubcategory (IsCofFibFactorization (f := f))
+def CofFibFactorization := ObjectProperty.FullSubcategory (IsCofFibFactorization (f := f))
 
 instance : Category (CofFibFactorization f) := by
   dsimp only [CofFibFactorization]
@@ -595,8 +594,7 @@ instance : Category (CofFibFactorization f) := by
 
 namespace CofFibFactorization
 
-def forget : CofFibFactorization f ⥤ HomFactorization f :=
-  fullSubcategoryInclusion _
+def forget : CofFibFactorization f ⥤ HomFactorization f := ObjectProperty.ι _
 
 variable {f}
 variable (F : CofFibFactorization f)
@@ -706,7 +704,7 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     have := S.isIso_pOpcycles _ n₁ rfl rfl
     have : opcyclesMap i₁ n₁ = Injective.ι (K.opcycles n₁) ≫ α ≫ S.pOpcycles n₁ := by
       rw [← (cancel_epi (K.pOpcycles n₁)), p_opcyclesMap, ← assoc, ← assoc]
-      simp [i₁, toSingleEquiv]
+      simp [α, i₁, toSingleEquiv]
     rw [this]
     infer_instance
   have hx₁' : (x₁ ≫ K.iCycles n₁) ≫ K.pOpcycles n₁ = 0 := by
@@ -723,7 +721,7 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
   rw [← cancel_mono (K.iCycles n₁), assoc, hx₃, assoc, toCycles_i]
 
 def CofFibFactorizationQuasiIsoLE (n : ℤ) :=
-  FullSubcategory (fun (F : CofFibFactorization f) => F.QuasiIsoLE n)
+  ObjectProperty.FullSubcategory (fun (F : CofFibFactorization f) => F.QuasiIsoLE n)
 
 instance (n : ℤ) : Category (CofFibFactorizationQuasiIsoLE f n) := by
   dsimp only [CofFibFactorizationQuasiIsoLE]
@@ -831,7 +829,7 @@ lemma homologyShortComplex'_exact : (homologyShortComplex' f n).Exact := by
   have : IsIso φ.τ₁ := by infer_instance
   have : IsIso φ.τ₂ := by infer_instance
   have : Mono φ.τ₃ := by
-    dsimp
+    dsimp [φ]
     rw [homologyMap_comp]
     have := mono_homologyMap_π' f n
     infer_instance
@@ -875,7 +873,7 @@ lemma isIso_p_f (q : ℤ) (hq : q ≤ n) : IsIso ((p f n).f q) := by
     dsimp [I, single]
     rw [if_neg (by linarith)]
     exact Limits.isZero_zero C
-  erw [← mappingCocone.id _ q (q - 1) (by linarith), self_eq_add_right, this, zero_comp]
+  erw [← mappingCocone.id _ q (q - 1) (by linarith), left_eq_add, this, zero_comp]
 
 @[simps]
 noncomputable def cofFibFactorization : CofFibFactorization f where

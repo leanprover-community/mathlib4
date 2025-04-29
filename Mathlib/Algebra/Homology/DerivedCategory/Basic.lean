@@ -23,7 +23,7 @@ It was already shown in the file `Algebra.Homology.Localization` that the induce
 functor `DerivedCategory.Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C`
 is a localization functor with respect to the class of morphisms
 `HomotopyCategory.quasiIso C (ComplexShape.up ℤ)`. In the lemma
-`HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W` we obtain that this class of morphisms
+`HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW` we obtain that this class of morphisms
 consists of morphisms whose cone belongs to the triangulated subcategory
 `HomotopyCategory.subcategoryAcyclic C` of acyclic complexes. Then, the triangulated
 structure on `DerivedCategory C` is deduced from the triangulated structure
@@ -100,17 +100,17 @@ lemma quotient_obj_mem_subcategoryAcyclic_iff_acyclic (K : CochainComplex C ℤ)
 
 variable (C)
 
-lemma quasiIso_eq_subcategoryAcyclic_W :
+lemma quasiIso_eq_subcategoryAcyclic_trW :
     quasiIso C (ComplexShape.up ℤ) = (subcategoryAcyclic C).trW := by
   ext K L f
   exact ((homologyFunctor C (ComplexShape.up ℤ) 0).mem_homologicalKernel_trW_iff f).symm
 
 instance : (quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ := by
-  rw [quasiIso_eq_subcategoryAcyclic_W]
+  rw [quasiIso_eq_subcategoryAcyclic_trW]
   infer_instance
 
 instance quasiIso_respectsIso : (quasiIso C (ComplexShape.up ℤ)).RespectsIso := by
-  rw [quasiIso_eq_subcategoryAcyclic_W]
+  rw [quasiIso_eq_subcategoryAcyclic_trW]
   infer_instance
 
 end HomotopyCategory
@@ -168,7 +168,7 @@ instance : Qh.IsLocalization (HomotopyCategory.quasiIso C (ComplexShape.up ℤ))
   infer_instance
 
 instance : Qh.IsLocalization (HomotopyCategory.subcategoryAcyclic C).trW := by
-  rw [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW]
   infer_instance
 
 noncomputable instance : Preadditive (DerivedCategory C) :=
@@ -237,11 +237,11 @@ instance : (Q : _ ⥤ DerivedCategory C).mapArrow.EssSurj where
     exact ⟨Arrow.mk f, ⟨e⟩⟩
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasLeftCalculusOfFractions := by
-  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW]
   infer_instance
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasRightCalculusOfFractions := by
-  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW]
   infer_instance
 
 instance : (Qh : _ ⥤ DerivedCategory C).EssSurj :=

@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.SpectralObject.Homology
 import Mathlib.Algebra.Homology.SpectralSequence.Basic
 import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
+import Batteries.Data.Fin.Basic
 
 /-!
 # The spectral sequence of a spectral object
@@ -104,13 +105,13 @@ structure SpectralSequenceMkData where
   hc₀₂ (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') : i₀ r hr pq = i₂ pq'
   hc₁₃ (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') : i₁ pq = i₃ r hr pq'
   antitone_i₀ (r r' : ℤ) (hr : r₀ ≤ r) (hrr' : r ≤ r') (pq : κ) :
-      i₀ r' (by linarith) pq ≤ i₀ r hr pq
+      i₀ r' (by omega) pq ≤ i₀ r hr pq
   monotone_i₃ (r r' : ℤ) (hr : r₀ ≤ r) (hrr' : r ≤ r') (pq : κ) :
-      i₃ r hr pq ≤ i₃ r' (by linarith) pq
+      i₃ r hr pq ≤ i₃ r' (by omega) pq
   i₀_prev' (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') :
-      i₀ (r + 1) (by linarith) pq = i₁ pq'
+      i₀ (r + 1) (by omega) pq = i₁ pq'
   i₃_next' (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') :
-      i₃ (r + 1) (by linarith) pq' = i₂ pq
+      i₃ (r + 1) (by omega) pq' = i₂ pq
 
 @[simps!]
 def mkDataE₂Cohomological :
@@ -120,30 +121,28 @@ def mkDataE₂Cohomological :
   i₁ pq := ℤt.mk pq.2
   i₂ pq := ℤt.mk (pq.2 + 1)
   i₃ r hr pq := ℤt.mk (pq.2 + r - 1)
-  le₀₁ r hr pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
-  le₁₂ pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
-  le₂₃ r hr pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
-  hc := by rintro r _ pq _ rfl; dsimp; linarith
-  hc₀₂ := by rintro r hr pq _ rfl; dsimp; congr 1; linarith
-  hc₁₃ := by rintro r hr pq _ rfl; dsimp; congr 1; linarith
+  le₀₁ r hr pq := by simp only [ℤt.mk_le_mk_iff]; omega
+  le₁₂ pq := by simp only [ℤt.mk_le_mk_iff]; omega
+  le₂₃ r hr pq := by simp only [ℤt.mk_le_mk_iff]; omega
+  hc := by rintro r _ pq _ rfl; dsimp; omega
+  hc₀₂ := by rintro r hr pq _ rfl; dsimp; congr 1; omega
+  hc₁₃ := by rintro r hr pq _ rfl; dsimp; congr 1; omega
   antitone_i₀ r r' hr hrr' pq := by
-    dsimp
     simp only [ℤt.mk_le_mk_iff]
-    linarith
+    omega
   monotone_i₃ r r' hr hrr' pq := by
-    dsimp
     simp only [ℤt.mk_le_mk_iff]
-    linarith
+    omega
   i₀_prev' := by
     rintro r hr pq _ rfl
     dsimp
     congr 1
-    linarith
+    omega
   i₃_next' := by
     rintro r hr pq _ rfl
     dsimp
     congr 1
-    linarith
+    omega
 
 @[simps!]
 def mkDataE₂CohomologicalNat :
@@ -154,41 +153,34 @@ def mkDataE₂CohomologicalNat :
   i₁ pq := ℤt.mk pq.2
   i₂ pq := ℤt.mk (pq.2 + 1)
   i₃ r hr pq := ℤt.mk (pq.2 + r - 1)
-  le₀₁ r hr pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
-  le₁₂ pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
-  le₂₃ r hr pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
+  le₀₁ r hr pq := by simp only [ℤt.mk_le_mk_iff]; omega
+  le₁₂ pq := by simp only [ℤt.mk_le_mk_iff]; omega
+  le₂₃ r hr pq := by simp only [ℤt.mk_le_mk_iff]; omega
   hc r _ pq pq' hpq := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    dsimp
-    linarith
+    omega
   hc₀₂ r hr pq pq' hpq := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    dsimp
     congr 1
-    linarith
+    omega
   hc₁₃ r hr pq pq' hpq := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    dsimp
     congr 1
-    linarith
+    omega
   antitone_i₀ r r' hrr' hr pq := by
-    dsimp
     rw [ℤt.mk_le_mk_iff]
-    linarith
+    omega
   monotone_i₃ r r' hrr' hr pq := by
-    dsimp
     rw [ℤt.mk_le_mk_iff]
-    linarith
+    omega
   i₀_prev' r hr pq pq' hpq := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    dsimp
     congr 1
-    linarith
+    omega
   i₃_next' r hr pq pq' hpq := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    dsimp
     congr 1
-    linarith
+    omega
 
 lemma _root_.Fin.clamp_le_clamp {a b : ℕ} (h : a ≤ b) (m : ℕ) :
     Fin.clamp a m ≤ Fin.clamp b m := by
@@ -203,81 +195,81 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
     by_cases h : 0 ≤ pq.2.1 - (r - 2)
     · simp only [Int.toNat_lt h, Nat.cast_add, Nat.cast_one]
       linarith [pq.2.2]
-    · refine lt_of_le_of_lt (le_of_eq ?_) (show 0 < l + 1 by linarith)
+    · refine lt_of_le_of_lt (le_of_eq ?_) (show 0 < l + 1 by omega)
       rw [Int.toNat_eq_zero]
-      linarith⟩
+      omega⟩
   i₁ pq := pq.2.castSucc
   i₂ pq := pq.2.succ
   i₃ r hr pq := Fin.clamp (pq.2.1 + (r - 1)).toNat _
   le₀₁ r hr pq := by simpa [Fin.le_iff_val_le_val] using hr
   le₁₂ pq := by simp [Fin.le_iff_val_le_val]
   le₂₃ r hr pq := by
-    dsimp
-    simp only [Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_clamp, ge_iff_le, Int.toNat_le,
-      le_min_iff]
+    simp only [Fin.le_iff_val_le_val, Fin.val_succ, ge_iff_le, Int.toNat_le,
+      le_min_iff, Fin.clamp]
     constructor
-    · rw [Int.le_toNat (by linarith)]
+    · rw [Int.le_toNat (by omega)]
       simp only [Nat.cast_add, Nat.cast_one, add_le_add_iff_left]
-      linarith
+      omega
     · linarith [pq.2.2]
   hc r _ := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩
     dsimp at h₁ h₂ ⊢
-    linarith
+    omega
   hc₀₂ r hr := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩
     ext
     rw [← Int.ofNat_inj]
     dsimp at h₁ h₂ ⊢
     simp only [sub_nonneg, tsub_le_iff_right, Nat.cast_add, Nat.cast_one]
-    rw [Int.toNat_of_nonneg (by linarith)]
-    linarith
+    rw [Int.toNat_of_nonneg (by omega)]
+    omega
   hc₁₃ r hr := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩
     rw [Fin.ext_iff]
     dsimp at h₁ h₂ ⊢
-    have : b₂ + (r - 1) = a₂ := by linarith
+    have : b₂ + (r - 1) = a₂ := by omega
     rw [this]
-    simp only [Int.toNat_ofNat]
+    simp only [Int.toNat_ofNat, Fin.clamp]
     apply le_antisymm
     · simp only [le_min_iff, le_refl, true_and]
-      linarith
+      omega
     · exact Nat.min_le_left a₂ l
   antitone_i₀ r r' hr hrr' := by
     rintro ⟨a, ⟨a', _⟩⟩
     dsimp
     rw [Fin.mk_le_mk]
     apply Int.toNat_le_toNat
-    linarith
+    omega
   monotone_i₃ r r' hr hrr' := by
     rintro ⟨a, ⟨a', _⟩⟩
     dsimp
     rw [Fin.mk_le_mk]
     apply Fin.clamp_le_clamp
     apply Int.toNat_le_toNat
-    linarith
+    omega
   i₀_prev' r hr := by
     rintro ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩
     ext
     dsimp at h₁ h₂ ⊢
     rw [← Int.ofNat_inj]
-    rw [Int.toNat_of_nonneg (by linarith)]
-    linarith
+    rw [Int.toNat_of_nonneg (by omega)]
+    omega
   i₃_next' r hr := by
     rintro ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩
     ext
     dsimp at h₁ h₂ ⊢
     apply le_antisymm
     · refine (min_le_left _ _).trans ?_
-      rw [← Int.ofNat_le, Int.toNat_of_nonneg (by linarith)]
+      rw [← Int.ofNat_le, Int.toNat_of_nonneg (by omega)]
       simp only [Nat.cast_add, Nat.cast_one]
-      linarith
-    · simp only [le_min_iff]
+      omega
+    · dsimp [Fin.clamp]
+      simp only [le_min_iff]
       constructor
-      · rw [← Int.ofNat_le, Int.toNat_of_nonneg (by linarith),
+      · rw [← Int.ofNat_le, Int.toNat_of_nonneg (by omega),
           Nat.cast_add, Nat.cast_one]
-        linarith
-      · linarith
+        omega
+      · omega
 
 variable {ι c r₀}
 
@@ -455,24 +447,24 @@ variable (data : SpectralSequenceMkData ι c r₀)
 namespace SpectralSequenceMkData
 
 lemma i₀_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq : κ) :
-    data.i₀ r' (by linarith) pq ≤ data.i₀ r hr pq := by
+    data.i₀ r' (by omega) pq ≤ data.i₀ r hr pq := by
   apply data.antitone_i₀
-  linarith
+  omega
 
 lemma i₃_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq : κ) :
-    data.i₃ r hr pq ≤ data.i₃ r' (by linarith) pq := by
+    data.i₃ r hr pq ≤ data.i₃ r' (by omega) pq := by
   apply data.monotone_i₃
-  linarith
+  omega
 
 lemma i₀_prev (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq pq' : κ)
     (hpq : (c r).Rel pq pq') :
-    data.i₀ r' (by linarith) pq = data.i₁ pq' := by
+    data.i₀ r' (by omega) pq = data.i₁ pq' := by
   subst hrr'
   exact data.i₀_prev' r hr pq pq' hpq
 
 lemma i₃_next (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq pq' : κ)
     (hpq : (c r).Rel pq pq') :
-    data.i₃ r' (by linarith) pq' = data.i₂ pq := by
+    data.i₃ r' (by omega) pq' = data.i₂ pq := by
   subst hrr'
   exact data.i₃_next' r hr pq pq' hpq
 
@@ -500,7 +492,7 @@ lemma isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤
 lemma isZero_H_obj_mk₁_i₀_le' (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
     (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
     (n : ℤ) (hn : n = data.deg pq + 1) (i₀' i₀ : ι)
-    (hi₀' : i₀' = data.i₀ r' (by linarith) pq)
+    (hi₀' : i₀' = data.i₀ r' (by omega) pq)
     (hi₀ : i₀ = data.i₀ r hr pq) :
     IsZero ((X.H n).obj (mk₁ (homOfLE (show i₀' ≤ i₀ by
       simpa only [hi₀', hi₀] using data.i₀_le r r' hrr' hr pq)))) := by
@@ -518,7 +510,7 @@ lemma isZero_H_obj_mk₁_i₃_le' (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ �
     (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq' pq))
     (n : ℤ) (hn : n = data.deg pq - 1) (i₃ i₃' : ι)
     (hi₃ : i₃ = data.i₃ r hr pq)
-    (hi₃' : i₃' = data.i₃ r' (by linarith) pq) :
+    (hi₃' : i₃' = data.i₃ r' (by omega) pq) :
     IsZero ((X.H n).obj (mk₁ (homOfLE (show i₃ ≤ i₃' by
       simpa only [hi₃, hi₃'] using data.i₃_le r r' hrr' hr pq)))) := by
   subst hi₃ hi₃'
@@ -547,7 +539,7 @@ noncomputable def pageXIso (r : ℤ) (hr : r₀ ≤ r) (pq : κ) (n₀ n₁ n₂
       (homOfLE' i₁ i₂ (by subst h₁ h₂; exact data.le₁₂ pq))
       (homOfLE' i₂ i₃ (by subst h₂ h₃; exact data.le₂₃ r hr pq)) :=
   eqToIso (by
-    obtain rfl : n₀ = n₁ - 1 := by linarith
+    obtain rfl : n₀ = n₁ - 1 := by omega
     subst h hn₂ h₀ h₁ h₂ h₃
     rfl)
 
@@ -557,7 +549,7 @@ noncomputable def paged (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) :
   if hpq : (c r).Rel pq pq'
     then
       X.d (data.deg pq - 1) (data.deg pq) (data.deg pq + 1) (data.deg pq + 2) _ rfl
-        (by linarith) (homOfLE (data.le₀₁ r hr pq'))
+        (by omega) (homOfLE (data.le₀₁ r hr pq'))
         (homOfLE (by simpa only [data.hc₀₂ r hr pq pq' hpq] using data.le₁₂ pq'))
         (homOfLE (data.le₀₁ r hr pq)) (homOfLE (data.le₁₂ pq)) (homOfLE (data.le₂₃ r hr pq)) ≫
       (pageXIso _ _ _ _ _ _ _ _ _ _ (data.hc r hr pq pq' hpq) _ _ _ _ rfl rfl
@@ -580,9 +572,9 @@ lemma paged_eq (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq'
           (by rw [h₂, data.hc₀₂ r hr pq pq' hpq])
           (by rw [h₃, data.hc₁₃ r hr pq pq' hpq])).inv := by
   subst hn₁' h₀ h₁ h₂ h₃ h₄ h₅
-  obtain rfl : n₀ = data.deg pq - 1 := by linarith
-  obtain rfl : n₂ = data.deg pq + 1 := by linarith
-  obtain rfl : n₃ = data.deg pq + 2 := by linarith
+  obtain rfl : n₀ = data.deg pq - 1 := by omega
+  obtain rfl : n₂ = data.deg pq + 1 := by omega
+  obtain rfl : n₃ = data.deg pq + 2 := by omega
   dsimp [paged, pageXIso]
   rw [dif_pos hpq, id_comp]
   rfl
@@ -831,7 +823,7 @@ lemma isIso_EMapFourδ₄Toδ₃' (h : ¬ (c r).Rel pq pq') :
       (le₀₁ data hr pq' hi₀ hi₁) (le₁₂ data pq' hi₁ hi₂)
       (le₂₃ data hr pq' hi₂ hi₃) (le₃₃' data hrr' hr pq' hi₃ hi₃')) := by
   apply X.isIso_EMap_fourδ₄Toδ₃_of_isZero
-  refine X.isZero_H_obj_mk₁_i₃_le' data r r' hrr' hr pq' ?_ _ (by linarith) _ _ hi₃ hi₃'
+  refine X.isZero_H_obj_mk₁_i₃_le' data r r' hrr' hr pq' ?_ _ (by omega) _ _ hi₃ hi₃'
   intro k hk
   obtain rfl := (c r).prev_eq' hk
   subst hpq
@@ -904,13 +896,14 @@ noncomputable def homologyData : ((page X data r hr).sc' pq pq' pq'').HomologyDa
 
 /-- homologyIso' -/
 noncomputable def homologyIso' :
-    ((page X data r hr).sc' pq pq' pq'').homology ≅ (page X data r' (by linarith)).X pq' :=
+    ((page X data r hr).sc' pq pq' pq'').homology ≅ (page X data r' (by omega)).X pq' :=
   (homologyData X data r r' hrr' hr pq pq' pq'' hpq hpq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
       i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃').left.homologyIso ≪≫
       (pageXIso X data _ _ _ _ _ _ _ _ hn₁' _ _ _ _ hi₀' hi₁ hi₂ hi₃').symm
 
 noncomputable def homologyIso :
-    (page X data r hr).homology pq' ≅ (page X data r' (by linarith)).X pq' :=
+    (page X data r hr).homology pq' ≅
+      (page X data r' (hr.trans (by rw [← hrr']; exact Int.le.intro 1 rfl))).X pq' :=
   homologyIso' X data r r' hrr' hr _ pq' _ rfl rfl
     (data.deg pq' - 1) (data.deg pq') (data.deg pq' + 1) (by simp)
     rfl rfl _ _ _ _ _ _ rfl rfl rfl rfl rfl rfl
@@ -959,7 +952,7 @@ lemma le₀'₀ {r r' : ℤ} (hrr' : r + 1 = r') [(X.spectralSequence data).HasP
     i₀' ≤ i₀ := by
   rw [hi₀', hi₀]
   apply data.antitone_i₀
-  linarith
+  omega
 
 lemma le₀₁ (r : ℤ) [(X.spectralSequence data).HasPage r] (pq' : κ)
     {i₀ i₁ : ι}
@@ -991,7 +984,7 @@ lemma le₃₃' {r r' : ℤ} (hrr' : r + 1 = r') [(X.spectralSequence data).HasP
     i₃ ≤ i₃' := by
   rw [hi₃, hi₃']
   apply data.monotone_i₃
-  linarith
+  omega
 
 noncomputable def spectralSequencePageXIso (r : ℤ) [(X.spectralSequence data).HasPage r]
     (pq : κ) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (h : n₁ = data.deg pq)
@@ -1135,7 +1128,7 @@ example (r : ℤ) [Y.E₂SpectralSequence.HasPage r] (p q : ℤ) (hq : q < 0) :
   apply Y.isZero₁_of_isFirstQuadrant
   dsimp
   simp only [ℤt.mk_le_mk_iff]
-  linarith
+  omega
 
 example (r : ℤ) [Y.E₂SpectralSequence.HasPage r] (p q : ℤ) (hp : p < 0) :
     IsZero ((Y.E₂SpectralSequence.page r).X ⟨p, q⟩) := by
@@ -1143,7 +1136,7 @@ example (r : ℤ) [Y.E₂SpectralSequence.HasPage r] (p q : ℤ) (hp : p < 0) :
   apply Y.isZero₂_of_isFirstQuadrant
   dsimp
   simp only [ℤt.mk_lt_mk_iff]
-  linarith
+  omega
 
 instance : Y.HasSpectralSequence mkDataE₂CohomologicalNat where
   isZero_H_obj_mk₁_i₀_le := by
@@ -1152,22 +1145,22 @@ instance : Y.HasSpectralSequence mkDataE₂CohomologicalNat where
     dsimp
     simp only [ℤt.mk_le_mk_iff]
     by_contra!
-    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by linarith)
-    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by linarith)
+    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by omega)
+    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by omega)
     exact hpq ⟨p', q'⟩ (by
       simp only [ComplexShape.spectralSequenceNat_rel_iff]
-      constructor <;> linarith)
+      constructor <;> omega)
   isZero_H_obj_mk₁_i₃_le := by
     rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
     apply isZero₂_of_isFirstQuadrant
     dsimp
     simp only [ℤt.mk_lt_mk_iff]
     by_contra!
-    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by linarith)
-    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q - 1 + r by linarith)
+    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by omega)
+    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q - 1 + r by omega)
     exact hpq ⟨p', q'⟩ (by
       simp only [ComplexShape.spectralSequenceNat_rel_iff]
-      constructor <;> linarith)
+      constructor <;> omega)
 
 noncomputable abbrev E₂SpectralSequenceNat := Y.spectralSequence mkDataE₂CohomologicalNat
 
@@ -1202,41 +1195,34 @@ def mkDataE₂HomologicalNat :
   i₁ pq := ℤt.mk (-pq.2)
   i₂ pq := ℤt.mk (-pq.2 + 1)
   i₃ r hr pq := ℤt.mk (-pq.2 + r - 1)
-  le₀₁ r hr pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
-  le₁₂ pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
-  le₂₃ r hr pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
+  le₀₁ r hr pq := by simp only [ℤt.mk_le_mk_iff]; omega
+  le₁₂ pq := by simp only [ℤt.mk_le_mk_iff]; omega
+  le₂₃ r hr pq := by simp only [ℤt.mk_le_mk_iff]; omega
   hc r _ pq pq' hpq := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    dsimp
-    linarith
+    omega
   hc₀₂ r hr pq pq' hpq := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    dsimp
     congr 1
-    linarith
+    omega
   hc₁₃ r hr pq pq' hpq := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    dsimp
     congr 1
-    linarith
+    omega
   antitone_i₀ r r' hrr' hr pq := by
-    dsimp
     rw [ℤt.mk_le_mk_iff]
-    linarith
+    omega
   monotone_i₃ r r' hrr' hr pq := by
-    dsimp
     rw [ℤt.mk_le_mk_iff]
-    linarith
+    omega
   i₀_prev' r hr pq pq' hpq := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    dsimp
     congr 1
-    linarith
+    omega
   i₃_next' r hr pq pq' hpq := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    dsimp
     congr 1
-    linarith
+    omega
 
 instance : Y.HasSpectralSequence mkDataE₂HomologicalNat where
   isZero_H_obj_mk₁_i₀_le := by
@@ -1245,22 +1231,22 @@ instance : Y.HasSpectralSequence mkDataE₂HomologicalNat where
     dsimp
     simp only [ℤt.mk_le_mk_iff]
     by_contra!
-    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by linarith)
-    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + r - 1 by linarith)
+    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by omega)
+    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + r - 1 by omega)
     exact hpq ⟨p', q'⟩ (by
       simp only [ComplexShape.spectralSequenceNat_rel_iff]
-      constructor <;> linarith)
+      constructor <;> omega)
   isZero_H_obj_mk₁_i₃_le := by
     rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
     apply isZero₁_of_isThirdQuadrant
     dsimp
     simp only [ℤt.mk_lt_mk_iff]
     by_contra!
-    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by linarith)
-    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by linarith)
+    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by omega)
+    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by omega)
     exact hpq ⟨p', q'⟩ (by
       simp only [ComplexShape.spectralSequenceNat_rel_iff]
-      constructor <;> linarith)
+      constructor <;> omega)
 
 end
 

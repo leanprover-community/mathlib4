@@ -20,23 +20,6 @@ section
 
 variable {C : Type*} [Category C]
 
-@[simp]
-theorem isIso_comp_left_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
-    IsIso (f ≫ g) ↔ IsIso g := by
-  constructor
-  · intro
-    exact IsIso.of_isIso_comp_left f g
-  · intro
-    infer_instance
-
-@[simp]
-theorem isIso_comp_right_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
-    IsIso (f ≫ g) ↔ IsIso f := by
-  constructor
-  · intro
-    exact IsIso.of_isIso_comp_right f g
-  · intro
-    infer_instance
 
 end
 
@@ -48,14 +31,6 @@ lemma Limits.hasColimit_iff_of_final {C C' D : Type*} [Category C] [Category C']
     exact Functor.Final.hasColimit_of_comp F
   · intro
     infer_instance
-
-lemma Limits.hasColimit_iff_of_iso {J C : Type*} [Category J] [Category C]
-    {F G : J ⥤ C} (e : F ≅ G) : HasColimit F ↔ HasColimit G := by
-  constructor
-  · intro
-    exact hasColimitOfIso e.symm
-  · intro
-    exact hasColimitOfIso e
 
 open Limits Category
 
@@ -140,7 +115,7 @@ instance [(Φ.functor ⋙ F).HasPointwiseRightDerivedFunctor W₁] :
   have : (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂).app Y =
       (IsColimit.coconePointUniqueUpToIso hF₁ hF₂').hom := hF₁.hom_ext (fun φ => by
     rw [IsColimit.comp_coconePointUniqueUpToIso_hom]
-    dsimp
+    dsimp [w]
     simp only [assoc, NatTrans.naturality, Functor.comp_obj, Functor.comp_map,
       rightDerivedFunctorComparison_fac_app_assoc, Functor.map_comp])
   rw [this]

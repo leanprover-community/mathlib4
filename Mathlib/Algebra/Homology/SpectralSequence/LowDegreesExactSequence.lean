@@ -44,7 +44,7 @@ def stripes : ConvergenceStripes (ℕ × ℕ) (fun (n : ℕ) => Fin (n + 1)) whe
   stripe pq := pq.1 + pq.2
   pred n := fun i => match i with
     | 0 => ⊥
-    | ⟨j + 1, hj⟩ => WithBot.some ⟨j, by linarith⟩
+    | ⟨j + 1, hj⟩ => WithBot.some ⟨j, by omega⟩
   pred_lt n i := by
     obtain ⟨_ | _, _⟩ := i
     · apply WithBot.bot_lt_coe
@@ -52,13 +52,13 @@ def stripes : ConvergenceStripes (ℕ × ℕ) (fun (n : ℕ) => Fin (n + 1)) whe
   position n i := ⟨n - i.1, i.1⟩
   stripe_position := by
     rintro n ⟨i, hi⟩
-    exact Nat.sub_add_cancel (by linarith)
+    exact Nat.sub_add_cancel (by omega)
   discrete := by
     rintro n ⟨_ | i, hi⟩ ⟨j, hj⟩ h
     · simp
     · simp only [WithBot.coe_lt_coe, Fin.mk_lt_mk] at h
       simp only [Fin.mk_le_mk]
-      linarith
+      omega
   finite_segment n i j := by
     rw [Set.finite_def]
     refine ⟨Fintype.ofInjective (fun x => (x : Fin (n + 1))) ?_⟩
@@ -97,7 +97,7 @@ instance : IsIso ((hE 1).filtrationι (WithBot.some 1)) :=
     exfalso
     simp only [WithBot.coe_lt_coe] at hj'
     change 1 < j at hj'
-    linarith)
+    omega)
 
 instance : IsIso ((hE 1).π 0 (1, 0) rfl) := by
   apply (hE 1).isIso_π_of_isZero
@@ -190,6 +190,7 @@ instance : Epi ((d₂Sequence E).map' 2 3) := by
   dsimp [ComposableArrows.Precomp.map]
   infer_instance
 
+attribute [local simp] ComposableArrows.Precomp.map
 lemma d₂Sequence_exact : (d₂Sequence E).Exact := by
   apply ComposableArrows.exact_of_δ₀
   · apply ComposableArrows.exact₂_mk _ (by simp [ComposableArrows.Precomp.map])
@@ -203,8 +204,8 @@ lemma d₂Sequence_exact : (d₂Sequence E).Exact := by
         apply (E.page 2).shape_from
         rintro ⟨p, q⟩ hpq
         simp only [ComplexShape.spectralSequenceNat_rel_iff, Nat.cast_zero, Nat.cast_one] at hpq
-        linarith) ≪≫ (E.iso 2 3 rfl) ⟨0, 1⟩) (Iso.refl _) (Iso.refl _) (by simp)
-          (by simp [ComposableArrows.Precomp.map])
+        omega) ≪≫ (E.iso 2 3 rfl) ⟨0, 1⟩) (Iso.refl _) (Iso.refl _) (by aesop_cat)
+          (by aesop_cat)
   · apply ComposableArrows.exact₂_mk _ (by simp [ComposableArrows.Precomp.map])
     let S := ShortComplex.mk _ _ ((E.page 2).d_pOpcycles ⟨0, 1⟩ ⟨2, 0⟩)
     have hS : S.Exact := by
@@ -218,7 +219,7 @@ lemma d₂Sequence_exact : (d₂Sequence E).Exact := by
         rintro ⟨p, q⟩ hpq
         simp only [ComplexShape.spectralSequenceNat_rel_iff, Nat.cast_ofNat,
           Nat.cast_zero, zero_add] at hpq
-        linarith)) (by simp) (by simp [ComposableArrows.Precomp.map])
+        omega)) (by aesop_cat) (by aesop_cat)
 
 end LowDegreesExactSequence
 

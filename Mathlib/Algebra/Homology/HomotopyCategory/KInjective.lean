@@ -35,7 +35,7 @@ variable (L)
 
 lemma isKInjective_iff_mem_rightOrthogonal :
     L.IsKInjective ↔
-      (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal.P
+      (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal
         ((HomotopyCategory.quotient _ _).obj L) := by
   constructor
   · intro _ ⟨(K : CochainComplex C ℤ)⟩ f hK
@@ -53,7 +53,7 @@ variable {L}
 lemma isKInjective_iff_of_iso (e : K ≅ L) :
     K.IsKInjective ↔ L.IsKInjective := by
   simp only [isKInjective_iff_mem_rightOrthogonal]
-  exact mem_iff_of_iso _ ((HomotopyCategory.quotient _ _).mapIso e)
+  exact ObjectProperty.prop_iff_of_iso _ ((HomotopyCategory.quotient _ _).mapIso e)
 
 lemma isKInjective_of_iso (e : K ≅ L) [K.IsKInjective] : L.IsKInjective := by
   rw [← isKInjective_iff_of_iso e]
@@ -63,9 +63,9 @@ variable (K)
 
 instance isKInjective_shift [hK : K.IsKInjective] (n : ℤ) : K⟦n⟧.IsKInjective := by
   simp only [isKInjective_iff_mem_rightOrthogonal] at hK ⊢
-  erw [mem_iff_of_iso ((HomotopyCategory.subcategoryAcyclic C)).rightOrthogonal.P
+  erw [((HomotopyCategory.subcategoryAcyclic C)).rightOrthogonal.prop_iff_of_iso
     ((((HomotopyCategory.quotient C (ComplexShape.up ℤ))).commShiftIso n).app K)]
-  exact Triangulated.Subcategory.shift _ _ n hK
+  exact ObjectProperty.le_shift _ n _ hK
 
 lemma isKInjective_shift_iff (n : ℤ) :
     K⟦n⟧.IsKInjective ↔ K.IsKInjective := by
@@ -181,7 +181,7 @@ lemma isKInjective_of_injective_aux
   obtain rfl : p = q := by linarith
   obtain hp | rfl := hp.lt_or_eq
   · rw [Int.lt_add_one_iff] at hp
-    rw [δ_add, Cochain.add_v, hα p p (by linarith) (by linarith), add_right_eq_self,
+    rw [δ_add, Cochain.add_v, hα p p (by linarith) (by linarith), add_eq_left,
       δ_v (-1) 0 (neg_add_cancel 1) _ p p hpq (p-1) (p+1) rfl rfl]
     simp only [neg_add_cancel, Int.negOnePow_zero, one_smul]
     rw [Cochain.single_v_eq_zero _ _ _ _ _ (by linarith),
@@ -210,10 +210,10 @@ lemma isKInjective_of_injective (d : ℤ) [L.IsStrictlyGE d] [∀ (n : ℤ), Inj
     ⟨_, (isKInjective_of_injective_aux f α.1 (n + d - 1) ((n + 1 : ℕ) + d - 1)
       (by simp; linarith) (hK _) α.2).choose_spec⟩
   have hφ : ∀ (k : ℕ) (x : X k), (φ k x).1.EqUpTo x.1 (d + k) := fun k x p q hpq hp => by
-    dsimp
-    simp only [add_right_eq_self]
+    dsimp [φ]
+    rw [add_eq_left]
     apply Cochain.single_v_eq_zero
-    linarith
+    omega
   refine ⟨(Cochain.equivHomotopy f 0).symm ⟨Cochain.Induction.limitSequence φ hφ x₀, ?_⟩⟩
   rw [Cochain.ofHom_zero, add_zero]
   ext n

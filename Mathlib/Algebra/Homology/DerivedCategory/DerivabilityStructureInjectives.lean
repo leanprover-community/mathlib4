@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Plus
-import Mathlib.CategoryTheory.Preadditive.Injective
+import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Triangulated
@@ -27,7 +27,7 @@ variable (C D : Type*) [Category C] [Category D] [Abelian C] [Abelian D]
 
 namespace CategoryTheory
 
-abbrev Injectives := FullSubcategory (fun (X : C) => Injective X)
+abbrev Injectives := ObjectProperty.FullSubcategory (fun (X : C) => Injective X)
 
 namespace Injectives
 
@@ -37,7 +37,7 @@ def closedUnderLimitsOfShapeDiscrete (J : Type*) :
   have : HasLimit F := ⟨_, hc⟩
   let X := fun j => F.obj ⟨j⟩
   let e := @Discrete.natIsoFunctor _ _ _ F
-  have : HasProduct X := hasLimitOfIso e
+  have : HasProduct X := hasLimit_of_iso e
   have : HasLimit (Discrete.functor (F.obj ∘ Discrete.mk)) := by
     change HasProduct X
     infer_instance
@@ -59,7 +59,7 @@ instance : HasZeroObject (Injectives C) where
     rw [IsZero.iff_id_eq_zero]
     apply id_zero
 
-abbrev ι : Injectives C ⥤ C := fullSubcategoryInclusion _
+abbrev ι : Injectives C ⥤ C := ObjectProperty.ι _
 
 instance (X : Injectives C) : Injective ((ι C).obj X) := X.2
 
@@ -92,7 +92,7 @@ def isoMapHomotopyCategoryPlusιObj (K : HomotopyCategory.Plus C)
 omit [HasDerivedCategory C] in
 lemma mem_essImage_mapHomotopyCategoryPlus_ι_of_injective (K : HomotopyCategory.Plus C)
     [∀ (n : ℤ), Injective (K.obj.as.X n)] :
-    K ∈ (ι C).mapHomotopyCategoryPlus.essImage :=
+    (ι C).mapHomotopyCategoryPlus.essImage K :=
   ⟨_, ⟨isoMapHomotopyCategoryPlusιObj K⟩⟩
 
 variable (C)
@@ -103,8 +103,9 @@ def localizerMorphism : LocalizerMorphism
     (HomotopyCategory.Plus.quasiIso C) where
   functor := (ι C).mapHomotopyCategoryPlus
   map K L f (hf : IsIso f) := by
-    dsimp [MorphismProperty.inverseImage, HomotopyCategory.Plus.quasiIso]
+    dsimp only [MorphismProperty.inverseImage, HomotopyCategory.Plus.quasiIso]
     rw [HomotopyCategory.mem_quasiIso_iff]
+    intro n
     infer_instance
 
 noncomputable instance : CatCommSq (localizerMorphism C).functor
@@ -181,7 +182,7 @@ noncomputable def rightResolution_localizerMorphism
   w := (HomotopyCategory.quotient _ _).map (K.ιInjectiveResolution n)
   hw := by
     dsimp [HomotopyCategory.Plus.quasiIso, MorphismProperty.inverseImage,
-      HomotopyCategory.Plus.ι, Triangulated.Subcategory.ι]
+      HomotopyCategory.Plus.ι]
     rw [HomotopyCategory.quotient_map_mem_quasiIso_iff, HomologicalComplex.mem_quasiIso_iff]
     infer_instance
 
@@ -259,7 +260,7 @@ section
 variable [EnoughInjectives C] (F : HomotopyCategory.Plus C ⥤ H)
 
 /-- Any functor the homotopy category `K^+` has a right derived functor with respect
-to quasi-isomorphisms.  -/
+to quasi-isomorphisms. -/
 instance : F.HasPointwiseRightDerivedFunctor (HomotopyCategory.Plus.quasiIso C) :=
   (localizerMorphism C).hasPointwiseRightDerivedFunctor F
     (MorphismProperty.isomorphisms_isInvertedBy _)

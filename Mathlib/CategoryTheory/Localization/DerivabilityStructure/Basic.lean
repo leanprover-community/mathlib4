@@ -126,7 +126,7 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsRightDerivabi
   rw [(LocalizerMorphism.id W₁).isRightDerivabilityStructure_iff W₁.Q W₁.Q (𝟭 W₁.Localization)
     (Iso.refl _)]
   dsimp
-  exact TwoSquare.GuitartExact.id W₁.Q
+  exact TwoSquare.guitartExact_id W₁.Q
 
 /-- A localizer morphism `Φ : LocalizerMorphism W₁ W₂` is a left derivability
 structure if it has left resolutions and the 2-square where the top and bottom functors

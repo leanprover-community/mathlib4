@@ -23,19 +23,22 @@ variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryB
 
 namespace HomotopyCategory
 
-def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) where
-  P K := ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.1 n
-  zero' := by
+def plus : ObjectProperty (HomotopyCategory C (ComplexShape.up ℤ)) :=
+  fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.1 n
+
+instance : (plus C).IsTriangulated where
+  exists_zero := by
     refine ⟨⟨0⟩, ?_, ⟨0, ?_⟩⟩
     · change IsZero ((quotient _ _).obj 0)
       rw [IsZero.iff_id_eq_zero, ← (quotient _ _).map_id, id_zero, Functor.map_zero]
     · dsimp
       infer_instance
-  shift := by
-    rintro ⟨X : CochainComplex C ℤ⟩ n ⟨k, _ : X.IsStrictlyGE k⟩
-    refine ⟨k - n, ?_⟩
-    erw [Quotient.functor_obj_shift]
-    exact X.isStrictlyGE_shift k n (k - n) (by linarith)
+  isStableUnderShiftBy n :=
+    { le_shift := by
+        rintro ⟨X : CochainComplex C ℤ⟩ ⟨k, _ : X.IsStrictlyGE k⟩
+        refine ⟨k - n, ?_⟩
+        erw [Quotient.functor_obj_shift]
+        exact X.isStrictlyGE_shift k n (k - n) (by omega) }
   ext₂' T hT := by
     rintro ⟨n₁, _⟩ ⟨n₃, _⟩
     obtain ⟨f : T.obj₃.as ⟶ T.obj₁.as⟦(1 : ℤ)⟧, hf⟩ := (quotient _ _ ).map_surjective
@@ -66,11 +69,11 @@ def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) whe
         (shiftFunctor _ (-1)).mapIso (Triangle.π₃.mapIso e) ≪≫
         ((quotient _ _).commShiftIso (-1)).symm.app (CochainComplex.mappingCone f)
 
-abbrev Plus := (subcategoryPlus C).category
+abbrev Plus := (plus C).FullSubcategory
 
 namespace Plus
 
-abbrev ι : Plus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (subcategoryPlus C).ι
+abbrev ι : Plus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (plus C).ι
 
 def quasiIso : MorphismProperty (Plus A) := (HomotopyCategory.quasiIso A _).inverseImage (ι A)
 
@@ -88,7 +91,7 @@ instance : (quasiIso A).IsCompatibleWithShift ℤ where
 
 noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
   SingleFunctors.lift (HomotopyCategory.singleFunctors C) (ι C)
-    (fun n => (subcategoryPlus C).lift (singleFunctor C n) (fun X => by
+    (fun n => (plus C).lift (singleFunctor C n) (fun X => by
       refine ⟨n, ?_⟩
       change ((CochainComplex.singleFunctor C n).obj X).IsStrictlyGE n
       infer_instance))
@@ -116,11 +119,11 @@ variable {C}
 variable (F : C ⥤ D) [F.Additive]
 
 def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D :=
-  (HomotopyCategory.subcategoryPlus D).lift
+  (HomotopyCategory.plus D).lift
     (HomotopyCategory.Plus.ι C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by
       rintro ⟨X, ⟨n, _⟩⟩
       refine ⟨n, ?_⟩
-      dsimp [HomotopyCategory.Plus.ι, Subcategory.ι, HomotopyCategory.quotient, Quotient.functor]
+      dsimp [HomotopyCategory.Plus.ι, HomotopyCategory.quotient, Quotient.functor]
       infer_instance)
 
 noncomputable instance : (F.mapHomotopyCategoryPlus).CommShift ℤ := by
@@ -143,7 +146,7 @@ def mapHomotopyCategoryPlusCompIso {E : Type*} [Category E] [Preadditive E] [Has
     {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
     [F.Additive] [G.Additive] [H.Additive] :
     H.mapHomotopyCategoryPlus ≅ F.mapHomotopyCategoryPlus ⋙ G.mapHomotopyCategoryPlus :=
-  ((HomotopyCategory.subcategoryPlus _).fullyFaithfulι.whiskeringRight _).preimageIso
+  ((HomotopyCategory.plus _).fullyFaithfulι.whiskeringRight _).preimageIso
     (isoWhiskerLeft (HomotopyCategory.Plus.ι C)
       (mapHomotopyCategoryCompIso e (ComplexShape.up ℤ)))
 
