@@ -5496,6 +5496,7 @@ import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.CategoryTheory.RotateIsos
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.CategoryTheory.ToApp
 import Mathlib.Tactic.Change
