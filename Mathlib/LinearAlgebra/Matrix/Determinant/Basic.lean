@@ -254,7 +254,7 @@ theorem det_reindex_self (e : m ≃ n) (A : Matrix m m R) : det (reindex e e A) 
 For the `simp` version of this lemma, see `abs_det_submatrix_equiv_equiv`;
 this one is unsuitable because `Matrix.reindex_apply` unfolds `reindex` first.
 -/
-theorem abs_det_reindex {R : Type*} [LinearOrderedCommRing R]
+theorem abs_det_reindex {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
     (e₁ e₂ : m ≃ n) (A : Matrix m m R) :
     |det (reindex e₁ e₂ A)| = |det A| :=
   abs_det_submatrix_equiv_equiv e₁.symm e₂.symm A
@@ -489,7 +489,8 @@ theorem det_updateCol_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j)
 alias det_updateColumn_add_smul_self := det_updateCol_add_smul_self
 
 theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
-    LinearIndependent R (fun i ↦ A i) := by
+    LinearIndependent R A.row := by
+  rw [row_def]
   contrapose! hA
   obtain ⟨c, hc0, i, hci⟩ := Fintype.not_linearIndependent_iff.1 hA
   have h0 := A.det_updateRow_sum i c
@@ -497,7 +498,7 @@ theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (h
     mul_eq_zero_iff_left hci] at h0
 
 theorem linearIndependent_cols_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
-    LinearIndependent R (fun i ↦ Aᵀ i) :=
+    LinearIndependent R A.col :=
   Matrix.linearIndependent_rows_of_det_ne_zero (by simpa)
 
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :
@@ -673,7 +674,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
   classical
     simp_rw [det_apply']
     convert Eq.symm <|
-      sum_subset (β := R) (subset_univ ((sumCongrHom m n).range : Set (Perm (m ⊕ n))).toFinset) ?_
+      sum_subset (M := R) (subset_univ ((sumCongrHom m n).range : Set (Perm (m ⊕ n))).toFinset) ?_
     · simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]
       refine sum_nbij (fun σ ↦ σ.fst.sumCongr σ.snd) ?_ ?_ ?_ ?_
       · intro σ₁₂ _
