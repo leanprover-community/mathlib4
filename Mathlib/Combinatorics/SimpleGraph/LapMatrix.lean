@@ -190,9 +190,14 @@ noncomputable def lapMatrix_ker_basis :=
 end
 
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
-theorem card_ConnectedComponent_eq_rank_ker_lapMatrix : Fintype.card G.ConnectedComponent =
-    Module.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
+theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
+    Fintype.card G.ConnectedComponent =
+      Module.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
   classical
   rw [Module.finrank_eq_card_basis (lapMatrix_ker_basis G)]
+
+@[deprecated (since := "2025-04-29")]
+alias card_ConnectedComponent_eq_rank_ker_lapMatrix :=
+  card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix
 
 end SimpleGraph
