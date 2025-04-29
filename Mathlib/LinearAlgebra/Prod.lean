@@ -29,7 +29,7 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
   - `LinearMap.prodMap`
   - `LinearEquiv.prodMap`
   - `LinearEquiv.skewProd`
-- product with one trivial factor:
+- product with the trivial module:
   - `LinearEquiv.prodUnique`
   - `LinearEquiv.uniqueProd`
 -/
