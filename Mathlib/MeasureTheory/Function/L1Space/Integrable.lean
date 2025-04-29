@@ -1109,13 +1109,14 @@ end Trim
 section SigmaFinite
 
 variable {E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
+  {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem integrable_of_forall_fin_meas_le' {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
-    (C : ℝ≥0∞) (hC : C < ∞) {f : α → E} (hf_meas : AEStronglyMeasurable f μ)
+    (C : ℝ≥0∞) (hC : C < ∞) {f : α → ε} (hf_meas : AEStronglyMeasurable f μ)
     (hf : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → ∫⁻ x in s, ‖f x‖ₑ ∂μ ≤ C) : Integrable f μ :=
   ⟨hf_meas, (lintegral_le_of_forall_fin_meas_trim_le hm C hf).trans_lt hC⟩
 
-theorem integrable_of_forall_fin_meas_le [SigmaFinite μ] (C : ℝ≥0∞) (hC : C < ∞) {f : α → E}
+theorem integrable_of_forall_fin_meas_le [SigmaFinite μ] (C : ℝ≥0∞) (hC : C < ∞) {f : α → ε}
     (hf_meas : AEStronglyMeasurable[m] f μ)
     (hf : ∀ s : Set α, MeasurableSet[m] s → μ s ≠ ∞ → ∫⁻ x in s, ‖f x‖ₑ ∂μ ≤ C) :
     Integrable f μ :=
@@ -1126,7 +1127,7 @@ end SigmaFinite
 
 section restrict
 
-variable {E : Type*} [NormedAddCommGroup E] {f : α → E}
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] {f : α → ε}
 
 /-- One should usually use `MeasureTheory.Integrable.integrableOn` instead. -/
 lemma Integrable.restrict (hf : Integrable f μ) {s : Set α} : Integrable f (μ.restrict s) :=
