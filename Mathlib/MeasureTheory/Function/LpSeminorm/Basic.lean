@@ -542,6 +542,8 @@ theorem MemLp.ae_eq [TopologicalSpace ε] {f g : α → ε} (hfg : f =ᵐ[μ] g)
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.ae_eq := MemLp.ae_eq
 
+section ContinuousENorm
+
 variable {ε ε' : Type*}
   [TopologicalSpace ε] [TopologicalSpace ε'] [ContinuousENorm ε] [ContinuousENorm ε']
 
@@ -657,10 +659,13 @@ theorem MemLp.mono_measure {f : α → ε} (hμν : ν ≤ μ) (hf : MemLp f p �
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.mono_measure := MemLp.mono_measure
 
+end ContinuousENorm
+
 section Indicator
 
 variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
   {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
+  {ε' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
 
 lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : MeasurableSet s) :
     eLpNorm (s.indicator f) p μ = eLpNorm f p (μ.restrict s) := by
@@ -848,7 +853,6 @@ theorem eLpNorm_restrict_eq_of_support_subset {s : Set α} {f : α → ε} (hsf 
 
 end ENormedAddMonoid
 
-
 theorem MemLp.restrict {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
     (s : Set α) {f : α → ε} (hf : MemLp f p μ) :
     MemLp f p (μ.restrict s) :=
@@ -975,10 +979,6 @@ theorem MemLp.right_of_add_measure {f : α → ε} (h : MemLp f p (μ + ν)) :
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.right_of_add_measure := MemLp.right_of_add_measure
 
-section
-
-variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
-
 theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖) p μ :=
   h.of_le h.aestronglyMeasurable.norm (Eventually.of_forall fun x => by simp)
 
@@ -1000,7 +1000,7 @@ theorem memLp_enorm_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) :
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_iff := memLp_norm_iff
 
-end
+section ENormedAddMonoid
 
 variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
@@ -1090,6 +1090,8 @@ alias Memℒp.of_discrete := MemLp.of_discrete
 @[simp] lemma eLpNorm_of_isEmpty [IsEmpty α] (f : α → ε) (p : ℝ≥0∞) : eLpNorm f p μ = 0 := by
   simp [Subsingleton.elim f 0]
 
+end ENormedAddMonoid
+
 section MapMeasure
 
 variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
@@ -1175,6 +1177,9 @@ end MapMeasure
 
 section Monotonicity
 
+variable {ε ε' : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+  [TopologicalSpace ε'] [ContinuousENorm ε']
+
 theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) {p : ℝ} (hp : 0 < p) :
     eLpNorm' f p μ ≤ c • eLpNorm' g p μ := by
@@ -1203,9 +1208,12 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α �
     simp [ENNReal.mul_rpow_eq_ite, enorm_eq_zero, this]
   simpa [ENNReal.coe_rpow_of_nonneg _ hp.le, aux, ENNReal.rpow_le_rpow_iff hp]
 
-variable {ε'' : Type*} [TopologicalSpace ε''] [ContinuousENorm ε''] in
+section ENormedAddMonoid
+
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+
 /-- If `‖f x‖ₑ ≤ c * ‖g x‖ₑ` a.e., `eLpNorm' f p μ ≤ c * eLpNorm' g p μ` for all `p ∈ (0, ∞)`. -/
-theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {g : α → ε''} {p : ℝ}
+theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {g : α → ε'} {p : ℝ}
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (hp : 0 < p) :
     eLpNorm' f p μ ≤ c * eLpNorm' g p μ := by
   have hp' : ¬(p < 0) := by linarith
@@ -1235,6 +1243,8 @@ theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {
       essSup_mono_ae <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
     _ = essSup (c * ‖g ·‖ₑ) μ := by simp_rw [ENNReal.coe_mul, enorm]
     _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
+
+end ENormedAddMonoid
 
 -- TODO: eventually, deprecate and remove the nnnorm version
 theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0∞}
@@ -1302,11 +1312,11 @@ theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c
   apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' (h.mono fun _x hx ↦ hx.trans ?_)
   rfl
 
-variable {ε'' : Type*} [TopologicalSpace ε''] [ContinuousENorm ε''] in
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] in
 /-- If `‖f x‖ₑ ≤ c * ‖g x‖ₑ`, then `eLpNorm f p μ ≤ c * eLpNorm g p μ`.
 
 This version allows `c = ∞`, but requires `g` to be a.e. strongly measurable. -/
-theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul'' {f : α → ε} {c : ℝ≥0∞} {g : α → ε''} (p : ℝ≥0∞)
+theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul'' {f : α → ε} {c : ℝ≥0∞} {g : α → ε'} (p : ℝ≥0∞)
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) :
     eLpNorm f p μ ≤ c * eLpNorm g p μ := by
   by_cases h₀ : p = 0
