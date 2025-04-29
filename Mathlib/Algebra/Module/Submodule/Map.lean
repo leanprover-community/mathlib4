@@ -214,11 +214,8 @@ variable [Module R M₂] (q : Submodule R M₂) (f : M →ₗ[R] M₂)
 
 /-- For a linear map `f`, the map from `Submodule.comap q f` to `q` for a submodule `q`
 obtained from restricting `f` using `LinearMap.restrict`. -/
-def comapRestrict : ↥(q.comap f) →ₗ[R] ↥q :=
+abbrev comapRestrict : ↥(q.comap f) →ₗ[R] ↥q :=
   f.restrict fun _ hx ↦ mem_comap.mp hx
-
-@[simp]
-theorem comapRestrict_coe_apply (x : q.comap f) : (q.comapRestrict f) x = f x := rfl
 
 theorem comapRestrict_surjective_of_surjective (hf : Function.Surjective f) :
     Function.Surjective (q.comapRestrict f) := fun y ↦ by
