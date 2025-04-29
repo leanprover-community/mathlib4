@@ -389,7 +389,7 @@ variable {K : Type*} [Field K] [CharZero K] [LieAlgebra K L]
 lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (toEnd K L M x) := by
-  refine Module.Finite.Module.End.isNilpotent_iff_of_finite.mpr fun m ↦ ?_
+  refine Module.End.isNilpotent_iff_of_finite.mpr fun m ↦ ?_
   have hm : m ∈ ⨆ χ : LieModule.Weight K H M, genWeightSpace M χ := by
     simp [iSup_genWeightSpace_eq_top' K H M]
   induction hm using LieSubmodule.iSup_induction' with
@@ -403,8 +403,8 @@ lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
     obtain ⟨n₁, hn₁⟩ := hm₁'
     obtain ⟨n₂, hn₂⟩ := hm₂'
     refine ⟨max n₁ n₂, ?_⟩
-    rw [map_add, LinearMap.pow_map_zero_of_le le_sup_left hn₁,
-      LinearMap.pow_map_zero_of_le le_sup_right hn₂, add_zero]
+    rw [map_add, Module.End.pow_map_zero_of_le le_sup_left hn₁,
+      Module.End.pow_map_zero_of_le le_sup_right hn₂, add_zero]
 
 lemma LieAlgebra.isNilpotent_ad_of_mem_rootSpace
     [IsTriangularizable K H L] [FiniteDimensional K L]

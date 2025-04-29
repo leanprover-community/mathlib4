@@ -394,7 +394,7 @@ def consRecOn {motive : Word M → Sort*} (w : Word M) (empty : motive empty)
   | cons m w ih =>
     refine cons m.1 m.2 ⟨w, fun _ hl => h1 _ (List.mem_cons_of_mem _ hl), h2.tail⟩ ?_ ?_ (ih _ _)
     · rw [List.chain'_cons'] at h2
-      simp only [fstIdx, ne_eq, Option.map_eq_some',
+      simp only [fstIdx, ne_eq, Option.map_eq_some_iff,
         Sigma.exists, exists_and_right, exists_eq_right, not_exists]
       intro m' hm'
       exact h2.1 _ hm' rfl
@@ -536,7 +536,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
           · simp only [Sigma.ext_iff, heq_eq_eq, true_and] at h
             subst h
             rfl
-          · simp only [fstIdx, Option.map_eq_some', Sigma.exists,
+          · simp only [fstIdx, Option.map_eq_some_iff, Sigma.exists,
               exists_and_right, exists_eq_right, not_exists, ne_eq] at hm'
             exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head?_eq_head])).elim
       · revert h
