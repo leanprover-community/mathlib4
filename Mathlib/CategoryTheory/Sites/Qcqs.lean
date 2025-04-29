@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benoît Guillemet
 -/
 import Mathlib.CategoryTheory.Sites.Limits
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
 
 /-!
 # Quasicompact and quasiseparated sheaves
