@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Category.Grp.Ulift
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 
@@ -27,22 +28,6 @@ lemma isZero (X : Ab) (hX : ∀ (x : X), x = 0) :
 def addEquivULiftFunctorObj (X : Ab.{v'}) :
     uliftFunctor.{v, v'}.obj X ≃+ X :=
   AddEquiv.mk' Equiv.ulift (fun _ _ => rfl)
-
-instance : uliftFunctor.{v, v'}.Additive where
-
-instance : uliftFunctor.{v, v'}.Faithful where
-  map_injective {G₁ G₂} f g h := by
-    ext x
-    change (uliftFunctor.{v, v'}.map f ⟨x⟩).down = (uliftFunctor.{v, v'}.map g ⟨x⟩).down
-    rw [h]
-
-instance : uliftFunctor.{v, v'}.Full where
-  map_surjective {X Y} f :=
-    ⟨AddCommGrp.ofHom (AddMonoidHom.mk' (fun x => (f ⟨x⟩).down) (by
-      rintro a b
-      dsimp
-      erw [f.hom.map_add ⟨a⟩ ⟨b⟩]
-      rfl)), rfl⟩
 
 lemma _root_.CategoryTheory.ShortComplex.ab_exact_iff_ulift
     (S : ShortComplex (Ab.{v'})) :
