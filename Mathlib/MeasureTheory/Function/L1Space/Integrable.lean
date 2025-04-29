@@ -159,11 +159,6 @@ lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMe
 /-- This lemma is a special case of `Integrable.of_finite`. -/
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
-theorem MemLp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
-    (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
-  rw [← memLp_one_iff_integrable]
-  exact hf.norm_rpow hp_ne_zero hp_ne_top
-
 variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem MemLp.integrable_enorm_rpow {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
@@ -171,13 +166,10 @@ theorem MemLp.integrable_enorm_rpow {f : α → ε} {p : ℝ≥0∞} (hf : MemLp
   rw [← memLp_one_iff_integrable]
   exact hf.enorm_rpow hp_ne_zero hp_ne_top
 
-theorem MemLp.integrable_norm_rpow' [IsFiniteMeasure μ] {f : α → β} {p : ℝ≥0∞} (hf : MemLp f p μ) :
-    Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
-  by_cases h_zero : p = 0
-  · simp [h_zero, integrable_const]
-  by_cases h_top : p = ∞
-  · simp [h_top, integrable_const]
-  exact hf.integrable_norm_rpow h_zero h_top
+theorem MemLp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
+    (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
+  rw [← memLp_one_iff_integrable]
+  exact hf.norm_rpow hp_ne_zero hp_ne_top
 
 theorem MemLp.integrable_enorm_rpow' [IsFiniteMeasure μ] {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) :
     Integrable (fun x : α => ‖f x‖ₑ ^ p.toReal) μ := by
@@ -187,25 +179,27 @@ theorem MemLp.integrable_enorm_rpow' [IsFiniteMeasure μ] {f : α → ε} {p : �
   · simp [h_top, integrable_const]
   exact hf.integrable_enorm_rpow h_zero h_top
 
-lemma MemLp.integrable_norm_pow {f : α → β} {p : ℕ} (hf : MemLp f p μ) (hp : p ≠ 0) :
-    Integrable (fun x : α => ‖f x‖ ^ p) μ := by
-  simpa using hf.integrable_norm_rpow (mod_cast hp) (by simp)
+theorem MemLp.integrable_norm_rpow' [IsFiniteMeasure μ] {f : α → β} {p : ℝ≥0∞} (hf : MemLp f p μ) :
+    Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
+  by_cases h_zero : p = 0
+  · simp [h_zero, integrable_const]
+  by_cases h_top : p = ∞
+  · simp [h_top, integrable_const]
+  exact hf.integrable_norm_rpow h_zero h_top
 
 lemma MemLp.integrable_enorm_pow {f : α → ε} {p : ℕ} (hf : MemLp f p μ) (hp : p ≠ 0) :
     Integrable (fun x : α ↦ ‖f x‖ₑ ^ p) μ := by
   simpa using hf.integrable_enorm_rpow (mod_cast hp) (by simp)
 
-lemma MemLp.integrable_norm_pow' [IsFiniteMeasure μ] {f : α → β} {p : ℕ} (hf : MemLp f p μ) :
-    Integrable (fun x : α => ‖f x‖ ^ p) μ := by simpa using hf.integrable_norm_rpow'
+lemma MemLp.integrable_norm_pow {f : α → β} {p : ℕ} (hf : MemLp f p μ) (hp : p ≠ 0) :
+    Integrable (fun x : α => ‖f x‖ ^ p) μ := by
+  simpa using hf.integrable_norm_rpow (mod_cast hp) (by simp)
 
 lemma MemLp.integrable_enorm_pow' [IsFiniteMeasure μ] {f : α → β} {p : ℕ} (hf : MemLp f p μ) :
     Integrable (fun x : α ↦ ‖f x‖ₑ ^ p) μ := by simpa using hf.integrable_enorm_rpow'
 
-lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
-    (hf : AEStronglyMeasurable f μ) (p_zero : p ≠ 0) (p_top : p ≠ ∞) :
-    Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ ↔ MemLp f p μ := by
-  rw [← memLp_norm_rpow_iff (q := p) hf p_zero p_top, ← memLp_one_iff_integrable,
-    ENNReal.div_self p_zero p_top]
+lemma MemLp.integrable_norm_pow' [IsFiniteMeasure μ] {f : α → β} {p : ℕ} (hf : MemLp f p μ) :
+    Integrable (fun x : α => ‖f x‖ ^ p) μ := by simpa using hf.integrable_norm_rpow'
 
 lemma integrable_enorm_rpow_iff {f : α → ε} {p : ℝ≥0∞}
     (hf : AEStronglyMeasurable f μ) (p_zero : p ≠ 0) (p_top : p ≠ ∞) :
@@ -213,6 +207,12 @@ lemma integrable_enorm_rpow_iff {f : α → ε} {p : ℝ≥0∞}
   -- TODO: another missing lemma!
   sorry -- rw [← memLp_enorm_rpow_iff (q := p) hf p_zero p_top, ← memLp_one_iff_integrable,
   --   ENNReal.div_self p_zero p_top]
+
+lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
+    (hf : AEStronglyMeasurable f μ) (p_zero : p ≠ 0) (p_top : p ≠ ∞) :
+    Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ ↔ MemLp f p μ := by
+  rw [← memLp_norm_rpow_iff (q := p) hf p_zero p_top, ← memLp_one_iff_integrable,
+    ENNReal.div_self p_zero p_top]
 
 theorem Integrable.mono_measure {f : α → ε} (h : Integrable f ν) (hμ : μ ≤ ν) : Integrable f μ :=
   ⟨h.aestronglyMeasurable.mono_measure hμ, h.hasFiniteIntegral.mono_measure hμ⟩
