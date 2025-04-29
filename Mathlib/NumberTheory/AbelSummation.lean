@@ -56,6 +56,7 @@ private theorem sumlocc {m : ℕ} (n : ℕ) :
   filter_upwards [Ico_ae_eq_Icc] with t h ht
   rw [Nat.floor_eq_on_Ico _ _ (h.mpr ht)]
 
+open scoped Interval in
 private theorem integralmulsum (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
     (hf_int : IntegrableOn (deriv f) (Set.Icc a b)) (t₁ t₂ : ℝ) (n : ℕ) (h : t₁ ≤ t₂)
     (h₁ : n ≤ t₁) (h₂ : t₂ ≤ n + 1) (h₃ : a ≤ t₁) (h₄ : t₂ ≤ b) :
@@ -64,7 +65,8 @@ private theorem integralmulsum (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableA
   have h_inc₁ : Ι t₁ t₂ ⊆ Set.Icc n (n + 1) :=
     Set.uIoc_of_le h ▸ Set.Ioc_subset_Icc_self.trans <| Set.Icc_subset_Icc h₁ h₂
   have h_inc₂ : Set.uIcc t₁ t₂ ⊆ Set.Icc a b := Set.uIcc_of_le h ▸ Set.Icc_subset_Icc h₃ h₄
-  rw [← integral_deriv_eq_sub (fun t ht ↦ hf_diff t (h_inc₂ ht)), ← integral_mul_const]
+  rw [← integral_deriv_eq_sub (fun t ht ↦ hf_diff t (h_inc₂ ht)),
+      ← intervalIntegral.integral_mul_const]
   · refine integral_congr_ae ?_
     filter_upwards [sumlocc c n] with t h h'
     rw [h (h_inc₁ h')]
