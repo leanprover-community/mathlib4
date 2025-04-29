@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
-# Functor which jointly reflect isomorphisms
+# Families of functors which jointly reflect isomorphisms
 
 -/
 
