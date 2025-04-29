@@ -292,31 +292,11 @@ namespace Fin
 
 local instance {n : ℕ} {i: Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
 
-/-- `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m` at the end,
-`natAdd_castLEEmb m hmn i` maps `i : Fin m` to `i + (m - n) : Fin n` by adds `m - n` to `i`
--/
-@[simps!]
-def natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m): Fin n ↪ Fin (m) :=
-  (addNatEmb (m - n)).trans (finCongr (by omega)).toEmbedding
-
-lemma natAdd_castLEEmb_apply {n m : ℕ} (hmn : n ≤ m) (k : Fin n) :
-    ((natAdd_castLEEmb m hmn) k).1 = k.1 + (m - n) := by simp
-
-@[simp]
-lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
-    Set.range (natAdd_castLEEmb m hmn) = {i | m - n ≤ i.1} := by
-  simp [natAdd_castLEEmb]
-  ext y
-  exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; omega,
-    fun xin ↦ ⟨subNat (m := m - n) (y.cast (Nat.add_sub_of_le hmn).symm)
-    (Nat.sub_le_of_le_add xin), by simp⟩⟩
-
 lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).1 < n - i.1 := by
   simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
 
 lemma sub_le_right {n : ℕ} (i : Fin n) : n - i.1 ≤ n := by
   simp
-#find_home! natAdd_castLEEmb
 
 variable {n : ℕ} {i j k : Fin n}
 
@@ -331,7 +311,7 @@ theorem cycleIcc_of_gt (hij : i ≤ j) (h : k < i) : (cycleIcc hij) k = k :=
   Perm.extendDomain_apply_not_subtype ((j - i).castLT _).cycleRange
     (natAdd_castLEEmb n _).toEquivRange (by simp; omega)
 
-private lemma cycleIcc_case (hij : i ≤ j) (h : i <= k) (kin : k ∈ Set.range ⇑(natAdd_castLEEmb n
+private lemma cycleIcc_case (hij : i ≤ j) (h : i ≤ k) (kin : k ∈ Set.range ⇑(natAdd_castLEEmb n
     (sub_le_right i))) : (cycleIcc hij) k = (natAdd_castLEEmb n (sub_le_right i))
     (((j - i).castLT (sub_val_lt_sub hij)).cycleRange ((natAdd_castLEEmb n
     (sub_le_right i)).toEquivRange.symm ⟨k, kin⟩)) := by
@@ -339,7 +319,7 @@ private lemma cycleIcc_case (hij : i ≤ j) (h : i <= k) (kin : k ∈ Set.range 
   simp [cycleIcc, ((j - i).castLT (sub_val_lt_sub hij)).cycleRange.extendDomain_apply_subtype
     (natAdd_castLEEmb n _).toEquivRange kin]
 
-private lemma cycleIcc_simp_lemma (h : i <= k) (kin : k ∈ Set.range ⇑(natAdd_castLEEmb n
+private lemma cycleIcc_simp_lemma (h : i ≤ k) (kin : k ∈ Set.range ⇑(natAdd_castLEEmb n
     (sub_le_right i))) : (((addNatEmb (n - (n - i.1))).trans
     (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩) = subNat i.1 (k.cast (by omega))
     (by simp [h]) := by
