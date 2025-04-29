@@ -207,7 +207,8 @@ end Neg
 
 section Const
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
+variable {ε' ε'' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
+  [TopologicalSpace ε'' ] [ENormedAddMonoid ε'']
 
 theorem eLpNorm'_const (c : ε) (hq_pos : 0 < q) :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
@@ -262,10 +263,9 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
   simpa [hμ, hc, hμ_top, hμ_top.lt_top] using
     ENNReal.rpow_lt_top_of_nonneg (inv_nonneg.mpr hp.le) hμ_top
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] in
 -- NB. If ‖c‖ₑ = ∞ and μ is finite, this claim is false: the right has side is true,
 -- but the left hand side is false (as the norm is infinite).
-theorem eLpNorm_const_lt_top_iff_enorm {c : ε'} (hc' : ‖c‖ₑ ≠ ∞)
+theorem eLpNorm_const_lt_top_iff_enorm {c : ε''} (hc' : ‖c‖ₑ ≠ ∞)
     {p : ℝ≥0∞} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     eLpNorm (fun _ : α ↦ c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   have hp : 0 < p.toReal := ENNReal.toReal_pos hp_ne_zero hp_ne_top
@@ -320,9 +320,8 @@ theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_t
   rw [← eLpNorm_const_lt_top_iff hp_ne_zero hp_ne_top]
   exact ⟨fun h => h.2, fun h => ⟨aestronglyMeasurable_const, h⟩⟩
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] in
 theorem memLp_const_iff_enorm
-    {p : ℝ≥0∞} {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+    {p : ℝ≥0∞} {c : ε''} (hc : ‖c‖ₑ ≠ ⊤) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun _ : α ↦ c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   simp_all [MemLp, aestronglyMeasurable_const,
     eLpNorm_const_lt_top_iff_enorm hc hp_ne_zero hp_ne_top]
@@ -649,10 +648,11 @@ theorem MemLp.mono_measure [TopologicalSpace ε] {f : α → ε} (hμν : ν ≤
 alias Memℒp.mono_measure := MemLp.mono_measure
 
 section Indicator
-variable {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
 
-lemma eLpNorm_indicator_eq_eLpNorm_restrict {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
-    {f : α → ε} {s : Set α} (hs : MeasurableSet s) :
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
+
+lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : MeasurableSet s) :
     eLpNorm (s.indicator f) p μ = eLpNorm f p (μ.restrict s) := by
   by_cases hp_zero : p = 0
   · simp only [hp_zero, eLpNorm_exponent_zero]
@@ -676,11 +676,9 @@ lemma eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict (hs : MeasurableSet s) :
     eLpNormEssSup (s.indicator f) μ = eLpNormEssSup f (μ.restrict s) := by
   simp_rw [← eLpNorm_exponent_top, eLpNorm_indicator_eq_eLpNorm_restrict hs]
 
-lemma eLpNorm_restrict_le (f : α → ε) (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
+lemma eLpNorm_restrict_le (f : α → ε') (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
     eLpNorm f p (μ.restrict s) ≤ eLpNorm f p μ :=
   eLpNorm_mono_measure f Measure.restrict_le_self
-
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 lemma eLpNorm_indicator_le (f : α → ε) :
     eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
