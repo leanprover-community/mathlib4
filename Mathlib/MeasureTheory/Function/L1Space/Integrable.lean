@@ -318,21 +318,19 @@ end
 
 section
 
-omit [TopologicalSpace ε]
-variable [MeasurableSpace ε]
-  {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
+variable {α' : Type*} [MeasurableSpace α'] {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
 
-theorem integrable_map_measure {f : α → ε} {g : ε → ε'}
+theorem integrable_map_measure {f : α → α'} {g : α' → ε'}
     (hg : AEStronglyMeasurable g (Measure.map f μ)) (hf : AEMeasurable f μ) :
     Integrable g (Measure.map f μ) ↔ Integrable (g ∘ f) μ := by
   simp_rw [← memLp_one_iff_integrable]
   exact memLp_map_measure_iff hg hf
 
-theorem Integrable.comp_aemeasurable {f : α → ε} {g : ε → ε'} (hg : Integrable g (Measure.map f μ))
-    (hf : AEMeasurable f μ) : Integrable (g ∘ f) μ :=
+theorem Integrable.comp_aemeasurable {f : α → α'} {g : α' → ε'}
+    (hg : Integrable g (Measure.map f μ)) (hf : AEMeasurable f μ) : Integrable (g ∘ f) μ :=
   (integrable_map_measure hg.aestronglyMeasurable hf).mp hg
 
-theorem Integrable.comp_measurable {f : α → ε} {g : ε → ε'} (hg : Integrable g (Measure.map f μ))
+theorem Integrable.comp_measurable {f : α → α'} {g : α' → ε'} (hg : Integrable g (Measure.map f μ))
     (hf : Measurable f) : Integrable (g ∘ f) μ :=
   hg.comp_aemeasurable hf.aemeasurable
 
