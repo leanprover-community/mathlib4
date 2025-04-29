@@ -14,4 +14,4 @@ def main(p):
         for p in ps:
             if p not in solved:
                 unsolved.add(p)
-    return [j for (i, j) in sorted(solved.items())]
+    print([j for (i, j) in sorted(solved.items())])

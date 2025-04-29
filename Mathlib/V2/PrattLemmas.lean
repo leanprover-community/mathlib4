@@ -64,7 +64,7 @@ lemma prove_prime_step (p a q o t r k : ℕ) (ho : (p - 1) / q = o) (hq : q.Prim
   | zero => rwa [pow_zero, mul_one]
   | succ n ih => exact pratt_rule_1' q _ hq (by ring) hpow ih
 
-lemma prove_prime_end (p p' a : ℕ) (hp : p' + 1 = p) (hpow : powMod a p' p = 1)
+lemma prove_prime_end {p : ℕ} (p' a : ℕ) (hp : p' + 1 = p) (hpow : powMod a p' p = 1)
     (h : pratt_predicate p a p') : p.Prime := by
   cases hp
   exact pratt_rule_2' a (by omega) hpow h

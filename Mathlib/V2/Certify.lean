@@ -19,10 +19,10 @@ inductive MPrattCertificate : Type
 inductive PrattEntry : Type
   | small (n : ℕ)
   | big (n : ℕ) (root : ℕ) (factors : List ℕ)
-  deriving Repr, BEq, Lean.ToExpr
+  deriving Repr, BEq, Lean.ToExpr, Lean.FromJson
 
 def PrattCertificate : Type := List PrattEntry
-  deriving Repr, BEq, Lean.ToExpr
+  deriving Repr, BEq, Lean.ToExpr, Lean.FromJson
 
 def PrattEntry.out : PrattEntry → ℕ
   | .small n => n
@@ -253,7 +253,7 @@ def processEntry (m : Std.TreeMap ℕ Expr) : PrattEntry → MetaM (Std.TreeMap 
     unless last = p - 1 do
       throwError "bad factorization {factors} of {p - 1} (missing {(p - 1) / last})"
     let hpow ← Tactic.powMod.provePowModEq root p' p 1 rootE p'E pE
-    let pf ← mkAppM ``prove_prime_end #[pE, p'E, mkNatLit root, ← mkEqRefl (mkNatLit p), hpow, pf]
+    let pf ← mkAppM ``prove_prime_end #[p'E, rootE, ← mkEqRefl pE, hpow, pf]
     return insert (p, pf) m
 
 def prove_prime (cert : PrattCertificate) (n : ℕ) : MetaM Expr := do
@@ -280,14 +280,82 @@ structure Primality.Config where
 
 declare_config_elab elabPrimeConfig Primality.Config
 
+def sageScript (n : ℕ) : String :=
+  (include_str "prime_sage_helper.py") ++ "\n" ++ s!"main({n})"
+
 def mathematicaScript (n : ℕ) : String :=
   s!"Needs[\"PrimalityProving`\"];\n\
   p = {n};\n\
   PrimalityProving`PrimeQCertificate[p, \"SmallPrime\" -> p + 1]"
 
+/-- The result of a sage call in the success case. -/
+structure SageSuccess where
+  /-- The main result of the function call is an array of polynomials
+  parallel to the input list of hypotheses and an exponent for the goal. -/
+  data : String
+  deriving FromJson, Repr
+
+/-- The result of a sage call in the failure case. -/
+structure SageError where
+  /-- The error kind -/
+  name : String
+  /-- The error message -/
+  value : String
+  deriving FromJson
+
+/-- The result of a sage call. -/
+def SageResult := Except SageError SageSuccess
+
+/-- Parse a `SageResult` from the raw SageMath API output. -/
+instance : FromJson SageResult where fromJson? j := do
+  -- we expect the output has either "success": true and contains "stdout",
+  -- or has "success": false and error information under "execute_reply"
+  if let .ok true := j.getObjValAs? Bool "success" then
+    -- parse SageSuccess from stdout, which is formatted as SageCoeffAndPower
+    -- (see sageCreateQuery for the format of stdout)
+    let stdout ← j.getObjValAs? String "stdout"
+    let coeffAndPower ← Json.parse stdout >>= fromJson?
+    let sageSuccess := { data := coeffAndPower }
+    return .ok sageSuccess
+  else
+    -- parse SageError from execute_reply
+    let executeReply ← j.getObjVal? "execute_reply"
+    let errorName ← executeReply.getObjValAs? String "ename"
+    let errorValue ← executeReply.getObjValAs? String "evalue"
+    return .error { name := errorName, value := errorValue }
+
+def extractCertificate (env : Environment) (out : String) : Except String Syntax := do
+  let out ← Json.parse out
+  if let .ok true := out.getObjValAs? Bool "success" then
+    let stdout ← out.getObjValAs? String "stdout"
+    Parser.runParserCategory env `bpratt_certificate stdout
+  else
+    -- parse SageError from execute_reply
+    let executeReply ← out.getObjVal? "execute_reply"
+    let errorName ← executeReply.getObjValAs? String "ename"
+    let errorValue ← executeReply.getObjValAs? String "evalue"
+    .error s!"SageMath error: {errorName}: {errorValue}"
+
 def makeCertificate (n : ℕ) (gen : Primality.Generator) : MetaM PrattCertificate := do
   match gen with
-  | .sage => throwError "sage not implemented"
+  | .sage =>
+    let data := s!"code={System.Uri.escapeUri (sageScript n)}"
+    let apiUrl := "https://sagecell.sagemath.org/service"
+    let curlArgs := #["-X", "POST", "--data-raw", data, apiUrl]
+    let out ← IO.Process.output {cmd := "curl", args := curlArgs}
+    if out.exitCode ≠ 0 then
+      IO.throwServerError <|
+        "Could not send API request to SageMath. " ++
+        s!"curl exited with code {out.exitCode}:\n{out.stderr}"
+    match extractCertificate (← getEnv) out.stdout with
+    | .error e =>
+      IO.throwServerError <|
+        s!"Could not parse SageMath output (error: {e})\nSageMath output:\n{out.stdout}\n\
+        The most likely reason for this is that the input {n} was not prime."
+    | .ok certStx =>
+      let certStx ← `(pratt_certificate| builder $(.mk certStx))
+      PrattCertificate.ofSyntax certStx
+
   | .native => throwError "native computation not implemented"
   | .mathematica =>
     let code := mathematicaScript n
@@ -299,12 +367,12 @@ def makeCertificate (n : ℕ) (gen : Primality.Generator) : MetaM PrattCertifica
     let out := out.stdout
     match Parser.runParserCategory (← getEnv) `mpratt_certificate out with
       | .error e =>
-        throwError s!"failed to parse mathematica output\nparser error: {e}\noutput: {out}"
+        throwError s!"failed to parse mathematica certificate output\n\
+          The most likely reason for this is that the input {n} was not prime.\n\
+          parser error: {e}\noutput: {out}"
       | .ok certStx =>
-        let certStx : TSyntax `mpratt_certificate := .mk certStx
-        let certStx ← `(pratt_certificate| mathematica $certStx)
-        let cert ← PrattCertificate.ofSyntax certStx
-        return cert
+        let certStx ← `(pratt_certificate| mathematica $(.mk certStx))
+        PrattCertificate.ofSyntax certStx
 
 syntax "prime" Parser.Tactic.optConfig ppSpace : tactic
 
@@ -324,3 +392,17 @@ elab_rules : tactic
       goal.assign pf
 
 end
+
+example : Nat.Prime 47867742232066880047611079 := by pratt
+  builder
+    [2, 3, 5, 7, 11, 17, 23, 29, 31, 37, 47, 67, 83, (167, 5, [2, 83]), (283, 3, [2, 3, 47]),
+      (4663, 3, [2, 3, 7, 37]), (5011, 2, [2, 3, 5, 167]), (62311, 6, [2, 3, 5, 31, 67]),
+      (214499, 2, [2, 23, 4663]), (1123145497, 7, [2, 3, 11, 283, 5011]),
+      (90101681149415123, 2, [2, 11, 17, 214499, 1123145497]),
+      (47867742232066880047611079, 3, [2, 3, 7, 29, 62311, 90101681149415123])]
+
+set_option exponentiation.threshold 3913 in
+example : Nat.Prime (3 * 2 ^ 3912 + 1) := by
+  simp only [reducePow, reduceMul, reduceAdd]
+  pratt builder [2, 3, (127780414391497973212171930170926986757577048484820926201064729783485263494817422495127775983679039078116803697168137524940219819335799478153348592755198599590903607242050230924443865709697486743641039970666450337071378658828331722728467720393963808366917988956767802913905167890490075236068196363700359481304279948916896583006686025357237170212018946813663108217900835975808683160984117514866915965161953626338070145596982334808959718966160701183250747572515090867613655044807172211728519357721287835503689517292364425608325467094686443862517374850243698013720305871319056887431952190952721719757200172695537054790570648290887720009455171821568413052107356003828041937567129362866696549587422369864562815134637684140271767482353107080370450890024342225936273158281477009232714640818424893445193089479459814572594522258577931514012256573162006292678354475638319009668319255772179069845291474717503333030909793536116894869761453687330048252587304656806182949368202671739705463406846852567720022377005763291104588535681445561286808586673846016527511475331939430139687698419185010117348285933672139833826832898565919546377321517928825162277951756632134321102813522053716838646284289
+, 11, [2, 3])]
