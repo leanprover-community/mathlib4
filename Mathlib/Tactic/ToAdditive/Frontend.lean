@@ -687,10 +687,8 @@ def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
       if xs.size = maxReorder + 1 then
         mkForallFVars (xs.permute! reorder) e
       else
-        logInfo m!"the permutation {reorder} provided by the reorder config option is too large, \
-          the type {src} has only {xs.size} arguments"
-        trace[to_additive_detail] "reorderForall tried to reorder a list that was too small:\n\
-          {src}\n{xs}\n{reorder}"
+        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
+          large, the type{indentExpr src}\nhas only {xs.size} arguments"
         return src
   else
     return src
@@ -702,10 +700,8 @@ def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
       if xs.size = maxReorder + 1 then
         mkLambdaFVars (xs.permute! reorder) e
       else
-        logInfo m!"the permutation {reorder} provided by the reorder config option is too large, \
-          the type {src} has only {xs.size} arguments"
-        trace[to_additive_detail] "reorderLambda tried to reorder a list that was too small:\n\
-          {src}\n{xs}\n{reorder}"
+        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
+          large, the type{indentExpr src}\nhas only {xs.size} arguments"
         return src
   else
     return src
