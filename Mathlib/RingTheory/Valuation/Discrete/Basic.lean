@@ -3,6 +3,7 @@ Copyright (c) 2025 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
+import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.Algebra.Order.Group.Cyclic
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.RingTheory.Valuation.Basic
@@ -45,112 +46,127 @@ class IsDiscrete : Prop where
 lemma exists_generator_lt_one [IsDiscrete v] :
   ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v := IsDiscrete.exists_generator_lt_one
 
-lemma IsDiscrete.cyclic_value_group [IsDiscrete v] : IsCyclic Γˣ := by
-  rw [isCyclic_iff_exists_zpowers_eq_top]
-  exact ⟨_, (v.exists_generator_lt_one.choose_spec).1⟩
+lemma IsDiscrete.mulArchimedean [IsDiscrete v] : MulArchimedean Γ := by
+  constructor
+  intro x y hy
+  obtain ⟨g, hgen, hg_lt_one, -, ha⟩ := v.exists_generator_lt_one
+  rcases le_or_lt x 1 with hx|hx
+  · exact ⟨0, by simpa using hx⟩
+  norm_cast at hx hy ⊢
+  obtain ⟨k, rfl⟩ : ∃ k : ℤ, g⁻¹ ^ k = x := by
+    lift x to Γˣ using isUnit_iff_ne_zero.mpr (zero_lt_one.trans hx).ne'
+    norm_cast
+    simp only [← Subgroup.mem_zpowers_iff, Subgroup.zpowers_inv, hgen, Subgroup.mem_top]
+  have hk : 0 < k := by
+    simp only [Units.val_inv_eq_inv_val, ← inv_zpow', zpow_neg] at hx
+    rwa [one_lt_zpow_iff_right₀] at hx
+    norm_cast
+    simp [hg_lt_one]
+  obtain ⟨l, rfl⟩ : ∃ l : ℤ, g⁻¹ ^ l = y := by
+    lift y to Γˣ using isUnit_iff_ne_zero.mpr (zero_lt_one.trans hy).ne'
+    norm_cast
+    simp only [← Subgroup.mem_zpowers_iff, Subgroup.zpowers_inv, hgen, Subgroup.mem_top]
+  have hl : 0 < l := by
+    simp only [Units.val_inv_eq_inv_val, ← inv_zpow', zpow_neg] at hy
+    rwa [one_lt_zpow_iff_right₀] at hy
+    norm_cast
+    simp [hg_lt_one]
+  lift k to ℕ using hk.le
+  lift l to ℕ using hl.le
+  norm_cast at hk hl ⊢
+  obtain ⟨n, hn⟩ := Archimedean.arch k hl
+  refine ⟨n, ?_⟩
+  simp only [Units.val_inv_eq_inv_val, zpow_natCast, ← pow_mul']
+  refine pow_right_monotone ?_ hn
+  simp [hg_lt_one.le]
 
 lemma IsDiscrete.nontrivial_value_group [IsDiscrete v] : Nontrivial Γˣ := by
   refine ⟨1, v.exists_generator_lt_one.choose, ?_⟩
   exact ne_of_gt <| (v.exists_generator_lt_one.choose_spec).2.1
 
-lemma IsDiscrete.infinite_value_group [IsDiscrete v] : Infinite Γˣ := by sorry
+lemma IsDiscrete.cyclic_value_group [IsDiscrete v] : IsCyclic Γˣ := by
+  rw [isCyclic_iff_exists_zpowers_eq_top]
+  exact ⟨_, (v.exists_generator_lt_one.choose_spec).1⟩
 
+lemma IsDiscrete.not_denselyOrdered [IsDiscrete v] : ¬ DenselyOrdered Γ := by
+  have := nontrivial_value_group v
+  have H := cyclic_value_group v
+  contrapose! H
+  rw [← denselyOrdered_units_iff] at H
+  exact not_isCyclic_of_denselyOrdered _
+
+open Multiplicative in
+lemma IsDiscrete.nonempty_mulOrderIso_multiplicative_int [IsDiscrete v] :
+    Nonempty (Γ ≃*o ℤₘ₀) := by
+  have := mulArchimedean v
+  have := nontrivial_value_group v
+  rw [LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered]
+  exact not_denselyOrdered v
+
+-- TODO: move elsewhere
+instance {X : Type*} [Preorder X] [Nonempty X] [NoMaxOrder X] : NoMaxOrder (WithZero X) := by
+  constructor
+  intro x
+  refine WithZero.cases_on x ?_ ?_
+  · inhabit X
+    exact ⟨(default : X), WithZero.zero_lt_coe _⟩
+  · intro a
+    obtain ⟨b, hb⟩ := exists_gt a
+    refine ⟨b, ?_⟩
+    simp [hb]
+
+open Multiplicative in
+lemma IsDiscrete.infinite_value_group [IsDiscrete v] : Infinite Γˣ := by
+  obtain ⟨e⟩ := nonempty_mulOrderIso_multiplicative_int v
+  let e' : Γˣ ≃* Multiplicative ℤ := MulEquiv.unzero (WithZero.withZeroUnitsEquiv.trans e)
+  rw [e'.toEquiv.infinite_iff]
+  infer_instance
+
+-- TODO: move elsewhere
+@[to_additive]
+lemma Subgroup.zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+    {x y : G} : Subgroup.zpowers x = Subgroup.zpowers y ↔ x = y ∨ x⁻¹ = y := by
+  rw [iff_comm]
+  constructor
+  · rintro (rfl|rfl) <;>
+    · simp
+  intro h
+  have hx : x ∈ Subgroup.zpowers y := by
+    simp [← h]
+  have hy : y ∈ Subgroup.zpowers x := by
+    simp [h]
+  rw [Subgroup.mem_zpowers_iff] at hx hy
+  obtain ⟨k, rfl⟩ := hy
+  obtain ⟨l, hl⟩ := hx
+  wlog hx1 : 1 < x
+  · push_neg at hx1
+    rcases hx1.eq_or_lt with rfl|hx1
+    · simp
+    · specialize this (x := x⁻¹) (-k) (by simp [h]) (-l) (by simp [hl]) (by simp [hx1])
+      simpa [or_comm] using this
+  simp only [← zpow_mul] at hl
+  replace hl : x ^ (k * l) = x ^ (1 : ℤ) := by simp [hl]
+  rw [zpow_right_inj hx1, Int.mul_eq_one_iff_eq_one_or_neg_one] at hl
+  refine hl.imp ?_ ?_ <;>
+  simp +contextual
 
 lemma IsDiscrete.exists_mem_val_eq_genLTOne [IsDiscrete v] :
     haveI := IsDiscrete.cyclic_value_group v
     haveI := IsDiscrete.nontrivial_value_group v
-    ∃ a : A, v a = LinearOrderedCommGroup.Subgroup.genLTOne (G := Γˣ) ⊤ := by
-  obtain ⟨a, ha⟩ := (v.exists_generator_lt_one.choose_spec).2.2
-  have ha' := (v.exists_generator_lt_one.choose_spec).1
+    ∃ a : A, v a = genLTOne (G := Γˣ) := by
+  obtain ⟨g, hgen, hg_lt_one, a, ha⟩ := v.exists_generator_lt_one
   use a
+  -- TODO: have the naked `getLTOne` have a lemma showing it is `< 1`
   rw [ha]
-  sorry
+  have := IsDiscrete.cyclic_value_group v
+  have := IsDiscrete.nontrivial_value_group v
+  norm_cast
+  rw [← Subgroup.genLTOne_zpowers_eq_top ⊤, Subgroup.zpowers_eq_zpowers_iff] at hgen
+  refine hgen.resolve_right ?_
+  refine ((genLTOne_lt_one Γˣ).trans ?_).ne'
+  simp [hg_lt_one]
 
-lemma heq (B : Type*) [DivisionRing B] (w : Valuation B Γ) [IsDiscrete w] :
-    MonoidHom.mrange w = ⊤ := by
-  have h_cyc := IsDiscrete.cyclic_value_group w
-  have h_ntriv := IsDiscrete.nontrivial_value_group w
-  ext x
-  refine ⟨fun h ↦ by trivial, fun _ ↦ ?_⟩
-  have := GroupWithZero.eq_zero_or_unit x
-  rcases this with hx | ⟨u, hu⟩
-  · rw [hx]
-    exact ⟨0, Valuation.map_zero w⟩
-  · rw [hu]
-    have := LinearOrderedCommGroup.Subgroup.genLTOne_zpowers_eq_top (G := Γˣ) ⊤
-    set γ := LinearOrderedCommGroup.Subgroup.genLTOne (G := Γˣ) ⊤ with hγ
-    have hu' : u ∈ (⊤ : Subgroup _) := by simp only [Subgroup.mem_top]
-    rw [← this, Subgroup.mem_zpowers_iff] at hu'
-    obtain ⟨k, hk⟩ := hu'
-    rw [← hk]
-    let a := (IsDiscrete.exists_mem_val_eq_genLTOne w).choose
-    use a ^ k
-    simp only [map_zpow₀, Units.val_zpow_eq_zpow_val]
-    have ha := (IsDiscrete.exists_mem_val_eq_genLTOne w).choose_spec
-    rw [← ha]
-
--- let fromYael /-- Any ordered group is isomorphic to the units of itself adjoined with `0`. -/
-open Classical in
-@[simps!]
-noncomputable def OrderMonoidIso.withZeroUnits {α : Type*} [GroupWithZero α] [Preorder α] :
-    WithZero αˣ ≃*o α where
-  toMulEquiv := WithZero.withZeroUnitsEquiv
-  map_le_map_iff' {a b} := by
-    simp [WithZero.withZeroUnitsEquiv]
-    -- ==simp [WithZero.withZeroUnitsEquiv]
-    sorry -- see Mathlib/Algebra/Order/Hom/Monoid.lean
-
-
-open scoped Multiplicative in
-noncomputable def forYakov (B : Type*) [DivisionRing B] {Γ₀ : Type*}
-    [LinearOrderedCommGroupWithZero Γ₀] {w : Valuation B Γ₀} [IsDiscrete w] : MonoidHom.mrange w ≃*o ℤₘ₀ := by
-  let ω := MulEquiv.submonoidCongr (heq B w)
-  let ω' : (MonoidHom.mrange w) ≃*o (⊤ : Submonoid Γ₀) := by
-    use ω
-    exact Iff.symm ge_iff_le
-
-  let ξ : (⊤ : Submonoid Γ₀) ≃* Γ₀ := Submonoid.topEquiv
-  let ξ' : (⊤ : Submonoid Γ₀) ≃*o Γ₀ := by
-    use ξ
-    exact Iff.symm ge_iff_le
-
-  let α : Γ₀ˣ ≃* Multiplicative ℤ := by
-    let ρ := zmodCyclicMulEquiv (IsDiscrete.cyclic_value_group w)
-    rw [@Nat.card_eq_zero_of_infinite _ (IsDiscrete.infinite_value_group w)] at ρ
-    exact ρ.symm
-
-  let β := @WithZero.withZeroUnitsEquiv Γ₀ _ _
-  let β' : WithZero Γ₀ˣ ≃*o Γ₀ := by
-    use β
-    intro a b
-    have := GroupWithZero.eq_zero_or_unit a
-    rcases this with _ | ⟨u, hu⟩
-    · simp_all
-    · simp_all
-      have := GroupWithZero.eq_zero_or_unit b
-      rcases this with _ | ⟨v, hv⟩
-      · simp_all
-      · rw [hv]
-        dsimp [β]
-        simp
-        sorry
-
-  let γ := α.withZero
-
-  let δ := β.symm.trans γ
-  let η := (ω.trans ξ).trans δ
-  use η
-  intro a b
-  simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · dsimp [η, δ, γ] at h
-    sorry
-  sorry
-
-
-
-variable {K : Type*} [Field K]
-
+variable {K : Type*} [DivisionRing K]
 /-- A discrete valuation on a field `K` is surjective. -/
 lemma IsDiscrete.surj (w : Valuation K Γ) [IsDiscrete w] : Surjective w := by
   intro c
@@ -163,6 +179,12 @@ lemma IsDiscrete.surj (w : Valuation K Γ) [IsDiscrete w] : Surjective w := by
   rw [map_zpow₀, ha]
   norm_cast
   rw [hk, hu, Units.val_mk0]
+
+lemma heq (w : Valuation K Γ) [IsDiscrete w] :
+    MonoidHom.mrange w = ⊤ := by
+  ext y
+  simp only [MonoidHom.mem_mrange, Submonoid.mem_top, iff_true]
+  exact IsDiscrete.surj w y
 
 variable [IsCyclic Γˣ] [Nontrivial Γˣ]
 /-- A valuation on a field `K` is discrete if and only if it is surjective. -/
