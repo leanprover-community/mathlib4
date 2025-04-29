@@ -75,6 +75,8 @@ namespace Plus
 
 abbrev ι : Plus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (plus C).ι
 
+def fullyFaithfulι : (ι C).FullyFaithful := ObjectProperty.fullyFaithfulι _
+
 def quasiIso : MorphismProperty (Plus A) := (HomotopyCategory.quasiIso A _).inverseImage (ι A)
 
 instance : (quasiIso A).IsMultiplicative := by

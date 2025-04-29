@@ -127,17 +127,22 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
         ((HomotopyCategory.Plus.singleFunctor C 0).obj (K.X i)))) :
     IsIso (F.rightDerivedFunctorPlusUnit.app
       ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, a, ha⟩) := by
-  let S := (Triangulated.Subcategory.ofNatTrans (F.rightDerivedFunctorPlusUnit)).map
+  let S := (ObjectProperty.ofNatTrans F.rightDerivedFunctorPlusUnit).map
     (HomotopyCategory.Plus.ι C)
-  suffices S.P ((HomotopyCategory.quotient _ _).obj K) by
-    change (Triangulated.Subcategory.ofNatTrans (F.rightDerivedFunctorPlusUnit)).P _
-    rw [← Triangulated.Subcategory.mem_map_iff _ (HomotopyCategory.Plus.ι C)]
+  have : (ObjectProperty.ofNatTrans F.rightDerivedFunctorPlusUnit).IsTriangulated := by
+    infer_instance
+  suffices S ((HomotopyCategory.quotient _ _).obj K) by
+    dsimp only [S] at this
+    change (ObjectProperty.ofNatTrans (F.rightDerivedFunctorPlusUnit)) _
+    rw [← ObjectProperty.prop_map_obj_iff (ObjectProperty.ofNatTrans
+      (F.rightDerivedFunctorPlusUnit)) (HomotopyCategory.Plus.ι C)]
     exact this
   apply HomotopyCategory.mem_subcategory_of_strictly_bounded _ _ a b
   intro i ha hb
   replace hK := hK i ha hb
-  change (Triangulated.Subcategory.ofNatTrans (F.rightDerivedFunctorPlusUnit)).P _ at hK
-  simpa only [← Triangulated.Subcategory.mem_map_iff _ (HomotopyCategory.Plus.ι C)] using hK
+  change (ObjectProperty.ofNatTrans (F.rightDerivedFunctorPlusUnit)) _ at hK
+  simpa only [← ObjectProperty.prop_map_obj_iff (ObjectProperty.ofNatTrans
+      (F.rightDerivedFunctorPlusUnit)) (HomotopyCategory.Plus.ι C)] using hK
 
 lemma isIso_rightDerivedFunctorPlusUnit_app
     (K : CochainComplex C ℤ) (a : ℤ) [ha : K.IsStrictlyGE a]
@@ -162,24 +167,25 @@ lemma isIso_rightDerivedFunctorPlusUnit_app
     { obj₁ := M'
       obj₂ := K'
       obj₃ := L'
-      mor₁ := (HomotopyCategory.Plus.ι _).preimage T.mor₁
-      mor₂ := (HomotopyCategory.Plus.ι _).preimage T.mor₂
-      mor₃ := (HomotopyCategory.Plus.ι _).preimage (T.mor₃ ≫
+      mor₁ := (HomotopyCategory.Plus.fullyFaithfulι _).preimage T.mor₁
+      mor₂ := (HomotopyCategory.Plus.fullyFaithfulι _).preimage T.mor₂
+      mor₃ := (HomotopyCategory.Plus.fullyFaithfulι _).preimage (T.mor₃ ≫
         ((HomotopyCategory.Plus.ι C).commShiftIso (1 : ℤ)).inv.app M') }
   have hT' : T' ∈ distTriang _ := by
     rw [← (HomotopyCategory.Plus.ι C).map_distinguished_iff]
     refine Pretriangulated.isomorphic_distinguished _ hT _
       (Pretriangulated.Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-      (by simp) (by simp) ?_)
-    dsimp
-    simp only [map_preimage, assoc, Iso.inv_hom_id_app, comp_obj, map_id, comp_id, id_comp]
+      (by aesop) (by aesop) ?_)
+    dsimp [T']
+    simp only [map_id, comp_id, id_comp]
+    change (_ ≫ _) ≫ _ = _
+    rw [assoc, Iso.inv_hom_id_app]
     apply comp_id
   have : IsIso (F.rightDerivedFunctorPlusUnit.app L') := by
     apply isIso_rightDerivedFunctorPlusUnit_app_of_bounded _ _ a (n + 1)
     intro i hi hi'
     exact (NatTrans.isIso_app_iff_of_iso _
       (Functor.mapIso _ (asIso' (K.isIso_πStupidTrunc_f (n + 1) i hi')))).1 (hK i hi)
-
   have : (DerivedCategory.Plus.Qh.obj M').IsGE (n + 2) := by
     rw [← DerivedCategory.Plus.isGE_ι_obj_iff]
     apply DerivedCategory.TStructure.t.isGE_of_iso

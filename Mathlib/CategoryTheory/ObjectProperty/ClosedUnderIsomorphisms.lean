@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.ObjectProperty.Basic
+import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Order.CompleteLattice.Defs
 
 /-! # Properties of objects which are closed under isomorphisms
@@ -88,6 +89,14 @@ instance (F : D ⥤ C) [P.IsClosedUnderIsomorphisms] :
 instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
     (P ⊓ Q).IsClosedUnderIsomorphisms where
   of_iso e hX := ⟨P.prop_of_iso e hX.1, Q.prop_of_iso e hX.2⟩
+
+lemma prop_map_obj_iff
+    (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms] (F : C ⥤ D) [F.Full] [F.Faithful] (X : C) :
+    P.map F (F.obj X) ↔ P X := by
+  refine ⟨fun hX ↦ ?_, P.prop_map_obj F⟩
+  rw [prop_map_iff] at hX
+  obtain ⟨Y, hY, ⟨e⟩⟩ := hX
+  exact P.prop_of_iso (F.preimageIso e) hY
 
 end ObjectProperty
 
