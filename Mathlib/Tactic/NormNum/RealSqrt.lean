@@ -7,7 +7,7 @@ import Mathlib.Data.Real.Sqrt
 
 /-! # `norm_num` extension for `Real.sqrt`
 
-This module defines a `norm_num` extension for `Real.
+This module defines a `norm_num` extension for `Real.sqrt` and `NNReal.sqrt`.
 -/
 
 namespace Tactic.NormNum
