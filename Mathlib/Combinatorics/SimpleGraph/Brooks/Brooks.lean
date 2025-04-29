@@ -326,13 +326,11 @@ theorem colorable_of_cliqueFree_forall_degree_le [LocallyFinite G] {k : ℕ} (hk
   haveI : Fintype ↑G'.verts := hf.fintype
   exact ((BrooksPart hk (hc.comap' G'.hom) h' univ).some.copy coe_univ).toColoring
 
+variable [DecidableEq α]
 lemma two_colorable_of_no_odd_cycle (ho : ∀ u, ∀ (w : G.Walk u u), w.IsCycle → ¬ Odd w.length) :
-    G.Colorable 2 := by
-  apply two_colorable_of_no_odd_closed_walk
-  intro v w hw
-  classical
-  obtain ⟨_, _, hc, hco⟩ := w.exists_odd_cycle_of_odd_closed_walk hw
-  exact ho _ _ hc hco
+    G.Colorable 2 :=
+  two_colorable_of_no_odd_closed_walk <|
+    fun _ w h ↦ ho _ _ (w.oddCycle_isCycle h) (w.oddCycle_is_odd h)
 
 
 end SimpleGraph
