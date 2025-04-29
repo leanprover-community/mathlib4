@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+import Mathlib.Analysis.Complex.Circle
 
 /-!
 # Complex roots of unity
@@ -31,9 +32,7 @@ namespace Units
 
 open Complex in
 /-- The map `fun t => exp (t * I)` from `ℝ` to `ℂˣ`. -/
-noncomputable def exp : ℝ → ℂˣ := fun t =>
-  ⟨(t * I).exp, (-t * I).exp, by rw [← exp_add, neg_mul, add_neg_cancel, exp_zero],
-    by rw [← exp_add, neg_mul, neg_add_cancel, exp_zero]⟩
+noncomputable def exp : ℝ → ℂˣ := Circle.toUnits ∘ Circle.exp
 
 @[simp, norm_cast]
 theorem coe_exp (t : ℝ) : exp t = Complex.exp (t * Complex.I) := rfl
@@ -148,8 +147,9 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
 -- Rework `mem_rootsOfUnity` into a more usable form
 nonrec theorem mem_rootsOfUnity' (n : ℕ) [NeZero n] (x : Units ℂ) :
     x ∈ rootsOfUnity n ℂ ↔ ∃ i < n, Units.exp (2 * π * (i / n)) = x := by
-  simp_rw [mem_rootsOfUnity, Units.exp, ofReal_mul, ofReal_ofNat, ofReal_div, ofReal_natCast,
-    ← Units.eq_iff]
+  simp_rw [mem_rootsOfUnity, Units.exp]
+  simp only [Function.comp_apply, Circle.toUnits_apply, Circle.coe_exp, ofReal_mul, ofReal_ofNat,
+    ofReal_div, ofReal_natCast, ← Units.eq_iff, Units.val_mk0]
   constructor <;> ({ intro ⟨i, hi1, hi2⟩; exact ⟨i, ⟨hi1, by rw [← hi2]; ring_nf⟩ ⟩})
 
 theorem card_rootsOfUnity (n : ℕ) [NeZero n] : Fintype.card (rootsOfUnity n ℂ) = n :=
