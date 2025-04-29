@@ -381,7 +381,7 @@ theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
       exact mem_range_self f x
     · intro x hx
       obtain ⟨y, hy⟩ := mem_range.1 hx
-      rw [← hy, ← mul_apply, h]
+      rw [← hy, ← Module.End.mul_apply, h]
 
 @[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
 
