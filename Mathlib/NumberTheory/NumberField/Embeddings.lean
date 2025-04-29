@@ -166,7 +166,7 @@ theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →
 @[simp]
 theorem lift_comp_algebraMap_apply [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) (x : k) :
     lift K φ (algebraMap k K x) = φ x :=
-  RingHom.congr_fun (lift_comp_algebraMap φ (K := K)) x
+  RingHom.congr_fun (lift_comp_algebraMap φ) x
 
 /-- The conjugate of a complex embedding as a complex embedding. -/
 abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
