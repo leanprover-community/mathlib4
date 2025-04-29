@@ -231,7 +231,7 @@ theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ cons_injective_of_injective h.1 h.2⟩
   · rintro ⟨i, hi⟩
     replace h := @h i.succ 0
-    simp [hi, succ_ne_zero] at h
+    simp [hi] at h
   · simpa [Function.comp] using h.comp (Fin.succ_injective _)
 
 @[simp]
@@ -254,7 +254,7 @@ theorem exists_fin_succ_pi {P : (∀ i, α i) → Prop} : (∃ x, P x) ↔ ∃ a
 @[simp]
 theorem tail_update_zero : tail (update q 0 z) = tail q := by
   ext j
-  simp [tail, Fin.succ_ne_zero]
+  simp [tail]
 
 /-- Updating a nonzero element and taking the tail commute. -/
 @[simp]
@@ -570,7 +570,7 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) i.castSucc y := 
         rw [← E, castSucc_castLT]
       simp [h', this, snoc, h]
   · rw [eq_last_of_not_lt h]
-    simp [Fin.ne_of_gt i.castSucc_lt_last]
+    simp
 
 /-- Adding an element at the beginning of a tuple and then updating it amounts to adding it
 directly. -/
@@ -611,7 +611,7 @@ theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
 @[simp]
 theorem init_update_last : init (update q (last n) z) = init q := by
   ext j
-  simp [init, Fin.ne_of_lt, castSucc_lt_last]
+  simp [init, Fin.ne_of_lt]
 
 /-- Updating an element and taking the beginning commute. -/
 @[simp]

@@ -256,8 +256,8 @@ lemma OrthogonalIdempotents.lift_of_isNilpotent_ker_aux
     obtain ⟨e₀, h₃, h₄, h₅, h₆⟩ :=
       exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent f h _ (he' 0) (he.idem 0) _
       h₁.isIdempotentElem_sum
-      (by simp [Finset.mul_sum, h₂', he.mul_eq, Fin.succ_ne_zero, eq_comm])
-      (by simp [Finset.sum_mul, h₂', he.mul_eq, Fin.succ_ne_zero])
+      (by simp [Finset.mul_sum, h₂', he.mul_eq, eq_comm])
+      (by simp [Finset.sum_mul, h₂', he.mul_eq])
     refine ⟨_, (h₁.option _ h₃ h₅ h₆).embedding (finSuccEquiv n).toEmbedding, funext fun i ↦ ?_⟩
     obtain ⟨_ | i, rfl⟩ := (finSuccEquiv n).symm.surjective i <;> simp [*]
 
