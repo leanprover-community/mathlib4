@@ -407,6 +407,7 @@
   "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
   "Mathlib.Deprecated.Cardinal.Finite": ["Mathlib.Data.Finite.Card"],
   "Mathlib.Deprecated.ByteArray": ["Batteries.Data.ByteSubarray"],
+  "Mathlib.Data.ZMod.Defs": ["Mathlib.Algebra.Ring.GrindInstances"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Set.Image":
   ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],
