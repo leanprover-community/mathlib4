@@ -23,18 +23,18 @@ namespace Minus
 variable (C)
 
 abbrev subcategoryAcyclic :
-    Triangulated.Subcategory (HomotopyCategory.Minus C) :=
+    ObjectProperty (HomotopyCategory.Minus C) :=
   (HomotopyCategory.subcategoryAcyclic C).inverseImage (HomotopyCategory.Minus.ι C)
 
-lemma quasiIso_eq_subcategoryAcyclic_W :
-    HomotopyCategory.Minus.quasiIso C = (subcategoryAcyclic C).W := by
+lemma quasiIso_eq_subcategoryAcyclic_trW :
+    HomotopyCategory.Minus.quasiIso C = (subcategoryAcyclic C).trW := by
   ext K L f
   obtain ⟨M, g, h, mem⟩ := CategoryTheory.Pretriangulated.distinguished_cocone_triangle f
-  have mem' := (HomotopyCategory.Minus.ι C).map_distinguished _ mem
-  erw [(subcategoryAcyclic C).mem_W_iff_of_distinguished _ mem,
-    ← (HomotopyCategory.subcategoryAcyclic C).mem_W_iff_of_distinguished _ mem',
-    ← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
-  rfl
+  have := (HomotopyCategory.subcategoryAcyclic C).trW_iff_of_distinguished _
+    ((HomotopyCategory.Minus.ι C).map_distinguished _ mem)
+  erw [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW] at this
+  erw [(subcategoryAcyclic C).trW_iff_of_distinguished _ mem]
+  exact this
 
 end Minus
 
@@ -61,8 +61,8 @@ instance : (Qh : _ ⥤ Minus C).IsTriangulated := by
   dsimp only [Qh]
   infer_instance
 
-instance : IsLeftLocalizing (HomotopyCategory.Minus.ι C)
-    (HomotopyCategory.subcategoryAcyclic C) where
+instance : (HomotopyCategory.subcategoryAcyclic C).IsLeftLocalizing (HomotopyCategory.Minus.ι C)
+    where
   fac {L K} φ hK := by
     obtain ⟨K : CochainComplex C ℤ⟩ := K
     obtain ⟨⟨L : CochainComplex C ℤ⟩, n, (hn : L.IsStrictlyLE n)⟩ := L
@@ -73,8 +73,8 @@ instance : IsLeftLocalizing (HomotopyCategory.Minus.ι C)
       ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj (K.truncLE n), n, by
         change (K.truncLE n).IsStrictlyLE n
         infer_instance⟩
-    have hM : (HomotopyCategory.subcategoryAcyclic C).P ((HomotopyCategory.Minus.ι C).obj M) := by
-      dsimp [M, HomotopyCategory.Minus.ι, Subcategory.ι]
+    have hM : (HomotopyCategory.subcategoryAcyclic C) ((HomotopyCategory.Minus.ι C).obj M) := by
+      dsimp [M, HomotopyCategory.Minus.ι]
       rw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic,
         K.acyclic_truncLE_iff n (n + 1) (by omega)]
       erw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic] at hK
@@ -108,12 +108,12 @@ instance : (Qh (C := C)).EssSurj := by
   exact ⟨(Q.objPreimage X).truncGE n, inferInstance,
     ⟨(asIso (Q.map ((Q.objPreimage X).πTruncGE n))).symm ≪≫ Q.objObjPreimageIso X⟩⟩
 
-instance : Qh.IsLocalization (HomotopyCategory.Minus.subcategoryAcyclic C).W :=
-  isLocalization_of_isLeftLocalizing (HomotopyCategory.Minus.ι C)
-    (HomotopyCategory.subcategoryAcyclic C) (QhCompιIsoιCompQh C)
+instance : Qh.IsLocalization (HomotopyCategory.Minus.subcategoryAcyclic C).trW :=
+  (HomotopyCategory.subcategoryAcyclic C).isLocalization_of_isLeftLocalizing
+    (HomotopyCategory.Minus.ι C) (QhCompιIsoιCompQh C)
 
 instance : Qh.IsLocalization (HomotopyCategory.Minus.quasiIso C) := by
-  rw [HomotopyCategory.Minus.quasiIso_eq_subcategoryAcyclic_W]
+  rw [HomotopyCategory.Minus.quasiIso_eq_subcategoryAcyclic_trW]
   infer_instance
 
 noncomputable def singleFunctors : SingleFunctors C (Minus C) ℤ :=
@@ -141,7 +141,7 @@ instance (n : ℤ) : (homologyFunctor C n).IsHomological := by
 
 instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow _
-    (HomotopyCategory.Minus.subcategoryAcyclic C).W
+    (HomotopyCategory.Minus.subcategoryAcyclic C).trW
 
 variable {C}
 

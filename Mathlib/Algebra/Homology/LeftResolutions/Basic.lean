@@ -56,7 +56,7 @@ the epimorphisms given by `Λ`. -/
 noncomputable def chainComplex : ChainComplex C ℕ :=
   ChainComplex.mk' _ _ (ι.preimage (Λ.π.app (kernel (Λ.π.app X)) ≫ kernel.ι _))
     (fun f => ⟨_, ι.preimage (Λ.π.app (kernel (ι.map f)) ≫ kernel.ι _),
-      ι.map_injective (by simp)⟩)
+      ι.map_injective (by simp [ι.map_zero])⟩)
 
 /-- Given `Λ : LeftResolutions ι`, the chain complex `Λ.chainComplex X`
 identifies in degree `0` to `Λ.F.obj X`. -/

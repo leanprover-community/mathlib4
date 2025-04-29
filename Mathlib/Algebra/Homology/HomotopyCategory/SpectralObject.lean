@@ -26,9 +26,7 @@ noncomputable def composableArrowsFunctor :
   map_id f := map_id _
   map_comp φ₁ φ₂ := by
     apply map_comp
-    all_goals simp
 
-set_option maxHeartbeats 400000 in
 noncomputable def spectralObjectMappingCone :
     SpectralObject (HomotopyCategory C (ComplexShape.up ℤ)) (CochainComplex C ℤ) where
   ω₁ := composableArrowsFunctor C ⋙ HomotopyCategory.quotient _ _

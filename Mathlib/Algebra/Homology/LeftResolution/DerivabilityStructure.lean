@@ -12,6 +12,8 @@ import Mathlib.Algebra.Homology.DerivedCategory.Minus
 
 -/
 
+-- part of this should be refactored and moved to `LeftResolutions.*`
+
 universe v u
 open CategoryTheory Category Limits
 

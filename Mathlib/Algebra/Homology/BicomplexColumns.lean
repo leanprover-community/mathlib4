@@ -9,6 +9,7 @@ import Mathlib.Algebra.Homology.HomologySequenceLemmas
 import Mathlib.Algebra.Homology.TotalComplex
 import Mathlib.Algebra.Homology.TotalComplexShift
 import Mathlib.Algebra.Homology.TotalComplexMap
+import Mathlib.CategoryTheory.Idempotents.Basic
 
 /-!
 # Columns of bicomplexes
@@ -79,14 +80,14 @@ section
 
 variable [IsIdempotentComplete C] {I : Type*}
   {X : I → C} (Y : I → C)
-  (hX : ∀ (i : I), DirectFactor (X i) (Y i))
+  (hX : ∀ (i : I), Retract (X i) (Y i))
 
 include hX in
 lemma hasCoproduct_of_direct_factor [HasCoproduct Y] : HasCoproduct X := by
-  let p : ∐ Y ⟶ ∐ Y := Sigma.map (fun i => (hX i).r ≫ (hX i).s)
-  obtain ⟨S, h, fac⟩ := directFactor_of_isIdempotentComplete _ p (by aesop_cat)
-  refine ⟨Cofan.mk S (fun i => (hX i).s ≫ Sigma.ι Y i ≫ h.r),
-    mkCofanColimit _ (fun c => h.s ≫ Sigma.desc (fun i => (hX i).r ≫ c.inj i))
+  let p : ∐ Y ⟶ ∐ Y := Sigma.map (fun i => (hX i).r ≫ (hX i).i)
+  obtain ⟨S, h, fac⟩ := retract_of_isIdempotentComplete _ p (by aesop_cat)
+  refine ⟨Cofan.mk S (fun i => (hX i).i ≫ Sigma.ι Y i ≫ h.r),
+    mkCofanColimit _ (fun c => h.i ≫ Sigma.desc (fun i => (hX i).r ≫ c.inj i))
       (fun c i => by simp [p, reassoc_of% fac])
       (fun c m hm => ?_)⟩
   dsimp at m ⊢
@@ -96,10 +97,10 @@ lemma hasCoproduct_of_direct_factor [HasCoproduct Y] : HasCoproduct X := by
   simp only [← hm, reassoc_of% fac]
   dsimp [p]
   simp only [Category.assoc, ι_colimMap_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app,
-    colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, DirectFactor.sr_assoc]
+    colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Retract.retract_assoc]
   simp only [← Category.assoc]
   congr 1
-  rw [← cancel_mono h.s]
+  rw [← cancel_mono h.i]
   simp [fac, p]
 
 end
@@ -222,10 +223,10 @@ section
 variable [IsIdempotentComplete C]
   {K : HomologicalComplex₂ C c₁ c₂} (L : HomologicalComplex₂ C c₁ c₂)
   (c : ComplexShape ι) [TotalComplexShape c₁ c₂ c]
-  (h : ∀ i₁ i₂, DirectFactor ((K.X i₁).X i₂) ((L.X i₁).X i₂))
+  (h : ∀ i₁ i₂, Retract ((K.X i₁).X i₂) ((L.X i₁).X i₂))
 
 include h in
-lemma hasTotal_of_directFactor [L.HasTotal c] : K.HasTotal c :=
+lemma hasTotal_of_retract [L.HasTotal c] : K.HasTotal c :=
   fun i => hasCoproduct_of_direct_factor
     (GradedObject.mapObjFun L.toGradedObject (π c₁ c₂ c) i) (fun _ => h _ _)
 
@@ -233,8 +234,8 @@ variable {ι₁' : Type*} {c₁' : ComplexShape ι₁'} (e : c₁'.Embedding c�
   [HasZeroObject C]
 
 instance [K.HasTotal c] : HomologicalComplex₂.HasTotal (K.stupidTrunc e) c :=
-  hasTotal_of_directFactor K c
-    (fun i₁ i₂ => (K.stupidTruncDirectFactor e i₁).map (HomologicalComplex.eval _ _ i₂))
+  hasTotal_of_retract K c
+    (fun i₁ i₂ => (K.stupidTruncRetract e i₁).map (HomologicalComplex.eval _ _ i₂))
 
 end
 

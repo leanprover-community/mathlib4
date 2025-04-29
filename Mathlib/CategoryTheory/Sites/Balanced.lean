@@ -29,10 +29,11 @@ namespace CategoryTheory
 open Limits
 
 variable {C : Type u} [Category.{v} C]
-  {D : Type u'} [Category.{v'} D] [ConcreteCategory.{w} D]
+  {D : Type u'} [Category.{v'} D] {FD : D → D → Type*} {DD : D → Type w}
+  [∀ X Y, FunLike (FD X Y) (DD X) (DD Y)] [ConcreteCategory.{w} D FD]
   {J : GrothendieckTopology C}
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] Types.instFunLike Types.instConcreteCategory
 
 namespace Sheaf
 
@@ -42,17 +43,18 @@ variable {F G : Sheaf J D} (φ : F ⟶ G)
 
 lemma mono_iff_injective [(forget D).PreservesMonomorphisms]
     [HasLimitsOfShape WalkingCospan D] :
-    Mono φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (fun (x : F.1.obj X) => φ.1.app _ x) := by
+    Mono φ ↔ ∀ (X : Cᵒᵖ), Function.Injective
+      (fun (x : (forget _).obj (F.1.obj X)) => φ.1.app _ x) := by
   constructor
   · intro _ X
     apply (CategoryTheory.mono_iff_injective ((sheafToPresheaf J D ⋙
       (evaluation _ _ ).obj X ⋙ forget D).map φ)).1
-    change Mono ((sheafToPresheaf J D ⋙ (evaluation _ _).obj X ⋙ forget D).map φ)
     infer_instance
   · apply mono_of_injective
 
 lemma isIso_iff_bijective [(forget D).ReflectsIsomorphisms] :
-    IsIso φ ↔ ∀ (X : Cᵒᵖ), Function.Bijective (fun (x : F.1.obj X) => φ.1.app _ x) := by
+    IsIso φ ↔ ∀ (X : Cᵒᵖ), Function.Bijective
+      (fun (x : (forget _).obj (F.1.obj X)) => φ.1.app _ x) := by
   have : IsIso φ ↔ IsIso φ.1 := by
     change _ ↔ IsIso ((sheafToPresheaf _ _).map φ)
     constructor
@@ -78,7 +80,7 @@ end
 namespace BalancedAux
 
 /-- If a commutative square in the category of types is pushout square, and the top map
-is injective, then the square is also a pullback square,  -/
+is injective, then the square is also a pullback square. -/
 noncomputable def isLimit_of_isPushout_of_injective {X Y S : Type w} {f : X ⟶ S} {g : Y ⟶ S}
     (c : PullbackCone f g) (hc : IsPushout c.fst c.snd f g)
     (h₁ : Function.Injective c.fst) :
@@ -142,10 +144,10 @@ lemma epi_iff_isLocallySurjective
     Epi φ ↔ IsLocallySurjective φ := by
   constructor
   · intro hφ
-    have : Epi (GrothendieckTopology.imageSheafι φ) :=
-      epi_of_epi_fac (GrothendieckTopology.toImageSheaf_ι φ)
-    have : IsIso (GrothendieckTopology.imageSheafι φ) := isIso_of_mono_of_epi _
-    rw [← GrothendieckTopology.toImageSheaf_ι φ]
+    have : Epi (Sheaf.imageι φ) :=
+      epi_of_epi_fac (Sheaf.toImage_ι φ)
+    have : IsIso (Sheaf.imageι φ) := isIso_of_mono_of_epi _
+    rw [← Sheaf.toImage_ι φ]
     apply Presheaf.isLocallySurjective_comp
   · intro
     apply epi_of_isLocallySurjective

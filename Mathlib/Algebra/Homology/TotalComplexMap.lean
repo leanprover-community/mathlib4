@@ -29,7 +29,7 @@ variable [K.HasTotal c] [L.HasTotal c] [F.PreservesTotalComplex K c]
   [F.PreservesTotalComplex L c]
 
 instance hasTotalOfPreserves : ((F.mapHomologicalComplex₂ c₁ c₂).obj K).HasTotal c := fun n =>
-  hasColimitOfIso (F := (Discrete.functor (K.toGradedObject.mapObjFun
+  hasColimit_of_iso (F := (Discrete.functor (K.toGradedObject.mapObjFun
     (ComplexShape.π c₁ c₂ c) n)) ⋙ F) (Discrete.natIso (fun _ => Iso.refl _))
 
 noncomputable def mapTotalXIso (n : I) :

@@ -16,19 +16,9 @@ import Mathlib.Algebra.Homology.TotalComplexMap
 
 -/
 
+-- part of this should be refactored and moved to `LeftResolutions.*`
+
 open CategoryTheory Category Limits Preadditive ZeroObject
-
-@[simp]
-lemma CategoryTheory.Limits.kernel.map_id {C : Type*} [Category C] [HasZeroMorphisms C]
-    {X Y : C} (f : X ⟶ Y) [HasKernel f] (q : Y ⟶ Y)
-    (w : f ≫ q = 𝟙 _ ≫ f) : kernel.map f f (𝟙 _) q w = 𝟙 _ := by
-  simp only [← cancel_mono (kernel.ι f), lift_ι, comp_id, id_comp]
-
-@[simp]
-lemma CategoryTheory.Limits.kernel.map_zero {C : Type*} [Category C] [HasZeroMorphisms C]
-    {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel f] [HasKernel f'] (q : Y ⟶ Y')
-    (w : f ≫ q = 0 ≫ f') : kernel.map f f' 0 q w = 0 := by
-  simp only [← cancel_mono (kernel.ι f'), lift_ι, comp_zero, zero_comp]
 
 namespace ChainComplex
 
@@ -371,7 +361,7 @@ instance : QuasiIsoAt (Λ.cochainComplexπ X) 0 := by
       show kernel.lift S.g S.f S.zero = Λ.π.app (kernel (Λ.π.app X)) by
         rw [← cancel_mono (kernel.ι _), kernel.lift_ι]]
     infer_instance
-  refine (ShortComplex.exact_and_epi_g_iff_of_iso ?_).2 ⟨hS, by dsimp; infer_instance⟩
+  refine (ShortComplex.exact_and_epi_g_iff_of_iso ?_).2 ⟨hS, by infer_instance⟩
   refine ShortComplex.isoMk (ι.mapIso (Λ.cochainComplexXNegOneIso X))
     (ι.mapIso (Λ.cochainComplexXZeroIso X))
     (HomologicalComplex.singleObjXSelf (ComplexShape.up ℤ) 0 X) ?_ ?_
@@ -380,7 +370,7 @@ instance : QuasiIsoAt (Λ.cochainComplexπ X) 0 := by
       Iso.inv_hom_id, ι.map_id]
     dsimp
     rw [comp_id]
-  · simp [cochainComplexπ_f_0]
+  · simp [cochainComplexπ_f_0, S]
 
 instance : QuasiIso (Λ.cochainComplexπ X) where
   quasiIsoAt i := by
@@ -512,7 +502,7 @@ section
 
 variable (K L : CochainComplex.Minus C) (φ : K ⟶ L)
 
-/-- totalπ'  -/
+/-- totalπ' -/
 noncomputable def totalπ'  :
     ((ι.mapHomologicalComplex₂ _ _).obj (Λ.bicomplexFunctor.obj K.obj)).total (ComplexShape.up ℤ) ⟶
       ((HomologicalComplex₂.singleRow C

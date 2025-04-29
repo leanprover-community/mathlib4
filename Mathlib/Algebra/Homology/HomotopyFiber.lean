@@ -119,7 +119,6 @@ noncomputable def fst : homotopyFiber f ⟶ F where
   f n := biprod.fst
   comm' := by
     rintro i _ rfl
-    dsimp
     simp only [d_eq _ _ _ rfl, Preadditive.add_comp, assoc, Preadditive.sub_comp,
       biprod.inl_fst, comp_id, biprod.inr_fst, comp_zero, add_zero, sub_zero]
 

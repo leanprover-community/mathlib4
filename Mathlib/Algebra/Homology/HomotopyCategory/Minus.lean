@@ -24,19 +24,22 @@ variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryB
 
 namespace HomotopyCategory
 
-def subcategoryMinus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) where
-  P K := ∃ (n : ℤ), CochainComplex.IsStrictlyLE K.1 n
-  zero' := by
+def minus : ObjectProperty (HomotopyCategory C (ComplexShape.up ℤ)) :=
+  fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyLE K.1 n
+
+instance : (minus C).IsTriangulated where
+  exists_zero := by
     refine ⟨⟨0⟩, ?_, ⟨0, ?_⟩⟩
     · change IsZero ((quotient _ _).obj 0)
       rw [IsZero.iff_id_eq_zero, ← (quotient _ _).map_id, id_zero, Functor.map_zero]
     · dsimp
       infer_instance
-  shift := by
-    rintro ⟨X : CochainComplex C ℤ⟩ n ⟨k, _ : X.IsStrictlyLE k⟩
-    refine ⟨k - n, ?_⟩
-    erw [Quotient.functor_obj_shift]
-    exact X.isStrictlyLE_shift k n (k - n) (by linarith)
+  isStableUnderShiftBy n :=
+    { le_shift := by
+        rintro ⟨X : CochainComplex C ℤ⟩ ⟨k, _ : X.IsStrictlyLE k⟩
+        refine ⟨k - n, ?_⟩
+        erw [Quotient.functor_obj_shift]
+        exact X.isStrictlyLE_shift k n (k - n) (by omega) }
   ext₂' T hT := by
     rintro ⟨n₁, _⟩ ⟨n₃, _⟩
     obtain ⟨f : T.obj₃.as ⟶ T.obj₁.as⟦(1 : ℤ)⟧, hf⟩ := (quotient _ _ ).map_surjective
@@ -67,11 +70,11 @@ def subcategoryMinus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) wh
         (shiftFunctor _ (-1)).mapIso (Triangle.π₃.mapIso e) ≪≫
         ((quotient _ _).commShiftIso (-1)).symm.app (CochainComplex.mappingCone f)
 
-abbrev Minus := (subcategoryMinus C).category
+abbrev Minus := (minus C).FullSubcategory
 
 namespace Minus
 
-abbrev ι : Minus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (subcategoryMinus C).ι
+abbrev ι : Minus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (minus C).ι
 
 def quasiIso : MorphismProperty (Minus A) := (HomotopyCategory.quasiIso A _).inverseImage (ι A)
 
@@ -88,7 +91,7 @@ instance : (quasiIso A).IsCompatibleWithShift ℤ where
       (Arrow.isoOfNatIso ((ι A).commShiftIso a) (Arrow.mk f))
 
 def quotient : CochainComplex.Minus C ⥤ Minus C :=
-  FullSubcategory.lift _
+  ObjectProperty.lift _
     (CochainComplex.Minus.ι C ⋙ HomotopyCategory.quotient C (ComplexShape.up ℤ)) (by
       rintro ⟨K, n, hn⟩
       exact ⟨n, hn⟩)
@@ -96,11 +99,11 @@ def quotient : CochainComplex.Minus C ⥤ Minus C :=
 def quotientCompι :
   quotient C ⋙ ι C ≅
     CochainComplex.Minus.ι C ⋙ HomotopyCategory.quotient C (ComplexShape.up ℤ) := by
-  apply FullSubcategory.lift_comp_inclusion
+  apply ObjectProperty.liftCompιIso
 
 noncomputable def singleFunctors : SingleFunctors C (Minus C) ℤ :=
   SingleFunctors.lift (HomotopyCategory.singleFunctors C) (ι C)
-    (fun n => (subcategoryMinus C).lift (singleFunctor C n) (fun X => by
+    (fun n => (minus C).lift (singleFunctor C n) (fun X => by
       refine ⟨n, ?_⟩
       change ((CochainComplex.singleFunctor C n).obj X).IsStrictlyLE n
       infer_instance))
@@ -128,11 +131,11 @@ variable {C}
 variable (F : C ⥤ D) [F.Additive]
 
 def mapHomotopyCategoryMinus : HomotopyCategory.Minus C ⥤ HomotopyCategory.Minus D :=
-  (HomotopyCategory.subcategoryMinus D).lift
+  (HomotopyCategory.minus D).lift
     (HomotopyCategory.Minus.ι C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by
       rintro ⟨X, ⟨n, _⟩⟩
       refine ⟨n, ?_⟩
-      dsimp [HomotopyCategory.Minus.ι, Subcategory.ι, HomotopyCategory.quotient, Quotient.functor]
+      dsimp [HomotopyCategory.Minus.ι, HomotopyCategory.quotient, Quotient.functor]
       infer_instance)
 
 noncomputable instance : (F.mapHomotopyCategoryMinus).CommShift ℤ := by
@@ -155,7 +158,7 @@ def mapHomotopyCategoryMinusCompIso {E : Type*} [Category E] [Preadditive E] [Ha
     {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
     [F.Additive] [G.Additive] [H.Additive] :
     H.mapHomotopyCategoryMinus ≅ F.mapHomotopyCategoryMinus ⋙ G.mapHomotopyCategoryMinus :=
-  ((HomotopyCategory.subcategoryMinus _).fullyFaithfulι.whiskeringRight _).preimageIso
+  ((HomotopyCategory.minus _).fullyFaithfulι.whiskeringRight _).preimageIso
     (isoWhiskerLeft (HomotopyCategory.Minus.ι C)
       (mapHomotopyCategoryCompIso e (ComplexShape.up ℤ)))
 

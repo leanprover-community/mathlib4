@@ -176,6 +176,8 @@ end
 
 namespace refinementsTopology
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory
+
 lemma epi_iff_isLocallySurjective_yoneda_map {C : Type u} [Category.{v} C] [Abelian C]
   {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Sheaf.IsLocallySurjective ((refinementsTopology C).yoneda.map f) := by
