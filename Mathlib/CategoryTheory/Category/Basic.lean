@@ -121,7 +121,7 @@ e.g. if the goal is `2 = 1 + 1`, the `rfl` tactic will give a proof of type `2 =
 Starting a proof with `refine id ?_` is a trick to make sure that the proof has exactly
 the expected type, in this case `2 = 1 + 1`.
 -/
-macro (name := rfl_cat) "rfl_cat" : tactic => do `(tactic| (refine id ?_; intros; rfl))
+macro (name := rfl_cat) "rfl_cat" : tactic => do `(tactic| (refine id ?_; intros; apply_rfl))
 
 /--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
