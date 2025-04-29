@@ -204,9 +204,8 @@ lemma MemLp.integrable_norm_pow' [IsFiniteMeasure μ] {f : α → β} {p : ℕ} 
 lemma integrable_enorm_rpow_iff {f : α → ε} {p : ℝ≥0∞}
     (hf : AEStronglyMeasurable f μ) (p_zero : p ≠ 0) (p_top : p ≠ ∞) :
     Integrable (fun x : α => ‖f x‖ₑ ^ p.toReal) μ ↔ MemLp f p μ := by
-  -- TODO: another missing lemma!
-  sorry -- rw [← memLp_enorm_rpow_iff (q := p) hf p_zero p_top, ← memLp_one_iff_integrable,
-  --   ENNReal.div_self p_zero p_top]
+  rw [← memLp_enorm_rpow_iff (q := p) hf p_zero p_top, ← memLp_one_iff_integrable,
+    ENNReal.div_self p_zero p_top]
 
 lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
     (hf : AEStronglyMeasurable f μ) (p_zero : p ≠ 0) (p_top : p ≠ ∞) :
@@ -242,6 +241,7 @@ theorem Integrable.right_of_add_measure {f : α → ε} (h : Integrable f (μ + 
   rw [← memLp_one_iff_integrable] at h ⊢
   exact h.right_of_add_measure
 
+-- NB: this depends on Integrable.add_measure, otherwise would also generalise
 @[simp]
 theorem integrable_add_measure {f : α → β} :
     Integrable f (μ + ν) ↔ Integrable f μ ∧ Integrable f ν :=
