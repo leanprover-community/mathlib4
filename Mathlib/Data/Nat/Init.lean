@@ -63,8 +63,6 @@ variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
 
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
   Nat.min_eq_left Nat.min_eq_right Nat.max_eq_left Nat.max_eq_right
-  -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
-  -- Nat.bit1_ne_bit0
 
 attribute [simp] Nat.min_eq_left Nat.min_eq_right
 
@@ -581,7 +579,7 @@ protected lemma div_lt_div_left (ha : a ≠ 0) (hba : b ∣ a) (hca : c ∣ a) :
   obtain ⟨e, he⟩ := hca
   rw [Nat.div_eq_of_eq_mul_right _ hd, Nat.div_eq_of_eq_mul_right _ he,
     Nat.lt_iff_lt_of_mul_eq_mul ha hd he] <;>
-    rw [Nat.pos_iff_ne_zero] <;> rintro rfl <;> simp at * <;> contradiction
+    rw [Nat.pos_iff_ne_zero] <;> rintro rfl <;> simp_all
 
 theorem lt_div_iff_mul_lt_of_dvd (hc : c ≠ 0) (hcb : c ∣ b) : a < b / c ↔ a * c < b := by
   simp [← Nat.div_lt_div_right _ _ hcb, hc, Nat.pos_iff_ne_zero, Nat.dvd_mul_left]
@@ -1199,11 +1197,5 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
-
-end Nat
-
-
-namespace Nat
-variable {a b c d e : ℕ}
 
 end Nat
