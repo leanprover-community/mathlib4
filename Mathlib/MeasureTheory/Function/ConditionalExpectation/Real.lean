@@ -256,6 +256,7 @@ theorem condExp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
 @[deprecated (since := "2025-01-21")]
 alias condexp_stronglyMeasurable_simpleFunc_mul := condExp_stronglyMeasurable_simpleFunc_mul
 
+-- TODO: use an enorm version of tendsto_condExp_unique, if possible
 theorem condExp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure μ] {f g : α → ℝ}
     (hf : StronglyMeasurable[m] f) (hg : Integrable g μ) (c : ℝ) (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
     μ[f * g|m] =ᵐ[μ] f * μ[g|m] := by

@@ -1009,6 +1009,7 @@ theorem norm_setToFun_le' (hT : DominatedFinMeasAdditive μ T C) (hf : Integrabl
     ‖setToFun μ T hT f‖ ≤ max C 0 * ‖hf.toL1 f‖ := by
   rw [setToFun_eq hT hf]; exact L1.norm_setToL1_le_mul_norm' hT _
 
+-- TODO: add an enorm version of this result!
 /-- Lebesgue dominated convergence theorem provides sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their image by
   `setToFun`.
@@ -1056,6 +1057,7 @@ theorem tendsto_setToFun_of_dominated_convergence (hT : DominatedFinMeasAdditive
   dsimp only
   rw [hx, ofReal_norm_eq_enorm, Pi.sub_apply]
 
+-- TODO: add an enorm version of this result!
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
 theorem tendsto_setToFun_filter_of_dominated_convergence (hT : DominatedFinMeasAdditive μ T C) {ι}
     {l : Filter ι} [l.IsCountablyGenerated] {fs : ι → α → E} {f : α → E} (bound : α → ℝ)

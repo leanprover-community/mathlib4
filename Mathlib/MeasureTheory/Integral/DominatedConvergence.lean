@@ -46,6 +46,7 @@ variable {α E G : Type*}
   [NormedAddCommGroup G] [NormedSpace ℝ G]
   {m : MeasurableSpace α} {μ : Measure α}
 
+-- TODO: add an enorm version of this result!
 /-- **Lebesgue dominated convergence theorem** provides sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their integrals.
   We could weaken the condition `bound_integrable` to require `HasFiniteIntegral bound μ` instead
@@ -62,6 +63,7 @@ theorem tendsto_integral_of_dominated_convergence {F : ℕ → α → G} {f : α
       bound F_measurable bound_integrable h_bound h_lim
   · simp [integral, hG]
 
+-- TODO: add an enorm version of this result!
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
 theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι} [l.IsCountablyGenerated]
     {F : ι → α → G} {f : α → G} (bound : α → ℝ) (hF_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) μ)

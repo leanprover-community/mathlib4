@@ -293,18 +293,10 @@ theorem ae_tendsto_enorm (h : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop <
     ∀ᵐ a ∂μ, Tendsto (fun n ↦ ‖F' n a‖ₑ) atTop <| 𝓝 <| ‖f' a‖ₑ :=
   h.mono fun _ h ↦ Tendsto.comp (Continuous.tendsto continuous_enorm _) h
 
+@[deprecated ae_tendsto_enorm (since := "2025-04-29")]
 theorem all_ae_tendsto_ofReal_norm (h : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop <| 𝓝 <| f a) :
     ∀ᵐ a ∂μ, Tendsto (fun n => ENNReal.ofReal ‖F n a‖) atTop <| 𝓝 <| ENNReal.ofReal ‖f a‖ := by
   convert ae_tendsto_enorm h <;> simp
-
-theorem all_ae_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
-    (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
-    ∀ᵐ a ∂μ, ENNReal.ofReal ‖f a‖ ≤ ENNReal.ofReal (bound a) := by
-  have F_le_bound := all_ae_ofReal_F_le_bound h_bound
-  rw [← ae_all_iff] at F_le_bound
-  apply F_le_bound.mp ((all_ae_tendsto_ofReal_norm h_lim).mono _)
-  intro a tendsto_norm F_le_bound
-  exact le_of_tendsto' tendsto_norm F_le_bound
 
 theorem ae_enorm_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop (𝓝 (f' a))) :
@@ -313,6 +305,16 @@ theorem ae_enorm_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ 
   apply h_bound.mp ((ae_tendsto_enorm h_lim).mono _)
   intro a tendsto_norm h_bound
   exact le_of_tendsto' tendsto_norm h_bound
+
+@[deprecated ae_enorm_le_bound (since := "2025-04-29")]
+theorem all_ae_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
+    (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
+    ∀ᵐ a ∂μ, ENNReal.ofReal ‖f a‖ ≤ ENNReal.ofReal (bound a) := by
+  have F_le_bound := all_ae_ofReal_F_le_bound h_bound
+  rw [← ae_all_iff] at F_le_bound
+  apply F_le_bound.mp ((all_ae_tendsto_ofReal_norm h_lim).mono _)
+  intro a tendsto_norm F_le_bound
+  exact le_of_tendsto' tendsto_norm F_le_bound
 
 theorem hasFiniteIntegral_of_dominated_convergence_enorm
     (bound_hasFiniteIntegral : HasFiniteIntegral bound' μ)
@@ -326,6 +328,7 @@ theorem hasFiniteIntegral_of_dominated_convergence_enorm
       lintegral_mono_ae <| ae_enorm_le_bound h_bound h_lim
     _ < ∞ := bound_hasFiniteIntegral
 
+@[deprecated hasFiniteIntegral_of_dominated_convergence_enorm (since := "2025-04-29")]
 theorem hasFiniteIntegral_of_dominated_convergence
     (bound_hasFiniteIntegral : HasFiniteIntegral bound μ)
     (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)

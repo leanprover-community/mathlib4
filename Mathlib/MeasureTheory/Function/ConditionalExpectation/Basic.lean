@@ -462,6 +462,7 @@ end NormedRing
 section NormedLatticeAddCommGroup
 variable [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
 
+-- TODO: add an enorm version of this result!
 /-- **Lebesgue dominated convergence theorem**: sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their image by
   `condExpL1`. -/
@@ -476,6 +477,7 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
 @[deprecated (since := "2025-01-21")]
 alias tendsto_condexpL1_of_dominated_convergence := tendsto_condExpL1_of_dominated_convergence
 
+-- TODO: add an enorm version of this result!
 /-- If two sequences of functions have a.e. equal conditional expectations at each step, converge
 and verify dominated convergence hypotheses, then the conditional expectations of their limits are
 a.e. equal. -/
