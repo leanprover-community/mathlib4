@@ -2342,7 +2342,6 @@ import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Bifunctor
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Pointwise
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Triangulated
