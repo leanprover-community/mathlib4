@@ -177,12 +177,6 @@ theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
     HasFiniteIntegral (fun _ : α => c) μ :=
   hasFiniteIntegral_const_iff.2 <| .inr ‹_›
 
-theorem HasFiniteIntegral.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ}
-    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
-    HasFiniteIntegral X μ := by
-  apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
-  filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
-
 theorem HasFiniteIntegral.of_mem_Icc_enorm [IsFiniteMeasure μ]
     {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞}
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
@@ -190,6 +184,12 @@ theorem HasFiniteIntegral.of_mem_Icc_enorm [IsFiniteMeasure μ]
   have : ‖max ‖a‖ₑ ‖b‖ₑ‖ₑ ≠ ⊤ := by simp [ha, hb]
   apply (hasFiniteIntegral_const_enorm this (μ := μ)).mono'_enorm
   filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω h₁ h₂ using by simp [h₂]
+
+theorem HasFiniteIntegral.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ}
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    HasFiniteIntegral X μ := by
+  apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
+  filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
 
 theorem hasFiniteIntegral_of_bounded_enorm [IsFiniteMeasure μ] {f : α → ε} {C : ℝ≥0}
     (hC : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ C) : HasFiniteIntegral f μ :=
@@ -258,7 +258,7 @@ theorem HasFiniteIntegral.norm {f : α → β} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => ‖f a‖) μ := by simpa [hasFiniteIntegral_iff_enorm] using hfi
 
 theorem hasFiniteIntegral_enorm_iff (f : α → ε) :
-    HasFiniteIntegral (fun a => ‖f a‖ₑ) μ ↔ HasFiniteIntegral f μ :=
+    HasFiniteIntegral (‖f ·‖ₑ) μ ↔ HasFiniteIntegral f μ :=
   hasFiniteIntegral_congr'_enorm <| Eventually.of_forall fun x => enorm_enorm (f x)
 
 theorem hasFiniteIntegral_norm_iff (f : α → β) :
@@ -304,10 +304,6 @@ theorem ae_tendsto_enorm (h : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop <
 theorem all_ae_tendsto_ofReal_norm (h : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop <| 𝓝 <| f a) :
     ∀ᵐ a ∂μ, Tendsto (fun n => ENNReal.ofReal ‖F n a‖) atTop <| 𝓝 <| ENNReal.ofReal ‖f a‖ := by
   convert ae_tendsto_enorm h <;> simp
-
-theorem all_ae_tendsto_ofReal_norm' (h : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop <| 𝓝 <| f' a) :
-    ∀ᵐ a ∂μ, Tendsto (fun n ↦ ‖F' n a‖ₑ) atTop <| 𝓝 <| ‖f' a‖ₑ :=
-  h.mono fun _ h ↦ Tendsto.comp (Continuous.tendsto continuous_enorm _) h
 
 theorem all_ae_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
