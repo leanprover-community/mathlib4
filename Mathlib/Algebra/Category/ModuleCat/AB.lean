@@ -5,6 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.Algebra.Category.ModuleCat.Colimits
+import Mathlib.Algebra.Small.Module
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 /-!
 
@@ -15,7 +16,7 @@ and AB4*. Further, it proves that `R` is a separator in the category of modules 
 concludes that this category is Grothendieck abelian.
 -/
 
-universe u
+universe u v
 
 open CategoryTheory Limits
 
@@ -33,12 +34,15 @@ instance : AB4Star (ModuleCat.{u} R) where
   ofShape J :=
     HasExactLimitsOfShape.domain_of_functor (Discrete J) (forget₂ (ModuleCat R) AddCommGrp.{u})
 
-lemma ModuleCat.isSeparator : IsSeparator (ModuleCat.of R R) := fun X Y f g h ↦ by
+lemma ModuleCat.isSeparator [Small.{v} R] : IsSeparator (ModuleCat.of.{v} R (Shrink.{v} R)) :=
+    fun X Y f g h ↦ by
   simp only [Set.mem_singleton_iff, forall_eq, ModuleCat.hom_ext_iff, LinearMap.ext_iff] at h
   ext x
-  simpa using h (ModuleCat.ofHom (LinearMap.toSpanSingleton R X x)) 1
+  simpa [linearEquivShrink, Equiv.linearEquiv] using
+    h (ModuleCat.ofHom ((LinearMap.toSpanSingleton R X x).comp
+      ((linearEquivShrink R R).symm : Shrink R →ₗ[R] R))) 1
 
-instance : HasSeparator (ModuleCat.{u} R) where
-  hasSeparator := ⟨ModuleCat.of R R, ModuleCat.isSeparator R⟩
+instance [Small.{v} R] : HasSeparator (ModuleCat.{v} R) where
+  hasSeparator := ⟨ModuleCat.of R (Shrink.{v} R), ModuleCat.isSeparator R⟩
 
 instance : IsGrothendieckAbelian.{u} (ModuleCat.{u} R) where
