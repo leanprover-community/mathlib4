@@ -104,7 +104,13 @@ p_sequence_coeff (p:=p) a.1.1 f* p_sequence_coeff (p:=p) a.1.2 g =
     (g1 m).isPWO_support n,
    (f1 m).coeff ij.1 * (g1 m).coeff ij.2 ):=by rfl
   simp[this]
+  refine helper3 _  _ ?_
+  unfold CauSeq.LimZero
+  simp only [gt_iff_lt, ge_iff_le, sub_apply, const_apply]
   
+
+
+
 
 
   sorry

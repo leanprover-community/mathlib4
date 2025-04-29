@@ -1,6 +1,8 @@
-import Mathlib.NumberTheory.Padics.PowerSeriesAdicCompletation
+import Mathlib.NumberTheory.Padics.PSAC3
 import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.Normed.Group.Ultra
+
+
 variable {p : ℕ} [hp : Fact p.Prime]
 
 namespace PadicInt
@@ -421,5 +423,67 @@ lemma lema_3 : id-(ϕ (p:=p))∘(ψ (p:=p))= restriction (p:=p) ⟨({a | IsUnit 
     exact Or.symm (Or.intro_left (b x = 0) j1)
   · simp[j2]
     simp[IsLocalRing.not_mem_maximalIdeal.mp j2]
+
+
+noncomputable def Convolution :(C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) →
+(C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] )→ (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] )
+| f_1 ,f_2 => {
+    toFun g:=f_2 {
+       toFun b:= f_1 ⟨(g)∘(fun( x :ℤ_[p])=> x+b),Continuous.comp g.2 (continuous_add_right b)⟩
+       continuous_toFun :=by
+         refine Continuous.comp' f_1.2 ?_
+         rw[continuous_iff_continuousAt]
+         intro x
+         unfold ContinuousAt
+         simp
+         rw[NormedAddCommGroup.tendsto_nhds_nhds]
+         intro s hs
+         choose e se hsw using (ContinuousMap.uniform_continuity g s hs)
+         use e
+         constructor
+         · exact se
+         · intro x' fs
+           rw[ContinuousMap.norm_lt_iff _ hs ]
+           intro m
+           simp only [ContinuousMap.sub_apply, ContinuousMap.coe_mk, Function.comp_apply]
+           have:‖(m+x') -(m+x)‖ < e :=by
+             rw[add_sub_add_left_eq_sub]
+             exact fs
+           exact hsw this
+           }
+
+--这些括号可能可以修剪更加简单
+    map_add' x y:=by
+       simp
+       rw[← ContinuousLinearMap.map_add ]
+       refine DFunLike.congr rfl ?_
+       ext s
+       simp
+       rw[← ContinuousLinearMap.map_add ]
+       refine DFunLike.congr rfl ?_
+       ext s
+       simp
+
+    map_smul' a b :=by
+       simp only [ContinuousMap.coe_smul, RingHom.id_apply]
+       rw[←ContinuousLinearMap.map_smul_of_tower]
+       refine DFunLike.congr rfl ?_
+       ext s
+       simp only [ContinuousMap.coe_mk, ContinuousMap.coe_smul, Pi.smul_apply]
+       rw[←ContinuousLinearMap.map_smul_of_tower]
+       refine DFunLike.congr rfl ?_
+       ext s
+       simp
+    cont :=by
+         refine Continuous.comp' f_2.2 ?_
+         rw[continuous_iff_continuousAt]
+         intro x
+         unfold ContinuousAt
+         simp
+         rw[NormedAddCommGroup.tendsto_nhds_nhds]
+         intro s rs
+         sorry
+  }
+
 
 end PadicInt

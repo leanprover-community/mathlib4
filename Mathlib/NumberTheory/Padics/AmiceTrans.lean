@@ -98,9 +98,6 @@ noncomputable def Amice_iso_1 (b: ℕ→ ℤ_[p]):C(ℤ_[p],ℤ_[p]) →L[ℤ_[p
 
 
 
-
---这个代码我不知道为什么会报错
-
 lemma dts (s:C(ℤ_[p],ℤ_[p]))(f:C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] )
  :∑' (n : ℕ), (f (mahler n))*( Δ_[1] ^[n] (⇑s) 0) = f s :=by
    have:=(PadicInt.hasSum_mahler s).tsum_eq
