@@ -135,7 +135,7 @@ lemma toDescentData_fullyFaithful_iff :
       invFun ψ :=
         { hom i := ψ.1 i
           comm := by
-            -- needs specialized constructor for morphisms
+            -- needs specialized constructor for morphisms in `DescentData`
             sorry }
       left_inv _ := rfl
       right_inv _ := rfl
