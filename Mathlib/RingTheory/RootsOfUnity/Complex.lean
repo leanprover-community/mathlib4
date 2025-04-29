@@ -72,11 +72,8 @@ lemma exp_2pi_mul_add_ZMod (n : ℕ) [NeZero n] (j k : ZMod n) :
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂˣ`,
 considered as a homomorphism of groups. -/
-@[simps]
-noncomputable def expHom : ℝ →+ Additive ℂˣ where
-  toFun := Additive.ofMul ∘ _root_.Units.exp
-  map_zero' := exp_zero
-  map_add' := exp_add
+@[simps!]
+noncomputable def expHom : ℝ →+ Additive ℂˣ := Circle.toUnits.toAdditive.comp Circle.expHom
 
 end Units
 
