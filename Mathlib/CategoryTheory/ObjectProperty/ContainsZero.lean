@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.Opposite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
@@ -20,7 +20,7 @@ universe v v' u u'
 
 namespace CategoryTheory
 
-open Limits ZeroObject
+open Limits ZeroObject Opposite
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
@@ -77,6 +77,16 @@ instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms] [Q.ContainsZero] :
   exists_zero := by
     obtain ⟨Z, hZ, hQ⟩ := Q.exists_prop_of_containsZero
     exact ⟨Z, hZ, P.prop_of_isZero hZ, hQ⟩
+
+instance [P.ContainsZero] : P.op.ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, mem⟩ := P.exists_prop_of_containsZero
+    exact ⟨op Z, hZ.op, mem⟩
+
+instance (P : ObjectProperty Cᵒᵖ) [P.ContainsZero] : P.unop.ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, mem⟩ := P.exists_prop_of_containsZero
+    exact ⟨Z.unop, hZ.unop, mem⟩
 
 end ObjectProperty
 

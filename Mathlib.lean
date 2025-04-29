@@ -2457,6 +2457,7 @@ import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 import Mathlib.CategoryTheory.ObjectProperty.Extensions
 import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+import Mathlib.CategoryTheory.ObjectProperty.Opposite
 import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.PEmpty
@@ -2639,6 +2640,7 @@ import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
 import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
+import Mathlib.CategoryTheory.Triangulated.Opposite.Subcategory
 import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
 import Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Orthogonal
