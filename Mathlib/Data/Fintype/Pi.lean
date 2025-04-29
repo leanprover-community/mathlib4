@@ -226,6 +226,7 @@ private def pairRelFintypeAux {n β} [Fintype β]
 We derive a `Fintype` for functions that satisfy an
 arbitrary predicate `motive` between all pairs of arguments.
 This is used in `Function.Embedding.fintype`, `RelHom.instFintype` and `RelEmbedding.instFintype`.
+Not recommended if your `[DecidableEq α]` is very slow.
 -/
 def pairRelFintype {α β} [Fintype α] [Fintype β] [DecidableEq α]
     (motive : α → α → (x : β) → (y : β) → [Decidable (x = y)] → Prop)
