@@ -883,8 +883,11 @@ theorem eLpNorm_one_smul_measure {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm f 1 (c • μ) = c * eLpNorm f 1 μ := by
   rw [eLpNorm_smul_measure_of_ne_top] <;> simp
 
-theorem MemLp.of_measure_le_smul {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
-    {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
+section ENormedAddMonoid
+
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+
+theorem MemLp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
     (hμ'_le : μ' ≤ c • μ) {f : α → ε} (hf : MemLp f p μ) : MemLp f p μ' := by
   refine ⟨hf.1.mono_ac (Measure.absolutelyContinuous_of_le_smul hμ'_le), ?_⟩
   refine (eLpNorm_mono_measure f hμ'_le).trans_lt ?_
@@ -897,12 +900,14 @@ theorem MemLp.of_measure_le_smul {ε} [TopologicalSpace ε] [ENormedAddMonoid ε
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.of_measure_le_smul := MemLp.of_measure_le_smul
 
-theorem MemLp.smul_measure {ε} [TopologicalSpace ε] [ENormedAddMonoid ε] {f : α → ε} {c : ℝ≥0∞}
-    (hf : MemLp f p μ) (hc : c ≠ ∞) : MemLp f p (c • μ) :=
+theorem MemLp.smul_measure {f : α → ε} {c : ℝ≥0∞} (hf : MemLp f p μ) (hc : c ≠ ∞) :
+    MemLp f p (c • μ) :=
   hf.of_measure_le_smul hc le_rfl
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.smul_measure := MemLp.smul_measure
+
+end ENormedAddMonoid
 
 theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
