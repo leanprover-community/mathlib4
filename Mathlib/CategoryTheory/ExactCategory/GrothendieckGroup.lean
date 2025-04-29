@@ -25,7 +25,7 @@ namespace ExactCategory
 namespace GrothendieckGroup
 
 inductive relations : Set (FreeAbelianGroup C)
-  | ofShortExact (S : ShortComplex C) (hS : S ∈ shortExact C) :
+  | ofShortExact (S : ShortComplex C) (hS : shortExact C S) :
       relations (FreeAbelianGroup.of S.X₁ + FreeAbelianGroup.of S.X₃ -
         FreeAbelianGroup.of S.X₂)
 
@@ -45,7 +45,7 @@ namespace GrothendieckGroup
 def of (X : C) : GrothendieckGroup C :=
   QuotientAddGroup.mk' _ (FreeAbelianGroup.of X)
 
-lemma additivity (S : ShortComplex C) (hS : S ∈ shortExact C) :
+lemma additivity (S : ShortComplex C) (hS : shortExact C S) :
     of S.X₂ = of S.X₁ + of S.X₃ := by
   symm
   rw [← sub_eq_zero]

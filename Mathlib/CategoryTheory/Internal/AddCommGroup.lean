@@ -230,11 +230,12 @@ def internal (φ : Hom h₁ h₂) : h₁.internal ⟶ h₂.internal where
   app X :=
     letI := h₁.presheafObj X.unop
     letI := h₂.presheafObj X.unop
-    show (X.unop ⟶ G₁) →+ (X.unop ⟶ G₂) from AddMonoidHom.mk' (fun x₁ => x₁ ≫ φ.map)
+    AddCommGrp.ofHom
+      (show (X.unop ⟶ G₁) →+ (X.unop ⟶ G₂) from AddMonoidHom.mk' (fun x₁ => x₁ ≫ φ.map)
       (fun a b => by
         dsimp
         rw [internal_presheaf_add, internal_presheaf_add]
-        simp only [Category.assoc, φ.map_add, prod.lift_map_assoc])
+        simp only [Category.assoc, φ.map_add, prod.lift_map_assoc]))
   naturality _ _ _ := by ext ; apply Category.assoc
 
 -- simp does not work with this lemma, only erw, why?
@@ -332,11 +333,11 @@ noncomputable def inverse : Internal Ab C ⥤ Internal.Ab C where
   obj G := mk' (AddCommGroupCatObjOperations.ofInternal G)
   map φ := AddCommGroupCatObjOperations.Hom.ofInternal φ
   map_id G := by
-    ext
+    apply AddCommGroupCatObjOperations.Hom.ext
     dsimp
     apply Functor.map_id
   map_comp _ _ := by
-    ext
+    apply AddCommGroupCatObjOperations.Hom.ext
     dsimp
     apply Functor.map_comp
 

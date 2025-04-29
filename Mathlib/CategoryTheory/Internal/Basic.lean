@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Operation
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
@@ -17,10 +18,11 @@ universe v₁ v₂ u₁ u₂
 namespace CategoryTheory
 
 @[simp]
-lemma NatTrans.hcomp_id {C D E : Type _} [Category C] [Category D] [Category E]
+lemma NatTrans.hcomp_id_id {C D E : Type _} [Category C] [Category D] [Category E]
     (F : C ⥤ D) (G : D ⥤ E) : 𝟙 F ◫ 𝟙 G = 𝟙 (F ⋙ G) := by aesop_cat
 
-variable (A : Type u₁) [Category.{v₁} A] [ConcreteCategory.{v₂} A]
+variable (A : Type u₁) [Category.{v₁} A] {FA : A → A → Type*} {CA : A → Type v₂}
+  [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{v₂} A FA]
   (C : Type u₂) [Category.{v₂} C]
 
 structure Internal where
@@ -54,17 +56,8 @@ def Internal.typesPresheafFunctor : Internal A C ⥤ Cᵒᵖ ⥤ Type v₂ :=
 noncomputable def Internal.objFunctor : Internal A C ⥤ C where
   obj X := X.obj
   map {X Y} f := yoneda.preimage (X.iso.hom ≫ (f ◫ (𝟙 (forget A))) ≫ Y.iso.inv)
-  map_id X := yoneda.map_injective (by
-    dsimp
-    erw [Functor.map_preimage, Functor.map_id, NatTrans.hcomp_id,
-      Category.id_comp, Iso.hom_inv_id])
-  map_comp {X Y Z} f g := yoneda.map_injective (by
-    dsimp
-    simp only [Functor.map_preimage, Functor.map_comp, Category.assoc,
-      Iso.inv_hom_id_assoc, Iso.cancel_iso_hom_left]
-    ext X
-    dsimp
-    simp only [FunctorToTypes.map_comp_apply])
+  map_id X := yoneda.map_injective (by simp)
+  map_comp {X Y Z} f g := yoneda.map_injective (by simp)
 
 variable {A C}
 
@@ -78,16 +71,17 @@ lemma Internal.forget_app {X Y : Internal A C} (f : X ⟶ Y) (T : Cᵒᵖ) :
     (forget A).map (f.app T) = X.iso.inv.app T ≫
       (yoneda.map ((Internal.objFunctor A C).map f)).app T ≫ Y.iso.hom.app T := by simp
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 lemma Internal.app_apply {X Y : Internal A C} (f : X ⟶ Y) (T : Cᵒᵖ)
   (x : (forget A).obj (X.presheaf.obj T)) :
     f.app T x = Y.iso.hom.app T (X.iso.inv.app T x ≫ (Internal.objFunctor A C).map f) :=
   congr_fun (Internal.forget_app f T) x
 
 instance : (Internal.objFunctor A C).Faithful := ⟨fun {_ _ f g h} => by
-  ext : 2
-  simp only [Internal.app_apply, h]⟩
+  ext T : 1
+  apply ConcreteCategory.hom_ext
+  intro x
+  dsimp
+  erw [Internal.app_apply, Internal.app_apply, h]⟩
 
 @[simps]
 def Internal.mkIso {X Y : Internal A C} (e : X.presheaf ≅ Y.presheaf) : X ≅ Y where
@@ -99,7 +93,7 @@ def Internal.mkIso {X Y : Internal A C} (e : X.presheaf ≅ Y.presheaf) : X ≅ 
 lemma Internal.isIso_of_isIso {X Y : Internal A C} (f : X ⟶ Y)
     (hf : @IsIso (Cᵒᵖ ⥤ A) _ _ _ f) : IsIso f := by
   let e := @asIso (Cᵒᵖ ⥤ A) _ _ _ f
-  exact (@Internal.mkIso _ _ _ _ _ X Y e).isIso_hom
+  exact (@Internal.mkIso _ _ _ _ _ _ _ _ X Y e).isIso_hom
 
 instance : (Internal.presheafFunctor A C).ReflectsIsomorphisms :=
   ⟨fun f hf => (Internal.mkIso (@asIso (Cᵒᵖ ⥤ A) _ _ _ f hf)).isIso_hom⟩

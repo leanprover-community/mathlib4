@@ -32,7 +32,7 @@ noncomputable def ofInternalAddCommGroupCat : Preadditive C := by
         refine (Internal.addCommGroup_addMonoidHom' φ g ?_ P).map_add f f'
         erw [← cancel_epi (iso.hom.app Q), ← iso.hom.naturality g]
         apply yoneda.map_injective
-        simp [Internal.objFunctor]
+        simp [φ, Internal.objFunctor]
       comp_add := fun P P' Q f g g' =>
         (Internal.addCommGroup_addMonoidHom
           (Internal.ofIsoObj (G.obj Q) (iso.app Q)) f).map_add g g' }
@@ -57,8 +57,7 @@ def toInternalAddCommGroupCatFunctor [Preadditive C] : C ⥤ Internal Ab C where
       simp [AddCommGrp.ofHom] }
   map_comp := fun f g => by
     apply NatTrans.ext
-    ext1 Z
-    ext1
+    ext Z : 3
     exact (Category.assoc _ _ _).symm
 
 noncomputable def toInternalAddCommGroupCatFunctor_comp_objFunctor [Preadditive C] :

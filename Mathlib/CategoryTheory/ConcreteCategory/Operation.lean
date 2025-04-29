@@ -251,7 +251,8 @@ end
 
 end Types
 
-variable (A : Type u) [Category.{v} A] [ConcreteCategory.{w} A]
+variable (A : Type u) [Category.{v} A] {FA : A → A → Type*} {CA : A → Type w}
+  [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA]
 
 namespace ConcreteCategory
 

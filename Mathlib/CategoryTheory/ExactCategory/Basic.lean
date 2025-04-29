@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
@@ -40,45 +40,45 @@ variable (C : Type _) [Category C] [Preadditive C]
 namespace ShortComplex
 
 variable {C}
-variable (S : (ShortComplex C) → Prop)
+variable (S : ObjectProperty (ShortComplex C))
 
 def fAdmissible : MorphismProperty C := fun _ Y f =>
   ∃ (Z : C) (g : Y ⟶ Z) (zero : f ≫ g = 0), S (ShortComplex.mk f g zero)
 
-lemma fAdmissible_respectsIso [ClosedUnderIsomorphisms S] : (fAdmissible S).RespectsIso where
+lemma fAdmissible_respectsIso [S.IsClosedUnderIsomorphisms] : (fAdmissible S).RespectsIso where
   precomp := by
     rintro X X' Y e he f ⟨Z, g, zero, mem⟩
     have : IsIso e := he
-    refine ⟨Z, g, by rw [assoc, zero, comp_zero], mem_of_iso S ?_ mem⟩
+    refine ⟨Z, g, by rw [assoc, zero, comp_zero], S.prop_of_iso ?_ mem⟩
     exact ShortComplex.isoMk (asIso e).symm (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
   postcomp := by
     rintro X Y Y' e he f ⟨Z, g, zero, mem⟩
     have : IsIso e := he
-    refine ⟨Z, inv e ≫ g, by rw [assoc, IsIso.hom_inv_id_assoc, zero], mem_of_iso S ?_ mem⟩
+    refine ⟨Z, inv e ≫ g, by rw [assoc, IsIso.hom_inv_id_assoc, zero], S.prop_of_iso ?_ mem⟩
     exact ShortComplex.isoMk (Iso.refl _) (asIso e) (Iso.refl _) (by aesop_cat) (by aesop_cat)
 
 def gAdmissible : MorphismProperty C := fun Y _ g =>
   ∃ (X : C) (f : X ⟶ Y) (zero : f ≫ g = 0), S (ShortComplex.mk f g zero)
 
-lemma gAdmissible_respectsIso [ClosedUnderIsomorphisms S] : (gAdmissible S).RespectsIso where
+lemma gAdmissible_respectsIso [S.IsClosedUnderIsomorphisms] : (gAdmissible S).RespectsIso where
   precomp := by
     rintro Y Y' Z e he g ⟨X, f, zero, mem⟩
     have : IsIso e := he
-    refine ⟨X, f ≫ inv e, by rw [assoc, IsIso.inv_hom_id_assoc, zero], mem_of_iso S ?_ mem⟩
+    refine ⟨X, f ≫ inv e, by rw [assoc, IsIso.inv_hom_id_assoc, zero], S.prop_of_iso ?_ mem⟩
     exact ShortComplex.isoMk (Iso.refl _) (asIso e).symm (Iso.refl _) (by aesop_cat) (by aesop_cat)
   postcomp := by
     rintro Y Z Z' e he g ⟨X, f, zero, mem⟩
     have : IsIso e := he
-    refine ⟨X, f, by rw [reassoc_of% zero, zero_comp], mem_of_iso S ?_ mem⟩
+    refine ⟨X, f, by rw [reassoc_of% zero, zero_comp], S.prop_of_iso ?_ mem⟩
     exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (asIso e) (by aesop_cat) (by aesop_cat)
 
 end ShortComplex
 
+-- this should be refactored as a property of some `ObjectProperty`
 -- see _Exact Categories_, Theo Bühler, Expo. Math 28 (2010), 1-69
-
 class ExactCategory [HasZeroObject C] [HasBinaryBiproducts C] where
-  shortExact' : (ShortComplex C) → Prop
-  respectsIso_shortExact' : ClosedUnderIsomorphisms shortExact'
+  shortExact' : ObjectProperty (ShortComplex C)
+  respectsIso_shortExact' : shortExact'.IsClosedUnderIsomorphisms
   shortExact_kernel' :
     ∀ S (_ : shortExact' S), Nonempty (IsLimit (KernelFork.ofι _ S.zero))
   shortExact_cokernel' :
@@ -103,7 +103,7 @@ variable [HasZeroObject C] [HasBinaryBiproducts C] [ExactCategory C]
 
 namespace ExactCategory
 
-def shortExact : Set (ShortComplex C) := ExactCategory.shortExact'
+def shortExact : ObjectProperty (ShortComplex C) := ExactCategory.shortExact'
 
 instance : (ShortComplex.fAdmissible (shortExact C)).IsStableUnderComposition :=
   admissibleMono_stableUnderComposition
@@ -121,16 +121,17 @@ end ExactCategory
 
 open ExactCategory
 
-instance respectsIso_shortExact : ClosedUnderIsomorphisms (shortExact C) := respectsIso_shortExact'
+instance respectsIso_shortExact : (shortExact C).IsClosedUnderIsomorphisms  :=
+  respectsIso_shortExact'
 
 variable {C}
 
-noncomputable def isLimit_kernelFork_of_shortExact (S : ShortComplex C) (hS : S ∈ shortExact C) :
+noncomputable def isLimit_kernelFork_of_shortExact (S : ShortComplex C) (hS : shortExact C S) :
     IsLimit (KernelFork.ofι _ S.zero) :=
   (shortExact_kernel' _ hS).some
 
 noncomputable def isColimit_cokernelCofork_of_shortExact
-    (S : ShortComplex C) (hS : S ∈ shortExact C) :
+    (S : ShortComplex C) (hS : shortExact C S) :
     IsColimit (CokernelCofork.ofπ _ S.zero) :=
   (shortExact_cokernel' _ hS).some
 
@@ -203,7 +204,7 @@ lemma shortExact_of_admissibleMono_of_isColimit (S : ShortComplex C)
     (hf : AdmissibleMono S.f) (hS : IsColimit (CokernelCofork.ofπ _ S.zero)) :
     shortExact C S := by
   obtain ⟨X₃', g', zero, mem⟩ := hf.mem
-  refine mem_of_iso _ ?_ mem
+  refine ObjectProperty.prop_of_iso _ ?_ mem
   have hg' := isColimit_cokernelCofork_of_shortExact _ mem
   refine ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
       (IsColimit.coconePointUniqueUpToIso hg' hS) (by aesop_cat) ?_
@@ -215,7 +216,7 @@ lemma shortExact_of_admissibleEpi_of_isLimit (S : ShortComplex C)
     (hg : AdmissibleEpi S.g) (hS : IsLimit (KernelFork.ofι _ S.zero)) :
     shortExact C S := by
   obtain ⟨X₁', f', zero, mem⟩ := hg.mem
-  refine mem_of_iso _ ?_ mem
+  refine ObjectProperty.prop_of_iso _ ?_ mem
   have hf' := isLimit_kernelFork_of_shortExact _ mem
   refine ShortComplex.isoMk (IsLimit.conePointUniqueUpToIso hf' hS) (Iso.refl _) (Iso.refl _)
     ?_ (by aesop_cat)
@@ -252,7 +253,7 @@ instance (X₁ X₂ : C) : AdmissibleEpi (biprod.fst : X₁ ⊞ X₂ ⟶ X₁) :
   infer_instance
 
 lemma binaryBiproduct_shortExact (X₁ X₂ : C) :
-    ShortComplex.mk (biprod.inl : X₁ ⟶ _) (biprod.snd : _ ⟶ X₂) (by simp) ∈ shortExact C := by
+    shortExact C (ShortComplex.mk (biprod.inl : X₁ ⟶ _) (biprod.snd : _ ⟶ X₂) (by simp)) := by
   apply shortExact_of_admissibleEpi_of_isLimit
   · dsimp
     infer_instance
@@ -273,38 +274,35 @@ instance {Y' : C} (f : X ⟶ Y) (g : Y' ⟶ Y) [hf : AdmissibleMono f] [Admissib
   have : AdmissibleEpi p := ⟨_, _, _, mem⟩
   let S := ShortComplex.mk (pullback.snd f g) (g ≫ p) (by
     rw [← pullback.condition_assoc, hp, comp_zero])
-  have hS : S ∈ shortExact C := by
+  have hS : shortExact C S := by
     apply shortExact_of_admissibleEpi_of_isLimit
     · dsimp
       infer_instance
     · exact KernelFork.IsLimit.ofι _ _
         (fun a ha => pullback.lift (KernelFork.IsLimit.lift' hf'' (a ≫ g)
           (by rw [assoc, ha])).1 a (by exact (KernelFork.IsLimit.lift' _ _ _).2))
-        (fun a ha => by dsimp ; simp)
+        (fun a ha => by dsimp; simp [S])
         (fun a ha b hb => by
-          dsimp at a b ha hb
           apply pullback.hom_ext
           · dsimp
             rw [← cancel_mono f, assoc, pullback.condition, reassoc_of% hb]
             simpa using (KernelFork.IsLimit.lift' hf'' (a ≫ g) (by rw [assoc, ha])).2.symm
-          · dsimp
-            simp [hb])
+          · simp [hb, S])
   exact ⟨_, _, _, hS⟩
 
 lemma shortExact_of_isZero_of_isIso (S : ShortComplex C) (h₁ : IsZero S.X₁) (_ : IsIso S.g) :
-    S ∈ shortExact C :=
+    shortExact C S :=
   shortExact_of_admissibleEpi_of_isLimit S inferInstance
     (KernelFork.IsLimit.ofMonoOfIsZero _ inferInstance h₁)
 
 lemma shortExact_of_isIso_of_isZero (S : ShortComplex C) (h₃ : IsZero S.X₃) (_ : IsIso S.f) :
-    S ∈ shortExact C :=
+    shortExact C S :=
   shortExact_of_admissibleMono_of_isColimit S inferInstance
     (CokernelCofork.IsColimit.ofEpiOfIsZero _ inferInstance h₃)
 
 lemma shortExact_of_isZero (S : ShortComplex C)
-    (h₁ : IsZero S.X₁) (h₂ : IsZero S.X₂) (h₃ : IsZero S.X₃) : S ∈ shortExact C :=
+    (h₁ : IsZero S.X₁) (h₂ : IsZero S.X₂) (h₃ : IsZero S.X₃) : shortExact C S :=
   shortExact_of_isZero_of_isIso _ h₁ ⟨⟨0, h₂.eq_of_src _ _, h₃.eq_of_src _ _⟩⟩
-
 
 end ExactCategory
 

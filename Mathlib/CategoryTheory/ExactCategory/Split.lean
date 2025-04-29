@@ -82,7 +82,7 @@ noncomputable def isColimitSplitShortExactPushoutCocone (S : ShortComplex C) (h 
       ext
       · dsimp
         simp only [biprod.inl_desc, ← h₁, Preadditive.add_comp, assoc,
-          Preadditive.comp_add, h.s_g_assoc, self_eq_add_right, h₂, h.s_r_assoc, zero_comp]
+          Preadditive.comp_add, h.s_g_assoc, left_eq_add, h₂, h.s_r_assoc, zero_comp]
       · simp [h₂])
 
 lemma admissibleSplitMono_coquarrable {X Y : C} (f : X ⟶ Y) (hf : (admissibleSplitMono C) f) :
