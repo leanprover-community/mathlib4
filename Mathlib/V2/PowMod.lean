@@ -1,5 +1,19 @@
+/-
+Copyright (c) 2025 Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta
+-/
+
 import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.NormNum.PowMod
+
+/-!
+# Proof-producing evaluation of `a ^ b % n`
+
+Note that `Mathlib.Tactic.NormNum.PowMod` contains a similar tactic, but that runs significantly
+slower and less efficiently than the one here.
+-/
 
 open Nat
 
@@ -45,12 +59,12 @@ def mkPowModAuxEq (a b c n : ℕ) (aE bE cE nE : Expr) : MetaM (ℕ × Expr × E
     let m : ℕ := c % n
     let mE : Expr := mkNatLit m
     let hm : Expr ← mkEqRefl mE
-    return (m, mE, mkApp5 (mkConst `powModAux_zero_eq []) aE cE nE mE hm)
+    return (m, mE, mkApp5 (mkConst ``powModAux_zero_eq []) aE cE nE mE hm)
   else if b = 1 then do
     let m : ℕ := (a * c) % n
     let mE : Expr := mkNatLit m
     let hm : Expr ← mkEqRefl mE
-    return (m, mE, mkApp5 (mkConst `powModAux_one_eq []) aE cE nE mE hm)
+    return (m, mE, mkApp5 (mkConst ``powModAux_one_eq []) aE cE nE mE hm)
   else if Even b then do
     let b' := b / 2
     let a' := a * a % n
@@ -128,7 +142,10 @@ elab "prove_pow_mod" : tactic =>
 end Tactic.powMod
 
 example :
-    powMod 5 85083351022467190124442353598696803287939269665616 85083351022467190124442353598696803287939269665617 = 1 := by
+    powMod
+      5
+      85083351022467190124442353598696803287939269665616
+      85083351022467190124442353598696803287939269665617 = 1 := by
   prove_pow_mod
 
 example : powMod 2304821 1 2308 = 1437 := by

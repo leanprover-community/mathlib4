@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta
+-/
 import Mathlib.V2.PrattLemmas
 import Batteries.Tactic.NoMatch
 import Mathlib.Lean.Message
@@ -54,7 +59,7 @@ syntax "{" num "," ppSpace num "," ppSpace "{" mpratt_certificate,+ "}" "}" : mp
 syntax "builder" ppSpace bpratt_certificate : pratt_certificate
 syntax "[" bpratt_entry,* "]" : bpratt_certificate
 syntax num : bpratt_entry
-syntax "(" num "," num "," "[" num,* "]" ")" : bpratt_entry
+syntax "(" num "," ppSpace num "," ppSpace "[" num,* "]" ")" : bpratt_entry
 
 partial def MPrattCertificate.ofSyntax : TSyntax `mpratt_certificate → MetaM MPrattCertificate
   | `(mpratt_certificate| $n:num) => return small n.getNat
@@ -64,11 +69,44 @@ partial def MPrattCertificate.ofSyntax : TSyntax `mpratt_certificate → MetaM M
     let root := root.getNat
     let factors ← factors.mapM ofSyntax
     return big n root factors.toList
+  | _ => throwError "Invalid mathematica Pratt certificate syntax"
+
+partial def PrattEntry.ofSyntax : TSyntax `bpratt_entry → MetaM PrattEntry
+  | `(bpratt_entry| $n:num) => return .small n.getNat
+  | `(bpratt_entry| ( $n:num, $root:num, [ $[$nums],* ] )) => do
+      let n := n.getNat
+      let root := root.getNat
+      let nums := nums.map (·.getNat)
+      return .big n root nums.toList
+  | _ => throwError "Invalid builder Pratt entry syntax"
+
+partial def PrattCertificate.ofSyntaxAux : TSyntax `bpratt_certificate → MetaM PrattCertificate
+  | `(bpratt_certificate| [ $[$entries],* ] ) => do
+    let entries ← entries.mapM PrattEntry.ofSyntax
+    return entries.toList
+  | _ => throwError "Invalid builder Pratt certificate syntax"
+
+partial def PrattCertificate.ofSyntax : TSyntax `pratt_certificate → MetaM PrattCertificate
+  | `(pratt_certificate| mathematica $n:mpratt_certificate) => do
+      let i ← MPrattCertificate.ofSyntax n
+      return reformat i
+  | `(pratt_certificate| builder $n:bpratt_certificate) => PrattCertificate.ofSyntaxAux n
   | _ => throwError "Invalid Pratt certificate syntax"
 
-partial def PrattCertificate.ofSyntax : TSyntax `pratt_certificate → MetaM MPrattCertificate
-  | `(pratt_certificate| mathematica $n:mpratt_certificate) => MPrattCertificate.ofSyntax n
-  | _ => throwUnsupportedSyntax
+partial def PrattEntry.toSyntax : PrattEntry → MetaM (TSyntax `bpratt_entry)
+  | .small n => do
+      let n := Lean.Syntax.mkNatLit n
+      `(bpratt_entry| $n:num)
+  | .big n root factors => do
+      let n := Lean.Syntax.mkNatLit n
+      let root := Lean.Syntax.mkNatLit root
+      let factors := factors.toArray.map Lean.Syntax.mkNatLit
+      `(bpratt_entry| ($n:num, $root:num, [ $[$factors],* ]))
+
+partial def PrattCertificate.toSyntax (i : PrattCertificate) :
+    MetaM (TSyntax `bpratt_certificate) := do
+  let j ← i.toArray.mapM (·.toSyntax)
+  `(bpratt_certificate| [ $[$j],* ] )
 
 partial def MPrattCertificate.toSyntaxAux : MPrattCertificate → MetaM (TSyntax `mpratt_certificate)
   | .small n => do
@@ -87,10 +125,32 @@ partial def MPrattCertificate.toSyntax
 
 end
 
+section test
+
 def testInput : String :=
-  "{7919, 7, {2, {37, 2, {2, {3, 2, {2}}}}, {107, 2, {2, {53, 2, {2, {13, 2, {2, {3, 2, {2}}}}}}}}}}"
+  "{7919, 7, {2, {37, 2, {2, {3, 2, {2}}}}, \
+  {107, 2, {2, {53, 2, {2, {13, 2, {2, {3, 2, {2}}}}}}}}}}"
+
 def testMyInput : String :=
   "[2, (3, 2, [2]), 7, (127, 3, [2, 3, 7])]"
+
+open Lean
+
+/--
+info: {7919, 7, {2, {37, 2, {2, {3, 2, {2}}}}, {107, 2, {2, {53, 2, {2, {13, 2, {2, {3, 2, {2}}}}}}}}}}
+-/
+#guard_msgs in
+#eval show MetaM _ from do
+  let i ← IO.ofExcept (Parser.runParserCategory (← getEnv) `mpratt_certificate testInput)
+  Lean.PrettyPrinter.ppTerm ⟨i⟩
+
+/-- info: [2, (3, 2, [2]), 7, (127, 3, [2, 3, 7])] -/
+#guard_msgs in
+#eval show MetaM _ from do
+  let i ← IO.ofExcept (Parser.runParserCategory (← getEnv) `bpratt_certificate testMyInput)
+  Lean.PrettyPrinter.ppCategory `bpratt_certificate i
+
+end test
 
 section
 
@@ -128,7 +188,7 @@ def processEntryAux (m : Std.TreeMap ℕ Expr) (p p' root : ℕ) (pE rootE : Exp
     let qE : Expr := mkNatLit q
     let o : ℕ := (p - 1) / q
     let oE : Expr := mkNatLit o
-    let some (hq : Expr) := m.get? q | throwError "error 6"
+    let some (hq : Expr) := m.get? q | throwError s!"purported prime {q} not in certificate"
     let hpow ← Tactic.powMod.provePowModNe root o p 1 rootE oE pE (mkNatLit 1)
     pf ← mkAppM ``prove_prime_step #[pE, rootE, qE, oE, tE, mkNatLit r, mkNatLit k,
       ← mkEqRefl oE, hq, ← mkEqRefl tE, hpow, pf]
@@ -181,57 +241,86 @@ def processEntry (m : Std.TreeMap ℕ Expr) : PrattEntry → MetaM (Std.TreeMap 
   | .small 83 => return insert (83, mkConst ``Nat.prime_eightyThree) m
   | .small 89 => return insert (89, mkConst ``Nat.prime_eightyNine) m
   | .small 97 => return insert (97, mkConst ``Nat.prime_ninetySeven) m
-  | .small _ => throwError "bad small prime"
+  | .small n => throwError s!"could not prove \"known\" prime {n} is prime"
   | .big p root factors => do
-    for q in factors do unless (m.get? q).isSome do throwError "error 5"
-    unless p ≥ 12 do throwError "error 4"
+    unless p ≥ 2 do
+      throwError "error 4"
     let p' : ℕ := p - 1
     let pE : Expr := mkNatLit p
     let p'E : Expr := mkNatLit p'
     let rootE : Expr := mkNatLit root
     let (last, pf) ← processEntryAux m p (p - 1) root pE rootE factors
-    unless last = p - 1 do throwError "bad factorization {factors} of {p - 1} (missing {(p - 1) / last})"
+    unless last = p - 1 do
+      throwError "bad factorization {factors} of {p - 1} (missing {(p - 1) / last})"
     let hpow ← Tactic.powMod.provePowModEq root p' p 1 rootE p'E pE
     let pf ← mkAppM ``prove_prime_end #[pE, p'E, mkNatLit root, ← mkEqRefl (mkNatLit p), hpow, pf]
     return insert (p, pf) m
 
-def prove_prime (cert : PrattCertificate) (goal : MVarId) : MetaM Expr := do
-  let t ← goal.getType
-  let some nE := (← whnfR t).app1? ``Nat.Prime | throwError "goal not a primality test"
-  let some n := nE.nat? | throwError "not a numeral"
+def prove_prime (cert : PrattCertificate) (n : ℕ) : MetaM Expr := do
   let data ← cert.foldlM processEntry ∅
   trace[debug] "{data.toArray}"
-  let some pf := data.get? n | throwError "the certificate doesn't prove this prime"
+  let some pf := data.get? n | throwError "the certificate doesn't prove {n} is prime"
   return pf
 
-elab "pratt " certificate:pratt_certificate : tactic => liftMetaFinishingTactic fun goal ↦ do
+elab "pratt" ppSpace certificate:pratt_certificate : tactic => liftMetaFinishingTactic fun goal ↦ do
   match certificate with
-  | `(pratt_certificate| mathematica $cert:mpratt_certificate) =>
-    let cert := reformat (← MPrattCertificate.ofSyntax cert)
-    let pf ← prove_prime cert goal
-    goal.assign pf
-  | _ => throwUnsupportedSyntax -- TODO: ADD OTHER THINGS!!!!!!
-
-syntax "prime " : tactic
-
-elab_rules : tactic
-  | `(tactic| prime%$tk) => liftMetaFinishingTactic fun goal ↦ do
-    let t ← goal.getType
-    let some nE := t.app1? ``Nat.Prime | throwError "goal not a primality test"
+  | `(pratt_certificate| $cert:pratt_certificate) =>
+    let cert ← PrattCertificate.ofSyntax cert
+    let t := (← goal.getType'').consumeMData
+    let some nE := t.app1? ``Nat.Prime | throwError "goal for `pratt` not a primality test"
     let some n := nE.nat? | throwError "not a numeral"
-    let code := s!"Needs[\"PrimalityProving`\"]; p = {n}; PrimalityProving`PrimeQCertificate[p, \"SmallPrime\" -> p + 1]"
+    let pf ← prove_prime cert n
+    goal.assign pf
+
+inductive Primality.Generator
+  | sage | mathematica | native
+
+structure Primality.Config where
+  generator : Primality.Generator := .sage
+
+declare_config_elab elabPrimeConfig Primality.Config
+
+def mathematicaScript (n : ℕ) : String :=
+  s!"Needs[\"PrimalityProving`\"];\n\
+  p = {n};\n\
+  PrimalityProving`PrimeQCertificate[p, \"SmallPrime\" -> p + 1]"
+
+def makeCertificate (n : ℕ) (gen : Primality.Generator) : MetaM PrattCertificate := do
+  match gen with
+  | .sage => throwError "sage not implemented"
+  | .native => throwError "native computation not implemented"
+  | .mathematica =>
+    let code := mathematicaScript n
     let out ← IO.Process.output {cmd := "wolframscript", args := #["-code", code]}
+    if out.exitCode != 0 then
+      IO.throwServerError <|
+        "Could not make call request to wolframscript. " ++
+        s!"curl exited with code {out.exitCode}:\n{out.stderr}"
     let out := out.stdout
     match Parser.runParserCategory (← getEnv) `mpratt_certificate out with
-    | .error e =>
-      throwError s!"failed to parse mathematica output\nparser error: {e}\noutput: {out}"
-    | .ok certStx =>
-      let certStx : TSyntax `mpratt_certificate := .mk certStx
-      let certM ← MPrattCertificate.ofSyntax certStx
-      let cert := reformat certM
-      let pf ← prove_prime cert goal
-      let stx ← MPrattCertificate.toSyntax certM
-      let _ ← TryThis.addSuggestion tk (← `(tactic| pratt $stx))
+      | .error e =>
+        throwError s!"failed to parse mathematica output\nparser error: {e}\noutput: {out}"
+      | .ok certStx =>
+        let certStx : TSyntax `mpratt_certificate := .mk certStx
+        let certStx ← `(pratt_certificate| mathematica $certStx)
+        let cert ← PrattCertificate.ofSyntax certStx
+        return cert
+
+syntax "prime" Parser.Tactic.optConfig ppSpace : tactic
+
+elab_rules : tactic
+  | `(tactic| prime%$tk $cfg:optConfig) => do
+    let config ← elabPrimeConfig cfg
+    liftMetaFinishingTactic fun goal ↦ do
+      let t := (← goal.getType'').consumeMData
+      let some nE := t.app1? ``Nat.Prime | throwError "goal for `prime` not a primality test"
+      let some n := nE.nat? | throwError "not a numeral"
+      let cert ←
+        if n < 100 then pure [.small n]
+        else makeCertificate n config.generator
+      let pf ← prove_prime cert n
+      let stx ← PrattCertificate.toSyntax cert
+      let _ ← TryThis.addSuggestion tk (← `(tactic| pratt builder $stx)) (origSpan? := ← getRef)
       goal.assign pf
 
 end
