@@ -2,7 +2,7 @@ import Mathlib.NumberTheory.Padics.PSAC3
 import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.Normed.Group.Ultra
 
-
+open Filter
 variable {p : ℕ} [hp : Fact p.Prime]
 
 namespace PadicInt
@@ -482,8 +482,50 @@ noncomputable def Convolution :(C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) →
          simp
          rw[NormedAddCommGroup.tendsto_nhds_nhds]
          intro s rs
-         sorry
+         have:=Continuous.tendsto' f_1.2 0 0 (ContinuousLinearMap.map_zero f_1)
+         rw[NormedAddCommGroup.tendsto_nhds_nhds] at this
+         simp at this
+         choose h1 sh use using (this s rs)
+         use h1
+         constructor
+         · exact sh
+         · intro e se
+           rw[ContinuousMap.norm_lt_iff _ rs ]
+           simp only [ContinuousMap.sub_apply, ContinuousMap.coe_mk]
+           intro x_1
+           rw[← ContinuousLinearMap.map_sub f_1 _ _]
+           refine use _ ?_
+           rw[ContinuousMap.norm_lt_iff _ sh ]
+           intro x_2
+           simp only [ContinuousMap.sub_apply, ContinuousMap.coe_mk, Function.comp_apply]
+           rw[← ContinuousMap.sub_apply]
+           refine  lt_of_le_of_lt (ContinuousMap.norm_coe_le_norm (e - x) (x_2 + x_1)) se
+
   }
 
+noncomputable instance instMul  : Mul (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) :=
+  ⟨fun f g =>Convolution f g⟩
 
+
+noncomputable instance padicMeasureRing : CommRing  (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) where
+  __  := ContinuousLinearMap.addCommGroup
+  mul :=(· * ·)
+  left_distrib a b c:= sorry
+  right_distrib := sorry
+  zero_mul := sorry
+  mul_zero := sorry
+  mul_assoc := sorry
+  one := sorry
+  one_mul := sorry
+  mul_one := sorry
+  natCast := sorry
+  natCast_zero := sorry
+  natCast_succ := sorry
+  npow := sorry
+  npow_zero := sorry
+  npow_succ := sorry
+  intCast := sorry
+  intCast_ofNat := sorry
+  intCast_negSucc := sorry
+  mul_comm := sorry
 end PadicInt
