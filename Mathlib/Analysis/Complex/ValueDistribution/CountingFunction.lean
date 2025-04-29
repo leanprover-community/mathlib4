@@ -65,8 +65,8 @@ locally finite support to maps `ℝ → ℝ`.  Given `D`, the result map `logCou
 ℝ` to a logarithmically weighted measure of values that `D` takes within the disk `∣z∣ ≤ r`.
 
 Implementation Note: In case where `z = 0`, the term `log (r * ‖z‖⁻¹)` evaluates to zero, which is
-typically different from `log r - log ‖z‖ = log r`. The summand `(D`0) * log r` compensates this,
-producing cleaner formulas then the logarithmic counting function is used in the main theorms of
+typically different from `log r - log ‖z‖ = log r`. The summand `(D 0) * log r` compensates this,
+producing cleaner formulas when the logarithmic counting function is used in the main theorms of
 Value Distribution Theory.  We refer the reader to page 164 of [Lang: Introduction to Complex
 Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) for more details.
 -/
@@ -99,8 +99,7 @@ Evaluation of the logarithmic counting function at zero yields zero.
 @[simp] lemma logCounting_eval_zero {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
     (D : locallyFinsuppWithin (univ : Set E) ℤ) :
     logCounting D 0 = 0 := by
-  rw [logCounting]
-  simp
+  simp [logCounting]
 
 end Function.locallyFinsuppWithin
 
@@ -132,7 +131,7 @@ noncomputable def logCounting : ℝ → ℝ := by
 For finite values `a₀`, the logarithmic counting function `logCounting f a₀` is the counting
 function associated with the zero-divisor of the meromorphic function `f - a₀`.
 -/
-lemma logCounting_finite :
+lemma logCounting_coe :
     logCounting f a₀ = (divisor (fun z ↦ f z - a₀) univ)⁺.logCounting := by
   simp [logCounting]
 
@@ -140,7 +139,7 @@ lemma logCounting_finite :
 For finite values `a₀`, the logarithmic counting function `logCounting f a₀` equals the logarithmic
 counting function for the value zero of the shifted function `f - a₀`.
 -/
-lemma logCounting_finite_eq_logCounting_zero_of_shifted :
+lemma logCounting_coe_eq_logCounting_sub_const_zero :
     logCounting f a₀ = logCounting (f - fun _ ↦ a₀) 0 := by
   simp [logCounting]
 
@@ -153,7 +152,7 @@ lemma logCounting_zero :
   simp [logCounting]
 
 /--
-The logarithmic counting function `logCounting f Set.univ` is the counting function associated with
+The logarithmic counting function `logCounting f ⊤` is the counting function associated with
 the pole-divisor of `f`.
 -/
 lemma logCounting_top :
@@ -163,7 +162,7 @@ lemma logCounting_top :
 /--
 Evaluation of the logarithmic counting function at zero yields zero.
 -/
-lemma logCounting_eval_zero :
+@[simp] lemma logCounting_eval_zero :
     logCounting f a 0 = 0 := by
   by_cases h : a = ⊤ <;> simp [logCounting, h]
 
@@ -182,8 +181,8 @@ theorem log_counting_zero_sub_logCounting_top {f : 𝕜 → E} :
 /--
 Relation between the logarithmic counting function of `f` and of `f⁻¹`.
 -/
-theorem logCounting_inv {f : 𝕜 → 𝕜} :
-    logCounting f 0 = logCounting f⁻¹ ⊤ := by
+@[simp] theorem logCounting_inv {f : 𝕜 → 𝕜} :
+     logCounting f⁻¹ ⊤ = logCounting f 0 := by
   simp [logCounting_zero, logCounting_top]
 
 /--
@@ -195,23 +194,19 @@ theorem logCounting_add_analyticOn (hf : MeromorphicOn f univ) (hg : AnalyticOn 
   rw [hf.negPart_divisor_add_of_analyticNhdOn_right (isOpen_univ.analyticOn_iff_analyticOnNhd.1 hg)]
 
 /--
-Special case of `VD.logCounting_add_analyticOn`: Adding a constant does not change the counting
+Special case of `logCounting_add_analyticOn`: Adding a constant does not change the counting
 function counting poles.
 -/
-theorem logCounting_add_const (hf : MeromorphicOn f univ) :
+@[simp] theorem logCounting_add_const (hf : MeromorphicOn f univ) :
     logCounting (f + fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
   apply logCounting_add_analyticOn hf analyticOn_const
 
 /--
-Special case of `VD.logCounting_add_analyticOn`: Subtracting a constant does not change the counting
+Special case of `logCounting_add_analyticOn`: Subtracting a constant does not change the counting
 function counting poles.
 -/
-theorem logCounting_sub_const (hf : MeromorphicOn f univ) :
+@[simp] theorem logCounting_sub_const (hf : MeromorphicOn f univ) :
     logCounting (f - fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
-  have : f - (fun x ↦ a₀) = f + fun x ↦ -a₀ := by
-    funext x
-    simp [sub_eq_add_neg]
-  rw [this]
-  apply logCounting_add_analyticOn hf analyticOn_const
+  simpa [sub_eq_add_neg] using logCounting_add_const hf
 
 end ValueDistribution
