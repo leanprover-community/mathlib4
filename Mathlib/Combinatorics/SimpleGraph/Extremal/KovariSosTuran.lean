@@ -40,14 +40,14 @@ namespace KovariSosTuran
 /-- `bound` is the upper bound in the statement of the **Kővári–Sós–Turán theorem**.
 
 This is an auxiliary definition for the **Kővári–Sós–Turán theorem**. -/
-noncomputable abbrev bound (V : Type*) [Fintype V] (s t : ℕ) : ℝ :=
-  (t-1)^(1/s : ℝ)*(card V)^(2-1/s : ℝ)/2 + (card V)*(s-1)/2
+noncomputable abbrev bound (n s t : ℕ) : ℝ :=
+  (t-1)^(1/s : ℝ)*n^(2-1/s : ℝ)/2 + n*(s-1)/2
 
-theorem bound_nonneg {s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) : 0 ≤ bound V s t := by
+theorem bound_nonneg {n s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) : 0 ≤ bound n s t := by
     apply add_nonneg <;> apply div_nonneg _ zero_le_two <;> apply mul_nonneg
     · apply Real.rpow_nonneg <| sub_nonneg_of_le (mod_cast hs.trans ht)
-    · apply Real.rpow_nonneg (card V).cast_nonneg
-    · exact (card V).cast_nonneg
+    · apply Real.rpow_nonneg n.cast_nonneg
+    · exact n.cast_nonneg
     · exact sub_nonneg_of_le (mod_cast hs)
 
 variable [DecidableEq V]
@@ -111,7 +111,7 @@ This is an auxiliary definition for the **Kővári–Sós–Turán theorem**. -/
 private lemma card_edgeFinset_le_bound [Nonempty V] [Nonempty α] [Nonempty β]
     (h_avg : card α-1 ≤ (∑ v : V, G.degree v : ℝ) / card V)
     (h_free : (completeBipartiteGraph α β).Free G) :
-    #G.edgeFinset ≤ bound V (card α) (card β) := by
+    #G.edgeFinset ≤ bound (card V) (card α) (card β) := by
   have h_avg_sub_nonneg : 0 ≤ (2*#G.edgeFinset/card V-card α+1 : ℝ) := by
     rwa [← Nat.cast_sum, sum_degrees_eq_twice_card_edges, Nat.cast_mul,
       Nat.cast_two, ← sub_nonneg, ← sub_add] at h_avg
