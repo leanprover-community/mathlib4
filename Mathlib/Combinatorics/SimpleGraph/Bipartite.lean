@@ -251,7 +251,9 @@ variable [Fintype V] {α β γ δ : Type*} [Fintype α] [Fintype β]
 "right" subset of `t` vertices such that every vertex in the "left" subset is adjacent to every
 vertex in the "right" subset. -/
 structure completeBipartiteSubgraph (G : SimpleGraph V) (s t : ℕ) where
+  /-- The "left" subset of size `s`. -/
   left : @univ.powersetCard V s
+  /-- The "right" subset of size `t`. -/
   right : @univ.powersetCard V t
   Adj : ∀ v₁ ∈ left.val, ∀ v₂ ∈ right.val, G.Adj v₁ v₂
 
@@ -269,6 +271,7 @@ theorem card_right : #B.right.val = t := by
   have h := B.right.prop
   rwa [mem_powersetCard_univ] at h
 
+/-- A complete bipartite subgraph gives rise to a copy of a complete bipartite graph. -/
 noncomputable def toCopy : Copy (completeBipartiteGraph (Fin s) (Fin t)) G := by
   haveI : Nonempty (Fin s ↪ B.left) := by
     apply Function.Embedding.nonempty_of_card_le
@@ -299,6 +302,7 @@ noncomputable def toCopy : Copy (completeBipartiteGraph (Fin s) (Fin t)) G := by
       Sum.elim_inl, Sum.elim_inr, adj_comm]
     exact B.Adj (fs _) (by simp) (ft _) (by simp)
 
+/-- A copy of a complete bipartite graph identifies a complete bipartite subgraph. -/
 def ofCopy (f : Copy (completeBipartiteGraph α β) G) :
     G.completeBipartiteSubgraph (card α) (card β) where
   left := by
