@@ -1345,12 +1345,14 @@ end IsBoundedSMul
 /-!
 ### Bounded actions by normed division rings
 The inequalities in the previous section are now tight.
+
+TODO: do these results hold for any `NormedRing` assuming `NormSMulClass`?
 -/
 
 section NormedSpace
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 E] [Module 𝕜 F]
-variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜 F]
+variable [NormSMulClass 𝕜 E] [NormSMulClass 𝕜 F]
 
 theorem eLpNorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
     eLpNorm' (c • f) q μ = ‖c‖ₑ * eLpNorm' f q μ := by
