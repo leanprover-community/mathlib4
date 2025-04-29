@@ -93,6 +93,8 @@ theorem memLp_zero_iff_aestronglyMeasurable [TopologicalSpace ε] {f : α → ε
 @[deprecated (since := "2025-02-21")]
 alias memℒp_zero_iff_aestronglyMeasurable := memLp_zero_iff_aestronglyMeasurable
 
+section ENormedAddMonoid
+
 variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 @[simp]
@@ -143,8 +145,7 @@ theorem eLpNorm'_measure_zero_of_exponent_zero {f : α → ε} : eLpNorm' f 0 (0
 theorem eLpNorm'_measure_zero_of_neg {f : α → ε} (hq_neg : q < 0) :
     eLpNorm' f q (0 : Measure α) = ∞ := by simp [eLpNorm', hq_neg]
 
-omit [ENormedAddMonoid ε]
-variable [ContinuousENorm ε]
+end ENormedAddMonoid
 
 @[simp]
 theorem eLpNormEssSup_measure_zero {f : α → ε} : eLpNormEssSup f (0 : Measure α) = 0 := by
@@ -159,11 +160,17 @@ theorem eLpNorm_measure_zero {f : α → ε} : eLpNorm f p (0 : Measure α) = 0 
   rw [← Ne] at h0
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm', ENNReal.toReal_pos h0 h_top]
 
+section ContinuousENorm
+
+variable {ε: Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+
 @[simp] lemma memLp_measure_zero {f : α → ε} : MemLp f p (0 : Measure α) := by
   simp [MemLp]
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_measure_zero := memLp_measure_zero
+
+end ContinuousENorm
 
 end Zero
 
