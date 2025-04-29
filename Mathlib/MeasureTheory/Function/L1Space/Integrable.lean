@@ -73,34 +73,29 @@ theorem Integrable.aemeasurable [MeasurableSpace β] [BorelSpace β] {f : α →
 theorem Integrable.hasFiniteIntegral {f : α → ε} (hf : Integrable f μ) : HasFiniteIntegral f μ :=
   hf.2
 
+theorem Integrable.mono_enorm {f : α → ε} {g : α → ε''} (hg : Integrable g μ)
+    (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ ‖g a‖ₑ) : Integrable f μ :=
+  ⟨hf, hg.hasFiniteIntegral.mono_enorm h⟩
+
 theorem Integrable.mono {f : α → β} {g : α → γ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ ‖g a‖) : Integrable f μ :=
   ⟨hf, hg.hasFiniteIntegral.mono h⟩
 
-theorem Integrable.mono_enorm {f : α → ε} {g : α → ε''} (hg : Integrable g μ)
-    (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ ‖g a‖ₑ) : Integrable f μ :=
+theorem Integrable.mono'_enorm {f : α → ε} {g : α → ℝ≥0∞} (hg : Integrable g μ)
+    (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : Integrable f μ :=
   ⟨hf, hg.hasFiniteIntegral.mono_enorm h⟩
 
 theorem Integrable.mono' {f : α → β} {g : α → ℝ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : Integrable f μ :=
   ⟨hf, hg.hasFiniteIntegral.mono' h⟩
 
-theorem Integrable.mono'_enorm {f : α → ε} {g : α → ℝ≥0∞} (hg : Integrable g μ)
-    (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : Integrable f μ :=
-  ⟨hf, hg.hasFiniteIntegral.mono_enorm h⟩
-
-theorem Integrable.congr' {f : α → β} {g : α → γ} (hf : Integrable f μ)
-    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) : Integrable g μ :=
-  ⟨hg, hf.hasFiniteIntegral.congr' h⟩
-
 theorem Integrable.congr'_enorm {f : α → ε} {g : α → ε''} (hf : Integrable f μ)
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) : Integrable g μ :=
   ⟨hg, hf.hasFiniteIntegral.congr'_enorm h⟩
 
-theorem integrable_congr' {f : α → β} {g : α → γ} (hf : AEStronglyMeasurable f μ)
-    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) :
-    Integrable f μ ↔ Integrable g μ :=
-  ⟨fun h2f => h2f.congr' hg h, fun h2g => h2g.congr' hf <| EventuallyEq.symm h⟩
+theorem Integrable.congr' {f : α → β} {g : α → γ} (hf : Integrable f μ)
+    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) : Integrable g μ :=
+  ⟨hg, hf.hasFiniteIntegral.congr' h⟩
 
 theorem integrable_congr'_enorm {ε} [TopologicalSpace ε] [ContinuousENorm ε]
     {f : α → ε} {g : α → ε''} (hf : AEStronglyMeasurable f μ)
@@ -108,33 +103,33 @@ theorem integrable_congr'_enorm {ε} [TopologicalSpace ε] [ContinuousENorm ε]
     Integrable f μ ↔ Integrable g μ :=
   ⟨fun h2f => h2f.congr'_enorm hg h, fun h2g => h2g.congr'_enorm hf <| EventuallyEq.symm h⟩
 
+theorem integrable_congr' {f : α → β} {g : α → γ} (hf : AEStronglyMeasurable f μ)
+    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) :
+    Integrable f μ ↔ Integrable g μ :=
+  integrable_congr'_enorm hf hg <| h.mono fun _x hx ↦ enorm_eq_iff_norm_eq.mpr hx
+
 theorem Integrable.congr {f g : α → ε} (hf : Integrable f μ) (h : f =ᵐ[μ] g) : Integrable g μ :=
   ⟨hf.1.congr h, hf.2.congr h⟩
 
 theorem integrable_congr {f g : α → ε} (h : f =ᵐ[μ] g) : Integrable f μ ↔ Integrable g μ :=
   ⟨fun hf => hf.congr h, fun hg => hg.congr h.symm⟩
 
-lemma integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 0 ∨ IsFiniteMeasure μ := by
-  have : AEStronglyMeasurable (fun _ : α => c) μ := aestronglyMeasurable_const
-  rw [Integrable, and_iff_right this, hasFiniteIntegral_const_iff]
-
 theorem integrable_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ⊤) :
     Integrable (fun _ : α => c) μ ↔ ‖c‖ₑ = 0 ∨ IsFiniteMeasure μ := by
   have : AEStronglyMeasurable (fun _ : α => c) μ := aestronglyMeasurable_const
   rw [Integrable, and_iff_right this, hasFiniteIntegral_const_iff_enorm hc]
 
-lemma integrable_const_iff_isFiniteMeasure {c : β} (hc : c ≠ 0) :
-    Integrable (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
-  simp [integrable_const_iff, hc, isFiniteMeasure_iff]
+lemma integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 0 ∨ IsFiniteMeasure μ := by
+  rw [integrable_const_iff_enorm enorm_ne_top]
+  simp
 
 lemma integrable_const_iff_isFiniteMeasure_enorm {c : ε} (hc : ‖c‖ₑ ≠ 0) (hc' : ‖c‖ₑ ≠ ⊤) :
     Integrable (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
   simp [integrable_const_iff_enorm hc', hc, isFiniteMeasure_iff]
 
-theorem Integrable.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} (hX : AEMeasurable X μ)
-    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
-    Integrable X μ :=
-  ⟨hX.aestronglyMeasurable, .of_mem_Icc a b h⟩
+lemma integrable_const_iff_isFiniteMeasure {c : β} (hc : c ≠ 0) :
+    Integrable (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
+  simp [integrable_const_iff, hc, isFiniteMeasure_iff]
 
 theorem Integrable.of_mem_Icc_enorm [IsFiniteMeasure μ]
     {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (hX : AEMeasurable X μ)
@@ -142,14 +137,19 @@ theorem Integrable.of_mem_Icc_enorm [IsFiniteMeasure μ]
     Integrable X μ :=
   ⟨hX.aestronglyMeasurable, .of_mem_Icc_enorm ha hb h⟩
 
-@[simp, fun_prop]
-theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α => c) μ :=
-  integrable_const_iff.2 <| .inr ‹_›
+theorem Integrable.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} (hX : AEMeasurable X μ)
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    Integrable X μ :=
+  ⟨hX.aestronglyMeasurable, .of_mem_Icc a b h⟩
 
 @[simp, fun_prop]
 theorem integrable_const_enorm [IsFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ⊤) :
     Integrable (fun _ : α ↦ c) μ :=
   (integrable_const_iff_enorm hc).2 <| .inr ‹_›
+
+@[simp, fun_prop]
+theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α => c) μ :=
+  integrable_const_iff.2 <| .inr ‹_›
 
 -- TODO: requires HasFiniteIntegral.of_finite...
 @[simp]
