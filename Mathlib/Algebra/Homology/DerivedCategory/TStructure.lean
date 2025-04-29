@@ -1,56 +1,23 @@
 /-
-<<<<<<< HEAD
-Copyright (c) 2024 Joël Riou. All rights reserved.
-=======
 Copyright (c) 2025 Joël Riou. All rights reserved.
->>>>>>> origin/jriou_localization_bump_deps
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Fractions
+import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
-=======
-import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
->>>>>>> origin/jriou_localization_bump_deps
 
 /-!
 # The canonical t-structure on the derived category
 
-<<<<<<< HEAD
-=======
 In this file, we introduce the canonical t-structure on the
 derived category of an abelian category.
 
->>>>>>> origin/jriou_localization_bump_deps
 -/
 
 open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
-<<<<<<< HEAD
-universe w
-
-namespace DerivedCategory
-
-variable {C : Type _} [Category C] [Abelian C] [HasDerivedCategory.{w} C]
-
-namespace TStructure
-
-def t : TStructure (DerivedCategory C) where
-  LE n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyLE n
-  GE n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyGE n
-  LE_closedUnderIsomorphisms n :=
-    { of_iso := by
-        rintro X Y e ⟨K, e', _⟩
-        exact ⟨K, e.symm ≪≫ e', inferInstance⟩ }
-  GE_closedUnderIsomorphisms n :=
-    { of_iso := by
-        rintro X Y e ⟨K, e', _⟩
-        exact ⟨K, e.symm ≪≫ e', inferInstance⟩ }
-  LE_shift := by
-=======
 universe w v u
 
 namespace DerivedCategory
@@ -70,16 +37,11 @@ def TStructure.t : TStructure (DerivedCategory C) where
         rintro X Y e ⟨K, e', _⟩
         exact ⟨K, e.symm ≪≫ e', inferInstance⟩ }
   le_shift := by
->>>>>>> origin/jriou_localization_bump_deps
     rintro n a n' h X ⟨K, e, _⟩
     exact ⟨(shiftFunctor (CochainComplex C ℤ) a).obj K,
       (shiftFunctor (DerivedCategory C) a).mapIso e ≪≫ (Q.commShiftIso a).symm.app K,
       K.isStrictlyLE_shift n a n' h⟩
-<<<<<<< HEAD
-  GE_shift := by
-=======
   ge_shift := by
->>>>>>> origin/jriou_localization_bump_deps
     rintro n a n' h X ⟨K, e, _⟩
     exact ⟨(shiftFunctor (CochainComplex C ℤ) a).obj K,
       (shiftFunctor (DerivedCategory C) a).mapIso e ≪≫ (Q.commShiftIso a).symm.app K,
@@ -88,17 +50,10 @@ def TStructure.t : TStructure (DerivedCategory C) where
     rintro ⟨K, e₁, _⟩ ⟨L, e₂, _⟩
     rw [← cancel_epi e₁.inv, ← cancel_mono e₂.hom, comp_zero, zero_comp]
     apply (subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE K L 0 1 (by simp)).elim
-<<<<<<< HEAD
-  LE_zero_le := by
-    rintro X ⟨K, e, _⟩
-    exact ⟨K, e, K.isStrictlyLE_of_le 0 1 (by omega)⟩
-  GE_one_le := by
-=======
   le_zero_le := by
     rintro X ⟨K, e, _⟩
     exact ⟨K, e, K.isStrictlyLE_of_le 0 1 (by omega)⟩
   ge_one_le := by
->>>>>>> origin/jriou_localization_bump_deps
     rintro X ⟨K, e, _⟩
     exact ⟨K, e, K.isStrictlyGE_of_ge 0 1 (by omega)⟩
   exists_triangle_zero_one X := by
@@ -118,18 +73,12 @@ def TStructure.t : TStructure (DerivedCategory C) where
       rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE,
         Iso.hom_inv_id_assoc]
 
-<<<<<<< HEAD
-end TStructure
-
-abbrev IsLE (X : DerivedCategory C) (n : ℤ) : Prop := TStructure.t.IsLE X n
-=======
 /-- Given `X : DerivedCategory C` and `n : ℤ`, this property means
 that `X` is `≤ n` for the canonical t-structure. -/
 abbrev IsLE (X : DerivedCategory C) (n : ℤ) : Prop := TStructure.t.IsLE X n
 
 /-- Given `X : DerivedCategory C` and `n : ℤ`, this property means
 that `X` is `≥ n` for the canonical t-structure. -/
->>>>>>> origin/jriou_localization_bump_deps
 abbrev IsGE (X : DerivedCategory C) (n : ℤ) : Prop := TStructure.t.IsGE X n
 
 lemma isGE_iff (X : DerivedCategory C) (n : ℤ) :
@@ -178,22 +127,14 @@ lemma isZero_of_isLE (X : DerivedCategory C) (n i : ℤ) (hi : n < i) [hX : X.Is
 
 lemma isGE_Q_obj_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (Q.obj K).IsGE n ↔ K.IsGE n := by
-<<<<<<< HEAD
-  have eq := fun i => ((homologyFunctorFactors C i).app K).isZero_iff
-=======
   have eq := fun i ↦ ((homologyFunctorFactors C i).app K).isZero_iff
->>>>>>> origin/jriou_localization_bump_deps
   simp only [Functor.comp_obj, HomologicalComplex.homologyFunctor_obj] at eq
   simp only [isGE_iff, CochainComplex.isGE_iff,
     HomologicalComplex.exactAt_iff_isZero_homology, eq]
 
 lemma isLE_Q_obj_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (Q.obj K).IsLE n ↔ K.IsLE n := by
-<<<<<<< HEAD
-  have eq := fun i => ((homologyFunctorFactors C i).app K).isZero_iff
-=======
   have eq := fun i ↦ ((homologyFunctorFactors C i).app K).isZero_iff
->>>>>>> origin/jriou_localization_bump_deps
   simp only [Functor.comp_obj, HomologicalComplex.homologyFunctor_obj] at eq
   simp only [isLE_iff, CochainComplex.isLE_iff,
     HomologicalComplex.exactAt_iff_isZero_homology, eq]
@@ -237,7 +178,6 @@ lemma exists_iso_Q_obj_of_isGE_of_isLE (X : DerivedCategory C) (a b : ℤ) [X.Is
     exact TStructure.t.isGE_of_iso e a
   exact ⟨K.truncGE a, inferInstance, inferInstance, ⟨e ≪≫ asIso (Q.map (K.πTruncGE a))⟩⟩
 
-<<<<<<< HEAD
 lemma exists_iso_single (X : DerivedCategory C) (n : ℤ) [X.IsGE n] [X.IsLE n] :
     ∃ (A : C), Nonempty (X ≅ (singleFunctor C n).obj A) := by
   dsimp only [singleFunctor, Functor.comp_obj]
@@ -245,50 +185,6 @@ lemma exists_iso_single (X : DerivedCategory C) (n : ℤ) [X.IsGE n] [X.IsLE n] 
   obtain ⟨A, ⟨e'⟩⟩ := Y.exists_iso_single n
   exact ⟨A, ⟨e ≪≫ Q.mapIso e' ≪≫
     ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostcompQIso C)).symm.app A⟩⟩
-
-instance (n : ℤ) : (singleFunctor C n).Faithful := ⟨fun {A B} f₁ f₂ h => by
-  have eq₁ := NatIso.naturality_1 (singleFunctorCompHomologyFunctorIso C n) f₁
-  have eq₂ := NatIso.naturality_1 (singleFunctorCompHomologyFunctorIso C n) f₂
-  dsimp at eq₁ eq₂
-  rw [← eq₁, ← eq₂, h]⟩
-
-noncomputable instance (n : ℤ) : (CochainComplex.singleFunctor C n).Full :=
-  (inferInstance : (HomologicalComplex.single _ _ _).Full)
-
-noncomputable instance (n : ℤ) : (CochainComplex.singleFunctor C n ⋙ Q).Full where
-  map_surjective {A B} f := by
-    suffices ∃ (f' : (CochainComplex.singleFunctor C n).obj A ⟶
-      (CochainComplex.singleFunctor C n).obj B), f = Q.map f' by
-      obtain ⟨f', rfl⟩ := this
-      obtain ⟨g, hg⟩ := (CochainComplex.singleFunctor C n).map_surjective f'
-      refine ⟨g, ?_⟩
-      dsimp
-      rw [hg]
-    obtain ⟨X, _, _, s, hs, g, fac⟩ := right_fac_of_isStrictlyLE_of_isStrictlyGE f n n
-    have : IsIso s := by
-      obtain ⟨A', ⟨e⟩⟩ := X.exists_iso_single n
-      have ⟨φ, hφ⟩ := (CochainComplex.singleFunctor C n).map_surjective (e.inv ≫ s)
-      suffices IsIso φ by
-        have : IsIso (e.inv ≫ s) := by
-          rw [← hφ]
-          infer_instance
-        exact IsIso.of_isIso_comp_left e.inv s
-      apply (NatIso.isIso_map_iff (singleFunctorCompHomologyFunctorIso C n) φ).1
-      have : IsIso (Q.map ((CochainComplex.singleFunctor C n).map φ)) := by
-        rw [hφ]
-        rw [Q.map_comp]
-        infer_instance
-      have : IsIso ((singleFunctor C n).map φ) :=
-        (NatIso.isIso_map_iff ((SingleFunctors.evaluation _ _ n).mapIso
-          (singleFunctorsPostcompQIso C)) φ).2 this
-      dsimp
-      infer_instance
-    exact ⟨inv s ≫ g, by rw [Q.map_comp, fac, Q.map_inv]⟩
-
-noncomputable instance (n : ℤ) : (singleFunctor C n).Full := by
-  have : _ ≅ (CochainComplex.singleFunctor C n ⋙ Q) :=
-    ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostcompQIso C))
-  exact Functor.Full.of_iso this.symm
 
 lemma singleFunctor_preimage {A B : C} {n : ℤ}
     (f : (singleFunctor C n).obj A ⟶  (singleFunctor C n).obj B) :
@@ -307,11 +203,11 @@ lemma singleFunctor_obj_mem_heart (X : C) :
 
 @[simp]
 lemma essImage_singleFunctor_eq_heart :
-    (singleFunctor C 0).essImage = setOf t.heart := by
+    (singleFunctor C 0).essImage = t.heart := by
   ext X
   constructor
   · rintro ⟨A, ⟨e⟩⟩
-    exact mem_of_iso t.heart e (singleFunctor_obj_mem_heart A)
+    exact t.heart.prop_of_iso e (singleFunctor_obj_mem_heart A)
   · intro (h : t.heart _)
     rw [TStructure.mem_heart_iff] at h
     have := h.1
@@ -320,6 +216,7 @@ lemma essImage_singleFunctor_eq_heart :
     exact ⟨A, ⟨e.symm⟩⟩
 
 noncomputable instance : (t : TStructure (DerivedCategory C)).HasHeart where
+  H := C
   ι := singleFunctor C 0
 
 lemma isIso_homologyFunctor_map_truncLTι_app (X : DerivedCategory C) (a n : ℤ) (hn : n < a) :
@@ -415,9 +312,9 @@ open DerivedCategory.TStructure
 
 variable (C)
 
-abbrev Minus := (t : TStructure (DerivedCategory C)).minus.category
-abbrev Plus := (t : TStructure (DerivedCategory C)).plus.category
-abbrev Bounded := (t : TStructure (DerivedCategory C)).bounded.category
+abbrev Minus := (t : TStructure (DerivedCategory C)).minus.FullSubcategory
+abbrev Plus := (t : TStructure (DerivedCategory C)).plus.FullSubcategory
+abbrev Bounded := (t : TStructure (DerivedCategory C)).bounded.FullSubcategory
 
 variable {C}
 
@@ -425,6 +322,4 @@ abbrev Minus.ι : Minus C ⥤ DerivedCategory C := t.minus.ι
 abbrev Plus.ι : Plus C ⥤ DerivedCategory C := t.plus.ι
 abbrev Bounded.ι : Bounded C ⥤ DerivedCategory C := t.bounded.ι
 
-=======
->>>>>>> origin/jriou_localization_bump_deps
 end DerivedCategory

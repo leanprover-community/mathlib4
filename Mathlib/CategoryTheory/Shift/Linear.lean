@@ -17,9 +17,10 @@ namespace Shift
 
 variable (R : Type _) [Ring R] {C : Type _} [Category C] [Preadditive C] [Linear R C]
   {D : Type _} [Category D] [Preadditive D] [Linear R D]
-  (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [L.Additive] [L.Linear R]
+  (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] --[L.Additive]
+  [L.Linear R]
   {M : Type _} [AddMonoid M] [HasShift C M] [HasShift D M] [L.CommShift M]
-  [∀ (n : M), (shiftFunctor C n).Additive] [∀ (n : M), (shiftFunctor D n).Additive]
+  --[∀ (n : M), (shiftFunctor C n).Additive] [∀ (n : M), (shiftFunctor D n).Additive]
   [∀ (n : M), (shiftFunctor C n).Linear R]
 
 include L W in

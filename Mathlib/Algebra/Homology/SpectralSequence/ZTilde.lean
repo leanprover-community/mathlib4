@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.Order.WithBot
 
 /-!
 # ℤ with bot and top

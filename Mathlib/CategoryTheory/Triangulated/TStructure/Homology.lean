@@ -151,10 +151,10 @@ noncomputable def preimageNatIso {F₁ F₂ : H ⥤ C} (e : F₁ ⋙ i ≅ F₂ 
   hom := i.preimageNatTrans e.hom
   inv := i.preimageNatTrans e.inv
 
-lemma isEquivalenceFullSubcategoryLift (S : Set D) (hi : i.essImage = S) :
-    IsEquivalence (FullSubcategory.lift S i
+lemma isEquivalenceFullSubcategoryLift (S : ObjectProperty D) (hi : i.essImage = S) :
+    IsEquivalence (S.lift i
       (fun X => by rw [← hi]; exact obj_mem_essImage i X)) := by
-  let F := FullSubcategory.lift S i
+  let F := S.lift i
       (fun X => by rw [← hi]; exact obj_mem_essImage i X)
   have : Full F := ⟨fun f ↦ ⟨ i.preimage f, by simp [F]⟩⟩
   have : Faithful F := ⟨fun {X Y} f g h => i.map_injective h⟩
@@ -162,7 +162,7 @@ lemma isEquivalenceFullSubcategoryLift (S : Set D) (hi : i.essImage = S) :
     rintro ⟨X, hX⟩
     rw [← hi] at hX
     obtain ⟨Y, ⟨e⟩⟩ := hX
-    exact ⟨Y, ⟨(fullSubcategoryInclusion S).preimageIso e⟩⟩⟩
+    exact ⟨Y, ⟨S.ι.preimageIso e⟩⟩⟩
   exact { }
 
 end Functor
@@ -207,9 +207,13 @@ def homology₀ιHeart : t.homology₀ ⋙ t.ιHeart ≅ t.truncGELE 0 0 := ht.i
 
 end TStructure
 
-namespace Subcategory
+end Triangulated
 
-variable (S : Subcategory C) (t : TStructure C)
+namespace ObjectProperty
+
+open Triangulated
+
+variable (S : ObjectProperty C) [S.IsTriangulated] (t : TStructure C)
   [S.HasInducedTStructure t] [t.HasHeart]
 
 instance : S.ι.TExact (S.tStructure t) t where
@@ -217,13 +221,13 @@ instance : S.ι.TExact (S.tStructure t) t where
   leftTExact := ⟨fun _ _ ⟨hX⟩ => ⟨hX⟩⟩
 
 class ContainsHeart : Prop where
-  subset : t.heart ≤ S.P
+  subset : t.heart ≤ S
 
 variable [hS : S.ContainsHeart t]
 
 instance : (S.tStructure t).HasHeart where
   H := t.Heart
-  ι := FullSubcategory.lift _ t.ιHeart (fun X => hS.subset _ (t.ιHeart_obj_mem X))
+  ι := S.lift t.ιHeart (fun X => hS.subset _ (t.ιHeart_obj_mem X))
   additive_ι := ⟨fun {X Y f g} => S.ι.map_injective (by simp)⟩
   fullι := ⟨fun f => ⟨t.ιHeart.preimage f, by simp⟩⟩
   faithful_ι := ⟨fun {X Y} f g h => t.ιHeart.map_injective h⟩
@@ -231,10 +235,10 @@ instance : (S.tStructure t).HasHeart where
     ext X
     constructor
     · rintro ⟨Y, ⟨e⟩⟩
-      exact mem_of_iso t.heart ((fullSubcategoryInclusion _).mapIso e)
+      exact prop_of_iso t.heart (S.ι.mapIso e)
         (t.ιHeart_obj_mem Y)
     · intro hX
-      exact ⟨_, ⟨(fullSubcategoryInclusion _).preimageIso (t.ιHeartObjHeartMkIso _ hX)⟩⟩
+      exact ⟨_, ⟨S.ι.preimageIso (t.ιHeartObjHeartMkIso _ hX)⟩⟩
 
 def ιHeartIso : (S.tStructure t).ιHeart ⋙ S.ι ≅ t.ιHeart := Iso.refl _
 
@@ -259,7 +263,9 @@ instance : t.minus.ContainsHeart t where
 instance : t.bounded.ContainsHeart t where
   subset _ hX := ⟨⟨0, ⟨hX.2⟩⟩, ⟨0, ⟨hX.1⟩⟩⟩
 
-end Subcategory
+end ObjectProperty
+
+namespace Triangulated
 
 namespace TStructure
 
@@ -284,32 +290,31 @@ lemma prod_mem_heart (X₁ X₂ : C) (hX₁ : t.heart X₁) (hX₂ : t.heart X�
   · exact t.isLE₂ _ (binaryProductTriangle_distinguished X₁ X₂) 0 ⟨hX₁.1⟩ ⟨hX₂.1⟩
   · exact t.isGE₂ _ (binaryProductTriangle_distinguished X₁ X₂) 0 ⟨hX₁.2⟩ ⟨hX₂.2⟩
 
-instance : HasTerminal (FullSubcategory t.heart) := by
-  let Z : FullSubcategory t.heart := ⟨0, t.zero_mem_heart⟩
+instance : HasTerminal t.heart.FullSubcategory := by
+  let Z : t.heart.FullSubcategory  := ⟨0, t.zero_mem_heart⟩
   have : ∀ X, Inhabited (X ⟶ Z) := fun X => ⟨0⟩
   have : ∀ X, Unique (X ⟶ Z) := fun X =>
-    { uniq := fun f => (fullSubcategoryInclusion t.heart).map_injective
+    { uniq := fun f => t.heart.ι.map_injective
         ((isZero_zero C).eq_of_tgt _ _) }
   exact hasTerminal_of_unique Z
 
-instance : HasBinaryProducts (FullSubcategory t.heart) := by
+instance : HasBinaryProducts t.heart.FullSubcategory := by
   apply hasLimitsOfShape_of_closedUnderLimits
   intro F c hc H
-  exact mem_of_iso t.heart
+  exact t.heart.prop_of_iso
     (limit.isoLimitCone ⟨_, (IsLimit.postcomposeHomEquiv (diagramIsoPair F) _).symm hc⟩)
     (prod_mem_heart t _ _ (H _) (H _))
 
-instance : HasFiniteProducts (FullSubcategory t.heart) :=
+instance : HasFiniteProducts t.heart.FullSubcategory :=
   hasFiniteProducts_of_has_binary_and_terminal
 
 variable [t.HasHeart]
 
 noncomputable def heartEquivalenceFullsubcategory :
-    t.Heart ≌ FullSubcategory t.heart :=
+    t.Heart ≌ t.heart.FullSubcategory :=
   have := t.ιHeart.isEquivalenceFullSubcategoryLift t.heart (by
     ext X
-    rw [t.mem_essImage_ιHeart_iff]
-    rfl)
+    rw [t.mem_essImage_ιHeart_iff])
   @Functor.asEquivalence _ _ _ _ _ this
 
 instance : HasFiniteProducts t.Heart where
@@ -452,8 +457,8 @@ lemma truncLETriangle_distinguished :
     have eq₁ := e.inv.comm₁
     have eq₂ := H.comm₁
     dsimp at eq₁ eq₂ ⊢
-    simp only [NatTrans.naturality, Functor.id_map, ← eq₂, assoc, ← eq₁,
-      he', Triangle.mk_obj₂, comp_id]
+    rw [NatTrans.naturality, Functor.id_map, ← eq₂, assoc, ← eq₁, he']
+    simp
   have he₁ : (truncLE t n).map T.mor₂ ≫ e.hom.hom₁ = f₂ := by
     rw [he₁', assoc, ← comp_hom₁, e.inv_hom_id, id_hom₁]
     simp only [Triangle.mk_obj₁, comp_id]
@@ -640,6 +645,7 @@ instance : t.homology₀.Additive := by
   erw [(t.homology₀ ⋙ t.ιHeart).map_add]
   simp
 
+omit [IsTriangulated C] in
 lemma isIso_homology₀_iff_isIso_truncGE₀LE₀_map {X Y : C} (f : X ⟶ Y) :
     IsIso (t.homology₀.map f) ↔ IsIso ((t.truncGELE 0 0).map f) := by
   have : IsIso (t.homology₀.map f) ↔  IsIso (t.ιHeart.map (t.homology₀.map f)) := by
@@ -1037,7 +1043,7 @@ lemma exists_distTriang_of_shortExact :
   have h' : Triangle.mk (t.ιHeart.map S.f) (t.ιHeart.map g') δ' ∈ distTriang C := by
     refine isomorphic_distinguished _ h _ ?_
     refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (t.ιHeartObjHeartMkIso _ hZ) ?_ ?_ ?_
-    all_goals simp [g']
+    all_goals simp [g', δ']
   obtain ⟨e, he⟩ : ∃ (e : S.X₃ ≅ Y), S.g ≫ e.hom = g' := by
     have h₁ := hS.gIsCokernel
     have h₂ := (t.shortExact_of_distTriang _ h').gIsCokernel

@@ -33,9 +33,8 @@ noncomputable def mk' : Abelian C where
     obtain ⟨_, _, _, _, Q, p, wp, hp, _⟩ := h f
     exact ⟨_, hp⟩⟩
   normalMonoOfMono {X Y} f _ := by
-    apply Nonempty.some
     obtain ⟨K, i, wi, _, Q, p, wp, _, I, π, wπ, hπ, ι, wι, hι, fac⟩ := h f
-    refine
+    exact
      ⟨{ Z := Q
         g := p
         w := by rw [fac, assoc, wι, comp_zero]
@@ -45,9 +44,8 @@ noncomputable def mk' : Abelian C where
           exact IsLimit.ofIsoLimit hι (Fork.ext (by exact asIso π)
             (by exact fac.symm)).symm }⟩
   normalEpiOfEpi {X Y} f _ := by
-    apply Nonempty.some
     obtain ⟨K, i, wi, _, Q, p, wp, _, I, π, wπ, hπ, ι, wι, hι, fac⟩ := h f
-    refine
+    exact
      ⟨{ W := K
         g := i
         w := by rw [fac, reassoc_of% wπ, zero_comp]

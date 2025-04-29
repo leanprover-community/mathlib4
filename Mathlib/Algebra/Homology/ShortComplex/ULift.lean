@@ -25,7 +25,7 @@ lemma isZero (X : Ab) (hX : ∀ (x : X), x = 0) :
 
 @[simps!]
 def addEquivULiftFunctorObj (X : Ab.{v'}) :
-    uliftFunctor.{v', v}.obj X ≃+ X :=
+    uliftFunctor.{v, v'}.obj X ≃+ X :=
   AddEquiv.mk' Equiv.ulift (fun _ _ => rfl)
 
 instance : uliftFunctor.{v, v'}.Additive where
@@ -37,15 +37,16 @@ instance : uliftFunctor.{v, v'}.Faithful where
     rw [h]
 
 instance : uliftFunctor.{v, v'}.Full where
-  map_surjective {X Y} f := ⟨AddMonoidHom.mk' (fun x => (f ⟨x⟩).down) (by
-    rintro a b
-    dsimp
-    erw [f.map_add ⟨a⟩ ⟨b⟩]
-    rfl), rfl⟩
+  map_surjective {X Y} f :=
+    ⟨AddCommGrp.ofHom (AddMonoidHom.mk' (fun x => (f ⟨x⟩).down) (by
+      rintro a b
+      dsimp
+      erw [f.hom.map_add ⟨a⟩ ⟨b⟩]
+      rfl)), rfl⟩
 
 lemma _root_.CategoryTheory.ShortComplex.ab_exact_iff_ulift
     (S : ShortComplex (Ab.{v'})) :
-    (S.map (uliftFunctor.{v', v})).Exact ↔ S.Exact := by
+    (S.map (uliftFunctor.{v, v'})).Exact ↔ S.Exact := by
   simp only [ShortComplex.ab_exact_iff]
   constructor
   · intro h x₂ hx₂
@@ -56,16 +57,16 @@ lemma _root_.CategoryTheory.ShortComplex.ab_exact_iff_ulift
     exact ⟨ULift.up x₁, congr_arg ULift.up hx₁⟩
 
 def ShortComplexIso (S : ShortComplex Ab.{v}) (S' : ShortComplex Ab.{v'}) :=
-  S.map (uliftFunctor.{v, v'}) ≅ S'.map (uliftFunctor.{v', v})
+  S.map (uliftFunctor.{v', v}) ≅ S'.map (uliftFunctor.{v, v'})
 
 @[simps!]
 def _root_.AddEquiv.toIsoULift {A : Ab.{v}} {B : Ab.{v'}} (e : A ≃+ B) :
-    uliftFunctor.{v, v'}.obj A ≅ uliftFunctor.{v', v}.obj B :=
+    uliftFunctor.{v', v}.obj A ≅ uliftFunctor.{v, v'}.obj B :=
   AddEquiv.toAddCommGrpIso ((addEquivULiftFunctorObj.{v', v} A).trans
     (e.trans (addEquivULiftFunctorObj.{v, v'} B).symm))
 
 lemma mono_iff_ulift {X Y : Ab.{v'}} (f : X ⟶ Y) :
-    Mono (uliftFunctor.{v', v}.map f) ↔ Mono f := by
+    Mono (uliftFunctor.{v, v'}.map f) ↔ Mono f := by
   simp only [mono_iff_injective]
   constructor
   · intro h x₁ x₂ eq
@@ -74,7 +75,7 @@ lemma mono_iff_ulift {X Y : Ab.{v'}} (f : X ⟶ Y) :
     exact Equiv.ulift.{v, v'}.injective (h (congr_arg ULift.down eq))
 
 lemma epi_iff_ulift {X Y : Ab.{v'}} (f : X ⟶ Y) :
-    Epi (uliftFunctor.{v', v}.map f) ↔ Epi f := by
+    Epi (uliftFunctor.{v, v'}.map f) ↔ Epi f := by
   simp only [epi_iff_surjective]
   constructor
   · intro h y
@@ -94,8 +95,8 @@ variable {X₁ X₂ : Ab.{v}} (f : X₁ ⟶ X₂)
 include comm
 
 @[simps!]
-def arrowIsoMk : Arrow.mk (uliftFunctor.{v, v'}.map f) ≅
-    Arrow.mk (uliftFunctor.{v', v}.map f') :=
+def arrowIsoMk : Arrow.mk (uliftFunctor.{v', v}.map f) ≅
+    Arrow.mk (uliftFunctor.{v, v'}.map f') :=
   Arrow.isoMk e₁.toIsoULift e₂.toIsoULift (by
     ext x₁
     exact Equiv.ulift.injective (comm x₁.down))
@@ -122,7 +123,7 @@ variable
 
 include commf commg
 
-def shortComplexULiftIsoMk : S.map (uliftFunctor.{v, v'}) ≅ S'.map (uliftFunctor.{v', v}) :=
+def shortComplexULiftIsoMk : S.map (uliftFunctor.{v', v}) ≅ S'.map (uliftFunctor.{v, v'}) :=
   ShortComplex.isoMk e₁.toIsoULift e₂.toIsoULift e₃.toIsoULift (by
     ext x₁
     exact Equiv.ulift.injective (commf x₁.down)) (by

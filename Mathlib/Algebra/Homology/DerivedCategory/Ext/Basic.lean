@@ -37,11 +37,8 @@ sheaves over `X` shall be in `Type u`.
 
 -/
 
-<<<<<<< HEAD
-=======
 assert_not_exists TwoSidedIdeal
 
->>>>>>> origin/jriou_localization_bump_deps
 universe w'' w' w v u
 
 namespace CategoryTheory

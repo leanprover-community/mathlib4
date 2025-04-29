@@ -246,6 +246,36 @@ lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁)
   rw [IsZero.iff_id_eq_zero]
   exact t.zero _ n₀ n₁ h
 
+def minus : ObjectProperty C := fun X ↦ ∃ (n : ℤ), t.IsLE X n
+def plus : ObjectProperty C := fun X ↦ ∃ (n : ℤ), t.IsGE X n
+def bounded : ObjectProperty C := t.plus ⊓ t.minus
+
+instance : t.minus.IsClosedUnderIsomorphisms where
+  of_iso e := by rintro ⟨n, _⟩; exact ⟨_, t.isLE_of_iso e n⟩
+
+instance : t.minus.IsStableUnderShift ℤ where
+  isStableUnderShiftBy n :=
+    { le_shift := by
+        rintro X ⟨i, _⟩
+        exact ⟨i - n, t.isLE_shift _ i _ _ (by omega)⟩ }
+
+instance : t.plus.IsClosedUnderIsomorphisms where
+  of_iso e := by rintro ⟨n, _⟩; exact ⟨_, t.isGE_of_iso e n⟩
+
+instance : t.plus.IsStableUnderShift ℤ where
+  isStableUnderShiftBy n :=
+    { le_shift := by
+        rintro X ⟨i, _⟩
+        exact ⟨i - n, t.isGE_shift _ i _ _ (by omega)⟩ }
+
+instance : t.bounded.IsClosedUnderIsomorphisms := by
+  dsimp [bounded]
+  infer_instance
+
+instance : t.bounded.IsStableUnderShift ℤ := by
+  dsimp [bounded]
+  infer_instance
+
 def heart : ObjectProperty C := fun X ↦ t.le 0 X ∧ t.ge 0 X
 
 lemma mem_heart_iff (X : C) :

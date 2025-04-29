@@ -34,7 +34,7 @@ instance : Functor.Linear R (DerivedCategory.Q : _ ⥤ DerivedCategory C) :=
 
 instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Linear R := by
   rw [← Localization.functor_linear_iff
-    Qh (HomotopyCategory.subcategoryAcyclic C).W R
+    Qh (HomotopyCategory.subcategoryAcyclic C).trW R
     (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n ⋙ Qh)
     (shiftFunctor (DerivedCategory C) n)]
   infer_instance

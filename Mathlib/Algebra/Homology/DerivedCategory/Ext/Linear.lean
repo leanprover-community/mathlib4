@@ -1,6 +1,15 @@
+/-
+Copyright (c) 2025 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
 
+/-!
+# Ext-modules in linear categories
+
+-/
 
 universe w' w t v u
 

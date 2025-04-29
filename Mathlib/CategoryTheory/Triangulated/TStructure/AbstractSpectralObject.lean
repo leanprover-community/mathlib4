@@ -345,6 +345,7 @@ lemma triangle_distinguished (D : Arrow₂ ι) (X : C) :
     (((F.triangleIsoTriangleLTGEPrecompTruncGELT).app D).app X)
 
 set_option maxHeartbeats 800000 in
+-- it is slow
 @[simps]
 noncomputable def spectralObject (X : C) :
     SpectralObject C ι where

@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.SingleHomology
 
 /-!
 # The homology sequence
@@ -42,16 +43,6 @@ noncomputable def homologyFunctorFactorsh (n : ℤ) : Qh ⋙ homologyFunctor C n
     HomotopyCategory.homologyFunctor _ _ n :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh C (ComplexShape.up ℤ) n
 
-<<<<<<< HEAD
-noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
-    singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 C :=
-  isoWhiskerRight ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostcompQIso C)) _ ≪≫
-    Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ (homologyFunctorFactors C n) ≪≫
-      HomologicalComplex.homologyFunctorSingleIso _ _ _
-
-=======
->>>>>>> origin/jriou_localization_bump_deps
 variable {C} in
 lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
     IsIso (Qh.map f) ↔ HomotopyCategory.quasiIso C _ f := by
@@ -64,7 +55,6 @@ lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X �
     infer_instance
   · exact Localization.inverts Qh (HomotopyCategory.quasiIso _ _) _
 
-<<<<<<< HEAD
 lemma isIso_iff {K L : DerivedCategory C} (f : K ⟶ L) :
     IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by
   constructor
@@ -84,8 +74,6 @@ lemma isIso_iff {K L : DerivedCategory C} (f : K ⟶ L) :
         ((Functor.mapArrowFunctor _ _).mapIso (homologyFunctorFactorsh C n)).app (Arrow.mk g.hom)
     exact ((MorphismProperty.isomorphisms C).arrow_iso_iff e).1 (hf n)
 
-=======
->>>>>>> origin/jriou_localization_bump_deps
 instance (n : ℤ) : (homologyFunctor C n).IsHomological :=
   Functor.isHomological_of_localization Qh
     (homologyFunctor C n) _ (homologyFunctorFactorsh C n)

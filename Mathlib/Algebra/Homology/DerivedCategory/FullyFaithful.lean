@@ -58,4 +58,10 @@ instance (n : ℤ) : (singleFunctor C n).Full where
     have : IsIso s := IsIso.of_isIso_comp_left e.inv s
     exact ⟨inv s ≫ g, by simp⟩
 
+noncomputable instance (n : ℤ) : (CochainComplex.singleFunctor C n ⋙ Q).Full :=
+  inferInstanceAs (singleFunctor C n).Full
+
+noncomputable instance (n : ℤ) : (CochainComplex.singleFunctor C n ⋙ Q).Faithful :=
+  inferInstanceAs (singleFunctor C n).Faithful
+
 end DerivedCategory
