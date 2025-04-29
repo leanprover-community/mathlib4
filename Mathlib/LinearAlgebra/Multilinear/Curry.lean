@@ -247,6 +247,11 @@ theorem currySum_apply (f : MultilinearMap R N M₂)
     (u : (i : ι) → N (Sum.inl i)) (v : (i : ι') → N (Sum.inr i)) :
     currySum f u v = f (Sum.rec u v) := rfl
 
+theorem currySum_apply' {N : Type*} [AddCommMonoid N] [Module R N]
+    (f : MultilinearMap R (fun _ : ι ⊕ ι' ↦ N) M₂)
+    (u : ι → N) (v : ι' → N) :
+    currySum f u v = f (Sum.elim u v) := rfl
+
 @[simp]
 lemma currySum_add (f₁ f₂ : MultilinearMap R N M₂):
     currySum (f₁ + f₂) = currySum f₁ + currySum f₂ := rfl
