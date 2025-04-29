@@ -13,6 +13,10 @@ import Mathlib.CategoryTheory.Localization.Prod
 -/
 universe v₁ v₂ v₁' v₂' v₃ v₄ v u₁ u₂ u₁' u₂' u₃ u₄ u
 
+-- Part of this should be moved to `CategoryTheory.Functor.Derived`,
+-- and the rest should be an adaptation of
+-- `CategoryTheory.Localization.DerivabilityStructure.Derives`
+
 namespace CategoryTheory
 
 open Category
