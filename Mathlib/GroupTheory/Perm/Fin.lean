@@ -316,6 +316,7 @@ lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).1 < n - i
 
 lemma sub_le_right {n : ℕ} (i : Fin n) : n - i.1 ≤ n := by
   simp
+#find_home! natAdd_castLEEmb
 
 variable {n : ℕ} {i j k : Fin n}
 
@@ -355,9 +356,9 @@ theorem cycleIcc_of_le (hij : i ≤ j) (h : j < k) : (cycleIcc hij) k = k := by
     exact lt_def.mpr (by simp [sub_val_of_le hij]; omega)
   simpa only [natAdd_castLEEmb, this] using eq_of_val_eq (by simp; omega)
 
-theorem cycleIcc_of (h1 : i ≤ k) (h2 : k ≤ j) [NeZero n] : haveI hij : i ≤ j := by omega
-    (cycleIcc hij) k = if k = j then i else k + 1 := by
-  have hij : i ≤ j := by omega
+theorem cycleIcc_of (h1 : i ≤ k) (h2 : k ≤ j) [NeZero n] :
+    (cycleIcc (le_trans h1 h2)) k = if k = j then i else k + 1 := by
+  have hij : i ≤ j := le_trans h1 h2
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (sub_le_right i)) := by simp; omega
   simp only [cycleIcc_case hij h1 kin, natAdd_castLEEmb, cycleIcc_simp_lemma h1,
     Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply]
