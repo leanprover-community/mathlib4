@@ -430,9 +430,8 @@ theorem isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
   exact IsSimpleModule.congr (f.quotKerEquivOfSurjective hf)
 
 /-- Schur's Lemma makes the endomorphism ring of a simple module a division ring. -/
-noncomputable instance _root_.Module.End.divisionRing
+noncomputable instance _root_.Module.End.instDivisionRing
     [DecidableEq (Module.End R M)] [IsSimpleModule R M] : DivisionRing (Module.End R M) where
-  __ := Module.End.ring
   inv f := if h : f = 0 then 0 else (LinearEquiv.ofBijective _ <| bijective_of_ne_zero h).symm
   exists_pair_ne := ⟨0, 1, have := IsSimpleModule.nontrivial R M; zero_ne_one⟩
   mul_inv_cancel a a0 := by

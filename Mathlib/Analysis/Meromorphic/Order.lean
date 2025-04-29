@@ -205,7 +205,7 @@ theorem order_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) 
   exact le_add_of_nonneg_right h₁g.meromorphicAt_order_nonneg
 
 /--
-Helper lemma for MeromorphicAt.order_add_of_unequal_order.
+Helper lemma for MeromorphicAt.order_add_of_order_ne.
 -/
 lemma order_add_of_order_lt_order (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
     (h : hf₁.order < hf₂.order) :
@@ -233,12 +233,15 @@ lemma order_add_of_order_lt_order (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromo
 If two meromorphic functions have unequal orders, then the order of their sum is
 exactly the minimum of the orders of the summands.
 -/
-theorem order_add_of_unequal_order (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
+theorem order_add_of_order_ne (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
     (h : hf₁.order ≠ hf₂.order) :
     (hf₁.add hf₂).order = min hf₁.order hf₂.order := by
   rcases lt_or_lt_iff_ne.mpr h with h | h
   · simpa [h.le] using hf₁.order_add_of_order_lt_order hf₂ h
   · simpa [h.le, add_comm] using hf₂.order_add_of_order_lt_order hf₁ h
+
+@[deprecated (since := "2025-04-27")]
+alias order_add_of_unequal_order := order_add_of_order_ne
 
 end MeromorphicAt
 
