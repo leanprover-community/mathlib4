@@ -264,7 +264,8 @@ instance decidableMemKer [DecidableEq M] (f : G →* M) : DecidablePred (· ∈ 
   decidable_of_iff (f x = 1) f.mem_ker
 
 @[to_additive]
-theorem comap_ker (g : N →* P) (f : G →* N) : g.ker.comap f = (g.comp f).ker :=
+theorem comap_ker {P : Type*} [MulOneClass P] (g : N →* P) (f : G →* N) :
+    g.ker.comap f = (g.comp f).ker :=
   rfl
 
 @[to_additive (attr := simp)]

@@ -256,9 +256,8 @@ theorem lift_surjective_of_surjective (φ : G →* M) (hφ : Function.Surjective
 @[to_additive]
 theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
     (QuotientGroup.lift N φ HN).ker = Subgroup.map (QuotientGroup.mk' N) φ.ker := by
-  rw [← Subgroup.toSubmonoid_inj, Subgroup.map_toSubmonoid, MonoidHom.ker_toSubmonoid,
-    MonoidHom.ker_toSubmonoid, ← congr_arg MonoidHom.mker (lift_comp_mk' N φ HN),
-    ← MonoidHom.comap_mker, Submonoid.map_comap_eq_self_of_surjective (mk'_surjective N)]
+  rw [← congrArg MonoidHom.ker (lift_comp_mk' N φ HN), ← MonoidHom.comap_ker,
+    Subgroup.map_comap_eq_self_of_surjective (mk'_surjective N)]
 
 /-- A group homomorphism `f : G →* H` induces a map `G/N →* H/M` if `N ⊆ f⁻¹(M)`. -/
 @[to_additive
