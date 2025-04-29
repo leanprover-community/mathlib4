@@ -115,6 +115,7 @@ to `x` and then back to `v` without revisiting `x` -/
 abbrev Walk.shortCut (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk u v :=
   (w.takeUntil _ hx).append (w.reverse.takeUntil _ (w.mem_support_reverse.2 hx)).reverse
 
+-- TODO change this definition to w.drop.rev.drop.rev (drop_rev_comm says they are the same)
 /-- Given a vertex `x` in a walk `w` form the walk that travels along `w` from the first visit of
 `x` to the last visit of `x` (which may be the same in which case this is `nil' x`) -/
 abbrev Walk.shortClosed (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk x x :=
@@ -147,6 +148,7 @@ lemma Walk.shortCut_not_nil (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ 
   simp only [nil_append_iff, nil_takeUntil, nil_reverse, not_and]
   rintro rfl; contradiction
 
+@[simp]
 lemma Walk.dropUntil_reverse_comm (w : G.Walk u v) (hx : x ∈ w.support) :
   ((w.dropUntil _ hx).reverse.dropUntil _ (by simp)).reverse =
   (((w.reverse.dropUntil _ (w.mem_support_reverse.2 hx)).reverse.dropUntil _ (by simp))):= by
@@ -166,6 +168,10 @@ lemma Walk.dropUntil_reverse_comm (w : G.Walk u v) (hx : x ∈ w.support) :
     · subst b
       simp [hu]
     · simpa [hu, hb] using ih _ hb
+
+lemma Walk.shortClosed_reverse (w : G.Walk u v) (hx : x ∈ w.support) :
+    (w.reverse.shortClosed ((w.mem_support_reverse.2 hx))).reverse = w.shortClosed hx := by
+  simp
 
 @[simp]
 lemma Walk.dropUntil_spec (w : G.Walk u v) (hx : x ∈ w.support) :
