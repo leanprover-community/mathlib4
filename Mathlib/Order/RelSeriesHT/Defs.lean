@@ -10,7 +10,7 @@ import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Order.OrderIsoNat
-
+import Mathlib.Data.List.Destutter
 
 
 /-!
@@ -23,18 +23,20 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 
 variable {α : Type*} (r : Rel α α)
 
-
+/-- `a -[r]→* b` is a type of nonempty lists of elements such that adjacent elements are
+  related by `r`, and such that the list starts/ends with `a`/`b` respectively. -/
 inductive RelSeriesHT {α : Type*} (r : Rel α α): (a : α) → (b : α) → Type _ where
   | singleton (a : α) : RelSeriesHT r a a
   | cons (a : α) {b c: α} (l : RelSeriesHT r b c) (hab : r a b) : RelSeriesHT r a c
 
 variable {r}
 namespace RelSeriesHT
-
+/-- notation for `RelSeriesHT` -/
 scoped notation3 l " -[" rel "]→* " r:arg => RelSeriesHT rel l r
 
+
 /-- the first element of an `r`-series -/
-def head {a b : α} (_l :a -[r]→* b) : α := a
+def head {a _b : α} (_l :a -[r]→* _b) : α := a
 -- (a,b)[r]
 
 @[simp]
@@ -126,6 +128,10 @@ lemma length_singleton (a : α) : (singleton (r := r) a).length = 0 := rfl
 @[simp]
 lemma length_cons (a : α) {b b' : α} (l : b -[r]→* b') (hab : r a b) :
   (l.cons a hab).length = l.length + 1 := rfl
+
+lemma length_pos_of_ne {a b : α} (hne : a ≠ b) (x : a -[r]→* b) :
+  0 < x.length := by
+  cases x <;> simp_all
 
 lemma length_toList {a b : α} (l : a -[r]→* b) : l.toList.length = l.length + 1 := by
   induction l <;> simp_all
@@ -495,6 +501,12 @@ lemma length_reverse {a b : α} (x : a -[r]→* b) :
 end reverse
 
 section map
+
+/--
+For two preorders `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
+can be pushed out to a strict chain of `β` by
+`a₀ < a₁ < ... < aₙ ↦ f a₀ < f a₁ < ... < f aₙ`
+-/
 def map {β : Type*} {s : Rel β β} (f : r →r s) {a b : α} (x : a -[r]→* b) :
     (f a) -[s]→* (f b) := match x with
   | .singleton a => .singleton (f a)
@@ -592,15 +604,15 @@ end RelSeriesHT
 
 namespace RelSeriesHT
 section LE
-/-
+
+/--
 given `x y : a -[r]→* b`, we say that `x` is less than `y` if `y` can be obtained from `a` by
-substituting single steps in `x` for any `rel`-series with the right start and end points.
+substituting single steps or values in `x` for any `r`-series with the right start and end points.
 
 For example, using (· < ·) as a relation on naturals, we have that `[0,2,3] ≤ [0,1,2,3]`
 as we can substitute the `0,2` step with `[0,1,2]`.
 Of note is the fact that if `r a a`, then we have `[a,a] ≤ [a]`.
 -/
-
 protected inductive le {rel : Rel α α} : {a b : α} → (l r : a -[rel]→* b) → Prop where
   | ofSingleton {a : α} (x : a -[rel]→* a) : RelSeriesHT.le (.singleton a) x
   | ofSubstCons {a b : α} (hr : rel a b) (hseries : a -[rel]→* b) {c : α} {l r : b -[rel]→* c}
@@ -657,11 +669,34 @@ end
 @[simp]
 lemma le_def {a b :α} (x y : a -[r]→* b) : x.le y ↔ x ≤ y := Iff.rfl
 
+
 @[simp]
 lemma singleton_le {a : α} (x : a -[r]→* a) : singleton a ≤ x := RelSeriesHT.le.ofSingleton x
 
 lemma cons_le_append (a : α) {b c : α} (hr : r a b) (x : a -[r]→* b) {y y' : b -[r]→* c}
     (hy : y ≤ y') : cons a y hr ≤ (x ++ y') := RelSeriesHT.le.ofSubstCons hr x hy
+
+@[elab_as_elim, induction_eliminator]
+lemma le_induction {motive : {a b : α} → (x y : a -[r]→* b) → x ≤ y → Prop}
+    (ofSingleton : {a : α} → (x : a-[r]→* a) → motive (singleton a) x (singleton_le x))
+    (ofSubstCons : {a b : α} → (hr : r a b) → (hseries : a -[r]→* b) → {c : α} →
+      {y y' : b -[r]→* c} → (hle : y ≤ y') → motive y y' hle →
+      motive (cons a y hr) (hseries ++ y') (cons_le_append a hr hseries hle) )
+    {a b : α}
+    {x y: a -[r]→* b} (hle : x ≤ y)
+     : motive x y hle :=
+  @le.rec α r motive ofSingleton ofSubstCons a b x y hle
+
+@[elab_as_elim, cases_eliminator]
+lemma le_casesOn {motive : {a b : α} → (x y : a -[r]→* b) → x ≤ y → Prop}
+    (ofSingleton : {a : α} → (x : a-[r]→* a) → motive (singleton a) x (singleton_le x))
+    (ofSubstCons : {a b : α} → (hr : r a b) → (hseries : a -[r]→* b) → {c : α} →
+      {y y' : b -[r]→* c} → (hle : y ≤ y') →
+      motive (cons a y hr) (hseries ++ y') (cons_le_append a hr hseries hle) )
+    {a b : α}
+    {x y: a -[r]→* b} (hle : x ≤ y)
+     : motive x y hle :=
+  @le.casesOn α r motive a b x y hle ofSingleton @ofSubstCons
 
 @[simp]
 lemma ofRel_le {a b : α} (hr : r a b) (x : a -[r]→* b) : ofRel hr ≤ x := by
@@ -677,9 +712,9 @@ lemma append_right_mono {a b c : α} (l : a -[r]→* b):
     intro h
     exact cons_le_append a hab (ofRel hab) (ih h)
 
-lemma append_left_mono {a b c : α} (x y : a -[r]→* b) (l : b -[r]→* c):
-  x ≤ y → (x ++ l) ≤ (y ++ l) := by
-  intro h
+lemma append_left_mono {a b c : α} (l : b -[r]→* c):
+  Monotone (α := a -[r]→* b) (· ++ l) := by
+  intro x y h
   induction h with
   | ofSingleton x =>
     simp only [singleton_append]
@@ -693,112 +728,50 @@ lemma append_left_mono {a b c : α} (x y : a -[r]→* b) (l : b -[r]→* c):
     simp_all
     exact cons_le_append _ hr hseries (ih l)
 
+@[simp]
+lemma snoc_le_append {a b : α} {x x' : a -[r]→* b}
+    (hy : x ≤ x') (c : α) (hr : r b c) (y : b -[r]→* c): snoc x c hr ≤ (x' ++ y) := by
+  induction x with
+  | singleton a =>
+    convert cons_le_append _ hr (x' ++ y) (singleton_le (singleton c)) using 1
+    simp
+  | cons a l hab ih =>
+    simp only [snoc_cons]
+    cases hy with
+    | ofSubstCons hr' hseries hle' =>
+      rw [append_assoc]
+      convert cons_le_append a hab (hseries) (ih hle' hr y)
+
+lemma reverse_mono {a b : α} : Monotone (α := a -[r]→* b) (·.reverse) := by
+  intro x y hxy
+  simp only
+  induction hxy with
+  | ofSingleton a => simp
+  | ofSubstCons hr hseries hle hi => simp_all
+
+lemma reverse_strictMono {a b : α} : StrictMono (α := a -[r]→* b) (·.reverse) := by
+  intro x y hxy
+  simp only
+  have hle := reverse_mono hxy.le
+  use hle
+  contrapose hxy
+  simp only [le_def, not_not,not_lt_iff_le_imp_le] at hxy ⊢
+  rw [← reverse_reverse x, ← reverse_reverse y]
+  exact fun _ => reverse_mono hxy
+
+lemma le_iff_destutter_toList_sublist [DecidableEq α] {a b : α} (x y : a-[r]→* b) : x ≤ y ↔
+  (x.toList.destutter (· ≠ ·)).Sublist (y.toList.destutter (· ≠ ·)) := by
+  induction x with
+  | singleton a =>
+    simp only [singleton_le, ne_eq, toList_singleton, List.destutter_singleton,
+      List.singleton_sublist, true_iff]
+    cases y <;> simp_all [List.destutter_cons']
+    apply List.mem_destutter'
+  | cons a l hab ih =>
+    simp_all only [ne_eq, toList_cons,List.destutter_cons']
+
+    sorry
+
 end LE
 
-end RelSeriesHT
-
-namespace Rel
-/-
-Of note in this section, we don't assume the existance of `r`-series between all pairs of points.
-Instead we assume that *if any exist*, the relevant property holds.
-This allows the notions to (mostly) coincide with those for transitive orders.
--/
-open scoped RelSeriesHT
-
-/-- A relation `r` is said to be discrete iff for all points `a`,`b`
-  there is a maximum length of `r`-chains starting at `a` and ending at `b`. -/
-@[mk_iff]
-class IsDiscrete (r : Rel α α) : Prop where
-  /-- A relation `r` is said to be discrete iff for all points `a`, `b`,
-    there is a maximum length of `r`-series starting at `a` and ending at `b` -/
-  isDiscrete (r) (a b : α) : ∃ n, ∀ (y : a -[r]→* b), y.length ≤ n
-
-/-- A relation `r` is said to be dense iff for every two points `a`, `b`,
-  there is no longest `r`-series. For transitive `· < ·`, equivalent to DenselyOrdered. -/
-@[mk_iff]
-class IsDense (r : Rel α α) : Prop where
-  /-- A relation `r` is said to be dense iff for every two points `a` and `b`,
-    there is no longest `r`-series. For transitive `· < ·`, equivalent to DenselyOrdered. -/
-  isDense (r) (a b : α) : ∀ (x : a -[r]→* b), ∃ (y : a -[r]→* b),
-    x.length < y.length
-
-end Rel
-
-namespace RelSeriesHT
-
-lemma isDiscrete_iff_exists_longest_of_nonempty : r.IsDiscrete ↔ ∀ a b,
-    Nonempty (a -[r]→* b) →
-      ∃ z: a -[r]→* b, ∀ y : a -[r]→* b, y.length ≤ z.length := by
-  refine ⟨?_,fun h => ⟨(· -[r]→* · |> Nonempty|> em |>.elim
-      (h _ _ · |>.elim (⟨·.length,·⟩)) (.intro 0 ∘ (· ⟨·⟩ |>.elim)))⟩⟩
-  rintro discrete a b ⟨x⟩
-  obtain ⟨n,hn⟩ := discrete.isDiscrete a b
-  contrapose! hn
-  induction n with
-  | zero =>
-    apply (hn x).imp
-    omega
-  | succ n ih =>
-    obtain ⟨x',hx'⟩ := ih
-    apply (hn x').imp
-    omega
-
-variable (r) in
-noncomputable def longestBetween [r.IsDiscrete] (a b : α) [Nonempty (a -[r]→* b)] :
-    a -[r]→* b :=
-  (isDiscrete_iff_exists_longest_of_nonempty.mp (by assumption) a b (by assumption)).choose
-
-lemma length_le_length_longestBetween [r.IsDiscrete] (a b : α) (y : a -[r]→* b)
-    (z : Nonempty (a -[r]→* b) := ⟨y⟩) : y.length ≤ (@longestBetween _ r _ a b).length :=
-  (isDiscrete_iff_exists_longest_of_nonempty.mp (by assumption) a b (by assumption)).choose_spec y
-
--- variable (r) in
-noncomputable def longerBetween [r.IsDense] {a b : α} (y : a -[r]→* b) : a -[r]→* b :=
-  (‹r.IsDense›.isDense a b y).choose
-
-lemma length_lt_length_longerBetween [r.IsDense] {a b : α} (y : a -[r]→* b) :
-  y.length < (longerBetween y).length :=
-  (‹r.IsDense›.isDense a b y).choose_spec
-
-instance [r.IsDense] : Rel.IsDense (Function.swap r) where
-  isDense a b x := (Rel.IsDense.isDense r b a x.reverse).elim (fun h => ⟨·.reverse,by simp_all⟩)
-
-instance [r.IsDiscrete] : Rel.IsDiscrete (Function.swap r) where
-  isDiscrete a b := (Rel.IsDiscrete.isDiscrete r b a).elim (fun h => ⟨·,(by
-    specialize h ·.reverse
-    simp_all)⟩)
-
-section
-variable {a b : α} {s : a -[r]→* b} {x : α}
-
-theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
-  rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
-  congr!
-  exact finCongr (by rw [hs, zero_add]) |>.injective <| Subsingleton.elim (α := Fin 1) _ _
-
-theorem length_ne_zero_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : s.length ≠ 0 :=
-  fun hs ↦ h.not_subsingleton <| subsingleton_of_length_eq_zero hs
-
-theorem length_pos_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : 0 < s.length :=
-  Nat.pos_iff_ne_zero.mpr <| length_ne_zero_of_nontrivial h
-
-theorem length_ne_zero (irrefl : Irreflexive r) : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
-  refine ⟨?_,length_ne_zero_of_nontrivial⟩
-  intro h
-  contrapose! h
-  simp only [Set.not_nontrivial_iff] at h
-  cases s with
-  | singleton a => rfl
-  | @cons a c _ l hab =>
-    apply (irrefl a).elim
-    convert hab
-    apply h <;> simp
-
-theorem length_pos (irrefl : Irreflexive r) : 0 < s.length ↔ {x | x ∈ s}.Nontrivial :=
-  Nat.pos_iff_ne_zero.trans <| length_ne_zero irrefl
-
-lemma length_eq_zero (irrefl : Irreflexive r) : s.length = 0 ↔ {x | x ∈ s}.Subsingleton := by
-  rw [← not_ne_iff, length_ne_zero irrefl, Set.not_nontrivial_iff]
-
-end
 end RelSeriesHT
