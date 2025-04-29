@@ -147,7 +147,7 @@ theorem IntegrableOn.inter_of_restrict (h : IntegrableOn f s (μ.restrict t)) :
   have := h.mono_set (inter_subset_left (t := t))
   rwa [IntegrableOn, μ.restrict_restrict_of_subset inter_subset_right] at this
 
-lemma Integrable.piecewise {f g : α → E} [DecidablePred (· ∈ s)]
+lemma Integrable.piecewise {f g : α → ε'} [DecidablePred (· ∈ s)]
     (hs : MeasurableSet s) (hf : IntegrableOn f s μ) (hg : IntegrableOn g sᶜ μ) :
     Integrable (s.piecewise f g) μ := by
   rw [IntegrableOn] at hf hg
@@ -165,19 +165,21 @@ theorem IntegrableOn.union {f : α → E} (hs : IntegrableOn f s μ) (ht : Integ
   (hs.add_measure ht).mono_measure <| Measure.restrict_union_le _ _
 
 @[simp]
-theorem integrableOn_union {f : α → E} : IntegrableOn f (s ∪ t) μ ↔ IntegrableOn f s μ ∧ IntegrableOn f t μ :=
+theorem integrableOn_union {f : α → E} :
+    IntegrableOn f (s ∪ t) μ ↔ IntegrableOn f s μ ∧ IntegrableOn f t μ :=
   ⟨fun h => ⟨h.left_of_union, h.right_of_union⟩, fun h => h.1.union h.2⟩
 
+-- TODO: generalise this lemma to enorms!
 @[simp]
-theorem integrableOn_singleton_iff {f : α → ε'} {x : α} [MeasurableSingletonClass α] :
+theorem integrableOn_singleton_iff {f : α → E} {x : α} [MeasurableSingletonClass α] :
     IntegrableOn f {x} μ ↔ f x = 0 ∨ μ {x} < ∞ := by
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
     filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
     simp only [mem_singleton_iff.1 ha]
-  rw [IntegrableOn, integrable_congr this, integrable_const_iff_enorm, isFiniteMeasure_restrict,
+  rw [IntegrableOn, integrable_congr this, integrable_const_iff, isFiniteMeasure_restrict,
     lt_top_iff_ne_top]
-  all_goals sorry -- TODO investigate!
 
+-- This lemma uses integrableOn_union, hence transitively Integrable.add_measure.
 @[simp]
 theorem integrableOn_finite_biUnion {f : α → E} {s : Set β} (hs : s.Finite) {t : β → Set α} :
     IntegrableOn f (⋃ i ∈ s, t i) μ ↔ ∀ i ∈ s, IntegrableOn f (t i) μ := by
@@ -216,6 +218,7 @@ theorem integrableOn_add_measure {f : α → E} :
     ⟨h.mono_measure (Measure.le_add_right le_rfl), h.mono_measure (Measure.le_add_left le_rfl)⟩,
     fun h => h.1.add_measure h.2⟩
 
+-- TODO: investigate this lemma and its friends
 theorem _root_.MeasurableEmbedding.integrableOn_map_iff [MeasurableSpace β] {e : α → β}
     (he : MeasurableEmbedding e) {f : β → E} {μ : Measure α} {s : Set β} :
     IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
@@ -250,31 +253,39 @@ theorem MeasurePreserving.integrableOn_image [MeasurableSpace β] {e : α → β
     IntegrableOn f (e '' s) ν ↔ IntegrableOn (f ∘ e) s μ :=
   ((h₁.restrict_image_emb h₂ s).integrable_comp_emb h₂).symm
 
-theorem integrable_indicator_iff {f : α → E} (hs : MeasurableSet s) :
+section indicator
+
+-- All results in this section hold for any enormed monoid.
+variable {f : α → ε'}
+
+theorem integrable_indicator_iff (hs : MeasurableSet s) :
     Integrable (indicator s f) μ ↔ IntegrableOn f s μ := by
   simp_rw [IntegrableOn, Integrable, hasFiniteIntegral_iff_enorm,
     enorm_indicator_eq_indicator_enorm, lintegral_indicator hs,
     aestronglyMeasurable_indicator_iff hs]
 
-theorem IntegrableOn.integrable_indicator {f : α → E} (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
+theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
     Integrable (indicator s f) μ :=
   (integrable_indicator_iff hs).2 h
 
 @[fun_prop]
-theorem Integrable.indicator {f : α → E} (h : Integrable f μ) (hs : MeasurableSet s) :
+theorem Integrable.indicator (h : Integrable f μ) (hs : MeasurableSet s) :
     Integrable (indicator s f) μ :=
   h.integrableOn.integrable_indicator hs
 
-theorem IntegrableOn.indicator {f : α → E} (h : IntegrableOn f s μ) (ht : MeasurableSet t) :
+theorem IntegrableOn.indicator (h : IntegrableOn f s μ) (ht : MeasurableSet t) :
     IntegrableOn (indicator t f) s μ :=
   Integrable.indicator h ht
 
+-- TODO: try to generalise this lemma; start with indicatorConstLp
 theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Integrable (indicatorConstLp p hs hμs c) μ := by
   rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff hs, IntegrableOn,
     integrable_const_iff, isFiniteMeasure_restrict]
   exact .inr hμs
+
+end indicator
 
 /-- If a function is integrable on a set `s` and nonzero there, then the measurable hull of `s` is
 well behaved: the restriction of the measure to `toMeasurable μ s` coincides with its restriction
@@ -319,7 +330,8 @@ theorem IntegrableOn.of_ae_diff_eq_zero {f : α → E} (hf : IntegrableOn f s μ
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
 if `t` is measurable. -/
-theorem IntegrableOn.of_forall_diff_eq_zero {f : α → E} (hf : IntegrableOn f s μ) (ht : MeasurableSet t)
+theorem IntegrableOn.of_forall_diff_eq_zero {f : α → E}
+    (hf : IntegrableOn f s μ) (ht : MeasurableSet t)
     (h't : ∀ x ∈ t \ s, f x = 0) : IntegrableOn f t μ :=
   hf.of_ae_diff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
 
@@ -405,7 +417,7 @@ theorem integrableAtFilter_atTop_iff [Preorder α] [IsDirected α fun (x1 x2 : �
     IntegrableAtFilter f atTop μ ↔ ∃ a, IntegrableOn f (Ici a) μ :=
   integrableAtFilter_atBot_iff (α := αᵒᵈ)
 
-protected theorem IntegrableAtFilter.add {f g : α → E}
+protected theorem IntegrableAtFilter.add [ContinuousAdd ε'] {f g : α → ε'}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
     IntegrableAtFilter (f + g) l μ := by
   rcases hf with ⟨s, sl, hs⟩
@@ -429,6 +441,10 @@ protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup �
     IntegrableAtFilter (c • f) l μ := by
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.smul c⟩
+
+protected theorem IntegrableAtFilter.enorm (hf : IntegrableAtFilter f l μ) :
+    IntegrableAtFilter (fun x => ‖f x‖ₑ) l μ :=
+  Exists.casesOn hf fun s hs ↦ ⟨s, hs.1, hs.2.enorm⟩
 
 protected theorem IntegrableAtFilter.norm {f : α → E} (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (fun x => ‖f x‖) l μ :=
