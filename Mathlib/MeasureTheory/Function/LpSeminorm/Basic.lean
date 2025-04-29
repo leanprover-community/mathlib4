@@ -270,7 +270,7 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
     eLpNorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ :=
   eLpNorm_const_lt_top_iff_enorm enorm_ne_top hp_ne_zero hp_ne_top
 
-theorem memLp_const_enorm {c : ε'} (hc : ‖c‖ₑ < ⊤) [IsFiniteMeasure μ] :
+theorem memLp_const_enorm {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) [IsFiniteMeasure μ] :
     MemLp (fun _ : α ↦ c) p μ := by
   refine ⟨aestronglyMeasurable_const, ?_⟩
   by_cases h0 : p = 0
@@ -278,21 +278,21 @@ theorem memLp_const_enorm {c : ε'} (hc : ‖c‖ₑ < ⊤) [IsFiniteMeasure μ]
   by_cases hμ : μ = 0
   · simp [hμ]
   rw [eLpNorm_const c h0 hμ]
-  exact ENNReal.mul_lt_top hc (ENNReal.rpow_lt_top_of_nonneg (by simp) (measure_ne_top μ Set.univ))
+  exact ENNReal.mul_lt_top hc.lt_top (ENNReal.rpow_lt_top_of_nonneg (by simp)
+    (measure_ne_top μ Set.univ))
 
 theorem memLp_const (c : E) [IsFiniteMeasure μ] : MemLp (fun _ : α => c) p μ :=
-  memLp_const_enorm enorm_lt_top
+  memLp_const_enorm enorm_ne_top
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_const := memLp_const
 
--- TODO: change hypothesis to ≠ ⊤ instead, also above!
-theorem memLp_top_const_enorm {c : ε'} (hc : ‖c‖ₑ < ⊤) :
+theorem memLp_top_const_enorm {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) :
     MemLp (fun _ : α ↦ c) ∞ μ :=
-  ⟨aestronglyMeasurable_const, by by_cases h : μ = 0 <;> simp [eLpNorm_const _, h, hc]⟩
+  ⟨aestronglyMeasurable_const, by by_cases h : μ = 0 <;> simp [eLpNorm_const _, h, hc.lt_top]⟩
 
 theorem memLp_top_const (c : E) : MemLp (fun _ : α => c) ∞ μ :=
-  memLp_top_const_enorm enorm_lt_top
+  memLp_top_const_enorm enorm_ne_top
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_top_const := memLp_top_const
