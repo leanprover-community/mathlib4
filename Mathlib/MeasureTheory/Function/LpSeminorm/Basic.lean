@@ -979,23 +979,23 @@ theorem MemLp.right_of_add_measure {f : α → ε} (h : MemLp f p (μ + ν)) :
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.right_of_add_measure := MemLp.right_of_add_measure
 
-theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖) p μ :=
-  h.of_le h.aestronglyMeasurable.norm (Eventually.of_forall fun x => by simp)
-
 theorem MemLp.enorm {f : α → ε} (h : MemLp f p μ) : MemLp (‖f ·‖ₑ) p μ :=
   ⟨h.aestronglyMeasurable.enorm.aestronglyMeasurable,
     by simp_rw [MeasureTheory.eLpNorm_enorm, h.eLpNorm_lt_top]⟩
 
+theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖) p μ :=
+  h.of_le h.aestronglyMeasurable.norm (Eventually.of_forall fun x => by simp)
+
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.norm := MemLp.norm
-
-theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
-    MemLp (fun x => ‖f x‖) p μ ↔ MemLp f p μ :=
-  ⟨fun h => ⟨hf, by rw [← eLpNorm_norm]; exact h.2⟩, fun h => h.norm⟩
 
 theorem memLp_enorm_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     MemLp (‖f ·‖ₑ) p μ ↔ MemLp f p μ :=
   ⟨fun h => ⟨hf, by rw [← eLpNorm_enorm]; exact h.2⟩, fun h => h.enorm⟩
+
+theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
+    MemLp (fun x => ‖f x‖) p μ ↔ MemLp f p μ :=
+  ⟨fun h => ⟨hf, by rw [← eLpNorm_norm]; exact h.2⟩, fun h => h.norm⟩
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_iff := memLp_norm_iff
