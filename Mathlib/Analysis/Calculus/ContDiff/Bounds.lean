@@ -445,7 +445,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
         simpa only [Ne, Nat.cast_eq_zero] using i.factorial_ne_zero
       · rw [← pow_add]
         congr 1
-        rw [Nat.add_succ, Nat.succ_inj']
+        rw [Nat.add_succ, Nat.succ_inj]
         exact Nat.add_sub_of_le (Finset.mem_range_succ_iff.1 hi)
     _ ≤ ∑ i ∈ Finset.range (n + 1), (n ! : ℝ) * 1 * C * D ^ (n + 1) * 1 := by
       gcongr with i

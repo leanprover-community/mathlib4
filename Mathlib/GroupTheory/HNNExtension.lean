@@ -370,10 +370,10 @@ noncomputable def unitsSMul (u : ℤˣ) (w : NormalWord d) : NormalWord d :=
     cons g'.1 u ((g'.2 * w.head⁻¹ : G) • w)
       (by simp)
       (by
-        simp only [g', group_smul_toList, Option.mem_def, Option.map_eq_some', Prod.exists,
+        simp only [g', group_smul_toList, Option.mem_def, Option.map_eq_some_iff, Prod.exists,
           exists_and_right, exists_eq_right, group_smul_head, inv_mul_cancel_right,
           forall_exists_index, unitsSMulGroup]
-        simp only [Cancels, Option.map_eq_some', Prod.exists, exists_and_right, exists_eq_right,
+        simp only [Cancels, Option.map_eq_some_iff, Prod.exists, exists_and_right, exists_eq_right,
           not_and, not_exists] at h
         intro u' x hx hmem
         have : w.head ∈ toSubgroup A B u := by
@@ -388,7 +388,7 @@ theorem not_cancels_of_cons_hyp (u : ℤˣ) (w : NormalWord d)
     (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?,
       w.head ∈ toSubgroup A B u → u = u') :
     ¬ Cancels u w := by
-  simp only [Cancels, Option.map_eq_some', Prod.exists,
+  simp only [Cancels, Option.map_eq_some_iff, Prod.exists,
     exists_and_right, exists_eq_right, not_and, not_exists]
   intro hw x hx
   rw [hx] at h2
@@ -628,7 +628,7 @@ theorem exists_normalWord_prod_eq
     · rw [prod_smul, hw'1]
       simp [ReducedWord.prod]
     · have : ¬ Cancels a.1 (a.2 • w') := by
-        simp only [Cancels, group_smul_head, group_smul_toList, Option.map_eq_some',
+        simp only [Cancels, group_smul_head, group_smul_toList, Option.map_eq_some_iff,
           Prod.exists, exists_and_right, exists_eq_right, not_and, not_exists]
         intro hS x hx
         have hx' := congr_arg (Option.map Prod.fst) hx

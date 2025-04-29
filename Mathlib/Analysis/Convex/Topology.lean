@@ -122,7 +122,7 @@ end PseudoMetricSpace
 
 section ContinuousConstSMul
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
@@ -201,6 +201,10 @@ theorem Convex.openSegment_self_interior_subset_interior {s : Set E} (hs : Conve
     (hx : x ∈ s) (hy : y ∈ interior s) : openSegment 𝕜 x y ⊆ interior s :=
   hs.openSegment_closure_interior_subset_interior (subset_closure hx) hy
 
+section
+
+variable [AddRightMono 𝕜]
+
 /-- If `x ∈ closure s` and `y ∈ interior s`, then the segment `(x, y]` is included in `interior s`.
 -/
 theorem Convex.add_smul_sub_mem_interior' {s : Set E} (hs : Convex 𝕜 s) {x y : E}
@@ -225,8 +229,11 @@ theorem Convex.add_smul_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E} 
     (hy : x + y ∈ interior s) {t : 𝕜} (ht : t ∈ Ioc (0 : 𝕜) 1) : x + t • y ∈ interior s :=
   hs.add_smul_mem_interior' (subset_closure hx) hy ht
 
+end
+
 /-- In a topological vector space, the interior of a convex set is convex. -/
-protected theorem Convex.interior {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 (interior s) :=
+protected theorem Convex.interior [ZeroLEOneClass 𝕜] {s : Set E} (hs : Convex 𝕜 s) :
+    Convex 𝕜 (interior s) :=
   convex_iff_openSegment_subset.mpr fun _ hx _ hy =>
     hs.openSegment_closure_interior_subset_interior (interior_subset_closure hx) hy
 
@@ -239,6 +246,8 @@ protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 
   show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab
 
 open AffineMap
+
+variable [IsStrictOrderedRing 𝕜]
 
 /-- A convex set `s` is strictly convex provided that for any two distinct points of
 `s \ interior s`, the line passing through these points has nonempty intersection with
@@ -300,7 +309,7 @@ end ContinuousSMul
 
 section TopologicalSpace
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 
 theorem convex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s ∧ IsClosed s) :
@@ -345,7 +354,7 @@ end TopologicalSpace
 
 section ContinuousConstSMul
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
