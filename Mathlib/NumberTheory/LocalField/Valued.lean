@@ -6,26 +6,24 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import Mathlib.RingTheory.Valuation.Discrete.Basic
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
-/-! # Valued Local Fields
+/-! # (Nonarchimedean) Local Fields
 
-In this file we define the class `ValuedLocalField` on a valued field `K`, requiring that it is
+In this file we define the class `NALocalField` on a field `K`, by extending `Valued K Γ` (for a
+linearly ordered commutative group `Γ`), by requiring that it is
 * complete (with respect to the uniform structure induced by the valuation);
-* that the valuation is discrete (so, in particular, it takes values in a linearly ordered
-  commutative group with zero `Γ` such that `Γˣ` is cyclic and non-trivial); and
+* that the valuation is discrete (so, in particular, `Γˣ` is cyclic and non-trivial); and
 * that the residue field of its unit ball is finite.
-It corresponds to the classical notion of nonarchimedean local field as developed, for instance, in
-Serre's book [serre1968].
+It corresponds to the classical notion of (nonarchimedean) local field as developed, for instance,
+in Serre's book [serre1968] or in the article [serre1967].
 
 ## ToDo
-* Once a more general definition of `LocalField` enters mathlib, provide instances of `LocalField`
-  for every `ValuedLocalField`
-* Show that valued local fields are the same thing as nonarchimedean local fields, the latter being
-  probably defined as non-trivially normed, locally compact fields whose norm is non-archimedean.
-* Study extensions of `ValuedLocalFields` and show that every finite extension of a
-  `ValuedLocalField` is again a `ValuedLocalField`.
+* Show that a topological field is a nonarchimedean local fields if and only if it is complete,
+  locally compact and endowed with a non-archimedean norm.
+* Study extensions of `NALocalFields` and show that every finite extension of a
+  `NALocalField` is again a `NALocalField`.
 
 ## Implementation details
-* The instance of `ValuedLocalField` on any finite extensions of a valued local field cannot be
+* The instance of `NALocalField` on any finite extensions of a local field cannot be
   synthesized, because the base field cannot be found by type-class inference. On the other hand,
   it is possible to define such an instance on every (finite) intermediate extension inside `L/K`
   under the assumption that `K` be a valued local field and `L/K` be separable.
@@ -43,19 +41,19 @@ open Valuation
 
 variable (Γ : outParam Type*) [LinearOrderedCommGroupWithZero Γ] [IsCyclic Γˣ] [Nontrivial Γˣ]
 
-/-- A `ValuedLocalField` is a complete, discretely-valued field with finite residue field. It
+/-- A `NALocalField` is a complete, discretely-valued field with finite residue field. It
 corresponds to the classical notion of nonarchimedean local field as developed, for instance, in
-Serre's book [serre1968]. -/
-class ValuedLocalField (K : Type*) [Field K] extends Valued K Γ where
+Serre's book [serre1968] or in [serre1967]. -/
+class NALocalField (K : Type*) [Field K] extends Valued K Γ where
   complete : CompleteSpace K
   isDiscrete : IsDiscrete <| Valued.v (R := K)
   finiteResidueField : Finite <| IsLocalRing.ResidueField (Valued.v (R := K)).valuationSubring
 
-variable (K : Type*) [Field K] [ValuedLocalField Γ K]
+variable (K : Type*) [Field K] [NALocalField Γ K]
 
-instance : IsDiscrete <| Valued.v (R := K) := ValuedLocalField.isDiscrete
+instance : IsDiscrete <| Valued.v (R := K) := NALocalField.isDiscrete
 
-instance : CompleteSpace K := ValuedLocalField.complete
+instance : CompleteSpace K := NALocalField.complete
 
 instance : Finite <| IsLocalRing.ResidueField (Valued.v (R := K)).valuationSubring :=
-  ValuedLocalField.finiteResidueField
+  NALocalField.finiteResidueField
