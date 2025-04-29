@@ -199,7 +199,7 @@ theorem mk_mem_periodicPts (hn : 0 < n) (hx : IsPeriodicPt f n x) : x ∈ period
 theorem mem_periodicPts : x ∈ periodicPts f ↔ ∃ n > 0, IsPeriodicPt f n x :=
   Iff.rfl
 
-theorem periodicPts_subset_image : periodicPts f ⊆ range f := by
+theorem periodicPts_subset_range : periodicPts f ⊆ range f := by
   intro x h
   rw [mem_periodicPts] at h
   rcases h with ⟨n, _, h⟩
@@ -207,6 +207,9 @@ theorem periodicPts_subset_image : periodicPts f ⊆ range f := by
   nth_rw 1 [← iterate_one f]
   rw [← iterate_add_apply, Nat.add_sub_cancel' (by omega)]
   exact h
+
+@[deprecated (since := "2025-04-27")]
+alias periodicPts_subset_image := periodicPts_subset_range
 
 theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ periodicPts f)
     (hm : IsPeriodicPt f m (f^[n] x)) : IsPeriodicPt f m x := by
@@ -223,8 +226,11 @@ variable (f)
 theorem bUnion_ptsOfPeriod : ⋃ n > 0, ptsOfPeriod f n = periodicPts f :=
   Set.ext fun x => by simp [mem_periodicPts]
 
-theorem iUnion_pNat_ptsOfPeriod : ⋃ n : ℕ+, ptsOfPeriod f n = periodicPts f :=
+theorem iUnion_pnat_ptsOfPeriod : ⋃ n : ℕ+, ptsOfPeriod f n = periodicPts f :=
   iSup_subtype.trans <| bUnion_ptsOfPeriod f
+
+@[deprecated (since := "2025-04-27")]
+alias iUnion_pNat_ptsOfPeriod := iUnion_pnat_ptsOfPeriod
 
 variable {f}
 
