@@ -765,8 +765,6 @@ def mkCLMtoNormedSpace [RingHomIsometric σ] (A : 𝓢(D, E) → G)
       rcases hbound with ⟨s, C, hC, h⟩
       exact ⟨s, ⟨C, hC⟩, h⟩ }
 
-
-
 end CLM
 
 section EvalCLM
