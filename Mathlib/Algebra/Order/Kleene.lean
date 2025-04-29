@@ -104,18 +104,14 @@ abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemS
     le := fun a b ↦ a + b = b
     le_refl := h
     le_trans := fun a b c hab hbc ↦ by
-      simp only
       rw [← hbc, ← add_assoc, hab]
     le_antisymm := fun a b hab hba ↦ by rwa [← hba, add_comm]
     sup := (· + ·)
     le_sup_left := fun a b ↦ by
-      simp only
       rw [← add_assoc, h]
     le_sup_right := fun a b ↦ by
-      simp only
       rw [add_comm, add_assoc, h]
     sup_le := fun a b c hab hbc ↦ by
-      simp only
       rwa [add_assoc, hbc]
     bot := 0
     bot_le := zero_add }
@@ -159,10 +155,9 @@ theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
   add_le_iff.2 ⟨ha, hb⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toOrderedAddCommMonoid :
-    OrderedAddCommMonoid α :=
-  { ‹IdemSemiring α› with
-    add_le_add_left := fun a b hbc c ↦ by
+instance (priority := 100) IdemSemiring.toIsOrderedAddMonoid :
+    IsOrderedAddMonoid α :=
+  { add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
       exact sup_le_sup_left hbc _ }
 

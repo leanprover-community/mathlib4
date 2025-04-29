@@ -46,7 +46,7 @@ theorem taylor_C (x : R) : taylor r (C x) = C x := by simp only [taylor_apply, C
 @[simp]
 theorem taylor_zero' : taylor (0 : R) = LinearMap.id := by
   ext
-  simp only [taylor_apply, add_zero, comp_X, _root_.map_zero, LinearMap.id_comp,
+  simp only [taylor_apply, add_zero, comp_X, map_zero, LinearMap.id_comp,
     Function.comp_apply, LinearMap.coe_comp]
 
 theorem taylor_zero (f : R[X]) : taylor 0 f = f := by rw [taylor_zero', LinearMap.id_apply]

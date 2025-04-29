@@ -586,6 +586,21 @@ theorem closure_prod {s : Set M} {t : Set N} (hs : 1 ∈ s) (ht : 1 ∈ t) :
       map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, ht⟩,
       map_le_of_le_comap _ <| closure_le.2 fun _y hy => subset_closure ⟨hs, hy⟩⟩)
 
+@[to_additive (attr := simp) closure_prod_zero]
+lemma closure_prod_one (s : Set M) : closure (s ×ˢ ({1} : Set N)) = (closure s).prod ⊥ :=
+  le_antisymm
+    (closure_le.2 <| Set.prod_subset_prod_iff.2 <| .inl ⟨subset_closure, .rfl⟩)
+    (prod_le_iff.2 ⟨
+      map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, rfl⟩,
+      by simp⟩)
+
+@[to_additive (attr := simp) closure_zero_prod]
+lemma closure_one_prod (t : Set N) : closure (({1} : Set M) ×ˢ t) = .prod ⊥ (closure t) :=
+  le_antisymm
+    (closure_le.2 <| Set.prod_subset_prod_iff.2 <| .inl ⟨.rfl, subset_closure⟩)
+    (prod_le_iff.2 ⟨by simp,
+      map_le_of_le_comap _ <| closure_le.2 fun _y hy => subset_closure ⟨rfl, hy⟩⟩)
+
 end Submonoid
 
 namespace MonoidHom
@@ -651,7 +666,7 @@ theorem mrange_id : mrange (MonoidHom.id M) = ⊤ := by
   simp [mrange_eq_map]
 
 @[to_additive]
-theorem map_mrange (g : N →* P) (f : M →* N) : f.mrange.map g = mrange (comp g f) := by
+theorem map_mrange (g : N →* P) (f : M →* N) : (mrange f).map g = mrange (comp g f) := by
   simpa only [mrange_eq_map] using (⊤ : Submonoid M).map_map g f
 
 @[to_additive]
@@ -751,7 +766,7 @@ instance decidableMemMker [DecidableEq N] (f : F) : DecidablePred (· ∈ mker f
   decidable_of_iff (f x = 1) mem_mker
 
 @[to_additive]
-theorem comap_mker (g : N →* P) (f : M →* N) : g.mker.comap f = mker (comp g f) :=
+theorem comap_mker (g : N →* P) (f : M →* N) : (mker g).comap f = mker (comp g f) :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -759,7 +774,7 @@ theorem comap_bot' (f : F) : (⊥ : Submonoid N).comap f = mker f :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem restrict_mker (f : M →* N) : mker (f.restrict S) = f.mker.comap S.subtype :=
+theorem restrict_mker (f : M →* N) : mker (f.restrict S) = (MonoidHom.mker f).comap S.subtype :=
   rfl
 
 @[to_additive]
@@ -781,7 +796,7 @@ theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneC
 
 @[to_additive mker_prod_map]
 theorem mker_prod_map {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
-    (g : M' →* N') : mker (prodMap f g) = f.mker.prod (mker g) := by
+    (g : M' →* N') : mker (prodMap f g) = (mker f).prod (mker g) := by
   rw [← comap_bot', ← comap_bot', ← comap_bot', ← prod_map_comap_prod', bot_prod_bot]
 
 @[to_additive (attr := simp)]
@@ -944,7 +959,7 @@ def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
     M ≃* MonoidHom.mrange f :=
   { f.mrangeRestrict with
     toFun := f.mrangeRestrict
-    invFun := g ∘ f.mrange.subtype
+    invFun := g ∘ (MonoidHom.mrange f).subtype
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|

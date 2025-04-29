@@ -43,11 +43,11 @@ def nerve₂Adj.counit.app (C : Type u) [SmallCategory C] :
     (nerveFunctor₂.obj (Cat.of C)).HomotopyCategory ⥤ C := by
   fapply Quotient.lift
   · exact
-      (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
+    (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
   · intro x y f g rel
     obtain ⟨φ⟩ := rel
     simpa [ReflQuiv.adj, Quot.liftOn, Cat.FreeRefl.quotientFunctor, Quotient.functor,
-        Quiv.adj, OneTruncation₂.nerveHomEquiv] using
+        pathComposition, Quiv.adj, OneTruncation₂.nerveHomEquiv] using
       φ.map_comp (X := 0) (Y := 1) (Z := 2) (homOfLE (by decide)) (homOfLE (by decide))
 
 @[simp]
@@ -170,7 +170,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
     nerve_obj, oneTruncation₂_obj, ReflQuiv.of_val, Nat.reduceAdd, mk.app_two,
     Functor.comp_map, op_map, Quiver.Hom.unop_op]
   unfold δ₂ inclusion
-  simp only [fullSubcategoryInclusion.map]
+  simp only [ObjectProperty.ι_map]
   fin_cases i
   · simp only [Fin.zero_eta]
     show _ = (nerve C).δ 0 _
@@ -450,7 +450,7 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
           ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, Fk, uF, ComposableArrows.hom, Fh]
       replace lem1 : HEq (uF'.map (h ≫ k)) (Fhk.map' 0 2) := by
         refine HEq.trans (b := Fhk'.map' 0 1) ?_ lem1
-        simp only [Nat.reduceAdd, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int, Int.reduceSub,
+        simp only [Nat.reduceAdd, id_eq, Int.reduceNeg, Int.cast_ofNat_Int, Int.reduceSub,
           Int.reduceAdd, Nat.cast_ofNat, Fin.zero_eta, Fin.isValue, Fin.mk_one,
           ComposableArrows.map', homOfLE_leOfHom, Fk, uF, Fh, uF']
         dsimp

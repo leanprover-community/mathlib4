@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
 import Mathlib.Algebra.Category.Grp.FiniteGrp
-import Mathlib.Topology.Algebra.ClosedSubgroup
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Category.Profinite.Basic
+import Mathlib.Topology.Separation.Connected
 /-!
 
 # Category of Profinite Groups
@@ -93,7 +94,7 @@ structure ProfiniteAddGrp.Hom (A B : ProfiniteAddGrp.{u}) where
   hom' : A →ₜ+ B
 
 /-- The type of morphisms in `ProfiniteGrp`. -/
-@[to_additive (attr := ext) existing]
+@[to_additive existing (attr := ext)]
 structure ProfiniteGrp.Hom (A B : ProfiniteGrp.{u}) where
   private mk ::
   /-- The underlying `ContinuousMonoidHom`. -/

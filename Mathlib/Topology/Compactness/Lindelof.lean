@@ -632,9 +632,6 @@ theorem Topology.IsClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : IsClo
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) :=
   hf.isInducing.isLindelof_preimage (hf.isClosed_range) hK
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.isLindelof_preimage := IsClosedEmbedding.isLindelof_preimage
-
 /-- A closed embedding is proper, ie, inverse images of Lindelöf sets are contained in Lindelöf.
 Moreover, the preimage of a Lindelöf set is Lindelöf, see
 `Topology.IsClosedEmbedding.isLindelof_preimage`. -/
@@ -642,9 +639,6 @@ theorem Topology.IsClosedEmbedding.tendsto_coLindelof {f : X → Y} (hf : IsClos
     Tendsto f (Filter.coLindelof X) (Filter.coLindelof Y) :=
   hasBasis_coLindelof.tendsto_right_iff.mpr fun _K hK =>
     (hf.isLindelof_preimage hK).compl_mem_coLindelof
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.tendsto_coLindelof := IsClosedEmbedding.tendsto_coLindelof
 
 /-- Sets of subtype are Lindelöf iff the image under a coercion is. -/
 theorem Subtype.isLindelof_iff {p : X → Prop} {s : Set { x // p x }} :
@@ -667,15 +661,9 @@ protected theorem Topology.IsClosedEmbedding.nonLindelofSpace [NonLindelofSpace 
     (hf : IsClosedEmbedding f) : NonLindelofSpace Y :=
   nonLindelofSpace_of_neBot hf.tendsto_coLindelof.neBot
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.nonLindelofSpace := IsClosedEmbedding.nonLindelofSpace
-
 protected theorem Topology.IsClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X → Y}
     (hf : IsClosedEmbedding f) : LindelofSpace X :=
   ⟨by rw [hf.isInducing.isLindelof_iff, image_univ]; exact hf.isClosed_range.isLindelof⟩
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.LindelofSpace := IsClosedEmbedding.LindelofSpace
 
 /-- Countable topological spaces are Lindelof. -/
 instance (priority := 100) Countable.LindelofSpace [Countable X] : LindelofSpace X where
