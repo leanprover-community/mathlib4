@@ -63,8 +63,6 @@ variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
 
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
   Nat.min_eq_left Nat.min_eq_right Nat.max_eq_left Nat.max_eq_right
-  -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
-  -- Nat.bit1_ne_bit0
 
 attribute [simp] Nat.min_eq_left Nat.min_eq_right
 
