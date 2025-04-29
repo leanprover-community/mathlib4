@@ -18,16 +18,20 @@ open Opposite Limits Bicategory
 
 namespace Presieve
 
-variable {C : Type u} [Category.{v} C] (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Presieve X)
+variable {C : Type u} [Category.{v} C] (P : Cᵒᵖ ⥤ Type w) {S : C}
+
+section
+
+variable (R : Presieve S)
 
 @[simps]
-def toCompatible (s : P.obj (op X)) :
+def toCompatible (R : Presieve S) (s : P.obj (op S)) :
     Subtype (FamilyOfElements.Compatible (P := P) (R := R)) where
   val Y f hf := P.map f.op s
   property Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ fac := by
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp, fac]
 
-lemma isSheafFor_iff_bijective_toCompatible (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) :
+lemma isSheafFor_iff_bijective_toCompatible :
     IsSheafFor P R ↔ Function.Bijective (toCompatible P R) := by
   constructor
   · intro h
@@ -49,6 +53,39 @@ lemma isSheafFor_iff_bijective_toCompatible (P : Cᵒᵖ ⥤ Type w) (R : Presie
       ext
       funext Y f hf
       simp only [toCompatible_coe, hs₁ f hf, hs₂ f hf]
+
+end
+
+variable {ι : Type t} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
+
+@[simps]
+def Arrows.toCompatible (s : P.obj (op S)) :
+    Subtype (Arrows.Compatible P f) where
+  val i := P.map (f i).op s
+  property i j Y pi pj w := by simp only [← FunctorToTypes.map_comp_apply, ← op_comp, w]
+
+lemma isSheafFor_ofArrows_iff_bijective_toCompatible :
+    IsSheafFor P (ofArrows _ f) ↔ Function.Bijective (Arrows.toCompatible P f) := by
+  constructor
+  · intro h
+    constructor
+    · intro s₁ s₂ hs
+      simp only [Subtype.ext_iff] at hs
+      apply h.isSeparatedFor.ext
+      rintro _ _ ⟨i⟩
+      exact congr_fun hs i
+    · rw [isSheafFor_arrows_iff] at h
+      rintro ⟨x, hx⟩
+      obtain ⟨s, hs⟩ := (h x hx).exists
+      exact ⟨s, by aesop⟩
+  · rw [isSheafFor_arrows_iff]
+    intro h x hx
+    apply existsUnique_of_exists_of_unique
+    · obtain ⟨s, hs⟩ := h.surjective ⟨x, hx⟩
+      simp only [Subtype.ext_iff] at hs
+      exact ⟨s, congr_fun hs⟩
+    · intro s₁ s₂ hs i
+      apply h.injective (by aesop)
 
 end Presieve
 
@@ -86,23 +123,31 @@ lemma toDescentData_fullyFaithful_iff :
         map_preimage := (Equiv.ofBijective _ (h _ _)).right_inv
       }⟩⟩
   · refine forall_congr' (fun M ↦ forall_congr' (fun N ↦ ?_))
-    -- instead we need a variant of `isSheafFor_arrows_iff`
-    rw [Presieve.isSheafFor_iff_bijective_toCompatible]
-    let R := (Presieve.ofArrows (X := Over.mk (𝟙 S)) (fun (i : ι) ↦ Over.mk (f i))
-            (fun (i : ι) ↦ Over.homMk (f i)))
-    let T := Subtype (Presieve.FamilyOfElements.Compatible (P := F.presheafHom M N) (R := R))
+    rw [Presieve.isSheafFor_ofArrows_iff_bijective_toCompatible]
+    let T := Subtype (Presieve.Arrows.Compatible (P := F.presheafHom M N)
+      (B := Over.mk (𝟙 S)) (X := (fun (i : ι) ↦ Over.mk (f i)))
+      (fun (i : ι) ↦ Over.homMk (f i)))
     let α : ((F.toDescentData f).obj M ⟶ (F.toDescentData f).obj N) ≃ T := {
-      toFun g := ⟨fun Y f hf ↦ by
-        sorry, sorry⟩
-      invFun := sorry
-      left_inv := sorry
-      right_inv := sorry
+      toFun φ := ⟨fun i ↦ φ.hom i, fun i j Z gi gj w ↦ by
+        replace w := (Over.forget _).congr_map w
+        dsimp at w
+        sorry⟩
+      invFun ψ :=
+        { hom i := ψ.1 i
+          comm := by
+            -- needs specialized constructor for morphisms
+            sorry }
+      left_inv _ := rfl
+      right_inv _ := rfl
     }
     let β : (M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S))) :=
       Equiv.ofBijective _ (Functor.FullyFaithful.map_bijective
         (Functor.FullyFaithful.ofFullyFaithful (F.map (.toLoc (𝟙 (op S))))) M N)
     have : Function.comp α (F.toDescentData f).map =
-      (Presieve.toCompatible (F.presheafHom M N) R).comp β := sorry
+      (Presieve.Arrows.toCompatible _ _).comp β := by
+        ext φ i
+        dsimp [α, β]
+        sorry
     rw [← Function.Bijective.of_comp_iff' α.bijective, this,
       Function.Bijective.of_comp_iff _ β.bijective]
 
