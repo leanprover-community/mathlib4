@@ -23,6 +23,10 @@ in Serre's book [serre1968] or in the article [serre1967].
   `NALocalField` is again a `NALocalField`.
 
 ## Implementation details
+* The reason for chosing to extend `Valued` is to ensure that the valuation is *unique* and is
+  compatible with the topology. This could be unbundled to separate the valuation and its
+  compatibility with the topology, but at the time of first providing the defintion of local fields
+  these classes are not well developed in mathlib.
 * The instance of `NALocalField` on any finite extensions of a local field cannot be
   synthesized, because the base field cannot be found by type-class inference. On the other hand,
   it is possible to define such an instance on every (finite) intermediate extension inside `L/K`
