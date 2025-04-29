@@ -17,6 +17,12 @@ We define two new walks `Walk.shortCut` and `Walk.shortClosed` where `w.shortCut
 that travels along `w` from `u` to `x` and then back to `v` without revisiting `x` and
 `w.shortClosed hx` is the closed walk that travels along `w` from the first visit of `x` to the last
  visit.
+
+We use these to construct an odd cycle from an odd length closed walk.
+
+[More generally we could define the `w.CyclesAndPaths` (of a walk `w : G.Walk u v`)
+to be a list of walks that when appended give `w` while each is either a cycle or
+path.]
 -/
 
 namespace SimpleGraph
@@ -65,7 +71,7 @@ lemma Walk.isCycle_or_nil_or_length_two_of_support_tail_nodup {u : α} (w : G.Wa
     | cons h w =>
       rw [support_cons, List.tail_cons] at hn
       rw [edges_cons]
-      apply nodup_cons.2 ⟨?_,edges_nodup_of_support_nodup hn⟩
+      apply nodup_cons.2 ⟨?_, edges_nodup_of_support_nodup hn⟩
       intro hf
       aesop
 
@@ -141,22 +147,11 @@ lemma Walk.shortCut_not_nil (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ 
   simp only [nil_append_iff, nil_takeUntil, nil_reverse, not_and]
   rintro rfl; contradiction
 
-lemma Walk.dropUntil_reverse_takeUntil (w : G.Walk u v) (hx : x ∈ w.support) :
-  (w.dropUntil _ hx).reverse.takeUntil _ (end_mem_support ..) =
-  w.reverse.takeUntil _ (w.mem_support_reverse.2 hx) := by
-  conv_rhs =>
-    enter [1]
-    rw [← take_spec w hx, reverse_append]
-  rw [ takeUntil_append_of_mem_left _ _ (by simp)]
-
-lemma Walk.reverse_dropUntil_reverse_takeUntil_eq_takeUntil (w : G.Walk u v) (hx : x ∈ w.support) :
-  (w.reverse.dropUntil _ (w.mem_support_reverse.2 hx)).reverse.takeUntil _ (by simp) =
-  w.takeUntil _ hx := by
-  simp_rw [w.reverse.dropUntil_reverse_takeUntil (by simpa), reverse_reverse]
-
-lemma Walk.dropUntil_reverse_comm (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) :
+lemma Walk.dropUntil_reverse_comm (w : G.Walk u v) (hx : x ∈ w.support) :
   ((w.dropUntil _ hx).reverse.dropUntil _ (by simp)).reverse =
   (((w.reverse.dropUntil _ (w.mem_support_reverse.2 hx)).reverse.dropUntil _ (by simp))):= by
+  by_cases hu : x = u
+  · subst x; simp
   induction w with
   | nil => rw [mem_support_nil_iff] at hx; exact (hu hx).elim
   | @cons _ b _ _ p ih =>
@@ -172,14 +167,15 @@ lemma Walk.dropUntil_reverse_comm (w : G.Walk u v) (hx : x ∈ w.support) (hu : 
       simp [hu]
     · simpa [hu, hb] using ih _ hb
 
-lemma Walk.dropUntil_spec (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) :
+@[simp]
+lemma Walk.dropUntil_spec (w : G.Walk u v) (hx : x ∈ w.support) :
     (w.shortClosed hx).append (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse =
     w.dropUntil x hx := by
   have hc := congr_arg Walk.reverse <| take_spec (w.dropUntil _ hx).reverse (end_mem_support _)
   rw [Walk.reverse_reverse, ← hc, Walk.reverse_append] at *
   symm
   congr! 1
-  · exact w.dropUntil_reverse_comm hx hu
+  · exact w.dropUntil_reverse_comm hx
   · congr! 1
     conv_rhs =>
       enter [1]
@@ -187,12 +183,12 @@ lemma Walk.dropUntil_spec (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u)
     rw [takeUntil_append_of_mem_left]
 
 /-- w.shortCut1 ++ w.shortClosed ++ w.shortCut2 = w -/
-lemma Walk.take_shortClosed_reverse_spec (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u) :
+lemma Walk.take_shortClosed_reverse_spec (w : G.Walk u v) (hx : x ∈ w.support) :
     (w.takeUntil _ hx).append ((w.shortClosed hx).append
       (w.reverse.takeUntil _ (w.mem_support_reverse.2 hx)).reverse) = w := by
   conv_rhs =>
     rw [← take_spec w hx]
-  rw [w.dropUntil_spec hx hu]
+  rw [w.dropUntil_spec hx]
 
 lemma Walk.count_reverse {y : α} (w : G.Walk u v) :
     w.reverse.support.count y = w.support.count y := by
@@ -225,7 +221,7 @@ lemma Walk.shortClosed_count_le {y : α} (w : G.Walk u v) (hx : x ∈ w.support)
     rw [List.count_reverse]
     apply w.reverse.dropUntil_count_le
   · conv_rhs =>
-      rw [← w.take_shortClosed_reverse_spec hx hu]
+      rw [← w.take_shortClosed_reverse_spec hx]
     simp_rw [support_append, count_append]
     by_cases hy : x = y
     · rw [List.count_tail (by simp)]
@@ -240,7 +236,7 @@ lemma Walk.shortClosed_count_le {y : α} (w : G.Walk u v) (hx : x ∈ w.support)
 lemma Walk.shortClosed_count_le_two {u x : α} (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u)
   (h2 : w.support.count u ≤ 2) : u ∉ (w.shortClosed hx).support := by
   intro hf
-  have := congr_arg Walk.support <| w.take_shortClosed_reverse_spec hx hne
+  have := congr_arg Walk.support <| w.take_shortClosed_reverse_spec hx
   apply_fun List.count u at this
   rw [← this] at h2
   simp_rw [support_append, count_append] at h2
@@ -260,27 +256,22 @@ lemma Walk.shortClosed_count_le_two {u x : α} (w : G.Walk u u) (hx : x ∈ w.su
 
 lemma Walk.shortCut_count_le {y : α} (w : G.Walk u v) (hx : x ∈ w.support) :
     (w.shortCut hx).support.count y ≤ w.support.count y := by
-  by_cases hu : x = u
-  · subst x
-    simp only [shortCut_start, support_reverse, List.count_reverse]
-    rw [←w.count_reverse]
-    apply w.reverse.takeUntil_count_le
-  · rw [shortCut]
-    conv_rhs =>
-      rw [← w.take_shortClosed_reverse_spec hx hu]
-    simp_rw [support_append, count_append]
-    gcongr
-    rw [List.count_tail (by simp), List.count_tail (by simp)]
-    by_cases hy : x = y
-    · subst y
-      simp
-    · simp only [support_reverse, List.count_reverse, head_reverse, getLast_support, beq_iff_eq,
-      hy, ↓reduceIte, tsub_zero, tail_reverse, count_append, ne_eq, support_ne_nil,
-      not_false_eq_true, head_append_of_ne_nil, head_support]
-      rw [← List.reverse_reverse (w.reverse.takeUntil _ (by simp [hx])).support]
-      rw [List.dropLast_reverse, List.reverse_reverse, List.count_reverse]
-      rw [List.count_tail (by simp)]
-      simp [hy]
+  rw [shortCut]
+  conv_rhs =>
+    rw [← w.take_shortClosed_reverse_spec hx]
+  simp_rw [support_append, count_append]
+  gcongr
+  rw [List.count_tail (by simp), List.count_tail (by simp)]
+  by_cases hy : x = y
+  · subst y
+    simp
+  · simp only [support_reverse, List.count_reverse, head_reverse, getLast_support, beq_iff_eq,
+    hy, ↓reduceIte, tsub_zero, tail_reverse, count_append, ne_eq, support_ne_nil,
+    not_false_eq_true, head_append_of_ne_nil, head_support]
+    rw [← List.reverse_reverse (w.reverse.takeUntil _ (by simp [hx])).support]
+    rw [List.dropLast_reverse, List.reverse_reverse, List.count_reverse]
+    rw [List.count_tail (by simp)]
+    simp [hy]
 
 lemma Walk.not_mem_support_reverse_tail_takeUntil (w : G.Walk u v) (hx : x ∈ w.support) :
     x ∉ (w.takeUntil x hx).support.reverse.tail := by
@@ -289,12 +280,12 @@ lemma Walk.not_mem_support_reverse_tail_takeUntil (w : G.Walk u v) (hx : x ∈ w
   simp at hx2
 
 open List
-/-- If `x` is a repeated vertex of the walk `w` and not the first vertex then `w.shortClosed hx` is
+/-- If `x` is a repeated vertex of the walk `w` then `w.shortClosed hx` is
 a non-nil closed walk. -/
-lemma Walk.shortClosed_not_nil_of_one_lt_count (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ u)
+lemma Walk.shortClosed_not_nil_of_one_lt_count (w : G.Walk u v) (hx : x ∈ w.support)
     (h2 : 1 < w.support.count x) : ¬(w.shortClosed hx).Nil := by
   intro h
-  have hs := dropUntil_spec w hx hu
+  have hs := dropUntil_spec w hx
   have : w.dropUntil x hx = (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse := by
     rw [← hs, h.eq_nil]
     exact Walk.nil_append _
@@ -310,15 +301,9 @@ lemma Walk.shortClosed_not_nil_of_one_lt_count (w : G.Walk u v) (hx : x ∈ w.su
 
 lemma Walk.length_shortCut_add_shortClosed (w : G.Walk u v) (hx : x ∈ w.support) :
     (w.shortCut hx).length + (w.shortClosed hx).length = w.length := by
-  rw [← Walk.length_takeUntil_add_dropUntil hx]
-  by_cases hu : x ≠ u
-  · rw [← w.dropUntil_spec hx hu, shortClosed, shortCut]
-    simp only [length_append, length_reverse]
-    omega
-  · rw [not_not] at hu
-    simp only [hu, shortCut_start, length_reverse, length_takeUntil_add_dropUntil]
-    rw [w.shortClosed_of_eq  _ w.start_mem_support hu.symm, length_copy]
-    simp
+  simp_rw [← Walk.length_takeUntil_add_dropUntil hx, ← w.dropUntil_spec hx, shortClosed, shortCut,
+            length_append, length_reverse]
+  omega
 
 lemma Walk.count_support_rotate_new (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u) :
   (w.rotate hx).support.count x = w.support.count x + 1 := by
@@ -345,12 +330,13 @@ lemma Walk.count_support_rotate_other (w : G.Walk u u) (hx : x ∈ w.support) (h
 /--
 Given a closed walk `w : G.Walk u u` and a vertex `x ∈ w.support` we can form a new closed walk
 `w.shorterOdd hx`. If `w.length` is odd then this walk is also odd. Morever if `x` occured more
-than once in `w` then `w.shorterOdd hx` is strictly shorter than `w`.
+than once in `w` and `x ≠ u` then `w.shorterOdd hx` is strictly shorter than `w`.
 -/
 def Walk.shorterOdd {u : α} (p : G.Walk u u) {x : α} (hx : x ∈ p.support) : G.Walk x x :=
   if ho : Odd (p.shortClosed hx).length then
     p.shortClosed hx
   else
+  -- We rotate this walk to be able to return a `G.Walk x x` in both cases
     (p.shortCut hx).rotate (by simp)
 
 lemma Walk.darts_shorterOdd_subset {u : α} (p : G.Walk u u) {x : α} (hx : x ∈ p.support) :
@@ -398,7 +384,7 @@ lemma Walk.length_shorterOdd_lt_length {p : G.Walk u u} {x : α} (hx : x ∈ p.s
   · rw [lt_add_iff_pos_left, ← not_nil_iff_lt_length]
     exact p.shortCut_not_nil hx hne
   · rw [Walk.length_rotate, lt_add_iff_pos_right, ← not_nil_iff_lt_length]
-    exact p.shortClosed_not_nil_of_one_lt_count hx hne h2
+    exact p.shortClosed_not_nil_of_one_lt_count hx h2
 
 lemma Walk.length_shorterOdd_lt_length' {p : G.Walk u u}
     (h : p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x) ≠ []) :
@@ -407,24 +393,28 @@ lemma Walk.length_shorterOdd_lt_length' {p : G.Walk u u}
   rw [List.mem_filter, decide_eq_true_eq] at hm
   exact p.length_shorterOdd_lt_length hm.1 hm.2.1 hm.2.2
 
-def Walk.shorterOdd2 {u : α} (p : G.Walk u u) : G.Walk u u  :=
+/--
+shorterOdd' is useful to convert a closed walk `p : G.Walk u u` where `u` occurs more
+than twice but all other vertices occur once into an (odd) cycle (see `cutVert`).
+-/
+private def Walk.shorterOdd' {u : α} (p : G.Walk u u) : G.Walk u u  :=
   match p with
-  | Walk.nil' u => nil' u
-  | Walk.cons h p => by
+  | .nil' u => nil' u
+  | .cons h p => by
     have hy : (p.cons h).snd ∈ (p.cons h).support := by simp
-    have hu : u ∈ ((p.cons h).rotate hy).support := by
-      exact (mem_support_rotate_iff hy).2 (p.cons h).start_mem_support
+    have hu : u ∈ ((p.cons h).rotate hy).support :=
+      (mem_support_rotate_iff hy).2 (p.cons h).start_mem_support
     exact ((p.cons h).rotate hy).shorterOdd hu
 
-lemma Walk.length_shorterOdd2 {u : α} (p : G.Walk u u) (hp : 2 < p.support.count u):
-    p.shorterOdd2.length < p.length := by
+lemma Walk.length_shorterOdd' {u : α} (p : G.Walk u u) (hp : 2 < p.support.count u):
+    p.shorterOdd'.length < p.length := by
   cases p with
   | nil => simp at hp
   | cons h p =>
     have hy : (p.cons h).snd ∈ (p.cons h).support := by simp
-    have hu : u ∈ ((p.cons h).rotate hy).support := by
-      exact (mem_support_rotate_iff hy).2 (p.cons h).start_mem_support
-    rw [shorterOdd2]
+    have hu : u ∈ ((p.cons h).rotate hy).support :=
+       (mem_support_rotate_iff hy).2 (p.cons h).start_mem_support
+    rw [shorterOdd']
     have : ((p.cons h).rotate hy).length = (p.cons h).length := by simp
     rw [← this]
     have : u ≠ (p.cons h).snd := by simpa using h.ne
@@ -432,127 +422,126 @@ lemma Walk.length_shorterOdd2 {u : α} (p : G.Walk u u) (hp : 2 < p.support.coun
     rw [count_support_rotate_old _ hy (Ne.symm this)]
     omega
 
-lemma Walk.count_le_shorterOdd2 {u x : α} (p : G.Walk u u) (hne : x ≠ u) (h2 : p.snd ≠ x):
-    p.shorterOdd2.support.count x ≤ p.support.count x := by
+lemma Walk.count_le_shorterOdd' {u x : α} (p : G.Walk u u) (hne : x ≠ u) (h2 : p.snd ≠ x):
+    p.shorterOdd'.support.count x ≤ p.support.count x := by
   cases p with
-  | nil => simp [shorterOdd2]
+  | nil => simp [shorterOdd']
   | @cons _ y _ h p =>
     have hy : (p.cons h).snd ∈ (p.cons h).support := by simp
     have hu : u ∈ ((p.cons h).rotate hy).support := by
       exact (mem_support_rotate_iff hy).2 (p.cons h).start_mem_support
     by_cases ho : Odd (((p.cons h).rotate hy).shortClosed hu).length
-    · simp only [shorterOdd2, shorterOdd, getVert_cons_succ, ho, ↓reduceDIte]
+    · simp only [shorterOdd', shorterOdd, getVert_cons_succ, ho, ↓reduceDIte]
       apply le_trans
       · apply Walk.shortClosed_count_le
       · rw [Walk.count_support_rotate_other _  hy (by simpa using h2) (Ne.symm hne) ]
-    · simp only [shorterOdd2, shorterOdd, getVert_cons_succ, ho, ↓reduceDIte]
+    · simp only [shorterOdd', shorterOdd, getVert_cons_succ, ho, ↓reduceDIte]
       rw [Walk.count_support_rotate_other _ (by simp) (Ne.symm hne) (by simpa using h2)]
       apply le_trans
       · apply Walk.shortCut_count_le
       · rw [Walk.count_support_rotate_other _  hy (by simpa using h2) (Ne.symm hne) ]
 
-lemma Walk.count_le_shorterOdd2_of_snd {u : α} (p : G.Walk u u) (hne : p.snd ≠ u)
-    (h1 : p.support.count p.snd ≤ 1) : p.shorterOdd2.support.count p.snd ≤ 1 := by
+lemma Walk.count_le_shorterOdd'_of_snd {u : α} (p : G.Walk u u) (hne : p.snd ≠ u)
+    (h1 : p.support.count p.snd ≤ 1) : p.shorterOdd'.support.count p.snd ≤ 1 := by
   apply h1.trans'
   cases p with
-  | nil => simp [shorterOdd2]
+  | nil => simp [shorterOdd']
   | cons h p =>
     have hy : (p.cons h).snd ∈ (p.cons h).support := by simp
     have hu : u ∈ ((p.cons h).rotate hy).support := by
       exact (mem_support_rotate_iff hy).2 (p.cons h).start_mem_support
     by_cases ho : Odd (((p.cons h).rotate hy).shortClosed hu).length
-    · simp only [shorterOdd2, shorterOdd, ho, ↓reduceDIte]
+    · simp only [shorterOdd', shorterOdd, ho, ↓reduceDIte]
       have := shortClosed_count_le_two  ((p.cons h).rotate hy) hu (Ne.symm hne)
         (by rw [count_support_rotate_new _ (by simp) hne]; omega)
       have := List.count_eq_zero_of_not_mem  this
       omega
-    · simp only [shorterOdd2, shorterOdd,ho, ↓reduceDIte]
+    · simp only [shorterOdd', shorterOdd,ho, ↓reduceDIte]
       rw [count_support_rotate_old _ _ (Ne.symm hne)]
       simp only [tsub_le_iff_right, ge_iff_le]
       rw [← count_support_rotate_new _ (by simp) hne]
       apply shortCut_count_le
 
-def Walk.cutvert {u : α} (w : G.Walk u u) : G.Walk u u  :=
+private def Walk.cutVert {u : α} (w : G.Walk u u) : G.Walk u u  :=
   if h : w.support.count u ≤ 2 then w
   else
-    have := w.length_shorterOdd2 (by rwa [not_le] at h)
-    w.shorterOdd2.cutvert
+    have := w.length_shorterOdd' (by rwa [not_le] at h)
+    w.shorterOdd'.cutVert
   termination_by w.length
 
 @[simp]
-lemma Walk.cutvert_of_count_le_two {u : α} (w : G.Walk u u) (h : w.support.count u ≤ 2) :
-    w.cutvert = w := by
-  simp [cutvert,h]
+lemma Walk.cutVert_of_count_le_two {u : α} (w : G.Walk u u) (h : w.support.count u ≤ 2) :
+    w.cutVert = w := by
+  simp [cutVert,h]
 
 @[simp]
-lemma Walk.cutvert_of_two_lt_count {u : α} (w : G.Walk u u) (h : 2 < w.support.count u) :
-    w.cutvert = w.shorterOdd2.cutvert := by
-  rw [cutvert, dif_neg]
+lemma Walk.cutVert_of_two_lt_count {u : α} (w : G.Walk u u) (h : 2 < w.support.count u) :
+    w.cutVert = w.shorterOdd'.cutVert := by
+  rw [cutVert, dif_neg]
   omega
 
-lemma Walk.cutvert_cutvert {u : α} (p : G.Walk u u) :
-    p.cutvert.cutvert = p.cutvert := by
+lemma Walk.cutVert_cutVert {u : α} (p : G.Walk u u) :
+    p.cutVert.cutVert = p.cutVert := by
   induction hn : p.length using Nat.strong_induction_on generalizing p with
   | h n ih =>
     by_cases h : p.support.count u ≤ 2
     · simp [h]
     · push_neg at h
-      rw [cutvert_of_two_lt_count _ h]
-      apply ih _ (hn ▸ p.length_shorterOdd2 h) p.shorterOdd2 rfl
+      rw [cutVert_of_two_lt_count _ h]
+      apply ih _ (hn ▸ p.length_shorterOdd' h) p.shorterOdd' rfl
 
-lemma Walk.cutvert_odd {u : α} (p : G.Walk u u) (ho : Odd p.length) : Odd p.cutvert.length := by
+lemma Walk.cutVert_odd {u : α} (p : G.Walk u u) (ho : Odd p.length) : Odd p.cutVert.length := by
   induction hn : p.length using Nat.strong_induction_on generalizing p with
   | h n ih =>
     by_cases h : p.support.count u ≤ 2
     · simpa [h]
     · push_neg at h
-      rw [cutvert_of_two_lt_count _ h]
-      apply ih _ (hn ▸ p.length_shorterOdd2 h) p.shorterOdd2 _ rfl
+      rw [cutVert_of_two_lt_count _ h]
+      apply ih _ (hn ▸ p.length_shorterOdd' h) p.shorterOdd' _ rfl
       cases p with
       | nil => simp at ho
       | cons h p =>
-        rw [shorterOdd2]
+        rw [shorterOdd']
         apply length_shorterOdd_odd
         rwa [length_rotate]
 
-lemma Walk.cutvert_count_start {u : α} (p : G.Walk u u) : p.cutvert.support.count u ≤ 2 := by
+lemma Walk.cutVert_count_start {u : α} (p : G.Walk u u) : p.cutVert.support.count u ≤ 2 := by
   induction hn : p.length using Nat.strong_induction_on generalizing p with
   | h n ih =>
     by_cases h : p.support.count u ≤ 2
-    · rwa [cutvert_of_count_le_two _ h]
+    · rwa [cutVert_of_count_le_two _ h]
     · push_neg at h
-      rw [cutvert_of_two_lt_count _ h]
-      exact ih _ (hn ▸ p.length_shorterOdd2 h) p.shorterOdd2 rfl
+      rw [cutVert_of_two_lt_count _ h]
+      exact ih _ (hn ▸ p.length_shorterOdd' h) p.shorterOdd' rfl
 
-
-lemma Walk.cutvert_count_ne_start {u x : α} (p : G.Walk u u) (hx : x ≠ u)
-    (h1 : p.support.count x ≤ 1) : p.cutvert.support.count x ≤ 1 := by
+lemma Walk.cutVert_count_ne_start {u x : α} (p : G.Walk u u) (hx : x ≠ u)
+    (h1 : p.support.count x ≤ 1) : p.cutVert.support.count x ≤ 1 := by
   induction hn : p.length using Nat.strong_induction_on generalizing p with
   | h n ih =>
     by_cases h : p.support.count u ≤ 2
-    · rwa [cutvert_of_count_le_two _ h]
+    · rwa [cutVert_of_count_le_two _ h]
     · push_neg at h
-      rw [cutvert_of_two_lt_count _ h]
-      apply ih _ (hn ▸ p.length_shorterOdd2 h) p.shorterOdd2 _ rfl
+      rw [cutVert_of_two_lt_count _ h]
+      apply ih _ (hn ▸ p.length_shorterOdd' h) p.shorterOdd' _ rfl
       by_cases h' : p.snd = x
       · subst x
-        exact p.count_le_shorterOdd2_of_snd  hx h1
-      · exact (p.count_le_shorterOdd2 hx h').trans h1
+        exact p.count_le_shorterOdd'_of_snd  hx h1
+      · exact (p.count_le_shorterOdd' hx h').trans h1
 
-lemma Walk.darts_cutvert_subset {u : α} (p : G.Walk u u) : p.cutvert.darts ⊆ p.darts := by
+lemma Walk.darts_cutVert_subset {u : α} (p : G.Walk u u) : p.cutVert.darts ⊆ p.darts := by
   induction hn : p.length using Nat.strong_induction_on generalizing p with
   | h n ih =>
     by_cases h : p.support.count u ≤ 2
-    · rw [cutvert_of_count_le_two _ h]
+    · rw [cutVert_of_count_le_two _ h]
       simp
     · push_neg at h
-      rw [cutvert_of_two_lt_count _ h]
+      rw [cutVert_of_two_lt_count _ h]
       intro d hd
-      have := ih _ (hn ▸ p.length_shorterOdd2 h) p.shorterOdd2 rfl hd
+      have := ih _ (hn ▸ p.length_shorterOdd' h) p.shorterOdd' rfl hd
       cases p with
       | nil => simp at h
       | cons h' p =>
-        rw [shorterOdd2] at hd
+        rw [shorterOdd'] at hd
         have hs := darts_shorterOdd_subset _ _ this
         have := rotate_darts (p.cons h') (show p.getVert 0 ∈ _ by simp)
         exact this.mem_iff.1 hs
@@ -653,17 +642,17 @@ lemma Walk.darts_minOdd_aux_subset {u : α} (p : G.Walk u u) :
       intro d hd ; exact hd
 
 /-- Returns an odd cycle (given an odd closed walk) -/
-def Walk.oddCycle {u : α} (p : G.Walk u u) : Σ v, G.Walk v v := ⟨_, p.minOdd_aux.2.cutvert⟩
+def Walk.oddCycle {u : α} (p : G.Walk u u) : Σ v, G.Walk v v := ⟨_, p.minOdd_aux.2.cutVert⟩
 
 lemma Walk.oddCycle_is_odd {u : α} (p : G.Walk u u) (ho : Odd p.length) :
-    Odd p.oddCycle.2.length := cutvert_odd _ <| p.minOdd_aux_odd ho
+    Odd p.oddCycle.2.length := cutVert_odd _ <| p.minOdd_aux_odd ho
 
 lemma Walk.oddCycle_isCycle {u : α} (p : G.Walk u u) (ho : Odd p.length) :
     p.oddCycle.2.IsCycle := by
   apply isCycle_odd_support_tail_nodup  _ _ <| p.oddCycle_is_odd ho
   apply (support_tail_nodup_iff_count_le _).2
-      ⟨cutvert_count_start _,
-      fun _ _ h ↦ cutvert_count_ne_start _ h <| minOdd_aux_count_le_one_of_ne_start p h⟩
+      ⟨cutVert_count_start _,
+      fun _ _ h ↦ cutVert_count_ne_start _ h <| minOdd_aux_count_le_one_of_ne_start p h⟩
 
 lemma Walk.oddCycle_spec {u : α} (p : G.Walk u u) (ho : Odd p.length) :
     Odd p.oddCycle.2.length ∧ p.oddCycle.2.IsCycle := ⟨p.oddCycle_is_odd ho, p.oddCycle_isCycle ho⟩
@@ -672,10 +661,7 @@ lemma Walk.exists_odd_cycle_of_odd_closed_walk  (p : G.Walk u u) (ho : Odd p.len
     ∃ x, ∃ (c : G.Walk x x), Odd c.length ∧ c.IsCycle :=
   ⟨_, _, p.oddCycle_spec ho⟩
 
-lemma Walk.oddCycle_darts_subset (p : G.Walk u u) : p.oddCycle.2.darts ⊆ p.darts :=
-  fun _ hd ↦ p.darts_minOdd_aux_subset <| p.minOdd_aux.2.darts_cutvert_subset hd
-
-
-
+lemma Walk.darts_oddCycle_subset (p : G.Walk u u) : p.oddCycle.2.darts ⊆ p.darts :=
+  fun _ hd ↦ p.darts_minOdd_aux_subset <| p.minOdd_aux.2.darts_cutVert_subset hd
 
 end SimpleGraph
