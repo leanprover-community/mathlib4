@@ -362,9 +362,9 @@ theorem lintegral_edist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : In
       simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_edist]
       exact ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩)
 
-variable (α ε' μ) in
+variable (α ε') in
 @[simp]
-theorem integrable_zero : Integrable (fun _ => (0 : ε')) μ := by
+theorem integrable_zero (μ : Measure α) : Integrable (fun _ => (0 : ε')) μ := by
   simp [Integrable, aestronglyMeasurable_const]
 
 theorem Integrable.add' {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :

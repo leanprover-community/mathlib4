@@ -53,7 +53,7 @@ theorem integrable_coeFn {f : α →ₘ[μ] ε} : MeasureTheory.Integrable f μ 
   rw [← integrable_mk, mk_coeFn]
 
 theorem integrable_zero : Integrable (0 : α →ₘ[μ] ε') :=
-  (MeasureTheory.integrable_zero α μ ε').congr (coeFn_mk _ _).symm
+  (MeasureTheory.integrable_zero α ε' μ).congr (coeFn_mk _ _).symm
 
 end
 
