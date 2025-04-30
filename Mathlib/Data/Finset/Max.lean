@@ -540,13 +540,12 @@ theorem isLUB_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsLUB (s : Se
 
 end Finset
 
-theorem Multiset.exists_max_image {α R : Type*} [DecidableEq α] [DecidableEq R] [LinearOrder R]
-    (f : α → R) {s : Multiset α} (hs : s ≠ 0) :
-    ∃ y ∈ s, ∀ z ∈ s, f z ≤ f y := by
+theorem Multiset.exists_max_image {α R : Type*} [LinearOrder R] (f : α → R) {s : Multiset α}
+    (hs : s ≠ 0) : ∃ y ∈ s, ∀ z ∈ s, f z ≤ f y := by
+  classical
   obtain ⟨y, hys, hy⟩ := Finset.exists_max_image s.toFinset f (toFinset_nonempty.mpr hs)
   exact ⟨y, mem_toFinset.mp hys, fun _ hz ↦ hy _ (mem_toFinset.mpr hz)⟩
 
-theorem Multiset.exists_min_image {α R : Type*} [DecidableEq α] [DecidableEq R] [LinearOrder R]
-    (f : α → R) {s : Multiset α} (hs : s ≠ 0) :
-    ∃ y ∈ s, ∀ z ∈ s, f y ≤ f z :=
-  @exists_max_image α Rᵒᵈ _ _ _ f s hs
+theorem Multiset.exists_min_image {α R : Type*} [LinearOrder R] (f : α → R) {s : Multiset α}
+    (hs : s ≠ 0) : ∃ y ∈ s, ∀ z ∈ s, f y ≤ f z :=
+  @exists_max_image α Rᵒᵈ _ f s hs
