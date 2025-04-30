@@ -50,7 +50,7 @@ class RelCWComplex.Finite {X : Type*} [TopologicalSpace X] (C : Set X) {D : Set 
 
 variable {X : Type*} [TopologicalSpace X] (C : Set X) {D : Set X} [RelCWComplex C D]
 
-def RelCWComplex.finite_of_finiteDimensional_finiteType [FiniteDimensional C]
+lemma RelCWComplex.finite_of_finiteDimensional_finiteType [FiniteDimensional C]
     [FiniteType C] : Finite C where
   eventually_isEmpty_cell := FiniteDimensional.eventually_isEmpty_cell
   finite_cell n := FiniteType.finite_cell n
