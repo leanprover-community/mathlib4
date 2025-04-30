@@ -3,8 +3,9 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.AffineSpace.Basis
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -39,6 +40,11 @@ theorem finiteDimensional_vectorSpan_of_finite {s : Set P} (h : Set.Finite s) :
     FiniteDimensional k (vectorSpan k s) :=
   .span_of_finite k <| h.vsub h
 
+/-- The vector span of a singleton is finite-dimensional. -/
+instance finiteDimensional_vectorSpan_singleton (p : P) :
+    FiniteDimensional k (vectorSpan k {p}) :=
+  finiteDimensional_vectorSpan_of_finite _ (Set.finite_singleton p)
+
 /-- The `vectorSpan` of a family indexed by a `Fintype` is
 finite-dimensional. -/
 instance finiteDimensional_vectorSpan_range [Finite ι] (p : ι → P) :
@@ -56,6 +62,12 @@ finite-dimensional. -/
 theorem finiteDimensional_direction_affineSpan_of_finite {s : Set P} (h : Set.Finite s) :
     FiniteDimensional k (affineSpan k s).direction :=
   (direction_affineSpan k s).symm ▸ finiteDimensional_vectorSpan_of_finite k h
+
+/-- The direction of the affine span of a singleton is finite-dimensional. -/
+instance finiteDimensional_direction_affineSpan_singleton (p : P) :
+    FiniteDimensional k (affineSpan k {p}).direction := by
+  rw [direction_affineSpan]
+  infer_instance
 
 /-- The direction of the affine span of a family indexed by a
 `Fintype` is finite-dimensional. -/
@@ -479,7 +491,7 @@ theorem collinear_iff_not_affineIndependent {p : Fin 3 → P} :
 theorem affineIndependent_iff_not_collinear_set {p₁ p₂ p₃ : P} :
     AffineIndependent k ![p₁, p₂, p₃] ↔ ¬Collinear k ({p₁, p₂, p₃} : Set P) := by
   rw [affineIndependent_iff_not_collinear]
-  simp_rw [Matrix.range_cons, Matrix.range_empty, Set.singleton_union, insert_emptyc_eq]
+  simp_rw [Matrix.range_cons, Matrix.range_empty, Set.singleton_union, insert_empty_eq]
 
 /-- Three points are collinear if and only if they are not affinely independent. -/
 theorem collinear_iff_not_affineIndependent_set {p₁ p₂ p₃ : P} :
@@ -490,9 +502,7 @@ theorem collinear_iff_not_affineIndependent_set {p₁ p₂ p₃ : P} :
 theorem affineIndependent_iff_not_collinear_of_ne {p : Fin 3 → P} {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
     (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     AffineIndependent k p ↔ ¬Collinear k ({p i₁, p i₂, p i₃} : Set P) := by
-  have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
-    -- Porting note: Originally `by decide!`
-    revert i₁ i₂ i₃; decide
+  have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by decide +revert
   rw [affineIndependent_iff_not_collinear, ← Set.image_univ, ← Finset.coe_univ, hu,
     Finset.coe_insert, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_pair]
 
@@ -548,9 +558,7 @@ theorem Collinear.collinear_insert_iff_of_ne {s : Set P} (h : Collinear k s) {p�
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₃ : p₂ ≠ p₃) :
     Collinear k (insert p₁ s) ↔ Collinear k ({p₁, p₂, p₃} : Set P) := by
   have hv : vectorSpan k (insert p₁ s) = vectorSpan k ({p₁, p₂, p₃} : Set P) := by
-    -- Porting note: Original proof used `conv_lhs` and `conv_rhs`, but these tactics timed out.
-    rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
-    symm
+    conv_rhs => rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
     rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, h.affineSpan_eq_of_ne hp₂ hp₃ hp₂p₃]
   rw [Collinear, Collinear, hv]
 

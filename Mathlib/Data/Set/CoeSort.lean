@@ -35,4 +35,7 @@ See e.g. `Mathlib.Data.Set.Order`.
 /-- Coercion from a set to the corresponding subtype. -/
 instance : CoeSort (Set α) (Type u) := ⟨Elem⟩
 
+@[simp] theorem elem_mem {σ α} [I : Membership σ α] {S} :
+    @Set.Elem σ (@Membership.mem σ α I S) = { x // x ∈ S } := rfl
+
 end Set

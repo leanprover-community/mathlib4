@@ -148,6 +148,26 @@ open scoped ComplexConjugate
 
 variable {K : Type*} [Field K] {k : Type*} [Field k]
 
+variable (K) in
+/--
+A (random) lift of the complex embedding `φ : k →+* ℂ` to an extension `K` of `k`.
+-/
+noncomputable def lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) : K →+* ℂ := by
+  letI := φ.toAlgebra
+  exact (IsAlgClosed.lift (R := k)).toRingHom
+
+@[simp]
+theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
+    (lift K φ).comp (algebraMap k K) = φ := by
+  unfold lift
+  letI := φ.toAlgebra
+  rw [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.algebraMap_toAlgebra']
+
+@[simp]
+theorem lift_algebraMap_apply [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) (x : k) :
+    lift K φ (algebraMap k K x) = φ x :=
+  RingHom.congr_fun (lift_comp_algebraMap φ) x
+
 /-- The conjugate of a complex embedding as a complex embedding. -/
 abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 
@@ -643,6 +663,14 @@ theorem nrRealPlaces_eq_one_of_finrank_eq_one (h : finrank ℚ K = 1) :
   have := card_add_two_mul_card_eq_rank K
   rwa [nrComplexPlaces_eq_zero_of_finrank_eq_one h, h, mul_zero, add_zero] at this
 
+theorem nrRealPlaces_pos_of_odd_finrank (h : Odd (finrank ℚ K)) :
+    0 < nrRealPlaces K := by
+  refine Nat.pos_of_ne_zero ?_
+  by_contra hc
+  refine (Nat.not_odd_iff_even.mpr ?_) h
+  rw [← card_add_two_mul_card_eq_rank, hc, zero_add]
+  exact even_two_mul (nrComplexPlaces K)
+
 /-- The restriction of an infinite place along an embedding. -/
 def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
   ⟨w.1.comp f.injective, w.embedding.comp f,
@@ -660,6 +688,9 @@ lemma comap_id (w : InfinitePlace K) : w.comap (RingHom.id K) = w := rfl
 lemma comap_comp (w : InfinitePlace K) (f : F →+* K) (g : k →+* F) :
     w.comap (f.comp g) = (w.comap f).comap g := rfl
 
+lemma comap_mk_lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
+    (mk (ComplexEmbedding.lift K φ)).comap (algebraMap k K) = mk φ := by simp
+
 lemma IsReal.comap (f : k →+* K) {w : InfinitePlace K} (hφ : IsReal w) :
     IsReal (w.comap f) := by
   rw [← mk_embedding w, comap_mk, isReal_mk_iff]
@@ -672,9 +703,7 @@ lemma isReal_comap_iff (f : k ≃+* K) {w : InfinitePlace K} :
 
 lemma comap_surjective [Algebra k K] [Algebra.IsAlgebraic k K] :
     Function.Surjective (comap · (algebraMap k K)) := fun w ↦
-  letI := w.embedding.toAlgebra
-  ⟨mk (IsAlgClosed.lift (M := ℂ) (R := k)).toRingHom,
-    by simp [this, comap_mk, RingHom.algebraMap_toAlgebra]⟩
+  ⟨(mk (ComplexEmbedding.lift K  w.embedding)), by simp⟩
 
 lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤ mult w := by
   rw [mult, mult]
@@ -1140,23 +1169,79 @@ lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
 
 end Rat
 
+namespace NumberField
+
+open InfinitePlace Module
+
+section TotallyRealField
+
 /-
 
 ## Totally real number fields
 
 -/
 
-namespace NumberField
-
 /-- A number field `K` is totally real if all of its infinite places
 are real. In other words, the image of every ring homomorphism `K → ℂ`
 is a subset of `ℝ`. -/
-class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
+@[mk_iff] class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
   isReal : ∀ v : InfinitePlace K, v.IsReal
+
+variable {K : Type*} [Field K] [NumberField K]
+
+theorem nrComplexPlaces_eq_zero_iff :
+    nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
+  simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
+
+variable (K)
+
+@[simp]
+theorem IsTotallyReal.nrComplexPlaces_eq_zero [h : IsTotallyReal K] :
+    nrComplexPlaces K = 0 :=
+  nrComplexPlaces_eq_zero_iff.mpr h
+
+protected theorem IsTotallyReal.finrank [h : IsTotallyReal K] :
+    finrank ℚ K = nrRealPlaces K := by
+  rw [← card_add_two_mul_card_eq_rank, nrComplexPlaces_eq_zero_iff.mpr h, mul_zero, add_zero]
 
 instance : IsTotallyReal ℚ where
   isReal v := by
     rw [Subsingleton.elim v Rat.infinitePlace]
     exact Rat.isReal_infinitePlace
+
+end TotallyRealField
+
+section TotallyComplexField
+
+/-
+## Totally complex number fields
+-/
+
+open InfinitePlace
+
+/--
+A number field `K` is totally complex if all of its infinite places are complex.
+-/
+@[mk_iff] class IsTotallyComplex (K : Type*) [Field K] [NumberField K] where
+  isComplex : ∀ v : InfinitePlace K, v.IsComplex
+
+variable {K : Type*} [Field K] [NumberField K]
+
+theorem nrRealPlaces_eq_zero_iff :
+    nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
+  simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyComplex_iff]
+
+variable (K)
+
+@[simp]
+theorem IsTotallyComplex.nrRealPlaces_eq_zero [h : IsTotallyComplex K] :
+    nrRealPlaces K = 0 :=
+  nrRealPlaces_eq_zero_iff.mpr h
+
+protected theorem IsTotallyComplex.finrank [h : IsTotallyComplex K] :
+    finrank ℚ K = 2 * nrComplexPlaces K := by
+  rw [← card_add_two_mul_card_eq_rank, nrRealPlaces_eq_zero_iff.mpr h, zero_add]
+
+end TotallyComplexField
 
 end NumberField

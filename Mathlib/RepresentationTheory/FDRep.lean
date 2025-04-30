@@ -33,7 +33,7 @@ We define `FDRep R G` for any ring `R` and monoid `G`,
 as the category of finitely generated `R`-linear representations of `G`.
 
 The main case of interest is when `R = k` is a field and `G` is a group,
-and this is reflected in the documentaton.
+and this is reflected in the documentation.
 
 ## TODO
 * `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
@@ -135,12 +135,12 @@ theorem of_ρ' {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V] (�
 @[simp]
 theorem ρ_inv_self_apply {G : Type u} [Group G] {A : FDRep R G} (g : G) (x : A) :
     A.ρ g⁻¹ (A.ρ g x) = x :=
-  show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_cancel, map_one, LinearMap.one_apply]
+  show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_cancel, map_one, Module.End.one_apply]
 
 @[simp]
 theorem ρ_self_inv_apply {G : Type u} [Group G] {A : FDRep R G} (g : G) (x : A) :
     A.ρ g (A.ρ g⁻¹ x) = x :=
-  show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, LinearMap.one_apply]
+  show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, Module.End.one_apply]
 
 instance : HasForget₂ (FDRep R G) (Rep R G) where
   forget₂ := (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G

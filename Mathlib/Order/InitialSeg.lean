@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Data.Sum.Order
-import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.WellFounded
@@ -107,9 +106,6 @@ theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
 theorem mem_range_of_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) → b ∈ Set.range f :=
   f.mem_range_of_rel' _ _
 
-@[deprecated mem_range_of_rel (since := "2024-09-21")]
-alias init := mem_range_of_rel
-
 theorem map_rel_iff {a b : α} (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 
@@ -121,9 +117,6 @@ theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a
     rcases f.mem_range_of_rel h with ⟨a', rfl⟩
     exact ⟨a', rfl, f.map_rel_iff.1 h⟩,
     fun ⟨_, e, h⟩ => e ▸ f.map_rel_iff.2 h⟩
-
-@[deprecated exists_eq_iff_rel (since := "2024-09-21")]
-alias init_iff := exists_eq_iff_rel
 
 /-- A relation isomorphism is an initial segment embedding -/
 @[simps!]
@@ -175,9 +168,6 @@ protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
 
 theorem eq_relIso [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) : g a = f a :=
   InitialSeg.eq g.toInitialSeg f a
-
-@[deprecated eq_relIso (since := "2024-10-20")]
-alias ltOrEq_apply_right := eq_relIso
 
 private theorem antisymm_aux [IsWellOrder α r] (f : r ≼i s) (g : s ≼i r) : LeftInverse g f :=
   (f.trans g).eq (InitialSeg.refl _)
@@ -298,10 +288,6 @@ theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α �
 theorem mem_range_iff_rel (f : r ≺i s) : ∀ {b : β}, b ∈ Set.range f ↔ s b f.top :=
   f.mem_range_iff_rel' _
 
-@[deprecated mem_range_iff_rel (since := "2024-10-07")]
-theorem down (f : r ≺i s) : ∀ {b : β}, s b f.top ↔ ∃ a, f a = b :=
-  f.mem_range_iff_rel.symm
-
 theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
   f.mem_range_iff_rel.1 ⟨_, rfl⟩
 
@@ -311,9 +297,6 @@ theorem mem_range_of_rel_top (f : r ≺i s) {b : β} (h : s b f.top) : b ∈ Set
 theorem mem_range_of_rel [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s b (f a)) :
     b ∈ Set.range f :=
   f.mem_range_of_rel_top <| _root_.trans h <| f.lt_top _
-
-@[deprecated mem_range_of_rel (since := "2024-09-21")]
-alias init := mem_range_of_rel
 
 theorem surjOn (f : r ≺i s) : Set.SurjOn f Set.univ { b | s b f.top } := by
   intro b h
@@ -330,15 +313,9 @@ theorem _root_.InitialSeg.eq_principalSeg [IsWellOrder β s] (f : r ≼i s) (g :
     g a = f a :=
   InitialSeg.eq g f a
 
-@[deprecated (since := "2024-10-20")]
-alias _root_.InitialSeg.ltOrEq_apply_left := InitialSeg.eq_principalSeg
-
 theorem exists_eq_iff_rel [IsTrans β s] (f : r ≺i s) {a : α} {b : β} :
     s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   @InitialSeg.exists_eq_iff_rel α β r s f a b
-
-@[deprecated exists_eq_iff_rel (since := "2024-09-21")]
-alias init_iff := exists_eq_iff_rel
 
 /-- A principal segment is the same as a non-surjective initial segment. -/
 noncomputable def _root_.InitialSeg.toPrincipalSeg [IsWellOrder β s] (f : r ≼i s)
@@ -372,19 +349,6 @@ theorem transInitial_apply (f : r ≺i s) (g : s ≼i t) (a : α) : f.transIniti
 theorem transInitial_top (f : r ≺i s) (g : s ≼i t) : (f.transInitial g).top = g f.top :=
   rfl
 
-@[deprecated (since := "2024-10-20")]
-alias ltLe := transInitial
-
-set_option linter.deprecated false in
-@[deprecated transInitial_apply (since := "2024-10-20")]
-theorem lt_le_apply (f : r ≺i s) (g : s ≼i t) (a : α) : (f.ltLe g) a = g (f a) :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated transInitial_top (since := "2024-10-20")]
-theorem lt_le_top (f : r ≺i s) (g : s ≼i t) : (f.ltLe g).top = g f.top :=
-  rfl
-
 /-- Composition of two principal segment embeddings as a principal segment embedding -/
 @[trans]
 protected def trans [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : r ≺i t :=
@@ -411,26 +375,10 @@ theorem relIsoTrans_apply (f : r ≃r s) (g : s ≺i t) (a : α) : relIsoTrans f
 theorem relIsoTrans_top (f : r ≃r s) (g : s ≺i t) : (relIsoTrans f g).top = g.top :=
   rfl
 
-@[deprecated (since := "2024-10-20")]
-alias equivLT := relIsoTrans
-
-set_option linter.deprecated false in
-@[deprecated transInitial_top (since := "2024-10-20")]
-theorem equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated transInitial_top (since := "2024-10-20")]
-theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
-  rfl
-
 /-- Composition of a principal segment embedding with a relation isomorphism, as a principal segment
 embedding -/
 def transRelIso (f : r ≺i s) (g : s ≃r t) : r ≺i t :=
   transInitial f g.toInitialSeg
-
-@[deprecated (since := "2024-10-20")]
-alias ltEquiv := transRelIso
 
 @[simp]
 theorem transRelIso_apply (f : r ≺i s) (g : s ≃r t) (a : α) : transRelIso f g a = g (f a) :=
@@ -454,9 +402,6 @@ theorem top_rel_top {r : α → α → Prop} {s : β → β → Prop} {t : γ �
     (f : r ≺i s) (g : s ≺i t) (h : r ≺i t) : t h.top g.top := by
   rw [Subsingleton.elim h (f.trans g)]
   apply PrincipalSeg.lt_top
-
-@[deprecated top_rel_top (since := "2024-10-10")]
-alias topLTTop := top_rel_top
 
 /-- Any element of a well order yields a principal segment. -/
 @[simps!]
@@ -532,9 +477,6 @@ noncomputable def principalSumRelIso [IsWellOrder β s] (f : r ≼i s) : (r ≺i
     then Sum.inr (RelIso.ofSurjective f h)
     else Sum.inl (f.toPrincipalSeg h)
 
-@[deprecated principalSumRelIso (since := "2024-10-20")]
-alias ltOrEq := principalSumRelIso
-
 /-- Composition of an initial segment embedding and a principal segment embedding as a principal
 segment embedding -/
 noncomputable def transPrincipal [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
@@ -550,15 +492,6 @@ theorem transPrincipal_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g
   obtain f' | f' := f.principalSumRelIso
   · rw [PrincipalSeg.trans_apply, f.eq_principalSeg]
   · rw [PrincipalSeg.relIsoTrans_apply, f.eq_relIso]
-
-@[deprecated transPrincipal (since := "2024-10-20")]
-alias leLT := transPrincipal
-
-set_option linter.deprecated false in
-@[deprecated transPrincipal_apply (since := "2024-10-20")]
-theorem leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
-    f.leLT g a = g (f a) :=
-  transPrincipal_apply f g a
 
 end InitialSeg
 

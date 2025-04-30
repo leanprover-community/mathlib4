@@ -21,8 +21,14 @@ namespace Hyperreal
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
-noncomputable instance : LinearOrderedField ℝ* :=
-  inferInstanceAs (LinearOrderedField (Germ _ _))
+noncomputable instance : Field ℝ* :=
+  inferInstanceAs (Field (Germ _ _))
+
+noncomputable instance : LinearOrder ℝ* :=
+  inferInstanceAs (LinearOrder (Germ _ _))
+
+instance : IsStrictOrderedRing ℝ* :=
+  inferInstanceAs (IsStrictOrderedRing (Germ _ _))
 
 /-- Natural embedding `ℝ → ℝ*`. -/
 @[coe] def ofReal : ℝ → ℝ* := const
@@ -326,7 +332,7 @@ theorem IsSt.map₂ {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) {
   rcases ofSeq_surjective x with ⟨x, rfl⟩
   rcases ofSeq_surjective y with ⟨y, rfl⟩
   rw [isSt_ofSeq_iff_tendsto] at hxr hys
-  exact isSt_ofSeq_iff_tendsto.2 <| hf.tendsto.comp (hxr.prod_mk_nhds hys)
+  exact isSt_ofSeq_iff_tendsto.2 <| hf.tendsto.comp (hxr.prodMk_nhds hys)
 
 theorem IsSt.add {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) :
     IsSt (x + y) (r + s) := hxr.map₂ hys continuous_add.continuousAt

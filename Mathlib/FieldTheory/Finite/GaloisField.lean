@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van
 import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Galois fields
@@ -47,7 +48,7 @@ instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     · simp only [rootSet, aroots, Polynomial.map_pow, map_X, Polynomial.map_sub]
     · rw [FiniteField.roots_X_pow_card_sub_X, val_toFinset, coe_univ, Algebra.adjoin_univ]
 
-theorem galois_poly_separable {K : Type*} [Field K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
+theorem galois_poly_separable {K : Type*} [CommRing K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
     Separable (X ^ q - X : K[X]) := by
   use 1, X ^ q - X - 1
   rw [← CharP.cast_eq_zero_iff K[X] p] at h
@@ -222,7 +223,45 @@ end GaloisField
 
 namespace FiniteField
 
-variable {K : Type*} [Field K] [Fintype K] {K' : Type*} [Field K'] [Fintype K']
+variable {K K' : Type*} [Field K] [Field K']
+
+section norm
+
+variable [Algebra K K'] [Finite K']
+
+theorem algebraMap_norm_eq_pow {x : K'} :
+    algebraMap K K' (Algebra.norm K x) = x ^ ((Nat.card K' - 1) / (Nat.card K - 1)) := by
+  have := Finite.of_injective _ (algebraMap K K').injective
+  have := Fintype.ofFinite K
+  have := Fintype.ofFinite K'
+  simp_rw [← Fintype.card_eq_nat_card, Algebra.norm_eq_prod_automorphisms,
+    ← (bijective_frobeniusAlgEquivOfAlgebraic_pow K K').prod_comp, AlgEquiv.coe_pow,
+    coe_frobeniusAlgEquivOfAlgebraic, pow_iterate, Finset.prod_pow_eq_pow_sum,
+    Fin.sum_univ_eq_sum_range, Nat.geomSum_eq Fintype.one_lt_card, ← Module.card_eq_pow_finrank]
+
+variable (K K')
+
+theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.norm K (S := K')) :=
+  have := Finite.of_injective_finite_range (algebraMap K K').injective
+  MonoidHom.surjective_of_card_ker_le_div _ <| by
+    simp_rw [Nat.card_units]
+    classical
+    have := Fintype.ofFinite K'ˣ
+    convert IsCyclic.card_pow_eq_one_le (α := K'ˣ) <| Nat.div_pos
+      (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective) _) <|
+      Nat.sub_pos_of_lt Finite.one_lt_card
+    rw [← Set.ncard_coe_Finset, ← SetLike.coe_sort_coe, Set.Nat.card_coe_set_eq]; congr; ext
+    simp [Units.ext_iff, ← (algebraMap K K').injective.eq_iff, algebraMap_norm_eq_pow]
+
+theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun k ↦ by
+  obtain rfl | ne := eq_or_ne k 0
+  · exact ⟨0, Algebra.norm_zero ..⟩
+  have ⟨x, eq⟩ := unitsMap_norm_surjective K K' (Units.mk0 k ne)
+  exact ⟨x, congr_arg (·.1) eq⟩
+
+end norm
+
+variable [Fintype K] [Fintype K']
 
 /-- Uniqueness of finite fields:
   Any two finite fields of the same cardinality are (possibly non canonically) isomorphic -/
