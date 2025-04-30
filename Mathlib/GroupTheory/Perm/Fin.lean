@@ -286,7 +286,7 @@ section cycleIcc
 * Define the permutation `cycleIcc i j hij`, which is the cycle `(i i+1 .... j)` leaving
 `(0 ... i-1)` and `(j+1 ... n-1)` unchanged. In other words, it rotates elements in `[i, j]` one
 step to the right.
--/  
+-/
 
 namespace Fin
 
@@ -361,18 +361,13 @@ theorem cycleIcc_of_last (hij : i ≤ j) [NeZero n] : (cycleIcc hij) j = i := by
 theorem sign_cycleIcc (hij : i ≤ j) : Perm.sign (cycleIcc hij) = (-1) ^ (j - i : ℕ) := by
   simp [cycleIcc, sub_val_of_le hij]
 
-private lemma nezero_simp_lemma (hij : i < j) :
-    (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
-  refine Ne.symm (ne_of_val_ne ?_)
-  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by omega
-
 theorem isCycle_cycleIcc (hij : i < j) : (cycleIcc (Fin.le_of_lt hij)).IsCycle :=
   Equiv.Perm.IsCycle.extendDomain
-  (natAdd_castLEEmb n _).toEquivRange (isCycle_cycleRange (nezero_simp_lemma hij))
+  (natAdd_castLEEmb n _).toEquivRange (isCycle_cycleRange (castLT_sub_nezero hij))
 
 theorem cycleType_cycleIcc (hij : i < j) :
     Perm.cycleType (cycleIcc (Fin.le_of_lt hij)) = {(j - i + 1: ℕ)} := by
-  simpa [cycleIcc, cycleType_cycleRange (nezero_simp_lemma hij)] using sub_val_of_le
+  simpa [cycleIcc, cycleType_cycleRange (castLT_sub_nezero hij)] using sub_val_of_le
     (Fin.le_of_lt hij)
 
 end Fin
@@ -431,3 +426,4 @@ theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
   apply Finset.prod_comm' (by simp)
 
 end Sign
+

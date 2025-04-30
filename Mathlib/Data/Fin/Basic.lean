@@ -354,6 +354,13 @@ lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
 lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).1 < n - i.1 := by
   simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
 
+local instance {n : ℕ} {i: Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
+
+lemma castLT_sub_nezero {n : ℕ} {i j : Fin n}(hij : i < j) :
+    (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
+  refine Ne.symm (ne_of_val_ne ?_)
+  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by omega
+
 lemma one_le_of_ne_zero {n : ℕ} [NeZero n] {k : Fin n} (hk : k ≠ 0) : 1 ≤ k := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
   cases n with
