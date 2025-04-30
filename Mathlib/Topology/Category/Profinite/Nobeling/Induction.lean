@@ -66,7 +66,7 @@ theorem GoodProducts.Plimit (o : Ordinal) (ho : Ordinal.IsLimit o) :
   rw [linearIndependent_iff_union_smaller C ho hsC, linearIndependent_subtype_iff]
   exact linearIndepOn_iUnion_of_directed
     (Monotone.directed_le fun _ _ h ↦ GoodProducts.smaller_mono C h) fun ⟨o', ho'⟩ ↦
-    (linearIndependent_iff_smaller _ _).mp (h o' ho' (le_of_lt (lt_of_lt_of_le ho' hho))
+    (linearIndependent_iff_smaller _ _).mp (h o' ho' (ho'.le.trans hho)
     (π C (ord I · < o')) (isClosed_proj _ _ hC) (contained_proj _ _))
 
 theorem GoodProducts.linearIndependentAux (μ : Ordinal) : P I μ := by
