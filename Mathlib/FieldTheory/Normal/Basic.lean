@@ -272,7 +272,7 @@ theorem exists_algEquiv_of_root [Normal K L] {x y : L} (hy : IsAlgebraic K y)
 
 /-- If `x : L` is a root of `minpoly K y`, then we can find `(σ : L ≃ₐ[K] L)` with `σ y = x`.
   That is, `x` and `y` are Galois conjugates. -/
-theorem exists_algEquiv_of_root' [Normal K L]{x y : L} (hy : IsAlgebraic K y)
+theorem exists_algEquiv_of_root' [Normal K L] {x y : L} (hy : IsAlgebraic K y)
     (h_ev : (Polynomial.aeval x) (minpoly K y) = 0) : ∃ σ : L ≃ₐ[K] L, σ y = x := by
   obtain ⟨σ, hσ⟩ := exists_algEquiv_of_root hy h_ev
   use σ.symm
