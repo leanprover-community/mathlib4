@@ -728,7 +728,7 @@ theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
 
 /-- `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m`, by appending the former
       at the end of the latter.
-`natAdd_castLEEmb m hmn i` maps `i : Fin m` to `i + (m - n) : Fin n` by adds `m - n` to `i` -/
+`natAdd_castLEEmb m hmn i` maps `i : Fin m` to `i + (m - n) : Fin n` by adding `m - n` to `i` -/
 @[simps!]
 def natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m): Fin n ↪ Fin (m) :=
   (addNatEmb (m - n)).trans (finCongr (by omega)).toEmbedding
