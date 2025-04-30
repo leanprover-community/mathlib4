@@ -4481,6 +4481,7 @@ import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Completion
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.EquivReindex
 import Mathlib.NumberTheory.NumberField.FinitePlaces
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
