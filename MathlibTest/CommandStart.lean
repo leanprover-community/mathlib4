@@ -52,7 +52,7 @@ open Nat in /- hi -/
 example : True := trivial
 
 -- The notation `0::[]` disables the linter
-variable  (h : 0::[] = [])
+variable (h : 0::[] = [])
 
 /--
 warning: 'section' starts on column 1, but all commands should start at the beginning of the line.
@@ -61,7 +61,7 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 #guard_msgs in
  section
 
-
+/-
 #eval
   let s := "example        f   g"
   let t := "example fg"
@@ -73,9 +73,36 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
   let t := "example : True :=
     trivial"
   Mathlib.Linter.parallelScan s t
+-/
 
 
+/--
+warning: extra space
+
+Current syntax:  'mple    : Tr'
+Expected syntax: 'mple : Tru'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
 example    : True := trivial
+
+/--
+warning: extra space
+
+Current syntax:  'mple      /-dα'
+Expected syntax: 'ple  /-dαα'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space
+
+Current syntax:  'κκ-/     :  T'
+Expected syntax: 'κκ-/ : Tru'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
 example      /-dαακdαακdαακκ-/     :  True :=trivial
 
 
@@ -123,11 +150,12 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 #guard_msgs in
 example {a: Nat} : a = a := rfl
 
-
+/-
 #eval
   let l := "hac d"
   let m := "h  acd"
   Mathlib.Linter.parallelScan l m
+-/
 
 set_option linter.style.commandStart.verbose true in
 /--
@@ -135,7 +163,7 @@ a
 b
 c
 d -/
-example (a : Nat) (b : Int) : True := trivial
+example (_a : Nat) (_b : Int) : True := trivial
 
 /--
 warning: missing space
