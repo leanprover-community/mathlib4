@@ -732,7 +732,7 @@ theorem norm_applyOrderedFinpartition_le (p : ∀ (i : Fin c.length), E [×c.par
 will be the key point to show that functions constructed from `applyOrderedFinpartition` retain
 multilinearity. -/
 theorem applyOrderedFinpartition_update_right
-    (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F)
+    (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F)
     (j : Fin n) (v : Fin n → E) (z : E) :
     c.applyOrderedFinpartition p (update v j z) =
       update (c.applyOrderedFinpartition p v) (c.index j)
