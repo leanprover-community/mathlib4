@@ -211,6 +211,8 @@ abbrev unlintedNodes := #[
 
   ``Parser.Command.declId, -- declaration name, avoids dealing with guillemets pairs `«»`
 
+  `Mathlib.Tactic.superscriptTerm,
+
   --`Bundle.termπ__, -- notation for `Bundle.TotalSpace.proj`, the total space of a bundle
   --`Finset.«term_#_», -- notation for `Finset.slice`
   --`ToAdditive.toAdditiveRest, -- the `existing` in `[to_additive existing]`
