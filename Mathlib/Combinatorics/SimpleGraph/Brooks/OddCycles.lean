@@ -5,7 +5,6 @@ Authors: John Talbot
 -/
 import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
 import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 
 /-!
@@ -85,7 +84,6 @@ lemma Walk.isCycle_odd_support_tail_nodup {u : α} (w : G.Walk u u) (hn : w.supp
     exact (Nat.not_odd_iff_even.2 (by decide) ho).elim
 
 variable [DecidableEq α]
-
 lemma Walk.support_tail_nodup_iff_count_le {u : α} (w : G.Walk u u) : w.support.tail.Nodup ↔
     w.support.count u ≤ 2 ∧ ∀ x ∈ w.support, x ≠ u → count x w.support ≤ 1 := by
   rw [List.nodup_iff_count_le_one]
@@ -240,10 +238,8 @@ lemma Walk.shortClosed_count_le {y : α} (w : G.Walk u v) (hx : x ∈ w.support)
 lemma Walk.shortClosed_count_le_two {u x : α} (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u)
     (h2 : w.support.count u ≤ 2) : u ∉ (w.shortClosed hx).support := by
   intro hf
-  have := congr_arg Walk.support <| w.take_shortClosed_reverse_spec hx
-  apply_fun List.count u at this
-  rw [← this] at h2
-  rw [support_append, count_append, List.count_tail (by simp)] at h2-- , support_reverse] at h2
+  rw [← congr_arg (count u) <| congr_arg support <| w.take_shortClosed_reverse_spec hx] at h2
+  rw [support_append, count_append, List.count_tail (by simp)] at h2
   simp only [hne, head_support, beq_iff_eq, hne, ↓reduceIte, tsub_zero] at h2
   rw [support_append, count_append] at h2
   have h1 :  1 ≤ count u (w.takeUntil _ hx).support :=
@@ -293,10 +289,8 @@ lemma Walk.shortClosed_not_nil_of_one_lt_count (w : G.Walk u v) (hx : x ∈ w.su
   have : w.dropUntil x hx = (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse := by
     rw [← hs, h.eq_nil]
     exact Walk.nil_append _
-  have hw :=  congr_arg Walk.support <| take_spec w hx
-  rw [this, support_append] at hw
-  apply_fun List.count x at hw
-  rw [List.count_append] at hw
+  have hw :=  congr_arg (count x) <| congr_arg support <| take_spec w hx
+  rw [this, support_append, count_append] at hw
   simp only [count_support_takeUntil_eq_one, support_reverse] at *
   have : 0 < count x (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).support.reverse.tail := by
     omega
@@ -321,7 +315,7 @@ lemma Walk.count_support_rotate_old (w : G.Walk u u) (hx : x ∈ w.support) (hne
   nth_rw 2 [← take_spec w hx]
   simp_rw [rotate, Walk.support_append, List.count_append]
   rw [List.count_tail (by simp), List.count_tail (by simp)]
-  simp [head_support, beq_self_eq_true, ↓reduceIte,if_neg hne]
+  simp [head_support, beq_self_eq_true, ↓reduceIte, if_neg hne]
   rw [← Nat.add_sub_assoc (by simp), add_comm]
 
 lemma Walk.count_support_rotate_other (w : G.Walk u u) (hx : x ∈ w.support) (hvx : x ≠ v)
@@ -340,6 +334,8 @@ def Walk.shorterOdd {u : α} (p : G.Walk u u) {x : α} (hx : x ∈ p.support) : 
   if ho : Odd (p.shortClosed hx).length then
     p.shortClosed hx
   else
+  -- TODO : change def of `shortCut` so that it is (w.rev.take _x).append w.take _x)
+  -- so there is no need for rotate below
   -- We rotate this walk to be able to return a `G.Walk x x` in both cases
     (p.shortCut hx).rotate (by simp)
 
@@ -358,7 +354,7 @@ lemma Walk.darts_shorterOdd_subset {u : α} (p : G.Walk u u) {x : α} (hx : x �
     cases hd with
     | inl hd => apply darts_takeUntil_subset _ _ hd
     | inr hd =>
-      rw [ mem_darts_reverse] at hd
+      rw [mem_darts_reverse] at hd
       have := darts_takeUntil_subset _ _ hd
       rwa [mem_darts_reverse] at this
 
@@ -550,19 +546,31 @@ lemma Walk.darts_cutVert_subset {u : α} (p : G.Walk u u) : p.cutVert.darts ⊆ 
         have := rotate_darts (p.cons h') (show p.getVert 0 ∈ _ by simp)
         exact this.mem_iff.1 hs
 
-
+/-- A closed walk is any walk that starts and ends at the same vertex -/
 def ClosedWalk {V : Type*} (G : SimpleGraph V) := Σ v, G.Walk v v
-/-- Return an almost minimal odd closed subwalk from an odd length closed walk
-(if p.length is not odd then this just returns some closed subwalk).
--/
 
 abbrev ClosedWalk.toWalk (w : G.ClosedWalk) : G.Walk w.1 w.1 := w.2
 
 abbrev ClosedWalk.start (w : G.ClosedWalk) : α := w.1
 
+
+-- private def Walk.minOdd_aux2 {u : α} (p : G.Walk u u) : G.ClosedWalk :=
+--   if h : p.support.countP (fun x ↦ x ≠ u ∧ 1 < p.support.count x) = 0
+--     then ⟨_, p⟩
+--   else
+--     have := p.length_shorterOdd_lt_length' h
+--     (p.shorterOdd (head_filter_mem _ _ h)).minOdd_aux
+--   termination_by p.length
+
+
+
+
+/-- An almost minimal odd closed subwalk from an odd length closed walk
+(if p.length is not odd then this just returns some closed subwalk).
+-/
 private def Walk.minOdd_aux {u : α} (p : G.Walk u u) : G.ClosedWalk :=
   if h : p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x) = []
-    then ⟨_,p⟩
+    then ⟨_, p⟩
   else
     have := p.length_shorterOdd_lt_length' h
     (p.shorterOdd (head_filter_mem _ _ h)).minOdd_aux
