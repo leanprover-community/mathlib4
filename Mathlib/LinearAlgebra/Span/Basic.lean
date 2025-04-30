@@ -71,13 +71,20 @@ theorem map_span_le [RingHomSurjective σ₁₂] (f : F) (s : Set M) (N : Submod
 
 alias _root_.LinearMap.map_span_le := Submodule.map_span_le
 
--- See also `span_preimage_eq` below.
+/-- See also `Submodule.span_preimage_eq`. -/
 theorem span_preimage_le (f : F) (s : Set M₂) :
     span R (f ⁻¹' s) ≤ (span R₂ s).comap f := by
   rw [span_le, comap_coe]
   exact preimage_mono subset_span
 
 alias _root_.LinearMap.span_preimage_le := Submodule.span_preimage_le
+
+include σ₁₂ in
+theorem mapsTo_span {f : F} {s : Set M} {t : Set M₂} (h : MapsTo f s t) :
+    MapsTo f (span R s) (span R₂ t) :=
+  (span_mono h).trans (span_preimage_le (σ₁₂ := σ₁₂) f t)
+
+alias _root_.Set.MapsTo.submoduleSpan := mapsTo_span
 
 section
 
