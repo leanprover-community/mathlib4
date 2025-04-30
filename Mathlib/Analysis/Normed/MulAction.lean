@@ -99,11 +99,11 @@ lemma norm_smul [Norm α] [Norm β] [SMul α β] [NormSMulClass α β] (r : α) 
 
 instance NormMulClass.toNormSMulClass [Norm α] [Mul α] [NormMulClass α] :
     NormSMulClass α α where
-   norm_smul := norm_mul
+  norm_smul := norm_mul
 
 instance NormMulClass.toNormSMulClass_op [SeminormedRing α] [NormMulClass α] :
     NormSMulClass αᵐᵒᵖ α where
-   norm_smul a b := mul_comm ‖b‖ ‖a‖ ▸ norm_mul b a.unop
+  norm_smul a b := mul_comm ‖b‖ ‖a‖ ▸ norm_mul b a.unop
 
 variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β] [NormSMulClass α β]
 
