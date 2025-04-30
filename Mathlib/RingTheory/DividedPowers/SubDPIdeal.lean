@@ -244,7 +244,7 @@ instance : SetLike (SubDPIdeal hI) A where
   coe s := s.carrier
   coe_injective' p q h := by
     rw [SetLike.coe_set_eq] at h
-    cases p ; cases q ; congr
+    cases p; cases q; congr
 
 /-- The coercion from `SubDPIdeal` to `Ideal`. -/
 @[coe]
