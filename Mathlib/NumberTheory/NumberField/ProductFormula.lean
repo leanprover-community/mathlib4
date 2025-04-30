@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
 import Mathlib.NumberTheory.NumberField.FinitePlaces
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # The Product Formula for number fields
