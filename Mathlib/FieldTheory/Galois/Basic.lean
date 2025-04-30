@@ -211,19 +211,19 @@ theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
 
 /-- The map `K ↦ Gal(E/K)` is inclusion-reversing. -/
-theorem fixingSubgroup.antimono {K1 K2 : IntermediateField F E} (h12 : K1 ≤ K2) :
+theorem fixingSubgroup_le {K1 K2 : IntermediateField F E} (h12 : K1 ≤ K2) :
     K2.fixingSubgroup ≤ K1.fixingSubgroup :=
   fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
 
-theorem fixedField.antimono {H1 H2 : Subgroup (E ≃ₐ[F] E)} (h12 : H1 ≤ H2) :
+theorem fixedField_le {H1 H2 : Subgroup (E ≃ₐ[F] E)} (h12 : H1 ≤ H2) :
     fixedField H2 ≤ fixedField H1 :=
   fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
 
-lemma fixingSubgroup_anti : Antitone (@fixingSubgroup F _ E _ _) :=
-  fun _ _ ↦ fixingSubgroup.antimono
+lemma fixingSubgroup_antitone : Antitone (@fixingSubgroup F _ E _ _) :=
+  fun _ _ ↦ fixingSubgroup_le
 
-lemma fixedField_anti : Antitone (@fixedField F _ E _ _) :=
-  fun _ _ ↦ fixedField.antimono
+lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
+  fun _ _ ↦ fixedField_le
 
 @[simp] lemma mem_fixingSubgroup_iff (σ) : σ ∈ fixingSubgroup K ↔ ∀ x ∈ K, σ x = x :=
   _root_.mem_fixingSubgroup_iff _

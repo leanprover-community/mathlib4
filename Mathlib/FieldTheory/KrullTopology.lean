@@ -88,14 +88,11 @@ def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] : FilterBasis (L �
   sets := (fun g => g.carrier) '' fixedByFinite K L
   nonempty := ⟨⊤, ⊤, top_fixedByFinite, rfl⟩
   inter_sets := by
-    rintro X Y ⟨H1, ⟨E1, h_E1, rfl⟩, rfl⟩ ⟨H2, ⟨E2, h_E2, rfl⟩, rfl⟩
-    use (IntermediateField.fixingSubgroup (E1 ⊔ E2)).carrier
-    refine ⟨⟨_, ⟨_, @IntermediateField.finiteDimensional_sup _ _ _ _ _ E1 E2 h_E1 h_E2, rfl⟩, rfl⟩,
-      ?_⟩
-    rw [Set.subset_inter_iff]
-    exact
-      ⟨IntermediateField.fixingSubgroup.antimono le_sup_left,
-        IntermediateField.fixingSubgroup.antimono le_sup_right⟩
+    rintro _ _ ⟨_, ⟨E1, h_E1, rfl⟩, rfl⟩ ⟨_, ⟨E2, h_E2, rfl⟩, rfl⟩
+    use (E1 ⊔ E2).fixingSubgroup.carrier
+    refine ⟨⟨_, ⟨_, @E1.finiteDimensional_sup _ _ _ _ _ E2 h_E1 h_E2, rfl⟩, rfl⟩, ?_⟩
+    exact Set.subset_inter_iff.mpr
+      ⟨E1.fixingSubgroup_le le_sup_left, E2.fixingSubgroup_le le_sup_right⟩
 
 /-- A subset of `L ≃ₐ[K] L` is a member of `galBasis K L` if and only if it is the underlying set
 of `Gal(L/E)` for some finite subextension `E/K`. -/
@@ -166,7 +163,7 @@ lemma krullTopology_mem_nhds_one_iff_of_normal (K L : Type*) [Field K] [Field L]
   refine ⟨fun ⟨E, _, hE⟩ ↦ ?_, fun ⟨E, hE⟩ ↦ ⟨E, hE.1, hE.2.2⟩⟩
   use (IntermediateField.normalClosure K E L)
   simp only [normalClosure.is_finiteDimensional K E L, normalClosure.normal K E L, true_and]
-  exact le_trans (E.fixingSubgroup_anti E.le_normalClosure) hE
+  exact le_trans (E.fixingSubgroup_antitone E.le_normalClosure) hE
 
 section KrullT2
 
@@ -310,7 +307,7 @@ theorem finrank_eq_fixingSubgroup_index (L : IntermediateField k K) [IsGalois k 
     let i := (liftAlgEquiv L').toLinearEquiv
     replace hfd := i.finiteDimensional
     rw [i.finrank_eq, this _ hfd] at hL'
-    exact (Subgroup.index_antitone <| fixingSubgroup.antimono <|
+    exact (Subgroup.index_antitone <| fixingSubgroup_le <|
       IntermediateField.lift_le L').not_lt hL'
   let E := normalClosure k L K
   have hle : L ≤ E := by simpa only [fieldRange_val] using L.val.fieldRange_le_normalClosure
