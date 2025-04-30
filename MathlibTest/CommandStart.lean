@@ -43,6 +43,14 @@ set_option linter.hashCommand false
 
 end tests
 
+-- embedded comments do not cause problems!
+#guard_msgs in
+open Nat in -- hi
+example : True := trivial
+
+open Nat in /- hi -/
+example : True := trivial
+
 -- The notation `0::[]` disables the linter
 variable  (h : 0::[] = [])
 
@@ -224,7 +232,7 @@ def Type.Hello := 0
 warning: extra space
 
 Current syntax:  'mple  : Tr'
-Expected syntax: 'mple : Tru'
+Expected syntax: 'ple : True'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
