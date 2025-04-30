@@ -206,14 +206,8 @@ end AddMonoidWithOne
 section CommRing
 
 #adaptation_note
-<<<<<<< HEAD
-/-- 2025-04-19
-`IsCharP` has `n` as an outparam, but `CharP` does not.
-Resolvable after https://github.com/leanprover-community/mathlib4/pull/24216.
-=======
 /-- 2025-04-19 `IsCharP` has `n` as an outparam, but `CharP` does not.
 Remove after https://github.com/leanprover-community/mathlib4/pull/24216 is merged.
->>>>>>> origin/lean-pr-testing-8161
 -/
 set_option synthInstance.checkSynthOrder false in
 instance (α : Type*) [CommRing α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
