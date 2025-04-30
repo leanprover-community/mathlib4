@@ -46,7 +46,6 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 
 -/
 
-
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -110,7 +109,6 @@ theorem orthogonalComplement_iSup_eigenspaces (hT : T.IsSymmetric) (μ : 𝕜) :
 
 /-! ### Finite-dimensional theory -/
 
-
 variable [FiniteDimensional 𝕜 E]
 
 /-- The mutual orthogonal complement of the eigenspaces of a self-adjoint operator on a
@@ -141,7 +139,7 @@ noncomputable instance directSumDecomposition [hT : Fact T.IsSymmetric] :
 
 theorem directSum_decompose_apply [_hT : Fact T.IsSymmetric] (x : E) (μ : Eigenvalues T) :
     DirectSum.decompose (fun μ : Eigenvalues T => eigenspace T μ) x μ =
-      orthogonalProjection (eigenspace T μ) x :=
+      (eigenspace T μ).orthogonalProjection x :=
   rfl
 
 /-- The eigenspaces of a self-adjoint operator on a finite-dimensional inner product space `E` gives
@@ -267,22 +265,16 @@ theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : Has
     (hnn : ∀ x : E, 0 ≤ RCLike.re ⟪x, T x⟫) : 0 ≤ μ := by
   obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
-  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
-    have := congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
-    -- Porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [← RCLike.ofReal_pow, ← RCLike.ofReal_mul] at this
-    exact mod_cast this
+  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 :=
+    mod_cast congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
   exact (mul_nonneg_iff_of_pos_right hpos).mp (this ▸ hnn v)
 
 theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
     (hnn : ∀ x : E, 0 < RCLike.re ⟪x, T x⟫) : 0 < μ := by
   obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
-  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
-    have := congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
-    -- Porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [← RCLike.ofReal_pow, ← RCLike.ofReal_mul] at this
-    exact mod_cast this
+  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 :=
+    mod_cast congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
   exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
 
 end Nonneg

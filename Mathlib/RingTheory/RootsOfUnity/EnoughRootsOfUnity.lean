@@ -64,8 +64,7 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     [HasEnoughRootsOfUnity M n] :
     Nat.card (rootsOfUnity n M) = n := by
   obtain ⟨ζ, h⟩ := exists_primitiveRoot M n
-  have : Fintype <| rootsOfUnity n M := Fintype.ofFinite _
-  rw [Nat.card_eq_fintype_card, ← IsCyclic.exponent_eq_card]
+  rw [← IsCyclic.exponent_eq_card]
   refine dvd_antisymm ?_ ?_
   · exact Monoid.exponent_dvd_of_forall_pow_eq_one fun g ↦ OneMemClass.coe_eq_one.mp g.prop
   · nth_rewrite 1 [h.eq_orderOf]
@@ -77,3 +76,17 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     rw [← Units.eq_iff, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
 
 end HasEnoughRootsOfUnity
+
+section cyclic
+
+/-- The group of group homomorphims from a finite cyclic group `G` of order `n` into the
+group of units of a ring `M` with all roots of unity is isomorphic to `G` -/
+lemma IsCyclic.monoidHom_equiv_self (G M : Type*) [CommGroup G] [Finite G]
+    [IsCyclic G] [CommMonoid M] [HasEnoughRootsOfUnity M (Nat.card G)] :
+    Nonempty ((G →* Mˣ) ≃* G) := by
+  have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
+  have hord := HasEnoughRootsOfUnity.natCard_rootsOfUnity M (Nat.card G)
+  let e := (IsCyclic.monoidHom_mulEquiv_rootsOfUnity G Mˣ).some
+  exact ⟨e.trans (rootsOfUnityUnitsMulEquiv M (Nat.card G)) |>.trans (mulEquivOfCyclicCardEq hord)⟩
+
+end cyclic

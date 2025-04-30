@@ -6,7 +6,7 @@ set_option linter.hashCommand true
 
 section ignored_commands
 
--- As a consequence of lean4#5644, `#guard_msgs in`, even without a doc-string,
+-- As a consequence of https://github.com/leanprover/lean4/pull/5644, `#guard_msgs in`, even without a doc-string,
 -- does not triggers the `#`-command linter.
 #guard_msgs in
 #guard_msgs in

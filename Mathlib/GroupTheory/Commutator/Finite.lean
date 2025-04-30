@@ -5,6 +5,8 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.GroupTheory.Rank
+import Mathlib.GroupTheory.Index
 
 /-!
 The commutator of a finite direct product is contained in the direct product of the commutators.
@@ -31,5 +33,16 @@ theorem commutator_pi_pi_of_finite {η : Type*} [Finite η] {Gs : η → Type*} 
         · subst h
           simpa using hx
         · simp [h, one_mem]
+
+variable (G : Type*) [Group G] [Group.FG G] [Finite (commutatorSet G)]
+
+instance finiteIndex_center : FiniteIndex (center G) := by
+  obtain ⟨S, -, hS⟩ := Group.rank_spec G
+  exact ⟨mt (Finite.card_eq_zero_of_embedding (quotientCenterEmbedding hS)) Finite.card_pos.ne'⟩
+
+lemma index_center_le_pow : (center G).index ≤ Nat.card (commutatorSet G) ^ Group.rank G := by
+  obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
+  rw [← hS1, ← Fintype.card_coe, ← Nat.card_eq_fintype_card, ← Finset.coe_sort_coe, ← Nat.card_fun]
+  exact Finite.card_le_of_embedding (quotientCenterEmbedding hS2)
 
 end Subgroup

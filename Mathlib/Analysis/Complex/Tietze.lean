@@ -25,9 +25,9 @@ universe u u₁ v w
 
 -- this is not an instance because Lean cannot determine `𝕜`.
 theorem TietzeExtension.of_tvs (𝕜 : Type v) [NontriviallyNormedField 𝕜] {E : Type w}
-    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-    [T2Space E] [FiniteDimensional 𝕜 E] [CompleteSpace 𝕜] [TietzeExtension.{u, v} 𝕜] :
-    TietzeExtension.{u, w} E :=
+    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [ContinuousSMul 𝕜 E] [T2Space E] [FiniteDimensional 𝕜 E] [CompleteSpace 𝕜]
+    [TietzeExtension.{u, v} 𝕜] : TietzeExtension.{u, w} E :=
   Basis.ofVectorSpace 𝕜 E |>.equivFun.toContinuousLinearEquiv.toHomeomorph |> .of_homeo
 
 instance Complex.instTietzeExtension : TietzeExtension ℂ :=
@@ -37,7 +37,7 @@ instance (priority := 900) RCLike.instTietzeExtension {𝕜 : Type*} [RCLike �
     TietzeExtension 𝕜 := TietzeExtension.of_tvs ℝ
 
 instance RCLike.instTietzeExtensionTVS {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
-    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
     [ContinuousSMul 𝕜 E] [T2Space E] [FiniteDimensional 𝕜 E] :
     TietzeExtension.{u, w} E :=
   TietzeExtension.of_tvs 𝕜

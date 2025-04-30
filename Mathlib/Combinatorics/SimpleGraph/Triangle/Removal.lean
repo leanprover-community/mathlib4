@@ -7,6 +7,7 @@ import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
+import Mathlib.Data.Finset.CastCard
 
 /-!
 # Triangle removal lemma
@@ -128,7 +129,7 @@ lemma FarFromTriangleFree.le_card_cliqueFinset (hG : G.FarFromTriangleFree ε) :
   · apply (mul_nonpos_of_nonpos_of_nonneg (triangleRemovalBound_nonpos hε) _).trans <;> positivity
   let l : ℕ := ⌈4 / ε⌉₊
   have hl : 4/ε ≤ l := le_ceil (4/ε)
-  cases' le_total (card α) l with hl' hl'
+  rcases le_total (card α) l with hl' | hl'
   · calc
       _ ≤ triangleRemovalBound ε * ↑l ^ 3 := by
         gcongr; exact (triangleRemovalBound_pos hε hG.lt_one.le).le
@@ -165,9 +166,7 @@ Note this looks for `ε ≤ 1` in the context. -/
 def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(triangleRemovalBound $ε) =>
-    let some fvarId ← findLocalDeclWithType? q($ε ≤ 1)
-      | throwError "`ε ≤ 1` is not available in the local context"
-    let hε₁ : Q($ε ≤ 1) := .fvar fvarId
+    let some hε₁ ← findLocalDeclWithTypeQ? q($ε ≤ 1) | failure
     let .positive hε ← core q(inferInstance) q(inferInstance) ε | failure
     assertInstancesCommute
     pure (.positive q(triangleRemovalBound_pos $hε $hε₁))

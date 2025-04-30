@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Harun Khan, Alex Keizer
 -/
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Data.ZMod.Defs
 
 /-!
@@ -17,6 +18,9 @@ can either be PR'd to Lean, or kept downstream if it also relies on Mathlib.
 -/
 
 namespace BitVec
+
+-- Pending rename in core.
+alias neg_one_eq_allOnes := negOne_eq_allOnes
 
 variable {w : Nat}
 
@@ -74,12 +78,12 @@ theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
   case succ w =>
     simp only [Int.cast, IntCast.intCast]
     unfold Int.castDef
-    cases' z with z z
+    rcases z with z | z
     · rfl
     · rw [ofInt_negSucc_eq_not_ofNat]
       simp only [Nat.cast_add, Nat.cast_one, neg_add_rev]
       rw [← add_ofFin, ofFin_neg, ofFin_ofNat, ofNat_eq_ofNat, ofFin_neg, ofFin_natCast,
-        natCast_eq_ofNat, negOne_eq_allOnes, ← sub_toAdd, allOnes_sub_eq_not]
+        natCast_eq_ofNat, neg_one_eq_allOnes, ← sub_toAdd, allOnes_sub_eq_not]
 
 theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
   apply toFin_inj.mpr <| (ofFin_intCast z).symm
@@ -88,5 +92,15 @@ instance : CommRing (BitVec w) :=
   toFin_injective.commRing _
     toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
     toFin_nsmul toFin_zsmul toFin_pow toFin_natCast toFin_intCast
+
+/-- The ring `BitVec m` is isomorphic to `Fin (2 ^ m)`. -/
+@[simps]
+def equivFin {m : ℕ} : BitVec m ≃+* Fin (2 ^ m) where
+  toFun a := a.toFin
+  invFun a := ofFin a
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
 
 end BitVec

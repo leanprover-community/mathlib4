@@ -106,7 +106,7 @@ theorem IsUnit.sub_iff [Ring α] {x y : α} : IsUnit (x - y) ↔ IsUnit (y - x) 
 namespace Units
 
 @[field_simps]
-theorem divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
+theorem divp_add_divp [CommSemiring α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ + b /ₚ u₂ = (a * u₂ + u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [divp, add_mul, mul_inv_rev, val_mul]
   rw [mul_comm (↑u₁ * b), mul_comm b]
@@ -123,3 +123,18 @@ theorem add_eq_mul_one_add_div [Semiring R] {a : Rˣ} {b : R} : ↑a + b = a * (
   rw [mul_add, mul_one, ← mul_assoc, Units.mul_inv, one_mul]
 
 end Units
+
+namespace RingHom
+
+section Semiring
+
+variable [Semiring α] [Semiring β]
+
+theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
+  IsUnit.map f
+
+end Semiring
+
+end RingHom
+
+variable [Semiring α] [Semiring β]

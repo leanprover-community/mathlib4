@@ -35,6 +35,10 @@ section
 
 variable (C)
 
+-- Don't generate unnecessary `sizeOf_spec` or `injEq` lemmas
+-- which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
+set_option genInjectivity false in
 /--
 Given a type `C`, the free monoidal category over `C` has as objects formal expressions built from
 (formal) tensor products of terms of `C` and a formal unit. Its morphisms are compositions and
@@ -52,13 +56,9 @@ local notation "F" => FreeMonoidalCategory
 
 namespace FreeMonoidalCategory
 
-attribute [nolint simpNF] unit.sizeOf_spec tensor.injEq tensor.sizeOf_spec
-
 /-- Formal compositions and tensor products of identities, unitors and associators. The morphisms
     of the free monoidal category are obtained as a quotient of these formal morphisms by the
     relations defining a monoidal category. -/
--- Porting note(#5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 inductive Hom : F C → F C → Type u
   | id (X) : Hom X X
   | α_hom (X Y Z : F C) : Hom ((X.tensor Y).tensor Z) (X.tensor (Y.tensor Z))
@@ -356,31 +356,26 @@ def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :
 
 end
 
-/-- If `D` is a monoidal category and we have a function `C → D`, then we have a functor from the
-    free monoidal category over `C` to the category `D`. -/
-def project : MonoidalFunctor (F C) D where
+/-- If `D` is a monoidal category and we have a function `C → D`, then we have a
+monoidal functor from the free monoidal category over `C` to the category `D`. -/
+def project : F C ⥤ D where
   obj := projectObj f
   map := projectMap f _ _
-  -- Porting note: `map_comp` and `μ_natural` were proved in mathlib3 by tidy, using induction.
+  map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
+
+instance : (project f).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso := fun _ _ ↦ Iso.refl _
+  -- Porting note: `μIso_hom_natural_left` was proved in mathlib3 by tidy, using induction.
   -- We probably don't expect `aesop_cat` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
   -- In any case I don't understand why we need to specify `using Quotient.recOn`.
-  map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
-  ε := 𝟙 _
-  μ _ _ := 𝟙 _
-  μ_natural_left := fun f _ => by
-    induction' f using Quotient.recOn
-    · dsimp
-      simp only [Category.comp_id, Category.id_comp]
-      rw [← tensorHom_id, ← tensorHom_id]
-      rfl
-    · rfl
-  μ_natural_right := fun _ f => by
-    induction' f using Quotient.recOn
-    · dsimp
-      simp only [Category.comp_id, Category.id_comp]
-      rw [← id_tensorHom, ← id_tensorHom]
-      rfl
-    · rfl
+      μIso_hom_natural_left := fun f _ => by
+        induction f using Quotient.recOn
+        all_goals aesop
+      μIso_hom_natural_right := fun _ f => by
+        induction f using Quotient.recOn
+        all_goals aesop }
 
 end Functor
 

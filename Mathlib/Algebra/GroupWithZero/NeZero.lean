@@ -31,11 +31,13 @@ instance NeZero.one : NeZero (1 : M₀) := ⟨by
     _ = y := by rw [one_mul]⟩
 
 /-- Pullback a `Nontrivial` instance along a function sending `0` to `0` and `1` to `1`. -/
-theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f 0 = 0) (one : f 1 = 1) :
+theorem domain_nontrivial [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f 0 = 0) (one : f 1 = 1) :
     Nontrivial M₀' :=
   ⟨⟨0, 1, mt (congr_arg f) <| by
     rw [zero, one]
     exact zero_ne_one⟩⟩
+
+@[deprecated (since := "2024-12-07")] alias pullback_nonzero := domain_nontrivial
 
 section GroupWithZero
 

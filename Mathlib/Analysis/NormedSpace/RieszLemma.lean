@@ -98,7 +98,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
     _ = ‖d‖ * (‖c‖ / R * ‖x‖) := by
       simp only [norm_smul]
       ring
-    _ ≤ ‖d‖ * ‖x - y'‖ := by gcongr; exact hx y' (by simp [Submodule.smul_mem _ _ hy])
+    _ ≤ ‖d‖ * ‖x - y'‖ := by gcongr; exact hx y' (by simp [y', Submodule.smul_mem _ _ hy])
     _ = ‖d • x - y‖ := by rw [yy', ← smul_sub, norm_smul]
 
 theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :

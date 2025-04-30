@@ -41,7 +41,7 @@ synonym for a list of ordered pairs in `R × M`, where typically `M` is an `R`-m
 form to which the tactics reduce module expressions.
 
 (It is not a full "normal form" because the scalars, i.e. `R` components, are not themselves
-ring-normalized.  But this partial normal form is more convenient for our purposes.)  -/
+ring-normalized. But this partial normal form is more convenient for our purposes.) -/
 def NF (R : Type*) (M : Type*) := List (R × M)
 
 namespace NF
@@ -163,7 +163,7 @@ theorem eval_smul [AddCommMonoid M] [Semiring R] [Module R M] {l : NF R M} {x : 
   simp [mul_smul]
 
 theorem smul_eq_eval {R₀ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] [Semiring R₀]
-    [Module R₀ M] [Semiring S] [Module S M]  {l : NF R M} {l₀ : NF R₀ M} {s : S} {r : R}
+    [Module R₀ M] [Semiring S] [Module S M] {l : NF R M} {l₀ : NF R₀ M} {s : S} {r : R}
     {x : M} (hx : x = l₀.eval) (hl : l.eval = l₀.eval) (hs : r • x = s • x) :
     s • x = (r • l).eval := by
   rw [← hs, hx, ← hl, eval_smul]
@@ -188,7 +188,7 @@ theorem eq_const_cons [AddCommMonoid M] [Semiring R] [Module R M] {r : R} (m : M
   simp [← h1, h2]
 
 theorem eq_of_eval_eq_eval {R₁ R₂ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] [Semiring R₁]
-    [Module R₁ M] [Semiring R₂] [Module R₂ M]  {l₁ l₂ : NF R M} {l₁' : NF R₁ M} {l₂' : NF R₂ M}
+    [Module R₁ M] [Semiring R₂] [Module R₂ M] {l₁ l₂ : NF R M} {l₁' : NF R₁ M} {l₂' : NF R₂ M}
     {x₁ x₂ : M} (hx₁ : x₁ = l₁'.eval) (hx₂ : x₂ = l₂'.eval) (h₁ : l₁.eval = l₁'.eval)
     (h₂ : l₂.eval = l₂'.eval) (h : l₁.eval = l₂.eval) :
     x₁ = x₂ := by
@@ -276,7 +276,7 @@ def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the sum of the
 "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
-`Module.qNF.add iR l₁ l₁`.-/
+`Module.qNF.add iR l₁ l₁`. -/
 def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) + NF.eval $(l₂.toNF) = NF.eval $((qNF.add iR l₁ l₂).toNF)) :=
@@ -321,7 +321,7 @@ def sub (iR : Q(Ring $R)) : qNF R M → qNF R M → qNF R M
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the difference
 of the "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
-`Module.qNF.sub iR l₁ l₁`.-/
+`Module.qNF.sub iR l₁ l₁`. -/
 def mkSubProof (iR : Q(Ring $R)) (iM : Q(AddCommGroup $M)) (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) - NF.eval $(l₂.toNF) = NF.eval $((qNF.sub iR l₁ l₂).toNF)) :=
@@ -400,7 +400,7 @@ It is assumed that there is a "linear order" on all the semirings which appear i
 for any two semirings `R` and `S` which occur, we have either `Algebra R S` or `Algebra S R`).
 
 TODO: implement a variant in which a semiring `R` is provided by the user, and the assumption is
-instead that for any semiring `S` which occurs, we have `Algebra S R`. The PR #16984 provides a
+instead that for any semiring `S` which occurs, we have `Algebra S R`. The PR https://github.com/leanprover-community/mathlib4/pull/16984 provides a
 proof-of-concept implementation of this variant, but it would need some polishing before joining
 Mathlib.
 
@@ -464,9 +464,9 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [], q(NF.zero_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
   | _ =>
-    let k : ℕ ← AtomM.addAtom x
-    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x), k)],
-      q(NF.atom_eq_eval $x)⟩
+    let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
+    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x'), k)],
+      q(NF.atom_eq_eval $x')⟩
 
 /-- Given expressions `R` and `M` representing types such that `M`'s is a module over `R`'s, and
 given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
@@ -573,10 +573,7 @@ def postprocess (mvarId : MVarId) : MetaM MVarId := do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
     thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
   -- now run `simp` with these lemmas, and (importantly) *no* simprocs
-  let ctx : Simp.Context := {
-      config      := { failIfUnchanged := false }
-      simpTheorems := #[thms]
-    }
+  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
   let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
     throwError "internal error in match_scalars tactic: postprocessing should not close goals"
   return r

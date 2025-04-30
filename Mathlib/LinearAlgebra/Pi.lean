@@ -10,7 +10,9 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.LinearAlgebra.Prod
+import Mathlib.Data.Fintype.Option
 
 /-!
 # Pi types of modules
@@ -85,8 +87,17 @@ theorem coe_proj (i : ι) : ⇑(proj i : ((i : ι) → φ i) →ₗ[R] φ i) = F
 theorem proj_apply (i : ι) (b : (i : ι) → φ i) : (proj i : ((i : ι) → φ i) →ₗ[R] φ i) b = b i :=
   rfl
 
-theorem proj_pi (f : (i : ι) → M₂ →ₗ[R] φ i) (i : ι) : (proj i).comp (pi f) = f i :=
-  ext fun _ => rfl
+@[simp]
+theorem proj_pi (f : (i : ι) → M₂ →ₗ[R] φ i) (i : ι) : (proj i).comp (pi f) = f i := rfl
+
+@[simp]
+theorem pi_proj : pi proj = LinearMap.id (R := R) (M := ∀ i, φ i) := rfl
+
+@[simp]
+theorem pi_proj_comp (f : M₂ →ₗ[R] ∀ i, φ i) : pi (proj · ∘ₗ f) = f := rfl
+
+theorem proj_surjective (i : ι) : Surjective (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :=
+  surjective_eval i
 
 theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) = ⊥ :=
@@ -216,9 +227,14 @@ theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
     [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) :
     lsum R φ S f = ∑ i : ι, (f i).comp (proj i) := rfl
 
+theorem lsum_piSingle (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
+    [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) (i : ι) (x : φ i) :
+    lsum R φ S f (Pi.single i x) = f i x := by
+  simp_rw [lsum_apply, sum_apply, comp_apply, proj_apply, apply_single, Fintype.sum_pi_single']
+
 @[simp high]
-theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommRing R] {M : ι → Type*}
-    [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] :
+theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommSemiring R] {M : ι → Type*}
+    [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)] :
     LinearMap.lsum R M R (LinearMap.single R M) = LinearMap.id :=
   LinearMap.ext fun x => by simp [Finset.univ_sum_single]
 
@@ -288,15 +304,14 @@ def diag (i j : ι) : φ i →ₗ[R] φ j :=
 theorem update_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i j : ι) (b : M₂ →ₗ[R] φ i) :
     (update f i b j) c = update (fun i => f i c) i (b c) j := by
   by_cases h : j = i
-  · rw [h, update_same, update_same]
-  · rw [update_noteq h, update_noteq h]
+  · rw [h, update_self, update_self]
+  · rw [update_of_ne h, update_of_ne h]
 
 variable (R φ)
 
 theorem single_eq_pi_diag (i : ι) : single R φ i = pi (diag i) := by
   ext x j
-  -- Porting note: made types explicit
-  convert (update_apply (R := R) (φ := φ) (ι := ι) 0 x i j _).symm
+  convert (update_apply 0 x i j _).symm
   rfl
 
 theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=
@@ -326,11 +341,14 @@ open LinearMap
 /-- A version of `Set.pi` for submodules. Given an index set `I` and a family of submodules
 `p : (i : ι) → Submodule R (φ i)`, `pi I s` is the submodule of dependent functions
 `f : (i : ι) → φ i` such that `f i` belongs to `p a` whenever `i ∈ I`. -/
+@[simps]
 def pi (I : Set ι) (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι) → φ i) where
   carrier := Set.pi I fun i => p i
   zero_mem' i _ := (p i).zero_mem
   add_mem' {_ _} hx hy i hi := (p i).add_mem (hx i hi) (hy i hi)
   smul_mem' c _ hx i hi := (p i).smul_mem c (hx i hi)
+
+attribute [norm_cast] coe_pi
 
 variable {I : Set ι} {p q : (i : ι) → Submodule R (φ i)} {x : (i : ι) → φ i}
 
@@ -338,18 +356,19 @@ variable {I : Set ι} {p q : (i : ι) → Submodule R (φ i)} {x : (i : ι) → 
 theorem mem_pi : x ∈ pi I p ↔ ∀ i ∈ I, x i ∈ p i :=
   Iff.rfl
 
-@[simp, norm_cast]
-theorem coe_pi : (pi I p : Set ((i : ι) → φ i)) = Set.pi I fun i => p i :=
-  rfl
-
 @[simp]
 theorem pi_empty (p : (i : ι) → Submodule R (φ i)) : pi ∅ p = ⊤ :=
   SetLike.coe_injective <| Set.empty_pi _
 
 @[simp]
-theorem pi_top (s : Set ι) : (pi s fun i : ι => (⊤ : Submodule R (φ i))) = ⊤ :=
+theorem pi_top (s : Set ι) : (pi s fun i : ι ↦ (⊤ : Submodule R (φ i))) = ⊤ :=
   SetLike.coe_injective <| Set.pi_univ _
 
+@[simp]
+theorem pi_univ_bot : (pi Set.univ fun i : ι ↦ (⊥ : Submodule R (φ i))) = ⊥ :=
+  le_bot_iff.mp fun _ h ↦ funext fun i ↦ h i trivial
+
+@[gcongr]
 theorem pi_mono {s : Set ι} (h : ∀ i ∈ s, p i ≤ q i) : pi s p ≤ pi s q :=
   Set.pi_mono h
 
@@ -363,25 +382,23 @@ theorem iInf_comap_proj :
   ext x
   simp
 
-theorem iSup_map_single [DecidableEq ι] [Finite ι] :
-    ⨆ i, map (LinearMap.single R φ i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
-  cases nonempty_fintype ι
-  refine (iSup_le fun i => ?_).antisymm ?_
-  · rintro _ ⟨x, hx : x ∈ p i, rfl⟩ j -
-    rcases em (j = i) with (rfl | hj) <;> simp [*]
-  · intro x hx
-    rw [← Finset.univ_sum_single x]
-    exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
-
-theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)) {i} :
-    p i ≤ Submodule.comap (LinearMap.single R φ i : φ i →ₗ[R] _) (Submodule.pi Set.univ p) := by
+theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)) {I i} :
+    p i ≤ Submodule.comap (LinearMap.single R φ i : φ i →ₗ[R] _) (Submodule.pi I p) := by
   intro x hx
   rw [Submodule.mem_comap, Submodule.mem_pi]
   rintro j -
-  by_cases h : j = i
-  · rwa [h, LinearMap.coe_single, Pi.single_eq_same]
-  · rw [LinearMap.coe_single, Pi.single_eq_of_ne h]
-    exact (p j).zero_mem
+  rcases eq_or_ne j i with rfl | hne <;> simp [*]
+
+theorem iSup_map_single_le [DecidableEq ι] :
+    ⨆ i, map (LinearMap.single R φ i) (p i) ≤ pi I p :=
+  iSup_le fun _ => map_le_iff_le_comap.mpr <| le_comap_single_pi _
+
+theorem iSup_map_single [DecidableEq ι] [Finite ι] :
+    ⨆ i, map (LinearMap.single R φ i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
+  cases nonempty_fintype ι
+  refine iSup_map_single_le.antisymm fun x hx => ?_
+  rw [← Finset.univ_sum_single x]
+  exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
 
 end Submodule
 
@@ -458,7 +475,7 @@ def piCurry {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
   rfl
 
 /-- This is `Equiv.piOptionEquivProd` as a `LinearEquiv` -/
-def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) → AddCommGroup (M i)]
+def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) → AddCommMonoid (M i)]
     [(i : Option ι) → Module R (M i)] :
     ((i : Option ι) → M i) ≃ₗ[R] M none × ((i : ι) → M (some i)) :=
   { Equiv.piOptionEquivProd with
@@ -552,7 +569,7 @@ theorem piFinTwo_apply (M : Fin 2 → Type v)
     (piFinTwo R M : ((i : Fin 2) → M i) → M 0 × M 1) = fun f => (f 0, f 1) := rfl
 
 /-- Linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
   { finTwoArrowEquiv M, piFinTwo R fun _ => M with }
 
@@ -570,6 +587,17 @@ noncomputable def Function.ExtendByZero.linearMap : (ι → R) →ₗ[R] η → 
     map_smul' := fun r f => by simpa using Function.extend_smul r s f 0 }
 
 end Extend
+
+variable (R) in
+/-- `Fin.consEquiv` as a continuous linear equivalence. -/
+@[simps]
+def Fin.consLinearEquiv
+    {n : ℕ} (M : Fin n.succ → Type*) [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] :
+    (M 0 × Π i, M (Fin.succ i)) ≃ₗ[R] (Π i, M i) where
+  __ := Fin.consEquiv M
+  map_add' x y := funext <| Fin.cases rfl (by simp)
+  map_smul' c x := funext <| Fin.cases rfl (by simp)
+
 
 /-! ### Bundled versions of `Matrix.vecCons` and `Matrix.vecEmpty`
 
@@ -604,19 +632,46 @@ theorem LinearMap.vecEmpty_apply (m : M) : (LinearMap.vecEmpty : M →ₗ[R] Fin
 
 /-- A linear map into `Fin n.succ → M₃` can be built out of a map into `M₃` and a map into
 `Fin n → M₃`. -/
-def LinearMap.vecCons {n} (f : M →ₗ[R] M₂) (g : M →ₗ[R] Fin n → M₂) : M →ₗ[R] Fin n.succ → M₂ where
-  toFun m := Matrix.vecCons (f m) (g m)
-  map_add' x y := by
-    simp only []
-    rw [f.map_add, g.map_add, Matrix.cons_add_cons (f x)]
-  map_smul' c x := by
-    simp only []
-    rw [f.map_smul, g.map_smul, RingHom.id_apply, Matrix.smul_cons c (f x)]
+def LinearMap.vecCons {n} (f : M →ₗ[R] M₂) (g : M →ₗ[R] Fin n → M₂) : M →ₗ[R] Fin n.succ → M₂ :=
+  Fin.consLinearEquiv R (fun _ : Fin n.succ => M₂) ∘ₗ f.prod g
 
 @[simp]
 theorem LinearMap.vecCons_apply {n} (f : M →ₗ[R] M₂) (g : M →ₗ[R] Fin n → M₂) (m : M) :
     f.vecCons g m = Matrix.vecCons (f m) (g m) :=
   rfl
+
+variable (R) in
+/--
+To show a property `motive` of modules holds for arbitrary finite products of modules, it suffices
+to show
+1. `motive` is stable under isomorphism.
+2. `motive` holds for the zero module.
+3. `motive` holds for `M × N` if it holds for both `M` and `N`.
+
+Since we need to apply `motive` to modules in `Type u` and in `Type (max u v)`, there is a second
+`motive'` argument which is required to be equivalent to `motive` up to universe lifting by `equiv`.
+
+See `Module.pi_induction'` for a version where `motive` assumes `AddCommGroup` instead.
+-/
+@[elab_as_elim]
+lemma Module.pi_induction {ι : Type v} [Finite ι]
+    (motive : ∀ (N : Type u) [AddCommMonoid N] [Module R N], Prop)
+    (motive' : ∀ (N : Type (max u v)) [AddCommMonoid N] [Module R N], Prop)
+    (equiv : ∀ {N : Type u} {N' : Type (max u v)} [AddCommMonoid N] [AddCommMonoid N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive N → motive' N')
+    (equiv' : ∀ {N N' : Type (max u v)} [AddCommMonoid N] [AddCommMonoid N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive' N → motive' N')
+    (unit : motive PUnit) (prod : ∀ {N : Type u} {N' : Type (max u v)} [AddCommMonoid N]
+      [AddCommMonoid N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
+    (M : ι → Type u) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+    (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
+  classical
+  cases nonempty_fintype ι
+  revert M
+  refine Fintype.induction_empty_option
+    (fun α β _ e h M _ _ hM ↦ equiv' (LinearEquiv.piCongrLeft R M e) <| h _ fun i ↦ hM _)
+    (fun M _ _ _ ↦ equiv default unit) (fun α _ h M _ _ hn ↦ ?_) ι
+  exact equiv' (LinearEquiv.piOptionEquivProd R).symm <| prod (hn _) (h _ fun i ↦ hn i)
 
 end Semiring
 
@@ -645,5 +700,26 @@ def LinearMap.vecCons₂ {n} (f : M →ₗ[R] M₂ →ₗ[R] M₃) (g : M →ₗ
   map_smul' r x := LinearMap.ext fun z => by simp [Matrix.smul_cons r (f x z)]
 
 end CommSemiring
+
+/-- A variant of `Module.pi_induction` that assumes `AddCommGroup` instead of `AddCommMonoid`. -/
+@[elab_as_elim]
+lemma Module.pi_induction' {ι : Type v} [Finite ι] (R : Type*) [Ring R]
+    (motive : ∀ (N : Type u) [AddCommGroup N] [Module R N], Prop)
+    (motive' : ∀ (N : Type (max u v)) [AddCommGroup N] [Module R N], Prop)
+    (equiv : ∀ {N : Type u} {N' : Type (max u v)} [AddCommGroup N] [AddCommGroup N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive N → motive' N')
+    (equiv' : ∀ {N N' : Type (max u v)} [AddCommGroup N] [AddCommGroup N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive' N → motive' N')
+    (unit : motive PUnit) (prod : ∀ {N : Type u} {N' : Type (max u v)} [AddCommGroup N]
+      [AddCommGroup N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
+    (M : ι → Type u) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+    (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
+  classical
+  cases nonempty_fintype ι
+  revert M
+  refine Fintype.induction_empty_option
+    (fun α β _ e h M _ _ hM ↦ equiv' (LinearEquiv.piCongrLeft R M e) <| h _ fun i ↦ hM _)
+    (fun M _ _ _ ↦ equiv default unit) (fun α _ h M _ _ hn ↦ ?_) ι
+  exact equiv' (LinearEquiv.piOptionEquivProd R).symm <| prod (hn _) (h _ fun i ↦ hn i)
 
 end Fin

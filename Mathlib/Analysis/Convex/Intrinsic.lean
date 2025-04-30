@@ -43,9 +43,7 @@ The main results are:
 * `x ∈ s → y ∈ intrinsicInterior 𝕜 s → openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 s`
 -/
 
-
-open AffineSubspace Set
-
+open AffineSubspace Set Topology
 open scoped Pointwise
 
 variable {𝕜 V W Q P : Type*}
@@ -111,8 +109,6 @@ theorem intrinsicClosure_nonempty : (intrinsicClosure 𝕜 s).Nonempty ↔ s.Non
     Nonempty.mono subset_intrinsicClosure⟩
 
 alias ⟨Set.Nonempty.ofIntrinsicClosure, Set.Nonempty.intrinsicClosure⟩ := intrinsicClosure_nonempty
-
---attribute [protected] Set.Nonempty.intrinsicClosure -- Porting note: removed
 
 @[simp]
 theorem intrinsicInterior_singleton (x : P) : intrinsicInterior 𝕜 ({x} : Set P) = {x} := by

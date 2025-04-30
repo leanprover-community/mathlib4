@@ -56,7 +56,7 @@ irreducible_def vitaliFamily (K : ℝ) : VitaliFamily μ := by
       μ (closedBall x (3 * r)) ≤ scalingConstantOf μ (max (4 * K + 3) 3) * μ (closedBall x r) := by
     intro x
     apply frequently_iff.2 fun {U} hU => ?_
-    obtain ⟨ε, εpos, hε⟩ := mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 hU
+    obtain ⟨ε, εpos, hε⟩ := mem_nhdsGT_iff_exists_Ioc_subset.1 hU
     refine ⟨min ε R, hε ⟨lt_min εpos Rpos, min_le_left _ _⟩, ?_⟩
     exact measure_mul_le_scalingConstantOf_mul μ
       ⟨zero_lt_three, le_max_right _ _⟩ (min_le_right _ _)
@@ -69,7 +69,7 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
     (rpos : 0 < r) : closedBall y r ∈ (vitaliFamily μ K).setsAt x := by
   let R := scalingScaleOf μ (max (4 * K + 3) 3)
   simp only [vitaliFamily, VitaliFamily.enlarge, Vitali.vitaliFamily, mem_union, mem_setOf_eq,
-    isClosed_ball, true_and, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
+    isClosed_closedBall, true_and, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
     measurableSet_closedBall]
   /- The measure is doubling on scales smaller than `R`. Therefore, we treat differently small
     and large balls. For large balls, this follows directly from the enlargement we used in the

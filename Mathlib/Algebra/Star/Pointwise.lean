@@ -3,9 +3,10 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise star operation on sets
@@ -116,9 +117,9 @@ protected theorem star_inv [Group α] [StarMul α] (s : Set α) : s⁻¹⋆ = s�
   ext
   simp only [mem_star, mem_inv, star_inv]
 
-protected theorem star_inv' [DivisionSemiring α] [StarRing α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
+protected theorem star_inv' [GroupWithZero α] [StarMul α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
-  simp only [mem_star, mem_inv, star_inv']
+  simp only [mem_star, mem_inv, star_inv₀]
 
 end Set
 
