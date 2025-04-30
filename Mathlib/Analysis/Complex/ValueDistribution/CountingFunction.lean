@@ -111,7 +111,7 @@ namespace ValueDistribution
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {U : Set 𝕜} {f g : 𝕜 → E} {a : WithTop E} {a₀ : E}
 
 variable (f a) in
