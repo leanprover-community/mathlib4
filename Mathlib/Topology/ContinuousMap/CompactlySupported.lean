@@ -653,7 +653,7 @@ noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
 lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
     f.nnrealPart x = Real.toNNReal (f x) := rfl
 
-lemma nnrealPart_neg_eq_zero_of_nonneg (f : C_c(α, ℝ)) (hf : 0 ≤ f) : (-f).nnrealPart = 0 := by
+lemma nnrealPart_neg_eq_zero_of_nonneg {f : C_c(α, ℝ)} (hf : 0 ≤ f) : (-f).nnrealPart = 0 := by
   ext x
   simpa using hf x
 
