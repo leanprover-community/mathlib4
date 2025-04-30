@@ -193,7 +193,7 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Non
   [∀ i, NonUnitalContinuousFunctionalCalculus ℝ (C i) IsSelfAdjoint]
   [NonUnitalContinuousFunctionalCalculus ℝ (∀ i, C i) IsSelfAdjoint]
   [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
-  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀i, NonnegSpectrumClass ℝ (C i)]
+  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
 
 /- Note that there is higher-priority instance of `Pow (∀ i, C i) ℝ≥0` coming from the `Pow`
 instance for pi types, hence the direct use of `nnrpow` here. -/
@@ -293,7 +293,7 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Non
   [∀ i, NonUnitalContinuousFunctionalCalculus ℝ (C i) IsSelfAdjoint]
   [NonUnitalContinuousFunctionalCalculus ℝ (∀ i, C i) IsSelfAdjoint]
   [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
-  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀i, NonnegSpectrumClass ℝ (C i)]
+  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
 
 lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
     sqrt c = fun i => sqrt (c i) := by
