@@ -111,7 +111,7 @@ attribute [fun_prop]
 
   contDiffOn_id'
   contDiffOn_const
-  ContDiffOn.comp'
+  ContDiffOn.comp_inter
   -- contDiffOn_apply -- missing
   contDiffOn_pi'
 
