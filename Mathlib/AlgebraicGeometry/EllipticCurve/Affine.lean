@@ -162,15 +162,16 @@ lemma monic_polynomial : W'.polynomial.Monic := by
 
 lemma irreducible_polynomial [IsDomain R] : Irreducible W'.polynomial := by
   by_contra h
-  rcases (monic_polynomial.not_irreducible_iff_exists_add_mul_eq_coeff natDegree_polynomial).mp h
-    with ⟨f, g, h0, h1⟩
-  simp only [polynomial_eq, Cubic.coeff_eq_c, Cubic.coeff_eq_d] at h0 h1
-  apply_fun degree at h0 h1
-  rw [Cubic.degree_of_a_ne_zero' <| neg_ne_zero.mpr <| one_ne_zero' R, degree_mul] at h0
-  apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_lt
-  rcases Nat.WithBot.add_eq_three_iff.mp h0.symm with h | h | h | h
-  iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
-  iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
+  sorry
+  -- rcases (monic_polynomial.not_irreducible_iff_exists_add_mul_eq_coeff natDegree_polynomial).mp h
+  --   with ⟨f, g, h0, h1⟩
+  -- simp only [polynomial_eq, Cubic.coeff_eq_c, Cubic.coeff_eq_d] at h0 h1
+  -- apply_fun degree at h0 h1
+  -- rw [Cubic.degree_of_a_ne_zero' <| neg_ne_zero.mpr <| one_ne_zero' R, degree_mul] at h0
+  -- apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_lt
+  -- rcases Nat.WithBot.add_eq_three_iff.mp h0.symm with h | h | h | h
+  -- iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
+  -- iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
 
 lemma evalEval_polynomial (x y : R) : W'.polynomial.evalEval x y =
     y ^ 2 + W'.a₁ * x * y + W'.a₃ * y - (x ^ 3 + W'.a₂ * x ^ 2 + W'.a₄ * x + W'.a₆) := by

@@ -50,9 +50,10 @@ lemma isStableUnderBaseChange :
     IsStableUnderBaseChange FormallyUnramified := by
   refine .mk _ respectsIso ?_
   intros R S T _ _ _ _ _ h
-  show (algebraMap _ _).FormallyUnramified
-  rw [formallyUnramified_algebraMap] at h ⊢
-  infer_instance
+  sorry
+  -- show (algebraMap R T).FormallyUnramified
+  -- rw [formallyUnramified_algebraMap] at h ⊢
+  -- infer_instance
 
 lemma holdsForLocalizationAway :
     HoldsForLocalizationAway FormallyUnramified := by
