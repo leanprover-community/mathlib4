@@ -106,10 +106,9 @@ end Complex
 
 section PartialOrder
 
-/-- The (Loewner) partial order on continuous linear maps on a Hilbert space determined by
-`f ≤ g` if and only if `g - f` is a positive linear map (in the sense of
-`ContinuousLinearMap.IsPositive`). With this partial order, the continuous linear maps form a
-`StarOrderedRing`. -/
+/-- The (Loewner) partial order on linear maps on a Hilbert space determined by `f ≤ g`
+if and only if `g - f` is a positive linear map (in the sense of `LinearMap.IsPositive`).
+With this partial order, the linear maps form a `StarOrderedRing`. -/
 instance instLoewnerPartialOrder : PartialOrder (E →ₗ[𝕜] E) where
   le f g := (g - f).IsPositive
   le_refl _ := by simpa using isPositive_zero
