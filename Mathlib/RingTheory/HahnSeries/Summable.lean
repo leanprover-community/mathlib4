@@ -928,69 +928,43 @@ theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : �
       simp only [mem_coe, mem_addAntidiagonal, mem_support, ne_eq, Set.mem_iUnion]
       exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 
-/-- A summable family of powers of a Hahn series `x`. If `x` has non-positive orderTop, then we
-return the junk value zero. -/
-def powers (x : HahnSeries Γ R) : SummableFamily Γ R ℕ where
-  toFun n := if 0 < x.orderTop then x ^ n else 0 ^ n
-  isPWO_iUnion_support' := by
-    by_cases h : 0 < x.orderTop
-    · simp only [h, ↓reduceIte]
-      exact isPWO_iUnion_support_powers (zero_le_orderTop_iff.mp <| le_of_lt h)
-    · simp only [h, ↓reduceIte]
-      apply isPWO_iUnion_support_powers
-      rw [order_zero]
-  finite_co_support' g := by
-    by_cases h : 0 < x.orderTop
-    · simp only [h, ↓reduceIte]
-      exact pow_finite_co_support h g
-    · simp only [h, ↓reduceIte]
-      exact pow_finite_co_support (orderTop_zero (R := R) (Γ := Γ) ▸ WithTop.top_pos) g
-
-theorem powers_toFun (x : HahnSeries Γ R) (n : ℕ) :
-    (powers x) n = if 0 < x.orderTop then x ^ n else 0 ^ n :=
-  rfl
-
-@[simp]
-theorem powers_of_orderTop_pos {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (n : ℕ) :
-    powers x n = x ^ n := by
-  simp only [powers, hx, ↓reduceIte]
-  exact rfl
-
-@[simp]
-theorem powers_of_not_orderTop_pos {x : HahnSeries Γ R} (hx : ¬ 0 < x.orderTop) (n : ℕ) :
-    powers x n = 0 ^ n := by
-  simp only [powers, hx, ↓reduceIte]
-  exact rfl
+/-- A summable family of powers of a Hahn series `x` with strictly positive orderTop. -/
+@[simps]
+def powers (x : HahnSeries Γ R) (hx : 0 < x.orderTop) : SummableFamily Γ R ℕ where
+  toFun n := x ^ n
+  isPWO_iUnion_support' :=
+    isPWO_iUnion_support_powers (zero_le_orderTop_iff.mp <| le_of_lt hx)
+  finite_co_support' g := pow_finite_co_support hx g
 
 variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
 
 include hx in
 @[simp]
-theorem coe_powers : ⇑(powers x) = HPow.hPow x := by
-  ext1 n
+theorem coe_powers : ⇑(powers x hx) = HPow.hPow x := by
+  ext1
   simp [hx]
 
 include hx in
 theorem embDomain_succ_smul_powers :
-    (x • powers x).embDomain ⟨Nat.succ, Nat.succ_injective⟩ =
-      powers x - ofFinsupp (Finsupp.single 0 1) := by
+    (x • powers x hx).embDomain ⟨Nat.succ, Nat.succ_injective⟩ =
+      powers x hx - ofFinsupp (Finsupp.single 0 1) := by
   apply SummableFamily.ext
   rintro (_ | n)
   · simp [hx]
-  · simp only [coe_sub, coe_ofFinsupp, Pi.sub_apply, powers_of_orderTop_pos hx, ne_eq,
+  · simp only [coe_sub, coe_ofFinsupp, Pi.sub_apply, powers_toFun, ne_eq,
     right_eq_add, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true,
     Finsupp.single_eq_of_ne, sub_zero]
     simp only [embDomain_apply, Embedding.coeFn_mk, Nat.range_succ, Set.mem_setOf_eq,
       lt_add_iff_pos_left, add_pos_iff, Nat.lt_one_iff, pos_of_gt, or_true, ↓reduceDIte,
-      Nat.succ_eq_add_one, add_left_inj, Classical.choose_eq, smul_apply, powers_of_orderTop_pos hx,
+      Nat.succ_eq_add_one, add_left_inj, Classical.choose_eq, smul_apply, powers_toFun,
       smul_eq_mul]
     rw [add_comm, pow_add, pow_one]
     exact rfl
 
 include hx in
-theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x).hsum = 1 := by
-  rw [← hsum_smul, sub_smul 1 x (powers x), one_smul, hsum_sub, ←
-    hsum_embDomain (x • powers x) ⟨Nat.succ, Nat.succ_injective⟩, embDomain_succ_smul_powers hx]
+theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x hx).hsum = 1 := by
+  rw [← hsum_smul, sub_smul 1 x (powers x hx), one_smul, hsum_sub, ←
+    hsum_embDomain (x • powers x hx) ⟨Nat.succ, Nat.succ_injective⟩, embDomain_succ_smul_powers hx]
   simp
 
 end powers
@@ -1069,7 +1043,7 @@ instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [F
     if x0 : x = 0 then 0
     else
       (single (IsAddUnit.addUnit (AddGroup.isAddUnit x.order)).neg) (x.leadingCoeff)⁻¹ *
-        (SummableFamily.powers _).hsum
+        (SummableFamily.powers _ _).hsum
   inv_zero := dif_pos rfl
   mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
     have h :=

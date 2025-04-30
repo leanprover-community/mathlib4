@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Data.Prod.RevLex
 import Mathlib.Order.WellFoundedSet
 
 /-!
@@ -523,7 +524,55 @@ theorem embDomain_injective {f : Γ ↪o Γ'} :
   have xyg := xy (f g)
   rwa [embDomain_coeff, embDomain_coeff] at xyg
 
+@[simp]
+theorem embDomain_comp {Γ'' : Type*} [PartialOrder Γ''] {f : Γ ↪o Γ'} {f' : Γ' ↪o Γ''} :
+    (embDomain (R := R) f') ∘ (embDomain f) = embDomain (f.trans f') := by
+  ext x g''
+  by_cases hf' : g'' ∈ Set.range f'
+  · obtain ⟨g', hg'⟩ := hf'
+    rw [← hg', comp_apply, embDomain_coeff]
+    by_cases hf : g' ∈ Set.range f
+    · obtain ⟨g, hg⟩ := hf
+      rw [← hg, show f' (f g) = (RelEmbedding.trans f f') g by rfl, embDomain_coeff,
+        embDomain_coeff]
+    · simp only [Set.mem_range, not_exists] at hf
+      rw [embDomain_notin_image_support, embDomain_notin_image_support]
+      · simp only [RelEmbedding.coe_trans, comp_apply, Set.mem_image, EmbeddingLike.apply_eq_iff_eq,
+          not_exists, not_and]
+        exact fun g _ ↦ hf g
+      · simp only [Set.mem_image, not_exists, not_and]
+        exact fun g _ ↦ hf g
+  · simp only [Set.mem_range, not_exists] at hf'
+    rw [embDomain_notin_image_support, comp_apply, embDomain_notin_image_support]
+    · simp only [Set.mem_image, not_exists, not_and]
+      exact fun g' _ ↦ hf' g'
+    · simp only [RelEmbedding.coe_trans, comp_apply, Set.mem_image, not_exists, not_and]
+      exact fun g _ ↦ hf' (f g)
+
 end Domain
+
+section RevLex
+
+open Prod.RevLex
+
+/-- An equivalence between Lex-valued Hahn series and RevLex-valued Hahn series. -/
+@[simps]
+def RevEquiv (Γ Γ') [PartialOrder Γ] [PartialOrder Γ'] :
+    HahnSeries (Γ' ×ₗ Γ) R ≃ HahnSeries (Γ ×ᵣ Γ') R where
+  toFun := embDomain (LexEquiv Γ' Γ)
+  invFun := embDomain (LexEquiv Γ' Γ).symm
+  left_inv x := by
+    ext g
+    nth_rw 1 [show g = (RelIso.toRelEmbedding (LexEquiv Γ' Γ).symm)
+      ((RelIso.toRelEmbedding (LexEquiv Γ' Γ)) g) by rfl]
+    rw [embDomain_coeff, embDomain_coeff]
+  right_inv x := by
+    ext g
+    nth_rw 1 [show g = (RelIso.toRelEmbedding (LexEquiv Γ' Γ))
+      ((RelIso.toRelEmbedding (LexEquiv Γ' Γ).symm) g) by rfl]
+    rw [embDomain_coeff, embDomain_coeff]
+
+end RevLex
 
 end Zero
 

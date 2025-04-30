@@ -1027,7 +1027,64 @@ theorem single_isUnit_iff (g : Γ) (r : R) : IsUnit (single g r) ↔ IsAddUnit g
 
 end Semiring
 
+end HahnSeries
+
 section Domain
+
+section SMul
+
+namespace HahnModule
+
+variable {Γ Γ' Γ₁ Γ₂ : Type*} [PartialOrder Γ] [PartialOrder Γ'] [PartialOrder Γ₁] [PartialOrder Γ₂]
+[VAdd Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] [VAdd Γ' Γ₂] [IsOrderedCancelVAdd Γ' Γ₂] [Zero R]
+[AddCommMonoid V] [SMulWithZero R V]
+
+theorem embDomain_smul (φ : Γ ↪o Γ') (f : Γ₁ ↪o Γ₂) (hf : ∀ (g : Γ) y, f (g +ᵥ y) = φ g +ᵥ f y)
+    (x : HahnSeries Γ R) (y : HahnModule Γ₁ R V) :
+    HahnSeries.embDomain f ((of R).symm (x • y)) =
+      (of R).symm ((HahnSeries.embDomain φ x) •
+        (of R) (HahnSeries.embDomain f ((of R).symm y))) := by
+  ext g
+  by_cases hg : g ∈ Set.range f
+  · obtain ⟨g, rfl⟩ := hg
+    simp only [coeff_smul, HahnSeries.embDomain_coeff]
+    trans
+      ∑ ij ∈ (VAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support g).map
+          (φ.toEmbedding.prodMap f.toEmbedding),
+          (HahnSeries.embDomain φ x).coeff ij.1 •
+          (HahnSeries.embDomain f ((of R).symm y)).coeff ij.2
+    · simp
+    apply sum_subset
+    · rintro ⟨i, j⟩ hij
+      simp only [mem_map, mem_vaddAntidiagonal, HahnSeries.mem_support, ne_eq,
+        Embedding.coe_prodMap, RelEmbedding.coe_toEmbedding, Prod.exists, Prod.map_apply,
+        Embedding.refl_apply, Prod.mk.injEq] at hij
+      obtain ⟨i, j, ⟨hx, hy, rfl⟩, rfl, rfl⟩ := hij
+      simp [hx, hy, hf]
+    · rintro ⟨_, _⟩ h1 h2
+      contrapose! h2
+      obtain ⟨i, _, rfl⟩ := HahnSeries.support_embDomain_subset (left_ne_zero_of_smul h2)
+      obtain ⟨j, _, rfl⟩ := HahnSeries.support_embDomain_subset (right_ne_zero_of_smul h2)
+      simp only [exists_prop, mem_map, Prod.mk_inj, mem_vaddAntidiagonal,
+        Function.Embedding.coe_prodMap, HahnSeries.mem_support, Prod.exists]
+      simp only [mem_vaddAntidiagonal, HahnSeries.embDomain_coeff, HahnSeries.mem_support, ← hf,
+        OrderEmbedding.eq_iff_eq, Equiv.symm_apply_apply, HahnSeries.embDomain_coeff] at h1
+      exact ⟨i, j, h1, rfl⟩
+  · rw [HahnSeries.embDomain_notin_range hg, eq_comm]
+    contrapose! hg
+    obtain ⟨i, hi, _, hj, h⟩ :=
+      support_smul_subset_vadd_support' <| (HahnSeries.mem_support _ g).mpr hg
+    obtain ⟨i, _, rfl⟩ := HahnSeries.support_embDomain_subset hi
+    obtain ⟨j, _, rfl⟩ := HahnSeries.support_embDomain_subset hj
+    exact ⟨i +ᵥ j, h ▸ hf i j⟩
+
+end HahnModule
+
+end SMul
+
+section Mul
+
+namespace HahnSeries
 
 variable {Γ' : Type*} [AddCommMonoid Γ'] [PartialOrder Γ'] [IsOrderedCancelAddMonoid Γ']
 
@@ -1085,7 +1142,153 @@ theorem embDomainRingHom_C [NonAssocSemiring R] {f : Γ →+ Γ'} {hfi : Functio
     {hf : ∀ g g' : Γ, f g ≤ f g' ↔ g ≤ g'} {r : R} : embDomainRingHom f hfi hf (C r) = C r :=
   embDomain_single.trans (by simp)
 
+end HahnSeries
+
+end Mul
+
+section Lex
+
+variable {Γ' : Type*} [AddCommMonoid Γ'] [PartialOrder Γ'] [IsOrderedCancelAddMonoid Γ']
+
+instance : IsOrderedCancelAddMonoid (Γ' ×ₗ Γ) where
+  add_le_add_left a b h c := by
+    obtain h₁ | ⟨h₂, h₃⟩ := Prod.Lex.le_iff.mp h
+    · exact Prod.Lex.le_iff.mpr <| Or.inl (by simp [h₁])
+    · exact Prod.Lex.le_iff.mpr <| Or.inr (by simp [h₂, h₃])
+  le_of_add_le_add_left a b c hab := by
+    obtain h₁ | ⟨h₂, h₃⟩ := Prod.Lex.le_iff.mp hab
+    · exact Prod.Lex.le_iff.mpr <| Or.inl (by simpa using h₁)
+    · exact Prod.Lex.le_iff.mpr <| Or.inr ⟨by simpa using h₂, by simpa using h₃⟩
+
+instance : Add (Γ ×ᵣ Γ') where
+  add a b := toRevLex (ofRevLex a + ofRevLex b)
+
+omit [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ] [PartialOrder Γ']
+[IsOrderedCancelAddMonoid Γ'] in
+@[simp]
+theorem ofRevLex_add (a b : Γ ×ᵣ Γ') : ofRevLex (a + b) = ofRevLex a + ofRevLex b :=
+  rfl
+
+instance : Zero (Γ ×ᵣ Γ') where
+  zero := toRevLex 0
+
+omit [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ] [PartialOrder Γ']
+[IsOrderedCancelAddMonoid Γ'] in
+@[simp]
+theorem toRevLex_zero : toRevLex (0 : Γ × Γ') = 0 := rfl
+
+omit [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ] [PartialOrder Γ']
+[IsOrderedCancelAddMonoid Γ'] in
+@[simp]
+theorem ofRevLex_zero : ofRevLex (0 : Γ ×ᵣ Γ') = 0 := rfl
+
+instance : AddCommMonoid (Γ ×ᵣ Γ') where
+  add_assoc a b c := by
+    dsimp only [(· + ·), Add.add]
+    rw [show Add.add = (· + ·) by rfl, show Add.add = (· + ·) by rfl]
+    simp [add_assoc]
+  zero_add a := by
+    dsimp only [(· + ·), Add.add]
+    rw [show Add.add = (· + ·) by rfl, show Add.add = (· + ·) by rfl]
+    simp
+  add_zero a := by
+    dsimp only [(· + ·), Add.add]
+    rw [show Add.add = (· + ·) by rfl, show Add.add = (· + ·) by rfl]
+    simp
+  nsmul n a := toRevLex (n • ofRevLex a)
+  add_comm := by
+    dsimp only [(· + ·), Add.add]
+    rw [show Add.add = (· + ·) by rfl, show Add.add = (· + ·) by rfl]
+    simp [add_comm]
+  nsmul_zero a := by
+    simp
+  nsmul_succ n a := by
+    dsimp only [(· + ·), Add.add]
+    rw [show Add.add = (· + ·) by rfl, show Add.add = (· + ·) by rfl]
+    simp [add_smul, Prod.add_def]
+
+instance : IsOrderedCancelAddMonoid (Γ ×ᵣ Γ') where
+  add_le_add_left a b h c := by
+    obtain h₁ | ⟨h₂, h₃⟩ := Prod.RevLex.le_iff.mp h
+    · exact Prod.RevLex.le_iff.mpr <| Or.inl (by simp [h₁])
+    · exact Prod.RevLex.le_iff.mpr <| Or.inr (by simp [h₂, h₃])
+  le_of_add_le_add_left a b c h := by
+    obtain h₁ | ⟨h₂, h₃⟩ := Prod.RevLex.le_iff.mp h
+    · exact Prod.RevLex.le_iff.mpr <| Or.inl (by simpa using h₁)
+    · exact Prod.RevLex.le_iff.mpr <| Or.inr ⟨by simpa using h₂, by simpa using h₃⟩
+
+section
+
+namespace HahnSeries
+
+variable (Γ Γ' R : Type*) [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+    [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
+
+/-- The ring isomorphism between Hahn series for Lex order and Hahn series for RevLex order. -/
+@[simps]
+def RevRingEquiv [NonAssocSemiring R] :
+    HahnSeries (Γ' ×ₗ Γ) R ≃+* HahnSeries (Γ ×ᵣ Γ') R where
+  toFun := RevEquiv Γ Γ'
+  invFun := (RevEquiv Γ Γ').symm
+  map_mul' x y := by simp [embDomain_mul (RelIso.toRelEmbedding (Prod.RevLex.LexEquiv Γ' Γ))
+      (fun x ↦ congrFun rfl) x y]
+  left_inv := Equiv.leftInverse_symm (RevEquiv Γ Γ')
+  right_inv := Equiv.rightInverse_symm (RevEquiv Γ Γ')
+  map_add' x y := by simp [embDomain_add]
+
+-- something about coefficients?
+
+end HahnSeries
+
+namespace HahnModule
+
+local instance [Semiring R] :
+    RingHomInvPair (HahnSeries.RevRingEquiv Γ Γ' R).toRingHom
+      (HahnSeries.RevRingEquiv Γ Γ' R).symm.toRingHom where
+  comp_eq := by simp
+  comp_eq₂ := by simp
+
+instance [Semiring R] :
+    RingHomInvPair (HahnSeries.RevRingEquiv Γ Γ' R).symm.toRingHom
+      (HahnSeries.RevRingEquiv Γ Γ' R).toRingHom where
+  comp_eq := by simp
+  comp_eq₂ := by simp
+
+/-- The semilinear equivalence between Hahn modules for Lex order and Hahn modules for RevLex order.
+-/
+@[simps]
+def RevEquiv [Semiring R] [AddCommMonoid V] [Module R V] :
+    (HahnModule (Γ' ×ₗ Γ) R V) ≃ₛₗ[(HahnSeries.RevRingEquiv Γ Γ' R).toRingHom]
+      (HahnModule (Γ ×ᵣ Γ') R V) where
+  toFun x := (HahnModule.of R) ((HahnSeries.RevEquiv Γ Γ') ((HahnModule.of R).symm x))
+  invFun x := (HahnModule.of R) ((HahnSeries.RevEquiv Γ Γ').symm ((HahnModule.of R).symm x))
+  map_add' x y := by
+    ext
+    simp [HahnSeries.embDomain_add]
+  map_smul' r x := by
+    ext g
+    rw [Equiv.symm_apply_apply, HahnSeries.RevEquiv_apply, embDomain_smul
+      (RelIso.toRelEmbedding (Prod.RevLex.LexEquiv Γ' Γ))
+      (RelIso.toRelEmbedding (Prod.RevLex.LexEquiv Γ' Γ)) fun g₁ g₂ ↦ rfl]
+    simp
+  left_inv x := by
+    ext
+    rw [Equiv.symm_apply_apply, Equiv.symm_apply_apply, Equiv.symm_apply_apply]
+  right_inv x := by
+    ext
+    rw [Equiv.symm_apply_apply, Equiv.symm_apply_apply, Equiv.apply_symm_apply]
+
+-- something about coefficients?
+
+end HahnModule
+
+end
+
+end Lex
+
 end Domain
+
+namespace HahnSeries
 
 section Algebra
 

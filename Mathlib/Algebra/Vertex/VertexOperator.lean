@@ -288,14 +288,18 @@ theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
     rw [← add_assoc, pow_succ', mul_smul, subLeft_smul_eq, coeff_subLeft_smul, pow_succ', mul_smul,
       coeff_subRight_smul, ih, ih]
 
+theorem toLex_zero_one_lt : (toLex (0, 1) : ℤ ×ₗ ℤ) < (toLex (1, 0)) := by
+  exact lex_basis_lt
+
 /-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
 vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
 since `B(y)A(x)` takes values in the opposite-lex-order Hahn series. -/
 def IsLocalToOrderLeq' (n : ℕ) : Prop :=
-  ∀ (k l : ℤ), ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) (A := R) (toLex (0, 1)) (toLex (1, 0))
-    (n : ℤ)) • (comp A B)).coeff (toLex (k, l)) =
-    Int.negOnePow n • ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) (A := R) (toLex (1, 0)) (toLex (0, 1))
-    (n : ℤ)) • (comp B A)).coeff (toLex (l, k))
+  ∀ (k l : ℤ),
+    ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) R (lex_basis_lt) (n : ℤ)) •
+      (comp A B)).coeff (toLex (k, l)) =
+    Int.negOnePow n • ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) R (lex_basis_lt) (n : ℤ)) •
+      (comp B A)).coeff (toLex (l, k))
 
 /-!
 theorem isLocalToOrderLeq_add (m n : ℕ) (h : IsLocalToOrderLeq' A B n) :

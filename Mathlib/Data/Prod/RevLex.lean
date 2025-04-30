@@ -3,8 +3,8 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Data.Prod.Basic
-import Mathlib.Logic.Equiv.Defs
+import Mathlib.Data.Prod.Lex
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Reverse Lexicographic order
@@ -34,7 +34,7 @@ structure RevLex (α : Type*) where
   obj : α
 
 /-- `toRevLex` is the identity function to the `Lex` of a type. -/
-@[match_pattern]
+--@[match_pattern]
 def toRevLex : α ≃ RevLex α where
   toFun a := ⟨ a ⟩
   invFun a := a.obj
@@ -111,7 +111,7 @@ theorem Lex_swap_iff {r : α → α → Prop} {s : β → β → Prop} {x y : α
   constructor <;> intro h <;> simpa [revLex_def, lex_iff] using h
 
 @[simp]
-theorem RevLex_swap_iff {r : α → α → Prop} {s : β → β → Prop} {x y : α × β} :
+theorem swap_iff_Lex {r : α → α → Prop} {s : β → β → Prop} {x y : α × β} :
     Prod.RevLex s r (Prod.swap x) (Prod.swap y) ↔ Prod.Lex r s x y := by
   constructor <;> intro h <;> simpa [revLex_def, lex_def] using h
 
@@ -150,7 +150,7 @@ instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×�
       · exact Or.inl <| lt_of_lt_of_eq h h₃
     · obtain h' | ⟨h₃, h₄⟩ := hyz
       · exact Or.inl <| lt_of_eq_of_lt h₁ h'
-      · refine Or.inr <|
+      · exact Or.inr <|
           ⟨h₁.trans h₃, Preorder.le_trans (ofRevLex x).1 (ofRevLex y).1 (ofRevLex z).1 h₂ h₄⟩
   lt_iff_le_not_le x y := by
     simp only [gt_iff_lt, lt_iff, ge_iff_le, le_iff, not_or, not_and]
@@ -176,31 +176,14 @@ instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : Part
       · exact (ne_of_lt h' h₁.symm).elim
       · exact ofRevLex_inj.mp <| Prod.ext_iff.mpr ⟨le_antisymm h₂ h₄, h₁⟩
 
-/-!
-/-- A map to PSigma -/
-@[simps]
-def toPSigma (x : α ×ᵣ β) : (_ : α) ×' β where
-  fst := x.obj.1
-  snd := x.obj.2
-
-
-theorem RevLex_equiv {r : α → α → Prop} {s : β → β → Prop} {x y : α ×ᵣ β} :
-    PSigma.RevLex r s (toPSigma x) (toPSigma y) ↔ Prod.RevLex r s x y := by
-  constructor
-  · intro h
-    cases h with
-    | left b _ => exact Prod.RevLex.right _ _ h
-    | right a₁ a₂ _ => sorry
-  · intro h
-    cases h with
-    | left b₁ b₂ h => exact PSigma.RevLex.right _ _ h
-    | right b h => exact PSigma.RevLex.left _ h
-
-instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ×ᵣ β) :=
-  PSigma.revLex _ _
-
-instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedRelation (α ×ᵣ β) :=
-  ⟨(· < ·), wellFounded_lt⟩
--/
+/-- An order equivalence between a lex product and a reverse lex product with inputs switched. -/
+def LexEquiv (α β : Type*) [PartialOrder α] [PartialOrder β] : α ×ₗ β ≃o β ×ᵣ α where
+  toFun a := toRevLex ⟨(ofLex a).2, (ofLex a).1⟩
+  invFun a := toLex ⟨(ofRevLex a).2, (ofRevLex a).1⟩
+  left_inv := congrFun rfl
+  right_inv := congrFun rfl
+  map_rel_iff' := by
+    intro a b
+    simp [le_iff, Lex.le_iff]
 
 end Prod.RevLex

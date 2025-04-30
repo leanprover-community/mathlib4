@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Order.Monoid.Prod
+import Mathlib.Data.Prod.RevLex
 import Mathlib.RingTheory.HahnSeries.Binomial
 
 /-!
@@ -416,7 +417,7 @@ theorem exists_binomialPow_smul_support_bound {g g' : Γ} (g₁ : Γ₁) (h : g 
 
 theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     (A : HVertexOperator Γ₁ R V W) (v : V) :
-    ((HahnModule.of R).symm (HahnSeries.binomialPow (A := R) g g' n • A v)).coeff g₁ =
+    ((HahnModule.of R).symm (HahnSeries.binomialPow (A := R) h n • A v)).coeff g₁ =
       ∑ᶠ m : ℕ, Int.negOnePow m • Ring.choose n m •
         ((HahnModule.of R).symm (A v)).coeff ((- (n • g) - (m • (g' - g))) +ᵥ g₁) := by
   let f : ℕ → Γ × Γ₁ := fun k ↦  ((n • g) + k • (g' - g), (- (n • g) - (k • (g' - g))) +ᵥ g₁)
@@ -424,7 +425,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
   rw [HahnModule.coeff_smul, finsum_eq_sum_of_support_subset (s := s)]
   · classical
     refine Eq.trans (b := ∑ ij ∈ (Finset.image f s),
-      (HahnSeries.binomialPow R g g' n).coeff ij.1 •
+      (HahnSeries.binomialPow R h n).coeff ij.1 •
         ((HahnModule.of R).symm (A v)).coeff ij.2) ?_ ?_
     · refine Finset.sum_of_injOn (fun k ↦ k) (Function.Injective.injOn fun ⦃x y⦄ a ↦ a) ?_ ?_ ?_
       · rw [Set.mapsTo', Set.image_id', Finset.coe_subset]
@@ -449,7 +450,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
           obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hij
           simp only [f, Prod.eq_iff_fst_eq_snd_eq] at hk₂
           rw [← hk₂.1, ← hk₂.2, vadd_vadd, add_add_sub_cancel, add_neg_cancel, zero_vadd]
-        by_cases h1 : (HahnSeries.binomialPow R g g' n).coeff ij.1 = 0
+        by_cases h1 : (HahnSeries.binomialPow R h n).coeff ij.1 = 0
         · rw [h1, zero_smul]
         · specialize hn h1
           by_cases h2 : ((HahnModule.of R).symm (A v)).coeff ij.2 = 0
@@ -485,6 +486,161 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     rw [this, smul_zero, smul_zero]
 
 end binomialPow
+
+section HStateField
+
+variable (Γ R U₀ U₁ U₂ V W : Type*) [CommRing R] [AddCommGroup U₀] [Module R U₀] [AddCommGroup U₁]
+[Module R U₁] [AddCommGroup U₂] [Module R U₂] [AddCommGroup V] [Module R V] [AddCommGroup W]
+[Module R W]
+
+/-- A heterogeneous state-field map is a linear map from a vector space `U` to the space of
+heterogeneous fields (or vertex operators) from `V` to `W`.  Equivalently, it is a bilinear map
+`U →ₗ[R] V →ₗ[R] HahnModule Γ R W`.  When `Γ = ℤ` and `U = V = W`, then the multiplication map in a
+vertex algebra has this form, but in other cases, we use this for module structures and intertwining
+operators. -/
+abbrev HStateFieldMap [PartialOrder Γ] := U₀ →ₗ[R] HVertexOperator Γ R V W
+
+theorem compLeft_isPWO {Γ} [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
+    (x : HahnModule Γ₁ R V) (u₂ : U₂) :
+    (fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm
+      (Y₁ (((HahnModule.of R).symm x).coeff (ofLex g).1) u₂)).coeff (ofLex g).2).support.IsPWO := by
+  refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
+  · refine Set.IsPWO.mono (HahnSeries.isPWO_support ((HahnModule.of R).symm x)) ?_
+    intro g hg
+    contrapose! hg
+    simp only [HahnSeries.mem_support, ne_eq, not_not] at hg
+    simp [hg]
+  · intro g
+    simp only [Function.mem_support, ofLex_toLex]
+    exact HahnSeries.isPWO_support _
+
+variable {Γ}
+
+/-- Composition of state-field maps by left-insertion. In traditional notation, if `Y₁(-,z)` and
+`Y₂(-,w)` are state-field maps, then this is `Y₁(Y₂(u₀,w)u₁,z)u₂`. -/
+@[simps!]
+def CompLeft [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
+    (Y₂ : HStateFieldMap Γ₁ R U₀ U₁ V) :
+    U₀ →ₗ[R] U₁ →ₗ[R] U₂ →ₗ[R] HahnModule (Γ₁ ×ₗ Γ) R W where
+  toFun u₀ := {
+    toFun u₁ := {
+      toFun u₂ := (HahnModule.of R) ⟨fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm
+        (Y₁ (((HahnModule.of R).symm (Y₂ u₀ u₁)).coeff (ofLex g).1) u₂)).coeff (ofLex g).2,
+          compLeft_isPWO R U₂ V W Y₁ (Y₂ u₀ u₁) u₂⟩
+      map_add' _ _ := by ext; simp
+      map_smul' _ _ := by ext; simp }
+    map_add' _ _ := by ext; simp
+    map_smul' _ _ := by ext; simp }
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+/-!
+/-- Composition of state-field maps with reversed variable order. -/
+def CompLeftRev [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
+    (Y₂ : HStateFieldMap Γ₁ R U₀ U₁ V) :
+    U₀ →ₗ[R] U₁ →ₗ[R] U₂ →ₗ[R] HahnModule (Γ ×ᵣ Γ₁) R W :=
+  CompLeft R U₀ U₁ U₂ V W Y₁ Y₂
+-/
+
+theorem compRight_isPWO {Γ} [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R U₀ V W)
+    (u₀ : U₀) (x : HahnModule Γ₁ R V) :
+    (Function.support fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm
+      ((Y₁ u₀) (((HahnModule.of R).symm x).coeff (ofLex g).1))).coeff (ofLex g).2).IsPWO := by
+  refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
+  · refine Set.IsPWO.mono (HahnSeries.isPWO_support ((HahnModule.of R).symm x)) ?_
+    intro g hg
+    contrapose! hg
+    simp only [HahnSeries.mem_support, ne_eq, not_not] at hg
+    simp [hg]
+  · intro g
+    simp only [Function.mem_support, ofLex_toLex]
+    exact HahnSeries.isPWO_support _
+
+/-- Composition of state-field maps by right-insertion. In traditional notation, if `Y₁(-,z)` and
+`Y₂(-,w)` are state-field maps, then this is `Y₁(u₀,z)Y₂(u₁,w)u₂`. -/
+@[simps!]
+def CompRight [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R U₀ V W)
+    (Y₂ : HStateFieldMap Γ₁ R U₁ U₂ V) :
+    U₀ →ₗ[R] U₁ →ₗ[R] U₂ →ₗ[R] HahnModule (Γ₁ ×ₗ Γ) R W where
+  toFun u₀ := {
+    toFun u₁ := {
+      toFun u₂ := (HahnModule.of R) ⟨fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm
+        (Y₁ u₀ (((HahnModule.of R).symm (Y₂ u₁ u₂)).coeff (ofLex g).1))).coeff (ofLex g).2,
+          compRight_isPWO R U₀ V W Y₁ u₀ (Y₂ u₁ u₂)⟩
+      map_add' _ _ := by ext; simp
+      map_smul' _ _ := by ext; simp }
+    map_add' _ _ := by ext; simp
+    map_smul' _ _ := by ext; simp }
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+end HStateField
+
+-- Can I just use `curry` to say this is a HVertexOperator Γ R (U ⊗[R] V) W?  So, the multiplication
+-- in a vertex algebra is just HVertexOperator ℤ R (V ⊗[R] V) V?
+-- Then composition is easier, but tensor products slow everything down.
+
+section TensorComp
+
+open TensorProduct
+
+variable [CommRing R] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+
+/-- The standard equivalence between heterogeneous state field maps and heterogeneous vertex
+operators on the tensor product. May be unnecessary. -/
+def uncurry [PartialOrder Γ] [AddCommGroup U] [Module R U] :
+    (U →ₗ[R] HVertexOperator Γ R V W) ≃ₗ[R] HVertexOperator Γ R (U ⊗[R] V) W :=
+  lift.equiv R U V (HahnModule Γ R W)
+
+@[simp]
+theorem uncurry_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
+    (A : U →ₗ[R] HVertexOperator Γ R V W) (u : U) (v : V) : uncurry A (u ⊗ₜ v) = A u v :=
+  rfl
+
+@[simp]
+theorem uncurry_symm_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
+    (A : HVertexOperator Γ R (U ⊗[R] V) W) (u : U) (v : V) : uncurry.symm A u v = A (u ⊗ₜ v) :=
+  rfl
+
+section Composition
+
+/-! Given heterogeneous vertex operators `Y_{UV}^W : U ⊗ V → W((z))` and
+`Y_{WX}^Y : W ⊗ X → Y((w))`, we wish to compose them to get a heterogeneous vertex operator
+`U ⊗ V ⊗ X → Y((w))((z))`.
+
+-/
+
+variable [PartialOrder Γ] [PartialOrder Γ₁] [AddCommGroup U] [Module R U] [AddCommGroup X]
+[Module R X]  [AddCommGroup Y] [Module R Y]
+
+/-- Left iterated vertex operator. -/
+def leftTensorComp (A : HVertexOperator Γ R (U ⊗[R] V) X)
+    (B : HVertexOperator Γ₁ R (X ⊗[R] W) Y) :
+    ((U ⊗[R] V) ⊗[R] W) →ₗ[R] HahnModule Γ R (HahnModule Γ₁ R Y) :=
+  (HahnModule.map B) ∘ₗ HahnModule.rightTensorMap ∘ₗ (TensorProduct.map A LinearMap.id)
+
+/-!
+`simps!` yields
+((A.leftTensorComp B) a).coeff g =
+  B (((HahnModule.of R).symm (HahnModule.rightTensorMap
+    ((TensorProduct.map A LinearMap.id) a))).coeff g)
+
+ Iterate starting with `Y_{UV}^W : U ⊗ V → W((z))` and `Y_{WX}^Y : W ⊗ X → Y((w))`, make
+`leftTensorComp`: `Y_{UVX}^Y (t_1, t_2) : U ⊗ V ⊗ X → W((z)) ⊗ X → (W ⊗ X)((z)) → Y((w))((z))`.
+First: `Y_{UV}^W ⊗ id X : U ⊗ V ⊗ X → W((z)) ⊗ X`
+Second: `W((z)) ⊗ X → (W ⊗ X)((z))` is `HahnModule.rightTensorMap`.
+Third: `(W ⊗ X)((z)) → Y((w))((z))` is `HahnModule.map` applied to `Y_{WX}^Y`.
+
+`rightTensorComp`: `Y_{XW}^Y (x, t_0) Y_{UV}^W (u, t_1) v`
+
+Define things like order of a pair, creativity?
+
+-/
+
+end Composition
+
+end TensorComp
+
 
 section Binomial -- delete this. Important adaptations go to VertexOperator.lean
 
@@ -572,134 +728,5 @@ theorem subLeft_smul_eq_subRight_smul (A B : HVertexOperator (ℤ ×ₗ ℤ) R V
   rw [subLeft_smul_eq, coeff_subLeft_smul, coeff_subRight_smul, h k (l-1), h (k-1) l]
 
 end Binomial
-
-section HStateField
-
-variable (Γ R U₀ U₁ U₂ V W : Type*) [CommRing R] [AddCommGroup U₀] [Module R U₀] [AddCommGroup U₁]
-[Module R U₁] [AddCommGroup U₂] [Module R U₂] [AddCommGroup V] [Module R V] [AddCommGroup W]
-[Module R W]
-
-/-- A heterogeneous state-field map is a linear map from a vector space `U` to the space of
-heterogeneous fields (or vertex operators) from `V` to `W`.  Equivalently, it is a bilinear map
-`U →ₗ[R] V →ₗ[R] HahnModule Γ R W`.  When `Γ = ℤ` and `U = V = W`, then the multiplication map in a
-vertex algebra has this form, but in other cases, we use this for module structures and intertwining
-operators. -/
-abbrev HStateFieldMap [PartialOrder Γ] := U₀ →ₗ[R] HVertexOperator Γ R V W
-
-/-!
-theorem CompLeftAuxPWO [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
-    (M : HahnModule Γ₁ R V) (u₂ : U₂) :
-    (fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm
-      (Y₁ (M.coeff g.1) u₂)).coeff g.2).support.IsPWO := by
-  refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
-  ·
-
-def CompLeftAux [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
-    (M : HahnModule Γ₁ R V) : HVertexOperator (Γ₁ ×ₗ Γ) R U₂ W where
-  toFun u₂ := (HahnModule.of R)
-    ⟨fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm (Y₁ (M.coeff g.1) u₂)).coeff g.2, by sorry⟩
-  map_add' _ _ := by
-    ext _
-    simp
-  map_smul' _ _ := by
-    ext _
-    simp
-
-def CompLeft [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
-    (Y₂ : HStateFieldMap Γ₁ R U₀ U₁ V) :
-    U₀ →ₗ[R] U₁ →ₗ[R] U₂ →ₗ[R] HahnModule (Γ₁ ×ₗ Γ) R W where
-  toFun u₀ :=
-  {
-    toFun := fun u₁ ↦ (CompLeftAux Γ R U₂ V W Y₁ (Y₂ u₀ u₁))
-    map_add' x y := by
-      ext
-      simp
-      sorry
-    map_smul' r x := by
-      ext
-      simp
-      sorry
-  }
-  map_add' x y := by
-    ext
-    simp
-    sorry
-  map_smul' r x := by
-    ext
-    simp
-    sorry
-
-CompRight `Y₁(u₀,x)Y₂(u₁,y)u₂` so `Y₁ : HStateFieldMap Γ R U₀ V W` and
-`Y₂ : HStateFieldMap Γ' R U₁ U₂ V`
-For each `u₀`, get a linear map `V → HahnModule
-CompLeft: `Y₁(Y₂(u₀,x)u₁,y)u₂` so `Y₁ : HStateFieldMap R V U₂ W` and `Y₂ : HStateFieldMap R U₀ U₁ V`
-For each `u₀`, have a linear map `U₁ → HahnModule Γ R V`. Send the coefficients to `Y₁` to get
-linear maps `U₂ → HahnModule Γ₁ R W`.
-
-
--/
-
-end HStateField
-
--- Can I just use `curry` to say this is a HVertexOperator Γ R (U ⊗[R] V) W?  So, the multiplication
--- in a vertex algebra is just HVertexOperator ℤ R (V ⊗[R] V) V?
--- Then composition is easier, but tensor products slow everything down.
-
-open TensorProduct
-
-variable [CommRing R] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
-
-/-- The standard equivalence between heterogeneous state field maps and heterogeneous vertex
-operators on the tensor product. May be unnecessary. -/
-def uncurry [PartialOrder Γ] [AddCommGroup U] [Module R U] :
-    (U →ₗ[R] HVertexOperator Γ R V W) ≃ₗ[R] HVertexOperator Γ R (U ⊗[R] V) W :=
-  lift.equiv R U V (HahnModule Γ R W)
-
-@[simp]
-theorem uncurry_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
-    (A : U →ₗ[R] HVertexOperator Γ R V W) (u : U) (v : V) : uncurry A (u ⊗ₜ v) = A u v :=
-  rfl
-
-@[simp]
-theorem uncurry_symm_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
-    (A : HVertexOperator Γ R (U ⊗[R] V) W) (u : U) (v : V) : uncurry.symm A u v = A (u ⊗ₜ v) :=
-  rfl
-
-section Composition
-
-/-! Given heterogeneous vertex operators `Y_{UV}^W : U ⊗ V → W((z))` and
-`Y_{WX}^Y : W ⊗ X → Y((w))`, we wish to compose them to get a heterogeneous vertex operator
-`U ⊗ V ⊗ X → Y((w))((z))`.
-
--/
-
-variable [PartialOrder Γ] [PartialOrder Γ₁] [AddCommGroup U] [Module R U] [AddCommGroup X]
-[Module R X]  [AddCommGroup Y] [Module R Y]
-
-/-- Left iterated vertex operator. -/
-def leftTensorComp (A : HVertexOperator Γ R (U ⊗[R] V) X)
-    (B : HVertexOperator Γ₁ R (X ⊗[R] W) Y) :
-    ((U ⊗[R] V) ⊗[R] W) →ₗ[R] HahnModule Γ R (HahnModule Γ₁ R Y) :=
-  (HahnModule.map B) ∘ₗ HahnModule.rightTensorMap ∘ₗ (TensorProduct.map A LinearMap.id)
-
-/-!
-`simps!` yields
-((A.leftTensorComp B) a).coeff g =
-  B (((HahnModule.of R).symm (HahnModule.rightTensorMap
-    ((TensorProduct.map A LinearMap.id) a))).coeff g)
-
- Iterate starting with `Y_{UV}^W : U ⊗ V → W((z))` and `Y_{WX}^Y : W ⊗ X → Y((w))`, make
-`leftTensorComp`: `Y_{UVX}^Y (t_1, t_2) : U ⊗ V ⊗ X → W((z)) ⊗ X → (W ⊗ X)((z)) → Y((w))((z))`.
-First: `Y_{UV}^W ⊗ id X : U ⊗ V ⊗ X → W((z)) ⊗ X`
-Second: `W((z)) ⊗ X → (W ⊗ X)((z))` is `HahnModule.rightTensorMap`.
-Third: `(W ⊗ X)((z)) → Y((w))((z))` is `HahnModule.map` applied to `Y_{WX}^Y`.
-
-`rightTensorComp`: `Y_{XW}^Y (x, t_0) Y_{UV}^W (u, t_1) v`
-
-Define things like order of a pair, creativity?
-
--/
-
-end Composition
 
 end HVertexOperator
