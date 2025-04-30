@@ -172,7 +172,7 @@ Given `p q : ℕ`, find the unique `r k : ℕ` such that `r * q ^ k = p` and `r`
 def extractFactor (p q : ℕ) : ℕ × ℕ :=
   if hq : q ≤ 1 then (p, 0) else extractFactor.acc p q 0 (lt_of_not_le hq)
 
-def processEntryAux (m : Std.TreeMap ℕ Expr) (p p' root : ℕ) (pE rootE : Expr)
+def processEntryAux (m : Std.TreeMap ℕ (Expr × Expr)) (p p' root : ℕ) (pE rootE : Expr)
     (factors : List ℕ) :
     MetaM (ℕ × Expr) := do
   let mut t : ℕ := 1
@@ -190,60 +190,46 @@ def processEntryAux (m : Std.TreeMap ℕ Expr) (p p' root : ℕ) (pE rootE : Exp
     let qE : Expr := mkNatLit q
     let o : ℕ := (p - 1) / q
     let oE : Expr := mkNatLit o
-    let some (hq : Expr) := m.get? q | throwError s!"purported prime {q} not in certificate"
+    let some ((hq : Expr), _) := m.get? q | throwError s!"purported prime {q} not in certificate"
     let hpow ← Tactic.powMod.provePowModNe root o p 1 rootE oE pE (mkNatLit 1)
     pf ← mkAppM ``prove_prime_step #[pE, rootE, qE, oE, tE, mkNatLit r, mkNatLit k,
       ← mkEqRefl oE, hq, ← mkEqRefl tE, hpow, pf]
   return (t, pf)
 
-lemma Nat.prime_thirteen : Nat.Prime 13 := by norm_num
-lemma Nat.prime_seventeen : Nat.Prime 17 := by norm_num
-lemma Nat.prime_nineteen : Nat.Prime 19 := by norm_num
-lemma Nat.prime_twentyThree : Nat.Prime 23 := by norm_num
-lemma Nat.prime_twentyNine : Nat.Prime 29 := by norm_num
-lemma Nat.prime_thirtyOne : Nat.Prime 31 := by norm_num
-lemma Nat.prime_thirtySeven : Nat.Prime 37 := by norm_num
-lemma Nat.prime_fortyOne : Nat.Prime 41 := by norm_num
-lemma Nat.prime_fortyThree : Nat.Prime 43 := by norm_num
-lemma Nat.prime_fortySeven : Nat.Prime 47 := by norm_num
-lemma Nat.prime_fiftyThree : Nat.Prime 53 := by norm_num
-lemma Nat.prime_fiftyNine : Nat.Prime 59 := by norm_num
-lemma Nat.prime_sixtyOne : Nat.Prime 61 := by norm_num
-lemma Nat.prime_sixtySeven : Nat.Prime 67 := by norm_num
-lemma Nat.prime_seventyOne : Nat.Prime 71 := by norm_num
-lemma Nat.prime_seventyThree : Nat.Prime 73 := by norm_num
-lemma Nat.prime_seventyNine : Nat.Prime 79 := by norm_num
-lemma Nat.prime_eightyThree : Nat.Prime 83 := by norm_num
-lemma Nat.prime_eightyNine : Nat.Prime 89 := by norm_num
-lemma Nat.prime_ninetySeven : Nat.Prime 97 := by norm_num
+lemma Nat.prime_2 : Nat.Prime 2 := by norm_num
+lemma Nat.prime_3 : Nat.Prime 3 := by norm_num
+lemma Nat.prime_5 : Nat.Prime 5 := by norm_num
+lemma Nat.prime_7 : Nat.Prime 7 := by norm_num
+lemma Nat.prime_11 : Nat.Prime 11 := by norm_num
+lemma Nat.prime_13 : Nat.Prime 13 := by norm_num
+lemma Nat.prime_17 : Nat.Prime 17 := by norm_num
+lemma Nat.prime_19 : Nat.Prime 19 := by norm_num
+lemma Nat.prime_23 : Nat.Prime 23 := by norm_num
+lemma Nat.prime_29 : Nat.Prime 29 := by norm_num
+lemma Nat.prime_31 : Nat.Prime 31 := by norm_num
+lemma Nat.prime_37 : Nat.Prime 37 := by norm_num
+lemma Nat.prime_41 : Nat.Prime 41 := by norm_num
+lemma Nat.prime_43 : Nat.Prime 43 := by norm_num
+lemma Nat.prime_47 : Nat.Prime 47 := by norm_num
+lemma Nat.prime_53 : Nat.Prime 53 := by norm_num
+lemma Nat.prime_59 : Nat.Prime 59 := by norm_num
+lemma Nat.prime_61 : Nat.Prime 61 := by norm_num
+lemma Nat.prime_67 : Nat.Prime 67 := by norm_num
+lemma Nat.prime_71 : Nat.Prime 71 := by norm_num
+lemma Nat.prime_73 : Nat.Prime 73 := by norm_num
+lemma Nat.prime_79 : Nat.Prime 79 := by norm_num
+lemma Nat.prime_83 : Nat.Prime 83 := by norm_num
+lemma Nat.prime_89 : Nat.Prime 89 := by norm_num
+lemma Nat.prime_97 : Nat.Prime 97 := by norm_num
 
-def processEntry (m : Std.TreeMap ℕ Expr) : PrattEntry → MetaM (Std.TreeMap ℕ Expr)
-  | .small 2 => return insert (2, mkConst ``Nat.prime_two) m
-  | .small 3 => return insert (3, mkConst ``Nat.prime_three) m
-  | .small 5 => return insert (5, mkConst ``Nat.prime_five) m
-  | .small 7 => return insert (7, mkConst ``Nat.prime_seven) m
-  | .small 11 => return insert (11, mkConst ``Nat.prime_eleven) m
-  | .small 13 => return insert (13, mkConst ``Nat.prime_thirteen) m
-  | .small 17 => return insert (17, mkConst ``Nat.prime_seventeen) m
-  | .small 19 => return insert (19, mkConst ``Nat.prime_nineteen) m
-  | .small 23 => return insert (23, mkConst ``Nat.prime_twentyThree) m
-  | .small 29 => return insert (29, mkConst ``Nat.prime_twentyNine) m
-  | .small 31 => return insert (31, mkConst ``Nat.prime_thirtyOne) m
-  | .small 37 => return insert (37, mkConst ``Nat.prime_thirtySeven) m
-  | .small 41 => return insert (41, mkConst ``Nat.prime_fortyOne) m
-  | .small 43 => return insert (43, mkConst ``Nat.prime_fortyThree) m
-  | .small 47 => return insert (47, mkConst ``Nat.prime_fortySeven) m
-  | .small 53 => return insert (53, mkConst ``Nat.prime_fiftyThree) m
-  | .small 59 => return insert (59, mkConst ``Nat.prime_fiftyNine) m
-  | .small 61 => return insert (61, mkConst ``Nat.prime_sixtyOne) m
-  | .small 67 => return insert (67, mkConst ``Nat.prime_sixtySeven) m
-  | .small 71 => return insert (71, mkConst ``Nat.prime_seventyOne) m
-  | .small 73 => return insert (73, mkConst ``Nat.prime_seventyThree) m
-  | .small 79 => return insert (79, mkConst ``Nat.prime_seventyNine) m
-  | .small 83 => return insert (83, mkConst ``Nat.prime_eightyThree) m
-  | .small 89 => return insert (89, mkConst ``Nat.prime_eightyNine) m
-  | .small 97 => return insert (97, mkConst ``Nat.prime_ninetySeven) m
-  | .small n => throwError s!"could not prove \"known\" prime {n} is prime"
+def processEntry (m : Std.TreeMap ℕ (Expr × Expr)) :
+    PrattEntry → MetaM (Std.TreeMap ℕ (Expr × Expr))
+  | .small p => do
+    let mv ← mkFreshExprMVar
+      (some (← mkAppM ``Nat.Prime #[mkNatLit p]))
+      (userName := .mkSimple s!"prime_{p}")
+    let pf := mkConst (.str `Tactic.Prime.Nat s!"prime_{p}")
+    return insert (p, (mv, pf)) m
   | .big p root factors => do
     unless p ≥ 2 do
       throwError "error 4"
@@ -256,20 +242,17 @@ def processEntry (m : Std.TreeMap ℕ Expr) : PrattEntry → MetaM (Std.TreeMap 
       throwError "bad factorization {factors} of {p - 1} (missing {(p - 1) / last})"
     let hpow ← Tactic.powMod.provePowModEq root p' p 1 rootE p'E pE
     let pf ← mkAppM ``prove_prime_end #[p'E, rootE, ← mkEqRefl pE, hpow, pf]
-    return insert (p, pf) m
+    let i ← mkFreshExprMVar
+      (some (← mkAppM ``Nat.Prime #[pE]))
+      (userName := .mkSimple s!"prime_{p}")
+    return insert (p, (i, pf)) m
 
 def prove_prime (cert : PrattCertificate) (n : ℕ) : MetaM Expr := do
   let data ← cert.foldlM processEntry ∅
   trace[debug] "{data.toArray}"
-  let some pf := data.get? n | throwError "the certificate doesn't prove {n} is prime"
-  return pf
-
--- def getPrimeGoals (e : Expr) : MetaM (List ℕ) :=
---   match_expr e with
---   | Nat.Prime nE => do
---     let some n := nE.nat? | throwError "not a numeral"
---     return [n]
---   | _ => throwError "goal for `pratt` not a primality test"
+  let some (pf, _) := data.get? n | throwError "the certificate doesn't prove {n} is prime"
+  data.foldrM (init := pf) fun _ (hmq, hpq) pf =>
+    mkLetFun hmq hpq pf
 
 elab "pratt" ppSpace certificate:pratt_certificate : tactic => liftMetaFinishingTactic fun goal ↦ do
   match certificate with
@@ -407,13 +390,12 @@ end
 
 end Tactic.Prime
 
--- example : Nat.Prime 47867742232066880047611079 := by pratt
---   builder
---     [2, 3, 5, 7, 11, 17, 23, 29, 31, 37, 47, 67, 83, (167, 5, [2, 83]), (283, 3, [2, 3, 47]),
---       (4663, 3, [2, 3, 7, 37]), (5011, 2, [2, 3, 5, 167]), (62311, 6, [2, 3, 5, 31, 67]),
---       (214499, 2, [2, 23, 4663]), (1123145497, 7, [2, 3, 11, 283, 5011]),
---       (90101681149415123, 2, [2, 11, 17, 214499, 1123145497]),
---       (47867742232066880047611079, 3, [2, 3, 7, 29, 62311, 90101681149415123])]
+example : Nat.Prime 47867742232066880047611079 := by pratt
+    [2, 3, 5, 7, 11, 17, 23, 29, 31, 37, 47, 67, 83, (167, 5, [2, 83]), (283, 3, [2, 3, 47]),
+      (4663, 3, [2, 3, 7, 37]), (5011, 2, [2, 3, 5, 167]), (62311, 6, [2, 3, 5, 31, 67]),
+      (214499, 2, [2, 23, 4663]), (1123145497, 7, [2, 3, 11, 283, 5011]),
+      (90101681149415123, 2, [2, 11, 17, 214499, 1123145497]),
+      (47867742232066880047611079, 3, [2, 3, 7, 29, 62311, 90101681149415123])]
 
 -- set_option exponentiation.threshold 3913 in
 -- example : Nat.Prime (3 * 2 ^ 3912 + 1) := by
