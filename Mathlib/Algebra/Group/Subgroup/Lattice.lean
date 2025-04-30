@@ -296,6 +296,11 @@ instance [Nontrivial G] : Nontrivial (Subgroup G) :=
   nontrivial_iff.mpr ‹_›
 
 @[to_additive]
+instance [Nontrivial G] : Nontrivial (⊤ : Subgroup G) := by
+  rw [nontrivial_iff_ne_bot]
+  exact top_ne_bot
+
+@[to_additive]
 theorem eq_top_iff' : H = ⊤ ↔ ∀ x : G, x ∈ H :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
@@ -354,9 +359,6 @@ theorem closure_induction {p : (g : G) → g ∈ closure k → Prop}
       one_mem' := ⟨_, one⟩
       inv_mem' := fun ⟨_, hb⟩ ↦ ⟨_, inv _ _ hb⟩ }
   closure_le (K := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
-
-@[deprecated closure_induction (since := "2024-10-10")]
-alias closure_induction' := closure_induction
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
@@ -469,6 +471,31 @@ theorem le_closure_toSubmonoid (S : Set G) : Submonoid.closure S ≤ (closure S)
 theorem closure_eq_top_of_mclosure_eq_top {S : Set G} (h : Submonoid.closure S = ⊤) :
     closure S = ⊤ :=
   (eq_top_iff' _).2 fun _ => le_closure_toSubmonoid _ <| h.symm ▸ trivial
+
+@[to_additive (attr := simp)]
+theorem closure_insert_one (s : Set G) : closure (insert 1 s) = closure s := by
+  rw [insert_eq, closure_union]
+  simp [one_mem]
+
+theorem toAddSubgroup_closure (S : Set G) :
+    (Subgroup.closure S).toAddSubgroup = AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
+  le_antisymm (toAddSubgroup.le_symm_apply.mp <|
+      (closure_le _).mpr (AddSubgroup.subset_closure (G := Additive G)))
+    ((AddSubgroup.closure_le _).mpr (subset_closure (G := G)))
+
+theorem _root_.AddSubgroup.toSubgroup_closure {A : Type*} [AddGroup A] (S : Set A) :
+    (AddSubgroup.closure S).toSubgroup = Subgroup.closure (Multiplicative.toAdd ⁻¹' S) :=
+  Subgroup.toAddSubgroup.injective (Subgroup.toAddSubgroup_closure _ ).symm
+
+theorem toAddSubgroup'_closure {A : Type*} [AddGroup A] (S : Set (Multiplicative A)) :
+    (closure S).toAddSubgroup' = AddSubgroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
+  le_antisymm (toAddSubgroup'.to_galoisConnection.l_le <|
+      (closure_le _).mpr <| AddSubgroup.subset_closure (G := A))
+    ((AddSubgroup.closure_le _).mpr <| Subgroup.subset_closure (G := Multiplicative A))
+
+theorem _root_.AddSubgroup.toSubgroup'_closure (S : Set (Additive G)) :
+    (AddSubgroup.closure S).toSubgroup' = Subgroup.closure (Additive.ofMul ⁻¹' S) :=
+  congr_arg AddSubgroup.toSubgroup' (toAddSubgroup'_closure _).symm
 
 @[to_additive]
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (hK : Directed (· ≤ ·) K)

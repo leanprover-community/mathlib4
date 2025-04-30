@@ -66,10 +66,10 @@ theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤
   have hp0_lt : 0 < p := lt_of_le_of_ne (zero_le _) hp0.symm
   have hq0_lt : 0 < q := lt_of_lt_of_le hp0_lt hpq
   by_cases hq_top : q = ∞
-  · simp only [hq_top, _root_.div_zero, one_div, ENNReal.top_toReal, sub_zero, eLpNorm_exponent_top,
+  · simp only [hq_top, _root_.div_zero, one_div, ENNReal.toReal_top, sub_zero, eLpNorm_exponent_top,
       GroupWithZero.inv_zero]
     by_cases hp_top : p = ∞
-    · simp only [hp_top, ENNReal.rpow_zero, mul_one, ENNReal.top_toReal, sub_zero,
+    · simp only [hp_top, ENNReal.rpow_zero, mul_one, ENNReal.toReal_top, sub_zero,
         GroupWithZero.inv_zero, eLpNorm_exponent_top]
       exact le_rfl
     rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
@@ -133,7 +133,7 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → 
   have hq0 : q ≠ 0 := by
     by_contra hq_eq_zero
     have hp_eq_zero : p = 0 := le_antisymm (by rwa [hq_eq_zero] at hpq) (zero_le _)
-    rw [hp_eq_zero, ENNReal.zero_toReal] at hp_pos
+    rw [hp_eq_zero, ENNReal.toReal_zero] at hp_pos
     exact (lt_irrefl _) hp_pos
   have hpq_real : p.toReal ≤ q.toReal := ENNReal.toReal_mono hq_top hpq
   rw [eLpNorm_eq_eLpNorm' hp0 hp_top]

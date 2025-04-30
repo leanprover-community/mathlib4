@@ -6,6 +6,7 @@ Authors: Sophie Morel
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Nat.Hom
+import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # The forget functor is corepresentable

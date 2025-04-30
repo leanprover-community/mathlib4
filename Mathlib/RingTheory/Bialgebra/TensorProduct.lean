@@ -55,7 +55,7 @@ noncomputable instance TensorProduct.instBialgebra
   have hcomul := congr(DFunLike.coe $(Bialgebra.TensorProduct.comul_eq_algHom_toLinearMap R A B))
   refine Bialgebra.mk' R (A ⊗[R] B) ?_ (fun {x y} => ?_) ?_ (fun {x y} => ?_) <;>
   simp_all only [AlgHom.toLinearMap_apply] <;>
-  simp only [_root_.map_one, _root_.map_mul]
+  simp only [map_one, map_mul]
 
 namespace Bialgebra.TensorProduct
 

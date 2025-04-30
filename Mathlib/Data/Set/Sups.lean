@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.NAry
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.SupClosed
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Set family operations
