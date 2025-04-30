@@ -71,7 +71,7 @@ If `y` is a conjugate root of `x`, then `x` is also a conjugate root of `y`.
 If `y` is a conjugate root of `x` and `z` is a conjugate root of `y`, then `z` is a conjugate
 root of `x`.
 -/
-@[trans] theorem trans {x y z: A} (h₁ : IsConjRoot R x y) (h₂ : IsConjRoot R y z) :
+@[trans] theorem trans {x y z : A} (h₁ : IsConjRoot R x y) (h₂ : IsConjRoot R y z) :
     IsConjRoot R x z := Eq.trans h₁ h₂
 
 variable (R A) in
