@@ -73,23 +73,10 @@ lemma toCircle_eq_Circle_exp (j : ZMod N) :
     (by rw [← ofReal_ofNat, ← ofReal_mul, ofReal_ne_zero]; exact Real.two_pi_ne_zero)]
   simp only [ofReal_natCast]
 
-
-/-
-lemma eq (k : ZMod N) : rootsOfUnity.exp N k = (ZMod.toCircle k).toUnits := by
+lemma rootsOfUnity_exp_eq (k : ZMod N) : rootsOfUnity.exp N k = (ZMod.toCircle k).toUnits := by
   rw [rootsOfUnity.exp]
-  --rw [Circle.toUnits_apply]
-  simp only [ZMod.natCast_val]
-  --simp only
-  rw [Units.exp]
-  rw [comp_apply]
-  --rw [toCircle_apply]
-  have e1 : Circle.exp (2 * π * (k.cast / ↑N)) = toCircle k := by
-    --rw [← toCircle_natCast]
-    --simp_all only [natCast_val, cast_id', id_eq]
-    simp_rw [toCircle_apply]
-    sorry
-  rw [e1]
--/
+  simp only
+  rw [Units.exp, comp_apply, toCircle_eq_Circle_exp, mul_div_assoc]
 
 lemma injective_toCircle : Injective (toCircle : ZMod N → Circle) :=
   (AddCircle.injective_toCircle one_ne_zero).comp (toAddCircle_injective N)
@@ -101,16 +88,6 @@ lemma stdAddChar_coe (j : ℤ) :
     stdAddChar (j : ZMod N) = exp (2 * π * I * j / N) := by simp [stdAddChar, toCircle_intCast]
 
 lemma stdAddChar_apply (j : ZMod N) : stdAddChar j = ↑(toCircle j) := rfl
-
-lemma rootsOfUnity.exp_eq_stdAddChar (k : ZMod N) : (rootsOfUnity.exp N k).val = stdAddChar k := by
-  rw [stdAddChar_apply]
-  rw [rootsOfUnity.exp]
-  rw [Units.coe_exp]
-  rw [toCircle_apply]
-
-  rw [mul_assoc _ _ I]
-  rw [mul_comm _ I]
-  ring_nf
 
 lemma injective_stdAddChar : Injective (stdAddChar : AddChar (ZMod N) ℂ) :=
   Subtype.coe_injective.comp injective_toCircle
