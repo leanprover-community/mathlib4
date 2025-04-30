@@ -1278,7 +1278,7 @@ instance isTotallyReal_sup {E F : Subfield K} [hE : IsTotallyReal E] [hF : IsTot
     IsTotallyReal (E ⊔ F : Subfield K) := by
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
 
--- Note sure if this should be an instance or a theorem 
+-- Note sure if this should be an instance or a theorem
 instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [h : ∀ i, IsTotallyReal (k i)] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
