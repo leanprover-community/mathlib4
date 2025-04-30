@@ -49,6 +49,8 @@ namespace LinearMap
 
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 
+/-- A linear map `T` of a Hilbert space is **positive** if it is self adjoint and
+  `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
 def IsPositive (T : E →ₗ[𝕜] E) : Prop :=
   IsSelfAdjoint T ∧ ∀ x, 0 ≤ re ⟪T x, x⟫
 
