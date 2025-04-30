@@ -178,6 +178,7 @@ theorem map_frobeniusPoly (n : ℕ) :
     map_frobeniusPoly.key₂ p hi.le hj, Nat.cast_mul, Nat.cast_pow]
   ring
 
+omit hp in
 theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by
   rw [frobeniusPoly, RingHom.map_add, RingHom.map_pow, RingHom.map_mul, map_X, map_C]
