@@ -175,7 +175,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   rcases l with - | ⟨hd, tl⟩
   · simp at hk
   · rw [nodup_iff_injective_get] at hl
-    rw [length, Nat.succ_inj']
+    rw [length, Nat.succ_inj]
     refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
       ⟨tl.length, by simp⟩ ?_
     rw [← Option.some_inj] at hk'
@@ -469,8 +469,8 @@ theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l
   Iff.rfl
 
 @[simp]
-theorem not_mem_nil : ∀ a, a ∉ @nil α :=
-  fun _ => List.not_mem_nil
+theorem not_mem_nil (a : α) : a ∉ nil :=
+  List.not_mem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''

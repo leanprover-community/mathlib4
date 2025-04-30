@@ -118,7 +118,7 @@ def ordConnectedSection (s : Set α) : Set α :=
 theorem dual_ordConnectedSection (s : Set α) :
     ordConnectedSection (ofDual ⁻¹' s) = ofDual ⁻¹' ordConnectedSection s := by
   simp only [ordConnectedSection]
-  simp (config := { unfoldPartialApp := true }) only [ordConnectedProj]
+  simp +unfoldPartialApp only [ordConnectedProj]
   ext x
   simp only [mem_range, Subtype.exists, mem_preimage, OrderDual.exists, dual_ordConnectedComponent,
     ofDual_toDual]

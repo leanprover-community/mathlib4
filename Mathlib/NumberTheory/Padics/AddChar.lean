@@ -10,13 +10,29 @@ import Mathlib.Analysis.SpecificLimits.Normed
 /-!
 # Additive characters of `ℤ_[p]`
 
-We show that for any normed `ℤ_[p]`-algebra `R`, there is a bijection between continuous additive
-characters `ℤ_[p] → R` and topologically nilpotent elements of `R`, given by sending `κ` to the
-element `κ 1 - 1`. This is used to define the Mahler transform for `p`-adic measures.
+We show that for any complete, ultrametric normed `ℤ_[p]`-algebra `R`, there is a bijection between
+continuous additive characters `ℤ_[p] → R` and topologically nilpotent elements of `R`, given by
+sending `κ` to the element `κ 1 - 1`. This is used to define the Mahler transform for `p`-adic
+measures.
 
 Note that if the norm on `R` is not strictly multiplicative, then the condition that `κ 1 - 1` be
-topologically nilpotent is strictly weaker than assuming `‖κ 1 - 1‖ < 1`, although they are of
-course equivalent if `NormMulClass R` holds.
+topologically nilpotent is strictly weaker than assuming `‖κ 1 - 1‖ < 1`, although they are
+equivalent if `NormMulClass R` holds.
+
+## Main definitions and theorems:
+
+* `addChar_of_value_at_one`: given a topologically nilpotent `r : R`, construct a continuous
+  additive character of `ℤ_[p]` mapping `1` to `1 + r`.
+* `continuousAddCharEquiv`: for any complete, ultrametric normed `ℤ_[p]`-algebra `R`, the map
+  `addChar_of_value_at_one` defines a bijection between continuous additive characters `ℤ_[p] → R`
+  and topologically nilpotent elements of `R`.
+* `continuousAddCharEquiv_of_norm_mul`: if the norm on `R` is strictly multiplicative (not just
+  sub-multiplicative), then `addChar_of_value_at_one` is a bijection between continuous additive
+  characters `ℤ_[p] → R` and elements of `R` with `‖r‖ < 1`.
+
+## TODO:
+
+* Show that the above equivalences are homeomorphisms, for appropriate choices of the topology.
 -/
 
 open scoped fwdDiff
@@ -27,7 +43,7 @@ variable {p : ℕ} [Fact p.Prime]
 variable {R : Type*} [NormedRing R] [Algebra ℤ_[p] R] [IsBoundedSMul ℤ_[p] R]
   [IsUltrametricDist R]
 
-lemma AddChar.tendsto_apply_one_sub_pow {κ : AddChar ℤ_[p] R} (hκ : Continuous κ) :
+lemma AddChar.tendsto_eval_one_sub_pow {κ : AddChar ℤ_[p] R} (hκ : Continuous κ) :
     Tendsto (fun n ↦ (κ 1 - 1) ^ n) atTop (𝓝 0) := by
   refine (PadicInt.fwdDiff_tendsto_zero ⟨κ, hκ⟩).congr fun n ↦ ?_
   simpa only [AddChar.map_zero_eq_one, mul_one] using fwdDiff_addChar_eq κ 0 1 n
@@ -75,18 +91,15 @@ lemma addChar_of_value_at_one_def {r : R} (hr : Tendsto (r ^ ·) atTop (𝓝 0))
 lemma eq_addChar_of_value_at_one {r : R} (hr : Tendsto (r ^ ·) atTop (𝓝 0))
     {κ : AddChar ℤ_[p] R} (hκ : Continuous κ) (hκ' : κ 1 = 1 + r) :
     κ = addChar_of_value_at_one r hr :=
-  denseRange_natCast.addChar_eq_of_apply_one_eq hκ (by fun_prop) (by simp [hκ'])
+  denseRange_natCast.addChar_eq_of_eval_one_eq hκ (by fun_prop) (by simp [hκ'])
 
 variable (p R) in
 /-- Equivalence between continuous additive characters `ℤ_[p] → R`, and `r ∈ R` with `r ^ n → 0`. -/
 noncomputable def continuousAddCharEquiv :
     {κ : AddChar ℤ_[p] R // Continuous κ} ≃ {r : R // Tendsto (r ^ ·) atTop (𝓝 0)} where
-  toFun := fun ⟨κ, hκ⟩ ↦ ⟨κ 1 - 1, κ.tendsto_apply_one_sub_pow hκ⟩
+  toFun := fun ⟨κ, hκ⟩ ↦ ⟨κ 1 - 1, κ.tendsto_eval_one_sub_pow hκ⟩
   invFun := fun ⟨r, hr⟩ ↦ ⟨_, continuous_addChar_of_value_at_one hr⟩
-  left_inv := fun ⟨κ, hκ⟩ ↦ by
-    apply Subtype.coe_injective
-    apply denseRange_natCast.addChar_eq_of_apply_one_eq (continuous_addChar_of_value_at_one _) hκ
-    rw [addChar_of_value_at_one_def (κ.tendsto_apply_one_sub_pow hκ), add_sub_cancel]
+  left_inv := fun ⟨κ, hκ⟩ ↦ by simpa using (eq_addChar_of_value_at_one _ hκ (by abel)).symm
   right_inv := fun ⟨r, hr⟩ ↦ by simp [addChar_of_value_at_one_def hr]
 
 @[simp] lemma continuousAddCharEquiv_apply {κ : AddChar ℤ_[p] R} (hκ : Continuous κ) :

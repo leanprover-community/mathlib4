@@ -297,7 +297,7 @@ lemma BddAbove.exists_isGreatest_of_nonempty {X : Type*} [LinearOrder X] [SuccOr
   have hn' := hm hn
   revert hn hm hm'
   refine Succ.rec ?_ ?_ hn'
-  · simp (config := {contextual := true})
+  · simp +contextual
   intro m _ IH hm hn hm'
   rw [mem_upperBounds] at IH hm
   simp_rw [Order.le_succ_iff_eq_or_le] at hm

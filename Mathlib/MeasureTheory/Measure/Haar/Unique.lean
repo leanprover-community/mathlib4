@@ -169,7 +169,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
   calc
   ∫ x, f x ∂μ = ∫ x, f x * (D x)⁻¹ * D x ∂μ := by
     congr with x; rw [mul_assoc, inv_mul_cancel₀ (D_pos x).ne', mul_one]
-  _ = ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ := by simp_rw [D, integral_mul_left]
+  _ = ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ := by simp_rw [D, integral_const_mul]
   _ = ∫ y, (∫ x, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂μ) ∂ν := by
       apply integral_integral_swap_of_hasCompactSupport
       · apply Continuous.mul
@@ -231,10 +231,10 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
         apply HasCompactSupport.intro' (L_comp.prod M'_comp) ?_ this
         exact (isClosed_tsupport g).prod isClosed_closure
   _ = ∫ x, (∫ y, f y * (D y)⁻¹ ∂ν) * g x ∂μ := by
-      simp_rw [integral_mul_right]
+      simp_rw [integral_mul_const]
       congr with x
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
-  _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
+  _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_const_mul _ _
 
 /-- Given two left-invariant measures which are finite on
 compacts, they coincide in the following sense: they give the same value to the integral of
@@ -996,11 +996,8 @@ end CommGroup
 
 section DistribMulAction
 variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
-  -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
-  -- assume `MeasurableSpace G` + `MeasurableSMul G A`
-  [MeasurableSpace G] [MeasurableSMul G A] [TopologicalSpace A] [BorelSpace A]
-  [IsTopologicalAddGroup A] [LocallyCompactSpace A] [ContinuousConstSMul G A] {μ ν : Measure A}
-  [μ.IsAddHaarMeasure] [ν.IsAddHaarMeasure] {g : G}
+  [TopologicalSpace A] [BorelSpace A] [IsTopologicalAddGroup A] [LocallyCompactSpace A]
+  [ContinuousConstSMul G A] {μ ν : Measure A} [μ.IsAddHaarMeasure] [ν.IsAddHaarMeasure] {g : G}
 
 variable (μ ν) in
 lemma addHaarScalarFactor_domSMul (g : Gᵈᵐᵃ) :

@@ -193,7 +193,7 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Non
   [∀ i, NonUnitalContinuousFunctionalCalculus ℝ (C i) IsSelfAdjoint]
   [NonUnitalContinuousFunctionalCalculus ℝ (∀ i, C i) IsSelfAdjoint]
   [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
-  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀i, NonnegSpectrumClass ℝ (C i)]
+  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
 
 /- Note that there is higher-priority instance of `Pow (∀ i, C i) ℝ≥0` coming from the `Pow`
 instance for pi types, hence the direct use of `nnrpow` here. -/
@@ -293,7 +293,7 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Non
   [∀ i, NonUnitalContinuousFunctionalCalculus ℝ (C i) IsSelfAdjoint]
   [NonUnitalContinuousFunctionalCalculus ℝ (∀ i, C i) IsSelfAdjoint]
   [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
-  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀i, NonnegSpectrumClass ℝ (C i)]
+  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
 
 lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
     sqrt c = fun i => sqrt (c i) := by
@@ -515,11 +515,10 @@ lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2
   by_cases htriv : 0 ≤ a
   case neg => simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a htriv]
   case pos =>
-    by_cases hx : x = 0
-    case pos => simp [hx, rpow_zero _ htriv]
-    case neg =>
-      have h₁ : 0 < x := lt_of_le_of_ne (by simp) (Ne.symm hx)
-      have h₂ : (x : ℝ) / 2 = NNReal.toReal (x / 2) := rfl
+    cases eq_zero_or_pos x with
+    | inl hx => simp [hx, rpow_zero _ htriv]
+    | inr h₁ =>
+      have h₂ : (x : ℝ) / 2 = NNReal.toReal (x / 2) := by simp
       have h₃ : 0 < x / 2 := by positivity
       rw [← nnrpow_eq_rpow h₁, h₂, ← nnrpow_eq_rpow h₃, sqrt_nnrpow (A := A)]
 

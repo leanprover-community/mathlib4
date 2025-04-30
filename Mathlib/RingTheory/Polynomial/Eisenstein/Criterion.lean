@@ -107,16 +107,16 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
   rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, if_neg hg', zero_add,
     mem_ker, ← coeff_map, hr, coeff_zero]
 
- /-- A generalized Eisenstein criterion
+/-- A generalized Eisenstein criterion
 
-  Let `R` be an integral domain and `K` an `R`-algebra which is a domain.
-  Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
-  Let `f : R[X]` be a primitive polynomial of strictly positive degree
-  whose leading coefficient is not zero in `K`
-  and such that the image `f` in `K[X]` is a power of `q`.
-  Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
-  where `P` is the kernel of `algebraMap R K`.
-  Then `f` is irreducible. -/
+Let `R` be an integral domain and `K` an `R`-algebra which is a domain.
+Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
+Let `f : R[X]` be a primitive polynomial of strictly positive degree
+whose leading coefficient is not zero in `K`
+and such that the image `f` in `K[X]` is a power of `q`.
+Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
+where `P` is the kernel of `algebraMap R K`.
+Then `f` is irreducible. -/
 theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
     (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
     (hf_prim : f.IsPrimitive)

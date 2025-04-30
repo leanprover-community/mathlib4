@@ -206,11 +206,6 @@ def factorial {n : ℕ} : Fin n → ℕ
 instance {n : ℕ} : WellFoundedRelation (Fin n) :=
   measure (val : Fin n → ℕ)
 
-/-- Given a positive `n`, `Fin.ofNat' i` is `i % n` as an element of `Fin n`. -/
-@[deprecated Fin.ofNat' (since := "2024-10-15")]
-def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
-  ⟨i % n, mod_lt _ n.pos_of_neZero⟩
-
 @[deprecated (since := "2025-02-24")]
 alias val_zero' := val_zero
 
@@ -271,8 +266,8 @@ theorem coe_int_sub_eq_ite {n : Nat} (u v : Fin n) :
     ((u - v : Fin n) : Int) = if v ≤ u then (u - v : Int) else (u - v : Int) + n := by
   rw [Fin.sub_def]
   split
-  · rw [ofNat_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
-  · rw [ofNat_emod, Int.emod_eq_of_lt] <;> omega
+  · rw [natCast_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+  · rw [natCast_emod, Int.emod_eq_of_lt] <;> omega
 
 theorem coe_int_sub_eq_mod {n : Nat} (u v : Fin n) :
     ((u - v : Fin n) : Int) = ((u : Int) - (v : Int)) % n := by
@@ -285,8 +280,8 @@ theorem coe_int_add_eq_ite {n : Nat} (u v : Fin n) :
     ((u + v : Fin n) : Int) = if (u + v : ℕ) < n then (u + v : Int) else (u + v : Int) - n := by
   rw [Fin.add_def]
   split
-  · rw [ofNat_emod, Int.emod_eq_of_lt] <;> omega
-  · rw [ofNat_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+  · rw [natCast_emod, Int.emod_eq_of_lt] <;> omega
+  · rw [natCast_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
 
 theorem coe_int_add_eq_mod {n : Nat} (u v : Fin n) :
     ((u + v : Fin n) : Int) = ((u : Int) + (v : Int)) % n := by
@@ -1408,8 +1403,10 @@ protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
-lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by
-  fin_omega
+lemma eq_one_of_ne_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by fin_omega
+
+@[deprecated (since := "2025-04-27")]
+alias eq_one_of_neq_zero := eq_one_of_ne_zero
 
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
