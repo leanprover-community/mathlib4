@@ -213,8 +213,11 @@ abbrev unlintedNodes := #[
 
   `Mathlib.Tactic.superscriptTerm,
 
-  --`Bundle.termπ__, -- notation for `Bundle.TotalSpace.proj`, the total space of a bundle
-  --`Finset.«term_#_», -- notation for `Finset.slice`
+  `Bundle.termπ__, -- notation for `Bundle.TotalSpace.proj`, the total space of a bundle
+                   -- prefers `π FE` over `π F E`
+
+  `Finset.«term_#_», -- notation for `Finset.slice`, prefers `𝒜 #r` over `𝒜 # r`
+
   --`ToAdditive.toAdditiveRest, -- the `existing` in `[to_additive existing]`
   ]
 
