@@ -82,7 +82,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
 /-- Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, it has a perfect matching. -/
 theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
-    (hveven : Even (Fintype.card V)) (h : ¬G.IsTutteViolator G.universalVerts)
+    (hveven : Even (Nat.card V)) (h : ¬G.IsTutteViolator G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     G.deleteUniversalVerts.coe.IsClique K.supp) : ∃ (M : Subgraph G), M.IsPerfectMatching := by
   classical
