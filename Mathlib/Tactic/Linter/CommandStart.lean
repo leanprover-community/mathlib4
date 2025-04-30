@@ -232,6 +232,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
+  if stx.find? (·.isOfKind ``runCmd) |>.isSome then
+    return
   -- If a command does not start on the first column, emit a warning.
   if let some pos := stx.getPos? then
     let colStart := ((← getFileMap).toPosition pos).column
