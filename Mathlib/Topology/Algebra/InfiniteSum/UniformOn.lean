@@ -23,19 +23,7 @@ open Filter Function
 open scoped Topology
 
 variable {α β ι : Type*} [CommMonoid α]  {f : ι → β → α} {g : β → α} {𝔖 : Set (Set β)}
-  {x : β} {s : Set β} {I : Finset ι}
-
-section prelim
-
--- XXX move this to `Topology.UniformSpace.UniformConvergenceTopology`
-variable (F I) in
-@[to_additive (attr := simp)]
-lemma UniformOnFun.ofFun_prod : ∏ i ∈ I, ofFun 𝔖 (f i) = ofFun 𝔖 (∏ i ∈ I, f i) :=
-  rfl
-
-end prelim
-
-variable [UniformSpace α]
+  {x : β} {s : Set β} {I : Finset ι} [UniformSpace α]
 
 /-!
 ## Uniform convergence of sums and products
@@ -112,7 +100,7 @@ variable (f g s) [TopologicalSpace β]
 /-- `HasProdLocallyUniformlyOn f g s` means that the (potentially infinite) product `∏' i, f i b`
 for `b : β` converges locally uniformly on `s` to `g b` (in the sense of
 `TendstoLocallyUniformlyOn`). -/
-@[to_additive "`HasProdLocallyUniformlyOn f g s` means that the (potentially infinite) sum
+@[to_additive "`HasSumLocallyUniformlyOn f g s` means that the (potentially infinite) sum
 `∑' i, f i b` for `b : β` converges locally uniformly on `s` to `g b` (in the sense of
 `TendstoLocallyUniformlyOn`)."]
 def HasProdLocallyUniformlyOn : Prop :=
@@ -120,8 +108,8 @@ def HasProdLocallyUniformlyOn : Prop :=
 
 /-- `MultipliableLocallyUniformlyOn f s` means that the product `∏' i, f i b` converges locally
 uniformly on `s` to something. -/
-@[to_additive "`SummableUniformlyOn f s` means that `∑' i, f i b` converges locally uniformly on
-`s` to something."]
+@[to_additive "`SummableLocallyUniformlyOn f s` means that `∑' i, f i b` converges locally
+uniformly on `s` to something."]
 def MultipliableLocallyUniformlyOn : Prop := ∃ g, HasProdLocallyUniformlyOn f g s
 
 variable {f g s}
@@ -136,7 +124,7 @@ lemma hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn :
 to `g`, then the product converges locally uniformly on `s` to `g`. Note that this is not a
 tautology, and the converse is only true if the domain is locally compact. -/
 @[to_additive "If every `x ∈ s` has a neighbourhood within `s` on which `b ↦ ∑' i, f i b` converges
-uniformly to `g`, then the product converges locally uniformly. Note that this is not a tautology,
+uniformly to `g`, then the sum converges locally uniformly. Note that this is not a tautology,
 and the converse is only true if the domain is locally compact."]
 lemma hasProdLocallyUniformlyOn_of_of_forall_exists_nhd
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, HasProdUniformlyOn f g {t}) : HasProdLocallyUniformlyOn f g s :=
@@ -152,7 +140,7 @@ theorem HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn
 then the product converges locally uniformly on `s`. Note that this is not a tautology, and the
 converse is only true if the domain is locally compact. -/
 @[to_additive "If every `x ∈ s` has a neighbourhood within `s` on which `b ↦ ∑' i, f i b` converges
-uniformly, then the product converges locally uniformly. Note that this is not a tautology, and the
+uniformly, then the sum converges locally uniformly. Note that this is not a tautology, and the
 converse is only true if the domain is locally compact."]
 lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhd [T2Space α]
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, MultipliableUniformlyOn f {t}) :
