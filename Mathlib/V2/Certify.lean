@@ -172,14 +172,21 @@ Given `p q : ℕ`, find the unique `r k : ℕ` such that `r * q ^ k = p` and `r`
 def extractFactor (p q : ℕ) : ℕ × ℕ :=
   if hq : q ≤ 1 then (p, 0) else extractFactor.acc p q 0 (lt_of_not_le hq)
 
-def processEntryAux (m : Std.TreeMap ℕ (Expr × Expr)) (p p' root : ℕ) (pE rootE : Expr)
+structure PrattProofEntry : Type where
+  metaVar : Expr
+  uses : Std.TreeSet ℕ
+  pf : Expr
+  deriving Repr
+
+def processEntryAux (m : Std.TreeMap ℕ PrattProofEntry) (p p' root : ℕ) (pE rootE : Expr)
     (factors : List ℕ) :
-    MetaM (ℕ × Expr) := do
+    MetaM (ℕ × Std.TreeSet ℕ × Expr) := do
   let mut t : ℕ := 1
   let mut res : ℕ := p'
   -- cur * res = p'
   let mut pf ← mkAppM ``pratt_axiom #[pE, rootE]
   -- pf will be a proof of `pratt_predicate p root t`
+  let mut uses : Std.TreeSet ℕ := ∅
   for q in factors do
     let (spare, k) := extractFactor res q -- r * q ^ k = res
     if k = 0 then logWarning m!"unused factor {q} in factorization {factors} of {p - 1}"
@@ -190,11 +197,12 @@ def processEntryAux (m : Std.TreeMap ℕ (Expr × Expr)) (p p' root : ℕ) (pE r
     let qE : Expr := mkNatLit q
     let o : ℕ := (p - 1) / q
     let oE : Expr := mkNatLit o
-    let some ((hq : Expr), _) := m.get? q | throwError s!"purported prime {q} not in certificate"
+    let some entry := m.get? q | throwError s!"purported prime {q} not in certificate"
     let hpow ← Tactic.powMod.provePowModNe root o p 1 rootE oE pE (mkNatLit 1)
     pf ← mkAppM ``prove_prime_step #[pE, rootE, qE, oE, tE, mkNatLit r, mkNatLit k,
-      ← mkEqRefl oE, hq, ← mkEqRefl tE, hpow, pf]
-  return (t, pf)
+      ← mkEqRefl oE, entry.metaVar, ← mkEqRefl tE, hpow, pf]
+    uses := insert q (uses.insertMany entry.uses)
+  return (t, uses, pf)
 
 lemma Nat.prime_2 : Nat.Prime 2 := by norm_num
 lemma Nat.prime_3 : Nat.Prime 3 := by norm_num
@@ -222,14 +230,14 @@ lemma Nat.prime_83 : Nat.Prime 83 := by norm_num
 lemma Nat.prime_89 : Nat.Prime 89 := by norm_num
 lemma Nat.prime_97 : Nat.Prime 97 := by norm_num
 
-def processEntry (m : Std.TreeMap ℕ (Expr × Expr)) :
-    PrattEntry → MetaM (Std.TreeMap ℕ (Expr × Expr))
+def processEntry (m : Std.TreeMap ℕ PrattProofEntry) :
+    PrattEntry → MetaM (Std.TreeMap ℕ PrattProofEntry)
   | .small p => do
     let mv ← mkFreshExprMVar
       (some (← mkAppM ``Nat.Prime #[mkNatLit p]))
       (userName := .mkSimple s!"prime_{p}")
     let pf := mkConst (.str `Tactic.Prime.Nat s!"prime_{p}")
-    return insert (p, (mv, pf)) m
+    return insert (p, ⟨mv, ∅, pf⟩) m
   | .big p root factors => do
     unless p ≥ 2 do
       throwError "error 4"
@@ -237,7 +245,7 @@ def processEntry (m : Std.TreeMap ℕ (Expr × Expr)) :
     let pE : Expr := mkNatLit p
     let p'E : Expr := mkNatLit p'
     let rootE : Expr := mkNatLit root
-    let (last, pf) ← processEntryAux m p (p - 1) root pE rootE factors
+    let (last, uses, pf) ← processEntryAux m p (p - 1) root pE rootE factors
     unless last = p - 1 do
       throwError "bad factorization {factors} of {p - 1} (missing {(p - 1) / last})"
     let hpow ← Tactic.powMod.provePowModEq root p' p 1 rootE p'E pE
@@ -245,14 +253,18 @@ def processEntry (m : Std.TreeMap ℕ (Expr × Expr)) :
     let i ← mkFreshExprMVar
       (some (← mkAppM ``Nat.Prime #[pE]))
       (userName := .mkSimple s!"prime_{p}")
-    return insert (p, (i, pf)) m
+    return insert (p, ⟨i, uses, pf⟩) m
 
 def prove_prime (cert : PrattCertificate) (n : ℕ) : MetaM Expr := do
   let data ← cert.foldlM processEntry ∅
-  trace[debug] "{data.toArray}"
-  let some (pf, _) := data.get? n | throwError "the certificate doesn't prove {n} is prime"
-  data.foldrM (init := pf) fun _ (hmq, hpq) pf =>
-    mkLetFun hmq hpq pf
+  -- trace[debug] "{data.toArray}"
+  let some ent := data.get? n | throwError "the certificate doesn't prove {n} is prime"
+  ent.uses.foldrM (init := ent.pf) fun q pf => do
+    let some entq := data.get? q | throwError "internal error 1"
+    mkLetFun entq.metaVar entq.pf pf
+
+  -- ent.uses.foldrM (init := ent.pf) fun _ (hmq, hpq) pf =>
+  --   mkLetFun hmq hpq pf
 
 elab "pratt" ppSpace certificate:pratt_certificate : tactic => liftMetaFinishingTactic fun goal ↦ do
   match certificate with
@@ -389,6 +401,12 @@ elab_rules : tactic
 end
 
 end Tactic.Prime
+
+example : Nat.Prime 101 := by?
+  pratt [2, (5, 2, [2]), (101, 2, [2, 5])]
+
+example : Nat.Prime 214499 := by? pratt
+    [2, 3, 7, 23, 37, (4663, 3, [2, 3, 7, 37]), (214499, 2, [2, 23, 4663])]
 
 example : Nat.Prime 47867742232066880047611079 := by pratt
     [2, 3, 5, 7, 11, 17, 23, 29, 31, 37, 47, 67, 83, (167, 5, [2, 83]), (283, 3, [2, 3, 47]),
