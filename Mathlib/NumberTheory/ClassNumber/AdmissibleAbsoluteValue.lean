@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.Data.Real.Basic
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
+import Mathlib.RingTheory.Localization.AsSubring
 
 /-!
 # Admissible absolute values
@@ -33,6 +34,31 @@ namespace AbsoluteValue
 
 variable {R : Type*} [EuclideanDomain R]
 variable (abv : AbsoluteValue R ℤ)
+
+variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] [Nontrivial R]
+variable (S : Submonoid R) (hS : S ≤ nonZeroDivisors R) :
+variable (A : Type*) [CommRing A] [Algebra R A] [IsLocalization S A]
+
+noncomputable example : EuclideanDomain A where
+  exists_pair_ne := sorry
+  quotient := by
+    intro a b
+    let ⟨x, k⟩ := IsLocalization.sec S a
+    let ⟨y, m⟩ := IsLocalization.sec S b
+    use algebraMap R A (EuclideanDomain.quotient x y)
+  quotient_zero := by
+    intro a
+    simp only
+
+
+  remainder := sorry
+  quotient_mul_add_remainder_eq := sorry
+  r := sorry
+  r_wellFounded := sorry
+  remainder_lt := sorry
+  mul_left_not_lt := sorry
+
+
 
 /-- An absolute value `R → ℤ` is admissible if it respects the Euclidean domain
 structure and a large enough set of elements in `R^n` will contain a pair of
