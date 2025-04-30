@@ -216,7 +216,7 @@ theorem lmarginal_update_of_not_mem {i : δ}
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∘ (Function.update · i y) ∂μ) x := by
   induction s using Finset.induction generalizing x with
   | empty => simp
-  | @insert i' s hi' ih =>
+  | insert i' s hi' ih =>
     rw [lmarginal_insert _ hf hi', lmarginal_insert _ (hf.comp measurable_update_left) hi']
     have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
     simp_rw [update_comm hii', ih (mt Finset.mem_insert_of_mem hi)]

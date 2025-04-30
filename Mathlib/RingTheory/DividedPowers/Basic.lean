@@ -292,7 +292,7 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
       apply congr_arg
       rw [card_eq_zero, sym_eq_empty]
       exact ⟨hn, rfl⟩
-  | @insert a s ha ih =>
+  | insert a s ha ih =>
     -- This should be golfable using `Finset.symInsertEquiv`
     have hx' : ∀ i, i ∈ s → x i ∈ I := fun i hi ↦ hx i (mem_insert_of_mem hi)
     simp_rw [sum_insert ha,

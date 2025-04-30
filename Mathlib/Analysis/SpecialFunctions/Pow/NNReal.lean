@@ -680,7 +680,7 @@ theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : �
   classical
   induction s using Finset.induction with
   | empty => simp
-  | @insert i s hi ih =>
+  | insert i s hi ih =>
     have h2f : ∀ i ∈ s, f i ≠ ∞ := fun i hi ↦ hf i <| mem_insert_of_mem hi
     rw [prod_insert hi, prod_insert hi, ih h2f, ← mul_rpow_of_ne_top <| hf i <| mem_insert_self ..]
     apply prod_ne_top h2f
