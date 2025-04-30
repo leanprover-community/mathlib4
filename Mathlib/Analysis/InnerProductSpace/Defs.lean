@@ -88,6 +88,12 @@ scoped[RealInnerProductSpace] notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x 
 /-- The inner product with values in `ℂ`. -/
 scoped[ComplexInnerProductSpace] notation "⟪" x ", " y "⟫" => @inner ℂ _ _ x y
 
+/--
+Delaborator for the inner product. It delaborates as follows:
+- `@inner ℝ _ _ x y` => `⟪x, y⟫`
+- `@inner ℂ _ _ x y` => `⟪x, y⟫`
+- `@inner 𝕜 _ _ x y` => `⟪x, y⟫_𝕜`
+-/
 @[delab app.Inner.inner]
 def Lean.PrettyPrinter.Delaborator.delabInner : Lean.PrettyPrinter.Delaborator.Delab :=
   Lean.PrettyPrinter.Delaborator.whenPPOption Lean.getPPNotation do
@@ -95,10 +101,10 @@ def Lean.PrettyPrinter.Delaborator.delabInner : Lean.PrettyPrinter.Delaborator.D
     let_expr Inner.inner 𝕜 _ _ _ _ := ← SubExpr.getExpr | failure
     let stx_x ← SubExpr.withNaryArg 3 delab
     let stx_y ← SubExpr.withNaryArg 4 delab
-    if 𝕜.isAppOf ``Real then
+    if 𝕜.isConstOf ``Real then
       Mathlib.Notation3.withHeadRefIfTagAppFns <|
         open scoped RealInnerProductSpace in `(⟪$stx_x, $stx_y⟫)
-    else if 𝕜.isAppOf ``Complex then
+    else if 𝕜.isConstOf ``Complex then
       Mathlib.Notation3.withHeadRefIfTagAppFns <|
         open scoped ComplexInnerProductSpace in `(⟪$stx_x, $stx_y⟫)
     else
