@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Rémy Degenne. All rights reserved.
+Copyright (c) 2025 Peter Pfaffelhuber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
@@ -39,36 +39,6 @@ end definition
 
 namespace IsCompactSystem
 
-lemma iff (p : Set α → Prop) : IsCompactSystem p ↔
-    ∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ n, ⋂ k < n, C k ≠ ∅) → ⋂ i, C i ≠ ∅ := by
-  refine ⟨fun h C hi ↦ ?_, fun h C hi ↦ ?_⟩
-  · rw [← not_imp_not]
-    push_neg
-    intro h'
-    specialize h C hi h'
-    obtain ⟨n, hn⟩ := h
-    use n + 1
-    rw [Dissipate] at hn
-    conv =>
-      lhs
-      enter [1]
-      intro j
-      rw [Nat.lt_add_one_iff]
-    exact hn
-  · rw [← not_imp_not]
-    push_neg
-    simp_rw [nonempty_iff_ne_empty]
-    intro h'
-    apply h C hi
-    intro n hn
-    apply h' n
-    rw [← subset_empty_iff] at hn ⊢
-    apply le_trans _ hn
-    rw [Dissipate]
-    intro x
-    rw [mem_iInter₂, mem_iInter₂]
-    exact fun h i hi ↦ h i hi.le
-
 /-- In a compact system, given a countable family with empty intersection, we choose a finite
 subfamily with empty intersection. -/
 noncomputable
@@ -89,6 +59,25 @@ theorem iff_of_nempty (p : Set α → Prop) :
     exact h2 hn
   · push_neg at h2
     exact h2
+
+/-- In this equivalent formulation for a compact system,
+note that we use `⋂ k < n, C k` rather than `⋂ k ≤ n, C k`. -/
+lemma iff_of_not_empty (p : Set α → Prop) : IsCompactSystem p ↔
+    ∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ n, ⋂ k < n, C k ≠ ∅) → ⋂ i, C i ≠ ∅ := by
+  simp_rw [← Set.nonempty_iff_ne_empty, iff_of_nempty]
+  refine ⟨fun h C hi h'↦ ?_, fun h C hi h' ↦ ?_⟩
+  · apply h C hi
+    exact fun n ↦ dissipate_eq ▸ (h' (n + 1))
+  · apply h C hi
+    intro n
+    simp_rw [Set.nonempty_iff_ne_empty] at h' ⊢
+    intro g
+    apply h' n
+    simp_rw [← subset_empty_iff, Dissipate] at g ⊢
+    apply le_trans _ g
+    intro x
+    rw [mem_iInter₂, mem_iInter₂]
+    exact fun h i hi ↦ h i hi.le
 
 theorem iff_directed (hpi : ∀ (s t : Set α), p s → p t → p (s ∩ t)) :
     (IsCompactSystem p) ↔
