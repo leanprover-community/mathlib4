@@ -558,6 +558,12 @@ theorem update_comp_eq_of_injective' (g : ∀ a, β a) {f : α' → α} (hf : Fu
     (i : α') (a : β (f i)) : (fun j ↦ update g (f i) a (f j)) = update (fun i ↦ g (f i)) i a :=
   eq_update_iff.2 ⟨update_self .., fun _ hj ↦ update_of_ne (hf.ne hj) _ _⟩
 
+theorem update_apply_of_injective
+    (g : ∀ a, β a) {f : α' → α} (hf : Function.Injective f)
+    (i : α') (a : β (f i)) (j : α') :
+    update g (f i) a (f j) = update (fun i ↦ g (f i)) i a j :=
+  congr_fun (update_comp_eq_of_injective' g hf i a) j
+
 /-- Non-dependent version of `Function.update_comp_eq_of_injective'` -/
 theorem update_comp_eq_of_injective {β : Sort*} (g : α' → β) {f : α → α'}
     (hf : Function.Injective f) (i : α) (a : β) :

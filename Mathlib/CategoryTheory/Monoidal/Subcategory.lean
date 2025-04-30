@@ -196,7 +196,7 @@ theorem ihom_obj (X Y : P.FullSubcategory) :
   rfl
 
 @[simp]
-theorem ihom_map (X : P.FullSubcategory ) {Y Z : P.FullSubcategory}
+theorem ihom_map (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
     (f : Y ⟶ Z) : (ihom X).map f = (ihom X.obj).map f :=
   rfl
 

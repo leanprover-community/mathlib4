@@ -187,7 +187,7 @@ noncomputable def compactlyGeneratedAdjunctionCounitHomeo
 The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGeneratedToCondensedSet`
 is an isomorphism.
 -/
-noncomputable def compactlyGeneratedAdjunctionCounitIso (X : CompactlyGenerated.{u, u+1}) :
+noncomputable def compactlyGeneratedAdjunctionCounitIso (X : CompactlyGenerated.{u, u + 1}) :
     condensedSetToCompactlyGenerated.obj (compactlyGeneratedToCondensedSet.obj X) ≅ X :=
   isoOfHomeo (compactlyGeneratedAdjunctionCounitHomeo X.toTop)
 
