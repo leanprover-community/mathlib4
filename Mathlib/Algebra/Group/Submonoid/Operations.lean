@@ -824,6 +824,14 @@ def submonoidComap (f : M →* N) (N' : Submonoid N) :
   map_one' := Subtype.eq f.map_one
   map_mul' x y := Subtype.eq (f.map_mul x y)
 
+@[to_additive]
+lemma submonoidComap_surjective_of_surjective (f : M →* N) (N' : Submonoid N) (hf : Surjective f) :
+    Surjective (f.submonoidComap N') := fun y ↦ by
+  obtain ⟨x, hx⟩ := hf y
+  use ⟨x, mem_comap.mpr (hx ▸ y.2)⟩
+  apply Subtype.val_injective
+  simp [hx]
+
 /-- The `MonoidHom` from a submonoid to its image.
 See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
 @[to_additive (attr := simps)
