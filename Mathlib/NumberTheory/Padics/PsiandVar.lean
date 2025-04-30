@@ -4,7 +4,7 @@ import Mathlib.Analysis.Normed.Group.Ultra
 
 open Filter
 variable {p : ℕ} [hp : Fact p.Prime]
-
+set_option maxHeartbeats 0
 namespace PadicInt
 
 noncomputable def Mul_of_a_measure :  C(ℤ_[p],ℤ_[p])→ (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) →
@@ -427,11 +427,11 @@ lemma lema_3 : id-(ϕ (p:=p))∘(ψ (p:=p))= restriction (p:=p) ⟨({a | IsUnit 
 
 noncomputable def Convolution :(C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) →
 (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] )→ (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] )
-| f_1 ,f_2 => {
-    toFun g:=f_2 {
-       toFun b:= f_1 ⟨(g)∘(fun( x :ℤ_[p])=> x+b),Continuous.comp g.2 (continuous_add_right b)⟩
+| μ_1 ,μ_2 => {
+    toFun g:=μ_2 {
+       toFun b:= μ_1 ⟨(g)∘(fun( x :ℤ_[p])=> x+b),Continuous.comp g.2 (continuous_add_right b)⟩
        continuous_toFun :=by
-         refine Continuous.comp' f_1.2 ?_
+         refine Continuous.comp' μ_1.2 ?_
          rw[continuous_iff_continuousAt]
          intro x
          unfold ContinuousAt
@@ -475,14 +475,14 @@ noncomputable def Convolution :(C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) →
        ext s
        simp
     cont :=by
-         refine Continuous.comp' f_2.2 ?_
+         refine Continuous.comp' μ_2.2 ?_
          rw[continuous_iff_continuousAt]
          intro x
          unfold ContinuousAt
          simp
          rw[NormedAddCommGroup.tendsto_nhds_nhds]
          intro s rs
-         have:=Continuous.tendsto' f_1.2 0 0 (ContinuousLinearMap.map_zero f_1)
+         have:=Continuous.tendsto' μ_1.2 0 0 (ContinuousLinearMap.map_zero μ_1)
          rw[NormedAddCommGroup.tendsto_nhds_nhds] at this
          simp at this
          choose h1 sh use using (this s rs)
@@ -493,7 +493,7 @@ noncomputable def Convolution :(C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) →
            rw[ContinuousMap.norm_lt_iff _ rs ]
            simp only [ContinuousMap.sub_apply, ContinuousMap.coe_mk]
            intro x_1
-           rw[← ContinuousLinearMap.map_sub f_1 _ _]
+           rw[← ContinuousLinearMap.map_sub μ_1 _ _]
            refine use _ ?_
            rw[ContinuousMap.norm_lt_iff _ sh ]
            intro x_2
@@ -503,29 +503,44 @@ noncomputable def Convolution :(C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) →
 
   }
 
-noncomputable instance instMul  : Mul (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) :=
-  ⟨fun f g =>Convolution f g⟩
+
+
+noncomputable instance : Mul (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) where
+  mul x y := Convolution x y
+
+noncomputable instance :  One (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] )  where
+  one := {
+    toFun x:= x 0
+    map_add' a b:=by rfl
+    map_smul' a b:=by rfl
+    cont :=by
+      exact continuous_eval_const 0
+  }
+
+noncomputable instance : NatCast (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] )  where
+  natCast n := n• 1
+
+noncomputable instance : IntCast (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] )  where
+  intCast n := n• 1
 
 
 noncomputable instance padicMeasureRing : CommRing  (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) where
   __  := ContinuousLinearMap.addCommGroup
   mul :=(· * ·)
   left_distrib a b c:= sorry
-  right_distrib := sorry
-  zero_mul := sorry
-  mul_zero := sorry
-  mul_assoc := sorry
-  one := sorry
-  one_mul := sorry
-  mul_one := sorry
-  natCast := sorry
-  natCast_zero := sorry
-  natCast_succ := sorry
-  npow := sorry
-  npow_zero := sorry
-  npow_succ := sorry
-  intCast := sorry
-  intCast_ofNat := sorry
-  intCast_negSucc := sorry
-  mul_comm := sorry
+  right_distrib :=sorry
+  zero_mul :=sorry
+  mul_zero:=sorry
+  mul_assoc:=sorry
+  one_mul:=sorry
+  mul_one:=sorry
+  mul_comm:=sorry
+  natCast_zero :=by
+    ext n
+    simp only [ContinuousLinearMap.zero_apply]
+    calc
+     _= 0 • (n 0) :=by rfl
+     _=_ :=by simp
+  natCast_succ:=sorry
+  intCast_negSucc:=sorry
 end PadicInt
