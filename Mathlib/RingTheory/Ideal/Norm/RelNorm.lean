@@ -9,7 +9,6 @@ import Mathlib.RingTheory.DedekindDomain.Instances
 import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
-
 /-!
 
 # Ideal norms
