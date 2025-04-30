@@ -297,6 +297,7 @@ theorem Quotient.lift_comp_mk {_ : Setoid α} (f : α → β) (h : ∀ a b : α,
     Quotient.lift f h ∘ Quotient.mk _ = f :=
   rfl
 
+@[simp]
 theorem Quotient.lift_surjective_iff {α β : Sort*} {s : Setoid α} (f : α → β)
     (h : ∀ (a b : α), a ≈ b → f a = f b) :
     Function.Surjective (Quotient.lift f h : Quotient s → β) ↔ Function.Surjective f :=
