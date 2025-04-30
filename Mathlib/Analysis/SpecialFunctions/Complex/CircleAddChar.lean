@@ -63,36 +63,16 @@ lemma toCircle_apply (j : ZMod N) :
     toCircle j = exp (2 * π * I * j.val / N) := by
   rw [← toCircle_natCast, natCast_zmod_val]
 
-lemma test : (π : ℂ) = Real.pi := by
-  simp?
-
 lemma toCircle_eq_Circle_exp (j : ZMod N) :
     toCircle j = Circle.exp (2 * π * j.val / N) := by
   ext
-  rw [toCircle_apply]
-  --rw [Circle.exp]
-  --rw [Circle.coe_inj]
-  rw [Circle.coe_exp]
+  rw [toCircle_apply, Circle.coe_exp]
   congr
-  rw [mul_assoc]
-  rw [mul_div_assoc]
-  rw [mul_div_assoc]
-  rw [mul_comm I]
-  rw [← mul_assoc]
-  --rw [← mul_assoc]
-  rw [mul_left_inj' I_ne_zero]
-  rw [mul_div_assoc]
-  --rw [← ofReal_ofNat 2]
-  rw [ofReal_mul]
-  rw [ofReal_div]
-  rw [ofReal_mul]
-  rw [ofReal_ofNat]
-  rw [mul_right_inj']
-  · simp only [ofReal_natCast]
-  · rw [← ofReal_ofNat]
-    rw [← ofReal_mul]
-    rw [ofReal_ne_zero]
-    exact Real.two_pi_ne_zero
+  rw [mul_assoc, mul_div_assoc, mul_div_assoc, mul_comm I, ← mul_assoc, mul_left_inj' I_ne_zero,
+    mul_div_assoc, ofReal_mul, ofReal_div, ofReal_mul, ofReal_ofNat, mul_right_inj'
+    (by rw [← ofReal_ofNat, ← ofReal_mul, ofReal_ne_zero]; exact Real.two_pi_ne_zero)]
+  simp only [ofReal_natCast]
+
 
 /-
 lemma eq (k : ZMod N) : rootsOfUnity.exp N k = (ZMod.toCircle k).toUnits := by
