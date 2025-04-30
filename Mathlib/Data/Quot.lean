@@ -193,7 +193,7 @@ end Quot
 namespace Quotient
 
 variable {sa : Setoid α} {sb : Setoid β}
-variable {φ : Quotient sa → Quotient sb → Sort*}
+variable {motive : Quotient sa → Quotient sb → Sort*}
 
 -- TODO: in mathlib3 this notation took the Setoid as an instance-implicit argument,
 -- now it's explicit but left as a metavariable.
@@ -217,9 +217,10 @@ instance {α : Type*} [Setoid α] : IsEquiv α (· ≈ ·) where
   trans _ _ _ := Setoid.trans
 
 /-- Induction on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
-protected def hrecOn₂ (qa : Quotient sa) (qb : Quotient sb) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧)
-    (c : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) : φ qa qb :=
-  Quot.hrecOn₂ qa qb f (fun p ↦ c _ _ _ _ p (Setoid.refl _)) fun p ↦ c _ _ _ _ (Setoid.refl _) p
+protected def hrecOn₂ (qa : Quotient sa) (qb : Quotient sb) (mk : ∀ a b, motive ⟦a⟧ ⟦b⟧)
+    (heq : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → HEq (mk a₁ b₁) (mk a₂ b₂)) : motive qa qb :=
+  Quot.hrecOn₂ qa qb mk (fun p ↦ heq _ _ _ _ p (Setoid.refl _))
+    fun p ↦ heq _ _ _ _ (Setoid.refl _) p
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
