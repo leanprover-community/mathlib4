@@ -495,18 +495,18 @@ def casesOn {motive : ∀ {n}, Vector α n → Sort*} (v : Vector α m)
   inductionOn (C := motive) v nil @fun _ hd tl _ => cons hd tl
 
 /-- Define `motive v₁ v₂` by case-analysis on `v₁ : Vector α n` and `v₂ : Vector β n`. -/
-def casesOn₂  {motive : ∀{n}, Vector α n → Vector β n → Sort*} (v₁ : Vector α m) (v₂ : Vector β m)
+def casesOn₂ {motive : ∀ {n}, Vector α n → Vector β n → Sort*} (v₁ : Vector α m) (v₂ : Vector β m)
     (nil : motive nil nil)
-    (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
+    (cons : ∀ {n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
       → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
     motive v₁ v₂ :=
   inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
 
 /-- Define `motive v₁ v₂ v₃` by case-analysis on `v₁ : Vector α n`, `v₂ : Vector β n`, and
     `v₃ : Vector γ n`. -/
-def casesOn₃  {motive : ∀{n}, Vector α n → Vector β n → Vector γ n → Sort*} (v₁ : Vector α m)
+def casesOn₃ {motive : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort*} (v₁ : Vector α m)
     (v₂ : Vector β m) (v₃ : Vector γ m) (nil : motive nil nil nil)
-    (cons : ∀{n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
+    (cons : ∀ {n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
       → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
     motive v₁ v₂ v₃ :=
   inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
