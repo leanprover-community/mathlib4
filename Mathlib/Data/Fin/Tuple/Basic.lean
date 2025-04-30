@@ -108,7 +108,7 @@ def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fi
 
 @[simp]
 theorem tail_cons : tail (cons x p) = p := by
-  simp (config := { unfoldPartialApp := true }) [tail, cons]
+  simp +unfoldPartialApp [tail, cons]
 
 @[simp]
 theorem cons_succ : cons x p i.succ = p i := by simp [cons]
