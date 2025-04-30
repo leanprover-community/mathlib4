@@ -239,6 +239,7 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
       or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
     exact mod_cast hℒ fun _ => zero_le_two
 
+set_option linter.deprecated false in
 /-- **Chebyshev's inequality** for `ℝ≥0∞`-valued variance. -/
 theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable X μ) {c : ℝ≥0}
     (hc : c ≠ 0) : μ {ω | ↑c ≤ |X ω - μ[X]|} ≤ evariance X μ / c ^ 2 := by
