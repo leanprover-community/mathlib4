@@ -74,10 +74,9 @@ may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0,
 lemma iff_rangeFactorization [Zero P] (hg : 0 ∈ Set.range g) :
     letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
     Exact f g ↔ Exact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
-  rw [Exact, Exact, Subtype.range_coe]
-  congr! 2
-  rw [Set.rangeFactorization]
-  exact ⟨fun _ ↦ by rwa [Subtype.ext_iff], fun h ↦ by rwa [Subtype.ext_iff] at h⟩
+  letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
+  have : ((0 : Set.range g) : P) = 0 := rfl
+  simp [Exact, Subtype.range_coe, Set.rangeFactorization, Subtype.ext_iff, this]
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
