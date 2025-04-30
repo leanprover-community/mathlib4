@@ -75,8 +75,7 @@ protected theorem differentiableOn : DifferentiableOn 𝕜 iso s :=
 
 theorem comp_differentiableWithinAt_iff {f : G → E} {s : Set G} {x : G} :
     DifferentiableWithinAt 𝕜 (iso ∘ f) s x ↔ DifferentiableWithinAt 𝕜 f s x := by
-  refine
-    ⟨fun H => ?_, fun H => iso.differentiable.differentiableAt.comp_differentiableWithinAt x H⟩
+  refine ⟨fun H => ?_, fun H => iso.differentiable.differentiableAt.comp_differentiableWithinAt x H⟩
   have : DifferentiableWithinAt 𝕜 (iso.symm ∘ iso ∘ f) s x :=
     iso.symm.differentiable.differentiableAt.comp_differentiableWithinAt x H
   rwa [← Function.comp_assoc iso.symm iso f, iso.symm_comp_self] at this
@@ -98,13 +97,8 @@ theorem comp_differentiable_iff {f : G → E} : Differentiable 𝕜 (iso ∘ f) 
 theorem comp_hasFDerivWithinAt_iff {f : G → E} {s : Set G} {x : G} {f' : G →L[𝕜] E} :
     HasFDerivWithinAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') s x ↔ HasFDerivWithinAt f f' s x := by
   refine ⟨fun H => ?_, fun H => iso.hasFDerivAt.comp_hasFDerivWithinAt x H⟩
-  have A : f = iso.symm ∘ iso ∘ f := by
-    rw [← Function.comp_assoc, iso.symm_comp_self]
-    rfl
-  have B : f' = (iso.symm : F →L[𝕜] E).comp ((iso : E →L[𝕜] F).comp f') := by
-    rw [← ContinuousLinearMap.comp_assoc, iso.coe_symm_comp_coe, ContinuousLinearMap.id_comp]
-  rw [A, B]
-  exact iso.symm.hasFDerivAt.comp_hasFDerivWithinAt x H
+  simpa [Function.comp_def, ← ContinuousLinearMap.comp_assoc]
+    using iso.symm.hasFDerivAt.comp_hasFDerivWithinAt x H
 
 theorem comp_hasStrictFDerivAt_iff {f : G → E} {x : G} {f' : G →L[𝕜] E} :
     HasStrictFDerivAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') x ↔ HasStrictFDerivAt f f' x := by
@@ -321,6 +315,19 @@ theorem comp_fderiv' {f : G → E} :
   exact LinearIsometryEquiv.comp_fderiv iso
 
 end LinearIsometryEquiv
+
+section SMulLeft
+
+open scoped Pointwise
+
+theorem hasFDerivWithinAt_comp_smul_iff_smul {c : 𝕜} :
+    HasFDerivWithinAt (f <| c • ·) (c • f') s x ↔ HasFDerivWithinAt f f' (c • s) x := by
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp [hasFDerivWithinAt_const, HasFDerivWithinAt.of_subsingleton (subsingleton_zero_smul_set _)]
+  · lift c to 𝕜ˣ using IsUnit.mk0 c hc
+    
+
+end SMulLeft
 
 /-- If `f (g y) = y` for `y` in a neighborhood of `a` within `t`,
 `g` maps a neighborhood of `a` within `t` to a neighborhood of `g a` within `s`,
