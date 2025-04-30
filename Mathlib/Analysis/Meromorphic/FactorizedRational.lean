@@ -136,7 +136,7 @@ theorem order_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
 /--
 If `D` is a divisor, then the divisor of the factorized rational function equals `D`.
 -/
-theorem divisor [CompleteSpace 𝕜] {U : Set 𝕜} (D : locallyFinsuppWithin U ℤ)
+theorem divisor {U : Set 𝕜} (D : locallyFinsuppWithin U ℤ)
     (hD : D.support.Finite) :
     MeromorphicOn.divisor (∏ᶠ u, (· - u) ^ D u) U = D := by
   ext z
