@@ -1,48 +1,28 @@
 import Aesop.Frontend.Attribute
 import Mathlib.Tactic.Linter.CommandStart
 
-section tests
-open Mathlib.Linter Style.CommandStart
+-- Strings are ignored by the linter.
+variable (a : String := "  ")
 
-set_option linter.hashCommand false
-#guard
-  let s := "abcdeacd"
-  findString s "a" == ("", "abcdeacd")
+run_cmd
+  for _ in [0] do
+    let _ ← `(
+      end)
 
-#guard
-  let s := "abcdeacd"
-  findString s "b" == ("a", "bcdeacd")
+def Card : Type → Nat := fun _ => 0
 
-#guard
-  let s := "abcdeacd"
-  findString s "ab" == ("", "abcdeacd")
+local prefix:arg "&" => Card
 
-#guard
-  let s := "abcdeacd"
-  findString s "ac" == ("abcde", "acd")
+example (s : Type) (h : & s = 0) : True := trivial
 
-#guard
-  let s := "text /- /-- -/"
-  let pattern := "/--"
-  findString s pattern == ("text /- ", "/-- -/")
-
-#guard findString "/-- ≫|/ a" "|/" == ("/-- ≫", "|/ a")
-
-#guard trimComments "- /-/\ncontinuing on -/\n and more text" false ==
-                    "-\n and more text"
-#guard trimComments "text /- I am a comment -/ more text" false ==
-                    "text more text"
-#guard trimComments  "text /- I am a comment -/   more text" false ==
-                    "text   more text"
-#guard trimComments "text -- /- I am a comment -/   more text" false ==
-                    "text"
-#guard trimComments  "text /- comment /- nested -/-/" false == -- comment nesting is not implemented
-                      "text-/"
-#guard trimComments "text /-- doc-string -/" false ==
-                    "text /-- doc-string -/"
-
-end tests
-
+/-- Symbols for use by all kinds of grammars. -/
+inductive Symbol (T N : Type)
+  /-- Terminal symbols (of the same type as the language) -/
+  | terminal (t : T) : Symbol T N
+  /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
+  | nonterminal (n : N) : Symbol T N
+deriving
+  DecidableEq, Repr
 
 -- embedded comments do not cause problems!
 #guard_msgs in
