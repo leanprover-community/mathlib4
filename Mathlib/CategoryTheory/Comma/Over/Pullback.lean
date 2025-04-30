@@ -31,13 +31,14 @@ Show `star X` itself has a right adjoint provided `C` is cartesian closed and ha
 
 noncomputable section
 
-universe v u
+universe v v₂ u u₂
 
 namespace CategoryTheory
 
 open Category Limits Comonad
 
 variable {C : Type u} [Category.{v} C] (X : C)
+variable {D : Type u₂} [Category.{v₂} D]
 
 
 namespace Over
@@ -82,8 +83,23 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
   conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
     (Over.mapComp _ _).symm
 
-instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAdjoint  :=
+instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAdjoint :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
+
+open pullback in
+/-- If `F` is a left adjoint and its source category has pullbacks, then so is
+`post F : Over Y ⥤ Over (G Y)`.
+
+If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given by
+`(Y ⟶ F X) ↦ (G Y ⟶ X ×_{G F X} G Y ⟶ X)`. -/
+@[simps!]
+def postAdjunctionLeft {X : C} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
+    post F ⊣ post G ⋙ pullback (a.unit.app X) :=
+  ((mapPullbackAdj (a.unit.app X)).comp (postAdjunctionRight a)).ofNatIsoLeft <|
+    NatIso.ofComponents fun Y ↦ isoMk (.refl _)
+
+instance isLeftAdjoint_post {F : C ⥤ D} [F.IsLeftAdjoint] : (post (X := X) F).IsLeftAdjoint :=
+  let ⟨G, ⟨a⟩⟩ := ‹F.IsLeftAdjoint›; ⟨_, ⟨postAdjunctionLeft a⟩⟩
 
 open Limits
 
@@ -166,8 +182,27 @@ def pushoutComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pushout (f ≫ g) ≅ 
 @[deprecated (since := "2025-04-15")]
 noncomputable alias pullbackComp := pushoutComp
 
-instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint  :=
+instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
+
+omit [HasPushouts C] in
+open pushout in
+/-- If `G` is a right adjoint and its source category has pushouts, then so is
+`post G : Under Y ⥤ Under (G Y)`.
+
+If the left adjoint of `G` is `F`, then the left adjoint of `post G` is given by
+`(G Y ⟶ X) ↦ (Y ⟶ Y ⨿_{F G Y} F X ⟶ F X)`. -/
+@[simps!]
+def postAdjunctionRight [HasPushouts D] {Y : D} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
+    post F ⋙ pushout (a.counit.app Y) ⊣ post G :=
+  ((postAdjunctionLeft a).comp (mapPushoutAdj (a.counit.app Y))).ofNatIsoRight <|
+    NatIso.ofComponents fun Y ↦ isoMk (.refl _)
+
+omit [HasPushouts C] in
+open pushout in
+instance isRightAdjoint_post [HasPushouts D] {Y : D} {G : D ⥤ C} [G.IsRightAdjoint] :
+    (post (X := Y) G).IsRightAdjoint :=
+  let ⟨F, ⟨a⟩⟩ := ‹G.IsRightAdjoint›; ⟨_, ⟨postAdjunctionRight a⟩⟩
 
 /-- The category under any object `X` factors through the category under the initial object `I`. -/
 @[simps!]
