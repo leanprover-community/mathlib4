@@ -20,7 +20,7 @@ equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equiv
 
 ## Main Definitions
 * `IsDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if `Γˣ` is cyclic and
-  `genLTOne Γˣ` belongs to the image of `v`
+  `genLTOne Γˣ` belongs to the image of `v`.
 
 ## TODO
 * Define (pre)uniformizers for nontrivial discrete valuations.
