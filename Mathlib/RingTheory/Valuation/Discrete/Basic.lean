@@ -45,12 +45,24 @@ class IsDiscrete : Prop where
 lemma exists_generator_lt_one [IsDiscrete v] :
   ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v := IsDiscrete.exists_generator_lt_one
 
+noncomputable def generator [IsDiscrete v] : Γˣ := v.exists_generator_lt_one.choose
+
+lemma generator_zpowers_eq_top [IsDiscrete v] :
+    Subgroup.zpowers (generator v) = (⊤ : Subgroup Γˣ) := v.exists_generator_lt_one.choose_spec.1
+
+lemma generator_lt_one [IsDiscrete v] : (generator v) < 1 :=
+  v.exists_generator_lt_one.choose_spec.2.1
+
+lemma generator_mem_range [IsDiscrete v] : ↑(generator v) ∈ range v :=
+  v.exists_generator_lt_one.choose_spec.2.2
+
 lemma IsDiscrete.cyclic_value_group [IsDiscrete v] : IsCyclic Γˣ := by
   rw [isCyclic_iff_exists_zpowers_eq_top]
-  exact ⟨_, (v.exists_generator_lt_one.choose_spec).1⟩
+  exact ⟨_, generator_zpowers_eq_top v⟩
+
 
 lemma IsDiscrete.nontrivial_value_group [IsDiscrete v] : Nontrivial Γˣ :=
-  ⟨1, v.exists_generator_lt_one.choose, ne_of_gt <| (v.exists_generator_lt_one.choose_spec).2.1⟩
+  ⟨1, generator v, ne_of_gt <| generator_lt_one v⟩
 
 variable {K : Type*} [Field K]
 
