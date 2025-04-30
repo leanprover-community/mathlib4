@@ -545,42 +545,15 @@ theorem snoc_comp_cast_add {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a 
 @[simp]
 theorem snoc_update : snoc (update p i y) x = update (snoc p x) i.castSucc y := by
   ext j
-  by_cases h : j.val < n
-  · rw [snoc]
-    simp only [h]
-    simp only [dif_pos]
-    by_cases h' : j = castSucc i
-    · have C1 : α i.castSucc = α j := by rw [h']
-      have E1 : update (snoc p x) i.castSucc y j = _root_.cast C1 y := by
-        have : update (snoc p x) j (_root_.cast C1 y) j = _root_.cast C1 y := by simp
-        convert this
-        · exact h'.symm
-        · exact heq_of_cast_eq (congr_arg α (Eq.symm h')) rfl
-      have C2 : α i.castSucc = α (castLT j h).castSucc := by rw [castSucc_castLT, h']
-      have E2 : update p i y (castLT j h) = _root_.cast C2 y := by
-        have : update p (castLT j h) (_root_.cast C2 y) (castLT j h) = _root_.cast C2 y := by simp
-        convert this
-        · simp [h, h']
-        · exact heq_of_cast_eq C2 rfl
-      rw [E1, E2]
-      rfl
-    · have : ¬castLT j h = i := by
-        intro E
-        apply h'
-        rw [← E, castSucc_castLT]
-      simp [h', this, snoc, h]
-  · rw [eq_last_of_not_lt h]
-    simp
+  cases j using lastCases with
+  | cast j => rcases eq_or_ne j i with rfl | hne <;> simp [*]
+  | last => simp [Ne.symm]
 
 /-- Adding an element at the beginning of a tuple and then updating it amounts to adding it
 directly. -/
 theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
   ext j
-  by_cases h : j.val < n
-  · have : j ≠ last n := Fin.ne_of_lt h
-    simp [h, update_of_ne, this, snoc]
-  · rw [eq_last_of_not_lt h]
-    simp
+  cases j using lastCases <;> simp
 
 /-- As a binary function, `Fin.snoc` is injective. -/
 theorem snoc_injective2 : Function.Injective2 (@snoc n α) := fun x y xₙ yₙ h ↦
