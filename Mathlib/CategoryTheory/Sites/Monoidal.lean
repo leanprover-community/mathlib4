@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Localization.Monoidal
+import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 import Mathlib.CategoryTheory.Sites.Localization
 import Mathlib.CategoryTheory.Sites.SheafHom
 
