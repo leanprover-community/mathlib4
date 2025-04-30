@@ -463,7 +463,7 @@ instance ContMDiffFiberwiseLinear.hasGroupoid :
 
 variable [IsManifold IB n B] in
 /-- A `C^n` vector bundle `E` is naturally a `C^n` manifold. -/
-instance Bundle.TotalSpace.isManifold  :
+instance Bundle.TotalSpace.isManifold :
     IsManifold (IB.prod 𝓘(𝕜, F)) n (TotalSpace F E) := by
   refine { StructureGroupoid.HasGroupoid.comp (contMDiffFiberwiseLinear B F IB n) ?_ with }
   intro e he
