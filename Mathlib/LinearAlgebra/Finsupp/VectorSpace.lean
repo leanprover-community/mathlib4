@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Finsupp.Span
 import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
@@ -25,36 +24,29 @@ universe u v w
 
 namespace Finsupp
 
-section Ring
-
-variable {R : Type*} {M : Type*} {ι : Type*}
-variable [Ring R] [AddCommGroup M] [Module R M]
-
-theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
-    (hf : ∀ i, LinearIndependent R (f i)) :
-    LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by
-  apply @linearIndependent_iUnion_finite R _ _ _ _ ι φ fun i x => single i (f i x)
-  · intro i
-    have h_disjoint : Disjoint (span R (range (f i))) (ker (lsingle i)) := by
-      rw [ker_lsingle]
-      exact disjoint_bot_right
-    apply (hf i).map h_disjoint
-  · intro i t _ hit
-    refine (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono ?_ ?_
-    · rw [span_le]
-      simp only [iSup_singleton]
-      rw [range_coe]
-      apply range_comp_subset_range _ (lsingle i)
-    · refine iSup₂_mono fun i hi => ?_
-      rw [span_le, range_coe]
-      apply range_comp_subset_range _ (lsingle i)
-
-end Ring
-
 section Semiring
 
 variable {R : Type*} {M : Type*} {ι : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M]
+
+theorem linearIndependent_single {φ : ι → Type*} (f : ∀ ι, φ ι → M)
+    (hf : ∀ i, LinearIndependent R (f i)) :
+    LinearIndependent R fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2) := by
+  classical
+  have : linearCombination R (fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2)) =
+    (finsuppLequivDFinsupp R).symm.toLinearMap ∘ₗ
+    DFinsupp.mapRange.linearMap (fun i ↦ linearCombination R (f i)) ∘ₗ
+    (sigmaFinsuppLequivDFinsupp R).toLinearMap := by ext; simp
+  rw [LinearIndependent, this]
+  exact (finsuppLequivDFinsupp R).symm.injective.comp <|
+    ((DFinsupp.mapRange_injective _ fun _ ↦ map_zero _).mpr hf).comp (Equiv.injective _)
+
+lemma linearIndependent_single_iff {φ : ι → Type*} {f : ∀ ι, φ ι → M} :
+    LinearIndependent R (fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2)) ↔
+      ∀ i, LinearIndependent R (f i) := by
+  refine ⟨fun h i => ?_, linearIndependent_single _⟩
+  replace h := h.comp _ (sigma_mk_injective  (i := i))
+  exact .of_comp (Finsupp.lsingle i) h
 
 open LinearMap Submodule
 
@@ -123,7 +115,24 @@ protected def basisSingleOne : Basis ι R (ι →₀ R) :=
 theorem coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun i => Finsupp.single i 1 :=
   funext fun _ => Basis.apply_eq_iff.mpr rfl
 
+variable (ι R) in
+lemma linearIndependent_single_one : LinearIndependent R fun i : ι ↦ single i (1 : R) :=
+  Finsupp.basisSingleOne.linearIndependent
+
 end Semiring
+
+section Ring
+
+variable {R : Type*} {M : Type*} {ι : Type*}
+variable [Ring R] [AddCommGroup M] [Module R M]
+
+lemma linearIndependent_single_of_ne_zero [NoZeroSMulDivisors R M] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+    LinearIndependent R fun i : ι ↦ single i (v i) := by
+  rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
+  exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by
+    simp +contextual [Fintype.linearIndependent_iff, hv]
+
+end Ring
 
 end Finsupp
 
@@ -182,7 +191,7 @@ variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : Type*} (B : Bas
 
 /-- For any `r : R`, `s : S`, we have
   `B.repr ((algebra_map R S r) * s) i = r * (B.repr s i) `. -/
-theorem Basis.repr_smul'  (i : ι) (r : R) (s : S) :
+theorem Basis.repr_smul' (i : ι) (r : R) (s : S) :
     B.repr (algebraMap R S r * s) i = r * B.repr s i := by
   rw [← smul_eq_mul, ← smul_eq_mul, algebraMap_smul, map_smul, Finsupp.smul_apply]
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Noncomputable Set Cardinality
@@ -584,6 +585,13 @@ theorem ncard_singleton_inter (a : α) (s : Set α) : ({a} ∩ s).ncard ≤ 1 :=
 theorem ncard_prod : (s ×ˢ t).ncard = s.ncard * t.ncard := by
   simp [ncard, ENat.toNat_mul]
 
+@[simp]
+theorem ncard_powerset (s : Set α) (hs : s.Finite := by toFinite_tac) :
+    (𝒫 s).ncard = 2 ^ s.ncard := by
+  have h := Cardinal.mk_powerset s
+  rw [← cast_ncard hs.powerset, ← cast_ncard hs] at h
+  norm_cast at h
+
 section InsertErase
 
 @[simp] theorem ncard_insert_of_not_mem {a : α} (h : a ∉ s) (hs : s.Finite := by toFinite_tac) :
@@ -927,6 +935,16 @@ theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
 theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
     s = univ ↔ ncard s = Nat.card α := by
   rw [← compl_empty_iff, ← ncard_eq_zero, ← ncard_add_ncard_compl s, left_eq_add]
+
+lemma even_ncard_compl_iff [Finite α] (heven : Even (Nat.card α)) (s : Set α) :
+    Even sᶜ.ncard ↔ Even s.ncard := by
+  simp [compl_eq_univ_diff, ncard_diff (subset_univ _ : s ⊆ Set.univ),
+    Nat.even_sub (ncard_le_ncard (subset_univ _ : s ⊆ Set.univ)),
+    (ncard_univ _).symm ▸ heven]
+
+lemma odd_ncard_compl_iff [Finite α] (heven : Even (Nat.card α)) (s : Set α) :
+    Odd sᶜ.ncard ↔ Odd s.ncard := by
+  rw [← Nat.not_even_iff_odd, even_ncard_compl_iff heven, Nat.not_even_iff_odd]
 
 end Lattice
 

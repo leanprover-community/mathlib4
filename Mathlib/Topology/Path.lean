@@ -127,9 +127,9 @@ theorem refl_range {a : X} : range (Path.refl a) = {a} := by simp [Path.refl, Co
 @[symm, simps]
 def symm (γ : Path x y) : Path y x where
   toFun := γ ∘ σ
-  continuous_toFun := by continuity
-  source' := by simpa [-Path.target] using γ.target
-  target' := by simpa [-Path.source] using γ.source
+  continuous_toFun := by fun_prop
+  source' := by simp
+  target' := by simp
 
 @[simp]
 theorem symm_symm (γ : Path x y) : γ.symm.symm = γ := by
