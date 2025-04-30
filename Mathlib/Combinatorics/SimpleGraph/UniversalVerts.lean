@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
+import Mathlib.Combinatorics.SimpleGraph.Matching
 
 /-!
 # Universal Vertices
@@ -54,21 +54,22 @@ lemma Subgraph.IsMatching.exists_of_universalVerts [Finite V] {s : Set V}
 
 lemma disjoint_image_val_universalVerts (s : Set G.deleteUniversalVerts.verts) :
     Disjoint (Subtype.val '' s) G.universalVerts := by
-  simpa [deleteUniversalVerts, Subgraph.deleteVerts_verts, ← Set.disjoint_compl_right_iff_subset,
-    Set.compl_eq_univ_diff] using Subtype.coe_image_subset _ s
+  simpa [← Set.disjoint_compl_right_iff_subset, Set.compl_eq_univ_diff] using
+    Subtype.coe_image_subset _ s
 
-/-- In this lemma we consider components after deleting universal vertices. If we take
-one such component and remove both a set of representatives of odd components and a subset
-of universal vertices, then an even number of vertices remain. -/
+/-- A component of the graph with universal vertices is even if we remove a set of representatives
+of odd components and a subset of universal vertices.
+
+This is because the number of vertices in the even components is not affected, and from odd
+components exactly one vertex is removed. -/
 lemma even_ncard_image_val_supp_sdiff_image_val_rep_union {t : Set V}
     {s : Set G.deleteUniversalVerts.verts} (K : G.deleteUniversalVerts.coe.ConnectedComponent)
     (h : t ⊆ G.universalVerts)
     (hrep : ConnectedComponent.Represents s G.deleteUniversalVerts.coe.oddComponents) :
     Even (Subtype.val '' K.supp \ (Subtype.val '' s ∪ t)).ncard := by
-  simp only [← Set.diff_inter_diff, ← Set.image_diff Subtype.val_injective,
+  simp [-deleteUniversalVerts_verts, ← Set.diff_inter_diff, ← Set.image_diff Subtype.val_injective,
     sdiff_eq_left.mpr <| Set.disjoint_of_subset_right h (disjoint_image_val_universalVerts _),
-    Set.inter_diff_distrib_right, Set.inter_self, Set.diff_inter_self_eq_diff,
-    ← Set.image_inter Subtype.val_injective, Set.ncard_image_of_injective _ Subtype.val_injective,
-    K.even_ncard_supp_sdiff_rep hrep]
+    Set.inter_diff_distrib_right, ← Set.image_inter Subtype.val_injective,
+    Set.ncard_image_of_injective _ Subtype.val_injective, K.even_ncard_supp_sdiff_rep hrep]
 
 end SimpleGraph
