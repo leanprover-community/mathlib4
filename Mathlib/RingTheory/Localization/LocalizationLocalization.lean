@@ -174,6 +174,12 @@ theorem localization_isScalarTower_of_submonoid_le (M N : Submonoid R) (h : M �
   letI := localizationAlgebraOfSubmonoidLe S T M N h
   IsScalarTower.of_algebraMap_eq' (IsLocalization.lift_comp _).symm
 
+/-- Let `R` and `S` be ring with fields of fraction `K` and `L`. Suppose that `S` is an `R` algebra
+and let `Rₚ` be the localization of `R` at a submonoid `M`. Let `Sₚ` be the induced localization
+of `S`. Then `IsScalarTower Rₚ Sₚ L`.
+
+The actual statement only requires minimal assumptions on `R`, `Rₚ`, `S`, `Sₚ`, `K` and `L`, but
+the above is the main application. -/
 theorem localization_localization_isScalarTower (Rₚ Sₚ K L : Type*) [CommRing Rₚ]
     [Algebra R Rₚ] [CommRing Sₚ] [Algebra S Sₚ] [Algebra R Sₚ] [Algebra Rₚ Sₚ]
     [IsScalarTower R Rₚ Sₚ] [IsScalarTower R S Sₚ] [CommRing K] [Algebra R K] [CommRing L]
