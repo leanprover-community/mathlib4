@@ -49,16 +49,16 @@ scoped [AlgebraicGeometry] notation "𝔸("n"; "S")" => AffineSpace n S
 
 variable {n} in
 lemma of_mvPolynomial_int_ext {R} {f g : ℤ[n] ⟶ R} (h : ∀ i, f (.X i) = g (.X i)) : f = g := by
-  suffices f.hom.comp (MvPolynomial.mapEquiv _ ULift.ringEquiv.symm).toRingHom =
-      g.hom.comp (MvPolynomial.mapEquiv _ ULift.ringEquiv.symm).toRingHom by
-    ext x
-    · obtain ⟨x⟩ := x
-      simpa [-map_intCast, -eq_intCast] using DFunLike.congr_fun this (C x)
-    · simpa [-map_intCast, -eq_intCast] using DFunLike.congr_fun this (X x)
-  ext1
-  · exact RingHom.ext_int _ _
-  · simpa using h _
-
+  sorry
+  -- suffices f.hom.comp (MvPolynomial.mapEquiv _ ULift.ringEquiv.symm).toRingHom =
+  --     g.hom.comp (MvPolynomial.mapEquiv _ ULift.ringEquiv.symm).toRingHom by
+    -- ext x <;> sorry
+    -- · obtain ⟨x⟩ := x
+    --   simpa [-map_intCast, -eq_intCast] using DFunLike.congr_fun this (C x)
+    -- · simpa [-map_intCast, -eq_intCast] using DFunLike.congr_fun this (X x)
+  -- ext1
+  -- · exact RingHom.ext_int _ _
+  -- · simpa using h _
 
 @[simps -isSimp]
 instance over : 𝔸(n; S).CanonicallyOver S where

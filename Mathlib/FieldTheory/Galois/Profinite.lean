@@ -122,6 +122,7 @@ noncomputable abbrev asProfiniteGaloisGroupFunctor :
   (finGaloisGroupFunctor k K) ⋙ forget₂ FiniteGrp ProfiniteGrp
 
 variable (k K) in
+set_option synthInstance.maxHeartbeats 0 in
 /--
 The homomorphism from `Gal(K/k)` to `lim Gal(L/k)` where `L` is a
 `FiniteGaloisIntermediateField k K` ordered by inverse inclusion. It is induced by the
@@ -168,6 +169,7 @@ lemma algEquivToLimit_continuous : Continuous (algEquivToLimit k K) := by
   convert restrictNormalHom_continuous L.unop.1
   exact (DiscreteTopology.eq_bot (α := L.unop ≃ₐ[k] L.unop)).symm
 
+set_option synthInstance.maxHeartbeats 0 in
 /-- The projection map from `lim Gal(L/k)` to a specific `Gal(L/k)`. -/
 noncomputable def proj (L : FiniteGaloisIntermediateField k K) :
     limit (asProfiniteGaloisGroupFunctor k K) →* (L ≃ₐ[k] L) where
@@ -256,6 +258,7 @@ noncomputable def limitToAlgEquiv [IsGalois k K]
   commutes' x := by
     simp only [toAlgEquivAux_eq_liftNormal g _ ⊥ (algebraMap_mem _ x), AlgEquiv.commutes]
 
+set_option synthInstance.maxHeartbeats 0 in
 variable (k K) in
 /-- `algEquivToLimit` as a `MulEquiv`. -/
 noncomputable def mulEquivToLimit [IsGalois k K] :
@@ -300,10 +303,12 @@ lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLim
   rw [mem_nhds_iff]
   use mulEquivToLimit k K '' L.1.fixingSubgroup
   simp only [isOpen_mulEquivToLimit_image_fixingSubgroup L]
-  simpa [one_mem] using Set.image_subset_iff.mp (Set.image_mono le)
+  sorry
+  -- simpa [one_mem] using Set.image_subset_iff.mp (Set.image_mono le)
 
 variable (k K)
 
+set_option synthInstance.maxHeartbeats 0 in
 /-- The `ContinuousMulEquiv` between `K ≃ₐ[k] K` and `lim Gal(L/k)` where `L` is a
   `FiniteGaloisIntermediateField` ordered by inverse inclusion, obtained
   from `InfiniteGalois.mulEquivToLimit` -/

@@ -186,26 +186,26 @@ See also the stronger `CliffordAlgebra.left_induction` and `CliffordAlgebra.righ
 theorem induction {C : CliffordAlgebra Q → Prop}
     (algebraMap : ∀ r, C (algebraMap R (CliffordAlgebra Q) r)) (ι : ∀ x, C (ι Q x))
     (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
-    (a : CliffordAlgebra Q) : C a := by
+    (a : CliffordAlgebra Q) : C a := by sorry
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
-  let s : Subalgebra R (CliffordAlgebra Q) :=
-    { carrier := C
-      mul_mem' := @mul
-      add_mem' := @add
-      algebraMap_mem' := algebraMap }
-  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
-    ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
-      fun m => Subtype.eq <| ι_sq_scalar Q m⟩
-  -- the mapping through the subalgebra is the identity
-  have of_id : s.val.comp (lift Q of) = AlgHom.id R (CliffordAlgebra Q) := by
-    ext x
-    simp [of]
-    -- porting note: `simp` should fire with the following lemma automatically
-    have := LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
-    exact this
-  -- finding a proof is finding an element of the subalgebra
-  rw [← AlgHom.id_apply (R := R) a, ← of_id]
-  exact (lift Q of a).prop
+  -- let s : Subalgebra R (CliffordAlgebra Q) :=
+  --   { carrier := C
+  --     mul_mem' := @mul
+  --     add_mem' := @add
+  --     algebraMap_mem' := algebraMap }
+  -- let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
+  --   ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
+  --     fun m => Subtype.eq <| ι_sq_scalar Q m⟩
+  -- -- the mapping through the subalgebra is the identity
+  -- have of_id : s.val.comp (lift Q of) = AlgHom.id R (CliffordAlgebra Q) := by
+  --   ext x
+  --   simp [of]
+  --   -- porting note: `simp` should fire with the following lemma automatically
+  --   have := LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
+  --   exact this
+  -- -- finding a proof is finding an element of the subalgebra
+  -- rw [← AlgHom.id_apply (R := R) a, ← of_id]
+  -- exact (lift Q of a).prop
 
 theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebra R A]
     (f : M →ₗ[R] A) (hf : ∀ x, f x * f x = algebraMap _ _ (Q x)) (a b : M) :

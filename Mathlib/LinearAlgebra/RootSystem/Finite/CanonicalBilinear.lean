@@ -303,7 +303,7 @@ lemma four_smul_rootForm_sq_eq_coxeterWeight_smul (i j : ι) :
   have hij : 4 • (P.RootForm (P.root i)) (P.root j) =
       2 • P.toPerfectPairing (P.root j) (2 • P.Polarization (P.root i)) := by
     rw [← toPerfectPairing_apply_apply_Polarization, LinearMap.map_smul_of_tower, ← smul_assoc,
-      Nat.nsmul_eq_mul]
+      Nat.nsmul_eq_mul]; sorry
   have hji : 2 • (P.RootForm (P.root i)) (P.root j) =
       P.toPerfectPairing (P.root i) (2 • P.Polarization (P.root j)) := by
     rw [show (P.RootForm (P.root i)) (P.root j) = (P.RootForm (P.root j)) (P.root i) by

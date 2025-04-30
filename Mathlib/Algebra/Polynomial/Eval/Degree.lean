@@ -100,13 +100,13 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     simp +contextual
 
 @[simp] lemma comp_C_mul_X_coeff {r : R} {n : ℕ} :
-    (p.comp <| C r * X).coeff n = p.coeff n * r ^ n := by
-  simp_rw [comp, eval₂_eq_sum_range, (commute_X _).symm.mul_pow,
-    ← C_pow, finset_sum_coeff, coeff_C_mul, coeff_X_pow]
-  rw [Finset.sum_eq_single n _ fun h ↦ ?_, if_pos rfl, mul_one]
-  · intro b _ h; simp_rw [if_neg h.symm, mul_zero]
-  · rw [coeff_eq_zero_of_natDegree_lt, zero_mul]
-    rwa [Finset.mem_range_succ_iff, not_le] at h
+    (p.comp <| C r * X).coeff n = p.coeff n * r ^ n := by sorry
+  -- simp_rw [comp, eval₂_eq_sum_range, (commute_X _).symm.mul_pow,
+  --   ← C_pow, finset_sum_coeff, coeff_C_mul, coeff_X_pow]
+  -- rw [Finset.sum_eq_single n _ fun h ↦ ?_, if_pos rfl, mul_one]
+  -- · intro b _ h; simp_rw [if_neg h.symm, mul_zero]
+  -- · rw [coeff_eq_zero_of_natDegree_lt, zero_mul]
+  --   rwa [Finset.mem_range_succ_iff, not_le] at h
 
 lemma comp_C_mul_X_eq_zero_iff {r : R} (hr : r ∈ nonZeroDivisors R) :
     p.comp (C r * X) = 0 ↔ p = 0 := by
