@@ -92,14 +92,29 @@ lemma order_eq_int_iff {n : ℤ} (hf : MeromorphicAt f x) : hf.order = n ↔
       AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
 
 /--
-The order of a meromorphic function `f` at `z₀` is finite iff f can locally be written as
-`f z = (z - z₀) ^ order • g z`, where `g` is analytic and does not vanish at `z₀`.
+The order of a meromorphic function `f` at `z₀` is finite iff `f` can locally be
+written as `f z = (z - z₀) ^ order • g z`, where `g` is analytic and does not
+vanish at `z₀`.
 -/
-theorem order_ne_top_iff {f : 𝕜 → E} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) :
+theorem order_ne_top_iff₁ {f : 𝕜 → E} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) :
     hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
       f =ᶠ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ (hf.order.untop₀) • g z :=
   ⟨fun h ↦ hf.order_eq_int_iff.1 (WithTop.coe_untop₀_of_ne_top h).symm,
     fun h ↦ Option.ne_none_iff_exists'.2 ⟨hf.order.untopD 0, hf.order_eq_int_iff.2 h⟩⟩
+
+/--
+The order of a meromorphic function `f` at `z₀` is finite iff `f` does not have
+any zeros in a sufficiently small neighborhood of `z₀`.
+-/
+theorem order_ne_top_iff₂ {f : 𝕜 → E} (hf : MeromorphicAt f x) :
+    hf.order ≠ ⊤ ↔ ∀ᶠ x in 𝓝[≠] x, f x ≠ 0 := by
+  constructor
+  · intro h
+    obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.order_ne_top_iff₁.1 h
+    filter_upwards [h₃g, self_mem_nhdsWithin, eventually_nhdsWithin_of_eventually_nhds
+      ((h₁g.continuousAt.ne_iff_eventually_ne continuousAt_const).mp h₂g)]
+    simp_all [zpow_ne_zero, sub_ne_zero]
+  · simp_all [hf.order_eq_top_iff, Eventually.frequently]
 
 /-- If the order of a meromorphic function is negative, then this function converges to infinity
 at this point. See also the iff version `tendsto_cobounded_iff_order_neg`. -/
@@ -337,7 +352,7 @@ theorem order_mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
     intro y hy
     simp [hy, zero_zpow n hn]
   -- General case
-  obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.order_ne_top_iff.1 h
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.order_ne_top_iff₁.1 h
   rw [← WithTop.coe_untop₀_of_ne_top h, ← WithTop.coe_mul, MeromorphicAt.order_eq_int_iff]
   use g ^ n, h₁g.zpow h₂g
   constructor
