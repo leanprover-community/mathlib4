@@ -986,7 +986,7 @@ theorem _root_.HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompact
 theorem _root_.HasCompactSupport.hasFDerivAt_convolution_left [IsNegInvariant μ]
     (hcf : HasCompactSupport f) (hf : ContDiff 𝕜 1 f) (hg : LocallyIntegrable g μ) (x₀ : G) :
     HasFDerivAt (f ⋆[L, μ] g) ((fderiv 𝕜 f ⋆[L.precompL G, μ] g) x₀) x₀ := by
-  simp (config := { singlePass := true }) only [← convolution_flip]
+  simp +singlePass only [← convolution_flip]
   exact hcf.hasFDerivAt_convolution_right L.flip hg hf x₀
 
 end RCLike
@@ -1015,7 +1015,7 @@ theorem _root_.HasCompactSupport.hasDerivAt_convolution_right (hf : LocallyInteg
 theorem _root_.HasCompactSupport.hasDerivAt_convolution_left [IsNegInvariant μ]
     (hcf : HasCompactSupport f₀) (hf : ContDiff 𝕜 1 f₀) (hg : LocallyIntegrable g₀ μ) (x₀ : 𝕜) :
     HasDerivAt (f₀ ⋆[L, μ] g₀) ((deriv f₀ ⋆[L, μ] g₀) x₀) x₀ := by
-  simp (config := { singlePass := true }) only [← convolution_flip]
+  simp +singlePass only [← convolution_flip]
   exact hcf.hasDerivAt_convolution_right L.flip hg hf x₀
 
 end Real
