@@ -89,10 +89,10 @@ def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] : FilterBasis (L �
   nonempty := ⟨⊤, ⊤, top_fixedByFinite, rfl⟩
   inter_sets := by
     rintro _ _ ⟨_, ⟨E1, h_E1, rfl⟩, rfl⟩ ⟨_, ⟨E2, h_E2, rfl⟩, rfl⟩
-    use (E1 ⊔ E2).fixingSubgroup.carrier
-    refine ⟨⟨_, ⟨_, @E1.finiteDimensional_sup _ _ _ _ _ E2 h_E1 h_E2, rfl⟩, rfl⟩, ?_⟩
-    exact Set.subset_inter_iff.mpr
-      ⟨E1.fixingSubgroup_le le_sup_left, E2.fixingSubgroup_le le_sup_right⟩
+    have : FiniteDimensional K E1 := h_E1
+    have : FiniteDimensional K E2 := h_E2
+    refine ⟨(E1 ⊔ E2).fixingSubgroup.carrier, ⟨_, ⟨_, E1.finiteDimensional_sup E2, rfl⟩, rfl⟩, ?_⟩
+    exact Set.subset_inter (E1.fixingSubgroup_le le_sup_left) (E2.fixingSubgroup_le le_sup_right)
 
 /-- A subset of `L ≃ₐ[K] L` is a member of `galBasis K L` if and only if it is the underlying set
 of `Gal(L/E)` for some finite subextension `E/K`. -/
