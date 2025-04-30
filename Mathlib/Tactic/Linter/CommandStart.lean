@@ -103,10 +103,10 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
   if L.take 3 == "/--" && M.take 3 == "/--" then
     parallelScanAux as (L.drop 3) (M.drop 3) else
   if L.take 2 == "--" then
-    let newL := (L.dropWhile (· != '\n')).drop 1
-    let diff := L.length - newL.length - 1
+    let newL := L.dropWhile (· != '\n')
+    let diff := L.length - newL.length
     let newM := M.dropWhile (· != '-') |>.drop diff
-    parallelScanAux as newL newM else
+    parallelScanAux as newL.trimLeft newM.trimLeft else
   if L.take 2 == "-/" then
     let newL := L.drop 2 |>.trimLeft
     let newM := M.drop 2 |>.trimLeft
