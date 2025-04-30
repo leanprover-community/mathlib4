@@ -84,7 +84,7 @@ def Proj : (I → Bool) → (I → Bool) :=
 @[simp]
 theorem continuous_proj :
     Continuous (Proj J : (I → Bool) → (I → Bool)) := by
-  dsimp (config := { unfoldPartialApp := true }) [Proj]
+  dsimp +unfoldPartialApp [Proj]
   apply continuous_pi
   intro i
   split
