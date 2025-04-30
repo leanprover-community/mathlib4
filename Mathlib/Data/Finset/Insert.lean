@@ -515,11 +515,11 @@ then it holds for the `Finset` obtained by inserting a new element of `S`.
 @[elab_as_elim]
 theorem induction_on' {α : Type*} {motive : Finset α → Prop} [DecidableEq α] (S : Finset α)
     (empty : motive ∅)
-    (insert : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → motive s → motive (insert a s)) : motive S :=
+    (insert : ∀ (a s), a ∈ S → s ⊆ S → a ∉ s → motive s → motive (insert a s)) : motive S :=
   @Finset.induction_on α (fun T => T ⊆ S → motive T) _ S (fun _ => empty)
-    (fun _ _ has hqs hs =>
+    (fun a s has hqs hs =>
       let ⟨hS, sS⟩ := Finset.insert_subset_iff.1 hs
-      insert hS sS has (hqs sS))
+      insert a s hS sS has (hqs sS))
     (Finset.Subset.refl S)
 
 /-- To prove a proposition about a nonempty `s : Finset α`, it suffices to show it holds for all
