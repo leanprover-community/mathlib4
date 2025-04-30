@@ -163,6 +163,8 @@ theorem pi_div_two_pos : 0 < π / 2 :=
 
 theorem two_pi_pos : 0 < 2 * π := by linarith [pi_pos]
 
+theorem two_pi_ne_zero : 2 * π ≠ 0 := two_pi_pos.ne'
+
 end Real
 
 namespace Mathlib.Meta.Positivity
