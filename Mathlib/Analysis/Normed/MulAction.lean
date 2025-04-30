@@ -112,16 +112,19 @@ theorem nnnorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖�
 
 lemma enorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ := by simp [enorm, nnnorm_smul]
 
-instance Pi.toNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
+instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
     [SeminormedRing α] [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)]
     [∀ i, NormSMulClass α (β i)] : NormSMulClass α (Π i, β i) where
   norm_smul r x := by
     simp [nnnorm_def, ← coe_nnnorm, nnnorm_smul, ← NNReal.coe_mul, NNReal.mul_finset_sup]
 
-instance Prod.toNormSMulClass {γ : Type*} [SeminormedAddGroup γ] [SMul α γ] [NormSMulClass α γ] :
+instance Prod.instNormSMulClass {γ : Type*} [SeminormedAddGroup γ] [SMul α γ] [NormSMulClass α γ] :
     NormSMulClass α (β × γ) where
   norm_smul := fun r ⟨v₁, v₂⟩ ↦ by simp only [smul_def, ← coe_nnnorm, nnnorm_def,
     nnnorm_smul r, ← NNReal.coe_mul, NNReal.mul_sup]
+
+instance ULift.instNormSMulClass : NormSMulClass α (ULift β) where
+  norm_smul r v := norm_smul r v.down
 
 end NormSMulClass
 
