@@ -162,7 +162,7 @@ nonrec theorem mul_zero {α : Type} [MulZeroClass α] (x : Holor α ds₁) : x �
 
 theorem mul_scalar_mul [Mul α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
-  simp (config := { unfoldPartialApp := true }) [mul, SMul.smul, HolorIndex.take, HolorIndex.drop,
+  simp +unfoldPartialApp [mul, SMul.smul, HolorIndex.take, HolorIndex.drop,
     HSMul.hSMul]
 
 -- holor slices

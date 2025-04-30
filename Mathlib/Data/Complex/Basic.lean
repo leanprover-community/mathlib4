@@ -80,8 +80,6 @@ def ofReal (r : ℝ) : ℂ :=
 instance : Coe ℝ ℂ :=
   ⟨ofReal⟩
 
-@[deprecated (since := "2024-10-12")] alias ofReal' := ofReal
-
 @[simp, norm_cast]
 theorem ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
   rfl
@@ -269,7 +267,7 @@ theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 +
   ext <;> simp [Complex.equivRealProd, ofReal]
 
 /-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
   { equivRealProd with map_add' := by simp }
 
@@ -399,9 +397,6 @@ def imAddGroupHom : ℂ →+ ℝ where
 @[simp]
 theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
-
-section
-end
 
 /-! ### Cast lemmas -/
 

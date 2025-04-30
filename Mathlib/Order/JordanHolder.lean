@@ -229,10 +229,6 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
   rw [last_eraseLast, last]
   convert s.step ⟨s.length - 1, by omega⟩; ext; simp [this]
 
-section FinLemmas
-
-end FinLemmas
-
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
     s = snoc (eraseLast s) s.last (isMaximal_eraseLast_last h) := by
   ext x
@@ -417,7 +413,7 @@ theorem jordan_holder (s₁ s₂ : CompositionSeries X)
         (ht.symm ▸ isMaximal_eraseLast_last h0s₂)
         (hb.symm ▸ s₂.head_eraseLast ▸ head_le_of_mem (last_mem _)) with
       ⟨t, htb, htl, htt, hteq⟩
-    have := ih t s₂.eraseLast (by simp [htb, ← hb]) htt (Nat.succ_inj'.1 (htl.trans hle))
+    have := ih t s₂.eraseLast (by simp [htb, ← hb]) htt (Nat.succ_inj.1 (htl.trans hle))
     refine hteq.trans ?_
     conv_rhs => rw [eq_snoc_eraseLast h0s₂]
     simp only [ht]

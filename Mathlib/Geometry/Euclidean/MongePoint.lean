@@ -109,12 +109,7 @@ theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
     ∑ i, mongePointWeightsWithCircumcenter n i = 1 := by
   simp_rw [sum_pointsWithCircumcenter, mongePointWeightsWithCircumcenter, sum_const, card_fin,
     nsmul_eq_mul]
-  -- Porting note: replaced
-  -- have hn1 : (n + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
-  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [n.cast_add_one_ne_zero]`, but was really slow
-  -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [Nat.cast_add, Nat.cast_ofNat, Nat.cast_one,
-    inv_eq_one_div, mul_div_assoc', mul_one, add_div', div_mul_cancel₀, div_eq_iff, one_mul]
+  field_simp
   ring
 
 /-- The Monge point of an (n+2)-simplex, in terms of
@@ -142,11 +137,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
     have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by norm_cast
     field_simp [hn1, hn3, mul_comm]
-  · -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [hn1]`, but was really slow
-  -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-    simp (disch := field_simp_discharge) only
-      [Nat.cast_add, Nat.cast_ofNat, Nat.cast_one, zero_sub, mul_neg, mul_one, neg_div',
-      neg_add_rev, div_add', one_mul, eq_div_iff, div_mul_cancel₀]
+  · field_simp [hn1]
     ring
 
 /-- The weights for the Monge point of an (n+2)-simplex, minus the

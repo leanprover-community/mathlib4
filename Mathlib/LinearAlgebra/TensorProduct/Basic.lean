@@ -606,8 +606,6 @@ theorem ext_threefold {g h : (M ⊗[R] N) ⊗[R] P →ₗ[R] Q}
   ext x y z
   exact H x y z
 
-@[deprecated (since := "2024-10-18")] alias ext₃ := ext_threefold
-
 -- We'll need this one for checking the pentagon identity!
 theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₗ[R] S}
     (H : ∀ w x y z, g (w ⊗ₜ x ⊗ₜ y ⊗ₜ z) = h (w ⊗ₜ x ⊗ₜ y ⊗ₜ z)) : g = h := by
@@ -1126,12 +1124,12 @@ variable {M}
 @[simp]
 theorem rTensor_pow (f : M →ₗ[R] M) (n : ℕ) : f.rTensor N ^ n = (f ^ n).rTensor N := by
   have h := TensorProduct.map_pow f (id : N →ₗ[R] N) n
-  rwa [id_pow] at h
+  rwa [Module.End.id_pow] at h
 
 @[simp]
 theorem lTensor_pow (f : N →ₗ[R] N) (n : ℕ) : f.lTensor M ^ n = (f ^ n).lTensor M := by
   have h := TensorProduct.map_pow (id : M →ₗ[R] M) f n
-  rwa [id_pow] at h
+  rwa [Module.End.id_pow] at h
 
 end LinearMap
 

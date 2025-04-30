@@ -69,10 +69,6 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   obj t := ModuleCat.of R <| R ⧸ I.obj t
   map w := ModuleCat.ofHom <| Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO:  Once this file is ported, move this instance to the right location.
-instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
-  ModuleCat.moduleCat_enoughProjectives.{u}
-
 /-- The diagram we will take the colimit of to define local cohomology, corresponding to the
 directed system determined by the functor `I` -/
 def diagram (I : D ⥤ Ideal R) (i : ℕ) : Dᵒᵖ ⥤ ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
@@ -135,12 +131,12 @@ def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
 
 /-- The full subcategory of all ideals with radical containing `J` -/
 def SelfLERadical (J : Ideal R) : Type u :=
-  FullSubcategory fun J' : Ideal R => J ≤ J'.radical
+  ObjectProperty.FullSubcategory fun J' : Ideal R => J ≤ J'.radical
 
 -- The `Category` instance should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 instance (J : Ideal R) : Category (SelfLERadical J) :=
-  (FullSubcategory.category _)
+  (ObjectProperty.FullSubcategory.category _)
 
 instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J) where
   default := ⟨J, Ideal.le_radical⟩
@@ -148,7 +144,7 @@ instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J) whe
 /-- The diagram of all ideals with radical containing `J`, represented as a functor.
 This is the "largest" diagram that computes local cohomology with support in `J`. -/
 def selfLERadicalDiagram (J : Ideal R) : SelfLERadical J ⥤ Ideal R :=
-  fullSubcategoryInclusion _
+  ObjectProperty.ι _
 
 end Diagrams
 
@@ -195,7 +191,7 @@ variable {R : Type u} [CommRing R]
 /-- Lifting `idealPowersDiagram J` from a diagram valued in `ideals R` to a diagram
 valued in `SelfLERadical J`. -/
 def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
-  FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
+  ObjectProperty.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
     rcases unop k with - | n
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]
@@ -208,7 +204,7 @@ radical containing `J`. This uses noetherianness. -/
 instance ideal_powers_initial [hR : IsNoetherian R R] :
     Functor.Initial (idealPowersToSelfLERadical J) where
   out J' := by
-    apply (config := {allowSynthFailures := true }) zigzag_isConnected
+    apply (config := { allowSynthFailures := true }) zigzag_isConnected
     · obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fg J'.2 (isNoetherian_def.mp hR _)
       exact ⟨CostructuredArrow.mk (⟨⟨hk⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
     · intro j1 j2
@@ -222,7 +218,7 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
 example : HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R) := inferInstance
 /-- Local cohomology (defined in terms of powers of `J`) agrees with local
 cohomology computed over all ideals with radical containing `J`. -/
-def isoSelfLERadical (J : Ideal.{u} R) [IsNoetherian.{u,u} R R] (i : ℕ) :
+def isoSelfLERadical (J : Ideal.{u} R) [IsNoetherian.{u, u} R R] (i : ℕ) :
     localCohomology.ofSelfLERadical.{u} J i ≅ localCohomology.{u} J i :=
   (localCohomology.isoOfFinal.{u, u, 0} (idealPowersToSelfLERadical.{u} J)
     (selfLERadicalDiagram.{u} J) i).symm ≪≫
@@ -231,7 +227,7 @@ def isoSelfLERadical (J : Ideal.{u} R) [IsNoetherian.{u,u} R R] (i : ℕ) :
 /-- Casting from the full subcategory of ideals with radical containing `J` to the full
 subcategory of ideals with radical containing `K`. -/
 def SelfLERadical.cast (hJK : J.radical = K.radical) : SelfLERadical J ⥤ SelfLERadical K :=
-  FullSubcategory.map fun L hL => by
+  ObjectProperty.ιOfLE fun L hL => by
     rw [← Ideal.radical_le_radical_iff] at hL ⊢
     exact hJK.symm.trans_le hL
 

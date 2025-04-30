@@ -86,7 +86,7 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
       fun a ha => Integrable.const_mul (integrable P (char he hL a)) _
   rw [hsum P, hsum P']
   apply Finset.sum_congr rfl fun i _ => ?_
-  simp only [smul_eq_mul, MeasureTheory.integral_mul_left, mul_eq_mul_left_iff]
+  simp only [smul_eq_mul, MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
   exact Or.inl (h i)
 
 end ext
@@ -106,7 +106,7 @@ lemma charFun_apply_real {μ : Measure ℝ} (t : ℝ) :
 variable [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 @[simp]
-lemma charFun_zero (μ : Measure E) : charFun μ 0 = (μ Set.univ).toReal := by
+lemma charFun_zero (μ : Measure E) : charFun μ 0 = μ.real Set.univ := by
   simp [charFun_apply]
 
 @[simp]
@@ -139,7 +139,7 @@ lemma charFun_eq_fourierIntegral' (t : E) :
   congr with x
   rw [← mul_assoc, mul_inv_cancel₀ (by simp [pi_ne_zero]), one_mul]
 
-lemma norm_charFun_le (t : E) : ‖charFun μ t‖ ≤ (μ Set.univ).toReal := by
+lemma norm_charFun_le (t : E) : ‖charFun μ t‖ ≤ μ.real Set.univ := by
   rw [charFun_eq_fourierIntegral]
   exact (VectorFourier.norm_fourierIntegral_le_integral_norm _ _ _ _ _).trans_eq (by simp)
 
@@ -164,7 +164,7 @@ lemma measurable_charFun [OpensMeasurableSpace E] [SecondCountableTopology E] [S
 
 lemma intervalIntegrable_charFun {μ : Measure ℝ} [IsFiniteMeasure μ] {a b : ℝ} :
     IntervalIntegrable (charFun μ) volume a b :=
-  IntervalIntegrable.mono_fun' (g := fun _ ↦ (μ Set.univ).toReal) (by simp)
+  IntervalIntegrable.mono_fun' (g := fun _ ↦ μ.real Set.univ) (by simp)
     stronglyMeasurable_charFun.aestronglyMeasurable (ae_of_all _ norm_charFun_le)
 
 lemma charFun_map_smul [BorelSpace E] [SecondCountableTopology E] (r : ℝ) (t : E) :
