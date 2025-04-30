@@ -43,7 +43,7 @@ theorem lintegral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫⁻ (x : X), f x ∂(r
   · simp only [ENNReal.coe_inj]
     rw [Real.toNNReal_of_nonneg (by apply integral_nonneg; intro x; simp),
       ← NNReal.coe_inj, ← eq_toRealLinear_toReal Λ f,
-      ← RealRMK.integral_rieszMeasure (nonneg_toRealLinear Λ) f.toReal]
+      ← RealRMK.integral_rieszMeasure (@nonneg_toRealLinear _ _ Λ) f.toReal]
     simp only [toReal_apply, NNReal.coe_mk]
     congr
     exact Eq.symm (eq_toNNRealLinear_toRealLinear Λ)

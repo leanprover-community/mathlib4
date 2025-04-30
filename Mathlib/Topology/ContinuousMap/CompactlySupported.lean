@@ -852,7 +852,7 @@ lemma toRealLinear_apply {Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0} (f : C_
 
 lemma nonneg_toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) {g : C_c(α, ℝ)} (hg : 0 ≤ g) :
     0 ≤ toRealLinear Λ g := by
-simp [toRealLinear_apply, nnrealPart_neg_eq_zero_of_nonneg g hg]
+  simp [toRealLinear_apply, nnrealPart_neg_eq_zero_of_nonneg hg]
 
 @[simp]
 lemma eq_toRealLinear_toReal (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (f : C_c(α, ℝ≥0)) :
@@ -861,7 +861,7 @@ lemma eq_toRealLinear_toReal (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (f 
 
 @[simp]
 lemma eq_toNNRealLinear_toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) :
-    (toNNRealLinear (toRealLinear Λ) (nonneg_toRealLinear Λ)) = Λ := by
+    (toNNRealLinear (toRealLinear Λ) (@nonneg_toRealLinear _ _ Λ)) = Λ := by
   ext f
   simp
 
