@@ -1266,7 +1266,7 @@ theorem IsTotallyReal.le_maximalRealSubfield (E : Subfield K) [h : IsTotallyReal
   intro x hx φ
   rw [show φ x = (φ.comp E.subtype) ⟨x, hx⟩ by rfl, RCLike.star_def, ← conjugate_coe_eq]
   refine RingHom.congr_fun ?_ _
-  exact ComplexEmbedding.isReal_iff.mp  <|isReal_mk_iff.mp <| isReal _
+  exact ComplexEmbedding.isReal_iff.mp  <| isReal_mk_iff.mp <| isReal _
 
 theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} :
     IsTotallyReal E ↔ E ≤ maximalRealSubfield K :=
