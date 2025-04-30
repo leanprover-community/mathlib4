@@ -53,7 +53,7 @@ variable {x y : Circle}
 
 instance instCoeOut : CoeOut Circle ℂ := subtypeCoe
 
-instance instCommGroup : CommGroup Circle := Metric.sphere.commGroup
+instance instCommGroup : CommGroup Circle := Metric.sphere.instCommGroup
 instance instMetricSpace : MetricSpace Circle := Subtype.metricSpace
 
 @[ext] lemma ext : (x : ℂ) = y → x = y := Subtype.ext
@@ -93,7 +93,7 @@ def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 @[simp] lemma toUnits_apply (z : Circle) : toUnits z = Units.mk0 ↑z z.coe_ne_zero := rfl
 
 instance : CompactSpace Circle := Metric.sphere.compactSpace _ _
-instance : IsTopologicalGroup Circle := Metric.sphere.topologicalGroup
+instance : IsTopologicalGroup Circle := Metric.sphere.instIsTopologicalGroup
 instance instUniformSpace : UniformSpace Circle := instUniformSpaceSubtype
 instance : IsUniformGroup Circle := by
   convert topologicalGroup_is_uniform_of_compactSpace Circle
@@ -212,7 +212,7 @@ theorem fourierChar_ne_one : fourierChar ≠ 1 := by
   rw [mul_comm, ← mul_assoc, inv_mul_cancel₀ (by positivity), one_mul]
   exact Circle.exp_pi_ne_one
 
-/-- The additive character from `ℝ` onto the circle, given by `fun x ↦ exp (2 * I)`. This uses the
+/-- The additive character from `ℝ` onto the circle, given by `fun x ↦ exp (x * I)`. This uses the
 probabilist convention that there is no `2 * π` in the exponent. -/
 def probChar : AddChar ℝ Circle where
   toFun := Circle.exp

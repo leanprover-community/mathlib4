@@ -32,7 +32,7 @@ variable {𝕜 E F α β ι : Type*}
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
@@ -549,12 +549,12 @@ theorem ConcaveOn.openSegment_subset_strict_hypograph (hf : ConcaveOn 𝕜 s f) 
     openSegment 𝕜 p q ⊆ { p : E × β | p.1 ∈ s ∧ p.2 < f p.1 } :=
   hf.dual.openSegment_subset_strict_epigraph p q hp hq
 
-theorem ConvexOn.convex_strict_epigraph (hf : ConvexOn 𝕜 s f) :
+theorem ConvexOn.convex_strict_epigraph [ZeroLEOneClass 𝕜] (hf : ConvexOn 𝕜 s f) :
     Convex 𝕜 { p : E × β | p.1 ∈ s ∧ f p.1 < p.2 } :=
   convex_iff_openSegment_subset.mpr fun p hp q hq =>
     hf.openSegment_subset_strict_epigraph p q hp ⟨hq.1, hq.2.le⟩
 
-theorem ConcaveOn.convex_strict_hypograph (hf : ConcaveOn 𝕜 s f) :
+theorem ConcaveOn.convex_strict_hypograph [ZeroLEOneClass 𝕜] (hf : ConcaveOn 𝕜 s f) :
     Convex 𝕜 { p : E × β | p.1 ∈ s ∧ p.2 < f p.1 } :=
   hf.dual.convex_strict_epigraph
 
@@ -893,7 +893,7 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [CommSemiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
+variable [CommSemiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
 
 section OrderedAddCommMonoid
 
@@ -922,7 +922,7 @@ end OrderedCommSemiring
 
 section OrderedRing
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [AddCommGroup F]
+variable [Field 𝕜] [LinearOrder 𝕜] [AddCommGroup E] [AddCommGroup F]
 
 section OrderedAddCommMonoid
 
@@ -1007,7 +1007,7 @@ end LinearOrderedField
 
 section OrderIso
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
   [AddCommMonoid α] [PartialOrder α] [SMul 𝕜 α]
   [AddCommMonoid β] [PartialOrder β] [SMul 𝕜 β]
 
