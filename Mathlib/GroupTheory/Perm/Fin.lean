@@ -283,7 +283,7 @@ section cycleIcc
 
 /-! ### `cycleIcc` section
 
-* Define the permutations `cycleIcc i j hij`, which is the cycle `(i i+1 .... j)` leaving
+* Define the permutation `cycleIcc i j hij`, which is the cycle `(i i+1 .... j)` leaving
 `(0 ... i-1)` and `(j+1 ... n-1)` unchanged. In other words, it rotates elements in `[i, j]` one step
  to the right.
 -/
