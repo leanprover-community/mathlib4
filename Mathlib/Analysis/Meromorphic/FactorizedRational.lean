@@ -20,9 +20,6 @@ zeros.
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
-  {U : Set 𝕜}
-  {z : 𝕜}
 
 open Set
 
