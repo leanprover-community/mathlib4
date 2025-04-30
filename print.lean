@@ -11,6 +11,6 @@ open Lean Meta IO FS
     !(e.fst.splitAt 1).fst.lastComponentAsString == "Simps" &&
     e.snd.type.getForallBody.withApp fun f _ => f.isBVar
   println decls.length
-  let str := "" |> decls.foldl
+  let str := "Name,File\n" |> decls.foldl
     fun rest e => s!"{rest}{e.fst},{(env.getModuleFor? e.fst).getD `none}\n"
   withFile (.mk "working.csv") .write fun handle => handle.putStr str
