@@ -654,26 +654,27 @@ lemma Walk.darts_minOdd_aux_subset {u : α} (p : G.Walk u u) :
       intro d hd ; exact hd
 
 /-- Returns an odd cycle (given an odd closed walk) -/
-def Walk.oddCycle {u : α} (p : G.Walk u u) : Σ v, G.Walk v v := ⟨_, p.minOdd_aux.toWalk.cutVert⟩
+def Walk.oddCycle {u : α} (p : G.Walk u u) : G.ClosedWalk := ⟨_, p.minOdd_aux.toWalk.cutVert⟩
 
 lemma Walk.oddCycle_is_odd {u : α} (p : G.Walk u u) (ho : Odd p.length) :
-    Odd p.oddCycle.2.length := cutVert_odd _ <| p.minOdd_aux_odd ho
+    Odd p.oddCycle.toWalk.length := cutVert_odd _ <| p.minOdd_aux_odd ho
 
 lemma Walk.oddCycle_isCycle {u : α} (p : G.Walk u u) (ho : Odd p.length) :
-    p.oddCycle.2.IsCycle := by
+    p.oddCycle.toWalk.IsCycle := by
   apply isCycle_odd_support_tail_nodup  _ _ <| p.oddCycle_is_odd ho
   apply (support_tail_nodup_iff_count_le _).2
       ⟨cutVert_count_start _,
       fun _ _ h ↦ cutVert_count_ne_start _ h <| minOdd_aux_count_le_one_of_ne_start p h⟩
 
 lemma Walk.oddCycle_spec {u : α} (p : G.Walk u u) (ho : Odd p.length) :
-    Odd p.oddCycle.2.length ∧ p.oddCycle.2.IsCycle := ⟨p.oddCycle_is_odd ho, p.oddCycle_isCycle ho⟩
+    Odd p.oddCycle.toWalk.length ∧ p.oddCycle.toWalk.IsCycle :=
+      ⟨p.oddCycle_is_odd ho, p.oddCycle_isCycle ho⟩
 
 lemma Walk.exists_odd_cycle_of_odd_closed_walk  (p : G.Walk u u) (ho : Odd p.length) :
     ∃ x, ∃ (c : G.Walk x x), Odd c.length ∧ c.IsCycle :=
   ⟨_, _, p.oddCycle_spec ho⟩
 
-lemma Walk.darts_oddCycle_subset (p : G.Walk u u) : p.oddCycle.2.darts ⊆ p.darts :=
+lemma Walk.darts_oddCycle_subset (p : G.Walk u u) : p.oddCycle.toWalk.darts ⊆ p.darts :=
   fun _ hd ↦ p.darts_minOdd_aux_subset <| p.minOdd_aux.toWalk.darts_cutVert_subset hd
 
 end SimpleGraph

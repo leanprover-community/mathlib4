@@ -221,7 +221,6 @@ lemma getVert_dropUntil {u v : V} {p : G.Walk u v} (n : ℕ) (hw : w ∈ p.suppo
   have ha := getVert_append (p.takeUntil w hw) (p.dropUntil w hw) (n + (p.takeUntil w hw).length)
   rwa [if_neg <| not_lt.2 <| Nat.le_add_left _ _, Nat.add_sub_cancel, Eq.comm] at ha
 
-@[simp]
 lemma getVert_length_takeUntil_eq_self {u v x} (p : G.Walk u v) (h : x ∈ p.support) :
     p.getVert (p.takeUntil _ h).length = x := by
   have := congr_arg₂ (y := (p.takeUntil _ h).length) getVert (take_spec p h) rfl
@@ -233,7 +232,7 @@ lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.suppo
   | inl h =>
     nth_rw 2 [← take_spec p hw]
     rw [getVert_append, if_pos h]
-  | inr h => simp [h]
+  | inr h => simp [p.getVert_length_takeUntil_eq_self, h]
 
 lemma snd_takeUntil (p : G.Walk u v) (h : w ∈ p.support) (hn : w ≠ u):
     (p.takeUntil w h).snd = p.snd := by
@@ -280,7 +279,7 @@ lemma takeUntil_append_of_mem_right (p : G.Walk u v) (q : G.Walk v w) (hxn : x �
     p.append (q.takeUntil _ hx) := by
   induction p with
   | nil => simp
-  | @cons u _ _ _ p ih =>
+  | cons _ p ih =>
     simp_rw [cons_append]
     rw [support_cons] at hxn
     rw [takeUntil_cons (subset_support_append_right _ _ hx) (List.ne_of_not_mem_cons hxn).symm]
