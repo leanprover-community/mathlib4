@@ -224,8 +224,8 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (
     ‖∫ x in Box.Icc ((J k).face i), f (i.insertNth d x) i - f (i.insertNth (c k) x) i‖ ≤
         (ε / ∏ j, ((I.face i).upper j - (I.face i).lower j)) *
           (volume (Box.Icc ((J k).face i))).toReal := by
-      refine norm_setIntegral_le_of_norm_le_const' (((J k).face i).measure_Icc_lt_top _)
-        ((J k).face i).measurableSet_Icc fun x hx => ?_
+      refine norm_setIntegral_le_of_norm_le_const (((J k).face i).measure_Icc_lt_top _)
+        fun x hx => ?_
       rw [← dist_eq_norm]
       calc
         dist (f (i.insertNth d x) i) (f (i.insertNth (c k) x) i) ≤

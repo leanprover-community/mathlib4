@@ -26,8 +26,8 @@ For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib.Algebra
 ## Implementation Notes
 
 * `NormalizationMonoid` is defined by assigning to each element a `normUnit` such that multiplying
-by that unit normalizes the monoid, and `normalize` is an idempotent monoid homomorphism. This
-definition as currently implemented does casework on `0`.
+  by that unit normalizes the monoid, and `normalize` is an idempotent monoid homomorphism. This
+  definition as currently implemented does casework on `0`.
 
 * `GCDMonoid` contains the definitions of `gcd` and `lcm` with the usual properties. They are
   both determined up to a unit.
@@ -350,6 +350,12 @@ theorem gcd_eq_zero_iff [GCDMonoid α] (a b : α) : gcd a b = 0 ↔ a = 0 ∧ b 
     fun ⟨ha, hb⟩ => by
     rw [ha, hb, ← zero_dvd_iff]
     apply dvd_gcd <;> rfl
+
+theorem gcd_ne_zero_of_left [GCDMonoid α] {a b : α} (ha : a ≠ 0) : gcd a b ≠ 0 := by
+  simp_all
+
+theorem gcd_ne_zero_of_right [GCDMonoid α] {a b : α} (hb : b ≠ 0) : gcd a b ≠ 0 := by
+  simp_all
 
 @[simp]
 theorem gcd_one_left [NormalizedGCDMonoid α] (a : α) : gcd 1 a = 1 :=

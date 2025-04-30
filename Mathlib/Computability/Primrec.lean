@@ -121,8 +121,8 @@ end Nat
 the encode/decode functions are primitive recursive.
 However, such a definition is circular.
 
-Instead, we ask that the composition of `decode : ℕ → option α` with
-`encode : option α → ℕ` is primitive recursive. Said composition is
+Instead, we ask that the composition of `decode : ℕ → Option α` with
+`encode : Option α → ℕ` is primitive recursive. Said composition is
 the identity function, restricted to the image of `encode`.
 Thus, in a way, the added requirement ensures that no predicates
 can be smuggled in through a cunning choice of the subset of `ℕ` into
@@ -952,12 +952,8 @@ theorem list_flatten : Primrec (@List.flatten α) :=
   (list_foldr .id (const []) <| to₂ <| comp (@list_append α _) snd).of_eq fun l => by
     dsimp; induction l <;> simp [*]
 
-@[deprecated (since := "2024-10-15")] alias list_join := list_flatten
-
 theorem list_flatMap {f : α → List β} {g : α → β → List σ} (hf : Primrec f) (hg : Primrec₂ g) :
     Primrec (fun a => (f a).flatMap (g a)) := list_flatten.comp (list_map hf hg)
-
-@[deprecated (since := "2024-10-16")] alias list_bind := list_flatMap
 
 theorem optionToList : Primrec (Option.toList : Option α → List α) :=
   (option_casesOn Primrec.id (const [])

@@ -63,8 +63,6 @@ variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
 
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
   Nat.min_eq_left Nat.min_eq_right Nat.max_eq_left Nat.max_eq_right
-  -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
-  -- Nat.bit1_ne_bit0
 
 attribute [simp] Nat.min_eq_left Nat.min_eq_right
 
@@ -244,8 +242,8 @@ protected lemma eq_sub_of_add_eq' (h : b + c = a) : c = a - b := by omega
 
 protected lemma lt_sub_iff_add_lt : a < c - b ↔ a + b < c := ⟨add_lt_of_lt_sub, lt_sub_of_add_lt⟩
 protected lemma lt_sub_iff_add_lt' : a < c - b ↔ b + a < c := by omega
-protected lemma sub_lt_iff_lt_add (hba : b ≤ a) : a - b < c ↔ a < b + c := by omega
-protected lemma sub_lt_iff_lt_add' (hba : b ≤ a) : a - b < c ↔ a < c + b := by omega
+protected lemma sub_lt_iff_lt_add (hba : b ≤ a) : a - b < c ↔ a < c + b := by omega
+protected lemma sub_lt_iff_lt_add' (hba : b ≤ a) : a - b < c ↔ a < b + c := by omega
 
 protected lemma sub_sub_sub_cancel_right (h : c ≤ b) : a - c - (b - c) = a - b := by omega
 protected lemma add_sub_sub_cancel (h : c ≤ a) : a + b - (a - c) = b + c := by omega
@@ -581,7 +579,7 @@ protected lemma div_lt_div_left (ha : a ≠ 0) (hba : b ∣ a) (hca : c ∣ a) :
   obtain ⟨e, he⟩ := hca
   rw [Nat.div_eq_of_eq_mul_right _ hd, Nat.div_eq_of_eq_mul_right _ he,
     Nat.lt_iff_lt_of_mul_eq_mul ha hd he] <;>
-    rw [Nat.pos_iff_ne_zero] <;> rintro rfl <;> simp at * <;> contradiction
+    rw [Nat.pos_iff_ne_zero] <;> rintro rfl <;> simp_all
 
 theorem lt_div_iff_mul_lt_of_dvd (hc : c ≠ 0) (hcb : c ∣ b) : a < b / c ↔ a * c < b := by
   simp [← Nat.div_lt_div_right _ _ hcb, hc, Nat.pos_iff_ne_zero, Nat.dvd_mul_left]
@@ -1033,7 +1031,7 @@ lemma add_mod_eq_ite :
     rw [Nat.add_mod]
     by_cases h : k + 1 ≤ m % (k + 1) + n % (k + 1)
     · rw [if_pos h, Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt]
-      exact (Nat.sub_lt_iff_lt_add h).mpr (Nat.add_lt_add (m.mod_lt (zero_lt_succ _))
+      exact (Nat.sub_lt_iff_lt_add' h).mpr (Nat.add_lt_add (m.mod_lt (zero_lt_succ _))
         (n.mod_lt (zero_lt_succ _)))
     · rw [if_neg h]
       exact Nat.mod_eq_of_lt (Nat.lt_of_not_ge h)
@@ -1199,11 +1197,5 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
-
-end Nat
-
-
-namespace Nat
-variable {a b c d e : ℕ}
 
 end Nat
