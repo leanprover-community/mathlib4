@@ -375,7 +375,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
       lift c to ℤ_[p]ˣ using by simp [isUnit_iff, norm_eq_zpow_neg_valuation hc', hc0]
       rw [IsDiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
       exact irreducible_p
-    · simp only [Int.natAbs_ofNat, zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
+    · simp only [Int.natAbs_natCast, zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
       rw [unitCoeff_spec hc']
       exact (dvd_pow_self (p : ℤ_[p]) hc0).mul_left _
 
@@ -474,7 +474,7 @@ def nthHom (r : R) : ℕ → ℤ := fun n => (f n r : ZMod (p ^ n)).val
 
 @[simp]
 theorem nthHom_zero : nthHom f 0 = 0 := by
-  simp (config := { unfoldPartialApp := true }) [nthHom]
+  simp +unfoldPartialApp [nthHom]
   rfl
 
 variable {f}
@@ -648,7 +648,7 @@ theorem ext_of_toZModPow {x y : ℤ_[p]} : (∀ n, toZModPow n x = toZModPow n y
   constructor
   · intro h
     rw [← lift_self x, ← lift_self y]
-    simp (config := { unfoldPartialApp := true }) [lift, limNthHom, nthHom, h]
+    simp +unfoldPartialApp [lift, limNthHom, nthHom, h]
   · rintro rfl _
     rfl
 

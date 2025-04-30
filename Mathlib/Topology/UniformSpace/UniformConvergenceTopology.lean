@@ -3,10 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.UniformSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.Pi
-import Mathlib.Topology.UniformSpace.Equiv
 import Mathlib.Topology.Coherent
+import Mathlib.Topology.UniformSpace.Equiv
+import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.UniformSpace.UniformApproximation
 
 /-!
 # Topology and uniform structure of uniform convergence

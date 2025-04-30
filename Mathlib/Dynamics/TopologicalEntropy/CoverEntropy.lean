@@ -299,10 +299,10 @@ lemma coverMincard_mul_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {
     coverMincard T F (U ○ U) (m * n) ≤ coverMincard T F U m ^ n := by
   rcases F.eq_empty_or_nonempty with rfl | F_nonempty
   · rw [coverMincard_empty]; exact zero_le _
-  rcases n.eq_zero_or_pos with rfl | n_pos
+  obtain rfl | hn := eq_or_ne n 0
   · rw [mul_zero, coverMincard_zero T F_nonempty (U ○ U), pow_zero]
   rcases eq_top_or_lt_top (coverMincard T F U m) with h | h
-  · exact h ▸ (le_top (α := ℕ∞)).trans_eq (ENat.top_pow n_pos).symm
+  · simp [*]
   · obtain ⟨s, s_cover, s_coverMincard⟩ := (coverMincard_finite_iff T F U m).1 h
     obtain ⟨t, t_cover, t_sn⟩ := s_cover.iterate_le_pow F_inv U_symm n
     rw [← s_coverMincard]

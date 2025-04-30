@@ -150,7 +150,7 @@ theorem chain_eq_iff_eq_replicate {a : α} {l : List α} :
   | [] => by simp
   | b :: l => by
     rw [chain_cons]
-    simp (config := {contextual := true}) [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
+    simp +contextual [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
 
 theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
     Chain' S l := by cases l <;> [trivial; exact Chain.imp H p]
@@ -332,8 +332,6 @@ lemma chain'_flatten : ∀ {L : List (List α)}, [] ∉ L →
     rw [mem_cons, not_or, ← Ne] at hL
     simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
-
-@[deprecated (since := "2024-10-15")] alias chain'_join := chain'_flatten
 
 theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
     {r : {a // p a} → {a // p a} → Prop} :

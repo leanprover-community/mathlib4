@@ -118,7 +118,7 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
   · exact Finset.subset_biUnion_of_mem (fun i ↦ (a i).support) hi
   · simp only [a, Finset.mem_sdiff, Finset.mem_biUnion, Finsupp.mem_support_iff, ne_eq, not_not,
       and_imp, forall_exists_index]
-    simp (config := {contextual := true})
+    simp +contextual
   · exact fun _ _ ↦ rfl
 
 variable [FormallyUnramified R S] [EssFiniteType R S]
