@@ -553,8 +553,7 @@ theorem exists_injOn_iff_injective [Nonempty β] :
     exact ⟨f, injOn_iff_injective.2 hf⟩⟩
 
 theorem injOn_preimage {B : Set (Set β)} (hB : B ⊆ 𝒫 range f) : InjOn (preimage f) B :=
-  fun s hs t ht hst => (preimage_eq_preimage' (@hB s hs) (@hB t ht)).1 hst
--- Porting note: is there a semi-implicit variable problem with `⊆`?
+  fun _ hs _ ht hst => (preimage_eq_preimage' (hB hs) (hB ht)).1 hst
 
 theorem InjOn.mem_of_mem_image {x} (hf : InjOn f s) (hs : s₁ ⊆ s) (h : x ∈ s) (h₁ : f x ∈ f '' s₁) :
     x ∈ s₁ :=
@@ -760,8 +759,7 @@ theorem SurjOn.inter (h₁ : SurjOn f s₁ t) (h₂ : SurjOn f s₂ t) (h : InjO
     SurjOn f (s₁ ∩ s₂) t :=
   inter_self t ▸ h₁.inter_inter h₂ h
 
--- Porting note: Why does `simp` not call `refl` by itself?
-lemma surjOn_id (s : Set α) : SurjOn id s s := by simp [SurjOn, subset_rfl]
+lemma surjOn_id (s : Set α) : SurjOn id s s := by simp [SurjOn]
 
 theorem SurjOn.comp (hg : SurjOn g t p) (hf : SurjOn f s t) : SurjOn (g ∘ f) s p :=
   Subset.trans hg <| Subset.trans (image_subset g hf) <| image_comp g f s ▸ Subset.refl _

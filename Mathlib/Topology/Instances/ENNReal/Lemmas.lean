@@ -172,7 +172,7 @@ theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ =
 theorem nhds_zero_basis_Iic : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ => 0 < a) Iic :=
   nhds_bot_basis_Iic
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a TC for `≠ ∞`?
+-- TODO: add a TC for `≠ ∞`?
 @[instance]
 theorem nhdsGT_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
   nhdsGT_neBot_of_exists_gt ⟨∞, ENNReal.coe_lt_top⟩
@@ -504,7 +504,7 @@ protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞
   | (n : ℕ) => mod_cast ENNReal.continuous_pow n
   | .negSucc n => by simpa using (ENNReal.continuous_pow _).inv
 
-@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
+@[simp] -- TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun x => (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
   ⟨fun h => by simpa only [inv_inv] using Tendsto.inv h, Tendsto.inv⟩

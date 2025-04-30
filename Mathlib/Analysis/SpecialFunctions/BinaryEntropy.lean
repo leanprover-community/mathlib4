@@ -168,7 +168,6 @@ This is due to definition of `Real.log` for negative numbers. -/
   simp only [log_inv, mul_neg]
   fun_prop (disch := assumption)
 
-set_option push_neg.use_distrib true in
 lemma differentiableAt_binEntropy_iff_ne_zero_one :
     DifferentiableAt ℝ binEntropy p ↔ p ≠ 0 ∧ p ≠ 1 := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ differentiableAt_binEntropy h.1 h.2⟩

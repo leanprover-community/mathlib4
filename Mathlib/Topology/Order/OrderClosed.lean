@@ -547,7 +547,6 @@ in another file.
 theorem Ioo_mem_nhdsGT_of_mem (H : b ∈ Ico a c) : Ioo a c ∈ 𝓝[>] b :=
   mem_nhdsWithin.2
     ⟨Iio c, isOpen_Iio, H.2, by rw [inter_comm, Ioi_inter_Iio]; exact Ioo_subset_Ioo_left H.1⟩
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 
 @[deprecated (since := "2024-12-22")] alias Ioo_mem_nhdsWithin_Ioi := Ioo_mem_nhdsGT_of_mem
 

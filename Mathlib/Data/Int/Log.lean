@@ -131,8 +131,7 @@ theorem log_one_left (r : R) : log 1 r = 0 := by
   · simp_all only [log, ↓reduceIte, Nat.log_one_left, Nat.cast_zero]
   · simp only [log, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
 
--- Porting note: needed to replace b ^ z with (b : R) ^ z in the below
-theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z := by
+theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b (b ^ z : R) = z := by
   obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z
   · rw [log_of_one_le_right _ (one_le_zpow₀ (mod_cast hb.le) <| Int.natCast_nonneg _), zpow_natCast,
       ← Nat.cast_pow, Nat.floor_natCast, Nat.log_pow hb]
@@ -257,8 +256,7 @@ theorem clog_zero_left (r : R) : clog 0 r = 0 := by
 theorem clog_one_left (r : R) : clog 1 r = 0 := by
   simp only [clog, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
 
--- Porting note: needed to replace b ^ z with (b : R) ^ z in the below
-theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b ((b : R) ^ z : R) = z := by
+theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b (b ^ z : R) = z := by
   rw [← neg_log_inv_eq_clog, ← zpow_neg, log_zpow hb, neg_neg]
 
 @[mono]

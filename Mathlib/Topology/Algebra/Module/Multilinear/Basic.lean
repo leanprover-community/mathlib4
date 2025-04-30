@@ -300,7 +300,7 @@ theorem _root_.ContinuousLinearMap.compContinuousMultilinearMap_coe (g : M₂ �
   rfl
 
 /-- `ContinuousMultilinearMap.prod` as an `Equiv`. -/
-@[simps apply symm_apply_fst symm_apply_snd, simps (config := .lemmasOnly) symm_apply]
+@[simps apply symm_apply_fst symm_apply_snd, simps -isSimp symm_apply]
 def prodEquiv :
     (ContinuousMultilinearMap R M₁ M₂ × ContinuousMultilinearMap R M₁ M₃) ≃
       ContinuousMultilinearMap R M₁ (M₂ × M₃) where

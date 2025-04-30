@@ -33,6 +33,10 @@ whereas we denote subsets of prime spectra with `t`, `t'`, etc...
 The contents of this file draw inspiration from <https://github.com/ramonfmir/lean-scheme>
 which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
+
+## References
+* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 -/
 
 -- A dividing line between this file and `Mathlib.RingTheory.Spectrum.Prime.Topology` is
@@ -427,7 +431,7 @@ variable (R : Type u) [CommRing R] [IsNoetherianRing R]
 variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
 /-- In a noetherian ring, every ideal contains a product of prime ideals
-([samuel, § 3.3, Lemma 3]). -/
+([samuel1967, § 3.3, Lemma 3]). -/
 theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
   -- Porting note: Need to specify `P` explicitly
@@ -459,7 +463,7 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
 
 /-- In a noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
   product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
-  product or prime ideals ([samuel, § 3.3, Lemma 3]) -/
+  product or prime ideals ([samuel1967, § 3.3, Lemma 3]) -/
 theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}
     (h_nzI : I ≠ ⊥) :
     ∃ Z : Multiset (PrimeSpectrum A),

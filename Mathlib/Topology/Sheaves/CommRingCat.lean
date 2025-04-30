@@ -157,7 +157,8 @@ noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
 
--- Porting note: deriving `Epi` failed
+-- The following instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by

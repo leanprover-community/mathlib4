@@ -200,7 +200,7 @@ alias sigmaCompactSpace_of_locally_compact_second_countable :=
   sigmaCompactSpace_of_locallyCompact_secondCountable
 
 section
--- Porting note: doesn't work on the same line
+
 variable (X)
 variable [SigmaCompactSpace X]
 

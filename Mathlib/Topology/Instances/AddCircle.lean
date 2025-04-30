@@ -80,8 +80,6 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
 theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x := by
   rw [(funext fun y => Eq.trans (by rw [neg_neg]) <| toIocMod_neg _ _ _ :
       toIocMod hp a = (fun x => p - x) ∘ toIcoMod hp (-a) ∘ Neg.neg)]
-  -- Porting note: added
-  have : ContinuousNeg 𝕜 := IsTopologicalAddGroup.toContinuousNeg
   exact
     (continuous_sub_left _).continuousAt.comp_continuousWithinAt <|
       (continuous_right_toIcoMod _ _ _).comp continuous_neg.continuousWithinAt fun y => neg_le_neg

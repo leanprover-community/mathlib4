@@ -648,7 +648,7 @@ section OrderedRing
 variable (𝕜) [OrderedRing 𝕜]
 
 /-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
   toFun f := ⟨f.1 0, f.2.1 _, f.2.2 ▸
     Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩

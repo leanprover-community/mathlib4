@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.MonoidAlgebra.MapDomain
 import Mathlib.Data.Finsupp.SMul

@@ -37,13 +37,13 @@ theorem Fin.preimage_apply_01_prod' {α : Type u} (s t : Set α) :
 /-- A product space `α × β` is equivalent to the space `Π i : Fin 2, γ i`, where
 `γ = Fin.cons α (Fin.cons β finZeroElim)`. See also `piFinTwoEquiv` and
 `finTwoArrowEquiv`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def prodEquivPiFinTwo (α β : Type u) : α × β ≃ ∀ i : Fin 2, ![α, β] i :=
   (piFinTwoEquiv (Fin.cons α (Fin.cons β finZeroElim))).symm
 
 /-- The space of functions `Fin 2 → α` is equivalent to `α × α`. See also `piFinTwoEquiv` and
 `prodEquivPiFinTwo`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def finTwoArrowEquiv (α : Type*) : (Fin 2 → α) ≃ α × α :=
   { piFinTwoEquiv fun _ => α with invFun := fun x => ![x.1, x.2] }
 

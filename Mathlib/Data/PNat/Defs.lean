@@ -3,13 +3,13 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
+import Mathlib.Algebra.Notation.Defs
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.PNat.Notation
-import Mathlib.Data.One.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift
-import Mathlib.Data.Int.Order.Basic
 
 /-!
 # The positive natural numbers

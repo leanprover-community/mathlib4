@@ -597,7 +597,7 @@ theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' :
       μ (f ⁻¹' s) * μ (g ⁻¹' t) = μ.map f s * μ.map g t ∧
       μ (f ⁻¹' s ∩ g ⁻¹' t) = μ.map (fun ω ↦ (f ω, g ω)) (s ×ˢ t) :=
     ⟨by rw [Measure.map_apply_of_aemeasurable hf hs, Measure.map_apply_of_aemeasurable hg ht],
-      (Measure.map_apply_of_aemeasurable (hf.prod_mk hg) (hs.prod ht)).symm⟩
+      (Measure.map_apply_of_aemeasurable (hf.prodMk hg) (hs.prod ht)).symm⟩
   constructor
   · refine fun h ↦ (Measure.prod_eq fun s t hs ht ↦ ?_).symm
     rw [← (h₀ hs ht).1, ← (h₀ hs ht).2, h s t hs ht]
@@ -643,13 +643,16 @@ lemma iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T) (hf_Indep
     IndepFun (fun a (i : S) ↦ f i a) (fun a (i : T) ↦ f i a) μ :=
   Kernel.iIndepFun.indepFun_finset S T hST hf_Indep hf_meas
 
-lemma iIndepFun.indepFun_prod_mk (hf_Indep : iIndepFun f μ) (hf_meas : ∀ i, Measurable (f i))
+lemma iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f μ) (hf_meas : ∀ i, Measurable (f i))
     (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (fun a => (f i a, f j a)) (f k) μ :=
-  Kernel.iIndepFun.indepFun_prod_mk hf_Indep hf_meas i j k hik hjk
+  Kernel.iIndepFun.indepFun_prodMk hf_Indep hf_meas i j k hik hjk
+
+@[deprecated (since := "2025-03-05")]
+alias iIndepFun.indepFun_prod_mk := iIndepFun.indepFun_prodMk
 
 open Finset in
-lemma iIndepFun.indepFun_prod_mk_prod_mk (h_indep : iIndepFun f μ) (hf : ∀ i, Measurable (f i))
+lemma iIndepFun.indepFun_prodMk_prodMk (h_indep : iIndepFun f μ) (hf : ∀ i, Measurable (f i))
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
     IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) μ := by
   classical
@@ -657,6 +660,9 @@ lemma iIndepFun.indepFun_prod_mk_prod_mk (h_indep : iIndepFun f μ) (hf : ∀ i,
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
   exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
+
+@[deprecated (since := "2025-03-05")]
+alias iIndepFun.indepFun_prod_mk_prod_mk := iIndepFun.indepFun_prodMk_prodMk
 
 variable {ι' : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
 

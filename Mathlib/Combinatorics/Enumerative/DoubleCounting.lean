@@ -26,6 +26,11 @@ and `t`.
 * `card_mul_le_card_mul`, `card_mul_le_card_mul'`: Double counting the edges of a bipartite graph
   from below and from above.
 * `card_mul_eq_card_mul`: Equality combination of the previous.
+
+## Implementation notes
+
+For the formulation of double-counting arguments where a bipartite graph is considered as a
+bipartite simple graph `G : SimpleGraph V`, see `Mathlib.Combinatorics.SimpleGraph.Bipartite`.
 -/
 
 assert_not_exists Field

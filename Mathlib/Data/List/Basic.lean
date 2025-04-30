@@ -237,7 +237,7 @@ theorem head?_flatten_replicate {n : ℕ} (h : n ≠ 0) (l : List α) :
   induction l <;> simp [replicate]
 
 @[simp]
-theorem getLast?_flatten_replicate  {n : ℕ} (h : n ≠ 0) (l : List α) :
+theorem getLast?_flatten_replicate {n : ℕ} (h : n ≠ 0) (l : List α) :
     (List.replicate n l).flatten.getLast? = l.getLast? := by
   rw [← List.head?_reverse, ← List.head?_reverse, List.reverse_flatten, List.map_replicate,
   List.reverse_replicate, head?_flatten_replicate h]

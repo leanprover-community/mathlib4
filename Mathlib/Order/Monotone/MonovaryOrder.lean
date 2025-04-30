@@ -26,8 +26,7 @@ We define `i < j` if `f i < f j`, or if `f i = f j` and `g i < g j`, breaking ti
 def MonovaryOrder (i j : ι) : Prop :=
   Prod.Lex (· < ·) (Prod.Lex (· < ·) WellOrderingRel) (f i, g i, i) (f j, g j, j)
 
-instance : IsStrictTotalOrder ι (MonovaryOrder f g)
-    where
+instance : IsStrictTotalOrder ι (MonovaryOrder f g) where
   trichotomous i j := by
     convert trichotomous_of (Prod.Lex (· < ·) <| Prod.Lex (· < ·) WellOrderingRel) _ _
     · simp only [Prod.ext_iff, ← and_assoc, imp_and, eq_iff_iff, iff_and_self]

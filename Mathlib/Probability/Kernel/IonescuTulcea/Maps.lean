@@ -101,8 +101,7 @@ def IicProdIoc {a b : ι} (hab : a ≤ b) :
     by_cases h : x ≤ a
     · simpa [h] using measurable_fst.eval
     · simpa [h] using measurable_snd.eval
-  measurable_invFun := by
-    refine Measurable.prod_mk ?_ ?_ <;> exact measurable_pi_lambda _ (fun a ↦ measurable_id.eval)
+  measurable_invFun := by dsimp; fun_prop
 
 lemma coe_IicProdIoc {a b : ι} (hab : a ≤ b) :
     ⇑(IicProdIoc (X := X) hab) = _root_.IicProdIoc a b := rfl
@@ -129,7 +128,7 @@ def IicProdIoi (a : ι) :
     by_cases hi : i ≤ a <;> simp only [Equiv.coe_fn_mk, hi, ↓reduceDIte]
     · exact measurable_fst.eval
     · exact measurable_snd.eval
-  measurable_invFun := Measurable.prod_mk (measurable_restrict _) (Set.measurable_restrict _)
+  measurable_invFun := Measurable.prodMk (measurable_restrict _) (Set.measurable_restrict _)
 
 end MeasurableEquiv
 

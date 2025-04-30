@@ -620,7 +620,6 @@ theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P �
     (i : ℕ) (hi : i ≤ e) :
     Module.rank (R ⧸ p) (Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) =
       (e - i) • Module.rank (R ⧸ p) (S ⧸ P) := by
--- Porting note: Lean cannot figure out what to prove by itself
   let Q : ℕ → Prop :=
     fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
       = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
@@ -699,8 +698,6 @@ instance Factors.fact_ramificationIdx_neZero (P : (factors (map (algebraMap R S)
     NeZero (ramificationIdx (algebraMap R S) p P) :=
   ⟨Factors.ramificationIdx_ne_zero p P⟩
 
-set_option synthInstance.checkSynthOrder false
--- Porting note: this is okay since, as noted above, in this file the value of `f` can be inferred
 attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero
 
 open scoped Classical in

@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE

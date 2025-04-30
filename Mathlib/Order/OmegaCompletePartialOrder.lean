@@ -90,7 +90,7 @@ lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.di
 
 /-- `map` function for `Chain` -/
 -- Porting note: `simps` doesn't work with type synonyms
--- @[simps! (config := .asFn)]
+-- @[simps! -fullyApplied]
 def map : Chain β :=
   f.comp c
 

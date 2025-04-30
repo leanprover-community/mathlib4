@@ -810,7 +810,7 @@ theorem normal_subgroupOf_iff {H K : Subgroup G} (hHK : H ≤ K) :
   ⟨fun hN h k hH hK => hN.conj_mem ⟨h, hHK hH⟩ hH ⟨k, hK⟩, fun hN =>
     { conj_mem := fun h hm k => hN h.1 k.1 hm k.2 }⟩
 
-@[to_additive]
+@[to_additive prod_addSubgroupOf_prod_normal]
 instance prod_subgroupOf_prod_normal {H₁ K₁ : Subgroup G} {H₂ K₂ : Subgroup N}
     [h₁ : (H₁.subgroupOf K₁).Normal] [h₂ : (H₂.subgroupOf K₂).Normal] :
     ((H₁.prod H₂).subgroupOf (K₁.prod K₂)).Normal where
@@ -820,12 +820,18 @@ instance prod_subgroupOf_prod_normal {H₁ K₁ : Subgroup G} {H₂ K₂ : Subgr
       h₂.conj_mem ⟨(n : G × N).snd, (mem_prod.mp n.2).2⟩ hgHK.2
         ⟨(g : G × N).snd, (mem_prod.mp g.2).2⟩⟩
 
-@[to_additive]
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddSubgroup.sum_addSubgroupOf_sum_normal := AddSubgroup.prod_addSubgroupOf_prod_normal
+
+@[to_additive prod_normal]
 instance prod_normal (H : Subgroup G) (K : Subgroup N) [hH : H.Normal] [hK : K.Normal] :
     (H.prod K).Normal where
   conj_mem n hg g :=
     ⟨hH.conj_mem n.fst (Subgroup.mem_prod.mp hg).1 g.fst,
       hK.conj_mem n.snd (Subgroup.mem_prod.mp hg).2 g.snd⟩
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddSubgroup.sum_normal := AddSubgroup.prod_normal
 
 @[to_additive]
 theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G) (hB : B' ≤ B)

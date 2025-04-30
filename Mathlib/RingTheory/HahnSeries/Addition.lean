@@ -86,7 +86,7 @@ protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
 Hahn series over `Γ` with coefficients in the opposite additive monoid `Rᵃᵒᵖ`
 and the additive opposite of Hahn series over `Γ` with coefficients `R`.
 -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def addOppositeEquiv : HahnSeries Γ (Rᵃᵒᵖ) ≃+ (HahnSeries Γ R)ᵃᵒᵖ where
   toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert x.isPWO_support; ext; simp⟩
   invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert x.unop.isPWO_support; ext; simp⟩

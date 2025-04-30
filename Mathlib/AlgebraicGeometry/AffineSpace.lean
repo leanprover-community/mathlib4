@@ -60,7 +60,7 @@ lemma of_mvPolynomial_int_ext {R} {f g : ℤ[n] ⟶ R} (h : ∀ i, f (.X i) = g 
   · simpa using h _
 
 
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 instance over : 𝔸(n; S).CanonicallyOver S where
   hom := pullback.fst _ _
 
@@ -173,7 +173,7 @@ variable (n) in
 The affine space over an affine base is isomorphic to the spectrum of the polynomial ring.
 Also see `AffineSpace.SpecIso`.
 -/
-@[simps (config := .lemmasOnly) hom inv]
+@[simps -isSimp hom inv]
 def isoOfIsAffine [IsAffine S] :
     𝔸(n; S) ≅ Spec (.of (MvPolynomial n Γ(S, ⊤))) where
       hom := 𝔸(n; S).toSpecΓ ≫ Spec.map (CommRingCat.ofHom

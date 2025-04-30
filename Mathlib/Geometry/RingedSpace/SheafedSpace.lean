@@ -194,7 +194,7 @@ theorem Γ_map {X Y : (SheafedSpace C)ᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.
 theorem Γ_map_op {X Y : SheafedSpace C} (f : X ⟶ Y) : Γ.map f.op = f.c.app (op ⊤) :=
   rfl
 
-noncomputable instance (J : Type w) [Category.{w'} J] [UnivLE.{w, v}] [HasLimitsOfShape Jᵒᵖ C] :
+noncomputable instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOfShape Jᵒᵖ C] :
     CreatesColimitsOfShape J (forgetToPresheafedSpace : SheafedSpace.{_, _, v} C ⥤ _) :=
   ⟨fun {K} =>
     createsColimitOfFullyFaithfulOfIso
@@ -205,13 +205,13 @@ noncomputable instance (J : Type w) [Category.{w'} J] [UnivLE.{w, v}] [HasLimits
 noncomputable instance [HasLimits C] :
     CreatesColimits (forgetToPresheafedSpace : SheafedSpace C ⥤ _) where
 
-instance (J : Type w) [Category.{w'} J] [UnivLE.{w, v}] [HasLimitsOfShape Jᵒᵖ C] :
+instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOfShape Jᵒᵖ C] :
     HasColimitsOfShape J (SheafedSpace.{_, _, v} C) :=
   hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape forgetToPresheafedSpace
 
 instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) where
 
-instance (J : Type w) [Category.{w'} J] [UnivLE.{w, v}] [HasLimitsOfShape Jᵒᵖ C] :
+instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOfShape Jᵒᵖ C] :
     PreservesColimitsOfShape J (forget.{_, _, v} C) :=
   Limits.comp_preservesColimitsOfShape forgetToPresheafedSpace (PresheafedSpace.forget C)
 

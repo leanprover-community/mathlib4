@@ -161,8 +161,6 @@ theorem t2_iff_isClosed_diagonal : T2Space X ↔ IsClosed (diagonal X) := by
 theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=
   t2_iff_isClosed_diagonal.mp ‹_›
 
--- Porting note: 2 lemmas moved below
-
 theorem tendsto_nhds_unique [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : a = b :=
   (tendsto_nhds_unique_inseparable ha hb).eq

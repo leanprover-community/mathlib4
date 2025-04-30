@@ -245,7 +245,7 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
       monomial_smul_single, f.map_smul, algebraMap_smul]
 
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
-@[simps! (config := .lemmasOnly)]
+@[simps! -isSimp]
 def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   toFun p := p.sum fun i m => r ^ i • m
   map_add' _ _ := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _

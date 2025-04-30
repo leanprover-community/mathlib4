@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Tactic.FinCases
+import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Sets.Closeds
 
 /-!

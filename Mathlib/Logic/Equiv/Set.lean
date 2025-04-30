@@ -62,12 +62,12 @@ theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃
     f ⁻¹' S = f.symm '' S :=
   (f.symm.image_eq_preimage S).symm
 
--- Porting note: increased priority so this fires before `image_subset_iff`
+-- Increased priority so this fires before `image_subset_iff`
 @[simp high]
 protected theorem symm_image_subset {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, e.image_eq_preimage]
 
--- Porting note: increased priority so this fires before `image_subset_iff`
+-- Increased priority so this fires before `image_subset_iff`
 @[simp high]
 protected theorem subset_symm_image {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     s ⊆ e.symm '' t ↔ e '' s ⊆ t :=
@@ -605,10 +605,8 @@ noncomputable def Set.BijOn.equiv {α : Type*} {β : Type*} {s : Set α} {t : Se
 
 /-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
--- Porting note: replace `s : Set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
--- former now unfolds syntactically to a less general case of the latter.
 theorem dite_comp_equiv_update {α : Type*} {β : Sort*} {γ : Sort*} {p : α → Prop}
-    (e : β ≃ Subtype p)
+    (e : β ≃ {x // p x})
     (v : β → γ) (w : α → γ) (j : β) (x : γ) [DecidableEq β] [DecidableEq α]
     [∀ j, Decidable (p j)] :
     (fun i : α => if h : p i then (Function.update v j x) (e.symm ⟨i, h⟩) else w i) =

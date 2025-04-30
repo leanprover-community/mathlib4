@@ -35,7 +35,6 @@ namespace Trivial
 
 variable (B : Type*) (F : Type*)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added name for this instance.
 -- TODO: use `TotalSpace.toProd`
 instance topologicalSpace [t₁ : TopologicalSpace B]
     [t₂ : TopologicalSpace F] : TopologicalSpace (TotalSpace F (Trivial B F)) :=
@@ -54,7 +53,6 @@ def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
 
 /-- Local trivialization for trivial bundle. -/
 def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
-  -- Porting note: golfed
   toPartialHomeomorph := (homeomorphProd B F).toPartialHomeomorph
   baseSet := univ
   open_baseSet := isOpen_univ
@@ -298,7 +296,6 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
 variable {E F}
 variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
 
--- Porting note: universe levels are explicitly provided
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
 noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
     Trivialization F (π F ((f : B' → B) *ᵖ E)) where

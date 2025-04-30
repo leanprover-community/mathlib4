@@ -386,7 +386,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) : (M →ₗ[R] N) ≃ (M [⋀^ι]�
 variable (ι) {N}
 
 /-- The constant map is alternating when `ι` is empty. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constOfIsEmpty [IsEmpty ι] (m : N) : M [⋀^ι]→ₗ[R] N :=
   { MultilinearMap.constOfIsEmpty R _ m with
     toFun := Function.const _ m

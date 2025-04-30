@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 
 import Mathlib.Data.Fintype.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Cardinal.Regular
 import Mathlib.SetTheory.Game.Birthday
 
 /-!

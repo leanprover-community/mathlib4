@@ -402,7 +402,7 @@ corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular f
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
 `(E × E, H × E)`. See note [Manifold type tags] for explanation about `ModelProd H H'`
 vs `H × H'`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
@@ -643,11 +643,11 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
   obtain ⟨he', he'_symm⟩ := he'
   constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv,
     contDiffPregroupoid]
-  · have h3 := ContDiffOn.prod_map he he'
+  · have h3 := ContDiffOn.prodMap he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3
-  · have h3 := ContDiffOn.prod_map he_symm he'_symm
+  · have h3 := ContDiffOn.prodMap he_symm he'_symm
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3

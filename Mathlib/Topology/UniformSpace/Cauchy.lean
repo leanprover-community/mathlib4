@@ -298,7 +298,6 @@ theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u
 theorem cauchySeq_of_controlled [SemilatticeSup β] [Nonempty β] (U : β → Set (α × α))
     (hU : ∀ s ∈ 𝓤 α, ∃ n, U n ⊆ s) {f : β → α}
     (hf : ∀ ⦃N m n : β⦄, N ≤ m → N ≤ n → (f m, f n) ∈ U N) : CauchySeq f :=
-    -- Porting note: changed to semi-implicit arguments
   cauchySeq_iff_tendsto.2
     (by
       intro s hs
@@ -694,7 +693,6 @@ noncomputable section
 
 /-- An auxiliary sequence of sets approximating a Cauchy filter. -/
 def setSeqAux (n : ℕ) : { s : Set α // s ∈ f ∧ s ×ˢ s ⊆ U n } :=
-  -- Porting note: changed `∃ _ : s ∈ f, ..` to `s ∈ f ∧ ..`
   Classical.indefiniteDescription _ <| (cauchy_iff.1 hf).2 (U n) (U_mem n)
 
 /-- Given a Cauchy filter `f` and a sequence `U` of entourages, `set_seq` provides
@@ -780,7 +778,7 @@ theorem complete_of_cauchySeq_tendsto (H' : ∀ u : ℕ → α, CauchySeq u → 
 
 variable (α)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move to `Topology.UniformSpace.Basic`
+-- TODO: move to `Topology.UniformSpace.Basic`
 instance (priority := 100) firstCountableTopology : FirstCountableTopology α :=
   ⟨fun a => by rw [nhds_eq_comap_uniformity]; infer_instance⟩
 

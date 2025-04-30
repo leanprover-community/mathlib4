@@ -1185,7 +1185,7 @@ section Field
 
 variable [LinearOrderedField R] (a b : ℍ[R])
 
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 instance instInv : Inv ℍ[R] :=
   ⟨fun a => (normSq a)⁻¹ • star a⟩
 

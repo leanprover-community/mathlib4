@@ -74,10 +74,7 @@ protected noncomputable def Finite.toFinset {s : Set α} (h : s.Finite) : Finset
 
 theorem Finite.toFinset_eq_toFinset {s : Set α} [Fintype s] (h : s.Finite) :
     h.toFinset = s.toFinset := by
-  -- Porting note: was `rw [Finite.toFinset]; congr`
-  -- in Lean 4, a goal is left after `congr`
-  have : h.fintype = ‹_› := Subsingleton.elim _ _
-  rw [Finite.toFinset, this]
+  rw [Finite.toFinset, Subsingleton.elim h.fintype]
 
 @[simp]
 theorem toFinite_toFinset (s : Set α) [Fintype s] : s.toFinite.toFinset = s.toFinset :=
@@ -639,7 +636,7 @@ theorem finite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) : (f '' s
 theorem univ_finite_iff_nonempty_fintype : (univ : Set α).Finite ↔ Nonempty (Fintype α) :=
   ⟨fun h => ⟨fintypeOfFiniteUniv h⟩, fun ⟨_i⟩ => finite_univ⟩
 
--- Porting note: moved `@[simp]` to `Set.toFinset_singleton` because `simp` can now simplify LHS
+-- `simp`-normal form is `Set.toFinset_singleton`.
 theorem Finite.toFinset_singleton {a : α} (ha : ({a} : Set α).Finite := finite_singleton _) :
     ha.toFinset = {a} :=
   Set.toFinite_toFinset _

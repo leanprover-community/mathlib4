@@ -60,7 +60,6 @@ theorem terminates_parallel.aux :
       simp only [parallel.aux1, rmap, corec_eq]
       rw [e]
     rw [this]
-    -- Porting note: This line is required.
     exact ret_terminates a
   intro l S c m T
   revert l S
@@ -166,7 +165,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         rw [D]
         simp only
         have TT := TT l'
-        rwa [Seq.destruct_eq_nil D, Seq.tail_nil] at TT
+        rwa [Seq.destruct_eq_none D, Seq.tail_nil] at TT
       · have D : Seq.destruct S = some (o, S.tail) := by
           dsimp [Seq.destruct]
           rw [e]

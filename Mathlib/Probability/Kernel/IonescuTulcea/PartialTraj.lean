@@ -194,8 +194,8 @@ private lemma fst_prod_comp_id_prod {X Y Z : Type*} {mX : MeasurableSpace X}
   ext x s ms
   simp_rw [comp_apply' _ _ _ ms, lintegral_id_prod (Kernel.measurable_coe _ ms),
     deterministic_prod_apply' _ _ _ ms, id_prod_apply' _ _ ms,
-    comp_apply' _ _ _ (measurable_prod_mk_left ms),
-    lintegral_id_prod (η.measurable_coe (measurable_prod_mk_left ms))]
+    comp_apply' _ _ _ (measurable_prodMk_left ms),
+    lintegral_id_prod (η.measurable_coe (measurable_prodMk_left ms))]
 
 /-- This is a technical lemma saying that `partialTraj κ a b` consists of two independent parts, the
 first one being the identity. It allows to compute integrals. -/

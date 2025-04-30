@@ -408,7 +408,7 @@ def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordina
 alias typein.principalSeg := typein
 
 set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-10-09")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-09")]
 theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
     (typein.principalSeg r : α → Ordinal) = typein r :=
   rfl
@@ -525,7 +525,7 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
   relIso_enum' _ _ _ _
 
 /-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
-@[simps! (config := .lemmasOnly)]
+@[simps! -isSimp]
 noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
   toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
@@ -763,7 +763,7 @@ theorem mem_range_lift_of_le {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b �
   liftInitialSeg.mem_range_of_le h
 
 @[deprecated mem_range_lift_of_le (since := "2024-10-07")]
-theorem lift_down {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b ≤ lift.{v,u} a) :
+theorem lift_down {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b ≤ lift.{v, u} a) :
     ∃ a', lift.{v,u} a' = b :=
   mem_range_lift_of_le h
 

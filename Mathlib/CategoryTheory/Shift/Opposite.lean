@@ -274,7 +274,7 @@ end NatTrans
 The adjunction `adj`, seen as an adjunction between `OppositeShift.functor G`
 and `OppositeShift.functor F`.
 -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def OppositeShift.adjunction {F} {G : D ⥤ C} (adj : F ⊣ G) :
     OppositeShift.functor A G ⊣ OppositeShift.functor A F where
   unit := (NatTrans.OppositeShift.natIsoId D A).hom ≫

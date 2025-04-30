@@ -494,7 +494,7 @@ open Multiset
 
 /-- Remove every `a` from a given `Sym α n`.
 Yields the number of copies `i` and a term of `Sym α (n - i)`. -/
-def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym α (n - i) :=
+def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σ i : Fin (n + 1), Sym α (n - i) :=
   ⟨⟨m.1.count a, (count_le_card _ _).trans_lt <| by rw [m.2, Nat.lt_succ_iff]⟩,
     m.1.filter (a ≠ ·),
     Nat.eq_sub_of_add_eq <|
@@ -505,7 +505,7 @@ def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym �
           rw [← card_eq_countP_add_countP _ _])
         m.2⟩
 
-theorem sigma_sub_ext {m₁ m₂ : Σi : Fin (n + 1), Sym α (n - i)} (h : (m₁.2 : Multiset α) = m₂.2) :
+theorem sigma_sub_ext {m₁ m₂ : Σ i : Fin (n + 1), Sym α (n - i)} (h : (m₁.2 : Multiset α) = m₂.2) :
     m₁ = m₂ :=
   Sigma.subtype_ext
     (Fin.ext <| by
@@ -524,7 +524,8 @@ theorem fill_filterNe [DecidableEq α] (a : α) (m : Sym α n) :
       · rw [if_pos rfl, if_neg (not_not.2 rfl), zero_add]
       · rw [if_pos h, if_neg h, add_zero])
 
-theorem filter_ne_fill [DecidableEq α] (a : α) (m : Σi : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
+theorem filter_ne_fill
+    [DecidableEq α] (a : α) (m : Σ i : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
     (m.2.fill a m.1).filterNe a = m :=
   sigma_sub_ext
     (by

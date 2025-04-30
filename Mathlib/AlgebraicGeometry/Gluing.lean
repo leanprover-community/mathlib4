@@ -238,7 +238,7 @@ theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι
   rfl
 
 /-- The open cover of the glued space given by the glue data. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   J := D.J
   obj := D.U

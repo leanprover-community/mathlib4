@@ -6,8 +6,9 @@ Authors: Robert Y. Lewis
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.RingTheory.Polynomial.Vieta
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Polynomials and limits

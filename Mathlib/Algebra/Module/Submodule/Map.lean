@@ -58,6 +58,9 @@ def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
 theorem map_coe (f : F) (p : Submodule R M) : (map f p : Set M₂) = f '' p :=
   rfl
 
+@[simp]
+theorem map_coe_toLinearMap (f : F) (p : Submodule R M) : map (f : M →ₛₗ[σ₁₂] M₂) p = map f p := rfl
+
 theorem map_toAddSubmonoid (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
     (p.map f).toAddSubmonoid = p.toAddSubmonoid.map (f : M →+ M₂) :=
   SetLike.coe_injective rfl
@@ -173,6 +176,9 @@ def comap [SemilinearMapClass F σ₁₂ M M₂] (f : F) (p : Submodule R₂ M�
 @[simp]
 theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
   rfl
+
+@[simp] theorem comap_coe_toLinearMap (f : F) (p : Submodule R₂ M₂) :
+    comap (f : M →ₛₗ[σ₁₂] M₂) p = comap f p := rfl
 
 @[simp]
 theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
@@ -383,6 +389,17 @@ lemma orderIsoMapComap_symm_apply [EquivLike F M M₂] [SemilinearMapClass F σ�
     (f : F) (p : Submodule R₂ M₂) :
     (orderIsoMapComap f).symm p = comap f p :=
   rfl
+
+variable [EquivLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂] {e : F}
+variable {p}
+
+@[simp] protected lemma map_eq_bot_iff : p.map e = ⊥ ↔ p = ⊥ := map_eq_bot_iff (orderIsoMapComap e)
+
+@[simp] protected lemma map_eq_top_iff : p.map e = ⊤ ↔ p = ⊤ := map_eq_top_iff (orderIsoMapComap e)
+
+protected lemma map_ne_bot_iff : p.map e ≠ ⊥ ↔ p ≠ ⊥ := by simp
+
+protected lemma map_ne_top_iff : p.map e ≠ ⊤ ↔ p ≠ ⊤ := by simp
 
 end OrderIso
 

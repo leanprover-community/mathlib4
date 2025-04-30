@@ -397,8 +397,7 @@ noncomputable instance isModule' : Module R (LocalizedModule S M) :=
   { Module.compHom (LocalizedModule S M) <| algebraMap R (Localization S) with }
 
 theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
-  erw [mk_smul_mk r m 1 s]
-  rw [one_mul]
+  simpa only [one_mul] using mk_smul_mk r m 1 s
 
 lemma smul_eq_iff_of_mem
     (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
@@ -508,11 +507,9 @@ def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
 theorem divBy_mul_by (s : S) (p : LocalizedModule S M) :
     divBy s (algebraMap R (Module.End R (LocalizedModule S M)) s p) = p :=
   p.induction_on fun m t => by
-    rw [Module.algebraMap_end_apply, divBy_apply]
-    erw [smul_def]
-    rw [LocalizedModule.liftOn_mk, mul_assoc, ← smul_def]
-    erw [smul'_mk]
-    rw [← Submonoid.smul_def, mk_cancel_common_right _ s]
+    rw [Module.algebraMap_end_apply, divBy_apply, ← algebraMap_smul (Localization S) (s : R),
+      smul_def, LocalizedModule.liftOn_mk, mul_assoc, ← smul_def, algebraMap_smul, smul'_mk,
+      ← Submonoid.smul_def, mk_cancel_common_right _ s]
 
 theorem mul_by_divBy (s : S) (p : LocalizedModule S M) :
     algebraMap R (Module.End R (LocalizedModule S M)) s (divBy s p) = p :=

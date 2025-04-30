@@ -160,7 +160,7 @@ theorem measurableSet_le' : MeasurableSet { p : α × α | p.1 ≤ p.2 } :=
 @[measurability]
 theorem measurableSet_le {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     MeasurableSet { a | f a ≤ g a } :=
-  hf.prod_mk hg measurableSet_le'
+  hf.prodMk hg measurableSet_le'
 
 end PartialOrder
 
@@ -222,11 +222,11 @@ theorem measurableSet_lt' [SecondCountableTopology α] : MeasurableSet { p : α 
 @[measurability]
 theorem measurableSet_lt [SecondCountableTopology α] {f g : δ → α} (hf : Measurable f)
     (hg : Measurable g) : MeasurableSet { a | f a < g a } :=
-  hf.prod_mk hg measurableSet_lt'
+  hf.prodMk hg measurableSet_lt'
 
 theorem nullMeasurableSet_lt [SecondCountableTopology α] {μ : Measure δ} {f g : δ → α}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : NullMeasurableSet { a | f a < g a } μ :=
-  (hf.prod_mk hg).nullMeasurable measurableSet_lt'
+  (hf.prodMk hg).nullMeasurable measurableSet_lt'
 
 theorem nullMeasurableSet_lt' [SecondCountableTopology α] {μ : Measure (α × α)} :
     NullMeasurableSet { p : α × α | p.1 < p.2 } μ :=
@@ -235,7 +235,7 @@ theorem nullMeasurableSet_lt' [SecondCountableTopology α] {μ : Measure (α × 
 theorem nullMeasurableSet_le [SecondCountableTopology α] {μ : Measure δ}
     {f g : δ → α} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     NullMeasurableSet { a | f a ≤ g a } μ :=
-  (hf.prod_mk hg).nullMeasurable measurableSet_le'
+  (hf.prodMk hg).nullMeasurable measurableSet_le'
 
 theorem Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s := by
   let u := ⋃ (x ∈ s) (y ∈ s), Ioo x y

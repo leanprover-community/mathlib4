@@ -26,10 +26,6 @@ assert_not_exists OrderedCommGroup Commute.zero_right Commute.add_right abs_eq_m
 -- TODO: `MulOpposite.op_natCast` was not intended to be imported
 -- assert_not_exists MulOpposite.op_natCast
 
--- Porting note: There are many occasions below where we need `simp [map_zero f]`
--- where `simp [map_zero]` should suffice. (Similarly for `map_one`.)
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20regression.20with.20MonoidHomClass
-
 open Additive Multiplicative
 
 variable {α β : Type*}
@@ -96,7 +92,7 @@ variable {A B F : Type*} [AddMonoidWithOne B] [FunLike F ℕ A] [AddMonoidWithOn
 
 -- these versions are primed so that the `RingHomClass` versions aren't
 theorem eq_natCast' [AddMonoidHomClass F ℕ A] (f : F) (h1 : f 1 = 1) : ∀ n : ℕ, f n = n
-  | 0 => by simp [map_zero f]
+  | 0 => by simp
   | n + 1 => by rw [map_add, h1, eq_natCast' f h1 n, Nat.cast_add_one]
 
 theorem map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
@@ -119,7 +115,7 @@ theorem ext_nat'' [MonoidWithZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : �
     f = g := by
   apply DFunLike.ext
   rintro (_ | n)
-  · simp [map_zero f, map_zero g]
+  · simp
   · exact h_pos n.succ_pos
 
 @[ext]
@@ -150,7 +146,7 @@ theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.At
   map_natCast f n
 
 theorem ext_nat [FunLike F ℕ R] [RingHomClass F ℕ R] (f g : F) : f = g :=
-  ext_nat' f g <| by simp only [map_one f, map_one g]
+  ext_nat' f g <| by simp
 
 theorem NeZero.nat_of_neZero {R S} [Semiring R] [Semiring S]
     {F} [FunLike F R S] [RingHomClass F R S] (f : F)

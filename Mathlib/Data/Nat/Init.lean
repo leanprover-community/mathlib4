@@ -159,7 +159,6 @@ lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
   | 1, _, h, _ => (h rfl).elim
   | 2, _, _, h => (h rfl).elim
-  -- Porting note: was `by decide`
   | n + 3, _, _, _ => le_add_left 3 n
 
 /-! ### `pred` -/
@@ -262,7 +261,7 @@ protected lemma sub_lt_sub_iff_right (h : c ≤ a) : a - c < b - c ↔ a < b := 
 
 @[simp] lemma mul_def : Nat.mul m n = m * n := rfl
 
--- Porting note: removing `simp` attribute
+-- Not `@[simp]` since it will be superseded by `_root_.zero_eq_mul`.
 protected lemma zero_eq_mul : 0 = m * n ↔ m = 0 ∨ n = 0 := by rw [eq_comm, Nat.mul_eq_zero]
 
 lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 :=
@@ -611,12 +610,10 @@ This section is here due to dependencies -- the lemmas here require some of the 
 proved above, and some of the results in later sections depend on the definitions in this section.
 -/
 
--- Porting note: The type ascriptions of these two lemmas need to be changed,
--- as mathport wrote a lambda that wasn't there in mathlib3, that prevents `simp` applying them.
-
 @[simp]
 lemma rec_zero {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) : Nat.rec h0 h 0 = h0 := rfl
 
+-- Not `@[simp]` since `simp` can reduce the whole term.
 lemma rec_add_one {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) (n : ℕ) :
     Nat.rec h0 h (n + 1) = h n (Nat.rec h0 h n) := rfl
 
@@ -954,8 +951,6 @@ lemma mod_succ_eq_iff_lt : m % n.succ = m ↔ m < n.succ :=
   mod_eq_iff_lt (succ_ne_zero _)
 
 @[simp] lemma mod_succ (n : ℕ) : n % n.succ = n := mod_eq_of_lt n.lt_succ_self
-
--- Porting note `Nat.div_add_mod` is now in core.
 
 lemma mod_add_div' (a b : ℕ) : a % b + a / b * b = a := by rw [Nat.mul_comm]; exact mod_add_div _ _
 

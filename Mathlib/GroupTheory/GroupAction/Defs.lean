@@ -53,6 +53,12 @@ theorem mem_orbit_iff {a₁ a₂ : α} : a₂ ∈ orbit M a₁ ↔ ∃ x : M, x 
 theorem mem_orbit (a : α) (m : M) : m • a ∈ orbit M a :=
   ⟨m, rfl⟩
 
+@[to_additive]
+theorem mem_orbit_of_mem_orbit {a₁ a₂ : α} (m : M) (h : a₂ ∈ orbit M a₁) :
+    m • a₂ ∈ orbit M a₁ := by
+  obtain ⟨x, rfl⟩ := mem_orbit_iff.mp h
+  simp [smul_smul]
+
 @[to_additive (attr := simp)]
 theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
   ⟨1, by simp [MulAction.one_smul]⟩

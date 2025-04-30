@@ -80,7 +80,7 @@ instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :
 
 /-- The standard one-dimensional simplex in `ℝ² = Fin 2 → ℝ`
 is homeomorphic to the unit interval. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
   toEquiv := stdSimplexEquivIcc ℝ
   continuous_toFun := .subtype_mk ((continuous_apply 0).comp continuous_subtype_val) _

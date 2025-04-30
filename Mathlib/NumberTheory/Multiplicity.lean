@@ -274,7 +274,6 @@ theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
     rw [Nat.succ_eq_add_one]
     ring
 
--- Porting note: simplified proof because `fin_cases` was not available in that case
 theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   intro hx
   unfold Odd at hx

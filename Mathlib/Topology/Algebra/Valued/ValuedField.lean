@@ -216,7 +216,6 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
           rw [← one_mul (1 : hat K)]
         refine
           Tendsto.mul continuous_fst.continuousAt (Tendsto.comp ?_ continuous_snd.continuousAt)
-        -- Porting note: Added `ContinuousAt.tendsto`
         convert (continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))).tendsto
         exact inv_one.symm
       rcases tendsto_prod_self_iff.mp this V V_in with ⟨U, U_in, hU⟩
@@ -341,8 +340,6 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
     simp_rw [← closure_coe_completion_v_lt]
     exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
 
--- Porting note: removed @[norm_cast] attribute due to error:
--- norm_cast: badly shaped lemma, rhs can't start with coe
 @[simp]
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x

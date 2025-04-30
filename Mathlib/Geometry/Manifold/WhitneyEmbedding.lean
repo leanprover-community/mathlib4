@@ -53,7 +53,7 @@ def embeddingPiTangent : C^∞⟮I, M; 𝓘(ℝ, ι → E × ℝ), ι → E × �
   val x i := (f i x • extChartAt I (f.c i) x, f i x)
   property :=
     contMDiff_pi_space.2 fun i =>
-      ((f i).contMDiff_smul contMDiffOn_extChartAt).prod_mk_space (f i).contMDiff
+      ((f i).contMDiff_smul contMDiffOn_extChartAt).prodMk_space (f i).contMDiff
 
 @[local simp]
 theorem embeddingPiTangent_coe :

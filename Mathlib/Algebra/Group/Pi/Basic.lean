@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Group.Pi.Notation
+import Mathlib.Algebra.Notation.Pi
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Spread

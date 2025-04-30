@@ -52,7 +52,7 @@ variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E�
 /-- A reducible type synonym for the bundle of continuous (semi)linear maps. For some reason, it
 helps with instance search.
 
-Porting note: after the port is done, we may want to remove this definition.
+TODO: we may want to remove this definition?
 -/
 protected abbrev Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
     [∀ x, TopologicalSpace (E₂ x)] : B → Type _ := fun x => E₁ x →SL[σ] E₂ x

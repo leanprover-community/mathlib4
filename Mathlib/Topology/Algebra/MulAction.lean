@@ -23,12 +23,6 @@ the map `(c, x) ↦ c • x` is continuous on `M × X`. We reuse this class for 
   multiplication by `M` is continuous. This allows `Homeomorph.smul` to be used with on monoids
   with `G = Mˣ`.
 
--- Porting note: These have all moved
-* `Homeomorph.smul_of_ne_zero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
-  is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
-* `Homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
-  is a homeomorphism of `X`.
-
 ## Main results
 
 Besides homeomorphisms mentioned above, in this file we provide lemmas like `Continuous.smul`

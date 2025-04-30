@@ -146,7 +146,6 @@ end ULift
 section Prod
 variable [PseudoMetricSpace β]
 
--- Porting note: added `let`, otherwise `simp` failed
 instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)

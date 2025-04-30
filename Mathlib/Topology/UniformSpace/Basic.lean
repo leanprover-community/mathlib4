@@ -495,18 +495,16 @@ instance OrderDual.instUniformSpace [UniformSpace α] : UniformSpace (αᵒᵈ) 
 
 section UniformContinuousInfi
 
--- Porting note: renamed for dot notation; add an `iff` lemma?
+-- TODO: add an `iff` lemma?
 theorem UniformContinuous.inf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ u₃ : UniformSpace β}
     (h₁ : UniformContinuous[u₁, u₂] f) (h₂ : UniformContinuous[u₁, u₃] f) :
     UniformContinuous[u₁, u₂ ⊓ u₃] f :=
   tendsto_inf.mpr ⟨h₁, h₂⟩
 
--- Porting note: renamed for dot notation
 theorem UniformContinuous.inf_dom_left {f : α → β} {u₁ u₂ : UniformSpace α} {u₃ : UniformSpace β}
     (hf : UniformContinuous[u₁, u₃] f) : UniformContinuous[u₁ ⊓ u₂, u₃] f :=
   tendsto_inf_left hf
 
--- Porting note: renamed for dot notation
 theorem UniformContinuous.inf_dom_right {f : α → β} {u₁ u₂ : UniformSpace α} {u₃ : UniformSpace β}
     (hf : UniformContinuous[u₂, u₃] f) : UniformContinuous[u₁ ⊓ u₂, u₃] f :=
   tendsto_inf_right hf

@@ -142,11 +142,13 @@ lemma hasLimit_iff_small_sections :
   · infer_instance
   · exact ⟨⟨_, isLimitConeOfForget _ (limit.isLimit _)⟩⟩
 
+instance topCat_hasLimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
+    HasLimitsOfShape J TopCat.{u} where
+  has_limit := fun F => by
+    rw [hasLimit_iff_small_sections]
+    infer_instance
+
 instance topCat_hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} TopCat.{u} where
-  has_limits_of_shape _ :=
-    { has_limit := fun F => by
-        rw [hasLimit_iff_small_sections]
-        infer_instance }
 
 instance topCat_hasLimits : HasLimits TopCat.{u} :=
   TopCat.topCat_hasLimitsOfSize.{u, u}
@@ -265,10 +267,13 @@ lemma hasColimit_iff_small_quot :
   · infer_instance
   · exact ⟨⟨_, isColimitCoconeOfForget _ (colimit.isColimit _)⟩⟩
 
-instance topCat_hasColimitsOfSize [UnivLE.{v, u}] : HasColimitsOfSize.{w, v} TopCat.{u} where
-  has_colimits_of_shape _ := ⟨fun F ↦ by
+instance topCat_hasColimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
+    HasColimitsOfShape J TopCat.{u} where
+  has_colimit := fun F => by
     rw [hasColimit_iff_small_quot]
-    infer_instance⟩
+    infer_instance
+
+instance topCat_hasColimitsOfSize [UnivLE.{v, u}] : HasColimitsOfSize.{w, v} TopCat.{u} where
 
 instance topCat_hasColimits : HasColimits TopCat.{u} :=
   TopCat.topCat_hasColimitsOfSize.{u, u}

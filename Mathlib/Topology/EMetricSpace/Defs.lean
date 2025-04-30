@@ -228,7 +228,6 @@ namespace EMetric
 instance (priority := 900) instIsCountablyGeneratedUniformity : IsCountablyGenerated (𝓤 α) :=
   isCountablyGenerated_of_seq ⟨_, uniformity_basis_edist_inv_nat.eq_iInf⟩
 
--- Porting note: changed explicit/implicit
 /-- ε-δ characterization of uniform continuity on a set for pseudoemetric spaces -/
 theorem uniformContinuousOn_iff [PseudoEMetricSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔
@@ -504,7 +503,7 @@ theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α}
 
 section Compact
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a uniform space with metrizable uniformity
+-- TODO: generalize to a uniform space with metrizable uniformity
 /-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
 set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
 theorem subset_countable_closure_of_almost_dense_set (s : Set α)

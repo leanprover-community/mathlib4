@@ -691,8 +691,7 @@ theorem mem_biInter {s : Set α} {t : α → Set β} {y : β} (h : ∀ x ∈ s, 
 /-- A specialization of `subset_iUnion₂`. -/
 theorem subset_biUnion_of_mem {s : Set α} {u : α → Set β} {x : α} (xs : x ∈ s) :
     u x ⊆ ⋃ x ∈ s, u x :=
--- Porting note: Why is this not just `subset_iUnion₂ x xs`?
-  @subset_iUnion₂ β α (· ∈ s) (fun i _ => u i) x xs
+  subset_iUnion₂ (s := fun i _ => u i) x xs
 
 /-- A specialization of `iInter₂_subset`. -/
 theorem biInter_subset_of_mem {s : Set α} {t : α → Set β} {x : α} (xs : x ∈ s) :
@@ -1209,10 +1208,7 @@ end le
 
 section Function
 
-/-! ### Lemmas about `Set.MapsTo`
-
-Porting note: some lemmas in this section were upgraded from implications to `iff`s.
--/
+/-! ### Lemmas about `Set.MapsTo` -/
 
 @[simp]
 theorem mapsTo_sUnion {S : Set (Set α)} {t : Set β} {f : α → β} :
@@ -1414,9 +1410,7 @@ section Image
 
 theorem image_iUnion {f : α → β} {s : ι → Set α} : (f '' ⋃ i, s i) = ⋃ i, f '' s i := by
   ext1 x
-  simp only [mem_image, mem_iUnion, ← exists_and_right, ← exists_and_left]
-  -- Porting note: `exists_swap` causes a `simp` loop in Lean4 so we use `rw` instead.
-  rw [exists_swap]
+  simp only [mem_image, mem_iUnion, ← exists_and_right, ← exists_and_left, exists_swap (α := α)]
 
 theorem image_iUnion₂ (f : α → β) (s : ∀ i, κ i → Set α) :
     (f '' ⋃ (i) (j), s i j) = ⋃ (i) (j), f '' s i j := by simp_rw [image_iUnion]
@@ -1920,9 +1914,7 @@ theorem _root_.Antitone.iInter_nat_add {f : ℕ → Set α} (hf : Antitone f) (k
     ⋂ n, f (n + k) = ⋂ n, f n :=
   hf.iInf_nat_add k
 
-/- Porting note: removing `simp`. LHS does not simplify. Possible linter bug. Zulip discussion:
-https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
--/
+@[simp]
 theorem iUnion_iInter_ge_nat_add (f : ℕ → Set α) (k : ℕ) :
     ⋃ n, ⋂ i ≥ n, f (i + k) = ⋃ n, ⋂ i ≥ n, f i :=
   iSup_iInf_ge_nat_add f k

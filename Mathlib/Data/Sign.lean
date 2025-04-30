@@ -147,28 +147,27 @@ def fin3Equiv : SignType ≃* Fin 3 where
 
 section CaseBashing
 
--- Porting note: a lot of these thms used to use decide! which is not implemented yet
-theorem nonneg_iff {a : SignType} : 0 ≤ a ↔ a = 0 ∨ a = 1 := by cases a <;> decide
+theorem nonneg_iff {a : SignType} : 0 ≤ a ↔ a = 0 ∨ a = 1 := by decide +revert
 
-theorem nonneg_iff_ne_neg_one {a : SignType} : 0 ≤ a ↔ a ≠ -1 := by cases a <;> decide
+theorem nonneg_iff_ne_neg_one {a : SignType} : 0 ≤ a ↔ a ≠ -1 := by decide +revert
 
-theorem neg_one_lt_iff {a : SignType} : -1 < a ↔ 0 ≤ a := by cases a <;> decide
+theorem neg_one_lt_iff {a : SignType} : -1 < a ↔ 0 ≤ a := by decide +revert
 
-theorem nonpos_iff {a : SignType} : a ≤ 0 ↔ a = -1 ∨ a = 0 := by cases a <;> decide
+theorem nonpos_iff {a : SignType} : a ≤ 0 ↔ a = -1 ∨ a = 0 := by decide +revert
 
-theorem nonpos_iff_ne_one {a : SignType} : a ≤ 0 ↔ a ≠ 1 := by cases a <;> decide
+theorem nonpos_iff_ne_one {a : SignType} : a ≤ 0 ↔ a ≠ 1 := by decide +revert
 
-theorem lt_one_iff {a : SignType} : a < 1 ↔ a ≤ 0 := by cases a <;> decide
+theorem lt_one_iff {a : SignType} : a < 1 ↔ a ≤ 0 := by decide +revert
 
 @[simp]
-theorem neg_iff {a : SignType} : a < 0 ↔ a = -1 := by cases a <;> decide
+theorem neg_iff {a : SignType} : a < 0 ↔ a = -1 := by decide +revert
 
 @[simp]
 theorem le_neg_one_iff {a : SignType} : a ≤ -1 ↔ a = -1 :=
   le_bot_iff
 
 @[simp]
-theorem pos_iff {a : SignType} : 0 < a ↔ a = 1 := by cases a <;> decide
+theorem pos_iff {a : SignType} : 0 < a ↔ a = 1 := by decide +revert
 
 @[simp]
 theorem one_le_iff {a : SignType} : 1 ≤ a ↔ a = 1 :=
@@ -191,10 +190,10 @@ theorem not_one_lt (a : SignType) : ¬1 < a :=
   not_top_lt
 
 @[simp]
-theorem self_eq_neg_iff (a : SignType) : a = -a ↔ a = 0 := by cases a <;> decide
+theorem self_eq_neg_iff (a : SignType) : a = -a ↔ a = 0 := by decide +revert
 
 @[simp]
-theorem neg_eq_self_iff (a : SignType) : -a = a ↔ a = 0 := by cases a <;> decide
+theorem neg_eq_self_iff (a : SignType) : -a = a ↔ a = 0 := by decide +revert
 
 @[simp]
 theorem neg_one_lt_one : (-1 : SignType) < 1 :=
@@ -217,8 +216,6 @@ def cast : SignType → α
 -- Porting note: Translated has_coe_t to CoeTC
 instance : CoeTC SignType α :=
   ⟨cast⟩
-
--- Porting note: `cast_eq_coe` removed, syntactic equality
 
 /-- Casting out of `SignType` respects composition with functions preserving `0, 1, -1`. -/
 lemma map_cast' {β : Type*} [One β] [Neg β] [Zero β]
@@ -285,7 +282,10 @@ theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f po
 
 end SignType
 
-variable {α : Type*}
+-- The lemma `exists_signed_sum` needs explicit universe handling in its statement.
+universe u
+
+variable {α : Type u}
 
 open SignType
 
@@ -293,7 +293,6 @@ section Preorder
 
 variable [Zero α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)] {a : α}
 
--- Porting note: needed to rename this from sign to SignType.sign to avoid ambiguity with Int.sign
 /-- The sign of an element is 1 if it's positive, -1 if negative, 0 otherwise. -/
 def SignType.sign : α →o SignType :=
   ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
@@ -475,10 +474,16 @@ end Int
 
 open Finset Nat
 
-/- Porting note: For all the following theorems, needed to add {α : Type u_1} to the assumptions
-because lean4 infers α to live in a different universe u_2 otherwise -/
-private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :
-    ∃ (β : Type u_1) (t : Finset β) (sgn : β → SignType) (g : β → α),
+section exists_signed_sum
+
+/-!
+In this section we explicitly handle universe variables,
+because Lean creates a fresh universe variable for the type whose existence is asserted.
+But we want the type to live in the same universe as the input type.
+-/
+
+private theorem exists_signed_sum_aux [DecidableEq α] (s : Finset α) (f : α → ℤ) :
+    ∃ (β : Type u) (t : Finset β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∈ s) ∧
         (#t = ∑ a ∈ s, (f a).natAbs) ∧
           ∀ a ∈ s, (∑ b ∈ t, if g b = a then (sgn b : ℤ) else 0) = f a := by
@@ -491,8 +496,8 @@ private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Fins
       sum_attach (s := s) (f := fun y => if y = x then f y else 0)]
 
 /-- We can decompose a sum of absolute value `n` into a sum of `n` signs. -/
-theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :
-    ∃ (β : Type u_1) (_ : Fintype β) (sgn : β → SignType) (g : β → α),
+theorem exists_signed_sum [DecidableEq α] (s : Finset α) (f : α → ℤ) :
+    ∃ (β : Type u) (_ : Fintype β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∈ s) ∧
         (Fintype.card β = ∑ a ∈ s, (f a).natAbs) ∧
           ∀ a ∈ s, (∑ b, if g b = a then (sgn b : ℤ) else 0) = f a :=
@@ -501,9 +506,9 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
     (sum_attach t fun b ↦ ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/
-theorem exists_signed_sum' {α : Type u_1} [Nonempty α] [DecidableEq α] (s : Finset α) (f : α → ℤ)
+theorem exists_signed_sum' [Nonempty α] [DecidableEq α] (s : Finset α) (f : α → ℤ)
     (n : ℕ) (h : (∑ i ∈ s, (f i).natAbs) ≤ n) :
-    ∃ (β : Type u_1) (_ : Fintype β) (sgn : β → SignType) (g : β → α),
+    ∃ (β : Type u) (_ : Fintype β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∉ s → sgn b = 0) ∧
         Fintype.card β = n ∧ ∀ a ∈ s, (∑ i, if g i = a then (sgn i : ℤ) else 0) = f a := by
   obtain ⟨β, _, sgn, g, hg, hβ, hf⟩ := exists_signed_sum s f
@@ -514,3 +519,5 @@ theorem exists_signed_sum' {α : Type u_1} [Nonempty α] [DecidableEq α] (s : F
   rintro (b | b) hb
   · cases hb (hg _)
   · rfl
+
+end exists_signed_sum

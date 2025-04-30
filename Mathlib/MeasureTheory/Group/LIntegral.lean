@@ -46,7 +46,7 @@ theorem lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0�
   convert (lintegral_map_equiv f <| MeasurableEquiv.mulRight g).symm using 1
   simp [map_mul_right_eq_self μ g]
 
-@[to_additive] -- Porting note: was `@[simp]`
+@[to_additive]
 theorem lintegral_div_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (x / g) ∂μ) = ∫⁻ x, f x ∂μ := by
   simp_rw [div_eq_mul_inv, lintegral_mul_right_eq_self f g⁻¹]
