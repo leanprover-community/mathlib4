@@ -85,7 +85,6 @@ theorem meas_ge_le_mul_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞
     {f : α → E} (hf : AEStronglyMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     μ { x | ε ≤ ‖f x‖₊ } ≤ ε⁻¹ ^ p.toReal * eLpNorm f p μ ^ p.toReal := by
   change μ { x | ε ≤ ‖f x‖ₑ } ≤ ε⁻¹ ^ p.toReal * eLpNorm f p μ ^ p.toReal
-  have : {x | ‖f x‖ₑ = ⊤} = ∅ := by ext x; simp
   exact meas_ge_le_mul_pow_eLpNorm_enorm' μ hp_ne_zero hp_ne_top hf hε (by simp)
 
 theorem MemLp.meas_ge_lt_top'_enorm {μ : Measure α} {f : α → ε'} (hℒp : MemLp f p μ)
