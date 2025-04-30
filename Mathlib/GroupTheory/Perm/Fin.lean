@@ -295,7 +295,7 @@ local instance {n : ℕ} {i: Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omeg
 variable {n : ℕ} {i j k : Fin n}
 
 /-- `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
-unchanged. In other words, it rotate elements in `[i, j]` one step to the right.
+unchanged. In other words, it rotates elements in `[i, j]` one step to the right.
 -/
 def cycleIcc (hij : i ≤ j): Perm (Fin n) :=
   (cycleRange ((j - i).castLT (sub_val_lt_sub hij))).extendDomain
