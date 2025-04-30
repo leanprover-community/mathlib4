@@ -224,6 +224,8 @@ abbrev unlintedNodes := #[
   --`ToAdditive.toAdditiveRest, -- the `existing` in `[to_additive existing]`
 
   ``Parser.Command.docComment, -- The docString linter already takes care of formatting doc-strings.
+
+  ``Parser.Command.omit, -- `omit [A] [B]` prints as `omit [A][B]`, see https://github.com/leanprover/lean4/pull/8169
   ]
 
 /--
