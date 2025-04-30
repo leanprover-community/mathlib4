@@ -144,12 +144,12 @@ lemma IsMatching.subgraphOfAdj (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching 
   | inr => use v; aesop
 
 lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsMatching) :
-    M.coeSubgraph.IsMatching := by
+    (Subgraph.coeSubgraph M).IsMatching := by
   intro _ hv
-  obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| M.verts_coeSubgraph.symm ▸ hv
+  obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| (Subgraph.verts_coeSubgraph M).symm ▸ hv
   use w
   refine ⟨?_, fun y hy => ?_⟩
-  · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| M.verts_coeSubgraph.symm ▸ hv
+  · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| (Subgraph.verts_coeSubgraph M).symm ▸ hv
     simp only [coeSubgraph_adj, Subtype.coe_eta, Subtype.coe_prop, exists_const]
     exact ⟨hv.2 ▸ v.2, hw.1⟩
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
@@ -276,11 +276,10 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
   simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
 lemma odd_matches_node_outside [Finite V] {u : Set V}
-    {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
-    (hM : M.IsPerfectMatching) (codd : Odd c.supp.ncard) :
-    ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.supp := by
+    (hM : M.IsPerfectMatching) (c : (Subgraph.deleteVerts ⊤ u).coe.oddComponents) :
+    ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.val.supp := by
   by_contra! h
-  have hMmatch : (M.induce c.supp).IsMatching := by
+  have hMmatch : (M.induce c.val.supp).IsMatching := by
     intro v hv
     obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
     obtain ⟨⟨v', hv'⟩, ⟨hv , rfl⟩⟩ := hv
@@ -292,10 +291,10 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
       Subgraph.induce_adj, hwnu, not_false_eq_true, and_self, Subgraph.top_adj, M.adj_sub hw.1,
       and_true] at hv' ⊢
     trivial
-  apply Nat.not_even_iff_odd.2 codd
-  haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
+  apply Nat.not_even_iff_odd.2 c.prop
+  haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
   classical
-  haveI : Fintype (c.supp) := Fintype.ofFinite _
+  haveI : Fintype (c.val.supp) := Fintype.ofFinite _
   simpa [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image, Nat.card_eq_fintype_card,
     Set.toFinset_image,Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card,
     ← Set.Nat.card_coe_set_eq] using hMmatch.even_card

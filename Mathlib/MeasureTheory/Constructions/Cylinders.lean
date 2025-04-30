@@ -3,10 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
-import Mathlib.Data.Finset.Lattice.Basic
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.Topology.Constructions
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.Data.Finset.Lattice.Basic
 
 /-!
 # π-systems of cylinders and square cylinders

@@ -370,7 +370,6 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
   { e.linearMapAt R b with
     toFun := e.linearMapAt R b -- given explicitly to help `simps`
     cont := by
-      dsimp
       rw [e.coe_linearMapAt b]
       classical
       refine continuous_if_const _ (fun hb => ?_) fun _ => continuous_zero

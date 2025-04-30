@@ -99,7 +99,7 @@ def leftRegular : Representation k G (G → k) where
 @[simp]
 lemma leftRegular_apply (s t : G) (f : G → k) : leftRegular s f t = f (s⁻¹ * t) := rfl
 
-variable [Fintype G]
+variable [Finite G]
 
 /-- The right regular representation `rightRegular` on `G → k` as a `FDRep k G`. -/
 @[simp]
@@ -107,12 +107,16 @@ def rightFDRep : FDRep k G := FDRep.of rightRegular
 
 end definitions
 
-variable [Fintype G]
+variable [Finite G]
 
-lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom k G) := by
+lemma equivHom_injective [Nontrivial k] : Function.Injective (equivHom k G) := by
   intro s t h
+  classical
   apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
+
+@[deprecated (since := "2025-04-27")]
+alias equivHom_inj := equivHom_injective
 
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
 def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
@@ -150,3 +154,5 @@ def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → 
 end FiniteGroup
 
 end TannakaDuality
+
+end

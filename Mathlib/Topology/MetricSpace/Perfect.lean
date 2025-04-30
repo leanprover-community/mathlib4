@@ -122,7 +122,7 @@ theorem Perfect.exists_nat_bool_injection
   · rintro y ⟨x, rfl⟩
     exact map_mem ⟨_, hdom⟩ 0
   · apply hdiam.map_continuous.comp
-    continuity
+    fun_prop
   intro x y hxy
   simpa only [← Subtype.val_inj] using hdisj'.map_injective hxy
 

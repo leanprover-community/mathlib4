@@ -593,7 +593,6 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
 theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 0 < a.x)
     (hay : 0 ≤ a.y) : ∃ n : ℕ, a = a₁ ^ n := by
   lift a.x to ℕ using hax.le with ax hax'
-  clear hax
   induction ax using Nat.strong_induction_on generalizing a with | h x ih =>
   rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`

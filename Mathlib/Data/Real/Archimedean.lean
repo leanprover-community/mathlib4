@@ -132,8 +132,6 @@ protected theorem isGLB_sInf (h₁ : s.Nonempty) (h₂ : BddBelow s) : IsGLB s (
   rw [sInf_def, ← isLUB_neg', neg_neg]
   exact Real.isLUB_sSup h₁.neg h₂.neg
 
-@[deprecated (since := "2024-10-02")] alias is_glb_sInf := isGLB_sInf
-
 noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
   __ := Real.linearOrder
   __ := Real.lattice
@@ -384,5 +382,12 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     _ ≤ ((1 / k + 1) ^ k : ℝ) ^ (2 * k) := by gcongr; exact mul_add_one_le_add_one_pow (by simp) _
     _ = (1 / k + 1 : ℝ) ^ (2 * k ^ 2) := by rw [← pow_mul, mul_left_comm, sq]
     _ < a ^ (2 * k ^ 2) := by gcongr
+
+lemma exists_nat_pos_inv_lt {b : ℝ} (hb : 0 < b) :
+    ∃ (n : ℕ), 0 < n ∧ (n : ℝ)⁻¹ < b := by
+  refine (exists_nat_gt b⁻¹).imp fun k hk ↦ ?_
+  have := (inv_pos_of_pos hb).trans hk
+  refine ⟨Nat.cast_pos.mp this, ?_⟩
+  rwa [inv_lt_comm₀ this hb]
 
 end Real
