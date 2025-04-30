@@ -39,6 +39,36 @@ end definition
 
 namespace IsCompactSystem
 
+lemma iff (p : Set α → Prop) : IsCompactSystem p ↔
+    ∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ n, ⋂ k < n, C k ≠ ∅) → ⋂ i, C i ≠ ∅ := by
+  refine ⟨fun h C hi ↦ ?_, fun h C hi ↦ ?_⟩
+  · rw [← not_imp_not]
+    push_neg
+    intro h'
+    specialize h C hi h'
+    obtain ⟨n, hn⟩ := h
+    use n + 1
+    rw [Dissipate] at hn
+    conv =>
+      lhs
+      enter [1]
+      intro j
+      rw [Nat.lt_add_one_iff]
+    exact hn
+  · rw [← not_imp_not]
+    push_neg
+    simp_rw [nonempty_iff_ne_empty]
+    intro h'
+    apply h C hi
+    intro n hn
+    apply h' n
+    rw [← subset_empty_iff] at hn ⊢
+    apply le_trans _ hn
+    rw [Dissipate]
+    intro x
+    rw [mem_iInter₂, mem_iInter₂]
+    exact fun h i hi ↦ h i hi.le
+
 /-- In a compact system, given a countable family with empty intersection, we choose a finite
 subfamily with empty intersection. -/
 noncomputable
