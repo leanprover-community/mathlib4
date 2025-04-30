@@ -21,7 +21,7 @@ This file defines compact systems of sets.
 
 * `IsCompactSystem`: A set of sets is a compact system if, whenever a countable subfamily has empty
   intersection, then finitely many of them already have empty intersection.
-
+* `IsCompactSystem.union`: The set system of finite unions of another set system.
 ## Main results
 
 * `IsCompactSystemiff_isCompactSystem_of_or_univ`: A set system is a compact
@@ -29,10 +29,10 @@ system iff inserting `univ` gives a compact system.
 * `IsClosedCompact.isCompactSystem`: The set of closed and compact sets is a compact system.
 * `IsClosedCompact.isCompactSystem_of_T2Space`: In a `T2Space α`, the set of compact sets
   is a compact system in a `T2Space`.
+* `IsCompactSystem.union.isConpactSystem`: If `IsCompactSystem p`, the set of finite unions
+  of `K : Set α` with `p K` is a compact system.
 * `IsCompactSystem.closedCompactSquareCylinders`: Closed and compact square cylinders form a
-  compact system.
-* `IsCompactSystem.closedCompactSquareCylinders`: Closed and compact square cylinders form a
-  compact system.
+  compact system in a product space.
 -/
 
 open Set Nat MeasureTheory
