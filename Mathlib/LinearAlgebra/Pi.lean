@@ -441,7 +441,7 @@ variable (R φ)
 /-- Transport dependent functions through an equivalence of the base space.
 
 This is `Equiv.piCongrLeft'` as a `LinearEquiv`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def piCongrLeft' (e : ι ≃ ι') : ((i' : ι) → φ i') ≃ₗ[R] (i : ι') → φ <| e.symm i :=
   { Equiv.piCongrLeft' φ e with
     map_add' := fun _ _ => rfl

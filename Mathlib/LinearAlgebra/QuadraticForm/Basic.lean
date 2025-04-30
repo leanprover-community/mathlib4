@@ -567,7 +567,7 @@ theorem comp_apply (Q : QuadraticMap R N P) (f : M →ₗ[R] N) (x : M) : (Q.com
   rfl
 
 /-- Compose a quadratic map with a linear function on the left. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] P) (Q : QuadraticMap R M N) :
     QuadraticMap R M P where
   toFun x := f (Q x)

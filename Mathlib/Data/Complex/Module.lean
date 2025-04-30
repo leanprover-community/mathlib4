@@ -301,7 +301,7 @@ of `A` which squares to `-1`.
 This can be used to embed the complex numbers in the `Quaternion`s.
 
 This isomorphism is named to match the very similar `Zsqrtd.lift`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
   toFun I' := liftAux I' I'.prop
   invFun F := ⟨F I, by rw [← map_mul, I_mul_I, map_neg, map_one]⟩

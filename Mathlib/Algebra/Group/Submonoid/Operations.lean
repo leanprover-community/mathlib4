@@ -951,7 +951,7 @@ def submonoidCongr (h : S = T) : S ≃* T :=
 /-- A monoid homomorphism `f : M →* N` with a left-inverse `g : N → M` defines a multiplicative
 equivalence between `M` and `f.mrange`.
 This is a bidirectional version of `MonoidHom.mrange_restrict`. -/
-@[to_additive (attr := simps (config := { simpRhs := true }))
+@[to_additive (attr := simps +simpRhs)
       "An additive monoid homomorphism `f : M →+ N` with a left-inverse `g : N → M`
       defines an additive equivalence between `M` and `f.mrange`.
       This is a bidirectional version of `AddMonoidHom.mrange_restrict`. "]
