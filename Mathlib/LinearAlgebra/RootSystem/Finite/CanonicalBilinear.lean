@@ -66,12 +66,12 @@ lemma Polarization_apply (x : M) :
 
 /-- An invariant linear map from coweight space to weight space. -/
 def CoPolarization : N →ₗ[R] M :=
-  ∑ i, LinearMap.toSpanSingleton R M (P.root i) ∘ₗ P.root' i
+  P.flip.Polarization
 
 @[simp]
 lemma CoPolarization_apply (x : N) :
-    P.CoPolarization x = ∑ i, P.root' i x • P.root i := by
-  simp [CoPolarization]
+    P.CoPolarization x = ∑ i, P.root' i x • P.root i :=
+  P.flip.Polarization_apply x
 
 lemma CoPolarization_eq : P.CoPolarization = P.flip.Polarization :=
   rfl
@@ -82,15 +82,15 @@ def RootForm : LinearMap.BilinForm R M :=
 
 /-- An invariant inner product on the coweight space. -/
 def CorootForm : LinearMap.BilinForm R N :=
-  ∑ i, (P.root' i).smulRight (P.root' i)
+  P.flip.RootForm
 
 lemma rootForm_apply_apply (x y : M) : P.RootForm x y =
     ∑ i, P.coroot' i x * P.coroot' i y := by
   simp [RootForm]
 
 lemma corootForm_apply_apply (x y : N) : P.CorootForm x y =
-    ∑ i, P.root' i x * P.root' i y := by
-  simp [CorootForm]
+    ∑ i, P.root' i x * P.root' i y :=
+  P.flip.rootForm_apply_apply x y
 
 lemma toPerfectPairing_apply_apply_Polarization (x y : M) :
     P.toPerfectPairing y (P.Polarization x) = P.RootForm x y := by
@@ -106,8 +106,8 @@ lemma flip_comp_polarization_eq_rootForm :
   ext; simp [rootForm_apply_apply, RootPairing.flip]
 
 lemma self_comp_coPolarization_eq_corootForm :
-    P.toLinearMap ∘ₗ P.CoPolarization = P.CorootForm := by
-  ext; simp [corootForm_apply_apply]
+    P.toLinearMap ∘ₗ P.CoPolarization = P.CorootForm :=
+  P.flip.flip_comp_polarization_eq_rootForm
 
 lemma polarization_apply_eq_zero_iff (m : M) :
     P.Polarization m = 0 ↔ P.RootForm m = 0 := by
@@ -175,7 +175,7 @@ end Fintype
 section IsValuedIn
 
 variable (S : Type*) [CommRing S] [Algebra S R] [FaithfulSMul S R] [Module S M]
-[IsScalarTower S R M] [Module S N] [IsScalarTower S R N] [P.IsValuedIn S] [Fintype ι] {i j : ι}
+  [IsScalarTower S R M] [Module S N] [IsScalarTower S R N] [P.IsValuedIn S] [Fintype ι] {i j : ι}
 
 /-- Polarization restricted to `S`-span of roots. -/
 def PolarizationIn : P.rootSpan S →ₗ[S] N :=
@@ -190,9 +190,8 @@ lemma PolarizationIn_eq (x : P.rootSpan S) :
     P.PolarizationIn S x = P.Polarization x := by
   simp only [PolarizationIn, LinearMap.coeFn_sum, LinearMap.coe_comp, Finset.sum_apply, comp_apply,
     LinearMap.toSpanSingleton_apply, Polarization_apply, PerfectPairing.flip_apply_apply]
-  refine Finset.sum_congr rfl ?_
-  intro i hi
-  rw [algebra_compatible_smul R ((P.coroot'In S i) x) (P.coroot i), algebraMap_coroot'In_apply,
+  refine Finset.sum_congr rfl fun i hi ↦ ?_
+  rw [algebra_compatible_smul R (P.coroot'In S i x) (P.coroot i), algebraMap_coroot'In_apply,
     PerfectPairing.flip_apply_apply]
 
 lemma range_polarizationIn :
@@ -202,24 +201,21 @@ lemma range_polarizationIn :
 
 /-- Polarization restricted to `S`-span of roots. -/
 def CoPolarizationIn : P.corootSpan S →ₗ[S] M :=
-  ∑ i, LinearMap.toSpanSingleton S M (P.root i) ∘ₗ P.root'In S i
+  P.flip.PolarizationIn S
 
 omit [IsScalarTower S R M] in
 lemma CoPolarizationIn_apply (x : P.corootSpan S) :
-    P.CoPolarizationIn S x = ∑ i, P.root'In S i x • P.root i := by
-  simp [CoPolarizationIn]
+    P.CoPolarizationIn S x = ∑ i, P.root'In S i x • P.root i :=
+  P.flip.PolarizationIn_apply S x
 
 lemma CoPolarizationIn_eq (x : P.corootSpan S) :
-    P.CoPolarizationIn S x = P.CoPolarization x := by
-  simp [CoPolarizationIn]
-  refine Finset.sum_congr rfl ?_
-  intro i hi
-  rw [algebra_compatible_smul R ((P.root'In S i) x) (P.root i), algebraMap_root'In_apply]
+    P.CoPolarizationIn S x = P.CoPolarization x :=
+  P.flip.PolarizationIn_eq S x
 
 /-- A canonical bilinear form on the span of roots in a finite root pairing, taking values in a
 commutative ring, where the root-coroot pairing takes values in that ring. -/
 def RootFormIn : LinearMap.BilinForm S (P.rootSpan S) :=
-    ∑ i, (P.coroot'In S i).smulRight (P.coroot'In S i)
+  ∑ i, (P.coroot'In S i).smulRight (P.coroot'In S i)
 
 omit [Module S N] [IsScalarTower S R N] in
 @[simp]
@@ -325,7 +321,7 @@ lemma prod_rootForm_smul_coroot_mem_range_domRestrict (i : ι) :
     (Finset.mem_univ i)
   rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
   refine LinearMap.mem_range.mpr ?_
-  use ⟨(c • 2 • P.root i), by aesop⟩
+  use ⟨c • 2 • P.root i, by aesop⟩
   simp
 
 end MoreFintype
@@ -334,7 +330,7 @@ section IsValuedInOrdered
 
 variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
   [Algebra S R] [FaithfulSMul S R] [Module S M]
-[IsScalarTower S R M] [Module S N] [IsScalarTower S R N] [P.IsValuedIn S] [Fintype ι] {i j : ι}
+  [IsScalarTower S R M] [Module S N] [IsScalarTower S R N] [P.IsValuedIn S] [Fintype ι] {i j : ι}
 
 /-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a
 root-positive form. -/

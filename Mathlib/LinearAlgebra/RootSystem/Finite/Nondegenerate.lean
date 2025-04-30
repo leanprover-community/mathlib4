@@ -71,7 +71,7 @@ class IsAnisotropic : Prop where
 
 instance [P.IsAnisotropic] : P.flip.IsAnisotropic where
   rootForm_root_ne_zero := IsAnisotropic.corootForm_coroot_ne_zero
-  corootForm_coroot_ne_zero := IsAnisotropic.rootForm_root_ne_zero
+  corootForm_coroot_ne_zero := IsAnisotropic.rootForm_root_ne_zero (P := P)
 
 lemma isAnisotropic_of_isValuedIn (S : Type*)
     [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
@@ -101,10 +101,10 @@ lemma pairingIn_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S 
 section DomainAlg
 
 variable (S : Type*) [CommRing S] [IsDomain R] [IsDomain S] [Algebra S R] [FaithfulSMul S R]
-[P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]
+  [P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]
 
 lemma finrank_range_polarization_eq_finrank_span_coroot [P.IsAnisotropic] :
-    finrank S (LinearMap.range (P.PolarizationIn S)) = finrank S (span S (range P.coroot)) := by
+    finrank S (LinearMap.range (P.PolarizationIn S)) = finrank S (P.corootSpan S) := by
   apply (Submodule.finrank_mono (P.range_polarizationIn_le_span_coroot S)).antisymm
   have : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
   have : NoZeroSMulDivisors S N := NoZeroSMulDivisors.trans_faithfulSMul S R N
@@ -113,7 +113,7 @@ lemma finrank_range_polarization_eq_finrank_span_coroot [P.IsAnisotropic] :
     have := (FaithfulSMul.algebraMap_eq_zero_iff S R).mpr h
     rw [algebraMap_rootFormIn] at this
     apply IsAnisotropic.rootForm_root_ne_zero i this
-  refine LinearMap.finrank_le_of_isSMulRegular (span S (range P.coroot))
+  refine LinearMap.finrank_le_of_isSMulRegular (P.corootSpan S)
     (LinearMap.range (M₂ := N) (P.PolarizationIn S))
     (smul_right_injective N h_ne) ?_
   intro _ hx
@@ -143,7 +143,7 @@ lemma polarizationIn_Injective [P.IsAnisotropic] :
   exact Submodule.finrank_mono <| le_of_eq <| LinearMap.range_eq_map (P.PolarizationIn S)
 
 lemma exists_coroot_ne [P.IsAnisotropic]
-    {x : span S (range P.root)} (hx : x ≠ 0) :
+    {x : P.rootSpan S} (hx : x ≠ 0) :
     ∃ i, P.coroot'In S i x ≠ 0 := by
   have hI := P.polarizationIn_Injective S
   have := (map_ne_zero_iff (P.PolarizationIn S) hI).mpr hx
@@ -159,11 +159,11 @@ end DomainAlg
 section LinearOrderedCommRingAlg
 
 variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] [IsDomain R] [Algebra S R]
-[FaithfulSMul S R] [P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N]
-[IsScalarTower S R N]
+  [FaithfulSMul S R] [P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N]
+  [IsScalarTower S R N]
 
-theorem posRootForm_posForm_pos_of_ne_zero {x : span S (range P.root)} (hx : x ≠ 0) :
-    0 < ((P.posRootForm S).posForm x x) := by
+theorem posRootForm_posForm_pos_of_ne_zero {x : P.rootSpan S} (hx : x ≠ 0) :
+    0 < (P.posRootForm S).posForm x x := by
   rw [posRootForm_posForm_apply_apply]
   have := P.isAnisotropic_of_isValuedIn S
   have : ∃ i ∈ Finset.univ, 0 < (P.coroot'In S i) x * (P.coroot'In S i) x := by
@@ -179,13 +179,12 @@ lemma posRootForm_posForm_anisotropic :
 
 lemma posRootForm_posForm_nondegenerate :
     (P.posRootForm S).posForm.Nondegenerate := by
-  refine LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr ?_
-  refine LinearMap.ker_eq_bot'.mpr ?_
+  refine LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr <| LinearMap.ker_eq_bot'.mpr ?_
   intro x hx
   contrapose! hx
   rw [DFunLike.ne_iff]
   use x
-  exact (ne_of_lt (posRootForm_posForm_pos_of_ne_zero P S hx)).symm
+  exact (posRootForm_posForm_pos_of_ne_zero P S hx).ne'
 
 end LinearOrderedCommRingAlg
 
