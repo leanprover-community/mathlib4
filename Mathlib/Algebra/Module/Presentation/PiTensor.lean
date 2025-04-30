@@ -240,6 +240,9 @@ end Relations
 @[simps! G R var]
 noncomputable def Presentation.piTensor [Finite ι] (pres : ∀ i, Presentation R (M i)) :
     Presentation R (⨂[R] i, M i) where
+  G := _
+  R := _
+  relation := _
   toSolution := .piTensor (fun i ↦ (pres i).toSolution)
   toIsPresentation := .piTensor (fun i ↦ (pres i).toIsPresentation)
 

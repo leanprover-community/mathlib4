@@ -60,10 +60,8 @@ namespace CategoryTheory
 
 variable [Category.{v₁} C]
 
-/-- The opposite category.
-
-See <https://stacks.math.columbia.edu/tag/001M>.
--/
+/-- The opposite category. -/
+@[stacks 001M]
 instance Category.opposite : Category.{v₁} Cᵒᵖ where
   comp f g := (g.unop ≫ f.unop).op
   id X := (𝟙 (unop X)).op
@@ -116,11 +114,17 @@ def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
   unitIso := Iso.refl (𝟭 Cᵒᵖᵒᵖ)
   counitIso := Iso.refl (opOp C ⋙ unopUnop C)
 
+instance : (opOp C).IsEquivalence :=
+  (opOpEquivalence C).isEquivalence_inverse
+
+instance : (unopUnop C).IsEquivalence :=
+  (opOpEquivalence C).isEquivalence_functor
+
 end
 
 /-- If `f` is an isomorphism, so is `f.op` -/
 instance isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op :=
-  ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by aesop_cat), Quiver.Hom.unop_inj (by aesop_cat)⟩⟩⟩
+  ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by simp), Quiver.Hom.unop_inj (by simp)⟩⟩⟩
 
 /-- If `f.op` is an isomorphism `f` must be too.
 (This cannot be an instance as it would immediately loop!)

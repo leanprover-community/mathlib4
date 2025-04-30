@@ -31,10 +31,7 @@ As corollaries, we get:
 -/
 
 
-open Finset LinearMap Set
-
-open scoped Classical
-open Convex Pointwise
+open Finset LinearMap Set Convex Pointwise
 
 variable {𝕜 E F β ι : Type*}
 
@@ -43,7 +40,8 @@ variable {𝕜 E F β ι : Type*}
 
 section Jensen
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [OrderedAddCommGroup β] [Module 𝕜 E] [Module 𝕜 β]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E]
+  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E] [Module 𝕜 β]
   [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E} {v : 𝕜} {q : E}
 
 /-- Convex **Jensen's inequality**, `Finset.centerMass` version. -/
@@ -110,14 +108,14 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
   have hk : k ∉ u := by simp [u]
   have ht :
       t = (u.cons k hk).cons j (mem_cons.not.2 <| not_or_intro (ne_of_apply_ne _ hjk) hj) := by
-    simp [insert_erase this, insert_erase ‹j ∈ t›, *]
+    simp [u, insert_erase this, insert_erase ‹j ∈ t›, *]
   clear_value u
   subst ht
   simp only [sum_cons]
   have := h₀ j <| by simp
   have := h₀ k <| by simp
   let c := w j + w k
-  have hc : w j / c + w k / c = 1 := by field_simp
+  have hc : w j / c + w k / c = 1 := by field_simp [c]
   calc f (w j • p j + (w k • p k + ∑ x ∈ u, w x • p x))
     _ = f (c • ((w j / c) • p j + (w k / c) • p k) + ∑ x ∈ u, w x • p x) := by
       congrm f ?_
@@ -242,7 +240,8 @@ end Jensen
 
 section MaximumPrinciple
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [LinearOrderedAddCommGroup β] [Module 𝕜 E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E]
+  [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E]
   [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {w : ι → 𝕜} {p : ι → E}
   {x y z : E}
 
@@ -257,12 +256,6 @@ theorem ConvexOn.inf_le_of_mem_convexHull {t : Finset E} (hf : ConcaveOn 𝕜 s 
     (hx : x ∈ convexHull 𝕜 (t : Set E)) :
     t.inf' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f ≤ f x :=
   hf.dual.le_sup_of_mem_convexHull hts hx
-
-@[deprecated (since := "2024-08-25")]
-alias le_sup_of_mem_convexHull := ConvexOn.le_sup_of_mem_convexHull
-
-@[deprecated (since := "2024-08-25")]
-alias inf_le_of_mem_convexHull := ConvexOn.inf_le_of_mem_convexHull
 
 /-- If a function `f` is convex on `s`, then the value it takes at some center of mass of points of
 `s` is less than the value it takes on one of those points. -/

@@ -3,8 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Tactic.MinImports
 
 /-!
 # Additive and Multiplicative for group actions
@@ -14,25 +15,25 @@ import Mathlib.Algebra.Group.TypeTags
 group action
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero MonoidHom
 
 open Function (Injective Surjective)
 
-variable {M N G H α β γ δ : Type*}
+variable {M α β γ : Type*}
 
 section
 
 open Additive Multiplicative
 
-instance Additive.vadd [SMul α β] : VAdd (Additive α) β where vadd a := (toMul a • ·)
+instance Additive.vadd [SMul α β] : VAdd (Additive α) β where vadd a := (a.toMul • ·)
 
-instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β where smul a := (toAdd a +ᵥ ·)
+instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β where smul a := (a.toAdd +ᵥ ·)
 
-@[simp] lemma toMul_smul [SMul α β] (a) (b : β) : (toMul a : α) • b = a +ᵥ b := rfl
+@[simp] lemma toMul_smul [SMul α β] (a:Additive α) (b : β) : (a.toMul : α) • b = a +ᵥ b := rfl
 
 @[simp] lemma ofMul_vadd [SMul α β] (a : α) (b : β) : ofMul a +ᵥ b = a • b := rfl
 
-@[simp] lemma toAdd_vadd [VAdd α β] (a) (b : β) : (toAdd a : α) +ᵥ b = a • b := rfl
+@[simp] lemma toAdd_vadd [VAdd α β] (a:Multiplicative α) (b : β) : (a.toAdd : α) +ᵥ b = a • b := rfl
 
 @[simp] lemma ofAdd_smul [VAdd α β] (a : α) (b : β) : ofAdd a • b = a +ᵥ b := rfl
 
@@ -55,18 +56,3 @@ instance Multiplicative.smulCommClass [VAdd α γ] [VAdd β γ] [VAddCommClass �
   ⟨@vadd_comm α β _ _ _ _⟩
 
 end
-
-/-- The tautological additive action by `Additive (Function.End α)` on `α`. -/
-instance AddAction.functionEnd : AddAction (Additive (Function.End α)) α := inferInstance
-
-/-- The additive monoid hom representing an additive monoid action.
-
-When `M` is a group, see `AddAction.toPermHom`. -/
-def AddAction.toEndHom [AddMonoid M] [AddAction M α] : M →+ Additive (Function.End α) :=
-  MonoidHom.toAdditive'' MulAction.toEndHom
-
-/-- The additive action induced by a hom to `Additive (Function.End α)`
-
-See note [reducible non-instances]. -/
-abbrev AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.End α)) : AddAction M α :=
-  AddAction.compHom α f

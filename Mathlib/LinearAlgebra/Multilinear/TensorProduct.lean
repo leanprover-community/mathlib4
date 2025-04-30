@@ -3,8 +3,8 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Multilinear.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Constructions relating multilinear maps and tensor products.
@@ -50,11 +50,16 @@ def domCoprodDep (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁)
 /-- A more bundled version of `MultilinearMap.domCoprodDep`, as a linear map
 from the tensor product of spaces of multilinear maps. -/
 def domCoprodDep' :
-    MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁ ⊗[R]
-      MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂ →ₗ[R]
+    MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁ ⊗[R] MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂ →ₗ[R]
         MultilinearMap R N (N₁ ⊗[R] N₂) :=
   TensorProduct.lift (LinearMap.mk₂ R domCoprodDep
     (by aesop) (by aesop) (by aesop) (by aesop))
+
+@[simp]
+theorem domCoprodDep'_apply (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁)
+    (b : MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂) :
+    domCoprodDep' (a ⊗ₜ b) = domCoprodDep a b := by
+  rfl
 
 end
 
@@ -84,8 +89,7 @@ def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
 def domCoprod' :
     MultilinearMap R (fun _ : ι₁ => N) N₁ ⊗[R] MultilinearMap R (fun _ : ι₂ => N) N₂ →ₗ[R]
       MultilinearMap R (fun _ : ι₁ ⊕ ι₂ => N) (N₁ ⊗[R] N₂) :=
-  TensorProduct.lift <|
-    LinearMap.mk₂ R domCoprod (by aesop) (by aesop) (by aesop) (by aesop)
+  domCoprodDep' (R := R) (N := fun (_ : ι₁ ⊕ ι₂) ↦ N)
 
 @[simp]
 theorem domCoprod'_apply (a : MultilinearMap R (fun _ : ι₁ => N) N₁)

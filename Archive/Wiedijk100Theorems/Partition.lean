@@ -64,8 +64,6 @@ variable {α : Type*}
 
 open Finset
 
-open scoped Classical
-
 /-- The partial product for the generating function for odd partitions.
 TODO: As `m` tends to infinity, this converges (in the `X`-adic topology).
 
@@ -92,10 +90,12 @@ open Finset.HasAntidiagonal
 universe u
 variable {ι : Type u}
 
+open scoped Classical in
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
 def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
   PowerSeries.mk fun n => if n ∈ s then 1 else 0
 
+open scoped Classical in
 theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
     coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 :=
   coeff_mk _ _
@@ -106,6 +106,7 @@ theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) 
 theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
     coeff α n (indicatorSeries _ s) = 0 := by rw [coeff_indicator, if_neg h]
 
+open scoped Classical in
 theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] :
     constantCoeff α (indicatorSeries _ s) = if 0 ∈ s then 1 else 0 :=
   rfl
@@ -115,7 +116,7 @@ theorem two_series (i : ℕ) [Semiring α] :
   ext n
   simp only [coeff_indicator, coeff_one, coeff_X_pow, Set.mem_insert_iff, Set.mem_singleton_iff,
     map_add]
-  cases' n with d
+  rcases n with - | d
   · simp [(Nat.succ_ne_zero i).symm]
   · simp [Nat.succ_ne_zero d]
 
@@ -129,7 +130,7 @@ theorem num_series' [Field α] (i : ℕ) :
       simp only [coeff_one, if_false, mul_sub, mul_one, coeff_indicator,
         LinearMap.map_sub, reduceCtorEq]
       simp_rw [coeff_mul, coeff_X_pow, coeff_indicator, @boole_mul _ _ _ _]
-      erw [sum_ite, sum_ite]
+      rw [sum_ite (hp := fun _ ↦ Classical.propDecidable _), sum_ite]
       simp_rw [@filter_filter _ _ _ _ _, sum_const_zero, add_zero, sum_const, nsmul_eq_mul, mul_one,
         sub_eq_iff_eq_add, zero_add]
       symm
@@ -137,10 +138,10 @@ theorem num_series' [Field α] (i : ℕ) :
       · suffices #{a ∈ antidiagonal (n + 1) | i + 1 ∣ a.fst ∧ a.snd = i + 1} = 1 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_one]
-        cases' h with p hp
+        obtain ⟨p, hp⟩ := h
         refine ⟨((i + 1) * (p - 1), i + 1), ?_⟩
         ext ⟨a₁, a₂⟩
-        simp only [mem_filter, Prod.mk.inj_iff, mem_antidiagonal, mem_singleton]
+        simp only [mem_filter, Prod.mk_inj, mem_antidiagonal, mem_singleton]
         constructor
         · rintro ⟨a_left, ⟨a, rfl⟩, rfl⟩
           refine ⟨?_, rfl⟩
@@ -162,6 +163,7 @@ theorem num_series' [Field α] (i : ℕ) :
 def mkOdd : ℕ ↪ ℕ :=
   ⟨fun i => 2 * i + 1, fun x y h => by linarith⟩
 
+open scoped Classical in
 -- The main workhorse of the partition theorem proof.
 theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
     (c : ℕ → Set ℕ) (hc : ∀ i, i ∉ s → 0 ∈ c i) :

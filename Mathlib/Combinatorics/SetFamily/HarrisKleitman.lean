@@ -3,10 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Combinatorics.SetFamily.Compression.Down
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Harris-Kleitman inequality
@@ -50,14 +51,17 @@ theorem IsLowerSet.memberSubfamily_subset_nonMemberSubfamily (h : IsLowerSet (�
 theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset α)))
     (hℬ : IsLowerSet (ℬ : Set (Finset α))) (h𝒜s : ∀ t ∈ 𝒜, t ⊆ s) (hℬs : ∀ t ∈ ℬ, t ⊆ s) :
     #𝒜 * #ℬ ≤ 2 ^ #s * #(𝒜 ∩ ℬ) := by
-  induction' s using Finset.induction with a s hs ih generalizing 𝒜 ℬ
-  · simp_rw [subset_empty, ← subset_singleton_iff', subset_singleton_iff] at h𝒜s hℬs
+  induction s using Finset.induction generalizing 𝒜 ℬ with
+  | empty =>
+    simp_rw [subset_empty, ← subset_singleton_iff', subset_singleton_iff] at h𝒜s hℬs
     obtain rfl | rfl := h𝒜s
     · simp only [card_empty, zero_mul, empty_inter, mul_zero, le_refl]
     obtain rfl | rfl := hℬs
     · simp only [card_empty, inter_empty, mul_zero, zero_mul, le_refl]
     · simp only [card_empty, pow_zero, inter_singleton_of_mem, mem_singleton, card_singleton,
         le_refl]
+  | insert hs ih =>
+  rename_i a s
   rw [card_insert_of_not_mem hs, ← card_memberSubfamily_add_card_nonMemberSubfamily a 𝒜, ←
     card_memberSubfamily_add_card_nonMemberSubfamily a ℬ, add_mul, mul_add, mul_add,
     add_comm (_ * _), add_add_add_comm]

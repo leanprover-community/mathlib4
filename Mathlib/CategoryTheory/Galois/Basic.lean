@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.Data.Finite.Card
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # Definition and basic properties of Galois categories
@@ -131,19 +131,19 @@ attribute [instance] preservesTerminalObjects preservesPullbacks preservesEpis
   preservesFiniteCoproducts reflectsIsos preservesQuotientsByFiniteGroups
 
 noncomputable instance : ReflectsLimitsOfShape (Discrete PEmpty.{1}) F :=
-  reflectsLimitsOfShapeOfReflectsIsomorphisms
+  reflectsLimitsOfShape_of_reflectsIsomorphisms
 
 noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
-  reflectsColimitsOfShapeOfReflectsIsomorphisms
+  reflectsColimitsOfShape_of_reflectsIsomorphisms
 
 noncomputable instance : PreservesFiniteLimits F :=
-  preservesFiniteLimitsOfPreservesTerminalAndPullbacks F
+  preservesFiniteLimits_of_preservesTerminal_and_pullbacks F
 
 /-- Fiber functors preserve quotients by finite groups in arbitrary universes. -/
-noncomputable instance {G : Type*} [Group G] [Finite G] :
+instance {G : Type*} [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) F := by
   choose G' hg hf he using Finite.exists_type_univ_nonempty_mulEquiv G
-  exact Limits.preservesColimitsOfShapeOfEquiv he.some.toSingleObjEquiv.symm F
+  exact Limits.preservesColimitsOfShape_of_equiv he.some.toSingleObjEquiv.symm F
 
 /-- Fiber functors reflect monomorphisms. -/
 instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
@@ -170,9 +170,9 @@ section
 
 /-- If `F` is a fiber functor and `E` is an equivalence between categories of finite types,
 then `F ⋙ E` is again a fiber functor. -/
-noncomputable def compRight (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
+lemma comp_right (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
     FiberFunctor (F ⋙ E) where
-  preservesQuotientsByFiniteGroups _ := compPreservesColimitsOfShape F E
+  preservesQuotientsByFiniteGroups _ := comp_preservesColimitsOfShape F E
 
 end
 
@@ -403,8 +403,8 @@ end CardFiber
 end PreGaloisCategory
 
 /-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fiber functor. -/
-class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C]
-    extends PreGaloisCategory C : Prop where
+class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop
+    extends PreGaloisCategory C where
   hasFiberFunctor : ∃ F : C ⥤ FintypeCat.{u₂}, Nonempty (PreGaloisCategory.FiberFunctor F)
 
 namespace PreGaloisCategory

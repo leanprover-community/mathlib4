@@ -57,9 +57,7 @@ theorem mem_ndinsert {a b : α} {s : Multiset α} : a ∈ ndinsert b s ↔ a = b
 theorem le_ndinsert_self (a : α) (s : Multiset α) : s ≤ ndinsert a s :=
   Quot.inductionOn s fun _ => (sublist_insert _ _).subperm
 
--- Porting note: removing @[simp], simp can prove it
-theorem mem_ndinsert_self (a : α) (s : Multiset α) : a ∈ ndinsert a s :=
-  mem_ndinsert.2 (Or.inl rfl)
+theorem mem_ndinsert_self (a : α) (s : Multiset α) : a ∈ ndinsert a s := by simp
 
 theorem mem_ndinsert_of_mem {a b : α} {s : Multiset α} (h : a ∈ s) : a ∈ ndinsert b s :=
   mem_ndinsert.2 (Or.inr h)
@@ -130,7 +128,7 @@ def ndunion (s t : Multiset α) : Multiset α :=
 theorem coe_ndunion (l₁ l₂ : List α) : @ndunion α _ l₁ l₂ = (l₁ ∪ l₂ : List α) :=
   rfl
 
--- Porting note: removing @[simp], simp can prove it
+-- `simp` can prove this once we have `ndunion_eq_union`.
 theorem zero_ndunion (s : Multiset α) : ndunion 0 s = s :=
   Quot.inductionOn s fun _ => rfl
 
@@ -164,7 +162,7 @@ theorem le_ndunion_left {s} (t : Multiset α) (d : Nodup s) : s ≤ ndunion s t 
   (le_iff_subset d).2 <| subset_ndunion_left _ _
 
 theorem ndunion_le_union (s t : Multiset α) : ndunion s t ≤ s ∪ t :=
-  ndunion_le.2 ⟨subset_of_le (le_union_left _ _), le_union_right _ _⟩
+  ndunion_le.2 ⟨subset_of_le le_union_left, le_union_right⟩
 
 theorem Nodup.ndunion (s : Multiset α) {t : Multiset α} : Nodup t → Nodup (ndunion s t) :=
   Quot.induction_on₂ s t fun _ _ => List.Nodup.union _
@@ -236,7 +234,7 @@ theorem ndinter_le_right {s} (t : Multiset α) (d : Nodup s) : ndinter s t ≤ t
   (le_iff_subset <| d.ndinter _).2 <| ndinter_subset_right _ _
 
 theorem inter_le_ndinter (s t : Multiset α) : s ∩ t ≤ ndinter s t :=
-  le_ndinter.2 ⟨inter_le_left _ _, subset_of_le <| inter_le_right _ _⟩
+  le_ndinter.2 ⟨inter_le_left, subset_of_le inter_le_right⟩
 
 @[simp]
 theorem ndinter_eq_inter {s t : Multiset α} (d : Nodup s) : ndinter s t = s ∩ t :=

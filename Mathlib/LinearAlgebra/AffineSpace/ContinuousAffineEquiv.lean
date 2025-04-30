@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Continuous affine equivalences
@@ -20,6 +21,7 @@ which are continuous with continuous inverse.
   not the convention used in function composition and compositions of bundled morphisms.
 
 * `e.toHomeomorph`: the continuous affine equivalence `e` as a homeomorphism
+* `e.toContinuousAffineMap`: the continuous affine equivalence `e` as a continuous affine map
 * `ContinuousLinearEquiv.toContinuousAffineEquiv`: a continuous linear equivalence as a continuous
   affine equivalence
 * `ContinuousAffineEquiv.constVAdd`: `AffineEquiv.constVAdd` as a continuous affine equivalence
@@ -45,13 +47,10 @@ structure ContinuousAffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring 
 notation:25 P₁ " ≃ᵃL[" k:25 "] " P₂:0 => ContinuousAffineEquiv k P₁ P₂
 
 variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k]
-  [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
-  [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
-  [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃]
-  [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄]
-  [TopologicalSpace P₁]
-  [TopologicalSpace P₂]
-  [TopologicalSpace P₃] [TopologicalSpace P₄]
+  [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
+  [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
+  [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃] [TopologicalSpace P₃]
+  [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄] [TopologicalSpace P₄]
 
 namespace ContinuousAffineEquiv
 
@@ -102,10 +101,10 @@ def Simps.apply (e : P₁ ≃ᵃL[k] P₂) : P₁ → P₂ :=
   e
 
 /-- See Note [custom simps projection]. -/
-def Simps.coe (e : P₁ ≃ᵃL[k] P₂) : P₁ ≃ᵃ[k] P₂ :=
-  e
+def Simps.symm_apply (e : P₁ ≃ᵃL[k] P₂) : P₂ → P₁ :=
+  e.symm
 
-initialize_simps_projections ContinuousLinearMap (toAffineEquiv_toFun → apply, toAffineEquiv → coe)
+initialize_simps_projections ContinuousAffineEquiv (toFun → apply, invFun → symm_apply)
 
 @[ext]
 theorem ext {e e' : P₁ ≃ᵃL[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
@@ -114,6 +113,29 @@ theorem ext {e e' : P₁ ≃ᵃL[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
 @[continuity]
 protected theorem continuous (e : P₁ ≃ᵃL[k] P₂) : Continuous e :=
   e.2
+
+/-- A continuous affine equivalence is a continuous affine map. -/
+def toContinuousAffineMap (e : P₁ ≃ᵃL[k] P₂) : P₁ →ᴬ[k] P₂ where
+  __ := e
+  cont := e.continuous_toFun
+
+@[simp]
+lemma coe_toContinuousAffineMap (e : P₁ ≃ᵃL[k] P₂) : ⇑e.toContinuousAffineMap = e :=
+  rfl
+
+lemma toContinuousAffineMap_injective :
+    Function.Injective (toContinuousAffineMap : (P₁ ≃ᵃL[k] P₂) → (P₁ →ᴬ[k] P₂)) := by
+  intro e e' h
+  ext p
+  simp_rw [← coe_toContinuousAffineMap, h]
+
+lemma toContinuousAffineMap_toAffineMap (e : P₁ ≃ᵃL[k] P₂) :
+    e.toContinuousAffineMap.toAffineMap = e.toAffineEquiv.toAffineMap :=
+  rfl
+
+lemma toContinuousAffineMap_toContinuousMap (e : P₁ ≃ᵃL[k] P₂) :
+    e.toContinuousAffineMap.toContinuousMap = toContinuousMap e.toHomeomorph :=
+  rfl
 
 end Basic
 
@@ -172,6 +194,9 @@ theorem apply_eq_iff_eq (e : P₁ ≃ᵃL[k] P₂) {p₁ p₂ : P₁} : e p₁ =
 
 @[simp]
 theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := rfl
+
+theorem symm_bijective : Function.Bijective (symm : (P₁ ≃ᵃL[k] P₂) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 theorem symm_symm_apply (e : P₁ ≃ᵃL[k] P₂) (x : P₁) : e.symm.symm x = e x :=
   rfl
@@ -263,6 +288,10 @@ theorem self_trans_symm (e : P₁ ≃ᵃL[k] P₂) : e.trans e.symm = refl k P�
 theorem symm_trans_self (e : P₁ ≃ᵃL[k] P₂) : e.symm.trans e = refl k P₂ :=
   ext e.apply_symm_apply
 
+lemma trans_toContinuousAffineMap (e : P₁ ≃ᵃL[k] P₂) (e' : P₂ ≃ᵃL[k] P₃) :
+    (e.trans e').toContinuousAffineMap = e'.toContinuousAffineMap.comp e.toContinuousAffineMap :=
+  rfl
+
 end ReflSymmTrans
 
 section
@@ -280,6 +309,11 @@ def _root_.ContinuousLinearEquiv.toContinuousAffineEquiv (L : E ≃L[k] F) : E �
 @[simp]
 theorem _root_.ContinuousLinearEquiv.coe_toContinuousAffineEquiv (e : E ≃L[k] F) :
     ⇑e.toContinuousAffineEquiv = e :=
+  rfl
+
+lemma _root_.ContinuousLinearEquiv.toContinuousAffineEquiv_toContinuousAffineMap (L : E ≃L[k] F) :
+    L.toContinuousAffineEquiv.toContinuousAffineMap =
+      L.toContinuousLinearMap.toContinuousAffineMap :=
   rfl
 
 variable (k P₁) in

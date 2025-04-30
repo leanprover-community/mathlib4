@@ -5,7 +5,7 @@ Authors: Hannah Fechtner
 -/
 
 import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # The finite set of symbols in a FreeMonoid element

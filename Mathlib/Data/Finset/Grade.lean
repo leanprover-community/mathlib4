@@ -3,10 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Order.Grade
+import Mathlib.Order.Nat
 
 /-!
 # Finsets and multisets form a graded order

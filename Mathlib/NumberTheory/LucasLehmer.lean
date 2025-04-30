@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Ainsley Pahljina
 -/
 import Mathlib.RingTheory.Fintype
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Zify
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
@@ -30,6 +33,7 @@ This tactic was ported by Thomas Murrills to Lean 4, and then it was converted t
 extension and made to use kernel reductions by Kyle Miller.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 /-- The Mersenne numbers, 2^p - 1. -/
 def mersenne (p : ℕ) : ℕ :=
@@ -135,21 +139,18 @@ theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <
 
 theorem sMod_lt (p : ℕ) (hp : p ≠ 0) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
   rw [← sMod_mod]
-  refine (Int.emod_lt _ (mersenne_int_ne_zero p hp)).trans_eq ?_
+  refine (Int.emod_lt_abs _ (mersenne_int_ne_zero p hp)).trans_eq ?_
   exact abs_of_nonneg (mersenne_int_pos hp).le
 
 theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
-  induction' i with i ih
-  · dsimp [s, sZMod]
-    norm_num
-  · push_cast [s, sZMod, ih]; rfl
+  induction i with
+  | zero => dsimp [s, sZMod]; norm_num
+  | succ i ih => push_cast [s, sZMod, ih]; rfl
 
 -- These next two don't make good `norm_cast` lemmas.
 theorem Int.natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
   have : 1 ≤ b ^ p := Nat.one_le_pow p b w
   norm_cast
-
-@[deprecated (since := "2024-05-25")] alias Int.coe_nat_pow_pred := Int.natCast_pow_pred
 
 theorem Int.coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
   Int.natCast_pow_pred 2 p (by decide)
@@ -184,13 +185,6 @@ the Lucas-Lehmer residue `s p (p-2) % (2^p - 1)` is zero.
 -/
 def LucasLehmerTest (p : ℕ) : Prop :=
   lucasLehmerResidue p = 0
-
--- Porting note: We have a fast `norm_num` extension, and we would rather use that than accidentally
--- have `simp` use `decide`!
-/-
-instance : DecidablePred LucasLehmerTest :=
-  inferInstanceAs (DecidablePred (lucasLehmerResidue · = 0))
--/
 
 /-- `q` is defined as the minimum factor of `mersenne p`, bundled as an `ℕ+`. -/
 def q (p : ℕ) : ℕ+ :=
@@ -270,14 +264,12 @@ instance : NatCast (X q) where
 
 @[simp] theorem snd_natCast (n : ℕ) : (n : X q).snd = (0 : ZMod q) := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : X q).fst = OfNat.ofNat n :=
+    (ofNat(n) : X q).fst = OfNat.ofNat n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_snd (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : X q).snd = 0 :=
+    (ofNat(n) : X q).snd = 0 :=
   rfl
 
 instance : AddGroupWithOne (X q) :=
@@ -318,18 +310,11 @@ theorem fst_intCast (n : ℤ) : (n : X q).fst = (n : ZMod q) :=
 theorem snd_intCast (n : ℤ) : (n : X q).snd = (0 : ZMod q) :=
   rfl
 
-@[deprecated (since := "2024-05-25")] alias nat_coe_fst := fst_natCast
-@[deprecated (since := "2024-05-25")] alias nat_coe_snd := snd_natCast
-@[deprecated (since := "2024-05-25")] alias int_coe_fst := fst_intCast
-@[deprecated (since := "2024-05-25")] alias int_coe_snd := snd_intCast
-
 @[norm_cast]
 theorem coe_mul (n m : ℤ) : ((n * m : ℤ) : X q) = (n : X q) * (m : X q) := by ext <;> simp
 
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
-
-@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by
@@ -357,10 +342,12 @@ theorem ωb_mul_ω (q : ℕ+) : (ωb : X q) * ω = 1 := by
 
 /-- A closed form for the recurrence relation. -/
 theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^ 2 ^ i := by
-  induction' i with i ih
-  · dsimp [s, ω, ωb]
+  induction i with
+  | zero =>
+    dsimp [s, ω, ωb]
     ext <;> norm_num
-  · calc
+  | succ i ih =>
+    calc
       (s (i + 1) : X q) = (s i ^ 2 - 2 : ℤ) := rfl
       _ = (s i : X q) ^ 2 - 2 := by push_cast; rfl
       _ = (ω ^ 2 ^ i + ωb ^ 2 ^ i) ^ 2 - 2 := by rw [ih]
@@ -393,7 +380,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   simp? [ZMod.intCast_zmod_eq_zero_iff_dvd] at h says
     simp only [add_tsub_cancel_right, ZMod.intCast_zmod_eq_zero_iff_dvd, ofNat_pos,
       pow_pos, cast_pred, cast_pow, cast_ofNat] at h
-  cases' h with k h
+  obtain ⟨k, h⟩ := h
   use k
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h
   -- coercion from ℤ to X q
@@ -416,7 +403,7 @@ theorem mersenne_coe_X (p : ℕ) : (mersenne p : X (q p)) = 0 := by
 
 theorem ω_pow_eq_neg_one (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     (ω : X (q (p' + 2))) ^ 2 ^ (p' + 1) = -1 := by
-  cases' ω_pow_formula p' h with k w
+  obtain ⟨k, w⟩ := ω_pow_formula p' h
   rw [mersenne_coe_X] at w
   simpa using w
 
@@ -513,11 +500,11 @@ def sModNat (q : ℕ) : ℕ → ℕ
 theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : ℤ) = sMod p k := by
   have h1 := calc
     4 = 2 ^ 2 := by norm_num
-    _ ≤ 2 ^ p := Nat.pow_le_pow_of_le_right (by norm_num) hp
+    _ ≤ 2 ^ p := Nat.pow_le_pow_right (by norm_num) hp
   have h2 : 1 ≤ 2 ^ p := by omega
   induction k with
   | zero =>
-    rw [sModNat, sMod, Int.ofNat_emod]
+    rw [sModNat, sMod, Int.natCast_emod]
     simp [h2]
   | succ k ih =>
     rw [sModNat, sMod, ← ih]
@@ -528,7 +515,7 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
         _         ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
     zify [h2, h3]
     rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
-      Int.add_emod_self, ← sub_eq_add_neg]
+      Int.add_emod_right, ← sub_eq_add_neg]
 
 /-- Tail-recursive version of `sModNat`. -/
 def sModNatTR (q : ℕ) (k : Nat) : ℕ :=

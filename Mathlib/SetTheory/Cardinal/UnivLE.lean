@@ -17,7 +17,7 @@ universe u v
 open Cardinal
 
 theorem univLE_iff_cardinal_le : UnivLE.{u, v} ↔ univ.{u, v+1} ≤ univ.{v, u+1} := by
-  rw [← not_iff_not, UnivLE]; simp_rw [small_iff_lift_mk_lt_univ]; push_neg
+  rw [← not_iff_not, univLE_iff]; simp_rw [small_iff_lift_mk_lt_univ]; push_neg
   -- strange: simp_rw [univ_umax.{v,u}] doesn't work
   refine ⟨fun ⟨α, le⟩ ↦ ?_, fun h ↦ ?_⟩
   · rw [univ_umax.{v,u}, ← lift_le.{u+1}, lift_univ, lift_lift] at le
@@ -34,6 +34,6 @@ theorem Ordinal.univLE_of_injective {f : Ordinal.{u} → Ordinal.{v}} (h : f.Inj
     UnivLE.{u, v} :=
   univLE_iff_exists_embedding.2 ⟨f, h⟩
 
-/-- Together with transitivity, this shows UnivLE "IsTotalPreorder". -/
+/-- Together with transitivity, this shows `UnivLE` is a total preorder. -/
 theorem univLE_total : UnivLE.{u, v} ∨ UnivLE.{v, u} := by
   simp_rw [univLE_iff_cardinal_le]; apply le_total

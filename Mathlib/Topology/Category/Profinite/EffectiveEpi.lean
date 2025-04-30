@@ -25,8 +25,6 @@ universe u
 
 open CategoryTheory Limits
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 namespace Profinite
 
 open List in

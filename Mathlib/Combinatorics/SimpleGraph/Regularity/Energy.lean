@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Rat.BigOperators
@@ -43,7 +43,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
     calc
       ∑ uv ∈ P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2 ≤ #P.parts.offDiag • (1 : ℚ) :=
         sum_le_card_nsmul _ _ 1 fun _ _ =>
-          (sq_le_one_iff <| G.edgeDensity_nonneg _ _).2 <| G.edgeDensity_le_one _ _
+          (sq_le_one_iff₀ <| G.edgeDensity_nonneg _ _).2 <| G.edgeDensity_le_one _ _
       _ = #P.parts.offDiag := Nat.smul_one_eq_cast _
       _ ≤ _ := by
         rw [offDiag_card, one_mul]
@@ -52,8 +52,9 @@ theorem energy_le_one : P.energy G ≤ 1 :=
         exact tsub_le_self
 
 @[simp, norm_cast]
-theorem coe_energy {𝕜 : Type*} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
-    (∑ uv ∈ P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (#P.parts : 𝕜) ^ 2 := by
+theorem coe_energy {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] :
+    (P.energy G : 𝕜) =
+      (∑ uv ∈ P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (#P.parts : 𝕜) ^ 2 := by
   rw [energy]; norm_cast
 
 end Finpartition

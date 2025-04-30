@@ -26,7 +26,7 @@ namespace Pi
 
 theorem _root_.IsSMulRegular.pi {α : Type*} [∀ i, SMul α <| f i] {k : α}
     (hk : ∀ i, IsSMulRegular (f i) k) : IsSMulRegular (∀ i, f i) k := fun _ _ h =>
-  funext fun i => hk i (congr_fun h i : _)
+  funext fun i => hk i (congr_fun h i :)
 
 instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
     SMulWithZero α (∀ i, f i) :=
@@ -80,7 +80,6 @@ instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCo
   zero_smul := by
     intros
     ext1
-    -- Porting note: not sure why `apply zero_smul` fails here.
     rw [zero_smul]
 
 end Pi

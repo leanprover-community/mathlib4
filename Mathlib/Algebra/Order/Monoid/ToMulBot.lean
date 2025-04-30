@@ -33,7 +33,7 @@ theorem toMulBot_zero : toMulBot (0 : WithZero (Multiplicative α)) = Multiplica
 
 @[simp]
 theorem toMulBot_coe (x : Multiplicative α) :
-    toMulBot ↑x = Multiplicative.ofAdd (↑(Multiplicative.toAdd x) : WithBot α) :=
+    toMulBot ↑x = Multiplicative.ofAdd (↑x.toAdd : WithBot α) :=
   rfl
 
 @[simp]

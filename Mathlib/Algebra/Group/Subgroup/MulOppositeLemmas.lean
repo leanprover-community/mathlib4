@@ -103,7 +103,7 @@ theorem unop_iInf (S : ι → Subgroup Gᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i
 
 @[to_additive]
 theorem op_closure (s : Set G) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Subgroup.unop_coe]
+  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Subgroup.coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 
@@ -127,7 +127,7 @@ theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : H.op) :
 
 @[to_additive (attr := simp)]
 theorem normal_op {H : Subgroup G} : H.op.Normal ↔ H.Normal := by
-  simp only [← normalizer_eq_top, ← op_normalizer, op_eq_top]
+  simp only [← normalizer_eq_top_iff, ← op_normalizer, op_eq_top]
 
 @[to_additive] alias ⟨Normal.of_op, Normal.op⟩ := normal_op
 
