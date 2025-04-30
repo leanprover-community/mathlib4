@@ -255,6 +255,12 @@ lemma iInf_ker_coroot'_eq :
     span R (range P.coroot') = ⊤ :=
   span_root'_eq_top P.flip
 
+lemma pairingIn_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
+    [P.IsValuedIn S] [IsDomain R] [NeZero (2 : R)] {i j : ι} :
+    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
+  simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn,
+    P.pairing_zero_iff' (i := i) (j := j)]
+
 /-- A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
 coefficients.
 
