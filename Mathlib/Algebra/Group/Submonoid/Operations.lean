@@ -1042,4 +1042,9 @@ theorem map_comap_eq_self {f : F} {S : Submonoid N} (h : S ≤ MonoidHom.mrange 
     (S.comap f).map f = S := by
   simpa only [inf_of_le_left h] using map_comap_eq f S
 
+@[to_additive]
+theorem map_comap_eq_self_of_surjective {f : F} (h : Function.Surjective f) {S : Submonoid N} :
+    map f (comap f S) = S :=
+  map_comap_eq_self (MonoidHom.mrange_eq_top_of_surjective _ h ▸ le_top)
+
 end Submonoid
