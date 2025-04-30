@@ -23,6 +23,10 @@ def Dissipate [LE α] (s : α → Set β) (x : α) : Set β :=
 @[simp]
 theorem dissipate_def [LE α] {x : α} : Dissipate s x = ⋂ y ≤ x, s y := rfl
 
+theorem dissipate_eq {s : ℕ → Set β} {n : ℕ} : Dissipate s n = ⋂ k < n + 1, s k := by
+  simp_rw [Nat.lt_add_one_iff]
+  rfl
+
 @[simp]
 theorem mem_dissipate [LE α] {x : α} {z : β} : z ∈ Dissipate s x ↔ ∀ y ≤ x, z ∈ s y := by
   simp_rw [dissipate_def, mem_iInter₂]
