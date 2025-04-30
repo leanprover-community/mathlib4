@@ -521,10 +521,10 @@ private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a
   unfold fastJacobiSymAux
   split <;> rename_i ha4
   · rw [IH (a / 4) (a.div_lt_self ha0 (by decide)) hb2 hb1]
-    simp only [Int.ofNat_ediv, Nat.cast_ofNat, div_four_left (a := a) (mod_cast ha4) hb2]
+    simp only [Int.natCast_ediv, Nat.cast_ofNat, div_four_left (a := a) (mod_cast ha4) hb2]
   split <;> rename_i ha2
   · rw [IH (a / 2) (a.div_lt_self ha0 (by decide)) hb2 hb1]
-    simp only [Int.ofNat_ediv, Nat.cast_ofNat, ← even_odd (a := a) (mod_cast ha2) hb2]
+    simp only [Int.natCast_ediv, Nat.cast_ofNat, ← even_odd (a := a) (mod_cast ha2) hb2]
     by_cases h : b % 8 = 3 ∨ b % 8 = 5 <;> simp [h]; cases flip <;> simp
   split <;> rename_i ha1
   · subst ha1; simp

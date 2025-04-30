@@ -916,7 +916,7 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClas
 /-- To rewrite from right to left, use `Finset.inf'_comp_eq_image`. -/
 @[simp]
 theorem inf'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
-    (g : β → α)  :
+    (g : β → α) :
     (s.image f).inf' hs g = s.inf' hs.of_image (g ∘ f) :=
   @sup'_image αᵒᵈ _ _ _ _ _ _ hs _
 
