@@ -219,7 +219,7 @@ def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (Decidable (Or ..))
 
 @[simp] theorem xor_true : Xor' True = Not := by
-  simp (config := { unfoldPartialApp := true }) [Xor']
+  simp +unfoldPartialApp [Xor']
 
 @[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
 
