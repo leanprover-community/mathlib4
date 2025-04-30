@@ -119,7 +119,7 @@ abbrev Walk.shortCut (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk u v :=
 /-- Given a vertex `x` in a walk `w` form the walk that travels along `w` from the first visit of
 `x` to the last visit of `x` (which may be the same in which case this is `nil' x`) -/
 abbrev Walk.shortClosed (w : G.Walk u v) (hx : x ∈ w.support) : G.Walk x x :=
-  (w.reverse.dropUntil _ (w.mem_support_reverse.2 hx)).reverse.dropUntil _ (by simp)
+  ((w.dropUntil _ hx).reverse.dropUntil _ (by simp)).reverse
 
 @[simp]
 lemma Walk.shortCut_start (w : G.Walk u v) : w.shortCut w.start_mem_support =
@@ -148,7 +148,6 @@ lemma Walk.shortCut_not_nil (w : G.Walk u v) (hx : x ∈ w.support) (hu : x ≠ 
   simp only [nil_append_iff, nil_takeUntil, nil_reverse, not_and]
   rintro rfl; contradiction
 
-@[simp]
 lemma Walk.dropUntil_reverse_comm (w : G.Walk u v) (hx : x ∈ w.support) :
   ((w.dropUntil _ hx).reverse.dropUntil _ (by simp)).reverse =
   (((w.reverse.dropUntil _ (w.mem_support_reverse.2 hx)).reverse.dropUntil _ (by simp))):= by
@@ -169,9 +168,10 @@ lemma Walk.dropUntil_reverse_comm (w : G.Walk u v) (hx : x ∈ w.support) :
       simp [hu]
     · simpa [hu, hb] using ih _ hb
 
+@[simp]
 lemma Walk.shortClosed_reverse (w : G.Walk u v) (hx : x ∈ w.support) :
     (w.reverse.shortClosed ((w.mem_support_reverse.2 hx))).reverse = w.shortClosed hx := by
-  simp
+  simp [shortClosed, ← (w.dropUntil_reverse_comm hx)]
 
 @[simp]
 lemma Walk.dropUntil_spec (w : G.Walk u v) (hx : x ∈ w.support) :
@@ -180,13 +180,11 @@ lemma Walk.dropUntil_spec (w : G.Walk u v) (hx : x ∈ w.support) :
   have hc := congr_arg Walk.reverse <| take_spec (w.dropUntil _ hx).reverse (end_mem_support _)
   rw [Walk.reverse_reverse, ← hc, Walk.reverse_append] at *
   symm
-  congr! 1
-  · exact w.dropUntil_reverse_comm hx
-  · congr! 1
-    conv_rhs =>
-      enter [1]
-      rw [← take_spec w hx, Walk.reverse_append]
-    rw [takeUntil_append_of_mem_left]
+  congr! 2
+  conv_rhs =>
+    enter [1]
+    rw [← take_spec w hx, Walk.reverse_append]
+  rw [takeUntil_append_of_mem_left]
 
 /-- w.shortCut1 ++ w.shortClosed ++ w.shortCut2 = w -/
 lemma Walk.take_shortClosed_reverse_spec (w : G.Walk u v) (hx : x ∈ w.support) :
@@ -240,25 +238,25 @@ lemma Walk.shortClosed_count_le {y : α} (w : G.Walk u v) (hx : x ∈ w.support)
 
 /-- If `w.count u ≤ 2` and `x ≠ u` then `u ∉ w.shortClosed x` -/
 lemma Walk.shortClosed_count_le_two {u x : α} (w : G.Walk u u) (hx : x ∈ w.support) (hne : x ≠ u)
-  (h2 : w.support.count u ≤ 2) : u ∉ (w.shortClosed hx).support := by
+    (h2 : w.support.count u ≤ 2) : u ∉ (w.shortClosed hx).support := by
   intro hf
   have := congr_arg Walk.support <| w.take_shortClosed_reverse_spec hx
   apply_fun List.count u at this
   rw [← this] at h2
-  simp_rw [support_append, count_append] at h2
-  simp at h2
-  rw [List.count_tail (by simp)] at h2
-  simp [hne] at h2
-  rw [← List.reverse_reverse (w.reverse.takeUntil _ (by simp [hx])).support] at h2
-  rw [List.dropLast_reverse, List.count_reverse] at h2
-  rw [List.count_tail (by simp)] at h2
-  simp [hne] at h2
-  rw [← List.count_pos_iff] at hf
-  have h1 : 0 < count u (w.takeUntil _ hx).support :=
+  rw [support_append, count_append, List.count_tail (by simp)] at h2-- , support_reverse] at h2
+  simp only [hne, head_support, beq_iff_eq, hne, ↓reduceIte, tsub_zero] at h2
+  rw [support_append, count_append] at h2
+  have h1 :  1 ≤ count u (w.takeUntil _ hx).support :=
     List.count_pos_iff.2 (start_mem_support ..)
-  have h3 : 0 < count u (w.reverse.takeUntil x (by simp [hx])).support :=
-    List.count_pos_iff.2 (start_mem_support ..)
-  omega
+  have h3 : 1 ≤ count u (w.shortClosed hx).support := List.count_pos_iff.2 hf
+  have h4 : (w.reverse.takeUntil x (by simp [hx])).reverse.support.tail.count u ≤ 0 := by
+    omega
+  rw [List.count_tail (by simp)] at h4
+  simp only [support_reverse, List.count_reverse, head_reverse, getLast_support, beq_iff_eq, hne,
+    ↓reduceIte, tsub_zero, nonpos_iff_eq_zero] at h4
+  rw [List.count_eq_zero] at h4
+  apply h4
+  exact start_mem_support ..
 
 lemma Walk.shortCut_count_le {y : α} (w : G.Walk u v) (hx : x ∈ w.support) :
     (w.shortCut hx).support.count y ≤ w.support.count y := by
@@ -271,9 +269,9 @@ lemma Walk.shortCut_count_le {y : α} (w : G.Walk u v) (hx : x ∈ w.support) :
   by_cases hy : x = y
   · subst y
     simp
-  · simp only [support_reverse, List.count_reverse, head_reverse, getLast_support, beq_iff_eq,
-    hy, ↓reduceIte, tsub_zero, tail_reverse, count_append, ne_eq, support_ne_nil,
-    not_false_eq_true, head_append_of_ne_nil, head_support]
+  · simp only [support_reverse, List.count_reverse, head_reverse, getLast_support, beq_iff_eq, hy,
+    ↓reduceIte, tsub_zero, tail_reverse, count_append, ne_eq, reverse_eq_nil_iff, support_ne_nil,
+    not_false_eq_true, head_append_of_ne_nil]
     rw [← List.reverse_reverse (w.reverse.takeUntil _ (by simp [hx])).support]
     rw [List.dropLast_reverse, List.reverse_reverse, List.count_reverse]
     rw [List.count_tail (by simp)]
@@ -351,10 +349,10 @@ lemma Walk.darts_shorterOdd_subset {u : α} (p : G.Walk u u) {x : α} (hx : x �
   rw [shorterOdd] at hd
   split_ifs at hd with h1
   · rw [shortClosed] at hd
+    apply darts_dropUntil_subset _ hx
+    rw [mem_darts_reverse] at hd
     have := darts_dropUntil_subset _ _ hd
-    rw [ mem_darts_reverse] at this
-    have := darts_dropUntil_subset _ _ this
-    rwa [mem_darts_reverse] at this
+    rwa [← mem_darts_reverse, reverse_reverse] at this
   · have := rotate_darts (p.shortCut hx) (show x ∈ _ by simp [hx])
     rw [this.mem_iff, shortCut, darts_append, mem_append] at hd
     cases hd with
@@ -646,7 +644,7 @@ lemma Walk.darts_minOdd_aux_subset {u : α} (p : G.Walk u u) :
     · push_neg at hv
       rw [minOdd_aux_nil _ hv]
       intro d hd ; exact hd
-
+#check Walk.bypass
 /-- Returns an odd cycle (given an odd closed walk) -/
 def Walk.oddCycle {u : α} (p : G.Walk u u) : Σ v, G.Walk v v := ⟨_, p.minOdd_aux.2.cutVert⟩
 
