@@ -487,14 +487,14 @@ theorem cons_induction {α : Type*} {motive : Finset α → Prop} (empty : motiv
 
 @[elab_as_elim]
 theorem cons_induction_on {α : Type*} {motive : Finset α → Prop} (s : Finset α) (empty : motive ∅)
-    (cons : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), motive s → motive (cons a s h)) : motive s :=
+    (cons : ∀ (a : α) (s : Finset α) (h : a ∉ s), motive s → motive (cons a s h)) : motive s :=
   cons_induction empty cons s
 
 @[elab_as_elim]
 protected theorem induction {α : Type*} {motive : Finset α → Prop} [DecidableEq α]
     (empty : motive ∅)
-    (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → motive s → motive (insert a s)) : ∀ s, motive s :=
-  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert ha
+    (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : ∀ s, motive s :=
+  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert a s ha
 
 /-- To prove a proposition about an arbitrary `Finset α`,
 it suffices to prove it for the empty `Finset`,
@@ -504,7 +504,7 @@ then it holds for the `Finset` obtained by inserting a new element.
 @[elab_as_elim]
 protected theorem induction_on {α : Type*} {motive : Finset α → Prop} [DecidableEq α] (s : Finset α)
     (empty : motive ∅)
-    (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → motive s → motive (insert a s)) : motive s :=
+    (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : motive s :=
   Finset.induction empty insert s
 
 /-- To prove a proposition about `S : Finset α`,
