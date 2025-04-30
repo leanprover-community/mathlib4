@@ -159,7 +159,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     rw [← f.appLE_congr _ rfl this (fun f => P f.hom),
       IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2 _ r]
     simp only [CommRingCat.hom_ofHom]
-    apply +allowSynthFailures h₂
+    apply (config := { allowSynthFailures := true }) h₂
     exact H U
   · introv hs hs' U
     apply h₃ _ _ hs

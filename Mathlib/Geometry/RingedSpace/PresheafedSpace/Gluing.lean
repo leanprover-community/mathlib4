@@ -445,10 +445,10 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
       limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
         (Quiver.Hom.op (WalkingMultispan.Hom.fst (i, j)))
   · rw [Category.comp_id]
-    apply +allowSynthFailures mono_comp
+    apply (config := { allowSynthFailures := true }) mono_comp
     change Mono ((_ ≫ D.f j i).c.app _)
     rw [comp_c_app]
-    apply +allowSynthFailures mono_comp
+    apply (config := { allowSynthFailures := true }) mono_comp
     · erw [D.ι_image_preimage_eq i j U]
       infer_instance
     · have : IsIso (D.t i j).c := by apply c_isIso_of_iso
@@ -638,7 +638,7 @@ theorem ι_isoSheafedSpace_inv (i : D.J) :
 
 instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   delta IsOpenImmersion; rw [← D.ι_isoSheafedSpace_inv]
-  apply +allowSynthFailures PresheafedSpace.IsOpenImmersion.comp
+  apply (config := { allowSynthFailures := true }) PresheafedSpace.IsOpenImmersion.comp
   -- Porting note: this was automatic
   exact (D.toSheafedSpaceGlueData).ιIsOpenImmersion i
 

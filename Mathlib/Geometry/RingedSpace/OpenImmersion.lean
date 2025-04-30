@@ -264,7 +264,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
 
   have : IsIso f.c := NatIso.isIso_of_isIso_app _
 
-  apply +allowSynthFailures isIso_of_components
+  apply (config := { allowSynthFailures := true }) isIso_of_components
   let t : X ≃ₜ Y := (Homeomorph.ofIsEmbedding _ H.base_open.isEmbedding).trans
     { toFun := Subtype.val
       invFun := fun x =>
