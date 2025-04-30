@@ -206,7 +206,7 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
     measurable_pi_iff.mpr <| fun i ↦ measurable_pi_apply (e i)
   induction s using Finset.induction generalizing x with
   | empty => simp
-  | insert hi ih =>
+  | insert _ _ hi ih =>
     rw [image_insert, lmarginal_insert _ (hf.comp h) (he.mem_finset_image.not.mpr hi),
       lmarginal_insert _ hf hi]
     simp_rw [ih, ← update_comp_eq_of_injective' x he]
