@@ -22,12 +22,18 @@ variable {C D H : Type _} [Category C] [Category D] [Category H]
   (α : L ⋙ LF ⟶ F) (α' : L ⋙ LF' ⟶ F') (α'' : L ⋙ LF'' ⟶ F'') (α'₂ : L ⋙ LF' ⟶ F)
   (W : MorphismProperty C)
 
+@[mk_iff]
 class IsLeftDerivedFunctor [L.IsLocalization W] : Prop where
   isRightKanExtension' : LF.IsRightKanExtension α
 
 lemma IsLeftDerivedFunctor.isRightKanExtension [L.IsLocalization W] [LF.IsLeftDerivedFunctor α W] :
     LF.IsRightKanExtension α :=
   IsLeftDerivedFunctor.isRightKanExtension' W
+
+lemma isLeftDerivedFunctor_iff_of_iso [L.IsLocalization W] (e : LF ≅ LF')
+    (comm : whiskerLeft L e.hom ≫ α'₂ = α) :
+    LF.IsLeftDerivedFunctor α W ↔ LF'.IsLeftDerivedFunctor α'₂ W := by
+  simpa only [isLeftDerivedFunctor_iff] using isRightKanExtension_iff_of_iso e α α'₂ comm
 
 section
 

@@ -1,0 +1,87 @@
+/-
+Copyright (c) 2025 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
+import Mathlib.CategoryTheory.Functor.CurryingThree
+import Mathlib.CategoryTheory.Localization.Prod
+
+/-!
+# Left derived bifunctors
+
+-/
+
+namespace CategoryTheory
+
+namespace Functor
+
+variable {C₁ C₂ D₁ D₂ H : Type*} [Category C₁] [Category C₂]
+  [Category D₁] [Category D₂] [Category H]
+
+@[simps]
+def whiskeringLeft₂Equiv {F : D₁ ⥤ D₂ ⥤ H} {G : C₁ ⥤ C₂ ⥤ H}
+    {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} :
+    ((((whiskeringLeft₂ H).obj L₁).obj L₂).obj F ⟶ G) ≃
+      (L₁.prod L₂ ⋙ uncurry.obj F ⟶ uncurry.obj G) where
+  toFun α :=
+    { app := fun ⟨X₁, X₂⟩ ↦ (α.app X₁).app X₂
+      naturality := by
+        rintro X Y f
+        have h₁ := NatTrans.congr_app (α.naturality f.1) X.2
+        have h₂ := (α.app Y.1).naturality f.2
+        dsimp at h₁ h₂ ⊢
+        rw [Category.assoc, h₂, reassoc_of% h₁] }
+  invFun β :=
+    { app X₁ :=
+        { app X₂ := β.app (X₁, X₂)
+          naturality {X₂ Y₂} f₂ := by
+            simpa using β.naturality ((𝟙 X₁, f₂) : (X₁, X₂) ⟶ (X₁, Y₂)) }
+      naturality {X₁ Y₁} f₁ := by
+        ext X₂
+        simpa using β.naturality ((f₁, 𝟙 X₂) : (X₁, X₂) ⟶ (Y₁, X₂)) }
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+variable (RF : D₁ ⥤ D₂ ⥤ H) (F : C₁ ⥤ C₂ ⥤ H)
+  {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂}
+  (α : (((whiskeringLeft₂ H).obj L₁).obj L₂).obj RF ⟶ F)
+  (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
+  [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
+
+abbrev HasLeftDerivedFunctor₂ := (uncurry.obj F).HasLeftDerivedFunctor (W₁.prod W₂)
+
+variable [W₁.ContainsIdentities] [W₂.ContainsIdentities]
+
+variable {F}
+
+abbrev IsLeftDerivedFunctor₂ : Prop :=
+  (uncurry.obj RF).IsLeftDerivedFunctor (whiskeringLeft₂Equiv α) (W₁.prod W₂)
+
+section
+
+variable (F L₁ L₂)
+variable [HasLeftDerivedFunctor₂ F W₁ W₂] [W₁.ContainsIdentities] [W₂.ContainsIdentities]
+
+noncomputable def leftDerived₂ : D₁ ⥤ D₂ ⥤ H :=
+    curry.obj ((uncurry.obj F).totalLeftDerived (L₁.prod L₂) (W₁.prod W₂))
+
+noncomputable def leftDerivedCounit₂ :
+    (((whiskeringLeft₂ H).obj L₁).obj L₂).obj (leftDerived₂ F L₁ L₂ W₁ W₂) ⟶ F :=
+  whiskeringLeft₂Equiv.symm (whiskerLeft _ (currying.counitIso.hom.app _) ≫
+    ((uncurry.obj F).totalLeftDerivedCounit (L₁.prod L₂) (W₁.prod W₂)))
+
+instance : (leftDerived₂ F L₁ L₂ W₁ W₂).IsLeftDerivedFunctor₂
+    (leftDerivedCounit₂ F L₁ L₂ W₁ W₂) W₁ W₂ := by
+  refine (isLeftDerivedFunctor_iff_of_iso _ _
+    ((uncurry.obj F).totalLeftDerivedCounit (L₁.prod L₂) (W₁.prod W₂)) _ _
+    (currying.counitIso.symm.app
+      (((uncurry.obj F).totalLeftDerived (L₁.prod L₂) (W₁.prod W₂)))) ?_).1 inferInstance
+  ext
+  simp [leftDerivedCounit₂]
+
+end
+
+end Functor
+
+end CategoryTheory
