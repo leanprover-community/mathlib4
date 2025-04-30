@@ -284,7 +284,7 @@ https://github.com/sagemath/sage/blob/f8df80820dc7321dc9b18c9644c3b8315999670b/s
 for a description of `MPolynomial_libsingular.lift`.
 -/
 def sageHelperFunctions : String :=
-  include_str ".."/".."/"scripts"/"polyrith_sage_helper.py"
+  include_str ".."/".."/".."/"scripts"/"polyrith_sage_helper.py"
 
 /--
 The Sage type to use, given a base type of the target. Currently always rational numbers (`QQ`).
