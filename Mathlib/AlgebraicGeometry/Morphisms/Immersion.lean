@@ -88,7 +88,7 @@ namespace IsImmersion
 instance : IsLocalAtTarget @IsImmersion := by
   suffices IsLocalAtTarget (topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f)) from
     isImmersion_eq_inf ▸ inferInstance
-  apply (config := { allowSynthFailures := true }) topologically_isLocalAtTarget'
+  apply +allowSynthFailures topologically_isLocalAtTarget'
   · refine { precomp := ?_, postcomp := ?_ }
     · intro X Y Z i hi f hf
       change IsIso i at hi

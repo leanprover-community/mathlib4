@@ -325,7 +325,7 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
   wlog hY : IsAffine Y
   · refine (IsLocalAtTarget.iff_of_openCover (P := .isomorphisms Scheme) Y.affineCover).mpr ?_
     intro i
-    apply (config := { allowSynthFailures := true }) this
+    apply +allowSynthFailures this
     · exact MorphismProperty.pullback_snd _ _ inferInstance
     · exact IsLocalAtTarget.of_isPullback (.of_hasPullback f (Y.affineCover.map i)) ‹_›
     · exact isReduced_of_isOpenImmersion (Y.affineCover.map i)

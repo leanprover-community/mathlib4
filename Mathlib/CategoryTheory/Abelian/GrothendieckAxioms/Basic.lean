@@ -531,7 +531,7 @@ finite biproducts and finite limits.
 -/
 lemma CountableAB4.of_hasExactColimitsOfShape_nat [HasFiniteLimits C] [HasCountableCoproducts C]
     [HasExactColimitsOfShape (Discrete ℕ) C] : CountableAB4 C := by
-  apply (config := { allowSynthFailures := true })
+  apply +allowSynthFailures
       CountableAB4.of_hasExactColimitsOfShape_nat_and_finite
   exact fun _ ↦ inferInstance
 
@@ -541,7 +541,7 @@ finite biproducts and finite colimits.
 -/
 lemma CountableAB4Star.of_hasExactLimitsOfShape_nat [HasFiniteColimits C]
     [HasCountableProducts C] [HasExactLimitsOfShape (Discrete ℕ) C] : CountableAB4Star C := by
-  apply (config := { allowSynthFailures := true })
+  apply +allowSynthFailures
       CountableAB4Star.of_hasExactLimitsOfShape_nat_and_finite
   exact fun _ ↦ inferInstance
 
@@ -559,7 +559,7 @@ shape `J`.
 lemma hasExactColimitsOfShape_of_preservesMono [HasColimitsOfShape J C]
     [PreservesMonomorphisms (colim (J := J) (C := C))] : HasExactColimitsOfShape J C where
   preservesFiniteLimits := by
-    apply (config := { allowSynthFailures := true }) preservesFiniteLimits_of_preservesHomology
+    apply +allowSynthFailures preservesFiniteLimits_of_preservesHomology
     · exact preservesHomology_of_preservesMonos_and_cokernels _
     · exact additive_of_preservesBinaryBiproducts _
 
@@ -570,7 +570,7 @@ shape `J`.
 lemma hasExactLimitsOfShape_of_preservesEpi [HasLimitsOfShape J C]
     [PreservesEpimorphisms (lim (J := J) (C := C))] : HasExactLimitsOfShape J C where
   preservesFiniteColimits := by
-    apply (config := { allowSynthFailures := true }) preservesFiniteColimits_of_preservesHomology
+    apply +allowSynthFailures preservesFiniteColimits_of_preservesHomology
     · exact preservesHomology_of_preservesEpis_and_kernels _
     · exact additive_of_preservesBinaryBiproducts _
 
