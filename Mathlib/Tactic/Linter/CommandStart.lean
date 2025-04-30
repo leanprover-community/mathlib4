@@ -198,9 +198,23 @@ if they appear in surface syntax, the linter will ignore formatting.
 Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset` notation and
 list notation.
 -/
-abbrev unlintedNodes := #[``«term_::_», ``«term{_:_//_}», `«term{_}», `Mathlib.Meta.setBuilder,
-  `Bundle.termπ__, `Finset.«term_#_», ``«term{}», `ToAdditive.toAdditiveRest, ``«term¬_»,
-  ``Parser.Command.declId]
+abbrev unlintedNodes := #[
+  -- set-like notations, have extra spaces around the braces `{` `}`
+  ``«term{_:_//_}», -- subtype, prefers `{ a // b }`
+  `«term{_}»,  -- set notation, prefers `{ a | b }`
+  `Mathlib.Meta.setBuilder, -- set builder notation, prefers `{ a : X | p a }`
+  ``«term{}», -- empty set, prefers `{ }`
+
+  ``«term_::_», -- list notation, prefers `a :: b`
+
+  ``«term¬_», -- negation, prefers `¬a`
+
+  ``Parser.Command.declId, -- declaration name, avoids dealing with guillemets pairs `«»`
+
+  --`Bundle.termπ__, -- notation for `Bundle.TotalSpace.proj`, the total space of a bundle
+  --`Finset.«term_#_», -- notation for `Finset.slice`
+  --`ToAdditive.toAdditiveRest, -- the `existing` in `[to_additive existing]`
+  ]
 
 /--
 Given an array `a` of `SyntaxNodeKind`s, we accumulate the ranges of the syntax nodes of the
