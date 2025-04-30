@@ -426,6 +426,7 @@ end AddCommGroup
 end CommRing
 
 open Function
+
 section restrictScalarsRange
 
 variable {R S M P M' P' : Type*}
