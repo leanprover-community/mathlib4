@@ -199,7 +199,53 @@ Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset`
 list notation.
 -/
 abbrev unlintedNodes := #[``«term_::_», ``«term{_:_//_}», `«term{_}», `Mathlib.Meta.setBuilder,
-  `Bundle.termπ__, `Finset.«term_#_», ``«term{}», `ToAdditive.toAdditiveRest]
+  `Bundle.termπ__, `Finset.«term_#_», ``«term{}», `ToAdditive.toAdditiveRest, ``«term¬_»,
+  ``Parser.Command.declId]
+
+/--
+Given an array `a` of `SyntaxNodeKind`s, we accumulate the ranges of the syntax nodes of the
+input syntax whose kind is in `a`.
+
+The linter uses this information to avoid emitting a warning for nodes with kind contained in
+`unlintedNodes`.
+-/
+def getUnlintedRanges(a : Array SyntaxNodeKind) :
+    Std.HashSet String.Range → Syntax → Std.HashSet String.Range
+  | curr, s@(.node _ kind args) =>
+    let new := args.foldl (init := curr) (·.union <| getUnlintedRanges a curr ·)
+    if a.contains kind then
+      new.insert (s.getRange?.getD default)
+    else
+      new
+  | curr, _ => curr
+
+/-- Given a `HashSet` of `String.Ranges` `rgs` and a further `String.Range` `rg`,
+`outside rgs rg` returns `true` if and only if `rgs` contains a range the completely contains
+`rg`.
+
+The linter uses this to figure out which nodes should be ignored.
+-/
+def outside? (rgs : Std.HashSet String.Range) (rg : String.Range) : Bool :=
+  let superRanges := rgs.filter fun {start := a, stop := b} => (a ≤ rg.start && rg.stop ≤ b)
+  superRanges.isEmpty
+
+/-
+instance : ToString String.Range where
+  toString | {start := a, stop := b} => s!"⟨{a}, {b}⟩"
+
+open Lean Elab Command in
+elab "ff " cmd:command : command => do
+  elabCommand cmd
+  let gu := getUnlintedRanges unlintedNodes ∅ cmd
+  dbg_trace gu.toArray.qsort (·.start < ·.start)
+  --logInfo m!"{cmd}"
+
+run_cmd
+  let stx ← `(¬ true)
+  dbg_trace stx
+
+ff example (a : ¬ {b // b = 0} = default) : {v // v = 1} := sorry --⟨a.1+1, by cases a; simp_all⟩
+-/
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -234,16 +280,19 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let some upTo := lintUpTo stx | return
     let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
     let docStringEnd := docStringEnd.getTailPos? |>.getD default
-    dbg_trace docStringEnd
+    --dbg_trace docStringEnd
+    let forbidden := getUnlintedRanges unlintedNodes ∅ stx
     for s in scan do
+      let center := origSubstring.stopPos - s.srcEndPos
+      let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
+      unless outside? forbidden rg do
+        continue
       --let mut (center', orig') := (origSubstring.stopPos, orig)
       --for i in [:orig.length - s.srcPos] do
       --  --dbg_trace "{center'}, '{orig'.get (center' - origSubstring.stopPos)}' {orig'}"
       --  center' := orig'.next center' -- ⟨1⟩
       --  orig' := orig'.dropRight 1
       --let center := center' + origSubstring.stopPos - origSubstring.startPos
-      let center := origSubstring.stopPos - s.srcEndPos
-      let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
       unless rg.stop ≤ upTo do return
       unless docStringEnd ≤ rg.start do return
 
