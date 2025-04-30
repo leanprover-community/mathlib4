@@ -122,7 +122,7 @@ instance instLoewnerPartialOrder : PartialOrder (E →ₗ[𝕜] E) where
         · rw [← neg_nonneg, ← map_neg, ← inner_neg_left]
           simpa using h₁.inner_nonneg_left _
         · exact h₂.inner_nonneg_left _
-      · rw [map_zero, ← h_isSymm.coe_reApplyInnerSelf_apply', RCLike.ofReal_im]
+      · rw [map_zero, ← h_isSymm.reApplyInnerSelf_apply, RCLike.ofReal_im]
 
 lemma le_def (f g : E →ₗ[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 

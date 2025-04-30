@@ -118,7 +118,7 @@ theorem IsSymmetric.coe_reApplyInnerSelf_apply {T : E →L[𝕜] E} (hT : IsSymm
 
 /-- For a symmetric linear map `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
 @[simp]
-theorem IsSymmetric.coe_reApplyInnerSelf_apply' {T : E →ₗ[𝕜] E} (hT : IsSymmetric T)
+theorem IsSymmetric.reApplyInnerSelf_apply {T : E →ₗ[𝕜] E} (hT : IsSymmetric T)
     (x : E) : (T.reApplyInnerSelf x : 𝕜) = ⟪T x, x⟫ := by
   rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ⟪T x, x⟫ = r
   · simp [hr, T.reApplyInnerSelf_apply]
