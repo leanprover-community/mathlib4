@@ -263,7 +263,7 @@ instance Prod.instNeBotNhdsWithinIio [Preorder X] [Preorder Y] {x : X × Y}
   exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩
 
 instance Prod.instNeBotNhdsWithinIoi [Preorder X] [Preorder Y] {x : X × Y}
-    [hx₁: (𝓝[>] x.1).NeBot] [hx₂ : (𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot := by
+    [hx₁ : (𝓝[>] x.1).NeBot] [hx₂ : (𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot := by
   refine (hx₁.prod hx₂).mono ?_
   rw [← nhdsWithin_prod_eq]
   exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩

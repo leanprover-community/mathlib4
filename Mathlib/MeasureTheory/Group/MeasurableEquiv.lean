@@ -45,7 +45,7 @@ variable {G G₀ α : Type*} [MeasurableSpace α] [Group G] [GroupWithZero G₀]
 automorphism of `α`. -/
 @[to_additive (attr := simps! -fullyApplied toEquiv apply)
       "If an additive group `G` acts on `α` by measurable maps, then each element `c : G`
-      defines a measurable automorphism of `α`." ]
+      defines a measurable automorphism of `α`."]
 def smul (c : G) : α ≃ᵐ α where
   toEquiv := MulAction.toPerm c
   measurable_toFun := measurable_const_smul c
