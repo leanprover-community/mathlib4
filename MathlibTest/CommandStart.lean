@@ -43,10 +43,27 @@ set_option linter.hashCommand false
 
 end tests
 
+
 -- embedded comments do not cause problems!
 #guard_msgs in
 open Nat in -- hi
 example : True := trivial
+
+-- embedded comments do not cause problems!
+#guard_msgs in
+open Nat in
+ -- hi
+example : True := trivial
+
+-- embedded comments do not cause problems!
+#guard_msgs in
+open Nat in
+  -- hi
+example : True := trivial
+
+structure X where
+  /-- A doc -/
+  x : Nat
 
 open Nat in /- hi -/
 example : True := trivial
@@ -105,6 +122,9 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 #guard_msgs in
 example      /-dαακdαακdαακκ-/     :  True :=trivial
 
+/-- A doc string -/
+-- comment
+example : True := trivial
 
 /--
 warning: extra space
@@ -260,7 +280,7 @@ def Type.Hello := 0
 warning: extra space
 
 Current syntax:  'mple  : Tr'
-Expected syntax: 'ple : True'
+Expected syntax: 'mple : Tru'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
