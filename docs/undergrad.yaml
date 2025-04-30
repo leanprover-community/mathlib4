@@ -458,7 +458,7 @@ Multivariable calculus:
     Jacobian matrix: ''
     gradient vector: ''
     Hessian matrix: ''
-    chain rule: 'fderiv.comp'
+    chain rule: 'fderiv_comp'
     mean value theorem: 'exists_ratio_deriv_eq_ratio_slope'
     differentiable functions: 'Differentiable'
     $k$-times continuously differentiable functions: 'ContDiff'
