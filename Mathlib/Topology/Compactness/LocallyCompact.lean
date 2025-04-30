@@ -192,9 +192,6 @@ theorem Topology.IsInducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X �
   rw [hf.isCompact_preimage_iff]
   exacts [hs.inter_right hZ, hUZ ▸ by gcongr]
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.locallyCompactSpace := IsInducing.locallyCompactSpace
-
 protected theorem Topology.IsClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsClosedEmbedding f) : LocallyCompactSpace X :=
   hf.isInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed

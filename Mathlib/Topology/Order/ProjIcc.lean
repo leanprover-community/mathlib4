@@ -33,9 +33,6 @@ theorem isQuotientMap_projIcc : IsQuotientMap (projIcc a b h) :=
   isQuotientMap_iff.2 ⟨projIcc_surjective h, fun s =>
     ⟨fun hs => hs.preimage continuous_projIcc, fun hs => ⟨_, hs, by ext; simp⟩⟩⟩
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_projIcc := isQuotientMap_projIcc
-
 @[simp]
 theorem continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h f) ↔ Continuous f :=
   isQuotientMap_projIcc.continuous_iff.symm

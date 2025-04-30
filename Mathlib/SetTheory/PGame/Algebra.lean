@@ -119,9 +119,6 @@ theorem moveLeft_neg {x : PGame} (i) :
   cases x
   rfl
 
-@[deprecated moveLeft_neg (since := "2024-10-30")]
-alias moveLeft_neg' := moveLeft_neg
-
 theorem moveLeft_neg_toLeftMovesNeg {x : PGame} (i) :
     (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by simp
 
@@ -130,9 +127,6 @@ theorem moveRight_neg {x : PGame} (i) :
     (-x).moveRight i = -x.moveLeft (toRightMovesNeg.symm i) := by
   cases x
   rfl
-
-@[deprecated moveRight_neg (since := "2024-10-30")]
-alias moveRight_neg' := moveRight_neg
 
 theorem moveRight_neg_toRightMovesNeg {x : PGame} (i) :
     (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by simp

@@ -336,8 +336,6 @@ theorem Topology.IsInducing.continuousInv {G H : Type*} [Inv G] [Inv H] [Topolog
     (hf_inv : ∀ x, f x⁻¹ = (f x)⁻¹) : ContinuousInv G :=
   ⟨hf.continuous_iff.2 <| by simpa only [Function.comp_def, hf_inv] using hf.continuous.inv⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.continuousInv := IsInducing.continuousInv
-
 section IsTopologicalGroup
 
 /-!
@@ -575,8 +573,6 @@ protected theorem Topology.IsInducing.topologicalGroup {F : Type*} [Group H] [To
     [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : IsInducing f) : IsTopologicalGroup H :=
   { toContinuousMul := hf.continuousMul _
     toContinuousInv := hf.continuousInv (map_inv f) }
-
-@[deprecated (since := "2024-10-28")] alias Inducing.topologicalGroup := IsInducing.topologicalGroup
 
 @[to_additive]
 theorem topologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHomClass F H G]
@@ -1201,9 +1197,6 @@ def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃�
 @[to_additive] theorem Units.isEmbedding_val [Group G] [TopologicalSpace G] [ContinuousInv G] :
     IsEmbedding (val : Gˣ → G) :=
   toUnits_homeomorph.symm.isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias Units.embedding_val := Units.isEmbedding_val
 
 lemma Continuous.of_coeHom_comp [Group G] [Monoid H] [TopologicalSpace G] [TopologicalSpace H]
     [ContinuousInv G] {f : G →* Hˣ} (hf : Continuous ((Units.coeHom H).comp f)) : Continuous f := by

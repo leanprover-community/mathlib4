@@ -88,26 +88,14 @@ protected theorem Topology.IsInducing.injective [TopologicalSpace Y] [T0Space X]
     (hf : IsInducing f) : Injective f := fun _ _ h =>
   (hf.inseparable_iff.1 <| .of_eq h).eq
 
-@[deprecated (since := "2024-10-28")] alias Inducing.injective := IsInducing.injective
-
 /-- A topology inducing map from a T₀ space is a topological embedding. -/
 protected theorem Topology.IsInducing.isEmbedding [TopologicalSpace Y] [T0Space X] {f : X → Y}
     (hf : IsInducing f) : IsEmbedding f :=
   ⟨hf, hf.injective⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.isEmbedding := IsInducing.isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias Inducing.embedding := Topology.IsInducing.isEmbedding
-
 lemma isEmbedding_iff_isInducing [TopologicalSpace Y] [T0Space X] {f : X → Y} :
     IsEmbedding f ↔ IsInducing f :=
   ⟨IsEmbedding.isInducing, IsInducing.isEmbedding⟩
-
-@[deprecated (since := "2024-10-28")] alias isEmbedding_iff_inducing := isEmbedding_iff_isInducing
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_iff_inducing := isEmbedding_iff_isInducing
 
 theorem t0Space_iff_nhds_injective (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Injective (𝓝 : X → Filter X) :=

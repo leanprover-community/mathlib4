@@ -190,8 +190,6 @@ theorem isInducing_nhds : IsInducing (𝓝 : X → Filter X) :=
         Iic_principal, preimage_setOf_eq, ← mem_interior_iff_mem_nhds, setOf_mem_eq,
         IsOpen.interior_eq]
 
-@[deprecated (since := "2024-10-28")] alias inducing_nhds := isInducing_nhds
-
 @[continuity]
 theorem continuous_nhds : Continuous (𝓝 : X → Filter X) :=
   isInducing_nhds.continuous

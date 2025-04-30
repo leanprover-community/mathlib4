@@ -64,9 +64,6 @@ theorem postcomp_mkCLM_surjective {L : Type*} [Semiring L] (σ : L →+* K)
 theorem isEmbedding_outCLM : IsEmbedding (outCLM K E) :=
   Function.LeftInverse.isEmbedding (mk_outCLM K) continuous_mk (map_continuous _)
 
-@[deprecated (since := "2024-10-26")]
-alias outCLM_embedding := isEmbedding_outCLM
-
 theorem outCLM_injective : Function.Injective (outCLM K E) :=
   (isEmbedding_outCLM K E).injective
 

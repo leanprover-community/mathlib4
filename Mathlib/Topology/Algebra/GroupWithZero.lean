@@ -132,9 +132,6 @@ theorem Units.isEmbedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [H
     IsEmbedding (val : G₀ˣ → G₀) :=
   embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono fun _ ↦ IsUnit.ne_zero
 
-@[deprecated (since := "2024-10-26")]
-alias Units.embedding_val₀ := Units.isEmbedding_val₀
-
 section NhdsInv
 
 variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] {x : G₀}

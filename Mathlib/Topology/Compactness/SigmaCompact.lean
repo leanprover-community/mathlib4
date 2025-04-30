@@ -121,17 +121,11 @@ lemma Topology.IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
         _ = f ⁻¹' (f '' s) ∩ s := by rw [hcov]
         _ = s := inter_eq_right.mpr (subset_preimage_image _ _)
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isSigmaCompact_iff := IsInducing.isSigmaCompact_iff
-
 /-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is σ-compact
 if and only `s` is σ-compact. -/
 lemma Topology.IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
     (hf : IsEmbedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
   hf.isInducing.isSigmaCompact_iff
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isSigmaCompact_iff := IsEmbedding.isSigmaCompact_iff
 
 /-- Sets of subtype are σ-compact iff the image under a coercion is. -/
 lemma Subtype.isSigmaCompact_iff {p : X → Prop} {s : Set { a // p a }} :

@@ -254,8 +254,6 @@ theorem ordProj_dvd (n p : ℕ) : ordProj[p] n ∣ n := by
   intro q hq
   simp [List.eq_of_mem_replicate hq]
 
-@[deprecated (since := "2024-10-24")] alias ord_proj_dvd := ordProj_dvd
-
 /-! ### Factorization LCM definitions -/
 
 

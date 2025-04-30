@@ -196,8 +196,6 @@ protected theorem Topology.IsInducing.regularSpace [TopologicalSpace Y] {f : Y �
     (fun b => by rw [hf.nhds_eq_comap b]; exact (closed_nhds_basis _).comap _)
     fun b s hs => by exact hs.2.preimage hf.continuous
 
-@[deprecated (since := "2024-10-28")] alias Inducing.regularSpace := IsInducing.regularSpace
-
 theorem regularSpace_induced (f : Y → X) : @RegularSpace Y (induced f ‹_›) :=
   letI := induced f ‹_›
   (IsInducing.induced f).regularSpace
@@ -539,9 +537,6 @@ theorem Topology.IsEmbedding.completelyNormalSpace [TopologicalSpace Y] [Complet
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_left]
   · rwa [← subset_compl_iff_disjoint_right, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_right]
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.completelyNormalSpace := IsEmbedding.completelyNormalSpace
 
 /-- A subspace of a completely normal space is a completely normal space. -/
 instance [CompletelyNormalSpace X] {p : X → Prop} : CompletelyNormalSpace { x // p x } :=
