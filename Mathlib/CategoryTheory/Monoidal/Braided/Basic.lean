@@ -501,6 +501,15 @@ def symmetricCategoryOfFaithful {C D : Type*} [Category C] [Category D] [Monoida
     [F.Faithful] : SymmetricCategory C where
   symmetry X Y := F.map_injective (by simp)
 
+/-- Pull back a symmetric braiding along a fully faithful monoidal functor. -/
+noncomputable def symmetricCategoryOfFullyFaithful {C D : Type*} [Category C] [Category D]
+    [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
+    [F.Faithful] [SymmetricCategory D] : SymmetricCategory C :=
+  let h : BraidedCategory C := braidedCategoryOfFullyFaithful F
+  let _ : F.Braided := {
+    braided X Y := by simp [h, braidedCategoryOfFullyFaithful, braidedCategoryOfFaithful] }
+  symmetricCategoryOfFaithful F
+
 namespace Functor.Braided
 
 instance : (𝟭 C).Braided where
