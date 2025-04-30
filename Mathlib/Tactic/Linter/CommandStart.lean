@@ -98,9 +98,19 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
 
 partial
 def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
+  --dbg_trace "'{L}'\n'{M}'\n---\n"
   if M.trim.isEmpty then as else
-  if L.trimLeft.take 2 == "--" then
-    parallelScanAux as ((L.dropWhile (· != '\n')).drop 1) ((L.dropWhile (· != '\n')).drop 1) else
+  if L.take 3 == "/--" && M.take 3 == "/--" then
+    parallelScanAux as (L.drop 3) (M.drop 3) else
+  if L.take 2 == "--" then
+    let newL := (L.dropWhile (· != '\n')).drop 1
+    let diff := L.length - newL.length - 1
+    let newM := M.dropWhile (· != '-') |>.drop diff
+    parallelScanAux as newL newM else
+  if L.take 2 == "-/" then
+    let newL := L.drop 2 |>.trimLeft
+    let newM := M.drop 2 |>.trimLeft
+    parallelScanAux as newL newM else
   let ls := L.drop 1
   let ms := M.drop 1
   match L.get 0, M.get 0 with
