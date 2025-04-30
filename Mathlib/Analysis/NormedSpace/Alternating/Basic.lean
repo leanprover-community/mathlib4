@@ -491,16 +491,10 @@ which is a linear map from `E [⋀^ι]→L[𝕜] F` to `E' [⋀^ι]→ₗ[𝕜] 
 def mkContinuousLinear (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G) (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : F →L[𝕜] E [⋀^ι]→L[𝕜] G :=
   LinearMap.mkContinuous
-    { toFun := fun x => (f x).mkContinuous (C * ‖x‖) <| H x
-      map_add' := fun x y => by
-        ext1
-        simp only [_root_.map_add]
-        rfl
-      map_smul' := fun c x => by
-        ext1
-        simp only [_root_.map_smul]
-        rfl }
-    (max C 0) fun x => by
+    { toFun x :=  (f x).mkContinuous (C * ‖x‖) <| H x
+      map_add' x y := by ext1; simp
+      map_smul' c x := by ext1; simp }
+    (max C 0) fun x ↦ by
       rw [LinearMap.coe_mk, AddHom.coe_mk]
       exact (mkContinuous_norm_le' _ _).trans_eq <| by
         rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
@@ -522,23 +516,18 @@ def mkContinuousAlternating (f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜]
     (C : ℝ) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     E [⋀^ι]→L[𝕜] (F [⋀^ι']→L[𝕜] G)  :=
   mkContinuous
-    { toFun := fun m => mkContinuous (f m) (C * ∏ i, ‖m i‖) <| H m
-      map_update_add' := fun m i x y => by
-        ext1
-        simp
-      map_update_smul' := fun m i c x => by
-        ext1
-        simp
-      map_eq_zero_of_eq' := by
-        intros v i j hv hij
+    { toFun m := mkContinuous (f m) (C * ∏ i, ‖m i‖) <| H m
+      map_update_add' m i x y := by ext1; simp
+      map_update_smul' m i c x := by ext1; simp
+      map_eq_zero_of_eq' v i j hv hij := by
         ext v'
         have : f v = 0 := by simpa using f.map_eq_zero_of_eq' v i j hv hij
         simp [this] }
     (max C 0) fun m => by
-      simp only [coe_mk, MultilinearMap.coe_mk, ge_iff_le]
+      simp only [coe_mk, MultilinearMap.coe_mk]
       refine ((f m).mkContinuous_norm_le' _).trans_eq ?_
       rw [max_mul_of_nonneg, zero_mul]
-      exact prod_nonneg fun _ _ => norm_nonneg _
+      positivity
 
 @[simp]
 theorem mkContinuousAlternating_apply (f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G)) {C : ℝ}
