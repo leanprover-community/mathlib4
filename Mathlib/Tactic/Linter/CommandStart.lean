@@ -269,6 +269,12 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     for s in scan do
       let center := origSubstring.stopPos - s.srcEndPos
       let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
+      if s.msg.startsWith "Oh no" then
+        Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
+          m!"This should not have happened: please report this issue!"
+        Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
+          m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
+        continue
       unless outside? forbidden rg do
         continue
       unless rg.stop ≤ upTo do return
