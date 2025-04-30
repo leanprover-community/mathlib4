@@ -99,6 +99,8 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
 partial
 def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
   if M.trim.isEmpty then as else
+  if L.trimLeft.take 2 == "--" then
+    parallelScanAux as ((L.dropWhile (· != '\n')).drop 1) ((L.dropWhile (· != '\n')).drop 1) else
   let ls := L.drop 1
   let ms := M.drop 1
   match L.get 0, M.get 0 with
@@ -216,7 +218,8 @@ abbrev unlintedNodes := #[
   `Bundle.termπ__, -- notation for `Bundle.TotalSpace.proj`, the total space of a bundle
                    -- the pretty-printer prefers `π FE` over `π F E` (which we want)
 
- `Finset.«term_#_», -- notation for `Finset.slice`, the pretty-printer prefers `𝒜 #r` over `𝒜 # r` (mathlib style)
+ `Finset.«term_#_», -- notation for `Finset.slice`,
+                    -- the pretty-printer prefers `𝒜 #r` over `𝒜 # r` (mathlib style)
 
   --`ToAdditive.toAdditiveRest, -- the `existing` in `[to_additive existing]`
   ]
