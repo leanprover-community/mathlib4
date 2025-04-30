@@ -290,7 +290,8 @@ end indicator
 /-- If a function is integrable on a set `s` and nonzero there, then the measurable hull of `s` is
 well behaved: the restriction of the measure to `toMeasurable μ s` coincides with its restriction
 to `s`. -/
-theorem IntegrableOn.restrict_toMeasurable {f : α → E} (hf : IntegrableOn f s μ) (h's : ∀ x ∈ s, f x ≠ 0) :
+theorem IntegrableOn.restrict_toMeasurable {f : α → E}
+    (hf : IntegrableOn f s μ) (h's : ∀ x ∈ s, f x ≠ 0) :
     μ.restrict (toMeasurable μ s) = μ.restrict s := by
   rcases exists_seq_strictAnti_tendsto (0 : ℝ) with ⟨u, _, u_pos, u_lim⟩
   let v n := toMeasurable (μ.restrict s) { x | u n ≤ ‖f x‖ }
@@ -307,7 +308,8 @@ theorem IntegrableOn.restrict_toMeasurable {f : α → E} (hf : IntegrableOn f s
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
 if `t` is null-measurable. -/
-theorem IntegrableOn.of_ae_diff_eq_zero {f : α → E} (hf : IntegrableOn f s μ) (ht : NullMeasurableSet t μ)
+theorem IntegrableOn.of_ae_diff_eq_zero {f : α → E}
+    (hf : IntegrableOn f s μ) (ht : NullMeasurableSet t μ)
     (h't : ∀ᵐ x ∂μ, x ∈ t \ s → f x = 0) : IntegrableOn f t μ := by
   let u := { x ∈ s | f x ≠ 0 }
   have hu : IntegrableOn f u μ := hf.mono_set fun x hx => hx.1
@@ -487,8 +489,8 @@ theorem IntegrableAtFilter.sup_iff {f : α → E} {l l' : Filter α} :
 
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
 above at `l`, then `f` is integrable at `l`. -/
-theorem Measure.FiniteAtFilter.integrableAtFilter {f : α → E} {l : Filter α} [IsMeasurablyGenerated l]
-    (hfm : StronglyMeasurableAtFilter f l μ) (hμ : μ.FiniteAtFilter l)
+theorem Measure.FiniteAtFilter.integrableAtFilter {f : α → E} {l : Filter α}
+    [IsMeasurablyGenerated l] (hfm : StronglyMeasurableAtFilter f l μ) (hμ : μ.FiniteAtFilter l)
     (hf : l.IsBoundedUnder (· ≤ ·) (norm ∘ f)) : IntegrableAtFilter f l μ := by
   obtain ⟨C, hC⟩ : ∃ C, ∀ᶠ s in l.smallSets, ∀ x ∈ s, ‖f x‖ ≤ C :=
     hf.imp fun C hC => eventually_smallSets.2 ⟨_, hC, fun t => id⟩
@@ -515,8 +517,8 @@ theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto {f : α → E} {l :
 alias _root_.Filter.Tendsto.integrableAtFilter :=
   Measure.FiniteAtFilter.integrableAtFilter_of_tendsto
 
-lemma Measure.integrableOn_of_bounded {f : α → E} (s_finite : μ s ≠ ∞) (f_mble : AEStronglyMeasurable f μ)
-    {M : ℝ} (f_bdd : ∀ᵐ a ∂(μ.restrict s), ‖f a‖ ≤ M) :
+lemma Measure.integrableOn_of_bounded {f : α → E} (s_finite : μ s ≠ ∞)
+    (f_mble : AEStronglyMeasurable f μ) {M : ℝ} (f_bdd : ∀ᵐ a ∂(μ.restrict s), ‖f a‖ ≤ M) :
     IntegrableOn f s μ :=
   ⟨f_mble.restrict, hasFiniteIntegral_restrict_of_bounded (C := M) s_finite.lt_top f_bdd⟩
 
