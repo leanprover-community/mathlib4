@@ -37,7 +37,7 @@ variable {R : Type*} [CommRing R] [IsDomain R] {I : Ideal R}
 that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with
 `Ideal.powQuotPowSuccLinearEquivMapMkPowSuccPow`. -/
 noncomputable
-def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h': I ≠ ⊥) (n : ℕ) :
+def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h' : I ≠ ⊥) (n : ℕ) :
     (R ⧸ I) ≃ₗ[R] (I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R)) := by
   let f : (I ^ n : Ideal R) →ₗ[R] (I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R)) :=
     Submodule.mkQ _
