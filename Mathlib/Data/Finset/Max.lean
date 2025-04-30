@@ -540,16 +540,13 @@ theorem isLUB_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsLUB (s : Se
 
 end Finset
 
-theorem Multiset.exists_max {α R : Type*} [DecidableEq α] [DecidableEq R] [LinearOrder R]
-    (f : α → R) {s : Multiset α} (hs : s.toFinset.Nonempty) :
-    ∃ y : α, y ∈ s ∧ ∀ z : α, z ∈ s → f z ≤ f y := by
-  have hsf : (map f s).toFinset.Nonempty := by
-    obtain ⟨x, hx⟩ := hs.exists_mem
-    exact ⟨f x, mem_toFinset.mpr (mem_map.mpr ⟨x, mem_toFinset.mp hx, rfl⟩)⟩
-  have h := (s.map f).toFinset.max'_mem hsf
-  rw [mem_toFinset, mem_map] at h
-  obtain ⟨y, hys, hymax⟩ := h
-  use y, hys
-  intro z hz
-  rw [hymax]
-  exact Finset.le_max' _ _ (mem_toFinset.mpr (mem_map.mpr ⟨z, hz, rfl⟩))
+theorem Multiset.exists_max_image {α R : Type*} [DecidableEq α] [DecidableEq R] [LinearOrder R]
+    (f : α → R) {s : Multiset α} (hs : s ≠ 0) :
+    ∃ y ∈ s, ∀ z ∈ s, f z ≤ f y := by
+  obtain ⟨y, hys, hy⟩ := Finset.exists_max_image s.toFinset f (toFinset_nonempty.mpr hs)
+  exact ⟨y, mem_toFinset.mp hys, fun _ hz ↦ hy _ (mem_toFinset.mpr hz)⟩
+
+theorem Multiset.exists_min_image {α R : Type*} [DecidableEq α] [DecidableEq R] [LinearOrder R]
+    (f : α → R) {s : Multiset α} (hs : s ≠ 0) :
+    ∃ y ∈ s, ∀ z ∈ s, f y ≤ f z :=
+  @exists_max_image α Rᵒᵈ _ _ _ f s hs
