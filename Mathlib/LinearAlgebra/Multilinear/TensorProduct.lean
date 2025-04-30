@@ -89,8 +89,7 @@ def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
 def domCoprod' :
     MultilinearMap R (fun _ : ι₁ => N) N₁ ⊗[R] MultilinearMap R (fun _ : ι₂ => N) N₂ →ₗ[R]
       MultilinearMap R (fun _ : ι₁ ⊕ ι₂ => N) (N₁ ⊗[R] N₂) :=
-  TensorProduct.lift <|
-    LinearMap.mk₂ R domCoprod (by aesop) (by aesop) (by aesop) (by aesop)
+  domCoprodDep' (R := R) (N := fun (_ : ι₁ ⊕ ι₂) ↦ N)
 
 @[simp]
 theorem domCoprod'_apply (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
