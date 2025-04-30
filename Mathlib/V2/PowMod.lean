@@ -31,10 +31,11 @@ lemma powModAux_one_eq {a c n m : ℕ} (hm : (a * c) % n = m) : powModAux a 1 c 
   simp_all [powModAux]
 
 lemma powModAux_even_eq {a a' b b' c n m : ℕ}
-    (ha' : a * a % n = a') (hb' : 2 * b' = b)
+    (ha' : a * a % n = a') (hb' : b' <<< 1 = b)
     (h : powModAux a' b' c n = m) :
     powModAux a b c n = m := by
   rw [← ha', powModAux, mul_mod] at h
+  rw [Nat.shiftLeft_eq, mul_comm, pow_one] at hb'
   rw [← hb', powModAux, pow_mul, mul_mod, pow_two, pow_mod, h]
 
 lemma powModAux_odd_eq {a a' b b' c c' n m : ℕ}
@@ -44,8 +45,9 @@ lemma powModAux_odd_eq {a a' b b' c c' n m : ℕ}
   rw [← ha', ← hc', powModAux, mul_mod, mod_mod] at h
   rw [← hb', powModAux, pow_succ, pow_mul, mul_assoc, mul_mod, pow_mod, pow_two, h]
 
-lemma powMod_eq {a b n m : ℕ} (h : powModAux a b 1 n = m) : powMod a b n = m := by
-  simp_all [powModAux, powMod]
+lemma powMod_eq (a : ℕ) {a' b n m : ℕ} (h : powModAux a' b 1 n = m) (ha : a % n = a') :
+    powMod a b n = m := by
+  rwa [powModAux, mul_one, ← ha, pow_mod, mod_mod, ← pow_mod] at h
 
 lemma powMod_ne {a b n m : ℕ} (m' : ℕ) (hm : bne m' m) (h : powMod a b n = m') :
     powMod a b n ≠ m := by
@@ -92,8 +94,10 @@ def mkPowModAuxEq (a b c n : ℕ) (aE bE cE nE : Expr) : MetaM (ℕ × Expr × E
 
 /-- Given `a, b, n : ℕ`, return `(m, ⊢ powMod a b n = m)`. -/
 def mkPowModEq (a b n : ℕ) (aE bE nE : Expr) : MetaM (ℕ × Expr × Expr) := do
-  let (m, mE, eq) ← mkPowModAuxEq a b 1 n aE bE (mkNatLit 1) nE
-  return (m, mE, ← mkAppM ``powMod_eq #[eq])
+  let a' := a % n
+  let a'E := mkNatLit a'
+  let (m, mE, eq) ← mkPowModAuxEq a' b 1 n a'E bE (mkNatLit 1) nE
+  return (m, mE, ← mkAppM ``powMod_eq #[aE, eq, ← mkEqRefl a'E])
 
 /-- Given `a, b, n, m : ℕ`, if `powMod a b n = m` then return a proof of that fact. -/
 def provePowModEq (a b n m : ℕ) (aE bE nE : Expr) : MetaM Expr := do
@@ -157,4 +161,7 @@ example : powMod 2 23408 2307 = 778 := by
   prove_pow_mod
 
 example : powMod 2 23408 2307 ≠ 1 := by
+  prove_pow_mod
+
+example : powMod 2 385273928 1000000007 = 3 := by
   prove_pow_mod

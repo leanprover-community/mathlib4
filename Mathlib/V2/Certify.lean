@@ -11,6 +11,8 @@ import Mathlib.V2.PowMod
 
 open Nat
 
+namespace Tactic.Prime
+
 inductive MPrattCertificate : Type
   | small (n : ℕ)
   | big (n : ℕ) (root : ℕ) (factors : List MPrattCertificate)
@@ -52,11 +54,11 @@ declare_syntax_cat mpratt_certificate
 declare_syntax_cat bpratt_certificate
 declare_syntax_cat bpratt_entry
 
-syntax "mathematica" ppSpace mpratt_certificate : pratt_certificate
+syntax mpratt_certificate : pratt_certificate
 syntax num : mpratt_certificate
 syntax "{" num "," ppSpace num "," ppSpace "{" mpratt_certificate,+ "}" "}" : mpratt_certificate
 
-syntax "builder" ppSpace bpratt_certificate : pratt_certificate
+syntax bpratt_certificate : pratt_certificate
 syntax "[" bpratt_entry,* "]" : bpratt_certificate
 syntax num : bpratt_entry
 syntax "(" num "," ppSpace num "," ppSpace "[" num,* "]" ")" : bpratt_entry
@@ -69,7 +71,7 @@ partial def MPrattCertificate.ofSyntax : TSyntax `mpratt_certificate → MetaM M
     let root := root.getNat
     let factors ← factors.mapM ofSyntax
     return big n root factors.toList
-  | _ => throwError "Invalid mathematica Pratt certificate syntax"
+  | e => throwError "Invalid mathematica Pratt certificate syntax {e}"
 
 partial def PrattEntry.ofSyntax : TSyntax `bpratt_entry → MetaM PrattEntry
   | `(bpratt_entry| $n:num) => return .small n.getNat
@@ -78,20 +80,20 @@ partial def PrattEntry.ofSyntax : TSyntax `bpratt_entry → MetaM PrattEntry
       let root := root.getNat
       let nums := nums.map (·.getNat)
       return .big n root nums.toList
-  | _ => throwError "Invalid builder Pratt entry syntax"
+  | e => throwError "Invalid builder Pratt entry syntax {e}"
 
 partial def PrattCertificate.ofSyntaxAux : TSyntax `bpratt_certificate → MetaM PrattCertificate
   | `(bpratt_certificate| [ $[$entries],* ] ) => do
     let entries ← entries.mapM PrattEntry.ofSyntax
     return entries.toList
-  | _ => throwError "Invalid builder Pratt certificate syntax"
+  | e => throwError "Invalid builder Pratt certificate syntax {e}"
 
 partial def PrattCertificate.ofSyntax : TSyntax `pratt_certificate → MetaM PrattCertificate
-  | `(pratt_certificate| mathematica $n:mpratt_certificate) => do
+  | `(pratt_certificate| $n:mpratt_certificate) => do
       let i ← MPrattCertificate.ofSyntax n
       return reformat i
-  | `(pratt_certificate| builder $n:bpratt_certificate) => PrattCertificate.ofSyntaxAux n
-  | _ => throwError "Invalid Pratt certificate syntax"
+  | `(pratt_certificate| $n:bpratt_certificate) => PrattCertificate.ofSyntaxAux n
+  | e => throwError "Invalid Pratt certificate syntax {e}"
 
 partial def PrattEntry.toSyntax : PrattEntry → MetaM (TSyntax `bpratt_entry)
   | .small n => do
@@ -121,7 +123,7 @@ partial def MPrattCertificate.toSyntaxAux : MPrattCertificate → MetaM (TSyntax
 partial def MPrattCertificate.toSyntax
     (c : MPrattCertificate) : MetaM (TSyntax `pratt_certificate) := do
   let cert ← c.toSyntaxAux
-  `(pratt_certificate| mathematica $cert)
+  `(pratt_certificate| $cert:mpratt_certificate)
 
 end
 
@@ -262,6 +264,13 @@ def prove_prime (cert : PrattCertificate) (n : ℕ) : MetaM Expr := do
   let some pf := data.get? n | throwError "the certificate doesn't prove {n} is prime"
   return pf
 
+-- def getPrimeGoals (e : Expr) : MetaM (List ℕ) :=
+--   match_expr e with
+--   | Nat.Prime nE => do
+--     let some n := nE.nat? | throwError "not a numeral"
+--     return [n]
+--   | _ => throwError "goal for `pratt` not a primality test"
+
 elab "pratt" ppSpace certificate:pratt_certificate : tactic => liftMetaFinishingTactic fun goal ↦ do
   match certificate with
   | `(pratt_certificate| $cert:pratt_certificate) =>
@@ -353,7 +362,8 @@ def makeCertificate (n : ℕ) (gen : Primality.Generator) : MetaM PrattCertifica
         s!"Could not parse SageMath output (error: {e})\nSageMath output:\n{out.stdout}\n\
         The most likely reason for this is that the input {n} was not prime."
     | .ok certStx =>
-      let certStx ← `(pratt_certificate| builder $(.mk certStx))
+      let certStx : TSyntax `bpratt_certificate := .mk certStx
+      let certStx ← `(pratt_certificate| $certStx:bpratt_certificate)
       PrattCertificate.ofSyntax certStx
 
   | .native => throwError "native computation not implemented"
@@ -371,7 +381,8 @@ def makeCertificate (n : ℕ) (gen : Primality.Generator) : MetaM PrattCertifica
           The most likely reason for this is that the input {n} was not prime.\n\
           parser error: {e}\noutput: {out}"
       | .ok certStx =>
-        let certStx ← `(pratt_certificate| mathematica $(.mk certStx))
+        let certStx : TSyntax `mpratt_certificate := .mk certStx
+        let certStx ← `(pratt_certificate| $certStx:mpratt_certificate)
         PrattCertificate.ofSyntax certStx
 
 syntax "prime" Parser.Tactic.optConfig ppSpace : tactic
@@ -388,21 +399,24 @@ elab_rules : tactic
         else makeCertificate n config.generator
       let pf ← prove_prime cert n
       let stx ← PrattCertificate.toSyntax cert
-      let _ ← TryThis.addSuggestion tk (← `(tactic| pratt builder $stx)) (origSpan? := ← getRef)
+      let _ ← TryThis.addSuggestion tk (origSpan? := ← getRef)
+        (← `(tactic| pratt $stx:bpratt_certificate))
       goal.assign pf
 
 end
 
-example : Nat.Prime 47867742232066880047611079 := by pratt
-  builder
-    [2, 3, 5, 7, 11, 17, 23, 29, 31, 37, 47, 67, 83, (167, 5, [2, 83]), (283, 3, [2, 3, 47]),
-      (4663, 3, [2, 3, 7, 37]), (5011, 2, [2, 3, 5, 167]), (62311, 6, [2, 3, 5, 31, 67]),
-      (214499, 2, [2, 23, 4663]), (1123145497, 7, [2, 3, 11, 283, 5011]),
-      (90101681149415123, 2, [2, 11, 17, 214499, 1123145497]),
-      (47867742232066880047611079, 3, [2, 3, 7, 29, 62311, 90101681149415123])]
+end Tactic.Prime
 
-set_option exponentiation.threshold 3913 in
-example : Nat.Prime (3 * 2 ^ 3912 + 1) := by
-  simp only [reducePow, reduceMul, reduceAdd]
-  pratt builder [2, 3, (127780414391497973212171930170926986757577048484820926201064729783485263494817422495127775983679039078116803697168137524940219819335799478153348592755198599590903607242050230924443865709697486743641039970666450337071378658828331722728467720393963808366917988956767802913905167890490075236068196363700359481304279948916896583006686025357237170212018946813663108217900835975808683160984117514866915965161953626338070145596982334808959718966160701183250747572515090867613655044807172211728519357721287835503689517292364425608325467094686443862517374850243698013720305871319056887431952190952721719757200172695537054790570648290887720009455171821568413052107356003828041937567129362866696549587422369864562815134637684140271767482353107080370450890024342225936273158281477009232714640818424893445193089479459814572594522258577931514012256573162006292678354475638319009668319255772179069845291474717503333030909793536116894869761453687330048252587304656806182949368202671739705463406846852567720022377005763291104588535681445561286808586673846016527511475331939430139687698419185010117348285933672139833826832898565919546377321517928825162277951756632134321102813522053716838646284289
-, 11, [2, 3])]
+-- example : Nat.Prime 47867742232066880047611079 := by pratt
+--   builder
+--     [2, 3, 5, 7, 11, 17, 23, 29, 31, 37, 47, 67, 83, (167, 5, [2, 83]), (283, 3, [2, 3, 47]),
+--       (4663, 3, [2, 3, 7, 37]), (5011, 2, [2, 3, 5, 167]), (62311, 6, [2, 3, 5, 31, 67]),
+--       (214499, 2, [2, 23, 4663]), (1123145497, 7, [2, 3, 11, 283, 5011]),
+--       (90101681149415123, 2, [2, 11, 17, 214499, 1123145497]),
+--       (47867742232066880047611079, 3, [2, 3, 7, 29, 62311, 90101681149415123])]
+
+-- set_option exponentiation.threshold 3913 in
+-- example : Nat.Prime (3 * 2 ^ 3912 + 1) := by
+--   simp only [reducePow, reduceMul, reduceAdd]
+--   pratt builder [2, 3, (127780414391497973212171930170926986757577048484820926201064729783485263494817422495127775983679039078116803697168137524940219819335799478153348592755198599590903607242050230924443865709697486743641039970666450337071378658828331722728467720393963808366917988956767802913905167890490075236068196363700359481304279948916896583006686025357237170212018946813663108217900835975808683160984117514866915965161953626338070145596982334808959718966160701183250747572515090867613655044807172211728519357721287835503689517292364425608325467094686443862517374850243698013720305871319056887431952190952721719757200172695537054790570648290887720009455171821568413052107356003828041937567129362866696549587422369864562815134637684140271767482353107080370450890024342225936273158281477009232714640818424893445193089479459814572594522258577931514012256573162006292678354475638319009668319255772179069845291474717503333030909793536116894869761453687330048252587304656806182949368202671739705463406846852567720022377005763291104588535681445561286808586673846016527511475331939430139687698419185010117348285933672139833826832898565919546377321517928825162277951756632134321102813522053716838646284289
+-- , 11, [2, 3])]
