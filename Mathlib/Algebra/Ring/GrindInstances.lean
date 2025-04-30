@@ -18,6 +18,7 @@ instance CommRing.toGrindCommRing [s : CommRing α] :
     Grind.CommRing α :=
   { s with
     ofNat | 0 | 1 | n + 2 => inferInstance
+    natCast := inferInstance
     intCast := inferInstance
     add_zero := by simp [add_zero]
     neg_add_cancel := by simp [neg_add_cancel]
@@ -25,6 +26,10 @@ instance CommRing.toGrindCommRing [s : CommRing α] :
     zero_mul := by simp [zero_mul]
     pow_zero := by simp
     pow_succ := by simp [pow_succ]
+    ofNat_eq_natCast
+    | 0 => Nat.cast_zero.symm
+    | 1 => Nat.cast_one.symm
+    | n + 2 => rfl
     ofNat_succ
     | 0 => by simp [zero_add]
     | 1 => by
@@ -59,6 +64,8 @@ example (s : Grind.CommRing α) : CommRing α :=
     one_mul := Grind.CommRing.one_mul
     nsmul := nsmulRec
     zsmul := zsmulRec
+    natCast := Nat.cast
+    natCast_zero :=  Grind.CommRing.natCast_zero
     natCast_succ n := Grind.CommRing.natCast_succ n
     intCast := Int.cast
     intCast_ofNat := Grind.CommRing.intCast_natCast
