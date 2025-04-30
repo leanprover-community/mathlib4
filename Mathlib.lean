@@ -2668,6 +2668,7 @@ import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 import Mathlib.Combinatorics.SimpleGraph.Turan
+import Mathlib.Combinatorics.SimpleGraph.Tutte
 import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 import Mathlib.Combinatorics.SimpleGraph.Walk
 import Mathlib.Combinatorics.Young.SemistandardTableau
@@ -3994,6 +3995,7 @@ import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 import Mathlib.LinearAlgebra.RootSystem.Finite.g2
 import Mathlib.LinearAlgebra.RootSystem.Hom
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
+import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 import Mathlib.LinearAlgebra.RootSystem.OfBilinear
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.RootPairingCat
