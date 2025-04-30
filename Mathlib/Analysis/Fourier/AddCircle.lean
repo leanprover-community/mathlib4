@@ -483,7 +483,7 @@ theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ �
   rw [(by ring : ((b - a : ℝ) : ℂ) / (-2 * π * I * n) = ((b - a : ℝ) : ℂ) * (1 / (-2 * π * I * n)))]
   have s2 : (b : AddCircle (b - a)) = (a : AddCircle (b - a)) := by
     simpa using coe_add_period (b - a) a
-  rw [s2, integral_const_mul, ← sub_mul, mul_sub, mul_sub]
+  rw [s2, intervalIntegral.integral_const_mul, ← sub_mul, mul_sub, mul_sub]
   congr 1
   · conv_lhs => rw [mul_comm, mul_div, mul_one]
     rw [div_eq_iff (ofReal_ne_zero.mpr hT.out.ne')]

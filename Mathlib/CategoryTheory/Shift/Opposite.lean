@@ -299,7 +299,7 @@ If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and 
 the opposite adjunction `OppositeShift.adjunction adj` is compatible with the opposite
 `CommShift` structures.
 -/
-instance commShift_op [F.CommShift A] [G.CommShift A]  [adj.CommShift A] :
+instance commShift_op [F.CommShift A] [G.CommShift A] [adj.CommShift A] :
     Adjunction.CommShift (OppositeShift.adjunction A adj) A where
   commShift_unit := by dsimp [OppositeShift.adjunction]; infer_instance
   commShift_counit := by dsimp [OppositeShift.adjunction]; infer_instance
