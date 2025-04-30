@@ -54,13 +54,12 @@ private partial def rewrite (parent : Expr) (root := true) : M Simp.Result :=
       try
         guard <| root || parent != e -- recursion guard
         let e ← withReducible <| whnf e
-        -- dbg_trace "rewrite {repr e}"
         guard e.isApp -- all interesting expressions are applications
         let ⟨u, α, e⟩ ← inferTypeQ' e
         let sα ← synthInstanceQ (q(LieRing $α) : Q(Type u))
-        -- dbg_trace "rewrite {repr e}"
-        let ⟨a, _, pa⟩ ← match ← isAtom α e rctx s with
-        | false =>
+        let ⟨a, _, pa⟩ ← if ← isAtom α e rctx s then
+          (failure : MetaM (Result (ExSum sα) e)) -- No point rewriting atoms
+        else
           -- notice that in our design,
           -- when we come across `u • ⁅a, b⁆ + v • ⁅c, d⁆`, we pass `⁅a, b⁆` and `⁅c, d⁆` to `eval`
           -- separately, rather than the whole expr.
@@ -73,9 +72,6 @@ private partial def rewrite (parent : Expr) (root := true) : M Simp.Result :=
             -- if it is not a lie bracket, recursively rewrite the arguments
             -- after failure, the simp process automatically continues into subexpressions
             failure
-        | true =>
-          -- dbg_trace "atom {repr e}"
-          failure -- No point rewriting atoms
         let r ← nctx.simp { expr := a, proof? := pa }
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)
