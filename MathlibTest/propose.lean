@@ -101,6 +101,6 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
     guard_hyp Prime.not_unit : ¬IsUnit p := not_unit hp
     contradiction
   rw [pow_succ'] at h
-  cases' dvd_or_dvd hp h with dvd_a dvd_pow
+  obtain dvd_a | dvd_pow := dvd_or_dvd hp h
   · assumption
   exact ih dvd_pow

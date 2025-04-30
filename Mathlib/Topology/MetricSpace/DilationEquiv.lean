@@ -91,7 +91,7 @@ initialize_simps_projections DilationEquiv (toFun → apply, invFun → symm_app
 lemma ratio_toDilation (e : X ≃ᵈ Y) : ratio e.toDilation = ratio e := rfl
 
 /-- Identity map as a `DilationEquiv`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
   toEquiv := .refl X
   edist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
@@ -100,7 +100,7 @@ def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
 @[simp] theorem ratio_refl : ratio (refl X) = 1 := Dilation.ratio_id
 
 /-- Composition of `DilationEquiv`s. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def trans (e₁ : X ≃ᵈ Y) (e₂ : Y ≃ᵈ Z) : X ≃ᵈ Z where
   toEquiv := e₁.1.trans e₂.1
   __ := e₂.toDilation.comp e₁.toDilation

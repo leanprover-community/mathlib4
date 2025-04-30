@@ -15,6 +15,9 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 This file contains some integrability results, and evaluations of integrals, over `ℝ` or over
 half-infinite intervals in `ℝ`.
 
+These lemmas are stated in terms of either `Iic` or `Ioi` (neglecting `Iio` and `Ici`) to match
+mathlib's conventions for integrals over finite intervals (see `intervalIntegral`).
+
 ## See also
 
 - `Mathlib.Analysis.SpecialFunctions.Integrals` -- integrals over finite intervals
@@ -35,6 +38,9 @@ theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   simp_rw [norm_of_nonneg (exp_pos _).le, integral_exp, sub_le_self_iff]
   exact (exp_pos _).le
 
+theorem integrableOn_exp_neg_Ioi (c : ℝ) : IntegrableOn (fun (x : ℝ) => exp (-x)) (Ioi c) :=
+  integrableOn_Ici_iff_integrableOn_Ioi.mp (integrableOn_exp_Iic (-c)).comp_neg_Ici
+
 theorem integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
   refine
     tendsto_nhds_unique
@@ -51,13 +57,63 @@ theorem integral_exp_neg_Ioi (c : ℝ) : (∫ x : ℝ in Ioi c, exp (-x)) = exp 
 theorem integral_exp_neg_Ioi_zero : (∫ x : ℝ in Ioi 0, exp (-x)) = 1 := by
   simpa only [neg_zero, exp_zero] using integral_exp_neg_Ioi 0
 
+theorem integrableOn_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
+    IntegrableOn (fun x : ℝ => Complex.exp (a * x)) (Ioi c) := by
+  refine (integrable_norm_iff ?_).mp ?_
+  · apply Continuous.aestronglyMeasurable
+    fun_prop
+  · simpa [Complex.norm_exp] using
+      (integrableOn_Ioi_comp_mul_left_iff (fun x => exp (-x)) c (a := -a.re) (by simpa)).mpr <|
+        integrableOn_exp_neg_Ioi _
+
+theorem integrableOn_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
+    IntegrableOn (fun x : ℝ => Complex.exp (a * x)) (Iic c) := by
+  simpa using integrableOn_Iic_iff_integrableOn_Iio.mpr
+    (integrableOn_exp_mul_complex_Ioi (a := -a) (by simpa) (-c)).comp_neg_Iio
+
+theorem integrableOn_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :
+    IntegrableOn (fun x : ℝ => Real.exp (a * x)) (Ioi c) := by
+  have := Integrable.norm <| integrableOn_exp_mul_complex_Ioi (a := a) (by simpa using ha) c
+  simpa [Complex.norm_exp] using this
+
+theorem integrableOn_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
+    IntegrableOn (fun x : ℝ => Real.exp (a * x)) (Iic c) := by
+  have := Integrable.norm <| integrableOn_exp_mul_complex_Iic (a := a) (by simpa using ha) c
+  simpa [Complex.norm_exp] using this
+
+theorem integral_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
+    ∫ x : ℝ in Set.Ioi c, Complex.exp (a * x) = - Complex.exp (a * c) / a := by
+  refine tendsto_nhds_unique (intervalIntegral_tendsto_integral_Ioi c
+    (integrableOn_exp_mul_complex_Ioi ha c) tendsto_id) ?_
+  simp_rw [integral_exp_mul_complex (c := a) (by aesop), id_eq]
+  suffices Tendsto (fun x : ℝ ↦ Complex.exp (a * x)) atTop (𝓝 0) by
+    simpa using this.sub_const _ |>.div_const _
+  simpa [Complex.tendsto_exp_nhds_zero_iff] using tendsto_const_nhds.neg_mul_atTop ha tendsto_id
+
+theorem integral_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
+    ∫ x : ℝ in Set.Iic c, Complex.exp (a * x) = Complex.exp (a * c) / a := by
+  simpa [neg_mul, ← mul_neg, ← Complex.ofReal_neg,
+    integral_comp_neg_Ioi (f := fun x : ℝ ↦ Complex.exp (a * x))]
+    using integral_exp_mul_complex_Ioi (a := -a) (by simpa) (-c)
+
+theorem integral_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :
+    ∫ x : ℝ in Set.Ioi c, Real.exp (a * x) = - Real.exp (a * c) / a := by
+  simp_rw [Real.exp, ← RCLike.re_to_complex, Complex.ofReal_mul]
+  rw [integral_re, integral_exp_mul_complex_Ioi (by simpa using ha), RCLike.re_to_complex,
+    RCLike.re_to_complex, Complex.div_ofReal_re, Complex.neg_re]
+  exact integrableOn_exp_mul_complex_Ioi  (by simpa using ha) _
+
+theorem integral_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
+    ∫ x : ℝ in Set.Iic c, Real.exp (a * x) = Real.exp (a * c) / a := by
+  simpa [neg_mul, ← mul_neg, integral_comp_neg_Ioi (f := fun x : ℝ ↦ Real.exp (a * x))]
+    using integral_exp_mul_Ioi (a := -a) (by simpa) (-c)
+
 /-- If `0 < c`, then `(fun t : ℝ ↦ t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
 theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     IntegrableOn (fun t : ℝ => t ^ a) (Ioi c) := by
   have hd : ∀ x ∈ Ici c, HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
     intro x hx
-    -- Porting note: helped `convert` with explicit arguments
-    convert (hasDerivAt_rpow_const (p := a + 1) (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
+    convert (hasDerivAt_rpow_const (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
     field_simp [show a + 1 ≠ 0 from ne_of_lt (by linarith), mul_comm]
   have ht : Tendsto (fun t => t ^ (a + 1) / (a + 1)) atTop (𝓝 (0 / (a + 1))) := by
     apply Tendsto.div_const
@@ -118,7 +174,7 @@ theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
 theorem integrableOn_Ioi_norm_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
     IntegrableOn (fun t : ℝ ↦ ‖(t : ℂ) ^ a‖) (Ioi c) := by
   refine (integrableOn_Ioi_rpow_of_lt ha hc).congr_fun (fun x hx => ?_) measurableSet_Ioi
-  rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos (hc.trans hx)]
+  rw [Complex.norm_cpow_eq_rpow_re_of_pos (hc.trans hx)]
 
 theorem integrableOn_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
     IntegrableOn (fun t : ℝ => (t : ℂ) ^ a) (Ioi c) := by
@@ -130,7 +186,7 @@ theorem integrableOn_Ioi_norm_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x : ℝ ↦ ‖(x : ℂ) ^ s‖) (Ioi t) ↔ s.re < -1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ integrableOn_Ioi_norm_cpow_of_lt h ht⟩
   refine (integrableOn_Ioi_rpow_iff ht).mp <| h.congr_fun (fun a ha ↦ ?_) measurableSet_Ioi
-  rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos (ht.trans ha)]
+  rw [Complex.norm_cpow_eq_rpow_re_of_pos (ht.trans ha)]
 
 theorem integrableOn_Ioi_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi t) ↔ s.re < -1 :=
@@ -192,8 +248,7 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
   refine
     (tendsto_rpow_neg_atTop (by linarith : 0 < -(a.re + 1))).congr'
       ((eventually_gt_atTop 0).mp (Eventually.of_forall fun x hx => ?_))
-  simp_rw [neg_neg, Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx, Complex.add_re,
-    Complex.one_re]
+  simp_rw [neg_neg, Complex.norm_cpow_eq_rpow_re_of_pos hx, Complex.add_re, Complex.one_re]
 
 theorem integrable_inv_one_add_sq : Integrable fun (x : ℝ) ↦ (1 + x ^ 2)⁻¹ := by
   suffices Integrable fun (x : ℝ) ↦ (1 + ‖x‖ ^ 2) ^ ((-2 : ℝ) / 2) by simpa [rpow_neg_one]

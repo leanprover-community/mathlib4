@@ -70,14 +70,11 @@ theorem exists_le_maximal (I : Ideal α) (hI : I ≠ ⊤) : ∃ M : Ideal α, M.
   let ⟨m, hm⟩ := (eq_top_or_exists_le_coatom I).resolve_left hI
   ⟨m, ⟨⟨hm.1⟩, hm.2⟩⟩
 
-variable (α)
-
+variable (α) in
 /-- Krull's theorem: a nontrivial ring has a maximal ideal. -/
 theorem exists_maximal [Nontrivial α] : ∃ M : Ideal α, M.IsMaximal :=
   let ⟨I, ⟨hI, _⟩⟩ := exists_le_maximal (⊥ : Ideal α) bot_ne_top
   ⟨I, hI⟩
-
-variable {α}
 
 instance [Nontrivial α] : Nontrivial (Ideal α) := by
   rcases@exists_maximal α _ _ with ⟨M, hM, _⟩
@@ -102,7 +99,7 @@ theorem IsMaximal.exists_inv {I : Ideal α} (hI : I.IsMaximal) {x} (hx : x ∉ I
   rwa [← span_eq I]
 
 theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : IsChain (· ≤ ·) s)
-    (H : ∀ p ∈ s, Ideal.IsPrime p) : (sInf s).IsPrime :=
+    (H : ∀ p ∈ s, p.IsPrime) : (sInf s).IsPrime :=
   ⟨fun e =>
     let ⟨x, hx⟩ := hs
     (H x hx).ne_top (eq_top_iff.mpr (e.symm.trans_le (sInf_le hx))),

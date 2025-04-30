@@ -3,9 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
+import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.Antisymmetrization
 
 /-!
 # The covering relation
@@ -439,6 +440,19 @@ lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
     exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
 
 end LinearOrder
+
+namespace Bool
+
+@[simp] theorem wcovBy_iff : ∀ {a b : Bool}, a ⩿ b ↔ a ≤ b := by unfold WCovBy; decide
+@[simp] theorem covBy_iff : ∀ {a b : Bool}, a ⋖ b ↔ a < b := by unfold CovBy; decide
+
+instance instDecidableRelWCovBy : DecidableRel (· ⩿ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ wcovBy_iff.symm
+
+instance instDecidableRelCovBy : DecidableRel (· ⋖ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ covBy_iff.symm
+
+end Bool
 
 namespace Set
 variable {s t : Set α} {a : α}

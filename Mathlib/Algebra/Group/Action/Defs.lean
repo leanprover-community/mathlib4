@@ -156,7 +156,7 @@ class VAddAssocClass (M N α : Type*) [VAdd M N] [VAdd N α] [VAdd M α] : Prop 
 /-- An instance of `IsScalarTower M N α` states that the multiplicative
 action of `M` on `α` is determined by the multiplicative actions of `M` on `N`
 and `N` on `α`. -/
-@[to_additive VAddAssocClass] -- TODO auto-translating
+@[to_additive]
 class IsScalarTower (M N α : Type*) [SMul M N] [SMul N α] [SMul M α] : Prop where
   /-- Associativity of `•` -/
   smul_assoc : ∀ (x : M) (y : N) (z : α), (x • y) • z = x • y • z
@@ -310,12 +310,6 @@ lemma smul_mul_smul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
 
 @[to_additive]
 alias smul_mul_smul := smul_mul_smul_comm
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated smul_mul_smul_comm (since := "2024-08-29")] smul_mul_smul
-attribute [deprecated vadd_add_vadd_comm (since := "2024-08-29")] vadd_add_vadd
-
 
 /-- Note that the `IsScalarTower α β β` and `SMulCommClass α β β` typeclass arguments are usually
 satisfied by `Algebra α β`. -/
@@ -492,3 +486,22 @@ lemma SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
   ⟨fun x y z ↦ by rw [← H x z, smul_eq_mul, ← H, smul_eq_mul, mul_assoc]⟩
 
 end CompatibleScalar
+
+/-- Typeclass for multiplicative actions on multiplicative structures. This generalizes
+conjugation actions. -/
+@[ext]
+class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
+  /-- Distributivity of `•` across `*` -/
+  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
+  /-- Multiplying `1` by a scalar gives `1` -/
+  smul_one : ∀ r : M, r • (1 : N) = 1
+
+export MulDistribMulAction (smul_one)
+
+section MulDistribMulAction
+variable [Monoid M] [Monoid N] [MulDistribMulAction M N]
+
+lemma smul_mul' (a : M) (b₁ b₂ : N) : a • (b₁ * b₂) = a • b₁ * a • b₂ :=
+  MulDistribMulAction.smul_mul ..
+
+end MulDistribMulAction
