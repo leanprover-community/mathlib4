@@ -43,9 +43,9 @@ def whiskeringLeft₂Equiv {F : D₁ ⥤ D₂ ⥤ H} {G : C₁ ⥤ C₂ ⥤ H}
   left_inv _ := rfl
   right_inv _ := rfl
 
-variable (RF : D₁ ⥤ D₂ ⥤ H) (F : C₁ ⥤ C₂ ⥤ H)
+variable (LF : D₁ ⥤ D₂ ⥤ H) (F : C₁ ⥤ C₂ ⥤ H)
   {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂}
-  (α : (((whiskeringLeft₂ H).obj L₁).obj L₂).obj RF ⟶ F)
+  (α : (((whiskeringLeft₂ H).obj L₁).obj L₂).obj LF ⟶ F)
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
 
@@ -56,7 +56,7 @@ variable [W₁.ContainsIdentities] [W₂.ContainsIdentities]
 variable {F}
 
 abbrev IsLeftDerivedFunctor₂ : Prop :=
-  (uncurry.obj RF).IsLeftDerivedFunctor (whiskeringLeft₂Equiv α) (W₁.prod W₂)
+  (uncurry.obj LF).IsLeftDerivedFunctor (whiskeringLeft₂Equiv α) (W₁.prod W₂)
 
 section
 
@@ -79,6 +79,43 @@ instance : (leftDerived₂ F L₁ L₂ W₁ W₂).IsLeftDerivedFunctor₂
       (((uncurry.obj F).totalLeftDerived (L₁.prod L₂) (W₁.prod W₂)))) ?_).1 inferInstance
   ext
   simp [leftDerivedCounit₂]
+
+end
+
+section
+
+variable [LF.IsLeftDerivedFunctor₂ α W₁ W₂]
+  (G : D₁ ⥤ D₂ ⥤ H)
+  (β : (((whiskeringLeft₂ H).obj L₁).obj L₂).obj G ⟶ F)
+
+noncomputable def leftDerived₂Lift : G ⟶ LF :=
+  fullyFaithfulUncurry.preimage
+    (leftDerivedLift (LF := uncurry.obj LF)
+      (whiskeringLeft₂Equiv α) (W₁.prod W₂) (uncurry.obj G)
+      (whiskeringLeft₂Equiv β))
+
+@[reassoc (attr := simp)]
+lemma leftDerived₂_fac_app_app (X₁ : C₁) (X₂ : C₂) :
+    ((leftDerived₂Lift LF α W₁ W₂ G β).app (L₁.obj X₁)).app (L₂.obj X₂) ≫
+      (α.app X₁).app X₂ = (β.app X₁).app X₂ := by
+  simpa [leftDerived₂Lift, fullyFaithfulUncurry, Equivalence.fullyFaithfulFunctor]
+    using leftDerived_fac_app (LF := uncurry.obj LF)
+      (whiskeringLeft₂Equiv α) (W₁.prod W₂) (uncurry.obj G)
+      (whiskeringLeft₂Equiv β) (X₁, X₂)
+
+@[reassoc (attr := simp)]
+lemma leftDerived₂_fac :
+    (((whiskeringLeft₂ H).obj L₁).obj L₂).map (leftDerived₂Lift LF α W₁ W₂ G β) ≫ α = β := by
+  aesop
+
+include W₁ W₂ in
+lemma leftDerived₂_ext (G : D₁ ⥤ D₂ ⥤ H) (γ₁ γ₂ : G ⟶ LF)
+    (hγ : (((whiskeringLeft₂ H).obj L₁).obj L₂).map γ₁ ≫ α =
+      (((whiskeringLeft₂ H).obj L₁).obj L₂).map γ₂ ≫ α) : γ₁ = γ₂ := by
+  apply uncurry.map_injective
+  apply leftDerived_ext (α := (whiskeringLeft₂Equiv α)) (W := W₁.prod W₂)
+  ext ⟨X₁, X₂⟩
+  exact congr_app (congr_app hγ X₁) X₂
 
 end
 
