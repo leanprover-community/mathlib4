@@ -159,7 +159,7 @@ lemma tendsto_cobounded_iff_order_neg (hf : MeromorphicAt f x) :
     obtain ⟨c, hc⟩ := hf.tendsto_nhds_of_order_nonneg ho
     exact not_tendsto_atTop_of_tendsto_nhds hc.norm
 
-/-- A meromorphic function converges to a limit iff its is order if nonnegative. -/
+/-- A meromorphic function converges to a limit iff its order is nonnegative. -/
 lemma tendsto_nhds_iff_order_nonneg (hf : MeromorphicAt f x) :
     (∃ c, Tendsto f (𝓝[≠] x) (𝓝 c)) ↔ 0 ≤ hf.order := by
   rcases lt_or_le hf.order 0 with ho | ho
