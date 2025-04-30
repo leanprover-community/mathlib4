@@ -280,6 +280,6 @@ theorem squarefree_natAbs {n : ℤ} : Squarefree n.natAbs ↔ Squarefree n := by
 
 @[simp]
 theorem squarefree_natCast {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
-  rw [← squarefree_natAbs, natAbs_ofNat]
+  rw [← squarefree_natAbs, natAbs_natCast]
 
 end Int

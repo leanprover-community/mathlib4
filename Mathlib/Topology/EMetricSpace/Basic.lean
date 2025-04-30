@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.EMetricSpace.Defs
 import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.UniformConvergence
+import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!

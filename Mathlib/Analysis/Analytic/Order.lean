@@ -17,8 +17,9 @@ TODO: Uniformize API between analytic and meromorphic functions
 open Filter  Set
 open scoped Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {f g : 𝕜 → E} {n : ℕ} {z₀ : 𝕜}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {f f₁ f₂ g : 𝕜 → E} {n : ℕ} {z₀ : 𝕜}
 
 /-!
 ## Vanishing Order at a Point: Definition and Characterization
@@ -113,41 +114,61 @@ lemma natCast_le_order_iff (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
           ← mul_smul] at hf'
         rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by omega), ← hf']
 
+/-- If two functions agree in a neighborhood of `z₀`, then their orders at `z₀` agree. -/
+theorem order_congr (hf₁ : AnalyticAt 𝕜 f₁ z₀) (h : f₁ =ᶠ[𝓝 z₀] f₂) :
+    (hf₁.congr h).order = hf₁.order := by
+  refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ?_
+  simpa only [natCast_le_order_iff] using ⟨fun ⟨g, hg, hfg⟩ ↦ ⟨g, hg, h.trans hfg⟩,
+    fun ⟨g, hg, hfg⟩ ↦ ⟨g, hg, h.symm.trans hfg⟩⟩
+
 /-!
-## Vanishing Order at a Point: Behaviour under Ring Operations
-
-The theorem `AnalyticAt.order_mul` and `AnalyticAt.order_pow` establish additivity of the order
-under multiplication and taking powers.
-
-TODO: Behaviour under Addition/Subtraction
+## Vanishing Order at a Point: Elementary Computations
 -/
 
-/-- Helper lemma for `AnalyticAt.order_mul` -/
-lemma order_mul_of_order_eq_top {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀)
-    (hg : AnalyticAt 𝕜 g z₀) (h'f : hf.order = ⊤) :
-    (hf.mul hg).order = ⊤ := by
-  rw [AnalyticAt.order_eq_top_iff, eventually_nhds_iff] at *
-  obtain ⟨t, h₁t, h₂t, h₃t⟩ := h'f
-  exact ⟨t, fun y hy ↦ (by simp [h₁t y hy]), h₂t, h₃t⟩
+/-- Helper lemma, required to state analyticAt_order_centeredMonomial below -/
+lemma analyticAt_centeredMonomial (z₀ : 𝕜) (n : ℕ) :
+    AnalyticAt 𝕜 ((· - z₀) ^ n) z₀ := by fun_prop
 
-/-- The order is additive when multiplying analytic functions. -/
-theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
-    (hf.mul hg).order = hf.order + hg.order := by
+/-- Simplifier lemma for the order of a centered monomial -/
+@[simp]
+lemma analyticAt_order_centeredMonomial {z₀ : 𝕜} {n : ℕ} :
+    (analyticAt_centeredMonomial z₀ n).order = n := by
+  rw [AnalyticAt.order_eq_nat_iff]
+  use 1
+  simp only [Pi.one_apply, ne_eq, one_ne_zero, not_false_eq_true, Pi.pow_apply, smul_eq_mul,
+    mul_one, eventually_true, and_self, and_true]
+  exact analyticAt_const
+
+/-!
+## Vanishing Order at a Point: Behaviour under Standard Operations
+
+The theorems `AnalyticAt.order_mul` and `AnalyticAt.order_pow` establish additivity of the order
+under multiplication and taking powers. The theorem `AnalyticAt.order_add` establishes behavior
+under addition.
+-/
+
+/-- The order is additive when scalar multiplying analytic functions. -/
+theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
+    (hf.smul hg).order = hf.order + hg.order := by
   -- Trivial cases: one of the functions vanishes around z₀
   by_cases h₂f : hf.order = ⊤
-  · simp [hf.order_mul_of_order_eq_top hg h₂f, h₂f]
+  · rw [h₂f, top_add, order_eq_top_iff]
+    filter_upwards [hf.order_eq_top_iff.mp h₂f] using by simp +contextual
   by_cases h₂g : hg.order = ⊤
-  · simp [mul_comm f g, hg.order_mul_of_order_eq_top hf h₂g, h₂g]
+  · rw [h₂g, add_top, order_eq_top_iff]
+    filter_upwards [hg.order_eq_top_iff.mp h₂g] using by simp +contextual
   -- Non-trivial case: both functions do not vanish around z₀
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf.order_ne_top_iff.1 h₂f
   obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hg.order_ne_top_iff.1 h₂g
-  rw [← ENat.coe_toNat h₂f, ← ENat.coe_toNat h₂g, ← ENat.coe_add, (hf.mul hg).order_eq_nat_iff]
-  use g₁ * g₂, h₁g₁.mul h₁g₂
-  constructor
-  · simp_all
-  · filter_upwards [h₃g₁, h₃g₂] with z hz₁ hz₂
-    simp [hz₁, hz₂, add_pow]
-    ring
+  rw [← ENat.coe_toNat h₂f, ← ENat.coe_toNat h₂g, ← ENat.coe_add, (hf.smul hg).order_eq_nat_iff]
+  refine ⟨_, h₁g₁.smul h₁g₂, by simp [h₂g₁, h₂g₂], ?_⟩
+  filter_upwards [h₃g₁, h₃g₂] with a h₁a h₂a
+  simp [h₁a, h₂a, ← smul_assoc, pow_add, mul_right_comm]
+
+/-- The order is additive when multiplying analytic functions. -/
+theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
+    (hf.mul hg).order = hf.order + hg.order :=
+  hf.order_smul hg
 
 /-- The order multiplies by `n` when taking an analytic function to its `n`th power. -/
 theorem order_pow {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
@@ -157,6 +178,35 @@ theorem order_pow {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
     simp [AnalyticAt.order_eq_zero_iff]
   case succ n hn =>
     simp [add_mul, pow_add, (hf.pow n).order_mul hf, hn]
+
+/-- The order of a sum is at least the minimum of the orders of the summands. -/
+theorem order_add (hf₁ : AnalyticAt 𝕜 f₁ z₀) (hf₂ : AnalyticAt 𝕜 f₂ z₀) :
+    min hf₁.order hf₂.order ≤ (hf₁.add hf₂).order := by
+  refine ENat.forall_natCast_le_iff_le.mp fun n ↦ ?_
+  simp only [le_min_iff, natCast_le_order_iff]
+  refine fun ⟨⟨F, hF, hF'⟩, ⟨G, hG, hG'⟩⟩ ↦ ⟨F + G, hF.add hG, ?_⟩
+  filter_upwards [hF', hG'] with z using by simp +contextual
+
+/-- Helper lemma for AnalyticAt.order_add_of_unequal_order -/
+lemma order_add_of_order_lt_order (hf₁ : AnalyticAt 𝕜 f₁ z₀) (hf₂ : AnalyticAt 𝕜 f₂ z₀)
+    (h : hf₁.order < hf₂.order) :
+    (hf₁.add hf₂).order = hf₁.order := by
+  lift hf₁.order to ℕ using h.ne_top with n₁ hn₁
+  simp only [eq_comm (a := (n₁ : ℕ∞)), order_eq_nat_iff] at hn₁ ⊢
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hn₁
+  obtain ⟨g₂, h₁g₂, h₂g₂⟩ := hf₂.natCast_le_order_iff.mp (Order.add_one_le_of_lt h)
+  refine ⟨g₁ + (· - z₀) • g₂, by fun_prop, by simpa using h₂g₁, ?_⟩
+  filter_upwards [h₃g₁, h₂g₂] with a h₁a h₂a
+  simp [mul_smul, pow_succ, h₁a, h₂a]
+
+/-- If two functions have unequal orders, then the order of their sum is exactly the minimum
+of the orders of the summands. -/
+theorem order_add_of_order_ne_order (hf₁ : AnalyticAt 𝕜 f₁ z₀) (hf₂ : AnalyticAt 𝕜 f₂ z₀)
+    (h : hf₁.order ≠ hf₂.order) :
+    (hf₁.add hf₂).order = min hf₁.order hf₂.order := by
+  rcases min_cases hf₁.order hf₂.order with (⟨hm, h₁⟩ | ⟨hm, h₁⟩)
+  · simpa [hm] using hf₁.order_add_of_order_lt_order hf₂ (h₁.lt_of_ne h)
+  · simpa [hm, add_comm] using hf₂.order_add_of_order_lt_order hf₁ h₁
 
 end AnalyticAt
 
