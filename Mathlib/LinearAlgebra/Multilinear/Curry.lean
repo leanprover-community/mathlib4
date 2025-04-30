@@ -242,11 +242,12 @@ def currySum (f : MultilinearMap R N M₂) :
   map_update_smul' u i c x :=
     ext fun _ ↦ by letI := Classical.decEq ι'; simp
 
-@[simp]
+@[simp low]
 theorem currySum_apply (f : MultilinearMap R N M₂)
     (u : (i : ι) → N (Sum.inl i)) (v : (i : ι') → N (Sum.inr i)) :
     currySum f u v = f (Sum.rec u v) := rfl
 
+@[simp]
 theorem currySum_apply' {N : Type*} [AddCommMonoid N] [Module R N]
     (f : MultilinearMap R (fun _ : ι ⊕ ι' ↦ N) M₂)
     (u : ι → N) (v : ι' → N) :
