@@ -222,6 +222,8 @@ abbrev unlintedNodes := #[
                     -- the pretty-printer prefers `𝒜 #r` over `𝒜 # r` (mathlib style)
 
   --`ToAdditive.toAdditiveRest, -- the `existing` in `[to_additive existing]`
+
+  ``Parser.Command.docComment, -- The docString linter already takes care of formatting doc-strings.
   ]
 
 /--
