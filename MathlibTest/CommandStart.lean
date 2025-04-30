@@ -78,20 +78,6 @@ Current syntax:  'mple  :  T'
 Expected syntax: 'mple : Tru'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: extra space
-
-Current syntax:  'e  :  True'
-Expected syntax: 'le : True '
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: missing space
-
-Current syntax:  'ue :=trivi'
-Expected syntax: 'ue :=⏎  tr'
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example  :  True :=trivial
@@ -133,24 +119,7 @@ example {a: Nat} : a = a := rfl
 #eval
   let l := "hac d"
   let m := "h  acd"
-  parallelScan l m
-
-def parallelScam : Nat → List Char → List Char → Array Nat
-  | n, as, ' '::l::ls, m::ms =>
-    match l.isWhitespace,  m.isWhitespace with
-    | _, true =>
-      parallelScanAux (n + 1) (l::ls) (ms.dropWhile (·.isWhitespace))
-    ---| true, true =>
-    ---  dbg_trace "extra space at {n+1}"
-    ---  parallelScanAux (n + 1) (l::ls) ms |>.push (n+1)
-    | _, false =>
-      dbg_trace "missing space at {n}"
-      parallelScanAux (n + 1) (l::ls) (m::ms) |>.push n
-    --| false, false =>
-    --  dbg_trace "missing space at {n}"
-    --  parallelScanAux (n + 1) (l::ls) (m::ms) |>.push n
-
-  | _, _, _ => default
+  Mathlib.Linter.parallelScan l m
 
 set_option linter.style.commandStart.verbose true in
 /--
