@@ -274,6 +274,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       Linter.logLint linter.style.commandStart stx
         m!"'{stx}' starts on column {colStart}, \
           but all commands should start at the beginning of the line."
+  -- We skip `macro_rules`, since they cause parsing issues.
+  if stx.find? (·.isOfKind ``Lean.Parser.Command.macro_rules) |>.isSome then
+    return
 
   let fmt : Option Format := ←
       try
