@@ -174,16 +174,20 @@ lemma isSymm_posForm :
   apply FaithfulSMul.algebraMap_injective S R
   simpa using B.symm.eq x y
 
-/-- The length of the `i`-th root wrt a root-positive form taking values in `S`. -/
-def rootLenIn (i : ι) : S :=
+/-- The length of the `i`-th root wrt a root-positive form taking values in `S`.
+
+TODO Generalise to drop requirement on `S` being ordered? We'd have to generalise `InvariantForm`
+to take a `[P.ValuedIn S]` and require `S`-valuedness. Probably worth it as part of upcoming
+refactor. -/
+def rootLength (i : ι) : S :=
   B.posForm ⟨P.root i, subset_span <| mem_range_self _⟩ ⟨P.root i, subset_span <| mem_range_self _⟩
 
-lemma rootLenIn_pos (i : ι) : 0 < B.rootLenIn i := by
+lemma rootLength_pos (i : ι) : 0 < B.rootLength i := by
   simpa using B.zero_lt_posForm_apply_root i
 
-@[simp] lemma algebraMap_rootLenIn (i : ι) :
-    algebraMap S R (B.rootLenIn i) = B.form (P.root i) (P.root i) := by
-  simp [rootLenIn]
+@[simp] lemma algebraMap_rootLength (i : ι) :
+    algebraMap S R (B.rootLength i) = B.form (P.root i) (P.root i) := by
+  simp [rootLength]
 
 @[simp]
 lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]

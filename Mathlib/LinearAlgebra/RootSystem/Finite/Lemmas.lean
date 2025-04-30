@@ -50,8 +50,8 @@ lemma coxeterWeightIn_le_four (S : Type*)
   have : Fintype ι := Fintype.ofFinite ι
   let ri : span S Φ := ⟨α i, Submodule.subset_span (mem_range_self _)⟩
   let rj : span S Φ := ⟨α j, Submodule.subset_span (mem_range_self _)⟩
-  set li := (P.posRootForm S).posForm ri ri
-  set lj := (P.posRootForm S).posForm rj rj
+  set li := (P.posRootForm S).rootLength i
+  set lj := (P.posRootForm S).rootLength j
   set lij := (P.posRootForm S).posForm ri rj
   obtain ⟨si, hsi, hsi'⟩ := (P.posRootForm S).exists_pos_eq i
   obtain ⟨sj, hsj, hsj'⟩ := (P.posRootForm S).exists_pos_eq j
@@ -119,37 +119,38 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' [P.IsReduced]
   have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
   aesop
 
+-- TODO Generalise to cover `P.pairingIn ℤ i j = 1` also
 variable {P} in
-lemma RootPositiveForm.rootLenIn_le_of_pairingIn_eq_neg_one (B : P.RootPositiveForm ℤ) {i j : ι}
+lemma RootPositiveForm.rootLength_le_of_pairingIn_eq_neg_one (B : P.RootPositiveForm ℤ) {i j : ι}
     (hij : P.pairingIn ℤ i j = -1) :
-    B.rootLenIn i ≤ B.rootLenIn j := by
+    B.rootLength i ≤ B.rootLength j := by
   have aux₁ : P.pairingIn ℤ j i = -1 ∨ P.pairingIn ℤ j i = -2 ∨ P.pairingIn ℤ j i = -3 ∨
       P.pairingIn ℤ j i = -4 := by
     simpa [hij] using P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
-  have aux₂ : P.pairingIn ℤ j i * B.rootLenIn i = P.pairingIn ℤ i j * B.rootLenIn j := by
+  have aux₂ : P.pairingIn ℤ j i * B.rootLength i = P.pairingIn ℤ i j * B.rootLength j := by
     simpa only [← (algebraMap_injective ℤ R).eq_iff, algebraMap_pairingIn, map_mul,
-      B.algebraMap_rootLenIn] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
-  have hi := B.rootLenIn_pos i
+      B.algebraMap_rootLength] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
+  have hi := B.rootLength_pos i
   rcases aux₁ with hji | hji | hji | hji <;> rw [hij, hji] at aux₂ <;> omega
 
 -- TODO Drop `[P.IsReduced]` assumption
 variable {P} in
-lemma RootPositiveForm.rootLenIn_lt_of_pairingIn_eq_neg_one [P.IsReduced]
+lemma RootPositiveForm.rootLength_lt_of_pairingIn_eq_neg_one [P.IsReduced]
     (B : P.RootPositiveForm ℤ) {i j : ι}
     (hne : P.root i ≠ P.root j) (hne' : P.root i ≠ - P.root j)
     (hij : P.pairingIn ℤ i j ∉ ({-1, 0, 1} : Set ℤ)) :
-    B.rootLenIn j < B.rootLenIn i := by
+    B.rootLength j < B.rootLength i := by
   have hij' : P.pairingIn ℤ i j = -3 ∨ P.pairingIn ℤ i j = -2 ∨ P.pairingIn ℤ i j = 2 ∨
       P.pairingIn ℤ i j = 3 := by
     have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i j hne hne'; aesop
   have aux₁ : P.pairingIn ℤ j i = -1 ∨ P.pairingIn ℤ j i = 1 := by
     have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i j hne hne'; aesop
-  have aux₂ : P.pairingIn ℤ j i * B.rootLenIn i = P.pairingIn ℤ i j * B.rootLenIn j := by
+  have aux₂ : P.pairingIn ℤ j i * B.rootLength i = P.pairingIn ℤ i j * B.rootLength j := by
     -- TODO Also appears in lemma above: missing upstream API.
     simpa only [← (algebraMap_injective ℤ R).eq_iff, algebraMap_pairingIn, map_mul,
-      B.algebraMap_rootLenIn] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
-  have hi := B.rootLenIn_pos i
-  have hj := B.rootLenIn_pos j
+      B.algebraMap_rootLength] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
+  have hi := B.rootLength_pos i
+  have hj := B.rootLength_pos j
   rcases aux₁ with hji | hji <;> rcases hij' with hij' | hij' | hij' | hij' <;>
   rw [hji, hij'] at aux₂ <;> omega
 

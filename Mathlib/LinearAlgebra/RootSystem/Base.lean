@@ -54,8 +54,8 @@ doc string for further remarks. -/
 structure Base (P : RootPairing ι R M N) where
   /-- The set of roots / coroots belonging to the base. -/
   support : Set ι
-  linInd_root : LinearIndependent R fun i : support ↦ P.root i
-  linInd_coroot : LinearIndependent R fun i : support ↦ P.coroot i
+  linInd_root : LinearIndepOn R P.root support
+  linInd_coroot : LinearIndepOn R P.coroot support
   root_mem_or_neg_mem (i : ι) : P.root i ∈ AddSubmonoid.closure (P.root '' support) ∨
                               - P.root i ∈ AddSubmonoid.closure (P.root '' support)
   coroot_mem_or_neg_mem (i : ι) : P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support) ∨
@@ -71,8 +71,8 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 @[simps] protected def flip :
     P.flip.Base where
   support := b.support
-  linInd_root := b.linInd_coroot -- TODO Change to `LinearIndepOn R (fun i ↦ P.root i) b.support`?
-  linInd_coroot := b.linInd_root -- TODO Change to `LinearIndepOn R (fun i ↦ P.coroot i) b.support`?
+  linInd_root := b.linInd_coroot
+  linInd_coroot := b.linInd_root
   root_mem_or_neg_mem := b.coroot_mem_or_neg_mem
   coroot_mem_or_neg_mem := b.root_mem_or_neg_mem
 
@@ -81,11 +81,9 @@ lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
     (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j) :
     P.root i ≠ - P.root j := by
   classical
-  have : LinearIndepOn R (fun i ↦ P.root i) b.support := b.linInd_root
-  rw [linearIndepOn_iff'] at this
   intro contra
-  specialize this ({i, j} : Finset ι) 1 (by simp [Set.insert_subset_iff, hi, hj])
-    (by simp [Finset.sum_pair hij, contra])
+  have := linearIndepOn_iff'.mp b.linInd_root ({i, j} : Finset ι) 1
+    (by simp [Set.insert_subset_iff, hi, hj]) (by simp [Finset.sum_pair hij, contra])
   aesop
 
 lemma root_mem_span_int (i : ι) :

@@ -167,7 +167,7 @@ lemma root_sub_zsmul_mem_range_iff {z : ℤ} :
 
 omit h
 
-private lemma chainCoeff_relfection_perm_aux :
+private lemma chainCoeff_relfection_perm_left_aux :
     letI := P.indexNeg
     Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) =
       Icc (-P.chainBotCoeff (-i) j : ℤ) (P.chainTopCoeff (-i) j) := by
@@ -198,23 +198,23 @@ private lemma chainCoeff_relfection_perm_right_aux :
       chainBotCoeff_of_not_linInd h, chainBotCoeff_of_not_linInd h']
 
 @[simp]
-lemma chainTopCoeff_relfection_perm :
+lemma chainTopCoeff_relfection_perm_left :
     P.chainTopCoeff (P.reflection_perm i i) j = P.chainBotCoeff i j := by
   letI := P.indexNeg
   have (z : ℤ) : z ∈ Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) ↔
       z ∈ Icc (-P.chainBotCoeff (-i) j : ℤ) (P.chainTopCoeff (-i) j) := by
-    rw [P.chainCoeff_relfection_perm_aux]
+    rw [P.chainCoeff_relfection_perm_left_aux]
   refine le_antisymm ?_ ?_
   · simpa using this (P.chainTopCoeff (-i) j)
   · simpa using this (P.chainBotCoeff i j)
 
 @[simp]
-lemma chainBotCoeff_relfection_perm :
+lemma chainBotCoeff_relfection_perm_left :
     P.chainBotCoeff (P.reflection_perm i i) j = P.chainTopCoeff i j := by
   letI := P.indexNeg
   have (z : ℤ) : z ∈ Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) ↔
       z ∈ Icc (-P.chainBotCoeff (-i) j : ℤ) (P.chainTopCoeff (-i) j) := by
-    rw [P.chainCoeff_relfection_perm_aux]
+    rw [P.chainCoeff_relfection_perm_left_aux]
   refine le_antisymm ?_ ?_
   · simpa using this (-P.chainBotCoeff (-i) j)
   · simpa using this (-P.chainTopCoeff i j)
@@ -293,7 +293,7 @@ lemma chainBotCoeff_sub_chainTopCoeff :
       P.chainBotCoeff i j - P.chainTopCoeff i j ≤ P.pairingIn ℤ j i by
     refine le_antisymm (this i j h) ?_
     specialize this (P.reflection_perm i i) j (by simpa)
-    simp only [chainBotCoeff_relfection_perm, chainTopCoeff_relfection_perm,
+    simp only [chainBotCoeff_relfection_perm_left, chainTopCoeff_relfection_perm_left,
       pairingIn_reflection_perm_self_right] at this
     omega
   intro i j h

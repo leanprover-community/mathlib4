@@ -70,17 +70,18 @@ lemma IsReduced.linearIndependent_iff [Nontrivial R] [P.IsReduced] :
 
 lemma two_smul_nmem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i : ι} :
     (2 : R) • P.root i ∉ range P.root := by
-  have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
+  have _i : Nontrivial R := ⟨2, 0, two_ne_zero⟩
   have : ¬ LinearIndependent R ![(2 : R) • P.root i, P.root i] := by
     simpa only [LinearIndependent.pair_iff, not_forall] using ⟨1, -2, by simp, by simp⟩
-  rintro ⟨k, hk⟩
-  rw [← hk, IsReduced.linearIndependent_iff, not_and_or, not_not, not_not] at this
+  rintro ⟨j, hj⟩
+  replace this : j = i ∨ P.root j = -P.root i := by
+    simpa only [← hj, IsReduced.linearIndependent_iff, not_and_or, not_not] using this
   rcases this with rfl | this
-  · simp [two_smul, P.ne_zero k] at hk
-  · rw [← Int.cast_ofNat, Int.cast_smul_eq_zsmul (R := R)] at hk
-    rw [← one_smul ℤ (P.root i), ← neg_smul] at this
-    rw [this, (smul_left_injective ℤ <| P.ne_zero i).eq_iff] at hk
-    norm_num at hk
+  · simp [two_smul, P.ne_zero j] at hj
+  · rw [← one_smul ℤ (P.root i), ← neg_smul] at this
+    rw [← Int.cast_ofNat, Int.cast_smul_eq_zsmul (R := R), this,
+      (smul_left_injective ℤ <| P.ne_zero i).eq_iff] at hj
+    norm_num at hj
 
 lemma linInd_of_add_mem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :
