@@ -338,9 +338,6 @@ theorem Topology.IsEmbedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X �
     (hf : IsEmbedding f) : T25Space X :=
   .of_injective_continuous hf.injective hf.continuous
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t25Space := IsEmbedding.t25Space
-
 protected theorem Homeomorph.t25Space [TopologicalSpace Y] [T25Space X] (h : X ≃ₜ Y) : T25Space Y :=
   h.symm.isEmbedding.t25Space
 
@@ -373,9 +370,6 @@ protected theorem Topology.IsEmbedding.t3Space [TopologicalSpace Y] [T3Space Y] 
     (hf : IsEmbedding f) : T3Space X :=
   { toT0Space := hf.t0Space
     toRegularSpace := hf.isInducing.regularSpace }
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t3Space := IsEmbedding.t3Space
 
 protected theorem Homeomorph.t3Space [TopologicalSpace Y] [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
   h.symm.isEmbedding.t3Space
@@ -555,9 +549,6 @@ theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X →
   completely_normal := by
     have := he.completelyNormalSpace
     exact completely_normal
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t5Space := IsEmbedding.t5Space
 
 protected theorem Homeomorph.t5Space [TopologicalSpace Y] [T5Space X] (h : X ≃ₜ Y) : T5Space Y :=
   h.symm.isClosedEmbedding.t5Space

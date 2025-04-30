@@ -131,22 +131,6 @@ theorem moveRight_neg {x : PGame} (i) :
 theorem moveRight_neg_toRightMovesNeg {x : PGame} (i) :
     (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by simp
 
-@[deprecated moveRight_neg (since := "2024-10-30")]
-theorem moveLeft_neg_symm {x : PGame} (i) :
-    x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
-
-@[deprecated moveRight_neg (since := "2024-10-30")]
-theorem moveLeft_neg_symm' {x : PGame} (i) :
-    x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
-
-@[deprecated moveLeft_neg (since := "2024-10-30")]
-theorem moveRight_neg_symm {x : PGame} (i) :
-    x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
-
-@[deprecated moveLeft_neg (since := "2024-10-30")]
-theorem moveRight_neg_symm' {x : PGame} (i) :
-    x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
-
 @[simp]
 theorem forall_leftMoves_neg {x : PGame} {p : (-x).LeftMoves → Prop} :
     (∀ i : (-x).LeftMoves, p i) ↔ (∀ i : x.RightMoves, p (toLeftMovesNeg i)) :=
