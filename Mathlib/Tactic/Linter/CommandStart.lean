@@ -49,13 +49,18 @@ This is every declaration until the type-specification, if there is one, or the 
 as well as all `variable` commands.
 -/
 def lintUpTo (stx : Syntax) : Option String.Pos :=
-  if let some cmd := stx.find? (·.isOfKind ``Lean.Parser.Command.declaration) then
-    match cmd.find? (·.isOfKind ``Lean.Parser.Term.typeSpec) with
+  if let some cmd := stx.find? (·.isOfKind ``Parser.Command.declaration) then
+    if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
+      match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
+      | none => dbg_trace "unreachable?"; none
+      | some sig => sig.getTailPos?
+    else
+    match cmd.find? (·.isOfKind ``Parser.Term.typeSpec) with
       | some s => s.getPos?
-      | none => match cmd.find? (·.isOfKind ``Lean.Parser.Command.declValSimple) with
+      | none => match cmd.find? (·.isOfKind ``Parser.Command.declValSimple) with
         | some s => s.getPos?
         | none => none
-  else if stx.isOfKind ``Lean.Parser.Command.variable then
+  else if stx.isOfKind ``Parser.Command.variable then
     stx.getTailPos?
   else none
 
