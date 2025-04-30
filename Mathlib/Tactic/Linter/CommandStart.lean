@@ -211,6 +211,8 @@ Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset`
 list notation.
 -/
 abbrev unlintedNodes := #[
+  `str, -- We ignore literal strings.
+
   -- set-like notations, have extra spaces around the braces `{` `}`
   ``«term{_:_//_}», -- subtype, prefers `{ a // b }`
   `«term{_}»,  -- set notation, prefers `{ a | b }`
@@ -223,7 +225,7 @@ abbrev unlintedNodes := #[
 
   ``Parser.Command.declId, -- declaration name, avoids dealing with guillemets pairs `«»`
 
-  `Mathlib.Tactic.superscriptTerm,
+  `Mathlib.Tactic.superscriptTerm, `Mathlib.Tactic.subscript,
 
   `Bundle.termπ__, -- notation for `Bundle.TotalSpace.proj`, the total space of a bundle
                    -- the pretty-printer prefers `π FE` over `π F E` (which we want)
@@ -236,6 +238,8 @@ abbrev unlintedNodes := #[
   ``Parser.Command.docComment, -- The docString linter already takes care of formatting doc-strings.
 
   ``Parser.Command.omit, -- `omit [A] [B]` prints as `omit [A][B]`, see https://github.com/leanprover/lean4/pull/8169
+
+  `Aesop.Frontend.Parser.aesop, -- https://github.com/leanprover-community/aesop/pull/203
   ]
 
 /--
