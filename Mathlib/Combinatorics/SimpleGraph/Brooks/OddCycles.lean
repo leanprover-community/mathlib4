@@ -20,9 +20,9 @@ that travels along `w` from `u` to `x` and then back to `v` without revisiting `
 
 We use these to construct an odd cycle from an odd length closed walk.
 
-[More generally we could define the `w.CyclesAndPaths` (of a walk `w : G.Walk u v`)
-to be a list of walks that when appended give `w` while each is either a cycle or
-path.]
+Any closed walk of odd length contains an odd cycle, but its not obvious the endpoints of such a
+cycle will be so we introduce `G.ClosedWalk := Σ v, G.Walk v v` the type of closed walks in `G`.
+
 -/
 
 namespace SimpleGraph
@@ -550,10 +550,17 @@ lemma Walk.darts_cutVert_subset {u : α} (p : G.Walk u u) : p.cutVert.darts ⊆ 
         have := rotate_darts (p.cons h') (show p.getVert 0 ∈ _ by simp)
         exact this.mem_iff.1 hs
 
+
+def ClosedWalk {V : Type*} (G : SimpleGraph V) := Σ v, G.Walk v v
 /-- Return an almost minimal odd closed subwalk from an odd length closed walk
 (if p.length is not odd then this just returns some closed subwalk).
 -/
-private def Walk.minOdd_aux {u : α} (p : G.Walk u u) : Σ v, G.Walk v v :=
+
+abbrev ClosedWalk.toWalk (w : G.ClosedWalk) : G.Walk w.1 w.1 := w.2
+
+abbrev ClosedWalk.start (w : G.ClosedWalk) : α := w.1
+
+private def Walk.minOdd_aux {u : α} (p : G.Walk u u) : G.ClosedWalk :=
   if h : p.support.filter (fun x ↦ x ≠ u ∧ 1 < p.support.count x) = []
     then ⟨_,p⟩
   else
@@ -578,7 +585,7 @@ lemma Walk.minOdd_aux_ne_nil {u v : α} (p : G.Walk u u)
   rw [minOdd_aux, dif_neg (p.minOdd_aux_filter_ne hv)]
 
 lemma Walk.minOdd_aux_minOdd_aux {u : α} (p : G.Walk u u) :
-    p.minOdd_aux.2.minOdd_aux = p.minOdd_aux := by
+    p.minOdd_aux.toWalk.minOdd_aux = p.minOdd_aux := by
   induction hn : p.length using Nat.strong_induction_on generalizing p u with
   | h n ih =>
     by_cases hv : ∃ v ∈ p.support, v ≠ u ∧ 1 < p.support.count v
@@ -588,7 +595,8 @@ lemma Walk.minOdd_aux_minOdd_aux {u : α} (p : G.Walk u u) :
     · push_neg at hv
       rw [minOdd_aux_nil _ hv, minOdd_aux_nil _ hv]
 
-lemma Walk.minOdd_aux_length_le {u : α} (p : G.Walk u u) : p.minOdd_aux.2.length ≤ p.length := by
+lemma Walk.minOdd_aux_length_le {u : α} (p : G.Walk u u) :
+    p.minOdd_aux.toWalk.length ≤ p.length := by
   induction hn : p.length using Nat.strong_induction_on generalizing p u with
   | h n ih =>
     by_cases hv : ∃ v ∈ p.support, v ≠ u ∧ 1 < p.support.count v
@@ -601,21 +609,21 @@ lemma Walk.minOdd_aux_length_le {u : α} (p : G.Walk u u) : p.minOdd_aux.2.lengt
       rw [minOdd_aux_nil _ hv, hn]
 
 lemma Walk.minOdd_aux_count_le_one_of_ne_start  {u v : α} (p : G.Walk u u)
-    (hn : v ≠ p.minOdd_aux.1) : count v p.minOdd_aux.2.support ≤ 1 := by
-  by_cases hv : v ∈ p.minOdd_aux.2.support
+    (hn : v ≠ p.minOdd_aux.start) : count v p.minOdd_aux.toWalk.support ≤ 1 := by
+  by_cases hv : v ∈ p.minOdd_aux.toWalk.support
   · by_contra! hc
-    have := p.minOdd_aux.2.minOdd_aux_ne_nil ⟨hv, hn, hc⟩
+    have := p.minOdd_aux.toWalk.minOdd_aux_ne_nil ⟨hv, hn, hc⟩
     rw [minOdd_aux_minOdd_aux] at this
-    have hnil := p.minOdd_aux.2.minOdd_aux_filter_ne ⟨hv, hn, hc⟩
-    have ht :=(p.minOdd_aux.2.shorterOdd (head_filter_mem _ _ hnil)).minOdd_aux_length_le
+    have hnil := p.minOdd_aux.toWalk.minOdd_aux_filter_ne ⟨hv, hn, hc⟩
+    have ht :=(p.minOdd_aux.toWalk.shorterOdd (head_filter_mem _ _ hnil)).minOdd_aux_length_le
     rw [← this] at ht
-    have := p.minOdd_aux.2.length_shorterOdd_lt_length' hnil
+    have := p.minOdd_aux.toWalk.length_shorterOdd_lt_length' hnil
     omega
   · rw [count_eq_zero_of_not_mem hv]
     omega
 
 lemma Walk.minOdd_aux_odd {u : α} (p : G.Walk u u) (ho : Odd p.length) :
-    Odd p.minOdd_aux.2.length := by
+    Odd p.minOdd_aux.toWalk.length := by
   induction hn : p.length using Nat.strong_induction_on generalizing p u with
   | h n ih =>
     by_cases hv : ∃ v ∈ p.support, v ≠ u ∧ 1 < p.support.count v
@@ -630,7 +638,7 @@ lemma Walk.minOdd_aux_odd {u : α} (p : G.Walk u u) (ho : Odd p.length) :
       exact hn ▸ ho
 
 lemma Walk.darts_minOdd_aux_subset {u : α} (p : G.Walk u u) :
-  p.minOdd_aux.2.darts ⊆ p.darts := by
+  p.minOdd_aux.toWalk.darts ⊆ p.darts := by
   induction hn : p.length using Nat.strong_induction_on generalizing p u with
   | h n ih =>
     by_cases hv : ∃ v ∈ p.support, v ≠ u ∧ 1 < p.support.count v
@@ -644,9 +652,9 @@ lemma Walk.darts_minOdd_aux_subset {u : α} (p : G.Walk u u) :
     · push_neg at hv
       rw [minOdd_aux_nil _ hv]
       intro d hd ; exact hd
-#check Walk.bypass
+
 /-- Returns an odd cycle (given an odd closed walk) -/
-def Walk.oddCycle {u : α} (p : G.Walk u u) : Σ v, G.Walk v v := ⟨_, p.minOdd_aux.2.cutVert⟩
+def Walk.oddCycle {u : α} (p : G.Walk u u) : Σ v, G.Walk v v := ⟨_, p.minOdd_aux.toWalk.cutVert⟩
 
 lemma Walk.oddCycle_is_odd {u : α} (p : G.Walk u u) (ho : Odd p.length) :
     Odd p.oddCycle.2.length := cutVert_odd _ <| p.minOdd_aux_odd ho
@@ -666,6 +674,6 @@ lemma Walk.exists_odd_cycle_of_odd_closed_walk  (p : G.Walk u u) (ho : Odd p.len
   ⟨_, _, p.oddCycle_spec ho⟩
 
 lemma Walk.darts_oddCycle_subset (p : G.Walk u u) : p.oddCycle.2.darts ⊆ p.darts :=
-  fun _ hd ↦ p.darts_minOdd_aux_subset <| p.minOdd_aux.2.darts_cutVert_subset hd
+  fun _ hd ↦ p.darts_minOdd_aux_subset <| p.minOdd_aux.toWalk.darts_cutVert_subset hd
 
 end SimpleGraph
