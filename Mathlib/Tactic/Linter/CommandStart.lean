@@ -59,6 +59,12 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
     stx.getTailPos?
   else none
 
+/--
+A `FormatError` is the main structure for keeping track of how different the user syntax is
+from the pretty-printed version of itself.
+
+It contains information about position within an ambient string of where the exception lies.
+-/
 structure FormatError where
   /-- The distance to the end of the source string, as number of characters. -/
   srcNat : Nat
@@ -79,6 +85,8 @@ instance : ToString FormatError where
     s!"srcNat: {f.srcNat}, srcPos: {f.srcEndPos}, fmtPos: {f.fmtPos}, \
       msg: {f.msg}, length: {f.length}\n"
 
+/-- Produces a `FormatError` from the input data.  In particular, it extracts the position
+information within the string, both as number of characters and as `String.Pos`. -/
 def mkFormatError (ls ms : String) (msg : String) (length : Nat := 1) : FormatError where
   srcNat := ls.length
   srcEndPos := ls.endPos
@@ -87,6 +95,10 @@ def mkFormatError (ls ms : String) (msg : String) (length : Nat := 1) : FormatEr
   length := length
   srcStartPos := ls.endPos
 
+/--
+Add a new `FormatError` `f` to the array `fs`, trying, as much as possible, to merge the new
+`FormatError` with the last entry of `fs`.
+-/
 def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatError :=
   -- If there are no errors already, we simply add the new one.
   if fs.isEmpty then fs.push f else
@@ -96,6 +108,15 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
   -- Otherwise, we are adding a further error of the same kind and we therefore merge the two.
   fs.pop.push {back with length := back.length + f.length, srcStartPos := f.srcEndPos}
 
+/--
+It scans the two input strings `L` and `M`, assuming that they `M` is the pretty-printed version
+of `L`.
+This almost means that `L` and `M` only differ in whitespace.
+
+While it scans the two strings, it accumulates the discrepancies that it finds with some heuristics
+for not flagging all line-break changes, since the pretty-printer does not always produce desirably
+formatted code.
+-/
 partial
 def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
   --dbg_trace "'{L}'\n'{M}'\n---\n"
@@ -133,73 +154,9 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
     else
       pushFormatError as (mkFormatError ls ms "Oh no! (Unreachable?)")
 
-
+@[inherit_doc parallelScanAux]
 def parallelScan (src fmt : String) : Array FormatError :=
   parallelScanAux ∅ src fmt
-
-/--
-Returns the pair consisting of
-* longest initial segment of `s` that does not contain `pattern` as a substring;
-* the rest of the string `s`.
-
-In particular, concatenating the two factors yields `s`.
--/
-partial
-def findString (s pattern : String) : String × String :=
-  if pattern.isEmpty then (s, pattern) else
-  if s.length < pattern.length then (s, pattern) else
-  let candidatePos := s.find ("".push · == pattern.take 1)
-  let notContains := {s.toSubstring with stopPos := candidatePos}.toString
-  let rest := {s.toSubstring with startPos := candidatePos}.toString
-  if rest.startsWith pattern then
-    (notContains, rest)
-  else
-    let (init, tail) := findString (rest.drop 1) pattern
-    (notContains ++ (pattern.take 1) ++ init, tail)
-
-/--
-`TrimComments s` eliminates comments from `s`, disregarding nesting.
-
-If `compressDocs` is `true`, then it also compresses doc-strings that might be present in `s`,
-by collapsing consecutive sequences of at least one space into a single space.
--/
-partial
-def trimComments (s : String) (compressDocs : Bool) : String :=
-  if s.length ≤ 1 then s else
-  let (beforeFirstDash, rest) := findString s "-"
-  if rest.length ≤ 1 then s else
-  match beforeFirstDash.takeRight 1, (rest.take 2).drop 1 with
-  | "/", "-" => -- this is a doc-string
-    let (takeDocs, rest) := findString (rest.drop 2) "-/"
-    let finalDocs :=
-      -- Replace each consecutive group of at least one space in `takeDocs` with a single space.
-      -- The begin/end `|`-markers take care of preserving initial and terminal spaces, if there
-      -- are any.  We remove them in the next step.
-      if compressDocs then
-        let intermediate := ("|" ++ takeDocs ++ "|").splitOn " " |>.filter (!·.isEmpty)
-        " ".intercalate intermediate |>.drop 1 |>.dropRight 1 |>.replace "¬" "¬ "
-      else
-        takeDocs
-    beforeFirstDash ++ "--" ++ finalDocs ++ trimComments rest compressDocs
-  | "/", _ => -- this is a multiline comment
-    let (_comment, rest) := findString (rest.drop 2) "-/"
-    --let rest := if rest.startsWith "-/" then rest.drop 2 else rest
-    (beforeFirstDash.dropRight 1).trimRight ++ trimComments (rest.drop 2) compressDocs
-  | _, "-" => -- this is a single line comment
-    let dropComment := rest.dropWhile (· != '\n')
-    beforeFirstDash.trimRight ++ trimComments dropComment compressDocs
-  | _, _ => beforeFirstDash ++ "-" ++ trimComments (rest.drop 1) compressDocs
-
-/--
-These are some replacements that we do to align the input syntax with the pretty-printed one,
-mostly in cases where there is no real rule for what style to use.
--/
-def furtherFormatting (s : String) : String :=
-  s |>.replace "¬ " "¬"
-               -- https://github.com/leanprover-community/aesop/pull/203/files
-    |>.replace "aesop (rule_sets" "aesop(rule_sets"
-    |>.replace " Prop." " «Prop»."
-    |>.replace " Type." " «Type»."
 
 namespace Style.CommandStart
 
@@ -269,24 +226,6 @@ def outside? (rgs : Std.HashSet String.Range) (rg : String.Range) : Bool :=
   let superRanges := rgs.filter fun {start := a, stop := b} => (a ≤ rg.start && rg.stop ≤ b)
   superRanges.isEmpty
 
-/-
-instance : ToString String.Range where
-  toString | {start := a, stop := b} => s!"⟨{a}, {b}⟩"
-
-open Lean Elab Command in
-elab "ff " cmd:command : command => do
-  elabCommand cmd
-  let gu := getUnlintedRanges unlintedNodes ∅ cmd
-  dbg_trace gu.toArray.qsort (·.start < ·.start)
-  --logInfo m!"{cmd}"
-
-run_cmd
-  let stx ← `(¬ true)
-  dbg_trace stx
-
-ff example (a : ¬ {b // b = 0} = default) : {v // v = 1} := sorry --⟨a.1+1, by cases a; simp_all⟩
--/
-
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.commandStart (← getOptions) do
@@ -330,12 +269,6 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
       unless outside? forbidden rg do
         continue
-      --let mut (center', orig') := (origSubstring.stopPos, orig)
-      --for i in [:orig.length - s.srcPos] do
-      --  --dbg_trace "{center'}, '{orig'.get (center' - origSubstring.stopPos)}' {orig'}"
-      --  center' := orig'.next center' -- ⟨1⟩
-      --  orig' := orig'.dropRight 1
-      --let center := center' + origSubstring.stopPos - origSubstring.startPos
       unless rg.stop ≤ upTo do return
       unless docStringEnd ≤ rg.start do return
 
@@ -351,43 +284,6 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
 
-  ---- We only lint up to the position given by `lintUpTo`
-  --if let some finalLintPos := lintUpTo stx then
-  --  if let some stype := stx.find? (unlintedNodes.contains ·.getKind) then
-  --    Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-  --      m!"Found a '{stype.getKind}' node in '{stype}'"
-  --    if let some pos := stype.getPos? then
-  --      if pos ≤ finalLintPos && stype.getKind != `ToAdditive.toAdditiveRest then
-  --        return
-  --    -- we allow the linter to inspect declarations with a `to_additive` doc-string, as long as
-  --    -- it fits in a single line.  Otherwise, getting the right formatting is hard.
-  --    if stype.getKind == `ToAdditive.toAdditiveRest then
-  --      let addDoc :=  stype.find? (·.isAtom) |>.map (·.getAtomVal) |>.getD ""
-  --      if addDoc.contains '\n' then
-  --        Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-  --          m!"Stop linting, since {addDoc} is a multiline additive docstring"
-  --        return
-    --let stx := capSyntax stx finalLintPos.1
-    --let origSubstringTrunc : Substring := {origSubstring with stopPos := finalLintPos}
-    --let (real, lths) := polishSource origSubstringTrunc.toString
-    --if let some fmt := fmt then
-    --  let st := polishPP fmt.pretty
-    --  --let scan := parallelScan origSubstring.toString fmt.pretty
-    --  --if !scan.isEmpty then logInfo m!"{scan}"
-    --  Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-    --    m!"slightly polished source:\n'{real}'\n\n\
-    --      actually used source:\n'{furtherFormatting (trimComments real true)}'\n\n\
-    --      reference formatting:\n'{st}'\n\n\
-    --      intermediate reference formatting:\n'{fmt}'\n"
-    --  if ! st.startsWith (furtherFormatting (trimComments real true)) then
-    --    let diff := real.firstDiffPos st
-    --    let pos := posToShiftedPos lths diff.1 + origSubstringTrunc.startPos.1
-    --    let f := origSubstringTrunc.str.drop (pos)
-    --    let extraLth := (f.takeWhile (· != st.get diff)).length
-    --    let srcCtxt := zoomString real diff.1 5
-    --    let ppCtxt  := zoomString st diff.1 5
-    --    --Linter.logLint linter.style.commandStart (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
-    --    --  m!"Current syntax:  '{srcCtxt}'\nExpected syntax: '{ppCtxt}'\n"
 initialize addLinter commandStartLinter
 
 end Style.CommandStart
