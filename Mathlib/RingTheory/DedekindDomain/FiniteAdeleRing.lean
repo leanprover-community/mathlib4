@@ -99,7 +99,7 @@ all but finitely many places, which is `IsDedekindDomain.HeightOneSpectrum.Suppo
 protected def algebraMap : K →+* FiniteAdeleRing R K where
   toFun k := ⟨fun i ↦ k, by
     simp only [Filter.eventually_cofinite, SetLike.mem_coe, mem_adicCompletionIntegers R K,
-     adicCompletion, Valued.valuedCompletion_apply, not_le]
+     adicCompletion, Valuation.valuedCompletion_apply', not_le]
     exact HeightOneSpectrum.Support.finite R k⟩
   map_one' := rfl
   map_mul' x y := Subtype.eq <| funext (fun v ↦
