@@ -95,8 +95,6 @@ just `R` itself, via `Algebra.botEquivOfInjective` and `IsFractionRing.injective
   exact v.valuation_le_one y
 
 end IsDedekindDomain
-
-
 /-! ## `S`-units -/
 
 namespace Set
