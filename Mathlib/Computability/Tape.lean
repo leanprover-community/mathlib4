@@ -385,15 +385,11 @@ def ListBlank.flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ)
   simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ,
     List.flatMap_cons]
 
-@[deprecated (since := "2024-10-16")] alias ListBlank.bind := ListBlank.flatMap
-
 @[simp]
 theorem ListBlank.flatMap_mk
     {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : List Γ) (f : Γ → List Γ') (hf) :
     (ListBlank.mk l).flatMap f hf = ListBlank.mk (l.flatMap f) :=
   rfl
-
-@[deprecated (since := "2024-10-16")] alias ListBlank.bind_mk := ListBlank.flatMap_mk
 
 @[simp]
 theorem ListBlank.cons_flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l : ListBlank Γ)
@@ -402,8 +398,6 @@ theorem ListBlank.cons_flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) 
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices ((mk l).cons a).flatMap f hf = ((mk l).flatMap f hf).append (f a) by exact this
   simp only [ListBlank.append_mk, ListBlank.flatMap_mk, ListBlank.cons_mk, List.flatMap_cons]
-
-@[deprecated (since := "2024-10-16")] alias ListBlank.cons_bind := ListBlank.cons_flatMap
 
 end ListBlank
 
@@ -547,7 +541,7 @@ theorem Tape.move_right_n_head {Γ} [Inhabited Γ] (T : Tape Γ) (i : ℕ) :
     ((Tape.move Dir.right)^[i] T).head = T.nth i := by
   induction i generalizing T
   · rfl
-  · simp only [*, Tape.move_right_nth, Int.ofNat_succ, iterate_succ, Function.comp_apply]
+  · simp only [*, Tape.move_right_nth, Int.natCast_succ, iterate_succ, Function.comp_apply]
 
 /-- Replace the current value of the head on the tape. -/
 def Tape.write {Γ} [Inhabited Γ] (b : Γ) (T : Tape Γ) : Tape Γ :=

@@ -433,7 +433,7 @@ theorem blocksFun_congr {n₁ n₂ : ℕ} (c₁ : Composition n₁) (c₂ : Comp
 
 /-- Two compositions (possibly of different integers) coincide if and only if they have the
 same sequence of blocks. -/
-theorem sigma_eq_iff_blocks_eq {c : Σn, Composition n} {c' : Σn, Composition n} :
+theorem sigma_eq_iff_blocks_eq {c : Σ n, Composition n} {c' : Σ n, Composition n} :
     c = c' ↔ c.2.blocks = c'.2.blocks := by
   refine ⟨fun H => by rw [H], fun H => ?_⟩
   rcases c with ⟨n, c⟩
@@ -787,17 +787,12 @@ theorem flatten_splitWrtCompositionAux {ns : List ℕ} :
     · simp
     · rw [length_drop, ← h, add_tsub_cancel_left]
 
-@[deprecated (since := "2024-10-15")]
-alias join_splitWrtCompositionAux := flatten_splitWrtCompositionAux
-
 /-- If one splits a list along a composition, and then flattens the sublists, one gets back the
 original list. -/
 @[simp]
 theorem flatten_splitWrtComposition (l : List α) (c : Composition l.length) :
     (l.splitWrtComposition c).flatten = l :=
   flatten_splitWrtCompositionAux c.blocks_sum
-
-@[deprecated (since := "2024-10-15")] alias join_splitWrtComposition := flatten_splitWrtComposition
 
 /-- If one joins a list of lists and then splits the flattening along the right composition,
 one gets back the original list of lists. -/
@@ -806,9 +801,6 @@ theorem splitWrtComposition_flatten (L : List (List α)) (c : Composition L.flat
     (h : map length L = c.blocks) : splitWrtComposition (flatten L) c = L := by
   simp only [eq_self_iff_true, and_self_iff, eq_iff_flatten_eq, flatten_splitWrtComposition,
     map_length_splitWrtComposition, h]
-
-@[deprecated (since := "2024-10-15")]
-alias splitWrtComposition_join := splitWrtComposition_flatten
 
 end List
 
@@ -857,26 +849,15 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
   right_inv := by
     intro s
     ext i
-    have : 1 + (i : ℕ) ≠ n := by
+    have : (i : ℕ) + 1 ≠ n := by
       apply ne_of_lt
-      convert add_lt_add_left i.is_lt 1
-      rw [add_comm]
+      convert add_lt_add_right i.is_lt 1
       apply (Nat.succ_pred_eq_of_pos _).symm
-      exact (zero_le i.val).trans_lt (i.2.trans_le (Nat.sub_le n 1))
+      exact Nat.lt_of_lt_pred (Fin.pos i)
     simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
       Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero, and_false,
       add_left_inj, false_or, true_and, reduceCtorEq]
-    constructor
-    · intro h
-      rcases h with n | h
-      · rw [add_comm] at this
-        contradiction
-      · obtain ⟨w, h₁, h₂⟩ := h
-        rw [← Fin.ext_iff] at h₂
-        rwa [h₂]
-    · intro h
-      apply Or.inr
-      use i, h
+    simp_rw [this, false_or, ← Fin.ext_iff, exists_eq_right']
 
 instance compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=
   Fintype.ofEquiv _ (compositionAsSetEquiv n).symm

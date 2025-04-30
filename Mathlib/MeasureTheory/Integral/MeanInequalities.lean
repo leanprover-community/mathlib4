@@ -3,10 +3,10 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
 /-!
 # Mean value inequalities for integrals
@@ -238,9 +238,9 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
 
 /-- A version of Hölder with multiple arguments, one of which plays a distinguished role. -/
 theorem lintegral_mul_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Measure α}
-    (s : Finset ι) {g : α →  ℝ≥0∞} {f : ι → α → ℝ≥0∞} (hg : AEMeasurable g μ)
+    (s : Finset ι) {g : α → ℝ≥0∞} {f : ι → α → ℝ≥0∞} (hg : AEMeasurable g μ)
     (hf : ∀ i ∈ s, AEMeasurable (f i) μ) (q : ℝ) {p : ι → ℝ} (hpq : q + ∑ i ∈ s, p i = 1)
-    (hq :  0 ≤ q) (hp : ∀ i ∈ s, 0 ≤ p i) :
+    (hq : 0 ≤ q) (hp : ∀ i ∈ s, 0 ≤ p i) :
     ∫⁻ a, g a ^ q * ∏ i ∈ s, f i a ^ p i ∂μ ≤
       (∫⁻ a, g a ∂μ) ^ q * ∏ i ∈ s, (∫⁻ a, f i a ∂μ) ^ p i := by
   suffices

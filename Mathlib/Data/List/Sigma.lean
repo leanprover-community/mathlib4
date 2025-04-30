@@ -64,10 +64,13 @@ theorem mem_keys {a} {l : List (Sigma β)} : a ∈ l.keys ↔ ∃ b : β a, Sigm
 theorem not_mem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, Sigma.mk a b ∉ l :=
   (not_congr mem_keys).trans not_exists
 
-theorem not_eq_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 :=
+theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 :=
   Iff.intro (fun h₁ s h₂ e => absurd (mem_keys_of_mem h₂) (by rwa [e] at h₁)) fun f h₁ =>
     let ⟨_, h₂⟩ := exists_of_mem_keys h₁
     f _ h₂ rfl
+
+@[deprecated (since := "2025-04-27")]
+alias not_eq_key := ne_key
 
 /-! ### `NodupKeys` -/
 
@@ -127,8 +130,6 @@ theorem nodupKeys_flatten {L : List (List (Sigma β))} :
   refine and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) ?_
   apply iff_of_eq; congr! with (l₁ l₂)
   simp [keys, disjoint_iff_ne, Sigma.forall]
-
-@[deprecated (since := "2024-10-15")] alias nodupKeys_join := nodupKeys_flatten
 
 theorem nodup_zipIdx_map_snd (l : List α) : (l.zipIdx.map Prod.snd).Nodup := by
   simp [List.nodup_range']

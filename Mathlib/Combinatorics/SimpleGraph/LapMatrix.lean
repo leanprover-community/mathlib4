@@ -17,8 +17,9 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
 * `isPosSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
-* `card_ConnectedComponent_eq_rank_ker_lapMatrix`: The number of connected components in `G` is
-  the dimension of the nullspace of its Laplacian matrix.
+* `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
+  The number of connected components in a graph
+  is the dimension of the nullspace of its Laplacian matrix.
 
 -/
 
@@ -90,7 +91,7 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
   ring_nf
 
 /-- The Laplacian matrix is positive semidefinite -/
-theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R]
+theorem posSemidef_lapMatrix [Field R] [LinearOrder R] [IsStrictOrderedRing R] [StarRing R]
     [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
   constructor
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
@@ -98,7 +99,8 @@ theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R]
     rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
     positivity
 
-theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedField R] (x : V → R) :
+theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj
+    [Field R] [LinearOrder R] [IsStrictOrderedRing R] (x : V → R) :
     Matrix.toLinearMap₂' R (G.lapMatrix R) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   simp (disch := intros; positivity)
     [lapMatrix_toLinearMap₂', sum_eq_zero_iff_of_nonneg, sub_eq_zero]
@@ -189,9 +191,14 @@ noncomputable def lapMatrix_ker_basis :=
 end
 
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
-theorem card_ConnectedComponent_eq_rank_ker_lapMatrix : Fintype.card G.ConnectedComponent =
-    Module.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
+theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
+    Fintype.card G.ConnectedComponent =
+      Module.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
   classical
   rw [Module.finrank_eq_card_basis (lapMatrix_ker_basis G)]
+
+@[deprecated (since := "2025-04-29")]
+alias card_ConnectedComponent_eq_rank_ker_lapMatrix :=
+  card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix
 
 end SimpleGraph

@@ -325,7 +325,7 @@ theorem exists_forall_pow_toEnd_eq_zero [IsNilpotent L M] :
   obtain ⟨k, hM⟩ := IsNilpotent.nilpotent R L M
   use k
   intro x; ext m
-  rw [LinearMap.pow_apply, LinearMap.zero_apply, ← @LieSubmodule.mem_bot R L M, ← hM]
+  rw [Module.End.pow_apply, LinearMap.zero_apply, ← @LieSubmodule.mem_bot R L M, ← hM]
   exact iterate_toEnd_mem_lowerCentralSeries R L M x m k
 
 theorem isNilpotent_toEnd_of_isNilpotent [IsNilpotent L M] (x : L) :
@@ -341,7 +341,7 @@ theorem isNilpotent_toEnd_of_isNilpotent₂ [IsNilpotent L M] (x y : L) :
     rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by omega)
   use k
   ext m
-  rw [LinearMap.pow_apply, LinearMap.zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]
+  rw [Module.End.pow_apply, LinearMap.zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]
   exact iterate_toEnd_mem_lowerCentralSeries₂ R L M x y m k
 
 @[simp] lemma maxGenEigenSpace_toEnd_eq_top [IsNilpotent L M] (x : L) :
@@ -953,7 +953,7 @@ theorem _root_.LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad {L : Type v} [LieR
     IsNilpotent (LieAlgebra.ad R K x) := by
   obtain ⟨n, hn⟩ := h
   use n
-  exact LinearMap.submodule_pow_eq_zero_of_pow_eq_zero (K.ad_comp_incl_eq x) hn
+  exact Module.End.submodule_pow_eq_zero_of_pow_eq_zero (K.ad_comp_incl_eq x) hn
 
 theorem _root_.LieAlgebra.isNilpotent_ad_of_isNilpotent {L : LieSubalgebra R A} {x : L}
     (h : IsNilpotent (x : A)) : IsNilpotent (LieAlgebra.ad R L x) :=
