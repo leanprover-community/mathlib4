@@ -78,7 +78,7 @@ class Inner (𝕜 E : Type*) where
 export Inner (inner)
 
 /-- The inner product with values in `𝕜`. -/
-scoped[InnerProductSpace] notation3:max "⟪" x ", " y "⟫_" 𝕜:max => @inner 𝕜 _ _ x y
+scoped[InnerProductSpace] notation:max "⟪" x ", " y "⟫_" 𝕜:max => @inner 𝕜 _ _ x y
 
 section Notations
 
@@ -87,6 +87,24 @@ scoped[RealInnerProductSpace] notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x 
 
 /-- The inner product with values in `ℂ`. -/
 scoped[ComplexInnerProductSpace] notation "⟪" x ", " y "⟫" => @inner ℂ _ _ x y
+
+@[delab app.Inner.inner]
+def Lean.PrettyPrinter.Delaborator.delabInner : Lean.PrettyPrinter.Delaborator.Delab :=
+  Lean.PrettyPrinter.Delaborator.whenPPOption Lean.getPPNotation do
+  Lean.PrettyPrinter.Delaborator.whenNotPPOption Lean.getPPExplicit do
+    let_expr Inner.inner 𝕜 _ _ _ _ := ← SubExpr.getExpr | failure
+    let stx_x ← SubExpr.withNaryArg 3 delab
+    let stx_y ← SubExpr.withNaryArg 4 delab
+    if 𝕜.isAppOf ``Real then
+      Mathlib.Notation3.withHeadRefIfTagAppFns <|
+        open scoped RealInnerProductSpace in `(⟪$stx_x, $stx_y⟫)
+    else if 𝕜.isAppOf ``Complex then
+      Mathlib.Notation3.withHeadRefIfTagAppFns <|
+        open scoped ComplexInnerProductSpace in `(⟪$stx_x, $stx_y⟫)
+    else
+      let stx_𝕜 ← SubExpr.withNaryArg 0 delab
+      Mathlib.Notation3.withHeadRefIfTagAppFns <|
+        open scoped InnerProductSpace in `(⟪$stx_x, $stx_y⟫_$stx_𝕜)
 
 end Notations
 
