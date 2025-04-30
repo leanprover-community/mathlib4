@@ -270,7 +270,7 @@ face). -/
 lemma inv_dist_orthogonalProjection_faceOpposite_eq_sum_mul_inv_dist (i : Fin (n + 1)) :
     (dist (s.points i)
       ((s.faceOpposite i).orthogonalProjectionSpan (s.points i)))⁻¹ =
-    ∑ j ∈ {k | k ≠ i}, (-⟪s.points i -ᵥ
+    ∑ j ∈ {k | k ≠ i}, -(⟪s.points i -ᵥ
       (s.faceOpposite i).orthogonalProjectionSpan (s.points i),
       s.points j -ᵥ
         (s.faceOpposite j).orthogonalProjectionSpan (s.points j)⟫ /
@@ -281,12 +281,12 @@ lemma inv_dist_orthogonalProjection_faceOpposite_eq_sum_mul_inv_dist (i : Fin (n
       (dist (s.points j)
         ((s.faceOpposite j).orthogonalProjectionSpan (s.points j)))⁻¹ := by
   rw [← sub_eq_zero]
-  simp_rw [neg_div, neg_mul, Finset.sum_neg_distrib, sub_neg_eq_add, Finset.filter_ne',
+  simp_rw [neg_mul]
+  rw [Finset.sum_neg_distrib, sub_neg_eq_add, Finset.filter_ne',
     Finset.sum_erase_eq_sub (Finset.mem_univ _), real_inner_self_eq_norm_mul_norm,
     ← dist_eq_norm_vsub]
-  simp only [ne_eq, mul_eq_zero, dist_eq_zero,
-    ne_orthogonalProjection_faceOpposite, or_self, not_false_eq_true, div_self, one_mul,
-    add_sub_cancel]
+  simp only [ne_eq, mul_eq_zero, dist_eq_zero, ne_orthogonalProjection_faceOpposite, or_self,
+    not_false_eq_true, div_self, one_mul, add_sub_cancel]
   have h := s.sum_inv_dist_orthogonalProjection_faceOpposite_sq_smul_vsub_eq_zero
   apply_fun fun v ↦ (dist (s.points i)
     ((s.faceOpposite i).orthogonalProjectionSpan (s.points i)))⁻¹ *
@@ -294,16 +294,9 @@ lemma inv_dist_orthogonalProjection_faceOpposite_eq_sum_mul_inv_dist (i : Fin (n
         (s.faceOpposite i).orthogonalProjectionSpan (s.points i), v⟫
     at h
   rw [inner_sum, Finset.mul_sum] at h
-  simp only [inner_zero_right, mul_zero] at h
+  simp only [inner_zero_right, mul_zero, inner_smul_right] at h
   convert h using 2 with j
-  nth_rw 3 [mul_comm]
-  rw [inner_smul_right, div_eq_mul_inv]
-  nth_rw 5 [mul_comm]
-  simp_rw [mul_assoc]
-  congr 1
-  simp only [mul_inv_rev, pow_two]
-  nth_rw 1 [mul_comm]
-  rw [mul_assoc]
+  ring
 
 /-- The inverse of the distance from one vertex to the opposite face is less than the sum of that
 quantity for the other vertices. This implies the existence of the excenter opposite that vertex;
@@ -324,7 +317,7 @@ lemma inv_dist_orthogonalProjection_faceOpposite_lt_sum_inv_dist (hn : 1 < n) (i
     refine mul_lt_of_lt_one_left ?_ ?_
     · simp
     · apply lt_of_abs_lt
-      rw [abs_div, abs_neg, div_lt_one]
+      rw [abs_neg, abs_div, div_lt_one]
       · apply LE.le.lt_of_ne
         · convert abs_real_inner_le_norm _ _ using 1
           simp only [dist_eq_norm_vsub, abs_eq_self]
