@@ -1077,6 +1077,20 @@ theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
 theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
   ofRealLI.lipschitz
 
+lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
+  intro x y
+  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  calc ‖re x - re y‖ₑ
+  _ = ‖re (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub re x y]
+  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
+
+lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
+  intro x y
+  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  calc ‖im x - im y‖ₑ
+  _ = ‖im (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub im x y]
+  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
+
 end LinearMaps
 
 /-!

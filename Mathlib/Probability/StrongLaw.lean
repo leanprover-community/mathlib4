@@ -239,7 +239,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         apply sum_le_sum fun i _ => ?_
         have I : (i : ℝ) ≤ (i + 1 : ℕ) := by
           simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
-        simp_rw [intervalIntegral.integral_of_le I, ← integral_mul_left]
+        simp_rw [intervalIntegral.integral_of_le I, ← integral_const_mul]
         apply setIntegral_mono_on
         · exact continuous_const.integrableOn_Ioc
         · exact (continuous_id.add continuous_const).integrableOn_Ioc

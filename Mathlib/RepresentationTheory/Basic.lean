@@ -405,7 +405,7 @@ theorem smul_tprod_one_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
     r • z = (r • x') ⊗ₜ y := by
   show asAlgebraHom (ρV ⊗ 1) _ _ = asAlgebraHom ρV _ _ ⊗ₜ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
-    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, LinearMap.one_apply]
+    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
   simp only [Finsupp.sum, TensorProduct.sum_tmul]
   rfl
 
@@ -416,7 +416,7 @@ theorem smul_one_tprod_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
     r • z = x ⊗ₜ (r • y') := by
   show asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
-    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, LinearMap.one_apply]
+    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
   simp only [Finsupp.sum, TensorProduct.tmul_sum, TensorProduct.tmul_smul]
 
 end TensorProduct
@@ -435,8 +435,8 @@ def linHom : Representation k G (V →ₗ[k] W) where
     { toFun := fun f => ρW g ∘ₗ f ∘ₗ ρV g⁻¹
       map_add' := fun f₁ f₂ => by simp_rw [add_comp, comp_add]
       map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
-  map_one' := ext fun x => by simp [one_eq_id]
-  map_mul' g h := ext fun x => by simp [mul_eq_comp, comp_assoc]
+  map_one' := ext fun x => by simp [Module.End.one_eq_id]
+  map_mul' g h := ext fun x => by simp [Module.End.mul_eq_comp, comp_assoc]
 
 @[simp]
 theorem linHom_apply (g : G) (f : V →ₗ[k] W) : (linHom ρV ρW) g f = ρW g ∘ₗ f ∘ₗ ρV g⁻¹ :=
