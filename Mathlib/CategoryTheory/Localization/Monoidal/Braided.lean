@@ -21,6 +21,14 @@ lemma one (X Y Z : C) : (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).hom =
             ((L').obj X) ◁ (Functor.OplaxMonoidal.δ (L') Y Z) := by
   simp
 
+lemma one' (X Y Z : C) : (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).inv =
+    (L').obj X ◁ (Functor.LaxMonoidal.μ (L') Y Z) ≫
+      (Functor.LaxMonoidal.μ (L') X (Y ⊗ Z)) ≫
+        (L').map (α_ X Y Z).inv ≫
+          (Functor.OplaxMonoidal.δ (L') (X ⊗ Y) Z) ≫
+            (Functor.OplaxMonoidal.δ (L') X Y) ▷ ((L').obj Z) := by
+  simp
+
 variable [BraidedCategory C]
 
 def braidingNatIsoC : curriedTensor C ≅ (curriedTensor C).flip :=
@@ -57,7 +65,17 @@ lemma three (X Y Z : C) :
           ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj (Y ⊗ Z)) := by
   erw [← ((braidingNatIso L W ε).hom.app ((L').obj X)).naturality
     ((Functor.LaxMonoidal.μ (L') Y Z))]
-  rw [two]
+  rfl
+
+lemma three' (X Y Z : C) :
+    ((braidingNatIso L W ε).hom.app ((L').obj X ⊗ (L').obj Y)).app ((L').obj Z)
+      ≫ (L').obj Z ◁ (Functor.LaxMonoidal.μ (L') X Y) =
+        (Functor.LaxMonoidal.μ (L') X Y) ▷ (L').obj Z ≫
+          ((braidingNatIso L W ε).hom.app ((L').obj (X ⊗ Y))).app ((L').obj Z) := by
+  have := NatTrans.congr_app
+    ((braidingNatIso L W ε).hom.naturality ((Functor.LaxMonoidal.μ (L') X Y))) ((L').obj Z)
+  dsimp [Functor.flip] at this
+  erw [← this]
   rfl
 
 lemma braiding_naturality {X X' Y Y' : LocalizedMonoidal L W ε} (f : X ⟶ Y) (g : X' ⟶ Y') :
@@ -70,6 +88,7 @@ lemma braiding_naturality {X X' Y Y' : LocalizedMonoidal L W ε} (f : X ⟶ Y) (
   congr 1
   exact NatTrans.congr_app ((braidingNatIso L W ε).hom.naturality f) Y'
 
+set_option maxHeartbeats 400000 in
 noncomputable instance : BraidedCategory (LocalizedMonoidal L W ε) where
   braiding X Y := ((braidingNatIso L W ε).app X).app Y
   braiding_naturality_right X Y Z f := by
@@ -132,6 +151,69 @@ noncomputable instance : BraidedCategory (LocalizedMonoidal L W ε) where
     slice_lhs 3 4 =>
       rw [three, two]
     simp
-  hexagon_reverse X Y Z := sorry
+  hexagon_reverse X Y Z := by
+    obtain ⟨x, ⟨eX⟩⟩ : ∃ x, Nonempty ((L').obj x ≅ X) := ⟨_, ⟨(L').objObjPreimageIso X⟩⟩
+    obtain ⟨y, ⟨eY⟩⟩ : ∃ x, Nonempty ((L').obj x ≅ Y) := ⟨_, ⟨(L').objObjPreimageIso Y⟩⟩
+    obtain ⟨z, ⟨eZ⟩⟩ : ∃ x, Nonempty ((L').obj x ≅ Z) := ⟨_, ⟨(L').objObjPreimageIso Z⟩⟩
+    suffices (α_ ((L').obj x) ((L').obj y) ((L').obj z)).inv ≫
+        (((braidingNatIso L W ε).app ((L').obj x ⊗ (L').obj y)).app ((L').obj z)).hom ≫
+          (α_ ((L').obj z) ((L').obj x) ((L').obj y)).inv =
+        ((L').obj x) ◁ (((braidingNatIso L W ε).app ((L').obj y)).app ((L').obj z)).hom ≫
+          (α_ ((L').obj x) ((L').obj z) ((L').obj y)).inv ≫
+          (((braidingNatIso L W ε).app ((L').obj x)).app ((L').obj z)).hom ▷ ((L').obj y)  by
+      refine Eq.trans ?_ (((eX.inv ⊗ (eY.inv ⊗ eZ.inv)) ≫= this =≫
+        ((eZ.hom ⊗ eX.hom) ⊗ eY.hom)).trans ?_)
+      · simp only [Iso.app_hom, Functor.flip_obj_obj, associator_conjugation, assoc,
+          Iso.inv_hom_id_assoc]
+        simp only [← assoc]
+        congr 1
+        simp only [assoc]
+        rw [← braiding_naturality]
+        simp only [← assoc]
+        congr 1
+        simp only [associator_conjugation, assoc, Iso.inv_hom_id_assoc, inv_hom_id_tensor_assoc,
+          MonoidalCategory.id_tensorHom]
+        rw [← whiskerLeft_comp_assoc]
+        simp
+      · simp only [Functor.flip_obj_obj, Iso.app_hom, assoc, ← id_tensorHom]
+        simp only [← assoc]
+        rw [← tensor_comp, braiding_naturality]
+        simp only [comp_id, Functor.flip_obj_obj, assoc, associator_conjugation,
+          MonoidalCategory.id_tensorHom]
+        rw [← id_comp eX.inv, tensor_comp, id_tensorHom]
+        simp only [assoc]
+        congr 1
+        simp only [← associator_conjugation]
+        rw [← tensorHom_id, ← tensor_comp, ← braiding_naturality]
+        simp only [Functor.flip_obj_obj, id_comp]
+        rw [← comp_id eY.hom, tensor_comp, tensorHom_id]
+        simp only [← assoc]
+        congr 1
+        simp only [associator_conjugation, assoc, Iso.inv_hom_id_assoc, inv_hom_id_tensor_assoc,
+          MonoidalCategory.id_tensorHom]
+        rw [← whiskerLeft_comp_assoc]
+        simp only [tensor_inv_hom_id, MonoidalCategory.tensorHom_id, inv_hom_whiskerRight]
+        exact whiskerLeft_id_assoc X _ _
+    simp only [one', Iso.app_hom, two]
+    slice_rhs 0 3 =>
+      simp only [Functor.flip_obj_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
+        Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, MonoidalCategory.whiskerLeft_comp, assoc,
+        Functor.Monoidal.whiskerLeft_δ_μ, comp_id]
+    simp only [assoc]
+    congr 1
+    slice_rhs 4 7 =>
+      simp only [Functor.flip_obj_obj, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
+        Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, comp_whiskerRight,
+        Functor.Monoidal.whiskerRight_δ_μ_assoc, Functor.OplaxMonoidal.δ_natural_left_assoc]
+    simp only [← assoc]
+    congr 2
+    slice_rhs 0 3 =>
+      simp only [Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
+        Functor.LaxMonoidal.μ_natural_right_assoc]
+    simp only [assoc]
+    congr 1
+    slice_lhs 4 5 =>
+      rw [three', two]
+    simp
 
 end CategoryTheory.Localization.Monoidal
