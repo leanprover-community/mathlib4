@@ -42,7 +42,8 @@ lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A)
 
 instance [Preadditive A] : PreservesFiniteProducts (colim (J := J) (C := A)) where
   preserves _ := by
-    apply +allowSynthFailures := true preservesProductsOfShape_of_preservesBiproductsOfShape
+    apply (config := { allowSynthFailures := true })
+      preservesProductsOfShape_of_preservesBiproductsOfShape
     apply preservesBiproductsOfShape_of_preservesCoproductsOfShape
 
 instance [PreservesFiniteProducts (colim (J := J) (C := A))] :
