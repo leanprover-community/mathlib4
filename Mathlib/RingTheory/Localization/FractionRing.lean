@@ -554,7 +554,7 @@ theorem algEquiv_comp_algebraMap (K B L : Type*) [CommRing K] [Algebra A K] [Com
     [IsScalarTower A (FractionRing A) (FractionRing B)] [IsScalarTower A B (FractionRing B)]
     [IsScalarTower A B L] :
     (algEquiv B L : _ →+* L).comp (algebraMap (FractionRing A) (FractionRing B)) =
-    (algebraMap K L).comp (algEquiv A K) := by
+      (algebraMap K L).comp (algEquiv A K) := by
   let _ : Field L := IsFractionRing.toField B
   refine IsFractionRing.ringHom_ext (A := A) (fun x ↦ ?_)
   simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes]
