@@ -308,11 +308,8 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
   let e : Fin (s.length + 1 + 1) ≃ Fin (s.length + 1 + 1) :=
     Equiv.swap (Fin.last _) (Fin.castSucc (Fin.last _))
   have h1 : ∀ {i : Fin s.length},
-      (Fin.castSucc (Fin.castSucc i)) ≠ (Fin.castSucc (Fin.last _)) := fun {_} =>
-    ne_of_lt (by simp [Fin.castSucc_lt_last])
-  have h2 : ∀ {i : Fin s.length},
-      (Fin.castSucc (Fin.castSucc i)) ≠ Fin.last _ := fun {_} =>
-    ne_of_lt (by simp [Fin.castSucc_lt_last])
+      (Fin.castSucc (Fin.castSucc i)) ≠ (Fin.castSucc (Fin.last _)) := by simp
+  have h2 : ∀ {i : Fin s.length}, (Fin.castSucc (Fin.castSucc i)) ≠ Fin.last _ := by simp
   ⟨e, by
     intro i
     dsimp only [e]

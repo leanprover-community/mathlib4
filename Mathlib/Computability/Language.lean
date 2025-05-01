@@ -388,7 +388,7 @@ end Language
 /-- Symbols for use by all kinds of grammars. -/
 inductive Symbol (T N : Type*)
   /-- Terminal symbols (of the same type as the language) -/
-  | terminal    (t : T) : Symbol T N
+  | terminal (t : T) : Symbol T N
   /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
   | nonterminal (n : N) : Symbol T N
 deriving
