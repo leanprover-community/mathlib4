@@ -28,7 +28,7 @@ universe u
 variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V}
 
 /-- A set certifying non-existence of a perfect matching -/
-def IsTutteViolator (G: SimpleGraph V) (u : Set V) : Prop :=
+def IsTutteViolator (G : SimpleGraph V) (u : Set V) : Prop :=
   u.ncard < ((⊤ : G.Subgraph).deleteVerts u).coe.oddComponents.ncard
 
 
@@ -36,8 +36,8 @@ def IsTutteViolator (G: SimpleGraph V) (u : Set V) : Prop :=
 of Tutte's theorem -/
 private lemma tutte_exists_IsAlternating_IsCycles {x b a c : V} {M : Subgraph (G ⊔ edge a c)}
     (hM2 : M.IsPerfectMatching) (p : G'.Walk a x) (hp : p.IsPath)
-    (hcalt : G'.IsAlternating M.spanningCoe) (hM2nadj : ¬ M.Adj x a)
-    (hpac : p.toSubgraph.Adj a c) (hnpxb : ¬p.toSubgraph.Adj x b) (hM2ac :  M.Adj a c)
+    (hcalt : G'.IsAlternating M.spanningCoe) (hM2nadj : ¬M.Adj x a)
+    (hpac : p.toSubgraph.Adj a c) (hnpxb : ¬p.toSubgraph.Adj x b) (hM2ac : M.Adj a c)
     (hgadj : G.Adj x a) (hnxc : x ≠ c) (hnab : a ≠ b)
     (hle : p.toSubgraph.spanningCoe ≤ G ⊔ edge a c)
     (aux : (c' : V) → c' ≠ a → p.toSubgraph.Adj c' x → M.Adj c' x) :
@@ -51,8 +51,8 @@ private lemma tutte_exists_IsAlternating_IsCycles {x b a c : V} {M : Subgraph (G
     refine fun v hv ↦ hp.isCycles_spanningCoe_toSubgraph_sup_edge hgadj.ne.symm (fun hadj ↦ ?_) hv
     rw [← Walk.mem_edges_toSubgraph, Subgraph.mem_edgeSet] at hadj
     simp [← hp.snd_of_toSubgraph_adj hadj.symm, hp.snd_of_toSubgraph_adj hpac] at hnxc, ?_⟩
-  exact ⟨
-    by simp only [sup_adj, Subgraph.spanningCoe_adj, hnpxb, edge_adj]; aesop, by aesop,
+  exact ⟨by
+    simp only [sup_adj, Subgraph.spanningCoe_adj, hnpxb, edge_adj]; aesop, by aesop,
     sup_le_iff.mpr ⟨hle, fun v w hvw ↦ by
       simpa [sup_adj, edge_adj,
         adj_congr_of_sym2 _ ((adj_edge _ _).mp hvw).1.symm] using .inl hgadj⟩⟩
@@ -69,7 +69,6 @@ lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u
 /-- Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, there exists a matching that covers
 everything except some universal vertices.
-
 This lemma is marked private, because
 it is strictly weaker than `IsPerfectMatching.exists_of_isClique_supp`. -/
 private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
@@ -78,8 +77,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     G.deleteUniversalVerts.coe.IsClique K.supp) :
     ∃ M : Subgraph G, M.IsMatching ∧ M.vertsᶜ ⊆ G.universalVerts := by
   classical
-  have hrep := ConnectedComponent.Represents.image_out
-      G.deleteUniversalVerts.coe.oddComponents
+  have hrep := ConnectedComponent.Represents.image_out G.deleteUniversalVerts.coe.oddComponents
   -- First we match one node from each odd component to a universal vertex
   obtain ⟨t, ht, M1, hM1⟩ := Subgraph.IsMatching.exists_of_universalVerts
       (disjoint_image_val_universalVerts _).symm (by
@@ -161,7 +159,7 @@ open scoped symmDiff
 /-- This lemma constructs a perfect matching on `G` from two near-matchings. -/
 private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     {M1 : Subgraph (G ⊔ edge x b)} {M2 : Subgraph (G ⊔ edge a c)} (hxa : G.Adj x a)
-    (hab : G.Adj a b) (hnGxb : ¬G.Adj x b) (hnGac : ¬ G.Adj a c) (hnxb : x ≠ b) (hnxc : x ≠ c)
+    (hab : G.Adj a b) (hnGxb : ¬G.Adj x b) (hnGac : ¬G.Adj a c) (hnxb : x ≠ b) (hnxc : x ≠ c)
     (hnac : a ≠ c) (hnbc : b ≠ c) (hM1 : M1.IsPerfectMatching) (hM2 : M2.IsPerfectMatching) :
     ∃ (M : Subgraph G), M.IsPerfectMatching := by
   classical
@@ -222,7 +220,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     exact hM2.1.not_adj_left_of_ne h.symm hM2ac
   -- Else we construct a path that contain the edge `a c`, but not the edge `x b`
   have : ∃ x' ∈ ({x, b} : Finset V), ∃ (p : cycles.Walk a x'), p.IsPath ∧
-    p.toSubgraph.Adj a c ∧ ¬ p.toSubgraph.Adj x b := by
+    p.toSubgraph.Adj a c ∧ ¬p.toSubgraph.Adj x b := by
       obtain ⟨p, hp⟩ := hcycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp hacc
         (Set.nonempty_of_mem hcac)
       obtain ⟨p', hp'⟩ := hp.1.exists_isCycle_snd_verts_eq (by
@@ -249,7 +247,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   -- We show this path satisfies all requirements
   obtain ⟨x', hx', p, hp, hpac, hnpxb⟩ := this
   have hle : p.toSubgraph.spanningCoe ≤ G ⊔ edge a c := by
-    rw [← sdiff_edge _ (by simpa : ¬ p.toSubgraph.spanningCoe.Adj x b), sdiff_le_iff']
+    rw [← sdiff_edge _ (by simpa : ¬p.toSubgraph.spanningCoe.Adj x b), sdiff_le_iff']
     intro v w hvw
     apply (hsupG ▸ sup_le_sup hM1sub hM2sub)
     have := p.toSubgraph.spanningCoe_le hvw
@@ -282,7 +280,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     rw [Subgraph.adj_comm] at hnpxb
     apply tutte_exists_IsAlternating_IsCycles hM2 p hp hcalt (hnM2 _ hnbc) hpac hnpxb hM2ac
       hab.symm hnbc hxa.ne.symm hle (aux (by simp))
-
+      
 /-- Proofs the sufficiency side of Tutte's theorem -/
 lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     (hvEven : Even (Nat.card V)) :
