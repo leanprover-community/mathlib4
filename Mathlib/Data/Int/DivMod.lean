@@ -13,10 +13,6 @@ import Mathlib.Init
 
 namespace Int
 
-theorem natCast_emod (m n : Nat) : (↑(m % n) : Int) = m % n := ofNat_emod m n
-theorem add_emod_right {a b : Int} : (a + b) % b = a % b := add_emod_self
-theorem add_emod_left {a b : Int} : (a + b) % a = b % a := add_emod_self_left
-
 /-! ### `ediv` and `fdiv` -/
 
 theorem mul_ediv_le_mul_ediv_assoc {a : Int} (ha : 0 ≤ a) (b : Int) {c : Int} (hc : 0 ≤ c) :
@@ -58,9 +54,6 @@ theorem fdiv_fdiv_eq_fdiv_mul (m : Int) {n k : Int} (hn : 0 ≤ n) (hk : 0 ≤ k
     ediv_ediv_eq_ediv_mul _ hn]
 
 /-! ### `emod` -/
-
-theorem sub_emod_right (a b : Int) : (a - b) % b = a % b :=
-  emod_sub_cancel a b
 
 theorem emod_eq_sub_self_emod {a b : Int} : a % b = (a - b) % b :=
   (sub_emod_right a b).symm
