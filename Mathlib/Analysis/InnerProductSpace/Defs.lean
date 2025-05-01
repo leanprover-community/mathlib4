@@ -78,7 +78,7 @@ class Inner (𝕜 E : Type*) where
 export Inner (inner)
 
 /-- The inner product with values in `𝕜`. -/
-scoped[InnerProductSpace] notation3:max "⟪" x ", " y "⟫_" 𝕜:max => inner 𝕜 x y
+scoped[InnerProductSpace] notation:max "⟪" x ", " y "⟫_" 𝕜:max => inner 𝕜 x y
 
 section Notations
 
