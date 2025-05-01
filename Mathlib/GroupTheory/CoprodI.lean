@@ -463,7 +463,7 @@ theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
   rw [mem_equivPair_tail_iff]
   rintro (h | h)
   · exact List.mem_of_mem_tail h
-  · revert h; cases w.toList <;> simp (config := {contextual := true})
+  · revert h; cases w.toList <;> simp +contextual
 
 theorem equivPair_head {i : ι} {w : Word M} :
     (equivPair i w).head =
@@ -543,7 +543,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
         rw [fstIdx]
         cases w.toList
         · simp
-        · simp (config := {contextual := true}) [Sigma.ext_iff]
+        · simp +contextual [Sigma.ext_iff]
   · rcases w with ⟨_ | _, _, _⟩ <;>
     simp [or_comm, hij, Ne.symm hij]; rw [eq_comm]
 

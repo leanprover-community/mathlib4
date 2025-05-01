@@ -87,7 +87,7 @@ theorem stoppedValue_stoppedValue_leastGE (f : ℕ → Ω → ℝ) (π : Ω → 
     (hπn : ∀ ω, π ω ≤ n) : stoppedValue (fun i => stoppedValue f (leastGE f r i)) π =
       stoppedValue (stoppedProcess f (leastGE f r n)) π := by
   ext1 ω
-  simp (config := { unfoldPartialApp := true }) only [stoppedProcess, stoppedValue]
+  simp +unfoldPartialApp only [stoppedProcess, stoppedValue]
   rw [leastGE_eq_min _ _ _ hπn]
 
 theorem Submartingale.stoppedValue_leastGE [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ) :
