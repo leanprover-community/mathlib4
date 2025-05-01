@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.LinearAlgebra.Pi
+import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -166,7 +166,7 @@ This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
 -/
 @[simps! apply symm_apply]
 def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) :=
-  .ofLinearEquiv (.piCongrLeft' R A₁ e) (by ext; simp) (by intro x y; ext; simp)
+  .ofRingEquiv (f := .piCongrLeft' A₁ e) (by intro; ext; simp)
 
 variable (R A₁) in
 /--
@@ -181,39 +181,19 @@ def piCongrLeft {ι' : Type*} (e : ι' ≃ ι) : (Π i, A₁ (e i)) ≃ₐ[R] Π
 
 section
 
-variable {S T A B : Type*} [Semiring A] [Semiring B]
-  [Semiring S] [Semiring T] [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
-
-/-- Product of algebra isomorphisms. -/
-@[simps! apply_fst apply_snd]
-def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B :=
-  .ofRingEquiv (f := RingEquiv.prodCongr l r) <| by simp
-
-variable (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B)
-
-@[simp]
-lemma prodCongr_symm_apply_fst (x : A × B) : ((prodCongr l r).symm x).fst = l.symm x.fst := rfl
-
-@[simp]
-lemma prodCongr_symm_apply_snd (x : A × B) : ((prodCongr l r).symm x).snd = r.symm x.snd := rfl
-
-end
-
-section
-
 variable (S : Type*) [Semiring S] [Algebra R S]
 
 variable (ι R) in
 /-- If `ι` as a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
 @[simps!]
 def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
-  .ofLinearEquiv (.funUnique ι R S) (by simp) (by simp)
+  .ofRingEquiv (f := .piUnique (fun i : ι ↦ S)) (by simp)
 
 variable (R) in
 /-- `Equiv.sumArrowEquivProdArrow` as an algebra equivalence. -/
 @[simps! apply_fst apply_snd]
 def sumArrowEquivProdArrow (α β : Type*) : (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
-  .ofLinearEquiv (.sumArrowLequivProdArrow α β R S) rfl <| fun x y ↦ by ext <;> simp
+  .ofRingEquiv (f := .sumArrowEquivProdArrow S α β) (by intro; ext <;> simp)
 
 @[simp]
 lemma sumArrowEquivProdArrow_symm_apply_inl (α β) (x : (α → S) × (β → S)) (a : α) :
