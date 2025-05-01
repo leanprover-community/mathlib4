@@ -564,19 +564,6 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
     Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
       (orthogonalProjection_vsub_mem_direction_orthogonal _ p₂)
 
-variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
-
-@[simp] lemma ne_orthogonalProjection_faceOpposite (i : Fin (n + 1)) :
-    s.points i ≠ (s.faceOpposite i).orthogonalProjectionSpan (s.points i) := by
-  intro h
-  rw [eq_comm, orthogonalProjectionSpan, EuclideanGeometry.orthogonalProjection_eq_self_iff,
-    mem_affineSpan_range_faceOpposite_points_iff] at h
-  simp at h
-
-lemma dist_orthogonalProjection_faceOpposite_pos (i : Fin (n + 1)) :
-    0 < dist (s.points i) ((s.faceOpposite i).orthogonalProjectionSpan (s.points i)) := by
-  simp
-
 end Simplex
 
 end Affine
