@@ -253,6 +253,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     have := p.toSubgraph.spanningCoe_le hvw
     simp only [cycles, symmDiff_def] at this
     aesop
+  -- Helper condition to show that `p` ends with an edge in `M2`
   have aux {x' : V} (hx' : x' ∈ ({x, b} : Set V)) (c' : V) : c' ≠ a → p.toSubgraph.Adj c' x' →
       M2.Adj c' x' := by
     intro hc hadj
