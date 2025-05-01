@@ -121,7 +121,8 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
   rintro p ⟨_, x, hx⟩
   by_cases h : ∃ a ∈ p.primeCompl, ∃ y : M, f y = a • x
   · obtain ⟨a, ha, y, h⟩ := h
-    refine Or.inl ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
+    left
+    refine ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
     · rw [hx] at hb
       rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
       apply_fun _ using hf
@@ -133,7 +134,8 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
       contrapose! hb
       exact p.primeCompl.mul_mem hb ha
   · push_neg at h
-    refine Or.inr ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
+    right
+    refine ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
     · rw [hx] at hb
       rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
       rw [← map_smul, hb, map_zero]
@@ -155,8 +157,8 @@ end associatedPrimes
 
 theorem LinearEquiv.AssociatedPrimes.eq (l : M ≃ₗ[R] M') :
     associatedPrimes R M = associatedPrimes R M' :=
-  le_antisymm (associatedPrimes.subset_of_injective l l.injective)
-    (associatedPrimes.subset_of_injective l.symm l.symm.injective)
+  le_antisymm (associatedPrimes.subset_of_injective l.injective)
+    (associatedPrimes.subset_of_injective l.symm.injective)
 
 theorem associatedPrimes.eq_empty_of_subsingleton [Subsingleton M] : associatedPrimes R M = ∅ := by
   ext; simp only [Set.mem_empty_iff_false, iff_false]
