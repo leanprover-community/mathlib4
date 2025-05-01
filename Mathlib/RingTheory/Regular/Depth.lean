@@ -379,39 +379,80 @@ noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R)
     [Small.{v} (R ⧸ (IsLocalRing.maximalIdeal R))] : ℕ∞ :=
   (IsLocalRing.maximalIdeal R).depth M
 
-lemma moduleDepth_eq_depth_of_supp_eq (I : Ideal R) [Small.{v, u} (R ⧸ I)] (N M: ModuleCat.{v} R)
-    [Module.Finite R M] [Module.Finite R N] [Nontrivial M] [Nontrivial N]
+omit [UnivLE.{v, w}] in
+open Classical in
+lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext.{max u v} N M n)) :
+    moduleDepth N M = Nat.find h := by
+  apply le_antisymm
+  · simp only [moduleDepth, sSup_le_iff, Set.mem_setOf_eq]
+    intro n hn
+    by_contra gt
+    absurd Nat.find_spec h
+    exact not_nontrivial_iff_subsingleton.mpr (hn (Nat.find h) (not_le.mp gt))
+  · simp only [moduleDepth]
+    apply le_sSup
+    simp only [Set.mem_setOf_eq, Nat.cast_lt, Nat.lt_find_iff]
+    intro i hi
+    exact not_nontrivial_iff_subsingleton.mp (hi i (le_refl i))
+
+omit [UnivLE.{v, w}] in
+lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
+    moduleDepth N M = ⊤ ↔ ∀ i, Subsingleton (Ext.{max u v} N M i) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · by_contra! exist
+    rw [moduleDepth_eq_find N M
+      ((exists_congr (fun i ↦ not_subsingleton_iff_nontrivial)).mp exist)] at h
+    simp at h
+  · simp [moduleDepth]
+    exact csSup_eq_top_of_top_mem (fun i _ ↦ h i)
+
+lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R) [Small.{v, u} (R ⧸ I)]
+    (N M : ModuleCat.{v} R) [Module.Finite R M] [Nfin : Module.Finite R N]
+    [Nontrivial M] [Nntr : Nontrivial N]
+    (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
     moduleDepth N M = I.depth M := by
+  have (n : ℕ) : (∀ i < n, Subsingleton (Ext.{max u v} N M i)) ↔
+    (∀ i < n, Subsingleton (Ext.{max u v} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i)) := by
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · have : ∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
+        Module.support R N = PrimeSpectrum.zeroLocus ↑I ∧
+        ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
+        use N
 
+      sorry
+    ·
+      sorry
+
+  --lemma222 I n M (by assumption) (by assumption)
   sorry
 
+instance [IsLocalRing R] : OrderTop (PrimeSpectrum R) where
+  top := ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩
+  le_top I := IsLocalRing.le_maximalIdeal I.2.ne_top'
+
 theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
-    [Module.Finite R M] [Module.Finite R N] [Nontrivial M] [Nontrivial N]
+    [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
     [Small.{v, u} (R ⧸ maximalIdeal R)] :
     moduleDepth N M ≥ IsLocalRing.depth M -
     (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) := by
-  by_cases eqtop : (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) = ⊤
-  · simp [eqtop]
-  · generalize dim :
-      ((Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N)).toNat = r
-    induction' r using Nat.strong_induction_on with r hr generalizing N
-    by_cases eq0 : r = 0
+  generalize dim :
+    ((Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N)).toNat = r
+  induction' r using Nat.strong_induction_on with r hr generalizing N
+  by_cases eq0 : r = 0
+  · by_cases eqtop : (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) = ⊤
+    · simp [eqtop]
     · rw [← ENat.coe_toNat eqtop, dim]
       show moduleDepth N M ≥ IsLocalRing.depth M - r
       simp only [eq0, ENat.toNat_eq_zero, WithBot.unbot_eq_iff, WithBot.coe_zero, eqtop,
         or_false] at dim
-      have hsupp : Module.support R N = PrimeSpectrum.zeroLocus (maximalIdeal R) := sorry
-      simp only [eq0, CharP.cast_eq_zero, tsub_zero, ge_iff_le]
-      simp [IsLocalRing.depth, moduleDepth_eq_depth_of_supp_eq (maximalIdeal R) N M hsupp]
-    · /-induction' ‹Module.Finite R N› using
-        IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime R with
-      | subsingleton N => sorry
-      | quotient N p f =>
+      have hsupp : Module.support R N = PrimeSpectrum.zeroLocus (maximalIdeal R) := by
+
         sorry
-      | exact N₁ N₂ N₃ f g hf _ hfg h₁ h₃ =>
-        sorry-/
+      simp [eq0, IsLocalRing.depth]
+      --moduleDepth_eq_depth_of_supp_eq (maximalIdeal R) N M hsupp
       sorry
+  · sorry
 
 theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing R]
     [Small.{v} (R ⧸ IsLocalRing.maximalIdeal R)]
