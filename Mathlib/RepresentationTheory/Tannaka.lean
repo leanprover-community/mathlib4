@@ -11,7 +11,7 @@ import Mathlib.RepresentationTheory.FDRep
 In this file we prove Tannaka duality for finite groups.
 
 The theorem can be formulated as follows: for any integral domain `k`, a finite group `G` can be
-recovered from `FDRep k G`, the monoidal category of finitely generated `k`-linear representations
+recovered from `FDRep k G`, the monoidal category of finite dimensional `k`-linear representations
 of `G`, and the monoidal forgetful functor `forget : FDRep k G ⥤ FGModuleCat k`.
 
 The main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
@@ -150,31 +150,25 @@ def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → 
   exact this
 
 /-- For `v : X` and `G` a finite group, the `G`-equivariant linear map from the right
-regular representation `rightFDRep` to `X` sending `1` to `v`. -/
+regular representation `rightFDRep` to `X` sending `single 1 1` to `v`. -/
 @[simps]
 def sumSMulInv [Fintype G] {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
   toFun f := ∑ s : G, (f s) • (X.ρ s⁻¹ v)
   map_add' _ _ := by
-    simp only [add_apply, add_smul, sum_add_distrib]
+    simp [add_smul, sum_add_distrib]
   map_smul' _ _ := by
-    simp only [smul_apply, smul_eq_mul, RingHom.id_apply, smul_sum, smul_smul]
+    simp [smul_sum, smul_smul]
 
 omit [Finite G] in
 @[simp]
 lemma sumSMulInv_single_id [Fintype G] [DecidableEq G] {X : FDRep k G} (v : X) :
     ∑ s : G, (single 1 1 : G → k) s • (X.ρ s⁻¹) v = v := by
-  calc
-    _ = ∑ s ∈ {1}ᶜ, single 1 1 s • (X.ρ s⁻¹) v + single 1 1 1 • (X.ρ 1⁻¹) v :=
-      Fintype.sum_eq_sum_compl_add 1 _
-    _ = (single 1 1 : G → k) 1 • (X.ρ 1⁻¹) v := by
-      apply add_eq_right.mpr
-      apply sum_eq_zero
-      simp_all
-    _ = v := by
-      simp
+  rw [Fintype.sum_eq_single 1]
+  · simp
+  · simp_all
 
 /-- For `v : X` and `G` a finite group, the representation morphism from the right
-regular representation `rightFDRep` to `X` sending `1` to `v`. -/
+regular representation `rightFDRep` to `X` sending `single 1 1` to `v`. -/
 @[simps]
 def ofRightFDRep [Fintype G] (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
   hom := ofHom (sumSMulInv v)
@@ -192,8 +186,7 @@ lemma toRightFDRepComp_injective {η₁ η₂ : Aut (forget k G)}
   have h1 := η₁.hom.hom.naturality (ofRightFDRep X v)
   have h2 := η₂.hom.hom.naturality (ofRightFDRep X v)
   rw [h, ← h2] at h1
-  apply_fun (Hom.hom · (single 1 1)) at h1
-  simpa using h1
+  simpa using congr(Hom.hom $h1 (single 1 1))
 
 /-- `leftRegular` as a morphism `rightFDRep k G ⟶ rightFDRep k G` in `FDRep k G`. -/
 def leftRegularFDRepHom (s : G) : End (rightFDRep : FDRep k G) where
@@ -207,17 +200,17 @@ def leftRegularFDRepHom (s : G) : End (rightFDRep : FDRep k G) where
 lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
     ∃ (s : G), (η.hom.hom.app rightFDRep).hom = rightRegular s := by
   classical
-  obtain ⟨s, hs⟩ := AlgHom.eq_piEvalAlgHom ((evalAlgHom _ _ 1).comp (algHomOfRightFDRepComp η))
+  obtain ⟨s, hs⟩ := ((evalAlgHom _ _ 1).comp (algHomOfRightFDRepComp η)).eq_piEvalAlgHom
   refine ⟨s, Basis.ext (basisFun k G) (fun u ↦ ?_)⟩
   simp only [rightFDRep, forget_obj]
   ext t
   have nat := η.hom.hom.naturality (leftRegularFDRepHom t⁻¹)
-  apply_fun (Hom.hom · (single u 1)) at nat
-  apply_fun (· ((leftRegular t⁻¹) (single u 1))) at hs
   calc
     _ = leftRegular t⁻¹ ((η.hom.hom.app rightFDRep).hom (single u 1)) 1 := by simp
-    _ = (η.hom.hom.app rightFDRep).hom (leftRegular t⁻¹ (single u 1)) 1 := congrFun nat.symm 1
-    _ = evalAlgHom _ _ s (leftRegular t⁻¹ (single u 1)) := hs
+    _ = (η.hom.hom.app rightFDRep).hom (leftRegular t⁻¹ (single u 1)) 1 :=
+      congrFun congr((Hom.hom $nat (single u 1))).symm 1
+    _ = evalAlgHom _ _ s (leftRegular t⁻¹ (single u 1)) :=
+      congr($hs ((leftRegular t⁻¹) (single u 1)))
     _ = _ := by
       by_cases u = t * s <;> simp_all [single_apply]
 
