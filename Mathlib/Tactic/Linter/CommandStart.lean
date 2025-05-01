@@ -173,35 +173,48 @@ Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset`
 list notation.
 -/
 abbrev unlintedNodes := #[
-  `str, -- We ignore literal strings.
+  -- # set-like notations, have extra spaces around the braces `{` `}`
 
-  -- set-like notations, have extra spaces around the braces `{` `}`
-  ``«term{_:_//_}», -- subtype, prefers `{ a // b }`
-  `«term{_}»,  -- set notation, prefers `{ a | b }`
-  `Mathlib.Meta.setBuilder, -- set builder notation, prefers `{ a : X | p a }`
-  ``«term{}», -- empty set, prefers `{ }`
+  -- subtype, the pretty-printer prefers `{ a // b }`
+  ``«term{_:_//_}»,
+  -- set notation, the pretty-printer prefers `{ a | b }`
+  `«term{_}»,
+  -- empty set, the pretty-printer prefers `{ }`
+  ``«term{}»,
+  -- set builder notation, the pretty-printer prefers `{ a : X | p a }`
+  `Mathlib.Meta.setBuilder,
 
-  ``«term_::_», -- list notation, prefers `a :: b`
+  -- # misc exceptions
 
-  ``«term¬_», -- negation, prefers `¬a`
+  -- We ignore literal strings.
+  `str,
 
-  ``Parser.Command.declId, -- declaration name, avoids dealing with guillemets pairs `«»`
+  -- list notation, the pretty-printer prefers `a :: b`
+  ``«term_::_»,
+
+  -- negation, the pretty-printer prefers `¬a`
+  ``«term¬_»,
+
+  -- declaration name, avoids dealing with guillemets pairs `«»`
+  ``Parser.Command.declId,
 
   `Mathlib.Tactic.superscriptTerm, `Mathlib.Tactic.subscript,
 
-  `Bundle.termπ__, -- notation for `Bundle.TotalSpace.proj`, the total space of a bundle
-                   -- the pretty-printer prefers `π FE` over `π F E` (which we want)
+  -- notation for `Bundle.TotalSpace.proj`, the total space of a bundle
+  -- the pretty-printer prefers `π FE` over `π F E` (which we want)
+  `Bundle.termπ__,
 
- `Finset.«term_#_», -- notation for `Finset.slice`,
-                    -- the pretty-printer prefers `𝒜 #r` over `𝒜 # r` (mathlib style)
+  -- notation for `Finset.slice`, the pretty-printer prefers `𝒜 #r` over `𝒜 # r` (mathlib style)
+  `Finset.«term_#_»,
 
-  --`ToAdditive.toAdditiveRest, -- the `existing` in `[to_additive existing]`
+  -- The docString linter already takes care of formatting doc-strings.
+  ``Parser.Command.docComment,
 
-  ``Parser.Command.docComment, -- The docString linter already takes care of formatting doc-strings.
+  -- `omit [A] [B]` prints as `omit [A][B]`, see https://github.com/leanprover/lean4/pull/8169
+  ``Parser.Command.omit,
 
-  ``Parser.Command.omit, -- `omit [A] [B]` prints as `omit [A][B]`, see https://github.com/leanprover/lean4/pull/8169
-
-  `Aesop.Frontend.Parser.aesop, -- https://github.com/leanprover-community/aesop/pull/203
+  -- https://github.com/leanprover-community/aesop/pull/203
+  `Aesop.Frontend.Parser.aesop,
   ]
 
 /--
