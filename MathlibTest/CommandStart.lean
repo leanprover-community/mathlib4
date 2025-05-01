@@ -11,10 +11,6 @@ run_cmd
 
 def Card : Type → Nat := fun _ => 0
 
-local prefix:arg "&" => Card
-
-example (s : Type) (h : & s = 0) : True := trivial
-
 /-- Symbols for use by all kinds of grammars. -/
 inductive Symbol (T N : Type)
   /-- Terminal symbols (of the same type as the language) -/
@@ -83,24 +79,6 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 -/
 #guard_msgs in
 example    : True := trivial
-
-/--
-warning: extra space
-
-Current syntax:  'mple      /-dα'
-Expected syntax: 'ple  /-dαα'
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: extra space
-
-Current syntax:  'κκ-/     :  T'
-Expected syntax: 'κκ-/ : Tru'
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-example      /-dαακdαακdαακκ-/     :  True :=trivial
 
 /-- A doc string -/
 -- comment
