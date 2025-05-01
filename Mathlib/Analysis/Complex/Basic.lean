@@ -118,7 +118,7 @@ instance : CompleteSpace ℂ :=
 instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpace
 
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
   equivRealProdLm.toContinuousLinearEquivOfBounds 1 (√2) equivRealProd_apply_le' fun p =>
     norm_le_sqrt_two_mul_max (equivRealProd.symm p)
@@ -262,9 +262,18 @@ theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
 theorem isUniformEmbedding_ofReal : IsUniformEmbedding ((↑) : ℝ → ℂ) :=
   ofRealLI.isometry.isUniformEmbedding
 
+lemma _root_.RCLike.isUniformEmbedding_ofReal {𝕜 : Type*} [RCLike 𝕜] :
+    IsUniformEmbedding ((↑) : ℝ → 𝕜) :=
+  RCLike.ofRealLI.isometry.isUniformEmbedding
+
 theorem _root_.Filter.tendsto_ofReal_iff {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ} :
     Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) ↔ Tendsto f l (𝓝 x) :=
   isUniformEmbedding_ofReal.isClosedEmbedding.tendsto_nhds_iff.symm
+
+lemma _root_.Filter.tendsto_ofReal_iff' {α 𝕜 : Type*} [RCLike 𝕜]
+    {l : Filter α} {f : α → ℝ} {x : ℝ} :
+    Tendsto (fun x ↦ (f x : 𝕜)) l (𝓝 (x : 𝕜)) ↔ Tendsto f l (𝓝 x) :=
+  RCLike.isUniformEmbedding_ofReal.isClosedEmbedding.tendsto_nhds_iff.symm
 
 lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ}
     (hf : Tendsto f l (𝓝 x)) : Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) :=

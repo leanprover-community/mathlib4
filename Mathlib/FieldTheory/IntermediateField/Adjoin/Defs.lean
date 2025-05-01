@@ -35,6 +35,12 @@ def adjoin : IntermediateField F E :=
 theorem adjoin_toSubfield :
     (adjoin F S).toSubfield = Subfield.closure (Set.range (algebraMap F E) ∪ S) := rfl
 
+variable {F S} in
+theorem mem_adjoin_iff_div {x : E} : x ∈ adjoin F S ↔
+    ∃ r ∈ Algebra.adjoin F S, ∃ s ∈ Algebra.adjoin F S, x = r / s := by
+  simp_rw [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
+    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring, eq_comm]
+
 end AdjoinDef
 
 section Lattice
@@ -658,7 +664,7 @@ theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E →
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F S) := by
   classical
-  refine Finset.induction_on' S ?_ (fun ha _ _ h => ?_)
+  refine Finset.induction_on' S ?_ (fun _ _ ha _ _ h => ?_)
   · simp [base]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
     exact ih (adjoin F _) _ ha h

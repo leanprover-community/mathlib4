@@ -23,7 +23,7 @@ such that `M^~(U)` is the set of dependent functions that are locally fractions.
 * `ModuleCat.tildeInType` : `M^~` as a sheaf of types groups.
 * `ModuleCat.tilde` : `M^~` as a sheaf of `𝒪_{Spec R}`-modules.
 * `ModuleCat.tilde.stalkIso`: The isomorphism of `R`-modules from the stalk of `M^~` at `x` to
-the localization of `M` at the prime ideal corresponding to `x`.
+  the localization of `M` at the prime ideal corresponding to `x`.
 
 ## Technical note
 
@@ -232,7 +232,7 @@ noncomputable def toStalk (x : PrimeSpectrum.Top R) :
 open LocalizedModule TopCat.Presheaf in
 lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     IsUnit ((algebraMap R (Module.End R ((tildeInModuleCat M).stalk x))) r) := by
-  rw [Module.End_isUnit_iff]
+  rw [Module.End.isUnit_iff]
   refine ⟨LinearMap.ker_eq_bot.1 <| eq_bot_iff.2 fun st (h : r.1 • st = 0) ↦
     smul_stalk_no_nonzero_divisor M r st h, fun st ↦ ?_⟩
   obtain ⟨U, mem, s, rfl⟩ := germ_exist (F := M.tildeInModuleCat) x st
@@ -362,9 +362,9 @@ theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.
     (localizationToStalk M x).hom (LocalizedModule.mk f s) =
       (tildeInModuleCat M).germ (PrimeSpectrum.basicOpen (s : R)) x s.2
         (const M f s (PrimeSpectrum.basicOpen s) fun _ => id) :=
-  (Module.End_isUnit_iff _ |>.1 (isUnit_toStalk M x s)).injective <| by
-  erw [← LinearMap.mul_apply]
-  simp only [IsUnit.mul_val_inv, LinearMap.one_apply, Module.algebraMap_end_apply]
+  (Module.End.isUnit_iff _ |>.1 (isUnit_toStalk M x s)).injective <| by
+  erw [← Module.End.mul_apply]
+  simp only [IsUnit.mul_val_inv, Module.End.one_apply, Module.algebraMap_end_apply]
   show (M.tildeInModuleCat.germ ⊤ x ⟨⟩) ((toOpen M ⊤) f) = _
   rw [← map_smul]
   fapply TopCat.Presheaf.germ_ext (W := PrimeSpectrum.basicOpen s.1) (hxW := s.2)
