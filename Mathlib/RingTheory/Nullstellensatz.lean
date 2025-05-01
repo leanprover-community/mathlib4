@@ -5,7 +5,6 @@ Authors: Devon Tuma
 -/
 import Mathlib.RingTheory.Jacobson.Ring
 import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
@@ -154,9 +153,8 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
   letI : Field (MvPolynomial σ k ⧸ I) := Quotient.field I
   let ϕ : k →+* MvPolynomial σ k ⧸ I := (Ideal.Quotient.mk I).comp C
   have hϕ : Function.Bijective ϕ :=
-    ⟨quotient_mk_comp_C_injective _ _ I hI.ne_top,
-      IsAlgClosed.algebraMap_surjective_of_isIntegral' ϕ
-        (MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing _ Quotient.mk_surjective)⟩
+    IsAlgClosed.ringHom_bijective_of_isIntegral ϕ
+      (MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing _ Quotient.mk_surjective)
   obtain ⟨φ, hφ⟩ := Function.Surjective.hasRightInverse hϕ.2
   let x : σ → k := fun s => φ ((Ideal.Quotient.mk I) (X s))
   have hx : ∀ s : σ, ϕ (x s) = (Ideal.Quotient.mk I) (X s) := fun s =>
