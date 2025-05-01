@@ -77,6 +77,6 @@ inductive ReflTransGen {α : Type _} (r : α → α → Prop) (a : α) : α → 
 | refl : ReflTransGen r a a
 | tail {b c} : ReflTransGen r a b → r b c → ReflTransGen r a c
 
-example {α : Type} (r: α → α → Prop) (a c : α) :
+example {α : Type} (r : α → α → Prop) (a c : α) :
     ReflTransGen r a c ↔ c = a ∨ ∃ b : α, ReflTransGen r a b ∧ r b c :=
  reflTransGen_iff r a c
