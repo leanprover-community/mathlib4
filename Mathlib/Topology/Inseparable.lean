@@ -37,7 +37,7 @@ topological space, separation setoid
 -/
 
 
-open Set Filter Function Topology List
+open Set Filter Function Topology
 
 variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f g : X → Y}
@@ -49,13 +49,13 @@ variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [Topolog
 /-- A collection of equivalent definitions of `x ⤳ y`. The public API is given by `iff` lemmas
 below. -/
 theorem specializes_TFAE (x y : X) :
-    TFAE [x ⤳ y,
+    [x ⤳ y,
       pure x ≤ 𝓝 y,
       ∀ s : Set X , IsOpen s → y ∈ s → x ∈ s,
       ∀ s : Set X , IsClosed s → x ∈ s → y ∈ s,
       y ∈ closure ({ x } : Set X),
       closure ({ y } : Set X) ⊆ closure { x },
-      ClusterPt y (pure x)] := by
+      ClusterPt y (pure x)].TFAE := by
   tfae_have 1 → 2 := (pure_le_nhds _).trans
   tfae_have 2 → 3 := fun h s hso hy => h (hso.mem_nhds hy)
   tfae_have 3 → 4 := fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
@@ -147,11 +147,9 @@ theorem Specializes.map_of_continuousWithinAt {s : Set X} (h : x ⤳ y)
     (hf : ContinuousWithinAt f s y) (hx : x ∈ s) : f x ⤳ f y := by
   rw [specializes_iff_pure] at h ⊢
   calc pure (f x)
-    _ = Filter.map f (pure x) := (Filter.map_pure f x).symm
-    _ = Filter.map f (pure x ⊓ 𝓟 s) :=
-      congrArg (Filter.map f) (inf_eq_left.mpr ((Filter.pure_le_principal x).mpr hx)).symm
-    _ ≤ Filter.map f (𝓝 y ⊓ 𝓟 s) := Filter.map_mono (inf_le_inf_right (𝓟 s) h)
-    _ = Filter.map f (𝓝[s] y) := rfl
+    _ = map f (pure x) := (map_pure f x).symm
+    _ ≤ map f (𝓝 y ⊓ 𝓟 s) := map_mono (le_inf h ((pure_le_principal x).mpr hx))
+    _ = map f (𝓝[s] y) := rfl
     _ ≤ _ := hf.tendsto
 
 theorem Specializes.map_of_continuousOn {s : Set X} (h : x ⤳ y)
