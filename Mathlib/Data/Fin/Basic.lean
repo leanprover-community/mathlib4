@@ -21,7 +21,6 @@ This file expands on the development in the core library.
 ### Induction principles
 
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
-Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 
 ### Embeddings and isomorphisms
 
