@@ -24,6 +24,9 @@ variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 noncomputable def supportDim : WithBot ℕ∞ :=
   krullDim (Module.support R M)
 
+lemma supportDim_ne_bot_of_nontrivial [Nontrivial M] : supportDim R M ≠ ⊥ := by
+  simpa [supportDim, Module.support_eq_empty_iff, not_subsingleton_iff_nontrivial]
+
 lemma supportDim_eq_ringKrullDim_quotient_ann [Module.Finite R M] :
     supportDim R M = ringKrullDim (R ⧸ (Module.annihilator R M)) := by
   simp only [supportDim]
