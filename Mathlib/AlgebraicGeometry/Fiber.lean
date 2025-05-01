@@ -59,7 +59,7 @@ instance (f : X ⟶ Y) (y : Y) : IsPreimmersion (f.fiberι y) :=
 
 /-- The scheme theoretic fiber of `f` at `y` is homeomorphic to `f ⁻¹' {y}`. -/
 def Scheme.Hom.fiberHomeo (f : X.Hom Y) (y : Y) : f.fiber y ≃ₜ f.base ⁻¹' {y} :=
-  .trans (.ofIsEmbedding _ (f.fiberι y).isEmbedding) (.setCongr (f.range_fiberι y))
+  .trans (f.fiberι y).isEmbedding.toHomeomorph (.setCongr (f.range_fiberι y))
 
 @[simp]
 lemma Scheme.Hom.fiberHomeo_apply (f : X.Hom Y) (y : Y) (x : f.fiber y) :

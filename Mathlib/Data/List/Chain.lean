@@ -150,7 +150,7 @@ theorem chain_eq_iff_eq_replicate {a : α} {l : List α} :
   | [] => by simp
   | b :: l => by
     rw [chain_cons]
-    simp (config := {contextual := true}) [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
+    simp +contextual [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
 
 theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
     Chain' S l := by cases l <;> [trivial; exact Chain.imp H p]
