@@ -493,6 +493,18 @@ lemma connected_induce_iff {s : Set V} :
     (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
   rw [induce_eq_coe_induce_top, ← Subgraph.connected_iff']
 
+lemma ConnectedComponent.connected_induce (c : G.ConnectedComponent) : (G.induce c).Connected := by
+  rw [connected_induce_iff, Subgraph.connected_iff_forall_exists_walk_subgraph]
+  refine ⟨c.nonempty_supp, fun hu hv ↦ ?_⟩
+  obtain ⟨w⟩ := ConnectedComponent.exact (hv ▸ hu)
+  use w
+  induction w with
+  | nil => simpa
+  | cons h _ ih =>
+    rw [Walk.toSubgraph, sup_le_iff]
+    refine ⟨subgraphOfAdj_le_of_adj _ ?_, ih (hu ▸ (connectedComponentMk_eq_of_adj h).symm) hv⟩
+    simpa using ⟨hu, hu ▸ (connectedComponentMk_eq_of_adj h).symm, h⟩
+
 lemma induce_union_connected {s t : Set V}
     (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
     (sintert : (s ∩ t).Nonempty) :
