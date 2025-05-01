@@ -164,6 +164,7 @@ Transport dependent functions through an equivalence of the base space.
 
 This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
 -/
+@[simps! apply symm_apply]
 def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) :=
   .ofLinearEquiv (.piCongrLeft' R A₁ e) (by ext; simp) (by intro x y; ext; simp)
 
@@ -174,26 +175,54 @@ Transport dependent functions through an equivalence of the base space, expresse
 
 This is `Equiv.piCongrLeft` as an `AlgEquiv`.
 -/
+@[simps! -isSimp]
 def piCongrLeft {ι' : Type*} (e : ι' ≃ ι) : (Π i, A₁ (e i)) ≃ₐ[R] Π i, A₁ i :=
   (AlgEquiv.piCongrLeft' R A₁ e.symm).symm
 
+section
+
+variable {S T A B : Type*} [Semiring A] [Semiring B]
+  [Semiring S] [Semiring T] [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
+
 /-- Product of algebra isomorphisms. -/
-def prodCongr {S T A B : Type*} [Semiring A] [Semiring B]
-    [Semiring S] [Semiring T] [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
-    (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) :
-    (S × T) ≃ₐ[R] A × B :=
+@[simps! apply_fst apply_snd]
+def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B :=
   .ofRingEquiv (f := RingEquiv.prodCongr l r) <| by simp
+
+variable (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B)
+
+@[simp]
+lemma prodCongr_symm_apply_fst (x : A × B) : ((prodCongr l r).symm x).fst = l.symm x.fst := rfl
+
+@[simp]
+lemma prodCongr_symm_apply_snd (x : A × B) : ((prodCongr l r).symm x).snd = r.symm x.snd := rfl
+
+end
+
+section
 
 variable (S : Type*) [Semiring S] [Algebra R S]
 
 variable (ι R) in
 /-- If `ι` as a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
+@[simps!]
 def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
   .ofLinearEquiv (.funUnique ι R S) (by simp) (by simp)
 
 variable (R) in
 /-- `Equiv.sumArrowEquivProdArrow` as an algebra equivalence. -/
+@[simps! apply_fst apply_snd]
 def sumArrowEquivProdArrow (α β : Type*) : (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
   .ofLinearEquiv (.sumArrowLequivProdArrow α β R S) rfl <| fun x y ↦ by ext <;> simp
+
+@[simp]
+lemma sumArrowEquivProdArrow_symm_apply_inl (α β) (x : (α → S) × (β → S)) (a : α) :
+    (sumArrowEquivProdArrow R S α β).symm x (Sum.inl a) = x.fst a := rfl
+
+@[simp]
+lemma sumArrowEquivProdArrow_symm_apply_inr (α β) (x : (α → S) × (β → S)) (b : β) :
+    (sumArrowEquivProdArrow R S α β).symm x (Sum.inr b) = x.snd b := rfl
+
+end
 
 end AlgEquiv
