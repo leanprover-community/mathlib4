@@ -34,14 +34,13 @@ variable {P Q : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Pr
 
 section RespectsIso
 
+variable (P) in
 /-- A property `RespectsIso` if it still holds when composed with an isomorphism -/
 def RespectsIso : Prop :=
   (∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
       ∀ (f : R →+* S) (e : S ≃+* T) (_ : P f), P (e.toRingHom.comp f)) ∧
     ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
       ∀ (f : S →+* T) (e : R ≃+* S) (_ : P f), P (f.comp e.toRingHom)
-
-variable {P}
 
 theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso f] : P (g.hom.comp f.hom) ↔ P g.hom :=
@@ -99,13 +98,12 @@ end RespectsIso
 
 section StableUnderComposition
 
+variable (P) in
 /-- A property is `StableUnderComposition` if the composition of two such morphisms
 still falls in the class. -/
 def StableUnderComposition : Prop :=
   ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
     ∀ (f : R →+* S) (g : S →+* T) (_ : P f) (_ : P g), P (g.comp f)
-
-variable {P}
 
 theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition @P)
     (hP' : ∀ {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S), P e.toRingHom) :
@@ -127,6 +125,7 @@ end StableUnderComposition
 
 section IsStableUnderBaseChange
 
+variable (P) in
 /-- A morphism property `P` is `IsStableUnderBaseChange` if `P(S →+* A)` implies
 `P(B →+* A ⊗[S] B)`. -/
 def IsStableUnderBaseChange : Prop :=
@@ -192,11 +191,10 @@ end IsStableUnderBaseChange
 
 section ToMorphismProperty
 
+variable (P) in
 /-- The categorical `MorphismProperty` associated to a property of ring homs expressed
 non-categorical terms. -/
 def toMorphismProperty : MorphismProperty CommRingCat := fun _ _ f ↦ P f.hom
-
-variable {P}
 
 lemma toMorphismProperty_respectsIso_iff :
     RespectsIso P ↔ (toMorphismProperty P).RespectsIso := by
