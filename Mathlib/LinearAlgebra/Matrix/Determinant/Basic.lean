@@ -418,7 +418,7 @@ theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j 
     (M.updateRow j (a • M j + ∑ k ∈ s, (c k) • M k)).det = a • M.det := by
   induction s using Finset.induction_on with
   | empty => rw [Finset.sum_empty, add_zero, smul_eq_mul, det_updateRow_smul, updateRow_eq_self]
-  | @insert k _ hk h_ind =>
+  | insert k _ hk h_ind =>
       have h : k ≠ j := fun h ↦ (h ▸ hj) (Finset.mem_insert_self _ _)
       rw [Finset.sum_insert hk, add_comm ((c k) • M k), ← add_assoc, det_updateRow_add,
         det_updateRow_smul, det_updateRow_eq_zero h, mul_zero, add_zero, h_ind]
@@ -515,7 +515,7 @@ theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Fin
     congr
     ext i j
     rw [A_eq, this, zero_mul, add_zero]
-  | @insert i s _hi ih =>
+  | insert i s _hi ih =>
     intro c hs k hk A_eq
     have hAi : A i = B i + c i • B k := funext (A_eq i)
     rw [@ih (updateRow B i (A i)) (Function.update c i 0), hAi, det_updateRow_add_smul_self]
