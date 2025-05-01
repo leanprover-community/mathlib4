@@ -523,13 +523,13 @@ open Nat
 variable {X : ℕ → Type u} [∀ n, MetricSpace (X n)] {f : ∀ n, X n → X (n + 1)}
 
 /-- Predistance on the disjoint union `Σ n, X n`. -/
-def inductiveLimitDist (f : ∀ n, X n → X (n + 1)) (x y : Σn, X n) : ℝ :=
+def inductiveLimitDist (f : ∀ n, X n → X (n + 1)) (x y : Σ n, X n) : ℝ :=
   dist (leRecOn (le_max_left x.1 y.1) (f _) x.2 : X (max x.1 y.1))
     (leRecOn (le_max_right x.1 y.1) (f _) y.2 : X (max x.1 y.1))
 
 /-- The predistance on the disjoint union `Σ n, X n` can be computed in any `X k` for large
 enough `k`. -/
-theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σn, X n) :
+theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σ n, X n) :
     ∀ m (hx : x.1 ≤ m) (hy : y.1 ≤ m), inductiveLimitDist f x y =
       dist (leRecOn hx (f _) x.2 : X m) (leRecOn hy (f _) y.2 : X m)
   | 0, hx, hy => by

@@ -150,7 +150,7 @@ lemma P1_of_lt (h₁ : P3 x₃ x₂ y₂ y₃) (h₂ : P3 x₁ x₃ y₂ y₁) :
   convert add_lt_add h₁ h₂ using 1 <;> abel
 
 /-- The type of lists of arguments for P1, P2, and P4. -/
-inductive Args : Type (u+1)
+inductive Args : Type (u + 1)
   | P1 (x y : PGame.{u}) : Args
   | P24 (x₁ x₂ y : PGame.{u}) : Args
 

@@ -3,7 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 
 /-!
@@ -26,7 +26,7 @@ positive semi-definite on weight space and positive-definite on the span of root
    all roots.
  * `RootPairing.zero_lt_pairingIn_iff`: sign relations between `RootPairing.pairingIn` and a
    root-positive form.
- * `RootPairing.pairing_zero_iff`: symmetric vanishing condition for `RootPairing.pairing`
+ * `RootPairing.pairing_eq_zero_iff`: symmetric vanishing condition for `RootPairing.pairing`
  * `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
  * `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
    orthogonal.
@@ -35,7 +35,7 @@ positive semi-definite on weight space and positive-definite on the span of root
 
 noncomputable section
 
-open Function Set Submodule
+open FaithfulSMul Function Set Submodule
 
 variable {ι R S M N : Type*} [CommRing S] [LinearOrder S]
   [CommRing R] [Algebra S R]
@@ -175,15 +175,25 @@ lemma isSymm_posForm :
   simpa using B.symm.eq x y
 
 /-- The length of the `i`-th root wrt a root-positive form taking values in `S`. -/
-def rootLenIn (i : ι) : S :=
-  B.posForm ⟨P.root i, subset_span <| mem_range_self _⟩ ⟨P.root i, subset_span <| mem_range_self _⟩
+def rootLength (i : ι) : S :=
+  B.posForm (P.rootSpanMem S i) (P.rootSpanMem S i)
 
-lemma rootLenIn_pos (i : ι) : 0 < B.rootLenIn i := by
+lemma rootLength_pos (i : ι) : 0 < B.rootLength i := by
   simpa using B.zero_lt_posForm_apply_root i
 
-@[simp] lemma algebraMap_rootLenIn (i : ι) :
-    algebraMap S R (B.rootLenIn i) = B.form (P.root i) (P.root i) := by
-  simp [rootLenIn]
+@[simp]
+lemma rootLength_reflection_perm_self (i : ι) :
+    B.rootLength (P.reflection_perm i i) = B.rootLength i := by
+  simp [rootLength, rootSpanMem_reflection_perm_self]
+
+@[simp] lemma algebraMap_rootLength (i : ι) :
+    algebraMap S R (B.rootLength i) = B.form (P.root i) (P.root i) := by
+  simp [rootLength]
+
+lemma pairingIn_mul_eq_pairingIn_mul_swap :
+    P.pairingIn S j i * B.rootLength i = P.pairingIn S i j * B.rootLength j := by
+  simpa only [← (algebraMap_injective S R).eq_iff, algebraMap_pairingIn, map_mul,
+    B.algebraMap_rootLength] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
 
 @[simp]
 lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]

@@ -524,7 +524,8 @@ theorem HasFDerivWithinAt.of_not_accPt (h : ¬AccPt x (𝓟 s)) : HasFDerivWithi
 /-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
 @[deprecated HasFDerivWithinAt.of_not_accPt (since := "2025-04-20")]
-theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) : HasFDerivWithinAt f f' s x :=
+theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s \ {x}] x = ⊥) :
+    HasFDerivWithinAt f f' s x :=
   .of_not_accPt <| by rwa [accPt_principal_iff_nhdsWithin, not_neBot]
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,

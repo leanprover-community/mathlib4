@@ -771,7 +771,7 @@ lemma IsIndepSet.nonempty_mem_compl_mem_edge
   · exact (c vins).left rfl
 
 /-- The neighbors of a vertex `v` form an independent set in a triangle free graph `G`. -/
-theorem isIndepSet_neighborSet_of_triangleFree (h: G.CliqueFree 3) (v : α) :
+theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
     G.IsIndepSet (G.neighborSet v) := by
   classical
   by_contra nind

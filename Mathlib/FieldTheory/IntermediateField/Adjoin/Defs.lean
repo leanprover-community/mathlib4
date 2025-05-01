@@ -664,7 +664,7 @@ theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E →
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F S) := by
   classical
-  refine Finset.induction_on' S ?_ (fun ha _ _ h => ?_)
+  refine Finset.induction_on' S ?_ (fun _ _ ha _ _ h => ?_)
   · simp [base]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
     exact ih (adjoin F _) _ ha h

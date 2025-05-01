@@ -304,7 +304,7 @@ private theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α
   int_floor_nonneg ha.le
 
 /-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
-@[positivity ⌊ _ ⌋]
+@[positivity ⌊_⌋]
 def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.floor $α' $ir $io $j $a) =>
@@ -323,7 +323,7 @@ private theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {
   Nat.ceil_pos.2
 
 /-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
-@[positivity ⌈ _ ⌉₊]
+@[positivity ⌈_⌉₊]
 def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
@@ -341,7 +341,7 @@ private theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} 
   Int.ceil_pos.2
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
-@[positivity ⌈ _ ⌉]
+@[positivity ⌈_⌉]
 def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.ceil $α' $ir $io $j $a) =>
