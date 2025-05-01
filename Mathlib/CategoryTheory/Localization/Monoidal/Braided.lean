@@ -20,7 +20,7 @@ braided, in such a way that the localization functor is braided. If `C` is symme
 the monoidal structure on `D` is also symmetric.
 -/
 
-open CategoryTheory Category MonoidalCategory Monoidal BraidedCategory
+open CategoryTheory Category MonoidalCategory BraidedCategory
 
 namespace CategoryTheory.Localization.Monoidal
 
