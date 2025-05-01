@@ -143,9 +143,23 @@ theorem specializes_of_nhdsWithin (h₁ : 𝓝[s] x ≤ 𝓝[s] y) (h₂ : x ∈
       _ ≤ 𝓝[s] y := h₁
       _ ≤ 𝓝 y := inf_le_left
 
-theorem Specializes.map_of_continuousAt (h : x ⤳ y) (hy : ContinuousAt f y) : f x ⤳ f y :=
-  specializes_iff_pure.2 fun _s hs =>
-    mem_pure.2 <| mem_preimage.1 <| mem_of_mem_nhds <| hy.mono_left h hs
+theorem Specializes.map_of_continuousWithinAt {s : Set X} (h : x ⤳ y)
+    (hf : ContinuousWithinAt f s y) (hx : x ∈ s) : f x ⤳ f y := by
+  rw [specializes_iff_pure] at h ⊢
+  calc pure (f x)
+    _ = Filter.map f (pure x) := (Filter.map_pure f x).symm
+    _ = Filter.map f (pure x ⊓ 𝓟 s) :=
+      congrArg (Filter.map f) (inf_eq_left.mpr ((Filter.pure_le_principal x).mpr hx)).symm
+    _ ≤ Filter.map f (𝓝 y ⊓ 𝓟 s) := Filter.map_mono (inf_le_inf_right (𝓟 s) h)
+    _ = Filter.map f (𝓝[s] y) := rfl
+    _ ≤ _ := hf.tendsto
+
+theorem Specializes.map_of_continuousOn {s : Set X} (h : x ⤳ y)
+    (hf : ContinuousOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x ⤳ f y :=
+  h.map_of_continuousWithinAt (hf.continuousWithinAt hy) hx
+
+theorem Specializes.map_of_continuousAt (h : x ⤳ y) (hf : ContinuousAt f y) : f x ⤳ f y :=
+  h.map_of_continuousWithinAt hf.continuousWithinAt (mem_univ x)
 
 theorem Specializes.map (h : x ⤳ y) (hf : Continuous f) : f x ⤳ f y :=
   h.map_of_continuousAt hf.continuousAt
@@ -505,9 +519,19 @@ theorem mem_open_iff (h : x ~ᵢ y) (hs : IsOpen s) : x ∈ s ↔ y ∈ s :=
 theorem mem_closed_iff (h : x ~ᵢ y) (hs : IsClosed s) : x ∈ s ↔ y ∈ s :=
   inseparable_iff_forall_isClosed.1 h s hs
 
+theorem map_of_continuousWithinAt {s t : Set X} (h : x ~ᵢ y)
+    (hfx : ContinuousWithinAt f s x) (hfy : ContinuousWithinAt f t y)
+    (hx : x ∈ t) (hy : y ∈ s) : f x ~ᵢ f y :=
+  (h.specializes.map_of_continuousWithinAt hfy hx).antisymm
+    (h.specializes'.map_of_continuousWithinAt hfx hy)
+
+theorem map_of_continuousOn {s : Set X} (h : x ~ᵢ y)
+    (hf : ContinuousOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x ~ᵢ f y :=
+  h.map_of_continuousWithinAt (hf.continuousWithinAt hx) (hf.continuousWithinAt hy) hx hy
+
 theorem map_of_continuousAt (h : x ~ᵢ y) (hx : ContinuousAt f x) (hy : ContinuousAt f y) :
     f x ~ᵢ f y :=
-  (h.specializes.map_of_continuousAt hy).antisymm (h.specializes'.map_of_continuousAt hx)
+  h.map_of_continuousWithinAt hx.continuousWithinAt hy.continuousWithinAt (mem_univ x) (mem_univ y)
 
 theorem map (h : x ~ᵢ y) (hf : Continuous f) : f x ~ᵢ f y :=
   h.map_of_continuousAt hf.continuousAt hf.continuousAt
