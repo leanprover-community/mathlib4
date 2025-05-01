@@ -42,6 +42,7 @@ private lemma xgcdAux_fuel_lemma {k r' fuel : ℕ} (hk : k ≠ 0) (hfuel : k < f
 /-- Helper function for the extended GCD algorithm (`Nat.xgcd`). -/
 def xgcdAux (k : ℕ) (s t : ℤ) (r' : ℕ) (s' t' : ℤ) : ℕ × ℤ × ℤ :=
   let rec
+    /-- Auxiliary function performing recursion for  `Nat.xgcdAux`. -/
     go (fuel : ℕ) (k : ℕ) (s t : ℤ) (r' : ℕ) (s' t' : ℤ) (hfuel : k < fuel) : ℕ × ℤ × ℤ :=
     match fuel with
     | 0 => by contradiction
@@ -62,7 +63,7 @@ private theorem xgcdAux.go.fuel_congr {k s t r' s' t'} (fuel1 fuel2 : ℕ)
     simp only [xgcdAux.go]
     split
     case isTrue => rfl
-    apply xgcdAux.go.fuel_congr
+    case isFalse => apply xgcdAux.go.fuel_congr
 
 @[simp]
 theorem xgcdAux_zero {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by
