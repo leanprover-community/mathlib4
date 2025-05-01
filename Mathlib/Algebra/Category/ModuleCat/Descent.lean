@@ -16,6 +16,11 @@ import Mathlib.RingTheory.RingHom.FaithfullyFlat
 In this file we show that extension of scalars by a faithfully flat ring homomorphism is comonadic.
 Then the general theory of descent implies that the pseudofunctor to `Cat` given by extension
 of scalars has effective descent relative to faithfully flat maps (TODO).
+
+## Notes
+
+This contribution was created as part of the AIM workshop
+"Formalizing algebraic geometry" in June 2024.
 -/
 
 universe u
