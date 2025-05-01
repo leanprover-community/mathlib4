@@ -3,9 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
---import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Module.Prod
 
 /-!
 # The R-algebra structure on products of R-algebras
@@ -112,4 +110,3 @@ def prodMap {D : Type*} [Semiring D] [Algebra R D] (f : A →ₐ[R] B) (g : C �
     commutes' := fun r => by simp [commutes] }
 
 end AlgHom
-
