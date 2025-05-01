@@ -374,21 +374,7 @@ def mkNotNMultipleWithin [LinearOrder M]
     q(NotNMultipleWithin.of_cond $kE $l $r $h₁ $h₂ $h₃)
   return ret
 
--- set_option trace.Meta.synthInstance true in
--- open NotNMultipleWithin in
--- def mkNotNMultipleWithinClosing [LinearOrder M] [ToLevel.{u}] [ToExpr M] : TacticM Unit := do
---   let goal ← getMainGoal
---   let g := (← goal.getType'').consumeMData
---   if ! g.isAppOfArity ``NotNMultipleWithin 7 then throwError "not a NotNMultipleWithin"
---   let some (tyE, lhsE, rhsE) := g.app3? ``ZMod      | throwError "not a List.Perm"
---   let arg := g.getAppArgs
---   let a := evalExpr M arg[2]!
---   let some n₁ := arg[2]!.nat? | throwError s!"{arg[2]!} is not a literal nat"
---   let some n₂ := arg[3]!.nat? | throwError s!"{arg[3]!} is not a literal nat"
---   let ret ← DisjointCert.mkExpr n₁ n₂ (2 * ·) (2 * · + 1) arg[1]!
---     arg[4]! arg[5]!
---   goal.assign ret
-
+#check Nat.Prime
 elab "prove_NotNMultipleWithin" : tactic => do
   let goal ← getMainGoal
   let g := (← goal.getType'').consumeMData
@@ -474,15 +460,13 @@ elab "test" t:term : tactic => do
   dbg_trace s!"{t.weierstrassCurvePointNat? E}"
 
 instance : Fact (Nat.Prime 37) := ⟨by decide⟩
-
+#synth Field (ZMod 37)
 instance : E.IsElliptic := by decide
 
 #synth AddCommGroup E.toAffine.Point
 
 #eval toString (((.some (x := 10) (y := 33) (by decide) : E.toAffine.Point) +
   (.some (x := 10) (y := 33) (by decide) : E.toAffine.Point)))
-
-#check Acc.rec
 
 #reduce [1, 4, 5, 3, 7, 2].mergeSort
 
