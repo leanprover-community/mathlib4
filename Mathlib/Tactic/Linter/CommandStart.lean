@@ -272,17 +272,14 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
             feel free to silence it and report this error!"
         return none
   if let some fmt := fmt then
-    --let st := polishPP fmt.pretty
     let st := fmt.pretty
     let origSubstring := stx.getSubstring?.getD default
     let orig := origSubstring.toString
     let scan := parallelScan orig st
-    --dbg_trace scan.map (·.srcPos)
 
     let some upTo := lintUpTo stx | return
     let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
     let docStringEnd := docStringEnd.getTailPos? |>.getD default
-    --dbg_trace docStringEnd
     let forbidden := getUnlintedRanges unlintedNodes ∅ stx
     for s in scan do
       let center := origSubstring.stopPos - s.srcEndPos
