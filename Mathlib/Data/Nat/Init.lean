@@ -25,7 +25,7 @@ This file contains:
 * decidability instances on predicates about the natural numbers
 
 This file should not depend on anything defined in Mathlib (except for notation), so that it can be
-upstreamed to Batteries easily.
+upstreamed to Batteries or the Lean standard library easily.
 
 See note [foundational algebra order theory].
 -/
@@ -63,8 +63,6 @@ variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
 
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
   Nat.min_eq_left Nat.min_eq_right Nat.max_eq_left Nat.max_eq_right
-  -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
-  -- Nat.bit1_ne_bit0
 
 attribute [simp] Nat.min_eq_left Nat.min_eq_right
 
@@ -1163,13 +1161,18 @@ lemma le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := b
   rw [← mul_succ] at h
   exact Nat.mul_le_mul_left _ (Nat.lt_succ_iff.1 <| Nat.lt_of_mul_lt_mul_left h)
 
+lemma not_dvd_iff_lt_mul_succ (n : ℕ) {a : ℕ} (ha : 0 < a) :
+     ¬ a ∣ n ↔ (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) := by
+  refine
+    ⟨fun han =>
+      ⟨n / a, ⟨Nat.lt_of_le_of_ne (mul_div_le n a) ?_, lt_mul_div_succ _ ha⟩⟩,
+      fun ⟨k, hk1, hk2⟩ => not_dvd_of_between_consec_multiples hk1 hk2⟩
+  exact mt (⟨n / a, Eq.symm ·⟩) han
+
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
 lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
-    (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) ↔ ¬a ∣ n := by
-  refine
-    ⟨fun ⟨k, hk1, hk2⟩ => not_dvd_of_between_consec_multiples hk1 hk2, fun han =>
-      ⟨n / a, ⟨Nat.lt_of_le_of_ne (mul_div_le n a) ?_, lt_mul_div_succ _ ha⟩⟩⟩
-  exact mt (⟨n / a, Eq.symm ·⟩) han
+    ¬ a ∣ n ↔ (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) :=
+  not_dvd_iff_lt_mul_succ n ha
 
 /-- Two natural numbers are equal if and only if they have the same multiples. -/
 lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=

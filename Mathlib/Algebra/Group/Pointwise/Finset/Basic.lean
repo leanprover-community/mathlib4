@@ -1150,8 +1150,7 @@ See `card_le_card_mul_self'` for the version with right-cancellative multiplicat
 -/
 @[to_additive
 "The size of `s + s` is at least the size of `s`, version with left-cancellative addition.
-See `card_le_card_add_self'` for the version with right-cancellative addition."
-]
+See `card_le_card_add_self'` for the version with right-cancellative addition."]
 theorem card_le_card_mul_self {s : Finset α} : #s ≤ #(s * s) := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_left, *]
 
@@ -1184,8 +1183,7 @@ See `card_le_card_mul_self` for the version with left-cancellative multiplicatio
 -/
 @[to_additive
 "The size of `s + s` is at least the size of `s`, version with right-cancellative addition.
-See `card_le_card_add_self` for the version with left-cancellative addition."
-]
+See `card_le_card_add_self` for the version with left-cancellative addition."]
 theorem card_le_card_mul_self' : #s ≤ #(s * s) := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_right, *]
 
