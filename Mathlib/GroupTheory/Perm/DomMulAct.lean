@@ -32,6 +32,8 @@ Let `α` and `ι` by types and let `f : α → ι`
   formula, where the product is restricted to `Finset.univ.image f`.
 -/
 
+assert_not_exists Field
+
 open Equiv MulAction
 
 variable {α ι : Type*} {f : α → ι}
