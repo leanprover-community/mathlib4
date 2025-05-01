@@ -28,13 +28,30 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [Topolog
   {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
 /-- Homeomorphism given an embedding. -/
-noncomputable def ofIsEmbedding (f : X → Y) (hf : IsEmbedding f) : X ≃ₜ Set.range f where
-  continuous_toFun := hf.continuous.subtype_mk _
-  continuous_invFun := hf.continuous_iff.2 <| by simp [continuous_subtype_val]
-  toEquiv := Equiv.ofInjective f hf.injective
+@[simps! apply_coe]
+noncomputable def _root_.Topology.IsEmbedding.toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
+    X ≃ₜ Set.range f :=
+  Equiv.ofInjective f hf.injective |>.toHomeomorphOfIsInducing <|
+    IsInducing.subtypeVal.of_comp_iff.mp hf.toIsInducing
+
+@[deprecated (since := "2025-04-16")]
+alias ofIsEmbedding := IsEmbedding.toHomeomorph
 
 @[deprecated (since := "2024-10-26")]
-alias ofEmbedding := ofIsEmbedding
+alias ofEmbedding := IsEmbedding.toHomeomorph
+
+/-- A surjective embedding is a homeomorphism. -/
+@[simps! apply]
+noncomputable def _root_.Topology.IsEmbedding.toHomeomorphOfSurjective {f : X → Y}
+    (hf : IsEmbedding f) (hsurj : Function.Surjective f) : X ≃ₜ Y :=
+  Equiv.ofBijective f ⟨hf.injective, hsurj⟩ |>.toHomeomorphOfIsInducing hf.toIsInducing
+
+@[deprecated (since := "2025-04-16")]
+alias _root_.Topology.IsEmbedding.toHomeomorph_of_surjective :=
+  IsEmbedding.toHomeomorphOfSurjective
+
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.toHomeomeomorph_of_surjective := IsEmbedding.toHomeomorphOfSurjective
 
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
@@ -201,7 +218,7 @@ This is `Equiv.piUnique` as a `Homeomorph`.
 @[simps! -fullyApplied]
 def piUnique {α : Type*} [Unique α] (f : α → Type*) [∀ x, TopologicalSpace (f x)] :
     (Π t, f t) ≃ₜ f default :=
-  homeomorphOfContinuousOpen (Equiv.piUnique f) (continuous_apply default) (isOpenMap_eval _)
+  (Equiv.piUnique f).toHomeomorphOfContinuousOpen (continuous_apply default) (isOpenMap_eval _)
 
 end prod
 
@@ -296,7 +313,7 @@ variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 @[simps! apply symm_apply toEquiv]
 def sigmaProdDistrib : (Σ i, X i) × Y ≃ₜ Σ i, X i × Y :=
   Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sigmaProdDistrib X Y).symm
+    (Equiv.sigmaProdDistrib X Y).symm.toHomeomorphOfContinuousOpen
       (continuous_sigma fun _ => continuous_sigmaMk.fst'.prodMk continuous_snd)
       (isOpenMap_sigma.2 fun _ => isOpenMap_sigmaMk.prodMap IsOpenMap.id)
 
