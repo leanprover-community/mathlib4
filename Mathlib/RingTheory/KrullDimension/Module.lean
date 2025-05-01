@@ -43,4 +43,7 @@ lemma supportDim_eq_ringKrullDim_quotient_ann [Module.Finite R M] :
   simp only [supportDim]
   rw [support_eq_zeroLocus, ringKrullDim_quotient]
 
+lemma supportDim_le_ringKrullDim : supportDim R M ≤ ringKrullDim R :=
+  krullDim_le_of_strictMono (fun a ↦ a) fun {_ _} lt ↦ lt
+
 end Module
