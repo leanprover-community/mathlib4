@@ -369,7 +369,7 @@ theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
 /--
 If `G` is cliquefree and `f : H →g G` then `H` is also cliquefree.
 -/
-theorem CliqueFree.comap' {H : SimpleGraph β} (f : H →g G) : G.CliqueFree n → H.CliqueFree n := by
+theorem CliqueFree.of_hom {H : SimpleGraph β} (f : H →g G) : G.CliqueFree n → H.CliqueFree n := by
   intro hc
   contrapose! hc
   rw [not_cliqueFree_iff]
@@ -382,7 +382,7 @@ theorem CliqueFree.comap' {H : SimpleGraph β} (f : H →g G) : G.CliqueFree n �
 
 /-- If a graph is cliquefree, any graph that embeds into it is also cliquefree. -/
 theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n → H.CliqueFree n :=
-  fun hc ↦ hc.comap' f.toHom
+  fun hc ↦ hc.of_hom f.toHom
 
 @[simp] theorem cliqueFree_map_iff {f : α ↪ β} [Nonempty α] :
     (G.map f).CliqueFree n ↔ G.CliqueFree n := by

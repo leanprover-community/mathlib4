@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot
 -/
 import Mathlib.Combinatorics.SimpleGraph.Brooks.PartColoring
+import Mathlib.Combinatorics.SimpleGraph.Brooks.OddCycles
 
 /-!
 ## Brooks' Theorem (for 3 ≤ k)
@@ -324,11 +325,11 @@ theorem colorable_of_cliqueFree_forall_degree_le [LocallyFinite G] {k : ℕ} (hk
   classical
   have h' := fun v ↦ G'.coe_degree v ▸ (Subgraph.degree_le ..).trans (hbd ..)
   haveI : Fintype ↑G'.verts := hf.fintype
-  exact ((BrooksPart hk (hc.comap' G'.hom) h' univ).some.copy coe_univ).toColoring
+  exact ((BrooksPart hk (hc.of_hom G'.hom) h' univ).some.copy coe_univ).toColoring
 
 lemma two_colorable_iff_no_odd_cycle :
     G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), w.IsCycle → ¬ Odd w.length := by
-  rw [two_colorable_iff_forall_closed_walk_not_odd]
+  rw [two_colorable_iff_forall_loop_not_odd]
   constructor <;> intro ho
   · intro _ w _ h
     exact ho _ _ h
