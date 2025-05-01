@@ -78,7 +78,7 @@ def gradient (f : F → 𝕜) (x : F) : F :=
 @[inherit_doc]
 scoped[Gradient] notation "∇" => gradient
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped Gradient
 

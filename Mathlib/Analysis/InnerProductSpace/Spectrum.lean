@@ -49,7 +49,7 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped ComplexConjugate
 

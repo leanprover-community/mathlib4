@@ -21,12 +21,13 @@ variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Normed
   [InnerProductSpace 𝕜 F]
 
 namespace WithLp
+open scoped InnerProductSpace
 
 variable (E F)
 
 noncomputable instance instProdInnerProductSpace :
     InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
-  inner x y := inner x.fst y.fst + inner x.snd y.snd
+  inner x y := ⟪x.fst, y.fst⟫_𝕜 + ⟪x.snd, y.snd⟫_𝕜
   norm_sq_eq_re_inner x := by
     simp [prod_norm_sq_eq_of_L2, ← norm_sq_eq_re_inner]
   conj_inner_symm x y := by
@@ -42,7 +43,7 @@ variable {E F}
 
 @[simp]
 theorem prod_inner_apply (x y : WithLp 2 (E × F)) :
-    inner (𝕜 := 𝕜) x y = inner x.fst y.fst + inner x.snd y.snd := rfl
+    ⟪x, y⟫_𝕜 = ⟪x.fst, y.fst⟫_𝕜 + ⟪x.snd, y.snd⟫_𝕜 := rfl
 
 end WithLp
 
