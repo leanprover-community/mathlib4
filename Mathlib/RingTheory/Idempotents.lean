@@ -463,15 +463,31 @@ lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentEle
       simp [o, mul_comm, sub_mul, mul_sub, hef₂, ← hef₁]
   · simpa
 
+section
+
+variable {S : Type*} [CommRing S] [Algebra R S] {e f : S} (he : IsIdempotentElem e)
+  (hf : IsIdempotentElem f)
+
+variable (R) in
 /-- If `e` and `f` are idempotent elements such that `e + f = 1` and `e * f = 0`,
 `S` is isomorphic as an `R`-algebra to `S ⧸ (e) × S ⧸ (f)`. -/
-noncomputable
-def AlgEquiv.prodQuotientOfIsIdempotentElem {R S : Type*} [CommSemiring R] [CommRing S]
-    [Algebra R S] {e f : S} (he : IsIdempotentElem e) (hf : IsIdempotentElem f) (hef₁ : e + f = 1)
-    (hef₂ : e * f = 0) :
+@[simps! -isSimp apply]
+noncomputable def AlgEquiv.prodQuotientOfIsIdempotentElem (hef₁ : e + f = 1) (hef₂ : e * f = 0) :
     S ≃ₐ[R] (S ⧸ Ideal.span {e}) × S ⧸ Ideal.span {f} :=
   AlgEquiv.ofBijective ((Ideal.Quotient.mkₐ _ _).prod (Ideal.Quotient.mkₐ _ _)) <|
     RingHom.prod_bijective_of_isIdempotentElem he hf hef₁ hef₂
+
+@[simp]
+lemma AlgEquiv.prodQuotientOfIsIdempotentElem_apply_fst (hef₁ : e + f = 1) (hef₂ : e * f = 0)
+    (s : S) : (AlgEquiv.prodQuotientOfIsIdempotentElem R he hf hef₁ hef₂ s).fst = s :=
+  rfl
+
+@[simp]
+lemma AlgEquiv.prodQuotientOfIsIdempotentElem_apply_snd (hef₁ : e + f = 1) (hef₂ : e * f = 0)
+    (s : S) : (AlgEquiv.prodQuotientOfIsIdempotentElem R he hf hef₁ hef₂ s).snd = s :=
+  rfl
+
+end
 
 end CommRing
 
