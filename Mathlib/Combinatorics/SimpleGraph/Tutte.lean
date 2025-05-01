@@ -280,7 +280,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     rw [Subgraph.adj_comm] at hnpxb
     apply tutte_exists_IsAlternating_IsCycles hM2 p hp hcalt (hnM2 _ hnbc) hpac hnpxb hM2ac
       hab.symm hnbc hxa.ne.symm hle (aux (by simp))
-      
+
 /-- Proofs the sufficiency side of Tutte's theorem -/
 lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     (hvEven : Even (Nat.card V)) :
