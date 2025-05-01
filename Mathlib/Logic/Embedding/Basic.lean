@@ -148,7 +148,7 @@ theorem equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort*} (e : α ≃ β)
   simp
 
 /-- Transfer an embedding along a pair of equivalences. -/
-@[simps! (config := { fullyApplied := false, simpRhs := true })]
+@[simps! -fullyApplied +simpRhs]
 protected def congr {α : Sort u} {β : Sort v} {γ : Sort w} {δ : Sort x} (e₁ : α ≃ β) (e₂ : γ ≃ δ)
     (f : α ↪ γ) : β ↪ δ :=
   (Equiv.toEmbedding e₁.symm).trans (f.trans e₂.toEmbedding)
