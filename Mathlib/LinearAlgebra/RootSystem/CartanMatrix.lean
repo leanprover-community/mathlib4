@@ -75,7 +75,7 @@ lemma cartanMatrix_mem_of_ne [Finite ι] [IsDomain R] {i j : b.support} (hij : i
   by_contra contra
   replace contra : P.pairingIn ℤ j i = -1 ∧ P.pairingIn ℤ i j = -4 := ⟨by aesop, contra⟩
   rw [pairingIn_neg_one_neg_four_iff] at contra
-  refine (not_linearIndependent_iff.mpr ?_) b.linInd_root
+  refine (not_linearIndependent_iff.mpr ?_) b.linearIndepOn_root
   refine ⟨⟨{i, j}, by simpa⟩, Finsupp.single i (1 : R) + Finsupp.single j (2 : R), ?_⟩
   simp [contra, hij, hij.symm]
 

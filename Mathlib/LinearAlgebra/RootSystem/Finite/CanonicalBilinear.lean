@@ -330,7 +330,7 @@ section IsValuedInOrdered
 
 variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
   [Algebra S R] [FaithfulSMul S R] [Module S M]
-  [IsScalarTower S R M] [Module S N] [IsScalarTower S R N] [P.IsValuedIn S] [Fintype ι] {i j : ι}
+  [IsScalarTower S R M] [P.IsValuedIn S] [Fintype ι] {i j : ι}
 
 /-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a
 root-positive form. -/
@@ -343,13 +343,11 @@ def posRootForm : P.RootPositiveForm S where
     refine ⟨∑ k, P.pairingIn S i k ^ 2, ?_, by simp [sq, rootForm_apply_apply]⟩
     exact Finset.sum_pos' (fun j _ ↦ sq_nonneg _) ⟨i, by simp⟩
 
-omit [Module S N] [IsScalarTower S R N] in
 lemma algebraMap_posRootForm_posForm (x y : span S (range P.root)) :
     (algebraMap S R) ((P.posRootForm S).posForm x y) = P.RootForm x y := by
   rw [RootPositiveForm.algebraMap_posForm]
   exact rfl
 
-omit [Module S N] [IsScalarTower S R N] in
 @[simp]
 lemma posRootForm_eq :
     (P.posRootForm S).posForm = P.RootFormIn S := by
@@ -357,7 +355,6 @@ lemma posRootForm_eq :
   apply FaithfulSMul.algebraMap_injective S R
   simp only [algebraMap_posRootForm_posForm, algebraMap_rootFormIn]
 
-omit [Module S N] [IsScalarTower S R N] in
 theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
     ∃ s ≥ 0, algebraMap S R s = P.RootForm x x := by
   refine ⟨(P.posRootForm S).posForm ⟨x, hx⟩ ⟨x, hx⟩, IsSumSq.nonneg ?_, by simp [posRootForm]⟩
@@ -368,13 +365,11 @@ theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
   simp only [posRootForm, RootPositiveForm.algebraMap_posForm, map_sum, map_mul]
   simp [← Algebra.linearMap_apply, hs, rootForm_apply_apply]
 
-omit [Module S N] [IsScalarTower S R N] in
 lemma posRootForm_posForm_apply_apply (x y : P.rootSpan S) : (P.posRootForm S).posForm x y =
     ∑ i, P.coroot'In S i x * P.coroot'In S i y := by
   refine (FaithfulSMul.algebraMap_injective S R) ?_
   simp [posRootForm, rootForm_apply_apply]
 
-omit [Module S N] [IsScalarTower S R N] in
 lemma zero_le_posForm (x : span S (range P.root)) :
     0 ≤ (P.posRootForm S).posForm x x := by
   obtain ⟨s, _, hs⟩ := P.exists_ge_zero_eq_rootForm S x.1 x.2
@@ -382,11 +377,27 @@ lemma zero_le_posForm (x : span S (range P.root)) :
     FaithfulSMul.algebraMap_injective S R <| (P.algebraMap_posRootForm_posForm S x x) ▸ hs
   rwa [← this]
 
-omit [Fintype ι] [Module S N] [IsScalarTower S R N] in
-lemma zero_lt_pairingIn_iff' [Finite ι] :
+omit [Fintype ι]
+variable [Finite ι]
+
+lemma zero_lt_pairingIn_iff' :
     0 < P.pairingIn S i j ↔ 0 < P.pairingIn S j i :=
   let _i : Fintype ι := Fintype.ofFinite ι
   zero_lt_pairingIn_iff (P.posRootForm S) i j
+
+lemma pairingIn_lt_zero_iff :
+    P.pairingIn S i j < 0 ↔ P.pairingIn S j i < 0 := by
+  simpa using P.zero_lt_pairingIn_iff' S (i := i) (j := P.reflection_perm j j)
+
+lemma pairingIn_le_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+    P.pairingIn S i j ≤ 0 ↔ P.pairingIn S j i ≤ 0 := by
+  rcases eq_or_ne (P.pairingIn S i j) 0 with hij | hij <;>
+  rcases eq_or_ne (P.pairingIn S j i) 0 with hji | hji
+  · rw [hij, hji]
+  · rw [hij, P.pairingIn_eq_zero_iff.mp hij]
+  · rw [hji, P.pairingIn_eq_zero_iff.mp hji]
+  · rw [le_iff_eq_or_lt, le_iff_eq_or_lt, or_iff_right hij, or_iff_right hji]
+    exact P.pairingIn_lt_zero_iff S
 
 end IsValuedInOrdered
 
