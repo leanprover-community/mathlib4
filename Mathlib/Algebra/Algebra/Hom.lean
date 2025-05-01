@@ -467,7 +467,7 @@ section
 variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
   [Subsingleton T]
 
-instance : Unique (S →ₐ[R] T) where
+instance uniqueOfRight : Unique (S →ₐ[R] T) where
   default := AlgHom.ofLinearMap default (Subsingleton.elim _ _) (fun _ _ ↦ (Subsingleton.elim _ _))
   uniq _ := AlgHom.ext fun _ ↦ Subsingleton.elim _ _
 
