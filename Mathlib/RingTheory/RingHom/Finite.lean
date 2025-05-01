@@ -96,6 +96,9 @@ lemma Module.finite_of_isLocalization (R S Rₚ Sₚ) [CommSemiring R] [CommSemi
     (IsLocalization.mk' Rₚ (1 : R) ⟨r, hr⟩) (H hy) using 1
   rw [Algebra.smul_def, this, IsLocalization.map_mk', map_one]
 
+@[deprecated (since := "2025-05-01")] alias Module.Finite_of_isLocalization :=
+  Module.finite_of_isLocalization
+
 /-- If `S` is a finite `R`-algebra, then `S' = M⁻¹S` is a finite `R' = M⁻¹R`-algebra. -/
 theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @RingHom.Finite := by
   introv R hf

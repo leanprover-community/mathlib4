@@ -265,7 +265,7 @@ instance [NoZeroSMulDivisors A C] [Module.Finite A C] :
       map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _) rfl.le
     have : IsScalarTower A (FractionRing A) B :=
       instIsScalarTowerLocalizationAlgebraMapSubmonoid A⁰ C
-    have : Module.Finite (FractionRing A) B := Module.Finite_of_isLocalization A C _ B A⁰
+    have : Module.Finite (FractionRing A) B := Module.finite_of_isLocalization A C _ B A⁰
     let _ : Algebra B (FractionRing C) :=
       (map _ (M := (algebraMapSubmonoid C A⁰)) (T := C⁰) (RingHom.id C) <|
         le_nonZeroDivisors_of_noZeroDivisors <| fun ⟨r, hr0, hr⟩ ↦
@@ -290,6 +290,6 @@ instance [NoZeroSMulDivisors A C] [Module.Finite A C] :
 attribute [local instance] FractionRing.liftAlgebra in
 instance [Module.Finite A C] [NoZeroSMulDivisors A C] :
     FiniteDimensional (FractionRing A) (FractionRing C) :=
-  Module.Finite_of_isLocalization A C _ _ A⁰
+  Module.finite_of_isLocalization A C _ _ A⁰
 
 end IsIntegralClosure
