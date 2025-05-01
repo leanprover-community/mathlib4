@@ -27,7 +27,7 @@ namespace SimpleGraph
 universe u
 variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V}
 
-/-- A set certifying non-existance of a perfect matching -/
+/-- A set certifying non-existence of a perfect matching -/
 def IsTutteViolator (G: SimpleGraph V) (u : Set V) : Prop :=
   u.ncard < ((⊤ : G.Subgraph).deleteVerts u).coe.oddComponents.ncard
 
@@ -335,5 +335,5 @@ theorem tutte : (∃ (M : Subgraph G) , M.IsPerfectMatching) ↔
   intro h
   by_cases hvOdd : Odd (Nat.card V)
   · exact ⟨∅, IsTutteViolator.empty hvOdd⟩
-  · exact exists_TutteViolator h (Nat.not_odd_iff_even.mp hvOdd)
+  · exact exists_isTutteViolator h (Nat.not_odd_iff_even.mp hvOdd)
 end SimpleGraph
