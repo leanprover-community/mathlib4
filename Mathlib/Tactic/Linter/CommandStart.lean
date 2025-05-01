@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Lean.Elab.Command
-import Lean.Parser.Syntax
+import Mathlib.Init
 
 /-!
 #  The `commandStart` linter
@@ -34,7 +33,7 @@ example (a: Nat) {R:Type}  [Add  R] : <not linted part>
 ```
 -/
 register_option linter.style.commandStart : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the commandStart linter"
 }
 

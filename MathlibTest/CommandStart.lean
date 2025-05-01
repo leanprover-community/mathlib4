@@ -1,6 +1,8 @@
 import Aesop.Frontend.Attribute
 import Mathlib.Tactic.Linter.CommandStart
 
+set_option linter.style.commandStart true
+
 -- Strings are ignored by the linter.
 variable (a : String := "  ")
 
