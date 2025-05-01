@@ -105,7 +105,7 @@ open Limits
 
 /-- The category over any object `X` factors through the category over the terminal object `T`. -/
 @[simps!]
-noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T)  :
+noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T) :
     forget X ≅ map (hT.from X) ⋙ (equivalenceOfIsTerminal hT).functor :=
   NatIso.ofComponents fun X ↦ .refl _
 

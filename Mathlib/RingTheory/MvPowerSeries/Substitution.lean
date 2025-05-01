@@ -503,7 +503,8 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
   · intro hn
     simpa using hn
 
-/-- Rescale a multivariate power series, as an `AlgHom` in the scaling parameters. -/
+/-- Rescale a multivariate power series, as an `AlgHom` in the scaling parameters,
+by multiplying each variable `x` by the value `a x`. -/
 noncomputable def rescaleAlgHom (a : σ → R) :
     MvPowerSeries σ R →ₐ[R] MvPowerSeries σ R :=
   substAlgHom (HasSubst.smul_X a)
