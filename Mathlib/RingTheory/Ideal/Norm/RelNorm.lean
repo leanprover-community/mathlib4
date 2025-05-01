@@ -236,7 +236,7 @@ and `S` is an extension of `R` that is finite and free as a module. -/
 def relNorm : Ideal S →*₀ Ideal R where
   toFun := spanNorm R
   map_zero' := spanNorm_bot R
-  map_one' := by dsimp only; rw [one_eq_top, spanNorm_top R, one_eq_top]
+  map_one' := by rw [one_eq_top, spanNorm_top R, one_eq_top]
   map_mul' := spanNorm_mul R
 
 theorem relNorm_apply (I : Ideal S) :
@@ -267,7 +267,7 @@ theorem norm_mem_relNorm [Module.Free R S] (I : Ideal S) {x : S} (hx : x ∈ I) 
 theorem relNorm_singleton (r : S) : relNorm R (span ({r} : Set S)) = span {Algebra.intNorm R S r} :=
   spanNorm_singleton R
 
-theorem map_relNorm (I : Ideal S) {T : Type*} [CommRing T] (f : R →+* T) :
+theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
     map f (relNorm R I) = span (f ∘ Algebra.intNorm R S '' (I : Set S)) :=
   map_spanIntNorm R I f
 

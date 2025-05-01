@@ -61,6 +61,7 @@ def adj : tensorLeft F ⊣ rightAdj F where
   counit := { app := fun G ↦ functorHomEquiv F _ G (𝟙 _) }
 
 instance closed : Closed F where
+  rightAdj := rightAdj F
   adj := adj F
 
 instance monoidalClosed : MonoidalClosed (C ⥤ Type max w v u) where

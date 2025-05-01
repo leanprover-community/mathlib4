@@ -15,14 +15,11 @@ divisors.
 
 ## TODO
 
-- Compatibility with restriction of divisors/functions
-- Non-negativity of the divisor for an analytic function
-- Behavior under addition of functions
 - Congruence lemmas for `codiscreteWithin`
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 namespace MeromorphicOn
 
@@ -70,6 +67,18 @@ lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
     divisor f U z = (hf z hz).order.untop₀ := by simp_all [MeromorphicOn.divisor_def, hz]
 
 /-!
+## Divisors of Analytic Functions
+-/
+
+/-- Analytic functions have non-negative divisors. -/
+theorem AnalyticOnNhd.divisor_nonneg {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f U) :
+    0 ≤ MeromorphicOn.divisor f U := by
+  intro x
+  by_cases hx : x ∈ U
+  · simp [hf.meromorphicOn, hx, (hf x hx).meromorphicAt_order_nonneg]
+  simp [hx]
+
+/-!
 ## Behavior under Standard Operations
 -/
 
@@ -81,7 +90,7 @@ See `MeromorphicOn.exists_order_ne_top_iff_forall` and
 `MeromorphicOn.order_ne_top_of_isPreconnected` for two convenient criteria to guarantee conditions
 `h₂f₁` and `h₂f₂`.
 -/
-theorem divisor_smul [CompleteSpace 𝕜] {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ U)
+theorem divisor_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
     (h₂f₂ : ∀ z, (hz : z ∈ U) → (h₁f₂ z hz).order ≠ ⊤) :
     divisor (f₁ • f₂) U = divisor f₁ U + divisor f₂ U := by
@@ -101,7 +110,7 @@ See `MeromorphicOn.exists_order_ne_top_iff_forall` and
 `MeromorphicOn.order_ne_top_of_isPreconnected` for two convenient criteria to guarantee conditions
 `h₂f₁` and `h₂f₂`.
 -/
-theorem divisor_mul [CompleteSpace 𝕜] {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f₁ U)
+theorem divisor_mul {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
     (h₂f₂ : ∀ z, (hz : z ∈ U) → (h₁f₂ z hz).order ≠ ⊤) :
     divisor (f₁ * f₂) U = divisor f₁ U + divisor f₂ U :=
@@ -109,11 +118,52 @@ theorem divisor_mul [CompleteSpace 𝕜] {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ :
 
 /-- The divisor of the inverse is the negative of the divisor. -/
 @[simp]
-theorem divisor_inv [CompleteSpace 𝕜] {f : 𝕜 → 𝕜} :
+theorem divisor_inv {f : 𝕜 → 𝕜} :
     divisor f⁻¹ U = -divisor f U := by
   ext z
   by_cases h : MeromorphicOn f U ∧ z ∈ U
   · simp [divisor_apply, h, (h.1 z h.2).order_inv]
   · simp [divisor_def, h]
+
+/--
+Taking the divisor of a meromorphic function commutes with restriction.
+-/
+@[simp]
+theorem divisor_restrict {f : 𝕜 → E} {V : Set 𝕜} (hf : MeromorphicOn f U) (hV : V ⊆ U) :
+    (divisor f U).restrict hV = divisor f V := by
+  ext x
+  by_cases hx : x ∈ V
+  · rw [Function.locallyFinsuppWithin.restrict_apply]
+    simp [hf, hx, hf.mono_set hV, hV hx]
+  · simp [hx]
+
+/-- Adding an analytic function to a meromorphic one does not change the pole divisor. -/
+theorem negPart_divisor_add_of_analyticNhdOn_right {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
+    (hf₂ : AnalyticOnNhd 𝕜 f₂ U) :
+    (divisor (f₁ + f₂) U)⁻ = (divisor f₁ U)⁻ := by
+  ext x
+  by_cases hx : x ∈ U
+  · suffices -(hf₁.add (hf₂.meromorphicOn) x hx).order.untop₀ ⊔ 0 = -(hf₁ x hx).order.untop₀ ⊔ 0 by
+      simpa [negPart_def, hx, hf₁, hf₁.add hf₂.meromorphicOn]
+    by_cases h : 0 ≤ (hf₁ x hx).order
+    · suffices 0 ≤ (add hf₁ (AnalyticOnNhd.meromorphicOn hf₂) x hx).order by simp_all
+      calc 0
+      _ ≤ min (hf₁ x hx).order (hf₂.meromorphicOn x hx).order :=
+        le_inf h (hf₂ x hx).meromorphicAt_order_nonneg
+      _ ≤ ((hf₁.add hf₂.meromorphicOn) x hx).order :=
+        (hf₁ x hx).order_add (hf₂ x hx).meromorphicAt
+    · suffices (hf₁ x hx).order < (AnalyticOnNhd.meromorphicOn hf₂ x hx).order by
+        rwa [(hf₁ x hx).order_add_of_order_lt_order (hf₂.meromorphicOn x hx)]
+      calc (hf₁ x hx).order
+      _ < 0 := by simpa using h
+      _ ≤ (hf₂.meromorphicOn x hx).order := (hf₂ x hx).meromorphicAt_order_nonneg
+  simp [hx]
+
+/-- Adding an analytic function to a meromorphic one does not change the pole divisor. -/
+theorem negPart_divisor_add_of_analyticNhdOn_left {f₁ f₂ : 𝕜 → E} (hf₁ : AnalyticOnNhd 𝕜 f₁ U)
+    (hf₂ : MeromorphicOn f₂ U) :
+    (divisor (f₁ + f₂) U)⁻ = (divisor f₂ U)⁻ := by
+  rw [add_comm]
+  exact negPart_divisor_add_of_analyticNhdOn_right hf₂ hf₁
 
 end MeromorphicOn

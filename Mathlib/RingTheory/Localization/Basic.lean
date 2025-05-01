@@ -229,8 +229,9 @@ theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
 
 theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
     algEquivOfAlgEquiv Q S h.symm (show Submonoid.map h.symm T = M by
-      erw [← H, ← Submonoid.comap_equiv_eq_map_symm,
-        Submonoid.comap_map_eq_of_injective h.injective]) := rfl
+      rw [← H, ← Submonoid.map_coe_toMulEquiv, AlgEquiv.symm_toMulEquiv,
+        ← Submonoid.comap_equiv_eq_map_symm, ← Submonoid.map_coe_toMulEquiv,
+        Submonoid.comap_map_eq_of_injective (h : R ≃* P).injective]) := rfl
 
 end AlgEquivOfAlgEquiv
 
@@ -516,6 +517,12 @@ theorem IsLocalization.lift_algebraMap_eq_algebraMap :
 end
 
 variable (Rₘ Sₘ)
+
+theorem localizationAlgebraMap_def :
+    @algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S) =
+      map Sₘ (algebraMap R S)
+        (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :=
+  rfl
 
 /-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :

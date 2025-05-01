@@ -3,6 +3,7 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
@@ -18,15 +19,13 @@ open Function Int
 variable {α : Type*}
 
 section OrderedCommGroup
-variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
+variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {m n : ℤ} {a b : α}
 
 @[to_additive zsmul_left_strictMono]
 lemma zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := by
   refine strictMono_int_of_lt_succ fun n ↦ ?_
   rw [zpow_add_one]
   exact lt_mul_of_one_lt_right' (a ^ n) ha
-
-@[deprecated (since := "2024-09-19")] alias zsmul_strictMono_left := zsmul_left_strictMono
 
 @[to_additive zsmul_pos] lemma one_lt_zpow (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
   simpa using zpow_right_strictMono ha hn
@@ -103,7 +102,7 @@ end OrderedCommGroup
 
 section LinearOrderedCommGroup
 
-variable [LinearOrderedCommGroup α] {n : ℤ} {a b : α}
+variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {n : ℤ} {a b : α}
 
 @[to_additive zsmul_le_zsmul_iff_right]
 lemma zpow_le_zpow_iff_left (hn : 0 < n) : a ^ n ≤ b ^ n ↔ a ≤ b :=
@@ -117,24 +116,8 @@ lemma zpow_lt_zpow_iff_left (hn : 0 < n) : a ^ n < b ^ n ↔ a < b :=
 
 @[deprecated (since := "2024-11-13")] alias zpow_lt_zpow_iff' := zpow_lt_zpow_iff_left
 
-@[to_additive zsmul_right_injective
-"See also `smul_right_injective`. TODO: provide a `NoZeroSMulDivisors` instance. We can't do
-that here because importing that definition would create import cycles."]
-lemma zpow_left_injective (hn : n ≠ 0) : Injective ((· ^ n) : α → α) := by
-  obtain hn | hn := hn.lt_or_lt
-  · refine fun a b (hab : a ^ n = b ^ n) ↦
-      (zpow_left_strictMono _ <| Int.neg_pos_of_neg hn).injective ?_
-    rw [zpow_neg, zpow_neg, hab]
-  · exact (zpow_left_strictMono _ hn).injective
-
-@[to_additive zsmul_right_inj]
-lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injective hn).eq_iff
-
-/-- Alias of `zpow_left_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
-`zsmul_lt_zsmul_iff'`. -/
-@[to_additive "Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
-`zsmul_lt_zsmul_iff'`."]
-lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
+@[to_additive]
+instance : IsMulTorsionFree α where pow_left_injective _ hn := (pow_left_strictMono hn).injective
 
 variable (α) in
 /-- A nontrivial densely linear ordered commutative group can't be a cyclic group. -/

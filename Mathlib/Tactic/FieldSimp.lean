@@ -26,7 +26,7 @@ open Qq
 initialize registerTraceClass `Tactic.field_simp
 
 /-- Constructs a trace message for the `discharge` function. -/
-private def dischargerTraceMessage {ε : Type*} (prop: Expr) :
+private def dischargerTraceMessage {ε : Type*} (prop : Expr) :
     Except ε (Option Expr) → SimpM MessageData
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
@@ -45,7 +45,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     let pf? ← match prop with
     | ~q(($e : $α) ≠ $b) =>
         try
-          let res ← Mathlib.Meta.NormNum.derive (α := (q(Prop) : Q(Type))) prop
+          let res ← Mathlib.Meta.NormNum.derive prop
           match res with
           | .isTrue pf => pure (some pf)
           | _ => pure none
