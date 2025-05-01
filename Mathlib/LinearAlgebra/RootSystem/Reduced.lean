@@ -14,15 +14,15 @@ This file contains basic definitions and results related to reduced root pairing
 
  * `RootPairing.IsReduced`: A root pairing is said to be reduced if two linearly dependent roots are
    always related by a sign.
- * `RootPairing.linInd_iff_coxeterWeight_ne_four`: for a finite root pairing, two
+ * `RootPairing.linearIndependent_iff_coxeterWeight_ne_four`: for a finite root pairing, two
    roots are linearly independent iff their Coxeter weight is not four.
 
 ## Implementation details:
 
 For convenience we provide two versions of many lemmas, according to whether we know that the root
 pairing is valued in a smaller ring (in the sense of `RootPairing.IsValuedIn`). For example we
-provide both `RootPairing.linInd_iff_coxeterWeight_ne_four` and
-`RootPairing.linInd_iff_coxeterWeightIn_ne_four`.
+provide both `RootPairing.linearIndependent_iff_coxeterWeight_ne_four` and
+`RootPairing.linearIndependent_iff_coxeterWeightIn_ne_four`.
 
 Several ways to avoid this duplication exist. We leave explorations of this for future work. One
 possible solution is to drop `RootPairing.pairing` and `RootPairing.coxeterWeight` entirely and rely
@@ -83,7 +83,7 @@ lemma two_smul_nmem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.Is
       (smul_left_injective ℤ <| P.ne_zero i).eq_iff] at hj
     norm_num at hj
 
-lemma linInd_of_add_mem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
+lemma linearIndependent_of_add_mem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
   refine IsReduced.linearIndependent P (fun hij ↦ ?_) (fun hij ↦ P.zero_nmem_range_root ?_)
@@ -91,14 +91,14 @@ lemma linInd_of_add_mem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [
     exact P.two_smul_nmem_range_root h
   · rwa [hij, neg_add_cancel] at h
 
-lemma linInd_of_sub_mem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
+lemma linearIndependent_of_sub_mem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
   suffices LinearIndependent R ![P.root i, P.root (P.reflection_perm j j)] by simpa using this
-  apply P.linInd_of_add_mem_range_root
+  apply P.linearIndependent_of_add_mem_range_root
   simpa [sub_eq_add_neg] using h
 
-lemma infinite_of_linInd_coxeterWeight_four [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M]
+lemma infinite_of_linearIndependent_coxeterWeight_four [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M]
     (hl : LinearIndependent R ![P.root i, P.root j]) (hc : P.coxeterWeight i j = 4) :
     Infinite ι := by
   refine (infinite_range_iff (Embedding.injective P.root)).mp (Infinite.mono ?_
@@ -117,7 +117,7 @@ lemma infinite_of_linInd_coxeterWeight_four [NeZero (2 : R)] [NoZeroSMulDivisors
     rw [ne_eq, coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
     exact hl
 
-lemma pairing_smul_root_eq_of_not_linInd [NeZero (2 : R)] [NoZeroSMulDivisors R M]
+lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [NoZeroSMulDivisors R M]
     (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
     P.pairing j i • P.root i = (2 : R) • P.root j := by
   rw [LinearIndependent.pair_iff] at h
@@ -145,7 +145,7 @@ lemma coxeterWeight_ne_four_of_linearIndependent [NeZero (2 : R)] [NoZeroSMulDiv
     (hl : LinearIndependent R ![P.root i, P.root j]) :
     P.coxeterWeight i j ≠ 4 := by
   intro contra
-  have := P.infinite_of_linInd_coxeterWeight_four hl contra
+  have := P.infinite_of_linearIndependent_coxeterWeight_four hl contra
   exact not_finite ι
 
 variable [CharZero R] [NoZeroSMulDivisors R M]
@@ -156,9 +156,9 @@ lemma linearIndependent_iff_coxeterWeight_ne_four :
   have : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
   refine ⟨coxeterWeight_ne_four_of_linearIndependent P, fun h ↦ ?_⟩
   contrapose! h
-  have h₁ := P.pairing_smul_root_eq_of_not_linInd h
+  have h₁ := P.pairing_smul_root_eq_of_not_linearIndependent h
   rw [LinearIndependent.pair_symm_iff] at h
-  have h₂ := P.pairing_smul_root_eq_of_not_linInd h
+  have h₂ := P.pairing_smul_root_eq_of_not_linearIndependent h
   suffices P.coxeterWeight i j • P.root i = (4 : R) • P.root i from
     smul_left_injective R (P.ne_zero i) this
   calc P.coxeterWeight i j • P.root i
@@ -180,7 +180,7 @@ lemma pairing_two_two_iff :
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ?_, fun h ↦ by simp [h]⟩
   have : ¬ LinearIndependent R ![P.root i, P.root j] := by
     rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight, h₁, h₂]; norm_num
-  replace this := P.pairing_smul_root_eq_of_not_linInd this
+  replace this := P.pairing_smul_root_eq_of_not_linearIndependent this
   exact P.root.injective <| smul_right_injective M two_ne_zero (h₂ ▸ this)
 
 /-- See also `RootPairing.pairingIn_neg_two_neg_two_iff`. -/
@@ -200,7 +200,7 @@ lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ?_, fun h ↦ ?_⟩
   · have : ¬ LinearIndependent R ![P.root i, P.root j] := by
       rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight, h₁, h₂]; norm_num
-    replace this := P.pairing_smul_root_eq_of_not_linInd this
+    replace this := P.pairing_smul_root_eq_of_not_linearIndependent this
     rw [h₂, show (4 : R) = 2 * 2 by norm_num, mul_smul] at this
     exact smul_right_injective M two_ne_zero this.symm
   · rw [← coroot_eq_smul_coroot_iff] at h

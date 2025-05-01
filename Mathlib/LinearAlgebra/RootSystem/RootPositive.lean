@@ -26,7 +26,7 @@ positive semi-definite on weight space and positive-definite on the span of root
    all roots.
  * `RootPairing.zero_lt_pairingIn_iff`: sign relations between `RootPairing.pairingIn` and a
    root-positive form.
- * `RootPairing.pairing_zero_iff`: symmetric vanishing condition for `RootPairing.pairing`
+ * `RootPairing.pairing_eq_zero_iff`: symmetric vanishing condition for `RootPairing.pairing`
  * `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
  * `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
    orthogonal.
