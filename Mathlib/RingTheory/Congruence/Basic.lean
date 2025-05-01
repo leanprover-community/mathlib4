@@ -187,6 +187,17 @@ instance [Nontrivial R] : Nontrivial (RingCon R) where
     let ⟨x, y, ne⟩ := exists_pair_ne R
     ⟨⊥, ⊤, ne_of_apply_ne (· x y) <| by simp [ne]⟩
 
+instance [Subsingleton R] : Subsingleton (RingCon R) where
+  allEq c c' := ext fun r r' ↦ by simp_rw [Subsingleton.elim r' r, c.refl, c'.refl]
+
+theorem nontrivial_iff : Nontrivial (RingCon R) ↔ Nontrivial R := by
+  cases subsingleton_or_nontrivial R
+  on_goal 1 => simp_rw [← not_subsingleton_iff_nontrivial, not_iff_not]
+  all_goals exact iff_of_true inferInstance ‹_›
+
+theorem subsingleton_iff : Subsingleton (RingCon R) ↔ Subsingleton R := by
+  simp_rw [← not_nontrivial_iff_subsingleton, nontrivial_iff]
+
 /-- The inductively defined smallest congruence relation containing a binary relation `r` equals
     the infimum of the set of congruence relations containing `r`. -/
 theorem ringConGen_eq (r : R → R → Prop) :

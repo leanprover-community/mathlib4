@@ -81,7 +81,7 @@ theorem length_splitLengths_getElem_eq {i : ℕ} (hi : i < sz.length)
   simp only [take_splitLength]
   conv_rhs =>
     rw [List.getElem_take' (hj := i.lt_add_one)]
-    simp (config := {singlePass := true}) only [← map_splitLengths_length l _ h]
+    simp +singlePass only [← map_splitLengths_length l _ h]
     rw [getElem_map]
 
 theorem splitLengths_length_getElem {α : Type*} (l : List α) (sz : List ℕ)

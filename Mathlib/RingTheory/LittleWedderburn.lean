@@ -99,7 +99,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   rw [Nat.cast_sum]
   apply Finset.dvd_sum
   rintro ⟨x⟩ hx
-  simp (config := {zeta := false}) only [ConjClasses.quot_mk_eq_mk, Set.mem_toFinset] at hx ⊢
+  simp -zeta only [ConjClasses.quot_mk_eq_mk, Set.mem_toFinset] at hx ⊢
   set Zx := Subring.centralizer ({↑x} : Set D)
   -- The key thing is then to note that for all conjugacy classes `x`, `|x|` is given by
   -- `|Dˣ| / |Zxˣ|`, where `Zx` is the centralizer of `x`; but `Zx` is an algebra over `Z`, and

@@ -316,7 +316,7 @@ theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type*} [CommRing R] (
   classical
   induction s using Finset.induction_on with
   | empty => simp only [Finset.prod_empty, mul_one]
-  | @insert a s ha ih =>
+  | insert a s ha ih =>
     simp only [Finset.mem_insert, forall_eq_or_imp] at h
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm,
       coeff_mul_left_one_sub_of_lt_weightedOrder w h.1, ih h.2]
