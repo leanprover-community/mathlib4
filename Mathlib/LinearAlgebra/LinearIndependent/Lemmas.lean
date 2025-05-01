@@ -375,7 +375,7 @@ theorem linearIndepOn_id_iUnion_finite {f : ι → Set M} (hl : ∀ i, LinearInd
   intro t
   induction t using Finset.induction_on with
   | empty => simp
-  | @insert i s his ih =>
+  | insert i s his ih =>
     rw [Finset.set_biUnion_insert]
     refine (hl _).id_union ih ?_
     rw [span_iUnion₂]
