@@ -172,9 +172,7 @@ end Equiv
 
 variable [FunLike F α β]
 
--- Porting note: Revisit this issue to see if it works in Lean 4.
-/-- This can't be an instance because of typeclass loops. -/
-lemma BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgebra β]
+instance BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgebra β]
     [BoundedLatticeHomClass F α β] : BiheytingHomClass F α β :=
   { ‹BoundedLatticeHomClass F α β› with
     map_himp := fun f a b => by rw [himp_eq, himp_eq, map_sup, (isCompl_compl.map _).compl_eq]
