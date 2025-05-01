@@ -765,10 +765,8 @@ theorem pi {s : Set ι} (hs : Finite s)
     have hy1' := h1 t y (fun i hi ↦ hy1 i (Or.inr hi))
     clear h1
     -- Express `u \ v` using `x` and `y`.
-    have h1 : u \ v = ((t.pi x \ t.pi y) ∩ (({a} : Set ι).pi x ∩ ({a} : Set ι).pi y))
-        ∪ (t.pi x ∩ (({a} : Set ι).pi x \ ({a} : Set ι).pi y)) :=  by
+    have h1 : u \ v = (t.pi x ∩ (({a} : Set ι).pi x \ ({a} : Set ι).pi y)) ∪ ((t.pi x \ t.pi y) ∩ (({a} : Set ι).pi x ∩ ({a} : Set ι).pi y)):=  by
       rw [← hx2, ← hy2, ← union_pi, ← union_pi]
-
       apply pi_setdiff_eq_union
     -- Show that the two sets from `h1` are disjoint.
     obtain h2 := pi_setdiff_union_disjoint ({a} : Set ι) t x y
@@ -806,8 +804,8 @@ theorem pi {s : Set ι} (hs : Finite s)
       use F.toFinset
       simp only [coe_union, coe_toFinset]
       refine ⟨hF1, hF2, ?_⟩
-      simp only [h, sdiff_self, Set.bot_eq_empty, Set.empty_inter,
-        empty_pi, univ_inter, empty_union] at hF3 h1
+      simp only [h, empty_pi, Set.univ_inter, sdiff_self, Set.bot_eq_empty,
+        Set.empty_inter, Set.union_empty] at hF3 h1
       exact hF3.symm ▸ h1
     · have h_ind' := h_ind h; clear h h_ind
       let G := Set.inter (({a} : Set ι).pi y ∩ ({a} : Set ι).pi x) ''
@@ -834,8 +832,8 @@ theorem pi {s : Set ι} (hs : Finite s)
       · apply (pairwiseDisjoint_union_of_disjoint (fun ⦃a b⦄ a ↦ a) hF2 hG2 )
         rw [hF3, hG3]
         nth_rewrite 2 [inter_comm]
-        exact (Disjoint.symm h2)
-      · rw [sUnion_union, hF3, hG3, h1, union_comm]
+        exact h2
+      · rw [sUnion_union, hF3, hG3, h1]
         nth_rewrite 2 [inter_comm]
         rfl
 

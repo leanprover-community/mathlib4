@@ -885,20 +885,18 @@ section Setdiff
 
 /-- Write that set difference `(s ∪ t).pi x \ (s ∪ t).pi y` as a union. -/
 lemma pi_setdiff_eq_union (s t : Set ι) (x y : (i : ι) → Set (α i)) :
-  (s ∪ t).pi x \ (s ∪ t).pi y = (t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y) ∪
-    t.pi x ∩ (s.pi x \ s.pi y) := by
+  (s ∪ t).pi x \ (s ∪ t).pi y = t.pi x ∩ (s.pi x \ s.pi y) ∪ (t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)
+     := by
   rw [union_pi, union_pi, diff_eq_compl_inter, compl_inter,  union_inter_distrib_right,
     ← inter_assoc, ← diff_eq_compl_inter, ← inter_assoc, inter_comm, inter_assoc,
-    inter_comm (s.pi x ) (t.pi x), ← inter_assoc,  ← diff_eq_compl_inter]
-  nth_rewrite 2 [union_comm]
-  rw [← union_diff_self]
+    inter_comm (s.pi x ) (t.pi x), ← inter_assoc,  ← diff_eq_compl_inter, ← union_diff_self]
   apply congrArg (Union.union (t.pi x ∩ (s.pi x \ s.pi y)))
   aesop
 
 lemma pi_setdiff_union_disjoint (s t : Set ι) (x : (i : ι) → Set (α i)) (y : (i : ι) → Set (α i)) :
-  Disjoint ((t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)) (t.pi x ∩ (s.pi x \ s.pi y)) :=
-  Disjoint.mono (inter_subset_right) (inter_subset_right) <|
-    Disjoint.mono Set.inter_subset_right (fun ⦃_⦄ a ↦ a) <| disjoint_sdiff_right
+  Disjoint (t.pi x ∩ (s.pi x \ s.pi y)) ((t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)) :=
+    Disjoint.symm (Disjoint.inter_left' (t.pi x \ t.pi y) (Disjoint.symm
+    (Disjoint.inter_left' (t.pi x) disjoint_sdiff_inter)))
 
 end Setdiff
 
