@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.SProd
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Sets in product and pi types
@@ -724,15 +725,9 @@ theorem pi_antitone (h : s₁ ⊆ s₂) : s₂.pi t ⊆ s₁.pi t := by
 open scoped Classical in
 lemma union_pi_ite_of_disjoint {s t : Set ι} {x y : (i : ι) → Set (α i)} (hst : Disjoint s t) :
 ((s ∪ t).pi fun i ↦ if i ∈ s then x i else y i)  = (s.pi x) ∩ (t.pi y) := by
-  have hx : ∀ i ∈ s, x i = if h : i ∈ s then x i else y i := by
-    intro i hi
-    simp only [dite_eq_ite, hi, ↓reduceIte]
-  have hy : ∀ i ∈ t, y i = if h : i ∈ s then x i else y i := by
-    intro i hi
-    have h : i ∉ s := Disjoint.not_mem_of_mem_left (id (Disjoint.symm hst)) hi
-    simp only [hi, hst, dite_eq_ite, h, ↓reduceIte]
-  rw [Set.pi_congr rfl hx, Set.pi_congr rfl hy]
-  exact union_pi
+ rw [union_pi, Set.pi_congr rfl (fun i hi ↦ if_pos hi), Set.pi_congr rfl (fun i hi ↦
+    if_neg <| hst.symm.not_mem_of_mem_left hi)]
+
 
 theorem union_pi_inter
     (ht₁ : ∀ i ∉ s₁, t₁ i = univ) (ht₂ : ∀ i ∉ s₂, t₂ i = univ) :
@@ -892,44 +887,14 @@ section Setdiff
 lemma pi_setdiff_eq_union (s t : Set ι) (x y : (i : ι) → Set (α i)) :
   (s ∪ t).pi x \ (s ∪ t).pi y = (t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y) ∪
     t.pi x ∩ (s.pi x \ s.pi y) := by
-    ext z
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · simp only [mem_diff, mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_pi, not_and,
-          not_forall, Classical.not_imp] at h
-      obtain ⟨h1, ⟨j, ⟨hj1, hj2⟩⟩⟩ := h
-      by_cases hz : ∃ a ∈ s, z a ∉ y a
-      · right
-        simp only [mem_inter_iff, Set.mem_pi, mem_diff, not_forall, Classical.not_imp]
-        refine ⟨fun i hi ↦ h1 i (Set.subset_union_right hi),
-          fun i hi ↦ h1 i (Set.subset_union_left hi), bex_def.mpr hz⟩
-      · simp only [not_exists, not_and, not_not] at hz
-        left
-        simp only [mem_inter_iff, mem_diff, Set.mem_pi, not_forall, Classical.not_imp,
-          Set.mem_preimage, Function.eval]
-        refine ⟨⟨fun i hi ↦ h1 i (Set.subset_union_right hi), ?_⟩,
-          fun i hi ↦ h1 i (Set.subset_union_left hi), hz⟩
-        · have hj : j ∈ t := by
-            simp only [Set.mem_union] at hj1
-            rcases hj1 with (g1 | g2)
-            · exact False.elim (hj2 (hz j g1))
-            · exact g2
-          exact ⟨j, hj, hj2⟩
-    · simp only [Set.mem_union, mem_inter_iff, mem_diff, Set.mem_pi, not_forall,
-      Classical.not_imp] at h
-      simp only [mem_diff, Set.mem_pi, Set.mem_union, not_forall, Classical.not_imp]
-      rcases h with ⟨⟨h11, h12⟩, h2, h3⟩ | ⟨h1, h2, h3⟩
-      · refine ⟨?_, ?_⟩
-        · rintro i (hi1 | hi2)
-          · exact h2 i hi1
-          · exact h11 i hi2
-        · obtain ⟨x, hx1, hx2⟩ := h12
-          exact ⟨x, Or.inr hx1, hx2⟩
-      · refine ⟨?_, ?_⟩
-        · rintro i (hi1 | hi2)
-          · exact h2 i hi1
-          · exact h1 i hi2
-        · obtain ⟨x, hx1, hx2⟩ := h3
-          exact ⟨x, Or.inl hx1, hx2⟩
+  rw [union_pi, union_pi, diff_eq_compl_inter, compl_inter,  union_inter_distrib_right,
+    ← inter_assoc, ← diff_eq_compl_inter, ← inter_assoc, inter_comm, inter_assoc,
+    inter_comm (s.pi x ) (t.pi x), ← inter_assoc,  ← diff_eq_compl_inter]
+  nth_rewrite 2 [union_comm]
+  rw [← union_diff_self]
+  apply congrArg (Union.union (t.pi x ∩ (s.pi x \ s.pi y)))
+  aesop
+  -- rw [diff_eq_compl_inter, diff_eq_compl_inter, compl_inter, compl_inter, union_inter_distrib_right, union_inter_distrib_right, compl_compl]
 
 lemma pi_setdiff_union_disjoint (s t : Set ι) (x : (i : ι) → Set (α i)) (y : (i : ι) → Set (α i)) :
   Disjoint ((t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)) (t.pi x ∩ (s.pi x \ s.pi y)) :=
