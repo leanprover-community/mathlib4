@@ -8,9 +8,11 @@ import Mathlib.RingTheory.Support
 
 /-!
 
-# Dimension of Module
+# Krull Dimension of Module
 
-In this file we defined `dim(M)` for a `R`-module `M`.
+In this file we defined `Module.supportDim R M` for a `R`-module `M` as
+the krull dimension of its support. It is equal to the krull dimension of `R / Ann M` when
+`M` is finitely generated.
 
 -/
 
@@ -20,7 +22,7 @@ open Order
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
-/-- The dimension of module, defined as `krullDim` of its support. -/
+/-- The krull dimension of module, defined as `krullDim` of its support. -/
 noncomputable def supportDim : WithBot ℕ∞ :=
   krullDim (Module.support R M)
 
