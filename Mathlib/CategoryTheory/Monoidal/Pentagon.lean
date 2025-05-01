@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Monoidal.Category
+import Mathlib.CategoryTheory.Functor.Quadrifunctor
 
 /-!
 # The pentagon identity as an equality of natural transformations
@@ -23,22 +24,22 @@ namespace Pentagon
 -- ((X₁ ⊗ X₂) ⊗ X₃) ⊗ X₄
 @[simps!]
 def functor₁ : C ⥤ C ⥤ C ⥤ C ⥤ C :=
-  (Functor.postcompose₃.obj F).obj (bifunctorComp₁₂ F F)
+  trifunctorComp₁₂₃ (bifunctorComp₁₂ F F) F
 
 -- (X₁ ⊗ (X₂ ⊗ X₃)) ⊗ X₄
 @[simps!]
 def functor₂ : C ⥤ C ⥤ C ⥤ C ⥤ C :=
-  (Functor.postcompose₃.obj F).obj (bifunctorComp₂₃ F F)
+  trifunctorComp₁₂₃ (bifunctorComp₂₃ F F) F
 
 -- X₁ ⊗ ((X₂ ⊗ X₃) ⊗ X₄)
 @[simps!]
 def functor₃ : C ⥤ C ⥤ C ⥤ C ⥤ C :=
-  (F ⋙ Functor.postcompose₃).flip.obj (bifunctorComp₁₂ F F)
+  trifunctorComp₂₃₄ F (bifunctorComp₁₂ F F)
 
 -- X₁ ⊗ (X₂ ⊗ (X₃ ⊗ X₄))
 @[simps!]
 def functor₄ : C ⥤ C ⥤ C ⥤ C ⥤ C :=
-  (F ⋙ Functor.postcompose₃).flip.obj (bifunctorComp₂₃ F F)
+  trifunctorComp₂₃₄ F (bifunctorComp₂₃ F F)
 
 -- (X₁ ⊗ X₂) ⊗ (X₃ ⊗ X₄)
 @[simps!]

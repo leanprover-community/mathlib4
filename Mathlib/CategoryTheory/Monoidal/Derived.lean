@@ -74,6 +74,14 @@ noncomputable def tensorUnitRightCounit :
 instance : (bifunctor L W).IsLeftDerivedFunctor₂ (counit L W) W W :=
   inferInstanceAs (Functor.IsLeftDerivedFunctor₂ _ (Functor.leftDerivedCounit₂ _ _ _ _ _) _ _)
 
+noncomputable def quadrifunctorLeft : DerivedMonoidal L W ⥤ DerivedMonoidal L W ⥤
+    DerivedMonoidal L W ⥤ DerivedMonoidal L W ⥤ DerivedMonoidal L W :=
+  trifunctorComp₁₂₃ (trifunctor₁₂ L W) (bifunctor L W)
+
+noncomputable def quadrifunctorRight : DerivedMonoidal L W ⥤ DerivedMonoidal L W ⥤
+    DerivedMonoidal L W ⥤ DerivedMonoidal L W ⥤ DerivedMonoidal L W :=
+  trifunctorComp₂₃₄ (bifunctor L W) (trifunctor₂₃ L W)
+
 end DerivedMonoidal
 
 end

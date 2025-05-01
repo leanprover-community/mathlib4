@@ -2108,6 +2108,7 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 import Mathlib.CategoryTheory.Functor.OfSequence
+import Mathlib.CategoryTheory.Functor.Quadrifunctor
 import Mathlib.CategoryTheory.Functor.ReflectsExactSequences
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
