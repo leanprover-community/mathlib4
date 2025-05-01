@@ -282,7 +282,7 @@ theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f
   rw [← Finset.sup_eq_biUnion]
   induction s using Finset.cons_induction_on with
   | empty => rfl
-  | cons _ ih =>
+  | cons _ _ _ ih =>
     rw [Finset.sum_cons, Finset.sup_cons]
     exact support_add.trans (Finset.union_subset_union (Finset.Subset.refl _) ih)
 

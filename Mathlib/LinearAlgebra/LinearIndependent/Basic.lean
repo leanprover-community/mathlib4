@@ -517,7 +517,7 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
   intro s
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert a s has ih =>
+  | insert a s has ih =>
   intro g hg
   -- Here
   -- * `a` is a new character we will insert into the `Finset` of characters `s`,

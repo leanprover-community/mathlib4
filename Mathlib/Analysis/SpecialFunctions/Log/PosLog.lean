@@ -116,7 +116,7 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
   classical
   induction s using Finset.induction with
   | empty => simp [posLog]
-  | @insert a s ha hs =>
+  | insert a s ha hs =>
     calc log⁺ (∏ t ∈ insert a s, f t)
     _ = log⁺ (f a * ∏ t ∈ s, f t) := by rw [Finset.prod_insert ha]
     _ ≤ log⁺ (f a) + log⁺ (∏ t ∈ s, f t) := posLog_mul

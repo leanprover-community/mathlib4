@@ -603,7 +603,7 @@ theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g
   classical
     induction t using Finset.induction with
     | empty => simp
-    | insert has ih => simp [Finset.sum_insert has, ih]
+    | insert _ _ has ih => simp [Finset.sum_insert has, ih]
 
 end ApplySum
 

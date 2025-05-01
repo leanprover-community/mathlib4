@@ -380,7 +380,7 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
   classical
   induction s using Finset.induction with
   | empty => simp [tendsto_const_nhds]
-  | insert has IH =>
+  | insert _ _ has IH =>
     simp only [Finset.prod_insert has]
     apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
     · right

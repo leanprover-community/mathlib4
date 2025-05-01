@@ -169,8 +169,7 @@ lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
     simp_rw [subset_empty] at hu
     rw [← subset_singleton_iff', subset_singleton_iff] at hu
     obtain rfl | rfl := hu <;> assumption
-  | insert _ ih =>
-    rename_i a u _
+  | insert a u _ ih =>
     refine subfamily a (ih _ ?_) (ih _ ?_)
     · simp only [mem_nonMemberSubfamily, and_imp]
       exact fun s hs has ↦ (subset_insert_iff_of_not_mem has).1 <| hu _ hs

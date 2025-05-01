@@ -332,7 +332,7 @@ lemma coe_finset_sup (s : Finset ι) (U : ι → Clopens α) :
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | insert _ IH => simp [IH]
+  | insert _ _ _ IH => simp [IH]
 
 @[simp, norm_cast]
 lemma coe_disjoint {s t : Clopens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by

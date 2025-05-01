@@ -676,7 +676,7 @@ theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : �
   intro μ₁ s
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert μ₂ s _ ih =>
+  | insert μ₂ s _ ih =>
   intro hμ₁₂
   obtain ⟨hμ₁₂ : μ₁ ≠ μ₂, hμ₁ : μ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hμ₁₂
   specialize ih hμ₁
