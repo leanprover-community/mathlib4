@@ -1,4 +1,4 @@
-import Mathlib.Tactic.CategoryTheory.RotateIsos
+import Mathlib.Tactic.CategoryTheory.RotateIsos.Core
 
 set_option linter.unusedTactic false
 set_option linter.unusedVariables false
