@@ -255,14 +255,12 @@ def firstReturn : ℕ :=
 
 include h in
 lemma firstReturn_pos : 0 < p.firstReturn := by
-  by_contra! f
-  have lpos : 0 < (range p.toList.length).length := by
-    rw [length_range, length_pos_iff]
+  rw [← not_le, Nat.le_zero, firstReturn, findIdx_eq, getElem_range]
+  · simp
+    rw [← p.cons_tail_dropLast_concat h]
+    simp
+  · rw [length_range, length_pos_iff]
     exact toList_ne_nil.mpr h
-  rw [Nat.le_zero, firstReturn, findIdx_eq lpos, getElem_range] at f
-  simp at f
-  rw [← p.cons_tail_dropLast_concat h] at f
-  simp at f
 
 include h in
 lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
