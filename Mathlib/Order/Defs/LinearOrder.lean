@@ -148,8 +148,6 @@ theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by
   · rw [if_pos (le_of_eq eq), if_pos (le_of_eq' eq), eq]
   · rw [if_neg (not_le.mpr gt), if_pos (le_of_lt gt)]
 
--- Porting note: no `min_tac` tactic in the following series of lemmas
-
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]
