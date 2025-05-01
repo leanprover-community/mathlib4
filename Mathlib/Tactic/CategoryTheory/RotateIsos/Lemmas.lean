@@ -62,10 +62,10 @@ lemma Iso.refl_eq_symm_trans {f : X ≅ Y} {g : X ≅ Y}
     (w : f = g) : Iso.refl Y = g.symm ≪≫ f := by
   rw [w, Iso.symm_self_id]
 
-/-- Assuming `e` is an expression for an isomorphism, gets a `Cancelable` structure with
-expression `e`. -/
+/-- Try matching `e` with an expression for an isomorphism and gets a `Cancelable` structure with
+expression `e` if it matches.. -/
+@[nolint unusedArguments]
 def tryCancelIso (e _whnfR_e: Expr) : MetaM <| Option Cancelable := do
-  trace[debug] "Trying to cancelIso at {e}"
   match_expr (← whnfR <| ← inferType e) with
   | Iso _ _ _ _ =>
     return some
@@ -103,8 +103,9 @@ lemma Iso.id_eq_comp_inv {f : X ≅ Y} {g : X ⟶ Y} (w : f.hom = g) :
     𝟙 _ = g ≫ f.inv  := by
   rw [← w, Iso.hom_inv_id]
 
+/-- Try matching `e` with an expresionn for `e₁.hom`, where `e₁` is an expression for an
+isomorphism and gets a `Cancelable` structure with expression `e` if it matches. -/
 def tryCancelIsoHom (e wnfhR_e : Expr) : MetaM (Option Cancelable) := do
-  trace[debug] "Trying to cancelIsoHom at {e}"
   match wnfhR_e with
   | .proj ``Iso 0 e₁ =>
     return some
@@ -140,10 +141,9 @@ lemma Iso.id_eq_comp_hom {f : X ≅ Y} {g : Y ⟶ X} (w : f.inv = g) :
     𝟙 _ = g ≫ f.hom  := by
   rw [← w, Iso.inv_hom_id]
 
-/-- Assuming `e₁` is an expression for an isomorphism and `e` is an exprission for `e₁.inv`,
-gets a `Cancelable` structure with expression `e`. -/
+/-- Try matching `e` with an expresionn for `e₁.inv`, where `e₁` is an expression for an
+isomorphism and gets a `Cancelable` structure with expression `e` if it matches. -/
 def tryCancelIsoInv (e whnfR_e: Expr): MetaM <| Option Cancelable := do
-  trace[debug] "Trying to cancelIsoInv at {e}"
   match whnfR_e with
   | .proj ``Iso 1 e₁ =>
     return some
@@ -182,8 +182,8 @@ lemma IsIso.id_eq_comp_inv {f : X ⟶ Y}  [IsIso f] {g : X ⟶ Y} (w : f = g) :
 /-- If `e` is an expression for a morphism in a category that has an `IsIso` instance,
 return `inv f`. Otherwise, return none. This is the "fallback" of the tactic, and this
 should always be the last element in the list of things `getCancelTerm` tries. -/
-def tryCancelIsIso (e _wnhfR_e: Expr) : MetaM (Option Cancelable) := do
-  trace[debug] "Trying to cancelIsIso at {e}"
+@[nolint unusedArguments]
+def tryCancelIsIso (e _whnfR_e: Expr) : MetaM (Option Cancelable) := do
   match_expr ← inferType e with
   | Quiver.Hom _ _ _ _ =>
     (← synthInstance? <| ← mkAppM ``IsIso #[e]).mapM fun i => do
@@ -235,11 +235,9 @@ lemma NatTrans.id_eq_comp_inv {D : Type*} [Category D] {F G : C ⥤ D} {α : F �
   rw [← w, ← NatTrans.comp_app, ← congrArg (fun t ↦ t.app c) id_eq_comp_inv,
     NatTrans.id_app]
 
-/-- Assuming `e` is an expression of the form `e₁.app e'` for a cancellable natural transformation
-`e₁`, and given a `Cancelable` structure `c` with expression `e₁`, build a `Cancelable` structure
-with expression `e`. -/
+/-- Try matching `e` with an expression of the form `e₁.app e'` for a cancelable natural
+transformation `e₁` and build a `Cancelable` structure with expression `e` if it matches. -/
 def tryCancelNatTransApp (e whnfR_e : Expr) : CancelM (Option Cancelable) := do
-  trace[debug] "Trying to cancelNatTransApp at {e}"
   match whnfR_e with
   | .app (.proj ``CategoryTheory.NatTrans 0 e₁) e' =>
     (← (← read) e₁).mapM fun c => do
@@ -295,11 +293,10 @@ lemma Functor.id_eq_comp_inv {D : Type*} [Category D] (F : C ⥤ D) {f : X ⟶ Y
     𝟙 (F.obj X) = g ≫ F.map f' := by
   rw [← w, ← Functor.map_comp, ← id_eq_comp_inv, Functor.map_id]
 
-/-- Given expressions `e` such that `e` is an expression of `F.map e'`, test if `e'`
+/-- Try matching `e` with an expression of the form `F.map e'`, test if `e'`
 is an expression of a cancelable term and gives a `Cancelable` structure with
-expression `e`. -/
+expression `e` if that is the case. -/
 def tryCancelFunctorMap (e whnfR_e: Expr) : CancelM (Option Cancelable) := do
-  trace[debug] "Trying to cancelNatFunctorMap at {e}"
   match whnfR_e with
   | .app (.app (.app (.proj ``Prefunctor 1 (.app _ F)) _) _) e₂ =>
     (← (← read) e₂).mapM fun c => do
