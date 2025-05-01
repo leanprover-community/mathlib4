@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -156,5 +157,43 @@ theorem piCongrRight_symm (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) :
 theorem piCongrRight_trans (e₁ : ∀ i, A₁ i ≃ₐ[R] A₂ i) (e₂ : ∀ i, A₂ i ≃ₐ[R] A₃ i) :
     (piCongrRight e₁).trans (piCongrRight e₂) = piCongrRight fun i ↦ (e₁ i).trans (e₂ i) :=
   rfl
+
+variable (R A₁) in
+/--
+Transport dependent functions through an equivalence of the base space.
+
+This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
+-/
+def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) :=
+  .ofLinearEquiv (.piCongrLeft' R A₁ e) (by ext; simp) (by intro x y; ext; simp)
+
+variable (R A₁) in
+/--
+Transport dependent functions through an equivalence of the base space, expressed as
+"simplification".
+
+This is `Equiv.piCongrLeft` as an `AlgEquiv`.
+-/
+def piCongrLeft {ι' : Type*} (e : ι' ≃ ι) : (Π i, A₁ (e i)) ≃ₐ[R] Π i, A₁ i :=
+  (AlgEquiv.piCongrLeft' R A₁ e.symm).symm
+
+/-- Product of algebra isomorphisms. -/
+def prodCongr {S T A B : Type*} [Semiring A] [Semiring B]
+    [Semiring S] [Semiring T] [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
+    (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) :
+    (S × T) ≃ₐ[R] A × B :=
+  .ofRingEquiv (f := RingEquiv.prodCongr l r) <| by simp
+
+variable (S : Type*) [Semiring S] [Algebra R S]
+
+variable (ι R) in
+/-- If `ι` as a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
+def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
+  .ofLinearEquiv (.funUnique ι R S) (by simp) (by simp)
+
+variable (R) in
+/-- `Equiv.sumArrowEquivProdArrow` as an algebra equivalence. -/
+def sumArrowEquivProdArrow (α β : Type*) : (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
+  .ofLinearEquiv (.sumArrowLequivProdArrow α β R S) rfl <| fun x y ↦ by ext <;> simp
 
 end AlgEquiv
