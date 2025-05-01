@@ -894,7 +894,6 @@ lemma pi_setdiff_eq_union (s t : Set ι) (x y : (i : ι) → Set (α i)) :
   rw [← union_diff_self]
   apply congrArg (Union.union (t.pi x ∩ (s.pi x \ s.pi y)))
   aesop
-  -- rw [diff_eq_compl_inter, diff_eq_compl_inter, compl_inter, compl_inter, union_inter_distrib_right, union_inter_distrib_right, compl_compl]
 
 lemma pi_setdiff_union_disjoint (s t : Set ι) (x : (i : ι) → Set (α i)) (y : (i : ι) → Set (α i)) :
   Disjoint ((t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)) (t.pi x ∩ (s.pi x \ s.pi y)) :=
