@@ -35,9 +35,11 @@ Bézout's lemma, Bezout's lemma
 
 namespace Nat
 
-lemma xgcdAux_fuel_lemma {k r' fuel : ℕ} (hk : k ≠ 0) (hfuel : k < fuel + 1) : r' % k < fuel :=
+private lemma xgcdAux_fuel_lemma {k r' fuel : ℕ} (hk : k ≠ 0) (hfuel : k < fuel + 1) :
+    r' % k < fuel :=
   (Nat.mod_lt _ (Nat.pos_of_ne_zero hk)).trans_le (by omega)
 
+/-- Helper function for the extended GCD algorithm (`Nat.xgcd`). -/
 def xgcdAux (k : ℕ) (s t : ℤ) (r' : ℕ) (s' t' : ℤ) : ℕ × ℤ × ℤ :=
   let rec
     go (fuel : ℕ) (k : ℕ) (s t : ℤ) (r' : ℕ) (s' t' : ℤ) (hfuel : k < fuel) : ℕ × ℤ × ℤ :=
