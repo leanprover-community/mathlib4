@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Support
 
 # Krull Dimension of Module
 
-In this file we defined `Module.supportDim R M` for a `R`-module `M` as
+In this file we define `Module.supportDim R M` for a `R`-module `M` as
 the krull dimension of its support. It is equal to the krull dimension of `R / Ann M` when
 `M` is finitely generated.
 
@@ -39,7 +39,7 @@ lemma supportDim_ne_bot_iff_nontrivial : supportDim R M ≠ ⊥ ↔ Nontrivial M
   simp [supportDim, krullDim_eq_bot_iff, support_eq_empty_iff, not_subsingleton_iff_nontrivial]
 
 lemma supportDim_eq_ringKrullDim_quotient_ann [Module.Finite R M] :
-    supportDim R M = ringKrullDim (R ⧸ (Module.annihilator R M)) := by
+    supportDim R M = ringKrullDim (R ⧸ annihilator R M) := by
   simp only [supportDim]
   rw [support_eq_zeroLocus, ringKrullDim_quotient]
 
