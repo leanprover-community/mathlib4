@@ -303,7 +303,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
       Function.extend (fun x : s => (x : β)) f fun _ : β => (∅ : Set α), by simp, ?_, ?_⟩
   · ext a
     constructor <;>
-      · simp (config := { proj := false }) only
+      · simp -proj only
           [Set.mem_iInter, Subtype.forall, Finset.set_biInter_finset_image]
         intro h1 b h_b h_b_in_T
         have h2 := h1 b h_b h_b_in_T
