@@ -30,7 +30,7 @@ variable {α β : Type*} {m n : Type*} {A : Matrix n n α}
 
 open scoped Matrix
 
-local notation "⟪" x ", " y "⟫" => @inner α _ _ x y
+local notation "⟪" x ", " y "⟫" => inner α x y
 
 section Star
 

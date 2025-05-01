@@ -18,9 +18,9 @@ namespace MeasureTheory
 /-! ## Strongly measurable functions -/
 
 
-namespace StronglyMeasurable
-
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
+
+namespace StronglyMeasurable
 
 protected theorem inner {_ : MeasurableSpace α} {f g : α → E} (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable fun t => ⟪f t, g t⟫ :=
