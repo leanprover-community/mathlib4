@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
 import Mathlib.Tactic.CategoryTheory.RotateIsos.Lemmas -- contains the initial set of `Cancelable`
-import Mathlib.Tactic.Conv
 
 /-!
 # The `rotate_isos` tactic
