@@ -37,9 +37,6 @@ noncomputable def _root_.Topology.IsEmbedding.toHomeomorph {f : X → Y} (hf : I
 @[deprecated (since := "2025-04-16")]
 alias ofIsEmbedding := IsEmbedding.toHomeomorph
 
-@[deprecated (since := "2024-10-26")]
-alias ofEmbedding := IsEmbedding.toHomeomorph
-
 /-- A surjective embedding is a homeomorphism. -/
 @[simps! apply]
 noncomputable def _root_.Topology.IsEmbedding.toHomeomorphOfSurjective {f : X → Y}
