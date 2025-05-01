@@ -241,5 +241,5 @@ theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.
 instance {R S : Type*} [CommRing R] {P : Ideal R} [CommRing S] [Algebra R S]
     [Module.Finite R S] [P.IsPrime] :
     Module.Finite (Localization.AtPrime P)
-    (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
+      (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
   Module.Finite_of_isLocalization R S _ _ P.primeCompl
