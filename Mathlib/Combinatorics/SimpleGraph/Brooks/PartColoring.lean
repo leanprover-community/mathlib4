@@ -3,9 +3,9 @@ Copyright (c) 2025 John Talbot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot
 -/
-import Mathlib.Combinatorics.SimpleGraph.Brooks.ColoringComponents
+--import Mathlib.Combinatorics.SimpleGraph.Brooks.ColoringComponents
 import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
-
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 /-!
 Develop partial colorings of a `G : SimpleGraph α` using the`SimpleGraph.Coloring` API.
 
