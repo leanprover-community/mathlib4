@@ -346,7 +346,10 @@ def mkNotNMultipleWithin [LinearOrder M]
     [ToLevel.{u}] [ToExpr M] (a bl br : M) (l r : Nat) : TacticM Expr := do
   have u : Level := ToLevel.toLevel.{u}
   have ME : Q(Type u) := toTypeExpr M
+  trace[debug] "hello!1"
+  trace[debug] "{ME}"
   let instAddCancelMonoid : Q(AddCancelMonoid $ME) ← synthInstanceQ q(AddCancelMonoid $ME)
+  trace[debug] "hello!2"
   let instLinearOrder : Q(LinearOrder $ME) ← synthInstanceQ q(LinearOrder $ME)
   let k := (r - l).sqrt
   have kE : Q(Nat) := mkNatLit k
@@ -374,63 +377,53 @@ def mkNotNMultipleWithin [LinearOrder M]
     q(NotNMultipleWithin.of_cond $kE $l $r $h₁ $h₂ $h₃)
   return ret
 
-#check Nat.Prime
-elab "prove_NotNMultipleWithin" : tactic => do
-  let goal ← getMainGoal
-  let g := (← goal.getType'').consumeMData
-  if ! g.isAppOfArity ``NotNMultipleWithin 7 then throwError "not a NotNMultipleWithin"
-  let arg := g.getAppArgs
-  let some pE := arg[0]!.app1? ``ZMod      | throwError "not `ZMod"
-  let some p := pE.nat?                    | throwError s!"{pE} is not a literal nat"
-  let some a := pE.o
 
-
-  let a := evalExpr M arg[2]!
-  let some n₁ := arg[2]!.nat? | throwError s!"{arg[2]!} is not a literal nat"
-  let some n₂ := arg[3]!.nat? | throwError s!"{arg[3]!} is not a literal nat"
-  let ret ← DisjointCert.mkExpr n₁ n₂ (2 * ·) (2 * · + 1) arg[1]!
-    arg[4]! arg[5]!
-  goal.assign ret
+--   let a := evalExpr M arg[2]!
+--   let some n₁ := arg[2]!.nat? | throwError s!"{arg[2]!} is not a literal nat"
+--   let some n₂ := arg[3]!.nat? | throwError s!"{arg[3]!} is not a literal nat"
+--   let ret ← DisjointCert.mkExpr n₁ n₂ (2 * ·) (2 * · + 1) arg[1]!
+--     arg[4]! arg[5]!
+--   goal.assign ret
 
 open Qq in
 def Lean.Expr.weierstrassCurvePointNat?
       (e : Expr) {R : Type*} [CommRing R] [DecidableEq R] (E : WeierstrassCurve.Affine R) :
-    Option E.Point := do
+    Except String E.Point := do
   if e.isAppOfArity ``WeierstrassCurve.Affine.Point.some 6 then
     let arg := e.getAppArgs
-    let some x := arg[3]!.nat? | failure
-    let some y := arg[4]!.nat? | failure
+    let some x := arg[3]!.int? | .error "no 01"
+    let some y := arg[4]!.int? | .error "no 02"
     if h : E.Nonsingular x y then
       return .some h
-    else failure
+    else .error "no 03"
   else if e.isAppOfArity ``WeierstrassCurve.Affine.Point.zero 3 then
     return 0
   else if e.isAppOfArity ``OfNat.ofNat 3 then
-    let some (E, n, _) := e.app3? ``OfNat.ofNat | failure
-    let some n := n.nat? | failure
+    -- let some (E, n, _) := e.app3? ``OfNat.ofNat | .error "no 04"
+    let some n := e.nat? | .error "no 05"
     if n = 0 then
       return 0
-    else failure
-  else failure
+    else .error "no 06"
+  else .error "no 07"
 
 open Qq in
 def Lean.Expr.weierstrassCurveNat?
-      (e : Expr) (R : Type*) [Semiring R] :
+      (e : Expr) (R : Type*) [Ring R] :
     Option (WeierstrassCurve.Affine R) := do
   if e.isAppOfArity ``WeierstrassCurve.mk 6 then
     let arg := e.getAppArgs
-    let some a₁ := arg[1]!.nat? | failure
-    let some a₂ := arg[2]!.nat? | failure
-    let some a₃ := arg[3]!.nat? | failure
-    let some a₄ := arg[4]!.nat? | failure
-    let some a₆ := arg[5]!.nat? | failure
+    let some a₁ := arg[1]!.int? | failure
+    let some a₂ := arg[2]!.int? | failure
+    let some a₃ := arg[3]!.int? | failure
+    let some a₄ := arg[4]!.int? | failure
+    let some a₆ := arg[5]!.int? | failure
     return ⟨a₁, a₂, a₃, a₄, a₆⟩
   else
     failure
 
 open Qq in
 def Lean.Expr.weierstrassCurveAffineNat?
-      (e : Expr) (R : Type*) [Semiring R] :
+      (e : Expr) (R : Type*) [Ring R] :
     Option (WeierstrassCurve.Affine R) := .map WeierstrassCurve.toAffine <| do
   let some (_, e') := e.app2? ``WeierstrassCurve.toAffine | e.weierstrassCurveNat? R
   e'.weierstrassCurveNat? R
@@ -451,27 +444,93 @@ instance : ∀ (p : ℕ), DecidableEq (ZMod p)
   | 0 => inferInstanceAs (DecidableEq Int)
   | n + 1 => inferInstanceAs (DecidableEq (Fin (n + 1)))
 
+instance : ∀ (p : ℕ), LinearOrder (ZMod p)
+  | 0 => inferInstanceAs (LinearOrder Int)
+  | n + 1 => inferInstanceAs (LinearOrder (Fin (n + 1)))
+
+instance : ∀ (p : ℕ), ToExpr (ZMod p)
+  | 0 => inferInstanceAs (ToExpr Int)
+  | n + 1 => inferInstanceAs (ToExpr (Fin (n + 1)))
+
 def E : WeierstrassCurve (ZMod 37) :=
   ⟨0, -1, 0, 27, -81⟩
 
-elab "test" t:term : tactic => do
-  let t ← elabTerm t .none
-  -- dbg_trace s!"{t}"
-  dbg_trace s!"{t.weierstrassCurvePointNat? E}"
+deriving instance Repr for WeierstrassCurve
 
 instance : Fact (Nat.Prime 37) := ⟨by decide⟩
 #synth Field (ZMod 37)
 instance : E.IsElliptic := by decide
 
+instance {R : Type*} [LinearOrder R] [CommRing R] {E : WeierstrassCurve.Affine R} :
+    LinearOrder E.Point :=
+  LinearOrder.lift' (β := WithBot (R ×ₗ R)) (inj := fun x ↦ by aesop)
+  fun
+  | .zero => ⊥
+  | .some (x := x) (y := y) _ => ↑(toLex (x, y))
+
+instance {R : Type u} [ToLevel.{u}] [ToExpr R] :
+    ToExpr (WeierstrassCurve.Affine R) where
+  toTypeExpr := mkApp (mkConst ``WeierstrassCurve.Affine [ToLevel.toLevel.{u}]) (toTypeExpr R)
+  toExpr
+  | ⟨a₁, a₂, a₃, a₄, a₆⟩ =>
+    mkApp6 (mkConst ``WeierstrassCurve.mk [ToLevel.toLevel.{u}])
+      (toTypeExpr R) (toExpr a₁) (toExpr a₂) (toExpr a₃) (toExpr a₄) (toExpr a₆)
+
+instance {p : ℕ} {E : WeierstrassCurve.Affine (ZMod p)} :
+    ToExpr E.Point where
+  toTypeExpr := q(@WeierstrassCurve.Affine.Point (ZMod $p) inferInstance $E)
+  toExpr
+  | .zero =>
+    mkApp3 (mkConst ``WeierstrassCurve.Affine.Point.zero [0])
+      (toTypeExpr (ZMod p)) q(inferInstance : CommRing (ZMod $p)) (toExpr E)
+    -- q(WeierstrassCurve.Affine.Point.zero (R := ZMod $p) (W' := $E))
+  | .some (x := x) (y := y) _ =>
+    mkApp6 (mkConst ``WeierstrassCurve.Affine.Point.some [0])
+      (toTypeExpr (ZMod p)) q(inferInstance : CommRing (ZMod $p)) (toExpr E) (toExpr x) (toExpr y)
+      (mkApp2 (mkConst ``sorryAx [0])
+        (mkApp5
+          (mkConst ``WeierstrassCurve.Affine.Nonsingular [0])
+          (toTypeExpr (ZMod p)) q(inferInstance : CommRing (ZMod $p)) (toExpr E) (toExpr x) (toExpr y)
+        )
+      (toExpr false))
+
+    -- mkApp3 (mkConst ``WeierstrassCurve.Affine.Point.some [ToLevel.toLevel.{u}])
+    --   (toTypeExpr E) (toExpr x) (toExpr y)
+
+elab "test" : tactic => do
+  let g ← getMainGoal
+  let t := (← g.getType'').consumeMData
+  unless t.isAppOfArity ``NotNMultipleWithin 7 do throwError "no"
+  -- unless t.getAppArgs[0]!.isAppOfArity
+  let some (zpE, _, EAE) := t.getAppArgs[0]!.app3? ``WeierstrassCurve.Affine.Point
+    | throwError "no 2"
+  let some pE := zpE.app1? ``ZMod | throwError "no 3"
+  let some p := pE.nat? | throwError "no 4"
+  if hp : ¬Nat.Prime p then throwError "no prime" else
+  let some E := Lean.Expr.weierstrassCurveAffineNat? (← whnf EAE) (ZMod p) | throwError "no 5"
+  let .ok p1 := t.getAppArgs[2]!.weierstrassCurvePointNat? E | throwError "no 6"
+  let .ok p2 := t.getAppArgs[3]!.weierstrassCurvePointNat? E | throwError "no 7"
+  let .ok p3 := t.getAppArgs[4]!.weierstrassCurvePointNat? E | throwError "no 8"
+  let some l := t.getAppArgs[5]!.nat? | throwError "no 9"
+  let some r := t.getAppArgs[6]!.nat? | throwError "no 10"
+  have : Fact (Nat.Prime p) := ⟨by simpa using hp⟩
+
+  trace[debug] "hello!"
+  -- dbg_trace s!"{t}"
+  g.assign <| ← mkNotNMultipleWithin (M := E.Point) p1 p2 p3 l r
+  dbg_trace s!"{t.weierstrassCurvePointNat? E}"
+
 #synth AddCommGroup E.toAffine.Point
 
-#eval toString (((.some (x := 10) (y := 33) (by decide) : E.toAffine.Point) +
-  (.some (x := 10) (y := 33) (by decide) : E.toAffine.Point)))
+-- #eval toString (((.some (x := 10) (y := 33) (by decide) : E.toAffine.Point) +
+--   (.some (x := 10) (y := 33) (by decide) : E.toAffine.Point)))
 
-#reduce [1, 4, 5, 3, 7, 2].mergeSort
+-- #reduce WeierstrassCurve.Affine.Point.some (W' := E) (x := 10) (y := 33) (by decide) + WeierstrassCurve.Affine.Point.some (W' := E) (x := 10) (y := 33) (by decide) + WeierstrassCurve.Affine.Point.some (W' := E) (x := 10) (y := 33) (by decide)
+-- #reduce (.some (W' := E) (x := 10) (y := 33) (by decide) : E.toAffine.Point) + (.some (W' := E) (x := 10) (y := 33) (by decide) : E.toAffine.Point) + (.some (W' := E) (x := 10) (y := 33) (by decide) : E.toAffine.Point)
 
+set_option trace.debug true
 example :
     NotNMultipleWithin (.some (x := 10) (y := 33) (by decide) : E.toAffine.Point) 0 0 10 20 := by
-  test (.some (x := 10) (y := 33) (by decide) : E.toAffine.Point)
-  sorry
-#min_imports
+  test
+
+-- #min_imports
