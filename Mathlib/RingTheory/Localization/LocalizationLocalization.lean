@@ -161,7 +161,7 @@ variable (S)
 
 /-- Given submonoids `M ≤ N` of `R`, this is the canonical algebra structure
 of `M⁻¹S` acting on `N⁻¹S`. -/
-@[reducible] noncomputable def localizationAlgebraOfSubmonoidLe (M N : Submonoid R) (h : M ≤ N)
+noncomputable abbrev localizationAlgebraOfSubmonoidLe (M N : Submonoid R) (h : M ≤ N)
     [IsLocalization M S] [IsLocalization N T] : Algebra S T :=
   (@IsLocalization.lift R _ M S _ _ T _ _ (algebraMap R T)
     (fun y => map_units T ⟨↑y, h y.prop⟩)).toAlgebra
