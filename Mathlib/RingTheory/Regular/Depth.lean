@@ -366,10 +366,10 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
 
 section depth
 
-noncomputable def moduleDepth (M N : ModuleCat.{v} R) : ℕ∞ :=
+noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
   sSup {n : ℕ∞ | ∀ i : ℕ, i < n → Subsingleton (Ext.{max u v} N M i)}
 
-noncomputable def Ideal.depth (I : Ideal R)(M : ModuleCat.{v} R) [Small.{v} (R ⧸ I)] : ℕ∞ :=
+noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) [Small.{v} (R ⧸ I)] : ℕ∞ :=
   moduleDepth (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M
 
 noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R)
