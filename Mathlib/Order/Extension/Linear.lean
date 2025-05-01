@@ -17,8 +17,7 @@ universe u
 
 open Set
 
-/-- Any partial order can be extended to a linear order.
--/
+/-- **Szpilrajn extension theorem**: any partial order can be extended to a linear order. -/
 theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrder α r] :
     ∃ s : α → α → Prop, IsLinearOrder α s ∧ r ≤ s := by
   let S := { s | IsPartialOrder α s }
