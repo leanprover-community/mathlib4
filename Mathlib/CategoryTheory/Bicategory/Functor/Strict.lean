@@ -164,7 +164,7 @@ lemma isoMapOfCommSq_horiz_id (f : X₁ ⟶ X₂) :
 /-- Equational lemma for `Pseudofunctor.isoMapOfCommSq` when
 both horizontal maps of the square are the same and vertical maps are identities. -/
 lemma isoMapOfCommSq_vert_id (f : X₁ ⟶ X₂) :
-    F.isoMapOfCommSq (t := f)  (l := 𝟙 _) (r := 𝟙 _) (b := f) ⟨by simp⟩ =
+    F.isoMapOfCommSq (t := f) (l := 𝟙 _) (r := 𝟙 _) (b := f) ⟨by simp⟩ =
       whiskerLeftIso (F.map f) (F.mapId X₂) ≪≫ ρ_ _ ≪≫ (λ_ _).symm ≪≫
         (whiskerRightIso (F.mapId X₁) (F.map f)).symm := by
   ext
