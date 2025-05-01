@@ -67,8 +67,10 @@ lemma of_comp_eq_zero_of_ker_in_range [Zero P] (hc : g.comp f = 0)
   fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congrFun hc x⟩
 
 /-- Two maps `f : M → N` and `g : N → P` are exact if and only if the induced maps
-`Set.range f → N → Set.range g` are exact. NOTE: To use this result a manual instance
-needs to be added: `let _ : Zero (Set.range g) := ⟨⟨0, hg⟩⟩`. -/
+`Set.range f → N → Set.range g` are exact.
+
+Note that if you already have an instance `[Zero (Set.range g)]` (which is unlikely) this lemma
+may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0, hg⟩`. -/
 lemma iff_rangeFactorization [Zero P] (hg : 0 ∈ Set.range g) :
     letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
     Exact f g ↔ Exact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
@@ -78,8 +80,10 @@ lemma iff_rangeFactorization [Zero P] (hg : 0 ∈ Set.range g) :
   exact ⟨fun _ ↦ by rwa [Subtype.ext_iff], fun h ↦ by rwa [Subtype.ext_iff] at h⟩
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
-`Set.range f → N → Set.range g` are exact. NOTE: To use this result a manual instance
-needs to be added: `let _ : Zero (Set.range g) := ⟨⟨0, hg⟩⟩`. -/
+`Set.range f → N → Set.range g` are exact.
+
+Note that if you already have an instance `[Zero (Set.range g)]` (which is unlikely) this lemma
+may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0, hg⟩`. -/
 lemma rangeFactorization [Zero P] (h : Exact f g) (hg : 0 ∈ Set.range g) :
     letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
     Exact ((↑) : Set.range f → N) (Set.rangeFactorization g) :=
