@@ -98,6 +98,44 @@ instance instCompleteLattice : CompleteLattice L :=
   Subtype.coe_injective.completeLattice _
     Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
 
+section
+variable {α : Type*}
+
+instance instFrameMinimalAxioms [Order.Frame α] {L : CompleteSublattice α} :
+    Order.Frame.MinimalAxioms L :=
+  Subtype.coe_injective.frameMinimalAxioms .of _
+    Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
+
+instance instFrame [Order.Frame α] {L : CompleteSublattice α} : Order.Frame L :=
+  .ofMinimalAxioms instFrameMinimalAxioms
+
+instance instCoframeMinimalAxioms [Order.Coframe α] {L : CompleteSublattice α} :
+    Order.Coframe.MinimalAxioms L :=
+  Subtype.coe_injective.coframeMinimalAxioms .of _
+    Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
+
+instance instCoframe [Order.Coframe α] {L : CompleteSublattice α} : Order.Coframe L :=
+  .ofMinimalAxioms instCoframeMinimalAxioms
+
+instance instCompleteDistribLatticeMinimalAxioms [CompleteDistribLattice α]
+    {L : CompleteSublattice α} : CompleteDistribLattice.MinimalAxioms L :=
+  Subtype.coe_injective.completeDistribLatticeMinimalAxioms .of _
+    Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
+
+instance instCompleteDistribLattice [CompleteDistribLattice α]
+    {L : CompleteSublattice α} : CompleteDistribLattice L :=
+  .ofMinimalAxioms instCompleteDistribLatticeMinimalAxioms
+
+instance instCompletelyDistribLatticeMinimalAxioms [CompletelyDistribLattice α]
+    {L : CompleteSublattice α} : CompletelyDistribLattice.MinimalAxioms L :=
+  Subtype.coe_injective.completelyDistribLatticeMinimalAxioms .of _
+    Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
+
+instance instCompletelyDistribLattice [CompletelyDistribLattice α] {L : CompleteSublattice α} :
+  CompletelyDistribLattice L :=
+  .ofMinimalAxioms instCompletelyDistribLatticeMinimalAxioms
+end
+
 /-- The natural complete lattice hom from a complete sublattice to the original lattice. -/
 def subtype (L : CompleteSublattice α) : CompleteLatticeHom L α where
   toFun := Subtype.val

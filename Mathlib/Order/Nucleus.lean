@@ -5,6 +5,7 @@ Authors: Chriara Cimino, Christian Krause
 -/
 import Mathlib.Order.Closure
 import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Order.CompleteSublattice
 
 /-!
 # Nucleus
@@ -229,6 +230,20 @@ instance : Frame (range n) := .ofMinimalAxioms range.instFrameMinimalAxioms
 the range to the original frame. -/
 def giRestrict (n : Nucleus X) : GaloisInsertion n.restrict Subtype.val := n.giAux
 
+lemma range_coe_preserves_inf (x y : range n) : (x ⊓ y).val = ↑x ⊓ ↑y := by
+  rcases x with ⟨x, ⟨a, h1⟩⟩
+  rcases y with ⟨y, ⟨b, h2⟩⟩
+  subst h1
+  subst h2
+  simp [n.giAux.gc.u_inf]
+
+def sublocale_to_Nucleus (S : Set X) [Order.Frame S] (f : InfHom X S)
+      (gc : GaloisConnection f Subtype.val) (h : ∀ x y : S, (x ⊓ y).val = ↑x ⊓ ↑y) : Nucleus X where
+  toFun x := f x
+  map_inf' x y := by simp [h]
+  le_apply' x := GaloisConnection.le_u_l gc x
+  idempotent' x := by apply gc.l_u_le
+
 lemma factorizes_iff_le : n ∘ m = m ↔ n ≤ m where
   mpr h := by
     ext x
@@ -243,6 +258,16 @@ lemma range_subset_iff : range m ⊆ range n ↔ n ≤ m  where
     rw [← mem_range.mp (Set.range_subset_iff.mp h x)]
     exact n.monotone (m.le_apply)
   mpr h := range_subset_range_iff_exists_comp.mpr (Exists.intro ↑m ((factorizes_iff_le.mpr) h).symm)
+
+abbrev Sublocale (X : Type*) [SemilatticeInf X] := (Nucleus X)ᵒᵈ
+
+instance : FunLike (Sublocale X) X X where
+  coe x := x.toFun
+  coe_injective' := by
+    simp [Function.Injective]
+
+def sublocale_range_iso : OrderIso (Sublocale X) (CompleteSublattice X) where
+  toFun x := range x
 
 end Frame
 end Nucleus
