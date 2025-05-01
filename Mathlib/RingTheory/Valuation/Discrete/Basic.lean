@@ -40,11 +40,13 @@ nontrivial cyclic, a valuation `v : A → Γ` on a ring `A` is *discrete*, if
 `genLTOne Γˣ` belongs to the image. Note that the latter is equivalent to
 asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
 class IsDiscrete : Prop where
-  exists_generator_lt_one : ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v
+  exists_generator_lt_one' : ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v
 
 lemma exists_generator_lt_one [IsDiscrete v] :
-  ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v := IsDiscrete.exists_generator_lt_one
+  ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v := IsDiscrete.exists_generator_lt_one'
 
+/-- Given a discrete valuation `v`, `Valuation.IsDiscrete.generator` is a generator of the value
+group that is `< 1`. -/
 noncomputable def generator [IsDiscrete v] : Γˣ := v.exists_generator_lt_one.choose
 
 lemma generator_zpowers_eq_top [IsDiscrete v] :
