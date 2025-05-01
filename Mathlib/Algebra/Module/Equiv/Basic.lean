@@ -9,6 +9,7 @@ import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
@@ -493,11 +494,11 @@ open LinearMap
 variable {M₂₁ M₂₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
   [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁] [Module R M₂₂]
 
-/-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
+/-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives an
 additive isomorphism between the two function spaces.
 
 See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
-def arrowCongrAddEquiv (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) :
+@[simps] def arrowCongrAddEquiv (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) :
     (M₁ →ₗ[R] M₂₁) ≃+ (M₂ →ₗ[R] M₂₂) where
   toFun f := e₂.comp (f.comp e₁.symm.toLinearMap)
   invFun f := e₂.symm.comp (f.comp e₁.toLinearMap)
@@ -511,11 +512,18 @@ def arrowCongrAddEquiv (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M�
     ext x
     simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
 
+/-- A linear isomorphism between the domains an codomains of two spaces of linear maps gives a
+linear isomorphism with respect to an action on the domains. -/
+@[simps] def domMulActCongrRight [Semiring S] [Module S M₁] [SMulCommClass R S M₁]
+    (e₂ : M₂₁ ≃ₗ[R] M₂₂) : (M₁ →ₗ[R] M₂₁) ≃ₗ[Sᵈᵐᵃ] (M₁ →ₗ[R] M₂₂) where
+  __ := arrowCongrAddEquiv (.refl ..) e₂
+  map_smul' := DomMulAct.mk.forall_congr_right.mp fun _ _ ↦ by ext; simp
+
 /-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
 are isomorphic.
 
 See `LinearEquiv.conj` for the linear version of this isomorphism. -/
-def conjRingEquiv (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃+* Module.End R M₂ where
+@[simps!] def conjRingEquiv (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃+* Module.End R M₂ where
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
 
