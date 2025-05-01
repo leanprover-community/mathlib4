@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Tactic.Linter.PPRoundtrip
+import Lean.Elab.Command
+import Lean.Parser.Syntax
 
 /-!
 #  The `commandStart` linter
