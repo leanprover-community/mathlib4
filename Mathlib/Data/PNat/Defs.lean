@@ -148,7 +148,6 @@ theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl
 
-/-- Hello -/
 @[simp, norm_cast]
 theorem coe_eq_one_iff {m : ℕ+} : (m : ℕ) = 1 ↔ m = 1 :=
   Subtype.coe_injective.eq_iff' one_coe
