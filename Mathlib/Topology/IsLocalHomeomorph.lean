@@ -55,10 +55,6 @@ theorem isLocalHomeomorphOn_iff_isOpenEmbedding_restrict {f : X → Y} :
       (continuousOn_iff_continuous_restrict.mpr cont) openMap isOpen_interior,
       mem_interior_iff_mem_nhds.mpr hU, rfl⟩
 
-@[deprecated (since := "2024-10-18")]
-alias isLocalHomeomorphOn_iff_openEmbedding_restrict :=
-  isLocalHomeomorphOn_iff_isOpenEmbedding_restrict
-
 namespace IsLocalHomeomorphOn
 
 /-- Proves that `f` satisfies `IsLocalHomeomorphOn f s`. The condition `h` is weaker than the
@@ -150,15 +146,9 @@ theorem isLocalHomeomorph_iff_isOpenEmbedding_restrict {f : X → Y} :
   simp_rw [isLocalHomeomorph_iff_isLocalHomeomorphOn_univ,
     isLocalHomeomorphOn_iff_isOpenEmbedding_restrict, imp_iff_right (Set.mem_univ _)]
 
-@[deprecated (since := "2024-10-18")]
-alias isLocalHomeomorph_iff_openEmbedding_restrict := isLocalHomeomorph_iff_isOpenEmbedding_restrict
-
 theorem Topology.IsOpenEmbedding.isLocalHomeomorph (hf : IsOpenEmbedding f) : IsLocalHomeomorph f :=
   isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun _ ↦
     ⟨_, Filter.univ_mem, hf.comp (Homeomorph.Set.univ X).isOpenEmbedding⟩
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.isLocalHomeomorph := IsOpenEmbedding.isLocalHomeomorph
 
 variable (f)
 
@@ -208,9 +198,6 @@ theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injectiv
     IsOpenEmbedding f :=
   .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_of_injective := isOpenEmbedding_of_injective
-
 /-- A surjective embedding is a homeomorphism. -/
 noncomputable def _root_.Topology.IsEmbedding.toHomeomorph_of_surjective (hf : IsEmbedding f)
     (hsurj : Function.Surjective f) : X ≃ₜ Y :=
@@ -229,9 +216,6 @@ noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.B
 theorem isOpenEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : IsOpenEmbedding (g ∘ f))
     (cont : Continuous f) : IsOpenEmbedding f :=
   (hgf.isLocalHomeomorph.of_comp hf cont).isOpenEmbedding_of_injective hgf.injective.of_comp
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_of_comp := isOpenEmbedding_of_comp
 
 open TopologicalSpace in
 /-- Ranges of continuous local sections of a local homeomorphism

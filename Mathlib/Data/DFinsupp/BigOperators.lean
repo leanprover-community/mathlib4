@@ -75,7 +75,7 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
   ∏ i ∈ f.support, g i (f i)
 
 @[to_additive (attr := simp)]
-theorem _root_.map_dfinsupp_prod
+theorem _root_.map_dfinsuppProd
     {R S H : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid R] [CommMonoid S] [FunLike H R S] [MonoidHomClass H R S] (h : H) (f : Π₀ i, β i)
     (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
@@ -420,14 +420,24 @@ variable {R S : Type*}
 variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_dfinsupp_prod [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
+theorem coe_dfinsuppProd [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
     ⇑(f.prod g) = f.prod fun a b => ⇑(g a b) :=
   coe_finset_prod _ _
 
+@[deprecated (since := "2025-04-06")]
+alias _root_.AddMonoidHom.coe_dfinsupp_sum := AddMonoidHom.coe_dfinsuppSum
+@[to_additive existing, deprecated (since := "2025-04-06")]
+alias coe_dfinsupp_prod := coe_dfinsuppProd
+
 @[to_additive]
-theorem dfinsupp_prod_apply [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
+theorem dfinsuppProd_apply [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
     (r : R) : (f.prod g) r = f.prod fun a b => (g a b) r :=
   finset_prod_apply _ _ _
+
+@[deprecated (since := "2025-04-06")]
+alias _root_.AddMonoidHom.dfinsupp_sum_apply := AddMonoidHom.dfinsuppSum_apply
+@[to_additive existing, deprecated (since := "2025-04-06")]
+alias dfinsupp_prod_apply := dfinsuppProd_apply
 
 end MonoidHom
 
@@ -441,22 +451,27 @@ variable {R S : Type*}
 open DFinsupp
 
 @[simp]
-theorem map_dfinsupp_sumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
+theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R →+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h g) f
 
-theorem dfinsupp_sumAddHom_apply [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
+@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
+
+theorem dfinsuppSumAddHom_apply [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) (r : R) :
     (sumAddHom g f) r = sumAddHom (fun i => (eval r).comp (g i)) f :=
-  map_dfinsupp_sumAddHom (eval r) f g
+  map_dfinsuppSumAddHom (eval r) f g
+
+@[deprecated (since := "2025-04-06")] alias dfinsupp_sumAddHom_apply := dfinsuppSumAddHom_apply
 
 @[simp, norm_cast]
-theorem coe_dfinsupp_sumAddHom [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
+theorem coe_dfinsuppSumAddHom [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) :
     ⇑(sumAddHom g f) = sumAddHom (fun i => (coeFn R S).comp (g i)) f :=
-  map_dfinsupp_sumAddHom (coeFn R S) f g
+  map_dfinsuppSumAddHom (coeFn R S) f g
 
+@[deprecated (since := "2025-04-06")] alias coe_dfinsupp_sumAddHom := coe_dfinsuppSumAddHom
 end AddMonoidHom
 
 namespace RingHom
@@ -466,10 +481,12 @@ variable {R S : Type*}
 open DFinsupp
 
 @[simp]
-theorem map_dfinsupp_sumAddHom [NonAssocSemiring R] [NonAssocSemiring S] [∀ i, AddZeroClass (β i)]
+theorem map_dfinsuppSumAddHom [NonAssocSemiring R] [NonAssocSemiring S] [∀ i, AddZeroClass (β i)]
     (h : R →+* S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+
+@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
 end RingHom
 
@@ -480,10 +497,12 @@ variable {R S : Type*}
 open DFinsupp
 
 @[simp]
-theorem map_dfinsupp_sumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
+theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R ≃+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+
+@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
 end AddEquiv
 

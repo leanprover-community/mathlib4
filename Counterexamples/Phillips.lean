@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.Star
 
@@ -127,7 +127,7 @@ def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α)
   LinearMap.mkContinuous (E := ↥(boundedIntegrableFunctions μ))
     { toFun := fun f => ∫ x, f.1 x ∂μ
       map_add' := fun f g => integral_add f.2 g.2
-      map_smul' := fun c f => integral_smul c f.1 } (μ univ).toReal
+      map_smul' := fun c f => integral_smul c f.1 } (μ.real univ)
     (by
       intro f
       rw [mul_comm]
@@ -216,7 +216,6 @@ theorem neg_apply (f : BoundedAdditiveMeasure α) (s : Set α) : (-f) s = -f s :
 def restrict (f : BoundedAdditiveMeasure α) (t : Set α) : BoundedAdditiveMeasure α where
   toFun s := f (t ∩ s)
   additive' s s' h := by
-    dsimp only
     rw [← f.additive (t ∩ s) (t ∩ s'), inter_union_distrib_left]
     exact h.mono inter_subset_right inter_subset_right
   exists_bound := ⟨f.C, fun s => f.abs_le_bound _⟩
@@ -393,7 +392,6 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
     (f : (α →ᵇ ℝ) →L[ℝ] ℝ) : BoundedAdditiveMeasure α where
   toFun s := f (ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s))
   additive' s t hst := by
-    dsimp only
     have :
       ofNormedAddCommGroupDiscrete (indicator (s ∪ t) 1) 1 (norm_indicator_le_one _) =
         ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s) +
@@ -421,7 +419,7 @@ theorem continuousPart_evalCLM_eq_zero [TopologicalSpace α] [DiscreteTopology �
 
 theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
-    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure s = (μ s).toReal := by
+    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure s = μ.real s := by
   simp only [ContinuousLinearMap.toBoundedAdditiveMeasure]
   rw [extensionToBoundedFunctions_apply]
   · simp [integral_indicator hs]
@@ -434,13 +432,14 @@ theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMe
 
 theorem toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : Measure α) [IsFiniteMeasure μ] [NoAtoms μ] (s : Set α) (hs : MeasurableSet s) :
-    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure.continuousPart s = (μ s).toReal := by
+    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure.continuousPart s = μ.real s := by
   let f := μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure
-  change f (univ \ f.discreteSupport ∩ s) = (μ s).toReal
+  change f (univ \ f.discreteSupport ∩ s) = μ.real s
   rw [toFunctions_toMeasure]; swap
   · exact
       MeasurableSet.inter
         (MeasurableSet.univ.diff (Countable.measurableSet f.countable_discreteSupport)) hs
+  simp only [measureReal_def]
   congr 1
   rw [inter_comm, ← inter_diff_assoc, inter_univ]
   exact measure_diff_null (f.countable_discreteSupport.measure_zero _)

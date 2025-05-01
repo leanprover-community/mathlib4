@@ -591,3 +591,71 @@ theorem adjoin_eq_of_isAlgebraic [Algebra.IsAlgebraic F E] :
   simp only [S, coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
 
 end separableClosure
+
+section
+
+open TensorProduct
+
+section Subalgebra
+
+variable (R A : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A] (p : ℕ) [ExpChar A p]
+
+/-- The perfect closure of `R` in `A` are the elements `x : A` such that `x ^ p ^ n`
+is in `R` for some `n`, where `p` is the exponential characteristic of `R`. -/
+def Subalgebra.perfectClosure : Subalgebra R A where
+  carrier := {x : A | ∃ n : ℕ, x ^ p ^ n ∈ (algebraMap R A).rangeS}
+  add_mem' := by
+    rintro x y ⟨n, hx⟩ ⟨m, hy⟩
+    use n + m
+    rw [add_pow_expChar_pow, pow_add, pow_mul, mul_comm (_ ^ n), pow_mul]
+    exact add_mem (pow_mem hx _) (pow_mem hy _)
+  mul_mem' := by
+    rintro x y ⟨n, hx⟩ ⟨m, hy⟩
+    use n + m
+    rw [mul_pow, pow_add, pow_mul, mul_comm (_ ^ n), pow_mul]
+    exact mul_mem (pow_mem hx _) (pow_mem hy _)
+  algebraMap_mem' := fun x ↦ ⟨0, by rw [pow_zero, pow_one]; exact ⟨x, rfl⟩⟩
+
+variable {R A p}
+
+theorem Subalgebra.mem_perfectClosure_iff {x : A} :
+    x ∈ perfectClosure R A p ↔ ∃ n : ℕ, x ^ p ^ n ∈ (algebraMap R A).rangeS := Iff.rfl
+
+end Subalgebra
+
+variable {k K R : Type*} [Field k] [Field K] [Algebra k K] [CommRing R] [Algebra k R]
+
+lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
+    [IsPurelyInseparable k K] (q : ℕ) [ExpChar k q] (x : R ⊗[k] K) :
+    ∃ n, x ^ q ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by
+  nontriviality (R ⊗[k] K)
+  obtain (hq|hq) := expChar_is_prime_or_one k q
+  induction x with
+  | zero => exact ⟨0, 0, by simp [zero_pow_eq, hq.ne_zero]⟩
+  | add x y h h' =>
+    have : ExpChar (R ⊗[k] K) q := expChar_of_injective_ringHom (algebraMap k _).injective q
+    simp_rw [RingHom.mem_range, ← RingHom.mem_rangeS, ← Subalgebra.mem_perfectClosure_iff] at h h' ⊢
+    exact add_mem h h'
+  | tmul x y =>
+    obtain ⟨n, a, ha⟩ := IsPurelyInseparable.pow_mem k q y
+    use n
+    have : (x ^ q ^ n) ⊗ₜ[k] (y ^ q ^ n) =
+        (x ^ q ^ n) ⊗ₜ[k] (1 : K) * (1 : R) ⊗ₜ[k] (y ^ q ^ n) := by
+      rw [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+    rw [Algebra.TensorProduct.tmul_pow, this]
+    refine Subring.mul_mem _ ⟨x ^ q ^ n, rfl⟩ ⟨algebraMap k R a, ?_⟩
+    rw [← IsScalarTower.algebraMap_apply, Algebra.TensorProduct.algebraMap_apply,
+      Algebra.TensorProduct.tmul_one_eq_one_tmul, ha]
+  · subst hq
+    have : CharZero k := charZero_of_expChar_one' k
+    exact ⟨0, (Algebra.TensorProduct.includeLeft_surjective R _ <|
+      IsPurelyInseparable.surjective_algebraMap_of_isSeparable k K) _⟩
+
+lemma IsPurelyInseparable.exists_pow_mem_range_tensorProduct [IsPurelyInseparable k K]
+    (x : R ⊗[k] K) : ∃ n > 0, x ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by
+  let q := ringExpChar k
+  obtain ⟨n, hr⟩ := exists_pow_pow_mem_range_tensorProduct_of_expChar q x
+  refine ⟨q ^ n, pow_pos ?_ _, hr⟩
+  obtain (hq|hq) := expChar_is_prime_or_one k q <;> simp [hq, Nat.Prime.pos]
+
+end

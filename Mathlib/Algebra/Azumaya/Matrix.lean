@@ -51,7 +51,7 @@ lemma AlgHom.mulLeftRightMatrix.comp_inv :
   apply Basis.ext (Matrix.stdBasis _ _ _)
   intro ⟨i, j⟩
   simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, map_sum,
-    _root_.map_smul, stdBasis_eq_stdBasisMatrix, LinearMap.coeFn_sum, Finset.sum_apply,
+    map_smul, stdBasis_eq_stdBasisMatrix, LinearMap.coeFn_sum, Finset.sum_apply,
     LinearMap.smul_apply, LinearMap.id_coe, id_eq]
   ext k l
   simp [sum_apply, Matrix.mul_apply, Finset.sum_mul, Finset.mul_sum, stdBasisMatrix,

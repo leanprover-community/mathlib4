@@ -5,7 +5,7 @@ Authors: Shing Tak Lam, Frédéric Dupuis
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 
 /-!
 # Unitary elements of a star monoid

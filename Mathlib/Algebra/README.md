@@ -14,4 +14,4 @@ previous:
 
 Files in earlier subfolders should not import files in later ones.
 
-## TODO: Succintly explain the other subfolders
+## TODO: Succinctly explain the other subfolders

@@ -3,7 +3,7 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Order.Filter.AtTopBot.Ring
 
 /-!
@@ -16,7 +16,8 @@ variable {α β : Type*}
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield α] {l : Filter β} {f : β → α} {r c : α} {n : ℕ}
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
+  {l : Filter β} {f : β → α} {r c : α} {n : ℕ}
 
 /-!
 ### Multiplication by constant: iff lemmas
@@ -101,7 +102,8 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [LinearOrderedField α] {l : Filter β} {f : β → α} {r : α}
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+  {l : Filter β} {f : β → α} {r : α}
 
 /-- If `r` is a positive constant, `fun x ↦ r * f x` tends to negative infinity along a filter
 if and only if `f` tends to negative infinity along the same filter. -/

@@ -41,14 +41,8 @@ theorem pairwise_one_le_dist : Pairwise fun m n : ℤ => 1 ≤ dist m n := by
 theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℤ → ℝ) :=
   isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
-
 theorem isClosedEmbedding_coe_real : IsClosedEmbedding ((↑) : ℤ → ℝ) :=
   isClosedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_coe_real := isClosedEmbedding_coe_real
 
 instance : MetricSpace ℤ := Int.isUniformEmbedding_coe_real.comapMetricSpace _
 

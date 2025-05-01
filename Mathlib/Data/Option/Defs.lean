@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
+import Batteries.Tactic.Alias
 
 /-!
 # Extra definitions on `Option`
@@ -15,6 +16,12 @@ Other basic operations on `Option` are defined in the core library.
 -/
 
 namespace Option
+
+-- Pending rename in core.
+alias map_eq_none_iff := map_eq_none'
+alias map_eq_some_iff := map_eq_some'
+alias forall_ne_none := ball_ne_none
+alias bind_eq_some_iff := bind_eq_some
 
 /-- Traverse an object of `Option α` with a function `f : α → F β` for an applicative `F`. -/
 protected def traverse.{u, v}
@@ -90,6 +97,9 @@ instance liftOrGet_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
 instance liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f) none where
   left_id a := by cases a <;> simp [liftOrGet]
   right_id a := by cases a <;> simp [liftOrGet]
+
+instance lawfulIdentity_merge (f : α → α → α) : Std.LawfulIdentity (merge f) none :=
+  liftOrGet_isId f
 
 /-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α

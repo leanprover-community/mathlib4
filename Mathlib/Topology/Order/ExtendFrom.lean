@@ -60,5 +60,5 @@ theorem continuousOn_Ioc_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [
     (hab : a < b) (hf : ContinuousOn f (Ioo a b)) (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) :
     ContinuousOn (extendFrom (Ioo a b) f) (Ioc a b) := by
   have := @continuousOn_Ico_extendFrom_Ioo αᵒᵈ _ _ _ _ _ _ _ f _ _ lb hab
-  erw [dual_Ico, dual_Ioi, dual_Ioo] at this
+  erw [Ico_toDual, Ioi_toDual, Ioo_toDual] at this
   exact this hf hb

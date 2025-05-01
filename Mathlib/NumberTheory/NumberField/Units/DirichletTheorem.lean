@@ -292,7 +292,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
           rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
           ← mul_assoc, inv_mul_cancel₀ (seq_ne_zero K w₁ hB n), one_mul]
       _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
-        _root_.map_mul _ _ _
+        map_mul _ _ _
       _ < 1 := by
         rw [map_inv₀, mul_inv_lt_iff₀' (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]
         exact seq_decreasing K w₁ hB hnm w hw

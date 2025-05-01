@@ -194,12 +194,12 @@ instance InducedCategory.hasForget₂ {C : Type u} {D : Type u'} [Category.{v} D
   forget_comp := rfl
 
 instance FullSubcategory.hasForget {C : Type u} [Category.{v} C] [HasForget.{w} C]
-    (Z : C → Prop) : HasForget (FullSubcategory Z) where
-  forget := fullSubcategoryInclusion Z ⋙ forget C
+    (P : ObjectProperty C) : HasForget P.FullSubcategory where
+  forget := P.ι ⋙ forget C
 
 instance FullSubcategory.hasForget₂ {C : Type u} [Category.{v} C] [HasForget.{w} C]
-    (Z : C → Prop) : HasForget₂ (FullSubcategory Z) C where
-  forget₂ := fullSubcategoryInclusion Z
+    (P : ObjectProperty C) : HasForget₂ P.FullSubcategory C where
+  forget₂ := P.ι
   forget_comp := rfl
 
 /-- In order to construct a “partially forgetting” functor, we do not need to verify functor laws;
@@ -456,7 +456,7 @@ instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{
 instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
     {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
     [ConcreteCategory.{w} C FC]
-    (Z : C → Prop) : ConcreteCategory (FullSubcategory Z) (fun X Y => FC X.1 Y.1) where
+    (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.1 Y.1) where
   hom := hom (C := C)
   ofHom := ofHom (C := C)
   hom_ofHom := hom_ofHom (C := C)

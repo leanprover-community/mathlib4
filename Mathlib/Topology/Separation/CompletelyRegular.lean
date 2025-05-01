@@ -26,7 +26,7 @@ This file defines `CompletelyRegularSpace` and `T35Space`.
 ### Completely regular spaces
 
 * `CompletelyRegularSpace.regularSpace`: A completely regular space is a regular space.
-* `NormalSpace.completelyRegularSpace`: A normal space is a completely regular space.
+* `NormalSpace.completelyRegularSpace`: A normal R0 space is a completely regular space.
 
 ### T₃.₅ spaces
 
@@ -54,7 +54,7 @@ noncomputable section
 
 open Set Topology Filter unitInterval
 
-variable {X : Type u} [TopologicalSpace X] [T1Space X]
+variable {X : Type u} [TopologicalSpace X]
 
 /-- A space is completely regular if points can be separated from closed sets via
   continuous functions to the unit interval. -/
@@ -63,7 +63,8 @@ class CompletelyRegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   completely_regular : ∀ (x : X), ∀ K : Set X, IsClosed K → x ∉ K →
     ∃ f : X → I, Continuous f ∧ f x = 0 ∧ EqOn f 1 K
 
-instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] : RegularSpace X := by
+instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] :
+    RegularSpace X := by
   rw [regularSpace_iff]
   intro s a hs ha
   obtain ⟨f, cf, hf, hhf⟩ := CompletelyRegularSpace.completely_regular a s hs ha
@@ -71,15 +72,19 @@ instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] : Re
   apply Disjoint.mono (cf.tendsto_nhdsSet_nhds hhf) cf.continuousAt
   exact disjoint_nhds_nhds.mpr (hf.symm ▸ zero_ne_one).symm
 
-instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] : CompletelyRegularSpace X := by
+instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] [R0Space X] :
+    CompletelyRegularSpace X := by
   rw [completelyRegularSpace_iff]
   intro x K hK hx
-  have cx : IsClosed {x} := T1Space.t1 x
-  have d : Disjoint {x} K := by rwa [Set.disjoint_iff, subset_empty_iff, singleton_inter_eq_empty]
+  have cx : IsClosed (closure {x}) := isClosed_closure
+  have d : Disjoint (closure {x}) K := by
+    rw [Set.disjoint_iff]
+    intro a ⟨hax, haK⟩
+    exact hx ((specializes_iff_mem_closure.mpr hax).symm.mem_closed hK haK)
   let ⟨⟨f, cf⟩, hfx, hfK, hficc⟩ := exists_continuous_zero_one_of_isClosed cx hK d
   let g : X → I := fun x => ⟨f x, hficc x⟩
   have cg : Continuous g := cf.subtype_mk hficc
-  have hgx : g x = 0 := Subtype.ext (hfx (mem_singleton_iff.mpr (Eq.refl x)))
+  have hgx : g x = 0 := Subtype.ext (hfx (subset_closure (mem_singleton x)))
   have hgK : EqOn g 1 K := fun k hk => Subtype.ext (hfK hk)
   exact ⟨g, cg, hgx, hgK⟩
 
@@ -87,9 +92,9 @@ instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] : CompletelyRegu
 @[mk_iff]
 class T35Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyRegularSpace X
 
-instance T35Space.instT3space [T35Space X] : T3Space X := {}
+instance T35Space.instT3space [T35Space X] : T3Space X where
 
-instance T4Space.instT35Space [T4Space X] : T35Space X := {}
+instance T4Space.instT35Space [T4Space X] : T35Space X where
 
 lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     SeparatesPoints (Continuous : Set (X → ℝ)) := by
@@ -98,6 +103,9 @@ lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by aesop⟩
 
+@[deprecated (since := "2025-04-13")]
+alias separatesPoints_continuous_of_completelyRegularSpace := separatesPoints_continuous_of_t35Space
+
 lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     SeparatesPoints (Continuous : Set (X → I)) := by
   intro x y x_ne_y
@@ -105,9 +113,16 @@ lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨f, f_cont, by aesop⟩
 
+@[deprecated (since := "2025-04-13")]
+alias separatesPoints_continuous_of_completelyRegularSpace_Icc :=
+  separatesPoints_continuous_of_t35Space_Icc
+
 lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
     Function.Injective (stoneCechUnit : X → StoneCech X) := by
   intros a b hab
   contrapose hab
   obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_Icc hab
   exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)
+
+@[deprecated (since := "2025-04-13")]
+alias injective_stoneCechUnit_of_completelyRegularSpace := injective_stoneCechUnit_of_t35Space

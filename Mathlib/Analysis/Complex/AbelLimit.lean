@@ -221,7 +221,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
         rw [← mul_sum, ← mul_assoc]
       _ ≤ ‖1 - z‖ * (ε / 4 / M) * ∑' i, ‖z‖ ^ i := by
         gcongr
-        exact sum_le_tsum _ (fun _ _ ↦ by positivity)
+        exact Summable.sum_le_tsum _ (fun _ _ ↦ by positivity)
           (summable_geometric_of_lt_one (by positivity) zn)
       _ = ‖1 - z‖ * (ε / 4 / M) / (1 - ‖z‖) := by
         rw [tsum_geometric_of_lt_one (by positivity) zn, ← div_eq_mul_inv]

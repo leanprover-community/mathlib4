@@ -162,10 +162,10 @@ theorem mk_prod_swap_eq {p : α × α} : Sym2.mk p.swap = Sym2.mk p := by
   exact eq_swap
 
 theorem congr_right {a b c : α} : s(a, b) = s(a, c) ↔ b = c := by
-  simp (config := {contextual := true})
+  simp +contextual
 
 theorem congr_left {a b c : α} : s(b, a) = s(c, a) ↔ b = c := by
-  simp (config := {contextual := true})
+  simp +contextual
 
 theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
   simp

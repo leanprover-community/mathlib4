@@ -9,82 +9,82 @@ import Mathlib.Algebra.Ring.Defs
 /-!
 # Ring structure on the order type synonyms
 
-Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
+Transfer algebraic instances from `R` to `Rᵒᵈ` and `Lex R`.
 -/
 
 
-variable {α : Type*}
+variable {R : Type*}
 
 /-! ### Order dual -/
 
 
-instance [h : Distrib α] : Distrib αᵒᵈ := h
+instance [h : Distrib R] : Distrib Rᵒᵈ := h
 
-instance [Mul α] [Add α] [h : LeftDistribClass α] : LeftDistribClass αᵒᵈ := h
+instance [Mul R] [Add R] [h : LeftDistribClass R] : LeftDistribClass Rᵒᵈ := h
 
-instance [Mul α] [Add α] [h : RightDistribClass α] : RightDistribClass αᵒᵈ := h
+instance [Mul R] [Add R] [h : RightDistribClass R] : RightDistribClass Rᵒᵈ := h
 
-instance [h : NonUnitalNonAssocSemiring α] : NonUnitalNonAssocSemiring αᵒᵈ := h
+instance [h : NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ := h
 
-instance [h : NonUnitalSemiring α] : NonUnitalSemiring αᵒᵈ := h
+instance [h : NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ := h
 
-instance [h : NonAssocSemiring α] : NonAssocSemiring αᵒᵈ := h
+instance [h : NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ := h
 
-instance [h : Semiring α] : Semiring αᵒᵈ := h
+instance [h : Semiring R] : Semiring Rᵒᵈ := h
 
-instance [h : NonUnitalCommSemiring α] : NonUnitalCommSemiring αᵒᵈ := h
+instance [h : NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ := h
 
-instance [h : CommSemiring α] : CommSemiring αᵒᵈ := h
+instance [h : CommSemiring R] : CommSemiring Rᵒᵈ := h
 
-instance [Mul α] [h : HasDistribNeg α] : HasDistribNeg αᵒᵈ := h
+instance [Mul R] [h : HasDistribNeg R] : HasDistribNeg Rᵒᵈ := h
 
-instance [h : NonUnitalNonAssocRing α] : NonUnitalNonAssocRing αᵒᵈ := h
+instance [h : NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ := h
 
-instance [h : NonUnitalRing α] : NonUnitalRing αᵒᵈ := h
+instance [h : NonUnitalRing R] : NonUnitalRing Rᵒᵈ := h
 
-instance [h : NonAssocRing α] : NonAssocRing αᵒᵈ := h
+instance [h : NonAssocRing R] : NonAssocRing Rᵒᵈ := h
 
-instance [h : Ring α] : Ring αᵒᵈ := h
+instance [h : Ring R] : Ring Rᵒᵈ := h
 
-instance [h : NonUnitalCommRing α] : NonUnitalCommRing αᵒᵈ := h
+instance [h : NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ := h
 
-instance [h : CommRing α] : CommRing αᵒᵈ := h
+instance [h : CommRing R] : CommRing Rᵒᵈ := h
 
-instance [Ring α] [h : IsDomain α] : IsDomain αᵒᵈ := h
+instance [Ring R] [h : IsDomain R] : IsDomain Rᵒᵈ := h
 
 /-! ### Lexicographical order -/
 
 
-instance [h : Distrib α] : Distrib (Lex α) := h
+instance [h : Distrib R] : Distrib (Lex R) := h
 
-instance [Mul α] [Add α] [h : LeftDistribClass α] : LeftDistribClass (Lex α) := h
+instance [Mul R] [Add R] [h : LeftDistribClass R] : LeftDistribClass (Lex R) := h
 
-instance [Mul α] [Add α] [h : RightDistribClass α] : RightDistribClass (Lex α) := h
+instance [Mul R] [Add R] [h : RightDistribClass R] : RightDistribClass (Lex R) := h
 
-instance [h : NonUnitalNonAssocSemiring α] : NonUnitalNonAssocSemiring (Lex α) := h
+instance [h : NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (Lex R) := h
 
-instance [h : NonUnitalSemiring α] : NonUnitalSemiring (Lex α) := h
+instance [h : NonUnitalSemiring R] : NonUnitalSemiring (Lex R) := h
 
-instance [h : NonAssocSemiring α] : NonAssocSemiring (Lex α) := h
+instance [h : NonAssocSemiring R] : NonAssocSemiring (Lex R) := h
 
-instance [h : Semiring α] : Semiring (Lex α) := h
+instance [h : Semiring R] : Semiring (Lex R) := h
 
-instance [h : NonUnitalCommSemiring α] : NonUnitalCommSemiring (Lex α) := h
+instance [h : NonUnitalCommSemiring R] : NonUnitalCommSemiring (Lex R) := h
 
-instance [h : CommSemiring α] : CommSemiring (Lex α) := h
+instance [h : CommSemiring R] : CommSemiring (Lex R) := h
 
-instance [Mul α] [h : HasDistribNeg α] : HasDistribNeg (Lex α) := h
+instance [Mul R] [h : HasDistribNeg R] : HasDistribNeg (Lex R) := h
 
-instance [h : NonUnitalNonAssocRing α] : NonUnitalNonAssocRing (Lex α) := h
+instance [h : NonUnitalNonAssocRing R] : NonUnitalNonAssocRing (Lex R) := h
 
-instance [h : NonUnitalRing α] : NonUnitalRing (Lex α) := h
+instance [h : NonUnitalRing R] : NonUnitalRing (Lex R) := h
 
-instance [h : NonAssocRing α] : NonAssocRing (Lex α) := h
+instance [h : NonAssocRing R] : NonAssocRing (Lex R) := h
 
-instance [h : Ring α] : Ring (Lex α) := h
+instance [h : Ring R] : Ring (Lex R) := h
 
-instance [h : NonUnitalCommRing α] : NonUnitalCommRing (Lex α) := h
+instance [h : NonUnitalCommRing R] : NonUnitalCommRing (Lex R) := h
 
-instance [h : CommRing α] : CommRing (Lex α) := h
+instance [h : CommRing R] : CommRing (Lex R) := h
 
-instance [Ring α] [h : IsDomain α] : IsDomain (Lex α) := h
+instance [Ring R] [h : IsDomain R] : IsDomain (Lex R) := h

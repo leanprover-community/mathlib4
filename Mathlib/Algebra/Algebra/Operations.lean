@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Ring.NonZeroDivisors
+import Mathlib.Algebra.Ring.Submonoid.Pointwise
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
@@ -68,10 +69,10 @@ section Module
 variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 
 -- TODO: Why is this in a file about `Algebra`?
-/-- `1 : Submodule R A` is the submodule `R ∙ 1` of A.
-TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
-once a version of `Algebra` without the `commutes'` field is introduced.
-See issue https://github.com/leanprover-community/mathlib4/issues/18110.
+-- TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
+-- once a version of `Algebra` without the `commutes'` field is introduced.
+-- See issue https://github.com/leanprover-community/mathlib4/issues/18110.
+/-- `1 : Submodule R A` is the submodule `R ∙ 1` of `A`.
 -/
 instance one : One (Submodule R A) :=
   ⟨LinearMap.range (LinearMap.toSpanSingleton R A 1)⟩
@@ -183,7 +184,7 @@ theorem smul_iSup {ι : Sort*} {I : Submodule R A} {t : ι → Submodule R M} :
 
 theorem iSup_smul {ι : Sort*} {t : ι → Submodule R A} {N : Submodule R M} :
     (⨆ i, t i) • N = ⨆ i, t i • N :=
-  le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (C := (· • s ∈ _)) ht
+  le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (motive := (· • s ∈ _)) ht
     (fun i t ht ↦ mem_iSup_of_mem i <| smul_mem_smul ht hs)
     (by simp_rw [zero_smul]; apply zero_mem) fun x y ↦ by simp_rw [add_smul]; apply add_mem)
     (iSup_le fun i ↦ Submodule.smul_mono_left <| le_iSup _ i)
@@ -522,26 +523,25 @@ theorem mem_span_mul_finite_of_mem_mul {P Q : Submodule R A} {x : A} (hx : x ∈
 variable {M N P}
 
 theorem mem_span_singleton_mul {x y : A} : x ∈ span R {y} * P ↔ ∃ z ∈ P, y * z = x := by
-  simp_rw [mul_eq_map₂, (· * ·), map₂_span_singleton_eq_map]
-  rfl
+  simp_rw [mul_eq_map₂, map₂_span_singleton_eq_map, mem_map, LinearMap.mul_apply_apply]
 
 theorem mem_mul_span_singleton {x y : A} : x ∈ P * span R {y} ↔ ∃ z ∈ P, z * y = x := by
-  simp_rw [mul_eq_map₂, (· * ·), map₂_span_singleton_eq_map_flip]
-  rfl
+  simp_rw [mul_eq_map₂, map₂_span_singleton_eq_map_flip, mem_map, LinearMap.flip_apply,
+    LinearMap.mul_apply_apply]
 
 lemma span_singleton_mul {x : A} {p : Submodule R A} :
     Submodule.span R {x} * p = x • p := ext fun _ ↦ mem_span_singleton_mul
 
-lemma mem_smul_iff_inv_mul_mem {S} [Field S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
-    (hx : x ≠ 0) : y ∈ x • p ↔ x⁻¹ * y ∈ p := by
+lemma mem_smul_iff_inv_mul_mem {S} [DivisionSemiring S] [Algebra R S] {x : S} {p : Submodule R S}
+    {y : S} (hx : x ≠ 0) : y ∈ x • p ↔ x⁻¹ * y ∈ p := by
   constructor
   · rintro ⟨a, ha : a ∈ p, rfl⟩; simpa [inv_mul_cancel_left₀ hx]
   · exact fun h ↦ ⟨_, h, by simp [mul_inv_cancel_left₀ hx]⟩
 
 lemma mul_mem_smul_iff {S} [CommRing S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
     (hx : x ∈ nonZeroDivisors S) :
-    x * y ∈ x • p ↔ y ∈ p :=
-  show Exists _ ↔ _ by simp [mul_cancel_left_mem_nonZeroDivisors hx]
+    x * y ∈ x • p ↔ y ∈ p := by
+  simp [mem_smul_pointwise_iff_exists, mul_cancel_left_mem_nonZeroDivisors hx]
 
 variable (M N) in
 theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M) * (y • N) := by
@@ -800,10 +800,8 @@ theorem mem_div_iff_forall_mul_mem {x : A} {I J : Submodule R A} : x ∈ I / J �
   Iff.refl _
 
 theorem mem_div_iff_smul_subset {x : A} {I J : Submodule R A} : x ∈ I / J ↔ x • (J : Set A) ⊆ I :=
-  ⟨fun h y ⟨y', hy', xy'_eq_y⟩ => by
-    rw [← xy'_eq_y]
-    apply h
-    assumption, fun h _ hy => h (Set.smul_mem_smul_set hy)⟩
+  ⟨fun h y ⟨y', hy', xy'_eq_y⟩ => by rw [← xy'_eq_y]; exact h _ hy',
+    fun h _ hy => h (Set.smul_mem_smul_set hy)⟩
 
 theorem le_div_iff {I J K : Submodule R A} : I ≤ J / K ↔ ∀ x ∈ I, ∀ z ∈ K, x * z ∈ J :=
   Iff.refl _
@@ -812,9 +810,7 @@ theorem le_div_iff_mul_le {I J K : Submodule R A} : I ≤ J / K ↔ I * K ≤ J 
   rw [le_div_iff, mul_le]
 
 theorem one_le_one_div {I : Submodule R A} : 1 ≤ 1 / I ↔ I ≤ 1 := by
-  constructor; all_goals intro hI
-  · rwa [le_div_iff_mul_le, one_mul] at hI
-  · rwa [le_div_iff_mul_le, one_mul]
+  rw [le_div_iff_mul_le, one_mul]
 
 @[simp]
 theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
@@ -835,7 +831,7 @@ theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
 protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Submodule R A)
     (h : A ≃ₐ[R] B) : (I / J).map h.toLinearMap = I.map h.toLinearMap / J.map h.toLinearMap := by
   ext x
-  simp only [mem_map, mem_div_iff_forall_mul_mem]
+  simp only [mem_map, mem_div_iff_forall_mul_mem, AlgEquiv.toLinearMap_apply]
   constructor
   · rintro ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
     exact ⟨x * y, hx _ hy, map_mul h x y⟩
@@ -844,9 +840,7 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
     convert xz_mem
     apply h.injective
-    rw [map_mul, h.apply_symm_apply]
-    simp only [AlgEquiv.toLinearMap_apply] at hxz
-    rw [hxz]
+    rw [map_mul, h.apply_symm_apply, hxz]
 
 end Quotient
 

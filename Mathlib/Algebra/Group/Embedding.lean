@@ -35,7 +35,7 @@ def mulRightEmbedding [Mul G] [IsRightCancelMul G] (g : G) : G ↪ G where
   inj' := mul_left_injective g
 
 @[to_additive]
-theorem mulLeftEmbedding_eq_mulRightEmbedding [CommSemigroup G] [IsCancelMul G] (g : G) :
+theorem mulLeftEmbedding_eq_mulRightEmbedding [CommMagma G] [IsCancelMul G] (g : G) :
     mulLeftEmbedding g = mulRightEmbedding g := by
   ext
   exact mul_comm _ _

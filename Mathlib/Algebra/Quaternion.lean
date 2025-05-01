@@ -77,7 +77,7 @@ open Quaternion
 
 /-- The equivalence between a quaternion algebra over `R` and `R × R × R × R`. -/
 @[simps]
-def equivProd {R : Type*} (c₁ c₂ c₃: R) : ℍ[R,c₁,c₂,c₃] ≃ R × R × R × R where
+def equivProd {R : Type*} (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃ R × R × R × R where
   toFun a := ⟨a.1, a.2, a.3, a.4⟩
   invFun a := ⟨a.1, a.2.1, a.2.2.1, a.2.2.2⟩
   left_inv _ := rfl
@@ -85,7 +85,7 @@ def equivProd {R : Type*} (c₁ c₂ c₃: R) : ℍ[R,c₁,c₂,c₃] ≃ R × R
 
 /-- The equivalence between a quaternion algebra over `R` and `Fin 4 → R`. -/
 @[simps symm_apply]
-def equivTuple {R : Type*} (c₁ c₂ c₃: R) : ℍ[R,c₁,c₂,c₃] ≃ (Fin 4 → R) where
+def equivTuple {R : Type*} (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃ (Fin 4 → R) where
   toFun a := ![a.1, a.2, a.3, a.4]
   invFun a := ⟨a 0, a 1, a 2, a 3⟩
   left_inv _ := rfl
@@ -1138,7 +1138,7 @@ variable {R : Type*}
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing R] {a : ℍ[R]}
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {a : ℍ[R]}
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
@@ -1183,7 +1183,27 @@ end LinearOrderedCommRing
 
 section Field
 
-variable [LinearOrderedField R] (a b : ℍ[R])
+variable [Field R] (a b : ℍ[R])
+
+instance instNNRatCast : NNRatCast ℍ[R] where nnratCast q := (q : R)
+instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
+
+@[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℍ[R]).re = q := rfl
+@[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℍ[R]).im = 0 := rfl
+@[simp, norm_cast] lemma imI_nnratCast (q : ℚ≥0) : (q : ℍ[R]).imI = 0 := rfl
+@[simp, norm_cast] lemma imJ_nnratCast (q : ℚ≥0) : (q : ℍ[R]).imJ = 0 := rfl
+@[simp, norm_cast] lemma imK_nnratCast (q : ℚ≥0) : (q : ℍ[R]).imK = 0 := rfl
+@[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℍ[R]).re = q := rfl
+@[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℍ[R]).im = 0 := rfl
+@[simp, norm_cast] lemma ratCast_imI (q : ℚ) : (q : ℍ[R]).imI = 0 := rfl
+@[simp, norm_cast] lemma ratCast_imJ (q : ℚ) : (q : ℍ[R]).imJ = 0 := rfl
+@[simp, norm_cast] lemma ratCast_imK (q : ℚ) : (q : ℍ[R]).imK = 0 := rfl
+
+@[norm_cast] lemma coe_nnratCast (q : ℚ≥0) : ↑(q : R) = (q : ℍ[R]) := rfl
+
+@[norm_cast] lemma coe_ratCast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) := rfl
+
+variable [LinearOrder R] [IsStrictOrderedRing R] (a b : ℍ[R])
 
 @[simps -isSimp]
 instance instInv : Inv ℍ[R] :=
@@ -1208,24 +1228,6 @@ theorem coe_div (x y : R) : ((x / y : R) : ℍ[R]) = x / y :=
 @[norm_cast, simp]
 theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :=
   map_zpow₀ (algebraMap R ℍ[R]) x z
-
-instance instNNRatCast : NNRatCast ℍ[R] where nnratCast q := (q : R)
-instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
-
-@[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℍ[R]).re = q := rfl
-@[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℍ[R]).im = 0 := rfl
-@[simp, norm_cast] lemma imI_nnratCast (q : ℚ≥0) : (q : ℍ[R]).imI = 0 := rfl
-@[simp, norm_cast] lemma imJ_nnratCast (q : ℚ≥0) : (q : ℍ[R]).imJ = 0 := rfl
-@[simp, norm_cast] lemma imK_nnratCast (q : ℚ≥0) : (q : ℍ[R]).imK = 0 := rfl
-@[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℍ[R]).re = q := rfl
-@[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℍ[R]).im = 0 := rfl
-@[simp, norm_cast] lemma ratCast_imI (q : ℚ) : (q : ℍ[R]).imI = 0 := rfl
-@[simp, norm_cast] lemma ratCast_imJ (q : ℚ) : (q : ℍ[R]).imJ = 0 := rfl
-@[simp, norm_cast] lemma ratCast_imK (q : ℚ) : (q : ℍ[R]).imK = 0 := rfl
-
-@[norm_cast] lemma coe_nnratCast (q : ℚ≥0) : ↑(q : R) = (q : ℍ[R]) := rfl
-
-@[norm_cast] lemma coe_ratCast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) := rfl
 
 instance instDivisionRing : DivisionRing ℍ[R] where
   __ := Quaternion.instRing

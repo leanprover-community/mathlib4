@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Module.Opposite
 import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-!
 # Multiplicative action on the completion of a uniform space
@@ -44,31 +44,31 @@ export UniformContinuousConstVAdd (uniformContinuous_const_vadd)
 
 export UniformContinuousConstSMul (uniformContinuous_const_smul)
 
-instance AddMonoid.uniformContinuousConstSMul_nat [AddGroup X] [UniformAddGroup X] :
+instance AddMonoid.uniformContinuousConstSMul_nat [AddGroup X] [IsUniformAddGroup X] :
     UniformContinuousConstSMul ℕ X :=
   ⟨uniformContinuous_const_nsmul⟩
 
-instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [UniformAddGroup X] :
+instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [IsUniformAddGroup X] :
     UniformContinuousConstSMul ℤ X :=
   ⟨uniformContinuous_const_zsmul⟩
 
 /-- A `DistribMulAction` that is continuous on a uniform group is uniformly continuous.
 This can't be an instance due to it forming a loop with
 `UniformContinuousConstSMul.to_continuousConstSMul` -/
-theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddCommGroup M]
-    [DistribMulAction R M] [UniformSpace M] [UniformAddGroup M] [ContinuousConstSMul R M] :
+theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddGroup M]
+    [DistribMulAction R M] [UniformSpace M] [IsUniformAddGroup M] [ContinuousConstSMul R M] :
     UniformContinuousConstSMul R M :=
   ⟨fun r =>
     uniformContinuous_of_continuousAt_zero (DistribMulAction.toAddMonoidHom M r)
       (Continuous.continuousAt (continuous_const_smul r))⟩
 
 /-- The action of `Semiring.toModule` is uniformly continuous. -/
-instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [UniformAddGroup R]
+instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [IsUniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul R R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
 
 /-- The action of `Semiring.toOppositeModule` is uniformly continuous. -/
-instance Ring.uniformContinuousConstSMul_op [Ring R] [UniformSpace R] [UniformAddGroup R]
+instance Ring.uniformContinuousConstSMul_op [Ring R] [UniformSpace R] [IsUniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul Rᵐᵒᵖ R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
 
@@ -96,9 +96,6 @@ lemma IsUniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuous
     simpa only [hf.uniformContinuous_iff, Function.comp_def, hsmul]
       using hf.uniformContinuous.const_smul c
 
-@[deprecated (since := "2024-10-05")]
-alias UniformInducing.uniformContinuousConstSMul := IsUniformInducing.uniformContinuousConstSMul
-
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/
 @[to_additive "If an additive action is central, then its right action is uniform
@@ -116,8 +113,8 @@ instance MulOpposite.uniformContinuousConstSMul [UniformContinuousConstSMul M X]
 end SMul
 
 @[to_additive]
-instance UniformGroup.to_uniformContinuousConstSMul {G : Type u} [Group G] [UniformSpace G]
-    [UniformGroup G] : UniformContinuousConstSMul G G :=
+instance IsUniformGroup.to_uniformContinuousConstSMul {G : Type u} [Group G] [UniformSpace G]
+    [IsUniformGroup G] : UniformContinuousConstSMul G G :=
   ⟨fun _ => uniformContinuous_const.mul uniformContinuous_id⟩
 
 section Ring
@@ -173,7 +170,7 @@ theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·
 instance : UniformContinuousConstSMul M (Completion X) :=
   ⟨fun _ => uniformContinuous_map⟩
 
-@[to_additive instVAddAssocClass]
+@[to_additive]
 instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
     [UniformContinuousConstSMul N X] [IsScalarTower M N X] : IsScalarTower M N (Completion X) :=
   ⟨fun m n x => by

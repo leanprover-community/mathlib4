@@ -50,8 +50,8 @@ If `Monovary f g`, `Injective g` and `σ` is a permutation, then `Monovary f (g 
 
 open Equiv Equiv.Perm Finset Function OrderDual
 
-variable {ι α β : Type*} [LinearOrderedSemiring α] [ExistsAddOfLE α]
-  [LinearOrderedCancelAddCommMonoid β] [Module α β]
+variable {ι α β : Type*} [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β] [Module α β]
 
 /-! ### Scalar multiplication versions -/
 

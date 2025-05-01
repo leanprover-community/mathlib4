@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 
 import Mathlib.Topology.Separation.Regular
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Separation properties: profinite spaces

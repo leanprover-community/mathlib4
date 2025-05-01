@@ -414,7 +414,7 @@ theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H]
   rw [div_eq_mul_inv, div_eq_mul_inv, map_mul, hf]
 
 @[to_additive]
-lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F)
+lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H] (f : F)
     (hf : ∀ a, f a⁻¹ = (f a)⁻¹) (g h : ι → G) : f ∘ (g / h) = f ∘ g / f ∘ h := by
   ext; simp [map_div' f hf]
 
@@ -568,10 +568,6 @@ def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G 
   map_one' := by rw [← mul_right_cancel_iff, ← map_mul _ 1, one_mul, one_mul]
 
 end MonoidHom
-
-section Deprecated
-
-end Deprecated
 
 @[to_additive (attr := simp)]
 theorem OneHom.mk_coe [One M] [One N] (f : OneHom M N) (h1) : OneHom.mk f h1 = f :=

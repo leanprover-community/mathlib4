@@ -96,6 +96,11 @@ lemma dist_add_dist_eq_iff : dist a b + dist b c = dist a c ↔ Wbtw ℝ a b c :
     at this
   rwa [(vsub_left_injective _).mem_set_image] at this
 
+/-- The strict triangle inequality. -/
+theorem dist_lt_dist_add_dist_iff {a b c : P} :
+    dist a c < dist a b + dist b c ↔ ¬ Wbtw ℝ a b c := by
+  rw [← ne_iff_lt_iff_le.mpr (dist_triangle _ _ _), not_iff_not, eq_comm, dist_add_dist_eq_iff]
+
 end MetricSpace
 
 variable {E F PE PF : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E]

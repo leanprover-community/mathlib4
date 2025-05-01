@@ -15,14 +15,14 @@ the Zariski topology on `Over X` can be obtained as `Scheme.zariskiTopology.over
 
 TODO:
 * If `Y : Scheme.{u}`, define a continuous functor from the category of opens of `Y`
-to `Over Y`, and show that a presheaf on `Over Y` is a sheaf for the Zariski topology
-iff its "restriction" to the topological space `Z` is a sheaf for all `Z : Over Y`.
+  to `Over Y`, and show that a presheaf on `Over Y` is a sheaf for the Zariski topology
+  iff its "restriction" to the topological space `Z` is a sheaf for all `Z : Over Y`.
 * We should have good notions of (pre)sheaves of `Type (u + 1)` (e.g. associated
-sheaf functor, pushforward, pullbacks) on `Scheme.{u}` for this topology. However,
-some constructions in the `CategoryTheory.Sites` folder currently assume that
-the site is a small category: this should be generalized. As a result,
-this big Zariski site can considered as a test case of the Grothendieck topology API
-for future applications to étale cohomology.
+  sheaf functor, pushforward, pullbacks) on `Scheme.{u}` for this topology. However,
+  some constructions in the `CategoryTheory.Sites` folder currently assume that
+  the site is a small category: this should be generalized. As a result,
+  this big Zariski site can considered as a test case of the Grothendieck topology API
+  for future applications to étale cohomology.
 
 -/
 

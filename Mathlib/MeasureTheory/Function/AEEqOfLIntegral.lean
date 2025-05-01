@@ -184,7 +184,7 @@ theorem lintegral_eq_lintegral_of_isPiSystem
   refine MeasurableSpace.induction_on_inter h_eq h_inter ?_ basic ?_ ?_
   · simp
   · intro t ht h_eq
-    rw [setLintegral_compl ht, setLintegral_compl ht, h_eq, h_univ]
+    rw [setLIntegral_compl ht, setLIntegral_compl ht, h_eq, h_univ]
     · refine ne_of_lt ?_
       calc ∫⁻ x in t, g x ∂μ
       _ ≤ ∫⁻ x, g x ∂μ := setLIntegral_le_lintegral t _

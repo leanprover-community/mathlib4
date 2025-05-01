@@ -39,7 +39,7 @@ def coveringOfPresieve (U : Opens X) (R : Presieve U) : (ΣV, { f : V ⟶ U // R
   fun f => f.1
 
 @[simp]
-theorem coveringOfPresieve_apply (U : Opens X) (R : Presieve U) (f : ΣV, { f : V ⟶ U // R f }) :
+theorem coveringOfPresieve_apply (U : Opens X) (R : Presieve U) (f : Σ V, { f : V ⟶ U // R f }) :
     coveringOfPresieve U R f = f.1 := rfl
 
 namespace coveringOfPresieve
@@ -105,10 +105,10 @@ def homOfIndex (i : ι) : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f } :=
 /-- By using the axiom of choice, a dependent pair `(V, f)` where `f : V ⟶ iSup U` is a member of
 `presieveOfCovering U f` can be turned into an index `i : ι`, such that `V = U i`.
 -/
-def indexOfHom (f : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
+def indexOfHom (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
   f.2.2.choose
 
-theorem indexOfHom_spec (f : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f }) :
+theorem indexOfHom_spec (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) :
     f.1 = U (indexOfHom U f) :=
   f.2.2.choose_spec
 
@@ -151,9 +151,6 @@ theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
   obtain ⟨_, _, rfl⟩ := i.le h
   exact ⟨_, rfl⟩
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.compatiblePreserving := IsOpenEmbedding.compatiblePreserving
-
 theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
     CoverPreserving (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) hf.functor := by
   constructor
@@ -169,16 +166,10 @@ lemma Topology.IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
   · exact h.compatiblePreserving
   · exact h.isOpenMap.coverPreserving
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.functor_isContinuous := IsOpenEmbedding.functor_isContinuous
-
 theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF : F.IsSheaf) :
     IsSheaf (h.isOpenMap.functor.op ⋙ F) := by
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
-
-@[deprecated (since := "2024-10-18")]
-alias TopCat.Presheaf.isSheaf_of_openEmbedding := TopCat.Presheaf.isSheaf_of_isOpenEmbedding
 
 variable (f)
 

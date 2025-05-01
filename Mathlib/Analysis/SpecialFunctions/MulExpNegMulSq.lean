@@ -5,7 +5,7 @@ Authors: Jakob Stiefel
 -/
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Definition of `mulExpNegMulSq` and properties

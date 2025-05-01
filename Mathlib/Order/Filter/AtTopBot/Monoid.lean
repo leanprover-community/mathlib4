@@ -17,7 +17,7 @@ namespace Filter
 
 section OrderedCommMonoid
 
-variable [OrderedCommMonoid M] {l : Filter α} {f g : α → M}
+variable [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M] {l : Filter α} {f g : α → M}
 
 @[to_additive]
 theorem Tendsto.one_eventuallyLE_mul_atTop (hf : 1 ≤ᶠ[l] f) (hg : Tendsto g l atTop) :
@@ -116,13 +116,13 @@ theorem Tendsto.atTop_pow (hf : Tendsto f l atTop) {n : ℕ} (hn : 0 < n) :
 @[to_additive nsmul_atBot]
 theorem Tendsto.atBot_pow (hf : Tendsto f l atBot) {n : ℕ} (hn : 0 < n) :
     Tendsto (fun x => f x ^ n) l atBot :=
-  @Tendsto.atTop_pow α Mᵒᵈ _ l f hf n hn
+  Tendsto.atTop_pow (M := Mᵒᵈ) hf hn
 
 end OrderedCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid M] {l : Filter α} {f g : α → M}
+variable [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M] {l : Filter α} {f g : α → M}
 
 /-- In an ordered cancellative multiplicative monoid, if `C * f x → +∞`, then `f x → +∞`.
 
@@ -211,7 +211,8 @@ end OrderedCancelCommMonoid
 
 section OrderedCancelAddCommMonoid
 
-variable [OrderedCancelAddCommMonoid M] {l : Filter α} {f g : α → M}
+variable [AddCommMonoid M] [PartialOrder M] [IsOrderedCancelAddMonoid M]
+  {l : Filter α} {f g : α → M}
 
 @[deprecated Tendsto.atTop_of_isBoundedUnder_le_add (since := "2025-02-13")]
 theorem tendsto_atTop_of_add_bdd_above_left' (C) (hC : ∀ᶠ x in l, f x ≤ C)

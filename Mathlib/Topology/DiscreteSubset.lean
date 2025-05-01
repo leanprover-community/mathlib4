@@ -5,6 +5,7 @@ Authors: Oliver Nash, Bhavik Mehta, Daniel Weber, Stefan Kebekus
 -/
 import Mathlib.Tactic.TautoSet
 import Mathlib.Topology.Constructions
+import Mathlib.Data.Set.Subset
 import Mathlib.Topology.Separation.Basic
 
 /-!
@@ -115,13 +116,8 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
 /-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
 lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
    codiscreteWithin U₁ ≤ codiscreteWithin U := by
-  intro s hs
-  simp_rw [mem_codiscreteWithin, disjoint_principal_right] at hs ⊢
-  intro x hx
-  specialize hs x (hU hx)
-  apply mem_of_superset hs
-  rw [Set.compl_subset_compl]
-  exact diff_subset_diff_left hU
+  refine (biSup_mono hU).trans <| iSup₂_mono fun _ _ ↦ ?_
+  gcongr
 
 /-- If `s` is codiscrete within `U`, then `sᶜ ∩ U` has discrete topology. -/
 theorem discreteTopology_of_codiscreteWithin {U s : Set X} (h : s ∈ Filter.codiscreteWithin U) :

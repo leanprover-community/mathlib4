@@ -134,7 +134,7 @@ def Foldr.get (x : Foldr α) : α → α :=
 def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr β where
   toFun xs := flip (List.foldr f) (FreeMonoid.toList xs)
   map_one' := rfl
-  map_mul' _ _ := funext fun _ => List.foldr_append _ _ _ _
+  map_mul' _ _ := funext fun _ => List.foldr_append
 
 abbrev foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   MulOpposite <| End <| KleisliCat.mk m α

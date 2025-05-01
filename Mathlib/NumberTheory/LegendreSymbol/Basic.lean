@@ -176,9 +176,9 @@ theorem eq_one_iff {a : ℤ} (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = 1 �
 
 theorem eq_one_iff' {a : ℕ} (ha0 : (a : ZMod p) ≠ 0) :
     legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by
-      rw [eq_one_iff]
-      · norm_cast
-      · exact mod_cast ha0
+  rw [eq_one_iff]
+  · norm_cast
+  · exact mod_cast ha0
 
 /-- `legendreSym p a = -1` iff `a` is a nonsquare mod `p`. -/
 theorem eq_neg_one_iff {a : ℤ} : legendreSym p a = -1 ↔ ¬IsSquare (a : ZMod p) :=

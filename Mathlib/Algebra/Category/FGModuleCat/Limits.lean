@@ -55,7 +55,8 @@ instance (F : J ⥤ FGModuleCat k) :
 def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
     CreatesLimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
   createsLimitOfFullyFaithfulOfIso
-    ⟨(limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k), inferInstance⟩
+    ⟨(limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k),
+      by rw [ModuleCat.isFG_iff]; infer_instance⟩
     (Iso.refl _)
 
 instance : CreatesLimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where

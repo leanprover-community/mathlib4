@@ -50,8 +50,8 @@ theorem eval₂_pow' (n : ℕ) :
 theorem eval₂_comp' : eval₂ (algebraMap R S) x (p.comp q) =
     eval₂ (algebraMap R S) (eval₂ (algebraMap R S) x q) p := by
   induction p using Polynomial.induction_on' with
-  | h_add r s hr hs => simp only [add_comp, eval₂_add, hr, hs]
-  | h_monomial n a => simp only [monomial_comp, eval₂_mul', eval₂_C, eval₂_monomial, eval₂_pow']
+  | add r s hr hs => simp only [add_comp, eval₂_add, hr, hs]
+  | monomial n a => simp only [monomial_comp, eval₂_mul', eval₂_C, eval₂_monomial, eval₂_pow']
 
 end Algebra
 

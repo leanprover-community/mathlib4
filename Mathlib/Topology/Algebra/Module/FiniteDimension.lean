@@ -136,7 +136,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
   · -- In the case where `l` is surjective, we factor it as `φ : (E ⧸ l.ker) ≃ₗ[𝕜] 𝕜`. Note that
     -- `E ⧸ l.ker` is T2 since `l.ker` is closed.
     have : finrank 𝕜 (LinearMap.range l) = 1 :=
-      le_antisymm (finrank_self 𝕜 ▸ l.range.finrank_le) (zero_lt_iff.mpr H)
+      le_antisymm (finrank_self 𝕜 ▸ (LinearMap.range l).finrank_le) (zero_lt_iff.mpr H)
     have hi : Function.Injective ((LinearMap.ker l).liftQ l (le_refl _)) := by
       rw [← LinearMap.ker_eq_bot]
       exact Submodule.ker_liftQ_eq_bot _ _ _ (le_refl _)
@@ -191,7 +191,7 @@ variable [CompleteSpace 𝕜]
 private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
-  letI : UniformAddGroup E := uniformAddGroup_of_addCommGroup
+  letI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   suffices ∀ n, Fintype.card ι = n → Continuous ξ.equivFun by exact this _ rfl
   intro n hn
   induction n generalizing ι E with
@@ -204,7 +204,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
       intro s s_dim
-      letI : UniformAddGroup s := s.toAddSubgroup.uniformAddGroup
+      letI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
       let b := Basis.ofVectorSpace 𝕜 s
       have U : IsUniformEmbedding b.equivFun.symm.toEquiv := by
         have : Fintype.card (Basis.ofVectorSpaceIndex 𝕜 s) = n := by
@@ -227,7 +227,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
           have Z := f.finrank_range_add_finrank_ker
           rw [finrank_eq_card_basis ξ, hn] at Z
           have : finrank 𝕜 (LinearMap.range f) = 1 :=
-            le_antisymm (finrank_self 𝕜 ▸ f.range.finrank_le) (zero_lt_iff.mpr H)
+            le_antisymm (finrank_self 𝕜 ▸ (LinearMap.range f).finrank_le) (zero_lt_iff.mpr H)
           rw [this, add_comm, Nat.add_one] at Z
           exact Nat.succ.inj Z
         have : IsClosed (LinearMap.ker f : Set E) := H₁ _ this
@@ -482,10 +482,10 @@ end ContinuousLinearMap
 
 end NormedField
 
-section UniformAddGroup
+section IsUniformAddGroup
 
 variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
-  [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [UniformAddGroup E]
+  [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [IsUniformAddGroup E]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
 include 𝕜 in
@@ -499,10 +499,10 @@ variable {𝕜 E}
 /-- A finite-dimensional subspace is complete. -/
 theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsComplete (s : Set E) :=
-  haveI : UniformAddGroup s := s.toAddSubgroup.uniformAddGroup
+  haveI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
   completeSpace_coe_iff_isComplete.1 (FiniteDimensional.complete 𝕜 s)
 
-end UniformAddGroup
+end IsUniformAddGroup
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
    [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
@@ -515,7 +515,7 @@ theorem Submodule.closed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
   letI := IsTopologicalAddGroup.toUniformSpace E
-  haveI : UniformAddGroup E := uniformAddGroup_of_addCommGroup
+  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   s.complete_of_finiteDimensional.isClosed
 
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
@@ -525,17 +525,11 @@ theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 
   { IsEmbedding.subtypeVal.comp g.toContinuousLinearEquiv.toHomeomorph.isEmbedding with
     isClosed_range := by
       haveI := f.finiteDimensional_range
-      simpa [LinearMap.range_coe f] using f.range.closed_of_finiteDimensional }
-
-@[deprecated (since := "2024-10-20")]
-alias LinearMap.closedEmbedding_of_injective := LinearMap.isClosedEmbedding_of_injective
+      simpa [LinearMap.range_coe f] using (LinearMap.range f).closed_of_finiteDimensional }
 
 theorem isClosedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
     IsClosedEmbedding fun x : 𝕜 => x • c :=
   LinearMap.isClosedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 E hc)
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_smul_left := isClosedEmbedding_smul_left
 
 -- `smul` is a closed map in the first argument.
 theorem isClosedMap_smul_left [T2Space E] (c : E) : IsClosedMap fun x : 𝕜 => x • c := by

@@ -91,12 +91,12 @@ theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
   · obtain ⟨_, ⟨⟨l, h₁, h₂⟩, rfl⟩, h₃⟩ :=
       not_bddAbove_iff'.mp (WithTop.iSup_coe_eq_top.1 ha) n
     exact ⟨l.take n, ⟨h₁.take _, fun x h ↦ h₂ _ <| take_subset _ _ h⟩,
-      (l.length_take n).trans <| min_eq_left <| le_of_not_ge h₃⟩
+      (l.length_take).trans <| min_eq_left <| le_of_not_ge h₃⟩
   · rw [ENat.iSup_coe_lt_top] at ha
     obtain ⟨⟨l, h₁, h₂⟩, e : l.length = _⟩ := Nat.sSup_mem (Set.range_nonempty _) ha
     refine
       ⟨l.take n, ⟨h₁.take _, fun x h ↦ h₂ _ <| take_subset _ _ h⟩,
-        (l.length_take n).trans <| min_eq_left <| ?_⟩
+        (l.length_take).trans <| min_eq_left <| ?_⟩
     rwa [e, ← Nat.cast_le (α := ℕ∞), sSup_range, ENat.coe_iSup ha, ← chainHeight_eq_iSup_subtype]
 
 theorem le_chainHeight_TFAE (n : ℕ) :
@@ -194,10 +194,10 @@ theorem chainHeight_image (f : α → β) (hf : ∀ {x y}, x < y ↔ f x < f y) 
   · suffices ∀ l ∈ (f '' s).subchain, ∃ l' ∈ s.subchain, map f l' = l by
       intro l hl
       obtain ⟨l', h₁, rfl⟩ := this l hl
-      exact ⟨l', h₁, length_map _ _⟩
+      exact ⟨l', h₁, length_map _⟩
     intro l
     induction' l with x xs hx
-    · exact fun _ ↦ ⟨nil, ⟨trivial, fun x h ↦ (not_mem_nil x h).elim⟩, rfl⟩
+    · exact fun _ ↦ ⟨nil, ⟨trivial, fun x h ↦ (not_mem_nil h).elim⟩, rfl⟩
     · intro h
       rw [cons_mem_subchain_iff] at h
       obtain ⟨⟨x, hx', rfl⟩, h₁, h₂⟩ := h
@@ -223,7 +223,7 @@ theorem chainHeight_dual : (ofDual ⁻¹' s).chainHeight = s.chainHeight := by
   · rw [chainHeight_le_chainHeight_iff]
     rintro l ⟨h₁, h₂⟩
     exact ⟨l.reverse, ⟨chain'_reverse.mpr h₁, fun i h ↦ h₂ i (mem_reverse.mp h)⟩,
-      (length_reverse _).symm⟩
+      length_reverse.symm⟩
 
 end LT
 
@@ -292,10 +292,10 @@ theorem chainHeight_union_le : (s ∪ t).chainHeight ≤ s.chainHeight + t.chain
     let l₂ := l.filter (· ∈ t)
     have hl₁ : ↑l₁.length ≤ s.chainHeight := by
       apply Set.length_le_chainHeight_of_mem_subchain
-      exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ by simpa using (of_mem_filter h :)⟩
+      exact ⟨hl.1.sublist filter_sublist, fun i h ↦ by simpa using (of_mem_filter h :)⟩
     have hl₂ : ↑l₂.length ≤ t.chainHeight := by
       apply Set.length_le_chainHeight_of_mem_subchain
-      exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ by simpa using (of_mem_filter h :)⟩
+      exact ⟨hl.1.sublist filter_sublist, fun i h ↦ by simpa using (of_mem_filter h :)⟩
     refine le_trans ?_ (add_le_add hl₁ hl₂)
     simp_rw [l₁, l₂, ← Nat.cast_add, ← Multiset.coe_card, ← Multiset.card_add,
       ← Multiset.filter_coe]

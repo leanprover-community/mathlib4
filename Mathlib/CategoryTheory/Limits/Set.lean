@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.Data.Set.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.Lattice
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # The functor from `Set X` to types preserves filtered colimits

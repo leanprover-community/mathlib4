@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Topology.Algebra.Module.WeakDual
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Data.Set.Lattice
 

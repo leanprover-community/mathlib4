@@ -145,7 +145,8 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   rw [← F.map_comp, ← F.map_comp]
   simp only [Functor.map_comp]
   apply IsIso.eq_inv_of_inv_hom_id
-  simp only [assoc]
+  simp only [assoc, Functor.associator_inv_app, Functor.associator_hom_app, Functor.comp_obj,
+    curriedTensor_obj_obj, tensorLeft_obj, Functor.map_id, id_comp]
   rw [prodComparison_natural_whiskerLeft, prodComparison_natural_whiskerRight_assoc]
   slice_lhs 2 3 => rw [← prodComparison_comp]
   simp only [assoc]

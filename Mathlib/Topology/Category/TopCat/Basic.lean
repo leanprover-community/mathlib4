@@ -214,17 +214,11 @@ theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding f :=
   (TopCat.homeoOfIso (asIso g)).isOpenEmbedding.of_comp_iff f
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_iff_comp_isIso := isOpenEmbedding_iff_comp_isIso
-
 @[simp]
 theorem isOpenEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding f := by
   simp only [← Functor.map_comp]
   exact isOpenEmbedding_iff_comp_isIso f g
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_iff_comp_isIso' := isOpenEmbedding_iff_comp_isIso'
 
 theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding g := by
@@ -234,16 +228,10 @@ theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶
     exact congr_arg (DFunLike.coe ∘ ConcreteCategory.hom) (IsIso.inv_hom_id_assoc f g).symm
   · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_iff_isIso_comp := isOpenEmbedding_iff_isIso_comp
-
 @[simp]
 theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding g := by
   simp only [← Functor.map_comp]
   exact isOpenEmbedding_iff_isIso_comp f g
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_iff_isIso_comp' := isOpenEmbedding_iff_isIso_comp'
 
 end TopCat

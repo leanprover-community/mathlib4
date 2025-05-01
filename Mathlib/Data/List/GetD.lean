@@ -71,7 +71,7 @@ theorem getD_replicate {y i n} (h : i < n) :
 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
     (l ++ l').getD n d = l.getD n d := by
-  rw [getD_eq_getElem _ _ (Nat.lt_of_lt_of_le h (length_append _ _ ▸ Nat.le_add_right _ _)),
+  rw [getD_eq_getElem _ _ (Nat.lt_of_lt_of_le h (length_append ▸ Nat.le_add_right _ _)),
     getElem_append_left h, getD_eq_getElem]
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :

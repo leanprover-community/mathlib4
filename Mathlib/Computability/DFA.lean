@@ -11,11 +11,27 @@ import Mathlib.Tactic.NormNum
 /-!
 # Deterministic Finite Automata
 
-This file contains the definition of a Deterministic Finite Automaton (DFA), a state machine which
-determines whether a string (implemented as a list over an arbitrary alphabet) is in a regular set
-in linear time.
-Note that this definition allows for Automaton with infinite states, a `Fintype` instance must be
-supplied for true DFA's.
+A Deterministic Finite Automaton (DFA) is a state machine which
+decides membership in a particular `Language`, by following a path
+uniquely determined by an input string.
+
+We define regular languages to be ones for which a DFA exists, other formulations
+are later proved equivalent.
+
+Note that this definition allows for automata with infinite states,
+a `Fintype` instance must be supplied for true DFAs.
+
+## Main definitions
+
+- `DFA α σ`: automaton over alphabet `α` and set of states `σ`
+- `M.accepts`: the language accepted by the DFA `M`
+- `Language.IsRegular L`: a predicate stating that `L` is a regular language, i.e. there exists
+  a DFA that recognizes the language
+
+## Main theorems
+
+- `DFA.pumping_lemma` : every sufficiently long string accepted by the DFA has a substring that can
+  be repeated arbitrarily many times
 
 ## Implementation notes
 
@@ -84,7 +100,7 @@ theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.ste
 
 theorem evalFrom_of_append (start : σ) (x y : List α) :
     M.evalFrom start (x ++ y) = M.evalFrom (M.evalFrom start x) y :=
-  x.foldl_append _ _ y
+  List.foldl_append
 
 /--
 `M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state.
@@ -140,7 +156,7 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
   rcases hy with ⟨S, rfl, hS⟩
   induction' S with a S ih
   · rfl
-  · have ha := hS a (List.mem_cons_self _ _)
+  · have ha := hS a List.mem_cons_self
     rw [Set.mem_singleton_iff] at ha
     rw [List.flatten, evalFrom_of_append, ha, hx]
     apply ih

@@ -31,6 +31,9 @@ theorem isRadical_iff_span_singleton [CommSemiring R] :
   simp_rw [IsRadical, ← Ideal.mem_span_singleton]
   exact forall_swap.trans (forall_congr' fun r => exists_imp.symm)
 
+theorem isNilpotent_iff_zero_mem_powers [Monoid R] [Zero R] {x : R} :
+    IsNilpotent x ↔ 0 ∈ Submonoid.powers x := Iff.rfl
+
 section CommSemiring
 
 variable [CommSemiring R] {x y : R}
@@ -104,7 +107,7 @@ lemma isNilpotent_restrict_of_le {f : End R M} {p q : Submodule R M}
   ext ⟨x, hx⟩
   replace hn := DFunLike.congr_fun hn ⟨x, h hx⟩
   simp_rw [LinearMap.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero] at hn ⊢
-  rw [LinearMap.pow_restrict, LinearMap.restrict_apply] at hn ⊢
+  rw [Module.End.pow_restrict, LinearMap.restrict_apply] at hn ⊢
   ext
   exact (congr_arg Subtype.val hn :)
 
@@ -112,7 +115,7 @@ lemma isNilpotent.restrict
     {f : M →ₗ[R] M} {p : Submodule R M} (hf : MapsTo f p p) (hnil : IsNilpotent f) :
     IsNilpotent (f.restrict hf) := by
   obtain ⟨n, hn⟩ := hnil
-  exact ⟨n, LinearMap.ext fun m ↦ by simp only [LinearMap.pow_restrict n, hn,
+  exact ⟨n, LinearMap.ext fun m ↦ by simp only [Module.End.pow_restrict n, hn,
     LinearMap.restrict_apply, LinearMap.zero_apply]; rfl⟩
 
 end

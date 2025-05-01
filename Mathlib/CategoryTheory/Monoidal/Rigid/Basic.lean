@@ -364,6 +364,7 @@ convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X
 naturally isomorphic).
 -/
 def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y where
+  rightAdj := tensorLeft (ᘁY)
   adj := tensorLeftAdjunction (ᘁY) Y
 
 /-- `tensorLeftHomEquiv` commutes with tensoring on the right -/

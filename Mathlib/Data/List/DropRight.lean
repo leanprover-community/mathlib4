@@ -75,7 +75,7 @@ theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) :
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
   · cases n
-    · exact drop_length _
+    · exact drop_length
     · simp [drop_append_eq_append_drop, IH]
 
 @[simp]
@@ -202,7 +202,7 @@ lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
 @[simp]
 lemma rdrop_append_length {l₁ l₂ : List α} :
     List.rdrop (l₁ ++ l₂) (List.length l₂) = l₁ := by
-  rw [rdrop_eq_reverse_drop_reverse, ← length_reverse l₂,
+  rw [rdrop_eq_reverse_drop_reverse, ← length_reverse,
       reverse_append, drop_left, reverse_reverse]
 
 lemma rdrop_append_of_le_length {l₁ l₂ : List α} (k : ℕ) :

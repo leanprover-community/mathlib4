@@ -196,7 +196,8 @@ theorem IsSumSq.prod [CommSemiring R] {ι : Type*} {I : Finset ι} {x : ι → R
 In a linearly ordered semiring with the property `a ≤ b → ∃ c, a + c = b` (e.g. `ℕ`),
 sums of squares are non-negative.
 -/
-theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {s : R}
+theorem IsSumSq.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
+    [ExistsAddOfLE R] {s : R}
     (hs : IsSumSq s) : 0 ≤ s := by
   induction hs using IsSumSq.rec' with
   | zero          => simp

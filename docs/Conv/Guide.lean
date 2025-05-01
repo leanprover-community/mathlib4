@@ -195,7 +195,7 @@ in Lean 4 core.
 * `whnf` reduces the expression to weak-head normal form.
 
 * `zeta` applies zeta reduction to the expression (i.e., substitutes all `let` expressions
-and expands all local variables).
+  and expands all local variables).
 
 * `reduce` reduces the expression like the `#reduce` command.
   (Documentation says "for debugging purposes only.")

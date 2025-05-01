@@ -208,7 +208,7 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
   · rw [eq_top_iff, ← hsgone, Ideal.span_le]
     intro t ht
     have : 1 ∈ Ideal.span (Set.range <| fun a : sf ↦ a.val) := by simp [hsfone]
-    simp only [mem_ideal_span_range_iff_exists_fun, SetLike.mem_coe] at this ⊢
+    simp only [Ideal.mem_span_range_iff_exists_fun, SetLike.mem_coe] at this ⊢
     obtain ⟨cf, hcf⟩ := this
     let cg : sg → T := Pi.single ⟨t, ht⟩ 1
     use fun (a, b) ↦ g (cf a) * cg b

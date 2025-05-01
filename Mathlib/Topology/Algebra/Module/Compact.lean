@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 
@@ -34,3 +35,9 @@ lemma Ideal.isCompact_of_fg [IsTopologicalSemiring R] [CompactSpace R]
 variable (R M) in
 lemma Module.Finite.compactSpace [CompactSpace R] [Module.Finite R M] : CompactSpace M :=
   ⟨Submodule.isCompact_of_fg (Module.Finite.fg_top (R := R))⟩
+
+instance (priority := low) IsNoetherianRing.isClosed_ideal
+    {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
+    [IsNoetherianRing R] [CompactSpace R] [T2Space R] (I : Ideal R) :
+    IsClosed (X := R) I :=
+  (Ideal.isCompact_of_fg (IsNoetherian.noetherian I)).isClosed

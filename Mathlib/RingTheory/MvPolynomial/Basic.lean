@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MvPolynomial.Degrees
+import Mathlib.Data.DFinsupp.Small
 import Mathlib.Data.Fintype.Pi
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
@@ -45,10 +46,15 @@ variable (σ : Type u) (R : Type v) [CommSemiring R] (p m : ℕ)
 
 namespace MvPolynomial
 
+instance {σ : Type*} {R : Type*} [CommSemiring R]
+    [Small.{u} R] [Small.{u} σ] :
+    Small.{u} (MvPolynomial σ R) :=
+  inferInstanceAs (Small.{u} ((σ →₀ ℕ) →₀ R))
+
 section CharP
 
 instance [CharP R p] : CharP (MvPolynomial σ R) p where
-  cast_eq_zero_iff' n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
+  cast_eq_zero_iff n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
 
 end CharP
 

@@ -326,7 +326,7 @@ theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
 
 theorem isLittleO_log_rpow_atTop {r : ℝ} (hr : 0 < r) : log =o[atTop] fun x => x ^ r :=
   calc
-    log =O[atTop] fun x => r * log x := isBigO_self_const_mul _ hr.ne' _ _
+    log =O[atTop] fun x => r * log x := isBigO_self_const_mul hr.ne' _ _
     _ =ᶠ[atTop] fun x => log (x ^ r) :=
       ((eventually_gt_atTop 0).mono fun _ hx => (log_rpow hx _).symm)
     _ =o[atTop] fun x => x ^ r := isLittleO_log_id_atTop.comp_tendsto (tendsto_rpow_atTop hr)

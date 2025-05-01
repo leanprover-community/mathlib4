@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 
 /-!
@@ -34,10 +35,6 @@ Then, for `C := Sheaf X.etale AddCommGrp.{u}`, we will have
 (as `C` has enough injectives). Then, the `Ext` groups between étale
 sheaves over `X` shall be in `Type u`.
 
-## TODO
-* compute `Ext X Y 0`
-* construct the contravariant long exact sequences of `Ext`.
-
 -/
 
 assert_not_exists TwoSidedIdeal
@@ -56,22 +53,34 @@ abbrev HasExt : Prop :=
   ∀ (X Y : C), HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) ℤ
     ((CochainComplex.singleFunctor C 0).obj X) ((CochainComplex.singleFunctor C 0).obj Y)
 
--- TODO: when the canonical t-structure is formalized, replace `n : ℤ` by `n : ℕ`
 lemma hasExt_iff [HasDerivedCategory.{w'} C] :
-    HasExt.{w} C ↔ ∀ (X Y : C) (n : ℤ), Small.{w}
+    HasExt.{w} C ↔ ∀ (X Y : C) (n : ℤ) (_ : 0 ≤ n), Small.{w}
       ((singleFunctor C 0).obj X ⟶
         (((singleFunctor C 0).obj Y)⟦n⟧)) := by
   dsimp [HasExt]
   simp only [hasSmallLocalizedShiftedHom_iff _ _ Q]
   constructor
-  · intro h X Y n
+  · intro h X Y n hn
     exact (small_congr ((shiftFunctorZero _ ℤ).app
       ((singleFunctor C 0).obj X)).homFromEquiv).1 (h X Y 0 n)
   · intro h X Y a b
-    refine (small_congr ?_).1 (h X Y (b - a))
-    exact (Functor.FullyFaithful.ofFullyFaithful
-      (shiftFunctor _ a)).homEquiv.trans
-      ((shiftFunctorAdd' _ _ _ _ (Int.sub_add_cancel b a)).symm.app _).homToEquiv
+    obtain hab | hab := le_or_lt a b
+    · refine (small_congr ?_).1 (h X Y (b - a) (by simpa))
+      exact (Functor.FullyFaithful.ofFullyFaithful
+        (shiftFunctor _ a)).homEquiv.trans
+        ((shiftFunctorAdd' _ _ _ _ (Int.sub_add_cancel b a)).symm.app _).homToEquiv
+    · suffices Subsingleton ((Q.obj ((CochainComplex.singleFunctor C 0).obj X))⟦a⟧ ⟶
+          (Q.obj ((CochainComplex.singleFunctor C 0).obj Y))⟦b⟧) from inferInstance
+      constructor
+      intro x y
+      rw [← cancel_mono ((Q.commShiftIso b).inv.app _),
+        ← cancel_epi ((Q.commShiftIso a).hom.app _)]
+      have : (((CochainComplex.singleFunctor C 0).obj X)⟦a⟧).IsStrictlyLE (-a) :=
+        CochainComplex.isStrictlyLE_shift _ 0 _ _ (by omega)
+      have : (((CochainComplex.singleFunctor C 0).obj Y)⟦b⟧).IsStrictlyGE (-b) :=
+        CochainComplex.isStrictlyGE_shift _ 0 _ _ (by omega)
+      apply (subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE _ _ (-a) (-b) (by
+        omega)).elim
 
 lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := by
   rw [hasExt_iff.{w}]
@@ -172,6 +181,33 @@ lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {n : ℕ} (α : Ext Z T
   rw [← mk₀_comp_mk₀, comp_assoc]
   omega
 
+
+variable (X Y) in
+lemma mk₀_bijective : Function.Bijective (mk₀ (X := X) (Y := Y)) := by
+  letI := HasDerivedCategory.standard C
+  have h : (singleFunctor C 0).FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
+  let e : (X ⟶ Y) ≃ Ext X Y 0 :=
+    (h.homEquiv.trans (ShiftedHom.homEquiv _ (by simp))).trans homEquiv.symm
+  have he : e.toFun = mk₀ := by
+    ext f : 1
+    dsimp [e]
+    apply homEquiv.injective
+    apply (Equiv.apply_symm_apply _ _).trans
+    symm
+    apply SmallShiftedHom.equiv_mk₀
+  rw [← he]
+  exact e.bijective
+
+/-- The bijection `Ext X Y 0 ≃ (X ⟶ Y)`. -/
+@[simps! symm_apply]
+noncomputable def homEquiv₀ : Ext X Y 0 ≃ (X ⟶ Y) :=
+  (Equiv.ofBijective _ (mk₀_bijective X Y)).symm
+
+@[simp]
+lemma mk₀_homEquiv₀_apply (f : Ext X Y 0) :
+    mk₀ (homEquiv₀ f) = f :=
+  homEquiv₀.left_inv f
+
 variable {n : ℕ}
 
 /-! The abelian group structure on `Ext X Y n` is defined by transporting the
@@ -253,7 +289,22 @@ lemma comp_mk₀_id (α : Ext X Y n) :
 variable (X Y) in
 @[simp]
 lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by
-  letI := HasDerivedCategory.standard C; ext; simp [this, zero_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [zero_hom']
+
+lemma mk₀_add (f g : X ⟶ Y) : mk₀ (f + g) = mk₀ f + mk₀ g := by
+  letI := HasDerivedCategory.standard C; ext; simp [add_hom', ShiftedHom.mk₀]
+
+/-- The additive bijection `Ext X Y 0 ≃+ (X ⟶ Y)`. -/
+@[simps! symm_apply]
+noncomputable def addEquiv₀ : Ext X Y 0 ≃+ (X ⟶ Y) where
+  toEquiv := homEquiv₀
+  map_add' x y := by apply
+    homEquiv₀.symm.injective (by simp [mk₀_add])
+
+@[simp]
+lemma mk₀_addEquiv₀_apply (f : Ext X Y 0) :
+    mk₀ (addEquiv₀ f) = f :=
+  addEquiv₀.left_inv f
 
 section
 
@@ -390,5 +441,19 @@ end Ext
 end ChangeOfUniverse
 
 end Abelian
+
+open Abelian
+
+variable (C) in
+lemma hasExt_iff_small_ext :
+    HasExt.{w'} C ↔ ∀ (X Y : C) (n : ℕ), Small.{w'} (Ext.{w} X Y n) := by
+  letI := HasDerivedCategory.standard C
+  simp only [hasExt_iff, small_congr Ext.homEquiv]
+  constructor
+  · intro h X Y n
+    exact h X Y n (by simp)
+  · intro h X Y n hn
+    lift n to ℕ using hn
+    exact h X Y n
 
 end CategoryTheory

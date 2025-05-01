@@ -128,7 +128,6 @@ noncomputable def realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥
     convert this using 1
     abel
   commutes' r := by
-    simp only
     obtain (hr | hr) := le_total 0 r
     · lift r to ℝ≥0 using hr
       simpa only [ContinuousMap.toNNReal_algebraMap, ContinuousMap.toNNReal_neg_algebraMap,

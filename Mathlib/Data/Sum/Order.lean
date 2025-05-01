@@ -376,8 +376,9 @@ instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕
 instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) :=
   { Lex.partialOrder with
     le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
-    decidableLE := instDecidableRelSumLex,
-    decidableEq := instDecidableEqSum }
+    toDecidableLE := instDecidableRelSumLex,
+    toDecidableLT := instDecidableRelSumLex,
+    toDecidableEq := instDecidableEqSum }
 
 /-- The lexicographical bottom of a sum is the bottom of the left component. -/
 instance orderBot [LE α] [OrderBot α] [LE β] :

@@ -197,7 +197,7 @@ theorem inv_fromBlocks_zero₂₁_of_isUnit_iff (A : Matrix m m α) (B : Matrix 
   · have hD := hAD.not.mp hA
     have : ¬IsUnit (fromBlocks A B 0 D) :=
       isUnit_fromBlocks_zero₂₁.not.mpr (not_and'.mpr fun _ => hA)
-    simp_rw [nonsing_inv_eq_ring_inverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
+    simp_rw [nonsing_inv_eq_ringInverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
       Ring.inverse_non_unit _ this, Matrix.zero_mul, neg_zero, fromBlocks_zero]
 
 /-- An expression for the inverse of a lower block-triangular matrix, when either both elements of
@@ -214,7 +214,7 @@ theorem inv_fromBlocks_zero₁₂_of_isUnit_iff (A : Matrix m m α) (C : Matrix 
   · have hD := hAD.not.mp hA
     have : ¬IsUnit (fromBlocks A 0 C D) :=
       isUnit_fromBlocks_zero₁₂.not.mpr (not_and'.mpr fun _ => hA)
-    simp_rw [nonsing_inv_eq_ring_inverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
+    simp_rw [nonsing_inv_eq_ringInverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
       Ring.inverse_non_unit _ this, Matrix.zero_mul, neg_zero, fromBlocks_zero]
 
 end Triangular

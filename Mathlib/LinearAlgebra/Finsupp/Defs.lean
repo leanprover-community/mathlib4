@@ -174,8 +174,7 @@ end LComapDomain
 def mapRange.linearMap (f : M →ₗ[R] N) : (α →₀ M) →ₗ[R] α →₀ N :=
   { mapRange.addMonoidHom f.toAddMonoidHom with
     toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
-    -- Porting note: `hf` should be specified.
-    map_smul' := fun c v => mapRange_smul (hf := f.map_zero) c v (f.map_smul c) }
+    map_smul' := fun c v => mapRange_smul c v (f.map_smul c) }
 
 @[simp]
 theorem mapRange.linearMap_id :
@@ -185,7 +184,6 @@ theorem mapRange.linearMap_id :
 theorem mapRange.linearMap_comp (f : N →ₗ[R] P) (f₂ : M →ₗ[R] N) :
     (mapRange.linearMap (f.comp f₂) : (α →₀ _) →ₗ[R] _) =
       (mapRange.linearMap f).comp (mapRange.linearMap f₂) :=
-  -- Porting note: Placeholders should be filled.
   LinearMap.ext <| mapRange_comp f f.map_zero f₂ f₂.map_zero (comp f f₂).map_zero
 
 @[simp]
@@ -210,7 +208,6 @@ theorem mapRange.linearEquiv_refl :
 theorem mapRange.linearEquiv_trans (f : M ≃ₗ[R] N) (f₂ : N ≃ₗ[R] P) :
     (mapRange.linearEquiv (f.trans f₂) : (α →₀ _) ≃ₗ[R] _) =
       (mapRange.linearEquiv f).trans (mapRange.linearEquiv f₂) :=
-  -- Porting note: Placeholders should be filled.
   LinearEquiv.ext <| mapRange_comp f₂ f₂.map_zero f f.map_zero (f.trans f₂).map_zero
 
 @[simp]

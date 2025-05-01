@@ -27,7 +27,7 @@ theorem norm_withLpEquiv_crossProduct (a b : EuclideanSpace ℝ (Fin 3)) :
   have := sin_angle_nonneg a b
   refine sq_eq_sq₀ (by positivity) (by positivity) |>.mp ?_
   trans ‖a‖^2 * ‖b‖^2 - inner a b ^ 2
-  · simp_rw [norm_sq_eq_inner (𝕜 := ℝ), EuclideanSpace.inner_eq_star_dotProduct, star_trivial,
+  · simp_rw [norm_sq_eq_re_inner (𝕜 := ℝ), EuclideanSpace.inner_eq_star_dotProduct, star_trivial,
       RCLike.re_to_real, Equiv.apply_symm_apply, cross_dot_cross,
       dotProduct_comm (WithLp.equiv _ _ b) (WithLp.equiv _ _ a), sq]
   · linear_combination (‖a‖ * ‖b‖) ^ 2 * (sin_sq_add_cos_sq (angle a b)).symm +

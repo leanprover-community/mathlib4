@@ -32,8 +32,8 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
   { Submodule.normedSpace W with
     inner := fun x y => ⟪(x : E), (y : E)⟫
-    conj_symm := fun _ _ => inner_conj_symm _ _
-    norm_sq_eq_inner := fun x => norm_sq_eq_inner (x : E)
+    conj_inner_symm := fun _ _ => inner_conj_symm _ _
+    norm_sq_eq_re_inner := fun x => norm_sq_eq_re_inner (x : E)
     add_left := fun _ _ _ => inner_add_left _ _ _
     smul_left := fun _ _ _ => inner_smul_left _ _ _ }
 

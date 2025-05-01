@@ -45,9 +45,6 @@ lemma isClosedEmbedding_natUnionInftyEmbedding : IsClosedEmbedding natUnionInfty
       rw [h]
   · exact fun _ hC => (hC.isCompact.image natUnionInftyEmbedding.continuous).isClosed
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_natUnionInftyEmbedding := isClosedEmbedding_natUnionInftyEmbedding
-
 instance : MetrizableSpace (OnePoint ℕ) := isClosedEmbedding_natUnionInftyEmbedding.metrizableSpace
 
 /-- The one point compactification of the natural numbers as a light profinite set. -/

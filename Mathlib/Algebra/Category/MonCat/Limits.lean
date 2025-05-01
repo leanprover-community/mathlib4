@@ -6,7 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Small.Group
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # The category of (commutative) (additive) monoids has all limits
@@ -182,11 +182,8 @@ noncomputable instance forget_createsLimitsOfShape :
     CreatesLimitsOfShape J (forget MonCat.{u}) where
       CreatesLimit := inferInstance
 
-/-- The forgetful functor from monoids to types preserves all limits.
--/
-@[to_additive
-"The forgetful functor from additive monoids to types preserves all limits."
-]
+/-- The forgetful functor from monoids to types preserves all limits. -/
+@[to_additive "The forgetful functor from additive monoids to types preserves all limits."]
 noncomputable instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w,v} (forget MonCat.{u}) where
       CreatesLimitsOfShape := inferInstance
@@ -337,11 +334,9 @@ noncomputable instance forget_createsLimitsOfShape :
     CreatesLimitsOfShape J (forget MonCat.{u}) where
       CreatesLimit := inferInstance
 
-/-- The forgetful functor from commutative monoids to types preserves all limits.
--/
+/-- The forgetful functor from commutative monoids to types preserves all limits. -/
 @[to_additive
-"The forgetful functor from commutative additive monoids to types preserves all limits."
-]
+"The forgetful functor from commutative additive monoids to types preserves all limits."]
 noncomputable instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w,v} (forget MonCat.{u}) where
       CreatesLimitsOfShape := inferInstance

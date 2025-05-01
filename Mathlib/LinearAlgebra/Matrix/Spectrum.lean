@@ -63,7 +63,7 @@ theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum �
 
 /-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
-    [Fintype n]{A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
+    [Fintype n] {A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
     Matrix.unitaryGroup n 𝕜 :=
   ⟨(EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (hA.eigenvectorBasis).toBasis,
     (EuclideanSpace.basisFun n 𝕜).toMatrix_orthonormalBasis_mem_unitary (eigenvectorBasis hA)⟩

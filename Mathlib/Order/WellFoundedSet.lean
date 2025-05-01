@@ -776,13 +776,13 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreo
     split_ifs at hmn with hm
     · apply hf1.2 m (g n') (lt_of_lt_of_le hm (g.monotone n'.zero_le))
       exact _root_.trans hmn (List.tail_sublistForall₂_self _)
-    · rw [← Nat.sub_lt_iff_lt_add (le_of_not_lt hm)] at mn
+    · rw [← Nat.sub_lt_iff_lt_add' (le_of_not_lt hm)] at mn
       apply hf1.2 _ _ (g.lt_iff_lt.2 mn)
       rw [← List.cons_head!_tail (hnil (g (m - g 0))), ← List.cons_head!_tail (hnil (g n'))]
       exact List.SublistForall₂.cons (hg _ _ (le_of_lt mn)) hmn
 
 theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
-    (hα : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO)
+    (hα : ((fun (x : α ×ₗ β) => (ofLex x).1) '' s).IsPWO)
     (hβ : ∀ a, {y | toLex (a, y) ∈ s}.IsPWO) : s.IsPWO := by
   rw [IsPWO, partiallyWellOrderedOn_iff_exists_lt]
   intro f hf

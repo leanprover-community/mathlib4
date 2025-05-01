@@ -454,4 +454,34 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   rw [← hne] at hc
   simpa using hc
 
+namespace completeMultipartiteGraph
+
+variable {ι : Type*} (V : ι → Type*)
+
+/-- The canonical `ι`-coloring of a `completeMultipartiteGraph` with parts indexed by `ι` -/
+def coloring : (completeMultipartiteGraph V).Coloring ι := Coloring.mk (fun v ↦ v.1) (by simp)
+
+lemma colorable [Fintype ι] : (completeMultipartiteGraph V).Colorable (Fintype.card ι) :=
+  (coloring V).colorable
+
+theorem chromaticNumber [Fintype ι] (f : ∀ (i : ι), V i) :
+    (completeMultipartiteGraph V).chromaticNumber = Fintype.card ι := by
+  apply le_antisymm (colorable V).chromaticNumber_le
+  by_contra! h
+  exact not_cliqueFree_of_le_card V f le_rfl <| cliqueFree_of_chromaticNumber_lt h
+
+theorem colorable_of_cliqueFree (f : ∀ (i : ι), V i)
+    (hc : (completeMultipartiteGraph V).CliqueFree n) :
+    (completeMultipartiteGraph V).Colorable (n - 1) := by
+  cases n with
+  | zero => exact absurd hc not_cliqueFree_zero
+  | succ n =>
+  have : Fintype ι := fintypeOfNotInfinite
+    fun hinf ↦ not_cliqueFree_of_infinite V f hc
+  apply (coloring V).colorable.mono
+  have := not_cliqueFree_of_le_card V f le_rfl
+  contrapose! this
+  exact hc.mono this
+
+end completeMultipartiteGraph
 end SimpleGraph

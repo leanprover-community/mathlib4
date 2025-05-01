@@ -3,11 +3,14 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Ring.Pi
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Big operators for Pi Types
@@ -57,7 +60,7 @@ theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Fin
   Finset.induction_on s rfl (by simp +contextual [Prod.ext_iff])
 
 /-- decomposing `x : ι → R` as a sum along the canonical basis -/
-theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [Semiring R]
+theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [NonAssocSemiring R]
     (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
   ext
   simp
@@ -195,7 +198,7 @@ lemma Pi.single_induction [AddCommMonoid M] (p : (ι → M) → Prop) (f : ι �
   rw [← Finset.univ_sum_single f]
   exact Finset.sum_induction _ _ add zero (by simp [single])
 
-@[to_additive (attr := elab_as_elim) existing]
+@[to_additive existing (attr := elab_as_elim)]
 lemma Pi.mulSingle_induction [CommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
     (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
     (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by

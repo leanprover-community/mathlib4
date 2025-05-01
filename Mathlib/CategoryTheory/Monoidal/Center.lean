@@ -48,6 +48,7 @@ transformations (in the pseudo- sense) of the identity 2-functor on `C`, which s
 `0`-morphism to `X`.
 -/
 structure HalfBraiding (X : C) where
+  /-- The family of isomorphisms `X ⊗ U ≅ U ⊗ X` -/
   β : ∀ U, X ⊗ U ≅ U ⊗ X
   monoidal : ∀ U U', (β (U ⊗ U')).hom =
       (α_ _ _ _).inv ≫
@@ -75,6 +76,7 @@ variable {C}
 /-- A morphism in the Drinfeld center of `C`. -/
 @[ext]
 structure Hom (X Y : Center C) where
+  /-- The underlying morphism between the first components of the objects involved -/
   f : X.1 ⟶ Y.1
   comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by aesop_cat
 

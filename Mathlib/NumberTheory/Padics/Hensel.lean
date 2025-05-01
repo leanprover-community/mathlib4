@@ -64,7 +64,7 @@ include ncs_der_val
 
 private theorem ncs_tendsto_const :
     Tendsto (fun i => ‖F.derivative.eval (ncs i)‖) atTop (𝓝 ‖F.derivative.eval a‖) := by
-  convert @tendsto_const_nhds ℝ ℕ _ _ _; rw [ncs_der_val]
+  convert @tendsto_const_nhds ℝ _ ℕ _ _; rw [ncs_der_val]
 
 private theorem norm_deriv_eq : ‖F.derivative.eval ncs.lim‖ = ‖F.derivative.eval a‖ :=
   tendsto_nhds_unique ncs_tendsto_lim (ncs_tendsto_const ncs_der_val)
@@ -419,7 +419,7 @@ private theorem soln_unique (z : ℤ_[p]) (hev : F.eval z = 0)
         (calc
           ‖F.derivative.eval soln‖ = ‖-q * h‖ := by rw [this]
           _ ≤ 1 * ‖h‖ := by
-            rw [PadicInt.norm_mul]
+            rw [norm_mul]
             exact mul_le_mul_of_nonneg_right (PadicInt.norm_le_one _) (norm_nonneg _)
           _ = ‖z - soln‖ := by simp [h]
           _ < ‖F.derivative.eval soln‖ := by rw [soln_deriv_norm]; apply soln_dist

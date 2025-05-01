@@ -244,7 +244,7 @@ open Mon_Class in
 @[reassoc]
 lemma _root_.IsMon_Hom.inv_hom {X Y : C} [Grp_Class X] [Grp_Class Y] (f : X ⟶ Y) [IsMon_Hom f] :
     ι ≫ f = f ≫ ι :=
-  Grp_.inv_hom (A := .mk' X) (B := .mk' Y) (f := ⟨f, IsMon_Hom.one_hom, IsMon_Hom.mul_hom⟩)
+  Grp_.inv_hom (A := .mk' X) (B := .mk' Y) (f := ⟨f, IsMon_Hom.one_hom _, IsMon_Hom.mul_hom _⟩)
 
 lemma _root_.Grp_Class.toMon_Class_injective {X : C} :
     Function.Injective (@Grp_Class.toMon_Class C ‹_› ‹_› X) := by
@@ -325,10 +325,7 @@ end Grp_
 
 namespace CategoryTheory.Functor
 
-variable {C} {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D)
-variable [PreservesFiniteProducts F]
-
-attribute [local instance] monoidalOfChosenFiniteProducts
+variable {C} {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D) [F.Monoidal]
 
 /-- A finite-product-preserving functor takes group objects to group objects. -/
 @[simps!]
@@ -344,7 +341,7 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
           Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] }
   map f := F.mapMon.map f
 
-attribute [local instance] NatTrans.monoidal_of_preservesFiniteProducts in
+attribute [local instance] Monoidal.ofChosenFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
 @[simps]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where

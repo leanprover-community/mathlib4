@@ -24,6 +24,31 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 theorem algebra_adjoin_le_adjoin : Algebra.adjoin F S ≤ (adjoin F S).toSubalgebra :=
   Algebra.adjoin_le (subset_adjoin _ _)
 
+namespace algebraAdjoinAdjoin
+
+/-- `IntermediateField.adjoin` as an algebra over `Algebra.adjoin`. -/
+scoped instance : Algebra (Algebra.adjoin F S) (adjoin F S) :=
+  (Subalgebra.inclusion <| algebra_adjoin_le_adjoin F S).toAlgebra
+
+scoped instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
+    IsScalarTower X (Algebra.adjoin F S) (adjoin F S) :=
+  Subalgebra.inclusion.isScalarTower_left (algebra_adjoin_le_adjoin F S) _
+
+scoped instance (X) [MulAction E X] : IsScalarTower (Algebra.adjoin F S) (adjoin F S) X :=
+  Subalgebra.inclusion.isScalarTower_right (algebra_adjoin_le_adjoin F S) _
+
+scoped instance : FaithfulSMul (Algebra.adjoin F S) (adjoin F S) :=
+  Subalgebra.inclusion.faithfulSMul (algebra_adjoin_le_adjoin F S)
+
+scoped instance : IsFractionRing (Algebra.adjoin F S) (adjoin F S) :=
+  .of_field _ _ fun ⟨_, h⟩ ↦ have ⟨x, hx, y, hy, eq⟩ := mem_adjoin_iff_div.mp h
+    ⟨⟨x, hx⟩, ⟨y, hy⟩, Subtype.ext eq⟩
+
+scoped instance : Algebra.IsAlgebraic (Algebra.adjoin F S) (adjoin F S) :=
+  IsLocalization.isAlgebraic _ (nonZeroDivisors (Algebra.adjoin F S))
+
+end algebraAdjoinAdjoin
+
 theorem adjoin_eq_algebra_adjoin (inv_mem : ∀ x ∈ Algebra.adjoin F S, x⁻¹ ∈ Algebra.adjoin F S) :
     (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
   le_antisymm
@@ -126,7 +151,8 @@ theorem adjoin_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
   apply_fun _ using Subalgebra.restrictScalars_injective F
   rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin_of_algEquiv i' hi,
     Algebra.restrictScalars_adjoin_of_algEquiv i' hi, restrictScalars_adjoin]
-  erw [Algebra.restrictScalars_adjoin]
+  dsimp only [← E'.coe_type_toSubalgebra]
+  rw [Algebra.restrictScalars_adjoin F E'.toSubalgebra]
   exact E'.sup_toSubalgebra_of_isAlgebraic L (halg.imp
     (fun (_ : Algebra.IsAlgebraic F E) ↦ i'.isAlgebraic) id)
 

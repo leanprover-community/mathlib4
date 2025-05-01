@@ -156,7 +156,7 @@ class VAddAssocClass (M N α : Type*) [VAdd M N] [VAdd N α] [VAdd M α] : Prop 
 /-- An instance of `IsScalarTower M N α` states that the multiplicative
 action of `M` on `α` is determined by the multiplicative actions of `M` on `N`
 and `N` on `α`. -/
-@[to_additive VAddAssocClass] -- TODO auto-translating
+@[to_additive]
 class IsScalarTower (M N α : Type*) [SMul M N] [SMul N α] [SMul M α] : Prop where
   /-- Associativity of `•` -/
   smul_assoc : ∀ (x : M) (y : N) (z : α), (x • y) • z = x • y • z

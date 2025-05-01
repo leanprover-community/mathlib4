@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Lemmas
+import Mathlib.Algebra.CharP.Frobenius
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.RingTheory.Polynomial.Basic
@@ -303,9 +303,6 @@ theorem isLocalHom_expand {p : ℕ} (hp : 0 < p) : IsLocalHom (expand R p) := by
   have hf2 := eq_C_of_degree_eq_zero (degree_eq_zero_of_isUnit hf1)
   rw [coeff_expand hp, if_pos (dvd_zero _), p.zero_div] at hf2
   rw [hf2, isUnit_C] at hf1; rw [expand_eq_C hp] at hf2; rwa [hf2, isUnit_C]
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_expand := isLocalHom_expand
 
 variable {R}
 

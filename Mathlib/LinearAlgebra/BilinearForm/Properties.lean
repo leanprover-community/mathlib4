@@ -11,7 +11,7 @@ import Mathlib.LinearAlgebra.Dual.Lemmas
 
 This file defines various properties of bilinear forms, including reflexivity, symmetry,
 alternativity, adjoint, and non-degeneracy.
-For orthogonality, see `LinearAlgebra/BilinearForm/Orthogonal.lean`.
+For orthogonality, see `Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean`.
 
 ## Notations
 
@@ -60,7 +60,7 @@ theorem eq_zero (H : B.IsRefl) : ∀ {x y : M}, B x y = 0 → B y x = 0 := fun {
 protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl := fun x y =>
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
 
-protected theorem smul {α} [CommSemiring α] [Module α R] [SMulCommClass R α R]
+protected theorem smul {α} [Semiring α] [Module α R] [SMulCommClass R α R]
     [NoZeroSMulDivisors α R] (a : α) {B : BilinForm R M} (hB : B.IsRefl) :
     (a • B).IsRefl := fun _ _ h =>
   (smul_eq_zero.mp h).elim (fun ha => smul_eq_zero_of_left ha _) fun hBz =>
@@ -202,14 +202,7 @@ theorem nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
 theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
     B.Nondegenerate ↔ LinearMap.ker B = ⊥ := by
   rw [LinearMap.ker_eq_bot']
-  constructor <;> intro h
-  · refine fun m hm => h _ fun x => ?_
-    rw [hm]
-    rfl
-  · intro m hm
-    apply h
-    ext x
-    exact hm x
+  simp [Nondegenerate, LinearMap.ext_iff]
 
 theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
     LinearMap.ker B = ⊥ := nondegenerate_iff_ker_eq_bot.mp h

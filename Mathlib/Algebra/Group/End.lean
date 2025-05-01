@@ -806,18 +806,18 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
     rfl
 
 @[simp]
-theorem conj_apply [AddGroup G] (g h : G) : conj g h = g + h + -g :=
+theorem conj_apply [AddGroup G] (g h : G) : (conj g).toMul h = g + h + -g :=
   rfl
 
 @[simp]
-theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
+theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).toMul.symm h = -g + h + g :=
   rfl
 
 @[simp]
 theorem conj_inv_apply [AddGroup G] (g h : G) : (conj g).toMul⁻¹ h = -g + h + g :=
   rfl
 
-theorem neg_conj_apply [AddGroup G] (g h : G) : (-conj g) h = -g + h + g := by
+theorem neg_conj_apply [AddGroup G] (g h : G) : (-conj g).toMul h = -g + h + g := by
   simp
 
 /-- Isomorphic additive groups have isomorphic automorphism groups. -/

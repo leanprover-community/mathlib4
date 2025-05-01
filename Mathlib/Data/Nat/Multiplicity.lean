@@ -114,7 +114,7 @@ theorem emultiplicity_factorial {p : ℕ} (hp : p.Prime) :
         rw [sum_add_distrib, sum_boole]
         simp
       _ = (∑ i ∈ Ico 1 b, (n + 1) / p ^ i : ℕ) :=
-        congr_arg _ <| Finset.sum_congr rfl fun _ _ => succ_div.symm
+        congr_arg _ <| Finset.sum_congr rfl fun _ _ => Nat.succ_div.symm
 
 /-- For a prime number `p`, taking `(p - 1)` times the multiplicity of `p` in `n!` equals `n` minus
 the sum of base `p` digits of `n`. -/
@@ -141,7 +141,7 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   revert hm
   have h4 : ∀ m ∈ Ico (p * n + 1) (p * (n + 1)), emultiplicity p m = 0 := by
     intro m hm
-    rw [emultiplicity_eq_zero, ← not_dvd_iff_between_consec_multiples _ hp.pos]
+    rw [emultiplicity_eq_zero, not_dvd_iff_between_consec_multiples _ hp.pos]
     rw [mem_Ico] at hm
     exact ⟨n, lt_of_succ_le hm.1, hm.2⟩
   simp_rw [← prod_Ico_id_eq_factorial, Finset.emultiplicity_prod hp', ← sum_Ico_consecutive _ h1 h3,

@@ -29,7 +29,7 @@ and (where appropriate) choose a uniform canonical way of expressing these ideas
 
 * Moreover, the results here should be generalised to an arbitrary unique factorization monoid
 with a normalization function, and then deduplicated.  The basics of this have been started in
-`RingTheory/UniqueFactorizationDomain`.
+`Mathlib/RingTheory/UniqueFactorizationDomain/`.
 
 * Extend the inductions to any `NormalizationMonoid` with unique factorization.
 
@@ -79,7 +79,7 @@ theorem factorization_eq_primeFactorsList_multiset (n : ℕ) :
 
 theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ∣ n) :
     0 < n.factorization p := by
-    rwa [← primeFactorsList_count_eq, count_pos_iff, mem_primeFactorsList_iff_dvd hn hp]
+  rwa [← primeFactorsList_count_eq, count_pos_iff, mem_primeFactorsList_iff_dvd hn hp]
 
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     multiplicity p n = n.factorization p := by

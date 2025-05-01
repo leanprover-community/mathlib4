@@ -94,15 +94,15 @@ lemma exact_of_comp_of_mem_range
 such that the left vertical map is surjective, the middle vertical map is bijective and the right
 vertical map is injective, then the upper row is exact iff the lower row is.
 See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
-`Algebra.Homology.ShortComplex.Exact` for the categorical version of this result. -/
+`Mathlib.Algebra.Homology.ShortComplex.Exact` for the categorical version of this result. -/
 lemma exact_iff_of_surjective_of_bijective_of_injective
-  {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-  [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
-  (f : M₁ →+ M₂) (g : M₂ →+ M₃) (f' : N₁ →+ N₂) (g' : N₂ →+ N₃)
-  (τ₁ : M₁ →+ N₁) (τ₂ : M₂ →+ N₂) (τ₃ : M₃ →+ N₃)
-  (comm₁₂ : f'.comp τ₁ = τ₂.comp f)
-  (comm₂₃ : g'.comp τ₂ = τ₃.comp g)
-  (h₁ : Function.Surjective τ₁) (h₂ : Function.Bijective τ₂) (h₃ : Function.Injective τ₃) :
+    {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+    [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+    (f : M₁ →+ M₂) (g : M₂ →+ M₃) (f' : N₁ →+ N₂) (g' : N₂ →+ N₃)
+    (τ₁ : M₁ →+ N₁) (τ₂ : M₂ →+ N₂) (τ₃ : M₃ →+ N₃)
+    (comm₁₂ : f'.comp τ₁ = τ₂.comp f)
+    (comm₂₃ : g'.comp τ₂ = τ₃.comp g)
+    (h₁ : Function.Surjective τ₁) (h₂ : Function.Bijective τ₂) (h₃ : Function.Injective τ₃) :
     Exact f g ↔ Exact f' g' := by
   replace comm₁₂ := DFunLike.congr_fun comm₁₂
   replace comm₂₃ := DFunLike.congr_fun comm₂₃
@@ -436,16 +436,16 @@ namespace LinearMap
 such that the left vertical map is surjective, the middle vertical map is bijective and the right
 vertical map is injective, then the upper row is exact iff the lower row is.
 See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
-`Algebra.Homology.ShortComplex.Exact` for the categorical version of this result. -/
+`Mathlib.Algebra.Homology.ShortComplex.Exact` for the categorical version of this result. -/
 lemma exact_iff_of_surjective_of_bijective_of_injective
-  {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-  [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
-  [Module R M₁] [Module R M₂] [Module R M₃]
-  [Module R N₁] [Module R N₂] [Module R N₃]
-  (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) (f' : N₁ →ₗ[R] N₂) (g' : N₂ →ₗ[R] N₃)
-  (τ₁ : M₁ →ₗ[R] N₁) (τ₂ : M₂ →ₗ[R] N₂) (τ₃ : M₃ →ₗ[R] N₃)
-  (comm₁₂ : f'.comp τ₁ = τ₂.comp f) (comm₂₃ : g'.comp τ₂ = τ₃.comp g)
-  (h₁ : Function.Surjective τ₁) (h₂ : Function.Bijective τ₂) (h₃ : Function.Injective τ₃) :
+    {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+    [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+    [Module R M₁] [Module R M₂] [Module R M₃]
+    [Module R N₁] [Module R N₂] [Module R N₃]
+    (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) (f' : N₁ →ₗ[R] N₂) (g' : N₂ →ₗ[R] N₃)
+    (τ₁ : M₁ →ₗ[R] N₁) (τ₂ : M₂ →ₗ[R] N₂) (τ₃ : M₃ →ₗ[R] N₃)
+    (comm₁₂ : f'.comp τ₁ = τ₂.comp f) (comm₂₃ : g'.comp τ₂ = τ₃.comp g)
+    (h₁ : Function.Surjective τ₁) (h₂ : Function.Bijective τ₂) (h₃ : Function.Injective τ₃) :
     Function.Exact f g ↔ Function.Exact f' g' :=
   AddMonoidHom.exact_iff_of_surjective_of_bijective_of_injective
     f.toAddMonoidHom g.toAddMonoidHom f'.toAddMonoidHom g'.toAddMonoidHom
@@ -480,7 +480,6 @@ an exact sequence `M → N → P → 0` of `R`-modules. -/
 noncomputable def Function.Exact.linearEquivOfSurjective (h : Function.Exact f g)
     (hg : Function.Surjective g) : (N ⧸ LinearMap.range f) ≃ₗ[R] P :=
   LinearEquiv.ofBijective ((LinearMap.range f).liftQ g (h · |>.mpr))
-      ⟨LinearMap.injective_range_liftQ_of_exact h,
-        LinearMap.surjective_range_liftQ _ hg⟩
+    ⟨LinearMap.injective_range_liftQ_of_exact h, LinearMap.surjective_range_liftQ _ hg⟩
 
 end Ring

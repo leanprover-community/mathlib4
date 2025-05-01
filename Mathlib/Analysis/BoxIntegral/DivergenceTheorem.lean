@@ -129,7 +129,8 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       gcongr
       exact I.diam_Icc_le_of_distortion_le i hc
     _ = 2 * ε * c * ∏ j, (I.upper j - I.lower j) := by
-      rw [← Measure.toBoxAdditive_apply, Box.volume_apply, ← I.volume_face_mul i]
+      rw [← measureReal_def, ← Measure.toBoxAdditive_apply, Box.volume_apply,
+        ← I.volume_face_mul i]
       ac_rfl
 
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
@@ -221,7 +222,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     · refine (norm_integral_le_of_le_const (fun y hy => hdfδ _ (Hmaps _ Hu hy) _
         (Hmaps _ Hl hy)) volume).trans ?_
       refine (mul_le_mul_of_nonneg_right ?_ (half_pos ε0).le).trans_eq (one_mul _)
-      rw [Box.coe_eq_pi, Real.volume_pi_Ioc_toReal (Box.lower_le_upper _)]
+      rw [Box.coe_eq_pi, measureReal_def, Real.volume_pi_Ioc_toReal (Box.lower_le_upper _)]
       refine prod_le_one (fun _ _ => sub_nonneg.2 <| Box.lower_le_upper _ _) fun j _ => ?_
       calc
         J.upper (i.succAbove j) - J.lower (i.succAbove j) ≤

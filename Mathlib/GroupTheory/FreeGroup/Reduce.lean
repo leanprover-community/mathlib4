@@ -107,17 +107,19 @@ theorem reduce.not {p : Prop} :
       · injections; subst_vars
         simp at h
       · refine @reduce.not _ L1 L2 L3 x' b' ?_
+        rw [List.cons_append] at H
         injection H with _ H
-        rw [r, H]; rfl
+        rw [r, H]
 
 /-- The second theorem that characterises the function `reduce`: the maximal reduction of a word
 only reduces to itself. -/
 @[to_additive "The second theorem that characterises the function `reduce`: the maximal reduction of
   a word only reduces to itself."]
 theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
-  induction' H with L1 L' L2 H1 H2 ih
-  · rfl
-  · obtain ⟨L4, L5, x, b⟩ := H1
+  induction H with
+  | refl => rfl
+  | tail _ H1 H2 =>
+    obtain ⟨L4, L5, x, b⟩ := H1
     exact reduce.not H2
 
 /-- `reduce` is idempotent, i.e. the maximal reduction of the maximal reduction of a word is the
@@ -246,8 +248,8 @@ lemma toWord_mul_sublist (x y : FreeGroup α) : (x * y).toWord <+ x.toWord ++ y.
   rw [this]
   exact FreeGroup.reduce.red
 
-/-- **Constructive Church-Rosser theorem** (compare `church_rosser`). -/
-@[to_additive "**Constructive Church-Rosser theorem** (compare `church_rosser`)."]
+/-- **Constructive Church-Rosser theorem** (compare `FreeGroup.Red.church_rosser`). -/
+@[to_additive "**Constructive Church-Rosser theorem** (compare `FreeAddGroup.Red.church_rosser`)."]
 def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // Red L₂ L₄ ∧ Red L₃ L₄ } :=
   ⟨reduce L₁, reduce.rev H12, reduce.rev H13⟩
 
@@ -256,6 +258,8 @@ instance : DecidableEq (FreeGroup α) :=
   toWord_injective.decidableEq
 
 -- TODO @[to_additive] doesn't succeed, possibly due to a bug
+--    FreeGroup.Red.decidableRel and FreeAddGroup.Red.decidableRel do not generate the same number
+--    of equation lemmas.
 instance Red.decidableRel : DecidableRel (@Red α)
   | [], [] => isTrue Red.refl
   | [], _hd2 :: _tl2 => isFalse fun H => List.noConfusion (Red.nil_iff.1 H)
@@ -335,7 +339,7 @@ theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
   calc
     norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_toWord, mk_toWord]
     _ ≤ (x.toWord ++ y.toWord).length := norm_mk_le
-    _ = norm x + norm y := List.length_append _ _
+    _ = norm x + norm y := List.length_append
 
 @[to_additive (attr := simp)]
 theorem norm_of_pow (a : α) (n : ℕ) : norm (of a ^ n) = n := by

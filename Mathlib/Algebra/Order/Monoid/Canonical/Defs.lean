@@ -45,6 +45,7 @@ class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] : Prop
 
 attribute [instance 50] CanonicallyOrderedMul.toExistsMulOfLE
 
+set_option linter.deprecated false in
 /-- A canonically ordered additive monoid is an ordered commutative additive monoid
   in which the ordering coincides with the subtractibility relation,
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
@@ -59,6 +60,7 @@ structure CanonicallyOrderedAddCommMonoid (α : Type*) extends
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 
+set_option linter.deprecated false in
 set_option linter.existingAttributeWarning false in
 /-- A canonically ordered monoid is an ordered commutative monoid
   in which the ordering coincides with the divisibility relation,
@@ -243,6 +245,12 @@ end LE
 
 end Semigroup
 
+-- TODO: make it an instance
+@[to_additive]
+lemma CanonicallyOrderedMul.toIsOrderedMonoid
+    [CommMonoid α] [PartialOrder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
+  mul_le_mul_left _ _ := mul_le_mul_left'
+
 section Monoid
 variable [Monoid α]
 
@@ -312,7 +320,7 @@ attribute [nolint docBlame] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCo
 
 section CanonicallyLinearOrderedCommMonoid
 
-variable [LinearOrderedCommMonoid α] [CanonicallyOrderedMul α]
+variable [CommMonoid α] [LinearOrder α] [CanonicallyOrderedMul α]
 
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by

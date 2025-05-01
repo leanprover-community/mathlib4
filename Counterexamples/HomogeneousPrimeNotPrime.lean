@@ -44,9 +44,8 @@ abbrev Two :=
 instance : Fintype Two :=
   inferInstanceAs (Fintype (Option Unit))
 
-instance : LinearOrderedAddCommMonoid Two :=
-  { (inferInstance : LinearOrder Two), (inferInstance : AddCommMonoid Two) with
-    add_le_add_left := by decide }
+instance : IsOrderedAddMonoid Two :=
+  { add_le_add_left := by decide }
 
 section
 
@@ -111,9 +110,9 @@ def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
 theorem grading.right_inv : Function.RightInverse (coeLinearMap (grading R)) grading.decompose := by
   intro zz
   induction zz using DirectSum.induction_on with
-  | H_zero => decide
-  | H_basic => decide +revert
-  | H_plus d1 d2 ih1 ih2 => simp only [map_add, ih1, ih2]
+  | zero => decide
+  | of => decide +revert
+  | add d1 d2 ih1 ih2 => simp only [map_add, ih1, ih2]
 
 instance : GradedAlgebra (grading R) where
   one_mem := grading.one_mem R

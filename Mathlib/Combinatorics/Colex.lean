@@ -296,8 +296,8 @@ instance instLinearOrder : LinearOrder (Colex α) where
     simp_rw [mem_symmDiff] at ha hamax
     exact ha.imp (fun ha b hbs hbt ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inr ⟨hbs, hbt⟩⟩)
       (fun ha b hbt hbs ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inl ⟨hbt, hbs⟩⟩)
-  decidableLE := instDecidableLE
-  decidableLT := instDecidableLT
+  toDecidableLE := instDecidableLE
+  toDecidableLT := instDecidableLT
 
 open scoped symmDiff
 

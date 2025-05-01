@@ -67,6 +67,7 @@ namespace Theory
 
 /-- The type of nonempty models of a first-order theory. -/
 structure ModelType where
+  /-- The underlying type for the models -/
   Carrier : Type w
   [struc : L.Structure Carrier]
   [is_model : T.Model Carrier]

@@ -71,10 +71,7 @@ theorem condExp_eq_zero_or_one_of_condIndepSet_self
   have (a) : IsFiniteMeasure (condExpKernel μ m a) := inferInstance
   have h := ae_of_ae_trim hm (Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep)
   filter_upwards [condExpKernel_ae_eq_condExp hm ht, h] with ω hω_eq hω
-  rw [← hω_eq, ENNReal.toReal_eq_zero_iff, ENNReal.toReal_eq_one_iff]
-  cases hω with
-  | inl h => exact Or.inl (Or.inl h)
-  | inr h => exact Or.inr h
+  rwa [← hω_eq, measureReal_eq_zero_iff, measureReal_def, ENNReal.toReal_eq_one_iff]
 
 @[deprecated (since := "2025-01-21")]
 alias condexp_eq_zero_or_one_of_condIndepSet_self := condExp_eq_zero_or_one_of_condIndepSet_self
@@ -236,10 +233,7 @@ theorem condExp_zero_or_one_of_measurableSet_limsup [StandardBorelSpace Ω]
     (Kernel.measure_zero_or_one_of_measurableSet_limsup h_le h_indep hf hns hnsp hns_univ ht_tail)
   have ht : MeasurableSet t := limsup_le_iSup.trans (iSup_le h_le) t ht_tail
   filter_upwards [condExpKernel_ae_eq_condExp hm ht, h] with ω hω_eq hω
-  rw [← hω_eq, ENNReal.toReal_eq_zero_iff, ENNReal.toReal_eq_one_iff]
-  cases hω with
-  | inl h => exact Or.inl (Or.inl h)
-  | inr h => exact Or.inr h
+  rwa [← hω_eq, measureReal_eq_zero_iff, measureReal_def, ENNReal.toReal_eq_one_iff]
 
 @[deprecated (since := "2025-01-21")]
 alias condexp_zero_or_one_of_measurableSet_limsup := condExp_zero_or_one_of_measurableSet_limsup

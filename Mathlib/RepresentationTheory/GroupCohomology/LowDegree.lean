@@ -204,7 +204,7 @@ theorem dTwo_comp_eq :
 theorem dOne_comp_dZero : dOne A ∘ₗ dZero A = 0 := by
   ext x g
   simp only [LinearMap.coe_comp, Function.comp_apply, dOne_apply A, dZero_apply A, map_sub,
-    map_mul, LinearMap.mul_apply, sub_sub_sub_cancel_left, sub_add_sub_cancel, sub_self]
+    map_mul, Module.End.mul_apply, sub_sub_sub_cancel_left, sub_add_sub_cancel, sub_self]
   rfl
 
 theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
@@ -269,7 +269,7 @@ theorem mem_oneCocycles_iff (f : G → A) :
 
 @[simp] theorem oneCocycles_map_one (f : oneCocycles A) : f 1 = 0 := by
   have := (mem_oneCocycles_def f).1 f.2 1 1
-  simpa only [map_one, LinearMap.one_apply, mul_one, sub_self, zero_add] using this
+  simpa only [map_one, Module.End.one_apply, mul_one, sub_self, zero_add] using this
 
 @[simp] theorem oneCocycles_map_inv (f : oneCocycles A) (g : G) :
     A.ρ g (f g⁻¹) = - f g := by
@@ -337,7 +337,7 @@ theorem mem_twoCocycles_iff (f : G × G → A) :
 theorem twoCocycles_map_one_fst (f : twoCocycles A) (g : G) :
     f (1, g) = f (1, 1) := by
   have := ((mem_twoCocycles_iff f).1 f.2 1 1 g).symm
-  simpa only [map_one, LinearMap.one_apply, one_mul, add_right_inj, this]
+  simpa only [map_one, Module.End.one_apply, one_mul, add_right_inj, this]
 
 theorem twoCocycles_map_one_snd (f : twoCocycles A) (g : G) :
     f (g, 1) = A.ρ g (f (1, 1)) := by

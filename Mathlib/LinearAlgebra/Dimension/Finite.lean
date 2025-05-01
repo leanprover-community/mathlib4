@@ -72,6 +72,12 @@ lemma rank_eq_zero_iff :
     apply ha
     simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
+theorem rank_pos_of_free [Module.Free R M] [Nontrivial M] :
+    0 < Module.rank R M :=
+  have := Module.nontrivial R M
+  (pos_of_ne_zero <| Cardinal.mk_ne_zero _).trans_le
+    (Free.chooseBasis R M).linearIndependent.cardinal_le_rank
+
 variable [Nontrivial R]
 
 section
@@ -102,6 +108,7 @@ end
 variable (R M)
 
 /-- See `rank_subsingleton` that assumes `Subsingleton R` instead. -/
+@[nontriviality]
 theorem rank_subsingleton' [Subsingleton M] : Module.rank R M = 0 :=
   rank_eq_zero_iff.mpr fun _ ↦ ⟨1, one_ne_zero, Subsingleton.elim _ _⟩
 
@@ -368,7 +375,7 @@ variable [Nontrivial R]
 @[nontriviality]
 theorem Module.finrank_zero_of_subsingleton [Subsingleton M] :
     finrank R M = 0 := by
-  rw [finrank, rank_subsingleton', _root_.map_zero]
+  rw [finrank, rank_subsingleton', map_zero]
 
 lemma LinearIndependent.finrank_eq_zero_of_infinite {ι} [Infinite ι] {v : ι → M}
     (hv : LinearIndependent R v) : finrank R M = 0 := toNat_eq_zero.mpr <| .inr hv.aleph0_le_rank
@@ -539,3 +546,26 @@ theorem finrank_le_one (v : M) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank
   · exact (finrank_eq_one v hn h).le
 
 end RankOne
+
+namespace Module
+variable {ι : Type*}
+
+@[simp] lemma finite_finsupp_iff :
+    Module.Finite R (ι →₀ M) ↔ IsEmpty ι ∨ Subsingleton M ∨ Module.Finite R M ∧ Finite ι where
+  mp := by
+    simp only [or_iff_not_imp_left, not_subsingleton_iff_nontrivial, not_isEmpty_iff]
+    rintro h ⟨i⟩ _
+    obtain ⟨s, hs⟩ := id h
+    exact ⟨.of_surjective (Finsupp.lapply (R := R) (M := M) i) (Finsupp.apply_surjective i),
+       finite_of_span_finite_eq_top_finsupp s.finite_toSet hs⟩
+  mpr
+  | .inl _ => inferInstance
+  | .inr <| .inl h => inferInstance
+  | .inr <| .inr h => by cases h; infer_instance
+
+@[simp high]
+lemma finite_finsupp_self_iff : Module.Finite R (ι →₀ R) ↔ Subsingleton R ∨ Finite ι := by
+  simp only [finite_finsupp_iff, Finite.self, true_and, or_iff_right_iff_imp]
+  exact fun _ ↦ .inr inferInstance
+
+end Module

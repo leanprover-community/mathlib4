@@ -97,9 +97,10 @@ omit [AddSubmonoidClass σ M] in
 def SetLike.IsHomogeneous {P : Type*} [SetLike P M] (p : P) : Prop :=
   ∀ (i : ι) ⦃m : M⦄, m ∈ p → (DirectSum.decompose ℳ m i : M) ∈ p
 
-protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
-    (h_homogeneous : ∀ {i} (m : ℳ i), p (m : M)) (h_add : ∀ m m' : M, p m → p m' → p (m + m')) :
-    ∀ m, p m := by
+@[elab_as_elim]
+protected theorem Decomposition.inductionOn {motive : M → Prop} (zero : motive 0)
+    (homogeneous : ∀ {i} (m : ℳ i), motive (m : M))
+    (add : ∀ m m' : M, motive m → motive m' → motive (m + m')) : ∀ m, motive m := by
   let ℳ' : ι → AddSubmonoid M := fun i ↦
     (⟨⟨ℳ i, fun x y ↦ AddMemClass.add_mem x y⟩, (ZeroMemClass.zero_mem _)⟩ : AddSubmonoid M)
   haveI t : DirectSum.Decomposition ℳ' :=
@@ -110,7 +111,7 @@ protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
     (DirectSum.IsInternal.addSubmonoid_iSup_eq_top ℳ' (Decomposition.isInternal ℳ')).symm ▸ trivial
   -- Porting note: needs to use @ even though no implicit argument is provided
   exact fun m ↦ @AddSubmonoid.iSup_induction _ _ _ ℳ' _ _ (mem m)
-    (fun i m h ↦ h_homogeneous ⟨m, h⟩) h_zero h_add
+    (fun i m h ↦ homogeneous ⟨m, h⟩) zero add
 --  exact fun m ↦
 --    AddSubmonoid.iSup_induction ℳ' (mem m) (fun i m h ↦ h_homogeneous ⟨m, h⟩) h_zero h_add
 

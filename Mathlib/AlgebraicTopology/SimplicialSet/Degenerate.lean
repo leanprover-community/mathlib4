@@ -13,9 +13,9 @@ and `X.nonDegenerate n` of degenerate or non-degenerate simplices of dimension `
 
 ## TODO (@joelriou)
 
-* `SSet.exists_nonDegenerate` shows that any `n`-simplex can be written
-as `X.map f.op y` for some epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and some
-non-degenerate simplex `y`. Show that `f` and `y` are unique.
+* `SSet.exists_nonDegenerate` shows that any `n`-simplex can be written as `X.map f.op y`
+  for some epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and some non-degenerate simplex `y`.
+  Show that `f` and `y` are unique.
 
 -/
 

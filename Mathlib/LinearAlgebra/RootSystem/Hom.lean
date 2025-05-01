@@ -207,9 +207,9 @@ lemma weightHom_injective (P : RootPairing ι R M N) : Injective (weightHom P) :
 def coweightHom (P : RootPairing ι R M N) : End P →* (N →ₗ[R] N)ᵐᵒᵖ where
   toFun g := MulOpposite.op (Hom.coweightMap (P := P) (Q := P) g)
   map_mul' g h := by
-    simp only [← MulOpposite.op_mul, coweightMap_mul, LinearMap.mul_eq_comp]
+    simp only [← MulOpposite.op_mul, coweightMap_mul, Module.End.mul_eq_comp]
   map_one' := by
-    simp only [MulOpposite.op_eq_one_iff, coweightMap_one, LinearMap.one_eq_id]
+    simp only [MulOpposite.op_eq_one_iff, coweightMap_one, Module.End.one_eq_id]
 
 lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (coweightHom P) := by
   intro f g hfg
@@ -609,9 +609,9 @@ def reflection (P : RootPairing ι R M N) (i : ι) : Aut P where
       PerfectPairing.toDualRight_apply, LinearMap.dualMap_apply, PerfectPairing.flip_apply_apply,
       LinearEquiv.comp_coe, LinearEquiv.trans_apply]
     rw [RootPairing.reflection_apply, RootPairing.coreflection_apply]
-    simp only [← PerfectPairing.toLin_apply, map_sub, map_smul, LinearMap.sub_apply,
-      toLin_toPerfectPairing, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
-    simp only [PerfectPairing.toLin_apply, PerfectPairing.flip_apply_apply, mul_comm]
+    simp only [← PerfectPairing.toLinearMap_apply, map_sub, map_smul, LinearMap.sub_apply,
+      toLinearMap_eq_toPerfectPairing, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
+    simp [mul_comm]
   root_weightMap := by ext; simp
   coroot_coweightMap := by ext; simp
   bijective_weightMap := by

@@ -16,6 +16,7 @@ We introduce the bundled categories:
 * `RingCat`
 * `CommSemiRingCat`
 * `CommRingCat`
+
 along with the relevant forgetful functors between them.
 -/
 

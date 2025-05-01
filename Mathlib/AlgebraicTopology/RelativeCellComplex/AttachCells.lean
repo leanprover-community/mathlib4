@@ -192,6 +192,6 @@ lemma nonempty_attachCells_iff :
         (IsColimit.precomposeHomEquiv (Discrete.natIso (fun ⟨i⟩ ↦ e₂ i)) _).1
           (IsColimit.ofIsoColimit h₂ (Cocones.ext (Iso.refl _) (by simp)))
       hm i := by simp [e₁, e₂]
-      isPushout := sq }⟩
+      isPushout := sq, .. }⟩
 
 end HomotopicalAlgebra

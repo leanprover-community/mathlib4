@@ -87,9 +87,6 @@ lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
   injective := autEmbedding_injective F
   isClosed_range := autEmbedding_range_isClosed F
 
-@[deprecated (since := "2024-10-20")]
-alias autEmbedding_closedEmbedding := autEmbedding_isClosedEmbedding
-
 instance : CompactSpace (Aut F) := (autEmbedding_isClosedEmbedding F).compactSpace
 
 instance : T2Space (Aut F) :=

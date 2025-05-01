@@ -717,7 +717,7 @@ def subsemigroupCongr (h : S = T) : S ≃* T :=
 equivalence between `M` and `f.srange`.
 
 This is a bidirectional version of `MulHom.srangeRestrict`. -/
-@[to_additive (attr := simps (config := { simpRhs := true }))
+@[to_additive (attr := simps +simpRhs)
       "An additive semigroup homomorphism `f : M →+ N` with a left-inverse
       `g : N → M` defines an additive equivalence between `M` and `f.srange`.
       This is a bidirectional version of `AddHom.srangeRestrict`. "]

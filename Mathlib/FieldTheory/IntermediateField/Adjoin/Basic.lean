@@ -32,10 +32,8 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {S : Set E}
 theorem mem_adjoin_range_iff {ι : Type*} (i : ι → E) (x : E) :
     x ∈ adjoin F (Set.range i) ↔ ∃ r s : MvPolynomial ι F,
       x = MvPolynomial.aeval i r / MvPolynomial.aeval i s := by
-  simp_rw [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
-    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
-    Algebra.adjoin_range_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
-  tauto
+  simp_rw [mem_adjoin_iff_div, Algebra.adjoin_range_eq_range_aeval,
+    AlgHom.mem_range, exists_exists_eq_and]
 
 theorem mem_adjoin_iff (x : E) :
     x ∈ adjoin F S ↔ ∃ r s : MvPolynomial S F,
@@ -44,10 +42,8 @@ theorem mem_adjoin_iff (x : E) :
 
 theorem mem_adjoin_simple_iff {α : E} (x : E) :
     x ∈ adjoin F {α} ↔ ∃ r s : F[X], x = aeval α r / aeval α s := by
-  simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
-    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
-    Algebra.adjoin_singleton_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
-  tauto
+  simp only [mem_adjoin_iff_div, Algebra.adjoin_singleton_eq_range_aeval,
+    AlgHom.mem_range, exists_exists_eq_and]
 
 variable {F}
 
@@ -399,7 +395,9 @@ variable {L : Type*} [Field L] [Algebra K L]
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
     Basis (Fin (minpoly K x).natDegree) K K⟮x⟯ :=
-  (AdjoinRoot.powerBasis (minpoly.ne_zero hx)).basis.map (adjoinRootEquivAdjoin K hx).toLinearEquiv
+  (AdjoinRoot.powerBasis (minpoly.ne_zero hx)).basis
+    |>.map (adjoinRootEquivAdjoin K hx).toLinearEquiv
+    |>.reindex (finCongr rfl)
 
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
@@ -409,11 +407,9 @@ noncomputable def adjoin.powerBasis {x : L} (hx : IsIntegral K x) : PowerBasis K
   dim := (minpoly K x).natDegree
   basis := powerBasisAux hx
   basis_eq_pow i := by
-    rw [powerBasisAux, Basis.map_apply]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [PowerBasis.basis_eq_pow]
-    rw [AlgEquiv.toLinearEquiv_apply, map_pow, AdjoinRoot.powerBasis_gen,
-      adjoinRootEquivAdjoin_apply_root]
+    rw [powerBasisAux, Basis.reindex_apply, Basis.map_apply, PowerBasis.basis_eq_pow,
+      finCongr_symm, finCongr_apply, Fin.cast_eq_self, AlgEquiv.toLinearEquiv_apply,
+      map_pow, AdjoinRoot.powerBasis_gen, adjoinRootEquivAdjoin_apply_root]
 
 theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimensional K K⟮x⟯ :=
   (adjoin.powerBasis hx).finite
@@ -459,7 +455,8 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
   have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α) := by
     intro K
     have := adjoin.finrank (.of_finite K α)
-    erw [adjoin_eq_top_of_adjoin_eq_top F hprim, finrank_top K E] at this
+    rw [adjoin_eq_top_of_adjoin_eq_top F hprim] at this
+    erw [finrank_top K E] at this
     exact this
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]

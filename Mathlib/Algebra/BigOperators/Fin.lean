@@ -155,12 +155,12 @@ theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : ∑ _i : Fin n, x = n 
 @[to_additive]
 theorem prod_Ioi_zero {M : Type*} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
     ∏ i ∈ Ioi 0, v i = ∏ j : Fin n, v j.succ := by
-  rw [Ioi_zero_eq_map, Finset.prod_map, val_succEmb]
+  rw [Ioi_zero_eq_map, Finset.prod_map, coe_succEmb]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem prod_Ioi_succ {M : Type*} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
     ∏ j ∈ Ioi i.succ, v j = ∏ j ∈ Ioi i, v j.succ := by
-  rw [Ioi_succ, Finset.prod_map, val_succEmb]
+  rw [← map_succEmb_Ioi, Finset.prod_map, coe_succEmb]
 
 @[to_additive]
 theorem prod_congr' {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin b → M) (h : a = b) :
@@ -179,9 +179,8 @@ theorem prod_univ_add {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) �
 @[to_additive]
 theorem prod_trunc {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M)
     (hf : ∀ j : Fin b, f (natAdd a j) = 1) :
-    (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castLE (Nat.le.intro rfl) i) := by
+    (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castAdd b i) := by
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
-  rfl
 
 lemma sum_neg_one_pow (R : Type*) [Ring R] (m : ℕ) :
     (∑ n : Fin m, (-1) ^ n.1 : R) = if Even m then 0 else 1 := by
@@ -323,7 +322,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
             (∏ i : Fin m, n i) * nn by
         replace := this (Fin.init n) (n (Fin.last _)) (Fin.init f) (f (Fin.last _))
         rw [← Fin.snoc_init_self f]
-        simp (config := { singlePass := true }) only [← Fin.snoc_init_self n]
+        simp +singlePass only [← Fin.snoc_init_self n]
         simp_rw [Fin.snoc_castSucc, Fin.snoc_last, Fin.snoc_init_self n]
         exact this
       intro n nn f fn
@@ -423,24 +422,22 @@ variable [CommMonoid α]
 
 @[to_additive]
 theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
-    ((ofFn f).take i).prod = ∏ j ∈ Finset.univ.filter fun j : Fin n => j.val < i, f j := by
+    ((ofFn f).take i).prod = ∏ j with j.val < i, f j := by
   induction i with
   | zero =>
     simp
   | succ i IH =>
     by_cases h : i < n
-    · have : i < length (ofFn f) := by rwa [length_ofFn f]
+    · have : i < length (ofFn f) := by rwa [length_ofFn]
       rw [prod_take_succ _ _ this]
-      have A : ((Finset.univ : Finset (Fin n)).filter fun j => j.val < i + 1) =
-          ((Finset.univ : Finset (Fin n)).filter fun j => j.val < i) ∪ {(⟨i, h⟩ : Fin n)} := by
+      have A : ({j | j.val < i + 1} : Finset (Fin n)) =
+          insert ⟨i, h⟩ ({j | Fin.val j < i} : Finset (Fin n)) := by
         ext ⟨_, _⟩
-        simp [Nat.lt_succ_iff_lt_or_eq]
-      have B : _root_.Disjoint (Finset.filter (fun j : Fin n => j.val < i) Finset.univ)
-          (singleton (⟨i, h⟩ : Fin n)) := by simp
-      rw [A, Finset.prod_union B, IH]
+        simp [Nat.lt_succ_iff_lt_or_eq, or_comm]
+      rw [A, prod_insert (by simp), IH, mul_comm]
       simp
     · have A : (ofFn f).take i = (ofFn f).take i.succ := by
-        rw [← length_ofFn f] at h
+        rw [← length_ofFn (f := f)] at h
         have : length (ofFn f) ≤ i := not_lt.mp h
         rw [take_of_length_le this, take_of_length_le (le_trans this (Nat.le_succ _))]
       have B : ∀ j : Fin n, ((j : ℕ) < i.succ) = ((j : ℕ) < i) := by
@@ -456,7 +453,7 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i :=
 end CommMonoid
 
 @[to_additive]
-theorem alternatingProd_eq_finset_prod {G : Type*} [CommGroup G] :
+theorem alternatingProd_eq_finset_prod {G : Type*} [DivisionCommMonoid G] :
     ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ)
   | [] => by
     rw [alternatingProd, Finset.prod_eq_one]

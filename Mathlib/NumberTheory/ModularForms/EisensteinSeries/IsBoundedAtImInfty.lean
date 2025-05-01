@@ -46,7 +46,7 @@ lemma norm_le_tsum_norm (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k
     ‖eisensteinSeries a k z‖  ≤ ∑' (x : Fin 2 → ℤ), ‖eisSummand k x z‖ := by
   simp_rw [eisensteinSeries]
   apply le_trans (norm_tsum_le_tsum_norm ((summable_norm_eisSummand hk z).subtype _))
-    (tsum_subtype_le (fun (x : Fin 2 → ℤ) ↦ ‖(eisSummand k x z)‖) _ (fun _ ↦ norm_nonneg _)
+    (Summable.tsum_subtype_le (fun (x : Fin 2 → ℤ) ↦ ‖(eisSummand k x z)‖) _ (fun _ ↦ norm_nonneg _)
       (summable_norm_eisSummand hk z))
 
 @[deprecated (since := "2025-02-17")] alias abs_le_tsum_abs := norm_le_tsum_norm
@@ -62,7 +62,7 @@ theorem isBoundedAtImInfty_eisensteinSeries_SIF {N : ℕ+} (a : Fin 2 → ZMod N
     ← T_zpow_width_invariant N k n (eisensteinSeries_SIF (a ᵥ* A) k) z]
   apply le_trans (norm_le_tsum_norm N (a ᵥ* A) k hk _)
   have hk' : (2 : ℝ) < k := by norm_cast
-  apply tsum_le_tsum _ (summable_norm_eisSummand hk _)
+  apply (summable_norm_eisSummand hk _).tsum_le_tsum _
   · exact_mod_cast (summable_one_div_norm_rpow hk').mul_left <| r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ (-k)
   · intro x
     simp_rw [eisSummand, norm_zpow]

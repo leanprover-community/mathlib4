@@ -51,7 +51,7 @@ section Eval
 variable {x : R}
 
 @[simp]
-theorem eval_smul [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S) (p : R[X])
+theorem eval_smul [SMulZeroClass S R] [IsScalarTower S R R] (s : S) (p : R[X])
     (x : R) : (s • p).eval x = s • p.eval x := by
   rw [← smul_one_smul R s p, eval, eval₂_smul, RingHom.id_apply, smul_one_mul]
 
@@ -67,7 +67,7 @@ end Eval
 section Comp
 
 @[simp]
-theorem smul_comp [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S) (p q : R[X]) :
+theorem smul_comp [SMulZeroClass S R] [IsScalarTower S R R] (s : S) (p q : R[X]) :
     (s • p).comp q = s • p.comp q := by
   rw [← smul_one_smul R s p, comp, comp, eval₂_smul, ← smul_eq_C_mul, smul_assoc, one_smul]
 

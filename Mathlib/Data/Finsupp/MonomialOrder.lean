@@ -57,8 +57,12 @@ it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvP
 structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
+  /-- `syn` is a additive commutative monoid -/
+  acm : AddCommMonoid syn := by infer_instance
+  /-- `syn` is linearly ordered -/
+  lo : LinearOrder syn := by infer_instance
   /-- `syn` is a linearly ordered cancellative additive commutative monoid -/
-  locacm : LinearOrderedCancelAddCommMonoid syn := by infer_instance
+  iocam : IsOrderedCancelAddMonoid syn := by infer_instance
   /-- the additive equivalence from `σ →₀ ℕ` to `syn` -/
   toSyn : (σ →₀ ℕ) ≃+ syn
   /-- `toSyn` is monotone -/
@@ -66,7 +70,7 @@ structure MonomialOrder (σ : Type*) where
   /-- `syn` is a well ordering -/
   wf : WellFoundedLT syn := by infer_instance
 
-attribute [instance] MonomialOrder.locacm MonomialOrder.wf
+attribute [instance] MonomialOrder.acm MonomialOrder.lo MonomialOrder.iocam MonomialOrder.wf
 
 namespace MonomialOrder
 
@@ -109,8 +113,9 @@ open Finsupp
 open scoped MonomialOrder
 
 -- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
-noncomputable instance {α N : Type*} [LinearOrder α] [OrderedCancelAddCommMonoid N] :
-    OrderedCancelAddCommMonoid (Lex (α →₀ N)) where
+noncomputable instance {α N : Type*} [LinearOrder α]
+    [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
+    IsOrderedCancelAddMonoid (Lex (α →₀ N)) where
   le_of_add_le_add_left a b c h := by simpa only [add_le_add_iff_left] using h
   add_le_add_left a b h c := by simpa only [add_le_add_iff_left] using h
 

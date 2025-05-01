@@ -32,8 +32,7 @@ generators and relations.
 
 ## TODO
 * Relate this to `Module.FinitePresentation`
-* Behaviour of presentations with respect to the extension of scalars and
-the restriction of scalars
+* Behaviour of presentations with respect to the extension of scalars and the restriction of scalars
 
 -/
 
@@ -500,6 +499,7 @@ variable {A M}
 def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
     {solution : relations.Solution M} (h : solution.IsPresentation) :
     Presentation.{w₀, w₁} A M where
+  __ := relations
   toSolution := solution
   toIsPresentation := h
 

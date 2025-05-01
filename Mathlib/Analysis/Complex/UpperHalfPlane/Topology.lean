@@ -31,9 +31,6 @@ instance : TopologicalSpace ℍ :=
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
   IsOpen.isOpenEmbedding_subtypeVal <| isOpen_lt continuous_const Complex.continuous_im
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_coe := isOpenEmbedding_coe
-
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
   IsEmbedding.subtypeVal
 

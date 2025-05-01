@@ -134,8 +134,8 @@ theorem even_odd_of_coprime (hc : Int.gcd x y = 1) :
   -- x odd, y odd
   · exfalso
     obtain ⟨x0, y0, rfl, rfl⟩ : ∃ x0 y0, x = x0 * 2 + 1 ∧ y = y0 * 2 + 1 := by
-      obtain ⟨x0, hx2⟩ := exists_eq_mul_left_of_dvd (Int.dvd_sub_of_emod_eq hx)
-      obtain ⟨y0, hy2⟩ := exists_eq_mul_left_of_dvd (Int.dvd_sub_of_emod_eq hy)
+      obtain ⟨x0, hx2⟩ := exists_eq_mul_left_of_dvd (Int.dvd_self_sub_of_emod_eq hx)
+      obtain ⟨y0, hy2⟩ := exists_eq_mul_left_of_dvd (Int.dvd_self_sub_of_emod_eq hy)
       rw [sub_eq_iff_eq_add] at hx2 hy2
       exact ⟨x0, y0, hx2, hy2⟩
     apply Int.sq_ne_two_mod_four z
@@ -160,7 +160,7 @@ theorem gcd_dvd : (Int.gcd x y : ℤ) ∣ z := by
   obtain ⟨k, x0, y0, _, h2, rfl, rfl⟩ :
     ∃ (k : ℕ) (x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
     Int.exists_gcd_one' (Nat.pos_of_ne_zero h0)
-  rw [Int.gcd_mul_right, h2, Int.natAbs_ofNat, one_mul]
+  rw [Int.gcd_mul_right, h2, Int.natAbs_natCast, one_mul]
   rw [← Int.pow_dvd_pow_iff two_ne_zero, sq z, ← h.eq]
   rw [(by ring : x0 * k * (x0 * k) + y0 * k * (y0 * k) = (k : ℤ) ^ 2 * (x0 * x0 + y0 * y0))]
   exact dvd_mul_right _ _
@@ -185,7 +185,7 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
   have hk : (k : ℤ) ≠ 0 := by
     norm_cast
     rwa [pos_iff_ne_zero] at k0
-  rw [Int.gcd_mul_right, h2, Int.natAbs_ofNat, one_mul] at h ⊢
+  rw [Int.gcd_mul_right, h2, Int.natAbs_natCast, one_mul] at h ⊢
   rw [mul_comm x0, mul_comm y0, mul_iff k hk] at h
   rwa [Int.mul_ediv_cancel _ hk, Int.mul_ediv_cancel _ hk, Int.mul_ediv_cancel_left _ hk]
 
@@ -350,13 +350,13 @@ private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1)
       simp only [sq, Nat.cast_ofNat, Int.sub_emod, Int.mul_emod, hm, hn,
         mul_zero, EuclideanDomain.zero_mod, mul_one, zero_sub]
       decide
-    apply mt (Int.dvd_gcd (Int.natCast_dvd.mpr hpm)) hnp
+    apply mt (Int.dvd_coe_gcd (Int.natCast_dvd.mpr hpm)) hnp
     apply or_self_iff.mp
     apply Int.Prime.dvd_mul' hp
     rw [(by ring : n * n = -(m ^ 2 - n ^ 2) + m * m)]
     exact hp1.neg_right.add ((Int.natCast_dvd.2 hpm).mul_right _)
   rw [Int.gcd_comm] at hnp
-  apply mt (Int.dvd_gcd (Int.natCast_dvd.mpr hpn)) hnp
+  apply mt (Int.dvd_coe_gcd (Int.natCast_dvd.mpr hpn)) hnp
   apply or_self_iff.mp
   apply Int.Prime.dvd_mul' hp
   rw [(by ring : m * m = m ^ 2 - n ^ 2 + n * n)]
@@ -381,8 +381,8 @@ private theorem coprime_sq_sub_sq_sum_of_odd_odd {m n : ℤ} (h : Int.gcd m n = 
     2 ∣ m ^ 2 + n ^ 2 ∧
       2 ∣ m ^ 2 - n ^ 2 ∧
         (m ^ 2 - n ^ 2) / 2 % 2 = 0 ∧ Int.gcd ((m ^ 2 - n ^ 2) / 2) ((m ^ 2 + n ^ 2) / 2) = 1 := by
-  obtain ⟨m0, hm2⟩ := exists_eq_mul_left_of_dvd (Int.dvd_sub_of_emod_eq hm)
-  obtain ⟨n0, hn2⟩ := exists_eq_mul_left_of_dvd (Int.dvd_sub_of_emod_eq hn)
+  obtain ⟨m0, hm2⟩ := exists_eq_mul_left_of_dvd (Int.dvd_self_sub_of_emod_eq hm)
+  obtain ⟨n0, hn2⟩ := exists_eq_mul_left_of_dvd (Int.dvd_self_sub_of_emod_eq hn)
   rw [sub_eq_iff_eq_add] at hm2 hn2
   subst m
   subst n
@@ -493,7 +493,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   · -- m even, n even
     exfalso
     have h1 : 2 ∣ (Int.gcd n m : ℤ) :=
-      Int.dvd_gcd (Int.dvd_of_emod_eq_zero hn2) (Int.dvd_of_emod_eq_zero hm2)
+      Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hn2) (Int.dvd_of_emod_eq_zero hm2)
     rw [hnmcp] at h1
     revert h1
     decide

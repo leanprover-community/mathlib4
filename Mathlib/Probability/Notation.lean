@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
-import Mathlib.MeasureTheory.Decomposition.Lebesgue
+import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 /-! # Notations for probability theory
 

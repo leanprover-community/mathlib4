@@ -166,9 +166,6 @@ theorem algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1
 theorem isLocalHom_algebraMap : IsLocalHom (algebraMap R (ExteriorAlgebra R M)) :=
   isLocalHom_of_leftInverse _ (algebraMap_leftInverse M)
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_algebraMap := isLocalHom_algebraMap
-
 theorem isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
   isUnit_map_of_leftInverse _ (algebraMap_leftInverse M)
 
@@ -201,9 +198,6 @@ def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x => by
-  -- Porting note: Original proof didn't have `letI` and `haveI`
-  letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
-  haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   simp [ιInv]
 
 variable (R) in

@@ -289,7 +289,7 @@ noncomputable def module : Module (R.val.obj X) (A.val.obj X) where
   add_smul := Sheafify.add_smul α φ
   mul_smul := Sheafify.mul_smul α φ
 
-lemma map_smul :
+protected lemma map_smul :
     A.val.map π (smul α φ r m) = smul α φ (R.val.map π r) (A.val.map π m) := by
   let S := Presheaf.imageSieve α (R.val.map π r) ⊓ Presheaf.imageSieve φ (A.val.map π m)
   have hS : S ∈ J Y.unop := by

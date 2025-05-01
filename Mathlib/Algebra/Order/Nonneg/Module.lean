@@ -5,7 +5,7 @@ Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Nonneg.Basic
 
 /-!
 # Modules over nonnegative elements
@@ -18,7 +18,7 @@ These instances are useful for working with `ConvexCone`.
 -/
 
 variable {𝕜 𝕜' E : Type*}
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
@@ -43,7 +43,7 @@ end SMul
 
 section IsScalarTower
 
-variable [SMul 𝕜 𝕜'] [SMul 𝕜 E] [SMul 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
+variable [IsOrderedRing 𝕜] [SMul 𝕜 𝕜'] [SMul 𝕜 E] [SMul 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 
 instance instIsScalarTower : IsScalarTower 𝕜≥0 𝕜' E :=
   SMul.comp.isScalarTower ↑Nonneg.coeRingHom
@@ -62,7 +62,8 @@ end SMulWithZero
 
 section OrderedSMul
 
-variable [OrderedAddCommMonoid E] [SMulWithZero 𝕜 E] [hE : OrderedSMul 𝕜 E]
+variable [IsOrderedRing 𝕜] [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E]
+  [SMulWithZero 𝕜 E] [hE : OrderedSMul 𝕜 E]
 
 instance instOrderedSMul : OrderedSMul 𝕜≥0 E :=
   ⟨hE.1, hE.2⟩
@@ -71,7 +72,7 @@ end OrderedSMul
 
 section Module
 
-variable [AddCommMonoid E] [Module 𝕜 E]
+variable [IsOrderedRing 𝕜] [AddCommMonoid E] [Module 𝕜 E]
 
 /-- A module over an ordered semiring is also a module over just the non-negative scalars. -/
 instance instModule : Module 𝕜≥0 E :=

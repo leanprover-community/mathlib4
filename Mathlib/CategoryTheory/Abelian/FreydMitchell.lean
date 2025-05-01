@@ -43,16 +43,16 @@ We put this all together in the file
 To prove (2), there are multiple options.
 
 * Some sources (for example Freyd's "Abelian Categories") choose `D := LeftExactFunctor C Ab`. The
-main difficulty with this approach is that it is not obvious that `D` is abelian. This approach has
-a very algebraic flavor and requires a relatively large armount of ad-hoc reasoning.
+  main difficulty with this approach is that it is not obvious that `D` is abelian. This approach
+  has a very algebraic flavor and requires a relatively large armount of ad-hoc reasoning.
 * In the Stacks project, it is suggested to choose `D := Sheaf J Ab` for a suitable Grothendieck
-topology on `Cᵒᵖ` and there are reasons to believe that this `D` is in fact equivalent to
-`LeftExactFunctor C Ab`. This approach translates many of the interesting properties along the
-sheafification adjunction from a category of `Ab`-valued presheaves, which in turn inherits many
-interesting properties from the category of abelian groups.
+  topology on `Cᵒᵖ` and there are reasons to believe that this `D` is in fact equivalent to
+  `LeftExactFunctor C Ab`. This approach translates many of the interesting properties along the
+  sheafification adjunction from a category of `Ab`-valued presheaves, which in turn inherits many
+  interesting properties from the category of abelian groups.
 * Kashiwara and Schapira choose `D := Ind Cᵒᵖ`, which can be shown to be equivalent to
-`LeftExactFunctor C Ab` (see the file `Mathlib.CategoryTheory.Preadditive.Indization`).
-This approach deduces most interesting properties from the category of types.
+  `LeftExactFunctor C Ab` (see the file `Mathlib.CategoryTheory.Preadditive.Indization`).
+  This approach deduces most interesting properties from the category of types.
 
 When work on this theorem commenced in early 2022, all three approaches were quite out of reach.
 By the time the theorem was proved in early 2025, both the `Sheaf` approach and the `Ind` approach

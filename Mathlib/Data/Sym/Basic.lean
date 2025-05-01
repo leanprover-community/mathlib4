@@ -269,12 +269,15 @@ theorem replicate_succ {a : α} {n : ℕ} : replicate n.succ a = a ::ₛ replica
 theorem coe_replicate : (replicate n a : Multiset α) = Multiset.replicate n a :=
   rfl
 
+theorem val_replicate : (replicate n a).val = Multiset.replicate n a := by
+  rw [val_eq_coe, coe_replicate]
+
 @[simp]
 theorem mem_replicate : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
   Multiset.mem_replicate
 
 theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
-  erw [Subtype.ext_iff, Multiset.eq_replicate]
+  rw [Subtype.ext_iff, val_replicate, Multiset.eq_replicate]
   exact and_iff_right s.2
 
 theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
@@ -313,7 +316,7 @@ instance inhabitedSym [Inhabited α] (n : ℕ) : Inhabited (Sym α n) :=
   ⟨replicate n default⟩
 
 instance inhabitedSym' [Inhabited α] (n : ℕ) : Inhabited (Sym' α n) :=
-  ⟨Quotient.mk' (Vector.replicate n default)⟩
+  ⟨Quotient.mk' (List.Vector.replicate n default)⟩
 
 instance (n : ℕ) [IsEmpty α] : IsEmpty (Sym α n.succ) :=
   ⟨fun s => by

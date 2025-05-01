@@ -37,7 +37,7 @@ Moreover, we show the convergence of the continued fractions computations, that 
 convergence, fractions
 -/
 
-variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} (v : K) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
 open GenContFract (of)
 open scoped Topology
@@ -45,7 +45,7 @@ open scoped Topology
 namespace GenContFract
 
 theorem of_convs_eq_convs' : (of v).convs = (of v).convs' :=
-  @ContFract.convs_eq_convs' _ _ (ContFract.of v)
+  ContFract.convs_eq_convs' (c := ContFract.of v)
 
 /-- The recurrence relation for the convergents of the continued fraction expansion
 of an element `v` of `K` in terms of the convergents of the inverse of its fractional part.

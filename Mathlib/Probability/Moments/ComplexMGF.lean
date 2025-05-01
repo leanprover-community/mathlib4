@@ -3,9 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.IntegrableExpMul
 
@@ -43,14 +43,14 @@ properties of the mgf from those of the characteristic function).
   the `complexMGF` are equal everywhere, not only on the strip.
   This lemma will be used in the proof of the equality of distributions.
 
+* `ext_of_complexMGF_eq`: If the complex moment generating functions of two random variables `X`
+  and `Y` with respect to the finite measures `μ`, `μ'`, respectively, coincide, then
+  `μ.map X = μ'.map Y`. In other words, complex moment generating functions separate the
+  distributions of random variables.
+
 ## TODO
 
-Once we have a definition for the characteristic function, we will be able to prove the following.
-
-* `x : ℝ ↦ complexMGF X μ (I * x)` is equal to the characteristic function of
-  the random variable `X`.
-* As a consequence, if two random variables have same `mgf`, then they have the same
-  characteristic function and the same distribution.
+* Prove that if two random variables have the same `mgf`, then the have the same `complexMGF`.
 
 -/
 
@@ -103,6 +103,16 @@ lemma re_complexMGF_ofReal (x : ℝ) : (complexMGF X μ x).re = mgf X μ x := by
 lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X μ := by
   ext x
   exact re_complexMGF_ofReal x
+
+lemma complexMGF_id_mul_I {μ : Measure ℝ} (t : ℝ) :
+    complexMGF id μ (t * I) = charFun μ t := by
+  simp only [complexMGF, id_eq, charFun, RCLike.inner_apply, conj_trivial, ofReal_mul]
+  congr with x
+  ring_nf
+
+lemma complexMGF_mul_I (hX : AEMeasurable X μ) (t : ℝ) :
+    complexMGF X μ (t * I) = charFun (μ.map X) t := by
+  rw [← complexMGF_id_map hX, complexMGF_id_mul_I]
 
 section Analytic
 
@@ -296,5 +306,36 @@ lemma eqOn_complexMGF_of_mgf [IsProbabilityMeasure μ]
   exact (mgf_pos (by simp)).ne'
 
 end EqOfMGF
+
+section ext
+
+variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
+
+/-- If the complex moment generating functions of two random variables `X` and `Y` with respect to
+the finite measures `μ`, `μ'`, respectively, coincide, then `μ.map X = μ'.map Y`. In other words,
+complex moment generating functions separate the distributions of random variables. -/
+theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
+    [IsFiniteMeasure μ'] (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ')
+    (h : complexMGF X μ = complexMGF Y μ') :
+    μ.map X = μ'.map Y := by
+  have inner_ne_zero (x : ℝ) (h : x ≠ 0) : bilinFormOfRealInner x ≠ 0 :=
+    DFunLike.ne_iff.mpr ⟨x, inner_self_ne_zero.mpr h⟩
+  apply MeasureTheory.ext_of_integral_char_eq continuous_probChar probChar_ne_one inner_ne_zero
+    continuous_inner (fun w ↦ ?_)
+  rw [funext_iff] at h
+  specialize h (Multiplicative.toAdd w * I)
+  simp_rw [complexMGF, mul_assoc, mul_comm I, ← mul_assoc] at h
+  simp only [BoundedContinuousFunction.char_apply, bilinFormOfRealInner_apply_apply,
+    RCLike.inner_apply, conj_trivial, probChar_apply, ofReal_mul]
+  rwa [integral_map hX (AEMeasurable.aestronglyMeasurable <| by fun_prop),
+    integral_map hY (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
+
+lemma _root_.MeasureTheory.Measure.ext_of_complexMGF_id_eq
+    {μ μ' : Measure ℝ} [IsFiniteMeasure μ] [IsFiniteMeasure μ']
+    (h : complexMGF id μ = complexMGF id μ') :
+    μ = μ' := by
+  simpa using Measure.ext_of_complexMGF_eq aemeasurable_id aemeasurable_id h
+
+end ext
 
 end ProbabilityTheory

@@ -404,7 +404,7 @@ theorem diophFn_iff_pFun (f : (α → ℕ) → ℕ) : DiophFn f = @DiophPFun α 
 
 theorem abs_poly_dioph (p : Poly α) : DiophFn fun v => (p v).natAbs :=
   of_no_dummies _ ((p.map some - Poly.proj none) * (p.map some + Poly.proj none))
-    fun v => (by dsimp; exact Int.eq_natAbs_iff_mul_eq_zero)
+    fun v => (by dsimp; exact Int.natAbs_eq_iff_mul_eq_zero)
 
 theorem proj_dioph (i : α) : DiophFn fun v => v i :=
   abs_poly_dioph (Poly.proj i)

@@ -135,9 +135,6 @@ lemma Topology.IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] 
   exact LocallyConnectedSpace.open_connected_basis (f x) |>.restrict_subset
     (h.isOpen_range.mem_nhds <| mem_range_self _) |>.comap _
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.locallyConnectedSpace := IsOpenEmbedding.locallyConnectedSpace
-
 theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU : IsOpen U) :
     LocallyConnectedSpace U :=
   hU.isOpenEmbedding_subtypeVal.locallyConnectedSpace

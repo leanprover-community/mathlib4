@@ -3,8 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Order.Monotone.Union
-import Mathlib.Algebra.Order.Group.Instances
 
 /-!
 # Monotonicity of odd functions
@@ -17,7 +18,8 @@ prove versions of this lemma for `Antitone`, `StrictMono`, and `StrictAnti`.
 
 open Set
 
-variable {G H : Type*} [LinearOrderedAddCommGroup G] [OrderedAddCommGroup H]
+variable {G H : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
+  [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
 
 /-- An odd function on a linear ordered additive commutative group is strictly monotone on the whole
 group provided that it is strictly monotone on `Set.Ici 0`. -/
@@ -31,7 +33,7 @@ theorem strictMono_of_odd_strictMonoOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x
 group provided that it is strictly antitone on `Set.Ici 0`. -/
 theorem strictAnti_of_odd_strictAntiOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
     (h₂ : StrictAntiOn f (Ici 0)) : StrictAnti f :=
-  @strictMono_of_odd_strictMonoOn_nonneg G Hᵒᵈ _ _ _ h₁ h₂
+  strictMono_of_odd_strictMonoOn_nonneg (H := Hᵒᵈ) h₁ h₂
 
 /-- An odd function on a linear ordered additive commutative group is monotone on the whole group
 provided that it is monotone on `Set.Ici 0`. -/
@@ -45,4 +47,4 @@ theorem monotone_of_odd_of_monotoneOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x)
 provided that it is monotone on `Set.Ici 0`. -/
 theorem antitone_of_odd_of_monotoneOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
     (h₂ : AntitoneOn f (Ici 0)) : Antitone f :=
-  @monotone_of_odd_of_monotoneOn_nonneg G Hᵒᵈ _ _ _ h₁ h₂
+  monotone_of_odd_of_monotoneOn_nonneg (H := Hᵒᵈ) h₁ h₂

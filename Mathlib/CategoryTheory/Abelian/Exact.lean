@@ -27,7 +27,7 @@ true in more general settings.
 * `X ⟶ Y ⟶ Z ⟶ 0` is exact if and only if the second map is a cokernel of the first, and
   `0 ⟶ X ⟶ Y ⟶ Z` is exact if and only if the first map is a kernel of the second.
 * A functor `F` such that for all `S`, we have `S.Exact → (S.map F).Exact` preserves both
-finite limits and colimits.
+  finite limits and colimits.
 
 -/
 

@@ -93,7 +93,7 @@ when `X` is initial.
 -/
 @[simps]
 noncomputable def forgetToSheafModuleCat
-      (X : Cᵒᵖ) (hX : Limits.IsInitial X)  :
+      (X : Cᵒᵖ) (hX : Limits.IsInitial X) :
     SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.1.obj X)) where
   obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1,
     Presheaf.isSheaf_of_isSheaf_comp _ _

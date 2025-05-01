@@ -19,7 +19,7 @@ In matroids arising from graphs, circuits correspond to graphical cycles.
 * For an `Indep`endent set `I` whose closure contains an element `e ∉ I`,
   `Matroid.fundCircuit M e I` is the unique circuit contained in `insert e I`.
 * `Matroid.Indep.fundCircuit_isCircuit` states that `Matroid.fundCircuit M e I` is indeed a circuit.
-* `Circuit.eq_fundCircuit_of_subset` states that `Matroid.fundCircuit M e I` is the
+* `Matroid.IsCircuit.eq_fundCircuit_of_subset` states that `Matroid.fundCircuit M e I` is the
   unique circuit contained in `insert e I`.
 * `Matroid.dep_iff_superset_isCircuit` states that the dependent subsets of the ground set
   are precisely those that contain a circuit.
@@ -33,8 +33,8 @@ In matroids arising from graphs, circuits correspond to graphical cycles.
   or equivalently that `M.E \ C` is a hyperplane of `M`.
 * `Matroid.fundCocircuit M B e` is the unique cocircuit that intersects the base `B` precisely
   in the element `e`.
-* `Base.mem_fundCocircuit_iff_mem_fundCircuit` : `e` is in the fundamental circuit for `B` and `f`
-  iff `f` is in the fundamental cocircuit for `B` and `e`.
+* `Matroid.IsBase.mem_fundCocircuit_iff_mem_fundCircuit` : `e` is in the fundamental circuit
+  for `B` and `f` iff `f` is in the fundamental cocircuit for `B` and `e`.
 
 # Implementation Details
 
@@ -53,7 +53,7 @@ open Set
 
 namespace Matroid
 
-/-- A `Circuit` of `M` is a minimal dependent set in `M` -/
+/-- `M.IsCircuit C` means that `C` is a minimal dependent set in `M`. -/
 def IsCircuit (M : Matroid α) := Minimal M.Dep
 
 @[deprecated (since := "2025-02-14")] alias Circuit := IsCircuit
@@ -189,8 +189,8 @@ lemma restrict_isCircuit_iff (hR : R ⊆ M.E := by aesop_mat) :
 /-! ### Fundamental IsCircuits -/
 
 /-- For an independent set `I` and some `e ∈ M.closure I \ I`,
-`M.fundCircuit e I` is the unique isCircuit contained in `insert e I`.
-For the fact that this is a isCircuit, see `Matroid.Indep.fundCircuit_isCircuit`,
+`M.fundCircuit e I` is the unique circuit contained in `insert e I`.
+For the fact that this is a circuit, see `Matroid.Indep.fundCircuit_isCircuit`,
 and the fact that it is unique, see `Matroid.IsCircuit.eq_fundCircuit_of_subset`.
 Has the junk value `{e}` if `e ∈ I` or `e ∉ M.E`, and `insert e I` if `e ∈ M.E \ M.closure I`. -/
 def fundCircuit (M : Matroid α) (e : α) (I : Set α) : Set α :=
@@ -411,7 +411,7 @@ lemma IsCircuit.strong_multi_elimination_insert (x : ι → α) (I : ι → Set 
   exact union_subset_union_left _ diff_subset
 
 /-- A generalization of the strong circuit elimination axiom `Matroid.IsCircuit.strong_elimination`
-to an infinite collection of isCircuits.
+to an infinite collection of circuits.
 
 It states that, given a circuit `C₀`, a arbitrary collection `C : ι → Set α` of circuits,
 an element `x i` of `C₀ ∩ C i` for each `i`, and an element `z ∈ C₀` outside all the `C i`,
@@ -473,7 +473,7 @@ lemma IsCircuit.strong_elimination (hC₁ : M.IsCircuit C₁) (hC₂ : M.IsCircu
     (by simpa) (by simpa) (by simpa) (by simp) (by simpa) (by simpa)
   exact ⟨C, hCs.trans (diff_subset_diff (by simp) (by simp)), hC, hfC⟩
 
-/-- The circuit elimination axiom : for any pair of distinct isCircuits `C₁, C₂` and any `e`,
+/-- The circuit elimination axiom : for any pair of distinct circuits `C₁, C₂` and any `e`,
 some circuit is contained in `(C₁ ∪ C₂) \ {e}`.
 
 This is one of the axioms when defining a finitary matroid via circuits;
@@ -599,8 +599,8 @@ lemma IsBase.compl_closure_diff_singleton_isCocircuit (hB : M.IsBase B) (he : e 
     apply closure_subset_ground
   exact hB.exchange_base_of_not_mem_closure he fcl
 
-/-- A version of `cocircuit_iff_minimal_compl_nonspanning` with a support assumption
-in the minimality -/
+/-- A version of `Matroid.isCocircuit_iff_minimal_compl_nonspanning` with a support assumption
+in the minimality. -/
 lemma isCocircuit_iff_minimal_compl_nonspanning' :
     M.IsCocircuit K ↔ Minimal (fun X ↦ ¬ M.Spanning (M.E \ X) ∧ X ⊆ M.E) K := by
   rw [isCocircuit_iff_minimal_compl_nonspanning]

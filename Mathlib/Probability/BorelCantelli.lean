@@ -21,7 +21,7 @@ filtration.
 - `ProbabilityTheory.measure_limsup_eq_one`: the second Borel-Cantelli lemma.
 
 **Note**: for the *first Borel-Cantelli lemma*, which holds in general measure spaces (not only
-in probability spaces), see `MeasureTheory.measure_limsup_eq_zero`.
+in probability spaces), see `MeasureTheory.measure_limsup_atTop_eq_zero`.
 -/
 
 open scoped ENNReal Topology
@@ -56,7 +56,7 @@ alias iIndepFun.condexp_natural_ae_eq_of_lt := iIndepFun.condExp_natural_ae_eq_o
 theorem iIndepSet.condExp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, MeasurableSet (s n))
     (hs : iIndepSet s μ) (hij : i < j) :
     μ[(s j).indicator (fun _ => 1 : Ω → ℝ)|filtrationOfSet hsm i] =ᵐ[μ]
-    fun _ => (μ (s j)).toReal := by
+    fun _ => μ.real (s j) := by
   rw [Filtration.filtrationOfSet_eq_natural (β := ℝ) hsm]
   refine (iIndepFun.condExp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans ?_
   simp only [integral_indicator_const _ (hsm _), Algebra.id.smul_eq_mul, mul_one]; rfl
@@ -97,8 +97,8 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
     rw [mem_upperBounds] at hB
     specialize hB (∑ k ∈ Finset.range n, μ (s (k + 1))).toReal _
     · refine ⟨n, ?_⟩
-      rw [ENNReal.toReal_sum]
-      exact fun _ _ => measure_ne_top _ _
+      rw [ENNReal.toReal_sum (by finiteness)]
+      rfl
     · rwa [not_lt, ENNReal.ofNNReal_toNNReal, ENNReal.le_ofReal_iff_toReal_le]
       · simp
       · exact le_trans (by positivity) hB

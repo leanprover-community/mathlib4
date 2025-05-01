@@ -119,12 +119,12 @@ theorem apply_eq_iff_eq {α β} (f : α ↪ β) (x y : α) : f x = f y ↔ x = y
   EmbeddingLike.apply_eq_iff_eq f
 
 /-- The identity map as a `Function.Embedding`. -/
-@[refl, simps (config := { simpRhs := true })]
+@[refl, simps +simpRhs]
 protected def refl (α : Sort*) : α ↪ α :=
   ⟨id, injective_id⟩
 
 /-- Composition of `f : α ↪ β` and `g : β ↪ γ`. -/
-@[trans, simps (config := { simpRhs := true })]
+@[trans, simps +simpRhs]
 protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
   ⟨g ∘ f, g.injective.comp f.injective⟩
 

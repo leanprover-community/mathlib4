@@ -114,7 +114,11 @@ noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder 
     CompleteDistribLattice α := .ofMinimalAxioms (toCompleteDistribLatticeMinimalAxioms _)
 
 -- See note [reducible non-instances]
-/-- A finite bounded linear order is complete. -/
+/-- A finite bounded linear order is complete.
+
+If the `α` is already a `BiheytingAlgebra`, then prefer to construct this instance manually using
+`Fintype.toCompleteLattice` instead, to avoid creating a diamond with
+`LinearOrder.toBiheytingAlgebra`. -/
 noncomputable abbrev toCompleteLinearOrder
     [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
   { toCompleteLattice α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
@@ -168,8 +172,6 @@ lemma Finite.exists_minimal_le [Finite α] (h : p a) : ∃ b, b ≤ a ∧ Minima
     Set.Finite.exists_minimal_wrt id {x | x ≤ a ∧ p x} (Set.toFinite _) ⟨a, rfl.le, h⟩
   exact ⟨b, hba, hb, fun x hx hxb ↦ (hbmin x ⟨hxb.trans hba, hx⟩ hxb).le⟩
 
-@[deprecated (since := "2024-09-23")] alias Finite.exists_ge_minimal := Finite.exists_minimal_le
-
 lemma Finite.exists_le_maximal [Finite α] (h : p a) : ∃ b, a ≤ b ∧ Maximal p b :=
   Finite.exists_minimal_le (α := αᵒᵈ) h
 
@@ -196,11 +198,13 @@ end PartialOrder
 noncomputable instance Fin.completeLinearOrder {n : ℕ} [NeZero n] : CompleteLinearOrder (Fin n) :=
   Fintype.toCompleteLinearOrder _
 
-noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool :=
-  Fintype.toCompleteLinearOrder _
-
 noncomputable instance Bool.completeBooleanAlgebra : CompleteBooleanAlgebra Bool :=
   Fintype.toCompleteBooleanAlgebra _
+
+noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool where
+  __ := Fintype.toCompleteLattice _
+  __ : BiheytingAlgebra Bool := inferInstance
+  __ : LinearOrder Bool := inferInstance
 
 noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Bool :=
   Fintype.toCompleteAtomicBooleanAlgebra _

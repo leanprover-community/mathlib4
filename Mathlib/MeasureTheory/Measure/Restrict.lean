@@ -158,9 +158,10 @@ theorem restrict_zero {_m0 : MeasurableSpace α} (s : Set α) : (0 : Measure α)
   (restrictₗ s).map_zero
 
 @[simp]
-theorem restrict_smul {_m0 : MeasurableSpace α} (c : ℝ≥0∞) (μ : Measure α) (s : Set α) :
-    (c • μ).restrict s = c • μ.restrict s :=
-  (restrictₗ s).map_smul c μ
+theorem restrict_smul {_m0 : MeasurableSpace α} {R : Type*} [SMul R ℝ≥0∞]
+    [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) (μ : Measure α) (s : Set α) :
+    (c • μ).restrict s = c • μ.restrict s := by
+  simpa only [smul_one_smul] using (restrictₗ s).map_smul (c • 1) μ
 
 theorem restrict_restrict₀ (hs : NullMeasurableSet s (μ.restrict t)) :
     (μ.restrict t).restrict s = μ.restrict (s ∩ t) :=
@@ -538,10 +539,12 @@ theorem ae_eq_restrict_biUnion_finset_iff (s : ι → Set α) (t : Finset ι) (f
     f =ᵐ[μ.restrict (⋃ i ∈ t, s i)] g ↔ ∀ i ∈ t, f =ᵐ[μ.restrict (s i)] g :=
   ae_eq_restrict_biUnion_iff s t.countable_toSet f g
 
+open scoped Interval in
 theorem ae_restrict_uIoc_eq [LinearOrder α] (a b : α) :
     ae (μ.restrict (Ι a b)) = ae (μ.restrict (Ioc a b)) ⊔ ae (μ.restrict (Ioc b a)) := by
   simp only [uIoc_eq_union, ae_restrict_union_eq]
 
+open scoped Interval in
 /-- See also `MeasureTheory.ae_uIoc_iff`. -/
 theorem ae_restrict_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
     (∀ᵐ x ∂μ.restrict (Ι a b), P x) ↔

@@ -36,9 +36,9 @@ instance instLinearOrder : LinearOrder ℤ where
   lt := (·<·)
   lt_iff_le_not_le := @Int.lt_iff_le_not_le
   le_total := Int.le_total
-  decidableEq := by infer_instance
-  decidableLE := by infer_instance
-  decidableLT := by infer_instance
+  toDecidableEq := by infer_instance
+  toDecidableLE := by infer_instance
+  toDecidableLT := by infer_instance
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) : a = 0 ∨ b = 0 :=
   Int.mul_eq_zero.mp h

@@ -33,7 +33,7 @@ variable {𝕜 E β : Type*}
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid_E
 
@@ -75,7 +75,7 @@ theorem Convex.quasiconvexOn_of_convex_le (hs : Convex 𝕜 s) (h : ∀ r, Conve
 
 theorem Convex.quasiconcaveOn_of_convex_ge (hs : Convex 𝕜 s) (h : ∀ r, Convex 𝕜 { x | r ≤ f x }) :
     QuasiconcaveOn 𝕜 s f :=
-  @Convex.quasiconvexOn_of_convex_le 𝕜 E βᵒᵈ _ _ _ _ _ _ hs h
+  Convex.quasiconvexOn_of_convex_le (β := βᵒᵈ) hs h
 
 theorem QuasiconvexOn.convex [IsDirected β (· ≤ ·)] (hf : QuasiconvexOn 𝕜 s f) : Convex 𝕜 s :=
   fun x hx y hy _ _ ha hb hab =>
@@ -117,7 +117,7 @@ theorem quasiconvexOn_iff_le_max : QuasiconvexOn 𝕜 s f ↔ Convex 𝕜 s ∧ 
 
 theorem quasiconcaveOn_iff_min_le : QuasiconcaveOn 𝕜 s f ↔ Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄,
     y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → min (f x) (f y) ≤ f (a • x + b • y) :=
-  @quasiconvexOn_iff_le_max 𝕜 E βᵒᵈ _ _ _ _ _ _
+  quasiconvexOn_iff_le_max (β := βᵒᵈ)
 
 theorem quasilinearOn_iff_mem_uIcc : QuasilinearOn 𝕜 s f ↔ Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄,
     y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → f (a • x + b • y) ∈ uIcc (f x) (f y) := by
@@ -140,7 +140,8 @@ end LinearOrder_β
 
 section OrderedSMul_β
 
-variable [OrderedAddCommMonoid β] [Module 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [Module 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β]
   {s : Set E} {f : E → β}
 
 theorem ConvexOn.quasiconvexOn (hf : ConvexOn 𝕜 s f) : QuasiconvexOn 𝕜 s f :=
@@ -155,7 +156,8 @@ end AddCommMonoid_E
 
 section LinearOrderedAddCommMonoid_E
 
-variable [LinearOrderedAddCommMonoid E] [OrderedAddCommMonoid β] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+variable [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E]
+  [PartialOrder β] [Module 𝕜 E] [OrderedSMul 𝕜 E]
   {s : Set E} {f : E → β}
 
 theorem MonotoneOn.quasiconvexOn (hf : MonotoneOn f s) (hs : Convex 𝕜 s) : QuasiconvexOn 𝕜 s f :=
@@ -200,7 +202,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → β}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {s : Set 𝕜} {f : 𝕜 → β}
 
 theorem QuasilinearOn.monotoneOn_or_antitoneOn [LinearOrder β] (hf : QuasilinearOn 𝕜 s f) :
     MonotoneOn f s ∨ AntitoneOn f s := by
@@ -208,7 +210,7 @@ theorem QuasilinearOn.monotoneOn_or_antitoneOn [LinearOrder β] (hf : Quasilinea
   rintro a ha b hb c _ h
   refine ⟨((hf.2 _).segment_subset ?_ ?_ h).2, ((hf.1 _).segment_subset ?_ ?_ h).2⟩ <;> simp [*]
 
-theorem quasilinearOn_iff_monotoneOn_or_antitoneOn [LinearOrderedAddCommMonoid β]
+theorem quasilinearOn_iff_monotoneOn_or_antitoneOn [LinearOrder β]
     (hs : Convex 𝕜 s) : QuasilinearOn 𝕜 s f ↔ MonotoneOn f s ∨ AntitoneOn f s :=
   ⟨fun h => h.monotoneOn_or_antitoneOn, fun h =>
     h.elim (fun h => h.quasilinearOn hs) fun h => h.quasilinearOn hs⟩

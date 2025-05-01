@@ -3,8 +3,8 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.Probability.Kernel.MeasurableLIntegral
-import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-!
 # With Density

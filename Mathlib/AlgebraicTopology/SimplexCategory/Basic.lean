@@ -102,7 +102,7 @@ def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : ⦋n⦌ ⟶ ⦋m⦌ :
   SimplexCategory.Hom.mk f
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out a specified `h : i ≤ j` in `Fin (n+1)`. -/
-def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ⦋1⦌ ⟶ ⦋n⦌ :=
+def mkOfLe {n} (i j : Fin (n + 1)) (h : i ≤ j) : ⦋1⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
     toFun := fun | 0 => i | 1 => j
     monotone' := fun
@@ -401,7 +401,7 @@ If `f : ⦋m⦌ ⟶ ⦋n+1⦌` is a morphism and `j` is not in the range of `f`,
 then `factor_δ f j` is a morphism `⦋m⦌ ⟶ ⦋n⦌` such that
 `factor_δ f j ≫ δ j = f` (as witnessed by `factor_δ_spec`).
 -/
-def factor_δ {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n+1⦌) (j : Fin (n+2)) : ⦋m⦌ ⟶ ⦋n⦌ :=
+def factor_δ {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2)) : ⦋m⦌ ⟶ ⦋n⦌ :=
   f ≫ σ (Fin.predAbove 0 j)
 
 open Fin in

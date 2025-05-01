@@ -24,6 +24,8 @@ section
 
 variable [CommRing R] [IsLocalRing R] [CommRing S] [IsLocalRing S] [CommRing T] [IsLocalRing T]
 
+lemma residue_def (x) : residue R x = Ideal.Quotient.mk (maximalIdeal R) x := rfl
+
 lemma ker_residue : RingHom.ker (residue R) = maximalIdeal R :=
   Ideal.mk_ker
 
@@ -83,7 +85,8 @@ theorem lift_residue_apply {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] 
 /-- The map on residue fields induced by a local homomorphism between local rings -/
 def map (f : R →+* S) [IsLocalHom f] : ResidueField R →+* ResidueField S :=
   Ideal.Quotient.lift (maximalIdeal R) ((Ideal.Quotient.mk _).comp f) fun a ha => by
-    erw [Ideal.Quotient.eq_zero_iff_mem]
+    unfold ResidueField
+    rw [RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem]
     exact map_nonunit f a ha
 
 /-- Applying `IsLocalRing.ResidueField.map` to the identity ring homomorphism gives the identity
@@ -192,11 +195,9 @@ theorem isLocalHom_residue : IsLocalHom (IsLocalRing.residue R) := by
   constructor
   intro a ha
   by_contra h
-  erw [Ideal.Quotient.eq_zero_iff_mem.mpr ((IsLocalRing.mem_maximalIdeal _).mpr h)] at ha
+  rw [residue_def, Ideal.Quotient.eq_zero_iff_mem.mpr ((IsLocalRing.mem_maximalIdeal _).mpr h)]
+    at ha
   exact ha.ne_zero rfl
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_residue := isLocalHom_residue
 
 end
 

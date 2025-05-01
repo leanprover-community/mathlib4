@@ -55,17 +55,17 @@ See https://ncatlab.org/nlab/show/bicategory.
 -/
 @[nolint checkUnivs]
 class Bicategory (B : Type u) extends CategoryStruct.{v} B where
-  -- category structure on the collection of 1-morphisms:
+  /-- The category structure on the collection of 1-morphisms -/
   homCategory : ∀ a b : B, Category.{w} (a ⟶ b) := by infer_instance
-  -- left whiskering:
+  /-- Left whiskering for morphisms -/
   whiskerLeft {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) : f ≫ g ⟶ f ≫ h
-  -- right whiskering:
+  /-- Right whiskering for morphisms -/
   whiskerRight {a b c : B} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) : f ≫ h ⟶ g ≫ h
-  -- associator:
+  /-- The associator isomorphism: `(f ≫ g) ≫ h ≅ f ≫ g ≫ h` -/
   associator {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) : (f ≫ g) ≫ h ≅ f ≫ g ≫ h
-  -- left unitor:
+  /-- The left unitor: `𝟙 a ≫ f ≅ f` -/
   leftUnitor {a b : B} (f : a ⟶ b) : 𝟙 a ≫ f ≅ f
-  -- right unitor:
+  /-- The right unitor: `f ≫ 𝟙 b ≅ f` -/
   rightUnitor {a b : B} (f : a ⟶ b) : f ≫ 𝟙 b ≅ f
   -- axioms for left whiskering:
   whiskerLeft_id : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), whiskerLeft f (𝟙 g) = 𝟙 (f ≫ g) := by
@@ -126,11 +126,11 @@ class Bicategory (B : Type u) extends CategoryStruct.{v} B where
 
 namespace Bicategory
 
-scoped infixr:81 " ◁ " => Bicategory.whiskerLeft
-scoped infixl:81 " ▷ " => Bicategory.whiskerRight
-scoped notation "α_" => Bicategory.associator
-scoped notation "λ_" => Bicategory.leftUnitor
-scoped notation "ρ_" => Bicategory.rightUnitor
+@[inherit_doc] scoped infixr:81 " ◁ " => Bicategory.whiskerLeft
+@[inherit_doc] scoped infixl:81 " ▷ " => Bicategory.whiskerRight
+@[inherit_doc] scoped notation "α_" => Bicategory.associator
+@[inherit_doc] scoped notation "λ_" => Bicategory.leftUnitor
+@[inherit_doc] scoped notation "ρ_" => Bicategory.rightUnitor
 
 /-!
 ### Simp-normal form for 2-morphisms
