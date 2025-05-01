@@ -351,21 +351,18 @@ lemma inv_dist_orthogonalProjection_faceOpposite_lt_sum_inv_dist (hn : 1 < n) (i
                     vectorSpan ℝ (Set.range (s.faceOpposite i).points) ⊔
                       vectorSpan ℝ (Set.range (s.faceOpposite j).points) := by
                   rcases hk with ⟨k, hki, hkj⟩
-                  have hki' : s.points k ∈ (Set.range (s.faceOpposite i).points) := by
+                  have hki' : s.points k ∈ Set.range (s.faceOpposite i).points := by
                     rw [range_faceOpposite_points]
                     exact Set.mem_image_of_mem _ hki
-                  have hkj' : s.points k ∈ (Set.range (s.faceOpposite j).points) := by
+                  have hkj' : s.points k ∈ Set.range (s.faceOpposite j).points := by
                     rw [range_faceOpposite_points]
                     exact Set.mem_image_of_mem _ hkj
                   convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
                   simp only [range_faceOpposite_points, ← Set.image_union]
-                  rw [← Set.image_univ]
-                  convert rfl
-                  ext t
-                  simp only [ne_eq, Set.mem_union, Set.mem_setOf_eq, Set.mem_univ, iff_true]
-                  by_cases ht : t = j
-                  · simpa [ht] using hj
-                  · simp [ht]
+                  simp_rw [← Set.image_univ, ← Set.compl_setOf, ← Set.compl_inter,
+                    Set.setOf_eq_eq_singleton]
+                  rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
+                  simpa using hj
                 rw [hs, ← Submodule.inf_orthogonal, Submodule.mem_inf]
                 refine ⟨?_, ?_⟩
                 · rw [h, ← direction_affineSpan]
