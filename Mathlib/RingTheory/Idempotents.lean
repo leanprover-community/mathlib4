@@ -435,12 +435,15 @@ lemma CompleteOrthogonalIdempotents.bijective_pi' (he : CompleteOrthogonalIdempo
       Ideal.Quotient.mk (Ideal.span {e' i})) := ⟨_, funext (by simp), he.bijective_pi⟩
   exact h
 
-lemma RingHom.bijective_pi_of_isIdempotentElem (e : I → R)
+lemma RingHom.pi_bijective_of_isIdempotentElem (e : I → R)
     (he : ∀ i, IsIdempotentElem (e i))
     (he₁ : ∀ i j, i ≠ j → (1 - e i) * (1 - e j) = 0) (he₂ : ∏ i, e i = 0) :
     Function.Bijective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {e i})) :=
   (CompleteOrthogonalIdempotents.of_prod_one_sub
       ⟨fun i ↦ (he i).one_sub, he₁⟩ (by simpa using he₂)).bijective_pi'
+
+@[deprecated (since := "2025-01-05")]
+alias bijective_pi_of_isIdempotentElem := RingHom.pi_bijective_of_isIdempotentElem
 
 lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentElem e)
     (hf : IsIdempotentElem f) (hef₁ : e + f = 1) (hef₂ : e * f = 0) :
@@ -452,7 +455,7 @@ lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentEle
   show Function.Bijective
     (piFinTwoEquiv _ ∘ Pi.ringHom (fun i : Fin 2 ↦ Ideal.Quotient.mk (Ideal.span {o i})))
   rw [(Equiv.bijective _).of_comp_iff']
-  apply bijective_pi_of_isIdempotentElem
+  apply pi_bijective_of_isIdempotentElem
   · intro i
     fin_cases i <;> simpa [o]
   · intro i j hij
