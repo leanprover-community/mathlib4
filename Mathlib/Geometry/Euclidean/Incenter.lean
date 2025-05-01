@@ -3,6 +3,7 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Geometry.Euclidean.Altitude
 import Mathlib.Geometry.Euclidean.SignedDist
 import Mathlib.Geometry.Euclidean.Sphere.Basic
 
@@ -54,8 +55,7 @@ signs determined by the given set of indices (for the empty set, this is the inc
 singleton set, this is the excenter opposite a vertex).  An excenter with those signs exists if
 and only if the sum of these weights is nonzero (so the normalized weights sum to 1). -/
 def excenterWeightsUnnorm (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : ℝ :=
-  (if i ∈ signs then -1 else 1) * (dist (s.points i)
-    ((s.faceOpposite i).orthogonalProjectionSpan (s.points i)))⁻¹
+  (if i ∈ signs then -1 else 1) * (s.height i)⁻¹
 
 /-- Whether an excenter exists with a given choice of signs. -/
 def ExcenterExists (signs : Finset (Fin (n + 1))) : Prop :=
@@ -98,19 +98,14 @@ alias ⟨_, ExcenterExists.sum_excenterWeights_eq_one⟩ := sum_excenterWeights_
 lemma sum_excenterWeightsUnnorm_empty_pos : 0 < ∑ i, s.excenterWeightsUnnorm ∅ i := by
   refine Finset.sum_pos ?_ (by simp)
   rintro i -
-  simp [excenterWeightsUnnorm]
+  simp [excenterWeightsUnnorm, height_pos]
 
 /-- The existence of the incenter, expressed in terms of `ExcenterExists`. -/
 lemma excenterExists_empty : s.ExcenterExists ∅ :=
   s.sum_excenterWeightsUnnorm_empty_pos.ne'
 
-lemma sum_inv_dist_orthogonalProjection_faceOpposite_sq_smul_vsub_eq_zero :
-    ∑ i, (dist (s.points i)
-      ((s.faceOpposite i).orthogonalProjectionSpan
-        (s.points i)))⁻¹ ^ 2 •
-      (s.points i -ᵥ
-        (s.faceOpposite i).orthogonalProjectionSpan (s.points i)) =
-      0 := by
+lemma sum_inv_height_sq_smul_vsub_eq_zero :
+    ∑ i, (s.height i)⁻¹ ^ 2 • (s.points i -ᵥ s.altitudeFoot i) = 0 := by
   rw [← Submodule.mem_bot ℝ, ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
   refine ⟨Submodule.sum_smul_mem _ _ fun i hi ↦
             vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
@@ -154,8 +149,9 @@ lemma sum_inv_dist_orthogonalProjection_faceOpposite_sq_smul_vsub_eq_zero :
         refine congr_arg _ ?_
         ext i
         fin_cases i <;> simp
-      rw [orthogonalProjectionSpan, orthogonalProjectionSpan,
-        eq_orthogonalProjection_of_eq_subspace h0, eq_orthogonalProjection_of_eq_subspace h1]
+      rw [height, height, altitudeFoot, altitudeFoot, orthogonalProjectionSpan,
+        orthogonalProjectionSpan, eq_orthogonalProjection_of_eq_subspace h0,
+        eq_orthogonalProjection_of_eq_subspace h1]
       simp only [orthogonalProjection_affineSpan_singleton]
       convert inner_zero_right _
       rw [add_eq_zero_iff_eq_neg, dist_comm, ← smul_neg, neg_vsub_eq_vsub_rev]
@@ -176,15 +172,15 @@ lemma sum_inv_dist_orthogonalProjection_faceOpposite_sq_smul_vsub_eq_zero :
         ext j
         by_cases hj : j = i <;> simp [hj]
       let p0 : P := s'.orthogonalProjectionSpan (s.points 0)
-      let p00 : P := (s.faceOpposite 0).orthogonalProjectionSpan (s.points 0)
+      let p00 : P := s.altitudeFoot 0
       let pi : P := s'.orthogonalProjectionSpan (s.points i)
-      let pii : P := (s.faceOpposite i).orthogonalProjectionSpan (s.points i)
+      let pii : P := s.altitudeFoot i
       let vi0 : V := pi -ᵥ p0
       let v0 : V := p00 -ᵥ p0
       let v00 : V := (s.points 0) -ᵥ p00
       let vi : V := pii -ᵥ pi
       let vii : V := (s.points i) -ᵥ pii
-      simp_rw [dist_eq_norm_vsub]
+      simp_rw [height, dist_eq_norm_vsub]
       suffices ⟪vii + vi + vi0 - v0 - v00, ‖v00‖⁻¹ ^ 2 • v00 + ‖vii‖⁻¹ ^ 2 • vii⟫ = 0 by
         simpa [vii, vi, v00, v0, vi0] using this
       have h00 : 0 < ‖v00‖ := by
@@ -267,34 +263,21 @@ inner products, are equal to the cosines of angles between faces (informally, th
 distances are proportional to the volumes of the faces and this is equivalent to expressing
 the volume of a face as the sum of the signed volumes of projections of the other faces onto that
 face). -/
-lemma inv_dist_orthogonalProjection_faceOpposite_eq_sum_mul_inv_dist (i : Fin (n + 1)) :
-    (dist (s.points i)
-      ((s.faceOpposite i).orthogonalProjectionSpan (s.points i)))⁻¹ =
-    ∑ j ∈ {k | k ≠ i}, -(⟪s.points i -ᵥ
-      (s.faceOpposite i).orthogonalProjectionSpan (s.points i),
-      s.points j -ᵥ
-        (s.faceOpposite j).orthogonalProjectionSpan (s.points j)⟫ /
-      (dist (s.points i)
-        ((s.faceOpposite i).orthogonalProjectionSpan (s.points i)) *
-       dist (s.points j)
-        ((s.faceOpposite j).orthogonalProjectionSpan (s.points j)))) *
-      (dist (s.points j)
-        ((s.faceOpposite j).orthogonalProjectionSpan (s.points j)))⁻¹ := by
+lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) : (s.height i)⁻¹ =
+    ∑ j ∈ {k | k ≠ i}, -(⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫ /
+      (s.height i * s.height j)) *
+      (s.height j)⁻¹ := by
   rw [← sub_eq_zero]
-  simp_rw [neg_mul]
+  simp_rw [neg_mul, height]
   rw [Finset.sum_neg_distrib, sub_neg_eq_add, Finset.filter_ne',
     Finset.sum_erase_eq_sub (Finset.mem_univ _), real_inner_self_eq_norm_mul_norm,
     ← dist_eq_norm_vsub]
-  simp only [ne_eq, mul_eq_zero, dist_eq_zero, ne_orthogonalProjection_faceOpposite, or_self,
+  simp only [ne_eq, mul_eq_zero, dist_eq_zero, ne_altitudeFoot, or_self,
     not_false_eq_true, div_self, one_mul, add_sub_cancel]
-  have h := s.sum_inv_dist_orthogonalProjection_faceOpposite_sq_smul_vsub_eq_zero
-  apply_fun fun v ↦ (dist (s.points i)
-    ((s.faceOpposite i).orthogonalProjectionSpan (s.points i)))⁻¹ *
-      ⟪s.points i -ᵥ
-        (s.faceOpposite i).orthogonalProjectionSpan (s.points i), v⟫
-    at h
+  have h := s.sum_inv_height_sq_smul_vsub_eq_zero
+  apply_fun fun v ↦ (s.height i)⁻¹ * ⟪s.points i -ᵥ s.altitudeFoot i, v⟫ at h
   rw [inner_sum, Finset.mul_sum] at h
-  simp only [inner_zero_right, mul_zero, inner_smul_right] at h
+  simp only [inner_zero_right, mul_zero, inner_smul_right, height] at h
   convert h using 2 with j
   ring
 
@@ -302,12 +285,9 @@ lemma inv_dist_orthogonalProjection_faceOpposite_eq_sum_mul_inv_dist (i : Fin (n
 quantity for the other vertices. This implies the existence of the excenter opposite that vertex;
 it also implies that the image of the incenter under a homothety with scale factor 2 about a
 vertex lies outside the simplex. -/
-lemma inv_dist_orthogonalProjection_faceOpposite_lt_sum_inv_dist (hn : 1 < n) (i : Fin (n + 1)) :
-    (dist (s.points i)
-      ((s.faceOpposite i).orthogonalProjectionSpan (s.points i)))⁻¹ <
-    ∑ j ∈ {k | k ≠ i}, (dist (s.points j)
-      ((s.faceOpposite j).orthogonalProjectionSpan (s.points j)))⁻¹ := by
-  rw [inv_dist_orthogonalProjection_faceOpposite_eq_sum_mul_inv_dist]
+lemma inv_height_lt_sum_inv_height (hn : 1 < n) (i : Fin (n + 1)) :
+    (s.height i)⁻¹ < ∑ j ∈ {k | k ≠ i}, (s.height j)⁻¹ := by
+  rw [inv_height_eq_sum_mul_inv_dist]
   refine Finset.sum_lt_sum_of_nonempty ?_ ?_
   · rw [Finset.filter_ne', ← Finset.card_ne_zero]
     simp only [Finset.mem_univ, Finset.card_erase_of_mem, Finset.card_univ, Fintype.card_fin,
@@ -315,19 +295,19 @@ lemma inv_dist_orthogonalProjection_faceOpposite_lt_sum_inv_dist (hn : 1 < n) (i
     exact NeZero.ne _
   · rintro j hj
     refine mul_lt_of_lt_one_left ?_ ?_
-    · simp
+    · simp [height_pos]
     · apply lt_of_abs_lt
       rw [abs_neg, abs_div, div_lt_one]
       · apply LE.le.lt_of_ne
         · convert abs_real_inner_le_norm _ _ using 1
-          simp only [dist_eq_norm_vsub, abs_eq_self]
+          simp only [dist_eq_norm_vsub, abs_eq_self, height]
           positivity
-        · simp_rw [dist_eq_norm_vsub]
+        · simp_rw [height, dist_eq_norm_vsub]
           nth_rw 2 [abs_eq_self.2]
           · rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff]
             · intro h
               rcases h with ⟨r, hr, h⟩
-              suffices s.points j -ᵥ (s.faceOpposite j).orthogonalProjectionSpan (s.points j) = 0 by
+              suffices s.points j -ᵥ s.altitudeFoot j = 0 by
                 simp at this
               rw [← Submodule.mem_bot ℝ,
                 ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
@@ -373,14 +353,14 @@ lemma inv_dist_orthogonalProjection_faceOpposite_lt_sum_inv_dist (hn : 1 < n) (i
             · simp
             · simp
           · positivity
-      · simp
+      · simp [height]
 
 lemma sum_excenterWeightsUnnorm_singleton_pos (hn : 1 < n) (i : Fin (n + 1)) :
     0 < ∑ j, s.excenterWeightsUnnorm {i} j := by
   rw [← Finset.sum_add_sum_compl {i}, Finset.sum_singleton]
   nth_rw 1 [excenterWeightsUnnorm]
   simp only [Finset.mem_singleton, ↓reduceIte, neg_mul, one_mul, lt_neg_add_iff_add_lt, add_zero]
-  convert s.inv_dist_orthogonalProjection_faceOpposite_lt_sum_inv_dist hn i using 2 with j h
+  convert s.inv_height_lt_sum_inv_height hn i using 2 with j h
   · ext j
     simp
   · simp only [ne_eq, Finset.mem_filter, Finset.mem_univ, true_and] at h
@@ -505,7 +485,8 @@ lemma ExcenterExists.signedInfDist_excenter_eq_mul_sum_inv {signs : Finset (Fin 
   simp_rw [excenter_eq_affineCombination,
     signedInfDist_affineCombination _ _ h.sum_excenterWeights_eq_one, excenterWeights,
     Pi.smul_apply, ← dist_eq_norm_vsub, excenterWeightsUnnorm]
-  simp
+  rw [← altitudeFoot, ← height]
+  simp [mul_assoc, (s.height_pos i).ne']
 
 variable {s} in
 lemma ExcenterExists.signedInfDist_excenter {signs : Finset (Fin (n + 1))}
@@ -540,19 +521,18 @@ lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
   refine ⟨?_, ?_⟩
   · rintro ⟨r, h⟩
     obtain ⟨w, h1, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hp
-    have h' : ∀ i, w i * ‖s.points i -ᵥ
-        (s.faceOpposite i).orthogonalProjectionSpan (s.points i)‖ =
-          (if i ∈ signs then -1 else 1) * r := by
+    have h' : ∀ i, w i * ‖s.points i -ᵥ s.altitudeFoot i‖ =
+        (if i ∈ signs then -1 else 1) * r := by
       intro i
-      rw [← s.signedInfDist_affineCombination i h1]
+      rw [altitudeFoot, ← s.signedInfDist_affineCombination i h1]
       exact h i
     simp_rw [← dist_eq_norm_vsub] at h'
     have h'' : ∀ i, w i = r * s.excenterWeightsUnnorm signs i := by
       simp_rw [excenterWeightsUnnorm]
       intro i
       replace h' := h' i
-      rw [← eq_div_iff (s.dist_orthogonalProjection_faceOpposite_pos i).ne'] at h'
-      rw [h', mul_comm, div_eq_mul_inv, mul_assoc, orthogonalProjectionSpan]
+      rw [← height, ← eq_div_iff (s.height_pos i).ne'] at h'
+      rw [h', mul_comm, div_eq_mul_inv, mul_assoc, height, altitudeFoot, orthogonalProjectionSpan]
     have hw : w = s.excenterWeights signs := by
       simp_rw [h'', ← Finset.mul_sum] at h1
       ext j
