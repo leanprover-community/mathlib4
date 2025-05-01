@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Will Sawin
 import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # A "module topology" for modules over a topological ring
@@ -406,12 +407,38 @@ theorem isQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology
       rw [← (IsOpenQuotientMap.prodMap hφo hφo).continuous_comp_iff, hφ2]
       exact Continuous.comp hφo.continuous hA
 
+/-- A linear surjection between modules with the module topology is an open quotient map. -/
+theorem isOpenQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology R B]
+    {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
+    IsOpenQuotientMap φ :=
+  have := toContinuousAdd R A
+  AddMonoidHom.isOpenQuotientMap_of_isQuotientMap <| isQuotientMap_of_surjective hφ
+
+omit [IsModuleTopology R A] in
+/-- A linear surjection to a module with the module topology is open. -/
+theorem isOpenMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology R B]
+    [ContinuousAdd A] [ContinuousSMul R A] {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
+    IsOpenMap φ := by
+  have hOpenMap :=
+    letI : TopologicalSpace A := moduleTopology R A
+    have : IsModuleTopology R A := ⟨rfl⟩
+    isOpenQuotientMap_of_surjective hφ |>.isOpenMap
+  intro U hU
+  exact hOpenMap U <| moduleTopology_le R A U hU
+
 lemma _root_.ModuleTopology.eq_coinduced_of_surjective
     {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
     moduleTopology R B = TopologicalSpace.coinduced φ inferInstance := by
   letI : TopologicalSpace B := moduleTopology R B
   haveI : IsModuleTopology R B := ⟨rfl⟩
   exact (isQuotientMap_of_surjective hφ).eq_coinduced
+
+instance instQuot (S : Submodule R A) : IsModuleTopology R (A ⧸ S) := by
+  constructor
+  have := toContinuousAdd R A
+  have quot := (Submodule.isOpenQuotientMap_mkQ S).isQuotientMap.eq_coinduced
+  have module := ModuleTopology.eq_coinduced_of_surjective <| Submodule.mkQ_surjective S
+  rw [quot, module]
 
 end surjection
 
