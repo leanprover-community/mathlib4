@@ -410,7 +410,7 @@ instance : CanLift (Ideal R) (TwoSidedIdeal R) TwoSidedIdeal.asIdeal (·.IsTwoSi
 end Ideal
 
 /-- A two-sided ideal is simply a left ideal that is two-sided. -/
-@[simps] def TwoSidedIdeal.orderIsoIsTwoSided  {R : Type*} [Ring R] :
+@[simps] def TwoSidedIdeal.orderIsoIsTwoSided {R : Type*} [Ring R] :
     TwoSidedIdeal R ≃o {I : Ideal R // I.IsTwoSided} where
   toFun I := ⟨I.asIdeal, inferInstance⟩
   invFun I := have := I.2; I.1.toTwoSided

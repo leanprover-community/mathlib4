@@ -329,7 +329,7 @@ def recIterModByRegularWithRing
       [Module R M] → (r : R) → (rs : List R) → (h1 : IsSMulRegular M r) →
       (h2 : IsWeaklyRegular (QuotSMulTop r M)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r})))) →
-      (ih : motive (R⧸Ideal.span {r}) (QuotSMulTop r M)
+      (ih : motive (R ⧸ Ideal.span {r}) (QuotSMulTop r M)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) h2) →
             motive R M (r :: rs) (cons' h1 h2)) :
     {R : Type u} → [CommRing R] → {M : Type v} → [AddCommGroup M] →
@@ -351,7 +351,7 @@ def ndrecWithRing
       [Module R M] → (r : R) → (rs : List R) → IsSMulRegular M r →
       IsWeaklyRegular (QuotSMulTop r M)
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) →
-      motive (R⧸Ideal.span {r}) (QuotSMulTop r M)
+      motive (R ⧸ Ideal.span {r}) (QuotSMulTop r M)
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) → motive R M (r :: rs))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs} :
     IsWeaklyRegular M rs → motive R M rs :=
@@ -460,7 +460,7 @@ def recIterModByRegularWithRing
       [Module R M] → (r : R) → (rs : List R) → (h1 : IsSMulRegular M r) →
       (h2 : IsRegular (QuotSMulTop r M)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r})))) →
-      (ih : motive (R⧸Ideal.span {r}) (QuotSMulTop r M)
+      (ih : motive (R ⧸ Ideal.span {r}) (QuotSMulTop r M)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) h2) →
             motive R M (r :: rs) (cons' h1 h2))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs}
@@ -486,7 +486,7 @@ def ndrecIterModByRegularWithRing
       IsSMulRegular M r →
       IsRegular (QuotSMulTop r M)
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) →
-      motive (R⧸Ideal.span {r}) (QuotSMulTop r M)
+      motive (R ⧸ Ideal.span {r}) (QuotSMulTop r M)
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) →
       motive R M (r :: rs))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs} :

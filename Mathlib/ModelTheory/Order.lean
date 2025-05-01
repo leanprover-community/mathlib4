@@ -365,7 +365,7 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
 -- because it will match with any `LE` typeclass search
 @[local instance]
 def decidableLEOfStructure
-    [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     letI := L.leOfStructure M
     DecidableLE M := h
 
@@ -385,7 +385,7 @@ def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
 
 /-- Any model of a theory of linear orders is a linear order. -/
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
-    [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
   __ := L.partialOrderOfModels M
   le_total := Relations.realize_total.1 ((Theory.model_iff _).1 h _

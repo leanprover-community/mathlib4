@@ -462,7 +462,7 @@ end
 open Finset
 
 /-- Pochhammer version of Chu-Vandermonde identity -/
-theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h: Commute r s) :
+theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h : Commute r s) :
     (descPochhammer ℤ k).smeval (r + s) = ∑ ij ∈ antidiagonal k,
     Nat.choose k ij.1 * ((descPochhammer ℤ ij.1).smeval r * (descPochhammer ℤ ij.2).smeval s) := by
   induction k with
