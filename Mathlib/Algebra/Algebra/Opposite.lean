@@ -167,6 +167,20 @@ theorem toRingEquiv_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) :
 def opComm : (A ≃ₐ[R] Bᵐᵒᵖ) ≃ (Aᵐᵒᵖ ≃ₐ[R] B) :=
   AlgEquiv.op.trans <| AlgEquiv.refl.equivCongr (opOp R B).symm
 
+variable (R S)
+
+/-- The canonical algebra isomorphism from `Aᵐᵒᵖ` to `Module.End A A` induced by the right
+multiplication. -/
+@[simps!] def moduleEndSelf : Aᵐᵒᵖ ≃ₐ[R] Module.End A A where
+  __ := RingEquiv.moduleEndSelf A
+  commutes' _ := by ext; simp [Algebra.algebraMap_eq_smul_one]
+
+/-- The canonical algebra isomorphism from `A` to `Module.End Aᵐᵒᵖ A` induced by the left
+multiplication. -/
+@[simps!] def moduleEndSelfOp : A ≃ₐ[R] Module.End Aᵐᵒᵖ A where
+  __ := RingEquiv.moduleEndSelfOp A
+  commutes' _ := by ext; simp [Algebra.algebraMap_eq_smul_one]
+
 end AlgEquiv
 
 end Semiring

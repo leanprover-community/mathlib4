@@ -229,12 +229,15 @@ section Chain
 instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
-  | nil => simp only [List.Chain.nil]; infer_instance
-  | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
+  | nil => exact decidable_of_decidable_of_iff (p := True) (by simp)
+  | cons b as ih =>
+    haveI := ih; exact decidable_of_decidable_of_iff (p := (R a b ∧ Chain R b as)) (by simp)
 
 instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
     Decidable (Chain' R l) := by
-  cases l <;> dsimp only [List.Chain'] <;> infer_instance
+  cases l
+  · exact inferInstanceAs (Decidable True)
+  · exact inferInstanceAs (Decidable (Chain _ _ _))
 
 end Chain
 

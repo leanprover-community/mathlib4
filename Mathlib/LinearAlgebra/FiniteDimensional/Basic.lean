@@ -352,7 +352,7 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
   classical
   induction s using Finset.induction_on with
   | empty => simp [Module.End.one_eq_id]
-  | @insert i s hi ih =>
+  | insert i s hi ih =>
     replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
         ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
     rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Module.End.mul_eq_comp,
@@ -582,10 +582,3 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
 end End
 
 end Module
-
-section IsQuadraticExtension
-
-instance (R : Type*) [Field K] [CommRing R] [h : IsQuadraticExtension K R] :
-    FiniteDimensional K R := Module.finite_of_finrank_eq_succ h.finrank_eq_two
-
-end IsQuadraticExtension
