@@ -467,7 +467,7 @@ lemma append_right_injective (h : x ++ₛ a = x ++ₛ b) : a = b := by
   ext n; replace h := congr_arg (fun a ↦ a.get (x.length + n)) h; simpa using h
 
 @[simp] lemma append_right_inj : x ++ₛ a = x ++ₛ b ↔ a = b :=
-  ⟨append_right_injective x a b, by simp (config := {contextual := true})⟩
+  ⟨append_right_injective x a b, by simp +contextual⟩
 
 lemma append_left_injective (h : x ++ₛ a = y ++ₛ b) (hl : x.length = y.length) : x = y := by
   apply List.ext_getElem hl

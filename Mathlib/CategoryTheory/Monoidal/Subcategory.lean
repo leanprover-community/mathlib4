@@ -126,7 +126,7 @@ variable {P} {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P')
 
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a monoidal functor between full monoidal subcategories. -/
-instance  : (ιOfLE h).Monoidal :=
+instance : (ιOfLE h).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
