@@ -56,23 +56,12 @@ jobs:
           ref: ${{ env.BRANCH_REF }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@f3ad22e9ca29cb9475bc9bee9afd1f39bb52bf6d # v1.1.2
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
         with:
           auto-config: false
           use-github-cache: false
           use-mathlib-cache: false
-
-      - name: If using a lean-pr-release toolchain, uninstall
-        run: |
-          if [[ "$(cat lean-toolchain)" =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            printf 'Uninstalling transient toolchain %s\n' "$(cat lean-toolchain)"
-            elan toolchain uninstall "$(cat lean-toolchain)"
-          fi
-
-      - name: Print Lean and Lake versions
-        run: |
-          lean --version
-          lake --version
+          reinstall-transient-toolchain: true
 
       - name: Run lake exe cache get
         run: |

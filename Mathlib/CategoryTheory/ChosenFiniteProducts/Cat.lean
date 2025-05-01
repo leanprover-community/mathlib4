@@ -27,7 +27,7 @@ def chosenTerminalIsTerminal : IsTerminal chosenTerminal :=
   IsTerminal.ofUniqueHom (fun _ ↦ (Functor.const _).obj ⟨⟨⟨⟩⟩⟩) fun _ _ ↦ rfl
 
 /-- The chosen product of categories `C × D` yields a product cone in `Cat`. -/
-def prodCone (C D : Cat.{v,u}) : BinaryFan C D :=
+def prodCone (C D : Cat.{v, u}) : BinaryFan C D :=
   .mk (P := .of (C × D)) (Prod.fst _ _) (Prod.snd _ _)
 
 /-- The product cone in `Cat` is indeed a product. -/
