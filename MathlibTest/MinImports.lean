@@ -1,8 +1,6 @@
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.FunProp.Attr
 
-set_option linter.style.commandStart false
-
 open Lean.Elab.Command Mathlib.Command.MinImports in
 run_cmd liftTermElabM do
   guard ([`A, `A.B.C_3, `A.B.C_2, `A.B.C_1, `A.B.C_0, `A.B.C].map previousInstName

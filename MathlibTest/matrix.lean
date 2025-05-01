@@ -7,8 +7,6 @@ import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Qq
 
-set_option linter.style.commandStart false
-
 open Qq
 
 variable {α β : Type} [Semiring α] [Ring β]
