@@ -226,14 +226,14 @@ instance instSProd : SProd (List α) (List β) (List (α × β)) where
 
 section Chain
 
-instance decidableChain {α : Type*} {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
+instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
   | nil => exact decidable_of_decidable_of_iff (p := True) (by simp)
   | cons b as ih =>
     haveI := ih; exact decidable_of_decidable_of_iff (p := (R a b ∧ Chain R b as)) (by simp)
 
-instance decidableChain' {α : Type*} {R : α → α → Prop} [DecidableRel R] (l : List α) :
+instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
     Decidable (Chain' R l) := by
   cases l
   · exact inferInstanceAs (Decidable True)
