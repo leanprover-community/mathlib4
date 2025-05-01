@@ -9,12 +9,13 @@ import Mathlib.Data.ZMod.Basic
 /-!
 ## Main definition
 
-* Given a `Coloring β` for each connected component of the
-graph `G` define `coloringOfConnectedComponents` to be the `G.Coloring β`.
+* `SimpleGraph.coloringOfConnectedComponents` :
+  Given a `(G.induce c).Coloring β` for each connected component `c` of the
+  graph `G` this is the corresponding `G.Coloring β`.
 
-Hence prove that a graph is `n` - colorable iff each of its components are.
+Hence prove that a graph is `n`-colorable iff each of its components are.
 
-In particular prove that `G` is 2 - colorable iff it contains no odd length loop (closed walk).
+In particular prove that `G` is 2-colorable iff it contains no odd length loop (closed walk).
 -/
 namespace SimpleGraph
 
@@ -22,7 +23,9 @@ variable {α β : Type*} {β : Type*} {G : SimpleGraph α}
 
 open ConnectedComponent
 
-/-- Given a coloring of each connected component of `G` we can form a coloring of `G` -/
+/--
+Given a `β`-coloring of each connected component of `G` this is the `β`-coloring of `G`
+-/
 def coloringOfConnectedComponents (h : ∀ (c : G.ConnectedComponent), (G.induce c).Coloring β) :
     G.Coloring β :=
   ⟨fun v ↦ h (G.connectedComponentMk v) _, fun hab heq ↦
@@ -51,8 +54,7 @@ lemma two_colorable_iff_forall_loop_not_odd :
     intro a b hab he
     apply h _ <| (((c.connected_induce ⟨_, hv⟩ a).some.concat hab).append
                  (c.connected_induce ⟨_, hv⟩ b).some.reverse).map (Embedding.induce c.supp).toHom
-    rw [ZMod.natCast_eq_natCast_iff _ _ 2] at he
-    rw [length_map, length_append, add_comm, length_concat, length_reverse, Nat.odd_iff,
-        Nat.add_mod, ← he, Nat.mod_two_add_succ_mod_two]
+    rw [length_map, length_append, length_concat, length_reverse, Nat.odd_iff, Nat.add_mod,
+        ← (ZMod.natCast_eq_natCast_iff _ _ 2).1 he, Nat.succ_mod_two_add_mod_two]
 
 end SimpleGraph
