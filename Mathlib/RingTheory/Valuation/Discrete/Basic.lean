@@ -81,13 +81,16 @@ lemma IsDiscrete.surj (w : Valuation K Γ) [IsDiscrete w] : Surjective w := by
   norm_cast
   rw [hk, hu, Units.val_mk0]
 
-variable [IsCyclic Γˣ] [Nontrivial Γˣ]
 /-- A valuation on a field `K` is discrete if and only if it is surjective. -/
-lemma isDiscrete_iff_surjective (w : Valuation K Γ) :
+lemma isDiscrete_iff_surjective (w : Valuation K Γ) [IsCyclic Γˣ] [Nontrivial Γˣ] :
     IsDiscrete w ↔ Surjective w := by
   refine ⟨fun _ ↦ IsDiscrete.surj w, fun h ↦ ⟨LinearOrderedCommGroup.genLTOne Γˣ,
     by simp, ?_, by apply h⟩⟩
   simpa using (⊤ : Subgroup Γˣ).genLTOne_lt_one
 
+instance [hv : IsDiscrete v] : IsNontrivial v where
+  exists_val_nontrivial := by
+    obtain ⟨γ, _, _, x, hx_v⟩ := hv
+    exact ⟨x, hx_v ▸ ⟨Units.ne_zero γ, ne_of_lt (by norm_cast)⟩⟩
 
 end Valuation
