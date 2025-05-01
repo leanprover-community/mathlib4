@@ -2091,6 +2091,7 @@ import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Functor.CurryingThree
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedBifunctorComp
+import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedFour
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
 import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
