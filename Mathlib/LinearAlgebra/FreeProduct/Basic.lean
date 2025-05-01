@@ -124,7 +124,7 @@ abbrev PowerAlgebra := ⨁ (n : ℕ), TensorPower R n (⨁ i, A i)
 
 /-- The free tensor algebra and its representation as an infinite direct sum
 of tensor powers are (noncomputably) equivalent as `R`-algebras. -/
-@[reducible] noncomputable def powerAlgebra_equiv_freeAlgebra :
+@[reducible] noncomputable def equivPowerAlgebraFreeAlgebra :
     PowerAlgebra R A ≃ₐ[R] FreeTensorAlgebra R A :=
   TensorAlgebra.equivDirectSum.symm
 
@@ -137,7 +137,7 @@ inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
         (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))
         (ι R <| lof R I A i (a₁ * a₂))
 
-open scoped Function -- required for scoped `on` notation
+open scoped Function
 
 /-- The generating equivalence relation for elements of the power algebra
 that are identified in the free product -/
@@ -152,16 +152,21 @@ theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
 
 /-- The free product of the collection of `R`-algebras `A i`,
 as a quotient of `PowerAlgebra R A` -/
-@[reducible] def _root_.LinearAlgebra.FreeProductOfPowers := RingQuot <| FreeProduct.rel' R A
+@[reducible] def asPowers := RingQuot <| FreeProduct.rel' R A
 
 @[deprecated (since := "2024-12-07")]
-alias _root_.LinearAlgebra.FreeProduct_ofPowers := LinearAlgebra.FreeProductOfPowers
+alias _root_.LinearAlgebra.FreeProduct_ofPowers := asPowers
+@[deprecated (since := "2025-05-01")]
+alias _root_.LinearAlgebra.FreeProductOfPowers := asPowers
 
 /-- The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct_ofPowers` -/
-noncomputable def equivPowerAlgebra : FreeProductOfPowers R A ≃ₐ[R] FreeProduct R A :=
+noncomputable def equivAsPowers : asPowers R A ≃ₐ[R] FreeProduct R A :=
   RingQuot.algEquivQuotAlgEquiv
-    (FreeProduct.powerAlgebra_equiv_freeAlgebra R A |>.symm) (FreeProduct.rel R A)
+    (equivPowerAlgebraFreeAlgebra R A |>.symm) (FreeProduct.rel R A)
   |>.symm
+
+@[deprecated (since := "2025-05-01")]
+alias equivPowerAlgebra := equivAsPowers
 
 open RingQuot Function
 
@@ -238,9 +243,12 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
 /-- Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
 to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`. -/
-theorem lift_comp_ι : (lift R A maps) ∘ₐ (ι R A i) = maps := by
+@[simp↓] theorem lift_comp_ι : (lift R A maps) ∘ₐ (ι R A i) = maps := by
   ext a
   simp [lift_apply, ι]
+
+@[simp↓] theorem lift_algebraMap (r : R) : lift R A maps (algebraMap R _ r) = algebraMap R _ r := by
+  rw [lift_apply, AlgHom.commutes]
 
 @[aesop safe destruct] theorem lift_unique
     (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps) :
