@@ -35,7 +35,7 @@ positive semi-definite on weight space and positive-definite on the span of root
 
 noncomputable section
 
-open Function Set Submodule
+open FaithfulSMul Function Set Submodule
 
 variable {ι R S M N : Type*} [CommRing S] [LinearOrder S]
   [CommRing R] [Algebra S R]
@@ -174,20 +174,26 @@ lemma isSymm_posForm :
   apply FaithfulSMul.algebraMap_injective S R
   simpa using B.symm.eq x y
 
-/-- The length of the `i`-th root wrt a root-positive form taking values in `S`.
-
-TODO Generalise to drop requirement on `S` being ordered? We'd have to generalise `InvariantForm`
-to take a `[P.ValuedIn S]` and require `S`-valuedness. Probably worth it as part of upcoming
-refactor. -/
+/-- The length of the `i`-th root wrt a root-positive form taking values in `S`. -/
 def rootLength (i : ι) : S :=
-  B.posForm ⟨P.root i, subset_span <| mem_range_self _⟩ ⟨P.root i, subset_span <| mem_range_self _⟩
+  B.posForm (P.rootSpanMem S i) (P.rootSpanMem S i)
 
 lemma rootLength_pos (i : ι) : 0 < B.rootLength i := by
   simpa using B.zero_lt_posForm_apply_root i
 
+@[simp]
+lemma rootLength_reflection_perm_self (i : ι) :
+    B.rootLength (P.reflection_perm i i) = B.rootLength i := by
+  simp [rootLength, rootSpanMem_reflection_perm_self]
+
 @[simp] lemma algebraMap_rootLength (i : ι) :
     algebraMap S R (B.rootLength i) = B.form (P.root i) (P.root i) := by
   simp [rootLength]
+
+lemma pairingIn_mul_eq_pairingIn_mul_swap :
+    P.pairingIn S j i * B.rootLength i = P.pairingIn S i j * B.rootLength j := by
+  simpa only [← (algebraMap_injective S R).eq_iff, algebraMap_pairingIn, map_mul,
+    B.algebraMap_rootLength] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
 
 @[simp]
 lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]

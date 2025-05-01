@@ -143,6 +143,16 @@ abbrev rootSpanMem [Module S M] (i : ι) : P.rootSpan S :=
 abbrev corootSpanMem [Module S N] (i : ι) : P.corootSpan S :=
   ⟨P.coroot i, Submodule.subset_span (mem_range_self i)⟩
 
+omit [Algebra S R] in
+lemma rootSpanMem_reflection_perm_self [Module S M] (i : ι) :
+    P.rootSpanMem S (P.reflection_perm i i) = - P.rootSpanMem S i := by
+  ext; simp
+
+omit [Algebra S R] in
+lemma corootSpanMem_reflection_perm_self [Module S N] (i : ι) :
+    P.corootSpanMem S (P.reflection_perm i i) = - P.corootSpanMem S i := by
+  ext; simp
+
 /-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
 def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
     Dual S (P.corootSpan S) :=
@@ -256,10 +266,10 @@ lemma iInf_ker_coroot'_eq :
   span_root'_eq_top P.flip
 
 lemma pairingIn_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
-    [P.IsValuedIn S] [IsDomain R] [NeZero (2 : R)] {i j : ι} :
+    [P.IsValuedIn S] [NoZeroSMulDivisors R M] [NeZero (2 : R)] {i j : ι} :
     P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
-  simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn,
-    P.pairing_zero_iff' (i := i) (j := j)]
+  simpa only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn] using
+    P.pairing_zero_iff
 
 /-- A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
 coefficients.
