@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Functor.Trifunctor
+import Mathlib.CategoryTheory.Functor.CurryingThree
 import Mathlib.CategoryTheory.Whiskering
 
 /-!
@@ -121,5 +122,62 @@ def whiskeringLeft₄ :
     (D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) where
   obj F₁ := whiskeringLeft₄Obj C₂ C₃ C₄ D₂ D₃ D₄ E F₁
   map τ₁ := whiskeringLeft₄Map C₂ C₃ C₄ D₂ D₃ D₄ E τ₁
+
+variable {E}
+
+/-- The equivalence of categories `(C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ≌ C₁ × C₂ × C₃ × C₄ ⥤ E`
+given by the curryfication of functors in four variables. -/
+def currying₄ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ≌ (C₁ × C₂ × C₃ × C₄ ⥤ E) :=
+  currying.trans (currying₃.trans ((prod.associativity C₁ C₂ (C₃ × C₄)).congrLeft))
+
+/-- Uncurrying a functor in four variables. -/
+abbrev uncurry₄ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ⥤ C₁ × C₂ × C₃ × C₄ ⥤ E := currying₄.functor
+
+/-- Currying a functor in four variables. -/
+abbrev curry₄ : (C₁ × C₂ × C₃ × C₄ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E := currying₄.inverse
+
+/-- Uncurrying functors in four variables gives a fully faithful functor. -/
+def fullyFaithfulUncurry₄ :
+    (uncurry₄ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ⥤ (C₁ × C₂ × C₃ × C₄ ⥤ E)).FullyFaithful :=
+  currying₄.fullyFaithfulFunctor
+
+@[simp]
+lemma curry₄_obj_map_app_app_app (F : C₁ × C₂ × C₃ × C₄ ⥤ E)
+    {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄):
+    ((((curry₄.obj F).map f).app X₂).app X₃).app X₄ = F.map ⟨f, 𝟙 X₂, 𝟙 X₃, 𝟙 X₄⟩ := rfl
+
+@[simp]
+lemma curry₄_obj_obj_map_app_app (F : C₁ × C₂ × C₃ × C₄ ⥤ E)
+    (X₁ : C₁) {X₂ Y₂ : C₂} (f : X₂ ⟶ Y₂) (X₃ : C₃) (X₄ : C₄) :
+    ((((curry₄.obj F).obj X₁).map f).app X₃).app X₄ = F.map ⟨𝟙 X₁, f, 𝟙 X₃, 𝟙 X₄⟩ := rfl
+
+@[simp]
+lemma curry₄_obj_obj_obj_map_app (F : C₁ × C₂ × C₃ × C₄ ⥤ E)
+    (X₁ : C₁) (X₂ : C₂) {X₃ Y₃ : C₃} (f : X₃ ⟶ Y₃) (X₄ : C₄) :
+    ((((curry₄.obj F).obj X₁).obj X₂).map f).app X₄ = F.map ⟨𝟙 X₁, 𝟙 X₂, f, 𝟙 X₄⟩ := rfl
+
+@[simp]
+lemma curry₄_obj_obj_obj_obj_map (F : C₁ × C₂ × C₃ × C₄ ⥤ E)
+    (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) {X₄ Y₄ : C₄} (f : X₄ ⟶ Y₄) :
+    ((((curry₄.obj F).obj X₁).obj X₂).obj X₃).map f = F.map ⟨𝟙 X₁, 𝟙 X₂, 𝟙 X₃, f⟩ := rfl
+
+@[simp]
+lemma curry₄_map_app_app_app_app {F G : C₁ × C₂ × C₃ × C₄ ⥤ E} (f : F ⟶ G)
+    (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
+    ((((curry₄.map f).app X₁).app X₂).app X₃).app X₄ = f.app ⟨X₁, X₂, X₃, X₄⟩ := rfl
+
+@[simp]
+lemma uncurry₄_obj_map (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) {X Y : C₁ × C₂ × C₃ × C₄} (f : X ⟶ Y) :
+    (uncurry₄.obj F).map f =
+      (((((F.map f.1).app X.2.1).app X.2.2.1).app X.2.2.2 ≫
+        (((F.obj Y.1).map f.2.1).app X.2.2.1).app X.2.2.2) ≫
+          (((F.obj Y.1).obj Y.2.1).map f.2.2.1).app X.2.2.2) ≫
+          (((F.obj Y.1).obj Y.2.1).obj Y.2.2.1).map f.2.2.2 := by
+  rfl
+
+@[simp]
+lemma uncurry₄_map_app {F G : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E} (f : F ⟶ G) (X : C₁ × C₂ × C₃ × C₄) :
+    (uncurry₄.map f).app X = (((f.app X.1).app X.2.1).app X.2.2.1).app X.2.2.2 := by
+  rfl
 
 end CategoryTheory
