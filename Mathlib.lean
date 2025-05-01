@@ -1448,6 +1448,7 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
 import Mathlib.Analysis.ConstantSpeed
 import Mathlib.Analysis.Convex.AmpleSet
 import Mathlib.Analysis.Convex.Basic
@@ -3503,6 +3504,7 @@ import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Tower
+import Mathlib.Geometry.Euclidean.Altitude
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
 import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
