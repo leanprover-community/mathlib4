@@ -184,8 +184,8 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
 * `kind`: the term will be wrapped in a node with this kind;
   generally this is a name of the parser declaration itself.
 -/
-def scriptParser (m : Mapping) (antiquotName errorMsg : String)
-    (p : Parser) (many := true) (kind : SyntaxNodeKind := by exact decl_name%) : Parser :=
+def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
+    (many := true) (kind : SyntaxNodeKind := by exact decl_name%) : Parser :=
   let tokens := "$" :: (m.toNormal.toArray.map (·.1.toString) |>.qsort (·<·)).toList
   let antiquotP := mkAntiquot antiquotName `term (isPseudoKind := true)
   let p := Superscript.scriptFnNoAntiquot m errorMsg p.fn many
@@ -228,8 +228,6 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
 
 end Superscript
 
-open Superscript (scriptParser)
-
 /--
 The parser `superscript(term)` parses a superscript. Basic usage is:
 ```
@@ -245,14 +243,14 @@ superscript, so this should not be used for complex expressions. Legal superscri
 ```
 -/
 def superscript (p : Parser) : Parser :=
-  scriptParser .superscript "superscript" "expected superscript character" p
+  Superscript.scriptParser .superscript "superscript" "expected superscript character" p
 /-- Formatter for the superscript parser. -/
 @[combinator_parenthesizer superscript]
-def superscript.parenthesizer := scriptParser.parenthesizer ``superscript
+def superscript.parenthesizer := Superscript.scriptParser.parenthesizer ``superscript
 /-- Formatter for the superscript parser. -/
 @[combinator_formatter superscript]
 def superscript.formatter :=
-  scriptParser.formatter "superscript" .superscript ``superscript
+  Superscript.scriptParser.formatter "superscript" .superscript ``superscript
 
 /-- Shorthand for `superscript(term)`.
 
@@ -282,13 +280,13 @@ subscript, so this should not be used for complex expressions. Legal subscript c
 ```
 -/
 def subscript (p : Parser) : Parser :=
-  scriptParser .subscript "subscript" "expected subscript character" p
+  Superscript.scriptParser .subscript "subscript" "expected subscript character" p
 /-- Formatter for the subscript parser. -/
 @[combinator_parenthesizer subscript]
-def subscript.parenthesizer := scriptParser.parenthesizer ``subscript
+def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscript
 /-- Formatter for the subscript parser. -/
 @[combinator_formatter subscript]
-def subscript.formatter := scriptParser.formatter "subscript" .subscript ``subscript
+def subscript.formatter := Superscript.scriptParser.formatter "subscript" .subscript ``subscript
 
 /-- Shorthand for `subscript(term)`.
 
