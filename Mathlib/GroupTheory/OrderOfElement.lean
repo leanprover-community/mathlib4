@@ -690,6 +690,12 @@ lemma finEquivZPowers_symm_apply (hx : IsOfFinOrder x) (n : ℕ) :
     ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
   rw [finEquivZPowers, Equiv.symm_trans_apply]; exact finEquivPowers_symm_apply _ n
 
+@[to_additive]
+lemma pow_finEquivZPowers_symm_apply (hx : IsOfFinOrder x) (a : Subgroup.zpowers x) :
+    x ^ ((finEquivZPowers hx).symm a : ℕ) = a := by
+  simpa only [finEquivZPowers_apply] using
+    congr_arg Subtype.val ((finEquivZPowers hx).apply_symm_apply a)
+
 end Group
 
 section CommMonoid
