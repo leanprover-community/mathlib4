@@ -83,7 +83,8 @@ lemma two_smul_nmem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.Is
       (smul_left_injective ℤ <| P.ne_zero i).eq_iff] at hj
     norm_num at hj
 
-lemma linearIndependent_of_add_mem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
+lemma linearIndependent_of_add_mem_range_root
+    [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
   refine IsReduced.linearIndependent P (fun hij ↦ ?_) (fun hij ↦ P.zero_nmem_range_root ?_)
@@ -91,7 +92,8 @@ lemma linearIndependent_of_add_mem_range_root [NeZero (2 : R)] [NoZeroSMulDiviso
     exact P.two_smul_nmem_range_root h
   · rwa [hij, neg_add_cancel] at h
 
-lemma linearIndependent_of_sub_mem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
+lemma linearIndependent_of_sub_mem_range_root
+    [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
   suffices LinearIndependent R ![P.root i, P.root (P.reflection_perm j j)] by simpa using this
