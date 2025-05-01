@@ -11,6 +11,7 @@ import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.RingTheory.KrullDimension.Module
 /-!
 
 # Hom(N,M) is subsingleton iff exist smul regular element of M in ann(N)
@@ -368,20 +369,50 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
 
 section depth
 
-noncomputable def moduleDepth (M N : ModuleCat.{v} R) : ℕ∞ :=
+noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
   sSup {n : ℕ∞ | ∀ i : ℕ, i < n → Subsingleton (Ext.{max u v} N M i)}
 
-noncomputable def Ideal.depth (I : Ideal R)(M : ModuleCat.{v} R) [Small.{v} (R ⧸ I)] : ℕ∞ :=
+noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) [Small.{v} (R ⧸ I)] : ℕ∞ :=
   moduleDepth (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M
 
 noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R)
     [Small.{v} (R ⧸ (IsLocalRing.maximalIdeal R))] : ℕ∞ :=
   (IsLocalRing.maximalIdeal R).depth M
-/-
+
+lemma moduleDepth_eq_depth_of_supp_eq (I : Ideal R) [Small.{v, u} (R ⧸ I)] (N M: ModuleCat.{v} R)
+    [Module.Finite R M] [Module.Finite R N] [Nontrivial M] [Nontrivial N]
+    (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
+    moduleDepth N M = I.depth M := by
+
+  sorry
+
 theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
-    [Module.Finite R M] [Module.Finite R N] [Nontrivial M] [Nontrivial N] :
-    moduleDepth M N ≥ depth M - **dim N**
--/
+    [Module.Finite R M] [Module.Finite R N] [Nontrivial M] [Nontrivial N]
+    [Small.{v, u} (R ⧸ maximalIdeal R)] :
+    moduleDepth N M ≥ IsLocalRing.depth M -
+    (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) := by
+  by_cases eqtop : (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) = ⊤
+  · simp [eqtop]
+  · generalize dim :
+      ((Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N)).toNat = r
+    induction' r using Nat.strong_induction_on with r hr generalizing N
+    by_cases eq0 : r = 0
+    · rw [← ENat.coe_toNat eqtop, dim]
+      show moduleDepth N M ≥ IsLocalRing.depth M - r
+      simp only [eq0, ENat.toNat_eq_zero, WithBot.unbot_eq_iff, WithBot.coe_zero, eqtop,
+        or_false] at dim
+      have hsupp : Module.support R N = PrimeSpectrum.zeroLocus (maximalIdeal R) := sorry
+      simp only [eq0, CharP.cast_eq_zero, tsub_zero, ge_iff_le]
+      simp [IsLocalRing.depth, moduleDepth_eq_depth_of_supp_eq (maximalIdeal R) N M hsupp]
+    · /-induction' ‹Module.Finite R N› using
+        IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime R with
+      | subsingleton N => sorry
+      | quotient N p f =>
+        sorry
+      | exact N₁ N₂ N₃ f g hf _ hfg h₁ h₃ =>
+        sorry-/
+      sorry
+
 theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing R]
     [Small.{v} (R ⧸ IsLocalRing.maximalIdeal R)]
     (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M]
