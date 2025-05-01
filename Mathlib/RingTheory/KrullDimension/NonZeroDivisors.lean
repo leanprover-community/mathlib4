@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.RingTheory.Support
 
 /-!
 
@@ -124,3 +125,19 @@ lemma ringKrullDim_succ_le_ringKrullDim_powerseries :
     ringKrullDim R + 1 ≤ ringKrullDim (PowerSeries R) :=
   ringKrullDim_succ_le_of_surjective (constantCoeff R) (⟨C R ·, rfl⟩)
     MvPowerSeries.X_mem_nonzeroDivisors constantCoeff_X
+
+namespace Module
+
+open Order
+
+variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
+
+noncomputable def supportDim : WithBot ℕ∞ :=
+  krullDim (Module.support R M)
+
+lemma supportDim_eq_ringKrullDim_quotient_ann [Module.Finite R M] :
+    supportDim R M = ringKrullDim (R ⧸ (Module.annihilator R M)) := by
+  simp only [supportDim]
+  rw [Module.support_eq_zeroLocus, ringKrullDim_quotient]
+
+end Module
