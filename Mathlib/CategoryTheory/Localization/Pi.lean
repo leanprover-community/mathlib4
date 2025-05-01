@@ -73,7 +73,7 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
 the induced functor `(Discrete J ⥤ C) ⥤ (Discrete J ⥤ D)` is also a localization
 for `W.functorCategory (Discrete J)` if `W` contains identities. -/
 instance {J : Type} [Finite J] {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
-    (L : C ⥤ D) (W : MorphismProperty C) [W.ContainsIdentities] [L.IsLocalization W]  :
+    (L : C ⥤ D) (W : MorphismProperty C) [W.ContainsIdentities] [L.IsLocalization W] :
     ((whiskeringRight (Discrete J) C D).obj L).IsLocalization
       (W.functorCategory (Discrete J)) := by
   let E := piEquivalenceFunctorDiscrete J C
