@@ -155,7 +155,7 @@ end
 both vertical maps of the square are the same and horizontal maps are identities. -/
 lemma isoMapOfCommSq_horiz_id (f : X₁ ⟶ X₂) :
     F.isoMapOfCommSq (t := 𝟙 _) (l := f) (r := f) (b := 𝟙 _) ⟨by simp⟩ =
-      whiskerRightIso (F.mapId X₁) (F.map f) ≪≫ λ_ _  ≪≫ (ρ_ _).symm ≪≫
+      whiskerRightIso (F.mapId X₁) (F.map f) ≪≫ λ_ _ ≪≫ (ρ_ _).symm ≪≫
         (whiskerLeftIso (F.map f) (F.mapId X₂)).symm := by
   ext
   rw [isoMapOfCommSq_eq _ _ f (by simp), mapComp'_comp_id, mapComp'_id_comp]
