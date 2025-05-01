@@ -193,7 +193,7 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
   induction s using Finset.induction generalizing p with
   | empty =>
     simp at hp
-  | @insert i₀ s hi₀ ih =>
+  | insert i₀ s hi₀ ih =>
     rcases eq_or_ne (p i₀) 1 with h2i₀|h2i₀
     · simp only [hi₀, not_false_eq_true, prod_insert]
       have h2p : ∀ i ∈ s, p i = 0 := by
