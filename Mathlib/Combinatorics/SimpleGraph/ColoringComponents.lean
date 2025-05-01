@@ -6,6 +6,7 @@ Authors: John Talbot
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 import Mathlib.Data.ZMod.Basic
+
 /-!
 ## Main definition
 
@@ -26,17 +27,17 @@ open ConnectedComponent
 /--
 Given a `β`-coloring of each connected component of `G` this is the `β`-coloring of `G`
 -/
-def coloringOfConnectedComponents (h : ∀ (c : G.ConnectedComponent), (G.induce c).Coloring β) :
+def coloringOfConnectedComponents (C : (c : G.ConnectedComponent) → (G.induce c).Coloring β) :
     G.Coloring β :=
-  ⟨fun v ↦ h (G.connectedComponentMk v) _, fun hab heq ↦
+  ⟨fun v ↦ C (G.connectedComponentMk v) _, fun hab heq ↦
     have := connectedComponentMk_eq_of_adj hab
     have hadj : (G.induce (G.connectedComponentMk _).supp).Adj ⟨_, rfl⟩
         ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
-    (h (G.connectedComponentMk _)).valid hadj (by simp only [top_adj] at heq; convert heq)⟩
+    (C (G.connectedComponentMk _)).valid hadj (by simp only [top_adj] at heq; convert heq)⟩
 
 theorem colorable_iff_forall_connectedComponents {n : ℕ} :
     G.Colorable n ↔ ∀ c : G.ConnectedComponent, (G.induce c).Colorable n :=
-  ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v.1, fun h h1 ↦ C.valid h h1⟩,
+  ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v, fun h h1 ↦ C.valid h h1⟩,
      fun h ↦ ⟨coloringOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
 
 open Walk Subgraph
