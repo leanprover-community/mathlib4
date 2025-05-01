@@ -176,7 +176,6 @@ lemma Cover.Directed.ofIsBasisOpensRange_le_iff (i j : 𝒰.J) :
     letI := Cover.Directed.ofIsBasisOpensRange hle H
     i ≤ j ↔ (𝒰.map i).opensRange ≤ (𝒰.map j).opensRange := hle
 
-@[simp]
 lemma Cover.Directed.ofIsBasisOpensRange_trans {i j : 𝒰.J} :
     letI := Cover.Directed.ofIsBasisOpensRange hle H
     (hij : i ≤ j) → 𝒰.trans hij = IsOpenImmersion.lift (𝒰.map j) (𝒰.map i) (hle.mp hij) :=
@@ -206,7 +205,6 @@ instance : Scheme.Cover.Directed X.directedAffineCover :=
 
 @[simp]
 lemma directedAffineCover_trans {U V : X.affineOpens} (hUV : U ≤ V) :
-    Cover.trans X.directedAffineCover hUV =
-      IsOpenImmersion.lift V.1.ι U.1.ι (by simpa using hUV) := rfl
+    Cover.trans X.directedAffineCover hUV = X.homOfLE hUV := rfl
 
 end AlgebraicGeometry.Scheme
