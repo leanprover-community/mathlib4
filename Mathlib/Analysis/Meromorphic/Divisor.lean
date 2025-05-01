@@ -15,11 +15,13 @@ divisors.
 
 ## TODO
 
-- Congruence lemmas for `codiscreteWithin`
+- Compatibility with restriction of divisors/functions
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+open Filter Topology
 
 namespace MeromorphicOn
 
@@ -65,6 +67,51 @@ Simplifier lemma: on `U`, the divisor of a function `f` that is meromorphic on `
 @[simp]
 lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
     divisor f U z = (hf z hz).order.untop₀ := by simp_all [MeromorphicOn.divisor_def, hz]
+
+/-!
+## Congruence Lemmas
+-/
+
+/--
+If `f₁` is meromorphic on `U`, if `f₂` agrees with `f₁` on a codiscrete subset of `U` and outside of
+`U`, then `f₁` and `f₂` induce the same divisors on `U`.
+-/
+theorem divisor_congr_codiscreteWithin_of_eqOn_compl {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
+    (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : Set.EqOn f₁ f₂ Uᶜ) :
+    divisor f₁ U = divisor f₂ U := by
+  ext x
+  by_cases hx : x ∈ U
+  · simp only [hf₁, hx, divisor_apply, hf₁.congr_codiscreteWithin_of_eqOn_compl h₁ h₂]
+    congr 1
+    apply (hf₁ x hx).order_congr
+    simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
+      disjoint_principal_right] at h₁
+    filter_upwards [h₁ x hx] with a ha
+    simp at ha
+    tauto
+  · simp [hx]
+
+/--
+If `f₁` is meromorphic on an open set `U`, if `f₂` agrees with `f₁` on a codiscrete subset of `U`,
+then `f₁` and `f₂` induce the same divisors on`U`.
+-/
+theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
+    (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : IsOpen U) :
+    divisor f₁ U = divisor f₂ U := by
+  ext x
+  by_cases hx : x ∈ U
+  · simp only [hf₁, hx, divisor_apply, hf₁.congr_codiscreteWithin h₁ h₂]
+    congr 1
+    apply (hf₁ x hx).order_congr
+    simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
+      disjoint_principal_right] at h₁
+    have : U ∈ 𝓝[≠] x := by
+      apply mem_nhdsWithin.mpr
+      use U, h₂, hx, Set.inter_subset_left
+    filter_upwards [this, h₁ x hx] with a h₁a h₂a
+    simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, Decidable.not_not] at h₂a
+    tauto
+  · simp [hx]
 
 /-!
 ## Divisors of Analytic Functions
