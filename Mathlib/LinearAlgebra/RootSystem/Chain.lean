@@ -211,8 +211,8 @@ private lemma chainCoeff_relfection_perm_right_aux :
       reflection_apply_self, ← sub_neg_eq_add, ← neg_sub', neg_mem_range_root_iff,
       P.root_sub_zsmul_mem_range_iff h, mem_Icc]
   · have h' : ¬ LinearIndependent R ![P.root i, P.root (-j)] := by simpa
-    simp only [chainTopCoeff_of_not_linInd h, chainTopCoeff_of_not_linInd h',
-      chainBotCoeff_of_not_linInd h, chainBotCoeff_of_not_linInd h']
+    simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
+      chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
 @[simp]
 lemma chainTopCoeff_reflection_perm_left :
@@ -397,7 +397,7 @@ lemma foo [P.IsNotG2] (h : P.root i + P.root j ∈ range P.root) :
   have _i := P.reflexive_left
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
   have aux₁ : LinearIndependent R ![P.root j, P.root i] :=
-    P.linInd_of_add_mem_range_root <| by rwa [add_comm]
+    P.linearIndependent_of_add_mem_range_root <| by rwa [add_comm]
   rw [← P.chainBotCoeff_sub_chainTopCoeff aux₁]
   have aux₂ := P.chainBotCoeff_add_chainTopCoeff_le_two (i := j) (j := i)
   have aux₃ : 1 ≤ P.chainTopCoeff j i := by
@@ -416,8 +416,9 @@ lemma chainBotCoeff_mul_chainTopCoeff_aux_case_1 [P.IsReduced] [P.IsNotG2]
       (P.chainTopCoeff j l + 1) * (P.chainBotCoeff i k + 1) := by
   have _i := P.reflexive_left
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
-  have hjk : LinearIndependent R ![P.root j, P.root k] := P.linInd_of_sub_mem_range_root <| by
-    rw [← P.neg_mem_range_root_iff, neg_sub, h₂]; exact mem_range_self m
+  have hjk : LinearIndependent R ![P.root j, P.root k] :=
+    P.linearIndependent_of_sub_mem_range_root <| by
+      rw [← P.neg_mem_range_root_iff, neg_sub, h₂]; exact mem_range_self m
   replace hjk : P.root k ≠ P.root j ∧ P.root k ≠ -P.root j := by
     refine ⟨fun contra ↦ P.ne_zero m (by aesop), ?_⟩
     have := ((IsReduced.linearIndependent_iff _).mp hjk).2
@@ -455,11 +456,11 @@ lemma chainBotCoeff_mul_chainTopCoeff_aux_case_1 [P.IsReduced] [P.IsNotG2]
       apply algebraMap_injective ℤ R
       simp only [map_add, map_sub, algebraMap_pairingIn, ← root_coroot_eq_pairing, hn]
       simp
-    have hki'' : P.pairingIn ℤ i k = 0 := by rwa [pairingIn_zero_iff]
+    have hki'' : P.pairingIn ℤ i k = 0 := by rwa [pairingIn_eq_zero_iff]
     omega
   have hkj'' : P.pairingIn ℤ k j = 1 := by
     have : k ≠ j ∧ P.root k ≠ -P.root j := (IsReduced.linearIndependent_iff _).mp <|
-      P.linInd_of_sub_mem_range_root <| h₂ ▸ mem_range_self m
+      P.linearIndependent_of_sub_mem_range_root <| h₂ ▸ mem_range_self m
     have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' j k (by aesop) (by aesop)
     aesop
   replace hkj : P.chainTopCoeff j k = 0 := by
@@ -480,7 +481,7 @@ lemma chainBotCoeff_mul_chainTopCoeff_aux_case_1 [P.IsReduced] [P.IsNotG2]
     simp only [algebraMap_pairingIn, ← root_coroot_eq_pairing, ← h₁]
     simp only [map_add, LinearMap.add_apply, root_coroot_eq_pairing, bar, algebraMap_int_eq,
       eq_intCast, Int.cast_one, add_eq_left]
-    rw [pairing_zero_iff, ← P.algebraMap_pairingIn ℤ, aux₁, map_zero]
+    rw [pairing_eq_zero_iff, ← P.algebraMap_pairingIn ℤ, aux₁, map_zero]
   replace hmi : P.chainBotCoeff i m = 1 := by simpa [aux₂] using hmi
   replace hlj : P.chainTopCoeff j l = 0 := by simpa [aux₄] using hlj
   simp [hki, hkj, hmi, hlj]
@@ -525,26 +526,26 @@ lemma chainBotCoeff_mul_chainTopCoeff_aux_case_3a [P.IsReduced] [P.IsIrreducible
   replace aux₂ : P.pairingIn ℤ i j = -1 ∧ P.pairingIn ℤ k j = 2 := by omega
   have : Fintype ι := Fintype.ofFinite ι
   have B := P.posRootForm ℤ
-  have aux₃ : B.rootLenIn i ≤ B.rootLenIn j ∧ B.rootLenIn j < B.rootLenIn k :=
-    ⟨B.rootLenIn_le_of_pairingIn_eq_neg_one (i := i) (j := j) aux₂.1,
-      B.rootLenIn_lt_of_pairingIn_eq_neg_one hjk.1 hjk.2 <| by aesop⟩
-  have aux₄ : B.rootLenIn i = B.rootLenIn j := by
+  have aux₃ : B.rootLength i ≤ B.rootLength j ∧ B.rootLength j < B.rootLength k :=
+    ⟨B.rootLength_le_of_pairingIn_eq (i := i) (j := j) <| Or.inl aux₂.1,
+      B.rootLength_lt_of_pairingIn_nmem hjk.1 hjk.2 <| by aesop⟩
+  have aux₄ : B.rootLength i = B.rootLength j := by
     have := (B.toInvariantForm.apply_eq_or_of_apply_ne (i := j) (j := k)
-      (by simpa [RootPositiveForm.posForm, RootPositiveForm.rootLenIn]
+      (by simpa [RootPositiveForm.posForm, RootPositiveForm.rootLength]
             using aux₃.2.ne) i).resolve_right
-      (by simpa [RootPositiveForm.posForm, RootPositiveForm.rootLenIn]
+      (by simpa [RootPositiveForm.posForm, RootPositiveForm.rootLength]
             using (lt_of_le_of_lt aux₃.1 aux₃.2).ne)
-    simpa [RootPositiveForm.posForm, RootPositiveForm.rootLenIn] using this
+    simpa [RootPositiveForm.posForm, RootPositiveForm.rootLength] using this
   have aux₅ : P.pairingIn ℤ k i = -1 := by
     replace aux₄ : B.toInvariantForm.form (P.root i) (P.root i) =
         B.toInvariantForm.form (P.root j) (P.root j) := by
-          simpa [RootPositiveForm.posForm, RootPositiveForm.rootLenIn] using aux₄
+          simpa [RootPositiveForm.posForm, RootPositiveForm.rootLength] using aux₄
     have : P.pairingIn ℤ i j = -1 ∧ P.pairingIn ℤ j i = -1 := by
       have := P.pairingIn_pairingIn_mem_set_of_length_eq_of_ne aux₄
         hij (b.root_ne_neg_of_ne hi hj hij)
       aesop
     omega
-  have aux₆ : B.rootLenIn k ≤ B.rootLenIn i := B.rootLenIn_le_of_pairingIn_eq_neg_one aux₅
+  have aux₆ : B.rootLength k ≤ B.rootLength i := B.rootLength_le_of_pairingIn_eq <| Or.inl aux₅
   omega
 
 /-- This is Lemma 2.6 from [Geck](Geck2017).
@@ -560,14 +561,16 @@ lemma chainBotCoeff_mul_chainTopCoeff [P.IsReduced] [P.IsIrreducible] [P.IsNotG2
       (P.chainTopCoeff j l + 1) * (P.chainBotCoeff i k + 1) := by
   have _i := P.reflexive_left
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
-  have hjk : LinearIndependent R ![P.root j, P.root k] := P.linInd_of_sub_mem_range_root <| by
-    rw [← P.neg_mem_range_root_iff, neg_sub, h₂]; exact mem_range_self m
+  have hjk : LinearIndependent R ![P.root j, P.root k] :=
+    P.linearIndependent_of_sub_mem_range_root <| by
+      rw [← P.neg_mem_range_root_iff, neg_sub, h₂]; exact mem_range_self m
   replace hjk : P.root k ≠ P.root j ∧ P.root k ≠ -P.root j := by
     refine ⟨fun contra ↦ P.ne_zero m (by aesop), ?_⟩
     have := ((IsReduced.linearIndependent_iff _).mp hjk).2
     rwa [ne_eq, eq_comm, neg_eq_iff_eq_neg]
-  have hik : LinearIndependent R ![P.root i, P.root k] := P.linInd_of_add_mem_range_root <| by
-    rw [add_comm, h₁]; exact mem_range_self l
+  have hik : LinearIndependent R ![P.root i, P.root k] :=
+    P.linearIndependent_of_add_mem_range_root <| by
+      rw [add_comm, h₁]; exact mem_range_self l
   have hik : -P.root k ≠ P.root i ∧ k ≠ i := by
     refine ⟨fun contra ↦ P.ne_zero l ?_, ?_⟩
     · rw [← contra, add_neg_cancel] at h₁
