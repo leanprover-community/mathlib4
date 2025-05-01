@@ -171,7 +171,7 @@ class AddGroupSeminormClass (F : Type*) (α β : outParam Type*)
 You should extend this class when you extend `GroupSeminorm`. -/
 @[to_additive]
 class GroupSeminormClass (F : Type*) (α β : outParam Type*)
-    [Group α] [AddCommMonoid β] [PartialOrder β]  [FunLike F α β] : Prop
+    [Group α] [AddCommMonoid β] [PartialOrder β] [FunLike F α β] : Prop
   extends MulLEAddHomClass F α β where
   /-- The image of one is zero. -/
   map_one_eq_zero (f : F) : f 1 = 0

@@ -156,7 +156,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
     refine ⟨{s}, singleton_subset_set_iff.mpr hs, ?_⟩
     simp only [coe_singleton, pairwiseDisjoint_singleton, sUnion_singleton, eq_self_iff_true,
       and_self_iff]
-  | @insert t I' _ h => ?_
+  | insert t I' _ h => ?_
 
   rw [coe_insert] at hI
   have ht : t ∈ C := hI (Set.mem_insert _ _)
@@ -465,7 +465,7 @@ lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
   classical
   induction S using Finset.induction with
   | empty => simp [hC.empty_mem]
-  | @insert i S _ h =>
+  | insert i S _ h =>
     simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     refine hC.union_mem (hs i (mem_insert_self i S)) ?_
     exact h (fun n hnS ↦ hs n (mem_insert_of_mem hnS))
@@ -488,7 +488,7 @@ lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α} {t : Fin
   classical
   induction t using Finset.induction_on with
   | empty => exact hC.empty_mem
-  | @insert m t hm ih =>
+  | insert m t hm ih =>
     simpa only [sup_insert] using
       hC.union_mem (hs m <| mem_insert_self m t) (ih <| fun i hi ↦ hs _ <| mem_insert_of_mem hi)
 
