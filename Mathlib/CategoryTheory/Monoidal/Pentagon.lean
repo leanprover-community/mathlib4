@@ -142,12 +142,12 @@ namespace MonoidalCategory
 lemma pentagon_curriedAssociatorNatIso_hom [MonoidalCategory C] :
     NatTrans.Pentagon (curriedAssociatorNatIso C).hom where
 
-def ofBifunctor (ε : C) (F : C ⥤ C ⥤ C) (α : bifunctorComp₁₂ F F ≅ bifunctorComp₂₃ F F)
-    (leftUnitor : F.obj ε ≅ 𝟭 C) (rightUnitor : F.flip.obj ε ≅ 𝟭 C)
+def ofBifunctor (unit : C) (F : C ⥤ C ⥤ C) (α : bifunctorComp₁₂ F F ≅ bifunctorComp₂₃ F F)
+    (leftUnitor : F.obj unit ≅ 𝟭 C) (rightUnitor : F.flip.obj unit ≅ 𝟭 C)
     (pentagon : NatTrans.Pentagon α.hom)
-    (triangle : NatTrans.Triangle α.hom ε leftUnitor rightUnitor) :
+    (triangle : NatTrans.Triangle α.hom unit leftUnitor rightUnitor) :
     MonoidalCategory C where
-  tensorUnit := ε
+  tensorUnit := unit
   tensorObj X₁ X₂ := (F.obj X₁).obj X₂
   whiskerLeft X₁ _ _ f₂ := (F.obj X₁).map f₂
   whiskerRight f₁ X₂ := (F.map f₁).app X₂

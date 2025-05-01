@@ -27,7 +27,7 @@ section
 
 variable [(curriedTensor C ⋙ (whiskeringRight _ _ _).obj L).HasLeftDerivedFunctor₂ W W]
 
-noncomputable nonrec def DerivedMonoidal.tensor :
+noncomputable nonrec def DerivedMonoidal.bifunctor :
     DerivedMonoidal L W ⥤ DerivedMonoidal L W ⥤ DerivedMonoidal L W :=
   (curriedTensor C ⋙ (whiskeringRight _ _ _).obj L).leftDerived₂ L L W W
 
@@ -36,14 +36,14 @@ def toDerivedMonoidal : C ⥤ DerivedMonoidal L W := L
 instance : (toDerivedMonoidal L W).IsLocalization W := by assumption
 
 noncomputable def DerivedMonoidal.counit :
-    (((whiskeringLeft₂ D).obj L).obj L).obj (tensor L W) ⟶
+    (((whiskeringLeft₂ D).obj L).obj L).obj (bifunctor L W) ⟶
     curriedTensor C ⋙ (whiskeringRight _ _ _).obj L :=
   (curriedTensor C ⋙ (whiskeringRight _ _ _).obj L).leftDerivedCounit₂ L L W W
 
 instance :
-    (DerivedMonoidal.tensor L W).IsLeftDerivedFunctor₂
+    (DerivedMonoidal.bifunctor L W).IsLeftDerivedFunctor₂
       (DerivedMonoidal.counit L W) W W := by
-  dsimp only [DerivedMonoidal.tensor, DerivedMonoidal.counit]
+  dsimp only [DerivedMonoidal.bifunctor, DerivedMonoidal.counit]
   infer_instance
 
 end
@@ -59,7 +59,29 @@ class Functor.HasDerivedMonoidalCategory : Prop where
     Functor.IsLeftDerivedFunctor₃ _ (bifunctorComp₂₃Counit (DerivedMonoidal.counit L W)
       (DerivedMonoidal.counit L W)) W W W
 
+namespace Functor.HasDerivedMonoidalCategory
+
+attribute [instance] hasLeftDerivedFunctor₂
+  bifunctorComp₂₃_isLeftDerivedFunctor
+  bifunctorComp₁₂_isLeftDerivedFunctor
+
+end Functor.HasDerivedMonoidalCategory
+
 namespace DerivedMonoidal
+
+variable [L.HasDerivedMonoidalCategory W]
+
+noncomputable def associator :
+    bifunctorComp₁₂ (bifunctor L W) (bifunctor L W) ≅
+      bifunctorComp₂₃ (bifunctor L W) (bifunctor L W) :=
+  Functor.leftDerived₃NatIso _ _
+    (bifunctorComp₁₂Counit (counit L W) (counit L W))
+    (bifunctorComp₂₃Counit (counit L W) (counit L W)) W W W
+    ((Functor.postcompose₃.obj L).mapIso (curriedAssociatorNatIso C))
+
+--noncomputable instance : MonoidalCategory (DerivedMonoidal L W) :=
+--  .ofBifunctor ((toDerivedMonoidal L W).obj (𝟙_ C)) (bifunctor L W) (associator L W)
+--    sorry sorry sorry sorry
 
 end DerivedMonoidal
 

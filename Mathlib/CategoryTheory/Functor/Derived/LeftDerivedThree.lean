@@ -46,9 +46,12 @@ def whiskeringLeft₃Equiv {F : D₁ ⥤ D₂ ⥤ D₃ ⥤ H} {G : C₁ ⥤ C₂
   left_inv _ := rfl
   right_inv _ := rfl
 
-variable (LF : D₁ ⥤ D₂ ⥤ D₃ ⥤ H) (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ H)
+variable (LF LF' LF'' : D₁ ⥤ D₂ ⥤ D₃ ⥤ H) (F F' F'' : C₁ ⥤ C₂ ⥤ C₃ ⥤ H)
   {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} {L₃ : C₃ ⥤ D₃}
   (α : ((((whiskeringLeft₃ H).obj L₁).obj L₂).obj L₃).obj LF ⟶ F)
+  (α' : ((((whiskeringLeft₃ H).obj L₁).obj L₂).obj L₃).obj LF' ⟶ F')
+  (α'₂ : ((((whiskeringLeft₃ H).obj L₁).obj L₂).obj L₃).obj LF' ⟶ F)
+  (α'' : ((((whiskeringLeft₃ H).obj L₁).obj L₂).obj L₃).obj LF'' ⟶ F'')
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] [L₃.IsLocalization W₃]
 
@@ -56,7 +59,7 @@ abbrev HasLeftDerivedFunctor₃ := (uncurry₃.obj F).HasLeftDerivedFunctor (W�
 
 variable [W₁.ContainsIdentities] [W₂.ContainsIdentities] [W₃.ContainsIdentities]
 
-variable {F}
+variable {F F'}
 
 abbrev IsLeftDerivedFunctor₃ : Prop :=
   (uncurry₃.obj LF).IsLeftDerivedFunctor (whiskeringLeft₃Equiv α) (W₁.prod (W₂.prod W₃))
@@ -89,6 +92,8 @@ end
 section
 
 variable [LF.IsLeftDerivedFunctor₃ α W₁ W₂ W₃]
+  [LF'.IsLeftDerivedFunctor₃ α' W₁ W₂ W₃]
+  [LF''.IsLeftDerivedFunctor₃ α'' W₁ W₂ W₃]
   (G : D₁ ⥤ D₂ ⥤ D₃ ⥤ H)
   (β : ((((whiskeringLeft₃ H).obj L₁).obj L₂).obj L₃).obj G ⟶ F)
 
@@ -121,6 +126,51 @@ lemma leftDerived₃_ext (G : D₁ ⥤ D₂ ⥤ D₃ ⥤ H) (γ₁ γ₂ : G ⟶
   apply leftDerived_ext (α := (whiskeringLeft₃Equiv α)) (W := W₁.prod (W₂.prod W₃))
   ext ⟨X₁, X₂, X₃⟩
   exact congr_app (congr_app (congr_app hγ X₁) X₂) X₃
+
+noncomputable def leftDerived₃NatTrans (τ : F ⟶ F') : LF ⟶ LF' :=
+  LF'.leftDerived₃Lift α' W₁ W₂ W₃ LF (α ≫ τ)
+
+omit [LF.IsLeftDerivedFunctor₃ α W₁ W₂ W₃] in
+@[reassoc (attr := simp)]
+lemma leftDerived₃NatTrans_fac (τ : F ⟶ F') :
+    ((((whiskeringLeft₃ H).obj L₁).obj L₂).obj L₃).map
+      (leftDerived₃NatTrans LF LF' α α' W₁ W₂ W₃ τ) ≫ α' =
+    α ≫ τ := by
+  dsimp only [leftDerived₃NatTrans]
+  simp
+
+omit [LF.IsLeftDerivedFunctor₃ α W₁ W₂ W₃] in
+@[reassoc (attr := simp)]
+lemma leftDerived₃NatTrans_app (τ : F ⟶ F') (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
+    (((leftDerived₃NatTrans LF LF' α α' W₁ W₂ W₃ τ).app (L₁.obj X₁)).app
+      (L₂.obj X₂)).app (L₃.obj X₃) ≫ ((α'.app X₁).app X₂).app X₃ =
+      ((α.app X₁).app X₂).app X₃ ≫ ((τ.app X₁).app X₂).app X₃ := by
+  dsimp only [leftDerived₃NatTrans]
+  simp
+
+@[simp]
+lemma leftDerived₃NatTrans_id :
+    leftDerived₃NatTrans LF LF α α W₁ W₂ W₃ (𝟙 F) = 𝟙 LF :=
+  leftDerived₃_ext LF α W₁ W₂ W₃ _ _ _ (by aesop_cat)
+
+omit [LF.IsLeftDerivedFunctor₃ α W₁ W₂ W₃] in
+@[reassoc (attr := simp)]
+lemma leftDerived₃NatTrans_comp (τ : F ⟶ F') (τ' : F' ⟶ F'') :
+  leftDerived₃NatTrans LF LF' α α' W₁ W₂ W₃ τ ≫
+      leftDerived₃NatTrans LF' LF'' α' α'' W₁ W₂ W₃ τ' =
+    leftDerived₃NatTrans LF LF'' α α'' W₁ W₂ W₃ (τ ≫ τ') :=
+  leftDerived₃_ext LF'' α'' W₁ W₂ W₃ _ _ _ (by aesop_cat)
+
+@[simps]
+noncomputable def leftDerived₃NatIso (τ : F ≅ F') :
+    LF ≅ LF' where
+  hom := leftDerived₃NatTrans LF LF' α α' W₁ W₂ W₃ τ.hom
+  inv := leftDerived₃NatTrans LF' LF α' α W₁ W₂ W₃ τ.inv
+
+@[simp]
+noncomputable def leftDerivedFunctor₃Unique [LF'.IsLeftDerivedFunctor₃ α'₂ W₁ W₂ W₃] :
+    LF ≅ LF' :=
+  leftDerived₃NatIso LF LF' α α'₂ W₁ W₂ W₃ (Iso.refl F)
 
 end
 
