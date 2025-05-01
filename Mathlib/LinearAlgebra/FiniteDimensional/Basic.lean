@@ -582,10 +582,3 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
 end End
 
 end Module
-
-section IsQuadraticExtension
-
-instance (R : Type*) [Field K] [CommRing R] [h : IsQuadraticExtension K R] :
-    FiniteDimensional K R := Module.finite_of_finrank_eq_succ h.finrank_eq_two
-
-end IsQuadraticExtension
