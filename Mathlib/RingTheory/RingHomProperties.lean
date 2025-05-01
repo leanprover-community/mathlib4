@@ -30,7 +30,7 @@ open CategoryTheory Opposite CategoryTheory.Limits
 
 namespace RingHom
 
-variable (P Q : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop) {Q}
+variable {P Q : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop}
 
 section RespectsIso
 
