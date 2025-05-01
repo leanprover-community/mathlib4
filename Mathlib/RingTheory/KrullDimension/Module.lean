@@ -6,6 +6,14 @@ Authors: Nailin Guan
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.Support
 
+/-!
+
+# Dimension of Module
+
+In this file we defined `dim(M)` for a `R`-module `M`.
+
+-/
+
 namespace Module
 
 open Order
