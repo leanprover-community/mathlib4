@@ -198,12 +198,6 @@ variable [AddCommGroup F] [Module 𝕜 F] [c : PreInnerProductSpace.Core 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
-/-- Local notation for `RCLike.normSq 𝕜` -/
-local notation "normSqK" => @RCLike.normSq 𝕜 _
-
-/-- Local notation for `RCLike.re 𝕜` -/
-local notation "reK" => @RCLike.re 𝕜 _
-
 /-- Local notation for `RCLike.ext_iff 𝕜` -/
 local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
 
@@ -220,7 +214,7 @@ attribute [local instance] toPreInner'
 
 /-- The norm squared function for `PreInnerProductSpace.Core` structure. -/
 def normSq (x : F) :=
-  reK ⟪x, x⟫
+  re ⟪x, x⟫
 
 /-- The norm squared function for `PreInnerProductSpace.Core` structure. -/
 local notation "normSqF" => @normSq 𝕜 F _ _ _ _
@@ -432,8 +426,6 @@ section InnerProductSpace.Core
 variable [AddCommGroup F] [Module 𝕜 F] [cd : InnerProductSpace.Core 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
-
-local notation "normSqK" => @RCLike.normSq 𝕜 _
 
 local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
 
