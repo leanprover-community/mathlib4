@@ -746,6 +746,7 @@ def submoduleMapThing {W₁ : Type*} [AddCommGroup W₁] [Module K W₁] {W₂ :
   simp only [Submodule.mem_map, Submodule.map_top, LinearMap.mem_range, LinearMap.domRestrict_apply,
     Subtype.exists, exists_prop]
 
+/-- 2nd bijection -/
 def reconstructMap : (X : Submodule K V) × (X →ₗ[K] K) ↪ Submodule K (V × K) where
   toFun sφ := Submodule.map (LinearMap.prod sφ.1.subtype sφ.2) ⊤
   inj' := fun Sφ Rφ h => by
