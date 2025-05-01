@@ -202,4 +202,4 @@ theorem associatedPrimes.finite : (associatedPrimes A M).Finite := by
     have := associatedPrimes.eq_singleton_of_isPrimary p.2.isPrimary
     simp [LinearEquiv.AssociatedPrimes.eq f, this]
   | exact N₁ N₂ N₃ f g hf _ hfg h₁ h₃ =>
-    exact (h₁.union h₃).subset (associatedPrimes.subset_union_of_exact f g hf hfg)
+    exact (h₁.union h₃).subset (associatedPrimes.subset_union_of_exact hf hfg)
