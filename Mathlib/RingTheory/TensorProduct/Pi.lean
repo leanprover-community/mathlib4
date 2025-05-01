@@ -61,9 +61,13 @@ noncomputable def piScalarRight : A ⊗[R] (ι → R) ≃ₐ[S] ι → A :=
   (piRight R S A (fun _ : ι ↦ R)).trans <|
     AlgEquiv.piCongrRight (fun _ ↦ Algebra.TensorProduct.rid R S A)
 
-@[simp]
 lemma piScalarRight_tmul (x : A) (y : ι → R) :
     piScalarRight R S A ι (x ⊗ₜ y) = fun i ↦ y i • x :=
+  rfl
+
+@[simp]
+lemma piScalarRight_tmul_apply (x : A) (y : ι → R) (i : ι) :
+    piScalarRight R S A ι (x ⊗ₜ y) i = y i • x :=
   rfl
 
 section
@@ -76,15 +80,22 @@ noncomputable nonrec def prodRight : A ⊗[R] (B × C) ≃ₐ[S] A ⊗[R] B × A
     (by simp [Algebra.TensorProduct.one_def])
     (LinearMap.map_mul_of_map_mul_tmul (fun _ _ _ _ ↦ by simp))
 
-@[simp]
 lemma prodRight_tmul (a : A) (x : B × C) : prodRight R S A B C (a ⊗ₜ x) = (a ⊗ₜ x.1, a ⊗ₜ x.2) :=
+  rfl
+
+@[simp]
+lemma prodRight_tmul_fst (a : A) (x : B × C) : (prodRight R S A B C (a ⊗ₜ x)).fst = a ⊗ₜ x.1 :=
+  rfl
+
+@[simp]
+lemma prodRight_tmul_snd (a : A) (x : B × C) : (prodRight R S A B C (a ⊗ₜ x)).snd = a ⊗ₜ x.2 :=
   rfl
 
 @[simp]
 lemma prodRight_symm_tmul (a : A) (b : B) (c : C) :
     (prodRight R S A B C).symm (a ⊗ₜ b, a ⊗ₜ c) = a ⊗ₜ (b, c) := by
   apply (prodRight R S A B C).injective
-  simp
+  simp [prodRight_tmul]
 
 end
 
