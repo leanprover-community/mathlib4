@@ -129,7 +129,7 @@ instance [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S] [hP : NeZ
 
 instance [Algebra.IsSeparable K L] :
     -- Without the following line there is a timeout
-    letI _ : Algebra Rₚ (FractionRing Sₚ) := OreLocalization.instAlgebra
+    letI : Algebra Rₚ (FractionRing Sₚ) := OreLocalization.instAlgebra
     Algebra.IsSeparable (FractionRing Rₚ) (FractionRing Sₚ) :=
   let _ : Algebra Rₚ (FractionRing Sₚ) := OreLocalization.instAlgebra
   FractionRing.isSeparable_of_isLocalization S _ _ P.primeCompl_le_nonZeroDivisors
