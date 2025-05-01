@@ -6,7 +6,6 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.Support
 
 /-!
 
