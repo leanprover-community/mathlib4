@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
+import Mathlib.Algebra.Order.Star.Prod
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
@@ -34,7 +37,8 @@ only makes sense for nonnegative exponents, and hence we define it such that the
 
 + We define a `Pow A ℝ` instance for `CFC.rpow`, i.e `a ^ y` with `A` an operator and `y : ℝ` works
   as expected. Likewise, we define a `Pow A ℝ≥0` instance for `CFC.nnrpow`. Note that these are
-  low-priority instances, in order to avoid overriding instances such as `Pow ℝ ℝ`.
+  low-priority instances, in order to avoid overriding instances such as `Pow ℝ ℝ`,
+  `Pow (A × B) ℝ` or `Pow (∀ i, A i) ℝ`.
 
 ## TODO
 
@@ -70,8 +74,10 @@ namespace CFC
 section NonUnital
 
 variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [StarRing A]
-  [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
-  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+  [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [StarOrderedRing A]
+  [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+  [NonnegSpectrumClass ℝ A]
+
 
 /- ## `nnrpow` -/
 
@@ -151,6 +157,57 @@ lemma nnrpow_inv_eq (a b : A) {x : ℝ≥0} (hx : x ≠ 0) (ha : 0 ≤ a := by c
   ⟨fun h ↦ nnrpow_inv_nnrpow a hx ▸ congr($(h) ^ x).symm,
     fun h ↦ nnrpow_nnrpow_inv b hx ▸ congr($(h) ^ x⁻¹).symm⟩
 
+section prod
+
+variable {B : Type*} [PartialOrder B] [NonUnitalRing B] [TopologicalSpace B] [StarRing B]
+  [Module ℝ B] [SMulCommClass ℝ B B] [IsScalarTower ℝ B B]
+  [NonUnitalContinuousFunctionalCalculus ℝ B IsSelfAdjoint]
+  [NonUnitalContinuousFunctionalCalculus ℝ (A × B) IsSelfAdjoint]
+  [IsTopologicalRing B] [T2Space B]
+  [NonnegSpectrumClass ℝ B] [NonnegSpectrumClass ℝ (A × B)]
+  [StarOrderedRing B]
+
+/- Note that there is higher-priority instance of `Pow (A × B) ℝ≥0` coming from the `Pow` instance
+for products, hence the direct use of `nnrpow` here. -/
+lemma nnrpow_map_prod {a : A} {b : B} {x : ℝ≥0}
+    (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
+    nnrpow (a, b) x = (a ^ x, b ^ x) := by
+  simp only [nnrpow_def]
+  unfold nnrpow
+  refine cfcₙ_map_prod (S := ℝ) _ a b (by cfc_cont_tac) ?_
+  rw [Prod.le_def]
+  constructor <;> simp [ha, hb]
+
+lemma nnrpow_eq_nnrpow_prod {a : A} {b : B} {x : ℝ≥0}
+    (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
+    nnrpow (a, b) x = (a, b) ^ x := nnrpow_map_prod
+
+end prod
+
+section pi
+
+variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, NonUnitalRing (C i)]
+  [∀ i, TopologicalSpace (C i)] [∀ i, StarRing (C i)]
+  [∀ i, StarOrderedRing (C i)] [StarOrderedRing (∀ i, C i)]
+  [∀ i, Module ℝ (C i)] [∀ i, SMulCommClass ℝ (C i) (C i)] [∀ i, IsScalarTower ℝ (C i) (C i)]
+  [∀ i, NonUnitalContinuousFunctionalCalculus ℝ (C i) IsSelfAdjoint]
+  [NonUnitalContinuousFunctionalCalculus ℝ (∀ i, C i) IsSelfAdjoint]
+  [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
+  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
+
+/- Note that there is higher-priority instance of `Pow (∀ i, C i) ℝ≥0` coming from the `Pow`
+instance for pi types, hence the direct use of `nnrpow` here. -/
+lemma nnrpow_map_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
+    nnrpow c x = fun i => (c i) ^ x := by
+  simp only [nnrpow_def]
+  unfold nnrpow
+  exact cfcₙ_map_pi (S := ℝ) _ c
+
+lemma nnrpow_eq_nnrpow_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
+    nnrpow c x = c ^ x := nnrpow_map_pi
+
+end pi
+
 end Unique
 
 /- ## `sqrt` -/
@@ -211,6 +268,40 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
 lemma sqrt_eq_zero_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt a = 0 ↔ a = 0 := by
   rw [sqrt_eq_iff a _, mul_zero, eq_comm]
 
+section prod
+
+variable {B : Type*} [PartialOrder B] [NonUnitalRing B] [TopologicalSpace B] [StarRing B]
+  [Module ℝ B] [SMulCommClass ℝ B B] [IsScalarTower ℝ B B] [StarOrderedRing B]
+  [NonUnitalContinuousFunctionalCalculus ℝ B IsSelfAdjoint]
+  [NonUnitalContinuousFunctionalCalculus ℝ (A × B) IsSelfAdjoint]
+  [IsTopologicalRing B] [T2Space B]
+  [NonnegSpectrumClass ℝ B] [NonnegSpectrumClass ℝ (A × B)]
+
+lemma sqrt_map_prod {a : A} {b : B} (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
+    sqrt (a, b) = (sqrt a, sqrt b) := by
+  simp only [sqrt_eq_nnrpow]
+  exact nnrpow_map_prod
+
+end prod
+
+section pi
+
+variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, NonUnitalRing (C i)]
+  [∀ i, TopologicalSpace (C i)] [∀ i, StarRing (C i)]
+  [∀ i, StarOrderedRing (C i)] [StarOrderedRing (∀ i, C i)]
+  [∀ i, Module ℝ (C i)] [∀ i, SMulCommClass ℝ (C i) (C i)] [∀ i, IsScalarTower ℝ (C i) (C i)]
+  [∀ i, NonUnitalContinuousFunctionalCalculus ℝ (C i) IsSelfAdjoint]
+  [NonUnitalContinuousFunctionalCalculus ℝ (∀ i, C i) IsSelfAdjoint]
+  [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
+  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
+
+lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
+    sqrt c = fun i => sqrt (c i) := by
+  simp only [sqrt_eq_nnrpow]
+  exact nnrpow_map_pi
+
+end pi
+
 end sqrt
 
 end NonUnital
@@ -218,7 +309,8 @@ end NonUnital
 section Unital
 
 variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
-  [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+  [StarOrderedRing A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+  [NonnegSpectrumClass ℝ A]
 
 /- ## `rpow` -/
 
@@ -298,7 +390,8 @@ lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
   simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_not_mem ℝ≥0 a.isUnit)
 
 lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
-    [NormedAlgebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 ((0 : A) ≤ ·)] (a : A) :
+    [StarOrderedRing A] [NormedAlgebra ℝ A] [NonnegSpectrumClass ℝ A]
+    [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) :
     a ^ (-1 : ℝ) = cfc (·⁻¹ : ℝ≥0 → ℝ≥0) a :=
   cfc_congr fun x _ ↦ NNReal.rpow_neg_one x
 
@@ -318,6 +411,59 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
   rw [← cfc_zpow (R := ℝ≥0) a n, rpow_def]
   refine cfc_congr fun _ _ => ?_
   simp
+
+section prod
+
+variable [IsTopologicalRing A] [T2Space A]
+variable {B : Type*} [PartialOrder B] [Ring B] [StarRing B] [TopologicalSpace B]
+  [StarOrderedRing B]
+  [Algebra ℝ B] [ContinuousFunctionalCalculus ℝ B IsSelfAdjoint]
+  [ContinuousFunctionalCalculus ℝ (A × B) IsSelfAdjoint]
+  [IsTopologicalRing B] [T2Space B] [StarOrderedRing (A × B)]
+  [NonnegSpectrumClass ℝ B] [NonnegSpectrumClass ℝ (A × B)]
+
+/- Note that there is higher-priority instance of `Pow (A × B) ℝ` coming from the `Pow` instance for
+products, hence the direct use of `rpow` here. -/
+lemma rpow_map_prod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (hb : 0 ∉ spectrum ℝ≥0 b)
+    (ha' : 0 ≤ a := by cfc_tac) (hb' : 0 ≤ b := by cfc_tac) :
+    rpow (a, b) x = (a ^ x, b ^ x) := by
+  simp only [rpow_def]
+  unfold rpow
+  refine cfc_map_prod (R := ℝ≥0) (S := ℝ) _ a b (by cfc_cont_tac) ?_
+  rw [Prod.le_def]
+  constructor <;> simp [ha', hb']
+
+lemma rpow_eq_rpow_rpod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (hb : 0 ∉ spectrum ℝ≥0 b)
+    (ha' : 0 ≤ a := by cfc_tac) (hb' : 0 ≤ b := by cfc_tac) :
+    rpow (a, b) x = (a, b) ^ x := rpow_map_prod ha hb
+
+end prod
+
+section pi
+
+variable [IsTopologicalRing A] [T2Space A]
+variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Ring (C i)]
+  [∀ i, StarRing (C i)] [∀ i, TopologicalSpace (C i)] [∀ i, StarOrderedRing (C i)]
+  [StarOrderedRing (∀ i, C i)]
+  [∀ i, Algebra ℝ (C i)] [∀ i, ContinuousFunctionalCalculus ℝ (C i) IsSelfAdjoint]
+  [ContinuousFunctionalCalculus ℝ (∀ i, C i) IsSelfAdjoint]
+  [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
+  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
+
+/- Note that there is a higher-priority instance of `Pow (∀ i, B i) ℝ` coming from the `Pow`
+instance for pi types, hence the direct use of `rpow` here. -/
+lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, 0 ∉ spectrum ℝ≥0 (c i))
+    (hc' : ∀ i, 0 ≤ c i := by cfc_tac) :
+    rpow c x = fun i => (c i) ^ x := by
+  simp only [rpow_def]
+  unfold rpow
+  exact cfc_map_pi (S := ℝ) _ c
+
+lemma rpow_eq_rpow_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, 0 ∉ spectrum ℝ≥0 (c i))
+    (hc' : ∀ i, 0 ≤ c i := by cfc_tac) :
+    rpow c x = c ^ x := rpow_map_pi hc
+
+end pi
 
 section unital_vs_nonunital
 
@@ -369,11 +515,10 @@ lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2
   by_cases htriv : 0 ≤ a
   case neg => simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a htriv]
   case pos =>
-    by_cases hx : x = 0
-    case pos => simp [hx, rpow_zero _ htriv]
-    case neg =>
-      have h₁ : 0 < x := lt_of_le_of_ne (by simp) (Ne.symm hx)
-      have h₂ : (x : ℝ) / 2 = NNReal.toReal (x / 2) := rfl
+    cases eq_zero_or_pos x with
+    | inl hx => simp [hx, rpow_zero _ htriv]
+    | inr h₁ =>
+      have h₂ : (x : ℝ) / 2 = NNReal.toReal (x / 2) := by simp
       have h₃ : 0 < x / 2 := by positivity
       rw [← nnrpow_eq_rpow h₁, h₂, ← nnrpow_eq_rpow h₃, sqrt_nnrpow (A := A)]
 
@@ -381,10 +526,10 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ (x : ℝ) = a ^ (x / 2 : ℝ) := by
   by_cases hx : x = 0
   case pos =>
-    have ha' : 0 ≤ sqrt a := by exact sqrt_nonneg
+    have ha' : 0 ≤ sqrt a := sqrt_nonneg
     simp [hx, rpow_zero _ ha', rpow_zero _ ha]
   case neg =>
-    have h₁ : 0 ≤ (x : ℝ) := by exact NNReal.zero_le_coe
+    have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe
     rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by norm_num) h₁, one_div_mul_eq_div]
 
 end unital_vs_nonunital

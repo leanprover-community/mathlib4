@@ -193,7 +193,7 @@ theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) 
 theorem map_jacobson_of_bijective {f : R →+* S} (hf : Function.Bijective f) :
     map f I.jacobson = (map f I).jacobson :=
   map_jacobson_of_surjective hf.right
-    (le_trans (le_of_eq (f.injective_iff_ker_eq_bot.1 hf.left)) bot_le)
+    (le_trans (le_of_eq ((RingHom.injective_iff_ker_eq_bot f).1 hf.left)) bot_le)
 
 theorem comap_jacobson {f : R →+* S} {K : Ideal S} :
     comap f K.jacobson = sInf (comap f '' { J : Ideal S | K ≤ J ∧ J.IsMaximal }) :=
@@ -221,7 +221,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
 @[mono]
 theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson := by
   intro h x hx
-  erw [mem_sInf] at hx ⊢
+  rw [jacobson, mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
 
 /-- The Jacobson radical of a two-sided ideal is two-sided.

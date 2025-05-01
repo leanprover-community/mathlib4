@@ -237,7 +237,7 @@ theorem ContDiffOn.neg {s : Set E} {f : E → F} (hf : ContDiffOn 𝕜 n f s) :
 
 variable {i : ℕ}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: define `Neg` instance on `ContinuousLinearEquiv`,
+-- TODO: define `Neg` instance on `ContinuousLinearEquiv`,
 -- prove it from `ContinuousLinearEquiv.iteratedFDerivWithin_comp_left`
 theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (-f) s x = -iteratedFDerivWithin 𝕜 i f s x := by
@@ -453,7 +453,7 @@ end SMul
 
 /-! ### Constant scalar multiplication
 
-Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize results in this section.
+TODO: generalize results in this section.
 
 1. It should be possible to assume `[Monoid R] [DistribMulAction R F] [SMulCommClass 𝕜 R F]`.
 2. If `c` is a unit (or `R` is a group), then one can drop `ContDiff*` assumptions in some
@@ -598,16 +598,18 @@ open NormedRing ContinuousLinearMap Ring
 
 /-- In a complete normed algebra, the operation of inversion is `C^n`, for all `n`, at each
 invertible element, as it is analytic. -/
-theorem contDiffAt_ring_inverse [HasSummableGeomSeries R] (x : Rˣ) :
+theorem contDiffAt_ringInverse [HasSummableGeomSeries R] (x : Rˣ) :
     ContDiffAt 𝕜 n Ring.inverse (x : R) := by
   have := AnalyticOnNhd.contDiffOn (analyticOnNhd_inverse (𝕜 := 𝕜) (A := R)) (n := n)
     Units.isOpen.uniqueDiffOn x x.isUnit
   exact this.contDiffAt (Units.isOpen.mem_nhds x.isUnit)
 
+@[deprecated (since := "2025-04-22")] alias contDiffAt_ring_inverse := contDiffAt_ringInverse
+
 variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 theorem contDiffAt_inv {x : 𝕜'} (hx : x ≠ 0) {n} : ContDiffAt 𝕜 n Inv.inv x := by
-  simpa only [Ring.inverse_eq_inv'] using contDiffAt_ring_inverse 𝕜 (Units.mk0 x hx)
+  simpa only [Ring.inverse_eq_inv'] using contDiffAt_ringInverse 𝕜 (Units.mk0 x hx)
 
 theorem contDiffOn_inv {n} : ContDiffOn 𝕜 n (Inv.inv : 𝕜' → 𝕜') {0}ᶜ := fun _ hx =>
   (contDiffAt_inv 𝕜 hx).contDiffWithinAt
@@ -661,18 +663,18 @@ inversion is `C^n`, for all `n`. -/
 theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
     ContDiffAt 𝕜 n inverse (e : E →L[𝕜] F) := by
   nontriviality E
-  -- first, we use the lemma `to_ring_inverse` to rewrite in terms of `Ring.inverse` in the ring
-  -- `E →L[𝕜] E`
+  -- first, we use the lemma `inverse_eq_ringInverse` to rewrite in terms of `Ring.inverse` in the
+  -- ring `E →L[𝕜] E`
   let O₁ : (E →L[𝕜] E) → F →L[𝕜] E := fun f => f.comp (e.symm : F →L[𝕜] E)
   let O₂ : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
-  have : ContinuousLinearMap.inverse = O₁ ∘ Ring.inverse ∘ O₂ := funext (to_ring_inverse e)
+  have : ContinuousLinearMap.inverse = O₁ ∘ Ring.inverse ∘ O₂ := funext (inverse_eq_ringInverse e)
   rw [this]
   -- `O₁` and `O₂` are `ContDiff`,
   -- so we reduce to proving that `Ring.inverse` is `ContDiff`
   have h₁ : ContDiff 𝕜 n O₁ := contDiff_id.clm_comp contDiff_const
   have h₂ : ContDiff 𝕜 n O₂ := contDiff_const.clm_comp contDiff_id
   refine h₁.contDiffAt.comp _ (ContDiffAt.comp _ ?_ h₂.contDiffAt)
-  convert contDiffAt_ring_inverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
+  convert contDiffAt_ringInverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
   simp [O₂, one_def]
 
 /-- At an invertible map `e : M →L[R] M₂` between Banach spaces, the operation of
@@ -825,9 +827,8 @@ over `𝕜`.
 -/
 
 
-variable (𝕜) {𝕜' : Type*} [NontriviallyNormedField 𝕜']
--- Porting note: this couldn't be on the same line as the binder type update of `𝕜`
-variable [NormedAlgebra 𝕜 𝕜']
+variable (𝕜)
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 variable [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 variable {p' : E → FormalMultilinearSeries 𝕜' E F}

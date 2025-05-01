@@ -109,13 +109,12 @@ attribute [instance 100] PreservesBiproductsOfShape.preserves
 
 end Bicone
 
-/-- A functor `F` preserves finite biproducts if it preserves biproducts of shape `J` whenever
-    `J` is a fintype. -/
+/-- A functor `F` preserves finite biproducts if it preserves biproducts of shape `J`
+whenever `J` is a finite type. -/
 class PreservesFiniteBiproducts (F : C ⥤ D) [PreservesZeroMorphisms F] : Prop where
-  preserves : ∀ {J : Type} [Fintype J], PreservesBiproductsOfShape J F
+  preserves : ∀ {J : Type} [Finite J], PreservesBiproductsOfShape J F
 
 attribute [inherit_doc PreservesFiniteBiproducts] PreservesFiniteBiproducts.preserves
-
 attribute [instance 100] PreservesFiniteBiproducts.preserves
 
 /-- A functor `F` preserves biproducts if it preserves biproducts of any shape `J` of size `w`.
@@ -365,21 +364,19 @@ section Bicone
 variable {J : Type w₁} (f : J → C) [HasBiproduct f] [PreservesBiproduct f F] {W : C}
 
 theorem biproduct.map_lift_mapBiprod (g : ∀ j, W ⟶ f j) :
-    -- Porting note: twice we need haveI to tell Lean about hasBiproduct_of_preserves F f
+    -- Porting note: we need haveI to tell Lean about hasBiproduct_of_preserves F f
     haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     F.map (biproduct.lift g) ≫ (F.mapBiproduct f).hom = biproduct.lift fun j => F.map (g j) := by
   ext j
   dsimp only [Function.comp_def]
-  haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
   simp only [mapBiproduct_hom, Category.assoc, biproduct.lift_π, ← F.map_comp]
 
 theorem biproduct.mapBiproduct_inv_map_desc (g : ∀ j, f j ⟶ W) :
-    -- Porting note: twice we need haveI to tell Lean about hasBiproduct_of_preserves F f
+    -- Porting note: we need haveI to tell Lean about hasBiproduct_of_preserves F f
     haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     (F.mapBiproduct f).inv ≫ F.map (biproduct.desc g) = biproduct.desc fun j => F.map (g j) := by
   ext j
   dsimp only [Function.comp_def]
-  haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
   simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc ,← F.map_comp]
 
 theorem biproduct.mapBiproduct_hom_desc (g : ∀ j, f j ⟶ W) :

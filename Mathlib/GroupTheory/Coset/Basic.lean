@@ -324,15 +324,6 @@ lemma orbit_eq_out_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x
   induction x using QuotientGroup.induction_on
   simp only [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, Quotient.out_eq']
 
-@[to_additive]
-alias orbit_eq_out'_smul := orbit_eq_out_smul
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated orbit_eq_out_smul (since := "2024-10-19")] orbit_eq_out'_smul
-attribute [deprecated QuotientAddGroup.orbit_eq_out_vadd (since := "2024-10-19")]
-QuotientAddGroup.orbit_eq_out'_vadd
-
 end QuotientGroup
 
 namespace Subgroup
@@ -374,9 +365,9 @@ variable {t : Subgroup α}
 
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
 of the quotient map `G → G/K`. The classical version is `Subgroup.quotientEquivProdOfLE`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps) quotientEquivProdOfLE'
   "If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
-  of the quotient map `G → G/K`. The classical version is `AddSubgroup.quotientEquivSumOfLE`."]
+  of the quotient map `G → G/K`. The classical version is `AddSubgroup.quotientEquivProdOfLE`."]
 def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
     (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t where
   toFun a :=
@@ -404,12 +395,31 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
     simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]
 
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE' := AddSubgroup.quotientEquivProdOfLE'
+
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE'_apply := AddSubgroup.quotientEquivProdOfLE'_apply
+
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE'_symm_apply := AddSubgroup.quotientEquivProdOfLE'_symm_apply
+
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively.
 The constructive version is `quotientEquivProdOfLE'`. -/
-@[to_additive (attr := simps!) "If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
- constructive version is `quotientEquivProdOfLE'`."]
+@[to_additive (attr := simps!) quotientEquivProdOfLE
+  "If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
+constructive version is `quotientEquivProdOfLE'`."]
 noncomputable def quotientEquivProdOfLE (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t :=
   quotientEquivProdOfLE' h_le Quotient.out Quotient.out_eq'
+
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE := AddSubgroup.quotientEquivProdOfLE
+
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE_apply := AddSubgroup.quotientEquivProdOfLE_apply
+
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE_symm_apply := AddSubgroup.quotientEquivProdOfLE_symm_apply
 
 /-- If `s ≤ t`, then there is an embedding `s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t`. -/
 @[to_additive "If `s ≤ t`, then there is an embedding

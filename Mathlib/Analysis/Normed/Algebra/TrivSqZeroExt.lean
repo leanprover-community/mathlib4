@@ -204,7 +204,7 @@ example :
 
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
   rw [WithLp.prod_norm_eq_add (by norm_num)]
-  simp only [ENNReal.one_toReal, Real.rpow_one, div_one]
+  simp only [ENNReal.toReal_one, Real.rpow_one, div_one]
   rfl
 
 theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by
@@ -220,20 +220,19 @@ variable [Module R M] [IsBoundedSMul R M] [Module Rᵐᵒᵖ M] [IsBoundedSMul R
   [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1SeminormedRing : SeminormedRing (tsze R M) where
-  norm_mul
+  norm_mul_le
   | ⟨r₁, m₁⟩, ⟨r₂, m₂⟩ => by
-    dsimp
-    rw [norm_def, norm_def, norm_def, add_mul, mul_add, mul_add, snd_mul, fst_mul]
-    dsimp [fst, snd]
-    rw [add_assoc]
-    gcongr
-    · exact norm_mul_le _ _
-    refine (norm_add_le _ _).trans ?_
-    gcongr
-    · exact norm_smul_le _ _
-    refine (_root_.norm_smul_le _ _).trans ?_
-    rw [mul_comm, MulOpposite.norm_op]
-    exact le_add_of_nonneg_right <| by positivity
+    simp_rw [norm_def]
+    calc ‖r₁ * r₂‖ + ‖r₁ • m₂ + MulOpposite.op r₂ • m₁‖
+    _ ≤ ‖r₁‖ * ‖r₂‖ + (‖r₁‖ * ‖m₂‖ + ‖r₂‖ * ‖m₁‖) := by
+      gcongr
+      · apply norm_mul_le
+      · refine norm_add_le_of_le ?_ ?_ <;>
+        apply norm_smul_le
+    _ ≤ ‖r₁‖ * ‖r₂‖ + (‖r₁‖ * ‖m₂‖ + ‖r₂‖ * ‖m₁‖) + (‖m₁‖ * ‖m₂‖) := by
+      apply le_add_of_nonneg_right
+      positivity
+    _ = (‖r₁‖ + ‖m₁‖) * (‖r₂‖ + ‖m₂‖) := by ring
   __ : SeminormedAddCommGroup (tsze R M) := inferInstance
   __ : Ring (tsze R M) := inferInstance
 

@@ -19,7 +19,8 @@ variable {α : Type*}
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α}
+  {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
 instance le : LE (Localization s) :=
@@ -79,7 +80,7 @@ instance partialOrder : PartialOrder (Localization s) where
   lt_iff_le_not_le a b := Localization.induction_on₂ a b fun _ _ => lt_iff_le_not_le
 
 @[to_additive]
-instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) where
+instance isOrderedCancelMonoid : IsOrderedCancelMonoid (Localization s) where
   mul_le_mul_left := fun a b =>
     Localization.induction_on₂ a b fun a b hab c =>
       Localization.induction_on c fun c => by
@@ -91,13 +92,11 @@ instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) wher
       exact le_of_mul_le_mul_left' hab
 
 @[to_additive]
-instance decidableLE [DecidableRel ((· ≤ ·) : α → α → Prop)] :
-    DecidableRel ((· ≤ ·) : Localization s → Localization s → Prop) := fun a b =>
+instance decidableLE [DecidableLE α] : DecidableLE (Localization s) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_le_mk
 
 @[to_additive]
-instance decidableLT [DecidableRel ((· < ·) : α → α → Prop)] :
-    DecidableRel ((· < ·) : Localization s → Localization s → Prop) := fun a b =>
+instance decidableLT [DecidableLT α] : DecidableLT (Localization s) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_lt_mk
 
 /-- An ordered cancellative monoid injects into its localization by sending `a` to `a / b`. -/
@@ -111,15 +110,14 @@ def mkOrderEmbedding (b : s) : α ↪o Localization s where
 end OrderedCancelCommMonoid
 
 @[to_additive]
-instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
-    LinearOrderedCancelCommMonoid (Localization s) :=
-  { Localization.orderedCancelCommMonoid with
-    le_total := fun a b =>
+instance [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α} :
+    LinearOrder (Localization s) :=
+  { le_total := fun a b =>
       Localization.induction_on₂ a b fun _ _ => by
         simp_rw [mk_le_mk]
         exact le_total _ _
-    decidableLE := Localization.decidableLE
-    decidableLT := Localization.decidableLT
-    decidableEq := Localization.decidableEq }
+    toDecidableLE := Localization.decidableLE
+    toDecidableLT := Localization.decidableLT
+    toDecidableEq := Localization.decidableEq }
 
 end Localization

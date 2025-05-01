@@ -46,8 +46,6 @@ def cons (a : α) (v : Vector3 α n) : Vector3 α (n + 1) := fun i => by
 section
 open Lean
 
--- Porting note: was
--- scoped notation3 "["(l", "* => foldr (h t => cons h t) nil)"]" => l
 scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofElems l),*])
 
 -- this is copied from `src/Init/NotationExtra.lean`
@@ -98,12 +96,12 @@ theorem cons_head_tail (v : Vector3 α (n + 1)) : (head v :: tail v) = v :=
   funext fun i => Fin2.cases' rfl (fun _ => rfl) i
 
 /-- Eliminator for an empty vector. -/
-@[elab_as_elim]  -- Porting note: add `elab_as_elim`
+@[elab_as_elim]
 def nilElim {C : Vector3 α 0 → Sort u} (H : C []) (v : Vector3 α 0) : C v := by
   rw [eq_nil v]; apply H
 
 /-- Recursion principle for a nonempty vector. -/
-@[elab_as_elim]  -- Porting note: add `elab_as_elim`
+@[elab_as_elim]
 def consElim {C : Vector3 α (n + 1) → Sort u} (H : ∀ (a : α) (t : Vector3 α n), C (a :: t))
     (v : Vector3 α (n + 1)) : C v := by rw [← cons_head_tail v]; apply H
 

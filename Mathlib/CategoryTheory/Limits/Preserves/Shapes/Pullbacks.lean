@@ -30,7 +30,6 @@ noncomputable section
 
 universe v₁ v₂ u₁ u₂
 
--- Porting note: need Functor namespace for mapCone
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Functor
 
 namespace CategoryTheory.Limits
@@ -85,7 +84,7 @@ def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
-    from by simp only [← G.map_comp,comm]))) : IsLimit (PullbackCone.mk h k comm) :=
+    from by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
   isLimitOfReflects G
     ((PullbackCone.isLimitMapConeEquiv (PullbackCone.mk _ _ comm) G).2 l)
 
@@ -212,7 +211,7 @@ def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
 /-- The property of reflecting pushouts expressed in terms of binary cofans. -/
 def isColimitOfIsColimitPushoutCoconeMap [ReflectsColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h =
-      G.map g ≫ G.map k from by simp only [← G.map_comp,comm]))) :
+      G.map g ≫ G.map k from by simp only [← G.map_comp, comm]))) :
     IsColimit (PushoutCocone.mk h k comm) :=
   isColimitOfReflects G ((isColimitMapCoconePushoutCoconeEquiv G comm).symm l)
 

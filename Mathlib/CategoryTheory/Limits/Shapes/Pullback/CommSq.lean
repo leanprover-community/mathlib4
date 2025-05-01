@@ -502,7 +502,7 @@ theorem of_hasBinaryCoproduct [HasBinaryCoproduct X Y] [HasZeroObject C] [HasZer
 
 section
 
-variable {P': C} {inl' : X ⟶ P'} {inr' : Y ⟶ P'}
+variable {P' : C} {inl' : X ⟶ P'} {inr' : Y ⟶ P'}
 
 /-- Any object at the bottom right of a pushout square is isomorphic to the object at the bottom
 right of any other pushout square with the same span. -/

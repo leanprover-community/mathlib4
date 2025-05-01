@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Setoid.Basic
+import Mathlib.Data.Vector.Basic
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -39,7 +40,6 @@ show these are equivalent in `Sym.symEquivSym'`.
 def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
@@ -47,7 +47,8 @@ def Sym (α : Type*) (n : ℕ) :=
 instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
   ⟨Sym.toMultiset⟩
 
--- Porting note: instance needed for Data.Finset.Sym
+-- The following instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance {α : Type*} {n : ℕ} [DecidableEq α] : DecidableEq (Sym α n) :=
   inferInstanceAs <| DecidableEq <| Subtype _
 
@@ -59,6 +60,12 @@ abbrev List.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :
   (List.isSetoid α).comap Subtype.val
 
 attribute [local instance] Vector.Perm.isSetoid
+
+-- Copy over the `DecidableRel` instance across the definition.
+-- (Although `List.Vector.Perm.isSetoid` is an `abbrev`, `List.isSetoid` is not.)
+instance {α : Type*} {n : ℕ} [DecidableEq α] :
+    DecidableRel (· ≈ · : List.Vector α n → List.Vector α n → Prop) :=
+  fun _ _ => List.decidablePerm _ _
 
 namespace Sym
 
@@ -80,7 +87,7 @@ theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
 
 /-- Construct an element of the `n`th symmetric power from a multiset of cardinality `n`.
 -/
-@[match_pattern] -- Porting note: removed `@[simps]`, generated bad lemma
+@[match_pattern]
 abbrev mk (m : Multiset α) (h : Multiset.card m = n) : Sym α n :=
   ⟨m, h⟩
 
@@ -262,12 +269,15 @@ theorem replicate_succ {a : α} {n : ℕ} : replicate n.succ a = a ::ₛ replica
 theorem coe_replicate : (replicate n a : Multiset α) = Multiset.replicate n a :=
   rfl
 
+theorem val_replicate : (replicate n a).val = Multiset.replicate n a := by
+  rw [val_eq_coe, coe_replicate]
+
 @[simp]
 theorem mem_replicate : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
   Multiset.mem_replicate
 
 theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
-  erw [Subtype.ext_iff, Multiset.eq_replicate]
+  rw [Subtype.ext_iff, val_replicate, Multiset.eq_replicate]
   exact and_iff_right s.2
 
 theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
@@ -306,7 +316,7 @@ instance inhabitedSym [Inhabited α] (n : ℕ) : Inhabited (Sym α n) :=
   ⟨replicate n default⟩
 
 instance inhabitedSym' [Inhabited α] (n : ℕ) : Inhabited (Sym' α n) :=
-  ⟨Quotient.mk' (Vector.replicate n default)⟩
+  ⟨Quotient.mk' (List.Vector.replicate n default)⟩
 
 instance (n : ℕ) [IsEmpty α] : IsEmpty (Sym α n.succ) :=
   ⟨fun s => by
@@ -530,7 +540,7 @@ theorem filter_ne_fill
   sigma_sub_ext
     (by
       rw [filterNe, ← val_eq_coe, Subtype.coe_mk, val_eq_coe, coe_fill]
-      rw [filter_add, filter_eq_self.2, add_right_eq_self, eq_zero_iff_forall_not_mem]
+      rw [filter_add, filter_eq_self.2, add_eq_left, eq_zero_iff_forall_not_mem]
       · intro b hb
         rw [mem_filter, Sym.mem_coe, mem_replicate] at hb
         exact hb.2 hb.1.2.symm
@@ -583,7 +593,6 @@ theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h 
   dif_neg h
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
--- @[simp] Porting note: not a nice simp lemma, applies too often in Lean4
 def decode : Sym (Option α) n ⊕ Sym α n.succ → Sym (Option α) n.succ
   | Sum.inl s => none ::ₛ s
   | Sum.inr s => s.map Embedding.some

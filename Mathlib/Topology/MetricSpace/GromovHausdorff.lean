@@ -418,7 +418,7 @@ instance : MetricSpace GHSpace where
       -- then was changed to be `simp only [hausdorffDist_comm]`,
       -- then `singlePass := true` was readded in https://github.com/leanprover-community/mathlib4/pull/8386 because of timeouts.
       -- TODO: figure out what causes the slowdown and make it a `simp only` again?
-      simp (config := { singlePass := true }) only [hausdorffDist_comm]
+      simp +singlePass only [hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
   eq_of_dist_eq_zero {x} {y} hxy := by
     /- To show that two spaces at zero distance are isometric,
@@ -627,7 +627,7 @@ instance : SecondCountableTopology GHSpace := by
   have εpos : 0 < ε := mul_pos (by norm_num) δpos
   have : ∀ p : GHSpace, ∃ s : Set p.Rep, s.Finite ∧ univ ⊆ ⋃ x ∈ s, ball x ε := fun p => by
     simpa only [subset_univ, true_and] using
-      finite_cover_balls_of_compact (α := p.Rep) isCompact_univ εpos
+      finite_cover_balls_of_compact (X := p.Rep) isCompact_univ εpos
   -- for each `p`, `s p` is a finite `ε`-dense subset of `p` (or rather the metric space
   -- `p.rep` representing `p`)
   choose s hs using this
