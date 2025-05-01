@@ -256,19 +256,13 @@ def firstReturn : ℕ :=
 include h in
 lemma firstReturn_pos : 0 < p.firstReturn := by
   by_contra! f
-  rw [Nat.le_zero, firstReturn, findIdx_eq] at f
-  #adaptation_note
-  /--
-  If we don't swap, then the second goal is dropped after completing the first goal.
-  What's going on?
-  -/
-  swap
-  · rw [length_range, length_pos_iff]
+  have lpos : 0 < (range p.toList.length).length := by
+    rw [length_range, length_pos_iff]
     exact toList_ne_nil.mpr h
-  · rw [getElem_range] at f
-    simp at f
-    rw [← p.cons_tail_dropLast_concat h] at f
-    simp at f
+  rw [Nat.le_zero, firstReturn, findIdx_eq lpos, getElem_range] at f
+  simp at f
+  rw [← p.cons_tail_dropLast_concat h] at f
+  simp at f
 
 include h in
 lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
