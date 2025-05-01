@@ -650,7 +650,7 @@ theorem coeff_prod [DecidableEq σ]
     split_ifs
     · simp only [card_singleton, Nat.cast_one]
     · simp only [card_empty, Nat.cast_zero]
-  | @insert a s ha ih =>
+  | insert a s ha ih =>
     rw [finsuppAntidiag_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
       simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]

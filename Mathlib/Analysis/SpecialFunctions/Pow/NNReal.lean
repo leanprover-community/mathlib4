@@ -667,7 +667,7 @@ theorem prod_coe_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
   classical
   induction s using Finset.induction with
   | empty => simp
-  | insert hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
+  | insert _ _ hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
 
 theorem mul_rpow_of_ne_zero {x y : ℝ≥0∞} (hx : x ≠ 0) (hy : y ≠ 0) (z : ℝ) :
     (x * y) ^ z = x ^ z * y ^ z := by simp [*, mul_rpow_eq_ite]
@@ -680,7 +680,7 @@ theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : �
   classical
   induction s using Finset.induction with
   | empty => simp
-  | @insert i s hi ih =>
+  | insert i s hi ih =>
     have h2f : ∀ i ∈ s, f i ≠ ∞ := fun i hi ↦ hf i <| mem_insert_of_mem hi
     rw [prod_insert hi, prod_insert hi, ih h2f, ← mul_rpow_of_ne_top <| hf i <| mem_insert_self ..]
     apply prod_ne_top h2f
@@ -690,7 +690,7 @@ theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : �
   classical
   induction s using Finset.induction with
   | empty => simp
-  | insert hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]
+  | insert _ _ hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]
 
 theorem inv_rpow (x : ℝ≥0∞) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
   rcases eq_or_ne y 0 with (rfl | hy); · simp only [rpow_zero, inv_one]
