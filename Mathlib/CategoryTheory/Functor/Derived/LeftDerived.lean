@@ -75,7 +75,7 @@ lemma leftDerivedNatTrans_fac (τ : F ⟶ F') :
 
 omit [LF.IsLeftDerivedFunctor α W] in
 @[reassoc (attr := simp)]
-lemma leftDerivedNatTrans_app (τ : F ⟶ F') (X : C) :
+lemma leftDerivedNatTrans_fac_app (τ : F ⟶ F') (X : C) :
   (leftDerivedNatTrans LF LF' α α' W τ).app (L.obj X) ≫ α'.app X =
     α.app X ≫ τ.app X := by
   dsimp only [leftDerivedNatTrans]

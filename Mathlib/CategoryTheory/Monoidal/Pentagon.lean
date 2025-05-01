@@ -40,7 +40,7 @@ def functor₃ : C ⥤ C ⥤ C ⥤ C ⥤ C :=
 def functor₄ : C ⥤ C ⥤ C ⥤ C ⥤ C :=
   (F ⋙ Functor.postcompose₃).flip.obj (bifunctorComp₂₃ F F)
 
--- X₁ ⊗ (X₂ ⊗ (X₃ ⊗ X₄))
+-- (X₁ ⊗ X₂) ⊗ (X₃ ⊗ X₄)
 @[simps!]
 def functor₅ : C ⥤ C ⥤ C ⥤ C ⥤ C :=
   bifunctorComp₁₂ F (bifunctorComp₂₃ F F)

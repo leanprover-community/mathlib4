@@ -141,7 +141,7 @@ lemma leftDerived₃NatTrans_fac (τ : F ⟶ F') :
 
 omit [LF.IsLeftDerivedFunctor₃ α W₁ W₂ W₃] in
 @[reassoc (attr := simp)]
-lemma leftDerived₃NatTrans_app (τ : F ⟶ F') (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
+lemma leftDerived₃NatTrans_fac_app_app_app (τ : F ⟶ F') (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
     (((leftDerived₃NatTrans LF LF' α α' W₁ W₂ W₃ τ).app (L₁.obj X₁)).app
       (L₂.obj X₂)).app (L₃.obj X₃) ≫ ((α'.app X₁).app X₂).app X₃ =
       ((α.app X₁).app X₂).app X₃ ≫ ((τ.app X₁).app X₂).app X₃ := by

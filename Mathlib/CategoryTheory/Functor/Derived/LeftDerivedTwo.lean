@@ -119,6 +119,21 @@ lemma leftDerived₂_ext (G : D₁ ⥤ D₂ ⥤ H) (γ₁ γ₂ : G ⟶ LF)
 
 end
 
+variable {LF}
+
+def bifunctorCounit₁ (X₁ : C₁) : L₂ ⋙ LF.obj (L₁.obj X₁) ⟶ F.obj X₁ := α.app X₁
+
+@[simp]
+lemma bifunctorCounit₁_app (X₁ : C₁) (X₂ : C₂) :
+    (bifunctorCounit₁ α X₁).app X₂ = (α.app X₁).app X₂ := rfl
+
+def bifunctorCounit₂ (X₂ : C₂) : L₁ ⋙ LF.flip.obj (L₂.obj X₂) ⟶ F.flip.obj X₂ :=
+  ((flipFunctor _ _ _).map α).app X₂
+
+@[simp]
+lemma bifunctorCounit₂_app (X₁ : C₁) (X₂ : C₂) :
+    (bifunctorCounit₂ α X₂).app X₁ = (α.app X₁).app X₂ := rfl
+
 end Functor
 
 end CategoryTheory
