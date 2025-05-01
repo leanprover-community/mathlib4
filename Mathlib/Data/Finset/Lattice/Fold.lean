@@ -198,7 +198,7 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
     | empty =>
       simpa only [forall_prop_of_true, and_true, forall_prop_of_false, bot_le, not_false_iff,
         sup_empty, forall_true_iff, not_mem_empty]
-    | @insert a r _ ih =>
+    | insert a r _ ih =>
       intro h
       have incs : (r : Set α) ⊆ ↑(insert a r) := by
         rw [Finset.coe_subset]
@@ -610,7 +610,7 @@ theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
   classical
   induction s using Finset.induction with
   | empty => exfalso; simp only [Finset.not_nonempty_empty] at hs
-  | @insert a s _ h =>
+  | insert a s _ h =>
     rw [Finset.sup_insert (b := a) (s := s) (f := f)]
     cases s.eq_empty_or_nonempty with
     | inl hs => simp [hs]
@@ -916,7 +916,7 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClas
 /-- To rewrite from right to left, use `Finset.inf'_comp_eq_image`. -/
 @[simp]
 theorem inf'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
-    (g : β → α)  :
+    (g : β → α) :
     (s.image f).inf' hs g = s.inf' hs.of_image (g ∘ f) :=
   @sup'_image αᵒᵈ _ _ _ _ _ _ hs _
 

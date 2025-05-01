@@ -304,7 +304,7 @@ noncomputable def liftCover : C(α, β) :=
     Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
-    simpa (config := { unfoldPartialApp := true }) only [Set.restrict, Set.liftCover_coe]
+    simpa +unfoldPartialApp only [Set.restrict, Set.liftCover_coe]
       using map_continuous (φ i)
 
 variable {S φ hφ hS}

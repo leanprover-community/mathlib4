@@ -558,11 +558,51 @@ theorem update_comp_eq_of_injective' (g : ∀ a, β a) {f : α' → α} (hf : Fu
     (i : α') (a : β (f i)) : (fun j ↦ update g (f i) a (f j)) = update (fun i ↦ g (f i)) i a :=
   eq_update_iff.2 ⟨update_self .., fun _ hj ↦ update_of_ne (hf.ne hj) _ _⟩
 
+theorem update_apply_of_injective
+    (g : ∀ a, β a) {f : α' → α} (hf : Function.Injective f)
+    (i : α') (a : β (f i)) (j : α') :
+    update g (f i) a (f j) = update (fun i ↦ g (f i)) i a j :=
+  congr_fun (update_comp_eq_of_injective' g hf i a) j
+
 /-- Non-dependent version of `Function.update_comp_eq_of_injective'` -/
 theorem update_comp_eq_of_injective {β : Sort*} (g : α' → β) {f : α → α'}
     (hf : Function.Injective f) (i : α) (a : β) :
     Function.update g (f i) a ∘ f = Function.update (g ∘ f) i a :=
   update_comp_eq_of_injective' g hf i a
+
+/-- Recursors can be pushed inside `Function.update`.
+
+The `ctor` argument should be a one-argument constructor like `Sum.inl`,
+and `recursor` should be an inductive recursor partially applied in all but that constructor,
+such as `(Sum.rec · g)`.
+
+In future, we should build some automation to generate applications like `Option.rec_update` for all
+inductive types. -/
+lemma rec_update {ι κ : Sort*} {α : κ → Sort*} [DecidableEq ι] [DecidableEq κ]
+    {ctor : ι → κ} (hctor : Function.Injective ctor)
+    (recursor : ((i : ι) → α (ctor i)) → ((i : κ) → α i))
+    (h : ∀ f i, recursor f (ctor i) = f i)
+    (h2 : ∀ f₁ f₂ k, (∀ i, ctor i ≠ k) → recursor f₁ k = recursor f₂ k)
+    (f : (i : ι) → α (ctor i)) (i : ι) (x : α (ctor i)) :
+    recursor (update f i x) = update (recursor f) (ctor i) x := by
+  ext k
+  by_cases h : ∃ i, ctor i = k
+  · obtain ⟨i', rfl⟩ := h
+    obtain rfl | hi := eq_or_ne i' i
+    · simp [h]
+    · have hk := hctor.ne hi
+      simp [h, hi, hk, Function.update_of_ne]
+  · rw [not_exists] at h
+    rw [h2 _ f _ h]
+    rw [Function.update_of_ne (Ne.symm <| h i)]
+
+@[simp]
+lemma _root_.Option.rec_update {α : Type*} {β : Option α → Sort*} [DecidableEq α]
+    (f : β none) (g : ∀ a, β (.some a)) (a : α) (x : β (.some a)) :
+    Option.rec f (update g a x) = update (Option.rec f g) (.some a) x :=
+  Function.rec_update (@Option.some.inj _) (Option.rec f) (fun _ _ => rfl) (fun
+    | _, _, .some _, h => (h _ rfl).elim
+    | _, _, .none, _ => rfl) _ _ _
 
 theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : ∀ i, α i → β i)
     (g : ∀ i, α i) (i : ι) (v : α i) (j : ι) :
