@@ -37,9 +37,9 @@ local notation3 "K" => FractionRing R
 local notation3 "L" => FractionRing S
 section
 
-theorem algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul {A : Type*} (B : Type*) [CommSemiring A]
-    [CommSemiring B] [Algebra A B] [NoZeroDivisors B] [FaithfulSMul A B] {S : Submonoid A}
-    (hS : S ≤ A⁰) : algebraMapSubmonoid B S ≤ B⁰ :=
+theorem algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul {A : Type*} (B : Type*)
+    [CommSemiring A] [CommSemiring B] [Algebra A B] [NoZeroDivisors B] [FaithfulSMul A B]
+    {S : Submonoid A} (hS : S ≤ A⁰) : algebraMapSubmonoid B S ≤ B⁰ :=
   map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective A B) hS
 
 variable (Rₘ Sₘ : Type*) [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ] [NoZeroSMulDivisors R S]
@@ -53,7 +53,8 @@ include R S in
 theorem FractionRing.isSeparable_of_isLocalization (hM : M ≤ R⁰) :
     Algebra.IsSeparable (FractionRing Rₘ) (FractionRing Sₘ) := by
   let M' := algebraMapSubmonoid S M
-  have hM' : algebraMapSubmonoid S M ≤ S⁰ := map_le_nonZeroDivisors_of_faithfulSMul _ hM
+  have hM' : algebraMapSubmonoid S M ≤ S⁰ := algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul
+    _ hM
   let f₁ : Rₘ →+* K := map _ (T := R⁰) (RingHom.id R) hM
   let f₂ : Sₘ →+* L := map _ (T := S⁰) (RingHom.id S) hM'
   algebraize [f₁, f₂]
@@ -85,11 +86,13 @@ variable [FaithfulSMul R S]
 
 noncomputable instance : Algebra Sₚ L :=
   (map _ (T := S⁰) (RingHom.id S)
-    (map_le_nonZeroDivisors_of_faithfulSMul _ P.primeCompl_le_nonZeroDivisors)).toAlgebra
+    (algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _
+      P.primeCompl_le_nonZeroDivisors)).toAlgebra
 
 instance : IsScalarTower S Sₚ L :=
   localization_isScalarTower_of_submonoid_le _ _ _ _
-    (map_le_nonZeroDivisors_of_faithfulSMul _ P.primeCompl_le_nonZeroDivisors)
+    (algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _
+      P.primeCompl_le_nonZeroDivisors)
 
 instance : IsFractionRing Rₚ K :=
   isFractionRing_of_isDomain_of_isLocalization P.primeCompl _ _
@@ -116,12 +119,12 @@ instance : IsScalarTower Rₚ Sₚ L :=
   localization_localization_isScalarTower S _ _ K _ P.primeCompl
 
 instance : IsDomain Sₚ :=
-  isDomain_localization <| map_le_nonZeroDivisors_of_faithfulSMul _
+  isDomain_localization <| algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _
     P.primeCompl_le_nonZeroDivisors
 
 instance [IsDedekindDomain S] : IsDedekindDomain Sₚ :=
   isDedekindDomain S
-    (map_le_nonZeroDivisors_of_faithfulSMul _ P.primeCompl_le_nonZeroDivisors) _
+    (algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ P.primeCompl_le_nonZeroDivisors) _
 
 instance [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S] [hP : NeZero P] :
     IsPrincipalIdealRing Sₚ :=
