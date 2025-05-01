@@ -29,6 +29,7 @@ namespace Int
 alias add_mul_emod_self_right := add_mul_emod_self
 alias natAbs_natCast := natAbs_ofNat
 alias natAbs_sign_of_ne_zero := natAbs_sign_of_nonzero
+alias dvd_self_sub_of_emod_eq := dvd_sub_of_emod_eq
 
 variable {a b c d m n : ℤ}
 
@@ -197,7 +198,7 @@ It is used as the default induction principle for the `induction` tactic.
     suffices ∀ n : ℕ, p (-n) from this (i + 1)
     intro n; induction n with
     | zero => simp [hz]
-    | succ n ih => simpa [ofNat_succ, Int.neg_add, Int.sub_eq_add_neg] using hn _ ih
+    | succ n ih => simpa [Int.natCast_succ, Int.neg_add, Int.sub_eq_add_neg] using hn _ ih
 
 section inductionOn'
 
@@ -357,9 +358,8 @@ theorem sign_mul_self_eq_natAbs : ∀ a : Int, sign a * a = natAbs a
 
 /-! ### `/` -/
 
-@[simp, norm_cast] lemma natCast_div (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := rfl
-
-lemma natCast_ediv (m n : ℕ) : ((m / n : ℕ) : ℤ) = ediv m n := rfl
+@[simp, norm_cast] lemma natCast_ediv (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := rfl
+lemma natCast_div (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := natCast_ediv m n
 
 lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-a - 1) / b + 1) :=
   match a, b, eq_negSucc_of_lt_zero Ha, eq_succ_of_zero_lt Hb with
