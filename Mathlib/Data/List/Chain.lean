@@ -399,7 +399,7 @@ theorem Chain.backwards_induction (p : α → Prop) (l : List α) (h : Chain r a
     (final : p b) : ∀ i ∈ a :: l, p i := by
   have : Chain' (flip (flip r)) (a :: l) := by simpa [Chain']
   replace this := chain'_reverse.mpr this
-  simp_rw (config := {singlePass := true}) [← List.mem_reverse]
+  simp_rw +singlePass [← List.mem_reverse]
   apply this.induction _ _ (fun _ _ h ↦ carries h)
   simpa only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb,
     reduceCtorEq]
