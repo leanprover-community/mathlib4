@@ -22,7 +22,9 @@ namespace Matrix
 
 variable {m R A : Type*} [Fintype m] [CommRing R]
 
-/-- A matrix `M` is nondegenerate if for all `v ≠ 0`, there is a `w ≠ 0` with `w * M * v ≠ 0`. -/
+/-- A matrix `M` is nondegenerate if for all `v ≠ 0`, there is a `w ≠ 0` with `w * M * v ≠ 0`.
+
+TODO(?) assume `[Finite m]` for the definition and use `[Fintype m]` when necessary in the API? -/
 def Nondegenerate (M : Matrix m m R) :=
   ∀ v, (∀ w, dotProduct v (M *ᵥ w) = 0) → v = 0
 

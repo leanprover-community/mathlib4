@@ -3,8 +3,10 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.RootSystem.Base
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 
 /-!
 # Cartan matrices for root systems
@@ -40,9 +42,42 @@ lemma cartanMatrixIn_def (i j : b.support) :
   rfl
 
 @[simp]
+lemma algebraMap_cartanMatrixIn_apply (i j : b.support) :
+    algebraMap S R (b.cartanMatrixIn S i j) = P.pairing i j := by
+  simp [cartanMatrixIn_def]
+
+@[simp]
 lemma cartanMatrixIn_apply_same [FaithfulSMul S R] (i : b.support) :
     b.cartanMatrixIn S i i = 2 :=
   FaithfulSMul.algebraMap_injective S R <| by simp [cartanMatrixIn_def, map_ofNat]
+
+/- If we generalised the notion of `RootPairing.Base` to work relative to an assumption
+`[P.IsValuedIn S]` then such a base would provide basis of `P.rootSpan S` and we could avoid
+using `Matrix.map` below. -/
+lemma cartanMatrixIn_mul_diagonal_eq {P : RootSystem ι R M N} [P.IsValuedIn S]
+    (B : P.InvariantForm) (b : P.Base) [DecidableEq ι] [Fintype b.support] :
+    (b.cartanMatrixIn S).map (algebraMap S R) *
+      (Matrix.diagonal fun i : b.support ↦ B.form (P.root i) (P.root i)) =
+      (2 : R) • BilinForm.toMatrix b.toWeightBasis B.form := by
+  ext
+  simp [B.two_mul_apply_root_root]
+
+lemma cartanMatrixIn_nondegenerate [IsDomain R] [NeZero (2 : R)] [FaithfulSMul S R] [IsDomain S]
+    {P : RootSystem ι R M N} [P.IsValuedIn S] [Fintype ι] [P.IsAnisotropic] (b : P.Base)
+    [Fintype b.support] :
+    (b.cartanMatrixIn S).Nondegenerate := by
+  classical
+  obtain ⟨B, hB⟩ : ∃ B : P.InvariantForm, B.form.Nondegenerate :=
+    ⟨P.toInvariantForm, P.rootForm_nondegenerate⟩
+  replace hB : ((2 : R) • BilinForm.toMatrix b.toWeightBasis B.form).Nondegenerate := by
+    rwa [Matrix.Nondegenerate.smul_iff two_ne_zero, LinearMap.BilinForm.nondegenerate_toMatrix_iff]
+  have aux : (Matrix.diagonal fun i : b.support ↦ B.form (P.root i) (P.root i)).Nondegenerate := by
+    rw [Matrix.nondegenerate_iff_det_ne_zero, Matrix.det_diagonal, Finset.prod_ne_zero_iff]
+    aesop
+  rw [← cartanMatrixIn_mul_diagonal_eq (S := S), Matrix.Nondegenerate.mul_iff_right aux,
+    Matrix.nondegenerate_iff_det_ne_zero, ← (algebraMap S R).mapMatrix_apply,
+    ← RingHom.map_det, ne_eq, FaithfulSMul.algebraMap_eq_zero_iff] at hB
+  rwa [Matrix.nondegenerate_iff_det_ne_zero]
 
 section IsCrystallographic
 
@@ -78,6 +113,12 @@ lemma cartanMatrix_mem_of_ne [Finite ι] [IsDomain R] {i j : b.support} (hij : i
   refine (not_linearIndependent_iff.mpr ?_) b.linearIndepOn_root
   refine ⟨⟨{i, j}, by simpa⟩, Finsupp.single i (1 : R) + Finsupp.single j (2 : R), ?_⟩
   simp [contra, hij, hij.symm]
+
+lemma cartanMatrix_nondegenerate [Finite ι] [IsDomain R]
+    {P : RootSystem ι R M N} [P.IsCrystallographic] (b : P.Base) [Fintype b.support] :
+    b.cartanMatrix.Nondegenerate :=
+  let _i : Fintype ι := Fintype.ofFinite ι
+  cartanMatrixIn_nondegenerate ℤ b
 
 end IsCrystallographic
 
