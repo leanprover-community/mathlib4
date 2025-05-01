@@ -140,7 +140,7 @@ def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ where
     obtain ⟨m, rfl⟩ := h
     rw [LinearMap.mem_range]
     use (f ^ c) m
-    rw [pow_add, LinearMap.mul_apply]
+    rw [pow_add, Module.End.mul_apply]
 
 /-- Restrict the codomain of a linear map `f` to `f.range`.
 
