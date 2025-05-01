@@ -284,7 +284,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
       hab.symm hnbc hxa.ne.symm hle (aux (by simp))
 
 /-- Proofs the sufficiency side of Tutte's theorem -/
-lemma exists_TutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
+lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     (hvEven : Even (Nat.card V)) :
     ∃ u, G.IsTutteViolator u := by
   classical
@@ -336,6 +336,4 @@ theorem tutte : (∃ (M : Subgraph G) , M.IsPerfectMatching) ↔
   by_cases hvOdd : Odd (Nat.card V)
   · exact ⟨∅, IsTutteViolator.empty hvOdd⟩
   · exact exists_TutteViolator h (Nat.not_odd_iff_even.mp hvOdd)
-
-
 end SimpleGraph
