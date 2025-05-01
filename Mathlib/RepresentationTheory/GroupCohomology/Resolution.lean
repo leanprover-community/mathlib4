@@ -336,7 +336,7 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
     · simp only [one_smul]
       erw [Representation.linHom_apply]
-      simp only [LinearMap.comp_apply, MonoidHom.one_apply, LinearMap.one_apply]
+      simp only [LinearMap.comp_apply, MonoidHom.one_apply, Module.End.one_apply]
       erw [Finsupp.llift_apply]
       rw [Finsupp.lift_apply]
       erw [Finsupp.sum_single_index]
@@ -352,7 +352,7 @@ theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fi
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1)
       = f (Fin.contractNth a (· * ·) g) := by
   simp only [diagonalHomEquiv_symm_apply, Function.comp_apply, Fin.succ_succAbove_zero,
-    Fin.partialProd_zero, map_one, Fin.succ_succAbove_succ, LinearMap.one_apply,
+    Fin.partialProd_zero, map_one, Fin.succ_succAbove_succ, Module.End.one_apply,
     Fin.partialProd_succ]
   congr
   ext
@@ -569,7 +569,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   · rw [ModuleCat.hom_comp]
     congr
     · ext x
-      dsimp (config := { unfoldPartialApp := true }) [HomotopyEquiv.ofIso,
+      dsimp +unfoldPartialApp [HomotopyEquiv.ofIso,
         Finsupp.LinearEquiv.finsuppUnique]
       rw [@Unique.eq_default _ Types.terminalIso.toEquiv.unique x]
       simp
