@@ -38,7 +38,7 @@ lemma supportDim_eq_bot_iff_subsingleton : supportDim R M = ⊥ ↔ Subsingleton
 lemma supportDim_ne_bot_iff_nontrivial : supportDim R M ≠ ⊥ ↔ Nontrivial M := by
   simp [supportDim, krullDim_eq_bot_iff, support_eq_empty_iff, not_subsingleton_iff_nontrivial]
 
-lemma supportDim_eq_ringKrullDim_quotient_ann [Module.Finite R M] :
+lemma supportDim_eq_ringKrullDim_quotient_annihilator [Module.Finite R M] :
     supportDim R M = ringKrullDim (R ⧸ annihilator R M) := by
   simp only [supportDim]
   rw [support_eq_zeroLocus, ringKrullDim_quotient]
