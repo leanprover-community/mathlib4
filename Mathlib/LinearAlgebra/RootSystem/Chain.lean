@@ -199,21 +199,6 @@ private lemma chainCoeff_reflection_perm_right_aux :
     simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
-private lemma chainCoeff_relfection_perm_right_aux :
-    letI := P.indexNeg
-    Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) =
-      Icc (-P.chainBotCoeff i (-j) : ℤ) (P.chainTopCoeff i (-j)) := by
-  letI := P.indexNeg
-  by_cases h : LinearIndependent R ![P.root i, P.root j]
-  · have h' : LinearIndependent R ![P.root i, P.root (-j)] := by simpa
-    ext z
-    rw [← P.root_add_zsmul_mem_range_iff h', indexNeg_neg, root_reflection_perm, mem_Icc,
-      reflection_apply_self, ← sub_neg_eq_add, ← neg_sub', neg_mem_range_root_iff,
-      P.root_sub_zsmul_mem_range_iff h, mem_Icc]
-  · have h' : ¬ LinearIndependent R ![P.root i, P.root (-j)] := by simpa
-    simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
-      chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
-
 @[simp]
 lemma chainTopCoeff_reflection_perm_left :
     P.chainTopCoeff (P.reflection_perm i i) j = P.chainBotCoeff i j := by
