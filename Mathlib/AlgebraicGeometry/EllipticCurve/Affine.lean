@@ -441,9 +441,10 @@ end Ring
 
 section Field
 
+variable [DecidableEq F]
+
 /-! ### Group operation polynomials over a field -/
 
-open Classical in
 variable (W) in
 /-- The slope of the line through two nonsingular affine points `(x₁, y₁)` and `(x₂, y₂)` on a
 Weierstrass curve `W`.
@@ -454,7 +455,7 @@ at `(x₁, y₁) = (x₂, y₂)`, and has slope `(3x₁² + 2a₂x₁ + a₄ - a
 this line is vertical, in which case this returns the value `0`.
 
 This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `y₂`. -/
-noncomputable def slope (x₁ x₂ y₁ y₂ : F) : F :=
+def slope (x₁ x₂ y₁ y₂ : F) : F :=
   if x₁ = x₂ then if y₁ = W.negY x₂ y₂ then 0
     else (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁)
   else (y₁ - y₂) / (x₁ - x₂)
@@ -484,12 +485,14 @@ lemma slope_of_Y_ne_eq_evalEval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy
 
 @[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_eval := slope_of_Y_ne_eq_evalEval
 
+omit [DecidableEq F] in
 lemma Y_eq_of_X_eq {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W.negY x₂ y₂ := by
   rw [equation_iff] at h₁ h₂
   rw [← sub_eq_zero, ← sub_eq_zero (a := y₁), ← mul_eq_zero, negY]
   linear_combination (norm := (rw [hx]; ring1)) h₁ - h₂
 
+omit [DecidableEq F] in
 lemma Y_eq_of_Y_ne {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂) (hx : x₁ = x₂)
     (hy : y₁ ≠ W.negY x₂ y₂) : y₁ = y₂ :=
   (Y_eq_of_X_eq h₁ h₂ hx).resolve_right hy
@@ -617,6 +620,7 @@ point at infinity `WeierstrassCurve.Affine.Point.zero` or a nonsingular affine p
 inductive Point
   | zero
   | some {x y : R} (h : W'.Nonsingular x y)
+  deriving DecidableEq
 
 /-- For an algebraic extension `S` of a ring `R`, the type of nonsingular `S`-points on a
 Weierstrass curve `W` over `R` in affine coordinates. -/
@@ -665,20 +669,21 @@ instance : InvolutiveNeg W'.Point where
     · rfl
     · simp only [neg_some, negY_negY]
 
-open Classical in
+variable [DecidableEq F]
+
 /-- The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
 
 Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` instead of `add P Q`. -/
-noncomputable def add : W.Point → W.Point → W.Point
+def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
   | @some _ _ _ x₁ y₁ h₁, @some _ _ _ x₂ y₂ h₂ =>
     if hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂ then 0 else some <| nonsingular_add h₁ h₂ hxy
 
-noncomputable instance : Add W.Point :=
+instance : Add W.Point :=
   ⟨add⟩
 
-noncomputable instance : AddZeroClass W.Point :=
+instance : AddZeroClass W.Point :=
   ⟨by rintro (_ | _) <;> rfl, by rintro (_ | _) <;> rfl⟩
 
 lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
@@ -805,7 +810,7 @@ lemma map_addY :
     (W'.map f).toAffine.addY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W'.toAffine.addY x₁ x₂ y₁ ℓ) := by
   simp only [addY, map_negAddY, map_addX, map_negY]
 
-lemma map_slope (f : F →+* K) (x₁ x₂ y₁ y₂ : F) :
+lemma map_slope [DecidableEq F] [DecidableEq K] (f : F →+* K) (x₁ x₂ y₁ y₂ : F) :
     (W.map f).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) = f (W.slope x₁ x₂ y₁ y₂) := by
   by_cases hx : x₁ = x₂
   · by_cases hy : y₁ = W.negY x₂ y₂
@@ -879,7 +884,7 @@ lemma baseChange_addY : (W'.baseChange B).toAffine.addY (f x₁) (f x₂) (f y�
   rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
 
 lemma baseChange_slope [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
-  [IsScalarTower R S K] (f : F →ₐ[S] K) (x₁ x₂ y₁ y₂ : F) :
+  [IsScalarTower R S K] [DecidableEq F] [DecidableEq K] (f : F →ₐ[S] K) (x₁ x₂ y₁ y₂ : F) :
   (W'.baseChange K).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) =
     f ((W'.baseChange F).toAffine.slope x₁ x₂ y₁ y₂) := by
   rw [← RingHom.coe_coe, ← map_slope, map_baseChange]
@@ -890,7 +895,7 @@ namespace Point
 
 variable [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
   [IsScalarTower R S K] [Algebra R L] [Algebra S L] [IsScalarTower R S L] (f : F →ₐ[S] K)
-  (g : K →ₐ[S] L)
+  (g : K →ₐ[S] L) [DecidableEq F] [DecidableEq K] [DecidableEq L]
 
 /-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `f : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/

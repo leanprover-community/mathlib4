@@ -270,7 +270,7 @@ section Field
 
 /-! ### Ideals in the coordinate ring over a field -/
 
-variable {F : Type u} [Field F] {W : Affine F}
+variable {F : Type u} [Field F] [DecidableEq F] {W : Affine F}
 
 lemma C_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
@@ -297,6 +297,7 @@ lemma XYIdeal_eq₂ {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁)
   C_simp
   ring1
 
+omit [DecidableEq F] in
 lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
     XYIdeal W x (C <| W.negY x y) * XYIdeal W x (C y) = XIdeal W x := by
   have Y_rw : (Y - C (C y)) * (Y - C (C <| W.negY x y)) -
@@ -327,6 +328,7 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
     C_simp
     ring1
 
+omit [DecidableEq F] in
 private lemma XYIdeal'_mul_inv {x y : F} (h : W.Nonsingular x y) :
     XYIdeal W x (C y) * (XYIdeal W x (C <| W.negY x y) *
         (XIdeal W x : FractionalIdeal W.CoordinateRing⁰ W.FunctionField)⁻¹) = 1 := by
@@ -381,10 +383,12 @@ noncomputable def XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=
   Units.mkOfMulEqOne _ _ <| XYIdeal'_mul_inv h
 
+omit [DecidableEq F] in
 lemma XYIdeal'_eq {x y : F} (h : W.Nonsingular x y) :
     (XYIdeal' h : FractionalIdeal W.CoordinateRing⁰ W.FunctionField) = XYIdeal W x (C y) :=
   rfl
 
+omit [DecidableEq F] in
 lemma mk_XYIdeal'_neg_mul {x y : F} (h : W.Nonsingular x y) :
     ClassGroup.mk (XYIdeal' <| (nonsingular_neg ..).mpr h) * ClassGroup.mk (XYIdeal' h) = 1 := by
   rw [← map_mul]
@@ -483,7 +487,7 @@ namespace Point
 
 /-! ### The axioms for nonsingular rational points on a Weierstrass curve -/
 
-variable {F : Type u} [Field F] {W : Affine F}
+variable {F : Type u} [Field F] [DecidableEq F] {W : Affine F}
 
 /-- The group homomorphism mapping a nonsingular affine point `(x, y)` of a Weierstrass curve `W` to
 the class of the non-zero fractional ideal `⟨X - x, Y - y⟩` in the ideal class group of `F[W]`. -/
@@ -533,13 +537,13 @@ lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
         (CoordinateRing.quotientXYIdealEquiv W h).toLinearEquiv.finrank_eq, Module.finrank_self]
   · exact congr_arg toClass
 
-lemma toClass_injective : Function.Injective <| @toClass _ _ W := by
+lemma toClass_injective : Function.Injective <| @toClass _ _ _ W := by
   rintro (_ | h) _ hP
   all_goals rw [← neg_inj, ← add_eq_zero, ← toClass_eq_zero, map_add, ← hP]
   · exact zero_add 0
   · exact CoordinateRing.mk_XYIdeal'_neg_mul h
 
-noncomputable instance : AddCommGroup W.Point where
+instance : AddCommGroup W.Point where
   nsmul := nsmulRec
   zsmul := zsmulRec
   zero_add := zero_add
