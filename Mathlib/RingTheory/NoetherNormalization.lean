@@ -79,8 +79,7 @@ noncomputable abbrev T1 (c : k) :
 private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
   rw [comp_aeval, ← MvPolynomial.aeval_X_left]
   ext i v
-  cases i using Fin.cases <;>
-  simp [Fin.succ_ne_zero]
+  cases i using Fin.cases <;> simp
 
 /- `T1 f 1` leads to an algebra equiv `T f`. -/
 private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
