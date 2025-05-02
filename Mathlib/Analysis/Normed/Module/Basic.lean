@@ -53,9 +53,6 @@ instance (priority := 100) NormedSpace.toNormSMulClass [NormedSpace 𝕜 E] : No
 
 instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
 
--- shortcut instance
-instance NormedField.toNormSMulClass : NormSMulClass 𝕜 𝕜 := inferInstance
-
 variable (𝕜) in
 theorem norm_zsmul (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
   rw [← norm_smul, ← Int.smul_one_eq_cast, smul_assoc, one_smul]
