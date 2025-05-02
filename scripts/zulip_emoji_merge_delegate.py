@@ -13,7 +13,9 @@ ZULIP_SITE = sys.argv[3]
 # e.g. 'labeled', 'unlabeled', 'delegated' or 'closed' (does not contain the label name when
 # a normal label was applied (as opposed to e.g. a bors command)
 LABEL_STATUS = sys.argv[4]
-PR_NUMBER = sys.argv[5]
+# Name of the label that was applied or removed
+LABEL_NAME = sys.argv[5]
+PR_NUMBER = sys.argv[6]
 
 print(f"LABEL: '{LABEL_STATUS}'")
 print(f"PR_NUMBER: '{PR_NUMBER}'")
