@@ -271,14 +271,8 @@ theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
     refine ⟨a::l, ⟨?_, ?_⟩, by simp⟩
     · rw [chain'_cons']
       exact ⟨fun y hy ↦ hx _ (hl.2 _ (mem_of_mem_head? hy)), hl.1⟩
-    · -- Porting note: originally this was
-        -- rintro x (rfl | hx)
-        -- exacts [Or.inl (Set.mem_singleton x), Or.inr (hl.2 x hx)]
-      -- but this fails because `List.Mem` is now an inductive prop.
-      -- I couldn't work out how to drive `rcases` here but asked at
-      -- https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/rcases.3F/near/347976083
-      rintro x (_ | _)
-      exacts [Or.inl (Set.mem_singleton a), Or.inr (hl.2 x ‹_›)]
+    · rintro x (_ | _)
+      exacts [Or.inl (Set.mem_singleton a), Or.inr (hl.2 x ‹x ∈ l›)]
 
 theorem chainHeight_insert_of_forall_lt (a : α) (ha : ∀ b ∈ s, b < a) :
     (insert a s).chainHeight = s.chainHeight + 1 := by

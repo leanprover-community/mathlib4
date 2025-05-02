@@ -112,6 +112,18 @@ theorem update_inr_apply_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α 
   rw [← update_inr_comp_inr, Function.comp_apply]
 
 @[simp]
+theorem update_inl_apply_inl' {γ : α ⊕ β → Type*} [DecidableEq α] [DecidableEq (α ⊕ β)]
+    {f : (i : α ⊕ β) → γ i} {i : α} {x : γ (.inl i)} (j : α) :
+    update f (.inl i) x (Sum.inl j) = update (fun j ↦ f (.inl j)) i x j :=
+  Function.update_apply_of_injective f Sum.inl_injective i x j
+
+@[simp]
+theorem update_inr_apply_inr' {γ : α ⊕ β → Type*} [DecidableEq β] [DecidableEq (α ⊕ β)]
+    {f : (i : α ⊕ β) → γ i} {i : β} {x : γ (.inr i)} (j : β) :
+    update f (.inr i) x (Sum.inr j) = update (fun j ↦ f (.inr j)) i x j :=
+  Function.update_apply_of_injective f Sum.inr_injective i x j
+
+@[simp]
 lemma rec_update_left {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
     (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (a : α) (x : γ (.inl a)) :
     Sum.rec (update f a x) g = update (Sum.rec f g) (.inl a) x :=
