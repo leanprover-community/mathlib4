@@ -503,7 +503,21 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           (IsLocalRing.maximalIdeal_le_jacobson (Module.annihilator R M)))
       simp [eq0, IsLocalRing.depth,
         moduleDepth_eq_depth_of_supp_eq (maximalIdeal R) N M smul_lt hsupp]
-  · sorry
+  · have := IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
+      (motive := fun L ↦ (∀ (Lntr : Nontrivial L),
+        (((Module.supportDim R L).unbot (Module.supportDim_ne_bot_of_nontrivial R L))).toNat = r →
+        (moduleDepth (ModuleCat.of R L) M ≥ IsLocalRing.depth M -
+        (Module.supportDim R L).unbot (Module.supportDim_ne_bot_of_nontrivial R L)))) R Nfin
+    refine this ?_ ?_ ?_ Nntr dim
+    · intro L _ _ _ Ltr Lntr
+      absurd Ltr
+      exact (not_subsingleton_iff_nontrivial.mpr Lntr)
+    · intro L _ _ _ p e Lntr dim_eq
+
+      sorry
+    · intro L1 _ _ _ L2 _ _ _ L3 _ _ _ f g inj surj exac ih1' ih3'
+
+      sorry
 
 theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing R]
     [Small.{v} (R ⧸ IsLocalRing.maximalIdeal R)]
