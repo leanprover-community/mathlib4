@@ -9,7 +9,6 @@ import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Data.Fin.Parity
 import Mathlib.Data.ZMod.Basic
 
-
 /-!
 # Concrete colorings of common graphs
 
@@ -161,7 +160,7 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
 
 section components
 
-variable {α β : Type*} {β : Type*} {G : SimpleGraph α}
+variable {α β : Type*} {G : SimpleGraph α}
 
 open ConnectedComponent
 
@@ -181,7 +180,7 @@ theorem colorable_iff_forall_connectedComponents {n : ℕ} :
   ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v, fun h h1 ↦ C.valid h h1⟩,
      fun h ↦ ⟨coloringOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
 
-open Walk Subgraph
+open Walk
 
 lemma two_colorable_iff_forall_loop_not_odd :
     G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), ¬ Odd w.length := by
@@ -198,6 +197,6 @@ lemma two_colorable_iff_forall_loop_not_odd :
                  (c.connected_induce_supp ⟨_, hv⟩ b).some.reverse).map (Embedding.induce c).toHom
     rw [length_map, length_append, length_concat, length_reverse, Nat.odd_iff, Nat.add_mod,
         ← (ZMod.natCast_eq_natCast_iff _ _ 2).1 he, Nat.succ_mod_two_add_mod_two]
-        
+
 end components
 end SimpleGraph
