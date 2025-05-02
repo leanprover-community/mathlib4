@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Lattice.Basic
 import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.Topology.Constructions
+import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
 # π-systems of cylinders and square cylinders
@@ -364,15 +365,22 @@ theorem diff_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
   rw [diff_eq_compl_inter]
   exact inter_mem_measurableCylinders (compl_mem_measurableCylinders ht) hs
 
-/-- The measurable cylinders are a ring. -/
-theorem isSetRing_measurableCylinders : IsSetRing (measurableCylinders α) where
-  empty_mem := empty_mem_measurableCylinders α
-  union_mem := fun _ _ ↦ union_mem_measurableCylinders
-  diff_mem := fun _ _ ↦ diff_mem_measurableCylinders
 
-/-- The measurable cylinders are a semiring. -/
-theorem isSetSemiring_measurableCylinders : MeasureTheory.IsSetSemiring (measurableCylinders α) :=
+section MeasurableCylinders
+
+lemma isSetAlgebra_measurableCylinders : IsSetAlgebra (measurableCylinders α) where
+  empty_mem := empty_mem_measurableCylinders α
+  compl_mem _ := compl_mem_measurableCylinders
+  union_mem _ _ := union_mem_measurableCylinders
+
+lemma isSetRing_measurableCylinders : IsSetRing (measurableCylinders α) :=
+  isSetAlgebra_measurableCylinders.isSetRing
+
+lemma isSetSemiring_measurableCylinders : MeasureTheory.IsSetSemiring (measurableCylinders α) :=
   isSetRing_measurableCylinders.isSetSemiring
+
+end MeasurableCylinders
+
 
 theorem iUnion_le_mem_measurableCylinders {s : ℕ → Set (∀ i : ι, α i)}
     (hs : ∀ n, s n ∈ measurableCylinders α) (n : ℕ) :
