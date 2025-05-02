@@ -695,20 +695,25 @@ theorem isGLB_univ [OrderBot α] : IsGLB (univ : Set α) ⊥ :=
   isLeast_univ.isGLB
 
 @[simp]
-theorem NoMaxOrder.upperBounds_univ [NoMaxOrder α] : upperBounds (univ : Set α) = ∅ :=
+theorem NoTopOrder.upperBounds_univ [NoTopOrder α] : upperBounds (univ : Set α) = ∅ :=
   eq_empty_of_subset_empty fun b hb =>
-    let ⟨_, hx⟩ := exists_gt b
-    not_le_of_lt hx (hb trivial)
+    not_isTop b fun x => hb (mem_univ x)
+
+@[deprecated (since := "2025-04-18")]
+alias NoMaxOrder.upperBounds_univ := NoTopOrder.upperBounds_univ
 
 @[simp]
-theorem NoMinOrder.lowerBounds_univ [NoMinOrder α] : lowerBounds (univ : Set α) = ∅ :=
-  @NoMaxOrder.upperBounds_univ αᵒᵈ _ _
+theorem NoBotOrder.lowerBounds_univ [NoBotOrder α] : lowerBounds (univ : Set α) = ∅ :=
+  @NoTopOrder.upperBounds_univ αᵒᵈ _ _
+
+@[deprecated (since := "2025-04-18")]
+alias NoMinOrder.lowerBounds_univ := NoBotOrder.lowerBounds_univ
 
 @[simp]
-theorem not_bddAbove_univ [NoMaxOrder α] : ¬BddAbove (univ : Set α) := by simp [BddAbove]
+theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by simp [BddAbove]
 
 @[simp]
-theorem not_bddBelow_univ [NoMinOrder α] : ¬BddBelow (univ : Set α) :=
+theorem not_bddBelow_univ [NoBotOrder α] : ¬BddBelow (univ : Set α) :=
   @not_bddAbove_univ αᵒᵈ _ _
 
 /-!
@@ -744,12 +749,11 @@ theorem isGLB_empty [OrderTop α] : IsGLB ∅ (⊤ : α) :=
 theorem isLUB_empty [OrderBot α] : IsLUB ∅ (⊥ : α) :=
   @isGLB_empty αᵒᵈ _ _
 
-theorem IsLUB.nonempty [NoMinOrder α] (hs : IsLUB s a) : s.Nonempty :=
-  let ⟨a', ha'⟩ := exists_lt a
+theorem IsLUB.nonempty [NoBotOrder α] (hs : IsLUB s a) : s.Nonempty :=
   nonempty_iff_ne_empty.2 fun h =>
-    not_le_of_lt ha' <| hs.right <| by rw [h, upperBounds_empty]; exact mem_univ _
+    not_isBot a fun _ => hs.right <| by rw [h, upperBounds_empty]; exact mem_univ _
 
-theorem IsGLB.nonempty [NoMaxOrder α] (hs : IsGLB s a) : s.Nonempty :=
+theorem IsGLB.nonempty [NoTopOrder α] (hs : IsGLB s a) : s.Nonempty :=
   hs.dual.nonempty
 
 theorem nonempty_of_not_bddAbove [ha : Nonempty α] (h : ¬BddAbove s) : s.Nonempty :=

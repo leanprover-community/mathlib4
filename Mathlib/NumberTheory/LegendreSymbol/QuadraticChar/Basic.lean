@@ -215,7 +215,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
   -- we consider the cases `a = 0`, `a` is a nonzero square and `a` is a nonsquare in turn
   by_cases h₀ : a = 0
   · simp only [h₀, sq_eq_zero_iff, Set.setOf_eq_eq_singleton, Set.toFinset_card,
-    Set.card_singleton, Int.ofNat_succ, Int.ofNat_zero, MulChar.map_zero]
+    Set.card_singleton, Int.natCast_succ, Int.ofNat_zero, MulChar.map_zero]
   · set s := {x : F | x ^ 2 = a}.toFinset
     by_cases h : IsSquare a
     · rw [(quadraticChar_one_iff_isSquare h₀).mpr h]

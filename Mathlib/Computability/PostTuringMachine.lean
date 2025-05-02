@@ -402,7 +402,7 @@ def Supports (M : Machine Γ Λ) (S : Set Λ) :=
 theorem step_supports (M : Machine Γ Λ) {S : Set Λ} (ss : Supports M S) :
     ∀ {c c' : Cfg Γ Λ}, c' ∈ step M c → c.q ∈ S → c'.q ∈ S := by
   intro ⟨q, T⟩ c' h₁ h₂
-  rcases Option.map_eq_some'.1 h₁ with ⟨⟨q', a⟩, h, rfl⟩
+  rcases Option.map_eq_some_iff.1 h₁ with ⟨⟨q', a⟩, h, rfl⟩
   exact ss.2 h h₂
 
 end
@@ -1013,7 +1013,7 @@ theorem stepAux_write (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L R
   · cases List.length_eq_zero_iff.1 e
     rfl
   rcases l₂' with - | ⟨b, l₂'⟩ <;>
-    simp only [List.length_nil, List.length_cons, Nat.succ_inj', reduceCtorEq] at e
+    simp only [List.length_nil, List.length_cons, Nat.succ_inj, reduceCtorEq] at e
   rw [List.reverseAux, ← IH (a :: l₁) l₂' e]
   simp [stepAux, ListBlank.append, write]
 

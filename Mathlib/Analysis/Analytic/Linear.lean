@@ -167,7 +167,7 @@ theorem analyticOn_id : AnalyticOn 𝕜 (fun x : E ↦ x) s :=
   fun _ _ ↦ analyticWithinAt_id
 
 /-- `fst` is analytic -/
-theorem analyticAt_fst  : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
+theorem analyticAt_fst : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
   (ContinuousLinearMap.fst 𝕜 E F).analyticAt p
 
 theorem analyticWithinAt_fst : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.fst) t p :=

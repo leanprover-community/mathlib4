@@ -76,7 +76,7 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
   · intro h
     constructor
     · intro i
-      have h' : ‖v i‖ ^ 2 = 1 ^ 2 := by simp [@norm_sq_eq_inner 𝕜, h i i]
+      have h' : ‖v i‖ ^ 2 = 1 ^ 2 := by simp [@norm_sq_eq_re_inner 𝕜, h i i]
       have h₁ : 0 ≤ ‖v i‖ := norm_nonneg _
       have h₂ : (0 : ℝ) ≤ 1 := zero_le_one
       rwa [sq_eq_sq₀ h₁ h₂] at h'
@@ -434,7 +434,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
     rw [← sub_nonneg, ← hbf]
     simp only [norm_nonneg, pow_nonneg]
   rw [@norm_sub_sq 𝕜, sub_add]
-  simp only [@InnerProductSpace.norm_sq_eq_inner 𝕜 E, inner_sum, sum_inner]
+  simp only [@InnerProductSpace.norm_sq_eq_re_inner 𝕜 E, inner_sum, sum_inner]
   simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ← mul_assoc, h₂,
     add_sub_cancel_right, sub_right_inj]
   simp only [map_sum, ← inner_conj_symm x, ← h₃]

@@ -163,7 +163,7 @@ theorem integral_inner_eq_sq_eLpNorm (f : α →₂[μ] E) :
     ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) zero_le_two, ofReal_norm_eq_enorm]
   norm_cast
 
-private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.re ⟪f, f⟫ := by
+private theorem norm_sq_eq_re_inner (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.re ⟪f, f⟫ := by
   have h_two : (2 : ℝ≥0∞).toReal = 2 := by simp
   rw [inner_def, integral_inner_eq_sq_eLpNorm, norm_def, ← ENNReal.toReal_pow, RCLike.ofReal_re,
     ENNReal.toReal_eq_toReal (ENNReal.pow_ne_top (Lp.eLpNorm_ne_top f)) _]
@@ -173,6 +173,8 @@ private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.r
   · refine (lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top zero_lt_two (ε := E) ?_).ne
     rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top]
     exact Lp.eLpNorm_lt_top f
+
+@[deprecated (since := "2025-04-22")] alias norm_sq_eq_inner' := norm_sq_eq_re_inner
 
 theorem mem_L1_inner (f g : α →₂[μ] E) :
     AEEqFun.mk (fun x => ⟪f x, g x⟫)
@@ -199,8 +201,8 @@ private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫
   rw [smul_eq_mul, ← inner_smul_left, hx, Pi.smul_apply]
 
 instance innerProductSpace : InnerProductSpace 𝕜 (α →₂[μ] E) where
-  norm_sq_eq_inner := norm_sq_eq_inner'
-  conj_symm _ _ := by simp_rw [inner_def, ← integral_conj, inner_conj_symm]
+  norm_sq_eq_re_inner := norm_sq_eq_re_inner
+  conj_inner_symm _ _ := by simp_rw [inner_def, ← integral_conj, inner_conj_symm]
   add_left := add_left'
   smul_left := smul_left'
 

@@ -124,7 +124,7 @@ theorem map_mk_eq_bot_of_le {I J : Ideal R} [J.IsTwoSided] (h : I ≤ J) :
 
 theorem ker_quotient_lift {I : Ideal R} [I.IsTwoSided] (f : R →+* S)
     (H : I ≤ ker f) :
-    ker (Ideal.Quotient.lift I f H) = f.ker.map (Quotient.mk I) := by
+    ker (Ideal.Quotient.lift I f H) = (RingHom.ker f).map (Quotient.mk I) := by
   apply Ideal.ext
   intro x
   constructor

@@ -952,12 +952,8 @@ theorem list_flatten : Primrec (@List.flatten α) :=
   (list_foldr .id (const []) <| to₂ <| comp (@list_append α _) snd).of_eq fun l => by
     dsimp; induction l <;> simp [*]
 
-@[deprecated (since := "2024-10-15")] alias list_join := list_flatten
-
 theorem list_flatMap {f : α → List β} {g : α → β → List σ} (hf : Primrec f) (hg : Primrec₂ g) :
     Primrec (fun a => (f a).flatMap (g a)) := list_flatten.comp (list_map hf hg)
-
-@[deprecated (since := "2024-10-16")] alias list_bind := list_flatMap
 
 theorem optionToList : Primrec (Option.toList : Option α → List α) :=
   (option_casesOn Primrec.id (const [])

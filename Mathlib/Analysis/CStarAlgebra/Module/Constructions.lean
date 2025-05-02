@@ -344,7 +344,7 @@ instance instCStarModuleComplex : CStarModule ℂ E where
   inner_smul_right_complex := by simp [inner_smul_right, smul_eq_mul]
   star_inner _ _ := by simp
   norm_eq_sqrt_norm_inner_self {x} := by
-    simpa only [← inner_self_re_eq_norm] using norm_eq_sqrt_inner x
+    simpa only [← inner_self_re_eq_norm] using norm_eq_sqrt_re_inner x
 
 -- Ensures that the two ways to obtain `CStarModule ℂᵐᵒᵖ ℂ` are definitionally equal.
 example : instCStarModule (A := ℂ) = instCStarModuleComplex := by with_reducible_and_instances rfl
