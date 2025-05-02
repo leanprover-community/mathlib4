@@ -369,6 +369,8 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
 
 section depth
 
+omit [UnivLE.{v, w}]
+
 noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
   sSup {n : ℕ∞ | ∀ i : ℕ, i < n → Subsingleton (Ext.{max u v} N M i)}
 
@@ -379,7 +381,6 @@ noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R)
     [Small.{v} (R ⧸ (IsLocalRing.maximalIdeal R))] : ℕ∞ :=
   (IsLocalRing.maximalIdeal R).depth M
 
-omit [UnivLE.{v, w}] in
 open Classical in
 lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext.{max u v} N M n)) :
     moduleDepth N M = Nat.find h := by
@@ -395,7 +396,6 @@ lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext.{m
     intro i hi
     exact not_nontrivial_iff_subsingleton.mp (hi i (le_refl i))
 
-omit [UnivLE.{v, w}] in
 lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
     moduleDepth N M = ⊤ ↔ ∀ i, Subsingleton (Ext.{max u v} N M i) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -406,7 +406,6 @@ lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
   · simp [moduleDepth]
     exact csSup_eq_top_of_top_mem (fun i _ ↦ h i)
 
-omit [UnivLE.{v, w}] in
 lemma moduleDepth_eq_sup_nat (N M : ModuleCat.{v} R) : moduleDepth N M =
     sSup {n : ℕ∞ | n < ⊤ ∧ ∀ i : ℕ, i < n → Subsingleton (Ext.{max u v} N M i)} := by
   simp only [moduleDepth]
@@ -451,6 +450,23 @@ instance [IsLocalRing R] : OrderTop (PrimeSpectrum R) where
   top := ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩
   le_top I := IsLocalRing.le_maximalIdeal I.2.ne_top'
 
+variable (R) in
+omit [Small.{v, u} R] in
+lemma IsLocalRing.maximalIdeal_mem_support [IsLocalRing R] (M : Type*)
+    [AddCommGroup M] [Module R M] [Module.Finite R M] [Nontrivial M] :
+    ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩ ∈ Module.support R M:= by
+  simp only [Module.support_eq_zeroLocus, PrimeSpectrum.mem_zeroLocus, SetLike.coe_subset_coe]
+  apply IsLocalRing.le_maximalIdeal
+  simpa [Module.annihilator_eq_top_iff.not, not_subsingleton_iff_nontrivial]
+
+variable (R) in
+omit [Small.{v, u} R] in
+lemma zeroLocus_eq_singleton (m : Ideal R) [max : m.IsMaximal] :
+    PrimeSpectrum.zeroLocus m = {⟨m, IsMaximal.isPrime' m⟩} := by
+  rw [← PrimeSpectrum.closure_singleton ⟨m, IsMaximal.isPrime' m⟩]
+  exact closure_eq_iff_isClosed.mpr
+    ((PrimeSpectrum.isClosed_singleton_iff_isMaximal ⟨m, IsMaximal.isPrime' m⟩).mpr (by assumption))
+
 theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
     [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
     [Small.{v, u} (R ⧸ maximalIdeal R)] :
@@ -467,8 +483,21 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       simp only [eq0, ENat.toNat_eq_zero, WithBot.unbot_eq_iff, WithBot.coe_zero, eqtop,
         or_false] at dim
       have hsupp : Module.support R N = PrimeSpectrum.zeroLocus (maximalIdeal R) := by
-        sorry
-
+        rw [zeroLocus_eq_singleton]
+        apply le_antisymm
+        · intro p hp
+          by_contra nmem
+          simp at nmem
+          have : p < ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩ :=
+            lt_of_le_of_ne (IsLocalRing.le_maximalIdeal IsPrime.ne_top') nmem
+          have := IsLocalRing.maximalIdeal_mem_support R N
+          have : Module.supportDim R N > 0 := by
+            simp [Module.supportDim, Order.krullDim_pos_iff]
+            use p
+            simp only [hp, true_and]
+            use ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩
+          exact (ne_of_lt this) dim.symm
+        · simpa using IsLocalRing.maximalIdeal_mem_support R N
       have smul_lt : (maximalIdeal R) • (⊤ : Submodule R M) < (⊤ : Submodule R M) :=
         Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
           (IsLocalRing.maximalIdeal_le_jacobson (Module.annihilator R M)))
