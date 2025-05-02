@@ -49,15 +49,13 @@ variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [Topolog
 /-- A collection of equivalent definitions of `x ⤳ y`. The public API is given by `iff` lemmas
 below. -/
 theorem specializes_TFAE (x y : X) :
-    [
-      x ⤳ y,
+    List.TFAE [x ⤳ y,
       pure x ≤ 𝓝 y,
       ∀ s : Set X , IsOpen s → y ∈ s → x ∈ s,
       ∀ s : Set X , IsClosed s → x ∈ s → y ∈ s,
       y ∈ closure ({ x } : Set X),
       closure ({ y } : Set X) ⊆ closure { x },
-      ClusterPt y (pure x)
-    ].TFAE := by
+      ClusterPt y (pure x)] := by
   tfae_have 1 → 2 := (pure_le_nhds _).trans
   tfae_have 2 → 3 := fun h s hso hy => h (hso.mem_nhds hy)
   tfae_have 3 → 4 := fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
