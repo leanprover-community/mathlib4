@@ -11,7 +11,6 @@ import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 -/
 
-
 namespace CategoryTheory
 
 open Limits
