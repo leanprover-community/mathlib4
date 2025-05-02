@@ -11,7 +11,10 @@ variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
   {X : C} {S : ShortComplex C} (hS : S.ShortExact) [Projective S.X₂]
   (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) (h0 : n₀ ≠ 0)
 
-def dim_shifting (n : ℕ) : Ext X S.X₃ n₀ ≃ Ext X S.X₁ n₁ := by sorry
+noncomputable def dim_shifting (n : ℕ) : Ext X S.X₃ n₀ ≃+ Ext X S.X₁ n₁ := by
+  refine AddEquiv.ofBijective (hS.extClass.postcomp X h) ⟨?_, ?_⟩
+  · sorry--apply (AddMonoidHom.ker_eq_bot_iff (hS.extClass.postcomp X h)).mpr
+  · sorry
 
 end CategoryTheory
 
