@@ -44,7 +44,7 @@ lemma vertex_card_eq_edge_card (c : G.IsCycle) : Fintype.card V = Fintype.card G
     have hd : ∀ v ∈ (Finset.univ : Finset V), G.degree v ≤ 2 := by simp [c.2]
     rw [← Finset.card_univ, Finset.card_eq_sum_ones, Finset.mul_sum, mul_one,
       Finset.sum_eq_sum_iff_of_le hd]
-    simp
+    simp only [Finset.mem_univ, forall_const]
     exact c.2
   have h_e_card : ∑ (v : V), G.degree v = 2*(Fintype.card G.edgeSet) := by
     have hhl : ∑ (v : V), G.degree v = 2*G.edgeFinset.card := G.sum_degrees_eq_twice_card_edges
@@ -64,16 +64,16 @@ variable {v w : V}
 lemma IsCycles (c : G.IsCycle) : G.IsCycles := by
   intro v hv
   have h_n_card : Fintype.card (G.neighborSet v) = 2 := by
-    simp [G.card_neighborSet_eq_degree]
+    simp only [G.card_neighborSet_eq_degree]
     apply c.2
-  simp at h_n_card
+  simp only [Fintype.card_ofFinset, mem_neighborSet] at h_n_card
   simp [Set.ncard_eq_toFinset_card', h_n_card]
 
 lemma exists_adj (c : G.IsCycle) : ∃ (w : V), G.Adj v w := by
   have hd : G.degree v > 0 := by
     rw [c.2]
     trivial
-exact (G.degree_pos_iff_exists_adj v).mp hd
+  exact (G.degree_pos_iff_exists_adj v).mp hd
 
 lemma neighborSet_nonempty (c : G.IsCycle) : (G.neighborSet v).Nonempty := by
   obtain ⟨w, hw⟩ := c.exists_adj
@@ -81,7 +81,7 @@ lemma neighborSet_nonempty (c : G.IsCycle) : (G.neighborSet v).Nonempty := by
   use w
 
 lemma no_bridges (c : G.IsCycle) (hadj : G.Adj v w) : ¬G.IsBridge s(v, w) := by
-  simp [isBridge_iff, hadj]
+  simp only [isBridge_iff, hadj, true_and, not_not]
   exact IsCycles.reachable_deleteEdges hadj c.IsCycles
 
 lemma notTree (c : G.IsCycle) : ¬G.IsTree := by
@@ -89,7 +89,7 @@ lemma notTree (c : G.IsCycle) : ¬G.IsTree := by
 
 lemma notAcyclic (c : G.IsCycle) : ¬G.IsAcyclic := by
   have h_not_tree := c.notTree
-  simp [G.isTree_iff, c.1] at h_not_tree
+  simp only [G.isTree_iff, c.1, true_and] at h_not_tree
   exact h_not_tree
 
 lemma isCyclic (c : G.IsCycle) : ∃ (v : V) (p : G.Walk v v), p.IsCycle := by
@@ -132,14 +132,14 @@ lemma cycle_walk_tail_contains_all_vertices {p : G.Walk v v} (c : G.IsCycle) (hp
     · intro
       have : p.support ≠ [] := by simp
       by_cases h : w = p.support.head this
-      · simp at h
+      · simp only [Walk.head_support] at h
         rw [h]
         exact Walk.end_mem_tail_support hpc.not_nil
       · cases hs : p.support with
         | nil => contradiction
         | cons head tail => simp_all
     · exact List.mem_of_mem_tail
-  simp [← this]
+  simp only [← this]
   exact c.cycle_walk_contains_all_vertices G hpc
 
 variable [DecidableEq V]
@@ -158,7 +158,7 @@ lemma cycle_walk_contains_all_edges {p : G.Walk v v} (c : G.IsCycle) (h : p.IsCy
   rw [c.vertex_card_eq_edge_card, h_stl_tsl, p.tail.length_support, p.length_tail_add_one h.not_nil,
     ← p.length_edges, ← List.toFinset_card_of_nodup h.edges_nodup, h_e_card] at h_support_length
   have he : p.edges.toFinset ⊆ G.edgeFinset := by
-    simp
+    simp only [Set.subset_toFinset, List.coe_toFinset]
     apply Walk.edges_subset_edgeSet
   have : ∀ e ∈  G.edgeSet, e ∈ p.edgeSet := by
     have : p.edgeSet = G.edgeSet := by
@@ -172,22 +172,22 @@ lemma cycle_walk_contains_all_edges {p : G.Walk v v} (c : G.IsCycle) (h : p.IsCy
   simp_all
 
 theorem IsEulerian (c : G.IsCycle) : ∃ (v : V) (p : G.Walk v v), p.IsEulerian := by
-  simp [Walk.isEulerian_iff]
+  simp only [Walk.isEulerian_iff]
   obtain ⟨v, p, hpc⟩ := c.isCyclic
   use v
   use p
   have h_trail := Walk.IsCircuit.isTrail (Walk.IsCycle.isCircuit hpc)
-  simp [h_trail]
+  simp only [h_trail, true_and]
   exact c.cycle_walk_contains_all_edges G hpc
 
 lemma IsHamiltonian (c : G.IsCycle) : G.IsHamiltonian := by
   unfold SimpleGraph.IsHamiltonian
   intro
-  simp [Walk.isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one]
+  simp only [Walk.isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one]
   obtain ⟨v, p, hcyc⟩ := c.isCyclic
   use v
   use p
-  simp [hcyc]
+  simp only [hcyc, true_and]
   intro v
   have : v ∈ p.support.tail := by apply c.cycle_walk_tail_contains_all_vertices G hcyc
   apply List.count_eq_one_of_mem hcyc.support_nodup this
