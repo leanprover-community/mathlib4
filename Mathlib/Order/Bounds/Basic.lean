@@ -27,6 +27,7 @@ variable {α : Type u} {γ : Type v}
 section
 
 variable [Preorder α] {s t u : Set α} {a b : α}
+variable [Preorder α] {s t u : Set α} {a b : α}
 
 theorem mem_upperBounds : a ∈ upperBounds s ↔ ∀ x ∈ s, x ≤ a :=
   Iff.rfl
