@@ -10,13 +10,13 @@ import Mathlib.Data.ZMod.Basic
 /-!
 ## Main definition
 
-* `SimpleGraph.coloringOfConnectedComponents` :
-  Given a `(G.induce c).Coloring β` for each connected component `c` of the
-  graph `G` this is the corresponding `G.Coloring β`.
+* `SimpleGraph.coloringOfConnectedComponents`:
+  Given a `(G.induce c).Coloring β` for each connected component `c` of `G : SimpleGraph α`
+  this is the corresponding `G.Coloring β`.
 
-Hence prove that a graph is `n`-colorable iff each of its components are.
+  Hence prove that a graph is `n`-colorable iff each of its components are.
 
-In particular prove that `G` is 2-colorable iff it contains no odd length loop (closed walk).
+  Also deduce that `G` is 2-colorable iff it contains no odd length loop (closed walk).
 -/
 namespace SimpleGraph
 
@@ -54,7 +54,7 @@ lemma two_colorable_iff_forall_loop_not_odd :
     use fun a ↦ (c.connected_induce ⟨_, hv⟩ a).some.length
     intro a b hab he
     apply h _ <| (((c.connected_induce ⟨_, hv⟩ a).some.concat hab).append
-                 (c.connected_induce ⟨_, hv⟩ b).some.reverse).map (Embedding.induce c.supp).toHom
+                 (c.connected_induce ⟨_, hv⟩ b).some.reverse).map (Embedding.induce c).toHom
     rw [length_map, length_append, length_concat, length_reverse, Nat.odd_iff, Nat.add_mod,
         ← (ZMod.natCast_eq_natCast_iff _ _ 2).1 he, Nat.succ_mod_two_add_mod_two]
 
