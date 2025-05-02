@@ -35,6 +35,11 @@ For modules over rings with invariant basis number
 * `mk_eq_mk_of_basis`: the dimension theorem, any two bases of the same vector space have the same
   cardinality.
 
+## Additional definition
+
+* `Algebra.IsQuadraticExtension`: An extension of rings `R ⊆ S` is quadratic if `S` is a
+  free `R`-algebra of rank `2`.
+
 -/
 
 
@@ -62,7 +67,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
   cases fintypeOrInfinite ι
   · -- `v` is a finite basis, so by `basis_finite_of_finite_spans` so is `v'`.
     -- haveI : Finite (range v) := Set.finite_range v
-    haveI := basis_finite_of_finite_spans _ (Set.finite_range v) v.span_eq v'
+    haveI := basis_finite_of_finite_spans (Set.finite_range v) v.span_eq v'
     cases nonempty_fintype ι'
     -- We clean up a little:
     rw [Cardinal.mk_fintype, Cardinal.mk_fintype]
@@ -121,7 +126,7 @@ but still assumes we have a finite spanning set.
 theorem basis_le_span' {ι : Type*} (b : Basis ι R M) {w : Set M} [Fintype w] (s : span R w = ⊤) :
     #ι ≤ Fintype.card w := by
   haveI := nontrivial_of_invariantBasisNumber R
-  haveI := basis_finite_of_finite_spans w (toFinite _) s b
+  haveI := basis_finite_of_finite_spans w.toFinite s b
   cases nonempty_fintype ι
   rw [Cardinal.mk_fintype ι]
   simp only [Nat.cast_le]
@@ -290,7 +295,7 @@ theorem linearIndependent_le_span'' {ι : Type v} {v : ι → M} (i : LinearInde
 
 /-- Let `R` satisfy the strong rank condition. If `m` elements of a free rank `n` `R`-module are
 linearly independent, then `m ≤ n`. -/
-theorem Basis.card_le_card_of_linearIndependent_aux {R : Type*} [Ring R] [StrongRankCondition R]
+theorem Basis.card_le_card_of_linearIndependent_aux {R : Type*} [Semiring R] [StrongRankCondition R]
     (n : ℕ) {m : ℕ} (v : Fin m → Fin n → R) : LinearIndependent R v → m ≤ n := fun h => by
   simpa using linearIndependent_le_basis (Pi.basisFun R (Fin n)) v h
 
@@ -446,19 +451,16 @@ theorem finrank_self : finrank R R = 1 :=
 
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
 noncomputable def _root_.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
-  have A : Cardinal.mk ι = ↑(Module.finrank R R) :=
-    (Module.mk_finrank_eq_card_basis b).symm
-  -- Porting note: replace `algebraMap.coe_one` with `Nat.cast_one`
-  simp only [Cardinal.eq_one_iff_unique, Module.finrank_self, Nat.cast_one] at A
-  exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 A)
+  have : Cardinal.mk ι = ↑(Module.finrank R R) := (Module.mk_finrank_eq_card_basis b).symm
+  have : Subsingleton ι ∧ Nonempty ι := by simpa [Cardinal.eq_one_iff_unique]
+  exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 this)
 
 variable (M)
 
 /-- The rank of a finite module is finite. -/
 theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   simp only [Module.rank_def]
-  -- Porting note: can't use `‹_›` as that pulls the unused `N` into the context
-  obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
+  obtain ⟨S, hS⟩ := Module.finite_def.mp ‹_›
   refine (ciSup_le' fun i => ?_).trans_lt (nat_lt_aleph0 S.card)
   exact linearIndependent_le_span_finset _ i.prop S hS
 
@@ -545,3 +547,19 @@ theorem mem_span_set_iff_exists_finsupp_le_finrank :
     exact mem_span_set.mpr ⟨c, hcs, hx⟩
 
 end Submodule
+
+namespace Algebra
+
+/--
+An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-algebra of rank `2`.
+-/
+-- TODO. use this in connection with `NumberTheory.Zsqrtd`
+class IsQuadraticExtension (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
+    [Algebra R S] extends Module.Free R S where
+  finrank_eq_two' : Module.finrank R S = 2
+
+theorem IsQuadraticExtension.finrank_eq_two (R S : Type*) [CommSemiring R] [StrongRankCondition R]
+    [Semiring S] [Algebra R S] [IsQuadraticExtension R S] :
+    Module.finrank R S = 2 := finrank_eq_two'
+
+end Algebra

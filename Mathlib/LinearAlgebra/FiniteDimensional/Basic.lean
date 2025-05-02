@@ -58,7 +58,6 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
     simpa [bS] using bS.linearIndependent.linearIndepOn_id.image
       (f := Submodule.subtype S) (by simp)
   set b := Basis.extend this with b_eq
-  -- Porting note: `letI` now uses `this` so we need to give different names
   letI i1 : Fintype (this.extend _) :=
     (LinearIndependent.set_finite_of_isNoetherian (by simpa [b] using b.linearIndependent)).fintype
   letI i2 : Fintype (((↑) : S → V) '' Basis.ofVectorSpaceIndex K S) :=
@@ -81,7 +80,7 @@ section
 
 open Finset
 
-variable {L : Type*} [LinearOrderedField L]
+variable {L : Type*} [Field L] [LinearOrder L] [IsStrictOrderedRing L]
 variable {W : Type v} [AddCommGroup W] [Module L W]
 
 /-- A slight strengthening of `exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card`
@@ -345,18 +344,18 @@ theorem ker_comp_eq_of_commute_of_disjoint_ker [FiniteDimensional K V] {f g : V 
     ker (f ∘ₗ g) = ker f ⊔ ker g := by
   suffices ∀ x, f x = 0 → f (g x) = 0 by rw [ker_comp, comap_eq_sup_ker_of_disjoint _ h']; simpa
   intro x hx
-  rw [← comp_apply, ← mul_eq_comp, h.eq, mul_apply, hx, map_zero]
+  rw [← comp_apply, ← Module.End.mul_eq_comp, h.eq, Module.End.mul_apply, hx, map_zero]
 
 theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} {f : ι → V →ₗ[K] V}
     (s : Finset ι) (comm) (h : s.SupIndep fun i ↦ ker (f i)) :
     ker (s.noncommProd f comm) = ⨆ i ∈ s, ker (f i) := by
   classical
   induction s using Finset.induction_on with
-  | empty => simp [one_eq_id]
-  | @insert i s hi ih =>
+  | empty => simp [Module.End.one_eq_id]
+  | insert i s hi ih =>
     replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
         ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
+    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Module.End.mul_eq_comp,
       ker_comp_eq_of_commute_of_disjoint_ker]
     · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
     · exact s.noncommProd_commute _ _ _ fun j hj ↦
@@ -517,9 +516,7 @@ theorem finrank_eq_one_iff_of_nonzero (v : V) (nz : v ≠ 0) :
   ⟨fun h => by simpa using (basisSingleton Unit h v nz).span_eq, fun s =>
     finrank_eq_card_basis
       (Basis.mk (LinearIndepOn.id_singleton _ nz)
-        (by
-          convert s.ge  -- Porting note: added `.ge` to make things easier for `convert`
-          simp))⟩
+        (by simp [← s]))⟩
 
 /-- A module with a nonzero vector `v` has dimension 1 iff every vector is a multiple of `v`.
 -/
@@ -579,7 +576,7 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
     · rw [add_comm, pow_add]
       apply LinearMap.ker_le_ker_comp
     · rw [ker_pow_constant h m, add_comm m 1, ← add_assoc, pow_add, pow_add f k m,
-        LinearMap.mul_eq_comp, LinearMap.mul_eq_comp, LinearMap.ker_comp, LinearMap.ker_comp, h,
+        Module.End.mul_eq_comp, Module.End.mul_eq_comp, LinearMap.ker_comp, LinearMap.ker_comp, h,
         Nat.add_one]
 
 end End

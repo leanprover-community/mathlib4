@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Bases
+import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.Copy
@@ -244,18 +244,12 @@ instance instFrame : Frame (Opens α) := .ofMinimalAxioms frameMinimalAxioms
 theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → α) :=
   U.isOpen.isOpenEmbedding_subtypeVal
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding' := isOpenEmbedding'
-
 theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
     IsOpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) where
   toIsEmbedding := .inclusion i
   isOpen_range := by
     rw [Set.range_inclusion i]
     exact U.isOpen.preimage continuous_subtype_val
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_of_le := isOpenEmbedding_of_le
 
 theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔ U = ⊥ := by
   rw [← coe_inj, coe_bot, ← Set.not_nonempty_iff_eq_empty]

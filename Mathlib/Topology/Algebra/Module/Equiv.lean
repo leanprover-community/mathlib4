@@ -334,7 +334,7 @@ theorem trans_toLinearEquiv (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃S
 /-- Product of two continuous linear equivalences. The map comes from `Equiv.prodCongr`. -/
 def prod [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂) (e' : M₃ ≃L[R₁] M₄) :
     (M₁ × M₃) ≃L[R₁] M₂ × M₄ :=
-  { e.toLinearEquiv.prod e'.toLinearEquiv with
+  { e.toLinearEquiv.prodCongr e'.toLinearEquiv with
     continuous_toFun := e.continuous_toFun.prodMap e'.continuous_toFun
     continuous_invFun := e.continuous_invFun.prodMap e'.continuous_invFun }
 
@@ -469,8 +469,6 @@ lemma isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E
   e.toLinearEquiv.toEquiv.isUniformEmbedding e.toContinuousLinearMap.uniformContinuous
     e.symm.toContinuousLinearMap.uniformContinuous
 
-@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
-
 protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁]
     [UniformSpace E₂] [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂]
     [IsUniformAddGroup E₁] [IsUniformAddGroup E₂] (e : E₁ ≃ₛₗ[σ₁₂] E₂)
@@ -480,9 +478,6 @@ protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [Uni
         continuous_toFun := h₁
         continuous_invFun := h₂ } :
       E₁ ≃SL[σ₁₂] E₂)
-
-@[deprecated (since := "2024-10-01")]
-alias _root_.LinearEquiv.uniformEmbedding := _root_.LinearEquiv.isUniformEmbedding
 
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other. See also `equivOfInverse'`. -/
@@ -996,8 +991,7 @@ lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf 
   · rcases hf with ⟨A, rfl⟩
     simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
     rfl
-  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf]
-    rfl
+  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf, zero_comp]
 
 @[simp] lemma inverse_comp_equiv {e : M₃ ≃L[R] M} {f : M →L[R] M₂} :
     (f ∘L e).inverse = (e.symm : M →L[R] M₃) ∘L f.inverse := by
@@ -1005,8 +999,7 @@ lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf 
   · rcases hf with ⟨A, rfl⟩
     simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
     rfl
-  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf]
-    simp
+  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf, comp_zero]
 
 lemma IsInvertible.inverse_comp_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
     (hg : g.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
@@ -1035,15 +1028,17 @@ variable [AddCommGroup M] [Module R M]
 variable [AddCommGroup M₂] [Module R M₂]
 
 @[simp]
-theorem ring_inverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M →L[R] M) := by
+theorem ringInverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M →L[R] M) := by
   suffices Ring.inverse ((ContinuousLinearEquiv.unitsEquiv _ _).symm e : M →L[R] M) = inverse ↑e by
     convert this
   simp
   rfl
 
+@[deprecated (since := "2025-04-22")] alias ring_inverse_equiv := ringInverse_equiv
+
 /-- The function `ContinuousLinearEquiv.inverse` can be written in terms of `Ring.inverse` for the
 ring of self-maps of the domain. -/
-theorem to_ring_inverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
+theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     inverse f = Ring.inverse ((e.symm : M₂ →L[R] M).comp f) ∘L e.symm := by
   by_cases h₁ : f.IsInvertible
   · obtain ⟨e', he'⟩ := h₁
@@ -1060,12 +1055,17 @@ theorem to_ring_inverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     rw [hF]
     simp
 
-theorem ring_inverse_eq_map_inverse : Ring.inverse = @inverse R M M _ _ _ _ _ _ _ := by
+@[deprecated (since := "2025-04-22")] alias to_ring_inverse := inverse_eq_ringInverse
+
+theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
   ext
-  simp [to_ring_inverse (ContinuousLinearEquiv.refl R M)]
+  simp [inverse_eq_ringInverse (ContinuousLinearEquiv.refl R M)]
+
+@[deprecated (since := "2025-04-22")]
+alias ring_inverse_eq_map_inverse := ringInverse_eq_inverse
 
 @[simp] theorem inverse_id : (id R M).inverse = id R M := by
-  rw [← ring_inverse_eq_map_inverse]
+  rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
 
 end

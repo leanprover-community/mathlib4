@@ -90,7 +90,7 @@ theorem tsupport_smul_subset_right {M α} [TopologicalSpace X] [Zero α] [SMulZe
   closure_mono <| support_smul_subset_right f g
 
 @[to_additive]
-theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
+theorem mulTSupport_mul [TopologicalSpace X] [MulOneClass α] {f g : X → α} :
     (mulTSupport fun x ↦ f x * g x) ⊆ mulTSupport f ∪ mulTSupport g :=
   closure_minimal
     ((mulSupport_mul f g).trans (union_subset_union (subset_mulTSupport _) (subset_mulTSupport _)))
@@ -213,9 +213,6 @@ theorem comp_isClosedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
   refine IsCompact.of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure ?_
   rw [hg.isEmbedding.closure_eq_preimage_closure_image]
   exact preimage_mono (closure_mono <| image_preimage_subset _ _)
-
-@[deprecated (since := "2024-10-20")]
-alias comp_closedEmbedding := comp_isClosedEmbedding
 
 @[to_additive]
 theorem comp₂_left (hf : HasCompactMulSupport f)
@@ -417,7 +414,7 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
       exact ⟨z, ⟨hi, hzn⟩⟩
 
 @[to_additive]
-theorem locallyFinite_mulSupport_iff [CommMonoid M] {f : ι → X → M} :
+theorem locallyFinite_mulSupport_iff [One M] {f : ι → X → M} :
     (LocallyFinite fun i ↦ mulSupport <| f i) ↔ LocallyFinite fun i ↦ mulTSupport <| f i :=
   ⟨LocallyFinite.closure, fun H ↦ H.subset fun _ ↦ subset_closure⟩
 

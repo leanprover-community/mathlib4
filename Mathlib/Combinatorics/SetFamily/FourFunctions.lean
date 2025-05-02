@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Finset.Sups
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
@@ -249,8 +251,7 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
   | empty =>
     simp only [Finset.powerset_empty, Finset.subset_singleton_iff] at h𝒜 hℬ
     obtain rfl | rfl := h𝒜 <;> obtain rfl | rfl := hℬ <;> simp; exact h (subset_refl ∅) subset_rfl
-  | insert hu ih =>
-    rename_i a u
+  | insert a u hu ih =>
     specialize ih (collapse_nonneg h₁) (collapse_nonneg h₂) (collapse_nonneg h₃)
       (collapse_nonneg h₄) (collapse_modular hu h₁ h₂ h₃ h₄ h 𝒜 ℬ) Subset.rfl Subset.rfl
     have : 𝒜 ⊼ ℬ ⊆ powerset (insert a u) := by simpa using infs_subset h𝒜 hℬ

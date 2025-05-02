@@ -248,20 +248,110 @@ lemma LinearIndepOn.pair_iff {i j : ι} (f : ι → M) (hij : i ≠ j) :
     exact fun k hkt ↦ Or.elim (ht hkt) (fun h ↦ h ▸ hi0) (fun h ↦ h ▸ hj0)
   simp +contextual [hg0]
 
+section Pair
+
+variable {x y : M}
+
 /-- Also see `LinearIndependent.pair_iff'` for a simpler version over fields. -/
-lemma LinearIndependent.pair_iff {x y : M} :
+lemma LinearIndependent.pair_iff :
     LinearIndependent R ![x, y] ↔ ∀ (s t : R), s • x + t • y = 0 → s = 0 ∧ t = 0 := by
   rw [← linearIndepOn_univ, ← Finset.coe_univ, show @Finset.univ (Fin 2) _ = {0,1} from rfl,
     Finset.coe_insert, Finset.coe_singleton, LinearIndepOn.pair_iff _ (by trivial)]
   simp
 
-lemma LinearIndependent.pair_symm_iff {x y : M} :
+lemma LinearIndependent.pair_symm_iff :
     LinearIndependent R ![x, y] ↔ LinearIndependent R ![y, x] := by
   suffices ∀ x y : M, LinearIndependent R ![x, y] → LinearIndependent R ![y, x] by tauto
   simp only [LinearIndependent.pair_iff]
   intro x y h s t
   specialize h t s
   rwa [add_comm, and_comm]
+
+@[simp] lemma LinearIndependent.pair_neg_left_iff :
+    LinearIndependent R ![-x, y] ↔ LinearIndependent R ![x, y] := by
+  rw [pair_iff, pair_iff]
+  refine ⟨fun h s t hst ↦ ?_, fun h s t hst ↦ ?_⟩ <;> simpa using h (-s) t (by simpa using hst)
+
+@[simp] lemma LinearIndependent.pair_neg_right_iff :
+    LinearIndependent R ![x, -y] ↔ LinearIndependent R ![x, y] := by
+  rw [pair_symm_iff, pair_neg_left_iff, pair_symm_iff]
+
+variable {S : Type*} [CommRing S] [Module S R] [Module S M]
+  [SMulCommClass S R M] [IsScalarTower S R M] [NoZeroSMulDivisors S R]
+  (a b c d : S)
+
+lemma LinearIndependent.pair_smul_iff {u : S} (hu : u ≠ 0) :
+    LinearIndependent R ![u • x, u • y] ↔ LinearIndependent R ![x, y] := by
+  simp only [LinearIndependent.pair_iff]
+  refine ⟨fun h s t hst ↦ ?_, fun h s t hst ↦ ?_⟩
+  · exact h s t (by rw [← smul_comm u s, ← smul_comm u t, ← smul_add, hst, smul_zero])
+  · specialize h (u • s) (u • t) (by rw [smul_assoc, smul_assoc, smul_comm u s, smul_comm u t, hst])
+    exact ⟨(smul_eq_zero_iff_right hu).mp h.1, (smul_eq_zero_iff_right hu).mp h.2⟩
+
+private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b * c)
+    (h' : LinearIndependent R ![x, y]) :
+    LinearIndependent R ![a • x + b • y, c • x + d • y] := by
+  simp only [LinearIndependent.pair_iff] at h' ⊢
+  intro s t hst
+  specialize h' (a • s + c • t) (b • s + d • t) (by simp only [← hst, smul_add, add_smul,
+    smul_assoc, smul_comm a s, smul_comm c t, smul_comm b s, smul_comm d t]; abel)
+  obtain ⟨h₁, h₂⟩ := h'
+  constructor
+  · suffices (a * d) • s = (b * c) • s by
+      by_contra hs; exact h (_root_.smul_left_injective S hs ‹_›)
+    calc (a * d) • s
+        = d • a • s := by rw [mul_comm, mul_smul]
+      _ = - (d • c • t) := by rw [eq_neg_iff_add_eq_zero, ← smul_add, h₁, smul_zero]
+      _ = (b * c) • s := ?_
+    · rw [mul_comm, mul_smul, neg_eq_iff_add_eq_zero, add_comm, smul_comm d c, ← smul_add, h₂,
+        smul_zero]
+  · suffices (a * d) • t = (b * c) • t by
+      by_contra ht; exact h (_root_.smul_left_injective S ht ‹_›)
+    calc (a * d) • t
+        = a • d • t := by rw [mul_smul]
+      _ = - (a • b • s) := by rw [eq_neg_iff_add_eq_zero, ← smul_add, add_comm, h₂, smul_zero]
+      _ = (b * c) • t := ?_
+    · rw [mul_smul, neg_eq_iff_add_eq_zero, smul_comm a b, ← smul_add, h₁, smul_zero]
+
+@[simp] lemma LinearIndependent.pair_add_smul_add_smul_iff [Nontrivial R] :
+    LinearIndependent R ![a • x + b • y, c • x + d • y] ↔
+      LinearIndependent R ![x, y] ∧ a * d ≠ b * c := by
+  rcases eq_or_ne (a * d) (b * c) with h | h
+  · suffices ¬ LinearIndependent R ![a • x + b • y, c • x + d • y] by simpa [h]
+    rw [pair_iff]
+    push_neg
+    by_cases hbd : b = 0 ∧ d = 0
+    · simp only [hbd.1, hbd.2, zero_smul, add_zero]
+      by_cases hac : a = 0 ∧ c = 0; · exact ⟨1, 0, by simp [hac.1, hac.2], by simp⟩
+      refine ⟨c • 1, -a • 1, ?_, by aesop⟩
+      simp only [smul_assoc, one_smul, neg_smul]
+      module
+    refine ⟨d • 1, -b • 1, ?_, by contrapose! hbd; aesop⟩
+    simp only [smul_add, smul_assoc, one_smul, smul_smul, mul_comm d, h]
+    module
+  refine ⟨fun h' ↦ ⟨?_, h⟩, fun ⟨h₁, h₂⟩ ↦ pair_add_smul_add_smul_iff_aux _ _ _ _ h₂ h₁⟩
+  suffices LinearIndependent R ![(a * d - b * c) • x, (a * d - b * c) • y] by
+    rwa [pair_smul_iff (sub_ne_zero_of_ne h)] at this
+  convert pair_add_smul_add_smul_iff_aux d (-b) (-c) a (by simpa [mul_comm d a]) h' using 1
+  ext i; fin_cases i <;> simp <;> module
+
+@[deprecated (since := "2025-04-15")]
+alias LinearIndependent.linear_combination_pair_of_det_ne_zero :=
+  LinearIndependent.pair_add_smul_add_smul_iff
+
+@[simp] lemma LinearIndependent.pair_add_smul_right_iff :
+    LinearIndependent R ![x, c • x + y] ↔ LinearIndependent R ![x, y] := by
+  rcases subsingleton_or_nontrivial S with hS | hS; · simp [hS.elim c 0]
+  nontriviality R
+  simpa using pair_add_smul_add_smul_iff (x := x) (y := y) 1 0 c 1
+
+@[simp] lemma LinearIndependent.pair_add_smul_left_iff :
+    LinearIndependent R ![x + b • y, y] ↔ LinearIndependent R ![x, y] := by
+  rcases subsingleton_or_nontrivial S with hS | hS; · simp [hS.elim b 0]
+  nontriviality R
+  simpa using pair_add_smul_add_smul_iff (x := x) (y := y) 1 b 0 1
+
+end Pair
 
 end Module
 
@@ -274,23 +364,6 @@ variable {v : ι → M}
 variable [Ring R] [AddCommGroup M] [AddCommGroup M']
 variable [Module R M] [Module R M']
 
-/-- If two vectors `x` and `y` are linearly independent, so are their linear combinations
-`a x + b y` and `c x + d y` provided the determinant `a * d - b * c` is nonzero. -/
-lemma LinearIndependent.linear_combination_pair_of_det_ne_zero {R M : Type*} [CommRing R]
-    [NoZeroDivisors R] [AddCommGroup M] [Module R M]
-    {x y : M} (h : LinearIndependent R ![x, y])
-    {a b c d : R} (h' : a * d - b * c ≠ 0) :
-    LinearIndependent R ![a • x + b • y, c • x + d • y] := by
-  apply LinearIndependent.pair_iff.2 (fun s t hst ↦ ?_)
-  have H : (s * a + t * c) • x + (s * b + t * d) • y = 0 := by
-    convert hst using 1
-    module
-  have I1 : s * a + t * c = 0 := (h.eq_zero_of_pair H).1
-  have I2 : s * b + t * d = 0 := (h.eq_zero_of_pair H).2
-  have J1 : (a * d - b * c) * s = 0 := by linear_combination d * I1 - c * I2
-  have J2 : (a * d - b * c) * t = 0 := by linear_combination -b * I1 + a * I2
-  exact ⟨by simpa [h'] using mul_eq_zero.1 J1, by simpa [h'] using mul_eq_zero.1 J2⟩
-
 theorem linearIndepOn_id_iUnion_finite {f : ι → Set M} (hl : ∀ i, LinearIndepOn R id (f i))
     (hd : ∀ i, ∀ t : Set ι, t.Finite → i ∉ t → Disjoint (span R (f i)) (⨆ i ∈ t, span R (f i))) :
     LinearIndepOn R id (⋃ i, f i) := by
@@ -302,7 +375,7 @@ theorem linearIndepOn_id_iUnion_finite {f : ι → Set M} (hl : ∀ i, LinearInd
   intro t
   induction t using Finset.induction_on with
   | empty => simp
-  | @insert i s his ih =>
+  | insert i s his ih =>
     rw [Finset.set_biUnion_insert]
     refine (hl _).id_union ih ?_
     rw [span_iUnion₂]

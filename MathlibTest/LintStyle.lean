@@ -119,6 +119,43 @@ lemma foo' : True := trivial
 
 -- TODO: add terms for the term form
 
+/--
+warning: Unscoped option maxHeartbeats is not allowed:
+Please scope this to individual declarations, as in
+```
+set_option maxHeartbeats in
+-- comment explaining why this is necessary
+example : ... := ...
+```
+note: this linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option maxHeartbeats 20
+
+#guard_msgs in
+set_option maxHeartbeats 20 in
+section
+end
+
+/--
+warning: Unscoped option synthInstance.maxHeartbeats is not allowed:
+Please scope this to individual declarations, as in
+```
+set_option synthInstance.maxHeartbeats in
+-- comment explaining why this is necessary
+example : ... := ...
+```
+note: this linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option synthInstance.maxHeartbeats 20
+
+#guard_msgs in
+set_option synthInstance.maxHeartbeats 20 in
+section
+end
+
+
 end setOption
 
 section cdotLinter
@@ -162,8 +199,10 @@ warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: This central dot `·` is isolated; please merge it with the next line.
+note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: This central dot `·` is isolated; please merge it with the next line.
+note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
 example : Nat := by

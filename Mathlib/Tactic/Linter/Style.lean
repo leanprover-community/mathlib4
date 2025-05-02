@@ -19,20 +19,21 @@ Historically, some of these were ported from the `lint-style.py` Python script.
 
 This file defines the following linters:
 - the `setOption` linter checks for the presence of `set_option` commands activating
-options disallowed in mathlib: these are meant to be temporary, and not for polished code
+  options disallowed in mathlib: these are meant to be temporary, and not for polished code.
+  It also checks for `maxHeartbeats` options being present which are not scoped to single commands.
 - the `missingEnd` linter checks for sections or namespaces which are not closed by the end
-of the file: enforcing this invariant makes minimising files or moving code between files easier
+  of the file: enforcing this invariant makes minimising files or moving code between files easier
 - the `cdotLinter` linter checks for focusing dots `·` which are typed using a `.` instead:
-this is allowed Lean syntax, but it is nicer to be uniform
+  this is allowed Lean syntax, but it is nicer to be uniform
 - the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
-similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
-the `|>` symbol
+  similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
+  the `|>` symbol
 - the `lambdaSyntax` linter checks for uses of the `λ` symbol for anonymous functions,
-instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
+  instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
 - the `longFile` linter checks for files which have more than 1500 lines
 - the `longLine` linter checks for lines which have more than 100 characters
 - the `openClassical` linter checks for `open (scoped) Classical` statements which are not
-scoped to a single declaration
+  scoped to a single declaration
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -43,7 +44,9 @@ open Lean Parser Elab Command Meta
 namespace Mathlib.Linter
 
 /-- The `setOption` linter emits a warning on a `set_option` command, term or tactic
-which sets a `pp`, `profiler` or `trace` option. -/
+which sets a `pp`, `profiler` or `trace` option.
+It also warns on an option containing `maxHeartbeats`
+(as these should be scoped as `set_option ... in` instead). -/
 register_option linter.style.setOption : Bool := {
   defValue := false
   descr := "enable the `setOption` linter"
@@ -73,12 +76,22 @@ def isSetOption : Syntax → Bool :=
 def is_set_option := @isSetOption
 
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
-which sets a `pp`, `profiler` or `trace` option.
+which sets a `debug`, `pp`, `profiler` or `trace` option.
+This also warns if an option containing `maxHeartbeats` (typically, the `maxHeartbeats` or
+`synthInstance.maxHeartbeats` option) is set.
 
-**Why is this bad?** These options are good for debugging, but should not be
-used in production code.
-**How to fix this?** Remove these options: usually, they are not necessary for production code.
-(Some tests will intentionally use one of these options; in this case, simply allow the linter.)
+**Why is this bad?** The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
+but should not be used in production code.
+
+`maxHeartbeats` options should be scoped as `set_option opt in ...` (and be followed by a comment
+explaining the need for them; another linter enforces this).
+
+**How to fix this?** The `maxHeartbeats` options can be scoped to individual commands, if they
+are truly necessary.
+
+The `debug`, `pp`, `profiler` and `trace` are usually not necessary for production code,
+so you can simply remove them. (Some tests will intentionally use one of these options;
+in this case, simply allow the linter.)
 -/
 def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
     unless Linter.getLinterValue linter.style.setOption (← getOptions) do
@@ -94,6 +107,11 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
                is only intended for development and not for final code. \
                If you intend to submit this contribution to the Mathlib project, \
                please remove 'set_option {name}'."
+        else if name.components.contains `maxHeartbeats then
+          Linter.logLint linter.style.setOption head m!"Unscoped option {name} is not allowed:\n\
+          Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
+          -- comment explaining why this is necessary\n\
+          example : ... := ...\n```"
 
 initialize addLinter setOptionLinter
 
@@ -203,7 +221,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
       match cdot.find? (·.isOfKind `token.«· ») with
       | some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) =>
         if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
-          logWarningAt cdot <| .tagged linter.style.cdot.name
+          Linter.logLint linter.style.cdot cdot
             m!"This central dot `·` is isolated; please merge it with the next line."
       | _ => return
 
@@ -333,7 +351,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
       | `(set_option linter.style.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
       | _ => false
   if smallOption then
-    logWarningAt stx <| .tagged linter.style.longFile.name
+    logLint0Disable linter.style.longFile stx
       m!"The default value of the `longFile` linter is {defValue}.\n\
         The current value of {linterBound} does not exceed the allowed bound.\n\
         Please, remove the `set_option linter.style.longFile {linterBound}`."
@@ -351,7 +369,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let lastLine := ((← getFileMap).toPosition init).line
     -- In this case, the file has an allowed length, and the linter option is unnecessarily set.
     if lastLine ≤ defValue && defValue < linterBound then
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"The default value of the `longFile` linter is {defValue}.\n\
           This file is {lastLine} lines long which does not exceed the allowed bound.\n\
           Please, remove the `set_option linter.style.longFile {linterBound}`."
@@ -363,7 +381,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let candidate := max candidate defValue
     -- In this case, the file is longer than the default and also than what the option says.
     if defValue ≤ linterBound && linterBound < lastLine then
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
           You can extend the allowed length of the file using \
           `set_option linter.style.longFile {candidate}`.\n\
@@ -374,7 +392,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- In particular, this flags any option that is set to an unnecessarily high value.
     if linterBound == candidate || linterBound + 100 == candidate then return
     else
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"This file is {lastLine} lines long. \
           The current limit is {linterBound}, but it is expected to be {candidate}:\n\
           `set_option linter.style.longFile {candidate}`."

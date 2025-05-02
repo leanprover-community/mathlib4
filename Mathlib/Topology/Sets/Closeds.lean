@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.Clopen
 
 /-!
 # Closed sets
@@ -31,7 +32,7 @@ namespace TopologicalSpace
 structure Closeds (α : Type*) [TopologicalSpace α] where
   /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
-  closed' : IsClosed carrier
+  isClosed' : IsClosed carrier
 
 namespace Closeds
 
@@ -42,8 +43,10 @@ instance : SetLike (Closeds α) α where
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
 
-theorem closed (s : Closeds α) : IsClosed (s : Set α) :=
-  s.closed'
+theorem isClosed (s : Closeds α) : IsClosed (s : Set α) :=
+  s.isClosed'
+
+@[deprecated (since := "2025-04-20")] alias closed := isClosed
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Closeds α) : Set α := s
@@ -67,9 +70,9 @@ protected def closure (s : Set α) : Closeds α :=
 theorem mem_closure {s : Set α} {x : α} : x ∈ Closeds.closure s ↔ x ∈ closure s := .rfl
 
 theorem gc : GaloisConnection Closeds.closure ((↑) : Closeds α → Set α) := fun _ U =>
-  ⟨subset_closure.trans, fun h => closure_minimal h U.closed⟩
+  ⟨subset_closure.trans, fun h => closure_minimal h U.isClosed⟩
 
-/-- The galois coinsertion between sets and opens. -/
+/-- The galois insertion between sets and closeds. -/
 def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   choice s hs := ⟨s, closure_eq_iff_isClosed.1 <| hs.antisymm subset_closure⟩
   gc := gc
@@ -329,7 +332,7 @@ lemma coe_finset_sup (s : Finset ι) (U : ι → Clopens α) :
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | insert _ IH => simp [IH]
+  | insert _ _ _ IH => simp [IH]
 
 @[simp, norm_cast]
 lemma coe_disjoint {s t : Clopens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by

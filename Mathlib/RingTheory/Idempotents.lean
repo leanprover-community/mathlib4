@@ -256,8 +256,8 @@ lemma OrthogonalIdempotents.lift_of_isNilpotent_ker_aux
     obtain ⟨e₀, h₃, h₄, h₅, h₆⟩ :=
       exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent f h _ (he' 0) (he.idem 0) _
       h₁.isIdempotentElem_sum
-      (by simp [Finset.mul_sum, h₂', he.mul_eq, Fin.succ_ne_zero, eq_comm])
-      (by simp [Finset.sum_mul, h₂', he.mul_eq, Fin.succ_ne_zero])
+      (by simp [Finset.mul_sum, h₂', he.mul_eq, eq_comm])
+      (by simp [Finset.sum_mul, h₂', he.mul_eq])
     refine ⟨_, (h₁.option _ h₃ h₅ h₆).embedding (finSuccEquiv n).toEmbedding, funext fun i ↦ ?_⟩
     obtain ⟨_ | i, rfl⟩ := (finSuccEquiv n).symm.surjective i <;> simp [*]
 
@@ -310,11 +310,9 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker_aux
   refine ⟨_, (equiv (finSuccEquiv n)).mpr
     (CompleteOrthogonalIdempotents.option (h₁.embedding (Fin.succEmb _))), funext fun i ↦ ?_⟩
   have (i) : f (e' i) = e i := congr_fun h₂ i
-  obtain ⟨_ | i, rfl⟩ := (finSuccEquiv n).symm.surjective i
-  · simp only [Fin.val_succEmb, Function.comp_apply, finSuccEquiv_symm_none, finSuccEquiv_zero,
-      Option.elim_none, map_sub, map_one, map_sum, this, ← he.complete, sub_eq_iff_eq_add,
-      Fin.sum_univ_succ]
-  · simp [this]
+  cases i using Fin.cases with
+  | zero => simp [this, Fin.sum_univ_succ, ← he.complete]
+  | succ i => simp [this]
 
 /-- A system of complete orthogonal idempotents lift along nil ideals. -/
 lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker
@@ -523,7 +521,7 @@ variable {I : Type*} [Fintype I] {e : I → R}
 
 /-- A complete orthogonal family of central idempotents in a semiring
 give rise to a direct product decomposition. -/
-def CompleteOrthogonalIdempotents.mulEquivOfIsMulCentral [Semiring R]
+def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
     (he : CompleteOrthogonalIdempotents e) (hc : ∀ i, IsMulCentral (e i)) :
     R ≃+* Π i, (he.idem i).Corner where
   toFun r i := ⟨_, r, rfl⟩
@@ -547,8 +545,14 @@ def CompleteOrthogonalIdempotents.mulEquivOfIsMulCentral [Semiring R]
 
 /-- A complete orthogonal family of idempotents in a commutative semiring
 give rise to a direct product decomposition. -/
-def CompleteOrthogonalIdempotents.mulEquivOfComm [CommSemiring R]
+def CompleteOrthogonalIdempotents.ringEquivOfComm [CommSemiring R]
     (he : CompleteOrthogonalIdempotents e) : R ≃+* Π i, (he.idem i).Corner :=
-  he.mulEquivOfIsMulCentral fun _ ↦ Semigroup.mem_center_iff.mpr fun _ ↦ mul_comm ..
+  he.ringEquivOfIsMulCentral fun _ ↦ Semigroup.mem_center_iff.mpr fun _ ↦ mul_comm ..
+
+@[deprecated (since := "2025-04-14")] alias CompleteOrthogonalIdempotents.mulEquivOfIsMulCentral :=
+  CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral
+
+@[deprecated (since := "2025-04-14")] alias CompleteOrthogonalIdempotents.mulEquivOfComm :=
+  CompleteOrthogonalIdempotents.ringEquivOfComm
 
 end corner

@@ -283,7 +283,7 @@ theorem simple_induction_right {p : W → Prop} (w : W) (one : p 1)
 /-! ### Homomorphisms from a Coxeter group -/
 
 /-- If two homomorphisms with domain `W` agree on all simple reflections, then they are equal. -/
-theorem ext_simple {G : Type*} [Monoid G] {φ₁ φ₂ : W →* G} (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) :
+theorem ext_simple {G : Type*} [MulOneClass G] {φ₁ φ₂ : W →* G} (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) :
     φ₁ = φ₂ :=
   MonoidHom.eq_of_eqOn_denseM cs.submonoid_closure_range_simple (fun _ ⟨i, hi⟩ ↦ hi ▸ h i)
 
@@ -505,7 +505,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
 
   /- Rewrite everything in terms of an integer m' which is equal to m.
   The resulting equation holds for all integers m'. -/
-  simp_rw [← zpow_natCast, Int.ofNat_ediv, Int.ofNat_sub hm]
+  simp_rw [← zpow_natCast, Int.natCast_ediv, Int.ofNat_sub hm]
   generalize (m : ℤ) = m'
   clear hm
   push_cast
