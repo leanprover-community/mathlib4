@@ -20,7 +20,8 @@ namespace Module
 
 open Order
 
-variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
+variable (R : Type*) [CommRing R]
+variable (M : Type*) [AddCommGroup M] [Module R M] (N : Type*) [AddCommGroup N] [Module R N]
 
 /-- The krull dimension of module, defined as `krullDim` of its support. -/
 noncomputable def supportDim : WithBot ℕ∞ :=
@@ -45,5 +46,20 @@ lemma supportDim_eq_ringKrullDim_quotient_annihilator [Module.Finite R M] :
 
 lemma supportDim_le_ringKrullDim : supportDim R M ≤ ringKrullDim R :=
   krullDim_le_of_strictMono (fun a ↦ a) fun {_ _} lt ↦ lt
+
+lemma supportDim_le_of_injective (f : M →ₗ[R] N) (h : Function.Injective f) :
+    supportDim R M ≤ supportDim R N :=
+  krullDim_le_of_strictMono (fun a ↦ ⟨a.1, Module.support_subset_of_injective f h a.2⟩)
+    (fun {_ _} lt ↦ lt)
+
+lemma supportDim_le_of_surjective (f : M →ₗ[R] N) (h : Function.Surjective f) :
+    supportDim R N ≤ supportDim R M :=
+  krullDim_le_of_strictMono (fun a ↦ ⟨a.1, Module.support_subset_of_surjective f h a.2⟩)
+    (fun {_ _} lt ↦ lt)
+
+lemma supportDim_eq_of_equiv (e : M ≃ₗ[R] N) :
+    supportDim R M = supportDim R N :=
+  le_antisymm (supportDim_le_of_injective R M N e e.injective)
+    (supportDim_le_of_surjective R M N e e.surjective)
 
 end Module
