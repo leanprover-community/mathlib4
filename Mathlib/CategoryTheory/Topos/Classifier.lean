@@ -8,6 +8,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 import Mathlib.CategoryTheory.Subobject.Presheaf
 
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+
 /-!
 
 # Subobject Classifier
@@ -52,6 +54,11 @@ Let `C` refer to a category with a terminal object.
 ## References
 
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
+
+## TODO
+
+* Refactor the `HasClassifier` API to use `Classifier.mk'`, so that talking about
+  an abstract subobject classifier doesn't require `HasTerminal`.
 
 -/
 
@@ -210,6 +217,13 @@ lemma χ_id (X : C) : χ (𝟙 X) = terminal.from X ≫ truth C := by
 @[simp]
 lemma χ_comp_id {X Y : C} (f : X ⟶ Y) : f ≫ χ (𝟙 Y) = χ (𝟙 X) := by
   simp [χ_id]
+
+@[simp]
+lemma χ_naturality [HasPullbacks C] {X Y Z : C} (g : X ⟶ Z) (f : Y ⟶ Z) [Mono f] :
+    g ≫ χ f = χ (pullback.snd f g) := by
+  apply unique
+  rw [IsPullback.flip_iff, ← terminal.comp_from (pullback.fst f g)]
+  exact IsPullback.paste_horiz (IsPullback.of_hasPullback f g) (isPullback_χ f).flip
 
 /-- `truth C` is a regular monomorphism (because it is split). -/
 noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
@@ -459,7 +473,7 @@ end
 open Function Classical in
 
 /-- The classifying object of `Type u` is `ULift Bool`. -/
-noncomputable instance : Classifier (Type u) where
+noncomputable def classifierType : Classifier (Type u) where
   Ω := ULift Bool
   truth := fun _ ↦ ⟨true⟩
   χ {α β} f [_] := extend f (fun _ ↦ ⟨true⟩) (fun _ ↦ ⟨false⟩)
@@ -505,6 +519,41 @@ noncomputable instance : Classifier (Type u) where
         uniq_term.eq_default _ |>.trans <| uniq_term.default_eq _
       replace this := congrFun (this .left) none
       simpa using hb _ this
+
+instance : HasClassifier (Type u) := ⟨⟨classifierType⟩⟩
+
+-- #synth HasClassifier (Type u)
+
+-- section variable {C : Type u₀} [Category.{v₀} C] {D : Type u} [Category.{v} D]
+
+-- def Functor.emptyFlipIsoConst : (empty (C ⥤ D)).flip ≅ (const C).obj (empty D) :=
+--   NatIso.ofComponents (fun _ ↦ emptyExt _ _)
+
+-- open HasClassifier in
+-- /-- Subfunctors are classified pointwise. -/
+-- noncomputable instance
+--     -- {C : Type u₀} [Category.{v₀} C] {D : Type u} [Category.{v} D]
+--     [HasPullbacks D] [HasTerminal D] [HasClassifier D] : Classifier (C ⥤ D) where
+--   Ω := (const C).obj (Ω D)
+--   truth :=
+--     let termIsTerm : ⊤_ (C ⥤ D) ≅ (const C).obj (⊤_ D) :=
+--       limitIsoFlipCompLim _ ≪≫ isoWhiskerRight Functor.emptyFlipIsoConst _
+--         ≪≫ NatIso.ofComponents (fun _ ↦ Iso.refl _)
+--     termIsTerm.hom ≫ (const C).map (truth D)
+--   χ {F G} ϑ hϑ :=
+--     have hϑ' := NatTrans.mono_iff_mono_app _ |>.mp hϑ
+--     { app X := χ (ϑ.app X)
+--       naturality ⦃X Y⦄ f := by
+--         simp [-χ_naturality, χ_comp_eq_iff_isPullback]
+--         have := ϑ.naturality f
+--         use F.map f
+--         -- refine ⟨F.map f, IsPullback.of_iso_pullback ⟨by simp⟩ ?ι ?h₁ ?h₂⟩
+--      }
+--   isPullback := _
+--   uniq := _
+    -- let F_const : (C ⥤ D) ⥤ (C ⥤ (Ω D)) :=
+    --   Functor.const C ⋙ (HasClassifier.exists_classifier.some.map F)
+
 
 
 end CategoryTheory
