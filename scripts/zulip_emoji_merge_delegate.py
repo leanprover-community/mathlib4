@@ -72,6 +72,7 @@ for message in messages:
     has_bors = any(reaction['emoji_name'] == 'bors' for reaction in reactions)
     has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
     has_awaiting_author = any(reaction['emoji_name'] == 'writing' for reaction in reactions)
+    has_maintainer_merge = any(reaction['emoji_name'] == 'hammer' for reaction in reactions)
     has_closed = any(reaction['emoji_name'] == 'closed-pr' for reaction in reactions)
     first_in_thread = hashPR.search(message['subject']) and message['display_recipient'] == 'PR reviews' and message['subject'] not in first_by_subject
     first_by_subject[message['subject']] = message['id']
@@ -105,6 +106,13 @@ for message in messages:
                 "emoji_name": "merge"
             })
             print(f"result: '{result}'")
+        if has_maintainer_merge:
+            print('Removing maintainer-merge')
+            result = client.remove_reaction({
+                "message_id": message['id'],
+                "emoji_name": "hammer"
+            })
+            print(f"result: '{result}'")
         if has_awaiting_author:
             print('Removing awaiting-author')
             result = client.remove_reaction({
@@ -136,6 +144,12 @@ for message in messages:
             client.add_reaction({
                 "message_id": message['id'],
                 "emoji_name": "peace_sign"
+            })
+        elif 'maintainer-merge' == LABEL:
+            print('adding maintainer-merge')
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": "hammer"
             })
         elif LABEL == 'labeled':
             print('adding awaiting-author')
