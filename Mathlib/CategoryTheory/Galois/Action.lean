@@ -18,7 +18,7 @@ See `Mathlib.CategoryTheory.Galois.Full` for the proof that `H` is (faithfully) 
 
 -/
 
-universe u v
+universe u
 
 namespace CategoryTheory
 
@@ -26,7 +26,7 @@ namespace PreGaloisCategory
 
 open Limits Functor
 
-variable {C : Type u} [Category.{v} C] (F : C ⥤ FintypeCat.{u})
+variable {C : Type*} [Category C] (F : C ⥤ FintypeCat.{u})
 
 /-- Any (fiber) functor `F : C ⥤ FintypeCat` naturally factors via
 the forgetful functor from `Action FintypeCat (Aut F)` to `FintypeCat`. -/
