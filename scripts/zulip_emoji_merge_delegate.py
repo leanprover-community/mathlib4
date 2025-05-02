@@ -111,7 +111,7 @@ for message in messages:
 
         # applying appropriate emoji reaction
         print("Applying reactions, as appropriate.")
-        def add_reaction(name: str, emoji_name: str) -> none:
+        def add_reaction(name: str, emoji_name: str) -> None:
             print(f'adding {name}')
             result = client.add_reaction({
                 "message_id": message['id'],
