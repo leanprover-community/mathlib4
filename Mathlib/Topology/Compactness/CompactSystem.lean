@@ -5,9 +5,6 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.Data.Set.Dissipate
 import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.MeasureTheory.PiSystem
-import Mathlib.MeasureTheory.Constructions.Cylinders
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Compact systems.
