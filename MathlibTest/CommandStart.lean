@@ -108,7 +108,7 @@ warning: This part of the code
   '(a: Nat)'
 
 should be written as
-  '(a : Nat'
+  '(a : Nat)'
 
 Notice the missing space in the source code.
 

@@ -258,10 +258,8 @@ def mkWindow (orig : String) (start ctx length : Nat) : String :=
   let head := orig.dropRight (start + 1) -- `orig`, up to one character before the discrepancy
   let middle := orig.takeRight (start + 1) --
   let headCtx := head.takeRightWhile (!·.isWhitespace)
-  let middleCtx := middle.dropRight headCtx.length
-  let tail := middleCtx.drop (length + ctx) |>.takeWhile (!·.isWhitespace)
-  s!"{headCtx}{middleCtx.take (length + ctx)}{tail}"
-  --orig.takeRight (start + ctx) |>.take (length + 2 * ctx -  1) |>.replace "\n" "⏎"
+  let tail := middle.drop (length + ctx) |>.takeWhile (!·.isWhitespace)
+  s!"{headCtx}{middle.take (length + ctx)}{tail}"
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
