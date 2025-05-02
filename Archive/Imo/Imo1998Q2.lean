@@ -174,9 +174,9 @@ theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1)
   let y := (Finset.univ.filter fun j => ¬r c j).card
   have h : (Finset.univ.filter fun p : JudgePair J => p.Agree r c).card = x * x + y * y := by
     simp [x, y, ← Finset.filter_product_card]
-  rw [h]; apply Int.le_of_ofNat_le_ofNat; simp only [Int.ofNat_add, Int.ofNat_mul]
+  rw [h]; apply Int.le_of_ofNat_le_ofNat; simp only [Int.natCast_add, Int.natCast_mul]
   apply norm_bound_of_odd_sum
-  suffices x + y = 2 * z + 1 by simp [← Int.ofNat_add, this]
+  suffices x + y = 2 * z + 1 by simp [← Int.natCast_add, this]
   rw [Finset.filter_card_add_filter_neg_card_eq_card, ← hJ, Finset.card_univ]
 
 open scoped Classical in

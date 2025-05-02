@@ -214,7 +214,7 @@ example (c : Prop → Prop → Prop → Prop) (x x' y z z' : Prop)
     (h₀ : x ↔ x') (h₁ : z ↔ z') : c x y z ↔ c x' y z' := by
   congr!
 
-example {α β γ δ} {F : ∀{α β}, (α → β) → γ → δ} {f g : α → β} {s : γ} (h : ∀ (x : α), f x = g x) :
+example {α β γ δ} {F : ∀ {α β}, (α → β) → γ → δ} {f g : α → β} {s : γ} (h : ∀ (x : α), f x = g x) :
     F f s = F g s := by
   congr!
   funext

@@ -71,17 +71,17 @@ theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
 
 @[functor_norm]
 theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 @[functor_norm]
 theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 -- note: in Lean 3 `>=>` is left-associative, but in Lean 4 it is right-associative.
 @[functor_norm]
 theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) :
     (f >=> g) >=> h = f >=> g >=> h := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 variable {β' γ' : Type v}
 variable {m' : Type v → Type w} [Monad m']
