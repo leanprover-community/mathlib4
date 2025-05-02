@@ -474,7 +474,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
     (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) := by
   generalize dim :
     ((Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N)).toNat = r
-  induction' r using Nat.strong_induction_on with r hr generalizing N
+  induction' r using Nat.strong_induction_on with r ihr generalizing N
   by_cases eq0 : r = 0
   · by_cases eqtop : (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) = ⊤
     · simp [eqtop]
@@ -503,21 +503,54 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           (IsLocalRing.maximalIdeal_le_jacobson (Module.annihilator R M)))
       simp [eq0, IsLocalRing.depth,
         moduleDepth_eq_depth_of_supp_eq (maximalIdeal R) N M smul_lt hsupp]
-  · have := IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
+  · have eqr (n : ℕ∞) : n.toNat = r → n = r := by
+      let _ : NeZero r := ⟨eq0⟩
+      simp
+    refine (IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
       (motive := fun L ↦ (∀ (Lntr : Nontrivial L),
         (((Module.supportDim R L).unbot (Module.supportDim_ne_bot_of_nontrivial R L))).toNat = r →
         (moduleDepth (ModuleCat.of R L) M ≥ IsLocalRing.depth M -
-        (Module.supportDim R L).unbot (Module.supportDim_ne_bot_of_nontrivial R L)))) R Nfin
-    refine this ?_ ?_ ?_ Nntr dim
+        (Module.supportDim R L).unbot (Module.supportDim_ne_bot_of_nontrivial R L)))) R Nfin)
+        ?_ ?_ ?_ Nntr dim
     · intro L _ _ _ Ltr Lntr
       absurd Ltr
       exact (not_subsingleton_iff_nontrivial.mpr Lntr)
     · intro L _ _ _ p e Lntr dim_eq
+      rw [eqr _ dim_eq]
 
       sorry
-    · intro L1 _ _ _ L2 _ _ _ L3 _ _ _ f g inj surj exac ih1' ih3'
+    · intro L1 _ _ _ L2 _ _ _ L3 _ _ _ f g inj surj exac ih1' ih3' L2ntr dim_eq
+      rw [eqr _ dim_eq]
+      by_cases ntr : Nontrivial L1 ∧ Nontrivial L3
+      · let _ := ntr.1
+        let _ := ntr.2
+        #check ih1' ntr.1
+        #check ih3' ntr.2
+        have dimle1 : (((Module.supportDim R L1).unbot
+          (Module.supportDim_ne_bot_of_nontrivial R L1))).toNat ≤ r := by
+          apply ENat.toNat_le_of_le_coe
+          rw [← (eqr _ dim_eq), ← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot]
+          exact Module.supportDim_le_of_injective R L1 L2 f inj
+        have dimle3 : (((Module.supportDim R L3).unbot
+          (Module.supportDim_ne_bot_of_nontrivial R L3))).toNat ≤ r := by
+          apply ENat.toNat_le_of_le_coe
+          rw [← (eqr _ dim_eq), ← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot]
+          exact Module.supportDim_le_of_surjective R L2 L3 g surj
 
-      sorry
+        sorry
+      · have : Subsingleton L1 ∨ Subsingleton L3 := by
+          simpa [← not_nontrivial_iff_subsingleton] using Classical.not_and_iff_not_or_not.mp ntr
+        rcases this with sub1|sub3
+        · have : Function.Injective g := by
+            rw [← ker_eq_bot, exact_iff.mp exac, range_eq_bot, Subsingleton.eq_zero f]
+          let eg : L2 ≃ₗ[R] L3 := LinearEquiv.ofBijective g ⟨this, surj⟩
+
+          sorry
+        · have : Function.Surjective f := by
+            rw [← range_eq_top, ← exact_iff.mp exac, ker_eq_top, Subsingleton.eq_zero g]
+          let ef : L1 ≃ₗ[R] L2 := LinearEquiv.ofBijective f ⟨inj, this⟩
+
+          sorry
 
 theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing R]
     [Small.{v} (R ⧸ IsLocalRing.maximalIdeal R)]
