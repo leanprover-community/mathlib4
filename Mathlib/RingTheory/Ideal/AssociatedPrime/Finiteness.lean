@@ -56,8 +56,7 @@ end Test
 
 universe u v
 
-variable {A : Type u} [CommRing A]
-  {M : Type v} [AddCommGroup M] [Module A M] {n : ℕ} {N : Submodule A M}
+variable {A : Type u} [CommRing A] {M : Type v} [AddCommGroup M] [Module A M]
 
 /-- A `Prop` asserting that two submodules `N₁, N₂` satisfy `N₁ ≤ N₂` and
 `N₂ / N₁` is isomorphic to `A / p` for some prime ideal `p` of `A`. -/
