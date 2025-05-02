@@ -450,6 +450,8 @@ instance [IsLocalRing R] : OrderTop (PrimeSpectrum R) where
   top := ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩
   le_top I := IsLocalRing.le_maximalIdeal I.2.ne_top'
 
+--depth under exact seq and iso
+
 variable (R) in
 omit [Small.{v, u} R] in
 lemma IsLocalRing.maximalIdeal_mem_support [IsLocalRing R] (M : Type*)
@@ -544,11 +546,27 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
         · have : Function.Injective g := by
             rw [← ker_eq_bot, exact_iff.mp exac, range_eq_bot, Subsingleton.eq_zero f]
           let eg : L2 ≃ₗ[R] L3 := LinearEquiv.ofBijective g ⟨this, surj⟩
+          let L3ntr : Nontrivial L3 := Function.Injective.nontrivial this
+          have dimeq3 : (((Module.supportDim R L3).unbot
+            (Module.supportDim_ne_bot_of_nontrivial R L3))).toNat = r := by
+            rw [← dim_eq]
+            congr 2
+            exact (Module.supportDim_eq_of_equiv R L2 L3 eg).symm
+          have := ih3' L3ntr dimeq3
+          rw [eqr _ dimeq3] at this
 
           sorry
         · have : Function.Surjective f := by
             rw [← range_eq_top, ← exact_iff.mp exac, ker_eq_top, Subsingleton.eq_zero g]
           let ef : L1 ≃ₗ[R] L2 := LinearEquiv.ofBijective f ⟨inj, this⟩
+          let L1ntr : Nontrivial L1 := Function.Surjective.nontrivial this
+          have dimeq1 : (((Module.supportDim R L1).unbot
+            (Module.supportDim_ne_bot_of_nontrivial R L1))).toNat = r := by
+            rw [← dim_eq]
+            congr 2
+            exact Module.supportDim_eq_of_equiv R L1 L2 ef
+          have := ih1' L1ntr dimeq1
+          rw [eqr _ dimeq1] at this
 
           sorry
 
