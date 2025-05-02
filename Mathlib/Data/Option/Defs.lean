@@ -98,6 +98,9 @@ instance liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f
   left_id a := by cases a <;> simp [liftOrGet]
   right_id a := by cases a <;> simp [liftOrGet]
 
+instance lawfulIdentity_merge (f : α → α → α) : Std.LawfulIdentity (merge f) none :=
+  liftOrGet_isId f
+
 /-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
   | .some a => some a

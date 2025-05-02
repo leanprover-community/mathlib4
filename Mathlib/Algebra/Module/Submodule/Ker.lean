@@ -72,6 +72,10 @@ theorem map_coe_ker (f : F) (x : ker f) : f x = 0 :=
 theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubmonoid = (AddMonoidHom.mker f) :=
   rfl
 
+theorem le_ker_iff_comp_subtype_eq_zero {N : Submodule R M} {f : M →ₛₗ[τ₁₂] M₂} :
+    N ≤ ker f ↔ f ∘ₛₗ N.subtype = 0 := by
+  rw [SetLike.le_def, LinearMap.ext_iff, Subtype.forall]; rfl
+
 theorem comp_ker_subtype (f : M →ₛₗ[τ₁₂] M₂) : f.comp (ker f).subtype = 0 :=
   LinearMap.ext fun x => mem_ker.1 x.2
 
@@ -125,6 +129,12 @@ theorem ker_zero : ker (0 : M →ₛₗ[τ₁₂] M₂) = ⊤ :=
 @[simp]
 theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
   ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
+
+theorem exists_ne_zero_of_sSup_eq_top {f : M →ₛₗ[τ₁₂] M₂} (h : f ≠ 0) (s : Set (Submodule R M))
+    (hs : sSup s = ⊤): ∃ m ∈ s, f ∘ₛₗ m.subtype ≠ 0 := by
+  contrapose! h
+  simp_rw [← ker_eq_top, eq_top_iff, ← hs, sSup_le_iff, le_ker_iff_comp_subtype_eq_zero]
+  exact h
 
 @[simp]
 theorem _root_.AddMonoidHom.coe_toIntLinearMap_ker {M M₂ : Type*} [AddCommGroup M] [AddCommGroup M₂]

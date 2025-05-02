@@ -104,7 +104,7 @@ instance : GCDMonoid ℤ where
   gcd_dvd_right _ _ := Int.gcd_dvd_right
   dvd_gcd := dvd_coe_gcd
   gcd_mul_lcm a b := by
-    rw [← Int.ofNat_mul, gcd_mul_lcm, natCast_natAbs, abs_eq_normalize]
+    rw [← Int.natCast_mul, gcd_mul_lcm, natCast_natAbs, abs_eq_normalize]
     exact normalize_associated (a * b)
   lcm_zero_left _ := natCast_eq_zero.2 <| Nat.lcm_zero_left _
   lcm_zero_right _ := natCast_eq_zero.2 <| Nat.lcm_zero_right _

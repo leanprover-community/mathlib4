@@ -109,7 +109,7 @@ lemma eq_zero_of_dvd_of_nonneg_of_lt (hm : 0 ≤ m) (hmn : m < n) (hnm : n ∣ m
 /-- If two integers are congruent to a sufficiently large modulus, they are equal. -/
 lemma eq_of_mod_eq_of_natAbs_sub_lt_natAbs {a b c : ℤ} (h1 : a % b = c)
     (h2 : natAbs (a - c) < natAbs b) : a = c :=
-  Int.eq_of_sub_eq_zero (eq_zero_of_dvd_of_natAbs_lt_natAbs (dvd_sub_of_emod_eq h1) h2)
+  Int.eq_of_sub_eq_zero (eq_zero_of_dvd_of_natAbs_lt_natAbs (dvd_self_sub_of_emod_eq h1) h2)
 
 lemma natAbs_le_of_dvd_ne_zero (hmn : m ∣ n) (hn : n ≠ 0) : natAbs m ≤ natAbs n :=
   not_lt.mp (mt (eq_zero_of_dvd_of_natAbs_lt_natAbs hmn) hn)
