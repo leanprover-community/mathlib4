@@ -83,7 +83,7 @@ for message in messages:
     if match:
         print(f"matched: '{message}'")
 
-        # removing previous emoji reactions
+        # Removing all previous emoji reactions.
         # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
         print("Removing previous reactions, if present.")
         def remove_reaction(name: str, emoji_name: str, **kwargs) -> None:
@@ -106,12 +106,12 @@ for message in messages:
         if has_awaiting_author:
             remove_reaction('awaiting-author', 'writing')
         if has_closed:
-            # 61282 was the earlier version of the emoji
+            # 61282 was the earlier version of the emoji.
             remove_reaction('closed-pr', 'closed-pr', emoji_code="61293", reaction_type="realm_emoji")
 
         # applying appropriate emoji reaction
         print("Applying reactions, as appropriate.")
-        def add_reaction(name: str, emoji_name: str) -> none:
+        def add_reaction(name: str, emoji_name: str) -> None:
             print(f'adding {name}')
             result = client.add_reaction({
                 "message_id": message['id'],
@@ -129,6 +129,6 @@ for message in messages:
             add_reaction('closed-pr', 'closed-pr')
         elif LABEL == 'unlabeled':
             print('awaiting-author removed')
-            # the reaction was already removed.
+            # The reaction was already removed.
         elif LABEL.startswith("[Merged by Bors]"):
             add_reaction('[Merged by Bors]', 'merge')
