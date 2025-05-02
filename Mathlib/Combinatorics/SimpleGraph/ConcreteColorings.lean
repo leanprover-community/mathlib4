@@ -7,7 +7,7 @@ import Mathlib.Combinatorics.SimpleGraph.Circulant
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Data.Fin.Parity
-
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 /-!
 # Concrete colorings of common graphs
 
@@ -158,25 +158,33 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
 
 section components
 
-variable {α β : Type*} {G : SimpleGraph α}
+variable {α β : Type*} (G : SimpleGraph α)
 
 open ConnectedComponent
-
 /--
-Given a `β`-coloring of each connected component of `G` this is the `β`-coloring of `G`
+Given homomorphisms from each connected component of `G` to `H` this is the `G →g H`
 -/
-def coloringOfConnectedComponents (C : (c : G.ConnectedComponent) → (G.induce c).Coloring β) :
-    G.Coloring β :=
-  ⟨fun v ↦ C (G.connectedComponentMk v) _, fun hab heq ↦
-    have := connectedComponentMk_eq_of_adj hab
+def homOfConnectedComponents {H : SimpleGraph β}
+    (C : (c : G.ConnectedComponent) → (G.induce c) →g H ) : G →g H :=
+  ⟨fun v ↦ (C (G.connectedComponentMk _)) ⟨_, rfl⟩, fun hab ↦ by
     have hadj : (G.induce (G.connectedComponentMk _).supp).Adj ⟨_, rfl⟩
         ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
-    (C (G.connectedComponentMk _)).valid hadj (by simp only [top_adj] at heq; convert heq)⟩
+    dsimp only
+    convert (C (G.connectedComponentMk _)).map_rel hadj using 3
+    all_goals rw [connectedComponentMk_eq_of_adj hab]
+    rfl⟩
 
+/--
+Given `β`-colorings of each connected component of `G` this is the `β`-coloring of `G`
+-/
+def coloringOfConnectedComponents (C : (c : G.ConnectedComponent) → (G.induce c).Coloring β) :
+    G.Coloring β := G.homOfConnectedComponents C
+
+variable {G}
 theorem colorable_iff_forall_connectedComponents {n : ℕ} :
     G.Colorable n ↔ ∀ c : G.ConnectedComponent, (G.induce c).Colorable n :=
   ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v, fun h h1 ↦ C.valid h h1⟩,
-     fun h ↦ ⟨coloringOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
+     fun h ↦ ⟨G.coloringOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
 
 open Walk
 lemma two_colorable_iff_forall_loop_not_odd :
