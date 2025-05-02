@@ -317,7 +317,7 @@ variable [PseudoEMetricSpace α] {x y : α}
 theorem infsep_pair_eq_toReal : ({x, y} : Set α).infsep = (edist x y).toReal := by
   by_cases hxy : x = y
   · rw [hxy]
-    simp only [infsep_singleton, pair_eq_singleton, edist_self, ENNReal.zero_toReal]
+    simp only [infsep_singleton, pair_eq_singleton, edist_self, ENNReal.toReal_zero]
   · rw [infsep, einfsep_pair hxy]
 
 end PseudoEMetricSpace

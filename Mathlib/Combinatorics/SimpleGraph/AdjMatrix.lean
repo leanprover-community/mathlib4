@@ -174,7 +174,7 @@ variable {α}
 
 /-- The sum of the identity, the adjacency matrix, and its complement is the all-ones matrix. -/
 theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [DecidableEq α]
-    [NonAssocSemiring α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
+    [AddMonoidWithOne α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
   ext i j
   unfold Matrix.compl
   rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
@@ -246,7 +246,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
       apply Finset.sum_toFinset_eq_subtype
     -- Disjointness for card_bUnion
     · rintro ⟨x, hx⟩ - ⟨y, hy⟩ - hxy
-      rw [disjoint_iff_inf_le]
+      rw [Function.onFun, disjoint_iff_inf_le]
       intro p hp
       simp only [inf_eq_inter, mem_inter, mem_map, Function.Embedding.coeFn_mk, exists_prop] at hp
       obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp

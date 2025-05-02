@@ -187,13 +187,13 @@ The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
 @[simps]
 def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
   toFun a := tprod R (MonoidHom.mulSingle _ i a)
-  map_one' := by simp only [_root_.map_one]; rfl
-  map_mul' a a' := by simp [_root_.map_mul]
+  map_one' := by simp only [map_one]; rfl
+  map_mul' a a' := by simp [map_mul]
   map_zero' := MultilinearMap.map_update_zero _ _ _
   map_add' _ _ := MultilinearMap.map_update_add _ _ _ _ _
   commutes' r := show tprodCoeff R _ _ = r • tprodCoeff R _ _ by
-    rw [Algebra.algebraMap_eq_smul_one]
-    erw [smul_tprodCoeff]
+    rw [Algebra.algebraMap_eq_smul_one, ← Pi.one_apply, MonoidHom.mulSingle_apply, Pi.mulSingle,
+      smul_tprodCoeff]
     rfl
 
 /--

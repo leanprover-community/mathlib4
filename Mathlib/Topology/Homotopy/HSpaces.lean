@@ -70,7 +70,6 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 /-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
--- Porting note: opening `HSpaces` so that the above notation works
 open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
@@ -192,16 +191,14 @@ def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   toFun t := γ (qRight (t, θ))
   continuous_toFun := by fun_prop
   source' := by
-    dsimp only
     rw [qRight_zero_left, γ.source]
   target' := by
-    dsimp only
     rw [qRight_one_left, γ.target]
 
 theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflRight p.1 p.2 :=
   continuous_uncurry_iff.mp <|
     (continuous_snd.comp continuous_fst).eval <|
-      continuous_qRight.comp <| continuous_snd.prod_mk <| continuous_fst.comp continuous_fst
+      continuous_qRight.comp <| continuous_snd.prodMk <| continuous_fst.comp continuous_fst
 
 theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by
   ext t
@@ -224,7 +221,7 @@ def delayReflLeft (θ : I) (γ : Path x y) : Path x y :=
 theorem continuous_delayReflLeft : Continuous fun p : I × Path x y => delayReflLeft p.1 p.2 :=
   Path.continuous_symm.comp <|
     continuous_delayReflRight.comp <|
-      continuous_fst.prod_mk <| Path.continuous_symm.comp continuous_snd
+      continuous_fst.prodMk <| Path.continuous_symm.comp continuous_snd
 
 theorem delayReflLeft_zero (γ : Path x y) : delayReflLeft 0 γ = (Path.refl x).trans γ := by
   simp only [delayReflLeft, delayReflRight_zero, trans_symm, refl_symm, Path.symm_symm]

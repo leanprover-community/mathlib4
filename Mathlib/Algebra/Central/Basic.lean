@@ -23,7 +23,7 @@ universe u v
 
 namespace Algebra.IsCentral
 
-variable (K : Type u) [CommSemiring K] (D D': Type v) [Semiring D] [Algebra K D]
+variable (K : Type u) [CommSemiring K] (D D' : Type v) [Semiring D] [Algebra K D]
   [h : IsCentral K D] [Semiring D'] [Algebra K D']
 
 @[simp]

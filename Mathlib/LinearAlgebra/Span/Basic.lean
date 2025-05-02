@@ -71,13 +71,20 @@ theorem map_span_le [RingHomSurjective σ₁₂] (f : F) (s : Set M) (N : Submod
 
 alias _root_.LinearMap.map_span_le := Submodule.map_span_le
 
--- See also `span_preimage_eq` below.
+/-- See also `Submodule.span_preimage_eq`. -/
 theorem span_preimage_le (f : F) (s : Set M₂) :
     span R (f ⁻¹' s) ≤ (span R₂ s).comap f := by
   rw [span_le, comap_coe]
   exact preimage_mono subset_span
 
 alias _root_.LinearMap.span_preimage_le := Submodule.span_preimage_le
+
+include σ₁₂ in
+theorem mapsTo_span {f : F} {s : Set M} {t : Set M₂} (h : MapsTo f s t) :
+    MapsTo f (span R s) (span R₂ t) :=
+  (span_mono h).trans (span_preimage_le (σ₁₂ := σ₁₂) f t)
+
+alias _root_.Set.MapsTo.submoduleSpan := mapsTo_span
 
 section
 
@@ -283,20 +290,20 @@ theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
 If `C` holds for `0` and all elements of `p i` for all `i`, and is preserved under addition,
 then it holds for all elements of the supremum of `p`. -/
 @[elab_as_elim]
-theorem iSup_induction {ι : Sort*} (p : ι → Submodule R M) {C : M → Prop} {x : M}
-    (hx : x ∈ ⨆ i, p i) (hp : ∀ (i), ∀ x ∈ p i, C x) (h0 : C 0)
-    (hadd : ∀ x y, C x → C y → C (x + y)) : C x := by
+theorem iSup_induction {ι : Sort*} (p : ι → Submodule R M) {motive : M → Prop} {x : M}
+    (hx : x ∈ ⨆ i, p i) (mem : ∀ (i), ∀ x ∈ p i, motive x) (zero : motive 0)
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive x := by
   rw [← mem_toAddSubmonoid, iSup_toAddSubmonoid] at hx
-  exact AddSubmonoid.iSup_induction (x := x) _ hx hp h0 hadd
+  exact AddSubmonoid.iSup_induction (x := x) _ hx mem zero add
 
 /-- A dependent version of `submodule.iSup_induction`. -/
 @[elab_as_elim]
-theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {C : ∀ x, (x ∈ ⨆ i, p i) → Prop}
-    (mem : ∀ (i) (x) (hx : x ∈ p i), C x (mem_iSup_of_mem i hx)) (zero : C 0 (zero_mem _))
-    (add : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
-    (hx : x ∈ ⨆ i, p i) : C x hx := by
-  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, p i) (hc : C x hx) => hc
-  refine iSup_induction p (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, p i), C x hx) hx
+theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {motive : ∀ x, (x ∈ ⨆ i, p i) → Prop}
+    (mem : ∀ (i) (x) (hx : x ∈ p i), motive x (mem_iSup_of_mem i hx)) (zero : motive 0 (zero_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›)) {x : M}
+    (hx : x ∈ ⨆ i, p i) : motive x hx := by
+  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, p i) (hc : motive x hx) => hc
+  refine iSup_induction p (motive := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, p i), motive x hx) hx
     (fun i x hx => ?_) ?_ fun x y => ?_
   · exact ⟨_, mem _ _ hx⟩
   · exact ⟨_, zero⟩
@@ -379,7 +386,7 @@ theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ �
 /-- If a bilinear map takes values in a submodule along two sets, then the same is true along
 the span of these sets. -/
 lemma _root_.LinearMap.BilinMap.apply_apply_mem_of_mem_span {R M N P : Type*} [CommSemiring R]
-    [AddCommGroup M] [AddCommMonoid N] [AddCommMonoid P] [Module R M] [Module R N] [Module R P]
+    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [Module R M] [Module R N] [Module R P]
     (P' : Submodule R P) (s : Set M) (t : Set N)
     (B : M →ₗ[R] N →ₗ[R] P) (hB : ∀ x ∈ s, ∀ y ∈ t, B x y ∈ P')
     (x : M) (y : N) (hx : x ∈ span R s) (hy : y ∈ span R t) :
@@ -392,6 +399,26 @@ lemma _root_.LinearMap.BilinMap.apply_apply_mem_of_mem_span {R M N P : Type*} [C
   | add_right u v₁ v₂ hu hv₁ hv₂ huv₁ huv₂ => simpa using add_mem huv₁ huv₂
   | smul_left t u v hu hv huv => simpa using Submodule.smul_mem _ _ huv
   | smul_right t u v hu hv huv => simpa using Submodule.smul_mem _ _ huv
+
+@[simp]
+lemma biSup_comap_subtype_eq_top {ι : Type*} (s : Set ι) (p : ι → Submodule R M) :
+    ⨆ i ∈ s, (p i).comap (⨆ i ∈ s, p i).subtype = ⊤ := by
+  refine eq_top_iff.mpr fun ⟨x, hx⟩ _ ↦ ?_
+  suffices x ∈ (⨆ i ∈ s, (p i).comap (⨆ i ∈ s, p i).subtype).map (⨆ i ∈ s, (p i)).subtype by
+    obtain ⟨y, hy, rfl⟩ := Submodule.mem_map.mp this
+    exact hy
+  suffices ∀ i ∈ s, (comap (⨆ i ∈ s, p i).subtype (p i)).map (⨆ i ∈ s, p i).subtype = p i by
+    simpa only [map_iSup, biSup_congr this]
+  intro i hi
+  rw [map_comap_eq, range_subtype, inf_eq_right]
+  exact le_biSup p hi
+
+theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N →ₛₗ[σ₁₂] M₂}
+    (h : f ≠ 0) (s : Set (Submodule R M)) (hs : sSup s = N):
+    ∃ m, ∃ h : m ∈ s, f ∘ₛₗ inclusion ((le_sSup h).trans_eq hs) ≠ 0 :=
+  have ⟨_, ⟨m, hm, rfl⟩, ne⟩ := LinearMap.exists_ne_zero_of_sSup_eq_top h (comap N.subtype '' s) <|
+    by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
+  ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.2⟩))⟩
 
 end AddCommMonoid
 
@@ -468,6 +495,15 @@ theorem map_iInf_of_ker_le {f : F} (hf : Surjective f) {ι} {p : ι → Submodul
   conv_rhs => rw [← map_comap_eq_of_surjective hf (⨅ _, _), comap_iInf]
   simp_rw [fun i ↦ comap_map_eq_self (le_iInf_iff.mp h i)]
 
+lemma comap_covBy_of_surjective {f : F} (hf : Surjective f)
+    {p q : Submodule R₂ M₂} (h : p ⋖ q) :
+    p.comap f ⋖ q.comap f := by
+  refine ⟨lt_of_le_of_ne (comap_mono h.1.le) ((comap_injective_of_surjective hf).ne h.1.ne), ?_⟩
+  intro N h₁ h₂
+  refine h.2 (lt_map_of_comap_lt_of_surjective hf h₁) ?_
+  rwa [← comap_lt_comap_iff_of_surjective hf, comap_map_eq, sup_eq_left.mpr]
+  refine (LinearMap.ker_le_comap (f : M →ₛₗ[τ₁₂] M₂)).trans h₁.le
+
 lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ S ⊔ (LinearMap.ker f) = ⊤ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -491,19 +527,6 @@ lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂]
   rw [← hf]
   exact LinearMap.range_domRestrict_eq_range_iff
 
-@[simp]
-lemma biSup_comap_subtype_eq_top {ι : Type*} (s : Set ι) (p : ι → Submodule R M) :
-    ⨆ i ∈ s, (p i).comap (⨆ i ∈ s, p i).subtype = ⊤ := by
-  refine eq_top_iff.mpr fun ⟨x, hx⟩ _ ↦ ?_
-  suffices x ∈ (⨆ i ∈ s, (p i).comap (⨆ i ∈ s, p i).subtype).map (⨆ i ∈ s, (p i)).subtype by
-    obtain ⟨y, hy, rfl⟩ := Submodule.mem_map.mp this
-    exact hy
-  suffices ∀ i ∈ s, (comap (⨆ i ∈ s, p i).subtype (p i)).map (⨆ i ∈ s, p i).subtype = p i by
-    simpa only [map_iSup, biSup_congr this]
-  intro i hi
-  rw [map_comap_eq, range_subtype, inf_eq_right]
-  exact le_biSup p hi
-
 lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempty)
     (p : ι → Submodule R₂ M₂) (hp : ⨆ i ∈ s, p i = ⊤)
     (f : M →ₛₗ[τ₁₂] M₂) (hf : Surjective f) :
@@ -515,7 +538,7 @@ lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempt
   rw [← comap_map_eq, map_iSup_comap_of_sujective hf, hp, comap_top]
 
 lemma biSup_comap_eq_top_of_range_eq_biSup
-    {R R₂ : Type*} [Ring R] [Ring R₂] {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
+    {R R₂ : Type*} [Semiring R] [Ring R₂] {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
     [Module R M] [Module R₂ M₂] {ι : Type*} (s : Set ι) (hs : s.Nonempty)
     (p : ι → Submodule R₂ M₂) (f : M →ₛₗ[τ₁₂] M₂) (hf : LinearMap.range f = ⨆ i ∈ s, p i) :
     ⨆ i ∈ s, (p i).comap f = ⊤ := by
@@ -633,15 +656,15 @@ variable {R M}
 
 theorem toSpanSingleton_isIdempotentElem_iff {e : R} :
     IsIdempotentElem (toSpanSingleton R R e) ↔ IsIdempotentElem e := by
-  simp_rw [IsIdempotentElem, LinearMap.ext_iff, mul_apply, toSpanSingleton_apply, smul_eq_mul,
-    mul_assoc]
+  simp_rw [IsIdempotentElem, LinearMap.ext_iff, Module.End.mul_apply, toSpanSingleton_apply,
+    smul_eq_mul, mul_assoc]
   exact ⟨fun h ↦ by conv_rhs => rw [← one_mul e, ← h, one_mul], fun h _ ↦ by rw [h]⟩
 
 theorem isIdempotentElem_apply_one_iff {f : Module.End R R} :
     IsIdempotentElem (f 1) ↔ IsIdempotentElem f := by
   rw [IsIdempotentElem, ← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, IsIdempotentElem,
     LinearMap.ext_iff]
-  simp_rw [mul_apply]
+  simp_rw [Module.End.mul_apply]
   exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
 
 end

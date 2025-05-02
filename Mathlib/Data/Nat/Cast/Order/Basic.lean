@@ -69,7 +69,7 @@ theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
 lemma _root_.GCongr.natCast_lt_natCast {a b : ℕ} (h : a < b) : (a : α) < b := strictMono_cast h
 
 /-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def castOrderEmbedding : ℕ ↪o α :=
   OrderEmbedding.ofStrictMono Nat.cast Nat.strictMono_cast
 

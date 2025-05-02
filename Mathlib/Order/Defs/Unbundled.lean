@@ -196,24 +196,19 @@ def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 /-- `IsTotal` as a definition, suitable for use in proofs. -/
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
 
-@[deprecated Equivalence.refl (since := "2024-09-13")]
 theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
 
-@[deprecated Equivalence.symm (since := "2024-09-13")]
 theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
   fun _ _ ↦ h.symm
 
-@[deprecated Equivalence.trans (since := "2024-09-13")]
 theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
   fun _ _ _ ↦ h.trans
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
   fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
   fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
 
@@ -244,6 +239,26 @@ lemma Minimal.le_of_le (h : Minimal P x) (hy : P y) (hle : y ≤ x) : x ≤ y :=
 
 lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
   h.2 hy hge
+
+end LE
+
+section LE
+variable {ι : Sort*} {α : Type*} [LE α] {P : ι → Prop} {f : ι → α} {i j : ι}
+
+/-- `Minimal P i` means that `i` is an element with minimal image along `f` satisfying `P`. -/
+def MinimalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f j ≤ f i → f i ≤ f j
+
+/-- `Maximal P i` means that `i` is an element with minimal image along `f` satisfying `P`. -/
+def MaximalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f i ≤ f j → f j ≤ f i
+
+lemma MinimalFor.prop (h : MinimalFor P f i) : P i := h.1
+lemma MaximalFor.prop (h : MaximalFor P f i) : P i := h.1
+
+lemma MinimalFor.le_of_le (h : MinimalFor P f i) (hj : P j) (hji : f j ≤ f i) : f i ≤ f j :=
+  h.2 hj hji
+
+lemma MaximalFor.le_of_le (h : MaximalFor P f i) (hj : P j) (hij : f i ≤ f j) : f j ≤ f i :=
+  h.2 hj hij
 
 end LE
 

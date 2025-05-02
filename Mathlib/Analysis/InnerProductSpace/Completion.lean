@@ -38,8 +38,8 @@ theorem inner_mk_mk (x y : E) :
     inner (mk x) (mk y) = (inner x y : 𝕜) := rfl
 
 instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
-  norm_sq_eq_inner := Quotient.ind norm_sq_eq_inner
-  conj_symm := Quotient.ind₂ inner_conj_symm
+  norm_sq_eq_re_inner := Quotient.ind norm_sq_eq_re_inner
+  conj_inner_symm := Quotient.ind₂ inner_conj_symm
   add_left := Quotient.ind fun x => Quotient.ind₂ <| inner_add_left x
   smul_left := Quotient.ind₂ inner_smul_left
 
@@ -87,13 +87,13 @@ protected theorem continuous_inner :
 @[fun_prop]
 protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α → Completion E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α => inner (f x) (g x) : α → 𝕜) :=
-  UniformSpace.Completion.continuous_inner.comp (hf.prod_mk hg :)
+  UniformSpace.Completion.continuous_inner.comp (hf.prodMk hg :)
 
 instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
-  norm_sq_eq_inner x :=
+  norm_sq_eq_re_inner x :=
     Completion.induction_on x (isClosed_eq (by fun_prop) (by fun_prop))
       fun a => by simp only [norm_coe, inner_coe, inner_self_eq_norm_sq]
-  conj_symm x y :=
+  conj_inner_symm x y :=
     Completion.induction_on₂ x y
       (isClosed_eq (continuous_conj.comp (by fun_prop)) (by fun_prop))
       fun a b => by simp only [inner_coe, inner_conj_symm]

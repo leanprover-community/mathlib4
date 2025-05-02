@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
@@ -274,7 +274,7 @@ this for an `OrderIso` between to partial orders with order topology.
 
 namespace OrderIso
 
-variable {α β : Type*} [PartialOrder α] [PartialOrder β] [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
   [OrderTopology α] [OrderTopology β]
 
 protected theorem continuous (e : α ≃o β) : Continuous e := by

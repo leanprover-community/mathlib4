@@ -70,6 +70,8 @@ theorem innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
     exact eq_singleton_iff_unique_mem.mpr ⟨fun x _ => (inner_zero_right _).ge, this⟩
   exact fun x hx => by simpa [← real_inner_self_nonpos] using hx (-x) (mem_univ _)
 
+variable {s t} in
+@[gcongr]
 theorem innerDualCone_le_innerDualCone (h : t ⊆ s) : s.innerDualCone ≤ t.innerDualCone :=
   fun _ hy x hx => hy x (h hx)
 

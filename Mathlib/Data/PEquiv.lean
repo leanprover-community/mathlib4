@@ -109,7 +109,7 @@ protected def trans (f : α ≃. β) (g : β ≃. γ) :
     α ≃. γ where
   toFun a := (f a).bind g
   invFun a := (g.symm a).bind f.symm
-  inv a b := by simp_all [and_comm, eq_some_iff f, eq_some_iff g, bind_eq_some]
+  inv a b := by simp_all [and_comm, eq_some_iff f, eq_some_iff g, bind_eq_some_iff]
 
 @[simp]
 theorem refl_apply (a : α) : PEquiv.refl α a = some a :=
@@ -186,7 +186,6 @@ def ofSet (s : Set α) [DecidablePred (· ∈ s)] :
   toFun a := if a ∈ s then some a else none
   invFun a := if a ∈ s then some a else none
   inv a b := by
-    dsimp only
     split_ifs with hb ha ha
     · simp [eq_comm]
     · simp [ne_of_mem_of_not_mem hb ha]
@@ -293,7 +292,6 @@ def single (a : α) (b : β) :
   toFun x := if x = a then some b else none
   invFun x := if x = b then some a else none
   inv x y := by
-    dsimp only
     split_ifs with h1 h2
     · simp [*]
     · simp only [mem_def, some.injEq, iff_false, reduceCtorEq] at *
@@ -345,7 +343,7 @@ theorem trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b
   ext
   simp only [eq_none_iff_forall_not_mem, Option.mem_def, f.eq_some_iff] at h
   dsimp [PEquiv.trans, single]
-  simp only [mem_def, bind_eq_some, iff_false, not_exists, not_and, reduceCtorEq]
+  simp only [mem_def, bind_eq_some_iff, iff_false, not_exists, not_and, reduceCtorEq]
   intros
   split_ifs <;> simp_all
 

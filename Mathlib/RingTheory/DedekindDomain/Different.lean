@@ -142,7 +142,7 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
       RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
     rw [IsScalarTower.algebraMap_apply A B (FractionRing B), AlgEquiv.commutes,
       ← IsScalarTower.algebraMap_apply]
-  simp only [AlgEquiv.toRingEquiv_eq_coe, _root_.map_mul, AlgEquiv.coe_ringEquiv,
+  simp only [AlgEquiv.toRingEquiv_eq_coe, map_mul, AlgEquiv.coe_ringEquiv,
     AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, mem_one, AlgEquiv.algebraMap_eq_apply]
 
 variable [IsIntegrallyClosed A]
@@ -560,7 +560,7 @@ lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
     FractionalIdeal.mem_one_iff, forall_exists_index, forall_apply_eq_imp_iff]
   simp_rw [← IsScalarTower.toAlgHom_apply A B L x, ← AlgHom.map_adjoin_singleton]
   simp only [Subalgebra.mem_map, IsScalarTower.coe_toAlgHom', Submodule.one_eq_range,
-    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, ← _root_.map_mul]
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, ← map_mul]
   exact ⟨fun H b ↦ (mul_one b) ▸ H b 1 (one_mem _), fun H _ _ _ ↦ H _⟩
 
 open Polynomial Pointwise in
