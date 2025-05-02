@@ -765,7 +765,8 @@ theorem pi {s : Set ι} (hs : Finite s)
     have hy1' := h1 t y (fun i hi ↦ hy1 i (Or.inr hi))
     clear h1
     -- Express `u \ v` using `x` and `y`.
-    have h1 : u \ v = (t.pi x ∩ (({a} : Set ι).pi x \ ({a} : Set ι).pi y)) ∪ ((t.pi x \ t.pi y) ∩ (({a} : Set ι).pi x ∩ ({a} : Set ι).pi y)):=  by
+    have h1 : u \ v = (t.pi x ∩ (({a} : Set ι).pi x \ ({a} : Set ι).pi y)) ∪
+    ((t.pi x \ t.pi y) ∩ (({a} : Set ι).pi x ∩ ({a} : Set ι).pi y)):=  by
       rw [← hx2, ← hy2, ← union_pi, ← union_pi]
       apply pi_setdiff_eq_union
     -- Show that the two sets from `h1` are disjoint.
