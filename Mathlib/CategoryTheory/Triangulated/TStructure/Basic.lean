@@ -167,6 +167,12 @@ lemma le_of_isLE (X : C) (n : ℤ) [t.IsLE X n] : t.le n X := IsLE.le
 
 lemma ge_of_isGE (X : C) (n : ℤ) [t.IsGE X n] : t.ge n X := IsGE.ge
 
+lemma isLE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsLE X n] : t.IsLE Y n where
+  le := (t.le n).prop_of_iso e (t.le_of_isLE X n)
+
+lemma isGE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsGE X n] : t.IsGE Y n where
+  ge := (t.ge n).prop_of_iso e (t.ge_of_isGE X n)
+
 @[deprecated (since := "2025-02-25")] alias LE := le
 @[deprecated (since := "2025-02-25")] alias GE := ge
 @[deprecated (since := "2025-02-25")] alias LE_shift := le_shift
