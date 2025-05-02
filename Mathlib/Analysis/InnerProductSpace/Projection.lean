@@ -642,11 +642,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
       let v := x - w
       have : ⟪v, w⟫ = 0 := orthogonalProjection_inner_eq_zero x w w.2
       convert norm_sub_eq_norm_add this using 2
-      · rw [LinearEquiv.coe_mk, reflectionLinearEquiv, LinearEquiv.toFun_eq_coe,
-          LinearEquiv.coe_ofInvolutive, LinearMap.sub_apply, LinearMap.id_apply, two_smul,
-          LinearMap.add_apply, LinearMap.comp_apply, Submodule.subtype_apply,
-          ContinuousLinearMap.coe_coe]
-        dsimp [v]
+      · dsimp [reflectionLinearEquiv, v]
         abel
       · simp only [v, add_sub_cancel, eq_self_iff_true] }
 
