@@ -69,6 +69,8 @@ end FinTopCat
 
 namespace FintypeCatDiscrete
 
+/-- Scoped topological space instance on objects of the category of finite types, assigning
+the discrete topology. -/
 scoped instance (X : FintypeCat) : TopologicalSpace X := ⊥
 scoped instance (X : FintypeCat) : DiscreteTopology X := ⟨rfl⟩
 
