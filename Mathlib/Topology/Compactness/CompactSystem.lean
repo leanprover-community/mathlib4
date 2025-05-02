@@ -102,7 +102,6 @@ theorem iff_directed' (hpi : ∀ (s t : Set α), p s → p t → p (s ∩ t)) :
 theorem of_supset {C D : (Set α) → Prop} (hD : IsCompactSystem D) (hCD : ∀ s, C s → D s) :
   IsCompactSystem C := fun s hC hs ↦ hD s (fun i ↦ hCD (s i) (hC i)) hs
 
-
 section ClosedCompact
 
 variable (α : Type*) [TopologicalSpace α]
