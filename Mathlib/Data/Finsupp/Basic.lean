@@ -1052,28 +1052,62 @@ theorem mem_support_finset_sum [AddCommMonoid M] {s : Finset ι} {h : ι → α 
 /-! ### Declarations about `curry` and `uncurry` -/
 
 
-section CurryUncurry
+section Curry
 
-variable [AddCommMonoid M] [AddCommMonoid N]
+section Uncurry
+
+variable [Zero M]
+
+/-- Given a finitely supported function `f` from `α` to the type of
+finitely supported functions from `β` to `M`,
+`uncurry f` is the "uncurried" finitely supported function from `α × β` to `M`. -/
+protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M where
+  toFun x := f x.1 x.2
+  support := f.support.disjiUnion (fun a ↦ (f a).support.map <| .sectR a _) <| by
+    intro a₁ _ a₂ _ hne
+    simp [Finset.disjoint_iff_ne, hne]
+  mem_support_toFun := by aesop
+
+protected theorem uncurry_apply (f : α →₀ β →₀ M) (x : α × β) : f.uncurry x = f x.1 x.2 := rfl
+
+@[simp]
+protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (a : α) (b : β) :
+    f.uncurry (a, b) = f a b :=
+  rfl
+
+end Uncurry
+
+section Zero
+
+variable [DecidableEq α] [Zero M]
 
 /-- Given a finitely supported function `f` from a product type `α × β` to `γ`,
 `curry f` is the "curried" finitely supported function from `α` to the type of
 finitely supported functions from `β` to `γ`. -/
-protected def curry (f : α × β →₀ M) : α →₀ β →₀ M :=
-  f.sum fun p c => single p.1 (single p.2 c)
+protected def curry [DecidableEq α] (f : α × β →₀ M) : α →₀ β →₀ M where
+  toFun a :=
+    { toFun b := f (a, b)
+      support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) (by simp +contextual)
+      mem_support_toFun := by simp }
+  support := f.support.image Prod.fst
+  mem_support_toFun := by simp [DFunLike.ext_iff]
 
 @[simp]
-theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f (x, y) := by
-  classical
-    have : ∀ b : α × β, single b.fst (single b.snd (f b)) x y = if b = (x, y) then f b else 0 := by
-      rintro ⟨b₁, b₂⟩
-      simp only [ne_eq, single_apply, Prod.ext_iff, ite_and]
-      split_ifs <;> simp [single_apply, *]
-    rw [Finsupp.curry, sum_apply, sum_apply, sum_eq_single, this, if_pos rfl]
-    · intro b _ b_ne
-      rw [this b, if_neg b_ne]
-    · intro _
-      rw [single_zero, single_zero, coe_zero, Pi.zero_apply, coe_zero, Pi.zero_apply]
+theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f (x, y) := rfl
+
+@[simp]
+theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
+  ext a b
+  simp
+
+@[simp]
+theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
+  ext ⟨a, b⟩
+  simp
+
+end Zero
+
+end Curry
 
 theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg₀ : ∀ a b, g a b 0 = 0)
     (hg₁ : ∀ a b c₀ c₁, g a b (c₀ + c₁) = g a b c₀ + g a b c₁) :
@@ -1087,29 +1121,6 @@ theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg�
   trans
   · exact sum_single_index sum_zero_index
   exact sum_single_index (hg₀ _ _)
-
-/-- Given a finitely supported function `f` from `α` to the type of
-finitely supported functions from `β` to `M`,
-`uncurry f` is the "uncurried" finitely supported function from `α × β` to `M`. -/
-protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
-  f.sum fun a g => g.sum fun b c => single (a, b) c
-
-@[simp]
-protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (x : α) (y : β) :
-    f.uncurry (x, y) = f x y := by
-  rw [← curry_apply (f.uncurry) x y]
-  simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
-    forall_true_iff, sum_single_index, single_zero, ← single_sum, sum_single]
-
-@[simp]
-theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
-  ext a b
-  rw [curry_apply, Finsupp.uncurry_apply_pair]
-
-@[simp]
-theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
-  ext ⟨a, b⟩
-  rw [Finsupp.uncurry_apply_pair, curry_apply]
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
