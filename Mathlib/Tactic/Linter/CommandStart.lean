@@ -244,6 +244,25 @@ def outside? (rgs : Std.HashSet String.Range) (rg : String.Range) : Bool :=
   let superRanges := rgs.filter fun {start := a, stop := b} => (a ≤ rg.start && rg.stop ≤ b)
   superRanges.isEmpty
 
+/-- `mkWindow orig start ctx length` extracts from `orig` a string that starts at the first
+non-whitespace character before `start`, then expands to cover `length + ctx` more characters
+and continues still until the first non-whitespace character.
+
+In essence, it extracts the substring of `orig` that begins at `start`, continues for `length + ctx`
+plus expands left and right until it encounters the first whitespace character, to avoid
+cutting into "words".
+
+*Note*. `start` is the number of characters *from the right* where our focus is!
+-/
+def mkWindow (orig : String) (start ctx length : Nat) : String :=
+  let head := orig.dropRight (start + 1) -- `orig`, up to one character before the discrepancy
+  let middle := orig.takeRight (start + 1) --
+  let headCtx := head.takeRightWhile (!·.isWhitespace)
+  let middleCtx := middle.dropRight headCtx.length
+  let tail := middleCtx.drop (length + ctx) |>.takeWhile (!·.isWhitespace)
+  s!"{headCtx}{middleCtx.take (length + ctx)}{tail}"
+  --orig.takeRight (start + ctx) |>.take (length + 2 * ctx -  1) |>.replace "\n" "⏎"
+
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.commandStart (← getOptions) do
@@ -295,11 +314,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       unless rg.stop ≤ upTo do return
       unless docStringEnd ≤ rg.start do return
 
-      let ctx := 5 -- the number of characters before and after of the mismatch that linter prints
-      let srcWindow :=
-        orig.takeRight (s.srcNat + ctx) |>.take (s.length + 2 * ctx -  1) |>.replace "\n" "⏎"
-      let expectedWindow :=
-        st.takeRight (s.fmtPos + ctx) |>.take (2 * ctx) |>.replace "\n" "⏎"
+      let ctx := 4 -- the number of characters after the mismatch that linter prints
+      let srcWindow := mkWindow orig s.srcNat ctx s.length
+      let expectedWindow := mkWindow st s.fmtPos ctx (1)
       Linter.logLint linter.style.commandStart (.ofRange rg)
         m!"{s.msg}\n\n\
           Current syntax:  '{srcWindow}'\n\

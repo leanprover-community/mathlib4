@@ -74,8 +74,8 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 /--
 warning: extra space
 
-Current syntax:  'mple    : Tr'
-Expected syntax: 'mple : Tru'
+Current syntax:  'example    : True'
+Expected syntax: 'example : True'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -89,8 +89,8 @@ example : True := trivial
 /--
 warning: extra space
 
-Current syntax:  'mple  :  T'
-Expected syntax: 'mple : Tru'
+Current syntax:  'example  :  True'
+Expected syntax: 'example : True'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -100,8 +100,8 @@ example  :  True :=trivial
 /--
 warning: missing space
 
-Current syntax:  'le (a: Nat'
-Expected syntax: 'le (a : Na'
+Current syntax:  '(a: Nat)'
+Expected syntax: '(a : Nat'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -111,8 +111,8 @@ variable (a: Nat)
 /--
 warning: missing space
 
-Current syntax:  'e (_a: Nat'
-Expected syntax: 'e (_a : Na'
+Current syntax:  '(_a: Nat)'
+Expected syntax: '(_a : Nat)'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -122,8 +122,8 @@ example (_a: Nat) : True := trivial
 /--
 warning: missing space
 
-Current syntax:  'le {a: Nat'
-Expected syntax: 'le {a : Na'
+Current syntax:  '{a: Nat}'
+Expected syntax: '{a : Nat}'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -148,8 +148,8 @@ example (_a : Nat) (_b : Int) : True := trivial
 /--
 warning: missing space
 
-Current syntax:  ' {a :Nat} '
-Expected syntax: ' {a : Nat}'
+Current syntax:  ':Nat}'
+Expected syntax: ': Nat}'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -159,15 +159,15 @@ example {a :Nat} : a = a := rfl
 /--
 warning: extra space
 
-Current syntax:  'mple  {a :'
-Expected syntax: 'mple {a : '
+Current syntax:  'example  {a :Nat}'
+Expected syntax: 'example {a :'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 ---
 warning: missing space
 
-Current syntax:  ' {a :Nat} '
-Expected syntax: ' {a : Nat}'
+Current syntax:  ':Nat}'
+Expected syntax: ': Nat}'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -180,8 +180,8 @@ note: this linter can be disabled with `set_option linter.unusedVariables false`
 ---
 warning: missing space
 
-Current syntax:  ' Nat}{b : '
-Expected syntax: ' Nat} {b :'
+Current syntax:  'Nat}{b :'
+Expected syntax: 'Nat} {b :'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -191,7 +191,7 @@ example {a : Nat}{b : Nat} : a = a := rfl
 /--
 warning: extra space
 
-Current syntax:  'Nat}  : a '
+Current syntax:  'Nat}  : a'
 Expected syntax: 'Nat} : a ='
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
@@ -203,7 +203,7 @@ example {a : Nat}  : a = a := rfl
 warning: extra space
 
 Current syntax:  'alpha   ] {a'
-Expected syntax: 'alpha] {a '
+Expected syntax: 'alpha] {a'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -239,8 +239,8 @@ def Type.Hello := 0
 /--
 warning: extra space
 
-Current syntax:  'mple  : Tr'
-Expected syntax: 'mple : Tru'
+Current syntax:  'example  : True'
+Expected syntax: 'example : True'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
