@@ -359,3 +359,34 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
     rw [ZMod.val_one'', pow_one]
     · exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
     · exact (one_lt_pow₀ ‹Fact p.Prime›.1.one_lt hk').ne'
+
+@[deprecated (since := "2025-05-02")]
+alias IsPrimitiveRoot.autToPow_eq_ModularCyclotomicCharacter :=
+  IsPrimitiveRoot.autToPow_eq_modularCyclotomicCharacter
+@[deprecated (since := "2025-05-02")]
+alias CyclotomicCharacter := cyclotomicCharacter
+@[deprecated (since := "2025-05-02")]
+alias CyclotomicCharacter.continuous := cyclotomicCharacter.continuous
+@[deprecated (since := "2025-05-02")]
+alias CyclotomicCharacter.spec := cyclotomicCharacter.spec
+@[deprecated (since := "2025-05-02")]
+alias CyclotomicCharacter.toFun := cyclotomicCharacter.toFun
+@[deprecated (since := "2025-05-02")]
+alias CyclotomicCharacter.toZModPow := cyclotomicCharacter.toZModPow
+@[deprecated (since := "2025-05-02")]
+alias ModularCyclotomicCharacter := modularCyclotomicCharacter
+@[deprecated (since := "2025-05-02")]
+alias ModularCyclotomicCharacter' := modularCyclotomicCharacter'
+@[deprecated (since := "2025-05-02")]
+alias ModularCyclotomicCharacter'.spec' := modularCyclotomicCharacter'.spec'
+@[deprecated (since := "2025-05-02")]
+alias ModularCyclotomicCharacter'.unique' := modularCyclotomicCharacter'.unique'
+@[deprecated (since := "2025-05-02")]
+alias ModularCyclotomicCharacter.aux := modularCyclotomicCharacter.aux
+@[deprecated (since := "2025-05-02")]
+alias ModularCyclotomicCharacter.aux_spec := modularCyclotomicCharacter.aux_spec
+@[deprecated (since := "2025-05-02")]
+alias ModularCyclotomicCharacter.pow_dvd_aux_pow_sub_aux_pow :=
+  modularCyclotomicCharacter.pow_dvd_aux_pow_sub_aux_pow
+@[deprecated (since := "2025-05-02")]
+alias ModularCyclotomicCharacter.toFun := modularCyclotomicCharacter.toFun
