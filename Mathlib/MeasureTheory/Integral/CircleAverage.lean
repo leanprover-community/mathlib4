@@ -41,7 +41,9 @@ Define `circleAverage f c R` as the average value of `f` on the circle with cent
 -/
 noncomputable def circleAverage : E :=
   (2 * π)⁻¹ • ∫ θ in (0)..2 * π, f (circleMap c R θ)
-
+@[simp]
+lemma circleAverage_def : circleAverage f c R =
+  (2 * π)⁻¹ • ∫ θ in (0)..2 * π, f (circleMap c R θ) := rfl
 /-- Expression of `circleAverage´ in terms of interval averages. -/
 lemma circleAverage_eq_intervalAverage :
     circleAverage f c R = ⨍ θ in (0)..2 * π, f (circleMap c R θ) := by
@@ -59,7 +61,7 @@ lemma circleAverage_eq_intervalAverage :
 /--
 Expression of `circleAverage´ with arbitrary center in terms of `circleAverage` with center zero.
 -/
-lemma circleAverage_shiftCenter :
+lemma circleAverage_fun_add :
     circleAverage f c R = circleAverage (fun z ↦ f (z + c)) 0 R := by
   unfold circleAverage circleMap
   congr
@@ -70,19 +72,23 @@ lemma circleAverage_shiftCenter :
 /-!
 ## Congruence Lemmata
 -/
+/-- Circle averages do not change when shifting the angle. -/
+lemma circleAverage_congr_angleShift (η : ℝ): circleAverage f c R =
+    (2 * π)⁻¹ • ∫ (θ : ℝ) in (0)..2 * π, f (circleMap c R (θ + η)) := by
+  rw [intervalIntegral.integral_comp_add_right (fun θ ↦ f (circleMap c R θ))]
+  have t₀ : (fun θ ↦ f (circleMap c R θ)).Periodic (2 * π) :=
+    fun x ↦ by simp [periodic_circleMap c R x]
+  have := t₀.intervalIntegral_add_eq 0 η
+  rw [zero_add, add_comm] at this
+  rw [zero_add]
+  simp only [circleAverage, mul_inv_rev]
+  congr
 
 /-- Circle averages do not change when replacing the radius by its negative. -/
 theorem circleAverage_congr_negRadius :
     circleAverage f c R = circleAverage f c (-R) := by
   unfold circleAverage
-  congr 1
-  simp_rw [circleMap_negRadius]
-  have t₀ : (fun θ ↦ f (circleMap c R θ)).Periodic (2 * π) :=
-    fun x ↦ by simp [periodic_circleMap c R x]
-  rw [intervalIntegral.integral_comp_add_right (fun θ ↦ f (circleMap c R θ))]
-  have := t₀.intervalIntegral_add_eq 0 π
-  rw [zero_add, add_comm] at this
-  simp_all
+  simp_rw [circleMap_negRadius, ← circleAverage_def, circleAverage_congr_angleShift π]
 
 /-- Circle averages do not change when replacing the radius by its absolute value. -/
 theorem circleAverage_congr_absRadius :
@@ -115,8 +121,8 @@ theorem circleAverage_smul :
 
 /-- Circle averages commute with skalar multiplication. -/
 theorem circleAverage_smul_fun :
-    circleAverage (fun z ↦ a • f z) c R = a • circleAverage f c R := by
-  apply circleAverage_smul
+    circleAverage (fun z ↦ a • f z) c R = a • circleAverage f c R := 
+  circleAverage_smul
 
 /-- Circle averages commute with addition. -/
 theorem circleAverage_add (hf₁ : CircleIntegrable f₁ c R) (hf₂ : CircleIntegrable f₂ c R) :
