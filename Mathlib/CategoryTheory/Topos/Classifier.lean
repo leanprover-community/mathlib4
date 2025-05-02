@@ -11,6 +11,8 @@ import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 import Mathlib.CategoryTheory.Subobject.Presheaf
 import Mathlib.CategoryTheory.Yoneda.ULift
 
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+
 /-!
 
 # Subobject Classifier
@@ -49,6 +51,11 @@ Let `C` refer to a category with a terminal object.
 ## References
 
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MLM92]
+
+## TODO
+
+* Refactor the `HasClassifier` API to use `Classifier.mk'`, so that talking about
+  an abstract subobject classifier doesn't require `HasTerminal`.
 
 -/
 
@@ -154,6 +161,13 @@ lemma χ_id (X : C) : χ (𝟙 X) = terminal.from X ≫ truth C := by
 @[simp]
 lemma χ_comp_id {X Y : C} (f : X ⟶ Y) : f ≫ χ (𝟙 Y) = χ (𝟙 X) := by
   simp [χ_id]
+
+@[simp]
+lemma χ_naturality [HasPullbacks C] {X Y Z : C} (g : X ⟶ Z) (f : Y ⟶ Z) [Mono f] :
+    g ≫ χ f = χ (pullback.snd f g) := by
+  apply unique
+  rw [IsPullback.flip_iff, ← terminal.comp_from (pullback.fst f g)]
+  exact IsPullback.paste_horiz (IsPullback.of_hasPullback f g) (isPullback_χ f).flip
 
 /-- `truth C` is a regular monomorphism (because it is split). -/
 noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
@@ -333,7 +347,7 @@ omit [HasPullbacks C] [HasClassifier C] in
 `Subobject.mk m₁`, `Subobject.mk m₂` are equal.
 
 This version takes an arbitrary choice of subobject classifier. -/
-lemma χ_eq_iff_subobject_eq' (cls : Classifier C) {U₁ U₂ X : C}
+lemma χ_ext_iff' (cls : Classifier C) {U₁ U₂ X : C}
     {m₁ : U₁ ⟶ X} {m₂ : U₂ ⟶ X} [Mono m₁] [Mono m₂] :
     cls.χ m₁ = cls.χ m₂ ↔ Subobject.mk m₁ = Subobject.mk m₂ := by
   -- let ⟨Ω, truth, χ, isPullback, uniq⟩ := cls
@@ -353,7 +367,7 @@ omit [HasClassifier C] in
 lemma subobjectEquivClassifying_ofPullbacks'_apply_mk
     (Ω : Classifier C) (X : C) {U : C} (m : U ⟶ X) [Mono m] :
     subobjectEquivClassifying_ofPullbacks' Ω X (Subobject.mk m) = Ω.χ m := by
-  simp [χ_eq_iff_subobject_eq']
+  simp [χ_ext_iff']
 
 /-- For any `X : C` when `C` has all pullbacks and a subobject classifier, subobjects of `X` are in
 bijection with morphisms `X ⟶ Ω C`.
@@ -379,21 +393,33 @@ omit [HasPullbacks C] in
 `Subobject.mk m₁`, `Subobject.mk m₂` are equal.
 
 This version uses the `HasClassifier` API. -/
-lemma χ_eq_iff_subobject_eq {U₁ U₂ X : C} {m₁ : U₁ ⟶ X} {m₂ : U₂ ⟶ X} [Mono m₁] [Mono m₂] :
+lemma χ_ext_iff {U₁ U₂ X : C} {m₁ : U₁ ⟶ X} {m₂ : U₂ ⟶ X} [Mono m₁] [Mono m₂] :
     χ m₁ = χ m₂ ↔ Subobject.mk m₁ = Subobject.mk m₂ := by
   simp_rw [χ.eq_def]
-  simp [χ_eq_iff_subobject_eq' (HasClassifier.exists_classifier.some)]
+  simp [χ_ext_iff' (HasClassifier.exists_classifier.some)]
+
+lemma χ_comp_eq_iff_isPullback {A X Y Z : C}
+    (g : X ⟶ Z) (f : Y ⟶ Z) [Mono f] (r : A ⟶ X) [Mono r] :
+    g ≫ χ f = χ r ↔ ∃ s, IsPullback r s g f := by
+  simp_rw [χ_naturality, χ_ext_iff]
+  constructor <;> intro h
+  · let ι := Subobject.isoOfMkEqMk _ _ h
+    exact ⟨ι.inv ≫ pullback.fst f g,
+      (IsPullback.of_iso_pullback
+        ⟨by simp [ι, pullback.condition, reassoc_of% Subobject.ofMkLEMk_comp (f := r)]⟩
+        ι.symm (by simp) (by simp [ι])).flip⟩
+  · obtain ⟨s, h⟩ := h
+    fapply Subobject.mk_eq_mk_of_comm
+    · exact h.flip.isoPullback.symm
+    · simp
 
 lemma subobjectEquivClassifying_ofPullbacks_apply_mk (X : C) {U : C} (m : U ⟶ X) [Mono m] :
     subobjectEquivClassifying_ofPullbacks X (Subobject.mk m) = χ m := by
-  simp [χ_eq_iff_subobject_eq]
+  simp [χ_ext_iff]
 
 noncomputable instance
     isTerminal_ofPresheafRepresentableBy {Ω : C} (hΩ : RepresentableBy (Subobject.presheaf C) Ω) :
     IsTerminal (Subobject.underlying.obj (hΩ.homEquiv (𝟙 Ω))) :=
-  -- let ⟨Ω, hΩ⟩ := Classical.indefiniteDescription _ inst.has_representation
-  -- let hΩ := hΩ.some
-  -- let χ {X} : Subobject X ≃ (X ⟶ Ω) := hΩ.homEquiv.symm
   let truth := (hΩ.homEquiv (𝟙 Ω)).arrow
   let top U := hΩ.homEquiv.symm (Subobject.mk (𝟙 U))
   { lift
@@ -549,7 +575,7 @@ end
 open Function Classical in
 
 /-- The classifying object of `Type u` is `ULift Bool`. -/
-noncomputable instance : Classifier (Type u) where
+noncomputable def classifierType : Classifier (Type u) where
   Ω := ULift Bool
   truth := fun _ ↦ ⟨true⟩
   χ {α β} f [_] := extend f (fun _ ↦ ⟨true⟩) (fun _ ↦ ⟨false⟩)
@@ -595,6 +621,41 @@ noncomputable instance : Classifier (Type u) where
         uniq_term.eq_default _ |>.trans <| uniq_term.default_eq _
       replace this := congrFun (this .left) none
       simpa using hb _ this
+
+instance : HasClassifier (Type u) := ⟨⟨classifierType⟩⟩
+
+-- #synth HasClassifier (Type u)
+
+-- section variable {C : Type u₀} [Category.{v₀} C] {D : Type u} [Category.{v} D]
+
+-- def Functor.emptyFlipIsoConst : (empty (C ⥤ D)).flip ≅ (const C).obj (empty D) :=
+--   NatIso.ofComponents (fun _ ↦ emptyExt _ _)
+
+-- open HasClassifier in
+-- /-- Subfunctors are classified pointwise. -/
+-- noncomputable instance
+--     -- {C : Type u₀} [Category.{v₀} C] {D : Type u} [Category.{v} D]
+--     [HasPullbacks D] [HasTerminal D] [HasClassifier D] : Classifier (C ⥤ D) where
+--   Ω := (const C).obj (Ω D)
+--   truth :=
+--     let termIsTerm : ⊤_ (C ⥤ D) ≅ (const C).obj (⊤_ D) :=
+--       limitIsoFlipCompLim _ ≪≫ isoWhiskerRight Functor.emptyFlipIsoConst _
+--         ≪≫ NatIso.ofComponents (fun _ ↦ Iso.refl _)
+--     termIsTerm.hom ≫ (const C).map (truth D)
+--   χ {F G} ϑ hϑ :=
+--     have hϑ' := NatTrans.mono_iff_mono_app _ |>.mp hϑ
+--     { app X := χ (ϑ.app X)
+--       naturality ⦃X Y⦄ f := by
+--         simp [-χ_naturality, χ_comp_eq_iff_isPullback]
+--         have := ϑ.naturality f
+--         use F.map f
+--         -- refine ⟨F.map f, IsPullback.of_iso_pullback ⟨by simp⟩ ?ι ?h₁ ?h₂⟩
+--      }
+--   isPullback := _
+--   uniq := _
+    -- let F_const : (C ⥤ D) ⥤ (C ⥤ (Ω D)) :=
+    --   Functor.const C ⋙ (HasClassifier.exists_classifier.some.map F)
+
 
 
 end CategoryTheory
