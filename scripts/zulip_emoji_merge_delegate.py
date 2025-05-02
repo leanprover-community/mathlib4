@@ -88,9 +88,6 @@ for message in messages:
     if match:
         print(f"matched: '{message}'")
 
-        # Removing all previous emoji reactions.
-        # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
-        print("Removing previous reactions, if present.")
         def remove_reaction(name: str, emoji_name: str, **kwargs) -> None:
             print(f'Removing {name}')
             result = client.remove_reaction({
@@ -99,6 +96,17 @@ for message in messages:
                 **kwargs
             })
             print(f"result: '{result}'")
+        def add_reaction(name: str, emoji_name: str) -> None:
+            print(f'adding {name} emoji')
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": emoji_name
+            })
+
+        # Removing all previous emoji reactions.
+        # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
+        print("Removing previous reactions, if present.")
+
 
         if has_peace_sign:
             remove_reaction('delegated', 'peace_sign')
@@ -116,12 +124,6 @@ for message in messages:
 
         # Apply the appropriate emoji reaction.
         print("Applying reactions, as appropriate.")
-        def add_reaction(name: str, emoji_name: str) -> None:
-            print(f'adding {name} emoji')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": emoji_name
-            })
         if 'ready-to-merge' == LABEL_STATUS:
             add_reaction('ready-to-merge', 'bors')
         elif 'delegated' == LABEL_STATUS:
@@ -131,7 +133,6 @@ for message in messages:
                 add_reaction('awaiting-author', 'writing')
             elif LABEL_NAME == 'maintainer-merge':
                 add_reaction('maintainer-merge', 'hammer')
-
         elif LABEL_STATUS == 'closed':
             add_reaction('closed-pr', 'closed-pr')
         elif LABEL_STATUS == 'unlabeled':
