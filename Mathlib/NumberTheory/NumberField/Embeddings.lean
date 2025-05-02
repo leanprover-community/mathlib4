@@ -148,6 +148,26 @@ open scoped ComplexConjugate
 
 variable {K : Type*} [Field K] {k : Type*} [Field k]
 
+variable (K) in
+/--
+A (random) lift of the complex embedding `φ : k →+* ℂ` to an extension `K` of `k`.
+-/
+noncomputable def lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) : K →+* ℂ := by
+  letI := φ.toAlgebra
+  exact (IsAlgClosed.lift (R := k)).toRingHom
+
+@[simp]
+theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
+    (lift K φ).comp (algebraMap k K) = φ := by
+  unfold lift
+  letI := φ.toAlgebra
+  rw [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.algebraMap_toAlgebra']
+
+@[simp]
+theorem lift_algebraMap_apply [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) (x : k) :
+    lift K φ (algebraMap k K x) = φ x :=
+  RingHom.congr_fun (lift_comp_algebraMap φ) x
+
 /-- The conjugate of a complex embedding as a complex embedding. -/
 abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 
@@ -668,6 +688,9 @@ lemma comap_id (w : InfinitePlace K) : w.comap (RingHom.id K) = w := rfl
 lemma comap_comp (w : InfinitePlace K) (f : F →+* K) (g : k →+* F) :
     w.comap (f.comp g) = (w.comap f).comap g := rfl
 
+lemma comap_mk_lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
+    (mk (ComplexEmbedding.lift K φ)).comap (algebraMap k K) = mk φ := by simp
+
 lemma IsReal.comap (f : k →+* K) {w : InfinitePlace K} (hφ : IsReal w) :
     IsReal (w.comap f) := by
   rw [← mk_embedding w, comap_mk, isReal_mk_iff]
@@ -680,9 +703,7 @@ lemma isReal_comap_iff (f : k ≃+* K) {w : InfinitePlace K} :
 
 lemma comap_surjective [Algebra k K] [Algebra.IsAlgebraic k K] :
     Function.Surjective (comap · (algebraMap k K)) := fun w ↦
-  letI := w.embedding.toAlgebra
-  ⟨mk (IsAlgClosed.lift (M := ℂ) (R := k)).toRingHom,
-    by simp [this, comap_mk, RingHom.algebraMap_toAlgebra]⟩
+  ⟨(mk (ComplexEmbedding.lift K  w.embedding)), by simp⟩
 
 lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤ mult w := by
   rw [mult, mult]

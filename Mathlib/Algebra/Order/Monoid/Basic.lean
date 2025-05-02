@@ -65,6 +65,14 @@ alias Function.Injective.linearOrderedCancelCommMonoid := Function.Injective.isO
 @[deprecated (since := "2025-04-10")]
 alias Function.Injective.linearOrderedCancelAddCommMonoid :=
   Function.Injective.isOrderedCancelAddMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedCommGroup := Function.Injective.isOrderedMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedAddCommGroup := Function.Injective.isOrderedAddMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedCommGroup := Function.Injective.isOrderedMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedAddCommGroup := Function.Injective.isOrderedAddMonoid
 
 -- TODO find a better home for the next two constructions.
 /-- The order embedding sending `b` to `a * b`, for some fixed `a`.
