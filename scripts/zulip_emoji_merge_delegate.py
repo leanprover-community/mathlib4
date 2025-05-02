@@ -10,10 +10,12 @@ import re
 ZULIP_API_KEY = sys.argv[1]
 ZULIP_EMAIL = sys.argv[2]
 ZULIP_SITE = sys.argv[3]
-LABEL = sys.argv[4]
+# e.g. 'labeled', 'unlabeled', 'delegated' or 'closed' (does not contain the label name when
+# a normal label was applied (as opposed to e.g. a bors command)
+LABEL_STATUS = sys.argv[4]
 PR_NUMBER = sys.argv[5]
 
-print(f"LABEL: '{LABEL}'")
+print(f"LABEL: '{LABEL_STATUS}'")
 print(f"PR_NUMBER: '{PR_NUMBER}'")
 
 # Initialize Zulip client
@@ -117,18 +119,18 @@ for message in messages:
                 "message_id": message['id'],
                 "emoji_name": emoji_name
             })
-        if 'ready-to-merge' == LABEL:
+        if 'ready-to-merge' == LABEL_STATUS:
             add_reaction('ready-to-merge', 'bors')
-        elif 'delegated' == LABEL:
+        elif 'delegated' == LABEL_STATUS:
             add_reaction('delegated', 'peace_sign')
-        elif 'maintainer-merge' == LABEL:
+        elif 'maintainer-merge' == LABEL_STATUS:
             add_reaction('maintainer-merge', 'hammer')
-        elif LABEL == 'labeled':
+        elif LABEL_STATUS == 'labeled':
             add_reaction('awaiting-author', 'writing')
-        elif LABEL == 'closed':
+        elif LABEL_STATUS == 'closed':
             add_reaction('closed-pr', 'closed-pr')
-        elif LABEL == 'unlabeled':
+        elif LABEL_STATUS == 'unlabeled':
             print('awaiting-author removed')
             # The reaction was already removed.
-        elif LABEL.startswith("[Merged by Bors]"):
+        elif LABEL_STATUS.startswith("[Merged by Bors]"):
             add_reaction('[Merged by Bors]', 'merge')
