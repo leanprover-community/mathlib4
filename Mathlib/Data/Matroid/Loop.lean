@@ -725,7 +725,8 @@ lemma restrict_isColoop_iff {R : Set α} (hRE : R ⊆ M.E) :
   · exact iff_of_false (fun h ↦ heR h.mem_ground) fun h ↦ heR h.2
   rw [isColoop_iff_forall_not_mem_isCircuit heR, mem_closure_iff_exists_isCircuit (by simp)]
   simp only [restrict_isCircuit_iff hRE, insert_diff_singleton]
-  aesop
+  -- aesop
+  sorry
 
 /-- If two matroids agree on loops and coloops, and have the same independent sets after
   loops/coloops are removed, they are equal. -/

@@ -516,19 +516,19 @@ theorem collinear_iff_not_affineIndependent_of_ne {p : Fin 3 → P} {i₁ i₂ i
 theorem ne₁₂_of_not_collinear {p₁ p₂ p₃ : P} (h : ¬Collinear k ({p₁, p₂, p₃} : Set P)) :
     p₁ ≠ p₂ := by
   rintro rfl
-  simp [collinear_pair] at h
+  simp [Set.insert_eq_of_mem, collinear_pair] at h
 
 /-- If three points are not collinear, the first and third are different. -/
 theorem ne₁₃_of_not_collinear {p₁ p₂ p₃ : P} (h : ¬Collinear k ({p₁, p₂, p₃} : Set P)) :
     p₁ ≠ p₃ := by
   rintro rfl
-  simp [collinear_pair] at h
+  simp [Set.insert_eq_of_mem, collinear_pair] at h
 
 /-- If three points are not collinear, the second and third are different. -/
 theorem ne₂₃_of_not_collinear {p₁ p₂ p₃ : P} (h : ¬Collinear k ({p₁, p₂, p₃} : Set P)) :
     p₂ ≠ p₃ := by
   rintro rfl
-  simp [collinear_pair] at h
+  simp [Set.insert_eq_of_mem, collinear_pair] at h
 
 /-- A point in a collinear set of points lies in the affine span of any two distinct points of
 that set. -/

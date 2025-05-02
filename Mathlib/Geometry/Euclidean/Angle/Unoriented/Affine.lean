@@ -382,8 +382,8 @@ theorem collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ :
     · exact Or.inl (h.angle₃₁₂_eq_zero_of_ne h₃₂)
     · exact Or.inl (h.angle₂₃₁_eq_zero_of_ne h₁₂)
   · rcases h with (rfl | rfl | h | h)
-    · simpa using collinear_pair ℝ p₁ p₃
-    · simpa using collinear_pair ℝ p₁ p₃
+    · simpa [Set.insert_eq_of_mem] using collinear_pair ℝ p₁ p₃
+    · simpa [Set.insert_eq_of_mem] using collinear_pair ℝ p₁ p₃
     · rw [angle_eq_zero_iff_ne_and_wbtw] at h
       rcases h with (⟨-, h⟩ | ⟨-, h⟩)
       · rw [Set.insert_comm]

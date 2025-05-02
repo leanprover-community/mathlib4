@@ -845,7 +845,8 @@ a neighborhood of this point. -/
 theorem contMDiffAt_iff_contMDiffOn_nhds
     [IsManifold I n M] [IsManifold I' n M'] (hn : n ≠ ∞) :
     ContMDiffAt I I' n f x ↔ ∃ u ∈ 𝓝 x, ContMDiffOn I I' n f u := by
-  simp [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_contMDiffOn_nhds hn, nhdsWithin_univ]
+  simp [insert_eq_of_mem, ← contMDiffWithinAt_univ,
+    contMDiffWithinAt_iff_contMDiffOn_nhds hn, nhdsWithin_univ]
 
 /-- Note: This does not hold for `n = ∞`. `f` being `C^∞` at `x` means that for every `n`, `f` is
 `C^n` on some neighborhood of `x`, but this neighborhood can depend on `n`. -/

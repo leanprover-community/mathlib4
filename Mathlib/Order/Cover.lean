@@ -453,7 +453,7 @@ variable {s t : Set α} {a : α}
   by_cases ha : a ∈ s
   · convert wcovBy_insert a _
     ext
-    simp [ha]
+    simp [insert_eq_of_mem, ha]
   · simp [ha]
 
 @[simp] lemma covBy_insert (ha : a ∉ s) : s ⋖ insert a s :=

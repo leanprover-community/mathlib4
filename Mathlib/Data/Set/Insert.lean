@@ -58,7 +58,6 @@ theorem eq_of_not_mem_of_mem_insert : b ∈ insert a s → b ∉ s → b = a :=
 theorem mem_insert_iff {x a : α} {s : Set α} : x ∈ insert a s ↔ x = a ∨ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem insert_eq_of_mem {a : α} {s : Set α} (h : a ∈ s) : insert a s = s :=
   ext fun _ => or_iff_right_of_imp fun e => e.symm ▸ h
 
@@ -492,7 +491,7 @@ theorem subset_pair_iff_eq {x y : α} : s ⊆ {x, y} ↔ s = ∅ ∨ s = {x} ∨
   refine ⟨?_, by rintro (rfl | rfl | rfl | rfl) <;> simp [pair_subset_iff]⟩
   rw [subset_insert_iff, subset_singleton_iff_eq, subset_singleton_iff_eq,
     ← subset_empty_iff (s := s \ {x}), diff_subset_iff, union_empty, subset_singleton_iff_eq]
-  have h : x ∈ s → {y} = s \ {x} → s = {x,y} := fun h₁ h₂ ↦ by simp [h₁, h₂]
+  have h : x ∈ s → {y} = s \ {x} → s = {x,y} := fun h₁ h₂ ↦ by simp [insert_eq_of_mem, h₁, h₂]
   tauto
 
 theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :

@@ -1044,7 +1044,7 @@ theorem HasFPowerSeriesAt.isBigO_sub_partialSum_pow
     (hf : HasFPowerSeriesAt f p x) (n : ℕ) :
     (fun y : E => f (x + y) - p.partialSum n y) =O[𝓝 0] fun y => ‖y‖ ^ n := by
   rw [← hasFPowerSeriesWithinAt_univ] at hf
-  simpa using hf.isBigO_sub_partialSum_pow n
+  simpa [insert_eq_of_mem] using hf.isBigO_sub_partialSum_pow n
 
 /-- If `f` has formal power series `∑ n, pₙ` in a set, within a ball of radius `r`, then
 for `y, z` in any smaller ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is
@@ -1121,7 +1121,7 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
       =O[𝓟 (EMetric.ball (x, x) r')] fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
-  simpa using hf.isBigO_image_sub_image_sub_deriv_principal hr
+  simpa [insert_eq_of_mem] using hf.isBigO_image_sub_image_sub_deriv_principal hr
 
 /-- If `f` has formal power series `∑ n, pₙ` within a set, on a ball of radius `r`, then for `y, z`
 in any smaller ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded above
@@ -1166,7 +1166,7 @@ theorem HasFPowerSeriesAt.isBigO_image_sub_norm_mul_norm_sub (hf : HasFPowerSeri
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) =O[𝓝 (x, x)] fun y =>
       ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   rw [← hasFPowerSeriesWithinAt_univ] at hf
-  simpa using hf.isBigO_image_sub_norm_mul_norm_sub
+  simpa [insert_eq_of_mem] using hf.isBigO_image_sub_norm_mul_norm_sub
 
 /-- If a function admits a power series expansion within a set at `x`, then it is the uniform limit
 of the partial sums of this power series on strict subdisks of the disk of convergence, i.e.,
@@ -1193,7 +1193,7 @@ theorem HasFPowerSeriesOnBall.tendstoUniformlyOn {r' : ℝ≥0} (hf : HasFPowerS
     TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
       (Metric.ball (0 : E) r') := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
-  simpa using hf.tendstoUniformlyOn h
+  simpa [insert_eq_of_mem] using hf.tendstoUniformlyOn h
 
 /-- If a function admits a power series expansion within a set at `x`, then it is the locally
 uniform limit of the partial sums of this power series on the disk of convergence, i.e., `f (x + y)`
@@ -1219,7 +1219,7 @@ theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn (hf : HasFPowerSeriesOnB
     TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
       (EMetric.ball (0 : E) r) := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
-  simpa using hf.tendstoLocallyUniformlyOn
+  simpa [insert_eq_of_mem] using hf.tendstoLocallyUniformlyOn
 
 /-- If a function admits a power series expansion within a set at `x`, then it is the uniform limit
 of the partial sums of this power series on strict subdisks of the disk of convergence, i.e., `f y`
@@ -1240,7 +1240,7 @@ theorem HasFPowerSeriesOnBall.tendstoUniformlyOn' {r' : ℝ≥0} (hf : HasFPower
     (h : (r' : ℝ≥0∞) < r) :
     TendstoUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop (Metric.ball (x : E) r') := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
-  simpa using hf.tendstoUniformlyOn' h
+  simpa [insert_eq_of_mem] using hf.tendstoUniformlyOn' h
 
 /-- If a function admits a power series expansion within a set at `x`, then it is the locally
 uniform limit of the partial sums of this power series on the disk of convergence, i.e., `f y`
@@ -1264,7 +1264,7 @@ theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn' (hf : HasFPowerSeriesOn
     TendstoLocallyUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop
       (EMetric.ball (x : E) r) := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
-  simpa using hf.tendstoLocallyUniformlyOn'
+  simpa [insert_eq_of_mem] using hf.tendstoLocallyUniformlyOn'
 
 /-- If a function admits a power series expansion within a set on a ball, then it is
 continuous there. -/
@@ -1279,7 +1279,7 @@ protected theorem HasFPowerSeriesWithinOnBall.continuousOn
 protected theorem HasFPowerSeriesOnBall.continuousOn (hf : HasFPowerSeriesOnBall f p x r) :
     ContinuousOn f (EMetric.ball x r) := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
-  simpa using hf.continuousOn
+  simpa [insert_eq_of_mem] using hf.continuousOn
 
 protected theorem HasFPowerSeriesWithinOnBall.continuousWithinAt_insert
     (hf : HasFPowerSeriesWithinOnBall f p s x r) :
