@@ -86,13 +86,16 @@ for message in messages:
         # removing previous emoji reactions
         # if the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well
         print("Removing previous reactions, if present.")
-        if has_peace_sign:
-            print('Removing peace_sign')
+        def remove_reaction(name: str, emoji_name: str) -> none:
+            print(f'Removing {name}')
             result = client.remove_reaction({
                 "message_id": message['id'],
-                "emoji_name": "peace_sign"
+                "emoji_name": emoji_name
             })
             print(f"result: '{result}'")
+
+        if has_peace_sign:
+            remove_reaction('delegated', 'peace_sign')
         if has_bors:
             print('Removing bors')
             result = client.remove_reaction({
@@ -103,26 +106,11 @@ for message in messages:
             })
             print(f"result: '{result}'")
         if has_merge:
-            print('Removing merge')
-            result = client.remove_reaction({
-                "message_id": message['id'],
-                "emoji_name": "merge"
-            })
-            print(f"result: '{result}'")
+            remove_reaction('merge', 'merge')
         if has_maintainer_merge:
-            print('Removing maintainer-merge')
-            result = client.remove_reaction({
-                "message_id": message['id'],
-                "emoji_name": "hammer"
-            })
-            print(f"result: '{result}'")
+            remove_reaction('maintainer-merge', 'hammer')
         if has_awaiting_author:
-            print('Removing awaiting-author')
-            result = client.remove_reaction({
-                "message_id": message['id'],
-                "emoji_name": "writing"
-            })
-            print(f"result: '{result}'")
+            remove_reaction('awaiting-author', 'writing')
         if has_closed:
             print('Removing closed-pr')
             result = client.remove_reaction({
