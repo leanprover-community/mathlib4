@@ -42,7 +42,6 @@ Define `circleAverage f c R` as the average value of `f` on the circle with cent
 noncomputable def circleAverage : E :=
   (2 * π)⁻¹ • ∫ θ in (0)..2 * π, f (circleMap c R θ)
 
-@[simp]
 lemma circleAverage_def : circleAverage f c R =
   (2 * π)⁻¹ • ∫ θ in (0)..2 * π, f (circleMap c R θ) := rfl
 
