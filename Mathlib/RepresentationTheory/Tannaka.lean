@@ -154,10 +154,8 @@ regular representation `rightFDRep` to `X` sending `single 1 1` to `v`. -/
 @[simps]
 def sumSMulInv [Fintype G] {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
   toFun f := ∑ s : G, (f s) • (X.ρ s⁻¹ v)
-  map_add' _ _ := by
-    simp [add_smul, sum_add_distrib]
-  map_smul' _ _ := by
-    simp [smul_sum, smul_smul]
+  map_add' _ _ := by simp [add_smul, sum_add_distrib]
+  map_smul' _ _ := by simp [smul_sum, smul_smul]
 
 omit [Finite G] in
 @[simp]
@@ -186,7 +184,7 @@ lemma toRightFDRepComp_injective {η₁ η₂ : Aut (forget k G)}
   have h1 := η₁.hom.hom.naturality (ofRightFDRep X v)
   have h2 := η₂.hom.hom.naturality (ofRightFDRep X v)
   rw [h, ← h2] at h1
-  simpa using congr(Hom.hom $h1 (single 1 1))
+  simpa using congr(($h1).hom (single 1 1))
 
 /-- `leftRegular` as a morphism `rightFDRep k G ⟶ rightFDRep k G` in `FDRep k G`. -/
 def leftRegularFDRepHom (s : G) : End (rightFDRep : FDRep k G) where
@@ -208,11 +206,10 @@ lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
   calc
     _ = leftRegular t⁻¹ ((η.hom.hom.app rightFDRep).hom (single u 1)) 1 := by simp
     _ = (η.hom.hom.app rightFDRep).hom (leftRegular t⁻¹ (single u 1)) 1 :=
-      congrFun congr((Hom.hom $nat (single u 1))).symm 1
+      congrFun congr(($nat.symm).hom (single u 1)) 1
     _ = evalAlgHom _ _ s (leftRegular t⁻¹ (single u 1)) :=
-      congr($hs ((leftRegular t⁻¹) (single u 1)))
-    _ = _ := by
-      by_cases u = t * s <;> simp_all [single_apply]
+      congr($hs (leftRegular t⁻¹ (single u 1)))
+    _ = _ := by by_cases u = t * s <;> simp_all [single_apply]
 
 lemma equivHom_surjective [IsDomain k] : Function.Surjective (equivHom k G) := by
   intro η
