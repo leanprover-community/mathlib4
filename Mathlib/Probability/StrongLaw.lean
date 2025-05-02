@@ -641,7 +641,7 @@ end StrongLawAeReal
 
 section StrongLawVectorSpace
 
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} [IsZeroOrProbabilityMeasure μ]
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   [MeasurableSpace E]
 
@@ -787,7 +787,7 @@ lemma strong_law_ae_of_measurable
       exact hn.le
   _ < ε := hδ
 
-omit [IsZeroOrProbabilityMeasure μ] in
+omit [IsProbabilityMeasure μ] in
 /-- **Strong law of large numbers**, almost sure version: if `X n` is a sequence of independent
 identically distributed integrable random variables taking values in a Banach space,
 then `n⁻¹ • ∑ i ∈ range n, X i` converges almost surely to `𝔼[X 0]`. We give here the strong
