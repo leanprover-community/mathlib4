@@ -169,11 +169,11 @@ lemma chainComplexMap_comp :
   induction n with
   | zero => simp
   | succ n hn =>
-      obtain _ | n := n
-      all_goals
-        simp [-Functor.map_comp, ← Λ.F.map_comp_assoc, ← ι.map_comp]
-        congr 1
-        simp [← cancel_mono (kernel.ι _), hn]
+    obtain _ | n := n
+    all_goals
+      simp [-Functor.map_comp, ← Λ.F.map_comp_assoc, ← ι.map_comp]
+      congr 1
+      simp [← cancel_mono (kernel.ι _), hn]
 
 /-- Given `ι : C ⥤ A`, `Λ : LeftResolutions ι`, this is a
 functor `A ⥤ ChainComplex C ℕ` which sends `X : A` to a resolution consisting
