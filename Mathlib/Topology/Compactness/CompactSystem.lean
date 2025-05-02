@@ -379,27 +379,6 @@ lemma nonempty (k : ℕ) (hc : ∀ N, ⋂ k < N, ⋃₀ (L k : Set (Set α)) ≠
     simp only [Finset.coe_empty, sUnion_empty]
   exact of_eq_false (congrFun hg x)
 
-private lemma inter_sUnion_sUnion (m n : ℕ) : (⋂ k < m, (⋃₀ L k)) ∩ ⋂ (k < n), ⋃₀ L (m + k) =
-    ⋂ (k < m + n), ⋃₀ (L k).toSet := by
-  ext x
-  rw [mem_inter_iff, mem_iInter₂, mem_iInter₂, mem_iInter₂]
-  refine ⟨fun h i hi ↦ ?_, fun h ↦ ?_⟩
-  · by_cases h' : i < m
-    · exact h.1 i h'
-    · have hj : ∃ j, j < n ∧ i = m + j := by
-        use i - m
-        refine ⟨Nat.sub_lt_left_of_lt_add (not_lt.mp h') hi, Eq.symm (add_sub_of_le (not_lt.mp h'))⟩
-      obtain ⟨j, hj₁, hj₂⟩ := hj
-      rw [hj₂]
-      exact h.2 j hj₁
-  · refine ⟨fun i hi ↦ ?_, fun i hi ↦ ?_⟩
-    · have h' (j m n : ℕ) (hj : j < m) : j < m + n := by
-        exact Nat.lt_add_right n hj
-      exact h i (h' i m n hi)
-    · have h' (j m n : ℕ) : j < n → ((m + j) < m + n) :=  by
-        exact fun a ↦ Nat.add_lt_add_left a m
-      exact h (m + i) (h' i m n hi)
-
 /-- `q n K` is the joint property that `(∀ k < n, K k ∈ L k)` and `r n K)` holds. -/
 def q : ℕ → (ℕ → Set α) → Prop := fun n K ↦ (∀ k < n, K k ∈ L k) ∧ (r L n K)
 
