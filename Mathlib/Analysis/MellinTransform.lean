@@ -184,7 +184,7 @@ theorem mellin_convergent_iff_norm [NormedSpace ℂ E] {f : ℝ → E} {T : Set 
     exact fun t ht => continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt (hT ht))
   rw [IntegrableOn, ← integrable_norm_iff this, ← IntegrableOn]
   refine integrableOn_congr_fun (fun t ht => ?_) hT'
-  simp_rw [norm_smul, Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos (hT ht), sub_re, one_re]
+  simp_rw [norm_smul, norm_cpow_eq_rpow_re_of_pos (hT ht), sub_re, one_re]
 
 /-- If `f` is a locally integrable real-valued function which is `O(x ^ (-a))` at `∞`, then for any
 `s < a`, its Mellin transform converges on some neighbourhood of `+∞`. -/
@@ -216,7 +216,7 @@ theorem mellin_convergent_top_of_isBigO {f : ℝ → ℝ}
 `b < s`, its Mellin transform converges on some right neighbourhood of `0`. -/
 theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     (hfc : AEStronglyMeasurable f <| volume.restrict (Ioi 0))
-    (hf :  f =O[𝓝[>] 0] (· ^ (-b))) {s : ℝ} (hs : b < s) :
+    (hf : f =O[𝓝[>] 0] (· ^ (-b))) {s : ℝ} (hs : b < s) :
     ∃ c : ℝ, 0 < c ∧ IntegrableOn (fun t : ℝ => t ^ (s - 1) * f t) (Ioc 0 c) := by
   obtain ⟨d, _, hd'⟩ := hf.exists_pos
   simp_rw [IsBigOWith, eventually_nhdsWithin_iff, Metric.eventually_nhds_iff, gt_iff_lt] at hd'
@@ -338,22 +338,21 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
   have h4 : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0),
       ∀ z : ℂ, z ∈ Metric.ball s v → ‖F' z t‖ ≤ bound t := by
     refine (ae_restrict_mem measurableSet_Ioi).mono fun t ht z hz => ?_
-    simp_rw [F', bound, norm_smul, norm_mul, Complex.norm_eq_abs (log _), Complex.abs_ofReal,
-      mul_assoc]
+    simp_rw [F', bound, norm_smul, norm_mul, norm_real, mul_assoc]
     gcongr
-    rw [Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos ht]
+    rw [norm_cpow_eq_rpow_re_of_pos ht]
     rcases le_or_lt 1 t with h | h
     · refine le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h ?_)
         (rpow_nonneg (zero_le_one.trans h) _)
       rw [sub_re, one_re, sub_le_sub_iff_right]
-      rw [mem_ball_iff_norm, Complex.norm_eq_abs] at hz
-      have hz' := (re_le_abs _).trans hz.le
+      rw [mem_ball_iff_norm] at hz
+      have hz' := (re_le_norm _).trans hz.le
       rwa [sub_re, sub_le_iff_le_add'] at hz'
     · refine
         le_add_of_nonneg_of_le (rpow_pos_of_pos ht _).le (rpow_le_rpow_of_exponent_ge ht h.le ?_)
       rw [sub_re, one_re, sub_le_iff_le_add, sub_add_cancel]
-      rw [mem_ball_iff_norm', Complex.norm_eq_abs] at hz
-      have hz' := (re_le_abs _).trans hz.le
+      rw [mem_ball_iff_norm'] at hz
+      have hz' := (re_le_norm _).trans hz.le
       rwa [sub_re, sub_le_iff_le_add, ← sub_le_iff_le_add'] at hz'
   have h5 : IntegrableOn bound (Ioi 0) := by
     simp_rw [bound, add_mul, mul_assoc]

@@ -30,9 +30,9 @@ theorem Equiv.optionCongr_swap {α : Type*} [DecidableEq α] (x y : α) :
 @[simp]
 theorem Equiv.optionCongr_sign {α : Type*} [DecidableEq α] [Fintype α] (e : Perm α) :
     Perm.sign e.optionCongr = Perm.sign e := by
-  refine Perm.swap_induction_on e ?_ ?_
-  · simp [Perm.one_def]
-  · intro f x y hne h
+  induction e using Perm.swap_induction_on with
+  | one => simp [Perm.one_def]
+  | swap_mul f x y hne h =>
     simp [h, hne, Perm.mul_def, ← Equiv.optionCongr_trans]
 
 @[simp]
@@ -40,7 +40,7 @@ theorem map_equiv_removeNone {α : Type*} [DecidableEq α] (σ : Perm (Option α
     (removeNone σ).optionCongr = swap none (σ none) * σ := by
   ext1 x
   have : Option.map (⇑(removeNone σ)) x = (swap none (σ none)) (σ x) := by
-    cases' x with x
+    obtain - | x := x
     · simp
     · cases h : σ (some _)
       · simp [removeNone_none _ h]

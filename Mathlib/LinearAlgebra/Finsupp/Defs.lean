@@ -174,8 +174,7 @@ end LComapDomain
 def mapRange.linearMap (f : M →ₗ[R] N) : (α →₀ M) →ₗ[R] α →₀ N :=
   { mapRange.addMonoidHom f.toAddMonoidHom with
     toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
-    -- Porting note: `hf` should be specified.
-    map_smul' := fun c v => mapRange_smul (hf := f.map_zero) c v (f.map_smul c) }
+    map_smul' := fun c v => mapRange_smul c v (f.map_smul c) }
 
 @[simp]
 theorem mapRange.linearMap_id :
@@ -185,7 +184,6 @@ theorem mapRange.linearMap_id :
 theorem mapRange.linearMap_comp (f : N →ₗ[R] P) (f₂ : M →ₗ[R] N) :
     (mapRange.linearMap (f.comp f₂) : (α →₀ _) →ₗ[R] _) =
       (mapRange.linearMap f).comp (mapRange.linearMap f₂) :=
-  -- Porting note: Placeholders should be filled.
   LinearMap.ext <| mapRange_comp f f.map_zero f₂ f₂.map_zero (comp f f₂).map_zero
 
 @[simp]
@@ -210,7 +208,6 @@ theorem mapRange.linearEquiv_refl :
 theorem mapRange.linearEquiv_trans (f : M ≃ₗ[R] N) (f₂ : N ≃ₗ[R] P) :
     (mapRange.linearEquiv (f.trans f₂) : (α →₀ _) ≃ₗ[R] _) =
       (mapRange.linearEquiv f).trans (mapRange.linearEquiv f₂) :=
-  -- Porting note: Placeholders should be filled.
   LinearEquiv.ext <| mapRange_comp f₂ f₂.map_zero f f.map_zero (f.trans f₂).map_zero
 
 @[simp]
@@ -237,17 +234,13 @@ This is the `LinearEquiv` version of `Finsupp.finsuppProdEquiv`. -/
 noncomputable def finsuppProdLEquiv {α β : Type*} (R : Type*) {M : Type*} [Semiring R]
     [AddCommMonoid M] [Module R M] : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M :=
   { finsuppProdEquiv with
-    map_add' := fun f g => by
-      ext
-      simp [finsuppProdEquiv, curry_apply]
-    map_smul' := fun c f => by
-      ext
-      simp [finsuppProdEquiv, curry_apply] }
+    map_add' f g := by ext; simp
+    map_smul' c f := by ext; simp }
 
 @[simp]
 theorem finsuppProdLEquiv_apply {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     (f : α × β →₀ M) (x y) : finsuppProdLEquiv R f x y = f (x, y) := by
-  rw [finsuppProdLEquiv, LinearEquiv.coe_mk, finsuppProdEquiv, Finsupp.curry_apply]
+  simp [finsuppProdLEquiv]
 
 @[simp]
 theorem finsuppProdLEquiv_symm_apply {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
@@ -274,9 +267,9 @@ def Module.subsingletonEquiv (R M ι : Type*) [Semiring R] [Subsingleton R] [Add
     [Module R M] : M ≃ₗ[R] ι →₀ R where
   toFun _ := 0
   invFun _ := 0
-  left_inv m := by
-    letI := Module.subsingleton R M
-    simp only [eq_iff_true_of_subsingleton]
+  left_inv m :=
+    have := Module.subsingleton R M
+    Subsingleton.elim _ _
   right_inv f := by simp only [eq_iff_true_of_subsingleton]
   map_add' _ _ := (add_zero 0).symm
   map_smul' r _ := (smul_zero r).symm

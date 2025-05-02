@@ -106,15 +106,15 @@ lemma killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero {α β : H → K
   However the semisimplicity of `ad R L z` is (a) non-trivial and (b) requires the assumption
   that `K` is a perfect field and `L` has non-degenerate Killing form. -/
   let σ : (H → K) → (H → K) := fun γ ↦ α + (β + γ)
-  have hσ : ∀ γ, σ γ ≠ γ := fun γ ↦ by simpa only [σ, ← add_assoc] using add_left_ne_self.mpr hαβ
+  have hσ : ∀ γ, σ γ ≠ γ := fun γ ↦ by simpa only [σ, ← add_assoc] using add_ne_right.mpr hαβ
   let f : Module.End K L := (ad K L x) ∘ₗ (ad K L y)
   have hf : ∀ γ, MapsTo f (rootSpace H γ) (rootSpace H (σ γ)) := fun γ ↦
     (mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace K L H L α (β + γ) hx).comp <|
       mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace K L H L β γ hy
   classical
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
-    (LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpace K H L)
-    (LieSubmodule.iSup_eq_top_iff_toSubmodule.mp <| iSup_genWeightSpace_eq_top K H L)
+    (LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpace K H L)
+    (LieSubmodule.iSup_toSubmodule_eq_top.mpr <| iSup_genWeightSpace_eq_top K H L)
   exact LinearMap.trace_eq_zero_of_mapsTo_ne hds σ hσ hf
 
 /-- Elements of the `α` root space which are Killing-orthogonal to the `-α` root space are
@@ -127,12 +127,12 @@ lemma mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg
   ext y
   have hy : y ∈ ⨆ β, rootSpace H β := by simp [iSup_genWeightSpace_eq_top K H L]
   induction hy using LieSubmodule.iSup_induction' with
-  | hN β y hy =>
+  | mem β y hy =>
     by_cases hαβ : α + β = 0
     · exact hx' _ (add_eq_zero_iff_neg_eq.mp hαβ ▸ hy)
     · exact killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero K L H hx hy hαβ
-  | h0 => simp
-  | hadd => simp_all
+  | zero => simp
+  | add => simp_all
 end
 
 namespace IsKilling
@@ -153,7 +153,7 @@ lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
   ext y
   have comm : Commute (toEnd K H L ⟨x, hx⟩) (toEnd K H L y) := by
     rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
-  rw [traceForm_apply_apply, ← LinearMap.mul_eq_comp, LinearMap.zero_apply]
+  rw [traceForm_apply_apply, ← Module.End.mul_eq_comp, LinearMap.zero_apply]
   exact (LinearMap.isNilpotent_trace_of_isNilpotent (comm.isNilpotent_mul_left hx')).eq_zero
 
 @[simp]
@@ -281,13 +281,13 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H) :
     have hy : y ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_genWeightSpace_eq_top]
     have hz : z ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_genWeightSpace_eq_top]
     induction hy using LieSubmodule.iSup_induction' with
-    | hN α y hy =>
+    | mem α y hy =>
       induction hz using LieSubmodule.iSup_induction' with
-      | hN β z hz => exact h_der y z α β hy hz
-      | h0 => simp
-      | hadd _ _ _ _ h h' => simp only [lie_add, map_add, h, h']; abel
-    | h0 => simp
-    | hadd _ _ _ _ h h' => simp only [add_lie, map_add, h, h']; abel
+      | mem β z hz => exact h_der y z α β hy hz
+      | zero => simp
+      | add _ _ _ _ h h' => simp only [lie_add, map_add, h, h']; abel
+    | zero => simp
+    | add _ _ _ _ h h' => simp only [add_lie, map_add, h, h']; abel
   /- An equivalent form of the derivation axiom used in `LieDerivation`. -/
   replace h_der : ∀ y z : L, S ⁅y, z⁆ = ⁅y, S z⁆ - ⁅z, S y⁆ := by
     simp_rw [← lie_skew (S _) _, add_comm, ← sub_eq_add_neg] at h_der; assumption

@@ -42,15 +42,16 @@ theorem Basis.ofRankEqZero_apply [Module.Free K V] {ι : Type*} [IsEmpty ι]
     (hV : Module.rank K V = 0) (i : ι) : Basis.ofRankEqZero hV i = 0 := rfl
 
 theorem le_rank_iff_exists_linearIndependent [Module.Free K V] {c : Cardinal} :
-    c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndependent K ((↑) : s → V) := by
+    c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndepOn K id s := by
   haveI := nontrivial_of_invariantBasisNumber K
   constructor
   · intro h
     obtain ⟨κ, t'⟩ := Module.Free.exists_basis (R := K) (M := V)
     let t := t'.reindexRange
-    have : LinearIndependent K ((↑) : Set.range t' → V) := by
-      convert t.linearIndependent
-      ext; exact (Basis.reindexRange_apply _ _).symm
+    have : LinearIndepOn K id (Set.range t') := by
+      convert t.linearIndependent.linearIndepOn_id
+      ext
+      simp [t]
     rw [← t.mk_eq_rank'', le_mk_iff_exists_subset] at h
     rcases h with ⟨s, hst, hsc⟩
     exact ⟨s, hsc, this.mono hst⟩
@@ -221,7 +222,7 @@ theorem lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank [Module.Free K V]
   -- `Module.Finite.finite_basis` is in a much later file, so we copy its proof to here
   haveI : Finite s := by
     obtain ⟨t, ht⟩ := ‹Module.Finite K V›
-    exact basis_finite_of_finite_spans _ t.finite_toSet ht hs
+    exact basis_finite_of_finite_spans t.finite_toSet ht hs
   have := lift_mk_eq'.2 ⟨hs.repr.toEquiv⟩
   rwa [Finsupp.equivFunOnFinite.cardinal_eq, mk_arrow, hs.mk_eq_rank'', lift_power, lift_lift,
     lift_lift, lift_umax] at this

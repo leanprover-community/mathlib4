@@ -41,7 +41,7 @@ open CategoryTheory Order Set Topology TopologicalSpace
 
 namespace Locale
 
-/-! ### Definition of the points functor `pt` --/
+/-! ### Definition of the points functor `pt` -/
 section pt_definition
 
 variable (L : Type*) [CompleteLattice L]

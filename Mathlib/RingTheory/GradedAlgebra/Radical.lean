@@ -38,7 +38,7 @@ open GradedRing DirectSum SetLike Finset
 
 variable {ι σ A : Type*}
 variable [CommRing A]
-variable [LinearOrderedCancelAddCommMonoid ι]
+variable [AddCommMonoid ι] [LinearOrder ι] [IsOrderedCancelAddMonoid ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
 
 -- Porting note: This proof needs a long time to elaborate
@@ -99,7 +99,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         rw [eq_sub_of_add_eq eq_add_sum.symm]
         refine Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => ?_)
         rcases z with ⟨i, j⟩
-        simp only [antidiag, mem_erase, Prod.mk.inj_iff, Ne, mem_filter, mem_product] at H
+        simp only [antidiag, mem_erase, Prod.mk_inj, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
           rcases lt_trichotomy max₁ i with (h | rfl | h)
@@ -109,7 +109,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
             have := add_lt_add_right h j
             rw [H₄] at this
             exact lt_of_add_lt_add_left this
-        cases' max_lt with max_lt max_lt
+        rcases max_lt with max_lt | max_lt
         · -- in this case `max₁ < i`, then `xᵢ ∈ I`; for otherwise `i ∈ set₁` then `i ≤ max₁`.
           have not_mem : i ∉ set₁ := fun h =>
             lt_irrefl _ ((max'_lt_iff set₁ (nonempty x rid₁)).mp max_lt i h)
@@ -127,8 +127,8 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           rw [mem_filter] at mem_max₁ mem_max₂
           exact ⟨mem_max₁.2, mem_max₂.2⟩
         intro _rid
-        cases' homogeneous_mem_or_mem ⟨max₁, SetLike.coe_mem _⟩ ⟨max₂, SetLike.coe_mem _⟩ mem_I
-          with h h
+        rcases homogeneous_mem_or_mem ⟨max₁, SetLike.coe_mem _⟩ ⟨max₂, SetLike.coe_mem _⟩ mem_I
+          with h | h
         · apply neither_mem.1 h
         · apply neither_mem.2 h
       exact not_mem_I mem_I⟩

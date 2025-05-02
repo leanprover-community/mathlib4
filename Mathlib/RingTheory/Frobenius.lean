@@ -119,7 +119,7 @@ lemma apply_of_pow_eq_one [IsDomain S] {ζ : S} {m : ℕ} (hζ : ζ ^ m = 1) (hk
   have h₁ := sum_mem (t := Finset.range k) fun j _ ↦ this j
   have h₂ := geom_sum_mul (ζ ^ (q + k - i)) k
   rw [pow_right_comm, hζ.1, one_pow, sub_self, mul_eq_zero, sub_eq_zero] at h₂
-  cases' h₂ with h₂ h₂
+  rcases h₂ with h₂ | h₂
   · simp [h₂, pow_mul, hk'] at h₁
   replace h₂ := congr($h₂ * ζ ^ i)
   rw [one_mul, ← pow_add, tsub_add_cancel_of_le (by linarith), pow_add, hζ.1, mul_one] at h₂

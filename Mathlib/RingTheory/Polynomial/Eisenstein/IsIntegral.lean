@@ -175,7 +175,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
 
   -- Do the computation in `K` so we can work in terms of `z` instead of `r`.
   apply IsFractionRing.injective R K
-  simp only [_root_.map_mul, map_pow, map_neg, map_one]
+  simp only [map_mul, map_pow, map_neg, map_one]
   -- Both sides are actually norms:
   calc
     _ = norm K (Q.coeff 0 • B.gen ^ n) := ?_
@@ -183,12 +183,12 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
           ∑ x ∈ (range (Q.natDegree + 1)).erase 0, p • Q.coeff x • f (x + n)) :=
         (congr_arg (norm K) (eq_sub_of_add_eq ?_))
     _ = _ := ?_
-  · simp only [Algebra.smul_def, algebraMap_apply R K L, Algebra.norm_algebraMap, _root_.map_mul,
+  · simp only [Algebra.smul_def, algebraMap_apply R K L, Algebra.norm_algebraMap, map_mul,
       map_pow, finrank_K_L, PowerBasis.norm_gen_eq_coeff_zero_minpoly,
       minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, coeff_map, ← hn]
     ring
   swap
-  · simp_rw [← smul_sum, ← smul_sub, Algebra.smul_def p, algebraMap_apply R K L, _root_.map_mul,
+  · simp_rw [← smul_sum, ← smul_sub, Algebra.smul_def p, algebraMap_apply R K L, map_mul,
       Algebra.norm_algebraMap, finrank_K_L, hr, ← hn]
   calc
     _ = (Q.coeff 0 • ↑1 + ∑ x ∈ (range (Q.natDegree + 1)).erase 0, Q.coeff x • B.gen ^ x) *
@@ -207,7 +207,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
       Finset.add_sum_erase (range (Q.natDegree + 1)) fun i => Q.coeff i • B.gen ^ i]
     simp
 
-theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [CommRing B]
+theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [Ring B]
     [Algebra A B] [NoZeroSMulDivisors A B] {Q : A[X]} {p : A} {x z : B} (hp : p ≠ 0)
     (hQ : ∀ i ∈ range (Q.natDegree + 1), p ∣ Q.coeff i) (hz : aeval x Q = p • z) :
     z ∈ adjoin A ({x} : Set B) := by
@@ -250,7 +250,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     simpa using hQ
   by_cases hQzero : Q = 0
   · simp only [hQzero, Algebra.smul_def, zero_eq_mul, aeval_zero] at hQ
-    cases' hQ with H H₁
+    rcases hQ with H | H₁
     · have : Function.Injective (algebraMap R L) := by
         rw [algebraMap_eq R K L]
         exact (algebraMap K L).injective.comp (IsFractionRing.injective R K)
@@ -351,12 +351,12 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         rw [h] at hk
         simp at hk
     obtain ⟨r, hr⟩ := isIntegral_iff.1 (isIntegral_norm K hintsum)
-    rw [Algebra.smul_def, mul_assoc, ← mul_sub, _root_.map_mul, algebraMap_apply R K L, map_pow,
-      Algebra.norm_algebraMap, _root_.map_mul, algebraMap_apply R K L, Algebra.norm_algebraMap,
+    rw [Algebra.smul_def, mul_assoc, ← mul_sub, map_mul, algebraMap_apply R K L, map_pow,
+      Algebra.norm_algebraMap, map_mul, algebraMap_apply R K L, Algebra.norm_algebraMap,
       finrank B, ← hr, PowerBasis.norm_gen_eq_coeff_zero_minpoly,
       minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, coeff_map,
-      show (-1 : K) = algebraMap R K (-1) by simp, ← map_pow, ← map_pow, ← _root_.map_mul, ←
-      map_pow, ← _root_.map_mul, ← map_pow, ← _root_.map_mul] at hQ
+      show (-1 : K) = algebraMap R K (-1) by simp, ← map_pow, ← map_pow, ← map_mul, ←
+      map_pow, ← map_mul, ← map_pow, ← map_mul] at hQ
     -- We can now finish the proof.
     have hppdiv : p ^ B.dim ∣ p ^ B.dim * r := dvd_mul_of_dvd_left dvd_rfl _
     rwa [← IsFractionRing.injective R K hQ, mul_comm, ← Units.coe_neg_one, mul_pow, ←

@@ -119,19 +119,6 @@ section Preadditive
 
 variable [Preadditive C]
 
-noncomputable instance homGroup (P Q : ShrinkHoms C) : AddCommGroup (P ⟶ Q : Type w) :=
-  Equiv.addCommGroup (equivShrink _).symm
-
-lemma functor_map_add {P Q : C} (f g : P ⟶ Q) :
-    (functor C).map (f + g) =
-      (functor C).map f + (functor C).map g := by
-  exact map_add (equivShrink.{w} (P ⟶ Q)).symm.addEquiv.symm f g
-
-lemma inverse_map_add {P Q : ShrinkHoms C} (f g : P ⟶ Q) :
-    (inverse C).map (f + g) =
-      (inverse C).map f + (ShrinkHoms.inverse C).map g :=
-  map_add (equivShrink.{w} (P.fromShrinkHoms ⟶ Q.fromShrinkHoms)).symm.addEquiv f g
-
 variable (C)
 
 instance preadditive : Preadditive.{w} (ShrinkHoms C) :=
@@ -157,5 +144,42 @@ noncomputable instance abelian [Abelian C] :
     Abelian.{w} (ShrinkHoms C) := abelianOfEquivalence (inverse C)
 
 end ShrinkHoms
+
+
+namespace AsSmall
+
+universe w v u
+
+variable {C : Type u} [Category.{v} C]
+
+section Preadditive
+
+variable [Preadditive C]
+
+variable (C)
+
+instance preadditive : Preadditive (AsSmall.{w} C) :=
+  .ofFullyFaithful equiv.fullyFaithfulInverse
+
+instance : (down (C := C)).Additive :=
+  equiv.symm.fullyFaithfulFunctor.additive_ofFullyFaithful
+
+instance : (up (C := C)).Additive :=
+  equiv.symm.additive_inverse_of_FullyFaithful
+
+instance hasLimitsOfShape (J : Type*) [Category J]
+    [HasLimitsOfShape J C] : HasLimitsOfShape.{_, _, max u v w} J (AsSmall.{w} C) :=
+  Adjunction.hasLimitsOfShape_of_equivalence equiv.inverse
+
+instance hasFiniteLimits [HasFiniteLimits C] :
+    HasFiniteLimits (AsSmall.{w} C) := ⟨fun _ => inferInstance⟩
+
+end Preadditive
+
+variable (C) in
+noncomputable instance abelian [Abelian C] :
+    Abelian (AsSmall.{w} C) := abelianOfEquivalence equiv.inverse
+
+end AsSmall
 
 end CategoryTheory

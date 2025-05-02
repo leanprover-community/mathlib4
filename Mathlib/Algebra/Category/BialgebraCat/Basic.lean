@@ -41,15 +41,12 @@ open Bialgebra
 instance : CoeSort (BialgebraCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
-variable (R)
-
+variable (R) in
 /-- The object in the category of `R`-bialgebras associated to an `R`-bialgebra. -/
 @[simps]
 def of (X : Type v) [Ring X] [Bialgebra R X] :
     BialgebraCat R where
   carrier := X
-
-variable {R}
 
 @[simp]
 lemma of_comul {X : Type v} [Ring X] [Bialgebra R X] :

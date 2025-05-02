@@ -299,7 +299,7 @@ theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a
   ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
 
 /-! Test that `@[to_additive]` correctly translates auxiliary declarations that do not have the
-original declaration name as prefix.-/
+original declaration name as prefix. -/
 @[to_additive]
 def IsUnit' [Monoid M] (a : M) : Prop := ∃ b : M, a * b = 1
 
@@ -313,6 +313,18 @@ theorem isUnit'_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, b 
 /-! Test a permutation with a cycle of length > 2. -/
 @[to_additive (reorder := 3 4 5)]
 def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
+
+/-! Test a permutation that is too big for the list of arguments. -/
+/--
+error: the permutation
+[[2, 3, 50]]
+provided by the reorder config option is too large, the type
+  {α : Type u_1} → [inst : Mul α] → α → α → α → α
+has only 5 arguments
+-/
+#guard_msgs in
+@[to_additive (reorder := 3 4 51)]
+def reorderMulThree' {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 
 example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
 
@@ -437,11 +449,11 @@ lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
 -- Test the error message for a name that cannot be additivised.
 
 /--
-warning: declaration uses 'sorry'
----
 error: to_additive: the generated additivised name equals the original name 'foo', meaning that no part of the name was additivised.
 Check that your declaration name is correct (if your declaration is an instance, try naming it)
 or provide an additivised name using the '@[to_additive my_add_name]' syntax.
+---
+warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 @[to_additive]

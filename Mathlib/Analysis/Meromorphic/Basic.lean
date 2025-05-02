@@ -82,7 +82,7 @@ lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.smul' hg using 2 with z
+  convert hf.fun_smul hg using 2 with z
   rw [Pi.smul_apply', smul_eq_mul]
   module
 
@@ -135,12 +135,19 @@ lemma congr {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hfg : f =ᶠ
   rcases hf with ⟨m, hf⟩
   refine ⟨m + 1, ?_⟩
   have : AnalyticAt 𝕜 (fun z ↦ z - x) x := analyticAt_id.sub analyticAt_const
-  refine (this.smul' hf).congr ?_
+  refine (this.fun_smul hf).congr ?_
   rw [eventuallyEq_nhdsWithin_iff] at hfg
   filter_upwards [hfg] with z hz
   rcases eq_or_ne z x with rfl | hn
   · simp
   · rw [hz (Set.mem_compl_singleton_iff.mp hn), pow_succ', mul_smul]
+
+/--
+If two functions agree on a punctured neighborhood, then one is meromorphic iff the other is so.
+-/
+lemma meromorphicAt_congr {f g : 𝕜 → E} {x : 𝕜} (h : f =ᶠ[𝓝[≠] x] g) :
+    MeromorphicAt f x ↔ MeromorphicAt g x :=
+  ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
 
 @[fun_prop]
 lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x := by
@@ -157,7 +164,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
     have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ (m + 1)) x :=
       (analyticAt_id.sub analyticAt_const).pow _
     -- use `m + 1` rather than `m` to damp out any silly issues with the value at `z = x`
-    refine ⟨n + 1, (this.smul' <| hg_an.inv hg_ne).congr ?_⟩
+    refine ⟨n + 1, (this.fun_smul <| hg_an.inv hg_ne).congr ?_⟩
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
     · simp only [sub_self, pow_succ, mul_zero, zero_smul]
@@ -202,7 +209,7 @@ lemma pow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) :
 
 @[fun_prop]
 lemma zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
-  induction n with
+  cases n with
   | ofNat m => simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
   | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
 
@@ -211,9 +218,25 @@ lemma zpow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) :
     MeromorphicAt (fun z ↦ (f z) ^ n) x :=
   hf.zpow n
 
+/-- If a function is meromorphic at a point, then it is continuous at nearby points. -/
+theorem eventually_continuousAt {f : 𝕜 → E} {x : 𝕜}
+    (h : MeromorphicAt f x) : ∀ᶠ y in 𝓝[≠] x, ContinuousAt f y := by
+  obtain ⟨n, h⟩ := h
+  have : ∀ᶠ y in 𝓝[≠] x, ContinuousAt (fun z ↦ (z - x) ^ n • f z) y :=
+    nhdsWithin_le_nhds h.eventually_continuousAt
+  filter_upwards [this, self_mem_nhdsWithin] with y hy h'y
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at h'y
+  have : ContinuousAt (fun z ↦ ((z - x) ^ n)⁻¹) y :=
+    ContinuousAt.inv₀ (by fun_prop) (by simp [sub_eq_zero, h'y])
+  apply (this.smul hy).congr
+  filter_upwards [eventually_ne_nhds h'y] with z hz
+  simp [smul_smul, hz, sub_eq_zero]
+
+/-- In a complete space, a function which is meromorphic at a point is analytic at all nearby
+points. The completeness assumption can be dispensed with if one assumes that `f` is meromorphic
+on a set around `x`, see `MeromorphicOn.eventually_analyticAt`. -/
 theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicAt f x) : ∀ᶠ y in 𝓝[≠] x, AnalyticAt 𝕜 f y := by
-  rw [MeromorphicAt] at h
   obtain ⟨n, h⟩ := h
   apply AnalyticAt.eventually_analyticAt at h
   refine (h.filter_mono ?_).mp ?_
@@ -246,14 +269,44 @@ lemma AnalyticOnNhd.meromorphicOn {f : 𝕜 → E} {U : Set 𝕜} (hf : Analytic
     MeromorphicOn f U :=
   fun x hx ↦ (hf x hx).meromorphicAt
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.meromorphicOn := AnalyticOnNhd.meromorphicOn
-
 namespace MeromorphicOn
 
 variable {s t : 𝕜 → 𝕜} {f g : 𝕜 → E} {U : Set 𝕜}
   (hs : MeromorphicOn s U) (ht : MeromorphicOn t U)
   (hf : MeromorphicOn f U) (hg : MeromorphicOn g U)
+
+/--
+If `f` is meromorphic on `U`, if `g` agrees with `f` on a codiscrete subset of `U` and outside of
+`U`, then `g` is also meromorphic on `U`.
+-/
+theorem congr_codiscreteWithin_of_eqOn_compl (hf : MeromorphicOn f U)
+    (h₁ : f =ᶠ[codiscreteWithin U] g) (h₂ : Set.EqOn f g Uᶜ) :
+    MeromorphicOn g U := by
+  intro x hx
+  apply (hf x hx).congr
+  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
+    disjoint_principal_right] at h₁
+  filter_upwards [h₁ x hx] with a ha
+  simp at ha
+  tauto
+
+/--
+If `f` is meromorphic on an open set `U`, if `g` agrees with `f` on a codiscrete subset of `U`, then
+`g` is also meromorphic on `U`.
+-/
+theorem congr_codiscreteWithin (hf : MeromorphicOn f U) (h₁ : f =ᶠ[codiscreteWithin U] g)
+    (h₂ : IsOpen U) :
+    MeromorphicOn g U := by
+  intro x hx
+  apply (hf x hx).congr
+  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
+    disjoint_principal_right] at h₁
+  have : U ∈ 𝓝[≠] x := by
+    apply mem_nhdsWithin.mpr
+    use U, h₂, hx, Set.inter_subset_left
+  filter_upwards [this, h₁ x hx] with a h₁a h₂a
+  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, Decidable.not_not] at h₂a
+  tauto
 
 lemma id {U : Set 𝕜} : MeromorphicOn id U := fun x _ ↦ .id x
 

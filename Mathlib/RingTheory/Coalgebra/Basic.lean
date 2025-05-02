@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Coalgebras
@@ -59,6 +60,8 @@ structure Coalgebra.Repr (R : Type u) {A : Type v}
 def Coalgebra.Repr.arbitrary (R : Type u) {A : Type v}
     [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) :
     Coalgebra.Repr R a where
+  left := Prod.fst
+  right := Prod.snd
   index := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose
   eq := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose_spec.symm
 
@@ -158,8 +161,6 @@ theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
   simp_all only [map_sum, TensorProduct.map_tmul, LinearMap.coe_coe]
 
 end Coalgebra
-
-section CommSemiring
 
 open Coalgebra
 
@@ -380,7 +381,6 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
 
 end Finsupp
 
-end CommSemiring
 namespace TensorProduct
 open Coalgebra
 

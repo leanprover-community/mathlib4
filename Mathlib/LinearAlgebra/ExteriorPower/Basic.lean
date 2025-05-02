@@ -259,4 +259,54 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
 
+/-! Linear equivalences in degrees 0 and 1. -/
+
+variable (R M) in
+/-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
+@[simps! -isSimp symm_apply]
+noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
+  LinearEquiv.ofLinear
+    (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
+    { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
+      map_add' := by intros; simp only [add_smul]
+      map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply]}
+    (by aesop) (by aesop)
+
+@[simp]
+lemma zeroEquiv_ιMulti (f : Fin 0 → M) :
+    zeroEquiv R M (ιMulti _ _ f) = 1 := by
+  simp [zeroEquiv]
+
+lemma zeroEquiv_naturality (f : M →ₗ[R] N) :
+    (zeroEquiv R N).comp (map 0 f) = zeroEquiv R M := by aesop
+
+variable (R M) in
+/-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
+@[simps! -isSimp symm_apply]
+noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
+  LinearEquiv.ofLinear
+    (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
+      have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
+        ext i
+        fin_cases i
+        rfl
+      exact
+        { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
+          map_add' := fun m₁ m₂ ↦ by
+            rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
+            simp only [Fin.isValue, AlternatingMap.map_update_add]
+          map_smul' := fun r m ↦ by
+            dsimp
+            rw [h]; nth_rw 2 [h]
+            simp only [Fin.isValue, AlternatingMap.map_update_smul] })
+    (by aesop) (by aesop)
+
+@[simp]
+lemma oneEquiv_ιMulti (f : Fin 1 → M) :
+    oneEquiv R M (ιMulti _ _ f) = f 0 := by
+  simp [oneEquiv]
+
+lemma oneEquiv_naturality (f : M →ₗ[R] N) :
+    (oneEquiv R N).comp (map 1 f) = f.comp (oneEquiv R M).toLinearMap := by aesop
+
 end exteriorPower

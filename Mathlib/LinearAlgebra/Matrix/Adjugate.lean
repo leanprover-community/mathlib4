@@ -86,7 +86,7 @@ theorem cramer_is_linear : IsLinearMap α (cramerMap A) := by
 
   If `A * x = b` has a unique solution in `x`, `cramer A` sends the vector `b` to `A.det • x`.
   Otherwise, the outcome of `cramer` is well-defined but not necessarily useful.
- -/
+-/
 def cramer (A : Matrix n n α) : (n → α) →ₗ[α] (n → α) :=
   IsLinearMap.mk' (cramerMap A) (cramer_is_linear A)
 
@@ -227,12 +227,10 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
 theorem adjugate_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m α) :
     adjugate (A.submatrix e e) = (adjugate A).submatrix e e := by
   ext i j
+  have : (fun j ↦ Pi.single i 1 <| e.symm j) = Pi.single (e i) 1 :=
+    Function.update_comp_equiv (0 : n → α) e.symm i 1
   rw [adjugate_apply, submatrix_apply, adjugate_apply, ← det_submatrix_equiv_self e,
-    updateRow_submatrix_equiv]
-  -- Porting note: added
-  suffices (fun j => Pi.single i 1 (e.symm j)) = Pi.single (e i) 1 by
-    erw [this]
-  exact Function.update_comp_equiv _ e.symm _ _
+    updateRow_submatrix_equiv, this]
 
 theorem adjugate_reindex (e : m ≃ n) (A : Matrix m m α) :
     adjugate (reindex e e A) = reindex e e (adjugate A) :=
@@ -247,8 +245,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
   have : b = ∑ i, b i • (Pi.single i 1 : n → α) := by
     refine (pi_eq_sum_univ b).trans ?_
     congr with j
-    -- Porting note: needed to help `Pi.smul_apply`
-    simp [Pi.single_apply, eq_comm, Pi.smul_apply (b j)]
+    simp [Pi.single_apply, eq_comm]
   conv_lhs =>
     rw [this]
   ext k
@@ -496,7 +493,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
   suffices adjugate (adjugate A') = det A' ^ (Fintype.card n - 2) • A' by
     rw [← mvPolynomialX_mapMatrix_aeval ℤ A, ← AlgHom.map_adjugate, ← AlgHom.map_adjugate, this,
       ← AlgHom.map_det, ← map_pow (MvPolynomial.aeval fun p : n × n ↦ A p.1 p.2),
-      AlgHom.mapMatrix_apply, AlgHom.mapMatrix_apply, Matrix.map_smul' _ _ _ (_root_.map_mul _)]
+      AlgHom.mapMatrix_apply, AlgHom.mapMatrix_apply, Matrix.map_smul' _ _ _ (map_mul _)]
   have h_card' : Fintype.card n - 2 + 1 = Fintype.card n - 1 := by simp [h_card]
   have is_reg : IsSMulRegular (MvPolynomial (n × n) ℤ) (det A') := fun x y =>
     mul_left_cancel₀ (det_mvPolynomialX_ne_zero n ℤ)

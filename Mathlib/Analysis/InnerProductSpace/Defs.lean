@@ -10,9 +10,11 @@ import Mathlib.Data.Complex.Basic
 /-!
 # Inner product spaces
 
-This file defines inner product spaces.  We do not formally define Hilbert spaces, but they can be
-obtained using the set of assumptions
-`[NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
+This file defines inner product spaces.
+Hilbert spaces can be obtained using the set of assumptions
+`[RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
+For convenience, a variable alias `HilbertSpace` is provided so that one can write
+`variable? [HilbertSpace 𝕜 E]` and get this as a suggestion.
 
 An inner product space is a vector space endowed with an inner product. It generalizes the notion of
 dot product in `ℝ^n` and provides the means of defining the length of a vector and the angle between
@@ -99,9 +101,9 @@ To construct a seminorm from an inner product, see `PreInnerProductSpace.ofCore`
 class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddCommGroup E] extends
   NormedSpace 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/
-  norm_sq_eq_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
+  norm_sq_eq_re_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
   /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
-  conj_symm : ∀ x y, conj (inner y x) = inner x y
+  conj_inner_symm : ∀ x y, conj (inner y x) = inner x y
   /-- The inner product is additive in the first coordinate. -/
   add_left : ∀ x y z, inner (x + y) z = inner x z + inner y z
   /-- The inner product is conjugate linear in the first coordinate. -/
@@ -129,19 +131,24 @@ instance defined on it, otherwise this will create a second non-defeq norm insta
 structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends Inner 𝕜 F where
   /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
-  conj_symm : ∀ x y, conj (inner y x) = inner x y
+  conj_inner_symm x y : conj (inner y x) = inner x y
   /-- The inner product is positive (semi)definite. -/
-  nonneg_re : ∀ x, 0 ≤ re (inner x x)
+  re_inner_nonneg x : 0 ≤ re (inner x x)
   /-- The inner product is additive in the first coordinate. -/
-  add_left : ∀ x y z, inner (x + y) z = inner x z + inner y z
+  add_left x y z : inner (x + y) z = inner x z + inner y z
   /-- The inner product is conjugate linear in the first coordinate. -/
-  smul_left : ∀ x y r, inner (r • x) y = conj r * inner x y
+  smul_left x y r : inner (r • x) y = conj r * inner x y
+
+@[deprecated (since := "2025-04-22")]
+alias PreInnerProductSpace.Core.conj_symm := PreInnerProductSpace.Core.conj_inner_symm
+
+@[deprecated (since := "2025-04-22")]
+alias PreInnerProductSpace.Core.inner_nonneg := PreInnerProductSpace.Core.re_inner_nonneg
 
 attribute [class] PreInnerProductSpace.Core
 
 /-- A structure requiring that a scalar product is positive definite. Some theorems that
 require this assumptions are put under section `InnerProductSpace.Core`. -/
--- @[nolint HasNonemptyInstance] porting note: I don't think we have this linter anymore
 structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends PreInnerProductSpace.Core 𝕜 F where
   /-- The inner product is positive definite. -/
@@ -155,21 +162,19 @@ attribute [class] InnerProductSpace.Core
 instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] [cd : InnerProductSpace.Core 𝕜 F] : PreInnerProductSpace.Core 𝕜 F where
   inner := cd.inner
-  conj_symm := cd.conj_symm
-  nonneg_re := cd.nonneg_re
+  conj_inner_symm := cd.conj_inner_symm
+  re_inner_nonneg := cd.re_inner_nonneg
   add_left := cd.add_left
   smul_left := cd.smul_left
 
-/-- Define `PreInnerProductSpace.Core` from `PreInnerProductSpace`. Defined to reuse lemmas about
+/-- Define `PreInnerProductSpace.Core` from `InnerProductSpace`. Defined to reuse lemmas about
 `PreInnerProductSpace.Core` for `PreInnerProductSpace`s. Note that the `Seminorm` instance provided
 by `PreInnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
 def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
-    PreInnerProductSpace.Core 𝕜 E :=
-  { c with
-    nonneg_re := fun x => by
-      rw [← InnerProductSpace.norm_sq_eq_inner]
-      apply sq_nonneg }
+    PreInnerProductSpace.Core 𝕜 E where
+  __ := c
+  re_inner_nonneg x := by rw [← InnerProductSpace.norm_sq_eq_re_inner]; apply sq_nonneg
 
 /-- Define `InnerProductSpace.Core` from `InnerProductSpace`. Defined to reuse lemmas about
 `InnerProductSpace.Core` for `InnerProductSpace`s. Note that the `Norm` instance provided by
@@ -178,12 +183,12 @@ norm. -/
 def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
     InnerProductSpace.Core 𝕜 E :=
   { c with
-    nonneg_re := fun x => by
-      rw [← InnerProductSpace.norm_sq_eq_inner]
+    re_inner_nonneg := fun x => by
+      rw [← InnerProductSpace.norm_sq_eq_re_inner]
       apply sq_nonneg
     definite := fun x hx =>
       norm_eq_zero.1 <| pow_eq_zero (n := 2) <| by
-        rw [InnerProductSpace.norm_sq_eq_inner (𝕜 := 𝕜) x, hx, map_zero] }
+        rw [InnerProductSpace.norm_sq_eq_re_inner (𝕜 := 𝕜) x, hx, map_zero] }
 
 namespace InnerProductSpace.Core
 
@@ -221,10 +226,10 @@ def normSq (x : F) :=
 local notation "normSqF" => @normSq 𝕜 F _ _ _ _
 
 theorem inner_conj_symm (x y : F) : ⟪y, x⟫† = ⟪x, y⟫ :=
-  c.conj_symm x y
+  c.conj_inner_symm x y
 
 theorem inner_self_nonneg {x : F} : 0 ≤ re ⟪x, x⟫ :=
-  c.nonneg_re _
+  c.re_inner_nonneg _
 
 theorem inner_self_im (x : F) : im ⟪x, x⟫ = 0 := by
   rw [← @ofReal_inj 𝕜, im_eq_conj_sub]
@@ -375,10 +380,12 @@ def toNorm : Norm F where norm x := √(re ⟪x, x⟫)
 
 attribute [local instance] toNorm
 
-theorem norm_eq_sqrt_inner (x : F) : ‖x‖ = √(re ⟪x, x⟫) := rfl
+theorem norm_eq_sqrt_re_inner (x : F) : ‖x‖ = √(re ⟪x, x⟫) := rfl
+
+@[deprecated (since := "2025-04-22")] alias norm_eq_sqrt_inner := norm_eq_sqrt_re_inner
 
 theorem inner_self_eq_norm_mul_norm (x : F) : re ⟪x, x⟫ = ‖x‖ * ‖x‖ := by
-  rw [norm_eq_sqrt_inner, ← sqrt_mul inner_self_nonneg (re ⟪x, x⟫), sqrt_mul_self inner_self_nonneg]
+  rw [norm_eq_sqrt_re_inner, ← sqrt_mul inner_self_nonneg, sqrt_mul_self inner_self_nonneg]
 
 theorem sqrt_normSq_eq_norm (x : F) : √(normSqF x) = ‖x‖ := rfl
 
@@ -412,7 +419,7 @@ attribute [local instance] toSeminormedAddCommGroup
 `PreInnerProductSpace.Core` structure -/
 def toSeminormedSpace : NormedSpace 𝕜 F where
   norm_smul_le r x := by
-    rw [norm_eq_sqrt_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
+    rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
     rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
       ofReal_re]
     · simp [sqrt_normSq_eq_norm, RCLike.sqrt_normSq_eq_norm]
@@ -476,7 +483,7 @@ attribute [local instance] toNormedAddCommGroup
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure -/
 def toNormedSpace : NormedSpace 𝕜 F where
   norm_smul_le r x := by
-    rw [norm_eq_sqrt_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
+    rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
     rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
       ofReal_re]
     · simp [sqrt_normSq_eq_norm, RCLike.sqrt_normSq_eq_norm]
@@ -497,11 +504,16 @@ def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : InnerProduct
     InnerProductSpace 𝕜 F :=
   letI : NormedSpace 𝕜 F := @InnerProductSpace.Core.toNormedSpace 𝕜 F _ _ _ cd
   { cd with
-    norm_sq_eq_inner := fun x => by
+    norm_sq_eq_re_inner := fun x => by
       have h₁ : ‖x‖ ^ 2 = √(re (cd.inner x x)) ^ 2 := rfl
       have h₂ : 0 ≤ re (cd.inner x x) := InnerProductSpace.Core.inner_self_nonneg
       simp [h₁, sq_sqrt, h₂] }
 
 end
+
+/-- A Hilbert space is a complete normed inner product space. -/
+@[variable_alias]
+structure HilbertSpace (𝕜 E : Type*) [RCLike 𝕜]
+  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 end

@@ -155,7 +155,7 @@ it suffices to prove it for
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
-See also `Finset.family_induction_on.`-/
+See also `Finset.family_induction_on.` -/
 @[elab_as_elim]
 lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
     (𝒜 : Finset (Finset α)) (empty : p ∅) (singleton_empty : p {∅})
@@ -169,8 +169,7 @@ lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
     simp_rw [subset_empty] at hu
     rw [← subset_singleton_iff', subset_singleton_iff] at hu
     obtain rfl | rfl := hu <;> assumption
-  | insert _ ih =>
-    rename_i a u _
+  | insert a u _ ih =>
     refine subfamily a (ih _ ?_) (ih _ ?_)
     · simp only [mem_nonMemberSubfamily, and_imp]
       exact fun s hs has ↦ (subset_insert_iff_of_not_mem has).1 <| hu _ hs
@@ -189,7 +188,7 @@ it suffices to prove it for
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
-See also `Finset.memberFamily_induction_on.`-/
+See also `Finset.memberFamily_induction_on.` -/
 @[elab_as_elim]
 protected lemma family_induction_on {p : Finset (Finset α) → Prop}
     (𝒜 : Finset (Finset α)) (empty : p ∅) (singleton_empty : p {∅})

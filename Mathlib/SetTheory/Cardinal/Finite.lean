@@ -43,7 +43,7 @@ theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
   mk_toNat_eq_card
 
 /-- Because this theorem takes `Fintype α` as a non-instance argument, it can be used in particular
-when `Fintype.card` ends up with different instance than the one found by inference  -/
+when `Fintype.card` ends up with different instance than the one found by inference -/
 theorem _root_.Fintype.card_eq_nat_card {_ : Fintype α} : Fintype.card α = Nat.card α :=
   mk_toNat_eq_card.symm
 
@@ -245,10 +245,10 @@ namespace Set
 variable {s : Set α}
 
 lemma card_singleton_prod (a : α) (t : Set β) : Nat.card ({a} ×ˢ t) = Nat.card t := by
-  rw [singleton_prod, Nat.card_image_of_injective (Prod.mk.inj_left a)]
+  rw [singleton_prod, Nat.card_image_of_injective (Prod.mk_right_injective a)]
 
 lemma card_prod_singleton (s : Set α) (b : β) : Nat.card (s ×ˢ {b}) = Nat.card s := by
-  rw [prod_singleton, Nat.card_image_of_injective (Prod.mk.inj_right b)]
+  rw [prod_singleton, Nat.card_image_of_injective (Prod.mk_left_injective b)]
 
 theorem natCard_pos (hs : s.Finite) : 0 < Nat.card s ↔ s.Nonempty := by
   simp [pos_iff_ne_zero, Nat.card_eq_zero, hs.to_subtype, nonempty_iff_ne_empty]
@@ -339,5 +339,9 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
   conv_rhs => rw [← Nat.cast_one]
   rw [← natCast_lt_toENat_iff]
   simp only [ENat.card, Nat.cast_one]
+
+@[simp]
+theorem card_prod (α β : Type*) : ENat.card (α × β) = .card α * .card β := by
+  simp [ENat.card]
 
 end ENat

@@ -7,7 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Continuous
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.Order.Filter.Ring
 
 /-! # From equality of integrals to equality of functions
@@ -130,7 +130,7 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
   let s := {x | f x ≤ b}
   have hs : NullMeasurableSet s μ := nullMeasurableSet_le hf.1.aemeasurable aemeasurable_const
   have mus : μ s < ∞ := Integrable.measure_le_lt_top hf hb_neg
-  have h_int_gt : (∫ x in s, f x ∂μ) ≤ b * (μ s).toReal := by
+  have h_int_gt : (∫ x in s, f x ∂μ) ≤ b * μ.real s := by
     have h_const_le : (∫ x in s, f x ∂μ) ≤ ∫ _ in s, b ∂μ := by
       refine setIntegral_mono_ae_restrict hf.integrableOn (integrableOn_const.mpr (Or.inr mus)) ?_
       rw [EventuallyLE, ae_restrict_iff₀ (hs.mono μ.restrict_le_self)]
@@ -138,7 +138,7 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
     rwa [setIntegral_const, smul_eq_mul, mul_comm] at h_const_le
   contrapose! h_int_gt with H
   calc
-    b * (μ s).toReal < 0 := mul_neg_of_neg_of_pos hb_neg <| ENNReal.toReal_pos H mus.ne
+    b * μ.real s < 0 := mul_neg_of_neg_of_pos hb_neg <| ENNReal.toReal_pos H mus.ne
     _ ≤ ∫ x in s, f x ∂μ := by
       rw [← μ.restrict_toMeasurable mus.ne]
       exact hf_zero _ (measurableSet_toMeasurable ..) (by rwa [measure_toMeasurable])
@@ -353,9 +353,9 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim (hm : 
 
 theorem Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α → E} (hf : Integrable f μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) : f =ᵐ[μ] 0 := by
-  have hf_Lp : Memℒp f 1 μ := memℒp_one_iff_integrable.mpr hf
+  have hf_Lp : MemLp f 1 μ := memLp_one_iff_integrable.mpr hf
   let f_Lp := hf_Lp.toLp f
-  have hf_f_Lp : f =ᵐ[μ] f_Lp := (Memℒp.coeFn_toLp hf_Lp).symm
+  have hf_f_Lp : f =ᵐ[μ] f_Lp := (MemLp.coeFn_toLp hf_Lp).symm
   refine hf_f_Lp.trans ?_
   refine Lp.ae_eq_zero_of_forall_setIntegral_eq_zero f_Lp one_ne_zero ENNReal.coe_ne_top ?_ ?_
   · exact fun s _ _ => Integrable.integrableOn (L1.integrable_coeFn _)

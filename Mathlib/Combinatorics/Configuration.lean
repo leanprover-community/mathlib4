@@ -68,11 +68,13 @@ class Nondegenerate : Prop where
 
 /-- A nondegenerate configuration in which every pair of lines has an intersection point. -/
 class HasPoints extends Nondegenerate P L where
+  /-- Intersection of two lines -/
   mkPoint : ∀ {l₁ l₂ : L}, l₁ ≠ l₂ → P
   mkPoint_ax : ∀ {l₁ l₂ : L} (h : l₁ ≠ l₂), mkPoint h ∈ l₁ ∧ mkPoint h ∈ l₂
 
 /-- A nondegenerate configuration in which every pair of points has a line through them. -/
 class HasLines extends Nondegenerate P L where
+  /-- Line through two points -/
   mkLine : ∀ {p₁ p₂ : P}, p₁ ≠ p₂ → L
   mkLine_ax : ∀ {p₁ p₂ : P} (h : p₁ ≠ p₂), p₁ ∈ mkLine h ∧ p₂ ∈ mkLine h
 
@@ -478,8 +480,9 @@ lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : 
     crossProduct a b = 0 ∨ crossProduct c d = 0 := by
   by_contra h
   simp_rw [not_or, ← ne_eq, crossProduct_ne_zero_iff_linearIndependent] at h
-  let A : Matrix (Fin 2) (Fin 3) K := ![a, b]
-  let B : Matrix (Fin 2) (Fin 3) K := ![c, d]
+  rw [← Matrix.of_row (![a,b]), ← Matrix.of_row (![c,d])] at h
+  let A : Matrix (Fin 2) (Fin 3) K := .of ![a, b]
+  let B : Matrix (Fin 2) (Fin 3) K := .of ![c, d]
   have hAB : A * B.transpose = 0 := by
     ext i j
     fin_cases i <;> fin_cases j <;> assumption

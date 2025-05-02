@@ -179,7 +179,7 @@ theorem toFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : RatFunc K)
   rw [← ofFractionRing_smul]
 
 theorem smul_eq_C_smul (x : RatFunc K) (r : K) : r • x = Polynomial.C r • x := by
-  cases' x with x
+  obtain ⟨x⟩ := x
   induction x using Localization.induction_on
   rw [← ofFractionRing_smul, ← ofFractionRing_smul, Localization.smul_mk,
     Localization.smul_mk, smul_eq_mul, Polynomial.smul_eq_C_mul]
@@ -340,7 +340,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       OneMemClass.coe_one, map_one, OneMemClass.one_mem, dite_true, ofFractionRing.injEq,
       Localization.mk_one, Localization.mk_eq_monoidOf_mk', Submonoid.LocalizationMap.mk'_self]
   map_mul' x y := by
-    cases' x with x; cases' y with y
+    obtain ⟨x⟩ := x; obtain ⟨y⟩ := y
     induction' x using Localization.induction_on with pq
     induction' y using Localization.induction_on with p'q'
     obtain ⟨p, q⟩ := pq
@@ -408,8 +408,8 @@ def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.co
     simp_rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk,
       OneMemClass.coe_one, map_one, div_one]
   map_mul' x y := by
-    cases' x with x
-    cases' y with y
+    obtain ⟨x⟩ := x
+    obtain ⟨y⟩ := y
     induction' x using Localization.induction_on with p q
     induction' y using Localization.induction_on with p' q'
     rw [← ofFractionRing_mul, Localization.mk_mul]
@@ -445,8 +445,8 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : RatFunc 
       simp only [ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe]
       cases subsingleton_or_nontrivial R
       · rw [Subsingleton.elim (x + y) y, Subsingleton.elim x 0, map_zero, zero_add]
-      cases' x with x
-      cases' y with y
+      obtain ⟨x⟩ := x
+      obtain ⟨y⟩ := y
       induction' x using Localization.induction_on with pq
       induction' y using Localization.induction_on with p'q'
       obtain ⟨p, q⟩ := pq
@@ -662,10 +662,6 @@ instance : IsFractionRing K[X] (RatFunc K) where
     convert IsLocalization.surj K[X]⁰ z
     simp only [← ofFractionRing_algebraMap, Function.comp_apply, ← ofFractionRing_mul,
       ofFractionRing.injEq]
-
-@[deprecated "Use FaithfulSMul.algebraMap_eq_zero_iff instead." (since := "2024-09-08")]
-theorem algebraMap_eq_zero_iff {x : K[X]} : algebraMap K[X] (RatFunc K) x = 0 ↔ x = 0 := by
-  simp
 
 variable {K}
 
@@ -919,7 +915,7 @@ theorem num_denom_add (x y : RatFunc K) :
     · exact algebraMap_ne_zero (denom_ne_zero y)
 
 theorem num_denom_neg (x : RatFunc K) : (-x).num * x.denom = -x.num * (-x).denom := by
-  rw [num_mul_eq_mul_denom_iff (denom_ne_zero x), _root_.map_neg, neg_div, num_div_denom]
+  rw [num_mul_eq_mul_denom_iff (denom_ne_zero x), map_neg, neg_div, num_div_denom]
 
 theorem num_denom_mul (x y : RatFunc K) :
     (x * y).num * (x.denom * y.denom) = x.num * y.num * (x * y).denom :=

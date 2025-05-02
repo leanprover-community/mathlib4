@@ -68,7 +68,7 @@ lemma freeYonedaEquiv_comp {M N : PresheafOfModules.{v} R} {X : C}
 
 variable (R) in
 /-- The set of `PresheafOfModules.{v} R` consisting of objects of the
-form `(free R).obj (yoneda.obj X)` for some `X`.  -/
+form `(free R).obj (yoneda.obj X)` for some `X`. -/
 def freeYoneda : Set (PresheafOfModules.{v} R) := Set.range (yoneda ⋙ free R).obj
 
 namespace freeYoneda

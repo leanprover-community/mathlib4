@@ -43,17 +43,15 @@ def chosenProd : J ⥤ C where
 namespace chosenProd
 
 /-- The first projection `chosenProd F₁ F₂ ⟶ F₁`. -/
-@[simps]
 def fst : chosenProd F₁ F₂ ⟶ F₁ where
   app _ := ChosenFiniteProducts.fst _ _
 
 /-- The second projection `chosenProd F₁ F₂ ⟶ F₂`. -/
-@[simps]
 def snd : chosenProd F₁ F₂ ⟶ F₂ where
   app _ := ChosenFiniteProducts.snd _ _
 
 /-- `Functor.chosenProd F₁ F₂` is a binary product of `F₁` and `F₂`. -/
-noncomputable def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
+def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
   evaluationJointlyReflectsLimits _ (fun j =>
     (IsLimit.postcomposeHomEquiv (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
       (IsLimit.ofIsoLimit (ChosenFiniteProducts.product (X := F₁.obj j) (Y := F₂.obj j)).2
@@ -63,7 +61,7 @@ end chosenProd
 
 end
 
-noncomputable instance chosenFiniteProducts :
+instance chosenFiniteProducts :
     ChosenFiniteProducts (J ⥤ C) where
   terminal := ⟨_, chosenTerminalIsTerminal J C⟩
   product F₁ F₂ := ⟨_, chosenProd.isLimit F₁ F₂⟩
@@ -73,6 +71,19 @@ namespace Monoidal
 open ChosenFiniteProducts
 
 variable {J C}
+
+@[simp]
+lemma tensorObj_obj (F₁ F₂ : J ⥤ C) (j : J) : (F₁ ⊗ F₂).obj j = (F₁.obj j) ⊗ (F₂.obj j) := rfl
+
+@[simp]
+lemma tensorObj_map (F₁ F₂ : J ⥤ C) {j j' : J} (f : j ⟶ j') :
+    (F₁ ⊗ F₂).map f = (F₁.map f) ⊗ (F₂.map f) := rfl
+
+@[simp]
+lemma fst_app (F₁ F₂ : J ⥤ C) (j : J) : (fst F₁ F₂).app j = fst (F₁.obj j) (F₂.obj j) := rfl
+
+@[simp]
+lemma snd_app (F₁ F₂ : J ⥤ C) (j : J) : (snd F₁ F₂).app j = snd (F₁.obj j) (F₂.obj j) := rfl
 
 @[simp]
 lemma leftUnitor_hom_app (F : J ⥤ C) (j : J) :
@@ -132,26 +143,22 @@ lemma whiskerRight_app_snd {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J
 lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).hom.app j = (α_ _ _ _).hom := by
   apply hom_ext
-  · change _ ≫ (fst F₁ (F₂ ⊗ F₃)).app j = _
-    rw [← NatTrans.comp_app, associator_hom_fst]
-    erw [associator_hom_fst]
-    rfl
+  · rw [← fst_app, ← NatTrans.comp_app, associator_hom_fst]
+    simp
   · apply hom_ext
-    · change (_ ≫ (snd F₁ (F₂ ⊗ F₃)).app j) ≫ (fst F₂ F₃).app j = _
-      rw [← NatTrans.comp_app, ← NatTrans.comp_app, assoc, associator_hom_snd_fst, assoc]
-      erw [associator_hom_snd_fst]
-      rfl
-    · change (_ ≫ (snd F₁ (F₂ ⊗ F₃)).app j) ≫ (snd F₂ F₃).app j = _
-      rw [← NatTrans.comp_app, ← NatTrans.comp_app, assoc, associator_hom_snd_snd, assoc]
-      erw [associator_hom_snd_snd]
-      rfl
+    · rw [← snd_app, ← NatTrans.comp_app, ← fst_app, ← NatTrans.comp_app, Category.assoc,
+        associator_hom_snd_fst]
+      simp
+    · rw [← snd_app, ← NatTrans.comp_app, ← snd_app, ← NatTrans.comp_app, Category.assoc,
+        associator_hom_snd_snd]
+      simp
 
 @[simp]
 lemma associator_inv_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).inv.app j = (α_ _ _ _).inv := by
   rw [← cancel_mono ((α_ _ _ _).hom), Iso.inv_hom_id, ← associator_hom_app, Iso.inv_hom_id_app]
 
-noncomputable instance {K : Type*} [Category K] [HasColimitsOfShape K C]
+instance {K : Type*} [Category K] [HasColimitsOfShape K C]
     [∀ X : C, PreservesColimitsOfShape K (tensorLeft X)] {F : J ⥤ C} :
     PreservesColimitsOfShape K (tensorLeft F) := by
   apply preservesColimitsOfShape_of_evaluation

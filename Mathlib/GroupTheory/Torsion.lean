@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Berman
 -/
 import Mathlib.GroupTheory.PGroup
+import Mathlib.LinearAlgebra.Quotient.Defs
 
 /-!
 # Torsion groups
@@ -65,7 +66,7 @@ noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with
     inv := fun g => g ^ (orderOf g - 1)
     inv_mul_cancel := fun g => by
-      erw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
+      rw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
       exact (tG g).orderOf_pos }
 
 section Group
@@ -300,8 +301,14 @@ namespace Monoid
 section Monoid
 variable (G) [Monoid G]
 
-/-- A predicate on a monoid saying that only 1 is of finite order. -/
-@[to_additive "A predicate on an additive monoid saying that only 0 is of finite order."]
+/-- A predicate on a monoid saying that only 1 is of finite order.
+
+This definition is mathematically incorrect for monoids which are not groups.
+Please use `IsMulTorsionFree` instead. -/
+@[to_additive "A predicate on an additive monoid saying that only 0 is of finite order.
+
+This definition is mathematically incorrect for monoids which are not groups.
+Please use `IsAddTorsionFree` instead. "]
 def IsTorsionFree :=
   ∀ g : G, g ≠ 1 → ¬IsOfFinOrder g
 
@@ -388,7 +395,7 @@ lemma isTorsionFree_iff_noZeroSMulDivisors_nat {M : Type*} [AddMonoid M] :
     pos_iff_ne_zero, noZeroSMulDivisors_iff, forall_swap (β := ℕ)]
   exact forall₂_congr fun _ _ ↦ by tauto
 
-lemma isTorsionFree_iff_noZeroSMulDivisors_int [AddGroup G] :
+lemma isTorsionFree_iff_noZeroSMulDivisors_int [SubtractionMonoid G] :
     IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
   simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_zsmul_eq_zero, not_exists, not_and,
     noZeroSMulDivisors_iff, forall_swap (β := ℤ)]
@@ -412,3 +419,12 @@ instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
   inferInstanceAs (Module R (M ⧸ this))
 
 end AddCommGroup
+
+section
+
+variable {M : Type*} [CommMonoid M] [HasDistribNeg M]
+
+theorem neg_one_mem_torsion : -1 ∈ CommMonoid.torsion M :=
+  ⟨2, zero_lt_two, (isPeriodicPt_mul_iff_pow_eq_one _).mpr (by simp)⟩
+
+end

@@ -55,9 +55,7 @@ theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).pr
   | nil => simp
   | cons head tail ih => simp only [*, List.flatten, map, prod_append, prod_cons]
 
-@[deprecated (since := "2024-10-15")] alias prod_join := prod_flatten
-@[deprecated (since := "2024-10-15")] alias sum_join := sum_flatten
-
+open scoped Relator in
 @[to_additive]
 theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
     (Forall₂ R ⇒ R) prod prod :=
@@ -72,7 +70,7 @@ theorem prod_hom_nonempty {l : List M} {F : Type*} [FunLike F M N] [MulHomClass 
 theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
     (l.map f).prod = f l.prod := by
   simp only [prod, foldr_map, ← map_one f]
-  exact l.foldr_hom f (· * ·) (f · * ·) 1 (fun x y => (map_mul f x y).symm)
+  exact l.foldr_hom f (fun x y => (map_mul f x y).symm)
 
 @[to_additive]
 theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
@@ -137,13 +135,16 @@ theorem prod_set :
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
-Instead, we write the statement in terms of `(L.get? 0).getD 1`.
+Instead, we write the statement in terms of `L[0]?.getD 1`.
 -/
 @[to_additive "We'd like to state this as `L.headI + L.tail.sum = L.sum`, but because `L.headI`
   relies on an inhabited instance to return a garbage value on the empty list, this is not possible.
-  Instead, we write the statement in terms of `(L.get? 0).getD 0`."]
-theorem get?_zero_mul_tail_prod (l : List M) : (l.get? 0).getD 1 * l.tail.prod = l.prod := by
+  Instead, we write the statement in terms of `L[0]?.getD 0`."]
+theorem getElem?_zero_mul_tail_prod (l : List M) : l[0]?.getD 1 * l.tail.prod = l.prod := by
   cases l <;> simp
+
+@[deprecated (since := "2025-02-15")] alias get?_zero_mul_tail_prod := getElem?_zero_mul_tail_prod
+@[deprecated (since := "2025-02-15")] alias get?_zero_add_tail_sum := getElem?_zero_add_tail_sum
 
 /-- Same as `get?_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by
   requiring the list to be nonempty. -/
@@ -185,7 +186,7 @@ lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
   | nil => rfl
   | cons i l hil =>
     rw [List.prod_cons, hil fun x hx ↦ hl _ (mem_cons_of_mem i hx),
-      hl _ (mem_cons_self i l), one_mul]
+      hl _ mem_cons_self, one_mul]
 
 @[to_additive] lemma exists_mem_ne_one_of_prod_ne_one (h : l.prod ≠ 1) :
     ∃ x ∈ l, x ≠ (1 : M) := by simpa only [not_forall, exists_prop] using mt prod_eq_one h
@@ -199,7 +200,7 @@ lemma prod_erase_of_comm [DecidableEq M] (ha : a ∈ l) (comm : ∀ x ∈ l, ∀
     obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem ha
     · simp only [erase_cons_head, prod_cons]
     rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
-      comm a ha b (l.mem_cons_self b), mul_assoc,
+      comm a ha b mem_cons_self, mul_assoc,
       ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
 
 @[to_additive]
@@ -213,7 +214,7 @@ lemma prod_map_eq_pow_single [DecidableEq α] {l : List α} (a : α) (f : α →
     simp only [beq_iff_eq]
     split_ifs with ha'
     · rw [ha', _root_.pow_succ']
-    · rw [hf a' ha' (List.mem_cons_self a' as), one_mul, add_zero]
+    · rw [hf a' ha' mem_cons_self, one_mul, add_zero]
 
 @[to_additive]
 lemma prod_eq_pow_single [DecidableEq M] (a : M) (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) :
@@ -240,7 +241,8 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
-@[to_additive] lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
+@[to_additive (attr := simp)]
+lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
 
 @[to_additive]
 lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
@@ -479,12 +481,6 @@ end MonoidHom
 
 namespace List
 
-@[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
-
-@[deprecated (since := "2024-10-16")] alias countP_bind := countP_flatMap
-
-@[deprecated (since := "2024-10-16")] alias count_bind := count_flatMap
-
 /-- In a flatten, taking the first elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the flatten of the first `i` sublists. -/
 lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
@@ -492,8 +488,6 @@ lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
   induction L generalizing i
   · simp
   · cases i <;> simp [take_append, *]
-
-@[deprecated (since := "2024-10-15")] alias take_sum_join := take_sum_flatten
 
 /-- In a flatten, dropping all the elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join after dropping the first `i` sublists. -/
@@ -503,7 +497,8 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
   · simp
   · cases i <;> simp [take_append, *]
 
-@[deprecated (since := "2024-10-15")] alias drop_sum_join := drop_sum_flatten
+@[deprecated (since := "2024-10-25")] alias take_sum_join' := take_sum_flatten
+@[deprecated (since := "2024-10-25")] alias drop_sum_join' := drop_sum_flatten
 
 end List
 
@@ -517,6 +512,6 @@ theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.le
   | nil => simp
   | cons j L IH =>
     rw [sum_cons, length, add_comm]
-    exact Nat.add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
+    exact Nat.add_le_add (h _ mem_cons_self) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
 
 end List

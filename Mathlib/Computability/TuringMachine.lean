@@ -421,18 +421,19 @@ def stWrite {k : K} (v : σ) (l : List (Γ k)) : StAct K Γ σ k → List (Γ k)
 of the stack, and all other actions, which do not. This is a modified recursor which lumps the
 stack actions into one. -/
 @[elab_as_elim]
-def stmtStRec.{l} {C : TM2.Stmt Γ Λ σ → Sort l} (H₁ : ∀ (k) (s : StAct K Γ σ k) (q)
-    (_ : C q), C (stRun s q))
-    (H₂ : ∀ (a q) (_ : C q), C (TM2.Stmt.load a q))
-    (H₃ : ∀ (p q₁ q₂) (_ : C q₁) (_ : C q₂), C (TM2.Stmt.branch p q₁ q₂))
-    (H₄ : ∀ l, C (TM2.Stmt.goto l)) (H₅ : C TM2.Stmt.halt) : ∀ n, C n
-  | TM2.Stmt.push _ f q => H₁ _ (push f) _ (stmtStRec H₁ H₂ H₃ H₄ H₅ q)
-  | TM2.Stmt.peek _ f q => H₁ _ (peek f) _ (stmtStRec H₁ H₂ H₃ H₄ H₅ q)
-  | TM2.Stmt.pop _ f q => H₁ _ (pop f) _ (stmtStRec H₁ H₂ H₃ H₄ H₅ q)
-  | TM2.Stmt.load _ q => H₂ _ _ (stmtStRec H₁ H₂ H₃ H₄ H₅ q)
-  | TM2.Stmt.branch _ q₁ q₂ => H₃ _ _ _ (stmtStRec H₁ H₂ H₃ H₄ H₅ q₁) (stmtStRec H₁ H₂ H₃ H₄ H₅ q₂)
-  | TM2.Stmt.goto _ => H₄ _
-  | TM2.Stmt.halt => H₅
+def stmtStRec.{l} {motive : TM2.Stmt Γ Λ σ → Sort l}
+    (run : ∀ (k) (s : StAct K Γ σ k) (q) (_ : motive q), motive (stRun s q))
+    (load : ∀ (a q) (_ : motive q), motive (TM2.Stmt.load a q))
+    (branch : ∀ (p q₁ q₂) (_ : motive q₁) (_ : motive q₂), motive (TM2.Stmt.branch p q₁ q₂))
+    (goto : ∀ l, motive (TM2.Stmt.goto l)) (halt : motive TM2.Stmt.halt) : ∀ n, motive n
+  | TM2.Stmt.push _ f q => run _ (push f) _ (stmtStRec run load branch goto halt q)
+  | TM2.Stmt.peek _ f q => run _ (peek f) _ (stmtStRec run load branch goto halt q)
+  | TM2.Stmt.pop _ f q => run _ (pop f) _ (stmtStRec run load branch goto halt q)
+  | TM2.Stmt.load _ q => load _ _ (stmtStRec run load branch goto halt q)
+  | TM2.Stmt.branch _ q₁ q₂ =>
+    branch _ _ _ (stmtStRec run load branch goto halt q₁) (stmtStRec run load branch goto halt q₂)
+  | TM2.Stmt.goto _ => goto _
+  | TM2.Stmt.halt => halt
 
 theorem supports_run (S : Finset Λ) {k : K} (s : StAct K Γ σ k) (q : TM2.Stmt Γ Λ σ) :
     TM2.SupportsStmt S (stRun s q) ↔ TM2.SupportsStmt S q := by
@@ -553,7 +554,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
           Nat.sub_self, List.length_singleton, List.getElem_singleton,
           le_refl, Nat.lt_succ_self]
       rw [← proj_map_nth, hL, ListBlank.nth_mk]
-      cases' lt_or_gt_of_ne h with h h
+      rcases lt_or_gt_of_ne h with h | h
       · rw [List.getI_append]
         simpa only [List.length_map, List.length_reverse] using h
       · rw [gt_iff_lt] at h
@@ -571,7 +572,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
       List.reverse_cons, ← List.length_reverse, List.getElem?_concat_length]
     rfl
   | pop f =>
-    cases' e : S k with hd tl
+    rcases e : S k with - | ⟨hd, tl⟩
     · simp only [Tape.mk'_head, ListBlank.head_cons, Tape.move_left_mk', List.length,
         Tape.write_mk', List.head?, iterate_zero_apply, List.tail_nil]
       rw [← e, Function.update_eq_self]
@@ -595,7 +596,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
           · rfl
           rw [h, List.length_reverse, List.length_map]
         rw [← proj_map_nth, hL, ListBlank.nth_mk, e, List.map, List.reverse_cons]
-        cases' lt_or_gt_of_ne h with h h
+        rcases lt_or_gt_of_ne h with h | h
         · rw [List.getI_append]
           simpa only [List.length_map, List.length_reverse] using h
         · rw [gt_iff_lt] at h
@@ -662,7 +663,7 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
   obtain ⟨T', hT', hrun⟩ := tr_respects_aux₂ (Λ := Λ) hT o
   have := hgo.tail' rfl
   rw [tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_snd,
-    stk_nth_val _ (hT k), List.getElem?_eq_none (le_of_eq (List.length_reverse _)),
+    stk_nth_val _ (hT k), List.getElem?_eq_none (le_of_eq List.length_reverse),
     Option.isNone, cond, hrun, TM1.stepAux] at this
   obtain ⟨c, gc, rc⟩ := IH hT'
   refine ⟨c, gc, (this.to₀.trans (tr_respects_aux₃ M _) c (TransGen.head' rfl ?_)).to_reflTransGen⟩
@@ -674,22 +675,20 @@ attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   intro c₁ c₂ h
-  cases' h with l v S L hT
-  cases' l with l; · constructor
+  obtain @⟨- | l, v, S, L, hT⟩ := h; · constructor
   rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ Reaches (TM1.step (tr M)) _ _
   · exact ⟨b, c, TransGen.head' rfl r⟩
   simp only [tr]
-  -- Porting note: `refine'` failed because of implicit lambda, so `induction` is used.
   generalize M l = N
   induction N using stmtStRec generalizing v S L hT with
-  | H₁ k s q IH => exact tr_respects_aux M hT s @IH
-  | H₂ a _ IH => exact IH _ hT
-  | H₃ p q₁ q₂ IH₁ IH₂ =>
+  | run k s q IH => exact tr_respects_aux M hT s @IH
+  | load a _ IH => exact IH _ hT
+  | branch p q₁ q₂ IH₁ IH₂ =>
     unfold TM2.stepAux trNormal TM1.stepAux
     beta_reduce
     cases p v <;> [exact IH₂ _ hT; exact IH₁ _ hT]
-  | H₄ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
-  | H₅ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
+  | goto => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
+  | halt => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
 
 section
 variable [Inhabited Λ] [Inhabited σ]
@@ -760,7 +759,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
         at sub
       have hgo := sub _ (Or.inl <| Or.inl rfl)
       have hret := sub _ (Or.inl <| Or.inr rfl)
-      cases' IH ss' fun x hx ↦ sub x <| Or.inr hx with IH₁ IH₂
+      obtain ⟨IH₁, IH₂⟩ := IH ss' fun x hx ↦ sub x <| Or.inr hx
       refine ⟨by simp only [trNormal_run, TM1.SupportsStmt]; intros; exact hgo, fun l h ↦ ?_⟩
       rw [trStmts₁_run] at h
       simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
@@ -778,8 +777,8 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       exact IH ss' sub
     · intro _ _ _ IH₁ IH₂ ss' sub -- branch
       unfold TM2to1.trStmts₁ at sub
-      cases' IH₁ ss'.1 fun x hx ↦ sub x <| Finset.mem_union_left _ hx with IH₁₁ IH₁₂
-      cases' IH₂ ss'.2 fun x hx ↦ sub x <| Finset.mem_union_right _ hx with IH₂₁ IH₂₂
+      obtain ⟨IH₁₁, IH₁₂⟩ := IH₁ ss'.1 fun x hx ↦ sub x <| Finset.mem_union_left _ hx
+      obtain ⟨IH₂₁, IH₂₂⟩ := IH₂ ss'.2 fun x hx ↦ sub x <| Finset.mem_union_right _ hx
       refine ⟨⟨IH₁₁, IH₂₁⟩, fun l h ↦ ?_⟩
       rw [trStmts₁] at h
       rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h; exact IH₂₂ _ h]

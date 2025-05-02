@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Order.UpperLower.Basic
@@ -60,8 +60,7 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
     · simp only [card_empty, inter_empty, mul_zero, zero_mul, le_refl]
     · simp only [card_empty, pow_zero, inter_singleton_of_mem, mem_singleton, card_singleton,
         le_refl]
-  | insert hs ih =>
-  rename_i a s
+  | insert a s hs ih =>
   rw [card_insert_of_not_mem hs, ← card_memberSubfamily_add_card_nonMemberSubfamily a 𝒜, ←
     card_memberSubfamily_add_card_nonMemberSubfamily a ℬ, add_mul, mul_add, mul_add,
     add_comm (_ * _), add_add_add_comm]

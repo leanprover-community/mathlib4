@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Int.CharZero
@@ -181,31 +181,37 @@ theorem algebraMap_end_apply (a : R) (m : M) : algebraMap R (End S M) a m = a �
   rfl
 
 @[simp]
-theorem ker_algebraMap_end (K : Type u) (V : Type v) [Field K] [AddCommGroup V] [Module K V] (a : K)
-    (ha : a ≠ 0) : LinearMap.ker ((algebraMap K (End K V)) a) = ⊥ :=
+theorem ker_algebraMap_end (K : Type u) (V : Type v) [Semifield K] [AddCommMonoid V] [Module K V]
+    (a : K) (ha : a ≠ 0) : LinearMap.ker ((algebraMap K (End K V)) a) = ⊥ :=
   LinearMap.ker_smul _ _ ha
 
 section
 
 variable {R M}
 
-theorem End_algebraMap_isUnit_inv_apply_eq_iff {x : R}
+theorem End.algebraMap_isUnit_inv_apply_eq_iff {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' where
-  mp H := H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
+  mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
   mpr H :=
     H.symm ▸ by
-      apply_fun ⇑h.unit.val using ((Module.End_isUnit_iff _).mp h).injective
-      simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m')
+      apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
+      simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
 
-theorem End_algebraMap_isUnit_inv_apply_eq_iff' {x : R}
+@[deprecated (since := "2025-04-28")]
+alias End_algebraMap_isUnit_inv_apply_eq_iff := End.algebraMap_isUnit_inv_apply_eq_iff
+
+theorem End.algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' where
-  mp H := H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
+  mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
   mpr H :=
     H.symm ▸ by
-      apply_fun (↑h.unit : M → M) using ((Module.End_isUnit_iff _).mp h).injective
-      simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
+      apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
+      simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
+
+@[deprecated (since := "2025-04-28")]
+alias End_algebraMap_isUnit_inv_apply_eq_iff' := End.algebraMap_isUnit_inv_apply_eq_iff'
 
 end
 
@@ -390,9 +396,9 @@ theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
 /-- If `M` is `A`-torsion free and `algebraMap R A` is injective, `M` is also `R`-torsion free. -/
-theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommRing R] [Ring A] [Algebra R A]
-    [FaithfulSMul R A] [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
-    [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M where
+theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommSemiring R] [Semiring A]
+    [Algebra R A] [FaithfulSMul R A] [AddCommMonoid M] [Module R M] [Module A M]
+    [IsScalarTower R A M] [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M where
   eq_zero_or_eq_zero_of_smul_eq_zero hx := by
     rw [← algebraMap_smul (A := A)] at hx
     simpa only [map_eq_zero_iff _ <| FaithfulSMul.algebraMap_injective R A] using
@@ -452,7 +458,7 @@ variable [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
 
 @[simp]
 theorem LinearMap.ker_restrictScalars (f : M →ₗ[S] N) :
-    LinearMap.ker (f.restrictScalars R) = f.ker.restrictScalars R :=
+    LinearMap.ker (f.restrictScalars R) = (LinearMap.ker f).restrictScalars R :=
   rfl
 
 end Module

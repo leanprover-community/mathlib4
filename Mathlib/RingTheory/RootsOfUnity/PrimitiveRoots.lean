@@ -3,6 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
@@ -68,7 +69,7 @@ open scoped Classical in
 /-- `primitiveRoots k R` is the finset of primitive `k`-th roots of unity
 in the integral domain `R`. -/
 def primitiveRoots (k : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
-  (nthRoots k (1 : R)).toFinset.filter fun ζ => IsPrimitiveRoot ζ k
+  {ζ ∈ (nthRoots k (1 : R)).toFinset | IsPrimitiveRoot ζ k}
 
 variable [CommRing R] [IsDomain R]
 
@@ -248,36 +249,13 @@ lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
   exact hζ.pow_inj hi hj e
 
 lemma exists_pos {k : ℕ} (hζ : ζ ^ k = 1) (hk : k ≠ 0) :
-    ∃ k' > 0, IsPrimitiveRoot ζ k' := by
-  classical
-  have H : ∃ k ≠ 0, ζ ^ k = 1 := ⟨k, hk, hζ⟩
-  let k' := Nat.find H
-  have hk' : 0 < k' := Nat.pos_iff_ne_zero.mpr (Nat.find_spec H).1
-  refine ⟨k', hk', (Nat.find_spec H).2, ?_⟩
-  intro l hl
-  have := Nat.find_min' H (m := .gcd k' l) ⟨Nat.gcd_ne_zero_left hk'.ne', ?_⟩
-  · exact Nat.gcd_eq_left_iff_dvd.mpr ((Nat.gcd_le_left l hk').antisymm this)
-  · have : IsUnit ζ := by
-      refine isUnit_iff_exists_inv.mpr ⟨ζ ^ (k - 1), ?_⟩
-      rw [← pow_succ', tsub_add_cancel_of_le, hζ]
-      rwa [Nat.one_le_iff_ne_zero]
-    have h₁ : this.unit ^ k' = 1 := by ext; simpa using (Nat.find_spec H).2
-    have h₂ : this.unit ^ l = 1 := by ext; simpa
-    suffices this.unit ^ (k'.gcd l : ℤ) = 1 by simpa using congr($(this).1)
-    simp [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_natCast, h₁, h₂]
-
-variable (ζ) in
-lemma «exists» : ∃ k, IsPrimitiveRoot ζ k := by
-  by_cases hζ : ∃ k ≠ 0, ζ ^ k = 1
-  · obtain ⟨k, hk, hζ⟩ := hζ
-    obtain ⟨k', -, hk'⟩ := exists_pos hζ hk
-    exact ⟨k', hk'⟩
-  · simp only [ne_eq, not_exists, not_and, not_imp_not] at hζ
-    exact ⟨0, pow_zero _, fun l hl ↦ zero_dvd_iff.mpr (hζ l hl)⟩
+    ∃ k' > 0, IsPrimitiveRoot ζ k' :=
+  ⟨orderOf ζ, by
+    rw [gt_iff_lt, orderOf_pos_iff, isOfFinOrder_iff_pow_eq_one]
+    exact ⟨k, Nat.pos_iff_ne_zero.mpr hk, hζ⟩, .orderOf _⟩
 
 lemma existsUnique : ∃! k, IsPrimitiveRoot ζ k :=
-  let ⟨k, hk⟩ := IsPrimitiveRoot.exists ζ
-  ⟨k, hk, fun _ hl ↦ unique hl hk⟩
+  ⟨_, .orderOf _, fun _ hl ↦ unique hl (.orderOf _)⟩
 
 section Maps
 
@@ -413,8 +391,8 @@ theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n :
   · exact NeZero.of_not_dvd R hp
 
 nonrec theorem mem_nthRootsFinset (hζ : IsPrimitiveRoot ζ k) (hk : 0 < k) :
-    ζ ∈ nthRootsFinset k R :=
-  (mem_nthRootsFinset hk).2 hζ.pow_eq_one
+    ζ ∈ nthRootsFinset k (1 : R) :=
+  (mem_nthRootsFinset hk (1 : R)).2 hζ.pow_eq_one
 
 end IsDomain
 
@@ -523,7 +501,7 @@ lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHo
 /-- If `R` contains an `n`-th primitive root, and `S/R` is a ring extension,
 then the `n`-th roots of unity in `R` and `S` are isomorphic.
 Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. -/
-@[simps! (config := .lemmasOnly) apply_coe_val apply_coe_inv_val]
+@[simps! -isSimp apply_coe_val apply_coe_inv_val]
 noncomputable
 def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S]
     [FunLike F R S] [MonoidHomClass F R S]
@@ -540,7 +518,6 @@ lemma _root_.rootsOfUnityEquivOfPrimitiveRoots_symm_apply
   obtain ⟨ε, rfl⟩ := (rootsOfUnityEquivOfPrimitiveRoots hf hζ).surjective η
   rw [MulEquiv.symm_apply_apply, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe]
 
--- Porting note: rephrased the next few lemmas to avoid `∃ (Prop)`
 theorem eq_pow_of_mem_rootsOfUnity {k : ℕ} [NeZero k] {ζ ξ : Rˣ} (h : IsPrimitiveRoot ζ k)
     (hξ : ξ ∈ rootsOfUnity k R) : ∃ i < k, ζ ^ i = ξ := by
   obtain ⟨n, rfl⟩ : ∃ n : ℤ, ζ ^ n = ξ := by rwa [← h.zpowers_eq] at hξ
@@ -653,7 +630,7 @@ theorem nthRoots_one_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
 
 @[simp]
 theorem card_nthRootsFinset {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
-    #(nthRootsFinset n R) = n := by
+    #(nthRootsFinset n (1 : R)) = n := by
   classical
   rw [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_one_nodup h), card_mk, h.card_nthRoots_one]
 
@@ -689,7 +666,7 @@ theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (prim
 /-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`. -/
 private -- marking as `private` since `nthRoots_one_eq_biUnion_primitiveRoots` can be used instead
 theorem nthRoots_one_eq_biUnion_primitiveRoots' [DecidableEq R] {n : ℕ} [NeZero n] :
-    nthRootsFinset n R = (Nat.divisors n).biUnion fun i ↦ primitiveRoots i R := by
+    nthRootsFinset n (1 : R) = (Nat.divisors n).biUnion fun i ↦ primitiveRoots i R := by
   ext x
   suffices x ^ n = 1 ↔ ∃ a, a ∣ n ∧ x ∈ primitiveRoots a R by
     simpa [Polynomial.mem_nthRootsFinset (NeZero.pos n), (NeZero.ne n)]
@@ -704,7 +681,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' [DecidableEq R] {n : ℕ} [NeZer
 
 /-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`. -/
 theorem nthRoots_one_eq_biUnion_primitiveRoots [DecidableEq R] {n : ℕ} :
-    nthRootsFinset n R = (Nat.divisors n).biUnion fun i ↦ primitiveRoots i R := by
+    nthRootsFinset n (1 : R) = (Nat.divisors n).biUnion fun i ↦ primitiveRoots i R := by
   by_cases hn : n = 0
   · simp only [hn, nthRootsFinset_zero, Nat.divisors_zero, biUnion_empty]
   have : NeZero n := ⟨hn⟩
@@ -727,7 +704,6 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
   MonoidHom.toHomUnits
     { toFun := fun σ ↦ (map_rootsOfUnity_eq_pow_self σ.toAlgHom μ').choose
       map_one' := by
-        dsimp only
         generalize_proofs h1
         have h := h1.choose_spec
         replace h : μ' = μ' ^ h1.choose :=
@@ -737,7 +713,6 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         exact Nat.cast_one.symm
       map_mul' := by
         intro x y
-        dsimp only
         generalize_proofs hxy' hx' hy'
         have hxy := hxy'.choose_spec
         replace hxy : x (((μ' : Sˣ) : S) ^ hy'.choose) = ((μ' : Sˣ) : S) ^ hxy'.choose :=
@@ -777,7 +752,7 @@ section cyclic
 
 /-- If `G` is cyclic of order `n` and `G'` contains a primitive `n`th root of unity,
 then for each `a : G` with `a ≠ 1` there is a homomorphism `φ : G →* G'` such that `φ a ≠ 1`. -/
-lemma IsCyclic.exists_apply_ne_one {G G' : Type*} [CommGroup G] [IsCyclic G] [Finite G]
+lemma IsCyclic.exists_apply_ne_one {G G' : Type*} [Group G] [IsCyclic G] [Finite G]
     [CommGroup G'] (hG' : ∃ ζ : G', IsPrimitiveRoot ζ (Nat.card G)) ⦃a : G⦄ (ha : a ≠ 1) :
     ∃ φ : G →* G', φ a ≠ 1 := by
   let inst : Fintype G := Fintype.ofFinite _

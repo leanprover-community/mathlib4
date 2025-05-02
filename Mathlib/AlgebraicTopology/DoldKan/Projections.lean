@@ -47,8 +47,6 @@ noncomputable def P : ℕ → (K[X] ⟶ K[X])
   | 0 => 𝟙 _
   | q + 1 => P q ≫ (𝟙 _ + Hσ q)
 
--- Porting note: `P_zero` and `P_succ` have been added to ease the port, because
--- `unfold P` would sometimes unfold to a `match` rather than the induction formula
 lemma P_zero : (P 0 : K[X] ⟶ K[X]) = 𝟙 _ := rfl
 lemma P_succ (q : ℕ) : (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
 
@@ -101,7 +99,7 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : High
   · simp only [P_zero]
     apply comp_id
   · simp only [P_succ, comp_add, HomologicalComplex.comp_f, HomologicalComplex.add_f_apply,
-      comp_id, ← assoc, hq v.of_succ, add_right_eq_self]
+      comp_id, ← assoc, hq v.of_succ, add_eq_left]
     by_cases hqn : n < q
     · exact v.of_succ.comp_Hσ_eq_zero hqn
     · obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
@@ -153,6 +151,7 @@ def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComp
     · dsimp [alternatingFaceMapComplex]
       simp only [P_zero, id_comp, comp_id]
     · simp only [P_succ, add_comp, comp_add, assoc, comp_id, hq, reassoc_of% hq]
+      -- `erw` is needed to see through `natTransHσ q).app = Hσ q`
       erw [(natTransHσ q).naturality f]
       rfl
 

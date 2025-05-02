@@ -3,7 +3,7 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Multilinear.Basic
+import Mathlib.LinearAlgebra.Multilinear.Curry
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-! # Multilinear maps over finite dimensional spaces
@@ -26,7 +26,6 @@ variable [Finite ι]
 variable [CommRing R] [AddCommGroup M₂] [Module R M₂]
 variable [Module.Finite R M₂] [Module.Free R M₂]
 
--- Porting note: split out from `free_and_finite` because of inscrutable typeclass errors
 private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type*) [∀ i, AddCommGroup (N i)]
     [∀ i, Module R (N i)] [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)] :
     Module.Free R (MultilinearMap R N M₂) ∧ Module.Finite R (MultilinearMap R N M₂) := by

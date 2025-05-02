@@ -115,7 +115,7 @@ theorem pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 
     f (x ^ n) ≤ f x ^ n := by
   induction' n with pn hpn
   · exfalso; exact Nat.lt_asymm hn hn
-  cases' pn with pn
+  rcases pn with - | pn
   · norm_num
   have hpn' := hpn pn.succ_pos
   rw [pow_succ x (pn + 1), pow_succ (f x) (pn + 1)]
@@ -167,7 +167,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
   obtain ⟨a, ha1, hae⟩ := H_fixed_point
   have H3 : ∀ x : ℚ, 0 < x → ∀ n : ℕ, 0 < n → ↑n * f x ≤ f (n * x) := by
     intro x hx n hn
-    cases' n with n
+    rcases n with - | n
     · exact (lt_irrefl 0 hn).elim
     induction' n with pn hpn
     · norm_num
@@ -208,9 +208,9 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
   have h_f_commutes_with_pos_nat_mul : ∀ n : ℕ, 0 < n → ∀ x : ℚ, 0 < x → f (n * x) = n * f x := by
     intro n hn x hx
     have h2 : f (n * x) ≤ n * f x := by
-      cases' n with n
+      rcases n with - | n
       · exfalso; exact Nat.lt_asymm hn hn
-      cases' n with n
+      rcases n with - | n
       · norm_num
       have hfneq : f n.succ.succ = n.succ.succ := by
         have :=

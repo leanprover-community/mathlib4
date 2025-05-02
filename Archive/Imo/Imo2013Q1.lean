@@ -3,7 +3,7 @@ Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity.Basic
@@ -50,7 +50,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
   obtain ⟨t, ht : ↑n = t + t⟩ | ⟨t, ht : ↑n = 2 * t + 1⟩ := (n : ℕ).even_or_odd
   · -- even case
     rw [← two_mul] at ht
-    cases' t with t
+    rcases t with - | t
     -- Eliminate the zero case to simplify later calculations.
     · exfalso; rw [Nat.mul_zero] at ht; exact PNat.ne_zero n ht
     -- Now we have ht : ↑n = 2 * (t + 1).

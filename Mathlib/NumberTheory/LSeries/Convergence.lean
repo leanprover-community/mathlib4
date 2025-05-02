@@ -3,8 +3,8 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
+import Mathlib.Data.EReal.Basic
 import Mathlib.NumberTheory.LSeries.Basic
-import Mathlib.Data.Real.EReal
 
 /-!
 # Convergence of L-series
@@ -61,22 +61,22 @@ lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable {f : ℕ → ℂ
   refine sInf_le_iff.mpr fun y hy ↦ le_of_forall_gt_imp_ge_of_dense fun a ↦ ?_
   replace hy : ∀ (a : ℝ), LSeriesSummable f a → y ≤ a := by simpa [mem_lowerBounds] using hy
   cases a with
-  | h_real a₀ => exact_mod_cast fun ha ↦ hy a₀ (h a₀ ha)
-  | h_bot => simp
-  | h_top => simp
+  | coe a₀ => exact_mod_cast fun ha ↦ hy a₀ (h a₀ ha)
+  | bot => simp
+  | top => simp
 
 lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' {f : ℕ → ℂ} {x : EReal}
     (h : ∀ y : ℝ, x < y → LSeriesSummable f y) :
     abscissaOfAbsConv f ≤ x := by
   cases x with
-  | h_real => exact abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable <| mod_cast h
-  | h_top => exact le_top
-  | h_bot =>
+  | coe => exact abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable <| mod_cast h
+  | top => exact le_top
+  | bot =>
     refine le_of_eq <| sInf_eq_bot.mpr fun y hy ↦ ?_
     cases y with
-    | h_bot => simp at hy
-    | h_real y => exact ⟨_,  ⟨_, h _ <| EReal.bot_lt_coe _, rfl⟩, mod_cast sub_one_lt y⟩
-    | h_top => exact ⟨_, ⟨_, h _ <| EReal.bot_lt_coe 0, rfl⟩, EReal.zero_lt_top⟩
+    | bot => simp at hy
+    | coe y => exact ⟨_,  ⟨_, h _ <| EReal.bot_lt_coe _, rfl⟩, mod_cast sub_one_lt y⟩
+    | top => exact ⟨_, ⟨_, h _ <| EReal.bot_lt_coe 0, rfl⟩, EReal.zero_lt_top⟩
 
 /-- If `‖f n‖` is bounded by a constant times `n^x`, then the abscissa of absolute convergence
 of `f` is bounded by `x + 1`. -/

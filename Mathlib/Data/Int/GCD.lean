@@ -10,6 +10,7 @@ import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Data.Int.Basic
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -133,9 +134,9 @@ theorem exists_mul_emod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m, n * m % k
   simp only at key
   rw [Int.add_mul_emod_self_left, ← Int.natCast_mod, Int.toNat_natCast, mod_eq_of_lt hk] at key
   refine ⟨(n.gcdA k % k).toNat, Eq.trans (Int.ofNat.inj ?_) key.symm⟩
-  rw [Int.ofNat_eq_coe, Int.natCast_mod, Int.ofNat_mul, Int.toNat_of_nonneg (Int.emod_nonneg _ hk'),
-    Int.ofNat_eq_coe, Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.mul_emod, Int.emod_emod,
-    ← Int.mul_emod]
+  rw [Int.ofNat_eq_coe, Int.natCast_mod, Int.natCast_mul,
+    Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.ofNat_eq_coe,
+    Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.mul_emod, Int.emod_emod, ← Int.mul_emod]
 
 theorem exists_mul_emod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
     ∃ m, n * m % k = 1 :=
@@ -181,9 +182,11 @@ theorem lcm_def (i j : ℤ) : lcm i j = Nat.lcm (natAbs i) (natAbs j) :=
 protected theorem coe_nat_lcm (m n : ℕ) : Int.lcm ↑m ↑n = Nat.lcm m n :=
   rfl
 
-theorem dvd_gcd {i j k : ℤ} (h1 : k ∣ i) (h2 : k ∣ j) : k ∣ gcd i j :=
+theorem dvd_coe_gcd {i j k : ℤ} (h1 : k ∣ i) (h2 : k ∣ j) : k ∣ gcd i j :=
   natAbs_dvd.1 <|
     natCast_dvd_natCast.2 <| Nat.dvd_gcd (natAbs_dvd_natAbs.2 h1) (natAbs_dvd_natAbs.2 h2)
+
+@[deprecated (since := "2025-04-27")] alias dvd_gcd := dvd_coe_gcd
 
 theorem gcd_mul_lcm (i j : ℤ) : gcd i j * lcm i j = natAbs (i * j) := by
   rw [Int.gcd, Int.lcm, Nat.gcd_mul_lcm, natAbs_mul]
@@ -225,17 +228,17 @@ theorem gcd_pos_iff {i j : ℤ} : 0 < gcd i j ↔ i ≠ 0 ∨ j ≠ 0 :=
 
 theorem gcd_div {i j k : ℤ} (H1 : k ∣ i) (H2 : k ∣ j) :
     gcd (i / k) (j / k) = gcd i j / natAbs k := by
-  rw [gcd, natAbs_ediv i k H1, natAbs_ediv j k H2]
+  rw [gcd, natAbs_ediv_of_dvd i k H1, natAbs_ediv_of_dvd j k H2]
   exact Nat.gcd_div (natAbs_dvd_natAbs.mpr H1) (natAbs_dvd_natAbs.mpr H2)
 
 theorem gcd_div_gcd_div_gcd {i j : ℤ} (H : 0 < gcd i j) : gcd (i / gcd i j) (j / gcd i j) = 1 := by
   rw [gcd_div gcd_dvd_left gcd_dvd_right, natAbs_ofNat, Nat.div_self H]
 
 theorem gcd_dvd_gcd_of_dvd_left {i k : ℤ} (j : ℤ) (H : i ∣ k) : gcd i j ∣ gcd k j :=
-  Int.natCast_dvd_natCast.1 <| dvd_gcd (gcd_dvd_left.trans H) gcd_dvd_right
+  Int.natCast_dvd_natCast.1 <| dvd_coe_gcd (gcd_dvd_left.trans H) gcd_dvd_right
 
 theorem gcd_dvd_gcd_of_dvd_right {i k : ℤ} (j : ℤ) (H : i ∣ k) : gcd j i ∣ gcd j k :=
-  Int.natCast_dvd_natCast.1 <| dvd_gcd gcd_dvd_left (gcd_dvd_right.trans H)
+  Int.natCast_dvd_natCast.1 <| dvd_coe_gcd gcd_dvd_left (gcd_dvd_right.trans H)
 
 theorem gcd_dvd_gcd_mul_left (i j k : ℤ) : gcd i j ∣ gcd (k * i) j :=
   gcd_dvd_gcd_of_dvd_left _ (dvd_mul_left _ _)
@@ -294,7 +297,7 @@ theorem gcd_dvd_iff {a b : ℤ} {n : ℕ} : gcd a b ∣ n ↔ ∃ x y : ℤ, ↑
 
 theorem gcd_greatest {a b d : ℤ} (hd_pos : 0 ≤ d) (hda : d ∣ a) (hdb : d ∣ b)
     (hd : ∀ e : ℤ, e ∣ a → e ∣ b → e ∣ d) : d = gcd a b :=
-  dvd_antisymm hd_pos (ofNat_zero_le (gcd a b)) (dvd_gcd hda hdb)
+  dvd_antisymm hd_pos (ofNat_zero_le (gcd a b)) (dvd_coe_gcd hda hdb)
     (hd _ gcd_dvd_left gcd_dvd_right)
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a c = 1` then `a ∣ b`.
@@ -357,10 +360,12 @@ theorem lcm_one_right (i : ℤ) : lcm i 1 = natAbs i := by
   rw [Int.lcm]
   apply Nat.lcm_one_right
 
-theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k := by
+theorem coe_lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k := by
   rw [Int.lcm]
   intro hi hj
   exact natCast_dvd.mpr (Nat.lcm_dvd (natAbs_dvd_natAbs.mpr hi) (natAbs_dvd_natAbs.mpr hj))
+
+@[deprecated (since := "2025-04-27")] alias lcm_dvd := coe_lcm_dvd
 
 theorem lcm_mul_left {m n k : ℤ} : (m * n).lcm (m * k) = natAbs m * n.lcm k := by
   simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_left]

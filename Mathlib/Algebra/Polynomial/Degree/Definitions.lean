@@ -7,6 +7,8 @@ import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Degree of univariate polynomials
@@ -50,7 +52,7 @@ def degree (p : R[X]) : WithBot ℕ :=
 def natDegree (p : R[X]) : ℕ :=
   (degree p).unbotD 0
 
-/-- `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`-/
+/-- `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`. -/
 def leadingCoeff (p : R[X]) : R :=
   coeff p (natDegree p)
 
@@ -240,6 +242,10 @@ theorem degree_X_le : degree (X : R[X]) ≤ 1 :=
 theorem natDegree_X_le : (X : R[X]).natDegree ≤ 1 :=
   natDegree_le_of_degree_le degree_X_le
 
+theorem withBotSucc_degree_eq_natDegree_add_one (h : p ≠ 0) : p.degree.succ = p.natDegree + 1 := by
+  rw [degree_eq_natDegree h]
+  exact WithBot.succ_coe p.natDegree
+
 end Semiring
 
 section NonzeroSemiring
@@ -329,7 +335,7 @@ theorem degree_add_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degr
   (p.degree_add_le q).trans <| max_le_max ‹_› ‹_›
 
 theorem natDegree_add_le (p q : R[X]) : natDegree (p + q) ≤ max (natDegree p) (natDegree q) := by
-  cases' le_max_iff.1 (degree_add_le p q) with h h <;> simp [natDegree_le_natDegree h]
+  rcases le_max_iff.1 (degree_add_le p q) with h | h <;> simp [natDegree_le_natDegree h]
 
 theorem natDegree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : natDegree p ≤ n)
     (hq : natDegree q ≤ n) : natDegree (p + q) ≤ n :=

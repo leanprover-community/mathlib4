@@ -197,9 +197,9 @@ lemma _root_.IsOpen.isEverywherePos [IsOpenPosMeasure μ] (hs : IsOpen s) : IsEv
   apply lt_of_lt_of_le _ (measure_mono hu)
   exact (u_open.inter hs).measure_pos μ ⟨x, ⟨xu, xs⟩⟩
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
   [LocallyCompactSpace G] [MeasurableSpace G] [BorelSpace G] {μ : Measure G}
   [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
 
@@ -244,7 +244,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
     apply le_of_lt (hW _ _ ?_)
     have : W n * {z} ∈ 𝓝 z := (IsOpen.mul_right (W_open n)).mem_nhds (by simp [mem_W])
     obtain ⟨i, hi, ni⟩ : ∃ i, y i ∈ W n * {z} ∧ n < i :=
-      ((mapClusterPt_iff.1 hz _ this).and_eventually (eventually_gt_atTop n)).exists
+      ((hz.frequently this).and_eventually (eventually_gt_atTop n)).exists
     refine ⟨x * (y i) ⁻¹, ?_, y i * z⁻¹, by simpa using hi, by group⟩
     have I : V i ⊆ W n := iInter₂_subset n (by simp [ni])
     have J : x * (y i) ⁻¹ ∈ V i := by simpa [← hvy i] using hv i
@@ -296,7 +296,7 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
     exact everywherePosSubset_ae_eq_of_measure_ne_top K_closed.measurableSet
       K_comp.measure_lt_top.ne
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 end Measure
 
