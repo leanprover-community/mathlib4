@@ -53,7 +53,7 @@ case «1».«1»
 ⊢ True
 -/
 #guard_msgs in
-example (x y:Fin 2): True := by
+example (x y : Fin 2): True := by
   fin_cases x, y
   trace_state
   all_goals trivial
