@@ -188,25 +188,6 @@ theorem iSup_toSubfield {ι : Sort*} [Nonempty ι] (S : ι → IntermediateField
     (iSup S).toSubfield = ⨆ i, (S i).toSubfield := by
   simp only [iSup, Set.range_nonempty, sSup_toSubfield, ← Set.range_comp, Function.comp_def]
 
-/-- Construct an algebra isomorphism from an equality of intermediate fields -/
-@[simps! apply]
-def equivOfEq {S T : IntermediateField F E} (h : S = T) : S ≃ₐ[F] T :=
-  Subalgebra.equivOfEq _ _ (congr_arg toSubalgebra h)
-
-@[simp]
-theorem equivOfEq_symm {S T : IntermediateField F E} (h : S = T) :
-    (equivOfEq h).symm = equivOfEq h.symm :=
-  rfl
-
-@[simp]
-theorem equivOfEq_rfl (S : IntermediateField F E) : equivOfEq (rfl : S = S) = AlgEquiv.refl := by
-  ext; rfl
-
-@[simp]
-theorem equivOfEq_trans {S T U : IntermediateField F E} (hST : S = T) (hTU : T = U) :
-    (equivOfEq hST).trans (equivOfEq hTU) = equivOfEq (hST.trans hTU) :=
-  rfl
-
 variable (F E)
 
 /-- The bottom intermediate_field is isomorphic to the field. -/
@@ -310,24 +291,6 @@ theorem _root_.AlgEquiv.fieldRange_eq_top (f : E ≃ₐ[F] K) :
   AlgHom.fieldRange_eq_top.mpr f.surjective
 
 end Lattice
-
-section equivMap
-
-variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
-  {K : Type*} [Field K] [Algebra F K] (L : IntermediateField F E) (f : E →ₐ[F] K)
-
-theorem fieldRange_comp_val : (f.comp L.val).fieldRange = L.map f := toSubalgebra_injective <| by
-  rw [toSubalgebra_map, AlgHom.fieldRange_toSubalgebra, AlgHom.range_comp, range_val]
-
-/-- An intermediate field is isomorphic to its image under an `AlgHom`
-(which is automatically injective) -/
-noncomputable def equivMap : L ≃ₐ[F] L.map f :=
-  (AlgEquiv.ofInjective _ (f.comp L.val).injective).trans (equivOfEq (fieldRange_comp_val L f))
-
-@[simp]
-theorem coe_equivMap_apply (x : L) : ↑(equivMap L f x) = f x := rfl
-
-end equivMap
 
 section AdjoinDef
 
