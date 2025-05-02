@@ -103,19 +103,24 @@ for message in messages:
                 "emoji_name": emoji_name
             })
 
-        # Removing all previous emoji reactions.
+        # The maintainer merge label is different from the others, as it is not mutually exclusive
+        # with them: just add or remove it manually.
+        if LABEL_NAME == "maintainer-merge":
+            if LABEL_STATUS == "labeled":
+                add_reaction('maintainer-merge', 'hammer')
+            elif LABEL_STATUS == "unlabeled":
+                remove_reaction('maintainer-merge', 'hammer')
+            continue
+
+        # Othewise, remove all previous mutually exclusive emoji reactions.
         # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
         print("Removing previous reactions, if present.")
-
-
         if has_peace_sign:
             remove_reaction('delegated', 'peace_sign')
         if has_bors:
             remove_reaction("bors", "bors", emoji_code="22134", reaction_type="realm_emoji")
         if has_merge:
             remove_reaction('merge', 'merge')
-        if has_maintainer_merge:
-            remove_reaction('maintainer-merge', 'hammer')
         if has_awaiting_author:
             remove_reaction('awaiting-author', 'writing')
         if has_closed:
@@ -131,8 +136,6 @@ for message in messages:
         elif LABEL_STATUS == 'labeled':
             if LABEL_NAME == 'awaiting-author':
                 add_reaction('awaiting-author', 'writing')
-            elif LABEL_NAME == 'maintainer-merge':
-                add_reaction('maintainer-merge', 'hammer')
         elif LABEL_STATUS == 'closed':
             add_reaction('closed-pr', 'closed-pr')
         elif LABEL_STATUS == 'unlabeled':
