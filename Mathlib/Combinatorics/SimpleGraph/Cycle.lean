@@ -64,10 +64,8 @@ variable {v w : V}
 lemma IsCycles (c : G.IsCycle) : G.IsCycles := by
   intro v hv
   have h_n_card : Fintype.card (G.neighborSet v) = 2 := by
-    have : ∀ (v : V), Fintype.card (G.neighborSet v) = 2 := by
-      simp [G.card_neighborSet_eq_degree]
-      exact c.2
-    apply this
+    simp [G.card_neighborSet_eq_degree]
+    apply c.2
   simp at h_n_card
   simp [Set.ncard_eq_toFinset_card', h_n_card]
 
@@ -75,8 +73,7 @@ lemma exists_adj (c : G.IsCycle) : ∃ (w : V), G.Adj v w := by
   have hd : G.degree v > 0 := by
     rw [c.2]
     trivial
-  simp [G.degree_pos_iff_exists_adj] at hd
-  exact hd
+exact (G.degree_pos_iff_exists_adj v).mp hd
 
 lemma neighborSet_nonempty (c : G.IsCycle) : (G.neighborSet v).Nonempty := by
   obtain ⟨w, hw⟩ := c.exists_adj
@@ -107,11 +104,9 @@ lemma all_vertices_form_a_cycle (c : G.IsCycle) : ∃ (p : G.Walk v v), p.IsCycl
   use p
 
 lemma cycle_walk_contains_all_vertices {p : G.Walk v v} (c : G.IsCycle) (hpc : p.IsCycle) :
-    ∀ (v : V), v ∈ p.support := by
+    ∀ (w : V), w ∈ p.support := by
   intro w
-  have hvw_reachable : G.Reachable v w := by
-    have : ∀ (v w : V), G.Reachable v w := c.1
-    apply this
+  have hvw_reachable : G.Reachable v w := c.1 v w
   have hpv : p.toSubgraph.verts = (G.connectedComponentMk v).supp := by
     have : ∀ v ∈ p.toSubgraph.verts, ∀ (w : V), G.Adj v w → p.toSubgraph.Adj v w := by
       intro v hv w hvw
@@ -125,14 +120,13 @@ lemma cycle_walk_contains_all_vertices {p : G.Walk v v} (c : G.IsCycle) (hpc : p
     have : v ∈ cc.supp := by simp [← hcc]
     simp_all
   rw [← Walk.mem_verts_toSubgraph, hpv]
-  have hvw : G.connectedComponentMk v = G.connectedComponentMk w := by
-    apply ConnectedComponent.sound
-    exact hvw_reachable
+  have hvw : G.connectedComponentMk v = G.connectedComponentMk w :=
+    ConnectedComponent.sound hvw_reachable
   simp [hvw]
 
 lemma cycle_walk_tail_contains_all_vertices {p : G.Walk v v} (c : G.IsCycle) (hpc : p.IsCycle) :
-    ∀ (v : V), v ∈ p.support.tail := by
-  have : ∀ (v : V), v ∈ p.support ↔ v ∈ p.support.tail := by
+    ∀ (w : V), w ∈ p.support.tail := by
+  have : ∀ (w : V), w ∈ p.support ↔ w ∈ p.support.tail := by
     intro w
     constructor
     · intro
@@ -157,12 +151,10 @@ lemma cycle_walk_contains_all_edges {p : G.Walk v v} (c : G.IsCycle) (h : p.IsCy
   have h_e_card : Fintype.card G.edgeSet = G.edgeFinset.card := by simp
   have h_support_length : p.support.tail.length = Fintype.card V := by
     rw [← List.toFinset_card_of_nodup h.support_nodup]
-    have : p.support.tail.toFinset.card = Fintype.card V := by
-      have : ∀ (v : V), v ∈ p.support.tail.toFinset := by
-        simp [c.cycle_walk_tail_contains_all_vertices G h]
-      rw [← Finset.eq_univ_iff_forall] at this
-      simp [this]
-    exact this
+    have : ∀ (v : V), v ∈ p.support.tail.toFinset := by
+      simp [c.cycle_walk_tail_contains_all_vertices G h]
+    rw [← Finset.eq_univ_iff_forall] at this
+    simp [this]
   rw [c.vertex_card_eq_edge_card, h_stl_tsl, p.tail.length_support, p.length_tail_add_one h.not_nil,
     ← p.length_edges, ← List.toFinset_card_of_nodup h.edges_nodup, h_e_card] at h_support_length
   have he : p.edges.toFinset ⊆ G.edgeFinset := by
@@ -179,13 +171,12 @@ lemma cycle_walk_contains_all_edges {p : G.Walk v v} (c : G.IsCycle) (h : p.IsCy
     simp [this]
   simp_all
 
-theorem IsEulerian (c : G.IsCycle) : ∃ (v : V) (p : G.Walk v v), p.IsEulerian
-    := by
+theorem IsEulerian (c : G.IsCycle) : ∃ (v : V) (p : G.Walk v v), p.IsEulerian := by
   simp [Walk.isEulerian_iff]
   obtain ⟨v, p, hpc⟩ := c.isCyclic
   use v
   use p
-  have h_trail := by apply Walk.IsCircuit.isTrail (Walk.IsCycle.isCircuit hpc)
+  have h_trail := Walk.IsCircuit.isTrail (Walk.IsCycle.isCircuit hpc)
   simp [h_trail]
   exact c.cycle_walk_contains_all_edges G hpc
 
