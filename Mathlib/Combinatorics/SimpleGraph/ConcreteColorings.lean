@@ -7,7 +7,6 @@ import Mathlib.Combinatorics.SimpleGraph.Circulant
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Data.Fin.Parity
-import Mathlib.Data.ZMod.Basic
 
 /-!
 # Concrete colorings of common graphs
@@ -157,7 +156,6 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
     rw [← hn3]
     exact Walk.three_le_chromaticNumber_of_odd_loop w hOdd'
 
-
 section components
 
 variable {α β : Type*} {G : SimpleGraph α}
@@ -181,7 +179,6 @@ theorem colorable_iff_forall_connectedComponents {n : ℕ} :
      fun h ↦ ⟨coloringOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
 
 open Walk
-
 lemma two_colorable_iff_forall_loop_not_odd :
     G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), ¬ Odd w.length := by
   constructor <;> intro h
@@ -195,8 +192,10 @@ lemma two_colorable_iff_forall_loop_not_odd :
     intro a b hab he
     apply h _ <| (((c.connected_induce_supp ⟨_, hv⟩ a).some.concat hab).append
                  (c.connected_induce_supp ⟨_, hv⟩ b).some.reverse).map (Embedding.induce c).toHom
-    rw [length_map, length_append, length_concat, length_reverse, Nat.odd_iff, Nat.add_mod,
-        ← (ZMod.natCast_eq_natCast_iff _ _ 2).1 he, Nat.succ_mod_two_add_mod_two]
+    rw [length_map, length_append, length_concat, length_reverse, add_right_comm]
+    have : 0 = ((Nonempty.some (c.connected_induce_supp ⟨_, hv⟩ a)).length : Fin 2) +
+       (Nonempty.some (c.connected_induce_supp ⟨_, hv⟩ b)).length := by fin_omega
+    exact (Nat.even_iff.mpr <| Fin.zero_eq_mk.mp (by norm_cast at this)).add_one
 
 end components
 end SimpleGraph
