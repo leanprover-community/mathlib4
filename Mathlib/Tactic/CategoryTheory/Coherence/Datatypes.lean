@@ -113,7 +113,7 @@ class MonadMor₁ (m : Type → Type) where
   comp₁M (f g : Mor₁) : m Mor₁
 
 /-- Expressions for coherence isomorphisms (i.e., structural 2-morphisms
-giveb by `BicategorycalCoherence.iso`). -/
+given by `BicategoricalCoherence.iso`). -/
 structure CoherenceHom where
   /-- The underlying lean expression of a coherence isomorphism. -/
   e : Expr

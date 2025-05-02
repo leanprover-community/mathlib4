@@ -1113,6 +1113,7 @@ theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
+@[simps]
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
@@ -1400,7 +1401,7 @@ theorem split_apply (i : ι) (x : αs i) : split l i x = l ⟨i, x⟩ := by
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ (i : ι), αs i` to `β`,
 `split_support l` is the finset of indices in `ι` that appear in the support of `l`. -/
-def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
+def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
   haveI := Classical.decEq ι
   l.support.image Sigma.fst
 

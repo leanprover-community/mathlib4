@@ -213,15 +213,15 @@ attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 
 lemma functorMap_epi (n : ℕ) : Epi (functorMap f n) := by
   rw [functorMap, Pi.map_eq_prod_map (P := fun m : ℕ ↦ m < n + 1)]
-  apply ( config := { allowSynthFailures := true } ) epi_comp
-  apply ( config := { allowSynthFailures := true } ) epi_comp
-  apply ( config := { allowSynthFailures := true } ) prod.map_epi
-  · apply ( config := { allowSynthFailures := true } ) Pi.map_epi
+  apply (config := { allowSynthFailures := true }) epi_comp
+  apply (config := { allowSynthFailures := true }) epi_comp
+  apply (config := { allowSynthFailures := true }) prod.map_epi
+  · apply (config := { allowSynthFailures := true }) Pi.map_epi
     intro ⟨_, _⟩
     split
     all_goals infer_instance
-  · apply ( config := { allowSynthFailures := true } ) IsIso.epi_of_iso
-    apply ( config := { allowSynthFailures := true } ) Pi.map_isIso
+  · apply (config := { allowSynthFailures := true }) IsIso.epi_of_iso
+    apply (config := { allowSynthFailures := true }) Pi.map_isIso
     intro ⟨_, _⟩
     split
     all_goals infer_instance

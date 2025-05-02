@@ -85,7 +85,7 @@ variable {ι : Type*} (M : ι → Type*) [∀ i, Monoid (M i)]
 
 /-- A relation on the free monoid on alphabet `Σ i, M i`,
 relating `⟨i, 1⟩` with `1` and `⟨i, x⟩ * ⟨i, y⟩` with `⟨i, x * y⟩`. -/
-inductive Monoid.CoprodI.Rel : FreeMonoid (Σi, M i) → FreeMonoid (Σi, M i) → Prop
+inductive Monoid.CoprodI.Rel : FreeMonoid (Σ i, M i) → FreeMonoid (Σ i, M i) → Prop
   | of_one (i : ι) : Monoid.CoprodI.Rel (FreeMonoid.of ⟨i, 1⟩) 1
   | of_mul {i : ι} (x y : M i) :
     Monoid.CoprodI.Rel (FreeMonoid.of ⟨i, x⟩ * FreeMonoid.of ⟨i, y⟩) (FreeMonoid.of ⟨i, x * y⟩)
@@ -463,7 +463,7 @@ theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
   rw [mem_equivPair_tail_iff]
   rintro (h | h)
   · exact List.mem_of_mem_tail h
-  · revert h; cases w.toList <;> simp (config := {contextual := true})
+  · revert h; cases w.toList <;> simp +contextual
 
 theorem equivPair_head {i : ι} {w : Word M} :
     (equivPair i w).head =
@@ -543,7 +543,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
         rw [fstIdx]
         cases w.toList
         · simp
-        · simp (config := {contextual := true}) [Sigma.ext_iff]
+        · simp +contextual [Sigma.ext_iff]
   · rcases w with ⟨_ | _, _, _⟩ <;>
     simp [or_comm, hij, Ne.symm hij]; rw [eq_comm]
 
