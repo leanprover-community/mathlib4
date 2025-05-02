@@ -65,6 +65,7 @@ def FiniteGaloisIntermediateField.finGaloisGroup (L : FiniteGaloisIntermediateFi
   letI := AlgEquiv.fintype k L
   FiniteGrp.of <| L ≃ₐ[k] L
 
+attribute [local instance 1000] Algebra.toSMul in
 /-- For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
   the restriction homomorphism from `Gal(L₁/k)` to `Gal(L₂/k)` -/
 noncomputable def finGaloisGroupMap {L₁ L₂ : (FiniteGaloisIntermediateField k K)ᵒᵖ}
@@ -81,6 +82,7 @@ lemma map_id (L : (FiniteGaloisIntermediateField k K)ᵒᵖ) :
     (finGaloisGroupMap (𝟙 L)) = 𝟙 L.unop.finGaloisGroup :=
   ConcreteCategory.ext (AlgEquiv.restrictNormalHom_id _ _)
 
+attribute [local instance 1000] Algebra.toSMul in
 @[simp]
 lemma map_comp {L₁ L₂ L₃ : (FiniteGaloisIntermediateField k K)ᵒᵖ} (f : L₁ ⟶ L₂) (g : L₂ ⟶ L₃) :
     finGaloisGroupMap (f ≫ g) = finGaloisGroupMap f ≫ finGaloisGroupMap g := by
@@ -121,6 +123,7 @@ noncomputable abbrev asProfiniteGaloisGroupFunctor :
     (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ ProfiniteGrp :=
   (finGaloisGroupFunctor k K) ⋙ forget₂ FiniteGrp ProfiniteGrp
 
+attribute [local instance 1000] Algebra.toSMul in
 variable (k K) in
 /--
 The homomorphism from `Gal(K/k)` to `lim Gal(L/k)` where `L` is a
@@ -180,6 +183,7 @@ lemma finGaloisGroupFunctor_map_proj_eq_proj (g : limit (asProfiniteGaloisGroupF
     (finGaloisGroupFunctor k K).map h.op (proj L₂ g) = proj L₁ g :=
   g.prop h.op
 
+attribute [local instance 1000] Algebra.toSMul in
 lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
     (g : limit (asProfiniteGaloisGroupFunctor k K)) (x : L)
     (L' : FiniteGaloisIntermediateField k K) (h : L ≤ L') :

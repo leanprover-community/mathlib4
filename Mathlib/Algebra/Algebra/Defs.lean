@@ -97,6 +97,8 @@ class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SM
   commutes' : ∀ r x, algebraMap r * x = x * algebraMap r
   smul_def' : ∀ r x, r • x = algebraMap r * x
 
+attribute [instance 100] Algebra.toSMul
+
 end Prio
 
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
