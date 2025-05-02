@@ -805,11 +805,6 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
 
-private alias ⟨_, ereal_coe_ne_zero⟩ := EReal.coe_ne_zero
-private alias ⟨_, ereal_coe_nonneg⟩ := EReal.coe_nonneg
-private alias ⟨_, ereal_coe_pos⟩ := EReal.coe_pos
-private alias ⟨_, ereal_coe_ennreal_pos⟩ := EReal.coe_ennreal_pos
-
 /-- Extension for the `positivity` tactic: cast from `ℝ` to `EReal`. -/
 @[positivity Real.toEReal _]
 def evalRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
@@ -818,9 +813,9 @@ def evalRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
     let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
     match ra with
-    | .positive pa => pure (.positive q(ereal_coe_pos $pa))
-    | .nonnegative pa => pure (.nonnegative q(ereal_coe_nonneg $pa))
-    | .nonzero pa => pure (.nonzero q(ereal_coe_ne_zero $pa))
+    | .positive pa => pure (.positive q(EReal.coe_pos.2 $pa))
+    | .nonnegative pa => pure (.nonnegative q(EReal.coe_nonneg.2 $pa))
+    | .nonzero pa => pure (.nonzero q(EReal.coe_ne_zero.2 $pa))
     | _ => pure .none
   | _, _, _ => throwError "not Real.toEReal"
 
@@ -832,7 +827,7 @@ def evalENNRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
     let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
     match ra with
-    | .positive pa => pure (.positive q(ereal_coe_ennreal_pos $pa))
+    | .positive pa => pure (.positive q(EReal.coe_ennreal_pos.2 $pa))
     | _ => pure (.nonnegative q(EReal.coe_ennreal_nonneg $a))
   | _, _, _ => throwError "not ENNReal.toEReal"
 
