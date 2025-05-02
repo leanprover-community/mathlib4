@@ -29,7 +29,7 @@ system iff inserting `univ` gives a compact system.
 * `IsClosedCompact.isCompactSystem`: The set of closed and compact sets is a compact system.
 * `IsClosedCompact.isCompactSystem_of_T2Space`: In a `T2Space α`, the set of compact sets
   is a compact system in a `T2Space`.
-* `IsCompactSystem.union.isConpactSystem`: If `IsCompactSystem p`, the set of finite unions
+* `IsCompactSystem.union.isCompactSystem`: If `IsCompactSystem p`, the set of finite unions
   of `K : Set α` with `p K` is a compact system.
 * `IsCompactSystem.closedCompactSquareCylinders`: Closed and compact square cylinders form a
   compact system in a product space.
@@ -49,36 +49,6 @@ def IsCompactSystem (p : Set α → Prop) : Prop :=
 end definition
 
 namespace IsCompactSystem
-
-lemma iff (p : Set α → Prop) : IsCompactSystem p ↔
-    ∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ n, ⋂ k < n, C k ≠ ∅) → ⋂ i, C i ≠ ∅ := by
-  refine ⟨fun h C hi ↦ ?_, fun h C hi ↦ ?_⟩
-  · rw [← not_imp_not]
-    push_neg
-    intro h'
-    specialize h C hi h'
-    obtain ⟨n, hn⟩ := h
-    use n + 1
-    rw [Dissipate] at hn
-    conv =>
-      lhs
-      enter [1]
-      intro j
-      rw [Nat.lt_add_one_iff]
-    exact hn
-  · rw [← not_imp_not]
-    push_neg
-    simp_rw [nonempty_iff_ne_empty]
-    intro h'
-    apply h C hi
-    intro n hn
-    apply h' n
-    rw [← subset_empty_iff] at hn ⊢
-    apply le_trans _ hn
-    rw [Dissipate]
-    intro x
-    rw [mem_iInter₂, mem_iInter₂]
-    exact fun h i hi ↦ h i hi.le
 
 /-- In a compact system, given a countable family with empty intersection, we choose a finite
 subfamily with empty intersection. -/
@@ -585,14 +555,9 @@ lemma mem_iff (s : Set α) : union p s ↔ ∃ L : Finset (Set α), s = ⋃₀ L
     simp only [mem_setOf_eq, Finset.finite_toSet, Finset.mem_coe, true_and]
     refine ⟨hL.2, hL.1.symm⟩
 
-example (s t : Set α) (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty := by
-  exact Nonempty.mono hst hs
-
-example (s : Set α) : s ≠ ∅ ↔ s.Nonempty := by exact Iff.symm nonempty_iff_ne_empty
-
 theorem isCompactSystem (p : Set α → Prop)(hp : IsCompactSystem p) : IsCompactSystem (union p) := by
-  have hp' := (IsCompactSystem.iff p).mp hp
-  rw [IsCompactSystem.iff]
+  have hp' := (IsCompactSystem.iff_of_not_empty p).mp hp
+  rw [IsCompactSystem.iff_of_not_empty]
   intro C hi
   simp_rw [mem_iff] at hi
   choose L' hL' using hi
