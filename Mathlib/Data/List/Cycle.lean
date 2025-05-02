@@ -469,8 +469,8 @@ theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l
   Iff.rfl
 
 @[simp]
-theorem not_mem_nil : ∀ a, a ∉ @nil α :=
-  fun _ => List.not_mem_nil
+theorem not_mem_nil (a : α) : a ∉ nil :=
+  List.not_mem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''

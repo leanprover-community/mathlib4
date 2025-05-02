@@ -31,19 +31,19 @@ example {α : Type} (_inst : (a : Prop) → Decidable a)
     0 < 1 - a := by
   linarith
 
-example (e b c a v0 v1 : Rat) (h1 : v0 = 5*a) (h2 : v1 = 3*b) (h3 : v0 + v1 + c = 10) :
+example (e b c a v0 v1 : Rat) (h1 : v0 = 5 * a) (h2 : v1 = 3 * b) (h3 : v0 + v1 + c = 10) :
     v0 + 5 + (v1 - 3) + (c - 2) = 10 := by
   linarith
 
 example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
-    (e b c a v0 v1 : α) (h1 : v0 = 5*a) (h2 : v1 = 3*b)
+    (e b c a v0 v1 : α) (h1 : v0 = 5 * a) (h2 : v1 = 3 * b)
     (h3 : v0 + v1 + c = 10) : v0 + 5 + (v1 - 3) + (c - 2) = 10 := by
   linarith
 
 example (h : (1 : ℤ) < 0) (g : ¬ (37 : ℤ) < 42) (_k : True) (l : (-7 : ℤ) < 5): (3 : ℤ) < 7 := by
   linarith [(rfl : 0 = 0)]
 
-example (u v r s t : Rat) (h : 0 < u*(t*v + t*r + s)) : 0 < (t*(r + v) + s)*3*u := by
+example (u v r s t : Rat) (h : 0 < u * (t * v + t * r + s)) : 0 < (t * (r + v) + s) * 3 * u := by
   linarith
 
 example (A B : Rat) (h : 0 < A * B) : 0 < 8*A*B := by
@@ -61,7 +61,7 @@ example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (x : α) : 
   linarith [h]
 
 example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
-    (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) :
+    (u v r s t : α) (h : 0 < u * (t * v + t * r + s)) :
     0 < (t*(r + v) + s)*3*u := by linarith
 
 example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
@@ -81,8 +81,8 @@ example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
 example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
  by linarith
 
-example (x y z : Rat) (h1 : 2*x < 3*y) (h2 : -4*x + z/2 < 0)
-    (h3 : 12*y - z < 0) : False := by
+example (x y z : Rat) (h1 : 2 * x < 3 * y) (h2 : -4 * x + z / 2 < 0)
+    (h3 : 12 * y - z < 0) : False := by
   linarith
 
 example (ε : Rat) (h1 : 0 < ε) : ε / 2 < ε := by linarith
@@ -129,10 +129,10 @@ example (g v V c h : Rat) (h1 : h = 0) (h2 : v = V) (h3 : V > 0) (h4 : g > 0)
     (h5 : 0 ≤ c) (h6 : c < 1) : v ≤ V := by
   linarith
 
-example (x y z : ℤ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0) (h3 : 12*y - 4* z < 0) : False := by
+example (x y z : ℤ) (h1 : 2 * x < 3 * y) (h2 : -4 * x + 2 * z < 0) (h3 : 12 * y - 4 * z < 0) : False := by
   linarith
 
-example (x y z : ℤ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0) (h3 : x*y < 5) (h3 : 12*y - 4* z < 0) :
+example (x y z : ℤ) (h1 : 2 * x < 3 * y) (h2 : -4 * x + 2 * z < 0) (h3 : x * y < 5) (h3 : 12 * y - 4 * z < 0) :
     False := by
   linarith
 
@@ -142,13 +142,13 @@ example (a b c : Rat) (h1 : a > 0) (h2 : b > 5) (h3 : c < -10) (h4 : a + b - c <
 example (a b c : Rat) (h2 : b > 0) (h3 : ¬ b ≥ 0) : False := by
   linarith
 
-example (x y z : Rat) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
+example (x y z : Rat) (hx : x ≤ 3 * y) (h2 : y ≤ 2 * z) (h3 : x ≥ 6 * z) : x = 3*y := by
   linarith
 
-example (x y z : ℤ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0) (h3 : x*y < 5) : ¬ 12*y - 4* z < 0 := by
+example (x y z : ℤ) (h1 : 2 * x < 3 * y) (h2 : -4 * x + 2 * z < 0) (h3 : x * y < 5) : ¬ 12*y - 4* z < 0 := by
   linarith
 
-example (x y z : Rat) (hx : ¬ x > 3*y) (h2 : ¬ y > 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
+example (x y z : Rat) (hx : ¬ x > 3 * y) (h2 : ¬ y > 2 * z) (h3 : x ≥ 6 * z) : x = 3 * y := by
   linarith
 
 example (x y : Rat) (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3) (h' : (x + 4) * x ≥ 0)
@@ -170,15 +170,15 @@ example (x : Rat) : id x ≥ x := by
 
 opaque Nat.prime : ℕ → Prop
 
-example (x y z : Rat) (h1 : 2*x + ((-3)*y) < 0) (h2 : (-4)*x + 2*z < 0) (h3 : 12*y + (-4)* z < 0)
+example (x y z : Rat) (h1 : 2 * x + ((-3) * y) < 0) (h2 : (-4) * x + 2 * z < 0) (h3 : 12 * y + (-4) * z < 0)
     (h4 : Nat.prime 7) : False := by
   linarith
 
-example (x y z : Rat) (h1 : 2*1*x + (3)*(y*(-1)) < 0) (h2 : (-2)*x*2 < -(z + z))
-    (h3 : 12*y + (-4)* z < 0) (h4 : Nat.prime 7) : False := by
+example (x y z : Rat) (h1 : 2 * 1 * x + (3) * (y * (-1)) < 0) (h2 : (-2) * x * 2 < -(z + z))
+    (h3 : 12 * y + (-4) * z < 0) (h4 : Nat.prime 7) : False := by
   linarith
 
-example (w x y z : ℤ) (h1 : 4*x + (-3)*y + 6*w ≤ 0) (h2 : (-1)*x < 0) (h3 : y < 0) (h4 : w ≥ 0)
+example (w x y z : ℤ) (h1 : 4 * x + (-3) * y + 6 * w ≤ 0) (h2 : (-1) * x < 0) (h3 : y < 0) (h4 : w ≥ 0)
     (h5 : Nat.prime x.natAbs) : False := by
   linarith
 
@@ -198,7 +198,7 @@ example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
 
 end term_arguments
 
-example (i n : ℕ) (h : (2:ℤ) ^ i ≤ 2 ^ n) : (0:ℤ) ≤ 2 ^ n - 2 ^ i := by
+example (i n : ℕ) (h : (2 : ℤ) ^ i ≤ 2 ^ n) : (0 : ℤ) ≤ 2 ^ n - 2 ^ i := by
   linarith
 
 -- Check we use `exfalso` on non-comparison goals.
@@ -237,7 +237,7 @@ example (x y : ℕ) (h : x < 3 * y) : True := by
 
 example : (Nat.cast 2 : ℤ) = 2 := Nat.cast_ofNat
 
-example (x y z : ℕ) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
+example (x y z : ℕ) (hx : x ≤ 3 * y) (h2 : y ≤ 2 * z) (h3 : x ≥ 6 * z) : x = 3 * y := by
   linarith
 
 example (a b c : ℕ) : ¬ a + b < a := by
@@ -272,18 +272,18 @@ example (N : ℕ) (n : ℕ) (Hirrelevant : n > N) (A : Rat) (l : Rat) (h : A - l
     (h_1 : ¬A ≤ -A) (h_2 : ¬l ≤ -l) (h_3 : -(A - l) < 1) : A < l + 1 := by
   linarith
 
-example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1)*n ≥ 0) (h2 : d = 2/3*(((q : Rat) - 1)*n)) :
-    d ≤ ((q : Rat) - 1)*n := by
+example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1) * n ≥ 0) (h2 : d = 2 / 3 * (((q : Rat) - 1) * n)) :
+    d ≤ ((q : Rat) - 1) * n := by
   linarith
 
-example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1)*n ≥ 0) (h2 : d = 2/3*(((q : Rat) - 1)*n)) :
-    ((q : Rat) - 1)*n - d = 1/3 * (((q : Rat) - 1)*n) := by
+example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1) * n ≥ 0) (h2 : d = 2 / 3 * (((q : Rat) - 1) * n)) :
+    ((q : Rat) - 1)*n - d = 1/3 * (((q : Rat) - 1) * n) := by
   linarith
 
-example (x y z : ℚ) (hx : x < 5) (hx2 : x > 5) (hy : y < 5000000000) (hz : z > 34*y) : false := by
+example (x y z : ℚ) (hx : x < 5) (hx2 : x > 5) (hy : y < 5000000000) (hz : z > 34 * y) : false := by
   linarith only [hx, hx2]
 
-example (x y z : ℚ) (hx : x < 5) (hy : y < 5000000000) (hz : z > 34*y) : x ≤ 5 := by
+example (x y z : ℚ) (hx : x < 5) (hy : y < 5000000000) (hz : z > 34 * y) : x ≤ 5 := by
   linarith only [hx]
 
 /- The speed of `linarith` is very sensitive to how much typeclass inference is demanded by the
@@ -584,7 +584,7 @@ noncomputable instance {c d} : Field (P c d) := test_sorry
 noncomputable instance {c d} : LinearOrder (P c d) := test_sorry
 noncomputable instance {c d} : IsStrictOrderedRing (P c d) := test_sorry
 
-example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
+example (p : P PUnit.{u + 1} PUnit.{v + 1}) (h : 0 < p) : 0 < 2 * p := by
   linarith
 
 example (n : Nat) : n + 1 ≥ (1 / 2 : ℚ) := by linarith

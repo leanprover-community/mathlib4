@@ -63,15 +63,15 @@ such as typeclass instances and `0 : α`.
 -/
 structure Context where
   /-- The type of the ambient additive commutative group or monoid. -/
-  α       : Expr
+  α : Expr
   /-- The universe level for `α`. -/
-  univ    : Level
+  univ : Level
   /-- The expression representing `0 : α`. -/
-  α0      : Expr
+  α0 : Expr
   /-- Specify whether we are in an additive commutative group or an additive commutative monoid. -/
   isGroup : Bool
   /-- The `AddCommGroup α` or `AddCommMonoid α` expression. -/
-  inst    : Expr
+  inst : Expr
 
 /-- Populate a `context` object for evaluating `e`. -/
 def mkContext (e : Expr) : MetaM Context := do
