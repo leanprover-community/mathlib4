@@ -985,6 +985,12 @@ theorem fderivWithin_congr' (hs : EqOn f₁ f s) (hx : x ∈ s) :
 theorem Filter.EventuallyEq.fderiv_eq (h : f₁ =ᶠ[𝓝 x] f) : fderiv 𝕜 f₁ x = fderiv 𝕜 f x := by
   rw [← fderivWithin_univ, ← fderivWithin_univ, h.fderivWithin_eq_nhds]
 
+/-Given an open subset `s` of a real vector space `E`, functions `f : E → F` and `g : E → F` that
+  agree on `s` have equal Fréchet derivatives on `s`.-/
+lemma eq_fderiv_of_eq_open {s : Set E} (hx: x ∈ s) (h1: IsOpen s) (h2: Set.EqOn f f₁ s) :
+    fderiv 𝕜 f x = fderiv 𝕜 f₁ x :=
+  (Filter.eventuallyEq_of_mem (h1.mem_nhds hx) h2).fderiv_eq
+
 protected theorem Filter.EventuallyEq.fderiv (h : f₁ =ᶠ[𝓝 x] f) : fderiv 𝕜 f₁ =ᶠ[𝓝 x] fderiv 𝕜 f :=
   h.eventuallyEq_nhds.mono fun _ h => h.fderiv_eq
 
