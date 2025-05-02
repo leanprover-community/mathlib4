@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
+import Mathlib.Data.Finset.Lattice.Basic
 import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-import Mathlib.MeasureTheory.PiSystem
+import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.Topology.Constructions
+import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
 # π-systems of cylinders and square cylinders
@@ -24,6 +26,8 @@ Given a finite set `s` of indices, a cylinder is the product of a set of `∀ i 
 a product set.
 
 * `cylinder s S`: cylinder with base set `S : Set (∀ i : s, α i)` where `s` is a `Finset`
+* `squareCylinder s S`: square cylinder with base set `S : (∀ i : s, Set (α i))` where
+  `s` is a `Finset`
 * `squareCylinders C` with `C : ∀ i, Set (Set (α i))`: set of all square cylinders such that for
   all `i` in the finset defining the box, the projection to `α i` belongs to `C i`. The main
   application of this is with `C i = {s : Set (α i) | MeasurableSet s}`.
@@ -48,62 +52,74 @@ variable {ι : Type _} {α : ι → Type _}
 
 section squareCylinders
 
-/-- Given a finite set `s` of indices, a square cylinder is the product of a set `S` of
-`∀ i : s, α i` and of `univ` on the other indices. The set `S` is a product of sets `t i` such that
+/-- Given a finite set `s` of indices, a square cylinder is the product of sets `t i : Set (α i)`
+for `i ∈ s` and of `univ` on the other indices. -/
+def squareCylinder (s : Finset ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) :=
+  (s : Set ι).pi t
+
+/-- The set `S` is a product of sets `t i` such that
 for all `i : s`, `t i ∈ C i`.
 `squareCylinders` is the set of all such squareCylinders. -/
 def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
-  {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = (s : Set ι).pi t}
+  {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = squareCylinder s t}
 
 theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
-    squareCylinders C = ⋃ s : Finset ι, (fun t ↦ (s : Set ι).pi t) '' univ.pi C := by
+    squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi  '' univ.pi C := by
   ext1 f
-  simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, exists_prop, mem_setOf_eq,
-    eq_comm (a := f)]
+  simp only [squareCylinder, squareCylinders, mem_iUnion, mem_image, mem_univ_pi, exists_prop,
+    mem_setOf_eq, eq_comm (a := f)]
 
-theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
-    (hC_univ : ∀ i, univ ∈ C i) :
-    IsPiSystem (squareCylinders C) := by
-  rintro S₁ ⟨s₁, t₁, h₁, rfl⟩ S₂ ⟨s₂, t₂, h₂, rfl⟩ hst_nonempty
+theorem squareCylinders_eq_iUnion_image' (C : ∀ i, Set (Set (α i))) (hC : ∀ i, Nonempty (C i)) :
+    squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi '' (s : Set ι).pi C := by
   classical
+  ext1 f
+  simp only [squareCylinder, squareCylinders, mem_iUnion, mem_image, mem_setOf_eq, eq_comm (a := f)]
+  have h (s : Set ι): s.pi '' s.pi C = s.pi '' univ.pi C := by
+    refine pi_image_eq_of_subset hC (subset_univ s)
+  simp_rw [← mem_image, h]
+
+theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Set (α i))}
+    (hC : ∀ i, IsPiSystem (C i)) (hC_univ : ∀ i, univ ∈ C i) : IsPiSystem (squareCylinders C) := by
+  classical
+  haveI h_nempty : ∀ i, Nonempty (C i) := fun i ↦ Nonempty.intro ⟨Set.univ, hC_univ i⟩
+  rintro S₁ ⟨s₁, t₁, h₁, rfl⟩ S₂ ⟨s₂, t₂, h₂, rfl⟩  hst_nonempty
   let t₁' := s₁.piecewise t₁ (fun i ↦ univ)
+  simp only [Set.mem_pi, Set.mem_univ, forall_const] at h₁ h₂
+  have ht₁ (i : ι) : t₁' i ∈ C i := by
+    by_cases h : i ∈ s₁
+    · simp only [h, Finset.piecewise_eq_of_mem, t₁']
+      exact h₁ i
+    · simp only [t₁']
+      rw [Finset.piecewise_eq_of_not_mem s₁ t₁ (fun i ↦ univ) h]
+      exact hC_univ i
   let t₂' := s₂.piecewise t₂ (fun i ↦ univ)
-  have h1 : ∀ i ∈ (s₁ : Set ι), t₁ i = t₁' i :=
-    fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
-  have h1' : ∀ i ∉ (s₁ : Set ι), t₁' i = univ :=
-    fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
-  have h2 : ∀ i ∈ (s₂ : Set ι), t₂ i = t₂' i :=
-    fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
-  have h2' : ∀ i ∉ (s₂ : Set ι), t₂' i = univ :=
-    fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
-  rw [Set.pi_congr rfl h1, Set.pi_congr rfl h2, ← union_pi_inter h1' h2']
-  refine ⟨s₁ ∪ s₂, fun i ↦ t₁' i ∩ t₂' i, ?_, ?_⟩
-  · rw [mem_univ_pi]
-    intro i
-    have : (t₁' i ∩ t₂' i).Nonempty := by
-      obtain ⟨f, hf⟩ := hst_nonempty
-      rw [Set.pi_congr rfl h1, Set.pi_congr rfl h2, mem_inter_iff, mem_pi, mem_pi] at hf
-      refine ⟨f i, ⟨?_, ?_⟩⟩
-      · by_cases hi₁ : i ∈ s₁
-        · exact hf.1 i hi₁
-        · rw [h1' i hi₁]
-          exact mem_univ _
-      · by_cases hi₂ : i ∈ s₂
-        · exact hf.2 i hi₂
-        · rw [h2' i hi₂]
-          exact mem_univ _
-    refine hC i _ ?_ _ ?_ this
-    · by_cases hi₁ : i ∈ s₁
-      · rw [← h1 i hi₁]
-        exact h₁ i (mem_univ _)
-      · rw [h1' i hi₁]
-        exact hC_univ i
-    · by_cases hi₂ : i ∈ s₂
-      · rw [← h2 i hi₂]
-        exact h₂ i (mem_univ _)
-      · rw [h2' i hi₂]
-        exact hC_univ i
-  · rw [Finset.coe_union]
+  have ht₂ (i : ι) : t₂' i ∈ C i := by
+    by_cases h : i ∈ s₂
+    · simp only [h, Finset.piecewise_eq_of_mem, t₂']
+      exact h₂ i
+    · simp only [t₂']
+      rw [Finset.piecewise_eq_of_not_mem s₂ t₂ (fun i ↦ univ) h]
+      exact hC_univ i
+  have h₁ : (s₁ : Set ι).pi t₁' = (s₁ : Set ι).pi t₁ := by
+    refine Set.pi_congr rfl ?_
+    exact fun i a ↦ (s₁.piecewise_eq_of_mem t₁ (fun i ↦ Set.univ) a)
+  have h₂ : (s₂ : Set ι).pi t₂' = (s₂ : Set ι).pi t₂ := by
+    refine Set.pi_congr rfl ?_
+    exact fun i a ↦ (s₂.piecewise_eq_of_mem t₂ (fun i ↦ Set.univ) a)
+  have h : squareCylinder s₁ t₁ ∩ squareCylinder s₂ t₂ = squareCylinder (s₁ ∪ s₂)
+      (fun i ↦ t₁' i ∩ t₂' i) := by
+    rw [squareCylinder, squareCylinder, squareCylinder, Finset.coe_union, union_pi_inter, h₁, h₂]
+      <;>
+    exact fun i a ↦ Finset.piecewise_eq_of_not_mem _ _ (fun i ↦ Set.univ) a
+  rw [h] at hst_nonempty ⊢
+  rw [squareCylinder, squareCylinders_eq_iUnion_image' C, mem_iUnion]
+  · use (s₁ ∪ s₂), (fun i ↦ t₁' i ∩ t₂' i)
+    refine ⟨?_, rfl⟩
+    apply fun i _ ↦ hC i (t₁' i) (ht₁ i) (t₂' i) (ht₂ i) _
+    intro i hi
+    rw [squareCylinder, pi_nonempty_iff'] at hst_nonempty
+    exact hst_nonempty i hi
+  · assumption
 
 theorem comap_eval_le_generateFrom_squareCylinders_singleton
     (α : ι → Type*) [m : ∀ i, MeasurableSpace (α i)] (i : ι) :
@@ -124,7 +140,7 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
     · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
   · simp only [id_eq, eq_mpr_eq_cast, ← h]
     ext1 x
-    simp only [singleton_pi, Function.eval, cast_eq, dite_eq_ite, ite_true, mem_preimage]
+    simp only [singleton_pi, Function.eval, cast_eq, dite_eq_ite, ite_true, Set.mem_preimage]
 
 /-- The square cylinders formed from measurable sets generate the product σ-algebra. -/
 theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
@@ -349,6 +365,33 @@ theorem diff_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
   rw [diff_eq_compl_inter]
   exact inter_mem_measurableCylinders (compl_mem_measurableCylinders ht) hs
 
+
+section MeasurableCylinders
+
+lemma isSetAlgebra_measurableCylinders : IsSetAlgebra (measurableCylinders α) where
+  empty_mem := empty_mem_measurableCylinders α
+  compl_mem _ := compl_mem_measurableCylinders
+  union_mem _ _ := union_mem_measurableCylinders
+
+lemma isSetRing_measurableCylinders : IsSetRing (measurableCylinders α) :=
+  isSetAlgebra_measurableCylinders.isSetRing
+
+lemma isSetSemiring_measurableCylinders : MeasureTheory.IsSetSemiring (measurableCylinders α) :=
+  isSetRing_measurableCylinders.isSetSemiring
+
+end MeasurableCylinders
+
+
+theorem iUnion_le_mem_measurableCylinders {s : ℕ → Set (∀ i : ι, α i)}
+    (hs : ∀ n, s n ∈ measurableCylinders α) (n : ℕ) :
+    (⋃ i ≤ n, s i) ∈ measurableCylinders α :=
+  isSetRing_measurableCylinders.iUnion_le_mem hs n
+
+theorem iInter_le_mem_measurableCylinders {s : ℕ → Set (∀ i : ι, α i)}
+    (hs : ∀ n, s n ∈ measurableCylinders α) (n : ℕ) :
+    (⋂ i ≤ n, s i) ∈ measurableCylinders α :=
+  isSetRing_measurableCylinders.iInter_le_mem hs n
+
 /-- The measurable cylinders generate the product σ-algebra. -/
 theorem generateFrom_measurableCylinders :
     MeasurableSpace.generateFrom (measurableCylinders α) = MeasurableSpace.pi := by
@@ -457,4 +500,5 @@ lemma measurable_restrict_cylinderEvents (Δ : Set ι) :
   rw [@measurable_pi_iff]; exact fun i ↦ measurable_cylinderEvent_apply i.2
 
 end cylinderEvents
+
 end MeasureTheory

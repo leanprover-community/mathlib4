@@ -695,6 +695,21 @@ theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [p
 theorem disjoint_pi : Disjoint (s.pi t₁) (s.pi t₂) ↔ ∃ i ∈ s, Disjoint (t₁ i) (t₂ i) := by
   simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, pi_eq_empty_iff']
 
+theorem pi_nonempty_iff' [∀ i, Decidable (i ∈ s)]  :
+    (s.pi t).Nonempty ↔ ∀ i ∈ s, (t i).Nonempty := by
+  classical
+  rw [pi_nonempty_iff]
+  have h := fun i ↦ exists_mem_of_nonempty (α i)
+  choose y hy using h
+  refine ⟨fun h i hi ↦ ?_, fun h i ↦ ?_⟩
+  · obtain ⟨x, hx⟩ := h i
+    exact ⟨x, hx hi⟩
+  · choose x hx using h
+    use (if g : i ∈ s then x i g else y i)
+    intro hi
+    simp only [hi, ↓reduceDIte]
+    exact hx i hi
+
 end Nonempty
 
 @[simp]
@@ -731,6 +746,10 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
 
 theorem union_pi : (s₁ ∪ s₂).pi t = s₁.pi t ∩ s₂.pi t := by
   simp [pi, or_imp, forall_and, setOf_and]
+
+theorem pi_antitone (h : s₁ ⊆ s₂) : s₂.pi t ⊆ s₁.pi t := by
+  rw [← union_diff_cancel h, union_pi]
+  exact Set.inter_subset_left
 
 theorem union_pi_inter
     (ht₁ : ∀ i ∉ s₁, t₁ i = univ) (ht₂ : ∀ i ∉ s₂, t₂ i = univ) :
@@ -892,6 +911,25 @@ theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α 
   simp_rw [mem_univ_pi]
   refine forall_congr' fun i => ?_
   split_ifs with h <;> simp [h]
+
+lemma pi_image_eq_of_subset {C : (i : ι) → Set (Set (α i))}
+  (hC : ∀ i, Nonempty (C i))
+  {s₁ s₂ : Set ι} [∀ i : ι, Decidable (i ∈ s₁)]
+    (hst : s₁ ⊆ s₂) : s₁.pi '' s₁.pi C = s₁.pi '' s₂.pi C := by
+  let C_mem (i : ι) : Set (α i) := ((Set.exists_mem_of_nonempty (C i)).choose : Set (α i))
+  have h_mem (i : ι) : C_mem i ∈ C i := by
+    simp [C_mem]
+  ext f
+  refine ⟨fun ⟨x, ⟨hx1, hx2⟩⟩ ↦ ?_, fun ⟨w, ⟨hw1, hw2⟩⟩ ↦ ?_⟩
+  · use fun i ↦ if i ∈ s₁ then x i else C_mem i
+    refine ⟨fun i hi ↦ ?_, ?_⟩
+    · by_cases h1 : i ∈ s₁ <;> simp only [h1, ↓reduceIte]
+      · exact hx1 i h1
+      · exact h_mem i
+    · rw [← hx2]
+      exact pi_congr rfl (fun i hi ↦ by simp only [hi, ↓reduceIte])
+  · have hw3 := pi_antitone hst hw1
+    use w
 
 end Pi
 
