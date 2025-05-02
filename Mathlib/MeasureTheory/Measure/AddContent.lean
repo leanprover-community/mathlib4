@@ -229,7 +229,7 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     (hf_disj : Pairwise (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
-  refine tsum_le_of_sum_le ENNReal.summable fun I ↦ ?_
+  refine  ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_
   classical
   rw [← Finset.sum_image_of_disjoint addContent_empty (hf_disj.pairwiseDisjoint _)]
   refine sum_addContent_le_of_subset hC (I := I.image f) ?_ ?_ hf_Union ?_
@@ -307,7 +307,7 @@ lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
   classical
   induction S using Finset.induction with
   | empty => simp
-  | @insert i S hiS h =>
+  | insert i S hiS h =>
     rw [Finset.sum_insert hiS]
     simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     simp only [Finset.mem_insert, forall_eq_or_imp] at hs
@@ -352,7 +352,7 @@ def IsSetRing.addContent_of_union (m : Set α → ℝ≥0∞) (hC : IsSetRing C)
     classical
     induction I using Finset.induction with
     | empty => simp only [Finset.coe_empty, Set.sUnion_empty, Finset.sum_empty, m_empty]
-    | @insert s I hsI h =>
+    | insert s I hsI h =>
       rw [Finset.coe_insert] at *
       rw [Set.insert_subset_iff] at h_ss
       rw [Set.pairwiseDisjoint_insert_of_not_mem] at h_dis

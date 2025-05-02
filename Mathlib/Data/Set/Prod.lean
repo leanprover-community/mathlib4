@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.SProd
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Sets in product and pi types
@@ -238,8 +239,10 @@ theorem prod_range_range_eq {m₁ : α → γ} {m₂ : β → δ} :
   ext <| by simp [range]
 
 @[simp, mfld_simps]
-theorem range_prod_map {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
+theorem range_prodMap {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
   prod_range_range_eq.symm
+
+@[deprecated (since := "2025-04-10")] alias range_prod_map := range_prodMap
 
 theorem prod_range_univ_eq {m₁ : α → γ} :
     range m₁ ×ˢ (univ : Set β) = range fun p : α × β => (m₁ p.1, p.2) :=
@@ -252,7 +255,7 @@ theorem prod_univ_range_eq {m₂ : β → δ} :
 theorem range_pair_subset (f : α → β) (g : α → γ) :
     (range fun x => (f x, g x)) ⊆ range f ×ˢ range g := by
   have : (fun x => (f x, g x)) = Prod.map f g ∘ fun x => (x, x) := funext fun x => rfl
-  rw [this, ← range_prod_map]
+  rw [this, ← range_prodMap]
   apply range_comp_subset_range
 
 theorem Nonempty.prod : s.Nonempty → t.Nonempty → (s ×ˢ t).Nonempty := fun ⟨x, hx⟩ ⟨y, hy⟩ =>
@@ -737,15 +740,9 @@ theorem pi_antitone (h : s₁ ⊆ s₂) : s₂.pi t ⊆ s₁.pi t := by
 open scoped Classical in
 lemma union_pi_ite_of_disjoint {s t : Set ι} {x y : (i : ι) → Set (α i)} (hst : Disjoint s t) :
 ((s ∪ t).pi fun i ↦ if i ∈ s then x i else y i)  = (s.pi x) ∩ (t.pi y) := by
-  have hx : ∀ i ∈ s, x i = if h : i ∈ s then x i else y i := by
-    intro i hi
-    simp only [dite_eq_ite, hi, ↓reduceIte]
-  have hy : ∀ i ∈ t, y i = if h : i ∈ s then x i else y i := by
-    intro i hi
-    have h : i ∉ s := Disjoint.not_mem_of_mem_left (id (Disjoint.symm hst)) hi
-    simp only [hi, hst, dite_eq_ite, h, ↓reduceIte]
-  rw [Set.pi_congr rfl hx, Set.pi_congr rfl hy]
-  exact union_pi
+ rw [union_pi, Set.pi_congr rfl (fun i hi ↦ if_pos hi), Set.pi_congr rfl (fun i hi ↦
+    if_neg <| hst.symm.not_mem_of_mem_left hi)]
+
 
 theorem union_pi_inter
     (ht₁ : ∀ i ∉ s₁, t₁ i = univ) (ht₂ : ∀ i ∉ s₂, t₂ i = univ) :
@@ -826,12 +823,19 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
     (fun f : ∀ i, α i => f i) '' pi univ t = t i :=
   eval_image_pi (mem_univ i) ht
 
+theorem piMap_mapsTo_pi {I : Set ι} {f : ∀ i, α i → β i} {s : ∀ i, Set (α i)} {t : ∀ i, Set (β i)}
+    (h : ∀ i ∈ I, MapsTo (f i) (s i) (t i)) :
+    MapsTo (Pi.map f) (I.pi s) (I.pi t) :=
+  fun _x hx i hi => h i hi (hx i hi)
+
+theorem piMap_image_pi_subset {f : ∀ i, α i → β i} (t : ∀ i, Set (α i)) :
+    Pi.map f '' s.pi t ⊆ s.pi fun i ↦ f i '' t i :=
+  image_subset_iff.2 <| piMap_mapsTo_pi fun _ _ => mapsTo_image _ _
+
 theorem piMap_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective (f i)) (t : ∀ i, Set (α i)) :
     Pi.map f '' s.pi t = s.pi fun i ↦ f i '' t i := by
-  refine Subset.antisymm (image_subset_iff.2 fun a ha i hi ↦ mem_image_of_mem _ (ha _ hi)) ?_
-  intro b hb
-  have : ∀ i, ∃ a, f i a = b i ∧ (i ∈ s → a ∈ t i) := by
-    intro i
+  refine Subset.antisymm (piMap_image_pi_subset _) fun b hb => ?_
+  have (i : ι) : ∃ a, f i a = b i ∧ (i ∈ s → a ∈ t i) := by
     if hi : i ∈ s then
       exact (hb i hi).imp fun a ⟨hat, hab⟩ ↦ ⟨hab, fun _ ↦ hat⟩
     else
@@ -839,19 +843,13 @@ theorem piMap_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective 
   choose a hab hat using this
   exact ⟨a, hat, funext hab⟩
 
-@[deprecated (since := "2024-10-06")] alias dcomp_image_pi := piMap_image_pi
-
 theorem piMap_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
     Pi.map f '' univ.pi t = univ.pi fun i ↦ f i '' t i :=
   piMap_image_pi (by simp) t
 
-@[deprecated (since := "2024-10-06")] alias dcomp_image_univ_pi := piMap_image_univ_pi
-
 @[simp]
 theorem range_piMap (f : ∀ i, α i → β i) : range (Pi.map f) = pi univ fun i ↦ range (f i) := by
   simp only [← image_univ, ← piMap_image_univ_pi, pi_univ]
-
-@[deprecated (since := "2024-10-06")] alias range_dcomp := range_piMap
 
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
@@ -911,51 +909,18 @@ section Setdiff
 
 /-- Write that set difference `(s ∪ t).pi x \ (s ∪ t).pi y` as a union. -/
 lemma pi_setdiff_eq_union (s t : Set ι) (x y : (i : ι) → Set (α i)) :
-  (s ∪ t).pi x \ (s ∪ t).pi y = (t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y) ∪
-    t.pi x ∩ (s.pi x \ s.pi y) := by
-    ext z
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · simp only [mem_diff, mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_pi, not_and,
-          not_forall, Classical.not_imp] at h
-      obtain ⟨h1, ⟨j, ⟨hj1, hj2⟩⟩⟩ := h
-      by_cases hz : ∃ a ∈ s, z a ∉ y a
-      · right
-        simp only [mem_inter_iff, Set.mem_pi, mem_diff, not_forall, Classical.not_imp]
-        refine ⟨fun i hi ↦ h1 i (Set.subset_union_right hi),
-          fun i hi ↦ h1 i (Set.subset_union_left hi), bex_def.mpr hz⟩
-      · simp only [not_exists, not_and, not_not] at hz
-        left
-        simp only [mem_inter_iff, mem_diff, Set.mem_pi, not_forall, Classical.not_imp,
-          Set.mem_preimage, Function.eval]
-        refine ⟨⟨fun i hi ↦ h1 i (Set.subset_union_right hi), ?_⟩,
-          fun i hi ↦ h1 i (Set.subset_union_left hi), hz⟩
-        · have hj : j ∈ t := by
-            simp only [Set.mem_union] at hj1
-            rcases hj1 with (g1 | g2)
-            · exact False.elim (hj2 (hz j g1))
-            · exact g2
-          exact ⟨j, hj, hj2⟩
-    · simp only [Set.mem_union, mem_inter_iff, mem_diff, Set.mem_pi, not_forall,
-      Classical.not_imp] at h
-      simp only [mem_diff, Set.mem_pi, Set.mem_union, not_forall, Classical.not_imp]
-      rcases h with ⟨⟨h11, h12⟩, h2, h3⟩ | ⟨h1, h2, h3⟩
-      · refine ⟨?_, ?_⟩
-        · rintro i (hi1 | hi2)
-          · exact h2 i hi1
-          · exact h11 i hi2
-        · obtain ⟨x, hx1, hx2⟩ := h12
-          exact ⟨x, Or.inr hx1, hx2⟩
-      · refine ⟨?_, ?_⟩
-        · rintro i (hi1 | hi2)
-          · exact h2 i hi1
-          · exact h1 i hi2
-        · obtain ⟨x, hx1, hx2⟩ := h3
-          exact ⟨x, Or.inl hx1, hx2⟩
+  (s ∪ t).pi x \ (s ∪ t).pi y = t.pi x ∩ (s.pi x \ s.pi y) ∪ (t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)
+     := by
+  rw [union_pi, union_pi, diff_eq_compl_inter, compl_inter,  union_inter_distrib_right,
+    ← inter_assoc, ← diff_eq_compl_inter, ← inter_assoc, inter_comm, inter_assoc,
+    inter_comm (s.pi x ) (t.pi x), ← inter_assoc,  ← diff_eq_compl_inter, ← union_diff_self]
+  apply congrArg (Union.union (t.pi x ∩ (s.pi x \ s.pi y)))
+  aesop
 
 lemma pi_setdiff_union_disjoint (s t : Set ι) (x : (i : ι) → Set (α i)) (y : (i : ι) → Set (α i)) :
-  Disjoint ((t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)) (t.pi x ∩ (s.pi x \ s.pi y)) :=
-  Disjoint.mono (inter_subset_right) (inter_subset_right) <|
-    Disjoint.mono Set.inter_subset_right (fun ⦃_⦄ a ↦ a) <| disjoint_sdiff_right
+  Disjoint (t.pi x ∩ (s.pi x \ s.pi y)) ((t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)) :=
+    Disjoint.symm (Disjoint.inter_left' (t.pi x \ t.pi y) (Disjoint.symm
+    (Disjoint.inter_left' (t.pi x) disjoint_sdiff_inter)))
 
 end Setdiff
 
@@ -1011,3 +976,107 @@ lemma subset_pi_image_of_subset {s : Set ι} {B C : (i : ι) → Set (Set (α i)
 
 
 end image
+
+namespace Set
+
+variable {α β γ δ : Type*} {s : Set α} {f : α → β}
+
+section graphOn
+variable {x : α × β}
+
+@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by aesop (add simp graphOn)
+
+@[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
+@[simp] lemma graphOn_eq_empty : graphOn f s = ∅ ↔ s = ∅ := image_eq_empty
+@[simp] lemma graphOn_nonempty : (s.graphOn f).Nonempty ↔ s.Nonempty := image_nonempty
+
+protected alias ⟨_, Nonempty.graphOn⟩ := graphOn_nonempty
+
+@[simp]
+lemma graphOn_union (f : α → β) (s t : Set α) : graphOn f (s ∪ t) = graphOn f s ∪ graphOn f t :=
+  image_union ..
+
+@[simp]
+lemma graphOn_singleton (f : α → β) (x : α) : graphOn f {x} = {(x, f x)} :=
+  image_singleton ..
+
+@[simp]
+lemma graphOn_insert (f : α → β) (x : α) (s : Set α) :
+    graphOn f (insert x s) = insert (x, f x) (graphOn f s) :=
+  image_insert_eq ..
+
+@[simp]
+lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s = s := by
+  simp [graphOn, image_image]
+
+@[simp] lemma image_snd_graphOn (f : α → β) : Prod.snd '' s.graphOn f = f '' s := by ext x; simp
+
+lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by aesop (add simp InjOn)
+
+lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
+    s.graphOn (g ∘ f) = (fun x ↦ (x.1, g x.2)) '' s.graphOn f := by
+  simpa using image_comp (fun x ↦ (x.1, g x.2)) (fun x ↦ (x, f x)) _
+
+lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := image_univ
+
+@[simp] lemma graphOn_inj {g : α → β} : s.graphOn f = s.graphOn g ↔ s.EqOn f g := by
+  simp [Set.ext_iff, funext_iff, forall_swap, EqOn]
+
+lemma graphOn_prod_graphOn (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
+    s.graphOn f ×ˢ t.graphOn g = Equiv.prodProdProdComm .. ⁻¹' (s ×ˢ t).graphOn (Prod.map f g) := by
+  aesop
+
+lemma graphOn_prod_prodMap (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
+    (s ×ˢ t).graphOn (Prod.map f g) = Equiv.prodProdProdComm .. ⁻¹' s.graphOn f ×ˢ t.graphOn g := by
+  aesop
+
+end graphOn
+
+/-! ### Vertical line test -/
+
+/-- **Vertical line test** for functions.
+
+Let `f : α → β × γ` be a function to a product. Assume that `f` is surjective on the first factor
+and that the image of `f` intersects every "vertical line" `{(b, c) | c : γ}` at most once.
+Then the image of `f` is the graph of some monoid homomorphism `f' : β → γ`. -/
+lemma exists_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjective (Prod.fst ∘ f))
+    (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
+    ∃ f' : β → γ, range f = univ.graphOn f' := by
+  refine ⟨fun h ↦ (f (hf₁ h).choose).snd, ?_⟩
+  ext x
+  simp only [mem_range, comp_apply, mem_graphOn, mem_univ, true_and]
+  refine ⟨?_, fun hi ↦ ⟨(hf₁ x.1).choose, Prod.ext (hf₁ x.1).choose_spec hi⟩⟩
+  rintro ⟨g, rfl⟩
+  exact hf _ _ (hf₁ (f g).1).choose_spec
+
+/-- **Line test** for equivalences.
+
+Let `f : α → β × γ` be a homomorphism to a product of monoids. Assume that `f` is surjective on both
+factors and that the image of `f` intersects every "vertical line" `{(b, c) | c : γ}` and every
+"horizontal line" `{(b, c) | b : β}` at most once. Then the image of `f` is the graph of some
+equivalence `f' : β ≃ γ`. -/
+lemma exists_equiv_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjective (Prod.fst ∘ f))
+    (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
+    ∃ e : β ≃ γ, range f = univ.graphOn e := by
+  obtain ⟨e₁, he₁⟩ := exists_range_eq_graphOn_univ hf₁ fun _ _ ↦ (hf _ _).1
+  obtain ⟨e₂, he₂⟩ := exists_range_eq_graphOn_univ (f := Equiv.prodComm _ _ ∘ f) (by simpa) <|
+    by simp [hf]
+  have he₁₂ h i : e₁ h = i ↔ e₂ i = h := by
+    rw [Set.ext_iff] at he₁ he₂
+    aesop (add simp [Prod.swap_eq_iff_eq_swap])
+  exact ⟨
+  { toFun := e₁
+    invFun := e₂
+    left_inv := fun h ↦ by rw [← he₁₂]
+    right_inv := fun i ↦ by rw [he₁₂] }, he₁⟩
+
+/-- **Vertical line test** for functions.
+
+Let `s : Set (β × γ)` be a set in a product. Assume that `s` maps bijectively to the first factor.
+Then `s` is the graph of some function `f : β → γ`. -/
+lemma exists_eq_mgraphOn_univ {s : Set (β × γ)}
+    (hs₁ : Bijective (Prod.fst ∘ (Subtype.val : s → β × γ))) : ∃ f : β → γ, s = univ.graphOn f := by
+  simpa using exists_range_eq_graphOn_univ hs₁.surjective
+    fun a b h ↦ congr_arg (Prod.snd ∘ (Subtype.val : s → β × γ)) (hs₁.injective h)
+
+end Set

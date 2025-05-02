@@ -23,7 +23,8 @@ for the names of the declarations whose syntax begins in position at least `pos`
 -/
 def getNamesFrom {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos) :
     m (Array Syntax) := do
-  let drs := declRangeExt.getState (← getEnv)
+  -- declarations from parallelism branches should not be interesting here, so use `local`
+  let drs := declRangeExt.toPersistentEnvExtension.getState (asyncMode := .local) (← getEnv)
   let fm ← getFileMap
   let mut nms := #[]
   for (nm, rgs) in drs do
@@ -46,3 +47,9 @@ def getAliasSyntax {m} [Monad m] [MonadResolveName m] (stx : Syntax) : m (Array 
       aliases := aliases.push
         (mkIdentFrom (.ofRange (idStx.raw.getRange?.getD default)) (currNamespace ++ id))
   return aliases
+
+/-- Used for linters which use `0` instead of `false` for disabling. -/
+def logLint0Disable {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
+    (linterOption : Lean.Option Nat) (stx : Syntax) (msg : MessageData) : m Unit :=
+  let disable := m!"note: this linter can be disabled with `set_option {linterOption.name} 0`"
+  logWarningAt stx (.tagged linterOption.name m!"{msg}\n{disable}")

@@ -34,7 +34,7 @@ namespace SummableFamily
 
 section PowerSeriesFamily
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
 variable [CommRing V] [Algebra R V] {x : HahnSeries Γ V} (hx : 0 < x.orderTop) (f : PowerSeries R)
 
@@ -117,8 +117,8 @@ namespace PowerSeries
 
 open HahnSeries SummableFamily
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {x : HahnSeries Γ R}
-(hx : 0 < x.orderTop)
+variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
+  [CommRing R] {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
 
 /-- The `R`-algebra homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
 variable `X` to a positive order element `x` and extending to infinite sums. -/

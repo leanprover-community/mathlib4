@@ -42,9 +42,6 @@ def IsTransitive (x : ZFSet) : Prop :=
 @[simp]
 theorem isTransitive_empty : IsTransitive ∅ := fun y hy => (not_mem_empty y hy).elim
 
-@[deprecated isTransitive_empty (since := "2024-09-21")]
-alias empty_isTransitive := isTransitive_empty
-
 theorem IsTransitive.subset_of_mem (h : x.IsTransitive) : y ∈ x → y ⊆ x := h y
 
 theorem isTransitive_iff_mem_trans : z.IsTransitive ↔ ∀ {x y : ZFSet}, x ∈ y → y ∈ z → x ∈ z :=
@@ -236,14 +233,5 @@ end IsOrdinal
 @[simp]
 theorem isOrdinal_empty : IsOrdinal ∅ :=
   ⟨isTransitive_empty, fun _ _ H ↦ (not_mem_empty _ H).elim⟩
-
-/-- The **Burali-Forti paradox**: ordinals form a proper class. -/
-theorem isOrdinal_not_mem_univ : IsOrdinal ∉ Class.univ.{u} := by
-  rintro ⟨x, hx, -⟩
-  suffices IsOrdinal x by
-    apply Class.mem_irrefl x
-    rwa [Class.coe_mem, hx]
-  refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;> rw [← Class.coe_apply, hx] at *
-  exacts [hy.mem hz, hwx.mem_trans hyz hzw]
 
 end ZFSet

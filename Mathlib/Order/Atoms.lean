@@ -639,6 +639,7 @@ end CompleteAtomicBooleanAlgebra
 end Atomistic
 
 /-- An order is simple iff it has exactly two elements, `⊥` and `⊤`. -/
+@[mk_iff]
 class IsSimpleOrder (α : Type*) [LE α] [BoundedOrder α] : Prop extends Nontrivial α where
   /-- Every element is either `⊥` or `⊤` -/
   eq_bot_or_eq_top : ∀ a : α, a = ⊥ ∨ a = ⊤
@@ -684,22 +685,30 @@ This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
     le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
-    decidableLE := fun a b =>
+    -- Note from #23976: do we want this inlined or should this be a separate definition?
+    toDecidableLE := fun a b =>
       if ha : a = ⊥ then isTrue (ha.le.trans bot_le)
       else
         if hb : b = ⊤ then isTrue (le_top.trans hb.ge)
         else
           isFalse fun H =>
             hb (top_unique (le_trans (top_le_iff.mpr (Or.resolve_left
-              (eq_bot_or_eq_top a) ha)) H)) }
+              (eq_bot_or_eq_top a) ha)) H))
+    toDecidableEq := ‹_› }
 
-@[simp]
 theorem isAtom_top : IsAtom (⊤ : α) :=
   ⟨top_ne_bot, fun a ha => Or.resolve_right (eq_bot_or_eq_top a) (ne_of_lt ha)⟩
 
 @[simp]
+theorem isAtom_iff_eq_top {a : α} : IsAtom a ↔ a = ⊤ :=
+  ⟨fun h ↦ (eq_bot_or_eq_top a).resolve_left h.1, (· ▸ isAtom_top)⟩
+
 theorem isCoatom_bot : IsCoatom (⊥ : α) :=
   isAtom_dual_iff_isCoatom.1 isAtom_top
+
+@[simp]
+theorem isCoatom_iff_eq_bot {a : α} : IsCoatom a ↔ a = ⊥ :=
+  ⟨fun h ↦ (eq_bot_or_eq_top a).resolve_right h.1, (· ▸ isCoatom_bot)⟩
 
 theorem bot_covBy_top : (⊥ : α) ⋖ ⊤ :=
   isAtom_top.bot_covBy
@@ -800,21 +809,21 @@ protected noncomputable def completeLattice : CompleteLattice α :=
     le_sSup := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · exact bot_le
-      · dsimp; rw [if_pos h]
+      · rw [if_pos h]
     sSup_le := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · dsimp; rw [if_neg]
+      · rw [if_neg]
         intro con
         exact bot_ne_top (eq_top_iff.2 (h ⊤ con))
       · exact le_top
     sInf_le := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · dsimp; rw [if_pos h]
+      · rw [if_pos h]
       · exact le_top
     le_sInf := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · exact bot_le
-      · dsimp; rw [if_neg]
+      · rw [if_neg]
         intro con
         exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
 
@@ -1110,14 +1119,12 @@ end IsModularLattice
 
 namespace «Prop»
 
-@[simp] theorem isAtom_iff {p : Prop} : IsAtom p ↔ p := by
-  simp [IsAtom, show ⊥ = False from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]
-
-@[simp] theorem isCoatom_iff {p : Prop} : IsCoatom p ↔ ¬ p := by
-  simp [IsCoatom, show ⊤ = True from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]; tauto
-
 instance : IsSimpleOrder Prop where
   eq_bot_or_eq_top p := by simp [em']
+
+theorem isAtom_iff {p : Prop} : IsAtom p ↔ p := by simp
+
+theorem isCoatom_iff {p : Prop} : IsCoatom p ↔ ¬ p := by simp
 
 end «Prop»
 

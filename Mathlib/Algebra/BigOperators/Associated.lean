@@ -59,7 +59,7 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
   | empty =>
     simp only [Finset.prod_empty]
     rfl
-  | @insert j s hjs IH =>
+  | insert j s hjs IH =>
     classical
     convert_to (∏ i ∈ insert j s, f i) ~ᵤ (∏ i ∈ insert j s, g i)
     rw [Finset.prod_insert hjs, Finset.prod_insert hjs]
@@ -89,7 +89,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α]
     simp only [Set.mem_setOf]
     simp only [Multiset.prod_zero] at hprod
     left; exact isUnit_of_mul_eq_one _ _ hprod.symm
-  | @cons c s hind =>
+  | cons c s hind =>
     simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
     simp only [Multiset.prod_cons] at hprod
     simp only [Set.mem_setOf_eq] at hind
@@ -221,12 +221,16 @@ theorem Prime.not_dvd_finset_prod {S : Finset α} {p : M} (pp : Prime p) {g : α
     (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g := by
   exact mt (Prime.dvd_finset_prod_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
 
-theorem Prime.dvd_finsupp_prod_iff {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p) :
+theorem Prime.dvd_finsuppProd_iff {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p) :
     p ∣ f.prod g ↔ ∃ a ∈ f.support, p ∣ g a (f a) :=
   Prime.dvd_finset_prod_iff pp _
 
-theorem Prime.not_dvd_finsupp_prod {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p)
+@[deprecated (since := "2025-04-06")] alias Prime.dvd_finsupp_prod_iff := Prime.dvd_finsuppProd_iff
+
+theorem Prime.not_dvd_finsuppProd {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p)
     (hS : ∀ a ∈ f.support, ¬p ∣ g a (f a)) : ¬p ∣ f.prod g :=
   Prime.not_dvd_finset_prod pp hS
+
+@[deprecated (since := "2025-04-06")] alias Prime.not_dvd_finsupp_prod := Prime.not_dvd_finsuppProd
 
 end CommMonoidWithZero

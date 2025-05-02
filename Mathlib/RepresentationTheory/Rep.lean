@@ -89,12 +89,12 @@ lemma ofHom_ρ {X : Rep k G} (g : G) : ModuleCat.ofHom (X.ρ g) = Action.ρ X g 
 @[simp]
 theorem ρ_inv_self_apply {G : Type u} [Group G] (A : Rep k G) (g : G) (x : A) :
     A.ρ g⁻¹ (A.ρ g x) = x :=
-  show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_cancel, map_one, LinearMap.one_apply]
+  show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_cancel, map_one, Module.End.one_apply]
 
 @[simp]
 theorem ρ_self_inv_apply {G : Type u} [Group G] {A : Rep k G} (g : G) (x : A) :
     A.ρ g (A.ρ g⁻¹ x) = x :=
-  show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, LinearMap.one_apply]
+  show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, Module.End.one_apply]
 
 theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
     f.hom (A.ρ g x) = B.ρ g (f.hom x) :=
@@ -402,15 +402,13 @@ def MonoidalClosed.linearHomEquivComm : (A ⊗ B ⟶ C) ≃ₗ[k] A ⟶ B ⟶[Re
 
 variable {A B C}
 
--- `simpNF` times out
-@[simp, nolint simpNF]
+@[simp]
 theorem MonoidalClosed.linearHomEquiv_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquiv A B C f).hom =
       ModuleCat.ofHom (TensorProduct.curry f.hom.hom).flip :=
   rfl
 
--- `simpNF` times out
-@[simp, nolint simpNF]
+@[simp]
 theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquivComm A B C f).hom =
       ModuleCat.ofHom (TensorProduct.curry f.hom.hom) :=

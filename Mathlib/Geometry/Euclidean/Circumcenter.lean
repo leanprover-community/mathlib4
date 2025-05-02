@@ -3,6 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.Geometry.Euclidean.Sphere.Basic
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.DeriveFintype
@@ -38,41 +39,6 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
 
 open AffineSubspace
 
-/-- `p` is equidistant from two points in `s` if and only if its
-`orthogonalProjection` is. -/
-theorem dist_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
-    [HasOrthogonalProjection s.direction] {p₁ p₂ : P} (p₃ : P) (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) :
-    dist p₁ p₃ = dist p₂ p₃ ↔
-      dist p₁ (orthogonalProjection s p₃) = dist p₂ (orthogonalProjection s p₃) := by
-  rw [← mul_self_inj_of_nonneg dist_nonneg dist_nonneg, ←
-    mul_self_inj_of_nonneg dist_nonneg dist_nonneg,
-    dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p₃ hp₁,
-    dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p₃ hp₂]
-  simp
-
-/-- `p` is equidistant from a set of points in `s` if and only if its
-`orthogonalProjection` is. -/
-theorem dist_set_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
-    [HasOrthogonalProjection s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
-    (Set.Pairwise ps fun p₁ p₂ => dist p₁ p = dist p₂ p) ↔
-      Set.Pairwise ps fun p₁ p₂ =>
-        dist p₁ (orthogonalProjection s p) = dist p₂ (orthogonalProjection s p) :=
-  ⟨fun h _ hp₁ _ hp₂ hne =>
-    (dist_eq_iff_dist_orthogonalProjection_eq p (hps hp₁) (hps hp₂)).1 (h hp₁ hp₂ hne),
-    fun h _ hp₁ _ hp₂ hne =>
-    (dist_eq_iff_dist_orthogonalProjection_eq p (hps hp₁) (hps hp₂)).2 (h hp₁ hp₂ hne)⟩
-
-/-- There exists `r` such that `p` has distance `r` from all the
-points of a set of points in `s` if and only if there exists (possibly
-different) `r` such that its `orthogonalProjection` has that distance
-from all the points in that set. -/
-theorem exists_dist_eq_iff_exists_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
-    [HasOrthogonalProjection s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
-    (∃ r, ∀ p₁ ∈ ps, dist p₁ p = r) ↔ ∃ r, ∀ p₁ ∈ ps, dist p₁ ↑(orthogonalProjection s p) = r := by
-  have h := dist_set_eq_iff_dist_orthogonalProjection_eq hps p
-  simp_rw [Set.pairwise_eq_iff_exists_eq] at h
-  exact h
-
 /-- The induction step for the existence and uniqueness of the
 circumcenter.  Given a nonempty set of points in a nonempty affine
 subspace whose direction is complete, such that there is a unique
@@ -81,7 +47,7 @@ and a point `p` not in that subspace, there is a unique (circumcenter,
 circumradius) pair for the set with `p` added, in the span of the
 subspace with `p` added. -/
 theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
-    [HasOrthogonalProjection s.direction] {ps : Set P} (hnps : ps.Nonempty) {p : P} (hps : ps ⊆ s)
+    [s.direction.HasOrthogonalProjection] {ps : Set P} (hnps : ps.Nonempty) {p : P} (hps : ps ⊆ s)
     (hp : p ∉ s) (hu : ∃! cs : Sphere P, cs.center ∈ s ∧ ps ⊆ (cs : Set P)) :
     ∃! cs₂ : Sphere P,
       cs₂.center ∈ affineSpan ℝ (insert p (s : Set P)) ∧ insert p ps ⊆ (cs₂ : Set P) := by
@@ -95,7 +61,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
   let cc₂ := (ycc₂ / y) • (p -ᵥ orthogonalProjection s p : V) +ᵥ cc
   let cr₂ := √(cr * cr + ycc₂ * ycc₂)
   use ⟨cc₂, cr₂⟩
-  simp (config := { zeta := false, proj := false }) only
+  simp -zeta -proj only
   have hpo : p = (1 : ℝ) • (p -ᵥ orthogonalProjection s p : V) +ᵥ (orthogonalProjection s p : P) :=
     by simp
   constructor
@@ -204,7 +170,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       let ι2 := { x // x ≠ i }
       classical
       have hc : Fintype.card ι2 = m + 1 := by
-        rw [Fintype.card_of_subtype (Finset.univ.filter fun x => x ≠ i)]
+        rw [Fintype.card_of_subtype {x | x ≠ i}]
         · rw [Finset.filter_not]
           -- Porting note: removed `simp_rw [eq_comm]` and used `filter_eq'` instead of `filter_eq`
           rw [Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
@@ -220,7 +186,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
         congr with j
         simp [Classical.em]
       rw [hr, ← affineSpan_insert_affineSpan]
-      refine existsUnique_dist_eq_of_insert (Set.range_nonempty _) (subset_spanPoints ℝ _) ?_ hm
+      refine existsUnique_dist_eq_of_insert (Set.range_nonempty _) (subset_affineSpan ℝ _) ?_ hm
       convert ha.not_mem_affineSpan_diff i Set.univ
       change (Set.range fun i2 : { x | x ≠ i } => p i2) = _
       rw [← Set.image_eq_range]
@@ -384,37 +350,6 @@ theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
     (s.reindex e).circumradius = s.circumradius := by simp_rw [circumradius, circumsphere_reindex]
 
 attribute [local instance] AffineSubspace.toAddTorsor
-
-/-- The orthogonal projection of a point `p` onto the hyperplane spanned by the simplex's points. -/
-def orthogonalProjectionSpan {n : ℕ} (s : Simplex ℝ P n) :
-    P →ᵃ[ℝ] affineSpan ℝ (Set.range s.points) :=
-  orthogonalProjection (affineSpan ℝ (Set.range s.points))
-
-/-- Adding a vector to a point in the given subspace, then taking the
-orthogonal projection, produces the original point if the vector is a
-multiple of the result of subtracting a point's orthogonal projection
-from that point. -/
-theorem orthogonalProjection_vadd_smul_vsub_orthogonalProjection {n : ℕ} (s : Simplex ℝ P n)
-    {p₁ : P} (p₂ : P) (r : ℝ) (hp : p₁ ∈ affineSpan ℝ (Set.range s.points)) :
-    s.orthogonalProjectionSpan (r • (p₂ -ᵥ s.orthogonalProjectionSpan p₂ : V) +ᵥ p₁) = ⟨p₁, hp⟩ :=
-  EuclideanGeometry.orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ _
-
-theorem coe_orthogonalProjection_vadd_smul_vsub_orthogonalProjection {n : ℕ} {r₁ : ℝ}
-    (s : Simplex ℝ P n) {p p₁o : P} (hp₁o : p₁o ∈ affineSpan ℝ (Set.range s.points)) :
-    ↑(s.orthogonalProjectionSpan (r₁ • (p -ᵥ ↑(s.orthogonalProjectionSpan p)) +ᵥ p₁o)) = p₁o :=
-  congrArg ((↑) : _ → P) (orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ _ hp₁o)
-
-theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq {n : ℕ}
-    (s : Simplex ℝ P n) {p₁ : P} (p₂ : P) (hp₁ : p₁ ∈ affineSpan ℝ (Set.range s.points)) :
-    dist p₁ p₂ * dist p₁ p₂ =
-      dist p₁ (s.orthogonalProjectionSpan p₂) * dist p₁ (s.orthogonalProjectionSpan p₂) +
-        dist p₂ (s.orthogonalProjectionSpan p₂) * dist p₂ (s.orthogonalProjectionSpan p₂) := by
-  rw [PseudoMetricSpace.dist_comm p₂ _, dist_eq_norm_vsub V p₁ _, dist_eq_norm_vsub V p₁ _,
-    dist_eq_norm_vsub V _ p₂, ← vsub_add_vsub_cancel p₁ (s.orthogonalProjectionSpan p₂) p₂,
-    norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
-  exact
-    Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
-      (orthogonalProjection_vsub_mem_direction_orthogonal _ p₂)
 
 theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Simplex ℝ P n) {p₁ : P}
     (h₁ : ∀ i : Fin (n + 1), dist (s.points i) p₁ = r)
@@ -676,7 +611,7 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
 that contains a set of points, those points are cospherical if and
 only if they are equidistant from some point in that subspace. -/
 theorem cospherical_iff_exists_mem_of_complete {s : AffineSubspace ℝ P} {ps : Set P} (h : ps ⊆ s)
-    [Nonempty s] [HasOrthogonalProjection s.direction] :
+    [Nonempty s] [s.direction.HasOrthogonalProjection] :
     Cospherical ps ↔ ∃ center ∈ s, ∃ radius : ℝ, ∀ p ∈ ps, dist p center = radius := by
   constructor
   · rintro ⟨c, hcr⟩
@@ -706,7 +641,7 @@ theorem exists_circumradius_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
   have hsx : affineSpan ℝ (Set.range sx.points) = s := by
     refine
       sx.independent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
-        (spanPoints_subset_coe_of_subset_coe (hsxps.trans h)) ?_
+        (affineSpan_le_of_subset_coe (hsxps.trans h)) ?_
     simp [hd]
   have hc : c ∈ affineSpan ℝ (Set.range sx.points) := hsx.symm ▸ hc
   exact
@@ -754,7 +689,7 @@ theorem exists_circumcenter_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
   have hsx : affineSpan ℝ (Set.range sx.points) = s := by
     refine
       sx.independent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
-        (spanPoints_subset_coe_of_subset_coe (hsxps.trans h)) ?_
+        (affineSpan_le_of_subset_coe (hsxps.trans h)) ?_
     simp [hd]
   have hc : c ∈ affineSpan ℝ (Set.range sx.points) := hsx.symm ▸ hc
   exact
