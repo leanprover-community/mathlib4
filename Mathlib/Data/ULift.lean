@@ -138,6 +138,7 @@ lemma rec_update {β : ULift α → Type*} [DecidableEq α]
   Function.rec_update up_injective (ULift.rec ·) (fun _ _ => rfl) (fun
     | _, _, .up _, h => (h _ rfl).elim) _ _ _
 
+/-- Conjugate a function by `ULift`ing. An inverse to `map`. -/
 def conj {α β : Type*} (f : ULift α → ULift β) : α → β := fun x => (f ⟨x⟩).down
 
 @[simp]
