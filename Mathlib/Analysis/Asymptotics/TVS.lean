@@ -33,7 +33,7 @@ thus reducing the definition to the classical one.
 This frees the user from having to chose a canonical norm, at the expense of having to pick a
 specific base field.
 This is exactly the tradeoff we want in `HasFDerivAtFilter`,
-as there the base ring is already chosen,
+as there the base field is already chosen,
 and this removes the choice of norm being part of the statement.
 
 These definitions were added to the library in order to migrate Fréchet derivatives
@@ -69,7 +69,7 @@ namespace Asymptotics
 section Defs
 
 variable (𝕜 : Type*) {α E F : Type*}
-  [NNNorm 𝕜] [TopologicalSpace E] [TopologicalSpace F] [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F]
+  [ENorm 𝕜] [TopologicalSpace E] [TopologicalSpace F] [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F]
 
 /-- `f =o[𝕜; l] g` (`IsLittleOTVS 𝕜 l f g`) is a generalization of `f =o[l] g` (`IsLittleO l f g`)
 that works in topological `𝕜`-vector spaces.
@@ -95,7 +95,7 @@ notation:100 f " =o[" 𝕜 "; " l "] " g:100 => IsLittleOTVS 𝕜 l f g
 that works in topological `𝕜`-vector spaces.
 
 Given two functions `f` and `g` taking values in topological vector spaces
-over a normed field `K`,
+over a normed field `𝕜`,
 we say that $f = O(g)$ if for any neighborhood of zero `U` in the codomain of `f`
 there exists a neighborhood of zero `V` in the codomain of `g`
 such that $\operatorname{gauge}_{K, U} (f(x)) \le \operatorname{gauge}_{K, V} (g(x))$,
