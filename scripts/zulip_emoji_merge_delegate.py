@@ -124,42 +124,24 @@ for message in messages:
 
         # applying appropriate emoji reaction
         print("Applying reactions, as appropriate.")
+        def add_reaction(name: str, emoji_name: str) -> none:
+            print(f'adding {name}')
+            result = client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": emoji_name
+            })
         if 'ready-to-merge' == LABEL:
-            print('adding ready-to-merge')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": "bors"
-            })
+            add_reaction('ready-to-merge', 'bors')
         elif 'delegated' == LABEL:
-            print('adding delegated')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": "peace_sign"
-            })
+            add_reaction('delegated', 'peace_sign')
         elif 'maintainer-merge' == LABEL:
-            print('adding maintainer-merge')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": "hammer"
-            })
+            add_reaction('maintainer-merge', 'hammer')
         elif LABEL == 'labeled':
-            print('adding awaiting-author')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": "writing"
-            })
+            add_reaction('awaiting-author', 'writing')
         elif LABEL == 'closed':
-            print('adding closed-pr')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": "closed-pr"
-            })
+            add_reaction('closed-pr', 'closed-pr')
         elif LABEL == 'unlabeled':
             print('awaiting-author removed')
             # the reaction was already removed.
         elif LABEL.startswith("[Merged by Bors]"):
-            print('adding [Merged by Bors]')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": "merge"
-            })
+            add_reaction('[Merged by Bors]', 'merge')
