@@ -72,10 +72,13 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 
 
 /--
-warning: extra space
+warning: This part of the code
+  'example    : True'
 
-Current syntax:  'example    : True'
-Expected syntax: 'example : True'
+should be written as
+  'example : True'
+
+Notice the extra space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -87,10 +90,13 @@ example    : True := trivial
 example : True := trivial
 
 /--
-warning: extra space
+warning: This part of the code
+  'example  :  True'
 
-Current syntax:  'example  :  True'
-Expected syntax: 'example : True'
+should be written as
+  'example : True'
+
+Notice the extra space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -98,10 +104,13 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 example  :  True :=trivial
 
 /--
-warning: missing space
+warning: This part of the code
+  '(a: Nat)'
 
-Current syntax:  '(a: Nat)'
-Expected syntax: '(a : Nat'
+should be written as
+  '(a : Nat'
+
+Notice the missing space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -109,10 +118,13 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 variable (a: Nat)
 
 /--
-warning: missing space
+warning: This part of the code
+  '(_a: Nat)'
 
-Current syntax:  '(_a: Nat)'
-Expected syntax: '(_a : Nat)'
+should be written as
+  '(_a : Nat)'
+
+Notice the missing space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -120,10 +132,13 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 example (_a: Nat) : True := trivial
 
 /--
-warning: missing space
+warning: This part of the code
+  '{a: Nat}'
 
-Current syntax:  '{a: Nat}'
-Expected syntax: '{a : Nat}'
+should be written as
+  '{a : Nat}'
+
+Notice the missing space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -146,10 +161,13 @@ d -/
 example (_a : Nat) (_b : Int) : True := trivial
 
 /--
-warning: missing space
+warning: This part of the code
+  ':Nat}'
 
-Current syntax:  ':Nat}'
-Expected syntax: ': Nat}'
+should be written as
+  ': Nat}'
+
+Notice the missing space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -157,17 +175,23 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 example {a :Nat} : a = a := rfl
 
 /--
-warning: extra space
+warning: This part of the code
+  'example  {a :Nat}'
 
-Current syntax:  'example  {a :Nat}'
-Expected syntax: 'example {a :'
+should be written as
+  'example {a :'
+
+Notice the extra space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 ---
-warning: missing space
+warning: This part of the code
+  ':Nat}'
 
-Current syntax:  ':Nat}'
-Expected syntax: ': Nat}'
+should be written as
+  ': Nat}'
+
+Notice the missing space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -178,10 +202,13 @@ example  {a :Nat} : a = a := rfl
 warning: unused variable `b`
 note: this linter can be disabled with `set_option linter.unusedVariables false`
 ---
-warning: missing space
+warning: This part of the code
+  'Nat}{b :'
 
-Current syntax:  'Nat}{b :'
-Expected syntax: 'Nat} {b :'
+should be written as
+  'Nat} {b :'
+
+Notice the missing space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -189,10 +216,13 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 example {a : Nat}{b : Nat} : a = a := rfl
 
 /--
-warning: extra space
+warning: This part of the code
+  'Nat}  : a'
 
-Current syntax:  'Nat}  : a'
-Expected syntax: 'Nat} : a ='
+should be written as
+  'Nat} : a ='
+
+Notice the extra space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -200,10 +230,13 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 example {a : Nat}  : a = a := rfl
 
 /--
-warning: extra space
+warning: This part of the code
+  'alpha   ] {a'
 
-Current syntax:  'alpha   ] {a'
-Expected syntax: 'alpha] {a'
+should be written as
+  'alpha] {a'
+
+Notice the extra space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -237,10 +270,13 @@ def Prop.Hello := 0
 def Type.Hello := 0
 
 /--
-warning: extra space
+warning: This part of the code
+  'example  : True'
 
-Current syntax:  'example  : True'
-Expected syntax: 'example : True'
+should be written as
+  'example : True'
+
+Notice the extra space in the source code.
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/

@@ -318,9 +318,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let srcWindow := mkWindow orig s.srcNat ctx s.length
       let expectedWindow := mkWindow st s.fmtPos ctx (1)
       Linter.logLint linter.style.commandStart (.ofRange rg)
-        m!"{s.msg}\n\n\
-          Current syntax:  '{srcWindow}'\n\
-          Expected syntax: '{expectedWindow}'\n"
+        m!"This part of the code\n  '{srcWindow}'\n\n\
+          should be written as\n  '{expectedWindow}'\n\n\
+          Notice the {s.msg} in the source code.\n"
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
 
