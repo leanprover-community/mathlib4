@@ -68,12 +68,15 @@ for message in messages:
     content = message['content']
     # Check for emoji reactions
     reactions = message['reactions']
-    has_peace_sign = any(reaction['emoji_name'] == 'peace_sign' for reaction in reactions)
-    has_bors = any(reaction['emoji_name'] == 'bors' for reaction in reactions)
-    has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
-    has_awaiting_author = any(reaction['emoji_name'] == 'writing' for reaction in reactions)
-    has_maintainer_merge = any(reaction['emoji_name'] == 'hammer' for reaction in reactions)
-    has_closed = any(reaction['emoji_name'] == 'closed-pr' for reaction in reactions)
+    # Does this message have any reaction with an emoji |name|?
+    has_reaction = lambda name: any(reaction['emoji_name'] == name for reaction in reactions)
+
+    has_peace_sign = has_reaction('peace_sign')
+    has_bors = has_reaction('bors')
+    has_merge = has_reaction('merge')
+    has_awaiting_author = has_reaction('writing')
+    has_maintainer_merge = has_reaction('hammer')
+    has_closed = has_reaction('closed-pr')
     first_in_thread = hashPR.search(message['subject']) and message['display_recipient'] == 'PR reviews' and message['subject'] not in first_by_subject
     first_by_subject[message['subject']] = message['id']
     match = urlPR.search(content) or first_in_thread
