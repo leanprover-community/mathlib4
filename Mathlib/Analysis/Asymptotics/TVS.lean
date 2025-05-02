@@ -295,8 +295,11 @@ lemma _root_.ContinuousLinearMap.isBigOTVS_id {l : Filter E} (f : E →L[𝕜] F
   ⟨fun U hU ↦ ⟨f ⁻¹' U, (map_continuous f).tendsto' 0 0 (map_zero f) hU, .of_forall <|
     (mapsTo_preimage f U).egauge_le 𝕜 f⟩⟩
 
-lemma _root_.ContinuousLinearMap.isBigOTVS_comp (g : E →L[𝕜] F) : (g <| f ·) =O[𝕜; l] f :=
+lemma _root_.ContinuousLinearMap.isBigOTVS_comp (g : E →L[𝕜] F) : (g ∘ f) =O[𝕜; l] f :=
   g.isBigOTVS_id.comp_tendsto tendsto_top
+
+lemma _root_.ContinuousLinearMap.isBigOTVS_fun_comp (g : E →L[𝕜] F) : (g <| f ·) =O[𝕜; l] f :=
+  g.isBigOTVS_comp
 
 @[simp]
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜; l] g := by
