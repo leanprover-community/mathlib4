@@ -292,7 +292,7 @@ lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFin
   · simp only [sub_nonneg, hx.le]
   · simp only [sub_pos, hx]
 
-lemma singularPart_of_subset_compl_mutuallySingularSetSlice [IsFiniteKernel κ]
+lemma singularPart_of_subset_compl_mutuallySingularSetSlice [IsSFiniteKernel κ]
     [IsFiniteKernel η] {a : α} {s : Set γ} (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :
     singularPart κ η a s = 0 :=
   measure_mono_null hs (singularPart_compl_mutuallySingularSetSlice κ η a)
@@ -392,8 +392,8 @@ lemma rnDeriv_add_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFin
 
 section EqZeroIff
 
-lemma singularPart_eq_zero_iff_apply_eq_zero (κ η : Kernel α γ) [IsFiniteKernel κ]
-    [IsFiniteKernel η] (a : α) :
+lemma singularPart_eq_zero_iff_apply_eq_zero (κ η : Kernel α γ) [IsSFiniteKernel κ]
+    [IsSFiniteKernel η] (a : α) :
     singularPart κ η a = 0 ↔ singularPart κ η a (mutuallySingularSetSlice κ η a) = 0 := by
   rw [← Measure.measure_univ_eq_zero]
   have : univ = (mutuallySingularSetSlice κ η a) ∪ (mutuallySingularSetSlice κ η a)ᶜ := by simp
