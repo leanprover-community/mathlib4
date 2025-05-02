@@ -172,5 +172,3 @@ theorem _of_isCompact_of_T2Space [T2Space α] :
 end ClosedCompact
 
 end IsCompactSystem
-
-#min_imports
