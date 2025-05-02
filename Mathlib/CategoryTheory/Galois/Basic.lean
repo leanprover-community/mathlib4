@@ -170,7 +170,7 @@ section
 
 /-- If `F` is a fiber functor and `E` is an equivalence between categories of finite types,
 then `F ⋙ E` is again a fiber functor. -/
-instance comp_right (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
+lemma comp_right (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
     FiberFunctor (F ⋙ E) where
   preservesQuotientsByFiniteGroups _ := comp_preservesColimitsOfShape F E
 
