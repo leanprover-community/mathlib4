@@ -828,6 +828,7 @@ def evalENNRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
     assertInstancesCommute
     match ra with
     | .positive pa => pure (.positive q(EReal.coe_ennreal_pos.2 $pa))
+    | .nonzero pa => pure (.nonzero q(EReal.coe_ennreal_ne_zero.2 $pa))
     | _ => pure (.nonnegative q(EReal.coe_ennreal_nonneg $a))
   | _, _, _ => throwError "not ENNReal.toEReal"
 
