@@ -221,6 +221,7 @@ theorem map_map (g : N →ₙ* P) (f : M →ₙ* N) : (S.map f).map g = S.map (g
 
 -- The simpNF linter says that the LHS can be simplified via `Subsemigroup.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[to_additive (attr := simp, nolint simpNF)]
 theorem mem_map_iff_mem {f : M →ₙ* N} (hf : Function.Injective f) {S : Subsemigroup M} {x : M} :
@@ -716,7 +717,7 @@ def subsemigroupCongr (h : S = T) : S ≃* T :=
 equivalence between `M` and `f.srange`.
 
 This is a bidirectional version of `MulHom.srangeRestrict`. -/
-@[to_additive (attr := simps (config := { simpRhs := true }))
+@[to_additive (attr := simps +simpRhs)
       "An additive semigroup homomorphism `f : M →+ N` with a left-inverse
       `g : N → M` defines an additive equivalence between `M` and `f.srange`.
       This is a bidirectional version of `AddHom.srangeRestrict`. "]

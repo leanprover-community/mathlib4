@@ -100,7 +100,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
   intro χ₁ s
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert χ₂ s _n ih =>
+  | insert χ₂ s _n ih =>
   intro hχ₁₂
   obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
   specialize ih hχ₁
@@ -121,7 +121,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
   obtain ⟨k, hk : (g ^ k) y = 0⟩ := (mem_iInf_maxGenEigenspace_iff _ _ _).mp hy l
   have aux (f : End R M) (φ : R) (k : ℕ) (p : Submodule R M) (hp : MapsTo f p p) :
       MapsTo ((f - algebraMap R (Module.End R M) φ) ^ k) p p := by
-    rw [LinearMap.coe_pow]
+    rw [Module.End.coe_pow]
     exact MapsTo.iterate (fun m hm ↦ p.sub_mem (hp hm) (p.smul_mem _ hm)) k
   refine ⟨k, Submodule.mem_inf.mp ⟨?_, ?_⟩⟩
   · refine aux (f l) (χ₂ l) k (⨅ i, (f i).maxGenEigenspace (χ₁ i)) ?_ hx
@@ -157,7 +157,7 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo [FiniteDimensional K M]
     simp_rw [eq_top_iff] at hχ ⊢
     exact le_trans hχ <| le_iSup (fun χ : ι → K ↦ ⨅ i, (f i).maxGenEigenspace (χ i)) χ
   · replace hy : ∀ φ, finrank K ((f i).maxGenEigenspace φ) < n := fun φ ↦ by
-      simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ)
+      simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ).ne
     have hi (j : ι) (φ : K) :
         MapsTo (f j) ((f i).maxGenEigenspace φ) ((f i).maxGenEigenspace φ) := by
       exact h j i φ

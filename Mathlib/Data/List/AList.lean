@@ -98,7 +98,7 @@ instance : Inhabited (AList β) :=
 
 @[simp]
 theorem not_mem_empty (a : α) : a ∉ (∅ : AList β) :=
-  not_mem_nil a
+  not_mem_nil
 
 @[simp]
 theorem empty_entries : (∅ : AList β).entries = [] :=

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Integral.Lebesgue
 
 /-!
 # Marginals of multivariate functions
@@ -207,7 +206,7 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
     measurable_pi_iff.mpr <| fun i ↦ measurable_pi_apply (e i)
   induction s using Finset.induction generalizing x with
   | empty => simp
-  | insert hi ih =>
+  | insert _ _ hi ih =>
     rw [image_insert, lmarginal_insert _ (hf.comp h) (he.mem_finset_image.not.mpr hi),
       lmarginal_insert _ hf hi]
     simp_rw [ih, ← update_comp_eq_of_injective' x he]
@@ -217,7 +216,7 @@ theorem lmarginal_update_of_not_mem {i : δ}
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∘ (Function.update · i y) ∂μ) x := by
   induction s using Finset.induction generalizing x with
   | empty => simp
-  | @insert i' s hi' ih =>
+  | insert i' s hi' ih =>
     rw [lmarginal_insert _ hf hi', lmarginal_insert _ (hf.comp measurable_update_left) hi']
     have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
     simp_rw [update_comm hii', ih (mt Finset.mem_insert_of_mem hi)]

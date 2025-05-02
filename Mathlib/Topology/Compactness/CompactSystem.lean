@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Rémy Degenne. All rights reserved.
+Copyright (c) 2025 Peter Pfaffelhuber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
@@ -64,6 +64,25 @@ theorem iff_of_nempty (p : Set α → Prop) :
   · push_neg at h2
     exact h2
 
+/-- In this equivalent formulation for a compact system,
+note that we use `⋂ k < n, C k` rather than `⋂ k ≤ n, C k`. -/
+lemma iff_of_not_empty (p : Set α → Prop) : IsCompactSystem p ↔
+    ∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ n, ⋂ k < n, C k ≠ ∅) → ⋂ i, C i ≠ ∅ := by
+  simp_rw [← Set.nonempty_iff_ne_empty, iff_of_nempty]
+  refine ⟨fun h C hi h'↦ ?_, fun h C hi h' ↦ ?_⟩
+  · apply h C hi
+    exact fun n ↦ dissipate_eq ▸ (h' (n + 1))
+  · apply h C hi
+    intro n
+    simp_rw [Set.nonempty_iff_ne_empty] at h' ⊢
+    intro g
+    apply h' n
+    simp_rw [← subset_empty_iff, Dissipate] at g ⊢
+    apply le_trans _ g
+    intro x
+    rw [mem_iInter₂, mem_iInter₂]
+    exact fun h i hi ↦ h i hi.le
+
 theorem iff_directed (hpi : ∀ (s t : Set α), p s → p t → p (s ∩ t)) :
     (IsCompactSystem p) ↔
     (∀ (C : ℕ → Set α), ∀ (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
@@ -86,7 +105,6 @@ theorem iff_directed' (hpi : ∀ (s t : Set α), p s → p t → p (s ∩ t)) :
 /-- Any subset of a compact system is a compact system. -/
 theorem of_supset {C D : (Set α) → Prop} (hD : IsCompactSystem D) (hCD : ∀ s, C s → D s) :
   IsCompactSystem C := fun s hC hs ↦ hD s (fun i ↦ hCD (s i) (hC i)) hs
-
 
 section ClosedCompact
 

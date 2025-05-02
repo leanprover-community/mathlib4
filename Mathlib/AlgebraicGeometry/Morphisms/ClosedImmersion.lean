@@ -50,9 +50,6 @@ namespace IsClosedImmersion
 
 @[deprecated (since := "2024-10-24")]
 alias isClosedEmbedding := Scheme.Hom.isClosedEmbedding
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding := isClosedEmbedding
-
 lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
     @SurjectiveOnStalks := by
   ext X Y f
@@ -74,6 +71,9 @@ instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
   base_closed := Homeomorph.isClosedEmbedding <| TopCat.homeoOfIso (asIso f.base)
   surj_on_stalks := fun _ ↦ (ConcreteCategory.bijective_of_isIso _).2
+
+instance (priority := low) {X Y : Scheme.{u}} [IsEmpty X] (f : X ⟶ Y) : IsClosedImmersion f :=
+  .of_isPreimmersion _ (by rw [Set.range_eq_empty]; exact isClosed_empty)
 
 instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
   id_mem _ := inferInstance
@@ -162,7 +162,7 @@ lemma surjective_of_isClosed_range_of_injective [CompactSpace X]
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
   haveI (i : 𝒰.J) : IsAffine (𝒰.obj i) := Scheme.isAffine_affineCover X _
   apply Set.range_eq_univ.mp
-  apply hI ▸ (Scheme.zeroLocus_eq_top_iff_subset_nilradical _).mpr
+  apply hI ▸ (Scheme.zeroLocus_eq_univ_iff_subset_nilradical _).mpr
   intro s hs
   simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
     Submodule.mem_toAddSubmonoid, SetLike.mem_coe, mem_nilradical, ← IsNilpotent.map_iff hfinj]
@@ -247,7 +247,7 @@ theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
   haveI := IsClosedImmersion.of_comp_isClosedImmersion (affineTargetImageFactorization f)
     (affineTargetImageInclusion f)
   haveI := isIso_of_injective_of_isAffine (affineTargetImageFactorization_app_injective f)
-  exact ⟨isAffine_of_isIso (affineTargetImageFactorization f),
+  exact ⟨.of_isIso (affineTargetImageFactorization f),
     (ConcreteCategory.bijective_of_isIso
       ((affineTargetImageFactorization f).appTop)).surjective.comp <|
       affineTargetImageInclusion_app_surjective f⟩
@@ -339,11 +339,56 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
   suffices RingHom.ker φ.hom ≤ nilradical _ by
     rwa [nilradical_eq_zero, Submodule.zero_eq_bot, le_bot_iff,
       ← RingHom.injective_iff_ker_eq_bot] at this
-  refine (PrimeSpectrum.zeroLocus_eq_top_iff _).mp ?_
-  rw [← range_specComap_of_surjective _ _ hf, Set.top_eq_univ, Set.range_eq_univ]
-  have : Surjective (Spec.map (f.appTop)) :=
+  refine (PrimeSpectrum.zeroLocus_eq_univ_iff _).mp ?_
+  rw [← range_specComap_of_surjective _ _ hf, Set.range_eq_univ]
+  have : Surjective (Spec.map f.appTop) :=
     (MorphismProperty.arrow_mk_iso_iff @Surjective (arrowIsoSpecΓOfIsAffine f)).mp
     (inferInstanceAs (Surjective f))
   exact this.1
+
+section Section
+
+nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton Y]
+    (f : X ⟶ Y) (g : Y ⟶ X) (hg : g ≫ f = 𝟙 Y) :
+    IsClosedImmersion g := by
+  wlog hX : ∃ R, X = Spec R
+  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) X.affineCover]
+    intro i
+    by_cases hxU : Set.range g.base ⊆ (X.affineCover.map i).opensRange
+    · rw [Scheme.Cover.pullbackHom,
+        ← (IsOpenImmersion.isPullback_lift_id _ _ hxU).flip.isoPullback_inv_snd,
+        MorphismProperty.cancel_left_of_respectsIso @IsClosedImmersion]
+      refine this (X.affineCover.map i ≫ f) _ ?_ ⟨_, rfl⟩
+      rw [IsOpenImmersion.lift_fac_assoc, hg]
+    · have : IsEmpty ((X.affineCover.pullbackCover g).obj i) := by
+        apply Scheme.isEmpty_pullback
+        rw [← Set.subset_compl_iff_disjoint_left]
+        rintro _ hx ⟨x, rfl⟩
+        apply hxU
+        rintro _ ⟨y, rfl⟩
+        exact Subsingleton.elim x y ▸ hx
+      infer_instance
+  obtain ⟨R, rfl⟩ := hX
+  wlog hY : ∃ S, Y = Spec S
+  · have inst := (Scheme.isoSpec Y).inv.homeomorph.injective.subsingleton
+    rw [← MorphismProperty.cancel_left_of_respectsIso @IsClosedImmersion (Scheme.isoSpec Y).inv]
+    exact this R (f ≫ (Scheme.isoSpec Y).hom) ((Scheme.isoSpec Y).inv ≫ g)
+      (by simp [reassoc_of% hg]) ⟨_, rfl⟩
+  obtain ⟨S, rfl⟩ := hY
+  obtain ⟨φ, rfl⟩ := Spec.map_surjective f
+  obtain ⟨ψ, rfl⟩ := Spec.map_surjective g
+  rw [← Spec.map_comp, ← Spec.map_id, Spec.map_injective.eq_iff] at hg
+  apply IsClosedImmersion.spec_of_surjective
+  apply Function.LeftInverse.surjective (g := φ)
+  exact fun x ↦ congr($hg.1 x)
+
+instance {X Y : Scheme.{u}} [Subsingleton X] (f : Retract X Y) : IsClosedImmersion f.i :=
+  isClosedImmersion_of_comp_eq_id _ _ f.retract
+
+instance (priority := low) {X Y : Scheme.{u}} [Subsingleton Y] [X.Over Y] (f : Y ⟶ X) [f.IsOver Y] :
+    IsClosedImmersion f :=
+  isClosedImmersion_of_comp_eq_id (X ↘ Y) f (by simp)
+
+end Section
 
 end AlgebraicGeometry

@@ -56,6 +56,7 @@ private theorem sumlocc {m : ℕ} (n : ℕ) :
   filter_upwards [Ico_ae_eq_Icc] with t h ht
   rw [Nat.floor_eq_on_Ico _ _ (h.mpr ht)]
 
+open scoped Interval in
 private theorem integralmulsum (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
     (hf_int : IntegrableOn (deriv f) (Set.Icc a b)) (t₁ t₂ : ℝ) (n : ℕ) (h : t₁ ≤ t₂)
     (h₁ : n ≤ t₁) (h₂ : t₂ ≤ n + 1) (h₃ : a ≤ t₁) (h₄ : t₂ ≤ b) :
@@ -64,7 +65,8 @@ private theorem integralmulsum (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableA
   have h_inc₁ : Ι t₁ t₂ ⊆ Set.Icc n (n + 1) :=
     Set.uIoc_of_le h ▸ Set.Ioc_subset_Icc_self.trans <| Set.Icc_subset_Icc h₁ h₂
   have h_inc₂ : Set.uIcc t₁ t₂ ⊆ Set.Icc a b := Set.uIcc_of_le h ▸ Set.Icc_subset_Icc h₃ h₄
-  rw [← integral_deriv_eq_sub (fun t ht ↦ hf_diff t (h_inc₂ ht)), ← integral_mul_const]
+  rw [← integral_deriv_eq_sub (fun t ht ↦ hf_diff t (h_inc₂ ht)),
+      ← intervalIntegral.integral_mul_const]
   · refine integral_congr_ae ?_
     filter_upwards [sumlocc c n] with t h h'
     rw [h (h_inc₁ h')]
@@ -187,7 +189,7 @@ theorem sum_mul_eq_sub_integral_mul {b : ℝ} (hb : 0 ≤ b)
     ∑ k ∈ Icc 0 ⌊b⌋₊, f k * c k =
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in Set.Ioc 0 b, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
   nth_rewrite 1 [Icc_eq_cons_Ioc (Nat.zero_le _)]
-  rw [sum_cons, ← Nat.floor_zero (α := ℝ), sum_mul_eq_sub_sub_integral_mul c le_rfl hb hf_diff
+  rw [sum_cons, ← Nat.floor_zero (R := ℝ), sum_mul_eq_sub_sub_integral_mul c le_rfl hb hf_diff
     hf_int, Nat.floor_zero, Nat.cast_zero, Icc_self, sum_singleton]
   ring
 
@@ -212,7 +214,7 @@ theorem sum_mul_eq_sub_integral_mul₀ (hc : c 0 = 0) (b : ℝ)
   · have : 1 ≤ ⌊b⌋₊ := (Nat.one_le_floor_iff _).mpr hb
     nth_rewrite 1 [Icc_eq_cons_Ioc (Nat.zero_le _), sum_cons, ← Nat.Icc_succ_left,
       Icc_eq_cons_Ioc (by omega), sum_cons]
-    rw [Nat.succ_eq_add_one, zero_add, ← Nat.floor_one (α := ℝ),
+    rw [Nat.succ_eq_add_one, zero_add, ← Nat.floor_one (R := ℝ),
       sum_mul_eq_sub_sub_integral_mul c zero_le_one hb hf_diff hf_int, Nat.floor_one, Nat.cast_one,
       Icc_eq_cons_Ioc zero_le_one, sum_cons, show 1 = 0 + 1 by rfl, Nat.Ioc_succ_singleton,
       zero_add, sum_singleton, hc, mul_zero, zero_add]

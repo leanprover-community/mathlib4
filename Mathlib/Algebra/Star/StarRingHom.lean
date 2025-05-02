@@ -383,7 +383,7 @@ theorem refl_symm : (StarRingEquiv.refl : A ≃⋆+* A).symm = StarRingEquiv.ref
 
 /-- Transitivity of `StarRingEquiv`. -/
 @[trans]
-def trans (e₁ : A≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
+def trans (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
   { e₁.toRingEquiv.trans e₂.toRingEquiv with
     map_star' := fun a =>
       show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by

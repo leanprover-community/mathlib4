@@ -136,7 +136,7 @@ theorem Prime.not_perfect (h : Prime p) : ¬ Perfect p := by
   exact not_imp_not.mpr (Perfect.pseudoperfect)
 
 /-- Any natural number power of a prime is deficient -/
-theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
+theorem Prime.deficient_pow (h : Prime n) : Deficient (n ^ m) := by
   rcases Nat.eq_zero_or_pos m with (rfl | _)
   · simpa using deficient_one
   · have h1 : (n ^ m).properDivisors = image (n ^ ·) (range m) := by
@@ -154,7 +154,7 @@ theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
     have h2 : ∑ i ∈ image (fun x => n ^ x) (range m), i = ∑ i ∈ range m, n^i := by
       rw [Finset.sum_image]
       rintro x _ y _
-      apply pow_injective_of_not_isUnit h.not_unit <| Prime.ne_zero h
+      apply pow_injective_of_not_isUnit h.not_isUnit <| Prime.ne_zero h
     rw [Deficient, h1, h2]
     calc
       ∑ i ∈ range m, n ^ i

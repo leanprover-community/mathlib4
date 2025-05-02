@@ -25,7 +25,7 @@ that is solvable by radicals has a solvable Galois group.
 
 noncomputable section
 
-open Polynomial IntermediateField
+open Polynomial
 
 section AbelRuffini
 
@@ -295,6 +295,8 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
       rw [sub_comp, X_comp, C_comp]
       exact gal_X_pow_sub_C_isSolvable n q
 
+open IntermediateField
+
 /-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
 theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (hα : P α) (hβ : P β) : P γ := by
   let p := minpoly F α
@@ -318,8 +320,8 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.
     apply Subtype.val_injective
-    -- This used to be `simp`, but we need `erw` and `simp` after https://github.com/leanprover/lean4/pull/2644
-    erw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
+    dsimp only [← coe_type_toSubalgebra]
+    rw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
     simp
   rw [P, key]
   refine gal_isSolvable_of_splits ⟨Normal.splits ?_ (f ⟨γ, hγ⟩)⟩ (gal_mul_isSolvable hα hβ)

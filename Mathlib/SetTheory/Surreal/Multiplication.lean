@@ -150,7 +150,7 @@ lemma P1_of_lt (h₁ : P3 x₃ x₂ y₂ y₃) (h₂ : P3 x₁ x₃ y₂ y₁) :
   convert add_lt_add h₁ h₂ using 1 <;> abel
 
 /-- The type of lists of arguments for P1, P2, and P4. -/
-inductive Args : Type (u+1)
+inductive Args : Type (u + 1)
   | P1 (x y : PGame.{u}) : Args
   | P24 (x₁ x₂ y : PGame.{u}) : Args
 
@@ -503,8 +503,8 @@ namespace Surreal
 
 open SetTheory.PGame.Equiv
 
-noncomputable instance : LinearOrderedCommRing Surreal where
-  __ := Surreal.orderedAddCommGroup
+instance : CommRing Surreal where
+  __ := Surreal.addCommGroup
   mul := Surreal.lift₂ (fun x y ox oy ↦ ⟦⟨x * y, ox.mul oy⟩⟧)
     (fun ox₁ oy₁ ox₂ oy₂ hx hy ↦ Quotient.sound <| mul_congr ox₁ ox₂ oy₁ oy₂ hx hy)
   mul_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact Quotient.sound (mul_assoc_equiv _ _ _)
@@ -514,19 +514,16 @@ noncomputable instance : LinearOrderedCommRing Surreal where
   left_distrib := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact Quotient.sound (left_distrib_equiv _ _ _)
   right_distrib := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact Quotient.sound (right_distrib_equiv _ _ _)
   mul_comm := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound (mul_comm_equiv _ _)
-  le := lift₂ (fun x y _ _ ↦ x ≤ y) (fun _ _ _ _ hx hy ↦ propext <| le_congr hx hy)
-  lt := lift₂ (fun x y _ _ ↦ x < y) (fun _ _ _ _ hx hy ↦ propext <| lt_congr hx hy)
-  le_refl := by rintro ⟨_⟩; apply @le_rfl PGame
-  le_trans := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; apply @le_trans PGame
-  lt_iff_le_not_le := by rintro ⟨_⟩ ⟨_⟩; exact lt_iff_le_not_le
-  le_antisymm := by rintro ⟨_⟩ ⟨_⟩ h₁ h₂; exact Quotient.sound ⟨h₁, h₂⟩
-  add_le_add_left := by rintro ⟨_⟩ ⟨_⟩ hx ⟨_⟩; exact add_le_add_left hx _
-  zero_le_one := PGame.zero_lt_one.le
   zero_mul := by rintro ⟨_⟩; exact Quotient.sound (zero_mul_equiv _)
   mul_zero := by rintro ⟨_⟩; exact Quotient.sound (mul_zero_equiv _)
+
+instance : ZeroLEOneClass Surreal where
+  zero_le_one := PGame.zero_lt_one.le
+
+instance : Nontrivial Surreal where
   exists_pair_ne := ⟨0, 1, ne_of_lt PGame.zero_lt_one⟩
-  le_total := by rintro ⟨x⟩ ⟨y⟩; exact (le_or_gf x.1 y.1).imp id (fun h ↦ h.le y.2 x.2)
-  mul_pos := by rintro ⟨x⟩ ⟨y⟩; exact x.2.mul_pos y.2
-  decidableLE := Classical.decRel _
+
+instance : IsStrictOrderedRing Surreal :=
+  .of_mul_pos <| by rintro ⟨x⟩ ⟨y⟩; exact x.2.mul_pos y.2
 
 end Surreal
