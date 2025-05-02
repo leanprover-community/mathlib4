@@ -319,6 +319,13 @@ lemma isIso_iff_of_hasLeftResolutions [Φ.HasLeftResolutions] {F G : D₂ ⥤ H}
 
 end
 
+lemma hasRightResolutions_of_arrow [Φ.arrow.HasRightResolutions] :
+    Φ.HasRightResolutions := fun X₂ => by
+  let R : Φ.arrow.RightResolution (Arrow.mk (𝟙 X₂)) := Classical.arbitrary _
+  exact
+   ⟨{ w := R.w.left
+      hw := R.hw.1 } ⟩
+
 end LocalizerMorphism
 
 end CategoryTheory

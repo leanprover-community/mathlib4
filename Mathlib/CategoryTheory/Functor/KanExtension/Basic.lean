@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+--import Mathlib.CategoryTheory.Comma.Extra
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
@@ -36,7 +37,8 @@ open Category Limits
 
 namespace Functor
 
-variable {C C' H D D' : Type*} [Category C] [Category C'] [Category H] [Category D] [Category D']
+variable {C C' D D' H H' : Type*} [Category C] [Category D] [Category H] [Category H']
+  [Category D'] [Category C']
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
 `F' : H ⥤ D` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
@@ -498,6 +500,41 @@ end
 
 section
 
+variable (L : C ⥤ H) (F : C ⥤ D)
+  (F' : H ⥤ D) (α : F ⟶ L ⋙ F')
+  (G : D ⥤ D') [IsEquivalence G]
+
+@[simps!]
+def LeftExtension.postcomp₂ : LeftExtension L F ⥤ LeftExtension L (F ⋙ G) :=
+  StructuredArrow.map₂ (F := (whiskeringRight H D D').obj G)
+    (G := (whiskeringRight C D D').obj G) (𝟙 _) (𝟙 _)
+
+noncomputable instance : IsEquivalence (LeftExtension.postcomp₂ L F G) := by
+  apply StructuredArrow.isEquivalenceMap₂
+
+noncomputable def LeftExtension.isUniversalPostcompEquiv (e : LeftExtension L F) :
+    e.IsUniversal ≃ ((LeftExtension.postcomp₂ L F G).obj e).IsUniversal := by
+  apply Limits.IsInitial.isInitialIffObj (LeftExtension.postcomp₂ L F G)
+
+variable {L F}
+
+lemma isLeftKanExtension_iff_postcomp₂ :
+    F'.IsLeftKanExtension α ↔
+      (F' ⋙ G).IsLeftKanExtension (whiskerRight α G ≫ (Functor.associator _ _ _).hom) := by
+  let e := LeftExtension.mk _ α
+  let e' := LeftExtension.mk _ (whiskerRight α G ≫ (Functor.associator _ _ _).hom)
+  have : e.IsUniversal ≃ e'.IsUniversal :=
+    (LeftExtension.isUniversalPostcompEquiv L F G e).trans
+    (IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _)))
+  constructor
+  · intro
+    exact ⟨⟨this (isUniversalOfIsLeftKanExtension _ _)⟩⟩
+  · intro
+    exact ⟨⟨this.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
+
+end
+
+section
 variable {L : C ⥤ D} {F₁ F₂ : C ⥤ H}
 
 /-- When two left extensions `α₁ : LeftExtension L F₁` and `α₂ : LeftExtension L F₂`
@@ -538,6 +575,70 @@ lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : L ⋙ F
     F₁'.IsRightKanExtension α₁ ↔ F₂'.IsRightKanExtension α₂ := by
   let eq := RightExtension.isUniversalEquivOfIso₂ (RightExtension.mk _ α₁)
     (RightExtension.mk _ α₂) e e' h
+  constructor
+  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
+  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
+
+end
+
+section
+
+variable {L₁ L₂ : C ⥤ H} {F₁ F₂ : C ⥤ D}
+
+/-- When two left extensions `α₁ : RightExtension L₁ F₁` and `α₂ : RightExtension L₂ F₂`
+are essentially the same via isomorphism of functors `F₁ ≅ F₂` and `L₁ ≅ L₂`,
+then `α₁` is universal iff `α₂` is. -/
+noncomputable def LeftExtension.isUniversalEquivOfIso₃
+    (α₁ : LeftExtension L₁ F₁) (α₂ : LeftExtension L₂ F₂)
+    (e : F₁ ≅ F₂) (e' : α₁.right ≅ α₂.right) (e'' : L₁ ≅ L₂)
+    (h : α₁.hom ≫ whiskerLeft L₁ e'.hom = e.hom ≫ α₂.hom ≫ whiskerRight e''.inv _) :
+    α₁.IsUniversal ≃ α₂.IsUniversal := by
+  apply (LeftExtension.isUniversalEquivOfIso₂ α₁
+    (LeftExtension.mk _ (e.inv ≫ α₁.hom ≫ whiskerLeft L₁ e'.hom)) e e' (by aesop_cat)).trans
+  apply (IsInitial.isInitialIffObj (leftExtensionEquivalenceOfIso₁ e'' F₂).functor _).trans
+  refine IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _) ?_)
+  dsimp [leftExtensionEquivalenceOfIso₁]
+  simp only [h, Iso.inv_hom_id_assoc, assoc, comp_id]
+  ext X
+  dsimp
+  rw [← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id, comp_id]
+
+lemma isLeftKanExtension_iff_of_iso₃
+    {F₁' F₂' : H ⥤ D} (α₁ : F₁ ⟶ L₁ ⋙ F₁') (α₂ : F₂ ⟶ L₂ ⋙ F₂')
+    (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') (e'' : L₁ ≅ L₂)
+    (h : α₁ ≫ whiskerLeft L₁ e'.hom = e.hom ≫ α₂ ≫ whiskerRight e''.inv _) :
+    F₁'.IsLeftKanExtension α₁ ↔ F₂'.IsLeftKanExtension α₂ := by
+  let eq := LeftExtension.isUniversalEquivOfIso₃ (LeftExtension.mk _ α₁)
+    (LeftExtension.mk _ α₂) e e' e'' h
+  constructor
+  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsLeftKanExtension F₁' α₁)⟩⟩
+  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsLeftKanExtension F₂' α₂)⟩⟩
+
+/-- When two right extensions `α₁ : RightExtension L₁ F₁` and `α₂ : RightExtension L₂ F₂`
+are essentially the same via isomorphism of functors `F₁ ≅ F₂` and `L₁ ≅ L₂`,
+then `α₁` is universal iff `α₂` is. -/
+noncomputable def RightExtension.isUniversalEquivOfIso₃
+    (α₁ : RightExtension L₁ F₁) (α₂ : RightExtension L₂ F₂)
+    (e : F₁ ≅ F₂) (e' : α₁.left ≅ α₂.left) (e'' : L₁ ≅ L₂)
+    (h : whiskerLeft L₂ e'.hom ≫ α₂.hom = whiskerRight e''.inv _ ≫ α₁.hom ≫ e.hom) :
+    α₁.IsUniversal ≃ α₂.IsUniversal := by
+  apply (RightExtension.isUniversalEquivOfIso₂ α₁
+    (RightExtension.mk _ (whiskerLeft L₁ e'.inv ≫ α₁.hom ≫ e.hom)) e e' (by aesop_cat)).trans
+  apply (IsTerminal.isTerminalIffObj (rightExtensionEquivalenceOfIso₁ e'' F₂).functor _).trans
+  refine IsTerminal.equivOfIso (CostructuredArrow.isoMk (Iso.refl _) ?_)
+  dsimp [rightExtensionEquivalenceOfIso₁]
+  rw [id_comp, ← cancel_epi (whiskerLeft L₂ e'.hom), h]
+  ext X
+  dsimp
+  rw [NatTrans.naturality_assoc, Iso.hom_inv_id_app_assoc]
+
+lemma isRightKanExtension_iff_of_iso₃
+    {F₁' F₂' : H ⥤ D} (α₁ : L₁ ⋙ F₁' ⟶ F₁) (α₂ : L₂ ⋙ F₂' ⟶ F₂)
+    (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') (e'' : L₁ ≅ L₂)
+    (h : whiskerLeft L₂ e'.hom ≫ α₂ = whiskerRight e''.inv _ ≫ α₁ ≫ e.hom) :
+    F₁'.IsRightKanExtension α₁ ↔ F₂'.IsRightKanExtension α₂ := by
+  let eq := RightExtension.isUniversalEquivOfIso₃ (RightExtension.mk _ α₁)
+    (RightExtension.mk _ α₂) e e' e'' h
   constructor
   · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
   · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
@@ -645,5 +746,21 @@ lemma limitIsoOfIsRightKanExtension_hom_π (i : C) :
 end Limit
 
 end Functor
+
+namespace Equivalence
+
+variable {C D : Type*} [Category C] [Category D] (e : C ≌ D)
+
+def whiskeringLeft (E : Type _) [Category E] : (D ⥤ E) ≌ (C ⥤ E) where
+  functor := (CategoryTheory.whiskeringLeft C D E).obj e.functor
+  inverse := (CategoryTheory.whiskeringLeft D C E).obj e.inverse
+  unitIso := (CategoryTheory.whiskeringLeft D D E).mapIso e.counitIso.symm
+  counitIso := (CategoryTheory.whiskeringLeft C C E).mapIso e.unitIso.symm
+  functor_unitIso_comp F := by
+    ext Y
+    dsimp
+    rw [← F.map_id, ← F.map_comp, counitInv_functor_comp]
+
+end Equivalence
 
 end CategoryTheory

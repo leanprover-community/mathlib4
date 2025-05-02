@@ -27,6 +27,11 @@ theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
   · exact le_of_eq (Int.ofNat_sub h).symm
   · simp [le_of_not_ge h, ofNat_le]
 
+lemma eq_add_ofNat_of_le {m n : ℤ} (h : m ≤ n) :
+    ∃ (d : ℕ), n = m + d := by
+  obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ n - m by omega)
+  exact ⟨d, by omega⟩
+
 /-! ### `succ` and `pred` -/
 
 

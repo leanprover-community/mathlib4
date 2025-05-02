@@ -558,7 +558,7 @@ variable [HasCoproduct Z]
 instance : HasLimit (Discrete.functor Z).op := hasLimit_op_of_hasColimit (Discrete.functor Z)
 
 instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
-  hasLimitEquivalenceComp (Discrete.opposite α).symm
+  hasLimit_equivalence_comp (Discrete.opposite α).symm
 
 instance : HasProduct (op <| Z ·) := hasLimit_of_iso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
@@ -621,6 +621,7 @@ theorem opCoproductIsoProduct'_comp_self {c c' : Cofan Z} {f : Fan (op <| Z ·)}
   rfl
 
 variable (Z) in
+@[reassoc]
 theorem opCoproductIsoProduct_inv_comp_ι [HasCoproduct Z] (b : α) :
     (opCoproductIsoProduct Z).inv ≫ (Sigma.ι Z b).op = Pi.π (op <| Z ·) b :=
   opCoproductIsoProduct'_inv_comp_inj _ _ b
@@ -640,6 +641,27 @@ theorem desc_op_comp_opCoproductIsoProduct_hom [HasCoproduct Z] {X : C} (π : (a
     (productIsProduct (op <| Z ·)) (Cofan.mk _ π)
   · ext; simp [Sigma.desc, coproductIsCoproduct]
   · ext; simp [Pi.lift, productIsProduct]
+
+@[reassoc (attr := simp)]
+lemma opCoproductIsoProduct_hom_comm_π [HasCoproduct Z] (b : α) :
+    (opCoproductIsoProduct Z).hom ≫ Pi.π _ b = (Sigma.ι Z b).op := by
+  rw [← cancel_epi (opCoproductIsoProduct Z).inv, Iso.inv_hom_id_assoc,
+    opCoproductIsoProduct_inv_comp_ι]
+
+
+lemma opCoproductIsoProduct_inv_comp_map {Z' : α → C} [HasCoproduct Z] [HasCoproduct Z']
+    (φ : ∀ a, Z' a ⟶ Z a) :
+  (opCoproductIsoProduct Z).inv ≫ (Sigma.map φ).op =
+    Pi.map (fun a => (φ a).op) ≫ (opCoproductIsoProduct Z').inv := Quiver.Hom.unop_inj (by
+  dsimp
+  ext j
+  rw [ι_colimMap_assoc, Discrete.natTrans_app]
+  apply Quiver.Hom.op_inj
+  conv_rhs =>
+    rw [← Category.assoc, op_comp, op_comp, Quiver.Hom.op_unop, Quiver.Hom.op_unop,
+      opCoproductIsoProduct_inv_comp_ι]
+  simp only [op_unop, op_comp, Quiver.Hom.op_unop, Category.assoc, limMap_π, Discrete.functor_obj,
+    Discrete.natTrans_app, opCoproductIsoProduct_inv_comp_ι_assoc])
 
 end OppositeCoproducts
 

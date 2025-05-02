@@ -49,7 +49,6 @@ not depend of the choice of the localization functors.
 * Define the product derivability structure and formalize derived functors of
   functors in several variables
 
-
 ## References
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 

@@ -602,6 +602,10 @@ instance {F : Cᵒᵖ ⥤ D} [IsEquivalence F] : IsEquivalence F.rightOp where
 
 instance {F : C ⥤ Dᵒᵖ} [IsEquivalence F] : IsEquivalence F.leftOp where
 
+instance {F : C ⥤ D} [EssSurj F] : EssSurj F.op where
+  mem_essImage Y := ⟨op (F.objPreimage Y.unop), ⟨(F.objObjPreimageIso Y.unop).symm.op⟩⟩
+
+
 end Functor
 
 end CategoryTheory

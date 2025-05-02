@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.Opposite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
@@ -20,13 +20,13 @@ universe v v' u u'
 
 namespace CategoryTheory
 
-open Limits ZeroObject
+open Limits ZeroObject Opposite
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 namespace ObjectProperty
 
-variable (P : ObjectProperty C)
+variable (P Q : ObjectProperty C)
 
 /-- Given `P : ObjectProperty C`, we say that `P.ContainsZero` if there exists
 a zero object for which `P` holds. When `P` is closed under isomorphisms,
@@ -66,6 +66,27 @@ instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms]
     (P.inverseImage F).ContainsZero where
   exists_zero :=
     ⟨0, isZero_zero D, P.prop_of_isZero (F.map_isZero (isZero_zero D))⟩
+
+instance [P.ContainsZero] : P.isoClosure.ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero
+    exact ⟨Z, hZ, P.le_isoClosure _ hP⟩
+
+instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms] [Q.ContainsZero] :
+    (P ⊓ Q).ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, hQ⟩ := Q.exists_prop_of_containsZero
+    exact ⟨Z, hZ, P.prop_of_isZero hZ, hQ⟩
+
+instance [P.ContainsZero] : P.op.ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, mem⟩ := P.exists_prop_of_containsZero
+    exact ⟨op Z, hZ.op, mem⟩
+
+instance (P : ObjectProperty Cᵒᵖ) [P.ContainsZero] : P.unop.ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, mem⟩ := P.exists_prop_of_containsZero
+    exact ⟨Z.unop, hZ.unop, mem⟩
 
 end ObjectProperty
 

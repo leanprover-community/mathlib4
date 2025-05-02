@@ -99,6 +99,10 @@ lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
   simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
     NatTrans.naturality, Preadditive.comp_add, Iso.inv_hom_id_app_assoc]
 
+omit [F.Additive] in
+lemma additive_iff_of_iso {G : C ⥤ D} (e : F ≅ G) : F.Additive ↔ G.Additive :=
+  ⟨fun _ => additive_of_iso e, fun _ => additive_of_iso e.symm⟩
+
 variable (F)
 
 lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
@@ -175,6 +179,96 @@ lemma additive_of_preserves_binary_products
   have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
   have := preservesBinaryBiproducts_of_preservesBinaryProducts F
   exact Functor.additive_of_preservesBinaryBiproducts F
+
+lemma additive_of_preserves_finite_products
+    [HasFiniteProducts C] [PreservesFiniteProducts F] : F.Additive :=
+  F.additive_of_preserves_binary_products
+
+section
+
+variable {J : Type _} [Fintype J] {X : J → C} (c : Fan X) (hc : IsLimit c)
+  [DecidableEq J]
+
+@[simps]
+def biconeOfLimitCone : Bicone X where
+  pt := c.pt
+  π j := c.proj j
+  ι j := by exact hc.lift (Fan.mk (X j) (fun i => if h : j = i then eqToHom (by rw [h]) else 0))
+  ι_π i j := by
+    erw [IsLimit.fac]
+    dsimp
+    congr
+
+def isBilimitBiconeOfLimitCone : (biconeOfLimitCone c hc).IsBilimit :=
+  isBilimitOfTotal _ (hc.hom_ext (fun ⟨j⟩ => by
+    rw [Preadditive.sum_comp, Category.id_comp, Finset.sum_eq_single j]
+    · change _ ≫ (biconeOfLimitCone c hc).π j = _
+      rw [Category.assoc, Bicone.ι_π, dif_pos rfl, eqToHom_refl, Category.comp_id]
+      rfl
+    · intro i _ hi
+      dsimp
+      simp only [Category.assoc, IsLimit.fac, Fan.mk_pt, Fan.mk_π_app, dif_neg hi, comp_zero]
+    · intro h
+      simp at h ))
+
+end
+
+section
+
+variable {J : Type _} [Fintype J] {X : J → C} (c : Cofan X) (hc : IsColimit c)
+  [DecidableEq J]
+
+@[simps]
+def biconeOfColimitCocone : Bicone X where
+  pt := c.pt
+  π j := hc.desc (Cofan.mk (X j) (fun i => if h : i = j then eqToHom (by rw [h]) else 0))
+  ι j := c.inj j
+  ι_π i j := by
+    erw [IsColimit.fac]
+    dsimp
+    congr
+
+def isBilimitBiconeOfColimitCocone : (biconeOfColimitCocone c hc).IsBilimit :=
+  isBilimitOfTotal _ (hc.hom_ext (fun ⟨j⟩ => by
+    erw [Preadditive.comp_sum, Category.comp_id, Finset.sum_eq_single j]
+    · simp
+      rfl
+    · intro i _ hi
+      simp [dif_neg hi.symm]
+    · intro h
+      simp at h))
+
+end
+
+instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
+    PreservesFiniteProducts F where
+  preserves _ :=
+    { preservesLimit := fun {K} => by
+        have : PreservesLimit (Discrete.functor (K.obj ∘ Discrete.mk)) F := by
+          refine ⟨fun {c : Fan _} hc => ?_⟩
+          let e : Discrete.functor (F.obj ∘ K.obj ∘ Discrete.mk) ≅
+              Discrete.functor (K.obj ∘ Discrete.mk) ⋙ F :=
+            Discrete.natIso (fun j => Iso.refl _)
+          refine ⟨(IsLimit.postcomposeInvEquiv e _).1
+            (IsLimit.ofIsoLimit
+              (isBilimitOfPreserves F (isBilimitBiconeOfLimitCone c hc)).isLimit
+                (Cones.ext (Iso.refl _)))⟩
+        exact preservesLimit_of_iso_diagram _ Discrete.natIsoFunctor.symm}
+
+instance (priority := 100) preservesFiniteCoproductsOfAdditive [Additive F] :
+    PreservesFiniteCoproducts F where
+  preserves n :=
+    { preservesColimit := fun {K} => by
+        have : PreservesColimit (Discrete.functor (K.obj ∘ Discrete.mk)) F := by
+          refine ⟨fun {c : Cofan _} hc => ?_⟩
+          let e : Discrete.functor (F.obj ∘ K.obj ∘ Discrete.mk) ≅
+              Discrete.functor (K.obj ∘ Discrete.mk) ⋙ F :=
+            Discrete.natIso (fun j => Iso.refl _)
+          refine ⟨(IsColimit.precomposeHomEquiv e _).1
+            (IsColimit.ofIsoColimit
+              (isBilimitOfPreserves F (isBilimitBiconeOfColimitCocone c hc)).isColimit
+                (Cocones.ext (Iso.refl _) (by aesop_cat)))⟩
+        exact preservesColimit_of_iso_diagram _ Discrete.natIsoFunctor.symm}
 
 end
 
@@ -289,6 +383,8 @@ end
 
 variable {C D}
 
+
+omit [HasZeroObject D] in
 @[simp]
 theorem AdditiveFunctor.ofLeftExact_obj_fst (F : C ⥤ₗ D) :
     ((AdditiveFunctor.ofLeftExact C D).obj F).obj = F.obj :=
@@ -299,11 +395,13 @@ theorem AdditiveFunctor.ofRightExact_obj_fst (F : C ⥤ᵣ D) :
     ((AdditiveFunctor.ofRightExact C D).obj F).obj = F.obj :=
   rfl
 
+omit [HasZeroObject D] in
 @[simp]
 theorem AdditiveFunctor.ofExact_obj_fst (F : C ⥤ₑ D) :
     ((AdditiveFunctor.ofExact C D).obj F).obj = F.obj :=
   rfl
 
+omit [HasZeroObject D] in
 @[simp]
 theorem AdditiveFunctor.ofLeftExact_map {F G : C ⥤ₗ D} (α : F ⟶ G) :
     (AdditiveFunctor.ofLeftExact C D).map α = α :=
@@ -314,6 +412,7 @@ theorem AdditiveFunctor.ofRightExact_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
     (AdditiveFunctor.ofRightExact C D).map α = α :=
   rfl
 
+omit [HasZeroObject D] in
 @[simp]
 theorem AdditiveFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
     (AdditiveFunctor.ofExact C D).map α = α :=

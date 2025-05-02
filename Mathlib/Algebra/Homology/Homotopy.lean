@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Tactic.Abel
+import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Chain homotopies

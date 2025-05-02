@@ -229,4 +229,16 @@ end IsTriangulated
 
 end Equivalence
 
+namespace Pretriangulated
+
+open Opposite
+
+instance : (opOpEquivalence C).IsTriangulated :=
+  Equivalence.IsTriangulated.mk'' _ (inferInstance : (opOp C).IsTriangulated)
+
+instance : (unopUnop C).IsTriangulated :=
+  (inferInstance : (opOpEquivalence C).functor.IsTriangulated)
+
+end Pretriangulated
+
 end CategoryTheory
