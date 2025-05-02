@@ -126,10 +126,12 @@ for message in messages:
             add_reaction('ready-to-merge', 'bors')
         elif 'delegated' == LABEL_STATUS:
             add_reaction('delegated', 'peace_sign')
-        elif 'maintainer-merge' == LABEL_STATUS:
-            add_reaction('maintainer-merge', 'hammer')
         elif LABEL_STATUS == 'labeled':
-            add_reaction('awaiting-author', 'writing')
+            if LABEL_NAME == 'awaiting-author':
+                add_reaction('awaiting-author', 'writing')
+            elif LABEL_NAME == 'maintainer-merge':
+                add_reaction('maintainer-merge', 'hammer')
+
         elif LABEL_STATUS == 'closed':
             add_reaction('closed-pr', 'closed-pr')
         elif LABEL_STATUS == 'unlabeled':
