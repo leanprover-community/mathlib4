@@ -712,6 +712,20 @@ theorem piCongrRight_symm_apply (n : (i : ι) → N i) (i : ι) :
 
 end piCongrRight
 
+section DistribMulAction
+
+variable {G : Type*} [Group G] [DistribMulAction G M₁] [ContinuousConstSMul G M₁]
+  [SMulCommClass G R₁ M₁]
+
+/-- Scalar multiplication by a group element as a continuous linear equivalence. -/
+@[simps! apply_toLinearEquiv apply_apply]
+def smulLeft : G →* M₁ ≃L[R₁] M₁ where
+  toFun g := ⟨DistribMulAction.toModuleAut _ _ g, continuous_const_smul _, continuous_const_smul _⟩
+  map_mul' _ _ := toLinearEquiv_injective <| map_mul (DistribMulAction.toModuleAut _ _) _ _
+  map_one' := toLinearEquiv_injective <| map_one <| DistribMulAction.toModuleAut _ _
+
+end DistribMulAction
+
 end AddCommMonoid
 
 section AddCommGroup

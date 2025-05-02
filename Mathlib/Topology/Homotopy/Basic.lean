@@ -145,6 +145,9 @@ def curry (F : Homotopy f₀ f₁) : C(I, C(X, Y)) :=
 theorem curry_apply (F : Homotopy f₀ f₁) (t : I) (x : X) : F.curry t x = F (t, x) :=
   rfl
 
+@[simp] theorem curry_zero (F : Homotopy f₀ f₁) : F.curry 0 = f₀ := by ext; simp
+@[simp] theorem curry_one (F : Homotopy f₀ f₁) : F.curry 1 = f₁ := by ext; simp
+
 /-- Continuously extending a curried homotopy to a function from `ℝ` to `C(X, Y)`.
 -/
 def extend (F : Homotopy f₀ f₁) : C(ℝ, C(X, Y)) :=

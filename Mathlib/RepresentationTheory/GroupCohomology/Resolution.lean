@@ -569,7 +569,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   · rw [ModuleCat.hom_comp]
     congr
     · ext x
-      dsimp (config := { unfoldPartialApp := true }) [HomotopyEquiv.ofIso,
+      dsimp +unfoldPartialApp [HomotopyEquiv.ofIso,
         Finsupp.LinearEquiv.finsuppUnique]
       rw [@Unique.eq_default _ Types.terminalIso.toEquiv.unique x]
       simp

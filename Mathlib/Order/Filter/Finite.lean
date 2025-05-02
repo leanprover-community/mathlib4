@@ -226,7 +226,7 @@ theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f)
   rcases hs with ⟨is, his⟩
   induction is using Finset.induction_on generalizing s with
   | empty => rwa [mem_top.1 his]
-  | insert _ ih =>
+  | insert _ _ _ ih =>
     rw [Finset.inf_insert, mem_inf_iff] at his
     rcases his with ⟨s₁, hs₁, s₂, hs₂, rfl⟩
     exact ins hs₁ (ih hs₂)
