@@ -62,9 +62,7 @@ theorem ContinuousLinearMap.norm_map_tail_le
     ‖f (m 0) (tail m)‖ ≤ ‖f (m 0)‖ * ∏ i, ‖(tail m) i‖ := (f (m 0)).le_opNorm _
     _ ≤ ‖f‖ * ‖m 0‖ * ∏ i, ‖tail m i‖ := mul_le_mul_of_nonneg_right (f.le_opNorm _) <| by positivity
     _ = ‖f‖ * (‖m 0‖ * ∏ i, ‖(tail m) i‖) := by ring
-    _ = ‖f‖ * ∏ i, ‖m i‖ := by
-      rw [prod_univ_succ]
-      rfl
+    _ = ‖f‖ * ∏ i, ‖m i‖ := by simp only [prod_univ_succ, Fin.tail]
 
 theorem ContinuousMultilinearMap.norm_map_init_le
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G))
@@ -74,9 +72,7 @@ theorem ContinuousMultilinearMap.norm_map_init_le
     _ ≤ (‖f‖ * ∏ i, ‖(init m) i‖) * ‖m (last n)‖ :=
       (mul_le_mul_of_nonneg_right (f.le_opNorm _) (norm_nonneg _))
     _ = ‖f‖ * ((∏ i, ‖(init m) i‖) * ‖m (last n)‖) := mul_assoc _ _ _
-    _ = ‖f‖ * ∏ i, ‖m i‖ := by
-      rw [prod_univ_castSucc]
-      rfl
+    _ = ‖f‖ * ∏ i, ‖m i‖ := by simp only [prod_univ_castSucc, Fin.init]
 
 theorem ContinuousMultilinearMap.norm_map_cons_le (f : ContinuousMultilinearMap 𝕜 Ei G) (x : Ei 0)
     (m : ∀ i : Fin n, Ei i.succ) : ‖f (cons x m)‖ ≤ ‖f‖ * ‖x‖ * ∏ i, ‖m i‖ :=
@@ -174,7 +170,7 @@ def continuousMultilinearCurryLeftEquiv :
       left_inv := ContinuousMultilinearMap.uncurry_curryLeft
       right_inv := ContinuousLinearMap.curry_uncurryLeft }
     (fun f => by
-      simp only [LinearEquiv.coe_mk]
+      simp only [LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
       exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
     (fun f => by
       simp only [LinearEquiv.coe_symm_mk]
@@ -288,7 +284,7 @@ def continuousMultilinearCurryRightEquiv :
       left_inv := ContinuousMultilinearMap.uncurry_curryRight
       right_inv := ContinuousMultilinearMap.curry_uncurryRight }
     (fun f => by
-      simp only [curryRight, LinearEquiv.coe_mk]
+      simp only [curryRight, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
       exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
     (fun f => by
       simp only [uncurryRight, LinearEquiv.coe_symm_mk]
