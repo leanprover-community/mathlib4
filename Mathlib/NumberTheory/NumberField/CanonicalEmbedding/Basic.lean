@@ -379,6 +379,7 @@ theorem exists_normAtPlace_ne_zero_iff {x : mixedSpace K} :
     (∃ w, normAtPlace w x ≠ 0) ↔ x ≠ 0 := by
   rw [ne_eq, ← forall_normAtPlace_eq_zero_iff, not_forall]
 
+@[fun_prop]
 theorem continuous_normAtPlace (w : InfinitePlace K) :
     Continuous (normAtPlace w) := by
   simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
@@ -465,6 +466,7 @@ theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbeddi
     map_eq_zero]
 
 variable (K) in
+@[fun_prop]
 protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpace K) → ℝ) := by
   refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
   simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
@@ -1059,7 +1061,7 @@ theorem iUnion_negAt_plusPart_union :
   rw [Set.mem_union, Set.mem_inter_iff, Set.mem_iUnion, Set.mem_iUnion]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro (⟨s, ⟨x, ⟨hx, _⟩, rfl⟩⟩ | h)
-    · simp_rw (config := {singlePass := true}) [hA, negAt_apply_norm_isReal, negAt_apply_snd]
+    · simp_rw +singlePass [hA, negAt_apply_norm_isReal, negAt_apply_snd]
       rwa [← hA]
     · exact h.left
   · obtain hx | hx := exists_or_forall_not (fun w ↦ x.1 w = 0)
@@ -1201,6 +1203,11 @@ abbrev normAtAllPlaces (x : mixedSpace K) : realSpace K :=
 @[simp]
 theorem normAtAllPlaces_apply (x : mixedSpace K) (w : InfinitePlace K) :
     normAtAllPlaces x w = normAtPlace w x := rfl
+
+
+variable (K) in
+theorem continuous_normAtAllPlaces :
+    Continuous (normAtAllPlaces : mixedSpace K → realSpace K) := by fun_prop
 
 theorem normAtAllPlaces_nonneg (x : mixedSpace K) (w : InfinitePlace K) :
     0 ≤ normAtAllPlaces x w := normAtPlace_nonneg _ _

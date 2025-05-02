@@ -86,24 +86,7 @@ theorem cof_eq {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : 
     Order.cof r = Order.cof s :=
   lift_inj.1 (f.cof_eq_lift)
 
-@[deprecated cof_eq (since := "2024-10-22")]
-theorem cof_le {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
-    Order.cof r ≤ Order.cof s :=
-  f.cof_eq.le
-
 end RelIso
-
-/-- Cofinality of a strict order `≺`. This is the smallest cardinality of a set `S : Set α` such
-that `∀ a, ∃ b ∈ S, ¬ b ≺ a`. -/
-@[deprecated Order.cof (since := "2024-10-22")]
-def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
-  Order.cof (swap rᶜ)
-
-/-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
-@[deprecated "No deprecation message was provided." (since := "2024-10-22")]
-theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
-    { c | ∃ S : Set α, Unbounded r S ∧ #S = c }.Nonempty :=
-  @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
 
 /-! ### Cofinality of ordinals -/
 
@@ -318,20 +301,6 @@ theorem nfpFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : �
 theorem nfpFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hc' : #ι < cof c)
     (hf : ∀ (i), ∀ b < c, f i b < c) {a} : a < c → nfpFamily.{u, u} f a < c :=
   nfpFamily_lt_ord_lift hc (by rwa [(#ι).lift_id]) hf
-
-set_option linter.deprecated false in
-@[deprecated nfpFamily_lt_ord_lift (since := "2024-10-14")]
-theorem nfpBFamily_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
-    (hc' : Cardinal.lift.{v, u} o.card < cof c) (hf : ∀ (i hi), ∀ b < c, f i hi b < c) {a} :
-    a < c → nfpBFamily.{u, v} o f a < c :=
-  nfpFamily_lt_ord_lift hc (by rwa [mk_toType]) fun _ => hf _ _
-
-set_option linter.deprecated false in
-@[deprecated nfpFamily_lt_ord (since := "2024-10-14")]
-theorem nfpBFamily_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
-    (hc' : o.card < cof c) (hf : ∀ (i hi), ∀ b < c, f i hi b < c) {a} :
-    a < c → nfpBFamily.{u, u} o f a < c :=
-  nfpBFamily_lt_ord_lift hc (by rwa [o.card.lift_id]) hf
 
 theorem nfp_lt_ord {f : Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hf : ∀ i < c, f i < c) {a} :
     a < c → nfp f a < c :=
@@ -632,21 +601,6 @@ theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = 
 @[simp]
 theorem cof_omega {o : Ordinal} (ho : o.IsLimit) : (ω_ o).cof = o.cof :=
   isNormal_omega.cof_eq ho
-
-set_option linter.deprecated false in
-@[deprecated cof_preOmega (since := "2024-10-22")]
-theorem preAleph_cof {o : Ordinal} (ho : o.IsLimit) : (preAleph o).ord.cof = o.cof :=
-  aleph'_isNormal.cof_eq ho
-
-set_option linter.deprecated false in
-@[deprecated cof_preOmega (since := "2024-10-22")]
-theorem aleph'_cof {o : Ordinal} (ho : o.IsLimit) : (aleph' o).ord.cof = o.cof :=
-  aleph'_isNormal.cof_eq ho
-
-set_option linter.deprecated false in
-@[deprecated cof_omega (since := "2024-10-22")]
-theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (ℵ_  o).ord.cof = o.cof :=
-  aleph_isNormal.cof_eq ho
 
 @[simp]
 theorem cof_omega0 : cof ω = ℵ₀ :=

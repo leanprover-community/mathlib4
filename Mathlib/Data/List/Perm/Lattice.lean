@@ -88,7 +88,7 @@ theorem Perm.drop_inter {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup
     rw [inter_reverse]
     apply Perm.take_inter _ _ h'
     apply (reverse_perm _).trans; assumption
-  · have : drop n xs = [] := by
+  · have : xs.drop n = [] := by
       apply eq_nil_of_length_eq_zero
       rw [length_drop, Nat.sub_eq_zero_iff_le]
       apply le_of_not_ge h''

@@ -94,7 +94,7 @@ measure. (This is a nontrivial result, following from the covering property of V
 theorem ae_eventually_measure_pos [SecondCountableTopology α] :
     ∀ᵐ x ∂μ, ∀ᶠ a in v.filterAt x, 0 < μ a := by
   set s := {x | ¬∀ᶠ a in v.filterAt x, 0 < μ a} with hs
-  simp (config := { zeta := false }) only [not_lt, not_eventually, nonpos_iff_eq_zero] at hs
+  simp -zeta only [not_lt, not_eventually, nonpos_iff_eq_zero] at hs
   change μ s = 0
   let f : α → Set (Set α) := fun _ => {a | μ a = 0}
   have h : v.FineSubfamilyOn f s := by
@@ -897,7 +897,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
     exact (h''a.sub (integrableOn_const.2 (Or.inr h'a))).norm
   dsimp [enorm]
   rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal (by positivity)]
-  simp only [coe_nnnorm, smul_eq_mul]
+  simp only [coe_nnnorm, smul_eq_mul, measureReal_def]
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `f` on `a` tends to `f x` as `a` shrinks to `x` along a Vitali family. -/

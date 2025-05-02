@@ -79,7 +79,7 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |R| :=
   calc
     range (circleMap c R) = c +ᵥ R • range fun θ : ℝ => exp (θ * I) := by
-      simp (config := { unfoldPartialApp := true }) only [← image_vadd, ← image_smul, ← range_comp,
+      simp +unfoldPartialApp only [← image_vadd, ← image_smul, ← range_comp,
         vadd_eq_add, circleMap, comp_def, real_smul]
     _ = sphere c |R| := by
       rw [range_exp_mul_I, smul_sphere R 0 zero_le_one]
@@ -221,7 +221,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
     CircleIntegrable f c R ↔ IntervalIntegrable (fun θ : ℝ =>
       deriv (circleMap c R) θ • f (circleMap c R θ)) volume 0 (2 * π) := by
   by_cases h₀ : R = 0
-  · simp (config := { unfoldPartialApp := true }) [h₀, const]
+  · simp +unfoldPartialApp [h₀, const]
   refine ⟨fun h => h.out, fun h => ?_⟩
   simp only [CircleIntegrable, intervalIntegrable_iff, deriv_circleMap] at h ⊢
   refine (h.norm.const_mul |R|⁻¹).mono' ?_ ?_
@@ -299,7 +299,7 @@ namespace circleIntegral
 
 @[simp]
 theorem integral_radius_zero (f : ℂ → E) (c : ℂ) : (∮ z in C(c, 0), f z) = 0 := by
-  simp (config := { unfoldPartialApp := true }) [circleIntegral, const]
+  simp +unfoldPartialApp [circleIntegral, const]
 
 theorem integral_congr {f g : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R) (h : EqOn f g (sphere c R)) :
     (∮ z in C(c, R), f z) = ∮ z in C(c, R), g z :=
@@ -586,7 +586,7 @@ theorem integral_sub_inv_of_mem_ball {c w : ℂ} {R : ℝ} (hw : w ∈ ball c R)
   simp only [div_eq_mul_inv, mul_pow, integral_const_mul, mul_assoc]
   rw [(integral_congr hR.le fun z hz => _).trans (H n hn), mul_zero]
   intro z _
-  rw [← pow_succ, ← zpow_natCast, inv_zpow, ← zpow_neg, Int.ofNat_succ, neg_add,
+  rw [← pow_succ, ← zpow_natCast, inv_zpow, ← zpow_neg, Int.natCast_succ, neg_add,
     sub_eq_add_neg _ (1 : ℤ)]
 
 end circleIntegral
