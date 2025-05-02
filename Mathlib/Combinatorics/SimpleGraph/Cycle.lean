@@ -47,8 +47,7 @@ lemma vertex_card_eq_edge_card (c : G.IsCycle) : Fintype.card V = Fintype.card G
     simp only [Finset.mem_univ, forall_const]
     exact c.2
   have h_e_card : ∑ (v : V), G.degree v = 2*(Fintype.card G.edgeSet) := by
-    have hhl : ∑ (v : V), G.degree v = 2*G.edgeFinset.card := G.sum_degrees_eq_twice_card_edges
-    simp_all
+    simp_all [G.sum_degrees_eq_twice_card_edges]
   simp_all
 
 lemma three_le_card (c : G.IsCycle) : 3 ≤ Fintype.card V := by
@@ -64,8 +63,7 @@ variable {v w : V}
 lemma IsCycles (c : G.IsCycle) : G.IsCycles := by
   intro v hv
   have h_n_card : Fintype.card (G.neighborSet v) = 2 := by
-    simp only [G.card_neighborSet_eq_degree]
-    apply c.2
+    rw [G.card_neighborSet_eq_degree, c.2]
   simp only [Fintype.card_ofFinset, mem_neighborSet] at h_n_card
   simp [Set.ncard_eq_toFinset_card', h_n_card]
 
@@ -160,10 +158,10 @@ lemma cycle_walk_contains_all_edges {p : G.Walk v v} (c : G.IsCycle) (h : p.IsCy
   have he : p.edges.toFinset ⊆ G.edgeFinset := by
     simp only [Set.subset_toFinset, List.coe_toFinset]
     apply Walk.edges_subset_edgeSet
-  have : ∀ e ∈  G.edgeSet, e ∈ p.edgeSet := by
+  have : ∀ e ∈ G.edgeSet, e ∈ p.edgeSet := by
     have : p.edgeSet = G.edgeSet := by
       have : p.edges.toFinset = G.edgeFinset :=
-        Finset.eq_of_subset_of_card_le he (Eq.ge h_support_length)
+        Finset.eq_of_subset_of_card_le he h_support_length.ge
       calc
         p.edgeSet = ↑p.edges.toFinset := by rw [Walk.coe_edges_toFinset]
         _ = ↑G.edgeFinset := by rw [this]
@@ -176,7 +174,7 @@ theorem IsEulerian (c : G.IsCycle) : ∃ (v : V) (p : G.Walk v v), p.IsEulerian 
   obtain ⟨v, p, hpc⟩ := c.isCyclic
   use v
   use p
-  have h_trail := Walk.IsCircuit.isTrail (Walk.IsCycle.isCircuit hpc)
+  have h_trail := hpc.isCircuit.isTrail
   simp only [h_trail, true_and]
   exact c.cycle_walk_contains_all_edges G hpc
 
