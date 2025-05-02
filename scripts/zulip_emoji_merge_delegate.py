@@ -84,9 +84,9 @@ for message in messages:
         print(f"matched: '{message}'")
 
         # removing previous emoji reactions
-        # if the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well
+        # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
         print("Removing previous reactions, if present.")
-        def remove_reaction(name: str, emoji_name: str, **kwargs) -> none:
+        def remove_reaction(name: str, emoji_name: str, **kwargs) -> None:
             print(f'Removing {name}')
             result = client.remove_reaction({
                 "message_id": message['id'],
