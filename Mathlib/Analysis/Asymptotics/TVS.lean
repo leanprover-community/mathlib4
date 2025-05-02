@@ -175,6 +175,7 @@ theorem IsLittleOTVS.isBigOTVS (h : f =o[𝕜; l] g) : f =O[𝕜; l] g := by
   use V, hV₀
   simpa using hV 1 one_ne_zero
 
+@[trans]
 theorem IsBigOTVS.trans {k : α → G} (hfg : f =O[𝕜; l] g) (hgk : g =O[𝕜; l] k) : f =O[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
   obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
@@ -183,7 +184,7 @@ theorem IsBigOTVS.trans {k : α → G} (hfg : f =O[𝕜; l] g) (hgk : g =O[𝕜;
   filter_upwards [hV, hW] with x hx₁ hx₂ using hx₁.trans hx₂
 
 instance instTransIsBigOTVSIsBigOTVS :
-    @Trans (α → E) (α → F) (α → G) (· =O[𝕜; l] ·) (· =O[𝕜; l] ·) (· =O[𝕜; l] ·) where
+    @Trans (α → E) (α → F) (α → G) (IsBigOTVS 𝕜 l) (IsBigOTVS 𝕜 l) (IsBigOTVS 𝕜 l) where
   trans := IsBigOTVS.trans
 
 theorem IsLittleOTVS.trans_isBigOTVS {k : α → G} (hfg : f =o[𝕜; l] g) (hgk : g =O[𝕜; l] k) :
@@ -195,7 +196,7 @@ theorem IsLittleOTVS.trans_isBigOTVS {k : α → G} (hfg : f =o[𝕜; l] g) (hgk
   filter_upwards [hV ε hε, hW] with x hx₁ hx₂ using hx₁.trans <| by gcongr
 
 instance instTransIsLittleOTVSIsBigOTVS :
-    @Trans (α → E) (α → F) (α → G) (· =o[𝕜; l] ·) (· =O[𝕜; l] ·) (· =o[𝕜; l] ·) where
+    @Trans (α → E) (α → F) (α → G) (IsLittleOTVS 𝕜 l) (IsBigOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) where
   trans := IsLittleOTVS.trans_isBigOTVS
 
 theorem IsBigOTVS.trans_isLittleOTVS {k : α → G} (hfg : f =O[𝕜; l] g) (hgk : g =o[𝕜; l] k) :
@@ -207,7 +208,7 @@ theorem IsBigOTVS.trans_isLittleOTVS {k : α → G} (hfg : f =O[𝕜; l] g) (hgk
   filter_upwards [hV, hW ε hε] with x hx₁ hx₂ using hx₁.trans hx₂
 
 instance instTransIsBigOTVSIsLittleOTVS :
-    @Trans (α → E) (α → F) (α → G) (· =O[𝕜; l] ·) (· =o[𝕜; l] ·) (· =o[𝕜; l] ·) where
+    @Trans (α → E) (α → F) (α → G) (IsBigOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) where
   trans := IsBigOTVS.trans_isLittleOTVS
 
 @[trans]
@@ -215,7 +216,7 @@ theorem IsLittleOTVS.trans {k : α → G} (hfg : f =o[𝕜; l] g) (hgk : g =o[�
   hfg.trans_isBigOTVS hgk.isBigOTVS
 
 instance instTransIsLittleOTVSIsLittleOTVS :
-    @Trans (α → E) (α → F) (α → G) (· =o[𝕜; l] ·) (· =o[𝕜; l] ·) (· =o[𝕜; l] ·) where
+    @Trans (α → E) (α → F) (α → G) (IsLittleOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) where
   trans := IsLittleOTVS.trans
 
 protected theorem _root_.Filter.HasBasis.isLittleOTVS_iff
