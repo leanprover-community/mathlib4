@@ -27,6 +27,8 @@ root pairings.
 
 -/
 
+attribute [-simp] Set.insert_eq_of_mem -- Performance hack
+
 noncomputable section
 
 open Function Set
