@@ -24,12 +24,10 @@ of `HasForget₂` instances.
 
 -/
 
-universe u v
-
 open CategoryTheory Limits
 
-variable (V : Type (u + 1)) [LargeCategory V] [HasForget V] [HasForget₂ V TopCat]
-variable (G : Type u) [Monoid G] [TopologicalSpace G]
+variable (V : Type*) [Category V] [HasForget V] [HasForget₂ V TopCat]
+variable (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Action
 

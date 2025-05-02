@@ -123,10 +123,10 @@ instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) 
 
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
-  Action.preservesLimits_forget.{u} _ _
+  Action.preservesLimits_forget _ _
 
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
-  Action.preservesColimits_forget.{u} _ _
+  Action.preservesColimits_forget _ _
 
 theorem epi_iff_surjective {A B : Rep k G} (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
   ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
