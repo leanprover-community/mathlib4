@@ -164,8 +164,8 @@ lemma cast_up_comm {α β} {a : α} (h : α = β) (h' : ULift α = ULift β := c
   cases h; cases h'; rfl
 
 @[simp]
-lemma cast_down_comm {α β} {a : α} (h : α = β) (h' : ULift α = ULift β := congrArg ULift h)
-    : (cast h' ⟨a⟩).down = cast h a := by
+lemma cast_down_comm {α β} {a : ULift α} (h : α = β) (h' : ULift α = ULift β := congrArg ULift h)
+    : (cast h' a).down = cast h a.down := by
   cases h; cases h'; rfl
 
 end ULift
