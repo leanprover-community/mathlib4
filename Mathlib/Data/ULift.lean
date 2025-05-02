@@ -155,7 +155,7 @@ lemma ext_heq {α β : Type u} (x : ULift.{u'} α) (y : ULift.{u'} β)
 @[simp]
 lemma ext_heq_iff {α β : Type u} (h : α = β)
     (x : ULift.{u'} α) (y : ULift.{u'} β) : HEq x y ↔ HEq x.down y.down := by
-  refine ⟨fun h' => ?_, ULift.down_heq_inj x y⟩
+  refine ⟨fun h' => ?_, ULift.ext_heq x y⟩
   cases h; cases h'; rfl
 
 @[simp]
@@ -164,7 +164,7 @@ lemma cast_up {α β} {a : α} (h : α = β) (h' : ULift α = ULift β := congrA
   cases h; cases h'; rfl
 
 @[simp]
-lemma cast_down {α β} {a : ULift α} (h : α = β) (h' : ULift α = ULift β := congrArg ULift h) :
+lemma down_cast {α β} {a : ULift α} (h : α = β) (h' : ULift α = ULift β := congrArg ULift h) :
     (cast h' a).down = cast h a.down := by
   cases h; cases h'; rfl
 
