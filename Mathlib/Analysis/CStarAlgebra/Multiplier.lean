@@ -317,7 +317,7 @@ instance instRing : Ring 𝓜(𝕜, A) :=
 
 /-- The canonical map `DoubleCentralizer.toProd` as an additive group homomorphism. -/
 @[simps]
-def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A) where
+noncomputable def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A) where
   toFun := toProd
   map_zero' := rfl
   map_add' _x _y := rfl
@@ -333,7 +333,7 @@ def toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜]
 
 /-- The module structure is inherited as the pullback under the additive group monomorphism
 `DoubleCentralizer.toProd : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A)` -/
-instance instModule {S : Type*} [Semiring S] [Module S A] [SMulCommClass 𝕜 S A]
+noncomputable instance instModule {S : Type*} [Semiring S] [Module S A] [SMulCommClass 𝕜 S A]
     [ContinuousConstSMul S A] [IsScalarTower S A A] [SMulCommClass S A A] : Module S 𝓜(𝕜, A) :=
   Function.Injective.module S toProdHom (ext (𝕜 := 𝕜) (A := A)) fun _x _y => rfl
 
@@ -506,11 +506,11 @@ theorem norm_def' (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdMulOppositeHom a‖ :
 theorem nnnorm_def' (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdMulOppositeHom a‖₊ :=
   rfl
 
-instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
+noncomputable instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instModule with
     norm_smul_le := fun k a => (norm_smul_le k a.toProdMulOpposite :) }
 
-instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) :=
+noncomputable instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instAlgebra, DoubleCentralizer.instNormedSpace with }
 
 theorem isUniformEmbedding_toProdMulOpposite :

@@ -90,7 +90,7 @@ def localized'gi : GaloisInsertion (localized' S p f) (comap f <| ·.restrictSca
   choice_eq _ _ := rfl
 
 /-- The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`. -/
-abbrev localized : Submodule (Localization p) (LocalizedModule p M) :=
+noncomputable abbrev localized : Submodule (Localization p) (LocalizedModule p M) :=
   M'.localized' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
 @[simp]
@@ -156,7 +156,7 @@ def toLocalized₀ : M' →ₗ[R] M'.localized₀ p f := f.restrict fun x hx ↦
 def toLocalized' : M' →ₗ[R] M'.localized' S p f := toLocalized₀ p f M'
 
 /-- The localization map of a submodule. -/
-abbrev toLocalized : M' →ₗ[R] M'.localized p :=
+noncomputable abbrev toLocalized : M' →ₗ[R] M'.localized p :=
   M'.toLocalized' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
 instance : IsLocalizedModule p (M'.toLocalized₀ p f) where
@@ -212,7 +212,8 @@ def Submodule.toLocalizedQuotient' : M ⧸ M' →ₗ[R] N ⧸ M'.localized' S p 
   Submodule.mapQ M' ((M'.localized' S p f).restrictScalars R) f (fun x hx ↦ ⟨x, hx, 1, by simp⟩)
 
 /-- The localization map of a quotient module. -/
-abbrev Submodule.toLocalizedQuotient : M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p :=
+noncomputable abbrev Submodule.toLocalizedQuotient :
+    M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p :=
   M'.toLocalizedQuotient' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
 @[simp]

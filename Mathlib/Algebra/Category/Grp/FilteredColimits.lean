@@ -115,7 +115,7 @@ noncomputable def colimitCocone : Cocone F where
 
 /-- The proposed colimit cocone is a colimit in `Grp`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddGroup`."]
-def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
+noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc t := Grp.ofHom
     (MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ Grp MonCat.{max v u})
       ((forget₂ Grp MonCat).mapCocone t)).hom
@@ -185,7 +185,7 @@ noncomputable def colimitCocone : Cocone F where
 
 /-- The proposed colimit cocone is a colimit in `CommGrp`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddCommGroup`."]
-def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
+noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc t := CommGrp.ofHom
     ((Grp.FilteredColimits.colimitCoconeIsColimit.{v, u}
           (F ⋙ forget₂ CommGrp Grp.{max v u})).desc

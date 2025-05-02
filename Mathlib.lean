@@ -1019,6 +1019,7 @@ import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Ext
 import Mathlib.Algebra.Ring.Fin
+import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Idempotent
@@ -5546,7 +5547,6 @@ import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
@@ -5589,7 +5589,6 @@ import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.LiftLets
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Linarith.Frontend

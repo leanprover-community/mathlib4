@@ -314,11 +314,6 @@ theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) 
 @[simp]
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
 
-@[simp]
-theorem getLast_cons_cons (a₁ a₂ : α) (l : List α) :
-    getLast (a₁ :: a₂ :: l) (cons_ne_nil _ _) = getLast (a₂ :: l) (cons_ne_nil a₂ l) :=
-  rfl
-
 theorem dropLast_append_getLast : ∀ {l : List α} (h : l ≠ []), dropLast l ++ [getLast l h] = l
   | [], h => absurd rfl h
   | [_], _ => rfl

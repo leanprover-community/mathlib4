@@ -236,7 +236,7 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
     msgs.forM fun msg => msg.toString >>= IO.println
     throw <| .userError "parse errors in file"
   -- the insertion point for `add` is the first newline after the imports
-  let insertion := header.getTailPos?.getD parserState.pos
+  let insertion := header.raw.getTailPos?.getD parserState.pos
   let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
   pure (path, inputCtx, header, insertion)
 
@@ -471,7 +471,7 @@ def main (args : List String) : IO UInt32 := do
     pure #[]
 
   -- Parse the `--cfg` argument
-  let srcSearchPath ← initSrcSearchPath
+  let srcSearchPath ← getSrcSearchPath
   let cfgFile ← if let some cfg := args.cfg then
     pure (some ⟨cfg⟩)
   else if let some mod := defaultTargetModules[0]? then

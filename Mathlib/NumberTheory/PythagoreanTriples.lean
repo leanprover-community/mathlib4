@@ -199,8 +199,8 @@ theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrim
   convert h.normalize.mul_isClassified (Int.gcd x y)
         (isClassified_of_isPrimitiveClassified h.normalize hc) <;>
     rw [Int.mul_ediv_cancel']
-  · exact Int.gcd_dvd_left
-  · exact Int.gcd_dvd_right
+  · exact Int.gcd_dvd_left ..
+  · exact Int.gcd_dvd_right ..
   · exact h.gcd_dvd
 
 theorem ne_zero_of_coprime (hc : Int.gcd x y = 1) : z ≠ 0 := by

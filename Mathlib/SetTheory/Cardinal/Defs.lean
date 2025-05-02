@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.ULift
 import Mathlib.Util.Delaborators
+import Mathlib.Util.AssertExists
 
 /-!
 # Cardinal Numbers

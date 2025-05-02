@@ -617,7 +617,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
     case pair cf cg hf hg _ =>
       simp? [Seq.seq, Option.bind_eq_some_iff] at h ⊢ says
         simp only [Seq.seq, Option.map_eq_map, Option.mem_def, Option.bind_eq_some_iff,
-          Option.map_eq_some', exists_exists_and_eq_and] at h ⊢
+          Option.map_eq_some_iff, exists_exists_and_eq_and] at h ⊢
       exact h.imp fun a => And.imp (hf _ _) <| Exists.imp fun b => And.imp_left (hg _ _)
     case comp cf cg hf hg _ =>
       simp? [Bind.bind, Option.bind_eq_some_iff] at h ⊢ says

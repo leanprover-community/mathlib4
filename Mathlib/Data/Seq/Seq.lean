@@ -222,7 +222,7 @@ theorem head_nil : head (nil : Seq α) = none :=
 
 @[simp]
 theorem head_cons (a : α) (s) : head (cons a s) = some a := by
-  rw [head_eq_destruct, destruct_cons, Option.map_eq_map, Option.map_some']
+  rw [head_eq_destruct, destruct_cons, Option.map_eq_map, Option.map_some]
 
 @[simp]
 theorem tail_nil : tail (nil : Seq α) = nil :=

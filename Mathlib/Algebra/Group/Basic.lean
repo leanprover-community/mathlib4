@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Aesop
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Nat.Init
 import Mathlib.Data.Int.Init
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.SimpRw

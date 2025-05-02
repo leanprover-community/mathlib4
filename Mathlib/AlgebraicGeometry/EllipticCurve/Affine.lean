@@ -894,7 +894,7 @@ variable [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebr
 
 /-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `f : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
-def map : W'⟮F⟯ →+ W'⟮K⟯ where
+noncomputable def map : W'⟮F⟯ →+ W'⟮K⟯ where
   toFun P := match P with
     | 0 => 0
     | some h => some <| (baseChange_nonsingular _ _ f.injective).mpr h
@@ -932,7 +932,7 @@ lemma map_injective : Function.Injective <| map (W' := W') f := by
 variable (F K) in
 /-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by the base change from `F` to `K`, where
 `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
-abbrev baseChange [Algebra F K] [IsScalarTower R F K] : W'⟮F⟯ →+ W'⟮K⟯ :=
+noncomputable abbrev baseChange [Algebra F K] [IsScalarTower R F K] : W'⟮F⟯ →+ W'⟮K⟯ :=
   map <| Algebra.ofId F K
 
 lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalarTower R F L]

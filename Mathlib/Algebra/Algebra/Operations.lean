@@ -684,7 +684,7 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 /-- `span` is a semiring homomorphism (recall multiplication is pointwise multiplication of subsets
 on either side). -/
 @[simps]
-def span.ringHom : SetSemiring A →+* Submodule R A where
+noncomputable def span.ringHom : SetSemiring A →+* Submodule R A where
   toFun s := Submodule.span R (SetSemiring.down s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
@@ -744,7 +744,7 @@ theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
 variable (R A)
 
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
-instance moduleSet : Module (SetSemiring A) (Submodule R A) where
+noncomputable instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   smul s P := span R (SetSemiring.down s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by
