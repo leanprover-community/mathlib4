@@ -3,7 +3,6 @@ Copyright (c) 2025 Jinzhao Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jinzhao Pan
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Order.RelSeries
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 import Mathlib.RingTheory.Noetherian.Basic
@@ -39,48 +38,12 @@ associated primes.
 
 section Test
 
-lemma Ideal.Quotient.span_singleton_one {R : Type*}
-    [Ring R] (I : Ideal R) [I.IsTwoSided] :
-    Submodule.span R {(1 : R ⧸ I)} = ⊤ := by
-  rw [← map_one (mk _), ← Submodule.range_mkQ I, ← Submodule.map_top, ← Ideal.span_singleton_one,
-    Ideal.span, Submodule.map_span, Set.image_singleton]
-  rfl
-
-lemma LinearMap.range_toSpanSingleton {R M : Type*}
-    [Semiring R] [AddCommMonoid M] [Module R M] (x : M) :
-    range (toSpanSingleton R M x) = .span R {x} :=
-  SetLike.coe_injective (Submodule.span_singleton_eq_range R x).symm
-
-lemma Submodule.submoduleOf_self {R M : Type*}
-    [Semiring R] [AddCommMonoid M] [Module R M] (N : Submodule R M) :
-    N.submoduleOf N = ⊤ := comap_subtype_self _
-
-lemma Submodule.submoduleOf_span_singleton_of_mem {R M : Type*}
-    [Ring R] [AddCommGroup M] [Module R M] (N : Submodule R M) {x : M} (hx : x ∈ N) :
-    (span R {x}).submoduleOf N = span R {⟨x, hx⟩} := by
-  have : LinearMap.ker N.subtype ≤ span R {⟨x, hx⟩} := by simp
-  convert Submodule.comap_map_eq_self this using 2
-  rw [map_span, Set.image_singleton]
-  rfl
-
-@[simp]
-lemma LinearMap.ker_toSpanSingleton_zero {R M : Type*}
-    [Semiring R] [AddCommMonoid M] [Module R M] :
-    ker (toSpanSingleton R M 0) = ⊤ := by ext; simp
-
-lemma Submodule.submoduleOf_sup_of_le {R M : Type*}
-    [Ring R] [AddCommGroup M] [Module R M] {N₁ N₂ N : Submodule R M}
-    (h₁ : N₁ ≤ N) (h₂ : N₂ ≤ N) :
-    (N₁ ⊔ N₂).submoduleOf N = N₁.submoduleOf N ⊔ N₂.submoduleOf N := by
-  apply Submodule.map_injective_of_injective N.subtype_injective
-  simp only [submoduleOf, map_comap_eq]
-  aesop
-
 @[elab_as_elim]
 lemma WellFoundedGT.induction_top {α : Type*} [Preorder α] [WellFoundedGT α] [OrderTop α]
     {P : α → Prop} (hexists : ∃ M, P M) (hind : ∀ N ≠ ⊤, P N → ∃ M > N, P M) : P ⊤ := by
-  contrapose! hexists
-  intro M
+  -- seems that `contrapose!` tactic is not imported in this file, so we have to do it manually
+  revert hexists; rw [← not_imp_not, not_exists]
+  intro hexists M
   induction M using WellFoundedGT.induction with
   | ind x IH =>
     by_cases hx : x = ⊤
@@ -146,8 +109,7 @@ theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
   have := Submodule.Quotient.nontrivial_of_lt_top _ hN.lt_top
   obtain ⟨p, hp, x, rfl⟩ := associatedPrimes.nonempty A (M ⧸ N)
   obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
-  have hxN : x ∉ N := fun h ↦ hp.ne_top
-    (by simp only [show N.mkQ x = 0 by simpa, LinearMap.ker_toSpanSingleton_zero])
+  have hxN : x ∉ N := fun h ↦ hp.ne_top (by rw [show N.mkQ x = 0 by simpa]; simp)
   have := Submodule.isQuotientEquivQuotientPrime_iff.mpr ⟨x, hp, rfl⟩
   refine ⟨_, by simpa [hs₂], s.snoc _ (hs₂ ▸ this), by simpa, rfl⟩
 
