@@ -42,10 +42,12 @@ def Gram (𝕜 : Type*) [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜  _ _ x y
 
+/-- A `M : Matrix n n 𝕜` is a Gram matrix if `M = Gram 𝕜 v` for some `v : n → E`. -/
 def IsGram (M : Matrix n n 𝕜) (v : n → E) : Prop := (M = Gram 𝕜 v)
 
 namespace IsGram
 
+@[simp]
 lemma of_Gram (v : n → E) : IsGram (Gram 𝕜 v) v := by
   rfl
 
@@ -55,8 +57,7 @@ lemma entry {M : Matrix n n 𝕜} {v : n → E} (hM : IsGram M v) (i j : n) : M 
 
 /-- A Gram matrix is Hermitian. -/
 lemma IsHermitian {M : Matrix n n 𝕜} {v : n → E} (hM : IsGram M v) : M.IsHermitian := by
-  refine IsHermitian.ext_iff.mpr ?_
-  intro i j
+  refine IsHermitian.ext_iff.mpr (fun i j ↦ ?_)
   rw [hM, Gram, Gram]
   simp only [RCLike.star_def, inner_conj_symm]
 
@@ -130,23 +131,28 @@ theorem posSemidef_interMatrix [Fintype n] (μ : Measure α) (v : n → (Set α)
 
 end L2
 
-
-
-
-
-
-
 section covariance
+
+/- Here, we describe the covariance matrix of the finite dimensional distributions of
+Brownian Motion, i.e. `s t ↦ s ∧ t`. Identifying this as a Gram Matrix gives that it is
+positive semi-definite. This section will be moved to the section on stochastic processes once
+we define Brownian Motion.
+-/
 
 variable {E n : Type*}
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 open MeasureTheory L2 NNReal ENNReal
+
+namespace brownianMotion
+
 /-- This is the covariance matrix of Brownian Motion. -/
 def covMatrix (t : n → ℝ≥0) : Matrix n n ℝ := fun i j ↦ ((t i) ⊓ (t j)).toReal
 
-theorem posSemidef_covMatrix [Fintype n] (t : n → ℝ≥0) :
+namespace covMatrix
+
+theorem posSemidef [Fintype n] (t : n → ℝ≥0) :
     PosSemidef (covMatrix t) := by
   let v : n → (Set ℝ) := fun i ↦ Set.Icc 0 (t i)
   have h : covMatrix t = interMatrix volume (fun i ↦ Set.Icc 0 (t i).toReal) := by
@@ -156,24 +162,8 @@ theorem posSemidef_covMatrix [Fintype n] (t : n → ℝ≥0) :
   apply h ▸ posSemidef_interMatrix _ v  (fun j ↦ measurableSet_Icc)
     (fun j ↦ IsCompact.measure_ne_top isCompact_Icc)
 
+end covMatrix
+
+end brownianMotion
+
 end covariance
-
-
-
-
-
-
-variable {M : Type*} [MulZeroClass M]
-
-omit [MeasurableSpace α] in
-lemma Set.indicator_mul_eq_inter (s t : Set α) (f g : α → M) (x : α) :
-  (Set.indicator s f x) * (Set.indicator t g x) =
-    Set.indicator (s ∩ t) (f * g) x := by
-  by_cases h : x ∈ s ∩ t
-  · rw [Set.indicator_of_mem h (f * g), Set.indicator_of_mem (mem_of_mem_inter_left h) f,
-      Set.indicator_of_mem (mem_of_mem_inter_right h) g]
-    simp only [Pi.mul_apply]
-  · have g : x ∉ s ∨ x ∉ t := Classical.not_and_iff_not_or_not.mp h
-    rcases g with (g1 | g2)
-    · rw [Set.indicator_of_not_mem g1 f, Set.indicator_of_not_mem h (f * g), MulZeroClass.zero_mul]
-    · rw [Set.indicator_of_not_mem g2 g, Set.indicator_of_not_mem h (f * g), mul_zero]
