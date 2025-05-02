@@ -414,17 +414,6 @@ theorem squareCylinder_mem_closedCompactSquareCylinders (s : Finset ι) (t : (i 
   rw [mem_closedCompactSquareCylinders]
   exact ⟨s, t, hS_closed, hS_compact, rfl⟩
 
-/-
-theorem mem_cylinder_of_mem_closedCompactSquareCylinders [∀ i, MeasurableSpace (α i)]
-    [∀ i, SecondCountableTopology (α i)] [∀ i, OpensMeasurableSpace (α i)]
-    (hS : S ∈ closedCompactSquareCylinders α) :
-    S ∈ measurableCylinders α := by
-  rw [mem_measurableSquareCylinders]
-  refine ⟨closedCompactCylinders.finset ht, closedCompactCylinders.set ht, ?_, ?_⟩
-  · exact (closedCompactCylinders.isClosed ht).measurableSet
-  · exact closedCompactCylinders.eq_cylinder ht
--/
-
 theorem IsCompactSystem.CompactClosedOrUniv_pi :
   IsCompactSystem (univ.pi '' univ.pi
     (fun (i : ι) ↦ (fun (s : Set (α i)) ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ)))) := by
