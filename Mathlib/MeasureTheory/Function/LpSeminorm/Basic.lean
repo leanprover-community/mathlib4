@@ -162,7 +162,7 @@ theorem eLpNorm_measure_zero {f : α → ε} : eLpNorm f p (0 : Measure α) = 0 
 
 section ContinuousENorm
 
-variable {ε: Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 @[simp] lemma memLp_measure_zero {f : α → ε} : MemLp f p (0 : Measure α) := by
   simp [MemLp]
@@ -208,7 +208,7 @@ end Neg
 section Const
 
 variable {ε' ε'' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
-  [TopologicalSpace ε'' ] [ENormedAddMonoid ε'']
+  [TopologicalSpace ε''] [ENormedAddMonoid ε'']
 
 theorem eLpNorm'_const (c : ε) (hq_pos : 0 < q) :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
@@ -986,6 +986,7 @@ theorem eLpNorm'_eq_zero_iff (hq0_lt : 0 < q) {f : α → ε} (hf : AEStronglyMe
     eLpNorm' f q μ = 0 ↔ f =ᵐ[μ] 0 :=
   ⟨ae_eq_zero_of_eLpNorm'_eq_zero (le_of_lt hq0_lt) hf, eLpNorm'_eq_zero_of_ae_zero hq0_lt⟩
 
+variable {ε : Type*} [ENorm ε] in
 theorem enorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :
     ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ eLpNormEssSup f μ :=
   ENNReal.ae_le_essSup fun x => ‖f x‖ₑ

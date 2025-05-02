@@ -947,7 +947,7 @@ theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G}
     ∫ a, f a ∂(∑ i ∈ s, μ i) = ∑ i ∈ s, ∫ a, f a ∂μ i := by
   induction s using Finset.cons_induction_on with
   | empty => simp
-  | cons h ih =>
+  | cons _ _ h ih =>
     rw [Finset.forall_mem_cons] at hf
     rw [Finset.sum_cons, Finset.sum_cons, ← ih hf.2]
     exact integral_add_measure hf.1 (integrable_finset_sum_measure.2 hf.2)

@@ -545,7 +545,7 @@ theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset �
   | empty =>
     simp only [Finset.prod_empty, Finset.sum_empty]
     rw [← C_1, m.degree_C, map_zero]
-  | @insert a s has hrec =>
+  | insert a s has hrec =>
     rw [Finset.prod_insert has, Finset.sum_insert has]
     apply le_trans degree_mul_le
     simp only [map_add, add_le_add_iff_left, hrec]
@@ -555,7 +555,7 @@ theorem coeff_prod_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s : F
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert a s has hrec =>
+  | insert a s has hrec =>
     simp only [Finset.prod_insert has, Finset.sum_insert has]
     rw [coeff_mul_of_add_of_degree_le (le_of_eq rfl) degree_prod_le]
     exact congr_arg₂ _ rfl hrec

@@ -46,7 +46,7 @@ instance [Ring R] (v : Valuation R Γ₀) : Ring (WithVal v) := inferInstanceAs 
 
 instance [CommRing R] (v : Valuation R Γ₀) : CommRing (WithVal v) := inferInstanceAs (CommRing R)
 
-instance [Field R] (v : Valuation R Γ₀)  : Field (WithVal v) := inferInstanceAs (Field R)
+instance [Field R] (v : Valuation R Γ₀) : Field (WithVal v) := inferInstanceAs (Field R)
 
 instance [Ring R] (v : Valuation R Γ₀) : Inhabited (WithVal v) := ⟨0⟩
 
