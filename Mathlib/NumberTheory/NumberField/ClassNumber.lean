@@ -97,6 +97,34 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_
     absNorm_dvd_absNorm_of_le (le_of_dvd (UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors
     hJ))).trans hI
 
+theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_mem_normalizedFactors
+    (h : ∀ ⦃p : ℕ⦄, p.Prime → p ≤ (4 / π) ^ nrComplexPlaces K *
+      ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|) →
+      ∀ (I : Ideal (𝓞 K)), I ∈ UniqueFactorizationMonoid.normalizedFactors (Ideal.span ({↑p})) →
+      Submodule.IsPrincipal I) :
+    IsPrincipalIdealRing (𝓞 K) := by
+  refine RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime <|
+    fun P hP hPNorm ↦ ?_
+  obtain ⟨p, hp⟩ := IsPrincipalIdealRing.principal <| P.1.comap (algebraMap ℤ (𝓞 K))
+  have hp0 : p ≠ 0 := fun h ↦ nonZeroDivisors.coe_ne_zero P <| eq_bot_of_comap_eq_bot (R := ℤ) <|
+    by rw [hp, h, submodule_span_eq, span_singleton_eq_bot]
+  have hpprime := (span_singleton_prime hp0).mp
+  rw [← submodule_span_eq, ← hp] at hpprime
+  have hle := map_comap_le (mem_map_of_mem _ <| hp ▸ Submodule.mem_span_singleton_self p)
+  refine h (Int.prime_iff_natAbs_prime.mp (hpprime (IsPrime.comap _))) ?_ _ ?_
+  · refine le_trans (cast_le.mpr <| Nat.le_of_dvd ?_ (Int.ofNat_dvd_right.mp ?_)) hPNorm
+    · exact Nat.pos_of_ne_zero <| fun h ↦ nonZeroDivisors.coe_ne_zero P <| absNorm_eq_zero_iff.mp h
+    suffices (Algebra.norm ℤ (algebraMap ℤ (𝓞 K) p)) = p ^ (Module.finrank ℚ K) by
+      obtain ⟨i, -, hi⟩ := (dvd_prime_pow (hpprime (IsPrime.comap _)) _).mp
+        (this ▸ absNorm_dvd_norm_of_mem hle)
+      refine dvd_trans (dvd_pow_self p (fun h ↦ hP.ne_top (absNorm_eq_one_iff.mp ?_))) hi.dvd'
+      simp only [h, pow_zero, associated_one_iff_isUnit] at hi
+      exact ZMod.eq_one_of_isUnit_natCast hi
+    exact Rat.intCast_injective (by simp [Algebra.coe_norm_int, ← Algebra.norm_algebraMap])
+  · refine (Ideal.mem_normalizedFactors_iff (by simpa using hp0)).mpr ⟨hP, span_le.mpr ?_⟩
+    rcases abs_choice p with h|h <;>
+    simpa [cast_natAbs, h]
+
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ nrComplexPlaces K *
       ((finrank ℚ K) ^ (finrank ℚ K) / (finrank ℚ K)!)) ^ 2) :
