@@ -86,25 +86,19 @@ for message in messages:
         # removing previous emoji reactions
         # if the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well
         print("Removing previous reactions, if present.")
-        def remove_reaction(name: str, emoji_name: str) -> none:
+        def remove_reaction(name: str, emoji_name: str, **kwargs) -> none:
             print(f'Removing {name}')
             result = client.remove_reaction({
                 "message_id": message['id'],
-                "emoji_name": emoji_name
+                "emoji_name": emoji_name,
+                **kwargs
             })
             print(f"result: '{result}'")
 
         if has_peace_sign:
             remove_reaction('delegated', 'peace_sign')
         if has_bors:
-            print('Removing bors')
-            result = client.remove_reaction({
-                "message_id": message['id'],
-                "emoji_name": "bors",
-                "emoji_code": "22134",
-                "reaction_type": "realm_emoji",
-            })
-            print(f"result: '{result}'")
+            remove_reaction("bors", "bors", emoji_code="22134", reaction_type="realm_emoji")
         if has_merge:
             remove_reaction('merge', 'merge')
         if has_maintainer_merge:
@@ -112,15 +106,8 @@ for message in messages:
         if has_awaiting_author:
             remove_reaction('awaiting-author', 'writing')
         if has_closed:
-            print('Removing closed-pr')
-            result = client.remove_reaction({
-                "message_id": message['id'],
-                "emoji_name": "closed-pr",
-                "emoji_code": "61293",  # 61282 was the earlier version of the emoji
-                "reaction_type": "realm_emoji",
-            })
-            print(f"result: '{result}'")
-
+            # 61282 was the earlier version of the emoji
+            remove_reaction('closed-pr', 'closed-pr', emoji_code="61293", reaction_type="realm_emoji")
 
         # applying appropriate emoji reaction
         print("Applying reactions, as appropriate.")
