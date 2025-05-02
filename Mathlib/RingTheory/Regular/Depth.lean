@@ -446,11 +446,24 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R) [Small.
   convert this n.toNat
   <;> nth_rw 1 [← ENat.coe_toNat (LT.lt.ne_top lt_top), ENat.coe_lt_coe]
 
-instance [IsLocalRing R] : OrderTop (PrimeSpectrum R) where
-  top := ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩
-  le_top I := IsLocalRing.le_maximalIdeal I.2.ne_top'
+open Opposite in
+lemma moduleDepth_eq_of_iso_fst (M : ModuleCat.{v} R) {N N' : ModuleCat.{v} R} (e : N ≅ N') :
+    moduleDepth N M = moduleDepth N' M := by
+  simp only [moduleDepth]
+  congr
+  ext n
+  exact forall₂_congr fun i _ ↦
+    (((extFunctor.{max u v} i).mapIso e.symm.op).app M).addCommGroupIsoToAddEquiv.subsingleton_congr
 
---depth under exact seq and iso
+lemma moduleDepth_eq_of_iso_snd (N : ModuleCat.{v} R) {M M' : ModuleCat.{v} R} (e : M ≅ M') :
+    moduleDepth N M = moduleDepth N M' := by
+  simp only [moduleDepth]
+  congr
+  ext n
+  exact forall₂_congr fun i _ ↦
+    ((extFunctorObj N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr
+
+--depth under exact seq
 
 variable (R) in
 omit [Small.{v, u} R] in
@@ -552,10 +565,8 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             rw [← dim_eq]
             congr 2
             exact (Module.supportDim_eq_of_equiv R L2 L3 eg).symm
-          have := ih3' L3ntr dimeq3
-          rw [eqr _ dimeq3] at this
-
-          sorry
+          rw [moduleDepth_eq_of_iso_fst M eg.toModuleIso, ← eqr _ dimeq3]
+          exact ih3' L3ntr dimeq3
         · have : Function.Surjective f := by
             rw [← range_eq_top, ← exact_iff.mp exac, ker_eq_top, Subsingleton.eq_zero g]
           let ef : L1 ≃ₗ[R] L2 := LinearEquiv.ofBijective f ⟨inj, this⟩
@@ -565,10 +576,8 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             rw [← dim_eq]
             congr 2
             exact Module.supportDim_eq_of_equiv R L1 L2 ef
-          have := ih1' L1ntr dimeq1
-          rw [eqr _ dimeq1] at this
-
-          sorry
+          rw [← moduleDepth_eq_of_iso_fst M ef.toModuleIso, ← eqr _ dimeq1]
+          exact ih1' L1ntr dimeq1
 
 theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing R]
     [Small.{v} (R ⧸ IsLocalRing.maximalIdeal R)]
