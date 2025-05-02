@@ -109,11 +109,11 @@ for message in messages:
             # 61282 was the earlier version of the emoji.
             remove_reaction('closed-pr', 'closed-pr', emoji_code="61293", reaction_type="realm_emoji")
 
-        # applying appropriate emoji reaction
+        # Apply the appropriate emoji reaction.
         print("Applying reactions, as appropriate.")
         def add_reaction(name: str, emoji_name: str) -> None:
-            print(f'adding {name}')
-            result = client.add_reaction({
+            print(f'adding {name} emoji')
+            client.add_reaction({
                 "message_id": message['id'],
                 "emoji_name": emoji_name
             })
