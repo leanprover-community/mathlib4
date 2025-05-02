@@ -7,7 +7,7 @@ import Mathlib.Combinatorics.SimpleGraph.Circulant
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Data.Fin.Parity
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+
 /-!
 # Concrete colorings of common graphs
 
