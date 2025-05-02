@@ -130,7 +130,7 @@ variable (ha : a ≠ 0)
 
 include ha in
 private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
-  simp (config := { unfoldPartialApp := true }) only [asiegel, a']
+  simp +unfoldPartialApp only [asiegel, a']
   simp only [ne_eq]
   rw [funext_iff]; intros hs
   simp only [Prod.forall] at hs

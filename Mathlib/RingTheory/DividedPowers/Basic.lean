@@ -264,7 +264,7 @@ theorem prod_dpow {ι : Type*} {s : Finset ι} {n : ι → ℕ} (ha : a ∈ I) :
   | empty =>
     simp only [prod_empty, multinomial_empty, cast_one, sum_empty, one_mul]
     rw [hI.dpow_zero ha]
-  | insert hi hrec =>
+  | insert _ _ hi hrec =>
     rw [prod_insert hi, hrec, ← mul_assoc, mul_comm (hI.dpow (n _) a),
       mul_assoc, hI.mul_dpow ha, ← sum_insert hi, ← mul_assoc]
     apply congr_arg₂ _ _ rfl
@@ -292,7 +292,7 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
       apply congr_arg
       rw [card_eq_zero, sym_eq_empty]
       exact ⟨hn, rfl⟩
-  | @insert a s ha ih =>
+  | insert a s ha ih =>
     -- This should be golfable using `Finset.symInsertEquiv`
     have hx' : ∀ i, i ∈ s → x i ∈ I := fun i hi ↦ hx i (mem_insert_of_mem hi)
     simp_rw [sum_insert ha,

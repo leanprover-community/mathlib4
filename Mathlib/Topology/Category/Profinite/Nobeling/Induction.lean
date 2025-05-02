@@ -104,7 +104,7 @@ Given a profinite set `S` and a closed embedding `S → (I → Bool)`, the `ℤ`
 -/
 theorem Nobeling_aux : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
   (Module.Free.of_basis <| GoodProducts.Basis _ hι.isClosed_range) (LocallyConstant.congrLeftₗ ℤ
-    (.ofIsEmbedding ι hι.isEmbedding)).symm
+    hι.isEmbedding.toHomeomorph).symm
 
 end NobelingProof
 
@@ -119,7 +119,7 @@ open scoped Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/
 theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
   apply Continuous.isClosedEmbedding
-  · dsimp (config := { unfoldPartialApp := true }) [ι]
+  · dsimp +unfoldPartialApp [ι]
     refine continuous_pi ?_
     intro C
     rw [← IsLocallyConstant.iff_continuous]
@@ -138,7 +138,7 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
     by_contra hn
     obtain ⟨C, hC, hh⟩ := exists_isClopen_of_totally_separated hn
     apply hh.2 ∘ of_decide_eq_true
-    dsimp (config := { unfoldPartialApp := true }) [ι] at h
+    dsimp +unfoldPartialApp [ι] at h
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
 
