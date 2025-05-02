@@ -167,6 +167,19 @@ lemma curry₄_map_app_app_app_app {F G : C₁ × C₂ × C₃ × C₄ ⥤ E} (f
     ((((curry₄.map f).app X₁).app X₂).app X₃).app X₄ = f.app ⟨X₁, X₂, X₃, X₄⟩ := rfl
 
 @[simp]
+lemma currying₄_unitIso_hom_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
+    (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
+    ((((currying₄.unitIso.hom.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
+  simp [currying₄, Equivalence.unit]
+
+@[simp]
+lemma currying₄_unitIso_inv_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
+    (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
+    ((((currying₄.unitIso.inv.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
+  simp [currying₄, Equivalence.unitInv]
+  rfl
+
+@[simp]
 lemma uncurry₄_obj_map (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) {X Y : C₁ × C₂ × C₃ × C₄} (f : X ⟶ Y) :
     (uncurry₄.obj F).map f =
       (((((F.map f.1).app X.2.1).app X.2.2.1).app X.2.2.2 ≫
@@ -179,5 +192,13 @@ lemma uncurry₄_obj_map (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) {X Y : C₁
 lemma uncurry₄_map_app {F G : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E} (f : F ⟶ G) (X : C₁ × C₂ × C₃ × C₄) :
     (uncurry₄.map f).app X = (((f.app X.1).app X.2.1).app X.2.2.1).app X.2.2.2 := by
   rfl
+
+/-- The "postcomposition" with a functor `E ⥤ E'` gives a functor
+`(E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E'`. -/
+@[simps!]
+def Functor.postcompose₄ {E' : Type*} [Category E'] :
+    (E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E' :=
+  whiskeringRight C₄ _ _ ⋙ whiskeringRight C₃ _ _ ⋙ whiskeringRight C₂ _ _ ⋙
+    whiskeringRight C₁ _ _
 
 end CategoryTheory

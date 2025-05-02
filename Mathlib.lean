@@ -2093,6 +2093,7 @@ import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedBifunctorComp
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedFour
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
+import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTrifunctorComp
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
 import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
 import Mathlib.CategoryTheory.Functor.Derived.RightDerived

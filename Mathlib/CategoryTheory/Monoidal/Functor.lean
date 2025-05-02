@@ -147,6 +147,14 @@ theorem associativity_inv (X Y Z : C) :
   rw [Iso.eq_inv_comp, ← associativity_assoc, ← F.map_comp, Iso.hom_inv_id,
     F.map_id, comp_id]
 
+/-- The tensorator on a lax monoidal functor `F : C ⥤ D`,
+as a natural transformation between bifunctors in `C ⥤ C ⥤ D`. -/
+@[simps!]
+noncomputable def μNatTrans :
+    (((whiskeringLeft₂ D).obj F).obj F).obj (curriedTensor D) ⟶
+      (Functor.postcompose₂.obj F).obj (curriedTensor C) where
+  app X₁ := { app X₂ := μ F X₁ X₂ }
+
 end
 
 section

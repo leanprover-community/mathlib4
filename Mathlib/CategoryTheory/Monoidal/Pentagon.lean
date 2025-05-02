@@ -126,7 +126,7 @@ variable {F}
 
 open Pentagon in
 structure Pentagon : Prop where
-  natTrans₁₂_comp_natTrans₂₃ :
+  natTrans₁₂_comp_natTrans₂₃_comp_natTrans₃₄ :
     natTrans₁₂ α ≫ natTrans₂₃ α ≫ natTrans₃₄ α = natTrans₁₅ α ≫ natTrans₅₄ α := by aesop_cat
 
 structure Triangle (ε : C) (leftUnitor : F.obj ε ≅ 𝟭 C)
@@ -162,7 +162,8 @@ def ofBifunctor (unit : C) (F : C ⥤ C ⥤ C) (α : bifunctorComp₁₂ F F ≅
     dsimp at h₁ h₂
     simp [← reassoc_of% h₁, reassoc_of% h₂]
   pentagon X₁ X₂ X₃ X₄ :=
-    congr_app (congr_app (congr_app (congr_app pentagon.natTrans₁₂_comp_natTrans₂₃ X₁) X₂) X₃) X₄
+    congr_app (congr_app (congr_app
+      (congr_app pentagon.natTrans₁₂_comp_natTrans₂₃_comp_natTrans₃₄ X₁) X₂) X₃) X₄
   triangle X₁ X₃ :=
     congr_app (congr_app triangle.triangle X₁) X₃
 
