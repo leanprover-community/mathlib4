@@ -63,7 +63,7 @@ noncomputable def genLTOne : G := (⊤ : Subgroup G).genLTOne
 @[to_additive (attr := simp) negGen_eq_of_top]
 lemma genLTOne_eq_of_top : genLTOne G = (⊤ : Subgroup G).genLTOne := rfl
 
-@[to_additive (attr := simp) negGen_neg]
+@[to_additive negGen_neg]
 lemma genLTOne_lt_one : genLTOne G < 1 := (⊤ : Subgroup G).genLTOne_lt_one
 
 end LinearOrderedCommGroup
