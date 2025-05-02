@@ -176,7 +176,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 namespace IsPGroup
 
-/-- If a cyclic `p`-group `G` acts on a group `K` of coprime order, then the map `K × G → G`
+/-- If a group `K` acts on a cyclic `p`-group `G` of coprime order, then the map `K × G → G`
   defined by `(k, g) ↦ k • g * g⁻¹` is either trivial or surjective. -/
 theorem smul_mul_inv_trivial_or_surjective [IsCyclic G] (hG : IsPGroup p G)
     {K : Type*} [Group K] [MulDistribMulAction K G] (hGK : (Nat.card G).Coprime (Nat.card K)) :
