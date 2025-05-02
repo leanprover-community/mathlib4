@@ -73,7 +73,8 @@ for message in messages:
     # Check for emoji reactions
     reactions = message['reactions']
     # Does this message have any reaction with an emoji |name|?
-    has_reaction = lambda name: any(reaction['emoji_name'] == name for reaction in reactions)
+    def has_reaction(name: str) -> bool:
+        return any(reaction['emoji_name'] == name for reaction in reactions)
 
     has_peace_sign = has_reaction('peace_sign')
     has_bors = has_reaction('bors')
