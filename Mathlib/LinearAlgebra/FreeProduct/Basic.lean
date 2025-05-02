@@ -21,8 +21,7 @@ to the whole tensor algebra in an `R`-linear way.
 
 The main result of this file is the universal property of the free product,
 which establishes the free product as the coproduct in the category of
-general $R$-algebras. (In the category of commutative $R$-algebras, the coproduct
-is just `PiTensorProduct`.)
+general $R$-algebras.
 
 ## Main definitions
 
