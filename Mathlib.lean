@@ -2622,7 +2622,6 @@ import Mathlib.Combinatorics.SimpleGraph.Bipartite
 import Mathlib.Combinatorics.SimpleGraph.Circulant
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.ColoringComponents
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
