@@ -32,46 +32,46 @@ noncomputable def freeAbs : Type u ⥤ Under R where
 
 def forget : Under R ⥤ Type u := Under.forget R ⋙ HasForget.forget
 
-noncomputable def tensorProd_freeAbs : freeAbs R ⋙ R.tensorProd S ≅ freeAbs S := by
-  let left : Type u ⥤ Under S := {
-    obj σ := S.mkUnder <| S ⊗[R] (MvPolynomial σ R)
-    map f := (Algebra.TensorProduct.map (AlgHom.id S S) (MvPolynomial.rename f)).toUnder
-    map_id σ := by
-      simp only
-      have : MvPolynomial.rename (𝟙 σ) = AlgHom.id R (MvPolynomial σ R) :=
-        MvPolynomial.rename_id (R := R) (σ := σ)
-      rw [this, Algebra.TensorProduct.map_id]
-      rfl
-    map_comp f g := by
-      simp only
-      have : MvPolynomial.rename (R := R) (f ≫ g) =
-        (MvPolynomial.rename g).comp (MvPolynomial.rename f) :=
-        (MvPolynomial.rename_comp_rename f g).symm
-      rw [this, Algebra.TensorProduct.map_id_comp, AlgHom.toUnder_comp]
-  }
-  have : freeAbs R ⋙ R.tensorProd S = left := by
-    have obj (σ : Type u) : (freeAbs R ⋙ R.tensorProd S).obj σ = left.obj σ := by
-      unfold freeAbs left tensorProd
-      simp only [Functor.comp_obj]
-      rw [algebra_eq]
-      rfl
-    #check eqToHom
-    have map (σ τ : Type u) (f : σ ⟶ τ) : (freeAbs R ⋙ R.tensorProd S).map f
-      = eqToHom (obj σ) ≫ left.map f ≫ eqToHom (obj τ).symm := by
-      unfold freeAbs left tensorProd
-      simp only [Functor.comp_obj, Functor.comp_map, id_eq, eq_mpr_eq_cast, AlgHom.toUnder_comp,
-        cast_eq]
-      sorry
-    exact CategoryTheory.Functor.ext obj map
-  rw [this]
-  -- let pointwise (σ : Type u) : left.obj σ ≅ (freeAbs S).obj σ := (MvPolynomial.algebraTensorAlgEquiv (σ := σ) R S).toUnder
-  -- unfold left
-  exact NatIso.ofComponents (fun σ => (MvPolynomial.algebraTensorAlgEquiv (σ := σ) R S).toUnder) (fun {σ τ} f => by
-    unfold freeAbs left
-    simp only
-    -- exact?
-    sorry
-  )
+-- noncomputable def tensorProd_freeAbs : freeAbs R ⋙ R.tensorProd S ≅ freeAbs S := by
+--   let left : Type u ⥤ Under S := {
+--     obj σ := S.mkUnder <| S ⊗[R] (MvPolynomial σ R)
+--     map f := (Algebra.TensorProduct.map (AlgHom.id S S) (MvPolynomial.rename f)).toUnder
+--     map_id σ := by
+--       simp only
+--       have : MvPolynomial.rename (𝟙 σ) = AlgHom.id R (MvPolynomial σ R) :=
+--         MvPolynomial.rename_id (R := R) (σ := σ)
+--       rw [this, Algebra.TensorProduct.map_id]
+--       rfl
+--     map_comp f g := by
+--       simp only
+--       have : MvPolynomial.rename (R := R) (f ≫ g) =
+--         (MvPolynomial.rename g).comp (MvPolynomial.rename f) :=
+--         (MvPolynomial.rename_comp_rename f g).symm
+--       rw [this, Algebra.TensorProduct.map_id_comp, AlgHom.toUnder_comp]
+--   }
+--   have : freeAbs R ⋙ R.tensorProd S = left := by
+--     have obj (σ : Type u) : (freeAbs R ⋙ R.tensorProd S).obj σ = left.obj σ := by
+--       unfold freeAbs left tensorProd
+--       simp only [Functor.comp_obj]
+--       rw [algebra_eq]
+--       rfl
+--     #check eqToHom
+--     have map (σ τ : Type u) (f : σ ⟶ τ) : (freeAbs R ⋙ R.tensorProd S).map f
+--       = eqToHom (obj σ) ≫ left.map f ≫ eqToHom (obj τ).symm := by
+--       unfold freeAbs left tensorProd
+--       simp only [Functor.comp_obj, Functor.comp_map, id_eq, eq_mpr_eq_cast, AlgHom.toUnder_comp,
+--         cast_eq]
+--       sorry
+--     exact CategoryTheory.Functor.ext obj map
+--   rw [this]
+--   -- let pointwise (σ : Type u) : left.obj σ ≅ (freeAbs S).obj σ := (MvPolynomial.algebraTensorAlgEquiv (σ := σ) R S).toUnder
+--   -- unfold left
+--   exact NatIso.ofComponents (fun σ => (MvPolynomial.algebraTensorAlgEquiv (σ := σ) R S).toUnder) (fun {σ τ} f => by
+--     unfold freeAbs left
+--     simp only
+--     -- exact?
+--     sorry
+--   )
 
 
 
