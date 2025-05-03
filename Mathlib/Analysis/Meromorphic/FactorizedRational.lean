@@ -13,6 +13,13 @@ This file discusses functions `𝕜 → 𝕜` of the form `∏ᶠ u, (· - u) ^ 
 integer-valued. We show that these "factorized rational functions" are meromorphic in normal form,
 with divisor equal to `d`.
 
+Implementation Note: For consistency, we use `∏ᶠ u, (· - u) ^ d u` throughout. If the support of `d`
+is finite, then evaluation of functions commutes with finprod, and the helper lemma
+`Function.FactorizedRational.finprod_eval` asserts that `∏ᶠ u, (· - u) ^ d u` equals the function
+`fun x ↦ ∏ᶠ u, (x - u) ^ d u`. If `d` has infinite support, this equality is wrong in general.
+There are elementary examples of functions `d` where `∏ᶠ u, (· - u) ^ d u` is constant one, while
+`fun x ↦ ∏ᶠ u, (x - u) ^ d u` is not continuous.
+
 TODO: Under suitable assumptions, show that meromorphic functions are equivalent, modulo equality on
 codiscrete sets, to the product of a factorized rational function and an analytic function without
 zeros.
@@ -39,6 +46,21 @@ lemma mulSupport (d : 𝕜 → ℤ) :
   · simp_all only [mem_mulSupport, ne_eq, ne_iff]
     use u
     simp_all [zero_zpow_eq_one₀]
+
+/--
+Helper Lemma: If the support of `d` is finite, then evaluation of functions commutes with finprod,
+and the function `∏ᶠ u, (· - u) ^ d u` equals `fun x ↦ ∏ᶠ u, (x - u) ^ d u`.
+-/
+lemma finprod_eval {d : 𝕜 → ℤ} (h : d.support.Finite) :
+    (∏ᶠ u, (· - u) ^ d u) = fun x ↦ ∏ᶠ u, (x - u) ^ d u := by
+  ext x
+  rw [finprod_eq_prod_of_mulSupport_subset (s := h.toFinset),
+    finprod_eq_prod_of_mulSupport_subset (s := h.toFinset)]
+  · simp
+  · intro u
+    contrapose
+    simp_all
+  · simp [mulSupport d]
 
 /--
 Factorized rational functions are analytic wherever the exponent is non-negative.
