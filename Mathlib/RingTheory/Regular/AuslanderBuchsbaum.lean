@@ -49,12 +49,12 @@ instance projective_of_hasProjectiveDimensionLT_one [HasProjectiveDimensionLT P 
     Projective P where
   factors := by
     intro E X f e he
-    let K : C := kernel e
     let S := ShortComplex.mk (kernel.ι e) e (kernel.condition e)
     have hS : S.ShortExact := shortExact_kernel_of_epi e
-    have h := covariant_sequence_exact₃ P hS (addEquiv₀.symm f) rfl
-    have : Subsingleton (Ext P S.X₁ 1) := sorry
-    sorry
+    rcases covariant_sequence_exact₃ P hS (addEquiv₀.symm f) rfl
+      (eq_zero_of_hasProjectiveDimensionLT _ 1 (Eq.le rfl)) with ⟨g, h⟩
+    rw [← addEquiv₀.eq_symm_apply.mp h, ← AddEquiv.symm_apply_apply addEquiv₀ g]
+    exact ⟨addEquiv₀ g, addEquiv₀.symm_apply_eq.mp (mk₀_comp_mk₀ (addEquiv₀ g) S.g).symm⟩
 
 instance Abelian.Ext.subsingleton_of_projective [Projective P] (n : ℕ) [hn : NeZero n] :
     Subsingleton (Ext P Y n) := by
