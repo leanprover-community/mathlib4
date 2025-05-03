@@ -117,7 +117,7 @@ open bernstein
 
 local postfix:1024 "/ₙ" => z
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [SeminormedAddCommGroup E]
 
 /-- The `n`-th approximation of a continuous function on `[0,1]` by Bernstein polynomials,
 given by `∑ k, bernstein n k x • f (k/n)`.
