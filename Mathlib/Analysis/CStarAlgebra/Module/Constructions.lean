@@ -115,7 +115,7 @@ lemma prod_norm_le_norm_add (x : C⋆ᵐᵒᵈ(A, E × F)) : ‖x‖ ≤ ‖x.1�
 variable [StarOrderedRing A]
 
 noncomputable instance : CStarModule A C⋆ᵐᵒᵈ(A, E × F) where
-  inner x y := inner x.1 y.1 + inner x.2 y.2
+  inner x y := ⟪x.1, y.1⟫_A + ⟪x.2, y.2⟫_A
   inner_add_right {x y z} := by simpa using add_add_add_comm ..
   inner_self_nonneg := add_nonneg CStarModule.inner_self_nonneg CStarModule.inner_self_nonneg
   inner_self {x} := by
@@ -223,7 +223,7 @@ variable [StarOrderedRing A]
 
 open Finset in
 noncomputable instance : CStarModule A C⋆ᵐᵒᵈ(A, Π i, E i) where
-  inner x y := ∑ i, inner (x i) (y i)
+  inner x y := ∑ i, ⟪x i, y i⟫_A
   inner_add_right {x y z} := by simp [inner_sum_right, sum_add_distrib]
   inner_self_nonneg := sum_nonneg <| fun _ _ ↦ CStarModule.inner_self_nonneg
   inner_self {x} := by
