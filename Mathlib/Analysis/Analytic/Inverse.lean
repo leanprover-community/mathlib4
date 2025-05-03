@@ -481,9 +481,7 @@ also has a positive radius of convergence. -/
 theorem radius_rightInv_pos_of_radius_pos
     {p : FormalMultilinearSeries 𝕜 E F} {i : E ≃L[𝕜] F} {x : E}
     (hp : 0 < p.radius) : 0 < (p.rightInv i x).radius := by
-  obtain ⟨C, r, Cpos, rpos, ple⟩ :
-    ∃ (C r : _) (_ : 0 < C) (_ : 0 < r), ∀ n : ℕ, ‖p n‖ ≤ C * r ^ n :=
-    le_mul_pow_of_radius_pos p hp
+  obtain ⟨C, r, Cpos, rpos, ple⟩ := le_mul_pow_of_radius_pos p hp
   let I := ‖(i.symm : F →L[𝕜] E)‖
   -- choose `a` small enough to make sure that `∑_{k ≤ n} aᵏ Qₖ` will be controllable by
   -- induction
