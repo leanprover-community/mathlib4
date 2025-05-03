@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -166,7 +167,7 @@ theorem closure_three_cycles_eq_alternating :
       exact hind n l hl hn
     intro n
     induction' n with n ih <;> intro l hl hn
-    · simp [List.length_eq_zero.1 hn, one_mem]
+    · simp [List.length_eq_zero_iff.1 hn, one_mem]
     rw [Nat.mul_succ] at hn
     obtain ⟨a, l, rfl⟩ := l.exists_of_length_succ hn
     rw [List.length_cons, Nat.succ_inj'] at hn
@@ -175,8 +176,8 @@ theorem closure_three_cycles_eq_alternating :
     rw [List.length_cons, Nat.succ_inj'] at hn
     exact
       mul_mem
-        (IsSwap.mul_mem_closure_three_cycles (hl a (List.mem_cons_self a _))
-          (hl b (List.mem_cons_of_mem a (l.mem_cons_self b))))
+        (IsSwap.mul_mem_closure_three_cycles (hl a List.mem_cons_self)
+          (hl b (List.mem_cons_of_mem a List.mem_cons_self)))
         (ih _ (fun g hg => hl g (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hg))) hn)
 
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on

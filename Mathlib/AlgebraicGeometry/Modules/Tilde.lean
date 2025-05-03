@@ -23,7 +23,7 @@ such that `M^~(U)` is the set of dependent functions that are locally fractions.
 * `ModuleCat.tildeInType` : `M^~` as a sheaf of types groups.
 * `ModuleCat.tilde` : `M^~` as a sheaf of `𝒪_{Spec R}`-modules.
 * `ModuleCat.tilde.stalkIso`: The isomorphism of `R`-modules from the stalk of `M^~` at `x` to
-the localization of `M` at the prime ideal corresponding to `x`.
+  the localization of `M` at the prime ideal corresponding to `x`.
 
 ## Technical note
 

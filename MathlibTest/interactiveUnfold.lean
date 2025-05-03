@@ -13,7 +13,7 @@ In order to test it, we use the `#unfold?` command.
 /--
 info: Unfolds for 0:
 · ↑0
-· NatCast.natCast 0
+· ↑0
 · Rat.ofInt ↑0
 -/
 #guard_msgs in
@@ -31,7 +31,7 @@ info: Unfolds for -42:
 /--
 info: Unfolds for 42:
 · ↑42
-· NatCast.natCast 42
+· ↑42
 · Rat.ofInt ↑42
 -/
 #guard_msgs in

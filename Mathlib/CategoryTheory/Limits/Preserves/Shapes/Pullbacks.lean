@@ -30,7 +30,6 @@ noncomputable section
 
 universe v₁ v₂ u₁ u₂
 
--- Porting note: need Functor namespace for mapCone
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Functor
 
 namespace CategoryTheory.Limits

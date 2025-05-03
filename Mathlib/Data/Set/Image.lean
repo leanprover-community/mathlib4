@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Batteries.Tactic.Congr
+import Mathlib.Data.Option.Basic
+import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.SymmDiff
-import Mathlib.Order.Hom.Basic
+import Mathlib.Data.Set.Inclusion
 
 /-!
 # Images and preimages of sets
@@ -29,6 +31,8 @@ import Mathlib.Order.Hom.Basic
 set, sets, image, preimage, pre-image, range
 
 -/
+
+assert_not_exists WithTop OrderIso
 
 universe u v
 
@@ -182,8 +186,6 @@ section Image
 
 variable {f : α → β} {s t : Set α}
 
--- Porting note: `Set.image` is already defined in `Data.Set.Defs`
-
 theorem image_eta (f : α → β) : f '' s = (fun x => f x) '' s :=
   rfl
 
@@ -201,11 +203,9 @@ theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
 theorem exists_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp
 
--- Porting note: used to be `safe`
 @[congr]
 theorem image_congr {f g : α → β} {s : Set α} (h : ∀ a ∈ s, f a = g a) : f '' s = g '' s := by
-  ext x
-  exact exists_congr fun a ↦ and_congr_right fun ha ↦ by rw [h a ha]
+  aesop
 
 /-- A common special case of `image_congr` -/
 theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) : f '' s = g '' s :=
@@ -289,7 +289,6 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   simp only [eq_empty_iff_forall_not_mem]
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
--- Porting note: `compl` is already defined in `Data.Set.Defs`
 theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (S : Set α) :
     HasCompl.compl ⁻¹' S = HasCompl.compl '' S :=
   Set.ext fun x =>
@@ -732,13 +731,11 @@ theorem preimage_eq_preimage' {s t : Set α} {f : β → α} (hs : s ⊆ range f
     · rw [← preimage_subset_preimage_iff ht, h]
   rintro rfl; rfl
 
--- Porting note:
--- @[simp] `simp` can prove this
+-- Not `@[simp]` since `simp` can prove this.
 theorem preimage_inter_range {f : α → β} {s : Set β} : f ⁻¹' (s ∩ range f) = f ⁻¹' s :=
   Set.ext fun x => and_iff_left ⟨x, rfl⟩
 
--- Porting note:
--- @[simp] `simp` can prove this
+-- Not `@[simp]` since `simp` can prove this.
 theorem preimage_range_inter {f : α → β} {s : Set β} : f ⁻¹' (range f ∩ s) = f ⁻¹' s := by
   rw [inter_comm, preimage_inter_range]
 
@@ -822,15 +819,6 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
   rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_union_distrib_left,
     range_inl_union_range_inr, inter_univ]
-
-open Sum in
-/-- Sets on sum types are equivalent to pairs of sets on each summand. -/
-def sumEquiv {α β : Type*} : Set (α ⊕ β) ≃o Set α × Set β where
-  toFun s := (inl ⁻¹' s, inr ⁻¹' s)
-  invFun s := inl '' s.1 ∪ inr '' s.2
-  left_inv s := image_preimage_inl_union_image_preimage_inr s
-  right_inv s := by simp [preimage_image_eq _ inl_injective, preimage_image_eq _ inr_injective]
-  map_rel_iff' := by simp [subset_def]
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
@@ -993,8 +981,7 @@ theorem compl_range_some (α : Type*) : (range (some : α → Option α))ᶜ = {
 theorem range_some_inter_none (α : Type*) : range (some : α → Option α) ∩ {none} = ∅ :=
   (isCompl_range_some_none α).inf_eq_bot
 
--- Porting note:
--- @[simp] `simp` can prove this
+-- Not `@[simp]` since `simp` can prove this.
 theorem range_some_union_none (α : Type*) : range (some : α → Option α) ∪ {none} = univ :=
   (isCompl_range_some_none α).sup_eq_top
 
@@ -1133,12 +1120,6 @@ theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
 
 alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_existsUnique
 
-@[deprecated (since := "2024-09-25")]
-alias Injective.mem_range_iff_exists_unique := Injective.mem_range_iff_existsUnique
-
-@[deprecated (since := "2024-09-25")]
-alias Injective.exists_unique_of_mem_range := Injective.existsUnique_of_mem_range
-
 theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     (f '' s)ᶜ = f '' sᶜ ∪ (range f)ᶜ := by
   ext y
@@ -1231,8 +1212,7 @@ theorem preimage_coe_self_inter (s t : Set α) :
     ((↑) : s → α) ⁻¹' (s ∩ t) = ((↑) : s → α) ⁻¹' t := by
   rw [preimage_coe_eq_preimage_coe_iff, ← inter_assoc, inter_self]
 
--- Porting note:
--- @[simp] `simp` can prove this
+-- Not `@[simp]` since `simp` can prove this.
 theorem preimage_coe_inter_self (s t : Set α) :
     ((↑) : s → α) ⁻¹' (t ∩ s) = ((↑) : s → α) ⁻¹' t := by
   rw [inter_comm, preimage_coe_self_inter]
@@ -1264,8 +1244,7 @@ theorem preimage_coe_nonempty {s t : Set α} :
 theorem preimage_coe_eq_empty {s t : Set α} : ((↑) : s → α) ⁻¹' t = ∅ ↔ s ∩ t = ∅ := by
   simp [← not_nonempty_iff_eq_empty, preimage_coe_nonempty]
 
--- Porting note:
--- @[simp] `simp` can prove this
+-- Not `@[simp]` since `simp` can prove this.
 theorem preimage_coe_compl (s : Set α) : ((↑) : s → α) ⁻¹' sᶜ = ∅ :=
   preimage_coe_eq_empty.2 (inter_compl_self s)
 
@@ -1295,14 +1274,6 @@ theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (ran
   Set.ext fun _ => Option.exists.trans <| eq_comm.or Iff.rfl
 
 end Option
-
-theorem WithBot.range_eq {α β} (f : WithBot α → β) :
-    range f = insert (f ⊥) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
-
-theorem WithTop.range_eq {α β} (f : WithTop α → β) :
-    range f = insert (f ⊤) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
 
 namespace Set
 

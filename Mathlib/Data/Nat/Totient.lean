@@ -78,21 +78,17 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   conv_lhs => rw [← Nat.mod_add_div n a]
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
-    simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
-      zero_add]
+    simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos), zero_add]
     gcongr
-    exact Ico_subset_Ico rfl.le (add_le_add_left (le_of_lt (mod_lt n a_pos)) k)
+    exact le_of_lt (mod_lt n a_pos)
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
     #{x ∈ Ico k (k + n % a + a * i + a) | a.Coprime x}
-      = #{x ∈ Ico k (k + n % a + a * i) ∪
+      ≤ #{x ∈ Ico k (k + n % a + a * i) ∪
         Ico (k + n % a + a * i) (k + n % a + a * i + a) | a.Coprime x} := by
-      congr
-      rw [Ico_union_Ico_eq_Ico]
-      · rw [add_assoc]
-        exact le_self_add
-      exact le_self_add
+      gcongr
+      apply Ico_subset_Ico_union_Ico
     _ ≤ #{x ∈ Ico k (k + n % a + a * i) | a.Coprime x} + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
       apply card_union_le

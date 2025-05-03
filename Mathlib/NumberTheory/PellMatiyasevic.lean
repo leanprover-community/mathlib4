@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.NumberTheory.Zsqrtd.Basic
 
@@ -78,7 +79,6 @@ end
 
 section
 
--- Porting note: was parameter in Lean3
 variable {a : ℕ} (a1 : 1 < a)
 
 private def d (_a1 : 1 < a) :=
@@ -93,7 +93,6 @@ theorem d_pos : 0 < d a1 :=
 `d = a ^ 2 - 1`, defined together in mutual recursion. -/
 --@[nolint dup_namespace]
 def pell : ℕ → ℕ × ℕ
-  -- Porting note: used pattern matching because `Nat.recOn` is noncomputable
   | 0 => (1, 0)
   | n+1 => ((pell n).1 * a + d a1 * (pell n).2, (pell n).1 + (pell n).2 * a)
 
@@ -225,20 +224,8 @@ theorem xn_ge_a_pow : ∀ n : ℕ, a ^ n ≤ xn a1 n
     simp only [_root_.pow_succ, xn_succ]
     exact le_trans (Nat.mul_le_mul_right _ (xn_ge_a_pow n)) (Nat.le_add_right _ _)
 
-include a1 in
-theorem n_lt_a_pow : ∀ n : ℕ, n < a ^ n
-  | 0 => Nat.le_refl 1
-  | n + 1 => by
-    have IH := n_lt_a_pow n
-    have : a ^ n + a ^ n ≤ a ^ n * a := by
-      rw [← mul_two]
-      exact Nat.mul_le_mul_left _ a1
-    simp only [_root_.pow_succ, gt_iff_lt]
-    refine lt_of_lt_of_le ?_ this
-    exact add_lt_add_of_lt_of_le IH (lt_of_le_of_lt (Nat.zero_le _) IH)
-
 theorem n_lt_xn (n) : n < xn a1 n :=
-  lt_of_lt_of_le (n_lt_a_pow a1 n) (xn_ge_a_pow a1 n)
+  lt_of_lt_of_le (Nat.lt_pow_self a1) (xn_ge_a_pow a1 n)
 
 theorem x_pos (n) : 0 < xn a1 n :=
   lt_of_le_of_lt (Nat.zero_le n) (n_lt_xn a1 n)
@@ -346,7 +333,7 @@ theorem xy_coprime (n) : (xn a1 n).Coprime (yn a1 n) :=
   Nat.coprime_of_dvd' fun k _ kx ky => by
     let p := pell_eq a1 n
     rw [← p]
-    exact Nat.dvd_sub (le_of_lt <| Nat.lt_of_sub_eq_succ p) (kx.mul_left _) (ky.mul_left _)
+    exact Nat.dvd_sub (kx.mul_left _) (ky.mul_left _)
 
 theorem strictMono_y : StrictMono (yn a1)
   | _, 0, h => absurd h <| Nat.not_lt_zero _
@@ -460,7 +447,7 @@ theorem xy_succ_succ (n) :
     xn a1 (n + 2) + xn a1 n =
       2 * a * xn a1 (n + 1) ∧ yn a1 (n + 2) + yn a1 n = 2 * a * yn a1 (n + 1) := by
   have := pellZd_succ_succ a1 n; unfold pellZd at this
-  erw [Zsqrtd.smul_val (2 * a : ℕ)] at this
+  rw [Zsqrtd.nsmul_val (2 * a : ℕ)] at this
   injection this with h₁ h₂
   constructor <;> apply Int.ofNat.inj <;> [simpa using h₁; simpa using h₂]
 
@@ -877,7 +864,7 @@ theorem eq_pow_of_pell {m n k} :
     have nt : (↑(n ^ k) : ℤ) < 2 * a * n - n * n - 1 := by
       refine eq_pow_of_pell_lem hn.ne' hk.ne' ?_
       calc
-        n ^ k ≤ n ^ w := Nat.pow_le_pow_of_le_right hn kw
+        n ^ k ≤ n ^ w := Nat.pow_le_pow_right hn kw
         _ < (w + 1) ^ w := Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) wpos.ne'
         _ ≤ a := xn_ge_a_pow w1 w
     lift (2 * a * n - n * n - 1 : ℤ) to ℕ using (Nat.cast_nonneg _).trans nt.le with t te
@@ -905,7 +892,7 @@ theorem eq_pow_of_pell {m n k} :
         (modEq_zero_iff_dvd.1 <|
           (yn_modEq_a_sub_one hw1 j).symm.trans <| modEq_zero_iff_dvd.2 ⟨z, yj.symm⟩)
     have hnka : n ^ k < xn hw1 j := calc
-      n ^ k ≤ n ^ j := Nat.pow_le_pow_of_le_right hn0 (le_trans kw wj)
+      n ^ k ≤ n ^ j := Nat.pow_le_pow_right hn0 (le_trans kw wj)
       _ < (w + 1) ^ j := Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) hj0.ne'
       _ ≤ xn hw1 j := xn_ge_a_pow hw1 j
     have nt : (↑(n ^ k) : ℤ) < 2 * xn hw1 j * n - n * n - 1 :=

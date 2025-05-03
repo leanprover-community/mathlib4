@@ -787,7 +787,7 @@ theorem dist_summable (x y : ∀ i, F i) :
 
 theorem min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
     min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) ≤ dist x y :=
-  le_tsum (dist_summable x y) i fun j _ => le_min (by simp) dist_nonneg
+  (dist_summable x y).le_tsum i fun j _ => le_min (by simp) dist_nonneg
 
 theorem dist_le_dist_pi_of_dist_lt {x y : ∀ i, F i} {i : ι} (h : dist x y < (1 / 2) ^ encode i) :
     dist (x i) (y i) ≤ dist x y := by
@@ -822,8 +822,8 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           min_le_right _ _
     calc dist x z ≤ ∑' i, (min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
           min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) :=
-        tsum_le_tsum I (dist_summable x z) ((dist_summable x y).add (dist_summable y z))
-      _ = dist x y + dist y z := tsum_add (dist_summable x y) (dist_summable y z)
+        (dist_summable x z).tsum_le_tsum I ((dist_summable x y).add (dist_summable y z))
+      _ = dist x y + dist y z := (dist_summable x y).tsum_add (dist_summable y z)
   eq_of_dist_eq_zero hxy := by
     ext1 n
     rw [← dist_le_zero, ← hxy]
@@ -855,11 +855,11 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := rfl
           _ = (∑ i ∈ K, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i))) +
                 ∑' i : ↑(K : Set ι)ᶜ, min ((1 / 2) ^ encode (i : ι) : ℝ) (dist (x i) (y i)) :=
-            (sum_add_tsum_compl (dist_summable _ _)).symm
+            (Summable.sum_add_tsum_compl (dist_summable _ _)).symm
           _ ≤ (∑ i ∈ K, dist (x i) (y i)) +
                 ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
             refine add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) ?_
-            refine tsum_le_tsum (fun i => min_le_left _ _) ?_ ?_
+            refine Summable.tsum_le_tsum (fun i => min_le_left _ _) ?_ ?_
             · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
             · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
           _ < (∑ _i ∈ K, δ) + ε / 2 := by

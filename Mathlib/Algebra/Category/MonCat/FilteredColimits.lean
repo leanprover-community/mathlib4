@@ -5,7 +5,7 @@ Authors: Justus Springer
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.Algebra.Category.MonCat.Basic
 
 /-!

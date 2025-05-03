@@ -730,7 +730,7 @@ theorem eq_cycleOf_of_mem_cycleFactorsFinset_iff
   exact (mem_cycleFactorsFinset_iff.mp hc).left.ne_one
 
 theorem zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff {g : Perm α}
-    {x :α} {m : ℤ} {c : g.cycleFactorsFinset} :
+    {x : α} {m : ℤ} {c : g.cycleFactorsFinset} :
     (g ^ m) x ∈ (c : Perm α).support ↔ x ∈ (c : Perm α).support := by
   rw [← g.eq_cycleOf_of_mem_cycleFactorsFinset_iff _ c.prop, cycleOf_self_apply_zpow,
     eq_cycleOf_of_mem_cycleFactorsFinset_iff _ _ c.prop]
@@ -813,7 +813,7 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
     rw [List.prod_cons]
     exact
       induction_disjoint σ l.prod (disjoint_prod_right _ (List.pairwise_cons.mp h2).1)
-        (h1 _ (List.mem_cons_self _ _)) (base_cycles σ (h1 σ (l.mem_cons_self σ)))
+        (h1 _ List.mem_cons_self) (base_cycles σ (h1 σ List.mem_cons_self))
         (ih (fun τ hτ => h1 τ (List.mem_cons_of_mem σ hτ)) h2.of_cons)
 
 theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [DecidableEq α] [Fintype α] {f g : Perm α}
@@ -881,7 +881,7 @@ theorem subtypePerm_on_cycleFactorsFinset [DecidableEq α] [Fintype α]
   simp only [subtypePerm_apply, Subtype.coe_mk, subtypePermOfSupport]
   exact ((mem_cycleFactorsFinset_iff.mp hc).2 x hx).symm
 
-theorem commute_iff_of_mem_cycleFactorsFinset [DecidableEq α] [Fintype α]{g k c : Equiv.Perm α}
+theorem commute_iff_of_mem_cycleFactorsFinset [DecidableEq α] [Fintype α] {g k c : Equiv.Perm α}
     (hc : c ∈ g.cycleFactorsFinset) :
     Commute k c ↔
       ∃ hc' : ∀ x : α, x ∈ c.support ↔ k x ∈ c.support,

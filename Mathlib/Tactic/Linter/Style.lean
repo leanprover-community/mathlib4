@@ -19,18 +19,21 @@ Historically, some of these were ported from the `lint-style.py` Python script.
 
 This file defines the following linters:
 - the `setOption` linter checks for the presence of `set_option` commands activating
-options disallowed in mathlib: these are meant to be temporary, and not for polished code
+  options disallowed in mathlib: these are meant to be temporary, and not for polished code.
+  It also checks for `maxHeartbeats` options being present which are not scoped to single commands.
 - the `missingEnd` linter checks for sections or namespaces which are not closed by the end
-of the file: enforcing this invariant makes minimising files or moving code between files easier
+  of the file: enforcing this invariant makes minimising files or moving code between files easier
 - the `cdotLinter` linter checks for focusing dots `·` which are typed using a `.` instead:
-this is allowed Lean syntax, but it is nicer to be uniform
+  this is allowed Lean syntax, but it is nicer to be uniform
 - the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
-similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
-the `|>` symbol
+  similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
+  the `|>` symbol
 - the `lambdaSyntax` linter checks for uses of the `λ` symbol for anonymous functions,
-instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
+  instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
 - the `longFile` linter checks for files which have more than 1500 lines
 - the `longLine` linter checks for lines which have more than 100 characters
+- the `openClassical` linter checks for `open (scoped) Classical` statements which are not
+  scoped to a single declaration
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -41,7 +44,9 @@ open Lean Parser Elab Command Meta
 namespace Mathlib.Linter
 
 /-- The `setOption` linter emits a warning on a `set_option` command, term or tactic
-which sets a `pp`, `profiler` or `trace` option. -/
+which sets a `pp`, `profiler` or `trace` option.
+It also warns on an option containing `maxHeartbeats`
+(as these should be scoped as `set_option ... in` instead). -/
 register_option linter.style.setOption : Bool := {
   defValue := false
   descr := "enable the `setOption` linter"
@@ -71,12 +76,22 @@ def isSetOption : Syntax → Bool :=
 def is_set_option := @isSetOption
 
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
-which sets a `pp`, `profiler` or `trace` option.
+which sets a `debug`, `pp`, `profiler` or `trace` option.
+This also warns if an option containing `maxHeartbeats` (typically, the `maxHeartbeats` or
+`synthInstance.maxHeartbeats` option) is set.
 
-**Why is this bad?** These options are good for debugging, but should not be
-used in production code.
-**How to fix this?** Remove these options: usually, they are not necessary for production code.
-(Some tests will intentionally use one of these options; in this case, simply allow the linter.)
+**Why is this bad?** The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
+but should not be used in production code.
+
+`maxHeartbeats` options should be scoped as `set_option opt in ...` (and be followed by a comment
+explaining the need for them; another linter enforces this).
+
+**How to fix this?** The `maxHeartbeats` options can be scoped to individual commands, if they
+are truly necessary.
+
+The `debug`, `pp`, `profiler` and `trace` are usually not necessary for production code,
+so you can simply remove them. (Some tests will intentionally use one of these options;
+in this case, simply allow the linter.)
 -/
 def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
     unless Linter.getLinterValue linter.style.setOption (← getOptions) do
@@ -92,6 +107,11 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
                is only intended for development and not for final code. \
                If you intend to submit this contribution to the Mathlib project, \
                please remove 'set_option {name}'."
+        else if name.components.contains `maxHeartbeats then
+          Linter.logLint linter.style.setOption head m!"Unscoped option {name} is not allowed:\n\
+          Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
+          -- comment explaining why this is necessary\n\
+          example : ... := ...\n```"
 
 initialize addLinter setOptionLinter
 
@@ -466,5 +486,55 @@ def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
 initialize addLinter doubleUnderscore
 
 end Style.nameCheck
+
+/-! # The "openClassical" linter -/
+
+/-- The "openClassical" linter emits a warning on `open Classical` statements which are not
+scoped to a single declaration. A non-scoped `open Classical` can hide that some theorem statements
+would be better stated with explicit decidability statements.
+-/
+register_option linter.style.openClassical : Bool := {
+  defValue := false
+  descr := "enable the openClassical linter"
+}
+
+namespace Style.openClassical
+
+/-- If `stx` is syntax describing an `open` command, `extractOpenNames stx`
+returns an array of the syntax corresponding to the opened names,
+omitting any renamed or hidden items.
+
+This only checks independent `open` commands: for `open ... in ...` commands,
+this linter returns an empty array.
+-/
+def extractOpenNames : Syntax → Array (TSyntax `ident)
+  | `(command|$_ in $_) => #[] -- redundant, for clarity
+  | `(command|open $decl:openDecl) => match decl with
+    | `(openDecl| $arg hiding $_*)    => #[arg]
+    | `(openDecl| $arg renaming $_,*) => #[arg]
+    | `(openDecl| $arg ($_*))         => #[arg]
+    | `(openDecl| $args*)             => args
+    | `(openDecl| scoped $args*)      => args
+    | _ => unreachable!
+  | _ => #[]
+
+@[inherit_doc Mathlib.Linter.linter.style.openClassical]
+def openClassicalLinter : Linter where run stx := do
+    unless Linter.getLinterValue linter.style.openClassical (← getOptions) do
+      return
+    if (← get).messages.hasErrors then
+      return
+    -- If `stx` describes an `open` command, extract the list of opened namespaces.
+    for stxN in (extractOpenNames stx).filter (·.getId == `Classical) do
+      Linter.logLint linter.style.openClassical stxN "\
+      please avoid 'open (scoped) Classical' statements: this can hide theorem statements \
+      which would be better stated with explicit decidability statements.\n\
+      Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
+      for proofs.\nFor theorem statements, \
+      either add missing decidability assumptions or use `open Classical in`."
+
+initialize addLinter openClassicalLinter
+
+end Style.openClassical
 
 end Mathlib.Linter

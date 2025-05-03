@@ -390,6 +390,9 @@ variable [S.HasLeftHomology]
 /-- The left homology of a short complex, given by the `H` field of a chosen left homology data. -/
 noncomputable def leftHomology : C := S.leftHomologyData.H
 
+-- `S.leftHomology` is the simp normal form.
+@[simp] lemma leftHomologyData_H : S.leftHomologyData.H = S.leftHomology := rfl
+
 /-- The cycles of a short complex, given by the `K` field of a chosen left homology data. -/
 noncomputable def cycles : C := S.leftHomologyData.K
 
@@ -1009,7 +1012,7 @@ lemma hasCokernel [S.HasLeftHomology] [HasKernel S.g] :
   let e : parallelPair (kernel.lift S.g S.f S.zero) 0 ≅ parallelPair h.f' 0 :=
     parallelPair.ext (Iso.refl _) (IsLimit.conePointUniqueUpToIso (kernelIsKernel S.g) h.hi)
       (by aesop_cat) (by simp)
-  exact hasColimitOfIso e
+  exact hasColimit_of_iso e
 
 end HasLeftHomology
 

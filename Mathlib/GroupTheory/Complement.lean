@@ -589,7 +589,7 @@ alias _root_.Subgroup.MemLeftTransversals.toEquiv := leftQuotientEquiv
 @[to_additive "A left transversal is finite iff the subgroup has finite index."]
 theorem finite_left_iff (h : IsComplement S H) : Finite S ↔ H.FiniteIndex := by
   rw [← h.leftQuotientEquiv.finite_iff]
-  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient H, fun _ ↦ finite_quotient_of_finiteIndex H⟩
+  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient, fun _ ↦ finite_quotient_of_finiteIndex⟩
 
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemLeftTransversals.finite_iff := finite_left_iff
@@ -653,7 +653,7 @@ alias _root_.Subgroup.MemRightTransversals.toEquiv := rightQuotientEquiv
 theorem finite_right_iff (h : IsComplement H T) : Finite T ↔ H.FiniteIndex := by
   rw [← h.rightQuotientEquiv.finite_iff,
     (QuotientGroup.quotientRightRelEquivQuotientLeftRel H).finite_iff]
-  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient H, fun _ ↦ finite_quotient_of_finiteIndex H⟩
+  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient, fun _ ↦ finite_quotient_of_finiteIndex⟩
 
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemRightTransversals.finite_iff := finite_right_iff
@@ -832,6 +832,6 @@ theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
   rintro ⟨h', g, hg : g • a = a⟩ rfl
   specialize h1 (h * h') (by rwa [mul_smul, smul_def h', ← hg, ← mul_smul, hg])
   refine Prod.ext (eq_inv_of_mul_eq_one_right h1) (Subtype.ext ?_)
-  rwa [Subtype.ext_iff, coe_one, coe_mul, ← self_eq_mul_left, mul_assoc (↑h) (↑h') g] at h1
+  rwa [Subtype.ext_iff, coe_one, coe_mul, ← right_eq_mul, mul_assoc (↑h) (↑h') g] at h1
 
 end Subgroup

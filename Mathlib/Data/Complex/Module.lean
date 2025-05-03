@@ -146,11 +146,7 @@ theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
   funext fun i =>
     Basis.apply_eq_iff.mpr <|
       Finsupp.ext fun j => by
-        fin_cases i <;> fin_cases j <;>
-          -- Porting note: removed `only`, consider squeezing again
-          simp [coe_basisOneI_repr, Finsupp.single_eq_of_ne, Matrix.cons_val_zero,
-            Matrix.cons_val_one, Matrix.head_cons, Fin.one_eq_zero_iff, Ne, not_false_iff, I_re,
-            Nat.succ_succ_ne_one, one_im, I_im, one_re, Finsupp.single_eq_same, Fin.zero_eq_one_iff]
+        fin_cases i <;> fin_cases j <;> simp
 
 end Complex
 
@@ -253,7 +249,6 @@ theorem conjAe_coe : ⇑conjAe = conj :=
 theorem toMatrix_conjAe :
     LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
   ext i j
-  -- Porting note: replaced non-terminal `simp [LinearMap.toMatrix_apply]`
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 
 /-- The identity and the complex conjugation are the only two `ℝ`-algebra homomorphisms of `ℂ`. -/
@@ -267,8 +262,7 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
   { equivRealProdAddHom with
-    -- Porting note: `simp` has issues with `Prod.smul_def`
-    map_smul' := fun r c => by simp [equivRealProdAddHom, Prod.smul_def, smul_eq_mul] }
+    map_smul' := fun r c => by simp }
 
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
@@ -290,11 +284,10 @@ def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
       rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
       congr 1
       -- equate "real" and "imaginary" parts
-      · let inst : SMulCommClass ℝ A A := by infer_instance  -- Porting note: added
-        rw [smul_mul_smul_comm, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg, ←
-          RingHom.map_mul, ← RingHom.map_sub]
-      · rw [Algebra.smul_def, Algebra.smul_def, Algebra.smul_def, ← Algebra.right_comm _ x₂, ←
-          mul_assoc, ← add_mul, ← RingHom.map_mul, ← RingHom.map_mul, ← RingHom.map_add]
+      · rw [smul_mul_smul_comm, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg,
+          ← RingHom.map_mul, ← RingHom.map_sub]
+      · rw [Algebra.smul_def, Algebra.smul_def, Algebra.smul_def, ← Algebra.right_comm _ x₂,
+          ← mul_assoc, ← add_mul, ← RingHom.map_mul, ← RingHom.map_mul, ← RingHom.map_add]
 
 @[simp]
 theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap ℝ A z.re + z.im • I' :=
@@ -396,18 +389,12 @@ theorem realPart_add_I_smul_imaginaryPart (a : A) : (ℜ a : A) + I • (ℑ a :
 @[simp]
 theorem realPart_I_smul (a : A) : ℜ (I • a) = -ℑ a := by
   ext
-  -- Porting note: was
-  -- simp [smul_comm I, smul_sub, sub_eq_add_neg, add_comm]
-  rw [realPart_apply_coe, NegMemClass.coe_neg, imaginaryPart_apply_coe, neg_smul, neg_neg,
-    smul_comm I, star_smul, star_def, conj_I, smul_sub, neg_smul, sub_eq_add_neg]
+  simp [realPart_apply_coe, imaginaryPart_apply_coe, smul_comm I, sub_eq_add_neg, add_comm]
 
 @[simp]
 theorem imaginaryPart_I_smul (a : A) : ℑ (I • a) = ℜ a := by
   ext
-  -- Porting note: was
-  -- simp [smul_comm I, smul_smul I]
-  rw [realPart_apply_coe, imaginaryPart_apply_coe, smul_comm]
-  simp [← smul_assoc]
+  simp [realPart_apply_coe, imaginaryPart_apply_coe, smul_comm I (2⁻¹ : ℝ), smul_smul I]
 
 theorem realPart_smul (z : ℂ) (a : A) : ℜ (z • a) = z.re • ℜ a - z.im • ℑ a := by
   have := by congrm (ℜ ($((re_add_im z).symm) • a))
@@ -503,7 +490,7 @@ lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
     rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
     simp [conj_ofReal, ← two_mul]
 
-lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalRing A] [StarRing A]
+lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalNonAssocRing A] [StarRing A]
     [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A] (a : A) :
     star a * a + a * star a = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) :=
   have a_eq := (realPart_add_I_smul_imaginaryPart a).symm

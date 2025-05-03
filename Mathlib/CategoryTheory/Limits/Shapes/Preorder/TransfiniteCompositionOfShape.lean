@@ -78,6 +78,7 @@ def ofComposableArrows {n : ℕ} (G : ComposableArrows C n) :
     TransfiniteCompositionOfShape (Fin (n + 1)) G.hom where
   F := G
   isoBot := Iso.refl _
+  incl := _
   isColimit := colimitOfDiagramTerminal (Fin.isTerminalLast n) G
   fac := Category.id_comp _
 

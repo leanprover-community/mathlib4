@@ -13,8 +13,6 @@ variable {α : Type*} (p : α → Bool) (xs : List α) (ls : List (List α))
 
 attribute [simp] splitAt_eq
 
-@[deprecated (since := "2024-08-17")] alias splitAt_eq_take_drop := splitAt_eq
-
 @[simp]
 theorem splitOn_nil [DecidableEq α] (a : α) : [].splitOn a = [[]] :=
   rfl
@@ -70,7 +68,7 @@ theorem splitOnP_eq_single (h : ∀ x ∈ xs, ¬p x) : xs.splitOnP p = [xs] := b
   induction xs with
   | nil => simp only [splitOnP_nil]
   | cons hd tl ih =>
-    simp only [splitOnP_cons, h hd (mem_cons_self hd tl), if_false, Bool.false_eq_true,
+    simp only [splitOnP_cons, h hd mem_cons_self, if_false, Bool.false_eq_true,
       modifyHead_cons, ih <| forall_mem_of_forall_mem_cons h]
 
 /-- When a list of the form `[...xs, sep, ...as]` is split on `p`, the first element is `xs`,

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.ENNReal.Action
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
 /-!
@@ -306,6 +306,9 @@ theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :
   le_inducedOuterMeasure
 
 theorem le_trim : m ≤ m.trim := le_trim_iff.2 fun _ _ ↦ le_rfl
+
+lemma null_of_trim_null {s : Set α} (h : m.trim s = 0) : m s = 0 :=
+  nonpos_iff_eq_zero.1 <| (le_trim m s).trans_eq h
 
 @[simp]
 theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=

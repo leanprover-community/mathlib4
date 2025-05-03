@@ -69,8 +69,7 @@ theorem Prime.factorization_self {p : ℕ} (hp : Prime p) : p.factorization p = 
 /-- If the factorization of `n` contains just one number `p` then `n` is a power of `p` -/
 theorem eq_pow_of_factorization_eq_single {n p k : ℕ} (hn : n ≠ 0)
     (h : n.factorization = Finsupp.single p k) : n = p ^ k := by
-  -- Porting note: explicitly added `Finsupp.prod_single_index`
-  rw [← Nat.factorization_prod_pow_eq_self hn, h, Finsupp.prod_single_index]
+  rw [← Nat.factorization_prod_pow_eq_self hn, h]
   simp
 
 /-- The only prime factor of prime `p` is `p` itself. -/
@@ -239,8 +238,7 @@ theorem factorization_ordCompl (n p : ℕ) :
     (ordCompl[p] n).factorization = n.factorization.erase p := by
   if hn : n = 0 then simp [hn] else
   if pp : p.Prime then ?_ else
-    -- Porting note: needed to solve side goal explicitly
-    rw [Finsupp.erase_of_not_mem_support] <;> simp [pp]
+    simp [pp]
   ext q
   rcases eq_or_ne q p with (rfl | hqp)
   · simp only [Finsupp.erase_same, factorization_eq_zero_iff, not_dvd_ordCompl pp hn]

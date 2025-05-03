@@ -7,7 +7,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-!
 # Continuous linear maps
@@ -49,8 +49,8 @@ and `f (c • x) = (σ c) • f x`. -/
 class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
     (σ : outParam <| R →+* S) (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M]
     (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
-    [Module S M₂] [FunLike F M M₂]
-    extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂ : Prop
+    [Module S M₂] [FunLike F M M₂] : Prop
+    extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂
 
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
@@ -107,8 +107,8 @@ protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
   f.2
 
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
-    [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [UniformAddGroup E₁]
-    [UniformAddGroup E₂] (f : E₁ →SL[σ₁₂] E₂) : UniformContinuous f :=
+    [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [IsUniformAddGroup E₁]
+    [IsUniformAddGroup E₂] (f : E₁ →SL[σ₁₂] E₂) : UniformContinuous f :=
   uniformContinuous_addMonoidHom_of_continuous f.continuous
 
 @[simp, norm_cast]
@@ -1009,75 +1009,72 @@ end CommRing
 
 section RestrictScalars
 
-variable {A M M₂ : Type*} [Ring A] [AddCommGroup M] [AddCommGroup M₂] [Module A M] [Module A M₂]
-  [TopologicalSpace M] [TopologicalSpace M₂] (R : Type*) [Ring R] [Module R M] [Module R M₂]
-  [LinearMap.CompatibleSMul M M₂ R A]
+section Semiring
+variable {A M₁ M₂ R S : Type*} [Semiring A] [Semiring R] [Semiring S]
+  [AddCommMonoid M₁] [Module A M₁] [Module R M₁] [TopologicalSpace M₁]
+  [AddCommMonoid M₂] [Module A M₂] [Module R M₂] [TopologicalSpace M₂]
+  [LinearMap.CompatibleSMul M₁ M₂ R A]
 
+variable (R) in
 /-- If `A` is an `R`-algebra, then a continuous `A`-linear map can be interpreted as a continuous
-`R`-linear map. We assume `LinearMap.CompatibleSMul M M₂ R A` to match assumptions of
+`R`-linear map. We assume `LinearMap.CompatibleSMul M₁ M₂ R A` to match assumptions of
 `LinearMap.map_smul_of_tower`. -/
-def restrictScalars (f : M →L[A] M₂) : M →L[R] M₂ :=
-  ⟨(f : M →ₗ[A] M₂).restrictScalars R, f.continuous⟩
-
-variable {R}
-
-@[simp] -- @[norm_cast] -- Porting note: This theorem can't be a `norm_cast` theorem.
-theorem coe_restrictScalars (f : M →L[A] M₂) :
-    (f.restrictScalars R : M →ₗ[R] M₂) = (f : M →ₗ[A] M₂).restrictScalars R :=
-  rfl
+def restrictScalars (f : M₁ →L[A] M₂) : M₁ →L[R] M₂ :=
+  ⟨(f : M₁ →ₗ[A] M₂).restrictScalars R, f.continuous⟩
 
 @[simp]
-theorem coe_restrictScalars' (f : M →L[A] M₂) : ⇑(f.restrictScalars R) = f :=
-  rfl
+theorem coe_restrictScalars (f : M₁ →L[A] M₂) :
+    (f.restrictScalars R : M₁ →ₗ[R] M₂) = (f : M₁ →ₗ[A] M₂).restrictScalars R := rfl
 
 @[simp]
-theorem toContinuousAddMonoidHom_restrictScalars (f : M →L[A] M₂) :
-    ↑(f.restrictScalars R) = (f : ContinuousAddMonoidHom M M₂) := rfl
+theorem coe_restrictScalars' (f : M₁ →L[A] M₂) : ⇑(f.restrictScalars R) = f := rfl
 
 @[simp]
-theorem restrictScalars_zero : (0 : M →L[A] M₂).restrictScalars R = 0 :=
-  rfl
+theorem toContinuousAddMonoidHom_restrictScalars (f : M₁ →L[A] M₂) :
+    ↑(f.restrictScalars R) = (f : ContinuousAddMonoidHom M₁ M₂) := rfl
 
-section
-
-variable [IsTopologicalAddGroup M₂]
+@[simp] lemma restrictScalars_zero : (0 : M₁ →L[A] M₂).restrictScalars R = 0 := rfl
 
 @[simp]
-theorem restrictScalars_add (f g : M →L[A] M₂) :
-    (f + g).restrictScalars R = f.restrictScalars R + g.restrictScalars R :=
-  rfl
+lemma restrictScalars_add [ContinuousAdd M₂] (f g : M₁ →L[A] M₂) :
+    (f + g).restrictScalars R = f.restrictScalars R + g.restrictScalars R := rfl
+
+variable [Module S M₂] [ContinuousConstSMul S M₂] [SMulCommClass A S M₂] [SMulCommClass R S M₂]
 
 @[simp]
-theorem restrictScalars_neg (f : M →L[A] M₂) : (-f).restrictScalars R = -f.restrictScalars R :=
-  rfl
-
-end
-
-variable {S : Type*}
-variable [Ring S] [Module S M₂] [ContinuousConstSMul S M₂] [SMulCommClass A S M₂]
-  [SMulCommClass R S M₂]
-
-@[simp]
-theorem restrictScalars_smul (c : S) (f : M →L[A] M₂) :
+theorem restrictScalars_smul (c : S) (f : M₁ →L[A] M₂) :
     (c • f).restrictScalars R = c • f.restrictScalars R :=
   rfl
 
-variable (A M M₂ R S)
-variable [IsTopologicalAddGroup M₂]
+variable [ContinuousAdd M₂]
 
+variable (A R S M₁ M₂) in
 /-- `ContinuousLinearMap.restrictScalars` as a `LinearMap`. See also
 `ContinuousLinearMap.restrictScalarsL`. -/
-def restrictScalarsₗ : (M →L[A] M₂) →ₗ[S] M →L[R] M₂ where
+def restrictScalarsₗ : (M₁ →L[A] M₂) →ₗ[S] M₁ →L[R] M₂ where
   toFun := restrictScalars R
   map_add' := restrictScalars_add
   map_smul' := restrictScalars_smul
 
-variable {A M M₂ R S}
+@[simp]
+theorem coe_restrictScalarsₗ : ⇑(restrictScalarsₗ A M₁ M₂ R S) = restrictScalars R := rfl
+
+end Semiring
+
+section Ring
+variable {A R S M₁ M₂ : Type*} [Ring A] [Ring R] [Ring S]
+  [AddCommGroup M₁] [Module A M₁] [Module R M₁] [TopologicalSpace M₁]
+  [AddCommGroup M₂] [Module A M₂] [Module R M₂] [TopologicalSpace M₂]
+  [LinearMap.CompatibleSMul M₁ M₂ R A] [IsTopologicalAddGroup M₂]
 
 @[simp]
-theorem coe_restrictScalarsₗ : ⇑(restrictScalarsₗ A M M₂ R S) = restrictScalars R :=
-  rfl
+lemma restrictScalars_sub (f g : M₁ →L[A] M₂) :
+    (f - g).restrictScalars R = f.restrictScalars R - g.restrictScalars R := rfl
 
+@[simp]
+lemma restrictScalars_neg (f : M₁ →L[A] M₂) : (-f).restrictScalars R = -f.restrictScalars R := rfl
+
+end Ring
 end RestrictScalars
 
 end ContinuousLinearMap

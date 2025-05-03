@@ -233,7 +233,7 @@ end LinearOrder
 /-- For any finite family of elements `f : ι → α`, we can find a pairwise-disjoint family `g`
 bounded above by `f` and having the same supremum. This is non-canonical, depending on an arbitrary
 choice of ordering of `ι`. -/
-lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] {f : ι → α} :
+lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] (f : ι → α) :
     ∃ g, g ≤ f ∧ univ.sup g = univ.sup f ∧ Pairwise (Disjoint on g) := by
   rcases isEmpty_or_nonempty ι with hι | hι
   ·  -- do `ι = ∅` separately since `⊤ : Fin n` isn't defined for `n = 0`

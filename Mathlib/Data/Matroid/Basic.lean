@@ -7,7 +7,7 @@ import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Finite.Powerset
-import Mathlib.Order.Minimal
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Matroids
@@ -22,7 +22,7 @@ where the bases are required to obey certain axioms.
 
 This file gives a definition of a matroid `M` in terms of its bases,
 and some API relating independent sets (subsets of bases) and the notion of a
-isBasis of a set `X` (a maximal independent subset of `X`).
+basis of a set `X` (a maximal independent subset of `X`).
 
 ## Main definitions
 
@@ -124,7 +124,6 @@ There are a few design decisions worth discussing.
   The tactic `aesop_mat` exists specifically to discharge such goals
   with minimal fuss (using default values).
   The tactic works fairly well, but has room for improvement.
-  Even though the carrier set is written `M.E`,
 
   A related decision is to not have matroids themselves be a typeclass.
   This would make things be notationally simpler
@@ -154,16 +153,11 @@ There are a few design decisions worth discussing.
 
 ## References
 
-[1] The standard text on matroid theory
-[J. G. Oxley, Matroid Theory, Oxford University Press, New York, 2011.]
-
-[2] The robust axiomatic definition of infinite matroids
-[H. Bruhn, R. Diestel, M. Kriesell, R. Pendavingh, P. Wollan, Axioms for infinite matroids,
-  Adv. Math 239 (2013), 18-46]
-
-[3] Equicardinality of matroid bases is independent of ZFC.
-[N. Bowler, S. Geschke, Self-dual uniform matroids on infinite sets,
-  Proc. Amer. Math. Soc. 144 (2016), 459-471]
+* [J. Oxley, Matroid Theory][oxley2011]
+* [H. Bruhn, R. Diestel, M. Kriesell, R. Pendavingh, P. Wollan, Axioms for infinite matroids,
+  Adv. Math 239 (2013), 18-46][bruhnDiestelKriesselPendavinghWollan2013]
+* [N. Bowler, S. Geschke, Self-dual uniform matroids on infinite sets,
+  Proc. Amer. Math. Soc. 144 (2016), 459-471][bowlerGeschke2015]
 -/
 
 assert_not_exists Field
@@ -472,10 +466,21 @@ theorem not_rankFinite (M : Matroid α) [RankInfinite M] : ¬ RankFinite M := by
 theorem not_rankInfinite (M : Matroid α) [RankFinite M] : ¬ RankInfinite M := by
   intro h; obtain ⟨B,hB⟩ := M.exists_isBase; exact hB.infinite hB.finite
 
-theorem finite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
+theorem rankFinite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
   let ⟨B, hB⟩ := M.exists_isBase
   B.finite_or_infinite.elim
   (Or.inl ∘ hB.rankFinite_of_finite) (Or.inr ∘ hB.rankInfinite_of_infinite)
+
+@[deprecated (since := "2025-03-27")] alias finite_or_rankInfinite := rankFinite_or_rankInfinite
+
+@[simp]
+theorem not_rankFinite_iff (M : Matroid α) : ¬ RankFinite M ↔ RankInfinite M :=
+  M.rankFinite_or_rankInfinite.elim (fun h ↦ iff_of_false (by simpa) M.not_rankInfinite)
+    fun h ↦ iff_of_true M.not_rankFinite h
+
+@[simp]
+theorem not_rankInfinite_iff (M : Matroid α) : ¬ RankInfinite M ↔ RankFinite M := by
+  rw [← not_rankFinite_iff, not_not]
 
 theorem IsBase.diff_finite_comm (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
     (B₁ \ B₂).Finite ↔ (B₂ \ B₁).Finite :=

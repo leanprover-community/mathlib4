@@ -6,7 +6,8 @@ Authors: Antoine Labelle, Rémi Bottinelli
 import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Data.Sum.Basic
+import Mathlib.Logic.Equiv.Sum
 import Mathlib.Tactic.Common
 
 /-!
@@ -135,8 +136,7 @@ theorem Prefunctor.symmetrifyStar (u : U) :
     φ.symmetrify.star u =
       (Quiver.symmetrifyStar _).symm ∘ Sum.map (φ.star u) (φ.costar u) ∘
         Quiver.symmetrifyStar u := by
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [Equiv.eq_symm_comp]
+  rw [Equiv.eq_symm_comp (e := Quiver.symmetrifyStar (φ.obj u))]
   ext ⟨v, f | g⟩ <;>
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [Quiver.symmetrifyStar]`
     simp only [Quiver.symmetrifyStar, Function.comp_apply] <;>
@@ -147,8 +147,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
     φ.symmetrify.costar u =
       (Quiver.symmetrifyCostar _).symm ∘
         Sum.map (φ.costar u) (φ.star u) ∘ Quiver.symmetrifyCostar u := by
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [Equiv.eq_symm_comp]
+  rw [Equiv.eq_symm_comp (e := Quiver.symmetrifyCostar (φ.obj u))]
   ext ⟨v, f | g⟩ <;>
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [Quiver.symmetrifyCostar]`
     simp only [Quiver.symmetrifyCostar, Function.comp_apply] <;>
@@ -158,11 +157,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
 protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
     φ.symmetrify.IsCovering := by
   refine ⟨fun u => ?_, fun u => ?_⟩ <;>
-    -- Porting note: was
-    -- simp [φ.symmetrifyStar, φ.symmetrifyCostar, hφ.star_bijective u, hφ.costar_bijective u]
-    simp only [φ.symmetrifyStar, φ.symmetrifyCostar] <;>
-    erw [EquivLike.comp_bijective, EquivLike.bijective_comp] <;>
-    simp [hφ.star_bijective u, hφ.costar_bijective u]
+  simp [φ.symmetrifyStar, φ.symmetrifyCostar, hφ.star_bijective u, hφ.costar_bijective u]
 
 /-- The path star at a vertex `u` is the type of all paths starting at `u`.
 The type `Quiver.PathStar u` is defined to be `Σ v : U, Path u v`. -/

@@ -3,6 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
@@ -61,7 +62,7 @@ variable {R v}
 /-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
 independent over a subring `R` of `K`.
 
-See also `LinearIndependent.restrict_scalars'` for a verison with more convenient typeclass
+See also `LinearIndependent.restrict_scalars'` for a version with more convenient typeclass
 assumptions.
 
 TODO : `LinearIndepOn` version. -/
@@ -151,8 +152,23 @@ theorem LinearIndepOn.id_image (hs : LinearIndepOn R v s) : LinearIndepOn R id (
 @[deprecated (since := "2025-02-14")] alias
   LinearIndependent.image := LinearIndepOn.id_image
 
-theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulAction G R]
-    [DistribMulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] {v : ι → M}
+theorem LinearIndepOn_iff_linearIndepOn_image_injOn [Nontrivial R] :
+    LinearIndepOn R v s ↔ LinearIndepOn R id (v '' s) ∧ InjOn v s :=
+  ⟨fun h ↦ ⟨h.id_image, h.injOn⟩, fun h ↦ (linearIndepOn_iff_image h.2).2 h.1⟩
+
+theorem linearIndepOn_congr {w : ι → M} (h : EqOn v w s) :
+    LinearIndepOn R v s ↔ LinearIndepOn R w s := by
+  rw [LinearIndepOn, LinearIndepOn]
+  convert Iff.rfl using 2
+  ext x
+  exact h.symm x.2
+
+theorem LinearIndepOn.congr {w : ι → M} (hli : LinearIndepOn R v s) (h : EqOn v w s) :
+    LinearIndepOn R w s :=
+  (linearIndepOn_congr h).1 hli
+
+theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [MulAction G R]
+    [SMul G M] [IsScalarTower G R M] [SMulCommClass G R M] {v : ι → M}
     (hv : LinearIndependent R v) (w : ι → G) : LinearIndependent R (w • v) := by
   rw [linearIndependent_iff''ₛ] at hv ⊢
   intro s g₁ g₂ hgs hsum i
@@ -162,8 +178,8 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulActio
   · simpa only [smul_assoc, smul_comm] using hsum
 
 @[simp]
-theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [DistribMulAction G R]
-    [DistribMulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] (v : ι → M) (w : ι → G) :
+theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [MulAction G R]
+    [MulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] (v : ι → M) (w : ι → G) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.group_smul w⟩
   convert h.group_smul (fun i ↦ (w i)⁻¹)
@@ -234,7 +250,7 @@ theorem LinearIndependent.disjoint_span_image (hv : LinearIndependent R v) {s t 
     (hs : Disjoint s t) : Disjoint (Submodule.span R <| v '' s) (Submodule.span R <| v '' t) := by
   simp only [disjoint_def, Finsupp.mem_span_image_iff_linearCombination]
   rintro _ ⟨l₁, hl₁, rfl⟩ ⟨l₂, hl₂, H⟩
-  rw [hv.injective_linearCombination.eq_iff] at H; subst l₂
+  rw [hv.finsuppLinearCombination_injective.eq_iff] at H; subst l₂
   have : l₁ = 0 := Submodule.disjoint_def.mp (Finsupp.disjoint_supported_supported hs) _ hl₁ hl₂
   simp [this]
 
@@ -250,17 +266,13 @@ theorem LinearIndependent.not_mem_span_image [Nontrivial R] (hv : LinearIndepend
 
 theorem LinearIndependent.linearCombination_ne_of_not_mem_support [Nontrivial R]
     (hv : LinearIndependent R v) {x : ι} (f : ι →₀ R) (h : x ∉ f.support) :
-    Finsupp.linearCombination R v f ≠ v x := by
+    f.linearCombination R v ≠ v x := by
   replace h : x ∉ (f.support : Set ι) := h
-  have p := hv.not_mem_span_image h
   intro w
-  rw [← w] at p
-  rw [Finsupp.span_image_eq_map_linearCombination] at p
-  simp only [not_exists, not_and, mem_map] at p -- Porting note: `mem_map` isn't currently triggered
+  have p : ∀ x ∈ Finsupp.supported R R f.support,
+    Finsupp.linearCombination R v x ≠ f.linearCombination R v := by
+    simpa [← w, Finsupp.span_image_eq_map_linearCombination] using hv.not_mem_span_image h
   exact p f (f.mem_supported_support R) rfl
-
-@[deprecated (since := "2024-08-29")] alias LinearIndependent.total_ne_of_not_mem_support :=
-  LinearIndependent.linearCombination_ne_of_not_mem_support
 
 end Subtype
 
@@ -374,7 +386,7 @@ scalar multiplications on `M` and `M'` are compatible, then `j` sends linearly i
 of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_surjective_injective {R' M' : Type*}
-    [Ring R'] [AddCommGroup M'] [Module R' M'] (hv : LinearIndependent R v)
+    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R → R') (j : M →+ M') (hi : Surjective i) (hj : ∀ m, j m = 0 → m = 0)
     (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) :=
   hv.map_of_surjective_injectiveₛ i _ hi ((injective_iff_map_eq_zero _).mpr hj) hc
@@ -420,9 +432,7 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
   refine ⟨?_, ?_⟩
   · intro h
     refine ⟨h.comp _ Sum.inl_injective, h.comp _ Sum.inr_injective, ?_⟩
-    refine h.disjoint_span_image ?_
-    -- Porting note: `isCompl_range_inl_range_inr.1` timeouts.
-    exact IsCompl.disjoint isCompl_range_inl_range_inr
+    exact h.disjoint_span_image <| isCompl_range_inl_range_inr.disjoint
   rintro ⟨hl, hr, hlr⟩
   rw [linearIndependent_iff'] at *
   intro s g hg i hi
@@ -434,10 +444,8 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
     rw [Finset.sum_preimage' (g := fun x => g x • v x),
       Finset.sum_preimage' (g := fun x => g x • v x), ← Finset.sum_union, ← Finset.filter_or]
     · simpa only [← mem_union, range_inl_union_range_inr, mem_univ, Finset.filter_True]
-    · -- Porting note: Here was one `exact`, but timeouted.
-      refine Finset.disjoint_filter.2 fun x _ hx =>
-        disjoint_left.1 ?_ hx
-      exact IsCompl.disjoint isCompl_range_inl_range_inr
+    · exact Finset.disjoint_filter.2 fun x _ hx =>
+        disjoint_left.1 isCompl_range_inl_range_inr.disjoint hx
   rw [← eq_neg_iff_add_eq_zero] at this
   rw [disjoint_def'] at hlr
   have A := by
@@ -455,14 +463,35 @@ theorem LinearIndependent.sum_type {v' : ι' → M} (hv : LinearIndependent R v)
     LinearIndependent R (Sum.elim v v') :=
   linearIndependent_sum.2 ⟨hv, hv', h⟩
 
--- TODO - generalize this to non-identity functions
-theorem LinearIndepOn.id_union {s t : Set M} (hs : LinearIndepOn R id s)
-    (ht : LinearIndepOn R id t) (hst : Disjoint (span R s) (span R t)) :
-    LinearIndepOn R id (s ∪ t) := by
-  have h := hs.linearIndependent.sum_type ht.linearIndependent (by simpa)
-  simpa [id_eq] using h.linearIndepOn_id
+theorem LinearIndepOn.union {t : Set ι} (hs : LinearIndepOn R v s) (ht : LinearIndepOn R v t)
+    (hdj : Disjoint (span R (v '' s)) (span R (v '' t))) : LinearIndepOn R v (s ∪ t) := by
+  nontriviality R
+  classical
+  have hli := LinearIndependent.sum_type hs ht (by rwa [← image_eq_range, ← image_eq_range])
+  have hdj := (hdj.of_span₀ hs.zero_not_mem_image).of_image
+  rw [LinearIndepOn]
+  convert (hli.comp _ (Equiv.Set.union hdj).injective) with ⟨x, hx | hx⟩
+  · rw [comp_apply, Equiv.Set.union_apply_left _ hx, Sum.elim_inl]
+  rw [comp_apply, Equiv.Set.union_apply_right _ hx, Sum.elim_inr]
 
-@[deprecated (since := "2025-02-14")] alias LinearIndependent.union := LinearIndepOn.id_union
+theorem LinearIndepOn.id_union {s t : Set M} (hs : LinearIndepOn R id s) (ht : LinearIndepOn R id t)
+    (hdj : Disjoint (span R s) (span R t)) : LinearIndepOn R id (s ∪ t) :=
+  hs.union ht (by simpa)
+
+theorem linearIndepOn_union_iff {t : Set ι} (hdj : Disjoint s t) :
+    LinearIndepOn R v (s ∪ t) ↔
+    LinearIndepOn R v s ∧ LinearIndepOn R v t ∧ Disjoint (span R (v '' s)) (span R (v '' t)) := by
+  refine ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right, ?_⟩,
+    fun h ↦ h.1.union h.2.1 h.2.2⟩
+  convert h.disjoint_span_image (s := (↑) ⁻¹' s) (t := (↑) ⁻¹' t) (hdj.preimage _) <;>
+  aesop
+
+theorem linearIndepOn_id_union_iff {s t : Set M} (hdj : Disjoint s t) :
+    LinearIndepOn R id (s ∪ t) ↔
+    LinearIndepOn R id s ∧ LinearIndepOn R id t ∧ Disjoint (span R s) (span R t) := by
+  rw [linearIndepOn_union_iff hdj, image_id, image_id]
+
+@[deprecated (since := "2025-02-14")] alias LinearIndependent.union := LinearIndepOn.union
 
 open LinearMap
 
@@ -478,7 +507,7 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 --  <https://kconrad.math.uconn.edu/blurbs/galoistheory/linearchar.pdf>
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]
-theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing L]
+theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
     [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   -- Porting note: Some casts are required.
   letI := Classical.decEq (G →* L)
@@ -585,8 +614,12 @@ theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :
 
 alias ⟨_, linearIndependent_unique⟩ := linearIndependent_unique_iff
 
-theorem LinearIndepOn.singleton {v : ι → M} {i : ι} (hi : v i ≠ 0) : LinearIndepOn R v {i} :=
-  linearIndependent_unique _ hi
+variable (R) in
+@[simp]
+theorem linearIndepOn_singleton_iff {i : ι} {v : ι → M} : LinearIndepOn R v {i} ↔ v i ≠ 0 :=
+  ⟨fun h ↦ h.ne_zero rfl, fun h ↦ linearIndependent_unique _ h⟩
+
+alias ⟨_, LinearIndepOn.singleton⟩ := linearIndepOn_singleton_iff
 
 variable (R) in
 theorem LinearIndepOn.id_singleton {x : M} (hx : x ≠ 0) : LinearIndepOn R id {x} :=

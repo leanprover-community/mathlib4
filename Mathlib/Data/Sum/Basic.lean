@@ -155,10 +155,6 @@ theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
 
 end LiftRel
 
-section Lex
-
-end Lex
-
 end Sum
 
 open Sum

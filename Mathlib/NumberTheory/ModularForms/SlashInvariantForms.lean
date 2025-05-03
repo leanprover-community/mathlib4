@@ -91,7 +91,7 @@ theorem slash_action_eqn'' {F : Type*} [FunLike F ℍ ℂ] {k : ℤ} {Γ : Subgr
   SlashInvariantForm.slash_action_eqn' f hγ z
 
 instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
-  ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f }⟩
+  ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f, .. }⟩
 
 instance instAdd : Add (SlashInvariantForm Γ k) :=
   ⟨fun f g ↦
@@ -175,7 +175,7 @@ instance : Module ℂ (SlashInvariantForm Γ k) :=
   coeHom_injective.module ℂ coeHom fun _ _ => rfl
 
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def const (x : ℂ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
   slash_action_eq' A _ := ModularForm.is_invariant_const A x

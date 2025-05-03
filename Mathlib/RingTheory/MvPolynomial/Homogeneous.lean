@@ -8,8 +8,9 @@ import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Homogeneous polynomials
@@ -51,6 +52,13 @@ theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
   simp only [totalDegree, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
     linearCombination, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
     id, Algebra.id.smul_eq_mul, mul_one]
+
+theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} [DecidableEq τ] {e : σ → τ}
+    {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
+    weightedTotalDegree w (rename e P) = weightedTotalDegree (w ∘ e) P := by
+  unfold weightedTotalDegree
+  rw [support_rename_of_injective he, Finset.sup_image]
+  congr; ext; unfold weight; simp
 
 variable (σ R)
 
@@ -444,7 +452,7 @@ open Finset Finsupp
 
 variable (n : ℕ) (φ ψ : MvPolynomial σ R)
 
-theorem homogeneousComponent_mem  :
+theorem homogeneousComponent_mem :
     homogeneousComponent n φ ∈ homogeneousSubmodule σ R n :=
   weightedHomogeneousComponent_mem _ φ n
 
