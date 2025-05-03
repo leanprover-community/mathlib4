@@ -3,9 +3,7 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Factorization.Defs
-import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.IntervalCases
 
@@ -50,6 +48,11 @@ theorem factorization_eq_zero_iff' (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨
 
 /-! ## Lemmas about factorizations of products and powers -/
 
+/-- Modified version of `factorization_prod` that accounts for inputs. -/
+theorem factorization_prod_apply {α : Type*} {p : ℕ}
+    {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
+    (S.prod g).factorization p = S.sum fun x => (g x).factorization p := by
+  rw [factorization_prod hS, finset_sum_apply]
 
 /-- A product over `n.factorization` can be written as a product over `n.primeFactors`; -/
 lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : ℕ → ℕ → β) :
@@ -61,10 +64,12 @@ lemma prod_primeFactors_prod_factorization {β : Type*} [CommMonoid β] (f : ℕ
 
 /-! ## Lemmas about factorizations of primes and prime powers -/
 
-
 /-- The multiplicity of prime `p` in `p` is `1` -/
 @[simp]
 theorem Prime.factorization_self {p : ℕ} (hp : Prime p) : p.factorization p = 1 := by simp [hp]
+
+theorem factorization_pow_self {p n : ℕ} (hp : p.Prime) : (p ^ n).factorization p = n := by
+  simp [factorization_pow, Prime.factorization_self hp]
 
 /-- If the factorization of `n` contains just one number `p` then `n` is a power of `p` -/
 theorem eq_pow_of_factorization_eq_single {n p k : ℕ} (hn : n ≠ 0)
@@ -399,90 +404,6 @@ theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
   ext1
   exact (min_add_max _ _).symm
 
-variable (a b)
-
-@[simp]
-lemma factorizationLCMLeft_zero_left : factorizationLCMLeft 0 b = 1 := by
-  simp [factorizationLCMLeft]
-
-@[simp]
-lemma factorizationLCMLeft_zero_right : factorizationLCMLeft a 0 = 1 := by
-  simp [factorizationLCMLeft]
-
-@[simp]
-lemma factorizationLCRight_zero_left : factorizationLCMRight 0 b = 1 := by
-  simp [factorizationLCMRight]
-@[simp]
-lemma factorizationLCMRight_zero_right : factorizationLCMRight a 0 = 1 := by
-  simp [factorizationLCMRight]
-
-lemma factorizationLCMLeft_pos :
-    0 < factorizationLCMLeft a b := by
-  apply Nat.pos_of_ne_zero
-  rw [factorizationLCMLeft, Finsupp.prod_ne_zero_iff]
-  intro p _ H
-  by_cases h : b.factorization p ≤ a.factorization p
-  · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq] at H
-    simpa [H.1] using H.2
-  · simp only [h, reduceIte, one_ne_zero] at H
-
-lemma factorizationLCMRight_pos :
-    0 < factorizationLCMRight a b := by
-  apply Nat.pos_of_ne_zero
-  rw [factorizationLCMRight, Finsupp.prod_ne_zero_iff]
-  intro p _ H
-  by_cases h : b.factorization p ≤ a.factorization p
-  · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq, reduceCtorEq] at H
-  · simp only [h, ↓reduceIte, pow_eq_zero_iff', ne_eq] at H
-    simpa [H.1] using H.2
-
-lemma coprime_factorizationLCMLeft_factorizationLCMRight :
-    (factorizationLCMLeft a b).Coprime (factorizationLCMRight a b) := by
-  rw [factorizationLCMLeft, factorizationLCMRight]
-  refine coprime_prod_left_iff.mpr fun p hp ↦ coprime_prod_right_iff.mpr fun q hq ↦ ?_
-  dsimp only; split_ifs with h h'
-  any_goals simp only [coprime_one_right_eq_true, coprime_one_left_eq_true]
-  refine coprime_pow_primes _ _ (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq) ?_
-  contrapose! h'; rwa [← h']
-
-variable {a b}
-
-lemma factorizationLCMLeft_mul_factorizationLCMRight (ha : a ≠ 0) (hb : b ≠ 0) :
-    (factorizationLCMLeft a b) * (factorizationLCMRight a b) = lcm a b := by
-  rw [← factorization_prod_pow_eq_self (lcm_ne_zero ha hb), factorizationLCMLeft,
-    factorizationLCMRight, ← prod_mul]
-  congr; ext p n; split_ifs <;> simp
-
-variable (a b)
-
-lemma factorizationLCMLeft_dvd_left : factorizationLCMLeft a b ∣ a := by
-  rcases eq_or_ne a 0 with rfl | ha
-  · simp only [dvd_zero]
-  rcases eq_or_ne b 0 with rfl | hb
-  · simp [factorizationLCMLeft]
-  nth_rewrite 2 [← factorization_prod_pow_eq_self ha]
-  rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
-  · apply prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
-    · rw [factorization_lcm ha hb]; apply pow_dvd_pow; exact sup_le le_rfl le
-    · apply one_dvd
-  · intro p hp; rw [mem_support_iff] at hp ⊢
-    rw [factorization_lcm ha hb]; exact (lt_sup_iff.mpr <| .inl <| Nat.pos_of_ne_zero hp).ne'
-  · intros; rw [pow_zero]
-
-lemma factorizationLCMRight_dvd_right : factorizationLCMRight a b ∣ b := by
-  rcases eq_or_ne a 0 with rfl | ha
-  · simp [factorizationLCMRight]
-  rcases eq_or_ne b 0 with rfl | hb
-  · simp only [dvd_zero]
-  nth_rewrite 2 [← factorization_prod_pow_eq_self hb]
-  rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
-  · apply Finset.prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
-    · apply one_dvd
-    · rw [factorization_lcm ha hb]; apply pow_dvd_pow; exact sup_le (not_le.1 le).le le_rfl
-  · intro p hp; rw [mem_support_iff] at hp ⊢
-    rw [factorization_lcm ha hb]; exact (lt_sup_iff.mpr <| .inr <| Nat.pos_of_ne_zero hp).ne'
-  · intros; rw [pow_zero]
-
 @[to_additive sum_primeFactors_gcd_add_sum_primeFactors_mul]
 theorem prod_primeFactors_gcd_mul_prod_primeFactors_mul {β : Type*} [CommMonoid β] (m n : ℕ)
     (f : ℕ → β) :
@@ -521,6 +442,25 @@ theorem Ico_filter_pow_dvd_eq {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : 
   rintro h1 -
   exact iff_of_true (lt_of_pow_dvd_right hn pp.two_le h1) <|
     (Nat.pow_le_pow_iff_right pp.one_lt).1 <| (le_of_dvd hn.bot_lt h1).trans hb
+
+theorem Ico_pow_dvd_eq_Ico_of_lt {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : n < p ^ b) :
+    {i ∈ Ico 1 n | p ^ i ∣ n} = {i ∈ Ico 1 b | p ^ i ∣ n} := by
+  ext i
+  simp only [Finset.mem_filter, mem_Ico, and_congr_left_iff, and_congr_right_iff]
+  refine fun h1 h2 ↦ ⟨fun h ↦ ?_, fun h ↦ lt_of_pow_dvd_right hn (Prime.one_lt pp) h1⟩
+  rcases p with - | p
+  · rw [zero_pow (ne_zero_of_lt h2), zero_dvd_iff] at h1
+    exact (hn h1).elim
+  · rw [←Nat.pow_lt_pow_iff_right (Prime.one_lt pp)]
+    apply lt_of_le_of_lt (le_of_dvd (Nat.zero_lt_of_ne_zero hn) h1) hb
+
+/-- The factorization of `m` in `n` is the number of positive natural numbers `i` such that `m ^ i`
+divides `n`. Note `m` is prime. This set is expressed by filtering `Ico 1 b` where `b` is any bound
+greater than `log m n`. -/
+theorem factorization_eq_card_pow_dvd_of_lt {m n b : ℕ}
+    (hm2: m.Prime) (hn : 0 < n) (hb : n < m ^ b) :
+    n.factorization m = #{i ∈ Ico 1 b | m ^ i ∣ n} := by
+  rwa [factorization_eq_card_pow_dvd n hm2, Ico_pow_dvd_eq_Ico_of_lt hm2 (ne_zero_of_lt hn)]
 
 /-! ### Factorization and coprimes -/
 
@@ -568,8 +508,6 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 
 /-! ### Lemmas about factorizations of particular functions -/
 
-
--- TODO: Port lemmas from `Data/Nat/Multiplicity` to here, re-written in terms of `factorization`
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
 See `Nat.card_multiples'` for an alternative spelling of the statement. -/
 theorem card_multiples (n p : ℕ) : #{e ∈ range n | p ∣ e + 1} = n / p := by
