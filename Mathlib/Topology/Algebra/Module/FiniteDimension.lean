@@ -255,7 +255,7 @@ theorem FiniteDimensional.isModuleTopology [T2Space E] [FiniteDimensional 𝕜 E
 /-- Any linear map on a finite dimensional space over a complete field is continuous. -/
 theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional 𝕜 E]
     (f : E →ₗ[𝕜] F') : Continuous f :=
-  have := FiniteDimensional.isModuleTopology 𝕜 E
+  have := FiniteDimensional.isModuleTopology
   IsModuleTopology.continuous_of_linearMap f
 
 instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E] :
@@ -326,7 +326,7 @@ theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
 /-- A surjective linear map `f` with finite dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f :=
-  have := FiniteDimensional.isModuleTopology 𝕜 E
+  have := FiniteDimensional.isModuleTopology
   IsModuleTopology.isOpenMap_of_surjective hf
 
 instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) (↑) fun _ => True :=

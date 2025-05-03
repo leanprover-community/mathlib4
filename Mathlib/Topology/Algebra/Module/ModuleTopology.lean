@@ -408,7 +408,7 @@ theorem isQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology
       exact Continuous.comp hφo.continuous hA
 
 /-- A linear surjection between modules with the module topology is an open quotient map. -/
-theorem isOpenQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology R B]
+theorem isOpenQuotientMap_of_surjective [TopologicalSpace B] [IsModuleTopology R B]
     {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
     IsOpenQuotientMap φ :=
   have := toContinuousAdd R A
@@ -416,7 +416,7 @@ theorem isOpenQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopo
 
 omit [IsModuleTopology R A] in
 /-- A linear surjection to a module with the module topology is open. -/
-theorem isOpenMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology R B]
+theorem isOpenMap_of_surjective [TopologicalSpace B] [IsModuleTopology R B]
     [ContinuousAdd A] [ContinuousSMul R A] {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
     IsOpenMap φ := by
   have hOpenMap :=
