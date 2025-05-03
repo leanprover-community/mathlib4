@@ -66,8 +66,6 @@ instance [Φ₁.IsRightDerivabilityStructure] [Φ₂.IsRightDerivabilityStructur
   have := Φ₂.guitartExact_of_isRightDerivabilityStructure W₂.Q W₂'.Q
   apply TwoSquare.GuitartExact.prod
 
-#check prodOpEquiv C₁ C₂
-
 instance {D : Type*} [Category D] (L : C₁ᵒᵖ × C₂ᵒᵖ ⥤ D)
     [L.IsLocalization (W₁.op.prod W₂.op)] :
     ((prodOpEquiv C₁ C₂).functor ⋙ L).IsLocalization (W₁.prod W₂).op :=
