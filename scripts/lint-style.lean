@@ -3,7 +3,7 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-
+import Lake.CLI.Main
 import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Basic
 import Mathlib.Tactic.Linter.TextBased
@@ -109,13 +109,38 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     | true => ErrorFormat.github
     | false => ErrorFormat.humanReadable
   let fix := args.hasFlag "fix"
-  -- Read all module names to lint.
-  let mut allModuleNames := #[]
-  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    allModuleNames := allModuleNames.append (← findImports s)
-  -- Note: since "Batteries" and "Std" are added explicitly to "Mathlib.lean", we remove them here
-  -- manually.
-  allModuleNames := eraseExplicitImports allModuleNames
+  -- If no modules are specified, use the defaults from the Lakefile.
+  let originModules ← match args.variableArgsAs! String with
+  | #[] =>
+    -- If none are specified, lint the default Lake modules.
+    let (elanInstall?, leanInstall?, lakeInstall?) ← Lake.findInstall?
+    let config ← Lake.MonadError.runEIO <| Lake.mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
+    let some workspace ← Lake.loadWorkspace config |>.toBaseIO
+      | throw <| IO.userError "failed to load Lake workspace"
+    pure <| workspace.root.defaultTargets.flatMap fun target =>
+      if let some lib := workspace.root.findLeanLib? target then
+        lib.roots
+      else if let some exe := workspace.root.findLeanExe? target then
+        #[exe.config.root]
+      else
+        #[]
+  | mods => do
+    let mut result := #[]
+    for mod in mods do
+      let modParse := Lean.ParseImports.moduleIdent mod {}
+      match modParse.error? with
+      | none => result := result.append <| modParse.imports.map Lean.Import.module
+      | some err => throw <| IO.userError s!"could not parse module name {mod}: {err}"
+    pure result
+  -- Get all the imports, but only those in the same package.
+  let pkgs := originModules.map (·.components.head!)
+  Lean.initSearchPath (← Lean.findSysroot)
+  let searchPath ← Lean.getSrcSearchPath
+  let allModuleNames ← originModules.flatMapM fun mod => do
+    let imports ← match ← searchPath.findWithExt "lean" mod with
+    | some file => findImports file
+    | none => throw <| IO.userError s!"could not find module with name {mod}"
+    pure <| imports.filter (·.components.head! ∈ pkgs)
 
   -- Read the `nolints` file, with manual exceptions for the linter.
   -- NB. We pass these lints to `lintModules` explicitly to prevent cache invalidation bugs:
@@ -137,13 +162,17 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
 -- so far, no help options or so: perhaps that is fine?
 def lintStyle : Cmd := `[Cli|
   «lint-style» VIA lintStyleCli; ["0.0.1"]
-  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/.
+  "Run text-based style linters on every Lean file in specified modules.
   Print errors about any unexpected style errors to standard output."
 
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
     fix;        "Automatically fix the style error, if possible"
+
+  ARGS:
+    ...modules : String; "Which modules, and their imports, will be linted.\n\
+                          If no modules are specified, the linter runs on the default Lake module(s)."
 ]
 
 /-- The entry point to the `lake exe lint-style` command. -/
