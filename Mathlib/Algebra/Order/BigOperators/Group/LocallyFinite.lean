@@ -29,17 +29,25 @@ variable [LocallyFiniteOrder α]
 lemma mul_prod_Ico_eq_prod_Icc (h : a ≤ b) : f b * ∏ x ∈ Ico a b, f x = ∏ x ∈ Icc a b, f x := by
   rw [Icc_eq_cons_Ico h, prod_cons]
 
+@[deprecated (since := "2025-05-03")] alias right_mul_prod_Ico := mul_prod_Ico_eq_prod_Icc
+
 @[to_additive]
 lemma prod_Ico_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ico a b, f x) * f b = ∏ x ∈ Icc a b, f x := by
   rw [mul_comm, mul_prod_Ico_eq_prod_Icc h]
+
+@[deprecated (since := "2025-05-03")] alias prod_Ico_mul_right := prod_Ico_mul_eq_prod_Icc
 
 @[to_additive]
 lemma mul_prod_Ioc_eq_prod_Icc (h : a ≤ b) : f a * ∏ x ∈ Ioc a b, f x = ∏ x ∈ Icc a b, f x := by
   rw [Icc_eq_cons_Ioc h, prod_cons]
 
+@[deprecated (since := "2025-05-03")] alias left_mul_prod_Ioo := mul_prod_Ioc_eq_prod_Icc
+
 @[to_additive]
 lemma prod_Ioc_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ioc a b, f x) * f a = ∏ x ∈ Icc a b, f x := by
   rw [mul_comm, mul_prod_Ioc_eq_prod_Icc h]
+
+@[deprecated (since := "2025-05-03")] alias prod_Ioo_mul_left := prod_Ioc_mul_eq_prod_Icc
 
 variable [AddMonoidWithOne α] [SuccAddOrder α]
 
@@ -48,6 +56,8 @@ theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → M) :
     ∏ k ∈ Ico a b, f k = f a * ∏ k ∈ Ico (a + 1) b, f k := by
   have ha : a ∉ Ico (a + 1) b := by simp
   rw [← prod_insert ha, Finset.insert_Ico_add_one_left_eq_Ico hab]
+
+@[deprecated (since := "2025-05-03")] alias prod_Ioo_mul_right := prod_eq_prod_Ico_succ_bot
 
 end LocallyFiniteOrder
 
@@ -58,9 +68,13 @@ variable [LocallyFiniteOrderTop α]
 lemma mul_prod_Ioi_eq_prod_Ici (a : α) : f a * ∏ x ∈ Ioi a, f x = ∏ x ∈ Ici a, f x := by
   rw [Ici_eq_cons_Ioi, prod_cons]
 
+@[deprecated (since := "2025-05-03")] alias left_mul_prod_Ioi := mul_prod_Ioi_eq_prod_Ici
+
 @[to_additive]
 lemma prod_Ioi_mul_eq_prod_Ici (a : α) : (∏ x ∈ Ioi a, f x) * f a = ∏ x ∈ Ici a, f x := by
   rw [mul_comm, mul_prod_Ioi_eq_prod_Ici]
+
+@[deprecated (since := "2025-05-03")] alias prod_Ioi_mul_left := prod_Ioi_mul_eq_prod_Ici
 
 end LocallyFiniteOrderTop
 
@@ -71,9 +85,13 @@ variable [LocallyFiniteOrderBot α]
 lemma mul_prod_Iio_eq_prod_Iic (a : α) : f a * ∏ x ∈ Iio a, f x = ∏ x ∈ Iic a, f x := by
   rw [Iic_eq_cons_Iio, prod_cons]
 
+@[deprecated (since := "2025-05-03")] alias right_mul_prod_Iio := mul_prod_Iio_eq_prod_Iic
+
 @[to_additive]
 lemma prod_Iio_mul_eq_prod_Iic (a : α) : (∏ x ∈ Iio a, f x) * f a = ∏ x ∈ Iic a, f x := by
   rw [mul_comm, mul_prod_Iio_eq_prod_Iic]
+
+@[deprecated (since := "2025-05-03")] alias prod_Iio_mul_right := prod_Iio_mul_eq_prod_Iic
 
 end LocallyFiniteOrderBot
 
