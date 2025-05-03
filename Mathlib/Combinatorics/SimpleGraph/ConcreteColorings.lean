@@ -158,23 +158,8 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
 
 section components
 
-variable {α β : Type*} (G : SimpleGraph α)
+variable {α β : Type*} {G : SimpleGraph α}
 
-open ConnectedComponent
-/--
-Given homomorphisms from each connected component of `G` to `H` this is the `G →g H`
--/
-@[simps]
-def homOfConnectedComponents {H : SimpleGraph β}
-    (C : (c : G.ConnectedComponent) → (G.induce c) →g H ) : G →g H where
-  toFun := fun x ↦ (C (G.connectedComponentMk _)) _
-  map_rel' := fun hab ↦ by
-    have h : (G.induce (G.connectedComponentMk _).supp).Adj ⟨_, rfl⟩
-      ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
-    convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
-    rw [connectedComponentMk_eq_of_adj hab]
-
-variable {G}
 theorem colorable_iff_forall_connectedComponents {n : ℕ} :
     G.Colorable n ↔ ∀ c : G.ConnectedComponent, (G.induce c).Colorable n :=
   ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v, fun h h1 ↦ C.valid h h1⟩,
