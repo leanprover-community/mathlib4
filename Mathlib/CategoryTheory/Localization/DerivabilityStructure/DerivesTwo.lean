@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
+import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
 
 /-!
 # Deriving bifunctors using a derivability structure
@@ -41,9 +43,10 @@ lemma prod_isInvertedBy_iff (W₁ : MorphismProperty C₁)
 end MorphismProperty
 
 variable {C₁₀ : Type u₁₀} {C₂₀ : Type u₂₀}
-  {C₁ : Type u₁} {C₂ : Type u₂} {H : Type u₃}
+  {C₁ : Type u₁} {C₂ : Type u₂} {H : Type u₃} {D₁ D₂ : Type*}
   [Category.{v₁₀} C₁₀] [Category.{v₂₀} C₂₀]
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} H]
+  [Category D₁] [Category D₂]
   {W₁₀ : MorphismProperty C₁₀} {W₂₀ : MorphismProperty C₂₀}
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
@@ -53,7 +56,7 @@ variable (Φ₁ : LocalizerMorphism W₁₀ W₁) (Φ₂ : LocalizerMorphism W�
   (F : C₁ ⥤ C₂ ⥤ H)
 
 abbrev Derives₂ : Prop :=
-  (W₁₀.prod W₂₀).IsInvertedBy (Φ₁.functor.prod Φ₂.functor ⋙ uncurry.obj F)
+  (Φ₁.prod Φ₂).Derives (uncurry.obj F)
 
 variable [W₁₀.ContainsIdentities] [W₂₀.ContainsIdentities]
 
@@ -61,6 +64,7 @@ lemma derives₂_iff :
     Derives₂ Φ₁ Φ₂ F ↔
       (∀ (X₂₀ : C₂₀), W₁₀.IsInvertedBy (Φ₁.functor ⋙ F.flip.obj (Φ₂.functor.obj X₂₀))) ∧
       (∀ (X₁₀ : C₁₀), W₂₀.IsInvertedBy (Φ₂.functor ⋙ F.obj (Φ₁.functor.obj X₁₀))) := by
+  change (W₁₀.prod W₂₀).IsInvertedBy (Φ₁.functor.prod Φ₂.functor ⋙ uncurry.obj F) ↔ _
   simp only [MorphismProperty.prod_isInvertedBy_iff]
   apply and_congr <;> apply forall_congr' <;> intro <;>
     simp [MorphismProperty.IsInvertedBy]
@@ -72,6 +76,32 @@ lemma Derives₂.isInvertedBy₁ (h : Derives₂ Φ₁ Φ₂ F) (X₂₀ : C₂�
 lemma Derives₂.isInvertedBy₂ (h : Derives₂ Φ₁ Φ₂ F) (X₁₀ : C₁₀) :
     W₂₀.IsInvertedBy (Φ₂.functor ⋙ F.obj (Φ₁.functor.obj X₁₀)) :=
   ((derives₂_iff _ _ _).1 h).2 _
+
+namespace Derives₂
+
+variable {Φ₁ Φ₂ F} (h : Derives₂ Φ₁ Φ₂ F)
+  [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure]
+
+/-include h in
+lemma hasLeftDerivedFunctor₂ : F.HasLeftDerivedFunctor₂ W₁ W₂ := by
+  have : (Φ₁.prod Φ₂).IsLeftDerivabilityStructure := sorry
+  exact h.hasLeftDerivedFunctor-/
+
+end Derives₂
+
+/-variable {F} in
+lemma isLeftDerivedFunctor₂_of_isLeftDerivabilityStructure
+    [W₁.ContainsIdentities] [W₂.ContainsIdentities]
+    {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} [L₁.IsLocalization W₁]
+    [L₂.IsLocalization W₂] {LF : D₁ ⥤ D₂ ⥤ H}
+    (α : (((whiskeringLeft₂ H).obj L₁).obj L₂).obj LF ⟶ F)
+    (hα : ∀ (X₁₀ : C₁₀) (X₂₀ : C₂₀),
+      IsIso ((α.app (Φ₁.functor.obj X₁₀)).app (Φ₂.functor.obj X₂₀))) :
+    LF.IsLeftDerivedFunctor₂ α W₁ W₂ := by
+  have : (Φ₁.prod Φ₂).IsLeftDerivabilityStructure := sorry
+  apply (Φ₁.prod Φ₂).isLeftDerivedFunctor_of_isLeftDerivabilityStructure
+  rintro ⟨X₁, X₂⟩
+  apply hα-/
 
 end LocalizerMorphism
 

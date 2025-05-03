@@ -96,6 +96,28 @@ lemma of_isIso_app_functor_obj (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.funct
 
 end
 
+section
+
+variable {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {LF : D₂ ⥤ H} (α : L₂ ⋙ LF ⟶ F)
+
+include h in
+lemma isIso_of_isLeftDerivabilityStructure
+    [Φ.IsLeftDerivabilityStructure] (X₁ : C₁) [LF.IsLeftDerivedFunctor α W₂] :
+    IsIso (α.app (Φ.functor.obj X₁)) := by
+  have := h.op.isIso_of_isRightDerivabilityStructure (RF := LF.op) (F := F.op)
+    (L₂ := L₂.op) (NatTrans.op α) (Opposite.op X₁)
+  rwa [← isIso_unop_iff] at this
+
+lemma of_isIso_app_functor_obj' (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
+    Φ.Derives F := by
+  intro X₁ X₂ f hf
+  have := Localization.inverts L₂ W₂ _ (Φ.map f hf)
+  rw [Functor.comp_map, ← isIso_comp_left_iff (α.app _),
+    ← α.naturality (Φ.functor.map f), isIso_comp_right_iff, Functor.comp_map]
+  infer_instance
+
+end
+
 end Derives
 
 lemma isRightDerivedFunctor_of_isRightDerivabilityStructure
@@ -120,6 +142,17 @@ lemma isRightDerivedFunctor_of_isRightDerivabilityStructure
   rw [← Functor.isRightDerivedFunctor_iff_of_iso (F.totalRightDerivedUnit L₂ W₂) α W₂
     (asIso φ) (by aesop)]
   infer_instance
+
+variable {F} in
+lemma isLeftDerivedFunctor_of_isLeftDerivabilityStructure
+    [Φ.IsLeftDerivabilityStructure]
+    {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {LF : D₂ ⥤ H}
+    (α : L₂ ⋙ LF ⟶ F) (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
+    LF.IsLeftDerivedFunctor α W₂ := by
+  rw [Functor.isLeftDerivedFunctor_iff_op]
+  exact Φ.op.isRightDerivedFunctor_of_isRightDerivabilityStructure
+    (F := F.op) (RF := LF.op) (L₂ := L₂.op)
+    (α := NatTrans.op α) (fun X₁ ↦ by dsimp; infer_instance)
 
 end LocalizerMorphism
 
