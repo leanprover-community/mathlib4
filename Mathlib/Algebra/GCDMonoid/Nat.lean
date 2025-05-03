@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # ℕ and ℤ are normalized GCD monoids.
