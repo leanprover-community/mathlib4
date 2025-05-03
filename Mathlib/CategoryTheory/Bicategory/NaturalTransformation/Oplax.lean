@@ -37,13 +37,10 @@ composition of oplax transformations.
 * `StrongOplaxTrans F G` : strong natural transformations between oplax functors `F` and `G`.
 * `StrongCore F G`: a structure on an oplax transformation between pseudofunctors that promotes
 it to a strong transformation.
-* `mkOfOplax η η'` : given an oplax natural transformation `η` such that each component 2-cell
+* `mkOfOplax η η'` : given an oplax natural transformation `η` such that each component 2-morphism
   is an isomorphism, `mkOfOplax` gives the corresponding strong natural transformation.
 * `StrongOplaxTrans.vcomp η θ` : the vertical composition of strong natural transformations `η`
   and `θ`.
-* `StrongOplaxTrans.category F G` : a category structure on pseudofunctors between `F` and `G`,
-  where the morphisms are strong natural transformations.
-
 
 # TODO
 This file could also include lax transformations between oplax functors.
@@ -251,14 +248,14 @@ def toOplax {F G : OplaxFunctor B C} (η : StrongOplaxTrans F G) : F ⟶ G where
   naturality f := (η.naturality f).hom
 
 /-- Construct a strong natural transformation from an oplax natural transformation whose
-naturality 2-cell is an isomorphism. -/
+naturality 2-morphism is an isomorphism. -/
 def mkOfOplax {F G : OplaxFunctor B C} (η : F ⟶ G) (η' : OplaxTrans.StrongCore η) :
     StrongOplaxTrans F G where
   app := η.app
   naturality := η'.naturality
 
 /-- Construct a strong natural transformation from an oplax natural transformation whose
-naturality 2-cell is an isomorphism. -/
+naturality 2-morphism is an isomorphism. -/
 noncomputable def mkOfOplax' {F G : OplaxFunctor B C} (η : F ⟶ G)
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongOplaxTrans F G where
   app := η.app

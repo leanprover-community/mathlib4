@@ -11,18 +11,20 @@ import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 # Strong transformations of pseudofunctors
 
-A strong transformation is an oplax transformation such that each component 2-cell
-is an isomorphism.
+There are three types of transformations between pseudofunctors, depending on the direction
+or invertibility of the 2-morphism witnessing the naturality condition.
+
+In this file we define strong transformations, which require the 2-morphism to be invertible.
 
 ## Main definitions
 
-* `StrongTrans F G` : strong transformations between oplax functors `F` and `G`.
-* `mkOfOplax η η'` : given an oplax transformation `η` such that each component 2-cell
+* `StrongTrans F G` : strong transformations between pseudofunctors `F` and `G`.
+* `mkOfOplax η η'` : given an oplax transformation `η` such that each component 2-morphism
   is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
-* `StrongTrans.vcomp η θ` : the vertical composition of strong transformations `η`
-  and `θ`.
-* `StrongTrans.category F G` : a category structure on Pseudofunctors between `F` and `G`,
-  where the morphisms are strong transformations.
+* `StrongTrans.vcomp η θ` : the vertical composition of strong transformations `η` and `θ`.
+
+Using this we obtain a `CategoryStruct` on pseudofunctors, where the arrows are given by
+strong transformations. See `Pseudofunctor.categoryStruct`.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
