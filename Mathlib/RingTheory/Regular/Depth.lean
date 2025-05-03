@@ -12,6 +12,7 @@ import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.RingTheory.KrullDimension.Module
+import Mathlib.RingTheory.KrullDimension.Field
 /-!
 
 # Hom(N,M) is subsingleton iff exist smul regular element of M in ann(N)
@@ -569,15 +570,35 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       exact (not_subsingleton_iff_nontrivial.mpr Lntr)
     · intro L _ _ _ p e Lntr dim_eq
       rw [eqr _ dim_eq]
-      have : ((maximalIdeal R : Set R) \ (p.asIdeal: Set R)).Nonempty  := by
+      obtain ⟨x, hx⟩ : ((maximalIdeal R : Set R) \ (p.asIdeal: Set R)).Nonempty  := by
         rw [Set.diff_nonempty]
         by_contra sub
         have := Ideal.IsMaximal.eq_of_le (maximalIdeal.isMaximal R) IsPrime.ne_top' sub
-
+        have : Module.supportDim R (R ⧸ p.asIdeal) = 0 := by
+          let _ : Field (R ⧸ maximalIdeal R) := Quotient.field (maximalIdeal R)
+          rw [Module.supportDim_eq_ringKrullDim_quotient_annihilator, ← this,
+            Ideal.annihilator_quotient, ringKrullDim_eq_zero_of_field]
         absurd eqr _ dim_eq
-
-        sorry
-      #check ModuleCat.smulShortComplex (ModuleCat.of R L)
+        simpa only [Module.supportDim_eq_of_equiv R L (R ⧸ p.asIdeal) e, this, WithBot.unbot_zero,
+          ← ENat.coe_zero, ENat.coe_inj, eq_comm] using eq0
+      let S := (ModuleCat.of R L).smulShortComplex x
+      have reg : IsSMulRegular (ModuleCat.of R L) x := by
+        show Function.Injective (x • (LinearMap.id (R := R) (M := L)))
+        rw [← LinearMap.ker_eq_bot]
+        ext l
+        simp only [mem_ker, smul_apply, id_coe, id_eq, Submodule.mem_bot]
+        refine ⟨fun h ↦ ?_, fun h ↦ smul_eq_zero_of_right x h⟩
+        apply e.injective
+        have : (Ideal.Quotient.mk p.asIdeal x) * e l = 0 := by
+          have : (Ideal.Quotient.mk p.asIdeal x) * e l = x • e l := rfl
+          rw [this, ← map_smul, h, map_zero]
+        rcases mul_eq_zero.mp this with xzero|zero
+        · absurd xzero
+          exact Ideal.Quotient.eq_zero_iff_mem.not.mpr (Set.not_mem_of_mem_diff hx)
+        · rw [zero, map_zero]
+      have hS := reg.smulShortComplex_shortExact
+      apply le_sSup
+      intro i hi
       sorry
     · intro L1 _ _ _ L2 _ _ _ L3 _ _ _ f g inj surj exac ih1' ih3' L2ntr dim_eq
       rw [eqr _ dim_eq]
