@@ -38,9 +38,23 @@ end Injective
 
 section Projective
 
+omit [HasExt C] in
+theorem shortExact_kernel_of_epi {X Y : C} (e : X ⟶ Y) [he : Epi e] :
+    (ShortComplex.mk (kernel.ι e) e (kernel.condition e)).ShortExact where
+  exact := ShortComplex.exact_kernel e
+  mono_f := equalizer.ι_mono
+  epi_g := he
+
 instance projective_of_hasProjectiveDimensionLT_one [HasProjectiveDimensionLT P 1] :
-    Projective P := by
-  sorry
+    Projective P where
+  factors := by
+    intro E X f e he
+    let K : C := kernel e
+    let S := ShortComplex.mk (kernel.ι e) e (kernel.condition e)
+    have hS : S.ShortExact := shortExact_kernel_of_epi e
+    have h := covariant_sequence_exact₃ P hS (addEquiv₀.symm f) rfl
+    have : Subsingleton (Ext P S.X₁ 1) := sorry
+    sorry
 
 instance Abelian.Ext.subsingleton_of_projective [Projective P] (n : ℕ) [hn : NeZero n] :
     Subsingleton (Ext P Y n) := by
