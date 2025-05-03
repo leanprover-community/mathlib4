@@ -108,15 +108,10 @@ noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[�
                 exact norm_eval_le_projectiveSeminorm _ _ _)
   map_add' x y := by
     ext _
-    simp only [map_add, LinearMap.mkContinuous_apply, LinearMap.coe_comp, Function.comp_apply,
-      ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.add_apply,
-      LinearMap.flip_apply, LinearEquiv.coe_coe, ContinuousLinearMap.add_apply]
+    simp -- TODO profile
   map_smul' a x := by
     ext _
-    simp only [map_smul, LinearMap.mkContinuous_apply, LinearMap.coe_comp, Function.comp_apply,
-      ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.smul_apply,
-      LinearMap.flip_apply, LinearEquiv.coe_coe, RingHom.id_apply, ContinuousLinearMap.coe_smul',
-      Pi.smul_apply]
+    simp -- TODO profile
 
 theorem toDualContinuousMultilinearMap_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) :
     ‖toDualContinuousMultilinearMap F x‖ ≤ projectiveSeminorm x := by
@@ -233,9 +228,9 @@ noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
 
 noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) where
   norm_smul_le a x := by
-    change injectiveSeminorm.toFun (a • x) ≤ _
+    change injectiveSeminorm.toFun (a • x) ≤ _ -- TODO
     rw [injectiveSeminorm.smul']
-    rfl
+    rfl -- TODO
 
 variable (𝕜 E F)
 
