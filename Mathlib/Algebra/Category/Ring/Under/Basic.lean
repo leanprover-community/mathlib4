@@ -175,4 +175,12 @@ lemma tensorProdIsoPushout_app (A : Under R) :
     (tensorProdIsoPushout R S).app A = tensorProdObjIsoPushoutObj S A :=
   rfl
 
+variable (R S) in
+/-- The forgetful base change functor. -/
+def forget : Under S ⥤ Under R := Under.map <| CommRingCat.ofHom Algebra.algebraMap
+
+-- /-- The adjunction between `tensorProd R S` and `forget R S`. -/
+def adjTensorForget : tensorProd R S ⊣ forget R S :=
+  (Under.mapPushoutAdj (ofHom <| algebraMap R S)).ofNatIsoLeft ((R.tensorProdIsoPushout S).symm)
+
 end CommRingCat
