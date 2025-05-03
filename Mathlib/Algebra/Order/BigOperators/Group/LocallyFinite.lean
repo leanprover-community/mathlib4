@@ -30,48 +30,56 @@ lemma mul_prod_Ico_eq_prod_Icc (h : a ≤ b) : f b * ∏ x ∈ Ico a b, f x = �
   rw [Icc_eq_cons_Ico h, prod_cons]
 
 @[deprecated (since := "2025-05-03")] alias right_mul_prod_Ico := mul_prod_Ico_eq_prod_Icc
+@[deprecated (since := "2025-05-03")] alias right_add_sum_Ico := add_sum_Ico_eq_sum_Icc
 
 @[to_additive]
 lemma prod_Ico_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ico a b, f x) * f b = ∏ x ∈ Icc a b, f x := by
   rw [mul_comm, mul_prod_Ico_eq_prod_Icc h]
 
 @[deprecated (since := "2025-05-03")] alias prod_Ico_mul_right := prod_Ico_mul_eq_prod_Icc
+@[deprecated (since := "2025-05-03")] alias sum_Ico_add_right := sum_Ico_add_eq_sum_Icc
 
 @[to_additive]
 lemma mul_prod_Ioc_eq_prod_Icc (h : a ≤ b) : f a * ∏ x ∈ Ioc a b, f x = ∏ x ∈ Icc a b, f x := by
   rw [Icc_eq_cons_Ioc h, prod_cons]
 
 @[deprecated (since := "2025-05-03")] alias left_mul_prod_Ioc := mul_prod_Ioc_eq_prod_Icc
+@[deprecated (since := "2025-05-03")] alias left_add_sum_Ioc := add_sum_Ioc_eq_sum_Icc
 
 @[to_additive]
 lemma prod_Ioc_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ioc a b, f x) * f a = ∏ x ∈ Icc a b, f x := by
   rw [mul_comm, mul_prod_Ioc_eq_prod_Icc h]
 
 @[deprecated (since := "2025-05-03")] alias prod_Ioc_mul_left := prod_Ioc_mul_eq_prod_Icc
+@[deprecated (since := "2025-05-03")] alias sum_Ioc_add_left := sum_Ioc_add_eq_sum_Icc
 
 @[to_additive]
 lemma mul_prod_Ioo_eq_prod_Ico (h : a < b) : f a * ∏ x ∈ Ioo a b, f x = ∏ x ∈ Ico a b, f x := by
   rw [Ico_eq_cons_Ioo h, prod_cons]
 
 @[deprecated (since := "2025-05-03")] alias left_mul_prod_Ioo := mul_prod_Ioo_eq_prod_Ico
+@[deprecated (since := "2025-05-03")] alias left_add_sum_Ioo := add_sum_Ioo_eq_sum_Ico
 
 @[to_additive]
 lemma prod_Ioo_mul_eq_prod_Ico (h : a < b) : (∏ x ∈ Ioo a b, f x) * f a = ∏ x ∈ Ico a b, f x := by
   rw [mul_comm, mul_prod_Ioo_eq_prod_Ico h]
 
 @[deprecated (since := "2025-05-03")] alias prod_Ioo_mul_left := prod_Ioo_mul_eq_prod_Ico
+@[deprecated (since := "2025-05-03")] alias sum_Ioo_add_left := sum_Ioo_add_eq_sum_Ico
 
 @[to_additive]
 lemma mul_prod_Ioo_eq_prod_Ioc (h : a < b) : f b * ∏ x ∈ Ioo a b, f x = ∏ x ∈ Ioc a b, f x := by
   rw [Ioc_eq_cons_Ioo h, prod_cons]
 
 @[deprecated (since := "2025-05-03")] alias right_mul_prod_Ioo := mul_prod_Ioo_eq_prod_Ioc
+@[deprecated (since := "2025-05-03")] alias right_add_sum_Ioo := add_sum_Ioo_eq_sum_Ioc
 
 @[to_additive]
 lemma prod_Ioo_mul_eq_prod_Ioc (h : a < b) : (∏ x ∈ Ioo a b, f x) * f b = ∏ x ∈ Ioc a b, f x := by
   rw [mul_comm, mul_prod_Ioo_eq_prod_Ioc h]
 
 @[deprecated (since := "2025-05-03")] alias prod_Ioo_mul_right := prod_Ioo_mul_eq_prod_Ioc
+@[deprecated (since := "2025-05-03")] alias sum_Ioo_add_right := sum_Ioo_add_eq_sum_Ioc
 
 variable [AddMonoidWithOne α] [SuccAddOrder α]
 
@@ -91,12 +99,14 @@ lemma mul_prod_Ioi_eq_prod_Ici (a : α) : f a * ∏ x ∈ Ioi a, f x = ∏ x ∈
   rw [Ici_eq_cons_Ioi, prod_cons]
 
 @[deprecated (since := "2025-05-03")] alias left_mul_prod_Ioi := mul_prod_Ioi_eq_prod_Ici
+@[deprecated (since := "2025-05-03")] alias left_add_sum_Ioi := add_sum_Ioi_eq_sum_Ici
 
 @[to_additive]
 lemma prod_Ioi_mul_eq_prod_Ici (a : α) : (∏ x ∈ Ioi a, f x) * f a = ∏ x ∈ Ici a, f x := by
   rw [mul_comm, mul_prod_Ioi_eq_prod_Ici]
 
 @[deprecated (since := "2025-05-03")] alias prod_Ioi_mul_left := prod_Ioi_mul_eq_prod_Ici
+@[deprecated (since := "2025-05-03")] alias sum_Ioi_add_left := sum_Ioi_add_eq_sum_Ici
 
 end LocallyFiniteOrderTop
 
@@ -108,12 +118,14 @@ lemma mul_prod_Iio_eq_prod_Iic (a : α) : f a * ∏ x ∈ Iio a, f x = ∏ x ∈
   rw [Iic_eq_cons_Iio, prod_cons]
 
 @[deprecated (since := "2025-05-03")] alias right_mul_prod_Iio := mul_prod_Iio_eq_prod_Iic
+@[deprecated (since := "2025-05-03")] alias right_add_sum_Iio := add_sum_Iio_eq_sum_Iic
 
 @[to_additive]
 lemma prod_Iio_mul_eq_prod_Iic (a : α) : (∏ x ∈ Iio a, f x) * f a = ∏ x ∈ Iic a, f x := by
   rw [mul_comm, mul_prod_Iio_eq_prod_Iic]
 
 @[deprecated (since := "2025-05-03")] alias prod_Iio_mul_right := prod_Iio_mul_eq_prod_Iic
+@[deprecated (since := "2025-05-03")] alias sum_Iio_add_right := sum_Iio_add_eq_sum_Iic
 
 end LocallyFiniteOrderBot
 
