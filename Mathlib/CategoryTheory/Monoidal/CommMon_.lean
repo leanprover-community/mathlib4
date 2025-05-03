@@ -132,11 +132,13 @@ instance : HasInitial (CommMon_ C) :=
 
 end CommMon_
 
-namespace CategoryTheory.Functor
+namespace CategoryTheory
 variable {C}
   {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D] [BraidedCategory D]
   {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E] [BraidedCategory E]
-  {F : C ⥤ D} [F.LaxBraided] {G : D ⥤ E} [G.LaxBraided]
+  {F F' : C ⥤ D} [F.LaxBraided] [F'.LaxBraided] {G : D ⥤ E} [G.LaxBraided]
+
+namespace Functor
 
 variable (F) in
 /-- A lax braided functor takes commutative monoid objects to commutative monoid objects.
@@ -170,7 +172,44 @@ def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D wher
   map α := { app := fun A => { hom := α.hom.app A.X } }
   map_comp _ _ := rfl
 
-end CategoryTheory.Functor
+/-- Natural transformations between functors lift to monoid objects. -/
+@[simps!]
+noncomputable def mapCommMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] :
+    F.mapCommMon ⟶ F'.mapCommMon where
+  app X := .mk (f.app _)
+
+/-- Natural isomorphisms between functors lift to monoid objects. -/
+@[simps!]
+noncomputable def mapCommMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] :
+    F.mapCommMon ≅ F'.mapCommMon :=
+  NatIso.ofComponents fun X ↦ CommMon_.mkIso (e.app _)
+
+end Functor
+
+open Functor
+
+namespace Adjunction
+variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.LaxBraided] [a.IsMonoidal]
+
+/-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative monoid
+objects. -/
+@[simps!] noncomputable def mapCommMon : F.mapCommMon ⊣ G.mapCommMon where
+  unit := mapCommMonIdIso.inv ≫ mapCommMonNatTrans a.unit ≫ mapCommMonCompIso.hom
+  counit := mapCommMonCompIso.inv ≫ mapCommMonNatTrans a.counit ≫ mapCommMonIdIso.hom
+
+end Adjunction
+
+namespace Equivalence
+
+/-- An equivalence of categories lifts to an equivalence of their commutative monoid objects. -/
+noncomputable def mapCommMon (e : C ≌ D) [e.functor.Braided] [e.inverse.Braided] [e.IsMonoidal] :
+    CommMon_ C ≌ CommMon_ D where
+  functor := e.functor.mapCommMon
+  inverse := e.inverse.mapCommMon
+  unitIso := mapCommMonIdIso.symm ≪≫ mapCommMonNatIso e.unitIso ≪≫ mapCommMonCompIso
+  counitIso := mapCommMonCompIso.symm ≪≫ mapCommMonNatIso e.counitIso ≪≫ mapCommMonIdIso
+
+end CategoryTheory.Equivalence
 
 namespace CommMon_
 

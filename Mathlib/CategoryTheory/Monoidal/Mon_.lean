@@ -258,15 +258,17 @@ instance : HasInitial (Mon_ C) :=
 
 end Mon_
 
-namespace CategoryTheory.Functor
+namespace CategoryTheory
 variable {C}
   {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D]
   {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E]
-  {F : C ⥤ D} {G : D ⥤ E}
+  {F F' : C ⥤ D} {G : D ⥤ E}
+
+namespace Functor
 
 section LaxMonoidal
-variable [F.LaxMonoidal] [G.LaxMonoidal] (X Y : C) [Mon_Class X] [Mon_Class Y] (f : X ⟶ Y)
-  [IsMon_Hom f]
+variable [F.LaxMonoidal] [F'.LaxMonoidal] [G.LaxMonoidal] (X Y : C) [Mon_Class X] [Mon_Class Y]
+  (f : X ⟶ Y) [IsMon_Hom f]
 
 /-- The image of a monoid object under a lax monoidal functor is a monoid object. -/
 abbrev obj.instMon_Class : Mon_Class (F.obj X) where
@@ -332,6 +334,16 @@ noncomputable def mapMonCompIso : (F ⋙ G).mapMon ≅ F.mapMon ⋙ G.mapMon :=
 protected instance Faithful.mapMon [F.Faithful] : F.mapMon.Faithful where
   map_injective {_X _Y} _f _g hfg := Mon_.Hom.ext <| map_injective congr(($hfg).hom)
 
+/-- Natural transformations between functors lift to monoid objects. -/
+@[simps!]
+noncomputable def mapMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] : F.mapMon ⟶ F'.mapMon where
+  app X := .mk (f.app _)
+
+/-- Natural isomorphisms between functors lift to monoid objects. -/
+@[simps!]
+noncomputable def mapMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapMon ≅ F'.mapMon :=
+  NatIso.ofComponents fun X ↦ Mon_.mkIso (e.app _)
+
 end LaxMonoidal
 
 section Monoidal
@@ -370,7 +382,31 @@ def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where
   map α := { app := fun A => { hom := α.hom.app A.X } }
   map_comp _ _ := rfl
 
-end CategoryTheory.Functor
+end Functor
+
+open Functor
+
+namespace Adjunction
+variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.LaxMonoidal] [a.IsMonoidal]
+
+/-- An adjunction of monoidal functors lifts to an adjunction of their lifts to monoid objects. -/
+@[simps!] noncomputable def mapMon : F.mapMon ⊣ G.mapMon where
+  unit := mapMonIdIso.inv ≫ mapMonNatTrans a.unit ≫ mapMonCompIso.hom
+  counit := mapMonCompIso.inv ≫ mapMonNatTrans a.counit ≫ mapMonIdIso.hom
+
+end Adjunction
+
+namespace Equivalence
+
+/-- An equivalence of categories lifts to an equivalence of their monoid objects. -/
+noncomputable def mapMon (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal] :
+    Mon_ C ≌ Mon_ D where
+  functor := e.functor.mapMon
+  inverse := e.inverse.mapMon
+  unitIso := mapMonIdIso.symm ≪≫ mapMonNatIso e.unitIso ≪≫ mapMonCompIso
+  counitIso := mapMonCompIso.symm ≪≫ mapMonNatIso e.counitIso ≪≫ mapMonIdIso
+
+end CategoryTheory.Equivalence
 
 namespace Mon_
 
