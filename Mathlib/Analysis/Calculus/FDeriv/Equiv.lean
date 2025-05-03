@@ -31,7 +31,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E}
+variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E} {c : F}
 
 namespace ContinuousLinearEquiv
 
@@ -406,15 +406,17 @@ theorem PartialHomeomorph.hasFDerivAt_symm (f : PartialHomeomorph E F) {f' : E �
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
 
 theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
-    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ f x := by
-  rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
-  have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
-    isBigO_iff.2 <| hf'.imp fun C hC => Eventually.of_forall fun z => hC _
-  have : (fun z => f z - f x) ~[𝓝[s] x] fun z => f' (z - x) := h.isLittleO.trans_isBigO A
-  simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
+    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c := by
+  rcases eq_or_ne (f x) c with rfl | hc
+  · rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
+    have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
+      isBigO_iff.2 <| hf'.imp fun C hC => Eventually.of_forall fun z => hC _
+    have : (fun z => f z - f x) ~[𝓝[s] x] fun z => f' (z - x) := h.isLittleO.trans_isBigO A
+    simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
+  · exact (h.continuousWithinAt.eventually_ne hc).filter_mono <| by gcongr; apply diff_subset
 
 theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) :
-    ∀ᶠ z in 𝓝[≠] x, f z ≠ f x := by
+    ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by
   simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_ne hf'
 
 end

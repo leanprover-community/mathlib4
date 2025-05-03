@@ -45,8 +45,11 @@ noncomputable def pullbackPushforwardAdjunction : pullback.{v} φ ⊣ pushforwar
 /-- Given a morphism of presheaves of rings `φ : S ⟶ F.op ⋙ R`, this is the property
 that the (partial) left adjoint functor of `pushforward φ` is defined
 on a certain object `M : PresheafOfModules S`. -/
-abbrev PullbackObjIsDefined : PresheafOfModules.{v} S → Prop :=
-  (pushforward φ).LeftAdjointObjIsDefined
+abbrev pullbackObjIsDefined : ObjectProperty (PresheafOfModules.{v} S) :=
+  (pushforward φ).leftAdjointObjIsDefined
+
+@[deprecated (since := "2025-03-06")]
+alias PullbackObjIsDefined := pullbackObjIsDefined
 
 end
 
@@ -72,11 +75,11 @@ noncomputable def pushforwardCompCoyonedaFreeYonedaCorepresentableBy (X : C) :
     rfl)
 
 lemma pullbackObjIsDefined_free_yoneda (X : C) :
-    PullbackObjIsDefined φ ((free S).obj (yoneda.obj X)) :=
+    pullbackObjIsDefined φ ((free S).obj (yoneda.obj X)) :=
   (pushforwardCompCoyonedaFreeYonedaCorepresentableBy φ X).isCorepresentable
 
 lemma pullbackObjIsDefined_eq_top :
-    PullbackObjIsDefined.{u} φ = ⊤ := by
+    pullbackObjIsDefined.{u} φ = ⊤ := by
   ext M
   simp only [Pi.top_apply, Prop.top_eq_true, iff_true]
   apply Functor.leftAdjointObjIsDefined_of_isColimit

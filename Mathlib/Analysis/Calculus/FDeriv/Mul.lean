@@ -583,7 +583,7 @@ theorem hasStrictFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
       (∑ i : Fin n, (((List.finRange n).take i).map x).prod •
         smulRight (proj i) (((List.finRange n).drop (.succ i)).map x).prod) x :=
   hasStrictFDerivAt_list_prod'.congr_fderiv <|
-    Finset.sum_equiv (finCongr (List.length_finRange n)) (by simp) (by simp [Fin.forall_iff])
+    Finset.sum_equiv (finCongr List.length_finRange) (by simp) (by simp [Fin.forall_iff])
 
 @[fun_prop]
 theorem hasStrictFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸} :
@@ -809,16 +809,18 @@ operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`.
 TODO (low prio): prove a version without assumption `[HasSummableGeomSeries R]` but within the set
 of units. -/
 @[fun_prop]
-theorem hasFDerivAt_ring_inverse (x : Rˣ) :
+theorem hasFDerivAt_ringInverse (x : Rˣ) :
     HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x :=
   have : (fun t : R => Ring.inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id :=
     (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
   by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
 
+@[deprecated (since := "2025-04-22")] alias hasFDerivAt_ring_inverse := hasFDerivAt_ringInverse
+
 @[fun_prop]
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
     DifferentiableAt 𝕜 (@Ring.inverse R _) x :=
-  let ⟨u, hu⟩ := hx; hu ▸ (hasFDerivAt_ring_inverse u).differentiableAt
+  let ⟨u, hu⟩ := hx; hu ▸ (hasFDerivAt_ringInverse u).differentiableAt
 
 @[fun_prop]
 theorem differentiableWithinAt_inverse {x : R} (hx : IsUnit x) (s : Set R) :
@@ -830,12 +832,15 @@ theorem differentiableOn_inverse : DifferentiableOn 𝕜 (@Ring.inverse R _) {x 
   fun _x hx => differentiableWithinAt_inverse hx _
 
 theorem fderiv_inverse (x : Rˣ) : fderiv 𝕜 (@Ring.inverse R _) x = -mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹ :=
-  (hasFDerivAt_ring_inverse x).fderiv
+  (hasFDerivAt_ringInverse x).fderiv
 
-theorem hasStrictFDerivAt_ring_inverse (x : Rˣ) :
+theorem hasStrictFDerivAt_ringInverse (x : Rˣ) :
     HasStrictFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
   convert (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
   exact (fderiv_inverse x).symm
+
+@[deprecated (since := "2025-04-22")]
+alias hasStrictFDerivAt_ring_inverse := hasStrictFDerivAt_ringInverse
 
 variable {h : E → R} {z : E} {S : Set E}
 
@@ -877,7 +882,7 @@ differentiable, with derivative the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`
 the commutative case, see `hasStrictFDerivAt_inv`. -/
 theorem hasStrictFDerivAt_inv' {x : R} (hx : x ≠ 0) :
     HasStrictFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x := by
-  simpa using hasStrictFDerivAt_ring_inverse (Units.mk0 _ hx)
+  simpa using hasStrictFDerivAt_ringInverse (Units.mk0 _ hx)
 
 /-- At an invertible element `x` of a normed division algebra `R`, the Fréchet derivative of the
 inversion operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`. For a nicer formula in the
@@ -885,27 +890,20 @@ commutative case, see `hasFDerivAt_inv`. -/
 @[fun_prop]
 theorem hasFDerivAt_inv' {x : R} (hx : x ≠ 0) :
     HasFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x := by
-  simpa using hasFDerivAt_ring_inverse (Units.mk0 _ hx)
+  simpa using hasFDerivAt_ringInverse (Units.mk0 _ hx)
 
 @[fun_prop]
 theorem differentiableAt_inv {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.inv x :=
   (hasFDerivAt_inv' hx).differentiableAt
-
-@[deprecated (since := "2024-09-21")] alias differentiableAt_inv' := differentiableAt_inv
 
 @[fun_prop]
 theorem differentiableWithinAt_inv {x : R} (hx : x ≠ 0) (s : Set R) :
     DifferentiableWithinAt 𝕜 (fun x => x⁻¹) s x :=
   (differentiableAt_inv hx).differentiableWithinAt
 
-@[deprecated (since := "2024-09-21")]
-alias differentiableWithinAt_inv' := differentiableWithinAt_inv
-
 @[fun_prop]
 theorem differentiableOn_inv : DifferentiableOn 𝕜 (fun x : R => x⁻¹) {x | x ≠ 0} := fun _x hx =>
   differentiableWithinAt_inv hx _
-
-@[deprecated (since := "2024-09-21")] alias differentiableOn_inv' := differentiableOn_inv
 
 /-- Non-commutative version of `fderiv_inv` -/
 theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ :=
@@ -924,27 +922,18 @@ theorem DifferentiableWithinAt.inv (hf : DifferentiableWithinAt 𝕜 h S z) (hz 
     DifferentiableWithinAt 𝕜 (fun x => (h x)⁻¹) S z :=
   (differentiableAt_inv hz).comp_differentiableWithinAt z hf
 
-@[deprecated (since := "2024-09-21")]
-alias DifferentiableWithinAt.inv' := DifferentiableWithinAt.inv
-
 @[simp, fun_prop]
 theorem DifferentiableAt.inv (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 0) :
     DifferentiableAt 𝕜 (fun x => (h x)⁻¹) z :=
   (differentiableAt_inv hz).comp z hf
 
-@[deprecated (since := "2024-09-21")] alias DifferentiableAt.inv' := DifferentiableAt.inv
-
 @[fun_prop]
 theorem DifferentiableOn.inv (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, h x ≠ 0) :
     DifferentiableOn 𝕜 (fun x => (h x)⁻¹) S := fun x h => (hf x h).inv (hz x h)
 
-@[deprecated (since := "2024-09-21")] alias DifferentiableOn.inv' := DifferentiableOn.inv
-
 @[simp, fun_prop]
 theorem Differentiable.inv (hf : Differentiable 𝕜 h) (hz : ∀ x, h x ≠ 0) :
     Differentiable 𝕜 fun x => (h x)⁻¹ := fun x => (hf x).inv (hz x)
-
-@[deprecated (since := "2024-09-21")] alias Differentiable.inv' := Differentiable.inv
 
 end DivisionRingInverse
 

@@ -202,6 +202,11 @@ def BinaryFan.ext {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) : c ≅ c' :=
   Cones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
 
+@[simp]
+lemma BinaryFan.ext_hom_hom {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
+    (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) :
+    (ext e h₁ h₂).hom.hom = e.hom := rfl
+
 /-- A convenient way to show that a binary fan is a limit. -/
 def BinaryFan.IsLimit.mk {X Y : C} (s : BinaryFan X Y)
     (lift : ∀ {T : C} (_ : T ⟶ X) (_ : T ⟶ Y), T ⟶ s.pt)
@@ -236,6 +241,11 @@ the injections. -/
 def BinaryCofan.ext {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) : c ≅ c' :=
   Cocones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
+
+@[simp]
+lemma BinaryCofan.ext_hom_hom {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
+    (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) :
+    (ext e h₁ h₂).hom.hom = e.hom := rfl
 
 @[simp]
 theorem BinaryCofan.ι_app_left {X Y : C} (s : BinaryCofan X Y) :
@@ -1120,7 +1130,7 @@ theorem prodComparison_comp :
     prodComparison (F ⋙ G) A B =
       G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
   unfold prodComparison
-  ext <;> simp <;> rw [← G.map_comp] <;> simp
+  ext <;> simp [← G.map_comp]
 
 end ProdComparison
 
@@ -1135,7 +1145,7 @@ variable [HasBinaryCoproduct (F.obj A) (F.obj B)] [HasBinaryCoproduct (F.obj A')
 
 /-- The coproduct comparison morphism.
 
-In `CategoryTheory/Limits/Preserves` we show
+In `Mathlib/CategoryTheory/Limits/Preserves/` we show
 this is always an iso iff F preserves binary coproducts.
 -/
 def coprodComparison (F : C ⥤ D) (A B : C) [HasBinaryCoproduct A B]
@@ -1228,3 +1238,68 @@ noncomputable def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over 
     dsimp; simp
 
 end CategoryTheory
+
+namespace CategoryTheory.Limits
+open Opposite
+
+variable {C : Type*} [Category C] {X Y P : C}
+
+/-- A binary fan gives a binary cofan in the opposite category. -/
+protected abbrev BinaryFan.op (c : BinaryFan X Y) : BinaryCofan (op X) (op Y) :=
+  .mk c.fst.op c.snd.op
+
+/-- A binary cofan gives a binary fan in the opposite category. -/
+protected abbrev BinaryCofan.op (c : BinaryCofan X Y) : BinaryFan (op X) (op Y) :=
+  .mk c.inl.op c.inr.op
+
+/-- A binary fan in the opposite category gives a binary cofan. -/
+protected abbrev BinaryFan.unop (c : BinaryFan (op X) (op Y)) : BinaryCofan X Y :=
+  .mk c.fst.unop c.snd.unop
+
+/-- A binary cofan in the opposite category gives a binary fan. -/
+protected abbrev BinaryCofan.unop (c : BinaryCofan (op X) (op Y)) : BinaryFan X Y :=
+  .mk c.inl.unop c.inr.unop
+
+@[simp] lemma BinaryFan.op_mk (π₁ : P ⟶ X) (π₂ : P ⟶ Y) :
+    BinaryFan.op (mk π₁ π₂) = .mk π₁.op π₂.op := rfl
+
+@[simp] lemma BinaryFan.unop_mk (π₁ : op P ⟶ op X) (π₂ : op P ⟶ op Y) :
+    BinaryFan.unop (mk π₁ π₂) = .mk π₁.unop π₂.unop := rfl
+
+@[simp] lemma BinaryCofan.op_mk (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) :
+    BinaryCofan.op (mk ι₁ ι₂) = .mk ι₁.op ι₂.op := rfl
+
+@[simp] lemma BinaryCofan.unop_mk (ι₁ : op X ⟶ op P) (ι₂ : op Y ⟶ op P) :
+    BinaryCofan.unop (mk ι₁ ι₂) = .mk ι₁.unop ι₂.unop := rfl
+
+/-- If a `BinaryFan` is a limit, then its opposite is a colimit. -/
+protected def BinaryFan.IsLimit.op {c : BinaryFan X Y} (hc : IsLimit c) : IsColimit c.op :=
+  BinaryCofan.isColimitMk (fun s ↦ (hc.lift s.unop).op)
+    (fun _ ↦ Quiver.Hom.unop_inj (by simp)) (fun _ ↦ Quiver.Hom.unop_inj (by simp))
+    (fun s m h₁ h₂ ↦ Quiver.Hom.unop_inj
+      (BinaryFan.IsLimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
+
+/-- If a `BinaryCofan` is a colimit, then its opposite is a limit. -/
+protected def BinaryCofan.IsColimit.op {c : BinaryCofan X Y} (hc : IsColimit c) : IsLimit c.op :=
+  BinaryFan.isLimitMk (fun s ↦ (hc.desc s.unop).op)
+    (fun _ ↦ Quiver.Hom.unop_inj (by simp)) (fun _ ↦ Quiver.Hom.unop_inj (by simp))
+    (fun s m h₁ h₂ ↦ Quiver.Hom.unop_inj
+      (BinaryCofan.IsColimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
+
+/-- If a `BinaryFan` in the opposite category is a limit, then its `unop` is a colimit. -/
+protected def BinaryFan.IsLimit.unop {c : BinaryFan (op X) (op Y)} (hc : IsLimit c) :
+    IsColimit c.unop :=
+  BinaryCofan.isColimitMk (fun s ↦ (hc.lift s.op).unop)
+    (fun _ ↦ Quiver.Hom.op_inj (by simp)) (fun _ ↦ Quiver.Hom.op_inj (by simp))
+    (fun s m h₁ h₂ ↦ Quiver.Hom.op_inj
+      (BinaryFan.IsLimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
+
+/-- If a `BinaryCofan` in the opposite category is a colimit, then its `unop` is a limit. -/
+protected def BinaryCofan.IsColimit.unop {c : BinaryCofan (op X) (op Y)} (hc : IsColimit c) :
+    IsLimit c.unop :=
+  BinaryFan.isLimitMk (fun s ↦ (hc.desc s.op).unop)
+    (fun _ ↦ Quiver.Hom.op_inj (by simp)) (fun _ ↦ Quiver.Hom.op_inj (by simp))
+    (fun s m h₁ h₂ ↦ Quiver.Hom.op_inj
+      (BinaryCofan.IsColimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
+
+end CategoryTheory.Limits

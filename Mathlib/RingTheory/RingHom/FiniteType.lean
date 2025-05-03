@@ -47,6 +47,7 @@ theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHo
   letI := ((algebraMap S S').comp f).toAlgebra
   let f' : R' →+* S' := IsLocalization.map S' f (Submonoid.le_comap_map M)
   letI := f'.toAlgebra
+  have algF'_eq : algebraMap R' S' = IsLocalization.map S' f (Submonoid.le_comap_map M) := rfl
   haveI : IsScalarTower R R' S' :=
     IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp M.le_comap_map).symm
   let fₐ : S →ₐ[R] S' := AlgHom.mk' (algebraMap S S') fun c x => RingHom.map_mul _ _ _
@@ -65,9 +66,7 @@ theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHo
     rw [Algebra.adjoin_le_iff]; exact Algebra.subset_adjoin
   convert (Algebra.adjoin R' (algebraMap S S' '' T)).smul_mem (H hy)
     (IsLocalization.mk' R' (1 : R) ⟨r, hr⟩) using 1
-  rw [Algebra.smul_def]
-  erw [IsLocalization.map_mk' M.le_comap_map]
-  rw [map_one]
+  rw [Algebra.smul_def, algF'_eq, IsLocalization.map_mk' M.le_comap_map, map_one]
 
 theorem localization_away_map_finiteType (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.FiniteType) :

@@ -417,6 +417,46 @@ lemma baseChange_jacobian : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := b
 
 end BaseChange
 
+/-- Given a pre-submersive presentation `P` and equivalences `ι ≃ P.vars` and
+`κ ≃ P.rels`, this is the induced pre-sumbersive presentation with variables indexed
+by `ι` and relations indexed by `κ -/
+@[simps toPresentation, simps -isSimp map]
+noncomputable def reindex (P : PreSubmersivePresentation.{w, t} R S)
+    {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels) :
+    PreSubmersivePresentation R S where
+  __ := P.toPresentation.reindex e f
+  map := e.symm ∘ P.map ∘ f
+  map_inj := by
+    rw [Function.Injective.of_comp_iff e.symm.injective, Function.Injective.of_comp_iff P.map_inj]
+    exact f.injective
+  relations_finite := f.finite_iff.mpr P.relations_finite
+
+lemma jacobiMatrix_reindex {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels)
+    [Fintype P.rels] [DecidableEq P.rels] [Fintype (P.reindex e f).rels]
+    [DecidableEq (P.reindex e f).rels] :
+    (P.reindex e f).jacobiMatrix =
+      (P.jacobiMatrix.reindex f.symm f.symm).map (MvPolynomial.rename e.symm) := by
+  ext i j : 1
+  simp [jacobiMatrix_apply, PreSubmersivePresentation.reindex_map, Presentation.reindex_relation,
+    Generators.reindex_vars, MvPolynomial.pderiv_rename e.symm.injective]
+
+@[simp]
+lemma jacobian_reindex (P : PreSubmersivePresentation.{w, t} R S)
+    {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels) :
+    (P.reindex e f).jacobian = P.jacobian := by
+  classical
+  cases nonempty_fintype P.rels
+  cases nonempty_fintype (P.reindex e f).rels
+  letI : Fintype κ := inferInstanceAs (Fintype ((P.reindex e f).rels))
+  simp_rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
+  simp only [reindex_toPresentation, Presentation.reindex_toGenerators, jacobiMatrix_reindex,
+    Matrix.reindex_apply, Equiv.symm_symm, Generators.algebraMap_apply, Generators.reindex_val]
+  simp_rw [← MvPolynomial.aeval_rename, Generators.reindex_vars, Presentation.reindex_rels,
+    ← AlgHom.mapMatrix_apply, ← Matrix.det_submatrix_equiv_self f, AlgHom.map_det,
+    AlgHom.mapMatrix_apply, Matrix.map_map]
+  simp [← AlgHom.coe_comp, rename_comp_rename, rename_id]
+
+
 end Constructions
 
 end PreSubmersivePresentation
@@ -497,6 +537,16 @@ noncomputable def baseChange : SubmersivePresentation T (T ⊗[R] S) where
 
 end BaseChange
 
+/-- Given a submersive presentation `P` and equivalences `ι ≃ P.vars` and
+`κ ≃ P.rels`, this is the induced sumbersive presentation with variables indexed
+by `ι` and relations indexed by `κ -/
+@[simps toPreSubmersivePresentation]
+noncomputable def reindex (P : SubmersivePresentation.{w, t} R S)
+    {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels) : SubmersivePresentation R S where
+  __ := P.toPreSubmersivePresentation.reindex e f
+  jacobian_isUnit := by simp [P.jacobian_isUnit]
+  isFinite := by simp [P.isFinite]
+
 end Constructions
 
 variable {R S}
@@ -544,14 +594,21 @@ An `R`-algebra `S` is called standard smooth, if there
 exists a submersive presentation.
 -/
 class IsStandardSmooth : Prop where
-  out : Nonempty (SubmersivePresentation.{t, w} R S)
+  out : Nonempty (SubmersivePresentation.{0, 0} R S)
+
+lemma SubmersivePresentation.isStandardSmooth (P : SubmersivePresentation.{t, w} R S) :
+    IsStandardSmooth R S := by
+  cases nonempty_fintype P.vars
+  cases nonempty_fintype P.rels
+  exact ⟨⟨P.reindex _ _ (Fintype.equivFin P.vars).symm (Fintype.equivFin P.rels).symm⟩⟩
 
 /--
 The relative dimension of a standard smooth `R`-algebra `S` is
 the dimension of an arbitrarily chosen submersive `R`-presentation of `S`.
 
 Note: If `S` is non-trivial, this number is independent of the choice of the presentation as it is
-equal to the `S`-rank of `Ω[S/R]` (TODO).
+equal to the `S`-rank of `Ω[S/R]`
+(see `IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential`).
 -/
 noncomputable def IsStandardSmooth.relativeDimension [IsStandardSmooth R S] : ℕ :=
   ‹IsStandardSmooth R S›.out.some.dimension
@@ -561,23 +618,30 @@ An `R`-algebra `S` is called standard smooth of relative dimension `n`, if there
 a submersive presentation of dimension `n`.
 -/
 class IsStandardSmoothOfRelativeDimension : Prop where
-  out : ∃ P : SubmersivePresentation.{t, w} R S, P.dimension = n
+  out : ∃ P : SubmersivePresentation.{0, 0} R S, P.dimension = n
+
+lemma SubmersivePresentation.isStandardSmoothOfRelativeDimension
+    (P : SubmersivePresentation.{t, w} R S) (hP : P.dimension = n) :
+    IsStandardSmoothOfRelativeDimension n R S := by
+  cases nonempty_fintype P.vars
+  cases nonempty_fintype P.rels
+  refine ⟨⟨P.reindex _ _ (Fintype.equivFin P.vars).symm (Fintype.equivFin P.rels).symm, ?_⟩⟩
+  simp [hP]
 
 variable {R} {S}
 
 lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth
-    [IsStandardSmoothOfRelativeDimension.{t, w} n R S] :
-    IsStandardSmooth.{t, w} R S :=
+    [IsStandardSmoothOfRelativeDimension n R S] : IsStandardSmooth R S :=
   ⟨‹IsStandardSmoothOfRelativeDimension n R S›.out.nonempty⟩
 
 lemma IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective
     (h : Function.Bijective (algebraMap R S)) :
-    IsStandardSmoothOfRelativeDimension.{t, w} 0 R S :=
+    IsStandardSmoothOfRelativeDimension 0 R S :=
   ⟨SubmersivePresentation.ofBijectiveAlgebraMap h, Presentation.ofBijectiveAlgebraMap_dimension h⟩
 
 variable (R) in
 instance IsStandardSmoothOfRelativeDimension.id :
-    IsStandardSmoothOfRelativeDimension.{t, w} 0 R R :=
+    IsStandardSmoothOfRelativeDimension 0 R R :=
   IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective Function.bijective_id
 
 instance (priority := 100) IsStandardSmooth.finitePresentation [IsStandardSmooth R S] :
@@ -589,16 +653,16 @@ section Composition
 
 variable (R S T) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
-lemma IsStandardSmooth.trans [IsStandardSmooth.{t, w} R S] [IsStandardSmooth.{t', w'} S T] :
-    IsStandardSmooth.{max t t', max w w'} R T where
+lemma IsStandardSmooth.trans [IsStandardSmooth R S] [IsStandardSmooth S T] :
+    IsStandardSmooth R T where
   out := by
     obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
     obtain ⟨⟨Q⟩⟩ := ‹IsStandardSmooth S T›
     exact ⟨Q.comp P⟩
 
-lemma IsStandardSmoothOfRelativeDimension.trans [IsStandardSmoothOfRelativeDimension.{t, w} n R S]
-    [IsStandardSmoothOfRelativeDimension.{t', w'} m S T] :
-    IsStandardSmoothOfRelativeDimension.{max t t', max w w'} (m + n) R T where
+lemma IsStandardSmoothOfRelativeDimension.trans [IsStandardSmoothOfRelativeDimension n R S]
+    [IsStandardSmoothOfRelativeDimension m S T] :
+    IsStandardSmoothOfRelativeDimension (m + n) R T where
   out := by
     obtain ⟨P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
     obtain ⟨Q, hQ⟩ := ‹IsStandardSmoothOfRelativeDimension m S T›
@@ -608,11 +672,11 @@ lemma IsStandardSmoothOfRelativeDimension.trans [IsStandardSmoothOfRelativeDimen
 end Composition
 
 lemma IsStandardSmooth.localization_away (r : R) [IsLocalization.Away r S] :
-    IsStandardSmooth.{0, 0} R S where
+    IsStandardSmooth R S where
   out := ⟨SubmersivePresentation.localizationAway S r⟩
 
 lemma IsStandardSmoothOfRelativeDimension.localization_away (r : R) [IsLocalization.Away r S] :
-    IsStandardSmoothOfRelativeDimension.{0, 0} 0 R S where
+    IsStandardSmoothOfRelativeDimension 0 R S where
   out := ⟨SubmersivePresentation.localizationAway S r,
     Presentation.localizationAway_dimension_zero r⟩
 
@@ -620,15 +684,15 @@ section BaseChange
 
 variable (T) [CommRing T] [Algebra R T]
 
-instance IsStandardSmooth.baseChange [IsStandardSmooth.{t, w} R S] :
-    IsStandardSmooth.{t, w} T (T ⊗[R] S) where
+instance IsStandardSmooth.baseChange [IsStandardSmooth R S] :
+    IsStandardSmooth T (T ⊗[R] S) where
   out := by
     obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
     exact ⟨P.baseChange R S T⟩
 
 instance IsStandardSmoothOfRelativeDimension.baseChange
-    [IsStandardSmoothOfRelativeDimension.{t, w} n R S] :
-    IsStandardSmoothOfRelativeDimension.{t, w} n T (T ⊗[R] S) where
+    [IsStandardSmoothOfRelativeDimension n R S] :
+    IsStandardSmoothOfRelativeDimension n T (T ⊗[R] S) where
   out := by
     obtain ⟨P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
     exact ⟨P.baseChange R S T, hP⟩

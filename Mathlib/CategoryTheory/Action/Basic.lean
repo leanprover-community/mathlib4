@@ -27,7 +27,7 @@ universe u v
 
 open CategoryTheory Limits
 
-variable (V : Type (u + 1)) [LargeCategory V]
+variable (V : Type*) [Category V]
 
 -- Note: this is _not_ a categorical action of `G` on `V`.
 /-- An `Action V G` represents a bundled action of
@@ -36,19 +36,21 @@ the monoid `G` on an object of some category `V`.
 As an example, when `V = ModuleCat R`, this is an `R`-linear representation of `G`,
 while when `V = Type` this is a `G`-action.
 -/
-structure Action (G : Type u) [Monoid G] where
+structure Action (G : Type*) [Monoid G] where
+  /-- The object this action acts on -/
   V : V
+  /-- The underlying monoid homomorphism of this action -/
   ρ : G →* End V
 
 namespace Action
 
 variable {V}
 
-theorem ρ_one {G : Type u} [Monoid G] (A : Action V G) : A.ρ 1 = 𝟙 A.V := by simp
+theorem ρ_one {G : Type*} [Monoid G] (A : Action V G) : A.ρ 1 = 𝟙 A.V := by simp
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/
 @[simps]
-def ρAut {G : Type u} [Group G] (A : Action V G) : G →* Aut A.V where
+def ρAut {G : Type*} [Group G] (A : Action V G) : G →* Aut A.V where
   toFun g :=
     { hom := A.ρ g
       inv := A.ρ (g⁻¹ : G)
@@ -57,11 +59,11 @@ def ρAut {G : Type u} [Group G] (A : Action V G) : G →* Aut A.V where
   map_one' := Aut.ext A.ρ.map_one
   map_mul' x y := Aut.ext (A.ρ.map_mul x y)
 
-variable (G : Type u) [Monoid G]
+variable (G : Type*) [Monoid G]
 
 section
 
-instance inhabited' : Inhabited (Action (Type u) G) :=
+instance inhabited' : Inhabited (Action (Type*) G) :=
   ⟨⟨PUnit, 1⟩⟩
 
 /-- The trivial representation of a group. -/
@@ -81,6 +83,7 @@ commuting with the action of `G`.
 -/
 @[ext]
 structure Hom (M N : Action V G) where
+  /-- The morphism between the underlying objects of this action -/
   hom : M.V ⟶ N.V
   comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by aesop_cat
 
@@ -308,7 +311,7 @@ taking actions of `H` to actions of `G`.
 (This makes sense for any homomorphism, but the name is natural when `f` is a monomorphism.)
 -/
 @[simps]
-def res {G H : Type u} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Action V G where
+def res {G H : Type*} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Action V G where
   obj M :=
     { V := M.V
       ρ := M.ρ.comp f }
@@ -320,21 +323,21 @@ def res {G H : Type u} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Act
 the identity functor on `Action V G`.
 -/
 @[simps!]
-def resId {G : Type u} [Monoid G] : res V (MonoidHom.id G) ≅ 𝟭 (Action V G) :=
+def resId {G : Type*} [Monoid G] : res V (MonoidHom.id G) ≅ 𝟭 (Action V G) :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 
 /-- The natural isomorphism from the composition of restrictions along homomorphisms
 to the restriction along the composition of homomorphism.
 -/
 @[simps!]
-def resComp {G H K : Type u} [Monoid G] [Monoid H] [Monoid K]
+def resComp {G H K : Type*} [Monoid G] [Monoid H] [Monoid K]
     (f : G →* H) (g : H →* K) : res V g ⋙ res V f ≅ res V (g.comp f) :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 
 -- TODO promote `res` to a pseudofunctor from
 -- the locally discrete bicategory constructed from `Monᵒᵖ` to `Cat`, sending `G` to `Action V G`.
 
-variable {G H : Type u} [Monoid G] [Monoid H] (f : G →* H)
+variable {G H : Type*} [Monoid G] [Monoid H] (f : G →* H)
 
 /-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is faithful. -/
 instance : (res V f).Faithful where
@@ -358,12 +361,12 @@ end Action
 
 namespace CategoryTheory.Functor
 
-variable {V} {W : Type (u + 1)} [LargeCategory W]
+variable {V} {W : Type*} [Category W]
 
 /-- A functor between categories induces a functor between
 the categories of `G`-actions within those categories. -/
 @[simps]
-def mapAction (F : V ⥤ W) (G : Type u) [Monoid G] : Action V G ⥤ Action W G where
+def mapAction (F : V ⥤ W) (G : Type*) [Monoid G] : Action V G ⥤ Action W G where
   obj M :=
     { V := F.obj M.V
       ρ :=

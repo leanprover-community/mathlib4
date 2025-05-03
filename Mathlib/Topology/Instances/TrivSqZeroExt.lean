@@ -161,9 +161,9 @@ instance instUniformSpace : UniformSpace (tsze R M) where
 instance [CompleteSpace R] [CompleteSpace M] : CompleteSpace (tsze R M) :=
   inferInstanceAs <| CompleteSpace (R × M)
 
-instance [AddGroup R] [AddGroup M] [UniformAddGroup R] [UniformAddGroup M] :
-    UniformAddGroup (tsze R M) :=
-  inferInstanceAs <| UniformAddGroup (R × M)
+instance [AddGroup R] [AddGroup M] [IsUniformAddGroup R] [IsUniformAddGroup M] :
+    IsUniformAddGroup (tsze R M) :=
+  inferInstanceAs <| IsUniformAddGroup (R × M)
 
 open Uniformity
 

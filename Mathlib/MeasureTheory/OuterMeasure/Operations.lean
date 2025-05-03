@@ -76,7 +76,6 @@ instance instSMul : SMul R (OuterMeasure α) :=
     { measureOf := fun s => c • m s
       empty := by simp only [measure_empty]; rw [← smul_one_mul c]; simp
       mono := fun {s t} h => by
-        simp only
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]
         exact mul_left_mono (m.mono h)
       iUnion_nat := fun s _ => by
