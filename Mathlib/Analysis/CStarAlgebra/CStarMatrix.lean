@@ -378,6 +378,7 @@ lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [St
     (ofMatrix : Matrix n n A → CStarMatrix n n A)
       = (ofMatrixStarAlgEquiv : Matrix n n A → CStarMatrix n n A) := rfl
 
+variable (R) (A) in
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
 def reindexₗ {l o : Type*} [Semiring R] [AddCommMonoid A] [Module R A]
@@ -386,14 +387,18 @@ def reindexₗ {l o : Type*} [Semiring R] [AddCommMonoid A] [Module R A]
     map_add' M N := by ext; simp
     map_smul' r M := by ext; simp }
 
+@[simp]
+lemma reindexₗ_apply {l o : Type*} [Semiring R] [AddCommMonoid A] [Module R A]
+    {eₘ : m ≃ l} {eₙ : n ≃ o} {M : CStarMatrix m n A} {i : l} {j : o} :
+    reindexₗ R A eₘ eₙ M i j = Matrix.reindex eₘ eₙ M i j := rfl
+
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
 def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] (e : m ≃ n) : CStarMatrix m m A ≃⋆ₐ[R] CStarMatrix n n A :=
-  { reindexₗ e e with
+  { reindexₗ R A e e with
     map_mul' M N := by
       ext i j
-      unfold reindexₗ
       simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, Matrix.reindex_symm, LinearEquiv.coe_mk,
         Matrix.reindex_apply, Matrix.submatrix_apply, mul_apply]
       refine Fintype.sum_equiv e _ _ ?_
@@ -406,6 +411,11 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
         AddHom.coe_mk, Matrix.reindex_apply, Matrix.submatrix_apply]
       rw [Matrix.star_apply, Matrix.star_apply]
       simp [Matrix.submatrix_apply] }
+
+@[simp]
+lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A]
+    [Module R A] {e : m ≃ n} {M : CStarMatrix m m A}
+    {i : n} {j : n} : reindexₐ R A e M i j = Matrix.reindex e e M i j := rfl
 
 lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
