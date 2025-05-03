@@ -39,7 +39,7 @@ variable {C₀ C D : Type*} [Category C₀] [Category C] [Category D]
   [Φ.IsLeftDerivabilityStructure] [Φ.functor.Monoidal] (L : C ⥤ D)
 
 abbrev DerivesMonoidalStructure [L.IsLocalization W] : Prop :=
-  Derives₂ Φ Φ ((Functor.postcompose₂.obj L).obj (curriedTensor C))
+  Derives₂ Φ Φ (curriedTensor C ⋙ (whiskeringRight C C D).obj L)
 
 namespace DerivesMonoidalStructure
 

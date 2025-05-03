@@ -69,18 +69,19 @@ lemma derives₂_iff :
   apply and_congr <;> apply forall_congr' <;> intro <;>
     simp [MorphismProperty.IsInvertedBy]
 
-lemma Derives₂.isInvertedBy₁ (h : Derives₂ Φ₁ Φ₂ F) (X₂₀ : C₂₀) :
-    W₁₀.IsInvertedBy (Φ₁.functor ⋙ F.flip.obj (Φ₂.functor.obj X₂₀)) :=
-  ((derives₂_iff _ _ _).1 h).1 _
-
-lemma Derives₂.isInvertedBy₂ (h : Derives₂ Φ₁ Φ₂ F) (X₁₀ : C₁₀) :
-    W₂₀.IsInvertedBy (Φ₂.functor ⋙ F.obj (Φ₁.functor.obj X₁₀)) :=
-  ((derives₂_iff _ _ _).1 h).2 _
-
 namespace Derives₂
 
 variable {Φ₁ Φ₂ F} (h : Derives₂ Φ₁ Φ₂ F)
-  [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure]
+
+lemma isInvertedBy₁ (h : Derives₂ Φ₁ Φ₂ F) (X₂₀ : C₂₀) :
+    W₁₀.IsInvertedBy (Φ₁.functor ⋙ F.flip.obj (Φ₂.functor.obj X₂₀)) :=
+  ((derives₂_iff _ _ _).1 h).1 _
+
+lemma isInvertedBy₂ (h : Derives₂ Φ₁ Φ₂ F) (X₁₀ : C₁₀) :
+    W₂₀.IsInvertedBy (Φ₂.functor ⋙ F.obj (Φ₁.functor.obj X₁₀)) :=
+  ((derives₂_iff _ _ _).1 h).2 _
+
+variable [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure]
   [W₁.ContainsIdentities] [W₂.ContainsIdentities]
 
 include h in

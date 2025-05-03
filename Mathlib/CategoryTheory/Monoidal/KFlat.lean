@@ -14,11 +14,13 @@ import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [MonoidalCategory C]
-  [Category D] (L : C ⥤ D) (W : MorphismProperty C)
+variable {C D : Type*} [Category C] [MonoidalCategory C] [Category D]
+
 open MonoidalCategory
 
 namespace MorphismProperty
+
+variable (W : MorphismProperty C) (L : C ⥤ D)
 
 def kFlat : ObjectProperty C := fun X ↦
   W ≤ W.inverseImage (tensorLeft X) ∧
@@ -99,6 +101,53 @@ instance [W.RespectsIso] [W.localizerMorphismKFlat.IsLeftDerivabilityStructure]
     L.HasDerivedMonoidalCategory W :=
   (W.kFlat_derivesMonoidal L).hasDerivedMonoidalCategory
 
+lemma kFlat_prod_id_derives_curriedTensor [W.ContainsIdentities] [W.HasTwoOutOfThreeProperty]
+    [W.localizerMorphismKFlat.HasLeftResolutions] [L.IsLocalization W] :
+    LocalizerMorphism.Derives₂ W.localizerMorphismKFlat (LocalizerMorphism.id W)
+      (curriedTensor C ⋙ (whiskeringRight C C D).obj L) := by
+  rw [LocalizerMorphism.derives₂_iff]
+  exact ⟨fun X₂ X₁ Y₁ f hf ↦ by dsimp; exact Localization.inverts L W _ (W.whiskerRight_of_kFlat _
+      hf X₁.property Y₁.property _),
+    fun X₁ X₂ Y₂ g hg ↦ Localization.inverts L W _ (X₁.property.whiskerLeft hg)⟩
+
+lemma id_prod_kFlat_derives_curriedTensor [W.ContainsIdentities] [W.HasTwoOutOfThreeProperty]
+    [W.localizerMorphismKFlat.HasLeftResolutions] [L.IsLocalization W] :
+    LocalizerMorphism.Derives₂ (LocalizerMorphism.id W) W.localizerMorphismKFlat
+      (curriedTensor C ⋙ (whiskeringRight C C D).obj L) := by
+  rw [LocalizerMorphism.derives₂_iff]
+  exact ⟨fun X₂ X₁ Y₁ f hf ↦ Localization.inverts L W _ (X₂.property.whiskerRight hf),
+    fun X₁ X₂ Y₂ g hg ↦ Localization.inverts L W _
+      (W.whiskerLeft_of_kFlat _ hg X₂.property Y₂.property _)⟩
+
 end MorphismProperty
+
+namespace DerivedMonoidal
+
+variable (L : C ⥤ D) (W : MorphismProperty C) [W.RespectsIso]
+  [W.localizerMorphismKFlat.IsLeftDerivabilityStructure]
+  [L.IsLocalization W] [W.ContainsIdentities]
+  [W.HasTwoOutOfThreeProperty]
+
+lemma isIso_counit_app_app_of_kFlat_right (X Y : C) (hY : W.kFlat Y) :
+    IsIso (((counit L W).app X).app Y) :=
+  have : (bifunctor L W).IsLeftDerivedFunctor₂ (counit L W) W W := inferInstance
+  (W.id_prod_kFlat_derives_curriedTensor L).isIso_of_isLeftDerivabilityStructure _ X ⟨Y, hY⟩
+
+lemma isIso_counit_app_app_of_kFlat_left (X Y : C) (hX : W.kFlat X) :
+    IsIso (((counit L W).app X).app Y) :=
+  have : (bifunctor L W).IsLeftDerivedFunctor₂ (counit L W) W W := inferInstance
+  (W.kFlat_prod_id_derives_curriedTensor L).isIso_of_isLeftDerivabilityStructure _ ⟨X, hX⟩ Y
+
+lemma isLeftDerivedFunctor_bifunctorCounit₁_kFlat (X : C) :
+    Functor.IsLeftDerivedFunctor _ (Functor.bifunctorCounit₁ (counit L W) X) W :=
+  W.localizerMorphismKFlat.isLeftDerivedFunctor_of_isLeftDerivabilityStructure _
+    (fun Y ↦ isIso_counit_app_app_of_kFlat_right _ _ _ _ Y.property)
+
+lemma isLeftDerivedFunctor_bifunctorCounit₂_kFlat (X : C) :
+    Functor.IsLeftDerivedFunctor _ (Functor.bifunctorCounit₁ (counit L W) X) W :=
+  W.localizerMorphismKFlat.isLeftDerivedFunctor_of_isLeftDerivabilityStructure _
+    (fun Y ↦ isIso_counit_app_app_of_kFlat_right _ _ _ _ Y.property)
+
+end DerivedMonoidal
 
 end CategoryTheory
