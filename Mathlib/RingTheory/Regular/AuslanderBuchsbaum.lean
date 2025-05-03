@@ -78,13 +78,19 @@ open RingTheory.Sequence Ideal CategoryTheory CategoryTheory.Abelian
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
 
-lemma proj_mod_over_local_ring_is_free [IsLocalRing R] (M : ModuleCat.{v} R) [Module.Finite R M]
-    [Module.Projective R M]: Module.Free R M:= by
+lemma free_of_projectiveOverLocalRing [IsLocalRing R] (M : ModuleCat.{v} R) [Module.Finite R M]
+    [Projective M]: Module.Free R M:= by
   -- Add your proof here
   sorry
 
 local instance : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
+
+lemma finte_free_ext_vanish_iff (M : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
+    :
+     ∀ N : ModuleCat.{v} R, ∀ (i:ℕ), Subsingleton (Ext M N i) ↔ Subsingleton (Ext (ModuleCat.of R (Shrink.{v} R)) N i) := by
+  -- Add your proof here
+  sorry
 
 open scoped Classical in
 theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
@@ -96,8 +102,9 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
     induction' n
     · simp
       have pdz: HasProjectiveDimensionLE M (Nat.find hfinprojdim) := Nat.find_spec hfinprojdim
-      simp [h, HasProjectiveDimensionLE, hasProjectiveDimensionLT_iff M  1] at pdz
-      have pm: Module.Projective R M := by
-        sorry
+      simp [h, HasProjectiveDimensionLE] at pdz
+      have fm: Module.Free R M := by apply free_of_projectiveOverLocalRing
+      simp [hasProjectiveDimensionLT_iff] at pdz
+      --apply Module.Free.exists_set at fm
       sorry
     · sorry
