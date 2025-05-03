@@ -33,6 +33,14 @@ Letting `T` be a self-adjoint operator on a finite-dimensional inner product spa
   from `E` to Euclidean space, and the theorem
   `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply` states that, when `T` is
   transferred via this equivalence to an operator on Euclidean space, it acts diagonally.
+* `LinearMap.IsSymmetric.eigenvalues` gives the eigenvalues in decreasing order.  This is
+  done for several reasons: (i) This agrees with the standard convention of listing singular
+  values in decreasing order, with the operator norm as the first singular value
+  (ii) For positive compact operators on an infinite dimensional space, one can list the nonzero
+  eigenvalues in decreasing (but not increasing) order since they converge to zero. (iii) This
+  simplifies several theorem statements. For example the Schur-Horn theorem states that the diagonal
+  of the matrix representation of a selfadjoint linear map is majorized by the eigenvalue sequence
+  listed in decreasing order).
 
 These are forms of the *diagonalization theorem* for self-adjoint operators on finite-dimensional
 inner product spaces.
@@ -187,7 +195,6 @@ variable {n : ℕ} (hn : Module.finrank 𝕜 E = n)
 
 /--
 Unsorted eigenvalues and eigenvectors.  These are composed with a permutation below. -/
-
 private noncomputable def unsortedEigenvalues (i : Fin n) : ℝ :=
   @RCLike.re 𝕜 _ <|
     (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
