@@ -613,15 +613,52 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
         have ntr : Nontrivial (QuotSMulTop x L) := quotSMulTop_nontrivial (Set.mem_of_mem_diff hx) L
         have dimlt' : (Module.supportDim R (QuotSMulTop x L)).unbot
           (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) < r := by
-
-          sorry
+          have : (Module.supportDim R (QuotSMulTop x L)) + 1 ≤ Module.supportDim R L := by
+            simp only [Module.supportDim_eq_ringKrullDim_quotient_annihilator]
+            rw [LinearEquiv.annihilator_eq e, Ideal.annihilator_quotient]
+            have ple : p.asIdeal ≤ Module.annihilator R (QuotSMulTop x L) := by
+              rw [Submodule.annihilator_quotient, ← Ideal.annihilator_quotient (I := p.asIdeal),
+                ← LinearEquiv.annihilator_eq e, ← Submodule.annihilator_top, ← Submodule.colon_bot]
+              exact Submodule.colon_mono bot_le (le_refl ⊤)
+            let f := Quotient.factor ple
+            have mem_ann : x ∈ Module.annihilator R (QuotSMulTop x L) := by
+              apply Module.mem_annihilator.mpr (fun l ↦ ?_)
+              induction' l using Submodule.Quotient.induction_on with l
+              simpa [← Submodule.Quotient.mk_smul] using
+                Submodule.smul_mem_pointwise_smul l x ⊤ trivial
+            have : Ideal.Quotient.mk p.asIdeal x ∈ nonZeroDivisors (R ⧸ p.asIdeal) := by
+              simpa [Ideal.Quotient.eq_zero_iff_mem] using Set.not_mem_of_mem_diff hx
+            exact ringKrullDim_succ_le_of_surjective (Quotient.factor ple)
+              (Quotient.factor_surjective ple) this
+              (by simpa [Quotient.eq_zero_iff_mem] using mem_ann)
+          have succle : (Module.supportDim R (QuotSMulTop x L)).unbot
+            (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) + 1 ≤ r := by
+            simpa [← eqr _ dim_eq, WithBot.le_unbot_iff] using this
+          have : (Module.supportDim R (QuotSMulTop x L)).unbot
+            (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) ≠ ⊤ := by
+            by_contra h
+            simp [h] at succle
+          exact (ENat.add_one_le_iff this).mp succle
         have dimlt : ((Module.supportDim R (QuotSMulTop x L)).unbot
           (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L))).toNat < r := by
-
-          sorry
-        have := ihr _ dimlt (ModuleCat.of R (QuotSMulTop x L)) rfl
-
-        sorry
+          rw [← ENat.coe_lt_coe, ENat.coe_toNat (ne_top_of_lt dimlt')]
+          exact dimlt'
+        apply ext_subsingleton_of_lt_moduleDepth
+        refine lt_of_lt_of_le ?_ (ihr _ dimlt (ModuleCat.of R (QuotSMulTop x L)) rfl)
+        rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt dimlt') with ⟨m, hm⟩
+        by_cases eqtop : IsLocalRing.depth M = ⊤
+        · simp only [Nat.cast_add, eqtop, ← hm, ENat.top_sub_coe, ENat.add_lt_top,
+            ENat.coe_lt_top, true_and]
+        · rcases ENat.ne_top_iff_exists.mp eqtop with ⟨k, hk⟩
+          have : (i + 1 : ℕ) ≤ IsLocalRing.depth M - r := by
+            simpa [ENat.add_one_le_iff (ENat.coe_ne_top i)] using hi
+          apply lt_of_le_of_lt this
+          have le : r ≤ k := by
+            simp only [← hk, ← ENat.coe_sub, Nat.cast_lt] at hi
+            omega
+          simp only [← hk, ← ENat.coe_sub, ← hm, Nat.cast_lt]
+          simp only [← hm, Nat.cast_lt] at dimlt'
+          omega
       have zero : IsZero
         (AddCommGrp.of (Ext.{max u v} (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
         @AddCommGrp.isZero_of_subsingleton _ this
@@ -632,13 +669,16 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
         (x • LinearMap.id (R := R) (M := (Ext.{max u v} (of R L) M i))) := by
 
         sorry
+      have range : LinearMap.range (x • LinearMap.id) =
+        x • (⊤ : Submodule R (Ext.{max u v} (of R L) M i)) := by
+
+        sorry
       by_contra ntr
       rw [not_subsingleton_iff_nontrivial] at ntr
-      have : x ∈ (Module.annihilator R (Ext.{max u v} (of R L) M i)).jacobson :=
+      have mem : x ∈ (Module.annihilator R (Ext.{max u v} (of R L) M i)).jacobson :=
         IsLocalRing.maximalIdeal_le_jacobson _ (Set.mem_of_mem_diff hx)
-
-      have := Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
-      sorry
+      absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator mem
+      nth_rw 1 [← LinearMap.range_eq_top_of_surjective _ epi', ← range]
     · intro L1 _ _ _ L2 _ _ _ L3 _ _ _ f g inj surj exac ih1' ih3' L2ntr dim_eq
       rw [eqr _ dim_eq]
       by_cases ntr : Nontrivial L1 ∧ Nontrivial L3
