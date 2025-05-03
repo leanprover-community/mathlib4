@@ -97,6 +97,15 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
 
+/-- Mapping a finite dimensional intermediate field along an algebra equivalence gives
+a finite-dimensional intermediate field. -/
+instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
+    FiniteDimensional K (E.map f) :=
+  LinearEquiv.finiteDimensional (IntermediateField.equivMap E f).toLinearEquiv
+
+@[deprecated (since := "2025-05-02")]
+alias _root_.im_finiteDimensional := IntermediateField.finiteDimensional_map
+
 end FiniteDimensional
 
 theorem isAlgebraic_iff {x : S} : IsAlgebraic K x ↔ IsAlgebraic K (x : L) :=
