@@ -151,7 +151,9 @@ theorem mk_add_mk {m1 m2 : M} {s1 s2 : S} :
   mk_eq.mpr <| ⟨1, rfl⟩
 
 private theorem add_assoc' (x y z : LocalizedModule S M) : x + y + z = x + (y + z) := by
-  cases x; cases y; cases z; rename_i mx sx my sy mz sz
+  induction x with | _ mx sx
+  induction y with | _ my sy
+  induction z with | _ mz sz
   simp only [mk_add_mk, smul_add]
   refine mk_eq.mpr ⟨1, ?_⟩
   rw [one_smul, one_smul]
@@ -353,7 +355,7 @@ private theorem smul_zero_aux (x : T) : x • (0 : LocalizedModule S M) = 0 := b
 
 private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x + y) • p = x • p + y • p := by
-  cases p with | _ m s => ?_
+  induction p with | _ m s
   rw [smul_def T x, smul_def T y, mk_add_mk, show (x + y) • _ =  IsLocalization.mk' T _ _ • _ by
     rw [← IsLocalization.mk'_sec (M := S) T x, ← IsLocalization.mk'_sec (M := S) T y,
       ← IsLocalization.mk'_add, IsLocalization.mk'_cancel _ _ s], mk'_smul_mk, ← smul_assoc,
@@ -421,12 +423,12 @@ lemma eq_zero_of_smul_eq_zero
 
 theorem smul'_mul {A : Type*} [Semiring A] [Algebra R A] (x : T) (p₁ p₂ : LocalizedModule S A) :
     x • p₁ * p₂ = x • (p₁ * p₂) := by
-  induction p₁, p₂ using induction_on₂ with | _ a₁ s₁ a₂ s₂ => _
+  induction p₁, p₂ using induction_on₂ with | _ a₁ s₁ a₂ s₂
   rw [mk_mul_mk, smul_def, smul_def, mk_mul_mk, mul_assoc, smul_mul_assoc]
 
 theorem mul_smul' {A : Type*} [Semiring A] [Algebra R A] (x : T) (p₁ p₂ : LocalizedModule S A) :
     p₁ * x • p₂ = x • (p₁ * p₂) := by
-  induction p₁, p₂ using induction_on₂ with | _ a₁ s₁ a₂ s₂ => _
+  induction p₁, p₂ using induction_on₂ with | _ a₁ s₁ a₂ s₂
   rw [smul_def, mk_mul_mk, mk_mul_mk, smul_def, mul_left_comm, mul_smul_comm]
 
 variable (T)
@@ -457,13 +459,13 @@ noncomputable instance algebra' {A : Type*} [Semiring A] [Algebra R A] :
     (algebraMap R <| Localization S)
   commutes' := by
     intro r x
-    induction x using induction_on with | _ a s => _
+    induction x using induction_on with | _ a s
     dsimp
     rw [← Localization.mk_one_eq_algebraMap, algebraMap_mk, mk_mul_mk, mk_mul_mk, mul_comm,
       Algebra.commutes]
   smul_def' := by
     intro r x
-    induction x using induction_on with | _ a s => _
+    induction x using induction_on with | _ a s
     dsimp
     rw [← Localization.mk_one_eq_algebraMap, algebraMap_mk, mk_mul_mk, smul'_mk,
       Algebra.smul_def, one_mul]
