@@ -64,12 +64,8 @@ class CompletelyPositiveMapClass (F : Type*) (A₁ : Type*) (A₂ : Type*)
   map_cstarMatrix_nonneg' (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
     0 ≤ M.map φ
 
-namespace CStarAlgebra
-
 /-- Notation for a `CompletelyPositiveMap`. -/
-scoped notation:25 A₁ " →CP " A₂:0 => CompletelyPositiveMap A₁ A₂
-
-end CStarAlgebra
+scoped[CStarAlgebra] notation:25 A₁ " →CP " A₂:0 => CompletelyPositiveMap A₁ A₂
 
 namespace CompletelyPositiveMapClass
 
