@@ -11,7 +11,7 @@ import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 
 A linear map `φ : A₁ →ₗ[ℂ] A₂` (where `A₁` and `A₂` are C⋆-algebras) is called
 *completely positive (CP)* if `CStarMatrix.map (Fin k) (Fin k) φ` (i.e. applying `φ` to all
-entries of a k × k matrix) is also positive for every `k ∈ ℕ`.
+entries of a k × k matrix) is also positive for every `k : ℕ`.
 
 This file defines completely positive maps and develops their basic API.
 
@@ -65,18 +65,19 @@ variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
   map. -/
+@[coe]
 def toCompletelyPositiveLinearMap [CompletelyPositiveMapClass F A₁ A₂] (f : F) : A₁ →CP A₂ :=
   { (f : A₁ →ₗ[ℂ] A₂) with
     map_cstarMatrix_nonneg' := CompletelyPositiveMapClass.map_cstarMatrix_nonneg' f }
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
-  map. -/
+map. -/
 instance instCoeToCompletelyPositiveMap [CompletelyPositiveMapClass F A₁ A₂] :
     CoeHead F (A₁ →CP A₂) where
   coe f := toCompletelyPositiveLinearMap f
 
 open CStarMatrix in
-/-- A completely positive map is also an order homomorphism (i.e. it is a positive map). -/
+/-- Linear maps which are completely positive are order homomorphisms (i.e., positive aps). -/
 lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg
     (h : ∀ (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map φ) :
     OrderHomClass F A₁ A₂ := .ofLinear <| by
