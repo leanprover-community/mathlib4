@@ -52,9 +52,10 @@ def preprocessFactsPreorder (g : MVarId) (facts : Array AtomicFact) :
   return res
 
 /-- Preprocesses facts for partial orders. Replaces `x < y`, `¬ (x ≤ y)`, and `x = y` with
-equivalent facts involving only `≤`, `≠`, and `≮`. -/
-def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact) :
-    MetaM <| Array AtomicFact := g.withContext do
+equivalent facts involving only `≤`, `≠`, and `≮`. For each fact `x = y ⊔ z` adds `y ≤ x`
+and `z ≤ x` facts, and similarly for `⊓`. -/
+def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact)
+    (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := g.withContext do
   let mut res : Array AtomicFact := #[]
   for fact in facts do
     match fact with
@@ -67,14 +68,27 @@ def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact) :
     | .eq lhs rhs proof =>
       res := res.push <| .le lhs rhs (← mkAppM ``le_of_eq #[proof])
       res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
+    | .isSup lhs rhs sup =>
+      res := res.push <| .le lhs sup
+        (← mkAppOptM ``le_sup_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+      res := res.push <| .le rhs sup
+        (← mkAppOptM ``le_sup_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+      res := res.push fact
+    | .isInf lhs rhs inf =>
+      res := res.push <| .le inf lhs
+        (← mkAppOptM ``inf_le_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+      res := res.push <| .le inf rhs
+        (← mkAppOptM ``inf_le_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+      res := res.push fact
     | _ =>
       res := res.push fact
   return res
 
 /-- Preprocesses facts for linear orders. Replaces `x < y`, `¬ (x ≤ y)`, `¬ (x < y)`, and `x = y`
-with equivalent facts involving only `≤` and `≠`. -/
-def preprocessFactsLinear (g : MVarId) (facts : Array AtomicFact) :
-    MetaM <| Array AtomicFact := g.withContext do
+with equivalent facts involving only `≤` and `≠`. For each fact `x = y ⊔ z` adds `y ≤ x`
+and `z ≤ x` facts, and similarly for `⊓`. -/
+def preprocessFactsLinear (g : MVarId) (facts : Array AtomicFact)
+    (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := g.withContext do
   let mut res : Array AtomicFact := #[]
   for fact in facts do
     match fact with
@@ -89,6 +103,18 @@ def preprocessFactsLinear (g : MVarId) (facts : Array AtomicFact) :
     | .eq lhs rhs proof =>
       res := res.push <| .le lhs rhs (← mkAppM ``le_of_eq #[proof])
       res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
+    | .isSup lhs rhs sup =>
+      res := res.push <| .le lhs sup
+        (← mkAppOptM ``le_sup_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+      res := res.push <| .le rhs sup
+        (← mkAppOptM ``le_sup_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+      res := res.push fact
+    | .isInf lhs rhs inf =>
+      res := res.push <| .le inf lhs
+        (← mkAppOptM ``inf_le_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+      res := res.push <| .le inf rhs
+        (← mkAppOptM ``inf_le_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+      res := res.push fact
     | _ =>
       res := res.push fact
   return res

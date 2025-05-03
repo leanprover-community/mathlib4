@@ -12,7 +12,7 @@ import Mathlib.Tactic.Order.Graph.Tarjan
 # `order` tactic
 
 This module defines the `order` tactic, a decision procedure for the theories of `Preorder`,
-`PartialOrder`, and `LinearOrder`.
+`PartialOrder`, `LinearOrder`, and `Lattice`. It also supports `⊤` and `⊥`.
 
 ## Implementation Details
 
@@ -123,6 +123,20 @@ with variables interpreted as their respective components. Note that the reachab
 [topologically ordered](https://en.wikipedia.org/wiki/Topological_sorting), meaning it forms a
 linear order where `C₁ R C₂` whenever `C₂` is reachable from `C₁`. It is easy to see that all facts
 in `T'` are satisfied by the model.
+
+### Lattice
+The algorithm for lattices is similar to that for partial orders, with two differences:
+1. During the preprocessing step, we add the facts `x ≤ x ⊔ y` and `y ≤ x ⊔ y` if `x ⊔ y` is present
+in the context, and similarly for `⊓`.
+2. In step 5, we expand the `≤`-graph using the following procedure: if a vertex `v` is reachable
+from both `x` and `y`, and `x ⊔ y` is present in the set of atoms, we add the edge `(x ⊔ y, v)`
+using `sup_le`, and similarly for `⊓`.
+
+One can show that this algorithm also serves as a decision procedure for the theory of lattices.
+
+### `⊤` and `⊥`
+For `⊤` and `⊥`, we add the edges `(x, ⊤)` and `(⊥, x)` for all vertices `x`, using `le_top`
+and `bot_le`, respectively.
 -/
 
 namespace Mathlib.Tactic.Order
@@ -155,12 +169,19 @@ def findContradictionWithNle (g : Graph) (idxToAtom : Std.HashMap ℕ Expr)
       return .some <| mkApp proof pf
   return .none
 
-/-- Each fact `¬ (x < y)` allows to add the edge `(x, y)` when `y` is reachable from `x` in the
-graph. We repeat adding edges using this until no more edges can be added. -/
-def updateGraphWithNlt (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
+/-- Adds edges to the `≤`-graph using two types of facts:
+1. Each fact `¬ (x < y)` allows to add the edge `(x, y)` when `y` is reachable from `x` in the
+graph.
+2. Each fact `x ⊔ y = z` allows to add the edge `(z, s)` when `s` is reachable from both `x`
+and `y`.
+
+We repeat the process until no more edges can be added. -/
+def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
     (facts : Array AtomicFact) : MetaM Graph := do
   let nltFacts := facts.filter fun fact => match fact with | .nlt _ _ _ => true | _ => false
   let mut usedNltFacts : Vector Bool _ := .replicate nltFacts.size false
+  let infSupFacts := facts.filter fun fact =>
+    match fact with | .isInf _ _ _ => true | .isSup _ _ _ => true | _ => false
   let mut g := g
   while true do
     let mut changed : Bool := false
@@ -172,6 +193,22 @@ def updateGraphWithNlt (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
       g := g.addEdge ⟨rhs, lhs, ← mkAppM ``le_of_not_lt_le #[proof, pf]⟩
       changed := true
       usedNltFacts := usedNltFacts.set i true
+    for fact in infSupFacts do
+      for idx in [:g.size] do
+        match fact with
+        | .isSup lhs rhs sup =>
+          let .some pf1 ← g.buildTransitiveLeProof idxToAtom lhs idx | continue
+          let .some pf2 ← g.buildTransitiveLeProof idxToAtom rhs idx | continue
+          if (← g.buildTransitiveLeProof idxToAtom sup idx).isNone then
+            g := g.addEdge ⟨sup, idx, ← mkAppM ``sup_le #[pf1, pf2]⟩
+            changed := true
+        | .isInf lhs rhs inf =>
+          let .some pf1 ← g.buildTransitiveLeProof idxToAtom idx lhs | continue
+          let .some pf2 ← g.buildTransitiveLeProof idxToAtom idx rhs | continue
+          if (← g.buildTransitiveLeProof idxToAtom idx inf).isNone then
+            g := g.addEdge ⟨idx, inf, ← mkAppM ``le_inf #[pf1, pf2]⟩
+            changed := true
+        | _ => throwError "Bug: Non-isInf or isSup fact in infSupFacts."
     if !changed then
       break
   return g
@@ -193,7 +230,7 @@ def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
   return .none
 
 /-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
-or `LinearOrder`. -/
+or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 elab "order" : tactic => focus do
   let g ← getMainGoal
   let .some g ← g.falseOrByContra | return
@@ -204,10 +241,10 @@ elab "order" : tactic => focus do
     let .some orderType ← findBestOrderInstance type | continue
     let facts : Array AtomicFact ← match orderType with
     | .pre => preprocessFactsPreorder g facts
-    | .part => preprocessFactsPartial g facts
-    | .lin => preprocessFactsLinear g facts
-    let mut graph ← Graph.constructLeGraph idxToAtom.size facts
-    graph ← updateGraphWithNlt graph idxToAtom facts
+    | .part => preprocessFactsPartial g facts idxToAtom
+    | .lin => preprocessFactsLinear g facts idxToAtom
+    let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
+    graph ← updateGraphWithNltInfSup graph idxToAtom facts
     if orderType == .pre then
       let .some pf ← findContradictionWithNle graph idxToAtom facts | continue
       g.assign pf
