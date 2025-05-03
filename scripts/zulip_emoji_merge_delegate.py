@@ -150,7 +150,8 @@ for message in messages:
         elif ACTION == 'closed':
             add_reaction('closed-pr', 'closed-pr')
         elif ACTION == 'unlabeled':
-            print('awaiting-author removed')
-            # The reaction was already removed.
+            if LABEL_NAME == 'awaiting-author':
+                print('awaiting-author removed')
+                # The reaction was already removed.
         elif ACTION.startswith("[Merged by Bors]"):
             add_reaction('[Merged by Bors]', 'merge')
