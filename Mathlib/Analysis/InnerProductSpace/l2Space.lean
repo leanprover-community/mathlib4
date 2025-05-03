@@ -88,7 +88,7 @@ variable {ι 𝕜 : Type*} [RCLike 𝕜] {E : Type*}
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- `ℓ²(ι, 𝕜)` is the Hilbert space of square-summable functions `ι → 𝕜`, herein implemented
 as `lp (fun i : ι => 𝕜) 2`. -/
