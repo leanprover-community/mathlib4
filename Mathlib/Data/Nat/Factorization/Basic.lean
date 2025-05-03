@@ -24,10 +24,6 @@ variable {a b m n p : ℕ}
 theorem factorization_eq_zero_of_lt {n p : ℕ} (h : n < p) : n.factorization p = 0 :=
   Finsupp.not_mem_support_iff.mp (mt le_of_mem_primeFactors (not_le_of_lt h))
 
-@[simp]
-theorem factorization_one_right (n : ℕ) : n.factorization 1 = 0 :=
-  factorization_eq_zero_of_non_prime _ not_prime_one
-
 theorem dvd_of_factorization_pos {n p : ℕ} (hn : n.factorization p ≠ 0) : p ∣ n :=
   dvd_of_mem_primeFactorsList <| mem_primeFactors_iff_mem_primeFactorsList.1 <| mem_support_iff.2 hn
 
@@ -297,15 +293,6 @@ theorem ordProj_dvd_ordProj_of_dvd {a b : ℕ} (hb0 : b ≠ 0) (hab : a ∣ b) (
 
 @[deprecated (since := "2024-10-24")]
 alias ord_proj_dvd_ord_proj_of_dvd := ordProj_dvd_ordProj_of_dvd
-
-theorem ordProj_dvd_ordProj_iff_dvd {a b : ℕ} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
-    (∀ p : ℕ, ordProj[p] a ∣ ordProj[p] b) ↔ a ∣ b := by
-  refine ⟨fun h => ?_, fun hab p => ordProj_dvd_ordProj_of_dvd hb0 hab p⟩
-  rw [← factorization_le_iff_dvd ha0 hb0]
-  intro q
-  rcases le_or_lt q 1 with (hq_le | hq1)
-  · rcases le_one_iff_eq_zero_or_eq_one.mp hq_le with rfl | rfl <;> simp
-  exact (pow_dvd_pow_iff_le_right hq1).1 (h q)
 
 @[deprecated (since := "2024-10-24")]
 alias ord_proj_dvd_ord_proj_iff_dvd := ordProj_dvd_ordProj_iff_dvd
