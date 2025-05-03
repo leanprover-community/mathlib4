@@ -788,35 +788,34 @@ variable (G)
 -- `powMonoidHom` to be defined.
 
 @[to_additive]
-theorem IsCyclic.card_powMonoidHom_range [CommGroup G] [IsCyclic G] [Fintype G] (d : ℕ) :
-    Nat.card (powMonoidHom d : G →* G).range = Fintype.card G / (Fintype.card G).gcd d := by
+theorem IsCyclic.card_powMonoidHom_range [CommGroup G] [IsCyclic G] [Finite G] (d : ℕ) :
+    Nat.card (powMonoidHom d : G →* G).range = Nat.card G / (Nat.card G).gcd d := by
   obtain ⟨g, h⟩ := exists_zpow_surjective G
   have : (powMonoidHom d).range = Subgroup.zpowers (g ^ d) := by
     rw [show g ^ d = powMonoidHom d g by rfl, ← MonoidHom.map_zpowers,
       (Subgroup.eq_top_iff' (Subgroup.zpowers g)).mpr h,  ← MonoidHom.range_eq_map]
-  rw [this, Nat.card_zpowers, orderOf_pow, orderOf_eq_card_of_forall_mem_zpowers h,
-    Nat.card_eq_fintype_card]
+  rw [this, Nat.card_zpowers, orderOf_pow, orderOf_eq_card_of_forall_mem_zpowers h]
 
 @[to_additive]
-theorem IsCyclic.index_powMonoidHom_ker [CommGroup G] [IsCyclic G] [Fintype G]
-    (d : ℕ) :
-    (powMonoidHom d : G →* G).ker.index = Fintype.card G / (Fintype.card G).gcd d := by
+theorem IsCyclic.index_powMonoidHom_ker [CommGroup G] [IsCyclic G] [Finite G] (d : ℕ) :
+    (powMonoidHom d : G →* G).ker.index = Nat.card G / (Nat.card G).gcd d := by
   rw [Subgroup.index_ker, card_powMonoidHom_range]
 
 @[to_additive]
-theorem IsCyclic.card_powMonoidHom_ker [CommGroup G] [hG : IsCyclic G] [Fintype G] (d : ℕ) :
-    Nat.card (powMonoidHom d : G →* G).ker = (Fintype.card G).gcd d := by
-  have h : ↑(Fintype.card G / (Fintype.card G).gcd d) ≠ (0 : ℚ) :=
-    Nat.cast_ne_zero.mpr <| Nat.div_ne_zero_iff.mpr
-      ⟨Nat.gcd_ne_zero_left Fintype.card_ne_zero, Nat.gcd_le_left d Fintype.card_pos⟩
+theorem IsCyclic.card_powMonoidHom_ker [CommGroup G] [hG : IsCyclic G] [Finite G] (d : ℕ) :
+    Nat.card (powMonoidHom d : G →* G).ker = (Nat.card G).gcd d := by
+  have h₁ : Nat.card G ≠ 0 := Nat.card_ne_zero.mpr ⟨inferInstance, inferInstance⟩
+  have h₂ : ↑(Nat.card G / (Nat.card G).gcd d) ≠ (0 : ℚ) := by
+    exact Nat.cast_ne_zero.mpr <|
+      Nat.div_ne_zero_iff.mpr ⟨Nat.gcd_ne_zero_left h₁, Nat.gcd_le_left d Nat.card_pos⟩
   have := Subgroup.card_mul_index (powMonoidHom d : G →* G).ker
-  rwa [index_powMonoidHom_ker, Nat.card_eq_fintype_card (α := G), ← Nat.cast_inj (R := ℚ),
-    Nat.cast_mul, ← eq_div_iff h, ← Nat.cast_div (Nat.div_dvd_of_dvd (Nat.gcd_dvd_left _ _)) h,
-    Nat.div_div_self (Nat.gcd_dvd_left _ _) Fintype.card_ne_zero, Nat.cast_inj] at this
+  rwa [index_powMonoidHom_ker, ← Nat.cast_inj (R := ℚ), Nat.cast_mul, ← eq_div_iff h₂,
+    ← Nat.cast_div (Nat.div_dvd_of_dvd (Nat.gcd_dvd_left _ _)) h₂,
+    Nat.div_div_self (Nat.gcd_dvd_left _ _) h₁, Nat.cast_inj] at this
 
 @[to_additive]
-theorem IsCyclic.index_powMonoidHom_range [CommGroup G] [hG : IsCyclic G] [Fintype G] (d : ℕ) :
-    (powMonoidHom d : G →* G).range.index = (Fintype.card G).gcd d := by
+theorem IsCyclic.index_powMonoidHom_range [CommGroup G] [hG : IsCyclic G] [Finite G] (d : ℕ) :
+    (powMonoidHom d : G →* G).range.index = (Nat.card G).gcd d := by
   rw [Subgroup.index_range, card_powMonoidHom_ker]
 
 end powMonoidHom
