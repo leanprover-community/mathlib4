@@ -110,7 +110,9 @@ lemma innerProduct_eq_inter (v w : (Set α)) (hv₁ : MeasurableSet v)
   have g : ∀ᵐ (x : α) ∂μ, x ∈ v → ((indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) : α → ℝ) x =
       w.indicator (fun x ↦ (1 : ℝ)) x := Filter.Eventually.mono h fun x a a_1 ↦ a
   rw [setIntegral_congr_ae hv₁ g, setIntegral_indicator hw₁]
-  simp
+  simp only [integral_const, MeasurableSet.univ, measureReal_restrict_apply, Set.univ_inter,
+    smul_eq_mul, mul_one]
+  rfl
 
 /-- A matrix with entry `μ (v i ∩ v j)` at index `i j : n`. -/
 def interMatrix (μ : Measure α) (v : n → (Set α)) : Matrix n n ℝ := fun i j ↦ (μ (v i ∩ v j)).toReal
@@ -130,40 +132,3 @@ theorem posSemidef_interMatrix [Fintype n] (μ : Measure α) (v : n → (Set α)
   exact IsGram.PosSemidef hg
 
 end L2
-
-section covariance
-
-/- Here, we describe the covariance matrix of the finite dimensional distributions of
-Brownian Motion, i.e. `s t ↦ s ∧ t`. Identifying this as a Gram Matrix gives that it is
-positive semi-definite. This section will be moved to the section on stochastic processes once
-we define Brownian Motion.
--/
-
-variable {E n : Type*}
-variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-
-open MeasureTheory L2 NNReal ENNReal
-
-namespace brownianMotion
-
-/-- This is the covariance matrix of Brownian Motion. -/
-def covMatrix (t : n → ℝ≥0) : Matrix n n ℝ := fun i j ↦ ((t i) ⊓ (t j)).toReal
-
-namespace covMatrix
-
-theorem posSemidef [Fintype n] (t : n → ℝ≥0) :
-    PosSemidef (covMatrix t) := by
-  let v : n → (Set ℝ) := fun i ↦ Set.Icc 0 (t i)
-  have h : covMatrix t = interMatrix volume (fun i ↦ Set.Icc 0 (t i).toReal) := by
-    ext i j
-    rw [covMatrix, interMatrix, Set.Icc_inter_Icc]
-    simp
-  apply h ▸ posSemidef_interMatrix _ v  (fun j ↦ measurableSet_Icc)
-    (fun j ↦ IsCompact.measure_ne_top isCompact_Icc)
-
-end covMatrix
-
-end brownianMotion
-
-end covariance
