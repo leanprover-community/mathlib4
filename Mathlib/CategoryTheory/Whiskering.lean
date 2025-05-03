@@ -437,16 +437,4 @@ def Functor.postcompose₃ {E' : Type*} [Category E'] :
     (E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E' :=
   whiskeringRight C₃ _ _ ⋙ whiskeringRight C₂ _ _ ⋙ whiskeringRight C₁ _ _
 
-
-namespace NatTrans
-
-lemma ext_of_essSurj {G₁ G₂ : C₂ ⥤ C₃} {f g : G₁ ⟶ G₂} (F : C₁ ⥤ C₂) [F.EssSurj]
-    (h : whiskerLeft F f = whiskerLeft F g) : f = g := by
-  ext X
-  have := congr_app h (F.objPreimage X)
-  dsimp at this
-  rw [← cancel_epi (G₁.map (F.objObjPreimageIso X).hom), naturality, naturality, this]
-
-end NatTrans
-
 end CategoryTheory
