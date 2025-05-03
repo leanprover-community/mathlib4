@@ -3,8 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
-import Mathlib.CategoryTheory.Monoidal.Derived
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Monoidal
 import Mathlib.CategoryTheory.Monoidal.Subcategory
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
@@ -55,6 +54,10 @@ abbrev ιKFlat : W.KFlat ⥤ C := W.kFlat.ι
 
 def WKFlat : MorphismProperty W.KFlat := W.inverseImage W.ιKFlat
 
+instance [W.ContainsIdentities] : W.WKFlat.ContainsIdentities := by
+  dsimp only [WKFlat]
+  infer_instance
+
 def localizerMorphismKFlat :
     LocalizerMorphism W.WKFlat W where
   functor := W.ιKFlat
@@ -84,12 +87,17 @@ lemma whiskerLeft_of_kFlat [W.HasTwoOutOfThreeProperty]
   rw [← W.precomp_iff _ _ (hY₁.whiskerRight hf), ← whisker_exchange f g]
   exact W.comp_mem _ _ (hX'.whiskerLeft hg) (hY₂.whiskerRight hf)
 
-/-instance [W.localizerMorphismKFlat.IsLeftDerivabilityStructure]
+lemma kFlat_derivesMonoidal [W.ContainsIdentities] [L.IsLocalization W] :
+    W.localizerMorphismKFlat.DerivesMonoidalStructure L := by
+  dsimp only [LocalizerMorphism.DerivesMonoidalStructure]
+  rw [LocalizerMorphism.derives₂_iff]
+  exact ⟨fun X _ _ _ hf ↦ Localization.inverts L W _ (X.2.whiskerRight hf),
+    fun X _ _ _ hf ↦ Localization.inverts L W _ (X.2.whiskerLeft hf)⟩
+
+instance [W.RespectsIso] [W.localizerMorphismKFlat.IsLeftDerivabilityStructure]
     [L.IsLocalization W] [W.ContainsIdentities] :
-    L.HasDerivedMonoidalCategory W := by
-  -- this should follow from a general result about derivability
-  -- structure `Φ` such that `Φ.functor` is monoidal
-  sorry-/
+    L.HasDerivedMonoidalCategory W :=
+  (W.kFlat_derivesMonoidal L).hasDerivedMonoidalCategory
 
 end MorphismProperty
 
