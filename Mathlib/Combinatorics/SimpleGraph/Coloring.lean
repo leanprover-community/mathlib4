@@ -241,7 +241,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
 theorem colorable_iff_forall_connectedComponents {n : ℕ} :
     G.Colorable n ↔ ∀ c : G.ConnectedComponent, (G.induce c).Colorable n :=
   ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v, fun h h1 ↦ C.valid h h1⟩,
-    fun h ↦ ⟨G.homOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
+   fun h ↦ ⟨G.homOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
 
 theorem colorable_set_nonempty_of_colorable {n : ℕ} (hc : G.Colorable n) :
     { n : ℕ | G.Colorable n }.Nonempty :=
