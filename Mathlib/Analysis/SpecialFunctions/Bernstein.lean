@@ -72,7 +72,7 @@ namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
 
 /-- Extension of the `positivity` tactic for Bernstein polynomials: they are always non-negative. -/
-@[positivity DFunLike.coe _ _]
+@[positivity DFunLike.coe (bernstein _ _) _]
 def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
   let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]
@@ -93,6 +93,9 @@ def z {n : ℕ} (k : Fin (n + 1)) : I :=
   ⟨(k : ℝ) / n, by simp [div_nonneg, div_le_one_of_le₀, k.is_le]⟩
 
 local postfix:90 "/ₙ" => z
+
+@[simp] lemma z_zero {n : ℕ} : (0 : Fin (n + 1))/ₙ = 0 := by simp [z]
+@[simp] lemma z_last {n : ℕ} (hn : n ≠ 0) : .last n/ₙ = 1 := by simp [z, hn]
 
 @[simp]
 theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
@@ -131,18 +134,30 @@ for some function `f : C(I, E)`, `h : 0 < ε`, `n : ℕ` and `x : I`.
 
 This is the set of points `k` in `Fin (n+1)` such that
 `k/n` is within `δ` of `x`, where `δ` is the modulus of uniform continuity for `f`,
-chosen so `|f x - f y| < ε/2` when `|x - y| < δ`.
+chosen so `‖f x - f y‖ < ε/2` when `|x - y| < δ`.
 
 We show that if `k ∉ S`, then `1 ≤ δ^-2 * (x - k/n)^2`.
 -/
 
-
 namespace bernsteinApproximation
 
-@[simp]
-theorem apply [NormedSpace ℝ E] (n : ℕ) (f : C(I, E)) (x : I) :
+section
+
+variable [NormedSpace ℝ E]
+
+theorem apply (n : ℕ) (f : C(I, E)) (x : I) :
     bernsteinApproximation n f x = ∑ k : Fin (n + 1), bernstein n k x • f k/ₙ := by
   simp [bernsteinApproximation]
+
+@[simp]
+theorem apply_zero (n : ℕ) (f : C(I, E)) : bernsteinApproximation n f 0 = f 0 := by
+  simp [apply, Fin.sum_univ_succ, bernstein_apply, z]
+
+@[simp]
+theorem apply_one {n : ℕ} (hn : n ≠ 0) (f : C(I, E)) : bernsteinApproximation n f 1 = f 1 := by
+  simp [apply, Fin.sum_univ_castSucc, bernstein_apply, hn, Nat.sub_eq_zero_iff_le]
+
+end
 
 /-- The modulus of (uniform) continuity for `f`, chosen so `|f x - f y| < ε/2` when `|x - y| < δ`.
 -/
@@ -211,7 +226,7 @@ theorem bernsteinApproximation_uniform [NormedSpace ℝ E] (f : C(I, E)) :
   calc
     ‖(bernsteinApproximation n f - f) x‖
       = ‖∑ k : Fin (n + 1), bernstein n k x • (f k/ₙ - f x)‖ := by
-      simp [smul_sub, ← Finset.sum_smul]
+      simp [bernsteinApproximation.apply, smul_sub, ← Finset.sum_smul]
     _ ≤ ∑ k : Fin (n + 1), ‖bernstein n k x • (f k/ₙ - f x)‖ := norm_sum_le _ _
     _ = ∑ k : Fin (n + 1), bernstein n k x * ‖f k/ₙ - f x‖ := by
       simp only [norm_smul, Real.norm_of_nonneg bernstein_nonneg]
