@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
+import Mathlib.CategoryTheory.Functor.Derived.Opposite
 
 /-!
 # Deriving functors using a derivability structure
@@ -49,13 +50,28 @@ abbrev Derives : Prop := W₁.IsInvertedBy (Φ.functor ⋙ F)
 
 namespace Derives
 
-variable (h : Φ.Derives F)
+variable {Φ F} (h : Φ.Derives F)
+
+include h in
+protected lemma op : Φ.op.Derives F.op := fun _ _ f hf ↦ by
+  have := h f.unop hf
+  dsimp at this ⊢
+  infer_instance
 
 include h in
 lemma hasPointwiseRightDerivedFunctor [Φ.IsRightDerivabilityStructure] :
     F.HasPointwiseRightDerivedFunctor W₂ := by
   rw [hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure Φ F]
   exact Functor.hasPointwiseRightDerivedFunctor_of_inverts _ h
+
+include h in
+lemma hasLeftDerivedFunctor [Φ.IsLeftDerivabilityStructure] :
+    F.HasLeftDerivedFunctor W₂ := by
+  rw [Functor.hasLeftDerivedFunctor_iff_op]
+  have := h.op.hasPointwiseRightDerivedFunctor
+  infer_instance
+
+section
 
 variable {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {RF : D₂ ⥤ H} (α : F ⟶ L₂ ⋙ RF)
 
@@ -78,6 +94,8 @@ lemma of_isIso_app_functor_obj (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.funct
     isIso_comp_left_iff, Functor.comp_map]
   infer_instance
 
+end
+
 end Derives
 
 lemma isRightDerivedFunctor_of_isRightDerivabilityStructure
@@ -85,9 +103,9 @@ lemma isRightDerivedFunctor_of_isRightDerivabilityStructure
     {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {RF : D₂ ⥤ H}
     (α : F ⟶ L₂ ⋙ RF) (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     RF.IsRightDerivedFunctor α W₂ := by
-  have h := Derives.of_isIso_app_functor_obj _ _ α hα
+  have h := Derives.of_isIso_app_functor_obj α hα
   have := h.hasPointwiseRightDerivedFunctor
-  have := h.isIso_of_isRightDerivabilityStructure _ _ (F.totalRightDerivedUnit L₂ W₂)
+  have := h.isIso_of_isRightDerivabilityStructure (F.totalRightDerivedUnit L₂ W₂)
   have := Φ.essSurj_of_hasRightResolutions L₂
   let φ := (F.totalRightDerived L₂ W₂).rightDerivedDesc (F.totalRightDerivedUnit L₂ W₂) W₂ RF α
   have hφ : F.totalRightDerivedUnit L₂ W₂ ≫ whiskerLeft L₂ φ = α :=

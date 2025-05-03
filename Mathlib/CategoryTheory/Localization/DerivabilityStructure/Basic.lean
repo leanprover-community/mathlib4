@@ -184,6 +184,9 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsLeftDerivabil
   dsimp
   exact TwoSquare.guitartExact_id' W₁.Q
 
+instance [Φ.IsLeftDerivabilityStructure] : Φ.op.IsRightDerivabilityStructure := by
+  rwa [← isLeftDerivabilityStructure_iff_op]
+
 end LocalizerMorphism
 
 end CategoryTheory

@@ -51,6 +51,7 @@ variable {C C' D D' H H' : Type _} [Category C] [Category C']
 if it is equipped with a natural transformation `α : F ⟶ L ⋙ RF`
 which makes it a left Kan extension of `F` along `L`,
 where `L : C ⥤ D` is a localization functor for `W : MorphismProperty C`. -/
+@[mk_iff]
 class IsRightDerivedFunctor [L.IsLocalization W] : Prop where
   isLeftKanExtension' : RF.IsLeftKanExtension α
 

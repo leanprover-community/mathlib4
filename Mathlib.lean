@@ -2095,6 +2095,7 @@ import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedFour
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTrifunctorComp
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
+import Mathlib.CategoryTheory.Functor.Derived.Opposite
 import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
 import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
@@ -2108,6 +2109,7 @@ import Mathlib.CategoryTheory.Functor.Functorial
 import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+import Mathlib.CategoryTheory.Functor.KanExtension.Opposite
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 import Mathlib.CategoryTheory.Functor.OfSequence
 import Mathlib.CategoryTheory.Functor.Quadrifunctor
