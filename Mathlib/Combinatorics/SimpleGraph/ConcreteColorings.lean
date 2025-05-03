@@ -164,27 +164,21 @@ open ConnectedComponent
 /--
 Given homomorphisms from each connected component of `G` to `H` this is the `G →g H`
 -/
+@[simps]
 def homOfConnectedComponents {H : SimpleGraph β}
-    (C : (c : G.ConnectedComponent) → (G.induce c) →g H ) : G →g H :=
-  ⟨fun v ↦ (C (G.connectedComponentMk _)) ⟨_, rfl⟩, fun hab ↦ by
-    have hadj : (G.induce (G.connectedComponentMk _).supp).Adj ⟨_, rfl⟩
-        ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
-    dsimp only
-    convert (C (G.connectedComponentMk _)).map_rel hadj using 3
-    all_goals rw [connectedComponentMk_eq_of_adj hab]
-    rfl⟩
-
-/--
-Given `β`-colorings of each connected component of `G` this is the `β`-coloring of `G`
--/
-def coloringOfConnectedComponents (C : (c : G.ConnectedComponent) → (G.induce c).Coloring β) :
-    G.Coloring β := G.homOfConnectedComponents C
+    (C : (c : G.ConnectedComponent) → (G.induce c) →g H ) : G →g H where
+  toFun := fun x ↦ (C (G.connectedComponentMk _)) _
+  map_rel' := fun hab ↦ by
+    have h : (G.induce (G.connectedComponentMk _).supp).Adj ⟨_, rfl⟩
+      ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
+    convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
+    rw [connectedComponentMk_eq_of_adj hab]
 
 variable {G}
 theorem colorable_iff_forall_connectedComponents {n : ℕ} :
     G.Colorable n ↔ ∀ c : G.ConnectedComponent, (G.induce c).Colorable n :=
   ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v, fun h h1 ↦ C.valid h h1⟩,
-     fun h ↦ ⟨G.coloringOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
+     fun h ↦ ⟨G.homOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
 
 open Walk
 lemma two_colorable_iff_forall_loop_not_odd :
