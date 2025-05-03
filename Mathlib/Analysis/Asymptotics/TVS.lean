@@ -107,7 +107,7 @@ structure IsBigOTVS (l : Filter α) (f : α → E) (g : α → F) : Prop where
     (egauge 𝕜 U <| f ·) ≤ᶠ[l] (egauge 𝕜 V <| g ·)
 
 @[inherit_doc]
-notation:100 f " =O[" 𝕜 ";" l "] " g:100 => IsBigOTVS 𝕜 l f g
+notation:100 f " =O[" 𝕜 "; " l "] " g:100 => IsBigOTVS 𝕜 l f g
 
 end Defs
 
@@ -396,7 +396,7 @@ protected theorem IsLittleOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCom
 theorem IsLittleOTVS.proj {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] {f : α → ∀ i, E i}
     (h : f =o[𝕜; l] g) (i : ι) : (f · i) =o[𝕜; l] g :=
-  ContinuousLinearMap.proj i |>.isBigOTVS_comp |>.trans_isLittleOTVS h
+  ContinuousLinearMap.proj i |>.isBigOTVS_fun_comp |>.trans_isLittleOTVS h
 
 theorem isLittleOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
@@ -419,7 +419,7 @@ protected theorem IsBigOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGr
 theorem IsBigOTVS.proj {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] {f : α → ∀ i, E i}
     (h : f =O[𝕜; l] g) (i : ι) : (f · i) =O[𝕜; l] g :=
-  ContinuousLinearMap.proj i |>.isBigOTVS_comp |>.trans h
+  ContinuousLinearMap.proj i |>.isBigOTVS_fun_comp |>.trans h
 
 theorem isBigOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
