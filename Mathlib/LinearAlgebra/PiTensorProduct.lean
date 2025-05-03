@@ -296,13 +296,19 @@ equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries `(a, m)` of `p
 lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)) :
     AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p =
     List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) := by
-  -- TODO: this is defeq abuse: `p` is not a `List`.
-  match p with
-  | [] => rw [FreeAddMonoid.toList_nil, List.map_nil, List.sum_nil]; rfl
-  | x :: ps =>
-    rw [FreeAddMonoid.toList_cons, List.map_cons, List.sum_cons, ← List.singleton_append,
-      ← toPiTensorProduct ps, ← tprodCoeff_eq_smul_tprod]
-    rfl
+  induction h : FreeAddMonoid.toList p generalizing p with
+  | nil =>
+    rw [@Equiv.apply_eq_iff_eq_symm_apply] at h
+    simp only [FreeAddMonoid.toList_symm, FreeAddMonoid.ofList_nil] at h
+    simp [h]
+  | cons x ps ih =>
+    rw [@Equiv.apply_eq_iff_eq_symm_apply] at h
+    simp only [FreeAddMonoid.toList_symm] at h
+    rw [List.map_cons, List.sum_cons, ← ih _ rfl, h]
+    simp
+    congr -- TODO still defeq abuse here
+    ext <;>
+    simp
 
 /-- The set of lifts of an element `x` of `⨂[R] i, s i` in `FreeAddMonoid (R × Π i, s i)`. -/
 def lifts (x : ⨂[R] i, s i) : Set (FreeAddMonoid (R × Π i, s i)) :=
