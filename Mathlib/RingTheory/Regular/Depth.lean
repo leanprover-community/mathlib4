@@ -671,8 +671,8 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
         sorry
       have range : LinearMap.range (x • LinearMap.id) =
         x • (⊤ : Submodule R (Ext.{max u v} (of R L) M i)) := by
-
-        sorry
+        ext y
+        simp [Submodule.mem_smul_pointwise_iff_exists]
       by_contra ntr
       rw [not_subsingleton_iff_nontrivial] at ntr
       have mem : x ∈ (Module.annihilator R (Ext.{max u v} (of R L) M i)).jacobson :=
