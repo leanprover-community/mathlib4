@@ -111,6 +111,7 @@ lemma innerProduct_eq_inter (v w : (Set α)) (hv₁ : MeasurableSet v)
       w.indicator (fun x ↦ (1 : ℝ)) x := Filter.Eventually.mono h fun x a a_1 ↦ a
   rw [setIntegral_congr_ae hv₁ g, setIntegral_indicator hw₁]
   simp
+  rfl
 
 /-- A matrix with entry `μ (v i ∩ v j)` at index `i j : n`. -/
 def interMatrix (μ : Measure α) (v : n → (Set α)) : Matrix n n ℝ := fun i j ↦ (μ (v i ∩ v j)).toReal
