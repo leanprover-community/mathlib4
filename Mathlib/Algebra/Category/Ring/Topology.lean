@@ -138,8 +138,6 @@ instance [TopologicalSpace S] [IsTopologicalRing S] [T1Space S] [CompactSpace S]
     CompactSpace (R ⟶ S) :=
   (isClosedEmbedding_hom R S).compactSpace
 
-open Limits
-
 /-- `Hom(A ⊗[S] B, R)` has the subspace topology from `Hom(A, R) × Hom(B, R)`. -/
 lemma isEmbedding_pushout [TopologicalSpace R] [IsTopologicalRing R]
     (φ : S ⟶ A) (ψ : S ⟶ B) :
