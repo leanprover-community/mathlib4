@@ -278,9 +278,6 @@ theorem pullback_map_isOpenEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
     · apply ContinuousMap.continuous_toFun
     · exact H₂.isOpen_range
 
-@[deprecated (since := "2024-10-18")]
-alias pullback_map_openEmbedding_of_open_embeddings := pullback_map_isOpenEmbedding
-
 
 lemma snd_isEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsEmbedding f) (g : Y ⟶ S) :
     IsEmbedding <| ⇑(pullback.snd f g) := by
@@ -318,18 +315,12 @@ theorem snd_isOpenEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsOpenEm
         (homeoOfIso (Iso.refl _)).isOpenEmbedding (𝟙 _) rfl (by simp))
   simp [homeoOfIso, ← coe_comp]
 
-@[deprecated (since := "2024-10-18")]
-alias snd_openEmbedding_of_left_openEmbedding := snd_isOpenEmbedding_of_left
-
 theorem fst_isOpenEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (H : IsOpenEmbedding g) : IsOpenEmbedding <| ⇑(pullback.fst f g) := by
   convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isOpenEmbedding.comp
       (pullback_map_isOpenEmbedding (i₁ := 𝟙 X) f g f (𝟙 _)
         (homeoOfIso (Iso.refl _)).isOpenEmbedding H (𝟙 _) rfl (by simp))
   simp [homeoOfIso, ← coe_comp]
-
-@[deprecated (since := "2024-10-18")]
-alias fst_openEmbedding_of_right_openEmbedding := fst_isOpenEmbedding_of_right
 
 /-- If `X ⟶ S`, `Y ⟶ S` are open embeddings, then so is `X ×ₛ Y ⟶ S`. -/
 theorem isOpenEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
@@ -342,14 +333,11 @@ theorem isOpenEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
 @[deprecated (since := "2024-10-30")]
 alias isOpenEmbedding_of_pullback_open_embeddings := isOpenEmbedding_of_pullback
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_of_pullback_open_embeddings := isOpenEmbedding_of_pullback
-
 theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (hg : IsEmbedding g) (H : Set.range f ⊆ Set.range g) :
     IsIso (pullback.fst f g) := by
   let esto : (pullback f g : TopCat) ≃ₜ X :=
-    (Homeomorph.ofIsEmbedding _ (fst_isEmbedding_of_right f hg)).trans
+    (fst_isEmbedding_of_right f hg).toHomeomorph.trans
       { toFun := Subtype.val
         invFun := fun x =>
           ⟨x, by
@@ -362,7 +350,7 @@ theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {
 theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (hf : IsEmbedding f)
     (g : Y ⟶ S) (H : Set.range g ⊆ Set.range f) : IsIso (pullback.snd f g) := by
   let esto : (pullback f g : TopCat) ≃ₜ Y :=
-    (Homeomorph.ofIsEmbedding _ (snd_isEmbedding_of_left hf g)).trans
+    (snd_isEmbedding_of_left hf g).toHomeomorph.trans
       { toFun := Subtype.val
         invFun := fun x =>
           ⟨x, by

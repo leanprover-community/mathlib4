@@ -21,6 +21,8 @@ This file proves the unsigned version of the Hahn decomposition theorem.
 Hahn decomposition
 -/
 
+assert_not_exists MeasureTheory.Measure.rnDeriv
+assert_not_exists MeasureTheory.VectorMeasure
 
 open Set Filter Topology ENNReal
 

@@ -716,7 +716,7 @@ end CommRing
 
 section IsDomain
 
-variable [LinearOrderedAddCommGroup Γ] [CommRing R] [IsDomain R]
+variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [CommRing R] [IsDomain R]
 
 theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
   constructor
@@ -737,7 +737,8 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) 
 end IsDomain
 
 open Classical in
-instance instField [LinearOrderedAddCommGroup Γ] [Field R] : Field (HahnSeries Γ R) where
+instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R] :
+    Field (HahnSeries Γ R) where
   __ : IsDomain (HahnSeries Γ R) := inferInstance
   inv x :=
     if x0 : x = 0 then 0

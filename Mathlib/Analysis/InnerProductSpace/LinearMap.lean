@@ -122,7 +122,7 @@ theorem LinearIsometryEquiv.inner_map_eq_flip (f : E ≃ₗᵢ[𝕜] E') (x : E)
 
 /-- A linear map that preserves the inner product is a linear isometry. -/
 def LinearMap.isometryOfInner (f : E →ₗ[𝕜] E') (h : ∀ x y, ⟪f x, f y⟫ = ⟪x, y⟫) : E →ₗᵢ[𝕜] E' :=
-  ⟨f, fun x => by simp only [@norm_eq_sqrt_inner 𝕜, h]⟩
+  ⟨f, fun x => by simp only [@norm_eq_sqrt_re_inner 𝕜, h]⟩
 
 @[simp]
 theorem LinearMap.coe_isometryOfInner (f : E →ₗ[𝕜] E') (h) : ⇑(f.isometryOfInner h) = f :=
@@ -205,6 +205,8 @@ def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
 theorem innerSLFlip_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
   rfl
 
+set_option linter.style.maxHeartbeats false in
+-- This option was set before the `maxHeartbeats` linter existed and had no comment.
 set_option synthInstance.maxHeartbeats 40000 in
 variable (F) in
 @[simp] lemma innerSL_real_flip : (innerSL ℝ (E := F)).flip = innerSL ℝ (E := F) := by

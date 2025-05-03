@@ -104,7 +104,7 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     apply (opEquiv _ _).injective
     refine NatTrans.ext (funext fun U => ?_)
     induction U with
-    | h U =>
+    | op U =>
       simp [opEquiv]
       rfl
   map_comp {j₁ j₂ j₃} f g := by

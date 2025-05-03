@@ -89,6 +89,7 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
 * `lean-toolchain`
 * `lake-manifest.json`
+
 and the hash of `Lean.githash`.
 
 (We hash `Lean.githash` in case the toolchain changes even though `lean-toolchain` hasn't.

@@ -81,7 +81,7 @@ def refl (a : G) : G ≃+c[a, a] G where
 @[simp] lemma symm_refl (a : G) : (refl a).symm = refl a := rfl
 
 /-- Composition of `AddConstEquiv`s, as an `AddConstEquiv`. -/
-@[simps! (config := { simpRhs := true }) toEquiv apply]
+@[simps! +simpRhs toEquiv apply]
 def trans (e₁ : G ≃+c[a, b] H) (e₂ : H ≃+c[b, c] K) : G ≃+c[a, c] K where
   toEquiv := e₁.toEquiv.trans e₂.toEquiv
   map_add_const' := (AddConstMapClass.semiconj e₁).trans (AddConstMapClass.semiconj e₂)

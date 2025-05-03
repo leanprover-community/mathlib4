@@ -64,7 +64,7 @@ and `(1 - g) * f` in weights strictly less than the weighted order of `g`.
 
 - `MvPowerSeries.ne_zero_iff_order_finite`: `f` is nonzero iff its order is finite.
 
-- `MvPowerSeries.order_eq_top_iff`: the order of `f` is infinite iff  `f = 0`.
+- `MvPowerSeries.order_eq_top_iff`: the order of `f` is infinite iff `f = 0`.
 
 - `MvPowerSeries.exists_coeff_ne_zero_of_order`: if the order is finite, then there exists a
 nonzero coefficient of degree equal to the order.
@@ -150,7 +150,7 @@ theorem ne_zero_iff_weightedOrder_finite :
 @[simp]
 theorem weightedOrder_eq_top_iff :
     f.weightedOrder w = ⊤ ↔ f = 0 := by
-  rw [← not_iff_not, ← ne_eq, ← ne_eq,   ne_zero_iff_weightedOrder_finite w, coe_toNat_eq_self]
+  rw [← not_iff_not, ← ne_eq, ← ne_eq, ne_zero_iff_weightedOrder_finite w, coe_toNat_eq_self]
 
 /-- If the order of a formal power series `f` is finite,
 then some coefficient of weight equal to the order of `f` is nonzero. -/
@@ -223,8 +223,8 @@ theorem weightedOrder_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
       simp only [coeff_monomial_same, ne_eq, h, not_false_eq_true, and_self]
     · intro b hb
       rw [coeff_monomial, if_neg]
-      intro h
-      simp only [h, lt_self_iff_false] at hb
+      rintro rfl
+      exact hb.false
 
 /-- The order of the monomial `a*X^n` is `n` if `a ≠ 0`. -/
 theorem weightedOrder_monomial_of_ne_zero {d : σ →₀ ℕ} {a : R} (h : a ≠ 0) :
@@ -237,7 +237,7 @@ theorem weightedOrder_monomial_of_ne_zero {d : σ →₀ ℕ} {a : R} (h : a ≠
 theorem min_weightedOrder_le_add :
     min (f.weightedOrder w) (g.weightedOrder w) ≤ (f + g).weightedOrder w := by
   apply le_weightedOrder w
-  simp (config := { contextual := true }) only
+  simp +contextual only
     [coeff_eq_zero_of_lt_weightedOrder w, lt_min_iff, map_add, add_zero,
       eq_self_iff_true, imp_true_iff]
 
@@ -264,13 +264,11 @@ private theorem weightedOrder_add_of_weightedOrder_lt.aux
 theorem weightedOrder_add_of_weightedOrder_ne (h : f.weightedOrder w ≠ g.weightedOrder w) :
     weightedOrder w (f + g) = weightedOrder w f ⊓ weightedOrder w g := by
   refine le_antisymm ?_ (min_weightedOrder_le_add w)
-  by_cases H₁ : f.weightedOrder w < g.weightedOrder w
-  · simp only [le_inf_iff, weightedOrder_add_of_weightedOrder_lt.aux w H₁]
-    exact ⟨le_rfl, le_of_lt H₁⟩
-  · by_cases H₂ : g.weightedOrder w < f.weightedOrder w
-    · simp only [add_comm f g, le_inf_iff, weightedOrder_add_of_weightedOrder_lt.aux w H₂]
-      exact ⟨le_of_lt H₂, le_rfl⟩
-    · exact absurd (le_antisymm (not_lt.1 H₂) (not_lt.1 H₁)) h
+  wlog H₁ : f.weightedOrder w < g.weightedOrder w
+  · rw [add_comm f g, inf_comm]
+    exact this _ h.symm ((le_of_not_lt H₁).lt_of_ne' h)
+  simp only [le_inf_iff, weightedOrder_add_of_weightedOrder_lt.aux w H₁]
+  exact ⟨le_rfl, le_of_lt H₁⟩
 
 /-- The weighted_order of the product of two formal power series
  is at least the sum of their orders. -/
@@ -312,14 +310,13 @@ theorem coeff_mul_right_one_sub_of_lt_weightedOrder
   apply lt_of_lt_of_le (lt_of_lt_of_le h le_self_add) (le_weightedOrder_mul w)
 
 theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type*} [CommRing R] (d : σ →₀ ℕ)
-    (s : Finset ι) (f : MvPowerSeries σ R) (g : ι → MvPowerSeries σ R) :
-    (∀ i ∈ s, (weight w d) < weightedOrder w (g i)) →
-      coeff R d (f * ∏ i ∈ s, (1 - g i)) = coeff R d f := by
+    (s : Finset ι) (f : MvPowerSeries σ R) (g : ι → MvPowerSeries σ R)
+    (h : ∀ i ∈ s, (weight w d) < weightedOrder w (g i)) :
+    coeff R d (f * ∏ i ∈ s, (1 - g i)) = coeff R d f := by
   classical
   induction s using Finset.induction_on with
-  | empty => simp only [imp_true_iff, Finset.prod_empty, mul_one, eq_self_iff_true]
-  | @insert a s ha ih =>
-    intro h
+  | empty => simp only [Finset.prod_empty, mul_one]
+  | insert a s ha ih =>
     simp only [Finset.mem_insert, forall_eq_or_imp] at h
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm,
       coeff_mul_left_one_sub_of_lt_weightedOrder w h.1, ih h.2]

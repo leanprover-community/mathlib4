@@ -138,7 +138,7 @@ def applyPeelThm (thm : Name) (goal : MVarId)
     MetaM (FVarId × List MVarId) := do
   let new_goal :: ge :: _ ← goal.applyConst thm <|> throwPeelError ty target
     | throwError "peel: internal error"
-  ge.assignIfDefeq e <|> throwPeelError ty target
+  ge.assignIfDefEq e <|> throwPeelError ty target
   let (fvars, new_goal) ← new_goal.introN 2 [n, n']
   return (fvars[1]!, [new_goal])
 

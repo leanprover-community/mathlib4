@@ -262,8 +262,7 @@ lemma Cotangent.map_sub_map (f g : Hom P P') :
   ext
   simp only [val_sub, val_mk, map_sub, AddSubgroupClass.coe_sub, Ideal.cotangentEquivIdeal_apply,
     Ideal.toCotangent_to_quotient_square, Submodule.mkQ_apply, Ideal.Quotient.mk_eq_mk,
-    Hom.subToKer_apply_coe]
-  rfl
+    Hom.subToKer_apply_coe, Hom.toAlgHom_apply]
 
 variable (P) in
 /-- The projection map from the relative cotangent space to the module of differentials. -/

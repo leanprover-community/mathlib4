@@ -72,7 +72,7 @@ theorem isOfFinOrder_iff_pow_eq_one : IsOfFinOrder x ↔ ∃ n, 0 < n ∧ x ^ n 
 @[to_additive] alias ⟨IsOfFinOrder.exists_pow_eq_one, _⟩ := isOfFinOrder_iff_pow_eq_one
 
 @[to_additive]
-lemma isOfFinOrder_iff_zpow_eq_one {G} [Group G] {x : G} :
+lemma isOfFinOrder_iff_zpow_eq_one {G} [DivisionMonoid G] {x : G} :
     IsOfFinOrder x ↔ ∃ (n : ℤ), n ≠ 0 ∧ x ^ n = 1 := by
   rw [isOfFinOrder_iff_pow_eq_one]
   refine ⟨fun ⟨n, hn, hn'⟩ ↦ ⟨n, Int.natCast_ne_zero_iff_pos.mpr hn, zpow_natCast x n ▸ hn'⟩,
@@ -95,14 +95,6 @@ theorem not_isOfFinOrder_of_injective_pow {x : G} (h : Injective fun n : ℕ => 
 @[to_additive (attr := simp) "0 is of finite order in any additive monoid."]
 theorem IsOfFinOrder.one : IsOfFinOrder (1 : G) :=
   isOfFinOrder_iff_pow_eq_one.mpr ⟨1, Nat.one_pos, one_pow 1⟩
-
-@[to_additive]
-alias isOfFinOrder_one := IsOfFinOrder.one
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated IsOfFinOrder.one (since := "2024-10-11")] isOfFinOrder_one
-attribute [deprecated IsOfFinAddOrder.zero (since := "2024-10-11")] isOfFinAddOrder_zero
 
 @[to_additive]
 lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by
@@ -1095,7 +1087,7 @@ variable [Monoid α] [Monoid β] {x : α × β} {a : α} {b : β}
 
 @[to_additive]
 protected theorem Prod.orderOf (x : α × β) : orderOf x = (orderOf x.1).lcm (orderOf x.2) :=
-  minimalPeriod_prod_map _ _ _
+  minimalPeriod_prodMap _ _ _
 
 @[to_additive]
 theorem orderOf_fst_dvd_orderOf : orderOf x.1 ∣ orderOf x :=

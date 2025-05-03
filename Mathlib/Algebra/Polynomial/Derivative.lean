@@ -136,14 +136,14 @@ theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
 
 theorem iterate_derivative_sum (k : ℕ) (s : Finset ι) (f : ι → R[X]) :
     derivative^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, derivative^[k] (f b) := by
-  simp_rw [← LinearMap.pow_apply, map_sum]
+  simp_rw [← Module.End.pow_apply, map_sum]
 
-theorem derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
+theorem derivative_smul {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=
   derivative.map_smul_of_tower s p
 
 @[simp]
-theorem iterate_derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
+theorem iterate_derivative_smul {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R]
     (s : S) (p : R[X]) (k : ℕ) : derivative^[k] (s • p) = s • derivative^[k] p := by
   induction k generalizing p with
   | zero => simp

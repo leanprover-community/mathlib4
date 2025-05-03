@@ -51,7 +51,7 @@ semilattice, lattice
 
 /-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
 @[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
-  eval h goal := do goal.assignIfDefeq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
 
 universe u v w
 
@@ -725,9 +725,9 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [IsTotal α (· �
 See note [reducible non-instances]. -/
 abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     [DecidableLE α] [DecidableLT α] [IsTotal α (· ≤ ·)] : LinearOrder α where
-  decidableLE := ‹_›
-  decidableEq := ‹_›
-  decidableLT := ‹_›
+  toDecidableLE := ‹_›
+  toDecidableEq := ‹_›
+  toDecidableLT := ‹_›
   le_total := total_of (· ≤ ·)
   max_def := by exact congr_fun₂ sup_eq_maxDefault
   min_def := by exact congr_fun₂ inf_eq_minDefault

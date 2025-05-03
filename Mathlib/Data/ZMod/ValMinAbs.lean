@@ -106,7 +106,7 @@ lemma natCast_natAbs_valMinAbs [NeZero n] (a : ZMod n) :
     exact a.val_le
   rw [valMinAbs_def_pos]
   split_ifs
-  · rw [Int.natAbs_ofNat, natCast_zmod_val]
+  · rw [Int.natAbs_natCast, natCast_zmod_val]
   · rw [← Int.cast_natCast, Int.ofNat_natAbs_of_nonpos this, Int.cast_neg, Int.cast_sub,
       Int.cast_natCast, Int.cast_natCast, natCast_self, sub_zero, natCast_zmod_val]
 
@@ -159,7 +159,7 @@ lemma valMinAbs_natCast_of_half_lt (ha : n / 2 < a) (ha' : a < n) :
 @[simp]
 lemma valMinAbs_natCast_eq_self [NeZero n] : (a : ZMod n).valMinAbs = a ↔ a ≤ n / 2 := by
   refine ⟨fun ha => ?_, valMinAbs_natCast_of_le_half⟩
-  rw [← Int.natAbs_ofNat a, ← ha]
+  rw [← Int.natAbs_natCast a, ← ha]
   exact natAbs_valMinAbs_le (n := n) a
 
 lemma natAbs_valMinAbs_add_le (a b : ZMod n) :
