@@ -232,7 +232,7 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | insert ha ih =>
+  | insert a s ha ih =>
     intro t
     simp only [Finset.mem_insert, forall_eq_or_imp] at t
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm, coeff_mul_one_sub_of_lt_order _ t.1]
