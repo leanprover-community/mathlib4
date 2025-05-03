@@ -93,7 +93,9 @@ def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ
       eLpNorm_add_lt_top ⟨f.aestronglyMeasurable, hf⟩ ⟨g.aestronglyMeasurable, hg⟩]
   neg_mem' {f} hf := by rwa [Set.mem_setOf_eq, eLpNorm_congr_ae (AEEqFun.coeFn_neg f), eLpNorm_neg]
 
+/-- `α →₁[μ] E` is the type of `L¹` or integrable functions from `α` to `E`. -/
 scoped notation:25 α' " →₁[" μ "] " E => MeasureTheory.Lp (α := α') E 1 μ
+/-- `α →₂[μ] E` is the type of `L²` or square-integrable functions from `α` to `E`. -/
 scoped notation:25 α' " →₂[" μ "] " E => MeasureTheory.Lp (α := α') E 2 μ
 
 namespace MemLp
@@ -764,7 +766,7 @@ def compLpₗ (L : E →L[𝕜] F) : Lp E p μ →ₗ[𝕜] Lp F p μ where
     ext1
     filter_upwards [Lp.coeFn_smul c f, coeFn_compLp L (c • f), Lp.coeFn_smul c (L.compLp f),
       coeFn_compLp L f] with _ ha1 ha2 ha3 ha4
-    simp only [ha1, ha2, ha3, ha4, _root_.map_smul, Pi.smul_apply]
+    simp only [ha1, ha2, ha3, ha4, map_smul, Pi.smul_apply]
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a continuous `𝕜`-linear map on
 `Lp E p μ`. See also the similar

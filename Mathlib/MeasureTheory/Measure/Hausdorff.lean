@@ -143,7 +143,7 @@ theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {
   classical
   induction I using Finset.induction_on with
   | empty => simp
-  | @insert i I hiI ihI =>
+  | insert i I hiI ihI =>
     simp only [Finset.mem_insert] at hI
     rw [Finset.set_biUnion_insert, hm, ihI, Finset.sum_insert hiI]
     exacts [fun i hi j hj hij => hI i (Or.inr hi) j (Or.inr hj) hij,
@@ -534,6 +534,7 @@ theorem mkMetric_le_liminf_sum {β : Type*} {ι : β → Type*} [hι : ∀ n, Fi
 def hausdorffMeasure (d : ℝ) : Measure X :=
   mkMetric fun r => r ^ d
 
+@[inherit_doc]
 scoped[MeasureTheory] notation "μH[" d "]" => MeasureTheory.Measure.hausdorffMeasure d
 
 theorem le_hausdorffMeasure (d : ℝ) (μ : Measure X) (ε : ℝ≥0∞) (h₀ : 0 < ε)
@@ -964,7 +965,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
       rw [← e.symm_image_image K]
       apply lt_of_le_of_lt <| e.symm.lipschitz.hausdorffMeasure_image_le (by simp) (e '' K)
       rw [ENNReal.rpow_natCast]
-      exact ENNReal.mul_lt_top (ENNReal.pow_lt_top ENNReal.coe_lt_top _) this
+      exact ENNReal.mul_lt_top (ENNReal.pow_lt_top ENNReal.coe_lt_top) this
     conv_lhs => congr; congr; rw [← Fintype.card_fin (finrank ℝ E)]
     rw [hausdorffMeasure_pi_real]
     exact (hK.image e.continuous).measure_lt_top

@@ -52,7 +52,7 @@ theorem LinearIndependent.sumElim_of_quotient
   refine disjoint_def.mpr fun x h₁ h₂ ↦ ?_
   have : x ∈ M' := span_le.mpr (Set.range_subset_iff.mpr fun i ↦ (f i).prop) h₁
   obtain ⟨c, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp h₂
-  simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsupp_sum, map_smul, mkQ_apply] at this
+  simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsuppSum, map_smul, mkQ_apply] at this
   rw [linearIndependent_iff.mp hg _ this, Finsupp.sum_zero_index]
 
 @[deprecated (since := "2025-02-21")]
@@ -143,7 +143,7 @@ theorem lift_rank_add_lift_rank_le_rank_prod [Nontrivial R] :
     lift.{v'} (Module.rank R M) + lift.{v} (Module.rank R M') ≤ Module.rank R (M × M') := by
   rw [← rank_ulift, ← rank_ulift]
   exact (rank_add_rank_le_rank_prod R _).trans_eq
-    (ULift.moduleEquiv.prod ULift.moduleEquiv).rank_eq
+    (ULift.moduleEquiv.prodCongr ULift.moduleEquiv).rank_eq
 
 variable {R M M'}
 variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M'] [Module.Free R M₁]

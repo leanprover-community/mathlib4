@@ -80,7 +80,7 @@ theorem remainder_summable {m : ℝ} (hm : 1 < m) (k : ℕ) :
   convert (summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
 
 theorem remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=
-  tsum_pos (remainder_summable hm k) (fun _ => by positivity) 0 (by positivity)
+  (remainder_summable hm k).tsum_pos (fun _ => by positivity) 0 (by positivity)
 
 theorem partialSum_succ (m : ℝ) (n : ℕ) :
     partialSum m (n + 1) = partialSum m n + 1 / m ^ (n + 1)! :=
@@ -89,7 +89,7 @@ theorem partialSum_succ (m : ℝ) (n : ℕ) :
 /-- Split the sum defining a Liouville number into the first `k` terms and the rest. -/
 theorem partialSum_add_remainder {m : ℝ} (hm : 1 < m) (k : ℕ) :
     partialSum m k + remainder m k = liouvilleNumber m :=
-  sum_add_tsum_nat_add _ (LiouvilleNumber.summable hm)
+  (LiouvilleNumber.summable hm).sum_add_tsum_nat_add _
 
 /-! We now prove two useful inequalities, before collecting everything together. -/
 
@@ -106,7 +106,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
   calc
     (∑' i, 1 / m ^ (i + (n + 1))!) < ∑' i, 1 / m ^ (i + (n + 1)!) :=
         -- 1. the second series dominates the first
-        tsum_lt_tsum (fun b => one_div_pow_le_one_div_pow_of_le m1.le
+        Summable.tsum_lt_tsum (fun b => one_div_pow_le_one_div_pow_of_le m1.le
           (b.add_factorial_succ_le_factorial_add_succ n))
         -- 2. the term with index `i = 2` of the first series is strictly smaller than
         -- the corresponding term of the second series

@@ -45,8 +45,8 @@ https://github.com/ImperialCollegeLondon/FLT .
 open List
 
 /-- Statement of Fermat's Last Theorem over a given semiring with a specific exponent. -/
-def FermatLastTheoremWith (α : Type*) [Semiring α] (n : ℕ) : Prop :=
-  ∀ a b c : α, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n ≠ c ^ n
+def FermatLastTheoremWith (R : Type*) [Semiring R] (n : ℕ) : Prop :=
+  ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n ≠ c ^ n
 
 /-- Statement of Fermat's Last Theorem over the naturals for a given exponent. -/
 def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWith ℕ n
@@ -68,10 +68,10 @@ lemma not_fermatLastTheoremFor_one : ¬ FermatLastTheoremFor 1 :=
 lemma not_fermatLastTheoremFor_two : ¬ FermatLastTheoremFor 2 :=
   fun h ↦ h 3 4 5 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
 
-variable {α : Type*} [Semiring α] [NoZeroDivisors α] {m n : ℕ}
+variable {R : Type*} [Semiring R] [NoZeroDivisors R] {m n : ℕ}
 
-lemma FermatLastTheoremWith.mono (hmn : m ∣ n) (hm : FermatLastTheoremWith α m) :
-    FermatLastTheoremWith α n := by
+lemma FermatLastTheoremWith.mono (hmn : m ∣ n) (hm : FermatLastTheoremWith R m) :
+    FermatLastTheoremWith R n := by
   rintro a b c ha hb hc
   obtain ⟨k, rfl⟩ := hmn
   simp_rw [pow_mul']
@@ -151,40 +151,43 @@ lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
 A relaxed variant of Fermat's Last Theorem over a given commutative semiring with a specific
 exponent, allowing nonzero solutions of units and their common multiples.
 
-1. The variant `FermatLastTheoremWith' α` is weaker than `FermatLastTheoremWith α` in general.
-   In particular, it holds trivially for `[Field α]`.
-2. This variant is equivalent to the original `FermatLastTheoremWith α` for `α = ℕ` or `ℤ`.
+1. The variant `FermatLastTheoremWith' R` is weaker than `FermatLastTheoremWith R` in general.
+   In particular, it holds trivially for `[Field R]`.
+2. This variant is equivalent to the original `FermatLastTheoremWith R` for `R = ℕ` or `ℤ`.
    In general, they are equivalent if there is no solutions of units to the Fermat equation.
-3. For a polynomial ring `α = k[X]`, the original `FermatLastTheoremWith α` is false but the weaker
-   variant `FermatLastTheoremWith' α` is true. This polynomial variant of Fermat's Last Theorem
+3. For a polynomial ring `R = k[X]`, the original `FermatLastTheoremWith R` is false but the weaker
+   variant `FermatLastTheoremWith' R` is true. This polynomial variant of Fermat's Last Theorem
    can be shown elementarily using Mason--Stothers theorem.
 -/
-def FermatLastTheoremWith' (α : Type*) [CommSemiring α] (n : ℕ) : Prop :=
-  ∀ a b c : α, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n = c ^ n →
+def FermatLastTheoremWith' (R : Type*) [CommSemiring R] (n : ℕ) : Prop :=
+  ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n = c ^ n →
     ∃ d a' b' c', (a = a' * d ∧ b = b' * d ∧ c = c' * d) ∧ (IsUnit a' ∧ IsUnit b' ∧ IsUnit c')
 
-lemma FermatLastTheoremWith.fermatLastTheoremWith' {α : Type*} [CommSemiring α] {n : ℕ}
-    (h : FermatLastTheoremWith α n) : FermatLastTheoremWith' α n :=
+lemma FermatLastTheoremWith.fermatLastTheoremWith' {R : Type*} [CommSemiring R] {n : ℕ}
+    (h : FermatLastTheoremWith R n) : FermatLastTheoremWith' R n :=
   fun a b c _ _ _ _ ↦ by exfalso; apply h a b c <;> assumption
 
-lemma fermatLastTheoremWith'_of_field (α : Type*) [Field α] (n : ℕ) : FermatLastTheoremWith' α n :=
-  fun a b c ha hb hc _ ↦
-    ⟨1, a, b, c,
-     ⟨(mul_one a).symm, (mul_one b).symm, (mul_one c).symm⟩,
-     ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩⟩
+lemma fermatLastTheoremWith'_of_semifield (𝕜 : Type*) [Semifield 𝕜] (n : ℕ) :
+    FermatLastTheoremWith' 𝕜 n := fun a b c ha hb hc _ ↦
+  ⟨1, a, b, c,
+    ⟨(mul_one a).symm, (mul_one b).symm, (mul_one c).symm⟩,
+    ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩⟩
 
-lemma FermatLastTheoremWith'.fermatLastTheoremWith {α : Type*} [CommSemiring α] [IsDomain α]
-    {n : ℕ} (h : FermatLastTheoremWith' α n)
-    (hn : ∀ a b c : α, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
-    FermatLastTheoremWith α n := by
+@[deprecated (since := "2025-03-21")]
+alias fermatLastTheoremWith'_of_field := fermatLastTheoremWith'_of_semifield
+
+lemma FermatLastTheoremWith'.fermatLastTheoremWith {R : Type*} [CommSemiring R] [IsDomain R]
+    {n : ℕ} (h : FermatLastTheoremWith' R n)
+    (hn : ∀ a b c : R, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
+    FermatLastTheoremWith R n := by
   intro a b c ha hb hc heq
   rcases h a b c ha hb hc heq with ⟨d, a', b', c', ⟨rfl, rfl, rfl⟩, ⟨ua, ub, uc⟩⟩
   rw [mul_pow, mul_pow, mul_pow, ← add_mul] at heq
   exact hn _ _ _ ua ub uc <| mul_right_cancel₀ (pow_ne_zero _ (right_ne_zero_of_mul ha)) heq
 
-lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {α : Type*} [CommSemiring α] [IsDomain α]
-    {n : ℕ} (hn : ∀ a b c : α, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
-    FermatLastTheoremWith' α n ↔ FermatLastTheoremWith α n :=
+lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {R : Type*} [CommSemiring R] [IsDomain R]
+    {n : ℕ} (hn : ∀ a b c : R, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
+    FermatLastTheoremWith' R n ↔ FermatLastTheoremWith R n :=
   Iff.intro (fun h ↦ h.fermatLastTheoremWith hn) (fun h ↦ h.fermatLastTheoremWith')
 
 lemma fermatLastTheoremWith'_nat_int_tfae (n : ℕ) :

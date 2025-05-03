@@ -655,7 +655,7 @@ lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 
   obtain ⟨δ, hδ, hUε⟩ := Metric.mem_nhds_iff.mp hs
   obtain ⟨C, hC⟩ := (isBounded_iff_subset_ball 0).1 (hbounded.subset <| image_subset f hUε)
   refine continuous_of_continuousAt_zero _ (continuousAt_iff.2 fun ε (hε : _ < _) => ?_)
-  simp only [dist_zero_right, _root_.map_zero, exists_prop]
+  simp only [dist_zero_right, map_zero, exists_prop]
   simp only [subset_def, mem_image, mem_ball, dist_zero_right, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂] at hC
   have hC₀ : 0 < C := (norm_nonneg _).trans_lt <| hC 0 (by simpa)

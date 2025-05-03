@@ -915,7 +915,7 @@ theorem num_denom_add (x y : RatFunc K) :
     · exact algebraMap_ne_zero (denom_ne_zero y)
 
 theorem num_denom_neg (x : RatFunc K) : (-x).num * x.denom = -x.num * (-x).denom := by
-  rw [num_mul_eq_mul_denom_iff (denom_ne_zero x), _root_.map_neg, neg_div, num_div_denom]
+  rw [num_mul_eq_mul_denom_iff (denom_ne_zero x), map_neg, neg_div, num_div_denom]
 
 theorem num_denom_mul (x y : RatFunc K) :
     (x * y).num * (x.denom * y.denom) = x.num * y.num * (x * y).denom :=

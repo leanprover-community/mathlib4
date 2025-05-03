@@ -174,10 +174,10 @@ theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1)
   let y := (Finset.univ.filter fun j => ¬r c j).card
   have h : (Finset.univ.filter fun p : JudgePair J => p.Agree r c).card = x * x + y * y := by
     simp [x, y, ← Finset.filter_product_card]
-  rw [h]; apply Int.le_of_ofNat_le_ofNat; simp only [Int.ofNat_add, Int.ofNat_mul]
+  rw [h]; apply Int.le_of_ofNat_le_ofNat; simp only [Int.natCast_add, Int.natCast_mul]
   apply norm_bound_of_odd_sum
-  suffices x + y = 2 * z + 1 by simp [← Int.ofNat_add, this]
-  rw [Finset.filter_card_add_filter_neg_card_eq_card, ← hJ]; rfl
+  suffices x + y = 2 * z + 1 by simp [← Int.natCast_add, this]
+  rw [Finset.filter_card_add_filter_neg_card_eq_card, ← hJ, Finset.card_univ]
 
 open scoped Classical in
 theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
@@ -192,7 +192,7 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
     · unfold s t
       suffices p.judge₁ = p.judge₂ by simp [this]
       aesop
-  have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ]; rfl
+  have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ, Finset.card_univ]
   rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff]
   · rw [hst']; rw [add_assoc] at hs; apply le_tsub_of_add_le_right hs
   · apply Finset.sdiff_subset
