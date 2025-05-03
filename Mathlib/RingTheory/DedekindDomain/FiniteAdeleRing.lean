@@ -127,10 +127,10 @@ instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion 
 section Topology
 
 instance : IsTopologicalRing (FiniteAdeleRing R K) :=
-    haveI : Fact (∀ (v : HeightOneSpectrum R),
+  haveI : Fact (∀ v : HeightOneSpectrum R,
       IsOpen (v.adicCompletionIntegers K : Set (v.adicCompletion K))) :=
     ⟨fun _ ↦ Valued.valuationSubring_isOpen _⟩
-    RestrictedProduct.isTopologicalRing (fun (v : HeightOneSpectrum R) ↦ v.adicCompletion K)
+  RestrictedProduct.isTopologicalRing (fun (v : HeightOneSpectrum R) ↦ v.adicCompletion K)
 
 end Topology
 

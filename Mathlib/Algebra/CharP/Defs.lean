@@ -38,7 +38,7 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
 @[mk_iff]
-class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : ℕ) : Prop where
+class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : semiOutParam ℕ) : Prop where
   cast_eq_zero_iff (R p) : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
 
 variable [CharP R p] {a b : ℕ}

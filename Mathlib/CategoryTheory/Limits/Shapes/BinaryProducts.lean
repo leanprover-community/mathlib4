@@ -1130,7 +1130,7 @@ theorem prodComparison_comp :
     prodComparison (F ⋙ G) A B =
       G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
   unfold prodComparison
-  ext <;> simp <;> rw [← G.map_comp] <;> simp
+  ext <;> simp [← G.map_comp]
 
 end ProdComparison
 
@@ -1145,7 +1145,7 @@ variable [HasBinaryCoproduct (F.obj A) (F.obj B)] [HasBinaryCoproduct (F.obj A')
 
 /-- The coproduct comparison morphism.
 
-In `CategoryTheory/Limits/Preserves` we show
+In `Mathlib/CategoryTheory/Limits/Preserves/` we show
 this is always an iso iff F preserves binary coproducts.
 -/
 def coprodComparison (F : C ⥤ D) (A B : C) [HasBinaryCoproduct A B]

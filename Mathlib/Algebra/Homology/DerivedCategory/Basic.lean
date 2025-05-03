@@ -69,7 +69,12 @@ namespace HomotopyCategory
 
 /-- The triangulated subcategory of `HomotopyCategory C (ComplexShape.up ℤ)` consisting
 of acyclic complexes. -/
+<<<<<<< HEAD
 def subcategoryAcyclic : ObjectProperty (HomotopyCategory C (ComplexShape.up ℤ)) :=
+=======
+noncomputable def subcategoryAcyclic :
+    Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
+>>>>>>> origin
   (homologyFunctor C (ComplexShape.up ℤ) 0).homologicalKernel
 
 instance : (subcategoryAcyclic C).IsTriangulated := by
