@@ -245,7 +245,7 @@ alias TFAE_mem_nhdsWithin_Ici := TFAE_mem_nhdsGE
 
 theorem mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioc a u', Ico a u ⊆ s :=
-  (TFAE_mem_nhdsGE hu' s).out 0 3 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsGE hu' s).out 0 3 (by simp) (by simp)
 
 @[deprecated (since := "2024-12-22")]
 alias mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset := mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset
@@ -254,7 +254,7 @@ alias mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset := mem_nhdsGE_iff_exists_
 with `a < u < u'`, provided `a` is not a top element. -/
 theorem mem_nhdsGE_iff_exists_Ico_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioi a, Ico a u ⊆ s :=
-  (TFAE_mem_nhdsGE hu' s).out 0 4 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsGE hu' s).out 0 4 (by simp) (by simp)
 
 @[deprecated (since := "2024-12-22")]
 alias mem_nhdsWithin_Ici_iff_exists_Ico_subset' := mem_nhdsGE_iff_exists_Ico_subset'
@@ -315,7 +315,7 @@ alias TFAE_mem_nhdsWithin_Iic := TFAE_mem_nhdsLE
 
 theorem mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Ico l' a, Ioc l a ⊆ s :=
-  (TFAE_mem_nhdsLE hl' s).out 0 3 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsLE hl' s).out 0 3 (by simp) (by simp)
 
 @[deprecated (since := "2024-12-22")]
 alias mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset := mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset
@@ -324,7 +324,7 @@ alias mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset := mem_nhdsLE_iff_exists_
 with `l < a`, provided `a` is not a bottom element. -/
 theorem mem_nhdsLE_iff_exists_Ioc_subset' {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Iio a, Ioc l a ⊆ s :=
-  (TFAE_mem_nhdsLE hl' s).out 0 4 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsLE hl' s).out 0 4 (by simp) (by simp)
 
 @[deprecated (since := "2024-12-22")]
 alias mem_nhdsWithin_Iic_iff_exists_Ioc_subset' := mem_nhdsLE_iff_exists_Ioc_subset'

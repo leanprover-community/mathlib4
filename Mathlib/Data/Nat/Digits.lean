@@ -75,7 +75,7 @@ In particular, `Nat.toDigits b 0 = ['0']`, while `digits b 0 = []`.
 def digits : ℕ → ℕ → List ℕ
   | 0 => digitsAux0
   | 1 => digitsAux1
-  | b + 2 => digitsAux (b + 2) (by norm_num)
+  | b + 2 => digitsAux (b + 2) (by simp)
 
 @[simp]
 theorem digits_zero (b : ℕ) : digits b 0 = [] := by
@@ -676,10 +676,10 @@ theorem modEq_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) : n ≡ (digits
   exact h.symm
 
 theorem modEq_three_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 3] :=
-  modEq_digits_sum 3 10 (by norm_num) n
+  modEq_digits_sum 3 10 (by simp) n
 
 theorem modEq_nine_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 9] :=
-  modEq_digits_sum 9 10 (by norm_num) n
+  modEq_digits_sum 9 10 (by simp) n
 
 theorem zmodeq_ofDigits_digits (b b' : ℕ) (c : ℤ) (h : b' ≡ c [ZMOD b]) (n : ℕ) :
     n ≡ ofDigits c (digits b' n) [ZMOD b] := by
@@ -714,10 +714,10 @@ theorem dvd_iff_dvd_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) :
 
 /-- **Divisibility by 3 Rule** -/
 theorem three_dvd_iff (n : ℕ) : 3 ∣ n ↔ 3 ∣ (digits 10 n).sum :=
-  dvd_iff_dvd_digits_sum 3 10 (by norm_num) n
+  dvd_iff_dvd_digits_sum 3 10 (by simp) n
 
 theorem nine_dvd_iff (n : ℕ) : 9 ∣ n ↔ 9 ∣ (digits 10 n).sum :=
-  dvd_iff_dvd_digits_sum 9 10 (by norm_num) n
+  dvd_iff_dvd_digits_sum 9 10 (by simp) n
 
 theorem dvd_iff_dvd_ofDigits (b b' : ℕ) (c : ℤ) (h : (b : ℤ) ∣ (b' : ℤ) - c) (n : ℕ) :
     b ∣ n ↔ (b : ℤ) ∣ ofDigits c (digits b' n) := by
@@ -727,7 +727,7 @@ theorem dvd_iff_dvd_ofDigits (b b' : ℕ) (c : ℤ) (h : (b : ℤ) ∣ (b' : ℤ
 
 theorem eleven_dvd_iff :
     11 ∣ n ↔ (11 : ℤ) ∣ ((digits 10 n).map fun n : ℕ => (n : ℤ)).alternatingSum := by
-  have t := dvd_iff_dvd_ofDigits 11 10 (-1 : ℤ) (by norm_num) n
+  have t := dvd_iff_dvd_ofDigits 11 10 (-1 : ℤ) (by simp) n
   rw [ofDigits_neg_one] at t
   exact t
 
@@ -882,7 +882,7 @@ open Tactic
 `a` and `b` are numerals.
 
 ```
-example : Nat.digits 10 123 = [3,2,1] := by norm_num
+example : Nat.digits 10 123 = [3,2,1] := by simp
 ```
 -/
 @[norm_num]

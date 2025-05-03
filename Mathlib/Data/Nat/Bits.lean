@@ -282,7 +282,7 @@ theorem one_bits : Nat.bits 1 = [true] := by
 
 -- TODO Find somewhere this can live.
 -- example : bits 3423 = [true, true, true, true, true, false, true, false, true, false, true, true]
--- := by norm_num
+-- := by simp
 
 theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
   induction n using Nat.binaryRec' with

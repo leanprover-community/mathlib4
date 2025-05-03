@@ -202,7 +202,7 @@ instance : Inhabited (Homotopy (ContinuousMap.id X) (ContinuousMap.id X)) :=
 @[simps]
 def symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀ where
   toFun x := F (σ x.1, x.2)
-  map_zero_left := by norm_num
+  map_zero_left := by simp
   map_one_left := by norm_num
 
 @[simp]

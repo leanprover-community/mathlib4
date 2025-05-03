@@ -79,7 +79,7 @@ lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 :=
 
 /-- The preCantor sets are closed. -/
 lemma isClosed_preCantorSet (n : ℕ) : IsClosed (preCantorSet n) := by
-  let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by norm_num)
+  let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by simp)
   let g := (Homeomorph.addLeft (2 : ℝ)).trans f
   induction n with
   | zero => exact isClosed_Icc
