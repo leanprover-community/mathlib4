@@ -520,6 +520,14 @@ lemma zeroLocus_eq_singleton (m : Ideal R) [max : m.IsMaximal] :
   exact closure_eq_iff_isClosed.mpr
     ((PrimeSpectrum.isClosed_singleton_iff_isMaximal ⟨m, IsMaximal.isPrime' m⟩).mpr (by assumption))
 
+omit [Small.{v, u} R] in
+lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
+    (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
+    Nontrivial (QuotSMulTop x L) := by
+  apply Submodule.Quotient.nontrivial_of_lt_top _ (Ne.lt_top' _)
+  apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
+  exact IsLocalRing.maximalIdeal_le_jacobson _ mem
+
 theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
     [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
     [Small.{v, u} (R ⧸ maximalIdeal R)] :
@@ -599,6 +607,26 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       have hS := reg.smulShortComplex_shortExact
       apply le_sSup
       intro i hi
+      have : Subsingleton (Ext.{max u v} (ModuleCat.of R (QuotSMulTop x L)) M (i + 1)) := by
+        have ntr : Nontrivial (QuotSMulTop x L) := quotSMulTop_nontrivial (Set.mem_of_mem_diff hx) L
+        have dimlt' : (Module.supportDim R (QuotSMulTop x L)).unbot
+          (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) < r := by
+
+          sorry
+        have dimlt : ((Module.supportDim R (QuotSMulTop x L)).unbot
+          (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L))).toNat < r := by
+
+          sorry
+        have := ihr _ dimlt (ModuleCat.of R (QuotSMulTop x L)) rfl
+
+        sorry
+      have zero : IsZero
+        (AddCommGrp.of (Ext.{max u v} (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
+        @AddCommGrp.isZero_of_subsingleton _ this
+      #check ShortComplex.Exact.epi_f (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i)) (zero.eq_zero_of_tgt _)
+      by_contra ntr
+      rw [not_subsingleton_iff_nontrivial] at ntr
+
       sorry
     · intro L1 _ _ _ L2 _ _ _ L3 _ _ _ f g inj surj exac ih1' ih3' L2ntr dim_eq
       rw [eqr _ dim_eq]
