@@ -88,7 +88,7 @@ local instance : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
 
 lemma finte_free_ext_vanish_iff (M : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     :
-     ∀ N : ModuleCat.{v} R, ∀ (i:ℕ), Subsingleton (Ext M N i) ↔ Subsingleton (Ext (ModuleCat.of R (Shrink.{v} R)) N i) := by
+     ∀ N : ModuleCat.{v} R, ∀ (i:ℕ), Subsingleton (Ext N M i) ↔ Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
   -- Add your proof here
   sorry
 
