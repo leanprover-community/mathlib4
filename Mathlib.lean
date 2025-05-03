@@ -2350,6 +2350,8 @@ import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Bifunctor
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesFour
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesThree
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTwo
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Monoidal

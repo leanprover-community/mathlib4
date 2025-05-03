@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTwo
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesFour
 import Mathlib.CategoryTheory.Monoidal.Derived
 
 /-!
@@ -45,13 +45,14 @@ namespace DerivesMonoidalStructure
 
 variable [L.IsLocalization W] (h : Φ.DerivesMonoidalStructure L)
 
-/-open DerivedMonoidal in
+open Functor.Monoidal DerivedMonoidal in
 include h in
-lemma HasDerivedMonoidalCategory : L.HasDerivedMonoidalCategory W := by
+lemma hasDerivedMonoidalCategory : L.HasDerivedMonoidalCategory W := by
   have : (curriedTensor C ⋙ (whiskeringRight C C (DerivedMonoidal L W)).obj
     (toDerivedMonoidal L W)).HasLeftDerivedFunctor₂ W W := h.hasLeftDerivedFunctor₂
   have : (bifunctor L W).IsLeftDerivedFunctor₂ (counit L W) W W := inferInstance
-  have h (X₁ X₂ : C) {X₁₀ X₂₀ : C₀} (e₁ : X₁ ≅ Φ.functor.obj X₁₀)
+  have := h.isIso_of_isLeftDerivabilityStructure (counit L W)
+  have isIso (X₁ X₂ : C) {X₁₀ X₂₀ : C₀} (e₁ : X₁ ≅ Φ.functor.obj X₁₀)
     (e₂ : X₂ ≅ Φ.functor.obj X₂₀) :
       IsIso (((counit L W).app X₁).app X₂) := by
     rw [NatTrans.isIso_app_app_iff_of_iso (counit L W) e₁ e₂]
@@ -61,15 +62,36 @@ lemma HasDerivedMonoidalCategory : L.HasDerivedMonoidalCategory W := by
     bifunctorFlipObjUnit_isLeftDerivedFunctor := by
       apply Φ.isLeftDerivedFunctor_of_isLeftDerivabilityStructure
       intro X₀
-      exact h _ _ (Iso.refl _) (Functor.Monoidal.εIso Φ.functor)
+      exact isIso _ _ (Iso.refl _) (Functor.Monoidal.εIso Φ.functor)
     bifunctorObjUnit_isLeftDerivedFunctor := by
       apply Φ.isLeftDerivedFunctor_of_isLeftDerivabilityStructure
       intro X₀
-      exact h _ _ (Functor.Monoidal.εIso Φ.functor) (Iso.refl _)
-    trifunctor₁₂_isLeftDerivedFunctor₃ := sorry
-    trifunctor₂₃_isLeftDerivedFunctor₃ := sorry
-    quadrifunctorRight_isLeftDerivedFunctor₄ := sorry
-  }-/
+      exact isIso _ _ (εIso Φ.functor) (Iso.refl _)
+    trifunctor₁₂_isLeftDerivedFunctor₃ := by
+      apply isLeftDerivedFunctor₃_of_isLeftDerivabilityStructure Φ Φ Φ
+      intro X₁₀ X₂₀ X₃₀
+      have := isIso _ (Φ.functor.obj X₃₀) (μIso Φ.functor X₁₀ X₂₀) (Iso.refl _)
+      dsimp
+      infer_instance
+    trifunctor₂₃_isLeftDerivedFunctor₃ := by
+      apply isLeftDerivedFunctor₃_of_isLeftDerivabilityStructure Φ Φ Φ
+      intro X₁₀ X₂₀ X₃₀
+      have := isIso (Φ.functor.obj X₁₀) _ (Iso.refl _) (μIso Φ.functor X₂₀ X₃₀)
+      dsimp
+      infer_instance
+    quadrifunctorRight_isLeftDerivedFunctor₄ := by
+      apply isLeftDerivedFunctor₄_of_isLeftDerivabilityStructure Φ Φ Φ Φ
+      intro X₁₀ X₂₀ X₃₀ X₄₀
+      have := isIso (Φ.functor.obj X₂₀) _ (Iso.refl _)
+        (μIso Φ.functor X₃₀ X₄₀)
+      have := isIso (Φ.functor.obj X₁₀) _ (Iso.refl _) (X₂₀ := X₂₀ ⊗ X₃₀ ⊗ X₄₀)
+        ((Iso.refl _ ⊗ μIso _ _ _) ≪≫ μIso Φ.functor X₂₀ (X₃₀ ⊗ X₄₀))
+      dsimp
+      infer_instance }
+
+noncomputable example : MonoidalCategory D :=
+  have := h.hasDerivedMonoidalCategory
+  inferInstanceAs (MonoidalCategory (DerivedMonoidal L W))
 
 end DerivesMonoidalStructure
 
