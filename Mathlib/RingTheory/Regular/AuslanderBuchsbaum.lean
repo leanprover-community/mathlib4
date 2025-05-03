@@ -1,36 +1,89 @@
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 import Mathlib.RingTheory.Regular.Depth
+import Mathlib.RingTheory.LocalRing.Module
 
 namespace CategoryTheory
 
 universe w v u
 
-open Abelian Limits ZeroObject
+open Abelian Limits ZeroObject Abelian.Ext
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
-  {X : C} {S : ShortComplex C} (hS : S.ShortExact) [Projective S.X₂]
-  (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) (h0 : n₀ ≠ 0)
+variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C] {X I P Y : C}
 
-noncomputable def dim_shifting (n : ℕ) : Ext X S.X₃ n₀ ≃+ Ext X S.X₁ n₁ := by
-  refine AddEquiv.ofBijective (hS.extClass.postcomp X h) ⟨?_, ?_⟩
-  · sorry--apply (AddMonoidHom.ker_eq_bot_iff (hS.extClass.postcomp X h)).mpr
-  · sorry
+section Injective
+
+instance Abelian.Ext.subsingleton_of_injective [Injective I] (n : ℕ) [hn : NeZero n] :
+    Subsingleton (Ext X I n) := by
+  rw [← Nat.succ_pred_eq_of_ne_zero hn.1]
+  exact subsingleton_of_forall_eq 0 eq_zero_of_injective
+
+variable {S : ShortComplex C} (hS : S.ShortExact) [Injective S.X₂]
+  (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) [NeZero n₀]
+
+noncomputable def injective_dim_shifting : Ext X S.X₃ n₀ ≃+ Ext X S.X₁ n₁ :=
+  have : NeZero n₁ := by
+    rw [← h]
+    infer_instance
+  have : IsIso (AddCommGrp.ofHom (hS.extClass.postcomp X h)) :=
+    ComposableArrows.Exact.isIso_map' (covariantSequence_exact X hS n₀ n₁ h) 1 (by decide)
+      (IsZero.eq_zero_of_src (AddCommGrp.of (Ext X S.X₂ n₀)).isZero_of_subsingleton _)
+      (IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext X S.X₂ n₁)).isZero_of_subsingleton _)
+  (CategoryTheory.asIso (AddCommGrp.ofHom (hS.extClass.postcomp X h))).addCommGroupIsoToAddEquiv
+
+lemma injective_dim_shifting_apply (e : Ext X S.X₃ n₀) :
+  injective_dim_shifting hS n₀ n₁ h e = hS.extClass.postcomp X h e := rfl
+
+end Injective
+
+section Projective
+
+instance projective_of_hasProjectiveDimensionLT_one [HasProjectiveDimensionLT P 1] :
+    Projective P := by
+  sorry
+
+instance Abelian.Ext.subsingleton_of_projective [Projective P] (n : ℕ) [hn : NeZero n] :
+    Subsingleton (Ext P Y n) := by
+  rw [← Nat.succ_pred_eq_of_ne_zero hn.1]
+  exact subsingleton_of_forall_eq 0 eq_zero_of_projective
+
+variable {S : ShortComplex C} (hS : S.ShortExact) [Projective S.X₂]
+  (n₀ n₁ : ℕ) (h : 1 + n₀ = n₁) [NeZero n₀]
+
+noncomputable def projective_dim_shifting : Ext S.X₁ Y n₀ ≃+ Ext S.X₃ Y n₁ :=
+  have : NeZero n₁ := by
+    rw [← h]
+    infer_instance
+  have : IsIso (AddCommGrp.ofHom (hS.extClass.precomp Y h)) :=
+    ComposableArrows.Exact.isIso_map' (contravariantSequence_exact hS Y n₀ n₁ h) 1 (by decide)
+      (IsZero.eq_zero_of_src (AddCommGrp.of (Ext S.X₂ Y n₀)).isZero_of_subsingleton _)
+      (IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext S.X₂ Y n₁)).isZero_of_subsingleton _)
+  (CategoryTheory.asIso (AddCommGrp.ofHom (hS.extClass.precomp Y h))).addCommGroupIsoToAddEquiv
+
+lemma projective_dim_shifting_apply (e : Ext S.X₁ Y n₀) :
+  projective_dim_shifting hS n₀ n₁ h e = hS.extClass.precomp Y h e := rfl
+
+end Projective
 
 end CategoryTheory
 
 universe v u
+
+#check Module.free_of_flat_of_isLocalRing
+
+#check Module.Finite.finite_basis
 
 open IsLocalRing
 open RingTheory.Sequence Ideal CategoryTheory CategoryTheory.Abelian
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
 
-lemma proj_mod_over_local_ring_is_free [IsLocalRing R] (M : ModuleCat.{v} R) [Module.Finite R M] [Module.Projective R M]: Module.Free R M:= by
+lemma proj_mod_over_local_ring_is_free [IsLocalRing R] (M : ModuleCat.{v} R) [Module.Finite R M]
+    [Module.Projective R M]: Module.Free R M:= by
   -- Add your proof here
   sorry
 
 local instance : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
-  --CategoryTheory.HasExt.standard (ModuleCat.{v} R)
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
 
 open scoped Classical in
