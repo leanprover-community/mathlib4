@@ -317,7 +317,7 @@ theorem order_mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
   hf.order_smul hg
 
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/
-@[simp] theorem order_pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℕ} :
+theorem order_pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℕ} :
     (hf.pow n).order = n * hf.order := by
   induction n
   case zero =>
@@ -334,7 +334,7 @@ theorem order_mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
       ring
 
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/
-@[simp] theorem order_zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℤ} :
+theorem order_zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℤ} :
     (hf.zpow n).order = n * hf.order := by
   -- Trivial case: n = 0
   by_cases hn : n = 0
