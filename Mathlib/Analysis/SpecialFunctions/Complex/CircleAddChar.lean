@@ -67,9 +67,8 @@ lemma toCircle_eq_circleExp (j : ZMod N) :
     toCircle j = Circle.exp (2 * π * (j.val / N)) := by
   ext
   rw [toCircle_apply, Circle.coe_exp]
-  congr
   push_cast
-  ring
+  ring_nf
 
 lemma injective_toCircle : Injective (toCircle : ZMod N → Circle) :=
   (AddCircle.injective_toCircle one_ne_zero).comp (toAddCircle_injective N)
