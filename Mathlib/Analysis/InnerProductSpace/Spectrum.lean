@@ -218,17 +218,18 @@ private theorem hasEigenvector_eigenvectorBasis_helper (i : Fin n) :
   simpa [re_μ] using key
 
 /-- The eigenvalues for a self-adjoint operator `T` on a
-finite-dimensional inner product space `E`, sorted in increasing order. -/
-noncomputable irreducible_def eigenvalues : Fin n → ℝ :=
-  (hT.unsortedEigenvalues hn) ∘ (Tuple.sort (hT.unsortedEigenvalues hn))
+finite-dimensional inner product space `E`, sorted in decreasing order -/
+noncomputable irreducible_def eigenvalues: Fin n → ℝ :=
+  (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
 
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
 finite-dimensional inner product space `E`.  Eigenvectors are sorted in increasing
 order of their eigenvalues. -/
 noncomputable irreducible_def eigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
+  let perm := Tuple.sort (hT.unsortedEigenvalues hn) * @Fin.revPerm n
   (hT.direct_sum_isInternal.subordinateOrthonormalBasis
     hn hT.orthogonalFamily_eigenspaces').reindex
-      (Tuple.sort (hT.unsortedEigenvalues hn)).symm
+      perm.symm
 
 theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
     HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
@@ -236,10 +237,13 @@ theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
   apply hasEigenvector_eigenvectorBasis_helper
 
 /--
-Eigenvalues are sorted in increasing order. -/
-theorem eigenvalues_monotone : Monotone (hT.eigenvalues hn) := by
-  rw[eigenvalues_def]
-  apply Tuple.monotone_sort
+Eigenvalues are sorted in decreasing order. -/
+theorem eigenvalues_antitone : Antitone (hT.eigenvalues hn) := by
+  rw[eigenvalues_def, ←Function.comp_assoc]
+  refine Monotone.comp_antitone ?_ ?_
+  · apply Tuple.monotone_sort
+  intro _ _ h
+  exact Fin.rev_le_rev.mpr h
 
 theorem hasEigenvalue_eigenvalues (i : Fin n) : HasEigenvalue T (hT.eigenvalues hn i) :=
   Module.End.hasEigenvalue_of_hasEigenvector (hT.hasEigenvector_eigenvectorBasis hn i)
