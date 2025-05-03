@@ -44,11 +44,11 @@ noncomputable def analyticOrderAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ∞ :=
 
 @[deprecated (since := "2025-05-02")] alias AnalyticAt.order := analyticOrderAt
 
-/-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
+/-- The order of vanishing of `f` at `z₀`, as an element of `ℕ`.
 
-The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
-unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic
-and does not vanish at `z₀`. See `AnalyticAt.analyticOrderAt_eq_top` and
+The order is defined to be `0` if `f` is identically zero on a neighbourhood of `z₀`,
+and is otherwise the unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z`,
+where `g` is analyticand does not vanish at `z₀`. See `AnalyticAt.analyticOrderAt_eq_top` and
 `AnalyticAt.analyticOrderAt_eq_natCast` for these equivalences. -/
 noncomputable def analyticOrderNatAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ := (analyticOrderAt f z₀).toNat
 

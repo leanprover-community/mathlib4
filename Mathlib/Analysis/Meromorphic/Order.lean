@@ -590,7 +590,11 @@ theorem codiscrete_setOf_order_eq_zero_or_top :
     obtain ⟨t, h₁t, h₂t, h₃t⟩ := h₁a
     use t \ {x}, fun y h₁y _ ↦ h₁t y h₁y.1 h₁y.2
     exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_diff_of_mem h₃t hax⟩
-  · filter_upwards [(hf x hx).eventually_analyticAt, h₁f] with a h₁a
-    simp +contextual [h₁a.meromorphicAt_order, h₁a.analyticOrderAt_eq_zero.2]
+  · filter_upwards [hf.eventually_analyticAt_or_mem_compl hx, h₁f] with a h₁a h'₁a
+    simp only [mem_compl_iff, mem_diff, mem_image, mem_setOf_eq, Subtype.exists, exists_and_right,
+      exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
+    rcases h₁a with h' | h'
+    · simp +contextual [h'.meromorphicAt_order, h'.analyticOrderAt_eq_zero.2, h'₁a]
+    · exact fun ha ↦ (h' ha).elim
 
 end MeromorphicOn
