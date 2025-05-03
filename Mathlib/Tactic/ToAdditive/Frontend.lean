@@ -1315,10 +1315,8 @@ partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) : Met
   if 0 ∈ reorder.flatten then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
-    logWarning m!"`to_additive` validation failed:
-  expected {srcDecl.levelParams.length} universe \
-  levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
-    return
+    throwError "`to_additive` validation failed:\n  expected {srcDecl.levelParams.length} universe \
+      levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
   -- instantiate both types with the same universes. `instantiateLevelParams` applies some
   -- normalization, so we have to apply it to both types.
   let type := srcDecl.type.instantiateLevelParams
@@ -1329,8 +1327,8 @@ partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) : Met
     applyReplacementFun <| ← reorderForall reorder <| ← expand <| ← unfoldAuxLemmas type
   -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
   unless ← withReducible <| isDefEq type tgtType do
-    logWarning m!"`to_additive` validation failed: expected{indentExpr type}
-but '{tgt}' has type{indentExpr tgtType}"
+    throwError "`to_additive` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
+      type{indentExpr tgtType}"
 
 /-- `addToAdditiveAttr src cfg` adds a `@[to_additive]` attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details.

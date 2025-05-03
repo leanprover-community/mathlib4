@@ -462,7 +462,7 @@ instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
 -- Test the error message for a wrong `to_additive existing`.
 
 /--
-warning: `to_additive` validation failed:
+error: `to_additive` validation failed:
   expected 1 universe levels, but 'Nat.le_trans' has 0 universe levels
 -/
 #guard_msgs in
@@ -471,7 +471,7 @@ lemma one_eq_one'' {α : Type*} [One α] : (1 : α) = 1 := rfl
 
 
 /--
-warning: `to_additive` validation failed: expected
+error: `to_additive` validation failed: expected
   ∀ {α : Type u} [inst : Zero α], 0 = 0
 but 'Eq.trans' has type
   ∀ {α : Sort u} {a b c : α}, a = b → b = c → a = c
