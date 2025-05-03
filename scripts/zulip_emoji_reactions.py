@@ -101,9 +101,6 @@ for message in messages:
     if match:
         print(f"matched: '{message}'")
 
-        # Removing all previous emoji reactions.
-        # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
-        print("Removing previous reactions, if present.")
         def remove_reaction(name: str, emoji_name: str, **kwargs) -> None:
             print(f'Removing {name}')
             result = client.remove_reaction({
@@ -112,8 +109,23 @@ for message in messages:
                 **kwargs
             })
             print(f"result: '{result}'")
+        def add_reaction(name: str, emoji_name: str) -> None:
+            print(f'adding {name} emoji')
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": emoji_name
+            })
 
-        # Remove all previous emoji reactions.
+        # The maintainer merge label is different from the others, as it is not mutually exclusive
+        # with them: just add or remove it manually and leave the other emojis alone.
+        if LABEL_NAME == "maintainer-merge":
+            if ACTION == "labeled":
+                add_reaction('maintainer-merge', 'hammer')
+            elif ACTION == "unlabeled":
+                remove_reaction('maintainer-merge', 'hammer')
+            continue
+
+        # Othewise, remove all previous mutually exclusive emoji reactions.
         # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
         print("Removing previous reactions, if present.")
         if has_peace_sign:
@@ -122,8 +134,6 @@ for message in messages:
             remove_reaction("bors", "bors", emoji_code="22134", reaction_type="realm_emoji")
         if has_merge:
             remove_reaction('merge', 'merge')
-        if has_maintainer_merge:
-            remove_reaction('maintainer-merge', 'hammer')
         if has_awaiting_author:
             remove_reaction('awaiting-author', 'writing')
         if has_closed:
@@ -132,12 +142,6 @@ for message in messages:
 
         # Apply the appropriate emoji reaction.
         print("Applying reactions, as appropriate.")
-        def add_reaction(name: str, emoji_name: str) -> None:
-            print(f'adding {name} emoji')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": emoji_name
-            })
         match ACTION:
             case 'ready-to-merge':
                 add_reaction('ready-to-merge', 'bors')
@@ -146,8 +150,6 @@ for message in messages:
             case 'labeled':
                 if LABEL_NAME == 'awaiting-author':
                     add_reaction('awaiting-author', 'writing')
-            case 'maintainer-merge':
-                add_reaction('maintainer-merge', 'hammer')
             case 'unlabeled':
                 if LABEL_NAME == 'awaiting-author':
                     print('awaiting-author removed')
