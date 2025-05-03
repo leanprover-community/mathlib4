@@ -49,4 +49,21 @@ lemma isEmbedding_precomp_of_surjective'
     (IsEmbedding.of_comp_iff this).mpr <| isEmbedding_hom' S T
   exact isEmbedding_precomp_of_surjective f.right hf
 
+-- lemma isClosedEmbedding_precomp_of_surjective'
+--     [TopologicalSpace T] [T1Space T] (f : R ⟶ S) (hf : Function.Surjective f.right) :
+--     Topology.IsClosedEmbedding ((f ≫ ·) : (S ⟶ T) → (R ⟶ T)) := by
+--   refine ⟨isEmbedding_precomp_of_surjective' f hf, ?_⟩
+--   -- have : IsClosed (⋂ i : RingHom.ker f.right, { f : R ⟶ T | f i = 0 }) :=
+--   --   isClosed_iInter fun x ↦ (isClosed_singleton (x := 0)).preimage (continuous_apply (S := T) x.1)
+--   -- convert this
+--   -- #check Mathlib.Tactic.convert
+--   -- ext x
+--   -- simp only [Set.mem_range, Set.iInf_eq_iInter, Set.mem_iInter, Set.mem_setOf_eq, Subtype.forall,
+--   --   RingHom.mem_ker]
+--   -- constructor
+--   -- · rintro ⟨g, rfl⟩ a ha; simp [ha]
+--   -- · exact fun H ↦ ⟨CommRingCat.ofHom (RingHom.liftOfSurjective f.hom hf ⟨x.hom, H⟩),
+--   --     by ext; simp [RingHom.liftOfRightInverse_comp_apply]⟩
+--   sorry
+
 end CommRingCat.HomTopology

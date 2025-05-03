@@ -28,7 +28,7 @@ namespace CommRingCat
 instance : CoeSort (Under R) (Type u) where
   coe A := A.right
 
-instance (A : Under R) : Algebra R A := RingHom.toAlgebra A.hom.hom
+instance algebra (A : Under R) : Algebra R A := RingHom.toAlgebra A.hom.hom
 
 /-- Turn a morphism in `Under R` into an algebra homomorphism. -/
 def toAlgHom {A B : Under R} (f : A ⟶ B) : A →ₐ[R] B where
@@ -61,6 +61,11 @@ lemma mkUnder_ext {A : Type u} [CommRing A] [Algebra R A] {B : Under R}
     f = g := by
   ext x
   exact h x
+
+@[simp]
+lemma algebra_eq (A : Type u) [CommRing A] [inst : Algebra R A] :
+  algebra (R.mkUnder A) = inst :=
+  Algebra.algebra_ext _ _ (congrFun rfl)
 
 end CommRingCat
 
@@ -174,15 +179,5 @@ def tensorProdIsoPushout : tensorProd R S ≅ Under.pushout (ofHom <| algebraMap
 lemma tensorProdIsoPushout_app (A : Under R) :
     (tensorProdIsoPushout R S).app A = tensorProdObjIsoPushoutObj S A :=
   rfl
-
-variable (R S) in
-/-- The forgetful base change functor. -/
-@[simps! map_right]
-def forget : Under S ⥤ Under R := Under.map <| CommRingCat.ofHom Algebra.algebraMap
-
--- /-- The adjunction between `tensorProd R S` and `forget R S`. -/
-@[simps! unit_app counit_app]
-def adjTensorForget : tensorProd R S ⊣ forget R S :=
-  (Under.mapPushoutAdj (ofHom <| algebraMap R S)).ofNatIsoLeft ((R.tensorProdIsoPushout S).symm)
 
 end CommRingCat
