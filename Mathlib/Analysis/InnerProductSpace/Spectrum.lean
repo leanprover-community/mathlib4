@@ -233,10 +233,9 @@ noncomputable irreducible_def eigenvalues: Fin n → ℝ :=
 finite-dimensional inner product space `E`.  Eigenvectors are sorted in increasing
 order of their eigenvalues. -/
 noncomputable irreducible_def eigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
-  let perm := Tuple.sort (hT.unsortedEigenvalues hn) * @Fin.revPerm n
   (hT.direct_sum_isInternal.subordinateOrthonormalBasis
     hn hT.orthogonalFamily_eigenspaces').reindex
-      perm.symm
+      (Tuple.sort (hT.unsortedEigenvalues hn) * @Fin.revPerm n).symm
 
 theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
     HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
