@@ -406,6 +406,15 @@ lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
   · simp [moduleDepth]
     exact csSup_eq_top_of_top_mem (fun i _ ↦ h i)
 
+lemma ext_subsingleton_of_lt_moduleDepth {N M : ModuleCat.{v} R} {i : ℕ}
+    (lt : i < moduleDepth N M) : Subsingleton (Ext.{max u v} N M i) := by
+  by_cases lttop : moduleDepth N M < ⊤
+  · let _ : Nonempty {n : ℕ∞ | ∀ (i : ℕ), ↑i < n → Subsingleton (Ext.{max u v} N M i)} :=
+      Nonempty.intro ⟨(0 : ℕ∞), by simp⟩
+    exact ENat.sSup_mem_of_nonempty_of_lt_top lttop i lt
+  · simp only [not_lt, top_le_iff, moduleDepth_eq_top_iff] at lttop
+    exact lttop i
+
 lemma moduleDepth_eq_sup_nat (N M : ModuleCat.{v} R) : moduleDepth N M =
     sSup {n : ℕ∞ | n < ⊤ ∧ ∀ i : ℕ, i < n → Subsingleton (Ext.{max u v} N M i)} := by
   simp only [moduleDepth]
@@ -464,6 +473,34 @@ lemma moduleDepth_eq_of_iso_snd (N : ModuleCat.{v} R) {M M' : ModuleCat.{v} R} (
     ((extFunctorObj N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr
 
 --depth under exact seq
+
+lemma moduleDepth_ge_min_of_shortExact_fst
+    (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
+    (N : ModuleCat.{v} R) : moduleDepth S.X₂ N ≥ moduleDepth S.X₁ N ⊓ moduleDepth S.X₃ N := by
+  apply le_sSup
+  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  intro i hi1 hi3
+  have zero1 : IsZero (AddCommGrp.of (Ext S.X₁ N i)) :=
+      @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi1)
+  have zero3 : IsZero (AddCommGrp.of (Ext S.X₃ N i)) :=
+      @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi3)
+  exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+    (Ext.contravariant_sequence_exact₂' hS N i)
+    (zero3.eq_zero_of_src _) (zero1.eq_zero_of_tgt _)
+
+lemma moduleDepth_ge_min_of_shortExact_snd
+    (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
+    (hS : S.ShortExact) : moduleDepth N S.X₂ ≥ moduleDepth N S.X₁ ⊓ moduleDepth N S.X₃ := by
+  apply le_sSup
+  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  intro i hi1 hi3
+  have zero1 : IsZero (AddCommGrp.of (Ext N S.X₁ i)) :=
+      @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi1)
+  have zero3 : IsZero (AddCommGrp.of (Ext N S.X₃ i)) :=
+      @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi3)
+  exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+    (Ext.covariant_sequence_exact₂' N hS i)
+    (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
 
 variable (R) in
 omit [Small.{v, u} R] in
@@ -539,20 +576,39 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       by_cases ntr : Nontrivial L1 ∧ Nontrivial L3
       · let _ := ntr.1
         let _ := ntr.2
-        #check ih1' ntr.1
-        #check ih3' ntr.2
-        have dimle1 : (((Module.supportDim R L1).unbot
-          (Module.supportDim_ne_bot_of_nontrivial R L1))).toNat ≤ r := by
-          apply ENat.toNat_le_of_le_coe
+        have dimle1' : ((Module.supportDim R L1).unbot
+          (Module.supportDim_ne_bot_of_nontrivial R L1)) ≤ r := by
           rw [← (eqr _ dim_eq), ← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot]
           exact Module.supportDim_le_of_injective R L1 L2 f inj
-        have dimle3 : (((Module.supportDim R L3).unbot
-          (Module.supportDim_ne_bot_of_nontrivial R L3))).toNat ≤ r := by
-          apply ENat.toNat_le_of_le_coe
+        have dimle3' : ((Module.supportDim R L3).unbot
+          (Module.supportDim_ne_bot_of_nontrivial R L3)) ≤ r := by
           rw [← (eqr _ dim_eq), ← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot]
           exact Module.supportDim_le_of_surjective R L2 L3 g surj
-
-        sorry
+        have ge1 : moduleDepth (of R L1) M ≥ IsLocalRing.depth M - ((Module.supportDim R L1).unbot
+          (Module.supportDim_ne_bot_of_nontrivial R L1)) := by
+          rcases lt_or_eq_of_le (ENat.toNat_le_of_le_coe dimle1') with lt|eq
+          · exact ihr _ lt (ModuleCat.of.{v} R L1) rfl
+          · exact ih1' ntr.1 eq
+        have ge3 : moduleDepth (of R L3) M ≥ IsLocalRing.depth M - ((Module.supportDim R L3).unbot
+          (Module.supportDim_ne_bot_of_nontrivial R L3)) := by
+          rcases lt_or_eq_of_le (ENat.toNat_le_of_le_coe dimle3') with lt|eq
+          · exact ihr _ lt (ModuleCat.of.{v} R L3) rfl
+          · exact ih3' ntr.2 eq
+        let S : ShortComplex (ModuleCat.{v} R) := {
+          X₁ := ModuleCat.of R L1
+          X₂ := ModuleCat.of R L2
+          X₃ := ModuleCat.of R L3
+          f := ModuleCat.ofHom f
+          g := ModuleCat.ofHom g
+          zero := by
+            ext
+            simp [Function.Exact.apply_apply_eq_zero exac] }
+        have hS : S.ShortExact := {
+          exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr exac
+          mono_f := (ModuleCat.mono_iff_injective S.f).mpr inj
+          epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surj }
+        exact ge_trans (moduleDepth_ge_min_of_shortExact_fst S hS M) (le_inf_iff.mpr
+          ⟨le_trans (tsub_le_tsub_left dimle1' _) ge1, le_trans (tsub_le_tsub_left dimle3' _) ge3⟩)
       · have : Subsingleton L1 ∨ Subsingleton L3 := by
           simpa [← not_nontrivial_iff_subsingleton] using Classical.not_and_iff_not_or_not.mp ntr
         rcases this with sub1|sub3
