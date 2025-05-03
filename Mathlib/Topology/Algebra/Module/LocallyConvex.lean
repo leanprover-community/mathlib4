@@ -129,8 +129,8 @@ theorem LocallyConvexSpace.convex_open_basis_zero [LocallyConvexSpace 𝕜 E] :
 
 variable {𝕜 E} [LocallyConvexSpace 𝕜 E] {s t : Set E} {x : E}
 
-/-- In a locally convex space, if `s`, `t` are disjoint convex sets, `s` is compact and `t` is
-closed, then we can find open disjoint convex sets containing them. -/
+/-- In a locally convex space, every two disjoint convex sets such that one is compact and the other
+is closed admit disjoint convex open neighborhoods. -/
 theorem Disjoint.exists_open_convexes (disj : Disjoint s t)
     (hs₁ : Convex 𝕜 s) (hs₂ : IsCompact s) (ht₁ : Convex 𝕜 t) (ht₂ : IsClosed t) :
     ∃ u v, IsOpen u ∧ IsOpen v ∧ Convex 𝕜 u ∧ Convex 𝕜 v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
@@ -145,8 +145,8 @@ theorem Disjoint.exists_open_convexes (disj : Disjoint s t)
   simp_rw [UniformSpace.ball, ← preimage_comp, sub_eq_neg_add] at hV
   exact hV
 
-/-- In a locally convex space, if `x ∉ s` and `s` is convex and closed, then we can find open
-disjoint convex sets containing them. -/
+/-- In a locally convex space, every point `x` and closed convex set `s ∌ x` admit disjoint convex
+open neighborhoods. -/
 lemma exists_open_convex_of_not_mem (hx : x ∉ s) (hsconv : Convex 𝕜 s) (hsclosed : IsClosed s) :
     ∃ U V : Set E,
       IsOpen U ∧ IsOpen V ∧ Convex 𝕜 U ∧ Convex 𝕜 V ∧ x ∈ U ∧ s ⊆ V ∧ Disjoint U V := by
