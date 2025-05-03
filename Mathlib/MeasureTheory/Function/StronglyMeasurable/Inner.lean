@@ -18,18 +18,18 @@ namespace MeasureTheory
 /-! ## Strongly measurable functions -/
 
 
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
+
 namespace StronglyMeasurable
 
 protected theorem inner {_ : MeasurableSpace α} {f g : α → E} (hf : StronglyMeasurable f)
-    (hg : StronglyMeasurable g) : StronglyMeasurable fun t => @inner 𝕜 _ _ (f t) (g t) :=
+    (hg : StronglyMeasurable g) : StronglyMeasurable fun t => ⟪f t, g t⟫ :=
   Continuous.comp_stronglyMeasurable continuous_inner (hf.prodMk hg)
 
 end StronglyMeasurable
 
 namespace AEStronglyMeasurable
 variable {m m₀ : MeasurableSpace α} {μ : Measure[m₀] α} {f g : α → E} {c : E}
-
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 protected theorem re {f : α → 𝕜} (hf : AEStronglyMeasurable[m] f μ) :
     AEStronglyMeasurable[m] (fun x => RCLike.re (f x)) μ :=

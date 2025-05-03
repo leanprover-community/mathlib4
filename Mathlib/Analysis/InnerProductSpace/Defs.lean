@@ -22,7 +22,7 @@ two vectors. In particular vectors `x` and `y` are orthogonal if their inner pro
 We define both the real and complex cases at the same time using the `RCLike` typeclass.
 
 Rather than defining the norm on an inner product space to be `√(re ⟪x, x⟫)`, we assume that a norm
-is given, and add a hypothesis stating that `‖x‖ ^ 2 = re (inner x x)`. This makes it possible to
+is given, and add a hypothesis stating that `‖x‖ ^ 2 = re ⟪x, x⟫`. This makes it possible to
 handle spaces where the norm is equal, but not defeq, to the square root of the
 inner product. Defining a norm starting from an inner product is handled via the
 `InnerProductSpace.Core` structure.
@@ -73,20 +73,20 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 /-- Syntactic typeclass for types endowed with an inner product -/
 class Inner (𝕜 E : Type*) where
   /-- The inner product function. -/
-  inner : E → E → 𝕜
+  inner (𝕜) : E → E → 𝕜
 
 export Inner (inner)
 
 /-- The inner product with values in `𝕜`. -/
-scoped[InnerProductSpace] notation3:max "⟪" x ", " y "⟫_" 𝕜:max => @inner 𝕜 _ _ x y
+scoped[InnerProductSpace] notation:max "⟪" x ", " y "⟫_" 𝕜:max => inner 𝕜 x y
 
 section Notations
 
 /-- The inner product with values in `ℝ`. -/
-scoped[RealInnerProductSpace] notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
+scoped[RealInnerProductSpace] notation "⟪" x ", " y "⟫" => inner ℝ x y
 
 /-- The inner product with values in `ℂ`. -/
-scoped[ComplexInnerProductSpace] notation "⟪" x ", " y "⟫" => @inner ℂ _ _ x y
+scoped[ComplexInnerProductSpace] notation "⟪" x ", " y "⟫" => inner ℂ x y
 
 end Notations
 
@@ -196,13 +196,7 @@ section PreInnerProductSpace.Core
 
 variable [AddCommGroup F] [Module 𝕜 F] [c : PreInnerProductSpace.Core 𝕜 F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 F _ x y
-
-/-- Local notation for `RCLike.normSq 𝕜` -/
-local notation "normSqK" => @RCLike.normSq 𝕜 _
-
-/-- Local notation for `RCLike.re 𝕜` -/
-local notation "reK" => @RCLike.re 𝕜 _
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- Local notation for `RCLike.ext_iff 𝕜` -/
 local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
@@ -220,7 +214,7 @@ attribute [local instance] toPreInner'
 
 /-- The norm squared function for `PreInnerProductSpace.Core` structure. -/
 def normSq (x : F) :=
-  reK ⟪x, x⟫
+  re ⟪x, x⟫
 
 /-- The norm squared function for `PreInnerProductSpace.Core` structure. -/
 local notation "normSqF" => @normSq 𝕜 F _ _ _ _
@@ -293,13 +287,13 @@ theorem inner_sub_right (x y z : F) : ⟪x, y - z⟫ = ⟪x, y⟫ - ⟪x, z⟫ :
 
 theorem inner_mul_symm_re_eq_norm (x y : F) : re (⟪x, y⟫ * ⟪y, x⟫) = ‖⟪x, y⟫ * ⟪y, x⟫‖ := by
   rw [← inner_conj_symm, mul_comm]
-  exact re_eq_norm_of_mul_conj (inner y x)
+  exact re_eq_norm_of_mul_conj ⟪y, x⟫
 
-/-- Expand `inner (x + y) (x + y)` -/
+/-- Expand `⟪x + y, x + y⟫` -/
 theorem inner_add_add_self (x y : F) : ⟪x + y, x + y⟫ = ⟪x, x⟫ + ⟪x, y⟫ + ⟪y, x⟫ + ⟪y, y⟫ := by
   simp only [inner_add_left, inner_add_right]; ring
 
--- Expand `inner (x - y) (x - y)`
+-- Expand `⟪x - y, x - y⟫`
 theorem inner_sub_sub_self (x y : F) : ⟪x - y, x - y⟫ = ⟪x, x⟫ - ⟪x, y⟫ - ⟪y, x⟫ + ⟪y, y⟫ := by
   simp only [inner_sub_left, inner_sub_right]; ring
 
@@ -431,9 +425,7 @@ section InnerProductSpace.Core
 
 variable [AddCommGroup F] [Module 𝕜 F] [cd : InnerProductSpace.Core 𝕜 F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 F _ x y
-
-local notation "normSqK" => @RCLike.normSq 𝕜 _
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
 

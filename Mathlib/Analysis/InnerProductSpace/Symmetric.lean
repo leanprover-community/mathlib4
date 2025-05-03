@@ -41,7 +41,7 @@ section Seminormed
 variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace LinearMap
 
@@ -183,7 +183,7 @@ section Normed
 variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace LinearMap
 
