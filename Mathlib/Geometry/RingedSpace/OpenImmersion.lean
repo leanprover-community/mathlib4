@@ -265,7 +265,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
   have : IsIso f.c := NatIso.isIso_of_isIso_app _
 
   apply (config := { allowSynthFailures := true }) isIso_of_components
-  let t : X ≃ₜ Y := (Homeomorph.ofIsEmbedding _ H.base_open.isEmbedding).trans
+  let t : X ≃ₜ Y := H.base_open.isEmbedding.toHomeomorph.trans
     { toFun := Subtype.val
       invFun := fun x =>
         ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
@@ -855,9 +855,6 @@ theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).base := by
   rw [TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_comp_isIso,
     TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_isIso_comp]
   exact .sigmaMk
-
-@[deprecated (since := "2024-10-18")]
-alias sigma_ι_openEmbedding := sigma_ι_isOpenEmbedding
 
 theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.obj i)) :
     (Opens.map (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) j).base).obj

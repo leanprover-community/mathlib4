@@ -44,16 +44,14 @@ open Finset
 theorem Finset.centerMass_empty : (∅ : Finset ι).centerMass w z = 0 := by
   simp only [centerMass, sum_empty, smul_zero]
 
-open scoped Classical in
-theorem Finset.centerMass_pair (hne : i ≠ j) :
+theorem Finset.centerMass_pair [DecidableEq ι] (hne : i ≠ j) :
     ({i, j} : Finset ι).centerMass w z = (w i / (w i + w j)) • z i + (w j / (w i + w j)) • z j := by
   simp only [centerMass, sum_pair hne]
   module
 
 variable {w}
 
-open scoped Classical in
-theorem Finset.centerMass_insert (ha : i ∉ t) (hw : ∑ j ∈ t, w j ≠ 0) :
+theorem Finset.centerMass_insert [DecidableEq ι] (ha : i ∉ t) (hw : ∑ j ∈ t, w j ≠ 0) :
     (insert i t).centerMass w z =
       (w i / (w i + ∑ j ∈ t, w j)) • z i +
         ((∑ j ∈ t, w j) / (w i + ∑ j ∈ t, w j)) • t.centerMass w z := by
@@ -103,8 +101,7 @@ theorem Finset.centerMass_segment (s : Finset ι) (w₁ w₂ : ι → R) (z : ι
   simp only [Finset.centerMass_eq_of_sum_1, Finset.centerMass_eq_of_sum_1 _ _ hw,
     smul_sum, sum_add_distrib, add_smul, mul_smul, *]
 
-open scoped Classical in
-theorem Finset.centerMass_ite_eq (hi : i ∈ t) :
+theorem Finset.centerMass_ite_eq [DecidableEq ι] (hi : i ∈ t) :
     t.centerMass (fun j => if i = j then (1 : R) else 0) z = z i := by
   rw [Finset.centerMass_eq_of_sum_1]
   · trans ∑ j ∈ t, if i = j then z i else 0
@@ -467,9 +464,8 @@ theorem convexHull_sum {ι} (s : Finset ι) (t : ι → Set E) :
 
 variable (ι) [Fintype ι] {f : ι → R}
 
-open scoped Classical in
 /-- `stdSimplex 𝕜 ι` is the convex hull of the canonical basis in `ι → 𝕜`. -/
-theorem convexHull_basis_eq_stdSimplex :
+theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
     convexHull R (range fun i j : ι => if i = j then (1 : R) else 0) = stdSimplex R ι := by
   refine Subset.antisymm (convexHull_min ?_ (convex_stdSimplex R ι)) ?_
   · rintro _ ⟨i, rfl⟩
@@ -552,11 +548,11 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
     simp_intro hx₁ hx₂
     simp [ht x hx₁ hx₂]
 
-open scoped Classical in
 /-- Two simplices glue nicely if the union of their vertices is affine independent.
 
 Note that `AffineIndependent.convexHull_inter` should be more versatile in most use cases. -/
-lemma AffineIndependent.convexHull_inter' (hs : AffineIndependent R ((↑) : ↑(t₁ ∪ t₂) → E)) :
+lemma AffineIndependent.convexHull_inter' [DecidableEq E]
+    (hs : AffineIndependent R ((↑) : ↑(t₁ ∪ t₂) → E)) :
     convexHull R (t₁ ∩ t₂ : Set E) = convexHull R t₁ ∩ convexHull R t₂ :=
   hs.convexHull_inter subset_union_left subset_union_right
 

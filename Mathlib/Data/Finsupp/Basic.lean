@@ -774,6 +774,12 @@ theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m
     simp only [coe_update, ne_eq, reduceCtorEq, not_false_eq_true, update_of_ne, some_apply]
     rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
 
+@[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
+  ext; rw [some_apply]; exact embDomain_apply _ _ _
+
+@[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some .none = 0 :=
+  embDomain_notin_range _ _ _ (by simp)
+
 end Option
 
 /-! ### Declarations about `Finsupp.filter` -/
@@ -1394,7 +1400,7 @@ theorem split_apply (i : ι) (x : αs i) : split l i x = l ⟨i, x⟩ := by
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ (i : ι), αs i` to `β`,
 `split_support l` is the finset of indices in `ι` that appear in the support of `l`. -/
-def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
+def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
   haveI := Classical.decEq ι
   l.support.image Sigma.fst
 

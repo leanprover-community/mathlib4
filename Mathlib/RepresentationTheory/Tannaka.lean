@@ -99,7 +99,7 @@ def leftRegular : Representation k G (G → k) where
 @[simp]
 lemma leftRegular_apply (s t : G) (f : G → k) : leftRegular s f t = f (s⁻¹ * t) := rfl
 
-variable [Fintype G]
+variable [Finite G]
 
 /-- The right regular representation `rightRegular` on `G → k` as a `FDRep k G`. -/
 @[simp]
@@ -107,12 +107,16 @@ def rightFDRep : FDRep k G := FDRep.of rightRegular
 
 end definitions
 
-variable [Fintype G]
+variable [Finite G]
 
-lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom k G) := by
+lemma equivHom_injective [Nontrivial k] : Function.Injective (equivHom k G) := by
   intro s t h
+  classical
   apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
+
+@[deprecated (since := "2025-04-27")]
+alias equivHom_inj := equivHom_injective
 
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
 def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
@@ -152,25 +156,3 @@ end FiniteGroup
 end TannakaDuality
 
 end
-
-/-- Let `k` be an integral domain and `G` an arbitrary finite set.
-Then any algebra morphism `φ : (G → k) →ₐ[k] k` is an evaluation map. -/
-lemma eval_of_algHom {k G : Type*} [CommRing k] [IsDomain k] [DecidableEq G] [Fintype G]
-    (φ : (G → k) →ₐ[k] k) : ∃ (s : G), φ = Pi.evalAlgHom _ _ s := by
-  have h1 := map_one φ
-  simp only [← Finset.univ_sum_single (1 : G → k), Pi.one_apply, map_sum] at h1
-  obtain ⟨s, hs⟩ : ∃ (s : G), φ (Pi.single s 1) ≠ 0 := by
-    by_contra
-    simp_all
-  have h2 : ∀ t ≠ s, φ (Pi.single t 1) = 0 := by
-    intros
-    apply eq_zero_of_ne_zero_of_mul_right_eq_zero hs
-    rw [← map_mul]
-    convert map_zero φ
-    ext u
-    by_cases u = s <;> simp_all
-  have h3 : φ (Pi.single s 1) = 1 := by
-    rwa [Fintype.sum_eq_single s h2] at h1
-  use s
-  refine AlgHom.toLinearMap_injective (Basis.ext (Pi.basisFun k G) (fun t ↦ ?_))
-  by_cases t = s <;> simp_all

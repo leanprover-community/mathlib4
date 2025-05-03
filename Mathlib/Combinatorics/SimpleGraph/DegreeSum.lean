@@ -126,7 +126,7 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
     simp only [ZMod.natCast_self, zero_mul, Nat.cast_mul] at h
     rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
-    rw [@sum_congr _ _ _ _ (fun v => (G.degree v : ZMod 2)) (fun _v => (1 : ZMod 2)) _ rfl] at h
+    rw [sum_congr (g := fun _v ↦ (1 : ZMod 2)) rfl] at h
     · simp only [filter_congr, mul_one, nsmul_eq_mul, sum_const, Ne] at h
       rw [← ZMod.eq_zero_iff_even]
       convert h

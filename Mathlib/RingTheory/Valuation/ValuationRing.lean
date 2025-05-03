@@ -152,7 +152,7 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
     apply Quotient.sound'
     exact ⟨this.unit, rfl⟩
   le_total := ValuationRing.le_total _ _
-  decidableLE := by classical infer_instance
+  toDecidableLE := Classical.decRel _
 
 instance commGroupWithZero :
     CommGroupWithZero (ValueGroup A K) :=

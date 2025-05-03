@@ -35,9 +35,9 @@ instance instLinearOrder : LinearOrder ℕ where
   le_total := @Nat.le_total
   lt := Nat.lt
   lt_iff_le_not_le := @Nat.lt_iff_le_not_le
-  decidableLT := inferInstance
-  decidableLE := inferInstance
-  decidableEq := inferInstance
+  toDecidableLT := inferInstance
+  toDecidableLE := inferInstance
+  toDecidableEq := inferInstance
 
 -- Shortcut instances
 instance : Preorder ℕ := inferInstance

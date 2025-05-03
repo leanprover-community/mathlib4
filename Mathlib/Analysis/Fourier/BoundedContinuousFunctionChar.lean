@@ -83,7 +83,7 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
   obtain ⟨a, ha⟩ := DFunLike.ne_iff.mp he'
   use (a / (L (v - v') w)) • w
   simp only [map_sub, LinearMap.sub_apply, char_apply, ne_eq]
-  rw [← div_eq_one_iff_eq (Circle.coe_ne_zero _), div_eq_inv_mul, ← coe_inv_unitSphere,
+  rw [← div_eq_one_iff_eq (Circle.coe_ne_zero _), div_eq_inv_mul, ← Metric.unitSphere.coe_inv,
     ← e.map_neg_eq_inv, ← Submonoid.coe_mul, ← e.map_add_eq_mul, OneMemClass.coe_eq_one]
   calc e (- L v' ((a / (L v w - L v' w)) • w) + L v ((a / (L v w - L v' w)) • w))
   _ = e (- (a / (L v w - L v' w)) • L v' w + (a / (L v w - L v' w)) • L v w) := by
@@ -138,32 +138,20 @@ lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V �
   simp only [charAlgHom_apply, Finsupp.support_embDomain, Finset.sum_map,
     Finsupp.embDomain_apply, star_apply, star_sum, star_mul', Circle.star_addChar]
   rw [Finsupp.support_mapRange_of_injective (star_zero _) y star_injective]
-  simp_rw [← map_neg (L u)]
-  rfl
+  simp [z, f]
 
 /-- The star-subalgebra of polynomials. -/
 noncomputable
 def charPoly (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     StarSubalgebra ℂ (V →ᵇ ℂ) where
   toSubalgebra := (charAlgHom he hL).range
-  star_mem' := by
-    intro x hx
-    exact star_mem_range_charAlgHom he hL hx
+  star_mem' hx := star_mem_range_charAlgHom he hL hx
 
 lemma mem_charPoly (f : V →ᵇ ℂ) :
     f ∈ charPoly he hL
       ↔ ∃ w : AddMonoidAlgebra ℂ W, f = fun x ↦ ∑ a ∈ w.support, w a * (e (L x a) : ℂ) := by
   change f ∈ (charAlgHom he hL).range ↔ _
-  rw [AlgHom.mem_range]
-  constructor
-  · rintro ⟨y, rfl⟩
-    refine ⟨y, ?_⟩
-    ext
-    simp
-  · rintro ⟨y, h⟩
-    refine ⟨y, ?_⟩
-    ext
-    simp [h]
+  simp [BoundedContinuousFunction.ext_iff, funext_iff, eq_comm]
 
 lemma char_mem_charPoly (w : W) : char he hL w ∈ charPoly he hL := by
   rw [mem_charPoly]
