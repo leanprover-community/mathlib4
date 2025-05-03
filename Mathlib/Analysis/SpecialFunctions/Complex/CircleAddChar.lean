@@ -63,7 +63,7 @@ lemma toCircle_apply (j : ZMod N) :
     toCircle j = exp (2 * π * I * j.val / N) := by
   rw [← toCircle_natCast, natCast_zmod_val]
 
-lemma toCircle_eq_Circle_exp (j : ZMod N) :
+lemma toCircle_eq_circleExp (j : ZMod N) :
     toCircle j = Circle.exp (2 * π * (j.val / N)) := by
   ext
   rw [toCircle_apply, Circle.coe_exp]
