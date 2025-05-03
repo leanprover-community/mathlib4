@@ -24,16 +24,6 @@ is an isomorphism.
 * `StrongTrans.category F G` : a category structure on Pseudofunctors between `F` and `G`,
   where the morphisms are strong transformations.
 
-## TODO
-
-After having defined lax functors, we should define 3 different types of strong natural
-transformations:
-* strong transformations between oplax functors (as defined here).
-* strong transformations between lax functors.
-* strong transformations between Pseudofunctors. From these types of strong natural
-  transformations, we can define the underlying natural transformations between the underlying
-  oplax resp. lax functors. Many properties can then be inferred from these.
-
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
