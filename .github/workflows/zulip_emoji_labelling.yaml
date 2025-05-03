@@ -31,7 +31,7 @@ jobs:
         ZULIP_SITE: https://leanprover.zulipchat.com
         PR_NUMBER: ${{ github.event.number}}
         LABEL_STATUS: ${{ github.event.action }}
-        LABEL: ${{ github.event.label.name }}
+        LABEL_NAME: ${{ github.event.label.name }}
       run: |
         printf $'Running the python script with pr "%s"\n' "$PR_NUMBER" "$LABEL_STATUS" "$LABEL"
-        python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$LABEL" "$PR_NUMBER"
+        python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$LABEL_NAME" "$PR_NUMBER"

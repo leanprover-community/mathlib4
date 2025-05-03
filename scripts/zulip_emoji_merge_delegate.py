@@ -4,16 +4,26 @@ import zulip
 import re
 
 # Usage:
-# python scripts/zulip_emoji_merge_delegate.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $LABEL $PR_NUMBER
-# See .github/workflows/zulip_emoji_merge_delegate.yaml for the meaning of these variables
+# python scripts/zulip_emoji_merge_delegate.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $ACTION $LABEL_NAME $PR_NUMBER
+# See .github/workflows/zulip_emoji_merge_delegate.yaml for the meaning of the first three variables,
+# and the comment below for $ACTION and $LABEL_NAME.
 
 ZULIP_API_KEY = sys.argv[1]
 ZULIP_EMAIL = sys.argv[2]
 ZULIP_SITE = sys.argv[3]
-# e.g. 'labeled', 'unlabeled', 'delegated' or 'closed' (does not contain the label name when
-# a normal label was applied (as opposed to e.g. a bors command)
+# Describes the "action" that is performed to the PR. Depending on which action calls this script,
+# this takes rather different values:
+# - if a PR is closed/reopened, it is 'closed' resp. 'reopened' (though the particular value for
+#   reopening is not used in this script)
+# - if a PR was just merged by bors, it is '[Merged by Bors]'
+# - if a PR was labeled or unlabeled (with e.g. maintainer-merge or awaiting-review),
+#   it is 'labeled' resp. 'unlabeled' (and the next argument is the label name)
+# - if a PR was delegated or sent to bors (via bors r+, bors r-, bors merge, bors delegate,
+#   bors d+ or bors d-) command was issued, it is 'ready-to-merge' or 'delegated'
+#   TODO clarify: what is the input on a bors d- or bors r- command? Also that?
 LABEL_STATUS = sys.argv[4]
 # Name of the label that was applied or removed
+# (if applicable; is 'none' if a PR was closed, reopened or merged)
 LABEL_NAME = sys.argv[5]
 PR_NUMBER = sys.argv[6]
 
