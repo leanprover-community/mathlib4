@@ -215,4 +215,18 @@ instance (Γ : Subgroup SL(2, ℤ)) : IntCast (SlashInvariantForm Γ 0) where
 @[simp, norm_cast]
 theorem coe_intCast (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
 
+/-- Translating a `SlashInvariantForm` by `SL(2, ℤ)`, to obtain a new `SlashInvariantForm`. -/
+noncomputable def translate [SlashInvariantFormClass F Γ k]
+    (f : F) (g : SL(2, ℤ)) : SlashInvariantForm (Γ.map <| MulAut.conj g⁻¹) k where
+  toFun := f ∣[k] g
+  slash_action_eq' := fun j ⟨r, hr, hr'⟩ ↦ by
+    simp only [map_inv, MonoidHom.coe_coe, MulAut.conj_inv_apply] at hr'
+    rw [← hr', ← SlashAction.slash_mul, mul_assoc, mul_inv_cancel_left, SlashAction.slash_mul,
+      SlashInvariantFormClass.slash_action_eq f r hr]
+
+@[simp]
+lemma coe_translate [SlashInvariantFormClass F Γ k] (f : F) (g : SL(2, ℤ)) :
+    translate f g = ⇑f ∣[k] g :=
+  rfl
+
 end SlashInvariantForm
