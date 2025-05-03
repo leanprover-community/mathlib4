@@ -208,24 +208,6 @@ theorem le_comap_pow_of_le_comap (p : Submodule R M) {f : M →ₗ[R] M}
   | zero => simp [Module.End.one_eq_id]
   | succ k ih => simp [Module.End.iterate_succ, comap_comp, h.trans (comap_mono ih)]
 
-section comapRestrict
-
-variable [Module R M₂] (q : Submodule R M₂) (f : M →ₗ[R] M₂)
-
-/-- For a linear map `f`, the map from `Submodule.comap q f` to `q` for a submodule `q`
-obtained from restricting `f` using `LinearMap.restrict`. -/
-abbrev comapRestrict : ↥(q.comap f) →ₗ[R] ↥q :=
-  f.restrict fun _ hx ↦ mem_comap.mp hx
-
-theorem comapRestrict_surjective_of_surjective (hf : Function.Surjective f) :
-    Function.Surjective (q.comapRestrict f) := fun y ↦ by
-  obtain ⟨x, hx⟩ := hf y
-  use ⟨x, mem_comap.mpr (hx ▸ y.2)⟩
-  apply Subtype.val_injective
-  simp [hx]
-
-end comapRestrict
-
 section
 
 variable [RingHomSurjective σ₁₂]
