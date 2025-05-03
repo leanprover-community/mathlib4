@@ -153,5 +153,5 @@ for message in messages:
             if LABEL_NAME == 'awaiting-author':
                 print('awaiting-author removed')
                 # The reaction was already removed.
-        elif ACTION.startswith("[Merged by Bors]"):
+        elif ACTION == "[Merged by Bors]":
             add_reaction('[Merged by Bors]', 'merge')
