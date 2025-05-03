@@ -432,8 +432,7 @@ theorem Quotient.liftₐ_comp (I : Ideal A) [I.IsTwoSided]
 theorem Quotient.span_singleton_one (I : Ideal A) [I.IsTwoSided] :
     Submodule.span A {(1 : A ⧸ I)} = ⊤ := by
   rw [← map_one (mk _), ← Submodule.range_mkQ I, ← Submodule.map_top, ← Ideal.span_singleton_one,
-    Ideal.span, Submodule.map_span, Set.image_singleton]
-  rfl
+    Ideal.span, Submodule.map_span, Set.image_singleton, Submodule.mkQ_apply, Quotient.mk_eq_mk]
 
 theorem KerLift.map_smul (f : A →ₐ[R₁] B) (r : R₁) (x : A ⧸ (RingHom.ker f)) :
     f.kerLift (r • x) = r • f.kerLift x := by
