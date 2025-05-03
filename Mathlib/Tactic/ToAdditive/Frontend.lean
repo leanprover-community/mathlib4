@@ -1305,7 +1305,7 @@ partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) : Met
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
     logWarning m!"`to_additive` validation failed:
   expected {srcDecl.levelParams.length} universe \
-  levels, but '{tgt}' has {tgtDecl.levelParams.length} uninverse levels"
+  levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
     return
   -- instantiate both types with the same universes. `instantiateLevelParams` applies some
   -- normalization, so we have to apply it to both types.

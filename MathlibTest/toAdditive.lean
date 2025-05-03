@@ -451,7 +451,7 @@ instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
 
 /--
 warning: `to_additive` validation failed:
-  expected 1 universe levels, but 'Nat.le_trans' has 0 uninverse levels
+  expected 1 universe levels, but 'Nat.le_trans' has 0 universe levels
 -/
 #guard_msgs in
 @[to_additive existing Nat.le_trans]
