@@ -569,7 +569,15 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       exact (not_subsingleton_iff_nontrivial.mpr Lntr)
     · intro L _ _ _ p e Lntr dim_eq
       rw [eqr _ dim_eq]
+      have : ((maximalIdeal R : Set R) \ (p.asIdeal: Set R)).Nonempty  := by
+        rw [Set.diff_nonempty]
+        by_contra sub
+        have := Ideal.IsMaximal.eq_of_le (maximalIdeal.isMaximal R) IsPrime.ne_top' sub
 
+        absurd eqr _ dim_eq
+
+        sorry
+      #check ModuleCat.smulShortComplex (ModuleCat.of R L)
       sorry
     · intro L1 _ _ _ L2 _ _ _ L3 _ _ _ f g inj surj exac ih1' ih3' L2ntr dim_eq
       rw [eqr _ dim_eq]
