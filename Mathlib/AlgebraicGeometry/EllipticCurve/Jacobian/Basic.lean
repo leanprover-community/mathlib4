@@ -110,9 +110,8 @@ abbrev toJacobian (W : WeierstrassCurve R) : Jacobian R :=
 
 namespace Jacobian
 
-variable (W') in
 /-- The conversion from a Weierstrass curve in Jacobian coordinates to affine coordinates. -/
-abbrev toAffine : Affine R :=
+abbrev toAffine (W' : Jacobian R) : Affine R :=
   W'
 
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by

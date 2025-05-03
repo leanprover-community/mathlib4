@@ -303,7 +303,7 @@ lemma of_ladder_linearEquiv_of_exact
 /-- Two maps `f : M →ₗ[R] N` and `g : N →ₗ[R] P` are exact if and only if the induced maps
 `LinearMap.range f → N → LinearMap.range g` are exact. -/
 lemma iff_linearMap_rangeRestrict :
-    Exact f g ↔ Exact f.range.subtype g.rangeRestrict :=
+    Exact f g ↔ Exact (LinearMap.range f).subtype g.rangeRestrict :=
   iff_rangeFactorization (zero_mem (LinearMap.range g))
 
 alias ⟨linearMap_rangeRestrict, _⟩ := iff_linearMap_rangeRestrict
