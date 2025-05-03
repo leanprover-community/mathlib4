@@ -660,6 +660,16 @@ theorem isIdempotentElem_apply_one_iff {f : Module.End R R} :
   simp_rw [Module.End.mul_apply]
   exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
 
+theorem range_toSpanSingleton (x : M) :
+    range (toSpanSingleton R M x) = .span R {x} :=
+  SetLike.coe_injective (Submodule.span_singleton_eq_range R x).symm
+
+theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x ∈ N) :
+    (span R {x}).submoduleOf N = span R {⟨x, hx⟩} := by
+  ext y
+  simp_rw [submoduleOf, mem_comap, subtype_apply, mem_span_singleton]
+  aesop
+
 end
 
 section AddCommMonoid
