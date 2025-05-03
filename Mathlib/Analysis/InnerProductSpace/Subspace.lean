@@ -24,7 +24,7 @@ section Submodule
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-! ### Inner product space structure on subspaces -/
 
@@ -60,7 +60,7 @@ section OrthogonalFamily_Seminormed
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 variable {ι : Type*} (𝕜)
 
@@ -241,7 +241,7 @@ section OrthogonalFamily
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 variable {ι : Type*} {G : ι → Type*}
 
