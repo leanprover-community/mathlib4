@@ -38,11 +38,11 @@ lemma zariskiTopology_le_etaleTopology : zariskiTopology ≤ etaleTopology := by
 
 /-- The small étale site of a scheme is the Grothendieck topology on the
 category of schemes étale over `X` induced from the étale topology on `Scheme.{u}`. -/
-def smallEtaleTopology (X : Scheme.{u}) : GrothendieckTopology (Etale X) :=
+def smallEtaleTopology (X : Scheme.{u}) : GrothendieckTopology X.Etale :=
   X.smallGrothendieckTopology (P := @IsEtale)
 
 /-- The pretopology generating the small étale site. -/
-def smallEtalePretopology (X : Scheme.{u}) : Pretopology (Etale X) :=
+def smallEtalePretopology (X : Scheme.{u}) : Pretopology X.Etale :=
   X.smallPretopology (Q := @IsEtale) (P := @IsEtale)
 
 end AlgebraicGeometry.Scheme
