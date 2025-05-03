@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.BoxIntegral.Partition.Filter
 import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.Oscillation
-import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Data.Bool.Basic
+import Mathlib.MeasureTheory.Measure.Real
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Integrals of Riemann, Henstock-Kurzweil, and McShane
@@ -345,14 +346,14 @@ theorem norm_integral_le_of_norm_le {g : ℝⁿ → ℝ} (hle : ∀ x ∈ Box.Ic
   · refine le_of_tendsto_of_tendsto' hfi.hasIntegral.norm hg.hasIntegral fun π => ?_
     refine norm_sum_le_of_le _ fun J _ => ?_
     simp only [BoxAdditiveMap.toSMul_apply, norm_smul, smul_eq_mul, Real.norm_eq_abs,
-      μ.toBoxAdditive_apply, abs_of_nonneg ENNReal.toReal_nonneg]
+      μ.toBoxAdditive_apply, abs_of_nonneg measureReal_nonneg]
     exact mul_le_mul_of_nonneg_left (hle _ <| π.tag_mem_Icc _) ENNReal.toReal_nonneg
   · rw [integral, dif_neg hfi, norm_zero]
     exact integral_nonneg (fun x hx => (norm_nonneg _).trans (hle x hx)) μ
 
 theorem norm_integral_le_of_le_const {c : ℝ}
     (hc : ∀ x ∈ Box.Icc I, ‖f x‖ ≤ c) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ] :
-    ‖(integral I l f μ.toBoxAdditive.toSMul : E)‖ ≤ (μ I).toReal * c := by
+    ‖(integral I l f μ.toBoxAdditive.toSMul : E)‖ ≤ μ.real I * c := by
   simpa only [integral_const] using norm_integral_le_of_norm_le hc μ (integrable_const c)
 
 /-!
@@ -621,7 +622,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     (hb : ∃ C : ℝ, ∀ x ∈ Box.Icc I, ‖f x‖ ≤ C) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ]
     (hc : ∀ᵐ x ∂(μ.restrict (Box.Icc I)), ContinuousWithinAt f (Box.Icc I) x) :
     Integrable I l f μ.toBoxAdditive.toSMul := by
-  /- We prove that f is integrable by proving that we can ensure that the integralSums over any
+  /- We prove that f is integrable by proving that we can ensure that the integrals over any
      two tagged prepartitions π₁ and π₂ can be made ε-close by making the partitions
      sufficiently fine.
 
@@ -679,7 +680,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
   · have : ∀ J ∈ B \ B', ‖μ.toBoxAdditive J • (f (t₁ J) - f (t₂ J))‖ ≤ μ.toBoxAdditive J * ε₁ := by
       intro J hJ
       rw [mem_sdiff, B.mem_filter, not_and] at hJ
-      rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg toReal_nonneg]
+      rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg measureReal_nonneg]
       refine mul_le_mul_of_nonneg_left ?_ toReal_nonneg
       obtain ⟨x, xJ, xnU⟩ : ∃ x ∈ J, x ∉ U := Set.not_subset.1 (hJ.2 hJ.1)
       have hx : x ∈ Box.Icc I \ U := ⟨Box.coe_subset_Icc ((le_of_mem' _ J hJ.1) xJ), xnU⟩
@@ -698,6 +699,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     · linarith
     simp_rw [mul_le_mul_right ε₁0, μ.toBoxAdditive_apply]
     refine le_trans ?_ <| toReal_mono (lt_top_iff_ne_top.1 μI) <| μ.mono <| un (B \ B') sdiff_subset
+    simp_rw [measureReal_def]
     rw [← toReal_sum (fun J hJ ↦ μJ_ne_top J (mem_sdiff.1 hJ).1), ← Finset.tsum_subtype]
     refine (toReal_mono <| ne_of_lt <| lt_of_le_of_lt (μ.mono <| un (B \ B') sdiff_subset) μI) ?_
     refine le_of_eq (measure_biUnion (countable_toSet _) ?_ (fun J _ ↦ J.measurableSet_coe)).symm
@@ -706,11 +708,12 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
   -- The contribution of the boxes contained within U is bounded because f is bounded and μ U < ε₂.
   · have : ∀ J ∈ B', ‖μ.toBoxAdditive J • (f (t₁ J) - f (t₂ J))‖ ≤ μ.toBoxAdditive J * (2 * C) := by
       intro J _
-      rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg toReal_nonneg, two_mul]
+      rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg measureReal_nonneg, two_mul]
       refine mul_le_mul_of_nonneg_left (le_trans (norm_sub_le _ _) (add_le_add ?_ ?_)) (by simp) <;>
         exact hC _ (TaggedPrepartition.tag_mem_Icc _ J)
     apply (norm_sum_le_of_le B' this).trans
-    simp_rw [← sum_mul, μ.toBoxAdditive_apply, ← toReal_sum (fun J hJ ↦ μJ_ne_top J (hB' hJ))]
+    simp_rw [← sum_mul, μ.toBoxAdditive_apply, measureReal_def,
+      ← toReal_sum (fun J hJ ↦ μJ_ne_top J (hB' hJ))]
     suffices (∑ J ∈ B', μ J).toReal ≤ ε₂ by
       linarith [mul_le_mul_of_nonneg_right this <| (mul_nonneg_iff_of_pos_left two_pos).2 C0]
     rw [← toReal_ofReal (le_of_lt ε₂0)]
@@ -813,7 +816,6 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
       exact fun J hJ => (Finset.mem_filter.1 hJ).2
   /- Now we deal with boxes such that `π.tag J ∉ s`.
     In this case the estimate is straightforward. -/
-  -- Porting note: avoided strange elaboration issues by rewriting using `calc`
   calc
     dist (∑ J ∈ π.boxes with ¬tag π J ∈ s, vol J (f (tag π J)))
       (∑ J ∈ π.boxes with ¬tag π J ∈ s, g J)

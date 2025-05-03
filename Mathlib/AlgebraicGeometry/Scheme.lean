@@ -75,6 +75,7 @@ initialize_simps_projections Hom (toLRSHom' → toLRSHom)
 /-- Schemes are a full subcategory of locally ringed spaces.
 -/
 instance : Category Scheme where
+  Hom := Hom
   id X := Hom.mk (𝟙 X.toLocallyRingedSpace)
   comp f g := Hom.mk (f.toLRSHom ≫ g.toLRSHom)
 
@@ -424,6 +425,12 @@ end
 
 namespace Scheme
 
+theorem isEmpty_of_commSq {W X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S}
+    {i : W ⟶ X} {j : W ⟶ Y} (h : CommSq i j f g)
+    (H : Disjoint (Set.range f.base) (Set.range g.base)) : IsEmpty W :=
+  ⟨fun x ↦ (Set.disjoint_iff_inter_eq_empty.mp H).le
+    ⟨⟨i.base x, congr($(h.w).base x)⟩, ⟨j.base x, rfl⟩⟩⟩
+
 /-- The empty scheme. -/
 @[simps]
 def empty : Scheme where
@@ -671,6 +678,15 @@ lemma zeroLocus_univ {U : X.Opens} :
   simp only [Scheme.mem_zeroLocus_iff, Set.mem_univ, forall_const, Set.mem_compl_iff,
     SetLike.mem_coe, ← not_exists, not_iff_not]
   exact ⟨fun ⟨f, hf⟩ ↦ X.basicOpen_le f hf, fun _ ↦ ⟨1, by rwa [X.basicOpen_of_isUnit isUnit_one]⟩⟩
+
+lemma zeroLocus_radical {U : X.Opens} (I : Ideal Γ(X, U)) :
+    X.zeroLocus (U := U) I.radical = X.zeroLocus (U := U) I := by
+  refine (X.zeroLocus_mono I.le_radical).antisymm ?_
+  simp only [Set.subset_def, mem_zeroLocus_iff, SetLike.mem_coe]
+  rintro x H f ⟨n, hn⟩ hx
+  rcases n.eq_zero_or_pos with rfl | hn'
+  · exact H f (by simpa using I.mul_mem_left f hn) hx
+  · exact H _ hn (X.basicOpen_pow f hn' ▸ hx)
 
 end ZeroLocus
 

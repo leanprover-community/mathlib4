@@ -301,7 +301,7 @@ protected theorem LocallyIntegrable.neg (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
 protected theorem LocallyIntegrable.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
-    [BoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
+    [IsBoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
 
 theorem locallyIntegrable_finset_sum' {ι} (s : Finset ι) {f : ι → X → E}
@@ -471,6 +471,7 @@ theorem Continuous.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X] [T2Spac
     (hf : Continuous f) : IntegrableOn f [[a, b]] μ :=
   hf.integrableOn_Icc
 
+open scoped Interval in
 theorem Continuous.integrableOn_uIoc [LinearOrder X] [CompactIccSpace X] [T2Space X]
     (hf : Continuous f) : IntegrableOn f (Ι a b) μ :=
   hf.integrableOn_Ioc

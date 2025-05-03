@@ -26,7 +26,7 @@ def reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
 termination_by l.length
 decreasing_by
   simp_wf
-  rw [← length_reverse l, h, length_cons]
+  rw [← length_reverse (as := l), h, length_cons]
   simp [Nat.lt_succ]
 
 @[simp]

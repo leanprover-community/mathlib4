@@ -8,7 +8,7 @@ IFS=$'\n\t'
 set -x
 
 # Install elan using the official script
-curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
+curl https://elan.lean-lang.org/elan-init.sh -sSf | sh
 
 # Set the default Lean version to the latest stable release
 elan toolchain install stable

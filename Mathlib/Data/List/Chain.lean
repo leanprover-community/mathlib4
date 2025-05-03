@@ -41,7 +41,7 @@ theorem Chain.iff_mem {a : α} {l : List α} :
     | nil => exact nil
     | @cons _ _ _ r _ IH =>
       constructor
-      · exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩
+      · exact ⟨mem_cons_self, mem_cons_self, r⟩
       · exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩,
     Chain.imp fun _ _ h => h.2.2⟩
 
@@ -150,7 +150,7 @@ theorem chain_eq_iff_eq_replicate {a : α} {l : List α} :
   | [] => by simp
   | b :: l => by
     rw [chain_cons]
-    simp (config := {contextual := true}) [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
+    simp +contextual [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
 
 theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
     Chain' S l := by cases l <;> [trivial; exact Chain.imp H p]
@@ -203,8 +203,9 @@ theorem chain'_iff_forall_rel_of_append_cons_cons {l : List α} :
     match tail with
     | nil => exact fun _ ↦ chain'_singleton head
     | cons head' tail =>
-      refine fun h ↦ chain'_cons.mpr ⟨h (nil_append _).symm, ih @(fun a b l₁ l₂ eq => ?_)⟩
-      simpa [eq] using @h (l₁ := head :: l₁) (l₂ := l₂)
+      refine fun h ↦ chain'_cons.mpr ⟨h (nil_append _).symm, ih fun ⦃a b l₁ l₂⦄ eq => ?_⟩
+      apply h
+      rw [eq, cons_append]
 
 theorem chain'_map (f : β → α) {l : List β} :
     Chain' R (map f l) ↔ Chain' (fun a b : β => R (f a) (f b)) l := by
@@ -332,8 +333,6 @@ lemma chain'_flatten : ∀ {L : List (List α)}, [] ∉ L →
     simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
-@[deprecated (since := "2024-10-15")] alias chain'_join := chain'_flatten
-
 theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
     {r : {a // p a} → {a // p a} → Prop} :
     (l.attachWith p h).Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ := by
@@ -347,7 +346,7 @@ theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
     intro hc b (hb : _ = _)
     · simp_rw [hb, Option.pbind_some] at hc
       have hb' := h b (mem_cons_of_mem a (mem_of_mem_head? hb))
-      exact ⟨h a (mem_cons_self a l), hb', hc ⟨b, hb'⟩ rfl⟩
+      exact ⟨h a mem_cons_self, hb', hc ⟨b, hb'⟩ rfl⟩
     · cases l <;> aesop
 
 theorem chain'_attach {l : List α} {r : {a // a ∈ l} → {a // a ∈ l} → Prop} :
@@ -400,7 +399,7 @@ theorem Chain.backwards_induction (p : α → Prop) (l : List α) (h : Chain r a
     (final : p b) : ∀ i ∈ a :: l, p i := by
   have : Chain' (flip (flip r)) (a :: l) := by simpa [Chain']
   replace this := chain'_reverse.mpr this
-  simp_rw (config := {singlePass := true}) [← List.mem_reverse]
+  simp_rw +singlePass [← List.mem_reverse]
   apply this.induction _ _ (fun _ _ h ↦ carries h)
   simpa only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb,
     reduceCtorEq]
@@ -413,7 +412,7 @@ That is, we can propagate the predicate all the way up the chain.
 theorem Chain.backwards_induction_head (p : α → Prop) (l : List α) (h : Chain r a l)
     (hb : getLast (a :: l) (cons_ne_nil _ _) = b) (carries : ∀ ⦃x y : α⦄, r x y → p y → p x)
     (final : p b) : p a :=
-  (Chain.backwards_induction p l h hb carries final) _ (mem_cons_self _ _)
+  (Chain.backwards_induction p l h hb carries final) _ mem_cons_self
 
 /--
 If there is an `r`-chain starting from `a` and ending at `b`, then `a` and `b` are related by the
@@ -522,8 +521,8 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       apply Acc.intro
       rintro ⟨_ | ⟨b, m⟩, hm⟩ (_ | hr | hr)
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
-      · apply ihl ⟨m, (List.chain'_cons'.1 hm).2⟩ hr
       · apply ih b hr
+      · apply ihl ⟨m, (List.chain'_cons'.1 hm).2⟩ hr
 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
 theorem WellFounded.list_chain' (hwf : WellFounded r) :

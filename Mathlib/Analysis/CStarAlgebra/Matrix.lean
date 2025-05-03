@@ -144,7 +144,7 @@ open scoped Topology Uniformity
 (continuous) linear maps of `EuclideanSpace`. -/
 def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
   /- We first replace the topology so that we can automatically replace the uniformity using
-  `UniformAddGroup.toUniformSpace_eq`. -/
+  `IsUniformAddGroup.toUniformSpace_eq`. -/
   letI normed_add_comm_group : NormedAddCommGroup (Matrix m n 𝕜) :=
     { l2OpNormedAddCommGroupAux.replaceTopology <|
         (toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap
@@ -153,8 +153,8 @@ def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
       dist_eq := l2OpNormedAddCommGroupAux.dist_eq }
   exact normed_add_comm_group.replaceUniformity <| by
     congr
-    rw [← @UniformAddGroup.toUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
-    rw [@UniformAddGroup.toUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
+    rw [← @IsUniformAddGroup.toUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
+    rw [@IsUniformAddGroup.toUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
 
 scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpMetricSpace
 
@@ -225,7 +225,7 @@ scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedSpace
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
 def instL2OpNormedRing : NormedRing (Matrix n n 𝕜) where
   dist_eq := l2OpNormedRingAux.dist_eq
-  norm_mul := l2OpNormedRingAux.norm_mul
+  norm_mul_le := l2OpNormedRingAux.norm_mul_le
 
 scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedRing
 

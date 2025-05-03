@@ -207,7 +207,7 @@ protected theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × �
   replace hj := hu hj
   rw [mem_product] at hi hj
   obtain rfl | hij := eq_or_ne i j
-  · refine (ht.pairwiseDisjoint hi.2 hj.2 <| (Prod.mk.inj_left _).ne_iff.1 hij).mono ?_ ?_
+  · refine (ht.pairwiseDisjoint hi.2 hj.2 <| (Prod.mk_right_injective _).ne_iff.1 hij).mono ?_ ?_
     · convert le_sup (α := α) hi.1; simp
     · convert le_sup (α := α) hj.1; simp
   · refine (hs.pairwiseDisjoint hi.1 hj.1 hij).mono ?_ ?_
