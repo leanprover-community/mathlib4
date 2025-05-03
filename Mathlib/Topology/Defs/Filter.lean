@@ -135,7 +135,7 @@ scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
 
 /-- Notation for the filter of punctured neighborhoods of a point. -/
 scoped[Topology] notation3 (name := nhdsNE) "𝓝[≠] " x:100 =>
-  nhdsWithin x (@singleton _ (Set _) Set.instSingletonSet x)ᶜ
+  nhdsWithin x {x}ᶜ
 
 /-- Notation for the filter of right neighborhoods of a point. -/
 scoped[Topology] notation3 (name := nhdsGE) "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
