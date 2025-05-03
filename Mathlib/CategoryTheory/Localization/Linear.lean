@@ -37,11 +37,11 @@ lemma functor_linear :
     letI := linear R L W
     Functor.Linear R L := by
   letI := linear R L W
-  exact
-    { map_smul := fun {X Y} f r => by
-        change L.map (r • f) = ((Linear.toCatCenter R C r).localization L W).app (L.obj X) ≫ L.map f
-        simp only [CatCenter.localization_app, ← L.map_comp,
-          Functor.id_obj, Linear.toCatCenter_apply_app, Linear.smul_comp, Category.id_comp] }
+  constructor
+  intro X Y f r
+  change L.map (r • f) = ((Linear.toCatCenter R C r).localization L W).app (L.obj X) ≫ L.map f
+  simp only [CatCenter.localization_app, ← L.map_comp,
+    Functor.id_obj, Linear.toCatCenter_apply_app, Linear.smul_comp, Category.id_comp]
 
 section
 
