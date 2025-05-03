@@ -106,6 +106,12 @@ def coneEquiv : Cone K ≌ Cone (liftFromOver.obj K) where
   unitIso := .refl _
   counitIso := NatIso.ofComponents fun t ↦ Cones.ext <| .refl _
 
+theorem coneEquiv_functor_obj_π_app_star : (coneEquiv.functor.obj t).π.app star = t.pt.hom :=
+  by simp
+
+theorem coneEquiv_functor_obj_π_app_of (Y : J): (coneEquiv.functor.obj t).π.app (of Y) =
+    (t.π.app Y).left := by simp
+
 /-- A cone `t` of `K : J ⥤ Over X` is a limit if and only if the corresponding cone
 `coneLift t` of `liftFromOver.obj K : WithTerminal K ⥤ C` is a limit. -/
 @[simps!]
@@ -196,6 +202,13 @@ def coconeEquiv : Cocone K ≌ Cocone (liftFromUnder.obj K) where
   inverse := coconeBack
   unitIso := .refl _
   counitIso := NatIso.ofComponents fun t ↦ Cocones.ext <| .refl _
+
+
+theorem coconeEquiv_functor_obj_π_app_star : (coconeEquiv.functor.obj t).ι.app star = t.pt.hom :=
+  by simp
+
+theorem coconeEquiv_functor_obj_π_app_of (Y : J): (coconeEquiv.functor.obj t).ι.app (of Y) =
+    (t.ι.app Y).right := by simp
 
 /-- A cocone `t` of `K : J ⥤ Under X` is a colimit if and only if the corresponding cocone
 `coconeLift t` of `liftFromUnder.obj K : WithInitial K ⥤ C` is a colimit. -/
