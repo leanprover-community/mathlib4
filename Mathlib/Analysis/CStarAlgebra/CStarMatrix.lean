@@ -393,7 +393,6 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
   { reindexₗ e e with
     map_mul' M N := by
       ext i j
-      dsimp
       unfold reindexₗ
       simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, Matrix.reindex_symm, LinearEquiv.coe_mk,
         Matrix.reindex_apply, Matrix.submatrix_apply, mul_apply]
@@ -402,9 +401,9 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
       simp
     map_star' M := by
       ext
-      dsimp
       unfold reindexₗ
-      dsimp
+      dsimp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, Matrix.reindex_symm, AddHom.toFun_eq_coe,
+        AddHom.coe_mk, Matrix.reindex_apply, Matrix.submatrix_apply]
       rw [Matrix.star_apply, Matrix.star_apply]
       simp [Matrix.submatrix_apply] }
 

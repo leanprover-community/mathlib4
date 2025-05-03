@@ -22,7 +22,8 @@ This file defines completely positive maps and develops their basic API.
 
 ## Notation
 
-+ `A₁ →CP A₂` denotes the type of CP maps from `A₁` to `A₂`.
++ `A₁ →CP A₂` denotes the type of CP maps from `A₁` to `A₂`. This notation is scoped to
+  `CStarAlgebra`.
 
 ## Implementation notes
 
