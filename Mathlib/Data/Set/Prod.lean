@@ -940,38 +940,35 @@ variable {x : α × β}
 
 @[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by aesop (add simp graphOn)
 
-@[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
-@[simp] lemma graphOn_eq_empty : graphOn f s = ∅ ↔ s = ∅ := image_eq_empty
-@[simp] lemma graphOn_nonempty : (s.graphOn f).Nonempty ↔ s.Nonempty := image_nonempty
+@[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := by simp [graphOn]
+@[simp] lemma graphOn_eq_empty : graphOn f s = ∅ ↔ s = ∅ := by simp [graphOn, Set.ext_iff]
+@[simp] lemma graphOn_nonempty : (s.graphOn f).Nonempty ↔ s.Nonempty := by
+  simp [graphOn, Set.Nonempty]
 
 protected alias ⟨_, Nonempty.graphOn⟩ := graphOn_nonempty
 
 @[simp]
-lemma graphOn_union (f : α → β) (s t : Set α) : graphOn f (s ∪ t) = graphOn f s ∪ graphOn f t :=
-  image_union ..
+lemma graphOn_union (f : α → β) (s t : Set α) : graphOn f (s ∪ t) = graphOn f s ∪ graphOn f t := by
+  simp [graphOn, or_and_right, setOf_or]
 
 @[simp]
-lemma graphOn_singleton (f : α → β) (x : α) : graphOn f {x} = {(x, f x)} :=
-  image_singleton ..
+lemma graphOn_singleton (f : α → β) (x : α) : graphOn f {x} = {(x, f x)} := by aesop
 
 @[simp]
 lemma graphOn_insert (f : α → β) (x : α) (s : Set α) :
-    graphOn f (insert x s) = insert (x, f x) (graphOn f s) :=
-  image_insert_eq ..
+    graphOn f (insert x s) = insert (x, f x) (graphOn f s) := by aesop
 
 @[simp]
-lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s = s := by
-  simp [graphOn, image_image]
+lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s = s := by aesop
 
 @[simp] lemma image_snd_graphOn (f : α → β) : Prod.snd '' s.graphOn f = f '' s := by ext x; simp
 
 lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by aesop (add simp InjOn)
 
 lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
-    s.graphOn (g ∘ f) = (fun x ↦ (x.1, g x.2)) '' s.graphOn f := by
-  simpa using image_comp (fun x ↦ (x.1, g x.2)) (fun x ↦ (x, f x)) _
+    s.graphOn (g ∘ f) = (fun x ↦ (x.1, g x.2)) '' s.graphOn f := by aesop
 
-lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := image_univ
+lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := by aesop
 
 @[simp] lemma graphOn_inj {g : α → β} : s.graphOn f = s.graphOn g ↔ s.EqOn f g := by
   simp [Set.ext_iff, funext_iff, forall_swap, EqOn]
