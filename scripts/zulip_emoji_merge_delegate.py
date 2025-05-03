@@ -140,18 +140,19 @@ for message in messages:
 
         # Apply the appropriate emoji reaction.
         print("Applying reactions, as appropriate.")
-        if 'ready-to-merge' == ACTION:
-            add_reaction('ready-to-merge', 'bors')
-        elif 'delegated' == ACTION:
-            add_reaction('delegated', 'peace_sign')
-        elif ACTION == 'labeled':
-            if LABEL_NAME == 'awaiting-author':
-                add_reaction('awaiting-author', 'writing')
-        elif ACTION == 'closed':
-            add_reaction('closed-pr', 'closed-pr')
-        elif ACTION == 'unlabeled':
-            if LABEL_NAME == 'awaiting-author':
-                print('awaiting-author removed')
-                # The reaction was already removed.
-        elif ACTION == "[Merged by Bors]":
-            add_reaction('[Merged by Bors]', 'merge')
+        match ACTION:
+            case 'ready-to-merge':
+                add_reaction('ready-to-merge', 'bors')
+            case 'delegated':
+                add_reaction('delegated', 'peace_sign')
+            case 'LABELED':
+                if LABEL_NAME == 'awaiting-author':
+                    add_reaction('awaiting-author', 'writing')
+            case 'unlabeled':
+                if LABEL_NAME == 'awaiting-author':
+                    print('awaiting-author removed')
+                    # The reaction was already removed.
+            case 'closed':
+                add_reaction('closed-pr', 'closed-pr')
+            case "[Merged by Bors]":
+                add_reaction('[Merged by Bors]', 'merge')
