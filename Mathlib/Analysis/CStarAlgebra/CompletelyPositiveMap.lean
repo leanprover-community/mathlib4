@@ -91,7 +91,7 @@ instance instCoeToCompletelyPositiveMap [CompletelyPositiveMapClass F A₁ A₂]
   coe f := toCompletelyPositiveLinearMap f
 
 open CStarMatrix in
-/-- Linear maps which are completely positive are order homomorphisms (i.e., positive aps). -/
+/-- Linear maps which are completely positive are order homomorphisms (i.e., positive maps). -/
 lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg
     (h : ∀ (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map φ) :
     OrderHomClass F A₁ A₂ := .ofLinear <| by
