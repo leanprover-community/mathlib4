@@ -15,23 +15,55 @@ Collection of useful identities of modular forms.
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Matrix CongruenceSubgroup
+open ModularForm UpperHalfPlane Matrix MatrixGroups ModularGroup
 
-namespace SlashInvariantForm
+variable {Γ : Subgroup SL(2, ℤ)}
 
-/- TODO: Once we have cusps, do this more generally, same below. -/
-theorem vAdd_width_periodic (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
-    f (((N * n) : ℝ) +ᵥ z) = f z := by
-  norm_cast
-  rw [← modular_T_zpow_smul z (N * n)]
-  convert slash_action_eqn' f (ModularGroup_T_pow_mem_Gamma N (N * n) (Int.dvd_mul_right N n)) z
-  simp only [Fin.isValue, ModularGroup.coe_T_zpow (N * n), of_apply, cons_val', cons_val_zero,
-    empty_val', cons_val_fin_one, cons_val_one, head_fin_const, Int.cast_zero, zero_mul, head_cons,
-    Int.cast_one, zero_add, one_zpow, one_mul]
+namespace Subgroup
 
-theorem T_zpow_width_invariant (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
-    f (((ModularGroup.T ^ (N * n))) • z) = f z := by
-  rw [modular_T_zpow_smul z (N * n)]
-  simpa only [Int.cast_mul, Int.cast_natCast] using vAdd_width_periodic N k n f z
+variable (Γ)
 
-end SlashInvariantForm
+/-- The width of the cusp `∞` for a subgroup of `SL(2, ℤ)`, i.e. the least `n > 0` such that
+`[1, n; 0, 1] ∈ Γ`. -/
+protected def width : ℕ := relindex Γ (.zpowers ModularGroup.T)
+
+lemma width_ne_zero [Γ.FiniteIndex] : Γ.width ≠ 0 :=
+  FiniteIndex.index_ne_zero
+
+lemma T_zpow_width_mem :
+    ModularGroup.T ^ Γ.width ∈ Γ :=
+  (Γ.subgroupOf <| .zpowers ModularGroup.T).pow_index_mem ⟨_, mem_zpowers _⟩
+
+/-- The integers `n` such that `[1, n; 0, 1] ∈ Γ` are precisely the multiples of `Γ.width`. -/
+lemma T_zpow_mem_iff {n : ℤ} : ModularGroup.T ^ n ∈ Γ ↔ ↑Γ.width ∣ n := by
+  let A : AddSubgroup ℤ := Subgroup.toAddSubgroup' <| Γ.comap (zpowersHom _ T)
+  have hA : Γ.width = A.index := by
+    have h := A.index_toSubgroup
+    have h' := Γ.index_comap (zpowersHom _ T)
+    rw [range_zpowersHom, ← Subgroup.width] at h'
+    simp only [A, OrderIso.apply_symm_apply, h'] at h
+    exact h
+  rw [hA, (by rfl : T ^ n ∈ Γ ↔ n ∈ A)]
+  obtain ⟨m, hm⟩ := Int.subgroup_cyclic A
+  simp [hm, ← AddSubgroup.zmultiples_eq_closure, Int.mem_zmultiples_iff]
+
+end Subgroup
+
+namespace SlashInvariantFormClass
+
+variable {F : Type*} (f : F) (k : ℤ) [FunLike F ℍ ℂ] [hF : SlashInvariantFormClass F Γ k]
+   {n : ℤ}
+
+include hF -- necessary because `k` is not inferrable from the statements
+
+theorem vAdd_width_periodic (hn : ↑Γ.width ∣ n) (τ : ℍ) :
+    f ((n : ℝ) +ᵥ τ) = f τ := by
+  rw [← modular_T_zpow_smul τ, SlashInvariantForm.slash_action_eqn' (k := k) f
+    (Γ.T_zpow_mem_iff.mpr hn)]
+  simp [← zpow_natCast, ← zpow_mul, ModularGroup.coe_T_zpow]
+
+theorem T_zpow_width_invariant (hn : ↑Γ.width ∣ n) (τ : ℍ) :
+    f (ModularGroup.T ^ n • τ) = f τ := by
+  simpa [-sl_moeb, modular_T_zpow_smul] using vAdd_width_periodic f k hn τ
+
+end SlashInvariantFormClass
