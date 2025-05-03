@@ -965,7 +965,7 @@ variable {W X Y Z}
 @[simps!]
 def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
   Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
+    (Equiv.sumProdDistrib X Y Z).symm.toHomeomorphOfContinuousOpen
         ((continuous_inl.prodMap continuous_id).sumElim
           (continuous_inr.prodMap continuous_id)) <|
       (isOpenMap_inl.prodMap IsOpenMap.id).sumElim (isOpenMap_inr.prodMap IsOpenMap.id)
