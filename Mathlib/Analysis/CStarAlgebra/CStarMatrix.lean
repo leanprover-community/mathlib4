@@ -203,6 +203,10 @@ theorem zero_apply [Zero A] (i : m) (j : n) : (0 : CStarMatrix m n A) i j = 0 :=
 @[simp] theorem neg_apply [Neg A] (M : CStarMatrix m n A) (i : m) (j : n) :
     (-M) i j = -(M i j) := rfl
 
+@[simp]
+theorem conjTranspose_zero [AddMonoid A] [StarAddMonoid A] :
+    conjTranspose (0 : CStarMatrix m n A) = 0 := by ext; simp
+
 /-! simp-normal form pulls `of` to the outside, to match the `Matrix` API. -/
 
 @[simp] theorem of_zero [Zero A] : ofMatrix (0 : Matrix m n A) = 0 := rfl
@@ -431,25 +435,21 @@ def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A
     rfl
   map_star' M := by ext; simp [map, star_apply, map_star]
 
-@[simp]
-theorem conjTranspose_zero [AddMonoid A] [StarAddMonoid A] :
-    conjTranspose (0 : CStarMatrix m n A) = 0 := by ext; simp
-
 theorem algebraMap_apply [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A]
     [Algebra R A] {r : R} {i j : n} :
     (algebraMap R (CStarMatrix n n A) r) i j = if i = j then algebraMap R A r else 0 := rfl
 
-variable (R) (A) in
+variable (n) (R) (A) in
 /-- The ⋆-algebra equivalence between `A` and 1×1 matrices with its entry in `A`. -/
-def toOneByOne [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Module R A] :
-    A ≃⋆ₐ[R] CStarMatrix (Fin 1) (Fin 1) A where
+def toOneByOne [Unique n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Module R A] :
+    A ≃⋆ₐ[R] CStarMatrix n n A where
   toFun a := fun x y => a
-  invFun M := M 0 0
+  invFun M := M default default
   left_inv := by intro; simp
   right_inv := by
     intro
     ext i j
-    simp [Subsingleton.elim i 0, Subsingleton.elim j 0]
+    simp [Subsingleton.elim i default, Subsingleton.elim j default]
   map_mul' _ _ := by ext; simp [mul_apply]
   map_add' _ _ := by ext; simp
   map_star' _ := by ext; simp [star_eq_conjTranspose]

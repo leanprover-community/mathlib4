@@ -32,10 +32,16 @@ to be used in conjunction with `LinearMapClass`. This is meant to avoid mixing o
 as much as possible.
 -/
 
+open scoped CStarAlgebra
+
 /--
 A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called *completely positive (CP)* if
 `CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
 positive for every `k ∈ ℕ`.
+
+Note that `Fin k` here is hardcoded to avoid having to quantify over types and introduce a new
+universe parameter. See `CompletelyPositiveMap.map_cstarMatrix_nonneg` for a version of the
+property that holds for matrices indexed by any finite type.
 -/
 structure CompletelyPositiveMap (A₁ : Type*) (A₂ : Type*) [NonUnitalCStarAlgebra A₁]
     [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
@@ -47,6 +53,10 @@ structure CompletelyPositiveMap (A₁ : Type*) (A₂ : Type*) [NonUnitalCStarAlg
 A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called *completely positive (CP)* if
 `CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
 positive for every `k ∈ ℕ`.
+
+Note that `Fin k` here is hardcoded to avoid having to quantify over types and introduce a new
+universe parameter. See `CompletelyPositiveMap.map_cstarMatrix_nonneg` for a version of the
+property that holds for matrices indexed by any finite type.
 -/
 class CompletelyPositiveMapClass (F : Type*) (A₁ : Type*) (A₂ : Type*)
     [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
@@ -54,8 +64,12 @@ class CompletelyPositiveMapClass (F : Type*) (A₁ : Type*) (A₂ : Type*)
   map_cstarMatrix_nonneg' (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
     0 ≤ M.map φ
 
+namespace CStarAlgebra
+
 /-- Notation for a `CompletelyPositiveMap`. -/
-notation:25 A₁ " →CP " A₂:0 => CompletelyPositiveMap A₁ A₂
+scoped notation:25 A₁ " →CP " A₂:0 => CompletelyPositiveMap A₁ A₂
+
+end CStarAlgebra
 
 namespace CompletelyPositiveMapClass
 
@@ -82,12 +96,12 @@ lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg
     (h : ∀ (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map φ) :
     OrderHomClass F A₁ A₂ := .ofLinear <| by
   intro φ a ha
-  let Ma := toOneByOne ℂ A₁ a
-  have h₁ : 0 ≤ Ma := map_nonneg (toOneByOne ℂ A₁) ha
+  let Ma := toOneByOne (Fin 1) ℂ A₁ a
+  have h₁ : 0 ≤ Ma := map_nonneg (toOneByOne (Fin 1) ℂ A₁) ha
   have h₂ : 0 ≤ Ma.map φ := h φ 1 Ma h₁
-  have h₃ : φ a = (toOneByOne ℂ A₂).symm (toOneByOne ℂ A₂ (φ a)) := rfl
+  have h₃ : φ a = (toOneByOne (Fin 1) ℂ A₂).symm (toOneByOne (Fin 1) ℂ A₂ (φ a)) := rfl
   rw [h₃]
-  exact map_nonneg (toOneByOne ℂ A₂).symm h₂
+  exact map_nonneg (toOneByOne (Fin 1) ℂ A₂).symm h₂
 
 instance [CompletelyPositiveMapClass F A₁ A₂] : OrderHomClass F A₁ A₂ :=
   .of_map_cstarMatrix_nonneg CompletelyPositiveMapClass.map_cstarMatrix_nonneg'
