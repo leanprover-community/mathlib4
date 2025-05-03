@@ -464,14 +464,14 @@ theorem closure_addSubmonoid_closure {s : Set R} :
 of `s`, and is preserved under addition and multiplication, then `p` holds for all elements
 of the closure of `s`. -/
 @[elab_as_elim]
-theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
-    (mem : ∀ (x) (hx : x ∈ s), p x (subset_closure hx))
-    (zero : p 0 (zero_mem _)) (one : p 1 (one_mem _))
-    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (hx : x ∈ closure s)  : p x hx :=
+theorem closure_induction {s : Set R} {motive : (x : R) → x ∈ closure s → Prop}
+    (mem : ∀ (x) (hx : x ∈ s), motive x (subset_closure hx))
+    (zero : motive 0 (zero_mem _)) (one : motive 1 (one_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem hx hy))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem hx hy))
+    {x} (hx : x ∈ closure s) : motive x hx :=
   let K : Subsemiring R :=
-    { carrier := { x | ∃ hx, p x hx }
+    { carrier := { x | ∃ hx, motive x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
       add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
       one_mem' := ⟨_, one⟩

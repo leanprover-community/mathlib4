@@ -173,15 +173,15 @@ theorem wRec_eq {α : TypeVec n} {C : Type*}
   congr
 
 /-- Induction principle for `W` -/
-theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
-    (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
-        (∀ i, C (f i)) → C (P.wMk a f' f)) :
-    ∀ x, C x := by
+theorem w_ind {α : TypeVec n} {motive : P.W α → Prop}
+    (wMk : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
+        (∀ i, motive (f i)) → motive (P.wMk a f' f)) :
+    ∀ x, motive x := by
   intro x; obtain ⟨a, f⟩ := x
-  apply @wp_ind n P α fun a f => C ⟨a, f⟩
+  apply @wp_ind n P α fun a f => motive ⟨a, f⟩
   intro a f f' ih'
-  dsimp [wMk] at ih
-  let ih'' := ih a (P.wPathDestLeft f') fun i => ⟨f i, P.wPathDestRight f' i⟩
+  dsimp [MvPFunctor.wMk] at wMk
+  let ih'' := wMk a (P.wPathDestLeft f') fun i => ⟨f i, P.wPathDestRight f' i⟩
   dsimp at ih''; rw [wPathCasesOn_eta] at ih''
   apply ih''
   apply ih'

@@ -259,13 +259,19 @@ protected theorem inductionOn' {p : FreeMonoid α → Prop} (a : FreeMonoid α)
 
 end induction_principles
 
+/--
+A version of `List.casesOn` for `FreeAddMonoid` using `0` and
+`FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`.
+-/
+def _root_.FreeAddMonoid.casesOn {motive : FreeAddMonoid α → Sort*} (xs : FreeAddMonoid α)
+    (zero : motive 0) (of_add : ∀ x xs, motive (FreeAddMonoid.of x + xs)) : motive xs :=
+  List.casesOn xs zero of_add
+
 /-- A version of `List.cases_on` for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of
 `[]` and `x :: xs`. -/
-@[to_additive (attr := elab_as_elim, cases_eliminator)
-  "A version of `List.casesOn` for `FreeAddMonoid` using `0` and
-  `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
-def casesOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
-    (ih : ∀ x xs, C (of x * xs)) : C xs := List.casesOn xs h0 ih
+@[to_additive existing (attr := elab_as_elim, cases_eliminator)]
+def casesOn {motive : FreeMonoid α → Sort*} (xs : FreeMonoid α) (one : motive 1)
+    (of_mul : ∀ x xs, motive (of x * xs)) : motive xs := List.casesOn xs one of_mul
 
 @[to_additive (attr := simp)]
 theorem casesOn_one {C : FreeMonoid α → Sort*} (h0 : C 1) (ih : ∀ x xs, C (of x * xs)) :

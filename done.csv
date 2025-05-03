@@ -18,3 +18,8 @@ CategoryTheory.Quotient.induction,Mathlib.CategoryTheory.Quotient
 Quot.recOnSubsingleton₂,Mathlib.Data.Quot
 Sym2.recOnSubsingleton,Mathlib.Data.Sym.Sym2
 Monoid.Coprod.induction_on',Mathlib.GroupTheory.Coprod.Basic
+MeasureTheory.SimpleFunc.induction,Mathlib.MeasureTheory.Function.SimpleFunc
+FreeMonoid.casesOn,Mathlib.Algebra.FreeMonoid.Basic
+MvPFunctor.w_ind,Mathlib.Data.PFunctor.Multivariate.W
+FinEnum.recEmptyOption,Mathlib.Data.FinEnum.Option
+Subsemiring.closure_induction,Mathlib.Algebra.Ring.Subsemiring.Basic

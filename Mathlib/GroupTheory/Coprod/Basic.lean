@@ -187,7 +187,6 @@ theorem mk_of_inl (x : M) : (mk (of (.inl x)) : M ∗ N) = inl x := rfl
 @[to_additive (attr := simp)]
 theorem mk_of_inr (x : N) : (mk (of (.inr x)) : M ∗ N) = inr x := rfl
 
-@[elab_as_elim]
 theorem _root_.AddMonoid.Coprod.induction_on'
     {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     {motive : AddMonoid.Coprod M N → Prop} (m : AddMonoid.Coprod M N)
@@ -202,7 +201,7 @@ theorem _root_.AddMonoid.Coprod.induction_on'
     | inl m => simpa using inl_add m _ ih
     | inr n => simpa using inr_add n _ ih
 
-@[to_additive existing, elab_as_elim]
+@[to_additive existing (attr := elab_as_elim)]
 theorem induction_on' {motive : M ∗ N → Prop} (m : M ∗ N)
     (one : motive 1)
     (inl_mul : ∀ m x, motive x → motive (inl m * x))
