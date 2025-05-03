@@ -218,9 +218,25 @@ lemma zpow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) :
     MeromorphicAt (fun z ↦ (f z) ^ n) x :=
   hf.zpow n
 
+/-- If a function is meromorphic at a point, then it is continuous at nearby points. -/
+theorem eventually_continuousAt {f : 𝕜 → E} {x : 𝕜}
+    (h : MeromorphicAt f x) : ∀ᶠ y in 𝓝[≠] x, ContinuousAt f y := by
+  obtain ⟨n, h⟩ := h
+  have : ∀ᶠ y in 𝓝[≠] x, ContinuousAt (fun z ↦ (z - x) ^ n • f z) y :=
+    nhdsWithin_le_nhds h.eventually_continuousAt
+  filter_upwards [this, self_mem_nhdsWithin] with y hy h'y
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at h'y
+  have : ContinuousAt (fun z ↦ ((z - x) ^ n)⁻¹) y :=
+    ContinuousAt.inv₀ (by fun_prop) (by simp [sub_eq_zero, h'y])
+  apply (this.smul hy).congr
+  filter_upwards [eventually_ne_nhds h'y] with z hz
+  simp [smul_smul, hz, sub_eq_zero]
+
+/-- In a complete space, a function which is meromorphic at a point is analytic at all nearby
+points. The completeness assumption can be dispensed with if one assumes that `f` is meromorphic
+on a set around `x`, see `MeromorphicOn.eventually_analyticAt`. -/
 theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicAt f x) : ∀ᶠ y in 𝓝[≠] x, AnalyticAt 𝕜 f y := by
-  rw [MeromorphicAt] at h
   obtain ⟨n, h⟩ := h
   apply AnalyticAt.eventually_analyticAt at h
   refine (h.filter_mono ?_).mp ?_
@@ -259,23 +275,45 @@ variable {s t : 𝕜 → 𝕜} {f g : 𝕜 → E} {U : Set 𝕜}
   (hs : MeromorphicOn s U) (ht : MeromorphicOn t U)
   (hf : MeromorphicOn f U) (hg : MeromorphicOn g U)
 
+/--
+If `f` is meromorphic on `U`, if `g` agrees with `f` on a codiscrete subset of `U` and outside of
+`U`, then `g` is also meromorphic on `U`.
+-/
+theorem congr_codiscreteWithin_of_eqOn_compl (hf : MeromorphicOn f U)
+    (h₁ : f =ᶠ[codiscreteWithin U] g) (h₂ : Set.EqOn f g Uᶜ) :
+    MeromorphicOn g U := by
+  intro x hx
+  apply (hf x hx).congr
+  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
+    disjoint_principal_right] at h₁
+  filter_upwards [h₁ x hx] with a ha
+  simp at ha
+  tauto
+
+/--
+If `f` is meromorphic on an open set `U`, if `g` agrees with `f` on a codiscrete subset of `U`, then
+`g` is also meromorphic on `U`.
+-/
+theorem congr_codiscreteWithin (hf : MeromorphicOn f U) (h₁ : f =ᶠ[codiscreteWithin U] g)
+    (h₂ : IsOpen U) :
+    MeromorphicOn g U := by
+  intro x hx
+  apply (hf x hx).congr
+  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
+    disjoint_principal_right] at h₁
+  have : U ∈ 𝓝[≠] x := by
+    apply mem_nhdsWithin.mpr
+    use U, h₂, hx, Set.inter_subset_left
+  filter_upwards [this, h₁ x hx] with a h₁a h₂a
+  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, Decidable.not_not] at h₂a
+  tauto
+
 lemma id {U : Set 𝕜} : MeromorphicOn id U := fun x _ ↦ .id x
 
 lemma const (e : E) {U : Set 𝕜} : MeromorphicOn (fun _ ↦ e) U :=
   fun x _ ↦ .const e x
 
 section arithmetic
-
-include hf in
-/-- Meromorphic functions on `U` are analytic on `U`, outside of a discrete subset. -/
-theorem analyticAt_mem_codiscreteWithin [CompleteSpace E] :
-    { x | AnalyticAt 𝕜 f x } ∈ Filter.codiscreteWithin U := by
-  rw [mem_codiscreteWithin]
-  intro x hx
-  rw [Filter.disjoint_principal_right, ← Filter.eventually_mem_set]
-  apply (hf x hx).eventually_analyticAt.mono
-  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, not_not]
-  tauto
 
 include hf in
 lemma mono_set {V : Set 𝕜} (hv : V ⊆ U) : MeromorphicOn f V := fun x hx ↦ hf x (hv hx)
