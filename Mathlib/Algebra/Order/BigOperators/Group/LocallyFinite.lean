@@ -3,8 +3,9 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!
@@ -46,7 +47,7 @@ variable [AddMonoidWithOne α] [SuccAddOrder α]
 theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → M) :
     ∏ k ∈ Ico a b, f k = f a * ∏ k ∈ Ico (a + 1) b, f k := by
   have ha : a ∉ Ico (a + 1) b := by simp
-  rw [← prod_insert ha, Nat.Ico_insert_succ_left hab]
+  rw [← prod_insert ha, Finset.insert_Ico_add_one_left_eq_Ico hab]
 
 end LocallyFiniteOrder
 
@@ -85,19 +86,17 @@ section LocallyFiniteOrder
 variable [LocallyFiniteOrder α] [AddMonoidWithOne α] [SuccAddOrder α] [NoMaxOrder α]
 
 lemma add_sum_Ico_eq_sum_Ico_add_one {M : Type*} [AddCommMonoid M] (hab : a ≤ b) (f : α → M) :
-    (∑ x ∈ Ico a b, f x) + f b = ∑ x ∈ Ico a (b + 1), f x := by
-  rw [Ico_add_one_right_eq_Icc a b]
-  rw [Nat.Ico_succ_right_eq_insert_Ico hab, prod_insert right_not_mem_Ico, mul_comm]
+    ∑ x ∈ Ico a b, f x + f b = ∑ x ∈ Ico a (b + 1), f x := by
+  rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, sum_insert right_not_mem_Ico, add_comm]
 
-@[to_additive existing]
+@[to_additive existing add_sum_Ico_eq_sum_Ico_add_one]
 lemma mul_prod_Ico_eq_prod_Ico_add_one (hab : a ≤ b) (f : α → M) :
     (∏ x ∈ Ico a b, f x) * f b = ∏ x ∈ Ico a (b + 1), f x := by
-  rw [Ico_add_one_right_eq_Icc (α := α) a b]
-  rw [Nat.Ico_succ_right_eq_insert_Ico hab, prod_insert right_not_mem_Ico, mul_comm]
+  rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, prod_insert right_not_mem_Ico, mul_comm]
 
 end LocallyFiniteOrder
 
-variable [Fintype α] [LinearOrder α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
+variable [Fintype α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 
 @[to_additive]
 lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
