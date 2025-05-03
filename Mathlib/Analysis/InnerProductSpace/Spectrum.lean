@@ -40,7 +40,7 @@ Letting `T` be a self-adjoint operator on a finite-dimensional inner product spa
   eigenvalues in decreasing (but not increasing) order since they converge to zero. (iii) This
   simplifies several theorem statements. For example the Schur-Horn theorem states that the diagonal
   of the matrix representation of a selfadjoint linear map is majorized by the eigenvalue sequence
-  listed in decreasing order).
+  listed in decreasing order.
 
 These are forms of the *diagonalization theorem* for self-adjoint operators on finite-dimensional
 inner product spaces.
