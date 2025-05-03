@@ -828,7 +828,7 @@ theorem Finset.emultiplicity_prod {β : Type*} {p : α} (hp : Prime p) (s : Fins
   | empty =>
     simp only [Finset.sum_empty, Finset.prod_empty]
     exact emultiplicity_of_one_right hp.not_unit
-  | insert has ih => simpa [has, ← ih] using emultiplicity_mul hp
+  | insert a s has ih => simpa [has, ← ih] using emultiplicity_mul hp
 
 theorem emultiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
     emultiplicity p (a ^ k) = k * emultiplicity p a := by
