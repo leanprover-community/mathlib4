@@ -41,13 +41,37 @@ lemma prod_Ico_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ico a b, f x) * f b = 
 lemma mul_prod_Ioc_eq_prod_Icc (h : a ≤ b) : f a * ∏ x ∈ Ioc a b, f x = ∏ x ∈ Icc a b, f x := by
   rw [Icc_eq_cons_Ioc h, prod_cons]
 
-@[deprecated (since := "2025-05-03")] alias left_mul_prod_Ioo := mul_prod_Ioc_eq_prod_Icc
+@[deprecated (since := "2025-05-03")] alias left_mul_prod_Ioc := mul_prod_Ioc_eq_prod_Icc
 
 @[to_additive]
 lemma prod_Ioc_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ioc a b, f x) * f a = ∏ x ∈ Icc a b, f x := by
   rw [mul_comm, mul_prod_Ioc_eq_prod_Icc h]
 
-@[deprecated (since := "2025-05-03")] alias prod_Ioo_mul_left := prod_Ioc_mul_eq_prod_Icc
+@[deprecated (since := "2025-05-03")] alias prod_Ioc_mul_left := prod_Ioc_mul_eq_prod_Icc
+
+@[to_additive]
+lemma mul_prod_Ioo_eq_prod_Ico (h : a < b) : f a * ∏ x ∈ Ioo a b, f x = ∏ x ∈ Ico a b, f x := by
+  rw [Ico_eq_cons_Ioo h, prod_cons]
+
+@[deprecated (since := "2025-05-03")] alias left_mul_prod_Ioo := mul_prod_Ioo_eq_prod_Ico
+
+@[to_additive]
+lemma prod_Ioo_mul_eq_prod_Ico (h : a < b) : (∏ x ∈ Ioo a b, f x) * f a = ∏ x ∈ Ico a b, f x := by
+  rw [mul_comm, mul_prod_Ioo_eq_prod_Ico h]
+
+@[deprecated (since := "2025-05-03")] alias prod_Ioo_mul_left := prod_Ioo_mul_eq_prod_Ico
+
+@[to_additive]
+lemma mul_prod_Ioo_eq_prod_Ioc (h : a < b) : f b * ∏ x ∈ Ioo a b, f x = ∏ x ∈ Ioc a b, f x := by
+  rw [Ioc_eq_cons_Ioo h, prod_cons]
+
+@[deprecated (since := "2025-05-03")] alias right_mul_prod_Ioo := mul_prod_Ioo_eq_prod_Ioc
+
+@[to_additive]
+lemma prod_Ioo_mul_eq_prod_Ioc (h : a < b) : (∏ x ∈ Ioo a b, f x) * f b = ∏ x ∈ Ioc a b, f x := by
+  rw [mul_comm, mul_prod_Ioo_eq_prod_Ioc h]
+
+@[deprecated (since := "2025-05-03")] alias prod_Ioo_mul_right := prod_Ioo_mul_eq_prod_Ioc
 
 variable [AddMonoidWithOne α] [SuccAddOrder α]
 
@@ -56,8 +80,6 @@ theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → M) :
     ∏ k ∈ Ico a b, f k = f a * ∏ k ∈ Ico (a + 1) b, f k := by
   have ha : a ∉ Ico (a + 1) b := by simp
   rw [← prod_insert ha, Finset.insert_Ico_add_one_left_eq_Ico hab]
-
-@[deprecated (since := "2025-05-03")] alias prod_Ioo_mul_right := prod_eq_prod_Ico_succ_bot
 
 end LocallyFiniteOrder
 
@@ -103,12 +125,12 @@ variable [LinearOrder α]
 section LocallyFiniteOrder
 variable [LocallyFiniteOrder α] [AddMonoidWithOne α] [SuccAddOrder α] [NoMaxOrder α]
 
-lemma add_sum_Ico_eq_sum_Ico_add_one {M : Type*} [AddCommMonoid M] (hab : a ≤ b) (f : α → M) :
+lemma sum_Ico_add_eq_sum_Ico_add_one {M : Type*} [AddCommMonoid M] (hab : a ≤ b) (f : α → M) :
     ∑ x ∈ Ico a b, f x + f b = ∑ x ∈ Ico a (b + 1), f x := by
   rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, sum_insert right_not_mem_Ico, add_comm]
 
-@[to_additive existing add_sum_Ico_eq_sum_Ico_add_one]
-lemma mul_prod_Ico_eq_prod_Ico_add_one (hab : a ≤ b) (f : α → M) :
+@[to_additive existing sum_Ico_add_eq_sum_Ico_add_one]
+lemma prod_Ico_mul_eq_prod_Ico_add_one (hab : a ≤ b) (f : α → M) :
     (∏ x ∈ Ico a b, f x) * f b = ∏ x ∈ Ico a (b + 1), f x := by
   rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, prod_insert right_not_mem_Ico, mul_comm]
 
