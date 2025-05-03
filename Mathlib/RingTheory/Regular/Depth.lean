@@ -370,6 +370,8 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
 
 section depth
 
+instance [IsNoetherianRing R] (N M : ModuleCat.{v} R) (i : ℕ) : Module.Finite R (Ext N M i) := sorry
+
 omit [UnivLE.{v, w}]
 
 noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
@@ -623,10 +625,19 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       have zero : IsZero
         (AddCommGrp.of (Ext.{max u v} (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
         @AddCommGrp.isZero_of_subsingleton _ this
-      #check ShortComplex.Exact.epi_f (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i)) (zero.eq_zero_of_tgt _)
+      have epi := ShortComplex.Exact.epi_f
+        (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
+        (zero.eq_zero_of_tgt _)
+      have epi' : Function.Surjective
+        (x • LinearMap.id (R := R) (M := (Ext.{max u v} (of R L) M i))) := by
+
+        sorry
       by_contra ntr
       rw [not_subsingleton_iff_nontrivial] at ntr
+      have : x ∈ (Module.annihilator R (Ext.{max u v} (of R L) M i)).jacobson :=
+        IsLocalRing.maximalIdeal_le_jacobson _ (Set.mem_of_mem_diff hx)
 
+      have := Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
       sorry
     · intro L1 _ _ _ L2 _ _ _ L3 _ _ _ f g inj surj exac ih1' ih3' L2ntr dim_eq
       rw [eqr _ dim_eq]
