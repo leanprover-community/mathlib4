@@ -3,7 +3,6 @@ Copyright (c) 2025 Jinzhao Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jinzhao Pan
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Order.RelSeries
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 import Mathlib.RingTheory.Noetherian.Basic
@@ -39,93 +38,45 @@ associated primes.
 
 universe u v
 
-variable {A : Type u} [CommRing A] [IsNoetherianRing A]
-  {M : Type v} [AddCommGroup M] [Module A M] [Module.Finite A M] {n : ℕ} {N : Submodule A M}
-
-section
-
-omit [Module.Finite A M]
+variable {A : Type u} [CommRing A] {M : Type v} [AddCommGroup M] [Module A M]
 
 /-- A `Prop` asserting that two submodules `N₁, N₂` satisfy `N₁ ≤ N₂` and
 `N₂ / N₁` is isomorphic to `A / p` for some prime ideal `p` of `A`. -/
 def Submodule.IsQuotientEquivQuotientPrime (N₁ N₂ : Submodule A M) :=
   N₁ ≤ N₂ ∧ ∃ (p : PrimeSpectrum A), Nonempty ((↥N₂ ⧸ N₁.submoduleOf N₂) ≃ₗ[A] A ⧸ p.1)
 
-private theorem aux (h : N ≠ ⊤) :
-    ∃ (p : PrimeSpectrum A) (f : A ⧸ p.1 →ₗ[A] M ⧸ N), Function.Injective f := by
-  have := Submodule.Quotient.nontrivial_of_lt_top _ h.lt_top
-  have h := (associatedPrimes.nonempty A (M ⧸ N)).some_mem
-  rw [AssociatePrimes.mem_iff, isAssociatedPrime_iff_exists_injective_linearMap] at h
-  exact ⟨⟨_, h.1⟩, h.2⟩
+open LinearMap in
+theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
+    N₁.IsQuotientEquivQuotientPrime N₂ ↔
+      ∃ x, Ideal.IsPrime (ker (toSpanSingleton A _ (N₁.mkQ x))) ∧ N₂ = N₁ ⊔ span A {x} := by
+  let f := mapQ (N₁.submoduleOf N₂) N₁ N₂.subtype le_rfl
+  have hf₁ : ker f = ⊥ := ker_liftQ_eq_bot _ _ _ (by simp [f, ker_comp, submoduleOf])
+  have hf₂ : range f = N₂.map N₁.mkQ := by simp [f, mapQ, range_liftQ, range_comp]
+  refine ⟨fun ⟨h, p, ⟨e⟩⟩ ↦ ?_, fun ⟨x, hx, hx'⟩ ↦ ⟨le_sup_left.trans_eq hx'.symm, ⟨_, hx⟩, ?_⟩⟩
+  · obtain ⟨⟨x, hx⟩, hx'⟩ := Submodule.mkQ_surjective _ (e.symm 1)
+    have hx'' : N₁.mkQ x = f (e.symm 1) := by simp [f, ← hx']
+    refine ⟨x, ?_, ?_⟩
+    · convert p.2
+      ext r
+      simp [hx'', ← map_smul, Algebra.smul_def, show f _ = 0 ↔ _ from congr(_ ∈ $hf₁),
+        Ideal.Quotient.eq_zero_iff_mem]
+    · refine le_antisymm ?_ (sup_le h ((span_singleton_le_iff_mem _ _).mpr hx))
+      have : (span A {x}).map N₁.mkQ = ((span A {1}).map e.symm).map f := by
+        simp only [map_span, Set.image_singleton, hx'']
+      rw [← N₁.ker_mkQ, sup_comm, ← comap_map_eq, ← map_le_iff_le_comap, this]
+      simp [← map_span, hf₂, Ideal.Quotient.span_singleton_one]
+  · have hxN₂ : x ∈ N₂ := (le_sup_right.trans_eq hx'.symm) (mem_span_singleton_self x)
+    refine ⟨.symm (.ofBijective (Submodule.mapQ _ _ (toSpanSingleton A _ ⟨x, hxN₂⟩) ?_) ⟨?_, ?_⟩)⟩
+    · simp [SetLike.le_def, ← Quotient.mk_smul, submoduleOf]
+    · refine ker_eq_bot.mp (ker_liftQ_eq_bot _ _ _ ?_)
+      simp [← Quotient.mk_smul, SetLike.le_def, submoduleOf]
+    · rw [mapQ, ← range_eq_top, range_liftQ, range_comp]
+      have := congr($(hx').submoduleOf N₂)
+      rw [submoduleOf_self, submoduleOf_sup_of_le (by aesop) (by aesop),
+        submoduleOf_span_singleton_of_mem _ hxN₂] at this
+      simpa [← span_singleton_eq_range, LinearMap.range_toSpanSingleton] using this.symm
 
-private noncomputable def auxP (h : N ≠ ⊤) : PrimeSpectrum A := (aux h).choose
-
-private noncomputable def auxLinearMap (h : N ≠ ⊤) :
-    A ⧸ (auxP h).1 →ₗ[A] M ⧸ N := (aux h).choose_spec.choose
-
-private theorem auxLinearMap_injective (h : N ≠ ⊤) : Function.Injective (auxLinearMap h) :=
-  (aux h).choose_spec.choose_spec
-
-private noncomputable def auxSeq
-    (A : Type u) [CommRing A] [IsNoetherianRing A]
-    (M : Type v) [AddCommGroup M] [Module A M] : ℕ → Submodule A M
-  | 0 => ⊥
-  | n + 1 =>
-    open scoped Classical in
-    if h : auxSeq A M n = ⊤ then
-      ⊤
-    else
-      (LinearMap.range (auxLinearMap h)).comap (auxSeq A M n).mkQ
-
-variable (A M) in
-private theorem auxSeq_zero : auxSeq A M 0 = ⊥ := rfl
-
-private theorem auxSeq_succ_of_eq_top (h : auxSeq A M n = ⊤) : auxSeq A M (n + 1) = ⊤ := by
-  simp only [auxSeq, dif_pos h]
-
-private theorem auxSeq_succ_of_ne_top (h : auxSeq A M n ≠ ⊤) :
-    auxSeq A M (n + 1) = (LinearMap.range (auxLinearMap h)).comap (auxSeq A M n).mkQ := by
-  simp only [auxSeq, dif_neg h]
-
-private theorem lt_auxSeq_succ_of_ne_top (h : auxSeq A M n ≠ ⊤) :
-    auxSeq A M n < auxSeq A M (n + 1) := by
-  rw [auxSeq_succ_of_ne_top h]
-  nth_rw 1 [← (auxSeq A M n).ker_mkQ]
-  rw [LinearMap.ker, Submodule.comap_lt_comap_iff_of_surjective (auxSeq A M n).mkQ_surjective,
-    bot_lt_iff_ne_bot]
-  by_contra! H
-  rw [LinearMap.range_eq_bot] at H
-  have : Subsingleton (A ⧸ (auxP h).1) := subsingleton_iff.2 fun x y ↦
-    auxLinearMap_injective h (by simp [H])
-  exact false_of_nontrivial_of_subsingleton (A ⧸ (auxP h).1)
-
-variable (A M) in
-private theorem monotone_auxSeq : Monotone (auxSeq A M) := by
-  refine monotone_nat_of_le_succ fun n ↦ ?_
-  by_cases h : auxSeq A M n = ⊤
-  · simp [auxSeq_succ_of_eq_top h]
-  exact (lt_auxSeq_succ_of_ne_top h).le
-
-private theorem auxSeq_eq_auxSeq_succ_iff : auxSeq A M n = auxSeq A M (n + 1) ↔ auxSeq A M n = ⊤ :=
-  ⟨not_imp_not.1 fun h ↦ (lt_auxSeq_succ_of_ne_top h).ne,
-    fun h ↦ h.trans (auxSeq_succ_of_eq_top h).symm⟩
-
-private theorem isQuotientEquivQuotientPrime_auxSeq_of_ne_top (h : auxSeq A M n ≠ ⊤) :
-    (auxSeq A M n).IsQuotientEquivQuotientPrime (auxSeq A M (n + 1)) := by
-  rw [auxSeq_succ_of_ne_top h]
-  have hle : auxSeq A M n ≤ (LinearMap.range (auxLinearMap h)).comap (auxSeq A M n).mkQ := by
-    nth_rw 1 [← (auxSeq A M n).ker_mkQ]
-    exact LinearMap.ker_le_comap _
-  refine ⟨hle, auxP h, ⟨?_ ≪≫ₗ (LinearEquiv.ofInjective _ (auxLinearMap_injective h)).symm⟩⟩
-  refine (Submodule.quotEquivOfEq _ _ ?_) ≪≫ₗ
-    ((LinearMap.range (auxLinearMap h)).comapRestrict (auxSeq A M n).mkQ
-      |>.quotKerEquivOfSurjective ((LinearMap.range (auxLinearMap h))
-        |>.comapRestrict_surjective_of_surjective _ (auxSeq A M n).mkQ_surjective))
-  simp [Submodule.submoduleOf, Submodule.comapRestrict, LinearMap.ker_restrict, Submodule.ker_mkQ]
-
-end
-
-variable (A M)
+variable (A M) [IsNoetherianRing A] [Module.Finite A M]
 
 /-- If `A` is a Noetherian ring and `M` is a finitely generated `A`-module, then there exists
 a chain of submodules `0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, such that for each `0 ≤ i < n`,
@@ -134,13 +85,14 @@ a chain of submodules `0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, 
 theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
     ∃ s : RelSeries (Submodule.IsQuotientEquivQuotientPrime (A := A) (M := M)),
       s.head = ⊥ ∧ s.last = ⊤ := by
-  have H : ∃ n : ℕ, auxSeq A M n = ⊤ := by
-    obtain ⟨n, h⟩ := monotone_stabilizes_iff_noetherian.2 (inferInstanceAs (IsNoetherian A M))
-      ⟨_, monotone_auxSeq A M⟩
-    exact ⟨n, auxSeq_eq_auxSeq_succ_iff.1 (h (n + 1) n.lt_add_one.le)⟩
-  classical exact ⟨⟨Nat.find H, fun ⟨n, _⟩ ↦ auxSeq A M n,
-    fun ⟨n, h⟩ ↦ isQuotientEquivQuotientPrime_auxSeq_of_ne_top (Nat.find_min H h)⟩,
-      auxSeq_zero A M, Nat.find_spec H⟩
+  refine WellFoundedGT.induction_top ⟨⊥, .singleton _ ⊥, rfl, rfl⟩ ?_
+  rintro N hN ⟨s, hs₁, hs₂⟩
+  have := Submodule.Quotient.nontrivial_of_lt_top _ hN.lt_top
+  obtain ⟨p, hp, x, rfl⟩ := associatedPrimes.nonempty A (M ⧸ N)
+  obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
+  have hxN : x ∉ N := fun h ↦ hp.ne_top (by rw [show N.mkQ x = 0 by simpa]; simp)
+  have := Submodule.isQuotientEquivQuotientPrime_iff.mpr ⟨x, hp, rfl⟩
+  refine ⟨_, by simpa [hs₂], s.snoc _ (hs₂ ▸ this), by simpa, rfl⟩
 
 /-- If a property on finitely generated modules over a Noetherian ring satisfies that:
 
