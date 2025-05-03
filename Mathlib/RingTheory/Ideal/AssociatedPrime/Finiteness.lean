@@ -36,24 +36,6 @@ associated primes.
 
 -/
 
-section Test
-
-@[elab_as_elim]
-lemma WellFoundedGT.induction_top {α : Type*} [Preorder α] [WellFoundedGT α] [OrderTop α]
-    {P : α → Prop} (hexists : ∃ M, P M) (hind : ∀ N ≠ ⊤, P N → ∃ M > N, P M) : P ⊤ := by
-  -- seems that `contrapose!` tactic is not imported in this file, so we have to do it manually
-  revert hexists; rw [← not_imp_not, not_exists]
-  intro hexists M
-  induction M using WellFoundedGT.induction with
-  | ind x IH =>
-    by_cases hx : x = ⊤
-    · exact hx ▸ hexists
-    · intro hx'
-      obtain ⟨M, hM, hM'⟩ := hind x hx hx'
-      exact IH _ hM hM'
-
-end Test
-
 universe u v
 
 variable {A : Type u} [CommRing A] {M : Type v} [AddCommGroup M] [Module A M]
