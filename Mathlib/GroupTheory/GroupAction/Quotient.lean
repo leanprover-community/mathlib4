@@ -392,7 +392,7 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     convert mem_orbit_self _
     rw [inv_smul_eq_iff, (exists_smul_eq α _ x).choose_spec]
   right_inv := fun g ↦ by
-    induction g using Quotient.inductionOn' with | _ g => ?_
+    induction g using Quotient.inductionOn' with | _ g
     simp only [Quotient.liftOn'_mk'', Quotient.liftOn'_mk, QuotientGroup.mk]
     rw [Quotient.eq'', leftRel_eq]
     simp only
