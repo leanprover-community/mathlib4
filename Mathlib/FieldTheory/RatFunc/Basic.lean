@@ -341,8 +341,8 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       Localization.mk_one, Localization.mk_eq_monoidOf_mk', Submonoid.LocalizationMap.mk'_self]
   map_mul' x y := by
     obtain ⟨x⟩ := x; obtain ⟨y⟩ := y
-    cases x using Localization.induction_on with | _ pq => ?_
-    cases y using Localization.induction_on with | _ p'q' => ?_
+    cases x using Localization.induction_on with | _ pq
+    cases y using Localization.induction_on with | _ p'q'
     obtain ⟨p, q⟩ := pq
     obtain ⟨p', q'⟩ := p'q'
     have hq : φ q ∈ S[X]⁰ := hφ q.prop
@@ -428,7 +428,7 @@ theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) 
     Function.Injective (liftMonoidWithZeroHom φ hφ') := by
   rintro ⟨x⟩ ⟨y⟩
   cases x using Localization.induction_on
-  cases y using Localization.induction_on with | _ a' => ?_
+  cases y using Localization.induction_on with | _ a'
   simp_rw [liftMonoidWithZeroHom_apply_ofFractionRing_mk]
   intro h
   congr 1
@@ -447,8 +447,8 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : RatFunc 
       · rw [Subsingleton.elim (x + y) y, Subsingleton.elim x 0, map_zero, zero_add]
       obtain ⟨x⟩ := x
       obtain ⟨y⟩ := y
-      cases x using Localization.induction_on with | _ pq => ?_
-      cases y using Localization.induction_on with | _ p'q' => ?_
+      cases x using Localization.induction_on with | _ pq
+      cases y using Localization.induction_on with | _ p'q'
       obtain ⟨p, q⟩ := pq
       obtain ⟨p', q'⟩ := p'q'
       rw [← ofFractionRing_add, Localization.add_mk]
@@ -503,7 +503,7 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
     map_zero' := by simp only [mk_one', RingHom.map_zero, ofFractionRing_zero] }
   smul := (· • ·)
   smul_def' c x := by
-    induction x using RatFunc.induction_on' with | _ p q hq => ?_
+    induction x using RatFunc.induction_on' with | _ p q hq
     rw [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, mk_one', ← mk_smul,
       mk_def_of_ne (c • p) hq, mk_def_of_ne p hq, ← ofFractionRing_mul,
       IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
@@ -871,7 +871,7 @@ theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q)
 @[simp]
 theorem num_div_denom (x : RatFunc K) : algebraMap _ _ (num x) / algebraMap _ _ (denom x) = x := by
   classical
-  induction x using RatFunc.induction_on with | _ p q hq => ?_
+  induction x using RatFunc.induction_on with | _ p q hq
   have q_div_ne_zero : q / gcd p q ≠ 0 := right_div_gcd_ne_zero hq
   rw [num_div p q, denom_div p hq, RingHom.map_mul, RingHom.map_mul, mul_div_mul_left,
     div_eq_div_iff, ← RingHom.map_mul, ← RingHom.map_mul, mul_comm _ q, ←
@@ -885,7 +885,7 @@ theorem num_div_denom (x : RatFunc K) : algebraMap _ _ (num x) / algebraMap _ _ 
 
 theorem isCoprime_num_denom (x : RatFunc K) : IsCoprime x.num x.denom := by
   classical
-  induction x using RatFunc.induction_on with | _ p q hq => ?_
+  induction x using RatFunc.induction_on with | _ p q hq
   rw [num_div, denom_div _ hq]
   exact (isCoprime_mul_unit_left
     ((leadingCoeff_ne_zero.2 <| right_div_gcd_ne_zero hq).isUnit.inv.map C) _ _).2

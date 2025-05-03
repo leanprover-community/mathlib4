@@ -31,7 +31,7 @@ variable {R : Type*} [Semiring R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommMonoid X] [Module R X]
 
 protected theorem zero_smul (x : X[S⁻¹]) : (0 : R[S⁻¹]) • x = 0 := by
-  cases x with | _ r s => ?_
+  cases x with | _ r s
   rw [OreLocalization.zero_def, oreDiv_smul_char 0 r 1 s 0 1 (by simp)]; simp
 
 protected theorem add_smul (y z : R[S⁻¹]) (x : X[S⁻¹]) :
@@ -116,7 +116,7 @@ instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] wh
   __ := inferInstanceAs (Module R₀ R[S⁻¹])
   algebraMap := numeratorRingHom.comp (algebraMap R₀ R)
   commutes' r x := by
-    cases x with | _ r₁ s₁ => ?_
+    cases x with | _ r₁ s₁
     dsimp
     rw [mul_div_one, oreDiv_mul_char _ _ _ _ (algebraMap R₀ R r) s₁ (Algebra.commutes _ _).symm,
       Algebra.commutes, mul_one]
@@ -259,7 +259,7 @@ protected theorem inv_def {r : R} {s : R⁰} :
   with_unfolding_all rfl
 
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
-  cases x with | _ r s => ?_
+  cases x with | _ r s
   rw [OreLocalization.inv_def, OreLocalization.one_def]
   have hr : r ≠ 0 := by
     rintro rfl

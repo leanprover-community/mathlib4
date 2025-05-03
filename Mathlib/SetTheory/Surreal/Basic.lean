@@ -397,7 +397,7 @@ theorem nat_toGame : ∀ n : ℕ, toGame n = n :=
 /-- A small family of surreals is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
     BddAbove (Set.range f) := by
-  cases f using Quotient.induction_on_pi with | _ f => ?_
+  cases f using Quotient.induction_on_pi with | _ f
   let g : ι → PGame.{u} := Subtype.val ∘ f
   have hg (i) : (g i).Numeric := Subtype.prop _
   conv in (⟦f _⟧) =>
@@ -418,7 +418,7 @@ lemma bddAbove_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddAbove s := by
 /-- A small family of surreals is bounded below. -/
 lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
     BddBelow (Set.range f) := by
-  cases f using Quotient.induction_on_pi with | _ f => ?_
+  cases f using Quotient.induction_on_pi with | _ f
   let g : ι → PGame.{u} := Subtype.val ∘ f
   have hg (i) : (g i).Numeric := Subtype.prop _
   conv in (⟦f _⟧) =>

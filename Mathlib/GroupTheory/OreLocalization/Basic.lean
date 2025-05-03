@@ -182,7 +182,7 @@ def lift₂Expand {C : Sort*} (P : X → S → X → S → C)
       have := hP r₁ 1 s₁ (by simp) r₂ t₂ s₂ ht₂
       simp [this])
     fun r₁ t₁ s₁ ht₁ => by
-    ext x; cases x with | _ r₂ s₂ => ?_
+    ext x; cases x with | _ r₂ s₂
     dsimp only
     rw [liftExpand_of, liftExpand_of, hP r₁ t₁ s₁ ht₁ r₂ 1 s₂ (by simp)]; simp
 
@@ -250,7 +250,7 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
 protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
   liftExpand smul'' fun r₁ r₂ s hs => by
     ext x
-    cases x with | _ x s₂ => ?_
+    cases x with | _ x s₂
     show OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
     rcases oreCondition r₁ s₂ with ⟨r₁', s₁', h₁⟩
     rw [smul'_char _ _ _ _ _ _ h₁]
@@ -346,7 +346,7 @@ protected theorem div_eq_one {s : S} : (s : R) /ₒ s = 1 :=
 
 @[to_additive]
 protected theorem one_smul (x : X[S⁻¹]) : (1 : R[S⁻¹]) • x = x := by
-  cases x with | _ r s => ?_
+  cases x with | _ r s
   simp [OreLocalization.one_def, oreDiv_smul_char 1 r 1 s 1 s (by simp)]
 
 @[to_additive]
@@ -355,7 +355,7 @@ protected theorem one_mul (x : R[S⁻¹]) : 1 * x = x :=
 
 @[to_additive]
 protected theorem mul_one (x : R[S⁻¹]) : x * 1 = x := by
-  cases x with | _ r s => ?_
+  cases x with | _ r s
   simp [OreLocalization.one_def, oreDiv_mul_char r (1 : R) s (1 : S) r 1 (by simp)]
 
 @[to_additive]
@@ -501,7 +501,7 @@ theorem universalMulHom_commutes {r : R} : universalMulHom f fS hf (numeratorHom
 @[to_additive "The universal morphism `universalAddHom` is unique."]
 theorem universalMulHom_unique (φ : R[S⁻¹] →* T) (huniv : ∀ r : R, φ (numeratorHom r) = f r) :
     φ = universalMulHom f fS hf := by
-  ext x; cases x with | _ r s => ?_
+  ext x; cases x with | _ r s
   rw [universalMulHom_apply, ← huniv r, numeratorHom_apply, ← one_mul (φ (r /ₒ s)), ←
     Units.val_one, ← inv_mul_cancel (fS s), Units.val_mul, mul_assoc, ← hf, ← huniv, ← φ.map_mul,
     numeratorHom_apply, OreLocalization.mul_cancel]

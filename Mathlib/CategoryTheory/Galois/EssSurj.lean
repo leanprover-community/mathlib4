@@ -152,7 +152,7 @@ private def coconeQuotientDiag :
     rw [← cancel_epi (u.inv), Iso.inv_hom_id_assoc]
     apply Action.hom_ext
     ext (x : Aut F ⧸ U.toSubgroup)
-    induction m, x using Quotient.inductionOn₂ with | _ σ μ => ?_
+    induction m, x using Quotient.inductionOn₂ with | _ σ μ
     suffices h : ⟦μ * σ⁻¹⟧ = ⟦μ⟧ by
       simp only [quotientToQuotientOfLE_hom_mk, quotientDiag_map,
         functorToAction_map_quotientToEndObjectHom V _ u]
