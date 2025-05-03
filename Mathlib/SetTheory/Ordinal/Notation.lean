@@ -989,7 +989,7 @@ theorem fundamentalSequenceProp_inr (o f) :
   Iff.rfl
 
 theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamentalSequence o) := by
-  induction o with | zero => exact rfl | oadd a m b iha ihb => ?_
+  induction o with | zero => exact rfl | oadd a m b iha ihb
   rw [fundamentalSequence]
   rcases e : b.fundamentalSequence with (⟨_ | b'⟩ | f) <;>
     simp only [FundamentalSequenceProp] <;>
