@@ -334,7 +334,7 @@ jobs:
 
       - name: "run style linters"
         run: |
-          lake exe lint-style
+          lake exe lint-style Mathlib Archive Counterexamples
 
       - name: Install bibtool
         run: |
