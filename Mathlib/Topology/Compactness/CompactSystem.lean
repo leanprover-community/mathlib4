@@ -218,7 +218,8 @@ lemma nonempty (k : ℕ) (hc : ∀ N, ⋂ k < N, ⋃₀ (L k : Set (Set α)) ≠
   simp only [Finset.not_nonempty_iff_eq_empty] at h
   apply hc
   apply iInter_eq_empty_iff.mpr fun x ↦ ⟨k, ?_⟩
-  simp only [lt_add_iff_pos_right, lt_one_iff, pos_of_gt, iInter_true]
+  -- simp only [Nat.lt_add_one, iInter_true, mem_sUnion, Finset.mem_coe, not_exists, not_and]
+  simp only [Nat.lt_add_one, iInter_true, Finset.mem_coe, not_exists, not_and]
   have hg : ⋃₀ (L k : Set (Set α)) = ∅ := by
     rw [h]
     simp only [Finset.coe_empty, sUnion_empty]
@@ -266,7 +267,7 @@ lemma get_element_succ' (n : ℕ)
       have h' := h i (le_trans hi (le_succ n))
       simp only [ne_eq, hi.ne, not_false_eq_true, Function.update_of_ne] at h'
       exact h'
-    · have h'' := h n (lt_add_one n)
+    · have h'' := h n (Nat.lt_add_one n)
       simp only [Function.update_self] at h''
       exact h''
     · intro i hi
@@ -292,7 +293,7 @@ lemma get_element_succ' (n : ℕ)
     intro k hk
     have hk' : 1 + k < b' K0Max + 1:= by
       rw [add_comm]
-      simp only [add_lt_add_iff_right]
+      simp only [Nat.add_lt_add_iff_right]
       apply lt_of_lt_of_le hk
       rw [hb'']
       apply hK0₂ i hi.1
@@ -330,7 +331,8 @@ lemma constantEventually' (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n 
     by_cases h' : k < n
     · rw [← hn h']
       exact (constantEventually L h n k h').symm
-    · have hkn' : k = n := by linarith
+    · have hkn' : k = n := by
+        exact Nat.eq_of_lt_succ_of_not_lt hkn h'
       rw [hkn']
 
 lemma constantEventually'' (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (m n k : ℕ)
@@ -350,7 +352,7 @@ noncomputable def mem_of_union (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅
 namespace mem_of_union
 
 lemma prop₀ (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n : ℕ) : mem_of_union L h n ∈ L n := by
-  exact (mem_of_union_aux L h (n + 1)).2.1 n (lt_add_one n)
+  exact (mem_of_union_aux L h (n + 1)).2.1 n (Nat.lt_add_one n)
 
 lemma isSubset (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n N : ℕ) :
     (⋂ j < n, mem_of_union L h j) ∩ ⋂ (k < N), (⋃₀ L (n + k)) ⊆
