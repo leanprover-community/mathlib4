@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # Topology on `Hom(R, S)`
@@ -172,5 +173,15 @@ lemma isEmbedding_pushout [TopologicalSpace R] [IsTopologicalRing R]
   have (s) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=
     congr($(pushout.condition (f := φ)).hom s).symm
   ext f s <;> simp [fA, fB, fAB, PA, PB, PAB, F, this]
+
+variable (S) in
+def topFunctor [TopologicalSpace S] : CommRingCatᵒᵖ ⥤ TopCat where
+  obj R := TopCat.of (R.unop ⟶ S)
+  map f := TopCat.ofHom {
+      toFun := (f.unop ≫ ·)
+      continuous_toFun := continuous_precomp f.unop
+    }
+
+lemma topFunctor_forget [TopologicalSpace S] : topFunctor S ⋙ forget TopCat = yoneda.obj S := rfl
 
 end CommRingCat.HomTopology
