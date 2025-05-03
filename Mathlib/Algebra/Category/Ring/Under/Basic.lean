@@ -90,6 +90,25 @@ lemma toUnder_comp {A B C : Type u} [CommRing A] [CommRing B] [CommRing C]
     (g.comp f).toUnder = f.toUnder ≫ g.toUnder :=
   rfl
 
+lemma toUnder_eq_core {A B : Type u} [CommRing A] [CommRing B]
+  [instA : Algebra R A] [instB : Algebra R B] [instA' : Algebra R A] [instB' : Algebra R B]
+  (eqA : instA = instA') (eqB : instB = instB') (f : @AlgHom R A B _ _ _ instA instB) :
+  @OneHom.toFun A B _ _ f = @OneHom.toFun A B _ _ ((by
+      rw [← eqA, ← eqB]
+      exact f
+  ) : @AlgHom R A B _ _ _ instA' instB') := by
+    subst eqA eqB
+    rfl
+
+@[simp]
+lemma toUnder_eq {A B : Type u} [CommRing A]  [CommRing B]
+  [instA : Algebra R A] [instB : Algebra R B] (f : A →ₐ[R] B) : CommRingCat.toAlgHom f.toUnder = (by
+      rw [CommRingCat.algebra_eq, CommRingCat.algebra_eq]
+      exact f
+    )
+    := ext <| congrFun <| toUnder_eq_core (instA := instA) (instB := instB)
+    (instA' := CommRingCat.algebra (R.mkUnder A)) (instB' := CommRingCat.algebra (R.mkUnder B))
+    (CommRingCat.algebra_eq A).symm (CommRingCat.algebra_eq B).symm f
 end AlgHom
 
 namespace AlgEquiv
