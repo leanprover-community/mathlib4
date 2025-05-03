@@ -156,17 +156,8 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
     rw [← hn3]
     exact Walk.three_le_chromaticNumber_of_odd_loop w hOdd'
 
-section components
-
-variable {α β : Type*} {G : SimpleGraph α}
-
-theorem colorable_iff_forall_connectedComponents {n : ℕ} :
-    G.Colorable n ↔ ∀ c : G.ConnectedComponent, (G.induce c).Colorable n :=
-  ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v, fun h h1 ↦ C.valid h h1⟩,
-     fun h ↦ ⟨G.homOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
-
 open Walk
-lemma two_colorable_iff_forall_loop_not_odd :
+lemma two_colorable_iff_forall_loop_not_odd {α : Type*} {G : SimpleGraph α} :
     G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), ¬ Odd w.length := by
   constructor <;> intro h
   · intro _ w ho
@@ -184,5 +175,4 @@ lemma two_colorable_iff_forall_loop_not_odd :
        (Nonempty.some (c.connected_induce_supp ⟨_, hv⟩ b)).length := by fin_omega
     exact (Nat.even_iff.mpr <| Fin.zero_eq_mk.mp (by norm_cast at this)).add_one
 
-end components
 end SimpleGraph
