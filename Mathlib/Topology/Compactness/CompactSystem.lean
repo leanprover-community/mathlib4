@@ -413,6 +413,7 @@ lemma prop₁N0 (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n : ℕ) :
 
 end mem_of_union
 
+/-- Finite unions of sets in a compact system. -/
 def union (p : Set α → Prop) : Set α → Prop :=
   (sUnion '' ({ L : Set (Set α) | L.Finite ∧ ∀ K ∈ L, p K}))
 
