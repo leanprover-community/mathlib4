@@ -172,7 +172,7 @@ lemma two_colorable_iff_forall_loop_not_odd {α : Type*} {G : SimpleGraph α} :
                  (c.connected_induce_supp ⟨_, hv⟩ b).some.reverse).map (Embedding.induce c).toHom
     rw [length_map, length_append, length_concat, length_reverse, add_right_comm]
     have : 0 = ((Nonempty.some (c.connected_induce_supp ⟨_, hv⟩ a)).length : Fin 2) +
-       (Nonempty.some (c.connected_induce_supp ⟨_, hv⟩ b)).length := by fin_omega
+        (Nonempty.some (c.connected_induce_supp ⟨_, hv⟩ b)).length := by fin_omega
     exact (Nat.even_iff.mpr <| Fin.zero_eq_mk.mp (by norm_cast at this)).add_one
 
 end SimpleGraph
