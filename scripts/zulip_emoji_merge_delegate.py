@@ -21,13 +21,14 @@ ZULIP_SITE = sys.argv[3]
 # - if a PR was delegated or sent to bors (via bors r+, bors r-, bors merge, bors delegate,
 #   bors d+ or bors d-) command was issued, it is 'ready-to-merge' or 'delegated'
 #   TODO clarify: what is the input on a bors d- or bors r- command? Also that?
-LABEL_STATUS = sys.argv[4]
+ACTION = sys.argv[4]
 # Name of the label that was applied or removed
 # (if applicable; is 'none' if a PR was closed, reopened or merged)
 LABEL_NAME = sys.argv[5]
 PR_NUMBER = sys.argv[6]
 
-print(f"LABEL: '{LABEL_STATUS}'")
+print(f"ACTION: '{ACTION}'")
+print(f"LABEL_NAME: '{LABEL_NAME}'")
 print(f"PR_NUMBER: '{PR_NUMBER}'")
 
 # Initialize Zulip client
@@ -114,11 +115,11 @@ for message in messages:
             })
 
         # The maintainer merge label is different from the others, as it is not mutually exclusive
-        # with them: just add or remove it manually.
+        # with them: just add or remove it manually and leave the other emojis alone.
         if LABEL_NAME == "maintainer-merge":
-            if LABEL_STATUS == "labeled":
+            if ACTION == "labeled":
                 add_reaction('maintainer-merge', 'hammer')
-            elif LABEL_STATUS == "unlabeled":
+            elif ACTION == "unlabeled":
                 remove_reaction('maintainer-merge', 'hammer')
             continue
 
@@ -139,17 +140,17 @@ for message in messages:
 
         # Apply the appropriate emoji reaction.
         print("Applying reactions, as appropriate.")
-        if 'ready-to-merge' == LABEL_STATUS:
+        if 'ready-to-merge' == ACTION:
             add_reaction('ready-to-merge', 'bors')
-        elif 'delegated' == LABEL_STATUS:
+        elif 'delegated' == ACTION:
             add_reaction('delegated', 'peace_sign')
-        elif LABEL_STATUS == 'labeled':
+        elif ACTION == 'labeled':
             if LABEL_NAME == 'awaiting-author':
                 add_reaction('awaiting-author', 'writing')
-        elif LABEL_STATUS == 'closed':
+        elif ACTION == 'closed':
             add_reaction('closed-pr', 'closed-pr')
-        elif LABEL_STATUS == 'unlabeled':
+        elif ACTION == 'unlabeled':
             print('awaiting-author removed')
             # The reaction was already removed.
-        elif LABEL_STATUS.startswith("[Merged by Bors]"):
+        elif ACTION.startswith("[Merged by Bors]"):
             add_reaction('[Merged by Bors]', 'merge')
