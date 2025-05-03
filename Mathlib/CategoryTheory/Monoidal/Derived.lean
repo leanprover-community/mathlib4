@@ -87,9 +87,17 @@ noncomputable def tensorUnitLeftCounit :
     L' ⋙ (bifunctor L W).obj ((L').obj (𝟙_ C)) ⟶ tensorLeft (𝟙_ C) ⋙ L' :=
   Functor.bifunctorCounit₁ (counit L W) (𝟙_ C)
 
+@[simp]
+lemma tensorUnitLeftCounit_app (X : C) :
+    (tensorUnitLeftCounit L W).app X = ((counit L W).app (𝟙_ C)).app X := rfl
+
 noncomputable def tensorUnitRightCounit :
     L' ⋙ (bifunctor L W).flip.obj ((L').obj (𝟙_ C)) ⟶ tensorRight (𝟙_ C) ⋙ L' :=
   Functor.bifunctorCounit₂ (counit L W) (𝟙_ C)
+
+@[simp]
+lemma tensorUnitRightCounit_app (X : C) :
+    (tensorUnitRightCounit L W).app X = ((counit L W).app X).app (𝟙_ C) := rfl
 
 instance : (bifunctor L W).IsLeftDerivedFunctor₂ (counit L W) W W :=
   inferInstanceAs (Functor.IsLeftDerivedFunctor₂ _ (Functor.leftDerivedCounit₂ _ _ _ _ _) _ _)

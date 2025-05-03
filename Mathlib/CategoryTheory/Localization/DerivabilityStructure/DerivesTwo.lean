@@ -81,27 +81,36 @@ namespace Derives₂
 
 variable {Φ₁ Φ₂ F} (h : Derives₂ Φ₁ Φ₂ F)
   [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure]
+  [W₁.ContainsIdentities] [W₂.ContainsIdentities]
 
-/-include h in
-lemma hasLeftDerivedFunctor₂ : F.HasLeftDerivedFunctor₂ W₁ W₂ := by
-  have : (Φ₁.prod Φ₂).IsLeftDerivabilityStructure := sorry
-  exact h.hasLeftDerivedFunctor-/
+include h in
+lemma hasLeftDerivedFunctor₂ : F.HasLeftDerivedFunctor₂ W₁ W₂ :=
+  Derives.hasLeftDerivedFunctor h
+
+include h in
+lemma isIso_of_isLeftDerivabilityStructure
+    {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} [L₁.IsLocalization W₁]
+    [L₂.IsLocalization W₂] {LF : D₁ ⥤ D₂ ⥤ H}
+    (α : (((whiskeringLeft₂ H).obj L₁).obj L₂).obj LF ⟶ F)
+    (X₁ : C₁₀) (X₂ : C₂₀) [LF.IsLeftDerivedFunctor₂ α W₁ W₂] :
+    IsIso ((α.app (Φ₁.functor.obj X₁)).app (Φ₂.functor.obj X₂)) :=
+  Derives.isIso_of_isLeftDerivabilityStructure h (Functor.whiskeringLeft₂Equiv α) ⟨X₁, X₂⟩
 
 end Derives₂
 
-/-variable {F} in
+variable {F} in
 lemma isLeftDerivedFunctor₂_of_isLeftDerivabilityStructure
     [W₁.ContainsIdentities] [W₂.ContainsIdentities]
+    [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure]
     {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} [L₁.IsLocalization W₁]
     [L₂.IsLocalization W₂] {LF : D₁ ⥤ D₂ ⥤ H}
     (α : (((whiskeringLeft₂ H).obj L₁).obj L₂).obj LF ⟶ F)
     (hα : ∀ (X₁₀ : C₁₀) (X₂₀ : C₂₀),
       IsIso ((α.app (Φ₁.functor.obj X₁₀)).app (Φ₂.functor.obj X₂₀))) :
     LF.IsLeftDerivedFunctor₂ α W₁ W₂ := by
-  have : (Φ₁.prod Φ₂).IsLeftDerivabilityStructure := sorry
   apply (Φ₁.prod Φ₂).isLeftDerivedFunctor_of_isLeftDerivabilityStructure
   rintro ⟨X₁, X₂⟩
-  apply hα-/
+  apply hα
 
 end LocalizerMorphism
 

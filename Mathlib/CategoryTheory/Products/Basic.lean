@@ -422,6 +422,7 @@ section Opposite
 
 open Opposite
 
+variable (D) in
 /-- The equivalence between the opposite of a product and the product of the opposites. -/
 @[simps!]
 def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
