@@ -562,7 +562,7 @@ theorem bind_decode_iff {f : α → β → Option σ} :
             snd).bind
         (Computable.comp hf fst).to₂.partrec₂)
       fun n => by
-        simp only [decode_prod_val, decode_nat, Option.map_some', PFun.coe_val, bind_eq_bind,
+        simp only [decode_prod_val, decode_nat, Option.map_some, PFun.coe_val, bind_eq_bind,
           bind_some, Part.map_bind, map_some]
         cases decode (α := α) n.unpair.1 <;> simp
         cases decode (α := β) n.unpair.2 <;> simp,
