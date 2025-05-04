@@ -38,16 +38,6 @@ instance hasEnoughRootsOfUnity (F : Type*) [Field F] [IsAlgClosed F] (n : ℕ) [
 
 end IsAlgClosed
 
-lemma IsCyclic.push_ofSurjective {G H : Type*} [Pow G ℤ] [Pow H ℤ] (h : IsCyclic G)
-    (f : G → H) (hf₁ : Function.Surjective f) (hf₂ : ∀ a : G, ∀ n : ℤ, f (a ^ n) = f a ^ n) :
-    IsCyclic H where
-  exists_zpow_surjective := by
-    obtain ⟨g₀, hg₀⟩ := h.exists_zpow_surjective
-    use f g₀
-    intro w
-    obtain ⟨z , hz⟩ := Function.Surjective.comp hf₁ hg₀ w
-    exact ⟨z, by rw [← hz, Function.comp_apply]; simp_all only⟩
-
 variable (n : ℕ) [NeZero n]
 
 /-- nth roots of unity of the complex numbers embeded into the Circle -/
