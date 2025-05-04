@@ -557,6 +557,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.Algebra.Homology.HomotopyCategory.Minus
+import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
 import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
