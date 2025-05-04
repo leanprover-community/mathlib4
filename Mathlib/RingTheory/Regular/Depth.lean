@@ -475,7 +475,7 @@ lemma moduleDepth_eq_of_iso_snd (N : ModuleCat.{v} R) {M M' : ModuleCat.{v} R} (
   exact forall₂_congr fun i _ ↦
     ((extFunctorObj N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr
 
---depth under exact seq
+--depth = 0 of Hom nontrivial
 
 lemma moduleDepth_ge_min_of_shortExact_fst
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
@@ -662,13 +662,18 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       have zero : IsZero
         (AddCommGrp.of (Ext.{max u v} (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
         @AddCommGrp.isZero_of_subsingleton _ this
-      have epi := ShortComplex.Exact.epi_f
-        (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
-        (zero.eq_zero_of_tgt _)
       have epi' : Function.Surjective
         (x • LinearMap.id (R := R) (M := (Ext.{max u v} (of R L) M i))) := by
-
-        sorry
+        convert (AddCommGrp.epi_iff_surjective _).mp <| ShortComplex.Exact.epi_f
+          (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
+          (zero.eq_zero_of_tgt _)
+        ext a
+        show x • a = Ext.bilinearCompOfLinear R _ _ _ _ _ _ (zero_add i)
+          ((Ext.homEquiv₀_linearHom R).symm
+          (ModuleCat.homLinearEquiv.symm (S := R) (x • LinearMap.id))) a
+        simp only [map_smul, smul_apply]
+        congr
+        exact (Ext.mk₀_id_comp a).symm
       have range : LinearMap.range (x • LinearMap.id) =
         x • (⊤ : Submodule R (Ext.{max u v} (of R L) M i)) := by
         ext y
