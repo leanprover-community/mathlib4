@@ -14,12 +14,6 @@ import Mathlib.Analysis.Complex.Circle
 We provide an instance for `HasEnoughRootsOfUnity F n` when `F` is an algebraically closed field
 and `n` is not divisible by the characteristic. In particular, when `F` has characteristic zero,
 this hold for all `n ≠ 0`.
-
-### TODO
-
-Add an instance `HasEnoughRootsOfUnity Circle n` for all `n ≠ 0`.
-This is probably easiest via setting up an isomorphism
-`rootsOfUnity n Circle ≃* rootsOfUnity n ℂ`.
 -/
 
 namespace IsAlgClosed
