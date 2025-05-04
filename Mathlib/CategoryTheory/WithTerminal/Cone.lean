@@ -99,7 +99,18 @@ there is an obvious equivalence between cones of these two functors.
 A cone of `K` is an object of `Over X`, so it has the form `t ⟶ X`.
 Equivalently, a cone of `WithTerminal K` is an object `t : C`,
 and we can recover the structure morphism as `π.app X : t ⟶ X`. -/
-@[simps!]
+@[simps!
+  functor_obj_pt
+  functor_map_hom
+  inverse_obj_pt_left
+  inverse_obj_pt_right_as
+  inverse_obj_pt_hom
+  inverse_obj_π_app_left
+  inverse_map_hom_left
+  unitIso_hom_app_hom_left
+  unitIso_inv_app_hom_left
+  counitIso_hom_app_hom
+  counitIso_inv_app_hom]
 def coneEquiv : Cone K ≌ Cone (liftFromOver.obj K) where
   functor := coneLift
   inverse := coneBack
@@ -108,11 +119,11 @@ def coneEquiv : Cone K ≌ Cone (liftFromOver.obj K) where
 
 @[simp]
 theorem coneEquiv_functor_obj_π_app_star : (coneEquiv.functor.obj t).π.app star = t.pt.hom :=
-  by simp
+  by aesop
 
 @[simp]
 theorem coneEquiv_functor_obj_π_app_of (Y : J): (coneEquiv.functor.obj t).π.app (of Y) =
-    (t.π.app Y).left := by simp
+    (t.π.app Y).left := by aesop
 
 /-- A cone `t` of `K : J ⥤ Over X` is a limit if and only if the corresponding cone
 `coneLift t` of `liftFromOver.obj K : WithTerminal K ⥤ C` is a limit. -/
@@ -198,7 +209,18 @@ there is an obvious equivalence between cocones of these two functors.
 A cocone of `K` is an object of `Under X`, so it has the form `X ⟶ t`.
 Equivalently, a cocone of `WithInitial K` is an object `t : C`,
 and we can recover the structure morphism as `ι.app X : X ⟶ t`. -/
-@[simps!]
+@[simps!
+  functor_obj_pt
+  functor_map_hom
+  inverse_obj_pt_right
+  inverse_obj_pt_left_as
+  inverse_obj_pt_hom
+  inverse_obj_ι_app_right
+  inverse_map_hom_right
+  unitIso_hom_app_hom_right
+  unitIso_inv_app_hom_right
+  counitIso_hom_app_hom
+  counitIso_inv_app_hom]
 def coconeEquiv : Cocone K ≌ Cocone (liftFromUnder.obj K) where
   functor := coconeLift
   inverse := coconeBack
@@ -207,11 +229,11 @@ def coconeEquiv : Cocone K ≌ Cocone (liftFromUnder.obj K) where
 
 @[simp]
 theorem coconeEquiv_functor_obj_ι_app_star : (coconeEquiv.functor.obj t).ι.app star = t.pt.hom := by
-  simp
+  aesop
 
 @[simp]
 theorem coconeEquiv_functor_obj_ι_app_of (Y : J): (coconeEquiv.functor.obj t).ι.app (of Y) =
-    (t.ι.app Y).right := by simp
+    (t.ι.app Y).right := by aesop
 
 /-- A cocone `t` of `K : J ⥤ Under X` is a colimit if and only if the corresponding cocone
 `coconeLift t` of `liftFromUnder.obj K : WithInitial K ⥤ C` is a colimit. -/
