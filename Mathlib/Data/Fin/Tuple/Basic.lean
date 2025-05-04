@@ -108,7 +108,7 @@ def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fi
 
 @[simp]
 theorem tail_cons : tail (cons x p) = p := by
-  simp (config := { unfoldPartialApp := true }) [tail, cons]
+  simp +unfoldPartialApp [tail, cons]
 
 @[simp]
 theorem cons_succ : cons x p i.succ = p i := by simp [cons]
@@ -231,7 +231,7 @@ theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ cons_injective_of_injective h.1 h.2⟩
   · rintro ⟨i, hi⟩
     replace h := @h i.succ 0
-    simp [hi, succ_ne_zero] at h
+    simp [hi] at h
   · simpa [Function.comp] using h.comp (Fin.succ_injective _)
 
 @[simp]
@@ -254,7 +254,7 @@ theorem exists_fin_succ_pi {P : (∀ i, α i) → Prop} : (∃ x, P x) ↔ ∃ a
 @[simp]
 theorem tail_update_zero : tail (update q 0 z) = tail q := by
   ext j
-  simp [tail, Fin.succ_ne_zero]
+  simp [tail]
 
 /-- Updating a nonzero element and taking the tail commute. -/
 @[simp]
@@ -545,42 +545,15 @@ theorem snoc_comp_cast_add {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a 
 @[simp]
 theorem snoc_update : snoc (update p i y) x = update (snoc p x) i.castSucc y := by
   ext j
-  by_cases h : j.val < n
-  · rw [snoc]
-    simp only [h]
-    simp only [dif_pos]
-    by_cases h' : j = castSucc i
-    · have C1 : α i.castSucc = α j := by rw [h']
-      have E1 : update (snoc p x) i.castSucc y j = _root_.cast C1 y := by
-        have : update (snoc p x) j (_root_.cast C1 y) j = _root_.cast C1 y := by simp
-        convert this
-        · exact h'.symm
-        · exact heq_of_cast_eq (congr_arg α (Eq.symm h')) rfl
-      have C2 : α i.castSucc = α (castLT j h).castSucc := by rw [castSucc_castLT, h']
-      have E2 : update p i y (castLT j h) = _root_.cast C2 y := by
-        have : update p (castLT j h) (_root_.cast C2 y) (castLT j h) = _root_.cast C2 y := by simp
-        convert this
-        · simp [h, h']
-        · exact heq_of_cast_eq C2 rfl
-      rw [E1, E2]
-      rfl
-    · have : ¬castLT j h = i := by
-        intro E
-        apply h'
-        rw [← E, castSucc_castLT]
-      simp [h', this, snoc, h]
-  · rw [eq_last_of_not_lt h]
-    simp [Fin.ne_of_gt i.castSucc_lt_last]
+  cases j using lastCases with
+  | cast j => rcases eq_or_ne j i with rfl | hne <;> simp [*]
+  | last => simp [Ne.symm]
 
 /-- Adding an element at the beginning of a tuple and then updating it amounts to adding it
 directly. -/
 theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
   ext j
-  by_cases h : j.val < n
-  · have : j ≠ last n := Fin.ne_of_lt h
-    simp [h, update_of_ne, this, snoc]
-  · rw [eq_last_of_not_lt h]
-    simp
+  cases j using lastCases <;> simp
 
 /-- As a binary function, `Fin.snoc` is injective. -/
 theorem snoc_injective2 : Function.Injective2 (@snoc n α) := fun x y xₙ yₙ h ↦
@@ -611,7 +584,7 @@ theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
 @[simp]
 theorem init_update_last : init (update q (last n) z) = init q := by
   ext j
-  simp [init, Fin.ne_of_lt, castSucc_lt_last]
+  simp [init, Fin.ne_of_lt]
 
 /-- Updating an element and taking the beginning commute. -/
 @[simp]

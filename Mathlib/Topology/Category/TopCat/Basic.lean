@@ -200,14 +200,14 @@ theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso 
 
 lemma isIso_of_bijective_of_isOpenMap {X Y : TopCat.{u}} (f : X ⟶ Y)
     (hfbij : Function.Bijective f) (hfcl : IsOpenMap f) : IsIso f :=
-  let e : X ≃ₜ Y := Homeomorph.homeomorphOfContinuousOpen
-    (Equiv.ofBijective f hfbij) f.hom.continuous hfcl
+  let e : X ≃ₜ Y :=
+    (Equiv.ofBijective f hfbij).toHomeomorphOfContinuousOpen f.hom.continuous hfcl
   inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
 
 lemma isIso_of_bijective_of_isClosedMap {X Y : TopCat.{u}} (f : X ⟶ Y)
     (hfbij : Function.Bijective f) (hfcl : IsClosedMap f) : IsIso f :=
-  let e : X ≃ₜ Y := Homeomorph.homeomorphOfContinuousClosed
-    (Equiv.ofBijective f hfbij) f.hom.continuous hfcl
+  let e : X ≃ₜ Y :=
+    (Equiv.ofBijective f hfbij).toHomeomorphOfContinuousClosed f.hom.continuous hfcl
   inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
 
 theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
