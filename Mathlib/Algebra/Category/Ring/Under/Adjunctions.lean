@@ -116,8 +116,41 @@ noncomputable def tensorProd_freeAbs : freeAbs R ⋙ R.tensorProd S ≅ freeAbs 
 noncomputable def Under_ℤ : Under (of (ULift.{u, 0} ℤ)) ≌ CommRingCat.{u} :=
   Under.equivalenceOfIsInitial isInitial
 
-def freeAbs_ℤ_tauto : free ⋙ Under_ℤ.inverse ≅ freeAbs (of (ULift.{u, 0} ℤ)) := by
-  sorry
+-- set_option maxHeartbeats 0 in
+noncomputable def freeAbs_ℤ_tauto : free ⋙ Under_ℤ.inverse ≅ freeAbs (of (ULift.{u, 0} ℤ)) where
+  hom := {
+    app σ := Under.homMk
+      (CommRingCat.ofHom <| MvPolynomial.map <| Int.castRingHom (ULift.{u, 0} ℤ))
+      (Limits.IsInitial.hom_ext isInitial _ _)
+    naturality {σ τ} f := by
+      apply Under.UnderMorphism.ext
+      exact hom_ext <| MvPolynomial.map_comp_rename (Int.castRingHom (ULift.{u, 0} ℤ)) f
+  }
+  inv := {
+    app σ := Under.homMk (CommRingCat.ofHom <| MvPolynomial.map RingHom.smulOneHom)
+      (Limits.IsInitial.hom_ext isInitial _ _)
+    naturality {σ τ} f := by
+      apply Under.UnderMorphism.ext
+      exact hom_ext <| MvPolynomial.map_comp_rename RingHom.smulOneHom f
+  }
+  hom_inv_id := by
+    ext σ (x : MvPolynomial σ ℤ)
+    show (MvPolynomial.map RingHom.smulOneHom)
+      ((MvPolynomial.map (Int.castRingHom (ULift.{u, 0} ℤ))) x) = x
+    rw [MvPolynomial.map_map _ (RingHom.smulOneHom (R := (ULift.{u, 0} ℤ)))]
+    have : RingHom.smulOneHom.comp (Int.castRingHom (ULift.{u, 0} ℤ)) = RingHom.id ℤ := by aesop_cat
+    rw [this]
+    exact MvPolynomial.map_id x
+  inv_hom_id := by
+    ext σ (x : MvPolynomial σ (ULift.{u, 0} ℤ))
+    show (MvPolynomial.map (Int.castRingHom (ULift.{u, 0} ℤ)))
+      ((MvPolynomial.map RingHom.smulOneHom) x) = x
+    rw [MvPolynomial.map_map]
+    have : (Int.castRingHom (ULift.{u, 0} ℤ)).comp (RingHom.smulOneHom (R := ULift.{u, 0} ℤ))
+        = RingHom.id (ULift.{u, 0} ℤ) := by aesop_cat
+    rw [this]
+    exact MvPolynomial.map_id x
+
 
 instance (R : CommRingCat.{u}) : Algebra (of (ULift.{u, 0} ℤ)) R
   := RingHom.toAlgebra RingHom.smulOneHom
