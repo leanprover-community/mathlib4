@@ -33,6 +33,8 @@ variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
   {f f₁ f₂ : ℂ → E} {c : ℂ} {R : ℝ} {a : 𝕜}
 
+namespace Real
+
 /-!
 # Definition
 -/
@@ -144,3 +146,5 @@ theorem circleAverage_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E}
     circleAverage (∑ i ∈ s, f i) c R = ∑ i ∈ s, circleAverage (f i) c R := by
   unfold circleAverage
   simp [← Finset.smul_sum, intervalIntegral.integral_finset_sum h]
+
+end Real
