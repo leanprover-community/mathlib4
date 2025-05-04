@@ -41,6 +41,15 @@ end IsAlgClosed
 
 variable (n : ℕ) [NeZero n]
 
+instance (e : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ): IsCyclic (rootsOfUnity n Circle) where
+  exists_zpow_surjective := by
+    obtain ⟨g₀, hg₀⟩ := (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc.exists_zpow_surjective
+    use e.symm g₀
+    intro w
+    obtain ⟨z , hz⟩ := Function.Surjective.comp e.symm.surjective hg₀ w
+    exact ⟨z, by rw [← hz, Function.comp_apply, map_zpow]⟩
+
+
 /-- nth roots of unity of the complex numbers embeded into the Circle -/
 noncomputable def rootsOfUnitytoCircle : (rootsOfUnity n ℂ) →* Circle where
   toFun := fun z => ⟨z.val.val,
@@ -60,6 +69,7 @@ noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUn
   left_inv _ := by aesop
   right_inv _ := by aesop
 
+/-
 instance : IsCyclic (rootsOfUnity n Circle) where
   exists_zpow_surjective := by
     obtain ⟨g₀, hg₀⟩ := (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc.exists_zpow_surjective
@@ -67,6 +77,7 @@ instance : IsCyclic (rootsOfUnity n Circle) where
     intro w
     obtain ⟨z , hz⟩ := Function.Surjective.comp (rootsOfUnityCircleEquiv n).symm.surjective hg₀ w
     exact ⟨z, by rw [← hz, Function.comp_apply, map_zpow]⟩
+-/
 
 lemma pullIsPrimitiveRoot {m : ℂ} (hm : IsPrimitiveRoot m n) :
     IsPrimitiveRoot ((rootsOfUnityCircleEquiv n).symm hm.toRootsOfUnity) n where
@@ -103,4 +114,6 @@ instance : HasEnoughRootsOfUnity Circle n where
     use ((rootsOfUnityCircleEquiv n).symm hm.toRootsOfUnity).val.val
     simp_all only [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.coe_submonoidClass_iff]
     exact pullIsPrimitiveRoot n hm
-  cyc := instIsCyclicSubtypeUnitsCircleMemSubgroupRootsOfUnity n
+  cyc :=
+    instIsCyclicSubtypeUnitsCircleMemSubgroupRootsOfUnityOfMulEquivComplex n
+      (rootsOfUnityCircleEquiv n)
