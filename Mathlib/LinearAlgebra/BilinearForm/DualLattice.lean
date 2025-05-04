@@ -51,12 +51,12 @@ lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
 This is bundled as a bilinear map in `BilinForm.dualSubmoduleToDual`. -/
 noncomputable
 def dualSubmoduleParing {N : Submodule R M} (x : B.dualSubmodule N) (y : N) : R :=
-  (x.prop y y.prop).choose
+  (Submodule.mem_one.mp <| x.prop y y.prop).choose
 
 @[simp]
 lemma dualSubmoduleParing_spec {N : Submodule R M} (x : B.dualSubmodule N) (y : N) :
     algebraMap R S (B.dualSubmoduleParing x y) = B x y :=
-  (x.prop y y.prop).choose_spec
+  (Submodule.mem_one.mp <| x.prop y y.prop).choose_spec
 
 /-- The natural paring of `B.dualSubmodule N` and `N`. -/
 -- TODO: Show that this is perfect when `N` is a lattice and `B` is nondegenerate.
@@ -66,12 +66,12 @@ def dualSubmoduleToDual [NoZeroSMulDivisors R S] (N : Submodule R M) :
     B.dualSubmodule N →ₗ[R] Module.Dual R N :=
   { toFun := fun x ↦
     { toFun := B.dualSubmoduleParing x
-      map_add' := fun x y ↦ NoZeroSMulDivisors.algebraMap_injective R S (by simp)
-      map_smul' := fun r m ↦ NoZeroSMulDivisors.algebraMap_injective R S
+      map_add' := fun x y ↦ FaithfulSMul.algebraMap_injective R S (by simp)
+      map_smul' := fun r m ↦ FaithfulSMul.algebraMap_injective R S
         (by simp [← Algebra.smul_def]) }
-    map_add' := fun x y ↦ LinearMap.ext fun z ↦ NoZeroSMulDivisors.algebraMap_injective R S
+    map_add' := fun x y ↦ LinearMap.ext fun z ↦ FaithfulSMul.algebraMap_injective R S
       (by simp)
-    map_smul' := fun r x ↦ LinearMap.ext fun y ↦ NoZeroSMulDivisors.algebraMap_injective R S
+    map_smul' := fun r x ↦ LinearMap.ext fun y ↦ FaithfulSMul.algebraMap_injective R S
       (by simp [← Algebra.smul_def]) }
 
 lemma dualSubmoduleToDual_injective (hB : B.Nondegenerate) [NoZeroSMulDivisors R S]
@@ -94,20 +94,20 @@ lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     rw [← (B.dualBasis hB b).sum_repr x]
     apply sum_mem
     rintro i -
-    obtain ⟨r, hr⟩ := hx (b i) (Submodule.subset_span ⟨_, rfl⟩)
+    obtain ⟨r, hr⟩ := Submodule.mem_one.mp <| hx (b i) (Submodule.subset_span ⟨_, rfl⟩)
     simp only [dualBasis_repr_apply, ← hr, Algebra.linearMap_apply, algebraMap_smul]
     apply Submodule.smul_mem
     exact Submodule.subset_span ⟨_, rfl⟩
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩ y hy
-    obtain ⟨f, rfl⟩ := (mem_span_range_iff_exists_fun _).mp hy
+    obtain ⟨f, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp hy
     simp only [map_sum, map_smul]
     apply sum_mem
     rintro j -
     rw [← IsScalarTower.algebraMap_smul S (f j), map_smul]
     simp_rw [apply_dualBasis_left]
     rw [smul_eq_mul, mul_ite, mul_one, mul_zero, ← (algebraMap R S).map_zero, ← apply_ite]
-    exact ⟨_, rfl⟩
+    exact Submodule.mem_one.mpr ⟨_, rfl⟩
 
 lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :

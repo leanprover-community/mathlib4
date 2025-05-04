@@ -17,9 +17,12 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 
 ## References
 
-- Stacks Project: Tag 0BMQ
+- [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
 
 -/
+
+open Topology
+
 universe u₁ u₂ v₁ v₂ v w
 
 namespace CategoryTheory
@@ -79,28 +82,27 @@ lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
   · fun_prop
   · fun_prop
 
-lemma autEmbedding_closedEmbedding : ClosedEmbedding (autEmbedding F) where
-  induced := rfl
-  inj := autEmbedding_injective F
+lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
+  eq_induced := rfl
+  injective := autEmbedding_injective F
   isClosed_range := autEmbedding_range_isClosed F
 
-instance : CompactSpace (Aut F) := ClosedEmbedding.compactSpace (autEmbedding_closedEmbedding F)
+instance : CompactSpace (Aut F) := (autEmbedding_isClosedEmbedding F).compactSpace
 
 instance : T2Space (Aut F) :=
   T2Space.of_injective_continuous (autEmbedding_injective F) continuous_induced_dom
 
 instance : TotallyDisconnectedSpace (Aut F) :=
-  (Embedding.isTotallyDisconnected_range (autEmbedding_closedEmbedding F).embedding).mp
+  (autEmbedding_isClosedEmbedding F).isEmbedding.isTotallyDisconnected_range.mp
     (isTotallyDisconnected_of_totallyDisconnectedSpace _)
 
 instance : ContinuousMul (Aut F) :=
-  Inducing.continuousMul (autEmbedding F)
-    (autEmbedding_closedEmbedding F).toInducing
+  (autEmbedding_isClosedEmbedding F).isInducing.continuousMul (autEmbedding F)
 
 instance : ContinuousInv (Aut F) :=
-  Inducing.continuousInv (autEmbedding_closedEmbedding F).toInducing (fun _ ↦ rfl)
+  (autEmbedding_isClosedEmbedding F).isInducing.continuousInv fun _ ↦ rfl
 
-instance : TopologicalGroup (Aut F) := ⟨⟩
+instance : IsTopologicalGroup (Aut F) := ⟨⟩
 
 instance (X : C) : SMul (Aut (F.obj X)) (F.obj X) := ⟨fun σ a => σ.hom a⟩
 

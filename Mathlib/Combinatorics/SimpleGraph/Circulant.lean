@@ -3,8 +3,9 @@ Copyright (c) 2024 Iván Renison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Combinatorics.SimpleGraph.Hasse
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Definition of circulant graphs
@@ -113,7 +114,7 @@ theorem cycleGraph_degree_two_le {n : ℕ} {v : Fin (n + 2)} :
 theorem cycleGraph_degree_three_le {n : ℕ} {v : Fin (n + 3)} :
     (cycleGraph (n + 3)).degree v = 2 := by
   rw [cycleGraph_degree_two_le, Finset.card_pair]
-  simp only [ne_eq, sub_eq_iff_eq_add, add_assoc v, self_eq_add_right]
+  simp only [ne_eq, sub_eq_iff_eq_add, add_assoc v, left_eq_add]
   exact ne_of_beq_false rfl
 
 theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
@@ -132,5 +133,34 @@ theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
 
 theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
   (pathGraph_connected n).mono pathGraph_le_cycleGraph
+
+private def cycleGraph_EulerianCircuit_cons (n : ℕ) :
+    ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
+  | ⟨0, h⟩ => Walk.nil
+  | ⟨m + 1, h⟩ =>
+    have hadj : (cycleGraph (n + 3)).Adj ⟨m + 1, h⟩ ⟨m, Nat.lt_of_succ_lt h⟩ := by
+      simp [cycleGraph_adj, Fin.ext_iff, Fin.sub_val_of_le]
+    Walk.cons hadj (cycleGraph_EulerianCircuit_cons n ⟨m, Nat.lt_of_succ_lt h⟩)
+
+/-- Eulerian trail of `cycleGraph (n + 3)` -/
+def cycleGraph_EulerianCircuit (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
+  have hadj : (cycleGraph (n + 3)).Adj 0 (Fin.last (n + 2)) := by
+    simp [cycleGraph_adj]
+  Walk.cons hadj (cycleGraph_EulerianCircuit_cons n (Fin.last (n + 2)))
+
+private theorem cycleGraph_EulerianCircuit_cons_length (n : ℕ) : ∀ m : Fin (n + 3),
+    (cycleGraph_EulerianCircuit_cons n m).length = m.val
+  | ⟨0, h⟩ => by
+    unfold cycleGraph_EulerianCircuit_cons
+    rfl
+  | ⟨m + 1, h⟩ => by
+    unfold cycleGraph_EulerianCircuit_cons
+    simp only [Walk.length_cons]
+    rw [cycleGraph_EulerianCircuit_cons_length n]
+
+theorem cycleGraph_EulerianCircuit_length {n : ℕ} :
+    (cycleGraph_EulerianCircuit n).length = n + 3 := by
+  unfold cycleGraph_EulerianCircuit
+  simp [cycleGraph_EulerianCircuit_cons_length]
 
 end SimpleGraph

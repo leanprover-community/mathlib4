@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Data.Set.BoolIndicator
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Clopen sets
@@ -118,11 +118,14 @@ theorem isClopen_range_inr : IsClopen (range (Sum.inr : Y → X ⊕ Y)) :=
 
 theorem isClopen_range_sigmaMk {X : ι → Type*} [∀ i, TopologicalSpace (X i)] {i : ι} :
     IsClopen (Set.range (@Sigma.mk ι X i)) :=
-  ⟨closedEmbedding_sigmaMk.isClosed_range, openEmbedding_sigmaMk.isOpen_range⟩
+  ⟨IsClosedEmbedding.sigmaMk.isClosed_range, IsOpenEmbedding.sigmaMk.isOpen_range⟩
 
-protected theorem QuotientMap.isClopen_preimage {f : X → Y} (hf : QuotientMap f) {s : Set Y} :
-    IsClopen (f ⁻¹' s) ↔ IsClopen s :=
+protected theorem Topology.IsQuotientMap.isClopen_preimage {f : X → Y} (hf : IsQuotientMap f)
+    {s : Set Y} : IsClopen (f ⁻¹' s) ↔ IsClopen s :=
   and_congr hf.isClosed_preimage hf.isOpen_preimage
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.isClopen_preimage := IsQuotientMap.isClopen_preimage
 
 theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by

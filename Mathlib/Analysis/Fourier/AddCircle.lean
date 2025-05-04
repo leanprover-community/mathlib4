@@ -9,9 +9,9 @@ import Mathlib.Analysis.InnerProductSpace.l2Space
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.Periodic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-import Mathlib.MeasureTheory.Integral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 
@@ -22,9 +22,10 @@ This file contains basic results on Fourier series for functions on the additive
 
 ## Main definitions
 
-* `haarAddCircle`, Haar measure on `AddCircle T`, normalized to have total measure `1`. (Note
-  that this is not the same normalisation as the standard measure defined in `Integral.Periodic`,
-  so we do not declare it as a `MeasureSpace` instance, to avoid confusion.)
+* `haarAddCircle`, Haar measure on `AddCircle T`, normalized to have total measure `1`.
+  Note that this is not the same normalisation
+  as the standard measure defined in `IntervalIntegral.Periodic`,
+  so we do not declare it as a `MeasureSpace` instance, to avoid confusion.
 * for `n : ℤ`, `fourier n` is the monomial `fun x => exp (2 π i n x / T)`,
   bundled as a continuous map from `AddCircle T` to `ℂ`.
 * `fourierBasis` is the Hilbert basis of `Lp ℂ 2 haarAddCircle` given by the images of the
@@ -80,7 +81,8 @@ variable [hT : Fact (0 < T)]
 def haarAddCircle : Measure (AddCircle T) :=
   addHaarMeasure ⊤
 
--- Porting note: was `deriving IsAddHaarMeasure` on `haarAddCircle`
+-- The `IsAddHaarMeasure` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : IsAddHaarMeasure (@haarAddCircle T _) :=
   Measure.isAddHaarMeasure_addHaarMeasure ⊤
 
@@ -107,7 +109,7 @@ def fourier (n : ℤ) : C(AddCircle T, ℂ) where
 theorem fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n • x :) :=
   rfl
 
--- @[simp] -- Porting note: simp normal form is `fourier_coe_apply'`
+-- simp normal form is `fourier_coe_apply'`
 theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
     fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [fourier_apply, ← QuotientAddGroup.mk_zsmul, toCircle, Function.Periodic.lift_coe,
@@ -121,26 +123,24 @@ theorem fourier_coe_apply' {n : ℤ} {x : ℝ} :
     toCircle (n • (x : AddCircle T) :) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [← fourier_apply]; exact fourier_coe_apply
 
--- @[simp] -- Porting note: simp normal form is `fourier_zero'`
+-- simp normal form is `fourier_zero'`
 theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
   induction x using QuotientAddGroup.induction_on
   simp only [fourier_coe_apply]
   norm_num
 
-@[simp]
 theorem fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
   have : fourier 0 x = @toCircle T 0 := by rw [fourier_apply, zero_smul]
   rw [← this]; exact fourier_zero
 
--- @[simp] -- Porting note: simp normal form is *also* `fourier_zero'`
+-- simp normal form is *also* `fourier_zero'`
 theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
   rw [← QuotientAddGroup.mk_zero, fourier_coe_apply, Complex.ofReal_zero, mul_zero,
     zero_div, Complex.exp_zero]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem fourier_one {x : AddCircle T} : fourier 1 x = toCircle x := by rw [fourier_apply, one_zsmul]
 
--- @[simp] -- Porting note: simp normal form is `fourier_neg'`
+-- simp normal form is `fourier_neg'`
 theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier n x) := by
   induction x using QuotientAddGroup.induction_on
   simp_rw [fourier_apply, toCircle]
@@ -152,7 +152,7 @@ theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier
 theorem fourier_neg' {n : ℤ} {x : AddCircle T} : @toCircle T (-(n • x)) = conj (fourier n x) := by
   rw [← neg_smul, ← fourier_apply]; exact fourier_neg
 
--- @[simp] -- Porting note: simp normal form is `fourier_add'`
+-- simp normal form is `fourier_add'`
 theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m x * fourier n x := by
   simp_rw [fourier_apply, add_zsmul, toCircle_add, Circle.coe_mul]
 
@@ -163,14 +163,15 @@ theorem fourier_add' {m n : ℤ} {x : AddCircle T} :
 
 theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   rw [ContinuousMap.norm_eq_iSup_norm]
-  have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => Circle.abs_coe _
+  have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => Circle.norm_coe _
   simp_rw [this]
   exact @ciSup_const _ _ _ Zero.instNonempty _
 
 /-- For `n ≠ 0`, a translation by `T / 2 / n` negates the function `fourier n`. -/
 theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : AddCircle T) :
     @fourier T n (x + ↑(T / 2 / n)) = -fourier n x := by
-  rw [fourier_apply, zsmul_add, ← QuotientAddGroup.mk_zsmul, toCircle_add, coe_mul_unitSphere]
+  rw [fourier_apply, zsmul_add, ← QuotientAddGroup.mk_zsmul, toCircle_add,
+    Metric.unitSphere.coe_mul]
   have : (n : ℂ) ≠ 0 := by simpa using hn
   have : (@toCircle T (n • (T / 2 / n) : ℝ) : ℂ) = -1 := by
     rw [zsmul_eq_mul, toCircle, Function.Periodic.lift_coe, Circle.coe_exp]
@@ -245,7 +246,9 @@ theorem span_fourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p 
   convert
     (ContinuousMap.toLp_denseRange ℂ (@haarAddCircle T hT) ℂ hp).topologicalClosure_map_submodule
       span_fourier_closure_eq_top
-  erw [map_span, range_comp]
+  rw [map_span]
+  unfold fourierLp
+  rw [range_comp']
   simp only [ContinuousLinearMap.coe_coe]
 
 /-- The monomials `fourier n` are an orthonormal set with respect to normalised Haar measure. -/
@@ -255,12 +258,11 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   rw [ContinuousMap.inner_toLp (@haarAddCircle T hT) (fourier i) (fourier j)]
   simp_rw [← fourier_neg, ← fourier_add]
   split_ifs with h
-  · simp_rw [h, neg_add_cancel]
+  · simp_rw [h, add_neg_cancel]
     have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
-    rw [this, integral_const, measure_univ, ENNReal.one_toReal, Complex.real_smul,
+    rw [this, integral_const, measureReal_univ_eq_one, Complex.real_smul,
       Complex.ofReal_one, mul_one]
-  have hij : -i + j ≠ 0 := by
-    rw [add_comm]
+  have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)
   convert integral_eq_zero_of_add_right_eq_neg (μ := haarAddCircle)
     (fourier_add_half_inv_index hij hT.elim)
@@ -287,8 +289,8 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
     fourierCoeff f n = (1 / T) • ∫ x in a..a + T, @fourier T (-n) x • f x := by
   have : ∀ x : ℝ, @fourier T (-n) x • f x = (fun z : AddCircle T => @fourier T (-n) z • f z) x := by
     intro x; rfl
-  -- After leanprover/lean4#3124, we need to add `singlePass := true` to avoid an infinite loop.
-  simp_rw (config := {singlePass := true}) [this]
+  -- After https://github.com/leanprover/lean4/pull/3124, we need to add `singlePass := true` to avoid an infinite loop.
+  simp_rw +singlePass [this]
   rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z => _ • _),
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
@@ -369,7 +371,7 @@ theorem fourierBasis_repr (f : Lp ℂ 2 <| @haarAddCircle T hT) (i : ℤ) :
     fourierBasis.repr f i = fourierCoeff f i := by
   trans ∫ t : AddCircle T, conj ((@fourierLp T hT 2 _ i : AddCircle T → ℂ) t) * f t ∂haarAddCircle
   · rw [fourierBasis.repr_apply_apply f i, MeasureTheory.L2.inner_def, coe_fourierBasis]
-    simp only [RCLike.inner_apply]
+    simp only [RCLike.inner_apply']
   · apply integral_congr_ae
     filter_upwards [coeFn_fourierLp 2 i] with _ ht
     rw [ht, ← fourier_neg, smul_eq_mul]
@@ -391,7 +393,7 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
   have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
   rw [← integral_re] at H₃
-  · simp only [← norm_sq_eq_inner] at H₃
+  · simp only [← norm_sq_eq_re_inner] at H₃
     rw [← H₁, H₂, H₃]
   · exact L2.integrable_inner f f
 
@@ -481,7 +483,7 @@ theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ �
   rw [(by ring : ((b - a : ℝ) : ℂ) / (-2 * π * I * n) = ((b - a : ℝ) : ℂ) * (1 / (-2 * π * I * n)))]
   have s2 : (b : AddCircle (b - a)) = (a : AddCircle (b - a)) := by
     simpa using coe_add_period (b - a) a
-  rw [s2, integral_const_mul, ← sub_mul, mul_sub, mul_sub]
+  rw [s2, intervalIntegral.integral_const_mul, ← sub_mul, mul_sub, mul_sub]
   congr 1
   · conv_lhs => rw [mul_comm, mul_div, mul_one]
     rw [div_eq_iff (ofReal_ne_zero.mpr hT.out.ne')]

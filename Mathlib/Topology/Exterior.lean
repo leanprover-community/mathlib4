@@ -46,8 +46,6 @@ lemma IsOpen.exterior_eq (h : IsOpen s) : exterior s = s :=
 lemma IsOpen.exterior_subset (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t :=
   ⟨subset_exterior.trans, fun h ↦ exterior_minimal h ht⟩
 
-@[deprecated (since := "2024-09-18")] alias IsOpen.exterior_subset_iff := IsOpen.exterior_subset
-
 @[simp]
 theorem exterior_iUnion (s : ι → Set X) : exterior (⋃ i, s i) = ⋃ i, exterior (s i) := by
   simp only [exterior, nhdsSet_iUnion, ker_iSup]
@@ -59,21 +57,6 @@ theorem exterior_union (s t : Set X) : exterior (s ∪ t) = exterior s ∪ exter
 @[simp]
 theorem exterior_sUnion (S : Set (Set X)) : exterior (⋃₀ S) = ⋃ s ∈ S, exterior s := by
   simp only [sUnion_eq_biUnion, exterior_iUnion]
-
-theorem exterior_iInter_subset {s : ι → Set X} : exterior (⋂ i, s i) ⊆ ⋂ i, exterior (s i) := by
-  simp_rw [exterior]
-  refine ker_mono (nhdsSet_iInter_le _) |>.trans_eq ?_
-  simp_rw [ker_iInf]
-
-theorem exterior_inter_subset {s t : Set X} : exterior (s ∩ t) ⊆ exterior s ∩ exterior t := by
-  simp_rw [exterior]
-  refine ker_mono (nhdsSet_inter_le _ _) |>.trans_eq ?_
-  rw [ker_inf _ _]
-
-theorem exterior_sInter_subset {s : Set (Set X)} : exterior (⋂₀ s) ⊆ ⋂ x ∈ s, exterior x := by
-  simp_rw [exterior]
-  refine ker_mono (nhdsSet_sInter_le _) |>.trans_eq ?_
-  simp_rw [ker_iInf]
 
 theorem mem_exterior_iff_specializes : x ∈ exterior s ↔ ∃ y ∈ s, x ⤳ y := calc
   x ∈ exterior s ↔ x ∈ exterior (⋃ y ∈ s, {y}) := by simp
@@ -89,7 +72,7 @@ see `exterior_subset_exterior_iff_nhdsSet`.
 @[gcongr] lemma exterior_subset_exterior (h : s ⊆ t) : exterior s ⊆ exterior t := exterior_mono h
 
 @[simp] lemma exterior_subset_exterior_iff_nhdsSet : exterior s ⊆ exterior t ↔ 𝓝ˢ s ≤ 𝓝ˢ t := by
-  simp (config := {contextual := true}) only [subset_exterior_iff, (hasBasis_nhdsSet _).ge_iff,
+  simp +contextual only [subset_exterior_iff, (hasBasis_nhdsSet _).ge_iff,
     and_imp, IsOpen.mem_nhdsSet, IsOpen.exterior_subset]
 
 theorem exterior_eq_exterior_iff_nhdsSet : exterior s = exterior t ↔ 𝓝ˢ s = 𝓝ˢ t := by
@@ -97,6 +80,15 @@ theorem exterior_eq_exterior_iff_nhdsSet : exterior s = exterior t ↔ 𝓝ˢ s 
 
 lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y} := by
   simp [Specializes]
+
+theorem exterior_iInter_subset {s : ι → Set X} : exterior (⋂ i, s i) ⊆ ⋂ i, exterior (s i) :=
+  exterior_mono.map_iInf_le
+
+theorem exterior_inter_subset {s t : Set X} : exterior (s ∩ t) ⊆ exterior s ∩ exterior t :=
+  exterior_mono.map_inf_le _ _
+
+theorem exterior_sInter_subset {s : Set (Set X)} : exterior (⋂₀ s) ⊆ ⋂ x ∈ s, exterior x :=
+  exterior_mono.map_sInf_le
 
 @[simp] lemma exterior_empty : exterior (∅ : Set X) = ∅ := isOpen_empty.exterior_eq
 @[simp] lemma exterior_univ : exterior (univ : Set X) = univ := isOpen_univ.exterior_eq

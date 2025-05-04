@@ -14,7 +14,7 @@ The structure of a metric space on `ℕ` is introduced in this file, induced fro
 
 noncomputable section
 
-open Metric Set Filter
+open Filter Metric Set Topology
 
 namespace Nat
 
@@ -34,11 +34,8 @@ theorem pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := fun _
 theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℕ → ℝ) :=
   isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
-
-theorem closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℕ → ℝ) :=
-  closedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
+theorem isClosedEmbedding_coe_real : IsClosedEmbedding ((↑) : ℕ → ℝ) :=
+  isClosedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 
 instance : MetricSpace ℕ := Nat.isUniformEmbedding_coe_real.comapMetricSpace _
 

@@ -6,6 +6,7 @@ Authors: Alex J. Best, Kyle Miller
 import Lean.Elab.Tactic.Config
 import Lean.Elab.Tactic.Location
 import Mathlib.Lean.Expr.Basic
+import Batteries.Lean.Expr
 
 /-!
 # The `generalize_proofs` tactic
@@ -18,6 +19,7 @@ It is also useful to eliminate proof terms to handle issues with dependent types
 
 For example:
 ```lean
+def List.nthLe {α} (l : List α) (n : ℕ) (_h : n < l.length) : α := sorry
 example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1, 2].nthLe 1 ⋯ = 2
   generalize_proofs h
@@ -160,13 +162,13 @@ where
     let mut fty ← inferType f
     -- Whether we have already unified the type `ty?` with `fty` (once `margs` is filled)
     let mut unifiedFTy := false
-    for i in [0 : args.size] do
+    for h : i in [0 : args.size] do
       unless i < margs.size do
         let (margs', _, fty') ← forallMetaBoundedTelescope fty (args.size - i)
         if margs'.isEmpty then throwError "could not make progress at argument {i}"
         fty := fty'
         margs := margs ++ margs'
-      let arg := args[i]!
+      let arg := args[i]
       let marg := margs[i]!
       if !unifiedFTy && margs.size == args.size then
         if let some ty := ty? then
@@ -493,6 +495,7 @@ with `generalize_proofs (config := { maxDepth := 0 })` turning this feature off.
 
 For example:
 ```lean
+def List.nthLe {α} (l : List α) (n : ℕ) (_h : n < l.length) : α := sorry
 example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1, 2].nthLe 1 ⋯ = 2
   generalize_proofs h
@@ -500,9 +503,9 @@ example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1, 2].nthLe 1 h = 2
 ```
 -/
-elab (name := generalizeProofsElab) "generalize_proofs" config?:(Parser.Tactic.config)?
+elab (name := generalizeProofsElab) "generalize_proofs" config:Parser.Tactic.optConfig
     hs:(ppSpace colGt binderIdent)* loc?:(location)? : tactic => withMainContext do
-  let config ← GeneralizeProofs.elabConfig (mkOptionalNode config?)
+  let config ← GeneralizeProofs.elabConfig config
   let (fvars, target) ←
     match expandOptLocation (Lean.mkOptionalNode loc?) with
     | .wildcard => pure ((← getLCtx).getFVarIds, true)

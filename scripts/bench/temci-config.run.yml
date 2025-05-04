@@ -7,7 +7,7 @@
     rusage_properties: ['maxrss']
     cmd: |
       # use build cache for proofwidgets, but not for anything else
-      bash -c 'set -eo pipefail; lake clean 1>&2 && LEAN_PATH=$(lean --print-libdir) lake build proofwidgets 1>&2 && rm -f .lake/packages/batteries/.lake/build/bin/runLinter 1>&2 && lake build --no-cache -v --lean ./scripts/bench/fake-root/bin/lean | ./scripts/bench/accumulate_profile.py | grep -v took'
+      bash -c 'set -eo pipefail; lake clean 1>&2 && LEAN_PATH=$(lean --print-libdir) lake build proofwidgets 1>&2 && rm -f .lake/packages/batteries/.lake/build/bin/runLinter 1>&2 && LAKE_OVERRIDE_LEAN=true LEAN=$(readlink -m ./scripts/bench/fake-root/bin/lean) lake build --no-cache -v | ./scripts/bench/accumulate_profile.py | grep -v took'
     parse_output: true
     runs: 1
 - attributes:

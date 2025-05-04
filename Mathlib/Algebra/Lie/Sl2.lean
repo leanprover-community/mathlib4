@@ -112,7 +112,7 @@ lemma lie_h_pow_toEnd_f (n : ℕ) :
   induction n with
   | zero => simpa using P.lie_h
   | succ n ih =>
-    rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
+    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
       leibniz_lie h, t.lie_lie_smul_f R, ← neg_smul, ih, lie_smul, smul_lie, ← add_smul]
     congr
     ring
@@ -122,10 +122,10 @@ lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
   induction n with
   | zero =>
       simp only [zero_add, pow_one, toEnd_apply_apply, Nat.cast_zero, sub_zero, one_mul,
-        pow_zero, LinearMap.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
+        pow_zero, Module.End.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
         add_zero]
   | succ n ih =>
-    rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
+    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
       lie_h_pow_toEnd_f P, ih, lie_smul, lie_f_pow_toEnd_f P, ← add_smul,
       Nat.cast_add, Nat.cast_one]
     congr
@@ -174,7 +174,7 @@ lemma pow_toEnd_f_eq_zero_of_eq_nat
       lie_h := (P.lie_h_pow_toEnd_f _).trans (by simp [hn])
       lie_e := (P.lie_e_pow_succ_toEnd_f _).trans (by simp [hn]) }
   obtain ⟨m, hm⟩ := this.exists_nat
-  have : (n : ℤ) < m + 2 * (n + 1) := by linarith
+  have : (n : ℤ) < m + 2 * (n + 1) := by omega
   exact this.ne (Int.cast_injective (α := R) <| by simpa [sub_eq_iff_eq_add] using hm)
 
 end HasPrimitiveVectorWith

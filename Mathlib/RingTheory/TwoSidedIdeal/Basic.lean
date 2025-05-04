@@ -5,9 +5,9 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.RingTheory.Congruence.Opposite
 
 /-!
 # Two Sided Ideals
@@ -22,8 +22,9 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
   `x ∈ I` if and only if `I.ringCon x 0`.
 * `TwoSidedIdeal.addCommGroup`: Every `I : TwoSidedIdeal R` is an abelian group.
 
-
 -/
+
+assert_not_exists LinearMap
 
 open MulOpposite
 
@@ -64,6 +65,12 @@ instance setLike : SetLike (TwoSidedIdeal R) R where
 
 lemma mem_iff (x : R) : x ∈ I ↔ I.ringCon x 0 := Iff.rfl
 
+@[simp]
+lemma mem_mk {x : R} {c : RingCon R} : x ∈ mk c ↔ c x 0 := Iff.rfl
+
+@[simp, norm_cast]
+lemma coe_mk {c : RingCon R} : (mk c : Set R) = {x | c x 0} := rfl
+
 lemma rel_iff (x y : R) : I.ringCon x y ↔ x - y ∈ I := by
   rw [mem_iff]
   constructor
@@ -82,6 +89,7 @@ def coeOrderEmbedding : TwoSidedIdeal R ↪o Set R where
 lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) := Iff.rfl
 
 /-- Two-sided-ideals corresponds to congruence relations on a ring. -/
+@[simps apply symm_apply]
 def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   toFun := TwoSidedIdeal.ringCon
   invFun := .mk
@@ -104,6 +112,7 @@ lemma lt_iff (I J : TwoSidedIdeal R) : I < J ↔ (I : Set R) ⊂ (J : Set R) := 
   rw [lt_iff_le_and_ne, Set.ssubset_iff_subset_ne, le_iff]
   simp
 
+@[simp]
 lemma zero_mem : 0 ∈ I := I.ringCon.refl 0
 
 lemma add_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x + y ∈ I := by simpa using I.ringCon.add hx hy
@@ -191,57 +200,50 @@ instance addCommGroup : AddCommGroup I :=
     rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- The coercion into the ring as a `AddMonoidHom` -/
-@[simp]
+@[simps]
 def coeAddMonoidHom : I →+ R where
   toFun := (↑)
   map_zero' := rfl
   map_add' _ _ := rfl
 
+/-- If `I` is a two-sided ideal of `R`, then `{op x | x ∈ I}` is a two-sided ideal in `Rᵐᵒᵖ`. -/
+@[simps]
+def op (I : TwoSidedIdeal R) : TwoSidedIdeal Rᵐᵒᵖ where
+  ringCon := I.ringCon.op
+
+@[simp]
+lemma mem_op_iff {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} : x ∈ I.op ↔ x.unop ∈ I :=
+  I.ringCon.comm'
+
+@[simp, norm_cast]
+lemma coe_op {I : TwoSidedIdeal R} : (I.op : Set Rᵐᵒᵖ) = MulOpposite.unop ⁻¹' I :=
+  Set.ext fun _ => mem_op_iff
+
+
+/-- If `I` is a two-sided ideal of `Rᵐᵒᵖ`, then `{x.unop | x ∈ I}` is a two-sided ideal in `R`. -/
+@[simps]
+def unop (I : TwoSidedIdeal Rᵐᵒᵖ) : TwoSidedIdeal R where
+  ringCon := I.ringCon.unop
+
+@[simp]
+lemma mem_unop_iff {I : TwoSidedIdeal Rᵐᵒᵖ} {x : R} : x ∈ I.unop ↔ MulOpposite.op x ∈ I :=
+  I.ringCon.comm'
+
+@[simp, norm_cast]
+lemma coe_unop {I : TwoSidedIdeal Rᵐᵒᵖ} : (I.unop : Set R) = MulOpposite.op ⁻¹' I :=
+  Set.ext fun _ => mem_unop_iff
+
+/--
+Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.
+-/
+@[simps]
+def opOrderIso : TwoSidedIdeal R ≃o TwoSidedIdeal Rᵐᵒᵖ where
+  toFun := op
+  invFun := unop
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' {I' J'} := by simpa [ringCon_le_iff] using RingCon.opOrderIso.map_rel_iff
+
 end NonUnitalNonAssocRing
-
-section Ring
-
-variable {R : Type*} [Ring R] (I : TwoSidedIdeal R)
-
-instance : SMul R I where smul r x := ⟨r • x.1, I.mul_mem_left _ _ x.2⟩
-
-instance : SMul Rᵐᵒᵖ I where smul r x := ⟨r • x.1, I.mul_mem_right _ _ x.2⟩
-
-instance leftModule : Module R I :=
-  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
-
-@[simp]
-lemma coe_smul {r : R} {x : I} : (r • x : R) = r * (x : R) := rfl
-
-instance rightModule : Module Rᵐᵒᵖ I :=
-  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
-
-@[simp]
-lemma coe_mop_smul {r : Rᵐᵒᵖ} {x : I} : (r • x : R) = (x : R) * r.unop := rfl
-
-instance : SMulCommClass R Rᵐᵒᵖ I where
-  smul_comm r s x := Subtype.ext <| smul_comm r s x.1
-
-/--
-For any `I : RingCon R`, when we view it as an ideal, `I.subtype` is the injective `R`-linear map
-`I → R`.
--/
-@[simps]
-def subtype : I →ₗ[R] R where
-  toFun x := x.1
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-/--
-For any `RingCon R`, when we view it as an ideal in `Rᵒᵖ`, `subtype` is the injective `Rᵐᵒᵖ`-linear
-map `I → Rᵐᵒᵖ`.
--/
-@[simps]
-def subtypeMop : I →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ where
-  toFun x := MulOpposite.op x.1
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-end Ring
 
 end TwoSidedIdeal

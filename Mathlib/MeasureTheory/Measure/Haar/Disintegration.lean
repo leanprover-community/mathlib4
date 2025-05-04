@@ -136,7 +136,8 @@ lemma ae_ae_add_linearMap_mem_iff [LocallyCompactSpace F] {s : Set F} (hs : Meas
   have : ProperSpace F := .of_locallyCompactSpace 𝕜
   let M : F × E →ₗ[𝕜] F := LinearMap.id.coprod L
   have M_cont : Continuous M := M.continuous_of_finiteDimensional
-  -- Note: #8386 had to change `range_eq_top` into `range_eq_top (f := _)`
+  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `range_eq_top` into
+  -- `range_eq_top (f := _)`
   have hM : Function.Surjective M := by
     simp [M, ← LinearMap.range_eq_top (f := _), LinearMap.range_coprod]
   have A : ∀ x, M x ∈ s ↔ x ∈ M ⁻¹' s := fun x ↦ Iff.rfl

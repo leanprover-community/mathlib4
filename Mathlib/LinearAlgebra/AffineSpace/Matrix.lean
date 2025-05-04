@@ -60,12 +60,10 @@ theorem affineIndependent_of_toMatrix_right_inv [Fintype ι] [Finite ι'] [Decid
   have hweq' : w₁ ᵥ* b.toMatrix p = w₂ ᵥ* b.toMatrix p := by
     ext j
     change (∑ i, w₁ i • b.coord j (p i)) = ∑ i, w₂ i • b.coord j (p i)
-    -- Porting note: Added `u` because `∘` was causing trouble
-    have u : (fun i => b.coord j (p i)) = b.coord j ∘ p := by simp only [Function.comp_def]
     rw [← Finset.univ.affineCombination_eq_linear_combination _ _ hw₁,
-      ← Finset.univ.affineCombination_eq_linear_combination _ _ hw₂, u,
-      ← Finset.univ.map_affineCombination p w₁ hw₁, ← Finset.univ.map_affineCombination p w₂ hw₂,
-      hweq]
+      ← Finset.univ.affineCombination_eq_linear_combination _ _ hw₂,
+      ← Function.comp_def (b.coord j) p, ← Finset.univ.map_affineCombination p w₁ hw₁,
+      ← Finset.univ.map_affineCombination p w₂ hw₂, hweq]
   replace hweq' := congr_arg (fun w => w ᵥ* A) hweq'
   simpa only [Matrix.vecMul_vecMul, hA, Matrix.vecMul_one] using hweq'
 
@@ -108,7 +106,7 @@ theorem toMatrix_vecMul_coords (x : P) : b₂.coords x ᵥ* b.toMatrix b₂ = b.
   change _ = b.coord j x
   conv_rhs => rw [← b₂.affineCombination_coord_eq_self x]
   rw [Finset.map_affineCombination _ _ _ (b₂.sum_coord_apply_eq_one x)]
-  simp [Matrix.vecMul, Matrix.dotProduct, toMatrix_apply, coords]
+  simp [Matrix.vecMul, dotProduct, toMatrix_apply, coords]
 
 variable [DecidableEq ι]
 

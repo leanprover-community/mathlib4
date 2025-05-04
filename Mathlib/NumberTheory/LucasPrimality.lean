@@ -3,10 +3,7 @@ Copyright (c) 2020 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Tactic.Zify
-import Mathlib.Data.Nat.Totient
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.RingTheory.IntegralDomain
 
 /-!
@@ -58,7 +55,8 @@ theorem reverse_lucas_primality (p : ℕ) (hP : p.Prime) :
   have : Fact p.Prime := ⟨hP⟩
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := (ZMod p)ˣ)
   have h1 : orderOf g = p - 1 := by
-    rwa [orderOf_eq_card_of_forall_mem_zpowers hg, ← Nat.prime_iff_card_units]
+    rwa [orderOf_eq_card_of_forall_mem_zpowers hg, Nat.card_eq_fintype_card,
+      ← Nat.prime_iff_card_units]
   have h2 := tsub_pos_iff_lt.2 hP.one_lt
   rw [← orderOf_injective (Units.coeHom _) Units.ext _, orderOf_eq_iff h2] at h1
   refine ⟨g, h1.1, fun q hq hqd ↦ ?_⟩

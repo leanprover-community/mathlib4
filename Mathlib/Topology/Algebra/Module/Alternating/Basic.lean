@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Heather Macbeth, Sébastien Gouëzel
 -/
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 /-!
@@ -105,14 +106,18 @@ theorem range_toAlternatingMap :
   Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h => ⟨{ f with cont := h }, DFunLike.ext' rfl⟩⟩
 
 @[simp]
-theorem map_add [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
+theorem map_update_add [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
     f (update m i (x + y)) = f (update m i x) + f (update m i y) :=
-  f.map_add' m i x y
+  f.map_update_add' m i x y
+
+@[deprecated (since := "2024-11-03")] protected alias map_add := map_update_add
 
 @[simp]
-theorem map_smul [DecidableEq ι] (m : ι → M) (i : ι) (c : R) (x : M) :
+theorem map_update_smul [DecidableEq ι] (m : ι → M) (i : ι) (c : R) (x : M) :
     f (update m i (c • x)) = c • f (update m i x) :=
-  f.map_smul' m i c x
+  f.map_update_smul' m i c x
+
+@[deprecated (since := "2024-11-03")] protected alias map_smul := map_update_smul
 
 theorem map_coord_zero {m : ι → M} (i : ι) (h : m i = 0) : f m = 0 :=
   f.toMultilinearMap.map_coord_zero i h
@@ -327,34 +332,49 @@ theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[
     (f : M [⋀^ι]→L[R] N) : ⇑(g.compContinuousAlternatingMap f) = g ∘ f :=
   rfl
 
-/-- A continuous linear equivalence of domains defines an equivalence between continuous
-alternating maps. -/
-def _root_.ContinuousLinearEquiv.continuousAlternatingMapComp (e : M ≃L[R] M') :
+/-- A continuous linear equivalence of domains
+defines an equivalence between continuous alternating maps. -/
+@[simps -fullyApplied apply]
+def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv (e : M ≃L[R] M') :
     M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N where
   toFun f := f.compContinuousLinearMap ↑e.symm
   invFun f := f.compContinuousLinearMap ↑e
   left_inv f := by ext; simp [Function.comp_def]
   right_inv f := by ext; simp [Function.comp_def]
 
-/-- A continuous linear equivalence of codomains defines an equivalence between continuous
-alternating maps. -/
-def _root_.ContinuousLinearEquiv.compContinuousAlternatingMap (e : N ≃L[R] N') :
+@[deprecated (since := "2025-04-16")]
+alias _root_.ContinuousLinearEquiv.continuousAlternatingMapComp :=
+  ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv
+
+/-- A continuous linear equivalence of codomains
+defines an equivalence between continuous alternating maps. -/
+@[simps -fullyApplied apply]
+def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv (e : N ≃L[R] N') :
     M [⋀^ι]→L[R] N ≃ M [⋀^ι]→L[R] N' where
   toFun := (e : N →L[R] N').compContinuousAlternatingMap
   invFun := (e.symm : N' →L[R] N).compContinuousAlternatingMap
   left_inv f := by ext; simp [(· ∘ ·)]
   right_inv f := by ext; simp [(· ∘ ·)]
 
+@[deprecated (since := "2025-04-16")]
+alias _root_.ContinuousLinearEquiv.compContinuousAlternatingMap :=
+  ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv
+
+set_option linter.deprecated false in
 @[simp]
 theorem _root_.ContinuousLinearEquiv.compContinuousAlternatingMap_coe
     (e : N ≃L[R] N') (f : M [⋀^ι]→L[R] N) : ⇑(e.compContinuousAlternatingMap f) = e ∘ f :=
   rfl
 
-/-- Continuous linear equivalences between domains and codomains define an equivalence between the
-spaces of continuous alternating maps. -/
-def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongr (e : M ≃L[R] M') (e' : N ≃L[R] N') :
-    M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N' :=
-  e.continuousAlternatingMapComp.trans e'.compContinuousAlternatingMap
+/-- Continuous linear equivalences between domains and codomains
+define an equivalence between the spaces of continuous alternating maps. -/
+def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrEquiv
+    (e : M ≃L[R] M') (e' : N ≃L[R] N') : M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N' :=
+  e.continuousAlternatingMapCongrLeftEquiv.trans e'.continuousAlternatingMapCongrRightEquiv
+
+@[deprecated (since := "2025-04-16")]
+alias _root_.ContinuousLinearEquiv.continuousAlternatingMapCongr :=
+  ContinuousLinearEquiv.continuousAlternatingMapCongrEquiv
 
 /-- `ContinuousAlternatingMap.pi` as an `Equiv`. -/
 @[simps]
@@ -452,13 +472,15 @@ variable {R M N ι : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalS
   (f g : M [⋀^ι]→L[R] N)
 
 @[simp]
-theorem map_sub [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
+theorem map_update_sub [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) :=
-  f.toMultilinearMap.map_sub _ _ _ _
+  f.toMultilinearMap.map_update_sub _ _ _ _
 
-section TopologicalAddGroup
+@[deprecated (since := "2024-11-03")] protected alias map_sub := map_update_sub
 
-variable [TopologicalAddGroup N]
+section IsTopologicalAddGroup
+
+variable [IsTopologicalAddGroup N]
 
 instance : Neg (M [⋀^ι]→L[R] N) :=
   ⟨fun f => { -f.toAlternatingMap with toContinuousMultilinearMap := -f.1 }⟩
@@ -482,7 +504,7 @@ instance : AddCommGroup (M [⋀^ι]→L[R] N) :=
   toContinuousMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-end TopologicalAddGroup
+end IsTopologicalAddGroup
 
 end Ring
 
@@ -539,14 +561,14 @@ def toContinuousMultilinearMapLinear :
 
 /-- Linear map version of the map `toAlternatingMap`
 associating to a continuous alternating map the corresponding alternating map. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def toAlternatingMapLinear : (M [⋀^ι]→L[A] N) →ₗ[R] (M [⋀^ι]→ₗ[A] N) where
   toFun := toAlternatingMap
   map_add' := by simp
   map_smul' := by simp
 
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R (M' i)] [∀ i, ContinuousConstSMul R (M' i)] :
@@ -600,11 +622,11 @@ end ContinuousAlternatingMap
 namespace ContinuousMultilinearMap
 
 variable {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-  [AddCommGroup N] [Module R N] [TopologicalSpace N] [TopologicalAddGroup N] [Fintype ι]
+  [AddCommGroup N] [Module R N] [TopologicalSpace N] [IsTopologicalAddGroup N] [Fintype ι]
   [DecidableEq ι] (f : ContinuousMultilinearMap R (fun _ : ι => M) N)
 
 /-- Alternatization of a continuous multilinear map. -/
-@[simps (config := .lemmasOnly) apply_toContinuousMultilinearMap]
+@[simps -isSimp apply_toContinuousMultilinearMap]
 def alternatization : ContinuousMultilinearMap R (fun _ : ι => M) N →+ M [⋀^ι]→L[R] N where
   toFun f :=
     { toContinuousMultilinearMap := ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f.domDomCongr σ

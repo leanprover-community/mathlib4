@@ -43,9 +43,7 @@ The main results are:
 * `x ∈ s → y ∈ intrinsicInterior 𝕜 s → openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 s`
 -/
 
-
-open AffineSubspace Set
-
+open AffineSubspace Set Topology
 open scoped Pointwise
 
 variable {𝕜 V W Q P : Type*}
@@ -112,8 +110,6 @@ theorem intrinsicClosure_nonempty : (intrinsicClosure 𝕜 s).Nonempty ↔ s.Non
 
 alias ⟨Set.Nonempty.ofIntrinsicClosure, Set.Nonempty.intrinsicClosure⟩ := intrinsicClosure_nonempty
 
---attribute [protected] Set.Nonempty.intrinsicClosure -- Porting note: removed
-
 @[simp]
 theorem intrinsicInterior_singleton (x : P) : intrinsicInterior 𝕜 ({x} : Set P) = {x} := by
   simp only [intrinsicInterior, preimage_coe_affineSpan_singleton, interior_univ, image_univ,
@@ -176,11 +172,11 @@ theorem intrinsicFrontier_union_intrinsicInterior (s : Set P) :
 
 theorem isClosed_intrinsicClosure (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
     IsClosed (intrinsicClosure 𝕜 s) :=
-  (closedEmbedding_subtype_val hs).isClosedMap _ isClosed_closure
+  hs.isClosedEmbedding_subtypeVal.isClosedMap _ isClosed_closure
 
 theorem isClosed_intrinsicFrontier (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
     IsClosed (intrinsicFrontier 𝕜 s) :=
-  (closedEmbedding_subtype_val hs).isClosedMap _ isClosed_frontier
+  hs.isClosedEmbedding_subtypeVal.isClosedMap _ isClosed_frontier
 
 @[simp]
 theorem affineSpan_intrinsicClosure (s : Set P) :

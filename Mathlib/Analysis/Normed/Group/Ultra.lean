@@ -55,6 +55,17 @@ lemma isUltrametricDist_of_isNonarchimedean_norm {S' : Type*} [SeminormedAddGrou
     (h : IsNonarchimedean (norm : S' → ℝ)) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_norm_add_le_max_norm h
 
+lemma isNonarchimedean_norm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
+    IsNonarchimedean (‖·‖ : R → ℝ) := by
+  intro x y
+  convert dist_triangle_max 0 x (x + y) using 1
+  · simp
+  · congr <;> simp [SeminormedAddGroup.dist_eq]
+
+lemma isUltrametricDist_iff_isNonarchimedean_norm {R} [SeminormedAddCommGroup R] :
+    IsUltrametricDist R ↔ IsNonarchimedean (‖·‖ : R → ℝ) :=
+  ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
+
 @[to_additive]
 lemma nnnorm_mul_le_max (x y : S) :
     ‖x * y‖₊ ≤ max ‖x‖₊ ‖y‖₊ :=
@@ -66,8 +77,19 @@ lemma isUltrametricDist_of_forall_nnnorm_mul_le_max_nnnorm
   isUltrametricDist_of_forall_norm_mul_le_max_norm h
 
 lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGroup S']
-    (h : IsNonarchimedean ((↑) ∘ (nnnorm : S' → ℝ≥0))) : IsUltrametricDist S' :=
+    (h : IsNonarchimedean (nnnorm : S' → ℝ≥0)) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm h
+
+lemma isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
+    IsNonarchimedean (‖·‖₊ : R → ℝ) := by
+  intro x y
+  convert dist_triangle_max 0 x (x + y) using 1
+  · simp
+  · congr <;> simp [SeminormedAddGroup.dist_eq]
+
+lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] :
+    IsUltrametricDist R ↔ IsNonarchimedean (‖·‖₊ : R → ℝ) :=
+  ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
 
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive "All triangles are isosceles in an ultrametric normed additive group."]
@@ -236,6 +258,54 @@ lemma norm_prod_le_of_forall_le_of_nonneg {s : Finset ι} {f : ι → M} {C : �
     (h_nonneg : 0 ≤ C) (hC : ∀ i ∈ s, ‖f i‖ ≤ C) : ‖∏ i ∈ s, f i‖ ≤ C := by
   lift C to NNReal using h_nonneg
   exact nnnorm_prod_le_of_forall_le hC
+
+/--
+Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can always find `i ∈ t` such that
+`‖∏ j in t, f j‖ ≤ ‖f i‖`.
+-/
+@[to_additive "Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can always find
+`i ∈ t` such that `‖∑ j ∈ t, f j‖ ≤ ‖f i‖`."]
+theorem exists_norm_finset_prod_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
+    ∃ i ∈ t, ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ :=
+  match t.exists_mem_eq_sup' ht (‖f ·‖) with
+  |⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
+
+/--
+Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`
+if `t` is nonempty, such that `‖∏ j ∈ t, f j‖ ≤ ‖f i‖`.
+-/
+@[to_additive "Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`,
+belonging to `t` if `t` is nonempty, such that `‖∑ j ∈ t, f j‖ ≤ ‖f i‖`."]
+theorem exists_norm_finset_prod_le (t : Finset ι) [Nonempty ι] (f : ι → M) :
+    ∃ i : ι, (t.Nonempty → i ∈ t) ∧ ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ := by
+  rcases t.eq_empty_or_nonempty with rfl | ht
+  · simp
+  exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finset_prod_le_of_nonempty ht f
+
+/--
+Given a function `f : ι → M` and a multiset `t : Multiset ι`, we can always find `i : ι`, belonging
+to `t` if `t` is nonempty, such that `‖(s.map f).prod‖ ≤ ‖f i‖`.
+-/
+@[to_additive "Given a function `f : ι → M` and a multiset `t : Multiset ι`, we can always find
+`i : ι`, belonging to `t` if `t` is nonempty, such that `‖(s.map f).sum‖ ≤ ‖f i‖`."]
+theorem exists_norm_multiset_prod_le (s : Multiset ι) [Nonempty ι] {f : ι → M} :
+    ∃ i : ι, (s ≠ 0 → i ∈ s) ∧ ‖(s.map f).prod‖ ≤ ‖f i‖ := by
+  inhabit ι
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons a t hM =>
+      obtain ⟨M, hMs, hM⟩ := hM
+      by_cases hMa : ‖f M‖ ≤ ‖f a‖
+      · refine ⟨a, by simp, ?_⟩
+        · rw [Multiset.map_cons, Multiset.prod_cons]
+          exact le_trans (norm_mul_le_max _ _) (max_le (le_refl _) (le_trans hM hMa))
+      · rw [not_le] at hMa
+        rcases eq_or_ne t 0 with rfl|ht
+        · exact ⟨a, by simp, by simp⟩
+        · refine ⟨M, ?_, ?_⟩
+          · simp [hMs ht]
+          rw [Multiset.map_cons, Multiset.prod_cons]
+          exact le_trans (norm_mul_le_max _ _) (max_le hMa.le hM)
 
 @[to_additive]
 lemma norm_tprod_le (f : ι → M) : ‖∏' i, f i‖ ≤ ⨆ i, ‖f i‖ := by

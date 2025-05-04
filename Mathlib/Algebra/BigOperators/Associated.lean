@@ -3,8 +3,9 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.BigOperators.Finsupp.Basic
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.GroupWithZero.Associated
 
 /-!
 # Products of associated, prime, and irreducible elements.
@@ -14,6 +15,7 @@ and products of multisets, finsets, and finsupps.
 
 -/
 
+assert_not_exists Field
 
 variable {α β γ δ : Type*}
 
@@ -57,7 +59,7 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
   | empty =>
     simp only [Finset.prod_empty]
     rfl
-  | @insert j s hjs IH =>
+  | insert j s hjs IH =>
     classical
     convert_to (∏ i ∈ insert j s, f i) ~ᵤ (∏ i ∈ insert j s, g i)
     rw [Finset.prod_insert hjs, Finset.prod_insert hjs]
@@ -87,7 +89,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α]
     simp only [Set.mem_setOf]
     simp only [Multiset.prod_zero] at hprod
     left; exact isUnit_of_mul_eq_one _ _ hprod.symm
-  | @cons c s hind =>
+  | cons c s hind =>
     simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
     simp only [Multiset.prod_cons] at hprod
     simp only [Set.mem_setOf_eq] at hind
@@ -156,10 +158,7 @@ theorem prod_mk {p : Multiset α} : (p.map Associates.mk).prod = Associates.mk p
 
 theorem finset_prod_mk {p : Finset β} {f : β → α} :
     (∏ i ∈ p, Associates.mk (f i)) = Associates.mk (∏ i ∈ p, f i) := by
-  -- Porting note: added
-  have : (fun i => Associates.mk (f i)) = Associates.mk ∘ f :=
-    funext fun x => Function.comp_apply
-  rw [Finset.prod_eq_multiset_prod, this, ← Multiset.map_map, prod_mk,
+  rw [Finset.prod_eq_multiset_prod, ← Function.comp_def, ← Multiset.map_map, prod_mk,
     ← Finset.prod_eq_multiset_prod]
 
 theorem rel_associated_iff_map_eq_map {p q : Multiset α} :
@@ -170,7 +169,7 @@ theorem rel_associated_iff_map_eq_map {p q : Multiset α} :
 theorem prod_eq_one_iff {p : Multiset (Associates α)} :
     p.prod = 1 ↔ ∀ a ∈ p, (a : Associates α) = 1 :=
   Multiset.induction_on p (by simp)
-    (by simp (config := { contextual := true }) [mul_eq_one, or_imp, forall_and])
+    (by simp +contextual [mul_eq_one, or_imp, forall_and])
 
 theorem prod_le_prod {p q : Multiset (Associates α)} (h : p ≤ q) : p.prod ≤ q.prod := by
   haveI := Classical.decEq (Associates α)
@@ -187,7 +186,7 @@ variable [CancelCommMonoidWithZero α]
 
 theorem exists_mem_multiset_le_of_prime {s : Multiset (Associates α)} {p : Associates α}
     (hp : Prime p) : p ≤ s.prod → ∃ a ∈ s, p ≤ a :=
-  Multiset.induction_on s (fun ⟨_, Eq⟩ => (hp.ne_one (mul_eq_one.1 Eq.symm).1).elim)
+  Multiset.induction_on s (fun ⟨_, eq⟩ => (hp.ne_one (mul_eq_one.1 eq.symm).1).elim)
     fun a s ih h =>
     have : p ≤ a * s.prod := by simpa using h
     match Prime.le_or_le hp this with
@@ -222,12 +221,16 @@ theorem Prime.not_dvd_finset_prod {S : Finset α} {p : M} (pp : Prime p) {g : α
     (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g := by
   exact mt (Prime.dvd_finset_prod_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
 
-theorem Prime.dvd_finsupp_prod_iff {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p) :
+theorem Prime.dvd_finsuppProd_iff {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p) :
     p ∣ f.prod g ↔ ∃ a ∈ f.support, p ∣ g a (f a) :=
   Prime.dvd_finset_prod_iff pp _
 
-theorem Prime.not_dvd_finsupp_prod {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p)
+@[deprecated (since := "2025-04-06")] alias Prime.dvd_finsupp_prod_iff := Prime.dvd_finsuppProd_iff
+
+theorem Prime.not_dvd_finsuppProd {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p)
     (hS : ∀ a ∈ f.support, ¬p ∣ g a (f a)) : ¬p ∣ f.prod g :=
   Prime.not_dvd_finset_prod pp hS
+
+@[deprecated (since := "2025-04-06")] alias Prime.not_dvd_finsupp_prod := Prime.not_dvd_finsuppProd
 
 end CommMonoidWithZero
