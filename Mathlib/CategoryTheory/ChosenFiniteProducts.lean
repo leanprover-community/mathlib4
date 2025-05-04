@@ -44,7 +44,7 @@ namespace CategoryTheory
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
-open MonoidalCategory
+open MonoidalCategory Limits
 
 variable (C) in
 /--
@@ -56,13 +56,13 @@ the terminal object.
 -/
 class ChosenFiniteProducts (C : Type u) [Category.{v} C] extends MonoidalCategory C where
   /-- The tensor unit is a terminal object. -/
-  isTerminalTensorUnit : Limits.IsTerminal (𝟙_ C)
+  isTerminalTensorUnit : IsTerminal (𝟙_ C)
   /-- The first projection from the product. -/
   fst (X Y : C) : X ⊗ Y ⟶ X
   /-- The second projection from the product. -/
   snd (X Y : C) : X ⊗ Y ⟶ Y
   /-- The monoidal product is the categorical product. -/
-  tensorProductIsBinaryProduct (X Y : C) : Limits.IsLimit <| Limits.BinaryFan.mk (fst X Y) (snd X Y)
+  tensorProductIsBinaryProduct (X Y : C) : IsLimit <| BinaryFan.mk (fst X Y) (snd X Y)
   fst_def (X Y : C) : fst X Y = X ◁ isTerminalTensorUnit.from Y ≫ (ρ_ X).hom := by aesop_cat
   snd_def (X Y : C) : snd X Y = isTerminalTensorUnit.from X ▷ Y ≫ (λ_ Y).hom := by aesop_cat
 
