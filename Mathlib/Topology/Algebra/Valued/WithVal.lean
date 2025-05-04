@@ -174,6 +174,7 @@ theorem coe_smul (r : S) (x : WithVal v) :
 theorem coe_algebraMap : ⇑(algebraMap S v.Completion) = (↑) ∘ algebraMap S K :=
   rfl
 
+/-- The ring of integers of `Valuation.Completion`. -/
 def integers [CompletableTopField (WithVal v)] : ValuationSubring v.Completion :=
   (valued v).v.valuationSubring
 
@@ -217,7 +218,6 @@ instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
 def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     𝓞 (WithVal v) ≃+* R := NumberField.RingOfIntegers.equiv R
 
-@[simp]
 theorem withValEquiv_symm_apply_coe (R : Type*) [CommRing R] [Algebra R K]
     [IsIntegralClosure R ℤ K] (x : R) :
     ((withValEquiv v R).symm x).1 = (algebraMap R (WithVal v) x) := by
