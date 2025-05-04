@@ -40,13 +40,14 @@ variable
 variable (f c R) in
 /--
 Define `circleAverage f c R` as the average value of `f` on the circle with center `c` and radius
-`R`.
+`R`. This is a real notion, which should not be confused with the complex path integral notion defined
+in `circleIntegral` (integrating with respect to `dz`).
 -/
 noncomputable def circleAverage : E :=
   (2 * π)⁻¹ • ∫ θ in (0)..2 * π, f (circleMap c R θ)
 
-lemma circleAverage_def : circleAverage f c R =
-  (2 * π)⁻¹ • ∫ θ in (0)..2 * π, f (circleMap c R θ) := rfl
+lemma circleAverage_def :
+    circleAverage f c R = (2 * π)⁻¹ • ∫ θ in (0)..2 * π, f (circleMap c R θ) := rfl
 
 /-- Expression of `circleAverage´ in terms of interval averages. -/
 lemma circleAverage_eq_intervalAverage :
@@ -66,7 +67,7 @@ lemma circleAverage_eq_intervalAverage :
 Expression of `circleAverage´ with arbitrary center in terms of `circleAverage` with center zero.
 -/
 lemma circleAverage_fun_add :
-    circleAverage f c R = circleAverage (fun z ↦ f (z + c)) 0 R := by
+    circleAverage (fun z ↦ f (z + c)) 0 R = circleAverage f c R := by
   unfold circleAverage circleMap
   congr
   ext θ
@@ -78,7 +79,7 @@ lemma circleAverage_fun_add :
 -/
 
 /-- Circle averages do not change when shifting the angle. -/
-lemma circleAverage_congr_angleShift (η : ℝ): circleAverage f c R =
+lemma circleAverage_eq_integral_add (η : ℝ) : circleAverage f c R =
     (2 * π)⁻¹ • ∫ (θ : ℝ) in (0)..2 * π, f (circleMap c R (θ + η)) := by
   rw [intervalIntegral.integral_comp_add_right (fun θ ↦ f (circleMap c R θ))]
   have t₀ : (fun θ ↦ f (circleMap c R θ)).Periodic (2 * π) :=
@@ -116,7 +117,7 @@ theorem circleAverage_congr_codiscreteWithin
 ## Behaviour with Respect to Arithmetic Operations
 -/
 
-/-- Circle averages commute with skalar multiplication. -/
+/-- Circle averages commute with scalar multiplication. -/
 theorem circleAverage_smul :
     circleAverage (a • f) c R = a • circleAverage f c R := by
   unfold circleAverage
@@ -125,7 +126,7 @@ theorem circleAverage_smul :
   simp [intervalIntegral.integral_smul]
 
 /-- Circle averages commute with skalar multiplication. -/
-theorem circleAverage_smul_fun :
+theorem circleAverage_fun_smul :
     circleAverage (fun z ↦ a • f z) c R = a • circleAverage f c R :=
   circleAverage_smul
 

@@ -154,7 +154,7 @@ theorem circleMap_preimage_codiscrete {c : ℂ} {R : ℝ} (hR : R ≠ 0) :
     simp [hR] at this
   · rwa [Set.image_univ, range_circleMap]
 
-theorem circleMap_negRadius {r x : ℝ} {c : ℂ} :
+theorem circleMap_neg_radius {r x : ℝ} {c : ℂ} :
     circleMap c (-r) x = circleMap c r (x + π) := by
   simp [circleMap, add_mul, Complex.exp_add]
 
