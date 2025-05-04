@@ -63,9 +63,8 @@ lemma mkUnder_ext {A : Type u} [CommRing A] [Algebra R A] {B : Under R}
   exact h x
 
 @[simp]
-lemma algebra_eq (A : Type u) [CommRing A] [inst : Algebra R A] :
-  algebra (R.mkUnder A) = inst :=
-  Algebra.algebra_ext _ _ (congrFun rfl)
+lemma mkUnder_eq (A : Type u) [CommRing A] [inst : Algebra R A] :
+  algebra (R.mkUnder A) = inst := Algebra.algebra_ext _ _ (congrFun rfl)
 
 end CommRingCat
 
@@ -90,25 +89,22 @@ lemma toUnder_comp {A B C : Type u} [CommRing A] [CommRing B] [CommRing C]
     (g.comp f).toUnder = f.toUnder ≫ g.toUnder :=
   rfl
 
-lemma toUnder_eq_core {A B : Type u} [CommRing A] [CommRing B]
-  [instA : Algebra R A] [instB : Algebra R B] [instA' : Algebra R A] [instB' : Algebra R B]
-  (eqA : instA = instA') (eqB : instB = instB') (f : @AlgHom R A B _ _ _ instA instB) :
-  @OneHom.toFun A B _ _ f = @OneHom.toFun A B _ _ ((by
-      rw [← eqA, ← eqB]
-      exact f
-  ) : @AlgHom R A B _ _ _ instA' instB') := by
-    subst eqA eqB
-    rfl
-
 @[simp]
 lemma toUnder_eq {A B : Type u} [CommRing A]  [CommRing B]
-  [instA : Algebra R A] [instB : Algebra R B] (f : A →ₐ[R] B) : CommRingCat.toAlgHom f.toUnder = (by
-      rw [CommRingCat.algebra_eq, CommRingCat.algebra_eq]
-      exact f
-    )
-    := ext <| congrFun <| toUnder_eq_core (instA := instA) (instB := instB)
-    (instA' := CommRingCat.algebra (R.mkUnder A)) (instB' := CommRingCat.algebra (R.mkUnder B))
-    (CommRingCat.algebra_eq A).symm (CommRingCat.algebra_eq B).symm f
+  [instA : Algebra R A] [instB : Algebra R B] (f : A →ₐ[R] B) : CommRingCat.toAlgHom f.toUnder =
+      (cast <| congr_arg₂ (fun instA instB => @AlgHom R A B _ _ _ instA instB)
+      (CommRingCat.mkUnder_eq A).symm (CommRingCat.mkUnder_eq B).symm) f :=
+    have [instA : Algebra R A] [instB : Algebra R B] [instA' : Algebra R A] [instB' : Algebra R B]
+      (eqA : instA = instA') (eqB : instB = instB') (f : @AlgHom R A B _ _ _ instA instB) :
+      @OneHom.toFun A B _ _ f = @OneHom.toFun A B _ _ (
+        (cast <| congr_arg₂ (fun instA instB => @AlgHom R A B _ _ _ instA instB) eqA eqB) f
+      ) := by
+        subst eqA eqB
+        rfl
+    ext <| congrFun <| this (instA := instA) (instB := instB)
+      (instA' := CommRingCat.algebra (R.mkUnder A)) (instB' := CommRingCat.algebra (R.mkUnder B))
+      (CommRingCat.mkUnder_eq A).symm (CommRingCat.mkUnder_eq B).symm f
+
 end AlgHom
 
 namespace AlgEquiv
