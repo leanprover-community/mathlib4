@@ -48,6 +48,7 @@ lemma freeAbs_map {σ τ : Type u} (f : σ ⟶ τ) :
     (mkUnder_eq (MvPolynomial τ R)).symm) (MvPolynomial.rename f)
   := AlgHom.toUnder_eq (MvPolynomial.rename f)
 
+/-- The forgetful functor `Under R ⥤ CommRingCat ⥤ Type`. -/
 def forget : Under R ⥤ Type u := Under.forget R ⋙ HasForget.forget
 
 lemma tensorProd_freeAbs_tauto : freeAbs R ⋙ R.tensorProd S = {
@@ -121,7 +122,6 @@ noncomputable def tensorProd_freeAbs : freeAbs R ⋙ R.tensorProd S ≅ freeAbs 
 noncomputable def Under_ℤ : Under (of (ULift.{u, 0} ℤ)) ≌ CommRingCat.{u} :=
   Under.equivalenceOfIsInitial isInitial
 
--- set_option maxHeartbeats 0 in
 noncomputable def freeAbs_ℤ_tauto : free ⋙ Under_ℤ.inverse ≅ freeAbs (of (ULift.{u, 0} ℤ)) where
   hom := {
     app σ := Under.homMk
@@ -159,6 +159,7 @@ noncomputable def freeAbs_ℤ_tauto : free ⋙ Under_ℤ.inverse ≅ freeAbs (of
 instance (R : CommRingCat.{u}) : Algebra (of (ULift.{u, 0} ℤ)) R
   := RingHom.toAlgebra RingHom.smulOneHom
 
+/-- The free forgetful adjunction of `Under R`. -/
 noncomputable def adjFreeForget : freeAbs R ⊣ forget :=
   (adj.comp (Under_ℤ.symm.toAdjunction.comp adjTensorForget)).ofNatIsoLeft
   (isoWhiskerRight freeAbs_ℤ_tauto ((of (ULift.{u, 0} ℤ)).tensorProd R) ≪≫ tensorProd_freeAbs)
