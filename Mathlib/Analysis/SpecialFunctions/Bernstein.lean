@@ -182,8 +182,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
   intro U hU₀ hUo hUc
   have hUnhds : U ∈ 𝓝 0 := hUo.mem_nhds hU₀
   obtain ⟨C, hC⟩ : ∃ C, ∀ x y, gauge U (f x - f y) ≤ C := by
-    have := continuous_gauge hUc (hUo.mem_nhds hU₀)
-    have : Continuous fun (x, y) ↦ gauge U (f x - f y) := by fun_prop
+    have : Continuous fun (x, y) ↦ gauge U (f x - f y) := by fun_prop (disch := assumption)
     simpa only [BddAbove, Set.Nonempty, mem_upperBounds, Set.forall_mem_range, Prod.forall]
       using isCompact_range this |>.bddAbove
   have hC₀ : 0 ≤ C := le_trans (gauge_nonneg _) (hC 0 0)
@@ -191,7 +190,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
     have := CompactSpace.uniformContinuous_of_continuous (map_continuous f)
     rw [Metric.uniformity_basis_dist.uniformContinuous_iff
       (basis_sets _).uniformity_of_nhds_zero_swapped] at this
-    exact this {z | gauge U z < 1 / 2} <| tendsto_gauge_nhds_zero (hUo.mem_nhds hU₀)
+    exact this {z | gauge U z < 1 / 2} <| tendsto_gauge_nhds_zero hUnhds
       |>.eventually_lt_const <| by positivity
   have nhds_zero := tendsto_const_div_atTop_nhds_zero_nat (C / δ ^ 2)
   filter_upwards [nhds_zero.eventually_lt_const (half_pos one_pos), eventually_ne_atTop 0]
@@ -202,7 +201,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
       = gauge U (∑ k : Fin (n + 1), bernstein n k x • (f k/ₙ - f x)) := by
       simp [bernsteinApproximation.apply, smul_sub, ← Finset.sum_smul]
     _ ≤ ∑ k : Fin (n + 1), gauge U (bernstein n k x • (f k/ₙ - f x)) :=
-      gauge_sum_le hUc (absorbent_nhds_zero <| hUo.mem_nhds hU₀) _ _
+      gauge_sum_le hUc (absorbent_nhds_zero hUnhds) _ _
     _ = ∑ k : Fin (n + 1), bernstein n k x * gauge U (f k/ₙ - f x) := by
       simp only [gauge_smul_of_nonneg, bernstein_nonneg, smul_eq_mul]
     _ = (∑ k ∈ S,  bernstein n k x * gauge U (f k/ₙ - f x)) +
