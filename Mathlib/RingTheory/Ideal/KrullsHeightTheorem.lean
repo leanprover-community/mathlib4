@@ -49,7 +49,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
   have := IsLocalRing.of_surjective' _ (Ideal.Quotient.mk_surjective (I := I))
   have : IsArtinianRing (R ⧸ I) := by
     rw [isArtinianRing_iff_isNilpotent_maximalIdeal,
-      Ideal.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _)]
+      Ideal.FG.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _)]
     refine (Ideal.comap_le_comap_iff_of_surjective _ Ideal.Quotient.mk_surjective _ _).mp ?_
     rw [nilradical, Ideal.comap_radical, Ideal.zero_eq_bot, ← RingHom.ker_eq_comap_bot,
       Ideal.mk_ker, IsLocalRing.eq_maximalIdeal (Ideal.comap_isMaximal_of_surjective
@@ -259,6 +259,16 @@ lemma Ideal.height_le_spanRank (I : Ideal R) (hI : I ≠ ⊤) :
 instance Ideal.finiteHeight_of_isNoetherianRing (I : Ideal R) :
     I.FiniteHeight := Ideal.finiteHeight_iff_lt.mpr <| Or.elim (em (I = ⊤)) Or.inl <|
   fun h ↦ Or.inr <| (lt_of_le_of_lt (I.height_le_spanFinrank h) (ENat.coe_lt_top _))
+
+instance [IsNoetherianRing R] [IsLocalRing R] : FiniteRingKrullDim R := by
+  apply finiteRingKrullDim_iff_ne_bot_and_top.mpr
+  rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim]
+  constructor
+  · exact WithBot.coe_ne_bot
+  · rw [← WithBot.coe_top, ne_eq, WithBot.coe_inj]
+    exact ((IsLocalRing.maximalIdeal R).finiteHeight_iff.mp
+      (IsLocalRing.maximalIdeal R).finiteHeight_of_isNoetherianRing).resolve_left
+        Ideal.IsPrime.ne_top'
 
 lemma Ideal.exists_spanRank_eq_and_height_eq (I : Ideal R) (hI : I ≠ ⊤) :
     ∃ J ≤ I, J.spanRank = I.height ∧ J.height = I.height := by

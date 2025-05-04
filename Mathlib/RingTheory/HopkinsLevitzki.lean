@@ -167,7 +167,7 @@ theorem isArtinianRing_iff_krullDimLE_zero {R : Type*} [CommRing R] [IsNoetheria
 lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R : Type*) [CommRing R] [IsNoetherianRing R]
     [IsLocalRing R] : IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
   rw [isArtinianRing_iff_krullDimLE_zero,
-    Ideal.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _),
+    Ideal.FG.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _),
     ← and_iff_left (a := Ring.KrullDimLE 0 R) ‹IsLocalRing R›,
     (Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 3 rfl rfl,
     IsLocalRing.isMaximal_iff, le_antisymm_iff, and_iff_right]
