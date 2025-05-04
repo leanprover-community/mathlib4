@@ -226,7 +226,7 @@ theorem withValEquiv_symm_apply_coe (R : Type*) [CommRing R] [Algebra R K]
 
 @[simp]
 theorem withVal_coe_eq_algebraMap (x : 𝓞 K) :
-    algebraMap (𝓞 K) (WithVal v) x = x.1 := rfl
+    algebraMap (𝓞 K) (WithVal v) x = (x : K) := rfl
 
 end NumberField.RingOfIntegers
 

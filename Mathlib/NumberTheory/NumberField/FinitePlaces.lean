@@ -122,8 +122,8 @@ noncomputable instance instRankOneValuedAdicCompletion :
     · simpa only [ne_eq, map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff,
         RingOfIntegers.withValEquiv_symm_apply_coe]
     · apply ne_of_lt
-      rw [RingOfIntegers.withValEquiv_symm_apply_coe, RingOfIntegers.withVal_coe_eq_algebraMap]
-      erw [adicValued_apply', valuation_eq_intValuationDef, intValuation_lt_one_iff_dvd]
+      rw [RingOfIntegers.withValEquiv_symm_apply_coe, RingOfIntegers.withVal_coe_eq_algebraMap,
+        adicValued_apply', valuation_eq_intValuationDef, intValuation_lt_one_iff_dvd]
       exact dvd_span_singleton.mpr hx1
 
 /-- The `v`-adic completion of `K` is a normed field. -/
