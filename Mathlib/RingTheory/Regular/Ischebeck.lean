@@ -22,6 +22,9 @@ local instance [Small.{v} R] : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R)
   --CategoryTheory.HasExt.standard (ModuleCat.{v} R)
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
 
+instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R) (i : ℕ) :
+    Module.Finite R (Ext.{max u v} N M i) := sorry
+
 variable (R) in
 lemma IsLocalRing.maximalIdeal_mem_support [IsLocalRing R] (M : Type*)
     [AddCommGroup M] [Module R M] [Module.Finite R M] [Nontrivial M] :

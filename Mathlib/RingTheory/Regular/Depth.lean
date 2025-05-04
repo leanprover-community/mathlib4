@@ -370,8 +370,6 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
 
 section depth
 
-instance [IsNoetherianRing R] (N M : ModuleCat.{v} R) (i : ℕ) : Module.Finite R (Ext N M i) := sorry
-
 omit [UnivLE.{v, w}]
 
 noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
