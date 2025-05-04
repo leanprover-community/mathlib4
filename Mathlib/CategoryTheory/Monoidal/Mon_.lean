@@ -207,13 +207,6 @@ theorem comp_hom' {M N K : Mon_ C} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
 
-@[simps]
-def mkIso' {M N : Mon_ C} (f : M.X ≅ N.X) [IsMon_Hom f.hom] : M ≅ N where
-  hom := Hom.mk' f.hom
-  inv := Hom.mk' f.inv
-  hom_inv_id := by aesop_cat
-  inv_hom_id := by aesop_cat
-
 section
 
 variable (C)
@@ -239,16 +232,20 @@ instance : (forget C).ReflectsIsomorphisms where
 and checking compatibility with unit and multiplication only in the forward direction.
 -/
 @[simps]
+def mkIso' {M N : Mon_ C} (f : M.X ≅ N.X) [IsMon_Hom f.hom] : M ≅ N where
+  hom := Hom.mk' f.hom
+  inv := Hom.mk' f.inv
+  hom_inv_id := by aesop_cat
+  inv_hom_id := by aesop_cat
+
+/-- Construct an isomorphism of monoids by giving an isomorphism between the underlying objects
+and checking compatibility with unit and multiplication only in the forward direction.
+-/
+@[simps!]
 def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := by aesop_cat)
-    (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul := by aesop_cat) : M ≅ N where
-  hom := { hom := f.hom }
-  inv :=
-  { hom := f.inv
-    one_hom := by rw [← one_f]; simp
-    mul_hom := by
-      rw [← cancel_mono f.hom]
-      slice_rhs 2 3 => rw [mul_f]
-      simp }
+    (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul := by aesop_cat) : M ≅ N :=
+  have : IsMon_Hom f.hom := ⟨one_f, mul_f⟩
+  mkIso' f
 
 @[simps]
 instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
