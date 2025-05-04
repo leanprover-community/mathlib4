@@ -121,9 +121,12 @@ lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Modu
     (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
     ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
     (Submodule.mkQ (maximalIdeal R)))) (Submodule.mkQ_surjective _))
-  #check IsLocalRing.map_mkQ_eq_top
-  --consider the map of range f
-  sorry
+  have : Function.Surjective ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap ∘ₗ
+    Finsupp.mapRange.linearMap (Submodule.mkQ (maximalIdeal R))) := by
+    apply Function.Surjective.comp (LinearEquiv.restrictScalars R b.repr).symm.surjective
+    exact Finsupp.mapRange_surjective _ rfl (Submodule.mkQ_surjective _)
+  rw [← hf, ← LinearMap.range_eq_top, LinearMap.range_comp] at this
+  exact LinearMap.range_eq_top.mp (IsLocalRing.map_mkQ_eq_top.mp this)
 
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
