@@ -426,8 +426,7 @@ lemma moduleDepth_eq_sup_nat (N M : ModuleCat.{v} R) : moduleDepth N M =
 
 lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R) [Small.{v, u} (R ⧸ I)]
     (N M : ModuleCat.{v} R) [Module.Finite R M] [Nfin : Module.Finite R N]
-    [Nontrivial M] [Nntr : Nontrivial N]
-    (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+    [Nontrivial M] [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
     moduleDepth N M = I.depth M := by
   have (n : ℕ) : (∀ i < n, Subsingleton (Ext.{max u v} N M i)) ↔
@@ -513,5 +512,31 @@ lemma moduleDepth_ge_min_of_shortExact_snd
   exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
     (Ext.covariant_sequence_exact₂' N hS i)
     (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
+
+lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R) [Small.{v, u} (R ⧸ I)]
+    (N M : ModuleCat.{v} R) [Module.Finite R M] [Nfin : Module.Finite R N]
+    [Nontrivial M] [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+    (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
+    moduleDepth N M = sSup {(List.length rs : ℕ∞) | (rs : List R)
+    (_ : RingTheory.Sequence.IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I) } := by
+  rw [moduleDepth_eq_sup_nat]
+  congr
+  ext m
+  simp only [Set.mem_setOf_eq, exists_prop, exists_and_left]
+  refine ⟨fun ⟨lt_top, h⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
+  · rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt lt_top) with ⟨n, hn⟩
+    simp only [← hn, Nat.cast_lt, Nat.cast_inj] at h ⊢
+    have : ∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
+      Module.support R N = PrimeSpectrum.zeroLocus ↑I ∧
+      ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
+      use N
+    rcases ((lemma222.{u, v, max u v} I n M (by assumption) (by assumption) smul_lt).out 2 3).mp
+      this with ⟨rs, len, mem, reg⟩
+    use rs
+  · simp only [← len, ENat.coe_lt_top, Nat.cast_lt, true_and]
+    have rees := ((lemma222.{u, v, max u v} I rs.length M (by assumption) (by assumption)
+      smul_lt).out 3 0).mp (by use rs)
+    apply rees N
+    simp [Nntr, Nfin, hsupp]
 
 end depth
