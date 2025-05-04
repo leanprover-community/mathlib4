@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Nakayama
 /-!
 # Krull's Height Theorem
 
-In this file, we proved Krull's principal ideal theorem and Krull's height theorem.
+In this file, we prove Krull's principal ideal theorem and Krull's height theorem.
 
 ## Main Results
 
