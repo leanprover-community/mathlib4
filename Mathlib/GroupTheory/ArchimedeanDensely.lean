@@ -178,8 +178,8 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_is
 section TypeTags
 
 /-- Reinterpret `G ≃*o H` as `Additive G ≃+o Additive H`. -/
-def OrderMonoidIso.toAdditive {G H : Type*} [CommMonoid G] [PartialOrder G]
-    [CommMonoid H] [PartialOrder H] [IsOrderedMonoid H] :
+def OrderMonoidIso.toAdditive {G H : Type*}
+    [CommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] :
     (G ≃*o H) ≃ (Additive G ≃+o Additive H) where
   toFun e := ⟨MulEquiv.toAdditive e, by simp⟩
   invFun e := ⟨MulEquiv.toAdditive.symm e, by simp⟩
@@ -187,8 +187,8 @@ def OrderMonoidIso.toAdditive {G H : Type*} [CommMonoid G] [PartialOrder G]
   right_inv e := by ext; simp
 
 /-- Reinterpret `G ≃+o H` as `Multiplicative G ≃*o Multiplicative H`. -/
-def OrderAddMonoidIso.toMultiplicative {G H : Type*} [AddCommMonoid G] [PartialOrder G]
-    [AddCommMonoid H] [PartialOrder H] [IsOrderedAddMonoid H] :
+def OrderAddMonoidIso.toMultiplicative {G H : Type*}
+    [AddCommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] :
     (G ≃+o H) ≃ (Multiplicative G ≃*o Multiplicative H) where
   toFun e := ⟨AddEquiv.toMultiplicative e, by simp⟩
   invFun e := ⟨AddEquiv.toMultiplicative.symm e, by simp⟩
@@ -196,16 +196,12 @@ def OrderAddMonoidIso.toMultiplicative {G H : Type*} [AddCommMonoid G] [PartialO
   right_inv e := by ext; simp
 
 instance Additive.instUniqueOrderAddMonoidIso {G H : Type*}
-    [CommMonoid G] [PartialOrder G] [IsOrderedMonoid G]
-    [CommMonoid H] [PartialOrder H] [IsOrderedMonoid H]
-    [Unique (G ≃*o H)] :
+    [CommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] [Unique (G ≃*o H)] :
     Unique (Additive G ≃+o Additive H) :=
   OrderMonoidIso.toAdditive.symm.unique
 
 instance Multiplicative.instUniqueOrderdMonoidIso {G H : Type*}
-    [AddCommMonoid G] [PartialOrder G] [IsOrderedAddMonoid G]
-    [AddCommMonoid H] [PartialOrder H] [IsOrderedAddMonoid H]
-    [Unique (G ≃+o H)] :
+    [AddCommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] [Unique (G ≃+o H)] :
     Unique (Multiplicative G ≃*o Multiplicative H) :=
   OrderAddMonoidIso.toMultiplicative.symm.unique
 
