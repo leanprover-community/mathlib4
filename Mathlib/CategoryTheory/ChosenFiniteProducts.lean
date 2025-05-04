@@ -766,10 +766,10 @@ lemma μ_comp [(F ⋙ G).Monoidal] (X Y : C) : μ (F ⋙ G) X Y = μ G _ _ ≫ G
 
 variable [PreservesFiniteProducts F]
 
-lemma ε_of_ChosenFiniteProducts : ε F = (preservesTerminalIso F).inv := by
+lemma ε_of_chosenFiniteProducts : ε F = (preservesTerminalIso F).inv := by
   change (εIso F).symm.inv = _; congr; ext
 
-lemma μ_of_ChosenFiniteProducts (X Y : C) : μ F X Y = (prodComparisonIso F X Y).inv := by
+lemma μ_of_chosenFiniteProducts (X Y : C) : μ F X Y = (prodComparisonIso F X Y).inv := by
   change (μIso F X Y).symm.inv = _; congr; ext : 1; simpa using δ_of_chosenFiniteProducts F X Y
 
 omit [F.Monoidal] in
