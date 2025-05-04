@@ -39,7 +39,7 @@ instance hasEnoughRootsOfUnity (F : Type*) [Field F] [IsAlgClosed F] (n : ℕ) [
 
 end IsAlgClosed
 
-lemma pullIsCyclic' {G H : Type*} [Pow G ℤ] [Pow H ℤ] (h : IsCyclic G)
+lemma IsCyclic.push_ofSurjective {G H : Type*} [Pow G ℤ] [Pow H ℤ] (h : IsCyclic G)
     (f : G → H) (hf₁ : Function.Surjective f) (hf₂ : ∀ a : G, ∀ n : ℤ, f (a ^ n) = f a ^ n) :
     IsCyclic H where
   exists_zpow_surjective := by
@@ -49,14 +49,7 @@ lemma pullIsCyclic' {G H : Type*} [Pow G ℤ] [Pow H ℤ] (h : IsCyclic G)
     obtain ⟨z , hz⟩ := Function.Surjective.comp hf₁ hg₀ w
     exact ⟨z, by rw [← hz, Function.comp_apply]; simp_all only⟩
 
-variable (n : ℕ)
-
-lemma pullIsCyclic {M : Type*} [CommMonoid M] {N : Type*} [CommMonoid N]
-    (e : rootsOfUnity n M ≃* rootsOfUnity n N) (h : IsCyclic (rootsOfUnity n N)) :
-    IsCyclic (rootsOfUnity n M) := pullIsCyclic' h e.symm e.symm.surjective (map_zpow _)
-
-
-variable [NeZero n]
+variable (n : ℕ) [NeZero n]
 
 /-- nth roots of unity of the complex numbers embeded into the Circle -/
 noncomputable def rootsOfUnitytoCircle : (rootsOfUnity n ℂ) →* Circle where
@@ -123,4 +116,5 @@ instance : HasEnoughRootsOfUnity Circle n where
     simp_all only [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.coe_submonoidClass_iff]
     exact pullIsPrimitiveRoot n hm
   cyc :=
-    pullIsCyclic n (rootsOfUnityCircleEquiv n) (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc
+    (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc.push_ofSurjective (rootsOfUnityCircleEquiv n).symm
+      (rootsOfUnityCircleEquiv n).symm.surjective (map_zpow _)
