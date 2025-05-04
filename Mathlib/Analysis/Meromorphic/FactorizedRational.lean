@@ -25,8 +25,7 @@ codiscrete sets, to the product of a factorized rational function and an analyti
 zeros.
 -/
 
-variable
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 open Set
 
@@ -51,7 +50,7 @@ lemma mulSupport (d : 𝕜 → ℤ) :
 Helper Lemma: If the support of `d` is finite, then evaluation of functions commutes with finprod,
 and the function `∏ᶠ u, (· - u) ^ d u` equals `fun x ↦ ∏ᶠ u, (x - u) ^ d u`.
 -/
-lemma finprod_eval {d : 𝕜 → ℤ} (h : d.support.Finite) :
+lemma finprod_eq_fun {d : 𝕜 → ℤ} (h : d.support.Finite) :
     (∏ᶠ u, (· - u) ^ d u) = fun x ↦ ∏ᶠ u, (x - u) ^ d u := by
   ext x
   rw [finprod_eq_prod_of_mulSupport_subset (s := h.toFinset),
@@ -86,7 +85,6 @@ theorem ne_zero {d : 𝕜 → ℤ} {x : 𝕜} (h : d x = 0) :
     simp only [Pi.pow_apply, ne_eq]
     by_cases h₂ : x = z <;> simp_all [zpow_ne_zero, sub_ne_zero]
   · simp [finprod_of_infinite_mulSupport h₁]
-
 
 open Classical in
 /--
@@ -158,8 +156,7 @@ theorem order_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
 /--
 If `D` is a divisor, then the divisor of the factorized rational function equals `D`.
 -/
-theorem divisor {U : Set 𝕜} (D : locallyFinsuppWithin U ℤ)
-    (hD : D.support.Finite) :
+theorem divisor {U : Set 𝕜} {D : locallyFinsuppWithin U ℤ} (hD : D.support.Finite) :
     MeromorphicOn.divisor (∏ᶠ u, (· - u) ^ D u) U = D := by
   ext z
   by_cases hz : z ∈ U
