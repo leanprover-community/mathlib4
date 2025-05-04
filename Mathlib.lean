@@ -1293,6 +1293,7 @@ import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 import Mathlib.Analysis.CStarAlgebra.Classes
+import Mathlib.Analysis.CStarAlgebra.CompletelyPositiveMap
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
@@ -1578,6 +1579,7 @@ import Mathlib.Analysis.MellinInversion
 import Mathlib.Analysis.MellinTransform
 import Mathlib.Analysis.Meromorphic.Basic
 import Mathlib.Analysis.Meromorphic.Divisor
+import Mathlib.Analysis.Meromorphic.FactorizedRational
 import Mathlib.Analysis.Meromorphic.NormalForm
 import Mathlib.Analysis.Meromorphic.Order
 import Mathlib.Analysis.Normed.Affine.AddTorsor
@@ -2259,6 +2261,7 @@ import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Localization.HomEquiv
+import Mathlib.CategoryTheory.Localization.Linear
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.Localization.LocallySmall
 import Mathlib.CategoryTheory.Localization.Monoidal
@@ -5053,6 +5056,7 @@ import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.Ideal.BigOperators
