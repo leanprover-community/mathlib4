@@ -5,7 +5,7 @@ Authors: Stefan Kebekus
 -/
 import Mathlib.Analysis.Meromorphic.Divisor
 import Mathlib.Analysis.Meromorphic.NormalForm
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Factorized Rational Functions
