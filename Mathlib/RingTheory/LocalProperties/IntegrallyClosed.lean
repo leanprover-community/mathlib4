@@ -5,6 +5,7 @@ Authors: Yongle Hu
 -/
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
@@ -66,3 +67,23 @@ theorem IsIntegrallyClosed.of_localization_maximal {R : Type*} [CommRing R] [IsD
 theorem isIntegrallyClosed_ofLocalizationMaximal :
     OfLocalizationMaximal fun R _ => ([IsDomain R] → IsIntegrallyClosed R) :=
   fun _ _ h _ ↦ IsIntegrallyClosed.of_localization_maximal fun p _ hpm ↦ h p hpm
+
+theorem IsIntegrallyClosed.of_localization {R : Type*} [CommRing R] [IsDomain R]
+    (S : Set (PrimeSpectrum R)) (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
+    (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl
+    p.1.primeCompl_le_nonZeroDivisors) = ⊥) : IsIntegrallyClosed R := by
+  by_cases hf : IsField R
+  · exact hf.toField.instIsIntegrallyClosed
+  apply (isIntegrallyClosed_iff (FractionRing R)).mpr
+  intro x hx
+  show x ∈ (⊥ : Subalgebra R (FractionRing R))
+  rw [← hs]
+  refine Algebra.mem_iInf.mpr ?_
+  intro p
+  refine Algebra.mem_iInf.mpr ?_
+  intro hp
+  let B := (Localization.subalgebra (FractionRing R) p.1.primeCompl
+    p.1.primeCompl_le_nonZeroDivisors)
+  have : IsIntegral (Localization.subalgebra (FractionRing R) p.1.primeCompl
+    p.1.primeCompl_le_nonZeroDivisors) x := sorry
+  sorry
