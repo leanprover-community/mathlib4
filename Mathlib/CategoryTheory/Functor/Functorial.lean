@@ -20,7 +20,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 -- Perhaps in the future we could redefine `Functor` in terms of this, but that isn't the
 -- immediate plan.
 /-- An unbundled functor. -/
-@[simps]
 class Functorial (F : C → D) : Type max v₁ v₂ u₁ u₂ where
   /-- If `F : C → D` (just a function) has `[Functorial F]`,
   we can write `map F f : F X ⟶ F Y` for the action of `F` on a morphism `f : X ⟶ Y`. -/
