@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Localization.Linear
 import Mathlib.CategoryTheory.Shift.Linear
 
 /-!
-# The derived category of a linear category is linear
+# The derived category of a linear abelian category is linear
 
 -/
 

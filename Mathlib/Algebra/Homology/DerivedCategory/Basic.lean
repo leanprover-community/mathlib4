@@ -199,6 +199,11 @@ noncomputable instance : IsTriangulated (DerivedCategory C) :=
   Triangulated.Localization.isTriangulated
     Qh (HomotopyCategory.subcategoryAcyclic C).trW
 
+noncomputable instance (n : ℤ) :
+  Localization.Lifting Qh (HomotopyCategory.subcategoryAcyclic C).trW
+    (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n ⋙ Qh)
+    (shiftFunctor (DerivedCategory C) n) := ⟨(Qh.commShiftIso n).symm⟩
+
 instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow _ (HomotopyCategory.subcategoryAcyclic C).trW
 
