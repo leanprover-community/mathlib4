@@ -50,10 +50,8 @@ noncomputable def rootsOfUnitytoCircle : (rootsOfUnity n ℂ) →* Circle where
 noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
   __ := (rootsOfUnityUnitsMulEquiv ℂ n).toMonoidHom.comp (restrictRootsOfUnity Circle.toUnits n)
   invFun z := ⟨(rootsOfUnitytoCircle n).toHomUnits z, by
-    rw [mem_rootsOfUnity']
-    rw [MonoidHom.coe_toHomUnits]
-    rw [← MonoidHom.map_pow]
-    rw [← (rootsOfUnitytoCircle n).map_one]
+    rw [mem_rootsOfUnity', MonoidHom.coe_toHomUnits, ← MonoidHom.map_pow,
+      ← (rootsOfUnitytoCircle n).map_one]
     congr
     aesop⟩
   left_inv _ := by aesop
@@ -63,13 +61,11 @@ instance : HasEnoughRootsOfUnity ℂ n := IsAlgClosed.hasEnoughRootsOfUnity ℂ 
 
 instance : IsCyclic (rootsOfUnity n Circle) where
   exists_zpow_surjective := by
-    obtain ⟨g₀,hg₀⟩ := (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc.exists_zpow_surjective
+    obtain ⟨g₀, hg₀⟩ := (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc.exists_zpow_surjective
     use (rootsOfUnityCircleEquiv n).symm g₀
     intro w
     obtain ⟨z , hz⟩ := Function.Surjective.comp (rootsOfUnityCircleEquiv n).symm.surjective hg₀ w
-    use z
-    rw [← hz]
-    aesop
+    exact ⟨z, by rw [← hz, Function.comp_apply, map_zpow]⟩
 
 
 /-
