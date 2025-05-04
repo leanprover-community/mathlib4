@@ -762,8 +762,6 @@ end Mon_Class
 
 namespace Mon_
 
-open Mon_Class
-
 instance : SymmetricCategory (Mon_ C) where
   braiding := fun X Y => mkIso' (β_ X.X Y.X)
   symmetry := fun X Y => by
