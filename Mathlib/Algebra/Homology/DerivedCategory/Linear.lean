@@ -32,12 +32,8 @@ instance : Functor.Linear R (DerivedCategory.Qh : _ ⥤ DerivedCategory C) :=
 instance : Functor.Linear R (DerivedCategory.Q : _ ⥤ DerivedCategory C) :=
   Functor.linear_of_iso _ (quotientCompQhIso C)
 
-instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Linear R := by
-  rw [← Localization.functor_linear_iff
-    Qh (HomotopyCategory.subcategoryAcyclic C).trW R
-    (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n ⋙ Qh)
-    (shiftFunctor (DerivedCategory C) n)]
-  infer_instance
+instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Linear R :=
+  Shift.linear_of_localization R Qh (HomotopyCategory.subcategoryAcyclic C).trW _
 
 instance (n : ℤ) :
     Functor.Linear R (DerivedCategory.singleFunctor C n) :=
