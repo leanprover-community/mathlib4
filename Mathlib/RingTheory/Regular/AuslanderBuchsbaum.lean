@@ -105,6 +105,7 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   -- Add your proof here
   sorry
 
+omit [Small.{v, u} R] in
 lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
     (ι : Type*) (b : Basis ι (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))) :
     Function.Surjective (Classical.choose (Module.projective_lifting_property
@@ -128,12 +129,36 @@ lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Modu
   rw [← hf, ← LinearMap.range_eq_top, LinearMap.range_comp] at this
   exact LinearMap.range_eq_top.mp (IsLocalRing.map_mkQ_eq_top.mp this)
 
+noncomputable instance [IsLocalRing R] : Field (R ⧸ maximalIdeal R) := Quotient.field (maximalIdeal R)
+
+lemma quot_smul_top_finiteDimensional [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M]
+    [Module.Finite R M] :
+    FiniteDimensional (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M)) := by
+  --FiniteDimensional.span_of_finite
+  sorry
+
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     [Small.{v} (R ⧸ (IsLocalRing.maximalIdeal R))]
     (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
     1 + IsLocalRing.depth M = IsLocalRing.depth (ModuleCat.of R R) := by
-
+  rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
+    with ⟨ι, hι⟩
+  rcases hι with ⟨B⟩
+  let f := Classical.choose (Module.projective_lifting_property
+    (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
+    ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
+    (Submodule.mkQ (maximalIdeal R)))) (Submodule.mkQ_surjective _))
+  have hf : (maximalIdeal R • (⊤ : Submodule R M)).mkQ.comp f = _ :=
+    Classical.choose_spec (Module.projective_lifting_property
+    (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
+    ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
+    (Submodule.mkQ (maximalIdeal R)))) (Submodule.mkQ_surjective _))
+  have surjf : Function.Surjective f := basis_lift M ι B
+  --FiniteDimensional.fintypeBasisIndex
+  --get exact seq using ker
+  --ker free from projective dimension
+  --ker in `(maximalIdeal R) • ⊤`
   sorry
 
 open scoped Classical in
