@@ -260,7 +260,7 @@ instance Ideal.finiteHeight_of_isNoetherianRing (I : Ideal R) :
     I.FiniteHeight := Ideal.finiteHeight_iff_lt.mpr <| Or.elim (em (I = ⊤)) Or.inl <|
   fun h ↦ Or.inr <| (lt_of_le_of_lt (I.height_le_spanFinrank h) (ENat.coe_lt_top _))
 
-lemma exists_spanRank_eq_and_height_eq (I : Ideal R) (hI : I ≠ ⊤) :
+lemma Ideal.exists_spanRank_eq_and_height_eq (I : Ideal R) (hI : I ≠ ⊤) :
     ∃ J ≤ I, J.spanRank = I.height ∧ J.height = I.height := by
   obtain ⟨J, hJ₁, hJ₂, hJ₃⟩ := exists_spanRank_le_and_le_height_of_le_height I _
     (ENat.coe_toNat_le_self I.height)
