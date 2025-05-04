@@ -106,9 +106,11 @@ def coneEquiv : Cone K ≌ Cone (liftFromOver.obj K) where
   unitIso := .refl _
   counitIso := NatIso.ofComponents fun t ↦ Cones.ext <| .refl _
 
+@[simp]
 theorem coneEquiv_functor_obj_π_app_star : (coneEquiv.functor.obj t).π.app star = t.pt.hom :=
   by simp
 
+@[simp]
 theorem coneEquiv_functor_obj_π_app_of (Y : J): (coneEquiv.functor.obj t).π.app (of Y) =
     (t.π.app Y).left := by simp
 
@@ -203,11 +205,12 @@ def coconeEquiv : Cocone K ≌ Cocone (liftFromUnder.obj K) where
   unitIso := .refl _
   counitIso := NatIso.ofComponents fun t ↦ Cocones.ext <| .refl _
 
+@[simp]
+theorem coconeEquiv_functor_obj_ι_app_star : (coconeEquiv.functor.obj t).ι.app star = t.pt.hom := by
+  simp
 
-theorem coconeEquiv_functor_obj_π_app_star : (coconeEquiv.functor.obj t).ι.app star = t.pt.hom :=
-  by simp
-
-theorem coconeEquiv_functor_obj_π_app_of (Y : J): (coconeEquiv.functor.obj t).ι.app (of Y) =
+@[simp]
+theorem coconeEquiv_functor_obj_ι_app_of (Y : J): (coconeEquiv.functor.obj t).ι.app (of Y) =
     (t.ι.app Y).right := by simp
 
 /-- A cocone `t` of `K : J ⥤ Under X` is a colimit if and only if the corresponding cocone
