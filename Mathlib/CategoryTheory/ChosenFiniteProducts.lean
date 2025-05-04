@@ -854,8 +854,7 @@ namespace EssImageSubcategory
 variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}
 
 @[simps!]
-noncomputable instance instChosenFiniteProducts :
-    ChosenFiniteProducts F.EssImageSubcategory :=
+noncomputable instance instChosenFiniteProducts : ChosenFiniteProducts F.EssImageSubcategory :=
   .fullSubcategory (.essImage _) (.essImage _)
 
 lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
