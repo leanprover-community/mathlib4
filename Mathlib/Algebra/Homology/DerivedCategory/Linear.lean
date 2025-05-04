@@ -35,8 +35,7 @@ instance : Functor.Linear R (DerivedCategory.Q : _ ⥤ DerivedCategory C) :=
 instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Linear R :=
   Shift.linear_of_localization R Qh (HomotopyCategory.subcategoryAcyclic C).trW _
 
-instance (n : ℤ) :
-    Functor.Linear R (DerivedCategory.singleFunctor C n) :=
+instance (n : ℤ) : Functor.Linear R (DerivedCategory.singleFunctor C n) :=
   inferInstanceAs (Functor.Linear R (HomotopyCategory.singleFunctor C n ⋙ Qh))
 
 end DerivedCategory
