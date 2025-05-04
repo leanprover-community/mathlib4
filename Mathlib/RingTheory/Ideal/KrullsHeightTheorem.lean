@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
+Authors: Wanyi He, Jiedong Jiang, Christian Merten, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.Height
@@ -296,3 +296,20 @@ lemma Ideal.height_le_iff_exists_minimalPrimes (p : Ideal R) [p.IsPrime]
     exact le_trans
       (Ideal.height_le_spanRank_toENat_of_mem_minimal_primes I p hp)
       (by simpa using (Cardinal.toENat.monotone' hI))
+
+/-- If `p` is a prime in a Noetherian ring `R`, there exists a `p`-primary ideal `I`
+spanned by `p.height` elements. -/
+lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing
+    (p : Ideal R) [p.IsPrime] : ∃ (I : Ideal R) (s : Finset R),
+      p ∈ I.minimalPrimes ∧ Ideal.span s = I ∧ s.card = p.height := by
+  obtain ⟨I, hI, hr⟩ := (p.height_le_iff_exists_minimalPrimes <| p.height).mp le_rfl
+  have hs : I.generators.Finite := (IsNoetherian.noetherian I).finite_generators
+  refine ⟨I, hs.toFinset, hI, (by simpa using I.span_generators), ?_⟩
+  rw [← Set.ncard_eq_toFinset_card (hs := hs), (IsNoetherian.noetherian I).generators_ncard]
+  refine le_antisymm ?_ ?_
+  · rw [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr (IsNoetherian.noetherian I)] at hr
+    exact Cardinal.nat_le_ofENat.mp hr
+  · convert_to p.height ≤ I.spanRank.toENat
+    · symm
+      simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using (IsNoetherian.noetherian I)
+    · exact I.height_le_spanRank_toENat_of_mem_minimal_primes _ hI
