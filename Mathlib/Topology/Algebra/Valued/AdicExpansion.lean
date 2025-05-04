@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.PowerSeries.Evaluation
 import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.Analysis.Normed.Ring.Lemmas
 
 
 /-!
@@ -101,6 +102,7 @@ open AdicExpansion
 /-- A formal expansion of an element in the local ring, at the digits specified. Meant to
 be evaluated using `AdicExpansion.evalAtUpto` and related definitions. -/
 structure AdicExpansion [IsLocalRing R] (d : Digits R) where
+  /-- The underlying series. -/
   carrier : PowerSeries R
   isDigits i : carrier.coeff R i ∈ d
 
@@ -181,6 +183,7 @@ lemma congr_of_eqOn (ϖ : R) {f g : AdicExpansion D} {n : ℕ}
     simp only [evalAtUpto_add_one]
     rw [ih (fun i hi ↦ h i (Nat.lt_succ_of_lt hi)), h _ (by simp)]
 
+/-- Division through by X, dropping the constant coefficient. -/
 noncomputable
 def shiftLeft (f : AdicExpansion D) : AdicExpansion D :=
   ⟨.mk fun n ↦ f (n + 1), fun _ ↦ by simp⟩
