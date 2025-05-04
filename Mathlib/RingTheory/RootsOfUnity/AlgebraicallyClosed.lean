@@ -7,6 +7,7 @@ import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 import Mathlib.NumberTheory.Cyclotomic.Basic
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Analysis.Complex.Circle
 
 /-!
 # Instances for HasEnoughRootsOfUnity
