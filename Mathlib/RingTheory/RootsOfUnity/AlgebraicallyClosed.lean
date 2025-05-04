@@ -64,31 +64,23 @@ lemma pullIsPrimitiveRoot {M N : Type*} [CommMonoid M] [CommMonoid N] {m : M}
     (hm : IsPrimitiveRoot m n) :
     IsPrimitiveRoot (e hm.toRootsOfUnity) n where
   pow_eq_one := by
-    have e1 : m ^ n = 1 :=  hm.pow_eq_one
+    rw [← map_pow]
     have e2 : hm.toRootsOfUnity ^ n = 1 := by
       ext : 2
       simp_all only [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val,
         IsPrimitiveRoot.val_toRootsOfUnity_coe, OneMemClass.coe_one, Units.val_one]
-    have e4 : e (hm.toRootsOfUnity ^ n) = 1 := by
-      aesop
-    have e5 : (e hm.toRootsOfUnity) ^ n = 1 := by
-      rw [← map_pow, e4]
-    rw [e5]
-  dvd_of_pow_eq_one := by
-    intro l hl
-    rw [← (hm.pow_eq_one_iff_dvd l)]
-    --rw [← map_pow] at hl
+      rw [hm.pow_eq_one]
+    rw [e2, e.map_one]
+  dvd_of_pow_eq_one := fun l hl => (hm.pow_eq_one_iff_dvd l).mp (by
     have e1 : (hm.toRootsOfUnity ^ l) = e.symm 1 := by
       rw [← hl]
       rw [← map_pow]
       simp only [map_pow, MulEquiv.symm_apply_apply]
-    have e2 : (hm.toRootsOfUnity ^ l) = 1 := by
-      aesop
     have e3 : (hm.toRootsOfUnity ^ l).val.val = 1 := by
-      rw [e2]
+      simp_all only [map_one]
       norm_cast
     rw [← e3]
-    norm_cast
+    norm_cast)
 
 instance : HasEnoughRootsOfUnity Circle n where
   prim := by
