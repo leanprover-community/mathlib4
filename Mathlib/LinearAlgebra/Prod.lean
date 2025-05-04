@@ -239,6 +239,11 @@ theorem coprod_map_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (S : Su
     rw [← Set.image2_add, Set.image2_image_left, Set.image2_image_right]
     exact Set.image_prod fun m m₂ => f m + g m₂
 
+@[simp]
+theorem coprod_comp_inl_inr (f : M × M₂ →ₗ[R] M₃) :
+    (f.comp (inl R M M₂)).coprod (f.comp (inr R M M₂)) = f := by
+  rw [← comp_coprod, coprod_inl_inr, comp_id]
+
 /-- Taking the product of two maps with the same codomain is equivalent to taking the product of
 their domains.
 
