@@ -449,9 +449,6 @@ protected theorem Topology.IsClosedEmbedding.normalSpace [TopologicalSpace Y] [N
         (disjoint_image_of_injective hf.injective hst)
     exact (H.preimage hf.continuous).mono (subset_preimage_image _ _) (subset_preimage_image _ _)
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.normalSpace := IsClosedEmbedding.normalSpace
-
 protected theorem Homeomorph.normalSpace [TopologicalSpace Y] [NormalSpace X] (h : X ≃ₜ Y) :
     NormalSpace Y :=
   h.symm.isClosedEmbedding.normalSpace
@@ -492,9 +489,6 @@ protected theorem Topology.IsClosedEmbedding.t4Space [TopologicalSpace Y] [T4Spa
     (hf : IsClosedEmbedding f) : T4Space X where
   toT1Space := hf.isEmbedding.t1Space
   toNormalSpace := hf.normalSpace
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.t4Space := IsClosedEmbedding.t4Space
 
 protected theorem Homeomorph.t4Space [TopologicalSpace Y] [T4Space X] (h : X ≃ₜ Y) : T4Space Y :=
   h.symm.isClosedEmbedding.t4Space

@@ -332,34 +332,49 @@ theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[
     (f : M [⋀^ι]→L[R] N) : ⇑(g.compContinuousAlternatingMap f) = g ∘ f :=
   rfl
 
-/-- A continuous linear equivalence of domains defines an equivalence between continuous
-alternating maps. -/
-def _root_.ContinuousLinearEquiv.continuousAlternatingMapComp (e : M ≃L[R] M') :
+/-- A continuous linear equivalence of domains
+defines an equivalence between continuous alternating maps. -/
+@[simps -fullyApplied apply]
+def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv (e : M ≃L[R] M') :
     M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N where
   toFun f := f.compContinuousLinearMap ↑e.symm
   invFun f := f.compContinuousLinearMap ↑e
   left_inv f := by ext; simp [Function.comp_def]
   right_inv f := by ext; simp [Function.comp_def]
 
-/-- A continuous linear equivalence of codomains defines an equivalence between continuous
-alternating maps. -/
-def _root_.ContinuousLinearEquiv.compContinuousAlternatingMap (e : N ≃L[R] N') :
+@[deprecated (since := "2025-04-16")]
+alias _root_.ContinuousLinearEquiv.continuousAlternatingMapComp :=
+  ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv
+
+/-- A continuous linear equivalence of codomains
+defines an equivalence between continuous alternating maps. -/
+@[simps -fullyApplied apply]
+def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv (e : N ≃L[R] N') :
     M [⋀^ι]→L[R] N ≃ M [⋀^ι]→L[R] N' where
   toFun := (e : N →L[R] N').compContinuousAlternatingMap
   invFun := (e.symm : N' →L[R] N).compContinuousAlternatingMap
   left_inv f := by ext; simp [(· ∘ ·)]
   right_inv f := by ext; simp [(· ∘ ·)]
 
+@[deprecated (since := "2025-04-16")]
+alias _root_.ContinuousLinearEquiv.compContinuousAlternatingMap :=
+  ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv
+
+set_option linter.deprecated false in
 @[simp]
 theorem _root_.ContinuousLinearEquiv.compContinuousAlternatingMap_coe
     (e : N ≃L[R] N') (f : M [⋀^ι]→L[R] N) : ⇑(e.compContinuousAlternatingMap f) = e ∘ f :=
   rfl
 
-/-- Continuous linear equivalences between domains and codomains define an equivalence between the
-spaces of continuous alternating maps. -/
-def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongr (e : M ≃L[R] M') (e' : N ≃L[R] N') :
-    M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N' :=
-  e.continuousAlternatingMapComp.trans e'.compContinuousAlternatingMap
+/-- Continuous linear equivalences between domains and codomains
+define an equivalence between the spaces of continuous alternating maps. -/
+def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrEquiv
+    (e : M ≃L[R] M') (e' : N ≃L[R] N') : M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N' :=
+  e.continuousAlternatingMapCongrLeftEquiv.trans e'.continuousAlternatingMapCongrRightEquiv
+
+@[deprecated (since := "2025-04-16")]
+alias _root_.ContinuousLinearEquiv.continuousAlternatingMapCongr :=
+  ContinuousLinearEquiv.continuousAlternatingMapCongrEquiv
 
 /-- `ContinuousAlternatingMap.pi` as an `Equiv`. -/
 @[simps]
@@ -553,7 +568,7 @@ def toAlternatingMapLinear : (M [⋀^ι]→L[A] N) →ₗ[R] (M [⋀^ι]→ₗ[A
   map_smul' := by simp
 
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R (M' i)] [∀ i, ContinuousConstSMul R (M' i)] :

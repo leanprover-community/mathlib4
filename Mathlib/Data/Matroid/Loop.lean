@@ -29,7 +29,7 @@ and provides API for interacting with them.
 The dual notion of a loop is a 'coloop'. Geometrically, these can be thought of elements that are
 skew to the remainder of the matroid. Coloops in graphic matroids are 'bridge' edges of the graph,
 and coloops in linearly representable matroids are vectors not spanned by the other vectors
-in the elements of the matroid.
+in the matroid.
 Coloops also have many equivalent definitions in abstract matroid language;
 a coloop is an element of `M.E` if any of the following equivalent conditions holds :
 * `e` is a loop of `M✶`;
@@ -48,6 +48,8 @@ For `M` : Matroid `α`:
 * `M.IsColoop e ` means that `e` is a loop of `M✶`.
 * `M.coloops` is the set of coloops of `M✶`.
 * `M.isColoop_tfae` gives a number of properties that are equivalent to `IsColoop`.
+* `M.Loopless` is a typeclass meaning `M` has no loops.
+* `M.removeLoops` is the matroid obtained from `M` by restricting to its set of nonloop elements.
 -/
 
 variable {α β : Type*} {M N : Matroid α} {e f : α} {F X C I : Set α}
@@ -239,9 +241,9 @@ lemma comap_isLoop_iff {M : Matroid β} {f : α → β} : (M.comap f).IsLoop e �
 lemma loopyOn_isLoop_iff {E : Set α} : (loopyOn E).IsLoop e ↔ e ∈ E := by
   simp [isLoop_iff, loops]
 
-lemma eq_loopyOn_iff_loops {E : Set α} : M = loopyOn E ↔ M.loops = E ∧ M.E = E :=
-  ⟨fun h ↦ by rw [h, loops]; simp, fun ⟨h,h'⟩ ↦
-    by rw [← h', ← closure_empty_eq_ground_iff, ← loops, h, h']⟩
+lemma eq_loopyOn_iff_loops {E : Set α} : M = loopyOn E ↔ M.loops = E ∧ M.E = E where
+  mp h := by rw [h, loops]; simp
+  mpr | ⟨h, h'⟩ => by rw [← h', ← closure_empty_eq_ground_iff, ← loops, h, h']
 
 lemma restrict_subset_loops_eq (hX : X ⊆ M.loops) : M ↾ X = loopyOn X := by
   rw [eq_loopyOn_iff_loops, restrict_loops_eq', inter_eq_self_of_subset_right hX,

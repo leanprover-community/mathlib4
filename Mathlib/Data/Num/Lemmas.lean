@@ -381,12 +381,12 @@ instance linearOrder : LinearOrder Num :=
       intro a b
       transfer_rw
       apply le_total
-    decidableLT := Num.decidableLT
-    decidableLE := Num.decidableLE
+    toDecidableLT := Num.decidableLT
+    toDecidableLE := Num.decidableLE
     -- This is relying on an automatically generated instance name,
     -- generated in a `deriving` handler.
     -- See https://github.com/leanprover/lean4/issues/2343
-    decidableEq := instDecidableEqNum }
+    toDecidableEq := instDecidableEqNum }
 
 instance isStrictOrderedRing : IsStrictOrderedRing Num :=
   { zero_le_one := by decide
@@ -560,9 +560,9 @@ instance linearOrder : LinearOrder PosNum where
     intro a b
     transfer_rw
     apply le_total
-  decidableLT := by infer_instance
-  decidableLE := by infer_instance
-  decidableEq := by infer_instance
+  toDecidableLT := by infer_instance
+  toDecidableLE := by infer_instance
+  toDecidableEq := by infer_instance
 
 @[simp]
 theorem cast_to_num (n : PosNum) : ↑n = Num.pos n := by rw [← cast_to_nat, ← of_to_nat n]
@@ -723,7 +723,7 @@ theorem pred_to_nat : ∀ n : Num, (pred n : ℕ) = Nat.pred n
 theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
   | 0 => rfl
   | pos p => by
-    rw [ppred, Option.map_some, Nat.ppred_eq_some.2]
+    rw [ppred, Option.map_eq_map, Option.map_some, Nat.ppred_eq_some.2]
     rw [PosNum.pred'_to_nat, Nat.succ_pred_eq_of_pos (PosNum.to_nat_pos _)]
     rfl
 

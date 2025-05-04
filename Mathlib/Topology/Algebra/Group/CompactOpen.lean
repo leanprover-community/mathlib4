@@ -68,9 +68,6 @@ theorem isClosedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     exact isClosed_eq (continuous_eval_const (x * y)) <|
       .mul (continuous_eval_const x) (continuous_eval_const y)
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_toContinuousMap := isClosedEmbedding_toContinuousMap
-
 variable {A B C D E}
 
 @[to_additive]

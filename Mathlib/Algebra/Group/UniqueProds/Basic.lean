@@ -570,7 +570,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
   multiplication is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
   "This instance asserts that if `G` has a right-cancellative addition, a linear order,
-  and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`." ]
+  and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`."]
 instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     [LinearOrder G] [MulLeftStrictMono G] :
     TwoUniqueProds G where
@@ -604,7 +604,7 @@ open MulOpposite in
   multiplication is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
   "This instance asserts that if `G` has a left-cancellative addition, a linear order, and
-  addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`." ]
+  addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`."]
 instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
     [LinearOrder G] [MulRightStrictMono G] :
     TwoUniqueProds G :=
