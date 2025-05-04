@@ -39,7 +39,7 @@ inductive ExLie : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(LieRing $α) → (e :
 deriving Repr
 
 /--
-This inductive type represents a simplied form of an expression produced by `lie_ring`,
+This inductive type represents a simplified form of an expression produced by `lie_ring`,
 but requires the coefficients to be integer literals.
 -/
 inductive ExSum : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(LieRing $α) → (e : Q($α)) → Type
@@ -67,7 +67,7 @@ def ExSum.eq {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a b : Q($
   | _, _ => false
 
 /--
-Given a nested lie bracket expression, flatten it into a list of natural numbers containing
+Given a nested bracket expression, flatten it into a list of natural numbers containing
 the index of the atoms in the order they appear. (This function facilitates the `ExLie.cmp` function
 that compares two `ExLie` elements)
 -/
@@ -82,7 +82,7 @@ def ExLie.cmp {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a : Q($�
 
 /--
 Check whether an `ExLie` expression satisfies the Lyndon property (which in our case means that
-the nested lie bracket term is already reduced). More information on this and how it's applied in
+the nested bracket term is already reduced). More information on this and how it's applied in
 the algorithm can be seen in the reference link in the documentation.
 -/
 def ExLie.isLyndon {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a : Q($α)} :
@@ -114,11 +114,11 @@ structure Result {α : Q(Type u)} (E : Q($α) → Type) (e : Q($α)) where
 
 variable {α : Q(Type u)}
 
-lemma smul_aux {M : Type*} [AddCommGroup M] {a₁ a₂ a₃ : M} (n₁ n₂ n₃ : ℤ) :
+private lemma smul_aux {M : Type*} [AddCommGroup M] {a₁ a₂ a₃ : M} (n₁ n₂ n₃ : ℤ) :
     n₃ = n₁ * n₂ → n₁ • a₂ = a₃ → n₁ • (n₂ • a₁ + a₂) = n₃ • a₁ + a₃ :=
   fun _ _ ↦ (by subst_vars; simp [smul_smul])
 
-/-- evaluates the `ℤ`-scaler multiple of an element of `ExSum` into the normal form. -/
+/-- This function evaluates the `ℤ`-scaler multiple of an element of `ExSum` into normal form. -/
 def evalSmul (sα : Q(LieRing $α)) {a : Q($α)} (va : ExSum sα a) (coeff : ℤ) :
     Result (ExSum sα) q($coeff • $a) :=
   match va with
@@ -210,7 +210,7 @@ mutual
 
 /-- This function evaluates an expression of the form `⁅ExLie, ExLie⁆` into its normal form,
 which is also the main part of the whole reduction algorithm. Termination of the function can be
-actually proved, but it's written to be mutual recursion to speed up the implementation (and save
+actually proved, but it is written to be mutually recursive to speed up the implementation (and save
 a lot of proving work). -/
 partial def evalLieLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) (vb : ExLie sα b) :
     Lean.Core.CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
@@ -319,7 +319,7 @@ This function is the evaluation process that deals with the expression. It match
 operator with certain kinds that we process, and then handle the subterms recursively.
 
 Notice that we can not `eval` the expression like `(r : ℤ) • ⁅a, b⁆` (where `r` is a variable),
-because this function is designed to only handle lie bracket expression like `⁅a, ⁅b, c⁆⁆` and
+because this function is designed to only handle bracket expression like `⁅a, ⁅b, c⁆⁆` and
 (literal) `ℤ`-coefficients produced in the process.
 -/
 partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(LieRing $α))
@@ -393,7 +393,7 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(LieRing $α))
 
 private theorem eq_aux {α} {a b c : α} (_ : (a : α) = c) (_ : b = c) : a = b := by subst_vars; rfl
 
-/-- Prove an equality in a LieRing by reducing two sides of the equation to Lyndon normal form. -/
+/-- Prove an equality in a `LieRing` by reducing two sides of the equation to Lyndon normal form. -/
 def proveEq (g : MVarId) : AtomM Unit := do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "lie_ring failed: not an equality"
@@ -422,7 +422,7 @@ where
       return q(eq_aux $pa $pb)
 
 /--
-A tactic which evaluate an equality of two expressions in the LieRing to the Lyndon normal form,
+A tactic which evaluate an equality of two expressions in the `LieRing` to the Lyndon normal form,
 and check if they are equal.
 Notice that it only handle expressions consisting only of addition, subtraction, literal
 `ℤ` and `ℕ`-scalar multiplication, and Lie bracket.
@@ -442,7 +442,7 @@ end execution
 
 section command
 
-/-- A Command which evaluates a Lie ring expression to its Lyndon normal form. -/
+/-- A Command which evaluates a `LieRing` expression to its Lyndon normal form. -/
 syntax (name := lie_reduce_cmd) "#LieReduce" term : command
 
 open Command in
@@ -470,7 +470,7 @@ end command
 
 section elaborator
 
-/-- An elaborator which evaluates a Lie ring expression to its Lyndon normal form. -/
+/-- An elaborator which evaluates a `LieRing` expression to its Lyndon normal form. -/
 syntax (name := lie_reduce_term) "lie_reduce%" term : term
 
 @[term_elab lie_reduce_term] private def lieReduceElabImpl : Elab.Term.TermElab := fun stx _ => do
