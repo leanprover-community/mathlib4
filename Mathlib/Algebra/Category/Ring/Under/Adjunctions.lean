@@ -87,7 +87,6 @@ lemma tensorProd_freeAbs_tauto : freeAbs R ⋙ R.tensorProd S = {
     exact this (algebra (R.mkUnder (MvPolynomial σ R))) (algebra (R.mkUnder (MvPolynomial τ R)))
       (mkUnder_eq (MvPolynomial σ R)) (mkUnder_eq (MvPolynomial τ R))
 
-
 noncomputable def tensorProd_freeAbs : freeAbs R ⋙ R.tensorProd S ≅ freeAbs S := by
   -- To get rid of algebra_eq
   rw [tensorProd_freeAbs_tauto]
@@ -114,12 +113,17 @@ noncomputable def tensorProd_freeAbs : freeAbs R ⋙ R.tensorProd S ≅ freeAbs 
         AlgHom.coe_id, id_eq, implies_true]
     )).symm
 
--- /-- The freeAbs is given by `R ⊗[ℤ] ℤ [σ]`. -/
+noncomputable def Under_ℤ : Under (of (ULift.{u, 0} ℤ)) ≌ CommRingCat.{u} :=
+  Under.equivalenceOfIsInitial isInitial
 
+def freeAbs_ℤ_tauto : free ⋙ Under_ℤ.inverse ≅ freeAbs (of (ULift.{u, 0} ℤ)) := by
+  sorry
 
--- -- The free-forget adjunction given by polynomials.
--- #check MvPolynomial.rTensor
--- #check MvPolynomial.algebraTensorAlgEquiv
--- def foo {σ : Type u} : S ⊗[R] (MvPolynomial σ R) ≃ₐ[S] MvPolynomial σ S := by
---   exact MvPolynomial.algebraTensorAlgEquiv R S
+instance (R : CommRingCat.{u}) : Algebra (of (ULift.{u, 0} ℤ)) R
+  := RingHom.toAlgebra RingHom.smulOneHom
+
+noncomputable def adjFreeForget : freeAbs R ⊣ forget :=
+  (adj.comp (Under_ℤ.symm.toAdjunction.comp adjTensorForget)).ofNatIsoLeft
+  (isoWhiskerRight freeAbs_ℤ_tauto ((of (ULift.{u, 0} ℤ)).tensorProd R) ≪≫ tensorProd_freeAbs)
+
 end CommRingCat
