@@ -278,3 +278,29 @@ lemma ι_mapBifunctorMap (i₁ : I₁) (i₂ : I₂) (j : J)
 end
 
 end HomologicalComplex
+
+namespace CategoryTheory.Functor
+
+open HomologicalComplex
+
+variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [Preadditive D]
+  (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
+  {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
+  (c : ComplexShape J) [TotalComplexShape c₁ c₂ c] [DecidableEq J]
+  [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂), HasMapBifunctor K₁ K₂ F c]
+
+@[simps]
+noncomputable def bifunctorMapHomologicalComplex :
+    HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂ ⥤ HomologicalComplex D c where
+  obj K₁ :=
+    { obj K₂ := mapBifunctor K₁ K₂ F c
+      map f₂ := mapBifunctorMap (𝟙 K₁) f₂ F c
+      map_id _ := by ext; dsimp; simp
+      map_comp _ _ := by ext; dsimp; simp }
+  map f₁ :=
+    { app K₂ := mapBifunctorMap f₁ (𝟙 K₂) F c
+      naturality _ _ _ := by ext; dsimp; simp }
+  map_id _ := by ext; dsimp; simp
+  map_comp _ _ := by ext; dsimp; simp
+
+end CategoryTheory.Functor
