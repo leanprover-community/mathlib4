@@ -65,7 +65,7 @@ theorem isIntegrallyClosed_ofLocalizationMaximal :
 /-- An integral domain $R$ is integrally closed if there exists a set of prime ideals $S$ such that
   $\bigcap_{\mathrm{p} \in S} R_{\mathrm{p}} = R$ and for every $\mathrm{p} \in S$, $R_{\mathrm{p}}$
   is integrally closed. -/
-theorem IsIntegrallyClosed.of_localization {R : Type*} [CommRing R] [IsDomain R]
+theorem IsIntegrallyClosed.of_localization {R : Type*} [CommRing R] [NoZeroDivisors R]
     (S : Set (PrimeSpectrum R)) (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
     (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl
     p.1.primeCompl_le_nonZeroDivisors) = ⊥) : IsIntegrallyClosed R := by
@@ -75,8 +75,8 @@ theorem IsIntegrallyClosed.of_localization {R : Type*} [CommRing R] [IsDomain R]
   rw [← hs]
   refine Algebra.mem_iInf.mpr (fun p ↦ (Algebra.mem_iInf.mpr (fun hp ↦ ?_)))
   let B := Localization.subalgebra (FractionRing R) p.1.primeCompl p.1.primeCompl_le_nonZeroDivisors
-  have hb : IsIntegrallyClosed B := .of_equiv (h := h p hp)
-    (IsLocalization.algEquiv p.1.primeCompl (Localization.AtPrime p.asIdeal) B).toRingEquiv
-  rcases ((isIntegrallyClosed_iff (FractionRing R)).mp hb) (IsIntegral.tower_top hx) with ⟨y, hy⟩
+  have hb : IsIntegrallyClosed B := of_equiv (h := h p hp)
+    (IsLocalization.algEquiv p.1.primeCompl (Localization.AtPrime p.1) B).toRingEquiv
+  rcases ((isIntegrallyClosed_iff (FractionRing R)).mp hb) hx.tower_top with ⟨⟨_, hin⟩, hy⟩
   rw [← hy]
-  exact y.2
+  exact hin

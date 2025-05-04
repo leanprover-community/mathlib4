@@ -221,8 +221,7 @@ theorem of_equiv (f : R ≃+* S) [h : IsIntegrallyClosed R] : IsIntegrallyClosed
   let f : S ≃ₐ[S] R := AlgEquiv.ofRingEquiv fun _ ↦ rfl
   let g : FractionRing S ≃ₐ[S] FractionRing R := IsFractionRing.algEquivOfAlgEquiv f
   refine (isIntegrallyClosed_iff (FractionRing S)).mpr (fun hx ↦ ?_)
-  rcases (isIntegrallyClosed_iff (FractionRing R)).mp h <|
-    IsIntegral.tower_top ((isIntegral_algEquiv g).mpr hx) with ⟨z, hz⟩
+  rcases (isIntegrallyClosed_iff _).mp h ((isIntegral_algEquiv g).mpr hx).tower_top with ⟨z, hz⟩
   exact ⟨f.symm z, (IsFractionRing.algEquivOfAlgEquiv_algebraMap f.symm z).symm.trans <|
     (AlgEquiv.symm_apply_eq g).mpr hz⟩
 
