@@ -39,17 +39,22 @@ instance hasEnoughRootsOfUnity (F : Type*) [Field F] [IsAlgClosed F] (n : ℕ) [
 
 end IsAlgClosed
 
+lemma pullIsCyclic' {G H : Type*} [Pow G ℤ] [Pow H ℤ] (h : IsCyclic G)
+    (f : G → H) (hf₁ : Function.Surjective f) (hf₂ : ∀ a : G, ∀ n : ℤ, f (a ^ n) = f a ^ n) :
+    IsCyclic H where
+  exists_zpow_surjective := by
+    obtain ⟨g₀, hg₀⟩ := h.exists_zpow_surjective
+    use f g₀
+    intro w
+    obtain ⟨z , hz⟩ := Function.Surjective.comp hf₁ hg₀ w
+    exact ⟨z, by rw [← hz, Function.comp_apply]; simp_all only⟩
+
 variable (n : ℕ)
 
 lemma pullIsCyclic {M : Type*} [CommMonoid M] {N : Type*} [CommMonoid N]
     (e : rootsOfUnity n M ≃* rootsOfUnity n N) (h : IsCyclic (rootsOfUnity n N)) :
-    IsCyclic (rootsOfUnity n M) where
-  exists_zpow_surjective := by
-    obtain ⟨g₀, hg₀⟩ := h.exists_zpow_surjective
-    use e.symm g₀
-    intro w
-    obtain ⟨z , hz⟩ := Function.Surjective.comp e.symm.surjective hg₀ w
-    exact ⟨z, by rw [← hz, Function.comp_apply, map_zpow]⟩
+    IsCyclic (rootsOfUnity n M) := pullIsCyclic' h e.symm e.symm.surjective (map_zpow _)
+
 
 variable [NeZero n]
 
