@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 
-import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.PowerSeries.Evaluation
 import Mathlib.RingTheory.PowerSeries.Trunc
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 
 /-!
