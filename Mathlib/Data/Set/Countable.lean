@@ -248,12 +248,6 @@ theorem Countable.of_subsingleton [Subsingleton α] (s : Set α) : s.Countable :
 theorem Subsingleton.countable {s : Set α} (hs : s.Subsingleton) : s.Countable :=
   hs.finite.countable
 
-theorem countable_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Countable :=
-  (finite_isTop α).countable
-
-theorem countable_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Countable :=
-  (finite_isBot α).countable
-
 /-- The set of finite subsets of a countable set is countable. -/
 theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
     { t | Set.Finite t ∧ t ⊆ s }.Countable := by

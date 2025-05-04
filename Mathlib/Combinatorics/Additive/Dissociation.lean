@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Dissociation and span
@@ -132,7 +133,7 @@ lemma exists_subset_mulSpan_card_le_of_forall_mulDissociated
     ∃ s', s' ⊆ s ∧ s'.card ≤ d ∧ s ⊆ mulSpan s' := by
   classical
   obtain ⟨s', hs'⟩ :=
-    exists_maximal (s.powerset.filter fun s' : Finset α ↦ MulDissociated (s' : Set α))
+   (s.powerset.filter fun s' : Finset α ↦ MulDissociated (s' : Set α)).exists_maximal
       ⟨∅, mem_filter.2 ⟨empty_mem_powerset _, by simp⟩⟩
   simp only [mem_filter, mem_powerset, lt_eq_subset, and_imp] at hs'
   refine ⟨s', hs'.1.1, hs _ hs'.1.1 hs'.1.2, fun a ha ↦ ?_⟩

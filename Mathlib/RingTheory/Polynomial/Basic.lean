@@ -218,7 +218,7 @@ set `s : R[X]` is finite. There exists a polynomial `p' ∈ s` whose degree domi
 every element of `p ∈ span R s`. -/
 theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite) (hs : s.Nonempty) :
     ∃ p' ∈ s, ∀ (p : R[X]), p ∈ Submodule.span R s → degree p ≤ degree p' := by
-  rcases Set.Finite.exists_maximalFor degree s s_fin hs with ⟨a, has, hmax⟩
+  obtain ⟨a, has, hmax⟩ := s_fin.exists_maximalFor degree s hs
   refine ⟨a, has, fun p hp => ?_⟩
   obtain ⟨p', hp', hpp'⟩ := exists_degree_le_of_mem_span hs hp
   exact hpp'.trans <| not_lt.1 <| not_lt_iff_le_imp_le.2 <| hmax hp'

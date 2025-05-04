@@ -161,36 +161,6 @@ end Nonempty
 
 end Fintype
 
-/-! ### Minimal elements exist in a finite preorder -/
-
-section Preorder
-variable {α : Type*} [Preorder α] {a : α} {p : α → Prop}
-
-lemma Finite.exists_minimal_le [Finite α] (h : p a) : ∃ b ≤ a, Minimal p b := by
-  obtain ⟨b, ⟨hba, hb⟩, hbmin⟩ := {x | x ≤ a ∧ p x}.toFinite.exists_minimal ⟨a, le_rfl, h⟩
-  exact ⟨b, hba, hb, fun x hx hxb ↦ hbmin ⟨hxb.trans hba, hx⟩ hxb⟩
-
-lemma Finite.exists_le_maximal [Finite α] (h : p a) : ∃ b, a ≤ b ∧ Maximal p b :=
-  Finite.exists_minimal_le (α := αᵒᵈ) h
-
-lemma Finset.exists_minimal_le (s : Finset α) (h : a ∈ s) : ∃ b, b ≤ a ∧ Minimal (· ∈ s) b := by
-  obtain ⟨⟨b, _⟩, lb, minb⟩ := @Finite.exists_minimal_le s _ ⟨a, h⟩ (·.1 ∈ s) _ h
-  use b, lb; rwa [minimal_subtype, inf_idem] at minb
-
-lemma Finset.exists_le_maximal (s : Finset α) (h : a ∈ s) : ∃ b, a ≤ b ∧ Maximal (· ∈ s) b :=
-  s.exists_minimal_le (α := αᵒᵈ) h
-
-lemma Set.Finite.exists_minimal_le {s : Set α} (hs : s.Finite) (h : a ∈ s) :
-    ∃ b, b ≤ a ∧ Minimal (· ∈ s) b := by
-  obtain ⟨b, lb, minb⟩ := hs.toFinset.exists_minimal_le (hs.mem_toFinset.mpr h)
-  use b, lb; simpa using minb
-
-lemma Set.Finite.exists_le_maximal {s : Set α} (hs : s.Finite) (h : a ∈ s) :
-    ∃ b, a ≤ b ∧ Maximal (· ∈ s) b :=
-  hs.exists_minimal_le (α := αᵒᵈ) h
-
-end Preorder
-
 /-! ### Concrete instances -/
 
 noncomputable instance Fin.completeLinearOrder {n : ℕ} [NeZero n] : CompleteLinearOrder (Fin n) :=

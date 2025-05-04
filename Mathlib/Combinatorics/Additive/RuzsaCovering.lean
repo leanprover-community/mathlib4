@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Finset
 import Mathlib.Data.Real.Basic
+import Mathlib.Order.Preorder.Finite
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Positivity.Finset
 

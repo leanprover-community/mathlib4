@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Order.Atoms
-import Mathlib.Order.Minimal
+import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness

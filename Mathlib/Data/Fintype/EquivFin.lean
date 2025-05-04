@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Order.WellFounded
 
 /-!
 # Equivalences between `Fintype`, `Fin` and `Finite`
