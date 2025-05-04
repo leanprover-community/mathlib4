@@ -241,7 +241,7 @@ theorem coprod_map_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (S : Su
 
 @[simp]
 theorem coprod_comp_inl_inr (f : M × M₂ →ₗ[R] M₃) :
-    (f.comp (LinearMap.inl R M M₂)).coprod (f.comp (LinearMap.inr R M M₂)) = f := by
+    (f.comp (inl R M M₂)).coprod (f.comp (inr R M M₂)) = f := by
   rw [← comp_coprod, coprod_inl_inr, comp_id]
 
 /-- Taking the product of two maps with the same codomain is equivalent to taking the product of
