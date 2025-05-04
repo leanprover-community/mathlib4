@@ -99,7 +99,7 @@ private instance isFiniteOver : Module.Finite {c : 𝕜 // 0 ≤ c} 𝕜 := by
 /-- If a module is finite over a linearly ordered ring, then it is also finite over the non-negative
 scalars. -/
 instance instModuleFinite [h : Module.Finite 𝕜 E] : Module.Finite {c : 𝕜 // 0 ≤ c} E :=
-  .Finite.trans 𝕜 E
+  .trans 𝕜 E
 
 end Ring
 
