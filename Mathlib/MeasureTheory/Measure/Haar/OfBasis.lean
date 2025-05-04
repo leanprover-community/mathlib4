@@ -327,13 +327,22 @@ instance [Finite ι] : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
 
 /-- `WithLp.equiv` as a `MeasurableEquiv`. -/
 @[simps toEquiv]
-protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
-  toEquiv := WithLp.equiv _ _
+def measurableOfLp : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
+  toEquiv := WithLp.ofLp
   measurable_toFun := measurable_id
   measurable_invFun := measurable_id
 
+@[deprecated (since := "2024-04-27")] protected alias measurableEquiv := measurableOfLp
+
+lemma coe_measurableOfLp : ⇑(EuclideanSpace.measurableOfLp ι) = WithLp.ofLp := rfl
+lemma coe_measurableOfLp_symm : ⇑(EuclideanSpace.measurableOfLp ι).symm = WithLp.toLp _ := rfl
+
+set_option linter.deprecated false in
+@[deprecated coe_measurableOfLp (since := "2024-04-27")]
 theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
 
+set_option linter.deprecated false in
+@[deprecated coe_measurableEquiv_symm (since := "2024-04-27")]
 theorem coe_measurableEquiv_symm :
     ⇑(EuclideanSpace.measurableEquiv ι).symm = (WithLp.equiv 2 _).symm := rfl
 
