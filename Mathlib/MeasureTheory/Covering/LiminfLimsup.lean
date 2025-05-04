@@ -5,8 +5,6 @@ Authors: Oliver Nash
 -/
 import Mathlib.MeasureTheory.Covering.DensityTheorem
 
-#align_import measure_theory.covering.liminf_limsup from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
-
 /-!
 # Liminf, limsup, and uniformly locally doubling measures.
 
@@ -30,7 +28,8 @@ open Set Filter Metric MeasureTheory TopologicalSpace
 
 open scoped NNReal ENNReal Topology
 
-variable {α : Type*} [MetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
+variable {α : Type*}
+variable [PseudoMetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
 variable (μ : Measure α) [IsLocallyFiniteMeasure μ] [IsUnifLocDoublingMeasure μ]
 
 /-- This is really an auxiliary result en route to `blimsup_cthickening_ae_le_of_eventually_mul_le`
@@ -107,7 +106,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     obtain ⟨η, hη, hη'⟩ := this
     replace hη' : 1 ≤ η := by
       simpa only [ENNReal.one_le_coe_iff] using
-        le_of_tendsto (hd' w (fun j => r₁ (f j)) hr <| eventually_of_forall hw') hη'
+        le_of_tendsto (hd' w (fun j => r₁ (f j)) hr <| Eventually.of_forall hw') hη'
     exact (lt_self_iff_false _).mp (lt_of_lt_of_le hη hη')
   refine ⟨1 - C⁻¹, tsub_lt_self zero_lt_one (inv_pos.mpr hC), ?_⟩
   replace hC : C ≠ 0 := ne_of_gt hC
@@ -148,7 +147,6 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     exact measure_mono (union_subset (h₁ j) (h₂ j))
   replace hj₃ := tsub_le_tsub_right hj₃ (↑C⁻¹ * μ (B j))
   rwa [ENNReal.add_sub_cancel_left hB] at hj₃
-#align blimsup_cthickening_ae_le_of_eventually_mul_le_aux blimsup_cthickening_ae_le_of_eventually_mul_le_aux
 
 /-- This is really an auxiliary result en route to `blimsup_cthickening_mul_ae_eq`.
 
@@ -176,7 +174,6 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : �
     have hs : ∀ i, IsClosed (closure (s i)) := fun i => isClosed_closure
     exact blimsup_cthickening_ae_le_of_eventually_mul_le_aux μ p hs
       (tendsto_nhds_max_right hr) hRp hM hM' hMr
-#align blimsup_cthickening_ae_le_of_eventually_mul_le blimsup_cthickening_ae_le_of_eventually_mul_le
 
 /-- Given a sequence of subsets `sᵢ` of a metric space, together with a sequence of radii `rᵢ`
 such that `rᵢ → 0`, the set of points which belong to infinitely many of the closed
@@ -202,13 +199,13 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
       convert TendstoNhdsWithinIoi.const_mul hM hr <;> simp only [mul_zero]
     refine eventuallyLE_antisymm_iff.mpr ⟨?_, ?_⟩
     · exact blimsup_cthickening_ae_le_of_eventually_mul_le μ p (inv_pos.mpr hM) hr'
-        (eventually_of_forall fun i => by rw [inv_mul_cancel_left₀ hM.ne' (r i)])
+        (Eventually.of_forall fun i => by rw [inv_mul_cancel_left₀ hM.ne' (r i)])
     · exact blimsup_cthickening_ae_le_of_eventually_mul_le μ p hM hr
-        (eventually_of_forall fun i => le_refl _)
+        (Eventually.of_forall fun i => le_refl _)
   let r' : ℕ → ℝ := fun i => if 0 < r i then r i else 1 / ((i : ℝ) + 1)
   have hr' : Tendsto r' atTop (𝓝[>] 0) := by
     refine tendsto_nhdsWithin_iff.mpr
-      ⟨Tendsto.if' hr tendsto_one_div_add_atTop_nhds_zero_nat, eventually_of_forall fun i => ?_⟩
+      ⟨Tendsto.if' hr tendsto_one_div_add_atTop_nhds_zero_nat, Eventually.of_forall fun i => ?_⟩
     by_cases hi : 0 < r i
     · simp [r', hi]
     · simp only [r', hi, one_div, mem_Ioi, if_false, inv_pos]; positivity
@@ -224,24 +221,22 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     ext i; simp [← and_or_left, lt_or_le 0 (r i)]
   rw [hp, blimsup_or_eq_sup, blimsup_or_eq_sup]
   simp only [sup_eq_union]
-  rw [blimsup_congr (eventually_of_forall h₀), blimsup_congr (eventually_of_forall h₁),
-    blimsup_congr (eventually_of_forall h₂)]
+  rw [blimsup_congr (Eventually.of_forall h₀), blimsup_congr (Eventually.of_forall h₁),
+    blimsup_congr (Eventually.of_forall h₂)]
   exact ae_eq_set_union (this (fun i => p i ∧ 0 < r i) hr') (ae_eq_refl _)
-#align blimsup_cthickening_mul_ae_eq blimsup_cthickening_mul_ae_eq
 
 theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ → Set α} {r : ℕ → ℝ}
     (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
     (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) =ᵐ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
   refine eventuallyLE_antisymm_iff.mpr ⟨?_, HasSubset.Subset.eventuallyLE (?_ : _ ≤ _)⟩
-  · rw [eventuallyLE_congr (blimsup_cthickening_mul_ae_eq μ p s (@one_half_pos ℝ _) r hr).symm
+  · rw [eventuallyLE_congr (blimsup_cthickening_mul_ae_eq μ p s (one_half_pos (α := ℝ)) r hr).symm
       EventuallyEq.rfl]
     apply HasSubset.Subset.eventuallyLE
     change _ ≤ _
     refine mono_blimsup' (hr'.mono fun i hi pi => cthickening_subset_thickening' (hi pi) ?_ (s i))
     nlinarith [hi pi]
   · exact mono_blimsup fun i _ => thickening_subset_cthickening _ _
-#align blimsup_cthickening_ae_eq_blimsup_thickening blimsup_cthickening_ae_eq_blimsup_thickening
 
 /-- An auxiliary result en route to `blimsup_thickening_mul_ae_eq`. -/
 theorem blimsup_thickening_mul_ae_eq_aux (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M)
@@ -254,7 +249,6 @@ theorem blimsup_thickening_mul_ae_eq_aux (p : ℕ → Prop) (s : ℕ → Set α)
   replace hr' : ∀ᶠ i in atTop, p i → 0 < M * r i := hr'.mono fun i hi hip ↦ mul_pos hM (hi hip)
   have h₃ := blimsup_cthickening_ae_eq_blimsup_thickening (s := s) μ hr hr'
   exact h₃.symm.trans (h₂.trans h₁)
-#align blimsup_thickening_mul_ae_eq_aux blimsup_thickening_mul_ae_eq_aux
 
 /-- Given a sequence of subsets `sᵢ` of a metric space, together with a sequence of radii `rᵢ`
 such that `rᵢ → 0`, the set of points which belong to infinitely many of the
@@ -275,15 +269,14 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
   let q : ℕ → Prop := fun i => p i ∧ 0 < r i
   have h₁ : blimsup (fun i => thickening (r i) (s i)) atTop p =
       blimsup (fun i => thickening (r i) (s i)) atTop q := by
-    refine blimsup_congr' (eventually_of_forall fun i h => ?_)
+    refine blimsup_congr' (Eventually.of_forall fun i h => ?_)
     replace hi : 0 < r i := by contrapose! h; apply thickening_of_nonpos h
     simp only [q, hi, iff_self_and, imp_true_iff]
   have h₂ : blimsup (fun i => thickening (M * r i) (s i)) atTop p =
       blimsup (fun i => thickening (M * r i) (s i)) atTop q := by
-    refine blimsup_congr' (eventually_of_forall fun i h ↦ ?_)
+    refine blimsup_congr' (Eventually.of_forall fun i h ↦ ?_)
     replace h : 0 < r i := by
       rw [← mul_pos_iff_of_pos_left hM]; contrapose! h; apply thickening_of_nonpos h
     simp only [q, h, iff_self_and, imp_true_iff]
   rw [h₁, h₂]
-  exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (eventually_of_forall fun i hi => hi.2)
-#align blimsup_thickening_mul_ae_eq blimsup_thickening_mul_ae_eq
+  exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (Eventually.of_forall fun i hi => hi.2)

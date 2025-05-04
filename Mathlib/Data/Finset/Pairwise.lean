@@ -3,9 +3,8 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice
-
-#align_import data.finset.pairwise from "leanprover-community/mathlib"@"c4c2ed622f43768eff32608d4a0f8a6cec1c047d"
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Set.Pairwise.List
 
 /-!
 # Relations holding pairwise on finite sets
@@ -28,14 +27,12 @@ theorem Finset.pairwiseDisjoint_range_singleton :
     (Set.range (singleton : α → Finset α)).PairwiseDisjoint id := by
   rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ h
   exact disjoint_singleton.2 (ne_of_apply_ne _ h)
-#align finset.pairwise_disjoint_range_singleton Finset.pairwiseDisjoint_range_singleton
 
 namespace Set
 
 theorem PairwiseDisjoint.elim_finset {s : Set ι} {f : ι → Finset α} (hs : s.PairwiseDisjoint f)
     {i j : ι} (hi : i ∈ s) (hj : j ∈ s) (a : α) (hai : a ∈ f i) (haj : a ∈ f j) : i = j :=
   hs.elim hi hj (Finset.not_disjoint_iff.2 ⟨a, hai, haj⟩)
-#align set.pairwise_disjoint.elim_finset Set.PairwiseDisjoint.elim_finset
 
 section SemilatticeInf
 
@@ -46,12 +43,10 @@ theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] {s : Finset ι} {f 
     (s.image g : Set ι).PairwiseDisjoint f := by
   rw [coe_image]
   exact hs.image_of_le hf
-#align set.pairwise_disjoint.image_finset_of_le Set.PairwiseDisjoint.image_finset_of_le
 
 theorem PairwiseDisjoint.attach (hs : (s : Set ι).PairwiseDisjoint f) :
     (s.attach : Set { x // x ∈ s }).PairwiseDisjoint (f ∘ Subtype.val) := fun i _ j _ hij =>
   hs i.2 j.2 <| mt Subtype.ext_val hij
-#align set.pairwise_disjoint.attach Set.PairwiseDisjoint.attach
 
 end SemilatticeInf
 
@@ -69,7 +64,6 @@ theorem PairwiseDisjoint.biUnion_finset {s : Set ι'} {g : ι' → Finset ι} {f
   obtain hcd | hcd := eq_or_ne (g c) (g d)
   · exact hg d hd (by rwa [hcd] at ha) hb hab
   · exact (hs hc hd (ne_of_apply_ne _ hcd)).mono (Finset.le_sup ha) (Finset.le_sup hb)
-#align set.pairwise_disjoint.bUnion_finset Set.PairwiseDisjoint.biUnion_finset
 
 end Set
 
@@ -81,24 +75,22 @@ theorem pairwise_of_coe_toFinset_pairwise (hl : (l.toFinset : Set α).Pairwise r
     l.Pairwise r := by
   rw [coe_toFinset] at hl
   exact hn.pairwise_of_set_pairwise hl
-#align list.pairwise_of_coe_to_finset_pairwise List.pairwise_of_coe_toFinset_pairwise
 
 theorem pairwise_iff_coe_toFinset_pairwise (hn : l.Nodup) (hs : Symmetric r) :
     (l.toFinset : Set α).Pairwise r ↔ l.Pairwise r := by
   letI : IsSymm α r := ⟨hs⟩
   rw [coe_toFinset, hn.pairwise_coe]
-#align list.pairwise_iff_coe_to_finset_pairwise List.pairwise_iff_coe_toFinset_pairwise
 
-theorem pairwise_disjoint_of_coe_toFinset_pairwiseDisjoint {α ι} [SemilatticeInf α] [OrderBot α]
+open scoped Function -- required for scoped `on` notation
+
+theorem pairwise_disjoint_of_coe_toFinset_pairwiseDisjoint {α ι} [PartialOrder α] [OrderBot α]
     [DecidableEq ι] {l : List ι} {f : ι → α} (hl : (l.toFinset : Set ι).PairwiseDisjoint f)
     (hn : l.Nodup) : l.Pairwise (_root_.Disjoint on f) :=
   pairwise_of_coe_toFinset_pairwise hl hn
-#align list.pairwise_disjoint_of_coe_to_finset_pairwise_disjoint List.pairwise_disjoint_of_coe_toFinset_pairwiseDisjoint
 
-theorem pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint {α ι} [SemilatticeInf α] [OrderBot α]
+theorem pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint {α ι} [PartialOrder α] [OrderBot α]
     [DecidableEq ι] {l : List ι} {f : ι → α} (hn : l.Nodup) :
     (l.toFinset : Set ι).PairwiseDisjoint f ↔ l.Pairwise (_root_.Disjoint on f) :=
   pairwise_iff_coe_toFinset_pairwise hn (symmetric_disjoint.comap f)
-#align list.pairwise_disjoint_iff_coe_to_finset_pairwise_disjoint List.pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint
 
 end List

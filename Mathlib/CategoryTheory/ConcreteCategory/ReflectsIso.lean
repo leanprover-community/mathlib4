@@ -1,12 +1,10 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Functor.ReflectsIso
-
-#align_import category_theory.concrete_category.reflects_isomorphisms from "leanprover-community/mathlib"@"73dd4b5411ec8fafb18a9d77c9c826907730af80"
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 A `forget₂ C D` forgetful functor between concrete categories `C` and `D`
@@ -20,8 +18,8 @@ namespace CategoryTheory
 
 instance : (forget (Type u)).ReflectsIsomorphisms where reflects _ _ _ {i} := i
 
-variable (C : Type (u + 1)) [Category C] [ConcreteCategory.{u} C]
-variable (D : Type (u + 1)) [Category D] [ConcreteCategory.{u} D]
+variable (C : Type (u + 1)) [Category C] [HasForget.{u} C]
+variable (D : Type (u + 1)) [Category D] [HasForget.{u} D]
 
 -- This should not be an instance, as it causes a typeclass loop
 -- with `CategoryTheory.hasForgetToType`.
@@ -36,6 +34,5 @@ theorem reflectsIsomorphisms_forget₂ [HasForget₂ C D] [(forget C).ReflectsIs
         have := @HasForget₂.forget_comp C D
         rwa [← this]
       apply isIso_of_reflects_iso f (forget C) }
-#align category_theory.reflects_isomorphisms_forget₂ CategoryTheory.reflectsIsomorphisms_forget₂
 
 end CategoryTheory

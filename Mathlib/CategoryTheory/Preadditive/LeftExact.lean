@@ -3,19 +3,18 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-
-#align_import category_theory.preadditive.left_exact from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Left exactness of functors between preadditive categories
 
 We show that a functor is left exact in the sense that it preserves finite limits, if it
 preserves kernels. The dual result holds for right exact functors and cokernels.
+
 ## Main results
+
 * We first derive preservation of binary product in the lemma
   `preservesBinaryProductsOfPreservesKernels`,
 * then show the preservation of equalizers in `preservesEqualizerOfPreservesKernels`,
@@ -55,41 +54,40 @@ def isLimitMapConeBinaryFanOfPreservesKernels {X Y Z : C} (π₁ : Z ⟶ X) (π�
   exact (isLimitMapConeBinaryFanEquiv F π₁ π₂).invFun
     (BinaryBicone.isBilimitOfKernelInl (F.mapBinaryBicone bc)
     (isLimitMapConeForkEquiv' F bc.inl_snd (isLimitOfPreserves F hf))).isLimit
-#align category_theory.functor.is_limit_map_cone_binary_fan_of_preserves_kernels CategoryTheory.Functor.isLimitMapConeBinaryFanOfPreservesKernels
 
 /-- A kernel preserving functor between preadditive categories preserves any pair being a limit. -/
-def preservesBinaryProductOfPreservesKernels
+lemma preservesBinaryProduct_of_preservesKernels
     [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] {X Y : C} :
     PreservesLimit (pair X Y) F where
   preserves {c} hc :=
-    IsLimit.ofIsoLimit
+    ⟨IsLimit.ofIsoLimit
       (isLimitMapConeBinaryFanOfPreservesKernels F _ _ (IsLimit.ofIsoLimit hc (isoBinaryFanMk c)))
-      ((Cones.functoriality _ F).mapIso (isoBinaryFanMk c).symm)
-#align category_theory.functor.preserves_binary_product_of_preserves_kernels CategoryTheory.Functor.preservesBinaryProductOfPreservesKernels
+      ((Cones.functoriality _ F).mapIso (isoBinaryFanMk c).symm)⟩
 
-attribute [local instance] preservesBinaryProductOfPreservesKernels
+attribute [local instance] preservesBinaryProduct_of_preservesKernels
 
 /-- A kernel preserving functor between preadditive categories preserves binary products. -/
-def preservesBinaryProductsOfPreservesKernels
+lemma preservesBinaryProducts_of_preservesKernels
     [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] :
   PreservesLimitsOfShape (Discrete WalkingPair) F where
-    preservesLimit := preservesLimitOfIsoDiagram F (diagramIsoPair _).symm
-#align category_theory.functor.preserves_binary_products_of_preserves_kernels CategoryTheory.Functor.preservesBinaryProductsOfPreservesKernels
+    preservesLimit := preservesLimit_of_iso_diagram F (diagramIsoPair _).symm
 
-attribute [local instance] preservesBinaryProductsOfPreservesKernels
+attribute [local instance] preservesBinaryProducts_of_preservesKernels
 
 variable [HasBinaryBiproducts C]
 
 /-- A functor between preadditive categories preserves the equalizer of two
 morphisms if it preserves all kernels. -/
-def preservesEqualizerOfPreservesKernels [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F]
+lemma preservesEqualizer_of_preservesKernels
+    [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F]
     {X Y : C} (f g : X ⟶ Y) : PreservesLimit (parallelPair f g) F := by
-  letI := preservesBinaryBiproductsOfPreservesBinaryProducts F
+  letI := preservesBinaryBiproducts_of_preservesBinaryProducts F
   haveI := additive_of_preservesBinaryBiproducts F
   constructor; intro c i
   let c' := isLimitKernelForkOfFork (i.ofIsoLimit (Fork.isoForkOfι c))
   dsimp only [kernelForkOfFork_ofι] at c'
   let iFc := isLimitForkMapOfIsLimit' F _ c'
+  constructor
   apply IsLimit.ofIsoLimit _ ((Cones.functoriality _ F).mapIso (Fork.isoForkOfι c).symm)
   apply (isLimitMapConeForkEquiv F (Fork.condition c)).invFun
   let p : parallelPair (F.map (f - g)) 0 ≅ parallelPair (F.map f - F.map g) 0 :=
@@ -98,30 +96,27 @@ def preservesEqualizerOfPreservesKernels [∀ {X Y} (f : X ⟶ Y), PreservesLimi
     IsLimit.ofIsoLimit
       (isLimitForkOfKernelFork ((IsLimit.postcomposeHomEquiv p _).symm iFc))
       (Fork.ext (Iso.refl _) (by simp [p]))
-#align category_theory.functor.preserves_equalizer_of_preserves_kernels CategoryTheory.Functor.preservesEqualizerOfPreservesKernels
 
 /-- A functor between preadditive categories preserves all equalizers if it preserves all kernels.
 -/
-def preservesEqualizersOfPreservesKernels
+lemma preservesEqualizers_of_preservesKernels
     [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] :
     PreservesLimitsOfShape WalkingParallelPair F where
   preservesLimit {K} := by
-    letI := preservesEqualizerOfPreservesKernels F (K.map WalkingParallelPairHom.left)
+    letI := preservesEqualizer_of_preservesKernels F (K.map WalkingParallelPairHom.left)
         (K.map WalkingParallelPairHom.right)
-    apply preservesLimitOfIsoDiagram F (diagramIsoParallelPair K).symm
-#align category_theory.functor.preserves_equalizers_of_preserves_kernels CategoryTheory.Functor.preservesEqualizersOfPreservesKernels
+    apply preservesLimit_of_iso_diagram F (diagramIsoParallelPair K).symm
 
 /-- A functor between preadditive categories which preserves kernels preserves all finite limits.
 -/
-def preservesFiniteLimitsOfPreservesKernels [HasFiniteProducts C] [HasEqualizers C]
+lemma preservesFiniteLimits_of_preservesKernels [HasFiniteProducts C] [HasEqualizers C]
     [HasZeroObject C] [HasZeroObject D] [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] :
-    PreservesFiniteLimits F := by
-  letI := preservesEqualizersOfPreservesKernels F
-  letI := preservesTerminalObjectOfPreservesZeroMorphisms F
-  letI := preservesLimitsOfShapePemptyOfPreservesTerminal F
-  letI : PreservesFiniteProducts F := ⟨preservesFiniteProductsOfPreservesBinaryAndTerminal F⟩
-  exact preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts F
-#align category_theory.functor.preserves_finite_limits_of_preserves_kernels CategoryTheory.Functor.preservesFiniteLimitsOfPreservesKernels
+    PreservesFiniteLimits F :=
+  have := preservesEqualizers_of_preservesKernels F
+  have := preservesTerminalObject_of_preservesZeroMorphisms F
+  have := preservesLimitsOfShape_pempty_of_preservesTerminal F
+  have : PreservesFiniteProducts F :=.of_preserves_binary_and_terminal F
+  preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts F
 
 end FiniteLimits
 
@@ -139,45 +134,43 @@ def isColimitMapCoconeBinaryCofanOfPreservesCokernels {X Y Z : C} (ι₁ : X ⟶
     (isColimitMapCoconeBinaryCofanEquiv F ι₁ ι₂).invFun
       (BinaryBicone.isBilimitOfCokernelFst (F.mapBinaryBicone bc)
           (isColimitMapCoconeCoforkEquiv' F bc.inr_fst (isColimitOfPreserves F hf))).isColimit
-#align category_theory.functor.is_colimit_map_cocone_binary_cofan_of_preserves_cokernels CategoryTheory.Functor.isColimitMapCoconeBinaryCofanOfPreservesCokernels
 
 /-- A cokernel preserving functor between preadditive categories preserves any pair being
 a colimit. -/
-def preservesCoproductOfPreservesCokernels
+lemma preservesCoproduct_of_preservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] {X Y : C} :
     PreservesColimit (pair X Y) F where
   preserves {c} hc :=
-    IsColimit.ofIsoColimit
+    ⟨IsColimit.ofIsoColimit
       (isColimitMapCoconeBinaryCofanOfPreservesCokernels F _ _
         (IsColimit.ofIsoColimit hc (isoBinaryCofanMk c)))
-      ((Cocones.functoriality _ F).mapIso (isoBinaryCofanMk c).symm)
-#align category_theory.functor.preserves_coproduct_of_preserves_cokernels CategoryTheory.Functor.preservesCoproductOfPreservesCokernels
+      ((Cocones.functoriality _ F).mapIso (isoBinaryCofanMk c).symm)⟩
 
-attribute [local instance] preservesCoproductOfPreservesCokernels
+attribute [local instance] preservesCoproduct_of_preservesCokernels
 
 /-- A cokernel preserving functor between preadditive categories preserves binary coproducts. -/
-def preservesBinaryCoproductsOfPreservesCokernels
+lemma preservesBinaryCoproducts_of_preservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] :
     PreservesColimitsOfShape (Discrete WalkingPair) F where
-  preservesColimit := preservesColimitOfIsoDiagram F (diagramIsoPair _).symm
-#align category_theory.functor.preserves_binary_coproducts_of_preserves_cokernels CategoryTheory.Functor.preservesBinaryCoproductsOfPreservesCokernels
+  preservesColimit := preservesColimit_of_iso_diagram F (diagramIsoPair _).symm
 
-attribute [local instance] preservesBinaryCoproductsOfPreservesCokernels
+attribute [local instance] preservesBinaryCoproducts_of_preservesCokernels
 
 variable [HasBinaryBiproducts C]
 
 /-- A functor between preadditive categories preserves the coequalizer of two
 morphisms if it preserves all cokernels. -/
-def preservesCoequalizerOfPreservesCokernels
+lemma preservesCoequalizer_of_preservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] {X Y : C} (f g : X ⟶ Y) :
     PreservesColimit (parallelPair f g) F := by
-  letI := preservesBinaryBiproductsOfPreservesBinaryCoproducts F
+  letI := preservesBinaryBiproducts_of_preservesBinaryCoproducts F
   haveI := additive_of_preservesBinaryBiproducts F
   constructor
   intro c i
   let c' := isColimitCokernelCoforkOfCofork (i.ofIsoColimit (Cofork.isoCoforkOfπ c))
   dsimp only [cokernelCoforkOfCofork_ofπ] at c'
   let iFc := isColimitCoforkMapOfIsColimit' F _ c'
+  constructor
   apply
     IsColimit.ofIsoColimit _ ((Cocones.functoriality _ F).mapIso (Cofork.isoCoforkOfπ c).symm)
   apply (isColimitMapCoconeCoforkEquiv F (Cofork.condition c)).invFun
@@ -187,30 +180,28 @@ def preservesCoequalizerOfPreservesCokernels
     IsColimit.ofIsoColimit
       (isColimitCoforkOfCokernelCofork ((IsColimit.precomposeHomEquiv p.symm _).symm iFc))
       (Cofork.ext (Iso.refl _) (by simp [p]))
-#align category_theory.functor.preserves_coequalizer_of_preserves_cokernels CategoryTheory.Functor.preservesCoequalizerOfPreservesCokernels
 
 /-- A functor between preadditive categories preserves all coequalizers if it preserves all kernels.
 -/
-def preservesCoequalizersOfPreservesCokernels
+lemma preservesCoequalizers_of_preservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] :
     PreservesColimitsOfShape WalkingParallelPair F where
   preservesColimit {K} := by
-    letI := preservesCoequalizerOfPreservesCokernels F (K.map Limits.WalkingParallelPairHom.left)
+    letI := preservesCoequalizer_of_preservesCokernels F (K.map Limits.WalkingParallelPairHom.left)
         (K.map Limits.WalkingParallelPairHom.right)
-    apply preservesColimitOfIsoDiagram F (diagramIsoParallelPair K).symm
-#align category_theory.functor.preserves_coequalizers_of_preserves_cokernels CategoryTheory.Functor.preservesCoequalizersOfPreservesCokernels
+    apply preservesColimit_of_iso_diagram F (diagramIsoParallelPair K).symm
 
 /-- A functor between preadditive categories which preserves kernels preserves all finite limits.
 -/
-def preservesFiniteColimitsOfPreservesCokernels [HasFiniteCoproducts C] [HasCoequalizers C]
+lemma preservesFiniteColimits_of_preservesCokernels [HasFiniteCoproducts C] [HasCoequalizers C]
     [HasZeroObject C] [HasZeroObject D]
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] : PreservesFiniteColimits F := by
-  letI := preservesCoequalizersOfPreservesCokernels F
-  letI := preservesInitialObjectOfPreservesZeroMorphisms F
-  letI := preservesColimitsOfShapePemptyOfPreservesInitial F
-  letI : PreservesFiniteCoproducts F := ⟨preservesFiniteCoproductsOfPreservesBinaryAndInitial F⟩
-  exact preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoproducts F
-#align category_theory.functor.preserves_finite_colimits_of_preserves_cokernels CategoryTheory.Functor.preservesFiniteColimitsOfPreservesCokernels
+  letI := preservesCoequalizers_of_preservesCokernels F
+  letI := preservesInitialObject_of_preservesZeroMorphisms F
+  letI := preservesColimitsOfShape_pempty_of_preservesInitial F
+  letI : PreservesFiniteCoproducts F :=
+    ⟨fun _ ↦ preservesFiniteCoproductsOfPreservesBinaryAndInitial F _⟩
+  exact preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts F
 
 end FiniteColimits
 

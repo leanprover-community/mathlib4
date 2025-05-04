@@ -1,12 +1,10 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Eric Wieser
+Authors: Kim Morrison, Eric Wieser
 -/
+import Mathlib.Init
 import Batteries.Util.LibraryNote
-import Mathlib.Mathport.Rename
-
-#align_import algebra.hierarchy_design from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -140,17 +138,17 @@ For many algebraic structures, particularly ones used in representation theory, 
 etc., we also define "bundled" versions, which carry `category` instances.
 
 These bundled versions are usually named by appending `Cat`,
-so for example we have `AddCommGroupCat` as a bundled `AddCommGroup`, and `TopCommRingCat`
-(which bundles together `CommRing`, `TopologicalSpace`, and `TopologicalRing`).
+so for example we have `AddCommGrp` as a bundled `AddCommGroup`, and `TopCommRingCat`
+(which bundles together `CommRing`, `TopologicalSpace`, and `IsTopologicalRing`).
 
 These bundled versions have many appealing features:
 * a uniform notation for morphisms `X ⟶ Y`
 * a uniform notation (and definition) for isomorphisms `X ≅ Y`
 * a uniform API for subobjects, via the partial order `Subobject X`
 * interoperability with unbundled structures, via coercions to `Type`
-  (so if `G : AddCommGroupCat`, you can treat `G` as a type,
+  (so if `G : AddCommGrp`, you can treat `G` as a type,
   and it automatically has an `AddCommGroup` instance)
-  and lifting maps `AddCommGroupCat.of G`, when `G` is a type with an `AddCommGroup` instance.
+  and lifting maps `AddCommGrp.of G`, when `G` is a type with an `AddCommGroup` instance.
 
 If, for example you do the work of proving that a typeclass `Z` has a good notion of tensor product,
 you are strongly encouraged to provide the corresponding `MonoidalCategory` instance
@@ -184,8 +182,6 @@ briefly listing the parts of the API which still need to be provided.
 Hopefully this document makes it easy to assemble this list.
 
 Another alternative to a TODO list in the doc-strings is adding Github issues.
-
-
 -/
 
 
@@ -232,4 +228,24 @@ See also [mathlib#1561](https://github.com/leanprover-community/mathlib/issues/1
 
 Therefore, if we create an instance that always applies, we set the priority of these instances to
 100 (or something similar, which is below the default value of 1000).
+-/
+
+library_note "instance argument order"/--
+When type class inference applies an instance, it attempts to solve the sub-goals from left to
+right (it used to be from right to left in lean 3). For example in
+```
+instance {p : α → Sort*} [∀ x, IsEmpty (p x)] [Nonempty α] : IsEmpty (∀ x, p x)
+```
+we make sure to write `[∀ x, IsEmpty (p x)]` on the left of `[Nonempty α]` to avoid an expensive
+search for `Nonempty α` when there is no instance for `∀ x, IsEmpty (p x)`.
+
+This helps to speed up failing type class searches, for example those triggered by `simp` lemmas.
+
+In some situations, we can't reorder type class assumptions because one depends on the other,
+for example in
+```
+instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G)
+```
+where the `Group G` instance appears in `IsKleinFour G`. Future work may be done to improve the
+type class synthesis order in this situation.
 -/

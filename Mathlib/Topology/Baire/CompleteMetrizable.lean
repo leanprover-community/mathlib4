@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.Metrizable.Uniformity
 
-#align_import topology.metric_space.baire from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
-
 /-!
 # First Baire theorem
 
@@ -105,7 +103,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     · exact Subset.trans (incl m) (Subset.trans inter_subset_left h)
   have yball : ∀ n, y ∈ closedBall (c n) (r n) := by
     intro n
-    refine isClosed_ball.mem_of_tendsto ylim ?_
+    refine isClosed_closedBall.mem_of_tendsto ylim ?_
     refine (Filter.eventually_ge_atTop n).mono fun m hm => ?_
     exact I n m hm mem_closedBall_self
   constructor
@@ -116,4 +114,3 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     exact this (yball (n + 1))
   show edist y x ≤ ε
   exact le_trans (yball 0) (min_le_left _ _)
-#align baire_category_theorem_emetric_complete BaireSpace.of_pseudoEMetricSpace_completeSpace

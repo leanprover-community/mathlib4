@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Harun Khan, Alex Keizer
 -/
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Data.ZMod.Defs
 
 /-!
@@ -18,7 +19,7 @@ can either be PR'd to Lean, or kept downstream if it also relies on Mathlib.
 
 namespace BitVec
 
-variable {w v : Nat}
+variable {w : Nat}
 
 /-!
 ## Injectivity
@@ -37,11 +38,12 @@ Having instance of `SMul ℕ`, `SMul ℤ` and `Pow` are prerequisites for a `Com
 
 instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
 instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-instance : Pow (BitVec w) ℕ  := ⟨fun x n => ofFin <| x.toFin ^ n⟩
-
 lemma toFin_nsmul (n : ℕ) (x : BitVec w)  : toFin (n • x) = n • x.toFin := rfl
 lemma toFin_zsmul (z : ℤ) (x : BitVec w)  : toFin (z • x) = z • x.toFin := rfl
-lemma toFin_pow (x : BitVec w) (n : ℕ)    : toFin (x ^ n) = x.toFin ^ n := rfl
+lemma toFin_pow (x : BitVec w) (n : ℕ)    : toFin (x ^ n) = x.toFin ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [ih, BitVec.pow_succ, pow_succ]
 
 /-!
 ## Ring
@@ -56,58 +58,47 @@ instance : CommSemiring (BitVec w) :=
     toFin_nsmul
     toFin_pow
     (fun _ => rfl) /- toFin_natCast -/
-
-#align bitvec BitVec
-#align bitvec.zero BitVec.zero
-#noalign bitvec.one
-#align bitvec.cong BitVec.cast
-#align bitvec.append BitVec.append
-#align bitvec.shl BitVec.shiftLeft
-#align bitvec.ushr BitVec.ushiftRight
-#align bitvec.sshr BitVec.sshiftRight
-#align bitvec.not BitVec.not
-#align bitvec.and BitVec.and
-#align bitvec.or BitVec.or
-#align bitvec.xor BitVec.xor
-#align bitvec.neg BitVec.neg
-#align bitvec.adc BitVec.adc
-#align bitvec.add BitVec.add
-#noalign bitvec.sbb
-#align bitvec.sub BitVec.sub
-#align bitvec.mul BitVec.mul
-#align bitvec.uborrow BitVec.ult
-#align bitvec.ult BitVec.ult
-#noalign bitvec.ugt
-#align bitvec.ule BitVec.ule
-#noalign bitvec.uge
-#align bitvec.sborrow BitVec.slt
-#align bitvec.slt BitVec.slt
-#noalign bitvec.sgt
-#align bitvec.sle BitVec.sle
-#noalign bitvec.sge
-#align bitvec.of_nat BitVec.ofNat
-#noalign bitvec.add_lsb
-#noalign bitvec.bits_to_nat
-#align bitvec.to_nat BitVec.toNat
-#align bitvec.of_fin BitVec.ofFin
-#align bitvec.to_fin BitVec.toFin
-#align bitvec.to_int BitVec.toInt
-#noalign bitvec.bits_to_nat_to_list
-#noalign bitvec.to_nat_append
-#noalign bitvec.bits_to_nat_to_bool
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
-#noalign bitvec.of_nat_succ
-#align bitvec.to_nat_of_nat BitVec.toNat_ofNat
-#noalign bitvec.of_fin_val
-#noalign bitvec.add_lsb_eq_twice_add_one
-#noalign bitvec.to_nat_eq_foldr_reverse
-#align bitvec.to_nat_lt BitVec.toNat_lt
-#noalign bitvec.add_lsb_div_two
-#noalign bitvec.to_bool_add_lsb_mod_two
-#noalign bitvec.to_fin_val
-#noalign bitvec.to_fin_le_to_fin_of_le
-#noalign bitvec.of_fin_le_of_fin_of_le
-#noalign bitvec.to_fin_of_fin
-#noalign bitvec.of_fin_to_fin
+
+@[simp] lemma ofFin_neg {x : Fin (2 ^ w)} : ofFin (-x) = -(ofFin x) := by
+  rfl
+
+@[simp] lemma ofFin_natCast (n : ℕ) : ofFin (n : Fin (2^w)) = n := by
+  rfl
+
+lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
+  rfl
+
+theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
+  cases w
+  case zero =>
+    simp only [eq_nil]
+  case succ w =>
+    simp only [Int.cast, IntCast.intCast]
+    unfold Int.castDef
+    rcases z with z | z
+    · rfl
+    · rw [ofInt_negSucc_eq_not_ofNat]
+      simp only [Nat.cast_add, Nat.cast_one, neg_add_rev]
+      rw [← add_ofFin, ofFin_neg, ofFin_ofNat, ofNat_eq_ofNat, ofFin_neg, ofFin_natCast,
+        natCast_eq_ofNat, neg_one_eq_allOnes, ← sub_eq_add_neg, allOnes_sub_eq_not]
+
+theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
+  apply toFin_inj.mpr <| (ofFin_intCast z).symm
+
+instance : CommRing (BitVec w) :=
+  toFin_injective.commRing _
+    toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
+    toFin_nsmul toFin_zsmul toFin_pow toFin_natCast toFin_intCast
+
+/-- The ring `BitVec m` is isomorphic to `Fin (2 ^ m)`. -/
+@[simps]
+def equivFin {m : ℕ} : BitVec m ≃+* Fin (2 ^ m) where
+  toFun a := a.toFin
+  invFun a := ofFin a
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
 
 end BitVec

@@ -14,7 +14,7 @@ When there is a terminal object `X : C`, then `J.CoversTop Y`
 holds iff `Sieve.ofObjects Y X` is covering for `J`.
 
 We introduce a notion of compatible family of elements on objects `Y`
-and obtain `Presheaf.FamilyOfElementsOnObjects.IsCompatible.exists_unique_section`
+and obtain `Presheaf.FamilyOfElementsOnObjects.IsCompatible.existsUnique_section`
 which asserts that if a presheaf of types is a sheaf, then any compatible
 family of elements on objects `Y` which cover the final object extends as
 a section of this presheaf.
@@ -51,6 +51,7 @@ namespace CoversTop
 
 variable {J}
 variable {I : Type*} {Y : I → C} (hY : J.CoversTop Y)
+include hY
 
 /-- The cover of any object `W : C` attached to a family of objects `Y` that satisfy
 `J.CoversTop Y` -/
@@ -87,7 +88,8 @@ def FamilyOfElementsOnObjects := ∀ (i : I), F.obj (Opposite.op (Y i))
 
 namespace FamilyOfElementsOnObjects
 
-variable {F Y} (x : FamilyOfElementsOnObjects F Y)
+variable {F Y}
+variable (x : FamilyOfElementsOnObjects F Y)
 
 /-- `x : FamilyOfElementsOnObjects F Y` is compatible if for any object `Z` such that
 there exists a morphism `f : Z → Y i`, then the pullback of `x i` by `f` is independent
@@ -105,25 +107,24 @@ noncomputable def familyOfElements (X : C) :
 
 namespace IsCompatible
 
-variable {x} (hx : x.IsCompatible)
+variable {x}
 
-lemma familyOfElements_apply {X Z : C} (f : Z ⟶ X) (i : I) (φ : Z ⟶ Y i) :
+lemma familyOfElements_apply (hx : x.IsCompatible) {X Z : C} (f : Z ⟶ X) (i : I) (φ : Z ⟶ Y i) :
     familyOfElements x X f ⟨i, ⟨φ⟩⟩ = F.map φ.op (x i) := by
   apply hx
 
-lemma familyOfElements_isCompatible (X : C) :
+lemma familyOfElements_isCompatible (hx : x.IsCompatible) (X : C) :
     (familyOfElements x X).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ ⟨i₁, ⟨φ₁⟩⟩ ⟨i₂, ⟨φ₂⟩⟩ _
   simpa [hx.familyOfElements_apply f₁ i₁ φ₁,
     hx.familyOfElements_apply f₂ i₂ φ₂] using hx Z i₁ i₂ (g₁ ≫ φ₁) (g₂ ≫ φ₂)
 
 variable {J}
-variable (hY : J.CoversTop Y) (hF : IsSheaf J F)
 
-lemma exists_unique_section :
+lemma existsUnique_section (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSheaf J F) :
     ∃! (s : F.sections), ∀ (i : I), s.1 (Opposite.op (Y i)) = x i := by
   have H := (isSheaf_iff_isSheaf_of_type _ _).1 hF
-  apply exists_unique_of_exists_of_unique
+  apply existsUnique_of_exists_of_unique
   · let s := fun (X : C) => (H _ (hY X)).amalgamate _
       (hx.familyOfElements_isCompatible X)
     have hs : ∀ {X : C} (i : I) (f : X ⟶ Y i), s X = F.map f.op (x i) := fun {X} i f => by
@@ -146,13 +147,17 @@ lemma exists_unique_section :
   · intro y₁ y₂ hy₁ hy₂
     exact hY.sections_ext ⟨F, hF⟩ (fun i => by rw [hy₁, hy₂])
 
+@[deprecated (since := "2024-12-17")] alias exists_unique_section := existsUnique_section
+
+variable (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSheaf J F)
+
 /-- The section of a sheaf of types which lifts a compatible family of elements indexed
 by objects which cover the terminal object. -/
-noncomputable def section_ : F.sections := (hx.exists_unique_section hY hF).choose
+noncomputable def section_ : F.sections := (hx.existsUnique_section hY hF).choose
 
 @[simp]
 lemma section_apply (i : I) : (hx.section_ hY hF).1 (Opposite.op (Y i)) = x i :=
-  (hx.exists_unique_section hY hF).choose_spec.1 i
+  (hx.existsUnique_section hY hF).choose_spec.1 i
 
 end IsCompatible
 

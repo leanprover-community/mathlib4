@@ -22,6 +22,7 @@ Gödel's Beta function, which is used in proving Gödel's incompleteness theorem
 Chinese Remainder Theorem, Gödel, beta function
 -/
 
+open scoped Function -- required for scoped `on` notation
 namespace Nat
 
 variable {ι : Type*}
@@ -35,7 +36,7 @@ lemma modEq_list_prod_iff {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
       List.length_cons]
     constructor
     · rintro ⟨h0, hs⟩ i
-      cases i using Fin.cases <;> simp [h0, hs]
+      cases i using Fin.cases <;> simp_all
     · intro h; exact ⟨h 0, fun i => h i.succ⟩
 
 lemma modEq_list_prod_iff' {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairwise (Coprime on s)) :
@@ -85,7 +86,7 @@ theorem chineseRemainderOfList_lt_prod (l : List ι)
       intro j hj
       exact (List.pairwise_cons.mp co).1 j hj
     refine chineseRemainder_lt_mul this (a i) (chineseRemainderOfList a s l co.of_cons)
-      (hs i (List.mem_cons_self _ l)) ?_
+      (hs i List.mem_cons_self) ?_
     simp only [ne_eq, List.prod_eq_zero_iff, List.mem_map, not_exists, not_and]
     intro j hj
     exact hs j (List.mem_cons_of_mem _ hj)
@@ -102,7 +103,7 @@ theorem chineseRemainderOfList_modEq_unique (l : List ι)
       intro j hj
       exact (List.pairwise_cons.mp co).1 j hj
     exact chineseRemainder_modEq_unique this
-      (hz i (List.mem_cons_self _ _)) (ih co.of_cons (fun j hj => hz j (List.mem_cons_of_mem _ hj)))
+      (hz i List.mem_cons_self) (ih co.of_cons (fun j hj => hz j (List.mem_cons_of_mem _ hj)))
 
 theorem chineseRemainderOfList_perm {l l' : List ι} (hl : l.Perm l')
     (hs : ∀ i ∈ l, s i ≠ 0) (co : l.Pairwise (Coprime on s)) :
@@ -146,8 +147,8 @@ theorem chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
     (nod : m.Nodup) (hs : ∀ i ∈ m, s i ≠ 0) (pp : Set.Pairwise {x | x ∈ m} (Coprime on s)) :
     chineseRemainderOfMultiset a s nod hs pp < (m.map s).prod := by
   induction' m using Quot.ind with l
-  unfold chineseRemainderOfMultiset; simp
-  exact chineseRemainderOfList_lt_prod a s l
+  unfold chineseRemainderOfMultiset
+  simpa using chineseRemainderOfList_lt_prod a s l
     (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using hs)
 
 /-- The natural number less than `∏ i ∈ t, s i` congruent to

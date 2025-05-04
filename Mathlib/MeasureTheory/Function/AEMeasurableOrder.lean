@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
-#align_import measure_theory.function.ae_measurable_order from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
-
 /-!
 # Measurability criterion for ennreal-valued functions
 
@@ -25,7 +23,6 @@ as possible.
 
 open MeasureTheory Set TopologicalSpace
 
-open scoped Classical
 open ENNReal NNReal
 
 /-- If a function `f : α → β` is such that the level sets `{f < p}` and `{q < f}` have measurable
@@ -38,6 +35,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
     (h : ∀ p ∈ s, ∀ q ∈ s, p < q → ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ μ (u ∩ v) = 0) :
     AEMeasurable f μ := by
+  classical
   haveI : Encodable s := s_count.toEncodable
   have h' : ∀ p q, ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ (p ∈ s → q ∈ s → p < q → μ (u ∩ v) = 0) := by
@@ -56,9 +54,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
     intro i
     exact MeasurableSet.biInter (s_count.mono inter_subset_left) fun b _ => (huv i b).1
   let f' : α → β := fun x => ⨅ i : s, piecewise (u' i) (fun _ => (i : β)) (fun _ => (⊤ : β)) x
-  have f'_meas : Measurable f' := by
-    apply measurable_iInf
-    exact fun i => Measurable.piecewise (u'_meas i) measurable_const measurable_const
+  have f'_meas : Measurable f' := by fun_prop (disch := aesop)
   let t := ⋃ (p : s) (q : ↥(s ∩ Ioi p)), u' p ∩ v p q
   have μt : μ t ≤ 0 :=
     calc
@@ -105,7 +101,6 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       have A : x ∈ u' r := mem_biInter fun i _ => (huv r i).2.2.1 xr
       simp only [A, rq, piecewise_eq_of_mem, Subtype.coe_mk]
   exact ⟨f', f'_meas, ff'⟩
-#align measure_theory.ae_measurable_of_exist_almost_disjoint_supersets MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets
 
 /-- If a function `f : α → ℝ≥0∞` is such that the level sets `{f < p}` and `{q < f}` have measurable
 supersets which are disjoint up to measure zero when `p` and `q` are finite numbers satisfying
@@ -125,4 +120,3 @@ theorem ENNReal.aemeasurable_of_exist_almost_disjoint_supersets {α : Type*} {m 
   lift p to ℝ≥0 using I p hp
   lift q to ℝ≥0 using I q hq
   exact h p q (ENNReal.coe_lt_coe.1 hpq)
-#align ennreal.ae_measurable_of_exist_almost_disjoint_supersets ENNReal.aemeasurable_of_exist_almost_disjoint_supersets

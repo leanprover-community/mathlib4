@@ -13,7 +13,7 @@ Hausdorff spaces as a cofiltered limit in `Profinite` indexed by `Finset ι`.
 
 ## Main definitions
 
-- `Profinite.indexFunctor` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps
+- `Profinite.indexFunctor` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps
   `J` to the restriction of `C` to `J`
 - `Profinite.indexCone` is a cone on `Profinite.indexFunctor` with cone point `C`
 
@@ -76,27 +76,30 @@ theorem eq_of_forall_π_app_eq (a b : C)
 
 end IndexFunctor
 
-variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)] {C} (hC : IsCompact C)
+variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)]
+variable {C}
 
 open CategoryTheory Limits Opposite IndexFunctor
 
 /-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
 noncomputable
-def indexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
+def indexFunctor (hC : IsCompact C) : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
   obj J := @Profinite.of (obj C (· ∈ (unop J))) _
     (by rw [← isCompact_iff_compactSpace]; exact hC.image (Pi.continuous_precomp' _)) _ _
-  map h := map C (leOfHom h.unop)
+  map h := TopCat.ofHom (map C (leOfHom h.unop))
 
 /-- The limit cone on `indexFunctor` -/
 noncomputable
-def indexCone : Cone (indexFunctor hC) where
+def indexCone (hC : IsCompact C) : Cone (indexFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
-  π := { app := fun J ↦ π_app C (· ∈ unop J) }
+  π := { app := fun J ↦ TopCat.ofHom (π_app C (· ∈ unop J)) }
+
+variable (hC : IsCompact C)
 
 instance isIso_indexCone_lift :
     IsIso ((limitConeIsLimit.{u, u} (indexFunctor hC)).lift (indexCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
-  isIso_of_bijective _
+  CompHausLike.isIso_of_bijective _
     (by
       refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
       · refine eq_of_forall_π_app_eq a b (fun J ↦ ?_)

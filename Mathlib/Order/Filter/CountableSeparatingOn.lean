@@ -70,8 +70,6 @@ We formalize several versions of this theorem in
 filter, countable
 -/
 
-set_option autoImplicit true
-
 open Function Set Filter
 
 /-- We say that a type `α` has a *countable separating family of sets* satisfying a predicate
@@ -129,18 +127,18 @@ theorem HasCountableSeparatingOn.subtype_iff {α : Type*} {p : Set α → Prop} 
     HasCountableSeparatingOn t (fun u ↦ ∃ v, p v ∧ (↑) ⁻¹' v = u) univ ↔
     HasCountableSeparatingOn α p t := by
   constructor <;> intro h
-  · exact h.of_subtype $ fun s ↦ id
+  · exact h.of_subtype <| fun s ↦ id
   rcases h with ⟨S, Sct, Sp, hS⟩
   use {Subtype.val ⁻¹' s | s ∈ S}, Sct.image _, ?_, ?_
   · rintro u ⟨t, tS, rfl⟩
     exact ⟨t, Sp _ tS, rfl⟩
   rintro x - y - hxy
-  exact Subtype.val_injective $ hS _ (Subtype.coe_prop _) _ (Subtype.coe_prop _)
+  exact Subtype.val_injective <| hS _ (Subtype.coe_prop _) _ (Subtype.coe_prop _)
     fun s hs ↦ hxy (Subtype.val ⁻¹' s) ⟨s, hs, rfl⟩
 
 namespace Filter
 
-variable {l : Filter α} [CountableInterFilter l] {f g : α → β}
+variable {α β : Type*} {l : Filter α} [CountableInterFilter l] {f g : α → β}
 
 /-!
 ### Filters supported on a (sub)singleton
@@ -169,7 +167,7 @@ theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop
     | inr hsl => simp only [hx.2 s hsS hsl, hy.2 s hsS hsl]
   · exact inter_mem
       (inter_mem hs ((countable_sInter_mem (hSc.mono inter_subset_left)).2 fun _ h ↦ h.2))
-      ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem.2 id)
+      ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem'.2 id)
 
 theorem exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating (p : Set α → Prop)
     {s : Set α} [HasCountableSeparatingOn α p s] (hs : s ∈ l) (hne : s.Nonempty)
@@ -255,3 +253,7 @@ theorem of_eventually_mem_of_forall_separating_preimage (p : Set β → Prop) {s
 theorem of_forall_separating_preimage (p : Set β → Prop) [HasCountableSeparatingOn β p univ]
     (h : ∀ U : Set β, p U → f ⁻¹' U =ᶠ[l] g ⁻¹' U) : f =ᶠ[l] g :=
   of_eventually_mem_of_forall_separating_preimage p (s := univ) univ_mem univ_mem h
+
+end EventuallyEq
+
+end Filter

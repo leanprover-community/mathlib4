@@ -3,12 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Data.Set.Basic
-
-#align_import data.int.order.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # The integers form a linear ordered ring
@@ -34,69 +33,21 @@ open Function Nat
 
 namespace Int
 
-instance instLinearOrderedCommRing : LinearOrderedCommRing ℤ where
-  __ := instCommRing
-  __ := instLinearOrder
-  add_le_add_left := @Int.add_le_add_left
-  mul_pos := @Int.mul_pos
-  zero_le_one := le_of_lt Int.zero_lt_one
-
-/-!
-### Extra instances to short-circuit type class resolution
-
-These also prevent non-computable instances being used to construct these instances non-computably.
--/
-
-instance instOrderedCommRing : OrderedCommRing ℤ := StrictOrderedCommRing.toOrderedCommRing'
-instance instOrderedRing : OrderedRing ℤ := StrictOrderedRing.toOrderedRing'
+instance instZeroLEOneClass : ZeroLEOneClass ℤ := ⟨Int.zero_lt_one.le⟩
+instance instIsStrictOrderedRing : IsStrictOrderedRing ℤ := .of_mul_pos @Int.mul_pos
 
 /-! ### Miscellaneous lemmas -/
 
 lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
-  simp [← Set.compl_setOf, isCompl_compl]
-#align int.is_compl_even_odd Int.isCompl_even_odd
+  simp [← not_even_iff_odd, ← Set.compl_setOf, isCompl_compl]
 
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
   rw [← natCast_natAbs, Int.cast_natCast]
-#align nat.cast_nat_abs Nat.cast_natAbs
 
-/-- Note this holds in marginally more generality than `Int.cast_mul` -/
-lemma cast_mul_eq_zsmul_cast {α : Type*} [AddCommGroupWithOne α] :
-    ∀ m n : ℤ, ↑(m * n) = m • (n : α) :=
-  fun m ↦ Int.induction_on m (by simp) (fun _ ih ↦ by simp [add_mul, add_zsmul, ih]) fun _ ih ↦ by
-    simp only [sub_mul, one_mul, cast_sub, ih, sub_zsmul, one_zsmul, ← sub_eq_add_neg, forall_const]
-#align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
+lemma two_le_iff_pos_of_even {m : ℤ} (even : Even m) : 2 ≤ m ↔ 0 < m :=
+  le_iff_pos_of_dvd (by decide) even.two_dvd
+
+lemma add_two_le_iff_lt_of_even_sub {m n : ℤ} (even : Even (n - m)) : m + 2 ≤ n ↔ m < n := by
+  rw [add_comm]; exact le_add_iff_lt_of_dvd_sub (by decide) even.two_dvd
 
 end Int
-
-section bit0_bit1
-variable {R}
-set_option linter.deprecated false
-
--- The next four lemmas allow us to replace multiplication by a numeral with a `zsmul` expression.
-
-section NonUnitalNonAssocRing
-variable [NonUnitalNonAssocRing R] (n r : R)
-
-lemma bit0_mul : bit0 n * r = (2 : ℤ) • (n * r) := by
-  rw [bit0, add_mul, ← one_add_one_eq_two, add_zsmul, one_zsmul]
-#align bit0_mul bit0_mul
-
-lemma mul_bit0 : r * bit0 n = (2 : ℤ) • (r * n) := by
-  rw [bit0, mul_add, ← one_add_one_eq_two, add_zsmul, one_zsmul]
-#align mul_bit0 mul_bit0
-
-end NonUnitalNonAssocRing
-
-section NonAssocRing
-variable [NonAssocRing R] (n r : R)
-
-lemma bit1_mul : bit1 n * r = (2 : ℤ) • (n * r) + r := by rw [bit1, add_mul, bit0_mul, one_mul]
-#align bit1_mul bit1_mul
-
-lemma mul_bit1 {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
-  rw [bit1, mul_add, mul_bit0, mul_one]
-#align mul_bit1 mul_bit1
-
-end NonAssocRing
-end bit0_bit1

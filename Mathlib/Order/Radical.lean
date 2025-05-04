@@ -3,7 +3,6 @@ Copyright (c) 2024 Colva Roney-Dougal. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colva Roney-Dougal, Inna Capdeboscq, Susanna Fishel, Kim Morrison
 -/
-import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Atoms
 
 /-!
@@ -32,8 +31,7 @@ theorem OrderIso.map_radical (f : α ≃o β) : f (Order.radical α) = Order.rad
   simp only [OrderIso.map_iInf]
   fapply Equiv.iInf_congr
   · exact f.toEquiv
-  · intros
-    simp
+  · simp
 
 theorem Order.radical_nongenerating [IsCoatomic α] {a : α} (h : a ⊔ radical α = ⊤) : a = ⊤ := by
   -- Since the lattice is coatomic, either `a` is already the top element,

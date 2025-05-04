@@ -3,7 +3,8 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.ZMod.IntUnitsPower
 
 /-!
@@ -15,6 +16,9 @@ The definition of `negOnePow` and some lemmas first appeared in contributions by
 Johan Commelin to the Liquid Tensor Experiment.
 
 -/
+
+assert_not_exists Field
+assert_not_exists TwoSidedIdeal
 
 namespace Int
 
@@ -55,7 +59,7 @@ lemma negOnePow_two_mul_add_one (n : ℤ) : (2 * n + 1).negOnePow = -1 :=
 lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n := by
   constructor
   · intro h
-    rw [Int.even_iff_not_odd]
+    rw [← Int.not_odd_iff_even]
     intro h'
     simp only [negOnePow_odd _ h'] at h
     contradiction
@@ -64,16 +68,24 @@ lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n := by
 lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
   constructor
   · intro h
-    rw [Int.odd_iff_not_even]
+    rw [← Int.not_even_iff_odd]
     intro h'
     rw [negOnePow_even _ h'] at h
     contradiction
   · exact negOnePow_odd n
 
 @[simp]
+theorem abs_negOnePow (n : ℤ) : |(n.negOnePow : ℤ)| = 1 := by
+  rw [abs_eq_natAbs, Int.units_natAbs, Nat.cast_one]
+
+@[simp]
 lemma negOnePow_neg (n : ℤ) : (-n).negOnePow = n.negOnePow := by
   dsimp [negOnePow]
   simp only [zpow_neg, ← inv_zpow, inv_neg, inv_one]
+
+@[simp]
+lemma negOnePow_abs (n : ℤ) : |n|.negOnePow = n.negOnePow := by
+  obtain h|h := abs_choice n <;> simp only [h, negOnePow_neg]
 
 lemma negOnePow_sub (n₁ n₂ : ℤ) :
     (n₁ - n₂).negOnePow = n₁.negOnePow * n₂.negOnePow := by
@@ -84,20 +96,18 @@ lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
   by_cases h₂ : Even n₂
   · rw [negOnePow_even _ h₂, Int.even_sub, negOnePow_eq_one_iff]
     tauto
-  · rw [← Int.odd_iff_not_even] at h₂
+  · rw [Int.not_even_iff_odd] at h₂
     rw [negOnePow_odd _ h₂, Int.even_sub, negOnePow_eq_neg_one_iff,
-      Int.even_iff_not_odd, Int.even_iff_not_odd]
+      ← Int.not_odd_iff_even, ← Int.not_odd_iff_even]
     tauto
 
 @[simp]
 lemma negOnePow_mul_self (n : ℤ) : (n * n).negOnePow = n.negOnePow := by
   simpa [mul_sub, negOnePow_eq_iff] using n.even_mul_pred_self
 
-lemma coe_negOnePow (K : Type*) (n : ℤ) [Field K] : n.negOnePow = (-1 : K) ^ n := by
-  rcases even_or_odd' n with ⟨k, rfl | rfl⟩
-  · rw [zpow_mul, zpow_ofNat]
-    simp
-  · rw [zpow_add_one₀ (by norm_num), zpow_mul, zpow_ofNat]
-    simp
+lemma cast_negOnePow_natCast (R : Type*) [Ring R] (n : ℕ) : negOnePow n = (-1 : R) ^ n := by
+  obtain ⟨k, rfl | rfl⟩ := Nat.even_or_odd' n <;> simp [pow_succ, pow_mul]
+
+lemma coe_negOnePow_natCast (n : ℕ) : negOnePow n = (-1 : ℤ) ^ n := cast_negOnePow_natCast ..
 
 end Int
