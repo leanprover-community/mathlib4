@@ -14,9 +14,9 @@ import Mathlib.Tactic.SuppressCompilation
 
 namespace CategoryTheory.Quotient
 
-variable {C₁ C₂ C₃ C₁₂ C : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category C₁₂] [Category C]
-  (r₁ : HomRel C₁) (r₂ : HomRel C₂) (r₁₂ : HomRel C₁₂) (r₃ : HomRel C₃)
+variable {C₁ C₂ C₃ C₁₂ C₂₃ C : Type*}
+  [Category C₁] [Category C₂] [Category C₃] [Category C₁₂] [Category C₂₃] [Category C]
+  (r₁ : HomRel C₁) (r₂ : HomRel C₂) (r₁₂ : HomRel C₁₂) (r₂₃ : HomRel C₂₃) (r₃ : HomRel C₃)
   (r : HomRel C)
 
 -- to be moved
@@ -53,6 +53,7 @@ lemma natTransLift₃_app_app_app
     (((natTransLift₃ r₁ r₂ r₃ τ).app ((functor r₁).obj X₁)).app ((functor r₂).obj X₂)).app
       ((functor r₃).obj X₃) = ((τ.app X₁).app X₂).app X₃ := rfl
 
+@[simps]
 def natIsoLift₃ {F G : Quotient r₁ ⥤ Quotient r₂ ⥤ Quotient r₃ ⥤ C}
     (τ : ((((whiskeringLeft₃ _).obj (functor r₁)).obj (functor r₂)).obj (functor r₃)).obj F ≅
       ((((whiskeringLeft₃ _).obj (functor r₁)).obj (functor r₂)).obj (functor r₃)).obj G) :
@@ -72,19 +73,19 @@ def natIsoLift₃ {F G : Quotient r₁ ⥤ Quotient r₂ ⥤ Quotient r₃ ⥤ C
     obtain ⟨X₃, rfl⟩ := X₃.functor_obj_surjective
     simp
 
-variable {r₁ r₂ r₁₂ r₃ r} {F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂} {G : C₁₂ ⥤ C₃ ⥤ C}
-  {F₁₂' : Quotient r₁ ⥤ Quotient r₂ ⥤ Quotient r₁₂}
-  {G' : Quotient r₁₂ ⥤ Quotient r₃ ⥤ Quotient r}
-  (eF : (((whiskeringLeft₂ _).obj (functor r₁)).obj (functor r₂)).obj F₁₂' ≅
-      F₁₂ ⋙ (whiskeringRight _ _ _).obj (functor r₁₂))
-  (eG : (((whiskeringLeft₂ _).obj (functor r₁₂)).obj (functor r₃)).obj G' ≅
-      G ⋙ (whiskeringRight _ _ _).obj (functor r))
+variable {r₁ r₂ r₁₂ r₂₃ r₃ r}
 
 set_option maxHeartbeats 400000 in
 -- this is slow
 suppress_compilation in
 @[simps!]
-def bifunctorComp₁₂Iso :
+def bifunctorComp₁₂Iso {F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂} {G : C₁₂ ⥤ C₃ ⥤ C}
+    {F₁₂' : Quotient r₁ ⥤ Quotient r₂ ⥤ Quotient r₁₂}
+    {G' : Quotient r₁₂ ⥤ Quotient r₃ ⥤ Quotient r}
+    (eF : (((whiskeringLeft₂ _).obj (functor r₁)).obj (functor r₂)).obj F₁₂' ≅
+      F₁₂ ⋙ (whiskeringRight _ _ _).obj (functor r₁₂))
+    (eG : (((whiskeringLeft₂ _).obj (functor r₁₂)).obj (functor r₃)).obj G' ≅
+        G ⋙ (whiskeringRight _ _ _).obj (functor r)) :
     ((((whiskeringLeft₃ _).obj (functor r₁)).obj (functor r₂)).obj (functor r₃)).obj
       (bifunctorComp₁₂ F₁₂' G') ≅
         ((Functor.postcompose₃).obj (functor r)).obj (bifunctorComp₁₂ F₁₂ G) :=
@@ -113,5 +114,46 @@ def bifunctorComp₁₂Iso :
       dsimp at h₁ h₂ ⊢
       simp only [Functor.map_comp, NatTrans.comp_app] at h₂
       simp only [Category.assoc, ← h₁, reassoc_of% h₂])
+
+set_option maxHeartbeats 400000 in
+-- this is slow
+suppress_compilation in
+@[simps!]
+def bifunctorComp₂₃Iso {F : C₁ ⥤ C₂₃ ⥤ C} {G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃}
+    {F' : Quotient r₁ ⥤ Quotient r₂₃ ⥤ Quotient r}
+    {G₂₃' : Quotient r₂ ⥤ Quotient r₃ ⥤ Quotient r₂₃}
+    (eF : (((whiskeringLeft₂ _).obj (functor r₁)).obj (functor r₂₃)).obj F' ≅
+      F ⋙ (whiskeringRight _ _ _).obj (functor r))
+    (eG : (((whiskeringLeft₂ _).obj (functor r₂)).obj (functor r₃)).obj G₂₃' ≅
+      G₂₃ ⋙ (whiskeringRight _ _ _).obj (functor r₂₃)) :
+    ((((whiskeringLeft₃ _).obj (functor r₁)).obj (functor r₂)).obj (functor r₃)).obj
+      (bifunctorComp₂₃ F' G₂₃') ≅
+        ((Functor.postcompose₃).obj (functor r)).obj (bifunctorComp₂₃ F G₂₃) :=
+  NatIso.ofComponents
+    (fun X₁ ↦ NatIso.ofComponents
+      (fun X₂ ↦ NatIso.ofComponents
+        (fun X₃ ↦ (F'.obj ((functor r₁).obj X₁)).mapIso ((eG.app X₂).app X₃) ≪≫
+            (eF.app X₁).app ((G₂₃.obj X₂).obj X₃))
+        (fun {X₃ Y₃} f₃ ↦ by
+          have h₁ := (eF.hom.app X₁).naturality ((G₂₃.obj X₂).map f₃)
+          have h₂ := ((F'.obj ((functor r₁).obj X₁)).congr_map
+            ((eG.hom.app X₂).naturality f₃))
+          dsimp at h₁ h₂ ⊢
+          simp only [Functor.map_comp] at h₂
+          simp only [Category.assoc, ← h₁, ← reassoc_of% h₂]))
+      (fun {X₂ Y₂} f₂ ↦ by
+        ext X₃
+        have h₁ := ((F'.obj ((functor r₁).obj X₁)).congr_map
+          (congr_app (eG.hom.naturality f₂) X₃))
+        have h₂ := (eF.hom.app X₁).naturality ((G₂₃.map f₂).app X₃)
+        dsimp at h₁ h₂ ⊢
+        simp only [Functor.map_comp] at h₁
+        simp only [Category.assoc, reassoc_of% h₁, h₂]))
+    (fun {X₁ Y₁} f₁ ↦ by
+      ext X₂ X₃
+      dsimp
+      have h₁ := congr_app (eF.hom.naturality f₁) ((G₂₃.obj X₂).obj X₃)
+      dsimp at h₁
+      simp only [Category.assoc, ← h₁, NatTrans.naturality_assoc])
 
 end CategoryTheory.Quotient

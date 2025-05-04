@@ -46,23 +46,63 @@ noncomputable def bifunctorIso :
       MonoidalCategory.curriedTensor (HomologicalComplex C c) ⋙
         (whiskeringRight _ _ _).obj (quotient C c) := Iso.refl _
 
+@[simp]
+lemma bifunctorIso_hom_app_app (K₁ K₂ : HomologicalComplex C c) :
+  ((bifunctorIso C c).hom.app K₁).app K₂ = 𝟙 _ := rfl
+
+@[simp]
+lemma bifunctorIso_inv_app_app (K₁ K₂ : HomologicalComplex C c) :
+  ((bifunctorIso C c).inv.app K₁).app K₂ = 𝟙 _ := rfl
+
 noncomputable def bifunctorComp₁₂Iso :
-  ((((whiskeringLeft₃ (HomotopyCategory C c)).obj (quotient C c)).obj
-    (quotient C c)).obj (quotient C c)).obj
-      (bifunctorComp₁₂ (bifunctor C c) (bifunctor C c)) ≅
+    ((((whiskeringLeft₃ (HomotopyCategory C c)).obj (quotient C c)).obj
+      (quotient C c)).obj (quotient C c)).obj
+        (bifunctorComp₁₂ (bifunctor C c) (bifunctor C c)) ≅
     (Functor.postcompose₃.obj (quotient C c)).obj
       (bifunctorComp₁₂ (curriedTensor (HomologicalComplex C c))
         (curriedTensor (HomologicalComplex C c))) :=
   Quotient.bifunctorComp₁₂Iso (bifunctorIso C c) (bifunctorIso C c)
 
-/-
-def bifunctorComp₂₃Iso :
-  ((((whiskeringLeft₃ (HomotopyCategory C c)).obj (quotient C c)).obj
-    (quotient C c)).obj (quotient C c)).obj
+noncomputable def bifunctorComp₂₃Iso :
+    ((((whiskeringLeft₃ (HomotopyCategory C c)).obj (quotient C c)).obj
+      (quotient C c)).obj (quotient C c)).obj
       (bifunctorComp₂₃ (bifunctor C c) (bifunctor C c)) ≅
     (Functor.postcompose₃.obj (quotient C c)).obj
       (bifunctorComp₂₃ (curriedTensor (HomologicalComplex C c))
-        (curriedTensor (HomologicalComplex C c))) := sorry
+        (curriedTensor (HomologicalComplex C c))) :=
+  Quotient.bifunctorComp₂₃Iso (bifunctorIso C c) (bifunctorIso C c)
+
+@[simp]
+lemma bifunctorComp₁₂Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
+    (((bifunctorComp₁₂Iso C c).hom.app K₁).app K₂).app K₃ = 𝟙 _ := by
+  dsimp only [bifunctorComp₁₂Iso]
+  simp
+  erw [comp_id, (bifunctor C c).map_id]
+  rfl
+
+@[simp]
+lemma bifunctorComp₁₂Iso_inv_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
+    (((bifunctorComp₁₂Iso C c).inv.app K₁).app K₂).app K₃ = 𝟙 _ := by
+  dsimp only [bifunctorComp₁₂Iso]
+  simp
+  erw [id_comp, (bifunctor C c).map_id]
+  rfl
+
+@[simp]
+lemma bifunctorComp₂₃Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
+    (((bifunctorComp₂₃Iso C c).hom.app K₁).app K₂).app K₃ = 𝟙 _ := by
+  dsimp only [bifunctorComp₂₃Iso]
+  simp
+  erw [comp_id, ((bifunctor C c).obj _).map_id]
+  rfl
+
+@[simp]
+lemma bifunctorComp₂₃Iso_inv_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
+    (((bifunctorComp₂₃Iso C c).inv.app K₁).app K₂).app K₃ = 𝟙 _ := by
+  dsimp only [bifunctorComp₂₃Iso]
+  simp
+  erw [id_comp, ((bifunctor C c).obj _).map_id]
+  rfl
 
 noncomputable def associator :
     bifunctorComp₁₂ (bifunctor C c) (bifunctor C c) ≅
@@ -72,9 +112,23 @@ noncomputable def associator :
       (curriedAssociatorNatIso (HomologicalComplex C c)) ≪≫
         (bifunctorComp₂₃Iso C c).symm)
 
-noncomputable instance : MonoidalCategory (HomotopyCategory C c) :=
-  .ofBifunctor (unit C c) (bifunctor C c) (associator C c) sorry sorry sorry sorry
-  -/
+@[simp]
+lemma associator_hom_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
+    (((associator C c).hom.app ((quotient C c).obj K₁)).app ((quotient C c).obj K₂)).app
+      ((quotient C c).obj K₃) =
+        (quotient C c).map
+          ((((curriedAssociatorNatIso (HomologicalComplex C c)).hom.app K₁).app K₂).app K₃) := by
+  dsimp [associator]
+  erw [Quotient.natTransLift₃_app_app_app]
+  dsimp
+  rw [bifunctorComp₁₂Iso_hom_app_app_app, bifunctorComp₂₃Iso_inv_app_app_app]
+  dsimp
+  rw [comp_id]
+  apply Category.id_comp
+
+/-noncomputable instance : MonoidalCategory (HomotopyCategory C c) :=
+  .ofBifunctor (unit C c) (bifunctor C c) (associator C c)
+  sorry sorry sorry sorry-/
 
 end MonoidalCategory
 
