@@ -68,6 +68,17 @@ theorem isIntegrallyClosed_ofLocalizationMaximal :
     OfLocalizationMaximal fun R _ => ([IsDomain R] → IsIntegrallyClosed R) :=
   fun _ _ h _ ↦ IsIntegrallyClosed.of_localization_maximal fun p _ hpm ↦ h p hpm
 
+theorem IsIntegrallyClosed.of_equiv {R S : Type*} [CommRing R] [CommRing S] (f : R ≃+* S)
+    [h : IsIntegrallyClosed R] : IsIntegrallyClosed S := by
+  let _ : Algebra S R := f.symm.toRingHom.toAlgebra
+  let f : S ≃ₐ[S] R := AlgEquiv.ofRingEquiv fun _ ↦ rfl
+  let g : FractionRing S ≃ₐ[S] FractionRing R := IsFractionRing.algEquivOfAlgEquiv f
+  refine (isIntegrallyClosed_iff (FractionRing S)).mpr (fun hx ↦ ?_)
+  rcases (isIntegrallyClosed_iff (FractionRing R)).mp h <|
+    IsIntegral.tower_top ((isIntegral_algEquiv g).mpr hx) with ⟨z, hz⟩
+  exact ⟨f.symm z, (IsFractionRing.algEquivOfAlgEquiv_algebraMap f.symm z).symm.trans <|
+    (AlgEquiv.symm_apply_eq g).mpr hz⟩
+
 theorem IsIntegrallyClosed.of_localization {R : Type*} [CommRing R] [IsDomain R]
     (S : Set (PrimeSpectrum R)) (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
     (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl
@@ -82,8 +93,17 @@ theorem IsIntegrallyClosed.of_localization {R : Type*} [CommRing R] [IsDomain R]
   intro p
   refine Algebra.mem_iInf.mpr ?_
   intro hp
-  let B := (Localization.subalgebra (FractionRing R) p.1.primeCompl
-    p.1.primeCompl_le_nonZeroDivisors)
-  have : IsIntegral (Localization.subalgebra (FractionRing R) p.1.primeCompl
-    p.1.primeCompl_le_nonZeroDivisors) x := sorry
+  have := h p hp
+  let B := Localization.subalgebra (FractionRing R) p.1.primeCompl p.1.primeCompl_le_nonZeroDivisors
+  have : IsIntegrallyClosed B := sorry
+  have : IsIntegral B x := sorry
   sorry
+/- letI : Algebra R (FractionRing S) := ((algebraMap S (FractionRing S)).comp f.toRingHom).toAlgebra
+  have : IsFractionRing R (FractionRing S) := sorry
+  apply (isIntegrallyClosed_iff (FractionRing S)).mpr
+  intro x hx
+  let g : FractionRing S ≃+* FractionRing R := IsFractionRing.ringEquivOfRingEquiv f.symm
+  have := g x
+  have : IsIntegral R (g x) := by
+    sorry
+  have : ∃ z, (algebraMap R (FractionRing R)) z = (g x) := IsIntegralClosure.isIntegral_iff.mp this -/
