@@ -45,7 +45,7 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F]
 variable [CompleteSpace E] [CompleteSpace F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A continuous linear endomorphism `T` of a Hilbert space is **positive** if it is self adjoint
   and `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
@@ -90,14 +90,39 @@ theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F 
 theorem IsPositive.conj_orthogonalProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
     [CompleteSpace U] :
     (U.subtypeL ∘L
-        orthogonalProjection U ∘L T ∘L U.subtypeL ∘L orthogonalProjection U).IsPositive := by
-  have := hT.conj_adjoint (U.subtypeL ∘L orthogonalProjection U)
+        U.orthogonalProjection ∘L T ∘L U.subtypeL ∘L U.orthogonalProjection).IsPositive := by
+  have := hT.conj_adjoint (U.subtypeL ∘L U.orthogonalProjection)
   rwa [(orthogonalProjection_isSelfAdjoint U).adjoint_eq] at this
 
 theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPositive) (U : Submodule 𝕜 E)
-    [CompleteSpace U] : (orthogonalProjection U ∘L T ∘L U.subtypeL).IsPositive := by
-  have := hT.conj_adjoint (orthogonalProjection U : E →L[𝕜] U)
+    [CompleteSpace U] : (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
+  have := hT.conj_adjoint (U.orthogonalProjection : E →L[𝕜] U)
   rwa [U.adjoint_orthogonalProjection] at this
+
+open scoped NNReal
+
+lemma antilipschitz_of_forall_le_inner_map {H : Type*} [NormedAddCommGroup H]
+    [InnerProductSpace 𝕜 H] (f : H →L[𝕜] H) {c : ℝ≥0} (hc : 0 < c)
+    (h : ∀ x, ‖x‖ ^ 2 * c ≤ ‖⟪f x, x⟫_𝕜‖) : AntilipschitzWith c⁻¹ f := by
+  refine f.antilipschitz_of_bound (K := c⁻¹) fun x ↦ ?_
+  rw [NNReal.coe_inv, inv_mul_eq_div, le_div_iff₀ (by exact_mod_cast hc)]
+  simp_rw [sq, mul_assoc] at h
+  by_cases hx0 : x = 0
+  · simp [hx0]
+  · apply (map_le_map_iff <| OrderIso.mulLeft₀ ‖x‖ (norm_pos_iff.mpr hx0)).mp
+    exact (h x).trans <| (norm_inner_le_norm _ _).trans <| (mul_comm _ _).le
+
+lemma isUnit_of_forall_le_norm_inner_map (f : E →L[𝕜] E) {c : ℝ≥0} (hc : 0 < c)
+    (h : ∀ x, ‖x‖ ^ 2 * c ≤ ‖⟪f x, x⟫_𝕜‖) : IsUnit f := by
+  rw [isUnit_iff_bijective, bijective_iff_dense_range_and_antilipschitz]
+  have h_anti : AntilipschitzWith c⁻¹ f := antilipschitz_of_forall_le_inner_map f hc h
+  refine ⟨?_, ⟨_, h_anti⟩⟩
+  have _inst := h_anti.completeSpace_range_clm
+  rw [Submodule.topologicalClosure_eq_top_iff, Submodule.eq_bot_iff]
+  intro x hx
+  have : ‖x‖ ^ 2 * c = 0 := le_antisymm (by simpa only [hx (f x) ⟨x, rfl⟩, norm_zero] using h x)
+    (by positivity)
+  aesop
 
 section Complex
 
@@ -123,7 +148,7 @@ instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
   le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
   le_antisymm f₁ f₂ h₁ h₂ := by
     rw [← sub_eq_zero]
-    have h_isSymm := isSelfAdjoint_iff_isSymmetric.mp h₂.isSelfAdjoint
+    have h_isSymm := isSelfAdjoint_iff_isSymmetric.mp <| IsPositive.isSelfAdjoint h₂
     exact_mod_cast h_isSymm.inner_map_self_eq_zero.mp fun x ↦ by
       apply RCLike.ext
       · rw [map_zero]

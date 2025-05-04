@@ -24,7 +24,7 @@ homomorphism.
 
 -/
 
-open TensorProduct Bialgebra
+open TensorProduct Bialgebra Coalgebra
 
 universe u v w
 
@@ -45,11 +45,11 @@ infixr:25 " →ₐc " => BialgHom _
 notation:25 A " →ₐc[" R "] " B => BialgHom R A B
 
 /-- `BialgHomClass F R A B` asserts `F` is a type of bundled bialgebra homomorphisms
-from `A` to `B`.  -/
+from `A` to `B`. -/
 class BialgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
-    extends CoalgHomClass F R A B, MonoidHomClass F A B : Prop
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
+    extends CoalgHomClass F R A B, MonoidHomClass F A B
 
 namespace BialgHomClass
 
@@ -67,7 +67,7 @@ instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
   map_add := map_add
   map_zero := map_zero
   commutes := fun c r => by
-    simp only [Algebra.algebraMap_eq_smul_one, map_smul, _root_.map_one]
+    simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one]
 
 /-- Turn an element of a type `F` satisfying `BialgHomClass F R A B` into an actual
 `BialgHom`. This is declared as the default coercion from `F` to `A →ₐc[R] B`. -/
@@ -126,6 +126,15 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
     (f : α →ₐc[R] β) : α → β := f
 
 initialize_simps_projections BialgHom (toFun → apply)
+
+/-- Construct a bialgebra hom from an algebra hom respecting counit and comultiplication. -/
+@[simps] def ofAlgHom (f : A →ₐ[R] B) (counit_comp : counit ∘ₗ f.toLinearMap = counit)
+    (map_comp_comul : map f.toLinearMap f.toLinearMap ∘ₗ comul = comul ∘ₗ f.toLinearMap) :
+    A →ₐc[R] B where
+  __ := f
+  map_smul' := map_smul f
+  counit_comp := counit_comp
+  map_comp_comul := map_comp_comul
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
@@ -191,9 +200,6 @@ protected theorem congr_arg (φ : A →ₐc[R] B) {x y : A} (h : x = y) : φ x =
 theorem ext {φ₁ φ₂ : A →ₐc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
   DFunLike.ext _ _ H
 
-theorem ext_iff {φ₁ φ₂ : A →ₐc[R] B} : φ₁ = φ₂ ↔ ∀ x, φ₁ x = φ₂ x :=
-  DFunLike.ext_iff
-
 @[ext high]
 theorem ext_of_ring {f g : R →ₐc[R] A} (h : f 1 = g 1) : f = g :=
   coe_linearMap_injective (by ext; assumption)
@@ -227,7 +233,7 @@ variable (R A)
 
 variable {R A}
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BialgHom.id R A) = id :=
   rfl
 
@@ -275,13 +281,13 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐc[R] A) where
   mul := comp
-  mul_assoc ϕ ψ χ := rfl
+  mul_assoc _ _ _ := rfl
   one := BialgHom.id R A
-  one_mul ϕ := ext fun x => rfl
-  mul_one ϕ := ext fun x => rfl
+  one_mul _ := ext fun _ => rfl
+  mul_one _ := ext fun _ => rfl
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₐc[R] A) x = x :=
@@ -300,7 +306,7 @@ variable (R : Type u) (A : Type v)
 variable [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 /-- The counit of a bialgebra as a `BialgHom`. -/
-def counitBialgHom : A →ₐc[R] R :=
+noncomputable def counitBialgHom : A →ₐc[R] R :=
   { Coalgebra.counitCoalgHom R A, counitAlgHom R A with }
 
 @[simp]

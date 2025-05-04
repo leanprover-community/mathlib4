@@ -16,7 +16,7 @@ variable {ι κ G₀ M₀ R : Type*}
 
 namespace Set
 section MulZeroClass
-variable [MulZeroClass M₀] {s t : Set ι} {f g : ι → M₀} {i : ι}
+variable [MulZeroClass M₀] {s t : Set ι} {i : ι}
 
 lemma indicator_mul (s : Set ι) (f g : ι → M₀) :
     indicator s (fun i ↦ f i * g i) = fun i ↦ indicator s f i * indicator s g i := by
@@ -39,6 +39,12 @@ lemma indicator_mul_right (s : Set ι) (f g : ι → M₀) :
   split_ifs
   · rfl
   · rw [mul_zero]
+
+lemma indicator_mul_const (s : Set ι) (f : ι → M₀) (a : M₀) (i : ι) :
+    s.indicator (f · * a) i = s.indicator f i * a := by rw [indicator_mul_left]
+
+lemma indicator_const_mul (s : Set ι) (f : ι → M₀) (a : M₀) (i : ι) :
+    s.indicator (a * f ·) i = a * s.indicator f i := by rw [indicator_mul_right]
 
 lemma inter_indicator_mul (f g : ι → M₀) (i : ι) :
     (s ∩ t).indicator (fun j ↦ f j * g j) i = s.indicator f i * t.indicator g i := by
@@ -135,13 +141,13 @@ variable [One R]
 
 lemma mulSupport_one_add [AddLeftCancelMonoid R] (f : ι → R) :
     mulSupport (fun x ↦ 1 + f x) = support f :=
-  Set.ext fun _ ↦ not_congr add_right_eq_self
+  Set.ext fun _ ↦ not_congr add_eq_left
 
 lemma mulSupport_one_add' [AddLeftCancelMonoid R] (f : ι → R) : mulSupport (1 + f) = support f :=
   mulSupport_one_add f
 
 lemma mulSupport_add_one [AddRightCancelMonoid R] (f : ι → R) :
-    mulSupport (fun x ↦ f x + 1) = support f := Set.ext fun _ ↦ not_congr add_left_eq_self
+    mulSupport (fun x ↦ f x + 1) = support f := Set.ext fun _ ↦ not_congr add_eq_right
 
 lemma mulSupport_add_one' [AddRightCancelMonoid R] (f : ι → R) : mulSupport (f + 1) = support f :=
   mulSupport_add_one f

@@ -10,9 +10,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 # Center of a group with zero
 -/
 
-assert_not_exists Finset
-assert_not_exists Ring
-assert_not_exists Subsemigroup
+assert_not_exists RelIso Finset Ring Subsemigroup
 
 variable {M₀ G₀ : Type*}
 
@@ -38,7 +36,7 @@ lemma center_units_subset : center G₀ˣ ⊆ ((↑) : G₀ˣ → G₀) ⁻¹' c
   intro u hu a
   obtain rfl | ha := eq_or_ne a 0
   · rw [zero_mul, mul_zero]
-  · exact congr_arg Units.val $ hu $ Units.mk0 a ha
+  · exact congr_arg Units.val <| hu <| Units.mk0 a ha
 
 /-- In a group with zero, the center of the units is the preimage of the center. -/
 lemma center_units_eq : center G₀ˣ = ((↑) : G₀ˣ → G₀) ⁻¹' center G₀ :=
@@ -54,14 +52,6 @@ lemma center_units_eq : center G₀ˣ = ((↑) : G₀ˣ → G₀) ⁻¹' center 
 @[simp] lemma div_mem_centralizer₀ (ha : a ∈ centralizer s) (hb : b ∈ centralizer s) :
     a / b ∈ centralizer s := by
   simpa only [div_eq_mul_inv] using mul_mem_centralizer ha (inv_mem_centralizer₀ hb)
-
-@[deprecated inv_mem_center (since := "2024-06-17")]
-theorem inv_mem_center₀ (ha : a ∈ Set.center G₀) : a⁻¹ ∈ Set.center G₀ :=
-  inv_mem_center ha
-
-@[deprecated div_mem_center (since := "2024-06-17")]
-theorem div_mem_center₀ (ha : a ∈ Set.center G₀) (hb : b ∈ Set.center G₀) : a / b ∈ Set.center G₀ :=
-  div_mem_center ha hb
 
 end GroupWithZero
 end Set

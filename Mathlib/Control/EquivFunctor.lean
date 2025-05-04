@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Convert
@@ -81,7 +81,7 @@ end
 
 instance (priority := 100) ofLawfulFunctor (f : Type u₀ → Type u₁) [Functor f] [LawfulFunctor f] :
     EquivFunctor f where
-  map {α β} e := Functor.map e
+  map {_ _} e := Functor.map e
   map_refl' α := by
     ext
     apply LawfulFunctor.id_map

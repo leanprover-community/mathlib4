@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Algebraic facts about the topology of uniform convergence
@@ -206,12 +207,12 @@ end AlgebraicInstances
 
 section Group
 
-variable {α G ι : Type*} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [UniformGroup G]
+variable {α G ι : Type*} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [IsUniformGroup G]
 
 /-- If `G` is a uniform group, then `α →ᵤ G` is a uniform group as well. -/
 @[to_additive "If `G` is a uniform additive group,
 then `α →ᵤ G` is a uniform additive group as well."]
-instance : UniformGroup (α →ᵤ G) :=
+instance : IsUniformGroup (α →ᵤ G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformFun.postcomp_uniformContinuous` tells us that
     -- `((/) ∘ —) : (α →ᵤ G × G) → (α →ᵤ G)` is uniformly continuous too. By precomposing with
@@ -237,7 +238,7 @@ protected theorem UniformFun.hasBasis_nhds_one :
 well. -/
 @[to_additive "Let `𝔖 : Set (Set α)`. If `G` is a uniform additive group,
 then `α →ᵤ[𝔖] G` is a uniform additive group as well."]
-instance : UniformGroup (α →ᵤ[𝔖] G) :=
+instance : IsUniformGroup (α →ᵤ[𝔖] G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformOnFun.postcomp_uniformContinuous` tells us that
     -- `((/) ∘ —) : (α →ᵤ[𝔖] G × G) → (α →ᵤ[𝔖] G)` is uniformly continuous too. By precomposing with
@@ -252,8 +253,8 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ[𝔖] G)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ Si.1, toFun 𝔖 f x ∈ b Si.2 } := by
-  have := h.uniformity_of_nhds_one_swapped
-  convert UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ this
+  convert UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ <|
+    h.uniformity_of_nhds_one_swapped
   simp [UniformOnFun.gen]
 
 @[to_additive]

@@ -43,7 +43,7 @@ Simplicial complexes can be generalized to affine spaces once `ConvexHull` has b
 
 open Finset Set
 
-variable (𝕜 E : Type*) {ι : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable (𝕜 E : Type*) [Ring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 namespace Geometry
 
@@ -72,7 +72,7 @@ variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 
 /-- A `Finset` belongs to a `SimplicialComplex` if it's a face of it. -/
 instance : Membership (Finset E) (SimplicialComplex 𝕜 E) :=
-  ⟨fun s K => s ∈ K.faces⟩
+  ⟨fun K s => s ∈ K.faces⟩
 
 /-- The underlying space of a simplicial complex is the union of its faces. -/
 def space (K : SimplicialComplex 𝕜 E) : Set E :=
@@ -166,7 +166,7 @@ theorem face_subset_face_iff (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
   ⟨fun h _ hxs =>
     (vertex_mem_convexHull_iff
           (K.down_closed hs (Finset.singleton_subset_iff.2 hxs) <| singleton_ne_empty _) ht).1
-      (h (subset_convexHull 𝕜 (↑s) hxs)),
+      (h (subset_convexHull 𝕜 (E := E) s hxs)),
     convexHull_mono⟩
 
 /-! ### Facets -/
@@ -202,7 +202,7 @@ theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t
 variable (𝕜 E)
 
 /-- The complex consisting of only the faces present in both of its arguments. -/
-instance : Inf (SimplicialComplex 𝕜 E) :=
+instance : Min (SimplicialComplex 𝕜 E) :=
   ⟨fun K L =>
     { faces := K.faces ∩ L.faces
       not_empty_mem := fun h => K.not_empty_mem (Set.inter_subset_left h)
@@ -211,7 +211,7 @@ instance : Inf (SimplicialComplex 𝕜 E) :=
       inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull hs.1 ht.1 }⟩
 
 instance : SemilatticeInf (SimplicialComplex 𝕜 E) :=
-  { PartialOrder.lift faces SimplicialComplex.ext with
+  { PartialOrder.lift faces (fun _ _ => SimplicialComplex.ext) with
     inf := (· ⊓ ·)
     inf_le_left := fun _ _ _ hs => hs.1
     inf_le_right := fun _ _ _ hs => hs.2

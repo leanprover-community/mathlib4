@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Order.Cover
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Notation.Prod
+import Mathlib.Data.Set.Image
 
 /-!
 # Support of a function
@@ -13,13 +15,13 @@ In this file we define `Function.support f = {x | f x ≠ 0}` and prove its basi
 We also define `Function.mulSupport f = {x | f x ≠ 1}`.
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists CompleteLattice MonoidWithZero
 
 open Set
 
 namespace Function
 
-variable {α β A B M N P G : Type*}
+variable {α β A B M M' N P G : Type*}
 
 section One
 variable [One M] [One N] [One P]
@@ -56,7 +58,7 @@ theorem mulSupport_subset_iff' {f : α → M} {s : Set α} :
 @[to_additive]
 theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
     mulSupport f = s ↔ (∀ x, x ∈ s → f x ≠ 1) ∧ ∀ x, x ∉ s → f x = 1 := by
-  simp (config := { contextual := true }) only [Set.ext_iff, mem_mulSupport, ne_eq, iff_def,
+  simp +contextual only [Set.ext_iff, mem_mulSupport, ne_eq, iff_def,
     not_imp_comm, and_comm, forall_and]
 
 @[to_additive]
@@ -82,7 +84,7 @@ theorem mulSupport_update_eq_ite [DecidableEq α] [DecidableEq M] (f : α → M)
   rcases eq_or_ne y 1 with rfl | hy <;> simp [mulSupport_update_one, mulSupport_update_of_ne_one, *]
 
 @[to_additive]
-theorem mulSupport_extend_one_subset {f : α → M} {g : α → N} :
+theorem mulSupport_extend_one_subset {f : α → M'} {g : α → N} :
     mulSupport (f.extend g 1) ⊆ f '' mulSupport g :=
   mulSupport_subset_iff'.mpr fun x hfg ↦ by
     by_cases hf : ∃ a, f a = x
@@ -92,7 +94,7 @@ theorem mulSupport_extend_one_subset {f : α → M} {g : α → N} :
     · rw [extend_apply' _ _ _ hf]; rfl
 
 @[to_additive]
-theorem mulSupport_extend_one {f : α → M} {g : α → N} (hf : f.Injective) :
+theorem mulSupport_extend_one {f : α → M'} {g : α → N} (hf : f.Injective) :
     mulSupport (f.extend g 1) = f '' mulSupport g :=
   mulSupport_extend_one_subset.antisymm <| by
     rintro _ ⟨x, hx, rfl⟩; rwa [mem_mulSupport, hf.extend_apply]
@@ -110,8 +112,6 @@ theorem disjoint_mulSupport_iff {f : α → M} {s : Set α} :
 
 @[to_additive (attr := simp)]
 theorem mulSupport_eq_empty_iff {f : α → M} : mulSupport f = ∅ ↔ f = 1 := by
-  #adaptation_note /-- This used to be `simp_rw` rather than `rw`,
-  but this broke `to_additive` as of `nightly-2024-03-07` -/
   rw [← subset_empty_iff, mulSupport_subset_iff', funext_iff]
   simp
 
@@ -128,8 +128,12 @@ theorem range_subset_insert_image_mulSupport (f : α → M) :
 @[to_additive]
 lemma range_eq_image_or_of_mulSupport_subset {f : α → M} {k : Set α} (h : mulSupport f ⊆ k) :
     range f = f '' k ∨ range f = insert 1 (f '' k) := by
-  apply (wcovBy_insert _ _).eq_or_eq (image_subset_range _ _)
-  exact (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
+  have : range f ⊆ insert 1 (f '' k) :=
+    (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
+  by_cases h1 : 1 ∈ range f
+  · exact Or.inr (subset_antisymm this (insert_subset h1 (image_subset_range _ _)))
+  refine Or.inl (subset_antisymm ?_ (image_subset_range _ _))
+  rwa [← diff_singleton_eq_self h1, diff_singleton_subset_iff]
 
 @[to_additive (attr := simp)]
 theorem mulSupport_one' : mulSupport (1 : α → M) = ∅ :=
@@ -209,9 +213,10 @@ theorem mulSupport_mul [MulOneClass M] (f g : α → M) :
 @[to_additive]
 theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
     (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
-  induction' n with n hfn
-  · simp [pow_zero, mulSupport_one]
-  · simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
+  induction n with
+  | zero => simp [pow_zero, mulSupport_one]
+  | succ n hfn =>
+    simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
 
 section DivisionMonoid
 

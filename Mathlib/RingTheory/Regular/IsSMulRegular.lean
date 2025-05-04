@@ -5,7 +5,7 @@ Authors: Brendan Murphy
 -/
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.Ideal.AssociatedPrime
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 import Mathlib.RingTheory.QuotSMulTop
 
 /-!
@@ -52,6 +52,7 @@ open scoped TensorProduct
 variable (M) [CommRing R] [AddCommGroup M] [AddCommGroup M']
     [Module R M] [Module R M'] [Module.Flat R M] {r : R}
     (h : IsSMulRegular M' r)
+include h
 
 lemma IsSMulRegular.lTensor : IsSMulRegular (M ⊗[R] M') r :=
   have h1 := congrArg DFunLike.coe (LinearMap.lTensor_smul_action M M' r)
@@ -95,7 +96,7 @@ lemma isSMulRegular_on_submodule_iff_mem_imp_smul_eq_zero_imp_eq_zero :
     IsSMulRegular N r ↔ ∀ x ∈ N, r • x = 0 → x = 0 :=
   Iff.trans (isSMulRegular_iff_smul_eq_zero_imp_eq_zero N r) <|
     Iff.trans Subtype.forall <| by
-      simp only [SetLike.mk_smul_mk, AddSubmonoid.mk_eq_zero]
+      simp only [SetLike.mk_smul_mk, Submodule.mk_eq_zero]
 
 lemma isSMulRegular_on_quot_iff_smul_mem_implies_mem :
     IsSMulRegular (M ⧸ N) r ↔ ∀ x : M, r • x ∈ N → x ∈ N :=
@@ -135,7 +136,7 @@ open Submodule Pointwise
 
 variable (M) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
-    (I : Ideal R) (N : Submodule R M) (r : R)
+    (N : Submodule R M) (r : R)
 
 variable (R) in
 lemma biUnion_associatedPrimes_eq_compl_regular [IsNoetherianRing R] :

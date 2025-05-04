@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.Module.End
 import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
@@ -17,6 +18,8 @@ The `Monoid` and `DistribMulAction` instances and additive versions are provided
 `Mathlib/RingTheory/OreLocalization/Basic.lean`.
 
 -/
+
+assert_not_exists Subgroup
 
 universe u
 
@@ -102,7 +105,7 @@ lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
-  exact congr($(AddCommMonoid.natModule.unique.2 inst).smul n x)
+  exact congr($(AddCommMonoid.uniqueNatModule.2 inst).smul n x)
 
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
 @[simps!]
@@ -113,7 +116,7 @@ def numeratorRingHom : R →+* R[S⁻¹] where
 
 instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] where
   __ := inferInstanceAs (Module R₀ R[S⁻¹])
-  __ := numeratorRingHom.comp (algebraMap R₀ R)
+  algebraMap := numeratorRingHom.comp (algebraMap R₀ R)
   commutes' r x := by
     induction' x using OreLocalization.ind with r₁ s₁
     dsimp
@@ -149,7 +152,7 @@ def universalHom : R[S⁻¹] →+* T :=
         Submonoid.smul_def]
       simp only [mul_inv_rev, MonoidHom.map_mul, RingHom.map_add, RingHom.map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
-      simp only [one_mul, mul_left_inv, Units.val_one]
+      simp only [one_mul, inv_mul_cancel, Units.val_one]
       congr 1
       rw [← mul_assoc]
       congr 1
@@ -188,7 +191,7 @@ lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
-  exact congr($(AddCommGroup.intModule.unique.2 inst).smul n x)
+  exact congr($(AddCommGroup.uniqueIntModule.2 inst).smul n x)
 
 open nonZeroDivisors
 
@@ -221,8 +224,6 @@ noncomputable section DivisionRing
 
 open nonZeroDivisors
 
-open scoped Classical
-
 variable {R : Type*} [Ring R] [Nontrivial R] [OreSet R⁰]
 
 instance nontrivial : Nontrivial R[R⁰⁻¹] :=
@@ -230,7 +231,8 @@ instance nontrivial : Nontrivial R[R⁰⁻¹] :=
 
 variable [NoZeroDivisors R]
 
-/-- The inversion of Ore fractions for a ring without zero divisors, satisying `0⁻¹ = 0` and
+open Classical in
+/-- The inversion of Ore fractions for a ring without zero divisors, satisfying `0⁻¹ = 0` and
 `(r /ₒ r')⁻¹ = r' /ₒ r` for `r ≠ 0`. -/
 @[irreducible]
 protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
@@ -252,6 +254,7 @@ protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
 instance inv' : Inv R[R⁰⁻¹] :=
   ⟨OreLocalization.inv⟩
 
+open Classical in
 protected theorem inv_def {r : R} {s : R⁰} :
     (r /ₒ s)⁻¹ =
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
@@ -275,9 +278,9 @@ instance : DivisionRing R[R⁰⁻¹] where
   mul_inv_cancel := OreLocalization.mul_inv_cancel
   inv_zero := OreLocalization.inv_zero
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 end DivisionRing
 

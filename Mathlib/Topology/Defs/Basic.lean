@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.MkIffOfInductiveProp
 /-!
 # Basic definitions about topological spaces
 
@@ -53,6 +54,8 @@ We introduce notation `IsOpen[t]`, `IsClosed[t]`, `closure[t]`, `Continuous[t₁
 that allow passing custom topologies to these predicates and functions without using `@`.
 -/
 
+assert_not_exists Monoid
+
 universe u v
 open Set
 
@@ -98,6 +101,12 @@ class IsClosed (s : Set X) : Prop where
 def IsClopen (s : Set X) : Prop :=
   IsClosed s ∧ IsOpen s
 
+/--
+A set is locally closed if it is the intersection of some open set and some closed set.
+Also see `isLocallyClosed_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed.lean`.
+-/
+def IsLocallyClosed (s : Set X) : Prop := ∃ (U Z : Set X), IsOpen U ∧ IsClosed Z ∧ s = U ∩ Z
+
 /-- The interior of a set `s` is the largest open subset of `s`. -/
 def interior (s : Set X) : Set X :=
   ⋃₀ { t | IsOpen t ∧ t ⊆ s }
@@ -109,6 +118,18 @@ def closure (s : Set X) : Set X :=
 /-- The frontier of a set is the set of points between the closure and interior. -/
 def frontier (s : Set X) : Set X :=
   closure s \ interior s
+
+/--
+The coborder is defined as the complement of `closure s \ s`,
+or the union of `s` and the complement of `∂(s)`.
+This is the largest set in which `s` is closed, and `s` is locally closed if and only if
+`coborder s` is open.
+
+This is unnamed in the literature, and this name is due to the fact that `coborder s = (border sᶜ)ᶜ`
+where `border s = s \ interior s` is the border in the sense of Hausdorff.
+-/
+def coborder (s : Set X) : Set X :=
+  (closure s \ s)ᶜ
 
 /-- A set is dense in a topological space if every point belongs to its closure. -/
 def Dense (s : Set X) : Prop :=
@@ -132,6 +153,28 @@ def IsOpenMap (f : X → Y) : Prop := ∀ U : Set X, IsOpen U → IsOpen (f '' U
 /-- A map `f : X → Y` is said to be a *closed map*,
 if the image of any closed `U : Set X` is closed in `Y`. -/
 def IsClosedMap (f : X → Y) : Prop := ∀ U : Set X, IsClosed U → IsClosed (f '' U)
+
+/-- An open quotient map is an open map `f : X → Y` which is both an open map and a quotient map.
+Equivalently, it is a surjective continuous open map.
+We use the latter characterization as a definition.
+
+Many important quotient maps are open quotient maps, including
+
+- the quotient map from a topological space to its quotient by the action of a group;
+- the quotient map from a topological group to its quotient by a normal subgroup;
+- the quotient map from a topological spaace to its separation quotient.
+
+Contrary to general quotient maps,
+the category of open quotient maps is closed under `Prod.map`.
+-/
+@[mk_iff]
+structure IsOpenQuotientMap (f : X → Y) : Prop where
+  /-- An open quotient map is surjective. -/
+  surjective : Function.Surjective f
+  /-- An open quotient map is continuous. -/
+  continuous : Continuous f
+  /-- An open quotient map is an open map. -/
+  isOpenMap : IsOpenMap f
 
 end Defs
 

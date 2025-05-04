@@ -71,9 +71,9 @@ through `L`. -/
 structure StrictUniversalPropertyFixedTarget where
   /-- the functor `L` inverts `W` -/
   inverts : W.IsInvertedBy L
-  /-- any functor `C ⥤ E` which inverts `W` can be lifted as a functor `D ⥤ E`  -/
+  /-- any functor `C ⥤ E` which inverts `W` can be lifted as a functor `D ⥤ E` -/
   lift : ∀ (F : C ⥤ E) (_ : W.IsInvertedBy F), D ⥤ E
-  /-- there is a factorisation involving the lifted functor  -/
+  /-- there is a factorisation involving the lifted functor -/
   fac : ∀ (F : C ⥤ E) (hF : W.IsInvertedBy F), L ⋙ lift F hF = F
   /-- uniqueness of the lifted functor -/
   uniq : ∀ (F₁ F₂ : D ⥤ E) (_ : L ⋙ F₁ = L ⋙ F₂), F₁ = F₂
@@ -95,7 +95,7 @@ of the localization. -/
 @[simps]
 def strictUniversalPropertyFixedTargetId (hW : W ≤ MorphismProperty.isomorphisms C) :
     StrictUniversalPropertyFixedTarget (𝟭 C) W E where
-  inverts X Y f hf := hW f hf
+  inverts _ _ f hf := hW f hf
   lift F _ := F
   fac F hF := by
     cases F
@@ -201,7 +201,7 @@ theorem essSurj (W) [L.IsLocalization W] : L.EssSurj :=
 /-- The functor `(D ⥤ E) ⥤ W.functors_inverting E` induced by the composition
 with a localization functor `L : C ⥤ D` with respect to `W : morphism_property C`. -/
 def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
-  FullSubcategory.lift _ ((whiskeringLeft _ _ E).obj L)
+  ObjectProperty.lift _ ((whiskeringLeft _ _ E).obj L)
     (MorphismProperty.IsInvertedBy.of_comp W L (inverts L W))
 
 instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
@@ -231,7 +231,7 @@ def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
 /-- The functor `(D ⥤ E) ⥤ (C ⥤ E)` given by the composition with a localization
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 @[nolint unusedArguments]
-def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type*) [Category E] :
+def whiskeringLeftFunctor' [L.IsLocalization W] (E : Type*) [Category E] :
     (D ⥤ E) ⥤ C ⥤ E :=
   (whiskeringLeft C D E).obj L
 
@@ -256,15 +256,17 @@ instance : (whiskeringLeftFunctor' L W E).Faithful := by
   · infer_instance
   apply InducedCategory.faithful -- why is it not found automatically ???
 
-lemma full_whiskeringLeft : ((whiskeringLeft C D E).obj L).Full :=
+lemma full_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category E] :
+    ((whiskeringLeft C D E).obj L).Full :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Full
 
-lemma faithful_whiskeringLeft : ((whiskeringLeft C D E).obj L).Faithful :=
+lemma faithful_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category E] :
+    ((whiskeringLeft C D E).obj L).Faithful :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Faithful
 
 variable {E}
 
-theorem natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
+theorem natTrans_ext (L : C ⥤ D) (W) [L.IsLocalization W] {F₁ F₂ : D ⥤ E} {τ τ' : F₁ ⟶ F₂}
     (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by
   haveI := essSurj L W
   ext Y
@@ -329,13 +331,13 @@ theorem comp_liftNatTrans (F₁ F₂ F₃ : C ⥤ E) (F₁' F₂' F₃' : D ⥤ 
     [h₂ : Lifting L W F₂ F₂'] [h₃ : Lifting L W F₃ F₃'] (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) :
     liftNatTrans L W F₁ F₂ F₁' F₂' τ ≫ liftNatTrans L W F₂ F₃ F₂' F₃' τ' =
       liftNatTrans L W F₁ F₃ F₁' F₃' (τ ≫ τ') :=
-  natTrans_ext L W _ _ fun X => by
+  natTrans_ext L W fun X => by
     simp only [NatTrans.comp_app, liftNatTrans_app, assoc, Iso.inv_hom_id_app_assoc]
 
 @[simp]
 theorem liftNatTrans_id (F : C ⥤ E) (F' : D ⥤ E) [h : Lifting L W F F'] :
     liftNatTrans L W F F F' F' (𝟙 F) = 𝟙 F' :=
-  natTrans_ext L W _ _ fun X => by
+  natTrans_ext L W fun X => by
     simp only [liftNatTrans_app, NatTrans.id_app, id_comp, Iso.hom_inv_id_app]
     rfl
 
@@ -363,11 +365,11 @@ instance id : Lifting L W L (𝟭 D) :=
 instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso.refl _⟩
 
 @[simp]
-lemma compLeft_iso (F : D ⥤ E) : Localization.Lifting.iso L W (L ⋙ F) F = Iso.refl _ := rfl
+lemma compLeft_iso (W) (F : D ⥤ E) : Localization.Lifting.iso L W (L ⋙ F) F = Iso.refl _ := rfl
 
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
-is isomorphic to `F₁'` also lifts a functor `F₂` that is isomorphic to `F₁`.  -/
+is isomorphic to `F₁'` also lifts a functor `F₂` that is isomorphic to `F₁`. -/
 @[simps]
 def ofIsos {F₁ F₂ : C ⥤ E} {F₁' F₂' : D ⥤ E} (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') [Lifting L W F₁ F₁'] :
     Lifting L W F₂ F₂' :=
@@ -430,7 +432,9 @@ same `MorphismProperty C`, this is an equivalence of categories `D₁ ≌ D₂`.
 def uniq : D₁ ≌ D₂ :=
   (equivalenceFromModel L₁ W').symm.trans (equivalenceFromModel L₂ W')
 
-lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := rfl
+lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := by
+  dsimp [uniq, Equivalence.trans]
+  ext <;> aesop
 
 /-- The functor of equivalence of localized categories given by `Localization.uniq` is
 compatible with the localization functors. -/
@@ -488,9 +492,9 @@ lemma mk (L : C ⥤ D) [L.IsLocalization W] (h : L.map f = L.map g) :
   (areEqualizedByLocalization_iff L W f g).2 h
 
 variable {W f g}
-variable (h : AreEqualizedByLocalization W f g)
 
-lemma map_eq (L : C ⥤ D) [L.IsLocalization W] : L.map f = L.map g :=
+lemma map_eq (h : AreEqualizedByLocalization W f g) (L : C ⥤ D) [L.IsLocalization W] :
+    L.map f = L.map g :=
   (areEqualizedByLocalization_iff L W f g).1 h
 
 end AreEqualizedByLocalization

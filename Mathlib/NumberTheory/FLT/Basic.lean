@@ -1,18 +1,13 @@
 /-
 Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Yaël Dillies
+Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Rat.Defs
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.TFAE
 
 /-!
 # Statement of Fermat's Last Theorem
@@ -50,8 +45,8 @@ https://github.com/ImperialCollegeLondon/FLT .
 open List
 
 /-- Statement of Fermat's Last Theorem over a given semiring with a specific exponent. -/
-def FermatLastTheoremWith (α : Type*) [Semiring α] (n : ℕ) : Prop :=
-  ∀ a b c : α, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n ≠ c ^ n
+def FermatLastTheoremWith (R : Type*) [Semiring R] (n : ℕ) : Prop :=
+  ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n ≠ c ^ n
 
 /-- Statement of Fermat's Last Theorem over the naturals for a given exponent. -/
 def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWith ℕ n
@@ -73,10 +68,10 @@ lemma not_fermatLastTheoremFor_one : ¬ FermatLastTheoremFor 1 :=
 lemma not_fermatLastTheoremFor_two : ¬ FermatLastTheoremFor 2 :=
   fun h ↦ h 3 4 5 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
 
-variable {α : Type*} [Semiring α] [NoZeroDivisors α] {m n : ℕ}
+variable {R : Type*} [Semiring R] [NoZeroDivisors R] {m n : ℕ}
 
-lemma FermatLastTheoremWith.mono (hmn : m ∣ n) (hm : FermatLastTheoremWith α m) :
-    FermatLastTheoremWith α n := by
+lemma FermatLastTheoremWith.mono (hmn : m ∣ n) (hm : FermatLastTheoremWith R m) :
+    FermatLastTheoremWith R n := by
   rintro a b c ha hb hc
   obtain ⟨k, rfl⟩ := hmn
   simp_rw [pow_mul']
@@ -89,7 +84,7 @@ lemma FermatLastTheoremFor.mono (hmn : m ∣ n) (hm : FermatLastTheoremFor m) :
 lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     TFAE [FermatLastTheoremWith ℕ n, FermatLastTheoremWith ℤ n, FermatLastTheoremWith ℚ n] := by
   tfae_have 1 → 2
-  · rintro h a b c ha hb hc habc
+  | h, a, b, c, ha, hb, hc, habc => by
     obtain hn | hn := n.even_or_odd
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
@@ -129,7 +124,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
       push_cast
       simp only [abs_of_pos, habc, *]
   tfae_have 2 → 3
-  · rintro h a b c ha hb hc habc
+  | h, a, b, c, ha, hb, hc, habc => by
     rw [← Rat.num_ne_zero] at ha hb hc
     refine h (a.num * b.den * c.den) (a.den * b.num * c.den) (a.den * b.den * c.num)
       (by positivity) (by positivity) (by positivity) ?_
@@ -140,8 +135,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
       div_self (by positivity : (b.den : ℚ) ≠ 0), div_self (by positivity : (c.den : ℚ) ≠ 0),
       one_mul, mul_one, Rat.num_div_den, habc]
   tfae_have 3 → 1
-  · rintro h a b c
-    exact mod_cast h a b c
+  | h, a, b, c => mod_cast h a b c
   tfae_finish
 
 lemma fermatLastTheoremFor_iff_nat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℕ n :=
@@ -152,6 +146,70 @@ lemma fermatLastTheoremFor_iff_int {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
 
 lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℚ n :=
   (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 2
+
+/--
+A relaxed variant of Fermat's Last Theorem over a given commutative semiring with a specific
+exponent, allowing nonzero solutions of units and their common multiples.
+
+1. The variant `FermatLastTheoremWith' R` is weaker than `FermatLastTheoremWith R` in general.
+   In particular, it holds trivially for `[Field R]`.
+2. This variant is equivalent to the original `FermatLastTheoremWith R` for `R = ℕ` or `ℤ`.
+   In general, they are equivalent if there is no solutions of units to the Fermat equation.
+3. For a polynomial ring `R = k[X]`, the original `FermatLastTheoremWith R` is false but the weaker
+   variant `FermatLastTheoremWith' R` is true. This polynomial variant of Fermat's Last Theorem
+   can be shown elementarily using Mason--Stothers theorem.
+-/
+def FermatLastTheoremWith' (R : Type*) [CommSemiring R] (n : ℕ) : Prop :=
+  ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n = c ^ n →
+    ∃ d a' b' c', (a = a' * d ∧ b = b' * d ∧ c = c' * d) ∧ (IsUnit a' ∧ IsUnit b' ∧ IsUnit c')
+
+lemma FermatLastTheoremWith.fermatLastTheoremWith' {R : Type*} [CommSemiring R] {n : ℕ}
+    (h : FermatLastTheoremWith R n) : FermatLastTheoremWith' R n :=
+  fun a b c _ _ _ _ ↦ by exfalso; apply h a b c <;> assumption
+
+lemma fermatLastTheoremWith'_of_semifield (𝕜 : Type*) [Semifield 𝕜] (n : ℕ) :
+    FermatLastTheoremWith' 𝕜 n := fun a b c ha hb hc _ ↦
+  ⟨1, a, b, c,
+    ⟨(mul_one a).symm, (mul_one b).symm, (mul_one c).symm⟩,
+    ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩⟩
+
+@[deprecated (since := "2025-03-21")]
+alias fermatLastTheoremWith'_of_field := fermatLastTheoremWith'_of_semifield
+
+lemma FermatLastTheoremWith'.fermatLastTheoremWith {R : Type*} [CommSemiring R] [IsDomain R]
+    {n : ℕ} (h : FermatLastTheoremWith' R n)
+    (hn : ∀ a b c : R, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
+    FermatLastTheoremWith R n := by
+  intro a b c ha hb hc heq
+  rcases h a b c ha hb hc heq with ⟨d, a', b', c', ⟨rfl, rfl, rfl⟩, ⟨ua, ub, uc⟩⟩
+  rw [mul_pow, mul_pow, mul_pow, ← add_mul] at heq
+  exact hn _ _ _ ua ub uc <| mul_right_cancel₀ (pow_ne_zero _ (right_ne_zero_of_mul ha)) heq
+
+lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {R : Type*} [CommSemiring R] [IsDomain R]
+    {n : ℕ} (hn : ∀ a b c : R, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
+    FermatLastTheoremWith' R n ↔ FermatLastTheoremWith R n :=
+  Iff.intro (fun h ↦ h.fermatLastTheoremWith hn) (fun h ↦ h.fermatLastTheoremWith')
+
+lemma fermatLastTheoremWith'_nat_int_tfae (n : ℕ) :
+    TFAE [FermatLastTheoremFor n, FermatLastTheoremWith' ℕ n, FermatLastTheoremWith' ℤ n] := by
+  tfae_have 2 ↔ 1 := by
+    apply fermatLastTheoremWith'_iff_fermatLastTheoremWith
+    simp only [Nat.isUnit_iff]
+    intro _ _ _ ha hb hc
+    rw [ha, hb, hc]
+    simp only [one_pow, Nat.reduceAdd, ne_eq, OfNat.ofNat_ne_one, not_false_eq_true]
+  tfae_have 3 ↔ 1 := by
+    rw [fermatLastTheoremFor_iff_int]
+    apply fermatLastTheoremWith'_iff_fermatLastTheoremWith
+    intro a b c ha hb hc
+    by_cases hn : n = 0
+    · subst hn
+      simp only [pow_zero, Int.reduceAdd, ne_eq, OfNat.ofNat_ne_one, not_false_eq_true]
+    · rw [← isUnit_pow_iff hn, Int.isUnit_iff] at ha hb hc
+      -- case division
+      rcases ha with ha | ha <;> rcases hb with hb | hb <;> rcases hc with hc | hc <;>
+        rw [ha, hb, hc] <;> decide
+  tfae_finish
 
 open Finset in
 /-- To prove Fermat Last Theorem in any semiring that is a `NormalizedGCDMonoid` one can assume
@@ -175,7 +233,7 @@ lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type
   rw [← Finset.gcd_mul_left, gcd_eq_gcd_image, image_insert, image_insert, image_singleton,
       id_eq, id_eq, id_eq, ← hA, ← hB, ← hC]
 
-lemma dvd_c_of_prime_of_dvd_a_of_dvd_b_of_FLT {n : ℕ} {p : ℤ} (hp : Prime p)  {a b c : ℤ}
+lemma dvd_c_of_prime_of_dvd_a_of_dvd_b_of_FLT {n : ℕ} {p : ℤ} (hp : Prime p) {a b c : ℤ}
     (hpa : p ∣ a) (hpb : p ∣ b) (HF : a ^ n + b ^ n + c ^ n = 0) : p ∣ c := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp at HF

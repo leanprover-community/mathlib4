@@ -3,8 +3,9 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.SetTheory.Cardinal.Ordinal
-import Mathlib.Order.Filter.Basic
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
 
 /-!
 # Cardinality of a set with a countable cover
@@ -25,7 +26,7 @@ universe u v
 
 /-- If a set `t` is eventually covered by a countable family of sets, all with cardinality at
 most `a`, then the cardinality of `t` is also bounded by `a`.
-Supersed by `mk_le_of_countable_eventually_mem` which does not assume
+Superseded by `mk_le_of_countable_eventually_mem` which does not assume
 that the indexing set lives in the same universe. -/
 lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardinal}
     [Countable ι] {f : ι → Set α} {l : Filter ι} [NeBot l]

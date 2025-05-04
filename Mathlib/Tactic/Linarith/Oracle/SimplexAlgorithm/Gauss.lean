@@ -15,7 +15,7 @@ solution which is done by standard Gaussian Elimination algorithm implemented in
 namespace Linarith.SimplexAlgorithm.Gauss
 
 /-- The monad for the Gaussian Elimination algorithm. -/
-abbrev GaussM (n m : Nat) (matType : Nat → Nat → Type) := StateM <| matType n m
+abbrev GaussM (n m : Nat) (matType : Nat → Nat → Type) := StateT (matType n m) Lean.CoreM
 
 variable {n m : Nat} {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
 
@@ -35,6 +35,7 @@ def getTableauImp : GaussM n m matType <| Tableau matType := do
   let mut col : Nat := 0
 
   while row < n && col < m do
+    Lean.Core.checkSystem decl_name%.toString
     match ← findNonzeroRow row col with
     | .none =>
       free := free.push col
@@ -74,7 +75,7 @@ Given matrix `A`, solves the linear equation `A x = 0` and returns the solution 
 some variables are free and others (basic) variable are expressed as linear combinations of the free
 ones.
 -/
-def getTableau (A : matType n m) : Tableau matType := Id.run do
+def getTableau (A : matType n m) : Lean.CoreM (Tableau matType) := do
   return (← getTableauImp.run A).fst
 
 end Linarith.SimplexAlgorithm.Gauss

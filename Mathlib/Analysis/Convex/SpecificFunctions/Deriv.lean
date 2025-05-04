@@ -39,7 +39,7 @@ theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0)
   apply StrictMonoOn.strictConvexOn_of_deriv (convex_Ici _) (continuousOn_pow _)
   rw [deriv_pow', interior_Ici]
   exact fun x (hx : 0 < x) y _ hxy => mul_lt_mul_of_pos_left
-    (pow_lt_pow_left hxy hx.le <| Nat.sub_ne_zero_of_lt hn) (by positivity)
+    (pow_lt_pow_left₀ hxy hx.le <| Nat.sub_ne_zero_of_lt hn) (by positivity)
 
 /-- `x^n`, `n : ℕ` is strictly convex on the whole real line whenever `n ≠ 0` is even. -/
 theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
@@ -50,7 +50,8 @@ theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
   exact StrictMono.const_mul (Odd.strictMono_pow <| Nat.Even.sub_odd h hn <| Nat.odd_iff.2 rfl)
     (Nat.cast_pos.2 h)
 
-theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCommRing β] {f : α → β}
+theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*}
+    [CommRing β] [LinearOrder β] [IsStrictOrderedRing β] {f : α → β}
     [DecidablePred fun x => f x ≤ 0] {s : Finset α} (h0 : Even (s.filter fun x => f x ≤ 0).card) :
     0 ≤ ∏ x ∈ s, f x :=
   calc
@@ -67,17 +68,18 @@ theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCom
 theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
     0 ≤ ∏ k ∈ Finset.range n, (m - k) := by
   rcases hn with ⟨n, rfl⟩
-  induction' n with n ihn
-  · simp
-  rw [← two_mul] at ihn
-  rw [← two_mul, mul_add, mul_one, ← one_add_one_eq_two, ← add_assoc,
-    Finset.prod_range_succ, Finset.prod_range_succ, mul_assoc]
-  refine mul_nonneg ihn ?_; generalize (1 + 1) * n = k
-  rcases le_or_lt m k with hmk | hmk
-  · have : m ≤ k + 1 := hmk.trans (lt_add_one (k : ℤ)).le
-    convert mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
-    convert sub_nonpos_of_le this
-  · exact mul_nonneg (sub_nonneg_of_le hmk.le) (sub_nonneg_of_le hmk)
+  induction n with
+  | zero => simp
+  | succ n ihn =>
+    rw [← two_mul] at ihn
+    rw [← two_mul, mul_add, mul_one, ← one_add_one_eq_two, ← add_assoc,
+      Finset.prod_range_succ, Finset.prod_range_succ, mul_assoc]
+    refine mul_nonneg ihn ?_; generalize (1 + 1) * n = k
+    rcases le_or_lt m k with hmk | hmk
+    · have : m ≤ k + 1 := hmk.trans (lt_add_one (k : ℤ)).le
+      convert mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
+      convert sub_nonpos_of_le this
+    · exact mul_nonneg (sub_nonneg_of_le hmk.le) (sub_nonneg_of_le hmk)
 
 theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 : ℤ) n) :
     0 < ∏ k ∈ Finset.range n, (m - k) := by
@@ -95,7 +97,7 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
   intro x hx
   rw [mem_Ioi] at hx
   rw [iter_deriv_zpow]
-  refine mul_pos ?_ (zpow_pos_of_pos hx _)
+  refine mul_pos ?_ (zpow_pos hx _)
   norm_cast
   refine int_prod_range_pos (by decide) fun hm => ?_
   rw [← Finset.coe_Ico] at hm
@@ -112,7 +114,7 @@ theorem hasDerivAt_sqrt_mul_log {x : ℝ} (hx : x ≠ 0) :
 
 theorem deriv_sqrt_mul_log (x : ℝ) :
     deriv (fun x => √x * log x) x = (2 + log x) / (2 * √x) := by
-  cases' lt_or_le 0 x with hx hx
+  rcases lt_or_le 0 x with hx | hx
   · exact (hasDerivAt_sqrt_mul_log hx.ne').deriv
   · rw [sqrt_eq_zero_of_nonpos hx, mul_zero, div_zero]
     refine HasDerivWithinAt.deriv_eq_zero ?_ (uniqueDiffOn_Iic 0 x hx)

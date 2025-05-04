@@ -6,7 +6,8 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Set.Function
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Data.Set.Monotone
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Miscellaneous lemmas about the integers
@@ -29,14 +30,11 @@ theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
 /-! ### `succ` and `pred` -/
 
 
--- Porting note (#10618): simp can prove this @[simp]
 theorem succ_natCast_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
   lt_add_one_iff.mpr (by simp)
 
 /-! ### `natAbs` -/
 
-
-variable {a b : ℤ} {n : ℕ}
 
 theorem natAbs_eq_iff_sq_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a ^ 2 = b ^ 2 := by
   rw [sq, sq]
@@ -51,7 +49,7 @@ theorem natAbs_le_iff_sq_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a ^ 2 ≤ b 
   exact natAbs_le_iff_mul_self_le
 
 theorem natAbs_inj_of_nonneg_of_nonneg {a b : ℤ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
-    natAbs a = natAbs b ↔ a = b := by rw [← sq_eq_sq ha hb, ← natAbs_eq_iff_sq_eq]
+    natAbs a = natAbs b ↔ a = b := by rw [← sq_eq_sq₀ ha hb, ← natAbs_eq_iff_sq_eq]
 
 theorem natAbs_inj_of_nonpos_of_nonpos {a b : ℤ} (ha : a ≤ 0) (hb : b ≤ 0) :
     natAbs a = natAbs b ↔ a = b := by
@@ -101,21 +99,10 @@ theorem injOn_natAbs_Iic : InjOn natAbs (Iic 0) :=
 
 end Intervals
 
-/-! ### `toNat` -/
-
-
-theorem toNat_of_nonpos : ∀ {z : ℤ}, z ≤ 0 → z.toNat = 0
-  | 0, _ => rfl
-  | (n + 1 : ℕ), h => (h.not_lt (by simp)).elim
-  | -[n+1], _ => rfl
-
 /-! ### bitwise ops
 
 This lemma is orphaned from `Data.Int.Bitwise` as it also requires material from `Data.Int.Order`.
 -/
-
-
-attribute [local simp] Int.zero_div
 
 @[simp]
 theorem div2_bit (b n) : div2 (bit b n) = n := by
@@ -126,13 +113,16 @@ theorem div2_bit (b n) : div2 (bit b n) = n := by
     rw [Nat.div_eq_of_lt] <;> simp
   · decide
 
-@[deprecated (since := "2024-04-02")] alias le_coe_nat_sub := le_natCast_sub
-@[deprecated (since := "2024-04-02")] alias succ_coe_nat_pos := succ_natCast_pos
-@[deprecated (since := "2024-04-02")] alias coe_natAbs := natCast_natAbs
-@[deprecated (since := "2024-04-02")] alias coe_nat_eq_zero := natCast_eq_zero
-@[deprecated (since := "2024-04-02")] alias coe_nat_ne_zero := natCast_ne_zero
-@[deprecated (since := "2024-04-02")] alias coe_nat_ne_zero_iff_pos := natCast_ne_zero_iff_pos
-@[deprecated (since := "2024-04-02")] alias abs_coe_nat := abs_natCast
-@[deprecated (since := "2024-04-02")] alias coe_nat_nonpos_iff := natCast_nonpos_iff
+/-- Like `Int.ediv_emod_unique`, but permitting negative `b`. -/
+theorem ediv_emod_unique'' {a b r q : Int} (h : b ≠ 0) :
+    a / b = q ∧ a % b = r ↔ r + b * q = a ∧ 0 ≤ r ∧ r < |b| := by
+  constructor
+  · intro ⟨rfl, rfl⟩
+    exact ⟨emod_add_ediv a b, emod_nonneg _ h, emod_lt_abs _ h⟩
+  · intro ⟨rfl, hz, hb⟩
+    constructor
+    · rw [Int.add_mul_ediv_left r q h, ediv_eq_zero_of_lt_abs hz hb]
+      simp [Int.zero_add]
+    · rw [add_mul_emod_self_left, ← emod_abs, emod_eq_of_lt hz hb]
 
 end Int

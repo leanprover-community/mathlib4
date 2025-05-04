@@ -268,8 +268,7 @@ theorem aeval_bind₂ [Algebra S T] (f : σ → T) (g : R →+* MvPolynomial σ 
     aeval f (bind₂ g φ) = eval₂Hom ((↑(aeval f : _ →ₐ[S] _) : _ →+* _).comp g) f φ :=
   eval₂Hom_bind₂ _ _ _ _
 
-theorem eval₂Hom_C_left (f : σ → MvPolynomial τ R) : eval₂Hom C f = bind₁ f :=
-  rfl
+alias eval₂Hom_C_left := eval₂Hom_C_eq_bind₁
 
 theorem bind₁_monomial (f : σ → MvPolynomial τ R) (d : σ →₀ ℕ) (r : R) :
     bind₁ f (monomial d r) = C r * ∏ i ∈ d.support, f i ^ d i := by

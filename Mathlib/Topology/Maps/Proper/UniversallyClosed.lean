@@ -30,8 +30,8 @@ theorem isProperMap_iff_isClosedMap_ultrafilter {X : Type u} {Y : Type v} [Topol
     let F : Set (X × Ultrafilter X) := closure {xℱ | xℱ.2 = pure xℱ.1}
     have := H.2 F isClosed_closure
     have : (y, 𝒰) ∈ Prod.map f id '' F :=
-      this.mem_of_tendsto (hy.prod_mk_nhds (Ultrafilter.tendsto_pure_self 𝒰))
-        (eventually_of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
+      this.mem_of_tendsto (hy.prodMk_nhds (Ultrafilter.tendsto_pure_self 𝒰))
+        (Eventually.of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
     rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩
     refine ⟨x, rfl, fun U hU ↦ Ultrafilter.compl_not_mem_iff.mp fun hUc ↦ ?_⟩
     rw [mem_closure_iff_nhds] at hx
