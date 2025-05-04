@@ -20,9 +20,9 @@ We show that a finite-product-preserving functor takes group objects to group ob
 
 universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
-open CategoryTheory Category Limits MonoidalCategory ChosenFiniteProducts Mon_
+open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon_
 
-variable (C : Type u₁) [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C]
+variable (C : Type u₁) [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C]
 
 section
 
@@ -210,11 +210,11 @@ theorem isPullback (A : Grp_ C) :
         (lift (s.snd ≫ fst _ _ ≫ A.inv) (s.fst ≫ fst _ _) ≫ A.mul))
       (s.fst ≫ snd _ _))
     (by
-      refine fun s => ChosenFiniteProducts.hom_ext _ _ ?_ (by simp)
+      refine fun s => CartesianMonoidalCategory.hom_ext _ _ ?_ (by simp)
       simp only [lift_whiskerRight, lift_fst]
       rw [← lift_lift_assoc, ← assoc, lift_comp_inv_right, lift_comp_one_left])
     (by
-      refine fun s => ChosenFiniteProducts.hom_ext _ _ (by simp) ?_
+      refine fun s => CartesianMonoidalCategory.hom_ext _ _ (by simp) ?_
       simp only [lift_lift_associator_hom_assoc, lift_whiskerLeft, lift_snd]
       have : lift (s.snd ≫ fst _ _ ≫ A.inv) (s.fst ≫ fst _ _) ≫ A.mul =
           lift (s.snd ≫ snd _ _) (s.fst ≫ snd _ _ ≫ A.inv) ≫ A.mul := by
@@ -223,7 +223,7 @@ theorem isPullback (A : Grp_ C) :
       rw [this, lift_lift_assoc, ← assoc, lift_comp_inv_left, lift_comp_one_right])
     (by
       intro s m hm₁ hm₂
-      refine ChosenFiniteProducts.hom_ext _ _ (ChosenFiniteProducts.hom_ext _ _ ?_ ?_) ?_
+      refine CartesianMonoidalCategory.hom_ext _ _ (CartesianMonoidalCategory.hom_ext _ _ ?_ ?_) ?_
       · simpa using hm₂ =≫ fst _ _
       · have h : m ≫ fst _ _ ≫ fst _ _ = s.snd ≫ fst _ _ := by simpa using hm₂ =≫ fst _ _
         have := hm₁ =≫ fst _ _
@@ -237,7 +237,7 @@ theorem isPullback (A : Grp_ C) :
 theorem inv_hom {A B : Grp_ C} (f : A ⟶ B) : A.inv ≫ f.hom = f.hom ≫ B.inv := by
   suffices lift (lift f.hom (A.inv ≫ f.hom)) f.hom =
       lift (lift f.hom (f.hom ≫ B.inv)) f.hom by simpa using (this =≫ fst _ _) =≫ snd _ _
-  apply B.isPullback.hom_ext <;> apply ChosenFiniteProducts.hom_ext <;>
+  apply B.isPullback.hom_ext <;> apply CartesianMonoidalCategory.hom_ext <;>
     simp [lift_inv_comp_right, lift_inv_comp_left]
 
 open Mon_Class in
@@ -325,8 +325,8 @@ end Grp_
 
 namespace CategoryTheory
 variable {C}
-  {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts D]
-  {E : Type u₃} [Category.{v₃} E] [ChosenFiniteProducts E]
+  {D : Type u₂} [Category.{v₂} D] [CartesianMonoidalCategory D]
+  {E : Type u₃} [Category.{v₃} E] [CartesianMonoidalCategory E]
 
 namespace Functor
 variable {F F' : C ⥤ D} [F.Monoidal] [F'.Monoidal] {G : D ⥤ E} [G.Monoidal]
