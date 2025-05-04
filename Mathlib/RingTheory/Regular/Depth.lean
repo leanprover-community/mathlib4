@@ -475,7 +475,23 @@ lemma moduleDepth_eq_of_iso_snd (N : ModuleCat.{v} R) {M M' : ModuleCat.{v} R} (
   exact forall₂_congr fun i _ ↦
     ((extFunctorObj N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr
 
---depth = 0 of Hom nontrivial
+lemma moduleDepth_eq_zero_of_hom_nontrivial (N M : ModuleCat.{v} R) :
+    moduleDepth N M = 0 ↔ Nontrivial (N →ₗ[R] M) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp [moduleDepth] at h
+    have : 1 ∉ {n : ℕ∞ | ∀ (i : ℕ), ↑i < n → Subsingleton (Ext.{max u v} N M i)} := by
+      by_contra mem
+      absurd le_sSup mem
+      simp [h]
+    simp only [Set.mem_setOf_eq, Nat.cast_lt_one, forall_eq,
+      not_subsingleton_iff_nontrivial, Ext.addEquiv₀.nontrivial_congr] at this
+    exact (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr.mp this
+  · apply nonpos_iff_eq_zero.mp (sSup_le (fun n mem ↦ ?_))
+    by_contra pos
+    absurd mem 0 (lt_of_not_le pos)
+    simpa [not_subsingleton_iff_nontrivial, Ext.addEquiv₀.nontrivial_congr]
+      using (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr.mpr h
+
 
 lemma moduleDepth_ge_min_of_shortExact_fst
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
