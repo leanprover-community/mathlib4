@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Ruiqi Chen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ruiqi Chen
+-/
 import Mathlib.Algebra.Category.Ring.Under.Basic
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
@@ -150,7 +155,6 @@ noncomputable def freeAbs_ℤ_tauto : free ⋙ Under_ℤ.inverse ≅ freeAbs (of
         = RingHom.id (ULift.{u, 0} ℤ) := by aesop_cat
     rw [this]
     exact MvPolynomial.map_id x
-
 
 instance (R : CommRingCat.{u}) : Algebra (of (ULift.{u, 0} ℤ)) R
   := RingHom.toAlgebra RingHom.smulOneHom
