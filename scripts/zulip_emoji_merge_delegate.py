@@ -5,7 +5,7 @@ import re
 
 # Usage:
 # python scripts/zulip_emoji_merge_delegate.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $ACTION $LABEL_NAME $PR_NUMBER
-# See .github/workflows/zulip_emoji_merge_delegate.yaml for the meaning of the first three variables,
+# The first three variables identify the lean4 Zulip chat and allow the bot to access it (see .github/workflows/zulip_emoji_merge_delegate.yaml),
 # and the comment below for $ACTION and $LABEL_NAME.
 
 ZULIP_API_KEY = sys.argv[1]
@@ -18,8 +18,8 @@ ZULIP_SITE = sys.argv[3]
 # - if a PR was just merged by bors, it is '[Merged by Bors]'
 # - if a PR was labeled or unlabeled (with e.g. maintainer-merge or awaiting-review),
 #   it is 'labeled' resp. 'unlabeled' (and the next argument is the label name)
-# - if a PR was delegated or sent to bors (via bors r+, bors r-, bors merge, bors delegate,
-#   bors d+ or bors d-) command was issued, it is 'ready-to-merge' or 'delegated'
+# - if a PR was delegated or sent to bors (via a bors r+, bors r-, bors merge, bors delegate,
+#   bors d+ or bors d- command), it is 'ready-to-merge' or 'delegated'
 #   TODO clarify: what is the input on a bors d- or bors r- command? Also that?
 ACTION = sys.argv[4]
 # Name of the label that was applied or removed
