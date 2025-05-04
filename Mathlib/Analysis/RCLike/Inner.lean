@@ -124,11 +124,11 @@ lemma wInner_const_right (f : ι → 𝕜) (a : 𝕜) :
     ⟪f, const _ a⟫ₙ_[𝕜] = a * (𝔼 i, conj (f i)) := by simp [wInner_cWeight_eq_expect, mul_expect]
 
 lemma wInner_one_eq_inner (f g : ι → 𝕜) :
-    ⟪f, g⟫_[𝕜, 1] = ⟪(WithLp.equiv 2 _).symm f, (WithLp.equiv 2 _).symm g⟫_𝕜 := by
+    ⟪f, g⟫_[𝕜, 1] = ⟪WithLp.toLp f, WithLp.toLp g⟫_𝕜 := by
   simp [wInner]
 
 lemma inner_eq_wInner_one (f g : PiLp 2 fun _i : ι ↦ 𝕜) :
-    ⟪f, g⟫_𝕜 = ⟪WithLp.equiv 2 _ f, WithLp.equiv 2 _ g⟫_[𝕜, 1] := by simp [wInner]
+    ⟪f, g⟫_𝕜 = ⟪WithLp.toLp 2 _ f, WithLp.toLp 2 _ g⟫_[𝕜, 1] := by simp [wInner]
 
 lemma linearIndependent_of_ne_zero_of_wInner_one_eq_zero {f : κ → ι → 𝕜} (hf : ∀ k, f k ≠ 0)
     (hinner : Pairwise fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫_[𝕜] = 0) : LinearIndependent 𝕜 f := by

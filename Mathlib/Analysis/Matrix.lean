@@ -3,7 +3,6 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Eric Wieser
 -/
-import Mathlib.Analysis.Normed.Lp.PiLp
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -49,6 +48,7 @@ The norm induced by the identification of `Matrix m n 𝕜` with
 
 noncomputable section
 
+open WithLp
 open scoped NNReal Matrix
 
 namespace Matrix
@@ -255,7 +255,7 @@ variable [SeminormedAddCommGroup α]
 theorem linfty_opNorm_def (A : Matrix m n α) :
     ‖A‖ = ((Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
   -- Porting note: added
-  change ‖fun i => (WithLp.equiv 1 _).symm (A i)‖ = _
+  change ‖fun i => toLp 1 (A i)‖ = _
   simp [Pi.norm_def, PiLp.nnnorm_eq_of_L1]
 
 theorem linfty_opNNNorm_def (A : Matrix m n α) :
@@ -499,9 +499,9 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 theorem frobenius_nnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
   -- Porting note: added, along with `WithLp.equiv_symm_pi_apply` below
-  change ‖(WithLp.equiv 2 _).symm fun i => (WithLp.equiv 2 _).symm fun j => A i j‖₊ = _
+  change ‖toLp 2 fun i => toLp 2 fun j => A i j‖₊ = _
   simp_rw [PiLp.nnnorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two,
-    WithLp.equiv_symm_pi_apply]
+    PiLp.toLp_apply]
 
 theorem frobenius_norm_def (A : Matrix m n α) :
     ‖A‖ = (∑ i, ∑ j, ‖A i j‖ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) :=
@@ -540,38 +540,32 @@ instance frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
   ⟨(le_of_eq <| frobenius_norm_conjTranspose ·)⟩
 
 @[simp]
-theorem frobenius_norm_replicateRow (v : m → α) :
-    ‖replicateRow ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
+lemma frobenius_norm_replicateRow (v : m → α) : ‖replicateRow ι v‖ = ‖toLp 2 v‖ := by
   rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [replicateRow_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+  simp only [replicateRow_apply, Real.rpow_two, PiLp.toLp_apply]
 
 @[deprecated (since := "2025-03-20")] alias frobenius_norm_row := frobenius_norm_replicateRow
 
 @[simp]
-theorem frobenius_nnnorm_replicateRow (v : m → α) :
-    ‖replicateRow ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
+lemma frobenius_nnnorm_replicateRow (v : m → α) : ‖replicateRow ι v‖₊ = ‖toLp 2 v‖₊ :=
   Subtype.ext <| frobenius_norm_replicateRow v
 
 @[deprecated (since := "2025-03-20")] alias frobenius_nnnorm_row := frobenius_nnnorm_replicateRow
 
 @[simp]
-theorem frobenius_norm_replicateCol (v : n → α) :
-    ‖replicateCol ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
-  simp_rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [replicateCol_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+lemma frobenius_norm_replicateCol (v : n → α) : ‖replicateCol ι v‖ = ‖toLp 2 v‖ := by
+  simp [frobenius_norm_def, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
 
 @[deprecated (since := "2025-03-20")] alias frobenius_norm_col := frobenius_norm_replicateCol
 
 @[simp]
-theorem frobenius_nnnorm_replicateCol (v : n → α) :
-    ‖replicateCol ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
+lemma frobenius_nnnorm_replicateCol (v : n → α) : ‖replicateCol ι v‖₊ = ‖toLp 2 v‖₊ :=
   Subtype.ext <| frobenius_norm_replicateCol v
 
 @[deprecated (since := "2025-03-20")] alias frobenius_nnnorm_col := frobenius_nnnorm_replicateCol
 
 @[simp]
-theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
-    ‖diagonal v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ := by
+lemma frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖toLp 2 v‖₊ := by
   simp_rw [frobenius_nnnorm_def, ← Finset.sum_product', Finset.univ_product_univ,
     PiLp.nnnorm_eq_of_L2]
   let s := (Finset.univ : Finset n).map ⟨fun i : n => (i, i), fun i j h => congr_arg Prod.fst h⟩
@@ -584,8 +578,7 @@ theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
     exact Finset.mem_map.not.mp his ⟨i.1, Finset.mem_univ _, Prod.ext rfl h⟩
 
 @[simp]
-theorem frobenius_norm_diagonal [DecidableEq n] (v : n → α) :
-    ‖diagonal v‖ = ‖(WithLp.equiv 2 _).symm v‖ :=
+lemma frobenius_norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖toLp 2 v‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_diagonal v :).trans rfl
 
 end SeminormedAddCommGroup
@@ -594,9 +587,9 @@ theorem frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α
     ‖(1 : Matrix n n α)‖₊ = .sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
   calc
     ‖(diagonal 1 : Matrix n n α)‖₊
-    _ = ‖(WithLp.equiv 2 (n → α)).symm (Function.const _ 1)‖₊ := frobenius_nnnorm_diagonal _
+    _ = ‖toLp 2 (Function.const _ 1)‖₊ := frobenius_nnnorm_diagonal _
     _ = .sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
-      rw [PiLp.nnnorm_equiv_symm_const (ENNReal.ofNat_ne_top (n := 2))]
+      rw [PiLp.nnnorm_toLp_const (ENNReal.ofNat_ne_top (n := 2))]
       simp [NNReal.sqrt_eq_rpow]
 
 section RCLike
@@ -610,9 +603,9 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
   rw [← NNReal.rpow_le_rpow_iff one_half_pos, ← NNReal.rpow_mul,
     mul_div_cancel₀ (1 : ℝ) two_ne_zero, NNReal.rpow_one, NNReal.mul_rpow]
   have :=
-    @nnnorm_inner_le_nnnorm α _ _ _ _ ((WithLp.equiv 2 <| _ → α).symm fun j => star (A i j))
-      ((WithLp.equiv 2 <| _ → α).symm fun k => B k j)
-  simpa only [WithLp.equiv_symm_pi_apply, PiLp.inner_apply, RCLike.inner_apply', starRingEnd_apply,
+    @nnnorm_inner_le_nnnorm α _ _ _ _ (toLp 2 fun j => star (A i j))
+      (toLp 2 fun k => B k j)
+  simpa only [PiLp.toLp_apply, PiLp.inner_apply, RCLike.inner_apply', starRingEnd_apply,
     Pi.nnnorm_def, PiLp.nnnorm_eq_of_L2, star_star, nnnorm_star, NNReal.sqrt_eq_rpow,
     NNReal.rpow_two] using this
 
