@@ -77,7 +77,7 @@ The unique map to the terminal object.
 -/
 def toUnit (X : C) : X ⟶ 𝟙_ C := isTerminalTensorUnit.from _
 
-instance (X : C) : Unique (X ⟶ 𝟙_ C) := Limits.isTerminalEquivUnique _ _ isTerminalTensorUnit _
+instance (X : C) : Unique (X ⟶ 𝟙_ C) := isTerminalEquivUnique _ _ isTerminalTensorUnit _
 
 lemma default_eq_toUnit (X : C) : default = toUnit X := rfl
 
@@ -98,15 +98,15 @@ theorem comp_toUnit {X Y : C} (f : X ⟶ Y) : f ≫ toUnit Y = toUnit X :=
 Construct a morphism to the product given its two components.
 -/
 def lift {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : T ⟶ X ⊗ Y :=
-  (Limits.BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).1
+  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).1
 
 @[reassoc (attr := simp)]
 lemma lift_fst {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ fst _ _ = f :=
-  (Limits.BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).2.1
+  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).2.1
 
 @[reassoc (attr := simp)]
 lemma lift_snd {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ snd _ _ = g :=
-  (Limits.BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).2.2
+  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).2.2
 
 instance mono_lift_of_mono_left {W X Y : C} (f : W ⟶ X) (g : W ⟶ Y)
     [Mono f] : Mono (lift f g) :=
@@ -121,7 +121,7 @@ lemma hom_ext {T X Y : C} (f g : T ⟶ X ⊗ Y)
     (h_fst : f ≫ fst _ _ = g ≫ fst _ _)
     (h_snd : f ≫ snd _ _ = g ≫ snd _ _) :
     f = g :=
-  Limits.BinaryFan.IsLimit.hom_ext (tensorProductIsBinaryProduct X Y) h_fst h_snd
+  BinaryFan.IsLimit.hom_ext (tensorProductIsBinaryProduct X Y) h_fst h_snd
 
 -- Similarly to `CategoryTheory.Limits.prod.comp_lift`, we do not make the `assoc` version a simp
 -- lemma
@@ -329,32 +329,31 @@ Construct an instance of `ChosenFiniteProducts C` given
 a terminal object and limit cones over arbitrary pairs of objects.
 -/
 abbrev ofChosenFiniteProducts
-    (𝒯 : Limits.LimitCone (Functor.empty C)) (ℬ : (X Y : C) → Limits.LimitCone (Limits.pair X Y)) :
+    (𝒯 : LimitCone (Functor.empty C)) (ℬ : (X Y : C) → LimitCone (pair X Y)) :
     ChosenFiniteProducts C where
   __ := monoidalOfChosenFiniteProducts 𝒯 ℬ
   isTerminalTensorUnit :=
-    .ofUniqueHom (𝒯.isLimit.lift <| Limits.asEmptyCone ·) fun _ _ ↦ 𝒯.isLimit.hom_ext (by simp)
-  fst X Y := Limits.BinaryFan.fst (ℬ X Y).cone
-  snd X Y := Limits.BinaryFan.snd (ℬ X Y).cone
-  tensorProductIsBinaryProduct X Y := Limits.BinaryFan.IsLimit.mk _
-    (fun f g ↦ (Limits.BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).1)
-    (fun f g ↦ (Limits.BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.1)
-    (fun f g ↦ (Limits.BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.2)
+    .ofUniqueHom (𝒯.isLimit.lift <| asEmptyCone ·) fun _ _ ↦ 𝒯.isLimit.hom_ext (by simp)
+  fst X Y := BinaryFan.fst (ℬ X Y).cone
+  snd X Y := BinaryFan.snd (ℬ X Y).cone
+  tensorProductIsBinaryProduct X Y := BinaryFan.IsLimit.mk _
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).1)
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.1)
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.2)
     (fun f g m hf hg ↦
-      Limits.BinaryFan.IsLimit.hom_ext (ℬ X Y).isLimit (by simpa using hf) (by simpa using hg))
+      BinaryFan.IsLimit.hom_ext (ℬ X Y).isLimit (by simpa using hf) (by simpa using hg))
   fst_def X Y := (((ℬ X 𝒯.cone.pt).isLimit.fac
-    (Limits.BinaryFan.mk _ _) ⟨.left⟩).trans (Category.comp_id _)).symm
+    (BinaryFan.mk _ _) ⟨.left⟩).trans (Category.comp_id _)).symm
   snd_def X Y := (((ℬ 𝒯.cone.pt Y).isLimit.fac
-    (Limits.BinaryFan.mk _ _) ⟨.right⟩).trans (Category.comp_id _)).symm
+    (BinaryFan.mk _ _) ⟨.right⟩).trans (Category.comp_id _)).symm
 
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
 -/
-@[reducible] noncomputable
-def ofFiniteProducts (C : Type u) [Category.{v} C] [Limits.HasFiniteProducts C] :
+noncomputable abbrev ofFiniteProducts (C : Type u) [Category.{v} C] [HasFiniteProducts C] :
     ChosenFiniteProducts C :=
   .ofChosenFiniteProducts
-    (Limits.getLimitCone (Functor.empty C)) (Limits.getLimitCone <| Limits.pair · ·)
+    (getLimitCone (Functor.empty C)) (getLimitCone <| pair · ·)
 
 instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : ∀ (X Y : C), Limits.HasLimit (Limits.pair X Y) := fun _ _ =>
