@@ -788,3 +788,26 @@ lemma ZMod.exists_monoidHom_apply_ne_one {M : Type*} [CommMonoid M] {n : ℕ} [N
     by simp only [ne_eq, ofAdd_eq_one, ha, not_false_eq_true]
 
 end cyclic
+
+lemma pullIsPrimitiveRoot {n : ℕ} [NeZero n] {M N : Type*} [CommMonoid M] [CommMonoid N] {m : M}
+    (e : rootsOfUnity n M ≃* rootsOfUnity n N)
+    (hm : IsPrimitiveRoot m n) :
+    IsPrimitiveRoot (e hm.toRootsOfUnity) n where
+  pow_eq_one := by
+    rw [← map_pow]
+    have e2 : hm.toRootsOfUnity ^ n = 1 := by
+      ext : 2
+      simp_all only [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val,
+        IsPrimitiveRoot.val_toRootsOfUnity_coe, OneMemClass.coe_one, Units.val_one]
+      rw [hm.pow_eq_one]
+    rw [e2, e.map_one]
+  dvd_of_pow_eq_one := fun l hl => (hm.pow_eq_one_iff_dvd l).mp (by
+    have e1 : (hm.toRootsOfUnity ^ l) = e.symm 1 := by
+      rw [← hl]
+      rw [← map_pow]
+      simp only [map_pow, MulEquiv.symm_apply_apply]
+    have e3 : (hm.toRootsOfUnity ^ l).val.val = 1 := by
+      simp_all only [map_one]
+      norm_cast
+    rw [← e3]
+    norm_cast)
