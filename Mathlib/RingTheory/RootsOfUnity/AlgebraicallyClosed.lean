@@ -6,6 +6,7 @@ Authors: Michael Stoll
 import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 import Mathlib.NumberTheory.Cyclotomic.Basic
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Instances for HasEnoughRootsOfUnity
@@ -46,7 +47,7 @@ noncomputable def rootsOfUnitytoCircle : (rootsOfUnity n ℂ) →* Circle where
   map_one' := rfl
   map_mul' _ _ := rfl
 
-noncomputable def rootsOfUnityCircleUnitsEquiv : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
+noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
   __ := (rootsOfUnityUnitsMulEquiv ℂ n).toMonoidHom.comp (restrictRootsOfUnity Circle.toUnits n)
   invFun z := ⟨(rootsOfUnitytoCircle n).toHomUnits z, by
     rw [mem_rootsOfUnity']
@@ -57,3 +58,23 @@ noncomputable def rootsOfUnityCircleUnitsEquiv : rootsOfUnity n Circle ≃* root
     aesop⟩
   left_inv _ := by aesop
   right_inv _ := by aesop
+
+instance : HasEnoughRootsOfUnity ℂ n := IsAlgClosed.hasEnoughRootsOfUnity ℂ n
+
+instance : IsCyclic (rootsOfUnity n Circle) where
+  exists_zpow_surjective := by
+    obtain ⟨g₀,hg₀⟩ := (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc.exists_zpow_surjective
+    use (rootsOfUnityCircleEquiv n).symm g₀
+    intro w
+    obtain ⟨z , hz⟩ := Function.Surjective.comp (rootsOfUnityCircleEquiv n).symm.surjective hg₀ w
+    use z
+    rw [← hz]
+    aesop
+
+
+/-
+instance : HasEnoughRootsOfUnity Circle n where
+  prim := sorry
+  cyc := by
+    obtain ⟨z,hz⟩ := (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc.exists_zpow_surjective
+-/
