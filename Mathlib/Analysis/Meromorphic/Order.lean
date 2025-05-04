@@ -110,7 +110,7 @@ theorem order_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : MeromorphicAt
     hf.order ≠ ⊤ ↔ ∀ᶠ x in 𝓝[≠] x, f x ≠ 0 := by
   constructor
   · intro h
-    obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.order_ne_top_iff₁.1 h
+    obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.order_ne_top_iff.1 h
     filter_upwards [h₃g, self_mem_nhdsWithin, eventually_nhdsWithin_of_eventually_nhds
       ((h₁g.continuousAt.ne_iff_eventually_ne continuousAt_const).mp h₂g)]
     simp_all [zpow_ne_zero, sub_ne_zero]
@@ -352,7 +352,7 @@ theorem order_zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : 
     intro y hy
     simp [hy, zero_zpow n hn]
   -- General case
-  obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.order_ne_top_iff₁.1 h
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.order_ne_top_iff.1 h
   rw [← WithTop.coe_untop₀_of_ne_top h, ← WithTop.coe_mul, MeromorphicAt.order_eq_int_iff]
   use g ^ n, h₁g.zpow h₂g
   constructor
