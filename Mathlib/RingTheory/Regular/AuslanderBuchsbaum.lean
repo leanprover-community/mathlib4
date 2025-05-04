@@ -100,9 +100,9 @@ lemma free_of_projectiveOverLocalRing [IsLocalRing R] (M : ModuleCat.{v} R) [Mod
 local instance : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
 
-lemma finte_free_ext_vanish_iff (M : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
-    :
-     ∀ N : ModuleCat.{v} R, ∀ (i:ℕ), Subsingleton (Ext N M i) ↔ Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
+lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
+    (i : ℕ) : Subsingleton (Ext N M i) ↔
+    Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
   -- Add your proof here
   sorry
 
@@ -113,7 +113,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
     (hfinprojdim : ∃ i : ℕ, CategoryTheory.HasProjectiveDimensionLE M i) :
     Nat.find hfinprojdim + IsLocalRing.depth M = IsLocalRing.depth (ModuleCat.of R R) := by
     generalize h: Nat.find hfinprojdim = n
-    induction' n
+    induction' n with n ih
     · simp
       have pdz: HasProjectiveDimensionLE M (Nat.find hfinprojdim) := Nat.find_spec hfinprojdim
       simp [h, HasProjectiveDimensionLE] at pdz
@@ -121,4 +121,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
       simp [hasProjectiveDimensionLT_iff] at pdz
       --apply Module.Free.exists_set at fm
       sorry
-    · sorry
+    · by_cases eq0 : n = 0
+      · simp only [eq0, zero_add, Nat.find_eq_iff, Nat.lt_one_iff, forall_eq, Nat.cast_one] at h ⊢
+        sorry
+      · sorry
