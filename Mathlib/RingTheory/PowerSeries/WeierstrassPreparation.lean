@@ -3,7 +3,6 @@ Copyright (c) 2025 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.RingTheory.AdicCompletion.LocalRing
 import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
@@ -102,35 +101,11 @@ theorem Polynomial.IsDistinguishedAt.natDegree_eq_of_associated_powerSeries
   rw [← Units.coe_map] at hu'
   exact PowerSeries.eq_of_X_pow_mul_eq_X_pow _ _ _ (Units.isUnit _) hu'
 
-theorem IsLocalRing.one_not_mem_maximalIdeal {R : Type*} [CommSemiring R] [IsLocalRing R] :
-    1 ∉ IsLocalRing.maximalIdeal R := one_not_mem_nonunits
-
-theorem IsLocalRing.maximalIdeal_lt_top {R : Type*} [CommSemiring R] [IsLocalRing R] :
-    IsLocalRing.maximalIdeal R < ⊤ := by
-  simp_rw [lt_top_iff_ne_top, Ideal.ne_top_iff_one]
-  exact one_not_mem_maximalIdeal
-
 namespace PowerSeries
 
 section
 
 variable {A B : Type*} [CommRing A] [CommRing B] {I J : Ideal A}
-
-theorem eq_shift_mul_X_pow_add_trunc (n : ℕ) (f : A⟦X⟧) :
-    f = (mk fun i ↦ coeff A (i + n) f) * X ^ n + (f.trunc n : A⟦X⟧) := by
-  ext j
-  rw [map_add, Polynomial.coeff_coe, coeff_mul_X_pow', coeff_trunc]
-  simp_rw [← not_le]
-  split_ifs with h <;> simp [h]
-
-theorem eq_X_pow_mul_shift_add_trunc (n : ℕ) (f : A⟦X⟧) :
-    f = X ^ n * (mk fun i ↦ coeff A (i + n) f) + (f.trunc n : A⟦X⟧) := by
-  rw [← (commute_X_pow _ n).eq, ← eq_shift_mul_X_pow_add_trunc]
-
-theorem map_eq_zero_iff_coeff_mem_ker (f : A⟦X⟧)
-    (g : A →+* B) : f.map g = 0 ↔ ∀ i, coeff A i f ∈ RingHom.ker g := by
-  rw [PowerSeries.ext_iff]
-  simp_rw [map_zero, coeff_map, RingHom.mem_ker]
 
 theorem coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal
     (f g : A⟦X⟧) (n : ℕ) (hf : ∀ i ≤ n, coeff A i f ∈ I)
@@ -207,8 +182,15 @@ variable (I : Ideal A)
 
 /-- The data used to construct Weierstrass division. -/
 structure WeierstrassDivisionData where
-  (n : ℕ) (g f : A⟦X⟧) (coeff_g_of_lt : ∀ i < n, coeff A i g ∈ I)
-  (isUnit_coeff_g : IsUnit (coeff A n g))
+  /-- The natural number `n` which is the order of the image of `g` in `(A / I)⟦X⟧`, such that the
+  `n`-th coefficient of `g` in `A` is a unit. -/
+  n : ℕ
+  /-- The power series `g` which is the divisor of Weierstrass division. -/
+  g : A⟦X⟧
+  /-- The power series `f` which is the dividend of Weierstrass division. -/
+  f : A⟦X⟧
+  coeff_g_of_lt : ∀ i < n, coeff A i g ∈ I
+  isUnit_coeff_g : IsUnit (coeff A n g)
 
 /-- Construct a `WeierstrassDivisionData` from power series `f`, `g` over a local ring such that
 the image of `g` in the residue field is not zero. -/
@@ -608,14 +590,14 @@ variable {g : A⟦X⟧} {f : A[X]} {h : A⟦X⟧} (H : g.IsWeierstrassFactorizat
 include H
 
 theorem map_ne_zero : g.map (IsLocalRing.residue A) ≠ 0 :=
-  H.map_ne_zero_of_ne_top IsLocalRing.maximalIdeal_lt_top.ne
+  H.map_ne_zero_of_ne_top (Ideal.IsMaximal.ne_top inferInstance)
 
 theorem degree_eq_order_map : f.degree = (g.map (IsLocalRing.residue A)).order :=
-  H.degree_eq_order_map_of_ne_top IsLocalRing.maximalIdeal_lt_top.ne
+  H.degree_eq_order_map_of_ne_top (Ideal.IsMaximal.ne_top inferInstance)
 
 theorem natDegree_eq_toNat_order_map :
     f.natDegree = (g.map (IsLocalRing.residue A)).order.toNat :=
-  H.natDegree_eq_toNat_order_map_of_ne_top IsLocalRing.maximalIdeal_lt_top.ne
+  H.natDegree_eq_toNat_order_map_of_ne_top (Ideal.IsMaximal.ne_top inferInstance)
 
 end IsWeierstrassFactorization
 
@@ -723,5 +705,13 @@ theorem IsWeierstrassFactorization.elim [IsHausdorff (IsLocalRing.maximalIdeal A
   obtain ⟨h1, h2⟩ := H.isWeierstrassDivision.elim H.map_ne_zero H2.isWeierstrassDivision
   rw [← Units.ext_iff, inv_inj, Units.ext_iff] at h1
   exact ⟨by simpa using h2, h1⟩
+
+/-- The `f` and `h` in Werierstrass preparation theorem is unique. -/
+theorem IsWeierstrassFactorization.eq_weierstrassDistinguished_weierstrassUnit
+    [IsAdicComplete (IsLocalRing.maximalIdeal A) A]
+    {g : A⟦X⟧} {f : A[X]} {h : A⟦X⟧} (H : g.IsWeierstrassFactorization f h)
+    (hg : g.map (IsLocalRing.residue A) ≠ 0) :
+    f = g.weierstrassDistinguished hg ∧ h = g.weierstrassUnit hg :=
+  H.elim (g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg)
 
 end PowerSeries
