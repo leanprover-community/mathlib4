@@ -3,7 +3,7 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Countable
+import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Minimal
 
 /-!
@@ -90,7 +90,7 @@ variable [Nonempty α]
 
 lemma infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite := by
   inhabit α
-  set f : ℕ → α := fun n => Nat.recOn n (h default).choose fun _ a => (h a).choose
+  let f (n : ℕ) : α := Nat.recOn n (h default).choose fun _ a ↦ (h a).choose
   have hf : ∀ n, f n ∈ s := by rintro (_ | _) <;> exact (h _).choose_spec.1
   exact infinite_of_injective_forall_mem
     (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
@@ -105,9 +105,6 @@ variable (α) [PartialOrder α]
 
 lemma finite_isTop : {a : α | IsTop a}.Finite := (subsingleton_isTop α).finite
 lemma finite_isBot : {a : α | IsBot a}.Finite := (subsingleton_isBot α).finite
-
-lemma countable_isTop : {a : α | IsTop a}.Countable := (finite_isTop α).countable
-lemma countable_isBot : {a : α | IsBot a}.Countable := (finite_isBot α).countable
 
 end PartialOrder
 
