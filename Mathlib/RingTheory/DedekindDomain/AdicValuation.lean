@@ -433,7 +433,6 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     simp only [Subring.coe_mul, Algebra.smul_def]
     rfl
 
--- TODO : deprecate for Valuation.Completion.valued_eq_valuation
 variable {R K} in
 open scoped algebraMap in -- to make the coercions from `R` fire
 /-- The valuation on the completion agrees with the global valuation on elements of the
@@ -443,7 +442,6 @@ theorem valuedAdicCompletion_eq_valuation (r : R) :
     Valued.v (r : v.adicCompletion K) = v.valuation K r := by
   convert Valued.valuedCompletion_apply (r : K)
 
--- TODO : deprecte for Valuation.Completion.valued_eq_valuation'
 variable {R K} in
 /-- The valuation on the completion agrees with the global valuation on elements of the field. -/
 @[deprecated Valuation.Completion.valued_eq_valuation' (since := "2025-05-04")]
