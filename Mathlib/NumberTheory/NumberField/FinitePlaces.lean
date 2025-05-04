@@ -94,7 +94,7 @@ end RingOfIntegers.HeightOneSpectrum
 section FinitePlace
 variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
-open RingOfIntegers.HeightOneSpectrum
+open RingOfIntegers.HeightOneSpectrum Valuation.Completion
 
 /-- The embedding of a number field inside its completion with respect to `v`. -/
 noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
@@ -102,7 +102,8 @@ noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
 
 @[deprecated (since := "2025-02-28")] alias embedding := FinitePlace.embedding
 
-theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
+theorem FinitePlace.embedding_apply (x : K) :
+    embedding v x = ↑((WithVal.equiv (v.valuation K)).symm x) := rfl
 
 noncomputable instance instRankOneValuedAdicCompletion :
     Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤₘ₀) where
@@ -115,13 +116,14 @@ noncomputable instance instRankOneValuedAdicCompletion :
   strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
   nontrivial' := by
     rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
-    use x
-    rw [Valuation.valuedCompletion_apply']
+    use ((RingOfIntegers.withValEquiv (v.valuation K) (𝓞 K)).symm x).1
+    rw [valued_apply]
     constructor
-    · simpa only [ne_eq, map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff]
+    · simpa only [ne_eq, map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff,
+        RingOfIntegers.withValEquiv_symm_apply_coe]
     · apply ne_of_lt
-      simp
-      rw [WithVal.equiv_symm_apply, valuation_eq_intValuationDef, intValuation_lt_one_iff_dvd]
+      rw [RingOfIntegers.withValEquiv_symm_apply_coe, RingOfIntegers.withVal_coe_eq_algebraMap]
+      erw [adicValued_apply', valuation_eq_intValuationDef, intValuation_lt_one_iff_dvd]
       exact dvd_span_singleton.mpr hx1
 
 /-- The `v`-adic completion of `K` is a normed field. -/
@@ -149,7 +151,8 @@ value. -/
 theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = adicAbv v x := by
   simp_rw [embedding_apply, NormedField.toNorm, instNormedFieldValuedAdicCompletion,
     Valued.toNormedField, Valued.norm, Valuation.RankOne.hom, ← toNNReal_valued_eq_adicAbv]
-  simp [Valuation.valuedCompletion_apply', WithVal.equiv_symm_apply]
+  simp [WithVal.equiv_symm_apply, valued_apply]
+
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/

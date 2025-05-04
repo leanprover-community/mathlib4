@@ -1155,7 +1155,7 @@ completion of `RatFunc K`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
     (LaurentSeriesRingEquiv K) F ∈ (idealX K).adicCompletionIntegers (RatFunc K) := by
   simp only [Subring.mem_map, exists_prop, ValuationSubring.mem_toSubring,
-    mem_adicCompletionIntegers, LaurentSeriesRingEquiv_def,
+    Valuation.Completion.mem_integers, LaurentSeriesRingEquiv_def,
     valuation_compare, val_le_one_iff_eq_coe]
   exact ⟨F, rfl⟩
 
@@ -1167,7 +1167,7 @@ theorem exists_powerSeries_of_memIntegers {x : RatFuncAdicCompl K}
   set f := (ratfuncAdicComplRingEquiv K) x with hf
   have H_x : (LaurentSeriesPkg K).compare ratfuncAdicComplPkg ((ratfuncAdicComplRingEquiv K) x) =
       x := congr_fun (inverse_compare (LaurentSeriesPkg K) ratfuncAdicComplPkg) x
-  rw [mem_adicCompletionIntegers, ← H_x] at hx
+  rw [Valuation.Completion.mem_integers, ← H_x] at hx
   obtain ⟨F, hF⟩ := (val_le_one_iff_eq_coe K f).mp (valuation_compare _ f ▸ hx)
   exact ⟨F, by rw [hF, hf, RingEquiv.symm_apply_apply]⟩
 
