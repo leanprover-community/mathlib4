@@ -342,12 +342,10 @@ lemma Algebra.charZero_of_charZero [CharZero R] : CharZero A :=
   have := algebraMap_comp_natCast R A
   ⟨this ▸ (FaithfulSMul.algebraMap_injective R A).comp CharZero.cast_injective⟩
 
--- see note [lower instance priority]
-instance (priority := 100) [CharZero R] : FaithfulSMul ℕ R := by
+instance [CharZero R] : FaithfulSMul ℕ R := by
   simpa only [faithfulSMul_iff_algebraMap_injective] using (algebraMap ℕ R).injective_nat
 
--- see note [lower instance priority]
-instance (priority := 100) (R : Type*) [Ring R] [CharZero R] : FaithfulSMul ℤ R := by
+instance (R : Type*) [Ring R] [CharZero R] : FaithfulSMul ℤ R := by
   simpa only [faithfulSMul_iff_algebraMap_injective] using (algebraMap ℤ R).injective_int
 
 end FaithfulSMul
