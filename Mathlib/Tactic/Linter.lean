@@ -9,6 +9,7 @@ This file is ignored by `shake`:
 -/
 
 import Mathlib.Tactic.Linter.DeprecatedModule
+import Mathlib.Tactic.Linter.ForallIntro
 import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.Linter.PPRoundtrip
