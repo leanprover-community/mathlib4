@@ -1,14 +1,16 @@
 /-
 Copyright (c) 2025 Peter Pfaffelhuber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Peter Pfaffelhuber
+Authors: Peter Pfaffelhuber
 -/
 
-import Mathlib.LinearAlgebra.Matrix.Gram
+import Mathlib.Analysis.InnerProductSpace.GramMatrix
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-! # Brownian Motion
 
-In this file we define Brownian Motion using the Kolmogorov extension theorem, and the Kolmogorov-Chentsov criterion for a continuous modification.
+In this file we define Brownian Motion using the Kolmogorov extension theorem, and the
+Kolmogorov-Chentsov criterion for a continuous modification.
 
 ## Main definition
 
@@ -26,11 +28,11 @@ positive semi-definite. This section will be moved to the section on stochastic 
 we define Brownian Motion.
 -/
 
+open MeasureTheory L2 NNReal ENNReal Matrix
+
 variable {E n : Type*}
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-
-open MeasureTheory L2 NNReal ENNReal
 
 namespace brownianMotion
 

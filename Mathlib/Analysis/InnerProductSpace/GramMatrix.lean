@@ -109,7 +109,8 @@ lemma innerProduct_eq_inter (v w : (Set α)) (hv₁ : MeasurableSet v)
   have g : ∀ᵐ (x : α) ∂μ, x ∈ v → ((indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) : α → ℝ) x =
       w.indicator (fun x ↦ (1 : ℝ)) x := Filter.Eventually.mono h fun x a a_1 ↦ a
   rw [setIntegral_congr_ae hv₁ g, setIntegral_indicator hw₁]
-  simp
+  simp only [integral_const, MeasurableSet.univ, measureReal_restrict_apply, Set.univ_inter,
+    smul_eq_mul, mul_one]
   rfl
 
 /-- A matrix with entry `μ (v i ∩ v j)` at index `i j : n`. -/
