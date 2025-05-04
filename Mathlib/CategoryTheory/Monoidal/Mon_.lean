@@ -765,7 +765,7 @@ namespace Mon_
 open Mon_Class
 
 instance : SymmetricCategory (Mon_ C) where
-  braiding := fun X Y => Mon_.mkIso' (β_ X.X Y.X)
+  braiding := fun X Y => mkIso' (β_ X.X Y.X)
   symmetry := fun X Y => by
     ext
     simp [← SymmetricCategory.braiding_swap_eq_inv_braiding]
