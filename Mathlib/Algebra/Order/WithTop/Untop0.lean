@@ -44,6 +44,11 @@ lemma untop₀_zero : untop₀ 0 = (0 : α) := by simp [untop₀]
 @[simp]
 lemma untop₀_coe (a : α) : (a : WithTop α).untop₀ = a := rfl
 
+lemma coe_untop₀_of_ne_top {a : WithTop α} (ha : a ≠ ⊤) :
+    a.untop₀ = a := by
+  obtain ⟨b, hb⟩ := WithTop.ne_top_iff_exists.1 ha
+  simp [← hb]
+
 end Zero
 
 /-!
