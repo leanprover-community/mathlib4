@@ -96,7 +96,7 @@ The order of a meromorphic function `f` at `z₀` is finite iff `f` can locally 
 written as `f z = (z - z₀) ^ order • g z`, where `g` is analytic and does not
 vanish at `z₀`.
 -/
-theorem order_ne_top_iff₁ {f : 𝕜 → E} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) :
+theorem order_ne_top_iff {f : 𝕜 → E} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) :
     hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
       f =ᶠ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ (hf.order.untop₀) • g z :=
   ⟨fun h ↦ hf.order_eq_int_iff.1 (WithTop.coe_untop₀_of_ne_top h).symm,
@@ -106,7 +106,7 @@ theorem order_ne_top_iff₁ {f : 𝕜 → E} {z₀ : 𝕜} (hf : MeromorphicAt f
 The order of a meromorphic function `f` at `z₀` is finite iff `f` does not have
 any zeros in a sufficiently small neighborhood of `z₀`.
 -/
-theorem order_ne_top_iff₂ {f : 𝕜 → E} (hf : MeromorphicAt f x) :
+theorem order_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : MeromorphicAt f x) :
     hf.order ≠ ⊤ ↔ ∀ᶠ x in 𝓝[≠] x, f x ≠ 0 := by
   constructor
   · intro h
