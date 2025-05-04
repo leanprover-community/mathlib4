@@ -108,7 +108,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed [P.IsReduced] :
   rcases eq_or_ne (P.root i) (-P.root j) with h₂ | h₂; · aesop
   have aux₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
   have aux₂ : P.pairingIn ℤ i j * P.pairingIn ℤ j i ≠ 4 := P.coxeterWeightIn_ne_four ℤ h₁ h₂
-  aesop
+  aesop -- #24551 (this should be faster)
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' [P.IsReduced]
     (hij : P.root i ≠ P.root j) (hij' : P.root i ≠ - P.root j) :
@@ -126,7 +126,7 @@ lemma RootPositiveForm.rootLength_le_of_pairingIn_eq (B : P.RootPositiveForm ℤ
   have h : (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(1, 1), (1, 2), (1, 3), (1, 4), (-1, -1), (-1, -2), (-1, -3), (-1, -4)} : Set (ℤ × ℤ)) := by
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
-    aesop
+    aesop -- #24551 (this should be faster)
   simp only [mem_insert_iff, mem_singleton_iff, Prod.mk_one_one, Prod.mk_eq_one, Prod.mk.injEq] at h
   have h' := B.pairingIn_mul_eq_pairingIn_mul_swap i j
   have hi := B.rootLength_pos i
@@ -142,11 +142,11 @@ lemma RootPositiveForm.rootLength_lt_of_pairingIn_nmem
   have hij' : P.pairingIn ℤ i j = -3 ∨ P.pairingIn ℤ i j = -2 ∨ P.pairingIn ℤ i j = 2 ∨
       P.pairingIn ℤ i j = 3 ∨ P.pairingIn ℤ i j = -4 ∨ P.pairingIn ℤ i j = 4 := by
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
-    aesop
+    aesop -- #24551 (this should be faster)
   have aux₁ : P.pairingIn ℤ j i = -1 ∨ P.pairingIn ℤ j i = 1 := by
     have _i := P.reflexive_left
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
-    aesop
+    aesop -- #24551 (this should be faster)
   have aux₂ := B.pairingIn_mul_eq_pairingIn_mul_swap i j
   have hi := B.rootLength_pos i
   rcases aux₁ with hji | hji <;> rcases hij' with hij' | hij' | hij' | hij' | hij' | hij' <;>
@@ -161,7 +161,7 @@ lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
     simp only [← (FaithfulSMul.algebraMap_injective ℤ R).eq_iff, algebraMap_pairingIn]
     exact mul_right_cancel₀ (B.ne_zero j) (len_eq ▸ B.pairing_mul_eq_pairing_mul_swap j i)
   have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
-  aesop
+  aesop -- #24551 (this should be faster)
 
 variable {i j} in
 lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne {B : P.InvariantForm}
@@ -211,7 +211,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
       have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
       replace hli : P.pairingIn ℤ i j * P.pairingIn ℤ j i = 4 :=
         (P.coxeterWeightIn_eq_four_iff_not_linearIndependent ℤ).mpr hli
-      aesop
+      aesop -- #24551 (this should be faster)
     simp only [mem_insert_iff, mem_singleton_iff, Prod.mk.injEq] at this
     rcases this with hij | hij | hij
     · rw [(P.pairingIn_one_four_iff ℤ i j).mp hij, two_smul, sub_add_cancel_right]
@@ -244,7 +244,7 @@ lemma apply_eq_or_aux (i j : ι) (h : P.pairingIn ℤ i j ≠ 0) :
   have h₂ : algebraMap ℤ R (P.pairingIn ℤ j i) * B.form (P.root i) (P.root i) =
             algebraMap ℤ R (P.pairingIn ℤ i j) * B.form (P.root j) (P.root j) := by
     simpa only [algebraMap_pairingIn] using B.pairing_mul_eq_pairing_mul_swap i j
-  aesop
+  aesop -- #24551 (this should be faster)
 
 variable [P.IsIrreducible]
 
@@ -339,12 +339,12 @@ lemma forall_pairing_eq_swap_or [P.IsReduced] [P.IsIrreducible] :
     have hk := B.pairing_mul_eq_pairing_mul_swap k₁ k₂
     rcases this with h₀ | h₀ <;> rcases key k₁ with h₁ | h₁ <;> rcases key k₂ with h₂ | h₂ <;>
     simp only [h₁, h₂, h₀, ← mul_assoc, mul_comm, mul_eq_mul_right_iff] at hk <;>
-    aesop
+    aesop -- #24551 (this should be faster)
   · refine Or.inr fun k₁ k₂ ↦ ?_
     have hk := B.pairing_mul_eq_pairing_mul_swap k₁ k₂
     rcases this with h₀ | h₀ <;> rcases key k₁ with h₁ | h₁ <;> rcases key k₂ with h₂ | h₂ <;>
     simp only [h₁, h₂, h₀, ← mul_assoc, mul_comm, mul_eq_mul_right_iff] at hk <;>
-    aesop
+    aesop -- #24551 (this should be faster)
 
 lemma forall_pairingIn_eq_swap_or [P.IsReduced] [P.IsIrreducible] :
     (∀ i j, P.pairingIn ℤ i j = P.pairingIn ℤ j i ∨
@@ -405,7 +405,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
       have := P.reflexive_left
       contrapose! hk'; exact (P.pairingIn_neg_two_neg_two_iff ℤ i k).mp ⟨h, hk'⟩
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i k
-    aesop
+    aesop -- #24551 (this should be faster)
   replace hki : P.pairing k i = -1 := by rw [← P.algebraMap_pairingIn ℤ, hki]; simp
   have : P.pairingIn ℤ l i = 1 - P.pairingIn ℤ j i := by
     apply algebraMap_injective ℤ R
