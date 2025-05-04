@@ -60,231 +60,34 @@ lemma tensorProd_freeAbs_tauto : freeAbs R ⋙ R.tensorProd S = {
         (MvPolynomial.rename g).comp (MvPolynomial.rename f) :=
         (MvPolynomial.rename_comp_rename f g).symm
       rw [this, Algebra.TensorProduct.map_id_comp, AlgHom.toUnder_comp]
-  } := by
-    let obj := fun σ => congr_arg
-            (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial σ R) _ _ _
-            (@Algebra.toModule _ _ _ _ inst)) <| freeAbs_obj σ
-    apply CategoryTheory.Functor.ext
-    #check eq_mpr_eq_cast
-    -- have obj (σ : Type u) : (freeAbs R ⋙ R.tensorProd S).obj σ = _.obj σ := by
-    --   unfold freeAbs left tensorProd
-    --   simp only [Functor.comp_obj]
-    --   rw [algebra_eq]
-    --   rfl
-    · intro σ τ f
-      unfold freeAbs tensorProd
-      dsimp
-      rw [AlgHom.toUnder_eq]
-      -- #check @Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      --     (algebra (R.mkUnder (MvPolynomial σ R))) _ _ _ _ _
-      --     (algebra (R.mkUnder (MvPolynomial τ R))) (AlgHom.id S S)
-      --     ((cast <| congr_arg₂ (fun instA instB => @AlgHom R (MvPolynomial σ R)
-      --         (MvPolynomial τ R) _ _ _ instA instB)
-      --     (mkUnder_eq (MvPolynomial σ R)).symm
-      --     (mkUnder_eq (MvPolynomial τ R)).symm) (MvPolynomial.rename f))
-      -- #check (cast <| congr_arg₂ (fun instσ instτ => @AlgHom S
-      --     (@TensorProduct R _ S (MvPolynomial σ R) _ _ _
-      --     (@Algebra.toModule _ _ _ _ instσ))
-      --     (@TensorProduct R _ S (MvPolynomial τ R) _ _ _
-      --     (@Algebra.toModule _ _ _ _ instτ)) _ _ _
-      --     (@Algebra.TensorProduct.leftAlgebra R S S (MvPolynomial σ R) _ _ _ _
-      --     instσ _ _ _)
-      --     (@Algebra.TensorProduct.leftAlgebra R S S (MvPolynomial τ R) _ _ _ _
-      --     instτ _ _ _)) (mkUnder_eq (MvPolynomial σ R)).symm
-      --     (mkUnder_eq (MvPolynomial τ R)).symm)
-      --     (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      --     (MvPolynomial.algebra) _ _ _ _ _
-      --     (MvPolynomial.algebra) (AlgHom.id S S) (MvPolynomial.rename f))
-      -- have (ninstσ : Algebra R (MvPolynomial σ R)) (ninstτ : Algebra R (MvPolynomial τ R))
-      --     (eqσ : MvPolynomial.algebra = ninstσ) (eqτ : MvPolynomial.algebra = ninstτ)
-      --     : @Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      --     (ninstσ) _ _ _ _ _ (ninstτ) (AlgHom.id S S)
-      --     ((cast <| congr_arg₂ (fun instσ instτ => @AlgHom R (MvPolynomial σ R)
-      --         (MvPolynomial τ R) _ _ _ instσ instτ) eqσ eqτ) (MvPolynomial.rename f))
-      --     = (cast <| congr_arg₂ (fun instσ instτ => @AlgHom S
-      --     (@TensorProduct R _ S (MvPolynomial σ R) _ _ _ (@Algebra.toModule _ _ _ _ instσ))
-      --     (@TensorProduct R _ S (MvPolynomial τ R) _ _ _ (@Algebra.toModule _ _ _ _ instτ)) _ _ _
-      --     (@Algebra.TensorProduct.leftAlgebra R S S (MvPolynomial σ R) _ _ _ _ instσ _ _ _)
-      --     (@Algebra.TensorProduct.leftAlgebra R S S (MvPolynomial τ R) _ _ _ _ instτ _ _ _)) eqσ eqτ
-      --     ) (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      --     (MvPolynomial.algebra) _ _ _ _ _
-      --     (MvPolynomial.algebra) (AlgHom.id S S) (MvPolynomial.rename f)) := by
-      --   subst eqσ eqτ
-      --   ext x
-      --   rfl
-      -- have : @Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      --     (algebra (R.mkUnder (MvPolynomial σ R))) _ _ _ _ _
-      --     (algebra (R.mkUnder (MvPolynomial τ R))) (AlgHom.id S S)
-      --     ((cast <| congr_arg₂ (fun instσ instτ => @AlgHom R (MvPolynomial σ R)
-      --         (MvPolynomial τ R) _ _ _ instσ instτ)
-      --     (mkUnder_eq (MvPolynomial σ R)).symm (mkUnder_eq (MvPolynomial τ R)).symm)
-      --     (MvPolynomial.rename f))
-      --     = (cast <| congr_arg₂ (fun instσ instτ => @AlgHom S
-      --     (@TensorProduct R _ S (MvPolynomial σ R) _ _ _ (@Algebra.toModule _ _ _ _ instσ))
-      --     (@TensorProduct R _ S (MvPolynomial τ R) _ _ _ (@Algebra.toModule _ _ _ _ instτ)) _ _ _
-      --     (@Algebra.TensorProduct.leftAlgebra R S S (MvPolynomial σ R) _ _ _ _ instσ _ _ _)
-      --     (@Algebra.TensorProduct.leftAlgebra R S S (MvPolynomial τ R) _ _ _ _ instτ _ _ _))
-      --     (mkUnder_eq (MvPolynomial σ R)).symm
-      --     (mkUnder_eq (MvPolynomial τ R)).symm)
-      --     (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      --     (MvPolynomial.algebra) _ _ _ _ _
-      --     (MvPolynomial.algebra) (AlgHom.id S S) (MvPolynomial.rename f)) :=
-      --   this (algebra (R.mkUnder (MvPolynomial σ R))) (algebra (R.mkUnder (MvPolynomial τ R)))
-      --   (mkUnder_eq (MvPolynomial σ R)).symm
-      --   (mkUnder_eq (MvPolynomial τ R)).symm
-      -- -- rw [this]
-      -- #check eqToHom (congr_arg
-      --       (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial σ R) _ _ _
-      --       (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial σ R) ≫
-      --   (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _ MvPolynomial.algebra _ _ _ _ _
-      --     MvPolynomial.algebra (AlgHom.id S S) (MvPolynomial.rename f)).toUnder
-      --   ≫ eqToHom (congr_arg
-      --       (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial τ R) _ _ _
-      --       (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial τ R).symm
-      have (ninstσ : Algebra R (MvPolynomial σ R)) (ninstτ : Algebra R (MvPolynomial τ R))
-          (eqσ : ninstσ = MvPolynomial.algebra) (eqτ : ninstτ = MvPolynomial.algebra) :
-          (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          (ninstσ) _ _ _ _ _
-          (ninstτ) (AlgHom.id S S)
-          ((cast <| congr_arg₂ (fun instσ instτ => @AlgHom R (MvPolynomial σ R)
-              (MvPolynomial τ R) _ _ _ instσ instτ)
-          eqσ.symm eqτ.symm) (MvPolynomial.rename f))).toUnder
-          =
-          eqToHom (congr_arg
-            (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial σ R) _ _ _
-            (@Algebra.toModule _ _ _ _ inst)) <| eqσ) ≫
-          (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _ MvPolynomial.algebra _ _ _ _ _
-            MvPolynomial.algebra (AlgHom.id S S) (MvPolynomial.rename f)).toUnder ≫
-          eqToHom (congr_arg
-            (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial τ R) _ _ _
-            (@Algebra.toModule _ _ _ _ inst)) <| eqτ).symm := by
-        subst eqσ eqτ
-        rfl
-      exact this (algebra (R.mkUnder (MvPolynomial σ R))) (algebra (R.mkUnder (MvPolynomial τ R)))
-        (mkUnder_eq (MvPolynomial σ R)) (mkUnder_eq (MvPolynomial τ R))
-      -- have : (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      --     (algebra (R.mkUnder (MvPolynomial σ R))) _ _ _ _ _
-      --     (algebra (R.mkUnder (MvPolynomial τ R))) (AlgHom.id S S)
-      --     ((cast <| congr_arg₂ (fun instσ instτ => @AlgHom R (MvPolynomial σ R)
-      --         (MvPolynomial τ R) _ _ _ instσ instτ)
-      --     (mkUnder_eq (MvPolynomial σ R)).symm
-      --     (mkUnder_eq (MvPolynomial τ R)).symm) (MvPolynomial.rename f))).toUnder
-      --     =
-      --     eqToHom (congr_arg
-      --       (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial σ R) _ _ _
-      --       (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial σ R) ≫
-      --     (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _ MvPolynomial.algebra _ _ _ _ _
-      --       MvPolynomial.algebra (AlgHom.id S S) (MvPolynomial.rename f)).toUnder ≫
-      --     eqToHom (congr_arg
-      --       (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial τ R) _ _ _
-      --       (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial τ R).symm := by sorry
+    } := by
+  apply CategoryTheory.Functor.ext
+  · intro σ τ f
+    unfold freeAbs tensorProd
+    dsimp
+    rw [AlgHom.toUnder_eq]
+    -- find out the path induction
+    have (ninstσ : Algebra R (MvPolynomial σ R)) (ninstτ : Algebra R (MvPolynomial τ R))
+        (eqσ : ninstσ = MvPolynomial.algebra) (eqτ : ninstτ = MvPolynomial.algebra) :
+        (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
+        (ninstσ) _ _ _ _ _
+        (ninstτ) (AlgHom.id S S)
+        ((cast <| congr_arg₂ (fun instσ instτ => @AlgHom R (MvPolynomial σ R)
+            (MvPolynomial τ R) _ _ _ instσ instτ)
+        eqσ.symm eqτ.symm) (MvPolynomial.rename f))).toUnder =
+        eqToHom (congr_arg
+          (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial σ R) _ _ _
+          (@Algebra.toModule _ _ _ _ inst)) <| eqσ) ≫
+        (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _ MvPolynomial.algebra _ _ _ _ _
+          MvPolynomial.algebra (AlgHom.id S S) (MvPolynomial.rename f)).toUnder ≫
+        eqToHom (congr_arg
+          (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial τ R) _ _ _
+          (@Algebra.toModule _ _ _ _ inst)) <| eqτ).symm := by
+      subst eqσ eqτ
+      rfl
+    exact this (algebra (R.mkUnder (MvPolynomial σ R))) (algebra (R.mkUnder (MvPolynomial τ R)))
+      (mkUnder_eq (MvPolynomial σ R)) (mkUnder_eq (MvPolynomial τ R))
 
-      -- #check AlgHom.toUnder_eq
-      -- CommRingCat.toAlgHom f.toUnder =
-      --  (cast <| congr_arg₂ (fun instA instB => @AlgHom R A B _ _ _ instA instB)
-      --  (CommRingCat.mkUnder_eq A).symm (CommRingCat.mkUnder_eq B).symm) f
-      -- have : eqToHom (congr_arg
-      --       (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial σ R) _ _ _
-      --       (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial σ R) ≫
-      --   (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _ MvPolynomial.algebra _ _ _ _ _
-      --     MvPolynomial.algebra (AlgHom.id S S) (MvPolynomial.rename f)).toUnder
-      --   ≫ eqToHom (congr_arg
-      --       (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial τ R) _ _ _
-      --       (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial τ R).symm = sorry := sorry
-      -- #check AlgHom.toUnder_eq
-      -- #check Algebra.TensorProduct.map
-      -- #check MvPolynomial.algebra
-      -- #check @Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      --   MvPolynomial.algebra _ _ _ _ _  MvPolynomial.algebra (AlgHom.id S S)
-      --   (MvPolynomial.rename f)
-      -- #check (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      --   (algebra ((freeAbs R).obj σ)) _ _ _ _ _  (algebra ((freeAbs R).obj τ)) (AlgHom.id S S)
-      --   (toAlgHom (MvPolynomial.rename f).toUnder)).toUnder
-      -- rw [AlgHom.toUnder_eq]
-      -- -- simp only [eq_mpr_eq_cast, cast_cast]
-      -- -- #check proof_irrel_heq
-      -- -- subst (freeAbs_obj σ)
-      -- have : (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      --   (algebra ((freeAbs R).obj σ)) _ _ _ _ _  (algebra ((freeAbs R).obj τ)) (AlgHom.id S S)
-      --   (toAlgHom (MvPolynomial.rename f).toUnder)).toUnder
-      --   = eqToHom (congr_arg
-      --       (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial σ R) _ _ _
-      --       (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial σ R) ≫
-      --   (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _ MvPolynomial.algebra _ _ _ _ _
-      --     MvPolynomial.algebra (AlgHom.id S S) (MvPolynomial.rename f)).toUnder
-      --   ≫ eqToHom (congr_arg
-      --       (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial τ R) _ _ _
-      --       (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial τ R).symm := by
-      --   rw [AlgHom.toUnder_eq]
-      --   #check fun (instσ : Algebra R <| MvPolynomial σ R) (instτ : Algebra R <| MvPolynomial τ R)
-      --     (φ : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) => eqToHom (congr_arg
-      --     (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial σ R) _ _ _
-      --     (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial σ R) ≫
-      --     (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _ instσ _ _ _ _ _
-      --     instτ (AlgHom.id S S) φ).toUnder
-      --     ≫ eqToHom (congr_arg
-      --     (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial τ R) _ _ _
-      --     (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial τ R).symm
-      --   have : (Algebra R <| MvPolynomial σ R) = (Algebra R <| R.mkUnder <| MvPolynomial σ R) := rfl
-      --   #check Σ' (instσ : Algebra R (MvPolynomial σ R)), (instσ = MvPolynomial.algebra)
-      --   let s1 : Σ' (instσ : Algebra R (MvPolynomial σ R)), (instσ = MvPolynomial.algebra) :=
-      --     ⟨MvPolynomial.algebra,rfl⟩
-      --   let s2 : Σ' (instσ : Algebra R (MvPolynomial σ R)), (instσ = MvPolynomial.algebra) :=
-      --     ⟨algebra (R.mkUnder (MvPolynomial σ R)), mkUnder_eq (MvPolynomial σ R)⟩
-      --   have : s1 = s2 := by
-      --     -- rw [mkUnder_eq] -- (MvPolynomial σ R)]
-      --     sorry
-      --   -- let ccf :=
-      --   --   fun (instσ : Algebra R <| MvPolynomial σ R) =>
-      --   --   fun (instτ : Algebra R <| MvPolynomial τ R) =>
-      --   --   fun (φ : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) =>
-      --   --   -- eqToHom (congr_arg
-      --   --   -- (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial σ R) _ _ _
-      --   --   -- (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial σ R) ≫
-      --   --   (@Algebra.TensorProduct.map _ _ _ _ _ _ _ _ _ _ _ _ _ _ instσ _ _ _ _ _
-      --   --   instτ (AlgHom.id S S) φ).toUnder
-      --     -- ≫ eqToHom (congr_arg
-      --     -- (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial τ R) _ _ _
-      --     -- (@Algebra.toModule _ _ _ _ inst)) <| mkUnder_eq <| MvPolynomial τ R).symm
-      --   -- have : R.mkUnder (MvPolynomial τ R) = MvPolynomial σ R := rfl
-      --   -- have : Algebra R (R.mkUnder (MvPolynomial τ R)) = (Algebra R <| MvPolynomial σ R) := rfl
-      --   -- have : (algebra (R.mkUnder (MvPolynomial τ R)) : Algebra R <| MvPolynomial τ R)
-      --   --   = MvPolynomial.algebra := mkUnder_eq (R := R) (MvPolynomial τ R) (inst := MvPolynomial.algebra)
-      --   #check congr_arg
-      --   -- #check →
-      --   -- #check Σ
-      --   -- let ccf :=
-      --     -- fun (⟨instσ, eqσ⟩ : Σ (instσ : Algebra R <| MvPolynomial σ R) → instσ = MvPolynomial.algebra) => sorry
-      --   -- #check congr_arg (α := Algebra R <| MvPolynomial σ R) ccf (mkUnder_eq (R := R) (MvPolynomial σ R) (inst := MvPolynomial.algebra))
-      --   -- let v := congr_arg ccf (mkUnder_eq (R := R) (MvPolynomial τ R) (inst := MvPolynomial.algebra))
-
-      --   #check (mkUnder_eq (R := R) (MvPolynomial τ R) (inst := MvPolynomial.algebra))
-      --   sorry
-      -- subst AlgHom.toUnder_eq
-      -- rw [AlgHom.toUnder_eq]
-      -- aesop_cat
-      -- sorry
-    -- ·
-    --   exact obj
-        -- fun σ => congr_arg (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial σ R) _ _ _
-        --     (@Algebra.toModule _ _ _ _ inst)) <| freeAbs_obj σ
-      -- unfold freeAbs tensorProd
-      -- dsimp
-      -- -- #check algebra
-      -- suffices algebra (R.mkUnder (MvPolynomial σ R)) = MvPolynomial.algebra from by
-      --   -- #check @S.mkUnder S _
-      --   #check TensorProduct
-
-      --   #check @Algebra.toModule _ _ _ _ MvPolynomial.algebra
-      --   #check @Algebra.toModule _ _ _ _ (algebra (R.mkUnder (MvPolynomial σ R)))
-      --   #check NonUnitalNonAssocSemiring.toAddCommMonoid
-      --   #check @TensorProduct R _ S (MvPolynomial σ R) _ _ _ (@Algebra.toModule _ _ _ _ MvPolynomial.algebra)
-      --   #check @TensorProduct R _ S (MvPolynomial σ R) _ _ _ (@Algebra.toModule _ _ _ _ (algebra (R.mkUnder (MvPolynomial σ R))))
-      --   exact congr_arg (fun inst => S.mkUnder <| @TensorProduct R _ S (MvPolynomial σ R) _ _ _ (@Algebra.toModule _ _ _ _ inst)) <| freeAbs_obj σ
-      -- exact freeAbs_obj σ
-      -- have : S ⊗[R] (R.mkUnder (MvPolynomial σ ↑R)).right = sorry := sorry
-      -- -- apply congr_arg S.mkUnder
-      -- sorry
 
 -- noncomputable def tensorProd_freeAbs : freeAbs R ⋙ R.tensorProd S ≅ freeAbs S := by
 --   -- To get rid of algebra_eq
