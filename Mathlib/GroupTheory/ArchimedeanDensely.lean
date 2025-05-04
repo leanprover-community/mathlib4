@@ -286,9 +286,9 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
   rw [← denselyOrdered_units_iff,
       ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
   refine Nonempty.congr ?_ ?_ <;> intro f
-  · refine ⟨MulEquiv.unzero (withZeroUnitsEquiv.trans f), ?_⟩
+  · refine ⟨MulEquiv.withZero.symm (withZeroUnitsEquiv.trans f), ?_⟩
     intros
-    simp only [MulEquiv.unzero, withZeroUnitsEquiv, MulEquiv.trans_apply,
+    simp only [MulEquiv.withZero, withZeroUnitsEquiv, MulEquiv.trans_apply,
       MulEquiv.coe_mk, Equiv.coe_fn_mk, recZeroCoe_coe, OrderMonoidIso.coe_mulEquiv,
       MulEquiv.symm_trans_apply, MulEquiv.symm_mk, Equiv.coe_fn_symm_mk, map_eq_zero, coe_ne_zero,
       ↓reduceDIte, unzero_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
@@ -384,10 +384,10 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
       rcases eq_or_ne b 0 with rfl|hb
       · simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero]
       simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero, ha, hb, ← Units.val_le_val]
-    · exact MulEquiv.unzero (WithZero.withZeroUnitsEquiv.trans f)
+    · exact MulEquiv.withZero.symm (WithZero.withZeroUnitsEquiv.trans f)
     · intros
       rw [← WithZero.coe_le_coe]
-      simp [WithZero.withZeroUnitsEquiv, MulEquiv.unzero]
+      simp
   rw [← Set.wellFoundedOn_sdiff_singleton (a := 0)]
   refine ⟨fun h ↦ (h.mapsTo Units.val ?_).mono' ?_,
     fun h ↦ (h.mapsTo ?_ ?_).mono' ?_⟩

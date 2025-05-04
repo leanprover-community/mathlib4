@@ -269,29 +269,23 @@ def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
   map_mul' := (by induction · <;> induction · <;> simp [← WithZero.coe_mul])
 
 /-- A version of `Equiv.optionCongr` for `WithZero`. -/
-@[simps]
-def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
-    WithZero α ≃* WithZero β where
-  toFun := map' e.toMonoidHom
-  invFun := map' e.symm.toMonoidHom
-  left_inv := (by induction · <;> simp)
-  right_inv := (by induction · <;> simp)
-  map_mul' := (by induction · <;> induction · <;> simp)
-
-/-- The inverse of `MulEquiv.withZero`. -/
-@[simps]
-protected def _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
-    α ≃* β where
-  toFun x := unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply])
-  invFun x := unzero (x := e.symm x) (by simp [e.symm_apply_eq])
-  left_inv _ := by simp
-  right_inv _ := by simp
-  map_mul' _ _ := by
-    simp only [coe_mul, map_mul]
-    generalize_proofs A B C
-    suffices ((unzero A : β) : WithZero β) = (unzero B) * (unzero C) by
-      rwa [← WithZero.coe_mul, WithZero.coe_inj] at this
-    simp
+@[simps!]
+def _root_.MulEquiv.withZero [Group β] :
+    (α ≃* β) ≃ (WithZero α ≃* WithZero β) where
+  toFun e := ⟨⟨map' e, map' e.symm, (by induction · <;> simp), (by induction · <;> simp)⟩,
+    (by induction · <;> induction · <;> simp)⟩
+  invFun e := ⟨⟨
+    fun x ↦ unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply]),
+    fun x ↦ unzero (x := e.symm x) (by simp [e.symm_apply_eq]),
+    by intro; simp, by intro; simp⟩, by
+      intro _ _
+      simp only [coe_mul, map_mul]
+      generalize_proofs A B C
+      suffices ((unzero A : β) : WithZero β) = (unzero B) * (unzero C) by
+        rwa [← WithZero.coe_mul, WithZero.coe_inj] at this
+      simp⟩
+  left_inv _ := by ext; simp
+  right_inv _ := by ext x; cases x <;> simp
 
 end Group
 

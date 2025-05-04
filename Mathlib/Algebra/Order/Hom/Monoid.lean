@@ -953,6 +953,6 @@ def OrderMonoidIso.withZero {G H : Type*}
     (G ≃*o H) ≃ (WithZero G ≃*o WithZero H) where
   toFun e := ⟨e.toMulEquiv.withZero, fun {a b} ↦ by cases a <;> cases b <;>
     simp [WithZero.zero_le, (WithZero.zero_lt_coe _).not_le]⟩
-  invFun e := ⟨e.toMulEquiv.unzero, fun {a b} ↦ by simp⟩
+  invFun e := ⟨MulEquiv.withZero.symm e, fun {a b} ↦ by simp⟩
   left_inv _ := by ext; simp
   right_inv _ := by ext x; cases x <;> simp
