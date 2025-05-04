@@ -96,7 +96,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
   let f := algebraMap R (Localization.AtPrime p)
   have := Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing (I.map f) ?_
   · rwa [← IsLocalization.height_comap p.primeCompl,
-     Localization.AtPrime.comap_maximalIdeal] at this
+      Localization.AtPrime.comap_maximalIdeal] at this
   · rwa [IsLocalization.minimalPrimes_map p.primeCompl (Localization.AtPrime p) I,
       Set.mem_preimage, Localization.AtPrime.comap_maximalIdeal]
 
