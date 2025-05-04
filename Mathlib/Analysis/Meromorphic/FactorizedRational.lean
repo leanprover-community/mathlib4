@@ -187,7 +187,7 @@ function without zeros.
 
 We provide analogous results for functions of the form `log ‖meromorphic‖`.
 
-TODO: We identify some of the terms that appear in the decomposition.
+TODO: Identify some of the terms that appear in the decomposition.
 -/
 
 /--
@@ -196,9 +196,8 @@ support of the divisor of `f` is finite, then there exists an analytic function 
 zeros such that `f` is equivalent, modulo equality on codiscrete sets, to the product of `g` and the
 factorized rational function associated with the divisor of `f`.
 -/
-theorem MeromorphicOn.extract_zeros_poles [CompleteSpace 𝕜] [CompleteSpace E] {f : 𝕜 → E}
-    (h₁f : MeromorphicOn f U) (h₂f : ∀ u : U, (h₁f u u.2).order ≠ ⊤)
-    (h₃f : (divisor f U).support.Finite) :
+theorem MeromorphicOn.extract_zeros_poles {f : 𝕜 → E} (h₁f : MeromorphicOn f U)
+    (h₂f : ∀ u : U, (h₁f u u.2).order ≠ ⊤) (h₃f : (divisor f U).support.Finite) :
     ∃ g : 𝕜 → E, AnalyticOnNhd 𝕜 g U ∧ (∀ u : U, g u ≠ 0) ∧
       f =ᶠ[codiscreteWithin U] (∏ᶠ u, (· - u) ^ divisor f U u) • g := by
   -- Take `g` as the inverse of the Laurent polynomial defined below, converted to a meromorphic
@@ -238,9 +237,8 @@ theorem MeromorphicOn.extract_zeros_poles [CompleteSpace 𝕜] [CompleteSpace E]
 In the setting of `MeromorphicOn.extract_zeros_poles`, the function `log ‖f‖` is equivalent, modulo
 equality on codiscrete subsets, to `∑ᶠ u, (divisor f U u * log ‖· - u‖) + log ‖g ·‖`.
 -/
-theorem MeromorphicOn.extract_zeros_poles_log [CompleteSpace 𝕜] {f g : 𝕜 → E}
-    {D : Function.locallyFinsuppWithin U ℤ} (hg : ∀ u : U, g u ≠ 0)
-    (h : f =ᶠ[codiscreteWithin U] (∏ᶠ u, (· - u) ^ D u) • g) :
+theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.locallyFinsuppWithin U ℤ}
+    (hg : ∀ u : U, g u ≠ 0) (h : f =ᶠ[codiscreteWithin U] (∏ᶠ u, (· - u) ^ D u) • g) :
     (log ‖f ·‖) =ᶠ[codiscreteWithin U] ∑ᶠ u, (D u * log ‖· - u‖) + (log ‖g ·‖) := by
   -- Identify support of the sum in the goal
   have t₁ : (fun u ↦ (D u * log ‖· - u‖)).support = D.support := by
