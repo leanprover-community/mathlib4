@@ -942,11 +942,9 @@ end
   left_inv f := rfl
   right_inv f := rfl
 
-lemma eq_conj {α α' β β' : Type*} (ε₁ : α ≃ α') (ε₂ : β' ≃ β)
-    (f : α → β) (f' : α' → β') : f = ε₂ ∘ f' ∘ ε₁ ↔ ε₂.symm ∘ f ∘ ε₁.symm = f' := by
-  constructor <;> (intro h; ext)
-  · simp [h]
-  · simp [← h]
+lemma eq_conj {α α' β β' : Sort*} (ε₁ : α ≃ α') (ε₂ : β' ≃ β)
+    (f : α → β) (f' : α' → β') : ε₂.symm ∘ f ∘ ε₁.symm = f' ↔ f = ε₂ ∘ f' ∘ ε₁ := by
+  rw [Equiv.symm_comp_eq, Equiv.comp_symm_eq, Function.comp_assoc]
 
 section BinaryOp
 
