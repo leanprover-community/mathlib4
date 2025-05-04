@@ -83,27 +83,14 @@ theorem IsIntegrallyClosed.of_localization {R : Type*} [CommRing R] [IsDomain R]
     (S : Set (PrimeSpectrum R)) (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
     (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl
     p.1.primeCompl_le_nonZeroDivisors) = ⊥) : IsIntegrallyClosed R := by
-  by_cases hf : IsField R
-  · exact hf.toField.instIsIntegrallyClosed
   apply (isIntegrallyClosed_iff (FractionRing R)).mpr
   intro x hx
   show x ∈ (⊥ : Subalgebra R (FractionRing R))
   rw [← hs]
-  refine Algebra.mem_iInf.mpr ?_
-  intro p
-  refine Algebra.mem_iInf.mpr ?_
-  intro hp
-  have := h p hp
+  refine Algebra.mem_iInf.mpr (fun p ↦ (Algebra.mem_iInf.mpr (fun hp ↦ ?_)))
   let B := Localization.subalgebra (FractionRing R) p.1.primeCompl p.1.primeCompl_le_nonZeroDivisors
-  have : IsIntegrallyClosed B := sorry
-  have : IsIntegral B x := sorry
-  sorry
-/- letI : Algebra R (FractionRing S) := ((algebraMap S (FractionRing S)).comp f.toRingHom).toAlgebra
-  have : IsFractionRing R (FractionRing S) := sorry
-  apply (isIntegrallyClosed_iff (FractionRing S)).mpr
-  intro x hx
-  let g : FractionRing S ≃+* FractionRing R := IsFractionRing.ringEquivOfRingEquiv f.symm
-  have := g x
-  have : IsIntegral R (g x) := by
-    sorry
-  have : ∃ z, (algebraMap R (FractionRing R)) z = (g x) := IsIntegralClosure.isIntegral_iff.mp this -/
+  have hb : IsIntegrallyClosed B := .of_equiv (h := h p hp)
+    (IsLocalization.algEquiv p.1.primeCompl (Localization.AtPrime p.asIdeal) B).toRingEquiv
+  rcases ((isIntegrallyClosed_iff (FractionRing R)).mp hb) (IsIntegral.tower_top hx) with ⟨y, hy⟩
+  rw [← hy]
+  exact y.2
