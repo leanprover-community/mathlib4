@@ -175,6 +175,42 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_is
   let f' := LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos (G := Additive G) this
   exact ⟨AddEquiv.toMultiplicative' f', by simp⟩
 
+section TypeTags
+
+/-- Reinterpret `G ≃*o H` as `Additive G ≃+o Additive H`. -/
+def OrderMonoidIso.toAdditive {G H : Type*} [CommMonoid G] [PartialOrder G]
+    [IsOrderedMonoid G] [CommMonoid H] [PartialOrder H] [IsOrderedMonoid H] :
+    (G ≃*o H) ≃ (Additive G ≃+o Additive H) where
+  toFun e := ⟨MulEquiv.toAdditive e, by simp⟩
+  invFun e := ⟨MulEquiv.toAdditive.symm e, by simp⟩
+  left_inv e := by ext; simp
+  right_inv e := by ext; simp
+
+/-- Reinterpret `G ≃+o H` as `Multiplicative G ≃*o Multiplicative H`. -/
+def OrderAddMonoidIso.toMultiplicative {G H : Type*} [AddCommMonoid G] [PartialOrder G]
+    [IsOrderedAddMonoid G] [AddCommMonoid H] [PartialOrder H] [IsOrderedAddMonoid H] :
+    (G ≃+o H) ≃ (Multiplicative G ≃*o Multiplicative H) where
+  toFun e := ⟨AddEquiv.toMultiplicative e, by simp⟩
+  invFun e := ⟨AddEquiv.toMultiplicative.symm e, by simp⟩
+  left_inv e := by ext; simp
+  right_inv e := by ext; simp
+
+instance Additive.instUniqueOrderAddMonoidIso {G H : Type*}
+    [CommMonoid G] [PartialOrder G] [IsOrderedMonoid G]
+    [CommMonoid H] [PartialOrder H] [IsOrderedMonoid H]
+    [Unique (G ≃*o H)] :
+    Unique (Additive G ≃+o Additive H) :=
+  OrderMonoidIso.toAdditive.symm.unique
+
+instance Multiplicative.instUniqueOrderdMonoidIso {G H : Type*}
+    [AddCommMonoid G] [PartialOrder G] [IsOrderedAddMonoid G]
+    [AddCommMonoid H] [PartialOrder H] [IsOrderedAddMonoid H]
+    [Unique (G ≃+o H)] :
+    Unique (Multiplicative G ≃*o Multiplicative H) :=
+  OrderAddMonoidIso.toMultiplicative.symm.unique
+
+end TypeTags
+
 /-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
 lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
