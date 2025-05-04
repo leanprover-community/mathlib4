@@ -59,14 +59,12 @@ noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUn
   left_inv _ := by aesop
   right_inv _ := by aesop
 
-
-
 instance : HasEnoughRootsOfUnity Circle n where
   prim := by
     obtain ⟨m, hm⟩ := (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).prim
     use ((rootsOfUnityCircleEquiv n).symm hm.toRootsOfUnity).val.val
     simp_all only [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.coe_submonoidClass_iff]
-    exact pullIsPrimitiveRoot n (rootsOfUnityCircleEquiv n).symm hm
+    exact hm.push (rootsOfUnityCircleEquiv n).symm
   cyc :=
     (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc.push_ofSurjective (rootsOfUnityCircleEquiv n).symm
       (rootsOfUnityCircleEquiv n).symm.surjective (map_zpow _)
