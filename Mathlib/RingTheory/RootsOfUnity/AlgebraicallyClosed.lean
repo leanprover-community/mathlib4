@@ -67,10 +67,42 @@ instance : IsCyclic (rootsOfUnity n Circle) where
     obtain ⟨z , hz⟩ := Function.Surjective.comp (rootsOfUnityCircleEquiv n).symm.surjective hg₀ w
     exact ⟨z, by rw [← hz, Function.comp_apply, map_zpow]⟩
 
+instance pullIsPrimitiveRoot {m : ℂ} (hm : IsPrimitiveRoot m n) :
+    IsPrimitiveRoot ((rootsOfUnityCircleEquiv n).symm hm.toRootsOfUnity) n where
+  pow_eq_one := by
+    have e1 : m ^ n = 1 :=  hm.pow_eq_one
+    have e2 : hm.toRootsOfUnity ^ n = 1 := by
+      ext : 2
+      simp_all only [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val,
+        IsPrimitiveRoot.val_toRootsOfUnity_coe, OneMemClass.coe_one, Units.val_one]
+    have e3 : (rootsOfUnityCircleEquiv n).symm (hm.toRootsOfUnity ^ n) =
+        (rootsOfUnityCircleEquiv n).symm 1 := by
+      simp_all only [map_one]
+    have e4 : (rootsOfUnityCircleEquiv n).symm (hm.toRootsOfUnity ^ n) = 1 := by
+      aesop
+    have e5 : ((rootsOfUnityCircleEquiv n).symm hm.toRootsOfUnity) ^ n = 1 := by
+      rw [← map_pow, e4]
+    rw [e5]
+  dvd_of_pow_eq_one := by
+    intro l hl
+    rw [← (hm.pow_eq_one_iff_dvd l)]
+    --rw [← map_pow] at hl
+    have e1 : (hm.toRootsOfUnity ^ l) = (rootsOfUnityCircleEquiv n) 1 := by
+      rw [← hl]
+      rw [← map_pow]
+      rw [MulEquiv.apply_symm_apply]
+    have e2 : (hm.toRootsOfUnity ^ l) = 1 := by
+      aesop
+    have e3 : (hm.toRootsOfUnity ^ l).val.val = 1 := by
+      rw [e2]
+      norm_cast
+    rw [← e3]
+    norm_cast
 
-/-
 instance : HasEnoughRootsOfUnity Circle n where
-  prim := sorry
-  cyc := by
-    obtain ⟨z,hz⟩ := (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc.exists_zpow_surjective
--/
+  prim := by
+    obtain ⟨m, hm⟩ := (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).prim
+    use ((rootsOfUnityCircleEquiv n).symm hm.toRootsOfUnity).val.val
+    simp_all only [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.coe_submonoidClass_iff]
+    exact pullIsPrimitiveRoot n hm
+  cyc := instIsCyclicSubtypeUnitsCircleMemSubgroupRootsOfUnity n
