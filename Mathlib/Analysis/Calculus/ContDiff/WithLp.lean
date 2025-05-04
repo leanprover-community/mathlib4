@@ -21,21 +21,21 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup H] [∀ i, NormedAdd
 
 theorem contDiffWithinAt_piLp :
     ContDiffWithinAt 𝕜 n f t y ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => f x i) t y := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiffWithinAt_iff, contDiffWithinAt_pi]
+  rw [← (PiLp.ofLpContinuousLinearEquiv p 𝕜 E).comp_contDiffWithinAt_iff, contDiffWithinAt_pi]
   rfl
 
 theorem contDiffAt_piLp :
     ContDiffAt 𝕜 n f y ↔ ∀ i, ContDiffAt 𝕜 n (fun x => f x i) y := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiffAt_iff, contDiffAt_pi]
+  rw [← (PiLp.ofLpContinuousLinearEquiv p 𝕜 E).comp_contDiffAt_iff, contDiffAt_pi]
   rfl
 
 theorem contDiffOn_piLp :
     ContDiffOn 𝕜 n f t ↔ ∀ i, ContDiffOn 𝕜 n (fun x => f x i) t := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiffOn_iff, contDiffOn_pi]
+  rw [← (PiLp.ofLpContinuousLinearEquiv p 𝕜 E).comp_contDiffOn_iff, contDiffOn_pi]
   rfl
 
 theorem contDiff_piLp : ContDiff 𝕜 n f ↔ ∀ i, ContDiff 𝕜 n fun x => f x i := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiff_iff, contDiff_pi]
+  rw [← (PiLp.ofLpContinuousLinearEquiv p 𝕜 E).comp_contDiff_iff, contDiff_pi]
   rfl
 
 end PiLp
