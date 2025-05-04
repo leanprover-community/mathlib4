@@ -179,7 +179,7 @@ section TypeTags
 
 /-- Reinterpret `G ≃*o H` as `Additive G ≃+o Additive H`. -/
 def OrderMonoidIso.toAdditive {G H : Type*} [CommMonoid G] [PartialOrder G]
-    [IsOrderedMonoid G] [CommMonoid H] [PartialOrder H] [IsOrderedMonoid H] :
+    [CommMonoid H] [PartialOrder H] [IsOrderedMonoid H] :
     (G ≃*o H) ≃ (Additive G ≃+o Additive H) where
   toFun e := ⟨MulEquiv.toAdditive e, by simp⟩
   invFun e := ⟨MulEquiv.toAdditive.symm e, by simp⟩
@@ -188,7 +188,7 @@ def OrderMonoidIso.toAdditive {G H : Type*} [CommMonoid G] [PartialOrder G]
 
 /-- Reinterpret `G ≃+o H` as `Multiplicative G ≃*o Multiplicative H`. -/
 def OrderAddMonoidIso.toMultiplicative {G H : Type*} [AddCommMonoid G] [PartialOrder G]
-    [IsOrderedAddMonoid G] [AddCommMonoid H] [PartialOrder H] [IsOrderedAddMonoid H] :
+    [AddCommMonoid H] [PartialOrder H] [IsOrderedAddMonoid H] :
     (G ≃+o H) ≃ (Multiplicative G ≃*o Multiplicative H) where
   toFun e := ⟨AddEquiv.toMultiplicative e, by simp⟩
   invFun e := ⟨AddEquiv.toMultiplicative.symm e, by simp⟩
