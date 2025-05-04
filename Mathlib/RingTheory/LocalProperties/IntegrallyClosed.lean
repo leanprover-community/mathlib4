@@ -63,7 +63,8 @@ theorem isIntegrallyClosed_ofLocalizationMaximal :
   fun _ _ h _ ↦ IsIntegrallyClosed.of_localization_maximal fun p _ hpm ↦ h p hpm
 
 /-- An integral domain $R$ is integrally closed if there exists a set of prime ideals $S$ such that
-  $\bigcap_{p \in S} R_p = R$ and for every $p \in S$, $R_p$ is integrally closed. -/
+  $\bigcap_{\mathrm{p} \in S} R_{\mathrm{p}} = R$ and for every $\mathrm{p} \in S$, $R_{\mathrm{p}}$
+  is integrally closed. -/
 theorem IsIntegrallyClosed.of_localization {R : Type*} [CommRing R] [IsDomain R]
     (S : Set (PrimeSpectrum R)) (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
     (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl
