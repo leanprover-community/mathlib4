@@ -93,6 +93,7 @@ lemma tensorProd_freeAbs_tauto : freeAbs R ⋙ R.tensorProd S = {
     exact this (algebra (R.mkUnder (MvPolynomial σ R))) (algebra (R.mkUnder (MvPolynomial τ R)))
       (mkUnder_eq (MvPolynomial σ R)) (mkUnder_eq (MvPolynomial τ R))
 
+/-- We obtain `freeAbs S` by base changing `freeAbs R` using `⊗[R] S`.  -/
 noncomputable def tensorProd_freeAbs : freeAbs R ⋙ R.tensorProd S ≅ freeAbs S := by
   -- To get rid of algebra_eq
   rw [tensorProd_freeAbs_tauto]
@@ -119,9 +120,11 @@ noncomputable def tensorProd_freeAbs : freeAbs R ⋙ R.tensorProd S ≅ freeAbs 
         AlgHom.coe_id, id_eq, implies_true]
     )).symm
 
+/-- A commutative ring is an algebra over `ℤ` which is commutative. -/
 noncomputable def Under_ℤ : Under (of (ULift.{u, 0} ℤ)) ≌ CommRingCat.{u} :=
   Under.equivalenceOfIsInitial isInitial
 
+/-- The defined `freeAbs ℤ` is isomorphic to `free` -/
 noncomputable def freeAbs_ℤ_tauto : free ⋙ Under_ℤ.inverse ≅ freeAbs (of (ULift.{u, 0} ℤ)) where
   hom := {
     app σ := Under.homMk
