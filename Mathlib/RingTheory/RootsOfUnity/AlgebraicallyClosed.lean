@@ -59,7 +59,8 @@ noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUn
   left_inv _ := by aesop
   right_inv _ := by aesop
 
-lemma pullIsPrimitiveRoot {m : ℂ} (e : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ)
+lemma pullIsPrimitiveRoot {M N : Type*} [CommMonoid M] [CommMonoid N] {m : N}
+    (e : rootsOfUnity n M ≃* rootsOfUnity n N)
     (hm : IsPrimitiveRoot m n) :
     IsPrimitiveRoot (e.symm hm.toRootsOfUnity) n where
   pow_eq_one := by
