@@ -107,6 +107,9 @@ instance charP (n : ℕ) : CharP (ZMod n) n where
     · simp [zero_dvd_iff, Int.natCast_eq_zero]
     · exact Fin.natCast_eq_zero
 
+-- Verify that `grind` can see that `ZMod n` has characteristic `n`.
+example (n : ℕ) : Lean.Grind.IsCharP (ZMod n) n := inferInstance
+
 @[simp]
 theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=
   CharP.eq _ (CharP.addOrderOf_one _) (ZMod.charP n)
@@ -255,7 +258,7 @@ theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
   · simp; rfl
   change Fin (n + 1) at a b
   change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
-  simp only [Fin.val_add_eq_ite, Int.ofNat_succ, Int.ofNat_le]
+  simp only [Fin.val_add_eq_ite, Int.natCast_succ, Int.ofNat_le]
   norm_cast
   split_ifs with h
   · rw [Nat.cast_sub h]

@@ -100,7 +100,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
   intro χ₁ s
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert χ₂ s _n ih =>
+  | insert χ₂ s _n ih =>
   intro hχ₁₂
   obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
   specialize ih hχ₁
