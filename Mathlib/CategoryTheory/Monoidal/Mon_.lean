@@ -572,7 +572,7 @@ theorem mul_rightUnitor {M : C} [Mon_Class M] :
   simp only [Category.assoc, Category.id_comp]
 
 @[simps]
-instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N : C) where
+instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) where
   one := (λ_ (𝟙_ C)).inv ≫ (η ⊗ η)
   mul := tensorμ M N M N ≫ (μ ⊗ μ)
   one_mul' := Mon_tensor_one_mul M N
@@ -581,7 +581,7 @@ instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N : C) where
 
 open IsMon_Hom
 
-instance tensorHom {X₁ Y₁ X₂ Y₂ : C} [Mon_Class X₁] [Mon_Class Y₁] [Mon_Class X₂] [Mon_Class Y₂]
+instance {X₁ Y₁ X₂ Y₂ : C} [Mon_Class X₁] [Mon_Class Y₁] [Mon_Class X₂] [Mon_Class Y₂]
     (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) [IsMon_Hom f] [IsMon_Hom g] :
      IsMon_Hom (f ⊗ g) :=
   { one_hom := by
@@ -593,32 +593,32 @@ instance tensorHom {X₁ Y₁ X₂ Y₂ : C} [Mon_Class X₁] [Mon_Class Y₁] [
       slice_lhs 2 3 => rw [← tensor_comp, mul_hom, mul_hom, tensor_comp]
       simp only [Category.assoc] }
 
-instance id {X : C} [Mon_Class X] : IsMon_Hom (𝟙 X) where
+instance {X : C} [Mon_Class X] : IsMon_Hom (𝟙 X) where
 
-instance whiskerLeft (X : C) [Mon_Class X] {Y Z : C} [Mon_Class Y] [Mon_Class Z]
+instance (X : C) [Mon_Class X] {Y Z : C} [Mon_Class Y] [Mon_Class Z]
     (f : Y ⟶ Z) [IsMon_Hom f] :
     IsMon_Hom (X ◁ f) where
-  one_hom := by simpa using (tensorHom (𝟙 X) f).one_hom
-  mul_hom := by simpa using (tensorHom (𝟙 X) f).mul_hom
+  one_hom := by simpa using (inferInstanceAs <| IsMon_Hom (𝟙 X ⊗ f)).one_hom
+  mul_hom := by simpa using (inferInstanceAs <| IsMon_Hom (𝟙 X ⊗ f)).mul_hom
 
 @[simps!]
-instance whiskerRight {X Y : C} [Mon_Class X] [Mon_Class Y] (f : X ⟶ Y) [IsMon_Hom f]
+instance {X Y : C} [Mon_Class X] [Mon_Class Y] (f : X ⟶ Y) [IsMon_Hom f]
     (Z : C) [Mon_Class Z] :
     IsMon_Hom (f ▷ Z) where
-  one_hom := by simpa using (tensorHom f (𝟙 Z)).one_hom
-  mul_hom := by simpa using (tensorHom f (𝟙 Z)).mul_hom
+  one_hom := by simpa using (inferInstanceAs <| IsMon_Hom (f ⊗ (𝟙 Z))).one_hom
+  mul_hom := by simpa using (inferInstanceAs <| IsMon_Hom (f ⊗ (𝟙 Z))).mul_hom
 
-instance associator (X Y Z : C) [Mon_Class X] [Mon_Class Y] [Mon_Class Z] :
+instance (X Y Z : C) [Mon_Class X] [Mon_Class Y] [Mon_Class Z] :
     IsMon_Hom (α_ X Y Z).hom where
   one_hom := one_associator
   mul_hom := mul_associator
 
-instance leftUnitor (X : C) [Mon_Class X] :
+instance (X : C) [Mon_Class X] :
     IsMon_Hom (λ_ X).hom where
   one_hom := one_leftUnitor
   mul_hom := mul_leftUnitor
 
-instance rightUnitor (X : C) [Mon_Class X] :
+instance (X : C) [Mon_Class X] :
     IsMon_Hom (ρ_ X).hom where
   one_hom := one_rightUnitor
   mul_hom := mul_rightUnitor
