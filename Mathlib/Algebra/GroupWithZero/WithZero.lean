@@ -294,6 +294,7 @@ def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
   map_mul' := (by induction · <;> induction · <;> simp)
 
 /-- The inverse of `MulEquiv.withZero`. -/
+@[simps]
 protected def _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
     α ≃* β where
   toFun x := unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply])
