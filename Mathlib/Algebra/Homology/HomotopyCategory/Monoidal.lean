@@ -35,22 +35,27 @@ namespace MonoidalCategory
 variable [∀ (K₁ K₂ : HomologicalComplex C c), HasMapBifunctor K₁ K₂ (curriedTensor C) c]
 
 noncomputable def unit : HomotopyCategory C c :=
-  (HomotopyCategory.quotient _ _).obj (𝟙_ _)
+  (quotient _ _).obj (𝟙_ _)
 
-noncomputable irreducible_def bifunctor :
+noncomputable def bifunctor :
     HomotopyCategory C c ⥤ HomotopyCategory C c ⥤ HomotopyCategory C c :=
   (curriedTensor C).bifunctorMapHomotopyCategory c c c
 
-/-
-def bifunctorComp₁₂Iso :
+noncomputable def bifunctorIso :
+    (((whiskeringLeft₂ _).obj (quotient C c)).obj (quotient C c)).obj (bifunctor C c ) ≅
+      MonoidalCategory.curriedTensor (HomologicalComplex C c) ⋙
+        (whiskeringRight _ _ _).obj (quotient C c) := Iso.refl _
+
+noncomputable def bifunctorComp₁₂Iso :
   ((((whiskeringLeft₃ (HomotopyCategory C c)).obj (quotient C c)).obj
     (quotient C c)).obj (quotient C c)).obj
       (bifunctorComp₁₂ (bifunctor C c) (bifunctor C c)) ≅
     (Functor.postcompose₃.obj (quotient C c)).obj
       (bifunctorComp₁₂ (curriedTensor (HomologicalComplex C c))
         (curriedTensor (HomologicalComplex C c))) :=
-  sorry
+  Quotient.bifunctorComp₁₂Iso (bifunctorIso C c) (bifunctorIso C c)
 
+/-
 def bifunctorComp₂₃Iso :
   ((((whiskeringLeft₃ (HomotopyCategory C c)).obj (quotient C c)).obj
     (quotient C c)).obj (quotient C c)).obj
