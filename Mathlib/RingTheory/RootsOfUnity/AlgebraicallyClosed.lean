@@ -59,16 +59,6 @@ noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUn
   left_inv _ := by aesop
   right_inv _ := by aesop
 
-/-
-instance : IsCyclic (rootsOfUnity n Circle) where
-  exists_zpow_surjective := by
-    obtain ⟨g₀, hg₀⟩ := (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc.exists_zpow_surjective
-    use (rootsOfUnityCircleEquiv n).symm g₀
-    intro w
-    obtain ⟨z , hz⟩ := Function.Surjective.comp (rootsOfUnityCircleEquiv n).symm.surjective hg₀ w
-    exact ⟨z, by rw [← hz, Function.comp_apply, map_zpow]⟩
--/
-
 lemma pullIsPrimitiveRoot {m : ℂ} (hm : IsPrimitiveRoot m n) :
     IsPrimitiveRoot ((rootsOfUnityCircleEquiv n).symm hm.toRootsOfUnity) n where
   pow_eq_one := by
