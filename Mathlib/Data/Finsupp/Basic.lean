@@ -1113,6 +1113,7 @@ theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
+@[simps]
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
