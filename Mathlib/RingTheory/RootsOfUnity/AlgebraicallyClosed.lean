@@ -40,13 +40,15 @@ end IsAlgClosed
 
 variable (n : ℕ) [NeZero n]
 
-@[simps]
+/-- nth roots of unity of the complex numbers embeded into the Circle -/
 noncomputable def rootsOfUnitytoCircle : (rootsOfUnity n ℂ) →* Circle where
   toFun := fun z => ⟨z.val.val,
     mem_sphere_zero_iff_norm.2 (Complex.norm_eq_one_of_mem_rootsOfUnity z.prop)⟩
   map_one' := rfl
   map_mul' _ _ := rfl
 
+/-- Equivalence of the nth roots of unity of the Circle with nth roots of unity of the complex
+numbers-/
 noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
   __ := (rootsOfUnityUnitsMulEquiv ℂ n).toMonoidHom.comp (restrictRootsOfUnity Circle.toUnits n)
   invFun z := ⟨(rootsOfUnitytoCircle n).toHomUnits z, by
@@ -56,8 +58,6 @@ noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUn
     aesop⟩
   left_inv _ := by aesop
   right_inv _ := by aesop
-
-instance : HasEnoughRootsOfUnity ℂ n := IsAlgClosed.hasEnoughRootsOfUnity ℂ n
 
 instance : IsCyclic (rootsOfUnity n Circle) where
   exists_zpow_surjective := by
