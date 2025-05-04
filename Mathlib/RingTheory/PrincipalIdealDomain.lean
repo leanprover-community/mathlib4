@@ -346,18 +346,6 @@ end
 
 end PrincipalIdealRing
 
-section PrincipalIdeal
-
-instance {R : Type*} [Semiring R] {x : R} : (Ideal.span {x}).IsPrincipal :=
-  ⟨x, rfl⟩
-
-instance {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) (I : Ideal R) [I.IsPrincipal] :
-    (I.map f).IsPrincipal :=
-  ⟨f (Submodule.IsPrincipal.generator I), by
-    rw [← Ideal.span, ← Set.image_singleton, ← Ideal.map_span, Ideal.span_singleton_generator]⟩
-
-end PrincipalIdeal
-
 section Surjective
 
 open Submodule

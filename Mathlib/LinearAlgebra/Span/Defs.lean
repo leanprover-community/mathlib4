@@ -54,6 +54,8 @@ theorem IsPrincipal.principal (S : Submodule R M) [S.IsPrincipal] :
     ∃ a, S = span R {a} :=
   Submodule.IsPrincipal.principal'
 
+instance (x : R) : (span R {x}).IsPrincipal := ⟨x, rfl⟩
+
 end
 
 variable {s t : Set M}
