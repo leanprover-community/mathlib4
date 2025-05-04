@@ -208,27 +208,6 @@ theorem le_comap_pow_of_le_comap (p : Submodule R M) {f : M →ₗ[R] M}
   | zero => simp [Module.End.one_eq_id]
   | succ k ih => simp [Module.End.iterate_succ, comap_comp, h.trans (comap_mono ih)]
 
-section comapRestrict
-
-variable [Module R M₂] (q : Submodule R M₂) (f : M →ₗ[R] M₂)
-
-/-- For a linear map `f`, the map from `Submodule.comap q f` to `q` for a submodule `q`
-obtained from restricting `f` using `LinearMap.restrict`. -/
-def comapRestrict : ↥(q.comap f) →ₗ[R] ↥q :=
-  f.restrict fun _ hx ↦ mem_comap.mp hx
-
-@[simp]
-theorem comapRestrict_coe_apply (x : q.comap f) : (q.comapRestrict f) x = f x := rfl
-
-theorem comapRestrict_surjective_of_surjective (hf : Function.Surjective f) :
-    Function.Surjective (q.comapRestrict f) := fun y ↦ by
-  obtain ⟨x, hx⟩ := hf y
-  use ⟨x, mem_comap.mpr (hx ▸ y.2)⟩
-  apply Subtype.val_injective
-  simp [hx]
-
-end comapRestrict
-
 section
 
 variable [RingHomSurjective σ₁₂]
@@ -654,6 +633,21 @@ end Submodule
 namespace LinearMap
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
+
+/-- The `LinearMap` from the preimage of a submodule to itself.
+
+This is the linear version of `AddMonoidHom.addSubmonoidComap`
+and `AddMonoidHom.addSubgroupComap`. -/
+@[simps!]
+def submoduleComap (f : M →ₗ[R] M₁) (q : Submodule R M₁) : q.comap f →ₗ[R] q :=
+  f.restrict fun _ ↦ Submodule.mem_comap.1
+
+theorem submoduleComap_surjective_of_surjective (f : M →ₗ[R] M₁) (q : Submodule R M₁)
+    (hf : Surjective f) : Surjective (f.submoduleComap q) := fun y ↦ by
+  obtain ⟨x, hx⟩ := hf y
+  use ⟨x, Submodule.mem_comap.mpr (hx ▸ y.2)⟩
+  apply Subtype.val_injective
+  simp [hx]
 
 /-- A linear map between two modules restricts to a linear map from any submodule p of the
 domain onto the image of that submodule.
