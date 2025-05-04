@@ -44,6 +44,16 @@ lemma supportDim_eq_ringKrullDim_quotient_annihilator [Module.Finite R M] :
   simp only [supportDim]
   rw [support_eq_zeroLocus, ringKrullDim_quotient]
 
+lemma supportDim_self_eq_ringKrullDim : supportDim R R = ringKrullDim R := by
+  have : annihilator R R = ⊥ :=
+    annihilator_eq_bot.mpr ((faithfulSMul_iff_algebraMap_injective R R).mpr fun {a₁ a₂} a ↦ a)
+  rw [supportDim_eq_ringKrullDim_quotient_annihilator, this]
+  exact (RingEquiv.ringKrullDim (RingEquiv.quotientBot R))
+
+lemma supportDim_quotient_eq_ringKrullDim (I : Ideal R) :
+    supportDim R (R ⧸ I) = ringKrullDim (R ⧸ I) := by
+  rw [supportDim_eq_ringKrullDim_quotient_annihilator, Ideal.annihilator_quotient]
+
 lemma supportDim_le_ringKrullDim : supportDim R M ≤ ringKrullDim R :=
   krullDim_le_of_strictMono (fun a ↦ a) fun {_ _} lt ↦ lt
 
