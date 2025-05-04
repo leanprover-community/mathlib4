@@ -202,13 +202,13 @@ lemma associator_inv_fst_fst (X Y Z : C) :
   simp [fst_def, ← whiskerLeft_rightUnitor_assoc, -whiskerLeft_rightUnitor,
     ← MonoidalCategory.whiskerLeft_comp_assoc]
 
+@[deprecated (since := "2025-04-01")] alias associator_inv_fst := associator_inv_fst_fst
+@[deprecated (since := "2025-04-01")] alias associator_inv_fst_assoc := associator_inv_fst_fst_assoc
+
 @[reassoc (attr := simp)]
 lemma associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ snd _ _ = snd _ _ ≫ fst _ _ := by
   simp [fst_def, ← whiskerLeft_rightUnitor_assoc, -whiskerLeft_rightUnitor]
-
-@[deprecated (since := "2025-04-01")] alias associator_inv_fst := associator_inv_fst_fst
-@[deprecated (since := "2025-04-01")] alias associator_inv_fst_assoc := associator_inv_fst_fst_assoc
 
 @[reassoc (attr := simp)]
 lemma associator_inv_snd (X Y Z : C) :
