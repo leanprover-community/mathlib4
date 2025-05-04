@@ -6,7 +6,6 @@ Authors: Yongle Hu
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.RingTheory.Localization.AsSubring
-import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
 # `IsIntegrallyClosed` is a local property
@@ -17,11 +16,6 @@ In this file, we prove that `IsIntegrallyClosed` is a local property.
 
 * `IsIntegrallyClosed.of_localization_maximal` : An integral domain `R` is integral closed
   if `Rₘ` is integral closed for any maximal ideal `m` of `R`.
-
-## TODO
-
-Prove that `IsIntegrallyClosed` is preserved by localization
-
 -/
 
 open scoped nonZeroDivisors
@@ -68,17 +62,8 @@ theorem isIntegrallyClosed_ofLocalizationMaximal :
     OfLocalizationMaximal fun R _ => ([IsDomain R] → IsIntegrallyClosed R) :=
   fun _ _ h _ ↦ IsIntegrallyClosed.of_localization_maximal fun p _ hpm ↦ h p hpm
 
-theorem IsIntegrallyClosed.of_equiv {R S : Type*} [CommRing R] [CommRing S] (f : R ≃+* S)
-    [h : IsIntegrallyClosed R] : IsIntegrallyClosed S := by
-  let _ : Algebra S R := f.symm.toRingHom.toAlgebra
-  let f : S ≃ₐ[S] R := AlgEquiv.ofRingEquiv fun _ ↦ rfl
-  let g : FractionRing S ≃ₐ[S] FractionRing R := IsFractionRing.algEquivOfAlgEquiv f
-  refine (isIntegrallyClosed_iff (FractionRing S)).mpr (fun hx ↦ ?_)
-  rcases (isIntegrallyClosed_iff (FractionRing R)).mp h <|
-    IsIntegral.tower_top ((isIntegral_algEquiv g).mpr hx) with ⟨z, hz⟩
-  exact ⟨f.symm z, (IsFractionRing.algEquivOfAlgEquiv_algebraMap f.symm z).symm.trans <|
-    (AlgEquiv.symm_apply_eq g).mpr hz⟩
-
+/-- An integral domain $R$ is integrally closed if there exists a set of prime ideals $S$ such that
+  $\bigcap_{p \in S} R_p = R$ and for every $p \in S$, $R_p$ is integrally closed. -/
 theorem IsIntegrallyClosed.of_localization {R : Type*} [CommRing R] [IsDomain R]
     (S : Set (PrimeSpectrum R)) (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
     (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl
