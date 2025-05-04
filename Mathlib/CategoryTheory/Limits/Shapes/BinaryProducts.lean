@@ -1398,8 +1398,8 @@ lemma BinaryFan.assocInv_snd (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
 
 /-- If all the binary fans involved a limit cones, `BinaryFan.assoc` produces another limit cone. -/
 @[simps]
-def IsLimit.assoc (P : IsLimit sXY)
-    (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z} (R : IsLimit s) : IsLimit (BinaryFan.assoc Q s) where
+protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z}
+    (R : IsLimit s) : IsLimit (BinaryFan.assoc Q s) where
   lift t := R.lift (BinaryFan.assocInv P t)
   fac t := by rintro ⟨⟨⟩⟩ <;> simp; apply Q.hom_ext; rintro ⟨⟨⟩⟩ <;> simp
   uniq t m w := by
