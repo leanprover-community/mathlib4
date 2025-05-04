@@ -19,6 +19,8 @@ We prove that the Bernstein approximations
 ```
 for a continuous function `f : C([0,1], E)` taking values in a locally convex vector space
 converge uniformly to `f` as `n` tends to infinity.
+This statement directly applies to the cases when the codomain is a (semi)normed space
+or, more generally, has a topology defined by a family of seminorms.
 
 Our proof follows [Richard Beals' *Analysis, an introduction*][beals-analysis], §7D.
 The original proof, due to [Bernstein](bernstein1912) in 1912, is probabilistic,
@@ -172,36 +174,46 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
     Tendsto (fun n : ℕ => bernsteinApproximation n f) atTop (𝓝 f) := by
   letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
   have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
-  suffices ∀ U : Set E, 0 ∈ U → IsOpen U → Convex ℝ U →
+  /- Topology on a locally convex TVS is given by a family of seminorms `‖x‖_U = gauge U x`,
+  where the open symmetric convex sets `U` form a basis of neighborhoods in this topology,
+  and are the open unit balls for the corresponding seminorms.
+  For technical reasons, we neither assume `U`s to be open, nor symmetric. -/
+  suffices ∀ U ∈ 𝓝 (0 : E), Convex ℝ U →
       ∀ᶠ n in atTop, ∀ x : I, gauge U (bernsteinApproximation n f x - f x) < 1 by
-    rw [(LocallyConvexSpace.convex_open_basis_zero ℝ E).uniformity_of_nhds_zero_swapped
+    rw [(LocallyConvexSpace.convex_basis_zero ℝ E).uniformity_of_nhds_zero_swapped
       |>.compactConvergenceUniformity_of_compact |> nhds_basis_uniformity |>.tendsto_right_iff]
-    rintro U ⟨hU₀, hUo, hcU⟩
-    filter_upwards [this U hU₀ hUo hcU] with n hn
-    rwa [← gauge_lt_one_eq_self_of_isOpen hcU hU₀ hUo]
-  intro U hU₀ hUo hUc
-  have hUnhds : U ∈ 𝓝 0 := hUo.mem_nhds hU₀
+    rintro U ⟨hU₀, hcU⟩
+    filter_upwards [this U hU₀ hcU] with n hn x
+    exact gauge_lt_one_subset_self hcU (mem_of_mem_nhds hU₀) (absorbent_nhds_zero hU₀) (hn x)
+  intro U hU₀ hUc
+  /- Choose a constant `C` such that `‖f x - f y‖_U ≤ C` for all `x`, `y`.
+  For a normed space, this would be twice the norm of `f`. -/
   obtain ⟨C, hC⟩ : ∃ C, ∀ x y, gauge U (f x - f y) ≤ C := by
     have : Continuous fun (x, y) ↦ gauge U (f x - f y) := by fun_prop (disch := assumption)
     simpa only [BddAbove, Set.Nonempty, mem_upperBounds, Set.forall_mem_range, Prod.forall]
       using isCompact_range this |>.bddAbove
   have hC₀ : 0 ≤ C := le_trans (gauge_nonneg _) (hC 0 0)
+  /- Use uniform continuity of `f` to hcoose `δ > 0` such that `‖f x - f y‖_U < 1 / 2`
+  whenever `dist x y < δ`. -/
   obtain ⟨δ, hδ₀, hδ⟩ : ∃ δ > 0, ∀ x y : I, dist x y < δ → gauge U (f x - f y) < 1 / 2 := by
     have := CompactSpace.uniformContinuous_of_continuous (map_continuous f)
     rw [Metric.uniformity_basis_dist.uniformContinuous_iff
       (basis_sets _).uniformity_of_nhds_zero_swapped] at this
-    exact this {z | gauge U z < 1 / 2} <| tendsto_gauge_nhds_zero hUnhds
+    exact this {z | gauge U z < 1 / 2} <| tendsto_gauge_nhds_zero hU₀
       |>.eventually_lt_const <| by positivity
+  -- Take `n ≠ 0` such that `C / δ ^ 2 / n < 1 / 2`.
   have nhds_zero := tendsto_const_div_atTop_nhds_zero_nat (C / δ ^ 2)
   filter_upwards [nhds_zero.eventually_lt_const (half_pos one_pos), eventually_ne_atTop 0]
     with n nh hn₀ x
+  -- The idea is to split up the sum over `k` into two sets,
+  -- `S`, where `x - k/n < δ`, and its complement.
   set S : Finset (Fin (n + 1)) := {k : Fin (n + 1) | dist k/ₙ x < δ}
   calc
     gauge U (bernsteinApproximation n f x - f x)
       = gauge U (∑ k : Fin (n + 1), bernstein n k x • (f k/ₙ - f x)) := by
       simp [bernsteinApproximation.apply, smul_sub, ← Finset.sum_smul]
     _ ≤ ∑ k : Fin (n + 1), gauge U (bernstein n k x • (f k/ₙ - f x)) :=
-      gauge_sum_le hUc (absorbent_nhds_zero hUnhds) _ _
+      gauge_sum_le hUc (absorbent_nhds_zero hU₀) _ _
     _ = ∑ k : Fin (n + 1), bernstein n k x * gauge U (f k/ₙ - f x) := by
       simp only [gauge_smul_of_nonneg, bernstein_nonneg, smul_eq_mul]
     _ = (∑ k ∈ S,  bernstein n k x * gauge U (f k/ₙ - f x)) +
