@@ -41,7 +41,8 @@ end IsAlgClosed
 
 variable (n : ℕ) [NeZero n]
 
-instance (e : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ): IsCyclic (rootsOfUnity n Circle) where
+lemma pullIsCyclic (e : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ) :
+    IsCyclic (rootsOfUnity n Circle) where
   exists_zpow_surjective := by
     obtain ⟨g₀, hg₀⟩ := (IsAlgClosed.hasEnoughRootsOfUnity ℂ n).cyc.exists_zpow_surjective
     use e.symm g₀
@@ -115,5 +116,4 @@ instance : HasEnoughRootsOfUnity Circle n where
     simp_all only [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.coe_submonoidClass_iff]
     exact pullIsPrimitiveRoot n hm
   cyc :=
-    instIsCyclicSubtypeUnitsCircleMemSubgroupRootsOfUnityOfMulEquivComplex n
-      (rootsOfUnityCircleEquiv n)
+    pullIsCyclic n (rootsOfUnityCircleEquiv n)
