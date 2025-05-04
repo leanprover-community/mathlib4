@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2025 Peter Pfaffelhuber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Peter Pfaffelhuber
+Authors: Peter Pfaffelhuber
 -/
 
 import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-! # Gram Matrices
 
@@ -38,7 +37,7 @@ namespace Matrix
 
 /-- The entries of a Gram matrix are inner products of vectors in an inner product space. -/
 def Gram (𝕜 : Type*) [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    (v : n → E) : Matrix n n 𝕜  := fun i j ↦ inner (v i) (v j)
+    (v : n → E) : Matrix n n 𝕜  := fun i j ↦ inner 𝕜 (v i) (v j)
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜  _ _ x y
 
