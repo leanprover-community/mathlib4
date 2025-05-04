@@ -202,6 +202,11 @@ def BinaryFan.ext {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) : c ≅ c' :=
   Cones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
 
+@[simp]
+lemma BinaryFan.ext_hom_hom {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
+    (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) :
+    (ext e h₁ h₂).hom.hom = e.hom := rfl
+
 /-- A convenient way to show that a binary fan is a limit. -/
 def BinaryFan.IsLimit.mk {X Y : C} (s : BinaryFan X Y)
     (lift : ∀ {T : C} (_ : T ⟶ X) (_ : T ⟶ Y), T ⟶ s.pt)
@@ -236,6 +241,11 @@ the injections. -/
 def BinaryCofan.ext {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) : c ≅ c' :=
   Cocones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
+
+@[simp]
+lemma BinaryCofan.ext_hom_hom {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
+    (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) :
+    (ext e h₁ h₂).hom.hom = e.hom := rfl
 
 @[simp]
 theorem BinaryCofan.ι_app_left {X Y : C} (s : BinaryCofan X Y) :
@@ -1120,7 +1130,7 @@ theorem prodComparison_comp :
     prodComparison (F ⋙ G) A B =
       G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
   unfold prodComparison
-  ext <;> simp <;> rw [← G.map_comp] <;> simp
+  ext <;> simp [← G.map_comp]
 
 end ProdComparison
 
@@ -1135,7 +1145,7 @@ variable [HasBinaryCoproduct (F.obj A) (F.obj B)] [HasBinaryCoproduct (F.obj A')
 
 /-- The coproduct comparison morphism.
 
-In `CategoryTheory/Limits/Preserves` we show
+In `Mathlib/CategoryTheory/Limits/Preserves/` we show
 this is always an iso iff F preserves binary coproducts.
 -/
 def coprodComparison (F : C ⥤ D) (A B : C) [HasBinaryCoproduct A B]

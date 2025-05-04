@@ -22,9 +22,9 @@ in linear functions), called respectively `multilinearCurryLeftEquiv` and
 
 open Fin Function Finset Set
 
-universe uR uS uι v v' v₁ v₂ v₃
+universe uR uS uι uι' v v' v₁ v₂ v₃
 
-variable {R : Type uR} {S : Type uS} {ι : Type uι} {n : ℕ}
+variable {R : Type uR} {S : Type uS} {ι : Type uι} {ι' : Type uι'} {n : ℕ}
   {M : Fin n.succ → Type v} {M₁ : ι → Type v₁} {M₂ : Type v₂} {M₃ : Type v₃} {M' : Type v'}
 
 /-!
@@ -223,88 +223,119 @@ def multilinearCurryRightEquiv :
 
 namespace MultilinearMap
 
-variable {ι' : Type*} {R M₂}
 
-/-- A multilinear map on `∀ i : ι ⊕ ι', M'` defines a multilinear map on `∀ i : ι, M'`
-taking values in the space of multilinear maps on `∀ i : ι', M'`. -/
-def currySum (f : MultilinearMap R (fun _ : ι ⊕ ι' => M') M₂) :
-    MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂) where
+variable {R M₂} {N : (ι ⊕ ι') → Type*}
+  [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+
+/-- Given a family of modules `N : (ι ⊕ ι') → Type*`, a multilinear map
+on `(fun _ : ι ⊕ ι' => M')` induces a multilinear map on
+`(fun (i : ι) ↦ N (.inl i))` taking values in the space of
+linear maps on `(fun (i : ι') ↦ N (.inr i))`. -/
+def currySum (f : MultilinearMap R N M₂) :
+    MultilinearMap R (fun i : ι ↦ N (.inl i)) (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂) where
   toFun u :=
-    { toFun := fun v => f (Sum.elim u v)
-      map_update_add' := fun v i x y => by
-        letI := Classical.decEq ι
-        simp only [← Sum.update_elim_inr, f.map_update_add]
-      map_update_smul' := fun v i c x => by
-        letI := Classical.decEq ι
-        simp only [← Sum.update_elim_inr, f.map_update_smul] }
+    { toFun v := f (Sum.rec u v)
+      map_update_add' := by letI := Classical.decEq ι; aesop
+      map_update_smul' := by letI := Classical.decEq ι; aesop }
   map_update_add' u i x y :=
-    ext fun v => by
-      letI := Classical.decEq ι'
-      simp only [MultilinearMap.coe_mk, add_apply, ← Sum.update_elim_inl, f.map_update_add]
+    ext fun _ ↦ by letI := Classical.decEq ι'; simp
   map_update_smul' u i c x :=
-    ext fun v => by
-      letI := Classical.decEq ι'
-      simp only [MultilinearMap.coe_mk, smul_apply, ← Sum.update_elim_inl, f.map_update_smul]
+    ext fun _ ↦ by letI := Classical.decEq ι'; simp
+
+@[simp low]
+theorem currySum_apply (f : MultilinearMap R N M₂)
+    (u : (i : ι) → N (Sum.inl i)) (v : (i : ι') → N (Sum.inr i)) :
+    currySum f u v = f (Sum.rec u v) := rfl
 
 @[simp]
-theorem currySum_apply (f : MultilinearMap R (fun _ : ι ⊕ ι' => M') M₂) (u : ι → M')
-    (v : ι' → M') : f.currySum u v = f (Sum.elim u v) :=
-  rfl
-
-/-- A multilinear map on `∀ i : ι, M'` taking values in the space of multilinear maps
-on `∀ i : ι', M'` defines a multilinear map on `∀ i : ι ⊕ ι', M'`. -/
-def uncurrySum (f : MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂)) :
-    MultilinearMap R (fun _ : ι ⊕ ι' => M') M₂ where
-  toFun u := f (u ∘ Sum.inl) (u ∘ Sum.inr)
-  map_update_add' u i x y := by
-    letI := (@Sum.inl_injective ι ι').decidableEq
-    letI := (@Sum.inr_injective ι ι').decidableEq
-    cases i <;>
-      simp only [MultilinearMap.map_update_add, add_apply, Sum.update_inl_comp_inl,
-        Sum.update_inl_comp_inr, Sum.update_inr_comp_inl, Sum.update_inr_comp_inr]
-  map_update_smul' u i c x := by
-    letI := (@Sum.inl_injective ι ι').decidableEq
-    letI := (@Sum.inr_injective ι ι').decidableEq
-    cases i <;>
-      simp only [MultilinearMap.map_update_smul, smul_apply, Sum.update_inl_comp_inl,
-        Sum.update_inl_comp_inr, Sum.update_inr_comp_inl, Sum.update_inr_comp_inr]
+theorem currySum_apply' {N : Type*} [AddCommMonoid N] [Module R N]
+    (f : MultilinearMap R (fun _ : ι ⊕ ι' ↦ N) M₂)
+    (u : ι → N) (v : ι' → N) :
+    currySum f u v = f (Sum.elim u v) := rfl
 
 @[simp]
-theorem uncurrySum_aux_apply
-    (f : MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂))
-    (u : ι ⊕ ι' → M') : f.uncurrySum u = f (u ∘ Sum.inl) (u ∘ Sum.inr) :=
+lemma currySum_add (f₁ f₂ : MultilinearMap R N M₂):
+    currySum (f₁ + f₂) = currySum f₁ + currySum f₂ := rfl
+
+@[simp]
+lemma currySum_smul (r : R) (f : MultilinearMap R N M₂):
+    currySum (r • f) = r • currySum f := rfl
+
+/-- Given a family of modules `N : (ι ⊕ ι') → Type*`, a multilinear map on
+`(fun (i : ι) ↦ N (.inl i))` taking values in the space of
+linear maps on `(fun (i : ι') ↦ N (.inr i))` induces a multilinear map
+on `(fun _ : ι ⊕ ι' => M')` induces. -/
+def uncurrySum
+    (g : MultilinearMap R (fun i : ι ↦ N (.inl i))
+      (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) :
+    MultilinearMap R N M₂  where
+  toFun u := g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i'))
+  map_update_add' := by
+    letI := Classical.decEq ι
+    letI := Classical.decEq ι'
+    rintro _ _ (_ | _) _ _ <;> simp
+  map_update_smul' := by
+    letI := Classical.decEq ι
+    letI := Classical.decEq ι'
+    rintro _ _ (_ | _) _ _ <;> simp
+
+@[simp]
+theorem uncurrySum_apply
+    (g : MultilinearMap R (fun i : ι ↦ N (.inl i))
+      (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) (u) :
+    g.uncurrySum u =
+      g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i')) := rfl
+
+@[simp]
+lemma uncurrySum_add
+    (g₁ g₂ : MultilinearMap R (fun i : ι ↦ N (.inl i))
+      (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) :
+    uncurrySum (g₁ + g₂) = uncurrySum g₁ + uncurrySum g₂ :=
   rfl
 
-variable (ι ι' R M₂ M')
+lemma uncurrySum_smul
+    (r : R) (g : MultilinearMap R (fun i : ι ↦ N (.inl i))
+      (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) :
+    uncurrySum (r • g) = r • uncurrySum g :=
+  rfl
 
-/-- Linear equivalence between the space of multilinear maps on `∀ i : ι ⊕ ι', M'` and the space
-of multilinear maps on `∀ i : ι, M'` taking values in the space of multilinear maps
-on `∀ i : ι', M'`. -/
-def currySumEquiv :
-    MultilinearMap R (fun _ : ι ⊕ ι' => M') M₂ ≃ₗ[R]
-      MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂) where
+@[deprecated (since := "2025-04-23")] alias uncurrySum_aux_apply := uncurrySum_apply
+
+@[simp]
+lemma uncurrySum_currySum (f : MultilinearMap R N M₂) :
+    uncurrySum (currySum f) = f := by
+  ext
+  simp only [uncurrySum_apply, currySum_apply]
+  congr
+  ext (_ | _) <;> simp
+
+@[simp]
+lemma currySum_uncurrySum
+    (g : MultilinearMap R (fun i : ι ↦ N (.inl i))
+      (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) :
+  currySum (uncurrySum g) = g :=
+    rfl
+
+/-- Multilinear maps on `N : (ι ⊕ ι') → Type*` identify to multilinear maps
+from `(fun (i : ι) ↦ N (.inl i))` taking values in the space of
+linear maps on `(fun (i : ι') ↦ N (.inr i))`. -/
+@[simps]
+def currySumEquiv : MultilinearMap R N M₂ ≃ₗ[R]
+    MultilinearMap R (fun i : ι ↦ N (.inl i))
+      (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂) where
   toFun := currySum
   invFun := uncurrySum
-  left_inv f := ext fun u => by simp
-  right_inv f := by
-    ext
-    simp
-  map_add' f g := by
-    ext
-    rfl
-  map_smul' c f := by
-    ext
-    rfl
-
-variable {ι ι' R M₂ M'}
+  left_inv _ := by simp
+  right_inv _ := rfl
+  map_add' := by aesop
+  map_smul' := by aesop
 
 @[simp]
-theorem coe_currySumEquiv : ⇑(currySumEquiv R ι M₂ M' ι') = currySum :=
+theorem coe_currySumEquiv : ⇑(currySumEquiv (R := R) (N := N) (M₂ := M₂)) = currySum :=
   rfl
 
--- Porting note: fixed missing letter `y` in name
 @[simp]
-theorem coe_currySumEquiv_symm : ⇑(currySumEquiv R ι M₂ M' ι').symm = uncurrySum :=
+theorem coe_currySumEquiv_symm : ⇑(currySumEquiv (R := R) (N := N) (M₂ := M₂)).symm = uncurrySum :=
   rfl
 
 variable (R M₂ M')
@@ -317,7 +348,7 @@ def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ 
     MultilinearMap R (fun _ : Fin n => M') M₂ ≃ₗ[R]
       MultilinearMap R (fun _ : Fin k => M') (MultilinearMap R (fun _ : Fin l => M') M₂) :=
   (domDomCongrLinearEquiv R R M' M₂ (finSumEquivOfFinset hk hl).symm).trans
-    (currySumEquiv R (Fin k) M₂ M' (Fin l))
+    currySumEquiv
 
 variable {R M₂ M'}
 
@@ -363,8 +394,6 @@ theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s =
     (hl : #sᶜ = l) (f : MultilinearMap R (fun _ : Fin n => M') M₂) (x y : M') :
     (curryFinFinset R M₂ M' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
-  -- Porting note: `rw` fails
-  refine (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans ?_
-  rw [LinearEquiv.symm_apply_apply]
+  rw [← curryFinFinset_symm_apply_piecewise_const hk hl, LinearEquiv.symm_apply_apply]
 
 end MultilinearMap

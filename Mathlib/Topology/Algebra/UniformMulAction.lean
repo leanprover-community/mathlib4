@@ -55,7 +55,7 @@ instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [IsUniformAddGroup
 /-- A `DistribMulAction` that is continuous on a uniform group is uniformly continuous.
 This can't be an instance due to it forming a loop with
 `UniformContinuousConstSMul.to_continuousConstSMul` -/
-theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddCommGroup M]
+theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddGroup M]
     [DistribMulAction R M] [UniformSpace M] [IsUniformAddGroup M] [ContinuousConstSMul R M] :
     UniformContinuousConstSMul R M :=
   ⟨fun r =>
@@ -95,9 +95,6 @@ lemma IsUniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuous
   uniformContinuous_const_smul c := by
     simpa only [hf.uniformContinuous_iff, Function.comp_def, hsmul]
       using hf.uniformContinuous.const_smul c
-
-@[deprecated (since := "2024-10-05")]
-alias UniformInducing.uniformContinuousConstSMul := IsUniformInducing.uniformContinuousConstSMul
 
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/
@@ -173,7 +170,7 @@ theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·
 instance : UniformContinuousConstSMul M (Completion X) :=
   ⟨fun _ => uniformContinuous_map⟩
 
-@[to_additive instVAddAssocClass]
+@[to_additive]
 instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
     [UniformContinuousConstSMul N X] [IsScalarTower M N X] : IsScalarTower M N (Completion X) :=
   ⟨fun m n x => by

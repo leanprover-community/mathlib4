@@ -27,7 +27,7 @@ section SchurZassenhausAbelian
 
 open MulOpposite MulAction Subgroup.leftTransversals MemLeftTransversals
 
-variable {G : Type*} [Group G] (H : Subgroup G) [IsCommutative H] [FiniteIndex H]
+variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteIndex H]
   (α β : H.LeftTransversal)
 
 /-- The quotient of the transversals of an abelian normal `N` by the `diff` relation. -/
@@ -243,7 +243,7 @@ private theorem step6 : IsPGroup (Nat.card N).minFac N := by
 
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-theorem step7 : IsCommutative N := by
+theorem step7 : IsMulCommutative N := by
   haveI := N.bot_or_nontrivial.resolve_left (step0 h1 h3)
   haveI : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   exact

@@ -244,6 +244,10 @@ theorem zeroLocus_bot : zeroLocus ((⊥ : Ideal R) : Set R) = Set.univ :=
   (gc R).l_bot
 
 @[simp]
+lemma zeroLocus_nilradical : zeroLocus (nilradical R : Set R) = Set.univ := by
+  rw [nilradical, zeroLocus_radical, Ideal.zero_eq_bot, zeroLocus_bot]
+
+@[simp]
 theorem zeroLocus_singleton_zero : zeroLocus ({0} : Set R) = Set.univ :=
   zeroLocus_bot
 

@@ -605,7 +605,7 @@ theorem eq_spanSingleton_of_principal (I : FractionalIdeal S P) [IsPrincipal (I 
 theorem isPrincipal_iff (I : FractionalIdeal S P) :
     IsPrincipal (I : Submodule R P) ↔ ∃ x, I = spanSingleton S x :=
   ⟨fun _ => ⟨generator (I : Submodule R P), eq_spanSingleton_of_principal I⟩,
-    fun ⟨x, hx⟩ => { principal' := ⟨x, Eq.trans (congr_arg _ hx) (coe_spanSingleton _ x)⟩ }⟩
+    fun ⟨x, hx⟩ => { principal := ⟨x, Eq.trans (congr_arg _ hx) (coe_spanSingleton _ x)⟩ }⟩
 
 @[simp]
 theorem spanSingleton_zero : spanSingleton S (0 : P) = 0 := by
@@ -820,8 +820,6 @@ end PrincipalIdeal
 variable {R₁ : Type*} [CommRing R₁]
 variable {K : Type*} [Field K] [Algebra R₁ K]
 
-attribute [local instance] Classical.propDecidable
-
 theorem isNoetherian_zero : IsNoetherian R₁ (0 : FractionalIdeal R₁⁰ K) :=
   isNoetherian_submodule.mpr fun I (hI : I ≤ (0 : FractionalIdeal R₁⁰ K)) => by
     rw [coe_zero, le_bot_iff] at hI
@@ -844,6 +842,7 @@ variable [IsFractionRing R₁ K] [IsDomain R₁]
 theorem isNoetherian_spanSingleton_inv_to_map_mul (x : R₁) {I : FractionalIdeal R₁⁰ K}
     (hI : IsNoetherian R₁ I) :
     IsNoetherian R₁ (spanSingleton R₁⁰ (algebraMap R₁ K x)⁻¹ * I : FractionalIdeal R₁⁰ K) := by
+  classical
   by_cases hx : x = 0
   · rw [hx, RingHom.map_zero, inv_zero, spanSingleton_zero, zero_mul]
     exact isNoetherian_zero

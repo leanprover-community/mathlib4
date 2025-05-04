@@ -109,9 +109,6 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   have := (diagonal_eq_diagonal_iff).mp h2
   refine RCLike.ofReal_eq_zero.mp (this i)
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_cfcAux := isClosedEmbedding_cfcAux
-
 lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
   conv_rhs => rw [hA.spectral_theorem]
   congr!

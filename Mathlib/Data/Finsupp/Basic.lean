@@ -341,9 +341,11 @@ variable [Zero M] (f : α →₀ M)
 namespace Nat
 
 @[simp, norm_cast]
-theorem cast_finsupp_prod [CommSemiring R] (g : α → M → ℕ) :
+theorem cast_finsuppProd [CommSemiring R] (g : α → M → ℕ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   Nat.cast_prod _ _
+
+@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
 
 @[simp, norm_cast]
 theorem cast_finsupp_sum [AddCommMonoidWithOne R] (g : α → M → ℕ) :
@@ -355,9 +357,11 @@ end Nat
 namespace Int
 
 @[simp, norm_cast]
-theorem cast_finsupp_prod [CommRing R] (g : α → M → ℤ) :
+theorem cast_finsuppProd [CommRing R] (g : α → M → ℤ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   Int.cast_prod _ _
+
+@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
 
 @[simp, norm_cast]
 theorem cast_finsupp_sum [AddCommGroupWithOne R] (g : α → M → ℤ) :
@@ -374,9 +378,11 @@ theorem cast_finsupp_sum [DivisionRing R] [CharZero R] (g : α → M → ℚ) :
   cast_sum _ _
 
 @[simp, norm_cast]
-theorem cast_finsupp_prod [Field R] [CharZero R] (g : α → M → ℚ) :
+theorem cast_finsuppProd [Field R] [CharZero R] (g : α → M → ℚ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   cast_prod _ _
+
+@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
 
 end Rat
 
@@ -467,7 +473,7 @@ theorem mapDomain_finset_sum {f : α → β} {s : Finset ι} {v : ι → α →�
 
 theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N → α →₀ M} :
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
-  map_finsupp_sum (mapDomain.addMonoidHom f : (α →₀ M) →+ β →₀ M) _ _
+  map_finsuppSum (mapDomain.addMonoidHom f : (α →₀ M) →+ β →₀ M) _ _
 
 theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
     (s.mapDomain f).support ⊆ s.support.image f :=
@@ -767,6 +773,12 @@ theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m
     intro
     simp only [coe_update, ne_eq, reduceCtorEq, not_false_eq_true, update_of_ne, some_apply]
     rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
+
+@[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
+  ext; rw [some_apply]; exact embDomain_apply _ _ _
+
+@[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some .none = 0 :=
+  embDomain_notin_range _ _ _ (by simp)
 
 end Option
 
@@ -1101,6 +1113,7 @@ theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
+@[simps]
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
@@ -1388,7 +1401,7 @@ theorem split_apply (i : ι) (x : αs i) : split l i x = l ⟨i, x⟩ := by
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ (i : ι), αs i` to `β`,
 `split_support l` is the finset of indices in `ι` that appear in the support of `l`. -/
-def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
+def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
   haveI := Classical.decEq ι
   l.support.image Sigma.fst
 

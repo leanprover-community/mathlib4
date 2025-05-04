@@ -97,9 +97,9 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         let e ← withReducible <| whnf e
         guard e.isApp -- all interesting ring expressions are applications
         let ⟨u, α, e⟩ ← inferTypeQ' e
-        let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
+        let sα ← synthInstanceQ q(CommSemiring $α)
         let c ← mkCache sα
-        let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable sα c e rctx s with
+        let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable q($sα) c q($e) rctx s with
         | none => eval sα c e rctx s -- `none` indicates that `eval` will find something algebraic.
         | some none => failure -- No point rewriting atoms
         | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
