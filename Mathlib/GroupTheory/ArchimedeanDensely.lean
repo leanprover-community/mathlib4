@@ -72,6 +72,18 @@ lemma Subgroup.zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] 
   refine hl.imp ?_ ?_ <;>
   simp +contextual
 
+lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg _ := by
+  suffices e 1 = 1 ∨ - e 1 = 1 by
+    refine this.imp ?_ ?_ <;> intro h
+    · ext z
+      have : z = (z • 1) := by simp
+      rw [this, map_zsmul, map_zsmul, h, AddEquiv.refl_apply]
+    · ext z
+      have : z = (z • 1) := by simp
+      rw [← neg_inj, this, map_zsmul, ← zsmul_neg, h, AddEquiv.neg_apply, neg_neg]
+  rw [← AddSubgroup.zmultiples_eq_zmultiples_iff]
+  simpa [e.surjective, eq_comm] using (AddMonoidHom.map_zmultiples (G := ℤ) (N := ℤ) (e : ℤ →+ ℤ) 1)
+
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
