@@ -5,6 +5,7 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Data.Prod.Lex
 
 /-!
 # Ordered scalar multiplication and vector addition
@@ -79,8 +80,8 @@ theorem IsOrderedSMul.smul_le_smul [LE G] [Preorder P] [SMul G P] [IsOrderedSMul
   (IsOrderedSMul.smul_le_smul_left _ _ hcd _).trans (IsOrderedSMul.smul_le_smul_right _ _ hab _)
 
 @[to_additive]
-theorem Monotone.smul {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [SMul G P]
-    [IsOrderedSMul G P] {f : γ → G} {g : γ → P} (hf : Monotone f) (hg : Monotone g) :
+theorem Monotone.smul {G : Type*} [Preorder G] [Preorder P] [SMul G P]
+    [IsOrderedSMul G P] {f : G → G} {g : G → P} (hf : Monotone f) (hg : Monotone g) :
     Monotone fun x => f x • g x :=
   fun _ _ hab => (IsOrderedSMul.smul_le_smul_left _ _ (hg hab) _).trans
     (IsOrderedSMul.smul_le_smul_right _ _ (hf hab) _)
@@ -151,4 +152,114 @@ theorem smul_lt_smul_of_lt_of_le [Preorder G] [Preorder P] [SMul G P] [IsOrdered
   rw [@lt_iff_le_not_le] at h₁
   simp_all only [not_true_eq_false, and_false]
 
+@[to_additive]
+theorem lt_of_smul_lt_smul_left [PartialOrder G] [PartialOrder P] [SMul G P]
+    [IsOrderedCancelSMul G P] {a : G} {b c : P} (h₁ : a • b < a • c) :
+    b < c := by
+  refine lt_of_le_of_ne (IsOrderedCancelSMul.le_of_smul_le_smul_left a b c (le_of_lt h₁)) ?_
+  contrapose! h₁
+  rw [h₁]
+  exact gt_irrefl (a • c)
+
+@[to_additive]
+theorem lt_of_smul_lt_smul_right [PartialOrder G] [PartialOrder P] [SMul G P]
+    [IsOrderedCancelSMul G P] {a b : G} {c : P} (h₁ : a • c < b • c) : a < b := by
+  refine lt_of_le_of_ne (IsOrderedCancelSMul.le_of_smul_le_smul_right a b c (le_of_lt h₁)) ?_
+  contrapose! h₁
+  rw [h₁]
+  exact gt_irrefl (b • c)
+
 end SMul
+
+-- Move this to Algebra.Order.Monoid.Prod!!!
+namespace Prod.Lex
+
+variable {G G₁ P₁ P₂ : Type*}
+
+instance [VAdd G P₁] [VAdd G₁ P₂] : VAdd (G ×ₗ G₁) (P₁ ×ₗ P₂) where
+  vadd g h := toLex ((ofLex g).1 +ᵥ (ofLex h).1, (ofLex g).2 +ᵥ (ofLex h).2)
+
+theorem vadd_eq [VAdd G P₁] [VAdd G₁ P₂] (g : G ×ₗ G₁) (h : P₁ ×ₗ P₂) :
+    g +ᵥ h = toLex ((ofLex g).1 +ᵥ (ofLex h).1, (ofLex g).2 +ᵥ (ofLex h).2) := rfl
+
+instance [Zero G] [Zero G₁] : Zero (G ×ₗ G₁) where
+  zero := toLex (0, 0)
+
+theorem zero_eq [Zero G] [Zero G₁] :
+    (0 : G ×ₗ G₁) = toLex (0, 0) := by rfl
+
+instance [Add G] [Add G₁] : Add (G ×ₗ G₁) where
+  add g h := toLex ((ofLex g).1 + (ofLex h).1, (ofLex g).2 + (ofLex h).2)
+
+theorem add_eq [Add G] [Add G₁] (g h : G ×ₗ G₁) :
+    g + h = toLex ((ofLex g).1 + (ofLex h).1, (ofLex g).2 + (ofLex h).2) := by
+  rfl
+
+instance [AddMonoid G] [AddMonoid G₁] : AddMonoid (G ×ₗ G₁) where
+  add_assoc x y z := by
+    simp [add_eq, add_assoc]
+  zero_add x := by
+    simp [add_eq, zero_eq]
+  add_zero x := by
+    simp [add_eq, zero_eq]
+  nsmul n x := nsmulRec n x
+
+instance [AddCommMonoid G] [AddCommMonoid G₁] : AddCommMonoid (G ×ₗ G₁) where
+  add_comm x y := by
+    simp [add_eq, add_comm]
+
+instance [AddCommMonoid G] [PartialOrder G] [AddCommMonoid G₁] [PartialOrder G₁]
+    [IsOrderedCancelAddMonoid G] [IsOrderedCancelAddMonoid G₁] :
+    IsOrderedCancelAddMonoid (G ×ₗ G₁) where
+  add_le_add_left a b h c := by
+    obtain h₁ | ⟨h₂, h₃⟩ := Prod.Lex.le_iff.mp h
+    · exact Prod.Lex.le_iff.mpr <| Or.inl <| by simpa [add_eq]
+    · exact Prod.Lex.le_iff.mpr <| Or.inr <| ⟨by simpa [add_eq], by simpa [add_eq]⟩
+  le_of_add_le_add_left a b c h := by
+    obtain h₁ | ⟨h₂, h₃⟩ := Prod.Lex.le_iff.mp h
+    · exact Prod.Lex.le_iff.mpr <| Or.inl <| lt_of_add_lt_add_left h₁
+    · refine Prod.Lex.le_iff.mpr <| Or.inr <|
+        ⟨add_left_cancel_iff.mp h₂, (add_le_add_iff_left (ofLex a).2).mp h₃⟩
+
+instance [AddMonoid G] [AddMonoid G₁] [AddAction G P₁] [AddAction G₁ P₂] :
+    AddAction (G ×ₗ G₁) (P₁ ×ₗ P₂) where
+  zero_vadd x := by
+    simp [vadd_eq, zero_eq]
+  add_vadd x y z := by
+    simp [add_eq, vadd_eq, add_vadd]
+
+instance [PartialOrder G] [PartialOrder G₁] [PartialOrder P₁] [VAdd G P₁]
+    [IsOrderedCancelVAdd G P₁] [PartialOrder P₂] [VAdd G₁ P₂] [IsOrderedCancelVAdd G₁ P₂] :
+    IsOrderedCancelVAdd (G ×ₗ G₁) (P₁ ×ₗ P₂) where
+  vadd_le_vadd_left a b h c := by
+    obtain h₁ | ⟨h₂, h₃⟩ := Prod.Lex.le_iff.mp h
+    · exact Prod.Lex.le_iff.mpr <| Or.inl <|
+        by simpa using (VAdd.vadd_lt_vadd_of_le_of_lt (Preorder.le_refl (ofLex c).1) h₁)
+    · refine Prod.Lex.le_iff.mpr <| Or.inr <| ⟨?_, ?_⟩
+      · simpa using (congrArg (HVAdd.hVAdd (ofLex c).1) h₂)
+      · simpa using (IsOrderedVAdd.vadd_le_vadd_left (ofLex a).2 (ofLex b).2 h₃ (ofLex c).2)
+  vadd_le_vadd_right a b h c := by
+    obtain h₁ | ⟨h₂, h₃⟩ := Prod.Lex.le_iff.mp h
+    · exact Prod.Lex.le_iff.mpr <| Or.inl <|
+        by simpa using (VAdd.vadd_lt_vadd_of_lt_of_le h₁ (Preorder.le_refl (ofLex c).1))
+    · refine Prod.Lex.le_iff.mpr <| Or.inr <| ⟨?_, ?_⟩
+      · simpa using congrFun (congrArg HVAdd.hVAdd h₂) (ofLex c).1
+      · simpa using (IsOrderedVAdd.vadd_le_vadd_right (ofLex a).2 (ofLex b).2 h₃ (ofLex c).2)
+  le_of_vadd_le_vadd_left a b c h := by
+    obtain h₁ | ⟨h₂, h₃⟩ := Prod.Lex.le_iff.mp h
+    · exact Prod.Lex.le_iff.mpr <| Or.inl <| VAdd.lt_of_vadd_lt_vadd_left h₁
+    · refine Prod.Lex.le_iff.mpr <| Or.inr <| ⟨IsCancelVAdd.left_cancel _ _ _ h₂, ?_⟩
+      exact IsOrderedCancelVAdd.le_of_vadd_le_vadd_left (ofLex a).2 (ofLex b).2 (ofLex c).2 h₃
+  le_of_vadd_le_vadd_right a b c h := by
+    obtain h₁ | ⟨h₂, h₃⟩ := Prod.Lex.le_iff.mp h
+    · refine Prod.Lex.le_iff.mpr <| Or.inl <| VAdd.lt_of_vadd_lt_vadd_right h₁
+    · refine Prod.Lex.le_iff.mpr <| Or.inr <| ⟨IsCancelVAdd.right_cancel _ _ _ h₂, ?_⟩
+      exact IsOrderedCancelVAdd.le_of_vadd_le_vadd_right (ofLex a).2 (ofLex b).2 (ofLex c).2 h₃
+
+end Prod.Lex
+
+namespace RevLex
+
+--TODO: RevLex versions
+
+end RevLex

@@ -3,7 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Order.Monoid.Prod
+--import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Data.Prod.RevLex
 import Mathlib.RingTheory.HahnSeries.Binomial
 
@@ -14,9 +14,10 @@ and `Γ = ℤ`, then this is the usual notion of "meromorphic left-moving 2D fie
 here allows us to consider composites and scalar-multiply by multivariable Laurent series.
 
 ## Definitions
-* `HVertexOperator` : An `R`-linear map from an `R`-module `V` to `HahnModule Γ W`.
-* The coefficient function as an `R`-linear map.
+* `HVertexOperator`: An `R`-linear map from an `R`-module `V` to `HahnModule Γ W`.
+* `HVertexOperator.coeff`: The coefficient function as an `R`-linear map.
 * Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
+* State-field maps
 
 ## Main results
 * `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W`.  This means we can consider
@@ -24,6 +25,7 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
   `X^n(1-Y/X)^n` in `R((X))((Y))`
 
 ## TODO
+* equiv for order equivalences, maps for order embeddings
 * curry for tensor product inputs
 * more API to make ext comparisons easier.
 * formal variable API, e.g., like the `T` function for Laurent polynomials and `X` for multivariable
@@ -256,6 +258,10 @@ theorem comp_coeff (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U
     (comp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
   rfl
 
+/-!
+def toRevLex (A : HVertexOperator (Γ₁ ×ₗ Γ) R V W) : HVertexOperator (Γ ×ᵣ Γ₁) R V W :=
+  LinearMap.comp (HahnModule.RevEquiv (Γ := Γ) (R := R)) A
+-/
 -- TODO: comp_assoc
 
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the left
@@ -300,15 +306,6 @@ def ResRight.linearMap (g' : Γ₁) :
   map_smul' _ _ := rfl
 
 end Products
-
-section rLex
-
-/-- A type synonym -/
-def rLex := Γ × Γ₁
-
--- Use Data.Prod.RevLex
-
-end rLex
 
 section PiLex -- Order.PiLex
 -- use Prod.swap?
@@ -539,7 +536,7 @@ def CompLeft [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R 
 def CompLeftRev [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
     (Y₂ : HStateFieldMap Γ₁ R U₀ U₁ V) :
     U₀ →ₗ[R] U₁ →ₗ[R] U₂ →ₗ[R] HahnModule (Γ ×ᵣ Γ₁) R W :=
-  CompLeft R U₀ U₁ U₂ V W Y₁ Y₂
+  LinearMap.comp
 -/
 
 theorem compRight_isPWO {Γ} [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R U₀ V W)
@@ -573,6 +570,12 @@ def CompRight [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R
     map_smul' _ _ := by ext; simp }
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
+
+theorem CompRight_eq_comp [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R U₀ V W)
+    (Y₂ : HStateFieldMap Γ₁ R U₁ U₂ V) (u₀ : U₀) (u₁ : U₁) (u₂ : U₂) :
+    CompRight R U₀ U₁ U₂ V W Y₁ Y₂ u₀ u₁ u₂ = comp (Y₁ u₀) (Y₂ u₁) u₂ := by
+  ext
+  simp [CompRight, HahnSeries.ofIterate]
 
 end HStateField
 

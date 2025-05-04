@@ -1254,12 +1254,16 @@ instance [Semiring R] :
   comp_eq := by simp
   comp_eq₂ := by simp
 
+/-!
+
 /-- The semilinear equivalence between Hahn modules for Lex order and Hahn modules for RevLex order.
 -/
-@[simps]
-def RevEquiv [Semiring R] [AddCommMonoid V] [Module R V] :
-    (HahnModule (Γ' ×ₗ Γ) R V) ≃ₛₗ[(HahnSeries.RevRingEquiv Γ Γ' R).toRingHom]
-      (HahnModule (Γ ×ᵣ Γ') R V) where
+--@[simps]
+def RevEquiv [Semiring R] [AddCommMonoid V] [Module R V] (Γ₁ Γ₂ : Type*) [PartialOrder Γ₁]
+    [PartialOrder Γ₂] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] [AddAction Γ' Γ₂]
+    [IsOrderedCancelVAdd Γ' Γ₂] :
+    (HahnModule (Γ₂ ×ₗ Γ₁) R V) ≃ₛₗ[(HahnSeries.RevRingEquiv Γ Γ' R).toRingHom]
+      (HahnModule (Γ₁ ×ᵣ Γ₂) R V) where
   toFun x := (HahnModule.of R) ((HahnSeries.RevEquiv Γ Γ') ((HahnModule.of R).symm x))
   invFun x := (HahnModule.of R) ((HahnSeries.RevEquiv Γ Γ').symm ((HahnModule.of R).symm x))
   map_add' x y := by
@@ -1279,6 +1283,7 @@ def RevEquiv [Semiring R] [AddCommMonoid V] [Module R V] :
     rw [Equiv.symm_apply_apply, Equiv.symm_apply_apply, Equiv.apply_symm_apply]
 
 -- something about coefficients?
+-/
 
 end HahnModule
 

@@ -421,8 +421,8 @@ theorem sum_vAddAntidiagonal_eq (s : SummableFamily Γ R α)
       (t a.2).coeff x.2 = ∑ x ∈ VAddAntidiagonal s.isPWO_iUnion_support' t.isPWO_iUnion_support' g,
       (s a.1).coeff x.1 • (t a.2).coeff x.2 := by
   refine sum_subset (fun gh hgh => ?_) fun gh hgh h => ?_
-  · simp_all only [mem_vaddAntidiagonal, Function.mem_support, Set.mem_iUnion, mem_support]
-    refine ⟨Exists.intro a.1 hgh.1, Exists.intro a.2 hgh.2.1, trivial⟩
+  · simp only [mem_vaddAntidiagonal, Function.mem_support, Set.mem_iUnion, mem_support] at hgh ⊢
+    exact ⟨Exists.intro a.1 hgh.1, Exists.intro a.2 hgh.2.1, hgh.2.2⟩
   · by_cases hs : (s a.1).coeff gh.1 = 0
     · exact smul_eq_zero_of_left hs ((t a.2).coeff gh.2)
     · simp_all
@@ -457,7 +457,7 @@ theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     constructor
     · rw [coeff_hsum_eq_sum] at hgh
       have h' := Finset.exists_ne_zero_of_sum_ne_zero hgh.1
-      simp_all
+      simpa using h'
     · by_contra hi
       simp_all
   · simp only [Set.image_id', mem_coe, mem_vaddAntidiagonal, mem_support, ne_eq, not_and] at hgh
@@ -938,13 +938,10 @@ def powers (x : HahnSeries Γ R) (hx : 0 < x.orderTop) : SummableFamily Γ R ℕ
 
 variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
 
-include hx in
 @[simp]
-theorem coe_powers : ⇑(powers x hx) = HPow.hPow x := by
-  ext1
-  simp [hx]
+theorem coe_powers : ⇑(powers x hx) = HPow.hPow x :=
+  rfl
 
-include hx in
 theorem embDomain_succ_smul_powers :
     (x • powers x hx).embDomain ⟨Nat.succ, Nat.succ_injective⟩ =
       powers x hx - ofFinsupp (Finsupp.single 0 1) := by
@@ -964,7 +961,7 @@ theorem embDomain_succ_smul_powers :
 include hx in
 theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x hx).hsum = 1 := by
   rw [← hsum_smul, sub_smul 1 x (powers x hx), one_smul, hsum_sub, ←
-    hsum_embDomain (x • powers x hx) ⟨Nat.succ, Nat.succ_injective⟩, embDomain_succ_smul_powers hx]
+    hsum_embDomain (x • powers x hx) ⟨Nat.succ, Nat.succ_injective⟩, embDomain_succ_smul_powers]
   simp
 
 end powers

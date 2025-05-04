@@ -212,7 +212,7 @@ theorem factorial_smul_hasseDeriv (k : ℕ) (A : VertexOperator R V) :
   induction k generalizing A with
   | zero => ext; simp
   | succ k ih =>
-    rw [LinearMap.iterate_succ, LinearMap.comp_apply, ← ih, derivative_apply, hasseDeriv_comp,
+    rw [Module.End.iterate_succ, LinearMap.comp_apply, ← ih, derivative_apply, hasseDeriv_comp,
       Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
 
 theorem factorial_smul_hasseDeriv_linear (k : ℕ) :
