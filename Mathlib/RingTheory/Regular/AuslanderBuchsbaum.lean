@@ -106,6 +106,14 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   -- Add your proof here
   sorry
 
+lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
+    (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
+    [Small.{v} (R ⧸ (IsLocalRing.maximalIdeal R))]
+    (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
+    1 + IsLocalRing.depth M = IsLocalRing.depth (ModuleCat.of R R) := by
+
+  sorry
+
 open scoped Classical in
 theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
@@ -123,5 +131,5 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
       sorry
     · by_cases eq0 : n = 0
       · simp only [eq0, zero_add, Nat.find_eq_iff, Nat.lt_one_iff, forall_eq, Nat.cast_one] at h ⊢
-        sorry
+        exact AuslanderBuchsbaum_one M h.1 h.2
       · sorry
