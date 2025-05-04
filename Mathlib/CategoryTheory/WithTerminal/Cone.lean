@@ -99,18 +99,9 @@ there is an obvious equivalence between cones of these two functors.
 A cone of `K` is an object of `Over X`, so it has the form `t ⟶ X`.
 Equivalently, a cone of `WithTerminal K` is an object `t : C`,
 and we can recover the structure morphism as `π.app X : t ⟶ X`. -/
-@[simps!
-  functor_obj_pt
-  functor_map_hom
-  inverse_obj_pt_left
-  inverse_obj_pt_right_as
-  inverse_obj_pt_hom
-  inverse_obj_π_app_left
-  inverse_map_hom_left
-  unitIso_hom_app_hom_left
-  unitIso_inv_app_hom_left
-  counitIso_hom_app_hom
-  counitIso_inv_app_hom]
+@[simps! functor_obj_pt functor_map_hom inverse_obj_pt_left inverse_obj_pt_right_as
+  inverse_obj_pt_hom inverse_obj_π_app_left inverse_map_hom_left unitIso_hom_app_hom_left
+  unitIso_inv_app_hom_left counitIso_hom_app_hom counitIso_inv_app_hom]
 def coneEquiv : Cone K ≌ Cone (liftFromOver.obj K) where
   functor := coneLift
   inverse := coneBack
@@ -209,18 +200,9 @@ there is an obvious equivalence between cocones of these two functors.
 A cocone of `K` is an object of `Under X`, so it has the form `X ⟶ t`.
 Equivalently, a cocone of `WithInitial K` is an object `t : C`,
 and we can recover the structure morphism as `ι.app X : X ⟶ t`. -/
-@[simps!
-  functor_obj_pt
-  functor_map_hom
-  inverse_obj_pt_right
-  inverse_obj_pt_left_as
-  inverse_obj_pt_hom
-  inverse_obj_ι_app_right
-  inverse_map_hom_right
-  unitIso_hom_app_hom_right
-  unitIso_inv_app_hom_right
-  counitIso_hom_app_hom
-  counitIso_inv_app_hom]
+@[simps! functor_obj_pt functor_map_hom inverse_obj_pt_right inverse_obj_pt_left_as
+  inverse_obj_pt_hom inverse_obj_ι_app_right inverse_map_hom_right unitIso_hom_app_hom_right
+  unitIso_inv_app_hom_right counitIso_hom_app_hom counitIso_inv_app_hom]
 def coconeEquiv : Cocone K ≌ Cocone (liftFromUnder.obj K) where
   functor := coconeLift
   inverse := coconeBack
