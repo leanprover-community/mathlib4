@@ -47,8 +47,7 @@ theorem shortExact_kernel_of_epi {X Y : C} (e : X ⟶ Y) [he : Epi e] :
 
 instance projective_of_hasProjectiveDimensionLT_one [HasProjectiveDimensionLT P 1] :
     Projective P where
-  factors := by
-    intro E X f e he
+  factors {E X} f e he := by
     let S := ShortComplex.mk (kernel.ι e) e (kernel.condition e)
     have hS : S.ShortExact := shortExact_kernel_of_epi e
     rcases covariant_sequence_exact₃ P hS (addEquiv₀.symm f) rfl
@@ -104,6 +103,15 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
     (i : ℕ) : Subsingleton (Ext N M i) ↔
     Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
   -- Add your proof here
+  sorry
+
+lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
+    (ι : Type*) (b : Basis ι (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))) :
+    Function.Surjective (Classical.choose (Module.projective_lifting_property
+    (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
+    ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
+    (Submodule.mkQ (maximalIdeal R)))) (Submodule.mkQ_surjective _))).toFun := by
+
   sorry
 
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
