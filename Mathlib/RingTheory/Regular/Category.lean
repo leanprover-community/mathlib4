@@ -18,6 +18,12 @@ open CategoryTheory Ideal Pointwise
 
 namespace ModuleCat
 
+lemma smulShortComplex_function_exact (M : Type v) [AddCommGroup M] [Module R M] (r : R) :
+    Function.Exact (r • LinearMap.id : M →ₗ[R] M) (r • (⊤ : Submodule R M)).mkQ := by
+  intro x
+  simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.ideal_span_singleton_smul r ⊤,
+    Submodule.mem_smul_pointwise_iff_exists]
+
 /-- The short complex `M → M → M⧸xM` given by an element `x : R`. -/
 @[simps]
 def smulShortComplex (r : R) :
@@ -28,21 +34,12 @@ def smulShortComplex (r : R) :
   f := ModuleCat.ofHom (r • LinearMap.id)
   g := ModuleCat.ofHom (r • (⊤ : Submodule R M)).mkQ
   zero := by
-    ext m
-    simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply,
-      LinearMap.smul_apply, LinearMap.id_coe, id_eq, Submodule.mkQ_apply,
-      ModuleCat.hom_zero, LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
-    exact Submodule.smul_mem_pointwise_smul m r ⊤ trivial
-
-lemma smulShortComplex_function_exact (M : Type v) [AddCommGroup M] [Module R M] (r : R) :
-    Function.Exact (r • LinearMap.id : M →ₗ[R] M) (r • (⊤ : Submodule R M)).mkQ := by
-  intro x
-  simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.ideal_span_singleton_smul r ⊤,
-    Submodule.mem_smul_pointwise_iff_exists]
+    ext x
+    exact (smulShortComplex_function_exact M r).apply_apply_eq_zero x
 
 lemma smulShortComplex_exact (r : R) : (smulShortComplex M r).Exact := by
-  simp only [smulShortComplex, ShortComplex.ShortExact.moduleCat_exact_iff_function_exact,
-    ModuleCat.hom_ofHom, smulShortComplex_function_exact]
+  simp [smulShortComplex, ShortComplex.ShortExact.moduleCat_exact_iff_function_exact,
+    smulShortComplex_function_exact]
 
 instance smulShortComplex_g_epi (r : R) : Epi (smulShortComplex M r).g := by
   simpa [smulShortComplex, ModuleCat.epi_iff_surjective] using Submodule.mkQ_surjective _
