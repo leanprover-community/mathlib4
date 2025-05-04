@@ -630,15 +630,14 @@ variable [BraidedCategory C]
 
 @[simps! tensorObj_X tensorHom_hom]
 instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) where
-  tensorObj := fun M N ↦ Mon_.mk' (M.X ⊗ N.X)
-  tensorHom f g := Mon_.Hom.mk' (f.hom ⊗ g.hom)
-  whiskerRight := fun f Y => Mon_.Hom.mk' (f.hom ▷ Y.X)
-  whiskerLeft := fun X _ _ g => Mon_.Hom.mk' (X.X ◁ g.hom)
-  tensorUnit := Mon_.mk' (𝟙_ C)
-  associator := fun M N P ↦ Mon_.mkIso' <| associator M.X N.X P.X
-  leftUnitor := fun M ↦ Mon_.mkIso' <| leftUnitor M.X
-  rightUnitor := fun M ↦ Mon_.mkIso' <| rightUnitor M.X
-
+  tensorObj := fun M N ↦ mk' (M.X ⊗ N.X)
+  tensorHom f g := Hom.mk' (f.hom ⊗ g.hom)
+  whiskerRight := fun f Y => Hom.mk' (f.hom ▷ Y.X)
+  whiskerLeft := fun X _ _ g => Hom.mk' (X.X ◁ g.hom)
+  tensorUnit := mk' (𝟙_ C)
+  associator := fun M N P ↦ mkIso' <| associator M.X N.X P.X
+  leftUnitor := fun M ↦ mkIso' <| leftUnitor M.X
+  rightUnitor := fun M ↦ mkIso' <| rightUnitor M.X
 
 @[simp]
 theorem tensorUnit_X : (𝟙_ (Mon_ C)).X = 𝟙_ C := rfl
