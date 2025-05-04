@@ -3,7 +3,8 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
@@ -104,7 +105,7 @@ noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G
     colim.mapCone (limit.cone G) ⟶ limit.cone (G ⋙ colim) where
   hom :=
     colim.map (limitIsoSwapCompLim G).hom ≫
-      colimitLimitToLimitColimit (uncurry.obj G : _) ≫
+      colimitLimitToLimitColimit (uncurry.obj G :) ≫
         lim.map (whiskerRight (currying.unitIso.app G).inv colim)
   w j := by
     dsimp

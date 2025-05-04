@@ -3,7 +3,7 @@ Copyright (c) 2023 Yaël Dillies, Zichen Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Zichen Wang
 -/
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
 # Convex functions are continuous
@@ -51,7 +51,8 @@ lemma ConvexOn.lipschitzOnWith_of_abs_le (hf : ConvexOn ℝ (ball x₀ r) f) (h�
       ε * (f x - f y) ≤ ‖x - y‖ * (f z - f x) := by
         rw [mul_sub, mul_sub, sub_le_sub_iff, ← add_mul]
         have h := hf.2 hy' hz (by positivity) (by positivity) hab
-        field_simp [← hxyz, a, b, ← mul_div_right_comm] at h
+        rw [← hxyz] at h
+        field_simp [a, b, ← mul_div_right_comm] at h
         rwa [← le_div_iff₀' (by positivity), add_comm (_ * _)]
       _ ≤ _ := by
         rw [sub_eq_add_neg (f _), two_mul]
@@ -162,7 +163,8 @@ lemma ConcaveOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : Conca
     ∀ ⦃x₀⦄, x₀ ∈ C → (𝓝 x₀).IsBoundedUnder (· ≥ ·) f,
     ∀ ⦃x₀⦄, x₀ ∈ C → (𝓝 x₀).IsBoundedUnder (· ≤ ·) |f|] := by
   have := hf.neg.continuousOn_tfae hC hC'
-  simp at this
+  simp only [locallyLipschitzOn_neg_iff, continuousOn_neg_iff, continuousAt_neg_iff, abs_neg]
+    at this
   convert this using 8 <;> exact (Equiv.neg ℝ).exists_congr (by simp)
 
 lemma ConvexOn.locallyLipschitzOn_iff_continuousOn (hC : IsOpen C) (hf : ConvexOn ℝ C f) :

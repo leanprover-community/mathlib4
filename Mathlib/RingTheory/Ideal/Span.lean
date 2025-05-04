@@ -3,7 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.GroupWithZero.Associated
+import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.RingTheory.Ideal.Lattice
@@ -196,7 +197,7 @@ theorem span_singleton_le_span_singleton {x y : α} :
     span ({x} : Set α) ≤ span ({y} : Set α) ↔ y ∣ x :=
   span_le.trans <| singleton_subset_iff.trans mem_span_singleton
 
-theorem span_singleton_eq_span_singleton {α : Type u} [CommRing α] [IsDomain α] {x y : α} :
+theorem span_singleton_eq_span_singleton {α : Type u} [CommSemiring α] [IsDomain α] {x y : α} :
     span ({x} : Set α) = span ({y} : Set α) ↔ Associated x y := by
   rw [← dvd_dvd_iff_associated, le_antisymm_iff, and_comm]
   apply and_congr <;> rw [span_singleton_le_span_singleton]
@@ -237,3 +238,22 @@ theorem span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
 end Ideal
 
 end Ring
+
+namespace IsIdempotentElem
+
+variable {R} [CommRing R] {e : R} (he : IsIdempotentElem e)
+include he
+
+theorem ker_toSpanSingleton_eq_span :
+    LinearMap.ker (LinearMap.toSpanSingleton R R e) = Ideal.span {1 - e} := SetLike.ext fun x ↦ by
+  rw [Ideal.mem_span_singleton']
+  refine ⟨fun h ↦ ⟨x, by rw [mul_sub, show x * e = 0 from h, mul_one, sub_zero]⟩, fun h ↦ ?_⟩
+  obtain ⟨x, rfl⟩ := h
+  show x * (1 - e) * e = 0
+  rw [mul_assoc, sub_mul, one_mul, he, sub_self, mul_zero]
+
+theorem ker_toSpanSingleton_one_sub_eq_span :
+    LinearMap.ker (LinearMap.toSpanSingleton R R (1 - e)) = Ideal.span {e} := by
+  rw [ker_toSpanSingleton_eq_span he.one_sub, sub_sub_cancel]
+
+end IsIdempotentElem

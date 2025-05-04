@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 -/
 import Mathlib.Algebra.Group.Subsemigroup.Defs
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Subsemigroups: `CompleteLattice` structure
@@ -124,8 +124,8 @@ theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
 
 /-- subsemigroup closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
-@[to_additive "Additive subsemigroup closure of a set is monotone in its argument: if `s ⊆ t`,
-  then `closure s ≤ closure t`"]
+@[to_additive (attr := gcongr) "Additive subsemigroup closure of a set is monotone in its argument:
+if `s ⊆ t`, then `closure s ≤ closure t`"]
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Subset.trans h subset_closure
 
@@ -148,9 +148,6 @@ theorem closure_induction {p : (x : M) → x ∈ closure s → Prop}
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩ }
   closure_le (S := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
-
-@[deprecated closure_induction (since := "2024-10-09")]
-alias closure_induction' := closure_induction
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership for

@@ -7,7 +7,7 @@ import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
-import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
@@ -104,7 +104,7 @@ lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
 @[simp]
 lemma toMvPolynomial_constantCoeff (M : Matrix m n R) (i : m) :
     constantCoeff (M.toMvPolynomial i) = 0 := by
-  simp only [toMvPolynomial, ← C_mul_X_eq_monomial, map_sum, _root_.map_mul, constantCoeff_X,
+  simp only [toMvPolynomial, ← C_mul_X_eq_monomial, map_sum, map_mul, constantCoeff_X,
     mul_zero, Finset.sum_const_zero]
 
 @[simp]
@@ -253,11 +253,6 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X, bind₁_X_right]
     classical
     rw [toMvPolynomial_comp _ (basis A (Basis.end bₘ)), ← toMvPolynomial_baseChange]
-    #adaptation_note
-    /--
-    After https://github.com/leanprover/lean4/pull/4119 we either need to specify the `M₂` argument,
-    or use `set_option maxSynthPendingDepth 2 in`.
-    -/
     suffices toMvPolynomial (M₂ := (Module.End A (TensorProduct R A M)))
         (basis A bₘ.end) (basis A bₘ).end (tensorProduct R A M M) ij = X ij by
       rw [this, bind₁_X_right]
@@ -548,12 +543,12 @@ lemma exists_isNilRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
   have aux :
     ((polyCharpoly φ b).coeff (nilRank φ)).IsHomogeneous (n - nilRank φ) :=
     polyCharpoly_coeff_isHomogeneous _ b (nilRank φ) (n - nilRank φ)
-      (by simp [nilRank_le_card φ bₘ, finrank_eq_card_chooseBasisIndex])
+      (by simp [n, nilRank_le_card φ bₘ, finrank_eq_card_chooseBasisIndex])
   obtain ⟨x, hx⟩ : ∃ r, eval r ((polyCharpoly _ b).coeff (nilRank φ)) ≠ 0 := by
     by_contra! h₀
     apply polyCharpoly_coeff_nilRank_ne_zero φ b
     apply aux.eq_zero_of_forall_eval_eq_zero_of_le_card h₀ (le_trans _ h)
-    simp only [finrank_eq_card_chooseBasisIndex, Nat.cast_le, Nat.sub_le]
+    simp only [n, finrank_eq_card_chooseBasisIndex, Nat.cast_le, Nat.sub_le]
   let c := Finsupp.equivFunOnFinite.symm x
   use b.repr.symm c
   rwa [isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero _ b, LinearEquiv.apply_symm_apply]

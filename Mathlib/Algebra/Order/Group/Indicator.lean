@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
@@ -200,9 +199,9 @@ lemma iSup_mulIndicator {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {
 
 end CompleteLattice
 
-section CanonicallyOrderedCommMonoid
+section CanonicallyOrderedMul
 
-variable [CanonicallyOrderedCommMonoid M]
+variable [Monoid M] [PartialOrder M] [CanonicallyOrderedMul M]
 
 @[to_additive]
 lemma mulIndicator_le_self (s : Set α) (f : α → M) : mulIndicator s f ≤ f :=
@@ -218,10 +217,10 @@ lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ 
     mulIndicator s f ≤ g :=
   mulIndicator_le' hfg fun _ _ ↦ one_le _
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
 
-section LinearOrderedCommGroup
-variable [LinearOrderedCommGroup M]
+section LatticeOrderedCommGroup
+variable [CommGroup M] [Lattice M]
 
 open scoped symmDiff
 
@@ -230,5 +229,5 @@ lemma mabs_mulIndicator_symmDiff (s t : Set α) (f : α → M) (x : α) :
     |mulIndicator (s ∆ t) f x|ₘ = |mulIndicator s f x / mulIndicator t f x|ₘ :=
   apply_mulIndicator_symmDiff mabs_inv s t f x
 
-end LinearOrderedCommGroup
+end LatticeOrderedCommGroup
 end Set

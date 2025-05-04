@@ -52,7 +52,7 @@ def limitCone (F : J ⥤ Mon_ C) : Cone F where
 -/
 def forgetMapConeLimitConeIso (F : J ⥤ Mon_ C) :
     (forget C).mapCone (limitCone F) ≅ limit.cone (F ⋙ forget C) :=
-  Cones.ext (Iso.refl _) (by aesop_cat)
+  Cones.ext (Iso.refl _) (by simp)
 
 /-- Implementation of `Mon_.hasLimitsOfShape`:
 the proposed cone over a functor `F : J ⥤ Mon_ C` is a limit cone.
@@ -79,9 +79,9 @@ instance hasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) w
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
 
-instance forgetPreservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
+instance forget_freservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
   preservesLimit := fun {F} =>
-    preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+    preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
       (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C)) (forgetMapConeLimitConeIso F).symm)
 
 end Mon_

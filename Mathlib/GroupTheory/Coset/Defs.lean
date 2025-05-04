@@ -7,6 +7,7 @@ import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Cosets
@@ -58,8 +59,7 @@ of a subgroup. -/
 def leftRel : Setoid α :=
   MulAction.orbitRel s.op α
 
-variable {s}
-
+variable {s} in
 @[to_additive]
 theorem leftRel_apply {x y : α} : leftRel s x y ↔ x⁻¹ * y ∈ s :=
   calc
@@ -68,8 +68,6 @@ theorem leftRel_apply {x y : α} : leftRel s x y ↔ x⁻¹ * y ∈ s :=
     _ ↔ ∃ a : s, x⁻¹ * y = a⁻¹ := by
       simp only [inv_mul_eq_iff_eq_mul, Subgroup.coe_inv, eq_mul_inv_iff_mul_eq]
     _ ↔ x⁻¹ * y ∈ s := by simp [exists_inv_mem_iff_exists_mem]
-
-variable (s)
 
 @[to_additive]
 theorem leftRel_eq : ⇑(leftRel s) = fun x y => x⁻¹ * y ∈ s :=
@@ -84,10 +82,14 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
 
 /-- `α ⧸ s` is the quotient type representing the left cosets of `s`.
   If `s` is a normal subgroup, `α ⧸ s` is a group -/
-@[to_additive "`α ⧸ s` is the quotient type representing the left cosets of `s`.  If `s` is a normal
+@[to_additive "`α ⧸ s` is the quotient type representing the left cosets of `s`. If `s` is a normal
  subgroup, `α ⧸ s` is a group"]
 instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
   ⟨fun s => Quotient (leftRel s)⟩
+
+@[to_additive]
+instance [DecidablePred (· ∈ s)] : DecidableEq (α ⧸ s) :=
+  @Quotient.decidableEq _ _ (leftRelDecidable _)
 
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
 subgroup. -/
@@ -96,16 +98,13 @@ subgroup. -/
 def rightRel : Setoid α :=
   MulAction.orbitRel s α
 
-variable {s}
-
+variable {s} in
 @[to_additive]
 theorem rightRel_apply {x y : α} : rightRel s x y ↔ y * x⁻¹ ∈ s :=
   calc
     (∃ a : s, (a : α) * y = x) ↔ ∃ a : s, y * x⁻¹ = a⁻¹ := by
       simp only [mul_inv_eq_iff_eq_mul, Subgroup.coe_inv, eq_inv_mul_iff_mul_eq]
     _ ↔ y * x⁻¹ ∈ s := by simp [exists_inv_mem_iff_exists_mem]
-
-variable (s)
 
 @[to_additive]
 theorem rightRel_eq : ⇑(rightRel s) = fun x y => y * x⁻¹ ∈ s :=
@@ -170,7 +169,7 @@ theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (Quoti
 instance : Coe α (α ⧸ s) :=
   ⟨mk⟩
 
-@[to_additive (attr := deprecated (since := "2024-08-04"))] alias induction_on' := induction_on
+@[to_additive] alias induction_on' := induction_on
 
 @[to_additive (attr := simp)]
 theorem quotient_liftOn_mk {β} (f : α → β) (h) (x : α) : Quotient.liftOn' (x : α ⧸ s) f h = f x :=
@@ -194,20 +193,18 @@ protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
     _ ↔ leftRel s a b := Quotient.eq''
     _ ↔ _ := by rw [leftRel_apply]
 
-@[to_additive (attr := deprecated (since := "2024-08-04"))] alias eq' := QuotientGroup.eq
-
 @[to_additive]
-theorem out_eq' (a : α ⧸ s) : mk a.out' = a :=
+theorem out_eq' (a : α ⧸ s) : mk a.out = a :=
   Quotient.out_eq' a
 
 variable (s)
 
-/- It can be useful to write `obtain ⟨h, H⟩ := mk_out'_eq_mul ...`, and then `rw [H]` or
+/- It can be useful to write `obtain ⟨h, H⟩ := mk_out_eq_mul ...`, and then `rw [H]` or
   `simp_rw [H]` or `simp only [H]`. In order for `simp_rw` and `simp only` to work, this lemma is
-  stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out'`. -/
-@[to_additive QuotientAddGroup.mk_out'_eq_mul]
-theorem mk_out'_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out' = g * h :=
-  ⟨⟨g⁻¹ * (mk g).out', QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
+  stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out`. -/
+@[to_additive QuotientAddGroup.mk_out_eq_mul]
+theorem mk_out_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out = g * h :=
+  ⟨⟨g⁻¹ * (mk g).out, QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
 
 variable {s} {a b : α}
 

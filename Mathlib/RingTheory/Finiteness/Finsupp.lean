@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Finiteness of (sub)modules and finitely supported functions
@@ -16,26 +17,21 @@ open Finsupp
 
 namespace Submodule
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M N P : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+  [Module R N] [AddCommGroup P] [Module R P]
 
 open Set
 
-variable {P : Type*} [AddCommMonoid P] [Module R P]
-variable (f : M →ₗ[R] P)
-
-variable {f}
-
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
 finitely generated then so is M. -/
-theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) {s : Submodule R M}
+theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
     (hs1 : (s.map f).FG)
     (hs2 : (s ⊓ LinearMap.ker f).FG) : s.FG := by
   haveI := Classical.decEq R
   haveI := Classical.decEq M
   haveI := Classical.decEq P
-  cases' hs1 with t1 ht1
-  cases' hs2 with t2 ht2
+  obtain ⟨t1, ht1⟩ := hs1
+  obtain ⟨t2, ht2⟩ := hs2
   have : ∀ y ∈ t1, ∃ x ∈ s, f x = y := by
     intro y hy
     have : y ∈ s.map f := by
@@ -52,7 +48,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
       apply hg1
     · simp only [dif_pos H]
       apply hg2
-  cases' this with g hg
+  obtain ⟨g, hg⟩ := this
   clear this
   exists t1.image g ∪ t2
   rw [Finset.coe_union, span_union, Finset.coe_image]
@@ -102,21 +98,26 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
 
 /-- The kernel of the composition of two linear maps is finitely generated if both kernels are and
 the first morphism is surjective. -/
-theorem fg_ker_comp {R M N P : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-    [Module R N] [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+theorem fg_ker_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (hf1 : (LinearMap.ker f).FG) (hf2 : (LinearMap.ker g).FG)
-    (hsur : Function.Surjective f) : (g.comp f).ker.FG := by
+    (hsur : Function.Surjective f) : (LinearMap.ker (g.comp f)).FG := by
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
   · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top.2 hsur, top_inf_eq]
   · rwa [inf_of_le_right (show (LinearMap.ker f) ≤
       (LinearMap.ker g).comap f from comap_mono bot_le)]
 
+theorem _root_.Module.Finite.of_submodule_quotient (N : Submodule R M) [Module.Finite R N]
+    [Module.Finite R (M ⧸ N)] : Module.Finite R M where
+  fg_top := fg_of_fg_map_of_fg_inf_ker N.mkQ
+    (by simpa only [map_top, range_mkQ] using Module.finite_def.mp ‹_›) <| by
+    simpa only [top_inf_eq, ker_mkQ] using Module.Finite.iff_fg.mp ‹_›
+
 end Submodule
 
 section
 
-variable {R V} [Ring R] [AddCommGroup V] [Module R V]
+variable {R V} [Semiring R] [AddCommMonoid V] [Module R V]
 
 instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R V] :
     Module.Finite R (ι →₀ V) :=

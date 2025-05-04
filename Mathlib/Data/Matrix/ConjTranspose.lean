@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Mul
 
 /-!
@@ -41,6 +41,13 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 @[inherit_doc]
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 
+@[simp]
+lemma conjTranspose_stdBasisMatrix [DecidableEq n] [DecidableEq m] [AddMonoid α]
+    [StarAddMonoid α] (i : m) (j : n) (a : α) :
+    (stdBasisMatrix i j a)ᴴ = stdBasisMatrix j i (star a) := by
+  show (stdBasisMatrix i j a).transpose.map starAddEquiv = stdBasisMatrix j i (star a)
+  simp
+
 section Diagonal
 
 variable [DecidableEq n]
@@ -56,7 +63,7 @@ end Diagonal
 section Diag
 
 @[simp]
-theorem diag_conjTranspose [AddMonoid α] [StarAddMonoid α] (A : Matrix n n α) :
+theorem diag_conjTranspose [Star α] (A : Matrix n n α) :
     diag Aᴴ = star (diag A) :=
   rfl
 
@@ -143,38 +150,37 @@ theorem conjTranspose_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n 
   rw [← conjTranspose_inj (A := M), conjTranspose_zero]
 
 @[simp]
-theorem conjTranspose_one [DecidableEq n] [Semiring α] [StarRing α] : (1 : Matrix n n α)ᴴ = 1 := by
+theorem conjTranspose_one [DecidableEq n] [NonAssocSemiring α] [StarRing α] :
+    (1 : Matrix n n α)ᴴ = 1 := by
   simp [conjTranspose]
 
 @[simp]
-theorem conjTranspose_eq_one [DecidableEq n] [Semiring α] [StarRing α] {M : Matrix n n α} :
+theorem conjTranspose_eq_one [DecidableEq n] [NonAssocSemiring α] [StarRing α] {M : Matrix n n α} :
     Mᴴ = 1 ↔ M = 1 :=
   (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
     by rw [conjTranspose_one]
 
 @[simp]
-theorem conjTranspose_natCast [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ) :
+theorem conjTranspose_natCast [DecidableEq n] [NonAssocSemiring α] [StarRing α] (d : ℕ) :
     (d : Matrix n n α)ᴴ = d := by
   simp [conjTranspose, Matrix.map_natCast, diagonal_natCast]
 
 @[simp]
-theorem conjTranspose_eq_natCast [DecidableEq n] [Semiring α] [StarRing α]
+theorem conjTranspose_eq_natCast [DecidableEq n] [NonAssocSemiring α] [StarRing α]
     {M : Matrix n n α} {d : ℕ} :
     Mᴴ = d ↔ M = d :=
   (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
     by rw [conjTranspose_natCast]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem conjTranspose_ofNat [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ) [d.AtLeastTwo] :
-    (no_index (OfNat.ofNat d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
+theorem conjTranspose_ofNat [DecidableEq n] [NonAssocSemiring α] [StarRing α] (d : ℕ)
+    [d.AtLeastTwo] : (ofNat(d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
   conjTranspose_natCast _
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem conjTranspose_eq_ofNat [DecidableEq n] [Semiring α] [StarRing α]
     {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
-    Mᴴ = no_index (OfNat.ofNat d) ↔ M = OfNat.ofNat d :=
+    Mᴴ = ofNat(d) ↔ M = OfNat.ofNat d :=
   conjTranspose_eq_natCast
 
 @[simp]
@@ -240,11 +246,10 @@ theorem conjTranspose_natCast_smul [Semiring R] [AddCommMonoid α] [StarAddMonoi
     (c : ℕ) (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
   Matrix.ext <| by simp
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem conjTranspose_ofNat_smul [Semiring R] [AddCommMonoid α] [StarAddMonoid α] [Module R α]
     (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
-    ((no_index (OfNat.ofNat c : R)) • M)ᴴ = (OfNat.ofNat c : R) • Mᴴ :=
+    ((ofNat(c) : R) • M)ᴴ = (OfNat.ofNat c : R) • Mᴴ :=
   conjTranspose_natCast_smul c M
 
 @[simp]
@@ -257,11 +262,10 @@ theorem conjTranspose_inv_natCast_smul [DivisionSemiring R] [AddCommMonoid α] [
     [Module R α] (c : ℕ) (M : Matrix m n α) : ((c : R)⁻¹ • M)ᴴ = (c : R)⁻¹ • Mᴴ :=
   Matrix.ext <| by simp
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem conjTranspose_inv_ofNat_smul [DivisionSemiring R] [AddCommMonoid α] [StarAddMonoid α]
     [Module R α] (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
-    ((no_index (OfNat.ofNat c : R))⁻¹ • M)ᴴ = (OfNat.ofNat c : R)⁻¹ • Mᴴ :=
+    ((ofNat(c) : R)⁻¹ • M)ᴴ = (OfNat.ofNat c : R)⁻¹ • Mᴴ :=
   conjTranspose_inv_natCast_smul c M
 
 @[simp]
@@ -279,7 +283,7 @@ theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ 
   Matrix.ext <| by simp
 
 @[simp]
-theorem conjTranspose_mul [Fintype n] [NonUnitalSemiring α] [StarRing α] (M : Matrix m n α)
+theorem conjTranspose_mul [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] (M : Matrix m n α)
     (N : Matrix n l α) : (M * N)ᴴ = Nᴴ * Mᴴ :=
   Matrix.ext <| by simp [mul_apply]
 
@@ -396,7 +400,7 @@ instance [Fintype n] [NonUnitalSemiring α] [StarRing α] : StarRing (Matrix n n
   star_mul := conjTranspose_mul
 
 /-- A version of `star_mul` for `*` instead of `*`. -/
-theorem star_mul [Fintype n] [NonUnitalSemiring α] [StarRing α] (M N : Matrix n n α) :
+theorem star_mul [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] (M N : Matrix n n α) :
     star (M * N) = star N * star M :=
   conjTranspose_mul _ _
 

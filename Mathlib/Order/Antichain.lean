@@ -3,10 +3,8 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Directed
-import Mathlib.Order.Hom.Set
+import Mathlib.Order.Preorder.Chain
 
 /-!
 # Antichains
@@ -23,6 +21,7 @@ relation is `G.adj` for `G : SimpleGraph α`, this corresponds to independent se
 * `IsAntichain.mk r s`: Turns `s` into an antichain by keeping only the "maximal" elements.
 -/
 
+assert_not_exists CompleteLattice
 
 open Function Set
 
@@ -171,6 +170,28 @@ theorem isAntichain_singleton (a : α) (r : α → α → Prop) : IsAntichain r 
 
 theorem Set.Subsingleton.isAntichain (hs : s.Subsingleton) (r : α → α → Prop) : IsAntichain r s :=
   hs.pairwise _
+
+/-- A set which is simultaneously a chain and antichain is subsingleton. -/
+lemma subsingleton_of_isChain_of_isAntichain (hs : IsChain r s) (ht : IsAntichain r s) :
+    s.Subsingleton := by
+  intro x hx y hy
+  by_contra! hne
+  cases hs hx hy hne with
+  | inl h => exact ht hx hy hne h
+  | inr h => exact ht hy hx hne.symm h
+
+lemma isChain_and_isAntichain_iff_subsingleton : IsChain r s ∧ IsAntichain r s ↔ s.Subsingleton :=
+  ⟨fun h ↦ subsingleton_of_isChain_of_isAntichain h.1 h.2, fun h ↦ ⟨h.isChain, h.isAntichain _⟩⟩
+
+/-- The intersection of a chain and an antichain is subsingleton. -/
+lemma inter_subsingleton_of_isChain_of_isAntichain (hs : IsChain r s) (ht : IsAntichain r t) :
+    (s ∩ t).Subsingleton :=
+  subsingleton_of_isChain_of_isAntichain (hs.mono (by simp)) (ht.subset (by simp))
+
+/-- The intersection of an antichain and a chain is subsingleton. -/
+lemma inter_subsingleton_of_isAntichain_of_isChain (hs : IsAntichain r s) (ht : IsChain r t) :
+    (s ∩ t).Subsingleton :=
+  inter_comm _ _ ▸ inter_subsingleton_of_isChain_of_isAntichain ht hs
 
 section Preorder
 

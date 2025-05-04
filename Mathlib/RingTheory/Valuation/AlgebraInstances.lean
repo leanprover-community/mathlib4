@@ -3,7 +3,6 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Valuation.ValuationSubring
 
@@ -35,7 +34,7 @@ namespace ValuationSubring
 instance : Algebra v.valuationSubring L := Algebra.ofSubring v.valuationSubring.toSubring
 
 theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) :=
-  (NoZeroSMulDivisors.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
+  (FaithfulSMul.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
 
 theorem isIntegral_of_mem_ringOfIntegers {x : L} (hx : x ∈ integralClosure v.valuationSubring L) :
     IsIntegral v.valuationSubring (⟨x, hx⟩ : integralClosure v.valuationSubring L) := by
@@ -59,12 +58,12 @@ instance algebra :
   RingHom.toAlgebra
     { toFun := fun k => ⟨algebraMap L E k, IsIntegral.algebraMap k.2⟩
       map_zero' :=
-        Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_zero, _root_.map_zero]
-      map_one' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_one, _root_.map_one]
+        Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_zero, map_zero]
+      map_one' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_one, map_one]
       map_add' := fun x y =>
-        Subtype.ext <| by simp only [_root_.map_add, Subalgebra.coe_add, Subtype.coe_mk]
+        Subtype.ext <| by simp only [map_add, Subalgebra.coe_add, Subtype.coe_mk]
       map_mul' := fun x y =>
-        Subtype.ext <| by simp only [Subalgebra.coe_mul, _root_.map_mul, Subtype.coe_mk] }
+        Subtype.ext <| by simp only [Subalgebra.coe_mul, map_mul, Subtype.coe_mk] }
 
 /-- A ring equivalence between the integral closure of the valuation subring of `K` in `L`
   and a ring `R` satisfying `isIntegralClosure R v.valuationSubring L`. -/

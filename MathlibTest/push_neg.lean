@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
-import Mathlib.Order.Defs
-import Mathlib.Tactic.PushNeg
+import Mathlib.Order.Defs.LinearOrder
+import Mathlib.Tactic.Push
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true

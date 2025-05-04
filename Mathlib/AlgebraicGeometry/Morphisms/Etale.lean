@@ -28,7 +28,7 @@ abbrev IsEtale {X Y : Scheme.{u}} (f : X ⟶ Y) := IsSmoothOfRelativeDimension 0
 
 namespace IsEtale
 
-variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+variable {X : Scheme.{u}}
 
 instance : IsStableUnderBaseChange @IsEtale :=
   isSmoothOfRelativeDimension_isStableUnderBaseChange 0

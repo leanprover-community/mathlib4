@@ -3,10 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Upper/lower bounds in ordered monoids and groups
@@ -26,7 +27,7 @@ variable [Mul M] [Preorder M] [MulLeftMono M]
 
 @[to_additive]
 lemma mul_mem_upperBounds_mul (ha : a ∈ upperBounds s) (hb : b ∈ upperBounds t) :
-    a * b ∈ upperBounds (s * t) := forall_image2_iff.2 fun _ hx _ hy => mul_le_mul' (ha hx) (hb hy)
+    a * b ∈ upperBounds (s * t) := forall_mem_image2.2 fun _ hx _ hy => mul_le_mul' (ha hx) (hb hy)
 
 @[to_additive]
 lemma subset_upperBounds_mul (s t : Set M) : upperBounds s * upperBounds t ⊆ upperBounds (s * t) :=
@@ -47,6 +48,13 @@ lemma BddAbove.mul (hs : BddAbove s) (ht : BddAbove t) : BddAbove (s * t) :=
 @[to_additive]
 lemma BddBelow.mul (hs : BddBelow s) (ht : BddBelow t) : BddBelow (s * t) :=
   (Nonempty.mul hs ht).mono (subset_lowerBounds_mul s t)
+
+@[to_additive] alias Set.BddAbove.mul := BddAbove.mul
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated BddAbove.mul (since := "2024-11-13")] Set.BddAbove.mul
+attribute [deprecated BddAbove.add (since := "2024-11-13")] Set.BddAbove.add
 
 @[to_additive]
 lemma BddAbove.range_mul (hf : BddAbove (range f)) (hg : BddAbove (range g)) :

@@ -6,8 +6,9 @@ Authors: Jz Pan
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.Separable
-import Mathlib.FieldTheory.NormalClosure
-import Mathlib.RingTheory.AlgebraicIndependent
+import Mathlib.FieldTheory.Normal.Closure
+import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
+import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 import Mathlib.RingTheory.Polynomial.SeparableDegree
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
@@ -24,26 +25,21 @@ This file contains basics about the separable degree of a field extension.
   advantage that `Field.Emb F E` lies in the same universe as `E` rather than the maximum over `F`
   and `E`). Usually denoted by $\operatorname{Emb}_F(E)$ in textbooks.
 
-  **Remark:** if `E / F` is not algebraic, then this definition makes no mathematical sense,
-  and if it is infinite, then its cardinality doesn't behave as expected (namely, not equal to the
-  field extension degree of `separableClosure F E / F`). For example, if $F = \mathbb{Q}$ and
-  $E = \mathbb{Q}( \mu_{p^\infty} )$, then $\operatorname{Emb}_F (E)$ is in bijection with
-  $\operatorname{Gal}(E/F)$, which is isomorphic to
-  $\mathbb{Z}_p^\times$, which is uncountable, while $[E:F]$ is countable.
-
-  **TODO:** prove or disprove that if `E / F` is algebraic and `Emb F E` is infinite, then
-  `Field.Emb F E` has cardinality `2 ^ Module.rank F (separableClosure F E)`.
-
-- `Field.finSepDegree F E`: the (finite) separable degree $[E:F]_s$ of an algebraic extension
-  `E / F` of fields, defined to be the number of `F`-algebra homomorphisms from `E` to the algebraic
+- `Field.finSepDegree F E`: the (finite) separable degree $[E:F]_s$ of an extension `E / F`
+  of fields, defined to be the number of `F`-algebra homomorphisms from `E` to the algebraic
   closure of `E`, as a natural number. It is zero if `Field.Emb F E` is not finite.
   Note that if `E / F` is not algebraic, then this definition makes no mathematical sense.
 
   **Remark:** the `Cardinal`-valued, potentially infinite separable degree `Field.sepDegree F E`
   for a general algebraic extension `E / F` is defined to be the degree of `L / F`, where `L` is
-  the (relative) separable closure `separableClosure F E` of `F` in `E`, which is not defined in
-  this file yet. Later we will show that (`Field.finSepDegree_eq`), if `Field.Emb F E` is finite,
-  then these two definitions coincide.
+  the separable closure of `F` in `E`, which is not defined in this file yet. Later we
+  will show that (`Field.finSepDegree_eq`), if `Field.Emb F E` is finite, then these two
+  definitions coincide. If `E / F` is algebraic with infinite separable degree, we have
+  `#(Field.Emb F E) = 2 ^ Field.sepDegree F E` instead.
+  (See `Field.Emb.cardinal_eq_two_pow_sepDegree` in another file.) For example, if
+  $F = \mathbb{Q}$ and $E = \mathbb{Q}( \mu_{p^\infty} )$, then $\operatorname{Emb}_F (E)$
+  is in bijection with $\operatorname{Gal}(E/F)$, which is isomorphic to
+  $\mathbb{Z}_p^\times$, which is uncountable, whereas $ [E:F] $ is countable.
 
 - `Polynomial.natSepDegree`: the separable degree of a polynomial is a natural number,
   defined to be the number of distinct roots of it over its splitting field.
@@ -251,7 +247,7 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
 
 /-- If the field extension `E / F` is transcendental, then `Field.Emb F E` is infinite. -/
 instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infinite (Emb F E) := by
-  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' _ (algebraMap F E).injective
+  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' F E
   have := hx.isAlgebraic_field
   rw [← (embProdEmbOfIsAlgebraic F (adjoin F (Set.range x)) E).infinite_iff]
   refine @Prod.infinite_of_left _ _ ?_ _
@@ -477,7 +473,7 @@ theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
 and `f` have the same separable degree. -/
 theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
     (expand F (q ^ n) f).natSepDegree = f.natSepDegree := by
-  cases' hF with _ _ hprime _
+  obtain - | hprime := hF
   · simp only [one_pow, expand_one]
   haveI := Fact.mk hprime
   classical
@@ -596,14 +592,14 @@ theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F 
   have hD := (h ▸ natSepDegree_le_of_dvd p f hf hm.ne_zero).antisymm <|
     Nat.pos_of_ne_zero <| (natSepDegree_ne_zero_iff _).2 hI.natDegree_pos.ne'
   obtain ⟨n, y, H, hp⟩ := hM.eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible q hI hD
-  have hF := multiplicity_finite_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
+  have hF := finiteMultiplicity_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
   classical
   have hne := (multiplicity_pos_of_dvd hf).ne'
   refine ⟨_, n, y, hne, H, ?_⟩
   obtain ⟨c, hf, H⟩ := hF.exists_eq_pow_mul_and_not_dvd
   rw [hf, natSepDegree_mul_of_isCoprime _ c <| IsCoprime.pow_left <|
-    (hI.coprime_or_dvd c).resolve_right H, natSepDegree_pow_of_ne_zero _ hne, hD,
-    add_right_eq_self, natSepDegree_eq_zero_iff] at h
+    (hI.isCoprime_or_dvd c).resolve_right H, natSepDegree_pow_of_ne_zero _ hne, hD,
+    add_eq_left, natSepDegree_eq_zero_iff] at h
   simpa only [eq_one_of_monic_natDegree_zero ((hM.pow _).of_mul_monic_left (hf ▸ hm)) h,
     mul_one, ← hp] using hf
 
@@ -783,7 +779,7 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
     have halg := IsAlgebraic.of_finite F x
     refine (finSepDegree_adjoin_simple_eq_finrank_iff F E x halg).1 <| le_antisymm
       (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_lt fun h ↦ ?_
-    have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.size_pos'
+    have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.pos'
     rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E,
       Module.finrank_mul_finrank F F⟮x⟯ E] at this
     linarith only [heq, this]⟩, fun _ ↦ finSepDegree_eq_finrank_of_isSeparable F E⟩
@@ -904,7 +900,7 @@ if and only if every separable degree one polynomial splits. -/
 theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
     PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → f.Splits (RingHom.id F) := by
   refine ⟨fun ⟨h⟩ f hf ↦ or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_, fun h ↦ ?_⟩
-  · rw [map_id] at hn hd
+  · rw [Polynomial.map_id] at hn hd
     have := natSepDegree_le_of_dvd g f hd hn
     rw [hf, (h hg).natSepDegree_eq_natDegree] at this
     exact (degree_eq_iff_natDegree_eq_of_pos one_pos).2 <| this.antisymm <|

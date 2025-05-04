@@ -42,8 +42,7 @@ namespace Function
 ### Injective
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 namespace Injective
 
@@ -305,7 +304,7 @@ protected abbrev addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul 
   { hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul),
     hf.addMonoidWithOne f zero one add nsmul natCast with
     intCast := Int.cast,
-    intCast_ofNat := fun n => hf (by rw [natCast, ← Int.cast, intCast, Int.cast_natCast]),
+    intCast_ofNat := fun n => hf (by rw [natCast, intCast, Int.cast_natCast]),
     intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc] ) }
 
 /-- A type endowed with `1`, `*` and `⁻¹` is a commutative group, if it admits an injective map that
@@ -395,9 +394,8 @@ protected abbrev monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (o
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₂ :=
   { hf.semigroup f mul, hf.mulOneClass f one mul with
     npow := fun n x => x ^ n,
-    npow_zero := hf.forall.2 fun x => by dsimp only; rw [← npow, pow_zero, ← one],
+    npow_zero := hf.forall.2 fun x => by rw [← npow, pow_zero, ← one],
     npow_succ := fun n => hf.forall.2 fun x => by
-      dsimp only
       rw [← npow, pow_succ, ← npow, ← mul] }
 
 /-- A type endowed with `0`, `1` and `+` is an additive monoid with one, if it admits a surjective
@@ -409,8 +407,8 @@ protected abbrev addMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul
     (natCast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₂ :=
   { hf.addMonoid f zero add (swap nsmul) with
     natCast := Nat.cast,
-    natCast_zero := by rw [← Nat.cast, ← natCast, Nat.cast_zero, zero]
-    natCast_succ := fun n => by rw [← Nat.cast, ← natCast, Nat.cast_succ, add, one, natCast]
+    natCast_zero := by rw [← natCast, Nat.cast_zero, zero]
+    natCast_succ := fun n => by rw [← natCast, Nat.cast_succ, add, one, natCast]
     one := 1 }
 
 /-- A type endowed with `1` and `*` is a commutative monoid, if it admits a surjective map that
@@ -457,12 +455,10 @@ protected abbrev divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surj
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvMonoid M₂ :=
   { hf.monoid f one mul npow, ‹Div M₂›, ‹Inv M₂› with
     zpow := fun n x => x ^ n,
-    zpow_zero' := hf.forall.2 fun x => by dsimp only; rw [← zpow, zpow_zero, ← one],
+    zpow_zero' := hf.forall.2 fun x => by rw [← zpow, zpow_zero, ← one],
     zpow_succ' := fun n => hf.forall.2 fun x => by
-      dsimp only
       rw [← zpow, ← zpow, zpow_natCast, zpow_natCast, pow_succ, ← mul],
     zpow_neg' := fun n => hf.forall.2 fun x => by
-      dsimp only
       rw [← zpow, ← zpow, zpow_negSucc, zpow_natCast, inv],
     div_eq_mul_inv := hf.forall₂.2 fun x y => by rw [← inv, ← mul, ← div, div_eq_mul_inv] }
 
@@ -490,9 +486,9 @@ protected abbrev addGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M
   { hf.addMonoidWithOne f zero one add nsmul natCast,
     hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul) with
     intCast := Int.cast,
-    intCast_ofNat := fun n => by rw [← Int.cast, ← intCast, Int.cast_natCast, natCast],
+    intCast_ofNat := fun n => by rw [← intCast, Int.cast_natCast, natCast],
     intCast_negSucc := fun n => by
-      rw [← Int.cast, ← intCast, Int.cast_negSucc, neg, natCast] }
+      rw [← intCast, Int.cast_negSucc, neg, natCast] }
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a commutative group, if it admits a surjective
 map that preserves `1`, `*`, `⁻¹`, and `/` from a commutative group. See note

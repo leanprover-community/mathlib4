@@ -3,10 +3,8 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Ring.Periodic
 import Mathlib.Data.Nat.Count
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Periodic Functions on ℕ
@@ -15,10 +13,11 @@ This file identifies a few functions on `ℕ` which are periodic, and also prove
 periodic predicates which helps determine their cardinality when filtering intervals over them.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 namespace Nat
 
-open Nat Function
+open Function
 
 theorem periodic_gcd (a : ℕ) : Periodic (gcd a) a := by
   simp only [forall_const, gcd_add_self_right, eq_self_iff_true, Periodic]

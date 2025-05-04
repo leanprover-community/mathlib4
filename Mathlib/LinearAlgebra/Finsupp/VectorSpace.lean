@@ -3,9 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.LinearAlgebra.Finsupp.Span
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
@@ -19,42 +19,34 @@ This file contains results on the `R`-module structure on functions of finite su
 noncomputable section
 
 open Set LinearMap Submodule
-open scoped Cardinal
 
 universe u v w
 
 namespace Finsupp
 
-section Ring
-
-variable {R : Type*} {M : Type*} {ι : Type*}
-variable [Ring R] [AddCommGroup M] [Module R M]
-
-theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
-    (hf : ∀ i, LinearIndependent R (f i)) :
-    LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by
-  apply @linearIndependent_iUnion_finite R _ _ _ _ ι φ fun i x => single i (f i x)
-  · intro i
-    have h_disjoint : Disjoint (span R (range (f i))) (ker (lsingle i)) := by
-      rw [ker_lsingle]
-      exact disjoint_bot_right
-    apply (hf i).map h_disjoint
-  · intro i t _ hit
-    refine (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono ?_ ?_
-    · rw [span_le]
-      simp only [iSup_singleton]
-      rw [range_coe]
-      apply range_comp_subset_range _ (lsingle i)
-    · refine iSup₂_mono fun i hi => ?_
-      rw [span_le, range_coe]
-      apply range_comp_subset_range _ (lsingle i)
-
-end Ring
-
 section Semiring
 
 variable {R : Type*} {M : Type*} {ι : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M]
+
+theorem linearIndependent_single {φ : ι → Type*} (f : ∀ ι, φ ι → M)
+    (hf : ∀ i, LinearIndependent R (f i)) :
+    LinearIndependent R fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2) := by
+  classical
+  have : linearCombination R (fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2)) =
+    (finsuppLequivDFinsupp R).symm.toLinearMap ∘ₗ
+    DFinsupp.mapRange.linearMap (fun i ↦ linearCombination R (f i)) ∘ₗ
+    (sigmaFinsuppLequivDFinsupp R).toLinearMap := by ext; simp
+  rw [LinearIndependent, this]
+  exact (finsuppLequivDFinsupp R).symm.injective.comp <|
+    ((DFinsupp.mapRange_injective _ fun _ ↦ map_zero _).mpr hf).comp (Equiv.injective _)
+
+lemma linearIndependent_single_iff {φ : ι → Type*} {f : ∀ ι, φ ι → M} :
+    LinearIndependent R (fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2)) ↔
+      ∀ i, LinearIndependent R (f i) := by
+  refine ⟨fun h i => ?_, linearIndependent_single _⟩
+  replace h := h.comp _ (sigma_mk_injective  (i := i))
+  exact .of_comp (Finsupp.lsingle i) h
 
 open LinearMap Submodule
 
@@ -107,13 +99,14 @@ theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
       ext ⟨j, y⟩
       by_cases h : i = j
       · cases h
-        simp only [basis_repr, single_eq_same, Basis.repr_self,
-          Finsupp.single_apply_left sigma_mk_injective]
-      · have : Sigma.mk i x ≠ Sigma.mk j y := fun h' => h <| congrArg (fun s => s.fst) h'
-        -- Porting note: previously `this` not needed
-        simp only [basis_repr, single_apply, h, this, if_false, LinearEquiv.map_zero, zero_apply]
+        simp [Finsupp.single_apply_left sigma_mk_injective]
+      · simp_all
 
-/-- The basis on `ι →₀ M` with basis vectors `fun i ↦ single i 1`. -/
+variable (ι R M) in
+instance _root_.Module.Free.finsupp [Module.Free R M] : Module.Free R (ι →₀ M) :=
+  .of_basis (Finsupp.basis fun _ => Module.Free.chooseBasis R M)
+
+/-- The basis on `ι →₀ R` with basis vectors `fun i ↦ single i 1`. -/
 @[simps]
 protected def basisSingleOne : Basis ι R (ι →₀ R) :=
   Basis.ofRepr (LinearEquiv.refl _ _)
@@ -122,7 +115,24 @@ protected def basisSingleOne : Basis ι R (ι →₀ R) :=
 theorem coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun i => Finsupp.single i 1 :=
   funext fun _ => Basis.apply_eq_iff.mpr rfl
 
+variable (ι R) in
+lemma linearIndependent_single_one : LinearIndependent R fun i : ι ↦ single i (1 : R) :=
+  Finsupp.basisSingleOne.linearIndependent
+
 end Semiring
+
+section Ring
+
+variable {R : Type*} {M : Type*} {ι : Type*}
+variable [Ring R] [AddCommGroup M] [Module R M]
+
+lemma linearIndependent_single_of_ne_zero [NoZeroSMulDivisors R M] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+    LinearIndependent R fun i : ι ↦ single i (v i) := by
+  rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
+  exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by
+    simp +contextual [Fintype.linearIndependent_iff, hv]
+
+end Ring
 
 end Finsupp
 
@@ -138,7 +148,20 @@ noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
   .ofRepr
     ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
 
+variable (R M) in
+instance _root_.Module.Free.dfinsupp [∀ i : ι, Module.Free R (M i)] : Module.Free R (Π₀ i, M i) :=
+  .of_basis <| DFinsupp.basis fun i => Module.Free.chooseBasis R (M i)
+
 end DFinsupp
+
+lemma Module.Free.trans {R S M : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M] [Module.Free S M]
+    [Module.Free R S] : Module.Free R M :=
+  let e : (ChooseBasisIndex S M →₀ S) ≃ₗ[R] ChooseBasisIndex S M →₀ (ChooseBasisIndex R S →₀ R) :=
+    Finsupp.mapRange.linearEquiv (chooseBasis R S).repr
+  let e : M ≃ₗ[R] ChooseBasisIndex S M →₀ (ChooseBasisIndex R S →₀ R) :=
+    (chooseBasis S M).repr.restrictScalars R ≪≫ₗ e
+  .of_equiv e.symm
 
 /-! TODO: move this section to an earlier file. -/
 
@@ -160,10 +183,16 @@ theorem equivFun_symm_single [Finite n] (b : Basis n R M) (i : n) :
   cases nonempty_fintype n
   simp [Pi.single_apply]
 
-set_option linter.deprecated false in
-@[deprecated equivFun_symm_single (since := "2024-08-09")]
-theorem equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
-    b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i :=
-  equivFun_symm_single ..
-
 end Basis
+
+section Algebra
+
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : Type*} (B : Basis ι R S)
+
+/-- For any `r : R`, `s : S`, we have
+  `B.repr ((algebra_map R S r) * s) i = r * (B.repr s i) `. -/
+theorem Basis.repr_smul' (i : ι) (r : R) (s : S) :
+    B.repr (algebraMap R S r * s) i = r * B.repr s i := by
+  rw [← smul_eq_mul, ← smul_eq_mul, algebraMap_smul, map_smul, Finsupp.smul_apply]
+
+end Algebra

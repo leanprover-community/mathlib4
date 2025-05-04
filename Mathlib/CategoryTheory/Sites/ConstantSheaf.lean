@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Sites.DenseSubsite
+import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 /-!
 
 # The constant sheaf
@@ -73,10 +73,10 @@ namespace Sheaf
 A sheaf is constant if it is in the essential image of the constant sheaf functor.
 -/
 class IsConstant (F : Sheaf J D) : Prop where
-  mem_essImage : F ∈ (constantSheaf J D).essImage
+  mem_essImage : (constantSheaf J D).essImage F
 
 lemma mem_essImage_of_isConstant (F : Sheaf J D) [IsConstant J F] :
-    F ∈ (constantSheaf J D).essImage :=
+    (constantSheaf J D).essImage F :=
   IsConstant.mem_essImage
 
 lemma isConstant_congr {F G : Sheaf J D} (i : F ≅ G) [IsConstant J F] : IsConstant J G where
@@ -87,7 +87,7 @@ lemma isConstant_of_iso {F : Sheaf J D} {X : D} (i : F ≅ (constantSheaf J D).o
 
 lemma isConstant_iff_mem_essImage {L : D ⥤ Sheaf J D} {T : C} (hT : IsTerminal T)
     (adj : L ⊣ (sheafSections J D).obj ⟨T⟩)
-    (F : Sheaf J D) : IsConstant J F ↔ F ∈ L.essImage := by
+    (F : Sheaf J D) : IsConstant J F ↔ L.essImage F := by
   rw [essImage_eq_of_natIso (adj.leftAdjointUniq (constantSheafAdj J D hT))]
   exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 

@@ -33,11 +33,6 @@ open CategoryTheory.Abelian CategoryTheory CategoryTheory.Limits ModuleCat Linea
 
 namespace Counterexample
 
-/-
-Porting note: this file was rewritten to use categorical notation
-such as `𝟙 _` instead of `ofHom id`. This way, `simp` found it easier to prove things.
--/
-
 noncomputable section
 
 open CategoryTheory.Abelian.Pseudoelement
@@ -74,29 +69,21 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   replace h := ModuleCat.eq_range_of_pseudoequal h
   dsimp [x, y] at h
   let φ := biprod.lift (𝟙 (of ℤ ℚ)) (2 • 𝟙 (of ℤ ℚ))
-  have mem_range := mem_range_self φ (1 : ℚ)
+  have mem_range := mem_range_self φ.hom (1 : ℚ)
   rw [h] at mem_range
   obtain ⟨a, ha⟩ := mem_range
-  erw [← ModuleCat.id_apply (φ (1 : ℚ)), ← biprod.total, ← LinearMap.comp_apply, ← comp_def,
-    Preadditive.comp_add] at ha
+  rw [← ModuleCat.id_apply _ (φ (1 : ℚ)), ← biprod.total, ← LinearMap.comp_apply,
+    ← ModuleCat.hom_comp, Preadditive.comp_add] at ha
   let π₁ := (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
   have ha₁ := congr_arg π₁ ha
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] at ha₁
+  rw [← ModuleCat.comp_apply, ← ModuleCat.comp_apply] at ha₁
   simp only [π₁, φ, BinaryBiproduct.bicone_fst, biprod.lift_fst, CategoryTheory.id_apply,
     biprod.lift_fst_assoc, Category.id_comp, biprod.lift_snd_assoc, Linear.smul_comp,
     Preadditive.add_comp, BinaryBicone.inl_fst, BinaryBicone.inr_fst, smul_zero, add_zero] at ha₁
   let π₂ := (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
   have ha₂ := congr_arg π₂ ha
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] at ha₂
-  simp only [π₁, π₂, φ, BinaryBiproduct.bicone_snd, biprod.lift_snd, CategoryTheory.id_apply,
-    biprod.lift_fst_assoc, Category.id_comp, biprod.lift_snd_assoc, Linear.smul_comp,
-    Preadditive.add_comp, BinaryBicone.inl_snd, BinaryBicone.inr_snd, zero_add, two_smul] at ha₂
-  erw [add_apply, CategoryTheory.id_apply] at ha₂
-  subst ha₁
-  simp only [self_eq_add_right] at ha₂
-  exact one_ne_zero' ℚ ha₂
+  rw [← ModuleCat.comp_apply, ← ModuleCat.comp_apply] at ha₂
+  simp_all [π₁, π₂, φ]
 
 attribute [local instance] Pseudoelement.setoid
 
@@ -104,12 +91,12 @@ open scoped Pseudoelement
 
 /-- `biprod.fst ⟦x⟧ = biprod.fst ⟦y⟧`. -/
 theorem fst_mk'_x_eq_fst_mk'_y :
-    (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) ⟦x⟧ = (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) ⟦y⟧ :=
+    pseudoApply biprod.fst ⟦x⟧ = pseudoApply biprod.fst ⟦y⟧ :=
   Quotient.eq.2 fst_x_pseudo_eq_fst_y
 
 /-- `biprod.snd ⟦x⟧ = biprod.snd ⟦y⟧`. -/
 theorem snd_mk'_x_eq_snd_mk'_y :
-    (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) ⟦x⟧ = (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) ⟦y⟧ :=
+    pseudoApply biprod.snd ⟦x⟧ = pseudoApply biprod.snd ⟦y⟧ :=
   Quotient.eq.2 snd_x_pseudo_eq_snd_y
 
 -- Porting note: needs explicit type ascription `: Quotient <| Pseudoelement.setoid _`
@@ -125,8 +112,8 @@ theorem exist_ne_and_fst_eq_fst_and_snd_eq_snd :
     ∃ x y, -- Porting note: removed type ascription `: of ℤ ℚ ⊞ of ℤ ℚ`, it gave an error about
            -- `Type` not having zero morphisms. jmc: I don't understand where the error came from
       x ≠ y ∧
-        (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) x = (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) y ∧
-          (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) x = (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) y :=
+        pseudoApply (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) x = pseudoApply biprod.fst y ∧
+          pseudoApply biprod.snd x = pseudoApply biprod.snd y :=
   ⟨⟦x⟧, ⟦y⟧, mk'_x_ne_mk'_y, fst_mk'_x_eq_fst_mk'_y, snd_mk'_x_eq_snd_mk'_y⟩
 
 end

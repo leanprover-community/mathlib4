@@ -53,6 +53,7 @@ variable {L : Language.{u, v}} (T : L.Theory) (α : Type w)
 /-- A complete type over a given theory in a certain type of variables is a maximally
   consistent (with the theory) set of formulas in that type. -/
 structure CompleteType where
+  /-- The underlying theory -/
   toTheory : L[[α]].Theory
   subset' : (L.lhomWithConstants α).onTheory T ⊆ toTheory
   isMaximal' : toTheory.IsMaximal
@@ -184,8 +185,6 @@ def realizedTypes (α : Type w) : Set (T.CompleteType α) :=
   Set.range (T.typeOf : (α → M) → T.CompleteType α)
 
 section
--- Porting note: This instance interrupts synthesizing instances.
-attribute [-instance] FirstOrder.Language.withConstants_expansion
 
 theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
     ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by
