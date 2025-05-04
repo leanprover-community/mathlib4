@@ -227,8 +227,6 @@ lemma Ideal.height_le_iff_covBy {p : Ideal R} {n : ℕ} [p.IsPrime] [IsNoetheria
   · intro H q hq e _
     exact H q hq e
   · intro H q hq e
-    have := (OrderEmbedding.subtype (fun I : Ideal R ↦ I.IsPrime)).dual.wellFounded wellFounded_lt
-    haveI := IsStronglyCoatomic.of_wellFounded_gt this (α := { I : Ideal R // I.IsPrime })
     obtain ⟨⟨x, hx⟩, hqx, hxp⟩ :=
       @exists_le_covBy_of_lt { I : Ideal R // I.IsPrime } ⟨q, hq⟩ ⟨p, ‹_›⟩ _ _ e
     exact (Ideal.height_mono hqx).trans_lt
