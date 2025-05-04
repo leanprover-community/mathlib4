@@ -84,6 +84,17 @@ lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg 
   rw [← AddSubgroup.zmultiples_eq_zmultiples_iff]
   simpa [e.surjective, eq_comm] using (AddMonoidHom.map_zmultiples (G := ℤ) (N := ℤ) (e : ℤ →+ ℤ) 1)
 
+instance : Unique (ℤ ≃+o ℤ) where
+  default := .refl _
+  uniq e := by
+    rcases Int.addEquiv_eq_refl_or_neg e with H|H
+    · exact OrderAddMonoidIso.toAddEquiv_injective H
+    · replace H : e 1 = -1 := by simp [← AddEquiv.neg_apply, ← H]
+      have h1 : 0 < e 1 := by
+        rw [← map_zero e, map_lt_map_iff]
+        simp
+      simp [H] at h1
+
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
