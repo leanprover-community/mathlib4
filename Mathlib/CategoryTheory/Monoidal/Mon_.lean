@@ -753,9 +753,8 @@ theorem mul_braiding (X Y : C) [Mon_Class X] [Mon_Class Y] :
     rw [← tensorHom_def]
   simp only [Category.assoc]
 
-instance {X Y : C} [Mon_Class X] [Mon_Class Y] : IsMon_Hom (β_ X Y).hom where
-  one_hom := one_braiding X Y
-  mul_hom := mul_braiding X Y
+instance {X Y : C} [Mon_Class X] [Mon_Class Y] : IsMon_Hom (β_ X Y).hom :=
+  ⟨one_braiding X Y, mul_braiding X Y⟩
 
 end Mon_Class
 
