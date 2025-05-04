@@ -55,7 +55,7 @@ add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 You should also extend this typeclass when you extend `NonUnitalStarRingHom`. -/
 class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
-    [FunLike F A B] [NonUnitalRingHomClass F A B] extends StarHomClass F A B : Prop
+    [FunLike F A B] [NonUnitalRingHomClass F A B] : Prop extends StarHomClass F A B
 
 namespace NonUnitalStarRingHomClass
 
@@ -151,7 +151,7 @@ variable (A)
 protected def id : A →⋆ₙ+* A :=
   { (1 : A →ₙ+* A) with map_star' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalStarRingHom.id A) = id :=
   rfl
 
@@ -202,7 +202,7 @@ end Basic
 section Zero
 
 -- the `zero` requires extra type class assumptions because we need `star_zero`
-variable {A B C D : Type*}
+variable {A B C : Type*}
 variable [NonUnitalNonAssocSemiring A] [StarAddMonoid A]
 variable [NonUnitalNonAssocSemiring B] [StarAddMonoid B]
 
@@ -248,8 +248,8 @@ add_decl_doc StarRingEquiv.toRingEquiv
 `B`.
 You should also extend this typeclass when you extend `StarRingEquiv`. -/
 class StarRingEquivClass (F : Type*) (A B : outParam Type*)
-    [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B]
-    extends RingEquivClass F A B : Prop where
+    [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B] : Prop
+    extends RingEquivClass F A B where
   /-- By definition, a ⋆-ring equivalence preserves the `star` operation. -/
   map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
 
@@ -319,9 +319,6 @@ theorem toRingEquiv_eq_coe (e : A ≃⋆+* B) : e.toRingEquiv = e :=
 theorem ext {f g : A ≃⋆+* B} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : A ≃⋆+* B} : f = g ↔ ∀ a, f a = g a :=
-  DFunLike.ext_iff
-
 /-- The identity map as a star ring isomorphism. -/
 @[refl]
 def refl : A ≃⋆+* A :=
@@ -357,9 +354,7 @@ theorem invFun_eq_symm {e : A ≃⋆+* B} : EquivLike.inv e = e.symm :=
   rfl
 
 @[simp]
-theorem symm_symm (e : A ≃⋆+* B) : e.symm.symm = e := by
-  ext
-  rfl
+theorem symm_symm (e : A ≃⋆+* B) : e.symm.symm = e := rfl
 
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆+* B) → B ≃⋆+* A) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
@@ -370,7 +365,7 @@ theorem coe_mk (e h₁) : ⇑(⟨e, h₁⟩ : A ≃⋆+* B) = e := rfl
 theorem mk_coe (e : A ≃⋆+* B) (e' h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B) = e := ext fun _ => rfl
 
-/-- Auxilliary definition to avoid looping in `dsimp` with `StarRingEquiv.symm_mk`. -/
+/-- Auxiliary definition to avoid looping in `dsimp` with `StarRingEquiv.symm_mk`. -/
 protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅) :=
   (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B).symm
 
@@ -388,7 +383,7 @@ theorem refl_symm : (StarRingEquiv.refl : A ≃⋆+* A).symm = StarRingEquiv.ref
 
 /-- Transitivity of `StarRingEquiv`. -/
 @[trans]
-def trans (e₁ : A≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
+def trans (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
   { e₁.toRingEquiv.trans e₂.toRingEquiv with
     map_star' := fun a =>
       show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by
@@ -403,7 +398,7 @@ theorem symm_apply_apply (e : A ≃⋆+* B) : ∀ x, e.symm (e x) = x :=
   e.toRingEquiv.symm_apply_apply
 
 @[simp]
-theorem symm_trans_apply (e₁ : A ≃⋆+* B) (e₂ : B≃⋆+* C) (x : C) :
+theorem symm_trans_apply (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) (x : C) :
     (e₁.trans e₂).symm x = e₁.symm (e₂.symm x) :=
   rfl
 
@@ -430,7 +425,7 @@ variable {F G A B : Type*}
 variable [NonUnitalNonAssocSemiring A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Star B]
 variable [FunLike F A B] [NonUnitalRingHomClass F A B] [NonUnitalStarRingHomClass F A B]
-variable [FunLike G B A] [NonUnitalRingHomClass G B A] [NonUnitalStarRingHomClass G B A]
+variable [FunLike G B A]
 
 /-- If a (unital or non-unital) star ring morphism has an inverse, it is an isomorphism of
 star rings. -/

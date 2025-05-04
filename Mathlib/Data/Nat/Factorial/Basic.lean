@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Defs
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Monotonicity.Attr
 
@@ -12,6 +12,8 @@ import Mathlib.Tactic.Monotonicity.Attr
 # Factorial and variants
 
 This file defines the factorial, along with the ascending and descending variants.
+For the proof that the factorial of `n` counts the permutations of an `n`-element set,
+see `Fintype.card_perm`.
 
 ## Main declarations
 
@@ -30,7 +32,13 @@ def factorial : ℕ → ℕ
   | 0 => 1
   | succ n => succ n * factorial n
 
-/-- factorial notation `n!` -/
+/-- factorial notation `(n)!` for `Nat.factorial n`.
+In Lean, names can end with exclamation marks (e.g. `List.get!`), so you cannot write
+`n!` in Lean, but must write `(n)!` or `n !` instead. The former is preferred, since
+Lean can confuse the `!` in `n !` as the (prefix) boolean negation operation in some
+cases.
+For numerals the parentheses are not required, so e.g. `0!` or `1!` work fine.
+Todo: replace occurrences of `n !` with `(n)!` in Mathlib. -/
 scoped notation:10000 n "!" => Nat.factorial n
 
 section Factorial
@@ -50,8 +58,8 @@ theorem factorial_succ (n : ℕ) : (n + 1)! = (n + 1) * n ! :=
 @[simp] theorem factorial_two : 2! = 2 :=
   rfl
 
-theorem mul_factorial_pred (hn : 0 < n) : n * (n - 1)! = n ! :=
-  Nat.sub_add_cancel (Nat.succ_le_of_lt hn) ▸ rfl
+theorem mul_factorial_pred (hn : n ≠ 0) : n * (n - 1)! = n ! :=
+  Nat.sub_add_cancel (one_le_iff_ne_zero.mpr hn) ▸ rfl
 
 theorem factorial_pos : ∀ n, 0 < n !
   | 0 => Nat.zero_lt_one
@@ -61,9 +69,9 @@ theorem factorial_ne_zero (n : ℕ) : n ! ≠ 0 :=
   ne_of_gt (factorial_pos _)
 
 theorem factorial_dvd_factorial {m n} (h : m ≤ n) : m ! ∣ n ! := by
-  induction' h with n _ ih
-  · exact Nat.dvd_refl _
-  · exact Nat.dvd_trans ih (Nat.dvd_mul_left _ _)
+  induction h with
+  | refl => exact Nat.dvd_refl _
+  | step _ ih => exact Nat.dvd_trans ih (Nat.dvd_mul_left _ _)
 
 theorem dvd_factorial : ∀ {m n}, 0 < m → m ≤ n → m ∣ n !
   | succ _, _, _, h => Nat.dvd_trans (Nat.dvd_mul_right _ _) (factorial_dvd_factorial h)
@@ -84,9 +92,9 @@ theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
     intro k hk
     rw [factorial_succ, succ_mul, Nat.lt_add_left_iff_pos]
     exact Nat.mul_pos hk k.factorial_pos
-  induction' h with k hnk ih generalizing hn
-  · exact this hn
-  · exact lt_trans (ih hn) $ this <| lt_trans hn <| lt_of_succ_le hnk
+  induction h generalizing hn with
+  | refl => exact this hn
+  | step hnk ih => exact lt_trans (ih hn) <| this <| lt_trans hn <| lt_of_succ_le hnk
 
 @[gcongr]
 lemma factorial_lt_of_lt {m n : ℕ} (hn : 0 < n) (h : n < m) : n ! < m ! := (factorial_lt hn).mpr h
@@ -157,7 +165,7 @@ theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) :
     | succ (succ n) => contradiction
 
 theorem add_factorial_le_factorial_add (i : ℕ) {n : ℕ} (n1 : 1 ≤ n) : i + n ! ≤ (i + n)! := by
-  cases' n1 with h
+  rcases n1 with - | @h
   · exact self_le_factorial _
   exact add_factorial_succ_le_factorial_add_succ i h
 
@@ -228,6 +236,18 @@ theorem factorial_mul_ascFactorial' (n k : ℕ) (h : 0 < n) :
   rw [Nat.sub_add_comm h, Nat.sub_one]
   nth_rw 2 [Nat.eq_add_of_sub_eq h rfl]
   rw [Nat.sub_one, factorial_mul_ascFactorial]
+
+theorem ascFactorial_mul_ascFactorial (n l k : ℕ) :
+    n.ascFactorial l * (n + l).ascFactorial k = n.ascFactorial (l + k) := by
+  cases n with
+  | zero =>
+    cases l
+    · simp only [ascFactorial_zero, Nat.add_zero, Nat.one_mul, Nat.zero_add]
+    · simp only [Nat.add_right_comm, zero_ascFactorial, Nat.zero_add, Nat.zero_mul]
+  | succ n' =>
+    apply Nat.mul_left_cancel (factorial_pos n')
+    simp only [Nat.add_assoc, ← Nat.mul_assoc, factorial_mul_ascFactorial]
+    rw [Nat.add_comm 1 l, ← Nat.add_assoc, factorial_mul_ascFactorial, Nat.add_assoc]
 
 /-- Avoid in favor of `Nat.factorial_mul_ascFactorial` if you can. ℕ-division isn't worth it. -/
 theorem ascFactorial_eq_div (n k : ℕ) : (n + 1).ascFactorial k = (n + k)! / n ! :=
@@ -354,11 +374,31 @@ theorem factorial_mul_descFactorial : ∀ {n k : ℕ}, k ≤ n → (n - k)! * n.
     rw [succ_descFactorial_succ, succ_sub_succ, ← Nat.mul_assoc, Nat.mul_comm (n - k)!,
       Nat.mul_assoc, factorial_mul_descFactorial (Nat.succ_le_succ_iff.1 h), factorial_succ]
 
+theorem descFactorial_mul_descFactorial {k m n : ℕ} (hkm : k ≤ m) :
+    (n - k).descFactorial (m - k) * n.descFactorial k = n.descFactorial m := by
+  by_cases hmn : m ≤ n
+  · apply Nat.mul_left_cancel (n - m).factorial_pos
+    rw [factorial_mul_descFactorial hmn, show n - m = (n - k) - (m - k) by omega, ← Nat.mul_assoc,
+      factorial_mul_descFactorial (show m - k ≤ n - k by omega),
+      factorial_mul_descFactorial (le_trans hkm hmn)]
+  · rw [descFactorial_eq_zero_iff_lt.mpr (show n < m by omega)]
+    by_cases hkn : k ≤ n
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n - k < m - k by omega), Nat.zero_mul]
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n < k by omega), Nat.mul_zero]
+
 /-- Avoid in favor of `Nat.factorial_mul_descFactorial` if you can. ℕ-division isn't worth it. -/
 theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n ! / (n - k)! := by
   apply Nat.mul_left_cancel (n - k).factorial_pos
   rw [factorial_mul_descFactorial h]
   exact (Nat.mul_div_cancel' <| factorial_dvd_factorial <| Nat.sub_le n k).symm
+
+theorem descFactorial_le (n : ℕ) {k m : ℕ} (h : k ≤ m) :
+    k.descFactorial n ≤ m.descFactorial n := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [descFactorial_succ, descFactorial_succ]
+    exact Nat.mul_le_mul (Nat.sub_le_sub_right h n) ih
 
 theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.descFactorial k
   | 0 => by rw [descFactorial_zero, Nat.pow_zero]
@@ -414,7 +454,7 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
   rw [Nat.mul_comm, Nat.two_mul]
   calc
     _ ≤ (n + 1)! * (n + 2) ^ (n + 1) :=
-      Nat.mul_le_mul_left _ (pow_le_pow_of_le_left (le_add_left _ _) _)
+      Nat.mul_le_mul_left _ (Nat.pow_le_pow_left (le_add_left _ _) _)
     _ ≤ _ := Nat.factorial_mul_pow_le_factorial
 
 end Nat

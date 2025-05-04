@@ -70,14 +70,14 @@ private theorem map_teichmullerFun (f : R →+* S) (r : R) :
   · rfl
   · exact f.map_zero
 
-private theorem teichmuller_mul_aux₁ (x y : MvPolynomial R ℚ) :
+private theorem teichmuller_mul_aux₁ {R : Type*} (x y : MvPolynomial R ℚ) :
     teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y := by
   apply (ghostMap.bijective_of_invertible p (MvPolynomial R ℚ)).1
   rw [RingHom.map_mul]
   ext1 n
   simp only [Pi.mul_apply, ghostMap_apply, ghostComponent_teichmullerFun, mul_pow]
 
-private theorem teichmuller_mul_aux₂ (x y : MvPolynomial R ℤ) :
+private theorem teichmuller_mul_aux₂ {R : Type*} (x y : MvPolynomial R ℤ) :
     teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y := by
   refine map_injective (MvPolynomial.map (Int.castRingHom ℚ))
     (MvPolynomial.map_injective _ Int.cast_injective) ?_

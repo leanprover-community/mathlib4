@@ -51,7 +51,7 @@ section Normed
 variable {E : Type*} [NormedAddCommGroup E]
 
 /-- A normed additive group is complete if any absolutely convergent series converges in the
-space.  -/
+space. -/
 lemma NormedAddCommGroup.completeSpace_of_summable_imp_tendsto
     (h : ∀ u : ℕ → E,
       Summable (‖u ·‖) → ∃ a, Tendsto (fun n => ∑ i ∈ range n, u i) atTop (𝓝 a)) :
@@ -73,14 +73,14 @@ lemma NormedAddCommGroup.completeSpace_of_summable_imp_tendsto
   simpa only [sub_add_cancel] using h₁
 
 /-- In a complete normed additive group, every absolutely convergent series converges in the
-space.  -/
+space. -/
 lemma NormedAddCommGroup.summable_imp_tendsto_of_complete [CompleteSpace E] (u : ℕ → E)
     (hu : Summable (‖u ·‖)) : ∃ a, Tendsto (fun n => ∑ i ∈ range n, u i) atTop (𝓝 a) := by
   refine cauchySeq_tendsto_of_complete <| cauchySeq_of_summable_dist ?_
   simp [dist_eq_norm, sum_range_succ, hu]
 
 /-- In a normed additive group, every absolutely convergent series converges in the
-space iff the space is complete.  -/
+space iff the space is complete. -/
 lemma NormedAddCommGroup.summable_imp_tendsto_iff_completeSpace :
     (∀ u : ℕ → E, Summable (‖u ·‖) → ∃ a, Tendsto (fun n => ∑ i ∈ range n, u i) atTop (𝓝 a))
      ↔ CompleteSpace E :=

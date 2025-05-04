@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.Interval.Set.UnorderedInterval
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Intervals in `pi`-space
@@ -51,22 +52,20 @@ theorem piecewise_mem_Icc' {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ 
 
 section Nonempty
 
-variable [Nonempty ι]
-
-theorem pi_univ_Ioi_subset : (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun z hz ↦
+theorem pi_univ_Ioi_subset [Nonempty ι]: (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun _ hz ↦
   ⟨fun i ↦ le_of_lt <| hz i trivial, fun h ↦
-    (Nonempty.elim ‹Nonempty ι›) fun i ↦ not_lt_of_le (h i) (hz i trivial)⟩
+    (‹Nonempty ι›.elim) fun i ↦ not_lt_of_le (h i) (hz i trivial)⟩
 
-theorem pi_univ_Iio_subset : (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
+theorem pi_univ_Iio_subset [Nonempty ι]: (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
   pi_univ_Ioi_subset (α := fun i ↦ (α i)ᵒᵈ) x
 
-theorem pi_univ_Ioo_subset : (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
+theorem pi_univ_Ioo_subset [Nonempty ι]: (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 
-theorem pi_univ_Ioc_subset : (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
+theorem pi_univ_Ioc_subset [Nonempty ι]: (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, fun i ↦ (hx i trivial).2⟩
 
-theorem pi_univ_Ico_subset : (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
+theorem pi_univ_Ico_subset [Nonempty ι]: (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
   ⟨fun i ↦ (hx i trivial).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 
 end Nonempty
@@ -101,7 +100,7 @@ theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {
   rw [disjoint_left]
   rintro z h₁ h₂
   refine (h₁ i₀ (mem_univ _)).2.not_lt ?_
-  simpa only [Function.update_same] using (h₂ i₀ (mem_univ _)).1
+  simpa only [Function.update_self] using (h₂ i₀ (mem_univ _)).1
 
 end PiPreorder
 
@@ -117,11 +116,11 @@ theorem image_update_Icc (f : ∀ i, α i) (i : ι) (a b : α i) :
   refine ⟨?_, fun h => ⟨x i, ?_, ?_⟩⟩
   · rintro ⟨c, hc, rfl⟩
     simpa [update_le_update_iff]
-  · simpa only [Function.update_same] using h i (mem_univ i)
+  · simpa only [Function.update_self] using h i (mem_univ i)
   · ext j
     obtain rfl | hij := eq_or_ne i j
-    · exact Function.update_same _ _ _
-    · simpa only [Function.update_noteq hij.symm, le_antisymm_iff] using h j (mem_univ j)
+    · exact Function.update_self ..
+    · simpa only [Function.update_of_ne hij.symm, le_antisymm_iff] using h j (mem_univ j)
 
 theorem image_update_Ico (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' Ico a b = Ico (update f i a) (update f i b) := by
@@ -290,10 +289,9 @@ theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     (Icc x y \ pi univ fun i ↦ Ioo (x' i) (y' i)) ⊆
     (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y := by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
-  simp at ha'
-  simp only [le_update_iff, ne_eq, not_and, not_forall, not_le, exists_prop, gt_iff_lt,
-    update_le_iff, mem_union, mem_iUnion, mem_Icc, hxa, hay _, implies_true, and_true, true_and,
-    hxa _, hay, ← exists_or]
+  simp only [mem_pi, mem_univ, mem_Ioo, true_implies, not_forall] at ha'
+  simp only [le_update_iff, update_le_iff, mem_union, mem_iUnion, mem_Icc,
+    hxa, hay _, hxa _, hay, ← exists_or]
   rcases ha' with ⟨w, hw⟩
   apply Exists.intro w
   cases lt_or_le (x' w) (a w) <;> simp_all

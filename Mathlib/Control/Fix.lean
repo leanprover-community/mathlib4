@@ -25,8 +25,6 @@ An instance is defined for `Part`.
 
 universe u v
 
-open scoped Classical
-
 variable {α : Type*} {β : α → Type*}
 
 /-- `Fix α` provides a `fix` operator to define recursive computation
@@ -66,6 +64,7 @@ protected def fix (x : α) : Part (β x) :=
   (Part.assert (∃ i, (Fix.approx f i x).Dom)) fun h =>
     WellFounded.fix.{1} (Nat.Upto.wf h) (fixAux f) Nat.Upto.zero x
 
+open Classical in
 protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     Part.fix f x = Fix.approx f (Nat.succ (Nat.find h')) x := by
   let p := fun i : ℕ => (Fix.approx f i x).Dom
@@ -76,12 +75,12 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
   revert hk
   dsimp [Part.fix]; rw [assert_pos h']; revert this
   generalize Upto.zero = z; intro _this hk
-  suffices ∀ x',
-    WellFounded.fix (Part.fix.proof_1 f x h') (fixAux f) z x' = Fix.approx f (succ k) x'
-    from this _
+  suffices ∀ x' hwf,
+    WellFounded.fix hwf (fixAux f) z x' = Fix.approx f (succ k) x'
+    from this _ _
   induction k generalizing z with
   | zero =>
-    intro x'
+    intro x' _
     rw [Fix.approx, WellFounded.fix_eq, fixAux]
     congr
     ext x : 1
@@ -90,7 +89,7 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     · rw [Nat.zero_add] at _this
       simpa only [not_not, Coe]
   | succ n n_ih =>
-    intro x'
+    intro x' _
     rw [Fix.approx, WellFounded.fix_eq, fixAux]
     congr
     ext : 1

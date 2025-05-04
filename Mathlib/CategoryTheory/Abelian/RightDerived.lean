@@ -1,10 +1,10 @@
 /-
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Scott Morrison, Joël Riou
+Authors: Jujian Zhang, Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Abelian.InjectiveResolution
+import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
 /-!
 # Right-derived functors
@@ -38,11 +38,11 @@ and show how to compute the components.
 ## TODO
 
 * refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
-material enters mathlib: derived categories, injective/projective derivability
-structures, existence of derived functors from derivability structures.
-Eventually, we shall get a right derived functor
-`F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`,
-and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
+  material enters mathlib: derived categories, injective/projective derivability
+  structures, existence of derived functors from derivability structures.
+  Eventually, we shall get a right derived functor
+  `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`,
+  and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
 
 -/
 
@@ -252,14 +252,14 @@ noncomputable def toRightDerivedZero' {X : C}
       zero_comp, F.map_zero])
 
 @[reassoc (attr := simp)]
-lemma toRightDerivedZero'_comp_iCycles {X : C}
+lemma toRightDerivedZero'_comp_iCycles {C} [Category C] [Abelian C] {X : C}
     (P : InjectiveResolution X) (F : C ⥤ D) [F.Additive] :
     P.toRightDerivedZero' F ≫
       HomologicalComplex.iCycles _ _ = F.map (P.ι.f 0) := by
   simp [toRightDerivedZero']
 
 @[reassoc]
-lemma toRightDerivedZero'_naturality {X Y : C} (f : X ⟶ Y)
+lemma toRightDerivedZero'_naturality {C} [Category C] [Abelian C] {X Y : C} (f : X ⟶ Y)
     (P : InjectiveResolution X) (Q : InjectiveResolution Y)
     (φ : P.cocomplex ⟶ Q.cocomplex) (comm : P.ι.f 0 ≫ φ.f 0 = f ≫ Q.ι.f 0)
     (F : C ⥤ D) [F.Additive] :

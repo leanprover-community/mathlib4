@@ -10,17 +10,17 @@ on:
 
 jobs:
   update-label:
-    if: github.event.issue.pull_request != null && (contains(github.event.comment.body, 'awaiting-author') || contains(github.event.comment.body, 'WIP'))
+    if: github.event.issue.pull_request && (contains(github.event.comment.body, 'awaiting-author') || contains(github.event.comment.body, 'WIP'))
     runs-on: ubuntu-latest
 
     steps:
     - name: Add label based on comment
-      uses: actions/github-script@v6
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const { owner, repo, number: issue_number  } = context.issue;
-          const commentLines = context.payload.comment.body.split('\r\n');
+          const commentLines = context.payload.comment.body.split(/\r?\n/);
 
           const awaitingAuthor = commentLines.includes('awaiting-author');
           const wip = commentLines.includes('WIP');

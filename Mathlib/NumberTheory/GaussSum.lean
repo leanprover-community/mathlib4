@@ -62,7 +62,6 @@ variable {R' : Type v} [CommRing R']
 ### Definition and first properties
 -/
 
-
 /-- Definition of the Gauss sum associated to a multiplicative and an additive character. -/
 def gaussSum (χ : MulChar R R') (ψ : AddChar R R') : R' :=
   ∑ a, χ a * ψ a
@@ -80,11 +79,33 @@ end GaussSumDef
 ### The product of two Gauss sums
 -/
 
-
 section GaussSumProd
 
--- In the following, we need `R` to be a finite field and `R'` to be a domain.
-variable {R : Type u} [Field R] [Fintype R] {R' : Type v} [CommRing R'] [IsDomain R']
+open Finset in
+/-- A formula for the product of two Gauss sums with the same additive character. -/
+lemma gaussSum_mul {R : Type u} [CommRing R] [Fintype R] {R' : Type v} [CommRing R']
+    (χ φ : MulChar R R') (ψ : AddChar R R') :
+    gaussSum χ ψ * gaussSum φ ψ = ∑ t : R, ∑ x : R, χ x * φ (t - x) * ψ t := by
+  rw [gaussSum, gaussSum, sum_mul_sum]
+  conv => enter [1, 2, x, 2, x_1]; rw [mul_mul_mul_comm]
+  simp only [← ψ.map_add_eq_mul]
+  have sum_eq x : ∑ y : R, χ x * φ y * ψ (x + y) = ∑ y : R, χ x * φ (y - x) * ψ y := by
+    rw [sum_bij (fun a _ ↦ a + x)]
+    · simp only [mem_univ, forall_true_left, forall_const]
+    · simp only [mem_univ, add_left_inj, imp_self, forall_const]
+    · exact fun b _ ↦ ⟨b - x, mem_univ _, by rw [sub_add_cancel]⟩
+    · exact fun a _ ↦ by rw [add_sub_cancel_right, add_comm]
+  rw [sum_congr rfl fun x _ ↦ sum_eq x, sum_comm]
+
+-- In the following, we need `R` to be a finite field.
+variable {R : Type u} [Field R] [Fintype R] {R' : Type v} [CommRing R']
+
+lemma mul_gaussSum_inv_eq_gaussSum (χ : MulChar R R') (ψ : AddChar R R') :
+    χ (-1) * gaussSum χ ψ⁻¹ = gaussSum χ ψ := by
+  rw [ψ.inv_mulShift, ← Units.coe_neg_one]
+  exact gaussSum_mulShift χ ψ (-1)
+
+variable [IsDomain R'] --  From now on, `R'` needs to be a domain.
 
 -- A helper lemma for `gaussSum_mul_gaussSum_eq_card` below
 -- Is this useful enough in other contexts to be public?
@@ -97,7 +118,7 @@ private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : χ ≠ 1) (ψ : AddC
       Finset.sum_const_zero, map_zero_eq_one, mul_one, χ.sum_eq_zero_of_ne_one hχ]
   · -- case `b ≠ 0`
     refine (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x ↦ ?_).symm
-    rw [mul_assoc, mul_comm x, ← mul_assoc, mul_inv_cancel hb, one_mul, mul_sub, mul_one]
+    rw [mul_assoc, mul_comm x, ← mul_assoc, mul_inv_cancel₀ hb, one_mul, mul_sub, mul_one]
 
 /-- We have `gaussSum χ ψ * gaussSum χ⁻¹ ψ⁻¹ = Fintype.card R`
 when `χ` is nontrivial and `ψ` is primitive (and `R` is a field). -/
@@ -116,6 +137,23 @@ theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ ≠ 1) {ψ :
   rw [Finset.sum_ite_eq' Finset.univ (1 : R)]
   simp only [Finset.mem_univ, map_one, one_mul, if_true]
 
+/-- If `χ` is a multiplicative character of order `n` on a finite field `F`,
+then `g(χ) * g(χ^(n-1)) = χ(-1)*#F` -/
+lemma gaussSum_mul_gaussSum_pow_orderOf_sub_one {χ : MulChar R R'} {ψ : AddChar R R'}
+    (hχ : χ ≠ 1) (hψ : ψ.IsPrimitive) :
+    gaussSum χ ψ * gaussSum (χ ^ (orderOf χ - 1)) ψ = χ (-1) * Fintype.card R := by
+  have h : χ ^ (orderOf χ - 1) = χ⁻¹ := by
+    refine (inv_eq_of_mul_eq_one_right ?_).symm
+    rw [← pow_succ', Nat.sub_one_add_one_eq_of_pos χ.orderOf_pos, pow_orderOf_eq_one]
+  rw [h, ← mul_gaussSum_inv_eq_gaussSum χ⁻¹, mul_left_comm, gaussSum_mul_gaussSum_eq_card hχ hψ,
+    MulChar.inv_apply', inv_neg_one]
+
+/-- The Gauss sum of a nontrivial character on a finite field does not vanish. -/
+lemma gaussSum_ne_zero_of_nontrivial (h : (Fintype.card R : R') ≠ 0) {χ : MulChar R R'}
+    (hχ : χ ≠ 1) {ψ : AddChar R R'} (hψ : ψ.IsPrimitive) :
+    gaussSum χ ψ ≠ 0 :=
+  fun H ↦ h.symm <| zero_mul (gaussSum χ⁻¹ _) ▸ H ▸ gaussSum_mul_gaussSum_eq_card hχ hψ
+
 /-- When `χ` is a nontrivial quadratic character, then the square of `gaussSum χ ψ`
 is `χ(-1)` times the cardinality of `R`. -/
 theorem gaussSum_sq {χ : MulChar R R'} (hχ₁ : χ ≠ 1) (hχ₂ : IsQuadratic χ)
@@ -131,7 +169,6 @@ end GaussSumProd
 /-!
 ### Gauss sums and Frobenius
 -/
-
 
 section gaussSum_frob
 
@@ -164,9 +201,10 @@ sum of`χ` and `ψ` is `χ (p^n)` times the original Gauss sum. -/
 theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') :
     gaussSum χ ψ ^ p ^ n = χ ((p : R) ^ n) * gaussSum χ ψ := by
-  induction' n with n ih
-  · rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
-  · rw [pow_succ, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ, map_mul,
+  induction n with
+  | zero => rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
+  | succ n ih =>
+    rw [pow_succ, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ, map_mul,
       ← pow_apply' χ fp.1.ne_zero ((p : R) ^ n), hχ.pow_char p]
 
 end gaussSum_frob
@@ -174,7 +212,6 @@ end gaussSum_frob
 /-!
 ### Values of quadratic characters
 -/
-
 
 section GaussSumValues
 
@@ -234,7 +271,6 @@ This can be used to show that the quadratic character of `F` takes the value
 The proof uses the Gauss sum of `χ₈` and a primitive additive character on `ℤ/8ℤ`;
 in this way, the result is reduced to `card_pow_char_pow`.
 -/
-
 
 open ZMod
 

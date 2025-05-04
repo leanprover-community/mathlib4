@@ -3,8 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
+import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
 
@@ -12,19 +12,21 @@ import Mathlib.RingTheory.Ideal.Quotient
 
 ## Main definitions
 
-* `LocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
-* `LocalRing.residue`: The quotient map from a local ring to its residue field.
+* `IsLocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
+* `IsLocalRing.residue`: The quotient map from a local ring to its residue field.
 -/
 
-namespace LocalRing
+namespace IsLocalRing
 
-variable (R : Type*) [CommRing R] [LocalRing R]
+variable (R : Type*) [CommRing R] [IsLocalRing R]
 
 /-- The residue field of a local ring is the quotient of the ring by its maximal ideal. -/
 def ResidueField :=
   R ⧸ maximalIdeal R
 
--- Porting note: failed at `deriving` instances automatically
+-- The `CommRing, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance ResidueFieldCommRing : CommRing (ResidueField R) :=
   show CommRing (R ⧸ maximalIdeal R) from inferInstance
 
@@ -38,4 +40,7 @@ noncomputable instance ResidueField.field : Field (ResidueField R) :=
 def residue : R →+* ResidueField R :=
   Ideal.Quotient.mk _
 
-end LocalRing
+end IsLocalRing
+
+@[deprecated (since := "2024-11-11")] alias LocalRing.ResidueField := IsLocalRing.ResidueField
+@[deprecated (since := "2024-11-11")] alias LocalRing.residue := IsLocalRing.residue

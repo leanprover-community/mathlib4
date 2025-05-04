@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Category.BialgebraCat.Basic
-import Mathlib.RingTheory.HopfAlgebra
+import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
 # The category of Hopf algebras over a commutative ring
@@ -23,10 +23,13 @@ universe v u
 variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-Hopf algebras. -/
-structure HopfAlgebraCat extends Bundled Ring.{v} where
-  [instHopfAlgebra : HopfAlgebra R α]
+structure HopfAlgebraCat where
+  /-- The underlying type. -/
+  carrier : Type v
+  [instRing : Ring carrier]
+  [instHopfAlgebra : HopfAlgebra R carrier]
 
-attribute [instance] HopfAlgebraCat.instHopfAlgebra
+attribute [instance] HopfAlgebraCat.instHopfAlgebra HopfAlgebraCat.instRing
 
 variable {R}
 
@@ -35,17 +38,13 @@ namespace HopfAlgebraCat
 open HopfAlgebra
 
 instance : CoeSort (HopfAlgebraCat.{v} R) (Type v) :=
-  ⟨(·.α)⟩
+  ⟨(·.carrier)⟩
 
-variable (R)
-
+variable (R) in
 /-- The object in the category of `R`-Hopf algebras associated to an `R`-Hopf algebra. -/
-@[simps]
-def of (X : Type v) [Ring X] [HopfAlgebra R X] :
+abbrev of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgebraCat R where
-  instHopfAlgebra := (inferInstance : HopfAlgebra R X)
-
-variable {R}
+  carrier := X
 
 @[simp]
 lemma of_comul {X : Type v} [Ring X] [HopfAlgebra R X] :
@@ -58,30 +57,37 @@ lemma of_counit {X : Type v} [Ring X] [HopfAlgebra R X] :
 /-- A type alias for `BialgHom` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : HopfAlgebraCat.{v} R) :=
+structure Hom (V W : HopfAlgebraCat.{v} R) where
   /-- The underlying `BialgHom`. -/
-  toBialgHom : V →ₐc[R] W
-
-lemma Hom.toBialgHom_injective (V W : HopfAlgebraCat.{v} R) :
-    Function.Injective (Hom.toBialgHom : Hom V W → _) :=
-  fun ⟨f⟩ ⟨g⟩ _ => by congr
+  toBialgHom' : V →ₐc[R] W
 
 instance category : Category (HopfAlgebraCat.{v} R) where
   Hom X Y := Hom X Y
   id X := ⟨BialgHom.id R X⟩
-  comp f g := ⟨BialgHom.comp g.toBialgHom f.toBialgHom⟩
+  comp f g := ⟨BialgHom.comp g.toBialgHom' f.toBialgHom'⟩
 
--- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
-@[ext]
-lemma hom_ext {X Y : HopfAlgebraCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBialgHom) :
-    f = g :=
-  Hom.ext _ _ h
+instance concreteCategory : ConcreteCategory (HopfAlgebraCat.{v} R) (· →ₐc[R] ·) where
+  hom f := f.toBialgHom'
+  ofHom f := ⟨f⟩
+
+/-- Turn a morphism in `HopfAlgebraCat` back into a `BialgHom`. -/
+abbrev Hom.toBialgHom {X Y : HopfAlgebraCat R} (f : Hom X Y) :=
+  ConcreteCategory.hom (C := HopfAlgebraCat R) f
 
 /-- Typecheck a `BialgHom` as a morphism in `HopfAlgebraCat R`. -/
 abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
     [HopfAlgebra R X] [HopfAlgebra R Y] (f : X →ₐc[R] Y) :
     of R X ⟶ of R Y :=
-  ⟨f⟩
+  ConcreteCategory.ofHom f
+
+lemma Hom.toBialgHom_injective (V W : HopfAlgebraCat.{v} R) :
+    Function.Injective (Hom.toBialgHom : Hom V W → _) :=
+  fun ⟨f⟩ ⟨g⟩ _ => by congr
+
+@[ext]
+lemma hom_ext {X Y : HopfAlgebraCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBialgHom) :
+    f = g :=
+  Hom.ext h
 
 @[simp] theorem toBialgHom_comp {X Y Z : HopfAlgebraCat.{v} R} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).toBialgHom = g.toBialgHom.comp f.toBialgHom :=
@@ -91,17 +97,10 @@ abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
     Hom.toBialgHom (𝟙 M) = BialgHom.id _ _ :=
   rfl
 
-instance concreteCategory : ConcreteCategory.{v} (HopfAlgebraCat.{v} R) where
-  forget :=
-    { obj := fun M => M
-      map := fun f => f.toBialgHom }
-  forget_faithful :=
-    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
-
 instance hasForgetToBialgebra : HasForget₂ (HopfAlgebraCat R) (BialgebraCat R) where
   forget₂ :=
     { obj := fun X => BialgebraCat.of R X
-      map := fun {X Y} f => BialgebraCat.ofHom f.toBialgHom }
+      map := fun {_ _} f => BialgebraCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_bialgebra_obj (X : HopfAlgebraCat R) :
@@ -129,8 +128,8 @@ variable [HopfAlgebra R X] [HopfAlgebra R Y] [HopfAlgebra R Z]
 def toHopfAlgebraCatIso (e : X ≃ₐc[R] Y) : HopfAlgebraCat.of R X ≅ HopfAlgebraCat.of R Y where
   hom := HopfAlgebraCat.ofHom e
   inv := HopfAlgebraCat.ofHom e.symm
-  hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
-  inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
+  hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
 @[simp] theorem toHopfAlgebraCatIso_refl :
     toHopfAlgebraCatIso (BialgEquiv.refl R X) = .refl _ :=

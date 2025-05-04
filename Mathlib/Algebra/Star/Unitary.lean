@@ -5,7 +5,7 @@ Authors: Shing Tak Lam, Frédéric Dupuis
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 
 /-!
 # Unitary elements of a star monoid
@@ -89,7 +89,7 @@ theorem mul_star_self (U : unitary R) : U * star U = 1 :=
 instance : Group (unitary R) :=
   { Submonoid.toMonoid _ with
     inv := star
-    mul_left_inv := star_mul_self }
+    inv_mul_cancel := star_mul_self }
 
 instance : InvolutiveStar (unitary R) :=
   ⟨by
@@ -122,7 +122,7 @@ def toUnits : unitary R →* Rˣ where
 theorem toUnits_injective : Function.Injective (toUnits : unitary R → Rˣ) := fun _ _ h =>
   Subtype.ext <| Units.ext_iff.mp h
 
-theorem _root_.IsUnit.mem_unitary_of_star_mul_self  {u : R} (hu : IsUnit u)
+theorem _root_.IsUnit.mem_unitary_of_star_mul_self {u : R} (hu : IsUnit u)
     (h_mul : star u * u = 1) : u ∈ unitary R := by
   refine unitary.mem_iff.mpr ⟨h_mul, ?_⟩
   lift u to Rˣ using hu
@@ -194,7 +194,7 @@ theorem coe_div (U₁ U₂ : unitary R) : ↑(U₁ / U₂) = (U₁ / U₂ : R) :
 
 @[norm_cast]
 theorem coe_zpow (U : unitary R) (z : ℤ) : ↑(U ^ z) = (U : R) ^ z := by
-  induction z
+  cases z
   · simp [SubmonoidClass.coe_pow]
   · simp [coe_inv]
 

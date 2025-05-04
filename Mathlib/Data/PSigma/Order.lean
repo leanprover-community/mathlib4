@@ -1,13 +1,14 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Minchao Wu
+Authors: Kim Morrison, Minchao Wu
 -/
 import Mathlib.Data.Sigma.Lex
-import Mathlib.Order.BoundedOrder
-import Mathlib.Mathport.Notation
+import Mathlib.Util.Notation3
 import Init.NotationExtra
 import Mathlib.Data.Sigma.Basic
+import Mathlib.Order.Lattice
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Lexicographic order on a sigma type
@@ -51,7 +52,7 @@ instance lt [LT ι] [∀ i, LT (α i)] : LT (Σₗ' i, α i) :=
 
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, α i) :=
   { Lex.le, Lex.lt with
-    le_refl := fun ⟨i, a⟩ => Lex.right _ le_rfl,
+    le_refl := fun ⟨_, _⟩ => Lex.right _ le_rfl,
     le_trans := by
       rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ ⟨a₃, b₃⟩ ⟨h₁r⟩ ⟨h₂r⟩
       · left
@@ -96,8 +97,8 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder 
         · exact Or.inl (Lex.right _ hab)
         · exact Or.inr (Lex.right _ hba)
       · exact Or.inr (Lex.left _ _ hji),
-    decidableEq := PSigma.decidableEq, decidableLE := Lex.decidable _ _,
-    decidableLT := Lex.decidable _ _ }
+    toDecidableEq := PSigma.decidableEq, toDecidableLE := Lex.decidable _ _,
+    toDecidableLT := Lex.decidable _ _ }
 
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Moritz Doll
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Opposite
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
@@ -36,7 +36,7 @@ Sesquilinear form, Sesquilinear map, matrix, basis
 -/
 
 
-variable {R R₁ S₁ R₂ S₂ M M₁ M₂ M₁' M₂' N₂ n m n' m' ι : Type*}
+variable {R R₁ S₁ R₂ S₂ M₁ M₂ M₁' M₂' N₂ n m n' m' ι : Type*}
 
 open Finset LinearMap Matrix
 
@@ -63,13 +63,12 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
         MulAction.mul_smul])
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, smul_add, sum_add_distrib])
     (fun _ v w => by
-      simp only [Pi.smul_apply, smul_eq_mul, _root_.map_mul, MulAction.mul_smul, smul_sum])
+      simp only [Pi.smul_apply, smul_eq_mul, map_mul, MulAction.mul_smul, smul_sum])
 
 variable [DecidableEq n] [DecidableEq m]
 
-theorem Matrix.toLinearMap₂'Aux_stdBasis (f : Matrix n m N₂) (i : n) (j : m) :
-    f.toLinearMap₂'Aux σ₁ σ₂ (LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
-      (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = f i j := by
+theorem Matrix.toLinearMap₂'Aux_single (f : Matrix n m N₂) (i : n) (j : m) :
+    f.toLinearMap₂'Aux σ₁ σ₂ (Pi.single i 1) (Pi.single j 1) = f i j := by
   rw [Matrix.toLinearMap₂'Aux, mk₂'ₛₗ_apply]
   have : (∑ i', ∑ j', (if i = i' then (1 : S₁) else (0 : S₁)) •
         (if j = j' then (1 : S₂) else (0 : S₂)) • f i' j') =
@@ -112,18 +111,17 @@ variable [DecidableEq n] [DecidableEq m]
 
 theorem LinearMap.toLinearMap₂'Aux_toMatrix₂Aux (f : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) :
     Matrix.toLinearMap₂'Aux σ₁ σ₂
-        (LinearMap.toMatrix₂Aux R (fun i => stdBasis R₁ (fun _ => R₁) i 1)
-          (fun j => stdBasis R₂ (fun _ => R₂) j 1) f) =
+        (LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1) (fun j => Pi.single j 1) f) =
       f := by
   refine ext_basis (Pi.basisFun R₁ n) (Pi.basisFun R₂ m) fun i j => ?_
-  simp_rw [Pi.basisFun_apply, Matrix.toLinearMap₂'Aux_stdBasis, LinearMap.toMatrix₂Aux_apply]
+  simp_rw [Pi.basisFun_apply, Matrix.toLinearMap₂'Aux_single, LinearMap.toMatrix₂Aux_apply]
 
 theorem Matrix.toMatrix₂Aux_toLinearMap₂'Aux (f : Matrix n m N₂) :
-    LinearMap.toMatrix₂Aux R (fun i => LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
-        (fun j => LinearMap.stdBasis R₂ (fun _ => R₂) j 1) (f.toLinearMap₂'Aux σ₁ σ₂) =
+    LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1)
+        (fun j => Pi.single j 1) (f.toLinearMap₂'Aux σ₁ σ₂) =
       f := by
   ext i j
-  simp_rw [LinearMap.toMatrix₂Aux_apply, Matrix.toLinearMap₂'Aux_stdBasis]
+  simp_rw [LinearMap.toMatrix₂Aux_apply, Matrix.toLinearMap₂'Aux_single]
 
 end CommSemiring
 
@@ -137,7 +135,7 @@ This section deals with the conversion between matrices and sesquilinear maps on
 -/
 
 variable [CommSemiring R] [AddCommMonoid N₂] [Module R N₂] [Semiring R₁] [Semiring R₂]
-  [SMulCommClass R R N₂] [Semiring S₁] [Semiring S₂] [Module S₁ N₂] [Module S₂ N₂]
+  [Semiring S₁] [Semiring S₂] [Module S₁ N₂] [Module S₂ N₂]
   [SMulCommClass S₁ R N₂] [SMulCommClass S₂ R N₂] [SMulCommClass S₂ S₁ N₂]
 variable {σ₁ : R₁ →+* S₁} {σ₂ : R₂ →+* S₂}
 variable [Fintype n] [Fintype m]
@@ -147,9 +145,7 @@ variable (R)
 
 /-- The linear equivalence between sesquilinear maps and `n × m` matrices -/
 def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
-  { LinearMap.toMatrix₂Aux R (fun i => stdBasis R₁ (fun _ => R₁) i 1) fun j =>
-      stdBasis R₂ (fun _ => R₂) j
-        1 with
+  { LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1) (fun j => Pi.single j 1) with
     toFun := LinearMap.toMatrix₂Aux R _ _
     invFun := Matrix.toLinearMap₂'Aux σ₁ σ₂
     left_inv := LinearMap.toLinearMap₂'Aux_toMatrix₂Aux R
@@ -189,24 +185,22 @@ theorem Matrix.toLinearMap₂'_apply (M : Matrix n m N₂) (x : n → S₁) (y :
     rw [RingHom.id_apply, RingHom.id_apply, smul_comm]
 
 theorem Matrix.toLinearMap₂'_apply' {T : Type*} [CommSemiring T] (M : Matrix n m T) (v : n → T)
-    (w : m → T) : Matrix.toLinearMap₂' T M v w = Matrix.dotProduct v (M *ᵥ w) := by
-  simp_rw [Matrix.toLinearMap₂'_apply, Matrix.dotProduct, Matrix.mulVec, Matrix.dotProduct]
+    (w : m → T) : Matrix.toLinearMap₂' T M v w = dotProduct v (M *ᵥ w) := by
+  simp_rw [Matrix.toLinearMap₂'_apply, dotProduct, Matrix.mulVec, dotProduct]
   refine Finset.sum_congr rfl fun _ _ => ?_
   rw [Finset.mul_sum]
   refine Finset.sum_congr rfl fun _ _ => ?_
   rw [smul_eq_mul, smul_eq_mul, mul_comm (w _), ← mul_assoc]
 
 @[simp]
-theorem Matrix.toLinearMapₛₗ₂'_stdBasis (M : Matrix n m N₂) (i : n) (j : m) :
-    Matrix.toLinearMapₛₗ₂' R σ₁ σ₂ M (LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
-      (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j :=
-  Matrix.toLinearMap₂'Aux_stdBasis σ₁ σ₂ M i j
+theorem Matrix.toLinearMapₛₗ₂'_single (M : Matrix n m N₂) (i : n) (j : m) :
+    Matrix.toLinearMapₛₗ₂' R σ₁ σ₂ M (Pi.single i 1) (Pi.single j 1) = M i j :=
+  Matrix.toLinearMap₂'Aux_single σ₁ σ₂ M i j
 
 @[simp]
-theorem Matrix.toLinearMap₂'_stdBasis (M : Matrix n m N₂) (i : n) (j : m) :
-    Matrix.toLinearMap₂' R M (LinearMap.stdBasis R (fun _ => R) i 1)
-      (LinearMap.stdBasis R (fun _ => R) j 1) = M i j :=
-  Matrix.toLinearMap₂'Aux_stdBasis _ _ M i j
+theorem Matrix.toLinearMap₂'_single (M : Matrix n m N₂) (i : n) (j : m) :
+    Matrix.toLinearMap₂' R M (Pi.single i 1) (Pi.single j 1) = M i j :=
+  Matrix.toLinearMap₂'Aux_single _ _ M i j
 
 @[simp]
 theorem LinearMap.toMatrixₛₗ₂'_symm :
@@ -240,14 +234,12 @@ theorem LinearMap.toMatrix'_toLinearMap₂' (M : Matrix n m N₂) :
 
 @[simp]
 theorem LinearMap.toMatrixₛₗ₂'_apply (B : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) (i : n) (j : m) :
-    LinearMap.toMatrixₛₗ₂' R B i j =
-      B (stdBasis R₁ (fun _ => R₁) i 1) (stdBasis R₂ (fun _ => R₂) j 1) :=
+    LinearMap.toMatrixₛₗ₂' R B i j = B (Pi.single i 1) (Pi.single j 1) :=
   rfl
 
 @[simp]
 theorem LinearMap.toMatrix₂'_apply (B : (n → S₁) →ₗ[S₁] (m → S₂) →ₗ[S₂] N₂) (i : n) (j : m) :
-    LinearMap.toMatrix₂' R B i j =
-      B (stdBasis S₁ (fun _ => S₁) i 1) (stdBasis S₂ (fun _ => S₂) j 1) :=
+    LinearMap.toMatrix₂' R B i j = B (Pi.single i 1) (Pi.single j 1) :=
   rfl
 
 end ToMatrix'
@@ -268,7 +260,7 @@ theorem LinearMap.toMatrix₂'_compl₁₂ (B : (n → R) →ₗ[R] (m → R) �
     toMatrix₂' R (B.compl₁₂ l r) = (toMatrix' l)ᵀ * toMatrix₂' R B * toMatrix' r := by
   ext i j
   simp only [LinearMap.toMatrix₂'_apply, LinearMap.compl₁₂_apply, transpose_apply, Matrix.mul_apply,
-    LinearMap.toMatrix', LinearEquiv.coe_mk, sum_mul]
+    LinearMap.toMatrix', LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, sum_mul]
   rw [sum_comm]
   conv_lhs => rw [← LinearMap.sum_repr_mul_repr_mul (Pi.basisFun R n) (Pi.basisFun R m) (l _) (r _)]
   rw [Finsupp.sum_fintype]
@@ -351,8 +343,8 @@ noncomputable def Matrix.toLinearMap₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₗ[
 theorem LinearMap.toMatrix₂_apply (B : M₁ →ₗ[R] M₂ →ₗ[R] N₂) (i : n) (j : m) :
     LinearMap.toMatrix₂ b₁ b₂ B i j = B (b₁ i) (b₂ j) := by
   simp only [toMatrix₂, LinearEquiv.trans_apply, toMatrix₂'_apply, LinearEquiv.arrowCongr_apply,
-    Basis.equivFun_symm_apply, stdBasis_apply', ite_smul, one_smul, zero_smul, sum_ite_eq, mem_univ,
-    ↓reduceIte, LinearEquiv.refl_apply]
+    Basis.equivFun_symm_apply, Pi.single_apply, ite_smul, one_smul, zero_smul, sum_ite_eq',
+    mem_univ, ↓reduceIte, LinearEquiv.refl_apply]
 
 @[simp]
 theorem Matrix.toLinearMap₂_apply (M : Matrix n m N₂) (x : M₁) (y : M₂) :
@@ -478,7 +470,7 @@ end
 
 end ToMatrix
 
-/-! ### Adjoint pairs-/
+/-! ### Adjoint pairs -/
 
 
 section MatrixAdjoints
@@ -552,12 +544,10 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
   let v := Pᵀ.nonsingInvUnit (P.isUnit_det_transpose h')
   let x := A₁ᵀ * Pᵀ * J
   let y := J * P * A₂
-  -- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
-  suffices x * u.val = v.val * y ↔ (v⁻¹).val * x = y * (u⁻¹).val by
+  suffices x * u = v * y ↔ v⁻¹ * x = y * u⁻¹ by
     dsimp only [Matrix.IsAdjointPair]
     simp only [Matrix.transpose_mul]
     simp only [← mul_assoc, P.transpose_nonsing_inv]
-    -- Porting note: the previous proof used `conv` and was causing timeouts, so we use `convert`
     convert this using 2
     · rw [mul_assoc, mul_assoc, ← mul_assoc J]
       rfl
@@ -616,7 +606,7 @@ end MatrixAdjoints
 
 namespace LinearMap
 
-/-! ### Nondegenerate bilinear forms-/
+/-! ### Nondegenerate bilinear forms -/
 
 
 section Det
@@ -631,8 +621,6 @@ theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinear
     (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) ↔
       (Matrix.toLinearMap₂ b b M).SeparatingLeft :=
   (separatingLeft_congr_iff b.equivFun.symm b.equivFun.symm).symm
-
-variable (B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁)
 
 -- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
 theorem _root_.Matrix.Nondegenerate.toLinearMap₂' {M : Matrix ι ι R₁} (h : M.Nondegenerate) :

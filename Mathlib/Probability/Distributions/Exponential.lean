@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Claus Clausen, Patrick Massot
 -/
 import Mathlib.Probability.Notation
-import Mathlib.Probability.Cdf
+import Mathlib.Probability.CDF
 import Mathlib.Probability.Distributions.Gamma
 
 /-! # Exponential distributions over ℝ
@@ -55,7 +55,7 @@ lemma exponentialPDF_of_nonneg {r x : ℝ} (hx : 0 ≤ x) :
     exponentialPDF r x = ENNReal.ofReal (r * rexp (-(r * x))) := by
   simp only [exponentialPDF_eq, if_pos hx]
 
-/-- The Lebesgue integral of the exponential pdf over nonpositive reals equals 0-/
+/-- The Lebesgue integral of the exponential pdf over nonpositive reals equals 0 -/
 lemma lintegral_exponentialPDF_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPDF r y = 0 := lintegral_gammaPDF_of_nonpos hx
 
@@ -73,7 +73,7 @@ lemma measurable_exponentialPDFReal (r : ℝ) : Measurable (exponentialPDFReal r
 lemma exponentialPDFReal_pos {x r : ℝ} (hr : 0 < r) (hx : 0 < x) :
     0 < exponentialPDFReal r x := gammaPDFReal_pos zero_lt_one hr hx
 
-/-- The exponential pdf is nonnegative-/
+/-- The exponential pdf is nonnegative -/
 lemma exponentialPDFReal_nonneg {r : ℝ} (hr : 0 < r) (x : ℝ) :
     0 ≤ exponentialPDFReal r x := gammaPDFReal_nonneg zero_lt_one hr x
 
@@ -139,7 +139,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     rw [setLIntegral_congr_fun measurableSet_Icc (ae_of_all _
         (by intro a ⟨(hle : _ ≤ a), _⟩; rw [if_pos hle]))]
     rw [← ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ← integral_eq_lintegral_of_nonneg_ae
-        (eventually_of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
+        (Eventually.of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
     · have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in (0)..x, r * rexp (-(r * a)) := by
         rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]
       rw [integral_Icc_eq_integral_Ioc, ← uIoc_of_le h, this]
@@ -154,14 +154,14 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
         exact Continuous.continuousOn (Continuous.comp' (continuous_mul_left (-1)) this)
       · simp only [neg_mul, one_mul]
         exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
-    · apply Integrable.aestronglyMeasurable (Integrable.const_mul _ _)
+    · refine Integrable.aestronglyMeasurable (Integrable.const_mul ?_ _)
       rw [← IntegrableOn, integrableOn_Icc_iff_integrableOn_Ioc]
       exact exp_neg_integrableOn_Ioc hr
     · refine ne_of_lt (IntegrableOn.setLIntegral_lt_top ?_)
       rw [integrableOn_Icc_iff_integrableOn_Ioc]
       exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
 
-/-- The CDF of the exponential distribution equals ``1 - exp (-(r * x))``-/
+/-- The CDF of the exponential distribution equals ``1 - exp (-(r * x))`` -/
 lemma exponentialCDFReal_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
     exponentialCDFReal r x = if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
   rw [exponentialCDFReal_eq_lintegral hr, lintegral_exponentialPDF_eq_antiDeriv hr x,

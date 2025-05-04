@@ -22,11 +22,10 @@ predicate `S`) but are not completely determined.
   of the set `s`. The specific element of `s` that the VM computes
   is hidden by a quotient construction, allowing for the representation
   of nondeterministic functions. -/
-  -- Porting note: removed universe parameter
 structure Semiquot (α : Type*) where mk' ::
-  /-- Set containing some element of `α`-/
+  /-- Set containing some element of `α` -/
   s : Set α
-  /-- Assertion of non-emptiness via `Trunc`-/
+  /-- Assertion of non-emptiness via `Trunc` -/
   val : Trunc s
 
 namespace Semiquot
@@ -34,7 +33,7 @@ namespace Semiquot
 variable {α : Type*} {β : Type*}
 
 instance : Membership α (Semiquot α) :=
-  ⟨fun a q => a ∈ q.s⟩
+  ⟨fun q a => a ∈ q.s⟩
 
 /-- Construct a `Semiquot α` from `h : a ∈ s` where `s : Set α`. -/
 def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
@@ -42,7 +41,7 @@ def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
 
 theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
   refine ⟨congr_arg _, fun h => ?_⟩
-  cases' q₁ with _ v₁; cases' q₂ with _ v₂; congr
+  obtain ⟨_, v₁⟩ := q₁; obtain ⟨_, v₂⟩ := q₂; congr
   exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
 
 theorem ext {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ ∀ a, a ∈ q₁ ↔ a ∈ q₂ :=
@@ -153,9 +152,9 @@ instance : LE (Semiquot α) :=
 
 instance partialOrder : PartialOrder (Semiquot α) where
   le s t := ∀ ⦃x⦄, x ∈ s → x ∈ t
-  le_refl s := Set.Subset.refl _
-  le_trans s t u := Set.Subset.trans
-  le_antisymm s t h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)
+  le_refl _ := Set.Subset.refl _
+  le_trans _ _ _ := Set.Subset.trans
+  le_antisymm _ _ h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)
 
 instance : SemilatticeSup (Semiquot α) :=
   { Semiquot.partialOrder with
@@ -181,7 +180,7 @@ theorem get_mem {q : Semiquot α} (p) : get q p ∈ q := by
   unfold get; rw [liftOn_ofMem q _ _ a h]; exact h
 
 theorem eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
-  ext.2 fun a => by simp; exact ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
+  ext.2 fun a => by simpa using ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
 
 @[simp]
 theorem pure_isPure (a : α) : IsPure (pure a)
@@ -198,7 +197,7 @@ theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
 theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
   ⟨fun st =>
     le_antisymm st <| by
-      rw [eq_pure h, eq_pure (h.mono st)]; simp; exact h _ (get_mem _) _ (st <| get_mem _),
+      rw [eq_pure h, eq_pure (h.mono st)]; simpa using h _ (get_mem _) _ (st <| get_mem _),
     le_of_eq⟩
 
 theorem isPure_of_subsingleton [Subsingleton α] (q : Semiquot α) : IsPure q

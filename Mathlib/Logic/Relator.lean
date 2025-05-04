@@ -32,7 +32,7 @@ def LiftFun (f : α → γ) (g : β → δ) : Prop :=
   ∀⦃a b⦄, R a b → S (f a) (g b)
 
 /-- `(R ⇒ S) f g` means `LiftFun R S f g`. -/
-infixr:40 " ⇒ " => LiftFun
+scoped infixr:40 " ⇒ " => LiftFun
 
 end
 
@@ -96,8 +96,8 @@ lemma rel_not : (Iff ⇒ Iff) Not Not :=
 lemma bi_total_eq {α : Type u₁} : Relator.BiTotal (@Eq α) :=
   { left := fun a => ⟨a, rfl⟩, right := fun a => ⟨a, rfl⟩ }
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
-variable {r : α → β → Prop} {p : β → γ → Prop} {q : γ → δ → Prop}
+variable {α : Type*} {β : Type*} {γ : Type*}
+variable {r : α → β → Prop}
 
 lemma LeftUnique.flip (h : LeftUnique r) : RightUnique (flip r) :=
   fun _ _ _ h₁ h₂ => h h₁ h₂
@@ -116,7 +116,7 @@ lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (·↔·)
 
 open Function
 
-variable {α : Type*} {r₁₁ : α → α → Prop} {r₁₂ : α → β → Prop} {r₂₁ : β → α → Prop}
+variable {r₁₁ : α → α → Prop} {r₁₂ : α → β → Prop} {r₂₁ : β → α → Prop}
   {r₂₃ : β → γ → Prop} {r₁₃ : α → γ → Prop}
 
 namespace LeftTotal

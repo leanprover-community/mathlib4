@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Order.Filter.Partial
-import Mathlib.Topology.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Partial functions and topological spaces
@@ -51,7 +51,7 @@ theorem open_dom_of_pcontinuous {f : X →. Y} (h : PContinuous f) : IsOpen f.Do
   rw [← PFun.preimage_univ]; exact h _ isOpen_univ
 
 theorem pcontinuous_iff' {f : X →. Y} :
-    PContinuous f ↔ ∀ {x y} (h : y ∈ f x), PTendsto' f (𝓝 x) (𝓝 y) := by
+    PContinuous f ↔ ∀ {x y} (_ : y ∈ f x), PTendsto' f (𝓝 x) (𝓝 y) := by
   constructor
   · intro h x y h'
     simp only [ptendsto'_def, mem_nhds_iff]
@@ -62,7 +62,6 @@ theorem pcontinuous_iff' {f : X →. Y} :
   rintro x ⟨y, ys, fxy⟩ t
   rw [mem_principal]
   intro (h : f.preimage s ⊆ t)
-  change t ∈ 𝓝 x
   apply mem_of_superset _ h
   have h' : ∀ s ∈ 𝓝 y, f.preimage s ∈ 𝓝 x := by
     intro s hs

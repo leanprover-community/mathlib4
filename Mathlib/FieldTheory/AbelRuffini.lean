@@ -23,12 +23,9 @@ by radicals, then its minimal polynomial has solvable Galois group.
 that is solvable by radicals has a solvable Galois group.
 -/
 
-
 noncomputable section
 
-open scoped Classical Polynomial IntermediateField
-
-open Polynomial IntermediateField
+open Polynomial
 
 section AbelRuffini
 
@@ -157,7 +154,7 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
   apply @splits_of_exists_multiset F E _ _ i (X ^ n - 1) (s.map fun c : E => c / b)
   rw [leadingCoeff_X_pow_sub_one hn', RingHom.map_one, C_1, one_mul, Multiset.map_map]
   have C_mul_C : C (i a⁻¹) * C (i a) = 1 := by
-    rw [← C_mul, ← i.map_mul, inv_mul_cancel ha, i.map_one, C_1]
+    rw [← C_mul, ← i.map_mul, inv_mul_cancel₀ ha, i.map_one, C_1]
   have key1 : (X ^ n - 1 : F[X]).map i = C (i a⁻¹) * ((X ^ n - C a).map i).comp (C b * X) := by
     rw [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C,
       Polynomial.map_one, sub_comp, pow_comp, X_comp, C_comp, mul_pow, ← C_pow, hb, mul_sub, ←
@@ -168,9 +165,8 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
     dsimp only [Function.comp_apply]
     rw [sub_comp, X_comp, C_comp, mul_sub, ← C_mul, mul_div_cancel₀ c hb']
   rw [key1, hs, multiset_prod_comp, Multiset.map_map, key2, Multiset.prod_map_mul,
-    -- Porting note: needed for `Multiset.map_const` to work
-    show (fun (_ : E) => C b) = Function.const E (C b) by rfl,
-    Multiset.map_const, Multiset.prod_replicate, hs', ← C_pow, hb, ← mul_assoc, C_mul_C, one_mul]
+    Function.const_def (α := E) (y := C b), Multiset.map_const, Multiset.prod_replicate,
+    hs', ← C_pow, hb, ← mul_assoc, C_mul_C, one_mul]
   rfl
 
 theorem gal_X_pow_sub_C_isSolvable (n : ℕ) (x : F) : IsSolvable (X ^ n - C x).Gal := by
@@ -261,8 +257,7 @@ theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
   · exact fun _ => IsIntegral.neg
   · exact fun _ _ => IsIntegral.mul
   · intro α hα
-    exact Subalgebra.inv_mem_of_algebraic (integralClosure F (solvableByRad F E))
-      (show IsAlgebraic F ↑(⟨α, hα⟩ : integralClosure F (solvableByRad F E)) from hα.isAlgebraic)
+    exact IsIntegral.inv hα
   · intro α n hn hα
     obtain ⟨p, h1, h2⟩ := hα.isAlgebraic
     refine IsAlgebraic.isIntegral ⟨p.comp (X ^ n),
@@ -279,7 +274,7 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
   let p := minpoly F (α ^ n)
   have hp : p.comp (X ^ n) ≠ 0 := by
     intro h
-    cases' comp_eq_zero_iff.mp h with h' h'
+    rcases comp_eq_zero_iff.mp h with h' | h'
     · exact minpoly.ne_zero (isIntegral (α ^ n)) h'
     · exact hn (by rw [← @natDegree_C F, ← h'.2, natDegree_X_pow])
   apply gal_isSolvable_of_splits
@@ -299,6 +294,8 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
       obtain ⟨q, _, rfl⟩ := hq
       rw [sub_comp, X_comp, C_comp]
       exact gal_X_pow_sub_C_isSolvable n q
+
+open IntermediateField
 
 /-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
 theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (hα : P α) (hβ : P β) : P γ := by
@@ -323,8 +320,8 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.
     apply Subtype.val_injective
-    -- This used to be `simp`, but we need `erw` and `simp` after leanprover/lean4#2644
-    erw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
+    dsimp only [← coe_type_toSubalgebra]
+    rw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
     simp
   rw [P, key]
   refine gal_isSolvable_of_splits ⟨Normal.splits ?_ (f ⟨γ, hγ⟩)⟩ (gal_mul_isSolvable hα hβ)

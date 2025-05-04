@@ -48,7 +48,7 @@ variable {𝕜 E F G : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F] [InnerProductSpace 𝕜 G]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-! ### Adjoint operator -/
 
@@ -60,7 +60,7 @@ namespace ContinuousLinearMap
 variable [CompleteSpace E] [CompleteSpace G]
 
 -- Note: made noncomputable to stop excess compilation
--- leanprover-community/mathlib4#7103
+-- https://github.com/leanprover-community/mathlib4/issues/7103
 /-- The adjoint, as a continuous conjugate-linear map. This is only meant as an auxiliary
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
@@ -99,11 +99,13 @@ theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := b
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
 
-/-- The adjoint of a bounded operator from Hilbert space `E` to Hilbert space `F`. -/
+/-- The adjoint of a bounded operator `A` from a Hilbert space `E` to another Hilbert space `F`,
+  denoted as `A†`. -/
 def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
   LinearIsometryEquiv.ofSurjective { adjointAux with norm_map' := adjointAux_norm } fun A =>
     ⟨adjointAux A, adjointAux_adjointAux A⟩
 
+@[inherit_doc]
 scoped[InnerProduct] postfix:1000 "†" => ContinuousLinearMap.adjoint
 open InnerProduct
 
@@ -161,16 +163,16 @@ theorem adjoint_id :
   simp
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
-    U.subtypeL† = orthogonalProjection U := by
+    U.subtypeL† = U.orthogonalProjection := by
   symm
   rw [eq_adjoint_iff]
   intro x u
-  rw [U.coe_inner, inner_orthogonalProjection_left_eq_right,
-    orthogonalProjection_mem_subspace_eq_self]
+  rw [U.coe_inner, U.inner_orthogonalProjection_left_eq_right,
+    U.orthogonalProjection_mem_subspace_eq_self]
   rfl
 
 theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [CompleteSpace U] :
-    (orthogonalProjection U : E →L[𝕜] U)† = U.subtypeL := by
+    (U.orthogonalProjection : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
 
 /-- `E →L[𝕜] E` is a star algebra with the adjoint as the star operation. -/
@@ -215,7 +217,9 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
         simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
           Real.sqrt_mul_self (norm_nonneg x)]
 
-instance : CstarRing (E →L[𝕜] E) where
+/-- The C⋆-algebra instance when `𝕜 := ℂ` can be found in
+`Analysis.CStarAlgebra.ContinuousLinearMap`. -/
+instance : CStarRing (E →L[𝕜] E) where
   norm_mul_self_le x := le_of_eq <| Eq.symm <| norm_adjoint_comp_self x
 
 theorem isAdjointPair_inner (A : E →L[𝕜] F) :
@@ -268,13 +272,13 @@ theorem _root_.LinearMap.IsSymmetric.isSelfAdjoint {A : E →L[𝕜] E}
 
 /-- The orthogonal projection is self-adjoint. -/
 theorem _root_.orthogonalProjection_isSelfAdjoint (U : Submodule 𝕜 E) [CompleteSpace U] :
-    IsSelfAdjoint (U.subtypeL ∘L orthogonalProjection U) :=
-  (orthogonalProjection_isSymmetric U).isSelfAdjoint
+    IsSelfAdjoint (U.subtypeL ∘L U.orthogonalProjection) :=
+  U.orthogonalProjection_isSymmetric.isSelfAdjoint
 
 theorem conj_orthogonalProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (U : Submodule 𝕜 E)
     [CompleteSpace U] :
     IsSelfAdjoint
-      (U.subtypeL ∘L orthogonalProjection U ∘L T ∘L U.subtypeL ∘L orthogonalProjection U) := by
+      (U.subtypeL ∘L U.orthogonalProjection ∘L T ∘L U.subtypeL ∘L U.orthogonalProjection) := by
   rw [← ContinuousLinearMap.comp_assoc]
   nth_rw 1 [← (orthogonalProjection_isSelfAdjoint U).adjoint_eq]
   exact hT.adjoint_conj _
@@ -432,19 +436,19 @@ theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
 /-- The Gram operator T†T is symmetric. -/
 theorem isSymmetric_adjoint_mul_self (T : E →ₗ[𝕜] E) : IsSymmetric (LinearMap.adjoint T * T) := by
   intro x y
-  simp only [mul_apply, adjoint_inner_left, adjoint_inner_right]
+  simp [adjoint_inner_left, adjoint_inner_right]
 
 /-- The Gram operator T†T is a positive operator. -/
 theorem re_inner_adjoint_mul_self_nonneg (T : E →ₗ[𝕜] E) (x : E) :
     0 ≤ re ⟪x, (LinearMap.adjoint T * T) x⟫ := by
-  simp only [mul_apply, adjoint_inner_right, inner_self_eq_norm_sq_to_K]
+  simp only [Module.End.mul_apply, adjoint_inner_right, inner_self_eq_norm_sq_to_K]
   norm_cast
   exact sq_nonneg _
 
 @[simp]
 theorem im_inner_adjoint_mul_self_eq_zero (T : E →ₗ[𝕜] E) (x : E) :
     im ⟪x, LinearMap.adjoint T (T x)⟫ = 0 := by
-  simp only [mul_apply, adjoint_inner_right, inner_self_eq_norm_sq_to_K]
+  simp only [Module.End.mul_apply, adjoint_inner_right, inner_self_eq_norm_sq_to_K]
   norm_cast
 
 end LinearMap
@@ -488,13 +492,13 @@ lemma _root_.LinearIsometryEquiv.star_eq_symm (e : H ≃ₗᵢ[𝕜] H) :
 
 theorem norm_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x : H) :
     ‖u x‖ = ‖x‖ :=
-  -- Elaborates faster with this broken out #11299
+  -- Elaborates faster with this broken out https://github.com/leanprover-community/mathlib4/issues/11299
   have := unitary.star_mul_self_of_mem hu
   u.norm_map_iff_adjoint_comp_self.mpr this x
 
 theorem inner_map_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x y : H) :
     ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜 :=
-  -- Elaborates faster with this broken out #11299
+  -- Elaborates faster with this broken out https://github.com/leanprover-community/mathlib4/issues/11299
   have := unitary.star_mul_self_of_mem hu
   u.inner_map_map_iff_adjoint_comp_self.mpr this x y
 
@@ -528,8 +532,8 @@ noncomputable def linearIsometryEquiv : unitary (H →L[𝕜] H) ≃* (H ≃ₗ�
             inv_val := by ext; simp }
         exact IsUnit.mem_unitary_of_star_mul_self ⟨e', rfl⟩ <|
           (e : H →L[𝕜] H).norm_map_iff_adjoint_comp_self.mp e.norm_map }
-  left_inv u := Subtype.ext rfl
-  right_inv e := LinearIsometryEquiv.ext fun x ↦ rfl
+  left_inv _ := Subtype.ext rfl
+  right_inv _ := LinearIsometryEquiv.ext fun _ ↦ rfl
   map_mul' u v := by ext; rfl
 
 @[simp]
@@ -564,7 +568,7 @@ lemma Matrix.toLin_conjTranspose (A : Matrix m n 𝕜) :
     orthonormal_iff_ite.mp v₁.orthonormal, orthonormal_iff_ite.mp v₂.orthonormal]
 
 /-- The matrix associated to the adjoint of a linear map corresponding to two orthonormal bases
-is the conjugate tranpose of the matrix associated to the linear map. -/
+is the conjugate transpose of the matrix associated to the linear map. -/
 lemma LinearMap.toMatrix_adjoint (f : E →ₗ[𝕜] F) :
     toMatrix v₂.toBasis v₁.toBasis (adjoint f) = (toMatrix v₁.toBasis v₂.toBasis f)ᴴ :=
   toLin v₂.toBasis v₁.toBasis |>.injective <| by simp [toLin_conjTranspose]
@@ -576,6 +580,20 @@ def LinearMap.toMatrixOrthonormal : (E →ₗ[𝕜] E) ≃⋆ₐ[𝕜] Matrix n 
   { LinearMap.toMatrix v₁.toBasis v₁.toBasis with
     map_mul' := LinearMap.toMatrix_mul v₁.toBasis
     map_star' := LinearMap.toMatrix_adjoint v₁ v₁ }
+
+lemma LinearMap.toMatrixOrthonormal_apply_apply (f : E →ₗ[𝕜] E) (i j : n) :
+    toMatrixOrthonormal v₁ f i j = ⟪v₁ i, f (v₁ j)⟫_𝕜 :=
+  calc
+    _ = v₁.repr (f (v₁ j)) i := f.toMatrix_apply ..
+    _ = ⟪v₁ i, f (v₁ j)⟫_𝕜 := v₁.repr_apply_apply ..
+
+lemma LinearMap.toMatrixOrthonormal_reindex (e : n ≃ m) (f : E →ₗ[𝕜] E) :
+    toMatrixOrthonormal (v₁.reindex e) f = (toMatrixOrthonormal v₁ f).reindex e e :=
+  Matrix.ext fun i j =>
+    calc toMatrixOrthonormal (v₁.reindex e) f i j
+      _ = (v₁.reindex e).repr (f (v₁.reindex e j)) i := f.toMatrix_apply ..
+      _ = v₁.repr (f (v₁ (e.symm j))) (e.symm i) := by simp
+      _ = toMatrixOrthonormal v₁ f (e.symm i) (e.symm j) := Eq.symm (f.toMatrix_apply ..)
 
 open scoped ComplexConjugate
 

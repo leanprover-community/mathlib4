@@ -46,11 +46,10 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 
 -/
 
-
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped ComplexConjugate
 
@@ -60,23 +59,24 @@ namespace LinearMap
 
 namespace IsSymmetric
 
-variable {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric)
+variable {T : E →ₗ[𝕜] E}
 
 /-- A self-adjoint operator preserves orthogonal complements of its eigenspaces. -/
-theorem invariant_orthogonalComplement_eigenspace (μ : 𝕜) (v : E) (hv : v ∈ (eigenspace T μ)ᗮ) :
-    T v ∈ (eigenspace T μ)ᗮ := by
+theorem invariant_orthogonalComplement_eigenspace (hT : T.IsSymmetric) (μ : 𝕜)
+    (v : E) (hv : v ∈ (eigenspace T μ)ᗮ) : T v ∈ (eigenspace T μ)ᗮ := by
   intro w hw
   have : T w = (μ : 𝕜) • w := by rwa [mem_eigenspace_iff] at hw
   simp [← hT w, this, inner_smul_left, hv w hw]
 
 /-- The eigenvalues of a self-adjoint operator are real. -/
-theorem conj_eigenvalue_eq_self {μ : 𝕜} (hμ : HasEigenvalue T μ) : conj μ = μ := by
+theorem conj_eigenvalue_eq_self (hT : T.IsSymmetric) {μ : 𝕜} (hμ : HasEigenvalue T μ) :
+    conj μ = μ := by
   obtain ⟨v, hv₁, hv₂⟩ := hμ.exists_hasEigenvector
   rw [mem_eigenspace_iff] at hv₁
   simpa [hv₂, inner_smul_left, inner_smul_right, hv₁] using hT v v
 
 /-- The eigenspaces of a self-adjoint operator are mutually orthogonal. -/
-theorem orthogonalFamily_eigenspaces :
+theorem orthogonalFamily_eigenspaces (hT : T.IsSymmetric) :
     OrthogonalFamily 𝕜 (fun μ => eigenspace T μ) fun μ => (eigenspace T μ).subtypeₗᵢ := by
   rintro μ ν hμν ⟨v, hv⟩ ⟨w, hw⟩
   by_cases hv' : v = 0
@@ -86,21 +86,21 @@ theorem orthogonalFamily_eigenspaces :
   refine Or.resolve_left ?_ hμν.symm
   simpa [inner_smul_left, inner_smul_right, hv, hw, H] using (hT v w).symm
 
-theorem orthogonalFamily_eigenspaces' :
+theorem orthogonalFamily_eigenspaces' (hT : T.IsSymmetric) :
     OrthogonalFamily 𝕜 (fun μ : Eigenvalues T => eigenspace T μ) fun μ =>
       (eigenspace T μ).subtypeₗᵢ :=
   hT.orthogonalFamily_eigenspaces.comp Subtype.coe_injective
 
 /-- The mutual orthogonal complement of the eigenspaces of a self-adjoint operator on an inner
 product space is an invariant subspace of the operator. -/
-theorem orthogonalComplement_iSup_eigenspaces_invariant ⦃v : E⦄ (hv : v ∈ (⨆ μ, eigenspace T μ)ᗮ) :
-    T v ∈ (⨆ μ, eigenspace T μ)ᗮ := by
+theorem orthogonalComplement_iSup_eigenspaces_invariant (hT : T.IsSymmetric)
+    ⦃v : E⦄ (hv : v ∈ (⨆ μ, eigenspace T μ)ᗮ) : T v ∈ (⨆ μ, eigenspace T μ)ᗮ := by
   rw [← Submodule.iInf_orthogonal] at hv ⊢
   exact T.iInf_invariant hT.invariant_orthogonalComplement_eigenspace v hv
 
 /-- The mutual orthogonal complement of the eigenspaces of a self-adjoint operator on an inner
 product space has no eigenvalues. -/
-theorem orthogonalComplement_iSup_eigenspaces (μ : 𝕜) :
+theorem orthogonalComplement_iSup_eigenspaces (hT : T.IsSymmetric) (μ : 𝕜) :
     eigenspace (T.restrict hT.orthogonalComplement_iSup_eigenspaces_invariant) μ = ⊥ := by
   set p : Submodule 𝕜 E := (⨆ μ, eigenspace T μ)ᗮ
   refine eigenspace_restrict_eq_bot hT.orthogonalComplement_iSup_eigenspaces_invariant ?_
@@ -109,12 +109,12 @@ theorem orthogonalComplement_iSup_eigenspaces (μ : 𝕜) :
 
 /-! ### Finite-dimensional theory -/
 
-
 variable [FiniteDimensional 𝕜 E]
 
 /-- The mutual orthogonal complement of the eigenspaces of a self-adjoint operator on a
 finite-dimensional inner product space is trivial. -/
-theorem orthogonalComplement_iSup_eigenspaces_eq_bot : (⨆ μ, eigenspace T μ)ᗮ = ⊥ := by
+theorem orthogonalComplement_iSup_eigenspaces_eq_bot (hT : T.IsSymmetric) :
+    (⨆ μ, eigenspace T μ)ᗮ = ⊥ := by
   have hT' : IsSymmetric _ :=
     hT.restrict_invariant hT.orthogonalComplement_iSup_eigenspaces_invariant
   -- a self-adjoint operator on a nontrivial inner product space has an eigenvalue
@@ -122,7 +122,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot : (⨆ μ, eigenspace T μ)
     hT'.subsingleton_of_no_eigenvalue_finiteDimensional hT.orthogonalComplement_iSup_eigenspaces
   exact Submodule.eq_bot_of_subsingleton
 
-theorem orthogonalComplement_iSup_eigenspaces_eq_bot' :
+theorem orthogonalComplement_iSup_eigenspaces_eq_bot' (hT : T.IsSymmetric) :
     (⨆ μ : Eigenvalues T, eigenspace T μ)ᗮ = ⊥ :=
   show (⨆ μ : { μ // eigenspace T μ ≠ ⊥ }, eigenspace T μ)ᗮ = ⊥ by
     rw [iSup_ne_bot_subtype, hT.orthogonalComplement_iSup_eigenspaces_eq_bot]
@@ -139,14 +139,17 @@ noncomputable instance directSumDecomposition [hT : Fact T.IsSymmetric] :
 
 theorem directSum_decompose_apply [_hT : Fact T.IsSymmetric] (x : E) (μ : Eigenvalues T) :
     DirectSum.decompose (fun μ : Eigenvalues T => eigenspace T μ) x μ =
-      orthogonalProjection (eigenspace T μ) x :=
+      (eigenspace T μ).orthogonalProjection x :=
   rfl
 
 /-- The eigenspaces of a self-adjoint operator on a finite-dimensional inner product space `E` gives
 an internal direct sum decomposition of `E`. -/
-theorem direct_sum_isInternal : DirectSum.IsInternal fun μ : Eigenvalues T => eigenspace T μ :=
+theorem direct_sum_isInternal (hT : T.IsSymmetric) :
+    DirectSum.IsInternal fun μ : Eigenvalues T => eigenspace T μ :=
   hT.orthogonalFamily_eigenspaces'.isInternal_iff.mpr
     hT.orthogonalComplement_iSup_eigenspaces_eq_bot'
+
+variable (hT : T.IsSymmetric)
 
 section Version1
 
@@ -179,7 +182,7 @@ end Version1
 
 section Version2
 
-variable {n : ℕ} (hn : FiniteDimensional.finrank 𝕜 E = n)
+variable {n : ℕ} (hn : Module.finrank 𝕜 E = n)
 
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
 finite-dimensional inner product space `E`.
@@ -262,22 +265,16 @@ theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : Has
     (hnn : ∀ x : E, 0 ≤ RCLike.re ⟪x, T x⟫) : 0 ≤ μ := by
   obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
-  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
-    have := congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
-    -- Porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [← RCLike.ofReal_pow, ← RCLike.ofReal_mul] at this
-    exact mod_cast this
+  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 :=
+    mod_cast congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
   exact (mul_nonneg_iff_of_pos_right hpos).mp (this ▸ hnn v)
 
 theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
     (hnn : ∀ x : E, 0 < RCLike.re ⟪x, T x⟫) : 0 < μ := by
   obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
-  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
-    have := congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
-    -- Porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [← RCLike.ofReal_pow, ← RCLike.ofReal_mul] at this
-    exact mod_cast this
+  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 :=
+    mod_cast congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
   exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
 
 end Nonneg

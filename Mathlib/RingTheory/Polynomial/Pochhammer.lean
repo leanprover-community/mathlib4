@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Eval
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Eval.Algebra
 import Mathlib.Tactic.Abel
 
 /-!
@@ -24,6 +24,8 @@ that are focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactor
 
 As with many other families of polynomials, even though the coefficients are always in `ℕ` or `ℤ` ,
 we define the polynomial with coefficients in any `[Semiring S]` or `[Ring R]`.
+In an integral domain `S`, we show that `ascPochhammer S n` is zero iff
+`n` is a sufficiently large non-positive integer.
 
 ## TODO
 
@@ -33,8 +35,6 @@ There is lots more in this direction:
 
 
 universe u v
-
-open Polynomial
 
 open Polynomial
 
@@ -76,9 +76,9 @@ variable {S} {T : Type v} [Semiring T]
 @[simp]
 theorem ascPochhammer_map (f : S →+* T) (n : ℕ) :
     (ascPochhammer S n).map f = ascPochhammer T n := by
-  induction' n with n ih
-  · simp
-  · simp [ih, ascPochhammer_succ_left, map_comp]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [ih, ascPochhammer_succ_left, map_comp]
 
 theorem ascPochhammer_eval₂ (f : S →+* T) (n : ℕ) (t : T) :
     (ascPochhammer T n).eval t = (ascPochhammer S n).eval₂ f t := by
@@ -116,9 +116,10 @@ theorem ascPochhammer_succ_right (n : ℕ) :
     apply_fun Polynomial.map (algebraMap ℕ S) at h
     simpa only [ascPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_natCast] using h
-  induction' n with n ih
-  · simp
-  · conv_lhs =>
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    conv_lhs =>
       rw [ascPochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← ascPochhammer_succ_left, add_comp,
           X_comp, natCast_comp, add_assoc, add_comm (1 : ℕ[X]), ← Nat.cast_succ]
 
@@ -152,9 +153,19 @@ theorem ascPochhammer_nat_eq_ascFactorial (n : ℕ) :
     rw [ascPochhammer_succ_right, eval_mul, ascPochhammer_nat_eq_ascFactorial n t, eval_add, eval_X,
       eval_natCast, Nat.cast_id, Nat.ascFactorial_succ, mul_comm]
 
+theorem ascPochhammer_nat_eq_natCast_ascFactorial (S : Type*) [Semiring S] (n k : ℕ) :
+    (ascPochhammer S k).eval (n : S) = n.ascFactorial k := by
+  norm_cast
+  rw [ascPochhammer_nat_eq_ascFactorial]
+
 theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
     (ascPochhammer ℕ b).eval a = (a + b - 1).descFactorial b := by
   rw [ascPochhammer_nat_eq_ascFactorial, Nat.add_descFactorial_eq_ascFactorial']
+
+theorem ascPochhammer_nat_eq_natCast_descFactorial (S : Type*) [Semiring S] (a b : ℕ) :
+    (ascPochhammer S b).eval (a : S) = (a + b - 1).descFactorial b := by
+  norm_cast
+  rw [ascPochhammer_nat_eq_descFactorial]
 
 @[simp]
 theorem ascPochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
@@ -172,13 +183,15 @@ end Semiring
 
 section StrictOrderedSemiring
 
-variable {S : Type*} [StrictOrderedSemiring S]
+variable {S : Type*} [Semiring S] [PartialOrder S] [IsStrictOrderedRing S]
 
 theorem ascPochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (ascPochhammer S n).eval s := by
-  induction' n with n ih
-  · simp only [Nat.zero_eq, ascPochhammer_zero, eval_one]
+  induction n with
+  | zero =>
+    simp only [ascPochhammer_zero, eval_one]
     exact zero_lt_one
-  · rw [ascPochhammer_succ_right, mul_add, eval_add, ← Nat.cast_comm, eval_natCast_mul, eval_mul_X,
+  | succ n ih =>
+    rw [ascPochhammer_succ_right, mul_add, eval_add, ← Nat.cast_comm, eval_natCast_mul, eval_mul_X,
       Nat.cast_comm, ← mul_add]
     exact mul_pos ih (lt_of_lt_of_le h (le_add_of_nonneg_right (Nat.cast_nonneg n)))
 
@@ -252,9 +265,9 @@ variable {R} {T : Type v} [Ring T]
 @[simp]
 theorem descPochhammer_map (f : R →+* T) (n : ℕ) :
     (descPochhammer R n).map f = descPochhammer T n := by
-  induction' n with n ih
-  · simp
-  · simp [ih, descPochhammer_succ_left, map_comp]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [ih, descPochhammer_succ_left, map_comp]
 end
 
 @[simp, norm_cast]
@@ -281,9 +294,10 @@ theorem descPochhammer_succ_right (n : ℕ) :
     apply_fun Polynomial.map (algebraMap ℤ R) at h
     simpa [descPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_intCast] using h
-  induction' n with n ih
-  · simp [descPochhammer]
-  · conv_lhs =>
+  induction n with
+  | zero => simp [descPochhammer]
+  | succ n ih =>
+    conv_lhs =>
       rw [descPochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← descPochhammer_succ_left, sub_comp,
           X_comp, natCast_comp]
     rw [Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub_swap]
@@ -368,4 +382,99 @@ theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
   rw [← Nat.cast_add, descPochhammer_eval_eq_descFactorial ℤ (a + b) b,
     Nat.add_descFactorial_eq_ascFactorial]
 
+variable {R}
+
+/-- The Pochhammer polynomial of degree `n` has roots at `0`, `-1`, ..., `-(n - 1)`. -/
+theorem ascPochhammer_eval_neg_coe_nat_of_lt {n k : ℕ} (h : k < n) :
+    (ascPochhammer R n).eval (-(k : R)) = 0 := by
+  induction n with
+  | zero => contradiction
+  | succ n ih =>
+    rw [ascPochhammer_succ_eval]
+    rcases lt_trichotomy k n with hkn | rfl | hkn
+    · simp [ih hkn]
+    · simp
+    · omega
+
+/-- Over an integral domain, the Pochhammer polynomial of degree `n` has roots *only* at
+`0`, `-1`, ..., `-(n - 1)`. -/
+@[simp]
+theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
+    (n : ℕ) (r : R) : (ascPochhammer R n).eval r = 0 ↔ ∃ k < n, k = -r := by
+  refine ⟨fun zero' ↦ ?_, fun hrn ↦ ?_⟩
+  · induction n with
+    | zero => simp only [ascPochhammer_zero, Polynomial.eval_one, one_ne_zero] at zero'
+    | succ n ih =>
+      rw [ascPochhammer_succ_eval, mul_eq_zero] at zero'
+      cases zero' with
+      | inl h =>
+        obtain ⟨rn, hrn, rrn⟩ := ih h
+        exact ⟨rn, by omega, rrn⟩
+      | inr h =>
+        exact ⟨n, lt_add_one n, eq_neg_of_add_eq_zero_right h⟩
+  · obtain ⟨rn, hrn, rnn⟩ := hrn
+    convert ascPochhammer_eval_neg_coe_nat_of_lt hrn
+    simp [rnn]
+
+/-- `descPochhammer R n` is `0` for `0, 1, …, n-1`. -/
+theorem descPochhammer_eval_coe_nat_of_lt {k n : ℕ} (h : k < n) :
+    (descPochhammer R n).eval (k : R) = 0 := by
+  rw [descPochhammer_eval_eq_ascPochhammer, sub_add_eq_add_sub,
+    ← Nat.cast_add_one, ← neg_sub, ← Nat.cast_sub h]
+  exact ascPochhammer_eval_neg_coe_nat_of_lt (Nat.sub_lt_of_pos_le k.succ_pos h)
+
+lemma descPochhammer_eval_eq_prod_range {R : Type*} [CommRing R] (n : ℕ) (r : R) :
+    (descPochhammer R n).eval r = ∏ j ∈ Finset.range n, (r - j) := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [descPochhammer_succ_right, ih, ← Finset.prod_range_succ]
+
 end Ring
+
+section StrictOrderedRing
+
+variable {S : Type*} [Ring S] [PartialOrder S] [IsStrictOrderedRing S]
+
+/-- `descPochhammer S n` is positive on `(n-1, ∞)`. -/
+theorem descPochhammer_pos {n : ℕ} {s : S} (h : n - 1 < s) :
+    0 < (descPochhammer S n).eval s := by
+  rw [← sub_pos, ← sub_add] at h
+  rw [descPochhammer_eval_eq_ascPochhammer]
+  exact ascPochhammer_pos n (s - n + 1) h
+
+/-- `descPochhammer S n` is nonnegative on `[n-1, ∞)`. -/
+theorem descPochhammer_nonneg {n : ℕ} {s : S} (h : n - 1 ≤ s) :
+    0 ≤ (descPochhammer S n).eval s := by
+  rcases eq_or_lt_of_le h with heq | h
+  · rw [← heq, descPochhammer_eval_eq_ascPochhammer,
+      sub_sub_cancel_left, neg_add_cancel, ascPochhammer_eval_zero]
+    positivity
+  · exact (descPochhammer_pos h).le
+
+/-- `descPochhammer S n` is at least `(s-n+1)^n` on `[n-1, ∞)`. -/
+theorem pow_le_descPochhammer_eval {n : ℕ} {s : S} (h : n - 1 ≤ s) :
+    (s - n + 1)^n ≤ (descPochhammer S n).eval s := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Nat.cast_add_one, add_sub_cancel_right, ← sub_nonneg] at h
+    have hsub1 : n - 1 ≤ s := (sub_le_self (n : S) zero_le_one).trans (le_of_sub_nonneg h)
+    rw [pow_succ, descPochhammer_succ_eval, Nat.cast_add_one, sub_add, add_sub_cancel_right]
+    apply mul_le_mul _ le_rfl h (descPochhammer_nonneg hsub1)
+    exact (ih hsub1).trans' <| pow_le_pow_left₀ h (le_add_of_nonneg_right zero_le_one) n
+
+/-- `descPochhammer S n` is monotone on `[n-1, ∞)`. -/
+theorem monotoneOn_descPochhammer_eval (n : ℕ) :
+    MonotoneOn (descPochhammer S n).eval (Set.Ici (n - 1 : S)) := by
+  induction n with
+  | zero => simp [monotoneOn_const]
+  | succ n ih =>
+    intro a ha b hb hab
+    rw [Set.mem_Ici, Nat.cast_add_one, add_sub_cancel_right] at ha hb
+    have ha_sub1 : n - 1 ≤ a := (sub_le_self (n : S) zero_le_one).trans ha
+    have hb_sub1 : n - 1 ≤ b := (sub_le_self (n : S) zero_le_one).trans hb
+    simp_rw [descPochhammer_succ_eval]
+    exact mul_le_mul (ih ha_sub1 hb_sub1 hab) (sub_le_sub_right hab (n : S))
+      (sub_nonneg_of_le ha) (descPochhammer_nonneg hb_sub1)
+
+end StrictOrderedRing

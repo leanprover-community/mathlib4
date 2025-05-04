@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
+import Mathlib.LinearAlgebra.Basis.Submodule
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
@@ -76,12 +77,12 @@ theorem toMatrix_self [DecidableEq ι] : e.toMatrix e = 1 := by
   simp [Basis.equivFun, Matrix.one_apply, Finsupp.single_apply, eq_comm]
 
 theorem toMatrix_update [DecidableEq ι'] (x : M) :
-    e.toMatrix (Function.update v j x) = Matrix.updateColumn (e.toMatrix v) j (e.repr x) := by
+    e.toMatrix (Function.update v j x) = Matrix.updateCol (e.toMatrix v) j (e.repr x) := by
   ext i' k
-  rw [Basis.toMatrix, Matrix.updateColumn_apply, e.toMatrix_apply]
+  rw [Basis.toMatrix, Matrix.updateCol_apply, e.toMatrix_apply]
   split_ifs with h
-  · rw [h, update_same j x v]
-  · rw [update_noteq h]
+  · rw [h, update_self j x v]
+  · rw [update_of_ne h]
 
 /-- The basis constructed by `unitsSMul` has vectors given by a diagonal matrix. -/
 @[simp]
@@ -98,18 +99,21 @@ theorem toMatrix_isUnitSMul [DecidableEq ι] (e : Basis ι R₂ M₂) {w : ι �
     (hw : ∀ i, IsUnit (w i)) : e.toMatrix (e.isUnitSMul hw) = diagonal w :=
   e.toMatrix_unitsSMul _
 
+theorem toMatrix_smul_left {G} [Group G] [DistribMulAction G M] [SMulCommClass G R M] (g : G) :
+    (g • e).toMatrix v = e.toMatrix (g⁻¹ • v) := rfl
+
 @[simp]
 theorem sum_toMatrix_smul_self [Fintype ι] : ∑ i : ι, e.toMatrix v i j • e i = v j := by
   simp_rw [e.toMatrix_apply, e.sum_repr]
 
-theorem toMatrix_smul {R₁ S : Type*} [CommRing R₁] [Ring S] [Algebra R₁ S] [Fintype ι]
+theorem toMatrix_smul {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S] [Fintype ι]
     [DecidableEq ι] (x : S) (b : Basis ι R₁ S) (w : ι → S) :
     (b.toMatrix (x • w)) = (Algebra.leftMulMatrix b x) * (b.toMatrix w) := by
   ext
   rw [Basis.toMatrix_apply, Pi.smul_apply, smul_eq_mul, ← Algebra.leftMulMatrix_mulVec_repr]
   rfl
 
-theorem toMatrix_map_vecMul {S : Type*} [Ring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
+theorem toMatrix_map_vecMul {S : Type*} [Semiring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
     (v : ι' → S) : b ᵥ* ((b.toMatrix v).map <| algebraMap R S) = v := by
   ext i
   simp_rw [vecMul, dotProduct, Matrix.map_apply, ← Algebra.commutes, ← Algebra.smul_def,
@@ -126,8 +130,7 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
   toFun := e.toMatrix
   map_add' v w := by
     ext i j
-    change _ = _ + _
-    rw [e.toMatrix_apply, Pi.add_apply, LinearEquiv.map_add]
+    rw [Matrix.add_apply, e.toMatrix_apply, Pi.add_apply, LinearEquiv.map_add]
     rfl
   map_smul' := by
     intro c v
@@ -217,7 +220,7 @@ theorem basis_toMatrix_basisFun_mul (b : Basis ι R (ι → R)) (A : Matrix ι �
   simp only [basis_toMatrix_mul _ _ (Pi.basisFun R ι), Matrix.toLin_eq_toLin']
   ext i j
   rw [LinearMap.toMatrix_apply, Matrix.toLin'_apply, Pi.basisFun_apply,
-    Matrix.mulVec_stdBasis_apply, Matrix.of_apply]
+    Matrix.mulVec_single_one, Matrix.of_apply]
 
 /-- See also `Basis.toMatrix_reindex` which gives the `simp` normal form of this result. -/
 theorem Basis.toMatrix_reindex' [DecidableEq ι] [DecidableEq ι'] (b : Basis ι R M) (v : ι' → M)
@@ -227,6 +230,14 @@ theorem Basis.toMatrix_reindex' [DecidableEq ι] [DecidableEq ι'] (b : Basis ι
   simp only [Basis.toMatrix_apply, Basis.repr_reindex, Matrix.reindexAlgEquiv_apply,
     Matrix.reindex_apply, Matrix.submatrix_apply, Function.comp_apply, e.apply_symm_apply,
     Finsupp.mapDomain_equiv_apply]
+
+omit [Fintype ι'] in
+@[simp]
+lemma Basis.toMatrix_mulVec_repr [Finite ι'] (m : M) :
+    b'.toMatrix b *ᵥ b.repr m = b'.repr m := by
+  classical
+  cases nonempty_fintype ι'
+  simp [← LinearMap.toMatrix_id_eq_basis_toMatrix, LinearMap.toMatrix_mulVec_repr]
 
 end Fintype
 

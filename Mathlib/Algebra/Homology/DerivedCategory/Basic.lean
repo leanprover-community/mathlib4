@@ -50,15 +50,14 @@ instance should be obtained at the beginning of the proof, using the term
 - construct the distinguished triangle associated to a short exact sequence
 of cochain complexes (done), and compare the associated connecting homomorphism
 with the one defined in `Algebra.Homology.HomologySequence`.
-- refactor the definition of Ext groups using morphisms in the derived category
-(which may be shrunk to the universe `v` at least when `C` has enough projectives
-or enough injectives).
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 * [Mark Hovey, *Model category structures on chain complexes of sheaves*][hovey-2001]
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 universe w v u
 
@@ -70,10 +69,11 @@ namespace HomotopyCategory
 
 /-- The triangulated subcategory of `HomotopyCategory C (ComplexShape.up ℤ)` consisting
 of acyclic complexes. -/
-def subcategoryAcyclic : Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
+noncomputable def subcategoryAcyclic :
+    Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
   (homologyFunctor C (ComplexShape.up ℤ) 0).homologicalKernel
 
-instance : ClosedUnderIsomorphisms (subcategoryAcyclic C).P := by
+instance : (subcategoryAcyclic C).P.IsClosedUnderIsomorphisms := by
   dsimp [subcategoryAcyclic]
   infer_instance
 
@@ -252,5 +252,28 @@ noncomputable def singleFunctorsPostcompQIso :
       (CochainComplex.singleFunctors C).postcompPostcompIso (HomotopyCategory.quotient _ _) Qh ≪≫
       SingleFunctors.postcompIsoOfIso
         (CochainComplex.singleFunctors C) (quotientCompQhIso C)
+
+lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
+    (singleFunctorsPostcompQIso C).hom.hom n = 𝟙 _ := by
+  ext X
+  dsimp [singleFunctorsPostcompQIso, HomotopyCategory.singleFunctorsPostcompQuotientIso,
+    quotientCompQhIso, HomologicalComplexUpToQuasiIso.quotientCompQhIso]
+  rw [CategoryTheory.Functor.map_id, SingleFunctors.id_hom, NatTrans.id_app]
+  erw [Category.id_comp, Category.id_comp]
+  rfl
+
+lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
+    (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
+  ext X
+  dsimp [singleFunctorsPostcompQIso, HomotopyCategory.singleFunctorsPostcompQuotientIso,
+    quotientCompQhIso, HomologicalComplexUpToQuasiIso.quotientCompQhIso]
+  erw [CategoryTheory.Functor.map_id]
+  rw [SingleFunctors.id_hom, NatTrans.id_app]
+  erw [Category.id_comp, Category.id_comp]
+  rfl
+
+lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    IsIso (Q.map φ) ↔ QuasiIso φ := by
+  apply HomologicalComplexUpToQuasiIso.isIso_Q_map_iff_mem_quasiIso
 
 end DerivedCategory

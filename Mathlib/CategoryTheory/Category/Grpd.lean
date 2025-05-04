@@ -22,6 +22,7 @@ Though `Grpd` is not a concrete category, we use `Bundled` to define
 its carrier type.
 -/
 
+assert_not_exists MonoidWithZero
 
 universe v u
 
