@@ -40,8 +40,8 @@ variable
 variable (f c R) in
 /--
 Define `circleAverage f c R` as the average value of `f` on the circle with center `c` and radius
-`R`. This is a real notion, which should not be confused with the complex path integral notion defined
-in `circleIntegral` (integrating with respect to `dz`).
+`R`. This is a real notion, which should not be confused with the complex path integral notion
+defined in `circleIntegral` (integrating with respect to `dz`).
 -/
 noncomputable def circleAverage : E :=
   (2 * π)⁻¹ • ∫ θ in (0)..2 * π, f (circleMap c R θ)
@@ -71,6 +71,7 @@ lemma circleAverage_fun_add :
   unfold circleAverage circleMap
   congr
   ext θ
+  simp only [zero_add]
   congr 1
   ring
 
@@ -94,7 +95,7 @@ lemma circleAverage_eq_integral_add (η : ℝ) : circleAverage f c R =
 theorem circleAverage_congr_neg_radius :
     circleAverage f c R = circleAverage f c (-R) := by
   unfold circleAverage
-  simp_rw [circleMap_negRadius, ← circleAverage_def, circleAverage_congr_angleShift π]
+  simp_rw [circleMap_neg_radius, ← circleAverage_def, circleAverage_eq_integral_add π]
 
 /-- Circle averages do not change when replacing the radius by its absolute value. -/
 theorem circleAverage_congr_abs_radius :
