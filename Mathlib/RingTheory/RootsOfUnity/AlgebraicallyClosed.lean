@@ -48,7 +48,7 @@ noncomputable def rootsOfUnitytoCircle : (rootsOfUnity n ℂ) →* Circle where
   map_mul' _ _ := rfl
 
 /-- Equivalence of the nth roots of unity of the Circle with nth roots of unity of the complex
-numbers-/
+numbers -/
 noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
   __ := (rootsOfUnityUnitsMulEquiv ℂ n).toMonoidHom.comp (restrictRootsOfUnity Circle.toUnits n)
   invFun z := ⟨(rootsOfUnitytoCircle n).toHomUnits z, by
@@ -67,7 +67,7 @@ instance : IsCyclic (rootsOfUnity n Circle) where
     obtain ⟨z , hz⟩ := Function.Surjective.comp (rootsOfUnityCircleEquiv n).symm.surjective hg₀ w
     exact ⟨z, by rw [← hz, Function.comp_apply, map_zpow]⟩
 
-instance pullIsPrimitiveRoot {m : ℂ} (hm : IsPrimitiveRoot m n) :
+lemma pullIsPrimitiveRoot {m : ℂ} (hm : IsPrimitiveRoot m n) :
     IsPrimitiveRoot ((rootsOfUnityCircleEquiv n).symm hm.toRootsOfUnity) n where
   pow_eq_one := by
     have e1 : m ^ n = 1 :=  hm.pow_eq_one
@@ -75,9 +75,6 @@ instance pullIsPrimitiveRoot {m : ℂ} (hm : IsPrimitiveRoot m n) :
       ext : 2
       simp_all only [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val,
         IsPrimitiveRoot.val_toRootsOfUnity_coe, OneMemClass.coe_one, Units.val_one]
-    have e3 : (rootsOfUnityCircleEquiv n).symm (hm.toRootsOfUnity ^ n) =
-        (rootsOfUnityCircleEquiv n).symm 1 := by
-      simp_all only [map_one]
     have e4 : (rootsOfUnityCircleEquiv n).symm (hm.toRootsOfUnity ^ n) = 1 := by
       aesop
     have e5 : ((rootsOfUnityCircleEquiv n).symm hm.toRootsOfUnity) ^ n = 1 := by
