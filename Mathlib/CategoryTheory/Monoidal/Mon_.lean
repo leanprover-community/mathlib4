@@ -581,47 +581,37 @@ instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) where
 
 open IsMon_Hom
 
-instance {X₁ Y₁ X₂ Y₂ : C} [Mon_Class X₁] [Mon_Class Y₁] [Mon_Class X₂] [Mon_Class Y₂]
-    (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) [IsMon_Hom f] [IsMon_Hom g] :
-     IsMon_Hom (f ⊗ g) :=
-  { one_hom := by
-      dsimp
-      slice_lhs 2 3 => rw [← tensor_comp, one_hom, one_hom]
-    mul_hom := by
-      dsimp
-      slice_rhs 1 2 => rw [tensorμ_natural]
-      slice_lhs 2 3 => rw [← tensor_comp, mul_hom, mul_hom, tensor_comp]
-      simp only [Category.assoc] }
+variable {X Y Z W : C} [Mon_Class X] [Mon_Class Y] [Mon_Class Z] [Mon_Class W]
 
-instance {X : C} [Mon_Class X] : IsMon_Hom (𝟙 X) where
+instance {f : X ⟶ Y} {g : Z ⟶ W} [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (f ⊗ g) where
+  one_hom := by
+    dsimp
+    slice_lhs 2 3 => rw [← tensor_comp, one_hom, one_hom]
+  mul_hom := by
+    dsimp
+    slice_rhs 1 2 => rw [tensorμ_natural]
+    slice_lhs 2 3 => rw [← tensor_comp, mul_hom, mul_hom, tensor_comp]
+    simp only [Category.assoc]
 
-instance (X : C) [Mon_Class X] {Y Z : C} [Mon_Class Y] [Mon_Class Z]
-    (f : Y ⟶ Z) [IsMon_Hom f] :
-    IsMon_Hom (X ◁ f) where
+instance : IsMon_Hom (𝟙 X) where
+
+instance {f : Y ⟶ Z} [IsMon_Hom f] : IsMon_Hom (X ◁ f) where
   one_hom := by simpa using (inferInstanceAs <| IsMon_Hom (𝟙 X ⊗ f)).one_hom
   mul_hom := by simpa using (inferInstanceAs <| IsMon_Hom (𝟙 X ⊗ f)).mul_hom
 
 @[simps!]
-instance {X Y : C} [Mon_Class X] [Mon_Class Y] (f : X ⟶ Y) [IsMon_Hom f]
-    (Z : C) [Mon_Class Z] :
-    IsMon_Hom (f ▷ Z) where
+instance {f : X ⟶ Y} [IsMon_Hom f] : IsMon_Hom (f ▷ Z) where
   one_hom := by simpa using (inferInstanceAs <| IsMon_Hom (f ⊗ (𝟙 Z))).one_hom
   mul_hom := by simpa using (inferInstanceAs <| IsMon_Hom (f ⊗ (𝟙 Z))).mul_hom
 
-instance (X Y Z : C) [Mon_Class X] [Mon_Class Y] [Mon_Class Z] :
-    IsMon_Hom (α_ X Y Z).hom where
-  one_hom := one_associator
-  mul_hom := mul_associator
+instance : IsMon_Hom (α_ X Y Z).hom :=
+  ⟨one_associator, mul_associator⟩
 
-instance (X : C) [Mon_Class X] :
-    IsMon_Hom (λ_ X).hom where
-  one_hom := one_leftUnitor
-  mul_hom := mul_leftUnitor
+instance : IsMon_Hom (λ_ X).hom :=
+  ⟨one_leftUnitor, mul_leftUnitor⟩
 
-instance (X : C) [Mon_Class X] :
-    IsMon_Hom (ρ_ X).hom where
-  one_hom := one_rightUnitor
-  mul_hom := mul_rightUnitor
+instance : IsMon_Hom (ρ_ X).hom :=
+  ⟨one_rightUnitor, mul_rightUnitor⟩
 
 theorem one_braiding (X Y : C) [Mon_Class X] [Mon_Class Y] : η ≫ (β_ X Y).hom = η := by
   simp only [instTensorObj_one, Category.assoc, BraidedCategory.braiding_naturality,
