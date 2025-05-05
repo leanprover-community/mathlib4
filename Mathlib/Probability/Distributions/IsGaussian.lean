@@ -41,6 +41,51 @@ lemma pow_toReal_eLpNorm {E F : Type*} {mE : MeasurableSpace E} {μ : Measure E}
   have h := rpow_toReal_eLpNorm h_Lp (by positivity)
   simpa using h
 
+lemma norm_add_sub_norm_sub_div_two_le {E : Type*} [NormedAddCommGroup E] (x y : E) :
+    (‖x + y‖ - ‖x - y‖) / 2 ≤ ‖x‖ := by
+  suffices ‖x + y‖ - ‖x - y‖ ≤ 2 * ‖x‖ by linarith
+  calc ‖x + y‖ - ‖x - y‖
+  _ = ‖x + x + y - x‖ - ‖x - y‖ := by congr; rw [add_assoc, add_sub_assoc, add_sub_cancel]
+  _ ≤ ‖x + x‖ + ‖y - x‖ - ‖x - y‖ := by gcongr; rw [add_sub_assoc]; exact norm_add_le _ _
+  _ = ‖x + x‖ := by rw [add_sub_assoc, norm_sub_rev]; simp
+  _ ≤ ‖x‖ + ‖x‖ := norm_add_le _ _
+  _ = 2 * ‖x‖ := by rw [two_mul]
+
+lemma norm_add_sub_norm_sub_div_two_le_min {E : Type*} [NormedAddCommGroup E] (x y : E) :
+    (‖x + y‖ - ‖x - y‖) / 2 ≤ min ‖x‖ ‖y‖ := by
+  refine le_min (norm_add_sub_norm_sub_div_two_le x y) ?_
+  rw [norm_sub_rev, add_comm]
+  exact norm_add_sub_norm_sub_div_two_le _ _
+
+lemma one_lt_sqrt_two : 1 < √2 := by
+  rw [← Real.sqrt_one]
+  exact Real.sqrt_lt_sqrt (by positivity) (by simp)
+
+lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
+  suffices 2 * √2 < 3 by linarith
+  rw [← sq_lt_sq₀ (by positivity) (by positivity), mul_pow, Real.sq_sqrt (by positivity)]
+  norm_num
+
+open Filter in
+lemma exists_between' {t : ℕ → ℝ} (ht_mono : StrictMono t) (ht_tendsto : Tendsto t atTop atTop)
+    (x : ℝ) :
+    x ≤ t 0 ∨ ∃ n, t n < x ∧ x ≤ t (n + 1) := by
+  by_cases hx0 : x ≤ t 0
+  · simp [hx0]
+  simp only [hx0, false_or]
+  have h : ∃ n, x ≤ t n := by
+    simp [tendsto_atTop_atTop_iff_of_monotone ht_mono.monotone] at ht_tendsto
+    exact ht_tendsto x
+  have h' := Nat.find_spec h
+  have h'' m := Nat.find_min h (m := m)
+  simp only [not_le] at h'' hx0
+  refine ⟨Nat.find h - 1, ?_, ?_⟩
+  · refine h'' _ ?_
+    simp [hx0]
+  · convert h'
+    rw [Nat.sub_add_cancel]
+    simp [hx0]
+
 end Aux
 
 namespace ProbabilityTheory
@@ -121,7 +166,7 @@ instance isGaussian_conv [SecondCountableTopology E]
 
 section Centered
 
-/-- A Gaussian distribution `μ` is centered if `μ[L] = 0` for all continuous linear forms `L`. -/
+/-- A measure `μ` is centered if `μ[L] = 0` for all continuous linear forms `L`. -/
 def IsCentered (μ : Measure E) : Prop := ∀ L : E →L[ℝ] ℝ, μ[L] = 0
 
 lemma isCentered_dirac_zero : IsCentered (Measure.dirac (0 : E)) := by intro L; simp
@@ -357,11 +402,11 @@ def _root_.ContinuousLinearMap.rotation (θ : ℝ) :
   cont := by fun_prop
 
 lemma _root_.ContinuousLinearMap.rotation_apply (θ : ℝ) (x : E × E) :
-    ContinuousLinearMap.rotation θ x = (Real.cos θ • x.1 + Real.sin θ • x.2,
-      - Real.sin θ • x.1 + Real.cos θ • x.2) := rfl
+    ContinuousLinearMap.rotation θ x
+     = (Real.cos θ • x.1 + Real.sin θ • x.2, - Real.sin θ • x.1 + Real.cos θ • x.2) := rfl
 
 lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace E]
-    (θ : ℝ) (hμ : IsCentered μ) :
+    (hμ : IsCentered μ) (θ : ℝ) :
     (μ.prod μ).map (ContinuousLinearMap.rotation θ) = μ.prod μ := by
   refine ext_of_charFunCLM ?_
   ext L
@@ -431,24 +476,6 @@ end Rotation
 
 section Fernique
 
-omit [NormedSpace ℝ E] in
-lemma norm_add_sub_norm_le_div_two_le (x y : E) :
-    (‖x + y‖ - ‖x - y‖) / 2 ≤ ‖x‖ := by
-  suffices ‖x + y‖ - ‖x - y‖ ≤ 2 * ‖x‖ by linarith
-  calc ‖x + y‖ - ‖x - y‖
-  _ = ‖x + x + y - x‖ - ‖x - y‖ := by congr; rw [add_assoc, add_sub_assoc, add_sub_cancel]
-  _ ≤ ‖x + x‖ + ‖y - x‖ - ‖x - y‖ := by gcongr; rw [add_sub_assoc]; exact norm_add_le _ _
-  _ = ‖x + x‖ := by rw [add_sub_assoc, norm_sub_rev]; simp
-  _ ≤ ‖x‖ + ‖x‖ := norm_add_le _ _
-  _ = 2 * ‖x‖ := by rw [two_mul]
-
-omit [NormedSpace ℝ E] in
-lemma norm_add_sub_norm_le_div_two_le_min (x y : E) :
-    (‖x + y‖ - ‖x - y‖) / 2 ≤ min ‖x‖ ‖y‖ := by
-  refine le_min (norm_add_sub_norm_le_div_two_le x y) ?_
-  rw [norm_sub_rev, add_comm]
-  exact norm_add_sub_norm_le_div_two_le _ _
-
 variable [SecondCountableTopology E] [CompleteSpace E] {μ : Measure E} [IsGaussian μ]
 
 lemma IsGaussian.measure_le_mul_measure_gt_le (hμ : IsCentered μ) (a b : ℝ) :
@@ -459,7 +486,7 @@ lemma IsGaussian.measure_le_mul_measure_gt_le (hμ : IsCentered μ) (a b : ℝ) 
   _ = (μ.prod μ) {p | ‖p.1‖ ≤ a ∧ b < ‖p.2‖} := rfl
   _ = ((μ.prod μ).map (ContinuousLinearMap.rotation (- (π/4)))) {p | ‖p.1‖ ≤ a ∧ b < ‖p.2‖} := by
     -- we can rotate the bands since `μ.prod μ` is invariant under rotation
-    rw [map_rotation_eq_self _ hμ]
+    rw [map_rotation_eq_self hμ]
   _ = (μ.prod μ) {p | ‖p.1 - p.2‖ / √2 ≤ a ∧ b < ‖p.1 + p.2‖ / √2} := by
     rw [Measure.map_apply]
     rotate_left
@@ -499,7 +526,7 @@ lemma IsGaussian.measure_le_mul_measure_gt_le (hμ : IsCentered μ) (a b : ℝ) 
       calc b - a
       _ < ‖p.1 + p.2‖ / √2 - a := by gcongr
       _ ≤ ‖p.1 + p.2‖ / √2 - ‖p.1 - p.2‖ / √2 := by gcongr
-    _ ≤ min ‖p.1‖ ‖p.2‖ := norm_add_sub_norm_le_div_two_le_min _ _
+    _ ≤ min ‖p.1‖ ‖p.2‖ := norm_add_sub_norm_sub_div_two_le_min _ _
   _ = (μ.prod μ) ({x | (b - a) / √2 < ‖x‖} ×ˢ {y | (b - a) / √2 < ‖y‖}) := rfl
   _ ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 := by rw [Measure.prod_prod, pow_two]
 
@@ -524,15 +551,6 @@ lemma aux {c : ℝ} (hc : c < 0) :
     have h_sum : Summable fun i : ℕ ↦ rexp (i * c) := Real.summable_exp_nat_mul_iff.mpr hc
     rw [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
     simp
-
-lemma one_lt_sqrt_two : 1 < √2 := by
-  rw [← Real.sqrt_one]
-  exact Real.sqrt_lt_sqrt (by positivity) (by simp)
-
-lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
-  suffices 2 * √2 < 3 by linarith
-  rw [← sq_lt_sq₀ (by positivity) (by positivity), mul_pow, Real.sq_sqrt (by positivity)]
-  norm_num
 
 -- todo: remove IsCentered (once we know that `∫ x, x ∂μ` is a thing)
 lemma eq_dirac_of_variance_eq_zero_of_isCentered (hμ : IsCentered μ)
@@ -604,26 +622,6 @@ lemma IsGaussian.exists_measure_norm_mem_Ioo (hμ : IsCentered μ) (h : μ ≠ M
   · intro a b hab x
     simp only [Set.mem_setOf_eq]
     exact fun hxa ↦ hxa.trans hab
-
-open Filter in
-lemma exists_between {t : ℕ → ℝ} (ht_mono : StrictMono t) (ht_tendsto : Tendsto t atTop atTop)
-    (x : ℝ) :
-    x ≤ t 0 ∨ ∃ n, t n < x ∧ x ≤ t (n + 1) := by
-  by_cases hx0 : x ≤ t 0
-  · simp [hx0]
-  simp only [hx0, false_or]
-  have h : ∃ n, x ≤ t n := by
-    simp [tendsto_atTop_atTop_iff_of_monotone ht_mono.monotone] at ht_tendsto
-    exact ht_tendsto x
-  have h' := Nat.find_spec h
-  have h'' m := Nat.find_min h (m := m)
-  simp only [not_le] at h'' hx0
-  refine ⟨Nat.find h - 1, ?_, ?_⟩
-  · refine h'' _ ?_
-    simp [hx0]
-  · convert h'
-    rw [Nat.sub_add_cancel]
-    simp [hx0]
 
 open Metric Filter in
 /-- Special case of Fernique's theorem for centered Gaussian distributions. -/
@@ -769,7 +767,7 @@ lemma IsGaussian.exists_integrable_exp_sq_of_isCentered (hμ : IsCentered μ) :
     simp only [Set.mem_univ, Set.mem_union, Metric.mem_closedBall, dist_zero_right, Set.mem_iUnion,
       Set.mem_diff, not_le, true_iff]
     simp_rw [and_comm (b := t _ < ‖x‖)]
-    exact exists_between ht_mono ht_tendsto _
+    exact exists_between' ht_mono ht_tendsto _
   rw [← setLIntegral_univ, h_iUnion]
   have : ∫⁻ x in closedBall 0 (t 0) ∪ ⋃ n, closedBall 0 (t (n + 1)) \ closedBall 0 (t n),
         .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
@@ -853,12 +851,8 @@ lemma IsGaussian.exists_integrable_exp_sq_of_isCentered (hμ : IsCentered μ) :
     refine mul_neg_of_neg_of_pos ?_ ?_
     · have : (1 + √2) ^ 2 = 1 + 2 * √2 + √2 ^ 2 := by ring
       rw [Real.sq_sqrt (by positivity)] at this
-      rw [this, add_mul, add_mul, add_comm, ← add_assoc, sub_neg, div_lt_one (by positivity)]
-      norm_num
-      rw [mul_comm, ← mul_assoc, ← lt_sub_iff_add_lt']
-      norm_num
-      suffices √2 < 3 / 2 by linarith
-      exact sqrt_two_lt_three_halves
+      have : √2 < 3 / 2 := sqrt_two_lt_three_halves
+      linarith
     · refine Real.log_pos ?_
       simp only [ENNReal.toReal_div, one_lt_div_iff, ENNReal.toReal_pos_iff, tsub_pos_iff_lt, hc_lt,
         hc_one_sub_lt_top, and_self, ne_eq, ENNReal.sub_eq_top_iff, ENNReal.one_ne_top, false_and,
@@ -985,20 +979,20 @@ lemma _root_.MeasureTheory.MemLp.integrable_continuousLinearMap
   exact h_Lp.continuousLinearMap L
 
 /-- `MemLp.toLp` as a `LinearMap` from the continuous linear maps. -/
-def ContinuousLinearMap.toLpₗ' (μ : Measure E) (p : ℝ≥0∞) (h_Lp : MemLp id p μ) :
+def ContinuousLinearMap.toLpₗ (μ : Measure E) (p : ℝ≥0∞) (h_Lp : MemLp id p μ) :
     (E →L[ℝ] ℝ) →ₗ[ℝ] Lp ℝ p μ where
   toFun := fun L ↦ MemLp.toLp L (h_Lp.continuousLinearMap L)
   map_add' u v := by push_cast; rw [MemLp.toLp_add]
   map_smul' c L := by push_cast; rw [MemLp.toLp_const_smul]; rfl
 
 @[simp]
-lemma ContinuousLinearMap.toLpₗ'_apply (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) :
-    L.toLpₗ' μ p h_Lp = MemLp.toLp L (h_Lp.continuousLinearMap L) := rfl
+lemma ContinuousLinearMap.toLpₗ_apply (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) :
+    L.toLpₗ μ p h_Lp = MemLp.toLp L (h_Lp.continuousLinearMap L) := rfl
 
-lemma norm_toLpₗ'_le (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
-    ‖L.toLpₗ' μ p h_Lp‖ ≤ ‖L‖ * (eLpNorm id p μ).toReal := by
+lemma norm_toLpₗ_le (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
+    ‖L.toLpₗ μ p h_Lp‖ ≤ ‖L‖ * (eLpNorm id p μ).toReal := by
   have h0 : 0 < p.toReal := by simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, hp, hp_top.lt_top]
-  suffices ‖L.toLpₗ' μ p h_Lp‖
+  suffices ‖L.toLpₗ μ p h_Lp‖
       ≤ (‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ).toReal ^ p.toReal⁻¹ by
     refine this.trans_eq ?_
     simp only [ENNReal.toReal_mul]
@@ -1006,7 +1000,7 @@ lemma norm_toLpₗ'_le (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) (hp : p ≠ 
       ← Real.rpow_mul (by positivity), mul_inv_cancel₀ h0.ne', Real.rpow_one, toReal_enorm]
     rw [eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top, ENNReal.toReal_rpow]
     simp
-  rw [ContinuousLinearMap.toLpₗ'_apply, Lp.norm_toLp,
+  rw [ContinuousLinearMap.toLpₗ_apply, Lp.norm_toLp,
     eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top]
   simp only [ENNReal.toReal_ofNat, ENNReal.rpow_ofNat, one_div]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
@@ -1031,10 +1025,10 @@ lemma norm_toLpₗ'_le (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) (hp : p ≠ 
   _ = ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ := by rw [lintegral_const_mul]; fun_prop
 
 /-- `MemLp.toLp` as a `ContinuousLinearMap` from the continuous linear maps. -/
-def ContinuousLinearMap.toLp' (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ)
+def ContinuousLinearMap.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ)
     (hp : p ≠ ∞) :
     (E →L[ℝ] ℝ) →L[ℝ] Lp ℝ p μ where
-  toLinearMap := ContinuousLinearMap.toLpₗ' μ p h_Lp
+  toLinearMap := ContinuousLinearMap.toLpₗ μ p h_Lp
   cont := by
     refine LinearMap.continuous_of_locally_bounded _ fun s hs ↦ ?_
     rw [image_isVonNBounded_iff]
@@ -1045,26 +1039,13 @@ def ContinuousLinearMap.toLp' (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)]
     have hp_ne : p ≠ 0 := by
       have : 1 ≤ p := Fact.out
       positivity
-    refine (norm_toLpₗ'_le h_Lp L hp_ne hp).trans ?_
+    refine (norm_toLpₗ_le h_Lp L hp_ne hp).trans ?_
     gcongr
 
 @[simp]
-lemma ContinuousLinearMap.toLp'_apply (L : E →L[ℝ] ℝ)
+lemma ContinuousLinearMap.toLp_apply (L : E →L[ℝ] ℝ)
     [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (hp : p ≠ ∞) :
-    L.toLp' μ p h_Lp hp = MemLp.toLp L (h_Lp.continuousLinearMap L) := rfl
-
-variable [SecondCountableTopology E] [CompleteSpace E]
-
-/-- `MemLp.toLp` as a `ContinuousLinearMap` from the continuous linear maps. -/
-def ContinuousLinearMap.toLp (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) [Fact (1 ≤ p)]
-    (hp : p ≠ ∞) :
-    (E →L[ℝ] ℝ) →L[ℝ] Lp ℝ p μ :=
-  ContinuousLinearMap.toLp' μ p (IsGaussian.memLp_id μ p hp) hp
-
-@[simp]
-lemma ContinuousLinearMap.toLp_apply {μ : Measure E} [IsGaussian μ] (L : E →L[ℝ] ℝ)
-    [Fact (1 ≤ p)] (hp : p ≠ ∞) :
-    L.toLp μ p hp = MemLp.toLp L (IsGaussian.memLp_continuousLinearMap μ L p hp) := rfl
+    L.toLp μ p h_Lp hp = MemLp.toLp L (h_Lp.continuousLinearMap L) := rfl
 
 end ToLp
 
@@ -1088,12 +1069,22 @@ lemma integral_continuousLinearMap_of_memLp_id (h_Lp : MemLp id 1 μ) (L : E →
     filter_upwards [MemLp.coeFn_toLp h_Lp] with x hx
     rw [hx, id_eq]
 
+lemma isCentered_map_sub_integral_id [BorelSpace E] [IsProbabilityMeasure μ] (h_Lp : MemLp id 1 μ) :
+    IsCentered (μ.map (fun x ↦ x - μ[id])) := by
+  intro L
+  rw [integral_map]
+  · simp only [map_sub]
+    rw [integral_sub (h_Lp.integrable_continuousLinearMap L) (integrable_const _)]
+    simp [← integral_continuousLinearMap_of_memLp_id h_Lp]
+  · fun_prop
+  · exact Measurable.aestronglyMeasurable <| by fun_prop
+
 variable [BorelSpace E] [SecondCountableTopology E] {μ : Measure E} [IsGaussian μ]
 
 lemma IsGaussian.integral_continuousLinearMap (L : E →L[ℝ] ℝ) : μ[L] = L (∫ x, x ∂μ) :=
   integral_continuousLinearMap_of_memLp_id (IsGaussian.memLp_id μ 1 (by simp)) L
 
-lemma eq_dirac_of_variance_eq_zero (h : ∀ (L : E →L[ℝ] ℝ), Var[L; μ] = 0) :
+lemma eq_dirac_of_variance_eq_zero (h : ∀ L : E →L[ℝ] ℝ, Var[L; μ] = 0) :
     μ = Measure.dirac (∫ x, x ∂μ) := by
   refine ext_of_charFunCLM ?_
   ext L
@@ -1117,66 +1108,69 @@ lemma IsGaussian.noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
     refine measure_mono_null ?_ hL_zero
     exact fun ⦃a⦄ ↦ congrArg ⇑L
 
+instance (μ : Measure E) [IsGaussian μ] :
+    IsGaussian (μ.map (fun x ↦ x - μ[id])) where
+  map_eq_gaussianReal L := by
+    have : (L ∘ fun x ↦ x - μ[id]) = (fun x ↦ x - μ[L]) ∘ L := by
+      ext x
+      simp only [id_eq, Function.comp_apply, map_sub, sub_right_inj]
+      rw [← IsGaussian.integral_continuousLinearMap]
+    rw [Measure.map_map (by fun_prop) (by fun_prop), this,
+      ← Measure.map_map (by fun_prop) (by fun_prop), IsGaussian.map_eq_gaussianReal,
+      gaussianReal_map_sub_const]
+    congr 1
+    · simp only [sub_self, id_eq]
+      rw [integral_map]
+      rotate_left
+      · fun_prop
+      · exact Measurable.aestronglyMeasurable <| by fun_prop
+      simp only [map_sub]
+      rw [integral_sub, integral_const, ← IsGaussian.integral_continuousLinearMap]
+      · simp
+      · fun_prop
+      · fun_prop
+    · rw [variance_map (by fun_prop) (by fun_prop), this]
+      have : (fun x ↦ x - ∫ x, L x ∂μ) ∘ L = fun x ↦ L x - μ[L] := rfl
+      rw [this, variance_sub_const (by fun_prop)]
+
 end Mean
 
 section Covariance
 
-section BilinForm
+variable {μ : Measure E}
 
-open scoped RealInnerProductSpace
-
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-
-/-- The inner product as a continuous bilinear form. -/
+/-- Continuous bilinear form with value `∫ x, L₁ x * L₂ x ∂μ` on `(L₁, L₂)`.
+This is the covariance only if `μ` is centered. -/
 noncomputable
-def continuousBilinFormOfInner : E →L[ℝ] E →L[ℝ] ℝ :=
-  (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
+def centeredCovariance (μ : Measure E) (h : MemLp id 2 μ) :
+    (E →L[ℝ] ℝ) →L[ℝ] (E →L[ℝ] ℝ) →L[ℝ] ℝ :=
+  ContinuousLinearMap.bilinearComp (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
+    (ContinuousLinearMap.toLp μ 2 h (by simp)) (ContinuousLinearMap.toLp μ 2 h (by simp))
 
-@[simp]
-lemma continuousBilinFormOfInner_apply {x y : E} : continuousBilinFormOfInner x y = ⟪x, y⟫ := rfl
-
-@[simp]
-lemma toLinearMap₂_continuousBilinFormOfInner :
-    ContinuousLinearMap.toLinearMap₂ (continuousBilinFormOfInner : E →L[ℝ] E →L[ℝ] ℝ)
-      = bilinFormOfRealInner := rfl
-
-end BilinForm
-
-variable [SecondCountableTopology E] [CompleteSpace E]
-
--- todo: this is the right def only for centered gaussian measures
-/-- Covariance operator of a Gaussian measure. -/
-noncomputable
-def covarianceOperator (μ : Measure E) [IsGaussian μ] : (E →L[ℝ] ℝ) →L[ℝ] (E →L[ℝ] ℝ) →L[ℝ] ℝ :=
-  ContinuousLinearMap.bilinearComp (continuousBilinFormOfInner (E := Lp ℝ 2 μ))
-    (ContinuousLinearMap.toLp μ 2 (by simp)) (ContinuousLinearMap.toLp μ 2 (by simp))
-
-lemma covarianceOperator_apply {μ : Measure E} [IsGaussian μ] (L₁ L₂ : E →L[ℝ] ℝ) :
-    covarianceOperator μ L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
-  simp only [covarianceOperator, ContinuousLinearMap.bilinearComp_apply,
-    ContinuousLinearMap.toLp_apply,
-    continuousBilinFormOfInner_apply, L2.inner_def,
+lemma centeredCovariance_apply (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
+    centeredCovariance μ h L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
+  simp only [centeredCovariance, ContinuousLinearMap.bilinearComp_apply,
+    ContinuousLinearMap.toLp_apply, L2.inner_def,
     RCLike.inner_apply, conj_trivial]
   refine integral_congr_ae ?_
-  filter_upwards [MemLp.coeFn_toLp (IsGaussian.memLp_continuousLinearMap μ L₁ 2 (by simp)),
-    MemLp.coeFn_toLp (IsGaussian.memLp_continuousLinearMap μ L₂ 2 (by simp))] with x hxL₁ hxL₂
+  filter_upwards [MemLp.coeFn_toLp (h.continuousLinearMap L₁),
+    MemLp.coeFn_toLp (h.continuousLinearMap L₂)] with x hxL₁ hxL₂
   rw [hxL₁, hxL₂, mul_comm]
 
-lemma norm_covarianceOperator_le {μ : Measure E} [IsGaussian μ] (L₁ L₂ : E →L[ℝ] ℝ) :
-    ‖covarianceOperator μ L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
-  calc ‖covarianceOperator μ L₁ L₂‖
-  _ = ‖∫ x, L₁ x * L₂ x ∂μ‖ := by rw [covarianceOperator_apply]
+lemma norm_centeredCovariance_le (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
+    ‖centeredCovariance μ h L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
+  calc ‖centeredCovariance μ h L₁ L₂‖
+  _ = ‖∫ x, L₁ x * L₂ x ∂μ‖ := by rw [centeredCovariance_apply]
   _ ≤ ∫ x, ‖L₁ x‖ * ‖L₂ x‖ ∂μ := (norm_integral_le_integral_norm _).trans (by simp)
   _ ≤ ∫ x, ‖L₁‖ * ‖x‖ * ‖L₂‖ * ‖x‖ ∂μ := by
     refine integral_mono_ae ?_ ?_ (ae_of_all _ fun x ↦ ?_)
     · simp_rw [← norm_mul]
-      exact (MemLp.integrable_mul (IsGaussian.memLp_continuousLinearMap μ L₁ 2 (by simp))
-        (IsGaussian.memLp_continuousLinearMap μ L₂ 2 (by simp))).norm
+      exact (MemLp.integrable_mul (h.continuousLinearMap L₁) (h.continuousLinearMap L₂)).norm
     · simp_rw [mul_assoc]
       refine Integrable.const_mul ?_ _
       simp_rw [← mul_assoc, mul_comm _ (‖L₂‖), mul_assoc, ← pow_two]
       refine Integrable.const_mul ?_ _
-      exact (IsGaussian.memLp_id μ 2 (by simp)).integrable_norm_pow (by simp)
+      exact h.integrable_norm_pow (by simp)
     · simp only
       rw [mul_assoc]
       gcongr
@@ -1187,14 +1181,33 @@ lemma norm_covarianceOperator_le {μ : Measure E} [IsGaussian μ] (L₁ L₂ : E
     congr with x
     ring
 
-lemma norm_covarianceOperator_le' {μ : Measure E} [IsGaussian μ] (L₁ L₂ : E →L[ℝ] ℝ) :
-    ‖covarianceOperator μ L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * (eLpNorm id 2 μ).toReal ^ 2 := by
-  calc ‖covarianceOperator μ L₁ L₂‖
-  _ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := norm_covarianceOperator_le _ _
+lemma norm_centeredCovariance_le' (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
+    ‖centeredCovariance μ h L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * (eLpNorm id 2 μ).toReal ^ 2 := by
+  calc ‖centeredCovariance μ h L₁ L₂‖
+  _ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := norm_centeredCovariance_le _ _ _
   _ = ‖L₁‖ * ‖L₂‖ * (eLpNorm id 2 μ).toReal ^ 2 := by
     congr
-    have h := pow_toReal_eLpNorm (IsGaussian.memLp_id μ 2 (by simp)) (by simp)
+    have h := pow_toReal_eLpNorm h (by simp)
     simpa only [ENNReal.ofReal_ofNat, Real.rpow_two, id_eq] using h.symm
+
+variable [SecondCountableTopology E] [CompleteSpace E]
+
+/-- Continuous bilinear form with value `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ` on `(L₁, L₂)`. -/
+noncomputable
+def covarianceBilin (μ : Measure E) [IsFiniteMeasure μ] (h : MemLp id 2 μ) :
+    (E →L[ℝ] ℝ) →L[ℝ] (E →L[ℝ] ℝ) →L[ℝ] ℝ :=
+  centeredCovariance (μ.map (fun x ↦ x - μ[id])) <| by
+    rw [memLp_map_measure_iff]
+    · exact h.sub (memLp_const _)
+    · exact Measurable.aestronglyMeasurable <| by fun_prop
+    · fun_prop
+
+lemma covarianceBilin_apply [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
+    covarianceBilin μ h L₁ L₂ = ∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ := by
+  rw [covarianceBilin, centeredCovariance_apply, integral_map]
+  · simp [← integral_continuousLinearMap_of_memLp_id (h.mono_exponent (by simp))]
+  · fun_prop
+  · exact Measurable.aestronglyMeasurable <| by fun_prop
 
 end Covariance
 

@@ -199,6 +199,20 @@ theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2
     integral_const_mul, Pi.pow_apply]
   ring
 
+lemma variance_add_const [IsProbabilityMeasure μ] (hX : Integrable X μ) (c : ℝ) :
+    Var[fun ω ↦ X ω + c; μ] = Var[X; μ] := by
+  rw [variance_eq_integral (hX.1.add_const _).aemeasurable,
+    integral_add hX (by fun_prop), integral_const, variance_eq_integral hX.1.aemeasurable]
+  simp
+
+lemma variance_const_add [IsProbabilityMeasure μ] (hX : Integrable X μ) (c : ℝ) :
+    Var[fun ω ↦ c + X ω; μ] = Var[X; μ] := by
+  simp_rw [add_comm c, variance_add_const hX c]
+
+lemma variance_sub_const [IsProbabilityMeasure μ] (hX : Integrable X μ) (c : ℝ) :
+    Var[fun ω ↦ X ω - c; μ] = Var[X; μ] := by
+  simp_rw [sub_eq_add_neg, variance_add_const hX (-c)]
+
 @[simp]
 lemma variance_dirac [MeasurableSingletonClass Ω] (x : Ω) :
     Var[X; Measure.dirac x] = 0 := by
@@ -206,16 +220,19 @@ lemma variance_dirac [MeasurableSingletonClass Ω] (x : Ω) :
   · simp
   · exact aemeasurable_dirac
 
+lemma variance_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
+    {Y : Ω' → Ω} (hX : AEMeasurable X (μ.map Y)) (hY : AEMeasurable Y μ) :
+    Var[X; μ.map Y] = Var[X ∘ Y; μ] := by
+  rw [variance_eq_integral hX, integral_map hY, variance_eq_integral (hX.comp_aemeasurable hY),
+    integral_map hY]
+  · congr
+  · exact hX.aestronglyMeasurable
+  · refine AEStronglyMeasurable.pow ?_ _
+    exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+
 lemma variance_id_map (hX : AEMeasurable X μ) :
     Var[id; μ.map X] = Var[X; μ] := by
-  rw [variance_eq_integral measurable_id.aemeasurable, integral_map hX]
-  swap; · exact Measurable.aestronglyMeasurable <| by fun_prop
-  simp only [id_eq]
-  rw [variance_eq_integral hX]
-  congr with x
-  congr
-  rw [integral_map hX]
-  exact Measurable.aestronglyMeasurable <| by fun_prop
+  simp [variance_map measurable_id.aemeasurable hX]
 
 theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
     (hm : AEStronglyMeasurable X μ) : variance X μ ≤ μ[X ^ 2] := by

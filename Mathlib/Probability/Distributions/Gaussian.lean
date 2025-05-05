@@ -287,6 +287,10 @@ lemma gaussianReal_map_const_add (y : ℝ) :
   simp_rw [add_comm y]
   exact gaussianReal_map_add_const y
 
+lemma gaussianReal_map_sub_const (y : ℝ) :
+    (gaussianReal μ v).map (· - y) = gaussianReal (μ - y) v := by
+  simp_rw [sub_eq_add_neg, gaussianReal_map_add_const]
+
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
 lemma gaussianReal_map_const_mul (c : ℝ) :
     (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
@@ -325,6 +329,16 @@ lemma gaussianReal_map_mul_const (c : ℝ) :
     (gaussianReal μ v).map (· * c) = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
   simp_rw [mul_comm _ c]
   exact gaussianReal_map_const_mul c
+
+lemma gaussianReal_map_neg : (gaussianReal μ v).map (fun x ↦ -x) = gaussianReal (-μ) v := by
+  simpa using gaussianReal_map_const_mul (μ := μ) (v := v) (-1)
+
+lemma gaussianReal_map_const_sub (y : ℝ) :
+    (gaussianReal μ v).map (y - ·) = gaussianReal (y - μ) v := by
+  simp_rw [sub_eq_add_neg]
+  have : (fun x ↦ y + -x) = (fun x ↦ y + x) ∘ fun x ↦ -x := by ext; simp
+  rw [this, ← Measure.map_map (by fun_prop) (by fun_prop), gaussianReal_map_neg,
+    gaussianReal_map_const_add, add_comm]
 
 variable {Ω : Type} [MeasureSpace Ω]
 
