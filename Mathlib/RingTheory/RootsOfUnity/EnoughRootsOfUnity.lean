@@ -75,6 +75,18 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     simp only [mem_rootsOfUnity, PNat.mk_coe]
     rw [← Units.eq_iff, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
 
+lemma push {n : ℕ} [NeZero n] {M N : Type*} [CommMonoid M] [CommMonoid N]
+    (hm : HasEnoughRootsOfUnity M n) (e : rootsOfUnity n M ≃* rootsOfUnity n N) :
+    HasEnoughRootsOfUnity N n where
+  prim := by
+    obtain ⟨m, hm⟩ := hm.prim
+    use (e hm.toRootsOfUnity).val.val
+    simp_all only [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.coe_submonoidClass_iff]
+    exact hm.push e
+  cyc :=
+    hm.cyc.push_ofSurjective e
+      e.surjective (map_zpow _)
+
 end HasEnoughRootsOfUnity
 
 section cyclic
