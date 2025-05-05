@@ -36,6 +36,7 @@ lemma SymmetricAlgebra.equivMvPolynomial_symm_ι {I : Type*} (b : Basis I R M) (
     (equivMvPolynomial b).symm (MvPolynomial.X i) = ι R M (b i) :=
   (equivMvPolynomial b).toEquiv.symm_apply_eq.mpr <| equivMvPolynomial_ι_apply b i |>.symm
 
+/-- A basis on `M` can be lifted to a basis on `SymmetricAlgebra R M` -/
 @[simps! repr_apply]
 noncomputable def _root_.Basis.symmetricAlgebra {I : Type*} (b : Basis I R M) :
     Basis (I →₀ ℕ) R (SymmetricAlgebra R M) :=
