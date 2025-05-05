@@ -175,7 +175,7 @@ theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t 
   fun _ hb _ h => hb <| hst h
 
 @[gcongr]
-lemma upperBounds_mono_of_iscofinalfor (hst : IsCofinalFor s t) : upperBounds t ⊆ upperBounds s :=
+lemma upperBounds_mono_of_isCofinalFor (hst : IsCofinalFor s t) : upperBounds t ⊆ upperBounds s :=
   fun _a ha _b hb ↦ let ⟨_c, hc, hbc⟩ := hst hb; hbc.trans (ha hc)
 
 @[gcongr]
