@@ -191,7 +191,7 @@ instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) :=
   Fintype.ofEquiv (G.neighborSet v) (G.incidenceSetEquivNeighborSet v).symm
 
 /-- This is the `Finset` version of `incidenceSet`. -/
-abbrev incidenceFinset [DecidableEq V] : Finset (Sym2 V) :=
+def incidenceFinset [DecidableEq V] : Finset (Sym2 V) :=
   (G.incidenceSet v).toFinset
 
 @[simp]
@@ -200,10 +200,12 @@ theorem card_incidenceSet_eq_degree [DecidableEq V] :
   rw [Fintype.card_congr (G.incidenceSetEquivNeighborSet v)]
   simp
 
+@[simp]
 theorem card_incidenceFinset_eq_degree [DecidableEq V] : #(G.incidenceFinset v) = G.degree v := by
   rw [← G.card_incidenceSet_eq_degree]
   apply Set.toFinset_card
 
+@[simp]
 theorem mem_incidenceFinset [DecidableEq V] (e : Sym2 V) :
     e ∈ G.incidenceFinset v ↔ e ∈ G.incidenceSet v :=
   Set.mem_toFinset
@@ -215,9 +217,8 @@ theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
   simp [mk'_mem_incidenceSet_iff]
 
 theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet]:
-    G.incidenceFinset v ⊆ G.edgeFinset := by
-  rw [Set.toFinset_subset_toFinset]
-  exact G.incidenceSet_subset v
+    G.incidenceFinset v ⊆ G.edgeFinset :=
+  Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
 
 variable {G v}
 

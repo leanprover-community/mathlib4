@@ -151,7 +151,7 @@ theorem card_edgeFinset_induce_compl_singleton (G : SimpleGraph V) [DecidableRel
 set difference the finite incidence set of the vertex `x`. -/
 theorem edgeFinset_deleteIncidenceSet_eq_sdiff (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     (G.deleteIncidenceSet x).edgeFinset = G.edgeFinset \ (G.incidenceFinset x) := by
-  rw [← Set.toFinset_diff, Set.toFinset_inj]
+  rw [incidenceFinset, ← Set.toFinset_diff, Set.toFinset_inj]
   exact G.edgeSet_deleteIncidenceSet x
 
 /-- Deleting the incident set of the vertex `x` deletes exactly `G.degree x` edges from the edge
@@ -168,7 +168,8 @@ theorem edgeFinset_deleteIncidenceSet_eq_filter (G : SimpleGraph V) [DecidableRe
   rw [edgeFinset_deleteIncidenceSet_eq_sdiff, sdiff_eq_filter]
   apply filter_congr
   intro _ h
-  rw [Set.mem_toFinset, incidenceSet, Set.mem_setOf_eq, not_and, Classical.imp_iff_right_iff]
+  rw [incidenceFinset, Set.mem_toFinset, incidenceSet,
+    Set.mem_setOf_eq, not_and, Classical.imp_iff_right_iff]
   left
   rwa [mem_edgeFinset] at h
 
