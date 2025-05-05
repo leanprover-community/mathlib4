@@ -95,8 +95,7 @@ lemma map_of_rootsOfUnityEquiv {n : ℕ} [NeZero n] {M N : Type*} [CommMonoid M]
         norm_cast
       rw [← e3]
       norm_cast
-  cyc :=
-    IsCyclic.push_ofSurjective hm.cyc e e.surjective (map_zpow _)
+  cyc := isCyclic_of_surjective e e.surjective
 
 end HasEnoughRootsOfUnity
 
