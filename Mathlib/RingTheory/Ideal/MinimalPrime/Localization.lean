@@ -188,18 +188,9 @@ lemma Ideal.minimalPrimes_map_of_surjective {S : Type*} [CommRing S] {f : R →+
     (I.map f).minimalPrimes = Ideal.map f '' (I ⊔ (RingHom.ker f)).minimalPrimes := by
   apply Set.image_injective.mpr (Ideal.comap_injective_of_surjective f hf)
   rw [← Ideal.comap_minimalPrimes_eq_of_surjective hf, ← Set.image_comp,
-    Ideal.comap_map_of_surjective f hf]
-  ext x
-  constructor
-  · intro hx
-    refine ⟨x, hx, (Ideal.comap_map_of_surjective f hf _).trans ?_⟩
-    rw [sup_eq_left, ← RingHom.ker_eq_comap_bot]
-    exact le_sup_right.trans hx.1.2
-  · rintro ⟨x, hx, rfl⟩
-    convert hx
-    refine (Ideal.comap_map_of_surjective f hf _).trans ?_
-    rw [sup_eq_left, ← RingHom.ker_eq_comap_bot]
-    exact le_sup_right.trans hx.1.2
+    Ideal.comap_map_of_surjective f hf, Set.image_congr, Set.image_id, RingHom.ker]
+  intro x hx
+  exact (Ideal.comap_map_of_surjective f hf _).trans (sup_eq_left.mpr <| le_sup_right.trans hx.1.2)
 
 theorem Ideal.minimalPrimes_eq_comap :
     I.minimalPrimes = Ideal.comap (Ideal.Quotient.mk I) '' minimalPrimes (R ⧸ I) := by
