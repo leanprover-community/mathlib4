@@ -29,8 +29,6 @@ See `SymAlg R` instead if you are looking for the symmetrized algebra, which giv
 multiplication on `R` by $a \circ b = \frac{1}{2}(ab + ba)$.
 -/
 
-universe u
-
 variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- Relation on the tensor algebra which will yield the symmetric algebra when
@@ -83,6 +81,10 @@ instance : CommSemiring (SymmetricAlgebra R M) where
       | add a b ha hb => exact ha.add_left hb
     | mul b c hb hc => exact hb.mul_right hc
     | add b c hb hc => exact hb.add_right hc
+
+instance (R M) [CommRing R] [AddCommMonoid M] [Module R M] : CommRing (SymmetricAlgebra R M) where
+  __ := inferInstanceAs (CommSemiring (SymmetricAlgebra R M))
+  __ := inferInstanceAs (Ring (RingQuot (SymRel R M)))
 
 variable {R M} {A : Type*} [CommSemiring A] [Algebra R A]
 
