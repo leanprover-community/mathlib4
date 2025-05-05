@@ -95,6 +95,12 @@ theorem span_insert_zero : span R (insert (0 : M) s) = span R s := by
   rw [span_le, Set.insert_subset_iff]
   exact ⟨by simp only [SetLike.mem_coe, Submodule.zero_mem], Submodule.subset_span⟩
 
+@[simp]
+lemma span_sdiff_singleton_zero : span R (s \ {0}) = span R s := by
+  by_cases h : 0 ∈ s
+  · rw [← span_insert_zero, show insert 0 (s \ {0}) = s by simp [h]]
+  · simp [h]
+
 theorem closure_subset_span {s : Set M} : (AddSubmonoid.closure s : Set M) ⊆ span R s :=
   (@AddSubmonoid.closure_le _ _ _ (span R s).toAddSubmonoid).mpr subset_span
 
@@ -363,6 +369,7 @@ theorem sup_eq_top_iff : p ⊔ p' = ⊤ ↔ ∀ m : M, ∃ u ∈ p, ∃ v ∈ p'
 
 end
 
+@[simp]
 theorem mem_span_singleton_self (x : M) : x ∈ R ∙ x :=
   subset_span rfl
 
