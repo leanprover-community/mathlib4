@@ -443,7 +443,9 @@ open ModularForm
 
 variable {k : ℤ} {Γ : Subgroup SL(2, ℤ)} {F : Type*} [FunLike F ℍ ℂ] (f : F) (g : SL(2, ℤ))
 
-/-- Translating a `ModularForm` by `SL(2, ℤ)`, to obtain a new `ModularForm`. -/
+/-- Translating a `ModularForm` by `SL(2, ℤ)`, to obtain a new `ModularForm`.
+
+(TODO : Define this more generally for `GL(2, ℚ)⁺`.) -/
 noncomputable def ModularForm.translate [ModularFormClass F Γ k] :
     ModularForm (Γ.map <| MulAut.conj g⁻¹) k where
   __ := SlashInvariantForm.translate f g
@@ -453,7 +455,9 @@ noncomputable def ModularForm.translate [ModularFormClass F Γ k] :
 @[simp]
 lemma ModularForm.coe_translate [ModularFormClass F Γ k] : translate f g = ⇑f ∣[k] g := rfl
 
-/-- Translating a `CuspForm` by `SL(2, ℤ)`, to obtain a new `CuspForm`. -/
+/-- Translating a `CuspForm` by `SL(2, ℤ)`, to obtain a new `CuspForm`.
+
+(TODO : Define this more generally for `GL(2, ℚ)⁺`.) -/
 noncomputable def CuspForm.translate [CuspFormClass F Γ k] :
     CuspForm (Γ.map <| MulAut.conj g⁻¹) k where
   __ := ModularForm.translate f g
