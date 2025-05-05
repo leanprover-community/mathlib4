@@ -116,7 +116,7 @@ universe v u
 #check Module.Finite.finite_basis
 
 open IsLocalRing
-open RingTheory.Sequence Ideal CategoryTheory CategoryTheory.Abelian
+open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
 
@@ -229,6 +229,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
   have : Module.Finite R (ι →₀ Shrink.{v, u} R) := by
     simp [Module.finite_finsupp_iff, Module.Finite.equiv (Shrink.linearEquiv R R).symm, fin.finite]
   have : Module.Finite R (LinearMap.ker f) := Module.IsNoetherian.finite R (LinearMap.ker f)
+  have free : Module.Free R (ι →₀ Shrink.{v, u} R) := inferInstance
   let S : ShortComplex (ModuleCat.{v} R) := {
     f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
     g := ModuleCat.ofHom.{v} f
@@ -246,7 +247,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     apply @free_of_projectiveOverLocalRing _ _ _ _ (ModuleCat.of R (LinearMap.ker f)) _ ?_
     apply @projective_of_hasProjectiveDimensionLT_one _ _ _ _ _ ?_
     have proj : Projective (ModuleCat.of.{v} R (ι →₀ Shrink.{v, u} R)) := by
-      obtain ⟨⟨B⟩⟩ : Module.Free R (ι →₀ Shrink.{v, u} R) := inferInstance
+      rcases free with ⟨⟨B⟩⟩
       exact ModuleCat.projective_of_free B.2
     exact (S_exact.hasProjectiveDimensionLT_X₃_iff 0 proj).mp le1
   have ker_le : LinearMap.ker f ≤ (maximalIdeal R) • (⊤ : Submodule R (ι →₀ Shrink.{v, u} R)) := by
@@ -286,7 +287,27 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     have hx : x ∈ LinearMap.range (LinearMap.ker f).subtype := hx
     rw [Submodule.range_subtype] at hx
     exact ker_le hx
-  have (i : ℕ) := ext_hom_zero_of_mem_ideal_smul K S.X₁ S.X₂ i S.f Sf_mem
+  have hom_zero (i : ℕ) := ext_hom_zero_of_mem_ideal_smul K S.X₁ S.X₂ i S.f Sf_mem
+  have iff (i : ℕ) : Subsingleton (Ext K M i) ↔
+    (Subsingleton (Ext K (ModuleCat.of R (Shrink.{v} R)) i) ∧
+      Subsingleton (Ext K (ModuleCat.of R (Shrink.{v} R)) (i + 1))) := by
+    refine ⟨fun h ↦ ?_, fun ⟨h1, h3⟩ ↦ ?_⟩
+    · have zero : IsZero (AddCommGrp.of (Ext K M i)) := @AddCommGrp.isZero_of_subsingleton _ h
+      constructor
+      · have := AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+          (Ext.covariant_sequence_exact₂' K S_exact i) (hom_zero i) (zero.eq_zero_of_tgt _)
+        exact (finte_free_ext_vanish_iff S.X₂ K i).mp this
+      · have := AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+          (Ext.covariant_sequence_exact₁' K S_exact i (i + 1) rfl)
+          (zero.eq_zero_of_src _) (hom_zero (i + 1))
+        exact (finte_free_ext_vanish_iff S.X₁ K (i + 1)).mp this
+    · have zero1 : IsZero (AddCommGrp.of (Ext K S.X₂ i)) :=
+        @AddCommGrp.isZero_of_subsingleton _ ((finte_free_ext_vanish_iff _ _ i).mpr h1)
+      have zero3 : IsZero  (AddCommGrp.of (Ext K S.X₁ (i + 1))) :=
+        @AddCommGrp.isZero_of_subsingleton _ ((finte_free_ext_vanish_iff _ _ (i + 1)).mpr h3)
+      exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+        (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl)
+        (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
   sorry
 
 open scoped Classical in
