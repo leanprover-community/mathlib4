@@ -85,11 +85,12 @@ section hom
 open Module Free Pointwise
 
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+  (I : Ideal R)
 
-theorem foo1 (I : Ideal R) {ι : Type*} (x : ι →₀ M) (h : ∀ i, x i ∈ I • (⊤ : Submodule R M)) :
-    x ∈ I • (⊤ : Submodule R (ι →₀ M)) := sorry
+theorem foo1 {ι : Type*} [Finite ι] (x : ι → M) (h : ∀ i, x i ∈ I • (⊤ : Submodule R M)) :
+    x ∈ I • (⊤ : Submodule R (ι → M)) := sorry
 
-variable [Module.Finite R M] [Free R M] [Module.Finite R N] (f : M →ₗ[R] N) (I : Ideal R)
+variable [Module.Finite R M] [Free R M] [Module.Finite R N] (f : M →ₗ[R] N)
 
 --open scoped Classical in
 theorem mem_smul_top_of_range_le_smul_top (hf : LinearMap.range f ≤ I • ⊤):
@@ -97,14 +98,16 @@ theorem mem_smul_top_of_range_le_smul_top (hf : LinearMap.range f ≤ I • ⊤)
   let ι := ChooseBasisIndex R M
   let e : Basis ι R M := chooseBasis R M
   have (i : ι) : M := e i
-  have (i : ι) : f (e i) ∈ I • (⊤ : Submodule R N) :=
-    hf (LinearMap.mem_range_self f (e i))
-  --let g (i : ι) : M →ₗ[R] N := e.constr R <| fun j ↦ if j = i then f (e i) else 0 Basis.coord
-  let g (i : ι) : M →ₗ[R] N :=
-    (LinearMap.toSpanSingleton R N (f (e i))).comp (Basis.coord e i)
-  have h (i : ι) : g i ∈ I • (⊤ : Submodule R (M →ₗ[R] N)) := by
-    sorry--have :=
-  sorry
+  have h (i : ι) : f (e i) ∈ I • (⊤ : Submodule R N) := hf (LinearMap.mem_range_self f (e i))
+  -- let g (i : ι) : M →ₗ[R] N := e.constr R <| fun j ↦ if j = i then f (e i) else 0 Basis.coord
+  -- let g (i : ι) : M →ₗ[R] N := (LinearMap.toSpanSingleton R N (f (e i))).comp (Basis.coord e i)
+  -- have h (i : ι) : g i ∈ I • (⊤ : Submodule R (M →ₗ[R] N)) := by
+  --   sorry--have :=
+  let g : (ι → N) →ₗ[R] (M →ₗ[R] N) := (e.constr R).toLinearMap
+  let x (i : ι) : N := f (e i)
+  have hx : f = g x := sorry
+  rw [hx]
+  exact Submodule.smul_top_le_comap_smul_top I g (foo1 I x h)
 
 end hom
 
