@@ -524,6 +524,19 @@ theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ι → M) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _
 
+/-- If two continuous `R`-alternating maps from `R` are equal on 1, then they are equal.
+
+This is the alternating version of `ContinuousLinearMap.ext_ring`. -/
+@[ext]
+theorem ext_ring [Finite ι] [TopologicalSpace R] ⦃f g : R [⋀^ι]→L[R] M⦄
+    (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=
+  toAlternatingMap_injective <| AlternatingMap.ext_ring h
+
+/-- The only continuous `R`-alternating map from two or more copies of `R` is the zero map. -/
+instance uniqueOfCommRing [Finite ι] [Nontrivial ι] [TopologicalSpace R] :
+    Unique (R [⋀^ι]→L[R] N) where
+  uniq _ := toAlternatingMap_injective <| Subsingleton.elim _ _
+
 end CommSemiring
 
 section DistribMulAction
