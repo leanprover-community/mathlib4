@@ -32,8 +32,7 @@ lemma factorizationLCRight_zero_left : factorizationLCMRight 0 b = 1 := by
 lemma factorizationLCMRight_zero_right : factorizationLCMRight a 0 = 1 := by
   simp [factorizationLCMRight]
 
-lemma factorizationLCMLeft_pos :
-    0 < factorizationLCMLeft a b := by
+lemma factorizationLCMLeft_pos : 0 < factorizationLCMLeft a b := by
   apply Nat.pos_of_ne_zero
   rw [factorizationLCMLeft, Finsupp.prod_ne_zero_iff]
   intro p _ H

@@ -151,15 +151,15 @@ example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
 noncomputable instance : CommRing (R a b) := test_sorry
 
-example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
+example (p : R PUnit.{u + 1} PUnit.{v + 1}) : p + 0 = p := by
   ring
-example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
+example (p q : R PUnit.{u + 1} PUnit.{v + 1}) : p + q = q + p := by
   ring
 
 
-example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
+example (p : R PUnit.{u + 1} PUnit.{v + 1}) : p + 0 = p := by
   ring_nf
-example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
+example (p q : R PUnit.{u + 1} PUnit.{v + 1}) : p + q = q + p := by
   ring_nf
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring_nf.20returns.20ugly.20literals/near/400988184

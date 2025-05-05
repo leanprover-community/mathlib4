@@ -108,7 +108,7 @@ lemma isStrictMinor_iff_isMinor_ne : N <m M ↔ N ≤m M ∧ N ≠ M :=
   lt_iff_le_and_ne (α := Matroid α)
 
 lemma IsStrictMinor.ne (h : N <m M) : N ≠ M :=
-  LT.lt.ne h
+  h.lt.ne
 
 lemma isStrictMinor_irrefl (M : Matroid α) : ¬ (M <m M) :=
   lt_irrefl M

@@ -505,7 +505,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
 
   /- Rewrite everything in terms of an integer m' which is equal to m.
   The resulting equation holds for all integers m'. -/
-  simp_rw [← zpow_natCast, Int.ofNat_ediv, Int.ofNat_sub hm]
+  simp_rw [← zpow_natCast, Int.natCast_ediv, Int.ofNat_sub hm]
   generalize (m : ℤ) = m'
   clear hm
   push_cast

@@ -68,7 +68,7 @@ theorem thickenedIndicatorAux_lt_top {δ : ℝ} {E : Set α} {x : α} :
 
 theorem thickenedIndicatorAux_closure_eq (δ : ℝ) (E : Set α) :
     thickenedIndicatorAux δ (closure E) = thickenedIndicatorAux δ E := by
-  simp (config := { unfoldPartialApp := true }) only [thickenedIndicatorAux, infEdist_closure]
+  simp +unfoldPartialApp only [thickenedIndicatorAux, infEdist_closure]
 
 theorem thickenedIndicatorAux_one (δ : ℝ) (E : Set α) {x : α} (x_in_E : x ∈ E) :
     thickenedIndicatorAux δ E x = 1 := by

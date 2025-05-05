@@ -667,7 +667,7 @@ theorem ker_eq : (ker f : Set R) = Set.preimage f {0} :=
 theorem ker_eq_comap_bot (f : F) : ker f = Ideal.comap f ⊥ :=
   rfl
 
-theorem comap_ker (f : S →+* R) (g : T →+* S) : f.ker.comap g = ker (f.comp g) := by
+theorem comap_ker (f : S →+* R) (g : T →+* S) : (ker f).comap g = ker (f.comp g) := by
   rw [RingHom.ker_eq_comap_bot, Ideal.comap_comap, RingHom.ker_eq_comap_bot]
 
 /-- If the target is not the zero ring, then one is not in the kernel. -/

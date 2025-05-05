@@ -46,7 +46,7 @@ theorem getElem?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
   induction l generalizing b i with
   | nil =>
     symm
-    simp only [scanl, getElem?_nil, Option.map_none', Option.bind_none, getElem?_cons_succ]
+    simp only [scanl, getElem?_nil, Option.map_none, Option.bind_none, getElem?_cons_succ]
   | cons hd tl hl =>
     simp only [scanl_cons, singleton_append]
     cases i

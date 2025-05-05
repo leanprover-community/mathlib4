@@ -195,7 +195,7 @@ noncomputable instance linearOrderedCommGroupWithZero :
     bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩ }
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
-def valuation : Valuation K (ValueGroup A K) where
+noncomputable def valuation : Valuation K (ValueGroup A K) where
   toFun := Quotient.mk''
   map_zero' := rfl
   map_one' := rfl

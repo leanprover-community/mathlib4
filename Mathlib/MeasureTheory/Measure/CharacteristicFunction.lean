@@ -86,7 +86,7 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
       fun a ha => Integrable.const_mul (integrable P (char he hL a)) _
   rw [hsum P, hsum P']
   apply Finset.sum_congr rfl fun i _ => ?_
-  simp only [smul_eq_mul, MeasureTheory.integral_mul_left, mul_eq_mul_left_iff]
+  simp only [smul_eq_mul, MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
   exact Or.inl (h i)
 
 end ext

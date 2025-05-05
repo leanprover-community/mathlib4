@@ -130,6 +130,12 @@ theorem mem_nonZeroDivisors_of_trailingCoeff {p : R[X]} (h : p.trailingCoeff ∈
 
 end nonZeroDivisors
 
+theorem natDegree_pos_of_monic_of_aeval_eq_zero [Nontrivial R] [Semiring S] [Algebra R S]
+    [FaithfulSMul R S] {p : R[X]} (hp : p.Monic) {x : S} (hx : aeval x p = 0) :
+    0 < p.natDegree :=
+  natDegree_pos_of_aeval_root (Monic.ne_zero hp) hx
+    ((injective_iff_map_eq_zero (algebraMap R S)).mp (FaithfulSMul.algebraMap_injective R S))
+
 theorem rootMultiplicity_mul_X_sub_C_pow {p : R[X]} {a : R} {n : ℕ} (h : p ≠ 0) :
     (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n := by
   have h2 := monic_X_sub_C a |>.pow n |>.mul_left_ne_zero h

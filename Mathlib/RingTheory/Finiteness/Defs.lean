@@ -149,7 +149,7 @@ namespace RingHom
 variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is `RingHom.Finite` if `B` is finitely generated as `A`-module. -/
-@[algebraize Module.Finite]
+@[algebraize Module.Finite, stacks 0563]
 def Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B

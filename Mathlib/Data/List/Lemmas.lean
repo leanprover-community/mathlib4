@@ -36,7 +36,7 @@ theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     · simp [hx.left] at h
     · simp [Ne.symm hx.left] at h
     · simp only [true_and, eq_self_iff_true, insertIdx_succ_cons] at h
-      rw [Nat.succ_inj']
+      rw [Nat.succ_inj]
       refine IH hx.right ?_ ?_ (by injection h)
       · simpa [Nat.succ_le_succ_iff] using hn
       · simpa [Nat.succ_le_succ_iff] using hm

@@ -152,7 +152,7 @@ lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [Decidab
     rw [length_cons, length_boxProd w']
     have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by aesop
     rcases disj with h₁ | h₂
-    · simp only [h₁,irrefl, false_and, and_self, ↓reduceDIte, length_cons, Or.by_cases]
+    · simp only [h₁, irrefl, false_and, and_self, ↓reduceDIte, length_cons, Or.by_cases]
       rw [add_comm, add_comm w'.ofBoxProdLeft.length 1, add_assoc]
       congr <;> simp [h₁.2.symm]
     · simp only [h₂, irrefl, false_and, ↓reduceDIte, length_cons, add_assoc, Or.by_cases]

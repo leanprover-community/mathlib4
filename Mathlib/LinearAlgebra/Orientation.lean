@@ -303,7 +303,7 @@ theorem det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
     rfl
   · right
     simp only [e.det_unitsSMul, ne_eq, Finset.mem_univ, Finset.prod_update_of_mem, not_true,
-      Pi.one_apply, Finset.prod_const_one, mul_one, inv_neg', inv_one, Units.val_neg, Units.val_one]
+      Pi.one_apply, Finset.prod_const_one, mul_one, inv_neg, inv_one, Units.val_neg, Units.val_one]
     ext
     simp
 

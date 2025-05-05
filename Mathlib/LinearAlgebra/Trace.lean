@@ -174,7 +174,7 @@ theorem trace_one : trace R M 1 = (finrank R M : R) := by
 
 /-- The trace of the identity endomorphism is the dimension of the free module. -/
 @[simp]
-theorem trace_id : trace R M id = (finrank R M : R) := by rw [← one_eq_id, trace_one]
+theorem trace_id : trace R M id = (finrank R M : R) := by rw [← Module.End.one_eq_id, trace_one]
 
 @[simp]
 theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose = trace R M := by
@@ -308,7 +308,7 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
     trace R M (f ∘ₗ g) = μ * trace R M f := by
   set n := g - algebraMap R _ μ
   replace hg : trace R M (f ∘ₗ n) = 0 := by
-    rw [← isNilpotent_iff_eq_zero, ← mul_eq_comp]
+    rw [← isNilpotent_iff_eq_zero, ← Module.End.mul_eq_comp]
     refine isNilpotent_trace_of_isNilpotent (Commute.isNilpotent_mul_right ?_ hg)
     exact h_comm.sub_right (Algebra.commute_algebraMap_right μ f)
   have hμ : g = algebraMap R _ μ + n := eq_add_of_sub_eq' rfl

@@ -115,7 +115,7 @@ theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
   apply isClosed_iInter
   intro x
   -- the dual cone of a singleton `{x}` is the preimage of `[0, ∞)` under `inner x`
-  have h : ({↑x} : Set H).innerDualCone = (inner x : H → ℝ) ⁻¹' Set.Ici 0 := by
+  have h : ({↑x} : Set H).innerDualCone = (inner ℝ (x : H)) ⁻¹' Set.Ici 0 := by
     rw [innerDualCone_singleton, ConvexCone.coe_comap, ConvexCone.coe_positive, innerₛₗ_apply_coe]
   -- the preimage is closed as `inner x` is continuous and `[0, ∞)` is closed
   rw [h]

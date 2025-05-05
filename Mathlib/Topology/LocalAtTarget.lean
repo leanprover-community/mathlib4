@@ -322,7 +322,7 @@ theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     IsEmbedding.subtypeVal.comp ((IsEmbedding.of_comp (hiV i) h (hV' _)).restrictPreimage _)
   have hf' : Set.range f' = f ⁻¹' U i := by
     simpa [f', Set.range_comp, Set.range_restrictPreimage] using hV i
-  let e := (Homeomorph.ofIsEmbedding _ this).trans (Homeomorph.setCongr hf')
+  let e := this.toHomeomorph.trans (Homeomorph.setCongr hf')
   refine IsEmbedding.of_comp (by fun_prop) continuous_subtype_val ?_
   convert ((hV' i).comp IsEmbedding.subtypeVal).comp e.symm.isEmbedding
   ext x

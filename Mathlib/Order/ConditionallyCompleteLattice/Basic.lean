@@ -671,21 +671,10 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
         intro a ha
         exact coe_le_coe.1 (hb ha)
 
--- Porting note: in mathlib3 `dsimp only [sSup]` was not needed, we used `show IsLUB ∅ (ite _ _ _)`
 theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
-  rcases s.eq_empty_or_nonempty with hs | hs
-  · rw [hs]
-    dsimp only [sSup]
-    show IsLUB ∅ _
-    split_ifs with h₁ h₂
-    · cases h₁
-    · rw [preimage_empty, csSup_empty]
-      exact isLUB_empty
-    · exfalso
-      apply h₂
-      use ⊥
-      rintro a ⟨⟩
-  exact isLUB_sSup' hs
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · simp [sSup]
+  · exact isLUB_sSup' hs
 
 /-- The `sInf` of a bounded-below set is its greatest lower bound for a conditionally
 complete lattice with a top. -/
@@ -921,19 +910,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     sSup_le := fun S a ha => by
       rcases S.eq_empty_or_nonempty with h | h
       · show ite _ _ _ ≤ a
-        split_ifs with h₁ h₂
-        · rw [h] at h₁
-          cases h₁
-        · convert bot_le
-          -- Porting note: previous proof relied on convert unfolding
-          -- the definition of ⊥
-          apply congr_arg
-          simp only [h, preimage_empty, WithBot.sSup_empty]
-        · exfalso
-          apply h₂
-          use ⊥
-          rw [h]
-          rintro b ⟨⟩
+        simp [h]
       · exact (WithTop.isLUB_sSup' h).2 ha
     sInf_le := fun S a haS =>
       show ite _ _ _ ≤ a by

@@ -176,7 +176,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       BalancedSz (size mr) (size r) ∧ BalancedSz (size l + size ml + 1) (size mr + size r + 1) from
     Valid'.node' (hl.node' hm.left this.1) (hm.right.node' hr this.2.1) this.2.2
   rcases H with (⟨l0, m1, r0⟩ | ⟨l0, mr₁, lr₁, lr₂, mr₂⟩)
-  · rw [hm.2.size_eq, Nat.succ_inj', add_eq_zero] at m1
+  · rw [hm.2.size_eq, Nat.succ_inj, add_eq_zero] at m1
     rw [l0, m1.1, m1.2]; revert r0; rcases size r with (_ | _ | _) <;>
       [decide; decide; (intro r0; unfold BalancedSz delta; omega)]
   · rcases Nat.eq_zero_or_pos (size r) with r0 | r0

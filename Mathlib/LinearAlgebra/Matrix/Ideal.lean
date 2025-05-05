@@ -164,7 +164,7 @@ theorem matrix_bot : (⊥ : RingCon R).matrix n = ⊥ :=
 
 @[simp]
 theorem matrix_top : (⊤ : RingCon R).matrix n = ⊤ :=
-  eq_top_iff.2 fun _ _ _ _ _ ↦ trivial
+  eq_top_iff.2 fun _ _ _ _ _ ↦ by simp
 
 open Matrix
 

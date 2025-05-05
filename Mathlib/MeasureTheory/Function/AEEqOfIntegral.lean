@@ -35,7 +35,7 @@ For each of these results, we also provide a lemma about the equality of one fun
 example, `Lp.ae_eq_zero_of_forall_setIntegral_eq_zero`.
 
 Generally useful lemmas which are not related to integrals:
-* `ae_eq_zero_of_forall_inner`: if for all constants `c`, `fun x => inner c (f x) =ᵐ[μ] 0` then
+* `ae_eq_zero_of_forall_inner`: if for all constants `c`, `(fun x => ⟪c, f x⟫_𝕜) =ᵐ[μ] 0` then
   `f =ᵐ[μ] 0`.
 * `ae_eq_zero_of_forall_dual`: if for all constants `c` in the dual space,
   `fun x => c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
@@ -53,17 +53,18 @@ section AeEqOfForall
 
 variable {α E 𝕜 : Type*} {m : MeasurableSpace α} {μ : Measure α} [RCLike 𝕜]
 
+open scoped InnerProductSpace in
 theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    [SecondCountableTopology E] {f : α → E} (hf : ∀ c : E, (fun x => (inner c (f x) : 𝕜)) =ᵐ[μ] 0) :
+    [SecondCountableTopology E] {f : α → E} (hf : ∀ c : E, (fun x => ⟪c, f x⟫_𝕜) =ᵐ[μ] 0) :
     f =ᵐ[μ] 0 := by
   let s := denseSeq E
   have hs : DenseRange s := denseRange_denseSeq E
-  have hf' : ∀ᵐ x ∂μ, ∀ n : ℕ, inner (s n) (f x) = (0 : 𝕜) := ae_all_iff.mpr fun n => hf (s n)
+  have hf' : ∀ᵐ x ∂μ, ∀ n : ℕ, ⟪s n, f x⟫_𝕜 = 0 := ae_all_iff.mpr fun n => hf (s n)
   refine hf'.mono fun x hx => ?_
   rw [Pi.zero_apply, ← @inner_self_eq_zero 𝕜]
-  have h_closed : IsClosed {c : E | inner c (f x) = (0 : 𝕜)} :=
+  have h_closed : IsClosed {c : E | ⟪c, f x⟫_𝕜 = 0} :=
     isClosed_eq (continuous_id.inner continuous_const) continuous_const
-  exact @isClosed_property ℕ E _ s (fun c => inner c (f x) = (0 : 𝕜)) hs h_closed hx _
+  exact @isClosed_property ℕ E _ s (fun c => ⟪c, f x⟫_𝕜 = 0) hs h_closed hx _
 
 local notation "⟪" x ", " y "⟫" => y x
 

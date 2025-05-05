@@ -92,7 +92,7 @@ def isoOfQuivIso {V W : Type u} [ReflQuiver V] [ReflQuiver W]
     exact e.inv_hom_id
 
 /-- Compatible equivalences of types and hom-types induce an isomorphism of reflexive quivers. -/
-def isoOfEquiv {V W : Type u } [ReflQuiver V] [ReflQuiver W] (e : V ≃ W)
+def isoOfEquiv {V W : Type u} [ReflQuiver V] [ReflQuiver W] (e : V ≃ W)
     (he : ∀ (X Y : V), (X ⟶ Y) ≃ (e X ⟶ e Y))
     (h_id : ∀ (X : V), he _ _ (𝟙rq X) = ReflQuiver.id (obj := W) (e X)) :
     ReflQuiv.of V ≅ ReflQuiv.of W := isoOfQuivIso (Quiv.isoOfEquiv e he) h_id

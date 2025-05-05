@@ -606,7 +606,7 @@ end IsometryEquiv
 
 /-- An isometry induces an isometric isomorphism between the source space and the
 range of the isometry. -/
-@[simps! (config := { simpRhs := true }) toEquiv apply]
+@[simps! +simpRhs toEquiv apply]
 def Isometry.isometryEquivOnRange [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
     (h : Isometry f) : α ≃ᵢ range f where
   isometry_toFun := h

@@ -351,7 +351,7 @@ lemma add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsZeroOrMarkovKernel η]
   calc mgf (fun p ↦ X p.1 + Y p.2) ((κ ⊗ₖ η) ω') q
   _ = ∫ x, exp (q * X x) * ∫ y, exp (q * Y y) ∂(η (ω', x)) ∂(κ ω') := by
     simp_rw [mgf, mul_add, exp_add] at h_int_mul ⊢
-    simp_rw [integral_compProd h_int_mul, integral_mul_left]
+    simp_rw [integral_compProd h_int_mul, integral_const_mul]
   _ ≤ ∫ x, exp (q * X x) * exp (cY * q ^ 2 / 2) ∂(κ ω') := by
     refine integral_mono_of_nonneg ?_ (hX_int.mul_const _) ?_
     · exact ae_of_all _ fun  ω ↦ mul_nonneg (by positivity)
@@ -360,7 +360,7 @@ lemma add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsZeroOrMarkovKernel η]
       gcongr
       exact hY_mgf
   _ ≤ exp (↑(c + cY) * q ^ 2 / 2) := by
-    rw [integral_mul_right, NNReal.coe_add, add_mul, add_div, exp_add]
+    rw [integral_mul_const, NNReal.coe_add, add_mul, add_div, exp_add]
     gcongr
     exact hX_mgf q
 
@@ -554,7 +554,7 @@ private lemma sum_of_iIndepFun_of_forall_aemeasurable
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert i s his h =>
+  | insert i s his h =>
     simp_rw [← Finset.sum_apply, Finset.sum_insert his, Pi.add_apply, Finset.sum_apply]
     have h_indep' := (h_indep.indepFun_finset_sum_of_not_mem₀ h_meas his).symm
     refine add_of_indepFun (h_subG _ (Finset.mem_insert_self _ _)) (h ?_) ?_

@@ -78,9 +78,9 @@ lemma isSimpleModule_weylGroupRootRep [P.IsIrreducible] :
 def toRootSystem [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : RootSystem ι R M N :=
   { toRootPairing := P
     span_root_eq_top := IsIrreducible.eq_top_of_invtSubmodule_reflection
-      P.rootSpan P.rootSpan_mem_invtSubmodule_reflection P.rootSpan_ne_bot
+      (P.rootSpan R) P.rootSpan_mem_invtSubmodule_reflection (P.rootSpan_ne_bot R)
     span_coroot_eq_top := IsIrreducible.eq_top_of_invtSubmodule_coreflection
-      P.corootSpan P.corootSpan_mem_invtSubmodule_coreflection P.corootSpan_ne_bot }
+      (P.corootSpan R) P.corootSpan_mem_invtSubmodule_coreflection (P.corootSpan_ne_bot R) }
 
 lemma invtSubmodule_reflection_of_invtSubmodule_coreflection (i : ι) (q : Submodule R N)
     (hq : q ∈ invtSubmodule (P.coreflection i)) :

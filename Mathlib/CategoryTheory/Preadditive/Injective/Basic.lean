@@ -68,7 +68,7 @@ Let `J` be injective and `g` a morphism into `J`, then `g` can be factored throu
 def factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] : Y ⟶ J :=
   (Injective.factors g f).choose
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem comp_factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] :
     f ≫ factorThru g f = g :=
   (Injective.factors g f).choose_spec

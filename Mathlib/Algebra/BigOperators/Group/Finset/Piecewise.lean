@@ -187,7 +187,7 @@ theorem prod_piecewise [DecidableEq α] (s t : Finset α) (f g : α → β) :
 theorem prod_inter_mul_prod_diff [DecidableEq α] (s t : Finset α) (f : α → β) :
     (∏ x ∈ s ∩ t, f x) * ∏ x ∈ s \ t, f x = ∏ x ∈ s, f x := by
   convert (s.prod_piecewise t f f).symm
-  simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
+  simp +unfoldPartialApp [Finset.piecewise]
 
 @[to_additive]
 theorem prod_eq_mul_prod_diff_singleton [DecidableEq α] {s : Finset α} {i : α} (h : i ∈ s)

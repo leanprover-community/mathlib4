@@ -395,7 +395,7 @@ lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) 
   exact hpc.getVert_injOn (by simp only [Set.mem_setOf_eq]; omega)
     (by simp only [Set.mem_setOf_eq]; omega) (h.symm ▸ (Walk.getVert_length p).symm)
 
-lemma IsCycle.getVert_sub_one_neq_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
+lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
   have hl := hpc.three_le_length
   by_cases hi' : i ≥ p.length - 1
@@ -407,6 +407,9 @@ lemma IsCycle.getVert_sub_one_neq_getVert_add_one {i : ℕ} {p : G.Walk u u} (hp
   have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; omega)
     (by simp only [Set.mem_setOf_eq]; omega) h'
   omega
+
+@[deprecated (since := "2025-04-27")]
+alias IsCycle.getVert_sub_one_neq_getVert_add_one := IsCycle.getVert_sub_one_ne_getVert_add_one
 
 /-! ### Walk decompositions -/
 

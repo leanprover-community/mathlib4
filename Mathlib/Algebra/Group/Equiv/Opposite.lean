@@ -15,7 +15,7 @@ variable {α : Type*}
 namespace MulOpposite
 
 /-- The function `MulOpposite.op` is an additive equivalence. -/
-@[simps! (config := { fullyApplied := false, simpRhs := true }) apply symm_apply]
+@[simps! -fullyApplied +simpRhs apply symm_apply]
 def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ where
   toEquiv := opEquiv
   map_add' _ _ := rfl
@@ -27,7 +27,7 @@ end MulOpposite
 namespace AddOpposite
 
 /-- The function `AddOpposite.op` is a multiplicative equivalence. -/
-@[simps! (config := { fullyApplied := false, simpRhs := true })]
+@[simps! -fullyApplied +simpRhs]
 def opMulEquiv [Mul α] : α ≃* αᵃᵒᵖ where
   toEquiv := opEquiv
   map_mul' _ _ := rfl
@@ -40,7 +40,7 @@ open MulOpposite
 
 /-- Inversion on a group is a `MulEquiv` to the opposite group. When `G` is commutative, there is
 `MulEquiv.inv`. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false, simpRhs := true }))
+@[to_additive (attr := simps! -fullyApplied +simpRhs)
       "Negation on an additive group is an `AddEquiv` to the opposite group. When `G`
       is commutative, there is `AddEquiv.inv`."]
 def MulEquiv.inv' (G : Type*) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=

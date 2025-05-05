@@ -171,7 +171,7 @@ theorem normSq_ne_zero (z : ℍ) : Complex.normSq (z : ℂ) ≠ 0 :=
   (normSq_pos z).ne'
 
 theorem im_inv_neg_coe_pos (z : ℍ) : 0 < (-z : ℂ)⁻¹.im := by
-  simpa using div_pos z.property (normSq_pos z)
+  simpa [neg_div] using div_pos z.property (normSq_pos z)
 
 lemma ne_nat (z : ℍ) : ∀ n : ℕ, z.1 ≠ n := by
   intro n

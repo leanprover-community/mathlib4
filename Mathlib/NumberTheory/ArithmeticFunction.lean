@@ -557,7 +557,7 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
   classical
     induction s using Finset.induction_on with
     | empty => simp [hf]
-    | insert has ih =>
+    | insert _ _ has ih =>
       rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
       rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
       exact .prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
@@ -1066,7 +1066,7 @@ theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
   · intro p n hp hn
     rw [coe_mul_zeta_apply, sum_divisors_prime_pow hp, sum_range_succ']
     simp_rw [Nat.pow_zero, moebius_apply_one,
-      moebius_apply_prime_pow hp (Nat.succ_ne_zero _), Nat.succ_inj', sum_ite_eq', mem_range,
+      moebius_apply_prime_pow hp (Nat.succ_ne_zero _), Nat.succ_inj, sum_ite_eq', mem_range,
       if_pos hn, neg_add_cancel]
     rw [one_apply_ne]
     rw [Ne, pow_eq_one_iff]

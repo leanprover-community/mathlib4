@@ -362,7 +362,7 @@ section Terminal
 variable {P : TopCat.{u} → Prop}
 
 /-- A one-element space is terminal in `CompHaus` -/
-def isTerminalPUnit [HasProp P PUnit.{u+1}] :
+def isTerminalPUnit [HasProp P PUnit.{u + 1}] :
     IsTerminal (CompHausLike.of P PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ CompHausLike.of P PUnit.{u + 1}) := fun _ ↦
     ⟨⟨ofHom _ ⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩

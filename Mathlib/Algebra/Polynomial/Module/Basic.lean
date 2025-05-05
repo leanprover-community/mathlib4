@@ -114,7 +114,7 @@ instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
 @[simp]
 theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     monomial i r • single R j m = single R (i + j) (r • m) := by
-  simp only [LinearMap.mul_apply, Polynomial.aeval_monomial, LinearMap.pow_apply,
+  simp only [Module.End.mul_apply, Polynomial.aeval_monomial, Module.End.pow_apply,
     Module.algebraMap_end_apply, smul_def]
   induction i generalizing r j m with
   | zero =>
@@ -250,7 +250,7 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
 
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps! -isSimp]
-def eval (r : R) : PolynomialModule R M →ₗ[R] M where
+noncomputable def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   toFun p := p.sum fun i m => r ^ i • m
   map_add' _ _ := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
   map_smul' s m := by

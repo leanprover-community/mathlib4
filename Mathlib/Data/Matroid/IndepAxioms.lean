@@ -327,10 +327,10 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
 @[simps E] protected def ofBdd (E : Set α) (Indep : Set α → Prop)
     (indep_empty : Indep ∅)
     (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
-    (indep_aug : ∀⦃I B⦄, Indep I → ¬ Maximal Indep I → Maximal Indep B →
+    (indep_aug : ∀ ⦃I B⦄, Indep I → ¬ Maximal Indep I → Maximal Indep B →
       ∃ x ∈ B \ I, Indep (insert x I))
     (subset_ground : ∀ I, Indep I → I ⊆ E)
-    (indep_bdd : ∃ (n : ℕ), ∀ I, Indep I → I.encard ≤ n ) : IndepMatroid α where
+    (indep_bdd : ∃ (n : ℕ), ∀ I, Indep I → I.encard ≤ n) : IndepMatroid α where
   E := E
   Indep := Indep
   indep_empty := indep_empty
@@ -360,7 +360,7 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
     (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
     (indep_aug : ∀ ⦃I J⦄, Indep I → Indep J → I.encard < J.encard →
       ∃ e ∈ J, e ∉ I ∧ Indep (insert e I))
-    (indep_bdd : ∃ (n : ℕ), ∀ I, Indep I → I.encard ≤ n )
+    (indep_bdd : ∃ (n : ℕ), ∀ I, Indep I → I.encard ≤ n)
     (subset_ground : ∀ I, Indep I → I ⊆ E) : IndepMatroid α :=
   IndepMatroid.ofBdd (E := E) (Indep := Indep)
     (indep_empty := indep_empty)

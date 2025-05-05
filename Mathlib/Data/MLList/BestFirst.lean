@@ -286,7 +286,7 @@ but lazily estimates these priorities to avoid unnecessary computations.
 -/
 def bestFirstSearchCore (f : α → MLList m α) (a : α)
     (β : Type _) [Ord β] (removeDuplicatesBy? : Option (α → β) := none)
-    (maxQueued : Option Nat := none) (maxDepth : Option Nat := none)  :
+    (maxQueued : Option Nat := none) (maxDepth : Option Nat := none) :
     MLList m α :=
   match removeDuplicatesBy? with
   | some g =>

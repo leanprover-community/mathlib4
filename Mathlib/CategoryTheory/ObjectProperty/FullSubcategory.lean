@@ -120,7 +120,7 @@ def lift : C ⥤ FullSubcategory P where
   map f := F.map f
 
 @[deprecated "use liftCompιIso" (since := "2025-03-04")]
-theorem FullSubcategory.lift_comp_inclusion_eq  :
+theorem FullSubcategory.lift_comp_inclusion_eq :
     P.lift F hF ⋙ P.ι = F :=
   rfl
 

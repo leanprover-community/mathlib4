@@ -104,11 +104,9 @@ theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
 
 theorem mem_smul_top_iff (N : Submodule R M) (x : N) :
     x ∈ I • (⊤ : Submodule R N) ↔ (x : M) ∈ I • N := by
-  change _ ↔ N.subtype x ∈ I • N
   have : Submodule.map N.subtype (I • ⊤) = I • N := by
     rw [Submodule.map_smul'', Submodule.map_top, Submodule.range_subtype]
-  rw [← this]
-  exact (Function.Injective.mem_set_image N.injective_subtype).symm
+  simp [← this, -map_smul'']
 
 @[simp]
 theorem smul_comap_le_comap_smul (f : M →ₗ[R] M') (S : Submodule R M') (I : Ideal R) :
@@ -174,7 +172,7 @@ theorem map_pointwise_smul (r : R) (N : Submodule R M) (f : M →ₗ[R] M') :
 theorem mem_smul_span {s : Set M} {x : M} :
     x ∈ I • Submodule.span R s ↔ x ∈ Submodule.span R (⋃ (a ∈ I) (b ∈ s), ({a • b} : Set M)) := by
   rw [← I.span_eq, Submodule.span_smul_span, I.span_eq]
-  rfl
+  simp
 
 variable (I)
 
@@ -314,7 +312,7 @@ theorem pow_le_pow_right {m n : ℕ} (h : m ≤ n) : I ^ n ≤ I ^ m := by
   obtain _ | m := m
   · rw [Submodule.pow_zero, one_eq_top]; exact le_top
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
-  simp_rw [add_comm, (· ^ ·), Pow.pow, npowRec_add _ _ m.succ_ne_zero _ I.one_mul]
+  rw [add_comm, Submodule.pow_add _ m.add_one_ne_zero]
   exact mul_le_left
 
 theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
@@ -343,7 +341,8 @@ instance (priority := low) : (I ^ n).IsTwoSided :=
     (fun _ _ ↦ by rw [Submodule.pow_succ]; infer_instance)
 
 protected theorem mul_one : I * 1 = I :=
-  mul_le_right.antisymm fun i hi ↦ mul_one i ▸ mul_mem_mul hi (one_eq_top (R := R) ▸ trivial)
+  mul_le_right.antisymm
+    fun i hi ↦ mul_one i ▸ mul_mem_mul hi (one_eq_top (R := R) ▸ Submodule.mem_top)
 
 protected theorem pow_add : I ^ (m + n) = I ^ m * I ^ n := by
   obtain rfl | h := eq_or_ne n 0
@@ -688,7 +687,7 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
   induction s using Finset.induction with
   | empty =>
       simp
-  | @insert i s _ hs =>
+  | insert i s _ hs =>
       rw [Finset.iInf_insert, inf_comm, one_eq_top, eq_top_iff, ← one_eq_top]
       set K := ⨅ j ∈ s, J j
       calc

@@ -15,6 +15,11 @@ In this file we prove that for a finite extension, being normal
 is the same as being a splitting field (`Normal.of_isSplittingField` and
 `Normal.exists_isSplittingField`).
 
+## Additional Results
+
+* `Algebra.IsQuadraticExtension.normal`: the instance that a quadratic extension, given as a class
+  `Algebra.IsQuadraticExtension`, is normal.
+
 -/
 
 
@@ -267,7 +272,7 @@ theorem exists_algEquiv_of_root [Normal K L] {x y : L} (hy : IsAlgebraic K y)
 
 /-- If `x : L` is a root of `minpoly K y`, then we can find `(σ : L ≃ₐ[K] L)` with `σ y = x`.
   That is, `x` and `y` are Galois conjugates. -/
-theorem exists_algEquiv_of_root' [Normal K L]{x y : L} (hy : IsAlgebraic K y)
+theorem exists_algEquiv_of_root' [Normal K L] {x y : L} (hy : IsAlgebraic K y)
     (h_ev : (Polynomial.aeval x) (minpoly K y) = 0) : ∃ σ : L ≃ₐ[K] L, σ y = x := by
   obtain ⟨σ, hσ⟩ := exists_algEquiv_of_root hy h_ev
   use σ.symm
@@ -278,15 +283,14 @@ end minpoly
 /--
 A quadratic extension is normal.
 -/
-theorem normal_of_finrank_eq_two (F K : Type*) [Field F] [Field K] [Algebra F K]
-    (h : Module.finrank F K = 2) :
+instance Algebra.IsQuadraticExtension.normal (F K : Type*) [Field F] [Field K] [Algebra F K]
+    [IsQuadraticExtension F K] :
     Normal F K where
-  toIsAlgebraic := by
-    have : Module.Finite F K := Module.finite_of_finrank_eq_succ h
-    exact Algebra.IsAlgebraic.of_finite F K
   splits' := by
-    have : FiniteDimensional F K := Module.finite_of_finrank_eq_succ h
     intro x
-    obtain h | h := le_iff_lt_or_eq.mp (h ▸ minpoly.natDegree_le x)
+    obtain h | h := le_iff_lt_or_eq.mp (finrank_eq_two F K ▸ minpoly.natDegree_le x)
     · exact splits_of_natDegree_le_one _ (by rwa [Nat.le_iff_lt_add_one])
     · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
+
+@[deprecated (since := "2025-04-17")] alias normal_of_finrank_eq_two :=
+  Algebra.IsQuadraticExtension.normal

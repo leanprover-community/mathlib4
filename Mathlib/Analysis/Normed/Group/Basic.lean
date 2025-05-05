@@ -940,6 +940,11 @@ lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
 
 end ENormedMonoid
 
+instance : ENormedAddCommMonoid ℝ≥0∞ where
+  continuous_enorm := continuous_id
+  enorm_eq_zero := by simp
+  enorm_add_le := by simp
+
 open Set in
 @[to_additive]
 lemma SeminormedGroup.disjoint_nhds (x : E) (f : Filter E) :

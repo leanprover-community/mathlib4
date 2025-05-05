@@ -80,8 +80,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp
   congr
   · have : MDifferentiableAt I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x) :=
       mdifferentiableAt_extChartAt hy
-    simp at this
-    simp [mfderiv, this]
+    simp_all [mfderiv]
   · simp only [mfderivWithin, writtenInExtChartAt, modelWithCornersSelf_coe, range_id, inter_univ]
     rw [if_pos]
     · simp [Function.comp_def, PartialHomeomorph.left_inv (chartAt H (f x₀)) hx]

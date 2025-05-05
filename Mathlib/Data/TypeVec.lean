@@ -412,8 +412,9 @@ def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
 theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i x) ↔ p := by
   induction i with
   | fz      => rfl
-  | fs _ ih => erw [TypeVec.const, @ih (drop α) x]
-
+  | fs _ ih =>
+    rw [TypeVec.const]
+    exact ih
 
 section
 variable {α β : TypeVec.{u} n}
@@ -492,7 +493,9 @@ theorem repeatEq_iff_eq {α : TypeVec n} {i x y} :
     ofRepeat (repeatEq α i (prod.mk _ x y)) ↔ x = y := by
   induction i with
   | fz => rfl
-  | fs _ i_ih => erw [repeatEq, i_ih]
+  | fs _ i_ih =>
+    rw [repeatEq]
+    exact i_ih
 
 /-- given a predicate vector `p` over vector `α`, `Subtype_ p` is the type of vectors
 that contain an `α` that satisfies `p` -/

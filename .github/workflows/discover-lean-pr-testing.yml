@@ -25,7 +25,7 @@ jobs:
         git config --global user.email "github-actions@github.com"
 
     - name: Configure Lean
-      uses: leanprover/lean-action@e18f2df7f0d4f30d11a4b963bff9b1140999480c # 2025-04-22
+      uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
       with:
         auto-config: false
         use-github-cache: false
@@ -196,13 +196,14 @@ jobs:
 
         # Report failed merges
         if [ -n "$FAILED_MERGES" ]; then
-          MESSAGE+=$'### ❌ Failed merges:\n\nThe following branches need to be merged manually:\n\n```bash\n'
+          MESSAGE+=$'### ❌ Failed merges:\n\nThe following branches need to be merged manually:\n\n'
           for MERGE_INFO in $FAILED_MERGES; do
             IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
-            MESSAGE+=$(printf '# Diff: %s\n' "$GITHUB_DIFF")
-            MESSAGE+=$(printf 'scripts/merge-lean-testing-pr.sh %s   # %s\n\n' "$PR_NUMBER" "$BRANCH")
+            MESSAGE+=$(printf 'Diff: %s\n\n' "$GITHUB_DIFF")
+            MESSAGE+=$'```bash\n'
+            MESSAGE+=$(printf 'scripts/merge-lean-testing-pr.sh %s\n' "$PR_NUMBER")
+            MESSAGE+=$'```\n\n'
           done
-          MESSAGE+=$'```\n'
         else
           MESSAGE+=$'All branches were successfully merged! 🎉\n'
         fi

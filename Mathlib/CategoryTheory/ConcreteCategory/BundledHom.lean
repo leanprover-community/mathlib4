@@ -69,9 +69,9 @@ instance category : Category (Bundled c) where
 instance hasForget : HasForget.{u} (Bundled c) where
   forget :=
     { obj := fun X => X
-      map := @fun X Y f => 𝒞.toFun X.str Y.str f
+      map := fun {X Y} f => 𝒞.toFun X.str Y.str f
       map_id := fun X => 𝒞.id_toFun X.str
-      map_comp := fun f g => by erw [𝒞.comp_toFun];rfl }
+      map_comp := fun f g => by erw [𝒞.comp_toFun]; rfl }
   forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext) }
 
 /-- This unification hint helps `rw` to figure out how to apply statements about abstract

@@ -37,7 +37,7 @@ def RingHom.IsIntegralElem (f : R →+* A) (x : A) :=
 
 /-- A ring homomorphism `f : R →+* A` is said to be integral
 if every element `A` is integral with respect to the map `f` -/
-@[algebraize Algebra.IsIntegral.mk]
+@[algebraize Algebra.IsIntegral.mk, stacks 00GI "(2)"]
 def RingHom.IsIntegral (f : R →+* A) :=
   ∀ x : A, f.IsIntegralElem x
 

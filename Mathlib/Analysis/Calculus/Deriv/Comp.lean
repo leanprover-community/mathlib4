@@ -129,9 +129,9 @@ theorem HasDerivAt.scomp_hasDerivWithinAt_of_eq (hg : HasDerivAt g₁ g₁' y)
 theorem derivWithin.scomp (hg : DifferentiableWithinAt 𝕜' g₁ t' (h x))
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s t') :
     derivWithin (g₁ ∘ h) s x = derivWithin h s x • derivWithin g₁ t' (h x) := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (HasDerivWithinAt.scomp x hg.hasDerivWithinAt hh.hasDerivWithinAt hs).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (HasDerivWithinAt.scomp x hg.hasDerivWithinAt hh.hasDerivWithinAt hs).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 theorem derivWithin.scomp_of_eq (hg : DifferentiableWithinAt 𝕜' g₁ t' y)
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s t')
@@ -269,9 +269,9 @@ theorem HasDerivAt.comp_hasDerivWithinAt_of_eq (hh₂ : HasDerivAt h₂ h₂' y)
 theorem derivWithin_comp (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' (h x))
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') :
     derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hh₂.hasDerivWithinAt.comp x hh.hasDerivWithinAt hs).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hh₂.hasDerivWithinAt.comp x hh.hasDerivWithinAt hs).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[deprecated (since := "2024-10-31")] alias derivWithin.comp := derivWithin_comp
 
@@ -379,9 +379,9 @@ theorem HasStrictFDerivAt.comp_hasStrictDerivAt_of_eq (hl : HasStrictFDerivAt l 
 theorem fderivWithin_comp_derivWithin {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) :
     derivWithin (l ∘ f) s x = (fderivWithin 𝕜 l t (f x) : F → E) (derivWithin f s x) := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hl.hasFDerivWithinAt.comp_hasDerivWithinAt x hf.hasDerivWithinAt hs).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hl.hasFDerivWithinAt.comp_hasDerivWithinAt x hf.hasDerivWithinAt hs).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[deprecated (since := "2024-10-31")]
 alias fderivWithin.comp_derivWithin := fderivWithin_comp_derivWithin

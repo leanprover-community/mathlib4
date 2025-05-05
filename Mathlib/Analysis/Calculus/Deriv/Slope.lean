@@ -91,18 +91,14 @@ theorem range_derivWithin_subset_closure_span_image
     (f : 𝕜 → F) {s t : Set 𝕜} (h : s ⊆ closure (s ∩ t)) :
     range (derivWithin f s) ⊆ closure (Submodule.span 𝕜 (f '' t)) := by
   rintro - ⟨x, rfl⟩
-  rcases eq_or_neBot (𝓝[s \ {x}] x) with H|H
-  · simpa [derivWithin_zero_of_isolated H] using subset_closure (zero_mem _)
+  by_cases H : UniqueDiffWithinAt 𝕜 s x; swap
+  · simpa [derivWithin_zero_of_not_uniqueDiffWithinAt H] using subset_closure (zero_mem _)
   by_cases H' : DifferentiableWithinAt 𝕜 f s x; swap
   · rw [derivWithin_zero_of_not_differentiableWithinAt H']
     exact subset_closure (zero_mem _)
   have I : (𝓝[(s ∩ t) \ {x}] x).NeBot := by
-    rw [← mem_closure_iff_nhdsWithin_neBot] at H ⊢
-    have A : closure (s \ {x}) ⊆ closure (closure (s ∩ t) \ {x}) :=
-      closure_mono (diff_subset_diff_left h)
-    have B : closure (s ∩ t) \ {x} ⊆ closure ((s ∩ t) \ {x}) := by
-      convert closure_diff; exact closure_singleton.symm
-    simpa using A.trans (closure_mono B) H
+    rw [← accPt_principal_iff_nhdsWithin, ← uniqueDiffWithinAt_iff_accPt]
+    exact H.mono_closure h
   have : Tendsto (slope f x) (𝓝[(s ∩ t) \ {x}] x) (𝓝 (derivWithin f s x)) := by
     apply Tendsto.mono_left (hasDerivWithinAt_iff_tendsto_slope.1 H'.hasDerivWithinAt)
     rw [inter_comm, inter_diff_assoc]

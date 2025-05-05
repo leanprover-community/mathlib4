@@ -248,13 +248,20 @@ theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p
   · rw [map_id] at this
     exact this hr
   · rw [map_id]
-    exact mul_ne_zero monic_prod_multiset_X_sub_C.ne_zero hq
+    exact mul_ne_zero (monic_multisetProd_X_sub_C _).ne_zero hq
 
 theorem degree_eq_card_roots' {p : K[X]} {i : K →+* L} (p_ne_zero : p.map i ≠ 0)
     (hsplit : Splits i p) : (p.map i).degree = Multiset.card (p.map i).roots := by
   simp [degree_eq_natDegree p_ne_zero, natDegree_eq_card_roots' hsplit]
 
 end CommRing
+
+theorem aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C [CommSemiring R] [CommRing L] [Algebra R L]
+    (s : Multiset L) {x : L} (hx : x ∈ s) {p : R[X]}
+    (hp : mapAlg R L p = (Multiset.map (fun a : L ↦ X - C a) s).prod) : aeval x p = 0 := by
+  rw [← aeval_map_algebraMap L, ← mapAlg_eq_map, hp, map_multiset_prod, Multiset.prod_eq_zero]
+  rw [Multiset.map_map, Multiset.mem_map]
+  exact ⟨x, hx, by simp⟩
 
 variable [CommRing R] [Field K] [Field L] [Field F]
 variable (i : K →+* L)

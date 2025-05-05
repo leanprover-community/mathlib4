@@ -634,7 +634,7 @@ instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α]
 protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
-      (((↑) : range f → β) ∘ (Homeomorph.ofIsEmbedding f h₁).toMeasurableEquiv) from
+      (((↑) : range f → β) ∘ h₁.toHomeomorph.toMeasurableEquiv) from
     (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
 
 @[deprecated (since := "2024-10-26")]

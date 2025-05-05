@@ -282,7 +282,7 @@ theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f
   rw [← Finset.sup_eq_biUnion]
   induction s using Finset.cons_induction_on with
   | empty => rfl
-  | cons _ ih =>
+  | cons _ _ _ ih =>
     rw [Finset.sum_cons, Finset.sup_cons]
     exact support_add.trans (Finset.union_subset_union (Finset.Subset.refl _) ih)
 
@@ -309,7 +309,7 @@ theorem sum_sub [Zero M] [SubtractionCommMonoid G] {f : α →₀ M} {h₁ h₂ 
 if `h` is an additive-to-multiplicative homomorphism on the support.
 This is a more general version of `Finsupp.prod_add_index'`; the latter has simpler hypotheses. -/
 @[to_additive
-      "Taking the product under `h` is an additive homomorphism of finsupps,  if `h` is an
+      "Taking the product under `h` is an additive homomorphism of finsupps, if `h` is an
       additive homomorphism on the support. This is a more general version of
       `Finsupp.sum_add_index'`; the latter has simpler hypotheses."]
 theorem prod_add_index [DecidableEq α] [AddZeroClass M] [CommMonoid N] {f g : α →₀ M}

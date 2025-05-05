@@ -155,7 +155,7 @@ theorem ext_addMonoidHom
 See note [partially-applied ext lemmas]. -/
 @[local ext]
 theorem ext_linearMap
-    [Finite m] [Finite n][Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
+    [Finite m] [Finite n] [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
     ⦃f g : Matrix m n α →ₗ[R] β⦄
     (h : ∀ i j, f ∘ₗ stdBasisMatrixLinearMap R i j = g ∘ₗ stdBasisMatrixLinearMap R i j) :
     f = g :=

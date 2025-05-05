@@ -122,10 +122,10 @@ theorem Maximal.and_left (h : Maximal P x) (hQ : Q x) : Maximal (fun x ↦ (Q x 
   h.mono (fun _ ↦ And.right) ⟨hQ, h.prop⟩
 
 @[simp] theorem minimal_eq_iff : Minimal (· = y) x ↔ x = y := by
-  simp (config := {contextual := true}) [Minimal]
+  simp +contextual [Minimal]
 
 @[simp] theorem maximal_eq_iff : Maximal (· = y) x ↔ x = y := by
-  simp (config := {contextual := true}) [Maximal]
+  simp +contextual [Maximal]
 
 theorem not_minimal_iff (hx : P x) : ¬ Minimal P x ↔ ∃ y, P y ∧ y ≤ x ∧ ¬ (x ≤ y) := by
   simp [Minimal, hx]

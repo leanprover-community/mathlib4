@@ -618,7 +618,7 @@ theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
   clear hab
   induction n with
   | zero => rw [Int.ofNat_one]; apply h
-  | succ n ihn => rw [Int.ofNat_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
+  | succ n ihn => rw [Int.natCast_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
 
 theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℤ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a ≤ b) : r (f a) (f b) :=

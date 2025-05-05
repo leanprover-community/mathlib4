@@ -78,21 +78,11 @@ variable {α : Type*} [Mul α] [HasDistribNeg α]
 
 open MulOpposite
 
-instance instHasDistribNeg : HasDistribNeg αᵐᵒᵖ where
+instance MulOpposite.instHasDistribNeg : HasDistribNeg αᵐᵒᵖ where
   neg_mul _ _ := unop_injective <| mul_neg _ _
   mul_neg _ _ := unop_injective <| neg_mul _ _
 
 end Mul
-
-section Group
-
-variable {α : Type*} [Group α] [HasDistribNeg α]
-
-@[simp]
-theorem inv_neg' (a : α) : (-a)⁻¹ = -a⁻¹ := by
-  rw [eq_comm, eq_inv_iff_mul_eq_one, neg_mul, mul_neg, neg_neg, inv_mul_cancel]
-
-end Group
 
 end HasDistribNeg
 
@@ -218,7 +208,11 @@ lemma neg_inv : -a⁻¹ = (-a)⁻¹ := by rw [inv_eq_one_div, inv_eq_one_div, di
 
 lemma div_neg (a : R) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
 
+@[simp]
 lemma inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
+
+@[deprecated (since := "2025-04-24")]
+alias inv_neg' := inv_neg
 
 lemma inv_neg_one : (-1 : R)⁻¹ = -1 := by rw [← neg_inv, inv_one]
 

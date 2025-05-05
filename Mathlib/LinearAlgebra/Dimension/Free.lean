@@ -222,3 +222,11 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
 
 end Module
+
+namespace Algebra
+
+instance (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
+    [IsQuadraticExtension R S] :
+    Module.Finite R S := finite_of_finrank_eq_succ <| IsQuadraticExtension.finrank_eq_two R S
+
+end Algebra

@@ -400,7 +400,7 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
         apply this
       intro a' b'
       induction b' using Fin.induction with
-      | zero => simpa using succ_ne_zero (c.emb i a')
+      | zero => simp
       | succ b' =>
         simp only [Nat.succ_eq_add_one, cases_succ, comp_apply, ne_eq, succ_inj]
         apply c.emb_ne_emb_of_ne hij
@@ -732,7 +732,7 @@ theorem norm_applyOrderedFinpartition_le (p : ∀ (i : Fin c.length), E [×c.par
 will be the key point to show that functions constructed from `applyOrderedFinpartition` retain
 multilinearity. -/
 theorem applyOrderedFinpartition_update_right
-    (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F)
+    (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F)
     (j : Fin n) (v : Fin n → E) (z : E) :
     c.applyOrderedFinpartition p (update v j z) =
       update (c.applyOrderedFinpartition p v) (c.index j)

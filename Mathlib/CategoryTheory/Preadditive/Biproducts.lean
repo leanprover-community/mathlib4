@@ -849,15 +849,16 @@ variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 namespace Limits
 
-section Fintype
+section Finite
 
-variable {J : Type} [Fintype J]
+variable {J : Type} [Finite J]
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
     preserves finite products. -/
 lemma preservesProduct_of_preservesBiproduct {f : J → C} [PreservesBiproduct f F] :
     PreservesLimit (Discrete.functor f) F where
   preserves hc :=
+    let ⟨_⟩ := nonempty_fintype J
     ⟨IsLimit.ofIsoLimit
         ((IsLimit.postcomposeInvEquiv (Discrete.compNatIsoDiscrete _ _) _).symm
           (isBilimitOfPreserves F (biconeIsBilimitOfLimitConeOfIsLimit hc)).isLimit) <|
@@ -880,6 +881,7 @@ end
 lemma preservesBiproduct_of_preservesProduct {f : J → C} [PreservesLimit (Discrete.functor f) F] :
     PreservesBiproduct f F where
   preserves {b} hb :=
+    let ⟨_⟩ := nonempty_fintype J
     ⟨isBilimitOfIsLimit _ <|
       IsLimit.ofIsoLimit
           ((IsLimit.postcomposeHomEquiv (Discrete.compNatIsoDiscrete _ _) (F.mapCone b.toCone)).symm
@@ -926,6 +928,7 @@ lemma preservesBiproductsOfShape_of_preservesProductsOfShape
 lemma preservesCoproduct_of_preservesBiproduct {f : J → C} [PreservesBiproduct f F] :
     PreservesColimit (Discrete.functor f) F where
   preserves {c} hc :=
+    let ⟨_⟩ := nonempty_fintype J
     ⟨IsColimit.ofIsoColimit
         ((IsColimit.precomposeHomEquiv (Discrete.compNatIsoDiscrete _ _) _).symm
           (isBilimitOfPreserves F (biconeIsBilimitOfColimitCoconeOfIsColimit hc)).isColimit) <|
@@ -949,6 +952,7 @@ lemma preservesBiproduct_of_preservesCoproduct {f : J → C}
     [PreservesColimit (Discrete.functor f) F] :
     PreservesBiproduct f F where
   preserves {b} hb :=
+    let ⟨_⟩ := nonempty_fintype J
     ⟨isBilimitOfIsColimit _ <|
       IsColimit.ofIsoColimit
           ((IsColimit.precomposeInvEquiv (Discrete.compNatIsoDiscrete _ _)
@@ -962,7 +966,7 @@ lemma preservesBiproductsOfShape_of_preservesCoproductsOfShape
     [PreservesColimitsOfShape (Discrete J) F] : PreservesBiproductsOfShape J F where
   preserves {_} := preservesBiproduct_of_preservesCoproduct F
 
-end Fintype
+end Finite
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary biproducts
     preserves binary products. -/

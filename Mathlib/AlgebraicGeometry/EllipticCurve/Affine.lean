@@ -202,7 +202,7 @@ lemma equation_zero : W'.Equation 0 0 ↔ W'.a₆ = 0 := by
   rw [Equation, evalEval_polynomial_zero, neg_eq_zero]
 
 lemma equation_iff_variableChange (x y : R) :
-    W'.Equation x y ↔ (W'.variableChange ⟨1, x, 0, y⟩).toAffine.Equation 0 0 := by
+    W'.Equation x y ↔ (VariableChange.mk 1 x 0 y • W').toAffine.Equation 0 0 := by
   rw [equation_iff', ← neg_eq_zero, equation_zero, variableChange_a₆, inv_one, Units.val_one]
   congr! 1
   ring1
@@ -271,10 +271,10 @@ lemma nonsingular_zero : W'.Nonsingular 0 0 ↔ W'.a₆ = 0 ∧ (W'.a₃ ≠ 0 �
     or_comm]
 
 lemma nonsingular_iff_variableChange (x y : R) :
-    W'.Nonsingular x y ↔ (W'.variableChange ⟨1, x, 0, y⟩).toAffine.Nonsingular 0 0 := by
+    W'.Nonsingular x y ↔ (VariableChange.mk 1 x 0 y • W').toAffine.Nonsingular 0 0 := by
   rw [nonsingular_iff', equation_iff_variableChange, equation_zero, ← neg_ne_zero, or_comm,
     nonsingular_zero, variableChange_a₃, variableChange_a₄, inv_one, Units.val_one]
-  simp only [variableChange]
+  simp only [variableChange_def]
   congr! 3 <;> ring1
 
 private lemma equation_zero_iff_nonsingular_zero_of_Δ_ne_zero (hΔ : W'.Δ ≠ 0) :
@@ -894,7 +894,7 @@ variable [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebr
 
 /-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `f : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
-def map : W'⟮F⟯ →+ W'⟮K⟯ where
+noncomputable def map : W'⟮F⟯ →+ W'⟮K⟯ where
   toFun P := match P with
     | 0 => 0
     | some h => some <| (baseChange_nonsingular _ _ f.injective).mpr h
@@ -932,7 +932,7 @@ lemma map_injective : Function.Injective <| map (W' := W') f := by
 variable (F K) in
 /-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by the base change from `F` to `K`, where
 `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
-abbrev baseChange [Algebra F K] [IsScalarTower R F K] : W'⟮F⟯ →+ W'⟮K⟯ :=
+noncomputable abbrev baseChange [Algebra F K] [IsScalarTower R F K] : W'⟮F⟯ →+ W'⟮K⟯ :=
   map <| Algebra.ofId F K
 
 lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalarTower R F L]

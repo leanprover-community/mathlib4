@@ -198,19 +198,10 @@ theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injectiv
     IsOpenEmbedding f :=
   .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
 
-/-- A surjective embedding is a homeomorphism. -/
-noncomputable def _root_.Topology.IsEmbedding.toHomeomorph_of_surjective (hf : IsEmbedding f)
-    (hsurj : Function.Surjective f) : X ≃ₜ Y :=
-  Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f ⟨hf.injective, hsurj⟩)
-    hf.continuous (hf.isOpenEmbedding_of_surjective hsurj).isOpenMap
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.toHomeomeomorph_of_surjective := IsEmbedding.toHomeomorph_of_surjective
-
 /-- A bijective local homeomorphism is a homeomorphism. -/
 noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
     X ≃ₜ Y :=
-  Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f hb) hf.continuous hf.isOpenMap
+  (Equiv.ofBijective f hb).toHomeomorphOfContinuousOpen hf.continuous hf.isOpenMap
 
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
 theorem isOpenEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : IsOpenEmbedding (g ∘ f))

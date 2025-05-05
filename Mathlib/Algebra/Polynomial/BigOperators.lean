@@ -105,14 +105,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
       rw [← tl.length_map natDegree, mul_comm]
       refine List.sum_le_card_nsmul _ _ ?_
       simpa using hl'
-    have hdn : natDegree hd ≤ n := hl _ List.mem_cons_self
-    rcases hdn.eq_or_lt with (rfl | hdn')
-    · rcases h.eq_or_lt with h' | h'
-      · rw [← h', coeff_mul_degree_add_degree, leadingCoeff, leadingCoeff]
-      · rw [coeff_eq_zero_of_natDegree_lt, coeff_eq_zero_of_natDegree_lt h', mul_zero]
-        exact natDegree_mul_le.trans_lt (add_lt_add_left h' _)
-    · rw [coeff_eq_zero_of_natDegree_lt hdn', coeff_eq_zero_of_natDegree_lt, zero_mul]
-      exact natDegree_mul_le.trans_lt (add_lt_add_of_lt_of_le hdn' h)
+    exact coeff_mul_add_eq_of_natDegree_le (hl _ List.mem_cons_self) h
 
 end Semiring
 
@@ -282,7 +275,7 @@ theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s
     (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by
   simpa using multiset_prod_X_sub_C_coeff_card_pred (s.1.map f) (by simpa using hs)
 
-variable [IsDomain R]
+variable [Nontrivial R]
 
 @[simp]
 lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
@@ -291,6 +284,11 @@ lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
   · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
       mul_one]
   · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
+
+@[simp] lemma natDegree_finset_prod_X_sub_C_eq_card {α} (s : Finset α) (f : α → R) :
+    (∏ a ∈ s, (X - C (f a))).natDegree = s.card := by
+  rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map,
+    natDegree_multiset_prod_X_sub_C_eq_card, Multiset.card_map, Finset.card]
 
 end CommRing
 

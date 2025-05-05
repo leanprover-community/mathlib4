@@ -572,7 +572,7 @@ def toMultilinearMapLinear : ContinuousMultilinearMap A M₁ M₂ →ₗ[R'] Mul
   map_smul' := toMultilinearMap_smul
 
 /-- `ContinuousMultilinearMap.pi` as a `LinearEquiv`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R' (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R' (M' i)] [∀ i, ContinuousConstSMul R' (M' i)] :

@@ -568,7 +568,7 @@ def toAlternatingMapLinear : (M [⋀^ι]→L[A] N) →ₗ[R] (M [⋀^ι]→ₗ[A
   map_smul' := by simp
 
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R (M' i)] [∀ i, ContinuousConstSMul R (M' i)] :
