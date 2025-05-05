@@ -898,15 +898,6 @@ theorem exists_zpow_surjective (G : Type*) [Pow G ℤ] [IsCyclic G] :
     ∃ g : G, Function.Surjective (g ^ · : ℤ → G) :=
   IsCyclic.exists_zpow_surjective
 
-lemma IsCyclic.push_ofSurjective {G H : Type*} [Pow G ℤ] [Pow H ℤ] (h : IsCyclic G)
-    (f : G → H) (hf₁ : Function.Surjective f) (hf₂ : ∀ a : G, ∀ n : ℤ, f (a ^ n) = f a ^ n) :
-    IsCyclic H where
-  exists_zpow_surjective := by
-    obtain ⟨g₀, hg₀⟩ := h.exists_zpow_surjective
-    exact ⟨f g₀, fun w => by
-      obtain ⟨z , hz⟩ := Function.Surjective.comp hf₁ hg₀ w
-      exact ⟨z, by rw [← hz, Function.comp_apply]; simp_all only⟩⟩
-
 section DivInvMonoid
 
 variable [DivInvMonoid G]
