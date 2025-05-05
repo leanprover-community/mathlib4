@@ -221,6 +221,7 @@ lemma getVert_dropUntil {u v : V} {p : G.Walk u v} (n : ℕ) (hw : w ∈ p.suppo
   have ha := getVert_append (p.takeUntil w hw) (p.dropUntil w hw) (n + (p.takeUntil w hw).length)
   rwa [if_neg <| not_lt.2 <| Nat.le_add_left _ _, Nat.add_sub_cancel, Eq.comm] at ha
 
+@[simp]
 lemma getVert_length_takeUntil_eq_self {u v x} (p : G.Walk u v) (h : x ∈ p.support) :
     p.getVert (p.takeUntil _ h).length = x := by
   have := congr_arg₂ (y := (p.takeUntil _ h).length) getVert (take_spec p h) rfl

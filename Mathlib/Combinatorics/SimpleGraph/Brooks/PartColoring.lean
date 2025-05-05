@@ -75,7 +75,7 @@ instance finiteAtCoe {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
     [Fintype (G.neighborSet v)] : Fintype (G'.spanningCoe.neighborSet v) := by
   apply Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
 
-abbrev neighborFinsetIn (s : Set α) (a : α) [DecidablePred (· ∈ s)] [Fintype (G.neighborSet a)] :=
+abbrev neighborFinsetIn (s : Set α) (a : α) [Fintype (G.neighborSetIn s a)] :=
   ((⊤ : Subgraph G).induce s).spanningCoe.neighborFinset a
 
 @[simp]

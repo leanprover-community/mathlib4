@@ -78,7 +78,7 @@ lemma Walk.exists_maximal_path_subset {u v : α} {q : G.Walk u v} (s : Finset α
       exact ⟨y, p.cons hy.1.symm, by aesop⟩
   obtain ⟨_, _, hp, hc1, hc2⟩ := this s.card
   simp_rw [← List.mem_toFinset] at hc1
-  have := length_support _ ▸ (toFinset_card_of_nodup hp.2) ▸ (card_le_card hc1)
+  have := length_support _ ▸ (List.toFinset_card_of_nodup hp.2) ▸ (card_le_card hc1)
   exact hc2.not_lt this
 
 lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.Walk u u} {d : G.Dart}
@@ -87,7 +87,7 @@ lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.
       c.support.toFinset.erase d.toProd.2 := by
   ext x
   have hr := (c.dart_fst_mem_support_of_mem_darts hd)
-  rw [mem_erase, mem_toFinset, mem_toFinset, hc.snd_eq_snd_of_rotate_fst_dart hd,
+  rw [mem_erase, List.mem_toFinset, List.mem_toFinset, hc.snd_eq_snd_of_rotate_fst_dart hd,
       (hc.rotate hr).mem_tail_tail_support_iff, mem_support_rotate_iff]
 
 open PartColoring
@@ -113,7 +113,7 @@ lemma Brooks1 [DecidableRel G.Adj] [LocallyFinite G] [DecidableEq α] (hk : 3 �
     rw [this.2 (by simp), this.2 (by simp)]; rfl
   exact ⟨(C₁.of_path_not_inj htp (fun _ _ ↦ (Fintype.card_fin _).symm ▸ (hbd _)) (by
     apply Set.disjoint_union_left.2
-    simp only [Walk.reverse_concat, support_cons, support_reverse, List.mem_cons, mem_reverse,
+    simp only [Walk.reverse_concat, support_cons, support_reverse, List.mem_cons, List.mem_reverse,
       Set.disjoint_insert_left, Set.mem_setOf_eq, not_or, Set.disjoint_singleton_left]
     refine ⟨⟨⟨h21.symm.ne, fun a ↦ h1 ((support_takeUntil_subset p hj) a)⟩, ⟨h23.symm.ne, fun a ↦ h3
       ((support_takeUntil_subset p hj) a)⟩⟩,?_⟩
@@ -127,6 +127,7 @@ lemma Brooks1 [DecidableRel G.Adj] [LocallyFinite G] [DecidableEq α] (hk : 3 �
     rw [support_append, List.concat_eq_append, List.reverse_append, List.reverse_cons]
     ext; aesop))⟩
 
+open List
 theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
     (hbd : ∀ v, G.degree v ≤ k) (s : Finset α) : G.PartColorable k s := by
   induction hn : #s using Nat.strong_induction_on generalizing s with
@@ -203,9 +204,10 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
     simp_rw [support_append, v41sup, List.tail, List.mem_append] at hr
     obtain ⟨vⱼ, hj⟩ := G.exists_adj_ne_of_two_lt_degree v₂ (hk.trans (hbd' _ hv₂).symm.le) v₁ v₃
     have hj : G.Adj v₂ vⱼ ∧ vⱼ ≠ v₁ ∧ vⱼ ≠ v₃ ∧ vⱼ ∈ s := ⟨hj.1, hj.2.1, hj.2.2, hin hv₂ hj.1⟩
-    have h1q := fun hf ↦ hdisj2 hf ((mem_cons_of_mem _ <| mem_cons_of_mem _ <| mem_cons_self ..))
-    have h2q := fun hf ↦ hdisj2 hf (mem_cons_of_mem _ <| mem_cons_self ..)
-    have h3q := fun hf ↦ hdisj2 hf (mem_cons_self ..)
+    have h1q := fun hf ↦ hdisj2 hf
+      ((List.mem_cons_of_mem _ <| List.mem_cons_of_mem _ <| List.mem_cons_self ..))
+    have h2q := fun hf ↦ hdisj2 hf (List.mem_cons_of_mem _ <| List.mem_cons_self ..)
+    have h3q := fun hf ↦ hdisj2 hf (List.mem_cons_self ..)
     have hj123: vⱼ ∉ [v₃ , v₂, v₁] := by simpa using ⟨hj.2.2.1, hj.1.symm.ne, hj.2.1⟩
     have hjq : vⱼ ∈ q.support := by
       rw [Set.ext_iff] at hr
@@ -219,14 +221,14 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
     -- in which case we can build a cycle `c` from `vᵣ` such that all the neighbors
     -- of `vᵣ` lie in `c`
     have hr' : (q.append v41).support.toFinset ≠ s := by
-      rw [← coe_toFinset] at hr; norm_cast at hr
-    have hssf := Finset.ssubset_iff_subset_ne.2 ⟨fun y hy ↦ hss _ <| mem_toFinset.1 hy, hr'⟩
+      rw [← List.coe_toFinset] at hr; norm_cast at hr
+    have hssf := Finset.ssubset_iff_subset_ne.2 ⟨fun y hy ↦ hss _ <| List.mem_toFinset.1 hy, hr'⟩
     have h1 := Nat.lt_of_succ_lt <| hk.trans (hbd' _ <| hss _ <| start_mem_support ..).symm.le
     let p := (q.append v41).reverse
     let S := {x | G.Adj vᵣ x ∧ x ≠ p.penultimate}
     obtain ⟨y, hy⟩ : ∃ y, y ∈ S := G.exists_adj_ne_of_one_lt_degree vᵣ h1 p.penultimate
     have hmaxp : ∀ x, G.Adj vᵣ x → x ∈ p.support := by
-      simp_rw [p, support_reverse, mem_reverse]; exact hmax
+      simp_rw [p, support_reverse, List.mem_reverse]; exact hmax
     obtain ⟨m, hm⟩ := exists_getVert_first p hy (fun x hx ↦ hmaxp x hx.1)
     let c := (p.drop m).cons (hm.1.1)
     have hcy := hq.reverse.cons_drop_isCycle hm.1.1 hm.1.2
@@ -236,23 +238,23 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
     have hcym : ∀ x, G.Adj vᵣ x → x ∈ c.support := by
       intro x hx; rw [support_cons]
       by_cases hxpen : x = p.penultimate
-      · exact hxpen ▸ mem_cons_of_mem _ (mem_support_drop _ (by omega))
-      · exact mem_cons_of_mem _ (hm.2 _ ⟨hx, hxpen⟩)
+      · exact hxpen ▸ List.mem_cons_of_mem _ (mem_support_drop _ (by omega))
+      · exact List.mem_cons_of_mem _ (hm.2 _ ⟨hx, hxpen⟩)
     have hsub : c.support.toFinset ⊂ s := by
       apply Finset.ssubset_of_subset_of_ssubset _ hssf
       intro y hy
-      rw [mem_toFinset, support_cons] at *
+      rw [List.mem_toFinset, support_cons] at *
       obtain ( rfl | hy ) := List.mem_cons.1 hy
       · exact start_mem_support ..
       · have := (support_drop_subset _ _) hy
-        rwa [support_reverse, mem_reverse] at this
+        rwa [support_reverse, List.mem_reverse] at this
     -- `c` is not empty
     -- so we will be able to color `c` and `s \ c` by induction if needed
     have hsdcard : #(s \ c.support.toFinset) < n := by
       rw [card_sdiff hsub.1]
       apply hn.le.trans_lt'
       rw [Nat.sub_lt_iff_lt_add (card_le_card hsub.1)]
-      exact Nat.lt_add_of_pos_left <| card_pos.2 ⟨_, mem_toFinset.2 c.start_mem_support⟩
+      exact Nat.lt_add_of_pos_left <| card_pos.2 ⟨_, List.mem_toFinset.2 c.start_mem_support⟩
     -- Two subcases either `c` has a neighbor in `s \ c` or not
     by_cases hnbc : ∃ x, x ∈ c.support ∧ ∃ y, y ∈ s \ c.support.toFinset ∧ G.Adj x y
     · obtain ⟨x, hx, y, hy, had⟩ := hnbc
@@ -260,7 +262,7 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
       -- so there is a first dart `d = (d₁, d₂)` in `c` such that `d₁` is adjacent
       -- to something `s \ c` and `d₂` is not
       have rS : vᵣ ∉ {a | ∃ b ∈ s \ c.support.toFinset, G.Adj a b} :=
-        fun ⟨_, hy , had⟩ ↦ (mem_sdiff.1 hy).2 <| mem_toFinset.2 <| hcym _ had
+        fun ⟨_, hy , had⟩ ↦ (mem_sdiff.1 hy).2 <| List.mem_toFinset.2 <| hcym _ had
       obtain ⟨d, hd, ⟨y, hy1, hd1⟩, hd2⟩ := exists_boundary_dart_of_closed c _
                     (Set.mem_setOf.2 ⟨_, hy, had⟩) rS hx (start_mem_support ..)
       have d2 : ∀ b ∈ s \ c.support.toFinset, ¬ G.Adj d.toProd.2 b := by
@@ -278,25 +280,25 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
       have hp : p.IsPath := (hcy.rotate hr).isPath_tail.tail
       have hne : d.toProd.2 ≠ y := by
         intro hf; subst_vars
-        exact (mem_sdiff.1 hy1).2 <| mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
+        exact (mem_sdiff.1 hy1).2 <| List.mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
       -- We will color the vertices in `p` greedily in reverse order, so ending with `d₁`
-      have hd2 := mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
+      have hd2 := List.mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
       have hsdc := sdiff_union_of_subset hsub.1
       have heq : (insert d.toProd.2 (s \ c.support.toFinset)
                     ∪ p.reverse.support.toFinset) = s := by
-        rwa [support_reverse, toFinset_reverse, hcy.support_rotate_tail_tail_eq hd, insert_union,
-          ← erase_eq_of_not_mem (not_mem_sdiff_of_mem_right hd2), ← erase_union_distrib,
-          insert_erase (hsdc.symm ▸ (hsub.1 hd2))]
+        rwa [support_reverse, List.toFinset_reverse, hcy.support_rotate_tail_tail_eq hd,
+          insert_union, ← erase_eq_of_not_mem (not_mem_sdiff_of_mem_right hd2),
+          ← erase_union_distrib, insert_erase (hsdc.symm ▸ (hsub.1 hd2))]
       have hps : p.support.toFinset ⊆ c.support.toFinset := by
         rw [List.toFinset_subset]
         intro x hx
         exact (mem_support_rotate_iff hr).1 (support_drop_subset _ _ (support_drop_subset _ _ hx))
       have hdisj : Disjoint (insert d.toProd.2 (s \ c.support.toFinset))
         p.reverse.support.toFinset := by
-        rw [support_reverse, toFinset_reverse]
+        rw [support_reverse, List.toFinset_reverse]
         apply disjoint_insert_left.2
         refine ⟨?_, disjoint_of_subset_right hps sdiff_disjoint⟩
-        rw [mem_toFinset, hcy.snd_eq_snd_of_rotate_fst_dart hd]
+        rw [List.mem_toFinset, hcy.snd_eq_snd_of_rotate_fst_dart hd]
         exact (hcy.rotate hr).snd_not_mem_tail_tail_support
       rw [← disjoint_coe, List.coe_toFinset, coe_insert] at hdisj
       -- When extending a coloring greedily along a path whose end point
@@ -314,9 +316,9 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
       let ⟨C₂⟩ := ih _ hsdcard _ rfl
       exact ⟨(C₁.union C₂ (fun _ _ hv hw had ↦
         ((hnbc _ (by simpa using hv) _ (by simpa using hw)) had).elim)).copy (by
-          ext; simp only [coe_toFinset, coe_sdiff, Set.union_diff_self, Set.mem_union,
+          ext; simp only [List.coe_toFinset, coe_sdiff, Set.union_diff_self, Set.mem_union,
             Set.mem_setOf_eq, mem_coe, or_iff_right_iff_imp]
-          exact fun hc ↦ hsub.1 <| mem_toFinset.mpr hc)⟩
+          exact fun hc ↦ hsub.1 <| List.mem_toFinset.mpr hc)⟩
 
 theorem colorable_of_cliqueFree_forall_degree_le [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k)
     (hc : G.CliqueFree (k + 1)) (hbd : ∀ v, G.degree v ≤ k) : G.Colorable k := by
