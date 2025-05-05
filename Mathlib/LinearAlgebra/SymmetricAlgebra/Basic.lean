@@ -69,14 +69,12 @@ theorem induction {motive : SymmetricAlgebra R M → Prop}
 open TensorAlgebra in
 instance : CommSemiring (SymmetricAlgebra R M) where
   mul_comm a b := by
-    have ι_commute (x y : M) : Commute (ι R M x) (ι R M y) := by
-      simp [commute_iff_eq, ι, ← map_mul, RingQuot.mkAlgHom_rel _ (SymRel.mul_comm x y)]
-    change Commute a b
+    show Commute a b
     induction b using SymmetricAlgebra.induction with
     | algebraMap r => exact Algebra.commute_algebraMap_right _ _
     | ι x => induction a using SymmetricAlgebra.induction with
       | algebraMap r => exact Algebra.commute_algebraMap_left _ _
-      | ι y => exact ι_commute _ _
+      | ι y => simp [commute_iff_eq, ι, ← map_mul, RingQuot.mkAlgHom_rel _ (SymRel.mul_comm x y)]
       | mul a b ha hb => exact ha.mul_left hb
       | add a b ha hb => exact ha.add_left hb
     | mul b c hb hc => exact hb.mul_right hc
