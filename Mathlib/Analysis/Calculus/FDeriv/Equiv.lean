@@ -512,11 +512,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
   {f' : E →L[𝕜] F} {x : E}
 
-theorem fderivWithin_const_smul_field (c : 𝕜) (hs : UniqueDiffWithinAt 𝕜 s x) :
+theorem fderivWithin_const_smul_field {R : Type*} [DivisionRing R] [Module R F]
+    [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F] (c : R) (hs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
   rcases eq_or_ne c 0 with rfl | hc
   · simp
-  · lift c to 𝕜ˣ using IsUnit.mk0 _ hc
+  · lift c to Rˣ using IsUnit.mk0 _ hc
+    have : SMulCommClass Rˣ 𝕜 F := .symm _ _ _
     exact (ContinuousLinearEquiv.smulLeft c).comp_fderivWithin hs
 
 theorem hasFDerivWithinAt_comp_smul_smul_iff {c : 𝕜} :
