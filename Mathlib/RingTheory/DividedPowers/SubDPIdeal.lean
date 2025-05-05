@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
 import Mathlib.RingTheory.DividedPowers.DPMorphism
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-! # Sub-divided power-ideals
 
