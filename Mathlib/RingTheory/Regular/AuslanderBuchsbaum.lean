@@ -185,8 +185,6 @@ instance [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M]
       rfl }
   exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
-set_option maxHeartbeats 250000 in
--- a weird time out, for exact same two copy, the first passed but the second does not
 lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (f : M ⟶ N)
     (mem : f ∈ (Module.annihilator R L) • (⊤ : Submodule R (M ⟶ N))) (n : ℕ) :
     (AddCommGrp.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero n)) = 0 := by
@@ -211,13 +209,9 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (f : M ⟶ N)
     show (((Ext.homEquiv₀_linearHom R).symm (g1 + g2)).postcompOfLinear R L _) x = 0
     simp only [Ext.postcompOfLinear, LinearMap.flip_apply]
     rw [map_add, map_add]
-    convert zero_add (0 : Ext L N n)
-    · show AddCommGrp.ofHom ((Ext.mk₀ g1).postcomp L (add_zero n)) x = 0
-      rw [hg1]
-      exact AddMonoidHom.zero_apply x
-    · show AddCommGrp.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0
-      rw [hg2]
-      exact AddMonoidHom.zero_apply x
+    show AddCommGrp.ofHom ((Ext.mk₀ g1).postcomp L (add_zero n)) x +
+      AddCommGrp.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0
+    simp [hg1, hg2]
 
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
