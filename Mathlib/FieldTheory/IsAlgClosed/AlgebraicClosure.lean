@@ -211,15 +211,12 @@ instance [Algebra.IsAlgebraic K E] : IsAlgClosure K (AlgebraicClosure E) :=
 
 theorem AdjoinSimple.normal_algebraicClosure {x : L} (hx : IsIntegral K x) :
     Normal K (AlgebraicClosure K⟮x⟯) :=
-  have : Algebra.IsAlgebraic K K⟮x⟯ := (isAlgebraic_adjoin_simple hx)
+  have : Algebra.IsAlgebraic K K⟮x⟯ := isAlgebraic_adjoin_simple hx
   IsAlgClosure.normal _ _
 
 theorem AdjoinDouble.normal_algebraicClosure {x y : L} (hx : IsIntegral K x)
     (hy : IsIntegral K y) : Normal K (AlgebraicClosure K⟮x, y⟯) :=
-  have : IsAlgClosure K (AlgebraicClosure ↥K⟮x, y⟯) := by
-    have : Algebra.IsAlgebraic K K⟮x, y⟯ := (isAlgebraic_adjoin_pair hx hy)
-    exact ⟨AlgebraicClosure.isAlgClosed ↥K⟮x, y⟯,
-      Algebra.IsAlgebraic.trans K K⟮x, y⟯ (AlgebraicClosure ↥K⟮x, y⟯)⟩
+  have : Algebra.IsAlgebraic K K⟮x, y⟯ := isAlgebraic_adjoin_pair hx hy
   IsAlgClosure.normal _ _
 
 end IntermediateField
