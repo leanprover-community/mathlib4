@@ -242,8 +242,7 @@ theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
   rw [eigenvalues_def, eigenvectorBasis_def, OrthonormalBasis.reindex_apply]
   apply hasEigenvector_eigenvectorBasis_helper
 
-/--
-Eigenvalues are sorted in decreasing order. -/
+/-- Eigenvalues are sorted in decreasing order. -/
 theorem eigenvalues_antitone : Antitone (hT.eigenvalues hn) := by
   rw [eigenvalues_def, ← Function.comp_assoc]
   refine Monotone.comp_antitone ?_ ?_
