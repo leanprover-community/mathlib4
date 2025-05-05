@@ -107,7 +107,8 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
 
 set_option linter.unusedTactic false
 
-instance (ι : Type*) : Module.Free R (ι →₀ Shrink.{v, u} R) := sorry
+instance (ι : Type*) : Module.Free R (ι →₀ Shrink.{v, u} R) :=
+  Module.Free.of_equiv (Finsupp.mapRange.linearEquiv (α := ι) (Shrink.linearEquiv R R).symm)
 
 lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
     (ι : Type*) (b : Basis ι (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))) :
@@ -149,6 +150,8 @@ instance [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M]
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_smul, Submodule.mkQ_apply]
       rfl }
   exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
+
+variable (M : Type*) [AddCommGroup M] [Module R M]
 
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
@@ -193,8 +196,32 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       obtain ⟨⟨B⟩⟩ : Module.Free R (ι →₀ Shrink.{v, u} R) := inferInstance
       exact ModuleCat.projective_of_free B.2
     exact (S_exact.hasProjectiveDimensionLT_X₃_iff 0 proj).mp le1
+  have ker_le : LinearMap.ker f ≤ (maximalIdeal R) • (⊤ : Submodule R (ι →₀ Shrink.{v, u} R)) := by
+    apply le_trans (LinearMap.ker_le_ker_comp f (maximalIdeal R • (⊤ : Submodule R M)).mkQ) _
+    rw [hf]
+    intro x
+    simp only [LinearEquiv.ker_comp, Finsupp.mapRange.linearMap_apply,
+      LinearMap.coe_comp, LinearEquiv.coe_coe, f]
+    have : x ∈ LinearMap.ker (Finsupp.mapRange.linearMap (Submodule.mkQ (maximalIdeal R) ∘ₗ
+      (Shrink.linearEquiv R R))) ↔ ∀ i : ι, x i ∈ (maximalIdeal R).comap (Shrink.ringEquiv R) := by
+      simp only [LinearMap.mem_ker, Finsupp.mapRange.linearMap_apply, LinearMap.coe_comp,
+        LinearEquiv.coe_coe, mem_comap, Finsupp.ext_iff, Finsupp.zero_apply]
+      congr!
+      simp [Quotient.eq_zero_iff_mem, Shrink.ringEquiv]
+    simp only [this, mem_comap]
+    intro h
+    rw [← (Finsupp.univ_sum_single x)]
+    apply Submodule.sum_mem
+    intro i hi
+    have : Finsupp.single i (x i) = ((Shrink.ringEquiv R) (x i)) • Finsupp.single i 1 := by
+      rw [Finsupp.smul_single]
+      congr
+      apply (Shrink.algEquiv R R).injective
+      rw [map_smul, map_one, smul_eq_mul, mul_one]
+      rfl
+    rw [this]
+    apply Submodule.smul_mem_smul (h i) (Set.mem_univ _)
 
-  --ker in `(maximalIdeal R) • ⊤`
   sorry
 
 open scoped Classical in
