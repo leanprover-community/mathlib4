@@ -244,6 +244,50 @@ lemma comp_μ (X Y : C) : μ (F ⋙ G) X Y = μ G _ _ ≫ G.map (μ F X Y) := rf
 
 end
 
+variable {F} in
+def ofIso [F.LaxMonoidal] {G : C ⥤ D} (e : F ≅ G) : G.LaxMonoidal where
+  ε' := ε F ≫ e.hom.app _
+  μ' X Y := (e.inv.app X ⊗ e.inv.app Y) ≫ μ F X Y ≫ e.hom.app _
+  μ'_natural_left {X₁ Y₁} f₁ X₂ := by
+    rw [Category.assoc, Category.assoc, ← e.hom.naturality,
+      ← μ_natural_left_assoc, tensorHom_def_assoc,
+      ← comp_whiskerRight_assoc, e.inv.naturality,
+      tensorHom_def'_assoc, ← comp_whiskerRight_assoc, whisker_exchange_assoc]
+  μ'_natural_right X₂ {Y₂ X₁} f₂ := by
+    rw [Category.assoc, Category.assoc, ← e.hom.naturality,
+      ← μ_natural_right_assoc, tensorHom_def'_assoc,
+      ← MonoidalCategory.whiskerLeft_comp_assoc, e.inv.naturality,
+      tensorHom_def_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
+      whisker_exchange_assoc]
+  associativity' X₁ X₂ X₃ := by
+    have := associativity F X₁ X₂ X₃
+    rw [assoc, assoc, comp_whiskerRight_assoc, comp_whiskerRight_assoc,
+      MonoidalCategory.whiskerLeft_comp_assoc, MonoidalCategory.whiskerLeft_comp_assoc,
+      tensorHom_def'_assoc, ← whisker_exchange_assoc, ← whisker_exchange_assoc,
+      ← whisker_exchange_assoc, ← comp_whiskerRight_assoc (e.hom.app _),
+      Iso.hom_inv_id_app, id_whiskerRight, id_comp, ← e.hom.naturality,
+      associativity_assoc, tensor_whiskerLeft_assoc,
+      tensorHom_def' (e.inv.app X₂),
+      MonoidalCategory.whiskerLeft_comp_assoc,
+      tensorHom_def, comp_whiskerRight_assoc, whisker_assoc,
+      assoc, assoc, Iso.inv_hom_id_assoc,
+      associator_naturality_left_assoc, Iso.inv_hom_id_assoc,
+      ← whisker_exchange_assoc, ← whisker_exchange_assoc,
+      tensorHom_def'_assoc]
+    rw [← MonoidalCategory.whiskerLeft_comp_assoc _ (e.hom.app _),
+      Iso.hom_inv_id_app, MonoidalCategory.whiskerLeft_id, id_comp]
+  left_unitality' X := by
+    rw [assoc, assoc, tensorHom_def_assoc,
+      ← comp_whiskerRight_assoc, assoc, e.hom_inv_id_app, comp_id,
+      ← whisker_exchange_assoc, id_whiskerLeft_assoc, left_unitality_inv_assoc,
+      NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc, Iso.map_inv_hom_id, comp_id]
+  right_unitality' X := by
+    rw [assoc, assoc, tensorHom_def'_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
+      assoc, Iso.hom_inv_id_app, comp_id, whisker_exchange_assoc,
+      MonoidalCategory.whiskerRight_id_assoc, right_unitality_inv_assoc,
+      NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc,
+      Iso.map_inv_hom_id, comp_id]
+
 end LaxMonoidal
 
 /-- A functor `F : C ⥤ D` between monoidal categories is oplax monoidal if it is

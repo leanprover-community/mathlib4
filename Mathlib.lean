@@ -503,6 +503,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
 import Mathlib.Algebra.Homology.DerivedCategory.Minus
+import Mathlib.Algebra.Homology.DerivedCategory.Monoidal
 import Mathlib.Algebra.Homology.DerivedCategory.Plus
 import Mathlib.Algebra.Homology.DerivedCategory.RightDerivedFunctorPlus
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
