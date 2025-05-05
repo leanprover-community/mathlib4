@@ -80,6 +80,34 @@ end Projective
 
 end CategoryTheory
 
+section hom
+
+open Module Free Pointwise
+
+variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+
+theorem foo1 (I : Ideal R) {ι : Type*} (x : ι →₀ M) (h : ∀ i, x i ∈ I • (⊤ : Submodule R M)) :
+    x ∈ I • (⊤ : Submodule R (ι →₀ M)) := sorry
+
+variable [Module.Finite R M] [Free R M] [Module.Finite R N] (f : M →ₗ[R] N) (I : Ideal R)
+
+--open scoped Classical in
+theorem mem_smul_top_of_range_le_smul_top (hf : LinearMap.range f ≤ I • ⊤):
+    f ∈ I • (⊤ : Submodule R (M →ₗ[R] N)) := by
+  let ι := ChooseBasisIndex R M
+  let e : Basis ι R M := chooseBasis R M
+  have (i : ι) : M := e i
+  have (i : ι) : f (e i) ∈ I • (⊤ : Submodule R N) :=
+    hf (LinearMap.mem_range_self f (e i))
+  --let g (i : ι) : M →ₗ[R] N := e.constr R <| fun j ↦ if j = i then f (e i) else 0 Basis.coord
+  let g (i : ι) : M →ₗ[R] N :=
+    (LinearMap.toSpanSingleton R N (f (e i))).comp (Basis.coord e i)
+  have h (i : ι) : g i ∈ I • (⊤ : Submodule R (M →ₗ[R] N)) := by
+    sorry--have :=
+  sorry
+
+end hom
+
 universe v u
 
 #check Module.free_of_flat_of_isLocalRing
