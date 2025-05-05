@@ -222,10 +222,17 @@ noncomputable def homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) : X ≃ₜ Y :=
   TopCat.homeoOfIso (forgetToTop.mapIso e)
 
 @[simp]
+lemma coe_homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) :
+    ⇑(homeoOfIso e) = e.hom.base := rfl
+
+@[simp]
+lemma coe_homeoOfIso_symm {X Y : Scheme.{u}} (e : X ≅ Y) :
+    ⇑(homeoOfIso e.symm) = e.inv.base := rfl
+
+@[simp]
 lemma homeoOfIso_symm {X Y : Scheme} (e : X ≅ Y) :
     (homeoOfIso e).symm = homeoOfIso e.symm := rfl
 
-@[simp]
 lemma homeoOfIso_apply {X Y : Scheme} (e : X ≅ Y) (x : X) :
     homeoOfIso e x = e.hom.base x := rfl
 
