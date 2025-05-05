@@ -245,7 +245,7 @@ theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
 /--
 Eigenvalues are sorted in decreasing order. -/
 theorem eigenvalues_antitone : Antitone (hT.eigenvalues hn) := by
-  rw[eigenvalues_def, ←Function.comp_assoc]
+  rw [eigenvalues_def, ← Function.comp_assoc]
   refine Monotone.comp_antitone ?_ ?_
   · apply Tuple.monotone_sort
   intro _ _ h
