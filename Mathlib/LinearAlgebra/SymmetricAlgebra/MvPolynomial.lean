@@ -32,7 +32,7 @@ lemma SymmetricAlgebra.equivMvPolynomial_ι_apply {I : Type*} (b : Basis I R M) 
   (SymmetricAlgebra.lift_ι_apply _ _).trans <| by simp
 
 @[simp]
-lemma SymmetricAlgebra.equivMvPolynomial_symm_ι {I : Type*} (b : Basis I R M) (i : I) :
+lemma SymmetricAlgebra.equivMvPolynomial_symm_X {I : Type*} (b : Basis I R M) (i : I) :
     (equivMvPolynomial b).symm (MvPolynomial.X i) = ι R M (b i) :=
   (equivMvPolynomial b).toEquiv.symm_apply_eq.mpr <| equivMvPolynomial_ι_apply b i |>.symm
 
