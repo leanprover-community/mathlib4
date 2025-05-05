@@ -84,6 +84,9 @@ theorem one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
   rfl
 
 @[to_additive (attr := simp)]
+theorem comp_one [One β] (g : C(β, γ)) : g.comp (1 : C(α, β)) = const α (g 1) := rfl
+
+@[to_additive (attr := simp)]
 theorem const_one [One β] : const α (1 : β) = 1 := rfl
 
 /-! ### `Nat.cast` -/
