@@ -193,8 +193,7 @@ lemma FG.generators_ncard {p : Submodule R M} (h : p.FG) :
      ENat.card, generators_card, toNat_toENat, ← spanFinrank]
   exact (fg_iff_spanRank_eq_spanFinrank.mpr h).symm
 
-lemma FG.finite_generators {M : Type*} [AddCommMonoid M] [Module R M]
-    {p : Submodule R M} (hp : p.FG) :
+lemma FG.finite_generators {p : Submodule R M} (hp : p.FG) :
     p.generators.Finite := by
   rw [← Cardinal.lt_aleph0_iff_set_finite, Submodule.generators_card]
   exact spanRank_finite_iff_fg.mpr hp
