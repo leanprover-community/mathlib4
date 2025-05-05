@@ -499,7 +499,7 @@ theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
 lemma Monotone.upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
     (hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
-  (upperBounds_mono_of_iscofinalfor (hd.IsCofinalFor_fst_image_prod_snd_image.image_of_monotone hg))
+  (upperBounds_mono_of_isCofinalFor (hd.IsCofinalFor_fst_image_prod_snd_image.image_of_monotone hg))
   (upperBounds_mono_set (image_mono subset_fst_image_prod_snd_image))
 
 end Prod
