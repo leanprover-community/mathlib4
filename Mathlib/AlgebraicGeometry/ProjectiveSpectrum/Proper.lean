@@ -179,12 +179,12 @@ such that these two diagrams exist and commute.
     φ'                      φ'
 K ←--- 𝒜_{(x x₀)}       K ←--- 𝒜_{(x x₀)}
 ↑       ↑                 ↖       ↑
-|       |                 φ ⟍    |
-|       |                     ⟍  |
+|       |                 φ ⟍     |
+|       |                     ⟍   |
 O ←---- 𝒜_{(x₀)}                𝒜_{(x)}
     φₗ
 ```
-This is the underlying algebraic statement of the valuative criterion for `Proj A`.
+This is the underlying algebraic statement of the valuative criterion for `Proj 𝒜`.
 -/
 @[stacks 01MF "algebraic part"]
 theorem valuativeCriterion_existence_aux
@@ -201,14 +201,7 @@ theorem valuativeCriterion_existence_aux
   classical
   let ψ (i : ι) : ValueGroup O K :=
     valuation O K ((φ (Away.isLocalizationElem (hxdi j) (hxdi i))) ^ ∏ k ∈ Finset.univ.erase i, d k)
-  have : Nonempty ι := by
-    refine not_isEmpty_iff.mp fun _ ↦ (hdi j).ne' (DirectSum.degree_eq_of_mem_mem 𝒜 (hxdi j) ?_ ?_)
-    · have : (⊥ : Subalgebra (𝒜 0) A) = ⊤ := by simpa [show Set.range x = ∅ by simpa] using h2
-      obtain ⟨⟨g, hg1⟩, e⟩ : x j ∈ _ := this.ge trivial
-      exact e ▸ hg1
-    · intro H
-      have : Subsingleton (Away 𝒜 (x j)) := HomogeneousLocalization.subsingleton _ (by simp [H])
-      exact not_subsingleton _ (RingHom.codomain_trivial φ)
+  have : Nonempty ι := ⟨j⟩
   let Kmax := (Finset.univ.image ψ).max' (by simp)
   have ⟨i₀, hi1⟩ : ∃ a, ψ a = Kmax := by
     simpa using Finset.max'_mem (Finset.univ.image ψ)
@@ -226,7 +219,7 @@ theorem valuativeCriterion_existence_aux
     rfl
   letI := (awayMap 𝒜 (f := x j) (hxdi i₀) rfl).toAlgebra
   have := Away.isLocalization_mul (hxdi j) (hxdi i₀) rfl (hdi _).ne'
-  have foounit : IsUnit (φ (Away.isLocalizationElem (hxdi j) (hxdi i₀))) := by
+  have hunit : IsUnit (φ (Away.isLocalizationElem (hxdi j) (hxdi i₀))) := by
     refine isUnit_iff_ne_zero.mpr fun rid ↦ ?_
     simp only [ψ, rid, map_pow, map_zero] at hi1
     rw [zero_pow] at hi1
@@ -317,30 +310,20 @@ theorem valuativeCriterion_existence_aux
   | zero => simp
   | add x y hx hy hhx hhy =>
     simp only [RingHom.coe_comp, Function.comp_apply, map_add, ge_iff_le]
-    transitivity
-    · refine Valuation.map_add (ValuationRing.valuation O K) _ _
-    · rw [sup_le_iff]
-      exact ⟨hhx, hhy⟩
+    exact (Valuation.map_add (ValuationRing.valuation O K) _ _).trans <| sup_le_iff.mpr ⟨hhx, hhy⟩
   | smul a x₀ hx hx1 =>
-    rw [Algebra.smul_def]
-    simp only [RingHom.coe_comp, Function.comp_apply, map_mul, ge_iff_le]
+    simp only [Algebra.smul_def, RingHom.coe_comp, Function.comp_apply, map_mul, ge_iff_le]
     refine mul_le_one' ?_ hx1
-    have foo1 : algebraMap (↥(𝒜 0)) (Away 𝒜 (x i₀)) = fromZeroRingHom 𝒜 (.powers (x i₀)) := rfl
-    rw [foo1]
-    rw [awayMap_fromZeroRingHom 𝒜 (hxdi j) (mul_comm (x j) (x i₀))]
+    rw [RingHom.algebraMap_toAlgebra, awayMap_fromZeroRingHom 𝒜 (hxdi j) (mul_comm (x j) (x i₀))]
     suffices fromZeroRingHom 𝒜 (Submonoid.powers (x j * x i₀)) a =
         awayMap 𝒜 (hxdi i₀) rfl ((fromZeroRingHom 𝒜 (Submonoid.powers (x j))) a) by
-      rw [this]
-      unfold φ'
-      rw [hφ'1]
+      simp only [this, φ', hφ'1]
       change (ValuationRing.valuation O K)
         (φ.comp (fromZeroRingHom 𝒜 (Submonoid.powers (x j))) a) ≤ 1
-      rw [← hcomm]
-      simp only [RingHom.coe_comp, Function.comp_apply]
-      rw [← Valuation.mem_integer_iff, ValuationRing.mem_integer_iff]
+      rw [← hcomm, RingHom.coe_comp, Function.comp_apply, ← Valuation.mem_integer_iff,
+        ValuationRing.mem_integer_iff]
       use φ₀ a
-    symm
-    exact awayMap_fromZeroRingHom 𝒜 (hxdi i₀) rfl a
+    exact (awayMap_fromZeroRingHom 𝒜 (hxdi i₀) rfl a).symm
 
 @[stacks 01MF]
 lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
@@ -378,10 +361,8 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     convert IsOpenImmersion.lift_fac _ _ this using 1
     show _ = φ ≫ _
     rw [← Spec.map_preimage φ, ← CommRingCat.ofHom_hom (Spec.preimage φ), ← hφ,
-      ← CommRingCat.ofHom_comp, hφ'', CommRingCat.ofHom_comp, Spec.map_comp,
-      CommRingCat.ofHom_comp, Spec.map_comp, Category.assoc, Category.assoc,
-      SpecMap_awayMap_awayι, SpecMap_awayMap_awayι]
-    rfl
+      ← CommRingCat.ofHom_comp]
+    simp [hφ'', SpecMap_awayMap_awayι, add_comm]
   · simp only [Category.assoc, Proj.awayι_toSpecZero, ← Spec.map_comp]
     conv_rhs => rw [← Spec.map_preimage i₂]
     congr 1
