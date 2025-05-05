@@ -75,17 +75,28 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     simp only [mem_rootsOfUnity, PNat.mk_coe]
     rw [← Units.eq_iff, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
 
-lemma push {n : ℕ} [NeZero n] {M N : Type*} [CommMonoid M] [CommMonoid N]
+lemma map_of_rootsOfUnityEquiv {n : ℕ} [NeZero n] {M N : Type*} [CommMonoid M] [CommMonoid N]
     (hm : HasEnoughRootsOfUnity M n) (e : rootsOfUnity n M ≃* rootsOfUnity n N) :
     HasEnoughRootsOfUnity N n where
   prim := by
     obtain ⟨m, hm⟩ := hm.prim
     use (e hm.toRootsOfUnity).val.val
     simp_all only [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.coe_submonoidClass_iff]
-    exact hm.push e
+    apply  IsPrimitiveRoot.map_of_injective _ e.injective
+    constructor
+    · ext : 2
+      simp_all only [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val,
+        IsPrimitiveRoot.val_toRootsOfUnity_coe, OneMemClass.coe_one, Units.val_one]
+      rw [hm.pow_eq_one]
+    · intro l hl
+      apply (hm.pow_eq_one_iff_dvd l).mp
+      have e3 : (hm.toRootsOfUnity ^ l).val.val = 1 := by
+        simp_all only [map_one]
+        norm_cast
+      rw [← e3]
+      norm_cast
   cyc :=
-    hm.cyc.push_ofSurjective e
-      e.surjective (map_zpow _)
+    IsCyclic.push_ofSurjective hm.cyc e e.surjective (map_zpow _)
 
 end HasEnoughRootsOfUnity
 
