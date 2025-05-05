@@ -717,7 +717,7 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
 def kerFunctor (Y : Scheme.{u}) : (Over Y)ᵒᵖ ⥤ IdealSheafData Y where
   obj f := f.unop.hom.ker
   map {f g} hfg := homOfLE <| by simpa only [Functor.id_obj, Functor.const_obj_obj,
-    OrderDual.toDual_le_toDual, ← Over.w hfg.unop] using f.unop.hom.le_ker_comp _
+    OrderDual.toDual_le_toDual, ← Over.w hfg.unop] using hfg.unop.left.le_ker_comp f.unop.hom
   map_id _ := Subsingleton.elim _ _
   map_comp _ _ := Subsingleton.elim _ _
 
@@ -782,10 +782,10 @@ lemma range_glueDataObjι_ι (U : X.affineOpens) :
 
 /-- The underlying space of `Spec (𝒪ₓ(U)/I(U))` is homeomorphic to its image in `X`. -/
 noncomputable
-def glueDataObjEquiv (U : X.affineOpens) :
+def glueDataObjCarrierIso (U : X.affineOpens) :
     (I.glueDataObj U).carrier ≅ TopCat.of ↑(X.zeroLocus (U := U) (I.ideal U) ∩ U) :=
-  TopCat.isoOfHomeo ((Homeomorph.ofIsEmbedding _ (I.glueDataObjι U ≫ U.1.ι).isEmbedding).trans
-    (Homeomorph.setCongr (I.range_glueDataObjι_ι U)))
+  TopCat.isoOfHomeo ((I.glueDataObjι U ≫ U.1.ι).isEmbedding.toHomeomorph.trans
+    (.setCongr (I.range_glueDataObjι_ι U)))
 
 /-- The open immersion `Spec Γ(𝒪ₓ/I, U) ⟶ Spec Γ(𝒪ₓ/I, V)` if `U ≤ V`. -/
 noncomputable
@@ -1118,7 +1118,7 @@ private instance : QuasiCompact I.gluedTo :=
 /-- (Implementation) The underlying space of `Spec(𝒪ₓ/I)` is homeomorphic to the support of `I`. -/
 private noncomputable
 def gluedHomeo : I.glueData.glued ≃ₜ I.support :=
-  .trans (.ofIsEmbedding _ I.gluedTo.isEmbedding) (.setCongr I.range_gluedTo)
+  I.gluedTo.isEmbedding.toHomeomorph.trans (.setCongr I.range_gluedTo)
 
 /-- The subscheme associated to an ideal sheaf. -/
 noncomputable
@@ -1163,18 +1163,10 @@ lemma range_subschemeι : Set.range I.subschemeι.base = I.support := by
   simp [← range_gluedTo, I.subschemeι_def, Set.range_comp,
     Set.range_eq_univ.mpr I.subschemeIso.hom.homeomorph.surjective]
 
-@[simp]
-lemma _root_.AlgebraicGeometry.Scheme.coe_homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) :
-    ⇑(homeoOfIso e) = e.hom.base := rfl
-
-@[simp]
-lemma _root_.AlgebraicGeometry.Scheme.coe_homeoOfIso_symm {X Y : Scheme.{u}} (e : X ≅ Y) :
-    ⇑(homeoOfIso e.symm) = e.inv.base := rfl
-
 private lemma opensRange_glueData_ι_subschemeIso_inv (U : X.affineOpens) :
     (I.glueData.ι U ≫ I.subschemeIso.inv).opensRange = I.subschemeι ⁻¹ᵁ U := by
   ext1
-  simp [Set.range_comp, I.range_glueData_ι, subschemeι_def, Set.preimage_comp, coe_homeoOfIso,
+  simp [Set.range_comp, I.range_glueData_ι, subschemeι_def, Set.preimage_comp,
     ← coe_homeoOfIso_symm, ← homeoOfIso_symm, ← Homeomorph.coe_symm_toEquiv,
     ← Set.preimage_equiv_eq_image_symm]
 
