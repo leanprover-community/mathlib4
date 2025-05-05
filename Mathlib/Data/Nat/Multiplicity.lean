@@ -10,8 +10,7 @@ import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Digits
 import Mathlib.RingTheory.Multiplicity
---For testing only
-import Mathlib.Data.Nat.Factorization.Basic
+
 
 /-!
 # Natural number multiplicity
