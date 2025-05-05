@@ -211,13 +211,11 @@ theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRin
 
 lemma Ideal.height_le_iff {p : Ideal R} {n : ℕ} [p.IsPrime] :
     p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p → q.height < n := by
-  refine ⟨fun h q hp hqp ↦ ?_, fun h ↦ ?_⟩
-  · rw [Ideal.height_eq_primeHeight, Ideal.primeHeight] at h ⊢
-    apply (Order.height_le_coe_iff (x := (⟨p, ‹_›⟩ : (PrimeSpectrum R))) (n := n)).mp <;> assumption
-  · rw [Ideal.height_eq_primeHeight, Ideal.primeHeight, Order.height_le_coe_iff]
-    intro ⟨q, hq⟩ hqp
-    convert h q hq hqp
-    rw [Ideal.height_eq_primeHeight, Ideal.primeHeight]
+  rw [height_eq_primeHeight, primeHeight, Order.height_le_coe_iff,
+    (PrimeSpectrum.equivSubtype R).forall_congr_left, Subtype.forall]
+  congr!
+  rw [height_eq_primeHeight, primeHeight]
+  rfl
 
 lemma Ideal.height_le_iff_covBy {p : Ideal R} {n : ℕ} [p.IsPrime] [IsNoetherianRing R] :
     p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p →
