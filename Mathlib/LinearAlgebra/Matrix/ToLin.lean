@@ -328,11 +328,7 @@ theorem Matrix.toLin'_toMatrix' (f : (n → R) →ₗ[R] m → R) :
 @[simp]
 theorem LinearMap.toMatrix'_apply (f : (n → R) →ₗ[R] m → R) (i j) :
     LinearMap.toMatrix' f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
-  simp only [LinearMap.toMatrix', LinearEquiv.coe_mk, of_apply]
-  congr! with i
-  split_ifs with h
-  · rw [h, Pi.single_eq_same]
-  apply Pi.single_eq_of_ne h
+  simp [toMatrix', ← Pi.single_apply]
 
 @[simp]
 theorem Matrix.toLin'_apply (M : Matrix m n R) (v : n → R) : Matrix.toLin' M v = M *ᵥ v :=
@@ -896,9 +892,11 @@ end Algebra
 
 section
 
-variable {R : Type*} [CommSemiring R] {n : Type*} [DecidableEq n]
+variable {R S : Type*} [CommSemiring R] {n : Type*} [DecidableEq n]
 variable {M M₁ M₂ : Type*} [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
+variable [Semiring S] [Module S M₁] [Module S M₂] [SMulCommClass S R M₁] [SMulCommClass S R M₂]
+variable [SMul R S] [IsScalarTower R S M₁] [IsScalarTower R S M₂]
 
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the algebra structures. -/
@@ -907,20 +905,17 @@ def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R 
     map_mul' := LinearMap.toMatrix'_comp
     commutes' := LinearMap.toMatrix'_algebraMap }
 
+variable (R) in
 /-- A linear equivalence of two modules induces an equivalence of algebras of their
 endomorphisms. -/
-def LinearEquiv.algConj (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃ₐ[R] Module.End R M₂ :=
-  { e.conj with
-    map_mul' := fun f g ↦ by apply e.arrowCongr_comp
-    commutes' := fun r ↦ by
-      change e.conj _ = _
-      simp only [Algebra.algebraMap_eq_smul_one, LinearEquiv.map_smul,
-        Module.End.one_eq_id, LinearEquiv.conj_id] }
+@[simps!] def LinearEquiv.algConj (e : M₁ ≃ₗ[S] M₂) : Module.End S M₁ ≃ₐ[R] Module.End S M₂ where
+  __ := e.conjRingEquiv
+  commutes' := fun _ ↦ by ext; show e.restrictScalars R _ = _; simp
 
 /-- A basis of a module induces an equivalence of algebras from the endomorphisms of the module to
 square matrices. -/
 def algEquivMatrix [Fintype n] (h : Basis n R M) : Module.End R M ≃ₐ[R] Matrix n n R :=
-  h.equivFun.algConj.trans algEquivMatrix'
+  (h.equivFun.algConj R).trans algEquivMatrix'
 
 end
 
