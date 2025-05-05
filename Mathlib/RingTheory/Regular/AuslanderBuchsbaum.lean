@@ -308,7 +308,34 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
-  sorry
+  simp only [IsLocalRing.depth, Ideal.depth, moduleDepth]
+  apply le_antisymm
+  · rw [ENat.add_sSup ⟨0, by simp⟩]
+    apply iSup_le (fun n ↦ iSup_le (fun hn ↦ ?_))
+    apply le_sSup
+    intro i hi
+    by_cases eq0 : i = 0
+    · rw [eq0]
+      --straightly prove hom = 0
+      rw [Ext.addEquiv₀.subsingleton_congr, (ModuleCat.homLinearEquiv (S := R)).subsingleton_congr]
+      sorry
+    · have : i - 1 < n := by
+        sorry
+      have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
+      have := ((iff (i - 1)).mp (hn (i - 1) this)).2
+      rw [eq] at this
+      sorry
+  · apply sSup_le (fun n hn ↦ ?_)
+    by_cases eq0 : n = 0
+    · simp [eq0]
+    · have : n - 1 + 1 = n := by sorry
+      rw [add_comm, ← this]
+      apply add_le_add_right
+      apply le_sSup
+      intro i hi
+      #check hn i
+      #check hn (i + 1)
+      sorry
 
 open scoped Classical in
 theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
