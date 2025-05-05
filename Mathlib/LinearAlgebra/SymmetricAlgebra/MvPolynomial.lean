@@ -10,7 +10,8 @@ import Mathlib.RingTheory.MvPolynomial.Basic
 # Main Definitions
 
 1. `SymmetricAlgebra.equivMvPolynomial` give an algebra isomorphism between symmetric algebra over a
-  free module and multivariate polynomial over the basis.
+  free module and multivariate polynomial over the basis, which is analogous to
+  `TensorAlgebra.equivFreeAlgebra`.
 -/
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
