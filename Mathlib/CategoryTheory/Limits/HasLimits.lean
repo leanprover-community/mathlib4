@@ -505,8 +505,8 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk' {
     { toFun := fun f => limit.lift _ ⟨c, f⟩
       invFun := fun f =>
         { app := fun _ => f ≫ limit.π _ _ }
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
+      left_inv _ := by aesop_cat
+      right_inv _ := by aesop_cat }
   unit := { app := fun _ => limit.lift _ ⟨_, 𝟙 _⟩ }
   counit := { app := fun g => { app := limit.π _ } } }
 
@@ -1051,8 +1051,8 @@ def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk' {
     { toFun := fun g =>
         { app := fun _ => colimit.ι _ _ ≫ g }
       invFun := fun g => colimit.desc _ ⟨_, g⟩
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
+      left_inv _ := by aesop_cat
+      right_inv _ := by aesop_cat }
   unit := { app := fun g => { app := colimit.ι _ } }
   counit := { app := fun _ => colimit.desc _ ⟨_, 𝟙 _⟩ } }
 

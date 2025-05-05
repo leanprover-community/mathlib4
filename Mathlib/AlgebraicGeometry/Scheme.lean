@@ -339,16 +339,16 @@ instance isIso_base {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
   Scheme.forgetToTop.map_isIso f
 
 -- Porting note: need an extra instance here.
-instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.c.app U) :=
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.c.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
   NatIso.isIso_app_of_isIso f.c _
 
-instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.app U) :=
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
   NatIso.isIso_app_of_isIso f.c _
 
 @[simp]
-theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
+theorem inv_app {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
     (inv f).app U =
       X.presheaf.map (eqToHom (show (f ≫ inv f) ⁻¹ᵁ U = U by rw [IsIso.hom_inv_id]; rfl)).op ≫
         inv (f.app ((inv f) ⁻¹ᵁ U)) := by
@@ -361,7 +361,7 @@ theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
 @[deprecated (since := "2024-11-23")] alias inv_app_top := inv_appTop
 
 /-- Copies a morphism with a different underlying map -/
-def Hom.copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
+def Hom.copyBase {X Y : Scheme.{u}} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
   base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
   c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
   prop x := by
@@ -369,7 +369,7 @@ def Hom.copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X
     convert f.prop x using 4
     aesop_cat
 
-lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
+lemma Hom.copyBase_eq {X Y : Scheme.{u}} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
     f.copyBase g h = f := by
   subst h
   obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
@@ -381,45 +381,45 @@ end Scheme
 
 /-- The spectrum of a commutative ring, as a scheme.
 -/
-def Spec (R : CommRingCat) : Scheme where
+def Spec (R : CommRingCat.{u}) : Scheme where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
 
-theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
+theorem Spec_toLocallyRingedSpace (R : CommRingCat.{u}) :
     (Spec R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
   rfl
 
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of schemes.
 -/
-def Spec.map {R S : CommRingCat} (f : R ⟶ S) : Spec S ⟶ Spec R :=
+def Spec.map {R S : CommRingCat.{u}} (f : R ⟶ S) : Spec S ⟶ Spec R :=
   ⟨Spec.locallyRingedSpaceMap f⟩
 
 @[simp]
-theorem Spec.map_id (R : CommRingCat) : Spec.map (𝟙 R) = 𝟙 (Spec R) :=
+theorem Spec.map_id (R : CommRingCat.{u}) : Spec.map (𝟙 R) = 𝟙 (Spec R) :=
   Scheme.Hom.ext' <| Spec.locallyRingedSpaceMap_id R
 
 @[reassoc, simp]
-theorem Spec.map_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
+theorem Spec.map_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.map (f ≫ g) = Spec.map g ≫ Spec.map f :=
   Scheme.Hom.ext' <| Spec.locallyRingedSpaceMap_comp f g
 
 /-- The spectrum, as a contravariant functor from commutative rings to schemes. -/
 @[simps]
-protected def Scheme.Spec : CommRingCatᵒᵖ ⥤ Scheme where
+protected def Scheme.Spec : CommRingCat.{u}ᵒᵖ ⥤ Scheme where
   obj R := Spec (unop R)
   map f := Spec.map f.unop
   map_id R := by simp
   map_comp f g := by simp
 
-lemma Spec.map_eqToHom {R S : CommRingCat} (e : R = S) :
+lemma Spec.map_eqToHom {R S : CommRingCat.{u}} (e : R = S) :
     Spec.map (eqToHom e) = eqToHom (e ▸ rfl) := by
   subst e; exact Spec.map_id _
 
-instance {R S : CommRingCat} (f : R ⟶ S) [IsIso f] : IsIso (Spec.map f) :=
+instance {R S : CommRingCat.{u}} (f : R ⟶ S) [IsIso f] : IsIso (Spec.map f) :=
   inferInstanceAs (IsIso <| Scheme.Spec.map f.op)
 
 @[simp]
-lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
+lemma Spec.map_inv {R S : CommRingCat.{u}} (f : R ⟶ S) [IsIso f] :
     Spec.map (inv f) = inv (Spec.map f) := by
   show Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
   rw [op_inv, ← Scheme.Spec.map_inv]
@@ -442,7 +442,7 @@ lemma Spec.map_app (U) :
 lemma Spec.map_appLE {U V} (e : U ≤ Spec.map f ⁻¹ᵁ V) :
     (Spec.map f).appLE V U e = CommRingCat.ofHom (StructureSheaf.comap f.hom V U e) := rfl
 
-instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
+instance {A : CommRingCat.{u}} [Nontrivial A] : Nonempty (Spec A) :=
   inferInstanceAs <| Nonempty (PrimeSpectrum A)
 
 end
@@ -472,24 +472,24 @@ instance : Inhabited Scheme :=
 
 /-- The global sections, notated Gamma.
 -/
-def Γ : Schemeᵒᵖ ⥤ CommRingCat :=
+def Γ : Scheme.{u}ᵒᵖ ⥤ CommRingCat.{u} :=
   Scheme.forgetToLocallyRingedSpace.op ⋙ LocallyRingedSpace.Γ
 
 theorem Γ_def : Γ = Scheme.forgetToLocallyRingedSpace.op ⋙ LocallyRingedSpace.Γ :=
   rfl
 
 @[simp]
-theorem Γ_obj (X : Schemeᵒᵖ) : Γ.obj X = Γ(unop X, ⊤) :=
+theorem Γ_obj (X : Scheme.{u}ᵒᵖ) : Γ.obj X = Γ(unop X, ⊤) :=
   rfl
 
-theorem Γ_obj_op (X : Scheme) : Γ.obj (op X) = Γ(X, ⊤) :=
+theorem Γ_obj_op (X : Scheme.{u}) : Γ.obj (op X) = Γ(X, ⊤) :=
   rfl
 
 @[simp]
-theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.appTop :=
+theorem Γ_map {X Y : Scheme.{u}ᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.appTop :=
   rfl
 
-theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.appTop :=
+theorem Γ_map_op {X Y : Scheme.{u}} (f : X ⟶ Y) : Γ.map f.op = f.appTop :=
   rfl
 
 /--
@@ -535,7 +535,7 @@ lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := 
 
 section BasicOpen
 
-variable (X : Scheme) {V U : X.Opens} (f g : Γ(X, U))
+variable (X : Scheme.{u}) {V U : X.Opens} (f g : Γ(X, U))
 
 /-- The subset of the underlying space where the given section does not vanish. -/
 def basicOpen : X.Opens :=
@@ -716,7 +716,7 @@ end ZeroLocus
 
 end Scheme
 
-theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
+theorem basicOpen_eq_of_affine {R : CommRingCat.{u}} (f : R) :
     (Spec R).basicOpen ((Scheme.ΓSpecIso R).inv f) = PrimeSpectrum.basicOpen f := by
   ext x
   simp only [SetLike.mem_coe, Scheme.mem_basicOpen_top, Opens.coe_top]
@@ -729,12 +729,12 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
       _)
 
 @[simp]
-theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(Spec R, ⊤)) :
+theorem basicOpen_eq_of_affine' {R : CommRingCat.{u}} (f : Γ(Spec R, ⊤)) :
     (Spec R).basicOpen f = PrimeSpectrum.basicOpen ((Scheme.ΓSpecIso R).hom f) := by
   convert basicOpen_eq_of_affine ((Scheme.ΓSpecIso R).hom f)
   exact (Iso.hom_inv_id_apply (Scheme.ΓSpecIso R) f).symm
 
-theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U = V) (W) :
+theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme.{u}} {U V : X.Opens} (h : U = V) (W) :
     (Spec.map (X.presheaf.map (eqToHom h).op)).app W = eqToHom (by cases h; dsimp; simp) := by
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
     rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
@@ -772,7 +772,7 @@ lemma Scheme.iso_inv_base_hom_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y
   show (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
   simp
 
-theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :
+theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat.{u}} (s : Set R) :
     (Spec R).zeroLocus ((Scheme.ΓSpecIso R).inv '' s) = PrimeSpectrum.zeroLocus s := by
   ext x
   suffices (∀ a ∈ s, x ∉ PrimeSpectrum.basicOpen a) ↔ x ∈ PrimeSpectrum.zeroLocus s by simpa
@@ -780,7 +780,7 @@ theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :
     PrimeSpectrum.mem_basicOpen _ x]
 
 @[simp]
-theorem Spec_zeroLocus {R : CommRingCat} (s : Set Γ(Spec R, ⊤)) :
+theorem Spec_zeroLocus {R : CommRingCat.{u}} (s : Set Γ(Spec R, ⊤)) :
     (Spec R).zeroLocus s = PrimeSpectrum.zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s) := by
   convert Spec_zeroLocus_eq_zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s)
   rw [Set.image_preimage_eq]
@@ -885,7 +885,7 @@ section IsLocalRing
 open IsLocalRing
 
 @[simp]
-lemma Spec_closedPoint {R S : CommRingCat} [IsLocalRing R] [IsLocalRing S]
+lemma Spec_closedPoint {R S : CommRingCat.{u}} [IsLocalRing R] [IsLocalRing S]
     {f : R ⟶ S} [IsLocalHom f.hom] : (Spec.map f).base (closedPoint S) = closedPoint R :=
   IsLocalRing.comap_closedPoint f.hom
 

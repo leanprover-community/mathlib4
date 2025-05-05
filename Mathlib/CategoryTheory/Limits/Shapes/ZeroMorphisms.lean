@@ -361,8 +361,8 @@ def idZeroEquivIsoZero (X : C) : 𝟙 X = 0 ≃ (X ≅ 0) where
     { hom := 0
       inv := 0 }
   invFun i := zero_of_target_iso_zero (𝟙 X) i
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 @[simp]
 theorem idZeroEquivIsoZero_apply_hom (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIsoZero X) h).hom = 0 :=
@@ -425,8 +425,8 @@ def isIsoZeroEquiv (X Y : C) : IsIso (0 : X ⟶ Y) ≃ 𝟙 X = 0 ∧ 𝟙 Y = 0
     rw [← IsIso.inv_hom_id (0 : X ⟶ Y)]
     simp only [eq_self_iff_true,comp_zero,and_self,zero_comp]
   invFun h := ⟨⟨(0 : Y ⟶ X), by aesop_cat⟩⟩
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 /-- A zero morphism `0 : X ⟶ X` is an isomorphism if and only if
 the identity on `X` is zero.
@@ -453,8 +453,8 @@ def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y �
     fconstructor
     · exact (idZeroEquivIsoZero X) hX
     · exact (idZeroEquivIsoZero Y) hY
-  · aesop_cat
-  · aesop_cat
+  · intro; aesop_cat
+  · intro; aesop_cat
 
 theorem isIso_of_source_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) (j : Y ≅ 0) :
     IsIso f := by

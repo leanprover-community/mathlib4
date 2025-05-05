@@ -161,8 +161,8 @@ theorem ofIsoLimit_lift {r t : Cone F} (P : IsLimit r) (i : r ≅ t) (s) :
 def equivIsoLimit {r t : Cone F} (i : r ≅ t) : IsLimit r ≃ IsLimit t where
   toFun h := h.ofIsoLimit i
   invFun h := h.ofIsoLimit i.symm
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 @[simp]
 theorem equivIsoLimit_apply {r t : Cone F} (i : r ≅ t) (P : IsLimit r) :
@@ -213,8 +213,8 @@ def ofConeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G �
     IsLimit (h.functor.obj c) ≃ IsLimit c where
   toFun P := ofIsoLimit (ofRightAdjoint h.toAdjunction P) (h.unitIso.symm.app c)
   invFun := ofRightAdjoint h.symm.toAdjunction
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 @[simp]
 theorem ofConeEquiv_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G ≌ Cone F)
@@ -303,7 +303,8 @@ def ofWhiskerEquivalence {s : Cone F} (e : K ≌ J) (P : IsLimit (s.whisker e.fu
 /-- Given an equivalence of diagrams `e`, `s` is a limit cone iff `s.whisker e.functor` is.
 -/
 def whiskerEquivalenceEquiv {s : Cone F} (e : K ≌ J) : IsLimit s ≃ IsLimit (s.whisker e.functor) :=
-  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
+  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e,
+    fun _ => by aesop_cat, fun _ => by aesop_cat⟩
 
 /-- A limit cone extended by an isomorphism is a limit cone. -/
 def extendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit s) :
@@ -614,8 +615,8 @@ theorem ofIsoColimit_desc {r t : Cocone F} (P : IsColimit r) (i : r ≅ t) (s) :
 def equivIsoColimit {r t : Cocone F} (i : r ≅ t) : IsColimit r ≃ IsColimit t where
   toFun h := h.ofIsoColimit i
   invFun h := h.ofIsoColimit i.symm
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 @[simp]
 theorem equivIsoColimit_apply {r t : Cocone F} (i : r ≅ t) (P : IsColimit r) :
@@ -671,8 +672,8 @@ def ofCoconeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cocone 
     {c : Cocone G} : IsColimit (h.functor.obj c) ≃ IsColimit c where
   toFun P := ofIsoColimit (ofLeftAdjoint h.symm.toAdjunction P) (h.unitIso.symm.app c)
   invFun := ofLeftAdjoint h.toAdjunction
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 @[simp]
 theorem ofCoconeEquiv_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D}
@@ -764,7 +765,8 @@ def ofWhiskerEquivalence {s : Cocone F} (e : K ≌ J) (P : IsColimit (s.whisker 
 -/
 def whiskerEquivalenceEquiv {s : Cocone F} (e : K ≌ J) :
     IsColimit s ≃ IsColimit (s.whisker e.functor) :=
-  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
+  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e,
+    fun _ => by aesop_cat, fun _ => by aesop_cat⟩
 
 /-- A colimit cocone extended by an isomorphism is a colimit cocone. -/
 def extendIso {s : Cocone F} {X : C} (i : s.pt ⟶ X) [IsIso i] (hs : IsColimit s) :

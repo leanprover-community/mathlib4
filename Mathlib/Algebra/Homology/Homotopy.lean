@@ -136,8 +136,8 @@ def equivSubZero : Homotopy f g ≃ Homotopy (f - g) 0 where
     { hom := fun i j => h.hom i j
       zero := fun _ _ w => h.zero _ _ w
       comm := fun i => by simpa [sub_eq_iff_eq_add] using h.comm i }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 /-- Equal chain maps are homotopic. -/
 @[simps]

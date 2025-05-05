@@ -269,7 +269,7 @@ theorem eqToHom_f {C₁ C₂ : HomologicalComplex V c} (h : C₁ = C₂) (n : ι
 
 -- We'll use this later to show that `HomologicalComplex V c` is preadditive when `V` is.
 theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
-    Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
+    Function.Injective fun f : Hom C₁ C₂ => f.f := by intro; aesop_cat
 
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
   ⟨{ f := fun _ => 0}⟩
