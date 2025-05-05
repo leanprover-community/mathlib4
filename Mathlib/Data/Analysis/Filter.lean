@@ -36,7 +36,7 @@ variable {α : Type*} {β : Type*} {σ : Type*} {τ : Type*}
 instance [Inhabited α] [SemilatticeInf α] : Inhabited (CFilter α α) :=
   ⟨{  f := id
       pt := default
-      min := (· ⊓ ·)
+      inf := (· ⊓ ·)
       inf_le_left := fun _ _ ↦ inf_le_left
       inf_le_right := fun _ _ ↦ inf_le_right }⟩
 
@@ -61,7 +61,7 @@ def ofEquiv (E : σ ≃ τ) : CFilter α σ → CFilter α τ
   | ⟨f, p, g, h₁, h₂⟩ =>
     { f := fun a ↦ f (E.symm a)
       pt := E p
-      min := fun a b ↦ E (g (E.symm a) (E.symm b))
+      inf := fun a b ↦ E (g (E.symm a) (E.symm b))
       inf_le_left := fun a b ↦ by simpa using h₁ (E.symm a) (E.symm b)
       inf_le_right := fun a b ↦ by simpa using h₂ (E.symm a) (E.symm b) }
 
@@ -112,7 +112,7 @@ def ofFilter (f : Filter α) : f.Realizer :=
   ⟨f.sets,
     { f := Subtype.val
       pt := ⟨univ, univ_mem⟩
-      min := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦ ⟨_, inter_mem h₁ h₂⟩
+      inf := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦ ⟨_, inter_mem h₁ h₂⟩
       inf_le_left := fun ⟨_, _⟩ ⟨_, _⟩ ↦ inter_subset_left
       inf_le_right := fun ⟨_, _⟩ ⟨_, _⟩ ↦ inter_subset_right },
     filter_eq <| Set.ext fun _ ↦ by simp [exists_mem_subset_iff]⟩
@@ -137,7 +137,7 @@ protected def principal (s : Set α) : (principal s).Realizer :=
   ⟨Unit,
     { f := fun _ ↦ s
       pt := ()
-      min := fun _ _ ↦ ()
+      inf := fun _ _ ↦ ()
       inf_le_left := fun _ _ ↦ le_rfl
       inf_le_right := fun _ _ ↦ le_rfl },
     filter_eq <| Set.ext fun _ ↦ ⟨fun ⟨_, s⟩ ↦ s, fun h ↦ ⟨(), h⟩⟩⟩
@@ -182,7 +182,7 @@ protected def map (m : α → β) {f : Filter α} (F : f.Realizer) : (map m f).R
   ⟨F.σ,
     { f := fun s ↦ image m (F.F s)
       pt := F.F.pt
-      min := F.F.inf
+      inf := F.F.inf
       inf_le_left := fun _ _ ↦ image_subset _ (F.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ image_subset _ (F.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by
@@ -202,7 +202,7 @@ protected def comap (m : α → β) {f : Filter β} (F : f.Realizer) : (comap m 
   ⟨F.σ,
     { f := fun s ↦ preimage m (F.F s)
       pt := F.F.pt
-      min := F.F.inf
+      inf := F.F.inf
       inf_le_left := fun _ _ ↦ preimage_mono (F.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ preimage_mono (F.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by
@@ -215,7 +215,7 @@ protected def sup {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊔ g
   ⟨F.σ × G.σ,
     { f := fun ⟨s, t⟩ ↦ F.F s ∪ G.F t
       pt := (F.F.pt, G.F.pt)
-      min := fun ⟨a, a'⟩ ⟨b, b'⟩ ↦ (F.F.inf a b, G.F.inf a' b')
+      inf := fun ⟨a, a'⟩ ⟨b, b'⟩ ↦ (F.F.inf a b, G.F.inf a' b')
       inf_le_left := fun _ _ ↦ union_subset_union (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ union_subset_union (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by cases F; cases G; substs f g; simp [CFilter.toFilter]⟩
@@ -225,7 +225,7 @@ protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g
   ⟨F.σ × G.σ,
     { f := fun ⟨s, t⟩ ↦ F.F s ∩ G.F t
       pt := (F.F.pt, G.F.pt)
-      min := fun ⟨a, a'⟩ ⟨b, b'⟩ ↦ (F.F.inf a b, G.F.inf a' b')
+      inf := fun ⟨a, a'⟩ ⟨b, b'⟩ ↦ (F.F.inf a b, G.F.inf a' b')
       inf_le_left := fun _ _ ↦ inter_subset_inter (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ inter_subset_inter (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
     by
@@ -243,7 +243,7 @@ protected def cofinite [DecidableEq α] : (@cofinite α).Realizer :=
   ⟨Finset α,
     { f := fun s ↦ { a | a ∉ s }
       pt := ∅
-      min := (· ∪ ·)
+      inf := (· ∪ ·)
       inf_le_left := fun _ _ _ ↦ mt (Finset.mem_union_left _)
       inf_le_right := fun _ _ _ ↦ mt (Finset.mem_union_right _) },
     filter_eq <|
@@ -257,7 +257,7 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
   ⟨Σs : F.σ, ∀ i ∈ F.F s, (G i).σ,
     { f := fun ⟨s, f⟩ ↦ ⋃ i ∈ F.F s, (G i).F (f i (by assumption))
       pt := ⟨F.F.pt, fun i _ ↦ (G i).F.pt⟩
-      min := fun ⟨a, f⟩ ⟨b, f'⟩ ↦
+      inf := fun ⟨a, f⟩ ⟨b, f'⟩ ↦
         ⟨F.F.inf a b, fun i h ↦
           (G i).F.inf (f i (F.F.inf_le_left _ _ h)) (f' i (F.F.inf_le_right _ _ h))⟩
       inf_le_left := fun _ _ _ ↦ by
