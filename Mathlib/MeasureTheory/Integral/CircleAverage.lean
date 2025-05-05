@@ -57,7 +57,7 @@ lemma circleAverage_eq_intervalAverage :
   simp [circleAverage, interval_average_eq]
 
 /-- Interval averages for zero radii equal values at the center point. -/
-@[simp] lemma circleAverage_zeroRadius [CompleteSpace E] :
+@[simp] lemma circleAverage_zero [CompleteSpace E] :
     circleAverage f c 0 = f c := by
   rw [circleAverage]
   simp only [circleMap_zero_radius, Function.const_apply,
@@ -94,14 +94,14 @@ lemma circleAverage_eq_integral_add (η : ℝ) : circleAverage f c R =
   congr
 
 /-- Circle averages do not change when replacing the radius by its negative. -/
-theorem circleAverage_congr_neg_radius :
-    circleAverage f c R = circleAverage f c (-R) := by
+@[simp] theorem circleAverage_neg_radius :
+    circleAverage f c (-R) = circleAverage f c R := by
   unfold circleAverage
   simp_rw [circleMap_neg_radius, ← circleAverage_def, circleAverage_eq_integral_add π]
 
 /-- Circle averages do not change when replacing the radius by its absolute value. -/
-theorem circleAverage_congr_abs_radius :
-    circleAverage f c R = circleAverage f c |R| := by
+@[simp] theorem circleAverage_abs_radius :
+    circleAverage f c |R| = circleAverage f c R := by
   by_cases hR : 0 ≤ R
   · rw [abs_of_nonneg hR]
   · rw [abs_of_neg (not_le.1 hR), circleAverage_congr_neg_radius]
