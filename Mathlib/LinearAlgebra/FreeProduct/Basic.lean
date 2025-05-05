@@ -127,7 +127,8 @@ of tensor powers are (noncomputably) equivalent as `R`-algebras. -/
     PowerAlgebra R A ≃ₐ[R] FreeTensorAlgebra R A :=
   TensorAlgebra.equivDirectSum.symm
 
-@[deprecated (since := "2025-05-05")] alias powerAlgebra_equiv_freeAlgebra := powerAlgebraEquivFreeTensorAlgebra
+@[deprecated (since := "2025-05-05")] alias powerAlgebra_equiv_freeAlgebra := 
+  powerAlgebraEquivFreeTensorAlgebra
 
 /-- The generating equivalence relation for elements of the free tensor algebra
 that are identified in the free product -/
