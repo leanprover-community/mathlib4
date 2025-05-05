@@ -230,7 +230,7 @@ noncomputable irreducible_def eigenvalues : Fin n → ℝ :=
   (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
 
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
-finite-dimensional inner product space `E`.  Eigenvectors are sorted in increasing
+finite-dimensional inner product space `E`.  Eigenvectors are sorted in decreasing
 order of their eigenvalues. -/
 noncomputable irreducible_def eigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
   (hT.direct_sum_isInternal.subordinateOrthonormalBasis
