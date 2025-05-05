@@ -14,8 +14,8 @@ This file defines continuous perfect pairings.
 For a topological ring `R` and two topological modules `M` and `N`, a continuous perfect pairing is
 a continuous bilinear map `M × N → R` that is bijective in both arguments.
 
-Note that this does **not** imply that the dual of `M` is `N` and vice-versa (one would instead need
-"homeomorphic in both arguments").
+Note that this does **not** imply that the continuous dual of `M` is `N` and vice-versa (one would
+instead need "homeomorphic in both arguments").
 -/
 
 open Function
