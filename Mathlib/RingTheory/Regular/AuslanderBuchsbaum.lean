@@ -151,6 +151,7 @@ instance [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M]
       rfl }
   exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
+-- a weird time out, for exact same two copy, the first passed but the second does not
 set_option maxHeartbeats 250000 in
 lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (f : M ⟶ N)
     (mem : f ∈ (Module.annihilator R L) • (⊤ : Submodule R (M ⟶ N))) (n : ℕ) :
