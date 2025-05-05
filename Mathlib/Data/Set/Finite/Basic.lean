@@ -156,7 +156,7 @@ protected alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
 
 @[simp high]
 protected theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p]
-    (h : { x | p x }.Finite) : h.toFinset = Finset.univ.filter p := by simp
+    (h : { x | p x }.Finite) : h.toFinset = ({x | p x} : Finset α) := by simp
 
 @[simp]
 nonrec theorem disjoint_toFinset {hs : s.Finite} {ht : t.Finite} :
@@ -244,7 +244,7 @@ instance fintypeUnion [DecidableEq α] (s t : Set α) [Fintype s] [Fintype t] :
 
 instance fintypeSep (s : Set α) (p : α → Prop) [Fintype s] [DecidablePred p] :
     Fintype ({ a ∈ s | p a } : Set α) :=
-  Fintype.ofFinset (s.toFinset.filter p) <| by simp
+  Fintype.ofFinset {a ∈ s.toFinset | p a} <| by simp
 
 instance fintypeInter (s t : Set α) [DecidableEq α] [Fintype s] [Fintype t] :
     Fintype (s ∩ t : Set α) :=
@@ -253,12 +253,12 @@ instance fintypeInter (s t : Set α) [DecidableEq α] [Fintype s] [Fintype t] :
 /-- A `Fintype` instance for set intersection where the left set has a `Fintype` instance. -/
 instance fintypeInterOfLeft (s t : Set α) [Fintype s] [DecidablePred (· ∈ t)] :
     Fintype (s ∩ t : Set α) :=
-  Fintype.ofFinset (s.toFinset.filter (· ∈ t)) <| by simp
+  Fintype.ofFinset {a ∈ s.toFinset | a ∈ t} <| by simp
 
 /-- A `Fintype` instance for set intersection where the right set has a `Fintype` instance. -/
 instance fintypeInterOfRight (s t : Set α) [Fintype t] [DecidablePred (· ∈ s)] :
     Fintype (s ∩ t : Set α) :=
-  Fintype.ofFinset (t.toFinset.filter (· ∈ s)) <| by simp [and_comm]
+  Fintype.ofFinset {a ∈ t.toFinset | a ∈ s} <| by simp [and_comm]
 
 /-- A `Fintype` structure on a set defines a `Fintype` structure on its subset. -/
 def fintypeSubset (s : Set α) {t : Set α} [Fintype s] [DecidablePred (· ∈ t)] (h : t ⊆ s) :

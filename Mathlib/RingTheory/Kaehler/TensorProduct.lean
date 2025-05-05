@@ -95,7 +95,7 @@ instance [Algebra.IsPushout R S A B] :
   show (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
     (Algebra.lsmul R (A := A) _ _) (LinearMap.ext <| smul_comm · ·)
       (algebraMap A B r)) • x = r • x
-  simp only [Algebra.pushoutDesc_right, LinearMap.smul_def, Algebra.lsmul_coe]
+  simp only [Algebra.pushoutDesc_right, Module.End.smul_def, Algebra.lsmul_coe]
 
 instance [Algebra.IsPushout R S A B] :
     IsScalarTower S B (S ⊗[R] Ω[A⁄R]) := by
@@ -104,16 +104,16 @@ instance [Algebra.IsPushout R S A B] :
   show (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
     (Algebra.lsmul R (A := A) _ _) (LinearMap.ext <| smul_comm · ·)
       (algebraMap S B r)) • x = r • x
-  simp only [Algebra.pushoutDesc_left, LinearMap.smul_def, Algebra.lsmul_coe]
+  simp only [Algebra.pushoutDesc_left, Module.End.smul_def, Algebra.lsmul_coe]
 
 lemma map_liftBaseChange_smul [h : Algebra.IsPushout R S A B] (b : B) (x) :
     ((map R S A B).restrictScalars R).liftBaseChange S (b • x) =
     b • ((map R S A B).restrictScalars R).liftBaseChange S x := by
   induction b using h.1.inductionOn with
-  | h₁ => simp only [zero_smul, map_zero]
-  | h₃ s b e => rw [smul_assoc, map_smul, e, smul_assoc]
-  | h₄ b₁ b₂ e₁ e₂ => simp only [map_add, e₁, e₂, add_smul]
-  | h₂ a =>
+  | zero => simp only [zero_smul, map_zero]
+  | smul s b e => rw [smul_assoc, map_smul, e, smul_assoc]
+  | add b₁ b₂ e₁ e₂ => simp only [map_add, e₁, e₂, add_smul]
+  | tmul a =>
     induction x
     · simp only [smul_zero, map_zero]
     · simp [smul_comm]
@@ -131,27 +131,28 @@ def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
     dsimp
     rw [Derivation.map_one_eq_zero, TensorProduct.tmul_zero]
   leibniz' a b := by
-    dsimp
     induction a using h.out.inductionOn with
-    | h₁ => rw [map_zero, zero_smul, smul_zero, zero_add, zero_mul, map_zero]
-    | h₃ x y e =>
+    | zero => rw [map_zero, zero_smul, smul_zero, zero_add, zero_mul, map_zero]
+    | smul x y e =>
       rw [smul_mul_assoc, map_smul, e, map_smul, smul_add,
         smul_comm x b, smul_assoc]
-    | h₄ b₁ b₂ e₁ e₂ => simp only [add_mul, add_smul, map_add, e₁, e₂, smul_add, add_add_add_comm]
-    | h₂ z =>
+    | add b₁ b₂ e₁ e₂ => simp only [add_mul, add_smul, map_add, e₁, e₂, smul_add, add_add_add_comm]
+    | tmul z =>
       dsimp
       induction b using h.out.inductionOn with
-      | h₁ => rw [map_zero, zero_smul, smul_zero, zero_add, mul_zero, map_zero]
-      | h₂ =>
+      | zero => rw [map_zero, zero_smul, smul_zero, zero_add, mul_zero, map_zero]
+      | tmul =>
         simp only [AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
           algebraMap_smul, ← map_mul]
-        erw [h.out.lift_eq, h.out.lift_eq, h.out.lift_eq]
+        rw [← IsScalarTower.toAlgHom_apply R, ← AlgHom.toLinearMap_apply, h.out.lift_eq,
+          ← IsScalarTower.toAlgHom_apply R, ← AlgHom.toLinearMap_apply, h.out.lift_eq,
+          ← IsScalarTower.toAlgHom_apply R, ← AlgHom.toLinearMap_apply, h.out.lift_eq]
         simp only [LinearMap.coe_comp, Derivation.coeFn_coe, Function.comp_apply,
           Derivation.leibniz, mk_apply, mulActionBaseChange_smul_tmul, TensorProduct.tmul_add]
-      | h₃ _ _ e =>
+      | smul _ _ e =>
         rw [mul_comm, smul_mul_assoc, map_smul, mul_comm, e,
             map_smul, smul_add, smul_comm, smul_assoc]
-      | h₄ _ _ e₁ e₂ => simp only [mul_add, add_smul, map_add, e₁, e₂, smul_add, add_add_add_comm]
+      | add _ _ e₁ e₂ => simp only [mul_add, add_smul, map_add, e₁, e₂, smul_add, add_add_add_comm]
 
 lemma derivationTensorProduct_algebraMap [Algebra.IsPushout R S A B] (x) :
     derivationTensorProduct R S A B (algebraMap A B x) =

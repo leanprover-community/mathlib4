@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Combinatorics.Enumerative.Bell
 import Mathlib.Data.Nat.Choose.Multinomial
+import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Divided powers
 
@@ -92,7 +93,6 @@ def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
   dpow n a := ite (a = 0 ∧ n = 0) 1 0
   dpow_null {n a} ha := by
     simp only [mem_bot] at ha
-    dsimp
     rw [if_neg]
     exact not_and_of_not_left (n = 0) ha
   dpow_zero ha := by
@@ -264,7 +264,7 @@ theorem prod_dpow {ι : Type*} {s : Finset ι} {n : ι → ℕ} (ha : a ∈ I) :
   | empty =>
     simp only [prod_empty, multinomial_empty, cast_one, sum_empty, one_mul]
     rw [hI.dpow_zero ha]
-  | insert hi hrec =>
+  | insert _ _ hi hrec =>
     rw [prod_insert hi, hrec, ← mul_assoc, mul_comm (hI.dpow (n _) a),
       mul_assoc, hI.mul_dpow ha, ← sum_insert hi, ← mul_assoc]
     apply congr_arg₂ _ _ rfl
@@ -292,7 +292,7 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
       apply congr_arg
       rw [card_eq_zero, sym_eq_empty]
       exact ⟨hn, rfl⟩
-  | @insert a s ha ih =>
+  | insert a s ha ih =>
     -- This should be golfable using `Finset.symInsertEquiv`
     have hx' : ∀ i, i ∈ s → x i ∈ I := fun i hi ↦ hx i (mem_insert_of_mem hi)
     simp_rw [sum_insert ha,
@@ -349,11 +349,9 @@ def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
     rw [EmbeddingLike.map_eq_one_iff, hI.dpow_zero]
     rwa [symm_apply_mem_of_equiv_iff, h]
   dpow_one hx := by
-    simp only
     rw [dpow_one, RingEquiv.apply_symm_apply]
     rwa [I.symm_apply_mem_of_equiv_iff, h]
   dpow_mem hn hx := by
-    simp only
     rw [← h, I.apply_mem_of_equiv_iff]
     apply hI.dpow_mem hn
     rwa [I.symm_apply_mem_of_equiv_iff, h]
@@ -361,21 +359,20 @@ def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
     simp only [map_add]
     rw [hI.dpow_add (symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))
         (symm_apply_mem_of_equiv_iff.mpr (h ▸ hy))]
-    simp only [map_sum, _root_.map_mul]
+    simp only [map_sum, map_mul]
   dpow_mul hx := by
-    simp only [_root_.map_mul]
+    simp only [map_mul]
     rw [hI.dpow_mul (symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))]
-    rw [_root_.map_mul, map_pow]
+    rw [map_mul, map_pow]
     simp only [RingEquiv.apply_symm_apply]
   mul_dpow hx := by
-    simp only
-    rw [← _root_.map_mul, hI.mul_dpow, _root_.map_mul]
+    rw [← map_mul, hI.mul_dpow, map_mul]
     · simp only [map_natCast]
     · rwa [symm_apply_mem_of_equiv_iff, h]
   dpow_comp hn hx := by
     simp only [RingEquiv.symm_apply_apply]
     rw [hI.dpow_comp hn]
-    · simp only [_root_.map_mul, map_natCast]
+    · simp only [map_mul, map_natCast]
     · rwa [symm_apply_mem_of_equiv_iff, h]
 
 @[simp]

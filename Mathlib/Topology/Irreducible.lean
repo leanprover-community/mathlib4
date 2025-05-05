@@ -230,7 +230,7 @@ theorem isIrreducible_iff_sInter :
   refine ⟨fun h U hu hU => ?_, fun h => ⟨?_, ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => simpa using h.nonempty
-    | @insert u U _ IH =>
+    | insert u U _ IH =>
       rw [Finset.coe_insert, sInter_insert]
       rw [Finset.forall_mem_insert] at hu hU
       exact h.2 _ _ hu.1 (U.finite_toSet.isOpen_sInter hu.2) hU.1 (IH hu.2 hU.2)

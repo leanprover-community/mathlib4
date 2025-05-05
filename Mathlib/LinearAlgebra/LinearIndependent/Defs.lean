@@ -115,15 +115,30 @@ variable {R v}
 theorem LinearIndepOn.linearIndependent {s : Set ι} (h : LinearIndepOn R v s) :
     LinearIndependent R (fun x : s ↦ v x) := h
 
-theorem linearIndependent_iff_injective_linearCombination :
+theorem linearIndependent_iff_injective_finsuppLinearCombination :
     LinearIndependent R v ↔ Injective (Finsupp.linearCombination R v) := Iff.rfl
 
-alias ⟨LinearIndependent.injective_linearCombination, _⟩ :=
-  linearIndependent_iff_injective_linearCombination
+@[deprecated (since := "2025-03-18")]
+alias linearIndependent_iff_injective_linearCombination :=
+  linearIndependent_iff_injective_finsuppLinearCombination
 
-theorem Fintype.linearIndependent_iff_injective [Fintype ι] :
+alias ⟨LinearIndependent.finsuppLinearCombination_injective, _⟩ :=
+  linearIndependent_iff_injective_finsuppLinearCombination
+
+@[deprecated (since := "2025-03-18")]
+alias LinearIndependent.linearCombination_injective :=
+  LinearIndependent.finsuppLinearCombination_injective
+
+theorem linearIndependent_iff_injective_fintypeLinearCombination [Fintype ι] :
     LinearIndependent R v ↔ Injective (Fintype.linearCombination R v) := by
   simp [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearIndependent]
+
+@[deprecated (since := "2025-03-18")]
+alias Fintype.linearIndependent_iff_injective :=
+  linearIndependent_iff_injective_fintypeLinearCombination
+
+alias ⟨LinearIndependent.fintypeLinearCombination_injective, _⟩ :=
+  linearIndependent_iff_injective_fintypeLinearCombination
 
 theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) : Injective v := by
   simpa [comp_def]
@@ -245,7 +260,7 @@ theorem not_linearIndependent_iffₛ :
 
 theorem Fintype.linearIndependent_iffₛ [Fintype ι] :
     LinearIndependent R v ↔ ∀ f g : ι → R, ∑ i, f i • v i = ∑ i, g i • v i → ∀ i, f i = g i := by
-  simp_rw [Fintype.linearIndependent_iff_injective,
+  simp_rw [linearIndependent_iff_injective_fintypeLinearCombination,
     Injective, Fintype.linearCombination_apply, funext_iff]
 
 theorem Fintype.not_linearIndependent_iffₛ [Fintype ι] :
@@ -556,6 +571,7 @@ theorem linearIndependent_iff :
     LinearIndependent R v ↔ ∀ l, Finsupp.linearCombination R v l = 0 → l = 0 := by
   simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot']
 
+/-- A version of `linearIndependent_iff` where the linear combination is a `Finset` sum. -/
 theorem linearIndependent_iff' :
     LinearIndependent R v ↔
       ∀ s : Finset ι, ∀ g : ι → R, ∑ i ∈ s, g i • v i = 0 → ∀ i ∈ s, g i = 0 := by
@@ -565,6 +581,8 @@ theorem linearIndependent_iff' :
   · rw [← sub_eq_zero, ← Finset.sum_sub_distrib]
     convert h s (f - g) using 3 <;> simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
 
+/-- A version of `linearIndependent_iff` where the linear combination is a `Finset` sum
+of a function with support contained in the `Finset`. -/
 theorem linearIndependent_iff'' :
     LinearIndependent R v ↔
       ∀ (s : Finset ι) (g : ι → R), (∀ i ∉ s, g i = 0) → ∑ i ∈ s, g i • v i = 0 → ∀ i, g i = 0 := by
@@ -578,7 +596,7 @@ theorem linearIndependent_iff'' :
 
 theorem linearIndependent_add_smul_iff {c : ι → R} {i : ι} (h₀ : c i = 0) :
     LinearIndependent R (v + (c · • v i)) ↔ LinearIndependent R v := by
-  simp [linearIndependent_iff_injective_linearCombination,
+  simp [linearIndependent_iff_injective_finsuppLinearCombination,
     ← Finsupp.linearCombination_comp_addSingleEquiv i c h₀]
 
 theorem not_linearIndependent_iff :
@@ -653,6 +671,28 @@ theorem linearIndepOn_iff_linearCombinationOn :
 
 @[deprecated (since := "2025-02-15")] alias linearIndependent_iff_linearCombinationOn :=
   linearIndepOn_iff_linearCombinationOn
+
+/-- A version of `linearIndepOn_iff` where the linear combination is a `Finset` sum. -/
+lemma linearIndepOn_iff' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι → R), (t : Set ι) ⊆ s →
+    ∑ i ∈ t, g i • v i = 0 → ∀ i ∈ t, g i = 0 := by
+  classical
+  rw [LinearIndepOn, linearIndependent_iff']
+  refine ⟨fun h t g hts h0 i hit ↦ ?_, fun h t g h0 i hit ↦ ?_⟩
+  · refine h (t.preimage _ Subtype.val_injective.injOn) (fun i ↦ g i) ?_ ⟨i, hts hit⟩ (by simpa)
+    rwa [t.sum_preimage ((↑) : s → ι) Subtype.val_injective.injOn (fun i ↦ g i • v i)]
+    simp only [Subtype.range_coe_subtype, setOf_mem_eq, smul_eq_zero]
+    exact fun x hxt hxs ↦ (hxs (hts hxt)) |>.elim
+  replace h : ∀ i (hi : i ∈ s), ⟨i, hi⟩ ∈ t → ∀ (h : i ∈ s), g ⟨i, h⟩ = 0 := by
+    simpa [h0] using h (t.image (↑)) (fun i ↦ if hi : i ∈ s then g ⟨i, hi⟩ else 0)
+  apply h _ _ hit
+
+/-- A version of `linearIndepOn_iff` where the linear combination is a `Finset` sum
+of a function with support contained in the `Finset`. -/
+lemma linearIndepOn_iff'' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι → R), (t : Set ι) ⊆ s →
+    (∀ i ∉ t, g i = 0) → ∑ i ∈ t, g i • v i = 0 → ∀ i ∈ t, g i = 0 := by
+  classical
+  exact linearIndepOn_iff'.trans ⟨fun h t g hts htg h0 ↦ h _ _ hts h0, fun h t g hts h0 ↦
+    by simpa +contextual [h0] using h t (fun i ↦ if i ∈ t then g i else 0) hts⟩
 
 end LinearIndepOn
 

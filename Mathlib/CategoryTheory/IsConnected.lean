@@ -383,9 +383,10 @@ theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPrec
   apply IsPreconnected.of_constant_of_preserves_morphisms
   intro α F hF j j'
   specialize h j j'
-  induction' h with j₁ j₂ _ hj ih
-  · rfl
-  · rw [ih]
+  induction h with
+  | refl => rfl
+  | tail _ hj ih =>
+    rw [ih]
     rcases hj with (⟨⟨hj⟩⟩|⟨⟨hj⟩⟩)
     exacts [hF hj, (hF hj).symm]
 

@@ -191,10 +191,8 @@ def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   toFun t := γ (qRight (t, θ))
   continuous_toFun := by fun_prop
   source' := by
-    dsimp only
     rw [qRight_zero_left, γ.source]
   target' := by
-    dsimp only
     rw [qRight_one_left, γ.target]
 
 theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflRight p.1 p.2 :=
