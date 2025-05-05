@@ -3,12 +3,11 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
+import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.Valued.WithVal
-import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
-
 
 /-!
 # Adic valuations on Dedekind domains
