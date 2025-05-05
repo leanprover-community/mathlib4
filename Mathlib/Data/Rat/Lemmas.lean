@@ -48,13 +48,16 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
     rw [qdf]
     exact Rat.num_ne_zero.2 ((divInt_ne_zero hd).mpr hn)
 
-theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
-  have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
-    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
-  rcases d with ((_ | _) | _) <;>
-  rw [← Int.tdiv_eq_ediv_of_dvd] <;>
-  simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd,
-    Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left, this]
+#adaptation_note
+/-- 2025-05-05. @kim-em has somehow broken this while bumping to v4.20.0-rc2 / rc3.
+It's unused. If someone could restore, deprecate, or remove it, that would be great. -/
+-- theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
+--   have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
+--     rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
+--   rcases d with ((_ | _) | _) <;>
+--   rw [← Int.tdiv_eq_ediv_of_dvd] <;>
+--   simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd,
+--     Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left, this]
 
 theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d := by
   have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
