@@ -105,31 +105,40 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   -- Add your proof here
   sorry
 
-omit [Small.{v, u} R] in
+set_option linter.unusedTactic false
+
+instance (ι : Type*) : Module.Free R (ι →₀ Shrink.{v, u} R) := sorry
+
 lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
     (ι : Type*) (b : Basis ι (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))) :
     Function.Surjective (Classical.choose (Module.projective_lifting_property
     (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
-    ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
-    (Submodule.mkQ (maximalIdeal R)))) (Submodule.mkQ_surjective _))).toFun := by
+    ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp
+    (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
+    (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))).toFun := by
   let f := Classical.choose (Module.projective_lifting_property
     (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
-    ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
-    (Submodule.mkQ (maximalIdeal R)))) (Submodule.mkQ_surjective _))
+    ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp
+    (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
+    (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
   show Function.Surjective f
   have hf : (maximalIdeal R • (⊤ : Submodule R M)).mkQ.comp f = _ :=
     Classical.choose_spec (Module.projective_lifting_property
     (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
-    ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
-    (Submodule.mkQ (maximalIdeal R)))) (Submodule.mkQ_surjective _))
+    ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp
+    (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
+    (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
   have : Function.Surjective ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap ∘ₗ
-    Finsupp.mapRange.linearMap (Submodule.mkQ (maximalIdeal R))) := by
+    Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
+    (Shrink.linearEquiv R R).toLinearMap)) := by
     apply Function.Surjective.comp (LinearEquiv.restrictScalars R b.repr).symm.surjective
-    exact Finsupp.mapRange_surjective _ rfl (Submodule.mkQ_surjective _)
+    apply Finsupp.mapRange_surjective _ (by simp)
+    apply Function.Surjective.comp (Submodule.mkQ_surjective _) (Shrink.linearEquiv R R).surjective
   rw [← hf, ← LinearMap.range_eq_top, LinearMap.range_comp] at this
   exact LinearMap.range_eq_top.mp (IsLocalRing.map_mkQ_eq_top.mp this)
 
-noncomputable instance [IsLocalRing R] : Field (R ⧸ maximalIdeal R) := Quotient.field (maximalIdeal R)
+noncomputable local instance [IsLocalRing R] : Field (R ⧸ maximalIdeal R) :=
+  Quotient.field (maximalIdeal R)
 
 instance [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M]
     [Module.Finite R M] :
@@ -151,19 +160,40 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
   let fin := FiniteDimensional.fintypeBasisIndex B
   let f := Classical.choose (Module.projective_lifting_property
     (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
-    ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
-    (Submodule.mkQ (maximalIdeal R)))) (Submodule.mkQ_surjective _))
+    ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp
+    (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
+    (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
   have hf : (maximalIdeal R • (⊤ : Submodule R M)).mkQ.comp f = _ :=
     Classical.choose_spec (Module.projective_lifting_property
     (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
-    ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
-    (Submodule.mkQ (maximalIdeal R)))) (Submodule.mkQ_surjective _))
+    ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp
+    (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
+    (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
   have surjf : Function.Surjective f := basis_lift M ι B
+  have : Module.Finite R (ι →₀ Shrink.{v, u} R) := by
+    simp [Module.finite_finsupp_iff, Module.Finite.equiv (Shrink.linearEquiv R R).symm, fin.finite]
+  have : Module.Finite R (LinearMap.ker f) := Module.IsNoetherian.finite R (LinearMap.ker f)
   have ker_free : Module.Free R (LinearMap.ker f) := by
     apply @free_of_projectiveOverLocalRing _ _ _ _ (ModuleCat.of R (LinearMap.ker f)) _ ?_
     apply @projective_of_hasProjectiveDimensionLT_one _ _ _ _ _ ?_
+    let S : ShortComplex (ModuleCat.{v} R) := {
+      f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
+      g := ModuleCat.ofHom.{v} f
+      zero := by
+        ext x
+        simp }
+    have S_exact : S.ShortExact := {
+      exact := by
+        apply (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr
+        intro x
+        simp [S]
+      mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
+      epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf }
+    have proj : Projective (ModuleCat.of.{v} R (ι →₀ Shrink.{v, u} R)) := by
+      obtain ⟨⟨B⟩⟩ : Module.Free R (ι →₀ Shrink.{v, u} R) := inferInstance
+      exact ModuleCat.projective_of_free B.2
+    exact (S_exact.hasProjectiveDimensionLT_X₃_iff 0 proj).mp le1
 
-    sorry
   --ker in `(maximalIdeal R) • ⊤`
   sorry
 
