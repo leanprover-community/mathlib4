@@ -254,6 +254,8 @@ jobs:
         echo "Target bump branch: ${BUMP_BRANCH}"
         echo "Using commit SHA: ${SHA}"
         current_version="${NIGHTLY}"
+        # Remove surrounding quotes from BUMP_BRANCH
+        BUMP_BRANCH=$(echo "${BUMP_BRANCH}" | sed 's/^"//;s/"$//')
         bump_branch_suffix="${BUMP_BRANCH#bump/}"
         echo "Running create-adaptation-pr.sh with:"
         echo "  bumpversion: ${bump_branch_suffix}"
