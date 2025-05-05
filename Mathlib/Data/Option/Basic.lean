@@ -77,11 +77,11 @@ theorem map_injective {f : α → β} (Hf : Function.Injective f) : Function.Inj
 theorem map_comp_some (f : α → β) : Option.map f ∘ some = some ∘ f :=
   rfl
 
-@[deprecated none_bind (since := "2025-04-10")]
-theorem none_bind' (f : α → Option β) : none.bind f = none := none_bind f
+@[deprecated bind_none (since := "2025-04-10")]
+theorem none_bind' (f : α → Option β) : none.bind f = none := bind_none f
 
-@[deprecated some_bind (since := "2025-04-10")]
-theorem some_bind' (a : α) (f : α → Option β) : (some a).bind f = f a := some_bind a f
+@[deprecated bind_some (since := "2025-04-10")]
+theorem some_bind' (a : α) (f : α → Option β) : (some a).bind f = f a := bind_some a f
 
 @[deprecated bind_eq_some_iff (since := "2025-04-10")]
 theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
@@ -97,7 +97,7 @@ theorem bind_congr' {f g : α → Option β} {x y : Option α} (hx : x = y)
 -- upstreamed it with a slightly different statement.
 theorem bind_congr'' {f g : α → Option β} {x : Option α}
     (h : ∀ a ∈ x, f a = g a) : x.bind f = x.bind g := by
-  cases x <;> simp only [some_bind, none_bind, mem_def, h]
+  cases x <;> simp only [bind_some, bind_none, mem_def, h]
 
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
@@ -146,11 +146,11 @@ theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) �
 theorem pmap_bind {α β γ} {x : Option α} {g : α → Option β} {p : β → Prop} {f : ∀ b, p b → γ} (H)
     (H' : ∀ (a : α), ∀ b ∈ g a, b ∈ x >>= g) :
     pmap f (x >>= g) H = x >>= fun a ↦ pmap f (g a) fun _ h ↦ H _ (H' a _ h) := by
-  cases x <;> simp only [pmap, bind_eq_bind, none_bind, some_bind]
+  cases x <;> simp only [pmap, bind_eq_bind, bind_none, bind_some]
 
 theorem bind_pmap {α β γ} {p : α → Prop} (f : ∀ a, p a → β) (x : Option α) (g : β → Option γ) (H) :
     pmap f x H >>= g = x.pbind fun a h ↦ g (f a (H _ h)) := by
-  cases x <;> simp only [pmap, bind_eq_bind, none_bind, some_bind, pbind]
+  cases x <;> simp only [pmap, bind_eq_bind, bind_none, bind_some, pbind]
 
 variable {f x}
 
