@@ -50,7 +50,6 @@ theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length
     · simp
     · simpa using ih _ (by simpa using h)
 
-
 /-- We can rebracket `x ++ (l₁ ++ x) ++ (l₂ ++ x) ++ ... ++ (lₙ ++ x)` to
 `(x ++ l₁) ++ (x ++ l₂) ++ ... ++ (x ++ lₙ) ++ x` where `L = [l₁, l₂, ..., lₙ]`. -/
 theorem append_flatten_map_append (L : List (List α)) (x : List α) :

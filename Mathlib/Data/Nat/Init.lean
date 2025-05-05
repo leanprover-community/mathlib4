@@ -416,7 +416,7 @@ protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
 
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
 lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
-    ¬a ∣ n ↔ (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) :=
+    ¬ a ∣ n ↔ (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) :=
   not_dvd_iff_lt_mul_succ n ha
 
 /-- Two natural numbers are equal if and only if they have the same multiples. -/

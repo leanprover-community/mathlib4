@@ -9,7 +9,7 @@ import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Algebra.Ring.GrindInstances
+
 /-!
 # Definition of `ZMod n` + basic results.
 
