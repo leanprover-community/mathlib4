@@ -25,7 +25,7 @@ asymptotics, exponential
 
 namespace ExpGrowth
 
-open ENNReal EReal Filter Function LinGrowth
+open ENNReal EReal Filter Function LinearGrowth
 open scoped Topology
 
 /-! ### Definition -/
