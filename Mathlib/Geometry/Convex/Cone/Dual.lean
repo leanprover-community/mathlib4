@@ -26,6 +26,8 @@ namespace PointedCone
 variable {R M N : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M]
   [AddCommGroup N] [Module R M] [Module R N] {p : M →ₗ[R] N →ₗ[R] R} {s t : Set M} {y : N}
 
+local notation3 "R≥0" => {c : R // 0 ≤ c}
+
 variable (p s) in
 /-- The dual cone of a set `s` with respect to a bilinear pairing `p` is the cone consisting of all
 points `y` such that for all points `x ∈ s` we have `0 ≤ p x y`. -/
@@ -70,26 +72,21 @@ lemma dual_eq_iInter_dual_singleton (s : Set M) :
 /-- Any set is a subset of its double dual cone. -/
 lemma subset_dual_dual : s ⊆ dual p.flip (dual p s) := fun _x hx _y hy ↦ hy hx
 
-@[simp]
-lemma dual_dual_flip_dual_eq_dual : dual p (dual p.flip (dual p s)) = dual p s :=
+variable (s) in
+@[simp] lemma dual_dual_flip_dual : dual p (dual p.flip (dual p s)) = dual p s :=
   le_antisymm (dual_le_dual subset_dual_dual) subset_dual_dual
 
-@[simp]
-lemma dual_flip_dual_dual_flip_eq_dual_flip {s : Set N} :
-    dual p.flip (dual p (dual p.flip s)) = dual p.flip s :=
-  dual_dual_flip_dual_eq_dual
+variable (p) in
+@[simp] lemma dual_flip_dual_dual_flip (s : Set N) :
+    dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual ..
 
 @[simp]
-lemma dual_span (s : Set M) : dual p (Submodule.span {r : R // 0 ≤ r} s) = dual p s := by
+lemma dual_span (s : Set M) : dual p (Submodule.span R≥0 s) = dual p s := by
   refine le_antisymm (dual_le_dual Submodule.subset_span) (fun x hx y hy => ?_)
   induction hy using Submodule.span_induction with
   | mem _y h => exact hx h
   | zero => simp
-  | add y z _hy _hz hy hz =>
-    rw [map_add, add_apply]
-    exact add_nonneg hy hz
-  | smul t y _hy hy =>
-    rw [map_smul_of_tower, Nonneg.mk_smul, smul_apply]
-    exact mul_nonneg t.2 hy
+  | add y z _hy _hz hy hz => rw [map_add, add_apply]; exact add_nonneg hy hz
+  | smul t y _hy hy => rw [map_smul_of_tower, Nonneg.mk_smul, smul_apply]; exact mul_nonneg t.2 hy
 
 end PointedCone

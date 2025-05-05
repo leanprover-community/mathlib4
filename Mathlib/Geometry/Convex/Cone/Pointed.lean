@@ -20,7 +20,7 @@ assert_not_exists TopologicalSpace Real Cardinal
 
 variable {R E F G : Type*}
 
-local notation3 "𝕜≥0" => {c : R // 0 ≤ c}
+local notation3 "R≥0" => {c : R // 0 ≤ c}
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
 abbrev PointedCone (R E)
@@ -115,7 +115,7 @@ between pointed cones induced from linear maps between the ambient modules that 
 
 /-- The image of a pointed cone under a `R`-linear map is a pointed cone. -/
 def map (f : E →ₗ[R] F) (S : PointedCone R E) : PointedCone R F :=
-  Submodule.map (f : E →ₗ[𝕜≥0] F) S
+  Submodule.map (f : E →ₗ[R≥0] F) S
 
 @[simp, norm_cast]
 theorem toConvexCone_map (S : PointedCone R E) (f : E →ₗ[R] F) :
@@ -140,7 +140,7 @@ theorem map_id (S : PointedCone R E) : S.map LinearMap.id = S :=
 
 /-- The preimage of a convex cone under a `R`-linear map is a convex cone. -/
 def comap (f : E →ₗ[R] F) (S : PointedCone R F) : PointedCone R E :=
-  Submodule.comap (f : E →ₗ[𝕜≥0] F) S
+  Submodule.comap (f : E →ₗ[R≥0] F) S
 
 @[simp, norm_cast]
 theorem coe_comap (f : E →ₗ[R] F) (S : PointedCone R F) : (S.comap f : Set E) = f ⁻¹' S :=
