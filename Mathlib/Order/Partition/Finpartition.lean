@@ -310,7 +310,7 @@ theorem parts_inf (P Q : Finpartition a) :
   rfl
 
 instance : SemilatticeInf (Finpartition a) :=
-  { inf := Min.min
+  { min := Min.min
     inf_le_left := fun P Q b hb ↦ by
       obtain ⟨c, hc, rfl⟩ := mem_image.1 (mem_of_mem_erase hb)
       rw [mem_product] at hc

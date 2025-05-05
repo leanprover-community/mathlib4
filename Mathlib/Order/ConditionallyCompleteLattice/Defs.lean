@@ -130,7 +130,7 @@ should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
 instance : ConditionallyCompleteLattice my_T :=
-  { inf := better_inf,
+  { min := better_inf,
     le_inf := ...,
     inf_le_right := ...,
     inf_le_left := ...

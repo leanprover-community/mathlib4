@@ -223,7 +223,7 @@ theorem isBounded [Finite ι] (I : Box ι) : Bornology.IsBounded I.toSet :=
 /-- `I ⊔ J` is the least box that includes both `I` and `J`. Since `↑I ∪ ↑J` is usually not a box,
 `↑(I ⊔ J)` is larger than `↑I ∪ ↑J`. -/
 instance : SemilatticeSup (Box ι) :=
-  { sup := fun I J ↦ ⟨I.lower ⊓ J.lower, I.upper ⊔ J.upper,
+  { max := fun I J ↦ ⟨I.lower ⊓ J.lower, I.upper ⊔ J.upper,
     fun i ↦ (min_le_left _ _).trans_lt <| (I.lower_lt_upper i).trans_le (le_max_left _ _)⟩
     le_sup_left := fun _ _ ↦ le_iff_bounds.2 ⟨inf_le_left, le_sup_left⟩
     le_sup_right := fun _ _ ↦ le_iff_bounds.2 ⟨inf_le_right, le_sup_right⟩
@@ -318,7 +318,7 @@ theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (
     coe_coe]
 
 instance : Lattice (WithBot (Box ι)) :=
-  { inf := min
+  { min := min
     inf_le_left := fun I J ↦ by
       rw [← withBotCoe_subset_iff, coe_inf]
       exact inter_subset_left
