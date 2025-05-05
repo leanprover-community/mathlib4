@@ -278,7 +278,7 @@ instance : CompleteLattice (Subfield K) :=
   { completeLatticeOfInf (Subfield K) isGLB_sInf with
     top := ⊤
     le_top := fun _ _ _ => trivial
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     inf_le_left := fun _ _ _ => And.left
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }

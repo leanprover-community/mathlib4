@@ -252,7 +252,7 @@ noncomputable instance isOrderedAddMonoid : IsOrderedAddMonoid PartENat :=
 
 instance semilatticeSup : SemilatticeSup PartENat :=
   { PartENat.partialOrder with
-    sup := (· ⊔ ·)
+    max := (· ⊔ ·)
     le_sup_left := fun _ _ => ⟨And.left, fun _ => le_sup_left⟩
     le_sup_right := fun _ _ => ⟨And.right, fun _ => le_sup_right⟩
     sup_le := fun _ _ _ ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩ =>
@@ -395,7 +395,7 @@ instance boundedOrder : BoundedOrder PartENat :=
 
 noncomputable instance lattice : Lattice PartENat :=
   { PartENat.semilatticeSup with
-    inf := min
+    min := min
     inf_le_left := min_le_left
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }

@@ -353,7 +353,7 @@ theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (in
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
 
 instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
-  inf := fun m n => (inf.obj m).obj n
+  min := fun m n => (inf.obj m).obj n
   inf_le_left := inf_le_left
   inf_le_right := inf_le_right
   le_inf := le_inf
@@ -459,7 +459,7 @@ def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.sup
 
 instance semilatticeSup {B : C} : SemilatticeSup (Subobject B) where
-  sup := fun m n => (sup.obj m).obj n
+  max := fun m n => (sup.obj m).obj n
   le_sup_left := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
   le_sup_right := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
   sup_le := fun m n k =>

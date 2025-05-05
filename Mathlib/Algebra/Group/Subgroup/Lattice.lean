@@ -245,7 +245,7 @@ instance : CompleteLattice (Subgroup G) :=
     bot_le := fun S _x hx => (mem_bot.1 hx).symm ▸ S.one_mem
     top := ⊤
     le_top := fun _S x _hx => mem_top x
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     le_inf := fun _a _b _c ha hb _x hx => ⟨ha hx, hb hx⟩
     inf_le_left := fun _a _b _x => And.left
     inf_le_right := fun _a _b _x => And.right }

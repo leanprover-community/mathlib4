@@ -332,11 +332,11 @@ instance : Min (UniformSpace α) :=
 
 instance : CompleteLattice (UniformSpace α) :=
   { inferInstanceAs (PartialOrder (UniformSpace α)) with
-    sup := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
+    max := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
     le_sup_left := fun _ _ => UniformSpace.le_sInf fun _ ⟨h, _⟩ => h
     le_sup_right := fun _ _ => UniformSpace.le_sInf fun _ ⟨_, h⟩ => h
     sup_le := fun _ _ _ h₁ h₂ => UniformSpace.sInf_le ⟨h₁, h₂⟩
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     le_inf := fun a _ _ h₁ h₂ => show a.uniformity ≤ _ from le_inf h₁ h₂
     inf_le_left := fun a _ => show _ ≤ a.uniformity from inf_le_left
     inf_le_right := fun _ b => show _ ≤ b.uniformity from inf_le_right

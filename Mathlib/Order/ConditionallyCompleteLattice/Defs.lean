@@ -144,7 +144,7 @@ def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 :
     (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s)) :
     ConditionallyCompleteLattice α :=
   { H1, H2 with
-    sup := fun a b => sSup {a, b}
+    max := fun a b => sSup {a, b}
     le_sup_left := fun a b =>
       (isLUB_sSup {a, b} (bddAbove_pair a b) (insert_nonempty _ _)).1 (mem_insert _ _)
     le_sup_right := fun a b =>
@@ -153,7 +153,7 @@ def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 :
     sup_le := fun a b _ hac hbc =>
       (isLUB_sSup {a, b} (bddAbove_pair a b) (insert_nonempty _ _)).2
         (forall_insert_of_forall (forall_eq.mpr hbc) hac)
-    inf := fun a b => sSup (lowerBounds {a, b})
+    min := fun a b => sSup (lowerBounds {a, b})
     inf_le_left := fun a b =>
       (isLUB_sSup (lowerBounds {a, b}) (Nonempty.bddAbove_lowerBounds ⟨a, mem_insert _ _⟩)
             (bddBelow_pair a b)).2
@@ -195,7 +195,7 @@ def conditionallyCompleteLatticeOfsInf (α : Type*) [H1 : PartialOrder α] [H2 :
     (isGLB_sInf : ∀ s : Set α, BddBelow s → s.Nonempty → IsGLB s (sInf s)) :
     ConditionallyCompleteLattice α :=
   { H1, H2 with
-    inf := fun a b => sInf {a, b}
+    min := fun a b => sInf {a, b}
     inf_le_left := fun a b =>
       (isGLB_sInf {a, b} (bddBelow_pair a b) (insert_nonempty _ _)).1 (mem_insert _ _)
     inf_le_right := fun a b =>
@@ -204,7 +204,7 @@ def conditionallyCompleteLatticeOfsInf (α : Type*) [H1 : PartialOrder α] [H2 :
     le_inf := fun _ a b hca hcb =>
       (isGLB_sInf {a, b} (bddBelow_pair a b) (insert_nonempty _ _)).2
         (forall_insert_of_forall (forall_eq.mpr hcb) hca)
-    sup := fun a b => sInf (upperBounds {a, b})
+    max := fun a b => sInf (upperBounds {a, b})
     le_sup_left := fun a b =>
       (isGLB_sInf (upperBounds {a, b}) (Nonempty.bddBelow_upperBounds ⟨a, mem_insert _ _⟩)
             (bddAbove_pair a b)).2

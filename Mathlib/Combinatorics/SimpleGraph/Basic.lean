@@ -303,8 +303,8 @@ instance distribLattice : DistribLattice (SimpleGraph V) :=
 instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) :=
   { SimpleGraph.distribLattice with
     le := (· ≤ ·)
-    sup := (· ⊔ ·)
-    inf := (· ⊓ ·)
+    max := (· ⊔ ·)
+    min := (· ⊓ ·)
     compl := HasCompl.compl
     sdiff := (· \ ·)
     top := completeGraph V

@@ -482,7 +482,7 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
       exact N.zero_mem'
     top := ⊤
     le_top := fun _ _ _ ↦ trivial
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }

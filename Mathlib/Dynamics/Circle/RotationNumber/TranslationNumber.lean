@@ -348,7 +348,7 @@ theorem map_fract_sub_fract_eq (x : ℝ) : f (fract x) - fract x = f x - x := by
 
 /-- Monotone circle maps form a lattice with respect to the pointwise order -/
 noncomputable instance : Lattice CircleDeg1Lift where
-  sup f g :=
+  max f g :=
     { toFun := fun x => max (f x) (g x)
       monotone' := fun _ _ h => max_le_max (f.mono h) (g.mono h)
       -- TODO: generalize to `Monotone.max`
@@ -360,7 +360,7 @@ noncomputable instance : Lattice CircleDeg1Lift where
   le_sup_left f g x := le_max_left (f x) (g x)
   le_sup_right f g x := le_max_right (f x) (g x)
   sup_le _ _ _ h₁ h₂ x := max_le (h₁ x) (h₂ x)
-  inf f g :=
+  min f g :=
     { toFun := fun x => min (f x) (g x)
       monotone' := fun _ _ h => min_le_min (f.mono h) (g.mono h)
       map_add_one' := fun x => by simp [min_add_add_right] }

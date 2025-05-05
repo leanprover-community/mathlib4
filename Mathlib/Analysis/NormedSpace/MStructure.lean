@@ -252,8 +252,8 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
 -- (deterministic) timeout at 'whnf', maximum number of heartbeats (800000) has been reached"
 -- My workaround is to show instance Lattice first
 instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where
-  sup := max
-  inf := min
+  max := max
+  min := min
   le_sup_left P Q := by
     rw [le_def, coe_inf, coe_sup, ← add_sub, mul_add, mul_sub, ← mul_assoc, P.prop.proj.eq,
       sub_self, add_zero]

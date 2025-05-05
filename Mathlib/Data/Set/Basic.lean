@@ -76,10 +76,10 @@ variable {α : Type u} {s t : Set α}
 
 instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
-    sup := (· ∪ ·),
+    max := (· ∪ ·),
     le := (· ≤ ·),
     lt := fun s t => s ⊆ t ∧ ¬t ⊆ s,
-    inf := (· ∩ ·),
+    min := (· ∩ ·),
     bot := ∅,
     compl := (·ᶜ),
     top := univ,

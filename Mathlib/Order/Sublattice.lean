@@ -187,7 +187,7 @@ instance instCompleteLattice : CompleteLattice (Sublattice α) where
   bot_le := fun _S _a ↦ False.elim
   top := ⊤
   le_top := fun _S a _ha ↦ mem_top a
-  inf := (· ⊓ ·)
+  min := (· ⊓ ·)
   le_inf := fun _L _M _N hM hN _a ha ↦ ⟨hM ha, hN ha⟩
   inf_le_left := fun _L _M _a ↦ And.left
   inf_le_right := fun _L _M _a ↦ And.right

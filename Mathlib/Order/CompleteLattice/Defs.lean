@@ -175,7 +175,7 @@ provided; for example, if `inf` is known explicitly, construct the `CompleteLatt
 instance as
 ```
 instance : CompleteLattice my_T where
-  inf := better_inf
+  min := better_inf
   le_inf := ...
   inf_le_right := ...
   inf_le_left := ...
@@ -190,8 +190,8 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
   bot_le _ := (isGLB_sInf univ).1 trivial
   top := sInf ∅
   le_top a := (isGLB_sInf ∅).2 <| by simp
-  sup a b := sInf { x : α | a ≤ x ∧ b ≤ x }
-  inf a b := sInf {a, b}
+  max a b := sInf { x : α | a ≤ x ∧ b ≤ x }
+  min a b := sInf {a, b}
   le_inf a b c hab hac := by
     apply (isGLB_sInf _).2
     simp [*]
@@ -222,7 +222,7 @@ provided; for example, if `inf` is known explicitly, construct the `CompleteLatt
 instance as
 ```
 instance : CompleteLattice my_T where
-  inf := better_inf
+  min := better_inf
   le_inf := ...
   inf_le_right := ...
   inf_le_left := ...
@@ -237,11 +237,11 @@ def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
   le_top _ := (isLUB_sSup univ).1 trivial
   bot := sSup ∅
   bot_le x := (isLUB_sSup ∅).2 <| by simp
-  sup a b := sSup {a, b}
+  max a b := sSup {a, b}
   sup_le a b c hac hbc := (isLUB_sSup _).2 (by simp [*])
   le_sup_left _ _ := (isLUB_sSup _).1 <| mem_insert _ _
   le_sup_right _ _ := (isLUB_sSup _).1 <| mem_insert_of_mem _ <| mem_singleton _
-  inf a b := sSup { x | x ≤ a ∧ x ≤ b }
+  min a b := sSup { x | x ≤ a ∧ x ≤ b }
   le_inf a b c hab hac := (isLUB_sSup _).1 <| by simp [*]
   inf_le_left _ _ := (isLUB_sSup _).2 fun _ => And.left
   inf_le_right _ _ := (isLUB_sSup _).2 fun _ => And.right

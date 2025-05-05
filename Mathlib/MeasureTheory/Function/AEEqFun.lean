@@ -550,11 +550,11 @@ end Inf
 
 instance instLattice [Lattice β] [TopologicalLattice β] : Lattice (α →ₘ[μ] β) :=
   { AEEqFun.instPartialOrder with
-    sup := max
+    max := max
     le_sup_left := AEEqFun.le_sup_left
     le_sup_right := AEEqFun.le_sup_right
     sup_le := AEEqFun.sup_le
-    inf := min
+    min := min
     inf_le_left := AEEqFun.inf_le_left
     inf_le_right := AEEqFun.inf_le_right
     le_inf := AEEqFun.le_inf }

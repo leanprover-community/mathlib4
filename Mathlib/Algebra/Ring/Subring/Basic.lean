@@ -341,7 +341,7 @@ instance : CompleteLattice (Subring R) :=
       hn ▸ intCast_mem s n
     top := ⊤
     le_top := fun _s _x _hx => trivial
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     inf_le_left := fun _s _t _x => And.left
     inf_le_right := fun _s _t _x => And.right
     le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }

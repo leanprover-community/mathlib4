@@ -78,7 +78,7 @@ instance [∀ i, PartialOrder (α i)] : PartialOrder (Π₀ i, α i) :=
 
 instance [∀ i, SemilatticeInf (α i)] : SemilatticeInf (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (DFinsupp α)) with
-    inf := zipWith (fun _ ↦ (· ⊓ ·)) fun _ ↦ inf_idem _
+    min := zipWith (fun _ ↦ (· ⊓ ·)) fun _ ↦ inf_idem _
     inf_le_left := fun _ _ _ ↦ inf_le_left
     inf_le_right := fun _ _ _ ↦ inf_le_right
     le_inf := fun _ _ _ hf hg i ↦ le_inf (hf i) (hg i) }
@@ -91,7 +91,7 @@ theorem inf_apply [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) (i : ι) 
 
 instance [∀ i, SemilatticeSup (α i)] : SemilatticeSup (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (DFinsupp α)) with
-    sup := zipWith (fun _ ↦ (· ⊔ ·)) fun _ ↦ sup_idem _
+    max := zipWith (fun _ ↦ (· ⊔ ·)) fun _ ↦ sup_idem _
     le_sup_left := fun _ _ _ ↦ le_sup_left
     le_sup_right := fun _ _ _ ↦ le_sup_right
     sup_le := fun _ _ _ hf hg i ↦ sup_le (hf i) (hg i) }

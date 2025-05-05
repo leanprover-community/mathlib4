@@ -213,7 +213,7 @@ instance instCompleteLattice : CompleteLattice (L.Substructure M) :=
     lt := (· < ·)
     top := ⊤
     le_top := fun _ x _ => mem_top x
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     sInf := InfSet.sInf
     le_inf := fun _a _b _c ha hb _x hx => ⟨ha hx, hb hx⟩
     inf_le_left := fun _ _ _ => And.left

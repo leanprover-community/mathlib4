@@ -176,7 +176,7 @@ instance : CompleteLattice (GroupTopology α) :=
   { inferInstanceAs (BoundedOrder (GroupTopology α)),
     inferInstanceAs (SemilatticeInf (GroupTopology α)),
     completeLatticeOfCompleteSemilatticeInf _ with
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     top := ⊤
     bot := ⊥ }
 

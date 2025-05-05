@@ -27,7 +27,7 @@ instance small_sup {P Q : Submodule R M} [smallP : Small.{u} P] [smallQ : Small.
   exact small_range _
 
 instance : SemilatticeSup {P : Submodule R M // Small.{u} P} where
-  sup := fun P Q ↦ ⟨P.val ⊔ Q.val, small_sup (smallP := P.property) (smallQ := Q.property)⟩
+  max := fun P Q ↦ ⟨P.val ⊔ Q.val, small_sup (smallP := P.property) (smallQ := Q.property)⟩
   le_sup_left := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_left
   le_sup_right := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_right
   sup_le := fun _ _ _ hPR hQR ↦ by

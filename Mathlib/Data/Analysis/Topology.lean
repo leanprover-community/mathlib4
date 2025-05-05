@@ -184,7 +184,7 @@ protected def nhds (F : Realizer α) (a : α) : (𝓝 a).Realizer :=
   ⟨{ s : F.σ // a ∈ F.F s },
     { f := fun s ↦ F.F s.1
       pt := ⟨_, F.F.top_mem a⟩
-      inf := fun ⟨x, h₁⟩ ⟨y, h₂⟩ ↦ ⟨_, F.F.inter_mem x y a ⟨h₁, h₂⟩⟩
+      min := fun ⟨x, h₁⟩ ⟨y, h₂⟩ ↦ ⟨_, F.F.inter_mem x y a ⟨h₁, h₂⟩⟩
       inf_le_left := fun ⟨x, h₁⟩ ⟨y, h₂⟩ _z h ↦ (F.F.inter_sub x y a ⟨h₁, h₂⟩ h).1
       inf_le_right := fun ⟨x, h₁⟩ ⟨y, h₂⟩ _z h ↦ (F.F.inter_sub x y a ⟨h₁, h₂⟩ h).2 },
     filter_eq <|

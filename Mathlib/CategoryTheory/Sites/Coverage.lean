@@ -286,7 +286,7 @@ theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     apply Saturate.of _ _ hS
 
 instance : SemilatticeSup (Coverage C) where
-  sup x y :=
+  max x y :=
   { covering := fun B ↦ x.covering B ∪ y.covering B
     pullback := by
       rintro X Y f S (hx | hy)

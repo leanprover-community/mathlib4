@@ -47,7 +47,7 @@ instance : PartialOrder (Subpresheaf F) :=
   PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
 
 instance : CompleteLattice (Subpresheaf F) where
-  sup F G :=
+  max F G :=
     { obj U := F.obj U ⊔ G.obj U
       map _ _ := by
         rintro (h|h)
@@ -59,7 +59,7 @@ instance : CompleteLattice (Subpresheaf F) where
     rintro x (h|h)
     · exact h₁ _ h
     · exact h₂ _ h
-  inf S T :=
+  min S T :=
     { obj U := S.obj U ⊓ T.obj U
       map _ _ h := ⟨S.map _ h.1, T.map _ h.2⟩}
   inf_le_left _ _ _ _ h := h.1
