@@ -104,7 +104,7 @@ lemma circleAverage_eq_integral_add (η : ℝ) : circleAverage f c R =
     circleAverage f c |R| = circleAverage f c R := by
   by_cases hR : 0 ≤ R
   · rw [abs_of_nonneg hR]
-  · rw [abs_of_neg (not_le.1 hR), circleAverage_congr_neg_radius]
+  · rw [abs_of_neg (not_le.1 hR), circleAverage_neg_radius]
 
 /-- If two functions agree outside of a discrete set in the circle, then their averages agree. -/
 theorem circleAverage_congr_codiscreteWithin
