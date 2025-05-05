@@ -50,7 +50,7 @@ satisfy a naturality condition with respect to `X₁`. -/
 structure ParametrizedAdjunction where
   /-- a family of adjunctions -/
   adj (X₁ : C₁) : F.obj X₁ ⊣ G.obj (op X₁)
-  unit_whiskerRight_map  {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) :
+  unit_whiskerRight_map {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) :
     (adj X₁).unit ≫ whiskerRight (F.map f) _ = (adj Y₁).unit ≫ whiskerLeft _ (G.map f.op) :=
       by aesop_cat
 
@@ -60,6 +60,8 @@ in an adjunction with a parameter. -/
 infixl:15 " ⊣₂ " => ParametrizedAdjunction
 
 namespace ParametrizedAdjunction
+
+attribute [reassoc] unit_whiskerRight_map
 
 variable {F G}
 
@@ -125,6 +127,16 @@ lemma homEquiv_symm_naturality_three
     adj₂.homEquiv.symm (g ≫ (G.obj (op X₁)).map f₃) =
       adj₂.homEquiv.symm g ≫ f₃ :=
   adj₂.homEquiv.injective (by simp [homEquiv_naturality_three])
+
+@[reassoc]
+lemma whiskerLeft_map_counit {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) :
+    whiskerLeft _ (F.map f) ≫ (adj₂.adj Y₁).counit =
+      whiskerRight (G.map f.op) _ ≫ (adj₂.adj X₁).counit := by
+  ext X₃
+  dsimp
+  apply adj₂.homEquiv.injective
+  rw [homEquiv_naturality_one, homEquiv_naturality_two]
+  simp [homEquiv_eq, Adjunction.homEquiv_unit]
 
 end ParametrizedAdjunction
 
