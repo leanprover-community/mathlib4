@@ -33,19 +33,15 @@ In this file, we prove Krull's principal ideal theorem and Krull's height theore
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
 lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
-    [IsLocalRing R] (I : Ideal R) (hp : (IsLocalRing.maximalIdeal R) ∈ I.minimalPrimes) :
-    IsArtinianRing (R ⧸ I) := by
-  have hI : I ≠ ⊤ := (hp.1.2.trans_lt
-    (lt_top_iff_ne_top.mpr (IsLocalRing.maximalIdeal.isMaximal _).ne_top)).ne
-  have := Ideal.Quotient.nontrivial hI
-  have := IsLocalRing.of_surjective' _ (Ideal.Quotient.mk_surjective (I := I))
-  rw [isArtinianRing_iff_isNilpotent_maximalIdeal,
-      Ideal.FG.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _)]
-  refine (Ideal.comap_le_comap_iff_of_surjective _ Ideal.Quotient.mk_surjective _ _).mp ?_
-  rw [nilradical, Ideal.comap_radical, Ideal.zero_eq_bot, ← RingHom.ker_eq_comap_bot,
-    Ideal.mk_ker, IsLocalRing.eq_maximalIdeal (Ideal.comap_isMaximal_of_surjective
-    _ (Ideal.Quotient.mk_surjective (I := I))), Ideal.radical_eq_sInf, le_sInf_iff]
-  exact fun J ⟨hJ₁, hJ₂⟩ => hp.2 ⟨hJ₂, hJ₁⟩ (IsLocalRing.le_maximalIdeal hJ₂.ne_top)
+    [IsLocalRing R] (I : Ideal R) (hp : IsLocalRing.maximalIdeal R ∈ I.minimalPrimes) :
+    IsArtinianRing (R ⧸ I) :=
+  have : Ring.KrullDimLE 0 (R ⧸ I) := Ring.krullDimLE_zero_iff.mpr fun J prime ↦
+    Ideal.isMaximal_of_isIntegral_of_isMaximal_comap _ <| by
+      convert IsLocalRing.maximalIdeal.isMaximal R
+      rw [Ideal.minimalPrimes, Set.mem_setOf] at hp
+      have := prime.comap (Ideal.Quotient.mk I)
+      exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩ (le_maximalIdeal this.1)
+  IsNoetherianRing.isArtinianRing_of_krullDimLE_zero
 
 lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     [IsLocalRing R] (I : Ideal R) [I.IsPrincipal]
