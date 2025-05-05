@@ -211,7 +211,8 @@ jobs:
             cp ../lean-toolchain .
             MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
             lake exe cache get || (sleep 1; lake exe cache get)
-            lake build Plausible ProofWidgets
+            # We need to run `lake build ProofWidgets` here to retrieve ProofWidgets via Reservoir.
+            lake build ProofWidgets
             lake build --no-build Mathlib
           fi
 
