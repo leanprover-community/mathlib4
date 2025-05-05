@@ -101,12 +101,12 @@ variable {n} [Fintype n] (i j : n)
 /-- When j ≠ i, the elementary matrices are elements of sl n R, in fact they are part of a natural
 basis of `sl n R`. -/
 def Eb (h : j ≠ i) : sl n R :=
-  ⟨Matrix.stdBasisMatrix i j (1 : R),
-    show Matrix.stdBasisMatrix i j (1 : R) ∈ LinearMap.ker (Matrix.traceLinearMap n R R) from
-      Matrix.StdBasisMatrix.trace_zero i j (1 : R) h⟩
+  ⟨Matrix.single i j (1 : R),
+    show Matrix.single i j (1 : R) ∈ LinearMap.ker (Matrix.traceLinearMap n R R) from
+      Matrix.trace_single_eq_of_ne i j (1 : R) h⟩
 
 @[simp]
-theorem eb_val (h : j ≠ i) : (Eb R i j h).val = Matrix.stdBasisMatrix i j 1 :=
+theorem eb_val (h : j ≠ i) : (Eb R i j h).val = Matrix.single i j 1 :=
   rfl
 
 end ElementaryBasis
@@ -119,7 +119,7 @@ theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
   intro c
   have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
-  simpa [A, B, stdBasisMatrix, Matrix.mul_apply, hij] using congr_fun (congr_fun c' i) i
+  simpa [A, B, single, Matrix.mul_apply, hij] using congr_fun (congr_fun c' i) i
 
 end SpecialLinear
 

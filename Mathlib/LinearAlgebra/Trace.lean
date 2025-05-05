@@ -133,7 +133,7 @@ theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     by_cases hij : i = j
     · rw [hij]
       simp
-    rw [Matrix.StdBasisMatrix.trace_zero j i (1 : R) hij]
+    rw [Matrix.trace_single_eq_of_ne j i (1 : R) hij]
     simp [Finsupp.single_eq_pi_single, hij]
 
 /-- The trace of a linear map corresponds to the contraction pairing under the isomorphism

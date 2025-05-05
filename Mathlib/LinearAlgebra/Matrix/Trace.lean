@@ -232,21 +232,21 @@ theorem trace_fin_three_of (a b c d e f g h i : R) :
 
 end Fin
 
-namespace StdBasisMatrix
+section single
 
 variable {l m n : Type*} {R α : Type*} [DecidableEq l] [DecidableEq m] [DecidableEq n]
 variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 
 @[simp]
-theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
+theorem trace_single_eq_of_ne (h : j ≠ i) : trace (single i j c) = 0 := by
   -- Porting note: added `-diag_apply`
   simp [trace, -diag_apply, h]
 
 @[simp]
-theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
+theorem trace_single_eq_same : trace (single i i c) = c := by
   -- Porting note: added `-diag_apply`
   simp [trace, -diag_apply]
 
-end StdBasisMatrix
+end single
 
 end Matrix
