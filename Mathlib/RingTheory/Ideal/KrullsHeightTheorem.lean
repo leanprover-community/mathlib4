@@ -159,27 +159,6 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
       ← comap_map_of_surjective f hf p]
     exact Ideal.comap_mono h₂
 
--- move me
-omit [IsNoetherianRing R] in
-lemma Ideal.exists_subset_radical_span_sup_span_of_subset_radical_sup (s : Set R) (I J : Ideal R)
-    (hs : s ⊆ (I ⊔ J).radical) :
-    ∃ (t₁ t₂ : Set R), Cardinal.mk t₁ ≤ Cardinal.mk s ∧ Cardinal.mk t₂ ≤ Cardinal.mk s ∧
-      t₁ ⊆ I ∧ t₂ ⊆ J ∧ s ⊆ (span t₁ ⊔ span t₂).radical := by
-  replace hs : ∀ z : s, ∃ (m : ℕ) (a b : R) (ha : a ∈ I) (hb : b ∈ J), a + b = z ^ m := by
-    rintro ⟨z, hzs⟩
-    simp only [Ideal.radical, Submodule.mem_sup, Ideal.mem_span_singleton'] at hs
-    obtain ⟨m, y, hyq, b, hb, hy⟩ := hs hzs
-    exact ⟨m, y, b, hyq, hb, hy⟩
-  choose m a b ha hb heq using hs
-  refine ⟨Set.range a, Set.range b, Cardinal.mk_range_le, Cardinal.mk_range_le, ?_, ?_,
-    fun z hz ↦ ⟨m ⟨z, hz⟩, ?_⟩⟩
-  · rwa [Set.range_subset_iff]
-  · rwa [Set.range_subset_iff]
-  · rw [← heq ⟨z, hz⟩]
-    refine Ideal.add_mem _ (mem_sup_left <| subset_span ?_) (mem_sup_right <| subset_span ?_)
-    · use ⟨z, hz⟩
-    · use ⟨z, hz⟩
-
 open IsLocalRing in
 /-- **Krull's height theorem** (also known as **Krullscher Höhensatz**) :
   In a commutative Noetherian ring `R`, any prime ideal that is minimal over an ideal generated
@@ -230,24 +209,22 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
         have := hp.1.2.trans this
         rw [Ideal.span_le, Set.insert_subset_iff] at this
         exact this.2
-      obtain ⟨t, w, hcard₁, _, htq, hwx, hst⟩ :=
+      obtain ⟨t, _, ht, hw, hspan⟩ :=
         exists_subset_radical_span_sup_span_of_subset_radical_sup s' _ _ h
-      suffices hq : q ∈ (span t).minimalPrimes by
+      suffices hq : q ∈ (span (Set.range t)).minimalPrimes by
         have hs := (hs.subset (Set.subset_insert _ _))
-        have ht : t.Finite := Cardinal.lt_aleph0_iff_set_finite.mp <|
-          hcard₁.trans_lt (Cardinal.lt_aleph0_iff_set_finite.mpr ‹_›)
-        have htcard : Cardinal.mk ht.toFinset ≤ .mk hs.toFinset := by simpa
-        replace htcard : (ht.toFinset.card : Cardinal) ≤ (hs.toFinset.card : Cardinal) := by
-          convert htcard <;> exact Cardinal.mk_coe_finset.symm
+        have ht : (Set.range t).Finite := @Set.finite_range _ _ t hs
         have htcard : ht.toFinset.card ≤ n := by
-          refine le_trans (Nat.cast_le.mp htcard) (Nat.le_of_lt_succ ?_)
-          rw [Nat.lt_iff_add_one_le, ← Finset.card_insert_of_not_mem (a := x) (by simpa)]
-          simpa using hn
-        exact le_trans (H ht.toFinset.card (by omega) q t ht hq rfl) (by norm_cast)
-      refine mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert hpq _ _ hp _ htq ?_
-      refine hst.trans <| radical_mono ?_
+          apply Nat.le_of_lt_succ (lt_of_lt_of_le ?_ hn)
+          rw [Set.Finite.toFinset_insert' hs, Finset.card_insert_of_not_mem (by simpa),
+            Nat.lt_add_one_iff, @Set.Finite.toFinset_range _ _ _ hs.fintype _]
+          apply le_trans Finset.card_image_le (le_of_eq ?_)
+          simpa using (@Set.Finite.card_toFinset _ _ hs.fintype hs).symm
+        exact le_trans (H ht.toFinset.card (by omega) q (Set.range t) ht hq rfl) (by norm_cast)
+      refine mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert hpq _ _ hp _ ht ?_
+      refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
-      exact sup_le_sup_left (span_le.mpr hwx) _
+      exact sup_le_sup_left (span_le.mpr hw) _
 
 /-- In a commutative Noetherian ring `R`, the height of a (finitely-generated) ideal is smaller
 than or equal to the minimum number of generators for this ideal. -/
