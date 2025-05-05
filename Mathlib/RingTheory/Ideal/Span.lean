@@ -264,17 +264,7 @@ open Subtype
 
 variable {A : Type*} [CommSemiring A] {I : Ideal A}
 
-/-- The Galois coinsertion between the map sending a subideal `J ≤ I` to itself,
-  and the mal sending `J ↦ J ⊓ I`. -/
-def galoisCoinsertion :
-    GaloisCoinsertion (fun J : { J : Ideal A // J ≤ I } ↦ (J : Ideal A))
-      (fun J : Ideal A ↦ ⟨J ⊓ I, inf_le_right⟩) :=
-  GaloisCoinsertion.monotoneIntro (fun _ _ h ↦ mk_le_mk.mpr (inf_le_inf_right I h))
-    (fun _ _ h ↦ h) (fun _ ↦ inf_le_left)
-    (fun ⟨J, hJ⟩ ↦ by simp only [ge_iff_le, mk.injEq, inf_eq_left, hJ])
-
-instance : CompleteLattice { J : Ideal A // J ≤ I } :=
-  GaloisCoinsertion.liftCompleteLattice galoisCoinsertion
+instance : CompleteLattice { J : Ideal A // J ≤ I } := Set.Iic.instCompleteLattice
 
 theorem top_def : (⟨I, le_refl I⟩ : { J : Ideal A // J ≤ I }) = ⊤ :=
   eq_top_iff.mpr (⊤ : { J : Ideal A // J ≤ I }).property
@@ -283,20 +273,20 @@ theorem bot_def : (⟨⊥, bot_le⟩ : { J : Ideal A // J ≤ I }) = ⊥ := by r
 
 theorem inf_def (J J' : { J : Ideal A // J ≤ I }) :
     (J ⊓ J' : { J : Ideal A // J ≤ I }) =
-      ⟨(J : Ideal A) ⊓ (J' : Ideal A), inf_le_of_left_le J.2⟩ := by
-  ext x
-  exact ⟨fun ⟨h, _⟩ ↦ h, fun h ↦ ⟨h, J.property h.left⟩⟩
+      ⟨(J : Ideal A) ⊓ (J' : Ideal A), inf_le_of_left_le J.2⟩ := rfl
 
 theorem sInf_def (S : Set { J : Ideal A // J ≤ I }) :
-    (sInf S : { J : Ideal A // J ≤ I }) = ⟨sInf (val '' S) ⊓ I, inf_le_right⟩ := rfl
+    (sInf S : { J : Ideal A // J ≤ I }) = ⟨I ⊓ sInf (val '' S) , inf_le_left⟩ := rfl
 
 theorem sup_def (J J' : { J : Ideal A // J ≤ I }) :
     (J ⊔ J' : { J : Ideal A // J ≤ I }) = ⟨sInf {B | (J : Ideal A) ≤ B ∧ (J' : Ideal A) ≤ B},
-      sInf_le_of_le ⟨J.2, J'.2⟩ (le_refl I)⟩ := by
-  ext x
-  exact ⟨fun ⟨h, _⟩ ↦ h, fun h ↦ ⟨h, Submodule.mem_sInf.mp h I ⟨J.2, J'.2⟩⟩⟩
+      sInf_le_of_le ⟨J.2, J'.2⟩ (le_refl I)⟩ := by rfl
 
 theorem sSup_def (S : Set { J : Ideal A // J ≤ I }) :
-    (sSup S : { J : Ideal A // J ≤ I }) = ⟨sSup (val '' S) ⊓ I, inf_le_right⟩ := rfl
+    (sSup S : { J : Ideal A // J ≤ I }) = ⟨I ⊓ sSup (val '' S), inf_le_left⟩ := by
+  ext x
+  simp only [sSup, mem_image, Subtype.exists, mem_Iic, exists_and_right, exists_eq_right,
+    forall_exists_index, Submodule.mem_sInf, mem_setOf_eq, Ideal.mem_inf, iff_and_self]
+  exact fun hp ↦ hp I (fun s hsI hsS ↦ hsI)
 
 end Subideal
