@@ -58,7 +58,8 @@ lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain
 
 /-- **Vieta's formula** for quadratics as an iff. -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {a b c x1 x2 : R}
-    (ha : a ≠ 0) : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2} ↔
+    (ha : a ≠ 0) :
+    (C a * X ^ 2 + C b * X + C c).roots = {x1, x2} ↔
       b = -a * (x1 + x2) ∧ c = a * x1 * x2 :=
   have roots_of_ne_zero_of_vieta (hvieta : b = -a * (x1 + x2) ∧ c = a * x1 * x2) :
       (C a * X ^ 2 + C b * X + C c).roots = {x1, x2} := by
@@ -73,9 +74,9 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {a b c x1
 /-- **Vieta's formula** for quadratics as an iff (`aroots` version). -/
 lemma aroots_quadratic_eq_pair_iff_of_ne_zero [CommRing T] [CommRing S] [IsDomain S]
     [Algebra T S] {a b c : T} {x1 x2 : S} (ha : algebraMap T S a ≠ 0) :
-      (C a * X ^ 2 + C b * X + C c).aroots S = {x1, x2} ↔
-        algebraMap T S b = -algebraMap T S a * (x1 + x2) ∧
-        algebraMap T S c = algebraMap T S a * x1 * x2 := by
+    (C a * X ^ 2 + C b * X + C c).aroots S = {x1, x2} ↔
+      algebraMap T S b = -algebraMap T S a * (x1 + x2) ∧
+      algebraMap T S c = algebraMap T S a * x1 * x2 := by
   rw [aroots_def, show map (algebraMap T S) (C a * X ^ 2 + C b * X + C c) = C ((algebraMap T S) a) *
     X ^ 2 + C ((algebraMap T S) b) * X + C ((algebraMap T S) c) by simp]
   exact roots_quadratic_eq_pair_iff_of_ne_zero ha
@@ -91,9 +92,10 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero' [Field R] {a b c x1 x2 : R} (ha : 
 
 /-- **Vieta's formula** for quadratics as an iff (`aroots, Field` version). -/
 lemma aroots_quadratic_eq_pair_iff_of_ne_zero' [CommRing T] [Field S] [Algebra T S] {a b c : T}
-      {x1 x2 : S} (ha : algebraMap T S a ≠ 0) : (C a * X ^ 2 + C b * X + C c).aroots S = {x1, x2} ↔
-        x1 + x2 = -algebraMap T S b / algebraMap T S a ∧
-        x1 * x2 = algebraMap T S c / algebraMap T S a := by
+    {x1 x2 : S} (ha : algebraMap T S a ≠ 0) :
+    (C a * X ^ 2 + C b * X + C c).aroots S = {x1, x2} ↔
+      x1 + x2 = -algebraMap T S b / algebraMap T S a ∧
+      x1 * x2 = algebraMap T S c / algebraMap T S a := by
   rw [aroots_def, show map (algebraMap T S) (C a * X ^ 2 + C b * X + C c) = C ((algebraMap T S) a) *
     X ^ 2 + C ((algebraMap T S) b) * X + C ((algebraMap T S) c) by simp]
   exact roots_quadratic_eq_pair_iff_of_ne_zero' ha

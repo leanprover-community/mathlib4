@@ -5,11 +5,10 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
-import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.Valued.WithVal
 import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
-import Mathlib.Algebra.Order.Group.TypeTags
+
 
 /-!
 # Adic valuations on Dedekind domains
@@ -50,7 +49,7 @@ We are only interested in Dedekind domains with Krull dimension 1.
 
 ## References
 * [G. J. Janusz, *Algebraic Number Fields*][janusz1996]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
@@ -284,11 +283,7 @@ theorem valuation_def (x : K) :
 /-- The `v`-adic valuation of `r/s ∈ K` is the valuation of `r` divided by the valuation of `s`. -/
 theorem valuation_of_mk' {r : R} {s : nonZeroDivisors R} :
     v.valuation K (IsLocalization.mk' K r s) = v.intValuation r / v.intValuation s := by
-  erw [valuation_def, (IsLocalization.toLocalizationMap (nonZeroDivisors R) K).lift_mk',
-    div_eq_mul_inv, mul_eq_mul_left_iff]
-  left
-  rw [Units.val_inv_eq_inv_val, inv_inj]
-  rfl
+  rw [valuation_def, Valuation.extendToLocalization_mk', div_eq_mul_inv]
 
 open scoped algebraMap in
 /-- The `v`-adic valuation on `K` extends the `v`-adic valuation on `R`. -/
@@ -365,6 +360,10 @@ def adicValued : Valued K ℤₘ₀ :=
   Valued.mk' (v.valuation K)
 
 theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
+  rfl
+
+@[simp]
+theorem adicValued_apply' (x : WithVal (v.valuation K)) : v.adicValued.v x = v.valuation K x :=
   rfl
 
 variable (K)
@@ -542,7 +541,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
       toAdd_ofAdd, toAdd_one,
       show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
         Int.natCast_natAbs, smul_eq_mul],
-      ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
+      ← Int.eq_natAbs_of_nonneg ha.le, smul_eq_mul]
     -- and now it's easy
     omega
 

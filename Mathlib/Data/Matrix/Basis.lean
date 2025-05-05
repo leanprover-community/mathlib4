@@ -14,12 +14,12 @@ at position `(i, j)`, and zeroes elsewhere.
 
 assert_not_exists Matrix.trace
 
-variable {l m n : Type*}
+variable {l m n o : Type*}
 variable {R α β : Type*}
 
 namespace Matrix
 
-variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
+variable [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq o]
 
 section Zero
 variable [Zero α]
@@ -91,7 +91,6 @@ theorem matrix_eq_sum_stdBasisMatrix [AddCommMonoid α] [Fintype m] [Fintype n] 
 theorem stdBasisMatrix_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
     stdBasisMatrix i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by
   ext i' j'
-  -- Porting note: lean3 didn't apply `mul_ite`.
   simp [-mul_ite, stdBasisMatrix, vecMulVec, ite_and, Pi.single_apply, eq_comm]
 
 -- todo: the old proof used fintypes, I don't know `Finsupp` but this feels generalizable
@@ -156,7 +155,7 @@ theorem ext_addMonoidHom
 See note [partially-applied ext lemmas]. -/
 @[local ext]
 theorem ext_linearMap
-    [Finite m] [Finite n][Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
+    [Finite m] [Finite n] [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
     ⦃f g : Matrix m n α →ₗ[R] β⦄
     (h : ∀ i j, f ∘ₗ stdBasisMatrixLinearMap R i j = g ∘ₗ stdBasisMatrixLinearMap R i j) :
     f = g :=
@@ -235,19 +234,21 @@ theorem mul_same (i : l) (j : m) (k : n) (d : α) :
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
 
 @[simp]
+theorem stdBasisMatrix_mul_mul_stdBasisMatrix [Fintype n]
+    (i : l) (i' : m) (j' : n) (j : o) (a : α) (x : Matrix m n α) (b : α) :
+    stdBasisMatrix i i' a * x * stdBasisMatrix j' j b = stdBasisMatrix i j (a * x i' j' * b) := by
+  ext i'' j''
+  simp only [mul_apply, stdBasisMatrix, boole_mul]
+  by_cases h₁ : i = i'' <;> by_cases h₂ : j = j'' <;> simp [h₁, h₂]
+
+@[simp]
 theorem mul_of_ne (i : l) (j k : m) {l : n} (h : j ≠ k) (d : α) :
     stdBasisMatrix i j c * stdBasisMatrix k l d = 0 := by
   ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix, of_apply]
   by_cases h₁ : i = a
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [h₁, h, h.symm]`
-  · simp only [h₁, true_and, mul_ite, ite_mul, zero_mul, mul_zero, ← ite_and, zero_apply]
-    refine Finset.sum_eq_zero (fun x _ => ?_)
-    apply if_neg
-    rintro ⟨⟨rfl, rfl⟩, h⟩
-    contradiction
-  · simp only [h₁, false_and, ite_false, mul_ite, zero_mul, mul_zero, ite_self,
-      Finset.sum_const_zero, zero_apply]
+  · simp [h₁, h, Finset.sum_eq_zero]
+  · simp [h₁]
 
 end mul
 

@@ -1,28 +1,31 @@
 /-
 Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yuma Mizuno
+Authors: Yuma Mizuno, Calle Sönne
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 
 /-!
-# Oplax natural transformations
+# Oplax transformations between oplax functors
 
-Just as there are natural transformations between functors, there are oplax natural transformations
+Just as there are natural transformations between functors, there are oplax transformations
 between oplax functors. The equality in the naturality of natural transformations is replaced by a
 specified 2-morphism `F.map f ≫ app b ⟶ app a ≫ G.map f` in the case of oplax natural
 transformations.
 
 ## Main definitions
 
-* `OplaxNatTrans F G` : oplax natural transformations between oplax functors `F` and `G`
-* `OplaxNatTrans.vcomp η θ` : the vertical composition of oplax natural transformations `η`
-  and `θ`
-* `OplaxNatTrans.category F G` : the category structure on the oplax natural transformations
-  between `F` and `G`
+* `OplaxTrans F G` : oplax transformations between oplax functors `F` and `G`
+
+Using this, we define a category instance on `OplaxTrans F G`, with composition given by vertical
+composition of oplax transformations.
+
+# TODO
+This file could also include lax and strong transformations between oplax functors.
+
 -/
 
-namespace CategoryTheory
+namespace CategoryTheory.Oplax
 
 open Category Bicategory
 
@@ -32,57 +35,44 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
-/-- If `η` is an oplax natural transformation between `F` and `G`, we have a 1-morphism
+/-- If `η` is an oplax transformation between `F` and `G`, we have a 1-morphism
 `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`. We also have a 2-morphism
 `η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism `f : a ⟶ b`.
 These 2-morphisms satisfies the naturality condition, and preserve the identities and
 the compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
-structure OplaxNatTrans (F G : OplaxFunctor B C) where
+structure OplaxTrans (F G : OplaxFunctor B C) where
+  /-- The component 1-morphisms of an oplax transformation. -/
   app (a : B) : F.obj a ⟶ G.obj a
+  /-- The 2-morphisms underlying the oplax naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ app b ⟶ app a ≫ G.map f
+  /-- Naturality of the oplax naturality constraint. -/
   naturality_naturality :
     ∀ {a b : B} {f g : a ⟶ b} (η : f ⟶ g),
       F.map₂ η ▷ app b ≫ naturality g = naturality f ≫ app a ◁ G.map₂ η := by
     aesop_cat
+  /-- Oplax unity. -/
   naturality_id :
     ∀ a : B,
       naturality (𝟙 a) ≫ app a ◁ G.mapId a =
         F.mapId a ▷ app a ≫ (λ_ (app a)).hom ≫ (ρ_ (app a)).inv := by
     aesop_cat
+  /-- Oplax functoriality. -/
   naturality_comp :
     ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
       naturality (f ≫ g) ≫ app a ◁ G.mapComp f g =
-        F.mapComp f g ▷ app c ≫
-          (α_ _ _ _).hom ≫
-            F.map f ◁ naturality g ≫ (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).hom := by
+        F.mapComp f g ▷ app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ naturality g ≫
+          (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).hom := by
     aesop_cat
 
-attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.app
-  CategoryTheory.OplaxNatTrans.naturality
-  CategoryTheory.OplaxNatTrans.naturality_naturality
-  CategoryTheory.OplaxNatTrans.naturality_id
-  CategoryTheory.OplaxNatTrans.naturality_comp
+attribute [reassoc (attr := simp)] OplaxTrans.naturality_naturality OplaxTrans.naturality_id
+  OplaxTrans.naturality_comp
 
-attribute [reassoc (attr := simp)] OplaxNatTrans.naturality_naturality OplaxNatTrans.naturality_id
-  OplaxNatTrans.naturality_comp
+@[deprecated (since := "2025-04-23")] alias _root_.CategoryTheory.OplaxNatTrans := OplaxTrans
 
-namespace OplaxNatTrans
+namespace OplaxTrans
 
-section
-
-variable (F : OplaxFunctor B C)
-
-/-- The identity oplax natural transformation. -/
-@[simps]
-def id : OplaxNatTrans F F where
-  app a := 𝟙 (F.obj a)
-  naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
-
-instance : Inhabited (OplaxNatTrans F F) :=
-  ⟨id F⟩
-
-variable {F} {G H : OplaxFunctor B C} (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H)
+variable {F : OplaxFunctor B C} {G H : OplaxFunctor B C} (η : OplaxTrans F G) (θ : OplaxTrans G H)
 
 section
 
@@ -135,58 +125,43 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
 
 end
 
-/-- Vertical composition of oplax natural transformations. -/
-@[simps]
-def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H where
+variable (F) in
+/-- The identity oplax transformation. -/
+def id : OplaxTrans F F where
+  app a := 𝟙 (F.obj a)
+  naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
+
+instance : Inhabited (OplaxTrans F F) :=
+  ⟨id F⟩
+
+/-- Vertical composition of oplax transformations. -/
+def vcomp : OplaxTrans F H where
   app a := η.app a ≫ θ.app a
   naturality {a b} f :=
     (α_ _ _ _).inv ≫
       η.naturality f ▷ θ.app b ≫ (α_ _ _ _).hom ≫ η.app a ◁ θ.naturality f ≫ (α_ _ _ _).inv
-  naturality_comp {a b c} f g := by
+  naturality_comp {a b c} f g :=
     calc
       _ =
-          ?_ ≫
-            F.mapComp f g ▷ η.app c ▷ θ.app c ≫
-              ?_ ≫
-                F.map f ◁ η.naturality g ▷ θ.app c ≫
-                  ?_ ≫
-                    (F.map f ≫ η.app b) ◁ θ.naturality g ≫
-                      η.naturality f ▷ (θ.app b ≫ H.map g) ≫
-                        ?_ ≫ η.app a ◁ θ.naturality f ▷ H.map g ≫ ?_ :=
-        ?_
-      _ = _ := ?_
-    · exact (α_ _ _ _).inv
-    · exact (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom
-    · exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
-    · exact (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv
-    · exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
-    · rw [whisker_exchange_assoc]
-      simp
-    · simp
+        (α_ _ _ _).inv ≫
+          F.mapComp f g ▷ η.app c ▷ θ.app c ≫
+            (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom ≫
+              F.map f ◁ η.naturality g ▷ θ.app c ≫
+                _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
+                  (F.map f ≫ η.app b) ◁ θ.naturality g ≫
+                    η.naturality f ▷ (θ.app b ≫ H.map g) ≫
+                      (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv ≫
+                        η.app a ◁ θ.naturality f ▷ H.map g ≫
+                          _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv := by
+        rw [whisker_exchange_assoc]; simp
+      _ = _ := by simp
 
-variable (B C)
-
-@[simps id comp]
+@[simps! id_app id_naturality comp_app comp_naturality]
 instance : CategoryStruct (OplaxFunctor B C) where
-  Hom := OplaxNatTrans
-  id := OplaxNatTrans.id
-  comp := OplaxNatTrans.vcomp
+  Hom := OplaxTrans
+  id := OplaxTrans.id
+  comp := OplaxTrans.vcomp
 
-end
+end OplaxTrans
 
-/-- A structure on an Oplax natural transformation that promotes it to a strong natural
-transformation.
-
-See `StrongNatTrans.mkOfOplax`. -/
-structure StrongCore {F G : OplaxFunctor B C} (η : OplaxNatTrans F G) where
-  naturality {a b : B} (f : a ⟶ b) : F.map f ≫ η.app b ≅ η.app a ≫ G.map f
-  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by aesop_cat
-
-attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.StrongCore.naturality
-  CategoryTheory.OplaxNatTrans.StrongCore.naturality_hom
-
-attribute [simp] StrongCore.naturality_hom
-
-end OplaxNatTrans
-
-end CategoryTheory
+end CategoryTheory.Oplax

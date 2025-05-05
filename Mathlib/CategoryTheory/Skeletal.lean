@@ -94,7 +94,6 @@ noncomputable instance : (fromSkeleton C).Faithful := by
 
 instance : (fromSkeleton C).EssSurj where mem_essImage X := ⟨Quotient.mk' X, Quotient.mk_out X⟩
 
--- Porting note: named this instance
 noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence where
 
 variable {C}

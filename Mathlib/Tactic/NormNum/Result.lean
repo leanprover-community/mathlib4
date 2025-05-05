@@ -42,16 +42,16 @@ def instAddMonoidWithOne {α : Type u} [Ring α] : AddMonoidWithOne α := inferI
 
 /-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
 def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
-  return ← synthInstanceQ (q(AddMonoidWithOne $α) : Q(Type u)) <|>
+  return ← synthInstanceQ q(AddMonoidWithOne $α) <|>
     throwError "not an AddMonoidWithOne"
 
 /-- Helper function to synthesize a typed `Semiring α` expression. -/
 def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
-  return ← synthInstanceQ (q(Semiring $α) : Q(Type u)) <|> throwError "not a semiring"
+  return ← synthInstanceQ q(Semiring $α) <|> throwError "not a semiring"
 
 /-- Helper function to synthesize a typed `Ring α` expression. -/
 def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
-  return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a ring"
+  return ← synthInstanceQ q(Ring $α) <|> throwError "not a ring"
 
 /--
 Represent an integer as a "raw" typed expression.
@@ -83,7 +83,7 @@ def mkRawRatLit (q : ℚ) : Q(ℚ) :=
 def rawIntLitNatAbs (n : Q(ℤ)) : (m : Q(ℕ)) × Q(Int.natAbs $n = $m) :=
   if n.isAppOfArity ``Int.ofNat 1 then
     have m : Q(ℕ) := n.appArg!
-    ⟨m, show Q(Int.natAbs (Int.ofNat $m) = $m) from q(Int.natAbs_ofNat $m)⟩
+    ⟨m, show Q(Int.natAbs (Int.ofNat $m) = $m) from q(Int.natAbs_natCast $m)⟩
   else if n.isAppOfArity ``Int.negOfNat 1 then
     have m : Q(ℕ) := n.appArg!
     ⟨m, show Q(Int.natAbs (Int.negOfNat $m) = $m) from q(Int.natAbs_neg $m)⟩
@@ -263,11 +263,11 @@ instance {α : Q(Type u)} {x : Q($α)} : Inhabited (Result x) := inferInstanceAs
 
 /-- The result is `proof : x`, where `x` is a (true) proposition. -/
 @[match_pattern, inline] def Result.isTrue {x : Q(Prop)} :
-    ∀ (proof : Q($x)), @Result _ (q(Prop) : Q(Type)) x := Result'.isBool true
+    ∀ (proof : Q($x)), Result q($x) := Result'.isBool true
 
 /-- The result is `proof : ¬x`, where `x` is a (false) proposition. -/
 @[match_pattern, inline] def Result.isFalse {x : Q(Prop)} :
-    ∀ (proof : Q(¬$x)), @Result _ (q(Prop) : Q(Type)) x := Result'.isBool false
+    ∀ (proof : Q(¬$x)), Result q($x) := Result'.isBool false
 
 /-- The result is `lit : ℕ` (a raw nat literal) and `proof : isNat x lit`. -/
 @[match_pattern, inline] def Result.isNat {α : Q(Type u)} {x : Q($α)} :
@@ -361,7 +361,7 @@ def Result.toRat' {α : Q(Type u)} {e : Q($α)}
   | .isNegNat _ lit proof =>
     have proof : Q(@IsInt _ DivisionRing.toRing $e (.negOfNat $lit)) := proof
     some ⟨-lit.natLit!, q(.negOfNat $lit), q(nat_lit 1),
-      (q(@IsInt.to_isRat _ DivisionRing.toRing _ _ $proof) : Expr)⟩
+      q(@IsInt.to_isRat _ DivisionRing.toRing _ _ $proof)⟩
   | .isRat _ q n d proof => some ⟨q, n, d, proof⟩
 
 /--

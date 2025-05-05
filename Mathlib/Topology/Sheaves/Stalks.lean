@@ -130,7 +130,7 @@ composition with the `germ` morphisms.
 theorem stalk_hom_ext (F : X.Presheaf C) {x} {Y : C} {f₁ f₂ : F.stalk x ⟶ Y}
     (ih : ∀ (U : Opens X) (hxU : x ∈ U), F.germ U x hxU ≫ f₁ = F.germ U x hxU ≫ f₂) : f₁ = f₂ :=
   colimit.hom_ext fun U => by
-    induction U using Opposite.rec with | op U => obtain ⟨U, hxU⟩ := U; exact ih U hxU
+    induction U with | op U => obtain ⟨U, hxU⟩ := U; exact ih U hxU
 
 @[reassoc (attr := simp)]
 theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) :
@@ -209,9 +209,6 @@ theorem stalkPushforward_iso_of_isInducing {f : X ⟶ Y} (hf : IsInducing f)
 
 @[deprecated (since := "2024-10-27")]
 alias stalkPushforward_iso_of_isOpenEmbedding := stalkPushforward_iso_of_isInducing
-@[deprecated (since := "2024-10-18")]
-alias stalkPushforward_iso_of_openEmbedding := stalkPushforward_iso_of_isInducing
-
 end stalkPushforward
 
 section stalkPullback
@@ -366,6 +363,7 @@ theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x 
   ext; delta stalkFunctor; simpa [stalkSpecializes] using by rfl
 
 -- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
+-- It seems the side condition `h` is not applied by `simpNF`.
 @[reassoc, elementwise, simp, nolint simpNF]
 theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     (f _* F).stalkSpecializes (f.hom.map_specializes h) ≫ F.stalkPushforward _ f x =
@@ -410,7 +408,7 @@ theorem germ_exist (F : X.Presheaf C) (x : X) (t : ToType (stalk.{v, u} F x)) :
   obtain ⟨U, s, e⟩ :=
     Types.jointly_surjective.{v, v} _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
   revert s e
-  induction U with | h U => ?_
+  induction U with | op U => ?_
   obtain ⟨V, m⟩ := U
   intro s e
   exact ⟨V, m, s, e⟩
