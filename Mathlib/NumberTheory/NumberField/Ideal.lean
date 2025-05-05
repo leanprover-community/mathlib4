@@ -7,15 +7,14 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
 import Mathlib.NumberTheory.NumberField.ClassNumber
 
 /-!
-# Integral ideals of a number fied
+# Integral ideals of a number field
 
-We prove results about integral ideals of a number field.
+We prove several results about integral ideals of a number field.
 
 ## Main results
 
 * `NumberField.ideal.tendsto_norm_le_and_mk_eq_div_atop`: asymptotics for the number of (nonzero)
   integral ideals of bounded norm in a fixed class of the classgroup.
-
 * `NumberField.ideal.tendsto_norm_le_div_atop`: asymptotics for the number of integral ideals
   of bounded norm.
 
