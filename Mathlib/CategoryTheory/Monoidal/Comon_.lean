@@ -67,6 +67,19 @@ theorem comul_assoc (X : C) [Comon_Class X] :
     Δ ≫ X ◁ Δ = Δ ≫ Δ ▷ X ≫ (α_ X X X).hom :=
   comul_assoc'
 
+@[reassoc]
+theorem comul_assoc_flip_hom (X : C) [Comon_Class X] :
+    Δ ≫ Δ ▷ X = Δ ≫ X ◁ Δ ≫ (α_ X X X).inv := by
+  simp
+
+@[simps]
+instance (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : Comon_Class (𝟙_ C) where
+  counit := 𝟙 _
+  comul := (λ_ _).inv
+  counit_comul' := by monoidal_coherence
+  comul_counit' := by monoidal_coherence
+  comul_assoc' := by monoidal_coherence
+
 end Comon_Class
 
 open scoped Comon_Class
@@ -75,10 +88,15 @@ variable {M N : C} [Comon_Class M] [Comon_Class N]
 
 /-- The property that a morphism between comonoid objects is a comonoid morphism. -/
 class IsComon_Hom (f : M ⟶ N) : Prop where
-  hom_counit : f ≫ ε = ε := by aesop_cat
-  hom_comul : f ≫ Δ = Δ ≫ (f ⊗ f) := by aesop_cat
+  hom_counit (f) : f ≫ ε = ε := by aesop_cat
+  hom_comul (f) : f ≫ Δ = Δ ≫ (f ⊗ f) := by aesop_cat
 
 attribute [reassoc (attr := simp)] IsComon_Hom.hom_counit IsComon_Hom.hom_comul
+
+instance (f : M ≅ N) [IsComon_Hom f.hom] :
+   IsComon_Hom f.inv where
+  hom_counit := by simp [Iso.inv_comp_eq]
+  hom_comul := by simp [Iso.inv_comp_eq]
 
 variable (C)
 
@@ -119,23 +137,15 @@ instance {M : Comon_ C} : Comon_Class M.X where
   comul_counit' := M.comul_counit
   comul_assoc' := M.comul_assoc
 
-variable (C)
-
+variable (C) in
 /-- The trivial comonoid object. We later show this is terminal in `Comon_ C`.
 -/
-@[simps]
-def trivial : Comon_ C where
-  X := 𝟙_ C
-  counit := 𝟙 _
-  comul := (λ_ _).inv
-  comul_assoc := by monoidal_coherence
-  counit_comul := by monoidal_coherence
-  comul_counit := by monoidal_coherence
+@[simps!]
+def trivial : Comon_ C := mk' (𝟙_ C)
 
 instance : Inhabited (Comon_ C) :=
   ⟨trivial C⟩
 
-variable {C}
 variable {M : Comon_ C}
 
 @[reassoc (attr := simp)]
@@ -158,6 +168,11 @@ structure Hom (M N : Comon_ C) where
   hom_counit : hom ≫ N.counit = M.counit := by aesop_cat
   hom_comul : hom ≫ N.comul = M.comul ≫ (hom ⊗ hom) := by aesop_cat
 
+/-- Construct a morphism `M ⟶ N` of `Comon_ C` from a map `f : M ⟶ N` and a `IsComon_Hom f`
+instance. -/
+abbrev Hom.mk' {M N : C} [Comon_Class M] [Comon_Class N] (f : M ⟶ N) [IsComon_Hom f] :
+    Hom (.mk' M) (.mk' N) := .mk f
+
 attribute [reassoc (attr := simp)] Hom.hom_counit Hom.hom_comul
 
 /-- The identity morphism on a comonoid object. -/
@@ -177,6 +192,8 @@ instance : Category (Comon_ C) where
   Hom M N := Hom M N
   id := id
   comp f g := comp f g
+
+instance {M N : Comon_ C} (f : M ⟶ N) : IsComon_Hom f.hom := ⟨f.2, f.3⟩
 
 @[ext] lemma ext {X Y : Comon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g := Hom.ext w
 
@@ -206,6 +223,16 @@ instance {A B : Comon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f
 instance : (forget C).ReflectsIsomorphisms where
   reflects f e :=
     ⟨⟨{ hom := inv f.hom }, by aesop_cat⟩⟩
+
+/-- Construct an isomorphism of comonoids by giving an isomorphism between the underlying objects
+and checking compatibility with counit and comultiplication only in the forward direction.
+-/
+@[simps]
+def mkIso' {M N : Comon_ C} (f : M.X ≅ N.X) [IsComon_Hom f.hom] : M ≅ N where
+  hom := Hom.mk' f.hom
+  inv := Hom.mk' f.inv
+  hom_inv_id := by aesop_cat
+  inv_hom_id := by aesop_cat
 
 /-- Construct an isomorphism of comonoids by giving an isomorphism between the underlying objects
 and checking compatibility with counit and comultiplication only in the forward direction.
@@ -320,6 +347,7 @@ variable [BraidedCategory C]
 
 theorem tensorObj_X (A B : Comon_ C) : (A ⊗ B).X = A.X ⊗ B.X := rfl
 
+@[simps!?]
 instance (A B : C) [Comon_Class A] [Comon_Class B] : Comon_Class (A ⊗ B) :=
   inferInstanceAs <| Comon_Class (Comon_.mk' A ⊗ Comon_.mk' B).X
 
@@ -369,7 +397,7 @@ namespace CategoryTheory.Functor
 
 variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
-open OplaxMonoidal
+open OplaxMonoidal Comon_Class IsComon_Hom
 
 /-- A oplax monoidal functor takes comonoid objects to comonoid objects.
 
@@ -379,24 +407,24 @@ That is, a oplax monoidal functor `F : C ⥤ D` induces a functor `Comon_ C ⥤ 
 def mapComon (F : C ⥤ D) [F.OplaxMonoidal] : Comon_ C ⥤ Comon_ D where
   obj A :=
     { X := F.obj A.X
-      counit := F.map A.counit ≫ η F
-      comul := F.map A.comul ≫ δ F _ _
+      counit := F.map ε[A.X] ≫ η F
+      comul := F.map Δ[A.X] ≫ δ F _ _
       counit_comul := by
         simp_rw [comp_whiskerRight, Category.assoc, δ_natural_left_assoc, left_unitality,
-          ← F.map_comp_assoc, A.counit_comul]
+          ← F.map_comp_assoc, counit_comul]
       comul_counit := by
         simp_rw [MonoidalCategory.whiskerLeft_comp, Category.assoc, δ_natural_right_assoc,
-          right_unitality, ← F.map_comp_assoc, A.comul_counit]
+          right_unitality, ← F.map_comp_assoc, comul_counit]
       comul_assoc := by
         simp_rw [comp_whiskerRight, Category.assoc, δ_natural_left_assoc,
           MonoidalCategory.whiskerLeft_comp, δ_natural_right_assoc,
-          ← F.map_comp_assoc, A.comul_assoc, F.map_comp, Category.assoc, associativity] }
+          ← F.map_comp_assoc, comul_assoc, F.map_comp, Category.assoc, associativity] }
   map f :=
     { hom := F.map f.hom
-      hom_counit := by dsimp; rw [← F.map_comp_assoc, f.hom_counit]
+      hom_counit := by dsimp; rw [← F.map_comp_assoc, hom_counit]
       hom_comul := by
         dsimp
-        rw [Category.assoc, δ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, f.hom_comul] }
+        rw [Category.assoc, δ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, hom_comul] }
   map_id A := by ext; simp
   map_comp f g := by ext; simp
 

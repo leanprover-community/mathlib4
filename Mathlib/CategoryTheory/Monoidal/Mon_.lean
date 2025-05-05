@@ -63,6 +63,9 @@ theorem mul_one (X : C) [Mon_Class X] : X ◁ η ≫ μ = (ρ_ X).hom := mul_one
 @[reassoc (attr := simp)]
 theorem mul_assoc (X : C) [Mon_Class X] : μ ▷ X ≫ μ = (α_ X X X).hom ≫ X ◁ μ ≫ μ := mul_assoc'
 
+@[reassoc]
+theorem mul_assoc_flip (X : C) [Mon_Class X] : X ◁ μ ≫ μ = (α_ X X X).inv ≫ μ ▷ X ≫ μ := by simp
+
 @[simps]
 instance (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : Mon_Class (𝟙_ C) where
   one := 𝟙 _
@@ -90,7 +93,7 @@ class IsMon_Hom (f : M ⟶ N) : Prop where
 
 attribute [reassoc (attr := simp)] IsMon_Hom.one_hom IsMon_Hom.mul_hom
 
-instance {M N : C} [Mon_Class M] [Mon_Class N] (f : M ≅ N) [IsMon_Hom f.hom] :
+instance (f : M ≅ N) [IsMon_Hom f.hom] :
    IsMon_Hom f.inv where
   one_hom := by simp [Iso.comp_inv_eq]
   mul_hom := by simp [Iso.comp_inv_eq]
@@ -242,8 +245,8 @@ def mkIso' {M N : Mon_ C} (f : M.X ≅ N.X) [IsMon_Hom f.hom] : M ≅ N where
 and checking compatibility with unit and multiplication only in the forward direction.
 -/
 @[simps!]
-def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := by aesop_cat)
-    (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul := by aesop_cat) : M ≅ N :=
+def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
+    (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ[N.X] := by aesop_cat) : M ≅ N :=
   have : IsMon_Hom f.hom := ⟨one_f, mul_f⟩
   mkIso' f
 
@@ -294,32 +297,34 @@ instance map.instIsMon_Hom : IsMon_Hom (F.map f) where
   one_hom := by simp [← map_comp]
   mul_hom := by simp [← map_comp]
 
+open Mon_Class
+
 -- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
 /-- A lax monoidal functor takes monoid objects to monoid objects.
 
 That is, a lax monoidal functor `F : C ⥤ D` induces a functor `Mon_ C ⥤ Mon_ D`.
 -/
-@[simps]
+@[simps!?]
 def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
   -- TODO: The following could be, but it leads to weird `erw`s later down the file
-  -- obj A := .mk' (F.obj A.X)
-  obj A :=
-    { X := F.obj A.X
-      one := ε F ≫ F.map A.one
-      mul := «μ» F _ _ ≫ F.map A.mul
-      one_mul := by
-        simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
-          LaxMonoidal.left_unitality]
-        slice_lhs 3 4 => rw [← F.map_comp, A.one_mul]
-      mul_one := by
-        simp_rw [MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc,
-          LaxMonoidal.right_unitality]
-        slice_lhs 3 4 => rw [← F.map_comp, A.mul_one]
-      mul_assoc := by
-        simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
-          MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc]
-        slice_lhs 3 4 => rw [← F.map_comp, A.mul_assoc]
-        simp }
+  obj A := .mk' (F.obj A.X)
+  -- obj A :=
+  --   { X := F.obj A.X
+  --     one := ε F ≫ F.map η[A.X]
+  --     mul := «μ» F _ _ ≫ F.map μ[A.X]
+  --     one_mul := by
+  --       simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
+  --         LaxMonoidal.left_unitality]
+  --       slice_lhs 3 4 => rw [← F.map_comp, one_mul A.X]
+  --     mul_one := by
+  --       simp_rw [MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc,
+  --         LaxMonoidal.right_unitality]
+  --       slice_lhs 3 4 => rw [← F.map_comp, mul_one A.X]
+  --     mul_assoc := by
+  --       simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
+  --         MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc]
+  --       slice_lhs 3 4 => rw [← F.map_comp, mul_assoc A.X]
+  --       simp }
   map f := .mk' (F.map f.hom)
 
 protected instance Faithful.mapMon [F.Faithful] : F.mapMon.Faithful where
@@ -383,16 +388,16 @@ def monToLaxMonoidalObj (A : Mon_ C) :
     Discrete PUnit.{u + 1} ⥤ C := (Functor.const _).obj A.X
 
 instance (A : Mon_ C) : (monToLaxMonoidalObj A).LaxMonoidal where
-  ε' := A.one
-  μ' := fun _ _ => A.mul
+  ε' := η[A.X]
+  μ' := fun _ _ => μ[A.X]
 
 @[simp]
 lemma monToLaxMonoidalObj_ε (A : Mon_ C) :
-    ε (monToLaxMonoidalObj A) = A.one := rfl
+    ε (monToLaxMonoidalObj A) = η[A.X] := rfl
 
 @[simp]
 lemma monToLaxMonoidalObj_μ (A : Mon_ C) (X Y) :
-    «μ» (monToLaxMonoidalObj A) X Y = A.mul := rfl
+    «μ» (monToLaxMonoidalObj A) X Y = μ[A.X] := rfl
 
 variable (C)
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
@@ -413,10 +418,30 @@ def unitIso :
   NatIso.ofComponents
     (fun F ↦ LaxMonoidalFunctor.isoOfComponents (fun _ ↦ F.mapIso (eqToIso (by ext))))
 
+@[simps!]
+def counitIsoAux (F : Mon_ C) :
+    ((monToLaxMonoidal C ⋙ laxMonoidalToMon C).obj F).X ≅ ((𝟭 (Mon_ C)).obj F).X :=
+  Iso.refl _
+
+@[simp]
+theorem counitIsoAux_one (F : Mon_ C) :
+    η[((monToLaxMonoidal C ⋙ laxMonoidalToMon C).obj F).X] = η[F.X] ≫ 𝟙 _ :=
+  rfl
+
+@[simp]
+theorem counitIsoAux_mul (F : Mon_ C) :
+    μ[((monToLaxMonoidal C ⋙ laxMonoidalToMon C).obj F).X] = μ[F.X] ≫ 𝟙 _ :=
+  rfl
+
+theorem counitIsoAux_IsMon_Hom (F : Mon_ C) :
+    IsMon_Hom (counitIsoAux C F).hom where
+
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps!]
 def counitIso : monToLaxMonoidal C ⋙ laxMonoidalToMon C ≅ 𝟭 (Mon_ C) :=
-  NatIso.ofComponents fun F ↦ mkIso (Iso.refl _)
+  NatIso.ofComponents (fun F ↦
+    letI : IsMon_Hom (counitIsoAux C F).hom := counitIsoAux_IsMon_Hom C F
+    mkIso' (counitIsoAux C F))
 
 end EquivLaxMonoidalFunctorPUnit
 
