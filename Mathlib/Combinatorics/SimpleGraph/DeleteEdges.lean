@@ -111,7 +111,7 @@ lemma edgeSet_fromEdgeSet_incidenceSet (G : SimpleGraph V) (x : V) :
 /-- The edge set of `G.deleteIncidenceSet x` is the edge set of `G` set difference the incidence
 set of the vertex `x`. -/
 theorem edgeSet_deleteIncidenceSet (G : SimpleGraph V) (x : V) :
-    (G.deleteIncidenceSet x).edgeSet = G.edgeSet \ (G.incidenceSet x) := by
+    (G.deleteIncidenceSet x).edgeSet = G.edgeSet \ G.incidenceSet x := by
   simp_rw [deleteIncidenceSet, deleteEdges, edgeSet_sdiff, edgeSet_fromEdgeSet_incidenceSet]
 
 /-- The support of `G.deleteIncidenceSet x` is a subset of the support of `G` set difference the
@@ -150,14 +150,14 @@ theorem card_edgeFinset_induce_compl_singleton (G : SimpleGraph V) [DecidableRel
 /-- The finite edge set of `G.deleteIncidenceSet x` is the finite edge set of the simple graph `G`
 set difference the finite incidence set of the vertex `x`. -/
 theorem edgeFinset_deleteIncidenceSet_eq_sdiff (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
-    (G.deleteIncidenceSet x).edgeFinset = G.edgeFinset \ (G.incidenceFinset x) := by
+    (G.deleteIncidenceSet x).edgeFinset = G.edgeFinset \ G.incidenceFinset x := by
   rw [incidenceFinset, ← Set.toFinset_diff, Set.toFinset_inj]
   exact G.edgeSet_deleteIncidenceSet x
 
 /-- Deleting the incident set of the vertex `x` deletes exactly `G.degree x` edges from the edge
 set of the simple graph `G`. -/
 theorem card_edgeFinset_deleteIncidenceSet (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
-    #(G.deleteIncidenceSet x).edgeFinset = #G.edgeFinset-G.degree x := by
+    #(G.deleteIncidenceSet x).edgeFinset = #G.edgeFinset - G.degree x := by
   simp_rw [← card_incidenceFinset_eq_degree, ← card_sdiff (G.incidenceFinset_subset x),
     edgeFinset_deleteIncidenceSet_eq_sdiff]
 
