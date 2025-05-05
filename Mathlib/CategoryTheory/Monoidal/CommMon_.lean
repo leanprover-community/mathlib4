@@ -13,10 +13,11 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 
 universe v₁ v₂ u₁ u₂ u
 
-open CategoryTheory MonoidalCategory
+open CategoryTheory MonoidalCategory Mon_Class
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory.{v₁} C]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory.{v₁} C]
 
+variable (C) in
 /-- A commutative monoid object internal to a monoidal category.
 -/
 structure CommMon_ extends Mon_ C where
@@ -26,6 +27,16 @@ attribute [reassoc (attr := simp)] CommMon_.mul_comm
 
 namespace CommMon_
 
+/-- Construct an object of `CommMon_ C` from an object `X : C` a `Mon_Class X` instance
+and a `IsCommMon X` instance. -/
+def mk' (X : C) [Mon_Class X] [IsCommMon X] : CommMon_ C where
+  __ := Mon_.mk' X
+  mul_comm := IsCommMon.mul_comm X
+
+instance (X : CommMon_ C) : IsCommMon X.X where
+  mul_comm' := X.mul_comm
+
+variable (C) in
 /-- The trivial commutative monoid object. We later show this is initial in `CommMon_ C`.
 -/
 @[simps!]
@@ -35,7 +46,6 @@ def trivial : CommMon_ C :=
 instance : Inhabited (CommMon_ C) :=
   ⟨trivial C⟩
 
-variable {C}
 variable {M : CommMon_ C}
 
 instance : Category (CommMon_ C) :=
@@ -135,7 +145,7 @@ end CommMon_
 
 namespace CategoryTheory.Functor
 
-variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [BraidedCategory.{v₂} D]
+variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [BraidedCategory.{v₂} D]
 
 /-- A lax braided functor takes commutative monoid objects to commutative monoid objects.
 
@@ -147,7 +157,7 @@ def mapCommMon (F : C ⥤ D) [F.LaxBraided] : CommMon_ C ⥤ CommMon_ D where
     { F.mapMon.obj A.toMon_ with
       mul_comm := by
         dsimp
-        rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, A.mul_comm] }
+        rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] }
   map f := F.mapMon.map f
 
 variable (C) (D)
@@ -167,13 +177,14 @@ open CategoryTheory.LaxBraidedFunctor
 
 namespace EquivLaxBraidedFunctorPUnit
 
+variable (C) in
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps]
 def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommMon_ C where
   obj F := (F.mapCommMon : CommMon_ _ ⥤ CommMon_ C).obj (trivial (Discrete PUnit.{u+1}))
   map α := ((Functor.mapCommMonFunctor (Discrete PUnit) C).map α).app _
 
-variable {C}
+-- variable {C}
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
@@ -188,11 +199,11 @@ open Functor.LaxMonoidal
 
 @[simp]
 lemma commMonToLaxBraidedObj_ε (A : CommMon_ C) :
-    ε (commMonToLaxBraidedObj A) = A.one := rfl
+    ε (commMonToLaxBraidedObj A) = η[A.X] := rfl
 
 @[simp]
 lemma commMonToLaxBraidedObj_μ (A : CommMon_ C) (X Y) :
-    μ (commMonToLaxBraidedObj A) X Y = A.mul := rfl
+    «μ» (commMonToLaxBraidedObj A) X Y = μ[A.X] := rfl
 
 instance (A : CommMon_ C) : (commMonToLaxBraidedObj A).LaxBraided where
 
@@ -232,20 +243,5 @@ def equivLaxBraidedFunctorPUnit : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C �
   inverse := commMonToLaxBraided C
   unitIso := unitIso C
   counitIso := counitIso C
-
-end CommMon_
-
-namespace CommMon_
-
-variable {C}
-
-/-- Construct an object of `CommMon_ C` from an object `X : C` a `Mon_Class X` instance
-and a `IsCommMon X` instance. -/
-def mk' (X : C) [Mon_Class X] [IsCommMon X] : CommMon_ C where
-  __ := Mon_.mk' X
-  mul_comm := IsCommMon.mul_comm X
-
-instance (X : CommMon_ C) : IsCommMon X.X where
-  mul_comm' := X.mul_comm
 
 end CommMon_
