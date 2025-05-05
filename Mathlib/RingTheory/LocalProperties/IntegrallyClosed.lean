@@ -78,5 +78,4 @@ theorem IsIntegrallyClosed.of_localization {R : Type*} [CommRing R] [NoZeroDivis
   have hb : IsIntegrallyClosed B := of_equiv (h := h p hp)
     (IsLocalization.algEquiv p.1.primeCompl (Localization.AtPrime p.1) B).toRingEquiv
   rcases ((isIntegrallyClosed_iff (FractionRing R)).mp hb) hx.tower_top with ⟨⟨_, hin⟩, hy⟩
-  rw [← hy]
-  exact hin
+  rwa [← hy]
