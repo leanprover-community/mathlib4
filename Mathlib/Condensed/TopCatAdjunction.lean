@@ -75,7 +75,11 @@ def condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u + 1} where
 namespace CondensedSet
 
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
+<<<<<<< HEAD
 noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ⟶ X :=
+=======
+noncomputable def topCatAdjunctionCounit (X : TopCat.{u+1}) : X.toCondensedSet.toTopCat ⟶ X :=
+>>>>>>> origin/lean-pr-testing-8161
   TopCat.ofHom
   { toFun x := x.1 PUnit.unit
     continuous_toFun := by
@@ -93,7 +97,11 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is compactly generated).
 -/
+<<<<<<< HEAD
 noncomputable def topCatAdjunctionCounitEquiv (X : TopCat.{u + 1}) :
+=======
+noncomputable def topCatAdjunctionCounitEquiv (X : TopCat.{u+1}) :
+>>>>>>> origin/lean-pr-testing-8161
     X.toCondensedSet.toTopCat ≃ X where
   toFun := topCatAdjunctionCounit X
   invFun x := ContinuousMap.const _ x
@@ -177,7 +185,11 @@ The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGene
 is a homeomorphism.
 -/
 noncomputable def compactlyGeneratedAdjunctionCounitHomeo
+<<<<<<< HEAD
     (X : TopCat.{u + 1}) [UCompactlyGeneratedSpace.{u} X] :
+=======
+    (X : TopCat.{u+1}) [UCompactlyGeneratedSpace.{u} X] :
+>>>>>>> origin/lean-pr-testing-8161
     X.toCondensedSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
   continuous_toFun := (topCatAdjunctionCounit X).hom.continuous
