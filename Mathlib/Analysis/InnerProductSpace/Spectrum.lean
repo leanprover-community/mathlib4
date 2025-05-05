@@ -226,7 +226,7 @@ private theorem hasEigenvector_eigenvectorBasis_helper (i : Fin n) :
 
 /-- The eigenvalues for a self-adjoint operator `T` on a
 finite-dimensional inner product space `E`, sorted in decreasing order -/
-noncomputable irreducible_def eigenvalues: Fin n → ℝ :=
+noncomputable irreducible_def eigenvalues : Fin n → ℝ :=
   (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
 
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
