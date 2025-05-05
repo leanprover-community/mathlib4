@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.Nakayama
 
 /-!
-# Krull's Height TheoremgroupCoho
+# Krull's Height Theorem
 
 In this file, we prove Krull's principal ideal theorem and Krull's height theorem.
 
