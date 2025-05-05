@@ -12,7 +12,7 @@ This file defines the leading coefficient of a meromorphic function. If `f` is m
 point `x`, the leading coefficient is defined as the (unique!) value `g x` for a presentation of `f`
 in the form `(z - x) ^ order • g z` with `g` analytic at `x`.
 
-The lemma `leadCoefficient_eq_limit` expresses the leading term as a limit.
+The lemma `leadCoefficient_eq_limit` expresses the leading coefficient as a limit.
 -/
 
 variable
@@ -187,16 +187,6 @@ lemma leadCoefficient_mul {f₁ f₂ : 𝕜 → 𝕜} (hf₁ : MeromorphicAt f�
     leadCoefficient (f₁ * f₂) x = (leadCoefficient f₁ x) * (leadCoefficient f₂ x) := by
   exact leadCoefficient_smul hf₁ hf₂
 
-theorem order_ne_top_iff₂ {f : 𝕜 → E} (hf : MeromorphicAt f x) :
-    hf.order ≠ ⊤ ↔ ∀ᶠ x in 𝓝[≠] x, f x ≠ 0 := by
-  constructor
-  · intro h
-    obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.order_ne_top_iff.1 h
-    filter_upwards [h₃g, self_mem_nhdsWithin, eventually_nhdsWithin_of_eventually_nhds
-      ((h₁g.continuousAt.ne_iff_eventually_ne continuousAt_const).mp h₂g)]
-    simp_all [zpow_ne_zero, sub_ne_zero]
-  · simp_all [hf.order_eq_top_iff, Eventually.frequently]
-
 /--
 The leading coefficient of the inverse function is the inverse of the leading coefficient.
 -/
@@ -206,7 +196,7 @@ lemma leadCoefficient_inv {f : 𝕜 → 𝕜} :
   · by_cases h₂ : h₁.order = ⊤
     · simp_all [h₁.order_inv]
     have : f⁻¹ * f =ᶠ[𝓝[≠] x] 1 := by
-      filter_upwards [h₁.order_ne_top_iff₂.1 h₂]
+      filter_upwards [h₁.order_ne_top_iff_eventually_ne_zero.1 h₂]
       simp_all
     rw [← mul_eq_one_iff_eq_inv₀ (h₁.zero_ne_leadCoefficient h₂).symm,
       ← leadCoefficient_mul h₁.inv h₁, leadCoefficient_congr_nhdNE this,
