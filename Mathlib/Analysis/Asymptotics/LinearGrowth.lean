@@ -73,7 +73,7 @@ variable {u v : ℕ → EReal} {a b : EReal}
 
 lemma linearGrowthInf_eventually_monotone (h : u ≤ᶠ[atTop] v) :
     linearGrowthInf u ≤ linearGrowthInf v :=
-  liminf_le_liminf (h.mono fun n u_v ↦ monotone_div_right_of_nonneg n.cast_nonneg' u_v)
+  liminf_le_liminf  (h.mono fun n u_v ↦ EReal.monotone_div_right_of_nonneg n.cast_nonneg' u_v)
 
 lemma linearGrowthInf_monotone (h : u ≤ v) : linearGrowthInf u ≤ linearGrowthInf v :=
   linearGrowthInf_eventually_monotone (Eventually.of_forall h)
@@ -156,12 +156,12 @@ lemma _root_.Frequently.le_linearGrowthSup (h : ∃ᶠ n : ℕ in atTop, a * n �
 
 /-! ### Special cases -/
 
-lemma linearGrowthSup_bot : linearGrowthSup ⊥ = (⊥ : EReal) := by
+lemma linearGrowthSup_bot : linearGrowthSup (⊥ : ℕ → EReal) = (⊥ : EReal) := by
   nth_rw 2 [← limsup_const (f := atTop (α := ℕ)) ⊥]
   refine limsup_congr (eventually_atTop.2 ?_)
   exact ⟨1, fun n n_pos ↦ bot_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)⟩
 
-lemma linearGrowthInf_bot : linearGrowthInf ⊥ = (⊥ : EReal) := by
+lemma linearGrowthInf_bot : linearGrowthInf (⊥ : ℕ → EReal) = (⊥ : EReal) := by
   apply le_bot_iff.1
   rw [← linearGrowthSup_bot]
   exact linearGrowthInf_le_linearGrowthSup
@@ -171,7 +171,7 @@ lemma linearGrowthInf_bot : linearGrowthInf ⊥ = (⊥ : EReal) := by
   refine liminf_congr (eventually_atTop.2 ?_)
   exact ⟨1, fun n n_pos ↦ top_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)⟩
 
-lemma linearGrowthSup_top : linearGrowthSup ⊤ = (⊤ : EReal) := by
+lemma linearGrowthSup_top : linearGrowthSup (⊤ : ℕ → EReal) = (⊤ : EReal) := by
   apply top_le_iff.1
   rw [← linearGrowthInf_top]
   exact linearGrowthInf_le_linearGrowthSup
@@ -354,7 +354,8 @@ lemma EReal.eventually_atTop_exists_nat_between {a b : EReal} (h : a < b) (hb : 
   | ⊤ => (not_top_lt h).rec
   | ⊥ => by
     refine Eventually.of_forall fun n ↦ ⟨0, ?_, ?_⟩ <;> rw [Nat.cast_zero]
-    · exact mul_nonpos_iff.2 (.inr ⟨bot_le, n.cast_nonneg'⟩)
+    · apply mul_nonpos_iff.2 -- Split apply and exact for a 0.5s. gain
+      exact .inr ⟨bot_le, n.cast_nonneg'⟩
     · exact mul_nonneg hb n.cast_nonneg'
   | (a : ℝ) =>
     match b with
@@ -392,7 +393,7 @@ lemma le_linearGrowthInf_comp (hu : 0 ≤ᶠ[atTop] u) (hv : Tendsto v atTop atT
   have uv_0 : 0 ≤ linearGrowthInf (u ∘ v) := by
     rw [← linearGrowthInf_const zero_ne_bot zero_ne_top]
     exact linearGrowthInf_eventually_monotone (hv.eventually hu)
-  apply mul_le_of_forall_lt_of_nonneg (linearGrowthInf_nonneg v) uv_0
+  apply EReal.mul_le_of_forall_lt_of_nonneg (linearGrowthInf_nonneg v) uv_0
   refine fun a ⟨_, a_v⟩ b ⟨b_0, b_u⟩ ↦ Eventually.le_linearGrowthInf ?_
   have b_uv := eventually_map.1 ((eventually_mul_le b_u).filter_mono hv)
   filter_upwards [b_uv, eventually_lt_of_lt_liminf a_v, eventually_gt_atTop 0]
@@ -434,7 +435,7 @@ lemma _root_.Monotone.linearGrowthInf_nonneg (h : Monotone u) (h' : u ≠ ⊥) :
 
 lemma _root_.Monotone.linearGrowthSup_nonneg (h : Monotone u) (h' : u ≠ ⊥) :
     0 ≤ linearGrowthSup u :=
-  (h.linearGrowthInf_nonneg h').trans linearGrowthInf_le_linearGrowthSup
+  (h.linearGrowthInf_nonneg h').trans (linearGrowthInf_le_linearGrowthSup)
 
 lemma linearGrowthInf_comp_nonneg (h : Monotone u) (h' : u ≠ ⊥) (hv : Tendsto v atTop atTop) :
     0 ≤ linearGrowthInf (u ∘ v) := by
@@ -503,9 +504,10 @@ lemma _root_.Monotone.le_linearGrowthSup_comp (h : Monotone u)
   -- WLOG, `u` is non-bot, and we can apply `mul_le_of_forall_lt_of_nonneg`.
   by_cases u_0 : u = ⊥
   · rw [u_0, linearGrowthSup_bot, mul_bot_of_pos v_0]; exact bot_le
-  apply mul_le_of_forall_lt_of_nonneg v_0.le
+  apply EReal.mul_le_of_forall_lt_of_nonneg v_0.le
     (linearGrowthSup_comp_nonneg h u_0 (tendsto_atTop_of_linearGrowthInf_pos hv))
-  refine fun a ⟨a_0, a_v⟩ b ⟨b_0, b_u⟩ ↦ Frequently.le_linearGrowthSup ?_
+  intro a ⟨a_0, a_v⟩ b ⟨b_0, b_u⟩
+  apply Frequently.le_linearGrowthSup
   obtain ⟨a', a_a', a_v'⟩ := exists_between a_v
   -- We get an epsilon of room: if `m` is large enough, then `a * n < a' * n ≤ v n`.
   -- Using `b_u`, we can find arbitrarily large values `n` such that `b * n ≤ u n`.
