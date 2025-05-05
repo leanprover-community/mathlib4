@@ -86,8 +86,7 @@ lemma map_of_rootsOfUnityEquiv {n : ℕ} [NeZero n] {M N : Type*} [CommMonoid M]
     constructor
     · ext : 2
       simp_all only [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val,
-        IsPrimitiveRoot.val_toRootsOfUnity_coe, OneMemClass.coe_one, Units.val_one]
-      rw [hm.pow_eq_one]
+        IsPrimitiveRoot.val_toRootsOfUnity_coe, OneMemClass.coe_one, Units.val_one, hm.pow_eq_one]
     · intro l hl
       apply (hm.pow_eq_one_iff_dvd l).mp
       have e3 : (hm.toRootsOfUnity ^ l).val.val = 1 := by
