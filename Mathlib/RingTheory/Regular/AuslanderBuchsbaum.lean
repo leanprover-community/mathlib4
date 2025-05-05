@@ -185,8 +185,8 @@ instance [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M]
       rfl }
   exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
-lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (f : M ⟶ N)
-    (mem : f ∈ (Module.annihilator R L) • (⊤ : Submodule R (M ⟶ N))) (n : ℕ) :
+lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M ⟶ N)
+    (mem : f ∈ (Module.annihilator R L) • (⊤ : Submodule R (M ⟶ N))) :
     (AddCommGrp.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero n)) = 0 := by
   refine Submodule.smul_induction_on mem ?_ ?_
   · intro r hr f hf
@@ -215,7 +215,7 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (f : M ⟶ N)
 
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
-    [Small.{v} (R ⧸ (IsLocalRing.maximalIdeal R))]
+    [Small.{v} (R ⧸ (maximalIdeal R))]
     (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
     1 + IsLocalRing.depth M = IsLocalRing.depth (ModuleCat.of R R) := by
   rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
@@ -236,22 +236,22 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
   have : Module.Finite R (ι →₀ Shrink.{v, u} R) := by
     simp [Module.finite_finsupp_iff, Module.Finite.equiv (Shrink.linearEquiv R R).symm, fin.finite]
   have : Module.Finite R (LinearMap.ker f) := Module.IsNoetherian.finite R (LinearMap.ker f)
+  let S : ShortComplex (ModuleCat.{v} R) := {
+    f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
+    g := ModuleCat.ofHom.{v} f
+    zero := by
+      ext x
+      simp }
+  have S_exact : S.ShortExact := {
+    exact := by
+      apply (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr
+      intro x
+      simp [S]
+    mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
+    epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf }
   have ker_free : Module.Free R (LinearMap.ker f) := by
     apply @free_of_projectiveOverLocalRing _ _ _ _ (ModuleCat.of R (LinearMap.ker f)) _ ?_
     apply @projective_of_hasProjectiveDimensionLT_one _ _ _ _ _ ?_
-    let S : ShortComplex (ModuleCat.{v} R) := {
-      f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
-      g := ModuleCat.ofHom.{v} f
-      zero := by
-        ext x
-        simp }
-    have S_exact : S.ShortExact := {
-      exact := by
-        apply (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr
-        intro x
-        simp [S]
-      mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
-      epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf }
     have proj : Projective (ModuleCat.of.{v} R (ι →₀ Shrink.{v, u} R)) := by
       obtain ⟨⟨B⟩⟩ : Module.Free R (ι →₀ Shrink.{v, u} R) := inferInstance
       exact ModuleCat.projective_of_free B.2
@@ -281,7 +281,19 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       rfl
     rw [this]
     apply Submodule.smul_mem_smul (h i) (Set.mem_univ _)
-
+  let K := ModuleCat.of R (Shrink.{v} (R ⧸ (maximalIdeal R)))
+  have Sf_mem : S.f ∈ (Module.annihilator R K) • (⊤ : Submodule R (S.X₁ ⟶ S.X₂)) := by
+    simp only [K, S, LinearEquiv.annihilator_eq (Shrink.linearEquiv (R ⧸ maximalIdeal R) R),
+      Ideal.annihilator_quotient]
+    rw [← (ModuleCat.homLinearEquiv (S := R)).symm_apply_apply
+      (ModuleCat.ofHom (LinearMap.ker f).subtype), ← Submodule.mem_comap]
+    apply Submodule.smul_top_le_comap_smul_top
+    apply mem_smul_top_of_range_le_smul_top
+    intro x hx
+    have hx : x ∈ LinearMap.range (LinearMap.ker f).subtype := hx
+    rw [Submodule.range_subtype] at hx
+    exact ker_le hx
+  have (i : ℕ) := ext_hom_zero_of_mem_ideal_smul K S.X₁ S.X₂ i S.f Sf_mem
   sorry
 
 open scoped Classical in
