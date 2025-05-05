@@ -70,6 +70,27 @@ theorem ext {X : C} (h₁ h₂ : Mon_Class X) (H : h₁.mul = h₂.mul) : h₁ =
   · simp [tensorHom_def, H, ← unitors_equal]
   · simp [tensorHom_def']
 
+@[simps]
+instance trivial (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : Mon_Class (𝟙_ C) where
+  one := 𝟙 _
+  mul := (λ_ _).hom
+  mul_assoc' := by monoidal_coherence
+  mul_one' := by monoidal_coherence
+
+variable {M : C}
+variable [Mon_Class M]
+
+@[simp]
+theorem one_mul_hom {Z : C} (f : Z ⟶ M) : (η[M] ⊗ f) ≫ μ = (λ_ Z).hom ≫ f := by
+  rw [tensorHom_def'_assoc, one_mul, leftUnitor_naturality]
+
+@[simp]
+theorem mul_one_hom {Z : C} (f : Z ⟶ M) : (f ⊗ η) ≫ μ = (ρ_ Z).hom ≫ f := by
+  rw [tensorHom_def_assoc, mul_one, rightUnitor_naturality]
+
+theorem mul_assoc_flip :
+    (M ◁ μ) ≫ μ = (α_ M M M).inv ≫ (μ ▷ M) ≫ μ := by simp
+
 end Mon_Class
 
 open scoped Mon_Class
@@ -82,6 +103,15 @@ class IsMon_Hom (f : M ⟶ N) : Prop where
   mul_hom (f) : μ ≫ f = (f ⊗ f) ≫ μ := by aesop_cat
 
 attribute [reassoc (attr := simp)] IsMon_Hom.one_hom IsMon_Hom.mul_hom
+
+namespace Mon_Class
+
+instance {M N : C} [Mon_Class M] [Mon_Class N] (f : M ≅ N) [IsMon_Hom f.hom] :
+   IsMon_Hom f.inv where
+  one_hom := by simp [Iso.comp_inv_eq]
+  mul_hom := by simp [Iso.comp_inv_eq]
+
+end Mon_Class
 
 variable (C)
 
@@ -129,7 +159,17 @@ instance {M : Mon_ C} : Mon_Class M.X where
   mul_one' := M.mul_one
   mul_assoc' := M.mul_assoc
 
+-- def Simps.one (M : Mon_ C) : 𝟙_ C ⟶ M.X := η[M.X]
+
+-- @[simp]
+-- theorem one_def {M : Mon_ C} : M.one = η := by simp?
+
+-- @[simp]
+-- theorem mul_def {M : Mon_ C} : M.mul = μ := rfl
+
 variable (C)
+
+
 
 /-- The trivial monoid object. We later show this is initial in `Mon_ C`.
 -/
@@ -148,15 +188,16 @@ variable {C}
 variable {M : Mon_ C}
 
 @[simp]
-theorem one_mul_hom {Z : C} (f : Z ⟶ M.X) : (M.one ⊗ f) ≫ M.mul = (λ_ Z).hom ≫ f := by
-  rw [tensorHom_def'_assoc, M.one_mul, leftUnitor_naturality]
+theorem one_mul_hom {Z : C} (f : Z ⟶ M.X) : (M.one ⊗ f) ≫ M.mul = (λ_ Z).hom ≫ f :=
+  Mon_Class.one_mul_hom f
 
 @[simp]
-theorem mul_one_hom {Z : C} (f : Z ⟶ M.X) : (f ⊗ M.one) ≫ M.mul = (ρ_ Z).hom ≫ f := by
-  rw [tensorHom_def_assoc, M.mul_one, rightUnitor_naturality]
+theorem mul_one_hom {Z : C} (f : Z ⟶ M.X) : (f ⊗ M.one) ≫ M.mul = (ρ_ Z).hom ≫ f :=
+  Mon_Class.mul_one_hom f
 
 theorem mul_assoc_flip :
-    (M.X ◁ M.mul) ≫ M.mul = (α_ M.X M.X M.X).inv ≫ (M.mul ▷ M.X) ≫ M.mul := by simp
+    (M.X ◁ M.mul) ≫ M.mul = (α_ M.X M.X M.X).inv ≫ (M.mul ▷ M.X) ≫ M.mul :=
+  Mon_Class.mul_assoc_flip
 
 /-- A morphism of monoid objects. -/
 @[ext]
@@ -204,6 +245,12 @@ theorem id_hom' (M : Mon_ C) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=
 theorem comp_hom' {M N K : Mon_ C} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
+
+def mkIso' {M N : Mon_ C} (f : M.X ≅ N.X) [IsMon_Hom f.hom] : M ≅ N where
+  hom := Hom.mk' f.hom
+  inv := Hom.mk' f.inv
+  hom_inv_id := by aesop_cat
+  inv_hom_id := by aesop_cat
 
 section
 
@@ -431,7 +478,7 @@ def equivLaxMonoidalFunctorPUnit : LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C
 
 end Mon_
 
-namespace Mon_
+namespace Mon_Class
 
 /-!
 In this section, we prove that the category of monoids in a braided monoidal category is monoidal.
@@ -479,124 +526,169 @@ which have also been proved in `Mathlib.CategoryTheory.Monoidal.Braided`.
 variable {C}
 
 -- The proofs that associators and unitors preserve monoid units don't require braiding.
-theorem one_associator {M N P : Mon_ C} :
-    ((λ_ (𝟙_ C)).inv ≫ ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one) ⊗ P.one)) ≫ (α_ M.X N.X P.X).hom =
-      (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ (λ_ (𝟙_ C)).inv ≫ (N.one ⊗ P.one)) := by
+theorem one_associator {M N P : C} [Mon_Class M] [Mon_Class N] [Mon_Class P] :
+    ((λ_ (𝟙_ C)).inv ≫ ((λ_ (𝟙_ C)).inv ≫ (η[M] ⊗ η[N]) ⊗ η[P])) ≫ (α_ M N P).hom =
+      (λ_ (𝟙_ C)).inv ≫ (η[M] ⊗ (λ_ (𝟙_ C)).inv ≫ (η[N] ⊗ η[P])) := by
   simp only [Category.assoc, Iso.cancel_iso_inv_left]
-  slice_lhs 1 3 => rw [← Category.id_comp P.one, tensor_comp]
+  slice_lhs 1 3 => rw [← Category.id_comp (η : 𝟙_ C ⟶ P), tensor_comp]
   slice_lhs 2 3 => rw [associator_naturality]
-  slice_rhs 1 2 => rw [← Category.id_comp M.one, tensor_comp]
+  slice_rhs 1 2 => rw [← Category.id_comp η, tensor_comp]
   slice_lhs 1 2 => rw [tensorHom_id, ← leftUnitor_tensor_inv]
   rw [← cancel_epi (λ_ (𝟙_ C)).inv]
   slice_lhs 1 2 => rw [leftUnitor_inv_naturality]
   simp
 
-theorem one_leftUnitor {M : Mon_ C} :
-    ((λ_ (𝟙_ C)).inv ≫ (𝟙 (𝟙_ C) ⊗ M.one)) ≫ (λ_ M.X).hom = M.one := by
+theorem one_leftUnitor {M : C} [Mon_Class M] :
+    ((λ_ (𝟙_ C)).inv ≫ (𝟙 (𝟙_ C) ⊗ η[M])) ≫ (λ_ M).hom = η := by
   simp
 
-theorem one_rightUnitor {M : Mon_ C} :
-    ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ 𝟙 (𝟙_ C))) ≫ (ρ_ M.X).hom = M.one := by
+theorem one_rightUnitor {M : C} [Mon_Class M] :
+    ((λ_ (𝟙_ C)).inv ≫ (η[M] ⊗ 𝟙 (𝟙_ C))) ≫ (ρ_ M).hom = η := by
   simp [← unitors_equal]
 
 section BraidedCategory
 
 variable [BraidedCategory C]
 
-theorem Mon_tensor_one_mul (M N : Mon_ C) :
-    (((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)) ▷ (M.X ⊗ N.X)) ≫
-        tensorμ M.X N.X M.X N.X ≫ (M.mul ⊗ N.mul) =
-      (λ_ (M.X ⊗ N.X)).hom := by
+theorem Mon_tensor_one_mul (M N : C) [Mon_Class M] [Mon_Class N] :
+    (((λ_ (𝟙_ C)).inv ≫ (η[M] ⊗ η[N])) ▷ (M ⊗ N)) ≫
+        tensorμ M N M N ≫ (μ ⊗ μ) =
+      (λ_ (M ⊗ N)).hom := by
   simp only [comp_whiskerRight_assoc]
   slice_lhs 2 3 => rw [tensorμ_natural_left]
-  slice_lhs 3 4 => rw [← tensor_comp, one_mul M, one_mul N]
+  slice_lhs 3 4 => rw [← tensor_comp, one_mul, one_mul]
   symm
-  exact tensor_left_unitality M.X N.X
+  exact tensor_left_unitality M N
 
-theorem Mon_tensor_mul_one (M N : Mon_ C) :
-    (M.X ⊗ N.X) ◁ ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)) ≫
-        tensorμ M.X N.X M.X N.X ≫ (M.mul ⊗ N.mul) =
-      (ρ_ (M.X ⊗ N.X)).hom := by
+theorem Mon_tensor_mul_one (M N : C) [Mon_Class M] [Mon_Class N] :
+    (M ⊗ N) ◁ ((λ_ (𝟙_ C)).inv ≫ (η[M] ⊗ η[N])) ≫
+        tensorμ M N M N ≫ (μ[M] ⊗ μ[N]) =
+      (ρ_ (M ⊗ N)).hom := by
   simp only [MonoidalCategory.whiskerLeft_comp_assoc]
   slice_lhs 2 3 => rw [tensorμ_natural_right]
-  slice_lhs 3 4 => rw [← tensor_comp, mul_one M, mul_one N]
+  slice_lhs 3 4 => rw [← tensor_comp, mul_one, mul_one]
   symm
-  exact tensor_right_unitality M.X N.X
+  exact tensor_right_unitality M N
 
-theorem Mon_tensor_mul_assoc (M N : Mon_ C) :
-    ((tensorμ M.X N.X M.X N.X ≫ (M.mul ⊗ N.mul)) ▷ (M.X ⊗ N.X)) ≫
-        tensorμ M.X N.X M.X N.X ≫ (M.mul ⊗ N.mul) =
-      (α_ (M.X ⊗ N.X) (M.X ⊗ N.X) (M.X ⊗ N.X)).hom ≫
-        ((M.X ⊗ N.X) ◁ (tensorμ M.X N.X M.X N.X ≫ (M.mul ⊗ N.mul))) ≫
-          tensorμ M.X N.X M.X N.X ≫ (M.mul ⊗ N.mul) := by
+theorem Mon_tensor_mul_assoc (M N : C) [Mon_Class M] [Mon_Class N] :
+    ((tensorμ M N M N ≫ (μ ⊗ μ)) ▷ (M ⊗ N)) ≫
+        tensorμ M N M N ≫ (μ ⊗ μ) =
+      (α_ (M ⊗ N : C) (M ⊗ N) (M ⊗ N)).hom ≫
+        ((M ⊗ N : C) ◁ (tensorμ M N M N ≫ (μ ⊗ μ))) ≫
+          tensorμ M N M N ≫ (μ ⊗ μ) := by
   simp only [comp_whiskerRight_assoc, MonoidalCategory.whiskerLeft_comp_assoc]
   slice_lhs 2 3 => rw [tensorμ_natural_left]
-  slice_lhs 3 4 => rw [← tensor_comp, mul_assoc M, mul_assoc N, tensor_comp, tensor_comp]
+  slice_lhs 3 4 => rw [← tensor_comp, mul_assoc, mul_assoc, tensor_comp, tensor_comp]
   slice_lhs 1 3 => rw [tensor_associativity]
   slice_lhs 3 4 => rw [← tensorμ_natural_right]
   simp
 
-theorem mul_associator {M N P : Mon_ C} :
-    (tensorμ (M.X ⊗ N.X) P.X (M.X ⊗ N.X) P.X ≫
-          (tensorμ M.X N.X M.X N.X ≫ (M.mul ⊗ N.mul) ⊗ P.mul)) ≫
-        (α_ M.X N.X P.X).hom =
-      ((α_ M.X N.X P.X).hom ⊗ (α_ M.X N.X P.X).hom) ≫
-        tensorμ M.X (N.X ⊗ P.X) M.X (N.X ⊗ P.X) ≫
-          (M.mul ⊗ tensorμ N.X P.X N.X P.X ≫ (N.mul ⊗ P.mul)) := by
+theorem mul_associator {M N P : C} [Mon_Class M] [Mon_Class N] [Mon_Class P] :
+    (tensorμ (M ⊗ N) P (M ⊗ N) P ≫
+          (tensorμ M N M N ≫ (μ ⊗ μ) ⊗ μ)) ≫
+        (α_ M N P).hom =
+      ((α_ M N P).hom ⊗ (α_ M N P).hom) ≫
+        tensorμ M (N ⊗ P) M (N ⊗ P) ≫
+          (μ ⊗ tensorμ N P N P ≫ (μ ⊗ μ)) := by
   simp only [tensor_obj, prodMonoidal_tensorObj, Category.assoc]
-  slice_lhs 2 3 => rw [← Category.id_comp P.mul, tensor_comp]
+  slice_lhs 2 3 => rw [← Category.id_comp μ[P], tensor_comp]
   slice_lhs 3 4 => rw [associator_naturality]
-  slice_rhs 3 4 => rw [← Category.id_comp M.mul, tensor_comp]
+  slice_rhs 3 4 => rw [← Category.id_comp μ, tensor_comp]
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 1 3 => rw [associator_monoidal]
   simp only [Category.assoc]
 
-theorem mul_leftUnitor {M : Mon_ C} :
-    (tensorμ (𝟙_ C) M.X (𝟙_ C) M.X ≫ ((λ_ (𝟙_ C)).hom ⊗ M.mul)) ≫ (λ_ M.X).hom =
-      ((λ_ M.X).hom ⊗ (λ_ M.X).hom) ≫ M.mul := by
-  rw [← Category.comp_id (λ_ (𝟙_ C)).hom, ← Category.id_comp M.mul, tensor_comp]
+theorem mul_leftUnitor {M : C} [Mon_Class M] :
+    (tensorμ (𝟙_ C) M (𝟙_ C) M ≫ ((λ_ (𝟙_ C)).hom ⊗ μ)) ≫ (λ_ M).hom =
+      ((λ_ M).hom ⊗ (λ_ M).hom) ≫ μ := by
+  rw [← Category.comp_id (λ_ (𝟙_ C)).hom, ← Category.id_comp μ, tensor_comp]
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 3 4 => rw [leftUnitor_naturality]
   slice_lhs 1 3 => rw [← leftUnitor_monoidal]
   simp only [Category.assoc, Category.id_comp]
 
-theorem mul_rightUnitor {M : Mon_ C} :
-    (tensorμ M.X (𝟙_ C) M.X (𝟙_ C) ≫ (M.mul ⊗ (λ_ (𝟙_ C)).hom)) ≫ (ρ_ M.X).hom =
-      ((ρ_ M.X).hom ⊗ (ρ_ M.X).hom) ≫ M.mul := by
-  rw [← Category.id_comp M.mul, ← Category.comp_id (λ_ (𝟙_ C)).hom, tensor_comp]
+theorem mul_rightUnitor {M : C} [Mon_Class M] :
+    (tensorμ M (𝟙_ C) M (𝟙_ C) ≫ (μ ⊗ (λ_ (𝟙_ C)).hom)) ≫ (ρ_ M).hom =
+      ((ρ_ M).hom ⊗ (ρ_ M).hom) ≫ μ := by
+  rw [← Category.id_comp μ, ← Category.comp_id (λ_ (𝟙_ C)).hom, tensor_comp]
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 3 4 => rw [rightUnitor_naturality]
   slice_lhs 1 3 => rw [← rightUnitor_monoidal]
   simp only [Category.assoc, Category.id_comp]
 
-@[simps tensorObj_X tensorHom_hom]
-instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
-  let tensorObj (M N : Mon_ C) : Mon_ C :=
-    { X := M.X ⊗ N.X
-      one := (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)
-      mul := tensorμ M.X N.X M.X N.X ≫ (M.mul ⊗ N.mul)
-      one_mul := Mon_tensor_one_mul M N
-      mul_one := Mon_tensor_mul_one M N
-      mul_assoc := Mon_tensor_mul_assoc M N }
-  let tensorHom {X₁ Y₁ X₂ Y₂ : Mon_ C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
-      tensorObj _ _ ⟶ tensorObj _ _ :=
-    { hom := f.hom ⊗ g.hom
-      one_hom := by
-        dsimp [tensorObj]
-        slice_lhs 2 3 => rw [← tensor_comp, Hom.one_hom f, Hom.one_hom g]
-      mul_hom := by
-        dsimp [tensorObj]
-        slice_rhs 1 2 => rw [tensorμ_natural]
-        slice_lhs 2 3 => rw [← tensor_comp, Hom.mul_hom f, Hom.mul_hom g, tensor_comp]
-        simp only [Category.assoc] }
-  { tensorObj := tensorObj
-    tensorHom := tensorHom
-    whiskerRight := fun f Y => tensorHom f (𝟙 Y)
-    whiskerLeft := fun X _ _ g => tensorHom (𝟙 X) g
-    tensorUnit := trivial C
-    associator := fun M N P ↦ mkIso (α_ M.X N.X P.X) one_associator mul_associator
-    leftUnitor := fun M ↦ mkIso (λ_ M.X) one_leftUnitor mul_leftUnitor
-    rightUnitor := fun M ↦ mkIso (ρ_ M.X) one_rightUnitor mul_rightUnitor }
+@[simps]
+instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N : C) where
+  one := (λ_ (𝟙_ C)).inv ≫ (η ⊗ η)
+  mul := tensorμ M N M N ≫ (μ ⊗ μ)
+  one_mul' := Mon_tensor_one_mul M N
+  mul_one' := Mon_tensor_mul_one M N
+  mul_assoc' := Mon_tensor_mul_assoc M N
+
+open IsMon_Hom
+
+instance tensorHom {X₁ Y₁ X₂ Y₂ : C} [Mon_Class X₁] [Mon_Class Y₁] [Mon_Class X₂] [Mon_Class Y₂]
+    (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) [IsMon_Hom f] [IsMon_Hom g] :
+     IsMon_Hom (f ⊗ g) :=
+  { one_hom := by
+      dsimp
+      slice_lhs 2 3 => rw [← tensor_comp, one_hom, one_hom]
+    mul_hom := by
+      dsimp
+      slice_rhs 1 2 => rw [tensorμ_natural]
+      slice_lhs 2 3 => rw [← tensor_comp, mul_hom, mul_hom, tensor_comp]
+      simp only [Category.assoc] }
+
+instance id {X : C} [Mon_Class X] : IsMon_Hom (𝟙 X) where
+
+instance whiskerLeft (X : C) [Mon_Class X] {Y Z : C} [Mon_Class Y] [Mon_Class Z]
+    (f : Y ⟶ Z) [IsMon_Hom f] :
+    IsMon_Hom (X ◁ f) where
+  one_hom := by simpa using (tensorHom (𝟙 X) f).one_hom
+  mul_hom := by simpa using (tensorHom (𝟙 X) f).mul_hom
+
+@[simps!]
+instance whiskerRight {X Y : C} [Mon_Class X] [Mon_Class Y] (f : X ⟶ Y) [IsMon_Hom f]
+    (Z : C) [Mon_Class Z] :
+    IsMon_Hom (f ▷ Z) where
+  one_hom := by simpa using (tensorHom f (𝟙 Z)).one_hom
+  mul_hom := by simpa using (tensorHom f (𝟙 Z)).mul_hom
+
+instance associator (X Y Z : C) [Mon_Class X] [Mon_Class Y] [Mon_Class Z] :
+    IsMon_Hom (α_ X Y Z).hom where
+  one_hom := one_associator
+  mul_hom := mul_associator
+
+instance leftUnitor (X : C) [Mon_Class X] :
+    IsMon_Hom (λ_ X).hom where
+  one_hom := one_leftUnitor
+  mul_hom := mul_leftUnitor
+
+instance rightUnitor (X : C) [Mon_Class X] :
+    IsMon_Hom (ρ_ X).hom where
+  one_hom := one_rightUnitor
+  mul_hom := mul_rightUnitor
+
+end BraidedCategory
+
+end Mon_Class
+
+namespace Mon_Cat
+
+section BraidedCategory
+
+variable {C}
+variable [BraidedCategory C]
+
+@[simps!]
+instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) where
+  tensorObj := fun M N ↦ Mon_.mk' (M.X ⊗ N.X)
+  tensorHom f g := Mon_.Hom.mk' (f.hom ⊗ g.hom)
+  whiskerRight := fun f Y => Mon_.Hom.mk' (f.hom ▷ Y.X)
+  whiskerLeft := fun X _ _ g => Mon_.Hom.mk' (X.X ◁ g.hom)
+  tensorUnit := Mon_.mk' (𝟙_ C)
+  associator := fun M N P ↦ Mon_.mkIso' <| associator M.X N.X P.X
+  leftUnitor := fun M ↦ Mon_.mkIso' <| leftUnitor M.X
+  rightUnitor := fun M ↦ Mon_.mkIso' <| rightUnitor M.X
 
 @[simp]
 theorem tensorUnit_X : (𝟙_ (Mon_ C)).X = 𝟙_ C := rfl
@@ -617,12 +709,12 @@ theorem tensorObj_mul (X Y : Mon_ C) :
 @[simp]
 theorem whiskerLeft_hom {X Y : Mon_ C} (f : X ⟶ Y) (Z : Mon_ C) :
     (f ▷ Z).hom = f.hom ▷ Z.X := by
-  rw [← tensorHom_id]; rfl
+  rfl
 
 @[simp]
 theorem whiskerRight_hom (X : Mon_ C) {Y Z : Mon_ C} (f : Y ⟶ Z) :
     (X ◁ f).hom = X.X ◁ f.hom := by
-  rw [← id_tensorHom]; rfl
+  rfl
 
 @[simp]
 theorem leftUnitor_hom_hom (X : Mon_ C) : (λ_ X).hom.hom = (λ_ X.X).hom := rfl

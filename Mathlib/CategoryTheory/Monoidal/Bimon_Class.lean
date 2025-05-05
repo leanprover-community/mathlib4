@@ -38,7 +38,7 @@ variable [BraidedCategory C]
 open scoped Mon_Class Comon_Class
 
 class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
-  mul_comul : μ ≫ Δ = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ ⊗ μ) := by aesop_cat
+  mul_comul : μ ≫ Δ = (Δ[M] ⊗ Δ[M]) ≫ tensorμ M M M M ≫ (μ ⊗ μ) := by aesop_cat
   one_comul : (η ≫ Δ : 𝟙_ C ⟶ M ⊗ M) = η := by aesop_cat
   mul_counit : (μ ≫ ε : M ⊗ M ⟶ 𝟙_ C) = ε := by aesop_cat
   one_counit : (η : 𝟙_ C ⟶ M) ≫ ε = 𝟙 (𝟙_ C) := by aesop_cat
@@ -142,7 +142,7 @@ theorem toMonCatforget : toMonCat C ⋙ Mon_Cat.forget C = forget C := rfl
 /-- The forgetful functor from bimonoid objects to comonoid objects. -/
 @[simps!]
 def toComonCat : Bimon_Cat C ⥤ Comon_Cat C :=
-  (Mon_Cat.forgetMonoidal C).toOplaxMonoidalFunctor.mapComonCat
+  (Mon_Cat.forget C).mapComonCat
 
 @[simp]
 theorem toComonCat_forget : toComonCat C ⋙ Comon_Cat.forget C = forget C := rfl
@@ -273,14 +273,14 @@ def ofMonCatComonCat : Mon_Cat (Comon_Cat C) ⥤ Bimon_Cat C where
     { hom := Mon_Cat.mkHom {
         hom := f.hom.hom
         one_hom := by
-          have := ((Comon_Cat.forgetMonoidal C).mapMonCat.map f).one_hom
+          have := ((Comon_Cat.forget C).mapMonCat.map f).one_hom
           simp at this
           have : (𝟙 (𝟙_ C) ≫ η) ≫ f.hom.hom = 𝟙 (𝟙_ C) ≫ η :=
-            ((Comon_Cat.forgetMonoidal C).mapMonCat.map f).one_hom
+            ((Comon_Cat.forget C).mapMonCat.map f).one_hom
           simpa using this
         mul_hom := by
           have : (𝟙 _ ≫ μ) ≫ f.hom.hom = (f.hom.hom ⊗ f.hom.hom) ≫ 𝟙 _ ≫ μ :=
-            ((Comon_Cat.forgetMonoidal C).mapMonCat.map f).mul_hom
+            ((Comon_Cat.forget C).mapMonCat.map f).mul_hom
           simpa using this }
       hom_comul := by aesop_cat
       hom_counit :=  by aesop_cat }
