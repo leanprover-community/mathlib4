@@ -131,11 +131,15 @@ lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Modu
 
 noncomputable instance [IsLocalRing R] : Field (R ⧸ maximalIdeal R) := Quotient.field (maximalIdeal R)
 
-lemma quot_smul_top_finiteDimensional [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M]
+instance [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M]
     [Module.Finite R M] :
     FiniteDimensional (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M)) := by
-  --FiniteDimensional.span_of_finite
-  sorry
+  let f : M →ₛₗ[Ideal.Quotient.mk (maximalIdeal R)] (M ⧸ maximalIdeal R • (⊤ : Submodule R M)) := {
+    __ := Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M))
+    map_smul' m r := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_smul, Submodule.mkQ_apply]
+      rfl }
+  exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
@@ -143,8 +147,8 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
     1 + IsLocalRing.depth M = IsLocalRing.depth (ModuleCat.of R R) := by
   rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
-    with ⟨ι, hι⟩
-  rcases hι with ⟨B⟩
+    with ⟨ι, ⟨B⟩⟩
+  let fin := FiniteDimensional.fintypeBasisIndex B
   let f := Classical.choose (Module.projective_lifting_property
     (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
     ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
@@ -155,9 +159,11 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
     (Submodule.mkQ (maximalIdeal R)))) (Submodule.mkQ_surjective _))
   have surjf : Function.Surjective f := basis_lift M ι B
-  --FiniteDimensional.fintypeBasisIndex
-  --get exact seq using ker
-  --ker free from projective dimension
+  have ker_free : Module.Free R (LinearMap.ker f) := by
+    apply @free_of_projectiveOverLocalRing _ _ _ _ (ModuleCat.of R (LinearMap.ker f)) _ ?_
+    apply @projective_of_hasProjectiveDimensionLT_one _ _ _ _ _ ?_
+
+    sorry
   --ker in `(maximalIdeal R) • ⊤`
   sorry
 
