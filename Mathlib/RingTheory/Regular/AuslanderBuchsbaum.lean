@@ -88,7 +88,15 @@ variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module 
   (I : Ideal R)
 
 theorem smul_prod_of_smul {ι : Type*} [Finite ι] (x : ι → M)
-    (h : ∀ i, x i ∈ I • (⊤ : Submodule R M)) : x ∈ I • (⊤ : Submodule R (ι → M)) := sorry
+    (h : ∀ i, x i ∈ I • (⊤ : Submodule R M)) : x ∈ I • (⊤ : Submodule R (ι → M)) := by
+  classical
+  let _ : Fintype ι := Fintype.ofFinite ι
+  rw [← Finset.univ_sum_single x]
+  apply Submodule.sum_mem
+  intro i hi
+  show LinearMap.single R (fun i ↦ M) i (x i) ∈ _
+  rw [← Submodule.mem_comap]
+  exact Submodule.smul_top_le_comap_smul_top _ _ (h i)
 
 variable [Module.Finite R M] [Free R M] (f : M →ₗ[R] N)
 
@@ -179,8 +187,8 @@ instance [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M]
       rfl }
   exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
--- a weird time out, for exact same two copy, the first passed but the second does not
 set_option maxHeartbeats 250000 in
+-- a weird time out, for exact same two copy, the first passed but the second does not
 lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (f : M ⟶ N)
     (mem : f ∈ (Module.annihilator R L) • (⊤ : Submodule R (M ⟶ N))) (n : ℕ) :
     (AddCommGrp.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero n)) = 0 := by
