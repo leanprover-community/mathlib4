@@ -319,6 +319,12 @@ lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
   conv_lhs => rw [hUs.eq_generateFrom]
   simp [Set.subset_def, le_generateFrom_iff_subset_isOpen]
 
+lemma IsBasis.isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
+    IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by
+  simp only [IsBasis] at H ⊢
+  convert H.isInducing h
+  ext; simp
+
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
     CompleteLattice.IsCompactElement s ↔ IsCompact (s : Set α) := by

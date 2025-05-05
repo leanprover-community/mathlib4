@@ -436,6 +436,37 @@ theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F 
   convert congr_arg (F.germ _ x hxW) heq using 1
   exacts [(F.germ_res_apply iWU₁ x hxW s).symm, (F.germ_res_apply iWU₂ x hxW t).symm]
 
+lemma germ_exist_of_isBasis (F : X.Presheaf C)
+    {B : Set (Opens X)} (hB : Opens.IsBasis B) (x : X) (t : ToType (F.stalk x)) :
+    ∃ (U : Opens X) (m : x ∈ U) (_ : U ∈ B) (s : ToType (F.obj (op U))), F.germ _ x m s = t := by
+  obtain ⟨U, hxU, s, rfl⟩ := F.germ_exist x t
+  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hB.exists_subset_of_mem_open hxU U.2
+  exact ⟨V, hxV, hV, F.map (homOfLE hVU).op s, by rw [← ConcreteCategory.comp_apply, F.germ_res']⟩
+
+lemma germ_eq_of_isBasis (F : X.Presheaf C)
+    {B : Set (Opens X)} (hB : Opens.IsBasis B) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
+    (s : ToType (F.obj (op U))) (t : ToType (F.obj (op V)))
+    (h : F.germ U x mU s = F.germ V x mV t) :
+    ∃ (W : Opens X) (_ : x ∈ W) (_ : W ∈ B) (hWU : W ≤ U) (hWV : W ≤ V),
+      F.map (homOfLE hWU).op s = F.map (homOfLE hWV).op t := by
+  obtain ⟨W, hxW, hWU, hWV, e⟩ := F.germ_eq x mU mV s t h
+  obtain ⟨_, ⟨W', hW', rfl⟩, hxW', hW'W⟩ := hB.exists_subset_of_mem_open hxW W.2
+  refine ⟨W', hxW', hW', hW'W.trans hWU.le, hW'W.trans hWV.le, ?_⟩
+  simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using
+    DFunLike.congr_arg (ConcreteCategory.hom (F.map (homOfLE hW'W).op)) e
+
+lemma stalkfunctor_map_injective_of_isBasis
+    {B : Set (Opens X)} (hB : Opens.IsBasis B)
+    {F G : X.Presheaf C} (α : F ⟶ G) (hα : ∀ U ∈ B, Function.Injective (α.app (op U))) (x : X) :
+    Function.Injective ((stalkFunctor _ x).map α) := by
+  intro s t hst
+  obtain ⟨U₁, hxU₁, hU₁, s, rfl⟩ := germ_exist_of_isBasis _ hB x s
+  obtain ⟨U₂, hxU₂, hU₂, t, rfl⟩ := germ_exist_of_isBasis _ hB x t
+  rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply] at hst
+  obtain ⟨W, hxW, hW, iWU₁, iWU₂, heq⟩ := germ_eq_of_isBasis _ hB x hxU₁ hxU₂ _ _ hst
+  simp only [← α.naturality_apply, (hα W hW).eq_iff] at heq
+  simpa [germ_res_apply'] using congr(F.germ W x hxW $heq)
+
 variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
 
 /-- Let `F` be a sheaf valued in a concrete category, whose forgetful functor reflects isomorphisms,

@@ -10,6 +10,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 import Mathlib.AlgebraicGeometry.ResidueField
 import Mathlib.AlgebraicGeometry.Properties
+import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 
@@ -147,6 +148,47 @@ instance Spec_map_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
+
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsClosedImmersion f] :
+    IsIso f.toSchemeImage := by
+  have := @of_comp_isClosedImmersion _ _ _ f.toSchemeImage f.schemeImageι inferInstance
+    (by rw [Scheme.Hom.toSchemeImage_schemeImageι]; infer_instance)
+  have : IsHomeomorph f.toSchemeImage.base :=
+    isHomeomorph_iff_isEmbedding_surjective.mpr ⟨f.toSchemeImage.isEmbedding, by
+      rw [← Set.range_eq_univ, ← f.toSchemeImage.isClosedEmbedding.isClosed_range.closure_eq]
+      exact f.toSchemeImage.denseRange.closure_eq⟩
+  refine isomorphisms_eq_stalkwise.ge _ ⟨?_, ?_⟩
+  · exact inferInstanceAs (IsIso (TopCat.isoOfHomeo this.homeomorph).hom)
+  · intro x
+    refine ⟨?_, f.toSchemeImage.stalkMap_surjective x⟩
+    show Function.Injective (CommRingCat.Hom.hom (((TopCat.Presheaf.stalkFunctor CommRingCat
+      (f.toSchemeImage.base x)).map f.toSchemeImage.c) ≫ X.presheaf.stalkPushforward _ _ x))
+    simp only [TopCat.Presheaf.stalkFunctor_obj, CommRingCat.hom_comp, RingHom.coe_comp]
+    refine .comp ?_ (f.stalkFunctor_toSchemeImage_injective _)
+    have := TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_isInducing CommRingCat
+      (f := f.toSchemeImage.base) f.toSchemeImage.isEmbedding.isInducing X.presheaf x
+    exact ((ConcreteCategory.isIso_iff_bijective _).mp this).1
+
+/-- The category of closed subschemes is contravariantly equvalent
+to the lattice of ideal sheaves. -/
+noncomputable
+def overEquivIdealSheafData (X : Scheme.{u}) :
+    (MorphismProperty.Over @IsClosedImmersion ⊤ X)ᵒᵖ ≌ X.IdealSheafData where
+  functor := (MorphismProperty.Over.forget _ _ _).op ⋙ X.kerFunctor
+  inverse :=
+  { obj I := .op <| .mk _ I.subschemeι inferInstance
+    map {I J} h := (MorphismProperty.Over.homMk (Scheme.IdealSheafData.inclusion h.le)).op
+    map_comp f g := Quiver.Hom.unop_inj (by ext1; simp) }
+  unitIso := NatIso.ofComponents (fun Y ↦
+    letI : IsClosedImmersion Y.unop.hom := Y.unop.prop
+    ((MorphismProperty.Over.isoMk (asIso Y.unop.hom.toSchemeImage).symm).op)) fun {X Y} f ↦ by
+      apply Quiver.Hom.unop_inj
+      ext1
+      dsimp
+      rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq,
+        ← cancel_mono (Scheme.IdealSheafData.subschemeι _)]
+      simp
+  counitIso := NatIso.ofComponents (fun I ↦ eqToIso (by simp))
 
 end IsClosedImmersion
 
