@@ -220,20 +220,22 @@ theorem integral_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [C
 Note that the integrability hypothesis in the two lemmas below is necessary: consider the case
 where `A = ℝ × ℝ`, `c = (1,0)`, and `f` is only integrable on the first component.
 -/
-lemma integral_const_mul_of_integrable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A]
-    [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ)
-    {c : A} :
+lemma integral_const_mul_of_integrable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
+    [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
     ∫ x, c * f x ∂μ = c * ∫ x, f x ∂μ := by
-  show ∫ x, ContinuousLinearMap.mul ℝ _ c (f x) ∂μ = ContinuousLinearMap.mul ℝ _ c (∫ x, f x ∂μ)
-  rw [ContinuousLinearMap.integral_comp_comm _ hf]
+  by_cases hA : CompleteSpace A
+  · show ∫ x, ContinuousLinearMap.mul ℝ _ c (f x) ∂μ = ContinuousLinearMap.mul ℝ _ c (∫ x, f x ∂μ)
+    rw [ContinuousLinearMap.integral_comp_comm _ hf]
+  · simp [integral, hA]
 
-lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A]
-    [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ)
-    {c : A} :
+lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
+    [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
     ∫ x, f x * c ∂μ = (∫ x, f x ∂μ) * c := by
-  show ∫ x, (ContinuousLinearMap.mul ℝ _).flip c (f x) ∂μ
-    = (ContinuousLinearMap.mul ℝ _).flip c (∫ x, f x ∂μ)
-  rw [ContinuousLinearMap.integral_comp_comm _ hf]
+  by_cases hA : CompleteSpace A
+  · show ∫ x, (ContinuousLinearMap.mul ℝ _).flip c (f x) ∂μ
+      = (ContinuousLinearMap.mul ℝ _).flip c (∫ x, f x ∂μ)
+    rw [ContinuousLinearMap.integral_comp_comm _ hf]
+  · simp [integral, hA]
 
 theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Measurable f) (g : X → E) :
     ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ := by
