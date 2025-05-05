@@ -31,11 +31,11 @@ at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorph
 * `IslocalDiffeomorph.diffeomorph_of_bijective`:
   a bijective local diffeomorphism is a diffeomorphism
 
-* `Diffeomorph.mfderiv_toContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism
+* `Diffeomorph.mfderivToContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism
 (`n ≥ 1`) is a linear equivalence.
-* `LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv`: if `f` is a local diffeomorphism
+* `LocalDiffeomorphAt.mfderivToContinuousLinearEquiv`: if `f` is a local diffeomorphism
 at `x`, the differential `mfderiv I J n f x` is a continuous linear equivalence.
-* `LocalDiffeomorph.differential_toContinuousLinearEquiv`: if `f` is a local diffeomorphism,
+* `LocalDiffeomorph.differentialToContinuousLinearEquiv`: if `f` is a local diffeomorphism,
 each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
 ## TODO
@@ -363,9 +363,9 @@ variable {f : M → N} {s : Set M} {x : M}
 
 variable {I I' J n}
 
-/-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≥ 1`,
-  the differential `df_x` is a linear equivalence. -/
-noncomputable def IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
+/-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≥ 1`, the differential `df_x`
+is a linear equivalence. -/
+noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
     ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) where
   toFun := mfderiv I J f x
@@ -390,28 +390,28 @@ noncomputable def IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
   map_smul' := by intros; simp
 
 @[simp, mfld_simps]
-lemma IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe
+lemma IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
     hf.mfderiv_toContinuousLinearEquiv hn = mfderiv I J f x := rfl
 
 /-- Each differential of a `C^n` diffeomorphism of Banach manifolds (`n ≥ 1`)
-  is a linear equivalence. -/
-noncomputable def Diffeomorph.mfderiv_toContinuousLinearEquiv
+is a linear equivalence. -/
+noncomputable def Diffeomorph.mfderivToContinuousLinearEquiv
     (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) (x : M) :
     ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (Φ x)) :=
   (Φ.isLocalDiffeomorph x).mfderiv_toContinuousLinearEquiv hn
 
-lemma Diffeomorph.mfderiv_toContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
+lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
     (Φ.mfderiv_toContinuousLinearEquiv hn x).toFun = mfderiv I J Φ x := by rfl
 
 /-- If `f` is a `C^n` local diffeomorphism of Banach manifolds (`n ≥ 1`),
-  each differential is a linear equivalence. -/
-noncomputable def IsLocalDiffeomorph.mfderiv_toContinuousLinearEquiv
+each differential is a linear equivalence. -/
+noncomputable def IsLocalDiffeomorph.mfderivToContinuousLinearEquiv
     (hf : IsLocalDiffeomorph I J n f) (hn : 1 ≤ n) (x : M) :
     ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
   (hf x).mfderiv_toContinuousLinearEquiv hn
 
-lemma IsLocalDiffeomorph.mfderiv_toContinuousLinearEquiv_coe
+lemma IsLocalDiffeomorph.mfderivToContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorph I J n f) (hn : 1 ≤ n) (x : M) :
     hf.mfderiv_toContinuousLinearEquiv hn x = mfderiv I J f x :=
   (hf x).mfderiv_toContinuousLinearEquiv_coe hn
