@@ -92,27 +92,20 @@ theorem smul_prod_of_smul {ι : Type*} [Finite ι] (x : ι → M)
   classical
   let _ : Fintype ι := Fintype.ofFinite ι
   rw [← Finset.univ_sum_single x]
-  apply Submodule.sum_mem
-  intro i hi
-  show LinearMap.single R (fun i ↦ M) i (x i) ∈ _
-  rw [← Submodule.mem_comap]
-  exact Submodule.smul_top_le_comap_smul_top _ _ (h i)
+  exact Submodule.sum_mem _ <| fun i hi ↦
+    Submodule.smul_top_le_comap_smul_top I (LinearMap.single R (fun i ↦ M) i) (h i)
 
 variable [Module.Finite R M] [Free R M] (f : M →ₗ[R] N)
 
 theorem mem_smul_top_of_range_le_smul_top (hf : LinearMap.range f ≤ I • ⊤) :
     f ∈ I • (⊤ : Submodule R (M →ₗ[R] N)) := by
-  let ι := ChooseBasisIndex R M
-  let e : Basis ι R M := chooseBasis R M
-  let g : (ι → N) →ₗ[R] (M →ₗ[R] N) := (e.constr R).toLinearMap
-  have h (i : ι) : f (e i) ∈ I • (⊤ : Submodule R N) := hf (LinearMap.mem_range_self f (e i))
-  let x (i : ι) : N := f (e i)
-  have hx : f = g x := by
+  let e : Basis _ R M := chooseBasis R M
+  have hx : f = (e.constr R).toLinearMap (fun i ↦ f (e i)) := by
     apply e.ext
-    simp only [g, x, LinearEquiv.coe_coe, Basis.constr_apply_fintype, Basis.equivFun_self, ite_smul,
-      one_smul, zero_smul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, implies_true]
+    simp
   rw [hx]
-  exact Submodule.smul_top_le_comap_smul_top I g (smul_prod_of_smul I x h)
+  exact Submodule.smul_top_le_comap_smul_top I (e.constr R).toLinearMap <|
+    smul_prod_of_smul I (fun i ↦ f (e i)) (fun i ↦ hf (LinearMap.mem_range_self f (e i)))
 
 end hom
 
