@@ -227,6 +227,18 @@ jobs:
         chmod 600 ~/.zuliprc
         echo "Setup complete"
 
+    - name: Clean workspace and checkout Mathlib4
+      if: steps.check_branch.outputs.result == 'false'
+      run: |
+        sudo rm -rf -- *
+    - name: Checkout Mathlib4 repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      if: steps.check_branch.outputs.result == 'false'
+      with:
+        ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
+        fetch-depth: 0 # checkout all branches
+        token: ${{ secrets.NIGHTLY_TESTING }}
+
     - name: Attempt automatic PR creation
       id: auto_pr
       if: steps.check_branch.outputs.result == 'false'
