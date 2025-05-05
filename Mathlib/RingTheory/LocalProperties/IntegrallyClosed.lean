@@ -69,7 +69,7 @@ theorem IsIntegrallyClosed.of_localization {R : Type*} [CommRing R] [NoZeroDivis
     (S : Set (PrimeSpectrum R)) (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
     (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl
       p.1.primeCompl_le_nonZeroDivisors) = ⊥) : IsIntegrallyClosed R := by
-  apply (isIntegrallyClosed_iff (FractionRing R)).mpr
+  rw [isIntegrallyClosed_iff (FractionRing R)]
   intro x hx
   show x ∈ (⊥ : Subalgebra R (FractionRing R))
   rw [← hs]
