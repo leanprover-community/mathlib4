@@ -90,6 +90,30 @@ protected lemma mem_nhds_iff {f : C(X, Y)} {s : Set C(X, Y)} :
       {g : C(X, Y) | ∀ K U, (K, U) ∈ S → MapsTo g K U} ⊆ s := by
   simp [f.hasBasis_nhds.mem_iff, ← setOf_forall, and_assoc]
 
+lemma _root_.Filter.HasBasis.nhds_continuousMapConst {ι : Type*} {c : Y} {p : ι → Prop}
+    {U : ι → Set Y} (h : (𝓝 c).HasBasis p U) :
+    (𝓝 (const X c)).HasBasis (fun Ki : Set X × ι ↦ IsCompact Ki.1 ∧ p Ki.2)
+      fun Ki ↦ {f : C(X, Y) | MapsTo f Ki.1 (U Ki.2)} := by
+  refine ⟨fun s ↦ ⟨fun hs ↦ ?_, fun hs ↦ ?_⟩⟩
+  · rcases ContinuousMap.mem_nhds_iff.mp hs with ⟨S, hSf, hS, hSsub⟩
+    choose hScompact hSopen hSmaps using hS
+    have : ⋂ KU ∈ S, ⋂ (_ : KU.1.Nonempty), KU.2 ∈ 𝓝 c := by
+      simp only [biInter_mem hSf, Prod.forall, iInter_mem]
+      rintro K U hKU ⟨x, hx⟩
+      exact (hSopen K U hKU).mem_nhds <| hSmaps K U hKU hx
+    rcases h.mem_iff.mp this with ⟨i, hpi, hi⟩
+    refine ⟨(⋃ KU ∈ S, KU.1, i), ⟨hSf.isCompact_biUnion <| Prod.forall.2 hScompact, hpi⟩,
+      Subset.trans ?_ hSsub⟩
+    intro f hf K V hKV
+    rcases K.eq_empty_or_nonempty with rfl | hKne
+    · exact mapsTo_empty _ _
+    · refine hf.out.mono (subset_biUnion_of_mem (u := Prod.fst) hKV) (hi.trans ?_)
+      exact (biInter_subset_of_mem hKV).trans <| iInter_subset _ hKne
+  · rcases hs with ⟨⟨K, i⟩, ⟨hK, hpi⟩, hi⟩
+    filter_upwards [eventually_mapsTo hK isOpen_interior fun x _ ↦
+      mem_interior_iff_mem_nhds.mpr <| h.mem_of_mem hpi] with f hf
+    exact hi <| hf.mono_right interior_subset
+
 section Functorial
 
 /-- `C(X, ·)` is a functor. -/
