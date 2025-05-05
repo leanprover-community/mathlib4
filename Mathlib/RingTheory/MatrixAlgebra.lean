@@ -67,6 +67,9 @@ theorem kroneckerTMulAlgEquiv_symm_single_tmul
   rw [LinearEquiv.symm_apply_eq, kroneckerTMulLinearEquiv_tmul,
     single_kroneckerTMul_single]
 
+@[deprecated (since := "2025-05-05")]
+alias kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul := kroneckerTMulAlgEquiv_symm_single_tmul
+
 @[simp]
 theorem kroneckerTMulLinearEquiv_one :
     kroneckerTMulLinearEquiv m m n n R A B 1 = 1 := by simp [Algebra.TensorProduct.one_def]
