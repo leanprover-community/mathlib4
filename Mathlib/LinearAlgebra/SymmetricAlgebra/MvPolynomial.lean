@@ -46,7 +46,3 @@ noncomputable def _root_.Basis.symmetricAlgebra {I : Type*} (b : Basis I R M) :
 instance instModuleFree [Module.Free R M] : Module.Free R (SymmetricAlgebra R M) :=
   let ⟨⟨_κ, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   .of_basis b.symmetricAlgebra
-
-theorem IsSymmetricAlgebra.mvPolynomial (I : Type*) (b : Basis I R M) :
-    IsSymmetricAlgebra (Basis.constr b R (.X : I → MvPolynomial I R)) :=
-  (SymmetricAlgebra.equivMvPolynomial b).bijective
