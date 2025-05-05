@@ -324,6 +324,7 @@ lemma Walk.count_support_rotate_other (w : G.Walk u u) (hx : x ∈ w.support) (h
   rw [List.count_tail (by simp), List.count_tail (by simp)]
   simp [head_support, beq_iff_eq, if_neg hvu, if_neg hvx, add_comm]
 
+
 /--
 Given a closed walk `w : G.Walk u u` and a vertex `x ∈ w.support` we can form a new closed walk
 `w.shorterOdd hx`. If `w.length` is odd then this walk is also odd. Morever if `x` occured more
@@ -488,7 +489,6 @@ lemma Walk.cutVert_odd {u : α} (p : G.Walk u u) (ho : Odd p.length) : Odd p.cut
       cases p with
       | nil => simp at ho
       | cons h p =>
-        rw [shorterOdd']
         apply length_shorterOdd_odd
         rwa [length_rotate]
 
@@ -621,7 +621,6 @@ lemma Walk.oddTrailLike_odd {u : α} (p : G.Walk u u) (ho : Odd p.length) :
     · push_neg at hv
       rw [oddTrailLike_nil _ hv, hn]
       exact hn ▸ ho
-
 
 lemma List.count_map_eq_countP {α β : Type*} (f : α → β) [DecidableEq α] [DecidableEq β] {b : β}
     {l : List α} : (l.map f).count b = l.countP (fun x ↦ (f x) = b) := by
