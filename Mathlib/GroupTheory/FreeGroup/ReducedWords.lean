@@ -79,7 +79,7 @@ theorem IsReduced.cons_append {x : α × Bool} {L₁ L₂ : List (α × Bool)} (
 
 @[to_additive]
 theorem IsReduced.append_append {L₁ L₂ L₃ : List (α × Bool)} (h : L₂ ≠ [])
-  (h₁₂ : IsReduced (L₁ ++ L₂)) (h₂₃ : IsReduced (L₂ ++ L₃)) : IsReduced (L₁ ++ L₂ ++ L₃) := by
+    (h₁₂ : IsReduced (L₁ ++ L₂)) (h₂₃ : IsReduced (L₂ ++ L₃)) : IsReduced (L₁ ++ L₂ ++ L₃) := by
   induction L₁
   case nil => simp [h₂₃]
   case cons head tail ih =>
