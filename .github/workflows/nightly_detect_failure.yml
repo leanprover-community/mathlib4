@@ -256,6 +256,8 @@ jobs:
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
         SHA: ${{ env.SHA }}
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+        REPOSITORY: ${{ github.repository }}
+        CURRENT_RUN_ID: ${{ github.run_id }}
       shell: python
       run: |
         import os
@@ -265,6 +267,8 @@ jobs:
         bump_version = os.getenv('BUMP_VERSION')
         bump_branch = os.getenv('BUMP_BRANCH')
         sha = os.getenv('SHA')
+        repository = os.getenv('REPOSITORY')
+        current_run_id = os.getenv('CURRENT_RUN_ID')
         print(f'Current version: {current_version}, Bump version: {bump_version}, SHA: {sha}')
         if current_version > bump_version:
             print('Lean toolchain in `nightly-testing` is ahead of the bump branch.')
@@ -279,7 +283,8 @@ jobs:
             response = client.get_messages(request)
             messages = response['messages']
             bump_branch_suffix = bump_branch.replace('bump/', '')
-            payload = f"🛠️: Automatic PR creation failed. Please create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
+            failed_link = f"https://github.com/{repository}/actions/runs/{current_run_id}"
+            payload = f"🛠️: Automatic PR creation [failed]({failed_link}). Please create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
             payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
             payload += f"```bash\n./scripts/create-adaptation-pr.sh --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
             # Only post if the message is different
