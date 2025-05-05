@@ -39,9 +39,6 @@ lemma isEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂)
   eq_induced := Eq.symm induced_compose
   injective := Subtype.map_injective h Function.injective_id
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_inclusion := isEmbedding_inclusion
-
 /-- The `StarSubalgebra.inclusion` of a closed star subalgebra is a `IsClosedEmbedding`. -/
 theorem isClosedEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂)
     (hS₁ : IsClosed (S₁ : Set A)) : IsClosedEmbedding (inclusion h) :=

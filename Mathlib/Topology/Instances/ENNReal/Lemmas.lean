@@ -31,9 +31,6 @@ section TopologicalSpace
 
 open TopologicalSpace
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_coe := isEmbedding_coe
-
 theorem isOpen_ne_top : IsOpen { a : ℝ≥0∞ | a ≠ ∞ } := isOpen_ne
 
 theorem isOpen_Ico_zero : IsOpen (Ico 0 b) := by

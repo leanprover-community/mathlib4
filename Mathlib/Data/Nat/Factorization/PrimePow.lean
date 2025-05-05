@@ -65,9 +65,6 @@ theorem IsPrimePow.exists_ordCompl_eq_one {n : ℕ} (h : IsPrimePow n) :
   rw [Nat.factorization_ordCompl n p, h1]
   simp
 
-@[deprecated (since := "2024-10-24")]
-alias IsPrimePow.exists_ord_compl_eq_one := IsPrimePow.exists_ordCompl_eq_one
-
 theorem exists_ordCompl_eq_one_iff_isPrimePow {n : ℕ} (hn : n ≠ 1) :
     IsPrimePow n ↔ ∃ p : ℕ, p.Prime ∧ ordCompl[p] n = 1 := by
   refine ⟨fun h => IsPrimePow.exists_ordCompl_eq_one h, fun h => ?_⟩
@@ -77,9 +74,6 @@ theorem exists_ordCompl_eq_one_iff_isPrimePow {n : ℕ} (hn : n ≠ 1) :
   refine ⟨p, n.factorization p, pp, ?_, by simp⟩
   contrapose! hn
   simp [Nat.le_zero.1 hn]
-
-@[deprecated (since := "2024-10-24")]
-alias exists_ord_compl_eq_one_iff_isPrimePow := exists_ordCompl_eq_one_iff_isPrimePow
 
 /-- An equivalent definition for prime powers: `n` is a prime power iff there is a unique prime
 dividing it. -/

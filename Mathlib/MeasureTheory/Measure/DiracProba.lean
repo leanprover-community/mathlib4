@@ -184,9 +184,6 @@ theorem isEmbedding_diracProba [T0Space X] [CompletelyRegularSpace X] :
     IsEmbedding (fun (x : X) ↦ diracProba x) :=
   IsEmbedding.subtypeVal.comp diracProbaHomeomorph.isEmbedding
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_diracProba := isEmbedding_diracProba
-
 end embed_to_probabilityMeasure
 
 end MeasureTheory
