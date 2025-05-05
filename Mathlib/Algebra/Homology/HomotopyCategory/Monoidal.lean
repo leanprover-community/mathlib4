@@ -126,9 +126,31 @@ lemma associator_hom_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
   rw [comp_id]
   apply Category.id_comp
 
+noncomputable def leftUnitor :
+    (bifunctor C c).obj (unit C c) ≅ 𝟭 (HomotopyCategory C c) :=
+  Quotient.natIsoLift _
+    ((bifunctorIso C c).app (𝟙_ _) ≪≫
+    isoWhiskerRight (leftUnitorNatIso (HomologicalComplex C c)) (quotient C c))
+
+@[simp]
+lemma leftUnitor_hom_app (K : HomologicalComplex C c) :
+    (leftUnitor C c).hom.app ((quotient C c).obj K) = (quotient C c).map (λ_ K).hom := by
+  apply id_comp
+
+noncomputable def rightUnitor :
+    (bifunctor C c).flip.obj (unit C c) ≅ 𝟭 (HomotopyCategory C c) :=
+  Quotient.natIsoLift _
+    (((flipFunctor _ _ _).mapIso (bifunctorIso C c)).app (𝟙_ _) ≪≫
+      isoWhiskerRight (rightUnitorNatIso (HomologicalComplex C c)) (quotient C c))
+
+@[simp]
+lemma rightUnitor_hom_app (K : HomologicalComplex C c) :
+    (rightUnitor C c).hom.app ((quotient C c).obj K) = (quotient C c).map (ρ_ K).hom := by
+  apply id_comp
+
 /-noncomputable instance : MonoidalCategory (HomotopyCategory C c) :=
   .ofBifunctor (unit C c) (bifunctor C c) (associator C c)
-  sorry sorry sorry sorry-/
+  (leftUnitor C c) (rightUnitor C c) sorry sorry-/
 
 end MonoidalCategory
 
