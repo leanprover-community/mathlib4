@@ -39,8 +39,7 @@ end LinearOrder
 
 theorem totalDegree_mul_of_isDomain [IsCancelMulZero R] (hf : f ≠ 0) (hg : g ≠ 0) :
     totalDegree (f * g) = totalDegree f + totalDegree g := by
-  let inst : LinearOrder σ := IsWellOrder.linearOrder WellOrderingRel
-  have : WellFoundedLT σ := ⟨WellOrderingRel.isWellOrder.wf⟩
+  cases exists_wellOrder σ
   rw [← degree_degLexDegree (σ := σᵒᵈ), ← degree_degLexDegree (σ := σᵒᵈ),
     ← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
   simp [Finsupp.sum_add_index]
