@@ -34,7 +34,7 @@ namespace MonoidalCategory
 
 variable [∀ (K₁ K₂ : HomologicalComplex C c), HasMapBifunctor K₁ K₂ (curriedTensor C) c]
 
-noncomputable def unit : HomotopyCategory C c :=
+noncomputable abbrev unit : HomotopyCategory C c :=
   (quotient _ _).obj (𝟙_ _)
 
 noncomputable def bifunctor :
@@ -148,9 +148,19 @@ lemma rightUnitor_hom_app (K : HomologicalComplex C c) :
     (rightUnitor C c).hom.app ((quotient C c).obj K) = (quotient C c).map (ρ_ K).hom := by
   apply id_comp
 
+lemma triangle :
+    NatTrans.Triangle (associator C c).hom (unit C c) (leftUnitor C c) (rightUnitor C c) where
+  triangle := by
+    ext K L
+    obtain ⟨K, rfl⟩ := K.quotient_obj_surjective
+    obtain ⟨L, rfl⟩ := L.quotient_obj_surjective
+    dsimp
+    rw [leftUnitor_hom_app, rightUnitor_hom_app, associator_hom_app_app_app]
+    exact (quotient C c).congr_map (CategoryTheory.MonoidalCategory.triangle K L)
+
 /-noncomputable instance : MonoidalCategory (HomotopyCategory C c) :=
   .ofBifunctor (unit C c) (bifunctor C c) (associator C c)
-  (leftUnitor C c) (rightUnitor C c) sorry sorry-/
+  (leftUnitor C c) (rightUnitor C c) sorry (triangle C c)-/
 
 end MonoidalCategory
 
