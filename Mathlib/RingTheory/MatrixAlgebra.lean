@@ -209,6 +209,9 @@ theorem matrixEquivTensor_apply_single (i j : n) (x : A) :
   have t : ∀ p : n × n, i = p.1 ∧ j = p.2 ↔ p = (i, j) := by aesop
   simp [ite_tmul, t, single]
 
+@[deprecated (since := "2025-05-05")]
+alias matrixEquivTensor_apply_stdBasisMatrix := matrixEquivTensor_apply_single
+
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
     (matrixEquivTensor n R A).symm (a ⊗ₜ M) = a • M.map (algebraMap R A) :=
