@@ -92,12 +92,12 @@ end DeleteEdges
 section DeleteIncidenceSet
 
 /-- Given a vertex `x`, remove the edges incident to `x` from the edge set. -/
-abbrev deleteIncidenceSet (G : SimpleGraph V) (x : V) : SimpleGraph V :=
+def deleteIncidenceSet (G : SimpleGraph V) (x : V) : SimpleGraph V :=
   G.deleteEdges (G.incidenceSet x)
 
 lemma deleteIncidenceSet_adj {G : SimpleGraph V} {x v₁ v₂ : V} :
     (G.deleteIncidenceSet x).Adj v₁ v₂ ↔ G.Adj v₁ v₂ ∧ v₁ ≠ x ∧ v₂ ≠ x := by
-  rw [deleteEdges_adj, mk'_mem_incidenceSet_iff]
+  rw [deleteIncidenceSet, deleteEdges_adj, mk'_mem_incidenceSet_iff]
   tauto
 
 lemma deleteIncidenceSet_le (G : SimpleGraph V) (x : V) : G.deleteIncidenceSet x ≤ G :=
@@ -112,7 +112,7 @@ lemma edgeSet_fromEdgeSet_incidenceSet (G : SimpleGraph V) (x : V) :
 set of the vertex `x`. -/
 theorem edgeSet_deleteIncidenceSet (G : SimpleGraph V) (x : V) :
     (G.deleteIncidenceSet x).edgeSet = G.edgeSet \ (G.incidenceSet x) := by
-  simp_rw [deleteEdges, edgeSet_sdiff, edgeSet_fromEdgeSet_incidenceSet]
+  simp_rw [deleteIncidenceSet, deleteEdges, edgeSet_sdiff, edgeSet_fromEdgeSet_incidenceSet]
 
 /-- The support of `G.deleteIncidenceSet x` is a subset of the support of `G` set difference the
 singleton set `{x}`. -/
@@ -129,6 +129,10 @@ theorem deleteIncidenceSet_induce_of_not_mem (G : SimpleGraph V) {s : Set V} {x 
   exact fun _ ↦ ⟨v₁.prop.ne_of_not_mem h, v₂.prop.ne_of_not_mem h⟩
 
 variable [Fintype V] [DecidableEq V]
+
+instance {G : SimpleGraph V} [DecidableRel G.Adj] {x : V} :
+    DecidableRel (G.deleteIncidenceSet x).Adj :=
+  inferInstanceAs <| DecidableRel (G.deleteEdges (G.incidenceSet x)).Adj
 
 /-- Deleting the incidence set of the vertex `x` retains the same number of edges as in the induced
 subgraph of the vertices `{x}ᶜ`. -/
