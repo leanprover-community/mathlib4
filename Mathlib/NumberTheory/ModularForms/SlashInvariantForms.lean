@@ -216,13 +216,26 @@ instance (Γ : Subgroup SL(2, ℤ)) : IntCast (SlashInvariantForm Γ 0) where
 theorem coe_intCast (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
 
 /-- Translating a `SlashInvariantForm` by `SL(2, ℤ)`, to obtain a new `SlashInvariantForm`. -/
+noncomputable def translateGLPos [SlashInvariantFormClass F Γ k] (f : F) (g : GL(2, ℝ)⁺) :
+    SlashInvariantForm (ModularGroup.conjGLPos Γ g) k where
+  toFun := f ∣[k] g
+  slash_action_eq' := fun j hj ↦ by
+    obtain ⟨y, hy, hy'⟩ := ModularGroup.mem_conjGLPos.mp hj
+    simp only [ModularForm.SL_slash, ← hy', ← SlashAction.slash_mul, mul_assoc,
+      mul_inv_cancel_left]
+    rw [SlashAction.slash_mul, ← ModularForm.SL_slash,
+      SlashInvariantFormClass.slash_action_eq f _ hy]
+
+@[simp]
+lemma coe_translateGLPos [SlashInvariantFormClass F Γ k] (f : F) (g : GL(2, ℝ)⁺) :
+    translateGLPos f g = ⇑f ∣[k] g :=
+  rfl
+
+/-- Translating a `SlashInvariantForm` by `SL(2, ℤ)`, to obtain a new `SlashInvariantForm`. -/
 noncomputable def translate [SlashInvariantFormClass F Γ k]
     (f : F) (g : SL(2, ℤ)) : SlashInvariantForm (Γ.map <| MulAut.conj g⁻¹) k where
   toFun := f ∣[k] g
-  slash_action_eq' := fun j ⟨r, hr, hr'⟩ ↦ by
-    simp only [map_inv, MonoidHom.coe_coe, MulAut.conj_inv_apply] at hr'
-    rw [← hr', ← SlashAction.slash_mul, mul_assoc, mul_inv_cancel_left, SlashAction.slash_mul,
-      SlashInvariantFormClass.slash_action_eq f r hr]
+  slash_action_eq' j hj := (translateGLPos f g).slash_action_eq' j (by simpa using hj)
 
 @[simp]
 lemma coe_translate [SlashInvariantFormClass F Γ k] (f : F) (g : SL(2, ℤ)) :
