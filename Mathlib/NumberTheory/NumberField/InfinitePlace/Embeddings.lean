@@ -15,9 +15,9 @@ the field of complex numbers.
 
 ## Main Definitions and Results
 
-* `NumberField.Embeddings.range_eval_eq_rootSet_minpoly`: let `x ∈ K` with `K` number field and
-  let `A` be an algebraic closed field of char. 0, then the images of `x` by the embeddings of `K`
-   in `A` are exactly the roots in `A` of the minimal polynomial of `x` over `ℚ`.
+* `NumberField.Embeddings.range_eval_eq_rootSet_minpoly`: let `x ∈ K` with `K` a number field and
+  let `A` be an algebraically closed field of char. 0. Then the images of `x` under the
+  embeddings of `K` in `A` are exactly the roots in `A` of the minimal polynomial of `x` over `ℚ`.
 * `NumberField.Embeddings.pow_eq_one_of_norm_eq_one`: an algebraic integer whose conjugates are
   all of norm one is a root of unity.
 

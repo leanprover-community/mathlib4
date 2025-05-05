@@ -18,7 +18,7 @@ This file studies the ramification of infinite places of a number field.
 * `NumberField.InfinitePlace.IsUnramified`: an infinite place is unramified in a field extension
   if the restriction has the same multiplicity.
 * `NumberField.InfinitePlace.not_isUnramified_iff`: an infinite place is not unramified
-  (ie. ramified) iff it is a complex place above a real place.
+  (i.e., is ramified) iff it is a complex place above a real place.
 * `NumberField.InfinitePlace.IsUnramifiedIn`: an infinite place of the base field is unramified
   in a field extension if every infinite place over it is unramified.
 * `IsUnramifiedAtInfinitePlaces`: a field extension is unramified at infinite places if every

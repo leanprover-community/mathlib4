@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex J. Best, Xavier Roblot
+Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.Norm
@@ -18,10 +18,10 @@ This file defines the infinite places of a number field.
 * `NumberField.InfinitePlace`: the type of infinite places of a number field `K`.
 * `NumberField.InfinitePlace.mk_eq_iff`: two complex embeddings define the same infinite place iff
   they are equal or complex conjugates.
-* `NumberField.InfinitePlace.IsReal`: an infinite place is real if it is defined by a
-  real embedding.
-* `NumberField.InfinitePlace.IsComplex`: an infinite place is complex if it is defined by a
-  complex (ie. not real) embedding.
+* `NumberField.InfinitePlace.IsReal`: The predicate on infinite places saying
+  that a place is real, i.e., defined by a real embedding.
+* `NumberField.InfinitePlace.IsComplex`: The predicate on infinite places saying
+  that a place is complex, i.e., defined by a complex embedding that is not real.
 * `NumberField.InfinitePlace.mult`: the multiplicity of an infinite place, that is the number of
   distinct complex embeddings that define it. So it is equal to `1` if the place is real and `2`
   if the place is complex.
