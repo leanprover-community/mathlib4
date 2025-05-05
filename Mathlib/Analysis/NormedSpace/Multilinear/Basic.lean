@@ -823,10 +823,10 @@ protected def piFieldEquiv : G ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fu
   toFun z := ContinuousMultilinearMap.mkPiRing 𝕜 ι z
   invFun f := f fun _ => 1
   map_add' z z' := by
-    ext m
+    ext
     simp [smul_add]
   map_smul' c z := by
-    ext m
+    ext
     simp [smul_smul, mul_comm]
   left_inv z := by simp
   right_inv f := f.mkPiRing_apply_one_eq_self
