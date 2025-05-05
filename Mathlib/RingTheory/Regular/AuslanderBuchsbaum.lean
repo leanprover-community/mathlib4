@@ -1,7 +1,7 @@
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-import Mathlib.RingTheory.Regular.Depth
 import Mathlib.RingTheory.LocalRing.Module
+import Mathlib.RingTheory.Regular.Depth
 
 namespace CategoryTheory
 
@@ -141,8 +141,6 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   -- Add your proof here
   sorry
 
-set_option linter.unusedTactic false
-
 instance (ι : Type*) : Module.Free R (ι →₀ Shrink.{v, u} R) :=
   Module.Free.of_equiv (Finsupp.mapRange.linearEquiv (α := ι) (Shrink.linearEquiv R R).symm)
 
@@ -213,12 +211,13 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (f : M ⟶ N)
     show (((Ext.homEquiv₀_linearHom R).symm (g1 + g2)).postcompOfLinear R L _) x = 0
     simp only [Ext.postcompOfLinear, LinearMap.flip_apply]
     rw [map_add, map_add]
-    dsimp
     convert zero_add (0 : Ext L N n)
     · show AddCommGrp.ofHom ((Ext.mk₀ g1).postcomp L (add_zero n)) x = 0
-      simp [hg1]
+      rw [hg1]
+      exact AddMonoidHom.zero_apply x
     · show AddCommGrp.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0
-      simp [hg2]
+      rw [hg2]
+      exact AddMonoidHom.zero_apply x
 
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
