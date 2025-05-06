@@ -13,7 +13,6 @@ For the most part, natural isomorphisms are just another sort of isomorphism.
 
 We provide some special support for extracting components:
 * if `α : F ≅ G`, then `a.app X : F.obj X ≅ G.obj X`,
-
 and building natural isomorphisms from components:
 *
 ```
