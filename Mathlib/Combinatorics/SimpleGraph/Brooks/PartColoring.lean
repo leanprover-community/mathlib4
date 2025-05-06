@@ -3,7 +3,6 @@ Copyright (c) 2025 John Talbot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot
 -/
---import Mathlib.Combinatorics.SimpleGraph.Brooks.ColoringComponents
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 /-!
@@ -26,25 +25,13 @@ while if `H := (G.induce s).spanningCoe` then `H.Adj a b` is
 -/
 
 namespace SimpleGraph
-open Subgraph
 
 variable {α : Type*} (G : SimpleGraph α)
-
-lemma induce_spanningCoe_eq_top_subgraph_induce_spanningCoe (s : Set α) :
-    (G.induce s).spanningCoe = ((⊤ : Subgraph G).induce s).spanningCoe := by
-  ext; simp [and_left_comm]
-
-lemma induce_spanningCoe_adj (s : Set α) (a b : α) : (G.induce s).spanningCoe.Adj a b ↔
-    ((G.comap (Function.Embedding.subtype s)).map (Function.Embedding.subtype _)).Adj a b := Iff.rfl
-
-lemma top_subgraph_induce_spanningCoe_adj (s : Set α) (a b : α) :
-    ((⊤ : Subgraph G).induce s).spanningCoe.Adj a b ↔ a ∈ s ∧ b ∈ s ∧ G.Adj a b := Iff.rfl
 
 /--
 A `PartColoring β s` of `G : SimpleGraph α` is an `β`-coloring of all vertices of `G` that is
 a valid coloring on the set `s` -/
-abbrev PartColoring (β : Type*) (s : Set α) :=
-  ((⊤ : Subgraph G).induce s).spanningCoe.Coloring β
+abbrev PartColoring (β : Type*) (s : Set α) := ((⊤ : Subgraph G).induce s).spanningCoe.Coloring β
 
 /-- `G.PartColorable n s` iff the subgraph of `G` induced by `s` is `n` - colorable. -/
 abbrev PartColorable (n : ℕ) (s : Set α) := Nonempty (G.PartColoring (Fin n) s)
@@ -54,17 +41,17 @@ variable {s t u : Set α} {β : Type*} {G}
 `C₂ : G.PartColoring β t` extends `C₁ : G.PartColoring β s` if `s ⊆ t` and `C₂` agrees with `C₁`
 on `s`
 -/
-protected def PartColoring.extends (C₂ : G.PartColoring β t) (C₁ : G.PartColoring β s) : Prop :=
+protected def PartColoring.Extends (C₂ : G.PartColoring β t) (C₁ : G.PartColoring β s) : Prop :=
   s ⊆ t ∧ ∀ ⦃v⦄, v ∈ s → C₂ v = C₁ v
 
 namespace PartColoring
 
 @[refl, simp]
-lemma extends_refl {C₁ : G.PartColoring β s} : C₁.extends C₁ := ⟨subset_refl _, fun _ _ ↦ rfl⟩
+lemma extends_refl {C₁ : G.PartColoring β s} : C₁.Extends C₁ := ⟨subset_refl _, fun _ _ ↦ rfl⟩
 
 @[trans, simp]
 lemma extends_trans {C₃ : G.PartColoring β u} {C₂ : G.PartColoring β t} {C₁ : G.PartColoring β s}
-    (h1 : C₂.extends C₁) (h2: C₃.extends C₂) : C₃.extends C₁ := by
+    (h1 : C₂.Extends C₁) (h2: C₃.Extends C₂) : C₃.Extends C₁ := by
   refine ⟨subset_trans h1.1 h2.1,?_⟩
   intro v hv
   rw [← h1.2 hv, h2.2 (h1.1 hv)]
@@ -91,8 +78,8 @@ lemma copy_def (C: G.PartColoring β s) (h : s = t) {v : α} :
   (C.copy h) v  = C v := rfl
 
 @[simp]
-lemma copy_extends {C₂ : G.PartColoring β t} {C₁ : G.PartColoring β s} (hc : C₂.extends C₁)
-  {h : t = u} : (C₂.copy h).extends C₁ :=
+lemma copy_extends {C₂ : G.PartColoring β t} {C₁ : G.PartColoring β s} (hc : C₂.Extends C₁)
+  {h : t = u} : (C₂.copy h).Extends C₁ :=
     ⟨fun _ hx ↦ h ▸ hc.1 hx, fun _ hv ↦ by rw [copy_def]; exact hc.2 hv⟩
 
 /-- A `G.PartColoring β Set.univ` is a `G.Coloring (Fin n)` -/
@@ -135,8 +122,8 @@ def PartColoring.union (C₁ : G.PartColoring β s) (C₂ : G.PartColoring β t)
     (h : ∀ ⦃v w⦄, v ∈ s → w ∈ t \ s → G.Adj v w → C₁ v ≠ C₂ w) : G.PartColoring β (s ∪ t) where
   toFun := fun v ↦ ite (v ∈ s) (C₁ v) (C₂ v)
   map_rel' := by
-      simp only [spanningCoe_adj, induce_adj, Set.mem_union, Subgraph.top_adj, top_adj, ne_eq,
-        and_imp]
+      simp only [Subgraph.spanningCoe_adj, Subgraph.induce_adj, Set.mem_union, Subgraph.top_adj,
+        top_adj, ne_eq, and_imp]
       intro v w hv' hw' hadj hf
       by_cases hv : v ∈ s <;> by_cases hws : w ∈ s
       · rw [if_pos hv, if_pos hws] at hf
@@ -159,23 +146,23 @@ lemma PartColoring.union_def {v : α} (C₁ : G.PartColoring β s) (C₂ : G.Par
 
 @[simp]
 lemma PartColoring.union_extends (C₁ : G.PartColoring β s) (C₂ : G.PartColoring β t)
-    (h : ∀ ⦃v w⦄, v ∈ s → w ∈ t \ s → G.Adj v w → C₁ v ≠ C₂ w) : (C₁.union C₂ h).extends C₁ :=
+    (h : ∀ ⦃v w⦄, v ∈ s → w ∈ t \ s → G.Adj v w → C₁ v ≠ C₂ w) : (C₁.union C₂ h).Extends C₁ :=
   ⟨Set.subset_union_left, fun _ hv ↦ by rw [union_def, if_pos hv]⟩
 
 @[simp]
 lemma PartColoring.union_extends_disjoint (hd : Disjoint s t) (C₁ : G.PartColoring β s)
     (C₂ : G.PartColoring β t) (h : ∀ ⦃v w⦄, v ∈ s → w ∈ t \ s → G.Adj v w → C₁ v ≠ C₂ w) :
-    (C₁.union C₂ h).extends C₂ :=
+    (C₁.union C₂ h).Extends C₂ :=
   ⟨Set.subset_union_right, fun _ hv ↦ by rw [union_def, if_neg (hd.not_mem_of_mem_right hv)]⟩
 
 
 variable [DecidableEq α]
 
-/-- The extension of a coloring of `s` to `insert a s` using a color `c` that is not used by `C₁` to
+/-- The extension of a coloring of `s` to `insert a s` using a color `c` that is not used by `C` to
 color a neighbor of `a` in `s` -/
-protected def PartColoring.insert (a : α) {c : β} (C₁ : G.PartColoring β s)
-    (h : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C₁ v ≠ c) : G.PartColoring β (insert a s) :=
-  ((G.partColoringOfSingleton a c).union C₁ (by
+protected def PartColoring.insert (a : α) {c : β} (C : G.PartColoring β s)
+    (h : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C v ≠ c) : G.PartColoring β (insert a s) :=
+  ((G.partColoringOfSingleton a c).union C (by
     simp only [Set.mem_singleton_iff, Set.mem_diff, and_imp]
     rintro _ _ rfl h' h1 had h2
     exact h h' had h2.symm)).copy (by simp [Set.union_comm])
@@ -183,19 +170,19 @@ protected def PartColoring.insert (a : α) {c : β} (C₁ : G.PartColoring β s)
 variable {a v : α} {c : β}
 
 @[simp]
-lemma PartColoring.insert_def (C₁ : G.PartColoring β s) (h : ∀ ⦃x⦄, x ∈ s → G.Adj a x → C₁ x ≠ c) :
-    (C₁.insert a h) v = ite (v = a) c (C₁ v) := by
+lemma PartColoring.insert_def (C : G.PartColoring β s) (h : ∀ ⦃x⦄, x ∈ s → G.Adj a x → C x ≠ c) :
+    (C.insert a h) v = ite (v = a) c (C v) := by
   rw [PartColoring.insert, copy_def, union_def]
   simp
 
 @[simp]
-lemma PartColoring.insert_extends {c : β} (C₁ : G.PartColoring β s)
-    (h : ∀ ⦃x⦄, x ∈ s → G.Adj a x → C₁ x ≠ c) :
-    (C₁.insert a h).extends (G.partColoringOfSingleton a c) := copy_extends (union_extends ..)
+lemma PartColoring.insert_extends {c : β} (C : G.PartColoring β s)
+    (h : ∀ ⦃x⦄, x ∈ s → G.Adj a x → C x ≠ c) :
+    (C.insert a h).Extends (G.partColoringOfSingleton a c) := copy_extends (union_extends ..)
 
 @[simp]
-lemma PartColoring.insert_extends_not_mem (C₁ : G.PartColoring β s)
-    (h : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C₁ v ≠ c) (ha : a ∉ s) : (C₁.insert a h).extends C₁ :=
+lemma PartColoring.insert_extends_not_mem (C : G.PartColoring β s)
+    (h : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C v ≠ c) (ha : a ∉ s) : (C.insert a h).Extends C :=
   copy_extends <| union_extends_disjoint (Set.disjoint_singleton_left.mpr ha) ..
 
 end SimpleGraph

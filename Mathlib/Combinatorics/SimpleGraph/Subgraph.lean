@@ -1278,48 +1278,49 @@ open Subgraph
 variable {α : Type*} (G : SimpleGraph α)
 /- The neighbors of `a` in `G.induce s` as a `SimpleGraph α` -/
 @[simp]
-abbrev neighborSetIn (s : Set α) (a : α) :=
+abbrev neighborSetInduce (s : Set α) (a : α) :=
   ((⊤ : Subgraph G).induce s).spanningCoe.neighborSet a
 
 @[simp]
-lemma mem_neighborSetIn {s : Set α} {a v : α} :
-  v ∈ G.neighborSetIn s a ↔ a ∈ s ∧ v ∈ s ∧ G.Adj a v := by simp
+lemma mem_neighborSetInduce {s : Set α} {a v : α} :
+  v ∈ G.neighborSetInduce s a ↔ a ∈ s ∧ v ∈ s ∧ G.Adj a v := by simp
 
-lemma neighborSetIn_eq_inter_of_mem {s : Set α} {a : α} (ha : a ∈ s) :
-    G.neighborSetIn s a = G.neighborSet a ∩ s := by
+lemma neighborSetInduce_eq_inter_of_mem {s : Set α} {a : α} (ha : a ∈ s) :
+    G.neighborSetInduce s a = G.neighborSet a ∩ s := by
   aesop
 
 @[simp]
-lemma neighborSetIn_insert_eq (s : Set α) (a : α) :
-    G.neighborSetIn (insert a s) a = {x | x ∈ s ∧ G.Adj a x} := by
-  rw [neighborSetIn_eq_inter_of_mem _ (Set.mem_insert ..)]
+lemma neighborSetInduce_insert_eq (s : Set α) (a : α) :
+    G.neighborSetInduce (insert a s) a = {x | x ∈ s ∧ G.Adj a x} := by
+  rw [neighborSetInduce_eq_inter_of_mem _ (Set.mem_insert ..)]
   aesop
 
 section withDecRel
 
 variable [DecidableRel G.Adj] {s : Set α} [DecidablePred (· ∈ s)]
 
+-- An almost identical instance exists higher up this file the difference is `v : α` here
+-- while `v : G'.verts` above.
 /-- If a graph is locally finite at a vertex, then so is any subgraph of that graph. -/
-instance finiteAt {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
+instance Subgraph.finiteAt' {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
     [Fintype (G.neighborSet v)] : Fintype (G'.neighborSet v) := by
   apply Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
 
-
 /-- If a graph is locally finite at a vertex, then so is any spanningCoe of a
 subgraph of that graph. -/
-instance finiteAtCoe {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
+instance Subgraph.finiteAtspanningCoe {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
     [Fintype (G.neighborSet v)] : Fintype (G'.spanningCoe.neighborSet v) := by
   apply Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
 
 /-- If the vertex `a : α` has finitely many neighbors in `G.induce s` then this is its set of
 neighbors as a `Finset α` -/
-abbrev neighborFinsetIn (s : Set α) (a : α) [Fintype (G.neighborSetIn s a)] :=
+abbrev neighborFinsetInduce (s : Set α) (a : α) [Fintype (G.neighborSetInduce s a)] :=
   ((⊤ : Subgraph G).induce s).spanningCoe.neighborFinset a
 
 @[simp]
-lemma neighborFinsetIn_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)] [DecidableEq α]
+lemma neighborFinsetInduce_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)] [DecidableEq α]
     [Fintype (G.neighborSet a)] :
-    G.neighborFinsetIn (insert a s) a = (G.neighborFinset a).filter (· ∈ s) := by
+    G.neighborFinsetInduce (insert a s) a = (G.neighborFinset a).filter (· ∈ s) := by
   ext x; simp only [mem_neighborFinset, spanningCoe_adj, induce_adj, Set.mem_insert_iff, true_or,
     Subgraph.top_adj, true_and, Finset.mem_filter]
   constructor <;> intro h
@@ -1328,47 +1329,47 @@ lemma neighborFinsetIn_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)
     | inr h' => exact ⟨h.2, h'⟩
   · exact ⟨Or.inr h.2, h.1⟩
 
-abbrev degreeIn (s : Set α) [DecidablePred (· ∈ s)] (a : α) [Fintype (G.neighborSet a)]  :=
+abbrev degreeInduce (s : Set α) [DecidablePred (· ∈ s)] (a : α) [Fintype (G.neighborSet a)]  :=
   ((⊤ : Subgraph G).induce s).spanningCoe.degree a
 
-lemma degreeIn_eq (s : Set α) [DecidablePred (· ∈ s)] (a : α) [Fintype (G.neighborSet a)] :
-  G.degreeIn s a = ((⊤ : Subgraph G).induce s).degree a := by simp
+lemma degreeInduce_eq (s : Set α) [DecidablePred (· ∈ s)] (a : α) [Fintype (G.neighborSet a)] :
+  G.degreeInduce s a = ((⊤ : Subgraph G).induce s).degree a := by simp
 
 open Finset
 
 variable {t : Set α} [DecidablePred (· ∈ t)] {a : α} [Fintype (G.neighborSet a)]
 
-lemma degreeIn_mono (h : s ⊆ t) : G.degreeIn s a ≤ G.degreeIn t a := by
-  rw [degreeIn_eq, degreeIn_eq]
+lemma degreeInduce_mono (h : s ⊆ t) : G.degreeInduce s a ≤ G.degreeInduce t a := by
+  rw [degreeInduce_eq, degreeInduce_eq]
   exact (degree_le' _ _ (induce_mono_right h) a)
 
 variable (a) in
-lemma degreeIn_le_degree : G.degreeIn s a ≤ G.degree a := by
-  rw [degreeIn_eq]
+lemma degreeInduce_le_degree : G.degreeInduce s a ≤ G.degree a := by
+  rw [degreeInduce_eq]
   exact degree_le _ _
 
-lemma neighborSet_subset_of_degree_le_degreeIn (h : G.degree a ≤ G.degreeIn s a) :
+lemma neighborSet_subset_of_degree_le_degreeInduce (h : G.degree a ≤ G.degreeInduce s a) :
       G.neighborSet a ⊆ s := by
-  rw [degree, degreeIn_eq, ← finset_card_neighborSet_eq_degree] at h
+  rw [degree, degreeInduce_eq, ← finset_card_neighborSet_eq_degree] at h
   intro v ha
   apply ((⊤ : Subgraph G).induce s).neighborSet_subset_verts a
   rwa [← Set.mem_toFinset, eq_of_subset_of_card_le (fun v ↦ by simp) h, mem_neighborFinset]
 
-lemma degreeIn_lt_degree {v : α} (hv : v ∈ G.neighborSet a ∧ v ∉ s) :
-    G.degreeIn s a < G.degree a :=
-  lt_of_le_of_ne (G.degreeIn_le_degree a)
-    fun h ↦ hv.2 <| G.neighborSet_subset_of_degree_le_degreeIn h.symm.le hv.1
+lemma degreeInduce_lt_degree {v : α} (hv : v ∈ G.neighborSet a ∧ v ∉ s) :
+    G.degreeInduce s a < G.degree a :=
+  lt_of_le_of_ne (G.degreeInduce_le_degree a)
+    fun h ↦ hv.2 <| G.neighborSet_subset_of_degree_le_degreeInduce h.symm.le hv.1
 @[simp]
-lemma degreeIn_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)] [DecidableEq α]
+lemma degreeInduce_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)] [DecidableEq α]
     [Fintype (G.neighborSet a)] :
-    G.degreeIn (insert a s) a = #((G.neighborFinset a).filter (· ∈ s)) := by
-  rw [← neighborFinsetIn_insert_eq]
+    G.degreeInduce (insert a s) a = #((G.neighborFinset a).filter (· ∈ s)) := by
+  rw [← neighborFinsetInduce_insert_eq]
   rfl
 
-lemma degreeIn_insert_lt_degree {s : Set α} {a v : α} (h : G.Adj a v) (hv : v ∉ s)
+lemma degreeInduce_insert_lt_degree {s : Set α} {a v : α} (h : G.Adj a v) (hv : v ∉ s)
   [DecidablePred (· ∈ s)] [DecidableEq α] [Fintype (G.neighborSet a)] :
-    G.degreeIn (insert a s) a < G.degree a := by
-  rw [degreeIn_insert_eq, ← card_neighborFinset_eq_degree]
+    G.degreeInduce (insert a s) a < G.degree a := by
+  rw [degreeInduce_insert_eq, ← card_neighborFinset_eq_degree]
   exact card_lt_card <| filter_ssubset.2 ⟨v, (G.mem_neighborFinset ..).2 h, hv⟩
 
 

@@ -132,23 +132,24 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
     (hbd : ∀ v, G.degree v ≤ k) (s : Finset α) : G.PartColorable k s := by
   induction hn : #s using Nat.strong_induction_on generalizing s with
   | h n ih =>
-  -- Case 0 : there is `v ∈ s` with `G.degreeIn s v < k`, so we can extend a `k` - coloring of
+  -- Case 0 : there is `v ∈ s` with `G.degreeInduce s v < k`, so we can extend a `k` - coloring of
   -- `s.erase v` greedily
   classical
-  by_cases hd : ∃ v ∈ s, G.degreeIn s v < k
+  by_cases hd : ∃ v ∈ s, G.degreeInduce s v < k
   · obtain ⟨v, hv, hlt⟩ := hd
     obtain ⟨C⟩ := ih _ ((card_erase_lt_of_mem hv).trans_le hn.le) _ rfl
-    exact ⟨(C.greedy v (C.nonempty_of_degreeIn_lt _ (by simpa [hv] using hlt))).copy (by simp [hv])⟩
-  -- So all vertices in `s` have `G.degreeIn s v = k` (and hence have no neighbors outside `s`)
+    exact ⟨(C.greedy v (C.nonempty_of_degreeInduce_lt _
+      (by simpa [hv] using hlt))).copy (by simp [hv])⟩
+  -- So all vertices in `s` have `G.degreeInduce s v = k` (and hence have no neighbors outside `s`)
   push_neg at hd
-  replace hd : ∀ v ∈ s, G.degreeIn s v = k := fun v hv ↦ le_antisymm
-        ((degreeIn_le_degree ..).trans (hbd v)) <| hd _ hv
+  replace hd : ∀ v ∈ s, G.degreeInduce s v = k := fun v hv ↦ le_antisymm
+        ((degreeInduce_le_degree ..).trans (hbd v)) <| hd _ hv
   have hbd' : ∀ v, v ∈ s → G.degree v = k := fun v hv ↦ le_antisymm (hbd v)
-        <| hd v hv ▸ degreeIn_le_degree ..
+        <| hd v hv ▸ degreeInduce_le_degree ..
   have hin : ∀ {v}, v ∈ s → ∀ {w}, G.Adj v w → w ∈ s := by
     by_contra! hf
     obtain ⟨v, hv, w, ha, hns⟩ := hf
-    have : G.degreeIn s v < G.degree v := G.degreeIn_lt_degree ⟨ha, hns⟩
+    have : G.degreeInduce s v < G.degree v := G.degreeInduce_lt_degree ⟨ha, hns⟩
     rw [hd _ hv] at this
     exact this.not_le (hbd v)
   -- `s` is either Nonempty (main case) or empty (easy)
@@ -194,7 +195,7 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
       ∀ y, G.Adj vᵣ y → y ∈ ((q.append v41)).support := by
     obtain ⟨vᵣ, q, hq, hs, hnb⟩ := exists_maximal_path_subset s h41 v41s
     refine ⟨vᵣ, q, hq, hs,fun x hx ↦ ?_⟩
-    have := G.neighborSet_subset_of_degree_le_degreeIn <|
+    have := G.neighborSet_subset_of_degree_le_degreeInduce <|
       (hbd vᵣ).trans (hd vᵣ (hs _ (start_mem_support ..))).symm.le
     exact hnb x hx <| this <| (mem_neighborSet ..).2 hx
   have hdisj2 := (append_isPath_iff.1 hq).2.2
@@ -338,6 +339,5 @@ lemma two_colorable_iff_no_odd_cycle :
   · classical
     intro _ w h
     exact ho _ _ (w.oddCycle_isCycle h) (w.oddCycle_is_odd h)
-
 
 end SimpleGraph

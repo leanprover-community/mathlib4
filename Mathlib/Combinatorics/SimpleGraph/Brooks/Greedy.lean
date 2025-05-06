@@ -13,7 +13,7 @@ Develop Greedy colorings of a `G : SimpleGraph α` using the`SimpleGraph.PartCol
 
 Prove the basic greedy coloring bound `∀ v, G.degree v ≤ n → G.Colorable (n + 1)`
 
-Develop greedy partial colorings along paths do enable proof of Brooks theorem.
+Develop greedy partial colorings along paths to enable a proof of Brooks theorem.
 
 Given `C`, a `β` - coloring of `G.induce s`, (where `Fintype β`) the set of `valid` colors
 that we can use to extend `C` to `s.insert a` is:
@@ -50,30 +50,30 @@ variable [DecidableEq α]
 /-- If we have a `β` - coloring of `G.induce s` and `G` has less than `|β|` neighbors in `s` then
 the set of valid colors at `a` is nonempty.
 -/
-lemma PartColoring.nonempty_of_degreeIn_lt [DecidableRel G.Adj] (C₁ : G.PartColoring β s) (a : α)
-    [Fintype (G.neighborSet a)] (h : G.degreeIn (insert a s) a < Fintype.card β) :
-    (((G.neighborFinset a).filter (· ∈ s)).image C₁)ᶜ.Nonempty := by
+lemma PartColoring.nonempty_of_degreeInduce_lt [DecidableRel G.Adj] (C : G.PartColoring β s) (a : α)
+    [Fintype (G.neighborSet a)] (h : G.degreeInduce (insert a s) a < Fintype.card β) :
+    (((G.neighborFinset a).filter (· ∈ s)).image C)ᶜ.Nonempty := by
   contrapose! h
   simp only [not_nonempty_iff_eq_empty, compl_eq_empty_iff] at h
-  have := card_image_le (f := C₁) (s := {x ∈ G.neighborFinset a | x ∈ s})
+  have := card_image_le (f := C) (s := {x ∈ G.neighborFinset a | x ∈ s})
   simp only [h, card_univ, Fintype.card_fin] at this
-  rwa [degreeIn_insert_eq]
+  rwa [degreeInduce_insert_eq]
 
 /-- If we have a `β` - coloring `C` of `G.induce s` and `G` has at most `|β|` neighbors in `s` *and*
 at least two of these neighbors received the same color in `C` then the set of valid colors at `a`
 is nonempty.
 -/
-lemma PartColoring.nonempty_of_degreeIn_le_not_inj {u v : α} [DecidableRel G.Adj]
+lemma PartColoring.nonempty_of_degreeInduce_le_not_inj {u v : α} [DecidableRel G.Adj]
     (C : G.PartColoring β s) (a : α) [Fintype (G.neighborSet a)]
-    (h : G.degreeIn (insert a s) a ≤ Fintype.card β) (hus : u ∈ s) (hvs : v ∈ s)
+    (h : G.degreeInduce (insert a s) a ≤ Fintype.card β) (hus : u ∈ s) (hvs : v ∈ s)
     (hu : G.Adj a u) (hv : G.Adj a v) (hne : u ≠ v) (heq : C u = C v) :
     (((G.neighborFinset a).filter (· ∈ s)).image C)ᶜ.Nonempty := by
   cases h.lt_or_eq with
-  | inl h => exact C.nonempty_of_degreeIn_lt a h
+  | inl h => exact C.nonempty_of_degreeInduce_lt a h
   | inr h =>
   contrapose! hne
   simp only [not_nonempty_iff_eq_empty, compl_eq_empty_iff] at hne
-  rw [degreeIn_insert_eq,  ← card_univ] at h
+  rw [degreeInduce_insert_eq,  ← card_univ] at h
   exact card_image_iff.1 (h ▸ congr_arg card hne) (by simp [*]) (by simp [*]) heq
 
 variable [LinearOrder β]
@@ -91,11 +91,11 @@ abbrev PartColoring.greedy (C : G.PartColoring β s) (a : α) [Fintype (G.neighb
 variable {a : α}
 @[simp]
 lemma PartColoring.greedy_extends_not_mem (C : G.PartColoring β s) (ha : a ∉ s)
-    [Fintype (G.neighborSet a)] (h) : (C.greedy a h).extends C := C.insert_extends_not_mem _ ha
+    [Fintype (G.neighborSet a)] (h) : (C.greedy a h).Extends C := C.insert_extends_not_mem _ ha
 
 @[simp]
 lemma PartColoring.greedy_extends (C : G.PartColoring β s) [Fintype (G.neighborSet a)] (h) :
-  (C.greedy a h).extends (G.partColoringOfSingleton a (min' _ h)) := C.insert_extends _
+  (C.greedy a h).Extends (G.partColoringOfSingleton a (min' _ h)) := C.insert_extends _
 
 end DecEq
 
@@ -106,7 +106,7 @@ lemma part_colorable_succ_finset_of_forall_degree_le [LocallyFinite G] (h : ∀ 
   induction s using Finset.induction_on with
   | empty => exact ⟨fun _ ↦ 0, by simp⟩
   | @insert a _ _ hC =>
-    have := hC.some.nonempty_of_degreeIn_lt a ((degreeIn_le_degree ..).trans_lt
+    have := hC.some.nonempty_of_degreeInduce_lt a ((degreeInduce_le_degree ..).trans_lt
       ((Fintype.card_fin _).symm ▸ Nat.lt_add_one_iff.mpr (h a)))
     exact ⟨(hC.some.greedy a this).copy (by simp)⟩
 
@@ -151,15 +151,15 @@ def PartColoring.of_tail_path {u v : α} {p : G.Walk u v} [LocallyFinite G] (C�
       intro hf; apply hp.2
       have := hf.resolve_left (fun hu ↦ hs.not_mem_of_mem_left hu rfl)
       exact mem_of_mem_tail this
-    have h' : G.degreeIn (insert v (s ∪ {a | a ∈ p.support.tail})) v < Fintype.card β :=
-      (G.degreeIn_insert_lt_degree h.symm hu).trans_le (hbd v (Or.inr p.start_mem_support))
-    exact (C₂.greedy v (C₂.nonempty_of_degreeIn_lt v h')).copy (by
+    have h' : G.degreeInduce (insert v (s ∪ {a | a ∈ p.support.tail})) v < Fintype.card β :=
+      (G.degreeInduce_insert_lt_degree h.symm hu).trans_le (hbd v (Or.inr p.start_mem_support))
+    exact (C₂.greedy v (C₂.nonempty_of_degreeInduce_lt v h')).copy (by
       ext x; rw [support_eq_cons]; simp [or_left_comm])
 
 lemma PartColoring.of_tail_path_extends {u v : α} {p : G.Walk u v} [LocallyFinite G]
     (C₁ : G.PartColoring β s) (hp : p.IsPath)
     (hbd : ∀ x, x ∈ p.support → G.degree x ≤ Fintype.card β)
-    (disj : Disjoint s {a | a ∈ p.support}) : (C₁.of_tail_path hp hbd disj).extends C₁ := by
+    (disj : Disjoint s {a | a ∈ p.support}) : (C₁.of_tail_path hp hbd disj).Extends C₁ := by
   cases p with
   | nil => exact copy_extends <| extends_refl ..
   | cons h p =>
@@ -199,8 +199,8 @@ def PartColoring.of_path_not_inj {u v x y : α} {p : G.Walk u v} [LocallyFinite 
   have he : C₂ x = C₂ y := by
     rwa [(C₁.of_tail_path_extends hp hbd disj).2 hxs, (C₁.of_tail_path_extends hp hbd disj).2 hys]
   classical
-  exact (C₂.greedy u (C₂.nonempty_of_degreeIn_le_not_inj u
-        ((degreeIn_le_degree ..).trans (hbd u p.start_mem_support)) (Or.inl hxs) (Or.inl hys)
+  exact (C₂.greedy u (C₂.nonempty_of_degreeInduce_le_not_inj u
+        ((degreeInduce_le_degree ..).trans (hbd u p.start_mem_support)) (Or.inl hxs) (Or.inl hys)
         hux huy hne he)).copy (by ext; rw [support_eq_cons]; simp [or_left_comm])
 
 lemma PartColoring.of_path_not_inj_extends {u v x y : α} {p : G.Walk u v} [LocallyFinite G]
@@ -208,7 +208,7 @@ lemma PartColoring.of_path_not_inj_extends {u v x y : α} {p : G.Walk u v} [Loca
     (hbd : ∀ x, x ∈ p.support → G.degree x ≤ Fintype.card β)
     (disj : Disjoint s {a | a ∈ p.support}) (hxs : x ∈ s) (hys : y ∈ s) (hux : G.Adj u x)
     (huy : G.Adj u y) (hne : x ≠ y) (heq : C₁ x = C₁ y) :
-    (C₁.of_path_not_inj hp hbd disj hxs hys hux huy hne heq).extends C₁ := by
+    (C₁.of_path_not_inj hp hbd disj hxs hys hux huy hne heq).Extends C₁ := by
   apply copy_extends
   · apply extends_trans (C₁.of_tail_path_extends hp hbd disj)
     apply (C₁.of_tail_path hp hbd disj).greedy_extends_not_mem
