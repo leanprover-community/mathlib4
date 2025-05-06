@@ -53,10 +53,10 @@ protected lemma LocallyLinear.edgeDisjointTriangles : G.LocallyLinear → G.Edge
 nonrec lemma EdgeDisjointTriangles.mono (h : G ≤ H) (hH : H.EdgeDisjointTriangles) :
     G.EdgeDisjointTriangles := hH.mono <| cliqueSet_mono h
 
-@[simp] lemma edgeDisjointTriangles_bot : (⊥ : SimpleGraph α).EdgeDisjointTriangles := by
+@[simp] lemma edgeDisjointTriangles_bot : (emptyGraph α).EdgeDisjointTriangles := by
   simp [EdgeDisjointTriangles]
 
-@[simp] lemma locallyLinear_bot : (⊥ : SimpleGraph α).LocallyLinear := by simp [LocallyLinear]
+@[simp] lemma locallyLinear_bot : (emptyGraph α).LocallyLinear := by simp [LocallyLinear]
 
 lemma EdgeDisjointTriangles.map (f : α ↪ β) (hG : G.EdgeDisjointTriangles) :
     (G.map f).EdgeDisjointTriangles := by

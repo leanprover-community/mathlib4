@@ -89,7 +89,7 @@ theorem IsClique.mono (h : G ≤ H) : G.IsClique s → H.IsClique s := Set.Pairw
 theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := Set.Pairwise.mono h
 
 @[simp]
-theorem isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Subsingleton :=
+theorem isClique_bot_iff : (emptyGraph α).IsClique s ↔ (s : Set α).Subsingleton :=
   Set.pairwise_bot_iff
 
 alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
@@ -225,7 +225,7 @@ theorem isNClique_map_iff (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
   simp [hs.card_eq, hs.isClique]
 
 @[simp]
-theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ #s = n := by
+theorem isNClique_bot_iff : (emptyGraph α).IsNClique n s ↔ n ≤ 1 ∧ #s = n := by
   rw [isNClique_iff, isClique_bot_iff]
   refine and_congr_left ?_
   rintro rfl
@@ -357,7 +357,7 @@ theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : completeGraph α 
   fun h ↦ h ∅ <| isNClique_empty.mpr rfl
 
 @[simp]
-theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
+theorem cliqueFree_bot (h : 2 ≤ n) : (emptyGraph α).CliqueFree n := by
   intro t ht
   have := le_trans h (isNClique_bot_iff.1 ht).1
   contradiction
@@ -579,7 +579,7 @@ theorem cliqueSet_one (G : SimpleGraph α) : G.cliqueSet 1 = Set.range singleton
   Set.ext fun s => by simp [eq_comm]
 
 @[simp]
-theorem cliqueSet_bot (hn : 1 < n) : (⊥ : SimpleGraph α).cliqueSet n = ∅ :=
+theorem cliqueSet_bot (hn : 1 < n) : (emptyGraph α).cliqueSet n = ∅ :=
   (cliqueFree_bot hn).cliqueSet
 
 @[simp]

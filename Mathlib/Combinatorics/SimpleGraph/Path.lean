@@ -898,7 +898,7 @@ theorem reachable_is_equivalence : Equivalence G.Reachable :=
 
 /-- Distinct vertices are not reachable in the empty graph. -/
 @[simp]
-lemma reachable_bot {u v : V} : (⊥ : SimpleGraph V).Reachable u v ↔ u = v :=
+lemma reachable_bot {u v : V} : (emptyGraph V).Reachable u v ↔ u = v :=
   ⟨fun h ↦ h.elim fun p ↦ match p with | .nil => rfl, fun h ↦ h ▸ .rfl⟩
 
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
@@ -915,15 +915,15 @@ theorem Preconnected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H)
 protected lemma Preconnected.mono  {G G' : SimpleGraph V} (h : G ≤ G') (hG : G.Preconnected) :
     G'.Preconnected := fun u v => (hG u v).mono h
 
-lemma bot_preconnected_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
+lemma bot_preconnected_iff_subsingleton : (emptyGraph V).Preconnected ↔ Subsingleton V := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simpa [subsingleton_iff, ← reachable_bot] using h⟩
   contrapose h
   simp [nontrivial_iff.mp <| not_subsingleton_iff_nontrivial.mp h, Preconnected, reachable_bot, h]
 
-lemma bot_preconnected [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
+lemma bot_preconnected [Subsingleton V] : (emptyGraph V).Preconnected :=
   bot_preconnected_iff_subsingleton.mpr ‹_›
 
-lemma bot_not_preconnected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected :=
+lemma bot_not_preconnected [Nontrivial V] : ¬(emptyGraph V).Preconnected :=
   bot_preconnected_iff_subsingleton.not.mpr <| not_subsingleton_iff_nontrivial.mpr ‹_›
 
 lemma top_preconnected : (completeGraph V).Preconnected := fun x y => by
@@ -973,7 +973,7 @@ theorem Connected.exists_isPath {G : SimpleGraph V} (h : G.Connected) (u v : V) 
     ∃ p : G.Walk u v, p.IsPath :=
   (h u v).exists_isPath
 
-lemma bot_not_connected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
+lemma bot_not_connected [Nontrivial V] : ¬(emptyGraph V).Connected := by
   simp [bot_not_preconnected, connected_iff, ‹_›]
 
 lemma top_connected [Nonempty V] : (completeGraph V).Connected where

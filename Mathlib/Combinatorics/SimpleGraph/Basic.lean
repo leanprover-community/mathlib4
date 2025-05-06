@@ -332,7 +332,7 @@ theorem top_adj (v w : V) : (completeGraph V).Adj v w ↔ v ≠ w :=
   Iff.rfl
 
 @[simp]
-theorem bot_adj (v w : V) : (⊥ : SimpleGraph V).Adj v w ↔ False :=
+theorem bot_adj (v w : V) : (emptyGraph V).Adj v w ↔ False :=
   Iff.rfl
 
 @[simp]
@@ -359,7 +359,7 @@ section Decidable
 
 variable (V) (H : SimpleGraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
 
-instance Bot.adjDecidable : DecidableRel (⊥ : SimpleGraph V).Adj :=
+instance Bot.adjDecidable : DecidableRel (emptyGraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ => False
 
 instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj :=
@@ -452,7 +452,7 @@ attribute [mono] edgeSet_mono edgeSet_strict_mono
 variable (G₁ G₂)
 
 @[simp]
-theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
+theorem edgeSet_bot : (emptyGraph V).edgeSet = ∅ :=
   Sym2.fromRel_bot
 
 @[simp]
@@ -527,7 +527,7 @@ instance decidableMemEdgeSet [DecidableRel G.Adj] : DecidablePred (· ∈ G.edge
 instance fintypeEdgeSet [Fintype (Sym2 V)] [DecidableRel G.Adj] : Fintype G.edgeSet :=
   Subtype.fintype _
 
-instance fintypeEdgeSetBot : Fintype (⊥ : SimpleGraph V).edgeSet := by
+instance fintypeEdgeSetBot : Fintype (emptyGraph V).edgeSet := by
   rw [edgeSet_bot]
   infer_instance
 

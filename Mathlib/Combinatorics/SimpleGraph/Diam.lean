@@ -126,7 +126,7 @@ lemma ediam_anti (h : G ≤ G') : G'.ediam ≤ G.ediam :=
   iSup₂_mono fun _ _ ↦ edist_anti h
 
 @[simp]
-lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
+lemma ediam_bot [Nontrivial α] : (emptyGraph α).ediam = ⊤ :=
   ediam_eq_top_of_not_connected bot_not_connected
 
 @[simp]
@@ -199,7 +199,7 @@ lemma diam_anti_of_ediam_ne_top (h : G ≤ G') (hn : G.ediam ≠ ⊤) : G'.diam 
   ENat.toNat_le_toNat (ediam_anti h) hn
 
 @[simp]
-lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
+lemma diam_bot : (emptyGraph α).diam = 0 := by
   rw [diam, ENat.toNat_eq_zero]
   cases subsingleton_or_nontrivial α
   · exact Or.inl ediam_eq_zero_of_subsingleton

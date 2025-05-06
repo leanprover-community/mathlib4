@@ -79,7 +79,7 @@ alias ⟨_, edgeFinset_strict_mono⟩ := edgeFinset_ssubset_edgeFinset
 attribute [mono] edgeFinset_mono edgeFinset_strict_mono
 
 @[simp]
-theorem edgeFinset_bot : (⊥ : SimpleGraph V).edgeFinset = ∅ := by simp [edgeFinset]
+theorem edgeFinset_bot : (emptyGraph V).edgeFinset = ∅ := by simp [edgeFinset]
 
 @[simp]
 theorem edgeFinset_sup [Fintype (edgeSet (G₁ ⊔ G₂))] [DecidableEq V] :
@@ -314,7 +314,7 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
   simp_rw [degree, neighborFinset_eq_filter, top_adj, filter_ne]
   rw [card_erase_of_mem (mem_univ v), card_univ]
 
-theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
+theorem bot_degree (v : V) : (emptyGraph V).degree v = 0 := by
   simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_False]
   exact Finset.card_empty
 

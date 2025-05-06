@@ -53,7 +53,7 @@ variable {G} {n k ℓ μ : ℕ}
 
 /-- Empty graphs are strongly regular. Note that `ℓ` can take any value
 for empty graphs, since there are no pairs of adjacent vertices. -/
-theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
+theorem bot_strongly_regular : (emptyGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
   card := rfl
   regular := bot_degree
   of_adj := fun _ _ h => h.elim
