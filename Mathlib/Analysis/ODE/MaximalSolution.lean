@@ -37,6 +37,7 @@ chain together.
 
 ## TODO
 
+* Implement the compact exit lemma ("lemme des bouts").
 * Tie to Grönwall's inequality for uniqueness arguments, particularly for showing that any two
   solutions (under appropriate Lipschitz conditions) must agree on the intersection of their
   domains. This underpins the coherence of extending solutions.
