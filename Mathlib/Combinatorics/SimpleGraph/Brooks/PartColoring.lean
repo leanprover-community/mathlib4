@@ -298,15 +298,17 @@ lemma PartColoring.insert_extends_not_mem (C₁ : G.PartColoring β s)
 
 open Finset
 section greedy
-variable {γ : Type*} [DecidableEq γ] [LT γ]
-noncomputable abbrev PartColoring.greedyWF (C₁ : G.PartColoring γ s) (a : α) (hwf : WellFounded ((· < ·) : γ → γ → Prop))[Fintype (G.neighborSet a)]
-    (h : ((((G.neighborFinset a).filter (· ∈ s)).image C₁) : Set γ)ᶜ.Nonempty) :
-    G.PartColoring γ  (insert a s) := by
-  have h' : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C₁ v ≠ hwf.min _  h := by
-    intro _ hv had he
-    apply mem_compl.1 <| hwf.min_mem _ h
-    exact mem_image.2 ⟨_, mem_filter.2 ⟨(G.mem_neighborFinset ..).2 had, hv⟩, he⟩
-  exact C₁.insert a (hwf.min _ h) h'
+
+-- variable {γ : Type*} [DecidableEq γ] [LT γ]
+-- noncomputable abbrev PartColoring.greedyWF (C₁ : G.PartColoring γ s) (a : α)
+--     (hwf : WellFounded ((· < ·) : γ → γ → Prop)) [Fintype (G.neighborSet a)]
+--     (h : ((((G.neighborFinset a).filter (· ∈ s)).image C₁) : Set γ)ᶜ.Nonempty) :
+--     G.PartColoring γ  (insert a s) := by
+--   have h' : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C₁ v ≠ hwf.min _  h := by
+--     intro _ hv had he
+--     apply mem_compl.1 <| hwf.min_mem _ h
+--     exact mem_image.2 ⟨_, mem_filter.2 ⟨(G.mem_neighborFinset ..).2 had, hv⟩, he⟩
+--   exact C₁.insert a (hwf.min _ h) h'
 
 
 variable [Fintype β] [DecidableEq β] [LinearOrder β]
@@ -321,9 +323,6 @@ abbrev PartColoring.greedy (C₁ : G.PartColoring β s) (a : α) [Fintype (G.nei
     exact mem_image.2 ⟨_, mem_filter.2 ⟨(G.mem_neighborFinset ..).2 had, hv⟩, he⟩
   exact C₁.insert a (min' _ h) h'
 
-
-
-#check Infinite.exists_not_mem_finset
 @[simp]
 lemma PartColoring.greedy_extends_not_mem (C₁ : G.PartColoring β s) (ha : a ∉ s)
     [Fintype (G.neighborSet a)] (h) : (C₁.greedy a h).extends C₁ := C₁.insert_extends_not_mem _ ha
