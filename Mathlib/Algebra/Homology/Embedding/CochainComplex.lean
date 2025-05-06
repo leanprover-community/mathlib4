@@ -51,6 +51,14 @@ noncomputable def ιTruncLE (n : ℤ) : K.truncLE n ⟶ K :=
 noncomputable def πTruncGE (n : ℤ) : K ⟶ K.truncGE n :=
   HomologicalComplex.πTruncGE K (embeddingUpIntGE n)
 
+instance (n : ℤ) : Mono (K.ιTruncLE n) := by
+  dsimp only [ιTruncLE]
+  infer_instance
+
+instance (n : ℤ) : Epi (K.πTruncGE n) := by
+  dsimp only [πTruncGE]
+  infer_instance
+
 section
 
 variable {K L}

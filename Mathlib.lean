@@ -515,6 +515,7 @@ import Mathlib.Algebra.Homology.Double
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Embedding.Boundary
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
+import Mathlib.Algebra.Homology.Embedding.CochainComplexTrunc
 import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
 import Mathlib.Algebra.Homology.Embedding.Connect
 import Mathlib.Algebra.Homology.Embedding.Extend
@@ -573,6 +574,7 @@ import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.LeftResolution.Basic
 import Mathlib.Algebra.Homology.LeftResolution.DerivabilityStructure
 import Mathlib.Algebra.Homology.LeftResolutions.Basic
+import Mathlib.Algebra.Homology.LeftResolutions.CochainComplex
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplexMinus
 import Mathlib.Algebra.Homology.LeftResolutions.Reduced
 import Mathlib.Algebra.Homology.LeftResolutions.Transport
