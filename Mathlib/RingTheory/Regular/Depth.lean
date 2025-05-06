@@ -539,4 +539,41 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R) [Sma
     apply rees N
     simp [Nntr, Nfin, hsupp]
 
+omit [Small.{v, u} R] in
+lemma Submodule.comap_lt_top_of_lt_range {M N : Type* } [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) (p : Submodule R N)
+    (lt : p < LinearMap.range f) : Submodule.comap f p < ⊤ := by
+  obtain ⟨x, ⟨y, hy⟩, nmem⟩ : ∃ x ∈ LinearMap.range f, x ∉ p := Set.exists_of_ssubset lt
+  have : y ∉ Submodule.comap f p := by simpa [hy] using nmem
+  exact lt_of_le_not_le (fun _ a ↦ trivial) fun a ↦ this (a trivial)
+
+--universe invariant
+lemma moduleDepth_eq_moduleDepth_shrink [IsNoetherianRing R] (I : Ideal R) [Small.{w, u} R]
+    [Small.{v, u} (R ⧸ I)] [Small.{w, u} (R ⧸ I)]
+    (N M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M] [Nontrivial M]
+    [AddCommGroup N] [Module R N] [Nfin : Module.Finite R N] [Nntr : Nontrivial N]
+    (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+    (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I)
+    [Small.{w} M] [Small.{w} N] :
+    moduleDepth (ModuleCat.of R N) (ModuleCat.of R M) =
+    moduleDepth (ModuleCat.of R (Shrink.{w} N)) (ModuleCat.of R (Shrink.{w} M)) := by
+  rw [moduleDepth_eq_sSup_length_regular I (ModuleCat.of R N) (ModuleCat.of R M) smul_lt hsupp]
+  let _ : Module.Finite R (Shrink.{w} M) :=
+    Module.Finite.equiv (Shrink.linearEquiv.{v, w} M R).symm
+  let _ : Module.Finite R (Shrink.{w} N) :=
+    Module.Finite.equiv (Shrink.linearEquiv.{v, w} N R).symm
+  have smul_lt' : I • (⊤ : Submodule R (Shrink.{w} M)) < ⊤ := by
+    apply lt_of_le_of_lt (Submodule.smul_top_le_comap_smul_top I
+      (Shrink.linearEquiv.{v, w} M R).toLinearMap) (Submodule.comap_lt_top_of_lt_range _ _ _)
+    simpa using smul_lt
+  have hsupp' : Module.support R (Shrink.{w} N) = PrimeSpectrum.zeroLocus I := by
+    rw [LinearEquiv.support_eq (Shrink.linearEquiv.{v, w} N R), hsupp]
+  rw [moduleDepth_eq_sSup_length_regular I
+    (ModuleCat.of R (Shrink.{w} N)) (ModuleCat.of R (Shrink.{w} M)) smul_lt' hsupp']
+  have : RingTheory.Sequence.IsRegular M =
+    RingTheory.Sequence.IsRegular (R := R) (Shrink.{w, v} M) := by
+    ext rs
+    exact LinearEquiv.isRegular_congr (Shrink.linearEquiv.{v, w} M R).symm rs
+  congr!
+
 end depth
