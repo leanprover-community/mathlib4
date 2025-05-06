@@ -9,7 +9,7 @@ import Mathlib.GroupTheory.Congruence.Hom
 /-!
 # Congruence relations and homomorphisms
 
-This file contains elementary definitions involving congruence relations and morphisms.
+This file contains elementary definitions involving congruence relations and ring morphisms.
 
 ## Main definitions
 
@@ -17,6 +17,10 @@ This file contains elementary definitions involving congruence relations and mor
  * `RingCon.mk'`: the map from a ring to its quotient by a congruence relation
  * `RingCon.lift`: the homomorphism on the quotient given that the congruence is in the kernel
  * `RingCon.map`: homomorphism from a smaller to a larger quotient
+
+## TODO
+
+Repeat everything in this file for `NonUnitalRingHom`.
 
 ## Tags
 
@@ -33,10 +37,11 @@ variable {R}
 
 namespace RingCon
 
-section Semiring
+section NonUnitalNonAssocSemiring
 
-variable [NonAssocSemiring R] [NonAssocSemiring N] [NonAssocSemiring P] {c : RingCon R}
-variable [FunLike F R P] [RingHomClass F R P]
+variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring N] [NonUnitalNonAssocSemiring P]
+variable {c : RingCon R}
+variable [FunLike F R P] [NonUnitalRingHomClass F R P]
 
 /-- The kernel of a ring homomorphism as a congruence relation. -/
 def ker (f : F) : RingCon R where
@@ -44,11 +49,18 @@ def ker (f : F) : RingCon R where
   __ := AddCon.ker f
 
 @[norm_cast]
-theorem ker_coeRingHom (f : F) : ker (f : R →+*P) = ker f := rfl
+theorem ker_coeNonUnitalRingHom (f : F) : ker (f : R →ₙ+* P) = ker f := rfl
 
 /-- The definition of the congruence relation defined by a ring homomorphism's kernel. -/
 theorem ker_rel (f : F) {x y} : ker f x y ↔ f x = f y :=
   Iff.rfl
+
+end NonUnitalNonAssocSemiring
+
+section NonAssocSemiring
+
+variable [NonAssocSemiring R] [NonAssocSemiring N] [NonAssocSemiring P] {c : RingCon R}
+variable [FunLike F R P] [NonUnitalRingHomClass F R P]
 
 variable (c)
 
@@ -172,6 +184,6 @@ theorem map_apply {c d : RingCon R} (h : c ≤ d) (x) :
     c.map d h x = c.lift d.mk' (fun _ _ hc => d.eq.2 <| h hc) x :=
   rfl
 
-end Semiring
+end NonAssocSemiring
 
 end RingCon
