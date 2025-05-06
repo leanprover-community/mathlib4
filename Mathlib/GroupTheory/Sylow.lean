@@ -363,7 +363,7 @@ theorem conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite (Sylow
   rw [← mul_assoc, Commute.right_comm (h.prop x (mem_zpowers x)), mul_inv_rev, inv_mul_cancel_right]
 
 theorem conj_eq_normalizer_conj_of_mem [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
-    [_hP : P.IsCommutative] (x g : G) (hx : x ∈ P) (hy : g⁻¹ * x * g ∈ P) :
+    [_hP : IsMulCommutative P] (x g : G) (hx : x ∈ P) (hy : g⁻¹ * x * g ∈ P) :
     ∃ n ∈ P.normalizer, g⁻¹ * x * g = n⁻¹ * x * n :=
   P.conj_eq_normalizer_conj_of_mem_centralizer x g
     (P.le_centralizer hx) (P.le_centralizer hy)

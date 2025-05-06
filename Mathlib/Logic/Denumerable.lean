@@ -114,14 +114,14 @@ instance option : Denumerable (Option α) :=
       rw [decode_option_zero, Option.mem_def]
     | succ n =>
       refine ⟨some (ofNat α n), ?_, ?_⟩
-      · rw [decode_option_succ, decode_eq_ofNat, Option.map_some', Option.mem_def]
+      · rw [decode_option_succ, decode_eq_ofNat, Option.map_some, Option.mem_def]
       rw [encode_some, encode_ofNat]⟩
 
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
-    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
+    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some,
       Option.mem_def, Sum.exists]
     cases bodd n <;> simp [decodeSum, bit, encodeSum, Nat.two_mul]⟩
 
@@ -238,7 +238,7 @@ theorem ofNat_surjective : Surjective (ofNat s)
       simp [List.mem_filter, Subtype.ext_iff_val, ht]
     cases hmax : List.maximum t with
     | bot =>
-      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
+      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (a := (⊥ : s)) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
     | coe m =>
       have wf : ↑m < x := by simpa using hmt.mp (List.maximum_mem hmax)

@@ -9,7 +9,7 @@ import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Group.Prod
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Convolution of functions
@@ -176,7 +176,7 @@ section Group
 variable [AddGroup G]
 
 theorem AEStronglyMeasurable.convolution_integrand' [MeasurableAdd₂ G]
-    [MeasurableNeg G] [SFinite ν] (hf : AEStronglyMeasurable f ν)
+    [MeasurableNeg G] (hf : AEStronglyMeasurable f ν)
     (hg : AEStronglyMeasurable g <| map (fun p : G × G => p.1 - p.2) (μ.prod ν)) :
     AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
   L.aestronglyMeasurable_comp₂ hf.snd <| hg.comp_measurable measurable_sub
@@ -288,7 +288,7 @@ theorem Integrable.convolution_integrand (hf : Integrable f ν) (hg : Integrable
       (Eventually.of_forall fun t => (?_ : _ ≤ ‖L‖ * ‖f t‖ * ∫ x, ‖g (x - t)‖ ∂μ))
   · simp only [integral_sub_right_eq_self (‖g ·‖)]
     exact (hf.norm.const_mul _).mul_const _
-  · simp_rw [← integral_mul_left]
+  · simp_rw [← integral_const_mul]
     rw [Real.norm_of_nonneg (by positivity)]
     exact integral_mono_of_nonneg (Eventually.of_forall fun t => norm_nonneg _)
       ((hg.comp_sub_right t).norm.const_mul _) (Eventually.of_forall fun t => L.le_opNorm₂ _ _)
@@ -508,7 +508,7 @@ theorem convolution_congr [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ]
     [IsAddRightInvariant μ] (h1 : f =ᵐ[μ] f') (h2 : g =ᵐ[μ] g') : f ⋆[L, μ] g = f' ⋆[L, μ] g' := by
   ext x
   apply integral_congr_ae
-  exact (h1.prod_mk <| h2.comp_tendsto
+  exact (h1.prodMk <| h2.comp_tendsto
     (quasiMeasurePreserving_sub_left_of_right_invariant μ x).tendsto_ae).fun_comp ↿fun x y ↦ L x y
 
 theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g + support f := by
@@ -565,7 +565,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rcases H with ⟨p, hp, x, hx⟩
     have A : support (g p) ⊆ k := support_subset_iff'.2 (fun y hy ↦ hgs p y hp hy)
     have B : Continuous (g p) := by
-      refine hg.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
+      refine hg.comp_continuous (.prodMk_right _) fun x => ?_
       simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
     rcases eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_addGroup hk A B with H|H
     · simp [H] at hx
@@ -604,7 +604,7 @@ theorem continuousOn_convolution_right_with_param_comp {s : Set P} {v : P → G}
     (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0) (hf : LocallyIntegrable f μ)
     (hg : ContinuousOn (↿g) (s ×ˢ univ)) : ContinuousOn (fun x => (f ⋆[L, μ] g x) (v x)) s := by
   apply
-    (continuousOn_convolution_right_with_param L hk hgs hf hg).comp (continuousOn_id.prod hv)
+    (continuousOn_convolution_right_with_param L hk hgs hf hg).comp (continuousOn_id.prodMk hv)
   intro x hx
   simp only [hx, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
 
@@ -765,13 +765,13 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
   rw [← integral_sub hfg.integrable]; swap; · exact (L.flip z₀).integrable_comp hif
   refine (norm_integral_le_of_norm_le ((L.integrable_comp hif).norm.mul_const ε)
     (Eventually.of_forall h2)).trans ?_
-  rw [integral_mul_right]
+  rw [integral_mul_const]
   refine mul_le_mul_of_nonneg_right ?_ hε
   have h3 : ∀ t, ‖L (f t)‖ ≤ ‖L‖ * ‖f t‖ := by
     intro t
     exact L.le_opNorm (f t)
   refine (integral_mono (L.integrable_comp hif).norm (hif.norm.const_mul _) h3).trans_eq ?_
-  rw [integral_mul_left]
+  rw [integral_const_mul]
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ E'] [CompleteSpace E']
 
@@ -923,14 +923,14 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     rw [← h3] at this
     convert this.comp_measurable (measurable_sub.prodMk measurable_snd)
     ext ⟨x, y⟩
-    simp (config := { unfoldPartialApp := true }) only [uncurry, Function.comp_apply,
+    simp +unfoldPartialApp only [uncurry, Function.comp_apply,
       sub_sub_sub_cancel_right]
   simp_rw [integrable_prod_iff' h_meas]
   refine ⟨((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht =>
     (L₃ (f t)).integrable_comp <| ht.of_norm L₄ hg hk, ?_⟩
   refine (hfgk.const_mul (‖L₃‖ * ‖L₄‖)).mono' h2_meas
     (((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht => ?_)
-  simp_rw [convolution_def, mul_apply', mul_mul_mul_comm ‖L₃‖ ‖L₄‖, ← integral_mul_left]
+  simp_rw [convolution_def, mul_apply', mul_mul_mul_comm ‖L₃‖ ‖L₄‖, ← integral_const_mul]
   rw [Real.norm_of_nonneg (by positivity)]
   refine integral_mono_of_nonneg (Eventually.of_forall fun t => norm_nonneg _)
     ((ht.const_mul _).const_mul _) (Eventually.of_forall fun s => ?_)
@@ -986,7 +986,7 @@ theorem _root_.HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompact
 theorem _root_.HasCompactSupport.hasFDerivAt_convolution_left [IsNegInvariant μ]
     (hcf : HasCompactSupport f) (hf : ContDiff 𝕜 1 f) (hg : LocallyIntegrable g μ) (x₀ : G) :
     HasFDerivAt (f ⋆[L, μ] g) ((fderiv 𝕜 f ⋆[L.precompL G, μ] g) x₀) x₀ := by
-  simp (config := { singlePass := true }) only [← convolution_flip]
+  simp +singlePass only [← convolution_flip]
   exact hcf.hasFDerivAt_convolution_right L.flip hg hf x₀
 
 end RCLike
@@ -1015,7 +1015,7 @@ theorem _root_.HasCompactSupport.hasDerivAt_convolution_right (hf : LocallyInteg
 theorem _root_.HasCompactSupport.hasDerivAt_convolution_left [IsNegInvariant μ]
     (hcf : HasCompactSupport f₀) (hf : ContDiff 𝕜 1 f₀) (hg : LocallyIntegrable g₀ μ) (x₀ : 𝕜) :
     HasDerivAt (f₀ ⋆[L, μ] g₀) ((deriv f₀ ⋆[L, μ] g₀) x₀) x₀ := by
-  simp (config := { singlePass := true }) only [← convolution_flip]
+  simp +singlePass only [← convolution_flip]
   exact hcf.hasDerivAt_convolution_right L.flip hg hf x₀
 
 end Real
@@ -1039,7 +1039,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       ((f ⋆[L.precompR (P × G), μ] fun x : G => fderiv 𝕜 (↿g) (q₀.1, x)) q₀.2) q₀ := by
   let g' := fderiv 𝕜 ↿g
   have A : ∀ p ∈ s, Continuous (g p) := fun p hp ↦ by
-    refine hg.continuousOn.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
+    refine hg.continuousOn.comp_continuous (.prodMk_right _) fun x => ?_
     simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
   have A' : ∀ q : P × G, q.1 ∈ s → s ×ˢ univ ∈ 𝓝 q := fun q hq ↦ by
     apply (hs.prod isOpen_univ).mem_nhds
@@ -1109,7 +1109,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     apply (HasCompactSupport.convolutionExists_right (L.precompR (P × G) :) T hf _ q₀.2).1
     have : ContinuousOn g' (s ×ˢ univ) :=
       hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
-    apply this.comp_continuous (continuous_const.prod_mk continuous_id')
+    apply this.comp_continuous (.prodMk_right _)
     intro x
     simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hq₀
   set K' := (-k + {q₀.2} : Set G) with K'_def

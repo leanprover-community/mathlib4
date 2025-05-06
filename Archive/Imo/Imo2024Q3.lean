@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Ring.Parity
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Nat.Nth
 import Mathlib.Tactic.ApplyFun
@@ -138,7 +139,7 @@ lemma apply_nth_add_one_eq_of_lt {m n : ℕ} (hn : N < Nat.nth (a · = m) n) :
 
 lemma lt_toFinset_card {j : ℕ} (h : M a N ≤ a (j + 1)) (hf : {i | a i = a j}.Finite) :
     M a N - 1 < #hf.toFinset := by
-  rw [Nat.sub_lt_iff_lt_add (M_pos _ _), Nat.lt_one_add_iff]
+  rw [Nat.sub_lt_iff_lt_add' (M_pos _ _), Nat.lt_one_add_iff]
   exact (hc.apply_eq_card (N_lt_of_M_le_apply h) ▸ h).trans (Finset.card_le_card (by simp))
 
 lemma nth_ne_zero_of_M_le_of_lt {i k : ℕ} (hi : M a N ≤ a i) (hk : k < a (i + 1)) :
@@ -635,7 +636,7 @@ lemma apply_add_one_eq_card_small_le_card_eq {i : ℕ} (hi : N' a N < i) (hib : 
       rw [← Nat.count_eq_card_filter_range] at htr
       constructor
       · rwa [add_lt_add_iff_right, ← Nat.lt_nth_iff_count_lt hts,
-          Nat.sub_lt_iff_lt_add (hc.one_le_apply _), Nat.lt_one_add_iff]
+          Nat.sub_lt_iff_lt_add' (hc.one_le_apply _), Nat.lt_one_add_iff]
       · rw [hc.apply_nth_add_one_eq_of_infinite hts]
         · exact Nat.sub_add_cancel (hc.one_le_apply _)
         · refine (Nat.le_nth fun hf ↦ absurd hf hts).trans ((Nat.nth_le_nth hts).2 ?_)

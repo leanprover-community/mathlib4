@@ -37,6 +37,8 @@ The definitions that use `MeasureTheory.Measure.map`
 imply that the left (resp., right) multiplication is `AEMeasurable`.
 -/
 
+assert_not_exists Basis
+
 namespace MeasureTheory
 
 /-- A measure `μ : Measure α` is invariant under an additive action of `M` on `α` if for any

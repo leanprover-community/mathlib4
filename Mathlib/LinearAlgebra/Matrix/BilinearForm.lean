@@ -61,15 +61,13 @@ def BilinForm.toMatrixAux (b : n → M₁) : BilinForm R₁ M₁ →ₗ[R₁] Ma
 
 @[simp]
 theorem LinearMap.BilinForm.toMatrixAux_apply (B : BilinForm R₁ M₁) (b : n → M₁) (i j : n) :
-    -- Porting note: had to hint the base ring even though it should be clear from context...
-    BilinForm.toMatrixAux (R₁ := R₁) b B i j = B (b i) (b j) :=
+    BilinForm.toMatrixAux b B i j = B (b i) (b j) :=
   LinearMap.toMatrix₂Aux_apply R₁ B _ _ _ _
 
 variable [Fintype n] [Fintype o]
 
 theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₁ (n → R₁)) :
-    -- Porting note: had to hint the base ring even though it should be clear from context...
-    Matrix.toBilin'Aux (BilinForm.toMatrixAux (R₁ := R₁) (fun j => Pi.single j 1) B₂) = B₂ := by
+    Matrix.toBilin'Aux (BilinForm.toMatrixAux (fun j => Pi.single j 1) B₂) = B₂ := by
   rw [BilinForm.toMatrixAux, Matrix.toBilin'Aux, toLinearMap₂'Aux_toMatrix₂Aux]
 
 section ToMatrix'
@@ -134,38 +132,35 @@ theorem BilinForm.toMatrix'_apply (B : BilinForm R₁ (n → R₁)) (i j : n) :
     BilinForm.toMatrix' B i j = B (Pi.single i 1) (Pi.single j 1) :=
   LinearMap.toMatrix₂'_apply _ _ _
 
--- Porting note: dot notation for bundled maps doesn't work in the rest of this section
 @[simp]
 theorem BilinForm.toMatrix'_comp (B : BilinForm R₁ (n → R₁)) (l r : (o → R₁) →ₗ[R₁] n → R₁) :
-    BilinForm.toMatrix' (B.comp l r) =
-      (LinearMap.toMatrix' l)ᵀ * BilinForm.toMatrix' B * LinearMap.toMatrix' r :=
-  LinearMap.toMatrix₂'_compl₁₂ B _ _
+    (B.comp l r).toMatrix' = l.toMatrix'ᵀ * B.toMatrix' * r.toMatrix' :=
+  B.toMatrix₂'_compl₁₂ _ _
 
 theorem BilinForm.toMatrix'_compLeft (B : BilinForm R₁ (n → R₁)) (f : (n → R₁) →ₗ[R₁] n → R₁) :
-    BilinForm.toMatrix' (B.compLeft f) = (LinearMap.toMatrix' f)ᵀ * BilinForm.toMatrix' B :=
-  LinearMap.toMatrix₂'_comp B _
+    (B.compLeft f).toMatrix' = f.toMatrix'ᵀ * B.toMatrix' :=
+  B.toMatrix₂'_comp _
 
 theorem BilinForm.toMatrix'_compRight (B : BilinForm R₁ (n → R₁)) (f : (n → R₁) →ₗ[R₁] n → R₁) :
-    BilinForm.toMatrix' (B.compRight f) = BilinForm.toMatrix' B * LinearMap.toMatrix' f :=
-  LinearMap.toMatrix₂'_compl₂ B _
+    (B.compRight f).toMatrix' = B.toMatrix' * f.toMatrix' :=
+  B.toMatrix₂'_compl₂ _
 
 theorem BilinForm.mul_toMatrix'_mul (B : BilinForm R₁ (n → R₁)) (M : Matrix o n R₁)
-    (N : Matrix n o R₁) : M * BilinForm.toMatrix' B * N =
-      BilinForm.toMatrix' (B.comp (Matrix.toLin' Mᵀ) (Matrix.toLin' N)) :=
-  LinearMap.mul_toMatrix₂'_mul B _ _
+    (N : Matrix n o R₁) : M * B.toMatrix' * N = (B.comp (Mᵀ).toLin' N.toLin').toMatrix' :=
+  B.mul_toMatrix₂'_mul _ _
 
 theorem BilinForm.mul_toMatrix' (B : BilinForm R₁ (n → R₁)) (M : Matrix n n R₁) :
-    M * BilinForm.toMatrix' B = BilinForm.toMatrix' (B.compLeft (Matrix.toLin' Mᵀ)) :=
+    M * B.toMatrix' = (B.compLeft (Mᵀ).toLin').toMatrix' :=
   LinearMap.mul_toMatrix' B _
 
 theorem BilinForm.toMatrix'_mul (B : BilinForm R₁ (n → R₁)) (M : Matrix n n R₁) :
     BilinForm.toMatrix' B * M = BilinForm.toMatrix' (B.compRight (Matrix.toLin' M)) :=
-  LinearMap.toMatrix₂'_mul B _
+  B.toMatrix₂'_mul _
 
 end LinearMap
 
 theorem Matrix.toBilin'_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
-    M.toBilin'.comp (Matrix.toLin' P) (Matrix.toLin' Q) = Matrix.toBilin' (Pᵀ * M * Q) :=
+    M.toBilin'.comp P.toLin' Q.toLin' = (Pᵀ * M * Q).toBilin' :=
   BilinForm.toMatrix'.injective
     (by simp only [BilinForm.toMatrix'_comp, BilinForm.toMatrix'_toBilin', toMatrix'_toLin'])
 

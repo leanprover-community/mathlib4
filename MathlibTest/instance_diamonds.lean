@@ -114,24 +114,6 @@ end Units
 
 end SMul
 
-/-! ## `WithTop` (Type with point at infinity) instances -/
-
-
-section WithTop
-
-example (R : Type _) [h : StrictOrderedSemiring R] :
-    @WithTop.addCommMonoid R
-        (@NonUnitalNonAssocSemiring.toAddCommMonoid R
-          (@NonAssocSemiring.toNonUnitalNonAssocSemiring R
-            (@Semiring.toNonAssocSemiring R (@StrictOrderedSemiring.toSemiring R h)))) =
-      @OrderedAddCommMonoid.toAddCommMonoid (WithTop R)
-        (@WithTop.orderedAddCommMonoid R
-          (@OrderedCancelAddCommMonoid.toOrderedAddCommMonoid R
-            (@StrictOrderedSemiring.toOrderedCancelAddCommMonoid R h))) := by
-  with_reducible_and_instances rfl
-
-end WithTop
-
 /-! ## `Multiplicative` instances -/
 
 
@@ -227,8 +209,8 @@ end Polynomial
 section Subtype
 
 -- this diamond is the reason that `Fintype.toLocallyFiniteOrder` is not an instance
-example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [DecidableRel (α := α) (· < ·)]
-    [DecidableRel (α := α) (· ≤ ·)] (p : α → Prop) [DecidablePred p] :
+example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [DecidableLT α]
+    [DecidableLE α] (p : α → Prop) [DecidablePred p] :
     Subtype.instLocallyFiniteOrder p = Fintype.toLocallyFiniteOrder := by
   fail_if_success rfl
   exact Subsingleton.elim _ _

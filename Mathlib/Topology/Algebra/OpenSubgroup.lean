@@ -276,7 +276,7 @@ theorem isOpen_of_openSubgroup
 /-- If a subgroup of a topological group has `1` in its interior, then it is open. -/
 @[to_additive "If a subgroup of an additive topological group has `0` in its interior, then it is
 open."]
-theorem isOpen_of_one_mem_interior [ContinuousMul G] (H: Subgroup G)
+theorem isOpen_of_one_mem_interior [ContinuousMul G] (H : Subgroup G)
     (h_1_int : (1 : G) ∈ interior (H : Set G)) : IsOpen (H : Set G) :=
   isOpen_of_mem_nhds H <| mem_interior_iff_mem_nhds.1 h_1_int
 

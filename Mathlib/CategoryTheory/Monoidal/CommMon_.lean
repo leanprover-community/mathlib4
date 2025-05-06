@@ -240,7 +240,7 @@ namespace CommMon_
 variable {C}
 
 /-- Construct an object of `CommMon_ C` from an object `X : C` a `Mon_Class X` instance
-and a `IsCommMon X` insance. -/
+and a `IsCommMon X` instance. -/
 def mk' (X : C) [Mon_Class X] [IsCommMon X] : CommMon_ C where
   __ := Mon_.mk' X
   mul_comm := IsCommMon.mul_comm X

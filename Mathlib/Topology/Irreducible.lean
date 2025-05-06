@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.Minimal
 import Mathlib.Order.Zorn
+import Mathlib.Topology.ContinuousOn
 /-!
 # Irreducibility in topological spaces
 
@@ -230,7 +230,7 @@ theorem isIrreducible_iff_sInter :
   refine ⟨fun h U hu hU => ?_, fun h => ⟨?_, ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => simpa using h.nonempty
-    | @insert u U _ IH =>
+    | insert u U _ IH =>
       rw [Finset.coe_insert, sInter_insert]
       rw [Finset.forall_mem_insert] at hu hU
       exact h.2 _ _ hu.1 (U.finite_toSet.isOpen_sInter hu.2) hU.1 (IH hu.2 hU.2)

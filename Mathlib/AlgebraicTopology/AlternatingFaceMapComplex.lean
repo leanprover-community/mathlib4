@@ -72,7 +72,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   simp only [comp_sum, sum_comp, ← Finset.sum_product']
   -- then, we decompose the index set P into a subset S and its complement Sᶜ
   let P := Fin (n + 2) × Fin (n + 3)
-  let S := Finset.univ.filter fun ij : P => (ij.2 : ℕ) ≤ (ij.1 : ℕ)
+  let S : Finset P := {ij : P | (ij.2 : ℕ) ≤ (ij.1 : ℕ)}
   rw [Finset.univ_product_univ, ← Finset.sum_add_sum_compl S, ← eq_neg_iff_add_eq_zero,
     ← Finset.sum_neg_distrib]
   /- we are reduced to showing that two sums are equal, and this is obtained
