@@ -69,38 +69,6 @@ theorem ENat.lift_eq_toNat {x : ℕ∞} (hx : x < ⊤) : x.lift hx = x.toNat := 
   · contradiction
   · rfl
 
--- unused
-theorem PowerSeries.eq_of_X_pow_mul_eq_X_pow
-    {A : Type*} [CommRing A] [Nontrivial A] (m n : ℕ) (u : A⟦X⟧) (hu : IsUnit u)
-    (h : X ^ m * u = X ^ n) : m = n := by
-  rw [isUnit_iff_constantCoeff] at hu
-  replace h := congr(coeff A m $h)
-  rw [coeff_mul, ← Finset.sum_subset (s₁ := {(m, 0)}) (by simp) (fun p hp hnmem ↦ by
-    have hp1 : p.1 ≠ m := by
-      contrapose! hnmem
-      rwa [Finset.mem_singleton, Finset.antidiagonal_congr hp (by simp)]
-    rw [coeff_X_pow, if_neg hp1, zero_mul]), Finset.sum_singleton, coeff_X_pow_self,
-    coeff_zero_eq_constantCoeff, one_mul, coeff_X_pow] at h
-  split_ifs at h with hmn
-  · exact hmn
-  · exact False.elim (hu.ne_zero h)
-
--- unused
-theorem Polynomial.IsDistinguishedAt.natDegree_eq_of_associated_powerSeries
-    {A : Type*} [CommRing A] {I : Ideal A} {f g : A[X]}
-    (hf : f.IsDistinguishedAt I) (hg : g.IsDistinguishedAt I) (hI : I ≠ ⊤)
-    (hfg : Associated (f : A⟦X⟧) (g : A⟦X⟧)) : f.natDegree = g.natDegree := by
-  rcases subsingleton_or_nontrivial (A ⧸ I) with h | _
-  · apply (Submodule.Quotient.subsingleton_iff _).1 at h
-    exact False.elim <| hI <| by ext; simp [h]
-  obtain ⟨u, hu⟩ := hfg
-  have hu' := congr(PowerSeries.map (Ideal.Quotient.mk I) $hu)
-  simp_rw [map_mul, ← Polynomial.polynomial_map_coe, hf.map_eq_X_pow, hg.map_eq_X_pow,
-    Polynomial.coe_pow, Polynomial.coe_X] at hu'
-  change _ * (RingHom.toMonoidHom _) _ = _ at hu'
-  rw [← Units.coe_map] at hu'
-  exact PowerSeries.eq_of_X_pow_mul_eq_X_pow _ _ _ (Units.isUnit _) hu'
-
 namespace PowerSeries
 
 section
@@ -223,9 +191,6 @@ noncomputable def g₁ := PowerSeries.mk fun i ↦ coeff A (i + S.n) S.g
 theorem g_eq : S.g = (S.g₀ : A⟦X⟧) + X ^ S.n * S.g₁ := by
   rw [S.g.eq_X_pow_mul_shift_add_trunc S.n, g₀, g₁]; ring
 
--- unused
-theorem degree_g₀_lt : S.g₀.degree < S.n := S.g.degree_trunc_lt _
-
 theorem coeff_g₀_mem : ∀ i, S.g₀.coeff i ∈ I := fun i ↦ by
   rw [g₀, coeff_trunc]
   split_ifs with h
@@ -243,9 +208,6 @@ noncomputable def f₁ := PowerSeries.mk fun i ↦ coeff A (i + S.n) S.f
 
 theorem f_eq : S.f = (S.f₀ : A⟦X⟧) + X ^ S.n * S.f₁ := by
   rw [S.f.eq_X_pow_mul_shift_add_trunc S.n, f₀, f₁]; ring
-
--- unused
-theorem degree_f₀_lt : S.f₀.degree < S.n := S.f.degree_trunc_lt _
 
 theorem order_eq (hI : I ≠ ⊤) : (S.g.map (Ideal.Quotient.mk I)).order = S.n := by
   simp_rw [order_eq_nat, coeff_map, S.g_eq, map_add, Polynomial.coeff_coe,
@@ -334,16 +296,6 @@ theorem coeff_div_sub_seq_mem [IsPrecomplete I A] (k : ℕ) :
 
 /-- The remainder `r` in the proof of Weierstrass division. -/
 noncomputable def mod [IsPrecomplete I A] : A[X] := (S.f - S.g * S.div).trunc S.n
-
--- unused
-theorem degree_mod_lt [IsPrecomplete I A] : S.mod.degree < S.n := degree_trunc_lt _ _
-
--- unused
-theorem coeff_f_sub_mod_mem [IsPrecomplete I A] :
-    ∀ i < S.n, coeff A i (S.f - S.mod) ∈ I := fun i hi ↦ by
-  rw [mod, map_sub, Polynomial.coeff_coe, coeff_trunc, if_pos hi, map_sub, sub_sub_cancel]
-  refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal _ _ i (fun j hj ↦ ?_) i le_rfl
-  exact S.coeff_g_of_lt _ (lt_of_le_of_lt hj hi)
 
 theorem isWeierstrassDivisionAt_div_mod [IsAdicComplete I A] :
     S.f.IsWeierstrassDivisionAt S.g S.div S.mod I := by
