@@ -22,9 +22,9 @@ namespace MeasureTheory
 
 section SameSpace
 
-variable {α ε : Type*} {m : MeasurableSpace α} {μ : Measure α} {f : α → ε}
+variable {α ε ε' : Type*} {m : MeasurableSpace α} {μ : Measure α} {f : α → ε}
   [TopologicalSpace ε] [ContinuousENorm ε]
-  {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
+  [TopologicalSpace ε'] [ENormedAddMonoid ε']
 
 theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq : p ≤ q)
     (hf : AEStronglyMeasurable f μ) :

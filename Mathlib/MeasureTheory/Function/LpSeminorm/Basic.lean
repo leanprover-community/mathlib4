@@ -162,7 +162,7 @@ theorem eLpNorm_measure_zero {f : α → ε} : eLpNorm f p (0 : Measure α) = 0 
 
 section ContinuousENorm
 
-variable {ε: Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 @[simp] lemma memLp_measure_zero {f : α → ε} : MemLp f p (0 : Measure α) := by
   simp [MemLp]
@@ -208,7 +208,7 @@ end Neg
 section Const
 
 variable {ε' ε'' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
-  [TopologicalSpace ε'' ] [ENormedAddMonoid ε'']
+  [TopologicalSpace ε''] [ENormedAddMonoid ε'']
 
 theorem eLpNorm'_const (c : ε) (hq_pos : 0 < q) :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
@@ -879,8 +879,11 @@ theorem eLpNorm_restrict_eq_of_support_subset {s : Set α} {f : α → ε} (hsf 
 
 end ENormedAddMonoid
 
-theorem MemLp.restrict {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
-    (s : Set α) {f : α → ε} (hf : MemLp f p μ) :
+section ContinuousENorm
+
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+
+theorem MemLp.restrict (s : Set α) {f : α → ε} (hf : MemLp f p μ) :
     MemLp f p (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 
@@ -890,6 +893,8 @@ alias Memℒp.restrict := MemLp.restrict
 theorem eLpNorm'_smul_measure {p : ℝ} (hp : 0 ≤ p) {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm' f p (c • μ) = c ^ (1 / p) * eLpNorm' f p μ := by
   simp [eLpNorm', ENNReal.mul_rpow_of_nonneg, hp]
+
+end ContinuousENorm
 
 section SMul
 variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
@@ -901,6 +906,10 @@ variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ�
   exact essSup_smul_measure hc _
 
 end SMul
+
+section ContinuousENorm
+
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 /-- Use `eLpNorm_smul_measure_of_ne_top` instead. -/
 private theorem eLpNorm_smul_measure_of_ne_zero_of_ne_top {p : ℝ≥0∞} (hp_ne_zero : p ≠ 0)
@@ -944,10 +953,6 @@ theorem eLpNorm_one_smul_measure {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm f 1 (c • μ) = c * eLpNorm f 1 μ := by
   rw [eLpNorm_smul_measure_of_ne_top] <;> simp
 
-section ENormedAddMonoid
-
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
-
 theorem MemLp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
     (hμ'_le : μ' ≤ c • μ) {f : α → ε} (hf : MemLp f p μ) : MemLp f p μ' := by
   refine ⟨hf.1.mono_ac (Measure.absolutelyContinuous_of_le_smul hμ'_le), ?_⟩
@@ -968,8 +973,7 @@ theorem MemLp.smul_measure {f : α → ε} {c : ℝ≥0∞} (hf : MemLp f p μ) 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.smul_measure := MemLp.smul_measure
 
-end ENormedAddMonoid
-
+variable {ε : Type*} [ENorm ε] in
 theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
   simp_rw [eLpNorm_one_eq_lintegral_enorm]
@@ -985,9 +989,11 @@ theorem eLpNorm_le_add_measure_left (f : α → ε) (μ ν : Measure α) {p : �
     eLpNorm f p ν ≤ eLpNorm f p (μ + ν) :=
   eLpNorm_mono_measure f <| Measure.le_add_left <| le_refl _
 
+variable {ε : Type*} [ENorm ε] in
 lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → ε) : eLpNormEssSup f μ = ⨆ a, ‖f a‖ₑ :=
   essSup_eq_iSup hμ _
 
+variable {ε : Type*} [ENorm ε] in
 @[simp] lemma eLpNormEssSup_count [MeasurableSingletonClass α] (f : α → ε) :
     eLpNormEssSup f .count = ⨆ a, ‖f a‖ₑ := essSup_count _
 
@@ -1026,6 +1032,8 @@ theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_iff := memLp_norm_iff
 
+end ContinuousENorm
+
 section ENormedAddMonoid
 
 variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
@@ -1053,7 +1061,7 @@ theorem eLpNorm'_eq_zero_iff (hq0_lt : 0 < q) {f : α → ε} (hf : AEStronglyMe
     eLpNorm' f q μ = 0 ↔ f =ᵐ[μ] 0 :=
   ⟨ae_eq_zero_of_eLpNorm'_eq_zero (le_of_lt hq0_lt) hf, eLpNorm'_eq_zero_of_ae_zero hq0_lt⟩
 
-variable {ε : Type u_8} [TopologicalSpace ε] [ContinuousENorm ε] in
+variable {ε : Type*} [ENorm ε] in
 theorem enorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :
     ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ eLpNormEssSup f μ :=
   ENNReal.ae_le_essSup fun x => ‖f x‖ₑ
@@ -1081,7 +1089,7 @@ theorem eLpNorm'_eq_zero_of_ae_eq_zero {f : α → ε} {p : ℝ} (hp : 0 < p)
   rw [← eLpNorm'_zero hp (μ := μ) (ε := ε), eLpNorm'_congr_enorm_ae]
   simp only [hf, Pi.zero_apply, enorm_zero]
 
-variable {ε : Type u_8} [ENorm ε] in
+variable {ε : Type*} [ENorm ε] in
 theorem ae_le_eLpNormEssSup {f : α → ε} : ∀ᵐ y ∂μ, ‖f y‖ₑ ≤ eLpNormEssSup f μ :=
   ae_le_essSup
 
@@ -1093,7 +1101,7 @@ lemma eLpNormEssSup_lt_top_iff_isBoundedUnder :
     simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_toNNReal h.ne]; exact ae_le_eLpNormEssSup⟩
   mpr := by rintro ⟨C, hC⟩; exact eLpNormEssSup_lt_top_of_ae_nnnorm_bound (C := C) hC
 
-variable {ε : Type u_8} [ENorm ε] in
+variable {ε : Type*} [ENorm ε] in
 theorem meas_eLpNormEssSup_lt {f : α → ε} : μ { y | eLpNormEssSup f μ < ‖f y‖ₑ } = 0 :=
   meas_essSup_lt
 
@@ -1124,7 +1132,7 @@ end ENormedAddMonoid
 
 section MapMeasure
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
   {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → ε}
 
 theorem eLpNormEssSup_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))

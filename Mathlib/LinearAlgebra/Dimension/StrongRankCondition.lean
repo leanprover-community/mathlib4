@@ -35,6 +35,11 @@ For modules over rings with invariant basis number
 * `mk_eq_mk_of_basis`: the dimension theorem, any two bases of the same vector space have the same
   cardinality.
 
+## Additional definition
+
+* `Algebra.IsQuadraticExtension`: An extension of rings `R ⊆ S` is quadratic if `S` is a
+  free `R`-algebra of rank `2`.
+
 -/
 
 
@@ -542,3 +547,19 @@ theorem mem_span_set_iff_exists_finsupp_le_finrank :
     exact mem_span_set.mpr ⟨c, hcs, hx⟩
 
 end Submodule
+
+namespace Algebra
+
+/--
+An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-algebra of rank `2`.
+-/
+-- TODO. use this in connection with `NumberTheory.Zsqrtd`
+class IsQuadraticExtension (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
+    [Algebra R S] extends Module.Free R S where
+  finrank_eq_two' : Module.finrank R S = 2
+
+theorem IsQuadraticExtension.finrank_eq_two (R S : Type*) [CommSemiring R] [StrongRankCondition R]
+    [Semiring S] [Algebra R S] [IsQuadraticExtension R S] :
+    Module.finrank R S = 2 := finrank_eq_two'
+
+end Algebra

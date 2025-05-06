@@ -46,7 +46,7 @@ theorem _root_.mulRight_bijective₀ (a : G₀) (ha : a ≠ 0) : Function.Biject
 
 /-- Right division by a nonzero element in a `GroupWithZero` is a permutation of the
 underlying type. -/
-@[simps! (config := { simpRhs := true })]
+@[simps! +simpRhs]
 def divRight₀ (a : G₀) (ha : a ≠ 0) : Perm G₀ where
   toFun := (· / a)
   invFun := (· * a)
@@ -60,7 +60,7 @@ variable [CommGroupWithZero G₀]
 
 /-- Left division by a nonzero element in a `CommGroupWithZero` is a permutation of the underlying
 type. -/
-@[simps! (config := { simpRhs := true })]
+@[simps! +simpRhs]
 def divLeft₀ (a : G₀) (ha : a ≠ 0) : Perm G₀ where
   toFun := (a / ·)
   invFun := (a / ·)
