@@ -136,10 +136,10 @@ lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := b
 lemma edist_bot [DecidableEq V] : (⊥ : SimpleGraph V).edist u v = (if u = v then 0 else ⊤) := by
   by_cases h : u = v <;> simp [h, edist_bot_of_ne]
 
-lemma edist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).edist u v = 1 := by
+lemma edist_top_of_ne (h : u ≠ v) : (completeGraph V).edist u v = 1 := by
   simp [h]
 
-lemma edist_top [DecidableEq V] : (⊤ : SimpleGraph V).edist u v = (if u = v then 0 else 1) := by
+lemma edist_top [DecidableEq V] : (completeGraph V).edist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
 /-- Supergraphs have smaller or equal extended distances to their subgraphs. -/
@@ -262,10 +262,10 @@ lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
 lemma dist_bot : (⊥ : SimpleGraph V).dist u v = 0 := by
   by_cases h : u = v <;> simp [h]
 
-lemma dist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).dist u v = 1 := by
+lemma dist_top_of_ne (h : u ≠ v) : (completeGraph V).dist u v = 1 := by
   simp [h]
 
-lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then 0 else 1) := by
+lemma dist_top [DecidableEq V] : (completeGraph V).dist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/

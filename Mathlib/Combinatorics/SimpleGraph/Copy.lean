@@ -358,7 +358,7 @@ alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgra
   isIndContained_iff_exists_iso_subgraph
 
 @[simp] lemma top_isIndContained_iff_top_isContained :
-    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H where
+    completeGraph V⊴ H ↔ completeGraph V ⊑ H where
   mp h := h.isContained
   mpr := fun ⟨f⟩ ↦ ⟨f.toEmbedding, fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩⟩
 

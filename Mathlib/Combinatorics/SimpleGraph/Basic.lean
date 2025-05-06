@@ -328,7 +328,7 @@ abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
 abbrev emptyGraph (V : Type u) : SimpleGraph V := ⊥
 
 @[simp]
-theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
+theorem top_adj (v w : V) : (completeGraph V).Adj v w ↔ v ≠ w :=
   Iff.rfl
 
 @[simp]
@@ -373,7 +373,7 @@ instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj :=
 
 variable [DecidableEq V]
 
-instance Top.adjDecidable : DecidableRel (⊤ : SimpleGraph V).Adj :=
+instance Top.adjDecidable : DecidableRel (completeGraph V).Adj :=
   inferInstanceAs <| DecidableRel fun v w => v ≠ w
 
 instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
@@ -456,7 +456,7 @@ theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
   Sym2.fromRel_bot
 
 @[simp]
-theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = {e | ¬e.IsDiag} :=
+theorem edgeSet_top : (completeGraph V).edgeSet = {e | ¬e.IsDiag} :=
   Sym2.fromRel_ne
 
 @[simp]
@@ -751,7 +751,7 @@ instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
   inferInstanceAs <| DecidablePred fun u => u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w
 
 theorem commonNeighbors_top_eq {v w : V} :
-    (⊤ : SimpleGraph V).commonNeighbors v w = Set.univ \ {v, w} := by
+    (completeGraph V).commonNeighbors v w = Set.univ \ {v, w} := by
   ext u
   simp [commonNeighbors, eq_comm, not_or]
 

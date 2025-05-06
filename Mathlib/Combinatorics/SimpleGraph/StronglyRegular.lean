@@ -72,7 +72,7 @@ variable [DecidableEq V]
 /-- Complete graphs are strongly regular. Note that `μ` can take any value
 for complete graphs, since there are no distinct pairs of non-adjacent vertices. -/
 theorem IsSRGWith.top :
-    (⊤ : SimpleGraph V).IsSRGWith (Fintype.card V) (Fintype.card V - 1) (Fintype.card V - 2) μ where
+    (completeGraph V).IsSRGWith (Fintype.card V) (Fintype.card V - 1) (Fintype.card V - 2) μ where
   card := rfl
   regular := IsRegularOfDegree.top
   of_adj := fun v w h => by

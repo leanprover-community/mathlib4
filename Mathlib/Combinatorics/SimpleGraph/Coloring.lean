@@ -65,7 +65,7 @@ variable {V : Type u} (G : SimpleGraph V) {n : ℕ}
 /-- An `α`-coloring of a simple graph `G` is a homomorphism of `G` into the complete graph on `α`.
 This is also known as a proper coloring.
 -/
-abbrev Coloring (α : Type v) := G →g (⊤ : SimpleGraph α)
+abbrev Coloring (α : Type v) := G →g completeGraph α
 
 variable {G}
 variable {α β : Type*} (C : G.Coloring α)
@@ -116,7 +116,7 @@ theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.color
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
   classical
-  change Fintype (RelHom G.Adj (⊤ : SimpleGraph α).Adj)
+  change Fintype (RelHom G.Adj (completeGraph α).Adj)
   apply Fintype.ofInjective _ RelHom.coe_fn_injective
 
 variable (G)
@@ -371,7 +371,7 @@ theorem chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber
   exact this.chromaticNumber_le.antisymm <| Order.one_le_iff_pos.2 <| chromaticNumber_pos this
 
 @[simp]
-theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber = Fintype.card V := by
+theorem chromaticNumber_top [Fintype V] : (completeGraph V).chromaticNumber = Fintype.card V := by
   rw [chromaticNumber_eq_card_iff_forall_surjective (selfColoring _).colorable]
   intro C
   rw [← Finite.injective_iff_surjective]
@@ -381,7 +381,7 @@ theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber 
   exact C.valid h
 
 theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
-    (⊤ : SimpleGraph V).chromaticNumber = ⊤ := by
+    (completeGraph V).chromaticNumber = ⊤ := by
   by_contra hc
   rw [← Ne, chromaticNumber_ne_top_iff_exists] at hc
   obtain ⟨n, ⟨hn⟩⟩ := hc

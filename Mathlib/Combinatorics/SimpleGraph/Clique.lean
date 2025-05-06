@@ -318,7 +318,7 @@ variable {G H} {s : Finset α}
 theorem IsNClique.not_cliqueFree (hG : G.IsNClique n s) : ¬G.CliqueFree n :=
   fun h ↦ h _ hG
 
-theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n)) ↪g G) :
+theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : completeGraph (Fin n) ↪g G) :
     ¬G.CliqueFree n := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not]
   use Finset.univ.map f.toEmbedding
@@ -332,23 +332,23 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
 
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
 noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
-    (⊤ : SimpleGraph (Fin n)) ↪g G := by
+    completeGraph (Fin n) ↪g G := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not] at h
   obtain ⟨ha, hb⟩ := h.choose_spec
-  have : (⊤ : SimpleGraph (Fin #h.choose)) ≃g (⊤ : SimpleGraph h.choose) := by
+  have : completeGraph (Fin #h.choose) ≃g completeGraph h.choose := by
     apply Iso.completeGraph
     simpa using (Fintype.equivFin h.choose).symm
   rw [← ha] at this
   convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
   exact hb.symm
 
-theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty ((⊤ : SimpleGraph (Fin n)) ↪g G) :=
+theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGraph (Fin n) ↪g G) :=
   ⟨fun h ↦ ⟨topEmbeddingOfNotCliqueFree h⟩, fun ⟨f⟩ ↦ not_cliqueFree_of_top_embedding f⟩
 
-theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty ((⊤ : SimpleGraph (Fin n)) ↪g G) := by
+theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
   rw [← not_iff_not, not_cliqueFree_iff, not_isEmpty_iff]
 
-theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGraph α) ↪g G) :
+theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : completeGraph α ↪g G) :
     ¬G.CliqueFree (card α) := by
   rw [not_cliqueFree_iff]
   exact ⟨(Iso.completeGraph (Fintype.equivFin α)).symm.toEmbedding.trans f⟩
@@ -406,7 +406,7 @@ variable {ι : Type*} (V : ι → Type*)
 /-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts -/
 @[simps]
 def topEmbedding (f : ∀ (i : ι), V i) :
-    (⊤ : SimpleGraph ι) ↪g completeMultipartiteGraph V where
+    completeGraph ι ↪g completeMultipartiteGraph V where
   toFun := fun i ↦ ⟨i, f i⟩
   inj' := fun _ _ h ↦ (Sigma.mk.inj_iff.1 h).1
   map_rel_iff' := by simp

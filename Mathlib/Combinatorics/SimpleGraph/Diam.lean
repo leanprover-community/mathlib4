@@ -130,11 +130,11 @@ lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
   ediam_eq_top_of_not_connected bot_not_connected
 
 @[simp]
-lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
+lemma ediam_top [Nontrivial α] : (completeGraph α).ediam = 1 := by
   apply le_antisymm ?_ <| Order.one_le_iff_pos.mpr <| pos_iff_ne_zero.mpr ediam_ne_zero
   apply ediam_def ▸ iSup_le_iff.mpr
   intro p
-  by_cases h : (⊤ : SimpleGraph α).Adj p.1 p.2
+  by_cases h : (completeGraph α).Adj p.1 p.2
   · apply le_of_eq <| edist_eq_one_iff_adj.mpr h
   · simp_all
 
@@ -206,7 +206,7 @@ lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
   · exact Or.inr ediam_bot
 
 @[simp]
-lemma diam_top [Nontrivial α] : (⊤ : SimpleGraph α).diam = 1 := by
+lemma diam_top [Nontrivial α] : (completeGraph α).diam = 1 := by
   rw [diam, ediam_top, ENat.toNat_one]
 
 @[simp]

@@ -926,7 +926,7 @@ lemma bot_preconnected [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
 lemma bot_not_preconnected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected :=
   bot_preconnected_iff_subsingleton.not.mpr <| not_subsingleton_iff_nontrivial.mpr ‹_›
 
-lemma top_preconnected : (⊤ : SimpleGraph V).Preconnected := fun x y => by
+lemma top_preconnected : (completeGraph V).Preconnected := fun x y => by
   if h : x = y then rw [h] else exact Adj.reachable h
 
 theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
@@ -976,7 +976,7 @@ theorem Connected.exists_isPath {G : SimpleGraph V} (h : G.Connected) (u v : V) 
 lemma bot_not_connected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
   simp [bot_not_preconnected, connected_iff, ‹_›]
 
-lemma top_connected [Nonempty V] : (⊤ : SimpleGraph V).Connected where
+lemma top_connected [Nonempty V] : (completeGraph V).Connected where
   preconnected := top_preconnected
 
 theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
@@ -1231,7 +1231,7 @@ lemma biUnion_supp_eq_supp {G G' : SimpleGraph V} (h : G ≤ G') (c' : Connected
   use c'.connectedComponentMk_supp_subset_supp h hv
   simp only [mem_supp_iff]
 
-lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
+lemma top_supp_eq_univ (c : ConnectedComponent (completeGraph V)) :
     c.supp = (Set.univ : Set V) := by
   have ⟨w, hw⟩ := c.exists_rep
   ext v

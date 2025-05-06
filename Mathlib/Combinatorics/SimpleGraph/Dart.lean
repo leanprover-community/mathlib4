@@ -131,7 +131,7 @@ theorem dartOfNeighborSet_injective (v : V) : Function.Injective (G.dartOfNeighb
     injection h with h'
     convert congr_arg Prod.snd h'
 
-instance nonempty_dart_top [Nontrivial V] : Nonempty (⊤ : SimpleGraph V).Dart := by
+instance nonempty_dart_top [Nontrivial V] : Nonempty (completeGraph V).Dart := by
   obtain ⟨v, w, h⟩ := exists_pair_ne V
   exact ⟨⟨(v, w), h⟩⟩
 
