@@ -166,7 +166,9 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
       v₃ ∈ G.neighborFinset v₂ ∩ s ∧ v₁ ≠ v₃ ∧ ¬ G.Adj v₁ v₃ := by
     contrapose! nc
     apply IsNClique.insert
-      ⟨fun _ ha _ hb hne ↦ nc _ _ ha hb hne, by rw [← hd _ hv₂]; congr; ext; simp [hv₂, and_comm]⟩
+      ⟨fun _ ha _ hb hne ↦ nc _ _ ha hb hne, by
+         rw [← hd _ hv₂, degreeInduce_eq, ← Subgraph.finset_card_neighborSet_eq_degree]; congr; ext;
+         simp [hv₂, and_comm]⟩
     intro b hb; rw [mem_inter, mem_neighborFinset] at hb
     exact hb.1
   -- Since `v₃` has degree at least 3 so it has another neighbor `v₄ ≠ v₂`
