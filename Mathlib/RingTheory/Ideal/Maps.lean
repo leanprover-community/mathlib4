@@ -667,7 +667,7 @@ theorem ker_eq : (ker f : Set R) = Set.preimage f {0} :=
 theorem ker_eq_comap_bot (f : F) : ker f = Ideal.comap f ⊥ :=
   rfl
 
-theorem comap_ker (f : S →+* R) (g : T →+* S) : f.ker.comap g = ker (f.comp g) := by
+theorem comap_ker (f : S →+* R) (g : T →+* S) : (ker f).comap g = ker (f.comp g) := by
   rw [RingHom.ker_eq_comap_bot, Ideal.comap_comap, RingHom.ker_eq_comap_bot]
 
 /-- If the target is not the zero ring, then one is not in the kernel. -/
@@ -720,8 +720,8 @@ lemma ker_comp_of_injective [Semiring T] (g : T →+* R) {f : R →+* S} (hf : F
   rw [← RingHom.comap_ker, (injective_iff_ker_eq_bot f).mp hf, RingHom.ker]
 
 /-- Synonym for `RingHom.ker_coe_equiv`, but given an algebra equivalence. -/
-@[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Ring A] [Ring B]
-    [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
+@[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Semiring A]
+    [Semiring B] [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
     RingHom.ker (e : A →+* B) = ⊥ :=
   RingHom.ker_coe_equiv (e.toRingEquiv)
 

@@ -118,7 +118,6 @@ instance instSMul' : SMul S (M ⧸ P) :=
     Quotient.map' (a • ·) fun x y h =>
       leftRel_apply.mpr <| by simpa using Submodule.smul_mem P (a • (1 : R)) (leftRel_apply.mp h)⟩
 
--- Porting note: should this be marked as a `@[default_instance]`?
 /-- Shortcut to help the elaborator in the common case. -/
 instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
@@ -149,7 +148,6 @@ instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : MulAction S (M ⧸ P) := fast_instance%
   Function.Surjective.mulAction mk Quot.mk_surjective <| Submodule.Quotient.mk_smul P
 
--- Porting note: should this be marked as a `@[default_instance]`?
 instance mulAction (P : Submodule R M) : MulAction R (M ⧸ P) :=
   Quotient.mulAction' P
 
@@ -157,7 +155,6 @@ instance smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P 
     SMulZeroClass S (M ⧸ P) :=
   ZeroHom.smulZeroClass ⟨mk, mk_zero _⟩ <| Submodule.Quotient.mk_smul P
 
--- Porting note: should this be marked as a `@[default_instance]`?
 instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
   Quotient.smulZeroClass' P
 
@@ -166,7 +163,6 @@ instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Su
   Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
     Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
--- Porting note: should this be marked as a `@[default_instance]`?
 instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
   Quotient.distribSMul' P
 
@@ -175,7 +171,6 @@ instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScala
   Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
     Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
--- Porting note: should this be marked as a `@[default_instance]`?
 instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
   Quotient.distribMulAction' P
 
@@ -184,7 +179,6 @@ instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P :
   Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
     Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
--- Porting note: should this be marked as a `@[default_instance]`?
 instance module (P : Submodule R M) : Module R (M ⧸ P) :=
   Quotient.module' P
 

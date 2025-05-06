@@ -309,7 +309,7 @@ variable {F : Type u} [Field F] {K : Type v} [Field K]
 
 theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
     f.Separable ↔ derivative f ≠ 0 :=
-  ⟨fun h1 h2 => hf.not_unit <| isCoprime_zero_right.1 <| h2 ▸ h1, fun h =>
+  ⟨fun h1 h2 => hf.not_isUnit <| isCoprime_zero_right.1 <| h2 ▸ h1, fun h =>
     EuclideanDomain.isCoprime_of_dvd (mt And.right h) fun g hg1 _hg2 ⟨p, hg3⟩ hg4 =>
       let ⟨u, hu⟩ := (hf.isUnit_or_isUnit hg3).resolve_left hg1
       have : f ∣ derivative f := by
@@ -515,7 +515,7 @@ theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f
   rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
   · rintro ⟨⟩
   rw [pos_iff_ne_zero, Ne, natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff]
-  refine fun hf1 => hf.not_unit ?_
+  refine fun hf1 => hf.not_isUnit ?_
   rw [hf1, isUnit_C, isUnit_iff_ne_zero]
   intro hf2
   rw [hf2, C_0] at hf1

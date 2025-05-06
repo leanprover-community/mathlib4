@@ -34,7 +34,7 @@ The contents of this file draw inspiration from <https://github.com/ramonfmir/le
 which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
 
-## Main definition
+## Main definitions
 
 * `PrimeSpectrum.zariskiTopology`: the Zariski topology on the prime spectrum, whose closed sets
   are zero loci (`zeroLocus`).
@@ -438,6 +438,17 @@ theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f
 alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 
 end Comap
+
+/-- Homeomorphism between prime spectra induced by an isomorphism of semirings. -/
+def homeomorphOfRingEquiv (e : R ≃+* S) : PrimeSpectrum R ≃ₜ PrimeSpectrum S where
+  toFun := comap (e.symm : S →+* R)
+  invFun := comap (e : R →+* S)
+  left_inv _ := (comap_comp_apply ..).symm.trans (by simp)
+  right_inv _ := (comap_comp_apply ..).symm.trans (by simp)
+
+lemma isHomeomorph_comap_of_bijective {f : R →+* S} (hf : Function.Bijective f) :
+    IsHomeomorph (comap f) := (homeomorphOfRingEquiv (.ofBijective f hf)).symm.isHomeomorph
+
 end CommSemiring
 
 section SpecOfSurjective
@@ -465,6 +476,12 @@ theorem range_comap_of_surjective (hf : Surjective f) :
     Set.range (comap f) = zeroLocus (ker f) :=
   range_specComap_of_surjective _ f hf
 
+lemma comap_quotientMk_bijective_of_le_nilradical {I : Ideal R} (hle : I ≤ nilradical R) :
+    Function.Bijective (comap <| Ideal.Quotient.mk I) := by
+  refine ⟨comap_injective_of_surjective _ Ideal.Quotient.mk_surjective, ?_⟩
+  simpa [← Set.range_eq_univ, range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
+    zeroLocus_eq_univ_iff]
+
 theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
     IsClosed (Set.range (comap f)) := by
   rw [range_comap_of_surjective _ f hf]
@@ -474,9 +491,6 @@ lemma isClosedEmbedding_comap_of_surjective (hf : Surjective f) : IsClosedEmbedd
   toIsInducing := comap_isInducing_of_surjective S f hf
   injective := comap_injective_of_surjective f hf
   isClosed_range := isClosed_range_comap_of_surjective S f hf
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_comap_of_surjective := isClosedEmbedding_comap_of_surjective
 
 end SpecOfSurjective
 
@@ -620,9 +634,6 @@ theorem localization_away_isOpenEmbedding (S : Type v) [CommSemiring S] [Algebra
   isOpen_range := by
     rw [localization_away_comap_range S r]
     exact isOpen_basicOpen
-
-@[deprecated (since := "2024-10-18")]
-alias localization_away_openEmbedding := localization_away_isOpenEmbedding
 
 theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectrum R)) := by
   rw [← localization_away_comap_range (Localization (Submonoid.powers f))]
@@ -1137,6 +1148,14 @@ lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRin
       eval_mul, reflect_sub, reflect_mul _ _ (by simp) (by simp)]
     simp [← pow_succ']
 
+lemma _root_.RingHom.IsIntegral.specComap_surjective {f : R →+* S} (hf : f.IsIntegral)
+    (hinj : Function.Injective f) : Function.Surjective f.specComap := by
+  algebraize [f]
+  intro ⟨p, hp⟩
+  obtain ⟨Q, _, hQ, rfl⟩ := Ideal.exists_ideal_over_prime_of_isIntegral p (⊥ : Ideal S)
+    (by simp [Ideal.comap_bot_of_injective (algebraMap R S) hinj])
+  exact ⟨⟨Q, hQ⟩, rfl⟩
+
 end IsIntegral
 
 section LocalizationAtMinimal
@@ -1223,9 +1242,6 @@ theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalR
   have := (local_hom_TFAE f).out 0 4
   rw [this, PrimeSpectrum.ext_iff]
   rfl
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_iff_comap_closedPoint := isLocalHom_iff_comap_closedPoint
 
 @[simp]
 theorem comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalRing S] (f : R →+* S)

@@ -96,8 +96,8 @@ lemma circleMap_neg_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (-π / 2) = c
     sub_eq_add_neg]
 
 /-- `circleMap` is `2π`-periodic. -/
-theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ =>
-  by simp [circleMap, add_mul, exp_periodic _]
+theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
+  simp [circleMap, add_mul, exp_periodic _]
 
 theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
     (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=
@@ -126,6 +126,7 @@ lemma eq_of_circleMap_eq {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (h_dist : |a - 
   norm_cast at h_dist
   simp [hn, Int.abs_lt_one_iff.mp h_dist]
 
+open scoped Interval in
 /-- `circleMap` is injective on `Ι a b` if the distance between `a` and `b` is at most `2π`. -/
 theorem injOn_circleMap_of_abs_sub_le {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (_ : |a - b| ≤ 2 * π) :
     (Ι a b).InjOn (circleMap c R) := by
