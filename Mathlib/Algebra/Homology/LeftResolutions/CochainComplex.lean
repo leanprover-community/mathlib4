@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplexMinus
 import Mathlib.Algebra.Homology.Embedding.CochainComplexTrunc
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Resolutions of unbounded complexes
@@ -33,6 +34,16 @@ noncomputable def leftResolutionπ :
 
 /-instance quasiIso_leftResolutionπ_app [∀ K, QuasiIso (α.app K)] (K : CochainComplex A ℤ) :
     QuasiIso ((leftResolutionπ α).app K) := by
-  sorry-/
+  have H : (HomologicalComplex.quasiIso A (.up ℤ)).IsStableUnderColimitsOfShape ℤ := by
+    sorry
+  dsimp only [leftResolutionπ]
+  apply (config := { allowSynthFailures := true } ) quasiIso_comp
+  simp only [Functor.comp_obj, filtrationLEMinusFunctor_obj, whiskeringRight_obj_obj, colim_obj,
+    whiskerLeft_app, whiskerRight_app, colim_map]
+  apply H.colimMap
+  intro n
+  dsimp
+  simp only [HomologicalComplex.mem_quasiIso_iff]
+  infer_instance-/
 
 end CochainComplex
