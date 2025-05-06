@@ -278,7 +278,7 @@ instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C)
 `l.map f` is the identity at `i` if `l` is, and constantly `f y` if `l` is constantly `y` at `i`. -/
 def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι where
   idxFun i := (l.idxFun i).map f
-  proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none']⟩
+  proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none]⟩
 
 /-- A point in `ι → α` and a line in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
 def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (ι ⊕ ι') where
@@ -477,7 +477,7 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
     intro i hi
     rw [hs, Finset.compl_filter, Finset.mem_filter] at hi
     obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
-    simp [← hy, Option.map_some', Option.getD]
+    simp [← hy, Option.map_some, Option.getD]
 
 namespace Subspace
 

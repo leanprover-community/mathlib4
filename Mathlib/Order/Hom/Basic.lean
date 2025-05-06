@@ -376,7 +376,7 @@ def diag : α →o α × α :=
   id.prod id
 
 /-- Restriction of `f : α →o α →o β` to the diagonal. -/
-@[simps! (config := { simpRhs := true })]
+@[simps! +simpRhs]
 def onDiag (f : α →o α →o β) : α →o β :=
   (curry.symm f).comp diag
 
