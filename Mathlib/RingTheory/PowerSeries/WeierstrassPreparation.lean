@@ -64,11 +64,6 @@ open scoped Polynomial PowerSeries
 
 -/
 
-theorem ENat.lift_eq_toNat {x : ℕ∞} (hx : x < ⊤) : x.lift hx = x.toNat := by
-  rcases x with ⟨⟩ | x
-  · contradiction
-  · rfl
-
 namespace PowerSeries
 
 section
@@ -177,8 +172,7 @@ noncomputable def WeierstrassDivisionData.ofMapResidueNeZero [IsLocalRing A]
     contrapose! h
     rwa [coeff_map, IsLocalRing.residue_eq_zero_iff]
 
-variable {I}
-variable (S : WeierstrassDivisionData I)
+variable {I} (S : WeierstrassDivisionData I)
 
 namespace WeierstrassDivisionData
 
