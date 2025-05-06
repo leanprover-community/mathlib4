@@ -100,6 +100,20 @@ lemma linearIndependent_of_sub_mem_range_root
   apply P.linearIndependent_of_add_mem_range_root
   simpa [sub_eq_add_neg] using h
 
+lemma linearIndependent_of_add_mem_range_root' [CharZero R] [IsDomain R] [P.IsReduced] {i j : ι}
+    (h : P.root i + P.root j ∈ range P.root) :
+    LinearIndependent R ![P.root i, P.root j] :=
+  have _i := P.reflexive_left
+  have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
+  P.linearIndependent_of_add_mem_range_root h
+
+lemma linearIndependent_of_sub_mem_range_root' [CharZero R] [IsDomain R] [P.IsReduced] {i j : ι}
+    (h : P.root i - P.root j ∈ range P.root) :
+    LinearIndependent R ![P.root i, P.root j] :=
+  have _i := P.reflexive_left
+  have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
+  P.linearIndependent_of_sub_mem_range_root h
+
 lemma infinite_of_linearIndependent_coxeterWeight_four [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M]
     (hl : LinearIndependent R ![P.root i, P.root j]) (hc : P.coxeterWeight i j = 4) :
     Infinite ι := by
