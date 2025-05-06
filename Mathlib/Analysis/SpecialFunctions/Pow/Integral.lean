@@ -58,16 +58,14 @@ theorem lintegral_rpow_eq_lintegral_meas_le_mul
     filter_upwards [self_mem_ae_restrict (measurableSet_Ioi : MeasurableSet (Ioi (0 : ℝ)))]
     intro t t_pos
     exact Real.rpow_nonneg (mem_Ioi.mp t_pos).le (p - 1)
-  have g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t := fun _ _ =>
+  have g_intble (t) (ht : 0 < t) : IntervalIntegrable g volume 0 t :=
     intervalIntegral.intervalIntegrable_rpow' one_lt_p
   have key := lintegral_comp_eq_lintegral_meas_le_mul μ f_nn f_mble g_intble g_nn
   rw [← key, ← lintegral_const_mul'' (ENNReal.ofReal p)] <;> simp_rw [obs]
   · congr with ω
     rw [← ENNReal.ofReal_mul p_pos.le, mul_div_cancel₀ (f ω ^ p) p_pos.ne.symm]
-  · have aux := (@measurable_const ℝ α (by infer_instance) (by infer_instance) p).aemeasurable
-                  (μ := μ)
-    exact (Measurable.ennreal_ofReal (hf := measurable_id)).comp_aemeasurable
-      ((f_mble.pow aux).div_const p)
+  · have aux := (measurable_const (a := p)).aemeasurable (μ := μ)
+    exact measurable_id.ennreal_ofReal.comp_aemeasurable <| (f_mble.pow aux).div_const p
 
 end Layercake
 
@@ -87,8 +85,7 @@ theorem lintegral_rpow_eq_lintegral_meas_lt_mul
   rw [lintegral_rpow_eq_lintegral_meas_le_mul μ f_nn f_mble p_pos]
   apply congr_arg fun z => ENNReal.ofReal p * z
   apply lintegral_congr_ae
-  filter_upwards [meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f]
-    with t ht
+  filter_upwards [meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f] with t ht
   rw [ht]
 
 end LayercakeLT
