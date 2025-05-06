@@ -216,7 +216,7 @@ theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
   induction e
   simp [mk'_mem_incidenceSet_iff]
 
-theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet]:
+theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
     G.incidenceFinset v ⊆ G.edgeFinset :=
   Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
 
