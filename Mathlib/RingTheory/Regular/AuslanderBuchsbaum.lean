@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Regular.Depth
 # Auslander-Buchsbaum theorem
 
 In this file, we prove the Auslander-Buchsbaum theorem, which states that for a finitely generated
-module `M` over a Noetherian local ring `R`, if $\operatorname{proj\,dim} M < \infty$, then
+module `M` over a Noetherian local ring `R`, if $\operatorname{proj}\dim M < \infty$, then
 $\operatorname{proj}\dim M + \operatorname{depth} M = \operatorname{depth} R$.
 
 -/
