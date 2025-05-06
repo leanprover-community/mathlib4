@@ -379,3 +379,32 @@ scoped notation "𝓀[" K "]" => ResidueField K
 end Valued
 
 end Notation
+
+open Valued
+lemma Valued.discreteTopology_valuationRing_iff_discreteTopology
+    {K Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Valued K Γ₀] :
+    DiscreteTopology 𝒪[K] ↔ DiscreteTopology K := by
+  have hk : IsOpen (𝒪[K] : Set K) := isOpen_integer K
+  constructor
+  · intro h
+    rw [← singletons_open_iff_discrete]
+    intro x
+    rcases le_total (Valued.v x) 1 with hx | hx
+    · have : IsOpen ({⟨x, hx⟩} : Set 𝒪[K]) := isOpen_discrete _
+      simpa using hk.isOpenMap_subtype_val _ this
+    · have hx0 : x ≠ 0 := by
+        rw [← Valued.v.pos_iff]
+        refine hx.trans_lt' ?_
+        norm_num
+      replace hx : Valued.v x⁻¹ ≤ 1 := by
+        rwa [map_inv₀, inv_le_one₀]
+        rwa [Valued.v.pos_iff]
+      suffices IsOpen {x⁻¹} by
+        simp only [isOpen_iff_mem_nhds, Set.mem_singleton_iff, forall_eq] at this ⊢
+        have := continuousAt_inv₀ hx0 this
+        rw [Filter.mem_map] at this
+        simpa using this
+      have : IsOpen ({⟨x⁻¹, hx⟩} : Set 𝒪[K]) := isOpen_discrete _
+      simpa using hk.isOpenMap_subtype_val _ this
+  · intro h
+    infer_instance
