@@ -723,18 +723,16 @@ theorem two_lt_card : 2 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, ∃ c ∈ s, a ≠ b 
 
 lemma exists_ne_of_two_lt_card (h : 2 < #s) (u w : α) : ∃ x, x ∈ s ∧ x ≠ u ∧ x ≠ w := by
   obtain ⟨a, b, c, ha, hb, hc, hab, hac, hbc⟩ := two_lt_card_iff.1 h
-  by_cases au : a = u
-  · by_cases bw : b = w
-    · exact ⟨c, hc, au ▸ hac.symm, bw ▸ hbc.symm⟩
-    · exact ⟨b, hb, au ▸ hab.symm, bw⟩
-  · by_cases bw : b = w
-    · exact ⟨a, ha, au, bw ▸ hab⟩
-    · by_cases cu : c = u
-      · exact ⟨b, hb, cu ▸ hbc, bw⟩
-      · by_cases aw : a = w
-        · exact ⟨c, hc, cu, aw ▸ hac.symm⟩
-        · exact ⟨a, ha, au, aw⟩
-          
+  by_cases au : a = u <;> by_cases bw : b = w
+  · exact ⟨_, hc, au ▸ hac.symm, bw ▸ hbc.symm⟩
+  · exact ⟨_, hb, au ▸ hab.symm, bw⟩
+  · exact ⟨_, ha, au, bw ▸ hab⟩
+  · by_cases cu : c = u
+    · exact ⟨_, hb, cu ▸ hbc, bw⟩
+    · by_cases aw : a = w
+      · exact ⟨_, hc, cu, aw ▸ hac.symm⟩
+      · exact ⟨_, ha, au, aw⟩
+
 /-! ### Inductions -/
 
 

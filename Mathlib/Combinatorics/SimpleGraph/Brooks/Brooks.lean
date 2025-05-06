@@ -3,7 +3,7 @@ Copyright (c) 2025 John Talbot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot
 -/
-import Mathlib.Combinatorics.SimpleGraph.Brooks.PartColoring
+import Mathlib.Combinatorics.SimpleGraph.Brooks.Greedy
 import Mathlib.Combinatorics.SimpleGraph.Brooks.OddCycles
 
 /-!
@@ -272,7 +272,7 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
       -- we then extend this coloring to `d₂` by coloring `d₂` with the color of `y`
       -- the neighbor of `d₁` (so now `d₁` is a vertex on `c` that has two neigbors
       -- colored with the same color)
-      let C₂ := C₁.insert d.toProd.2 (C₁ y) (fun v hv h' ↦ (d2 _ (by simpa using hv) h').elim)
+      let C₂ := C₁.insert d.toProd.2 (c := (C₁ y)) (fun v h h' ↦ (d2 _ (by simpa using h) h').elim)
       let hr := (c.dart_fst_mem_support_of_mem_darts hd)
       -- we take the path given by removing `d₂` from `c` (we do this by rotating
       -- `c` to start at `d₁` and then removing its last two darts)
