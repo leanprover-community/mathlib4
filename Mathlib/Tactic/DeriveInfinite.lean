@@ -86,13 +86,45 @@ open Lean Elab Command Parser.Term Meta
 We state the necessary lemmas to protect this module from changes to theory files.
 -/
 
-private theorem infinite_of_injective {α β : Sort _} [Infinite β]
-    (f : β → α) (hf : Function.Injective f) : Infinite α :=
+private theorem infinite_of_injective {α β : Sort _} [Infinite α]
+    (f : α → β) (hf : Function.Injective f) : Infinite β :=
   Infinite.of_injective f hf
 
 private theorem infinite_of_injective_to_set {α : Type _} {s : Set α} (hs : s ≠ Set.univ)
     {f : α → s} (hf : Function.Injective f) : Infinite α :=
   Infinite.of_injective_to_set hs hf
+
+private theorem infinite_of_proper_injection {α : Sort _}
+    {f : α → α} (hf : Function.Injective f) (hf' : ¬ Function.Surjective f) : Infinite α := by
+  let f' : PLift α → PLift α := fun x => PLift.up (f x.down)
+  let hf : Function.Injective f' := by
+    intro x y h
+    apply PLift.down_injective
+    apply hf
+    rw [← PLift.up.injEq]
+    exact h
+  let hf' : ¬ Function.Surjective f' := by
+    contrapose! hf'
+    intro y
+    obtain ⟨x, hx⟩ := hf' (PLift.up y)
+    use x.down
+    rw [← PLift.up.injEq]
+    exact hx
+  rw [← not_finite_iff_infinite]
+  by_contra
+  have := Finite.surjective_of_injective hf
+  exact absurd this hf'
+
+private theorem infinite_of_proper_injection' {α : Sort _}
+    {f : α → α} (hf : Function.Injective f)
+    (x : α) (hx : ∀ a : α, f a ≠ x) : Infinite α := by
+  apply infinite_of_proper_injection hf
+  intro h
+  specialize h x
+  simp [hx] at h
+
+private def fn_of_empty_dom {α : Sort _} [IsEmpty α] {β : α → Sort _} : (x : α) → β x :=
+  IsEmpty.elim inferInstance
 
 /-!
 ### `derive_infinite% α` term elaborator
@@ -289,6 +321,301 @@ private def mkProofSelf (ctorInfo : ConstructorVal) (xs : Array Expr) (self : Ex
   addNonemptyElim val
 
 /--
+Adds inhabited instances for each expression in `xs`.
+Calls `k` with the additional local instance fvars.
+
+Avoids adding `Inhabited (Inhabited α)` instances.
+-/
+private def withInhabitedInstances {α} (xs : Array Expr) (k : Array Expr → MetaM α) : MetaM α := do
+  let rec go (i : Nat) (insts : Array Expr) : MetaM α := do
+    if h : i < xs.size then
+      let x := xs[i]
+      let xTy ← instantiateMVars (← inferType x)
+      if xTy.isAppOf ``Inhabited || xTy.isAppOf ``Nonempty then
+        go (i + 1) insts
+      else
+        let u ← getLevel xTy
+        let instTy := mkApp (.const ``Inhabited [u]) xTy
+        let instVal := mkApp2 (.const ``Inhabited.mk [u]) xTy x
+        withLetDecl `inst instTy instVal fun inst =>
+          go (i + 1) (insts.push inst)
+    else
+      k insts
+  go 0 #[]
+
+private def withInhabitedInstances' (xs : Array Expr) (k : MetaM Expr) :
+    MetaM Expr := do
+  withInhabitedInstances xs fun insts => do
+    let val ← k
+    mkLetFVars (usedLetOnly := true) insts val
+
+mutual
+
+/--
+Find an inhabitant (non)constructively.
+1. Looks for instances of Inhabited or Nonempty.
+2. Goes under binders, adding parameters as new Inhabited instances.
+3. Delta unfolds definitions.
+4. Makes use of constructors of inductive types with inhabited fields.
+-/
+private partial def mkInhabitantForAux (visitedTypes : NameSet) (type : Expr) :
+    MetaM Expr := withIncRecDepth do
+  -- Is there an `Inhabited` instance?
+  if let some val ← observing? (mkDefault type) then
+    return val
+  -- Is there a `Nonempty` instance?
+  else if let some val ← observing? (mkOfNonempty type) then
+    return val
+  else
+    let type ← whnfCore type
+    -- Is it a forall we can descend under?
+    if type.isForall then
+      forallTelescope type fun xs type' => do
+        -- If any of these binders are empty, we can eliminate immediately.
+        for x in xs do
+          try
+            let inst ← synthInstance (← mkAppM ``IsEmpty #[← inferType x])
+            let val ← mkAppOptM ``IsEmpty.elim' #[none, type', inst, x]
+            return ← mkLambdaFVars xs val
+          catch _ => pure ()
+        -- Otherwise descend.
+        withInhabitedInstances xs fun insts => do
+          let val ← mkInhabitantForAux visitedTypes type'
+          mkLambdaFVars xs (← mkLetFVars (usedLetOnly := true) insts val)
+    -- Try doing a step of unfolding
+    else if let some type' ← unfoldDefinition? type then
+      mkInhabitantForAux visitedTypes type'
+    else
+      -- If it's an inductive type, try finding a constructor with inhabited fields.
+      matchConstInduct type.getAppFn
+        (fun _ => failure)
+        (fun ival us => do
+          guard <| !visitedTypes.contains ival.name
+          let visitedTypes := visitedTypes.insert ival.name
+          Option.getM <| ← ival.ctors.findSomeM? fun ctorName =>
+            observing? (mkInhabitantForCtorAux visitedTypes ctorName us type))
+
+private partial def mkInhabitantForCtorAux
+    (visitedTypes : NameSet) (ctorName : Name) (us : List Level) (type : Expr) :
+    MetaM Expr := do
+  let ctorInfo ← getConstInfoCtor ctorName
+  let (args, _, ty) ←
+    forallMetaTelescopeReducing (ctorInfo.instantiateTypeLevelParams us)
+  guard (← isDefEq type ty)
+  for arg in args[ctorInfo.numParams:] do
+    -- Assumption: if it was assigned to anything, then a parameter is responsible for it.
+    unless ← arg.mvarId!.isAssigned do
+      let argVal ← mkInhabitantForAux visitedTypes (← inferType arg)
+      guard (← isDefEq arg argVal)
+      let arg ← instantiateMVars arg
+      if arg.isMVar then
+        guard <| ← arg.mvarId!.checkedAssign argVal
+  return ← instantiateMVars (mkAppN (.const ctorInfo.name us) args)
+
+end
+
+/-- Tries to synthesize a term of the given type. -/
+private def mkInhabitantFor (type : Expr) : MetaM Expr := do
+  let type ← instantiateMVars type
+  withNewMCtxDepth do
+    withInhabitedInstances' (← getLCtx).getFVars do mkInhabitantForAux {} type
+
+/-- Tries to synthesize a term of the given constructor, or throws an exception. -/
+private def mkInhabitantForCtor (ctorName : Name) (us : List Level)
+    (type : Expr) : MetaM Expr := do
+  let type ← instantiateMVars type
+  withNewMCtxDepth do
+    withInhabitedInstances' (← getLCtx).getFVars do mkInhabitantForCtorAux {} ctorName us type
+
+/--
+Constructs an inhabitant for the expected type, if possible.
+-/
+elab (name := inhabit) "inhabit%" : term <= expectedType => do
+  try
+    mkInhabitantFor expectedType
+  catch _ =>
+    throwError "could not construct inhabitant of type{indentExpr expectedType}"
+
+structure A (α : Type) (a : α) where
+  a : α
+  b : Nat
+#check A.mk.inj
+#check fun α a => (inhabit% : A α a)
+
+private theorem injective_id (α) : Function.Injective (id : α → α) := Function.injective_id
+
+private theorem injective_insert_pi {α β γ} (g : γ)
+    {f : α → β} (hf : Function.Injective f) :
+    Function.Injective (fun (x : α) (_ : γ) => f x) := by
+  intro x1 x2 h
+  exact hf (congr_fun h g)
+
+/--
+Tries to make an injection `dom → codom`.
+Abstracts `dom` from the `codom` type.
+
+Returns the injectivity proof.
+If `h : Expr` is the proof then `(← inferType h).appArg!` is the function.
+-/
+private partial def mkInj (dom codom : Expr) : MetaM Expr := do
+  let dom ← instantiateMVars dom
+  let codom ← instantiateMVars codom
+  let dom' ← kabstract codom dom
+  -- If `dom` does not appear in `codom`, then we don't try to create an injection.
+  -- The only way an injection could still exist is if `dom` were defined before `codom`,
+  -- but in our case `dom` is always the new type.
+  guard dom'.hasLooseBVars
+  withLocalDeclD `self (← inferType dom) fun self => do
+    let codom' := codom.instantiate1 self
+    -- We should make sure that the abstracted codomain is type correct:
+    check codom'
+    mkInjAux {} self codom'
+where
+  mkInjAux (visitedTypes : NameSet) (self codom : Expr) : MetaM Expr := do
+    let codom ← whnf codom
+    -- Base case: `self → self`
+    if codom == self then
+      mkAppM ``injective_id #[self]
+    -- For the `self → α → β` case, we only try making an injection `self → β`
+    else if codom.isForall then
+      -- Only non-dependent functions are supported
+      guard <| codom.isArrow
+      let p ← mkInhabitantFor codom.bindingDomain!
+      withLocalDeclD codom.bindingName! codom.bindingDomain! fun param => do
+        let inj ← mkInjAux visitedTypes self codom
+        let pf ← mkAppM ``injective_insert_pi #[p, inj]
+        let pf ← mkLambdaFVars #[param] pf
+        return pf.bindingBody!.instantiate1 p
+    else
+      -- Otherwise, try to find a constructor that can be used to create the injection.
+      matchConstInduct codom.getAppFn
+        (fun _ => failure)
+        (fun ival us => do
+          guard <| !visitedTypes.contains ival.name
+          let visitedTypes := visitedTypes.insert ival.name
+          Option.getM <| ← ival.ctors.findSomeM? fun ctorName =>
+            observing? (mkInjForCtor visitedTypes self codom ctorName us))
+  /--
+  Try to create an injection `self -> codom` using the given constructor.
+  Strategy: locate a field for which there is an injection,
+  and try to inhabit the remaining fields.
+  -/
+  mkInjForCtor (visitedTypes : NameSet) (self codom : Expr) (ctorName : Name) (us : List Level) :
+      MetaM Expr := do
+    let injThmName := mkInjectiveTheoremNameFor ctorName
+    guard <| (← getEnv).contains injThmName
+    let ctorInfo ← getConstInfoCtor ctorName
+    let (args, _, ty) ← forallMetaTelescopeReducing (ctorInfo.instantiateTypeLevelParams us)
+    guard <| ← withNewMCtxDepth <| isDefEq codom ty
+    withLocalDeclD `x self fun x => do
+      -- Inhabited values for each field. Note: the values may depend on `x`.
+      -- Another note: we won't use the inhabitant for the field that we will use for the injection.
+      let mut vals : Array Expr ←
+        args[ctorInfo.numParams:].foldlM (init := #[]) fun vals arg => do
+          -- Assumption: if it was assigned to anything, then a parameter is responsible for it.
+          if ← arg.mvarId!.isAssigned then
+            return vals.push arg
+          else
+            let val ← mkInhabitantFor (← inferType arg)
+            return vals.push val
+      -- Now look for a field that can be used for injection.
+      for i in [0:ctorInfo.numFields] do
+        let arg := args[ctorInfo.numParams + i]!
+        unless (← arg.mvarId!.isAssigned) do
+          if let some inji ← observing? (mkInjAux visitedTypes self (← inferType arg)) then
+            -- There is an injectivity proof for this field.
+            -- Given that we have inhabitants for all other fields, we now commit to it.
+            -- Step 1: get the function from the proof
+            let fi := (← inferType inji).appArg!
+            -- Step 2: assign `arg` using `fi x`
+            guard <| ← arg.mvarId!.checkedAssign (mkApp fi x)
+            -- Step 3: assign all other arguments to the values in `vals`
+            for j in [0:ctorInfo.numFields] do
+              let argj := args[ctorInfo.numParams + j]!
+              let valj := vals[ctorInfo.numParams + j]!
+              unless ← argj.mvarId!.isAssigned do
+                guard (← isDefEq argj valj)
+                let argj ← instantiateMVars argj
+                if argj.isMVar then
+                  guard <| ← argj.mvarId!.checkedAssign valj
+            -- Step 4: build the injection function
+            let f ← mkLambdaFVars #[x] (mkAppN (.const ctorName us) args)
+            -- Step 5: prove that it is an injection
+            let injTy ← mkAppM ``Function.Injective #[f]
+            let injPf ← mkFreshExprSyntheticOpaqueMVar injTy
+            let (eq, g) ← injPf.mvarId!.intro `h
+            g.withContext do
+              let mut val ← mkAppM injThmName #[Expr.fvar eq]
+              for _ in [0:i] do
+                val ← mkAppM ``And.right #[val]
+              if i + 1 < ctorInfo.numFields then
+                val ← mkAppM ``And.left #[val]
+              if (← whnf (← inferType val)).isHEq then
+                val ← mkEqOfHEq val
+              g.assignIfDefEq (← mkAppM' inji #[val])
+            return ← mkExpectedTypeHint injPf injTy
+      -- No injectivity proof.
+      failure
+
+inductive Baz (β : Type) where
+  | mk (n : Nat) (b : β) (c : Baz β)
+
+example {β : Type} (fi : Baz β → β) (hfi : Function.Injective fi) :
+    let f : Baz β → Baz β := fun x => Baz.mk default (fi x) sorry
+    Function.Injective f := by
+  intro f a b h
+  have := Baz.mk.inj h
+
+  sorry
+
+/--
+Tries to use the given constructor for the type `α` to construct an injection `α → α`.
+Returns the injection and the proof of injectivity.
+-/
+private def mkInjOfCtor (ival : InductiveVal) (ctorName : Name) (us : List Level) (type : Expr) :
+    MetaM (Expr × Expr) := do
+  let ctorInfo ← getConstInfoCtor ctorName
+  let (args, _, ty) ← forallMetaTelescopeReducing (ctorInfo.instantiateTypeLevelParams us)
+  guard (← isDefEq type ty)
+  let type ← instantiateMVars type
+  withLocalDeclD `self type fun self => do
+    failure
+
+/--
+For each constructor, tries to use it to inhabit the type `type`.
+-/
+private def inhabitCtors (ival : InductiveVal) (us : List Level) (type : Expr) :
+    MetaM (List Expr) :=
+  ival.ctors.filterMapM fun ctorName =>
+    observing? (mkInhabitantForCtor ival ctorName us type)
+
+/--
+If there is a constructor with an `Infinite` field, with all other fields inhabited,
+returns a proof of `Infinite type`.
+-/
+private def infiniteOfCtor (ival : InductiveVal) (us : List Level) (type : Expr) :
+    MetaM Expr := do
+  for ctorName in ival.ctors do
+    let state ← saveState
+    try
+      let ctorInfo ← getConstInfoCtor ctorName
+      let (args, _, ty) ←
+        forallMetaTelescopeReducing (ctorInfo.instantiateTypeLevelParams us)
+      guard (← isDefEq type ty)
+      for arg in args[ival.numParams:] do
+        let arg ← instantiateMVars arg
+        if arg.hasExprMVar then
+          let some argVal ← mkInhabitantFor? (← inferType arg)
+            | failure
+          guard (← isDefEq arg argVal)
+          if arg.isMVar then
+            arg.mvarId!.assign argVal
+      return ← instantiateMVars (mkAppN (.const ctorInfo.name us) args)
+    catch _ =>
+      restoreState state
+  failure
+
+/--
 The `derive_infinite%` term elaborator attempts to derive an instance of `Infinite α`.
 The type `α` is obtained from the expected type.
 
@@ -313,12 +640,17 @@ private def extractType (expectedType? : Option Expr) :
     | throwMustBeKnown
   Term.tryPostponeIfMVar type
   let type ← instantiateMVars (← whnf type)
-  matchConstInduct type.getAppFn (fun _ => throwMustBeKnown)
+  matchConstInduct type.getAppFn
+    (fun _ => throwMustBeKnown)
     (fun ival us => return (type, us, ival))
 
 @[term_elab deriveInfinite]
-private def elabDeriveInfinite : Term.TermElab := fun _ expectedType? => do
+def elabDeriveInfinite : Term.TermElab := fun _ expectedType? => do
   let (type, us, indVal) ← extractType expectedType?
+  if indVal.isUnsafe then
+    throwError "unsafe inductive types are not supported"
+  unless indVal.numIndices = 0 do
+    throwError "indexed inductive types are not supported"
   trace[Elab.Deriving.infinite] "deriving for type {.ofConstName indVal.name},{indentExpr type}"
   let getProof f : TermElabM (Option Term) :=
     indVal.ctors.findSomeM? fun ctorName => do
@@ -347,7 +679,9 @@ private def elabDeriveInfinite : Term.TermElab := fun _ expectedType? => do
 
 private def mkInfiniteInstanceCmd (declName : Name) : TermElabM Command := do
   let indVal       ← getConstInfoInduct declName
-  if indVal.numIndices ≠ 0 then
+  if indVal.isUnsafe then
+    throwError "unsafe inductive types are not supported"
+  unless indVal.numIndices = 0 do
     throwError "indexed inductive types are not supported"
   let argNames     ← Deriving.mkInductArgNames indVal
   let binders      ← Deriving.mkImplicitBinders argNames
