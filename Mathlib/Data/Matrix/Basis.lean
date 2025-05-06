@@ -193,8 +193,8 @@ section
 variable [Zero α] (i j : n) (c : α)
 
 @[simp]
-theorem diag_zero (h : j ≠ i) : diag (stdBasisMatrix i j c) = 0 :=
-  funext fun _ => if_neg fun ⟨e₁, e₂⟩ => h (e₂.trans e₁.symm)
+theorem diag_zero (h : i ≠ j) : diag (stdBasisMatrix i j c) = 0 :=
+  funext fun _ => if_neg fun ⟨e₁, e₂⟩ => h (e₁.trans e₂.symm)
 
 @[simp]
 theorem diag_same : diag (stdBasisMatrix i i c) = Pi.single i c := by
