@@ -305,7 +305,7 @@ theorem single_mul_single_of_ne (i : l) (j k : m) {l : n} (h : j ≠ k) (d : α)
   · simp [h₁, h, Finset.sum_eq_zero]
   · simp [h₁]
 
-@[deprecated (since := "2025-05-05")] alias mul_of_ne := single_mul_single_of_ne
+@[deprecated (since := "2025-05-05")] alias StdBasisMatrix.mul_of_ne := single_mul_single_of_ne
 
 end mul
 
