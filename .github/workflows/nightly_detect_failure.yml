@@ -150,6 +150,7 @@ jobs:
       id: latest_bump_branch
       uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
+        result-encoding: string
         script: |
           const branches = await github.paginate(github.rest.repos.listBranches, {
             owner: context.repo.owner,
@@ -254,8 +255,6 @@ jobs:
         echo "Target bump branch: ${BUMP_BRANCH}"
         echo "Using commit SHA: ${SHA}"
         current_version="${NIGHTLY}"
-        # Remove surrounding quotes from BUMP_BRANCH
-        BUMP_BRANCH=$(echo "${BUMP_BRANCH}" | sed 's/^"//;s/"$//')
         bump_branch_suffix="${BUMP_BRANCH#bump/}"
         echo "Running create-adaptation-pr.sh with:"
         echo "  bumpversion: ${bump_branch_suffix}"
