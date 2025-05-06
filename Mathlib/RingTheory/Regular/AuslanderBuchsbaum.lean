@@ -390,12 +390,12 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
     IsLocalRing.depth.{v} (ModuleCat.of R (Shrink.{v} R)) := by
     generalize h: Nat.find hfinprojdim = n
     induction' n with n ih
-    · simp
+    · simp only [CharP.cast_eq_zero, IsLocalRing.depth, Ideal.depth, moduleDepth, zero_add]
       have pdz: HasProjectiveDimensionLE M (Nat.find hfinprojdim) := Nat.find_spec hfinprojdim
-      simp [h, HasProjectiveDimensionLE] at pdz
-      have fm: Module.Free R M := by apply free_of_projectiveOverLocalRing
-      simp [hasProjectiveDimensionLT_iff] at pdz
-      --apply Module.Free.exists_set at fm
+      simp only [HasProjectiveDimensionLE, h, zero_add] at pdz
+      have : Module.Free R M := by apply free_of_projectiveOverLocalRing
+      congr! 5
+
       sorry
     · by_cases eq0 : n = 0
       · simp only [eq0, zero_add, Nat.find_eq_iff, Nat.lt_one_iff, forall_eq, Nat.cast_one] at h ⊢
