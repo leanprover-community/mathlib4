@@ -132,7 +132,7 @@ theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     rw [trace_eq_matrix_trace R b, toMatrix_dualTensorHom]
     obtain rfl | hij := eq_or_ne i j
     · simp
-    rw [Matrix.StdBasisMatrix.trace_zero j i (1 : R) hij.symm]
+    rw [Matrix.trace_single_eq_of_ne j i (1 : R) hij.symm]
     simp [Finsupp.single_eq_pi_single, hij]
 
 /-- The trace of a linear map corresponds to the contraction pairing under the isomorphism
