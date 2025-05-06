@@ -493,6 +493,23 @@ theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) 
     mul_one]
   exact hf.2.ne
 
+theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞) :
+    MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ := by
+  refine ⟨(hf.1.enorm.pow_const q.toReal).aestronglyMeasurable, ?_⟩
+  by_cases q_top : q = ∞
+  · simp [q_top]
+  by_cases q_zero : q = 0
+  · simp only [q_zero, ENNReal.toReal_zero, Real.rpow_zero]
+    by_cases p_zero : p = 0
+    · simp [p_zero]
+    rw [ENNReal.div_zero p_zero]
+    simpa only [ENNReal.rpow_zero, eLpNorm_exponent_top] using (memLp_top_const_enorm (by simp)).2
+  rw [eLpNorm_enorm_rpow _ (ENNReal.toReal_pos q_zero q_top)]
+  apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
+  rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
+    mul_one]
+  exact hf.2.ne
+
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.norm_rpow_div := MemLp.norm_rpow_div
 
@@ -508,12 +525,29 @@ theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeas
   · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
       mul_one]
 
+theorem memLp_enorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
+    (q_top : q ≠ ∞) : MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
+  refine ⟨fun h => ?_, fun h => h.enorm_rpow_div q⟩
+  apply (memLp_enorm_iff hf).1
+  convert h.enorm_rpow_div q⁻¹ using 1
+  · ext x
+    have : q.toReal * q.toReal⁻¹ = 1 :=
+      CommGroupWithZero.mul_inv_cancel q.toReal <| ENNReal.toReal_ne_zero.mpr ⟨q_zero, q_top⟩
+    simp [← ENNReal.rpow_mul, this, ENNReal.rpow_one]
+  · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
+      mul_one]
+
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_rpow_iff := memLp_norm_rpow_iff
 
 theorem MemLp.norm_rpow {f : α → E} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun x : α => ‖f x‖ ^ p.toReal) 1 μ := by
   convert hf.norm_rpow_div p
+  rw [div_eq_mul_inv, ENNReal.mul_inv_cancel hp_ne_zero hp_ne_top]
+
+theorem MemLp.enorm_rpow {f : α → ε} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+    MemLp (fun x : α => ‖f x‖ₑ ^ p.toReal) 1 μ := by
+  convert hf.enorm_rpow_div p
   rw [div_eq_mul_inv, ENNReal.mul_inv_cancel hp_ne_zero hp_ne_top]
 
 @[deprecated (since := "2025-02-21")]
