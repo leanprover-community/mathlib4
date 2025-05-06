@@ -14,7 +14,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Minus
 
 -- part of this should be refactored and moved to `LeftResolutions.*`
 
-universe v u
+/-universe v u
 open CategoryTheory Category Limits
 
 namespace CategoryTheory
@@ -99,4 +99,4 @@ lemma localizerMorphism_isLocalizedEquivalence :
 
 end LeftResolutions
 
-end CochainComplex
+end CochainComplex-/

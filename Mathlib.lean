@@ -573,6 +573,7 @@ import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.LeftResolution.Basic
 import Mathlib.Algebra.Homology.LeftResolution.DerivabilityStructure
 import Mathlib.Algebra.Homology.LeftResolutions.Basic
+import Mathlib.Algebra.Homology.LeftResolutions.CochainComplexMinus
 import Mathlib.Algebra.Homology.LeftResolutions.Reduced
 import Mathlib.Algebra.Homology.LeftResolutions.Transport
 import Mathlib.Algebra.Homology.Linear

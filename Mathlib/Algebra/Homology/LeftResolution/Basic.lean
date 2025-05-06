@@ -16,9 +16,9 @@ import Mathlib.Algebra.Homology.TotalComplexMap
 
 -/
 
--- part of this should be refactored and moved to `LeftResolutions.*`
+-- moved to `LeftResolutions.*`
 
-open CategoryTheory Category Limits Preadditive ZeroObject
+/-open CategoryTheory Category Limits Preadditive ZeroObject
 
 namespace ChainComplex
 
@@ -609,7 +609,7 @@ end
 
 end LeftResolutions
 
-end CochainComplex
+end CochainComplex-/
 
 /-
 namespace CategoryTheory
