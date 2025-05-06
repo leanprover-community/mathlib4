@@ -92,10 +92,10 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_
   by_cases hJ0 : J = 0
   · simpa [hJ0] using bot_isPrincipal
   rw [← Subtype.coe_mk J (mem_nonZeroDivisors_of_ne_zero hJ0)]
-  refine h (((mem_normalizedFactors_iff (nonZeroDivisors.coe_ne_zero I)).mp hJ).1) ?_
+  apply h (((mem_normalizedFactors_iff (nonZeroDivisors.coe_ne_zero I)).mp hJ).1)
   exact (cast_le.mpr <| le_of_dvd (absNorm_pos_of_nonZeroDivisors I) <|
-    absNorm_dvd_absNorm_of_le (le_of_dvd (UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors
-    hJ))).trans hI
+    absNorm_dvd_absNorm_of_le <| le_of_dvd <|
+      UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hJ).trans hI
 
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_mem_primesOver
     (h : ∀ ⦃p : ℕ⦄, p.Prime → p ≤ (4 / π) ^ nrComplexPlaces K *
