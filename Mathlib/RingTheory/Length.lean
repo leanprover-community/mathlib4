@@ -126,6 +126,18 @@ lemma Module.length_bot :
     Module.length R (⊤ : Submodule R M) = Module.length R M := by
   rw [Module.length_submodule, Module.length_eq_height]
 
+lemma Submodule.height_lt_top [IsArtinian R M] [IsNoetherian R M] (N : Submodule R M) :
+    Order.height N < ⊤ := by
+  simpa only [← Module.length_submodule] using Module.length_ne_top.lt_top
+
+lemma Submodule.height_strictMono [IsArtinian R M] [IsNoetherian R M] :
+    StrictMono (Order.height : Submodule R M → ℕ∞) :=
+  fun N _ h ↦ Order.height_strictMono h N.height_lt_top
+
+lemma Submodule.length_lt [IsArtinian R M] [IsNoetherian R M] {N : Submodule R M} (h : N ≠ ⊤) :
+    Module.length R N < Module.length R M := by
+  simpa [← Module.length_top (M := M), Module.length_submodule] using height_strictMono h.lt_top
+
 variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R P]
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
 variable (H : Function.Exact f g)

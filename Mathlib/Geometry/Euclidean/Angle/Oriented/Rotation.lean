@@ -47,7 +47,7 @@ def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
         Orientation.areaForm_rightAngleRotation_left, Orientation.inner_rightAngleRotation_left,
         Orientation.inner_rightAngleRotation_right, inner_add_left, inner_smul_left,
         inner_add_right, inner_smul_right]
-      linear_combination inner (𝕜 := ℝ) x y * θ.cos_sq_add_sin_sq)
+      linear_combination ⟪x, y⟫ * θ.cos_sq_add_sin_sq)
 
 @[simp]
 theorem rotationAux_apply (θ : Real.Angle) (x : V) :

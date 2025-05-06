@@ -18,7 +18,7 @@ import B
 ...
 import Z
 
-deprecated_module "Optional string here with further details" (since "yyyy-mm-dd")
+deprecated_module "Optional string here with further details" (since := "yyyy-mm-dd")
 ```
 in module `A` with the expectation that `A` contains nothing else.
 This triggers the `deprecated.module` linter to notify every file with `import A`
@@ -75,18 +75,19 @@ def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m] [MonadQuotat
          i.module == `Mathlib.Tactic.Linter.DeprecatedModule then none else i.module, msg?))
 
 /--
-`deprecated_module "Optional string" (since "yyyy-mm-dd")` deprecates the current module `A`
+`deprecated_module "Optional string" (since := "yyyy-mm-dd")` deprecates the current module `A`
 in favour of its direct imports.
 This means that any file that directly imports `A` will get a notification on the `import A` line
 suggesting to instead import the *direct imports* of `A`.
 -/
 elab (name := deprecated_modules)
-    "deprecated_module " msg?:(str)? "(" &"since " date:str ")" : command => do
+    "deprecated_module " msg?:(str)? "(" &"since " ":= " date:str ")" : command => do
   if let .error _parsedDate := Std.Time.PlainDate.fromLeanDateString date.getString then
     throwError "Invalid date: the expected format is \"{← Std.Time.PlainDate.now}\""
   addModuleDeprecation <| msg?.map (·.getString)
   -- Disable the linter, so that it does not complain in the file with the deprecation.
-  elabCommand (← `(set_option linter.deprecated.module false))
+  elabCommand <| mkNullNode #[← `(set_option linter.style.header false),
+                              ← `(set_option linter.deprecated.module false)]
 
 /--
 A utility command to show the current entries of the `deprecatedModuleExt` in the format:

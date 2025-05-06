@@ -109,7 +109,7 @@ theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
 /-- A special version of `ContinuousMap.coe_coe`.
 
 When you delete this deprecated lemma, please rename `Path.coe_mk'` to `Path.coe_mk`. -/
-@[deprecated ContinuousMap.coe_coe (since := "2025-04-15")]
+@[deprecated ContinuousMap.coe_coe (since := "2025-05-02")]
 theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
 
@@ -119,7 +119,7 @@ theorem range_coe : range ((↑) : Path x y → C(I, X)) = {f | f 0 = x ∧ f 1 
     ⟨⟨f, hf₀, hf₁⟩, rfl⟩
 
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
-instance insHasUncurryPath {α : Type*} {x y : α → X} :
+instance instHasUncurryPath {α : Type*} {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
   ⟨fun φ p => φ p.1 p.2⟩
 
@@ -137,9 +137,9 @@ theorem refl_range {a : X} : range (Path.refl a) = {a} := range_const
 @[symm, simps]
 def symm (γ : Path x y) : Path y x where
   toFun := γ ∘ σ
-  continuous_toFun := by continuity
-  source' := by simpa [-Path.target] using γ.target
-  target' := by simpa [-Path.source] using γ.source
+  continuous_toFun := by fun_prop
+  source' := by simp
+  target' := by simp
 
 @[simp]
 theorem symm_symm (γ : Path x y) : γ.symm.symm = γ := by
@@ -186,7 +186,7 @@ theorem _root_.Continuous.pathExtend {γ : Y → Path x y} {f : Y → ℝ} (hγ 
     (hf : Continuous f) : Continuous fun t => (γ t).extend (f t) :=
   Continuous.IccExtend hγ hf
 
-@[deprecated (since := "2025-04-14")]
+@[deprecated (since := "2025-05-02")]
 alias _root_.Continuous.path_extend := Continuous.pathExtend
 
 /-- A useful special case of `Continuous.path_extend`. -/
@@ -199,7 +199,7 @@ theorem _root_.Filter.Tendsto.pathExtend
     Tendsto (↿fun x => ⇑(γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 
-@[deprecated (since := "2025-04-14")]
+@[deprecated (since := "2025-05-02")]
 alias _root_.Filter.Tendsto.path_extend := Filter.Tendsto.pathExtend
 
 theorem _root_.ContinuousAt.pathExtend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
@@ -207,7 +207,7 @@ theorem _root_.ContinuousAt.pathExtend {g : Y → ℝ} {l r : Y → X} (γ : ∀
     ContinuousAt (fun i => (γ i).extend (g i)) y :=
   hγ.IccExtend (fun x => γ x) hg
 
-@[deprecated (since := "2025-04-14")]
+@[deprecated (since := "2025-05-02")]
 alias _root_.ContinuousAt.path_extend := ContinuousAt.pathExtend
 
 @[simp]

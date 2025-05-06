@@ -48,7 +48,7 @@ universe.
 
 Note that if `M` does not fit in `w`, the reverse direction of this implication is still true as
 `Module.Free.of_basis`. -/
-theorem free_def [Small.{w,v} M] : Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) where
+theorem free_def [Small.{w, v} M] : Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) where
   mp h :=
     ⟨Shrink (Set.range h.exists_basis.some.2),
       ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩

@@ -329,7 +329,7 @@ instance {R₀} [CommRing R₀] [Algebra R₀ S] : Module R₀ P.Cotangent :=
 
 instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ S] [Algebra R₂ S] [Algebra R₁ R₂]
     [IsScalarTower R₁ R₂ S] :
-  IsScalarTower R₁ R₂ P.Cotangent := by
+    IsScalarTower R₁ R₂ P.Cotangent := by
   constructor
   intros r s m
   show algebraMap R₂ S (r • s) • m = (algebraMap _ S r) • (algebraMap _ S s) • m
@@ -355,7 +355,7 @@ lemma Cotangent.val_smul'' (r : R) (x : P.Cotangent) : (r • x).val = r • x.v
   rw [← algebraMap_smul P.Ring, val_smul', algebraMap_smul]
 
 /-- The quotient map from the kernel of `P → S` onto the cotangent space. -/
-def Cotangent.mk : P.ker →ₗ[P.Ring] P.Cotangent where
+noncomputable def Cotangent.mk : P.ker →ₗ[P.Ring] P.Cotangent where
   toFun x := .of (Ideal.toCotangent _ x)
   map_add' x y := by simp
   map_smul' x y := ext <| by simp
