@@ -34,7 +34,7 @@ section equivMvPolynomial
 variable {R : Type uR} {M : Type uM} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- `SymmetricAlgebra.equivMvPolynomial` give an algebra isomorphism between symmetric algebra over
-a free module and multivariate polynomial over the basis, this is analogous to
+a free module and multivariate polynomial over the basis. This is analogous to
 `TensorAlgebra.equivFreeAlgebra`. -/
 noncomputable def equivMvPolynomial {I : Type*} (b : Basis I R M) :
     SymmetricAlgebra R M ≃ₐ[R] MvPolynomial I R :=
