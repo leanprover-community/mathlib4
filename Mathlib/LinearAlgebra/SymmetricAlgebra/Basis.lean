@@ -8,11 +8,21 @@ import Mathlib.LinearAlgebra.Dimension.Basic
 import Mathlib.RingTheory.MvPolynomial
 
 /-!
-# Main Definitions
+# A basis for `SymmetricAlgebra R M`
 
-1. `SymmetricAlgebra.equivMvPolynomial` give an algebra isomorphism between symmetric algebra over a
-  free module and multivariate polynomial over the basis, which is analogous to
-  `TensorAlgebra.equivFreeAlgebra`.
+## Main definitions
+
+* `SymmetricAlgebra.equivMvPolynomial b : SymmetricAlgebra R M ≃ₐ[R] MvPolynomial I R`:
+  the isomorphism given by a basis `b : Basis I R M`.
+* `Basis.symmetricAlgebra b : Basis (I →₀ ℕ) R (SymmetricAlgebra R M)`:
+  the basis on the symmetric algebra given by a basis `b : Basis I R M`.
+
+## Main results
+
+* `SymmetricAlgebra.instFreeModule`: the symmetric algebra over `M` is free when `M` is free.
+* `SymmetricAlgebra.rank_eq`: the rank of `SymmetricAlgebra R M` when `M` is a nontrivial free
+  module is equal to `max (Module.rank R M) Cardinal.aleph0`.
+
 -/
 
 universe uR uM
@@ -24,7 +34,8 @@ section equivMvPolynomial
 variable {R : Type uR} {M : Type uM} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- `SymmetricAlgebra.equivMvPolynomial` give an algebra isomorphism between symmetric algebra over
-a free module and multivariate polynomial over the basis. -/
+a free module and multivariate polynomial over the basis, this is analogous to
+`TensorAlgebra.equivFreeAlgebra`. -/
 noncomputable def equivMvPolynomial {I : Type*} (b : Basis I R M) :
     SymmetricAlgebra R M ≃ₐ[R] MvPolynomial I R :=
   .ofAlgHom
@@ -67,11 +78,12 @@ section rank
 variable {R : Type uR} {M : Type uM} [CommRing R] [AddCommMonoid M] [Module R M]
 
 open Cardinal in
-lemma rank_eq [Nontrivial R] [Nontrivial M] [Module.Free R M] :
+lemma rank_eq [Nontrivial M] [Module.Free R M] :
     Module.rank R (SymmetricAlgebra R M) =
       Cardinal.lift.{uR} (max (Module.rank R M) Cardinal.aleph0) := by
   let ⟨⟨I, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   have : Nonempty I := Basis.index_nonempty b
+  have : Nontrivial R := Module.nontrivial R M
   rw [(equivMvPolynomial b).toLinearEquiv.rank_eq, MvPolynomial.rank_eq_lift,
     Cardinal.mk_finsupp_nat, Basis.mk_eq_rank'' b]
 
