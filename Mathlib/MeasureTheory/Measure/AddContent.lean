@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.MeasureTheory.OuterMeasure.Induced
+import Mathlib.Topology.Compactness.CompactSystem
 
 /-!
 # Additive Contents
@@ -434,5 +435,132 @@ theorem isSigmaSubadditive_of_addContent_iUnion_eq_tsum (hC : IsSetRing C)
   exact addContent_biUnion_le hC (fun _ _ ↦ hf _)
 
 end IsSetRing
+
+variable {R : Set (Set α)} {s : ℕ → Set α}
+
+namespace IsSetRing
+
+-- `innerRegular` is defined only for a measure, hence we expand the definition to use it with a
+-- content
+lemma tendsto_zero_of_regular_addContent (hR : IsSetRing R) (m : AddContent R)
+    (hs : ∀ n, s n ∈ R) (hs_anti : Antitone s) (hs_Inter : (⋂ n, s n) = ∅)
+    (hC : IsCompactSystem C) (hCR : C ⊆ R)
+    (h_reg : ∀ A (_ : A ∈ R) (ε : ℝ≥0∞) (_ : 0 < ε), ∃ K ∈ C, K ⊆ A ∧ m (A \ K) ≤ ε) :
+    Filter.Tendsto (fun n ↦ m (s n)) Filter.atTop (nhds 0) := by
+  rcases isEmpty_or_nonempty α with hα | hα
+  · simp [Set.eq_empty_of_isEmpty]
+  rw [ENNReal.tendsto_nhds_zero]
+  intro ε hε
+  obtain ⟨δ, hδ_pos, hδ_sum⟩ := ENNReal.exists_pos_sum_of_countable hε.ne' ℕ
+  have h_reg' : ∀ n, ∃ K ∈ C, K ⊆ s n ∧ m (s n \ K) ≤ δ n :=
+    fun n ↦ h_reg (s n) (hs n) (δ n) (mod_cast (hδ_pos n))
+  choose t ht_mem_C ht_subset ht using h_reg'
+  rw [Filter.eventually_atTop]
+  have ht_empty : ⋂ n, t n = ∅ := Set.subset_eq_empty (Set.iInter_mono ht_subset) hs_Inter
+  let S := hC.max_of_empty ht_mem_C ht_empty
+  have hS := hC.iInter_eq_empty ht_mem_C ht_empty
+  let N := hC.max_of_empty ht_mem_C ht_empty
+  have ht_empty' : ∀ n, N ≤ n → ⋂ i ≤ n, t i = ∅ := fun n hn ↦
+    subset_eq_empty (dissipate_subset_dissipate hn) hS
+  refine ⟨N, fun n hn ↦ ?_⟩
+  calc m (s n) = m (⋂ i ≤ n, s i) := by
+        congr
+        exact le_antisymm (le_iInf₂ fun i hi ↦ hs_anti hi)
+          (iInf₂_le (κ := fun i ↦ i ≤ n) (f := fun i _ ↦ s i) n le_rfl)
+    _ = m ((⋂ i ≤ n, s i) \ (⋂ i ≤ n, t i)) := by simp only [ht_empty' n hn, Set.diff_empty]
+    _ ≤ m (⋃ i ≤ n, (s i \ t i)) := by
+        refine addContent_mono hR.isSetSemiring ?_ ?_ ?_
+        · exact hR.diff_mem (hR.iInter_le_mem hs n) (hR.iInter_le_mem (fun i ↦ hCR (ht_mem_C i)) n)
+        · exact hR.iUnion_le_mem (fun i ↦ hR.diff_mem (hs i) (hCR (ht_mem_C i))) n
+        · rw [Set.diff_iInter]
+          refine Set.iUnion_mono (fun i ↦ ?_)
+          by_cases hin : i ≤ n
+          · simp only [hin, Set.iInter_true, Set.iUnion_true]
+            refine Set.diff_subset_diff ?_ subset_rfl
+            exact Set.biInter_subset_of_mem hin
+          · simp only [hin, Set.iInter_of_empty, Set.diff_univ, Set.iUnion_of_empty,
+              Set.empty_subset]
+    _ = m (⋃ i ∈ Finset.range (n + 1), (s i \ t i)) := by simp only [Finset.mem_range_succ_iff]
+    _ ≤ ∑ i ∈ Finset.range (n + 1), m (s i \ t i) :=
+        addContent_biUnion_le hR (fun i _ ↦ hR.diff_mem (hs i) (hCR (ht_mem_C i)))
+    _ ≤ ∑ i ∈ Finset.range (n + 1), (δ i : ℝ≥0∞) := Finset.sum_le_sum (fun i _ ↦ ht i)
+    _ ≤ ∑' i, (δ i : ℝ≥0∞) := ENNReal.sum_le_tsum _
+    _ ≤ ε := hδ_sum.le
+
+lemma addContent_iUnion_eq_sum_of_regular (hR : IsSetRing R) (m : AddContent R)
+    (hm_ne_top : ∀ s ∈ R, m s ≠ ∞)
+    (hC : IsCompactSystem C) (hCR : C ⊆ R)
+    (h_reg : ∀ A ∈ R, ∀ ε, 0 < ε → ∃ K ∈ C, K ⊆ A ∧ m (A \ K) ≤ ε)
+    ⦃f : ℕ → Set α⦄ (hf : ∀ i, f i ∈ R) (hUf : (⋃ i, f i) ∈ R)
+    (h_disj : Pairwise (Function.onFun Disjoint f)) :
+    m (⋃ i, f i) = ∑' i, m (f i) := by
+  refine addContent_iUnion_eq_sum_of_tendsto_zero hR m hm_ne_top ?_ hf hUf h_disj
+  intro s hs hs_anti hs_iInter
+  exact tendsto_zero_of_regular_addContent hR m hs hs_anti hs_iInter hC hCR h_reg
+
+end IsSetRing
+
+namespace IsSetSemiring
+
+theorem addContent_iUnion_eq_sum_of_tendsto_zero (hR : IsSetSemiring R) (m : AddContent C)
+    (hm_ne_top : ∀ s ∈ R, m s ≠ ∞)
+    (hm_tendsto : ∀ ⦃s : ℕ → Finset (Set α)⦄ (_ : ∀ n, (s n).toSet ⊆ R ∧
+      (PairwiseDisjoint (s n).toSet) id),
+      Antitone (fun n ↦ ⋃₀ (s n).toSet) → (⋂ n, ⋃₀(s n).toSet) = ∅ →
+        Tendsto (fun n ↦ ∑ B ∈ s n, m B) atTop (𝓝 0))
+    ⦃f : ℕ → Set α⦄ (hf : ∀ i, f i ∈ R) (hUf : (⋃ i, f i) ∈ R)
+    (h_disj : Pairwise (Disjoint on f)) :
+    m (⋃ i, f i) = ∑' i, m (f i) := by
+  sorry
+  -- We use the continuity of `m` at `∅` on the sequence `n ↦ (⋃ i, f i) \ (set.accumulate f n)`
+  let s : ℕ → Set α := fun n ↦ (⋃ i, f i) \ Set.Accumulate f n
+  have hCs n : s n ∈ C := hC.diff_mem hUf (hC.accumulate_mem hf n)
+  have h_tendsto : Tendsto (fun n ↦ m (s n)) atTop (𝓝 0) := by
+    refine hm_tendsto hCs ?_ ?_
+    · intro i j hij x hxj
+      rw [Set.mem_diff] at hxj ⊢
+      exact ⟨hxj.1, fun hxi ↦ hxj.2 (Set.monotone_accumulate hij hxi)⟩
+    · simp_rw [s, Set.diff_eq]
+      rw [Set.iInter_inter_distrib, Set.iInter_const, ← Set.compl_iUnion, Set.iUnion_accumulate]
+      exact Set.inter_compl_self _
+  have hmsn n : m (s n) = m (⋃ i, f i) - ∑ i ∈ Finset.range (n + 1), m (f i) := by
+    rw [addContent_diff_of_ne_top m hC hm_ne_top hUf (hC.accumulate_mem hf n)
+      (Set.accumulate_subset_iUnion _), addContent_accumulate m hC h_disj hf n]
+  simp_rw [hmsn] at h_tendsto
+  refine tendsto_nhds_unique ?_ (ENNReal.tendsto_nat_tsum fun i ↦ m (f i))
+  refine (Filter.tendsto_add_atTop_iff_nat 1).mp ?_
+  rwa [ENNReal.tendsto_const_sub_nhds_zero_iff (hm_ne_top _ hUf) (fun n ↦ ?_)] at h_tendsto
+  rw [← addContent_accumulate m hC h_disj hf]
+  exact addContent_mono hC.isSetSemiring (hC.accumulate_mem hf n) hUf
+    (Set.accumulate_subset_iUnion _)
+
+
+variable {s : ℕ → Finset (Set α)}
+
+-- `innerRegular` is defined only for a measure, hence we expand the definition to use it with a
+-- content
+lemma tendsto_zero_of_regular_addContent (hR : IsSetSemiring R) (m : AddContent R)
+    (hs : ∀ n, (s n).toSet ⊆ R ∧ PairwiseDisjoint (s n).toSet id)
+      (hs_anti : Antitone (fun n ↦ ⋃₀ (s n).toSet))
+    (hs_Inter : (⋂ n, ⋃₀ (s n).toSet) = ∅)
+    (hC : IsCompactSystem C) (hCR : C ⊆ R)
+    (h_reg : ∀ A (hA : A ∈ R) (ε : ℝ≥0∞) (_ : 0 < ε), ∃ (K : Set α) (hK : K ∈ C),
+    K ⊆ A ∧ ∑ B ∈ hR.disjointOfDiff hA (hCR hK), m (B) ≤ ε) :
+    Filter.Tendsto (fun n ↦ ∑ B ∈ (s n), m B) Filter.atTop (nhds 0) := by
+  sorry
+
+lemma addContent_iUnion_eq_sum_of_regular (hR : IsSetSemiring R) (m : AddContent R)
+    (hm_ne_top : ∀ s ∈ R, m s ≠ ∞)
+    (hC : IsCompactSystem C) (hCR : C ⊆ R)
+    (h_reg : ∀ (A : Set α) (hA : A ∈ R), ∀ ε, 0 < ε → ∃ (K : Set α)
+      (hK : K ∈ C), K ⊆ A ∧ ∑ B ∈ hR.disjointOfDiff hA (hCR hK), m (B) ≤ ε)
+    ⦃f : ℕ → Set α⦄ (hf : ∀ i, f i ∈ R) (hUf : (⋃ i, f i) ∈ R)
+    (h_disj : Pairwise (Disjoint on f)) :
+    m (⋃ i, f i) = ∑' i, m (f i) := by
+  refine addContent_iUnion_eq_sum_of_tendsto_zero hR m hm_ne_top ?_ hf hUf h_disj
+  intro s hs hs_anti hs_iInter
+  exact tendsto_zero_of_regular_addContent hR m hs hs_anti hs_iInter hC hCR h_reg
+
+end IsSetSemiring
 
 end MeasureTheory
