@@ -445,7 +445,6 @@ instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsSc
   smul_assoc k k' f := Subtype.ext <| smul_assoc k k' (f : α →ₘ[μ] E)
 
 instance instIsBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp E p μ) :=
-  -- TODO: add `IsBoundedSMul.of_nnnorm_smul_le`
   IsBoundedSMul.of_norm_smul_le fun r f => by
     suffices ‖r • f‖ₑ ≤ ‖r‖ₑ * ‖f‖ₑ by
       -- squeezed for performance reasons
