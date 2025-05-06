@@ -75,6 +75,7 @@ variable {X₁ X₂ X₃ S : C} {f₁ : X₁ ⟶ S} {f₂ : X₂ ⟶ S} {f₃ : 
 structure ChosenPullback₃ where
   chosenPullback : ChosenPullback h₁₂.p₂ h₂₃.p₁
   p : chosenPullback.pullback ⟶ S := chosenPullback.p₁ ≫ h₁₂.p
+  -- should this be a `LiftStruct` on `p₁` and `p₃`?
   l : h₁₃.LiftStruct (chosenPullback.p₁ ≫ h₁₂.p₁) (chosenPullback.p₂ ≫ h₂₃.p₂) p
   p₁ : chosenPullback.pullback ⟶ X₁ := chosenPullback.p₁ ≫ h₁₂.p₁
   p₃ : chosenPullback.pullback ⟶ X₃ := chosenPullback.p₂ ≫ h₂₃.p₂
