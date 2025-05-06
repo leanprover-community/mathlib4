@@ -18,10 +18,6 @@ the 'unique best' representative of any given equivalence class, where 'best'
 means that the representative can locally near any point `x` be written 'in
 normal form', as `f =ᶠ[𝓝 x] fun z ↦ (z - x) ^ n • g` where `g` is analytic and
 does not vanish at `x`.
-
-## TODO
-
-Establish the analogous notion `MeromorphicNFOn`.
 -/
 
 open Topology WithTop

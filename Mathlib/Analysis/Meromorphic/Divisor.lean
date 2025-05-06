@@ -12,10 +12,6 @@ import Mathlib.Data.LocallyFinsupp
 
 This file defines the divisor of a meromorphic function and proves the most basic lemmas about those
 divisors.
-
-## TODO
-
-- Compatibility with restriction of divisors/functions
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
