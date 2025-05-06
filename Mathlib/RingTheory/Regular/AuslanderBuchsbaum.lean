@@ -322,11 +322,8 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     apply le_sSup
     intro i hi
     by_cases eq0 : i = 0
-    · rw [eq0]
-      --straightly prove hom = 0
-      rw [Ext.addEquiv₀.subsingleton_congr, (ModuleCat.homLinearEquiv (S := R)).subsingleton_congr]
-      show Subsingleton ((Shrink.{v, u} (R ⧸ maximalIdeal R)) →ₗ[R] (Shrink.{v, u} R))
-
+    · rw [eq0, ← finte_free_ext_vanish_iff S.X₁]
+      --consider Ext0 K A^q → Ext0 K A^p injective
       sorry
     · have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
       have : i - 1 < n := by
