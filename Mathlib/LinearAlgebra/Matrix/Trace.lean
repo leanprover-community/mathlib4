@@ -238,7 +238,7 @@ variable {l m n : Type*} {R α : Type*} [DecidableEq l] [DecidableEq m] [Decidab
 variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 
 @[simp]
-theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
+theorem trace_zero (h : i ≠ j) : trace (stdBasisMatrix i j c) = 0 := by
   -- Porting note: added `-diag_apply`
   simp [trace, -diag_apply, h]
 
