@@ -235,8 +235,6 @@ and checking compatibility with unit and multiplication only in the forward dire
 def mkIso' {M N : Mon_ C} (f : M.X ≅ N.X) [IsMon_Hom f.hom] : M ≅ N where
   hom := Hom.mk' f.hom
   inv := Hom.mk' f.inv
-  hom_inv_id := by aesop_cat
-  inv_hom_id := by aesop_cat
 
 /-- Construct an isomorphism of monoids by giving an isomorphism between the underlying objects
 and checking compatibility with unit and multiplication only in the forward direction.
@@ -630,7 +628,7 @@ variable [BraidedCategory C]
 
 @[simps! tensorObj_X tensorHom_hom]
 instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) where
-  tensorObj := fun M N ↦ mk' (M.X ⊗ N.X)
+  tensorObj M N := mk' (M.X ⊗ N.X)
   tensorHom f g := Hom.mk' (f.hom ⊗ g.hom)
   whiskerRight := fun f Y => Hom.mk' (f.hom ▷ Y.X)
   whiskerLeft := fun X _ _ g => Hom.mk' (X.X ◁ g.hom)
