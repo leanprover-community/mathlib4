@@ -16,6 +16,7 @@ This file contains definitions and basic results about Cartan matrices of root p
 ## Main definitions:
  * `RootPairing.Base.cartanMatrix`: the Cartan matrix of a crystallographic root pairing, with
    respect to a base `b`.
+ * `RootPairing.Base.cartanMatrix_nondegenerate`: the Cartan matrix is non-degenerate.
 
 -/
 
@@ -63,8 +64,7 @@ lemma cartanMatrixIn_mul_diagonal_eq {P : RootSystem ι R M N} [P.IsValuedIn S]
   simp [B.two_mul_apply_root_root]
 
 lemma cartanMatrixIn_nondegenerate [IsDomain R] [NeZero (2 : R)] [FaithfulSMul S R] [IsDomain S]
-    {P : RootSystem ι R M N} [P.IsValuedIn S] [Fintype ι] [P.IsAnisotropic] (b : P.Base)
-    [Fintype b.support] :
+    {P : RootSystem ι R M N} [P.IsValuedIn S] [Fintype ι] [P.IsAnisotropic] (b : P.Base) :
     (b.cartanMatrixIn S).Nondegenerate := by
   classical
   obtain ⟨B, hB⟩ : ∃ B : P.InvariantForm, B.form.Nondegenerate :=
@@ -115,7 +115,7 @@ lemma cartanMatrix_mem_of_ne [Finite ι] [IsDomain R] {i j : b.support} (hij : i
   simp [contra, hij, hij.symm]
 
 lemma cartanMatrix_nondegenerate [Finite ι] [IsDomain R]
-    {P : RootSystem ι R M N} [P.IsCrystallographic] (b : P.Base) [Fintype b.support] :
+    {P : RootSystem ι R M N} [P.IsCrystallographic] (b : P.Base) :
     b.cartanMatrix.Nondegenerate :=
   let _i : Fintype ι := Fintype.ofFinite ι
   cartanMatrixIn_nondegenerate ℤ b
