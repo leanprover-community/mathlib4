@@ -169,7 +169,7 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton [IsNoetherianRing R]
 
 -/
 
-universe u v w
+universe w v u
 
 open IsLocalRing LinearMap
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
