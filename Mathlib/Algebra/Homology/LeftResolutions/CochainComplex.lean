@@ -17,23 +17,22 @@ namespace CochainComplex
 
 variable {A : Type*} [Category A] [Abelian A]
   [HasColimitsOfShape ℤ A]
-  (L : Minus A ⥤ Minus A)
+  (L : Minus A ⥤ CochainComplex A ℤ)
 
-noncomputable def leftResolutionObj
-    (K : CochainComplex A ℤ) : CochainComplex A ℤ :=
-  colimit (K.filtrationLEMinus ⋙ L ⋙ Minus.ι _)
+noncomputable def leftResolution : CochainComplex A ℤ ⥤ CochainComplex A ℤ :=
+  filtrationLEMinusFunctor A ⋙ (whiskeringRight _ _ _).obj L ⋙ colim
 
-variable {L} (α : L ⟶ 𝟭 _)
+variable {L} (α : L ⟶ Minus.ι _)
 
-noncomputable def leftResolutionNatTransApp (K : CochainComplex A ℤ) :
-    leftResolutionObj L K ⟶ K :=
-  colimit.desc (K.filtrationLEMinus ⋙ L ⋙ Minus.ι _) (Cocone.mk _
-    { app n := (Minus.ι A).map (α.app _) ≫ K.ιTruncLE n
-      naturality _ _ _ := by
-        dsimp
-        rw [← Functor.map_comp_assoc]
-        simp })
+noncomputable def leftResolutionπ :
+    leftResolution L ⟶ 𝟭 _ :=
+  whiskerLeft _ (whiskerRight ((whiskeringRight _ _ _).map α) _) ≫
+    (Functor.associator _ _ _).inv ≫
+    whiskerRight (filtrationLEMinusFunctorCompWhiskeringRightObjιIso A).hom _ ≫
+    (filtrationLEFunctorCompColimIso A).hom
 
-variable (hα : Minus.quasiIso.functorCategory _ α)
+/-instance quasiIso_leftResolutionπ_app [∀ K, QuasiIso (α.app K)] (K : CochainComplex A ℤ) :
+    QuasiIso ((leftResolutionπ α).app K) := by
+  sorry-/
 
 end CochainComplex

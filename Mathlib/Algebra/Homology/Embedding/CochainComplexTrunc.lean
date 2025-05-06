@@ -17,7 +17,7 @@ open CategoryTheory Category Limits
 namespace CochainComplex
 
 variable {C : Type*} [Category C] [Abelian C]
-  (K : CochainComplex C ℤ)
+  (K L : CochainComplex C ℤ)
 
 instance (n : ℤ) : Mono (K.ιTruncLE n) := by
   dsimp only [ιTruncLE]
@@ -51,6 +51,13 @@ lemma truncLEMapOfLE_ι (n m : ℤ) (h : n ≤ m) :
   rw [← cancel_epi (K.truncLELEIsoOfLE n m h).hom, assoc,
     ιTruncLE_naturality, Iso.hom_inv_id_assoc]
   simp only [truncLELEIsoOfLE_hom]
+
+variable {K L} in
+@[reassoc (attr := simp)]
+lemma truncLEMapOfLE_naturality (f : K ⟶ L) (n m : ℤ) (h : n ≤ m) :
+    truncLEMap f n ≫ L.truncLEMapOfLE n m h =
+      K.truncLEMapOfLE n m h ≫ truncLEMap f m := by
+  simp [← cancel_mono (L.ιTruncLE _)]
 
 @[simps]
 noncomputable def filtrationLE : ℤ ⥤ CochainComplex C ℤ where
@@ -89,5 +96,55 @@ noncomputable def isColimitFiltrationLECocone :
       intro m h
       replace h := leOfHom h
       exact isIso_ιTruncLE_f _ _ _ (by omega)))
+
+variable (C) in
+@[simps]
+noncomputable def filtrationLEFunctor :
+    CochainComplex C ℤ ⥤ ℤ ⥤ CochainComplex C ℤ where
+  obj K := K.filtrationLE
+  map {K L} f := { app n := truncLEMap f n }
+
+variable {K L} in
+noncomputable def mapFiltrationLEMinus (f : K ⟶ L) :
+    K.filtrationLEMinus ⟶ L.filtrationLEMinus :=
+  ((Minus.fullyFaithfulι C).whiskeringRight ℤ).preimage ((filtrationLEFunctor C).map f)
+
+variable {K L} in
+@[simp]
+lemma ι_map_mapFiltrationLEMinus_app (f : K ⟶ L) (n : ℤ) :
+    (Minus.ι _).map ((mapFiltrationLEMinus f).app n) = truncLEMap f n := rfl
+
+variable (C)
+
+@[simps]
+noncomputable def filtrationLEMinusFunctor :
+    CochainComplex C ℤ ⥤ ℤ ⥤ Minus C where
+  obj K := K.filtrationLEMinus
+  map {K L} f := mapFiltrationLEMinus f
+  map_id K := by
+    ext n : 2
+    apply (Minus.ι _).map_injective
+    simp
+  map_comp _ _ := by
+    ext n : 2
+    apply (Minus.ι _).map_injective
+    simp
+
+@[simps!]
+noncomputable def filtrationLEMinusFunctorCompWhiskeringRightObjιIso :
+  filtrationLEMinusFunctor C ⋙ (whiskeringRight _ _ _).obj (Minus.ι C) ≅
+    filtrationLEFunctor C := Iso.refl _
+
+noncomputable def filtrationLEFunctorCompColimIso [HasColimitsOfShape ℤ C] :
+    filtrationLEFunctor C ⋙ colim ≅ 𝟭 (CochainComplex C ℤ) :=
+  NatIso.ofComponents
+    (fun K ↦ IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
+      K.isColimitFiltrationLECocone) (fun f ↦ colimit.hom_ext (by simp))
+
+@[reassoc (attr := simp)]
+lemma ι_filtrationLEFunctorCompColimIso_hom_app (n : ℤ) [HasColimitsOfShape ℤ C] :
+    colimit.ι K.filtrationLE n ≫ (filtrationLEFunctorCompColimIso C).hom.app K =
+      K.ιTruncLE n := by
+  simp [filtrationLEFunctorCompColimIso]
 
 end CochainComplex
