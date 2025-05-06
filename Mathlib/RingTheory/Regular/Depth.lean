@@ -171,7 +171,7 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton [IsNoetherianRing R]
 
 -/
 
-universe u v w
+universe w v u
 
 open IsLocalRing LinearMap
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
@@ -438,10 +438,10 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R) [Small.
         Module.support R N = PrimeSpectrum.zeroLocus ↑I ∧
         ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
         use N
-      exact ((lemma222.{u, v, max u v} I n M (by assumption) (by assumption) smul_lt).out 1 2).mpr
+      exact ((lemma222 I n M (by assumption) (by assumption) smul_lt).out 1 2).mpr
         this
     · have rees :=
-        ((lemma222.{u, v, max u v} I n M (by assumption) (by assumption) smul_lt).out 0 1).mpr h
+        ((lemma222 I n M (by assumption) (by assumption) smul_lt).out 0 1).mpr h
       apply rees N
       simp [Nfin, Nntr, hsupp]
   simp [Ideal.depth, moduleDepth_eq_sup_nat]
@@ -532,11 +532,11 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R) [Sma
       Module.support R N = PrimeSpectrum.zeroLocus ↑I ∧
       ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
       use N
-    rcases ((lemma222.{u, v, max u v} I n M (by assumption) (by assumption) smul_lt).out 2 3).mp
+    rcases ((lemma222 I n M (by assumption) (by assumption) smul_lt).out 2 3).mp
       this with ⟨rs, len, mem, reg⟩
     use rs
   · simp only [← len, ENat.coe_lt_top, Nat.cast_lt, true_and]
-    have rees := ((lemma222.{u, v, max u v} I rs.length M (by assumption) (by assumption)
+    have rees := ((lemma222 I rs.length M (by assumption) (by assumption)
       smul_lt).out 3 0).mp (by use rs)
     apply rees N
     simp [Nntr, Nfin, hsupp]
