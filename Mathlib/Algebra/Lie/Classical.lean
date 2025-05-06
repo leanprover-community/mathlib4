@@ -96,18 +96,62 @@ theorem sl_bracket [Fintype n] (A B : sl n R) : ⁅A, B⁆.val = A.val * B.val -
 
 section ElementaryBasis
 
-variable {n R} [Fintype n] (i j : n)
+variable {n R} [Fintype n] (i j k : n)
 
-/-- When `i ≠ j`, the single-element matrices are elements of `sl n R`, in fact they are part of a
-natural basis of `sl n R`. -/
+/-- When `i ≠ j`, the single-element matrices are elements of `sl n R`.
+
+Along with some elements produced by `singleSubSingle`, these form a natural basis of `sl n R`. -/
 def single (h : i ≠ j) (r : R) : sl n R :=
-  ⟨Matrix.single i j r,
-    show Matrix.single i j r ∈ LinearMap.ker (Matrix.traceLinearMap n R R) from
-      Matrix.trace_single_eq_of_ne i j r h⟩
+  ⟨Matrix.single i j r, Matrix.trace_single_eq_of_ne i j r h⟩
+
+@[deprecated (since := "2025-05-06")] alias Eb := single
 
 @[simp]
 theorem val_single (h : i ≠ j) (r : R) : (single i j h r).val = Matrix.single i j r :=
   rfl
+
+@[simp]
+theorem single_zero (h : i ≠ j) : single i j h (0 : R) = 0 := Subtype.ext <| Matrix.single_zero _ _
+
+@[simp]
+theorem single_add (h : i ≠ j) (r₁ r₂ : R) :
+    single i j h (r₁ + r₂) = single i j h r₁ + single i j h r₂ :=
+  Subtype.ext <| Matrix.single_add _ _ _ _
+
+@[deprecated (since := "2025-05-06")] alias eb_val := val_single
+
+/-- The matrices with matching positive and negative elements on the diagonal are elements of
+`sl n R`. Along with `single`, a subset of these form a basis for `sl n R`. -/
+def singleSubSingle (r : R) : sl n R :=
+  ⟨Matrix.single i i r - Matrix.single j j r, LinearMap.sub_mem_ker_iff.mpr <| by simp⟩
+
+@[simp]
+theorem val_singleSubSingle (r : R) :
+    (singleSubSingle i j r).val = Matrix.single i i r - Matrix.single j j r :=
+  rfl
+
+@[simp]
+theorem singleSubSingle_zero : singleSubSingle i j (0 : R) = 0 := by ext; simp
+
+@[simp]
+theorem singleSubSingle_add (r₁ r₂ : R) :
+    singleSubSingle i j (r₁ + r₂) = singleSubSingle i j r₁ + singleSubSingle i j r₂ := by
+  ext : 1; simp [Matrix.single_add, add_sub_add_comm]
+
+@[simp]
+theorem singleSubSingle_add_singleSubSingle (r : R) :
+    singleSubSingle i j r + singleSubSingle j k r = singleSubSingle i k r := by
+  ext : 1; simp [add_sub_add_comm]
+
+@[simp]
+theorem singleSubSingle_sub_singleSubSingle (r : R) :
+    singleSubSingle i k r - singleSubSingle i j r = singleSubSingle j k r := by
+  ext : 1; simp [add_sub_add_comm]
+
+@[simp]
+theorem singleSubSingle_sub_singleSubSingle' (r : R) :
+    singleSubSingle i k r - singleSubSingle j k r = singleSubSingle i j r := by
+  ext : 1; simp [add_sub_add_comm]
 
 end ElementaryBasis
 
