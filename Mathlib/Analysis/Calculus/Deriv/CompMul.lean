@@ -7,6 +7,14 @@ import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.Deriv.Mul
 
 /-!
+# Derivative of `x ↦ f (cx)`
+
+In this file we prove that the derivative of `fun x ↦ f (c * x)`
+equals `c` times the derivative of `f` evaluated at `c * x`.
+
+Since Mathlib uses `0` as the fallback value for the derivatives whenever they are undefined,
+the theorems in this file require neither differentiability of `f`,
+nor assumptions like `UniqueDiffWithinAt 𝕜 s x`.
 -/
 
 open Set
