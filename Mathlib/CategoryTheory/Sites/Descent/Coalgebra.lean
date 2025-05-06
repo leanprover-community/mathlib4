@@ -38,6 +38,8 @@ namespace Pseudofunctor
 
 variable (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) (Adj Cat)) {X S  : C} (f : X ⟶ S)
 
+-- needs more assumptions about certain "base change" maps being isomorphisms
+-- for the square that are part of the data `sq` and `sq₃`
 def descentDataEquivCoalgebra (sq : ChosenPullback f f) (diag : sq.Diagonal)
   (sq₃ : ChosenPullback₃ sq sq sq) :
     (F.comp Adj.forget₁).DescentData (fun (_ : Unit) ↦ f) ≌
