@@ -549,6 +549,14 @@ theorem Finite.of_finite_image {s : Set α} {f : α → β} (h : (f '' s).Finite
   have := h.to_subtype
   .of_injective _ hi.bijOn_image.bijective.injective
 
+theorem Finite.of_injOn {f : α → β} {s : Set α} {t : Set β} (hm : MapsTo f s t) (hi : InjOn f s)
+    (ht : t.Finite) : s.Finite :=
+  .of_finite_image (ht.subset (image_subset_iff.mpr hm)) hi
+
+theorem BijOn.finite_iff_finite {f : α → β} {s : Set α} {t : Set β} (h : BijOn f s t) :
+    s.Finite ↔ t.Finite :=
+  ⟨fun h1 ↦ h1.of_surjOn _ h.2.2, fun h1 ↦ h1.of_injOn h.1 h.2.1⟩
+
 section preimage
 variable {f : α → β} {s : Set β}
 
