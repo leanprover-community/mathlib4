@@ -11,7 +11,8 @@ import Mathlib.Data.LocallyFinsupp
 # The Divisor of a meromorphic function
 
 This file defines the divisor of a meromorphic function and proves the most basic lemmas about those
-divisors.
+divisors. The lemma `MeromorphicOn.divisor_restrict` guarantees compatibility between restrictions
+of divisors and of meromorphic functions to subsets of their domain of definition.
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
