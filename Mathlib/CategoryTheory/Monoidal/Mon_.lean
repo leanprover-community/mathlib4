@@ -359,7 +359,7 @@ variable (C D)
 @[simps] -- Porting note: added this, not sure how it worked previously without.
 def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where
   obj F := F.mapMon
-  map α := { app := fun A => { hom := α.hom.app A.X } }
+  map α := { app A := { hom := α.hom.app A.X } }
   map_comp _ _ := rfl
 
 end CategoryTheory.Functor
@@ -382,7 +382,7 @@ def monToLaxMonoidalObj (A : Mon_ C) :
 
 instance (A : Mon_ C) : (monToLaxMonoidalObj A).LaxMonoidal where
   ε' := A.one
-  μ' := fun _ _ => A.mul
+  μ' _ _ := A.mul
 
 @[simp]
 lemma monToLaxMonoidalObj_ε (A : Mon_ C) :
@@ -398,7 +398,7 @@ variable (C)
 def monToLaxMonoidal : Mon_ C ⥤ LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C where
   obj A := LaxMonoidalFunctor.of (monToLaxMonoidalObj A)
   map f :=
-    { hom := { app := fun _ => f.hom }
+    { hom := { app _ := f.hom }
       isMonoidal := { } }
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
@@ -629,12 +629,12 @@ variable [BraidedCategory C]
 instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) where
   tensorObj M N := mk' (M.X ⊗ N.X)
   tensorHom f g := Hom.mk' (f.hom ⊗ g.hom)
-  whiskerRight := fun f Y => Hom.mk' (f.hom ▷ Y.X)
-  whiskerLeft := fun X _ _ g => Hom.mk' (X.X ◁ g.hom)
+  whiskerRight f Y := Hom.mk' (f.hom ▷ Y.X)
+  whiskerLeft X _ _ g := Hom.mk' (X.X ◁ g.hom)
   tensorUnit := mk' (𝟙_ C)
-  associator := fun M N P ↦ mkIso' <| associator M.X N.X P.X
-  leftUnitor := fun M ↦ mkIso' <| leftUnitor M.X
-  rightUnitor := fun M ↦ mkIso' <| rightUnitor M.X
+  associator M N P := mkIso' <| associator M.X N.X P.X
+  leftUnitor M := mkIso' <| leftUnitor M.X
+  rightUnitor M := mkIso' <| rightUnitor M.X
 
 @[simp]
 theorem tensorUnit_X : (𝟙_ (Mon_ C)).X = 𝟙_ C := rfl
@@ -700,7 +700,7 @@ variable (C)
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _ }
+      μIso _ _ := Iso.refl _ }
 
 @[simp] theorem forget_ε : ε (forget C) = 𝟙 (𝟙_ C) := rfl
 @[simp] theorem forget_η : «η» (forget C) = 𝟙 (𝟙_ C) := rfl
@@ -758,8 +758,8 @@ end Mon_Class
 namespace Mon_
 
 instance : SymmetricCategory (Mon_ C) where
-  braiding := fun X Y => mkIso' (β_ X.X Y.X)
-  symmetry := fun X Y => by
+  braiding X Y := mkIso' (β_ X.X Y.X)
+  symmetry X Y := by
     ext
     simp [← SymmetricCategory.braiding_swap_eq_inv_braiding]
 
