@@ -110,7 +110,6 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
     ext ⟨⟩ <;> rw [verschiebungFun_coeff] <;>
       simp only [if_true, eq_self_iff_true, zero_coeff, ite_self]
   map_add' := by
-    dsimp
     ghost_calc _ _
     rintro ⟨⟩ <;> ghost_simp
 

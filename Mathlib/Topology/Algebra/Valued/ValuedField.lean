@@ -275,7 +275,6 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     rw [← v.map_zero (R := K), ← Valued.extension_extends (0 : K)]
     rfl
   map_one' := by
-    simp only
     rw [← Completion.coe_one, Valued.extension_extends (1 : K)]
     exact Valuation.map_one _
   map_mul' x y := by

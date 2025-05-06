@@ -114,7 +114,7 @@ namespace GroupExtension
 variable [Group N] [Group E] [Group G] (S : GroupExtension N E G)
 
 /-- The range of the inclusion map is a normal subgroup. -/
-@[to_additive "The range of the inclusion map is a normal additive subgroup." ]
+@[to_additive "The range of the inclusion map is a normal additive subgroup."]
 instance normal_inl_range : S.inl.range.Normal :=
   S.range_inl_eq_ker_rightHom ▸ S.rightHom.normal_ker
 
@@ -320,8 +320,10 @@ variable [Group G] [Group N] (φ : G →* MulAut N)
 
 /-- The group extension associated to the semidirect product -/
 def toGroupExtension : GroupExtension N (N ⋊[φ] G) G where
+  inl := inl
   inl_injective := inl_injective
   range_inl_eq_ker_rightHom := range_inl_eq_ker_rightHom
+  rightHom := rightHom
   rightHom_surjective := rightHom_surjective
 
 theorem toGroupExtension_inl : (toGroupExtension φ).inl = SemidirectProduct.inl := rfl

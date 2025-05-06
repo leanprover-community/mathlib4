@@ -71,7 +71,6 @@ def Cover.pullbackCoverOver : W.Cover P where
     ((PreservesPullback.iso (Over.forget S) (f.asOver S) ((𝒰.map _).asOver S)).inv)
     (PreservesPullback.iso_inv_fst _ _ _) x).mp ((𝒰.pullbackCover f).covers x)
   map_prop j := by
-    dsimp only
     rw [← Over.forget_map, ← PreservesPullback.iso_hom_fst, P.cancel_left_of_respectsIso]
     exact P.pullback_fst _ _ (𝒰.map_prop j)
 
@@ -93,7 +92,6 @@ def Cover.pullbackCoverOver' : W.Cover P where
     ((PreservesPullback.iso (Over.forget S) ((𝒰.map _).asOver S) (f.asOver S)).inv)
     (PreservesPullback.iso_inv_snd _ _ _) x).mp ((𝒰.pullbackCover' f).covers x)
   map_prop j := by
-    dsimp only
     rw [← Over.forget_map, ← PreservesPullback.iso_hom_snd, P.cancel_left_of_respectsIso]
     exact P.pullback_snd _ _ (𝒰.map_prop j)
 

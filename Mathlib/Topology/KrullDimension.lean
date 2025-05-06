@@ -53,9 +53,6 @@ theorem IsClosedEmbedding.topologicalKrullDim_le (f : X → Y) (hf : IsClosedEmb
     topologicalKrullDim X ≤ topologicalKrullDim Y :=
   krullDim_le_of_strictMono _ (IrreducibleCloseds.map_strictMono hf)
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.topologicalKrullDim_le := IsClosedEmbedding.topologicalKrullDim_le
-
 /-- The topological Krull dimension is invariant under homeomorphisms -/
 theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :
     topologicalKrullDim X = topologicalKrullDim Y :=

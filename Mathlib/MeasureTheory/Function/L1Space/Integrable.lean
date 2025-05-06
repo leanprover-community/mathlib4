@@ -114,11 +114,9 @@ theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α 
 
 @[simp]
 lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMeasure μ] {f : α → β} :
-    Integrable f μ := ⟨.of_finite, .of_finite⟩
+    Integrable f μ := ⟨.of_discrete, .of_finite⟩
 
 /-- This lemma is a special case of `Integrable.of_finite`. -/
--- Eternal deprecation for discoverability, don't remove
-@[deprecated Integrable.of_finite (since := "2024-10-05"), nolint deprecatedNoSince]
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
 theorem MemLp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
@@ -412,19 +410,25 @@ theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun
   ⟨hf.aestronglyMeasurable.norm, hf.hasFiniteIntegral.norm⟩
 
 @[fun_prop]
-theorem Integrable.inf {β} [NormedLatticeAddCommGroup β] {f g : α → β} (hf : Integrable f μ)
+theorem Integrable.inf {β}
+    [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+    {f g : α → β} (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⊓ g) μ := by
   rw [← memLp_one_iff_integrable] at hf hg ⊢
   exact hf.inf hg
 
 @[fun_prop]
-theorem Integrable.sup {β} [NormedLatticeAddCommGroup β] {f g : α → β} (hf : Integrable f μ)
+theorem Integrable.sup {β}
+    [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+    {f g : α → β} (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⊔ g) μ := by
   rw [← memLp_one_iff_integrable] at hf hg ⊢
   exact hf.sup hg
 
 @[fun_prop]
-theorem Integrable.abs {β} [NormedLatticeAddCommGroup β] {f : α → β} (hf : Integrable f μ) :
+theorem Integrable.abs {β}
+    [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+    {f : α → β} (hf : Integrable f μ) :
     Integrable (fun a => |f a|) μ := by
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.abs
@@ -464,8 +468,8 @@ theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
 
 /-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
 scalar-valued function by a vector-value function with finite essential supremum is integrable. -/
-theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
-    {f : α → 𝕜} (hf : Integrable f μ) {g : α → β}
+theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
+    [IsBoundedSMul 𝕜 β] {f : α → 𝕜} (hf : Integrable f μ) {g : α → β}
     (g_aestronglyMeasurable : AEStronglyMeasurable g μ) (ess_sup_g : essSup (‖g ·‖ₑ) μ ≠ ∞) :
     Integrable (fun x : α => f x • g x) μ := by
   rw [← memLp_one_iff_integrable] at *
@@ -822,15 +826,17 @@ theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBou
     {f : α → β} (hf : Integrable f μ) : Integrable (c • f) μ :=
   ⟨hf.aestronglyMeasurable.const_smul c, hf.hasFiniteIntegral.smul c⟩
 
-theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β] {c : 𝕜}
-    (hc : IsUnit c) (f : α → β) : Integrable (c • f) μ ↔ Integrable f μ :=
+theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
+    [IsBoundedSMul 𝕜 β] {c : 𝕜} (hc : IsUnit c) (f : α → β) :
+    Integrable (c • f) μ ↔ Integrable f μ :=
   and_congr hc.aestronglyMeasurable_const_smul_iff (hasFiniteIntegral_smul_iff hc f)
 
-theorem integrable_smul_iff [NormedDivisionRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β] {c : 𝕜}
-    (hc : c ≠ 0) (f : α → β) : Integrable (c • f) μ ↔ Integrable f μ :=
+theorem integrable_smul_iff [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 β]
+    [IsBoundedSMul 𝕜 β] {c : 𝕜} (hc : c ≠ 0) (f : α → β) :
+    Integrable (c • f) μ ↔ Integrable f μ :=
   (IsUnit.mk0 _ hc).integrable_smul_iff f
 
-theorem integrable_fun_smul_iff [NormedDivisionRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
+theorem integrable_fun_smul_iff [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
     {c : 𝕜} (hc : c ≠ 0) (f : α → β) :
     Integrable (fun x ↦ c • f x) μ ↔ Integrable f μ :=
   integrable_smul_iff hc f
@@ -1001,7 +1007,7 @@ section restrict
 
 variable {E : Type*} [NormedAddCommGroup E] {f : α → E}
 
-/-- One should usually use `MeasureTheory.Integrable.IntegrableOn` instead. -/
+/-- One should usually use `MeasureTheory.Integrable.integrableOn` instead. -/
 lemma Integrable.restrict (hf : Integrable f μ) {s : Set α} : Integrable f (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 

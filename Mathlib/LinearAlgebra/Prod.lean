@@ -239,6 +239,11 @@ theorem coprod_map_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (S : Su
     rw [← Set.image2_add, Set.image2_image_left, Set.image2_image_right]
     exact Set.image_prod fun m m₂ => f m + g m₂
 
+@[simp]
+theorem coprod_comp_inl_inr (f : M × M₂ →ₗ[R] M₃) :
+    (f.comp (inl R M M₂)).coprod (f.comp (inr R M M₂)) = f := by
+  rw [← comp_coprod, coprod_inl_inr, comp_id]
+
 /-- Taking the product of two maps with the same codomain is equivalent to taking the product of
 their domains.
 
@@ -272,7 +277,7 @@ theorem prod_ext {f g : M × M₂ →ₗ[R] M₃} (hl : f.comp (inl _ _ _) = g.c
     (hr : f.comp (inr _ _ _) = g.comp (inr _ _ _)) : f = g :=
   prod_ext_iff.2 ⟨hl, hr⟩
 
-/-- `prod.map` of two linear maps. -/
+/-- `Prod.map` of two linear maps. -/
 def prodMap (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄) : M × M₂ →ₗ[R] M₃ × M₄ :=
   (f.comp (fst R M M₂)).prod (g.comp (snd R M M₂))
 
@@ -319,8 +324,9 @@ theorem prodMap_zero : (0 : M →ₗ[R] M₂).prodMap (0 : M₃ →ₗ[R] M₄) 
   rfl
 
 @[simp]
-theorem prodMap_smul [Module S M₃] [Module S M₄] [SMulCommClass R S M₃] [SMulCommClass R S M₄]
-    (s : S) (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄) : prodMap (s • f) (s • g) = s • prodMap f g :=
+theorem prodMap_smul [DistribMulAction S M₃] [DistribMulAction S M₄] [SMulCommClass R S M₃]
+    [SMulCommClass R S M₄] (s : S) (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄) :
+    prodMap (s • f) (s • g) = s • prodMap f g :=
   rfl
 
 variable (R M M₂ M₃ M₄)
@@ -528,10 +534,9 @@ def fst : Submodule R (M × M₂) :=
 def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
   -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.1
-  invFun m := ⟨⟨m, 0⟩, by simp only [fst, comap_bot, mem_ker, snd_apply]⟩
-  map_add' := by simp only [coe_add, Prod.fst_add, implies_true]
-  map_smul' := by simp only [SetLike.val_smul, Prod.smul_fst, RingHom.id_apply, Subtype.forall,
-    implies_true]
+  invFun m := ⟨⟨m, 0⟩, by simp [fst]⟩
+  map_add' := by simp
+  map_smul' := by simp
   left_inv := by
     rintro ⟨⟨x, y⟩, hy⟩
     simp only [fst, comap_bot, mem_ker, snd_apply] at hy
@@ -539,16 +544,10 @@ def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
   right_inv := by rintro x; rfl
 
 theorem fst_map_fst : (Submodule.fst R M M₂).map (LinearMap.fst R M M₂) = ⊤ := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): was `tidy`
-  rw [eq_top_iff]; rintro x -
-  simp only [fst, comap_bot, mem_map, mem_ker, snd_apply, fst_apply,
-    Prod.exists, exists_eq_left, exists_eq]
+  aesop
 
 theorem fst_map_snd : (Submodule.fst R M M₂).map (LinearMap.snd R M M₂) = ⊥ := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): was `tidy`
-  rw [eq_bot_iff]; intro x
-  simp only [fst, comap_bot, mem_map, mem_ker, snd_apply, eq_comm, Prod.exists, exists_eq_left,
-    exists_const, mem_bot, imp_self]
+  aesop (add simp fst)
 
 /-- `N` as a submodule of `M × N`. -/
 def snd : Submodule R (M × M₂) :=
@@ -559,10 +558,9 @@ def snd : Submodule R (M × M₂) :=
 def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
   -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.2
-  invFun n := ⟨⟨0, n⟩, by simp only [snd, comap_bot, mem_ker, fst_apply]⟩
-  map_add' := by simp only [coe_add, Prod.snd_add, implies_true]
-  map_smul' := by simp only [SetLike.val_smul, Prod.smul_snd, RingHom.id_apply, Subtype.forall,
-    implies_true]
+  invFun n := ⟨⟨0, n⟩, by simp [snd]⟩
+  map_add' := by simp
+  map_smul' := by simp
   left_inv := by
     rintro ⟨⟨x, y⟩, hx⟩
     simp only [snd, comap_bot, mem_ker, fst_apply] at hx
@@ -570,16 +568,10 @@ def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
   right_inv := by rintro x; rfl
 
 theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = ⊥ := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): was `tidy`
-  rw [eq_bot_iff]; intro x
-  simp only [snd, comap_bot, mem_map, mem_ker, fst_apply, eq_comm, Prod.exists, exists_eq_left,
-    exists_const, mem_bot, imp_self]
+  aesop (add simp snd)
 
 theorem snd_map_snd : (Submodule.snd R M M₂).map (LinearMap.snd R M M₂) = ⊤ := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): was `tidy`
-  rw [eq_top_iff]; rintro x -
-  simp only [snd, comap_bot, mem_map, mem_ker, snd_apply, fst_apply,
-    Prod.exists, exists_eq_right, exists_eq]
+  aesop
 
 theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ := by
   rw [eq_top_iff]
@@ -590,10 +582,7 @@ theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ :=
   · exact Submodule.mem_sup_right (Submodule.mem_comap.mpr (by simp))
 
 theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): was `tidy`
-  rw [eq_bot_iff]; rintro ⟨x, y⟩
-  simp only [fst, comap_bot, snd, mem_inf, mem_ker, snd_apply, fst_apply, mem_bot,
-    Prod.mk_eq_zero, and_comm, imp_self]
+  aesop
 
 theorem le_prod_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} {q : Submodule R (M × M₂)} :
     q ≤ p₁.prod p₂ ↔ map (LinearMap.fst R M M₂) q ≤ p₁ ∧ map (LinearMap.snd R M M₂) q ≤ p₂ := by
@@ -723,21 +712,29 @@ variable {module_M₃ : Module R M₃} {module_M₄ : Module R M₄}
 variable (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄)
 
 /-- Product of linear equivalences; the maps come from `Equiv.prodCongr`. -/
-protected def prod : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
+protected def prodCongr : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
   { e₁.toAddEquiv.prodCongr e₂.toAddEquiv with
     map_smul' := fun c _x => Prod.ext (e₁.map_smulₛₗ c _) (e₂.map_smulₛₗ c _) }
 
-theorem prod_symm : (e₁.prod e₂).symm = e₁.symm.prod e₂.symm :=
+@[deprecated (since := "2025-04-17")] alias prod := LinearEquiv.prodCongr
+
+theorem prodCongr_symm : (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
   rfl
+
+@[deprecated (since := "2025-04-17")] alias prod_symm := prodCongr_symm
 
 @[simp]
-theorem prod_apply (p) : e₁.prod e₂ p = (e₁ p.1, e₂ p.2) :=
+theorem prodCongr_apply (p) : e₁.prodCongr e₂ p = (e₁ p.1, e₂ p.2) :=
   rfl
 
+@[deprecated (since := "2025-04-17")] alias prod_apply := prodCongr_apply
+
 @[simp, norm_cast]
-theorem coe_prod :
-    (e₁.prod e₂ : M × M₃ →ₗ[R] M₂ × M₄) = (e₁ : M →ₗ[R] M₂).prodMap (e₂ : M₃ →ₗ[R] M₄) :=
+theorem coe_prodCongr :
+    (e₁.prodCongr e₂ : M × M₃ →ₗ[R] M₂ × M₄) = (e₁ : M →ₗ[R] M₂).prodMap (e₂ : M₃ →ₗ[R] M₄) :=
   rfl
+
+@[deprecated (since := "2025-04-17")] alias coe_prod := coe_prodCongr
 
 end
 

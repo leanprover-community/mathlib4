@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!
 # Extra lemmas about intervals

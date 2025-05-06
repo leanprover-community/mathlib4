@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Kexing Ying
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 import Mathlib.MeasureTheory.Function.UniformIntegrable
-import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 
 /-!
 
@@ -157,7 +157,7 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   by_contra h
   change μ _ ≠ 0 at h
   simp only [← zero_lt_iff, Set.compl_def, Set.mem_setOf_eq, not_le] at h
-  suffices (μ {x | ↑R < |(μ[f|m]) x|}).toReal * ↑R < (μ {x | ↑R < |(μ[f|m]) x|}).toReal * ↑R by
+  suffices μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R < μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R by
     exact this.ne rfl
   refine lt_of_lt_of_le (setIntegral_gt_gt R.coe_nonneg ?_ h.ne') ?_
   · exact integrable_condExp.abs.integrableOn

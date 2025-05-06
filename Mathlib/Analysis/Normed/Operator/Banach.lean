@@ -198,7 +198,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     calc
       ‖x‖ ≤ ∑' n, ‖u n‖ := norm_tsum_le_tsum_norm sNu
       _ ≤ ∑' n, (1 / 2) ^ n * (C * ‖y‖) :=
-        tsum_le_tsum ule sNu (Summable.mul_right _ summable_geometric_two)
+        sNu.tsum_le_tsum ule <| Summable.mul_right _ summable_geometric_two
       _ = (∑' n, (1 / 2) ^ n) * (C * ‖y‖) := tsum_mul_right
       _ = 2 * C * ‖y‖ := by rw [tsum_geometric_two, mul_assoc]
       _ ≤ 2 * C * ‖y‖ + ‖y‖ := le_add_of_nonneg_right (norm_nonneg y)

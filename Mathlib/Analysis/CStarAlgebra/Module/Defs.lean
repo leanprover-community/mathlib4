@@ -81,7 +81,7 @@ section general
 variable {A E : Type*} [NonUnitalRing A] [StarRing A] [AddCommGroup E] [Module ℂ A]
   [Module ℂ E] [PartialOrder A] [SMul A E] [Norm A] [Norm E] [CStarModule A E]
 
-local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
+local notation "⟪" x ", " y "⟫" => inner A x y
 
 @[simp]
 lemma inner_add_left {x y z : E} : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ := by
@@ -154,7 +154,7 @@ section norm
 variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [AddCommGroup E]
   [Module ℂ E] [SMul A E] [Norm E] [CStarModule A E]
 
-local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
+local notation "⟪" x ", " y "⟫" => inner A x y
 
 open scoped InnerProductSpace in
 /-- The norm associated with a Hilbert C⋆-module. It is not registered as a norm, since a type

@@ -83,7 +83,7 @@ theorem map_subtype_of_cycleType (m : Multiset ℕ) :
 variable (α) in
 /-- The cardinality of even permutations of given `cycleType` -/
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
-    #({ g |  g.val.cycleType = m} : Finset (alternatingGroup α)) *
+    #{g : alternatingGroup α |  g.val.cycleType = m} *
         ((Fintype.card α - m.sum)! * m.prod * (∏ n ∈ m.toFinset, (m.count n)!)) =
           if ((m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) ∧ Even (m.sum + Multiset.card m))
           then (Fintype.card α)!
@@ -96,7 +96,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
 variable (α) in
 /-- The cardinality of even permutations of given `cycleType` -/
 theorem card_of_cycleType (m : Multiset ℕ) :
-    (Finset.univ.filter fun g : alternatingGroup α => (g : Equiv.Perm α).cycleType = m).card =
+    #{g : alternatingGroup α | (g : Equiv.Perm α).cycleType = m} =
       if (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) ∧ Even (m.sum + Multiset.card m) then
         (Fintype.card α)! /
           ((Fintype.card α - m.sum)! *
@@ -119,7 +119,7 @@ theorem card_of_cycleType (m : Multiset ℕ) :
 open Fintype in
 /-- The number of cycles of given length -/
 lemma card_of_cycleType_singleton {n : ℕ} (hn : 2 ≤ n) (hα : n ≤ card α) :
-    #({g | g.val.cycleType = {n}} : Finset (alternatingGroup α)) =
+    #{g : alternatingGroup α | g.val.cycleType = {n}} =
       if Odd n then (n - 1)! * (choose (card α) n) else 0 := by
   rw [← card_map, map_subtype_of_cycleType, apply_ite Finset.card]
   simp only [Multiset.sum_singleton, Multiset.card_singleton, Finset.card_empty]
