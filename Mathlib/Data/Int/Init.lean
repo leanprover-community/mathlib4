@@ -82,7 +82,7 @@ It is used as the default induction principle for the `induction` tactic.
     suffices ∀ n : ℕ, p (-n) from this (i + 1)
     intro n; induction n with
     | zero => simp [hz]
-    | succ n ih => simpa [Int.natCast_succ, Int.neg_add, Int.sub_eq_add_neg] using hn _ ih
+    | succ n ih => simpa [natCast_succ, Int.neg_add, Int.sub_eq_add_neg] using hn _ ih
 
 section inductionOn'
 
