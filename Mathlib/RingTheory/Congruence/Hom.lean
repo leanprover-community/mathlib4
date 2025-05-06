@@ -25,7 +25,7 @@ quotient ring
 -/
 
 
-variable (R : Type*) {N : Type*} {P : Type*}
+variable (R : Type*) {N : Type*} {P : Type*} {F : Type*}
 
 open Function Setoid
 
@@ -36,15 +36,18 @@ namespace RingCon
 section Semiring
 
 variable [NonAssocSemiring R] [NonAssocSemiring N] [NonAssocSemiring P] {c : RingCon R}
+variable [FunLike F R P] [RingHomClass F R P]
 
 /-- The kernel of a ring homomorphism as a congruence relation. -/
-def ker (f : R →+* P) : RingCon R where
-  __ := Setoid.ker f
-  __ := Con.ker f.toMonoidHom
-  __ := AddCon.ker f.toAddMonoidHom
+def ker (f : F) : RingCon R where
+  __ := Con.ker f
+  __ := AddCon.ker f
+
+@[norm_cast]
+theorem ker_coeRingHom (f : F) : ker (f : R →+*P) = ker f := rfl
 
 /-- The definition of the congruence relation defined by a ring homomorphism's kernel. -/
-theorem ker_rel (f : R →+* P) {x y} : ker f x y ↔ f x = f y :=
+theorem ker_rel (f : F) {x y} : ker f x y ↔ f x = f y :=
   Iff.rfl
 
 variable (c)
@@ -60,14 +63,14 @@ def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient where
 variable (x y : R)
 
 /-- The kernel of the natural homomorphism from a ring to its quotient by a congruence
-    relation `c` equals `c`. -/
+relation `c` equals `c`. -/
 theorem mk'_ker : ker c.mk' = c :=
   ext fun _ _ => c.eq
 
 variable {c}
 
 /-- The natural homomorphism from a ring to its quotient by a congruence relation is
-    surjective. -/
+surjective. -/
 theorem mk'_surjective : Surjective c.mk' :=
   Quotient.mk''_surjective
 
@@ -77,15 +80,15 @@ theorem coe_mk' : (c.mk' : R → c.Quotient) = ((↑) : R → c.Quotient) :=
 theorem ker_apply {f : R →+* P} {x y} : ker f x y ↔ f x = f y := Iff.rfl
 
 /-- Given a ring homomorphism `f : N → R` and a congruence relation `c` on `R`, the congruence
-    relation induced on `N` by `f` equals the kernel of `c`'s quotient homomorphism composed with
-    `f`. -/
+relation induced on `N` by `f` equals the kernel of `c`'s quotient homomorphism composed with
+`f`. -/
 theorem comap_eq {f : N →+* R} : comap c f = ker (c.mk'.comp f) :=
   ext fun x y => show c _ _ ↔ c.mk' _ = c.mk' _ by rw [← c.eq]; rfl
 
 variable (c) (f : R →+* P)
 
 /-- The homomorphism on the quotient of a ring by a congruence relation `c` induced by a
-    homomorphism constant on `c`'s equivalence classes. -/
+homomorphism constant on `c`'s equivalence classes. -/
 def lift (H : c ≤ ker f) : c.Quotient →+* P where
   toFun x := (RingCon.liftOn x f) fun _ _ h => H h
   map_zero' := by rw [← f.map_zero]; rfl
@@ -107,14 +110,14 @@ theorem lift_coe (H : c ≤ ker f) (x : R) : c.lift f H x = f x :=
 theorem lift_comp_mk' (H : c ≤ ker f) : (c.lift f H).comp c.mk' = f := by ext; rfl
 
 /-- Given a homomorphism `f` from the quotient of a ring by a congruence relation, `f` equals the
-    homomorphism on the quotient induced by `f` composed with the natural map from the ring to
-    the quotient. -/
+homomorphism on the quotient induced by `f` composed with the natural map from the ring to
+the quotient. -/
 theorem lift_apply_mk' (f : c.Quotient →+* P) :
     (c.lift (f.comp c.mk') fun x y h => show f ↑x = f ↑y by rw [c.eq.2 h]) = f := by
   ext x; rcases x with ⟨⟩; rfl
 
 /-- Homomorphisms on the quotient of a ring by a congruence relation are equal if they
-    are equal on elements that are coercions from the ring. -/
+are equal on elements that are coercions from the ring. -/
 theorem lift_funext (f g : c.Quotient →+* P) (h : ∀ a : R, f a = g a) : f = g := by
   rw [← lift_apply_mk' f, ← lift_apply_mk' g]
   congr 1
@@ -128,7 +131,7 @@ theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →+* P) (Hg : g.comp c.mk
     rfl
 
 /-- Surjective ring homomorphisms constant on a congruence relation `c`'s equivalence classes
-    induce a surjective homomorphism on `c`'s quotient. -/
+induce a surjective homomorphism on `c`'s quotient. -/
 theorem lift_surjective_of_surjective (h : c ≤ ker f) (hf : Surjective f) :
     Surjective (c.lift f h) := fun y =>
   (Exists.elim (hf y)) fun w hw => ⟨w, (lift_mk' h w).symm ▸ hw⟩
@@ -136,7 +139,7 @@ theorem lift_surjective_of_surjective (h : c ≤ ker f) (hf : Surjective f) :
 variable (c f)
 
 /-- Given a ring homomorphism `f` from `R` to `P`, the kernel of `f` is the unique congruence
-    relation on `R` whose induced map from the quotient of `R` to `P` is injective. -/
+relation on `R` whose induced map from the quotient of `R` to `P` is injective. -/
 theorem ker_eq_lift_of_injective (H : c ≤ ker f) (h : Injective (c.lift f H)) : ker f = c :=
   toCon_injective <| Con.toSetoid_inj <| Setoid.ker_eq_lift_of_injective f H h
 
@@ -149,7 +152,7 @@ def kerLift : (ker f).Quotient →+* P :=
 variable {f}
 
 /-- The diagram described by the universal property for quotients of rings, when the congruence
-    relation is the kernel of the homomorphism, commutes. -/
+relation is the kernel of the homomorphism, commutes. -/
 theorem kerLift_mk (x : R) : kerLift f x = f x :=
   rfl
 
@@ -158,13 +161,13 @@ theorem kerLift_injective (f : R →+* P) : Injective (kerLift f) := fun x y =>
   Quotient.inductionOn₂' x y fun _ _ => (ker f).eq.2
 
 /-- Given congruence relations `c, d` on a ring such that `d` contains `c`, `d`'s quotient
-    map induces a homomorphism from the quotient by `c` to the quotient by `d`. -/
+map induces a homomorphism from the quotient by `c` to the quotient by `d`. -/
 def map (c d : RingCon R) (h : c ≤ d) : c.Quotient →+* d.Quotient :=
   (c.lift d.mk') fun x y hc => show (ker d.mk') x y from (mk'_ker d).symm ▸ h hc
 
 /-- Given congruence relations `c, d` on a ring such that `d` contains `c`, the definition of
-    the homomorphism from the quotient by `c` to the quotient by `d` induced by `d`'s quotient
-    map. -/
+the homomorphism from the quotient by `c` to the quotient by `d` induced by `d`'s quotient
+map. -/
 theorem map_apply {c d : RingCon R} (h : c ≤ d) (x) :
     c.map d h x = c.lift d.mk' (fun _ _ hc => d.eq.2 <| h hc) x :=
   rfl
