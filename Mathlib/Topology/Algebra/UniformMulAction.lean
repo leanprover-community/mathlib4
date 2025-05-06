@@ -170,7 +170,7 @@ theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·
 instance : UniformContinuousConstSMul M (Completion X) :=
   ⟨fun _ => uniformContinuous_map⟩
 
-@[to_additive instVAddAssocClass]
+@[to_additive]
 instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
     [UniformContinuousConstSMul N X] [IsScalarTower M N X] : IsScalarTower M N (Completion X) :=
   ⟨fun m n x => by

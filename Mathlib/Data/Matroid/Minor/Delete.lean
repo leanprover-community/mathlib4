@@ -23,7 +23,8 @@ This is often quite convenient.
 
 # Main Declarations
 
-* `Matroid.delete M D`, written `M ＼ D`, is the restriction of `M` to the set `M.E \ D`.
+* `Matroid.delete M D`, written `M ＼ D`, is the restriction of `M` to the set `M.E \ D`,
+  or equivalently the matroid on `M.E \ D` whose independent sets are the `M`-independent sets.
 
 # Naming conventions
 

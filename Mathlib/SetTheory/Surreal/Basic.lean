@@ -370,7 +370,7 @@ noncomputable instance : LinearOrder Surreal :=
     le_total := by
       rintro ⟨⟨x, ox⟩⟩ ⟨⟨y, oy⟩⟩
       exact or_iff_not_imp_left.2 fun h => (PGame.not_le.1 h).le oy ox
-    decidableLE := Classical.decRel _ }
+    toDecidableLE := Classical.decRel _ }
 
 instance : AddMonoidWithOne Surreal :=
   AddMonoidWithOne.unary
