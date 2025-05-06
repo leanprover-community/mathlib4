@@ -152,12 +152,12 @@ noncomputable def monoidalCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify 
   inferInstanceAs (MonoidalCategory
     (LocalizedMonoidal (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)))
 
+attribute [local instance] monoidalCategory
+
 /-- The monoidal category structure on `Sheaf J A` obtained in `Sheaf.monoidalCategory` is
 braided when `A` is braided. -/
 noncomputable def braidedCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A]
-    [BraidedCategory A] :
-    letI := monoidalCategory J A
-    BraidedCategory (Sheaf J A) :=
+    [BraidedCategory A] : BraidedCategory (Sheaf J A) :=
   inferInstanceAs (BraidedCategory
     (LocalizedMonoidal (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)))
 
@@ -165,20 +165,16 @@ noncomputable def braidedCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J
 symmetric when `A` is symmetric. -/
 noncomputable def symmetricCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A]
     [SymmetricCategory A] :
-    letI := monoidalCategory J A
     SymmetricCategory (Sheaf J A) :=
   inferInstanceAs (SymmetricCategory
     (LocalizedMonoidal (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)))
 
 noncomputable instance [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] :
-    letI := monoidalCategory J A
     (presheafToSheaf J A).Monoidal :=
   inferInstanceAs (Localization.Monoidal.toMonoidalCategory
     (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)).Monoidal
 
-noncomputable instance [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A]
-    [BraidedCategory A] :
-    letI := monoidalCategory J A
+noncomputable instance [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] [BraidedCategory A] :
     letI := braidedCategory J A
     (presheafToSheaf J A).Braided :=
   inferInstanceAs (Localization.Monoidal.toMonoidalCategory
@@ -195,7 +191,6 @@ noncomputable example
     [HasWeakSheafify J A] [MonoidalClosed A] [BraidedCategory A]
     [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasFunctorEnrichedHom A F₁ F₂]
     [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasEnrichedHom A F₁ F₂] :
-    letI := monoidalCategory J A
     BraidedCategory (Sheaf J A) :=
   braidedCategory J A
 
@@ -203,7 +198,6 @@ noncomputable example
     [HasWeakSheafify J A] [MonoidalClosed A] [SymmetricCategory A]
     [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasFunctorEnrichedHom A F₁ F₂]
     [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasEnrichedHom A F₁ F₂] :
-    letI := monoidalCategory J A
     SymmetricCategory (Sheaf J A) :=
   symmetricCategory J A
 

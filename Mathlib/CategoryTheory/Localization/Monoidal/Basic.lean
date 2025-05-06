@@ -430,4 +430,23 @@ noncomputable instance : (toMonoidalCategory L W ε).Monoidal :=
       left_unitality Y := leftUnitor_hom_app L W ε Y
       right_unitality X := rightUnitor_hom_app L W ε X }
 
+local notation "L'" => toMonoidalCategory L W ε
+
+lemma associator_hom (X Y Z : C) : (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).hom =
+    (Functor.LaxMonoidal.μ (L') X Y) ▷ (L').obj Z ≫
+      (Functor.LaxMonoidal.μ (L') (X ⊗ Y) Z) ≫
+        (L').map (α_ X Y Z).hom ≫
+          (Functor.OplaxMonoidal.δ (L') X (Y ⊗ Z)) ≫
+            ((L').obj X) ◁ (Functor.OplaxMonoidal.δ (L') Y Z) := by
+  simp
+
+lemma associator_inv (X Y Z : C) : (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).inv =
+    (L').obj X ◁ (Functor.LaxMonoidal.μ (L') Y Z) ≫
+      (Functor.LaxMonoidal.μ (L') X (Y ⊗ Z)) ≫
+        (L').map (α_ X Y Z).inv ≫
+          (Functor.OplaxMonoidal.δ (L') (X ⊗ Y) Z) ≫
+            (Functor.OplaxMonoidal.δ (L') X Y) ▷ ((L').obj Z) := by
+  simp
+
+
 end CategoryTheory
