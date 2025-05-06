@@ -226,6 +226,10 @@ theorem smul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts (algebraMap R S)) :
   rw [mem_lifts_iff_mem_alg] at hp ⊢
   exact Subalgebra.smul_mem (mapAlg R S).range hp r
 
+theorem monic_of_monic_mapAlg [FaithfulSMul R S] {p : Polynomial R} (hp : (mapAlg R S p).Monic) :
+    p.Monic :=
+  monic_of_injective (FaithfulSMul.algebraMap_injective R S) hp
+
 end Algebra
 
 end Polynomial

@@ -82,7 +82,7 @@ theorem val_mul' {m n : ZMod 0} : (m * n).val = m.val * n.val :=
 theorem val_natCast (n a : ℕ) : (a : ZMod n).val = a % n := by
   cases n
   · rw [Nat.mod_zero]
-    exact Int.natAbs_ofNat a
+    exact Int.natAbs_natCast a
   · apply Fin.val_natCast
 
 lemma val_natCast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
@@ -106,6 +106,9 @@ instance charP (n : ℕ) : CharP (ZMod n) n where
     rcases n with - | n
     · simp [zero_dvd_iff, Int.natCast_eq_zero]
     · exact Fin.natCast_eq_zero
+
+-- Verify that `grind` can see that `ZMod n` has characteristic `n`.
+example (n : ℕ) : Lean.Grind.IsCharP (ZMod n) n := inferInstance
 
 @[simp]
 theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=
@@ -255,7 +258,7 @@ theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
   · simp; rfl
   change Fin (n + 1) at a b
   change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
-  simp only [Fin.val_add_eq_ite, Int.ofNat_succ, Int.ofNat_le]
+  simp only [Fin.val_add_eq_ite, Int.natCast_succ, Int.ofNat_le]
   norm_cast
   split_ifs with h
   · rw [Nat.cast_sub h]
@@ -919,7 +922,7 @@ theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
 @[simp]
 theorem natAbs_mod_two (a : ℤ) : (a.natAbs : ZMod 2) = a := by
   cases a
-  · simp only [Int.natAbs_ofNat, Int.cast_natCast, Int.ofNat_eq_coe]
+  · simp only [Int.natAbs_natCast, Int.cast_natCast, Int.ofNat_eq_coe]
   · simp only [neg_eq_self_mod_two, Nat.cast_succ, Int.natAbs, Int.cast_negSucc]
 
 theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
@@ -1052,7 +1055,7 @@ theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (
   apply hl.trans
   rw [← add_le_add_iff_right x.natAbs]
   refine le_trans (le_trans ((add_le_add_iff_left _).2 hl) ?_) (Int.natAbs_sub_le _ _)
-  rw [add_sub_cancel_right, Int.natAbs_mul, Int.natAbs_ofNat]
+  rw [add_sub_cancel_right, Int.natAbs_mul, Int.natAbs_natCast]
   refine le_trans ?_ (Nat.le_mul_of_pos_right _ <| Int.natAbs_pos.2 hm)
   rw [← mul_two]; apply Nat.div_mul_le_self
 
@@ -1243,13 +1246,13 @@ section Group
 variable {α : Type*} [Group α] {n : ℕ}
 
 -- TODO: Without the `existing`, `to_additive` chokes on `Inv (ZMod n)`.
-@[to_additive (attr := simp) existing nsmul_zmod_val_inv_nsmul]
+@[to_additive existing (attr := simp) nsmul_zmod_val_inv_nsmul]
 lemma pow_zmod_val_inv_pow (hn : (Nat.card α).Coprime n) (a : α) :
     (a ^ (n⁻¹ : ZMod (Nat.card α)).val) ^ n = a := by
   rw [← pow_mul', ← pow_mod_natCard, ← ZMod.val_natCast, Nat.cast_mul, ZMod.mul_val_inv hn.symm,
     ZMod.val_one_eq_one_mod, pow_mod_natCard, pow_one]
 
-@[to_additive (attr := simp) existing zmod_val_inv_nsmul_nsmul]
+@[to_additive existing (attr := simp) zmod_val_inv_nsmul_nsmul]
 lemma pow_pow_zmod_val_inv (hn : (Nat.card α).Coprime n) (a : α) :
     (a ^ n) ^ (n⁻¹ : ZMod (Nat.card α)).val = a := by rw [pow_right_comm, pow_zmod_val_inv_pow hn]
 

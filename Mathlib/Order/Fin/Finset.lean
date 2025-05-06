@@ -42,7 +42,7 @@ section
 variable (a b : α) (hab : a < b)
 
 /-- This is the order isomorphism from `Fin 2` to a finset `{a, b}` when `a < b`. -/
-noncomputable def orderIsoPair  :
+noncomputable def orderIsoPair :
     Fin 2 ≃o ({a, b} : Finset α) :=
   StrictMono.orderIsoOfSurjective ![⟨a, by simp⟩, ⟨b, by simp⟩]
     (strictMono_vecEmpty.vecCons hab) (fun ⟨x, hx⟩ ↦ by

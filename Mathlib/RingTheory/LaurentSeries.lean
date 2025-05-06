@@ -335,7 +335,7 @@ theorem coeff_coe (i : ℤ) :
       if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
   · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_lt,
-      Int.natAbs_ofNat]
+      Int.natAbs_natCast]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
       Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
@@ -454,12 +454,10 @@ theorem coe_smul (r : F) : ((r • f : RatFunc F) : F⸨X⸩) = r • (f : F⸨X
 -- even though `single 1 1` is a bundled function application, not a "real" coercion
 @[simp]
 theorem coe_X : ((X : RatFunc F) : F⸨X⸩) = single 1 1 := by
-  rw [coe_num_denom, num_X, denom_X, Polynomial.coe_X, -- Porting note: removed `coe_C`
-     Polynomial.coe_one,
-     PowerSeries.coe_one, div_one]
-  simp only [ofPowerSeries_X]  -- Porting note: added
+  rw [coe_num_denom, num_X, denom_X, Polynomial.coe_X, Polynomial.coe_one, PowerSeries.coe_one,
+    div_one, ofPowerSeries_X]
 
-theorem single_one_eq_pow {R : Type _} [Semiring R] (n : ℕ) :
+theorem single_one_eq_pow {R : Type*} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   induction' n with n h_ind
   · simp

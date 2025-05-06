@@ -351,6 +351,12 @@ theorem gcd_eq_zero_iff [GCDMonoid α] (a b : α) : gcd a b = 0 ↔ a = 0 ∧ b 
     rw [ha, hb, ← zero_dvd_iff]
     apply dvd_gcd <;> rfl
 
+theorem gcd_ne_zero_of_left [GCDMonoid α] {a b : α} (ha : a ≠ 0) : gcd a b ≠ 0 := by
+  simp_all
+
+theorem gcd_ne_zero_of_right [GCDMonoid α] {a b : α} (hb : b ≠ 0) : gcd a b ≠ 0 := by
+  simp_all
+
 @[simp]
 theorem gcd_one_left [NormalizedGCDMonoid α] (a : α) : gcd 1 a = 1 :=
   dvd_antisymm_of_normalize_eq (normalize_gcd _ _) normalize_one (gcd_dvd_left _ _) (one_dvd _)
@@ -822,11 +828,11 @@ instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
     have hgcd : g₁.gcd = g₂.gcd := by
       ext a b
       refine associated_iff_eq.mp (associated_of_dvd_dvd ?_ ?_) <;>
-      apply_rules (config := { allowSynthFailures := true }) [dvd_gcd, gcd_dvd_left, gcd_dvd_right]
+      apply_rules +allowSynthFailures [dvd_gcd, gcd_dvd_left, gcd_dvd_right]
     have hlcm : g₁.lcm = g₂.lcm := by
       ext a b
       refine associated_iff_eq.mp (associated_of_dvd_dvd ?_ ?_) <;>
-      apply_rules (config := { allowSynthFailures := true }) [lcm_dvd, dvd_lcm_left, dvd_lcm_right]
+      apply_rules +allowSynthFailures [lcm_dvd, dvd_lcm_left, dvd_lcm_right]
     cases g₁
     cases g₂
     dsimp only at hgcd hlcm

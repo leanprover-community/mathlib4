@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # Cyclotomic extensions of `ℚ` are totally complex number fields.

@@ -13,10 +13,11 @@ import Mathlib.RingTheory.MvPowerSeries.LexOrder
 a multivariate power series whose constant coefficient is not a zero divisor
 is itself not a zero divisor
 
-## TODO
+##  Instance
 
-* A subsequent PR https://github.com/leanprover-community/mathlib4/pull/14571 proves that if `R` has
-  no zero divisors, then so does `MvPowerSeries σ R`.
+If `R` has `NoZeroDivisors`, then so does `MvPowerSeries σ R`.
+
+## TODO
 
 * Transfer/adapt these results to `HahnSeries`.
 

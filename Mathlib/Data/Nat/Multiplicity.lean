@@ -141,7 +141,7 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   revert hm
   have h4 : ∀ m ∈ Ico (p * n + 1) (p * (n + 1)), emultiplicity p m = 0 := by
     intro m hm
-    rw [emultiplicity_eq_zero, ← not_dvd_iff_between_consec_multiples _ hp.pos]
+    rw [emultiplicity_eq_zero, not_dvd_iff_between_consec_multiples _ hp.pos]
     rw [mem_Ico] at hm
     exact ⟨n, lt_of_succ_le hm.1, hm.2⟩
   simp_rw [← prod_Ico_id_eq_factorial, Finset.emultiplicity_prod hp', ← sum_Ico_consecutive _ h1 h3,
