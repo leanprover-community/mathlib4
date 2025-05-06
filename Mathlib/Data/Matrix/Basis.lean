@@ -227,8 +227,8 @@ section
 variable [Zero α] (i j : n) (c : α)
 
 @[simp]
-theorem diag_single_of_ne (h : j ≠ i) : diag (single i j c) = 0 :=
-  funext fun _ => if_neg fun ⟨e₁, e₂⟩ => h (e₂.trans e₁.symm)
+theorem diag_single_of_ne (h : i ≠ j) : diag (single i j c) = 0 :=
+  funext fun _ => if_neg fun ⟨e₁, e₂⟩ => h (e₁.trans e₂.symm)
 
 @[deprecated (since := "2025-05-05")] alias StdBasisMatrix.diag_zero := diag_single_of_ne
 
