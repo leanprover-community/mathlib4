@@ -92,7 +92,9 @@ A local solution to the ODE, consisting of the function, its domain (an open int
 and a proof that it satisfies the `IsODESolution` predicate.
 -/
 structure LocalODESolution where
+  /-- The function `f` which locally solves the ODE. -/
   protected f : ℝ → E
+  /-- The open interval `I` on which `f` solves the ODE. -/
   protected I : Set ℝ
   protected property : IsODESolution v t₀ x₀ f I
 
