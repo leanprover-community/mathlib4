@@ -130,10 +130,9 @@ theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     rintro ⟨i, j⟩
     simp only [Function.comp_apply, Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp]
     rw [trace_eq_matrix_trace R b, toMatrix_dualTensorHom]
-    by_cases hij : i = j
-    · rw [hij]
-      simp
-    rw [Matrix.StdBasisMatrix.trace_zero j i (1 : R) hij]
+    obtain rfl | hij := eq_or_ne i j
+    · simp
+    rw [Matrix.StdBasisMatrix.trace_zero j i (1 : R) hij.symm]
     simp [Finsupp.single_eq_pi_single, hij]
 
 /-- The trace of a linear map corresponds to the contraction pairing under the isomorphism
