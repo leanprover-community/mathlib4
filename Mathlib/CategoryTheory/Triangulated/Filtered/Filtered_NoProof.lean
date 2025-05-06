@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.Triangulated.Lemmas
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -420,21 +421,38 @@ section Truncation
 -- Prop A.1.3 (i)
 -- First sentence.
 
-def truncLE (n : ℤ) : C ⥤ C := sorry
+instance LE_reflective (n : ℤ) : Reflective (fullSubcategoryInclusion
+    (FilteredTriangulated.LE (C := C) n).P) := sorry
+
+instance GE_coreflective (n : ℤ) : Coreflective (fullSubcategoryInclusion
+    (FilteredTriangulated.GE (C := C) n).P) := sorry
+
+def truncLE (n : ℤ) : C ⥤ C := reflector (fullSubcategoryInclusion
+    (FilteredTriangulated.LE (C := C) n).P) ⋙ (fullSubcategoryInclusion
+    (FilteredTriangulated.LE (C := C) n).P)
 -- The "left adjoint" of the inclusion.
 
-def truncGE (n : ℤ) : C ⥤ C := sorry
+def truncGE (n : ℤ) : C ⥤ C := coreflector (fullSubcategoryInclusion
+    (FilteredTriangulated.GE (C := C) n).P) ⋙ (fullSubcategoryInclusion
+    (FilteredTriangulated.GE (C := C) n).P)
 -- The "right adjoint" of the inclusion.
 
 instance (X : C) (n : ℤ) : IsLE ((truncLE n).obj X) n := sorry
 
 instance (X : C) (n : ℤ) : IsGE ((truncGE n).obj X) n := sorry
 
-def truncLEπ (n : ℤ) : 𝟭 _ ⟶ truncLE (C := C) n := sorry
--- Unit of the "adjunction".
+def essImage_of_LE (X : C) (n : ℤ) [IsLE X n] : (fullSubcategoryInclusion
+    (FilteredTriangulated.LE (C := C) n).P).essImage X := sorry
 
-instance truncLEπ_iso_of_LE (X : C) (n : ℤ) [IsLE X n] : IsIso ((truncLEπ n).app X) := sorry
+def essImage_of_GE (X : C) (n : ℤ) [IsGE X n] : (fullSubcategoryInclusion
+    (FilteredTriangulated.GE (C := C) n).P).essImage X := sorry
 
+def truncLEπ (n : ℤ) : 𝟭 _ ⟶ truncLE (C := C) n :=
+  (reflectorAdjunction (fullSubcategoryInclusion (FilteredTriangulated.LE (C := C) n).P)).unit
+-- Unit of the adjunction.
+
+instance truncLEπ_iso_of_LE (X : C) (n : ℤ) [IsLE X n] : IsIso ((truncLEπ n).app X) :=
+  Functor.essImage.unit_isIso (essImage_of_LE X n)
 
 noncomputable def descTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsLE Y n] :
     (truncLE n).obj X ⟶ Y := sorry
@@ -443,11 +461,13 @@ noncomputable def descTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsLE Y n] :
 lemma π_descTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsLE Y n] :
     (truncLEπ n).app X ≫ descTruncLE f n = f := sorry
 
+def truncGEι (n : ℤ) : truncGE (C := C) n ⟶ 𝟭 _ :=
+  (coreflectorAdjunction (fullSubcategoryInclusion
+  (FilteredTriangulated.GE (C := C) n).P)).counit
+-- Counit of the adjunction.
 
-def truncGEι (n : ℤ) : truncGE (C := C) n ⟶ 𝟭 _ := sorry
--- Counit of the "adjunction".
-
-instance truncGEι_iso_of_GE (X : C) (n : ℤ) [IsGE X n] : IsIso ((truncGEι n).app X) := sorry
+instance truncGEι_iso_of_GE (X : C) (n : ℤ) [IsGE X n] : IsIso ((truncGEι n).app X) :=
+  Functor.essImage.counit_isIso (essImage_of_GE X n)
 
 def liftTruncGE {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsGE X n] :
     X ⟶ (truncGE n).obj Y := sorry
@@ -466,7 +486,7 @@ instance (n : ℤ) : (truncGE (C := C) n).CommShift ℤ := sorry
 
 instance (n : ℤ) : (truncGE (C := C) n).IsTriangulated := sorry
 
--- The truncation functors preserves the subcategories `hCP.LE m` and `hCP.GE m` for
+-- The truncation functors preserve the subcategories `hCP.LE m` and `hCP.GE m` for
 -- every `m : ℤ`.
 
 instance (n m : ℤ) (X : C) [IsLE X m] : IsLE ((truncLE n).obj X) m := sorry
@@ -487,14 +507,14 @@ def truncLEGEIsoGELE (a b : ℤ) : truncLEGE (C := C) a b ≅ truncGELE a b := s
 
 lemma truncLEGEIsoGELE_comm (a b : ℤ) :
     truncGEι (C := C) b ≫ truncLEπ a =
-    whiskerLeft (truncGE b) (truncLEπ a) ≫ (truncLEGEIsoGELE a b).hom ≫
+    whiskerLeft (truncGE b) (truncLEπ a) ≫ (truncLEGEIsoGELE b a).hom ≫
     whiskerLeft (truncLE a) (truncGEι b) := sorry
 
 lemma truncLEGEIsoGELE_uniq {a b : ℤ} {X : C}
-    {f : (truncLEGE a b).obj X ⟶ (truncGELE a b).obj X}
+    {f : (truncLEGE b a).obj X ⟶ (truncGELE b a).obj X}
     (comm : (truncGEι b).app X ≫ (truncLEπ a).app X =
     (truncLEπ a).app ((truncGE b).obj X) ≫ f ≫ (truncGEι b).app ((truncLE a).obj X)) :
-    f = (truncLEGEIsoGELE a b).hom.app X := sorry
+    f = (truncLEGEIsoGELE b a).hom.app X := sorry
 
 -- Prop A.1.3 (iii) but with general indices
 
