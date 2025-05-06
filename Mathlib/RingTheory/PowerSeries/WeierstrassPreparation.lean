@@ -39,20 +39,26 @@ such ring has only on maximal ideal, and hence such ring is a complete local rin
 
 ## Main results
 
-- `PowerSeries.exists_isWeierstrassDivision`: **Weierstrass division**: let `f`, `g` be power
-  series over a complete local ring, such that the image of `g` in the residue field is not zero.
+- `PowerSeries.exists_isWeierstrassDivision`: **Weierstrass division**
+  ([washington_cyclotomic], Proposition 7.2): let `f`, `g` be power series
+  over a complete local ring, such that the image of `g` in the residue field is not zero.
   Let `n` be the order of the image of `g` in the residue field. Then there exists a power series
   `q` and a polynomial `r` of degree `< n`, such that `f = g * q + r`.
 
 - `PowerSeries.IsWeierstrassDivision.elim`: The `q` and `r` in the Weierstrass division is unique.
 
-- `PowerSeries.exists_isWeierstrassFactorization`: **Weierstrass preparation theorem**: let `g` be
-  a power series over a complete local ring, such that the image of `g` in the residue field is
+- `PowerSeries.exists_isWeierstrassFactorization`: **Weierstrass preparation theorem**
+  ([washington_cyclotomic], Theorem 7.3): let `g` be a power series
+  over a complete local ring, such that the image of `g` in the residue field is
   not zero. Then there exists a distinguished polynomial `f` and a power series `h`
   which is a unit, such that `g = f * h`.
 
 - `PowerSeries.IsWeierstrassFactorization.elim`: The `f` and `h` in Werierstrass preparation
   theorem is unique.
+
+## References
+
+- [Washington, Lawrence C. *Introduction to cyclotomic fields.*][washington_cyclotomic]
 
 -/
 
@@ -367,7 +373,8 @@ end WeierstrassDivisionData
 
 end
 
-/-- **Weierstrass division**: let `f`, `g` be power series over a complete local ring, such that
+/-- **Weierstrass division** ([washington_cyclotomic], Proposition 7.2): let `f`, `g` be
+power series over a complete local ring, such that
 the image of `g` in the residue field is not zero. Let `n` be the order of the image of `g` in the
 residue field. Then there exists a power series `q` and a polynomial `r` of degree `< n`, such that
 `f = g * q + r`. -/
@@ -610,7 +617,8 @@ variable [IsAdicComplete (IsLocalRing.maximalIdeal A) A] (g : A⟦X⟧)
   (hg : g.map (IsLocalRing.residue A) ≠ 0)
 include hg
 
-/-- **Weierstrass preparation theorem**: let `g` be a power series over a complete local ring,
+/-- **Weierstrass preparation theorem** ([washington_cyclotomic], Theorem 7.3):
+let `g` be a power series over a complete local ring,
 such that the image of `g` in the residue field is not zero. Then there exists a distinguished
 polynomial `f` and a power series `h` which is a unit, such that `g = f * h`. -/
 theorem exists_isWeierstrassFactorization : ∃ f h, g.IsWeierstrassFactorization f h := by
