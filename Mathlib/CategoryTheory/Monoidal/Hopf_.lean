@@ -62,23 +62,35 @@ A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped wit
 -/
 structure Hopf_ where
   /-- The underlying bimonoid of a Hopf monoid. -/
-  X : Bimon_ C
-  /-- The antipode is an endomorphism of the underlying object of the Hopf monoid. -/
-  antipode : X.X.X ⟶ X.X.X
-  antipode_left : X.comul.hom ≫ (antipode ▷ X.X.X) ≫ X.X.mul = X.counit.hom ≫ X.X.one
-  antipode_right : X.comul.hom ≫ (X.X.X ◁ antipode) ≫ X.X.mul = X.counit.hom ≫ X.X.one
+  X : C
+  [hopf : Hopf_Class X]
+  -- /-- The antipode is an endomorphism of the underlying object of the Hopf monoid. -/
+  -- antipode : X.X.X ⟶ X.X.X
+  -- antipode_left : X.comul.hom ≫ (antipode ▷ X.X.X) ≫ X.X.mul = X.counit.hom ≫ X.X.one
+  -- antipode_right : X.comul.hom ≫ (X.X.X ◁ antipode) ≫ X.X.mul = X.counit.hom ≫ X.X.one
 
-attribute [reassoc (attr := simp)] Hopf_.antipode_left Hopf_.antipode_right
+-- attribute [reassoc (attr := simp)] Hopf_.antipode_left Hopf_.antipode_right
 
-namespace Hopf_Class
+attribute [instance] Hopf_.hopf
+
+namespace Hopf_
 
 -- open scoped Hopf_Class
+
+variable {C}
+
+def toBimon_ (A : Hopf_ C) : Bimon_ C := .mk' A.X
 
 /--
 Morphisms of Hopf monoids are just morphisms of the underlying bimonoids.
 In fact they automatically intertwine the antipodes, proved below.
 -/
-instance : Category (Hopf_ C) := inferInstanceAs <| Category (InducedCategory (Bimon_ C) Hopf_.X)
+instance : Category (Hopf_ C) :=
+  inferInstanceAs <| Category (InducedCategory (Bimon_ C) Hopf_.toBimon_)
+
+end Hopf_
+
+namespace Hopf_Class
 
 variable {C}
 
@@ -92,8 +104,7 @@ theorem hom_antipode {A B : C} [Hopf_Class A] [Hopf_Class B] (f : A ⟶ B) [IsBi
     (M := Conv A B)
     (a := f)
   · rw [Conv.mul_eq, Conv.one_eq]
-    simp only [Bimon_.toComon__obj_X, Bimon_.toComon__obj_comul, comp_whiskerRight, Category.assoc,
-      Bimon_.toComon__obj_counit]
+    simp only [comp_whiskerRight, Category.assoc]
     slice_lhs 3 4 =>
       rw [← whisker_exchange]
     slice_lhs 2 3 =>
@@ -105,8 +116,7 @@ theorem hom_antipode {A B : C} [Hopf_Class A] [Hopf_Class B] (f : A ⟶ B) [IsBi
     slice_lhs 1 2 =>
       rw [IsComon_Hom.hom_counit]
   · rw [Conv.mul_eq, Conv.one_eq]
-    simp only [Bimon_.toComon__obj_X, Bimon_.toComon__obj_comul, MonoidalCategory.whiskerLeft_comp,
-      Category.assoc, Bimon_.toComon__obj_counit]
+    simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc]
     slice_lhs 2 3 =>
       rw [← whisker_exchange]
     slice_lhs 3 4 =>
@@ -230,7 +240,7 @@ theorem antipode_comul₂ (A : C) [Hopf_Class A] :
     rw [← BraidedCategory.hexagon_reverse_assoc, Iso.inv_hom_id_assoc,
       ← BraidedCategory.braiding_naturality_left]
     simp only [MonoidalCategory.whiskerLeft_comp]
-  rw [Comon_Class.comul_assoc_flip_hom_assoc, Iso.inv_hom_id_assoc]
+  rw [Comon_Class.comul_assoc_flip_assoc, Iso.inv_hom_id_assoc]
   slice_lhs 2 3 =>
     simp only [← MonoidalCategory.whiskerLeft_comp]
     rw [Comon_Class.comul_assoc]
@@ -441,15 +451,15 @@ theorem mul_antipode (A : C) [Hopf_Class A] :
   · -- Unfold the algebra structure in the convolution monoid,
     -- then `simp?, simp only [tensor_μ], simp?`.
     rw [Conv.mul_eq, Conv.one_eq]
-    simp only [Comon_.instComon_ClassTensorObj_comul, whiskerRight_tensor, comp_whiskerRight,
-      Category.assoc, Comon_.instComon_ClassTensorObj_counit]
+    simp only [Comon_.tensorObj_comul, whiskerRight_tensor, comp_whiskerRight, Category.assoc,
+      Comon_.tensorObj_counit]
     simp only [tensorμ]
     simp only [Category.assoc, pentagon_hom_inv_inv_inv_inv_assoc]
     exact mul_antipode₁ A
   · rw [Conv.mul_eq, Conv.one_eq]
-    simp only [Comon_.instComon_ClassTensorObj_comul, whiskerRight_tensor,
+    simp only [Comon_.tensorObj_comul, whiskerRight_tensor,
       BraidedCategory.braiding_naturality_assoc, MonoidalCategory.whiskerLeft_comp, Category.assoc,
-      Comon_.instComon_ClassTensorObj_counit]
+      Comon_.tensorObj_counit]
     simp only [tensorμ]
     simp only [Category.assoc, pentagon_hom_inv_inv_inv_inv_assoc]
     exact mul_antipode₂ A

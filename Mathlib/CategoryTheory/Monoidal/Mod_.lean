@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory MonoidalCategory
+open CategoryTheory MonoidalCategory Mon_Class
 
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 variable {C}
@@ -23,8 +23,8 @@ structure Mod_ (A : Mon_ C) where
   X : C
   /-- The action morphism of the module object -/
   act : A.X ⊗ X ⟶ X
-  one_act : (A.one ▷ X) ≫ act = (λ_ X).hom := by aesop_cat
-  assoc : (A.mul ▷ X) ≫ act = (α_ A.X A.X X).hom ≫ (A.X ◁ act) ≫ act := by aesop_cat
+  one_act : η ▷ X ≫ act = (λ_ X).hom := by aesop_cat
+  assoc : μ ▷ X ≫ act = (α_ A.X A.X X).hom ≫ A.X ◁ act ≫ act := by aesop_cat
 
 attribute [reassoc (attr := simp)] Mod_.one_act Mod_.assoc
 
@@ -33,7 +33,7 @@ namespace Mod_
 variable {A : Mon_ C} (M : Mod_ A)
 
 theorem assoc_flip :
-    (A.X ◁ M.act) ≫ M.act = (α_ A.X A.X M.X).inv ≫ (A.mul ▷ M.X) ≫ M.act := by simp
+    A.X ◁ M.act ≫ M.act = (α_ A.X A.X M.X).inv ≫ μ ▷ M.X ≫ M.act := by simp
 
 /-- A morphism of module objects. -/
 @[ext]
@@ -79,7 +79,7 @@ variable (A)
 @[simps]
 def regular : Mod_ A where
   X := A.X
-  act := A.mul
+  act := μ
 
 instance : Inhabited (Mod_ A) :=
   ⟨regular A⟩

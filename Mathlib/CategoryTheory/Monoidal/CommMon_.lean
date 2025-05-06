@@ -20,28 +20,36 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [Braide
 variable (C) in
 /-- A commutative monoid object internal to a monoidal category.
 -/
-structure CommMon_ extends Mon_ C where
-  mul_comm : (β_ _ _).hom ≫ mul = mul := by aesop_cat
+structure CommMon_ where
+  X : C
+  [mon : Mon_Class X]
+  [comm : IsCommMon X]
+  -- mul_comm : (β_ _ _).hom ≫ μ[X] = μ[X] := by aesop_cat
 
-attribute [reassoc (attr := simp)] CommMon_.mul_comm
+-- attribute [reassoc (attr := simp)] CommMon_.mul_comm
+
+attribute [instance] CommMon_.mon CommMon_.comm
 
 namespace CommMon_
 
-/-- Construct an object of `CommMon_ C` from an object `X : C` a `Mon_Class X` instance
-and a `IsCommMon X` instance. -/
-def mk' (X : C) [Mon_Class X] [IsCommMon X] : CommMon_ C where
-  __ := Mon_.mk' X
-  mul_comm := IsCommMon.mul_comm X
+-- /-- Construct an object of `CommMon_ C` from an object `X : C` a `Mon_Class X` instance
+-- and a `IsCommMon X` instance. -/
+-- def mk' (X : C) [Mon_Class X] [IsCommMon X] : CommMon_ C where
+--   __ := Mon_.mk X
+--   mul_comm := IsCommMon.mul_comm X
 
-instance (X : CommMon_ C) : IsCommMon X.X where
-  mul_comm' := X.mul_comm
+-- instance (X : CommMon_ C) : IsCommMon X.X where
+--   mul_comm' := X.mul_comm
+
+@[simps X]
+def toMon_ (A : CommMon_ C) : Mon_ C := { X := A.X }
 
 variable (C) in
 /-- The trivial commutative monoid object. We later show this is initial in `CommMon_ C`.
 -/
 @[simps!]
-def trivial : CommMon_ C :=
-  { Mon_.trivial C with mul_comm := by dsimp; rw [braiding_leftUnitor, unitors_equal] }
+def trivial : CommMon_ C := { X := 𝟙_ C }
+  -- { Mon_.trivial C with mul_comm := by dsimp; rw [braiding_leftUnitor, unitors_equal] }
 
 instance : Inhabited (CommMon_ C) :=
   ⟨trivial C⟩
@@ -92,11 +100,11 @@ instance : (forget₂Mon_ C).Full := InducedCategory.full _
 instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
 
 @[simp]
-theorem forget₂Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
+theorem forget₂Mon_obj_one (A : CommMon_ C) : η[((forget₂Mon_ C).obj A).X] = η[A.X] :=
   rfl
 
 @[simp]
-theorem forget₂Mon_obj_mul (A : CommMon_ C) : ((forget₂Mon_ C).obj A).mul = A.mul :=
+theorem forget₂Mon_obj_mul (A : CommMon_ C) : μ[((forget₂Mon_ C).obj A).X] = μ[A.X] :=
   rfl
 
 @[simp]
@@ -121,8 +129,8 @@ end
 
 section
 
-variable {M N : CommMon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := by aesop_cat)
-  (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul := by aesop_cat)
+variable {M N : CommMon_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
+  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ[N.X] := by aesop_cat)
 
 /-- Constructor for isomorphisms in the category `CommMon_ C`. -/
 def mkIso : M ≅ N :=
@@ -155,9 +163,10 @@ That is, a lax braided functor `F : C ⥤ D` induces a functor `CommMon_ C ⥤ C
 def mapCommMon (F : C ⥤ D) [F.LaxBraided] : CommMon_ C ⥤ CommMon_ D where
   obj A :=
     { F.mapMon.obj A.toMon_ with
-      mul_comm := by
-        dsimp
-        rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] }
+      comm :=
+        { mul_comm' := by
+            dsimp
+            rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
   map f := F.mapMon.map f
 
 variable (C) (D)
@@ -192,8 +201,8 @@ def commMonToLaxBraidedObj (A : CommMon_ C) :
     Discrete PUnit.{u + 1} ⥤ C := (Functor.const _).obj A.X
 
 instance (A : CommMon_ C) : (commMonToLaxBraidedObj A).LaxMonoidal where
-  ε' := A.one
-  μ' := fun _ _ => A.mul
+  ε' := η[A.X]
+  μ' _ _ := μ[A.X]
 
 open Functor.LaxMonoidal
 
@@ -224,6 +233,16 @@ def unitIso :
   NatIso.ofComponents
     (fun F ↦ LaxBraidedFunctor.isoOfComponents (fun _ ↦ F.mapIso (eqToIso (by ext))))
     (fun f ↦ by ext ⟨⟨⟩⟩; dsimp; simp)
+
+@[simp]
+theorem counitIso_aux_one (A : CommMon_ C) :
+    η[((commMonToLaxBraided C ⋙ laxBraidedToCommMon C).obj A).X] = η[A.X] ≫ 𝟙 _ :=
+  rfl
+
+@[simp]
+theorem counitIso_aux_mul (A : CommMon_ C) :
+    μ[((commMonToLaxBraided C ⋙ laxBraidedToCommMon C).obj A).X] = μ[A.X] ≫ 𝟙 _ :=
+  rfl
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]

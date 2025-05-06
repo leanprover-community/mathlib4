@@ -113,14 +113,14 @@ theorem toComon_forget : toComon_ C ⋙ Comon_.forget C = forget C := rfl
 
 variable {C} in
 /-- The object level part of the forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
+@[simps]
 def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
   X := (toComon_ C).obj M
-  one := { hom := η[M.X.X] }
-  mul :=
-  { hom := μ[M.X.X],
-    hom_comul := by dsimp; simp [tensor_μ] }
-
-attribute [simps] toMon_Comon_obj -- We add this after the fact to avoid a timeout.
+  mon :=
+    { one := { hom := η[M.X.X] }
+      mul :=
+        { hom := μ[M.X.X],
+          hom_comul := by dsimp; simp [tensor_μ] } }
 
 /-- The forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
@@ -138,7 +138,7 @@ example {X₁ X₂ : Comon_ C} (f : X₁ ⟶ X₂) (X : Comon_ C) : (f ▷ X).ho
   rfl
 
 -- set_option trace.profiler true in
-@[simps! (config := {isSimp := false}) one mul]
+@[simps (config := {isSimp := false}) one mul]
 instance (M : Comon_ C) [Mon_Class M] : Mon_Class M.X where
   one := η[M].hom
   mul := μ[M].hom
@@ -161,25 +161,35 @@ def ofMon_Comon_objAux (M : Mon_ (Comon_ C)) : Bimon_Class M.X.X where
   -- mul := μ[M]
   -- comul := Δ[M.X.X]
   -- counit := ε[M.X.X]
-  one_comul' := by
-    dsimp
-    simp [instMon_ClassXOfComon__one]
+  one_comul' := by dsimp [instMon_ClassXOfComon__one]; simp
   mul_comul' := by dsimp [instMon_ClassXOfComon__mul]; simp
   mul_counit' := by dsimp [instMon_ClassXOfComon__mul]; simp
   one_counit' := by dsimp [instMon_ClassXOfComon__one]; simp
+
+@[simps! X]
+def ofMon_Comon_objX (M : Mon_ (Comon_ C)) : Mon_ C := (Comon_.forget C).mapMon.obj M
+
+@[simp]
+theorem ofMon_Comon_objX_one (M : Mon_ (Comon_ C)) :
+    η[(ofMon_Comon_objX M).X] = 𝟙 (𝟙_ C) ≫ η[M.X].hom :=
+  rfl
+
+@[simp]
+theorem ofMon_Comon_objX_mul (M : Mon_ (Comon_ C)) :
+    μ[(ofMon_Comon_objX M).X] = 𝟙 (M.X.X ⊗ M.X.X) ≫ μ[M.X].hom :=
+  rfl
 
 /-- The object level part of the backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
 def ofMon_Comon_obj (M : Mon_ (Comon_ C)) : Bimon_ C where
   X := (Comon_.forget C).mapMon.obj M
-  counit := {
-    hom := ε[M.X.X]
-    one_hom := by dsimp; simp only [Category.id_comp, IsComon_Hom.hom_counit,
-      Comon_Class.instTensorUnit_counit]
-     }
-  comul :=
-  { hom := Δ[M.X.X]
-    mul_hom := by dsimp; simp [tensorμ] }
+  comon :=
+    { counit :=
+        { hom := ε[M.X.X] }
+
+      comul :=
+        { hom := Δ[M.X.X]
+          mul_hom := by dsimp; simp [tensorμ] } }
 
 variable (C) in
 /-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
@@ -194,10 +204,10 @@ def ofMon_Comon_ : Mon_ (Comon_ C) ⥤ Bimon_ C where
 --     ((toMon_Comon_ C).obj ((ofMon_Comon_ C).obj M)).X.X = M.X.X := by
 --   rfl
 
-@[simp]
-theorem toComon_MonCat_ofComon_Mon_X_X (M N : Mon_ (Comon_ C)) (f : M ⟶ N) :
-    ((toMon_Comon_ C).map ((ofMon_Comon_ C).map f)).hom.hom = f.hom.hom := by
-  rfl
+-- @[simp]
+-- theorem toComon_MonCat_ofComon_Mon_X_X (M N : Mon_ (Comon_ C)) (f : M ⟶ N) :
+--     ((toMon_Comon_ C).map ((ofMon_Comon_ C).map f)).hom.hom = f.hom.hom := by
+--   rfl
 
 -- instance (M : Bimon_ C) : IsMon_Hom (Iso.refl M.X.X).hom :=
 --   inferInstanceAs (IsMon_Hom (𝟙 M.X.X))
@@ -341,7 +351,7 @@ theorem Bimon_ClassAux_comul (M : Bimon_ C) :
     Δ[M.X.X] = Δ[M.X].hom :=
   Category.comp_id _
 
-@[simps!?]
+@[simps counit comul]
 instance (M : Bimon_ C) : Bimon_Class M.X.X where
   counit := ε[M.X].hom
   comul := Δ[M.X].hom
@@ -362,7 +372,7 @@ theorem one_comul (M : C) [Bimon_Class M] :
 @[reassoc]
 theorem mul_counit (M : C) [Bimon_Class M] :
     μ[M] ≫ ε[M] = (ε[M] ⊗ ε[M]) ≫ (λ_ _).hom := by
-  simp only [Bimon_Class.mul_counit, Comon_.instComon_ClassTensorObj_counit]
+  simp only [Bimon_Class.mul_counit, Comon_.tensorObj_counit]
 
 /-- Compatibility of the monoid and comonoid structures, in terms of morphisms in `C`. -/
 @[reassoc (attr := simp)] theorem compatibility (M : C) [Bimon_Class M] :
@@ -376,5 +386,15 @@ theorem mul_counit (M : C) [Bimon_Class M] :
 
 set_option linter.hashCommand false in
 #string_diagram compatibility
+
+@[simps X]
+def mk'Aux (X : C) [Bimon_Class X] : Mon_ C := { X := X }
+
+@[simps]
+def mk' (X : C) [Bimon_Class X] : Bimon_ C where
+  X := mk'Aux X
+  comon :=
+    { counit := { hom := (ε : X ⟶ 𝟙_ C) }
+      comul := { hom := (Δ : X ⟶ X ⊗ X) } }
 
 end Bimon_

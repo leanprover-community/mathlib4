@@ -13,28 +13,45 @@ import Mathlib.CategoryTheory.Monoidal.CommMon_
 universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory Category Limits MonoidalCategory ChosenFiniteProducts Mon_ Grp_ CommMon_
+open Mon_Class
 
 variable (C : Type u₁) [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C]
 
 /-- A commutative group object internal to a cartesian monoidal category. -/
-structure CommGrp_ extends Grp_ C, CommMon_ C where
+structure CommGrp_ where
+  X : C
+  [grp : Grp_Class X]
+  [comm : IsCommMon X]
+-- extends Grp_ C, CommMon_ C where
 
-/-- Turn a commutative group object into a commutative monoid object. -/
-add_decl_doc CommGrp_.toCommMon_
+-- /-- Turn a commutative group object into a commutative monoid object. -/
+-- add_decl_doc CommGrp_.toCommMon_
 
-attribute [reassoc (attr := simp)] CommGrp_.mul_comm
+-- attribute [reassoc (attr := simp)] CommGrp_.mul_comm
+
+attribute [instance] CommGrp_.grp CommGrp_.comm
 
 namespace CommGrp_
 
+variable {C}
+
+@[simps X]
+def toGrp_ (A : CommGrp_ C) : Grp_ C := ⟨A.X⟩
+
+@[simps X]
+def toCommMon_ (A : CommGrp_ C) : CommMon_ C := ⟨A.X⟩
+
+@[simps X]
+def toMon_ (A : CommGrp_ C) : Mon_ C := ⟨A.X⟩
+
+variable (C) in
 /-- The trivial commutative group object. -/
 @[simps!]
-def trivial : CommGrp_ C :=
-  { Grp_.trivial C with mul_comm := by simpa using unitors_equal.symm }
+def trivial : CommGrp_ C := { X := 𝟙_ C }
+  -- { Grp_.trivial C with mul_comm := by simpa using unitors_equal.symm }
 
 instance : Inhabited (CommGrp_ C) where
   default := trivial C
-
-variable {C}
 
 instance : Category (CommGrp_ C) :=
   InducedCategory.category CommGrp_.toGrp_
@@ -53,11 +70,11 @@ theorem hom_ext {A B : CommGrp_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :
   Mon_.Hom.ext h
 
 @[simp]
-lemma id' (A : CommGrp_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
+lemma id' (A : CommGrp_ C) : (𝟙 A : A ⟶ A) = 𝟙 A := rfl
 
 @[simp]
 lemma comp' {A₁ A₂ A₃ : CommGrp_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
-    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
+    ((f ≫ g : A₁ ⟶ A₃) : A₁ ⟶ A₃) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
 
 section
 
@@ -69,17 +86,17 @@ def forget₂Grp_ : CommGrp_ C ⥤ Grp_ C :=
 
 /-- The forgetful functor from commutative group objects to group objects is fully faithful. -/
 def fullyFaithfulForget₂Grp_ : (forget₂Grp_ C).FullyFaithful :=
-    fullyFaithfulInducedFunctor _
+  fullyFaithfulInducedFunctor _
 
 instance : (forget₂Grp_ C).Full := InducedCategory.full _
 instance : (forget₂Grp_ C).Faithful := InducedCategory.faithful _
 
 @[simp]
-theorem forget₂Grp_obj_one (A : CommGrp_ C) : ((forget₂Grp_ C).obj A).one = A.one :=
+theorem forget₂Grp_obj_one (A : CommGrp_ C) : η[((forget₂Grp_ C).obj A).X] = η[A.X] :=
   rfl
 
 @[simp]
-theorem forget₂Grp_obj_mul (A : CommGrp_ C) : ((forget₂Grp_ C).obj A).mul = A.mul :=
+theorem forget₂Grp_obj_mul (A : CommGrp_ C) : μ[((forget₂Grp_ C).obj A).X] = μ[A.X] :=
   rfl
 
 @[simp]
@@ -93,17 +110,17 @@ def forget₂CommMon_ : CommGrp_ C ⥤ CommMon_ C :=
 /-- The forgetful functor from commutative group objects to commutative monoid objects is fully
 faithful. -/
 def fullyFaithfulForget₂CommMon_ : (forget₂CommMon_ C).FullyFaithful :=
-    fullyFaithfulInducedFunctor _
+  fullyFaithfulInducedFunctor _
 
 instance : (forget₂CommMon_ C).Full := InducedCategory.full _
 instance : (forget₂CommMon_ C).Faithful := InducedCategory.faithful _
 
 @[simp]
-theorem forget₂CommMon_obj_one (A : CommGrp_ C) : ((forget₂CommMon_ C).obj A).one = A.one :=
+theorem forget₂CommMon_obj_one (A : CommGrp_ C) : η[((forget₂CommMon_ C).obj A).X] = η[A.X] :=
   rfl
 
 @[simp]
-theorem forget₂CommMon_obj_mul (A : CommGrp_ C) : ((forget₂CommMon_ C).obj A).mul = A.mul :=
+theorem forget₂CommMon_obj_mul (A : CommGrp_ C) : μ[((forget₂CommMon_ C).obj A).X] = μ[A.X] :=
   rfl
 
 @[simp]
@@ -128,8 +145,8 @@ end
 
 section
 
-variable {M N : CommGrp_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := by aesop_cat)
-  (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul := by aesop_cat)
+variable {M N : CommGrp_ C} (f : M.X ≅ N.X) (one_f : η ≫ f.hom = η := by aesop_cat)
+  (mul_f : μ ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ := by aesop_cat)
 
 /-- Constructor for isomorphisms in the category `Grp_ C`. -/
 def mkIso : M ≅ N :=
@@ -164,10 +181,12 @@ objects. -/
 noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
   obj A :=
     { F.mapGrp.obj A.toGrp_ with
-      mul_comm := by
-        dsimp
-        rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, A.mul_comm] }
+      comm :=
+        { mul_comm' := by
+            dsimp
+            rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
   map f := F.mapMon.map f
+  map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon_) = _ by aesop_cat
 
 attribute [local instance] Functor.Braided.ofChosenFiniteProducts in
 /-- `mapCommGrp` is functorial in the left-exact functor. -/
