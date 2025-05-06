@@ -137,8 +137,6 @@ theorem frequently_frequently_nhds {p : X → Prop} :
 theorem eventually_mem_nhds_iff : (∀ᶠ x' in 𝓝 x, s ∈ 𝓝 x') ↔ s ∈ 𝓝 x :=
   eventually_eventually_nhds
 
-@[deprecated (since := "2024-10-04")] alias eventually_mem_nhds := eventually_mem_nhds_iff
-
 @[simp]
 theorem nhds_bind_nhds : (𝓝 x).bind 𝓝 = 𝓝 x :=
   Filter.ext fun _ => eventually_eventually_nhds

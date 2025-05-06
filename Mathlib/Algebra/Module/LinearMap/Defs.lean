@@ -51,7 +51,7 @@ linear map
 -/
 
 
-assert_not_exists Star DomMulAct Pi.module WCovBy Field
+assert_not_exists Star DomMulAct Pi.module WCovBy.image Field
 
 open Function
 
@@ -102,7 +102,7 @@ A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ :
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
-  (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
+    (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module S M₂] [FunLike F M M₂] : Prop
     extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
 
@@ -799,6 +799,15 @@ instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
 
 instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) :=
   coe_injective.unique
+
+theorem ne_zero_of_injective [Nontrivial M] {f : M →ₛₗ[σ₁₂] M₂} (hf : Injective f) : f ≠ 0 :=
+  have ⟨x, ne⟩ := exists_ne (0 : M)
+  fun h ↦ hf.ne ne <| by simp [h]
+
+theorem ne_zero_of_surjective [Nontrivial M₂] {f : M →ₛₗ[σ₁₂] M₂} (hf : Surjective f) : f ≠ 0 := by
+  have ⟨y, ne⟩ := exists_ne (0 : M₂)
+  obtain ⟨x, rfl⟩ := hf y
+  exact fun h ↦ ne congr($h x)
 
 /-- The sum of two linear maps is linear. -/
 instance : Add (M →ₛₗ[σ₁₂] M₂) :=

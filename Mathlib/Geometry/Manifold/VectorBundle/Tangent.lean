@@ -509,7 +509,7 @@ def inTangentCoordinates (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E
 
 theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N → E →L[𝕜] E') (x₀ : N) :
     inTangentCoordinates I I' f g ϕ x₀ = ϕ := by
-  simp (config := { unfoldPartialApp := true }) only [inTangentCoordinates,
+  simp +unfoldPartialApp only [inTangentCoordinates,
     inCoordinates_tangent_bundle_core_model_space]
 
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and

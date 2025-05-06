@@ -225,9 +225,6 @@ theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := b
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
 
-@[deprecated Polynomial.Monic.normalize_eq_self (since := "2024-10-21")]
-alias normalize_monic := Monic.normalize_eq_self
-
 theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 

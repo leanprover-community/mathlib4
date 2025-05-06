@@ -87,7 +87,7 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
     rw [factoredNumbers_empty]
     simp only [not_mem_empty, IsEmpty.forall_iff, forall_const, filter_true_of_mem, prod_empty]
     exact ⟨(Set.finite_singleton 1).summable (‖f ·‖), hf₁ ▸ hasSum_singleton 1 f⟩
-  | @insert p s hp ih =>
+  | insert p s hp ih =>
     rw [filter_insert]
     split_ifs with hpp
     · constructor
@@ -127,7 +127,7 @@ lemma norm_tsum_factoredNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0
   simp_rw [mem_ball_zero_iff] at hN
   refine ⟨N, fun s hs ↦ ?_⟩
   have := hN _ <| factoredNumbers_compl hs
-  rwa [← tsum_subtype_add_tsum_subtype_compl hsum (factoredNumbers s),
+  rwa [← hsum.tsum_subtype_add_tsum_subtype_compl (factoredNumbers s),
     add_sub_cancel_left, tsum_eq_tsum_diff_singleton (factoredNumbers s)ᶜ hf₀]
 
 -- Versions of the three lemmas above for `smoothNumbers N`
