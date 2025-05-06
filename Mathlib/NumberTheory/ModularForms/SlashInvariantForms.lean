@@ -219,7 +219,7 @@ theorem coe_intCast (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
 noncomputable def translateGLPos [SlashInvariantFormClass F Γ k] (f : F) (g : GL(2, ℝ)⁺) :
     SlashInvariantForm (ModularGroup.conjGLPos Γ g) k where
   toFun := f ∣[k] g
-  slash_action_eq' := fun j hj ↦ by
+  slash_action_eq' j hj := by
     obtain ⟨y, hy, hy'⟩ := ModularGroup.mem_conjGLPos.mp hj
     simp only [ModularForm.SL_slash, ← hy', ← SlashAction.slash_mul, mul_assoc,
       mul_inv_cancel_left]
