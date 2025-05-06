@@ -213,6 +213,25 @@ lemma ENat.lt_of_add_one_lt {a b : ℕ∞} (lt : a + 1 < b + 1) : a < b := by
   · rw [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff (LT.lt.ne_top lttop)] at lt
     exact lt
 
+lemma ENat.add_one_lt_of_lt {a b : ℕ∞} (lt : a < b) : a + 1 < b + 1 := by
+  have lttop : a < ⊤ := (lt_top_of_lt lt)
+  by_cases eqtop : b = ⊤
+  · simpa [eqtop, lttop] using Ne.lt_top' ENat.one_ne_top.symm
+  · rw [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff (LT.lt.ne_top lt)]
+    exact lt
+
+lemma CategoryTheory.Abelian.extFunctorObj_zero_preserve_momoMorphism (L M N : ModuleCat.{v} R)
+    (f : M ⟶ N) (mono : Mono f) :
+    Mono (AddCommGrp.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero 0)) := by
+  apply ConcreteCategory.mono_of_injective
+  rw [← AddMonoidHom.ker_eq_bot_iff]
+  apply (AddSubgroup.eq_bot_iff_forall _).mpr (fun x hx ↦ ?_)
+  simp only [AddCommGrp.hom_ofHom, AddMonoidHom.mem_ker, AddMonoidHom.flip_apply,
+    Ext.bilinearComp_apply_apply] at hx
+  rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
+  have : (Ext.addEquiv₀ x ≫ f) = 0 := (AddEquiv.map_eq_zero_iff Ext.addEquiv₀.symm).mp hx
+  exact (AddEquiv.map_eq_zero_iff Ext.addEquiv₀).mp (zero_of_comp_mono f this)
+
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     [Small.{v} (R ⧸ (maximalIdeal R))]
@@ -323,8 +342,8 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     intro i hi
     by_cases eq0 : i = 0
     · rw [eq0, ← finte_free_ext_vanish_iff S.X₁]
-      --consider Ext0 K A^q → Ext0 K A^p injective
-      sorry
+      have mono := extFunctorObj_zero_preserve_momoMorphism K S.X₁ S.X₂ S.f S_exact.mono_f
+      exact AddCommGrp.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ (hom_zero 0))
     · have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
       have : i - 1 < n := by
         rw [add_comm, ← eq, ENat.coe_add, ENat.coe_sub, ENat.coe_one] at hi
@@ -345,8 +364,10 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       apply add_le_add_right
       apply le_sSup
       intro i hi
-      have lt1 : i < n := sorry
-      have lt2 : i + 1 < n := sorry
+      have lt2 : i + 1 < n := by
+        rw [← this]
+        exact ENat.add_one_lt_of_lt hi
+      have lt1 : i < n := lt_of_le_of_lt (self_le_add_right _ _) lt2
       exact (iff i).mpr ⟨hn i lt1, hn (i + 1) lt2⟩
 
 open scoped Classical in
