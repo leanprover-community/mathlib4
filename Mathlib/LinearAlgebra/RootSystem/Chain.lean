@@ -453,19 +453,18 @@ variable {b : P.Base} {i j k l m : ι}
 -- TODO Turn this `variable` into a lemma: it is implied by the assumptions above.
 variable [P.IsNotG2]
 
-include h₁ in
-lemma chainBotCoeff_mul_chainTopCoeff.aux_0 (hik_mem : P.root i + P.root k ∈ range P.root) :
+lemma chainBotCoeff_mul_chainTopCoeff.aux_0 (hik_mem : P.root k + P.root i ∈ range P.root) :
     P.pairingIn ℤ k i = 0 ∨ (P.pairingIn ℤ k i < 0 ∧ P.chainBotCoeff i k = 0) := by
-  have _i := P.reflexive_left; letI := P.indexNeg
-  rw [or_iff_not_imp_left]
-  intro hki
-  refine ⟨pairingIn_le_zero_of_root_add_mem (h₁ ▸ mem_range_self l) |>.lt_of_ne hki, ?_⟩
-  simp [P.chainBotCoeff_if_one_zero hik_mem, P.pairingIn_eq_zero_iff (i := i), hki]
+  have _i := P.reflexive_left
+  have := pairingIn_le_zero_of_root_add_mem hik_mem
+  rw [add_comm] at hik_mem
+  rw [P.chainBotCoeff_if_one_zero hik_mem, ite_eq_right_iff, P.pairingIn_eq_zero_iff (i := i)]
+  omega
 
 include hi hj hij h₁ h₂ h₃
 
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
-private lemma chainBotCoeff_mul_chainTopCoeff.aux_1'
+private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
     (hki : P.pairingIn ℤ k i = 0) :
     have _i := P.reflexive_left; letI := P.indexNeg
     P.root i + P.root m ∈ range P.root → P.root j + P.root (-l) ∈ range P.root →
@@ -526,7 +525,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1'
 
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
 open RootPositiveForm in
-private lemma chainBotCoeff_mul_chainTopCoeff.aux_2'
+private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
     (hki' : P.pairingIn ℤ k i < 0) (hkj' : 0 < P.pairingIn ℤ k j) :
     have _i := P.reflexive_left; letI := P.indexNeg
     P.root i + P.root m ∈ range P.root → P.root j + P.root (-l) ∈ range P.root →
@@ -603,8 +602,7 @@ lemma chainBotCoeff_mul_chainTopCoeff :
       (P.chainBotCoeff j (-l) + 1) * (P.chainBotCoeff i k + 1) by simpa
   /- Establish basic relationships about roots and their sums / differences. -/
   have him_mem : P.root i + P.root m ∈ range P.root := by rw [← h₂]; convert h₃ using 1; abel
-  have hik_mem : P.root i + P.root k ∈ range P.root := by
-    rw [add_comm] at h₁; exact h₁ ▸ mem_range_self l
+  have hik_mem : P.root k + P.root i ∈ range P.root := h₁ ▸ mem_range_self l
   have hjk_mem : P.root j + P.root (-k) ∈ range P.root := by
     convert mem_range_self (-m) using 1; simpa [sub_eq_add_neg] using congr(-$h₂)
   have hjl_mem : P.root j + P.root (-l) ∈ range P.root := by
@@ -617,19 +615,20 @@ lemma chainBotCoeff_mul_chainTopCoeff :
     simp only [root_reflection_perm, reflection_apply_self, indexNeg_neg]
     rw [← neg_mem_range_root_iff]; convert h₃ using 1; abel
   /- Proceed to the main argument, following Geck's case splits. It's all just bookkeeping. -/
-  rcases aux_0 h₁ hik_mem with hki | ⟨hki, hik⟩
+  rcases aux_0 hik_mem with hki | ⟨hki, hik⟩
   · /- Geck "Case 1" -/
-    exact aux_1' hi hj hij h₁ h₂ h₃ hki him_mem hjl_mem hjk_mem
-  rcases aux_0 h₂' hjk_mem with hkj | ⟨hkj, hjk⟩
+    exact aux_1 hi hj hij h₁ h₂ h₃ hki him_mem hjl_mem hjk_mem
+  rw [add_comm] at hik_mem hjk_mem
+  rcases aux_0 hjk_mem with hkj | ⟨hkj, hjk⟩
   · /- Geck "Case 2" -/
-    simpa only [neg_neg] using (aux_1' hj hi hij.symm h₂' h₁' h₃' hkj hjl_mem
+    simpa only [neg_neg] using (aux_1 hj hi hij.symm h₂' h₁' h₃' hkj hjl_mem
       (by simpa only [neg_neg]) (by simpa only [neg_neg])).symm
   /- Geck "Case 3" -/
   suffices P.chainBotCoeff i m = P.chainBotCoeff j (-l) by rw [hik, hjk, this]
   have aux₁ : ¬ (P.chainBotCoeff i m = 1 ∧ P.chainBotCoeff j (-l) = 0) :=
-    aux_2' hi hj hij h₁ h₂ h₃ hki (by simpa using hkj) him_mem hjl_mem hjk_mem
+    aux_2 hi hj hij h₁ h₂ h₃ hki (by simpa using hkj) him_mem hjl_mem <| by rwa [add_comm]
   have aux₂ : ¬(P.chainBotCoeff j (-l) = 1 ∧ P.chainBotCoeff i m = 0) := by
-    simpa using aux_2' hj hi hij.symm h₂' h₁' h₃' hkj (by simpa)
+    simpa using aux_2 hj hi hij.symm h₂' h₁' h₃' hkj (by simpa)
       hjl_mem (by simpa only [neg_neg]) (by simpa only [neg_neg])
   have aux₃ : P.chainBotCoeff i m = 0 ∨ P.chainBotCoeff i m = 1 := by
     have := P.chainBotCoeff_if_one_zero him_mem
