@@ -75,6 +75,8 @@ instance finiteAtCoe {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
     [Fintype (G.neighborSet v)] : Fintype (G'.spanningCoe.neighborSet v) := by
   apply Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
 
+/-- If the vertex `a : α` has finitely many neighbors in `G.induce s` then this is its set of
+neighbors as a `Finset α` -/
 abbrev neighborFinsetIn (s : Set α) (a : α) [Fintype (G.neighborSetIn s a)] :=
   ((⊤ : Subgraph G).induce s).spanningCoe.neighborFinset a
 
@@ -90,7 +92,6 @@ lemma neighborFinsetIn_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)
     | inr h' => exact ⟨h.2, h'⟩
   · exact ⟨Or.inr h.2, h.1⟩
 
-
 abbrev degreeIn (s : Set α) [DecidablePred (· ∈ s)] (a : α) [Fintype (G.neighborSet a)]  :=
   ((⊤ : Subgraph G).induce s).spanningCoe.degree a
 
@@ -98,18 +99,6 @@ lemma degreeIn_eq (s : Set α) [DecidablePred (· ∈ s)] (a : α) [Fintype (G.n
   G.degreeIn s a = ((⊤ : Subgraph G).induce s).degree a := by simp
 
 open Finset
-@[simp]
-lemma degreeIn_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)] [DecidableEq α]
-    [Fintype (G.neighborSet a)] :
-    G.degreeIn (insert a s) a = #((G.neighborFinset a).filter (· ∈ s)) := by
-  rw [← neighborFinsetIn_insert_eq]
-  rfl
-
-lemma degreeIn_insert_lt_degree {s : Set α} {a v : α} (h : G.Adj a v) (hv : v ∉ s)
-  [DecidablePred (· ∈ s)] [DecidableEq α] [Fintype (G.neighborSet a)] :
-    G.degreeIn (insert a s) a < G.degree a := by
-  rw [degreeIn_insert_eq, ← card_neighborFinset_eq_degree]
-  exact card_lt_card <| filter_ssubset.2 ⟨v, (G.mem_neighborFinset ..).2 h, hv⟩
 
 variable {t : Set α} [DecidablePred (· ∈ t)] {a : α} [Fintype (G.neighborSet a)]
 
@@ -133,6 +122,19 @@ lemma degreeIn_lt_degree {v : α} (hv : v ∈ G.neighborSet a ∧ v ∉ s) :
     G.degreeIn s a < G.degree a :=
   lt_of_le_of_ne (G.degreeIn_le_degree a)
     fun h ↦ hv.2 <| G.neighborSet_subset_of_degree_le_degreeIn h.symm.le hv.1
+@[simp]
+lemma degreeIn_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)] [DecidableEq α]
+    [Fintype (G.neighborSet a)] :
+    G.degreeIn (insert a s) a = #((G.neighborFinset a).filter (· ∈ s)) := by
+  rw [← neighborFinsetIn_insert_eq]
+  rfl
+
+lemma degreeIn_insert_lt_degree {s : Set α} {a v : α} (h : G.Adj a v) (hv : v ∉ s)
+  [DecidablePred (· ∈ s)] [DecidableEq α] [Fintype (G.neighborSet a)] :
+    G.degreeIn (insert a s) a < G.degree a := by
+  rw [degreeIn_insert_eq, ← card_neighborFinset_eq_degree]
+  exact card_lt_card <| filter_ssubset.2 ⟨v, (G.mem_neighborFinset ..).2 h, hv⟩
+
 
 end withDecRel
 /--
