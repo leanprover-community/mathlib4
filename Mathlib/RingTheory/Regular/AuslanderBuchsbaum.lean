@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yongle Hu, Nailin Guan, Yijun Yuan
+Authors: Nailin Guan, Yongle Hu, Yijun Yuan
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
