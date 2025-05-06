@@ -195,7 +195,6 @@ theorem filterMap_eq_filter : filterMap (Option.guard p) = filter p :=
   funext fun s =>
     Quot.inductionOn s fun l => congr_arg ofList <| by
       rw [← List.filterMap_eq_filter]
-      congr; funext a; simp
 
 theorem filterMap_filterMap (f : α → Option β) (g : β → Option γ) (s : Multiset α) :
     filterMap g (filterMap f s) = filterMap (fun x => (f x).bind g) s :=
