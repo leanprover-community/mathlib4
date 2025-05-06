@@ -5499,6 +5499,7 @@ import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.RotateIsos.Cancelable
 import Mathlib.Tactic.CategoryTheory.RotateIsos.Core
 import Mathlib.Tactic.CategoryTheory.RotateIsos.Lemmas
+import Mathlib.Tactic.CategoryTheory.RotateIsos.Monoidal
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.CategoryTheory.ToApp
 import Mathlib.Tactic.Change
