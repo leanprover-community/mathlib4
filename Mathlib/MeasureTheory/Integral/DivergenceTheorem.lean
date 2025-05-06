@@ -139,7 +139,7 @@ private theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I
 /-- An auxiliary lemma for
 `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`. Compared to the previous
 lemma, here we drop the assumption of differentiability on the boundary of the box. -/
-theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (Fin (n + 1)))
+private theorem integral_divergence_of_hasFDerivAt_off_countable_aux₂ (I : Box (Fin (n + 1)))
     (f : ℝⁿ⁺¹ → Eⁿ⁺¹)
     (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹)
     (s : Set ℝⁿ⁺¹) (hs : s.Countable) (Hc : ContinuousOn f (Box.Icc I))
