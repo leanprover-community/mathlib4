@@ -74,11 +74,11 @@ lemma eccent_pos_iff (u : α) : 0 < G.eccent u ↔ Nontrivial α := by
   rw [pos_iff_ne_zero, ← not_subsingleton_iff_nontrivial, ← eccent_eq_zero_iff]
 
 @[simp]
-lemma eccent_bot [Nontrivial α] (u : α) : (⊥ : SimpleGraph α).eccent u = ⊤ :=
+lemma eccent_bot [Nontrivial α] (u : α) : (emptyGraph α).eccent u = ⊤ :=
   eccent_eq_top_of_not_connected bot_not_connected u
 
 @[simp]
-lemma eccent_top [Nontrivial α] (u : α) : (⊤ : SimpleGraph α).eccent u = 1 := by
+lemma eccent_top [Nontrivial α] (u : α) : (completeGraph α).eccent u = 1 := by
   apply le_antisymm ?_ <| Order.one_le_iff_pos.mpr <| pos_iff_ne_zero.mpr <| eccent_ne_zero u
   rw [eccent, iSup_le_iff]
   intro v
@@ -382,11 +382,11 @@ lemma radius_eq_ediam_iff [Nonempty α] :
     exact le_antisymm ((h Classical.ofNonempty) ▸ radius_le_eccent) (le_iInf fun u ↦ (h u).ge)
 
 @[simp]
-lemma radius_bot [Nontrivial α] : (⊥ : SimpleGraph α).radius = ⊤ :=
+lemma radius_bot [Nontrivial α] : (emptyGraph α).radius = ⊤ :=
   radius_eq_top_of_not_connected bot_not_connected
 
 @[simp]
-lemma radius_top [Nontrivial α] : (⊤ : SimpleGraph α).radius = 1 := by
+lemma radius_top [Nontrivial α] : (completeGraph α).radius = 1 := by
   simp [radius]
 
 end radius
@@ -420,14 +420,14 @@ lemma center_eq_univ_of_subsingleton [Subsingleton α] : G.center = Set.univ := 
   rw [mem_center_iff, eccent_eq_zero_of_subsingleton u, eq_comm, radius_eq_zero_iff]
   tauto
 
-lemma center_bot : (⊥ : SimpleGraph α).center = Set.univ := by
+lemma center_bot : (emptyGraph α).center = Set.univ := by
   cases subsingleton_or_nontrivial α
   · exact center_eq_univ_of_subsingleton
   · rw [Set.eq_univ_iff_forall]
     intro u
     rw [mem_center_iff, eccent_bot, radius_bot]
 
-lemma center_top : (⊤ : SimpleGraph α).center = Set.univ := by
+lemma center_top : (completeGraph α).center = Set.univ := by
   cases subsingleton_or_nontrivial α
   · exact center_eq_univ_of_subsingleton
   · rw [Set.eq_univ_iff_forall]
