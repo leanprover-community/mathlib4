@@ -1193,30 +1193,26 @@ is a subset of `ℝ`. -/
 @[mk_iff] class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
   isReal : ∀ v : InfinitePlace K, v.IsReal
 
-variable (F : Type*) [Field F] [NumberField F] {K : Type*} [Field K] [NumberField K]
+variable {F : Type*} [Field F] [NumberField F] {K : Type*} [Field K] [NumberField K]
 
 theorem nrComplexPlaces_eq_zero_iff :
     nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
 
-variable {F} in
-theorem IsTotallyReal.ofRingEquiv [IsTotallyReal F]
-     (f : F ≃+* K) :
-     IsTotallyReal K where
-   isReal _ := (isReal_comap_iff f).mp <| IsTotallyReal.isReal _
+theorem IsTotallyReal.ofRingEquiv [IsTotallyReal F] (f : F ≃+* K) : IsTotallyReal K where
+  isReal _ := (isReal_comap_iff f).mp <| IsTotallyReal.isReal _
 
-variable (K) in
-theorem IsTotally.of_algebra [IsTotallyReal K] [Algebra F K]  :
-    IsTotallyReal F where
+variable (F K) in
+theorem IsTotally.of_algebra [IsTotallyReal K] [Algebra F K] : IsTotallyReal F where
   isReal w := by
     obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
     exact IsReal.comap _ (IsTotallyReal.isReal W)
 
-instance [IsTotallyReal K] (F : IntermediateField ℚ K)  :
-    IsTotallyReal F := IsTotally.of_algebra F K
+instance [IsTotallyReal K] (F : IntermediateField ℚ K)  : IsTotallyReal F :=
+  IsTotally.of_algebra F K
 
- instance [IsTotallyReal K] (F : Subfield K) :
-    IsTotallyReal F := IsTotally.of_algebra F K
+instance [IsTotallyReal K] (F : Subfield K) : IsTotallyReal F :=
+  IsTotally.of_algebra F K
 
 variable (K)
 
@@ -1273,12 +1269,10 @@ theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} :
   ⟨fun h ↦ h.le_maximalRealSubfield, fun h ↦ IsTotallyReal.ofRingEquiv
     (RingEquiv.ofBijective _ (Subfield.inclusion h).rangeRestrictField_bijective).symm⟩
 
--- Note sure if this should be an instance or a theorem
 instance isTotallyReal_sup {E F : Subfield K} [hE : IsTotallyReal E] [hF : IsTotallyReal F] :
     IsTotallyReal (E ⊔ F : Subfield K) := by
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
 
--- Note sure if this should be an instance or a theorem
 instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [h : ∀ i, IsTotallyReal (k i)] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
@@ -1302,10 +1296,6 @@ A number field `K` is totally complex if all of its infinite places are complex.
   isComplex : ∀ v : InfinitePlace K, v.IsComplex
 
 variable {F : Type*} [Field F] [NumberField F] {K : Type*} [Field K] [NumberField K]
-
-theorem IsTotallyComplex.ofRingEquiv [IsTotallyComplex F] (f : F ≃+* K) :
-     IsTotallyComplex K where
-   isComplex _ := (isComplex_comap_iff f).mp <| IsTotallyComplex.isComplex _
 
 theorem nrRealPlaces_eq_zero_iff :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
