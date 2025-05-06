@@ -116,13 +116,13 @@ theorem edgeSet_deleteIncidenceSet (G : SimpleGraph V) (x : V) :
 
 /-- The support of `G.deleteIncidenceSet x` is a subset of the support of `G` set difference the
 singleton set `{x}`. -/
-theorem deleteIncidenceSet_support_subset (G : SimpleGraph V) (x : V) :
+theorem support_deleteIncidenceSet_subset (G : SimpleGraph V) (x : V) :
     (G.deleteIncidenceSet x).support ⊆ G.support \ {x} :=
   fun _ ↦ by simp_rw [mem_support, deleteIncidenceSet_adj]; tauto
 
 /-- If the vertex `x` is not in the set `s`, then the induced subgraph in `G.deleteIncidenceSet x`
 by `s` is equal to the induced subgraph in `G` by `s`. -/
-theorem deleteIncidenceSet_induce_of_not_mem (G : SimpleGraph V) {s : Set V} {x : V} (h : x ∉ s) :
+theorem induce_deleteIncidenceSet_of_not_mem (G : SimpleGraph V) {s : Set V} {x : V} (h : x ∉ s) :
     (G.deleteIncidenceSet x).induce s = G.induce s := by
   ext v₁ v₂
   simp_rw [comap_adj, Function.Embedding.coe_subtype, deleteIncidenceSet_adj, and_iff_left_iff_imp]
@@ -140,10 +140,10 @@ theorem card_edgeFinset_induce_compl_singleton (G : SimpleGraph V) [DecidableRel
     #(G.induce {x}ᶜ).edgeFinset = #(G.deleteIncidenceSet x).edgeFinset := by
   have h_not_mem : x ∉ ({x}ᶜ : Set V) := Set.not_mem_compl_iff.mpr (Set.mem_singleton x)
   simp_rw [Set.toFinset_card,
-    ← G.deleteIncidenceSet_induce_of_not_mem h_not_mem, ← Set.toFinset_card]
+    ← G.induce_deleteIncidenceSet_of_not_mem h_not_mem, ← Set.toFinset_card]
   apply card_edgeFinset_induce_of_support_subset
   trans G.support \ {x}
-  · exact deleteIncidenceSet_support_subset G x
+  · exact support_deleteIncidenceSet_subset G x
   · rw [Set.compl_eq_univ_diff]
     exact Set.diff_subset_diff_left (Set.subset_univ G.support)
 
@@ -182,7 +182,7 @@ theorem card_support_deleteIncidenceSet
   simp_rw [← Set.card_singleton x, ← Set.toFinset_card, ← card_sdiff hx, ← Set.toFinset_diff]
   apply card_le_card
   rw [Set.toFinset_subset_toFinset]
-  exact G.deleteIncidenceSet_support_subset x
+  exact G.support_deleteIncidenceSet_subset x
 
 end DeleteIncidenceSet
 
