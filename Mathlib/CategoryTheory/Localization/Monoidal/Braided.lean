@@ -36,10 +36,6 @@ section Braided
 
 variable [BraidedCategory C]
 
-noncomputable instance : Lifting₂ L' L' W W ((curriedTensor C) ⋙ (whiskeringRight C C
-    (LocalizedMonoidal L W ε)).obj L') (tensorBifunctor L W ε) := by
-  infer_instance
-
 noncomputable instance : Lifting₂ L' L' W W ((curriedTensor C).flip ⋙ (whiskeringRight C C
     (LocalizedMonoidal L W ε)).obj L') (tensorBifunctor L W ε).flip :=
   inferInstanceAs (Lifting₂ L' L' W W (((curriedTensor C) ⋙ (whiskeringRight C C
