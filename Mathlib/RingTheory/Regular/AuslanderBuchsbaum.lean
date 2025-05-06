@@ -217,7 +217,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     [Small.{v} (R ⧸ (maximalIdeal R))]
     (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
-    1 + IsLocalRing.depth M = IsLocalRing.depth.{u, v} (ModuleCat.of.{v} R (Shrink.{v} R)) := by
+    1 + IsLocalRing.depth M = IsLocalRing.depth.{v} (ModuleCat.of.{v} R (Shrink.{v} R)) := by
   rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
     with ⟨ι, ⟨B⟩⟩
   let fin := FiniteDimensional.fintypeBasisIndex B
@@ -357,7 +357,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
     [Small.{v} (R ⧸ (IsLocalRing.maximalIdeal R))]
     (hfinprojdim : ∃ i : ℕ, CategoryTheory.HasProjectiveDimensionLE M i) :
     Nat.find hfinprojdim + IsLocalRing.depth M =
-    IsLocalRing.depth.{u, v} (ModuleCat.of R (Shrink.{v} R)) := by
+    IsLocalRing.depth.{v} (ModuleCat.of R (Shrink.{v} R)) := by
     generalize h: Nat.find hfinprojdim = n
     induction' n with n ih
     · simp
