@@ -455,21 +455,6 @@ instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
     simp only [SLOnGLPos_smul_apply]
     apply mul_smul'
 
-/-- The subgroup `SL(2, ℤ) ∩ g⁻¹ Γ g`, for `Γ` a subgroup of `SL(2, ℤ)` and `g in GL(2, ℝ)⁺`. -/
-def conjGLPos (Γ : Subgroup SL(2, ℤ)) (g : GL(2, ℝ)⁺) : Subgroup SL(2, ℤ) :=
-  (Γ.map ((MulAut.conj g⁻¹).toMonoidHom.comp ModularGroup.coeHom)).comap ModularGroup.coeHom
-
-@[simp] lemma mem_conjGLPos {Γ : Subgroup SL(2, ℤ)} {g : GL(2, ℝ)⁺} {x : SL(2, ℤ)} :
-    x ∈ conjGLPos Γ g ↔ ∃ y ∈ Γ, g⁻¹ * y * g = x :=
-  Iff.rfl
-
-@[simp]
-lemma conjGLPos_coe (Γ : Subgroup SL(2, ℤ)) (g : SL(2, ℤ)) :
-    conjGLPos Γ g = Γ.map (MulAut.conj g⁻¹) := by
-  ext x
-  simp_rw [mem_conjGLPos, Subgroup.mem_map, ← coeHom_apply, ← map_inv, ← map_mul, map_inv,
-    MonoidHom.coe_coe, MulAut.conj_inv_apply, coeHom_apply, coe_inj]
-
 end ModularScalarTowers
 
 section SLModularAction

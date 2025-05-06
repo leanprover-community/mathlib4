@@ -3,6 +3,7 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.ModularForms.SlashActions
 
 /-!
@@ -217,10 +218,10 @@ theorem coe_intCast (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
 
 /-- Translating a `SlashInvariantForm` by `SL(2, ℤ)`, to obtain a new `SlashInvariantForm`. -/
 noncomputable def translateGLPos [SlashInvariantFormClass F Γ k] (f : F) (g : GL(2, ℝ)⁺) :
-    SlashInvariantForm (ModularGroup.conjGLPos Γ g) k where
+    SlashInvariantForm (CongruenceSubgroup.conjGLPos Γ g) k where
   toFun := f ∣[k] g
   slash_action_eq' j hj := by
-    obtain ⟨y, hy, hy'⟩ := ModularGroup.mem_conjGLPos.mp hj
+    obtain ⟨y, hy, hy'⟩ := CongruenceSubgroup.mem_conjGLPos'.mp hj
     simp only [ModularForm.SL_slash, ← hy', ← SlashAction.slash_mul, mul_assoc,
       mul_inv_cancel_left]
     rw [SlashAction.slash_mul, ← ModularForm.SL_slash,
@@ -231,9 +232,10 @@ lemma coe_translateGLPos [SlashInvariantFormClass F Γ k] (f : F) (g : GL(2, ℝ
     translateGLPos f g = ⇑f ∣[k] g :=
   rfl
 
+open Pointwise ConjAct in
 /-- Translating a `SlashInvariantForm` by `SL(2, ℤ)`, to obtain a new `SlashInvariantForm`. -/
 noncomputable def translate [SlashInvariantFormClass F Γ k]
-    (f : F) (g : SL(2, ℤ)) : SlashInvariantForm (Γ.map <| MulAut.conj g⁻¹) k where
+    (f : F) (g : SL(2, ℤ)) : SlashInvariantForm ((toConjAct g⁻¹) • Γ) k where
   toFun := f ∣[k] g
   slash_action_eq' j hj := (translateGLPos f g).slash_action_eq' j (by simpa using hj)
 
