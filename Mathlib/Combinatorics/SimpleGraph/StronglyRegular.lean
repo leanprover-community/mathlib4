@@ -52,7 +52,7 @@ variable {G} {n k ℓ μ : ℕ}
 
 /-- Empty graphs are strongly regular. Note that `ℓ` can take any value
 for empty graphs, since there are no pairs of adjacent vertices. -/
-theorem bot_strongly_regular : (emptyGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
+theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
   card := rfl
   regular := bot_degree
   of_adj _ _ h := h.elim
@@ -71,7 +71,7 @@ variable [DecidableEq V]
 /-- Complete graphs are strongly regular. Note that `μ` can take any value
 for complete graphs, since there are no distinct pairs of non-adjacent vertices. -/
 theorem IsSRGWith.top :
-    (completeGraph V).IsSRGWith (Fintype.card V) (Fintype.card V - 1) (Fintype.card V - 2) μ where
+    (⊤ : SimpleGraph V).IsSRGWith (Fintype.card V) (Fintype.card V - 1) (Fintype.card V - 2) μ where
   card := rfl
   regular := IsRegularOfDegree.top
   of_adj _ _ := card_commonNeighbors_top

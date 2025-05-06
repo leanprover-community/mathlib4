@@ -78,7 +78,7 @@ alias ⟨_, edgeFinset_strict_mono⟩ := edgeFinset_ssubset_edgeFinset
 attribute [mono] edgeFinset_mono edgeFinset_strict_mono
 
 @[simp]
-theorem edgeFinset_bot : (emptyGraph V).edgeFinset = ∅ := by simp [edgeFinset]
+theorem edgeFinset_bot : (⊥ : SimpleGraph V).edgeFinset = ∅ := by simp [edgeFinset]
 
 @[simp]
 theorem edgeFinset_sup [Fintype (edgeSet (G₁ ⊔ G₂))] [DecidableEq V] :
@@ -112,11 +112,11 @@ variable [Fintype V]
 
 @[simp]
 theorem edgeFinset_top [DecidableEq V] :
-    (completeGraph V).edgeFinset = ({e | ¬e.IsDiag} : Finset _) := by simp [← coe_inj]
+    (⊤ : SimpleGraph V).edgeFinset = ({e | ¬e.IsDiag} : Finset _) := by simp [← coe_inj]
 
 /-- The complete graph on `n` vertices has `n.choose 2` edges. -/
 theorem card_edgeFinset_top_eq_card_choose_two [DecidableEq V] :
-    #(completeGraph V).edgeFinset = (Fintype.card V).choose 2 := by
+    #(⊤ : SimpleGraph V).edgeFinset = (Fintype.card V).choose 2 := by
   simp_rw [Set.toFinset_card, edgeSet_top, Set.coe_setOf, ← Sym2.card_subtype_not_diag]
 
 /-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
@@ -279,12 +279,12 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
   simp_rw [degree, neighborFinset_eq_filter, top_adj, filter_ne]
   rw [card_erase_of_mem (mem_univ v), card_univ]
 
-theorem bot_degree (v : V) : (emptyGraph V).degree v = 0 := by
+theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
   simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_False]
   exact Finset.card_empty
 
 theorem IsRegularOfDegree.top [DecidableEq V] :
-    (completeGraph V).IsRegularOfDegree (Fintype.card V - 1) := by
+    (⊤ : SimpleGraph V).IsRegularOfDegree (Fintype.card V - 1) := by
   intro v
   simp
 
@@ -418,7 +418,7 @@ theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.A
       exact G.commonNeighbors_subset_neighborSet_left _ _
 
 theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
-    Fintype.card ((completeGraph V).commonNeighbors v w) = Fintype.card V - 2 := by
+    Fintype.card ((⊤ : SimpleGraph V).commonNeighbors v w) = Fintype.card V - 2 := by
   simp only [commonNeighbors_top_eq, ← Set.toFinset_card, Set.toFinset_diff]
   rw [Finset.card_sdiff]
   · simp [Finset.card_univ, h]

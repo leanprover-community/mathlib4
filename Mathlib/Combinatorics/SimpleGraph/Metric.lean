@@ -130,16 +130,16 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (edist_le h.toWalk) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
-lemma edist_bot_of_ne (h : u ≠ v) : (emptyGraph V).edist u v = ⊤ := by
+lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by
   rwa [ne_eq, ← reachable_bot.not, ← edist_ne_top_iff_reachable.not, not_not] at h
 
-lemma edist_bot [DecidableEq V] : (emptyGraph V).edist u v = (if u = v then 0 else ⊤) := by
+lemma edist_bot [DecidableEq V] : (⊥ : SimpleGraph V).edist u v = (if u = v then 0 else ⊤) := by
   by_cases h : u = v <;> simp [h, edist_bot_of_ne]
 
-lemma edist_top_of_ne (h : u ≠ v) : (completeGraph V).edist u v = 1 := by
+lemma edist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).edist u v = 1 := by
   simp [h]
 
-lemma edist_top [DecidableEq V] : (completeGraph V).edist u v = (if u = v then 0 else 1) := by
+lemma edist_top [DecidableEq V] : (⊤ : SimpleGraph V).edist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
 /-- Supergraphs have smaller or equal extended distances to their subgraphs. -/
@@ -270,13 +270,13 @@ lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
 
 @[simp]
-lemma dist_bot : (emptyGraph V).dist u v = 0 := by
+lemma dist_bot : (⊥ : SimpleGraph V).dist u v = 0 := by
   by_cases h : u = v <;> simp [h]
 
-lemma dist_top_of_ne (h : u ≠ v) : (completeGraph V).dist u v = 1 := by
+lemma dist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).dist u v = 1 := by
   simp [h]
 
-lemma dist_top [DecidableEq V] : (completeGraph V).dist u v = (if u = v then 0 else 1) := by
+lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/

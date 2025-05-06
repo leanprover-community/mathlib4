@@ -158,7 +158,7 @@ theorem ofLE_comp (h₁₂ : G₁ ≤ G₂) (h₂₃ : G₂ ≤ G₃) :
 def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.induce s).toCopy
 
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
-protected def bot (f : α ↪ β) : Copy (emptyGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
+protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
 
 /-- The isomorphism from a subgraph of `A` to its map under a copy `f : Copy A B`. -/
 noncomputable def isoSubgraphMap (f : Copy A B) (A' : A.Subgraph) :
@@ -275,7 +275,7 @@ lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
 
 /-- `⊥` is contained in any simple graph having sufficiently many vertices. -/
 lemma bot_isContained_iff_card_le [Fintype α] [Fintype β] :
-    (emptyGraph α) ⊑ B ↔ Fintype.card α ≤ Fintype.card β :=
+    (⊥ : SimpleGraph α) ⊑ B ↔ Fintype.card α ≤ Fintype.card β :=
   ⟨fun ⟨f⟩ ↦ Fintype.card_le_of_embedding f.toEmbedding,
     fun h ↦ ⟨Copy.bot (Function.Embedding.nonempty_of_card_le h).some⟩⟩
 
@@ -316,7 +316,7 @@ lemma free_congr_right (e₂ : B ≃g C) : A.Free B ↔ A.Free C := free_congr .
 
 alias ⟨_, Free.congr_right⟩ := free_congr_right
 
-lemma free_bot (h : A ≠ ⊥) : A.Free (emptyGraph β) := by
+lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
   rw [← edgeSet_nonempty] at h
   intro ⟨f, hf⟩
   absurd f.map_mem_edgeSet h.choose_spec
@@ -376,7 +376,7 @@ alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgra
   isIndContained_iff_exists_iso_subgraph
 
 @[simp] lemma top_isIndContained_iff_top_isContained :
-    completeGraph V⊴ H ↔ completeGraph V ⊑ H where
+    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H where
   mp h := h.isContained
   mpr := fun ⟨f⟩ ↦ ⟨f.toEmbedding, fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩⟩
 
@@ -443,7 +443,7 @@ lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // Injective
 lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledCopyCount H := by
   classical rw [copyCount_eq_card_image_copyToSubgraph]; exact card_image_le
 
-@[simp] lemma copyCount_bot (G : SimpleGraph V) : copyCount G (emptyGraph V) = 1 := by
+@[simp] lemma copyCount_bot (G : SimpleGraph V) : copyCount G (⊥ : SimpleGraph V) = 1 := by
   classical
   rw [copyCount]
   convert card_singleton (α := G.Subgraph)
@@ -504,7 +504,7 @@ noncomputable irreducible_def killCopies (G : SimpleGraph V) (H : SimpleGraph W)
 lemma killCopies_le_left : G.killCopies H ≤ G := by
   rw [killCopies]; split_ifs; exacts [le_rfl, deleteEdges_le _]
 
-@[simp] lemma killCopies_bot (G : SimpleGraph V) : G.killCopies (emptyGraph W) = G := by
+@[simp] lemma killCopies_bot (G : SimpleGraph V) : G.killCopies (⊥ : SimpleGraph W) = G := by
   rw [killCopies]; exact dif_pos rfl
 
 private lemma killCopies_of_ne_bot (hH : H ≠ ⊥) (G : SimpleGraph V) :

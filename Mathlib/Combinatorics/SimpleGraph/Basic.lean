@@ -328,11 +328,11 @@ abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
 abbrev emptyGraph (V : Type u) : SimpleGraph V := ⊥
 
 @[simp]
-theorem top_adj (v w : V) : (completeGraph V).Adj v w ↔ v ≠ w :=
+theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
   Iff.rfl
 
 @[simp]
-theorem bot_adj (v w : V) : (emptyGraph V).Adj v w ↔ False :=
+theorem bot_adj (v w : V) : (⊥ : SimpleGraph V).Adj v w ↔ False :=
   Iff.rfl
 
 @[simp]
@@ -359,7 +359,7 @@ section Decidable
 
 variable (V) (H : SimpleGraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
 
-instance Bot.adjDecidable : DecidableRel (emptyGraph V).Adj :=
+instance Bot.adjDecidable : DecidableRel (⊥ : SimpleGraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ => False
 
 instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj :=
@@ -373,7 +373,7 @@ instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj :=
 
 variable [DecidableEq V]
 
-instance Top.adjDecidable : DecidableRel (completeGraph V).Adj :=
+instance Top.adjDecidable : DecidableRel (⊤ : SimpleGraph V).Adj :=
   inferInstanceAs <| DecidableRel fun v w => v ≠ w
 
 instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
@@ -452,11 +452,11 @@ attribute [mono] edgeSet_mono edgeSet_strict_mono
 variable (G₁ G₂)
 
 @[simp]
-theorem edgeSet_bot : (emptyGraph V).edgeSet = ∅ :=
+theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
   Sym2.fromRel_bot
 
 @[simp]
-theorem edgeSet_top : (completeGraph V).edgeSet = {e | ¬e.IsDiag} :=
+theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = {e | ¬e.IsDiag} :=
   Sym2.fromRel_ne
 
 @[simp]
@@ -527,7 +527,7 @@ instance decidableMemEdgeSet [DecidableRel G.Adj] : DecidablePred (· ∈ G.edge
 instance fintypeEdgeSet [Fintype (Sym2 V)] [DecidableRel G.Adj] : Fintype G.edgeSet :=
   Subtype.fintype _
 
-instance fintypeEdgeSetBot : Fintype (emptyGraph V).edgeSet := by
+instance fintypeEdgeSetBot : Fintype (⊥ : SimpleGraph V).edgeSet := by
   rw [edgeSet_bot]
   infer_instance
 
@@ -754,7 +754,7 @@ instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
   inferInstanceAs <| DecidablePred fun u => u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w
 
 theorem commonNeighbors_top_eq {v w : V} :
-    (completeGraph V).commonNeighbors v w = Set.univ \ {v, w} := by
+    (⊤ : SimpleGraph V).commonNeighbors v w = Set.univ \ {v, w} := by
   ext u
   simp [commonNeighbors, eq_comm, not_or]
 

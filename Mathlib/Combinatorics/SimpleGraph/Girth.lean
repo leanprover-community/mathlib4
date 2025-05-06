@@ -62,7 +62,7 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
     have ⟨_, _, _⟩ := h
     simp_all only [Nat.cast_inj, Nat.ofNat_le_cast, Walk.IsCycle.three_le_length]
 
-@[simp] lemma egirth_bot : egirth (emptyGraph α) = ⊤ := by simp
+@[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
 end egirth
 
@@ -94,7 +94,7 @@ lemma exists_girth_eq_length :
   simp_all only [girth, ENat.toNat_coe]
   tauto
 
-@[simp] lemma girth_bot : girth (emptyGraph α) = 0 := by
+@[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
 
 end girth

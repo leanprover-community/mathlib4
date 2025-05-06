@@ -366,12 +366,12 @@ lemma chromaticNumber_eq_iff_forall_surjective (hG : G.Colorable n) :
     G.chromaticNumber = n ↔ ∀ C : G.Coloring (Fin n), Surjective C := by
   rw [← hG.chromaticNumber_le.ge_iff_eq, le_chromaticNumber_iff_forall_surjective]
 
-theorem chromaticNumber_bot [Nonempty V] : (emptyGraph V).chromaticNumber = 1 := by
-  have : (emptyGraph V).Colorable 1 := ⟨.mk 0 <| by simp⟩
+theorem chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber = 1 := by
+  have : (⊥ : SimpleGraph V).Colorable 1 := ⟨.mk 0 <| by simp⟩
   exact this.chromaticNumber_le.antisymm <| Order.one_le_iff_pos.2 <| chromaticNumber_pos this
 
 @[simp]
-theorem chromaticNumber_top [Fintype V] : (completeGraph V).chromaticNumber = Fintype.card V := by
+theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber = Fintype.card V := by
   rw [chromaticNumber_eq_card_iff_forall_surjective (selfColoring _).colorable]
   intro C
   rw [← Finite.injective_iff_surjective]
@@ -381,7 +381,7 @@ theorem chromaticNumber_top [Fintype V] : (completeGraph V).chromaticNumber = Fi
   exact C.valid h
 
 theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
-    (completeGraph V).chromaticNumber = ⊤ := by
+    (⊤ : SimpleGraph V).chromaticNumber = ⊤ := by
   by_contra hc
   rw [← Ne, chromaticNumber_ne_top_iff_exists] at hc
   obtain ⟨n, ⟨hn⟩⟩ := hc

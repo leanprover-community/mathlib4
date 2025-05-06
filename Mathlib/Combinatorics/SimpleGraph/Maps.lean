@@ -143,7 +143,7 @@ lemma le_comap_of_subsingleton (f : V → W) [Subsingleton V] : G ≤ G'.comap f
 lemma map_le_of_subsingleton (f : V ↪ W) [Subsingleton V] : G.map f ≤ G' := by
   rw [map_le_iff_le_comap]; apply le_comap_of_subsingleton
 
-/-- Given a family of vertex types indexed by `ι`, pulling back from `completeGraph ι`
+/-- Given a family of vertex types indexed by `ι`, pulling back from `⊤ : SimpleGraph ι`
 yields the complete multipartite graph on the family.
 Two vertices are adjacent if and only if their indices are not equal. -/
 abbrev completeMultipartiteGraph {ι : Type*} (V : ι → Type*) : SimpleGraph (Σ i, V i) :=
@@ -295,7 +295,7 @@ theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective 
   apply Sym2.map.injective hinj
 
 /-- Every graph homomorphism from a complete graph is injective. -/
-theorem injective_of_top_hom (f : completeGraph V →g G') : Function.Injective f := by
+theorem injective_of_top_hom (f : (⊤ : SimpleGraph V) →g G') : Function.Injective f := by
   intro v w h
   contrapose! h
   exact G'.ne_of_adj (map_adj _ ((top_adj _ _).mpr h))

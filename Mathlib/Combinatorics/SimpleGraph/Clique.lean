@@ -89,7 +89,7 @@ theorem IsClique.mono (h : G ≤ H) : G.IsClique s → H.IsClique s := Set.Pairw
 theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := Set.Pairwise.mono h
 
 @[simp]
-theorem isClique_bot_iff : (emptyGraph α).IsClique s ↔ (s : Set α).Subsingleton :=
+theorem isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Subsingleton :=
   Set.pairwise_bot_iff
 
 alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
@@ -225,7 +225,7 @@ theorem isNClique_map_iff (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
   simp [hs.card_eq, hs.isClique]
 
 @[simp]
-theorem isNClique_bot_iff : (emptyGraph α).IsNClique n s ↔ n ≤ 1 ∧ #s = n := by
+theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ #s = n := by
   rw [isNClique_iff, isClique_bot_iff]
   refine and_congr_left ?_
   rintro rfl
@@ -318,7 +318,7 @@ variable {G H} {s : Finset α}
 theorem IsNClique.not_cliqueFree (hG : G.IsNClique n s) : ¬G.CliqueFree n :=
   fun h ↦ h _ hG
 
-theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : completeGraph (Fin n) ↪g G) :
+theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n)) ↪g G) :
     ¬G.CliqueFree n := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not]
   use Finset.univ.map f.toEmbedding
@@ -332,11 +332,10 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : completeGraph (Fin n) ↪
 
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
 noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
-    completeGraph (Fin n) ↪g G := by
+    (⊤ : SimpleGraph (Fin n)) ↪g G := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not] at h
   obtain ⟨ha, hb⟩ := h.choose_spec
-  repeat rw [← completeGraph] at ha
-  have : completeGraph (Fin #h.choose) ≃g completeGraph h.choose := by
+  have : (⊤ : SimpleGraph (Fin #h.choose)) ≃g (⊤ : SimpleGraph h.choose) := by
     apply Iso.completeGraph
     simpa using (Fintype.equivFin h.choose).symm
   rw [← ha] at this
@@ -349,7 +348,7 @@ theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGr
 theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
   rw [← not_iff_not, not_cliqueFree_iff, not_isEmpty_iff]
 
-theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : completeGraph α ↪g G) :
+theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGraph α) ↪g G) :
     ¬G.CliqueFree (card α) := by
   rw [not_cliqueFree_iff]
   exact ⟨(Iso.completeGraph (Fintype.equivFin α)).symm.toEmbedding.trans f⟩
@@ -358,7 +357,7 @@ theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : completeGraph α 
   fun h ↦ h ∅ <| isNClique_empty.mpr rfl
 
 @[simp]
-theorem cliqueFree_bot (h : 2 ≤ n) : (emptyGraph α).CliqueFree n := by
+theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
   intro t ht
   have := le_trans h (isNClique_bot_iff.1 ht).1
   contradiction
@@ -407,7 +406,7 @@ variable {ι : Type*} (V : ι → Type*)
 /-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts -/
 @[simps]
 def topEmbedding (f : ∀ (i : ι), V i) :
-    completeGraph ι ↪g completeMultipartiteGraph V where
+    (⊤ : SimpleGraph ι) ↪g completeMultipartiteGraph V where
   toFun := fun i ↦ ⟨i, f i⟩
   inj' := fun _ _ h ↦ (Sigma.mk.inj_iff.1 h).1
   map_rel_iff' := by simp
@@ -580,7 +579,7 @@ theorem cliqueSet_one (G : SimpleGraph α) : G.cliqueSet 1 = Set.range singleton
   Set.ext fun s => by simp [eq_comm]
 
 @[simp]
-theorem cliqueSet_bot (hn : 1 < n) : (emptyGraph α).cliqueSet n = ∅ :=
+theorem cliqueSet_bot (hn : 1 < n) : (⊥ : SimpleGraph α).cliqueSet n = ∅ :=
   (cliqueFree_bot hn).cliqueSet
 
 @[simp]
