@@ -2464,10 +2464,13 @@ import Mathlib.CategoryTheory.Sites.CoversTop
 import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
+import Mathlib.CategoryTheory.Sites.Descent.Coalgebra
 import Mathlib.CategoryTheory.Sites.Descent.CodescentData
 import Mathlib.CategoryTheory.Sites.Descent.DescentData
 import Mathlib.CategoryTheory.Sites.Descent.HasEffectiveDescent
+import Mathlib.CategoryTheory.Sites.Descent.ModuleCat
 import Mathlib.CategoryTheory.Sites.Descent.Morphisms
+import Mathlib.CategoryTheory.Sites.Descent.PullbackStruct
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
