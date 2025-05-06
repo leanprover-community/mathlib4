@@ -82,14 +82,12 @@ noncomputable def filtrationLECocone :
   pt := K
   ι := { app := K.ιTruncLE }
 
-/-noncomputable def isColimitFiltrationLECocone :
+noncomputable def isColimitFiltrationLECocone :
     IsColimit K.filtrationLECocone :=
   HomologicalComplex.isColimitOfEval _ _ (fun n ↦
     isColimitOfIsEventuallyConstant _ (n + 1) (by
       intro m h
       replace h := leOfHom h
-      dsimp
-      -- use `HomologicalComplex.isIso_ιTruncLE_f`
-      sorry))-/
+      exact isIso_ιTruncLE_f _ _ _ (by omega)))
 
 end CochainComplex

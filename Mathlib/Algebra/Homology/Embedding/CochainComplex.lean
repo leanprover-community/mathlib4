@@ -59,6 +59,24 @@ instance (n : ℤ) : Epi (K.πTruncGE n) := by
   dsimp only [πTruncGE]
   infer_instance
 
+lemma isIso_ιTruncLE_f (n m : ℤ) (h : m < n) : IsIso ((K.ιTruncLE n).f m) := by
+  obtain ⟨a, rfl⟩ : ∃ a, (embeddingUpIntLE n).f a = m := by
+    obtain ⟨a, ha⟩ := Int.le.dest h.le
+    exact ⟨a, by dsimp; omega⟩
+  apply HomologicalComplex.isIso_ιTruncLE_f
+  simp only [ComplexShape.boundaryLE_embeddingUpIntLE_iff]
+  rintro rfl
+  simp at h
+
+lemma isIso_πTruncGE_f (n m : ℤ) (h : n < m) : IsIso ((K.πTruncGE n).f m) := by
+  obtain ⟨a, rfl⟩ : ∃ a, (embeddingUpIntGE n).f a = m := by
+    obtain ⟨a, ha⟩ := Int.le.dest h.le
+    exact ⟨a, by dsimp; omega⟩
+  apply HomologicalComplex.isIso_πTruncGE_f
+  simp only [ComplexShape.boundaryGE_embeddingUpIntGE_iff]
+  rintro rfl
+  simp at h
+
 section
 
 variable {K L}
