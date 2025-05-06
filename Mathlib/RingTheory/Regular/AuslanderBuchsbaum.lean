@@ -206,6 +206,13 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
       AddCommGrp.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0
     simp [hg1, hg2]
 
+lemma ENat.lt_of_add_one_lt {a b : ℕ∞} (lt : a + 1 < b + 1) : a < b := by
+  have lttop : a < ⊤ := lt_of_add_lt_add_right (lt_top_of_lt lt)
+  by_cases eqtop : b = ⊤
+  · simpa [eqtop] using lttop
+  · rw [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff (LT.lt.ne_top lttop)] at lt
+    exact lt
+
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     [Small.{v} (R ⧸ (maximalIdeal R))]
@@ -319,16 +326,23 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       --straightly prove hom = 0
       rw [Ext.addEquiv₀.subsingleton_congr, (ModuleCat.homLinearEquiv (S := R)).subsingleton_congr]
       sorry
-    · have : i - 1 < n := by
-        sorry
-      have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
+    · have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
+      have : i - 1 < n := by
+        rw [add_comm, ← eq, ENat.coe_add, ENat.coe_sub, ENat.coe_one] at hi
+        exact ENat.lt_of_add_one_lt hi
       have := ((iff (i - 1)).mp (hn (i - 1) this)).2
-      rw [eq] at this
+      simp only [eq, K] at this
       sorry
   · apply sSup_le (fun n hn ↦ ?_)
     by_cases eq0 : n = 0
     · simp [eq0]
-    · have : n - 1 + 1 = n := by sorry
+    · have : n - 1 + 1 = n := by
+        by_cases eqtop : n = ⊤
+        · simp [eqtop]
+        · rcases ENat.ne_top_iff_exists.mp eqtop with ⟨m, hm⟩
+          simp only [← hm, ← ENat.coe_zero, ENat.coe_inj] at eq0
+          rw [← hm, ← ENat.coe_one, ← ENat.coe_sub, ← ENat.coe_add, ENat.coe_inj,
+            Nat.sub_one_add_one eq0]
       rw [add_comm, ← this]
       apply add_le_add_right
       apply le_sSup
