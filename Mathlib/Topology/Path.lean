@@ -287,8 +287,8 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
   · refine congr_arg _ (Subtype.ext ?_)
     norm_num [sub_sub_eq_add_sub, mul_sub]
   · refine congr_arg _ (Subtype.ext ?_)
-    norm_num [mul_sub, h]
-    ring -- TODO norm_num should really do this
+    simp only [coe_symm_eq]
+    ring
   · exfalso
     linarith
 
@@ -296,8 +296,7 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
 theorem refl_trans_refl {a : X} :
     (Path.refl a).trans (Path.refl a) = Path.refl a := by
   ext
-  simp only [Path.trans, ite_self, one_div, Path.refl_extend, ContinuousMap.const_apply]
-  rfl
+  simp [Path.trans]
 
 theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
     range (γ₁.trans γ₂) = range γ₁ ∪ range γ₂ := by
