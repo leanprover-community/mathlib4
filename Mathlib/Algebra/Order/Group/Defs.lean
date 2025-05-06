@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Util.AssertExists
@@ -178,3 +179,20 @@ theorem one_le_inv_of_le_one : a ≤ 1 → 1 ≤ a⁻¹ :=
   one_le_inv'.mpr
 
 end NormNumLemmas
+
+variable {α : Type*}
+
+/-- Typeclass for preservation of sign by inversion. -/
+class InvNonneg (α : Type*) extends Inv α, Preorder α, Zero α where
+  protected inv_nonneg {a : α} : 0 ≤ a⁻¹ ↔ 0 ≤ a
+
+lemma inv_nonneg [InvNonneg α] {a : α} (h : 0 ≤ a) : 0 ≤ a⁻¹ := InvNonneg.inv_nonneg.2 h
+
+class DivInvNonnegMonoid (α : Type*) extends DivInvMonoid α, InvNonneg α
+
+lemma monotone_div_right_of_nonneg [DivInvNonnegMonoid α] [MulPosMono α] {b : α}
+    (h : 0 ≤ b) :
+    Monotone fun a : α ↦ a / b := by
+  intro a a' a_a'
+  simp only [div_eq_mul_inv]
+  exact mul_le_mul_of_nonneg_right a_a' (inv_nonneg h)
