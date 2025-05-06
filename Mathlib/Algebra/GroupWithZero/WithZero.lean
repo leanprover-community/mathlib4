@@ -287,6 +287,11 @@ def _root_.MulEquiv.withZero [Group β] :
   left_inv _ := by ext; simp
   right_inv _ := by ext x; cases x <;> simp
 
+/-- The inverse of `MulEquiv.withZero`. -/
+abbrev _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
+    α ≃* β :=
+  _root_.MulEquiv.withZero.symm e
+
 end Group
 
 instance instCommGroupWithZero [CommGroup α] : CommGroupWithZero (WithZero α) where
