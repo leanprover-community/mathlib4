@@ -229,6 +229,10 @@ def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
     return .some .pre
   return .none
 
+def translateToNat (type : Expr) (idxToAtom : Std.HashMap ℕ Expr) (facts : Array AtomicFact) :
+    MetaM <| Std.HashMap ℕ Expr × Array AtomicFact :=
+  sorry
+
 /-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
 or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 elab "order" : tactic => focus do
@@ -243,6 +247,19 @@ elab "order" : tactic => focus do
     | .pre => preprocessFactsPreorder g facts
     | .part => preprocessFactsPartial g facts idxToAtom
     | .lin => preprocessFactsLinear g facts idxToAtom
+    if orderType == .lin then
+      let (_, factsNat) ← translateToNat type idxToAtom facts
+      let factsExpr : Array Expr := factsNat.filterMap fun factNat =>
+        match factNat with
+        | .eq _ _ proof => some proof
+        | .ne _ _ proof => some proof
+        | .le _ _ proof => some proof
+        | .nle _ _ proof => some proof
+        | .lt _ _ proof => some proof
+        | .nlt _ _ proof => some proof
+        | _ => none
+      Omega.omega factsExpr.toList g
+      return
     let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
     graph ← updateGraphWithNltInfSup graph idxToAtom facts
     if orderType == .pre then
