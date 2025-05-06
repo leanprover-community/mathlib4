@@ -141,7 +141,8 @@ def rotateIsosCore (e : Expr) (a b : ℕ) (rev : Bool) : MetaM (Expr × Expr) :=
         ``Functor.mapIso_symm, ``Category.assoc, ``Category.id_comp, ``Category.comp_id,
         ``Iso.trans_refl, ``Iso.refl_trans]
       e (config := { decide := false })) (← inferType e') e'
-  return (← mkLambdaFVars #[g] final_expr.2 (binderInfoForMVars := .default), final_expr.1)
+  return (← mkLambdaFVars #[g] (← mkExpectedTypeHint final_expr.2 final_expr.1)
+    (binderInfoForMVars := .default), final_expr.1)
 
 /-- A variant of `rotateIsosCore` in which we return an expression of the form `e ↔ e'`
 (see the `rotateIsosCore` docstring for interpretation of `e` and `e''`) which is useful in case
