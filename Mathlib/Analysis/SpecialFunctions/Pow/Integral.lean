@@ -109,6 +109,24 @@ section LayercakeLT
 For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
 be written (roughly speaking) as: `∫⁻ f^p ∂μ = p * ∫⁻ t in 0..∞, t^(p-1) * μ {ω | f(ω) > t}`.
 
+See `MeasureTheory.lintegral_rpow_eq_lintegral_meas_le_mul_enorm` for a version with sets of the
+form `{ω | f(ω) ≥ t}` instead. -/
+theorem lintegral_rpow_eq_lintegral_meas_lt_mul_enorm
+    {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) {p : ℝ} (p_pos : 0 < p) :
+    ∫⁻ ω, f ω ^ p ∂μ =
+      ENNReal.ofReal p * ∫⁻ t in Ioi 0, μ {a : α | ENNReal.ofReal t < f a} * ENNReal.ofReal (t ^ (p - 1)) := by
+  rw [lintegral_rpow_eq_lintegral_meas_le_mul_enorm μ hf p_pos]
+  apply congr_arg fun z => ENNReal.ofReal p * z
+  apply lintegral_congr_ae
+  -- TODO: this needs a measure on ENNReal with no atoms
+  sorry -- filter_upwards [meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f] with t ht
+  -- rw [ht]
+
+/-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
+
+For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
+be written (roughly speaking) as: `∫⁻ f^p ∂μ = p * ∫⁻ t in 0..∞, t^(p-1) * μ {ω | f(ω) > t}`.
+
 See `MeasureTheory.lintegral_rpow_eq_lintegral_meas_le_mul` for a version with sets of the form
 `{ω | f(ω) ≥ t}` instead. -/
 theorem lintegral_rpow_eq_lintegral_meas_lt_mul
