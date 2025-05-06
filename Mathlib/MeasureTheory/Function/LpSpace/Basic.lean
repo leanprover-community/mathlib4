@@ -445,7 +445,6 @@ instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsSc
   smul_assoc k k' f := Subtype.ext <| smul_assoc k k' (f : α →ₘ[μ] E)
 
 instance instIsBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp E p μ) :=
-  -- TODO: add `IsBoundedSMul.of_nnnorm_smul_le`
   IsBoundedSMul.of_norm_smul_le fun r f => by
     suffices ‖r • f‖ₑ ≤ ‖r‖ₑ * ‖f‖ₑ by
       -- squeezed for performance reasons
@@ -496,7 +495,7 @@ theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) 
   exact hf.2.ne
 
 theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞) :
-    MemLp (fun x : α => ‖f x‖ₑ ^ q.toReal) (p / q) μ := by
+    MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ := by
   refine ⟨(hf.1.enorm.pow_const q.toReal).aestronglyMeasurable, ?_⟩
   by_cases q_top : q = ∞
   · simp [q_top]
@@ -505,13 +504,12 @@ theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
     by_cases p_zero : p = 0
     · simp [p_zero]
     rw [ENNReal.div_zero p_zero]
-    simp only [ENNReal.rpow_zero, eLpNorm_exponent_top]
-    sorry -- TODO: need an enorm version of memLp_top_const
-  sorry--rw [eLpNorm_enorm_rpow _ (ENNReal.toReal_pos q_zero q_top)]
-  --apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
-  --rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
-  --  mul_one]
-  --exact hf.2.ne
+    simpa only [ENNReal.rpow_zero, eLpNorm_exponent_top] using (memLp_top_const_enorm (by simp)).2
+  rw [eLpNorm_enorm_rpow _ (ENNReal.toReal_pos q_zero q_top)]
+  apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
+  rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
+    mul_one]
+  exact hf.2.ne
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.norm_rpow_div := MemLp.norm_rpow_div
@@ -529,17 +527,16 @@ theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeas
       mul_one]
 
 theorem memLp_enorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
-    (q_top : q ≠ ∞) : MemLp (fun x : α => ‖f x‖ₑ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
+    (q_top : q ≠ ∞) : MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
   refine ⟨fun h => ?_, fun h => h.enorm_rpow_div q⟩
   apply (memLp_enorm_iff hf).1
-  sorry /- TODO: continue from here, find all the missing lemmas
   convert h.enorm_rpow_div q⁻¹ using 1
   · ext x
-    rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg (norm_nonneg _), ← Real.rpow_mul (abs_nonneg _),
-      ENNReal.toReal_inv, mul_inv_cancel₀, abs_of_nonneg (norm_nonneg _), Real.rpow_one]
-    simp [ENNReal.toReal_eq_zero_iff, not_or, q_zero, q_top]
+    have : q.toReal * q.toReal⁻¹ = 1 :=
+      CommGroupWithZero.mul_inv_cancel q.toReal <| ENNReal.toReal_ne_zero.mpr ⟨q_zero, q_top⟩
+    simp [← ENNReal.rpow_mul, this, ENNReal.rpow_one]
   · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
-      mul_one] -/
+      mul_one]
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_rpow_iff := memLp_norm_rpow_iff
