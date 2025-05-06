@@ -543,6 +543,7 @@ import Mathlib.Algebra.Homology.HomologicalBicomplex
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 import Mathlib.Algebra.Homology.HomologicalComplexBiprod
+import Mathlib.Algebra.Homology.HomologicalComplexFunctorEquiv
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
 import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 import Mathlib.Algebra.Homology.Homology
