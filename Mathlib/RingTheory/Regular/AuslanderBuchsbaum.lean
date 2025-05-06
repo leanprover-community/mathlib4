@@ -1,7 +1,21 @@
+/-
+Copyright (c) 2025 Yongle Hu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nailin Guan, Yongle Hu, Yijun Yuan
+-/
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Regular.Depth
+
+/-!
+# Auslander-Buchsbaum theorem
+
+In this file, we prove the Auslander-Buchsbaum theorem, which states that for a finitely generated
+module `M` over a Noetherian local ring `R`, if $\operatorname{proj}\dim M < \infty$, then
+$\operatorname{proj}\dim M + \operatorname{depth} M = \operatorname{depth} R$.
+
+-/
 
 namespace CategoryTheory
 
@@ -168,15 +182,12 @@ lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Modu
 noncomputable local instance [IsLocalRing R] : Field (R ⧸ maximalIdeal R) :=
   Quotient.field (maximalIdeal R)
 
-instance [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M]
-    [Module.Finite R M] :
-    FiniteDimensional (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M)) := by
-  let f : M →ₛₗ[Ideal.Quotient.mk (maximalIdeal R)] (M ⧸ maximalIdeal R • (⊤ : Submodule R M)) := {
-    __ := Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M))
-    map_smul' m r := by
-      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_smul, Submodule.mkQ_apply]
-      rfl }
-  exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
+instance (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
+    [Module.Finite R M] : Module.Finite (R ⧸I) (M ⧸ I • (⊤ : Submodule R M)) :=
+  let f : M →ₛₗ[Ideal.Quotient.mk I] (M ⧸ I • (⊤ : Submodule R M)) := {
+    __ := Submodule.mkQ (I • ⊤)
+    map_smul' _ _ := rfl }
+  Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
 lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M ⟶ N)
     (mem : f ∈ (Module.annihilator R L) • (⊤ : Submodule R (M ⟶ N))) :
