@@ -436,9 +436,7 @@ lemma edgeFinset_subset_sym2_of_support_subset (h : G.support ⊆ s) :
 instance : DecidablePred (· ∈ G.support) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
 
-variable [DecidableEq V]
-
-theorem map_edgeFinset_induce :
+theorem map_edgeFinset_induce [DecidableEq V] :
     (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map
       = G.edgeFinset ∩ s.toFinset.sym2 := by
   simp_rw [Finset.ext_iff, Sym2.forall, mem_inter, mk_mem_sym2_iff, mem_map, Sym2.exists,
@@ -456,6 +454,7 @@ theorem map_edgeFinset_induce :
 
 theorem map_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
     (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map = G.edgeFinset := by
+  classical
   simpa [map_edgeFinset_induce] using edgeFinset_subset_sym2_of_support_subset h
 
 /-- If the support of the simple graph `G` is a subset of the set `s`, then the induced subgraph of
@@ -468,13 +467,14 @@ theorem card_edgeFinset_induce_support :
     #(G.induce G.support).edgeFinset = #G.edgeFinset :=
   card_edgeFinset_induce_of_support_subset subset_rfl
 
-theorem map_neighborFinset_induce (v : s) :
+theorem map_neighborFinset_induce [DecidableEq V] (v : s) :
     ((G.induce s).neighborFinset v).map (.subtype s)
       = G.neighborFinset v ∩ s.toFinset := by
   ext; simp [Set.mem_def]
 
 theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
     ((G.induce s).neighborFinset v).map (.subtype s) = G.neighborFinset v := by
+  classical
   rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
     ← map_neighborFinset_induce v] at h
 
