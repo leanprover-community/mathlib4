@@ -335,6 +335,7 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     completeGraph (Fin n) ↪g G := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not] at h
   obtain ⟨ha, hb⟩ := h.choose_spec
+  repeat rw [← completeGraph] at ha
   have : completeGraph (Fin #h.choose) ≃g completeGraph h.choose := by
     apply Iso.completeGraph
     simpa using (Fintype.equivFin h.choose).symm
