@@ -378,6 +378,64 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
 
 /-- The layer cake formula / **Cavalieri's principle** / tail probability formula:
 
+Let `f` be an `ℝ≥0∞`-valued measurable function on a measure space. Let `G` be an
+increasing absolutely continuous function on the positive real line, vanishing at the origin,
+with derivative `G' = g`. Then the integral of the composition `G ∘ f` can be written as
+the integral over the positive real line of the "tail measures" `μ {ω | f(ω) ≥ t}` of `f`
+weighted by `g`.
+
+Roughly speaking, the statement is: `∫⁻ (G ∘ f) ∂μ = ∫⁻ t in 0..∞, g(t) * μ {ω | f(ω) ≥ t}`.
+
+See `MeasureTheory.lintegral_comp_eq_lintegral_meas_lt_mul_enorm` for a version with sets of the
+form `{ω | f(ω) > t}` instead. -/
+theorem lintegral_comp_eq_lintegral_meas_le_mul_enorm {f : α → ℝ≥0∞} (μ : Measure α)
+    (f_mble : AEMeasurable f μ) (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t)
+    (g_nn : ∀ᵐ t ∂volume.restrict (Ioi 0), 0 ≤ g t) :
+    ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ =
+      ∫⁻ t in Ioi 0, μ {a : α | ENNReal.ofReal t ≤ f a} * ENNReal.ofReal (g t) := by
+  obtain ⟨G, G_mble, G_nn, g_eq_G⟩ : ∃ G : ℝ → ℝ, Measurable G ∧ 0 ≤ G
+      ∧ g =ᵐ[volume.restrict (Ioi 0)] G := by
+    refine AEMeasurable.exists_measurable_nonneg ?_ g_nn
+    exact aemeasurable_Ioi_of_forall_Ioc fun t ht => (g_intble t ht).1.1.aemeasurable
+  have g_eq_G_on : ∀ t, g =ᵐ[volume.restrict (Ioc 0 t)] G := fun t =>
+    ae_mono (Measure.restrict_mono Ioc_subset_Ioi_self le_rfl) g_eq_G
+  have G_intble : ∀ t > 0, IntervalIntegrable G volume 0 t := by
+    refine fun t t_pos => ⟨(g_intble t t_pos).1.congr_fun_ae (g_eq_G_on t), ?_⟩
+    rw [Ioc_eq_empty_of_le t_pos.lt.le]
+    exact integrableOn_empty
+  obtain ⟨F, F_mble, F_nn, f_eq_F⟩ : ∃ F : α → ℝ≥0∞, Measurable F ∧ 0 ≤ F ∧ f =ᵐ[μ] F := by
+    refine ⟨fun ω ↦ max (f_mble.mk f ω) 0, f_mble.measurable_mk.max measurable_const,
+        fun ω ↦ le_max_right _ _, ?_⟩
+    filter_upwards [f_mble.ae_eq_mk] with ω hω
+    rw [← hω]
+    exact (max_eq_left (zero_le _)).symm
+  have eq₁ :
+    ∫⁻ t in Ioi 0, μ {a : α | ENNReal.ofReal t ≤ f a} * ENNReal.ofReal (g t) =
+      ∫⁻ t in Ioi 0, μ {a : α | ENNReal.ofReal t ≤ F a} * ENNReal.ofReal (G t) := by
+    apply lintegral_congr_ae
+    filter_upwards [g_eq_G] with t ht
+    rw [ht]
+    congr 1
+    apply measure_congr
+    filter_upwards [f_eq_F] with a ha using by simp [setOf, ha]
+  have eq₂ : ∀ᵐ ω ∂μ,
+      ENNReal.ofReal (∫ t in (0)..f ω, g t) = ENNReal.ofReal (∫ t in (0)..F ω, G t) := by
+    filter_upwards [f_eq_F] with ω fω_nn
+    --rw [fω_nn]
+    congr 1
+    refine intervalIntegral.integral_congr_ae ?_
+    --have fω_nn : 0 ≤ F ω := F_nn ω
+    rw [uIoc_of_le fω_nn, ←
+      ae_restrict_iff' (measurableSet_Ioc : MeasurableSet (Ioc (0 : ℝ) (F ω)))]
+    exact g_eq_G_on (F ω)
+  simp_rw [lintegral_congr_ae eq₂, eq₁]
+  exact lintegral_comp_eq_lintegral_meas_le_mul_of_measurable μ F_nn F_mble
+          G_intble G_mble (fun t _ => G_nn t)
+
+#exit
+
+/-- The layer cake formula / **Cavalieri's principle** / tail probability formula:
+
 Let `f` be a non-negative measurable function on a measure space. Let `G` be an
 increasing absolutely continuous function on the positive real line, vanishing at the origin,
 with derivative `G' = g`. Then the integral of the composition `G ∘ f` can be written as
