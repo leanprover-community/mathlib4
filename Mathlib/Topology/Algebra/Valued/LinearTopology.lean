@@ -3,10 +3,9 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.Topology.Algebra.LinearTopology
-import Mathlib.Topology.Algebra.Valued.LocallyCompact
+import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # Valuation rings of valued fields have a linear topology
@@ -32,7 +31,7 @@ lemma _root_.Irreducible.maximalIdeal_pow_succ_eq_ball_pow [IsDiscreteValuationR
       {x : 𝒪[K] | Valued.v (x : K) < (Valued.v (ϖ : K)) ^ n} := by
   ext x
   simp only [h.maximalIdeal_eq, Ideal.span_singleton_pow, SetLike.mem_coe,
-    Ideal.mem_span_singleton, dist_zero_right, ← map_pow, Set.mem_setOf_eq]
+    Ideal.mem_span_singleton, ← map_pow, Set.mem_setOf_eq]
   constructor
   · rintro ⟨c, rfl⟩
     simp only [pow_succ, mul_assoc, Subring.coe_mul, SubmonoidClass.coe_pow, map_mul, map_pow]
@@ -174,13 +173,3 @@ instance IsLinearTopology.of_isDiscreteValuationRing {K Γ₀ : Type*} [Field K]
       refine hx.le.trans ?_
       rw [← map_pow, ← Subring.coe_pow]
       exact Subtype.prop (p ^ n : 𝒪[K])
-
-variable {p : ℕ} [Fact (Nat.Prime p)]
-
-section
-open NormedField
--- we don't have `Valued ℚ_[p] Γ₀` for any `Γ₀`, and even if we did
--- the definition of `ℤ_[p]` would not necessarily line up
-instance : IsDiscreteValuationRing 𝒪[ℚ_[p]] := inferInstanceAs (IsDiscreteValuationRing ℤ_[p])
-instance : IsLinearTopology ℤ_[p] ℤ_[p] := inferInstanceAs (IsLinearTopology 𝒪[ℚ_[p]] 𝒪[ℚ_[p]])
-end
