@@ -16,18 +16,18 @@ and there may also be more than one edge `e` whose ends are the same pair `(x,y)
 A multigraph where neither of these occurs is 'simple',
 and these objects are described by `SimpleGraph`.
 
-This module defines `Graph α β` for a vertex type `α` and an edge type `β`,
+This module defines `Graph α ε` for a vertex type `α` and an edge type `ε`,
 and gives basic API for incidence, adjacency and extensionality.
 The design broadly follows [Chou1994].
 
 ## Main definitions
 
-For `G : Graph α β`, ...
+For `G : Graph α ε`, ...
 
 * `G.V` denotes the vertex set of `G` as a term in `Set α`.
-* `G.E` denotes the edge set of `G` as a term in `Set β`.
-* `G.Inc₂ e x y` means that the edge `e : β` has vertices `x : α` and `y : α` as its ends.
-* `G.Inc e x` means that the edge `e : β` has `x` as one of its ends.
+* `G.E` denotes the edge set of `G` as a term in `Set ε`.
+* `G.Inc₂ e x y` means that the edge `e : ε` has vertices `x : α` and `y : α` as its ends.
+* `G.Inc e x` means that the edge `e : ε` has `x` as one of its ends.
 * `G.Adj x y` means that there is an edge `e` having `x` and `y` as its ends.
 * `G.IsLoopAt e x` means that `e` is a loop edge with both ends equal to `x`.
 * `G.IsNonloopAt e x` means that `e` is a non-loop edge with one end equal to `x`.
@@ -35,18 +35,18 @@ For `G : Graph α β`, ...
 ## Implementation notes
 
 Unlike the design of `SimpleGraph`, the vertex and edge sets of `G` are modelled as sets
-`G.V : Set α` and `G.E : Set β`, within ambient types, rather than being types themselves.
+`G.V : Set α` and `G.E : Set ε`, within ambient types, rather than being types themselves.
 This mimics the 'embedded set' design used in `Matroid`, which seems to be more convenient for
 formalizing real-world proofs in combinatorics.
 
-A specific advantage is that this will allow subgraphs of `G : Graph α β` to also exist on
-an equal footing with `G` as terms in `Graph α β`,
+A specific advantage is that this will allow subgraphs of `G : Graph α ε` to also exist on
+an equal footing with `G` as terms in `Graph α ε`,
 and so there is no need for an extensive `Graph.subgraph` API and all the associated
 definitions and canonical coercion maps. The same will go for minors and the various other
 partial orders on multigraphs.
 
 The main tradeoff is that parts of the API will require caring about whether a term
-`x : α` or `e : β` is a 'real' vertex or edge of the graph, rather than something outside
+`x : α` or `e : ε` is a 'real' vertex or edge of the graph, rather than something outside
 the vertex or edge set. This is an issue, but is likely amenable to automation.
 
 ## Notation
@@ -57,21 +57,24 @@ lemma names to refer to the same objects.
 
 -/
 
-variable {α β : Type*} {x y z u v w : α} {e f : β}
+variable {α ε : Type*} {x y z u v w : α} {e f : ε}
 
 open Set
 
-/-- A multigraph with vertex set `V : Set α` and edge set `E : Set β`,
-as described by a predicate describing whether an edge `e : β` has ends `x` and `y`. -/
-structure Graph (α β : Type*) where
+/-- A multigraph with vertex set `V : Set α` and edge set `E : Set ε`,
+as described by a predicate describing whether an edge `e : ε` has ends `x` and `y`.
+For definitional reasons, we include the edge set `E` as a structure field
+even though it can be inferred from `Inc₂` via `edge_mem_iff_exists_inc₂`;
+see `Graph.mk'` for a constructor that does not use `E`. -/
+structure Graph (α ε : Type*) where
   /-- The vertex set. -/
   V : Set α
   /-- The edge set. -/
-  E : Set β
+  E : Set ε
   /-- The binary incidence predicate, stating that `x` and `y` are the ends of an edge `e` -/
-  Inc₂ : β → α → α → Prop
+  Inc₂ : ε → α → α → Prop
   /-- If `e` goes from `x` to `y`, it goes from `y` to `x`. -/
-  inc₂_symm : ∀ e, Symmetric <| Inc₂ e
+  inc₂_symm : ∀ ⦃e⦄, e ∈ E → (Symmetric <| Inc₂ e)
   /-- An edge is incident with at most one pair of vertices. -/
   eq_or_eq_of_inc₂_of_inc₂ : ∀ ⦃e x y v w⦄, Inc₂ e x y → Inc₂ e v w → x = v ∨ x = w
   /-- An edge `e` is incident to something if and only if `e` is in the edge set -/
@@ -81,24 +84,24 @@ structure Graph (α β : Type*) where
 
 namespace Graph
 
-variable {G : Graph α β}
+variable {G : Graph α ε}
 
 /-! ### Edge-vertex-vertex incidence -/
 
-lemma Inc₂.symm (h : G.Inc₂ e x y) : G.Inc₂ e y x :=
-  G.inc₂_symm e h
-
-lemma inc₂_comm : G.Inc₂ e x y ↔ G.Inc₂ e y x :=
-  ⟨Inc₂.symm, Inc₂.symm⟩
-
 lemma Inc₂.edge_mem (h : G.Inc₂ e x y) : e ∈ G.E :=
   (edge_mem_iff_exists_inc₂ ..).2 ⟨x, y, h⟩
+
+lemma Inc₂.symm (h : G.Inc₂ e x y) : G.Inc₂ e y x :=
+  G.inc₂_symm h.edge_mem h
 
 lemma Inc₂.vx_mem_left (h : G.Inc₂ e x y) : x ∈ G.V :=
   G.vx_mem_left_of_inc₂ h
 
 lemma Inc₂.vx_mem_right (h : G.Inc₂ e x y) : y ∈ G.V :=
   h.symm.vx_mem_left
+
+lemma inc₂_comm : G.Inc₂ e x y ↔ G.Inc₂ e y x :=
+  ⟨Inc₂.symm, Inc₂.symm⟩
 
 lemma exists_inc₂_of_mem_edgeSet (h : e ∈ G.E) : ∃ x y, G.Inc₂ e x y :=
   (edge_mem_iff_exists_inc₂ ..).1 h
@@ -120,7 +123,7 @@ lemma Inc₂.eq_of_inc₂ (h : G.Inc₂ e x y) (h' : G.Inc₂ e x z) : y = z := 
 /-! ### Edge-vertex incidence -/
 
 /-- The unary incidence predicate of `G`. `G.Inc e x` means that `x` is one of the ends of `e`. -/
-def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.Inc₂ e x y
+def Inc (G : Graph α ε) (e : ε) (x : α) : Prop := ∃ y, G.Inc₂ e x y
 
 @[simp]
 lemma Inc.edge_mem (h : G.Inc e x) : e ∈ G.E :=
@@ -175,7 +178,7 @@ lemma Inc.eq_or_eq_or_eq_of_inc_of_inc (hx : G.Inc e x) (hy : G.Inc e y) (hz : G
   exact hcon.2.2 rfl
 
 /-- `G.IsLoopAt e x` means that both ends of `e` are equal to `x`. -/
-def IsLoopAt (G : Graph α β) (e : β) (x : α) : Prop := G.Inc₂ e x x
+def IsLoopAt (G : Graph α ε) (e : ε) (x : α) : Prop := G.Inc₂ e x x
 
 @[simp]
 lemma inc₂_self_iff : G.Inc₂ e x x ↔ G.IsLoopAt e x := Iff.rfl
@@ -196,7 +199,7 @@ lemma IsLoopAt.vx_mem (h : G.IsLoopAt e x) : x ∈ G.V :=
 
 /-- `G.IsNonloopAt e x` means that `e` is an edge from `x` to some `y ≠ x`. -/
 @[mk_iff]
-structure IsNonloopAt (G : Graph α β) (e : β) (x : α) : Prop where
+structure IsNonloopAt (G : Graph α ε) (e : ε) (x : α) : Prop where
   inc : G.Inc e x
   exists_inc₂_ne : ∃ y ≠ x, G.Inc₂ e x y
 
@@ -226,7 +229,7 @@ lemma Inc.isLoopAt_or_isNonloopAt (h : G.Inc e x) : G.IsLoopAt e x ∨ G.IsNonlo
 /-! ### Adjacency -/
 
 /-- `G.Adj x y` means that `G` has an edge from `x` to `y`. -/
-def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.Inc₂ e x y
+def Adj (G : Graph α ε) (x y : α) : Prop := ∃ e, G.Inc₂ e x y
 
 lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
   ⟨_, h.choose_spec.symm⟩
@@ -250,20 +253,20 @@ lemma Inc₂.adj (h : G.Inc₂ e x y) : G.Adj x y :=
 /-- A constructor for `Graph` in which the edge set is inferred from the incidence predicate
 rather than supplied explicitly. -/
 @[simps]
-protected def mk' (V : Set α) (Inc₂ : β → α → α → Prop)
+protected def mk' (V : Set α) (Inc₂ : ε → α → α → Prop)
     (inc₂_symm : ∀ ⦃e x y⦄, Inc₂ e x y → Inc₂ e y x)
     (eq_or_eq_of_inc₂_of_inc₂ : ∀ ⦃e x y v w⦄, Inc₂ e x y → Inc₂ e v w → x = v ∨ x = w)
-    (vx_mem_left_of_inc₂ : ∀ ⦃e x y⦄, Inc₂ e x y → x ∈ V) : Graph α β where
+    (vx_mem_left_of_inc₂ : ∀ ⦃e x y⦄, Inc₂ e x y → x ∈ V) : Graph α ε where
   V := V
   E := {e | ∃ x y, Inc₂ e x y}
   Inc₂ := Inc₂
-  inc₂_symm := inc₂_symm
+  inc₂_symm _ _ _ _ h := inc₂_symm h
   eq_or_eq_of_inc₂_of_inc₂ := eq_or_eq_of_inc₂_of_inc₂
   edge_mem_iff_exists_inc₂ _ := Iff.rfl
   vx_mem_left_of_inc₂ := vx_mem_left_of_inc₂
 
 @[simp]
-lemma mk'_eq_self (G : Graph α β) : Graph.mk' G.V G.Inc₂ (fun _ _ _ ↦ Inc₂.symm)
+lemma mk'_eq_self (G : Graph α ε) : Graph.mk' G.V G.Inc₂ (fun _ _ _ ↦ Inc₂.symm)
   (fun _ _ _ _ _ h h' ↦ h.left_eq_or_eq_of_inc₂ h') (fun _ _ _ ↦ Inc₂.vx_mem_left) = G := by
   have h := G.edgeSet_eq_setOf_exists_inc₂
   cases G with | mk V E Inc₂ _ _ _ => simpa [Graph.mk'] using h.symm
@@ -272,7 +275,7 @@ lemma mk'_eq_self (G : Graph α β) : Graph.mk' G.V G.Inc₂ (fun _ _ _ ↦ Inc�
 (We use this as the default extensionality lemma rather than adding `@[ext]`
 to the definition of `Graph`, so it doesn't require equality of the edge sets.) -/
 @[ext]
-protected lemma ext {G₁ G₂ : Graph α β} (hV : G₁.V = G₂.V)
+protected lemma ext {G₁ G₂ : Graph α ε} (hV : G₁.V = G₂.V)
     (h : ∀ e x y, G₁.Inc₂ e x y ↔ G₂.Inc₂ e x y) : G₁ = G₂ := by
   rw [← G₁.mk'_eq_self, ← G₂.mk'_eq_self]
   simp_rw [hV]
@@ -282,7 +285,7 @@ protected lemma ext {G₁ G₂ : Graph α β} (hV : G₁.V = G₂.V)
 
 /-- Two graphs with the same vertex set and unary incidences are equal. -/
 @[ext]
-lemma ext_inc {G₁ G₂ : Graph α β} (hV : G₁.V = G₂.V) (h : ∀ e x, G₁.Inc e x ↔ G₂.Inc e x) :
+lemma ext_inc {G₁ G₂ : Graph α ε} (hV : G₁.V = G₂.V) (h : ∀ e x, G₁.Inc e x ↔ G₂.Inc e x) :
     G₁ = G₂ :=
   Graph.ext hV fun _ _ _ ↦ by simp_rw [inc₂_iff_inc, h]
 
