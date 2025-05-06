@@ -289,8 +289,7 @@ theorem integral_divergence_of_hasFDerivAt_off_countable (hle : a ≤ b)
         setIntegral_empty, sub_self]
   · -- In the non-trivial case `∀ i, a i < b i`, we apply a lemma we proved above.
     have hlt : ∀ i, a i < b i := fun i => (hle i).lt_of_ne fun hi => hne ⟨i, hi⟩
-    exact integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ ⟨a, b, hlt⟩ f f' s hs Hc
-      Hd Hi
+    exact integral_divergence_of_hasFDerivAt_off_countable_aux₂ ⟨a, b, hlt⟩ f f' s hs Hc Hd Hi
 
 @[deprecated (since := "2025-05-02")]
 alias integral_divergence_of_hasFDerivWithinAt_off_countable :=
