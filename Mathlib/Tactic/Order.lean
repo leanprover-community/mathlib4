@@ -247,6 +247,17 @@ elab "order" : tactic => focus do
     | .pre => preprocessFactsPreorder g facts
     | .part => preprocessFactsPartial g facts idxToAtom
     | .lin => preprocessFactsLinear g facts idxToAtom
+    let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
+    graph ← updateGraphWithNltInfSup graph idxToAtom facts
+    if orderType == .pre then
+      if let .some pf ← findContradictionWithNle graph idxToAtom facts then
+        g.assign pf
+        break
+    else
+      if let .some pf ← findContradictionWithNe graph idxToAtom facts then
+        g.assign pf
+        break
+    -- if fast procedure failed and order is linear, we try `omega`
     if orderType == .lin then
       let (_, factsNat) ← translateToNat type idxToAtom facts
       let factsExpr : Array Expr := factsNat.filterMap fun factNat =>
@@ -258,18 +269,10 @@ elab "order" : tactic => focus do
         | .lt _ _ proof => some proof
         | .nlt _ _ proof => some proof
         | _ => none
-      Omega.omega factsExpr.toList g
-      return
-    let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
-    graph ← updateGraphWithNltInfSup graph idxToAtom facts
-    if orderType == .pre then
-      let .some pf ← findContradictionWithNle graph idxToAtom facts | continue
-      g.assign pf
-      return
-    else
-      let .some pf ← findContradictionWithNe graph idxToAtom facts | continue
-      g.assign pf
-      return
+      try
+        Omega.omega factsExpr.toList g
+        break
+      catch _ => pure ()
   throwError "No contradiction found"
 
 end Mathlib.Tactic.Order
