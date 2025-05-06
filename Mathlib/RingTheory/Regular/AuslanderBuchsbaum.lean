@@ -325,14 +325,15 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     · rw [eq0]
       --straightly prove hom = 0
       rw [Ext.addEquiv₀.subsingleton_congr, (ModuleCat.homLinearEquiv (S := R)).subsingleton_congr]
+      show Subsingleton ((Shrink.{v, u} (R ⧸ maximalIdeal R)) →ₗ[R] (Shrink.{v, u} R))
+
       sorry
     · have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
       have : i - 1 < n := by
         rw [add_comm, ← eq, ENat.coe_add, ENat.coe_sub, ENat.coe_one] at hi
         exact ENat.lt_of_add_one_lt hi
       have := ((iff (i - 1)).mp (hn (i - 1) this)).2
-      simp only [eq, K] at this
-      sorry
+      simpa only [eq] using this
   · apply sSup_le (fun n hn ↦ ?_)
     by_cases eq0 : n = 0
     · simp [eq0]
@@ -347,9 +348,9 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       apply add_le_add_right
       apply le_sSup
       intro i hi
-      #check hn i
-      #check hn (i + 1)
-      sorry
+      have lt1 : i < n := sorry
+      have lt2 : i + 1 < n := sorry
+      exact (iff i).mpr ⟨hn i lt1, hn (i + 1) lt2⟩
 
 open scoped Classical in
 theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
