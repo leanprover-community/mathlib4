@@ -98,15 +98,15 @@ section ElementaryBasis
 
 variable {n R} [Fintype n] (i j : n)
 
-/-- When `i ≠ j`, the elementary matrices are elements of `sl n R`, in fact they are part of a
+/-- When `i ≠ j`, the single-element matrices are elements of `sl n R`, in fact they are part of a
 natural basis of `sl n R`. -/
-def Eb (h : i ≠ j) (r : R) : sl n R :=
+def single (h : i ≠ j) (r : R) : sl n R :=
   ⟨Matrix.single i j r,
     show Matrix.single i j r ∈ LinearMap.ker (Matrix.traceLinearMap n R R) from
       Matrix.trace_single_eq_of_ne i j r h⟩
 
 @[simp]
-theorem eb_val (h : i ≠ j) (r : R) : (Eb i j h r).val = Matrix.single i j r :=
+theorem val_single (h : i ≠ j) (r : R) : (single i j h r).val = Matrix.single i j r :=
   rfl
 
 end ElementaryBasis
@@ -114,12 +114,12 @@ end ElementaryBasis
 theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
     ¬IsLieAbelian (sl n R) := by
   rcases Fintype.exists_pair_of_one_lt_card h with ⟨i, j, hij⟩
-  let A := Eb i j hij (1 : R)
-  let B := Eb j i hij.symm (1 : R)
+  let A := single i j hij (1 : R)
+  let B := single j i hij.symm (1 : R)
   intro c
   have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
-  simpa [A, B, single, Matrix.mul_apply, hij.symm] using congr_fun (congr_fun c' i) i
+  simpa [A, B, Matrix.single, Matrix.mul_apply, hij.symm] using congr_fun (congr_fun c' i) i
 
 end SpecialLinear
 
