@@ -9,20 +9,20 @@ import Mathlib.MeasureTheory.Integral.Layercake
 /-!
 # The integral of the real power of a nonnegative function
 
-In this file, we give a common application of the layer cake formula -
-a representation of the integral of the p:th power of a nonnegative function f:
-∫ f(ω)^p ∂μ(ω) = p * ∫ t^(p-1) * μ {ω | f(ω) ≥ t} dt .
+In this file, we give a common application of the layer cake formula ---
+a representation of the integral of the p:th power of a nonnegative function `f`:
+`∫ f(ω)^p ∂μ(ω) = p * ∫ t^(p-1) * μ {ω | f(ω) ≥ t} dt`.
 
-A variant of the formula with measures of sets of the form {ω | f(ω) > t} instead of {ω | f(ω) ≥ t}
-is also included.
+A variant of the formula with measures of sets of the form `{ω | f(ω) > t}` instead of
+`{ω | f(ω) ≥ t}` is also included.
 
 ## Main results
 
  * `MeasureTheory.lintegral_rpow_eq_lintegral_meas_le_mul` and
-   `MeasureTheory.lintegral_rpow_eq_lintegral_meas_lt_mul`:
-   Other common special cases of the layer cake formulas, stating that for a nonnegative function f
-   and p > 0, we have ∫ f(ω)^p ∂μ(ω) = p * ∫ μ {ω | f(ω) ≥ t} * t^(p-1) dt and
-   ∫ f(ω)^p ∂μ(ω) = p * ∫ μ {ω | f(ω) > t} * t^(p-1) dt, respectively.
+  `MeasureTheory.lintegral_rpow_eq_lintegral_meas_lt_mul`:
+  other common special cases of the layer cake formulas, stating that for a nonnegative function `f`
+  and `p > 0`, we have `∫ f(ω)ᵖ ∂μ(ω) = p * ∫ μ {ω | f(ω) ≥ t} * tᵖ⁻¹ dt` and
+   `∫ f(ω)ᵖ ∂μ(ω) = p * ∫ μ {ω | f(ω) > t} * tᵖ⁻¹ dt, respectively.
 
 ## Tags
 
