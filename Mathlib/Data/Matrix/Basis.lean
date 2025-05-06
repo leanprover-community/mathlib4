@@ -294,7 +294,7 @@ theorem single_mul_mul_single [Fintype n]
   by_cases h₁ : i = i'' <;> by_cases h₂ : j = j'' <;> simp [h₁, h₂]
 
 @[deprecated (since := "2025-05-05")]
-alias stdBasisMatrix_mul_mul_stdBasisMatrix := single_mul_mul_single
+alias StdBasisMatrix.stdBasisMatrix_mul_mul_stdBasisMatrix := single_mul_mul_single
 
 @[simp]
 theorem single_mul_single_of_ne (i : l) (j k : m) {l : n} (h : j ≠ k) (d : α) :
