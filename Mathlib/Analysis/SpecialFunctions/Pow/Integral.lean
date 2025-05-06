@@ -40,7 +40,7 @@ section Layercake
 
 /-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
 
-For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
+For an `ℝ≥0∞`-valued function `f` on a measure space, the Lebesgue integral of `f` can
 be written (roughly speaking) as: `∫⁻ f^p ∂μ = p * ∫⁻ t in 0..∞, t^(p-1) * μ {ω | f(ω) ≥ t}`.
 
 See `MeasureTheory.lintegral_rpow_eq_lintegral_meas_lt_mul_enorm` for a version with sets of the
