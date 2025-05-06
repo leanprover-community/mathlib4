@@ -153,7 +153,6 @@ if it holds for
 * `a * X`, with `a ∈ R`,
 * `p * X`, with `p ∈ R[X]`,
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
-
 with appropriate restrictions on each term.
 
 See `natDegree_ne_zero_induction_on` for a similar statement involving no explicit multiplication.
@@ -181,7 +180,6 @@ semiring `R` if it holds for
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
 * `p + q`, with `p, q ∈ R[X]`,
 * monomials with nonzero coefficient and non-zero exponent,
-
 with appropriate restrictions on each term.
 Note that multiplication is "hidden" in the assumption on monomials, so there is no explicit
 multiplication in the statement.

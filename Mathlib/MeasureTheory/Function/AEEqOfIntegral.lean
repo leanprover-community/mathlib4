@@ -24,7 +24,6 @@ This file is about Bochner integrals. See the file `AEEqOfLIntegral` for Lebesgu
 All results listed below apply to two functions `f, g`, together with two main hypotheses,
 * `f` and `g` are integrable on all measurable sets with finite measure,
 * for all measurable sets `s` with finite measure, `∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ`.
-
 The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
 * `ae_eq_of_forall_setIntegral_eq_of_sigmaFinite`: case of a sigma-finite measure.
 * `AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq`: for functions which are

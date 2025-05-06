@@ -180,7 +180,6 @@ declaration names that are implied by
 * the attributes of `cmd` (if there are any),
 * the identifiers contained in `cmd`,
 * if `cmd` adds a declaration `d` to the environment, then also all the module names implied by `d`.
-
 The argument `id` is expected to be an identifier.
 It is used either for the internally generated name of a "nameless" `instance` or when parsing
 an identifier representing the name of a declaration.
@@ -204,7 +203,6 @@ module names that are implied by
 * the attributes of `cmd` (if there are any),
 * the identifiers contained in `cmd`,
 * if `cmd` adds a declaration `d` to the environment, then also all the module names implied by `d`.
-
 The argument `id` is expected to be an identifier.
 It is used either for the internally generated name of a "nameless" `instance` or when parsing
 an identifier representing the name of a declaration.

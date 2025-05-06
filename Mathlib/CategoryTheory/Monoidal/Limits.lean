@@ -13,7 +13,6 @@ When `C` is a monoidal category, the limit functor `lim : (J ⥤ C) ⥤ C` is la
 i.e. there are morphisms
 * `(𝟙_ C) → limit (𝟙_ (J ⥤ C))`
 * `limit F ⊗ limit G ⟶ limit (F ⊗ G)`
-
 satisfying the laws of a lax monoidal functor.
 
 ## TODO

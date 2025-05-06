@@ -294,7 +294,6 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
 "sufficiently monotone" map.  Assume also that
 * `φ` maps to `0` all monomials of degree less than `k`,
 * `φ` maps each monomial `m` in `R[x]` to a polynomial `φ m` of degree `fu (deg m)`.
-
 Then, `φ` maps each polynomial `p` in `R[x]` to a polynomial of degree `fu (deg p)`. -/
 theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
     [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]] {φ : F}

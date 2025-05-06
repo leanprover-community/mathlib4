@@ -32,7 +32,6 @@ functions and relations.
 `Set.preimage` can be generalized to relations in two ways:
 * `Rel.preimage` returns the image of the set under the inverse relation.
 * `Rel.core` returns the set of elements that are only related to those in the set.
-
 Both generalizations are sensible in the context of filters, so `Filter.comap` and `Filter.Tendsto`
 get two generalizations each.
 

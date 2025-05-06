@@ -19,7 +19,6 @@ To avoid coercions, we rather consider `DividedPowers.dpow : ℕ → A → A`, e
 
 * `DividedPowers.dpow_null` asserts that `dpow n x = 0` for `x ∉ I`
 * `DividedPowers.dpow_mem` : `dpow n x ∈ I` for `n ≠ 0`
-
 For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 * `DividedPowers.dpow_zero` : `dpow 0 x = 1`
 * `DividedPowers.dpow_one` : `dpow 1 x = 1`

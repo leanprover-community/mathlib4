@@ -26,7 +26,6 @@ This file introduces abstract configurations of points and lines, and proves som
 * `Configuration.HasPoints.card_le`: `HasPoints` implies `|L| ≤ |P|`.
 * `Configuration.HasLines.hasPoints`: `HasLines` and `|P| = |L|` implies `HasPoints`.
 * `Configuration.HasPoints.hasLines`: `HasPoints` and `|P| = |L|` implies `HasLines`.
-
 Together, these four statements say that any two of the following properties imply the third:
 (a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
 

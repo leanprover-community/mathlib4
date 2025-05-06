@@ -126,7 +126,6 @@ protected theorem mdifferentiableAt (hn : 1 ≤ n) {x : M} (hx : x ∈ Φ.source
 /- We could add lots of additional API (following `Diffeomorph` and `PartialHomeomorph`), such as
 * further continuity and differentiability lemmas
 * refl and trans instances; lemmas between them.
-
 As this declaration is meant for internal use only, we keep it simple. -/
 end PartialDiffeomorph
 end PartialDiffeomorph

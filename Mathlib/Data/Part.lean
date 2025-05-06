@@ -28,12 +28,10 @@ there's none).
   `some a`.
 * `Part.toOption`: Converts a `Part α` with a decidable domain to an `Option α`.
 * `Part.equivOption`: Classical equivalence between `Part α` and `Option α`.
-
 Monadic structure:
 * `Part.bind`: `o.bind f` has value `(f (o.get _)).get _` (`f o` morally) and is defined when `o`
   and `f (o.get _)` are defined.
 * `Part.map`: Maps the value and keeps the same domain.
-
 Other:
 * `Part.restrict`: `Part.restrict p o` replaces the domain of `o : Part α` by `p : Prop` so long as
   `p → o.Dom`.

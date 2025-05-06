@@ -18,8 +18,8 @@ Using `compute_degree` when the goal is of one of the five forms
 *  `natDegree f = d`,
 *  `degree f = d`,
 *  `coeff f d = r`, if `d` is the degree of `f`,
-
-tries to solve the goal. It may leave side-goals, in case it is not entirely successful.
+tries to solve the goal.
+It may leave side-goals, in case it is not entirely successful.
 
 Using `monicity` when the goal is of the form `Monic f` tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.

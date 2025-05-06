@@ -564,7 +564,6 @@ def changeNumeral : Expr → Expr
 It translates each identifier (inductive type, defined function etc) in an expression, unless
 * The identifier occurs in an application with first argument `arg`; and
 * `test arg` is false.
-
 However, if `f` is in the dictionary `relevant`, then the argument `relevant.find f`
 is tested, instead of the first argument.
 

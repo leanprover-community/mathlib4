@@ -15,7 +15,6 @@ We show that
 
 For
 * `Top.sheafToTop`: continuous functions into a topological space form a sheaf
-
 please see `Topology/Sheaves/LocalPredicate.lean`, where we set up a general framework
 for constructing sub(pre)sheaves of the sheaf of dependent functions.
 
