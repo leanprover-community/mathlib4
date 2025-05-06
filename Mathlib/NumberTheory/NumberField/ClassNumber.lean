@@ -92,7 +92,7 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_
   by_cases hJ0 : J = 0
   · simpa [hJ0] using bot_isPrincipal
   rw [← Subtype.coe_mk J (mem_nonZeroDivisors_of_ne_zero hJ0)]
-  apply h (((mem_normalizedFactors_iff (nonZeroDivisors.coe_ne_zero I)).mp hJ).1)
+  refine h (((mem_normalizedFactors_iff (nonZeroDivisors.coe_ne_zero I)).mp hJ).1) ?_
   exact (cast_le.mpr <| le_of_dvd (absNorm_pos_of_nonZeroDivisors I) <|
     absNorm_dvd_absNorm_of_le <| le_of_dvd <|
       UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hJ).trans hI
@@ -122,9 +122,8 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_mem_primesO
       simp only [h, pow_zero, associated_one_iff_isUnit] at hi
       exact ZMod.eq_one_of_isUnit_natCast hi
     exact Rat.intCast_injective (by simp [Algebra.coe_norm_int, ← Algebra.norm_algebraMap])
-  · convert over_under P.1
-    rcases abs_choice p with h|h <;>
-    simp [hp, h]
+  · rcases abs_choice p with h | h <;>
+    simpa [h, span_singleton_neg p, ← submodule_span_eq, ← hp] using over_under P.1
 
 
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
