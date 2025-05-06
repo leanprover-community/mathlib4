@@ -5,7 +5,9 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplexMinus
 import Mathlib.Algebra.Homology.Embedding.CochainComplexTrunc
+import Mathlib.Algebra.Homology.PreservesQuasiIso
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
 /-!
 # Resolutions of unbounded complexes
@@ -17,7 +19,7 @@ open CategoryTheory Limits
 namespace CochainComplex
 
 variable {A : Type*} [Category A] [Abelian A]
-  [HasColimitsOfShape ℤ A]
+  [HasColimitsOfShape ℤ A] [HasExactColimitsOfShape ℤ A]
   (L : Minus A ⥤ CochainComplex A ℤ)
 
 noncomputable def leftResolution : CochainComplex A ℤ ⥤ CochainComplex A ℤ :=
