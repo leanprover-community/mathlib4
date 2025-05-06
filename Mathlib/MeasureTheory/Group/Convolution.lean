@@ -3,8 +3,10 @@ Copyright (c) 2023 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
-import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.Analysis.LConvolution
+import Mathlib.Probability.Density
+import Mathlib.Probability.Independence.Basic
+--import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-!
 # The multiplicative and additive convolution of measures
@@ -38,10 +40,16 @@ scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.mconv
 scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.conv
 
 @[to_additive]
+theorem lintegral_mconv_eq_lintegral_prod [MeasurableMul₂ M] {μ ν : Measure M}
+    {f : M → ℝ≥0∞} (hf : Measurable f):
+    ∫⁻ z, f z ∂(μ ∗ ν) = ∫⁻ z, f (z.1 * z.2) ∂(μ.prod ν) := by
+  rw[mconv, lintegral_map hf measurable_mul]
+
+@[to_additive]
 theorem lintegral_mconv [MeasurableMul₂ M] {μ ν : Measure M} [SFinite ν]
     {f : M → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ z, f z ∂(μ ∗ ν) = ∫⁻ x, ∫⁻ y, f (x * y) ∂ν ∂μ := by
-  rw [mconv, lintegral_map hf measurable_mul, lintegral_prod]
+  rw [lintegral_mconv_eq_lintegral_prod hf, lintegral_prod]
   fun_prop
 
 /-- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
@@ -129,6 +137,78 @@ instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : 
     [MeasurableMul₂ M] [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     IsProbabilityMeasure (μ ∗ ν) :=
   MeasureTheory.isProbabilityMeasure_map (by fun_prop)
+
+open ProbabilityTheory
+
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} [IsFiniteMeasure μ]
+
+@[to_additive]
+theorem IndepFun.map_mul_eq_map_mconv_map [MeasurableMul₂ M]
+    {f g : Ω → M} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) (hfg : IndepFun f g μ):
+    μ.map (f * g) = (μ.map f) ∗ (μ.map g) := by
+  conv in f * g => change (fun (x,y) ↦ x * y) ∘ (fun ω ↦ (f ω, g ω))
+  rw [← measurable_mul.aemeasurable.map_map_of_aemeasurable (hf.prodMk hg),
+     (indepFun_iff_map_prod_eq_prod_map_map hf hg).mp hfg]
+  rfl
+
+@[to_additive]
+theorem IndepFun.map_fun_mul_eq_map_mconv_map
+    [MeasurableMul₂ M] {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} [IsFiniteMeasure μ]
+    {f g : Ω → M} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) (hfg : IndepFun f g μ):
+    μ.map (fun x ↦ f x * g x) = (μ.map f) ∗ (μ.map g) :=
+  IndepFun.map_mul_eq_map_mconv_map hf hg hfg
+
+section withDensity
+
+variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
+
+
+variable {π : Measure G} [SFinite π] [IsMulLeftInvariant π]
+
+@[to_additive]
+theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
+    (hf : AEMeasurable f π) (hg : AEMeasurable g π) :
+    π.withDensity f ∗ π.withDensity g = π.withDensity (f ⋆ₗ[π] g) := by
+  refine ext_of_lintegral _ fun φ hφ ↦ ?_
+  rw [lintegral_mconv_eq_lintegral_prod hφ, prod_withDensity₀ hf hg,
+    lintegral_withDensity_eq_lintegral_mul₀,
+    lintegral_withDensity_eq_lintegral_mul₀, lintegral_prod,
+    lintegral_congr (fun x ↦ by apply (lintegral_mul_left_eq_self _ x⁻¹).symm),
+    lintegral_lintegral_swap]
+  · simp only [Pi.mul_apply, mul_inv_cancel_left, mlconvolution_def]
+    conv in (∫⁻ _ , _ ∂π) * φ _ => rw[(lintegral_mul_const'' _ (by fun_prop)).symm]
+  all_goals first | fun_prop | simp; fun_prop
+
+@[to_additive]
+theorem mconv_withDensity_eq_mlconvolution {f g : G → ℝ≥0∞}
+    (hf : Measurable f) (hg : Measurable g) :
+    π.withDensity f ∗ π.withDensity g = π.withDensity (f ⋆ₗ[π] g) :=
+  mconv_withDensity_eq_mlconvolution₀ hf.aemeasurable hg.aemeasurable
+
+open pdf
+
+-- probably should do an intermediary that works with rnderiv
+
+@[to_additive]
+theorem HasPDF.mul {μ : Measure Ω} [IsFiniteMeasure μ] {f g : Ω → G}
+    (hfg : IndepFun f g μ) [hf : HasPDF f μ π] [hg : HasPDF g μ π] : HasPDF (f * g) μ π := by
+  apply hasPDF_of_map_eq_withDensity _ ((pdf f μ π) ⋆ₗ[π] (pdf g μ π))
+  · apply aemeasurable_mlconvolution
+    repeat exact (measurable_pdf _ _ _).aemeasurable
+  · rw[IndepFun.map_mul_eq_map_mconv_map hf.aemeasurable hg.aemeasurable hfg,
+      ← mconv_withDensity_eq_mlconvolution₀,
+      map_eq_withDensity_pdf f μ π, map_eq_withDensity_pdf g μ π]
+    repeat exact (measurable_pdf _ _ _).aemeasurable
+  exact (hf.aemeasurable).mul hg.aemeasurable
+
+-- @[to_additive]
+-- theorem IndepFun.map_mul_eq_pdf_mlconvolution {μ : Measure Ω} [IsFiniteMeasure μ]
+--     {f g : Ω → G} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
+--     (hfg : IndepFun f g μ) [HasPDF f μ π] [HasPDF g μ π] :
+--     pdf (f * g) μ π =ᶠ[ae π] (pdf f μ π) ⋆ₗ[π] (pdf g μ π) := by
+--   rw[← eq_of_map_eq_withDensity]
+
+end withDensity
 
 end Measure
 

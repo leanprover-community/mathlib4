@@ -101,11 +101,10 @@ variable {μ : Measure G} [IsMulLeftInvariant μ] [SFinite μ]
 /-- The convolution of AEMeasurable functions is AEMeasurable. -/
 @[to_additive (attr := measurability, fun_prop)
 "The convolution of AEMeasurable functions is AEMeasurable,"]
-theorem aemeasurable_mlconvolution [IsMulRightInvariant μ] {f g : G → ℝ≥0∞}
+theorem aemeasurable_mlconvolution {f g : G → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : AEMeasurable (f ⋆ₗ[μ] g) μ := by
   unfold mlconvolution
   fun_prop
-
 
 @[to_additive]
 theorem mlconvolution_assoc₀ {f g k : G → ℝ≥0∞}
