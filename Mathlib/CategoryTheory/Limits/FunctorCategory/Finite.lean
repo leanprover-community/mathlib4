@@ -5,6 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 /-!
 
 # Functor categories have finite limits when the target category does
@@ -24,5 +25,13 @@ instance [HasFiniteProducts C] : HasFiniteProducts (K ⥤ C) := ⟨inferInstance
 instance [HasFiniteColimits C] : HasFiniteColimits (K ⥤ C) := ⟨fun _ ↦ inferInstance⟩
 
 instance [HasFiniteCoproducts C] : HasFiniteCoproducts (K ⥤ C) := ⟨inferInstance⟩
+
+instance [HasFiniteLimits C] (k : K) :
+    PreservesFiniteLimits ((evaluation K C).obj k) where
+  preservesFiniteLimits _ := inferInstance
+
+instance [HasFiniteColimits C] (k : K) :
+    PreservesFiniteColimits ((evaluation K C).obj k) where
+  preservesFiniteColimits _ := inferInstance
 
 end CategoryTheory.Limits

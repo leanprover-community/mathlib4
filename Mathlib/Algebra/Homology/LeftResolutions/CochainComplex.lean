@@ -7,7 +7,7 @@ import Mathlib.Algebra.Homology.LeftResolutions.CochainComplexMinus
 import Mathlib.Algebra.Homology.Embedding.CochainComplexTrunc
 import Mathlib.Algebra.Homology.PreservesQuasiIso
 import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 
 /-!
 # Resolutions of unbounded complexes
@@ -34,17 +34,16 @@ noncomputable def leftResolutionπ :
     whiskerRight (filtrationLEMinusFunctorCompWhiskeringRightObjιIso A).hom _ ≫
     (filtrationLEFunctorCompColimIso A).hom
 
-/-instance quasiIso_leftResolutionπ_app [∀ K, QuasiIso (α.app K)] (K : CochainComplex A ℤ) :
+instance quasiIso_leftResolutionπ_app [∀ K, QuasiIso (α.app K)] (K : CochainComplex A ℤ) :
     QuasiIso ((leftResolutionπ α).app K) := by
-  have H : (HomologicalComplex.quasiIso A (.up ℤ)).IsStableUnderColimitsOfShape ℤ := by
-    sorry
   let φ := colimMap (((whiskeringRight _ _ _).map α).app K.filtrationLEMinus)
-  have : QuasiIso φ := (H.colimMap _ (fun n ↦ by
+  have : QuasiIso φ := ((HomologicalComplex.isStableUnderColimitsOfShape_quasiIso
+      A (.up ℤ) ℤ).colimMap _ (fun n ↦ by
     dsimp
     simp only [HomologicalComplex.mem_quasiIso_iff]
     infer_instance))
   dsimp only [leftResolutionπ]
   change QuasiIso (φ ≫ _)
-  infer_instance-/
+  infer_instance
 
 end CochainComplex

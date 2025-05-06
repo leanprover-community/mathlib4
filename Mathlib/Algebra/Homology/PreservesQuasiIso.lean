@@ -10,6 +10,7 @@ import Mathlib.Algebra.Homology.QuasiIso
 
 -/
 
+
 namespace CategoryTheory
 
 open Limits
@@ -56,6 +57,21 @@ lemma preserves_quasiIso {ι : Type*} (c : ComplexShape ι) :
   intro _ _ _ hf
   simp only [HomologicalComplex.mem_quasiIso_iff, MorphismProperty.inverseImage_iff] at hf ⊢
   infer_instance
+
+noncomputable def mapHomologicalComplexCompShortComplexFunctorIso
+    {C D : Type*} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D]
+    (F : C ⥤ D) [F.PreservesZeroMorphisms] {ι : Type*} (c : ComplexShape ι) (i : ι) :
+    F.mapHomologicalComplex c ⋙ HomologicalComplex.shortComplexFunctor D c i ≅
+      HomologicalComplex.shortComplexFunctor C c i ⋙ F.mapShortComplex := Iso.refl _
+
+noncomputable def mapHomologicalComplexHomologyIso {ι : Type*} (c : ComplexShape ι) (i : ι) :
+    F.mapHomologicalComplex c ⋙ HomologicalComplex.homologyFunctor D c i ≅
+      HomologicalComplex.homologyFunctor C c i ⋙ F :=
+  isoWhiskerLeft _ (HomologicalComplex.homologyFunctorIso D c i) ≪≫ (associator _ _ _).symm ≪≫
+    isoWhiskerRight (F.mapHomologicalComplexCompShortComplexFunctorIso c i) _ ≪≫
+    (associator _ _ _) ≪≫ isoWhiskerLeft _ (ShortComplex.homologyFunctorIso F) ≪≫
+    (associator _ _ _).symm ≪≫
+      isoWhiskerRight (HomologicalComplex.homologyFunctorIso C c i).symm _
 
 end Functor
 

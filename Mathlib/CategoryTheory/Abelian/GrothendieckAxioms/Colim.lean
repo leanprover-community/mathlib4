@@ -7,6 +7,10 @@ import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Limits.Connected
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+import Mathlib.Algebra.Homology.PreservesQuasiIso
+import Mathlib.Algebra.Homology.HomologicalComplexFunctorEquiv
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
 
 /-!
 # Exactness of colimits
@@ -154,3 +158,63 @@ instance [HasCoproducts.{u'} C] [AB4OfSize.{u'} C] :
 end MorphismProperty
 
 end CategoryTheory
+
+open CategoryTheory Limits
+
+namespace HomologicalComplex
+
+noncomputable def functorEquivalenceInverseCompMapHomologicalComplexColim
+    (C : Type*) [Category C] [HasZeroMorphisms C]
+    {ι : Type*} (c : ComplexShape ι) (J : Type*) [Category J] [HasColimitsOfShape J C] :
+    (functorEquivalence C c J).inverse ⋙ colim.mapHomologicalComplex c ≅ colim :=
+  NatIso.ofComponents (fun F ↦
+    (Hom.isoOfComponents (fun i ↦ IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
+        (isColimitOfPreserves (eval C c i) (colimit.isColimit F))) (by aesop_cat))) (by
+          intro F G f
+          ext i
+          dsimp
+          ext j
+          simp [← comp_f])
+
+lemma quasiIso_functorCategory_iff {C : Type*} [Category C] [Abelian C]
+    {ι : Type*} (c : ComplexShape ι) (J : Type*) [Category J]
+    {K L : HomologicalComplex (J ⥤ C) c} (f : K ⟶ L) :
+    QuasiIso f ↔
+      ∀ (j : J), QuasiIso ((((evaluation J C).obj j).mapHomologicalComplex c).map f) := by
+  constructor
+  · intro _ j
+    infer_instance
+  · intro h
+    constructor
+    intro i
+    rw [quasiIsoAt_iff_isIso_homologyMap, NatTrans.isIso_iff_isIso_app]
+    intro j
+    apply ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff
+      (((Functor.mapArrowFunctor _ _).mapIso
+        (((evaluation J C).obj j).mapHomologicalComplexHomologyIso c i)).app f)).1
+    dsimp
+    simp
+    infer_instance
+
+lemma isStableUnderColimitsOfShape_quasiIso
+    (C : Type*) [Category C] [Abelian C]
+    {ι : Type*} (c : ComplexShape ι) (J : Type*) [Category J]
+    [HasColimitsOfShape J C] [HasExactColimitsOfShape J C] :
+    (HomologicalComplex.quasiIso C c).IsStableUnderColimitsOfShape J := by
+  suffices ∀ ⦃F₁ F₂ : J ⥤ HomologicalComplex C c⦄ (f : F₁ ⟶ F₂)
+    (hf : (quasiIso C c).functorCategory J f), QuasiIso (colimMap f) by
+      intro F₁ F₂ c₁ c₂ h₁ h₂ f hf
+      refine ((quasiIso C c).arrow_mk_iso_iff
+        (Arrow.isoMk (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h₁)
+          (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h₂)
+          (colimit.hom_ext (by simp)))).1 (this f hf)
+  intro F₁ F₂ f hf
+  have : QuasiIso ((functorEquivalence.inverse C c J).map f) := by
+    rwa [quasiIso_functorCategory_iff]
+  refine ((quasiIso C c).arrow_mk_iso_iff (((Functor.mapArrowFunctor _ _).mapIso
+    ((functorEquivalenceInverseCompMapHomologicalComplexColim C c J))).app (Arrow.mk f))).1 ?_
+  dsimp
+  simp only [mem_quasiIso_iff]
+  infer_instance
+
+end HomologicalComplex

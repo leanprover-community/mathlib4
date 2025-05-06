@@ -328,6 +328,10 @@ def eval (i : ι) : HomologicalComplex V c ⥤ V where
   obj C := C.X i
   map f := f.f i
 
+@[simps]
+def dNatTrans (i j : ι) : eval V c i ⟶ eval V c j where
+  app C := C.d i j
+
 instance (i : ι) : (eval V c i).PreservesZeroMorphisms where
 
 instance (i : ι) : (eval V c i).PreservesZeroMorphisms where
