@@ -6,6 +6,7 @@ Authors: Luke Kershaw, Joël Riou
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.ObjectProperty.Shift
+import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.Triangulated.Lemmas
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Reflective
@@ -229,7 +230,6 @@ class IsLE (X : C) (n : ℤ) : Prop where
 holds if `X : C` is `≥ n` for the filtration. -/
 class IsGE (X : C) (n : ℤ) : Prop where
   ge : (hP.GE n).P X
-
 
 lemma mem_of_isLE (X : C) (n : ℤ) [IsLE X n] : (LE n).P X := IsLE.le
 lemma mem_of_isGE (X : C) (n : ℤ) [IsGE X n] : (GE n).P X := IsGE.ge
@@ -497,11 +497,16 @@ instance (n m : ℤ) (X : C) [IsLE X m] : IsLE ((truncGE n).obj X) m := sorry
 
 instance (n m : ℤ) (X : C) [IsGE X m] : IsGE ((truncGE n).obj X) m := sorry
 
+abbrev truncGE_onLE (n m : ℤ) :
+    (FilteredTriangulated.LE (C := C) m).P.FullSubcategory ⥤ (FilteredTriangulated.LE (C := C) m).P := sorry
+
 -- Prop A.1.3 (ii)
 
 def truncLEGE (a b : ℤ) : C ⥤ C := truncGE a ⋙ truncLE b
 
 def truncGELE (a b : ℤ) : C ⥤ C := truncLE b ⋙ truncGE a
+
+def truncLEGEToGELE (a b : ℤ) : truncLEGE (C := C) a b ⟶ truncGELE a b := sorry
 
 def truncLEGEIsoGELE (a b : ℤ) : truncLEGE (C := C) a b ≅ truncGELE a b := sorry
 
