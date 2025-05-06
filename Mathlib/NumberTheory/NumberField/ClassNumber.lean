@@ -18,6 +18,10 @@ on the class number.
 ## Main definitions
 - `NumberField.classNumber`: the class number of a number field is the (finite)
 cardinality of the class group of its ring of integers
+- `RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_mem_primesOver_of_le`: to show that the
+ring of integer of a number field is a PID it is enough to show that all ideals above any (natural)
+prime `p`  smaller than Minkowski bound are principal. This is the standard technique to prove that
+`𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
 -/
 
 namespace NumberField
@@ -97,24 +101,27 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_
     absNorm_dvd_absNorm_of_le <| le_of_dvd <|
       UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hJ).trans hI
 
-theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_mem_primesOver
+/-- To show that the ring of integer of a number field is a PID it is enough to show that all ideals
+above any (natural) prime `p`  smaller than Minkowski bound are principal. -/
+theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_mem_primesOver_of_le
     (h : ∀ ⦃p : ℕ⦄, p.Prime → p ≤ (4 / π) ^ nrComplexPlaces K *
       ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|) →
       ∀ (I : Ideal (𝓞 K)), I ∈ Ideal.primesOver (span {(p : ℤ)}) (𝓞 K) →
       Submodule.IsPrincipal I) :
     IsPrincipalIdealRing (𝓞 K) := by
   refine RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime <|
-    fun P hP hPNorm ↦ ?_
-  obtain ⟨p, hp⟩ := IsPrincipalIdealRing.principal <| under ℤ P.1
-  have hp0 : p ≠ 0 := fun h ↦ nonZeroDivisors.coe_ne_zero P <|
+    fun ⟨P, HP⟩ hP hPNorm ↦ ?_
+  obtain ⟨p, hp⟩ := IsPrincipalIdealRing.principal <| under ℤ P
+  have hp0 : p ≠ 0 := fun h ↦ nonZeroDivisors.coe_ne_zero ⟨P, HP⟩ <|
     eq_bot_of_comap_eq_bot (R := ℤ) <| by simpa only [hp, submodule_span_eq, span_singleton_eq_bot]
   have hpprime := (span_singleton_prime hp0).mp
   rw [← submodule_span_eq, ← hp] at hpprime
-  have hle : algebraMap ℤ (𝓞 K) p ∈ P.1 := (mem_of_liesOver P.1 (under ℤ P.1) p).mp <|
+  have hle : algebraMap ℤ (𝓞 K) p ∈ P := (mem_of_liesOver P (under ℤ P) p).mp <|
     hp ▸ Submodule.mem_span_singleton_self p
   refine h (Int.prime_iff_natAbs_prime.mp (hpprime (hP.under _))) ?_ _ ⟨hP, ?_⟩
   · refine le_trans (cast_le.mpr <| Nat.le_of_dvd ?_ (Int.ofNat_dvd_right.mp ?_)) hPNorm
-    · exact Nat.pos_of_ne_zero <| fun h ↦ nonZeroDivisors.coe_ne_zero P <| absNorm_eq_zero_iff.mp h
+    · exact Nat.pos_of_ne_zero <| fun h ↦ nonZeroDivisors.coe_ne_zero ⟨P, HP⟩ <|
+        absNorm_eq_zero_iff.mp h
     suffices (Algebra.norm ℤ (algebraMap ℤ (𝓞 K) p)) = p ^ (Module.finrank ℚ K) by
       obtain ⟨i, -, hi⟩ := (dvd_prime_pow (hpprime (IsPrime.comap _)) _).mp
         (this ▸ absNorm_dvd_norm_of_mem hle)
@@ -123,8 +130,7 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_mem_primesO
       exact ZMod.eq_one_of_isUnit_natCast hi
     exact Rat.intCast_injective (by simp [Algebra.coe_norm_int, ← Algebra.norm_algebraMap])
   · rcases abs_choice p with h | h <;>
-    simpa [h, span_singleton_neg p, ← submodule_span_eq, ← hp] using over_under P.1
-
+    simpa [h, span_singleton_neg p, ← submodule_span_eq, ← hp] using over_under P
 
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ nrComplexPlaces K *
