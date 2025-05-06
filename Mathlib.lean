@@ -1708,6 +1708,7 @@ import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.ODE.Gronwall
+import Mathlib.Analysis.ODE.MaximalSolution
 import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Analysis.Oscillation
 import Mathlib.Analysis.PSeries
