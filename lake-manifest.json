@@ -61,7 +61,7 @@
    "inputRev": "master",
    "inherited": false,
    "configFile": "lakefile.toml"},
-  {"url": "https://github.com/leanprover-community/batteries",
+  {"url": "https://github.com/Rob23oba/lean4-batteries",
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
