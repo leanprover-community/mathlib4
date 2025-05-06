@@ -17,7 +17,7 @@ representative of any given equivalence class, where 'best' means that the repre
 locally near any point `x` be written 'in normal form', as `f =ᶠ[𝓝 x] fun z ↦ (z - x) ^ n • g`
 where `g` is analytic and does not vanish at `x`.
 
-The relevant notions are `MeromorphicNFAt` and `MeromorphicNFOn`, which , which guarantee normal
+The relevant notions are `MeromorphicNFAt` and `MeromorphicNFOn`; these guarantee normal
 form at a single point and along a set, respectively.
 -/
 
