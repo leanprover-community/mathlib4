@@ -36,14 +36,13 @@ noncomputable def leftResolutionπ :
     QuasiIso ((leftResolutionπ α).app K) := by
   have H : (HomologicalComplex.quasiIso A (.up ℤ)).IsStableUnderColimitsOfShape ℤ := by
     sorry
+  let φ := colimMap (((whiskeringRight _ _ _).map α).app K.filtrationLEMinus)
+  have : QuasiIso φ := (H.colimMap _ (fun n ↦ by
+    dsimp
+    simp only [HomologicalComplex.mem_quasiIso_iff]
+    infer_instance))
   dsimp only [leftResolutionπ]
-  apply (config := { allowSynthFailures := true } ) quasiIso_comp
-  simp only [Functor.comp_obj, filtrationLEMinusFunctor_obj, whiskeringRight_obj_obj, colim_obj,
-    whiskerLeft_app, whiskerRight_app, colim_map]
-  apply H.colimMap
-  intro n
-  dsimp
-  simp only [HomologicalComplex.mem_quasiIso_iff]
+  change QuasiIso (φ ≫ _)
   infer_instance-/
 
 end CochainComplex
