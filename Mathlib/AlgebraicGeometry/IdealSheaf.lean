@@ -26,7 +26,7 @@ We define ideal sheaves of schemes and provide various constructors for it.
 * `AlgebraicGeometry.Scheme.Hom.ker`: The kernel of a morphism.
 * `AlgebraicGeometry.Scheme.IdealSheafData.subscheme`: The subscheme associated to an ideal sheaf.
 * `AlgebraicGeometry.Scheme.IdealSheafData.subschemeι`: The inclusion from the subscheme.
-* `AlgebraicGeometry.Scheme.Hom.schemeImage`: The scheme theoretical image of a morphism.
+* `AlgebraicGeometry.Scheme.Hom.image`: The scheme theoretical image of a morphism.
 * `AlgebraicGeometry.Scheme.kerAdjunction`:
   The adjunction between taking kernels and taking the associated subscheme.
 
@@ -1321,10 +1321,10 @@ open Limits
 variable {X Y : Scheme.{u}} (f : X.Hom Y) (U : Y.affineOpens)
 
 /-- The scheme theoretic image of a morphism. -/
-abbrev Hom.schemeImage : Scheme.{u} := f.ker.subscheme
+abbrev Hom.image : Scheme.{u} := f.ker.subscheme
 
 /-- The embedding from the scheme theoretic image to the codomain. -/
-abbrev Hom.schemeImageι : f.schemeImage ⟶ Y := f.ker.subschemeι
+abbrev Hom.imageι : f.image ⟶ Y := f.ker.subschemeι
 
 lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
     f.ker.ideal U ≤ RingHom.ker ((ΓSpecIso Γ(Y, ↑U)).inv ≫
@@ -1345,48 +1345,48 @@ lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
     (RingHom.ker_equiv_comp _ e.commRingCatIsoToRingEquiv).symm
 
 private noncomputable
-def Hom.toSchemeImageAux : X ⟶ f.schemeImage :=
+def Hom.toImageAux : X ⟶ f.image :=
   ((Y.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top Y)).pullbackCover f).glueMorphisms
     (fun U ↦ (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).liftQuotient _
       (by exact ideal_ker_le_ker_ΓSpecIso_inv_comp f U) ≫ f.ker.subschemeCover.map U) (by
     intros U V
-    rw [← cancel_mono f.schemeImageι]
+    rw [← cancel_mono f.imageι]
     simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc,
       ← pullback.condition, ← pullback.condition_assoc])
 
-private lemma Hom.toSchemeImageAux_spec :
-    f.toSchemeImageAux ≫ f.schemeImageι = f := by
+private lemma Hom.toImageAux_spec :
+    f.toImageAux ≫ f.imageι = f := by
   apply ((Y.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top Y)).pullbackCover f).hom_ext
   intro U
-  simp only [Hom.toSchemeImageAux, Cover.ι_glueMorphisms_assoc]
+  simp only [Hom.toImageAux, Cover.ι_glueMorphisms_assoc]
   simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc, pullback.condition]
 
 /-- The morphism from the domain to the scheme theoretic image. -/
 noncomputable
-def Hom.toSchemeImage : X ⟶ f.schemeImage :=
-  f.toSchemeImageAux.copyBase (fun x ↦ ⟨f.base x, f.range_subset_ker_support ⟨x, rfl⟩⟩)
-    (funext fun x ↦ Subtype.ext congr(($f.toSchemeImageAux_spec).base x))
+def Hom.toImage : X ⟶ f.image :=
+  f.toImageAux.copyBase (fun x ↦ ⟨f.base x, f.range_subset_ker_support ⟨x, rfl⟩⟩)
+    (funext fun x ↦ Subtype.ext congr(($f.toImageAux_spec).base x))
 
 @[reassoc (attr := simp)]
-lemma Hom.toSchemeImage_schemeImageι :
-    f.toSchemeImage ≫ f.schemeImageι = f := by
-  convert f.toSchemeImageAux_spec using 2
+lemma Hom.toImage_imageι :
+    f.toImage ≫ f.imageι = f := by
+  convert f.toImageAux_spec using 2
   exact Scheme.Hom.copyBase_eq _ _ _
 
-instance [QuasiCompact f] : IsDominant f.toSchemeImage where
+instance [QuasiCompact f] : IsDominant f.toImage where
   denseRange := by
-    rw [denseRange_iff_closure_range, f.schemeImageι.isEmbedding.closure_eq_preimage_closure_image,
+    rw [denseRange_iff_closure_range, f.imageι.isEmbedding.closure_eq_preimage_closure_image,
       ← Set.univ_subset_iff, ← Set.image_subset_iff, Set.image_univ,
       IdealSheafData.range_subschemeι, Hom.support_ker, ← Set.range_comp,
-      ← TopCat.coe_comp, ← Scheme.comp_base, f.toSchemeImage_schemeImageι]
+      ← TopCat.coe_comp, ← Scheme.comp_base, f.toImage_imageι]
 
-lemma Hom.toSchemeImage_app :
-    f.toSchemeImage.app (f.schemeImageι ⁻¹ᵁ U) =
+lemma Hom.toImage_app :
+    f.toImage.app (f.imageι ⁻¹ᵁ U) =
       (f.ker.subschemeObjIso U).hom ≫ CommRingCat.ofHom
         (Ideal.Quotient.lift _ (f.app U.1).hom (IdealSheafData.ideal_ofIdeals_le _ _)) := by
   have := ConcreteCategory.epi_of_surjective _ (f.ker.subschemeι_app_surjective U)
   rw [← cancel_epi (f.ker.subschemeι.app U), ← Scheme.comp_app,
-    Scheme.congr_app f.toSchemeImage_schemeImageι, f.ker.subschemeι_app,
+    Scheme.congr_app f.toImage_imageι, f.ker.subschemeι_app,
     ← IsIso.eq_comp_inv, ← Functor.map_inv]
   simp only [comp_coeBase, Opens.map_comp_obj, Category.assoc,
     Iso.inv_hom_id_assoc, eqToHom_op, inv_eqToHom]
@@ -1394,18 +1394,18 @@ lemma Hom.toSchemeImage_app :
     eqToHom_refl, CategoryTheory.Functor.map_id]
   exact (Category.comp_id _).symm
 
-lemma Hom.toSchemeImage_app_injective [QuasiCompact f] :
-    Function.Injective (f.toSchemeImage.app (f.schemeImageι ⁻¹ᵁ U)) := by
-  simp only [f.toSchemeImage_app U, CommRingCat.hom_comp, CommRingCat.hom_ofHom, RingHom.coe_comp]
+lemma Hom.toImage_app_injective [QuasiCompact f] :
+    Function.Injective (f.toImage.app (f.imageι ⁻¹ᵁ U)) := by
+  simp only [f.toImage_app U, CommRingCat.hom_comp, CommRingCat.hom_ofHom, RingHom.coe_comp]
   exact (RingHom.lift_injective_of_ker_le_ideal _ _ (by simp)).comp
     (f.ker.subschemeObjIso U).commRingCatIsoToRingEquiv.injective
 
-lemma Hom.stalkFunctor_toSchemeImage_injective [QuasiCompact f] (x) :
-    Function.Injective ((TopCat.Presheaf.stalkFunctor _ x).map f.toSchemeImage.c) := by
+lemma Hom.stalkFunctor_toImage_injective [QuasiCompact f] (x) :
+    Function.Injective ((TopCat.Presheaf.stalkFunctor _ x).map f.toImage.c) := by
   apply TopCat.Presheaf.stalkFunctor_map_injective_of_isBasis
-    (hB := ((isBasis_affine_open Y).isInducing f.schemeImageι.isEmbedding.isInducing))
+    (hB := ((isBasis_affine_open Y).isInducing f.imageι.isEmbedding.isInducing))
   rintro _ ⟨U, hU, rfl⟩
-  exact f.toSchemeImage_app_injective ⟨U, hU⟩
+  exact f.toImage_app_injective ⟨U, hU⟩
 
 open IdealSheafData in
 /-- The adjunction between `Y.IdealSheafData` and `(Over Y)ᵒᵖ` given by taking kernels. -/
@@ -1413,7 +1413,7 @@ open IdealSheafData in
 noncomputable
 def kerAdjunction (Y : Scheme.{u}) : (subschemeFunctor Y).rightOp ⊣ Y.kerFunctor where
   unit.app I := eqToHom (by simp)
-  counit.app f := (Over.homMk f.unop.hom.toSchemeImage f.unop.hom.toSchemeImage_schemeImageι).op
+  counit.app f := (Over.homMk f.unop.hom.toImage f.unop.hom.toImage_imageι).op
   counit.naturality _ _ _ := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
   left_triangle_components I := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
 
