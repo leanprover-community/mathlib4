@@ -772,17 +772,6 @@ lemma ε_of_ChosenFiniteProducts : ε F = (preservesTerminalIso F).inv := by
 lemma μ_of_ChosenFiniteProducts (X Y : C) : μ F X Y = (prodComparisonIso F X Y).inv := by
   change (μIso F X Y).symm.inv = _; congr; ext : 1; simpa using δ_of_chosenFiniteProducts F X Y
 
-omit [F.Monoidal] in
-/-- A finite-product-preserving functor between cartesian monoidal categories is monoidal.
-
-This is the variant where `F.OplaxMonoidal` is an argument instead.
-
-This is not made an instance because it would create a diamond for the monoidal structure on
-the identity and composition of functors. -/
-noncomputable def ofChosenFiniteProducts'
-    (F : C ⥤ D) [PreservesFiniteProducts F] [F.OplaxMonoidal] : F.Monoidal :=
-  .ofOplaxMonoidal F
-
 attribute [local instance] Functor.OplaxMonoidal.ofChosenFiniteProducts in
 omit [F.Monoidal] in
 /-- A finite-product-preserving functor between cartesian monoidal categories is monoidal.
@@ -821,22 +810,13 @@ end Monoidal
 namespace Braided
 variable [BraidedCategory C] [BraidedCategory D]
 
-/-- A finite-product-preserving functor between cartesian monoidal categories is braided.
-
-This is the variant where `F.Monoidal` is an argument instead.
-
-This is not made an instance because it would create a diamond for the braided structure on
-the identity and composition of functors. -/
-noncomputable def ofChosenFiniteProducts' [F.Monoidal] : F.Braided where
-  braided X Y := by rw [← cancel_mono (Monoidal.μIso _ _ _).inv]; ext <;> simp [← F.map_comp]
-
 attribute [local instance] Functor.Monoidal.ofChosenFiniteProducts in
 /-- A finite-product-preserving functor between cartesian monoidal categories is braided.
 
 This is not made an instance because it would create a diamond for the monoidal structure on
 the identity and composition of functors. -/
-noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts F] : F.Braided :=
-  .ofChosenFiniteProducts' F
+noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts F] : F.Braided where
+  braided X Y := by rw [← cancel_mono (Monoidal.μIso _ _ _).inv]; ext <;> simp [← F.map_comp]
 
 instance : Subsingleton F.Braided := (Braided.toMonoidal_injective F).subsingleton
 
