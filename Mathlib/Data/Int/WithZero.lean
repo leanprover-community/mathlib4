@@ -99,14 +99,10 @@ theorem toNNReal_eq_one_iff {e : ℝ≥0} (m : ℤₘ₀) (he0 : e ≠ 0) (he1 :
 
 theorem toNNReal_lt_one_iff {e : ℝ≥0} {m : ℤₘ₀} (he : 1 < e) :
     toNNReal (ne_zero_of_lt he) m < 1 ↔ m < 1 := by
-  have : 1 = (toNNReal (ne_zero_of_lt he)) 1 := rfl
-  simp_rw [this]
-  exact StrictMono.lt_iff_lt (toNNReal_strictMono he)
+  rw [← (toNNReal_strictMono he).lt_iff_lt, map_one]
 
 theorem toNNReal_le_one_iff {e : ℝ≥0} {m : ℤₘ₀} (he : 1 < e) :
     toNNReal (ne_zero_of_lt he) m ≤ 1 ↔ m ≤ 1 := by
-  have : 1 = (toNNReal (ne_zero_of_lt he)) 1 := rfl
-  simp_rw [this]
-  exact StrictMono.le_iff_le (toNNReal_strictMono he)
+  rw [← (toNNReal_strictMono he).le_iff_le, map_one]
 
 end WithZeroMulInt

@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Submodule
+import Mathlib.Algebra.Lie.Ideal
 import Mathlib.Algebra.Lie.Basic
 
 /-!

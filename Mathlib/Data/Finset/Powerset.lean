@@ -240,7 +240,7 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
   simp only [mem_powerset, mem_filter, Function.comp_apply, and_congr_right_iff]
   intro ht
   have : x ∉ t := fun H => h (ht H)
-  simp [card_insert_of_not_mem this, Nat.succ_inj']
+  simp [card_insert_of_not_mem this, Nat.succ_inj]
 
 @[simp]
 lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by
