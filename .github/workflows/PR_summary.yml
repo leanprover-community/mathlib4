@@ -57,7 +57,7 @@ jobs:
 
     - name: Compute (re)moved files without deprecation
       run: |
-        echo "" > moved_without_deprecation.txt
+        touch moved_without_deprecation.txt
         git checkout ${{ github.base_ref }}
         for file in $(cat removed_renamed_files.txt) ; do
           if grep ^deprecated_module $file ; then
