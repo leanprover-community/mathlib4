@@ -130,22 +130,15 @@ variable {γ : Type*}
 
 variable [Preorder α] [Preorder β] [Preorder γ]
 
-/-- TODO: Come up with better name -/
-lemma step1 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.snd '' d).Nonempty)
-    (hd₂ : DirectedOn (· ≤ ·) (Prod.snd '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
-    (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) {a : α} :
-    IsLUB (f '' {a} ×ˢ (Prod.snd '' d)) (f (a,p₂)) := by
-  rw [singleton_prod, image_image f (fun b ↦ (a, b))]
-  exact h₁ a hd₁ hd₂ ((isLUB_prod (p₁,p₂)).mp h).2
-
 lemma ScottContinuous_prod_of_ScottContinuous {f : α × β → γ}
     (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
     ScottContinuous f := fun d hd₁ hd₂ p hdp => by
   rw [isLUB_congr ((monotone_prod_iff.mpr ⟨(fun a => (h₁ a).monotone),
     (fun a => (h₂ a).monotone)⟩).upperBounds_image_of_directedOn_prod hd₂),
     ← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion,
-    ← isLUB_iUnion_iff_of_isLUB (fun a => step1 (Nonempty.image Prod.snd hd₁) hd₂.snd hdp h₁) _,
-    Set.range]
+    ← isLUB_iUnion_iff_of_isLUB (fun a => by
+      rw [singleton_prod, image_image f (fun b ↦ (a, b))]
+      exact h₁ _ (Nonempty.image Prod.snd hd₁) hd₂.snd ((isLUB_prod (_,_)).mp hdp).2) _, Set.range]
   have e2 : IsLUB ((fun a ↦ f (a, p.2)) '' (Prod.fst '' d)) (f (p.1,p.2)) :=
     h₂ p.2 (Nonempty.image Prod.fst hd₁) hd₂.fst ((isLUB_prod (p.1,p.2)).mp hdp).1
   simp_all only [image, Prod.exists, exists_and_right, exists_eq_right, mem_setOf_eq, Prod.mk.eta,
@@ -178,14 +171,12 @@ lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     exact sup_le_iff.mp (hb b₁ b₂ hb' rfl)
 
 lemma inf_sSup_eq_sSup_map  [CompleteLinearOrder β] (a : β) (d : Set β) :
-    a ⊓ sSup d = sSup ((fun b ↦ a ⊓ b) '' d) := by
-  apply eq_of_forall_ge_iff fun e ↦ ?_
+    a ⊓ sSup d = sSup ((fun b ↦ a ⊓ b) '' d) := eq_of_forall_ge_iff fun _ => by
   simp only [inf_le_iff, sSup_le_iff, ← forall_or_left, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
 
 lemma sSup_inf_eq_sSup_map [CompleteLinearOrder β] (b : β) (d : Set β) :
-    sSup d ⊓ b = sSup ((fun a ↦ a ⊓ b) '' d) := by
-  apply eq_of_forall_ge_iff fun e ↦ ?_
+    sSup d ⊓ b = sSup ((fun a ↦ a ⊓ b) '' d) := eq_of_forall_ge_iff fun _ => by
   simp [inf_le_iff, sSup_le_iff, ← forall_or_right, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
 
@@ -198,6 +189,5 @@ lemma right_cont_inf [CompleteLinearOrder β] (b : β) : ScottContinuous fun a �
 lemma ScottContinuousOn.inf₂ [CompleteLinearOrder β] :
     ScottContinuous fun (a, b) => (a ⊓ b : β) :=
   ScottContinuous_prod_of_ScottContinuous (left_cont_inf _) (right_cont_inf _)
-
 
 end SemilatticeSup
