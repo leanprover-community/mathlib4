@@ -518,6 +518,23 @@ theorem mem_span_finite_of_mem_span {S : Set M} {x : M} (hx : x ∈ span R S) :
   · rintro a x - ⟨T, hT, h2⟩
     exact ⟨T, hT, smul_mem _ _ h2⟩
 
+theorem subset_span_finite_of_subset_span (s : Set M) (t : Finset M) (ht : (t : Set M) ⊆ span R s) :
+  ∃ T : Finset M, ↑T ⊆ s ∧ (t : Set M) ⊆ span R (T : Set M) := by
+  classical
+  use (Finset.subtype (· ∈ t) t).biUnion
+    fun ⟨m, hm⟩ ↦ (mem_span_finite_of_mem_span <| mem_of_subset_of_mem ht hm).choose
+  split_ands
+  · simp
+    intro a ha
+    generalize_proofs h
+    exact h.choose_spec.1
+  intro m hm
+  simp
+  generalize_proofs h
+  rw [span_iUnion]
+  apply mem_iSup_of_mem ⟨m, hm⟩
+  exact (h <| Subtype.mk m hm).choose_spec.2
+
 end
 
 end AddCommMonoid
