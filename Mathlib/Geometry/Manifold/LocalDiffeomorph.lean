@@ -32,11 +32,11 @@ at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorph
   a bijective local diffeomorphism is a diffeomorphism
 
 * `Diffeomorph.mfderivToContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism
-(`n ≥ 1`) is a linear equivalence.
+  (`n ≥ 1`) is a linear equivalence.
 * `LocalDiffeomorphAt.mfderivToContinuousLinearEquiv`: if `f` is a local diffeomorphism
-at `x`, the differential `mfderiv I J n f x` is a continuous linear equivalence.
+  at `x`, the differential `mfderiv I J n f x` is a continuous linear equivalence.
 * `LocalDiffeomorph.mfderivToContinuousLinearEquiv`: if `f` is a local diffeomorphism,
-each differential `mfderiv I J n f x` is a continuous linear equivalence.
+  each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image

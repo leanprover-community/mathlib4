@@ -305,7 +305,7 @@ section
 
 variable (R₁ M₁)
 
-/-- the identity map as a continuous linear map -/
+/-- the identity map as a continuous linear map. -/
 def id : M₁ →L[R₁] M₁ :=
   ⟨LinearMap.id, continuous_id⟩
 
