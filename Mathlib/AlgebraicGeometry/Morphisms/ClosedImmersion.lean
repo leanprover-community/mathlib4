@@ -169,7 +169,7 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsClosedImmersion f] :
       (f := f.toSchemeImage.base) f.toSchemeImage.isEmbedding.isInducing X.presheaf x
     exact ((ConcreteCategory.isIso_iff_bijective _).mp this).1
 
-/-- The category of closed subschemes is contravariantly equvalent
+/-- The category of closed subschemes is contravariantly equivalent
 to the lattice of ideal sheaves. -/
 noncomputable
 def overEquivIdealSheafData (X : Scheme.{u}) :
