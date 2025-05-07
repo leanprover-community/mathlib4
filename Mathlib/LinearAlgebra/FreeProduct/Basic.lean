@@ -161,7 +161,7 @@ alias _root_.LinearAlgebra.FreeProduct_ofPowers := asPowers
 @[deprecated (since := "2025-05-01")]
 alias _root_.LinearAlgebra.FreeProductOfPowers := asPowers
 
-/-- The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct_ofPowers` -/
+/-- The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct.asPowers`. -/
 noncomputable def asPowersEquiv : asPowers R A ≃ₐ[R] FreeProduct R A :=
   RingQuot.algEquivQuotAlgEquiv
     (powerAlgebraEquivFreeTensorAlgebra R A |>.symm) (FreeProduct.rel R A)
