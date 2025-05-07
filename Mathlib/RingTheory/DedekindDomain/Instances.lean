@@ -115,8 +115,12 @@ instance : IsScalarTower Rₚ K L :=
 instance : IsScalarTower R Rₚ K :=
   of_algebraMap_eq' (RingHom.ext fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
 
-instance : IsScalarTower Rₚ Sₚ L :=
-  localization_localization_isScalarTower S _ _ K _ P.primeCompl
+instance : IsScalarTower Rₚ Sₚ L := by
+  refine IsScalarTower.of_algebraMap_eq' <| IsLocalization.ringHom_ext P.primeCompl ?_
+  rw [RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq R Rₚ Sₚ, IsScalarTower.algebraMap_eq R S Sₚ,
+    ← RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq S Sₚ L, IsScalarTower.algebraMap_eq Rₚ K L,
+    RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq,
+    ← IsScalarTower.algebraMap_eq]
 
 instance : IsDomain Sₚ :=
   isDomain_localization <| algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _
