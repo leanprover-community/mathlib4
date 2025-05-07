@@ -268,7 +268,7 @@ lemma eq_sqrt_iff_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) : A = hB.sqrt 
   ⟨fun h => h ▸ hB.sq_sqrt, fun h => by subst h; rw [hA.sqrt_sq]⟩
 
 include hA in
-lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : hA.sqrt = B ↔ A = B^2 := by
+lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : hA.sqrt = B ↔ A = B ^ 2 := by
   simpa [eq_comm] using eq_sqrt_iff_sq_eq hB hA
 
 include hA in
@@ -538,14 +538,8 @@ theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
 
 lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
     PosDef hM.posSemidef.sqrt := by
-  unfold PosSemidef.sqrt
   apply PosDef.mul_mul_conjTranspose_same
-  · refine posDef_diagonal_iff.mpr fun i ↦ ?_
-    rw [Function.comp_apply, RCLike.pos_iff]
-    constructor
-    · simp only [RCLike.ofReal_re, Function.comp_apply, Real.sqrt_pos]
-      exact hM.eigenvalues_pos _
-    · simp only [RCLike.ofReal_im]
+  · exact posDef_diagonal_iff.mpr fun i ↦ by simpa using hM.eigenvalues_pos _
   · apply Matrix.vecMul_injective_of_isUnit
     convert (Group.isUnit _).map (unitaryGroup n 𝕜).subtype
 
