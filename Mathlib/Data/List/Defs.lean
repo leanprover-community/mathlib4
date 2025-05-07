@@ -411,9 +411,8 @@ def replaceIf : List α → List Bool → List α → List α
   | n :: ns, tf :: bs, e@(c :: cs) => if tf then c :: ns.replaceIf bs cs else n :: ns.replaceIf bs e
 
 /-- `repeatList n l` is a list consisting of l repeated n times. -/
-
 @[simp]
-def repeatList (n: ℕ) (l: List α) : List α := (List.replicate n l).flatten
+def repeatList (n : ℕ) (l : List α) : List α := (List.replicate n l).flatten
 
 /-- `iterate f a n` is `[a, f a, ..., f^[n - 1] a]`. -/
 @[simp]

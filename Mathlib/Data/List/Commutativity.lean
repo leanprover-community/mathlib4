@@ -90,9 +90,9 @@ theorem comm_iff_repeatList_of_same {q p : List α} :
 
   -- Reverse direction (∃w k l... → u++v=v++u)
   · rintro ⟨w, k, l, rfl, rfl⟩
-    rw [← repeatList_append_repeatList, ← repeatList_append_repeatList, Nat.add_comm]
+    rw [repeatList_append_repeatList, repeatList_append_repeatList, Nat.add_comm]
 
-termination_by (p++q).length
+termination_by (p ++ q).length
 decreasing_by
 
   · have n : (hp :: tp).length + t.length = (hq :: tq).length := by
