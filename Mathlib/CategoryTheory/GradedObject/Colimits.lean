@@ -41,6 +41,7 @@ section
 
 variable [HasColimitsOfShape K C]
 
+@[simps]
 noncomputable def colimitCocone (F : K ⥤ GradedObject I C) :
     Cocone F where
   pt i := colimit (F ⋙ eval i)
@@ -65,6 +66,24 @@ instance (i : I) : PreservesColimitsOfShape K (eval i : _ ⥤ C) where
 end
 
 end HasColimitsOfShape
+
+variable (C) {I J : Type*} (p : I → J)
+  [∀ (j : J), HasColimitsOfShape (Discrete (p ⁻¹' {j})) C]
+  (K : Type*) [Category K] [HasColimitsOfShape K C]
+
+instance : PreservesColimitsOfShape K (map C p) where
+  preservesColimit {F} :=
+    preservesColimit_of_preserves_colimit_cocone
+      (isColimitColimitCocone F)
+        (evalJointlyReflectsColimits (fun j ↦
+          { desc s := descMapObj _ _ (fun i hi ↦ colimit.desc _ (Cocone.mk _
+                  { app k := (F.obj k).ιMapObj p i j hi ≫ s.ι.app k
+                    naturality k k' f := by simp [← s.w f] }))
+            fac s k := by aesop_cat
+            uniq s m hm := mapObj_ext _ _ _ _ (fun i hi ↦ by
+              dsimp at hm ⊢
+              ext k
+              simp [← hm] ) }))
 
 end GradedObject
 
