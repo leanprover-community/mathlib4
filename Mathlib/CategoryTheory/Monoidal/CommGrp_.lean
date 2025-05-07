@@ -19,6 +19,7 @@ variable (C : Type u₁) [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C]
 
 /-- A commutative group object internal to a cartesian monoidal category. -/
 structure CommGrp_ where
+  /-- The underlying object in the ambient monoidal category -/
   X : C
   [grp : Grp_Class X]
   [comm : IsCommMon X]
@@ -35,14 +36,17 @@ namespace CommGrp_
 
 variable {C}
 
+/-- A commutative group object is a group object. -/
 @[simps X]
 def toGrp_ (A : CommGrp_ C) : Grp_ C := ⟨A.X⟩
 
+/-- A commutative group object is a commutative monoid object. -/
 @[simps X]
 def toCommMon_ (A : CommGrp_ C) : CommMon_ C := ⟨A.X⟩
 
-@[simps X]
-def toMon_ (A : CommGrp_ C) : Mon_ C := ⟨A.X⟩
+/-- A commutative group object is a monoid object. -/
+-- @[simps! X]
+abbrev toMon_ (A : CommGrp_ C) : Mon_ C := (toCommMon_ A).toMon_
 
 variable (C) in
 /-- The trivial commutative group object. -/
@@ -69,8 +73,8 @@ theorem comp_hom {R S T : CommGrp_ C} (f : R ⟶ S) (g : S ⟶ T) :
 theorem hom_ext {A B : CommGrp_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
   Mon_.Hom.ext h
 
-@[simp]
-lemma id' (A : CommGrp_ C) : (𝟙 A : A ⟶ A) = 𝟙 A := rfl
+-- @[simp]
+-- lemma id' (A : CommGrp_ C) : (𝟙 A : A ⟶ A) = 𝟙 A := rfl
 
 @[simp]
 lemma comp' {A₁ A₂ A₃ : CommGrp_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :

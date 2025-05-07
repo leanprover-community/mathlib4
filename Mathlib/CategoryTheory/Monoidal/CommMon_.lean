@@ -21,6 +21,7 @@ variable (C) in
 /-- A commutative monoid object internal to a monoidal category.
 -/
 structure CommMon_ where
+  /-- The underlying object in the ambient monoidal category -/
   X : C
   [mon : Mon_Class X]
   [comm : IsCommMon X]
@@ -41,8 +42,9 @@ namespace CommMon_
 -- instance (X : CommMon_ C) : IsCommMon X.X where
 --   mul_comm' := X.mul_comm
 
+/-- A commutative monoid object is a monoid object. -/
 @[simps X]
-def toMon_ (A : CommMon_ C) : Mon_ C := { X := A.X }
+def toMon_ (A : CommMon_ C) : Mon_ C := ⟨A.X⟩
 
 variable (C) in
 /-- The trivial commutative monoid object. We later show this is initial in `CommMon_ C`.
@@ -264,3 +266,5 @@ def equivLaxBraidedFunctorPUnit : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C �
   counitIso := counitIso C
 
 end CommMon_
+
+#lint
