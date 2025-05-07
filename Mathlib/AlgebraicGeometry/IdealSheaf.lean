@@ -545,7 +545,7 @@ This is usually only well-behaved when `f` is quasi-compact. -/
 def Hom.ker (f : X.Hom Y) : IdealSheafData Y :=
   ofIdeals fun U ↦ RingHom.ker (f.app U).hom
 
-lemma Hom.ker_ideal_le (f : X.Hom Y) (U : Y.affineOpens) :
+lemma Hom.ideal_ker_le (f : X.Hom Y) (U : Y.affineOpens) :
     f.ker.ideal U ≤ RingHom.ker (f.app U).hom :=
   ideal_ofIdeals_le _ _
 
@@ -589,7 +589,7 @@ lemma ker_eq_top_of_isEmpty (f : X.Hom Y) [IsEmpty X] : f.ker = ⊤ :=
 
 lemma ker_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
     f.ker = ofIdealTop (RingHom.ker f.appTop.hom) := by
-  refine (le_of_isAffine ((f.ker_ideal_le _).trans (by simp))).antisymm
+  refine (le_of_isAffine ((f.ideal_ker_le _).trans (by simp))).antisymm
     (le_ofIdeals_iff.mpr fun U ↦ ?_)
   simp only [ofIdealTop_ideal, homOfLE_leOfHom, Ideal.map_le_iff_le_comap, RingHom.comap_ker,
     ← CommRingCat.hom_comp, f.naturality]
@@ -605,7 +605,7 @@ lemma Hom.range_subset_ker_support (f : X.Hom Y) :
   simp only [Scheme.mem_zeroLocus_iff, SetLike.mem_coe]
   intro s hs hxs
   have : x ∈ f ⁻¹ᵁ Y.basicOpen s := hxs
-  rwa [Scheme.preimage_basicOpen, RingHom.mem_ker.mp (f.ker_ideal_le _ hs),
+  rwa [Scheme.preimage_basicOpen, RingHom.mem_ker.mp (f.ideal_ker_le _ hs),
     Scheme.basicOpen_zero] at this
 
 lemma Hom.iInf_ker_openCover_map_comp_apply
@@ -625,7 +625,7 @@ lemma Hom.iInf_ker_openCover_map_comp_apply
     Scheme.Hom.appIso_hom']
   simp only [homOfLE_leOfHom, Scheme.Hom.app_eq_appLE, ← RingHom.comp_apply,
     ← CommRingCat.hom_comp, Scheme.Hom.appLE_map, Scheme.appLE_comp_appLE]
-  simpa [Scheme.Hom.appLE] using ker_ideal_le _ _ (Ideal.mem_iInf.mp hs i)
+  simpa [Scheme.Hom.appLE] using ideal_ker_le _ _ (Ideal.mem_iInf.mp hs i)
 
 lemma Hom.iInf_ker_openCover_map_comp (f : X ⟶ Y) [QuasiCompact f] (𝒰 : X.OpenCover) :
     ⨅ i, (𝒰.map i ≫ f).ker = f.ker := by
