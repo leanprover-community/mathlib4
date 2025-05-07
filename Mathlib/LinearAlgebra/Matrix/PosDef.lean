@@ -254,13 +254,41 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
   exact hv <| dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
     (RCLike.ofReal_ne_zero.mpr ht) aux
 
+include hA in
+lemma sq_eq_sq_iff {B : Matrix n n 𝕜} (hB : PosSemidef B) : A ^ 2 = B ^ 2 ↔ A = B :=
+  ⟨eq_of_sq_eq_sq hA hB, fun h => h ▸ rfl⟩
+
 lemma sqrt_sq : (hA.pow 2 : PosSemidef (A ^ 2)).sqrt = A :=
   (hA.pow 2).posSemidef_sqrt.eq_of_sq_eq_sq hA (hA.pow 2).sq_sqrt
 
 include hA in
-lemma eq_sqrt_of_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B) : A = hB.sqrt := by
-  subst B
-  rw [hA.sqrt_sq]
+lemma eq_sqrt_iff_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) : A = hB.sqrt ↔ A ^ 2 = B :=
+  ⟨fun h => h ▸ hB.sq_sqrt, fun h => by subst h; rw [hA.sqrt_sq]⟩
+
+include hA in
+lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : hA.sqrt = B ↔ A = B^2 := by
+  simpa [eq_comm] using eq_sqrt_iff_sq_eq hB hA
+
+include hA in
+@[deprecated eq_sqrt_iff_sq_eq (since := "2025-05-07")]
+lemma eq_sqrt_of_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B) : A = hB.sqrt :=
+  eq_sqrt_iff_sq_eq hA hB |>.2 hAB
+
+@[simp]
+lemma sqrt_eq_zero_iff : hA.sqrt = 0 ↔ A = 0 := by
+  rw [sqrt_eq_iff_eq_sq _ .zero, zero_pow two_ne_zero]
+
+@[simp]
+lemma sqrt_eq_one_iff : hA.sqrt = 1 ↔ A = 1 := by
+  rw [sqrt_eq_iff_eq_sq _ .one, one_pow]
+
+@[simp]
+lemma isUnit_sqrt_iff : IsUnit hA.sqrt ↔ IsUnit A := by
+  conv_rhs => rw [← hA.sqrt_mul_self]
+  rw [isUnit_mul_self_iff]
+
+lemma inv_sqrt : hA.sqrt⁻¹ = hA.inv.sqrt := by
+  rw [eq_sqrt_iff_sq_eq hA.posSemidef_sqrt.inv, sq, ← Matrix.mul_inv_rev, ← sq, sq_sqrt]
 
 end sqrt
 
@@ -449,6 +477,12 @@ lemma mul_mul_conjTranspose_same {A : Matrix n n R} {B : Matrix m n R} (hA : A.P
   simp_rw [Function.comp_def, star_vecMul, star_star] at hB
   simpa using hA.conjTranspose_mul_mul_same (B := Bᴴ) hB
 
+theorem conjTranspose_mul_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matrix m n R)
+    (hA : Function.Injective A.mulVec) :
+    PosDef (Aᴴ * A) := by
+  classical
+  simpa using conjTranspose_mul_mul_same .one hA
+
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosDef) : Mᴴ.PosDef := hM.1.symm ▸ hM
 
 @[simp]
@@ -496,6 +530,29 @@ theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
   ⟨fun h =>
     letI := (Matrix.isUnit_nonsing_inv_iff.1 <| h.isUnit).invertible
     Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
+
+lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
+    PosDef hM.posSemidef.sqrt := by
+  unfold PosSemidef.sqrt
+  apply PosDef.mul_mul_conjTranspose_same
+  · refine posDef_diagonal_iff.mpr fun i ↦ ?_
+    rw [Function.comp_apply, RCLike.pos_iff]
+    constructor
+    · simp only [RCLike.ofReal_re, Function.comp_apply, Real.sqrt_pos]
+      exact hM.eigenvalues_pos _
+    · simp only [RCLike.ofReal_im]
+  · apply Matrix.vecMul_injective_of_isUnit
+    convert (Group.isUnit _).map (unitaryGroup n 𝕜).subtype
+
+/--
+A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
+-/
+lemma posDef_iff_eq_transpose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
+    PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B := by
+  classical
+  refine ⟨fun hA ↦ ⟨_, hA.posDef_sqrt.isUnit, ?_⟩, fun ⟨B, hB, hA⟩ ↦ (hA ▸ ?_)⟩
+  · simp [hA.posDef_sqrt.isHermitian.eq]
+  · exact conjTranspose_mul_self _ (mulVec_injective_of_isUnit hB)
 
 end PosDef
 
