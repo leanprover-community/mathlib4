@@ -354,16 +354,10 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
   invFun π i := π ∘ₐ ι R A i
   left_inv π := by
     ext i aᵢ
-    simp_rw [ι, ι', AlgHom.comp_apply, AlgHom.ofLinearMap_apply,
-             LinearMap.comp_apply, AlgHom.toLinearMap_apply,
-             liftAlgHom_mkAlgHom_apply, TensorAlgebra.lift_ι_apply, toModule_lof,
-             AlgHom.toLinearMap_apply]
+    aesop (add simp [ι, ι'])
   right_inv maps := by
     ext i a
-    simp_rw [ι, ι', LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
-             liftAlgHom_mkAlgHom_apply, TensorAlgebra.lift_ι_apply, toModule_lof,
-             AlgHom.toLinearMap_apply, AlgHom.comp_apply, AlgHom.ofLinearMap_apply,
-             LinearMap.comp_apply, mkAlgHom, AlgHom.toLinearMap_apply]
+    aesop (add simp [ι, ι'])
 
 /-- Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
