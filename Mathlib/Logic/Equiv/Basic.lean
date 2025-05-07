@@ -446,30 +446,52 @@ def sigmaSubtype {α : Type*} {β : α → Type*} (a : α) :
   left_inv := fun ⟨a, h⟩ ↦ by cases h; simp
   right_inv b := by simp
 
+
+section
+attribute [local simp] Trans.trans sigmaAssoc subtypeSigmaEquiv uniqueSigma eqRec_eq_cast
+
 /-- A subtype of a dependent triple which pins down both bases is equivalent to the
 respective fiber. -/
-@[simps! (config := {simpRhs := true})]
+@[simps! +simpRhs apply]
 def sigmaSigmaSubtype {α : Type*} {β : α → Type*} {γ : (a : α) → β a → Type*}
-    (p : (a : α) × β a → Prop) [uniq : Unique {ab // p ab}] (a : α) (b : β a) (h : p ⟨a, b⟩) :
-    {s : (a : α) × (b : β a) × γ a b // p ⟨s.1, s.2.1⟩} ≃ γ a b := by
+    (p : (a : α) × β a → Prop) [uniq : Unique {ab // p ab}] {a : α} {b : β a} (h : p ⟨a, b⟩) :
+    {s : (a : α) × (b : β a) × γ a b // p ⟨s.1, s.2.1⟩} ≃ γ a b :=
   calc {s : (a : α) × (b : β a) × γ a b // p ⟨s.1, s.2.1⟩}
   _ ≃ _ := subtypeEquiv (p := fun ⟨a, b, c⟩ ↦ p ⟨a, b⟩) (q := (p ·.1))
     (sigmaAssoc γ).symm fun s ↦ by simp [sigmaAssoc]
   _ ≃ _ := subtypeSigmaEquiv _ _
   _ ≃ _ := uniqueSigma (fun ab ↦ γ (Sigma.fst <| Subtype.val ab) (Sigma.snd <| Subtype.val ab))
-  _ ≃ γ a b := by rw [ ← show ⟨⟨a, b⟩, h⟩ = uniq.default from uniq.uniq _]
+  _ ≃ γ a b := Equiv.cast <| by rw [ ← show ⟨⟨a, b⟩, h⟩ = uniq.default from uniq.uniq _]
+
+@[simp]
+lemma sigmaSigmaSubtype_symm_apply {α : Type*} {β : α → Type*} {γ : (a : α) → β a → Type*}
+    (p : (a : α) × β a → Prop) [uniq : Unique {ab // p ab}]
+    {a : α} {b : β a} (c : γ a b) (h : p ⟨a, b⟩) :
+    (sigmaSigmaSubtype p h).symm c = ⟨⟨a, ⟨b, c⟩⟩, h⟩ := by
+  rw [Equiv.symm_apply_eq]; simp
 
 /-- A specialization of `sigmaSigmaSubtype` to the case where the second base
 does not depend on the first, and the property being checked for is simple
-equality. Useful for e.g. hom-types. -/
-@[simps!]
+equality. Useful e.g. when `γ` is `Hom` inside a category. -/
 def sigmaSigmaSubtypeEq {α β : Type*} {γ : α → β → Type*} (a : α) (b : β) :
     {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b} ≃ γ a b :=
   have : Unique (@Subtype ((_ : α) × β) (fun ⟨a', b'⟩ ↦ a' = a ∧ b' = b)) := {
     default := ⟨⟨a, b⟩, ⟨rfl, rfl⟩⟩
-    uniq := by rintro ⟨⟨a', b'⟩, ⟨rfl, rfl⟩⟩; rfl
-  }
-  sigmaSigmaSubtype (fun ⟨a', b'⟩ ↦ a' = a ∧ b' = b) a b ⟨rfl, rfl⟩
+    uniq := by rintro ⟨⟨a', b'⟩, ⟨rfl, rfl⟩⟩; rfl }
+  sigmaSigmaSubtype (fun ⟨a', b'⟩ ↦ a' = a ∧ b' = b) ⟨rfl, rfl⟩
+
+@[simp]
+lemma sigmaSigmaSubtypeEq_apply {α β : Type*} {γ : α → β → Type*} {a : α} {b : β}
+    (s: {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
+    sigmaSigmaSubtypeEq a b s = cast (congrArg₂ γ s.2.1 s.2.2) s.1.2.2 := by
+  simp [sigmaSigmaSubtypeEq]
+
+@[simp]
+lemma sigmaSigmaSubtypeEq_symm_apply {α β : Type*} {γ : α → β → Type*} {a : α} {b : β} (c : γ a b) :
+    (sigmaSigmaSubtypeEq a b).symm c = ⟨⟨a, ⟨b, c⟩⟩, ⟨rfl, rfl⟩⟩ := by
+  simp [sigmaSigmaSubtypeEq]
+
+end
 
 end
 
