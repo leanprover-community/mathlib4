@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Data.Set.Image
+import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Order.SetNotation
 
@@ -120,6 +121,18 @@ lemma isRelLowerSet_iff_isLowerSet_subtype {s : Set { x // c ≤ x }} :
     simpa only [mem_image, SetCoe.ext_iff, exists_eq_right] using (h ma).2 x b.2
   · obtain ⟨a, ma, rfl⟩ := x
     exact ⟨a.2, fun b x y ↦ by simpa [h (show ⟨b, y⟩ ≤ a by exact x) ma]⟩
+
+instance : SetLike (RelUpperSet c) α where
+  coe := RelUpperSet.carrier
+  coe_injective' s t h := by cases s; cases t; congr
+
+instance : SetLike (RelLowerSet c) α where
+  coe := RelLowerSet.carrier
+  coe_injective' s t h := by cases s; cases t; congr
+
+lemma RelUpperSet.isRelUpperSet (u : RelUpperSet c) : IsRelUpperSet u c := u.isRelUpperSet'
+
+lemma RelLowerSet.isRelLowerSet (l : RelLowerSet c) : IsRelLowerSet l c := l.isRelLowerSet'
 
 end LE
 

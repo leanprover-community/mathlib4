@@ -306,8 +306,10 @@ def IsRelLowerSet {α : Type*} [LE α] (s : Set α) (c : α) : Prop :=
 structure RelUpperSet {α : Type*} [LE α] (c : α) where
   /-- The carrier of a `RelUpperSet`. -/
   carrier : Set α
-  /-- The carrier of a `RelUpperSet` is an upper set relative to `c`. -/
-  relUpper : IsRelUpperSet carrier c
+  /-- The carrier of a `RelUpperSet` is an upper set relative to `c`.
+
+  Do NOT use directly. Please use `RelUpperSet.isRelUpperSet` instead. -/
+  isRelUpperSet' : IsRelUpperSet carrier c
 
 extend_docs RelUpperSet before "The type of upper sets of an order relative to `c`."
 
@@ -315,8 +317,10 @@ extend_docs RelUpperSet before "The type of upper sets of an order relative to `
 structure RelLowerSet {α : Type*} [LE α] (c : α) where
   /-- The carrier of a `RelLowerSet`. -/
   carrier : Set α
-  /-- The carrier of a `RelLowerSet` is a lower set relative to `c`. -/
-  relLower : IsRelLowerSet carrier c
+  /-- The carrier of a `RelLowerSet` is a lower set relative to `c`.
+
+  Do NOT use directly. Please use `RelLowerSet.isRelLowerSet` instead. -/
+  isRelLowerSet' : IsRelLowerSet carrier c
 
 extend_docs RelLowerSet before "The type of lower sets of an order relative to `c`."
 
