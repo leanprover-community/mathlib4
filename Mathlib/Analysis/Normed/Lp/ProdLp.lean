@@ -972,7 +972,7 @@ def prodOfLpₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
   map_smul' _c _f := rfl
   norm_map' := prod_norm_toLp
 
-@[deprecated (since := "2024-04-27")] alias prodEquivₗᵢ:= prodOfLpₗᵢ
+@[deprecated (since := "2024-04-27")] alias prodEquivₗᵢ := prodOfLpₗᵢ
 
 end IsBoundedSMul
 

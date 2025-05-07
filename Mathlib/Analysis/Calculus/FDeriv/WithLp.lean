@@ -54,9 +54,13 @@ theorem hasStrictFDerivAt_ofLp (f : PiLp p E) :
     HasStrictFDerivAt ofLp (ofLpContinuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
   .of_isLittleO <| (Asymptotics.isLittleO_zero _ _).congr_left fun _ => (sub_self _).symm
 
+@[deprecated (since := "2025-05-07")] alias hasStrictFDerivAt_equiv := hasStrictFDerivAt_ofLp
+
 theorem hasStrictFDerivAt_toLp (f : ∀ i, E i) :
     HasStrictFDerivAt (toLp p) (ofLpContinuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
   .of_isLittleO <| (Asymptotics.isLittleO_zero _ _).congr_left fun _ => (sub_self _).symm
+
+@[deprecated (since := "2025-05-07")] alias hasStrictFDerivAt_equiv_symm := hasStrictFDerivAt_toLp
 
 nonrec theorem hasStrictFDerivAt_apply (f : PiLp p E) (i : ι) :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
@@ -66,9 +70,13 @@ theorem hasFDerivAt_ofLp (f : PiLp p E) :
     HasFDerivAt ofLp (ofLpContinuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
   (hasStrictFDerivAt_ofLp p f).hasFDerivAt
 
+@[deprecated (since := "2025-05-07")] alias hasFDerivAt_equiv := hasFDerivAt_ofLp
+
 theorem hasFDerivAt_toLp (f : ∀ i, E i) :
     HasFDerivAt (toLp p) (ofLpContinuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
   (hasStrictFDerivAt_toLp p f).hasFDerivAt
+
+@[deprecated (since := "2025-05-07")] alias hasFDerivAt_equiv_symm := hasFDerivAt_toLp
 
 nonrec theorem hasFDerivAt_apply (f : PiLp p E) (i : ι) :
     HasFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
