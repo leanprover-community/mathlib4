@@ -75,13 +75,26 @@ lemma continuous_compactOpen {f : X → C(Y, Z)} :
     Continuous f ↔ ∀ K, IsCompact K → ∀ U, IsOpen U → IsOpen {x | MapsTo (f x) K U} :=
   continuous_generateFrom_iff.trans forall_mem_image2
 
+protected lemma hasBasis_nhds (f : C(X, Y)) :
+    (𝓝 f).HasBasis
+      (fun S : Set (Set X × Set Y) ↦
+        S.Finite ∧ ∀ K U, (K, U) ∈ S → IsCompact K ∧ IsOpen U ∧ MapsTo f K U)
+      (⋂ KU ∈ ·, {g : C(X, Y) | MapsTo g KU.1 KU.2}) := by
+  refine ⟨fun s ↦ ?_⟩
+  simp_rw [nhds_compactOpen, iInf_comm.{_, 0, _ + 1}, iInf_prod', iInf_and']
+  simp [mem_biInf_principal, and_assoc]
+
+protected lemma mem_nhds_iff {f : C(X, Y)} {s : Set C(X, Y)} :
+    s ∈ 𝓝 f ↔ ∃ S : Set (Set X × Set Y), S.Finite ∧
+      (∀ K U, (K, U) ∈ S → IsCompact K ∧ IsOpen U ∧ MapsTo f K U) ∧
+      {g : C(X, Y) | ∀ K U, (K, U) ∈ S → MapsTo g K U} ⊆ s := by
+  simp [f.hasBasis_nhds.mem_iff, ← setOf_forall, and_assoc]
+
 section Functorial
 
 /-- `C(X, ·)` is a functor. -/
 theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
   continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOf_mapsTo hK (hU.preimage g.2)
-
-@[deprecated (since := "2024-10-19")] alias continuous_comp := continuous_postcomp
 
 /-- If `g : C(Y, Z)` is a topology inducing map,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
@@ -93,8 +106,6 @@ theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
 
 @[deprecated (since := "2024-10-28")] alias inducing_postcomp := isInducing_postcomp
 
-@[deprecated (since := "2024-10-19")] alias inducing_comp := isInducing_postcomp
-
 /-- If `g : C(Y, Z)` is a topological embedding,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
@@ -104,15 +115,11 @@ theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
 @[deprecated (since := "2024-10-26")]
 alias embedding_postcomp := isEmbedding_postcomp
 
-@[deprecated (since := "2024-10-19")] alias embedding_comp := isEmbedding_postcomp
-
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]
 theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
-
-@[deprecated (since := "2024-10-19")] alias continuous_comp_left := continuous_precomp
 
 variable (Z) in
 /-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
@@ -132,14 +139,6 @@ protected def _root_.Homeomorph.arrowCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
   right_inv f := ext fun _ ↦ ψ.right_inv (f _) |>.trans <| congrArg f <| φ.right_inv _
   continuous_toFun := continuous_postcomp _ |>.comp <| continuous_precomp _
   continuous_invFun := continuous_postcomp _ |>.comp <| continuous_precomp _
-
-variable (Z) in
-/-- Precomposition by a homeomorphism is itself a homeomorphism between spaces of continuous maps.
--/
-@[deprecated Homeomorph.arrowCongr (since := "2024-10-19")]
-def compRightHomeomorph (f : X ≃ₜ Y) :
-    C(Y, Z) ≃ₜ C(X, Z) :=
-  .arrowCongr f.symm (.refl _)
 
 variable [LocallyCompactPair Y Z]
 

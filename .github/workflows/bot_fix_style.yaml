@@ -112,12 +112,12 @@ jobs:
 
       - name: install Python
         if: steps.user_permission.outputs.require-result == 'true'
-        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: 3.8
 
       - name: Configure Lean
-        uses: leanprover/lean-action@f3ad22e9ca29cb9475bc9bee9afd1f39bb52bf6d # v1.1.2
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
         with:
           auto-config: false
           use-github-cache: false

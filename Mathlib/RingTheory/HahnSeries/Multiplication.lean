@@ -13,22 +13,32 @@ import Mathlib.RingTheory.HahnSeries.Addition
 /-!
 # Multiplicative properties of Hahn series
 If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
-coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `HahnSeries Γ R`.  We prove some facts about multiplying
-Hahn series.
+coefficients in `R`, whose supports are partially well-ordered. This module introduces
+multiplication and scalar multiplication on Hahn series. If `Γ` is an ordered cancellative
+commutative additive monoid and `R` is a semiring, then we get a semiring structure on
+`HahnSeries Γ R`. If `Γ` has an ordered vector-addition on `Γ'` and `R` has a scalar multiplication
+on `V`, we define `HahnModule Γ' R V` as a type alias for `HahnSeries Γ' V` that admits a scalar
+multiplication from `HahnSeries Γ R`. The scalar action of `R` on `HahnSeries Γ R` is compatible
+with the action of `HahnSeries Γ R` on `HahnModule Γ' R V`.
 
 ## Main Definitions
   * `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
   of `HahnSeries Γ R` on `HahnModule Γ' R V` for an `R`-module `V`, where `Γ'` admits an ordered
-  cancellative vector addition operation from `Γ`.
+  cancellative vector addition operation from `Γ`. The type alias allows us to avoid a potential
+  instance diamond.
+  * `HahnModule.of` is the isomorphism from `HahnSeries Γ V` to `HahnModule Γ R V`.
+  * `HahnSeries.C` is the `constant term` ring homomorphism `R →+* HahnSeries Γ R`.
+  * `HahnSeries.embDomainRingHom` is the ring homomorphism `HahnSeries Γ R →+* HahnSeries Γ' R`
+  induced by an order embedding `Γ ↪o Γ'`.
 
 ## Main results
   * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
   * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `HahnSeries Γ R`-module.
 
 ## TODO
-
-  * Scalar tower instances
+The following may be useful for composing vertex operators, but they seem to take time.
+  * rightTensorMap: `HahnModule Γ' R U ⊗[R] V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
+  * leftTensorMap: `U ⊗[R] HahnModule Γ' R V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -640,6 +650,21 @@ instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
   one_smul := fun _ => one_smul'
   add_smul := fun _ _ _ => add_smul Module.add_smul
   zero_smul := fun _ => zero_smul' }
+
+instance [Zero R] {S : Type*} [Zero S] [SMul R S] [SMulWithZero R V] [SMulWithZero S V]
+    [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) where
+  smul_assoc r s a := by
+    ext
+    simp
+
+instance [Semiring R] [Module R V] : IsScalarTower R (HahnSeries Γ R) (HahnModule Γ' R V) where
+  smul_assoc r x a := by
+    rw [← HahnSeries.single_zero_mul_eq_smul, mul_smul', ← single_zero_smul_eq_smul Γ]
+
+instance SMulCommClass [CommSemiring R] [Module R V] :
+    SMulCommClass R (HahnSeries Γ R) (HahnModule Γ' R V) where
+  smul_comm r x y := by
+    rw [← single_zero_smul_eq_smul Γ, ← mul_smul', mul_comm, mul_smul', single_zero_smul_eq_smul Γ]
 
 instance instNoZeroSMulDivisors {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [Zero R] [SMulWithZero R V] [NoZeroSMulDivisors R V] :

@@ -323,7 +323,7 @@ theorem sum_geometric_two_le (n : ℕ) : (∑ i ∈ range n, (1 / (2 : ℝ)) ^ i
     intro i
     apply pow_nonneg
     norm_num
-  convert sum_le_tsum (range n) (fun i _ ↦ this i) summable_geometric_two
+  convert summable_geometric_two.sum_le_tsum (range n) (fun i _ ↦ this i)
   exact tsum_geometric_two.symm
 
 theorem tsum_geometric_inv_two : (∑' n : ℕ, (2 : ℝ)⁻¹ ^ n) = 2 :=
@@ -338,7 +338,7 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
   have B : ((Finset.range n).sum fun i : ℕ ↦ ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0) = 0 :=
     Finset.sum_eq_zero fun i hi ↦
       ite_eq_right_iff.2 fun h ↦ (lt_irrefl _ ((Finset.mem_range.1 hi).trans_le h)).elim
-  simp only [← _root_.sum_add_tsum_nat_add n A, B, if_true, zero_add, zero_le',
+  simp only [← Summable.sum_add_tsum_nat_add n A, B, if_true, zero_add, zero_le',
     le_add_iff_nonneg_left, pow_add, _root_.tsum_mul_right, tsum_geometric_inv_two]
 
 theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ ↦ a / 2 / 2 ^ n) a := by

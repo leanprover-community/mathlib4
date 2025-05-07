@@ -189,7 +189,7 @@ Given monoid morphisms `φᵢ : Nᵢ → M` and `f : M → P`, if we have suffic
 theorem comp_noncommPiCoprod {P : Type*} [Monoid P] {f : M →* P}
     (hcomm' : Pairwise fun i j => ∀ x y, Commute (f.comp (ϕ i) x) (f.comp (ϕ j) y) :=
       Pairwise.mono hcomm (fun i j ↦ forall_imp (fun x h y ↦ by
-        simp only [MonoidHom.coe_comp, Function.comp_apply, Commute.map  (h y) f]))) :
+        simp only [MonoidHom.coe_comp, Function.comp_apply, Commute.map (h y) f]))) :
     f.comp (MonoidHom.noncommPiCoprod ϕ hcomm) =
       MonoidHom.noncommPiCoprod (fun i ↦ f.comp (ϕ i)) hcomm' :=
   MonoidHom.ext fun _ ↦ by
