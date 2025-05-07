@@ -46,7 +46,7 @@ jobs:
         sudo apt-get install -y jq
         # If you have additional dependencies, install them here
 
-    - name: Get changed and removed/renamed and removed/renamed files
+    - name: Get changed and removed/renamed files
       run: |
         git fetch origin ${{ github.base_ref }}  # fetch the base branch
         # Get the list of all changed files.
@@ -149,7 +149,7 @@ jobs:
     - name: Update the file-removed label
       run: |
         undeprecatedMoves="$(cat moved_without_deprecation.txt)"
-        if [ -n $undeprecatedMoves ]; then
+        if [ -n "$undeprecatedMoves" ]; then
           echo "This PR has undeprecated module (re)movals."
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
