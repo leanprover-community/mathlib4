@@ -1,4 +1,20 @@
+/-
+Copyright (c) 2025 Ben Eltschig. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ben Eltschig
+-/
 import Mathlib.CategoryTheory.Adjunction.Triple
+
+/-!
+# Adjoint quadruples
+
+This file concerns adjoint quadruples `L ⊣ F ⊣ G ⊣ R` of functors `L G : C ⥤ D`, `F R : D ⥤ C`.
+Currently the only two results are the following:
+* When `F` and `R` are fully faithful, the components of the induced natural transformation `G ⟶ L`
+  are epic iff the components of the natural transformation `F ⟶ R` are monic.
+* When `L` and `G` are fully faithful, the components of the induced natural transformation `L ⟶ G`
+  are epic iff the components of the natural transformation `R ⟶ F` are monic.
+-/
 
 open CategoryTheory Limits
 
