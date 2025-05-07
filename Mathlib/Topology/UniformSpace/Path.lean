@@ -45,7 +45,7 @@ theorem uniformContinuous_extend_left : UniformContinuous (Path.extend : Path x 
 theorem _root_.Filter.HasBasis.uniformityPath {ι : Sort*} {p : ι → Prop} {U : ι → Set (X × X)}
     (hU : (𝓤 X).HasBasis p U) :
     (𝓤 (Path x y)).HasBasis p fun i ↦ {γ | ∀ t, (γ.1 t, γ.2 t) ∈ U i} :=
-  hU.compactConvergenceUniformity_of_compactSpace.comap _
+  hU.compactConvergenceUniformity_of_compact.comap _
 
 theorem hasBasis_uniformity :
     (𝓤 (Path x y)).HasBasis (· ∈ 𝓤 X) ({γ | ∀ t, (γ.1 t, γ.2 t) ∈ ·}) :=
