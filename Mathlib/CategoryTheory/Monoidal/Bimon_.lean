@@ -176,29 +176,25 @@ def toTrivial (A : Bimon_ C) : A ⟶ trivial C :=
 variable {C}
 
 @[reassoc]
-theorem one_comul (M : C) [Bimon_Class M] :
-    η[M] ≫ Δ[M] = (λ_ _).inv ≫ (η[M] ⊗ η[M]) := by
-  simp only [Bimon_Class.one_comul, Mon_Class.instTensorObj_one]
+theorem one_comul (M : Bimon_ C) :
+    M.X.one ≫ M.comul.hom = (λ_ _).inv ≫ (M.X.one ⊗ M.X.one) := by
+  simp
 
 @[reassoc]
-theorem mul_counit (M : C) [Bimon_Class M] :
-    μ[M] ≫ ε[M] = (ε[M] ⊗ ε[M]) ≫ (λ_ _).hom := by
-  erw [Bimon_Class.mul_counit]
-  change _ ≫ _ = _
-  simp only [Equivalence.symm_inverse, Comon_.Comon_EquivMon_OpOp_functor,
-    Comon_.Comon_ToMon_OpOp_obj, Comon_.Comon_ToMon_OpOp_obj'_X, Comon_.mk'_X, unop_tensorObj,
-    unop_tensorUnit, unop_tensorHom, unop_inv_leftUnitor, Iso.cancel_iso_hom_right]
-  rfl
+theorem mul_counit (M : Bimon_ C) :
+    M.X.mul ≫ M.counit.hom = (M.counit.hom ⊗ M.counit.hom) ≫ (λ_ _).hom := by
+  simp
 
 /-- Compatibility of the monoid and comonoid structures, in terms of morphisms in `C`. -/
-@[reassoc (attr := simp)] theorem compatibility (M : C) [Bimon_Class M] :
-    (Δ[M] ⊗ Δ[M]) ≫
-      (α_ _ _ (M ⊗ M)).hom ≫ M ◁ (α_ _ _ _).inv ≫
-      M ◁ (β_ M M).hom ▷ M ≫
-      M ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
-      (μ[M] ⊗ μ[M]) =
-    μ[M] ≫ Δ[M] := by
-  simp only [Bimon_Class.mul_comul, tensorμ, Category.assoc]
+@[reassoc (attr := simp)] theorem compatibility (M : Bimon_ C) :
+    (M.comul.hom ⊗ M.comul.hom) ≫
+      (α_ _ _ (M.X.X ⊗ M.X.X)).hom ≫ M.X.X ◁ (α_ _ _ _).inv ≫
+      M.X.X ◁ (β_ M.X.X M.X.X).hom ▷ M.X.X ≫
+      M.X.X ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
+      (M.X.mul ⊗ M.X.mul) =
+    M.X.mul ≫ M.comul.hom := by
+  have := (Mon_.Hom.mul_hom M.comul).symm
+  simpa [-Mon_.Hom.mul_hom, tensorμ] using this
 
 @[reassoc (attr := simp)] theorem comul_counit_hom (M : Bimon_ C) :
     M.comul.hom ≫ (_ ◁ M.counit.hom) = (ρ_ _).inv := by
