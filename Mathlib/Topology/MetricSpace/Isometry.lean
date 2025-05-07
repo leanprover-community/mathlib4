@@ -84,9 +84,12 @@ theorem _root_.isometry_subsingleton [Subsingleton α] : Isometry f := fun x y =
 /-- The identity is an isometry -/
 theorem _root_.isometry_id : Isometry (id : α → α) := fun _ _ => rfl
 
-theorem prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf : Isometry f)
+theorem prodMap {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf : Isometry f)
     (hg : Isometry g) : Isometry (Prod.map f g) := fun x y => by
   simp only [Prod.edist_eq, Prod.map_fst, hf.edist_eq, Prod.map_snd, hg.edist_eq]
+
+@[deprecated (since := "2025-04-18")]
+alias prod_map := prodMap
 
 protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
@@ -179,9 +182,6 @@ alias embedding := isEmbedding
 theorem isClosedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
     IsClosedEmbedding f :=
   hf.antilipschitz.isClosedEmbedding hf.lipschitz.uniformContinuous
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding := isClosedEmbedding
 
 end EmetricIsometry
 
@@ -606,7 +606,7 @@ end IsometryEquiv
 
 /-- An isometry induces an isometric isomorphism between the source space and the
 range of the isometry. -/
-@[simps! (config := { simpRhs := true }) toEquiv apply]
+@[simps! +simpRhs toEquiv apply]
 def Isometry.isometryEquivOnRange [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
     (h : Isometry f) : α ≃ᵢ range f where
   isometry_toFun := h

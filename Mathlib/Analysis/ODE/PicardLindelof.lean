@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Winston Yin
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.MetricSpace.Contracting
+import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # Picard-Lindelöf (Cauchy-Lipschitz) Theorem
@@ -324,7 +325,7 @@ lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
       ← intervalIntegral.integral_sub (intervalIntegrable_comp_compProj hf _ t)
         (intervalIntegrable_comp_compProj hf _ t)]
     calc
-      _ ≤ ∫ τ in Ι t₀.1 t.1, K ^ (n + 1) * |τ - t₀| ^ n / n ! * dist α β := by
+      _ ≤ ∫ τ in uIoc t₀.1 t.1, K ^ (n + 1) * |τ - t₀| ^ n / n ! * dist α β := by
         rw [intervalIntegral.norm_intervalIntegral_eq]
         apply norm_integral_le_of_norm_le <| Continuous.integrableOn_uIoc (by fun_prop)
         apply ae_restrict_mem measurableSet_Ioc |>.mono

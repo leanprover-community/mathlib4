@@ -131,7 +131,7 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
 
 @[simp]
 theorem range_const (α) [MeasurableSpace α] [Nonempty α] (b : β) : (const α b).range = {b} :=
-  Finset.coe_injective <| by simp (config := { unfoldPartialApp := true }) [Function.const]
+  Finset.coe_injective <| by simp +unfoldPartialApp [Function.const]
 
 theorem range_const_subset (α) [MeasurableSpace α] (b : β) : (const α b).range ⊆ {b} :=
   Finset.coe_subset.1 <| by simp
@@ -587,6 +587,11 @@ instance instOrderBot [LE β] [OrderBot β] : OrderBot (α →ₛ β) where
 instance instOrderTop [LE β] [OrderTop β] : OrderTop (α →ₛ β) where
   top := const α ⊤
   le_top _ _ := le_top
+
+@[to_additive]
+instance [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
+    IsOrderedMonoid (α →ₛ β) where
+  mul_le_mul_left _ _ h _ _ := mul_le_mul_left' (h _) _
 
 instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (α →ₛ β) :=
   { SimpleFunc.instPartialOrder with
@@ -1158,7 +1163,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
     convert const 0 MeasurableSet.univ
     ext x
     simp [h]
-  | @insert x s hxs ih =>
+  | insert x s hxs ih =>
     have mx := f.measurableSet_preimage {x}
     let g := SimpleFunc.piecewise (f ⁻¹' {x}) mx 0 f
     have Pg : motive g := by
@@ -1200,7 +1205,7 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
     convert const c
     ext x
     simp [h]
-  | @insert x s hxs ih =>
+  | insert x s hxs ih =>
     have mx := f.measurableSet_preimage {x}
     let g := SimpleFunc.piecewise (f ⁻¹' {x}) mx (SimpleFunc.const α c) f
     have Pg : P g := by

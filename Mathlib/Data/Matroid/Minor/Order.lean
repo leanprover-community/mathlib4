@@ -8,8 +8,8 @@ import Mathlib.Data.Matroid.Minor.Contract
 /-!
 # Matroid Minors
 
-A matroid `N = M ／ C ＼ D` obtained from a matroid `M` by a deletion then a contraction,
-(or equivalently, by any number of deletions/contractions in any order) is a *minor* of `M`.
+A matroid `N = M ／ C ＼ D` obtained from a matroid `M` by a contraction then a delete,
+(or equivalently, by any number of contractions/deletions in any order) is a *minor* of `M`.
 This gives a partial order on `Matroid α` that is ubiquitous in matroid theory,
 and interacts nicely with duality and linear representations.
 
@@ -108,7 +108,7 @@ lemma isStrictMinor_iff_isMinor_ne : N <m M ↔ N ≤m M ∧ N ≠ M :=
   lt_iff_le_and_ne (α := Matroid α)
 
 lemma IsStrictMinor.ne (h : N <m M) : N ≠ M :=
-  LT.lt.ne h
+  h.lt.ne
 
 lemma isStrictMinor_irrefl (M : Matroid α) : ¬ (M <m M) :=
   lt_irrefl M

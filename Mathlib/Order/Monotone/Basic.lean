@@ -577,6 +577,13 @@ theorem exists_strictMono' [NoMaxOrder α] (a : α) : ∃ f : ℕ → α, Strict
 theorem exists_strictAnti' [NoMinOrder α] (a : α) : ∃ f : ℕ → α, StrictAnti f ∧ f 0 = a :=
   exists_strictMono' (OrderDual.toDual a)
 
+theorem exists_strictMono_subsequence {P : ℕ → Prop} (h : ∀ N, ∃ n > N, P n) :
+    ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
+  have : NoMaxOrder {n // P n} :=
+    ⟨fun n ↦ Exists.intro ⟨(h n.1).choose, (h n.1).choose_spec.2⟩ (h n.1).choose_spec.1⟩
+  obtain ⟨f, hf, _⟩ := Nat.exists_strictMono' (⟨(h 0).choose, (h 0).choose_spec.2⟩ : {n // P n})
+  exact Exists.intro (fun n ↦ (f n).1) ⟨hf, fun n ↦ (f n).2⟩
+
 variable (α)
 
 /-- If `α` is a nonempty preorder with no maximal elements, then there exists a strictly monotone
@@ -611,7 +618,7 @@ theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
   clear hab
   induction n with
   | zero => rw [Int.ofNat_one]; apply h
-  | succ n ihn => rw [Int.ofNat_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
+  | succ n ihn => rw [Int.natCast_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
 
 theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℤ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a ≤ b) : r (f a) (f b) :=
