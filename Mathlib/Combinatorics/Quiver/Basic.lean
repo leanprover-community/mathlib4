@@ -125,15 +125,15 @@ lemma homOfEq_heq {X Y X' Y' : V} (hX : X = X') (hY : Y = Y') (f : X ⟶ Y) :
     HEq (homOfEq f hX hY) f := by
   cases hX; cases hY; rfl
 
-@[simp] lemma homOfEq_heq_left_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+lemma homOfEq_heq_left_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
     (hX : X = X') (hY : Y = Y') :
-    homOfEq f hX hY = g ↔ HEq f g := by
-  rw [← heq_iff_eq]; cases hX; cases hY; rfl
+    HEq (homOfEq f hX hY) g ↔ HEq f g := by
+  cases hX; cases hY; rfl
 
-@[simp] lemma homOfEq_heq_right_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+lemma homOfEq_heq_right_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
     (hX : X' = X) (hY : Y' = Y) :
-    f = homOfEq g hX hY ↔ HEq f g := by
-  rw [← heq_iff_eq]; cases hX; cases hY; rfl
+    HEq f (homOfEq g hX hY) ↔ HEq f g := by
+  cases hX; cases hY; rfl
 
 
 end
