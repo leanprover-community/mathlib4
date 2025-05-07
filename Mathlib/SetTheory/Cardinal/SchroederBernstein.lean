@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.Zorn
 
@@ -42,7 +43,7 @@ Given injections `α → β` and `β → α`, we can get a bijection `α → β`
 theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injective f)
     (hg : Function.Injective g) : ∃ h : α → β, Bijective h := by
   classical
-  cases' isEmpty_or_nonempty β with hβ hβ
+  rcases isEmpty_or_nonempty β with hβ | hβ
   · have : IsEmpty α := Function.isEmpty f
     exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective⟩
   set F : Set α →o Set α :=
@@ -104,7 +105,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
         let ⟨f, hf⟩ := Classical.axiom_of_choice h
         have : f ∈ s :=
           have : insert f s ∈ sets β := fun i x hx y hy => by
-            cases' hx with hx hx <;> cases' hy with hy hy; · simp [hx, hy]
+            rcases hx with hx | hx <;> rcases hy with hy | hy; · simp [hx, hy]
             · subst x
               exact fun e => (hf i y hy e.symm).elim
             · subst y

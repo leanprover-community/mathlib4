@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
-import Mathlib.Init
+import Mathlib.Tactic.Linter.Header
 
 /-!
 #  The "flexible" linter
@@ -295,7 +295,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.normNum,
     `linarith,
     `nlinarith,
-    ``Lean.Parser.Tactic.tacticNorm_cast_,
+    ``Lean.Parser.Tactic.tacticNorm_cast__,
     `Aesop.Frontend.Parser.aesopTactic,
     `Mathlib.Tactic.Tauto.tauto,
     `Mathlib.Meta.FunProp.funPropTacStx,

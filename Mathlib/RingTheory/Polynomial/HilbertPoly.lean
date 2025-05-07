@@ -19,11 +19,11 @@ given any `p : F[X]` and `d : ℕ`, there exists some `h : F[X]` such that for a
 `n : ℕ`, `h(n)` is equal to the coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
 This `h` is unique and is denoted as `Polynomial.hilbertPoly p d`.
 
-For example, given `d : ℕ`, the power series expansion of `1/(1-X)ᵈ⁺¹` in `F[X]`
+For example, given `d : ℕ`, the power series expansion of `1/(1 - X)ᵈ⁺¹` in `F[X]`
 is `Σₙ ((d + n).choose d)Xⁿ`, which equals `Σₙ ((n + 1)···(n + d)/d!)Xⁿ` and hence
 `Polynomial.hilbertPoly (1 : F[X]) (d + 1)` is the polynomial `(X + 1)···(X + d)/d!`. Note that
 if `d! = 0` in `F`, then the polynomial `(X + 1)···(X + d)/d!` no longer works, so we do not want
-the characteristic of `F` to be divisible by `d!`. As `Polynomial.hilbertPoly` may take any
+`d!` to be divisible by the characteristic of `F`. As `Polynomial.hilbertPoly` may take any
 `p : F[X]` and `d : ℕ` as its inputs, it is necessary for us to assume that `CharZero F`.
 
 ## Main definitions
@@ -95,7 +95,7 @@ variable {F}
 
 /--
 `Polynomial.hilbertPoly p 0 = 0`; for any `d : ℕ`, `Polynomial.hilbertPoly p (d + 1)`
-is defined as `∑ i in p.support, (p.coeff i) • Polynomial.preHilbertPoly F d i`. If
+is defined as `∑ i ∈ p.support, (p.coeff i) • Polynomial.preHilbertPoly F d i`. If
 `M` is a graded module whose Poincaré series can be written as `p(X)/(1 - X)ᵈ` for some
 `p : ℚ[X]` with integer coefficients, then `Polynomial.hilbertPoly p d` is the Hilbert
 polynomial of `M`. See also `Polynomial.coeff_mul_invOneSubPow_eq_hilbertPoly_eval`,
@@ -104,23 +104,52 @@ which says that `PowerSeries.coeff F n (p * PowerSeries.invOneSubPow F d)` equal
 -/
 noncomputable def hilbertPoly (p : F[X]) : (d : ℕ) → F[X]
   | 0 => 0
-  | d + 1 => ∑ i in p.support, (p.coeff i) • preHilbertPoly F d i
+  | d + 1 => ∑ i ∈ p.support, (p.coeff i) • preHilbertPoly F d i
 
-variable (F) in
-lemma hilbertPoly_zero_nat (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
+lemma hilbertPoly_zero_left (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
   delta hilbertPoly; induction d with
   | zero => simp only
   | succ d _ => simp only [coeff_zero, zero_smul, Finset.sum_const_zero]
 
-lemma hilbertPoly_poly_zero (p : F[X]) : hilbertPoly p 0 = 0 := rfl
+lemma hilbertPoly_zero_right (p : F[X]) : hilbertPoly p 0 = 0 := rfl
 
-lemma hilbertPoly_poly_succ (p : F[X]) (d : ℕ) :
-    hilbertPoly p (d + 1) = ∑ i in p.support, (p.coeff i) • preHilbertPoly F d i := rfl
+lemma hilbertPoly_succ (p : F[X]) (d : ℕ) :
+    hilbertPoly p (d + 1) = ∑ i ∈ p.support, (p.coeff i) • preHilbertPoly F d i := rfl
 
-variable (F) in
 lemma hilbertPoly_X_pow_succ (d k : ℕ) :
     hilbertPoly ((X : F[X]) ^ k) (d + 1) = preHilbertPoly F d k := by
   delta hilbertPoly; simp
+
+lemma hilbertPoly_add_left (p q : F[X]) (d : ℕ) :
+    hilbertPoly (p + q) d = hilbertPoly p d + hilbertPoly q d := by
+  delta hilbertPoly
+  induction d with
+  | zero => simp only [add_zero]
+  | succ d _ =>
+      simp only [← coeff_add]
+      rw [← sum_def _ fun _ r => r • _]
+      exact sum_add_index _ _ _ (fun _ => zero_smul ..) (fun _ _ _ => add_smul ..)
+
+lemma hilbertPoly_smul (a : F) (p : F[X]) (d : ℕ) :
+    hilbertPoly (a • p) d = a • hilbertPoly p d := by
+  delta hilbertPoly
+  induction d with
+  | zero => simp only [smul_zero]
+  | succ d _ =>
+      simp only
+      rw [← sum_def _ fun _ r => r • _, ← sum_def _ fun _ r => r • _, Polynomial.smul_sum,
+        sum_smul_index' _ _ _ fun i => zero_smul F (preHilbertPoly F d i)]
+      simp only [smul_assoc]
+
+variable (F) in
+/--
+The function that sends any `p : F[X]` to `Polynomial.hilbertPoly p d` is an `F`-linear map from
+`F[X]` to `F[X]`.
+-/
+noncomputable def hilbertPoly_linearMap (d : ℕ) : F[X] →ₗ[F] F[X] where
+  toFun p := hilbertPoly p d
+  map_add' p q := hilbertPoly_add_left p q d
+  map_smul' r p := hilbertPoly_smul r p d
 
 variable [CharZero F]
 
@@ -158,9 +187,9 @@ theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
 /--
 The polynomial satisfying the key property of `Polynomial.hilbertPoly p d` is unique.
 -/
-theorem exists_unique_hilbertPoly (p : F[X]) (d : ℕ) :
+theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
     ∃! h : F[X], ∃ N : ℕ, ∀ n > N,
-    PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F) := by
+      PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F) := by
   use hilbertPoly p d; constructor
   · use p.natDegree
     exact fun n => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d
@@ -171,6 +200,8 @@ theorem exists_unique_hilbertPoly (p : F[X]) (d : ℕ) :
     simp only [Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hn ⊢
     rw [← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn.2, hhN n hn.1]
 
+@[deprecated (since := "2024-12-17")] alias exists_unique_hilbertPoly := existsUnique_hilbertPoly
+
 /--
 If `h : F[X]` and there exists some `N : ℕ` such that for any number `n : ℕ` bigger than `N`
 we have `PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)`, then `h` is exactly
@@ -180,7 +211,7 @@ theorem eq_hilbertPoly_of_forall_coeff_eq_eval
     {p h : F[X]} {d : ℕ} (N : ℕ) (hhN : ∀ n > N,
     PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)) :
     h = hilbertPoly p d :=
-  ExistsUnique.unique (exists_unique_hilbertPoly p d) ⟨N, hhN⟩
+  ExistsUnique.unique (existsUnique_hilbertPoly p d) ⟨N, hhN⟩
     ⟨p.natDegree, fun _ x => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d x⟩
 
 lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
@@ -201,7 +232,7 @@ lemma hilbertPoly_eq_zero_of_le_rootMultiplicity_one
     {p : F[X]} {d : ℕ} (hdp : d ≤ p.rootMultiplicity 1) :
     hilbertPoly p d = 0 := by
   by_cases hp : p = 0
-  · rw [hp, hilbertPoly_zero_nat]
+  · rw [hp, hilbertPoly_zero_left]
   · rcases exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp 1 with ⟨q, hq1, hq2⟩
     have heq : p = q * (- 1) ^ p.rootMultiplicity 1 * (1 - X) ^ p.rootMultiplicity 1 := by
       simp only [mul_assoc, ← mul_pow, neg_mul, one_mul, neg_sub]
@@ -236,7 +267,7 @@ theorem natDegree_hilbertPoly_of_ne_zero
   have hp : p ≠ 0 := by
     intro h
     rw [h] at hh
-    exact hh (hilbertPoly_zero_nat F d)
+    exact hh (hilbertPoly_zero_left d)
   have hpd : p.rootMultiplicity 1 < d := by
     by_contra h
     exact hh (hilbertPoly_eq_zero_of_le_rootMultiplicity_one <| not_lt.1 h)

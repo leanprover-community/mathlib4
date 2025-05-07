@@ -11,6 +11,8 @@ import Mathlib.Data.Set.Basic
 See also `Set.indicator` and `Set.piecewise`.
 -/
 
+assert_not_exists RelIso
+
 open Bool
 
 namespace Set
@@ -35,8 +37,7 @@ theorem preimage_boolIndicator_true : s.boolIndicator ⁻¹' {true} = s :=
 theorem preimage_boolIndicator_false : s.boolIndicator ⁻¹' {false} = sᶜ :=
   ext fun x ↦ (s.not_mem_iff_boolIndicator x).symm
 
-open scoped Classical
-
+open scoped Classical in
 theorem preimage_boolIndicator_eq_union (t : Set Bool) :
     s.boolIndicator ⁻¹' t = (if true ∈ t then s else ∅) ∪ if false ∈ t then sᶜ else ∅ := by
   ext x

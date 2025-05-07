@@ -22,10 +22,10 @@ open scoped Manifold
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M]
+  [IsManifold I 1 M]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M']
+  [IsManifold I' 1 M']
 
 
 /-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
@@ -80,8 +80,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp
   congr
   · have : MDifferentiableAt I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x) :=
       mdifferentiableAt_extChartAt hy
-    simp at this
-    simp [mfderiv, this]
+    simp_all [mfderiv]
   · simp only [mfderivWithin, writtenInExtChartAt, modelWithCornersSelf_coe, range_id, inter_univ]
     rw [if_pos]
     · simp [Function.comp_def, PartialHomeomorph.left_inv (chartAt H (f x₀)) hx]

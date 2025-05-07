@@ -5,8 +5,8 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Analysis.Normed.Module.Completion
-import Mathlib.Analysis.Normed.Ring.WithAbs
-import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.Analysis.Normed.Field.WithAbs
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # The completion of a number field at an infinite place
@@ -32,10 +32,10 @@ field at an infinite place is then derived in this file, as `InfinitePlace` is a
  - `NumberField.InfinitePlace.Completion.extensionEmbeddingOfIsReal` : if the infinite place `v`
   is real, then this extends the embedding `v.embedding_of_isReal : K →+* ℝ` to
   `v.Completion →+* ℝ`.
- - `NumberField.InfinitePlace.Completion.equiv_real_of_isReal` : the ring isomorphism
+ - `NumberField.InfinitePlace.Completion.ringEquivRealOfIsReal` : the ring isomorphism
   `v.Completion ≃+* ℝ` when `v` is a real infinite place; the forward direction of this is
   `extensionEmbeddingOfIsReal`.
- - `NumberField.InfinitePlace.Completion.equiv_complex_of_isComplex` : the ring isomorphism
+ - `NumberField.InfinitePlace.Completion.ringEquivComplexOfIsComplex` : the ring isomorphism
   `v.Completion ≃+* ℂ` when `v` is a complex infinite place; the forward direction of this is
   `extensionEmbedding`.
 
@@ -83,7 +83,7 @@ instance : Algebra K v.Completion :=
 lemma WithAbs.ratCast_equiv (v : InfinitePlace ℚ) (x : WithAbs v.1) :
     Rat.cast (WithAbs.equiv _ x) = (x : v.Completion) :=
   (eq_ratCast (UniformSpace.Completion.coeRingHom.comp
-    (WithAbs.ringEquiv v.1).symm.toRingHom) x).symm
+    (WithAbs.equiv v.1).symm.toRingHom) x).symm
 
 lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
     ‖(x : v.Completion)‖ = |x| := by
@@ -118,7 +118,7 @@ theorem extensionEmbedding_of_isReal_coe {v : InfinitePlace K} (hv : IsReal v) (
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
   Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp v.norm_embedding_eq)
 
-/-- The embedding `v.Completion →+* ℝ` at a real infinite palce is an isometry. -/
+/-- The embedding `v.Completion →+* ℝ` at a real infinite place is an isometry. -/
 theorem isometry_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbeddingOfIsReal hv) :=
   Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp <| v.norm_embedding_of_isReal hv)

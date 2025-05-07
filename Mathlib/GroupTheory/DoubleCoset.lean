@@ -19,8 +19,8 @@ this is the usual left or right quotient of a group by a subgroup.
 * `rel`: The double coset relation defined by two subgroups `H K` of `G`.
 * `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
--- Porting note: removed import
--- import Mathlib.Tactic.Group
+
+assert_not_exists MonoidWithZero
 
 variable {G : Type*} [Group G] {α : Type*} [Mul α]
 
@@ -83,7 +83,6 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
   rw [rel_iff, QuotientGroup.leftRel_apply]
   constructor
   · rintro ⟨a, rfl : a = 1, b, hb, rfl⟩
-    change a⁻¹ * (1 * a * b) ∈ H
     rwa [one_mul, inv_mul_cancel_left]
   · rintro (h : a⁻¹ * b ∈ H)
     exact ⟨1, rfl, a⁻¹ * b, h, by rw [one_mul, mul_inv_cancel_left]⟩
@@ -94,16 +93,15 @@ theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
   rw [rel_iff, QuotientGroup.rightRel_apply]
   constructor
   · rintro ⟨b, hb, a, rfl : a = 1, rfl⟩
-    change b * a * 1 * a⁻¹ ∈ H
     rwa [mul_one, mul_inv_cancel_right]
   · rintro (h : b * a⁻¹ ∈ H)
     exact ⟨b * a⁻¹, h, 1, rfl, by rw [mul_one, inv_mul_cancel_right]⟩
 
-/-- Create a doset out of an element of `H \ G / K`-/
+/-- Create a doset out of an element of `H \ G / K` -/
 def quotToDoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
   doset q.out H K
 
-/-- Map from `G` to `H \ G / K`-/
+/-- Map from `G` to `H \ G / K` -/
 abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
   Quotient.mk'' a
 
@@ -126,8 +124,6 @@ theorem mk_out_eq_mul (H K : Subgroup G) (g : G) :
   refine ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq ?_)⟩
   rw [← mul_assoc, ← T]
 
-@[deprecated (since := "2024-10-19")] alias mk_out'_eq_mul := mk_out_eq_mul
-
 theorem mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset b H K) :
     mk H K a = mk H K b := by
   rw [eq]
@@ -138,8 +134,6 @@ theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
   contrapose!
   intro h
   simpa [out_eq'] using mk_eq_of_doset_eq (eq_of_not_disjoint h)
-
-@[deprecated (since := "2024-10-19")] alias disjoint_out' := disjoint_out
 
 theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x

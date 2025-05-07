@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Int.Interval
-import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.ConditionallyCompleteOrder
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.MetricSpace.Bounded
@@ -42,14 +41,8 @@ theorem pairwise_one_le_dist : Pairwise fun m n : ℤ => 1 ≤ dist m n := by
 theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℤ → ℝ) :=
   isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
-
 theorem isClosedEmbedding_coe_real : IsClosedEmbedding ((↑) : ℤ → ℝ) :=
   isClosedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_coe_real := isClosedEmbedding_coe_real
 
 instance : MetricSpace ℤ := Int.isUniformEmbedding_coe_real.comapMetricSpace _
 
@@ -73,7 +66,6 @@ theorem cobounded_eq : Bornology.cobounded ℤ = atBot ⊔ atTop := by
   simp_rw [← comap_dist_right_atTop (0 : ℤ), dist_eq', sub_zero,
     ← comap_abs_atTop, ← @Int.comap_cast_atTop ℝ, comap_comap]; rfl
 
-@[deprecated (since := "2024-02-07")] alias cocompact_eq := cocompact_eq_atBot_atTop
 
 @[simp]
 theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by

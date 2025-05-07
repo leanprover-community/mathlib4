@@ -24,6 +24,8 @@ For the prime case and involving `factorial` rather than `descFactorial`, see Wi
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open Finset Nat
 
 namespace ZMod

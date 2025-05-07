@@ -144,6 +144,29 @@ def combinedIsColimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.
   evaluationJointlyReflectsColimits _ fun k =>
     (c k).isColimit.ofIsoColimit (evaluateCombinedCocones F c k).symm
 
+/--
+An alternative colimit cocone in the functor category `K ⥤ C` in the case where `C` has
+`J`-shaped colimits, with cocone point `F.flip ⋙ colim`.
+-/
+@[simps]
+noncomputable def pointwiseCocone [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : Cocone F where
+  pt := F.flip ⋙ colim
+  ι := {
+    app X := { app Y := (colimit.ι _ X : (F.flip.obj Y).obj X ⟶ _) }
+    naturality X Y f := by
+      ext x
+      simp only [Functor.const_obj_obj, Functor.comp_obj, colim_obj, NatTrans.comp_app,
+        Functor.const_obj_map, Category.comp_id]
+      change (F.flip.obj x).map f ≫ _ = _
+      rw [colimit.w] }
+
+/-- `pointwiseCocone` is indeed a colimit cocone. -/
+noncomputable def pointwiseIsColimit [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) :
+    IsColimit (pointwiseCocone F) := by
+  apply IsColimit.ofIsoColimit (combinedIsColimit _
+    (fun k ↦ ⟨colimit.cocone _, colimit.isColimit _⟩))
+  exact Cocones.ext (Iso.refl _)
+
 noncomputable section
 
 instance functorCategoryHasLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] : HasLimit F :=
@@ -174,9 +197,9 @@ instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
     HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where
   has_colimits_of_shape := fun _ _ => inferInstance
 
-instance hasLimitCompEvalution (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.obj k)] :
+instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.obj k)] :
     HasLimit (F ⋙ (evaluation _ _).obj k) :=
-  hasLimitOfIso (F := F.flip.obj k) (Iso.refl _)
+  hasLimit_of_iso (F := F.flip.obj k) (Iso.refl _)
 
 instance evaluation_preservesLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] (k : K) :
     PreservesLimit F ((evaluation K C).obj k) :=
@@ -261,7 +284,7 @@ theorem limitCompWhiskeringLeftIsoCompLimit_inv_π (F : J ⥤ K ⥤ C) (G : D �
 
 instance hasColimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasColimit (F.flip.obj k)] :
     HasColimit (F ⋙ (evaluation _ _).obj k) :=
-  hasColimitOfIso (F := F.flip.obj k) (Iso.refl _)
+  hasColimit_of_iso (F := F.flip.obj k) (Iso.refl _)
 
 instance evaluation_preservesColimit (F : J ⥤ K ⥤ C) [∀ k, HasColimit (F.flip.obj k)] (k : K) :
     PreservesColimit F ((evaluation K C).obj k) :=

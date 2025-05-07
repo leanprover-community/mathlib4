@@ -54,7 +54,7 @@ theorem IsIntegrallyClosed.of_localization_maximal {R : Type*} [CommRing R] [IsD
       apply mem_span_singleton'.mpr ⟨b * y.1, _⟩
       rw [← hb, ← mul_assoc, mul_comm y.2.1 b, mul_assoc, mul_assoc]
       exact congrArg (HMul.hMul b) <| (mul_comm y.1 x.2.1).trans <|
-        NoZeroSMulDivisors.algebraMap_injective R (Localization R⁰) <| mk'_eq_iff_eq.mp <|
+        FaithfulSMul.algebraMap_injective R (Localization R⁰) <| mk'_eq_iff_eq.mp <|
           (mk'_eq_algebraMap_mk'_of_submonoid_le _ _ p.primeCompl_le_nonZeroDivisors y.1 y.2).trans
             <| show algebraMap (Localization.AtPrime p) _ (mk' _ y.1 y.2) = mk' _ x.1 x.2
               by simpa only [← mk_eq_mk', ← hy] using by rfl

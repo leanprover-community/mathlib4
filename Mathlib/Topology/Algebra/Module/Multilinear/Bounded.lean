@@ -69,14 +69,14 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
     calc
       f (update y i₀ ((a / ∏ i ∈ I, c i) • y i₀)) ∈ V := hft fun i hi => by
         rcases eq_or_ne i i₀ with rfl | hne
-        · simp_rw [update_same, y, I.piecewise_eq_of_mem _ _ hi, smul_smul]
+        · simp_rw [update_self, y, I.piecewise_eq_of_mem _ _ hi, smul_smul]
           refine hc _ _ ?_ _ hx
           calc
             ‖(a / ∏ i ∈ I, c i) * c i‖ ≤ (‖∏ i ∈ I, c i‖ / ‖∏ i ∈ I, c i‖) * ‖c i‖ := by
               rw [norm_mul, norm_div]; gcongr; exact ha.out.le
             _ ≤ 1 * ‖c i‖ := by gcongr; apply div_self_le_one
             _ = ‖c i‖ := one_mul _
-        · simp_rw [update_noteq hne, y, I.piecewise_eq_of_mem _ _ hi]
+        · simp_rw [update_of_ne hne, y, I.piecewise_eq_of_mem _ _ hi]
           exact hc _ _ le_rfl _ hx
       _ = a • f x := by
         rw [f.map_update_smul, update_eq_self, f.map_piecewise_smul, div_eq_mul_inv, mul_smul,

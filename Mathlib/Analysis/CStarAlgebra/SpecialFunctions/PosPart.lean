@@ -3,8 +3,8 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-! # C⋆-algebraic facts about `a⁺` and `a⁻`. -/
 
@@ -51,5 +51,29 @@ lemma span_nonneg_inter_unitBall :
   span_nonneg_inter_ball zero_lt_one
 
 end SpanNonneg
+
+open Complex in
+lemma exists_sum_four_nonneg {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A]
+    [StarOrderedRing A] (a : A) :
+    ∃ x : Fin 4 → A, (∀ i, 0 ≤ x i) ∧ (∀ i, ‖x i‖ ≤ ‖a‖) ∧ a = ∑ i : Fin 4, I ^ (i : ℕ) • x i := by
+  use ![(realPart a)⁺, (imaginaryPart a)⁺, (realPart a)⁻, (imaginaryPart a)⁻]
+  rw [← and_assoc, ← forall_and]
+  constructor
+  · intro i
+    fin_cases i
+    all_goals
+      constructor
+      · simp
+        cfc_tac
+    · exact CStarAlgebra.norm_posPart_le _ |>.trans <| realPart.norm_le a
+    · exact CStarAlgebra.norm_posPart_le _ |>.trans <| imaginaryPart.norm_le a
+    · exact CStarAlgebra.norm_negPart_le _ |>.trans <| realPart.norm_le a
+    · exact CStarAlgebra.norm_negPart_le _ |>.trans <| imaginaryPart.norm_le a
+  · nth_rw 1 [← CStarAlgebra.linear_combination_nonneg a]
+    simp [Fin.sum_univ_four, sub_eq_add_neg]
+    rw [add_add_add_comm]
+    have : ((3 : Fin 4) : ℕ) = 3 := rfl -- ugh, seriously, why can't `norm_num` do this?
+    match_scalars
+    all_goals simp [this, I_pow_three]
 
 end CStarAlgebra

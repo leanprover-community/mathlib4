@@ -269,12 +269,10 @@ noncomputable def liftIsometry : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[�
     norm_map' := by
       intro f
       refine le_antisymm ?_ ?_
-      · simp only [liftEquiv, lift_symm, LinearEquiv.coe_mk]
+      · simp only [liftEquiv_apply]
         exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _
-      · conv_lhs => rw [← (liftEquiv 𝕜 E F).left_inv f]
-        simp only [liftEquiv, lift_symm, AddHom.toFun_eq_coe, AddHom.coe_mk,
-          LinearEquiv.invFun_eq_symm, LinearEquiv.coe_symm_mk, LinearMap.mkContinuous_coe,
-          LinearEquiv.coe_mk]
+      · conv_lhs => rw [← (liftEquiv 𝕜 E F).symm_apply_apply f]
+        rw [liftEquiv_symm_apply]
         exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg _) _ }
 
 variable {𝕜 E F}
@@ -285,15 +283,12 @@ theorem liftIsometry_apply_apply (f : ContinuousMultilinearMap 𝕜 E F) (x : �
   simp only [liftIsometry, LinearIsometryEquiv.coe_mk, liftEquiv_apply,
     LinearMap.mkContinuous_apply]
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The canonical continuous multilinear map from `E = Πᵢ Eᵢ` to `⨂[𝕜] i, Eᵢ`.
 -/
 @[simps!]
 noncomputable def tprodL : ContinuousMultilinearMap 𝕜 E (⨂[𝕜] i, E i) :=
   (liftIsometry 𝕜 E _).symm (ContinuousLinearMap.id 𝕜 _)
-
-variable {𝕜}
 
 @[simp]
 theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
@@ -411,8 +406,8 @@ private theorem mapL_add_smul_aux {ι : Type uι}
   symm
   rw [update_eq_iff]
   constructor
-  · simp only [update_same]
-  · exact fun _ h ↦ by simp only [ne_eq, h, not_false_eq_true, update_noteq]
+  · simp only [update_self]
+  · exact fun _ h ↦ by simp only [ne_eq, h, not_false_eq_true, update_of_ne]
 
 open Function in
 protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i) :

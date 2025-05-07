@@ -36,7 +36,7 @@ variable {x : ℝ}
 
 /-- For 0 < x, we have sin x < x. -/
 theorem sin_lt (h : 0 < x) : sin x < x := by
-  cases' lt_or_le 1 x with h' h'
+  rcases lt_or_le 1 x with h' | h'
   · exact (sin_le_one x).trans_lt h'
   have hx : |x| = x := abs_of_nonneg h.le
   have := le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])
@@ -138,11 +138,6 @@ lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   have := (pow_le_pow_left₀ (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)
   ring_nf at this ⊢
   linarith
-
-@[deprecated (since := "2024-08-29")] alias two_div_pi_mul_le_sin := mul_le_sin
-@[deprecated (since := "2024-08-29")] alias sin_le_two_div_pi_mul := sin_le_mul
-@[deprecated (since := "2024-08-29")] alias one_sub_two_div_pi_mul_le_cos := one_sub_mul_le_cos
-@[deprecated (since := "2024-08-29")] alias cos_quadratic_upper_bound := cos_le_one_sub_mul_cos_sq
 
 /-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
 

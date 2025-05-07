@@ -34,7 +34,7 @@ theorem Module.free_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
     (S) (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M] :
     Module.Free Rₛ Mₛ :=
-    Free.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
+  Free.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
 
 universe uR' uM' in
 /--
@@ -88,7 +88,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
       obtain ⟨a, ha, c, rfl⟩ := hf
       obtain ⟨g, rfl⟩ := ha
       use IsLocalizedModule.mk' (LocalizedModule.map I.primeCompl) g c
-      apply ((Module.End_isUnit_iff _).mp <| IsLocalizedModule.map_units
+      apply ((Module.End.isUnit_iff _).mp <| IsLocalizedModule.map_units
         (LocalizedModule.map I.primeCompl) c).injective
       dsimp
       conv_rhs => rw [← Submonoid.smul_def]
@@ -106,7 +106,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
         IsLocalizedModule.mk'_surjective I.primeCompl (LocalizedModule.map I.primeCompl) g
       simp only [Function.uncurry_apply_pair, Submodule.restrictScalars_mem]
       refine ⟨f.comp g, ⟨g, rfl⟩, s, ?_⟩
-      apply ((Module.End_isUnit_iff _).mp <| IsLocalizedModule.map_units
+      apply ((Module.End.isUnit_iff _).mp <| IsLocalizedModule.map_units
          (LocalizedModule.map I.primeCompl) s).injective
       simp only [Module.algebraMap_end_apply, ← Submonoid.smul_def, IsLocalizedModule.mk'_cancel',
         ← LinearMap.map_smul_of_tower]
@@ -121,7 +121,7 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
     Module.Projective (Localization.AtPrime I) (LocalizedModule I.primeCompl M))
     [Module.FinitePresentation R M] : Module.Projective R M := by
   have : Module.Finite R M := by infer_instance
-  have : (⊤ : Submodule R M).FG := this.out
+  have : (⊤ : Submodule R M).FG := this.fg_top
   have : ∃ (s : Finset M), _ := this
   obtain ⟨s, hs⟩ := this
   let N := s →₀ R
@@ -166,7 +166,7 @@ theorem Module.projective_of_localization_maximal'
       map_smul' := ?_ }
   · intros r m
     obtain ⟨r, s, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl r
-    apply ((Module.End_isUnit_iff _).mp
+    apply ((Module.End.isUnit_iff _).mp
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
     dsimp
     simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
