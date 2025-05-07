@@ -438,18 +438,19 @@ def unitIso :
   NatIso.ofComponents
     (fun F ↦ LaxMonoidalFunctor.isoOfComponents (fun _ ↦ F.mapIso (eqToIso (by ext))))
 
+/-- Auxiliary definition for `counitIso`. -/
 @[simps!]
 def counitIsoAux (F : Mon_ C) :
     ((monToLaxMonoidal C ⋙ laxMonoidalToMon C).obj F).X ≅ ((𝟭 (Mon_ C)).obj F).X :=
   Iso.refl _
 
 @[simp]
-theorem counitIsoAux_one (F : Mon_ C) :
+theorem monToLaxMonoidal_laxMonoidalToMon_obj_one (F : Mon_ C) :
     η[((monToLaxMonoidal C ⋙ laxMonoidalToMon C).obj F).X] = η[F.X] ≫ 𝟙 _ :=
   rfl
 
 @[simp]
-theorem counitIsoAux_mul (F : Mon_ C) :
+theorem monToLaxMonoidal_laxMonoidalToMon_obj_mul (F : Mon_ C) :
     μ[((monToLaxMonoidal C ⋙ laxMonoidalToMon C).obj F).X] = μ[F.X] ≫ 𝟙 _ :=
   rfl
 

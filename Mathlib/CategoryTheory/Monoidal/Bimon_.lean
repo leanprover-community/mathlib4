@@ -208,15 +208,15 @@ theorem toMon_Comon_ofMon_Comon_obj_mul (M : Bimon_ C) :
     μ[((toMon_Comon_ C ⋙ ofMon_Comon_ C).obj M).X.X] = 𝟙 _ ≫ μ[M.X.X] :=
   rfl
 
-@[simp]
-theorem toMon_Comon_ofMon_Comon_obj_counit (M : Bimon_ C) :
-    ε[((toMon_Comon_ C ⋙ ofMon_Comon_ C).obj M).X].hom = ε[M.X].hom ≫ 𝟙 _ :=
-  rfl
+-- @[simp]
+-- theorem toMon_Comon_ofMon_Comon_obj_counit (M : Bimon_ C) :
+--     ε[((toMon_Comon_ C ⋙ ofMon_Comon_ C).obj M).X].hom = ε[M.X].hom ≫ 𝟙 _ :=
+--   rfl
 
-@[simp]
-theorem toMon_Comon_ofMon_Comon_obj_comul (M : Bimon_ C) :
-    Δ[((toMon_Comon_ C ⋙ ofMon_Comon_ C).obj M).X].hom = Δ[M.X].hom ≫ 𝟙 _ :=
-  rfl
+-- @[simp]
+-- theorem toMon_Comon_ofMon_Comon_obj_comul (M : Bimon_ C) :
+--     Δ[((toMon_Comon_ C ⋙ ofMon_Comon_ C).obj M).X].hom = Δ[M.X].hom ≫ 𝟙 _ :=
+--   rfl
 
 /-- Auxiliary definition for `equivMon_Comon_UnitIsoApp`. -/
 @[simps!]
@@ -383,7 +383,7 @@ set_option linter.hashCommand false in
 def mk'X (X : C) [Bimon_Class X] : Mon_ C := { X := X }
 
 /-- Construct an object of `Bimon_ C` from an object `X : C` and `Bimon_Class X` instance. -/
-@[simps]
+@[simps X]
 def mk' (X : C) [Bimon_Class X] : Bimon_ C where
   X := mk'X X
   comon :=
@@ -391,3 +391,12 @@ def mk' (X : C) [Bimon_Class X] : Bimon_ C where
       comul := { hom := (Δ : X ⟶ X ⊗ X) } }
 
 end Bimon_
+
+-- #check Bimon_.toComon__obj_comon_comul
+
+-- set_option diagnostics true
+-- #lint
+
+-- example (A : Bimon_ C) : Δ[((Bimon_.toComon_ C).obj A).X] = sorry := by
+--   simp
+--   sorry

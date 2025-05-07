@@ -266,5 +266,3 @@ def equivLaxBraidedFunctorPUnit : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C â
   counitIso := counitIso C
 
 end CommMon_
-
-#lint
