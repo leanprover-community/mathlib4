@@ -272,7 +272,7 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
 
 theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     Opens.IsBasis (Set.range (X.basicOpen : Γ(X, ⊤) → X.Opens)) := by
-  convert PrimeSpectrum.isBasis_basic_opens.isInducing
+  convert PrimeSpectrum.isBasis_basic_opens.of_isInducing
     (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).isInducing using 1
   ext V
   simp only [Set.mem_range, exists_exists_eq_and, Set.mem_setOf,

@@ -191,20 +191,20 @@ def overEquivIdealSheafData (X : Scheme.{u}) :
   counitIso := NatIso.ofComponents (fun I ↦ eqToIso (by simp))
 
 /-- The universal property of closed immersions:
-For an closed immersion `g : Z ⟶ Y`, given any morphism of schemes `f : X ⟶ Y` whose kernel
-contains the kernel of `Z`, we can lift this morphism to a unique `X ⟶ Z` that
+For an closed immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z` whose kernel
+contains the kernel of `X` in `Z`, we can lift this morphism to a unique `Y ⟶ X` that
 commutes with these maps.
 -/
 noncomputable
 def lift {X Y Z : Scheme.{u}}
-    (f : X ⟶ Y) (g : Z ⟶ Y) [IsClosedImmersion g] (H : g.ker ≤ f.ker) : X ⟶ Z :=
-  f.toImage ≫ Scheme.IdealSheafData.inclusion H ≫ inv g.toImage
+    (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] (H : f.ker ≤ g.ker) : Y ⟶ X :=
+  g.toImage ≫ Scheme.IdealSheafData.inclusion H ≫ inv f.toImage
 
 @[reassoc (attr := simp)]
 lemma lift_fac {X Y Z : Scheme.{u}}
-    (f : X ⟶ Y) (g : Z ⟶ Y) [IsClosedImmersion g] (H : g.ker ≤ f.ker) : lift f g H ≫ g = f := by
-  nth_rw 2 [← g.toImage_imageι]
-  simp [lift, - Scheme.Hom.toImage_imageι, f.toImage_imageι]
+    (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] (H : f.ker ≤ g.ker) : lift f g H ≫ f = g := by
+  nth_rw 2 [← f.toImage_imageι]
+  simp [lift, - Scheme.Hom.toImage_imageι, g.toImage_imageι]
 
 end IsClosedImmersion
 

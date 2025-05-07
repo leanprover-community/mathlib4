@@ -1403,7 +1403,7 @@ lemma Hom.toImage_app_injective [QuasiCompact f] :
 lemma Hom.stalkFunctor_toImage_injective [QuasiCompact f] (x) :
     Function.Injective ((TopCat.Presheaf.stalkFunctor _ x).map f.toImage.c) := by
   apply TopCat.Presheaf.stalkFunctor_map_injective_of_isBasis
-    (hB := ((isBasis_affine_open Y).isInducing f.imageι.isEmbedding.isInducing))
+    (hB := ((isBasis_affine_open Y).of_isInducing f.imageι.isEmbedding.isInducing))
   rintro _ ⟨U, hU, rfl⟩
   exact f.toImage_app_injective ⟨U, hU⟩
 
