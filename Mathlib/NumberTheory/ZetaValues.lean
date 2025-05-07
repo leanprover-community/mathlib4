@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.NumberTheory.BernoulliPolynomials
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.PSeries
@@ -75,7 +75,7 @@ theorem integral_bernoulliFun_eq_zero {k : ℕ} (hk : k ≠ 0) :
       ((Polynomial.continuous _).intervalIntegrable _ _)]
   rw [bernoulliFun_eval_one]
   split_ifs with h
-  · exfalso; exact hk (Nat.succ_inj'.mp h)
+  · exfalso; exact hk (Nat.succ_inj.mp h)
   · simp
 
 end BernoulliFunProps

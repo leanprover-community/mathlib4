@@ -9,6 +9,7 @@ import Mathlib.Algebra.Field.ZMod
 import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
@@ -391,7 +392,7 @@ theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
 
 instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ[K] L) where
   exists_zpow_surjective :=
-    have := Finite.of_injective_finite_range (RingHom.injective <| algebraMap K L)
+    have := Finite.of_injective _ (algebraMap K L).injective
     have := Fintype.ofFinite K
     ⟨frobeniusAlgEquivOfAlgebraic K L,
       fun f ↦ have ⟨n, hn⟩ := (bijective_frobeniusAlgEquivOfAlgebraic_pow K L).2 f; ⟨n, hn⟩⟩
@@ -507,7 +508,7 @@ theorem Nat.sq_add_sq_modEq (p : ℕ) [Fact p.Prime] (x : ℕ) :
 
 namespace CharP
 
-theorem sq_add_sq (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
+theorem sq_add_sq (R : Type*) [Ring R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
     ∃ a b : ℕ, ((a : R) ^ 2 + (b : R) ^ 2) = x := by
   haveI := char_is_prime_of_pos R p
   obtain ⟨a, b, hab⟩ := ZMod.sq_add_sq p x
@@ -547,13 +548,24 @@ open FiniteField
 
 namespace ZMod
 
+variable {p : ℕ} [Fact p.Prime]
+
+instance : Subsingleton (Subfield (ZMod p)) :=
+  subsingleton_of_bot_eq_top <| top_unique (a := ⊥) fun n _ ↦
+  have := zsmul_mem (one_mem (⊥ : Subfield (ZMod p))) n.val
+  by rwa [natCast_zsmul, Nat.smul_one_eq_cast, ZMod.natCast_zmod_val] at this
+
+theorem fieldRange_castHom_eq_bot (p : ℕ) [Fact p.Prime] [DivisionRing K] [CharP K p] :
+    (ZMod.castHom (m := p) dvd_rfl K).fieldRange = (⊥ : Subfield K) := by
+  rw [RingHom.fieldRange_eq_map, ← Subfield.map_bot (K := ZMod p), Subsingleton.elim ⊥]
+
 /-- A variation on Fermat's little theorem. See `ZMod.pow_card_sub_one_eq_one` -/
 @[simp]
-theorem pow_card {p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
+theorem pow_card (x : ZMod p) : x ^ p = x := by
   have h := FiniteField.pow_card x; rwa [ZMod.card p] at h
 
 @[simp]
-theorem pow_card_pow {n p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p ^ n = x := by
+theorem pow_card_pow {n : ℕ} (x : ZMod p) : x ^ p ^ n = x := by
   induction n with
   | zero => simp
   | succ n ih => simp [pow_succ, pow_mul, ih, pow_card]
@@ -572,27 +584,27 @@ theorem units_pow_card_sub_one_eq_one (p : ℕ) [Fact p.Prime] (a : (ZMod p)ˣ) 
   rw [← card_units p, pow_card_eq_one]
 
 /-- **Fermat's Little Theorem**: for all nonzero `a : ZMod p`, we have `a ^ (p - 1) = 1`. -/
-theorem pow_card_sub_one_eq_one {p : ℕ} [Fact p.Prime] {a : ZMod p} (ha : a ≠ 0) :
+theorem pow_card_sub_one_eq_one {a : ZMod p} (ha : a ≠ 0) :
     a ^ (p - 1) = 1 := by
-    have h := FiniteField.pow_card_sub_one_eq_one a ha
-    rwa [ZMod.card p] at h
+  have h := FiniteField.pow_card_sub_one_eq_one a ha
+  rwa [ZMod.card p] at h
 
-lemma pow_card_sub_one {p : ℕ} [Fact p.Prime] (a : ZMod p) :
+lemma pow_card_sub_one (a : ZMod p) :
     a ^ (p - 1) = if a ≠ 0 then 1 else 0 := by
   split_ifs with ha
   · exact pow_card_sub_one_eq_one ha
   · simp [of_not_not ha, (Fact.out : p.Prime).one_lt, tsub_eq_zero_iff_le]
 
-theorem orderOf_units_dvd_card_sub_one {p : ℕ} [Fact p.Prime] (u : (ZMod p)ˣ) : orderOf u ∣ p - 1 :=
+theorem orderOf_units_dvd_card_sub_one (u : (ZMod p)ˣ) : orderOf u ∣ p - 1 :=
   orderOf_dvd_of_pow_eq_one <| units_pow_card_sub_one_eq_one _ _
 
-theorem orderOf_dvd_card_sub_one {p : ℕ} [Fact p.Prime] {a : ZMod p} (ha : a ≠ 0) :
+theorem orderOf_dvd_card_sub_one {a : ZMod p} (ha : a ≠ 0) :
     orderOf a ∣ p - 1 :=
   orderOf_dvd_of_pow_eq_one <| pow_card_sub_one_eq_one ha
 
 open Polynomial
 
-theorem expand_card {p : ℕ} [Fact p.Prime] (f : Polynomial (ZMod p)) :
+theorem expand_card (f : Polynomial (ZMod p)) :
     expand (ZMod p) p f = f ^ p := by have h := FiniteField.expand_card f; rwa [ZMod.card p] at h
 
 end ZMod
@@ -642,7 +654,47 @@ theorem ZMod.eq_one_or_isUnit_sub_one {n p k : ℕ} [Fact p.Prime] (hn : n = p ^
   rw [tsub_eq_iff_eq_add_of_le ha0, add_comm] at hb
   exact hb ▸ pow_pow_modEq_one p k b
 
-section
+section prime_subfield
+
+variable {F : Type*} [Field F]
+
+theorem mem_bot_iff_intCast (p : ℕ) [Fact p.Prime] (K) [DivisionRing K] [CharP K p] {x : K} :
+    x ∈ (⊥ : Subfield K) ↔ ∃ n : ℤ, n = x := by
+  simp [← fieldRange_castHom_eq_bot p, ZMod.intCast_surjective.exists]
+
+variable (F) (p : ℕ) [Fact p.Prime] [CharP F p]
+
+theorem Subfield.card_bot : Nat.card (⊥ : Subfield F) = p := by
+  rw [← fieldRange_castHom_eq_bot p,
+    ← Nat.card_eq_of_bijective _ (RingHom.rangeRestrictField_bijective _), Nat.card_zmod]
+
+/-- The prime subfield is finite. -/
+def Subfield.fintypeBot : Fintype (⊥ : Subfield F) :=
+  Fintype.subtype (univ.map ⟨_, (ZMod.castHom (m := p) dvd_rfl F).injective⟩)
+    fun _ ↦ by simp_rw [Finset.mem_map, mem_univ, true_and, ← fieldRange_castHom_eq_bot p]; rfl
+
+open Polynomial
+
+theorem Subfield.roots_X_pow_char_sub_X_bot :
+    letI := Subfield.fintypeBot F p
+    (X ^ p - X : (⊥ : Subfield F)[X]).roots = Finset.univ.val := by
+  let _ := Subfield.fintypeBot F p
+  conv_lhs => rw [← card_bot F p, ← Fintype.card_eq_nat_card]
+  exact FiniteField.roots_X_pow_card_sub_X _
+
+theorem Subfield.splits_bot :
+    Splits (RingHom.id (⊥ : Subfield F)) (X ^ p - X) := by
+  let _ := Subfield.fintypeBot F p
+  rw [splits_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
+    FiniteField.X_pow_card_sub_X_natDegree_eq _ (Fact.out (p := p.Prime)).one_lt,
+    Fintype.card_eq_nat_card, card_bot F p]
+
+theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
+   have := roots_X_pow_char_sub_X_bot F p ▸
+     Polynomial.roots_map (Subfield.subtype _) (splits_bot F p) ▸ Multiset.mem_map (b := x)
+   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
+
+end prime_subfield
 
 namespace FiniteField
 
@@ -727,5 +779,3 @@ theorem isSquare_iff (hF : ringChar F ≠ 2) {a : F} (ha : a ≠ 0) :
     refine ⟨Units.mk0 y hy, ?_⟩; simp
 
 end FiniteField
-
-end

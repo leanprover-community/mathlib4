@@ -61,7 +61,7 @@ section IsBipartiteWith
 are adjacent in `G` then `v ∈ s` and `w ∈ t`, or `v ∈ t` and `w ∈ s`. -/
 structure IsBipartiteWith (G : SimpleGraph V) (s t : Set V) : Prop where
   disjoint : Disjoint s t
-  mem_of_adj ⦃v w⦄ : G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s
+  mem_of_adj ⦃v w : V⦄ : G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s
 
 theorem IsBipartiteWith.symm (h : G.IsBipartiteWith s t) : G.IsBipartiteWith t s where
   disjoint := h.disjoint.symm
@@ -144,8 +144,7 @@ theorem isBipartiteWith_neighborFinset (h : G.IsBipartiteWith s t) (hv : v ∈ s
 "above" `v` according to the adjacency relation of `G`. -/
 theorem isBipartiteWith_bipartiteAbove (h : G.IsBipartiteWith s t) (hv : v ∈ s) :
     G.neighborFinset v = bipartiteAbove G.Adj t v := by
-  rw [isBipartiteWith_neighborFinset h hv]
-  rfl
+  rw [isBipartiteWith_neighborFinset h hv, bipartiteAbove]
 
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then the neighbor finset of `v` is a subset of `s`. -/
 theorem isBipartiteWith_neighborFinset_subset (h : G.IsBipartiteWith s t) (hv : v ∈ s) :
@@ -177,8 +176,7 @@ theorem isBipartiteWith_neighborFinset' (h : G.IsBipartiteWith s t) (hw : w ∈ 
 "below" `w` according to the adjacency relation of `G`. -/
 theorem isBipartiteWith_bipartiteBelow (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
     G.neighborFinset w = bipartiteBelow G.Adj s w := by
-  rw [isBipartiteWith_neighborFinset' h hw]
-  rfl
+  rw [isBipartiteWith_neighborFinset' h hw, bipartiteBelow]
 
 /-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the neighbor finset of `w` is a subset of `s`. -/
 theorem isBipartiteWith_neighborFinset_subset' (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
@@ -215,9 +213,7 @@ theorem isBipartiteWith_sum_degrees_eq (h : G.IsBipartiteWith s t) :
     sum_attach t fun v ↦ #(bipartiteBelow G.Adj s v)]
   exact sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow G.Adj
 
-variable [DecidableEq V]
-
-lemma isBipartiteWith_sum_degrees_eq_twice_card_edges (h : G.IsBipartiteWith s t) :
+lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V] (h : G.IsBipartiteWith s t) :
     ∑ v ∈ s ∪ t, G.degree v = 2 * #G.edgeFinset := by
   have hsub : G.support ⊆ ↑s ∪ ↑t := isBipartiteWith_support_subset h
   rw [← coe_union, ← Set.toFinset_subset] at hsub
@@ -231,6 +227,7 @@ See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
 `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right". -/
 theorem isBipartiteWith_sum_degrees_eq_card_edges (h : G.IsBipartiteWith s t) :
     ∑ v ∈ s, G.degree v = #G.edgeFinset := by
+  classical
   rw [← Nat.mul_left_cancel_iff zero_lt_two, ← isBipartiteWith_sum_degrees_eq_twice_card_edges h,
     sum_union (disjoint_coe.mp h.disjoint), two_mul, add_right_inj]
   exact isBipartiteWith_sum_degrees_eq h

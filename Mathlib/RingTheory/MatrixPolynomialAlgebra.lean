@@ -58,10 +58,7 @@ noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
 
 @[simp] theorem matPolyEquiv_symm_X :
     matPolyEquiv.symm X = diagonal fun _ : n => (X : R[X]) := by
-  suffices (Matrix.map 1 fun x ↦ X * algebraMap R R[X] x) = diagonal fun _ : n => (X : R[X]) by
-    simpa [matPolyEquiv]
-  rw [← Matrix.diagonal_one]
-  simp [-Matrix.diagonal_one]
+  simp [matPolyEquiv, Matrix.smul_one_eq_diagonal]
 
 @[simp] theorem matPolyEquiv_diagonal_X :
     matPolyEquiv (diagonal fun _ : n => (X : R[X])) = X := by
@@ -71,22 +68,22 @@ open Finset
 
 unseal Algebra.TensorProduct.mul in
 theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
-    matPolyEquiv (stdBasisMatrix i j <| monomial k x) = monomial k (stdBasisMatrix i j x) := by
-  simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_stdBasisMatrix]
+    matPolyEquiv (single i j <| monomial k x) = monomial k (single i j x) := by
+  simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_single]
   apply (polyEquivTensor R (Matrix n n R)).injective
   simp only [AlgEquiv.apply_symm_apply,Algebra.TensorProduct.comm_tmul,
     polyEquivTensor_apply, eval₂_monomial]
   simp only [Algebra.TensorProduct.tmul_mul_tmul, one_pow, one_mul, Matrix.mul_one,
     Algebra.TensorProduct.tmul_pow, Algebra.TensorProduct.includeLeft_apply]
   rw [← smul_X_eq_monomial, ← TensorProduct.smul_tmul]
-  congr with i' <;> simp [stdBasisMatrix]
+  congr with i' <;> simp [single]
 
 theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
-    coeff (matPolyEquiv (stdBasisMatrix i j p)) k = stdBasisMatrix i j (coeff p k) := by
+    coeff (matPolyEquiv (single i j p)) k = single i j (coeff p k) := by
   refine Polynomial.induction_on' p ?_ ?_
   · intro p q hp hq
     ext
-    simp [hp, hq, coeff_add, add_apply, stdBasisMatrix_add]
+    simp [hp, hq, coeff_add, add_apply, single_add]
   · intro k x
     simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
     split_ifs <;>
@@ -102,11 +99,11 @@ theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
     simp [hp, hq]
   · intro i' j' x
     rw [matPolyEquiv_coeff_apply_aux_2]
-    dsimp [stdBasisMatrix]
+    dsimp [single]
     split_ifs <;> rename_i h
     · rcases h with ⟨rfl, rfl⟩
-      simp [stdBasisMatrix]
-    · simp [stdBasisMatrix, h]
+      simp [single]
+    · simp [single, h]
 
 @[simp]
 theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ) :
@@ -125,7 +122,7 @@ theorem matPolyEquiv_smul_one (p : R[X]) :
 @[simp]
 lemma matPolyEquiv_map_smul (p : R[X]) (M : Matrix n n R[X]) :
     matPolyEquiv (p • M) = p.map (algebraMap _ _) * matPolyEquiv M := by
-  rw [← one_mul M, ← smul_mul_assoc, _root_.map_mul, matPolyEquiv_smul_one, one_mul]
+  rw [← one_mul M, ← smul_mul_assoc, map_mul, matPolyEquiv_smul_one, one_mul]
 
 theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
     support (m i j) ⊆ support (matPolyEquiv m) := by
@@ -133,8 +130,7 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
   contrapose
   simp only [not_mem_support_iff]
   intro hk
-  rw [← matPolyEquiv_coeff_apply, hk]
-  rfl
+  rw [← matPolyEquiv_coeff_apply, hk, zero_apply]
 
 variable {A}
 /-- Extend a ring hom `A → Mₙ(R)` to a ring hom `A[X] → Mₙ(R[X])`. -/

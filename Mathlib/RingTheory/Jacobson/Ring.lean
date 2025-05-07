@@ -70,8 +70,8 @@ theorem isJacobsonRing_iff_prime_eq :
   rw [← hI.radical, radical_eq_sInf I, mem_sInf]
   intro P hP
   rw [Set.mem_setOf_eq] at hP
-  erw [mem_sInf] at hx
-  erw [← h P hP.right, mem_sInf]
+  rw [jacobson, mem_sInf] at hx
+  rw [← h P hP.right, jacobson, mem_sInf]
   exact fun J hJ => hx ⟨le_trans hP.left hJ.left, hJ.right⟩
 
 /-- A ring `R` is Jacobson if and only if for every prime ideal `I`,
@@ -163,7 +163,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
     have hJ : J.IsPrime := IsMaximal.isPrime h
     rw [isPrime_iff_isPrime_disjoint (Submonoid.powers y)] at hJ
     have : y ∉ (comap (algebraMap R S) J).1 := Set.disjoint_left.1 hJ.right (Submonoid.mem_powers _)
-    erw [← H.out hJ.left.isRadical, Ideal.mem_sInf] at this
+    rw [← H.out hJ.left.isRadical, jacobson, Submodule.mem_toAddSubmonoid, Ideal.mem_sInf] at this
     push_neg at this
     rcases this with ⟨I, hI, hI'⟩
     convert hI.right
@@ -247,7 +247,7 @@ section CommRing
 
 -- Porting note: move to better place
 -- Porting note: make `S` and `T` universe polymorphic
-lemma Subring.mem_closure_image_of {S T : Type*} [CommRing S] [CommRing T] (g : S →+* T)
+lemma Subring.mem_closure_image_of {S T : Type*} [Ring S] [Ring T] (g : S →+* T)
     (u : Set S) (x : S) (hx : x ∈ Subring.closure u) : g x ∈ Subring.closure (g '' u) := by
   rw [Subring.mem_closure] at hx ⊢
   intro T₁ h₁
@@ -564,7 +564,7 @@ theorem isMaximal_comap_C_of_isJacobsonRing : (P.comap (C : R →+* R[X])).IsMax
 
 theorem comp_C_integral_of_surjective_of_isJacobsonRing {S : Type*} [Field S] (f : R[X] →+* S)
     (hf : Function.Surjective ↑f) : (f.comp C).IsIntegral := by
-  haveI : f.ker.IsMaximal := RingHom.ker_isMaximal_of_surjective f hf
+  haveI : (RingHom.ker f).IsMaximal := RingHom.ker_isMaximal_of_surjective f hf
   let g : R[X] ⧸ (RingHom.ker f) →+* S := Ideal.Quotient.lift (RingHom.ker f) f fun _ h => h
   have hfg : g.comp (Ideal.Quotient.mk (RingHom.ker f)) = f := ringHom_ext' rfl rfl
   rw [← hfg, RingHom.comp_assoc]
@@ -666,7 +666,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
   have hf' := Function.Surjective.comp hf (renameEquiv R e).surjective
   change Function.Surjective ↑f' at hf'
   have : (f'.comp C).IsIntegral := by
-    haveI : f'.ker.IsMaximal := ker_isMaximal_of_surjective f' hf'
+    haveI : (RingHom.ker f').IsMaximal := ker_isMaximal_of_surjective f' hf'
     let g : MvPolynomial _ R ⧸ (RingHom.ker f') →+* S :=
       Ideal.Quotient.lift (RingHom.ker f') f' fun _ h => h
     have hfg : g.comp (Ideal.Quotient.mk (RingHom.ker f')) = f' :=
@@ -719,7 +719,7 @@ lemma RingHom.finite_iff_finiteType_of_isJacobsonRing
 /-- If `K` is a jacobson noetherian ring, `A` a nontrivial `K`-algebra of finite type,
 then any `K`-subfield of `A` is finite over `K`. -/
 theorem finite_of_algHom_finiteType_of_isJacobsonRing
-    {K L A : Type*} [CommRing K] [Field L] [CommRing A]
+    {K L A : Type*} [CommRing K] [DivisionRing L] [CommRing A]
     [IsJacobsonRing K] [IsNoetherianRing K] [Nontrivial A]
     [Algebra K L] [Algebra K A]
     [Algebra.FiniteType K A] (f : L →ₐ[K] A) :

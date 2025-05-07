@@ -13,7 +13,7 @@ The type class `ContinuousSqrt` gives a sufficient condition on `R` to make `C(�
 and `C(α, R)₀` into a `StarOrderedRing` for any topological space `α`, thereby providing a means
 by which we can ensure `C(α, R)` has this property. This condition is satisfied
 by `ℝ≥0`, `ℝ`, and `ℂ`, and the instances can be found in the file
-`Topology.ContinuousMap.ContinuousSqrt`.
+`Mathlib.Topology.ContinuousMap.ContinuousSqrt`.
 
 ## Implementation notes
 
@@ -71,8 +71,8 @@ namespace ContinuousMapZero
 variable {α : Type*} [TopologicalSpace α] [Zero α]
 
 instance instStarOrderedRing {R : Type*}
-    [TopologicalSpace R] [OrderedCommSemiring R] [NoZeroDivisors R] [StarRing R] [StarOrderedRing R]
-    [IsTopologicalSemiring R] [ContinuousStar R] [StarOrderedRing C(α, R)] :
+    [TopologicalSpace R] [CommSemiring R] [PartialOrder R] [NoZeroDivisors R] [StarRing R]
+    [StarOrderedRing R] [IsTopologicalSemiring R] [ContinuousStar R] [StarOrderedRing C(α, R)] :
     StarOrderedRing C(α, R)₀ where
   le_iff f g := by
     constructor

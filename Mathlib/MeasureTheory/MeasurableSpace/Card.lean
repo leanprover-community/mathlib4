@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Violeta Hernández Palacios
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.SetTheory.Cardinal.Regular
 import Mathlib.SetTheory.Cardinal.Continuum
+import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # Cardinal of sigma-algebras
@@ -132,14 +133,16 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
     { t | GenerateMeasurable s t } = generateMeasurableRec s ω₁ := by
   apply (generateMeasurableRec_subset s _).antisymm'
   intro t ht
-  induction' ht with u hu u _ IH f _ IH
-  · exact self_subset_generateMeasurableRec s _ hu
-  · exact empty_mem_generateMeasurableRec s _
-  · rw [generateMeasurableRec_omega1, mem_iUnion₂] at IH
+  induction ht with
+  | basic u hu => exact self_subset_generateMeasurableRec s _ hu
+  | empty => exact empty_mem_generateMeasurableRec s _
+  | compl u _ IH =>
+    rw [generateMeasurableRec_omega1, mem_iUnion₂] at IH
     obtain ⟨i, hi, hi'⟩ := IH
     exact generateMeasurableRec_mono _ ((isLimit_omega 1).succ_lt hi).le
       (compl_mem_generateMeasurableRec (Order.lt_succ i) hi')
-  · simp_rw [generateMeasurableRec_omega1, mem_iUnion₂, exists_prop] at IH
+  | iUnion f _ IH =>
+    simp_rw [generateMeasurableRec_omega1, mem_iUnion₂, exists_prop] at IH
     exact iUnion_mem_generateMeasurableRec IH
 
 /-- `generateMeasurableRec` is constant for ordinals `≥ ω₁`. -/

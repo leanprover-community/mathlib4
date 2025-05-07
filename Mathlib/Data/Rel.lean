@@ -3,8 +3,7 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.CompleteLattice
+import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -332,7 +331,7 @@ theorem graph_injective : Injective (graph : (α → β) → Rel α β) := by
 
 @[simp] lemma graph_inj {f g : α → β} : f.graph = g.graph ↔ f = g := graph_injective.eq_iff
 
-theorem graph_id : graph id = @Eq α := by simp (config := { unfoldPartialApp := true }) [graph]
+theorem graph_id : graph id = @Eq α := by simp +unfoldPartialApp [graph]
 
 theorem graph_comp {f : β → γ} {g : α → β} : graph (f ∘ g) = Rel.comp (graph g) (graph f) := by
   ext x y
