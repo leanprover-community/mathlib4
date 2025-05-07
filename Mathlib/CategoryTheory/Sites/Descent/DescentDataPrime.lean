@@ -95,6 +95,18 @@ lemma pullHom_self' (hom_self : ∀ i, pullHom hom (f i) (𝟙 (X i)) (𝟙 (X i
   simp [pullHom_comp' hom g (f i) q hg (𝟙 (X i)) (𝟙 (X i)) (by simp) (by simp) g g
     (by simp) (by simp), hom_self]
 
+variable {sq₃} in
+@[reassoc]
+lemma comp_pullHom' (hom_comp : ∀ (i₁ i₂ i₃ : ι),
+    pullHom hom (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₂ ≫
+    pullHom hom (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₂ (sq₃ i₁ i₂ i₃).p₃ =
+    pullHom hom (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃)
+    ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ i₃ : ι⦄ (f₁ : Y ⟶ X i₁)
+    (f₂ : Y ⟶ X i₂) (f₃ : Y ⟶ X i₃) (hf₁ : f₁ ≫ f i₁ = q)
+    (hf₂ : f₂ ≫ f i₂ = q) (hf₃ : f₃ ≫ f i₃ = q) :
+    pullHom hom q f₁ f₂ ≫ pullHom hom q f₂ f₃ = pullHom hom q f₁ f₃ := by
+  sorry
+
 end
 
 end DescentData'
@@ -120,6 +132,15 @@ lemma pullHom_self (D : F.DescentData' sq sq₃)
     ⦃Y : C⦄ (q : Y ⟶ S) ⦃i : ι⦄ (g : Y ⟶ X i) (hg : g ≫ f i = q) :
     pullHom D.hom q g g hg hg = 𝟙 _ :=
   pullHom_self' _ D.hom_self _ _ _
+
+@[reassoc (attr := simp)]
+lemma comp_pullHom (D : F.DescentData' sq sq₃)
+    ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ i₃ : ι⦄ (f₁ : Y ⟶ X i₁)
+    (f₂ : Y ⟶ X i₂) (f₃ : Y ⟶ X i₃) (hf₁ : f₁ ≫ f i₁ = q)
+    (hf₂ : f₂ ≫ f i₂ = q) (hf₃ : f₃ ≫ f i₃ = q) :
+    pullHom D.hom q f₁ f₂ hf₁ hf₂ ≫ pullHom D.hom q f₂ f₃ hf₂ hf₃ =
+      pullHom D.hom q f₁ f₃ hf₁ hf₃ :=
+  comp_pullHom' _ D.hom_comp _ _ _ _ hf₁ hf₂ hf₃
 
 @[ext]
 structure Hom (D₁ D₂ : F.DescentData' sq sq₃) where
@@ -160,16 +181,23 @@ lemma id_hom (D : F.DescentData' sq sq₃) (i : ι) :
     Hom.hom (𝟙 D) i = 𝟙 _ :=
   rfl
 
-/-noncomputable def descentData (D : F.DescentData' sq sq₃) : F.DescentData f :=
+@[simps!]
+noncomputable def descentData (D : F.DescentData' sq sq₃) : F.DescentData f :=
   .mk' D.obj
     (fun _ _ _ _ _ _ _ _ ↦ pullHom D.hom _ _ _ (by aesop) (by aesop))
     (fun _ _ _ _ _ hq _ _ _ _ _ _ _ _ hgf₁ hgf₂ ↦
       pullHom_comp' _ _ _ _ hq _ _ _ _ _ _ hgf₁ hgf₂)
-    (by simp) sorry-/
+    (by simp) (by simp)
 
 end DescentData'
 
---def DescentData'.toDescentData : F.DescentData' sq sq₃ ⥤ F.DescentData f := sorry
+noncomputable def DescentData'.toDescentData : F.DescentData' sq sq₃ ⥤ F.DescentData f where
+  obj D := D.descentData
+  map φ :=
+    { hom i := φ.hom i
+      comm := sorry }
+  map_id := by intros; ext; dsimp
+  map_comp := by intros; ext; dsimp
 
 end Pseudofunctor
 
