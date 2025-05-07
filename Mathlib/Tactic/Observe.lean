@@ -43,7 +43,7 @@ elab_rules : tactic |
     else
       let v := (← instantiateMVars (mkMVar goal)).headBeta
       if trace.isSome then
-        addHaveSuggestion tk (some name) type v
+        addHaveSuggestion tk (some name) type v (checkState? := (← saveState))
       let (_, newGoal) ← (← getMainGoal).note name v
       replaceMainGoal [newGoal]
 

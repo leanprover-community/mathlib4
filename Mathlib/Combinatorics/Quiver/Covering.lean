@@ -179,7 +179,7 @@ theorem Prefunctor.pathStar_apply {u v : U} (p : Path u v) :
 
 theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.star u)) (u : U) :
     Injective (φ.pathStar u) := by
-  dsimp (config := { unfoldPartialApp := true }) [Prefunctor.pathStar, Quiver.PathStar.mk]
+  dsimp +unfoldPartialApp [Prefunctor.pathStar, Quiver.PathStar.mk]
   rintro ⟨v₁, p₁⟩
   induction p₁ with
   | nil =>
@@ -221,7 +221,7 @@ theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.star u)) (u : 
 
 theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u : U) :
     Surjective (φ.pathStar u) := by
-  dsimp (config := { unfoldPartialApp := true }) [Prefunctor.pathStar, Quiver.PathStar.mk]
+  dsimp +unfoldPartialApp [Prefunctor.pathStar, Quiver.PathStar.mk]
   rintro ⟨v, p⟩
   induction p with
   | nil =>

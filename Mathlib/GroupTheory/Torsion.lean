@@ -301,8 +301,14 @@ namespace Monoid
 section Monoid
 variable (G) [Monoid G]
 
-/-- A predicate on a monoid saying that only 1 is of finite order. -/
-@[to_additive "A predicate on an additive monoid saying that only 0 is of finite order."]
+/-- A predicate on a monoid saying that only 1 is of finite order.
+
+This definition is mathematically incorrect for monoids which are not groups.
+Please use `IsMulTorsionFree` instead. -/
+@[to_additive "A predicate on an additive monoid saying that only 0 is of finite order.
+
+This definition is mathematically incorrect for monoids which are not groups.
+Please use `IsAddTorsionFree` instead. "]
 def IsTorsionFree :=
   ∀ g : G, g ≠ 1 → ¬IsOfFinOrder g
 

@@ -125,7 +125,7 @@ theorem LinearMap.dualMap_id : (LinearMap.id : M₁ →ₗ[R] M₁).dualMap = Li
   ext
   rfl
 
-theorem LinearMap.dualMap_comp_dualMap {M₃ : Type*} [AddCommGroup M₃] [Module R M₃]
+theorem LinearMap.dualMap_comp_dualMap {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃]
     (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) : f.dualMap.comp g.dualMap = (g.comp f).dualMap :=
   rfl
 
@@ -160,7 +160,7 @@ theorem LinearEquiv.dualMap_symm {f : M₁ ≃ₗ[R] M₂} :
     (LinearEquiv.dualMap f).symm = LinearEquiv.dualMap f.symm :=
   rfl
 
-theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddCommGroup M₃] [Module R M₃] (f : M₁ ≃ₗ[R] M₂)
+theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (f : M₁ ≃ₗ[R] M₂)
     (g : M₂ ≃ₗ[R] M₃) : g.dualMap.trans f.dualMap = (f.trans g).dualMap :=
   rfl
 
@@ -485,14 +485,14 @@ variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M�
 variable (f : M₁ →ₗ[R] M₂)
 
 theorem ker_dualMap_eq_dualAnnihilator_range :
-    LinearMap.ker f.dualMap = f.range.dualAnnihilator := by
+    LinearMap.ker f.dualMap = (range f).dualAnnihilator := by
   ext
   simp_rw [mem_ker, LinearMap.ext_iff, Submodule.mem_dualAnnihilator,
     ← SetLike.mem_coe, range_coe, Set.forall_mem_range]
   rfl
 
 theorem range_dualMap_le_dualAnnihilator_ker :
-    LinearMap.range f.dualMap ≤ f.ker.dualAnnihilator := by
+    LinearMap.range f.dualMap ≤ (ker f).dualAnnihilator := by
   rintro _ ⟨ψ, rfl⟩
   simp_rw [Submodule.mem_dualAnnihilator, mem_ker]
   rintro x hx
@@ -511,7 +511,7 @@ namespace LinearMap
 open Submodule
 
 theorem ker_dualMap_eq_dualCoannihilator_range (f : M →ₗ[R] M') :
-    LinearMap.ker f.dualMap = (Dual.eval R M' ∘ₗ f).range.dualCoannihilator := by
+    LinearMap.ker f.dualMap = (range (Dual.eval R M' ∘ₗ f)).dualCoannihilator := by
   ext x; simp [LinearMap.ext_iff (f := dualMap f x)]
 
 @[simp]
