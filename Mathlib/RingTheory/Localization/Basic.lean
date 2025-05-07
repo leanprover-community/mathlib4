@@ -347,6 +347,26 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     rw [← map_mul, ← map_mul, mul_assoc, mul_comm _ c, ha, map_mul, map_mul]
     ring
 
+variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommRing Rₘ] [CommRing Sₙ] [CommRing Rₘ'] [CommRing Sₙ']
+  [Algebra R Rₘ] [Algebra S Sₙ] [Algebra R Rₘ'] [Algebra S Sₙ'] [Algebra R Sₙ] [Algebra Rₘ Sₙ]
+  [Algebra Rₘ' Sₙ'] [Algebra R Sₙ'] (N : Submonoid S) [IsLocalization M Rₘ] [IsLocalization N Sₙ]
+  [IsLocalization M Rₘ'] [IsLocalization N Sₙ'] [IsScalarTower R Rₘ Sₙ] [IsScalarTower R S Sₙ]
+  [IsScalarTower R Rₘ' Sₙ'] [IsScalarTower R S Sₙ']
+
+theorem algEquiv_comp_algebraMap : (algEquiv N Sₙ Sₙ' : _ →+* Sₙ').comp (algebraMap Rₘ Sₙ) =
+      (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') := by
+  refine IsLocalization.ringHom_ext M (RingHom.ext fun x => ?_)
+  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes]
+  rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
+    ← AlgEquiv.restrictScalars_apply R, AlgEquiv.commutes]
+
+variable {Rₘ} in
+theorem algEquiv_comp_algebraMap_apply (x : Rₘ) :
+    (algEquiv N Sₙ Sₙ' : _ →+* Sₙ').comp (algebraMap Rₘ Sₙ) x =
+    (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') x := by
+  rw [algEquiv_comp_algebraMap M Rₘ Sₙ Rₘ']
+
+
 end IsLocalization
 
 namespace Localization
