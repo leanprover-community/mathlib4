@@ -185,6 +185,7 @@ variable (sq₃ : ∀ (i₁ i₂ i₃ : ι), ChosenPullback₃ (sq i₁ i₂) (s
     mk''Hom obj sq hom (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₂ (sq₃ i₁ i₂ i₃).p₃ (by simp) (by simp) =
     mk''Hom obj sq hom (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃ (by simp) (by simp))
 
+-- TODO @jriou: moving to DescentDataPrime.lean
 noncomputable def mk'' : F.DescentData f :=
   DescentData.mk' obj (fun _ _ _ _ _ _ ↦ mk''Hom _ _ _ _ _ _)
     (fun _ _ _ _ _ hq _ _ _ _ _ _ _ _ ↦ mk''Hom_comp' _ _ _ _ _ _ hq _ _ _ _ _ _)
