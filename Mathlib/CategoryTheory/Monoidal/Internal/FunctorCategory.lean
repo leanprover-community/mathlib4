@@ -40,6 +40,7 @@ namespace MonFunctorCategoryEquivalence
 
 variable {C D}
 
+/-- A monoid object in a functor category sends any object to a monoid object. -/
 @[simps]
 def functorObjObj (A : C ⥤ D) [Mon_Class A] (X : C) : Mon_ D where
   X := A.obj X
@@ -127,6 +128,7 @@ namespace ComonFunctorCategoryEquivalence
 
 variable {C D}
 
+/-- A comonoid object in a functor category sends any object to a comonoid object. -/
 @[simps]
 def functorObjObj (A : C ⥤ D) [Comon_Class A] (X : C) : Comon_ D where
   X := A.obj X

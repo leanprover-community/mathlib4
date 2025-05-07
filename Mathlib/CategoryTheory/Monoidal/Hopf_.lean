@@ -61,7 +61,7 @@ variable (C)
 A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped with an antipode.
 -/
 structure Hopf_ where
-  /-- The underlying bimonoid of a Hopf monoid. -/
+  /-- The underlying object in the ambient monoidal category -/
   X : C
   [hopf : Hopf_Class X]
   -- /-- The antipode is an endomorphism of the underlying object of the Hopf monoid. -/
@@ -79,6 +79,7 @@ namespace Hopf_
 
 variable {C}
 
+/-- A Hopf monoid is a bimonoid. -/
 def toBimon_ (A : Hopf_ C) : Bimon_ C := .mk' A.X
 
 /--
