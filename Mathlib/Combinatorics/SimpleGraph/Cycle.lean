@@ -41,9 +41,7 @@ lemma all_vertices_degree_two (c : G.IsCycle) : ∀ (v : V), G.degree v = 2 := c
 
 lemma vertex_card_eq_edge_card (c : G.IsCycle) : Fintype.card V = Fintype.card G.edgeSet := by
   have h_v_card : ∑ (v : V), G.degree v = 2*(Fintype.card V) := by
-    have hd : ∀ v ∈ (Finset.univ : Finset V), G.degree v ≤ 2 := by simp [c.2]
-    simp only [← Finset.card_univ, Finset.card_eq_sum_ones, Finset.mul_sum, mul_one,
-      Finset.sum_eq_sum_iff_of_le hd, Finset.mem_univ, forall_const, c.2]
+    simp only [← Finset.card_univ, Finset.card_eq_sum_ones, Finset.mul_sum, mul_one, c.2]
   simp_all [G.sum_degrees_eq_twice_card_edges]
 
 lemma three_le_card (c : G.IsCycle) : 3 ≤ Fintype.card V := by
