@@ -539,7 +539,8 @@ theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
 lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
     PosDef hM.posSemidef.sqrt := by
   apply PosDef.mul_mul_conjTranspose_same
-  · exact posDef_diagonal_iff.mpr fun i ↦ by simpa using hM.eigenvalues_pos _
+  · rw [posDef_diagonal_iff]
+    simpa using hM.eigenvalues_pos
   · apply Matrix.vecMul_injective_of_isUnit
     convert (Group.isUnit _).map (unitaryGroup n 𝕜).subtype
 
