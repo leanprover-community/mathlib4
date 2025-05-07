@@ -518,7 +518,7 @@ theorem mem_span_finite_of_mem_span {S : Set M} {x : M} (hx : x ∈ span R S) :
   · rintro a x - ⟨T, hT, h2⟩
     exact ⟨T, hT, smul_mem _ _ h2⟩
 
-theorem subset_span_finite_of_subset_span (s : Set M) (t : Finset M) (ht : (t : Set M) ⊆ span R s) :
+theorem subset_span_finite_of_subset_span {s : Set M} {t : Finset M} (ht : (t : Set M) ⊆ span R s) :
   ∃ T : Finset M, ↑T ⊆ s ∧ (t : Set M) ⊆ span R (T : Set M) := by
   classical
   use (Finset.subtype (· ∈ t) t).biUnion
