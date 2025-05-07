@@ -1019,6 +1019,7 @@ import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Ext
 import Mathlib.Algebra.Ring.Fin
+import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Idempotent
@@ -1103,6 +1104,9 @@ import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.AlgebraicGeometry.Cover.Over
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
@@ -1292,6 +1296,7 @@ import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 import Mathlib.Analysis.CStarAlgebra.Classes
+import Mathlib.Analysis.CStarAlgebra.CompletelyPositiveMap
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
@@ -1346,6 +1351,7 @@ import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.CompMul
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Inverse
 import Mathlib.Analysis.Calculus.Deriv.Linear
@@ -1577,6 +1583,7 @@ import Mathlib.Analysis.MellinInversion
 import Mathlib.Analysis.MellinTransform
 import Mathlib.Analysis.Meromorphic.Basic
 import Mathlib.Analysis.Meromorphic.Divisor
+import Mathlib.Analysis.Meromorphic.FactorizedRational
 import Mathlib.Analysis.Meromorphic.NormalForm
 import Mathlib.Analysis.Meromorphic.Order
 import Mathlib.Analysis.Normed.Affine.AddTorsor
@@ -1914,6 +1921,7 @@ import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Center.Basic
 import Mathlib.CategoryTheory.Center.Linear
+import Mathlib.CategoryTheory.Center.Localization
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
@@ -2033,6 +2041,7 @@ import Mathlib.CategoryTheory.Functor.TwoSquare
 import Mathlib.CategoryTheory.Galois.Action
 import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Galois.Decomposition
+import Mathlib.CategoryTheory.Galois.Equivalence
 import Mathlib.CategoryTheory.Galois.EssSurj
 import Mathlib.CategoryTheory.Galois.Examples
 import Mathlib.CategoryTheory.Galois.Full
@@ -2257,11 +2266,13 @@ import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Localization.HomEquiv
+import Mathlib.CategoryTheory.Localization.Linear
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.Localization.LocallySmall
 import Mathlib.CategoryTheory.Localization.Monoidal
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Pi
+import Mathlib.CategoryTheory.Localization.Preadditive
 import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Localization.Prod
 import Mathlib.CategoryTheory.Localization.Resolution
@@ -4494,6 +4505,11 @@ import Mathlib.NumberTheory.NumberField.EquivReindex
 import Mathlib.NumberTheory.NumberField.FinitePlaces
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.House
+import Mathlib.NumberTheory.NumberField.Ideal
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
+import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.ProductFormula
 import Mathlib.NumberTheory.NumberField.Units.Basic
@@ -5050,6 +5066,7 @@ import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.Ideal.BigOperators
@@ -5368,6 +5385,7 @@ import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.Discrete.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
+import Mathlib.RingTheory.Valuation.Extension
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.Integral
 import Mathlib.RingTheory.Valuation.LocalSubring
@@ -5543,7 +5561,6 @@ import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
@@ -5586,7 +5603,6 @@ import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.LiftLets
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Linarith.Frontend
@@ -5886,6 +5902,7 @@ import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.Bornology.Real
 import Mathlib.Topology.CWComplex.Abstract.Basic
 import Mathlib.Topology.CWComplex.Classical.Basic
+import Mathlib.Topology.CWComplex.Classical.Finite
 import Mathlib.Topology.Category.Born
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
@@ -6029,7 +6046,7 @@ import Mathlib.Topology.FiberBundle.Trivialization
 import Mathlib.Topology.FiberPartition
 import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta.Basic
-import Mathlib.Topology.GDelta.UniformSpace
+import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.Germ
 import Mathlib.Topology.Gluing
 import Mathlib.Topology.Hom.ContinuousEval

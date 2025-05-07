@@ -21,8 +21,7 @@ to the whole tensor algebra in an `R`-linear way.
 
 The main result of this file is the universal property of the free product,
 which establishes the free product as the coproduct in the category of
-general $R$-algebras. (In the category of commutative $R$-algebras, the coproduct
-is just `PiTensorProduct`.)
+general $R$-algebras.
 
 ## Main definitions
 
@@ -132,9 +131,12 @@ abbrev PowerAlgebra := ⨁ (n : ℕ), TensorPower R n (⨁ i, A i)
 
 /-- The free tensor algebra and its representation as an infinite direct sum
 of tensor powers are (noncomputably) equivalent as `R`-algebras. -/
-@[reducible] noncomputable def equivPowerAlgebraFreeAlgebra :
+@[reducible] noncomputable def powerAlgebraEquivFreeTensorAlgebra :
     PowerAlgebra R A ≃ₐ[R] FreeTensorAlgebra R A :=
   TensorAlgebra.equivDirectSum.symm
+
+@[deprecated (since := "2025-05-05")] alias powerAlgebra_equiv_freeAlgebra :=
+  powerAlgebraEquivFreeTensorAlgebra
 
 /-- The generating equivalence relation for elements of the free tensor algebra
 that are identified in the free product -/
@@ -210,14 +212,14 @@ alias _root_.LinearAlgebra.FreeProduct_ofPowers := asPowers
 @[deprecated (since := "2025-05-01")]
 alias _root_.LinearAlgebra.FreeProductOfPowers := asPowers
 
-/-- The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct_ofPowers` -/
-noncomputable def equivAsPowers : asPowers R A ≃ₐ[R] FreeProduct R A :=
+/-- The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct.asPowers`. -/
+noncomputable def asPowersEquiv : asPowers R A ≃ₐ[R] FreeProduct R A :=
   RingQuot.algEquivQuotAlgEquiv
-    (equivPowerAlgebraFreeAlgebra R A |>.symm) (FreeProduct.rel R A)
+    (powerAlgebraEquivFreeTensorAlgebra R A |>.symm) (FreeProduct.rel R A)
   |>.symm
 
 @[deprecated (since := "2025-05-01")]
-alias equivPowerAlgebra := equivAsPowers
+alias equivPowerAlgebra := asPowersEquiv
 
 open RingQuot Function
 
@@ -358,7 +360,7 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
 /-- Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
 to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`. -/
-@[simp↓] theorem lift_comp_ι : (lift R A maps) ∘ₐ (ι R A i) = maps := by
+@[simp↓] theorem lift_comp_ι : lift R A maps ∘ₐ ι R A i = maps := by
   ext a
   simp [lift_apply, ι]
 
