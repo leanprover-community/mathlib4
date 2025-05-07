@@ -79,74 +79,22 @@ theorem Ideal.exists_mul_mem_of_mem_minimalPrimes
 /-- minimal primes are contained in zero divisors. -/
 lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p ∈ minimalPrimes R) :
     Disjoint (p : Set R) (nonZeroDivisors R) := by
-  classical
-  rw [← Set.subset_compl_iff_disjoint_right, Set.subset_def]
-  simp only [SetLike.mem_coe, Set.mem_compl_iff, mem_nonZeroDivisors_iff, not_forall,
-    Classical.not_imp]
-  intro x hxp
-  simp_rw [exists_prop, @and_comm (_ * _ = _), ← mul_comm x]
-  exact Ideal.exists_mul_mem_of_mem_minimalPrimes hp hxp
+  simp_rw [Set.disjoint_left, SetLike.mem_coe, mem_nonZeroDivisors_iff, not_forall, exists_prop,
+    @and_comm (_ * _ = _), ← mul_comm]
+  exact fun _ ↦ Ideal.exists_mul_mem_of_mem_minimalPrimes hp
+
+theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
+    (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p :=
+  have := H.1.1
+  have ⟨p', hIp', hp', le⟩ := exists_ideal_comap_le_prime p I H.1.2
+  ⟨p', hp', hIp', le.antisymm (H.2 ⟨inferInstance, comap_mono hIp'⟩ le)⟩
 
 @[stacks 00FK] theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
     (hf : Function.Injective f) (p) (H : p ∈ minimalPrimes R) :
-    ∃ p' : Ideal S, p'.IsPrime ∧ p'.comap f = p := by
-  have := H.1.1
-  have : Nontrivial (Localization (Submonoid.map f p.primeCompl)) := by
-    refine ⟨⟨1, 0, ?_⟩⟩
-    convert (IsLocalization.map_injective_of_injective p.primeCompl (Localization.AtPrime p)
-        (Localization <| p.primeCompl.map f) hf).ne one_ne_zero
-    · rw [map_one]
-    · rw [map_zero]
-  obtain ⟨M, hM⟩ := Ideal.exists_maximal (Localization (Submonoid.map f p.primeCompl))
-  refine ⟨M.comap (algebraMap S <| Localization (Submonoid.map f p.primeCompl)), inferInstance, ?_⟩
-  rw [Ideal.comap_comap, ← @IsLocalization.map_comp _ _ _ _ _ _ _ _ Localization.isLocalization
-      _ _ _ _ _ Localization.isLocalization p.primeCompl.le_comap_map,
-    ← Ideal.comap_comap]
-  suffices _ ≤ p by exact this.antisymm (H.2 ⟨inferInstance, bot_le⟩ this)
-  intro x hx
-  by_contra h
-  apply hM.ne_top
-  apply M.eq_top_of_isUnit_mem hx
-  apply IsUnit.map
-  apply IsLocalization.map_units _ (show p.primeCompl from ⟨x, h⟩)
-
-end
-
-section
-
-variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
-
-theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
-    (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p := by
-  have := H.1.1
-  let f' := (Ideal.Quotient.mk I).comp f
-  have e : RingHom.ker f' = I.comap f := by
-    ext1
-    exact Submodule.Quotient.mk_eq_zero _
-  have : RingHom.ker (Ideal.Quotient.mk <| RingHom.ker f') ≤ p := by
-    rw [Ideal.mk_ker, e]
-    exact H.1.2
-  suffices _ by
-    have ⟨p', hp₁, hp₂⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective
-      (RingHom.kerLift_injective f') (p.map <| Ideal.Quotient.mk <| RingHom.ker f') this
-    refine ⟨p'.comap <| Ideal.Quotient.mk I, Ideal.IsPrime.comap _, ?_, ?_⟩
-    · exact Ideal.mk_ker.symm.trans_le (Ideal.comap_mono bot_le)
-    · convert congr_arg (Ideal.comap <| Ideal.Quotient.mk <| RingHom.ker f') hp₂
-      rwa [Ideal.comap_map_of_surjective (Ideal.Quotient.mk <| RingHom.ker f')
-        Ideal.Quotient.mk_surjective, eq_comm, sup_eq_left]
-  refine ⟨⟨?_, bot_le⟩, ?_⟩
-  · apply Ideal.map_isPrime_of_surjective _ this
-    exact Ideal.Quotient.mk_surjective
-  · rintro q ⟨hq, -⟩ hq'
-    rw [← Ideal.map_comap_of_surjective
-        (Ideal.Quotient.mk (RingHom.ker ((Ideal.Quotient.mk I).comp f)))
-        Ideal.Quotient.mk_surjective q]
-    apply Ideal.map_mono
-    apply H.2
-    · refine ⟨inferInstance, (Ideal.mk_ker.trans e).symm.trans_le (Ideal.comap_mono bot_le)⟩
-    · refine (Ideal.comap_mono hq').trans ?_
-      rw [Ideal.comap_map_of_surjective]
-      exacts [sup_le rfl.le this, Ideal.Quotient.mk_surjective]
+    ∃ p' : Ideal S, p'.IsPrime ∧ p'.comap f = p :=
+  have ⟨p', hp', _, eq⟩ := exists_comap_eq_of_mem_minimalPrimes f (I := ⊥) p <| by
+    rwa [comap_bot_of_injective f hf]
+  ⟨p', hp', eq⟩
 
 theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
     (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' ∈ I.minimalPrimes, Ideal.comap f p' = p := by
@@ -157,9 +105,15 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
   have := (Ideal.comap_mono hq').trans_eq h₃
   exact (H.2 ⟨inferInstance, Ideal.comap_mono hq.1.2⟩ this).antisymm this
 
-theorem Ideal.minimalPrimes_comap_subset {A : Type*} [CommRing A] (f : R →+* A) (J : Ideal A) :
+theorem Ideal.minimalPrimes_comap_subset (f : R →+* S) (J : Ideal S) :
     (J.comap f).minimalPrimes ⊆ Ideal.comap f '' J.minimalPrimes :=
   fun p hp ↦ Ideal.exists_minimalPrimes_comap_eq f p hp
+
+end
+
+section
+
+variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
 
 theorem Ideal.minimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
@@ -192,7 +146,7 @@ end
 
 section
 
-variable {R : Type*} [CommRing R] (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
+variable {R : Type*} [CommSemiring R] (S : Submonoid R) (A : Type*) [CommSemiring A] [Algebra R A]
 
 theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     (J.map (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) ⁻¹' J.minimalPrimes := by
@@ -210,8 +164,7 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     · exact IsLocalization.comap_map_of_isPrime_disjoint S A _ hI.1 hI'
   · intro hp
     refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr hp.1.2⟩, ?_⟩
-    · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A,
-        IsLocalization.disjoint_comap_iff S]
+    · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A, IsLocalization.disjoint_comap_iff S]
       refine ⟨hp.1.1, ?_⟩
       rintro rfl
       exact hp.1.1.ne_top rfl

@@ -3,9 +3,8 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-
+import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
 # Submonoids of archimedean monoids
@@ -25,7 +24,8 @@ submonoid of the ambient group.
 assert_not_exists Finset
 
 @[to_additive]
-instance SubmonoidClass.instMulArchimedean {M S : Type*} [SetLike S M] [OrderedCommMonoid M]
+instance SubmonoidClass.instMulArchimedean {M S : Type*} [SetLike S M]
+    [CommMonoid M] [PartialOrder M]
     [SubmonoidClass S M] [MulArchimedean M] (H : S) : MulArchimedean H := by
   constructor
   rintro x _

@@ -71,7 +71,7 @@ section CommSemiring
 
 variable {v : ι → M} {x y : M}
 
-theorem groupSMul_span_eq_top {G : Type*} [Group G] [DistribMulAction G R] [DistribMulAction G M]
+theorem groupSMul_span_eq_top {G : Type*} [Group G] [SMul G R] [MulAction G M]
     [IsScalarTower G R M] {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤) {w : ι → G} :
     Submodule.span R (Set.range (w • v)) = ⊤ := by
   rw [eq_top_iff]
