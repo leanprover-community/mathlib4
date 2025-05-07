@@ -135,15 +135,18 @@ open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 variable {R : Type u} [CommRing R] [Small.{v} R]
 
 lemma free_of_projectiveOverLocalRing [IsLocalRing R] (M : ModuleCat.{v} R) [Module.Finite R M]
-    [Projective M]: Module.Free R M:= by
-  -- Add your proof here
-  sorry
+    [proj : Projective M]: Module.Free R M := by
+  have : Module.Projective R M := by
+    --need fix for `IsProjective.iff_projective`
+    sorry
+  have : Module.Flat R M := Module.Flat.of_projective
+  exact Module.free_of_flat_of_isLocalRing
 
 local instance : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
 
 lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
-    (i : ℕ) : Subsingleton (Ext N M i) ↔
+    [Nontrivial M] (i : ℕ) : Subsingleton (Ext N M i) ↔
     Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
   -- Add your proof here
   sorry
@@ -280,6 +283,16 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       simp [S]
     mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
     epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf }
+  have ntr2 : Nontrivial S.X₂ := Function.Surjective.nontrivial surjf
+  have ntr1 : Nontrivial S.X₁ := by
+    by_contra h
+    have : Subsingleton (LinearMap.ker f) := not_nontrivial_iff_subsingleton.mp h
+    let ef : (ι →₀ Shrink.{v, u} R) ≃ₗ[R] M := LinearEquiv.ofBijective f
+      ⟨LinearMap.ker_eq_bot.mp Submodule.eq_bot_of_subsingleton, surjf⟩
+    obtain ⟨⟨B⟩⟩ := Module.Free.of_equiv ef
+    absurd nle0
+    have := ModuleCat.projective_of_free B.2
+    infer_instance
   have ker_free : Module.Free R (LinearMap.ker f) := by
     apply @free_of_projectiveOverLocalRing _ _ _ _ (ModuleCat.of R (LinearMap.ker f)) _ ?_
     apply @projective_of_hasProjectiveDimensionLT_one _ _ _ _ _ ?_
@@ -395,8 +408,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
       simp only [HasProjectiveDimensionLE, h, zero_add] at pdz
       have : Module.Free R M := by apply free_of_projectiveOverLocalRing
       congr! 5
-
-      sorry
+      apply finte_free_ext_vanish_iff
     · by_cases eq0 : n = 0
       · simp only [eq0, zero_add, Nat.find_eq_iff, Nat.lt_one_iff, forall_eq, Nat.cast_one] at h ⊢
         exact AuslanderBuchsbaum_one M h.1 h.2
