@@ -7,6 +7,7 @@ Authors: Michael Rothgang
 import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Basic
 import Mathlib.Tactic.Linter.TextBased
+import Lake.Util.Casing
 import Cli.Basic
 
 /-!
@@ -104,6 +105,21 @@ def allScriptsDocumented : IO Bool := do
       {String.intercalate "," undocumented.toList}"
   return undocumented.size == 0
 
+/-- Verifies that all modules `modules` are named in `UpperCamelCase`
+(except for explicitly discussed exceptions, which are hard-coded here). -/
+def checkModulesUpperCamelCase (modules : Array Lean.Name) : IO Bool := do
+  -- Exceptions to this list should be discussed on zulip!
+  let exceptions := [
+    `Mathlib.Analysis.CStarAlgebra.lpSpace,
+    `Mathlib.Analysis.InnerProductSpace.l2Space,
+    `Mathlib.Analysis.Normed.Lp.lpSpace
+  ]
+  -- We allow only names in UpperCamelCase, possibly with a trailing underscore.
+  let badNames := modules.filter fun name ↦!exceptions.contains name &&
+    (Lake.toUpperCamelCase name != name && s!"{Lake.toUpperCamelCase name}_" != name.toString)
+  for bad in badNames do
+    IO.eprintln s!"error: module name {bad} is not in 'UpperCamelCase': it should be {Lake.toUpperCamelCase bad} instead"
+  return badNames.size == 0
 
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
@@ -129,6 +145,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   let mut numberErrors ← lintModules nolints allModuleNames style fix
   if ← checkInitImports then numberErrors := numberErrors + 1
   if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
+  if !(← checkModulesUpperCamelCase allModuleNames) then numberErrors := numberErrors + 1
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
