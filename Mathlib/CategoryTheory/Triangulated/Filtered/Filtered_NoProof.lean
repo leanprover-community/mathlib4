@@ -378,8 +378,8 @@ lemma isFilteredTriangulated_over_image (L : isFilteredTriangulated_over C A) (X
 -- This gives an equivalence of categories from `A` to the full subcategory of
 -- objects of `C` that are `LE 0` and `GE 0`.
 def isFilteredTriangulated_over_equiv (L : isFilteredTriangulated_over C A) :
-    A ⥤ (FullSubcategory (fun (X : C) ↦ IsLE X 0 ∧ IsGE X 0)) :=
-  FullSubcategory.lift _ L.functor (isFilteredTriangulated_over_image L)
+    A ⥤ ObjectProperty.FullSubcategory (fun (X : C) ↦ IsLE X 0 ∧ IsGE X 0) :=
+  ObjectProperty.lift _ L.functor (isFilteredTriangulated_over_image L)
 
 instance (L : isFilteredTriangulated_over C A) :
     Functor.IsEquivalence (isFilteredTriangulated_over_equiv L) where
@@ -396,8 +396,8 @@ instance (L : isFilteredTriangulated_over C A) :
         }
 
 def isFilteredTriangulated_over_equiv_inv_comp (L : isFilteredTriangulated_over C A) :
-    (isFilteredTriangulated_over_equiv L).inv ⋙ L.functor ≅ fullSubcategoryInclusion _ :=
-  Iso.inverseCompIso (FullSubcategory.lift_comp_inclusion _ _ _).symm
+    (isFilteredTriangulated_over_equiv L).inv ⋙ L.functor ≅ ObjectProperty.ι _ :=
+  Iso.inverseCompIso (ObjectProperty.liftCompιIso _ _ _).symm
   (G := (isFilteredTriangulated_over_equiv L).asEquivalence)
 
 /--
@@ -421,19 +421,19 @@ section Truncation
 -- Prop A.1.3 (i)
 -- First sentence.
 
-instance LE_reflective (n : ℤ) : Reflective (fullSubcategoryInclusion
+instance LE_reflective (n : ℤ) : Reflective (ObjectProperty.ι
     (FilteredTriangulated.LE (C := C) n).P) := sorry
 
-instance GE_coreflective (n : ℤ) : Coreflective (fullSubcategoryInclusion
+instance GE_coreflective (n : ℤ) : Coreflective (ObjectProperty.ι
     (FilteredTriangulated.GE (C := C) n).P) := sorry
 
-def truncLE (n : ℤ) : C ⥤ C := reflector (fullSubcategoryInclusion
-    (FilteredTriangulated.LE (C := C) n).P) ⋙ (fullSubcategoryInclusion
+def truncLE (n : ℤ) : C ⥤ C := reflector (ObjectProperty.ι
+    (FilteredTriangulated.LE (C := C) n).P) ⋙ (ObjectProperty.ι
     (FilteredTriangulated.LE (C := C) n).P)
 -- The "left adjoint" of the inclusion.
 
-def truncGE (n : ℤ) : C ⥤ C := coreflector (fullSubcategoryInclusion
-    (FilteredTriangulated.GE (C := C) n).P) ⋙ (fullSubcategoryInclusion
+def truncGE (n : ℤ) : C ⥤ C := coreflector (ObjectProperty.ι
+    (FilteredTriangulated.GE (C := C) n).P) ⋙ (ObjectProperty.ι
     (FilteredTriangulated.GE (C := C) n).P)
 -- The "right adjoint" of the inclusion.
 
@@ -441,14 +441,14 @@ instance (X : C) (n : ℤ) : IsLE ((truncLE n).obj X) n := sorry
 
 instance (X : C) (n : ℤ) : IsGE ((truncGE n).obj X) n := sorry
 
-def essImage_of_LE (X : C) (n : ℤ) [IsLE X n] : (fullSubcategoryInclusion
+def essImage_of_LE (X : C) (n : ℤ) [IsLE X n] : (ObjectProperty.ι
     (FilteredTriangulated.LE (C := C) n).P).essImage X := sorry
 
-def essImage_of_GE (X : C) (n : ℤ) [IsGE X n] : (fullSubcategoryInclusion
+def essImage_of_GE (X : C) (n : ℤ) [IsGE X n] : (ObjectProperty.ι
     (FilteredTriangulated.GE (C := C) n).P).essImage X := sorry
 
 def truncLEπ (n : ℤ) : 𝟭 _ ⟶ truncLE (C := C) n :=
-  (reflectorAdjunction (fullSubcategoryInclusion (FilteredTriangulated.LE (C := C) n).P)).unit
+  (reflectorAdjunction (FilteredTriangulated.LE (C := C) n).P.ι).unit
 -- Unit of the adjunction.
 
 instance truncLEπ_iso_of_LE (X : C) (n : ℤ) [IsLE X n] : IsIso ((truncLEπ n).app X) :=
@@ -462,8 +462,7 @@ lemma π_descTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsLE Y n] :
     (truncLEπ n).app X ≫ descTruncLE f n = f := sorry
 
 def truncGEι (n : ℤ) : truncGE (C := C) n ⟶ 𝟭 _ :=
-  (coreflectorAdjunction (fullSubcategoryInclusion
-  (FilteredTriangulated.GE (C := C) n).P)).counit
+  (coreflectorAdjunction (FilteredTriangulated.GE (C := C) n).P.ι).counit
 -- Counit of the adjunction.
 
 instance truncGEι_iso_of_GE (X : C) (n : ℤ) [IsGE X n] : IsIso ((truncGEι n).app X) :=
@@ -498,28 +497,63 @@ instance (n m : ℤ) (X : C) [IsLE X m] : IsLE ((truncGE n).obj X) m := sorry
 instance (n m : ℤ) (X : C) [IsGE X m] : IsGE ((truncGE n).obj X) m := sorry
 
 abbrev truncGE_onLE (n m : ℤ) :
-    (FilteredTriangulated.LE (C := C) m).P.FullSubcategory ⥤ (FilteredTriangulated.LE (C := C) m).P := sorry
+    (FilteredTriangulated.LE (C := C) m).P.FullSubcategory ⥤
+    (FilteredTriangulated.LE (C := C) m).P.FullSubcategory := by
+  refine ObjectProperty.lift _ ?_ (fun X ↦ ?_)
+  · exact ObjectProperty.ι _ ⋙ truncGE n
+  · have : IsLE X.1 m := {le := X.2}
+    exact (instIsLEObjTruncGE n m X.1).le
+
+/-
+def truncGE_onLE_comp (n m :  ℤ) :
+    truncGE_onLE (C := C) n m ⋙ (FilteredTriangulated.LE m).P.ι ≅
+    (FilteredTriangulated.LE m).P.ι ⋙ truncGE n := Iso.refl _
+-/
+
+abbrev truncLE_onGE (n m : ℤ) :
+    (FilteredTriangulated.GE (C := C) m).P.FullSubcategory ⥤
+    (FilteredTriangulated.GE (C := C) m).P.FullSubcategory := by
+  refine ObjectProperty.lift _ ?_ (fun X ↦ ?_)
+  · exact ObjectProperty.ι _ ⋙ truncLE n
+  · have : IsGE X.1 m := {ge := X.2}
+    exact (instIsGEObjTruncLE n m X.1).ge
 
 -- Prop A.1.3 (ii)
 
-def truncLEGE (a b : ℤ) : C ⥤ C := truncGE a ⋙ truncLE b
+abbrev truncLEGE (a b : ℤ) : C ⥤ C := truncGE a ⋙ truncLE b
 
-def truncGELE (a b : ℤ) : C ⥤ C := truncLE b ⋙ truncGE a
+abbrev truncGELE (a b : ℤ) : C ⥤ C := truncLE b ⋙ truncGE a
 
-def truncLEGEToGELE (a b : ℤ) : truncLEGE (C := C) a b ⟶ truncGELE a b := sorry
+def truncLEGEToGELE (a b : ℤ) : truncLEGE (C := C) a b ⟶ truncGELE a b := by
+  set u : TwoSquare (FilteredTriangulated.LE (C := C) b).P.ι (truncGE_onLE a b) (truncGE a)
+      (FilteredTriangulated.LE b).P.ι := by
+    refine {app X := ?_, naturality X Y f := ?_}
+    · dsimp; exact 𝟙 _
+    · dsimp; simp
+  exact (Functor.associator _ _ _).inv ≫ whiskerRight ((mateEquiv (reflectorAdjunction _)
+    (reflectorAdjunction _)).symm u) _ ≫ (Functor.associator _ _ _).hom ≫
+    whiskerLeft (reflector (FilteredTriangulated.LE b).P.ι) (𝟙 _)  ≫
+    (Functor.associator _ _ _).inv
 
-def truncLEGEIsoGELE (a b : ℤ) : truncLEGE (C := C) a b ≅ truncGELE a b := sorry
+lemma truncLEGEIsoGELE (a b : ℤ) : IsIso (truncLEGEToGELE a b (C := C)) := sorry
 
-lemma truncLEGEIsoGELE_comm (a b : ℤ) :
+lemma truncLEGEToGELE_comm (a b : ℤ) :
     truncGEι (C := C) b ≫ truncLEπ a =
-    whiskerLeft (truncGE b) (truncLEπ a) ≫ (truncLEGEIsoGELE b a).hom ≫
-    whiskerLeft (truncLE a) (truncGEι b) := sorry
+    whiskerLeft (truncGE b) (truncLEπ a) ≫ truncLEGEToGELE b a ≫
+    whiskerLeft (truncLE a) (truncGEι b) := by
+  ext X
+  dsimp [truncLEGEToGELE, truncGEι, truncLEπ]
+  simp only [Functor.map_id, id_comp, comp_id, assoc]
+  erw [id_comp]
+  have := (reflectorAdjunction (FilteredTriangulated.LE (C := C) a).P.ι).unit.naturality
+  have := (reflectorAdjunction (FilteredTriangulated.LE (C := C) a).P.ι).counit.naturality
+  sorry
 
-lemma truncLEGEIsoGELE_uniq {a b : ℤ} {X : C}
+lemma truncLEGEToGELE_uniq {a b : ℤ} {X : C}
     {f : (truncLEGE b a).obj X ⟶ (truncGELE b a).obj X}
     (comm : (truncGEι b).app X ≫ (truncLEπ a).app X =
     (truncLEπ a).app ((truncGE b).obj X) ≫ f ≫ (truncGEι b).app ((truncLE a).obj X)) :
-    f = (truncLEGEIsoGELE b a).hom.app X := sorry
+    f = (truncLEGEToGELE b a).app X := sorry
 
 -- Prop A.1.3 (iii) but with general indices
 
@@ -551,7 +585,9 @@ lemma triangleGELE_distinguished (n : ℤ) (X : C) :
 -- Here we are cheating too, because the maps are specific ones!
 
 def truncGELE_le_up (a b c : ℤ) (h : b ≤ c) :
-    truncGELE (C := C) a b ⟶ truncGELE a c := sorry
+    truncGELE (C := C) a b ⟶ truncGELE a c := by
+  dsimp [truncGELE]
+  sorry
 
 def truncGELE_le_down (a b c : ℤ) (h : a ≤ b) :
     truncGELE (C := C) a c ⟶ truncGELE b c := sorry
@@ -560,7 +596,8 @@ def truncGELE_δ (a b c : ℤ) :
     truncGELE (C := C) (b + 1) c ⟶ truncGELE a b ⋙ shiftFunctor C (1 : ℤ) := sorry
 
 def truncGELE_triangle (a b c : ℤ) (h : a ≤ b) (h' : b ≤ c) : C ⥤ Triangle C :=
-  Triangle.functorMk (truncGELE_le_up a b c h') (truncGELE_le_down a b c h) (truncGELE_δ a b c)
+  Triangle.functorMk (truncGELE_le_up a b c h') (truncGELE_le_down a (b + 1) c (by linarith))
+  (truncGELE_δ a b c)
 
 lemma truncGELE_triangle_distinguished (a b c : ℤ) (h : a ≤ b) (h' : b ≤ c) (X : C) :
     (truncGELE_triangle a b c h h').obj X ∈ distTriang C := sorry
@@ -602,42 +639,22 @@ def truncLE_commShift : familyCommShift (fun n ↦ truncLE (C := C) n) := sorry
 
 def truncGE_commShift : familyCommShift (fun n ↦ truncGE (C := C) n) := sorry
 
--- Definition A.1.4.
-variable (L : isFilteredTriangulated_over C A) (n : ℤ)
-
-def Gr_aux : C ⥤ C := truncGELE n n ⋙ shiftFunctor₂ C (-n)
-
-lemma Gr_aux_image (X : C) : IsLE ((Gr_aux n).obj X) 0 ∧ IsGE ((Gr_aux n).obj X) 0 := by
-  dsimp [Gr_aux]
-  constructor
-  · have : IsLE ((shiftFunctor₂ C (-n)).obj ((truncLEGE n n).obj X)) 0 := by
-      dsimp [truncLEGE]
-      exact isLE_shift _ n (-n) 0 (neg_add_cancel _)
-    refine isLE_of_iso ((shiftFunctor₂ C (-n)).mapIso ((truncLEGEIsoGELE n n).app X)) 0
-  · dsimp [truncGELE]
-    exact isGE_shift _ n (-n) 0 (neg_add_cancel _)
-
-def Gr : C ⥤ A :=
-  (FullSubcategory.lift _ (Gr_aux n) (Gr_aux_image n)) ⋙ (isFilteredTriangulated_over_equiv L).inv
-
-def Gr_Gr_aux : Gr L n ⋙ L.functor ≅ Gr_aux n :=
-  Functor.associator _ _ _ ≪≫
-  isoWhiskerLeft _ (isFilteredTriangulated_over_equiv_inv_comp L) ≪≫
-  FullSubcategory.lift_comp_inclusion _ _ _
-
--- `Gr` is triangulated. We can prove this now, but let's admit this temporarily.
-
-instance (n : ℤ) : (Gr L n).CommShift ℤ := sorry
-
-instance (n : ℤ) : (Gr L n).IsTriangulated := sorry
-
 end Truncation
 
-section Graded
+/-
+The next thing in the paper is the definition, when we have a filtered triangulated category `C`
+over a triangulated category `A`, of the "graded pieces" functors `Gr n : C ⥤ A`, which use
+an arbitrary quasi-inverse of the fully faithful functor `i : A ⥤ C` on the essential image of
+`i`.
 
-variable (L : isFilteredTriangulated_over C A)
+Rather than using an arbitrary quasi-inverse, it makes things much simpler to use the one
+given by the "forget the filtration" functor `ω : C ⥤ A`, which has the addditional pleasant
+property that it is defined on all of `C` and so avoids an `ObjectProperty.lift`. For this,
+we need to change the order of statements and do Proposition A.1.6 first (this is possible as
+that proposition makes no use of the functors `Gr n`).
+-/
 
--- Proposition A.1.5(i).
+-- First a technical definition. (Is this really useful?)
 variable {E E' M : Type*} [Category E] [Category E'] [AddMonoid M] [HasShift E M]
 
 structure leftCommShift (G : M → (E ⥤ E')) where
@@ -649,35 +666,6 @@ structure leftCommShift (G : M → (E ⥤ E')) where
       iso a (b' + b) c' (by rw [← add_assoc, ← h', h]) =
       isoWhiskerRight (shiftFunctorAdd E b' b) _ ≪≫ Functor.associator _ _ _ ≪≫
       isoWhiskerLeft _ (iso a b c h) ≪≫ iso c b' c' h'
-
--- Again, the isomorphisms are explicit.
-def Gr_commShift : leftCommShift (fun n ↦ Gr (C := C) L n) (E := FilteredShift C) := sorry
-
--- Proposition A.1.5(ii).
-
-lemma Gr_pure_zero_of_ne_zero {n : ℤ} (h : n ≠ 0) (X : A) :
-    Limits.IsZero ((Gr L n).obj (L.functor.obj X)) := sorry
-
--- This should be an explicit isomorphism.
-def Gr_pure_of_zero (n : ℤ) (h : n = 0) : L.functor ⋙ Gr L n ≅ 𝟭 A := sorry
-
--- Proposition A.1.5(iii).
--- Here the math statement doesn't say everything we want it to, because the
--- isomorphisms are not arbitrary ones, they're given by `truncLEπ` and `truncGEι`.
-
-lemma Gr_truncLE_zero (r n : ℤ) (h : n < r) (X : C) :
-    Limits.IsZero ((truncLE n ⋙ Gr L r).obj X) := sorry
-
-lemma isIso_Gr_truncLEπ (r n : ℤ) (h : r ≤ n) :
-    IsIso (whiskerRight (truncLEπ n) (Gr L r)) := sorry
-
-lemma Gr_truncGE_zero (r n : ℤ) (h : r < n) (X : C) :
-    Limits.IsZero ((truncGE n ⋙ Gr L r).obj X) := sorry
-
-lemma isIso_Gr_truncGEι (r n : ℤ) (h : n ≤ r) :
-    IsIso (whiskerRight (truncGEι n) (Gr L r)) := sorry
-
-end Graded
 
 section Forget
 
@@ -793,6 +781,67 @@ def ForgetFiltration_for_Gr (n : ℤ) : truncGELE n n ⋙ ForgetFiltration L ≅
     isoWhiskerLeft _ (ForgetFiltration_vs_equiv L)
 
 end Forget
+
+section Graded
+-- Definition A.1.4.
+variable (L : isFilteredTriangulated_over C A) (n : ℤ)
+
+def Gr_aux : C ⥤ C := truncGELE n n ⋙ shiftFunctor₂ C (-n)
+
+lemma Gr_aux_image (X : C) : IsLE ((Gr_aux n).obj X) 0 ∧ IsGE ((Gr_aux n).obj X) 0 := by
+  dsimp [Gr_aux]
+  constructor
+  · have : IsLE ((shiftFunctor₂ C (-n)).obj ((truncLEGE n n).obj X)) 0 := by
+      dsimp [truncLEGE]
+      exact isLE_shift _ n (-n) 0 (neg_add_cancel _)
+    refine isLE_of_iso ((shiftFunctor₂ C (-n)).mapIso ((truncLEGEIsoGELE n n).app X)) 0
+  · dsimp [truncGELE]
+    exact isGE_shift _ n (-n) 0 (neg_add_cancel _)
+
+def Gr : C ⥤ A :=
+  (FullSubcategory.lift _ (Gr_aux n) (Gr_aux_image n)) ⋙ (isFilteredTriangulated_over_equiv L).inv
+
+def Gr_Gr_aux : Gr L n ⋙ L.functor ≅ Gr_aux n :=
+  Functor.associator _ _ _ ≪≫
+  isoWhiskerLeft _ (isFilteredTriangulated_over_equiv_inv_comp L) ≪≫
+  FullSubcategory.lift_comp_inclusion _ _ _
+
+-- `Gr` is triangulated. We can prove this now, but let's admit this temporarily.
+
+instance (n : ℤ) : (Gr L n).CommShift ℤ := sorry
+
+instance (n : ℤ) : (Gr L n).IsTriangulated := sorry
+
+-- Proposition A.1.5(i).
+
+-- Again, the isomorphisms are explicit.
+def Gr_commShift : leftCommShift (fun n ↦ Gr (C := C) L n) (E := FilteredShift C) := sorry
+
+-- Proposition A.1.5(ii).
+
+lemma Gr_pure_zero_of_ne_zero {n : ℤ} (h : n ≠ 0) (X : A) :
+    Limits.IsZero ((Gr L n).obj (L.functor.obj X)) := sorry
+
+-- This should be an explicit isomorphism.
+def Gr_pure_of_zero (n : ℤ) (h : n = 0) : L.functor ⋙ Gr L n ≅ 𝟭 A := sorry
+
+-- Proposition A.1.5(iii).
+-- Here the math statement doesn't say everything we want it to, because the
+-- isomorphisms are not arbitrary ones, they're given by `truncLEπ` and `truncGEι`.
+
+lemma Gr_truncLE_zero (r n : ℤ) (h : n < r) (X : C) :
+    Limits.IsZero ((truncLE n ⋙ Gr L r).obj X) := sorry
+
+lemma isIso_Gr_truncLEπ (r n : ℤ) (h : r ≤ n) :
+    IsIso (whiskerRight (truncLEπ n) (Gr L r)) := sorry
+
+lemma Gr_truncGE_zero (r n : ℤ) (h : r < n) (X : C) :
+    Limits.IsZero ((truncGE n ⋙ Gr L r).obj X) := sorry
+
+lemma isIso_Gr_truncGEι (r n : ℤ) (h : n ≤ r) :
+    IsIso (whiskerRight (truncGEι n) (Gr L r)) := sorry
+
+end Graded
 
 section FunctorLiftCompat
 

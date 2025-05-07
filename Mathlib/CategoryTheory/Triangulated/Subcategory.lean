@@ -443,28 +443,19 @@ instance : IsClosedUnderIsomorphisms (S.inter S').P := by
   infer_instance
 
 end
-section
-
-variable [IsTriangulated C]
-example : Pretriangulated (S.W.Localization) := inferInstance
-example : IsTriangulated (S.W.Localization) := inferInstance
-example : S.W.Q.IsTriangulated := inferInstance
 
 end
 
-end
-
-def category := FullSubcategory S.P
+def category := S.P.FullSubcategory
 
 instance : Category S.category := FullSubcategory.category _
 
-def ι : S.category ⥤ C := fullSubcategoryInclusion _
+def ι : S.category ⥤ C := ObjectProperty.ι _
 
-def fullyFaithfulι : S.ι.FullyFaithful := fullyFaithfulFullSubcategoryInclusion _
+def fullyFaithfulι : S.ι.FullyFaithful := ObjectProperty.fullyFaithfulι _
 
-instance : S.ι.Full := FullSubcategory.full _
-instance : S.ι.Faithful := FullSubcategory.faithful _
-
+instance : S.ι.Full := (fullyFaithfulι _).full
+instance : S.ι.Faithful := (fullyFaithfulι _).faithful
 
 instance : Preadditive S.category := by
   dsimp [category]
@@ -477,9 +468,9 @@ instance : S.ι.Additive := by
 lemma ι_obj_mem (X : S.category) : S.P (S.ι.obj X) := X.2
 
 noncomputable instance hasShift : HasShift S.category ℤ :=
-  S.fullyFaithfulι.hasShift (fun n => FullSubcategory.lift _ (S.ι ⋙ shiftFunctor C n)
+  S.fullyFaithfulι.hasShift (fun n => ObjectProperty.lift _ (S.ι ⋙ shiftFunctor C n)
     (fun X => S.shift _ _ X.2))
-    (fun _ => FullSubcategory.lift_comp_inclusion _ _ _)
+    (fun _ => ObjectProperty.liftCompιIso _ _ _)
 
 instance commShiftι : S.ι.CommShift ℤ :=
   Functor.CommShift.of_hasShiftOfFullyFaithful _ _ _
@@ -498,7 +489,7 @@ instance : HasZeroObject S.category where
     rw [IsZero.iff_id_eq_zero]
     apply hZ.eq_of_src
 
-instance : Pretriangulated S.category where
+noncomputable instance : Pretriangulated S.category where
   distinguishedTriangles := fun T => S.ι.mapTriangle.obj T ∈ distTriang C
   isomorphic_distinguished := fun T₁ hT₁ T₂ e =>
     isomorphic_distinguished _ hT₁ _ (S.ι.mapTriangle.mapIso e)
@@ -570,12 +561,9 @@ section
 
 variable {D : Type*} [Category D] (F : D ⥤ C) (hF : ∀ (X : D), S.P (F.obj X))
 
-def lift : D ⥤ S.category := FullSubcategory.lift S.P F hF
+def lift : D ⥤ S.category := ObjectProperty.lift S.P F hF
 
-lemma lift_comp_inclusion_eq : S.lift F hF ⋙ S.ι = F :=
-  FullSubcategory.lift_comp_inclusion_eq _ _ _
-
-def liftCompInclusion : S.lift F hF ⋙ S.ι ≅ F := Iso.refl _
+def liftCompInclusion : S.lift F hF ⋙ S.ι ≅ F :=   liftCompιIso _ _ _
 
 instance [F.Faithful] : (S.lift F hF).Faithful :=
   Functor.Faithful.of_comp_iso (S.liftCompInclusion F hF)
