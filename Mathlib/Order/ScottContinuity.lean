@@ -124,27 +124,6 @@ alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
 
 end CompleteLattice
 
-section Pi
-
-variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [Preorder β]
-
-/-
-open Set in
-lemma Pi.upperBounds {f : (Π i, α i) → β} (hf : Monotone f)
-    {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) :
-    upperBounds (f '' d) = upperBounds (f '' (pi univ (fun i => (fun a => a i) '' d))) := by
-  apply le_antisymm
-  · intro u hu c hc
-    simp at hc
-    obtain ⟨a, ⟨ha, hfac⟩⟩ := hc
-    obtain ⟨z,hz⟩ := hd
-    sorry
-  · exact upperBounds_mono_set (image_mono (by intro a ha₁ i hi; use a))
--/
-
-
-end Pi
-
 section Products
 
 variable {γ : Type*}
@@ -181,23 +160,7 @@ end Products
 
 section SemilatticeSup
 
-section
-
-variable [Preorder α] [Preorder β]
-
-lemma prod_all_dom2 {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
-    (Prod.fst '' d) ×ˢ (Prod.snd '' d) ⊆ lowerClosure d :=
-  fun _ hp => hd.isCofinalFor_fst_image_prod_snd_image hp
-
-end
-
 variable (β : Type*)
-
-
-
-
-
-
 
 lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := by
@@ -226,43 +189,6 @@ lemma inf_sSup_eq_sSup_map  [CompleteLinearOrder β] (a : β) (d : Set β) :
   apply eq_of_forall_ge_iff fun e ↦ ?_
   simp only [inf_le_iff, sSup_le_iff, ← forall_or_left, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
-
-/-
-lemma upperBounds_eq [CompleteLinearOrder β] (a : β) (s : Set β) :
-   (fun b ↦ a ⊓ b) '' (upperBounds s) = upperBounds ((fun b ↦ a ⊓ b) '' s) := sorry
-  --apply eq_of_forall_ge_iff fun e ↦ ?_
-  --simp only [le_eq_subset, image_subset_iff]
-
--/
-
-/-
-  rw [upperBounds, upperBounds]
-  simp [← forall_or_right, ← forall_or_left]
-  apply le_antisymm
-  · intro u hu
-    simp only [mem_setOf_eq]
-    simp at hu
-    obtain ⟨x,⟨hx1,hx2⟩⟩ := hu
-    intro b hb
-    rw [← hx2]
-
-    aesop?
--/
-
-
-/-
-lemma inf_IsLUB_iff_IsLUB_map [CompleteLinearOrder β] (a u : β) (d : Set β) :
-    IsLUB d u ↔ IsLUB ((fun b ↦ a ⊓ b) '' d) (a ⊓ u) := by
-  rw [IsLUB, IsLUB, IsLeast, IsLeast]
-  have e1 : u ∈ upperBounds d ↔ a ⊓ u ∈ upperBounds ((fun b ↦ a ⊓ b) '' d) := by
-    rw [← upperBounds_eq]
-    simp only [mem_image]
-
-    exact?
-  rw [upperBounds_eq]
--/
-
-
 
 lemma sSup_inf_eq_sSup_map [CompleteLinearOrder β] (b : β) (d : Set β) :
     sSup d ⊓ b = sSup ((fun a ↦ a ⊓ b) '' d) := by
