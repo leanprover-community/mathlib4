@@ -1404,7 +1404,7 @@ open TopCat.Presheaf in
 lemma Hom.stalkFunctor_toSchemeImage_injective [QuasiCompact f] (x) :
     Function.Injective ((stalkFunctor _ x).map f.toSchemeImage.c) := by
   apply TopCat.Presheaf.stalkFunctor_map_injective_of_isBasis
-    (hB := ((isBasis_affine_open Y).preimage f.schemeImageι.isEmbedding.isInducing))
+    (hB := ((isBasis_affine_open Y).isInducing f.schemeImageι.isEmbedding.isInducing))
   rintro _ ⟨U, hU, rfl⟩
   exact f.toSchemeImage_app_injective ⟨U, hU⟩
 
