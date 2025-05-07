@@ -18,9 +18,10 @@ ZULIP_SITE = sys.argv[3]
 # - if a PR was just merged by bors, it is '[Merged by Bors]'
 # - if a PR was labeled or unlabeled (with e.g. maintainer-merge or awaiting-review),
 #   it is 'labeled' resp. 'unlabeled' (and the next argument is the label name)
-# - if a PR was delegated or sent to bors (via a bors r+, bors r-, bors merge, bors delegate,
-#   bors d+ or bors d- command), it is 'ready-to-merge' or 'delegated'
-#   TODO clarify: what is the input on a bors d- or bors r- command? Also that?
+# - if a PR was delegated or sent to bors (via a bors r+, bors merge, bors delegate or bors d+
+#   command), it is 'ready-to-merge' or 'delegated'. On a bors merge-, bors r- or bors d- command,
+#   it is 'remove-label'. (This particular value is not used in this script.)
+#   Note that `bors d-` is *not* a bors command, so only has an effect on mathlib's PR labels.
 ACTION = sys.argv[4]
 # Name of the label that was applied or removed
 # (if applicable; is 'none' if a PR was closed, reopened or merged)
