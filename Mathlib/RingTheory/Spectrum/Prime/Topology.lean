@@ -428,20 +428,22 @@ lemma primeSpectrumProd_symm_inr (x) :
     (primeSpectrumProd R S).symm (.inr x) = comap (RingHom.snd R S) x := by
   ext; simp [Ideal.prod]
 
-lemma range_comap_fst : letI f := RingHom.fst R S
-    Set.range (comap f) = zeroLocus (RingHom.ker f) := by
+lemma range_comap_fst :
+    Set.range (comap (RingHom.fst R S)) = zeroLocus (RingHom.ker (RingHom.fst R S)) := by
   refine Set.ext fun p ↦ ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨I, hI, rfl⟩; exact Ideal.comap_mono bot_le
   obtain ⟨p, hp, eq⟩ | ⟨p, hp, eq⟩ := p.1.ideal_prod_prime.mp p.2
   · exact ⟨⟨p, hp⟩, PrimeSpectrum.ext <| by simpa [Ideal.prod] using eq.symm⟩
-  · exact (hp.ne_top <| (Ideal.eq_top_iff_one _).mpr (eq ▸ h (show (0, 1) ∈ _ from rfl)).2).elim
+  · refine (hp.ne_top <| (Ideal.eq_top_iff_one _).mpr ?_).elim
+    simpa [eq] using h (show (0, 1) ∈ RingHom.ker (RingHom.fst R S) from rfl)
 
-lemma range_comap_snd : letI f := RingHom.snd R S
-    Set.range (comap f) = zeroLocus (RingHom.ker f) := by
+lemma range_comap_snd :
+    Set.range (comap (RingHom.snd R S)) = zeroLocus (RingHom.ker (RingHom.snd R S)) := by
   refine Set.ext fun p ↦ ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨I, hI, rfl⟩; exact Ideal.comap_mono bot_le
   obtain ⟨p, hp, eq⟩ | ⟨p, hp, eq⟩ := p.1.ideal_prod_prime.mp p.2
-  · exact (hp.ne_top <| (Ideal.eq_top_iff_one _).mpr (eq ▸ h (show (1, 0) ∈ _ from rfl)).1).elim
+  · refine (hp.ne_top <| (Ideal.eq_top_iff_one _).mpr ?_).elim
+    simpa [eq] using h (show (1, 0) ∈ RingHom.ker (RingHom.snd R S) from rfl)
   · exact ⟨⟨p, hp⟩, PrimeSpectrum.ext <| by simpa [Ideal.prod] using eq.symm⟩
 
 lemma isClosedEmbedding_comap_fst : IsClosedEmbedding (comap (RingHom.fst R S)) :=
