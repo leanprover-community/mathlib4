@@ -59,6 +59,7 @@ end
 variable (C) in
 /-- A group object in a cartesian monoidal category. -/
 structure Grp_ where
+  /-- The underlying object in the ambient monoidal category -/
   X : C
   [grp : Grp_Class X]
   -- /-- The inversion operation -/
@@ -73,8 +74,9 @@ attribute [instance] Grp_.grp
 
 namespace Grp_
 
+/-- A group object is a monoid object. -/
 @[simps X]
-def toMon_ (A : Grp_ C) : Mon_ C := { X := A.X }
+def toMon_ (A : Grp_ C) : Mon_ C := ⟨A.X⟩
 
 variable (C) in
 /-- The trivial group object. -/
@@ -351,15 +353,15 @@ open Mon_Class Grp_Class
 
 variable {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D) [F.Monoidal]
 
-abbrev obj.instGpr_Class (A : C) [Grp_Class A] : Grp_Class (F.obj A) where
-  toMon_Class := obj.instMon_Class F A
-  inv := F.map ι[A]
-  left_inv' := by
-    simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc, Functor.Monoidal.toUnit_ε_assoc,
-      ← Functor.map_comp]
-  right_inv' := by
-    simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc, Functor.Monoidal.toUnit_ε_assoc,
-      ← Functor.map_comp]
+-- abbrev obj.instGpr_Class (A : C) [Grp_Class A] : Grp_Class (F.obj A) where
+--   toMon_Class := obj.instMon_Class F A
+--   inv := F.map ι[A]
+--   left_inv' := by
+--     simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc, Functor.Monoidal.toUnit_ε_assoc,
+--       ← Functor.map_comp]
+--   right_inv' := by
+--     simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc, Functor.Monoidal.toUnit_ε_assoc,
+--       ← Functor.map_comp]
 
 /-- A finite-product-preserving functor takes group objects to group objects. -/
 @[simps!]

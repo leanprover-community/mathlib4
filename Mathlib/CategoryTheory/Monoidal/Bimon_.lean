@@ -382,7 +382,7 @@ set_option linter.hashCommand false in
 @[simps X]
 def mk'X (X : C) [Bimon_Class X] : Mon_ C := { X := X }
 
--- /-- Construct an object of `Bimon_ C` from an object `X : C` and `Bimon_Class X` instance. -/
+/-- Construct an object of `Bimon_ C` from an object `X : C` and `Bimon_Class X` instance. -/
 @[simps]
 def mk' (X : C) [Bimon_Class X] : Bimon_ C where
   X := mk'X X

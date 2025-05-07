@@ -181,7 +181,9 @@ instance. -/
 abbrev Hom.mk' {M N : C} [Comon_Class M] [Comon_Class N] (f : M ⟶ N) [IsComon_Hom f] :
     Hom (.mk M) (.mk N) := .mk f
 
-attribute [reassoc (attr := simp)] Hom.hom_counit Hom.hom_comul
+attribute [reassoc] Hom.hom_counit Hom.hom_comul
+
+instance {M N : Comon_ C} (f : Hom M N) : IsComon_Hom f.hom := ⟨f.2, f.3⟩
 
 /-- The identity morphism on a comonoid object. -/
 @[simps]
@@ -201,7 +203,7 @@ instance : Category (Comon_ C) where
   id := id
   comp f g := comp f g
 
-instance {M N : Comon_ C} (f : M ⟶ N) : IsComon_Hom f.hom := ⟨f.2, f.3⟩
+instance {M N : Comon_ C} (f : M ⟶ N) : IsComon_Hom f.hom := inferInstanceAs (IsComon_Hom f.hom)
 
 @[ext] lemma ext {X Y : Comon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g := Hom.ext w
 
@@ -279,7 +281,8 @@ open Opposite
 
 -- variable (C)
 
-abbrev Comon_ToMon_OpOp_obj'Mon (A : Comon_ C) : Mon_Class (op A.X) where
+/-- Auxiliary definition for `Comon_ToMon_OpOpObj`. -/
+abbrev Comon_ToMon_OpOpObjMon (A : Comon_ C) : Mon_Class (op A.X) where
   one := ε[A.X].op
   mul := Δ[A.X].op
   one_mul' := by
@@ -296,22 +299,23 @@ abbrev Comon_ToMon_OpOp_obj'Mon (A : Comon_ C) : Mon_Class (op A.X) where
 /--
 Turn a comonoid object into a monoid object in the opposite category.
 -/
-@[simps] def Comon_ToMon_OpOp_obj' (A : Comon_ C) : Mon_ (Cᵒᵖ) where
+@[simps] def Comon_ToMon_OpOpObj (A : Comon_ C) : Mon_ (Cᵒᵖ) where
   X := op A.X
-  mon := Comon_ToMon_OpOp_obj'Mon A
+  mon := Comon_ToMon_OpOpObjMon A
 
 variable (C) in
 /--
 The contravariant functor turning comonoid objects into monoid objects in the opposite category.
 -/
 @[simps] def Comon_ToMon_OpOp : Comon_ C ⥤ (Mon_ (Cᵒᵖ))ᵒᵖ where
-  obj A := op (Comon_ToMon_OpOp_obj' A)
+  obj A := op (Comon_ToMon_OpOpObj A)
   map := fun f => op <|
     { hom := f.hom.op
       one_hom := by apply Quiver.Hom.unop_inj; simp
       mul_hom := by apply Quiver.Hom.unop_inj; simp [op_tensorHom] }
 
-abbrev Mon_OpOpToComon_obj'Comon (A : Mon_ (Cᵒᵖ)) : Comon_Class (unop A.X) where
+/-- Auxiliary definition for `Mon_OpOpToComonObj`. -/
+abbrev Mon_OpOpToComonObjComon (A : Mon_ (Cᵒᵖ)) : Comon_Class (unop A.X) where
   counit := η[A.X].unop
   comul := μ[A.X].unop
   counit_comul' := by rw [← unop_whiskerRight, ← unop_comp, Mon_Class.one_mul]; rfl
@@ -324,9 +328,9 @@ abbrev Mon_OpOpToComon_obj'Comon (A : Mon_ (Cᵒᵖ)) : Comon_Class (unop A.X) w
 /--
 Turn a monoid object in the opposite category into a comonoid object.
 -/
-@[simps] def Mon_OpOpToComon_obj' (A : (Mon_ (Cᵒᵖ))) : Comon_ C where
+@[simps] def Mon_OpOpToComonObj (A : (Mon_ (Cᵒᵖ))) : Comon_ C where
   X := unop A.X
-  comon := Mon_OpOpToComon_obj'Comon A
+  comon := Mon_OpOpToComonObjComon A
 
 variable (C)
 
@@ -335,7 +339,7 @@ The contravariant functor turning monoid objects in the opposite category into c
 -/
 @[simps]
 def Mon_OpOpToComon_ : (Mon_ (Cᵒᵖ))ᵒᵖ ⥤ Comon_ C where
-  obj A := Mon_OpOpToComon_obj' (unop A)
+  obj A := Mon_OpOpToComonObj (unop A)
   map := fun f =>
     { hom := f.unop.hom.unop
       hom_counit := by apply Quiver.Hom.op_inj; simp
