@@ -20,8 +20,10 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
 
 ## Main results
 
-* `Matrix.posSemidef_iff_eq_transpose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
+* `Matrix.posSemidef_iff_eq_conjTranspose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
   semidefinite iff it has the form `Bᴴ * B` for some `B`.
+* `Matrix.posDef_iff_eq_conjTranspose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
+  definite iff it has the form `Bᴴ * B` for some _invertible_ `B`.
 * `Matrix.PosSemidef.sqrt` : the unique positive semidefinite square root of a positive semidefinite
   matrix. (See `Matrix.PosSemidef.eq_sqrt_of_sq_eq` for the proof of uniqueness.)
 -/
@@ -320,12 +322,15 @@ lemma eigenvalues_self_mul_conjTranspose_nonneg (A : Matrix m n 𝕜) [Decidable
   (posSemidef_self_mul_conjTranspose _).eigenvalues_nonneg _
 
 /-- A matrix is positive semidefinite if and only if it has the form `Bᴴ * B` for some `B`. -/
-lemma posSemidef_iff_eq_transpose_mul_self {A : Matrix n n 𝕜} :
+lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
     PosSemidef A ↔ ∃ (B : Matrix n n 𝕜), A = Bᴴ * B := by
   classical
   refine ⟨fun hA ↦ ⟨hA.sqrt, ?_⟩, fun ⟨B, hB⟩ ↦ (hB ▸ posSemidef_conjTranspose_mul_self B)⟩
   simp_rw [← PosSemidef.sq_sqrt hA, pow_two]
   rw [hA.posSemidef_sqrt.1]
+
+@[deprecated (since := "2025-05-07")]
+alias posSemidef_iff_eq_transpose_mul_self := posSemidef_iff_eq_conjTranspose_mul_self
 
 lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A := by
@@ -338,7 +343,7 @@ theorem PosSemidef.dotProduct_mulVec_zero_iff
     {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
     star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
   constructor
-  · obtain ⟨B, rfl⟩ := posSemidef_iff_eq_transpose_mul_self.mp hA
+  · obtain ⟨B, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hA
     rw [← Matrix.mulVec_mulVec, dotProduct_mulVec,
       vecMul_conjTranspose, star_star, dotProduct_star_self_eq_zero]
     intro h0
@@ -547,7 +552,7 @@ lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
 /--
 A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
 -/
-lemma posDef_iff_eq_transpose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
+lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
     PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B := by
   classical
   refine ⟨fun hA ↦ ⟨_, hA.posDef_sqrt.isUnit, ?_⟩, fun ⟨B, hB, hA⟩ ↦ (hA ▸ ?_)⟩
