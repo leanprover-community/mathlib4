@@ -84,7 +84,7 @@ def Proj : (I → Bool) → (I → Bool) :=
 @[simp]
 theorem continuous_proj :
     Continuous (Proj J : (I → Bool) → (I → Bool)) := by
-  dsimp (config := { unfoldPartialApp := true }) [Proj]
+  dsimp +unfoldPartialApp [Proj]
   apply continuous_pi
   intro i
   split
@@ -344,12 +344,10 @@ def eval (l : {l : Products I // l.isGood C}) : LocallyConstant C ℤ :=
 theorem injective : Function.Injective (eval C) := by
   intro ⟨a, ha⟩ ⟨b, hb⟩ h
   dsimp [eval] at h
-  rcases lt_trichotomy a b with (h'|rfl|h')
-  · exfalso; apply hb; rw [← h]
-    exact Submodule.subset_span ⟨a, h', rfl⟩
-  · rfl
-  · exfalso; apply ha; rw [h]
-    exact Submodule.subset_span ⟨b, ⟨h',rfl⟩⟩
+  by_contra! hne
+  cases hne.lt_or_lt with
+  | inl h' => apply hb; rw [← h]; exact Submodule.subset_span ⟨a, h', rfl⟩
+  | inr h' => apply ha; rw [h]; exact Submodule.subset_span ⟨b, h', rfl⟩
 
 /-- The image of the good products in the module `LocallyConstant C ℤ`. -/
 def range := Set.range (GoodProducts.eval C)
@@ -392,10 +390,7 @@ theorem evalFacProp {l : Products I} (J : I → Prop)
   ext x
   dsimp [ProjRestrict]
   rw [Products.eval_eq, Products.eval_eq]
-  congr
-  apply forall_congr; intro i
-  apply forall_congr; intro hi
-  simp [h i hi, Proj]
+  simp +contextual [h, Proj]
 
 theorem evalFacProps {l : Products I} (J K : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] [∀ j, Decidable (K j)]

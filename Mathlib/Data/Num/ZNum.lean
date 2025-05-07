@@ -402,9 +402,9 @@ instance linearOrder : LinearOrder ZNum where
     apply le_total
   -- This is relying on an automatically generated instance name, generated in a `deriving` handler.
   -- See https://github.com/leanprover/lean4/issues/2343
-  decidableEq := instDecidableEqZNum
-  decidableLE := ZNum.decidableLE
-  decidableLT := ZNum.decidableLT
+  toDecidableEq := instDecidableEqZNum
+  toDecidableLE := ZNum.decidableLE
+  toDecidableLT := ZNum.decidableLT
 
 instance addMonoid : AddMonoid ZNum where
   add := (· + ·)
@@ -443,7 +443,7 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
 instance commRing : CommRing ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul := (· * ·)
-    mul_assoc a b c := show a * b * c = a * (b * c) by transfer
+    mul_assoc a b c := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
     one_mul := by transfer

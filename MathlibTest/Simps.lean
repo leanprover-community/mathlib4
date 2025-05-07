@@ -1007,7 +1007,7 @@ instance {α β} : CoeFun (α ≃ β) (fun _ ↦ α → β) := ⟨Equiv'.toFun�
   ⟨f.invFun, f, f.right_inv, f.left_inv⟩
 
 structure DecoratedEquiv (α : Sort _) (β : Sort _) extends Equiv' α β where
-  (P_toFun  : Function.Injective toFun )
+  (P_toFun  : Function.Injective toFun)
   (P_invFun : Function.Injective invFun)
 
 instance {α β} : CoeFun (DecoratedEquiv α β) (fun _ ↦ α → β) := ⟨fun f ↦ f.toEquiv'⟩
@@ -1057,8 +1057,8 @@ example {α : Type} (x z : α) (h : x = z) : foo2 α x = z := by
   rw [h]
 
 structure FurtherDecoratedEquiv (α : Sort _) (β : Sort _) extends DecoratedEquiv α β where
-  (Q_toFun  : Function.Surjective toFun )
-  (Q_invFun : Function.Surjective invFun )
+  (Q_toFun  : Function.Surjective toFun)
+  (Q_invFun : Function.Surjective invFun)
 
 instance {α β} : CoeFun (FurtherDecoratedEquiv α β) (fun _ ↦ α → β) :=
   ⟨fun f ↦ f.toDecoratedEquiv⟩
