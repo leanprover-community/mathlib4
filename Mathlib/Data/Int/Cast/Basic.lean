@@ -94,7 +94,7 @@ theorem cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.
 
 @[simp, norm_cast]
 theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
-  | (m : ℕ), (n : ℕ) => by simp [← Int.natCast_add]
+  | (m : ℕ), (n : ℕ) => by simp [-Int.natCast_add, ← Int.natCast_add]
   | (m : ℕ), -[n+1] =>
     show (subNatNat m n.succ : R) = _ by
       rw [cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_add_neg]
