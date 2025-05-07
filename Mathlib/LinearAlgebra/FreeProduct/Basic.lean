@@ -101,7 +101,7 @@ def equivQuotEquiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel
 
 end RingQuot
 
-open TensorAlgebra DirectSum TensorPower
+open TensorAlgebra DirectSum TensorPower TensorProduct
 
 variable {I : Type u} [DecidableEq I] {i : I} -- The type of the indexing set
   (R : Type v) [CommSemiring R] -- The commutative semiring `R`
@@ -238,8 +238,10 @@ abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct R A :=
   (mkAlgHom R A).toLinearMap ∘ₗ TensorAlgebra.ι R (M := ⨁ i, A i)
 
 @[simp] theorem ι_apply (x : ⨁ i, A i) :
-  ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
-    aesop (add simp [ι', mkAlgHom, RingQuot.mkAlgHom, mkRingHom])
+    ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
+  simp_rw [ι', mkAlgHom, RingQuot.mkAlgHom, mkRingHom, LinearMap.coe_comp, comp_apply,
+           AlgHom.toLinearMap_apply, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk,
+           OneHom.coe_mk]
 
 /-- The injection into the free product of any `1 : A i` is the 1 of the free product. -/
 theorem identify_one (i : I) : ι' R A (DirectSum.lof R I A i 1) = 1 := by
