@@ -165,22 +165,23 @@ lemma integrable_fun_norm_addHaar {f : ℝ → F} :
   · simp
 
 lemma integral_fun_norm_addHaar (f : ℝ → F) :
-    ∫ x, f (‖x‖) ∂μ = dim E • μ.real (ball 0 1) • ∫ y in Ioi 0, y ^ (dim E - 1) • f y := calc
-  ∫ x, f (‖x‖) ∂μ = ∫ x : ({0}ᶜ : Set E), f (‖x.1‖) ∂(μ.comap (↑)) := by
-    rw [integral_subtype_comap (measurableSet_singleton _).compl fun x ↦ f (‖x‖),
-      restrict_compl_singleton]
-  _ = ∫ x : sphere (0 : E) 1 × Ioi (0 : ℝ), f x.2 ∂μ.toSphere.prod (.volumeIoiPow (dim E - 1)) :=
-    μ.measurePreserving_homeomorphUnitSphereProd.integral_comp (Homeomorph.measurableEmbedding _)
-      (f ∘ Subtype.val ∘ Prod.snd)
-  _ = μ.toSphere.real univ • ∫ x : Ioi (0 : ℝ), f x ∂.volumeIoiPow (dim E - 1) :=
-    integral_fun_snd (f ∘ Subtype.val)
-  _ = dim E • μ.real (ball 0 1) • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y := by
-    simp only [Measure.volumeIoiPow, ENNReal.ofReal]
-    rw [integral_withDensity_eq_integral_smul, μ.toSphere_real_apply_univ,
-      ← nsmul_eq_mul, smul_assoc,
-      integral_subtype_comap measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
-      setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_]
-    · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
-    · exact (measurable_subtype_coe.pow_const _).real_toNNReal
+    ∫ x, f (‖x‖) ∂μ = dim E • μ.real (ball 0 1) • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y :=
+  calc
+    ∫ x, f (‖x‖) ∂μ = ∫ x : ({(0)}ᶜ : Set E), f (‖x.1‖) ∂(μ.comap (↑)) := by
+      rw [integral_subtype_comap (measurableSet_singleton _).compl fun x ↦ f (‖x‖),
+        restrict_compl_singleton]
+    _ = ∫ x : sphere (0 : E) 1 × Ioi (0 : ℝ), f x.2 ∂μ.toSphere.prod (.volumeIoiPow (dim E - 1)) :=
+      μ.measurePreserving_homeomorphUnitSphereProd.integral_comp (Homeomorph.measurableEmbedding _)
+        (f ∘ Subtype.val ∘ Prod.snd)
+    _ = μ.toSphere.real univ • ∫ x : Ioi (0 : ℝ), f x ∂.volumeIoiPow (dim E - 1) :=
+      integral_fun_snd (f ∘ Subtype.val)
+    _ = _ := by
+      simp only [Measure.volumeIoiPow, ENNReal.ofReal]
+      rw [integral_withDensity_eq_integral_smul, μ.toSphere_real_apply_univ,
+        ← nsmul_eq_mul, smul_assoc,
+        integral_subtype_comap measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
+        setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_]
+      · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
+      · exact (measurable_subtype_coe.pow_const _).real_toNNReal
 
 end MeasureTheory
