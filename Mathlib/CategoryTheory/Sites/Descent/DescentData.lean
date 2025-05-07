@@ -41,6 +41,10 @@ end
 variable {C : Type u} [Category.{v} C] (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v', u'})
   {ι : Type t} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
 
+-- Defining `DescentData` as a wrapper for `CodescentData` is problematic
+-- as we do not get good lemmas using `simps`, and we have do state the
+-- lemmas like `mk'_iso_hom` by hand. TODO: Redefine `DescentData` using
+-- the same inputs as in `mk'` (and probably remove `CodescentData`)
 /-- If `F` is a pseudofunctor from `(LocallyDiscrete Cᵒᵖ)` to `Cat` and `f i : X i ⟶ S`
 is a family of morphisms in `C`, this is the type of family of objects in `F.obj (X i)`
 equipped with a descent datum relative to the morphisms `f i`. -/
@@ -151,7 +155,6 @@ lemma mk'_iso_hom ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X
       hom q f₁ f₂ hf₁ hf₂ := rfl
 
 end
-
 
 @[simps]
 def homMk {D₁ D₂ : F.DescentData f} (φ : ∀ i, D₁.obj i ⟶ D₂.obj i)
