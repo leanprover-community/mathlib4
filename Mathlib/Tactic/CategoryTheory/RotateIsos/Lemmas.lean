@@ -57,11 +57,11 @@ lemma Iso.eq_trans_symm {f : X ≅ Y} {Z : C} {g : Z ≅ X} {h : Z ≅ Y}
   rw [←w, Iso.trans_assoc, Iso.self_symm_id, Iso.trans_refl]
 
 lemma Iso.refl_eq_trans_symm {f : X ≅ Y} {g : X ≅ Y}
-    (w : f = g) : Iso.refl X = f ≪≫ g.symm := by
+    (w : f = g) : Iso.refl X = g ≪≫ f.symm := by
   rw [w, Iso.self_symm_id]
 
 lemma Iso.refl_eq_symm_trans {f : X ≅ Y} {g : X ≅ Y}
-    (w : f = g) : Iso.refl Y = g.symm ≪≫ f := by
+    (w : f = g) : Iso.refl Y = f.symm ≪≫ g := by
   rw [w, Iso.symm_self_id]
 
 /-- Try matching `e` with an expression for an isomorphism and gets a `Cancelable` structure with
