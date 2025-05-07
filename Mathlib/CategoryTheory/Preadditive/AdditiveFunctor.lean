@@ -34,6 +34,7 @@ universe v₁ v₂ u₁ u₂
 namespace CategoryTheory
 
 /-- A functor `F` is additive provided `F.map` is an additive homomorphism. -/
+@[stacks 00ZY]
 class Functor.Additive {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) : Prop where
   /-- the addition of two morphisms is mapped to the sum of their images -/
@@ -153,7 +154,8 @@ open CategoryTheory.Preadditive
 
 instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
     PreservesFiniteBiproducts F where
-  preserves :=
+  preserves := fun {J} _ =>
+    let ⟨_⟩ := nonempty_fintype J
     { preserves :=
       { preserves := fun hb =>
           ⟨isBilimitOfTotal _ (by

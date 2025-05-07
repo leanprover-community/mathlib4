@@ -54,8 +54,11 @@ To avoid pathologies in dimension 0, we also require that `x` belongs to the clo
 is automatic when `E` is not `0`-dimensional). -/
 @[mk_iff]
 structure UniqueDiffWithinAt (s : Set E) (x : E) : Prop where
-  dense_tangentCone : Dense (Submodule.span R (tangentConeAt R s x) : Set E)
+  dense_tangentConeAt : Dense (Submodule.span R (tangentConeAt R s x) : Set E)
   mem_closure : x ∈ closure s
+
+@[deprecated (since := "2025-04-27")]
+alias UniqueDiffWithinAt.dense_tangentCone := UniqueDiffWithinAt.dense_tangentConeAt
 
 /-- A property ensuring that the tangent cone to `s` at any of its points spans a dense subset of
 the whole space. The main role of this property is to ensure that the differential along `s` is
@@ -91,6 +94,8 @@ theorem exists_tendsto_of_mem_tangentConeAt (h : y ∈ tangentConeAt R s x) :
   exact ⟨_, _, h, fun cd ↦ cd.1.1, fun cd ↦ cd.1.2, tendsto_comap.mono_left inf_le_right,
     Subtype.property, tendsto_comap.mono_left inf_le_left⟩
 
+@[deprecated (since := "2025-04-27")] alias tangentCone_univ := tangentConeAt_univ
+
 @[gcongr]
 theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt R s x ⊆ tangentConeAt R t x :=
   fun y hy ↦ hy.mono <| by gcongr
@@ -123,6 +128,8 @@ theorem tangentConeAt_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
 
 @[deprecated (since := "2025-03-06")]
 alias tangentCone_mono_nhds := tangentConeAt_mono_nhds
+
+@[deprecated (since := "2025-04-27")] alias tangentCone_mono_nhds := tangentConeAt_mono_nhds
 
 /-- Tangent cone of `s` at `x` depends only on `𝓝[s] x`. -/
 theorem tangentConeAt_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt R s x = tangentConeAt R t x :=
@@ -356,6 +363,9 @@ variable {ι : Type*} {E : ι → Type*} [Semiring R]
     [∀ i, AddCommGroup (E i)] [∀ i, Module R (E i)] [∀ i, TopologicalSpace (E i)]
     [∀ i, ContinuousAdd (E i)]
 
+@[deprecated (since := "2025-04-27")]
+alias subset_tangentCone_prod_right := subset_tangentConeAt_prod_right
+
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
 theorem mapsTo_tangentConeAt_pi [DecidableEq ι] [∀ i, ContinuousConstSMul R (E i)]
     {s : ∀ i, Set (E i)} {x : ∀ i, E i} {i : ι} (hi : ∀ j ≠ i, x j ∈ closure (s j)) :
@@ -406,9 +416,11 @@ variable [NormedAddCommGroup F] [NormedSpace R F]
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 variable {x y : E} {s t : Set E}
 
+@[deprecated (since := "2025-04-27")] alias mapsTo_tangentCone_pi := mapsTo_tangentConeAt_pi
+
 /-- If a subset of a real vector space contains an open segment, then the direction of this
 segment belongs to the tangent cone at its endpoints. -/
-theorem mem_tangentCone_of_openSegment_subset {s : Set G} {x y : G} (h : openSegment ℝ x y ⊆ s) :
+theorem mem_tangentConeAt_of_openSegment_subset {s : Set G} {x y : G} (h : openSegment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ s x := by
   refine mem_tangentConeAt_of_pow_smul one_half_pos.ne' (by norm_num) ?_
   refine (eventually_ne_atTop 0).mono fun n hn ↦ (h ?_)
@@ -418,14 +430,20 @@ theorem mem_tangentCone_of_openSegment_subset {s : Set G} {x y : G} (h : openSeg
   · exact pow_lt_one₀ one_half_pos.le one_half_lt_one hn
   · simp only [sub_smul, one_smul, smul_sub]; abel
 
+@[deprecated (since := "2025-04-27")]
+alias mem_tangentCone_of_openSegment_subset := mem_tangentConeAt_of_openSegment_subset
+
 /-- If a subset of a real vector space contains a segment, then the direction of this
 segment belongs to the tangent cone at its endpoints. -/
-theorem mem_tangentCone_of_segment_subset {s : Set G} {x y : G} (h : segment ℝ x y ⊆ s) :
+theorem mem_tangentConeAt_of_segment_subset {s : Set G} {x y : G} (h : segment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ s x :=
-  mem_tangentCone_of_openSegment_subset ((openSegment_subset_segment ℝ x y).trans h)
+  mem_tangentConeAt_of_openSegment_subset ((openSegment_subset_segment ℝ x y).trans h)
+
+@[deprecated (since := "2025-04-27")]
+alias mem_tangentCone_of_segment_subset := mem_tangentConeAt_of_segment_subset
 
 /-- In a proper space, the tangent cone at a non-isolated point is nontrivial. -/
-theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
+theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
     {s : Set E} {x : E} (hx : AccPt x (𝓟 s)) :
     (tangentConeAt 𝕜 s x ∩ {0}ᶜ).Nonempty := by
   /- Take a sequence `d n` tending to `0` such that `x + d n ∈ s`. Taking `c n` of the order
@@ -525,7 +543,7 @@ theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt R s x) (st : 𝓝[s
     UniqueDiffWithinAt R t x := by
   simp only [uniqueDiffWithinAt_iff] at *
   rw [mem_closure_iff_nhdsWithin_neBot] at h ⊢
-  exact ⟨h.1.mono <| Submodule.span_mono <| tangentCone_mono_nhds st, h.2.mono st⟩
+  exact ⟨h.1.mono <| Submodule.span_mono <| tangentConeAt_mono_nhds st, h.2.mono st⟩
 
 theorem UniqueDiffWithinAt.mono (h : UniqueDiffWithinAt R s x) (st : s ⊆ t) :
     UniqueDiffWithinAt R t x :=
@@ -588,7 +606,7 @@ theorem UniqueDiffWithinAt.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
   norm_cast
   simp only [← Submodule.iSup_map_single, iSup_le_iff, LinearMap.map_span, Submodule.span_le,
     ← mapsTo']
-  exact fun i => (mapsTo_tangentCone_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
+  exact fun i => (mapsTo_tangentConeAt_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
 
 theorem UniqueDiffWithinAt.pi (ι : Type*) [Finite ι] (E : ι → Type*)
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace R (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
@@ -636,7 +654,7 @@ theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (inter
   replace hy : interior s ∈ 𝓝 y := IsOpen.mem_nhds isOpen_interior hy
   apply mem_of_superset ((isOpenMap_sub_right x).image_mem_nhds hy)
   rintro _ ⟨z, zs, rfl⟩
-  refine mem_tangentCone_of_openSegment_subset (Subset.trans ?_ interior_subset)
+  refine mem_tangentConeAt_of_openSegment_subset (Subset.trans ?_ interior_subset)
   exact conv.openSegment_closure_interior_subset_interior hx zs
 
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
@@ -696,7 +714,7 @@ iff it is an accumulation point of the set. -/
 theorem uniqueDiffWithinAt_iff_accPt {s : Set 𝕜} {x : 𝕜} :
     UniqueDiffWithinAt 𝕜 s x ↔ AccPt x (𝓟 s) :=
   ⟨UniqueDiffWithinAt.accPt, fun h ↦
-    ⟨by simp [tangentCone_eq_univ h], mem_closure_iff_clusterPt.mpr h.clusterPt⟩⟩
+    ⟨by simp [tangentConeAt_eq_univ h], mem_closure_iff_clusterPt.mpr h.clusterPt⟩⟩
 
 alias ⟨_, AccPt.uniqueDiffWithinAt⟩ := uniqueDiffWithinAt_iff_accPt
 
