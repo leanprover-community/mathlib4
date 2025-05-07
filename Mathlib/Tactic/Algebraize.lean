@@ -203,6 +203,8 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       constructor (and that this is all we need to supply explicitly). -/
       else
         let pargs := pargs.set! (n - 1) decl.toExpr
+        /- check that the lemma applies to the hypothesis -/
+        if ← isDefEq (← forallMetaBoundedTelescope cinfo.type n).fst.back! decl.type do
         let val ← mkAppOptM p pargs
         let tp ← inferType val -- This should be the type `Algebra.Property A B`
         /- find all arguments to `Algebra.Property A B` which are of the form
