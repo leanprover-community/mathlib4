@@ -77,7 +77,7 @@ lemma isClosed (s : ClosedSubmodule R M) : IsClosed (s : Set M) := s.isClosed'
 
 initialize_simps_projections ClosedSubmodule (carrier → coe, as_prefix coe)
 
-/-- The preimage of a closed submodule under a continuous linear map as a proper cone. -/
+/-- The preimage of a closed submodule under a continuous linear map as a closed submodule. -/
 @[simps!]
 def comap (f : M →L[R] N) (s : ClosedSubmodule R N) : ClosedSubmodule R M where
   toSubmodule := .comap f s
@@ -130,7 +130,7 @@ lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
 
 @[simp] lemma mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := .rfl
 
-instance insttop : Top (ClosedSubmodule R M) where top := ⟨⊤, isClosed_univ⟩
+instance instTop : Top (ClosedSubmodule R M) where top := ⟨⊤, isClosed_univ⟩
 
 @[simp, norm_cast] lemma toSubmodule_top : toSubmodule (⊤ : ClosedSubmodule R M) = ⊤ := rfl
 
