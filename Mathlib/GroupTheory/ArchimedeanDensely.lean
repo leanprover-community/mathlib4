@@ -51,7 +51,7 @@ lemma Subgroup.zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] 
   rw [iff_comm]
   constructor
   · rintro (rfl | rfl) <;>
-   simp
+    simp
   intro h
   have hx : x ∈ Subgroup.zpowers y := by
     simp [← h]
