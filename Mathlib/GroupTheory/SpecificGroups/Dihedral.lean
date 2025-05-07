@@ -273,6 +273,11 @@ def oddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
 
 @[deprecated (since := "2025-05-07")] alias OddCommuteEquiv := oddCommuteEquiv
 
+@[deprecated (since := "2025-05-07")] alias
+OddCommuteEquiv_apply := DihedralGroup.oddCommuteEquiv_apply
+@[deprecated (since := "2025-05-07")] alias
+OddCommuteEquiv_symm_apply := DihedralGroup.oddCommuteEquiv_symm_apply
+
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs of commuting elements. -/
 lemma card_commute_odd (hn : Odd n) :
     Nat.card { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } = n * (n + 3) := by
