@@ -19,11 +19,11 @@ open MonoidalCategory
 variable {A : Type*} [Category A] --[Abelian A]
   [MonoidalCategory A] --[MonoidalPreadditive A]
 
-namespace Abelian
+namespace ObjectProperty
 
 def flat : ObjectProperty A := fun X ↦
   ObjectProperty.exactFunctor (tensorLeft X) ∧
-  ObjectProperty.exactFunctor (tensorRight X)
+    ObjectProperty.exactFunctor (tensorRight X)
 
 variable {X : A}
 
@@ -34,13 +34,12 @@ lemma flat.tensorRight (hX : flat X) :
     ObjectProperty.exactFunctor (tensorRight X) := hX.2
 
 instance : (flat (A := A)).IsClosedUnderIsomorphisms where
-  of_iso e := by
-    rintro ⟨h₁, h₂⟩
-    exact ⟨ObjectProperty.exactFunctor.prop_of_iso
-      ((curriedTensor A).mapIso e) h₁,
+  of_iso e h :=
+    ⟨ObjectProperty.exactFunctor.prop_of_iso
+      ((curriedTensor A).mapIso e) h.1,
       ObjectProperty.exactFunctor.prop_of_iso
-      ((curriedTensor A).flip.mapIso e) h₂⟩
+        ((curriedTensor A).flip.mapIso e) h.2⟩
 
-end Abelian
+end ObjectProperty
 
 end CategoryTheory
