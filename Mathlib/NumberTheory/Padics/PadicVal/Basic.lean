@@ -79,30 +79,30 @@ theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
 
 open Nat.maxPowDvd
 
-theorem maxPowDiv_eq_emultiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
-    p.maxPowDiv n = emultiplicity p n := by
-  apply (emultiplicity_eq_of_dvd_of_not_dvd (pow_dvd p n) _).symm
+theorem maxPowDvd_eq_emultiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
+    p.maxPowDvd n = emultiplicity p n := by
+  apply (emultiplicity_eq_of_dvd_of_not_dvd pow_dvd _).symm
   intro h
   apply Nat.not_lt.mpr <| le_of_dvd hp hn h
   simp
 
-theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h : FiniteMultiplicity p n) :
-    p.maxPowDiv n = multiplicity p n := by
-  exact_mod_cast h.emultiplicity_eq_multiplicity ▸ maxPowDiv_eq_emultiplicity hp hn
+theorem maxPowDvd_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h : FiniteMultiplicity p n) :
+    p.maxPowDvd n = multiplicity p n := by
+  exact_mod_cast h.emultiplicity_eq_multiplicity ▸ maxPowDvd_eq_emultiplicity hp hn
 
 /-- Allows for more efficient code for `padicValNat` -/
 @[csimp]
-theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
+theorem padicValNat_eq_maxPowDvd : @padicValNat = @maxPowDvd := by
   ext p n
   by_cases h : 1 < p ∧ 0 < n
-  · rw [padicValNat_def' h.1.ne' h.2, maxPowDiv_eq_multiplicity h.1 h.2]
+  · rw [padicValNat_def' h.1.ne' h.2, maxPowDvd_eq_multiplicity h.1 h.2]
     exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
   · simp only [not_and_or,not_gt_eq,Nat.le_zero] at h
     apply h.elim
     · intro h
       interval_cases p
       · simp [Classical.em]
-      · dsimp [padicValNat, maxPowDiv]
+      · dsimp [padicValNat, maxPowDvd]
         rw [go, if_neg]; simp
     · intro h
       simp [h]
