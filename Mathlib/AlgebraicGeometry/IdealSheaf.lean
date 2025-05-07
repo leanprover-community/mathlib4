@@ -1400,32 +1400,22 @@ lemma Hom.toSchemeImage_app_injective [QuasiCompact f] :
   exact (RingHom.lift_injective_of_ker_le_ideal _ _ (by simp)).comp
     (f.ker.subschemeObjIso U).commRingCatIsoToRingEquiv.injective
 
-open TopCat.Presheaf in
 lemma Hom.stalkFunctor_toSchemeImage_injective [QuasiCompact f] (x) :
-    Function.Injective ((stalkFunctor _ x).map f.toSchemeImage.c) := by
+    Function.Injective ((TopCat.Presheaf.stalkFunctor _ x).map f.toSchemeImage.c) := by
   apply TopCat.Presheaf.stalkFunctor_map_injective_of_isBasis
     (hB := ((isBasis_affine_open Y).isInducing f.schemeImageι.isEmbedding.isInducing))
   rintro _ ⟨U, hU, rfl⟩
   exact f.toSchemeImage_app_injective ⟨U, hU⟩
 
+open IdealSheafData in
 /-- The adjunction between `Y.IdealSheafData` and `(Over Y)ᵒᵖ` given by taking kernels. -/
 @[simps]
 noncomputable
-def kerAdjunction (Y : Scheme.{u}) :
-    (IdealSheafData.subschemeFunctor Y).rightOp ⊣ Y.kerFunctor where
-  counit :=
-  { app f := (Over.homMk f.unop.hom.toSchemeImage f.unop.hom.toSchemeImage_schemeImageι).op
-    naturality {f g} α := by
-      apply Quiver.Hom.unop_inj
-      ext1
-      rw [← cancel_mono (IdealSheafData.subschemeι _)]
-      simp }
-  unit := { app I := eqToHom (by simp) }
-  left_triangle_components I := by
-    apply Quiver.Hom.unop_inj
-    ext1
-    rw [← cancel_mono (IdealSheafData.subschemeι _)]
-    simp
+def kerAdjunction (Y : Scheme.{u}) : (subschemeFunctor Y).rightOp ⊣ Y.kerFunctor where
+  unit.app I := eqToHom (by simp)
+  counit.app f := (Over.homMk f.unop.hom.toSchemeImage f.unop.hom.toSchemeImage_schemeImageι).op
+  counit.naturality _ _ _ := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
+  left_triangle_components I := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
 
 instance : (IdealSheafData.subschemeFunctor Y).Full :=
   have : IsIso Y.kerAdjunction.rightOp.counit := by
