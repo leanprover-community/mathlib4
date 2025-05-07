@@ -179,7 +179,8 @@ lemma upperBounds_mono_of_isCofinalFor (hst : IsCofinalFor s t) : upperBounds t 
   fun _a ha _b hb ↦ let ⟨_c, hc, hbc⟩ := hst hb; hbc.trans (ha hc)
 
 @[gcongr]
-lemma lowerBounds_mono_of_iscofinalfor (hst : IsCoinitialFor s t) : lowerBounds t ⊆ lowerBounds s :=
+lemma lowerBounds_mono_of_isCoinitialFor (hst : IsCoinitialFor s t) :
+    lowerBounds t ⊆ lowerBounds s :=
   fun _a ha _b hb ↦ let ⟨_c, hc, hcb⟩ := hst hb; hcb.trans' (ha hc)
 
 theorem upperBounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : a ∈ upperBounds s → b ∈ upperBounds s :=
