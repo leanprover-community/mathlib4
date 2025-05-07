@@ -104,11 +104,10 @@ end MapAccumr
 
 /-!
   ### RepeatList
-  Some lemmas `repeatList`
+  Some lemmas on `repeatList`
 -/
 section RepeatList
 
-@[simp]
 theorem repeatList_append_repeatList {n m : ℕ} {w : List α} :
   List.repeatList n w ++ List.repeatList m w = List.repeatList (n + m) w := by
   induction n with
