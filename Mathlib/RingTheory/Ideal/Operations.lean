@@ -728,7 +728,7 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
   induction s using Finset.induction with
   | empty =>
       simp
-  | @insert i s _ hs =>
+  | insert i s _ hs =>
       rw [Finset.iInf_insert, inf_comm, one_eq_top, eq_top_iff, ← one_eq_top]
       set K := ⨅ j ∈ s, J j
       calc
