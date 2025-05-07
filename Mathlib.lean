@@ -583,6 +583,7 @@ import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.Localization
 import Mathlib.Algebra.Homology.Monoidal
+import Mathlib.Algebra.Homology.ObjectProperty
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.PreservesQuasiIso
 import Mathlib.Algebra.Homology.QuasiIso
@@ -2471,6 +2472,7 @@ import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Noetherian
 import Mathlib.CategoryTheory.ObjectProperty.Basic
 import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.ColimitOfShape
 import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 import Mathlib.CategoryTheory.ObjectProperty.Extensions

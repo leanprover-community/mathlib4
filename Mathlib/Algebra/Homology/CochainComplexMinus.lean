@@ -17,10 +17,16 @@ namespace CochainComplex
 
 variable (C : Type*) [Category C]
 
-def Minus [HasZeroMorphisms C] :=
-  ObjectProperty.FullSubcategory (fun (K : CochainComplex C ℤ) => ∃ (n : ℤ), K.IsStrictlyLE n)
+protected def minus [HasZeroMorphisms C] : ObjectProperty (CochainComplex C ℤ) :=
+  fun K ↦ ∃ (n : ℤ), K.IsStrictlyLE n
 
-instance [HasZeroMorphisms C] : Category (Minus C) := by dsimp [Minus]; infer_instance
+instance [HasZeroMorphisms C] : (CochainComplex.minus C).IsClosedUnderIsomorphisms where
+  of_iso := by
+    rintro _ _ e ⟨n, _⟩
+    exact ⟨n, isStrictlyLE_of_iso e n⟩
+
+abbrev Minus [HasZeroMorphisms C] :=
+  (CochainComplex.minus C).FullSubcategory
 
 namespace Minus
 
