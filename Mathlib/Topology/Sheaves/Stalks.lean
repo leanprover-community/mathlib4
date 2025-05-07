@@ -455,7 +455,7 @@ lemma germ_eq_of_isBasis (F : X.Presheaf C)
   simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using
     DFunLike.congr_arg (ConcreteCategory.hom (F.map (homOfLE hW'W).op)) e
 
-lemma stalkfunctor_map_injective_of_isBasis
+lemma stalkFunctor_map_injective_of_isBasis
     {B : Set (Opens X)} (hB : Opens.IsBasis B)
     {F G : X.Presheaf C} (α : F ⟶ G) (hα : ∀ U ∈ B, Function.Injective (α.app (op U))) (x : X) :
     Function.Injective ((stalkFunctor _ x).map α) := by
