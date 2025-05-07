@@ -16,7 +16,9 @@ This file defines the type of totally real and totally complex number fields.
   are real. In other words, the image of every ring homomorphism `K → ℂ` is a subset of `ℝ`.
 * `NumberField.IsTotallyComplex`: a number field `K` is totally complex if all of its infinite
   places are complex.
-* `NumberField.maximalRealSubfield`: the maximal real subfield of `K`.
+* `NumberField.maximalRealSubfield`: the maximal real subfield of `K`. It is totally real,
+  see `NumberField.isTotallyReal_maximalRealSubfield`, and contains all the other totally real
+  subfields of `K`, see `NumberField.IsTotallyReal.le_maximalRealSubfield`
 
 ## Tags
 
@@ -83,8 +85,9 @@ section maximalRealSubfield
 open ComplexEmbedding
 
 /--
-The maximal real subfield of `K`. It is totally real, see `isTotallyReal_maximalRealSubfield`, and
-contains all the other totally real subfields of `K`, see `IsTotallyReal.le_maximalRealSubfield`.
+The maximal real subfield of `K`. It is totally real,
+see `NumberField.isTotallyReal_maximalRealSubfield`, and contains all the other totally real
+subfields of `K`, see `NumberField.IsTotallyReal.le_maximalRealSubfield`.
 -/
 def maximalRealSubfield : Subfield K where
   carrier := {x | ∀ φ : K →+* ℂ, star (φ x) = φ x}
