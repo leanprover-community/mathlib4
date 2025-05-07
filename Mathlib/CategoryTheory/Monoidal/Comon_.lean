@@ -75,8 +75,8 @@ variable {M N : C} [Comon_Class M] [Comon_Class N]
 
 /-- The property that a morphism between comonoid objects is a comonoid morphism. -/
 class IsComon_Hom (f : M ⟶ N) : Prop where
-  hom_counit : f ≫ ε = ε := by aesop_cat
-  hom_comul : f ≫ Δ = Δ ≫ (f ⊗ f) := by aesop_cat
+  hom_counit (f) : f ≫ ε = ε := by aesop_cat
+  hom_comul (f) : f ≫ Δ = Δ ≫ (f ⊗ f) := by aesop_cat
 
 attribute [reassoc (attr := simp)] IsComon_Hom.hom_counit IsComon_Hom.hom_comul
 
