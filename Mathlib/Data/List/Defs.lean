@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro, Shimanogov Igor
+Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Notation
 import Mathlib.Control.Functor
@@ -410,11 +410,10 @@ def replaceIf : List α → List Bool → List α → List α
   | l, [], _ => l
   | n :: ns, tf :: bs, e@(c :: cs) => if tf then c :: ns.replaceIf bs cs else n :: ns.replaceIf bs e
 
-/-- `repeatSelf n l` is one list conisting of l repeated n times. -/
+/-- `repeatList n l` is a list consisting of l repeated n times. -/
+
 @[simp]
-def repeatSelf : Nat → List α → List α
-  | Nat.zero, _ => []
-  | Nat.succ p, l => l ++ repeatSelf p l
+def repeatList (n: ℕ) (l: List α) : List α := (List.replicate n l).flatten
 
 /-- `iterate f a n` is `[a, f a, ..., f^[n - 1] a]`. -/
 @[simp]

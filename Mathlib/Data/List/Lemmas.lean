@@ -72,7 +72,6 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
     (foldl_range_subset_of_range_subset hfg.ge a)
 
 
-
 /-!
   ### MapAccumr and Foldr
   Some lemmas relation `mapAccumr` and `foldr`
@@ -102,5 +101,33 @@ theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ
     rfl
 
 end MapAccumr
+
+/-!
+  ### RepeatList
+  Some lemmas `repeatList`
+-/
+section RepeatList
+
+@[simp]
+theorem repeatList_append {n: ℕ} {w : List α} :
+  List.repeatList (n+1) w = List.repeatList n w ++ w:= by simp [List.replicate_add]
+
+@[simp]
+theorem append_repeatList {n: ℕ} {w : List α} :
+  List.repeatList (n+1) w = w ++ List.repeatList n w := by
+  rw [repeatList, repeatList, Nat.add_comm]
+  simp [List.replicate_add]
+
+@[simp]
+theorem repeatList_append_repeatList {n m : ℕ} {w : List α} :
+  List.repeatList (n+m) w = List.repeatList n w ++ List.repeatList m w := by
+  induction n with
+  | zero => simp
+  | succ p ih =>
+    rw [repeatList_append, Nat.add_comm, ←Nat.add_assoc, repeatList_append]
+    rw [Nat.add_comm, ih, List.append_assoc, ←repeatList_append]
+    rw [List.append_assoc, ←append_repeatList]
+
+end RepeatList
 
 end List
