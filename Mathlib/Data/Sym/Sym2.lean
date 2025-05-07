@@ -590,6 +590,27 @@ theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
 
 end Relations
 
+section ToMultiset
+
+/-- Map an unordered pair to an unordered list. -/
+def toMultiset {α : Type*} (z : Sym2 α) : Multiset α := by
+  refine Sym2.lift ?_ z
+  use (Multiset.ofList [·, ·])
+  simp [List.Perm.swap]
+
+/-- Mapping an unordered pair to an unordered list produces a multiset of size `2`. -/
+lemma card_toMultiset {α : Type*} (z : Sym2 α) : z.toMultiset.card = 2 := by
+  induction z
+  simp [Sym2.toMultiset]
+
+/-- The members of an unordered pair are members of the corresponding unordered list. -/
+theorem mem_toMultiset {α : Type*} {x : α} {z : Sym2 α} :
+    x ∈ z ↔ x ∈ (z.toMultiset : Multiset α) := by
+  induction z
+  simp [Sym2.toMultiset]
+
+end ToMultiset
+
 section SymEquiv
 
 /-! ### Equivalence to the second symmetric power -/
