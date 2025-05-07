@@ -6,7 +6,7 @@ Authors: Salvatore Mercuri
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Field.WithAbs
-import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # The completion of a number field at an infinite place

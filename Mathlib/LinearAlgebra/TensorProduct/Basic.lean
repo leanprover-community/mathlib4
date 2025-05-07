@@ -432,14 +432,14 @@ theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
   classical
     induction s using Finset.induction with
     | empty => simp
-    | insert has ih => simp [Finset.sum_insert has, add_tmul, ih]
+    | insert _ _ has ih => simp [Finset.sum_insert has, add_tmul, ih]
 
 theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
     (m ⊗ₜ[R] ∑ a ∈ s, n a) = ∑ a ∈ s, m ⊗ₜ[R] n a := by
   classical
     induction s using Finset.induction with
     | empty => simp
-    | insert has ih => simp [Finset.sum_insert has, tmul_add, ih]
+    | insert _ _ has ih => simp [Finset.sum_insert has, tmul_add, ih]
 
 end
 
@@ -1124,12 +1124,12 @@ variable {M}
 @[simp]
 theorem rTensor_pow (f : M →ₗ[R] M) (n : ℕ) : f.rTensor N ^ n = (f ^ n).rTensor N := by
   have h := TensorProduct.map_pow f (id : N →ₗ[R] N) n
-  rwa [id_pow] at h
+  rwa [Module.End.id_pow] at h
 
 @[simp]
 theorem lTensor_pow (f : N →ₗ[R] N) (n : ℕ) : f.lTensor M ^ n = (f ^ n).lTensor M := by
   have h := TensorProduct.map_pow (id : M →ₗ[R] M) f n
-  rwa [id_pow] at h
+  rwa [Module.End.id_pow] at h
 
 end LinearMap
 

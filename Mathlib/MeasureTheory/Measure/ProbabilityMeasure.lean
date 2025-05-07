@@ -318,18 +318,16 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
     Tendsto μs F (𝓝 μ) ↔
       ∀ f : Ω →ᵇ ℝ,
         Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫ ω, f ω ∂(μ : Measure Ω))) := by
-  rw [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds]
-  rw [FiniteMeasure.tendsto_iff_forall_integral_tendsto]
-  rfl
+  simp [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds,
+    FiniteMeasure.tendsto_iff_forall_integral_tendsto]
 
 theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [RCLike 𝕜]
     {F : Filter γ} {μs : γ → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔
       ∀ f : Ω →ᵇ 𝕜,
         Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫ ω, f ω ∂(μ : Measure Ω))) := by
-  rw [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds]
-  rw [FiniteMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜]
-  rfl
+  simp [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds,
+    FiniteMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜]
 
 lemma continuous_integral_boundedContinuousFunction
     {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :
