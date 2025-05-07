@@ -187,7 +187,7 @@ variable [Preorder α] [Preorder β]
 
 lemma prod_all_dom2 {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     (Prod.fst '' d) ×ˢ (Prod.snd '' d) ⊆ lowerClosure d :=
-  fun p hp => DirectedOn.prod_all_dominated hd p hp
+  fun _ hp => hd.isCofinalFor_fst_image_prod_snd_image hp
 
 end
 
