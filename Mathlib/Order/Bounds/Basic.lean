@@ -171,12 +171,14 @@ lemma DirectedOn.isCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β
 theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t ⊆ upperBounds s :=
   fun _ hb _ h => hb <| hst h
 
+/-
 lemma upperBounds_congr_of_subset {s₁ s₂ : Set α} (hs₁ : s₁ ⊆ s₂)
     (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b) : upperBounds s₁ = upperBounds s₂ := le_antisymm
   (fun c hc d hd => by
     obtain ⟨e,⟨he₁, he₂⟩⟩ := hs₂ _ hd
     exact le_trans he₂ (hc he₁))
   (upperBounds_mono_set hs₁)
+-/
 
 theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
   fun _ hb _ h => hb <| hst h
