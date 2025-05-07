@@ -191,7 +191,8 @@ theorem Nondegenerate.mul_iff_left {A : Type*} [CommRing A] [IsDomain A]
   simp only [nondegenerate_iff_det_ne_zero, det_mul] at h ⊢
   exact mul_ne_zero_iff_left h
 
-theorem Nondegenerate.smul_iff {A : Type*} [CommRing A] [IsDomain A]
+omit [Fintype n] in
+theorem Nondegenerate.smul_iff [Finite n] {A : Type*} [CommRing A] [IsDomain A]
     {M : Matrix n n A} {t : A} (h : t ≠ 0) :
     (t • M).Nondegenerate ↔ M.Nondegenerate := by
   simp_rw [Nondegenerate, smul_mulVec_assoc, dotProduct_smul]

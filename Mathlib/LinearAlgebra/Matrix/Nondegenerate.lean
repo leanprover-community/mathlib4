@@ -24,7 +24,7 @@ variable {m R A : Type*} [CommRing R]
 
 /-- A matrix `M` is nondegenerate if for all `v ≠ 0`, there is a `w ≠ 0` with `w * M * v ≠ 0`. -/
 def Nondegenerate [Finite m] (M : Matrix m m R) :=
-  let _i : Fintype m := Fintype.ofFinite m
+  letI : Fintype m := Fintype.ofFinite m
   ∀ v, (∀ w, dotProduct v (M *ᵥ w) = 0) → v = 0
 
 variable [Fintype m]
