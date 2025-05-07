@@ -33,8 +33,6 @@ namespace SimpleGraph
 
 variable {V α β : Type*} [Fintype V] [Fintype α] [Fintype β]
 
-section KovariSosTuran
-
 namespace KovariSosTuran
 
 /-- `bound` is the upper bound in the statement of the **Kővári–Sós–Turán theorem**.
@@ -52,8 +50,8 @@ theorem bound_nonneg {n s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) : 0 ≤ bound n
 
 variable [DecidableEq V]
 
-/-- `aux` is the set of pairs `(t, v)` s.t. `t : Finset V` is an `n`-sized subset of the neighbor
-finset of `v : V` in `G : SimpleGraph V`.
+/-- `aux` is the set of pairs `(t, v)` such that `t : Finset V` is an `n`-sized subset of the
+neighbor finset of `v : V` in `G : SimpleGraph V`.
 
 This is an auxiliary definition for the **Kővári–Sós–Turán theorem**. -/
 private abbrev aux (G : SimpleGraph V) [DecidableRel G.Adj] (n : ℕ) :=
@@ -136,16 +134,16 @@ private lemma card_edgeFinset_le_bound [Nonempty V] [Nonempty α] [Nonempty β]
       rw [Nat.one_le_cast]
       apply Nat.succ_le_of_lt
     any_goals positivity
-  -- double-counting t ⊆ G.neighborSet v
+  -- double-counting `(t, v) ↦ t ⊆ G.neighborSet v`
   trans (#X : ℝ)
-  -- counting t
+  -- counting `t`
   · trans (card V)*((descPochhammer ℝ (card α)).eval
         ((∑ v, G.degree v : ℝ)/card V)/(card α).factorial)
     · rw [← Nat.cast_two, ← Nat.cast_mul, ← sum_degrees_eq_twice_card_edges, Nat.cast_sum,
         mul_div, div_le_div_iff_of_pos_right (by positivity), mul_le_mul_left (by positivity)]
       exact pow_le_descPochhammer_eval h_avg
     · exact le_card_aux h_avg
-  -- counting v
+  -- counting `v`
   · trans ((card V).choose (card α))*(card β-1)
     · exact card_aux_le h_free
     · apply mul_le_mul_of_nonneg_right (Nat.choose_le_pow_div (card α) (card V))
@@ -168,12 +166,10 @@ theorem card_edgeFinset_le_of_completeBipartiteGraph_free
     rw [← card_pos_iff]
     exact card_pos.trans_le hcard_le
   cases isEmpty_or_nonempty V
-  -- if no vertices
   · have h_two_sub_one_div_ne_zero : 2 - (card α : ℝ)⁻¹ ≠ 0 := by
       apply sub_ne_zero_of_ne ∘ ne_of_gt
       exact (card α).cast_inv_le_one.trans_lt one_lt_two
     simp [h_two_sub_one_div_ne_zero]
-  -- if vertices
   · rcases lt_or_le (∑ v, G.degree v : ℝ) ((card V)*(card α-1) : ℝ) with h_sum_lt | h_avg
     -- if avg degree less than `card a-1`
     · rw [← Nat.cast_sum, sum_degrees_eq_twice_card_edges,
@@ -200,7 +196,5 @@ theorem extremalNumber_completeBipartiteGraph_le (n : ℕ) [Nonempty α] (hcard_
     extremalNumber_le_iff_of_nonneg _ <| KovariSosTuran.bound_nonneg card_pos hcard_le]
   intro G _ h_free
   exact card_edgeFinset_le_of_completeBipartiteGraph_free hcard_le h_free
-
-end KovariSosTuran
 
 end SimpleGraph
