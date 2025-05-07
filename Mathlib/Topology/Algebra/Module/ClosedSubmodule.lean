@@ -145,10 +145,6 @@ instance instOrderBot : OrderBot (ClosedSubmodule R M) where
   bot := ⟨⊥, isClosed_singleton⟩
   bot_le s := bot_le (a := s.toSubmodule)
 
-instance instZero : Zero (ClosedSubmodule R M) where zero := ⟨0, isClosed_singleton⟩
-
-@[simp] lemma zero_eq_bot : (0 : ClosedSubmodule R M) = ⊥ := rfl
-
 @[simp, norm_cast] lemma toSubmodule_bot : toSubmodule (⊥ : ClosedSubmodule R M) = ⊥ := rfl
 
 @[simp, norm_cast] lemma coe_bot : ((⊥ : ClosedSubmodule R M) : Set M) = {0} := rfl
