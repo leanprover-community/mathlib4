@@ -263,9 +263,6 @@ instance [NoZeroSMulDivisors A C] [Module.Finite A C] :
   · let B := Localization (algebraMapSubmonoid C A⁰)
     have : IsDomain B := isDomain_localization <|
       map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _) rfl.le
-    have : IsScalarTower A (FractionRing A) B :=
-      instIsScalarTowerLocalizationAlgebraMapSubmonoid A⁰ C
-    have : Module.Finite (FractionRing A) B := .of_isLocalization A C A⁰
     let _ : Algebra B (FractionRing C) :=
       (map _ (M := (algebraMapSubmonoid C A⁰)) (T := C⁰) (RingHom.id C) <|
         le_nonZeroDivisors_of_noZeroDivisors <| fun ⟨r, hr0, hr⟩ ↦

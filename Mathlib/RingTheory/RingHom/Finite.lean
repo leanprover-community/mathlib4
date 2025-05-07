@@ -99,6 +99,13 @@ lemma Module.Finite.of_isLocalization (R S) {Rₚ Sₚ : Type*} [CommSemiring R]
 @[deprecated (since := "2025-05-01")] alias Module.Finite_of_isLocalization :=
   Module.Finite.of_isLocalization
 
+open Algebra nonZeroDivisors in
+instance {A C : Type*} [CommRing A] [CommRing C] [Algebra A C] [Module.Finite A C] :
+    Module.Finite (FractionRing A) (Localization (algebraMapSubmonoid C A⁰)) :=
+  have : IsScalarTower A (FractionRing A) (Localization (algebraMapSubmonoid C A⁰)) :=
+    instIsScalarTowerLocalizationAlgebraMapSubmonoid A⁰ C
+  .of_isLocalization A C A⁰
+
 /-- If `S` is a finite `R`-algebra, then `S' = M⁻¹S` is a finite `R' = M⁻¹R`-algebra. -/
 theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @RingHom.Finite := by
   introv R hf
