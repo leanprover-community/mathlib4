@@ -1365,7 +1365,7 @@ private lemma Hom.toSchemeImageAux_spec :
 noncomputable
 def Hom.toSchemeImage : X ⟶ f.schemeImage :=
   f.toSchemeImageAux.copyBase (fun x ↦ ⟨f.base x, f.range_subset_ker_support ⟨x, rfl⟩⟩)
-  (funext fun x ↦ Subtype.ext congr(($f.toSchemeImageAux_spec).base x))
+    (funext fun x ↦ Subtype.ext congr(($f.toSchemeImageAux_spec).base x))
 
 @[reassoc (attr := simp)]
 lemma Hom.toSchemeImage_schemeImageι :
