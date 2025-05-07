@@ -54,7 +54,7 @@ lemma pullHom_eq ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X 
   rfl
 
 @[reassoc]
-lemma pullHom_comp' ⦃Y Y' : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
+  lemma pullHom_comp' ⦃Y Y' : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
     ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q)
     (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂) (hgf₁ : g ≫ f₁ = gf₁) (hgf₂ : g ≫ f₂ = gf₂) :
     pullHom hom q' gf₁ gf₂ =
@@ -190,19 +190,14 @@ lemma id_hom (D : F.DescentData' sq sq₃) (i : ι) :
 
 @[simps!]
 noncomputable def descentData (D : F.DescentData' sq sq₃) : F.DescentData f :=
-  .mk' D.obj
-    (fun _ _ _ _ _ _ _ _ ↦ pullHom D.hom _ _ _ (by aesop) (by aesop))
-    (fun _ _ _ _ _ hq _ _ _ _ _ _ _ _ hgf₁ hgf₂ ↦
-      pullHom_comp' _ _ _ _ hq _ _ _ _ _ _ hgf₁ hgf₂)
-    (by simp) (by simp)
+  .mk' D.obj (fun _ _ _ _ _ _ _ _ ↦ pullHom D.hom _ _ _ (by aesop) (by aesop))
+    (fun _ _ _ _ _ hq _ _ _ _ _ _ ↦ pullHom_comp' _ _ _ _ hq _ _ _ _) (by simp) (by simp)
 
 end DescentData'
 
 noncomputable def DescentData'.toDescentData : F.DescentData' sq sq₃ ⥤ F.DescentData f where
   obj D := D.descentData
-  map φ :=
-    { hom i := φ.hom i
-      comm := sorry }
+  map φ := DescentData.homMk φ.hom sorry
   map_id := by intros; ext; dsimp
   map_comp := by intros; ext; dsimp
 
