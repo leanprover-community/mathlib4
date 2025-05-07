@@ -121,13 +121,9 @@ def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
           apply isLimitOfReflects i
           apply isLimitChangeEmptyCone _ isTerminalTensorUnit
           letI : IsIso ((reflectorAdjunction i).unit.app (𝟙_ C)) := by
-            apply Functor.essImage.unit_isIso
-            haveI := reflective_products i
-            use Limits.terminal D
-            constructor
-            apply Limits.PreservesTerminal.iso i|>.trans
-            refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit _)
-              isTerminalTensorUnit
+            have := reflective_products i
+            refine Functor.essImage.unit_isIso ⟨terminal D, ⟨PreservesTerminal.iso i |>.trans ?_⟩⟩
+            exact IsLimit.conePointUniqueUpToIso (limit.isLimit _) isTerminalTensorUnit
           exact asIso ((reflectorAdjunction i).unit.app (𝟙_ C)) })
   fun X Y ↦
     { cone := BinaryFan.mk

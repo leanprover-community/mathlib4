@@ -46,10 +46,9 @@ lemma tensorUnit_isSheaf : Presheaf.IsSheaf J (𝟙_ (Cᵒᵖ ⥤ A)) := by
 noncomputable instance chosenFiniteProducts : ChosenFiniteProducts (Sheaf J A) :=
   .ofChosenFiniteProducts
    ({ cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A), cond := tensorUnit_isSheaf _}
-      isLimit :=
-        { lift := fun f ↦ ⟨ChosenFiniteProducts.toUnit f.pt.val⟩
-          fac := by rintro _ ⟨⟨⟩⟩
-          uniq x f h := Sheaf.hom_ext _ _ (ChosenFiniteProducts.toUnit_unique f.val _) } })
+      isLimit.lift f := ⟨ChosenFiniteProducts.toUnit f.pt.val⟩
+      isLimit.fac := by rintro _ ⟨⟨⟩⟩
+      isLimit.uniq x f h := Sheaf.hom_ext _ _ (ChosenFiniteProducts.toUnit_unique f.val _) })
   fun X Y ↦
     { cone := BinaryFan.mk
           (P := { val := X.val ⊗ Y.val

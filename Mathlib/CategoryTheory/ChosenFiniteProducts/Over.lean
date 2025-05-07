@@ -22,9 +22,7 @@ open Limits
 variable {C : Type*} [Category C] [HasPullbacks C]
 
 /-- A choice of finite products of `Over X` given by `Limits.pullback`. -/
-@[reducible]
-noncomputable
-def chosenFiniteProducts (X : C) : ChosenFiniteProducts (Over X) :=
+noncomputable abbrev chosenFiniteProducts (X : C) : ChosenFiniteProducts (Over X) :=
   .ofChosenFiniteProducts
     ⟨asEmptyCone (Over.mk (𝟙 X)), IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
       fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
@@ -34,10 +32,7 @@ def chosenFiniteProducts (X : C) : ChosenFiniteProducts (Over X) :=
 attribute [local instance] chosenFiniteProducts
 
 /-- `Over X` is braided wrt the cartesian monoidal structure given by `Limits.pullback`. -/
-@[reducible]
-noncomputable
-def braidedCategory (X : C) : BraidedCategory (Over X) :=
-  .ofChosenFiniteProducts
+noncomputable abbrev braidedCategory (X : C) : BraidedCategory (Over X) := .ofChosenFiniteProducts
 
 attribute [local instance] braidedCategory
 
