@@ -195,74 +195,71 @@ theorem valuativeCriterion_existence_aux
     (j : ι) (φ : Away 𝒜 (x j) →+* K)
     (hcomm : (algebraMap O K).comp φ₀ = φ.comp (fromZeroRingHom 𝒜 _))
     (d : ι → ℕ) (hdi : ∀ i, 0 < d i) (hxdi : ∀ i, x i ∈ 𝒜 (d i)) :
-    ∃ (x₀ : A) (e : ℕ) (_he : 0 < e) (h₀ : x₀ ∈ 𝒜 e)
-      (φ' : Away 𝒜 (x j * x₀) →+* K), φ'.comp (awayMap 𝒜 h₀ rfl) = φ ∧
-      (φ'.comp (awayMap 𝒜 (hxdi j) (mul_comm (x j) x₀))).range ≤ (algebraMap O K).range := by
+    ∃ (j₀ : ι) (φ' : Away 𝒜 (x j * x j₀) →+* K), φ'.comp (awayMap 𝒜 (hxdi j₀) rfl) = φ ∧
+      (φ'.comp (awayMap 𝒜 (hxdi j) (mul_comm (x j) (x j₀)))).range ≤ (algebraMap O K).range := by
   classical
   let ψ (i : ι) : ValueGroup O K :=
     valuation O K ((φ (Away.isLocalizationElem (hxdi j) (hxdi i))) ^ ∏ k ∈ Finset.univ.erase i, d k)
   have : Nonempty ι := ⟨j⟩
   let Kmax := (Finset.univ.image ψ).max' (by simp)
-  have ⟨i₀, hi1⟩ : ∃ a, ψ a = Kmax := by
-    simpa using Finset.max'_mem (Finset.univ.image ψ)
+  have ⟨i₀, hi1⟩ : ∃ a, ψ a = Kmax := by simpa using Finset.max'_mem (Finset.univ.image ψ)
   have hi₀ (j) : ψ j ≤ ψ i₀ := hi1 ▸ (Finset.univ.image ψ).le_max' (ψ j) (by simp)
-  use x i₀, d i₀, hdi i₀, hxdi i₀
   have hKmax : 0 < Kmax := by
     refine zero_lt_iff.mpr fun hKmax ↦ ?_
     have (i) : ψ i = 0 := le_zero_iff.mp (hKmax ▸ Finset.le_max' _ _ (by simp))
     simp only [ψ, map_pow, pow_eq_zero_iff', map_eq_zero, ne_eq] at this
-    suffices φ 1 = 0 by simp only [map_one, one_ne_zero] at this
-    convert (this j).1
-    ext
-    simp only [val_one, val_mk, Away.val_mk]
-    convert (Localization.mk_self _).symm
-    rfl
+    have : φ 1 = 0 := by convert (this j).1; ext; simp
+    simp only [map_one, one_ne_zero] at this
   letI := (awayMap 𝒜 (f := x j) (hxdi i₀) rfl).toAlgebra
   have := Away.isLocalization_mul (hxdi j) (hxdi i₀) rfl (hdi _).ne'
-  have hunit : IsUnit (φ (Away.isLocalizationElem (hxdi j) (hxdi i₀))) := by
-    refine isUnit_iff_ne_zero.mpr fun rid ↦ ?_
-    simp only [ψ, rid, map_pow, map_zero] at hi1
-    rw [zero_pow] at hi1
-    · exact hKmax.ne' hi1.symm
-    simp [Finset.prod_eq_zero_iff, (hdi _).ne', ψ]
-  let φ' := IsLocalization.Away.lift (S := Away 𝒜 (x j * x i₀)) _ foounit
-  have hφ'1 (s) : φ' (awayMap 𝒜 (hxdi i₀) rfl s) = φ s :=
-    IsLocalization.Away.lift_eq (S := Away 𝒜 (x j * x i₀)) _ foounit s
-  use φ', IsLocalization.Away.lift_comp ..
+  have hunit : IsUnit (φ (Away.isLocalizationElem (hxdi j) (hxdi i₀))) := isUnit_iff_ne_zero.mpr
+    fun rid ↦ hKmax.ne' (.symm (by simpa [ψ, rid, Finset.prod_eq_zero_iff, (hdi _).ne'] using hi1))
+  let φ' := IsLocalization.Away.lift (S := Away 𝒜 (x j * x i₀)) _ hunit
+  have hφ'1 (s) : φ' (awayMap 𝒜 (hxdi i₀) rfl s) = φ s := IsLocalization.Away.lift_eq _ hunit s
+  use i₀, φ', IsLocalization.Away.lift_comp ..
   rintro _ ⟨sx, rfl⟩
   rw [RingHom.mem_range, ← ValuationRing.mem_integer_iff, Valuation.mem_integer_iff]
   have := (Away.span_mk_prod_pow_eq_top (hxdi i₀) x h2 d hxdi).ge (Submodule.mem_top (x := sx))
   induction this using Submodule.span_induction with
+  | zero => simp
+  | add x y hx hy hhx hhy =>
+    simp only [RingHom.coe_comp, Function.comp_apply, map_add, ge_iff_le]
+    exact ((valuation O K).map_add _ _).trans <| sup_le_iff.mpr ⟨hhx, hhy⟩
+  | smul a x₀ hx hx1 =>
+    simp only [Algebra.smul_def, RingHom.coe_comp, Function.comp_apply, map_mul, ge_iff_le]
+    refine mul_le_one' ?_ hx1
+    rw [RingHom.algebraMap_toAlgebra, awayMap_fromZeroRingHom 𝒜 (hxdi j) (mul_comm (x j) (x i₀)),
+      ← awayMap_fromZeroRingHom 𝒜 (hxdi i₀) rfl a, hφ'1]
+    change valuation O K (φ.comp (fromZeroRingHom 𝒜 (.powers (x j))) a) ≤ 1
+    simp only [← hcomm, RingHom.coe_comp, Function.comp_apply, ← Valuation.mem_integer_iff,
+      IsFractionRing.coe_inj, exists_eq, mem_integer_iff]
   | mem x1 h =>
     obtain ⟨a, ai, hai, rfl⟩ := h
     simp only [smul_eq_mul] at hai
     have H : (∏ i, x i ^ ai i) * x i₀ ^ (a * (d j - 1)) ∈ 𝒜 ((a * d i₀) • d j) := by
-      convert SetLike.mul_mem_graded
-        (SetLike.prod_pow_mem_graded 𝒜 d x (F := .univ) ai (fun _ _ ↦ hxdi _))
-        (SetLike.pow_mem_graded (A := 𝒜) (a * (d j - 1)) (hxdi i₀)) using 2
+      convert SetLike.mul_mem_graded (SetLike.prod_pow_mem_graded 𝒜 d x ai fun _ _ ↦ hxdi _)
+        (SetLike.pow_mem_graded (a * (d j - 1)) (hxdi i₀)) using 2
       simp only [smul_eq_mul, hai]
       cases h : d j
       · cases (hdi j).ne' h
       · simp only [add_tsub_cancel_right]; ring
     suffices valuation O K (φ (Away.mk 𝒜 (hxdi j) _ _ H) /
-          (φ (Away.isLocalizationElem (hxdi j) (hxdi i₀))) ^ a) ≤ 1 by
+          φ (Away.isLocalizationElem (hxdi j) (hxdi i₀)) ^ a) ≤ 1 by
       convert this
-      rw [eq_div_iff (pow_ne_zero _ foounit.ne_zero), ← hφ'1, ← hφ'1, RingHom.comp_apply,
+      rw [eq_div_iff (pow_ne_zero _ hunit.ne_zero), ← hφ'1, ← hφ'1, RingHom.comp_apply,
         ← map_pow, ← map_mul]
       congr
       ext
-      rw [val_mul]
       simp only [awayMap_mk, Away.val_mk, val_pow, Localization.mk_pow, Localization.mk_mul,
-        Localization.mk_eq_mk_iff, Localization.r_iff_exists]
+        Localization.mk_eq_mk_iff, Localization.r_iff_exists, val_mul]
       use 1
       simp only [OneMemClass.coe_one, one_mul, Submonoid.coe_mul, SubmonoidClass.coe_pow]
       cases h : d j
       · cases (hdi j).ne' h
       · rw [Nat.add_sub_cancel]; ring
-    rw [map_div₀, div_le_iff₀ ((pow_pos ((Valuation.pos_iff _).mpr foounit.ne_zero) _).trans_eq
-      (Valuation.map_pow _ _ _).symm), one_mul,
-      ← pow_le_pow_iff_left₀ (n := d j * ∏ i, d i) zero_le' zero_le' <|
-      (mul_pos (hdi j) (Finset.prod_pos (fun i _ => hdi i))).ne.symm]
+    rw [map_div₀, div_le_iff₀ ((pow_pos ((Valuation.pos_iff _).mpr hunit.ne_zero) _).trans_eq
+      (Valuation.map_pow _ _ _).symm), one_mul, ← pow_le_pow_iff_left₀ zero_le' zero_le'
+        (mul_pos (hdi j) (Finset.prod_pos fun i _ => hdi i)).ne.symm]
     calc
       _ = (∏ i, ψ i ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) := by
           simp only [ψ, ← map_pow, ← map_prod, ← map_mul]
@@ -276,12 +273,10 @@ theorem valuativeCriterion_existence_aux
           use 1
           simp only [OneMemClass.coe_one, SubmonoidClass.mk_pow, ← pow_mul, Submonoid.coe_mul,
             SubmonoidClass.coe_finset_prod, one_mul]
-          simp_rw [← mul_assoc, Finset.prod_erase_mul Finset.univ d (h := Finset.mem_univ _),
-            mul_assoc, ← mul_assoc (Finset.prod ..),
-            Finset.prod_erase_mul Finset.univ d (h := Finset.mem_univ _), SubmonoidClass.coe_pow,
-            ← pow_mul]
-          rw [Finset.prod_pow_eq_pow_sum, ← pow_add, mul_pow, ← Finset.prod_pow]
-          simp_rw [← pow_mul]
+          simp_rw [← mul_assoc, Finset.prod_erase_mul _ d (h := Finset.mem_univ _), mul_assoc,
+            ← mul_assoc (Finset.prod ..), Finset.prod_erase_mul _ d (h := Finset.mem_univ _),
+            SubmonoidClass.coe_pow, ← pow_mul, Finset.prod_pow_eq_pow_sum,
+            ← pow_add, mul_pow, ← Finset.prod_pow, ← pow_mul]
           congr 3
           · simp only [mul_comm _ (∏ i, d i), mul_assoc, mul_left_comm _ (∏ i, d i),
               mul_comm (d _) (ai _), ← Finset.mul_sum, hai]
@@ -290,40 +285,20 @@ theorem valuativeCriterion_existence_aux
             · simp; ring
           · ext i; congr 1; ring
           · ring
-      _ ≤ (∏ i : ι, ψ i₀ ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) := by
-          gcongr
-          · exact zero_le'
-          · exact hi₀ _
+      _ ≤ (∏ i : ι, ψ i₀ ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) :=
+          mul_le_mul_right' (Finset.prod_le_prod' fun i a ↦ pow_le_pow_left₀ zero_le' (hi₀ i) _) _
       _ = ψ i₀ ^ (d i₀ * a * d j) := by
           rw [Finset.prod_pow_eq_pow_sum, ← pow_add]
-          congr 1
           simp_rw [mul_comm (d _) (ai _), hai]
           cases h : d j
           · cases (hdi j).ne' h
-          · simp; ring
+          · simp; ring_nf
       _ = valuation O K ((φ _) ^ a) ^ (d j * ∏ i, d i) := by
           · simp only [ψ, ← map_pow, ← map_prod, ← map_mul]
             congr 2
             rw [← pow_mul, ← pow_mul, ← mul_assoc, ← mul_assoc, ← mul_assoc,
               Finset.univ.prod_erase_mul d (h := Finset.mem_univ _),
               mul_comm _ a, mul_right_comm]
-  | zero => simp
-  | add x y hx hy hhx hhy =>
-    simp only [RingHom.coe_comp, Function.comp_apply, map_add, ge_iff_le]
-    exact (Valuation.map_add (ValuationRing.valuation O K) _ _).trans <| sup_le_iff.mpr ⟨hhx, hhy⟩
-  | smul a x₀ hx hx1 =>
-    simp only [Algebra.smul_def, RingHom.coe_comp, Function.comp_apply, map_mul, ge_iff_le]
-    refine mul_le_one' ?_ hx1
-    rw [RingHom.algebraMap_toAlgebra, awayMap_fromZeroRingHom 𝒜 (hxdi j) (mul_comm (x j) (x i₀))]
-    suffices fromZeroRingHom 𝒜 (Submonoid.powers (x j * x i₀)) a =
-        awayMap 𝒜 (hxdi i₀) rfl ((fromZeroRingHom 𝒜 (Submonoid.powers (x j))) a) by
-      simp only [this, φ', hφ'1]
-      change (ValuationRing.valuation O K)
-        (φ.comp (fromZeroRingHom 𝒜 (Submonoid.powers (x j))) a) ≤ 1
-      rw [← hcomm, RingHom.coe_comp, Function.comp_apply, ← Valuation.mem_integer_iff,
-        ValuationRing.mem_integer_iff]
-      use φ₀ a
-    exact (awayMap_fromZeroRingHom 𝒜 (hxdi i₀) rfl a).symm
 
 @[stacks 01MF]
 lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
@@ -346,7 +321,7 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     apply Spec.map_injective
     simp only [Spec.map_comp, Spec.map_preimage, ← w.w]
     rw [← Proj.awayι_toSpecZero, IsOpenImmersion.lift_fac_assoc]
-  obtain ⟨x₀, e, he, hxe, φ', hφ, hφ'⟩ :=
+  obtain ⟨i₀, φ', hφ, hφ'⟩ :=
     valuativeCriterion_existence_aux 𝒜 (Spec.preimage i₂).hom x (↑) (by simpa using hx) i
       (O := O) (K := K) (Spec.preimage φ).hom congr(($H).hom)
       (fun i ↦ d _ i.2) (fun i ↦ (hd _ i.2).bot_lt) (fun i ↦ hxd _ i.2)
@@ -356,7 +331,7 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
   have hφ'' : (algebraMap O K).comp φ'' = φ'.comp (awayMap 𝒜 (hxd _ i.2) (mul_comm _ _)) := by
     ext x
     exact congr_arg Subtype.val (e.apply_symm_apply _)
-  refine ⟨⟨Spec.map (CommRingCat.ofHom φ'') ≫ Proj.awayι 𝒜 _ hxe he, ?_, ?_⟩⟩
+  refine ⟨⟨Spec.map (CommRingCat.ofHom φ'') ≫ Proj.awayι 𝒜 _ (hxd _ i₀.2) (hd _ _).bot_lt, ?_, ?_⟩⟩
   · rw [← Spec.map_comp_assoc]
     convert IsOpenImmersion.lift_fac _ _ this using 1
     show _ = φ ≫ _
@@ -370,7 +345,7 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     apply IsFractionRing.injective O K
     refine (DFunLike.congr_fun hφ'' (fromZeroRingHom 𝒜 _ _)).trans ?_
     simp only [RingHom.coe_comp, Function.comp_apply]
-    rw [awayMap_fromZeroRingHom, ← awayMap_fromZeroRingHom 𝒜 hxe rfl, ← RingHom.comp_apply, hφ]
+    rw [awayMap_fromZeroRingHom, ← awayMap_fromZeroRingHom 𝒜 _ rfl, ← RingHom.comp_apply, hφ]
     exact congr($(H.symm) x)
 
 instance [Algebra.FiniteType (𝒜 0) A] : UniversallyClosed (Proj.toSpecZero 𝒜) := by
