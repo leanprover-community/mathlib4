@@ -127,8 +127,8 @@ lemma ofHom_comp {X Y Z : Type v} [Semiring X] [Semiring Y] [Semiring Z] [Algebr
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
-lemma ofHom_apply {R : Type u} [CommSemiring R] {X Y : Type v} [Semiring X] [Algebra R X] [Semiring Y]
-    [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
+lemma ofHom_apply {R : Type u} [CommSemiring R] {X Y : Type v} [Semiring X] [Algebra R X]
+    [Semiring Y] [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
 
 lemma inv_hom_apply {A B : AlgebraCat.{v} R} (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by
   rw [← comp_apply]
@@ -149,6 +149,9 @@ lemma forget_map {A B : AlgebraCat.{v} R} (f : A ⟶ B) :
 
 instance {S : AlgebraCat.{v} R} : Semiring ((forget (AlgebraCat R)).obj S) :=
   (inferInstance : Semiring S.carrier)
+
+instance (R : Type u) [CommRing R] {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
+  (inferInstance : Ring S.carrier)
 
 instance {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) :=
   (inferInstance : Algebra R S.carrier)
@@ -215,8 +218,8 @@ variable {X₁ X₂ : Type u}
 
 /-- Build an isomorphism in the category `AlgebraCat R` from a `AlgEquiv` between `Algebra`s. -/
 @[simps]
-def AlgEquiv.toAlgebraIso {g₁ : Semiring X₁} {g₂ : Semiring X₂} {m₁ : Algebra R X₁} {m₂ : Algebra R X₂}
-    (e : X₁ ≃ₐ[R] X₂) : AlgebraCat.of R X₁ ≅ AlgebraCat.of R X₂ where
+def AlgEquiv.toAlgebraIso {g₁ : Semiring X₁} {g₂ : Semiring X₂} {m₁ : Algebra R X₁}
+    {m₂ : Algebra R X₂} (e : X₁ ≃ₐ[R] X₂) : AlgebraCat.of R X₁ ≅ AlgebraCat.of R X₂ where
   hom := AlgebraCat.ofHom (e : X₁ →ₐ[R] X₂)
   inv := AlgebraCat.ofHom (e.symm : X₂ →ₐ[R] X₁)
 
