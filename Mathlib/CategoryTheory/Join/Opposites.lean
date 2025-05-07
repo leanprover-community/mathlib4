@@ -53,11 +53,13 @@ lemma opEquivFunctor_map_op_edge (c : C) (d : D) :
     (opEquivFunctor C D).map (op <| edge c d) = edge (op d) (op c) :=
   rfl
 
+/-- Characterize (up to a rightOp) the action of the left inclusion on `Join.opEquivFunctor`. -/
 @[simps!]
 def rightOpOpEquivFunctorCompInclLeft :
     inclLeft C D ⋙ (opEquivFunctor C D).rightOp ≅ (inclRight _ _).rightOp :=
   isoWhiskerLeft _ (Functor.leftOpRightOpIso _) ≪≫ mkFunctorLeft _ _ _
 
+/-- Characterize (up to a rightOp) the action of the right inclusion on `Join.opEquivFunctor`. -/
 @[simps!]
 def rightOpOpEquivFunctorCompInclRight :
     inclRight C D ⋙ (opEquivFunctor C D).rightOp ≅ (inclLeft _ _).rightOp :=
@@ -131,6 +133,8 @@ lemma opEquivInverseCompInclRight_inv_app_op (c : C) :
     (opEquivInverseCompInclRight C D).inv.app (op c) = 𝟙 (op <| left c) :=
   rfl
 
+/-- The equivalence `(C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ` induced by `Join.opEquivFunctor` and
+`Join.opEquivInverse`. -/
 def opEquiv : (C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ where
   functor := opEquivFunctor C D
   inverse := opEquivInverse C D
