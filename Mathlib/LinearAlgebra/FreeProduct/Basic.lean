@@ -404,7 +404,7 @@ lemma empty_rel_false [inst : IsEmpty I] {x y} (h : rel R A x y) :
 @[simp] lemma empty_rel'_bot [IsEmpty I] : rel' R A = ⊥ := by
   ext x y; simp [empty_rel_false_iff]
 
-/--The free product over an empty type is isomorphic to the base ring.-/
+/-- The free product over an empty type is isomorphic to the base ring. -/
 @[simps!] def of_empty [inst : IsEmpty I] : FreeProduct R A ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom
     (lift R A fun {i} => inst.elim i)
@@ -412,10 +412,12 @@ lemma empty_rel_false [inst : IsEmpty I] {x y} (h : rel R A x y) :
     (by ext)
     (by ext; exact inst.elim ‹_›)
 
+variable {R A}
+
 --Follows the proof in `Mathlib.Algebra.FreeAlgebra`.
-/--Inductive principle for `FreeProduct`. If a `Prop` can be proven for
+/-- Inductive principle for `FreeProduct`. If a `Prop` can be proven for
 all elements of the `A i`, including scalars `R`, and is preserved by
-multiplication and addition, then it holds for the whole of the algebra.-/
+multiplication and addition, then it holds for the whole of the algebra. -/
 @[elab_as_elim, induction_eliminator]
 theorem inductionOn {motive : FreeProduct R A → Prop} (x : FreeProduct R A)
     (scalar : ∀ r, motive (algebraMap R (FreeProduct R A) r))
@@ -432,11 +434,7 @@ theorem inductionOn {motive : FreeProduct R A → Prop} (x : FreeProduct R A)
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (FreeProduct R A) = s.val.comp (lift R A of) := by
     ext
-    simp_rw [AlgHom.id_comp, AlgHom.comp_toLinearMap, LinearMap.comp_apply,
-             AlgHom.toLinearMap_apply, lift_apply, liftAlgHom_mkAlgHom_apply,
-             TensorAlgebra.lift_ι_apply, toModule_lof, AlgHom.toLinearMap_apply, ← AlgHom.comp_apply,
-             of, AlgHom.val_comp_codRestrict, FreeProduct.of, ι, ι', mkAlgHom,
-             AlgHom.ofLinearMap_apply, LinearMap.comp_apply, AlgHom.toLinearMap_apply]
+    simp [FreeProduct.of, ι, ι', of]
   -- finding a proof is finding an element of the subalgebra
   suffices x = lift R A of x by
     rw [this]
@@ -444,9 +442,9 @@ theorem inductionOn {motive : FreeProduct R A → Prop} (x : FreeProduct R A)
   simp [AlgHom.ext_iff] at of_id
   exact of_id x
 
-/--Inductive principle for `FreeProduct.asPowers`. If a `Prop` can be proven for
+/-- Inductive principle for `FreeProduct.asPowers`. If a `Prop` can be proven for
 all elements of the `A i`, including scalars `R`, and is preserved by
-multiplication and addition, then it holds for the whole of the algebra.-/
+multiplication and addition, then it holds for the whole of the algebra. -/
 @[elab_as_elim, induction_eliminator]
 theorem asPowers.inductionOn
     {motive : FreeProduct.asPowers R A → Prop} (x : FreeProduct.asPowers R A)
@@ -458,10 +456,8 @@ theorem asPowers.inductionOn
   simpa using
     FreeProduct.inductionOn (motive := motive ∘ ε.symm) (ε x)
       (by simpa using scalar)
-      (fun aᵢ ↦ by
-        convert iota aᵢ
-        simp_rw [of, FreeProduct.of, ε_def, comp_apply, ι_equiv_ι'])
-      (by convert (fun {x y} ↦ @mul (ε.symm x) (ε.symm y)); simp)
-      (by convert (fun {x y} ↦ @add (ε.symm x) (ε.symm y)); simp)
+      (by simpa [of, FreeProduct.of, ε_def] using iota ·)
+      (by simpa using (fun {x y} ↦ @mul (ε.symm x) (ε.symm y)))
+      (by simpa using (fun {x y} ↦ @add (ε.symm x) (ε.symm y)))
 
 end LinearAlgebra.FreeProduct
