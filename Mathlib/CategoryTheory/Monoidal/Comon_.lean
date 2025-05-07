@@ -102,37 +102,10 @@ structure Comon_ where
   /-- The underlying object of a comonoid object. -/
   X : C
   [comon : Comon_Class X]
-  -- /-- The counit of a comonoid object. -/
-  -- counit : X ⟶ 𝟙_ C
-  -- /-- The comultiplication morphism of a comonoid object. -/
-  -- comul : X ⟶ X ⊗ X
-  -- counit_comul : comul ≫ (counit ▷ X) = (λ_ X).inv := by aesop_cat
-  -- comul_counit : comul ≫ (X ◁ counit) = (ρ_ X).inv := by aesop_cat
-  -- comul_assoc : comul ≫ (X ◁ comul) = comul ≫ (comul ▷ X) ≫ (α_ X X X).hom := by aesop_cat
-
--- attribute [reassoc (attr := simp)] Comon_.counit_comul Comon_.comul_counit
-
--- attribute [reassoc (attr := simp)] Comon_.comul_assoc
 
 attribute [instance] Comon_.comon
 
 namespace Comon_
-
--- variable {C}
-
--- /-- Construct an object of `Comon_ C` from an object `X : C` and `Comon_Class X` instance. -/
--- @[simps]
--- def mk' (X : C) [Comon_Class X] : Comon_ C where
---   X := X
---   counit := ε
---   comul := Δ
-
--- instance {M : Comon_ C} : Comon_Class M.X where
---   counit := M.counit
---   comul := M.comul
---   counit_comul' := M.counit_comul
---   comul_counit' := M.comul_counit
---   comul_assoc' := M.comul_assoc
 
 variable (C) in
 /-- The trivial comonoid object. We later show this is terminal in `Comon_ C`.

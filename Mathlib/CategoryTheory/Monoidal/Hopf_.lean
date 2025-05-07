@@ -64,18 +64,10 @@ structure Hopf_ where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [hopf : Hopf_Class X]
-  -- /-- The antipode is an endomorphism of the underlying object of the Hopf monoid. -/
-  -- antipode : X.X.X ⟶ X.X.X
-  -- antipode_left : X.comul.hom ≫ (antipode ▷ X.X.X) ≫ X.X.mul = X.counit.hom ≫ X.X.one
-  -- antipode_right : X.comul.hom ≫ (X.X.X ◁ antipode) ≫ X.X.mul = X.counit.hom ≫ X.X.one
-
--- attribute [reassoc (attr := simp)] Hopf_.antipode_left Hopf_.antipode_right
 
 attribute [instance] Hopf_.hopf
 
 namespace Hopf_
-
--- open scoped Hopf_Class
 
 variable {C}
 

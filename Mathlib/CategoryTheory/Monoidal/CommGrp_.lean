@@ -23,12 +23,6 @@ structure CommGrp_ where
   X : C
   [grp : Grp_Class X]
   [comm : IsCommMon X]
--- extends Grp_ C, CommMon_ C where
-
--- /-- Turn a commutative group object into a commutative monoid object. -/
--- add_decl_doc CommGrp_.toCommMon_
-
--- attribute [reassoc (attr := simp)] CommGrp_.mul_comm
 
 attribute [instance] CommGrp_.grp CommGrp_.comm
 
@@ -45,14 +39,12 @@ def toGrp_ (A : CommGrp_ C) : Grp_ C := ⟨A.X⟩
 def toCommMon_ (A : CommGrp_ C) : CommMon_ C := ⟨A.X⟩
 
 /-- A commutative group object is a monoid object. -/
--- @[simps! X]
 abbrev toMon_ (A : CommGrp_ C) : Mon_ C := (toCommMon_ A).toMon_
 
 variable (C) in
 /-- The trivial commutative group object. -/
 @[simps!]
 def trivial : CommGrp_ C := { X := 𝟙_ C }
-  -- { Grp_.trivial C with mul_comm := by simpa using unitors_equal.symm }
 
 instance : Inhabited (CommGrp_ C) where
   default := trivial C
@@ -73,12 +65,12 @@ theorem comp_hom {R S T : CommGrp_ C} (f : R ⟶ S) (g : S ⟶ T) :
 theorem hom_ext {A B : CommGrp_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
   Mon_.Hom.ext h
 
--- @[simp]
--- lemma id' (A : CommGrp_ C) : (𝟙 A : A ⟶ A) = 𝟙 A := rfl
+@[simp]
+lemma id' (A : CommGrp_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
 
 @[simp]
 lemma comp' {A₁ A₂ A₃ : CommGrp_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
-    ((f ≫ g : A₁ ⟶ A₃) : A₁ ⟶ A₃) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
+    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
 
 section
 

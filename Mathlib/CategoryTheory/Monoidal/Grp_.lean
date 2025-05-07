@@ -62,13 +62,6 @@ structure Grp_ where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [grp : Grp_Class X]
-  -- /-- The inversion operation -/
-  -- inv : X ⟶ X
-  -- left_inv : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by aesop_cat
-  -- right_inv : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by aesop_cat
-
--- attribute [reassoc (attr := simp)] Grp_.left_inv
--- attribute [reassoc (attr := simp)] Grp_.right_inv
 
 attribute [instance] Grp_.grp
 
@@ -92,11 +85,6 @@ instance : Inhabited (Grp_ C) where
 def mk' (X : C) [Grp_Class X] : Grp_ C where
   __ := Mon_.mk X
   grp := { inv := Grp_Class.inv (X := X) }
-
--- instance (X : Grp_ C) : Grp_Class X.X where
---   inv := X.inv
---   left_inv' := X.left_inv
---   right_inv' := X.right_inv
 
 instance : Category (Grp_ C) :=
   InducedCategory.category Grp_.toMon_
@@ -256,12 +244,6 @@ theorem inv_hom [Grp_Class A] [Grp_Class B] (f : A ⟶ B) [IsMon_Hom f] : ι ≫
   apply (isPullback B).hom_ext <;> apply ChosenFiniteProducts.hom_ext <;>
     simp [lift_inv_comp_right, lift_inv_comp_left]
 
--- open Mon_Class in
--- @[reassoc]
--- lemma _root_.IsMon_Hom.inv_hom {X Y : C} [Grp_Class X] [Grp_Class Y] (f : X ⟶ Y) [IsMon_Hom f] :
---     ι ≫ f = f ≫ ι :=
---   Grp_.inv_hom (A := .mk' X) (B := .mk' Y) (f := ⟨f, IsMon_Hom.one_hom _, IsMon_Hom.mul_hom _⟩)
-
 lemma toMon_Class_injective {X : C} :
     Function.Injective (@Grp_Class.toMon_Class C ‹_› ‹_› X) := by
   intro h₁ h₂ e
@@ -352,16 +334,6 @@ namespace CategoryTheory.Functor
 open Mon_Class Grp_Class
 
 variable {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D) [F.Monoidal]
-
--- abbrev obj.instGpr_Class (A : C) [Grp_Class A] : Grp_Class (F.obj A) where
---   toMon_Class := obj.instMon_Class F A
---   inv := F.map ι[A]
---   left_inv' := by
---     simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc, Functor.Monoidal.toUnit_ε_assoc,
---       ← Functor.map_comp]
---   right_inv' := by
---     simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc, Functor.Monoidal.toUnit_ε_assoc,
---       ← Functor.map_comp]
 
 /-- A finite-product-preserving functor takes group objects to group objects. -/
 @[simps!]

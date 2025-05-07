@@ -106,49 +106,10 @@ structure Mon_ where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [mon : Mon_Class X]
-  -- /-- The unit morphism of the monoid object -/
-  -- one : 𝟙_ C ⟶ X
-  -- /-- The multiplication morphism of a monoid object -/
-  -- mul : X ⊗ X ⟶ X
-  -- one_mul : (one ▷ X) ≫ mul = (λ_ X).hom := by aesop_cat
-  -- mul_one : (X ◁ one) ≫ mul = (ρ_ X).hom := by aesop_cat
-  -- -- Obviously there is some flexibility stating this axiom.
-  -- -- This one has left- and right-hand sides matching the statement of `Monoid.mul_assoc`,
-  -- -- and chooses to place the associator on the right-hand side.
-  -- -- The heuristic is that unitors and associators "don't have much weight".
-  -- mul_assoc : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by aesop_cat
 
 attribute [instance] Mon_.mon
 
--- attribute [reassoc] Mon_.one_mul Mon_.mul_one
-
--- attribute [simp] Mon_.one_mul Mon_.mul_one
-
--- We prove a more general `@[simp]` lemma below.
--- attribute [reassoc (attr := simp)] Mon_.mul_assoc
-
 namespace Mon_
-
--- /-- Construct an object of `Mon_ C` from an object `X : C` and `Mon_Class X` instance. -/
--- @[simps]
--- def mk' (X : C) [Mon_Class X] : Mon_ C where
---   X := X
---   one := η
---   mul := μ
-
--- @[simps?]
--- instance {M : Mon_ C} : Mon_Class M.X where
---   one := M.one
---   mul := M.mul
---   one_mul' := M.one_mul
---   mul_one' := M.mul_one
---   mul_assoc' := M.mul_assoc
-
--- @[simp]
--- theorem Mon_one {M : Mon_ C} : M.one = η[M.X] := rfl
-
--- @[simp]
--- theorem Mon_mul {M : Mon_ C} : M.mul = μ[M.X] := rfl
 
 variable (C)
 
@@ -326,25 +287,7 @@ That is, a lax monoidal functor `F : C ⥤ D` induces a functor `Mon_ C ⥤ Mon_
 -/
 @[simps]
 def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
-  -- TODO: The following could be, but it leads to weird `erw`s later down the file
   obj A := .mk (F.obj A.X)
-  -- obj A :=
-  --   { X := F.obj A.X
-  --     one := ε F ≫ F.map η[A.X]
-  --     mul := «μ» F _ _ ≫ F.map μ[A.X]
-  --     one_mul := by
-  --       simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
-  --         LaxMonoidal.left_unitality]
-  --       slice_lhs 3 4 => rw [← F.map_comp, one_mul A.X]
-  --     mul_one := by
-  --       simp_rw [MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc,
-  --         LaxMonoidal.right_unitality]
-  --       slice_lhs 3 4 => rw [← F.map_comp, mul_one A.X]
-  --     mul_assoc := by
-  --       simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
-  --         MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc]
-  --       slice_lhs 3 4 => rw [← F.map_comp, mul_assoc A.X]
-  --       simp }
   map f := .mk' (F.map f.hom)
 
 protected instance Faithful.mapMon [F.Faithful] : F.mapMon.Faithful where

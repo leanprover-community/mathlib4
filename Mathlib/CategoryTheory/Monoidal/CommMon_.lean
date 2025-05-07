@@ -25,22 +25,10 @@ structure CommMon_ where
   X : C
   [mon : Mon_Class X]
   [comm : IsCommMon X]
-  -- mul_comm : (β_ _ _).hom ≫ μ[X] = μ[X] := by aesop_cat
-
--- attribute [reassoc (attr := simp)] CommMon_.mul_comm
 
 attribute [instance] CommMon_.mon CommMon_.comm
 
 namespace CommMon_
-
--- /-- Construct an object of `CommMon_ C` from an object `X : C` a `Mon_Class X` instance
--- and a `IsCommMon X` instance. -/
--- def mk' (X : C) [Mon_Class X] [IsCommMon X] : CommMon_ C where
---   __ := Mon_.mk X
---   mul_comm := IsCommMon.mul_comm X
-
--- instance (X : CommMon_ C) : IsCommMon X.X where
---   mul_comm' := X.mul_comm
 
 /-- A commutative monoid object is a monoid object. -/
 @[simps X]
@@ -51,7 +39,6 @@ variable (C) in
 -/
 @[simps!]
 def trivial : CommMon_ C := { X := 𝟙_ C }
-  -- { Mon_.trivial C with mul_comm := by dsimp; rw [braiding_leftUnitor, unitors_equal] }
 
 instance : Inhabited (CommMon_ C) :=
   ⟨trivial C⟩
