@@ -142,6 +142,74 @@ noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
 --     -- use `OuterMeasure.trim_eq` for measurable sets
 --     trim_le := le_of_eq (OuterMeasure.trim_trim (supOuterMeasure μ)) }
 
+-- ## An alternative attempt to define first a content and hence a measure
+
+variable [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [BorelSpace X]
+open TopologicalSpace NNReal
+
+-- Implementation note: instead of working with partitions of `K`, work with sets of disjoints sets
+-- contained within `K` since the same value will be achieved in the supremum.
+private def partitions (K : Set X) : Set (ℕ → Set X) :=
+    {E : ℕ → Set X | (∀ n, (E n) ⊆ K) ∧ Pairwise (Function.onFun Disjoint E)}
+
+/-- Given a partition of a set `K`, this returns the sum of the norm of the measure of the elements
+of that partition. If elements of the partition are non-measurable then the measure of that will be
+0 and hence not contribute to the sum. -/
+private noncomputable def sumOfNormOfMeasure (μ : VectorMeasure X V) (E : ℕ → Set X) : ℝ≥0 :=
+    ⟨∑' n,  ‖μ (E n)‖, tsum_nonneg (fun n ↦ norm_nonneg (μ (E n)))⟩
+
+noncomputable def variationContentAux (μ : VectorMeasure X V) (K : Compacts X) : ℝ≥0 :=
+    ⨆ E ∈ partitions K, sumOfNormOfMeasure μ E
+
+lemma partitionsMono {E₁ E₂ : Set X} (h : E₁ ⊆ E₂) : partitions E₁ ⊆ partitions E₂ := by
+  intro E hE
+  refine ⟨?_,?_⟩
+  · exact fun n _ hx ↦ h ((hE.1 n) hx)
+  · exact hE.2
+
+theorem variationContentAux_mono (μ : VectorMeasure X V) (K₁ K₂ : Compacts X)
+    (h : (K₁ : Set X) ⊆ K₂) : variationContentAux μ K₁ ≤ variationContentAux μ K₂ := by
+  dsimp [variationContentAux]
+  -- follows from the fact that the partitions are monotone
+  have := partitionsMono h
+  -- apply iSup_le_iSup_of_subset
+  sorry
+
+theorem variationContentAux_sup_le (μ : VectorMeasure X V) (K₁ K₂ : Compacts X) :
+    variationContentAux μ (K₁ ⊔ K₂) ≤ variationContentAux μ K₁ + variationContentAux μ K₂ := by
+  -- From any partition of `K₁ ⊔ K₂` we obtain a partition of `K₁` and of `K₂`.
+  -- The elements of these partititions are subsets of the elements of the original partition.
+  -- The conclusion follows from the fact that `μ` is monotone.
+  sorry
+
+theorem variationContentAux_sup_disjoint (μ : VectorMeasure X V) (K₁ K₂ : Compacts X)
+    (h: Disjoint (K₁ : Set X) K₂) (h' : IsClosed (K₁ : Set X)) (h'' : IsClosed (K₂ : Set X)) :
+    variationContentAux μ (K₁ ⊔ K₂) = variationContentAux μ K₁ + variationContentAux μ K₂ := by
+  refine le_antisymm (variationContentAux_sup_le μ K₁ K₂) ?_
+  -- we need only prove `≤`
+  -- Given a partition of `K₁` and a partition of `K₂` we obtain a partition of `K₁ ⊔ K₂` by
+  -- combining them.
+  sorry
+
+/-- The variation content of a vector-valued measure. -/
+noncomputable def variationContent (μ : VectorMeasure X V) : Content X where
+  toFun := variationContentAux μ
+  mono' := variationContentAux_mono μ
+  sup_disjoint' := variationContentAux_sup_disjoint μ
+  sup_le' := variationContentAux_sup_le μ
+
+lemma contentRegular_variationContent (μ : VectorMeasure X V) :
+    (variationContent μ).ContentRegular := by
+  sorry
+
+/-- The variation measure of a vector-valued measure. -/
+noncomputable def variation (μ : VectorMeasure X V) := (variationContent μ).measure
+
+theorem abs_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
+    ‖μ E‖ ≤ (variation μ E).toReal := by
+  sorry
+
+-- TO DO : show that total variation is a norm on the space of vector-valued measures.
 
 /-- **Theorem**
 Let `Φ` be a linear functional on `C_0(X, ℂ)`. Suppsoe that `μ`, `μ'` are complex Borel measures
