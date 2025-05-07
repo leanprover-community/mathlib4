@@ -645,15 +645,13 @@ lemma integral_convexOn_of_integrand_ae {β : Type*} [AddCommMonoid β]
                     refine hf_int _ ?_
                     rw [convex_iff_add_mem] at hs
                     exact hs ha hb hp hq hpq
-                  case rhs =>
-                    exact Integrable.add
-                        (Integrable.smul _ (hf_int a ha)) (Integrable.smul _ (hf_int b hb))
+                  case rhs => fun_prop (disch := aesop)
                   case ae_le =>
                     filter_upwards [hf_conv] with x hx
                     exact hx.2 ha hb hp hq hpq
             _ = ∫ x, p • f x a ∂μ + ∫ x, q • f x b ∂μ := by
-                  exact integral_add
-                    (Integrable.smul _ (hf_int a ha)) (Integrable.smul _ (hf_int b hb))
+                  apply integral_add
+                  all_goals fun_prop (disch := aesop)
             _ = p • ∫ x, f x a ∂μ + q • ∫ x, f x b ∂μ := by simp [integral_smul]
 
 lemma integral_concaveOn_of_integrand_ae {β : Type*} [AddCommMonoid β]
@@ -661,10 +659,8 @@ lemma integral_concaveOn_of_integrand_ae {β : Type*} [AddCommMonoid β]
     (hf_conc : ∀ᵐ x ∂μ, ConcaveOn ℝ s (f x)) (hf_int : ∀ a ∈ s, Integrable (f · a) μ) :
     ConcaveOn ℝ s (fun b => ∫ x, f x b ∂μ) := by
   simp_rw [← neg_convexOn_iff] at hf_conc ⊢
-  have hf_int' : ∀ a ∈ s,  Integrable ((-f) · a) μ := fun a ha => Integrable.neg <| hf_int a ha
-  change ConvexOn ℝ s (fun b ↦ -∫ (x : α), f x b ∂μ)
-  simp_rw [← integral_neg]
-  exact integral_convexOn_of_integrand_ae hs hf_conc hf_int'
+  simpa only [Pi.neg_apply, integral_neg] using
+    integral_convexOn_of_integrand_ae hs hf_conc (hf_int · · |>.neg)
 
 end Order
 
