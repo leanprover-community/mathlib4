@@ -3,7 +3,7 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 
 /-!
@@ -11,7 +11,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular Jacobian points on `W` can be given
 negation and addition operations defined by an analogue of the secant-and-tangent process in
-`Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, but the polynomials involved are
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`, but the polynomials involved are
 `(2, 3, 1)`-homogeneous, so any instances of division become multiplication in the `Z`-coordinate.
 Most computational proofs are immediate from their analogous proofs for affine coordinates.
 
@@ -36,7 +36,7 @@ be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
 The definitions of `WeierstrassCurve.Jacobian.addX` and `WeierstrassCurve.Jacobian.negAddY` are
 given explicitly by large polynomials that are homogeneous of degrees `8` and `12` respectively.
 Clearing the denominators of their corresponding affine rational functions in
-`Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean` would give polynomials that are
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean` would give polynomials that are
 homogeneous of degrees `12` and `18` respectively, so their actual definitions are off by powers of
 a certain polynomial factor that is homogeneous of degree `2`. This factor divides their
 corresponding affine polynomials only modulo the `(2, 3, 1)`-homogeneous Weierstrass equation, so

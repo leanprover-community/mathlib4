@@ -3,8 +3,12 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Lake.Util.Error
+import Lean.Environment
+import Lean.Parser.Module
 import Lean.Util.FoldConsts
-import Lean
+import Lean.Util.Paths
+import Lake.CLI.Main
 
 /-! # `lake exe shake` command
 
@@ -26,7 +30,7 @@ To mitigate this, the `scripts/noshake.json` file is used to suppress known fals
 
 -/
 
-def help : String := "Mathlib4 tree shaking tool
+def help : String := "Lean project tree shaking tool
 Usage: lake exe shake [OPTIONS] <MODULE>..
 
 Arguments:
@@ -232,7 +236,7 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
     msgs.forM fun msg => msg.toString >>= IO.println
     throw <| .userError "parse errors in file"
   -- the insertion point for `add` is the first newline after the imports
-  let insertion := header.getTailPos?.getD parserState.pos
+  let insertion := header.raw.getTailPos?.getD parserState.pos
   let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
   pure (path, inputCtx, header, insertion)
 
@@ -449,12 +453,32 @@ def main (args : List String) : IO UInt32 := do
       IO.println "There are out of date oleans. Run `lake build` or `lake exe cache get` first"
       IO.Process.exit 1
 
+  -- Determine default module(s) to run shake on
+  let defaultTargetModules : Array Name ← try
+    let (elanInstall?, leanInstall?, lakeInstall?) ← Lake.findInstall?
+    let config ← Lake.MonadError.runEIO <| Lake.mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
+    let some workspace ← Lake.loadWorkspace config |>.toBaseIO
+      | throw <| IO.userError "failed to load Lake workspace"
+    let defaultTargetModules := workspace.root.defaultTargets.flatMap fun target =>
+      if let some lib := workspace.root.findLeanLib? target then
+        lib.roots
+      else if let some exe := workspace.root.findLeanExe? target then
+        #[exe.config.root]
+      else
+        #[]
+    pure defaultTargetModules
+  catch _ =>
+    pure #[]
+
   -- Parse the `--cfg` argument
-  let srcSearchPath ← initSrcSearchPath
+  let srcSearchPath ← getSrcSearchPath
   let cfgFile ← if let some cfg := args.cfg then
     pure (some ⟨cfg⟩)
-  else if let some path ← srcSearchPath.findModuleWithExt "lean" `Mathlib then
-    pure (some (path.parent.get! / "scripts" / "noshake.json"))
+  else if let some mod := defaultTargetModules[0]? then
+    if let some path ← srcSearchPath.findModuleWithExt "lean" mod then
+      pure (some (path.parent.get! / "scripts" / "noshake.json"))
+    else
+      pure none
   else pure none
 
   -- Read the config file
@@ -472,7 +496,7 @@ def main (args : List String) : IO UInt32 := do
     IO.Process.exit 1
   else
   -- the list of root modules
-  let mods := if args.mods.isEmpty then #[`Mathlib] else args.mods
+  let mods := if args.mods.isEmpty then defaultTargetModules else args.mods
   -- Only submodules of `pkg` will be edited or have info reported on them
   let pkg := mods[0]!.components.head!
 

@@ -91,7 +91,7 @@ instance : Category (Pairwise ι) where
 
 end
 
-variable {α : Type v} (U : ι → α)
+variable {α : Type u} (U : ι → α)
 
 section
 

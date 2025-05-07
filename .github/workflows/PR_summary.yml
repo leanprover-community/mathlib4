@@ -36,7 +36,7 @@ jobs:
         fi
 
     - name: Set up Python
-      uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
       with:
         python-version: 3.12
 
@@ -46,27 +46,24 @@ jobs:
         sudo apt-get install -y jq
         # If you have additional dependencies, install them here
 
-    - name: Get changed and removed/renamed files
+    - name: Get changed and removed/renamed and removed/renamed files
       run: |
         git fetch origin ${{ github.base_ref }}  # fetch the base branch
         # Get the list of all changed files.
         git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt
         # Get all files which were removed or renamed.
-        movedFiles=$(git diff --name-only --diff-filter DR origin/${{ github.base_ref }}...)
-        if [ -n "$movedFiles" ]; then
-          echo "info: found removed file(s) $movedFiles"
-        fi
-        echo $movedFiles > removed_renamed_files.txt
+        echo "Checking for removed files..."
+        git diff --name-only --diff-filter DR origin/${{ github.base_ref }}... | tee removed_renamed_files.txt
 
     - name: Compute (re)moved files without deprecation
       run: |
-        echo "" > moved_without_deprecation.txt
+        touch moved_without_deprecation.txt
         git checkout ${{ github.base_ref }}
         for file in $(cat removed_renamed_files.txt) ; do
-          if grep ^deprecated_module $file ; then
-            echo "info: removed file $file contains a deprecation"
+          if grep ^deprecated_module "${file}" ; then
+            printf 'info: removed file %s contains a deprecation\n' "${file}"
           else
-            echo "**error**: file $file was removed without a module deprecation" >> moved_without_deprecation.txt
+            printf '**error**: file %s was removed without a module deprecation\n' "${file}" >> moved_without_deprecation.txt
           fi
         done
 

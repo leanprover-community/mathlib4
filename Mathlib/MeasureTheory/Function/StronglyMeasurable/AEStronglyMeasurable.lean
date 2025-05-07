@@ -439,9 +439,9 @@ protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β
 
 /-- The `enorm` of a strongly a.e. measurable function is a.e. measurable.
 
-Note that unlike `AEStrongMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, this lemma proves
+Note that unlike `AEStronglyMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, this lemma proves
 a.e. measurability, **not** a.e. strong measurability. This is an intentional decision:
-for functions taking values in ℝ≥0∞, a.e. measurability is much more useful than
+for functions taking values in `ℝ≥0∞`, a.e. measurability is much more useful than
 a.e. strong measurability. -/
 @[fun_prop, measurability]
 protected theorem enorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
@@ -631,6 +631,26 @@ theorem _root_.exists_stronglyMeasurable_limit_of_tendsto_ae [PseudoMetrizableSp
   refine ⟨Hg.mk g, Hg.stronglyMeasurable_mk, ?_⟩
   filter_upwards [hg, Hg.ae_eq_mk] with x hx h'x
   rwa [h'x] at hx
+
+/-- If `f` is almost everywhere strongly measurable and its range is almost everywhere contained
+in a nonempty measurable set `s`, then there is a strongly measurable representative `g` of `f`
+whose range is contained in `s`. -/
+lemma exists_stronglyMeasurable_range_subset {α β : Type*}
+    [TopologicalSpace β] [PseudoMetrizableSpace β] [mb : MeasurableSpace β] [BorelSpace β]
+    [m : MeasurableSpace α] {μ : Measure α} {f : α → β} (hf : AEStronglyMeasurable f μ)
+    {s : Set β} (hs : MeasurableSet s) (h_nonempty : s.Nonempty) (h_mem : ∀ᵐ x ∂μ, f x ∈ s) :
+    ∃ g : α → β, StronglyMeasurable g ∧ (∀ x, g x ∈ s) ∧ f =ᵐ[μ] g := by
+  obtain ⟨f', hf', hff'⟩ := hf
+  classical
+  refine ⟨(f' ⁻¹' s).piecewise f' (fun _ ↦ h_nonempty.some), ?meas, ?subset, ?ae_eq⟩
+  case meas => exact hf'.piecewise (hf'.measurable hs) stronglyMeasurable_const
+  case subset =>
+    rw [← Set.range_subset_iff]
+    simpa [Set.range_piecewise] using fun _ _ ↦ h_nonempty.some_mem
+  case ae_eq =>
+    apply hff'.trans
+    filter_upwards [h_mem, hff'] with x hx hx'
+    exact Eq.symm <| (f' ⁻¹' s).piecewise_eq_of_mem f' _ (by simpa [hx'] using hx)
 
 theorem piecewise {s : Set α} [DecidablePred (· ∈ s)]
     (hs : MeasurableSet s) (hf : AEStronglyMeasurable f (μ.restrict s))

@@ -66,6 +66,23 @@ namespace IsFractionRing
 
 open IsLocalization
 
+theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
+    (surj : ∀ z : K, ∃ x y, z = algebraMap R K x / algebraMap R K y) :
+    IsFractionRing R K :=
+  have inj := FaithfulSMul.algebraMap_injective R K
+  have := inj.noZeroDivisors _ (map_zero _) (map_mul _)
+  have := Module.nontrivial R K
+{ map_units' x :=
+    .mk0 _ <| (map_ne_zero_iff _ inj).mpr <| mem_nonZeroDivisors_iff_ne_zero.mp x.2
+  surj' z := by
+    have ⟨x, y, eq⟩ := surj z
+    obtain rfl | hy := eq_or_ne y 0
+    · obtain rfl : z = 0 := by simpa using eq
+      exact ⟨(0, 1), by simp⟩
+    exact ⟨⟨x, y, mem_nonZeroDivisors_iff_ne_zero.mpr hy⟩,
+      (eq_div_iff_mul_eq <| (map_ne_zero_iff _ inj).mpr hy).mp eq⟩
+  exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
+
 variable {R K}
 
 section CommRing
