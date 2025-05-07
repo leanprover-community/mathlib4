@@ -532,7 +532,7 @@ protected theorem IsTopologicalBasis.iInf {β : Type*} {ι : Type*} {t : ι → 
     refine isOpen_biInter_finset fun i hi ↦
       (h_basis i).isOpen (t := t i) (hU i hi) |>.mono (iInf_le _ _)
   · intro a u ha hu
-    rcases (nhds_iInf (t := t) (a := a)).symm ▸ hasBasis_iInf'
+    rcases (nhds_iInf (t := t) (a := a)).symm ▸ HasBasis.iInf'
       (fun i ↦ (h_basis i).nhds_hasBasis (t := t i)) |>.mem_iff.1 (hu.mem_nhds ha)
       with ⟨⟨F, U⟩, ⟨hF, hU⟩, hUu⟩
     refine ⟨_, ⟨U, hF.toFinset, ?_, rfl⟩, ?_, ?_⟩ <;> simp only [Finite.mem_toFinset, mem_iInter]

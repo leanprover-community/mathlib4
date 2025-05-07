@@ -537,7 +537,7 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} (φ : Π i, δ
   simp_rw [iInf_uniformity, uniformity_comap]
   refine le_antisymm (le_iInf fun i ↦ tendsto_iff_comap.mp UniformFun.precomp_uniformContinuous) ?_
   rcases h_cover with ⟨I, I_finite, I_cover⟩
-  refine Filter.hasBasis_iInf (fun i : ι ↦ UniformFun.hasBasis_uniformity (δ i) β |>.comap _)
+  refine HasBasis.iInf (fun i : ι ↦ UniformFun.hasBasis_uniformity (δ i) β |>.comap _)
       |>.le_basis_iff (UniformFun.hasBasis_uniformity α β) |>.mpr fun U hU ↦
     ⟨⟨I, fun _ ↦ U⟩, ⟨I_finite, fun _ ↦ hU⟩, fun ⟨f, g⟩ hfg x ↦ ?_⟩
   rcases mem_iUnion₂.mp <| I_cover.ge <| mem_univ x with ⟨i, hi, y, rfl⟩
