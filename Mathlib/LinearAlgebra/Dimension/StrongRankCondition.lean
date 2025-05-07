@@ -35,6 +35,11 @@ For modules over rings with invariant basis number
 * `mk_eq_mk_of_basis`: the dimension theorem, any two bases of the same vector space have the same
   cardinality.
 
+## Additional definition
+
+* `Algebra.IsQuadraticExtension`: An extension of rings `R ⊆ S` is quadratic if `S` is a
+  free `R`-algebra of rank `2`.
+
 -/
 
 
@@ -62,7 +67,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
   cases fintypeOrInfinite ι
   · -- `v` is a finite basis, so by `basis_finite_of_finite_spans` so is `v'`.
     -- haveI : Finite (range v) := Set.finite_range v
-    haveI := basis_finite_of_finite_spans _ (Set.finite_range v) v.span_eq v'
+    haveI := basis_finite_of_finite_spans (Set.finite_range v) v.span_eq v'
     cases nonempty_fintype ι'
     -- We clean up a little:
     rw [Cardinal.mk_fintype, Cardinal.mk_fintype]
@@ -121,7 +126,7 @@ but still assumes we have a finite spanning set.
 theorem basis_le_span' {ι : Type*} (b : Basis ι R M) {w : Set M} [Fintype w] (s : span R w = ⊤) :
     #ι ≤ Fintype.card w := by
   haveI := nontrivial_of_invariantBasisNumber R
-  haveI := basis_finite_of_finite_spans w (toFinite _) s b
+  haveI := basis_finite_of_finite_spans w.toFinite s b
   cases nonempty_fintype ι
   rw [Cardinal.mk_fintype ι]
   simp only [Nat.cast_le]
@@ -542,3 +547,19 @@ theorem mem_span_set_iff_exists_finsupp_le_finrank :
     exact mem_span_set.mpr ⟨c, hcs, hx⟩
 
 end Submodule
+
+namespace Algebra
+
+/--
+An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-algebra of rank `2`.
+-/
+-- TODO. use this in connection with `NumberTheory.Zsqrtd`
+class IsQuadraticExtension (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
+    [Algebra R S] extends Module.Free R S where
+  finrank_eq_two' : Module.finrank R S = 2
+
+theorem IsQuadraticExtension.finrank_eq_two (R S : Type*) [CommSemiring R] [StrongRankCondition R]
+    [Semiring S] [Algebra R S] [IsQuadraticExtension R S] :
+    Module.finrank R S = 2 := finrank_eq_two'
+
+end Algebra

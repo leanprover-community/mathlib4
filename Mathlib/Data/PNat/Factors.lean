@@ -221,15 +221,14 @@ namespace PrimeMultiset
  then factor it, we get back the original multiset. -/
 theorem factorMultiset_prod (v : PrimeMultiset) : v.prod.factorMultiset = v := by
   apply PrimeMultiset.coeNat_injective
-  suffices toNatMultiset (PNat.factorMultiset (prod v)) = toNatMultiset v by exact this
   rw [v.prod.coeNat_factorMultiset, PrimeMultiset.coe_prod]
   rcases v with ⟨l⟩
-  --unfold_coes
   dsimp [PrimeMultiset.toNatMultiset]
   let l' := l.map ((↑) : Nat.Primes → ℕ)
-  have : ∀ p : ℕ, p ∈ l' → p.Prime := fun p hp => by
-    rcases List.mem_map.mp hp with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩
-    exact h_eq ▸ hp'
+  have (p : ℕ) (hp : p ∈ l') : p.Prime := by
+    simp only [List.map_subtype, List.map_id_fun', id_eq, List.mem_unattach, l'] at hp
+    obtain ⟨hp', -⟩ := hp
+    exact hp'
   exact Multiset.coe_eq_coe.mpr (@Nat.primeFactorsList_unique _ l' rfl this).symm
 
 end PrimeMultiset

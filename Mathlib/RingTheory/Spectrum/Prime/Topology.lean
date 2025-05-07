@@ -492,9 +492,6 @@ lemma isClosedEmbedding_comap_of_surjective (hf : Surjective f) : IsClosedEmbedd
   injective := comap_injective_of_surjective f hf
   isClosed_range := isClosed_range_comap_of_surjective S f hf
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_comap_of_surjective := isClosedEmbedding_comap_of_surjective
-
 end SpecOfSurjective
 
 section SpecProd
@@ -637,9 +634,6 @@ theorem localization_away_isOpenEmbedding (S : Type v) [CommSemiring S] [Algebra
   isOpen_range := by
     rw [localization_away_comap_range S r]
     exact isOpen_basicOpen
-
-@[deprecated (since := "2024-10-18")]
-alias localization_away_openEmbedding := localization_away_isOpenEmbedding
 
 theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectrum R)) := by
   rw [← localization_away_comap_range (Localization (Submonoid.powers f))]
