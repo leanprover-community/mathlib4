@@ -42,13 +42,9 @@ lemma all_vertices_degree_two (c : G.IsCycle) : ∀ (v : V), G.degree v = 2 := c
 lemma vertex_card_eq_edge_card (c : G.IsCycle) : Fintype.card V = Fintype.card G.edgeSet := by
   have h_v_card : ∑ (v : V), G.degree v = 2*(Fintype.card V) := by
     have hd : ∀ v ∈ (Finset.univ : Finset V), G.degree v ≤ 2 := by simp [c.2]
-    rw [← Finset.card_univ, Finset.card_eq_sum_ones, Finset.mul_sum, mul_one,
-      Finset.sum_eq_sum_iff_of_le hd]
-    simp only [Finset.mem_univ, forall_const]
-    exact c.2
-  have h_e_card : ∑ (v : V), G.degree v = 2*(Fintype.card G.edgeSet) := by
-    simp_all [G.sum_degrees_eq_twice_card_edges]
-  simp_all
+    simp only [← Finset.card_univ, Finset.card_eq_sum_ones, Finset.mul_sum, mul_one,
+      Finset.sum_eq_sum_iff_of_le hd, Finset.mem_univ, forall_const, c.2]
+  simp_all [G.sum_degrees_eq_twice_card_edges]
 
 lemma three_le_card (c : G.IsCycle) : 3 ≤ Fintype.card V := by
   obtain ⟨hc, hd⟩ := c
@@ -68,15 +64,10 @@ lemma IsCycles (c : G.IsCycle) : G.IsCycles := by
   simp [Set.ncard_eq_toFinset_card', h_n_card]
 
 lemma exists_adj (c : G.IsCycle) : ∃ (w : V), G.Adj v w := by
-  have hd : G.degree v > 0 := by
-    rw [c.2]
-    trivial
+  have hd : G.degree v > 0 := by simp [c.2]
   exact (G.degree_pos_iff_exists_adj v).mp hd
 
-lemma neighborSet_nonempty (c : G.IsCycle) : (G.neighborSet v).Nonempty := by
-  obtain ⟨w, hw⟩ := c.exists_adj
-  have : w ∈ G.neighborSet v := hw
-  use w
+lemma neighborSet_nonempty (c : G.IsCycle) : (G.neighborSet v).Nonempty := c.exists_adj
 
 lemma no_bridges (c : G.IsCycle) (hadj : G.Adj v w) : ¬G.IsBridge s(v, w) := by
   simp only [isBridge_iff, hadj, true_and, not_not]
@@ -92,8 +83,7 @@ lemma notAcyclic (c : G.IsCycle) : ¬G.IsAcyclic := by
 
 lemma isCyclic (c : G.IsCycle) : ∃ (v : V) (p : G.Walk v v), p.IsCycle := by
   have h_not_acyclic := c.notAcyclic
-  unfold IsAcyclic at h_not_acyclic
-  simp_all
+  simp_all [IsAcyclic]
 
 lemma all_vertices_form_a_cycle (c : G.IsCycle) : ∃ (p : G.Walk v v), p.IsCycle := by
   have hv : v ∈ G.connectedComponentMk v := ConnectedComponent.connectedComponentMk_mem
@@ -128,7 +118,7 @@ lemma cycle_walk_tail_contains_all_vertices {p : G.Walk v v} (c : G.IsCycle) (hp
     intro w
     constructor
     · intro
-      have : p.support ≠ [] := by simp
+      have : p.support ≠ [] := p.support_ne_nil
       by_cases h : w = p.support.head this
       · simp only [Walk.head_support] at h
         rw [h]
@@ -146,7 +136,6 @@ lemma cycle_walk_contains_all_edges {p : G.Walk v v} (c : G.IsCycle) (h : p.IsCy
     ∀ e ∈ G.edgeSet, e ∈ p.edges := by
   have h_stl_tsl : p.support.tail.length = p.tail.support.length := by
     simp [p.support_tail h.not_nil]
-  have h_e_card : Fintype.card G.edgeSet = G.edgeFinset.card := by simp
   have h_support_length : p.support.tail.length = Fintype.card V := by
     rw [← List.toFinset_card_of_nodup h.support_nodup]
     have : ∀ (v : V), v ∈ p.support.tail.toFinset := by
@@ -154,18 +143,19 @@ lemma cycle_walk_contains_all_edges {p : G.Walk v v} (c : G.IsCycle) (h : p.IsCy
     rw [← Finset.eq_univ_iff_forall] at this
     simp [this]
   rw [c.vertex_card_eq_edge_card, h_stl_tsl, p.tail.length_support, p.length_tail_add_one h.not_nil,
-    ← p.length_edges, ← List.toFinset_card_of_nodup h.edges_nodup, h_e_card] at h_support_length
-  have he : p.edges.toFinset ⊆ G.edgeFinset := by
-    simp only [Set.subset_toFinset, List.coe_toFinset]
-    apply Walk.edges_subset_edgeSet
+    ← p.length_edges, ← List.toFinset_card_of_nodup h.edges_nodup, ← edgeFinset_card]
+    at h_support_length
   have : ∀ e ∈ G.edgeSet, e ∈ p.edgeSet := by
     have : p.edgeSet = G.edgeSet := by
+      have : p.edges.toFinset ⊆ G.edgeFinset := by
+        simp only [Set.subset_toFinset, List.coe_toFinset]
+        apply Walk.edges_subset_edgeSet
       have : p.edges.toFinset = G.edgeFinset :=
-        Finset.eq_of_subset_of_card_le he h_support_length.ge
+        Finset.eq_of_subset_of_card_le this h_support_length.ge
       calc
-        p.edgeSet = ↑p.edges.toFinset := by rw [Walk.coe_edges_toFinset]
+        p.edgeSet = ↑p.edges.toFinset := (Walk.coe_edges_toFinset _).symm
         _ = ↑G.edgeFinset := by rw [this]
-        _ = G.edgeSet := by rw [coe_edgeFinset]
+        _ = G.edgeSet := coe_edgeFinset _
     simp [this]
   simp_all
 
@@ -174,18 +164,16 @@ theorem IsEulerian (c : G.IsCycle) : ∃ (v : V) (p : G.Walk v v), p.IsEulerian 
   obtain ⟨v, p, hpc⟩ := c.isCyclic
   use v
   use p
-  have h_trail := hpc.isCircuit.isTrail
-  simp only [h_trail, true_and]
+  simp only [hpc.isCircuit.isTrail, true_and]
   exact c.cycle_walk_contains_all_edges G hpc
 
 lemma IsHamiltonian (c : G.IsCycle) : G.IsHamiltonian := by
   unfold SimpleGraph.IsHamiltonian
   intro
-  simp only [Walk.isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one]
   obtain ⟨v, p, hcyc⟩ := c.isCyclic
   use v
   use p
-  simp only [hcyc, true_and]
+  simp only [Walk.isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one, hcyc, true_and]
   intro v
   have : v ∈ p.support.tail := by apply c.cycle_walk_tail_contains_all_vertices G hcyc
   apply List.count_eq_one_of_mem hcyc.support_nodup this
