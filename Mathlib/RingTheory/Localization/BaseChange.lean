@@ -197,23 +197,40 @@ lemma IsLocalizedModule.map_lTensor (g : M →ₗ[A] M') [h : IsLocalizedModule 
 
 end
 
-namespace IsLocalization.Away
+section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     (r : R) (A : Type*) [CommRing A] [Algebra R A]
 
+instance IsLocalization.tensor (M : Submonoid R) [IsLocalization M A] :
+    IsLocalization (Algebra.algebraMapSubmonoid S M) (S ⊗[R] A) := by
+  let _ : Algebra A (S ⊗[R] A) := Algebra.TensorProduct.rightAlgebra
+  rw [Algebra.isLocalization_iff_isPushout _ A]
+  infer_instance
+
+open Algebra.TensorProduct in
+lemma IsLocalization.tmul_mk' (M : Submonoid R) [IsLocalization M A] (s : S) (x : R) (y : M) :
+    s ⊗ₜ IsLocalization.mk' A x y =
+      IsLocalization.mk' (S ⊗[R] A) (algebraMap R S x * s)
+        ⟨algebraMap R S y.1, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
+  rw [IsLocalization.eq_mk'_iff_mul_eq, algebraMap_apply, Algebra.id.map_eq_id,
+    RingHomCompTriple.comp_apply, tmul_one_eq_one_tmul, tmul_mul_tmul, mul_one, mul_comm,
+    IsLocalization.mk'_spec', algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply,
+    ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
+
+namespace IsLocalization.Away
+
 instance tensor [IsLocalization.Away r A] :
     IsLocalization.Away (algebraMap R S r) (S ⊗[R] A) := by
-  let _ : Algebra A (S ⊗[R] A) := Algebra.TensorProduct.rightAlgebra
   simp only [IsLocalization.Away]
   have : Submonoid.powers (algebraMap R S r) = Algebra.algebraMapSubmonoid S (.powers r) := by
     simp [Algebra.algebraMapSubmonoid]
-  rw [this, Algebra.isLocalization_iff_isPushout _ A]
+  rw [this]
   infer_instance
 
 variable (S) in
 /-- The `S`-isomorphism `S ⊗[R] Rᵣ ≃ₐ Sᵣ`. -/
-noncomputable def tensorEquiv [IsLocalization.Away r A] :
+noncomputable abbrev tensorEquiv [IsLocalization.Away r A] :
     S ⊗[R] A ≃ₐ[S] Localization.Away (algebraMap R S r) :=
   IsLocalization.algEquiv (Submonoid.powers <| algebraMap R S r) _ _
 
@@ -229,8 +246,10 @@ instance tensorRight [IsLocalization.Away r A] :
 
 variable (S) in
 /-- The `S`-isomorphism `S ⊗[R] Rᵣ ≃ₐ Sᵣ`. -/
-noncomputable def tensorRightEquiv [IsLocalization.Away r A] :
+noncomputable abbrev tensorRightEquiv [IsLocalization.Away r A] :
     A ⊗[R] S ≃ₐ[S] Localization.Away (algebraMap R S r) :=
   IsLocalization.algEquiv (Submonoid.powers <| algebraMap R S r) _ _
 
 end IsLocalization.Away
+
+end

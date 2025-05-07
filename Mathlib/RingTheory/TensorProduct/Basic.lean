@@ -921,9 +921,6 @@ lemma comm_comp_includeRight :
 theorem adjoin_tmul_eq_top : adjoin R { t : A ⊗[R] B | ∃ a b, a ⊗ₜ[R] b = t } = ⊤ :=
   top_le_iff.mp <| (top_le_iff.mpr <| span_tmul_eq_top R A B).trans (span_le_adjoin R _)
 
-lemma tmul_comm(r : R) : algebraMap R A r ⊗ₜ[R] 1 = 1 ⊗ₜ algebraMap R B r := by
-  rw [algebraMap_eq_smul_one, algebraMap_eq_smul_one, smul_tmul]
-
 end
 
 section
