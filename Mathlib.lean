@@ -1854,6 +1854,7 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
+import Mathlib.CategoryTheory.Adjunction.Quadruple
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Adjunction.Triple
