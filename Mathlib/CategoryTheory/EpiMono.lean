@@ -244,27 +244,29 @@ end
 
 section
 
-/-- When `f` is an isomorphism, `f ≫ g` is epic iff `g` is.
-TODO: should this and the following lemmas be simp lemmas? might cause slowdowns because it triggers
-instance searches for `IsIso` whenever `simp` is used on a goal containing `Mono (f ≫ g)`. -/
+/-- When `f` is an isomorphism, `f ≫ g` is epic iff `g` is. -/
+@[simp]
 lemma epi_isIso_comp_iff {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) :
     Epi (f ≫ g) ↔ Epi g := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
   simpa using (inferInstance : Epi (inv f ≫ f ≫ g))
 
 /-- When `g` is an isomorphism, `f ≫ g` is epic iff `f` is. -/
+@[simp]
 lemma epi_comp_isIso_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     Epi (f ≫ g) ↔ Epi f := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
   simpa using (inferInstance : Epi ((f ≫ g) ≫ inv g ))
 
 /-- When `f` is an isomorphism, `f ≫ g` is monic iff `g` is. -/
+@[simp]
 lemma mono_isIso_comp_iff {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) :
     Mono (f ≫ g) ↔ Mono g := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
   simpa using (inferInstance : Mono (inv f ≫ f ≫ g))
 
 /-- When `g` is an isomorphism, `f ≫ g` is monic iff `f` is. -/
+@[simp]
 lemma mono_comp_isIso_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     Mono (f ≫ g) ↔ Mono f := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
