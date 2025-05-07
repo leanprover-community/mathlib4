@@ -333,16 +333,18 @@ protected def op (α : F ⟶ G) : G.op ⟶ F.op where
 theorem op_id (F : C ⥤ D) : NatTrans.op (𝟙 F) = 𝟙 F.op :=
   rfl
 
-@[simp]
+@[simp, reassoc]
 theorem op_comp {H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.op (α ≫ β) = NatTrans.op β ≫ NatTrans.op α :=
   rfl
 
+@[reassoc]
 lemma op_whiskerRight {E : Type*} [Category E] {H : D ⥤ E} (α : F ⟶ G) :
     NatTrans.op (whiskerRight α H) =
     (Functor.opComp _ _).hom ≫ whiskerRight (NatTrans.op α) H.op ≫ (Functor.opComp _ _).inv := by
   aesop_cat
 
+@[reassoc]
 lemma op_whiskerLeft {E : Type*} [Category E] {H : E ⥤ C} (α : F ⟶ G) :
     NatTrans.op (whiskerLeft H α) =
     (Functor.opComp _ _).hom ≫ whiskerLeft H.op (NatTrans.op α) ≫ (Functor.opComp _ _).inv := by
@@ -358,17 +360,19 @@ protected def unop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ⟶ G) : G.unop ⟶ F.uno
 theorem unop_id (F : Cᵒᵖ ⥤ Dᵒᵖ) : NatTrans.unop (𝟙 F) = 𝟙 F.unop :=
   rfl
 
-@[simp]
+@[simp, reassoc]
 theorem unop_comp {F G H : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.unop (α ≫ β) = NatTrans.unop β ≫ NatTrans.unop α :=
   rfl
 
+@[reassoc]
 lemma unop_whiskerRight {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category E] {H : Dᵒᵖ ⥤ Eᵒᵖ} (α : F ⟶ G) :
     NatTrans.unop (whiskerRight α H) =
     (Functor.unopComp _ _).hom ≫ whiskerRight (NatTrans.unop α) H.unop ≫
       (Functor.unopComp _ _).inv := by
   aesop_cat
 
+@[reassoc]
 lemma unop_whiskerLeft {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category E] {H : Eᵒᵖ ⥤ Cᵒᵖ} (α : F ⟶ G) :
     NatTrans.unop (whiskerLeft H α) =
     (Functor.unopComp _ _).hom ≫ whiskerLeft H.unop (NatTrans.unop α) ≫
@@ -423,6 +427,7 @@ theorem leftOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.leftOp (α ≫ β) 
     NatTrans.leftOp β ≫ NatTrans.leftOp α :=
   rfl
 
+@[reassoc]
 lemma leftOpWhiskerRight {E : Type*} [Category E] {H : E ⥤ C} (α : F ⟶ G) :
     (whiskerLeft H α).leftOp = (Functor.leftOpComp H G).hom ≫ whiskerLeft _ α.leftOp ≫
       (Functor.leftOpComp H F).inv := by
@@ -464,6 +469,7 @@ theorem rightOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.rightOp (α ≫ β
     NatTrans.rightOp β ≫ NatTrans.rightOp α :=
   rfl
 
+@[reassoc]
 lemma rightOpWhiskerRight {E : Type*} [Category E] {H : D ⥤ E} (α : F ⟶ G) :
     (whiskerRight α H).rightOp = (Functor.rightOpComp G H).hom ≫ whiskerRight α.rightOp H.op ≫
       (Functor.rightOpComp F H).inv := by
@@ -625,15 +631,15 @@ lemma unop_whiskerLeft {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category E] {H :
   aesop_cat
 
 lemma op_leftUnitor :
-    NatIso.op (Functor.leftUnitor F) =
-    (Functor.leftUnitor F.op).symm ≪≫
+    NatIso.op F.leftUnitor =
+    F.op.leftUnitor.symm ≪≫
       isoWhiskerRight (Functor.opId C).symm F.op ≪≫
       (Functor.opComp _ _).symm := by
   aesop_cat
 
 lemma op_rightUnitor :
-    NatIso.op (Functor.rightUnitor F) =
-    (Functor.rightUnitor F.op).symm ≪≫
+    NatIso.op F.rightUnitor =
+    F.op.rightUnitor.symm ≪≫
       isoWhiskerLeft F.op (Functor.opId D).symm ≪≫
       (Functor.opComp _ _).symm := by
   aesop_cat
@@ -646,15 +652,15 @@ lemma op_associator {E E': Type*} [Category E] [Category E'] {F : C ⥤ D} {G : 
   aesop_cat
 
 lemma unop_leftUnitor {F : Cᵒᵖ ⥤ Dᵒᵖ} :
-    NatIso.unop (Functor.leftUnitor F) =
-    (Functor.leftUnitor F.unop).symm ≪≫
+    NatIso.unop F.leftUnitor =
+    F.unop.leftUnitor.symm ≪≫
       isoWhiskerRight (Functor.unopId C).symm F.unop ≪≫
       (Functor.unopComp _ _).symm := by
   aesop_cat
 
 lemma unop_rightUnitor {F : Cᵒᵖ ⥤ Dᵒᵖ} :
-    NatIso.unop (Functor.rightUnitor F) =
-    (Functor.rightUnitor F.unop).symm ≪≫
+    NatIso.unop F.rightUnitor =
+    F.unop.rightUnitor.symm ≪≫
       isoWhiskerLeft F.unop (Functor.unopId D).symm ≪≫
       (Functor.unopComp _ _).symm := by
   aesop_cat
