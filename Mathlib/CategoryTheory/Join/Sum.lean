@@ -24,19 +24,17 @@ It sends `inl c` to `left c` and `inr d` to `right d`. -/
 @[simps! obj] -- Maps get characterized w.r.t the inclusions below
 def fromSum : C ⊕ D ⥤ C ⋆ D := (inclLeft C D).sum' <| inclRight C D
 
-variable {C D}
-
+variable {C} in
 @[simp]
 lemma fromSum_map_inl {c c' : C} (f : c ⟶ c') :
     (fromSum C D).map ((Sum.inl_ C D).map f) = (inclLeft C D).map f :=
   rfl
 
+variable {D} in
 @[simp]
 lemma fromSum_map_inr {d d' : D} (f : d ⟶ d') :
     (fromSum C D).map ((Sum.inr_ C D).map f) = (inclRight C D).map f :=
   rfl
-
-variable (C D)
 
 /-- Characterization of `fromSum` with respect to the left inclusion. -/
 @[simps! hom_app inv_app]
