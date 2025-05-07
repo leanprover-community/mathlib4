@@ -60,10 +60,10 @@ jobs:
         touch moved_without_deprecation.txt
         git checkout ${{ github.base_ref }}
         for file in $(cat removed_renamed_files.txt) ; do
-          if grep ^deprecated_module $file ; then
-            echo "info: removed file $file contains a deprecation"
+          if grep ^deprecated_module "${file}" ; then
+            printf 'info: removed file %s contains a deprecation\n' "${file}"
           else
-            echo "**error**: file $file was removed without a module deprecation" >> moved_without_deprecation.txt
+            printf '**error**: file %s was removed without a module deprecation\n' "${file}" >> moved_without_deprecation.txt
           fi
         done
 
