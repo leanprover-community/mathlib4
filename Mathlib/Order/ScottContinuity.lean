@@ -113,6 +113,7 @@ section CompleteLattice
 
 variable [CompleteLattice α] [CompleteLattice β]
 
+/- `f` is Scott continuous if and only if it commutes with `sSup` on directed sets -/
 lemma scottContinuous_iff_map_sSup {f : α → β} : ScottContinuous f ↔
     ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) :=
   ⟨fun h _ d₁ d₂ => by rw [IsLUB.sSup_eq (h d₁ d₂ (isLUB_iff_sSup_eq.mpr rfl))],
@@ -127,9 +128,8 @@ section Products
 
 variable {γ : Type*}
 
-variable [Preorder α] [Preorder β] [Preorder γ]
-
-lemma ScottContinuous_prod_of_ScottContinuous {f : α × β → γ}
+/- `f` is Scott continuous on a product space if it is Scott continuous in each variable -/
+lemma ScottContinuous_prod_of_ScottContinuous [Preorder α] [Preorder β] [Preorder γ] {f : α × β → γ}
     (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
     ScottContinuous f := fun d hd₁ hd₂ p hdp => by
   rw [isLUB_congr ((monotone_prod_iff.mpr ⟨(fun a => (h₁ a).monotone),
@@ -143,12 +143,9 @@ lemma ScottContinuous_prod_of_ScottContinuous {f : α × β → γ}
   simp_all only [image, Prod.exists, exists_and_right, exists_eq_right, mem_setOf_eq, Prod.mk.eta,
     coe_setOf, Subtype.exists, exists_prop]
 
-end Products
-
-section SemilatticeSup
-
 variable (β : Type*)
 
+/- The join operation is Scott continuous -/
 lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := fun d _ _ _ ⟨p₁, p₂⟩ hdp => by
   simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp
@@ -181,8 +178,9 @@ lemma left_cont_inf [CompleteLinearOrder β] (a : β) : ScottContinuous fun b �
 lemma right_cont_inf [CompleteLinearOrder β] (b : β) : ScottContinuous fun a ↦ a ⊓ b := by
   refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [sSup_inf_eq_sSup_map])
 
+/- The meet operation is Scott continuous -/
 lemma ScottContinuousOn.inf₂ [CompleteLinearOrder β] :
     ScottContinuous fun (a, b) => (a ⊓ b : β) :=
   ScottContinuous_prod_of_ScottContinuous (left_cont_inf _) (right_cont_inf _)
 
-end SemilatticeSup
+end Products
