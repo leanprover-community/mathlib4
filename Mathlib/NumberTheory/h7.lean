@@ -121,10 +121,16 @@ lemma eq_order_sub_one (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f
     sorry
   }
 
+-- lemma: if the order of f is n > 0, then the order of the *single* derivative of f is n - 1
+--   this follows from the definition (characterization?) of the order as being (z - z₀)^n*g(z)
+-- lemma: by induction if the order ≥ k, then the order of the k-th derivative is n - k
+
 -- have hfoo : ∀ (z : ℂ), AnalyticAt ℂ (iteratedDeriv k f) z :=
  -- by {exact fun z ↦ analytic_iter_deriv k f hf z}
 -- have := order_inf_if_zero (iteratedDeriv k f) z hfoo
 
+-- the statement below is not correct
+-- iteratedDeriv k f z = 0 should be *AnalyticAt.order* of iteratedDeriv k f
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
   ∀ n (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z) (ho : AnalyticAt.order (hf z) ≠ ⊤),
   (∀ k < n, iteratedDeriv k f z = 0) ∧ (iteratedDeriv k f z ≠ 0)
@@ -1362,6 +1368,7 @@ lemma IsAnalyticRAtl :
 def order := AnalyticAt.order
   (IsAnalyticRAtl α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)
 
+--zero_iff_order_inf
 lemma order_neq_top :
   order α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq ≠ ⊤ := by {
   sorry
@@ -1383,8 +1390,14 @@ lemma r_div_q_geq_0 :
     simp_all only [zero_le]}
 
 #check iterated_deriv_eq_zero_imp_n_leq_order
-
+#check iterated_deriv_eq_zero_iff_order_eq_n
 --on the board
+
+-- lemma foo' : -- "order of f is not infinite, f is analytic at l"
+--   (∀ k < n, iteratedDeriv k f l = 0) →
+--   n ≤ order f l
+--   sorry
+
 lemma foo :
   let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
   let k : ℕ := (finProdFinEquiv.symm.1 u).2
@@ -1408,8 +1421,13 @@ lemma foo :
 
 lemma rgeqn :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  r ≤ n K q := sorry
+  n K q  ≤ r  := sorry
 
+-- for the next lemma you need that if you take  the minimum over a set, there is a value
+-- in the set where the minimum is attained.
+-- so yet another lemma: "there exists l₀ where the order of R in l₀ is r"
+-- after that, you can define l₀ already!
+-- these lemmas should go directly after the defintion of r
 --on the board 1st lemma
 lemma exists_nonzero_iteratedFDeriv :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
@@ -1429,7 +1447,13 @@ lemma exists_nonzero_iteratedFDeriv :
 def l₀ : Fin (m K) :=
   (exists_nonzero_iteratedFDeriv α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).choose
 
-
+-- you want somewhere a lemma that the order of R in each l is ≥ n
+--   this follows from the fact that the R^(k)(l) = 0 for each k < n
+--     which in turn follows from the equations that are solved in lemma 8.2
+--   and the equivalence between derivatives being zero and the order
+-- you want somewhere a lemma that the order of R in l₀ is r
+-- together this gives that r ≥ n
+-- each of these lines should be a separate lemma!
 
 
 
