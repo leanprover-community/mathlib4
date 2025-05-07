@@ -188,18 +188,31 @@ lemma id_hom (D : F.DescentData' sq sq₃) (i : ι) :
     Hom.hom (𝟙 D) i = 𝟙 _ :=
   rfl
 
-@[simps!]
+@[reassoc]
+lemma comm {D₁ D₂ : F.DescentData' sq sq₃} (φ : D₁ ⟶ D₂)
+    ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
+    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
+    (F.map f₁.op.toLoc).map (φ.hom i₁) ≫ pullHom D₂.hom q f₁ f₂ hf₁ hf₂ =
+  pullHom D₁.hom q f₁ f₂ hf₁ hf₂ ≫ (F.map f₂.op.toLoc).map (φ.hom i₂) := sorry
+
+@[simps! obj]
 noncomputable def descentData (D : F.DescentData' sq sq₃) : F.DescentData f :=
   .mk' D.obj (fun _ _ _ _ _ _ _ _ ↦ pullHom D.hom _ _ _ (by aesop) (by aesop))
     (fun _ _ _ _ _ hq _ _ _ _ _ _ ↦ pullHom_comp' _ _ _ _ hq _ _ _ _) (by simp) (by simp)
 
+@[simp]
+lemma descentData_iso_hom (D : F.DescentData' sq sq₃)
+    ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
+    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
+    (D.descentData.iso q f₁ f₂ hf₁ hf₂).hom = pullHom D.hom q f₁ f₂ hf₁ hf₂ :=
+  rfl
+
 end DescentData'
 
+@[simps]
 noncomputable def DescentData'.toDescentData : F.DescentData' sq sq₃ ⥤ F.DescentData f where
   obj D := D.descentData
-  map φ := DescentData.homMk φ.hom sorry
-  map_id := by intros; ext; dsimp
-  map_comp := by intros; ext; dsimp
+  map {D₁ D₂} φ := DescentData.homMk φ.hom (by simp [DescentData'.comm])
 
 end Pseudofunctor
 

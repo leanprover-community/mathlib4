@@ -110,8 +110,9 @@ lemma hom_ext {D₁ D₂ : F.DescentData f} {φ φ' : D₁ ⟶ D₂}
     (h : ∀ i, φ.hom i = φ'.hom i): φ = φ' :=
   CodescentData.hom_ext h
 
-@[simps!]
-def mk' (obj : ∀ i, F.obj (.mk (op (X i))))
+section
+
+variable (obj : ∀ i, F.obj (.mk (op (X i))))
     (hom : ∀ ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
       (_hf₁ : f₁ ≫ f i₁ = q) (_hf₂ : f₂ ≫ f i₂ = q),
         (F.map f₁.op.toLoc).obj (obj i₁) ⟶ (F.map f₂.op.toLoc).obj (obj i₂))
@@ -128,8 +129,10 @@ def mk' (obj : ∀ i, F.obj (.mk (op (X i))))
       hom q g g hg hg = 𝟙 _)
     (comp_hom : ∀ ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ i₃ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
       (f₃ : Y ⟶ X i₃) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) (hf₃ : f₃ ≫ f i₃ = q),
-        hom q f₁ f₂ hf₁ hf₂ ≫ hom q f₂ f₃ hf₂ hf₃ = hom q f₁ f₃ hf₁ hf₃) :
-    F.DescentData f :=
+        hom q f₁ f₂ hf₁ hf₂ ≫ hom q f₂ f₃ hf₂ hf₃ = hom q f₁ f₃ hf₁ hf₃)
+
+@[simps! obj]
+def mk' : F.DescentData f :=
   CodescentData.mk' obj
     (fun Y i₁ i₂ f₁ f₂ ↦ hom Y.as.unop.hom f₁.as.unop.left f₂.as.unop.left
       (Over.w f₁.as.unop) (Over.w f₂.as.unop))
@@ -141,16 +144,35 @@ def mk' (obj : ∀ i, F.obj (.mk (op (X i))))
     (fun _ _ _ ↦ hom_self _ _ _)
     (fun Y i₁ i₂ i₃ f₁ f₂ f₃ ↦ comp_hom _ _ _ _ _ _ _)
 
+@[simp]
+lemma mk'_iso_hom ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
+    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
+    ((mk' obj hom hom_comp' hom_self comp_hom).iso q f₁ f₂ hf₁ hf₂).hom =
+      hom q f₁ f₂ hf₁ hf₂ := rfl
+
+end
+
+
 @[simps]
 def homMk {D₁ D₂ : F.DescentData f} (φ : ∀ i, D₁.obj i ⟶ D₂.obj i)
     (hφ : ∀ ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
     (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q),
       (F.map f₁.op.toLoc).map (φ i₁) ≫ (D₂.iso q f₁ f₂ hf₁ hf₂).hom =
-        (D₁.iso q f₁ f₂ hf₁ hf₂).hom ≫ (F.map f₂.op.toLoc).map (φ i₂)) : D₁ ⟶ D₂ where
+        (D₁.iso q f₁ f₂ hf₁ hf₂).hom ≫ (F.map f₂.op.toLoc).map (φ i₂) := by aesop_cat) :
+    D₁ ⟶ D₂ where
   hom i := φ i
   comm Y _ _ f₁ f₂ :=
     hφ Y.as.unop.hom f₁.as.unop.left f₂.as.unop.left
       (Over.w f₁.as.unop) (Over.w f₂.as.unop)
+
+@[reassoc]
+lemma comm {D₁ D₂ : F.DescentData f} (φ : D₁ ⟶ D₂)
+    ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
+    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
+    (F.map f₁.op.toLoc).map (φ.hom i₁) ≫ (D₂.iso q f₁ f₂ hf₁ hf₂).hom =
+        (D₁.iso q f₁ f₂ hf₁ hf₂).hom ≫ (F.map f₂.op.toLoc).map (φ.hom i₂) := by
+  exact φ.comm (Y := .mk (op (Over.mk q)))
+    (Over.homMk f₁).op.toLoc (Over.homMk f₂).op.toLoc
 
 end DescentData
 
