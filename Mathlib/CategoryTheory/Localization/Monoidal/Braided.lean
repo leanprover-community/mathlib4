@@ -48,7 +48,7 @@ noncomputable def braidingNatIso : tensorBifunctor L W ε ≅ (tensorBifunctor L
       (LocalizedMonoidal L W ε)).obj L')
     (((curriedTensor C).flip ⋙ (whiskeringRight C C
       (LocalizedMonoidal L W ε)).obj L'))
-    _ _  (isoWhiskerRight (NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ β_ X Y))) _)
+    _ _  (isoWhiskerRight (curriedBraidingNatIso C) _)
 
 lemma braidingNatIso_hom_app (X Y : C) :
     ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj Y) =
