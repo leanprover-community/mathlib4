@@ -395,7 +395,7 @@ lemma empty_rel_false [inst : IsEmpty I] {x y} (h : rel R A x y) :
 @[simp] lemma empty_rel_bot [IsEmpty I] : rel R A = ⊥ := by
   ext x y; simp [empty_rel_false_iff]
 
-@[simp] lemma empty_rel'_bot [IsEmpty I] : rel' R A = ⊥ := by
+@[simp↓] lemma empty_rel'_bot [IsEmpty I] : rel' R A = ⊥ := by
   ext x y; simp [empty_rel_false_iff]
 
 /-- The free product over an empty type is isomorphic to the base ring. -/
