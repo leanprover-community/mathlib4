@@ -611,6 +611,34 @@ theorem mem_toMultiset {α : Type*} {x : α} {z : Sym2 α} :
 
 end ToMultiset
 
+section ToFinset
+
+variable [DecidableEq α]
+
+/-- Map an unordered pair to a finite set. -/
+def toFinset (z : Sym2 α) : Finset α := (z.toMultiset : Multiset α).toFinset
+
+/-- The members of an unordered pair are members of the corresponding finite set. -/
+theorem mem_toFinset {x : α} {z : Sym2 α} : x ∈ z ↔ x ∈ z.toFinset := by
+  rw [Sym2.mem_toMultiset, Sym2.toFinset, Multiset.mem_toFinset]
+
+lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
+  ext; simp [←Sym2.mem_toFinset, ←Sym2.mem_iff, Sym2.mem_toMultiset]
+
+/-- Mapping an unordered pair on the diagonal to a finite set produces a finset of size `1`. -/
+theorem card_toFinset_of_isDiag (z : Sym2 α) (h : z.IsDiag) : #(z : Sym2 α).toFinset = 1 := by
+  induction z
+  rw [Sym2.mk_isDiag_iff] at h
+  simp [Sym2.toFinset_mk_eq, h]
+
+/-- Mapping an unordered pair off the diagonal to a finite set produces a finset of size `2`. -/
+theorem card_toFinset_of_not_isDiag (z : Sym2 α) (h : ¬z.IsDiag) : #(z : Sym2 α).toFinset = 2 := by
+  induction z
+  rw [Sym2.mk_isDiag_iff] at h
+  simp [Sym2.toFinset_mk_eq, h]
+
+end ToFinset
+
 section SymEquiv
 
 /-! ### Equivalence to the second symmetric power -/
