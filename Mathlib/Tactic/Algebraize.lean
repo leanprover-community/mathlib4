@@ -203,8 +203,14 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       constructor (and that this is all we need to supply explicitly). -/
       else
         let pargs := pargs.set! (n - 1) decl.toExpr
-        /- check that the lemma applies to the hypothesis -/
-        if ← isDefEq (← inferType (← forallMetaBoundedTelescope cinfo.type n).fst.back!) decl.type then
+        -- /- check that the lemma applies to the hypothesis -/
+        -- let check ← do
+        --   let (args,_binfo,_t) ← forallMetaBoundedTelescope cinfo.type n
+        --   let argTypes ← args.mapM (inferType ·)
+        --   logInfo s!"{p} has arguments with types {argTypes}\n hypothesis has {decl.type}"
+        --   isDefEq argTypes.back! decl.type
+        -- logInfo s!"check is {check}"
+        -- if check then
         let val ← mkAppOptM p pargs
         let tp ← inferType val -- This should be the type `Algebra.Property A B`
         /- find all arguments to `Algebra.Property A B` which are of the form
