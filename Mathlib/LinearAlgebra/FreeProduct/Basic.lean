@@ -327,7 +327,7 @@ abbrev of {i : I} : A i →ₐ[R] FreeProduct.asPowers R A := ι R A i
 
 end asPowers
 
-@[simp] theorem ι_equiv_ι aᵢ : (asPowersEquiv R A (asPowers.ι R A i aᵢ) = ι R A i aᵢ := by
+@[simp] theorem ι_equiv_ι aᵢ : asPowersEquiv R A (asPowers.ι R A i aᵢ) = ι R A i aᵢ := by
   simp_rw [asPowersEquiv, asPowers.ι, ι, powerAlgebraEquivFreeTensorAlgebra, algEquivQuotAlgEquiv]
   convert RingQuot.liftAlgHom_mkAlgHom_apply R _ _ _
   aesop (add simp [Function.onFun, lof_eq_of])
