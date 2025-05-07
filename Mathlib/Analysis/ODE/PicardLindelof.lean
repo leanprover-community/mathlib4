@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Winston Yin
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.MetricSpace.Contracting
-import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # Picard-Lindelöf (Cauchy-Lipschitz) Theorem
