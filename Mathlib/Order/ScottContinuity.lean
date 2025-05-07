@@ -152,20 +152,16 @@ variable (β : Type*)
 
 lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := fun d _ _ _ ⟨p₁, p₂⟩ hdp => by
-  rw [IsLUB, IsLeast, upperBounds] at hdp
-  simp only [Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp
-  rw [IsLUB, IsLeast, upperBounds]
+  simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp
+  simp only [IsLUB, IsLeast, upperBounds, mem_image, Prod.exists, forall_exists_index, and_imp]
   constructor
-  · simp only [mem_image, Prod.exists, forall_exists_index, and_imp, mem_setOf_eq]
-    intro a b₁ b₂ hbd hba
+  · intro a b₁ b₂ hbd hba
     rw [← hba]
     exact sup_le_sup (hdp.1 _ _ hbd).1 (hdp.1 _ _ hbd).2
-  · simp only [mem_image, Prod.exists, forall_exists_index, and_imp]
-    intro b hb
+  · intro b hb
     simp only [sup_le_iff]
     have e1 : (p₁, p₂) ∈ lowerBounds {x | ∀ (b₁ b₂ : β), (b₁, b₂) ∈ d → (b₁, b₂) ≤ x} := hdp.2
-    rw [lowerBounds] at e1
-    simp only [mem_setOf_eq, Prod.forall, Prod.mk_le_mk] at e1
+    simp only [lowerBounds, mem_setOf_eq, Prod.forall, Prod.mk_le_mk] at e1
     apply e1
     intro b₁ b₂ hb'
     exact sup_le_iff.mp (hb b₁ b₂ hb' rfl)
