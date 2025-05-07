@@ -45,7 +45,7 @@ def Int.heightOneSpectrumEquiv : HeightOneSpectrum ℤ ≃ { p : ℕ // p.Prime 
     simpa only [Ideal.span_singleton_eq_span_singleton, Int.associated_iff_natAbs] using
       Ideal.span_singleton_generator (Ideal.span {(n : ℤ)})
 
-/-- The maximal ideal (`span {n}`) associated to a prime `p : ℕ`. -/
+/-- The maximal ideal (`span {p}`) associated to a prime `p : ℕ`. -/
 @[simps! asIdeal]
 noncomputable
 def Nat.toHeightOneSpectrum (p : ℕ) [Fact p.Prime] : HeightOneSpectrum ℤ :=
@@ -88,8 +88,7 @@ def Padic.ofAdicCompletion (p : ℕ) [Fact p.Prime] :
   rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff Metric.nhds_basis_ball]
   intro ε hε
   obtain ⟨k, hk⟩ := PadicInt.exists_pow_neg_lt p hε
-  refine ⟨WithZero.unitsWithZeroEquiv.symm (Multiplicative.ofAdd (-k)), trivial, ?_⟩
-  intro x hx
+  refine ⟨WithZero.unitsWithZeroEquiv.symm (Multiplicative.ofAdd (-k)), trivial, fun x hx ↦ ?_⟩
   obtain ⟨x, rfl⟩ := (WithVal.equiv _).symm.surjective x
   simp only [eq_ratCast, Metric.mem_ball, dist_zero_right, map_ratCast, padicNormE.eq_padicNorm]
   refine lt_of_le_of_lt ?_ hk
@@ -187,10 +186,9 @@ def PadicInt.ofAdicCompletionIntegers (p : ℕ) [Fact p.Prime] :
 
 lemma PadicInt.isHomeomorph_adicCompletionIntegers (p : ℕ) [Fact p.Prime] :
     IsHomeomorph (ofAdicCompletionIntegers p) := by
-  refine (Topology.IsEmbedding.toHomeomorph_of_surjective ?_ ?_).isHomeomorph
+  refine (Topology.IsEmbedding.toHomeomorph_of_surjective ?_ fun ⟨x, hx⟩ ↦ ?_).isHomeomorph
   · refine .of_comp ?_ continuous_subtype_val ?_
     · dsimp; fun_prop
     · exact (Padic.isHomeomorph_ofAdicCompletion p).isEmbedding.comp .subtypeVal
-  · intro ⟨x, hx⟩
-    obtain ⟨x, rfl⟩ := (Padic.isHomeomorph_ofAdicCompletion p).surjective x
+  · obtain ⟨x, rfl⟩ := (Padic.isHomeomorph_ofAdicCompletion p).surjective x
     exact ⟨⟨x, (Padic.comap_ofAdicCompletion_subring p).le hx⟩, Subtype.ext rfl⟩
