@@ -52,11 +52,8 @@ jobs:
         # Get the list of all changed files.
         git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt
         # Get all files which were removed or renamed.
-        movedFiles=$(git diff --name-only --diff-filter DR origin/${{ github.base_ref }}...)
-        if [ -n "$movedFiles" ]; then
-          echo "info: found removed file(s) $movedFiles"
-        fi
-        echo $movedFiles > removed_renamed_files.txt
+        echo "Checking for removed files..."
+        git diff --name-only --diff-filter DR origin/${{ github.base_ref }}... | tee removed_renamed_files.txt
 
     - name: Compute (re)moved files without deprecation
       run: |
