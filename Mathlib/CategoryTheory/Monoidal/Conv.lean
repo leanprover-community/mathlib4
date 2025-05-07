@@ -20,7 +20,7 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 /--
 The morphisms in `C` between the underlying objects of a pair of bimonoids in `C` naturally has a
 (set-theoretic) monoid structure. -/
-def Conv (M N : C) [Comon_Class M] [Mon_Class N] : Type v₁ := M ⟶ N
+def Conv (M N : C) : Type v₁ := M ⟶ N
 
 namespace Conv
 
