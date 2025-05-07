@@ -18,33 +18,6 @@ Currently the only two results are the following:
 
 open CategoryTheory Limits
 
--- TODO: move these somewhere else
-section Misc
-
-/-- `f : X ⟶ Y` is an epimorphism iff for all `Z`, composition of morphisms `Y ⟶ Z` with `f`
-is injective. -/
-lemma CategoryTheory.epi_iff_forall_injective {C : Type*} [Category C] {X Y : C} {f : X ⟶ Y} :
-    Epi f ↔ ∀ Z, (fun g : Y ⟶ Z ↦ f ≫ g).Injective :=
-  ⟨fun _ _ _ _ hg ↦ (cancel_epi f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
-
-/-- `f : X ⟶ Y` is a monomorphism iff for all `Z`, composition of morphisms `Z ⟶ X` with `f`
-is injective. -/
-lemma CategoryTheory.mono_iff_forall_injective {C : Type*} [Category C] {X Y : C} {f : X ⟶ Y} :
-    Mono f ↔ ∀ Z, (fun g : Z ⟶ X ↦ g ≫ f).Injective :=
-  ⟨fun _ _ _ _ hg ↦ (cancel_mono f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
-
-@[simp]
-lemma CategoryTheory.op_mono_iff {C : Type*} [Category C] {X Y : C} {f : X ⟶ Y} :
-    Mono f.op ↔ Epi f :=
-  ⟨fun _ ↦ unop_epi_of_mono f.op, fun _ ↦ inferInstance⟩
-
-@[simp]
-lemma CategoryTheory.op_epi_iff {C : Type*} [Category C] {X Y : C} {f : X ⟶ Y} :
-    Epi f.op ↔ Mono f :=
-  ⟨fun _ ↦ unop_mono_of_epi f.op, fun _ ↦ inferInstance⟩
-
-end Misc
-
 namespace CategoryTheory.Adjunction
 
 variable {C D : Type*} [Category C] [Category D]
