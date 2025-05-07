@@ -204,7 +204,7 @@ theorem mem_dlookup_iff {a : α} {b : β a} {l : List (Sigma β)} (nd : l.NodupK
 
 theorem perm_dlookup (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys)
     (p : l₁ ~ l₂) : dlookup a l₁ = dlookup a l₂ := by
-  ext b; simp only [mem_dlookup_iff nd₁, mem_dlookup_iff nd₂]; exact p.mem_iff
+  ext b; simp only [← Option.mem_def, mem_dlookup_iff nd₁, mem_dlookup_iff nd₂]; exact p.mem_iff
 
 theorem lookup_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.NodupKeys) (nd₁ : l₁.NodupKeys)
     (h : ∀ x y, y ∈ l₀.dlookup x ↔ y ∈ l₁.dlookup x) : l₀ ~ l₁ :=
@@ -215,10 +215,10 @@ theorem dlookup_map (l : List (Sigma β))
     {f : α → α'} (hf : Function.Injective f) (g : ∀ a, β a → β' (f a)) (a : α) :
     (l.map fun x => ⟨f x.1, g _ x.2⟩).dlookup (f a) = (l.dlookup a).map (g a) := by
   induction' l with b l IH
-  · rw [map_nil, dlookup_nil, dlookup_nil, Option.map_none']
+  · rw [map_nil, dlookup_nil, dlookup_nil, Option.map_none]
   · rw [map_cons]
     obtain rfl | h := eq_or_ne a b.1
-    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.map_some']
+    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.map_some]
     · rw [dlookup_cons_ne _ _ h, dlookup_cons_ne _ _ (fun he => h <| hf he), IH]
 
 theorem dlookup_map₁ {β : Type v} (l : List (Σ _ : α, β))
@@ -341,6 +341,8 @@ theorem kreplace_self {a : α} {b : β a} {l : List (Sigma β)} (nd : NodupKeys 
     split_ifs
     · subst a'
       simp [nd.eq_of_mk_mem h h']
+    · simp_all
+    · simp_all
     · rfl
   · rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩
     dsimp [Option.guard]
