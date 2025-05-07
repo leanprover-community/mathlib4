@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Comon_
-import Mathlib.Tactic.Widget.StringDiagram
 
 /-!
 # The category of bimonoids in a braided monoidal category.
@@ -374,9 +373,6 @@ theorem mul_counit (M : C) [Bimon_Class M] :
       (μ[M] ⊗ μ[M]) =
     μ[M] ≫ Δ[M] := by
   simp only [Bimon_Class.mul_comul, tensorμ, Category.assoc]
-
-set_option linter.hashCommand false in
-#string_diagram compatibility
 
 /-- Auxiliary definition for `Bimon_.mk'`. -/
 @[simps X]
