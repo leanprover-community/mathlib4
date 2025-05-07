@@ -80,11 +80,6 @@ theorem IsIntegralClosure.isLocalization [IsDomain A] [Algebra.IsAlgebraic K L] 
       smul_def]
   · simp only [IsIntegralClosure.algebraMap_injective C A L h]
 
-attribute [local instance] FractionRing.liftAlgebra in
-instance [IsDomain A] [IsDomain C] [NoZeroSMulDivisors A C] [Module.Finite A C]
-    [IsIntegrallyClosed C] : IsLocalization (algebraMapSubmonoid C A⁰) (FractionRing C) :=
-  IsIntegralClosure.isLocalization _ (FractionRing A) _ _
-
 theorem IsIntegralClosure.isLocalization_of_isSeparable [IsDomain A] [Algebra.IsSeparable K L] :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
   IsIntegralClosure.isLocalization A K L C
