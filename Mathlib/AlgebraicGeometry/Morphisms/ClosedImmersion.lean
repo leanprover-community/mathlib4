@@ -191,7 +191,7 @@ def overEquivIdealSheafData (X : Scheme.{u}) :
   counitIso := NatIso.ofComponents (fun I ↦ eqToIso (by simp))
 
 /-- The universal property of closed immersions:
-For an closed immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z` whose kernel
+For a closed immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z` whose kernel
 contains the kernel of `X` in `Z`, we can lift this morphism to a unique `Y ⟶ X` that
 commutes with these maps.
 -/
