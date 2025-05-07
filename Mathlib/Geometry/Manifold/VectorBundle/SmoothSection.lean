@@ -180,6 +180,9 @@ def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x where
   map_zero' := coe_zero
   map_add' := coe_add
 
+@[simp]
+theorem coeAddHom_apply (s : Cₛ^n⟮I; F, V⟯) : coeAddHom I F n V s = s := rfl
+
 instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
   coe_injective.module 𝕜 (coeAddHom I F n V) coe_smul
 

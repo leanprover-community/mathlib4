@@ -75,7 +75,7 @@ lemma univ_natDegree [Nontrivial R] : (univ R n).natDegree = Fintype.card n :=
 @[simp]
 lemma univ_coeff_card : (univ R n).coeff (Fintype.card n) = 1 := by
   suffices Polynomial.coeff (univ ℤ n) (Fintype.card n) = 1 by
-    rw [← univ_map_map n (Int.castRingHom R), Polynomial.coeff_map, this, _root_.map_one]
+    rw [← univ_map_map n (Int.castRingHom R), Polynomial.coeff_map, this, map_one]
   rw [← univ_natDegree ℤ n]
   exact (univ_monic ℤ n).leadingCoeff
 
@@ -85,7 +85,7 @@ lemma optionEquivLeft_symm_univ_isHomogeneous :
   have aux : Fintype.card n = 0 + ∑ i : n, 1 := by
     simp only [zero_add, Finset.sum_const, smul_eq_mul, mul_one, Fintype.card]
   simp only [aux, univ, charpoly, charmatrix, scalar_apply, RingHom.mapMatrix_apply, det_apply',
-    sub_apply, map_apply, of_apply, map_sum, _root_.map_mul, map_intCast, map_prod, map_sub,
+    sub_apply, map_apply, of_apply, map_sum, map_mul, map_intCast, map_prod, map_sub,
     optionEquivLeft_symm_apply, Polynomial.aevalTower_C, rename_X, diagonal, mvPolynomialX]
   apply IsHomogeneous.sum
   rintro i -

@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.Solvable
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Characters of Lie algebras

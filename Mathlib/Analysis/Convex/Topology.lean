@@ -80,7 +80,7 @@ instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :
 
 /-- The standard one-dimensional simplex in `ℝ² = Fin 2 → ℝ`
 is homeomorphic to the unit interval. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
   toEquiv := stdSimplexEquivIcc ℝ
   continuous_toFun := .subtype_mk ((continuous_apply 0).comp continuous_subtype_val) _
@@ -94,7 +94,8 @@ end stdSimplex
 /-! ### Topological vector spaces -/
 section TopologicalSpace
 
-variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [DenselyOrdered 𝕜]
+  [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
   {x y : E}
 
@@ -106,7 +107,8 @@ end TopologicalSpace
 
 section PseudoMetricSpace
 
-variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜] [OrderTopology 𝕜]
+variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [DenselyOrdered 𝕜]
+  [PseudoMetricSpace 𝕜] [OrderTopology 𝕜]
   [ProperSpace 𝕜] [CompactIccSpace 𝕜] [AddCommGroup E] [TopologicalSpace E] [T2Space E]
   [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
@@ -120,7 +122,8 @@ end PseudoMetricSpace
 
 section ContinuousConstSMul
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Field 𝕜] [LinearOrder 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 /-- If `s` is a convex set, then `a • interior s + b • closure s ⊆ interior s` for all `0 < a`,
@@ -198,6 +201,10 @@ theorem Convex.openSegment_self_interior_subset_interior {s : Set E} (hs : Conve
     (hx : x ∈ s) (hy : y ∈ interior s) : openSegment 𝕜 x y ⊆ interior s :=
   hs.openSegment_closure_interior_subset_interior (subset_closure hx) hy
 
+section
+
+variable [AddRightMono 𝕜]
+
 /-- If `x ∈ closure s` and `y ∈ interior s`, then the segment `(x, y]` is included in `interior s`.
 -/
 theorem Convex.add_smul_sub_mem_interior' {s : Set E} (hs : Convex 𝕜 s) {x y : E}
@@ -222,8 +229,11 @@ theorem Convex.add_smul_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E} 
     (hy : x + y ∈ interior s) {t : 𝕜} (ht : t ∈ Ioc (0 : 𝕜) 1) : x + t • y ∈ interior s :=
   hs.add_smul_mem_interior' (subset_closure hx) hy ht
 
+end
+
 /-- In a topological vector space, the interior of a convex set is convex. -/
-protected theorem Convex.interior {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 (interior s) :=
+protected theorem Convex.interior [ZeroLEOneClass 𝕜] {s : Set E} (hs : Convex 𝕜 s) :
+    Convex 𝕜 (interior s) :=
   convex_iff_openSegment_subset.mpr fun _ hx _ hy =>
     hs.openSegment_closure_interior_subset_interior (interior_subset_closure hx) hy
 
@@ -236,6 +246,8 @@ protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 
   show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab
 
 open AffineMap
+
+variable [IsStrictOrderedRing 𝕜]
 
 /-- A convex set `s` is strictly convex provided that for any two distinct points of
 `s \ interior s`, the line passing through these points has nonempty intersection with
@@ -271,7 +283,8 @@ end ContinuousConstSMul
 
 section ContinuousSMul
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [TopologicalSpace 𝕜] [OrderTopology 𝕜] [ContinuousSMul 𝕜 E]
 
 theorem Convex.closure_interior_eq_closure_of_nonempty_interior {s : Set E} (hs : Convex 𝕜 s)
@@ -296,7 +309,8 @@ end ContinuousSMul
 
 section TopologicalSpace
 
-variable [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 
 theorem convex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s ∧ IsClosed s) :
     Convex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
@@ -340,7 +354,8 @@ end TopologicalSpace
 
 section ContinuousConstSMul
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Field 𝕜] [LinearOrder 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 theorem closedConvexHull_eq_closure_convexHull {s : Set E} :
@@ -474,3 +489,23 @@ theorem isPathConnected_compl_of_isPathConnected_compl_zero [ContinuousSMul ℝ 
     exact mt (Submodule.eq_zero_of_coe_mem_of_disjoint hpq.disjoint) (hγ₁ t)
 
 end ComplementsConnected
+
+section LinearOrderedField
+
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+
+theorem Convex.nontrivial_iff_nonempty_interior {s : Set 𝕜} (hs : Convex 𝕜 s) :
+    s.Nontrivial ↔ (interior s).Nonempty := by
+  constructor
+  · rintro ⟨x, hx, y, hy, h⟩
+    have hs' := Nonempty.mono <| interior_mono <| hs.segment_subset hx hy
+    rw [segment_eq_Icc', interior_Icc, nonempty_Ioo, inf_lt_sup] at hs'
+    exact hs' h
+  · rintro ⟨x, hx⟩
+    rcases eq_singleton_or_nontrivial (interior_subset hx) with rfl | h
+    · rw [interior_singleton] at hx
+      exact hx.elim
+    · exact h
+
+end LinearOrderedField

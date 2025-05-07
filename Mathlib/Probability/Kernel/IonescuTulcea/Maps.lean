@@ -13,6 +13,8 @@ This file contains auxiliary maps which are used to prove the Ionescu-Tulcea the
 
 open Finset Preorder
 
+section Definitions
+
 section LinearOrder
 
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
@@ -101,8 +103,7 @@ def IicProdIoc {a b : ι} (hab : a ≤ b) :
     by_cases h : x ≤ a
     · simpa [h] using measurable_fst.eval
     · simpa [h] using measurable_snd.eval
-  measurable_invFun := by
-    refine Measurable.prod_mk ?_ ?_ <;> exact measurable_pi_lambda _ (fun a ↦ measurable_id.eval)
+  measurable_invFun := by dsimp; fun_prop
 
 lemma coe_IicProdIoc {a b : ι} (hab : a ≤ b) :
     ⇑(IicProdIoc (X := X) hab) = _root_.IicProdIoc a b := rfl
@@ -129,7 +130,7 @@ def IicProdIoi (a : ι) :
     by_cases hi : i ≤ a <;> simp only [Equiv.coe_fn_mk, hi, ↓reduceDIte]
     · exact measurable_fst.eval
     · exact measurable_snd.eval
-  measurable_invFun := Measurable.prod_mk (measurable_restrict _) (Set.measurable_restrict _)
+  measurable_invFun := Measurable.prodMk (measurable_restrict _) (Set.measurable_restrict _)
 
 end MeasurableEquiv
 
@@ -152,3 +153,46 @@ def MeasurableEquiv.piSingleton (a : ℕ) : X (a + 1) ≃ᵐ Π i : Ioc a (a + 1
   measurable_invFun := measurable_pi_apply _
 
 end Nat
+
+end Definitions
+
+section Lemmas
+
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
+
+lemma _root_.IocProdIoc_preimage {a b c : ι} (hab : a ≤ b) (hbc : b ≤ c)
+    (s : (i : Ioc a c) → Set (X i)) :
+    IocProdIoc a b c ⁻¹' (Set.univ.pi s) =
+      (Set.univ.pi <| restrict₂ (π := (fun n ↦ Set (X n))) (Ioc_subset_Ioc_right hbc) s) ×ˢ
+        (Set.univ.pi <| restrict₂ (π := (fun n ↦ Set (X n))) (Ioc_subset_Ioc_left hab) s) := by
+  ext x
+  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, IocProdIoc, forall_const, Subtype.forall,
+    mem_Ioc, Set.mem_prod, restrict₂]
+  refine ⟨fun h ↦ ⟨fun i ⟨hi1, hi2⟩ ↦ ?_, fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i ⟨hi1, hi2⟩ ↦ ?_⟩
+  · convert h i ⟨hi1, hi2.trans hbc⟩
+    rw [dif_pos hi2]
+  · convert h i ⟨lt_of_le_of_lt hab hi1, hi2⟩
+    rw [dif_neg (not_le.2 hi1)]
+  · split_ifs with hi3
+    · exact h1 i ⟨hi1, hi3⟩
+    · exact h2 i ⟨not_le.1 hi3, hi2⟩
+
+variable [LocallyFiniteOrderBot ι]
+
+lemma _root_.IicProdIoc_preimage {a b : ι} (hab : a ≤ b) (s : (i : Iic b) → Set (X i)) :
+    IicProdIoc a b ⁻¹' (Set.univ.pi s) =
+      (Set.univ.pi <| frestrictLe₂ (π := (fun n ↦ Set (X n))) hab s) ×ˢ
+        (Set.univ.pi <| restrict₂ (π := (fun n ↦ Set (X n))) Ioc_subset_Iic_self s) := by
+  ext x
+  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, IicProdIoc_def, forall_const,
+    Subtype.forall, mem_Iic, Set.mem_prod, frestrictLe₂_apply, restrict₂, mem_Ioc]
+  refine ⟨fun h ↦ ⟨fun i hi ↦ ?_, fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i hi ↦ ?_⟩
+  · convert h i (hi.trans hab)
+    rw [dif_pos hi]
+  · convert h i hi2
+    rw [dif_neg (not_le.2 hi1)]
+  · split_ifs with hi3
+    · exact h1 i hi3
+    · exact h2 i ⟨not_le.1 hi3, hi⟩
+
+end Lemmas

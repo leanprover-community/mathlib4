@@ -27,7 +27,7 @@ analogue of `Finset.pi` where the base finset is `univ` (but formally they are n
 there is an additional condition `i ∈ Finset.univ` in the `Finset.pi` definition). -/
 def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
   (Finset.univ.pi t).map ⟨fun f a => f a (mem_univ a), fun _ _ =>
-    by simp (config := {contextual := true}) [funext_iff]⟩
+    by simp +contextual [funext_iff]⟩
 
 @[simp]
 theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFinset t ↔ ∀ a, f a ∈ t a := by
@@ -145,12 +145,13 @@ theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] 
       (Finset.univ : Finset (∀ a, β a)) :=
   rfl
 
--- Porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
--- it makes things a lot harder to work with here. in some ways that was because in Lean3
--- we could make this instance irreducible when needed and in the worst case use `congr/convert`,
--- but those don't work with subsingletons in lean4 as-is so we cannot do this here.
+/-- There are finitely many embeddings between finite types.
+
+This instance used to be computable (using `DecidableEq` arguments), but
+it makes things a lot harder to work with here.
+-/
 noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] :
-  Fintype (α ↪ β) := by
+    Fintype (α ↪ β) := by
   classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 
 instance RelHom.instFintype {α β} [Fintype α] [Fintype β] [DecidableEq α] {r : α → α → Prop}

@@ -75,6 +75,16 @@ theorem op_sum (X Y : C) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
     (s.sum f).op = s.sum fun i => (f i).op :=
   map_sum (opHom X Y) _ _
 
+/-- `G ⟶ G` and `(End G)ᵐᵒᵖ` are isomorphic as `(End G)ᵐᵒᵖ`-modules. -/
+@[simps]
+def Preadditive.homSelfLinearEquivEndMulOpposite (G : C) : (G ⟶ G) ≃ₗ[(End G)ᵐᵒᵖ] (End G)ᵐᵒᵖ where
+  toFun f := ⟨f⟩
+  map_add' := by aesop_cat
+  map_smul' := by aesop_cat
+  invFun := fun ⟨f⟩ => f
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
 variable {D : Type*} [Category D] [Preadditive D]
 
 instance Functor.op_additive (F : C ⥤ D) [F.Additive] : F.op.Additive where

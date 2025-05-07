@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
@@ -110,9 +110,8 @@ abbrev toProjective (W : WeierstrassCurve R) : Projective R :=
 
 namespace Projective
 
-variable (W') in
 /-- The conversion from a Weierstrass curve in projective coordinates to affine coordinates. -/
-abbrev toAffine : Affine R :=
+abbrev toAffine (W' : Projective R) : Affine R :=
   W'
 
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
@@ -516,6 +515,12 @@ variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebr
 lemma baseChange_polynomial : (W'.baseChange B).toProjective.polynomial =
     MvPolynomial.map f (W'.baseChange A).toProjective.polynomial := by
   rw [← map_polynomial, map_baseChange]
+
+variable {P} in
+lemma Equation.baseChange (h : (W'.baseChange A).toProjective.Equation P) :
+    (W'.baseChange B).toProjective.Equation (f ∘ P) := by
+  convert Equation.map f.toRingHom h using 1
+  rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
 lemma baseChange_equation (hf : Function.Injective f) :

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.OrderClosed
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero

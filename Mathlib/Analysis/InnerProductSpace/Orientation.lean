@@ -86,9 +86,7 @@ top-dimensional forms on `E`. -/
 theorem det_eq_neg_det_of_opposite_orientation (h : e.toBasis.orientation ≠ f.toBasis.orientation) :
     e.toBasis.det = -f.toBasis.det := by
   rw [e.toBasis.det.eq_smul_basis_det f.toBasis]
-  -- Porting note: added `neg_one_smul` with explicit type
-  simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h,
-    neg_one_smul ℝ (M := E [⋀^ι]→ₗ[ℝ] ℝ)]
+  simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h, neg_one_smul]
 
 variable [Nonempty ι]
 
@@ -221,8 +219,7 @@ theorem volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl
     · simp [volumeForm_zero_neg]
-    · rw [neg_neg (positiveOrientation (R := ℝ))] -- Porting note: added
-      simp [volumeForm_zero_neg]
+    · simp [volumeForm_zero_neg]
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   have h₁ : e.toBasis.orientation = o := o.finOrthonormalBasis_orientation _ _
   have h₂ : e.toBasis.orientation ≠ -o := by

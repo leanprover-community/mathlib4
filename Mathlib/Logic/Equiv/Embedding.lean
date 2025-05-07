@@ -45,7 +45,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
     ext x
     cases x <;> simp!
   right_inv := fun ⟨⟨f, g⟩, _⟩ => by
-    simp only [Prod.mk.inj_iff]
+    simp only [Prod.mk_inj]
     constructor
 
 /-- Embeddings whose range lies within a set are equivalent to embeddings to that set.
