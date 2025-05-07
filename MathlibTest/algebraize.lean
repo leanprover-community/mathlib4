@@ -131,3 +131,23 @@ example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (
   guard_hyp algebraizeInst : Algebra.testProperty1 A C
   guard_hyp scalarTowerInst := IsScalarTower.of_algebraMap_eq' rfl
   trivial
+
+section
+/- Test that the algebraize tactic also works on non-RingHom types -/
+class Algebra.Fooo (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] : Prop where
+
+structure Bar (A B : Type*) [CommRing A] [CommRing B] where
+  f : A →+* B
+
+@[algebraize fooo]
+def Bar.Fooo {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) : Prop := True
+
+lemma fooo {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.Fooo) :
+  @Algebra.Fooo A B _ _ b.f.toAlgebra := @Algebra.Fooo.mk A B _ _ b.f.toAlgebra
+
+example {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.Fooo) : True := by
+  algebraize [b.f]
+  guard_hyp algebraizeInst : @Algebra.Fooo A B _ _ b.f.toAlgebra
+  trivial
+
+end

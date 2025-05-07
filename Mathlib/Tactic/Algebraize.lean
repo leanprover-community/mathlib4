@@ -176,11 +176,6 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
     -- If it has, `p` will either be the name of the corresponding `Algebra` property, or a
     -- lemma/constructor.
     | some p =>
-      -- The last argument of the `RingHom` property is assumed to be `f`
-      let f := args[args.size - 1]!
-      -- Check that `f` appears in the list of functions given to `algebraize`
-      if ¬ (← t.anyM (Meta.isDefEq · f)) then return
-
       let cinfo ← getConstInfo p
       let n ← getExpectedNumArgs cinfo.type
       let pargs := Array.replicate n (none : Option Expr)
@@ -191,7 +186,14 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
         let pargs := pargs.set! 0 args[0]!
         let pargs := pargs.set! 1 args[1]!
         let tp ← mkAppOptM p pargs -- This should be the type `Algebra.Property A B`
-        unless (← synthInstance? tp).isSome do
+        /- find all arguments to `Algebra.Property A B` which are of the form
+          `RingHom.toAlgebra x` -/
+        let rargs ← tp.getAppArgs.filterMapM <| fun x => liftMetaM do
+          ((·.getAppArgs.back?) =<< ·) <$> whnfUntil x ``RingHom.toAlgebra
+        /- check that we're not reproving a result, and that all involved ringhoms are indeed
+          arguments to the tactic -/
+        unless (← synthInstance? tp).isSome || !(← rargs.allM (fun z => t.anyM
+          (withoutModifyingMCtx <| isDefEq z ·))) do
         liftMetaTactic fun mvarid => do
           let nm ← mkFreshBinderNameForTactic `algebraizeInst
           let (_, mvar) ← mvarid.note nm decl.toExpr tp
@@ -202,8 +204,15 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       else
         let pargs := pargs.set! (n - 1) decl.toExpr
         let val ← mkAppOptM p pargs
-        let tp ← inferType val
-        unless (← synthInstance? tp).isSome do
+        let tp ← inferType val -- This should be the type `Algebra.Property A B`
+        /- find all arguments to `Algebra.Property A B` which are of the form
+          `RingHom.toAlgebra x` -/
+        let rargs ← tp.getAppArgs.filterMapM <| fun x => liftMetaM do
+          ((·.getAppArgs.back?) =<< ·) <$> whnfUntil x ``RingHom.toAlgebra
+        /- check that we're not reproving a result, and that all involved ringhoms are indeed
+          arguments to the tactic -/
+        unless (← synthInstance? tp).isSome ||
+          !(← rargs.allM (fun z => t.anyM (withoutModifyingMCtx <| isDefEq · z))) do
         liftMetaTactic fun mvarid => do
           let nm ← mkFreshBinderNameForTactic `algebraizeInst
           let (_, mvar) ← mvarid.note nm val
