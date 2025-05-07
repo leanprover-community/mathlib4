@@ -135,7 +135,7 @@ def CWComplex.mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
       MapsTo (map n i) (sphere 0 1) (⋃ (m < n) (j : cell m), map m j '' closedBall 0 1))
     (closed' : ∀ (A : Set X) (_ : A ⊆ C),
     (∀ n j, IsClosed (A ∩ map n j '' closedBall 0 1)) → IsClosed A)
-    (union' :  ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C) :
+    (union' : ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C) :
     CWComplex C where
   cell := cell
   map := map
@@ -178,7 +178,7 @@ lemma CWComplex.finiteType_mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C
 `closed'`. -/
 def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (D : outParam (Set X)) (cell : (n : ℕ) → Type u)
-    (map : (n : ℕ)  → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
+    (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (eventually_isEmpty_cell : ∀ᶠ n in Filter.atTop, IsEmpty (cell n))
     (finite_cell : ∀ (n : ℕ), _root_.Finite (cell n))
     (source_eq : ∀ (n : ℕ) (i : cell n), (map n i).source = ball 0 1)
@@ -251,7 +251,7 @@ lemma RelCWComplex.finite_mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Se
 /-- If we want to construct a finite CW complex we can add the conditions `eventually_isEmpty_cell`
 and `finite_cell`, relax the condition `mapsTo` and remove the condition `closed'`. -/
 def CWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
-    (cell : (n : ℕ) → Type u) (map : (n : ℕ)  → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
+    (cell : (n : ℕ) → Type u) (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (eventually_isEmpty_cell : ∀ᶠ n in Filter.atTop, IsEmpty (cell n))
     (finite_cell : ∀ (n : ℕ), _root_.Finite (cell n))
     (source_eq : ∀ (n : ℕ) (i : cell n), (map n i).source = ball 0 1)

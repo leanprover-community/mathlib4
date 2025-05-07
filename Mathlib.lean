@@ -4504,6 +4504,7 @@ import Mathlib.NumberTheory.NumberField.EquivReindex
 import Mathlib.NumberTheory.NumberField.FinitePlaces
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.House
+import Mathlib.NumberTheory.NumberField.Ideal
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
@@ -6044,7 +6045,7 @@ import Mathlib.Topology.FiberBundle.Trivialization
 import Mathlib.Topology.FiberPartition
 import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta.Basic
-import Mathlib.Topology.GDelta.UniformSpace
+import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.Germ
 import Mathlib.Topology.Gluing
 import Mathlib.Topology.Hom.ContinuousEval
