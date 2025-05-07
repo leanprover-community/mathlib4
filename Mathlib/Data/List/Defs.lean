@@ -481,6 +481,4 @@ theorem length_mapAccumr₂ :
 
 end MapAccumr
 
-alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
-
 end List
