@@ -112,9 +112,10 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   * whenever a PR is labelled or unlabelled with `awaiting-author` or `maintainer-merge`
   It looks through all zulip posts containing a reference to the relevant PR
   and will post or update an emoji reaction corresponding to the current PR state to the message.
-  This reaction is `:peace_sign:` for delegated, `:bors:` for PRs sent to bors, `:merge` for merged
-  PRs, `:writing:` for PRs awaiting-author, `:hammer:` for maintainer-merged PRs and
-  `:closed-pr:` for closed PRs. Two of these are custom emojis configured on zulip.
+  This reaction is ✌️ (`:peace_sign:`) for delegated, `:bors:` for PRs sent to bors,
+  `:merge` for merged PRs, ✍️ (`:writing:`) for PRs awaiting-author,
+  🔨 (`:hammer:`) for maintainer-merged PRs and `:closed-pr:` for closed PRs.
+  Two of these are custom emojis configured on zulip.
 - `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
   the `linter.minImports` output, summarizing the data in a table.  See the module docs of
   `late_importers.sh` for further details.
