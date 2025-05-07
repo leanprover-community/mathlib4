@@ -139,7 +139,7 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
     · simp [hm, uniformBell_zero_left, hn]
     · simp only [hm, and_false, ite_false, false_or, if_neg hn]
 
-noncomputable instance [DecidableEq A] : Inhabited (DividedPowers (⊥ : Ideal A)) :=
+noncomputable instance : Inhabited (DividedPowers (⊥ : Ideal A)) :=
   ⟨dividedPowersBot A⟩
 
 /-- The coercion from the divided powers structures to functions -/
