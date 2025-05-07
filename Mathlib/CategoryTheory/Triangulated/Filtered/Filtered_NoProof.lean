@@ -634,10 +634,57 @@ structure familyCommShift (F : ℤ → (C ⥤ C)) where
       iso n (a + b) n'' (by rw [add_comm a b, ← add_assoc, h', h]) =
       familyCommShift.isoAdd F n a b n' n'' (iso n a n' h) (iso n' b n'' h')
 
--- But this is not enough, the isomorphisms are explicit!
-def truncLE_commShift : familyCommShift (fun n ↦ truncLE (C := C) n) := sorry
+variable (C) in
+abbrev shiftFunctor₂' (n m n' : ℤ) (h : n' + m = n) :
+    (FilteredTriangulated.LE (C := C) n').P.FullSubcategory ⥤
+    (FilteredTriangulated.LE (C := C) n).P.FullSubcategory where
+      obj X := ⟨(shiftFunctor₂ C m).obj X.1,
+        ((isLE_shift_iff X.1 n' m n (by rw [add_comm, h])).mpr {le := X.2}).le⟩
+      map := (shiftFunctor₂ C m).map
+      map_id X := (shiftFunctor₂ C m).map_id X.1
+      map_comp := (shiftFunctor₂ C m).map_comp
 
-def truncGE_commShift : familyCommShift (fun n ↦ truncGE (C := C) n) := sorry
+def truncLE_commShift_hom (n m n' : ℤ) (h : n' + m = n) :
+    shiftFunctor₂ C m ⋙ truncLE n ⟶ truncLE n' ⋙ shiftFunctor₂ C m := by
+  set u : TwoSquare (FilteredTriangulated.LE (C := C) n').P.ι (shiftFunctor₂' C n m n' h)
+      (shiftFunctor₂ C m) (FilteredTriangulated.LE n).P.ι :=
+    {app X := 𝟙 _, naturality X Y f := by dsimp; rw [id_comp, comp_id]}
+  refine (Functor.associator _ _ _).inv ≫ whiskerRight ((mateEquiv (reflectorAdjunction _)
+    (reflectorAdjunction _)).symm u) _ ≫ (Functor.associator _ _ _).hom ≫
+    whiskerLeft _ (𝟙 _)
+
+instance (n m n' : ℤ) (h : n' + m = n) : IsIso (truncLE_commShift_hom (C := C) n m n' h) := sorry
+
+def truncLE_commShift : familyCommShift (fun n ↦ truncLE (C := C) n) where
+  iso n m n' h := asIso (truncLE_commShift_hom (C := C) n m n' h)
+  zero := sorry
+  add := sorry
+
+variable (C) in
+abbrev shiftFunctor₂'' (n m n' : ℤ) (h : n' + m = n) :
+    (FilteredTriangulated.GE (C := C) n').P.FullSubcategory ⥤
+    (FilteredTriangulated.GE (C := C) n).P.FullSubcategory where
+      obj X := ⟨(shiftFunctor₂ C m).obj X.1,
+        ((isGE_shift_iff X.1 n' m n (by rw [add_comm, h])).mpr {ge := X.2}).ge⟩
+      map := (shiftFunctor₂ C m).map
+      map_id X := (shiftFunctor₂ C m).map_id X.1
+      map_comp := (shiftFunctor₂ C m).map_comp
+
+def truncGE_commShift_inv (n m n' : ℤ) (h : n' + m = n) :
+    truncGE n' ⋙ shiftFunctor₂ C m ⟶ shiftFunctor₂ C m ⋙ truncGE n := by
+  set u : TwoSquare (shiftFunctor₂'' C n m n' h) (FilteredTriangulated.GE (C := C) n').P.ι
+      (FilteredTriangulated.GE (C := C) n).P.ι (shiftFunctor₂ C m) :=
+    {app X := 𝟙 _, naturality X Y f := by dsimp; rw [id_comp, comp_id]}
+  refine ?_ ≫ whiskerRight ((mateEquiv (coreflectorAdjunction _) (coreflectorAdjunction _) u)) _
+    ≫ (Functor.associator _ _ _).hom
+  exact 𝟙 _
+
+instance (n m n' : ℤ) (h : n' + m = n) : IsIso (truncGE_commShift_inv (C := C) n m n' h) := sorry
+
+def truncGE_commShift : familyCommShift (fun n ↦ truncGE (C := C) n) where
+  iso n m n' h := (asIso (truncGE_commShift_inv n m n' h)).symm
+  zero := sorry
+  add := sorry
 
 end Truncation
 
