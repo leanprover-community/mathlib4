@@ -87,9 +87,10 @@ structure DividedPowers where
   dpow_comp : ∀ {m n x} (_ : n ≠ 0) (_ : x ∈ I),
     dpow m (dpow n x) = uniformBell m n * dpow (m * n) x
 
+open Classical in
 variable (A) in
 /-- The canonical `DividedPowers` structure on the zero ideal -/
-def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
+noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
   dpow n a := ite (a = 0 ∧ n = 0) 1 0
   dpow_null {n a} ha := by
     simp only [mem_bot] at ha
@@ -138,7 +139,7 @@ def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
     · simp [hm, uniformBell_zero_left, hn]
     · simp only [hm, and_false, ite_false, false_or, if_neg hn]
 
-instance [DecidableEq A] : Inhabited (DividedPowers (⊥ : Ideal A)) :=
+noncomputable instance [DecidableEq A] : Inhabited (DividedPowers (⊥ : Ideal A)) :=
   ⟨dividedPowersBot A⟩
 
 /-- The coercion from the divided powers structures to functions -/
