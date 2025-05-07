@@ -172,7 +172,7 @@ theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
   · intro hM v hv hMv
     obtain ⟨w, hwMv⟩ := hM.exists_not_ortho_of_ne_zero hv
     simp [dotProduct_mulVec, hMv, zero_dotProduct, ne_eq, not_true] at hwMv
-  · rw [Matrix.Nondegenerate_def]
+  · rw [Matrix.nondegenerate_def]
     intro h v hv
     refine not_imp_not.mp (h v) (funext fun i => ?_)
     simpa only [dotProduct_mulVec, dotProduct_single, mul_one] using hv (Pi.single i 1)

@@ -339,7 +339,7 @@ theorem _root_.Matrix.Nondegenerate.toBilin' {M : Matrix ι ι R₂} (h : M.Nond
 @[simp]
 theorem _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₂} :
     M.toBilin'.Nondegenerate ↔ M.Nondegenerate := by
-  refine ⟨fun h ↦ Matrix.Nondegenerate_def.mpr ?_, Matrix.Nondegenerate.toBilin'⟩
+  refine ⟨fun h ↦ Matrix.nondegenerate_def.mpr ?_, Matrix.Nondegenerate.toBilin'⟩
   exact fun v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w
 
 theorem _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₂} (h : M.Nondegenerate)
