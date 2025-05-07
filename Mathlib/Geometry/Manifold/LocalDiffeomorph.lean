@@ -35,7 +35,7 @@ at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorph
 (`n ≥ 1`) is a linear equivalence.
 * `LocalDiffeomorphAt.mfderivToContinuousLinearEquiv`: if `f` is a local diffeomorphism
 at `x`, the differential `mfderiv I J n f x` is a continuous linear equivalence.
-* `LocalDiffeomorph.differentialToContinuousLinearEquiv`: if `f` is a local diffeomorphism,
+* `LocalDiffeomorph.mfderivToContinuousLinearEquiv`: if `f` is a local diffeomorphism,
 each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
 ## TODO
@@ -366,7 +366,7 @@ variable {I I' J n}
 is a linear equivalence. -/
 noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) where
+    TangentSpace I x ≃L[𝕜] TangentSpace J (f x) where
   toFun := mfderiv I J f x
   invFun := mfderiv J I hf.localInverse (f x)
   left_inv := by
@@ -397,7 +397,7 @@ lemma IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv_coe
 is a linear equivalence. -/
 noncomputable def Diffeomorph.mfderivToContinuousLinearEquiv
     (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) (x : M) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (Φ x)) :=
+    TangentSpace I x ≃L[𝕜] TangentSpace J (Φ x) :=
   (Φ.isLocalDiffeomorph x).mfderivToContinuousLinearEquiv hn
 
 lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
@@ -407,7 +407,7 @@ lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ 
 each differential is a linear equivalence. -/
 noncomputable def IsLocalDiffeomorph.mfderivToContinuousLinearEquiv
     (hf : IsLocalDiffeomorph I J n f) (hn : 1 ≤ n) (x : M) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
+    TangentSpace I x ≃L[𝕜] TangentSpace J (f x) :=
   (hf x).mfderivToContinuousLinearEquiv hn
 
 lemma IsLocalDiffeomorph.mfderivToContinuousLinearEquiv_coe

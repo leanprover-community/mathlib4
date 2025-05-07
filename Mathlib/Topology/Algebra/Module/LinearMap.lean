@@ -305,7 +305,7 @@ section
 
 variable (R₁ M₁)
 
-/-- the identity map as a continuous linear map. -/
+/-- the identity map as a continuous linear map -/
 def id : M₁ →L[R₁] M₁ :=
   ⟨LinearMap.id, continuous_id⟩
 
@@ -448,12 +448,12 @@ variable {R E F : Type*} [Semiring R]
   [TopologicalSpace F] [AddCommMonoid F] [Module R F]
 
 /-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
-lemma _root_.LeftInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
+lemma LeftInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
     (hinv : g.comp f = ContinuousLinearMap.id R E) : Function.LeftInverse g f := by
   simpa [← Function.rightInverse_iff_comp] using congr(⇑$hinv)
 
 /-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
-lemma _root_.RightInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
+lemma RightInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
     (hinv : f.comp g = ContinuousLinearMap.id R F) : Function.RightInverse g f :=
   LeftInverse.of_composition hinv
 
