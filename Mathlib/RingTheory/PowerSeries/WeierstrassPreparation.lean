@@ -74,211 +74,207 @@ variable {A : Type*} [CommRing A]
 
 -/
 
+section IsWeierstrassDivisionAt
+
+variable (f g q : A⟦X⟧) (r : A[X]) (I : Ideal A)
+
 /-- `PowerSeries.IsWeierstrassDivisionAt f g q r I` is a `Prop` which asserts that a power series
 `q` and a polynomial `r` of degree `< n` satisfy `f = g * q + r`, where `n` is the order of the
 image of `g` in `(A / I)⟦X⟧` (defined to be zero if such image is zero, in which case
 it's mathematically not considered). -/
-def IsWeierstrassDivisionAt (f g q : A⟦X⟧) (r : A[X]) (I : Ideal A) : Prop :=
+def IsWeierstrassDivisionAt : Prop :=
   r.degree < (g.map (Ideal.Quotient.mk I)).order.toNat ∧ f = g * q + r
 
 /-- Version of `PowerSeries.IsWeierstrassDivisionAt` for local rings with respect to
 its maximal ideal. -/
-abbrev IsWeierstrassDivision [IsLocalRing A] (f g q : A⟦X⟧) (r : A[X]) : Prop :=
+abbrev IsWeierstrassDivision [IsLocalRing A] : Prop :=
   f.IsWeierstrassDivisionAt g q r (IsLocalRing.maximalIdeal A)
 
-theorem isWeierstrassDivisionAt_zero (g : A⟦X⟧) (I : Ideal A) :
-    IsWeierstrassDivisionAt 0 g 0 0 I := by
+theorem isWeierstrassDivisionAt_zero : IsWeierstrassDivisionAt 0 g 0 0 I := by
   constructor
   · rw [Polynomial.degree_zero]
     exact WithBot.bot_lt_coe _
   · simp
 
-theorem IsWeierstrassDivisionAt.coeff_f_sub_r_mem {f g q : A⟦X⟧} {r : A[X]} {I : Ideal A}
-    (H : f.IsWeierstrassDivisionAt g q r I) :
+variable {f g q r I}
+
+theorem IsWeierstrassDivisionAt.coeff_f_sub_r_mem (H : f.IsWeierstrassDivisionAt g q r I) :
     ∀ i < (g.map (Ideal.Quotient.mk I)).order.toNat, coeff A i (f - r) ∈ I := fun i hi ↦ by
   replace H := H.2
   rw [← sub_eq_iff_eq_add] at H
   rw [H]
-  refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal _ _ i (fun j hj ↦ ?_) i le_rfl
+  refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal i (fun j hj ↦ ?_) i le_rfl
   have := coeff_of_lt_order_toNat _ (lt_of_le_of_lt hj hi)
   rwa [coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at this
 
-section
+end IsWeierstrassDivisionAt
 
-variable (I : Ideal A)
+section IsWeierstrassDivisorAt
 
-/-- The data used to construct Weierstrass division. -/
-structure WeierstrassDivisionData where
-  /-- The natural number `n` which is the order of the image of `g` in `(A / I)⟦X⟧`, such that the
-  `n`-th coefficient of `g` in `A` is a unit. -/
-  n : ℕ
-  /-- The power series `g` which is the divisor of Weierstrass division. -/
-  g : A⟦X⟧
-  /-- The power series `f` which is the dividend of Weierstrass division. -/
-  f : A⟦X⟧
-  coeff_g_of_lt : ∀ i < n, coeff A i g ∈ I
-  isUnit_coeff_g : IsUnit (coeff A n g)
+variable (g : A⟦X⟧) (I : Ideal A)
 
-/-- Construct a `WeierstrassDivisionData` from power series `f`, `g` over a local ring such that
-the image of `g` in the residue field is not zero. -/
-@[simps n g f]
-noncomputable def WeierstrassDivisionData.ofMapResidueNeZero [IsLocalRing A]
-    (f g : A⟦X⟧) (hg : g.map (IsLocalRing.residue A) ≠ 0) :
-    WeierstrassDivisionData (IsLocalRing.maximalIdeal A) where
-  n := (g.map (IsLocalRing.residue A)).order.toNat
-  g := g
-  f := f
-  coeff_g_of_lt i hi := by
-    simpa only [coeff_map, IsLocalRing.residue_eq_zero_iff] using coeff_of_lt_order_toNat _ hi
-  isUnit_coeff_g := by
-    rw [← IsLocalRing.not_mem_maximalIdeal]
-    have h := coeff_order hg
-    contrapose! h
-    rwa [coeff_map, IsLocalRing.residue_eq_zero_iff]
+/-- `PowerSeries.IsWeierstrassDivisorAt g I` is a `Prop` which asserts that the `n`-th coefficient
+of `g` is a unit, where `n` is the order of the
+image of `g` in `(A / I)⟦X⟧` (defined to be zero if such image is zero, in which case
+it's mathematically not considered).
 
-variable {I} (S : WeierstrassDivisionData I)
+This property guarantees that if the ring is `I`-adic complete, then `g` can be used as a divisor
+in Weierstrass division (`PowerSeries.IsWeierstrassDivisorAt.isWeierstrassDivisionAt_div_mod`). -/
+def IsWeierstrassDivisorAt : Prop :=
+  IsUnit (coeff A (g.map (Ideal.Quotient.mk I)).order.toNat g)
 
-namespace WeierstrassDivisionData
+/-- Version of `PowerSeries.IsWeierstrassDivisorAt` for local rings with respect to
+its maximal ideal. -/
+abbrev IsWeierstrassDivisor [IsLocalRing A] : Prop :=
+  g.IsWeierstrassDivisorAt (IsLocalRing.maximalIdeal A)
+
+/-- If `g` is a power series over a local ring such that
+its image in the residue field is not zero, then `g` can be used as a Weierstrass divisor. -/
+theorem IsWeierstrassDivisor.of_map_ne_zero [IsLocalRing A]
+    (hg : g.map (IsLocalRing.residue A) ≠ 0) : g.IsWeierstrassDivisor := by
+  rw [IsWeierstrassDivisor, IsWeierstrassDivisorAt, ← IsLocalRing.not_mem_maximalIdeal]
+  have h := coeff_order hg
+  contrapose! h
+  rwa [coeff_map, IsLocalRing.residue_eq_zero_iff]
+
+namespace IsWeierstrassDivisorAt
+
+variable {g I} (H : g.IsWeierstrassDivisorAt I)
+include H
+
+/-- The `n` is the order of the image of `g` in `(A / I)⟦X⟧`. -/
+noncomputable abbrev n (_H : g.IsWeierstrassDivisorAt I) :=
+  (g.map (Ideal.Quotient.mk I)).order.toNat
+
+theorem coeff_g_of_lt : ∀ i < H.n, coeff A i g ∈ I := fun i hi ↦ by
+  simpa only [coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] using coeff_of_lt_order_toNat _ hi
 
 /-- The `g₀` is `∑ i < n, coeff g i * X ^ i`. -/
-noncomputable def g₀ := S.g.trunc S.n
+noncomputable def g₀ := g.trunc H.n
 
 /-- The `g₁` is `∑ i, coeff g (i + n) * X ^ i`. -/
-noncomputable def g₁ := PowerSeries.mk fun i ↦ coeff A (i + S.n) S.g
+noncomputable def g₁ := PowerSeries.mk fun i ↦ coeff A (i + H.n) g
 
-theorem g_eq : S.g = (S.g₀ : A⟦X⟧) + X ^ S.n * S.g₁ := by
-  rw [S.g.eq_X_pow_mul_shift_add_trunc S.n, g₀, g₁]; ring
+theorem g_eq : g = (H.g₀ : A⟦X⟧) + X ^ H.n * H.g₁ := by
+  nth_rw 1 [g.eq_X_pow_mul_shift_add_trunc H.n]
+  rw [g₀, g₁]; ring
 
-theorem coeff_g₀_mem : ∀ i, S.g₀.coeff i ∈ I := fun i ↦ by
+theorem coeff_g₀_mem : ∀ i, H.g₀.coeff i ∈ I := fun i ↦ by
   rw [g₀, coeff_trunc]
   split_ifs with h
-  · exact S.coeff_g_of_lt i h
-  · simp
+  · exact H.coeff_g_of_lt i h
+  · exact zero_mem _
 
-theorem isUnit_g₁ : IsUnit S.g₁ := by
-  simp_rw [g₁, isUnit_iff_constantCoeff, constantCoeff_mk, zero_add, S.isUnit_coeff_g]
-
-/-- The `f₀` is `∑ i < n, coeff f i * X ^ i`. -/
-noncomputable def f₀ := S.f.trunc S.n
-
-/-- The `f₁` is `∑ i, coeff f (i + n) * X ^ i`. -/
-noncomputable def f₁ := PowerSeries.mk fun i ↦ coeff A (i + S.n) S.f
-
-theorem f_eq : S.f = (S.f₀ : A⟦X⟧) + X ^ S.n * S.f₁ := by
-  rw [S.f.eq_X_pow_mul_shift_add_trunc S.n, f₀, f₁]; ring
-
-theorem order_eq (hI : I ≠ ⊤) : (S.g.map (Ideal.Quotient.mk I)).order = S.n := by
-  simp_rw [order_eq_nat, coeff_map, S.g_eq, map_add, Polynomial.coeff_coe,
-    Ideal.Quotient.eq_zero_iff_mem.2 (S.coeff_g₀_mem _), zero_add]
-  refine ⟨?_, fun i hi ↦ ?_⟩
-  · nth_rw 1 [← zero_add S.n]
-    rw [coeff_X_pow_mul, coeff_zero_eq_constantCoeff]
-    contrapose! hI
-    rw [Ideal.Quotient.eq_zero_iff_mem] at hI
-    exact Ideal.eq_top_of_isUnit_mem _ hI (isUnit_iff_constantCoeff.1 S.isUnit_g₁)
-  · rw [Ideal.Quotient.eq_zero_iff_mem]
-    refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal _ _ i (fun j hj ↦ ?_) i le_rfl
-    simp_rw [coeff_X_pow, if_neg (lt_of_le_of_lt hj hi).ne, zero_mem]
-
-theorem order_toNat_eq (hI : I ≠ ⊤) : (S.g.map (Ideal.Quotient.mk I)).order.toNat = S.n := by
-  simpa using congr($(S.order_eq hI).toNat)
+theorem isUnit_g₁ : IsUnit H.g₁ := by
+  simpa only [g₁, isUnit_iff_constantCoeff, constantCoeff_mk, zero_add]
 
 /-- The inductively constructed sequence `qₖ` in the proof of Weierstrass division. -/
-noncomputable def seq (S : WeierstrassDivisionData I) : ℕ → A⟦X⟧
+noncomputable def seq (H : g.IsWeierstrassDivisorAt I) (f : A⟦X⟧) : ℕ → A⟦X⟧
   | 0 => 0
   | k + 1 =>
-    S.seq k + (PowerSeries.mk fun i ↦ coeff A (i + S.n) (S.f - S.g * S.seq k)) * S.isUnit_g₁.unit⁻¹
+    H.seq f k + (PowerSeries.mk fun i ↦ coeff A (i + H.n) (f - g * H.seq f k)) * H.isUnit_g₁.unit⁻¹
 
-theorem coeff_seq_mem (k : ℕ) : ∀ i ≥ S.n, coeff A i (S.f - S.g * S.seq k) ∈ I ^ k := by
+variable {f : A⟦X⟧}
+
+theorem coeff_seq_mem (k : ℕ) : ∀ i ≥ H.n, coeff A i (f - g * H.seq f k) ∈ I ^ k := by
   induction k with
   | zero => simp
   | succ k hq =>
     rw [seq]
-    set q := S.seq k
-    set s := S.f - S.g * q
-    have hs := s.eq_X_pow_mul_shift_add_trunc S.n
-    set s₀ := s.trunc S.n
-    set s₁ := PowerSeries.mk fun i ↦ coeff A (i + S.n) s
-    set q' := q + s₁ * S.isUnit_g₁.unit⁻¹
-    have key : S.f - S.g * q' = (s₀ : A⟦X⟧) - (S.g₀ : A⟦X⟧) * s₁ * S.isUnit_g₁.unit⁻¹ := by
-      trans s + S.g * (q - q')
+    set q := H.seq f k
+    set s := f - g * q
+    have hs := s.eq_X_pow_mul_shift_add_trunc H.n
+    set s₀ := s.trunc H.n
+    set s₁ := PowerSeries.mk fun i ↦ coeff A (i + H.n) s
+    set q' := q + s₁ * H.isUnit_g₁.unit⁻¹
+    have key : f - g * q' = (s₀ : A⟦X⟧) - (H.g₀ : A⟦X⟧) * s₁ * H.isUnit_g₁.unit⁻¹ := by
+      trans s + g * (q - q')
       · simp_rw [s]; ring
       simp_rw [q']
-      rw [sub_add_cancel_left, mul_neg, ← mul_assoc, mul_right_comm, S.g_eq, add_mul, mul_assoc,
-        IsUnit.mul_val_inv, hs]
+      rw [sub_add_cancel_left, mul_neg, ← mul_assoc, mul_right_comm]
+      nth_rw 1 [H.g_eq]
+      rw [add_mul, mul_assoc, IsUnit.mul_val_inv, hs]
       ring
     intro i hi
     rw [key, map_sub, Polynomial.coeff_coe, coeff_trunc, if_neg hi.not_lt, zero_sub, neg_mem_iff,
       pow_succ']
-    refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal' _ _ (fun i ↦ ?_) i
-    refine coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal' _ _
-      (by simp [S.coeff_g₀_mem]) (fun i ↦ ?_) i
+    refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal' (fun i ↦ ?_) i
+    refine coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal'
+      (by simp [H.coeff_g₀_mem]) (fun i ↦ ?_) i
     rw [coeff_mk]
-    exact hq (i + S.n) (by simp)
+    exact hq (i + H.n) (by simp)
 
-theorem coeff_seq_succ_sub_seq_mem (k : ℕ) : ∀ i, coeff A i (S.seq (k + 1) - S.seq k) ∈ I ^ k := by
+theorem coeff_seq_succ_sub_seq_mem (k : ℕ) :
+    ∀ i, coeff A i (H.seq f (k + 1) - H.seq f k) ∈ I ^ k := by
   simp_rw [seq, add_sub_cancel_left]
-  refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal' _ _ fun i ↦ ?_
+  refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal' fun i ↦ ?_
   rw [coeff_mk]
-  exact S.coeff_seq_mem k (i + S.n) (by simp)
+  exact H.coeff_seq_mem k (i + H.n) (by simp)
 
 @[simp]
-theorem seq_zero : S.seq 0 = 0 := rfl
+theorem seq_zero : H.seq f 0 = 0 := rfl
 
-theorem seq_one : S.seq 1 = S.f₁ * S.isUnit_g₁.unit⁻¹ := by
-  simp_rw [seq, mul_zero, zero_add, sub_zero, f₁]
+theorem seq_one : H.seq f 1 =
+    (PowerSeries.mk fun i ↦ coeff A (i + H.n) f) * H.isUnit_g₁.unit⁻¹ := by
+  simp_rw [seq, mul_zero, zero_add, sub_zero]
+
+variable (f)
 
 /-- The (bundled version of) coefficient of the limit `q` of the
 inductively constructed sequence `qₖ` in the proof of Weierstrass division. -/
 noncomputable def divCoeff [IsPrecomplete I A] (i : ℕ) :=
   Classical.indefiniteDescription _ <| IsPrecomplete.prec' (I := I)
-    (fun k ↦ coeff A i (S.seq k)) fun {m} {n} hn ↦ by
+    (fun k ↦ coeff A i (H.seq f k)) fun {m} {n} hn ↦ by
       induction n, hn using Nat.le_induction with
       | base => rfl
       | succ n hn ih =>
         refine ih.trans (SModEq.symm ?_)
         simp_rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top, ← map_sub]
-        exact Ideal.pow_le_pow_right hn (S.coeff_seq_succ_sub_seq_mem n i)
+        exact Ideal.pow_le_pow_right hn (H.coeff_seq_succ_sub_seq_mem n i)
 
 /-- The limit `q` of the
 inductively constructed sequence `qₖ` in the proof of Weierstrass division. -/
-noncomputable def div [IsPrecomplete I A] : A⟦X⟧ := PowerSeries.mk fun i ↦ (S.divCoeff i).1
+noncomputable def div [IsPrecomplete I A] : A⟦X⟧ := PowerSeries.mk fun i ↦ (H.divCoeff f i).1
 
-theorem coeff_div [IsPrecomplete I A] : ∀ i, coeff A i S.div = (S.divCoeff i).1 := by
+variable {f}
+
+theorem coeff_div [IsPrecomplete I A] : ∀ i, coeff A i (H.div f) = (H.divCoeff f i).1 := by
   simp [div]
 
 theorem coeff_div_sub_seq_mem [IsPrecomplete I A] (k : ℕ) :
-    ∀ i, coeff A i (S.div - (S.seq k)) ∈ I ^ k := fun i ↦ by
+    ∀ i, coeff A i (H.div f - (H.seq f k)) ∈ I ^ k := fun i ↦ by
   rw [map_sub, coeff_div]
-  simpa only [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top] using ((S.divCoeff i).2 k).symm
+  simpa only [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top] using ((H.divCoeff f i).2 k).symm
+
+variable (f)
 
 /-- The remainder `r` in the proof of Weierstrass division. -/
-noncomputable def mod [IsPrecomplete I A] : A[X] := (S.f - S.g * S.div).trunc S.n
+noncomputable def mod [IsPrecomplete I A] : A[X] := (f - g * H.div f).trunc H.n
 
+/-- If the ring is `I`-adic complete, then `g` can be used as a divisor in Weierstrass division. -/
 theorem isWeierstrassDivisionAt_div_mod [IsAdicComplete I A] :
-    S.f.IsWeierstrassDivisionAt S.g S.div S.mod I := by
+    f.IsWeierstrassDivisionAt g (H.div f) (H.mod f) I := by
   rcases eq_or_ne I ⊤ with rfl | hI
   · have := ‹IsAdicComplete ⊤ A›.toIsHausdorff.subsingleton
-    rw [Subsingleton.elim S.f 0, Subsingleton.elim S.div 0, Subsingleton.elim S.mod 0]
-    exact S.g.isWeierstrassDivisionAt_zero _
+    rw [Subsingleton.elim f 0, Subsingleton.elim (H.div 0) 0, Subsingleton.elim (H.mod 0) 0]
+    exact g.isWeierstrassDivisionAt_zero _
   constructor
-  · rw [S.order_toNat_eq hI]
-    exact degree_trunc_lt _ _
+  · exact degree_trunc_lt _ _
   · rw [mod, add_comm, ← sub_eq_iff_eq_add]
     ext i
-    by_cases hi : i < S.n
+    by_cases hi : i < H.n
     · simp [coeff_trunc, hi]
     rw [Polynomial.coeff_coe, coeff_trunc, if_neg hi]
     refine IsHausdorff.haus' (I := I) _ fun k ↦ ?_
-    rw [SModEq.zero, smul_eq_mul, Ideal.mul_top, show S.f - S.g * S.div =
-      S.f - S.g * (S.seq k) - S.g * (S.div - (S.seq k)) by ring, map_sub]
-    exact Ideal.sub_mem _ (S.coeff_seq_mem k _ (not_lt.1 hi)) <|
-      coeff_mul_mem_ideal_of_coeff_right_mem_ideal' _ _ (S.coeff_div_sub_seq_mem k) i
+    rw [SModEq.zero, smul_eq_mul, Ideal.mul_top, show f - g * H.div f =
+      f - g * (H.seq f k) - g * (H.div f - (H.seq f k)) by ring, map_sub]
+    exact Ideal.sub_mem _ (H.coeff_seq_mem k _ (not_lt.1 hi)) <|
+      coeff_mul_mem_ideal_of_coeff_right_mem_ideal' (H.coeff_div_sub_seq_mem k) i
 
 /-- If `g * q = r` for some power series `q` and some polynomial `r` whose degree is `< n`,
 then `q` and `r` are all zero. This implies the uniqueness of Weierstrass division. -/
 theorem eq_zero_of_mul_eq [IsHausdorff I A]
-    {q : A⟦X⟧} {r : A[X]} (hdeg : r.degree < S.n) (heq : S.g * q = r) : q = 0 ∧ r = 0 := by
+    {q : A⟦X⟧} {r : A[X]} (hdeg : r.degree < H.n) (heq : g * q = r) : q = 0 ∧ r = 0 := by
   suffices ∀ k i, coeff A i q ∈ I ^ k by
     have hq : q = 0 := by
       ext i
@@ -291,45 +287,45 @@ theorem eq_zero_of_mul_eq [IsHausdorff I A]
   induction k with
   | zero => simp
   | succ k ih =>
-    rw [S.g_eq] at heq
+    rw [H.g_eq] at heq
     have h1 : ∀ i, coeff A i r ∈ I ^ (k + 1) := fun i ↦ by
-      rcases lt_or_le i S.n with hi | hi
+      rcases lt_or_le i H.n with hi | hi
       · rw [← heq, pow_succ']
-        refine coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal _ _ i (fun j hj ↦ ?_)
+        refine coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal i (fun j hj ↦ ?_)
           (fun j _ ↦ ih j) i le_rfl
         rw [map_add, Polynomial.coeff_coe]
-        refine Ideal.add_mem _ (S.coeff_g₀_mem _) ?_
+        refine Ideal.add_mem _ (H.coeff_g₀_mem _) ?_
         simp_rw [coeff_X_pow_mul', if_neg (lt_of_le_of_lt hj hi).not_le, zero_mem]
       simp_rw [Polynomial.coeff_coe,
         Polynomial.coeff_eq_zero_of_degree_lt (lt_of_lt_of_le hdeg (by simpa)), zero_mem]
     rw [add_mul, add_comm, ← eq_sub_iff_add_eq] at heq
-    replace heq := congr($heq * S.isUnit_g₁.unit⁻¹)
-    rw [mul_right_comm, mul_assoc _ S.g₁, IsUnit.mul_val_inv, mul_one] at heq
+    replace heq := congr($heq * H.isUnit_g₁.unit⁻¹)
+    rw [mul_right_comm, mul_assoc _ H.g₁, IsUnit.mul_val_inv, mul_one] at heq
     intro i
-    rw [← coeff_X_pow_mul _ S.n i, heq]
-    refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal' _ _ (fun i ↦ ?_) _
+    rw [← coeff_X_pow_mul _ H.n i, heq]
+    refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal' (fun i ↦ ?_) _
     rw [map_sub]
     refine Ideal.sub_mem _ (h1 _) ?_
     rw [pow_succ']
-    refine coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal' _ _ (fun i ↦ ?_) ih _
-    simp_rw [Polynomial.coeff_coe, S.coeff_g₀_mem]
+    refine coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal' (fun i ↦ ?_) ih _
+    simp_rw [Polynomial.coeff_coe, H.coeff_g₀_mem]
 
 /-- If `g * q + r = g * q' + r'` for some power series `q`, `q'` and some polynomials `r`, `r'`
 whose degrees are `< n`, then `q = q'` and `r = r'` are all zero.
 This implies the uniqueness of Weierstrass division. -/
-theorem eq_of_mul_add_eq_mul_add [IsHausdorff I A] {q q' : A⟦X⟧} {r r' : A[X]} (hr : r.degree < S.n)
-    (hr' : r'.degree < S.n) (heq : S.g * q + r = S.g * q' + r') : q = q' ∧ r = r' := by
-  replace heq : S.g * (q - q') = ↑(r' - r) := by
+theorem eq_of_mul_add_eq_mul_add [IsHausdorff I A] {q q' : A⟦X⟧} {r r' : A[X]} (hr : r.degree < H.n)
+    (hr' : r'.degree < H.n) (heq : g * q + r = g * q' + r') : q = q' ∧ r = r' := by
+  replace heq : g * (q - q') = ↑(r' - r) := by
     rw [← eq_sub_iff_add_eq] at heq
     rw [Polynomial.coe_sub, mul_sub, heq]
     ring
-  have h := S.eq_zero_of_mul_eq (lt_of_le_of_lt (r'.degree_sub_le r) (max_lt hr' hr)) heq
+  have h := H.eq_zero_of_mul_eq (lt_of_le_of_lt (r'.degree_sub_le r) (max_lt hr' hr)) heq
   simp_rw [sub_eq_zero] at h
   exact ⟨h.1, h.2.symm⟩
 
-end WeierstrassDivisionData
+end IsWeierstrassDivisorAt
 
-end
+end IsWeierstrassDivisorAt
 
 /-- **Weierstrass division** ([washington_cyclotomic], Proposition 7.2): let `f`, `g` be
 power series over a complete local ring, such that
@@ -338,7 +334,7 @@ residue field. Then there exists a power series `q` and a polynomial `r` of degr
 `f = g * q + r`. -/
 theorem exists_isWeierstrassDivision [IsLocalRing A] [IsAdicComplete (IsLocalRing.maximalIdeal A) A]
     (f g : A⟦X⟧) (hg : g.map (IsLocalRing.residue A) ≠ 0) : ∃ q r, f.IsWeierstrassDivision g q r :=
-  ⟨_, _, (WeierstrassDivisionData.ofMapResidueNeZero f g hg).isWeierstrassDivisionAt_div_mod⟩
+  ⟨_, _, (IsWeierstrassDivisor.of_map_ne_zero g hg).isWeierstrassDivisionAt_div_mod f⟩
 
 -- Unfortunately there is no Unicode subscript `w`.
 
@@ -404,7 +400,7 @@ theorem eq_zero_of_weierstrass_division [IsLocalRing A] [IsHausdorff (IsLocalRin
     (g : A⟦X⟧) (hg : g.map (IsLocalRing.residue A) ≠ 0) {q : A⟦X⟧} {r : A[X]}
     (hr : r.degree < (g.map (IsLocalRing.residue A)).order.toNat)
     (heq : g * q = r) : q = 0 ∧ r = 0 :=
-  (WeierstrassDivisionData.ofMapResidueNeZero 0 g hg).eq_zero_of_mul_eq hr heq
+  (IsWeierstrassDivisor.of_map_ne_zero g hg).eq_zero_of_mul_eq hr heq
 
 /-- The `q` and `r` in the Weierstrass division is unique. -/
 theorem eq_of_weierstrass_division [IsLocalRing A] [IsHausdorff (IsLocalRing.maximalIdeal A) A]
@@ -412,7 +408,7 @@ theorem eq_of_weierstrass_division [IsLocalRing A] [IsHausdorff (IsLocalRing.max
     (hr : r.degree < (g.map (IsLocalRing.residue A)).order.toNat)
     (hr' : r'.degree < (g.map (IsLocalRing.residue A)).order.toNat)
     (heq : g * q + r = g * q' + r') : q = q' ∧ r = r' :=
-  (WeierstrassDivisionData.ofMapResidueNeZero 0 g hg).eq_of_mul_add_eq_mul_add hr hr' heq
+  (IsWeierstrassDivisor.of_map_ne_zero g hg).eq_of_mul_add_eq_mul_add hr hr' heq
 
 /-- The `q` and `r` in the Weierstrass division is unique. -/
 theorem IsWeierstrassDivision.elim [IsLocalRing A] [IsHausdorff (IsLocalRing.maximalIdeal A) A]
@@ -527,7 +523,7 @@ theorem IsWeierstrassDivision.isUnit_of_map_ne_zero
       rwa [Finset.mem_singleton, Finset.antidiagonal_congr hp (by simp)]
     rw [coeff_of_lt_order p.1 (by
       rwa [← ENat.lt_lift_iff (h := order_finite_iff_ne_zero.2 hg),
-        ENat.lift_eq_toNat]), zero_mul]), Finset.sum_singleton,
+        ENat.lift_eq_toNat_of_lt_top]), zero_mul]), Finset.sum_singleton,
     coeff_map, coeff_map, coeff_zero_eq_constantCoeff, mul_comm, Eq.comm] at H2
   rw [isUnit_iff_constantCoeff, ← isUnit_map_iff (IsLocalRing.residue A)]
   exact isUnit_of_mul_eq_one _ _ H2
@@ -563,7 +559,7 @@ theorem IsWeierstrassFactorization.isWeierstrassDivision
   · change (Polynomial.X ^ n - f).degree < ↑n
     refine (Polynomial.degree_sub_lt ?_ (Polynomial.monic_X_pow n).ne_zero ?_).trans_eq (by simp)
     · simp_rw [H.degree_eq_order_map, Polynomial.degree_X_pow, n,
-        ← ENat.lift_eq_toNat (order_finite_iff_ne_zero.2 H.map_ne_zero)]
+        ← ENat.lift_eq_toNat_of_lt_top (order_finite_iff_ne_zero.2 H.map_ne_zero)]
       exact ENat.coe_lift _ _
     · rw [(Polynomial.monic_X_pow n).leadingCoeff, H.isDistinguishedAt.monic.leadingCoeff]
   · simp_rw [H.eq_mul, mul_assoc, IsUnit.mul_val_inv, mul_one, Polynomial.coe_sub,
