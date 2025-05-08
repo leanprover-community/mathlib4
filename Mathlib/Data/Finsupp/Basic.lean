@@ -1077,11 +1077,15 @@ protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
   f.sum fun a g => g.sum fun b c => single (a, b) c
 
 @[simp]
-protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (x : α × β) :
-    f.uncurry x = f x.1 x.2 := by
-  rw [← curry_apply (f.uncurry) x.1 x.2]
+protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (x : α) (y : β) :
+    f.uncurry (x, y) = f x y := by
+  rw [← curry_apply (f.uncurry) x y]
   simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
     forall_true_iff, sum_single_index, single_zero, ← single_sum, sum_single]
+
+protected theorem uncurry_apply (f : α →₀ β →₀ M) (x : α × β) :
+    f.uncurry x = f x.1 x.2 := by
+  rw [← Prod.mk.eta (p := x), Finsupp.uncurry_apply_pair]
 
 @[simp]
 lemma uncurry_single (a : α) (b : β) (m : M) :
