@@ -194,6 +194,12 @@ theorem H0Map_id_eq_invariantsFunctor_map {A B : Rep k G} (f : A ⟶ B) :
     H0Map (MonoidHom.id G) f = (invariantsFunctor k G).map f := by
   rfl
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma H0Map_comp_f :
+    H0Map f φ ≫ (shortComplexH0 B).f = (shortComplexH0 A).f ≫ φ.hom := by
+  ext
+  simp [shortComplexH0]
+
 instance mono_H0Map_of_mono {A B : Rep k G} (f : A ⟶ B) [Mono f] :
     Mono (H0Map (MonoidHom.id G) f) :=
   (ModuleCat.mono_iff_injective _).2 fun _ _ hxy => Subtype.ext <|
@@ -202,10 +208,8 @@ instance mono_H0Map_of_mono {A B : Rep k G} (f : A ⟶ B) [Mono f] :
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem cocyclesMap_comp_isoZeroCocycles_hom :
     cocyclesMap f φ 0 ≫ (isoZeroCocycles B).hom = (isoZeroCocycles A).hom ≫ H0Map f φ := by
-  rw [← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq, ← cancel_mono (iCocycles _ _)]
-  ext x
-  have := congr($((CommSq.vert_inv ⟨cochainsMap_f_0_comp_zeroCochainsLequiv f φ⟩).w.symm) x)
-  simp_all
+  have := cochainsMap_f_0_comp_zeroCochainsLequiv f φ
+  simp_all [← cancel_mono (shortComplexH0 B).f]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_comp_isoH0_hom :
@@ -260,18 +264,17 @@ noncomputable abbrev mapOneCocycles :
     (shortComplexH1 B).moduleCatLeftHomologyData
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma mapOneCocycles_comp_subtype :
-    mapOneCocycles f φ ≫ ModuleCat.ofHom (oneCocycles B).subtype =
-      ModuleCat.ofHom (oneCocycles A).subtype ≫ ModuleCat.ofHom (fOne f φ) :=
+lemma mapOneCocycles_comp_i :
+    mapOneCocycles f φ ≫ (shortComplexH1 B).moduleCatLeftHomologyData.i =
+      (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fOne f φ) :=
   ShortComplex.cyclesMap'_i (mapShortComplexH1 f φ) (moduleCatLeftHomologyData _)
     (moduleCatLeftHomologyData _)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoOneCocycles_hom :
     cocyclesMap f φ 1 ≫ (isoOneCocycles B).hom = (isoOneCocycles A).hom ≫ mapOneCocycles f φ := by
-  simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapOneCocycles,
-      Category.assoc, cyclesMap'_i, isoOneCocycles, ← Category.assoc]
-  simp [cochainsMap_f_1_comp_oneCochainsLequiv f, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
+  simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapShortComplexH1,
+    cochainsMap_f_1_comp_oneCochainsLequiv f, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `H¹(H, A) ⟶ H¹(G, B)`. -/
@@ -354,18 +357,17 @@ noncomputable abbrev mapTwoCocycles :
     (shortComplexH2 B).moduleCatLeftHomologyData
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma mapTwoCocycles_comp_subtype :
-    mapTwoCocycles f φ ≫ ModuleCat.ofHom (twoCocycles B).subtype =
-      ModuleCat.ofHom (twoCocycles A).subtype ≫ ModuleCat.ofHom (fTwo f φ) :=
+lemma mapTwoCocycles_comp_i :
+    mapTwoCocycles f φ ≫ (shortComplexH2 B).moduleCatLeftHomologyData.i =
+      (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fTwo f φ) :=
   ShortComplex.cyclesMap'_i (mapShortComplexH2 f φ) (moduleCatLeftHomologyData _)
     (moduleCatLeftHomologyData _)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoTwoCocycles_hom :
     cocyclesMap f φ 2 ≫ (isoTwoCocycles B).hom = (isoTwoCocycles A).hom ≫ mapTwoCocycles f φ := by
-  simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 B)).i, mapTwoCocycles,
-      Category.assoc, cyclesMap'_i, isoTwoCocycles, ← Category.assoc]
-  simp [cochainsMap_f_2_comp_twoCochainsLequiv f, mapShortComplexH2, ← LinearEquiv.toModuleIso_hom]
+  simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 B)).i, mapShortComplexH2,
+    cochainsMap_f_2_comp_twoCochainsLequiv f, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `H²(H, A) ⟶ H²(G, B)`. -/
