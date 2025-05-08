@@ -18,18 +18,18 @@ specific exponent, along with the usual statement over the naturals.
 ## Main definitions
 
 * `FermatLastTheoremWith R n`: The statement that only solutions to the Fermat
-equation `a^n + b^n = c^n` in the semiring `R` have `a = 0`, `b = 0` or `c = 0`.
+  equation `a^n + b^n = c^n` in the semiring `R` have `a = 0`, `b = 0` or `c = 0`.
 
-Note that this statement can certainly be false for certain values of `R` and `n`.
-For example `FermatLastTheoremWith ℝ 3` is false as `1^3 + 1^3 = (2^{1/3})^3`, and
-`FermatLastTheoremWith ℕ 2` is false, as 3^2 + 4^2 = 5^2.
+  Note that this statement can certainly be false for certain values of `R` and `n`.
+  For example `FermatLastTheoremWith ℝ 3` is false as `1^3 + 1^3 = (2^{1/3})^3`, and
+  `FermatLastTheoremWith ℕ 2` is false, as 3^2 + 4^2 = 5^2.
 
 * `FermatLastTheoremFor n` : The statement that the only solutions to `a^n + b^n = c^n` in `ℕ`
-have `a = 0`, `b = 0` or `c = 0`. Again, this statement is not always true, for
-example `FermatLastTheoremFor 1` is false because `2^1 + 2^1 = 4^1`.
+  have `a = 0`, `b = 0` or `c = 0`. Again, this statement is not always true, for
+  example `FermatLastTheoremFor 1` is false because `2^1 + 2^1 = 4^1`.
 
 * `FermatLastTheorem` : The statement of Fermat's Last Theorem, namely that the only solutions to
-`a^n + b^n = c^n` in `ℕ` when `n ≥ 3` have `a = 0`, `b = 0` or `c = 0`.
+  `a^n + b^n = c^n` in `ℕ` when `n ≥ 3` have `a = 0`, `b = 0` or `c = 0`.
 
 ## History
 

@@ -32,17 +32,17 @@ by taking `[Fact p.Prime]` as a type class argument.
 ## Calculations with `p`-adic valuations
 
 * `padicValNat_factorial`: Legendre's Theorem. The `p`-adic valuation of `n!` is the sum of the
-quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
-greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in the
-language of prime multiplicity.
+  quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
+  greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in
+  the language of prime multiplicity.
 
 * `sub_one_mul_padicValNat_factorial`: Legendre's Theorem.  Taking (`p - 1`) times
-the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
+  the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
 
 * `padicValNat_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
-of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
-`Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for the
-same result but stated in the language of prime multiplicity.
+  of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
+  `Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for
+  the same result but stated in the language of prime multiplicity.
 
 * `sub_one_mul_padicValNat_choose_eq_sub_sum_digits`: Kummer's Theorem. Taking (`p - 1`) times the
 `p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum of

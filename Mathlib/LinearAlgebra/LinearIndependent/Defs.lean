@@ -29,11 +29,11 @@ vector space and `ι : Type*` is an arbitrary indexing type.
 * `LinearIndependent R v` states that the elements of the family `v` are linearly independent.
 
 * `LinearIndepOn R v s` states that the elements of the family `v` indexed by the members
-of the set `s : Set ι` are linearly independent.
+  of the set `s : Set ι` are linearly independent.
 
 * `LinearIndependent.repr hv x` returns the linear combination representing `x : span R (range v)`
-on the linearly independent vectors `v`, given `hv : LinearIndependent R v`
-(using classical choice). `LinearIndependent.repr hv` is provided as a linear map.
+  on the linearly independent vectors `v`, given `hv : LinearIndependent R v`
+  (using classical choice). `LinearIndependent.repr hv` is provided as a linear map.
 
 * `LinearIndependent.Maximal` states that there exists no linear independent family that strictly
   includes the given one.

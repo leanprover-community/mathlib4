@@ -154,8 +154,7 @@ open CategoryTheory.Prod
 
 variable [IsFiltered K]
 
-/-- This follows this proof from
-* Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
+/-- This follows this proof from `Borceux, Handbook of categorical algebra 1, Theorem 2.13.4`
 although with different names.
 -/
 theorem colimitLimitToLimitColimit_surjective :

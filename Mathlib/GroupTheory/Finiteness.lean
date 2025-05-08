@@ -17,10 +17,10 @@ finitely-generated modules.
 
 * `Submonoid.FG S`, `AddSubmonoid.FG S` : A submonoid `S` is finitely generated.
 * `Monoid.FG M`, `AddMonoid.FG M` : A typeclass indicating a type `M` is finitely generated as a
-monoid.
+  monoid.
 * `Subgroup.FG S`, `AddSubgroup.FG S` : A subgroup `S` is finitely generated.
 * `Group.FG M`, `AddGroup.FG M` : A typeclass indicating a type `M` is finitely generated as a
-group.
+  group.
 
 -/
 

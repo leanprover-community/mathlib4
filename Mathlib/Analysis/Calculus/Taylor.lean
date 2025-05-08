@@ -33,7 +33,7 @@ which states that if `f` is sufficiently smooth, then
 * `taylor_mean_remainder_lagrange`: Taylor's theorem with the Lagrange remainder
 * `taylor_mean_remainder_cauchy`: Taylor's theorem with the Cauchy remainder
 * `exists_taylor_mean_remainder_bound`: Taylor's theorem for vector valued functions with a
-polynomial bound on the remainder
+  polynomial bound on the remainder
 
 ## TODO
 

@@ -18,7 +18,7 @@ bounds in binomial coefficients. These include:
 * `Nat.factorization_choose_le_one`: Primes above `sqrt n` appear at most once
   in the factorization of `n` choose `k`.
 * `Nat.factorization_centralBinom_of_two_mul_self_lt_three_mul`: Primes from `2 * n / 3` to `n`
-do not appear in the factorization of the `n`th central binomial coefficient.
+  do not appear in the factorization of the `n`th central binomial coefficient.
 * `Nat.factorization_choose_eq_zero_of_lt`: Primes greater than `n` do not
   appear in the factorization of `n` choose `k`.
 

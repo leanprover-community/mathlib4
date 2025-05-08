@@ -38,7 +38,7 @@ if it is full, faithful and essentially surjective.
 * `Functor.EssSurj`: type class on a functor `F` containing the data of the preimages
   and the isomorphisms `F.obj (preimage d) ≅ d`.
 * `Functor.IsEquivalence`: type class on a functor `F` which is full, faithful and
-essentially surjective.
+  essentially surjective.
 
 ## Main results
 
@@ -46,8 +46,8 @@ essentially surjective.
 * `isEquivalence_iff_of_iso`: when `F` and `G` are isomorphic functors,
 `F` is an equivalence iff `G` is.
 * `Functor.asEquivalenceFunctor`: construction of an equivalence of categories from
-a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
-and essentially surjective).
+  a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
+  and essentially surjective).
 
 ## Notations
 

@@ -14,30 +14,30 @@ This file provides API for interacting with cones (resp. cocones) in the case of
 # Main definitions
 
 * `PullbackCone f g`: Given morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`, a term `t : PullbackCone f g`
-provides the data of a cone pictured as follows
-```
-t.pt ---t.snd---> Y
-  |               |
- t.fst            g
-  |               |
-  v               v
-  X -----f------> Z
-```
-The type `PullbackCone f g` is implemented as an abbreviation for `Cone (cospan f g)`, so general
-results about cones are also available for `PullbackCone f g`.
+  provides the data of a cone pictured as follows
+  ```
+  t.pt ---t.snd---> Y
+    |               |
+  t.fst            g
+    |               |
+    v               v
+    X -----f------> Z
+  ```
+  The type `PullbackCone f g` is implemented as an abbreviation for `Cone (cospan f g)`, so general
+  results about cones are also available for `PullbackCone f g`.
 
 * `PushoutCone f g`: Given morphisms `f : X ⟶ Y` and `g : X ⟶ Z`, a term `t : PushoutCone f g`
-provides the data of a cocone pictured as follows
-```
-  X -----f------> Y
-  |               |
-  g               t.inr
-  |               |
-  v               v
-  Z ---t.inl---> t.pt
-```
-Similar to `PullbackCone`, `PushoutCone f g` is implemented as an abbreviation for
-`Cocone (span f g)`, so general results about cocones are also available for `PushoutCone f g`.
+  provides the data of a cocone pictured as follows
+  ```
+    X -----f------> Y
+    |               |
+    g               t.inr
+    |               |
+    v               v
+    Z ---t.inl---> t.pt
+  ```
+  Similar to `PullbackCone`, `PushoutCone f g` is implemented as an abbreviation for
+  `Cocone (span f g)`, so general results about cocones are also available for `PushoutCone f g`.
 
 ## API
 We summarize the most important parts of the API for pullback cones here. The dual notions for

@@ -77,8 +77,7 @@ register_option linter.style.maxHeartbeats : Bool := {
 where `<option>` contains `maxHeartbeats`, then it returns
 * the `<option>`, as a name (typically, `maxHeartbeats` or `synthInstance.maxHeartbeats`);
 * the number `num` and
-* whatever is in `<string>`.
-Note that `<string>` can only consist of whitespace and comments.
+* whatever is in `<string>`. Note that `<string>` can only consist of whitespace and comments.
 
 Otherwise, it returns `none`.
 -/
