@@ -124,9 +124,6 @@ alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
 
 end CompleteLattice
 
-/- TODO: Provide a `ScottContinuousOn` version -/
-/- TODO: Can we then deduce `ScottContinuousOn.sup₂` from this? -/
-/- `f` is Scott continuous on a product space if it is Scott continuous in each variable -/
 lemma ScottContinuous_prod_of_ScottContinuous {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} (h₁ : ∀ a, ScottContinuous (fun b => f (a,b)))
     (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) : ScottContinuous f := fun d hd₁ hd₂ p hdp => by
@@ -140,6 +137,36 @@ lemma ScottContinuous_prod_of_ScottContinuous {γ : Type*} [Preorder α] [Preord
     h₂ p.2 (Nonempty.image Prod.fst hd₁) hd₂.fst ((isLUB_prod (p.1,p.2)).mp hdp).1
   simp_all only [image, Prod.exists, exists_and_right, exists_eq_right, mem_setOf_eq, Prod.mk.eta,
     coe_setOf, Subtype.exists, exists_prop]
+
+
+/- TODO: Provide a `ScottContinuousOn` version -/
+/- TODO: Can we then deduce `ScottContinuousOn.sup₂` from this? -/
+/- `f` is Scott continuous on a product space if it is Scott continuous in each variable -/
+-- aesop is slow
+set_option maxHeartbeats 4000000 in
+-- aesop is slow
+lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
+    {f : α × β → γ} {D : Set (Set (α × β))} (hD : ∀ a b : (α × β), a ≤ b → {a, b} ∈ D)
+    (h₁ : ∀ a, ScottContinuousOn ((fun d => Prod.snd '' d) '' D) (fun b => f (a,b)))
+    (h₂ : ∀ b, ScottContinuousOn ((fun d => Prod.fst '' d) '' D) (fun a => f (a,b))) :
+    ScottContinuousOn D f := by
+  intro d hX hd₁ hd₂ p hdp
+  have e2 : IsLUB ((fun a ↦ f (a, p.2)) '' (Prod.fst '' d)) (f (p.1,p.2)) := by
+    apply h₂ _
+    exact mem_image_of_mem (fun d ↦ Prod.fst '' d) hX
+    exact Nonempty.image Prod.fst hd₁
+    exact DirectedOn.fst hd₂
+    exact ((isLUB_prod (p.1,p.2)).mp hdp).1
+  rw [isLUB_congr ((monotone_prod_iff.mpr ⟨(fun a => (h₁ a).monotone _ (by aesop)),
+    (fun a => (h₂ a).monotone _ (by aesop))⟩).upperBounds_image_of_directedOn_prod hd₂),
+    ← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion,
+    ← isLUB_iUnion_iff_of_isLUB (fun a => by
+      rw [singleton_prod, image_image f (fun b ↦ (a, b))]
+      exact h₁ _ (mem_image_of_mem (fun d ↦ Prod.snd '' d) hX) (Nonempty.image Prod.snd hd₁)
+        (DirectedOn.snd hd₂) ((isLUB_prod (_,_)).mp hdp).2) _, Set.range]
+  simp_all
+  sorry
+
 
 /- The join operation is Scott continuous -/
 lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
