@@ -203,28 +203,26 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       constructor (and that this is all we need to supply explicitly). -/
       else
         let pargs := pargs.set! (n - 1) decl.toExpr
-        -- /- check that the lemma applies to the hypothesis -/
-        -- let check ← do
-        --   let (args,_binfo,_t) ← forallMetaBoundedTelescope cinfo.type n
-        --   let argTypes ← args.mapM (inferType ·)
-        --   logInfo s!"{p} has arguments with types {argTypes}\n hypothesis has {decl.type}"
-        --   isDefEq argTypes.back! decl.type
-        -- logInfo s!"check is {check}"
-        -- if check then
-        let val ← mkAppOptM p pargs
-        let tp ← inferType val -- This should be the type `Algebra.Property A B`
-        /- find all arguments to `Algebra.Property A B` which are of the form
-          `RingHom.toAlgebra x` -/
-        let rargs ← tp.getAppArgs.filterMapM <| fun x => liftMetaM do
-          ((·.getAppArgs.back?) =<< ·) <$> whnfUntil x ``RingHom.toAlgebra
-        /- check that we're not reproving a result, and that all involved ringhoms are indeed
-          arguments to the tactic -/
-        unless (← synthInstance? tp).isSome ||
-          !(← rargs.allM (fun z => t.anyM (withoutModifyingMCtx <| isDefEq · z))) do
-        liftMetaTactic fun mvarid => do
-          let nm ← mkFreshBinderNameForTactic `algebraizeInst
-          let (_, mvar) ← mvarid.note nm val
-          return [mvar]
+        try -- it could be the case that mkAppOptM fails
+          let val ← mkAppOptM p pargs
+          let tp ← inferType val -- This should be the type `Algebra.Property A B`
+          /- find all arguments to `Algebra.Property A B` which are of the form
+            `RingHom.toAlgebra x` -/
+          let rargs ← tp.getAppArgs.filterMapM <| fun x => liftMetaM do
+            ((·.getAppArgs.back?) =<< ·) <$> whnfUntil x ``RingHom.toAlgebra
+          /- check that we're not reproving a result, and that all involved ringhoms are indeed
+            arguments to the tactic -/
+          unless (← synthInstance? tp).isSome ||
+            !(← rargs.allM (fun z => t.anyM (withoutModifyingMCtx <| isDefEq · z))) do
+          liftMetaTactic fun mvarid => do
+            let nm ← mkFreshBinderNameForTactic `algebraizeInst
+            let (_, mvar) ← mvarid.note nm val
+            return [mvar]
+        catch e => do
+          let z ← e.toMessageData.toString
+          unless "application type mismatch".isPrefixOf z do
+            throw e
+          return
     | none => return
 
 /-- Configuration for `algebraize`. -/
