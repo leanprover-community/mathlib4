@@ -543,33 +543,33 @@ end NaturalTransforms
 
 section mapPairEquiv
 
-variable {E : Type u₃} [Category.{v₃} E]
-  {E' : Type u₄} [Category.{v₄} E']
+variable {C' : Type u₃} [Category.{v₃} C']
+  {D' : Type u₄} [Category.{v₄} D']
 
 variable {C D}
 
 /-- Equivalent categories have equivalent joins. -/
 @[simps]
-def mapPairEquiv (Eₗ : C ≌ E) (Eᵣ : D ≌ E') : C ⋆ D ≌ E ⋆ E' where
-  functor := mapPair Eₗ.functor Eᵣ.functor
-  inverse := mapPair Eₗ.inverse Eᵣ.inverse
+def mapPairEquiv (e : C ≌ C') (e' : D ≌ D') : C ⋆ D ≌ C' ⋆ D' where
+  functor := mapPair e.functor e'.functor
+  inverse := mapPair e.inverse e'.inverse
   unitIso :=
     mapPairId.symm ≪≫
-    mapIsoWhiskerRight Eₗ.unitIso _ ≪≫
-    mapIsoWhiskerLeft _ (Eᵣ.unitIso) ≪≫
+    mapIsoWhiskerRight e.unitIso _ ≪≫
+    mapIsoWhiskerLeft _ e'.unitIso ≪≫
     mapPairComp _ _ _ _
   counitIso :=
     (mapPairComp _ _ _ _).symm ≪≫
-    mapIsoWhiskerRight Eₗ.counitIso _ ≪≫
-    mapIsoWhiskerLeft _ (Eᵣ.counitIso) ≪≫
+    mapIsoWhiskerRight e.counitIso _ ≪≫
+    mapIsoWhiskerLeft _ e'.counitIso ≪≫
     mapPairId
   functor_unitIso_comp x := by
     cases x <;>
-    simp [← (inclLeft E E').map_comp, ← (inclRight E E').map_comp]
+    simp [← (inclLeft C' D').map_comp, ← (inclRight C' D').map_comp]
 
-instance isEquivalenceMapPair {Fₗ : C ⥤ E} {Fᵣ : D ⥤ E'} [Fₗ.IsEquivalence] [Fᵣ.IsEquivalence] :
-    (mapPair Fₗ Fᵣ).IsEquivalence :=
-  inferInstanceAs (mapPairEquiv Fₗ.asEquivalence Fᵣ.asEquivalence).functor.IsEquivalence
+instance isEquivalenceMapPair {F : C ⥤ C'} {F' : D ⥤ D'} [F.IsEquivalence] [F'.IsEquivalence] :
+    (mapPair F F').IsEquivalence :=
+  inferInstanceAs (mapPairEquiv F.asEquivalence F'.asEquivalence).functor.IsEquivalence
 
 end mapPairEquiv
 
