@@ -7,7 +7,7 @@ Authors: David Loeffler
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
 /-!
-# Asymptotic bounds for Jacobi theta functions
+# Asymptotic bounds for Jacobi theta functions
 
 The goal of this file is to establish some technical lemmas about the asymptotics of the sums
 
@@ -34,7 +34,7 @@ hence Dirichlet L-functions, etc).
   `∞`.
 -/
 
-open Set Filter Topology Asymptotics Real Classical
+open Set Filter Topology Asymptotics Real
 
 noncomputable section
 
@@ -99,8 +99,8 @@ lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_na
   simp_rw [← mul_assoc, f_nat, norm_mul, norm_eq_abs, abs_exp,
     mul_le_mul_iff_of_pos_right (exp_pos _), ← mul_pow, abs_pow, two_mul]
   filter_upwards [eventually_ge_atTop (Nat.ceil |a|)] with n hn
-  apply pow_le_pow_left (abs_nonneg _) ((abs_add_le _ _).trans
-    (add_le_add (le_of_eq (Nat.abs_cast _)) (Nat.ceil_le.mp hn)))
+  gcongr
+  exact (abs_add_le ..).trans (add_le_add (Nat.abs_cast _).le (Nat.ceil_le.mp hn))
 
 section k_eq_zero
 
@@ -122,7 +122,7 @@ lemma F_nat_zero_le {a : ℝ} (ha : 0 ≤ a) {t : ℝ} (ht : 0 < t) :
 lemma F_nat_zero_zero_sub_le {t : ℝ} (ht : 0 < t) :
     ‖F_nat 0 0 t - 1‖ ≤ rexp (-π * t) / (1 - rexp (-π * t)) := by
   convert F_nat_zero_le zero_le_one ht using 2
-  · rw [F_nat, tsum_eq_zero_add (summable_f_nat 0 0 ht), f_nat, Nat.cast_zero, add_zero, pow_zero,
+  · rw [F_nat, (summable_f_nat 0 0 ht).tsum_eq_zero_add, f_nat, Nat.cast_zero, add_zero, pow_zero,
       one_mul, pow_two, mul_zero, mul_zero, zero_mul, exp_zero, add_comm, add_sub_cancel_right]
     simp_rw [F_nat, f_nat, Nat.cast_add, Nat.cast_one, add_zero]
   · rw [one_pow, mul_one]
@@ -221,7 +221,7 @@ lemma summable_f_int (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_in
     funext this ▸ (HasSum.int_rec (summable_f_nat k a ht).hasSum
       (summable_f_nat k (1 - a) ht).hasSum).summable.norm
   intro n
-  cases' n with m m
+  rcases n with - | m
   · simp only [f_int, f_nat, Int.ofNat_eq_coe, Int.cast_natCast, norm_mul, norm_eq_abs, abs_pow,
       abs_abs]
   · simp only [f_int, f_nat, Int.cast_negSucc, norm_mul, norm_eq_abs, abs_pow, abs_abs,
@@ -240,7 +240,7 @@ lemma F_int_eq_of_mem_Icc (k : ℕ) {a : ℝ} (ha : a ∈ Icc 0 1) {t : ℝ} (ht
   simp only [F_int, F_nat, Function.Periodic.lift_coe]
   convert ((summable_f_nat k a ht).hasSum.int_rec (summable_f_nat k (1 - a) ht).hasSum).tsum_eq
     using 3 with n
-  cases' n with m m
+  cases n
   · rw [f_int_ofNat _ ha.1]
   · rw [f_int_negSucc _ ha.2]
 
@@ -249,11 +249,7 @@ lemma isBigO_atTop_F_int_zero_sub (a : UnitAddCircle) : ∃ p, 0 < p ∧
   obtain ⟨a, ha, rfl⟩ := a.eq_coe_Ico
   obtain ⟨p, hp, hp'⟩ := isBigO_atTop_F_nat_zero_sub ha.1
   obtain ⟨q, hq, hq'⟩ := isBigO_atTop_F_nat_zero_sub (sub_nonneg.mpr ha.2.le)
-  have ha' : (a : UnitAddCircle) = 0 ↔ a = 0 := by
-    rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico (hp := ⟨zero_lt_one' ℝ⟩), QuotientAddGroup.mk_zero]
-    · rw [zero_add]; exact ha
-    · simp
-  simp_rw [ha']
+  simp_rw [AddCircle.coe_eq_zero_iff_of_mem_Ico ha]
   simp_rw [eq_false_intro (by linarith [ha.2] : 1 - a ≠ 0), if_false, sub_zero] at hq'
   refine ⟨_, lt_min hp hq, ?_⟩
   have : (fun t ↦ F_int 0 a t - (if a = 0 then 1 else 0)) =ᶠ[atTop]

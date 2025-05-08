@@ -5,12 +5,14 @@ Authors: Michael Rothgang
 -/
 
 import Lean.Elab.Command
-import Lean.Linter.Util
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-!
-# The `oldObtain` linter, against stream-of-conciousness `obtain`
+# The `oldObtain` linter, against stream-of-consciousness `obtain`
 
-The `oldObtain` linter flags any occurrences of "stream-of-conciousness" `obtain`,
+The `oldObtain` linter flags any occurrences of "stream-of-consciousness" `obtain`,
 i.e. uses of the `obtain` tactic which do not immediately provide a proof.
 
 ## Example
@@ -52,31 +54,31 @@ open Lean Elab
 namespace Mathlib.Linter.Style
 
 /-- Whether a syntax element is an `obtain` tactic call without a provided proof. -/
-def is_obtain_without_proof : Syntax → Bool
+def isObtainWithoutProof : Syntax → Bool
   -- Using the `obtain` tactic without a proof requires proving a type;
   -- a pattern is optional.
   | `(tactic|obtain : $_type) | `(tactic|obtain $_pat : $_type) => true
   | _ => false
 
+/-- Deprecated alias for `Mathlib.Linter.Style.isObtainWithoutProof`. -/
+@[deprecated isObtainWithoutProof (since := "2024-12-07")]
+def is_obtain_without_proof := @isObtainWithoutProof
 
-/-- The `oldObtain` linter emits a warning upon uses of the "stream-of-conciousness" variants
+/-- The `oldObtain` linter emits a warning upon uses of the "stream-of-consciousness" variants
 of the `obtain` tactic, i.e. with the proof postponed. -/
 register_option linter.oldObtain : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `oldObtain` linter"
 }
 
-/-- Gets the value of the `linter.oldObtain` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.oldObtain o
-
 /-- The `oldObtain` linter: see docstring above -/
 def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterHash (← getOptions) do
+    unless Linter.getLinterValue linter.oldObtain (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    if let some head := stx.find? is_obtain_without_proof then
-      Linter.logLint linter.oldObtain head m!"Please remove stream-of-conciousness `obtain` syntax"
+    if let some head := stx.find? isObtainWithoutProof then
+      Linter.logLint linter.oldObtain head m!"Please remove stream-of-consciousness `obtain` syntax"
 
 initialize addLinter oldObtainLinter
 

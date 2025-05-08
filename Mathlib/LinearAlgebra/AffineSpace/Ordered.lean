@@ -1,15 +1,13 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Algebra.Order.Group.Instances
-import Mathlib.LinearAlgebra.AffineSpace.Slope
+import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-import Mathlib.Tactic.FieldSimp
+import Mathlib.LinearAlgebra.AffineSpace.Slope
 
 /-!
 # Ordered modules as affine spaces
@@ -44,7 +42,8 @@ other arguments belong to specific domains.
 
 section OrderedRing
 
-variable [OrderedRing k] [OrderedAddCommGroup E] [Module k E] [OrderedSMul k E]
+variable [Ring k] [PartialOrder k] [IsOrderedRing k]
+  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [OrderedSMul k E]
 variable {a a' b b' : E} {r r' : k}
 
 theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
@@ -55,10 +54,12 @@ theorem lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < li
   simp only [lineMap_apply_module]
   exact add_lt_add_right (smul_lt_smul_of_pos_left ha (sub_pos.2 hr)) _
 
+omit [IsOrderedRing k] in
 theorem lineMap_mono_right (hb : b ≤ b') (hr : 0 ≤ r) : lineMap a b r ≤ lineMap a b' r := by
   simp only [lineMap_apply_module]
   exact add_le_add_left (smul_le_smul_of_nonneg_left hb hr) _
 
+omit [IsOrderedRing k] in
 theorem lineMap_strict_mono_right (hb : b < b') (hr : 0 < r) : lineMap a b r < lineMap a b' r := by
   simp only [lineMap_apply_module]
   exact add_lt_add_left (smul_lt_smul_of_pos_left hb hr) _
@@ -93,7 +94,8 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing k] [OrderedAddCommGroup E] [Module k E] [OrderedSMul k E]
+variable [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
+  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [OrderedSMul k E]
   [Invertible (2 : k)] {a a' b b' : E} {r r' : k}
 
 theorem midpoint_le_midpoint (ha : a ≤ a') (hb : b ≤ b') : midpoint k a b ≤ midpoint k a' b' :=
@@ -103,7 +105,8 @@ end LinearOrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField k] [OrderedAddCommGroup E]
+variable [Field k] [LinearOrder k] [IsStrictOrderedRing k]
+  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E]
 variable [Module k E] [OrderedSMul k E]
 
 section
@@ -133,15 +136,13 @@ theorem lineMap_le_right_iff_le (h : r < 1) : lineMap a b r ≤ b ↔ a ≤ b :=
   Iff.trans (by rw [lineMap_apply_one]) (lineMap_le_lineMap_iff_of_lt h)
 
 @[simp]
-theorem midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b :=
-  lineMap_le_right_iff_le <| inv_lt_one one_lt_two
+theorem midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b := lineMap_le_right_iff_le two_inv_lt_one
 
 theorem right_le_lineMap_iff_le (h : r < 1) : b ≤ lineMap a b r ↔ b ≤ a :=
   lineMap_le_right_iff_le (E := Eᵒᵈ) h
 
 @[simp]
-theorem right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a :=
-  right_le_lineMap_iff_le <| inv_lt_one one_lt_two
+theorem right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a := right_le_lineMap_iff_le two_inv_lt_one
 
 end
 
@@ -177,6 +178,9 @@ These inequalities can be used to restate `convexOn` in terms of monotonicity of
 variable {f : k → E} {a b r : k}
 
 local notation "c" => lineMap a b r
+
+section
+omit [IsStrictOrderedRing k]
 
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is non-strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a c ≤ slope f a b`. -/
@@ -238,6 +242,8 @@ segment `[(a, f a), (b, f b)]` if and only if `slope f c b < slope f a b`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
     lineMap (f a) (f b) r < f c ↔ slope f c b < slope f a b :=
   map_lt_lineMap_iff_slope_lt_slope_right (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
+
+end
 
 /-- Given `c = lineMap a b r`, `a < c < b`, the point `(c, f c)` is non-strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a c ≤ slope f c b`. -/

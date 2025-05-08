@@ -1,18 +1,63 @@
 #!/usr/bin/env bash
 
-## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
-begs="(theorem|lemma|inductive|structure|def|class|instance|alias)"
+ : <<'BASH_DOC_MODULE'
 
-if [ "${1}" == "long" ]
+#  The `declarations_diff` script
+
+The `declarations_diff` script is a text-based script that attempts to find which declarations
+have been removed and which declarations have been added in the current PR with respect to `master`.
+
+In essence, it looks at the output of `git diff origin/master...HEAD`, extracts the lines that
+contain one of the keywords
+
+`theorem` `lemma` `inductive` `structure` `def` `class` `instance` `alias`
+
+and tries to find exact matches between a removed line and an added line
+(e.g. when moving a declaration from one file to another or restructuring within the same file).
+
+Exact matches are removed.
+Among the remaining unmatched lines, the script tries to extract the declaration ids and tries to
+find exact matches among those.
+No effort is made to keep track of namespaces: if the declaration is `theorem abc ...`, then
+`abc` is extracted, even if this happens inside `namespace xyz`.
+If a declaration id is added exactly once *and* removed exactly once,
+then they are again considered paired and are not shown.
+
+If a declaration id is either only added or removed or it is added or removed more than once, then
+the script will return a count such as
+
+++--+ thmName
+
+This means that a declaration `thmName` was added 3 times and removed twice: this can happen
+with namespacing, e.g. you could see it with `++-- map_zero`.
+
+The script uses some heuristics to guide this process.
+* It assumes that each keyword (as above) appears on the same line as the corresponding
+  declaration id --- a line break between `theorem` and `riemannHypothesis` fools the script.
+* It deals with declaration modifiers (such as `noncomputable`, `nonrec`, `protected`) and
+  attributes.
+* It is "aware" of "nameless" `instance`s and, rather than looking for a declaration id,
+  in this case records the whole line `instance ...`.
+
+BASH_DOC_MODULE
+
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
+## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
+begs="(theorem|lemma|inductive|structure|def|class|instance|alias|abbrev)"
+
+if [ "${1:-}" == "long" ]
 then
   short=0
-  shift
 else short=1
 fi
 
 ## if an input commit is given, compute the diff with that, otherwise, use the git-magic `...`
-full_output=$(if [ -n "${1}" ]; then
-  git diff --unified=0 "${1}"
+full_output=$(if [ -n "${2:-}" ]; then
+  git diff --unified=0 "${2:-}"
 else
   git diff origin/master...HEAD
 fi |
@@ -64,6 +109,9 @@ fi |
   }'
 )
 
+# Keeping set -e causes errors further below. TODO understand why and fix this!
+set +e
+
 ## report may be empty, if every declaration is accounted for.
 report="$(if [ "${short}" == "0" ]
 then
@@ -107,6 +155,8 @@ else
   grep '\(+\|-\)' | sed 's=^ *1 =`=; s=^[^`]=`=; s=$=`='
 fi)"
 
+set -e
+
 if [ -n "${report}" ]
 then
   echo "${report}"
@@ -123,7 +173,10 @@ printf $'<details>
 ## more verbose report:
 ./scripts/declarations_diff.sh long <optional_commit>
 ```
-</details>'
+</details>
+
+The doc-module for `script/declarations_diff.sh` contains some details about this script.'
+
  : <<ReferenceTest
 theorem oh hello
 inductive triggers the count even if it is not lean code
@@ -137,4 +190,5 @@ def testingLongDiff2 im a def
 def testingLongDiff3 im a def
 @[trying to fool you] instance. the messing dot
 alias ⟨d1, d2⟩ := d  check the "split an iff alias"
+abbrev a_new_one := I was not here before
 ReferenceTest

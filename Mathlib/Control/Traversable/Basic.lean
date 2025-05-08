@@ -6,6 +6,7 @@ Authors: Simon Hudon
 import Mathlib.Data.Option.Defs
 import Mathlib.Control.Functor
 import Batteries.Data.List.Basic
+import Mathlib.Control.Basic
 
 /-!
 # Traversable type class
@@ -60,8 +61,8 @@ universe u v w
 
 section ApplicativeTransformation
 
-variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
+variable (F : Type u → Type v) [Applicative F]
+variable (G : Type u → Type w) [Applicative G]
 
 /-- A transformation between applicative functors.  It is a natural
 transformation such that `app` preserves the `Pure.pure` and
@@ -79,8 +80,8 @@ end ApplicativeTransformation
 
 namespace ApplicativeTransformation
 
-variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
+variable (F : Type u → Type v) [Applicative F]
+variable (G : Type u → Type w) [Applicative G]
 
 instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G α :=
   ⟨fun η ↦ η.app _⟩
@@ -117,10 +118,6 @@ theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) 
   ext1 α
   exact funext (h α)
 
-theorem ext_iff {η η' : ApplicativeTransformation F G} :
-    η = η' ↔ ∀ (α : Type u) (x : F α), η x = η' x :=
-  ⟨fun h _ _ => h ▸ rfl, fun h => ext h⟩
-
 section Preserves
 
 variable (η : ApplicativeTransformation F G)
@@ -132,6 +129,8 @@ theorem preserves_pure {α} : ∀ x : α, η (pure x) = pure x :=
 @[functor_norm]
 theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η (x <*> y) = η x <*> η y :=
   η.preserves_seq'
+
+variable [LawfulApplicative F] [LawfulApplicative G]
 
 @[functor_norm]
 theorem preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
@@ -145,7 +144,7 @@ end Preserves
 
 /-- The identity applicative transformation from an applicative functor to itself. -/
 def idTransformation : ApplicativeTransformation F F where
-  app α := id
+  app _ := id
   preserves_pure' := by simp
   preserves_seq' x y := by simp
 
@@ -154,12 +153,12 @@ instance : Inhabited (ApplicativeTransformation F F) :=
 
 universe s t
 
-variable {H : Type u → Type s} [Applicative H] [LawfulApplicative H]
+variable {H : Type u → Type s} [Applicative H]
 
 /-- The composition of applicative transformations. -/
 def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :
     ApplicativeTransformation F H where
-  app α x := η' (η x)
+  app _ x := η' (η x)
   -- Porting note: something has gone wrong with `simp [functor_norm]`,
   -- which should suffice for the next two.
   preserves_pure' x := by simp only [preserves_pure]
@@ -205,8 +204,7 @@ export Traversable (traverse)
 section Functions
 
 variable {t : Type u → Type u}
-variable {m : Type u → Type v} [Applicative m]
-variable {α β : Type u}
+variable {α : Type u}
 variable {f : Type u → Type u} [Applicative f]
 
 /-- A traversable functor commutes with all applicative functors. -/
@@ -221,9 +219,8 @@ send the composition of applicative functors to the composition of the
 `traverse` of each, send each function `f` to `fun x ↦ f <$> x`, and
 satisfy a naturality condition with respect to applicative
 transformations. -/
-class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
-    Prop where
-  /-- `traverse` plays well with `pure` of the identity monad-/
+class LawfulTraversable (t : Type u → Type u) [Traversable t] : Prop extends LawfulFunctor t where
+  /-- `traverse` plays well with `pure` of the identity monad -/
   id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
   /-- `traverse` plays well with composition of applicative functors. -/
   comp_traverse :
@@ -250,8 +247,6 @@ instance : LawfulTraversable Id where
   naturality _ _ _ _ _ := rfl
 
 section
-
-variable {F : Type u → Type v} [Applicative F]
 
 instance : Traversable Option :=
   ⟨Option.traverse⟩

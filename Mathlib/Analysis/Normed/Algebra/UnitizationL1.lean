@@ -24,7 +24,7 @@ non-unital Banach algebra is compact, which can be established by passing to the
 -/
 
 variable (𝕜 A : Type*) [NormedField 𝕜] [NonUnitalNormedRing A]
-variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
+variable [NormedSpace 𝕜 A]
 
 namespace WithLp
 
@@ -50,7 +50,7 @@ noncomputable def uniformEquiv_unitization_addEquiv_prod :
 
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (WithLp 1 (Unitization 𝕜 A)) :=
-  completeSpace_congr (uniformEquiv_unitization_addEquiv_prod 𝕜 A).uniformEmbedding |>.mpr
+  completeSpace_congr (uniformEquiv_unitization_addEquiv_prod 𝕜 A).isUniformEmbedding |>.mpr
     CompleteSpace.prod
 
 variable {𝕜 A}
@@ -78,6 +78,8 @@ lemma unitization_isometry_inr :
   AddMonoidHomClass.isometry_of_norm
     ((WithLp.linearEquiv 1 𝕜 (Unitization 𝕜 A)).symm.comp <| Unitization.inrHom 𝕜 A)
     unitization_norm_inr
+
+variable [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 
 instance instUnitizationRing : Ring (WithLp 1 (Unitization 𝕜 A)) :=
   inferInstanceAs (Ring (Unitization 𝕜 A))
@@ -108,7 +110,7 @@ def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMu
 
 noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitization 𝕜 A)) where
   dist_eq := dist_eq_norm
-  norm_mul x y := by
+  norm_mul_le x y := by
     simp_rw [unitization_norm_def, add_mul, mul_add, unitization_mul, fst_mul, snd_mul]
     rw [add_assoc, add_assoc]
     gcongr

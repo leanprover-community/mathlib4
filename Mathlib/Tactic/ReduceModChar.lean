@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.PowMod
 import Mathlib.Tactic.ReduceModChar.Ext
 
 /-!
@@ -44,26 +45,63 @@ open Mathlib.Meta.NormNum
 
 variable {u : Level}
 
+lemma CharP.isInt_of_mod {e' r : ℤ} {α : Type*} [Ring α] {n n' : ℕ} (inst : CharP α n) {e : α}
+    (he : IsInt e e') (hn : IsNat n n') (h₂ : IsInt (e' % n') r) : IsInt e r :=
+  ⟨by rw [he.out, CharP.intCast_eq_intCast_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
+
+lemma CharP.isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} {a' b b' c n n' : ℕ},
+    CharP α n → f = HPow.hPow → IsNat a a' → IsNat b b' → IsNat n n' →
+    Nat.mod (Nat.pow a' b') n' = c → IsNat (f a b) c
+  | _, _, a, _, b, _, _, n, _, rfl, ⟨h⟩, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by
+    rw [h, Nat.cast_id, Nat.pow_eq, ← Nat.cast_pow, CharP.natCast_eq_natCast_mod α n]
+    rfl⟩
+
+attribute [local instance] Mathlib.Meta.monadLiftOptionMetaM in
+/-- Evaluates `e` to an integer using `norm_num` and reduces the result modulo `n`. -/
+def normBareNumeral {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
+    (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
+  let ⟨ze, ne, pe⟩ ← Result.toInt _ (← Mathlib.Meta.NormNum.derive e)
+  let rr ← evalIntMod.go _ _ ze q(IsInt.raw_refl $ne) _ <|
+    .isNat q(instAddMonoidWithOne) _ q(isNat_natCast _ _ (IsNat.raw_refl $n'))
+  let ⟨zr, nr, pr⟩ ← rr.toInt _
+  return .isInt _ nr zr q(CharP.isInt_of_mod $instCharP $pe $pn $pr)
+
+mutual
+
+  /-- Given an expression of the form `a ^ b` in a ring of characteristic `n`, reduces `a`
+      modulo `n` recursively and then calculates `a ^ b` using fast modular exponentiation. -/
+  partial def normPow {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»)) (e : Q($α))
+      (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
+    let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
+    let .isNat sα na pa ← normIntNumeral' n n' pn a _ instCharP | failure
+    let ⟨nb, pb⟩ ← Mathlib.Meta.NormNum.deriveNat b q(instAddMonoidWithOneNat)
+    guard <|← withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
+    haveI' : $e =Q $a ^ $b := ⟨⟩
+    haveI' : $f =Q HPow.hPow := ⟨⟩
+    have ⟨c, r⟩ := evalNatPowMod na nb n'
+    assumeInstancesCommute
+    return .isNat sα c q(CharP.isNat_pow (f := $f) $instCharP (.refl $f) $pa $pb $pn $r)
+
+  /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentiation, otherwise
+      reduce it using `norm_num`. -/
+  partial def normIntNumeral' {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
+      (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) :=
+    normPow n n' pn e _ instCharP <|> normBareNumeral n n' pn e _ instCharP
+
+end
+
 lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ) :
     (k : R) = (k % p : ℤ) := by
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Int.emod_add_ediv]
     _ = ↑(k % p) := by simp [CharP.cast_eq_zero R]
 
-lemma CharP.isInt_of_mod {e' r : ℤ} {α : Type _} [Ring α] {n n' : ℕ} (inst : CharP α n) {e : α}
-    (he : IsInt e e') (hn : IsNat n n') (h₂ : IsInt (e' % n') r) : IsInt e r :=
-  ⟨by rw [he.out, CharP.intCast_eq_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
-
 /-- Given an integral expression `e : t` such that `t` is a ring of characteristic `n`,
 reduce `e` modulo `n`. -/
-partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (instRing : Q(Ring $α))
+partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_ : Q(Ring $α))
     (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
-  let ⟨ze, ne, pe⟩ ← Result.toInt instRing (← Mathlib.Meta.NormNum.derive e)
   let ⟨n', pn⟩ ← deriveNat n q(instAddMonoidWithOneNat)
-  let rr ← evalIntMod.go _ _ ze q(IsInt.raw_refl $ne) _ <|
-    .isNat q(instAddMonoidWithOne) _ q(isNat_natCast _ _ (IsNat.raw_refl $n'))
-  let ⟨zr, nr, pr⟩ ← rr.toInt q(Int.instRing)
-  return .isInt instRing nr zr q(CharP.isInt_of_mod $instCharP $pe $pn $pr)
+  normIntNumeral' n n' pn e _ instCharP
 
 lemma CharP.neg_eq_sub_one_mul {α : Type _} [Ring α] (n : ℕ) (inst : CharP α n) (b : α)
     (a : ℕ) (a' : α) (p : IsNat (n - 1 : α) a) (pa : a = a') :
@@ -154,9 +192,9 @@ match Expr.getAppFnArgs t with
     let .some instRing ← trySynthInstanceQ q(Ring $t) | return .failure
 
     let n ← mkFreshExprMVarQ q(ℕ)
-    let .some instCharP ← findLocalDeclWithType? q(CharP $t $n) | return .failure
+    let .some instCharP ← findLocalDeclWithTypeQ? q(CharP $t $n) | return .failure
 
-    return .intLike (← instantiateMVarsQ n) instRing (.fvar instCharP)
+    return .intLike (← instantiateMVarsQ n) instRing instCharP
 
 /-- Given an expression `e`, determine whether it is a numeric expression in characteristic `n`,
 and if so, reduce `e` modulo `n`.
@@ -213,11 +251,8 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
   let ext ← match ext? with
   | some ext => pure ext
   | none => throwError "internal error: reduce_mod_char not registered as simp extension"
-  let ctx : Simp.Context := {
-    config := config,
-    congrTheorems := congrTheorems,
-    simpTheorems := #[← ext.getTheorems]
-  }
+  let ctx ← Simp.mkContext config (congrTheorems := congrTheorems)
+    (simpTheorems := #[← ext.getTheorems])
   let discharge := Mathlib.Meta.NormNum.discharge ctx
   let r : Simp.Result := {expr := e}
   let pre := Simp.preDefault #[] >> fun e =>

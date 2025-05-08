@@ -11,8 +11,9 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 This file introduces an equivalence between the set of embeddings of `K` into `ℂ` and the
 index set of the chosen basis of the ring of integers of `K`.
 
-## Tagshouse
-number field, algebraic number
+## Tags
+
+house, number field, algebraic number
 -/
 
 variable (K : Type*) [Field K] [NumberField K]
@@ -21,13 +22,13 @@ namespace NumberField
 
 noncomputable section
 
-open Module.Free FiniteDimensional canonicalEmbedding Matrix Finset
+open Module.Free Module canonicalEmbedding Matrix Finset
 
 /-- An equivalence between the set of embeddings of `K` into `ℂ` and the
   index set of the chosen basis of the ring of integers of `K`. -/
-abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) :=
-    Fintype.equivOfCardEq <|
-  by rw [Embeddings.card, ← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank]
+abbrev equivReindex : (K →+* ℂ) ≃ ChooseBasisIndex ℤ (𝓞 K) :=
+  Fintype.equivOfCardEq <| by
+    rw [Embeddings.card, ← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank]
 
 /-- The basis matrix for the embeddings of `K` into `ℂ`. This matrix is formed by
   taking the lattice basis vectors of `K` and reindexing them according to the
@@ -35,9 +36,7 @@ abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) :=
 abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
   (Matrix.of fun i ↦ latticeBasis K (equivReindex K i))
 
-variable [DecidableEq (K →+* ℂ)]
-
-theorem det_of_basisMatrix_non_zero : (basisMatrix K).det ≠ 0 := by
+theorem det_of_basisMatrix_non_zero [DecidableEq (K →+* ℂ)] : (basisMatrix K).det ≠ 0 := by
   let e : (K →+* ℂ) ≃ ChooseBasisIndex ℤ (𝓞 K) := equivReindex K
   let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
     RingHom.equivRatAlgHom
@@ -50,7 +49,7 @@ theorem det_of_basisMatrix_non_zero : (basisMatrix K).det ≠ 0 := by
   exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
     (fun _ => integralBasis K (e _)) RingHom.equivRatAlgHom).symm
 
-instance : Invertible (basisMatrix K) := invertibleOfIsUnitDet _
+instance [DecidableEq (K →+* ℂ)] : Invertible (basisMatrix K) := invertibleOfIsUnitDet _
     (Ne.isUnit (det_of_basisMatrix_non_zero K))
 
 variable {K}
@@ -64,7 +63,7 @@ theorem canonicalEmbedding_eq_basisMatrix_mulVec (α : K) :
     transpose_apply, of_apply, Fintype.sum_apply, mul_comm, Basis.repr_reindex,
     Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Pi.smul_apply, smul_eq_mul]
 
-theorem inverse_basisMatrix_mulVec_eq_repr (α : 𝓞 K) :
+theorem inverse_basisMatrix_mulVec_eq_repr [DecidableEq (K →+* ℂ)] (α : 𝓞 K) :
     ∀ i, ((basisMatrix K).transpose)⁻¹.mulVec (fun j =>
       canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
       ((integralBasis K).reindex (equivReindex K).symm).repr α i := fun i => by

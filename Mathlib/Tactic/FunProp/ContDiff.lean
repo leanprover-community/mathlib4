@@ -23,8 +23,7 @@ variable {K : Type*} [NontriviallyNormedField K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace K G']
-variable {f f₀ f₁ g : E → F} {x} {s t} {n}
+variable {f : E → F} {x} {s} {n}
 
 theorem contDiff_id' : ContDiff K n (fun x : E => x) := contDiff_id
 
@@ -42,8 +41,8 @@ theorem ContDiffAt.comp' {f : E → F} {g : F → G} (hg : ContDiffAt K n g (f x
 -- theorem ContDiffOn.comp'' {g : F → G} {t : Set F} (hg : ContDiffOn K n g t)
 --     (hf : ContDiffOn K n f s) (st : Set.MapsTo f s t) : ContDiffOn K n (fun x => g (f x)) s :=
 
-variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
-  [∀ i, NormedSpace K (F' i)] {φ : ∀ i, E → F' i} {Φ : E → ∀ i, F' i}
+variable {ι : Type*} [Fintype ι] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
+  [∀ i, NormedSpace K (F' i)] {Φ : E → ∀ i, F' i}
 
 theorem contDiff_pi' (hΦ : ∀ i, ContDiff K n fun x => Φ x i) : ContDiff K n Φ :=
   contDiff_pi.2 hΦ
@@ -60,10 +59,9 @@ section div
 
 variable {K : Type*} [NontriviallyNormedField K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
-variable {f f₀ f₁ g : E → F} {x} {s t} {n}
+variable {s}
 
-theorem ContDiffOn.div' [CompleteSpace K] {f g : E → K} {n} (hf : ContDiffOn K n f s)
+theorem ContDiffOn.div' {f g : E → K} {n} (hf : ContDiffOn K n f s)
     (hg : ContDiffOn K n g s) (h₀ : ∀ x ∈ s, g x ≠ 0) : ContDiffOn K n (fun x => f x / g x) s :=
   ContDiffOn.div hf hg h₀
 
@@ -74,16 +72,15 @@ end div
 section deriv
 
 variable {K : Type*} [NontriviallyNormedField K]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
 
 /-- Original version `ContDiff.differentiable_iteratedDeriv` introduces a new variable `(n:ℕ∞)`
 and `funProp` can't work with such theorem. The theorem should be state where `n` is explicitly
 the smallest possible value i.e. `n=m+1`.
 
-In conjunction with `ContDiff.of_le` we can recover the full power of the original theorem.  -/
+In conjunction with `ContDiff.of_le` we can recover the full power of the original theorem. -/
 theorem ContDiff.differentiable_iteratedDeriv' {m : ℕ} {f : K → F}
-    (hf : ContDiff K (m+1) f) : Differentiable K (iteratedDeriv m f) :=
+    (hf : ContDiff K (m + 1) f) : Differentiable K (iteratedDeriv m f) :=
   ContDiff.differentiable_iteratedDeriv m hf (Nat.cast_lt.mpr m.lt_succ_self)
 
 end deriv

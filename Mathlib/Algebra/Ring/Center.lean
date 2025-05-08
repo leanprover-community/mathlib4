@@ -11,6 +11,7 @@ import Mathlib.Data.Int.Cast.Lemmas
 
 -/
 
+assert_not_exists RelIso Finset Subsemigroup Field
 
 variable {M : Type*}
 
@@ -34,10 +35,9 @@ theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.cent
     | zero => rw [Nat.cast_zero, mul_zero, mul_zero, mul_zero]
     | succ n ihn => rw [Nat.cast_succ, mul_add, ihn, mul_add, mul_add, mul_one, mul_one]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n)) ∈ Set.center M :=
+    ofNat(n) ∈ Set.center M :=
   natCast_mem_center M n
 
 @[simp]
@@ -83,7 +83,3 @@ theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center 
   right_assoc _ _ := by rw [mul_neg, ha.right_assoc, mul_neg, mul_neg]
 
 end Set
-
--- Guard against import creep
-assert_not_exists Finset
-assert_not_exists Subsemigroup

@@ -3,7 +3,7 @@ Copyright (c) 2022 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 /-!
 # Subtraction of measures
@@ -89,6 +89,12 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
 theorem sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
   ext1 s h_s_meas
   rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s)]
+
+@[simp]
+protected lemma add_sub_cancel [IsFiniteMeasure ν] : μ + ν - ν = μ := by
+  ext1 s hs
+  rw [sub_apply hs (Measure.le_add_left (le_refl _)), add_apply,
+    ENNReal.add_sub_cancel_right (measure_ne_top ν s)]
 
 theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     (μ - ν).restrict s = μ.restrict s - ν.restrict s := by

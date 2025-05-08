@@ -96,30 +96,30 @@ theorem sl_bracket [Fintype n] (A B : sl n R) : ⁅A, B⁆.val = A.val * B.val -
 
 section ElementaryBasis
 
-variable {n} [Fintype n] (i j : n)
+variable {n R} [Fintype n] (i j : n)
 
-/-- When j ≠ i, the elementary matrices are elements of sl n R, in fact they are part of a natural
-basis of `sl n R`. -/
-def Eb (h : j ≠ i) : sl n R :=
-  ⟨Matrix.stdBasisMatrix i j (1 : R),
-    show Matrix.stdBasisMatrix i j (1 : R) ∈ LinearMap.ker (Matrix.traceLinearMap n R R) from
-      Matrix.StdBasisMatrix.trace_zero i j (1 : R) h⟩
+/-- When `i ≠ j`, the elementary matrices are elements of `sl n R`, in fact they are part of a
+natural basis of `sl n R`. -/
+def Eb (h : i ≠ j) (r : R) : sl n R :=
+  ⟨Matrix.single i j r,
+    show Matrix.single i j r ∈ LinearMap.ker (Matrix.traceLinearMap n R R) from
+      Matrix.trace_single_eq_of_ne i j r h⟩
 
 @[simp]
-theorem eb_val (h : j ≠ i) : (Eb R i j h).val = Matrix.stdBasisMatrix i j 1 :=
+theorem eb_val (h : i ≠ j) (r : R) : (Eb i j h r).val = Matrix.single i j r :=
   rfl
 
 end ElementaryBasis
 
 theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
     ¬IsLieAbelian (sl n R) := by
-  rcases Fintype.exists_pair_of_one_lt_card h with ⟨j, i, hij⟩
-  let A := Eb R i j hij
-  let B := Eb R j i hij.symm
+  rcases Fintype.exists_pair_of_one_lt_card h with ⟨i, j, hij⟩
+  let A := Eb i j hij (1 : R)
+  let B := Eb j i hij.symm (1 : R)
   intro c
   have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
-  simpa [A, B, stdBasisMatrix, Matrix.mul_apply, hij] using congr_fun (congr_fun c' i) i
+  simpa [A, B, single, Matrix.mul_apply, hij.symm] using congr_fun (congr_fun c' i) i
 
 end SpecialLinear
 
@@ -204,7 +204,7 @@ theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (p ⊕ q) (p ⊕ q) R) =
       (Pso p q R i)⁻¹ * (A : Matrix (p ⊕ q) (p ⊕ q) R) * Pso p q R i := by
   rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [skewAdjointMatricesLieSubalgebraEquiv_apply]
 
 /-- A matrix defining a canonical even-rank symmetric bilinear form.
@@ -323,13 +323,12 @@ theorem indefiniteDiagonal_assoc :
       Matrix.reindexLieEquiv (Equiv.sumAssoc Unit l l).symm
         (Matrix.fromBlocks 1 0 0 (indefiniteDiagonal l l R)) := by
   ext ⟨⟨i₁ | i₂⟩ | i₃⟩ ⟨⟨j₁ | j₂⟩ | j₃⟩ <;>
-  -- Porting note: added `Sum.inl_injective.eq_iff`, `Sum.inr_injective.eq_iff`
     simp only [indefiniteDiagonal, Matrix.diagonal_apply, Equiv.sumAssoc_apply_inl_inl,
       Matrix.reindexLieEquiv_apply, Matrix.submatrix_apply, Equiv.symm_symm, Matrix.reindex_apply,
       Sum.elim_inl, if_true, eq_self_iff_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,
       DMatrix.zero_apply, Equiv.sumAssoc_apply_inl_inr, if_false, Matrix.fromBlocks_apply₁₂,
       Matrix.fromBlocks_apply₂₁, Matrix.fromBlocks_apply₂₂, Equiv.sumAssoc_apply_inr,
-      Sum.elim_inr, Sum.inl_injective.eq_iff, Sum.inr_injective.eq_iff] <;>
+      Sum.elim_inr, Sum.inl_injective.eq_iff, Sum.inr_injective.eq_iff, reduceCtorEq] <;>
     congr 1
 
 /-- An equivalence between two possible definitions of the classical Lie algebra of type B. -/

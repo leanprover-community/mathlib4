@@ -39,34 +39,33 @@ section Surjectivity
 variable {M : Type v} [AddCommGroup M] [Module R M]
 variable {N : Type w} [AddCommGroup N] [Module R N]
 
-variable {f : M →ₗ[R] N} (hf : Function.Surjective f)
+variable {f : M →ₗ[R] N}
 
 /- In each step, a preimage is constructed from the preimage of the previous step by
 subtracting this delta. -/
-private noncomputable def mapPreimageDelta (x : AdicCauchySequence I N)
+private noncomputable def mapPreimageDelta (hf : Function.Surjective f) (x : AdicCauchySequence I N)
     {n : ℕ} {y yₙ : M} (hy : f y = x (n + 1)) (hyₙ : f yₙ = x n) :
-    { d : (I ^ n • ⊤ : Submodule R M) | f d = f (yₙ - y) } :=
+    {d : (I ^ n • ⊤ : Submodule R M) | f d = f (yₙ - y) } :=
   have h : f (yₙ - y) ∈ Submodule.map f (I ^ n • ⊤ : Submodule R M) := by
-    rw [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr hf, map_sub,
-      hyₙ, hy, ← Submodule.neg_mem_iff, neg_sub, ← SModEq.sub_mem]
+    rw [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.2 hf,
+      map_sub, hyₙ, hy, ← Submodule.neg_mem_iff, neg_sub, ← SModEq.sub_mem]
     exact AdicCauchySequence.mk_eq_mk (Nat.le_succ n) x
   ⟨⟨h.choose, h.choose_spec.1⟩, h.choose_spec.2⟩
 
 /- Inductively construct preimage of cauchy sequence. -/
-private noncomputable def mapPreimage (x : AdicCauchySequence I N) :
+private noncomputable def mapPreimage (hf : Function.Surjective f) (x : AdicCauchySequence I N) :
     (n : ℕ) → f ⁻¹' {x n}
   | .zero => ⟨(hf (x 0)).choose, (hf (x 0)).choose_spec⟩
   | .succ n =>
       let y := (hf (x (n + 1))).choose
       have hy := (hf (x (n + 1))).choose_spec
-      let ⟨yₙ, (hyₙ : f yₙ = x n)⟩ := mapPreimage x n
+      let ⟨yₙ, (hyₙ : f yₙ = x n)⟩ := mapPreimage hf x n
       let ⟨⟨d, _⟩, (p : f d = f (yₙ - y))⟩ := mapPreimageDelta hf x hy hyₙ
       ⟨yₙ - d, by simpa [p]⟩
 
-variable (I)
-
+variable (I) in
 /-- Adic completion preserves surjectivity -/
-theorem map_surjective : Function.Surjective (map I f) := fun y ↦ by
+theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map I f) := fun y ↦ by
   apply AdicCompletion.induction_on I N y (fun b ↦ ?_)
   let a := mapPreimage hf b
   refine ⟨AdicCompletion.mk I M (AdicCauchySequence.mk I M (fun n ↦ (a n : M)) ?_), ?_⟩
@@ -99,7 +98,7 @@ theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
   rw [← Submodule.comap_map_eq_of_injective hf (I ^ n • ⊤ : Submodule R M),
     Submodule.map_smul'', Submodule.map_top]
   apply (smul_mono_right _ inf_le_right : I ^ n • (I ^ k • ⊤ ⊓ (range f)) ≤ _)
-  nth_rw 2 [show n = n + k - k by omega]
+  nth_rw 1 [show n = n + k - k by omega]
   rw [← hk (n + k) (show n + k ≥ k by omega)]
   exact ⟨by simpa using congrArg (fun x ↦ x.val (n + k)) hx, ⟨a (n + k), rfl⟩⟩
 
@@ -147,25 +146,26 @@ private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
 
 open Submodule
 
-/- Inductively construct preimage of cauchy sequence in kernel of `g.adicCompletion I`. -/
+include hfg in
+/-- Inductively construct preimage of cauchy sequence in kernel of `g.adicCompletion I`. -/
 private noncomputable def mapExactAux :
     (n : ℕ) → { a : M | f a - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N) }
   | .zero =>
-      let d := (h2 0).choose
-      let y := (h2 0).choose_spec.choose
-      have hdy : f y = x (k + 0) - d := (h2 0).choose_spec.choose_spec.right
-      have hdmem := (h2 0).choose_spec.choose_spec.left
-      ⟨y, by simpa [hdy]⟩
+    let d := (h2 0).choose
+    let y := (h2 0).choose_spec.choose
+    have hdy : f y = x (k + 0) - d := (h2 0).choose_spec.choose_spec.right
+    have hdmem := (h2 0).choose_spec.choose_spec.left
+    ⟨y, by simpa [hdy]⟩
   | .succ n =>
-      let d := (h2 <| n + 1).choose
-      let y := (h2 <| n + 1).choose_spec.choose
-      have hdy : f y = x (k + (n + 1)) - d := (h2 <| n + 1).choose_spec.choose_spec.right
-      have hdmem := (h2 <| n + 1).choose_spec.choose_spec.left
-      let ⟨yₙ, (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N))⟩ :=
-        mapExactAux n
-      let ⟨d, hd⟩ := mapExactAuxDelta hf hkn x hdmem hdy hyₙ
-      ⟨yₙ + d, hd⟩
- where
+    let d := (h2 <| n + 1).choose
+    let y := (h2 <| n + 1).choose_spec.choose
+    have hdy : f y = x (k + (n + 1)) - d := (h2 <| n + 1).choose_spec.choose_spec.right
+    have hdmem := (h2 <| n + 1).choose_spec.choose_spec.left
+    let ⟨yₙ, (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N))⟩ :=
+      mapExactAux n
+    let ⟨d, hd⟩ := mapExactAuxDelta hf hkn x hdmem hdy hyₙ
+    ⟨yₙ + d, hd⟩
+where
   h1 (n : ℕ) : g (x (k + n)) ∈ Submodule.map g (I ^ (k + n) • ⊤ : Submodule R N) := by
     rw [map_smul'', Submodule.map_top, range_eq_top.mpr hg]
     exact hker (k + n)
@@ -177,6 +177,7 @@ private noncomputable def mapExactAux :
 
 end
 
+include hf hfg hg in
 /-- `AdicCompletion` over a Noetherian ring is exact on finitely generated modules. -/
 theorem map_exact : Function.Exact (map I f) (map I g) := by
   refine LinearMap.exact_of_comp_eq_zero_of_ker_le_range ?_ (fun y ↦ ?_)

@@ -6,6 +6,7 @@ Neil Strickland, Aaron Anderson
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Divisibility.Units
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Divisibility in groups with zero.
@@ -129,15 +130,15 @@ end MonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero α] [Subsingleton αˣ] {a b : α} {m n : ℕ}
+variable [CancelCommMonoidWithZero α] {a b : α} {m n : ℕ}
+
+section Subsingleton
+variable [Subsingleton αˣ]
 
 theorem dvd_antisymm : a ∣ b → b ∣ a → a = b := by
   rintro ⟨c, rfl⟩ ⟨d, hcd⟩
   rw [mul_assoc, eq_comm, mul_right_eq_self₀, mul_eq_one] at hcd
   obtain ⟨rfl, -⟩ | rfl := hcd <;> simp
-
--- Porting note: `attribute [protected]` is currently unsupported
--- attribute [protected] Nat.dvd_antisymm --This lemma is in core, so we protect it here
 
 theorem dvd_antisymm' : a ∣ b → b ∣ a → b = a :=
   flip dvd_antisymm
@@ -151,6 +152,8 @@ theorem eq_of_forall_dvd (h : ∀ c, a ∣ c ↔ b ∣ c) : a = b :=
 
 theorem eq_of_forall_dvd' (h : ∀ c, c ∣ a ↔ c ∣ b) : a = b :=
   ((h _).1 dvd_rfl).antisymm <| (h _).2 dvd_rfl
+
+end Subsingleton
 
 lemma pow_dvd_pow_iff (ha₀ : a ≠ 0) (ha : ¬IsUnit a) : a ^ n ∣ a ^ m ↔ n ≤ m := by
   constructor
@@ -166,3 +169,18 @@ lemma pow_dvd_pow_iff (ha₀ : a ≠ 0) (ha : ¬IsUnit a) : a ^ n ∣ a ^ m ↔ 
   · apply pow_dvd_pow
 
 end CancelCommMonoidWithZero
+
+section GroupWithZero
+variable [GroupWithZero α]
+
+/-- `∣` is not a useful definition if an inverse is available. -/
+@[simp]
+lemma GroupWithZero.dvd_iff {m n : α} : m ∣ n ↔ (m = 0 → n = 0) := by
+  refine ⟨fun ⟨a, ha⟩ hm => ?_, fun h => ?_⟩
+  · simp [hm, ha]
+  · refine ⟨m⁻¹ * n, ?_⟩
+    obtain rfl | hn := eq_or_ne n 0
+    · simp
+    · rw [mul_inv_cancel_left₀ (mt h hn)]
+
+end GroupWithZero

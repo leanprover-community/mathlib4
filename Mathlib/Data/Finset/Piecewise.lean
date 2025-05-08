@@ -3,7 +3,8 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.BooleanAlgebra
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.Interval.Set.Basic
 
 /-!
@@ -26,7 +27,6 @@ variable {ι : Type*} {π : ι → Sort*} (s : Finset ι) (f g : ∀ i, π i)
 complement. -/
 def piecewise [∀ j, Decidable (j ∈ s)] : ∀ i, π i := fun i ↦ if i ∈ s then f i else g i
 
--- Porting note (#10618): @[simp] can prove this
 lemma piecewise_insert_self [DecidableEq ι] {j : ι} [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g j = f j := by simp [piecewise]
 
@@ -72,7 +72,7 @@ lemma piecewise_cases {i} (p : π i → Prop) (hf : p (f i)) (hg : p (g i)) :
   by_cases hi : i ∈ s <;> simpa [hi]
 
 lemma piecewise_singleton [DecidableEq ι] (i : ι) : piecewise {i} f g = update g i (f i) := by
-  rw [← insert_emptyc_eq, piecewise_insert, piecewise_empty]
+  rw [← insert_empty_eq, piecewise_insert, piecewise_empty]
 
 lemma piecewise_piecewise_of_subset_left {s t : Finset ι} [∀ i, Decidable (i ∈ s)]
     [∀ i, Decidable (i ∈ t)] (h : s ⊆ t) (f₁ f₂ g : ∀ a, π a) :
@@ -106,13 +106,13 @@ lemma update_piecewise [DecidableEq ι] (i : ι) (v : π i) :
 lemma update_piecewise_of_mem [DecidableEq ι] {i : ι} (hi : i ∈ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise (update f i v) g := by
   rw [update_piecewise]
-  refine s.piecewise_congr (fun _ _ => rfl) fun j hj => update_noteq ?_ _ _
+  refine s.piecewise_congr (fun _ _ => rfl) fun j hj => update_of_ne ?_ ..
   exact fun h => hj (h.symm ▸ hi)
 
 lemma update_piecewise_of_not_mem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise f (update g i v) := by
   rw [update_piecewise]
-  refine s.piecewise_congr (fun j hj => update_noteq ?_ _ _) fun _ _ => rfl
+  refine s.piecewise_congr (fun j hj => update_of_ne ?_ ..) fun _ _ => rfl
   exact fun h => hi (h ▸ hj)
 
 lemma piecewise_same : s.piecewise f f = f := by

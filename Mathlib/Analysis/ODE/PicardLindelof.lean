@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Winston Yin
+Authors: Yury Kudryashov, Winston Yin
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.MetricSpace.Contracting
 
 /-!
@@ -62,11 +63,22 @@ The similarly named `IsPicardLindelof` is a bundled `Prop` holding the long hypo
 Picard-Lindelöf theorem as named arguments. It is used as part of the public API.
 -/
 structure PicardLindelof (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
+  /-- Function of the initial value problem -/
   toFun : ℝ → E → E
-  (tMin tMax : ℝ)
+  /-- Lower limit of `t` -/
+  tMin : ℝ
+  /-- Upper limit of `t` -/
+  tMax : ℝ
+  /-- Initial value of `t` -/
   t₀ : Icc tMin tMax
+  /-- Initial value of `x` -/
   x₀ : E
-  (C R L : ℝ≥0)
+  /-- Bound of the function over the region of interest -/
+  C : ℝ≥0
+  /-- Radius of closed ball in `x` over which the bound `C` holds -/
+  R : ℝ≥0
+  /-- Lipschitz constant of the function -/
+  L : ℝ≥0
   isPicardLindelof : IsPicardLindelof toFun tMin t₀ tMax x₀ L R C
 
 namespace PicardLindelof
@@ -80,9 +92,9 @@ instance : Inhabited (PicardLindelof E) :=
   ⟨⟨0, 0, 0, ⟨0, le_rfl, le_rfl⟩, 0, 0, 0, 0,
       { ht₀ := by rw [Subtype.coe_mk, Icc_self]; exact mem_singleton _
         hR := le_rfl
-        lipschitz := fun t _ => (LipschitzWith.const 0).lipschitzOnWith _
+        lipschitz := fun _ _ => (LipschitzWith.const 0).lipschitzOnWith
         cont := fun _ _ => by simpa only [Pi.zero_apply] using continuousOn_const
-        norm_le := fun t _ x _ => norm_zero.le
+        norm_le := fun _ _ _ _ => norm_zero.le
         C_mul_le_R := (zero_mul _).le }⟩⟩
 
 theorem tMin_le_tMax : v.tMin ≤ v.tMax :=
@@ -141,6 +153,7 @@ Lipschitz continuous with constant $C$. The map sending $γ$ to
 $\mathbf Pγ(t)=x₀ + ∫_{t₀}^{t} v(τ, γ(τ))\,dτ$ is a contracting map on this space, and its fixed
 point is a solution of the ODE $\dot x=v(t, x)$. -/
 structure FunSpace where
+  /-- The particular curve represented by this object. -/
   toFun : Icc v.tMin v.tMax → E
   map_t₀' : toFun v.t₀ = v.x₀
   lipschitz' : LipschitzWith v.C toFun
@@ -169,7 +182,7 @@ def toContinuousMap : v.FunSpace ↪ C(Icc v.tMin v.tMax, E) :=
 instance : MetricSpace v.FunSpace :=
   MetricSpace.induced toContinuousMap toContinuousMap.injective inferInstance
 
-theorem uniformInducing_toContinuousMap : UniformInducing (@toContinuousMap _ _ _ v) :=
+theorem isUniformInducing_toContinuousMap : IsUniformInducing (@toContinuousMap _ _ _ v) :=
   ⟨rfl⟩
 
 theorem range_toContinuousMap :
@@ -199,7 +212,7 @@ theorem vComp_apply_coe (t : Icc v.tMin v.tMax) : f.vComp t = v t (f t) := by
   simp only [vComp, proj_coe]
 
 theorem continuous_vComp : Continuous f.vComp := by
-  have := (continuous_subtype_val.prod_mk f.continuous).comp v.continuous_proj
+  have := (continuous_subtype_val.prodMk f.continuous).comp v.continuous_proj
   refine ContinuousOn.comp_continuous v.continuousOn this fun x => ?_
   exact ⟨(v.proj x).2, f.mem_closedBall _⟩
 
@@ -216,18 +229,16 @@ theorem dist_le_of_forall {f₁ f₂ : FunSpace v} {d : ℝ} (h : ∀ t, dist (f
     v.nonempty_Icc.to_subtype).2 h
 
 instance [CompleteSpace E] : CompleteSpace v.FunSpace := by
-  refine (completeSpace_iff_isComplete_range uniformInducing_toContinuousMap).2
+  refine (completeSpace_iff_isComplete_range isUniformInducing_toContinuousMap).2
       (IsClosed.isComplete ?_)
   rw [range_toContinuousMap, setOf_and]
-  refine (isClosed_eq (ContinuousMap.continuous_eval_const _) continuous_const).inter ?_
+  refine (isClosed_eq (continuous_eval_const _) continuous_const).inter ?_
   have : IsClosed {f : Icc v.tMin v.tMax → E | LipschitzWith v.C f} :=
     isClosed_setOf_lipschitzWith v.C
-  exact this.preimage ContinuousMap.continuous_coe
+  exact this.preimage continuous_coeFun
 
 theorem intervalIntegrable_vComp (t₁ t₂ : ℝ) : IntervalIntegrable f.vComp volume t₁ t₂ :=
   f.continuous_vComp.intervalIntegrable _ _
-
-variable [CompleteSpace E]
 
 /-- The Picard-Lindelöf operator. This is a contracting map on `PicardLindelof.FunSpace v` such
 that the fixed point of this map is the solution of the corresponding ODE.
@@ -244,27 +255,13 @@ def next (f : FunSpace v) : FunSpace v where
 theorem next_apply (t : Icc v.tMin v.tMax) : f.next t = v.x₀ + ∫ τ : ℝ in v.t₀..t, f.vComp τ :=
   rfl
 
-theorem hasDerivWithinAt_next (t : Icc v.tMin v.tMax) :
-    HasDerivWithinAt (f.next ∘ v.proj) (v t (f t)) (Icc v.tMin v.tMax) t := by
-  haveI : Fact ((t : ℝ) ∈ Icc v.tMin v.tMax) := ⟨t.2⟩
-  simp only [(· ∘ ·), next_apply]
-  refine HasDerivWithinAt.const_add _ ?_
-  have : HasDerivWithinAt (∫ τ in v.t₀..·, f.vComp τ) (f.vComp t) (Icc v.tMin v.tMax) t :=
-    integral_hasDerivWithinAt_right (f.intervalIntegrable_vComp _ _)
-      (f.continuous_vComp.stronglyMeasurableAtFilter _ _)
-      f.continuous_vComp.continuousWithinAt
-  rw [vComp_apply_coe] at this
-  refine this.congr_of_eventuallyEq_of_mem ?_ t.coe_prop
-  filter_upwards [self_mem_nhdsWithin] with _ ht'
-  rw [v.proj_of_mem ht']
-
 theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
     (h : ∀ t, dist (f₁ t) (f₂ t) ≤ (v.L * |t.1 - v.t₀|) ^ n / n ! * d) (t : Icc v.tMin v.tMax) :
     dist (next f₁ t) (next f₂ t) ≤ (v.L * |t.1 - v.t₀|) ^ (n + 1) / (n + 1)! * d := by
   simp only [dist_eq_norm, next_apply, add_sub_add_left_eq_sub, ←
     intervalIntegral.integral_sub (intervalIntegrable_vComp _ _ _)
       (intervalIntegrable_vComp _ _ _),
-    norm_integral_eq_norm_integral_Ioc] at *
+    norm_integral_eq_norm_integral_uIoc] at *
   calc
     ‖∫ τ in Ι (v.t₀ : ℝ) t, f₁.vComp τ - f₂.vComp τ‖ ≤
         ∫ τ in Ι (v.t₀ : ℝ) t, v.L * ((v.L * |τ - v.t₀|) ^ n / n ! * d) := by
@@ -275,16 +272,18 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
       rw [v.proj_of_mem]
       exact uIcc_subset_Icc v.t₀.2 t.2 <| Ioc_subset_Icc_self hτ
     _ = (v.L * |t.1 - v.t₀|) ^ (n + 1) / (n + 1)! * d := by
-      simp_rw [mul_pow, div_eq_mul_inv, mul_assoc, MeasureTheory.integral_mul_left,
-        MeasureTheory.integral_mul_right, integral_pow_abs_sub_uIoc, div_eq_mul_inv,
+      simp_rw [mul_pow, div_eq_mul_inv, mul_assoc, MeasureTheory.integral_const_mul,
+        MeasureTheory.integral_mul_const, integral_pow_abs_sub_uIoc, div_eq_mul_inv,
         pow_succ' (v.L : ℝ), Nat.factorial_succ, Nat.cast_mul, Nat.cast_succ, mul_inv, mul_assoc]
 
 theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v.tMin v.tMax) :
     dist (next^[n] f₁ t) (next^[n] f₂ t) ≤ (v.L * |t.1 - v.t₀|) ^ n / n ! * dist f₁ f₂ := by
-  induction' n with n ihn generalizing t
-  · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul]
+  induction n generalizing t with
+  | zero =>
+    rw [pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul]
     exact dist_apply_le_dist f₁ f₂ t
-  · rw [iterate_succ_apply', iterate_succ_apply']
+  | succ n ihn =>
+    rw [iterate_succ_apply', iterate_succ_apply']
     exact dist_next_apply_le_of_le ihn _
 
 theorem dist_iterate_next_le (f₁ f₂ : FunSpace v) (n : ℕ) :
@@ -293,22 +292,36 @@ theorem dist_iterate_next_le (f₁ f₂ : FunSpace v) (n : ℕ) :
   have : |(t - v.t₀ : ℝ)| ≤ v.tDist := v.dist_t₀_le t
   gcongr
 
-end FunSpace
-
 variable [CompleteSpace E]
+
+theorem hasDerivWithinAt_next (t : Icc v.tMin v.tMax) :
+    HasDerivWithinAt (f.next ∘ v.proj) (v t (f t)) (Icc v.tMin v.tMax) t := by
+  haveI : Fact ((t : ℝ) ∈ Icc v.tMin v.tMax) := ⟨t.2⟩
+  simp only [Function.comp_def, next_apply]
+  refine HasDerivWithinAt.const_add _ ?_
+  have : HasDerivWithinAt (∫ τ in v.t₀..·, f.vComp τ) (f.vComp t) (Icc v.tMin v.tMax) t :=
+    integral_hasDerivWithinAt_right (f.intervalIntegrable_vComp _ _)
+      (f.continuous_vComp.stronglyMeasurableAtFilter _ _)
+      f.continuous_vComp.continuousWithinAt
+  rw [vComp_apply_coe] at this
+  refine this.congr_of_eventuallyEq_of_mem ?_ t.coe_prop
+  filter_upwards [self_mem_nhdsWithin] with _ ht'
+  rw [v.proj_of_mem ht']
+
+end FunSpace
 
 section
 
 theorem exists_contracting_iterate :
     ∃ (N : ℕ) (K : _), ContractingWith K (FunSpace.next : v.FunSpace → v.FunSpace)^[N] := by
-  rcases ((Real.tendsto_pow_div_factorial_atTop (v.L * v.tDist)).eventually
+  rcases ((FloorSemiring.tendsto_pow_div_factorial_atTop (v.L * v.tDist)).eventually
     (gt_mem_nhds zero_lt_one)).exists with ⟨N, hN⟩
   have : (0 : ℝ) ≤ (v.L * v.tDist) ^ N / N ! :=
     div_nonneg (pow_nonneg (mul_nonneg v.L.2 v.tDist_nonneg) _) (Nat.cast_nonneg _)
   exact ⟨N, ⟨_, this⟩, hN, LipschitzWith.of_dist_le_mul fun f g =>
     FunSpace.dist_iterate_next_le f g N⟩
 
-theorem exists_fixed : ∃ f : v.FunSpace, f.next = f :=
+theorem exists_fixed [CompleteSpace E] : ∃ f : v.FunSpace, f.next = f :=
   let ⟨_N, _K, hK⟩ := exists_contracting_iterate v
   ⟨_, hK.isFixedPt_fixedPoint_iterate⟩
 
@@ -316,7 +329,7 @@ end
 
 /-- Picard-Lindelöf (Cauchy-Lipschitz) theorem. Use
 `IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq` instead for the public API. -/
-theorem exists_solution :
+theorem exists_solution [CompleteSpace E] :
     ∃ f : ℝ → E, f v.t₀ = v.x₀ ∧ ∀ t ∈ Icc v.tMin v.tMax,
       HasDerivWithinAt f (v t (f t)) (Icc v.tMin v.tMax) t := by
   rcases v.exists_fixed with ⟨f, hf⟩

@@ -60,3 +60,5 @@ elab_rules : tactic
     match hId? with
     | some hId => replaceMainGoal [goal1, (← observing? <| goal2.clear hId).getD goal2]
     | none     => replaceMainGoal [goal1, goal2]
+
+end Mathlib.Tactic

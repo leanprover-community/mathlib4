@@ -114,7 +114,8 @@ end GradeOrder
 
 section GradeMinOrder
 
-variable (𝕆) [Preorder 𝕆] [GradeMinOrder 𝕆 α] {a : α}
+variable (𝕆)
+variable [GradeMinOrder 𝕆 α] {a : α}
 
 protected theorem IsMin.grade (h : IsMin a) : IsMin (grade 𝕆 a) :=
   GradeMinOrder.isMin_grade h
@@ -129,7 +130,8 @@ end GradeMinOrder
 
 section GradeMaxOrder
 
-variable (𝕆) [Preorder 𝕆] [GradeMaxOrder 𝕆 α] {a : α}
+variable (𝕆)
+variable [GradeMaxOrder 𝕆 α] {a : α}
 
 protected theorem IsMax.grade (h : IsMax a) : IsMax (grade 𝕆 a) :=
   GradeMaxOrder.isMax_grade h
@@ -145,13 +147,13 @@ end GradeMaxOrder
 end Preorder
 
 -- graded order
-theorem grade_mono [PartialOrder α] [Preorder 𝕆] [GradeOrder 𝕆 α] : Monotone (grade 𝕆 : α → 𝕆) :=
+theorem grade_mono [PartialOrder α] [GradeOrder 𝕆 α] : Monotone (grade 𝕆 : α → 𝕆) :=
   grade_strictMono.monotone
 
 section LinearOrder
 
 -- graded order
-variable [LinearOrder α] [Preorder 𝕆] [GradeOrder 𝕆 α] {a b : α}
+variable [LinearOrder α] [GradeOrder 𝕆 α] {a b : α}
 
 theorem grade_injective : Function.Injective (grade 𝕆 : α → 𝕆) :=
   grade_strictMono.injective
@@ -196,6 +198,7 @@ end PartialOrder
 
 /-! ### Instances -/
 
+section Preorder
 variable [Preorder 𝕆] [Preorder ℙ] [Preorder α] [Preorder β]
 
 instance Preorder.toGradeBoundedOrder : GradeBoundedOrder α α where
@@ -294,13 +297,13 @@ abbrev GradeBoundedOrder.liftRight [GradeBoundedOrder 𝕆 β] (f : α → β) (
 
 -- See note [reducible non-instances]
 /-- A `Fin n`-graded order is also `ℕ`-graded. We do not mark this an instance because `n` is not
-inferrable. -/
+inferable. -/
 abbrev GradeOrder.finToNat (n : ℕ) [GradeOrder (Fin n) α] : GradeOrder ℕ α :=
   (GradeOrder.liftLeft (_ : Fin n → ℕ) Fin.val_strictMono) fun _ _ => CovBy.coe_fin
 
 -- See note [reducible non-instances]
 /-- A `Fin n`-graded order is also `ℕ`-graded. We do not mark this an instance because `n` is not
-inferrable. -/
+inferable. -/
 abbrev GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrder ℕ α :=
   (GradeMinOrder.liftLeft (_ : Fin n → ℕ) Fin.val_strictMono fun _ _ => CovBy.coe_fin) fun a h => by
     cases n
@@ -311,11 +314,11 @@ abbrev GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrd
 instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=
   (GradeOrder.liftLeft _ Int.natCast_strictMono) fun _ _ => CovBy.intCast
 
-theorem GradeOrder.wellFoundedLT (𝕆 : Type*) [Preorder α] [Preorder 𝕆] [GradeOrder 𝕆 α]
+theorem GradeOrder.wellFoundedLT (𝕆 : Type*) [Preorder 𝕆] [GradeOrder 𝕆 α]
     [WellFoundedLT 𝕆] : WellFoundedLT α :=
   (grade_strictMono (𝕆 := 𝕆)).wellFoundedLT
 
-theorem GradeOrder.wellFoundedGT (𝕆 : Type*) [Preorder α] [Preorder 𝕆] [GradeOrder 𝕆 α]
+theorem GradeOrder.wellFoundedGT (𝕆 : Type*) [Preorder 𝕆] [GradeOrder 𝕆 α]
     [WellFoundedGT 𝕆] : WellFoundedGT α :=
   (grade_strictMono (𝕆 := 𝕆)).wellFoundedGT
 
@@ -324,3 +327,63 @@ instance [GradeOrder ℕ α] : WellFoundedLT α :=
 
 instance [GradeOrder ℕᵒᵈ α] : WellFoundedGT α :=
   GradeOrder.wellFoundedGT ℕᵒᵈ
+
+end Preorder
+
+/-!
+### Grading a flag
+
+A flag inherits the grading of its ambient order.
+-/
+
+namespace Flag
+variable [PartialOrder α] {s : Flag α} {a b : s}
+
+@[simp, norm_cast]
+lemma coe_wcovBy_coe : (a : α) ⩿ b ↔ a ⩿ b := by
+  refine and_congr_right' ⟨fun h c hac ↦ h hac, fun h c hac hcb ↦
+    @h ⟨c, mem_iff_forall_le_or_ge.2 fun d hd ↦ ?_⟩ hac hcb⟩
+  classical
+  obtain hda | had := le_or_lt (⟨d, hd⟩ : s) a
+  · exact .inr ((Subtype.coe_le_coe.2 hda).trans hac.le)
+  obtain hbd | hdb := le_or_lt b ⟨d, hd⟩
+  · exact .inl (hcb.le.trans hbd)
+  · cases h had hdb
+
+@[simp, norm_cast]
+lemma coe_covBy_coe : (a : α) ⋖ b ↔ a ⋖ b := by simp [covBy_iff_wcovBy_and_not_le]
+
+@[simp]
+lemma isMax_coe : IsMax (a : α) ↔ IsMax a where
+  mp h b hab := h hab
+  mpr h b hab := by
+    refine @h ⟨b, mem_iff_forall_le_or_ge.2 fun c hc ↦ ?_⟩ hab
+    classical
+    exact .inr <| hab.trans' <| h.isTop ⟨c, hc⟩
+
+@[simp]
+lemma isMin_coe : IsMin (a : α) ↔ IsMin a where
+  mp h b hba := h hba
+  mpr h b hba := by
+    refine @h ⟨b, mem_iff_forall_le_or_ge.2 fun c hc ↦ ?_⟩ hba
+    classical
+    exact .inl <| hba.trans <| h.isBot ⟨c, hc⟩
+
+variable [Preorder 𝕆]
+
+instance [GradeOrder 𝕆 α] (s : Flag α) : GradeOrder 𝕆 s :=
+  .liftRight _ (Subtype.strictMono_coe _) fun _ _ ↦ coe_covBy_coe.2
+
+instance [GradeMinOrder 𝕆 α] (s : Flag α) : GradeMinOrder 𝕆 s :=
+  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covBy_coe.2) fun _ ↦ isMin_coe.2
+
+instance [GradeMaxOrder 𝕆 α] (s : Flag α) : GradeMaxOrder 𝕆 s :=
+  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covBy_coe.2) fun _ ↦ isMax_coe.2
+
+instance [GradeBoundedOrder 𝕆 α] (s : Flag α) : GradeBoundedOrder 𝕆 s :=
+  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covBy_coe.2) (fun _ ↦ isMin_coe.2)
+    fun _ ↦ isMax_coe.2
+
+@[simp, norm_cast] lemma grade_coe [GradeOrder 𝕆 α] (a : s) : grade 𝕆 (a : α) = grade 𝕆 a := rfl
+
+end Flag

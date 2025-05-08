@@ -30,12 +30,12 @@ The approach taken here is inspired by `Mathlib/Algebra/Opposites.lean`. We use 
 
 open Function
 
-/-- The symmetrized algebra has the same underlying space as the original algebra.
--/
+/-- The symmetrized algebra (denoted as `αˢʸᵐ`)
+has the same underlying space as the original algebra `α`. -/
 def SymAlg (α : Type*) : Type _ :=
   α
 
-postfix:max "ˢʸᵐ" => SymAlg
+@[inherit_doc] postfix:max "ˢʸᵐ" => SymAlg
 
 namespace SymAlg
 
@@ -48,7 +48,7 @@ def sym : α ≃ αˢʸᵐ :=
 
 /-- The element of `α` represented by `x : αˢʸᵐ`. -/
 -- Porting note (kmill): `pp_nodot` has no affect here
--- unless RFC lean4#1910 leads to dot notation for CoeFun
+-- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 def unsym : αˢʸᵐ ≃ α :=
   Equiv.refl _
@@ -95,11 +95,9 @@ theorem unsym_injective : Injective (unsym : αˢʸᵐ → α) :=
 theorem unsym_surjective : Surjective (unsym : αˢʸᵐ → α) :=
   unsym.surjective
 
--- Porting note (#10618): @[simp] can prove this
 theorem sym_inj {a b : α} : sym a = sym b ↔ a = b :=
   sym_injective.eq_iff
 
--- Porting note (#10618): @[simp] can prove this
 theorem unsym_inj {a b : αˢʸᵐ} : unsym a = unsym b ↔ a = b :=
   unsym_injective.eq_iff
 
@@ -255,17 +253,15 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
       rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
         mul_zero, sym_zero]
     mul_one := fun _ => by
-      rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_self_assoc, sym_unsym]
+      rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_cancel_left, sym_unsym]
     one_mul := fun _ => by
-      rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_self_assoc, sym_unsym]
+      rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_cancel_left, sym_unsym]
     left_distrib := fun a b c => by
-      -- Porting note: rewrote previous proof which used `match` in a way that seems unsupported.
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]
       abel
     right_distrib := fun a b c => by
-      -- Porting note: rewrote previous proof which used `match` in a way that seems unsupported.
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]
@@ -279,10 +275,11 @@ instance [Ring α] [Invertible (2 : α)] : NonAssocRing αˢʸᵐ :=
 
 
 theorem unsym_mul_self [Semiring α] [Invertible (2 : α)] (a : αˢʸᵐ) :
-    unsym (a * a) = unsym a * unsym a := by rw [mul_def, unsym_sym, ← two_mul, invOf_mul_self_assoc]
+    unsym (a * a) = unsym a * unsym a := by
+  rw [mul_def, unsym_sym, ← two_mul, invOf_mul_cancel_left]
 
 theorem sym_mul_self [Semiring α] [Invertible (2 : α)] (a : α) : sym (a * a) = sym a * sym a := by
-  rw [sym_mul_sym, ← two_mul, invOf_mul_self_assoc]
+  rw [sym_mul_sym, ← two_mul, invOf_mul_cancel_left]
 
 theorem mul_comm [Mul α] [AddCommSemigroup α] [One α] [OfNat α 2] [Invertible (2 : α)]
     (a b : αˢʸᵐ) :
@@ -294,12 +291,10 @@ instance [Ring α] [Invertible (2 : α)] : CommMagma αˢʸᵐ where
 instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
   lmul_comm_rmul_rmul a b := by
     have commute_half_left := fun a : α => by
-      -- Porting note: mathlib3 used `bit0_left`
       have := (Commute.one_left a).add_left (Commute.one_left a)
       rw [one_add_one_eq_two] at this
       exact this.invOf_left.eq
 
-    -- Porting note: introduced `calc` block to make more robust
     calc a * b * (a * a)
       _ = sym (⅟2 * ⅟2 * (unsym a * unsym b * unsym (a * a) +
           unsym b * unsym a * unsym (a * a) +

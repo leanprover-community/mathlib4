@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Defs
+import Batteries.Data.List.Basic
 
 /-!
 # Levenshtein distances
@@ -99,7 +100,7 @@ def impl
     (xs : List α) (y : β) (d : {r : List δ // 0 < r.length}) : {r : List δ // 0 < r.length} :=
   let ⟨ds, w⟩ := d
   xs.zip (ds.zip ds.tail) |>.foldr
-    (init := ⟨[C.insert y + ds.getLast (List.length_pos.mp w)], by simp⟩)
+    (init := ⟨[C.insert y + ds.getLast (List.length_pos_iff.mp w)], by simp⟩)
     (fun ⟨x, d₀, d₁⟩ ⟨r, w⟩ =>
       ⟨min (C.delete x + r[0]) (min (C.insert y + d₀) (C.substitute x y + d₁)) :: r, by simp⟩)
 
@@ -218,7 +219,7 @@ theorem suffixLevenshtein_cons₂ (xs : List α) (y ys) :
     suffixLevenshtein C xs (y :: ys) = (impl C xs) y (suffixLevenshtein C xs ys) :=
   rfl
 
-theorem suffixLevenshtein_cons₁_aux {x y : {r : List δ // 0 < r.length}}
+theorem suffixLevenshtein_cons₁_aux {α} {x y : { l : List α // 0 < l.length }}
     (w₀ : x.1[0]'x.2 = y.1[0]'y.2) (w : x.1.tail = y.1.tail) : x = y := by
   match x, y with
   | ⟨hx :: tx, _⟩, ⟨hy :: ty, _⟩ => simp_all
@@ -266,9 +267,9 @@ theorem suffixLevenshtein_eq_tails_map (xs ys) :
     (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := by
   induction xs with
   | nil =>
-    simp only [List.map, suffixLevenshtein_nil']
+    simp only [suffixLevenshtein_nil', List.tails, List.map_cons, List.map]
   | cons x xs ih =>
-    simp only [List.map, suffixLevenshtein_cons₁, ih]
+    simp only [suffixLevenshtein_cons₁, ih, List.tails, List.map_cons]
 
 @[simp]
 theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
@@ -277,9 +278,9 @@ theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
 @[simp]
 theorem levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
-  dsimp (config := { unfoldPartialApp := true }) [levenshtein, suffixLevenshtein, impl]
+  dsimp +unfoldPartialApp [levenshtein, suffixLevenshtein, impl]
   congr
-  rw [List.getLast_eq_get]
+  rw [List.getLast_eq_getElem]
   congr
   rw [show (List.length _) = 1 from _]
   induction ys <;> simp

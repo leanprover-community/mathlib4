@@ -3,7 +3,6 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.CompleteLattice
 import Mathlib.Order.CompactlyGenerated.Basic
 
 /-!
@@ -35,7 +34,7 @@ namespace IsCompactlyGenerated
 
 open CompleteLattice
 
-variable {α : Type*} [CompleteLattice α] [IsCompactlyGenerated α]
+variable {α : Type*} [CompleteLattice α]
 
 /--
 An alternative constructor for boolean algebras.
@@ -68,6 +67,8 @@ lemma mono (hS : BooleanGenerators S) {T : Set α} (hTS : T ⊆ S) : BooleanGene
   isAtom I hI := hS.isAtom I (hTS hI)
   finitelyAtomistic := fun s a hs ↦ hS.finitelyAtomistic s a (le_trans hs hTS)
 
+variable [IsCompactlyGenerated α]
+
 lemma atomistic (hS : BooleanGenerators S) (a : α) (ha : a ≤ sSup S) : ∃ T ⊆ S, a = sSup T := by
   obtain ⟨C, hC, rfl⟩ := IsCompactlyGenerated.exists_sSup_eq a
   have aux : ∀ b : α, IsCompactElement b → b ≤ sSup S → ∃ T ⊆ S, b = sSup T := by
@@ -99,7 +100,7 @@ lemma atomistic (hS : BooleanGenerators S) (a : α) (ha : a ≤ sSup S) : ∃ T 
 
 lemma isAtomistic_of_sSup_eq_top (hS : BooleanGenerators S) (h : sSup S = ⊤) :
     IsAtomistic α := by
-  refine ⟨fun a ↦ ?_⟩
+  refine CompleteLattice.isAtomistic_iff.2 fun a ↦ ?_
   obtain ⟨s, hs, hs'⟩ := hS.atomistic a (h ▸ le_top)
   exact ⟨s, hs', fun I hI ↦ hS.isAtom I (hs hI)⟩
 

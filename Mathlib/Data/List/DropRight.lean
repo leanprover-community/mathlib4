@@ -3,7 +3,9 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.TakeWhile
+
 /-!
 
 # Dropping or taking from lists on the right
@@ -73,7 +75,7 @@ theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) :
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
   · cases n
-    · exact drop_length _
+    · exact drop_length
     · simp [drop_append_eq_append_drop, IH]
 
 @[simp]
@@ -106,8 +108,8 @@ theorem rdropWhile_singleton (x : α) : rdropWhile p [x] = if p x then [] else [
 
 theorem rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l).getLast hl) := by
   simp_rw [rdropWhile]
-  rw [getLast_reverse]
-  exact dropWhile_nthLe_zero_not _ _ _
+  rw [getLast_reverse, head_dropWhile_not p]
+  simp
 
 theorem rdropWhile_prefix : l.rdropWhile p <+: l := by
   rw [← reverse_suffix, rdropWhile, reverse_reverse]
@@ -121,7 +123,7 @@ theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by s
 -- it is in this file because it requires `List.Infix`
 @[simp]
 theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp only [dropWhile, true_iff]
     intro h
     by_contra
@@ -130,7 +132,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
     refine ⟨fun h => ?_, fun h => ?_⟩
     · intro _ H
       rw [get] at H
-      refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons _ _))
+      refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons_self _ _))
       rw [← h]
       simp only [H]
       exact List.IsSuffix.sublist (dropWhile_suffix p)
@@ -138,24 +140,15 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
       rw [get] at this
       simp_rw [this]
 
-/- porting note: This proof is longer than it used to be because `simp` refuses to rewrite
- the `l ≠ []` condition if `hl` is not `intro`'d yet -/
 @[simp]
 theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
-  simp only [rdropWhile, reverse_eq_iff, dropWhile_eq_self_iff, getLast_eq_get]
-  refine ⟨fun h hl => ?_, fun h hl => ?_⟩
-  · rw [← length_pos, ← length_reverse] at hl
-    have := h hl
-    rwa [get_reverse'] at this
-  · rw [length_reverse, length_pos] at hl
-    have := h hl
-    rwa [get_reverse']
+  simp [rdropWhile, reverse_eq_iff, getLast_eq_getElem, Nat.pos_iff_ne_zero]
 
 variable (p) (l)
 
 theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
   simp only [dropWhile_eq_self_iff]
-  exact fun h => dropWhile_nthLe_zero_not p l h
+  exact fun h => dropWhile_get_zero_not p l h
 
 theorem rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
   rdropWhile_eq_self_iff.mpr (rdropWhile_last_not _ _)
@@ -191,17 +184,9 @@ variable {p} {l}
 theorem rtakeWhile_eq_self_iff : rtakeWhile p l = l ↔ ∀ x ∈ l, p x := by
   simp [rtakeWhile, reverse_eq_iff]
 
--- Porting note: This needed a lot of rewriting.
 @[simp]
 theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
-  induction' l using List.reverseRecOn with l a
-  · simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
-    intro f; contradiction
-  · simp only [rtakeWhile, reverse_append, takeWhile, reverse_eq_nil_iff, getLast_append, ne_eq,
-      append_eq_nil, and_false, not_false_eq_true, forall_true_left]
-    refine ⟨fun h => ?_ , fun h => ?_⟩
-    · intro pa; simp [pa] at h
-    · simp [h]
+  induction' l using List.reverseRecOn with l a <;> simp [rtakeWhile]
 
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
   rw [rtakeWhile, mem_reverse] at hx
@@ -212,12 +197,12 @@ theorem rtakeWhile_idempotent (p : α → Bool) (l : List α) :
   rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
 
 lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
-  simp_rw [rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop, Nat.add_comm]
+  simp_rw [rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop]
 
 @[simp]
 lemma rdrop_append_length {l₁ l₂ : List α} :
     List.rdrop (l₁ ++ l₂) (List.length l₂) = l₁ := by
-  rw [rdrop_eq_reverse_drop_reverse, ← length_reverse l₂,
+  rw [rdrop_eq_reverse_drop_reverse, ← length_reverse,
       reverse_append, drop_left, reverse_reverse]
 
 lemma rdrop_append_of_le_length {l₁ l₂ : List α} (k : ℕ) :
