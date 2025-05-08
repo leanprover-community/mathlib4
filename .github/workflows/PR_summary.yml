@@ -81,7 +81,7 @@ jobs:
                 oldNew[oldFile]=file
               } END {
                 for(old in oldNew) {
-                  printf(""`%s` was renamed to `%s`\n", old, oldNew[old])
+                  printf("`%s` was renamed to `%s`\n", old, oldNew[old])
                 }
               }' | tee renamed_files.txt
 
