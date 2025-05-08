@@ -549,30 +549,36 @@ theorem embDomain_comp {Γ'' : Type*} [PartialOrder Γ''] {f : Γ ↪o Γ'} {f' 
     · simp only [RelEmbedding.coe_trans, comp_apply, Set.mem_image, not_exists, not_and]
       exact fun g _ ↦ hf' (f g)
 
+/-- The equivalence of HahnSeries induced by an order isomorphism. -/
+def equivDomain (f : Γ ≃o Γ') : HahnSeries Γ R ≃ HahnSeries Γ' R where
+  toFun x :=
+  { coeff g := x.coeff (f.symm g)
+    isPWO_support' :=
+      (x.isPWO_support.image_of_monotone f.monotone).mono fun b hb => by
+        contrapose! hb
+        rw [Function.mem_support]
+        rwa [OrderIso.image_eq_preimage, Set.mem_preimage] at hb }
+  invFun x :=
+  { coeff g := x.coeff (f g)
+    isPWO_support' :=
+      (x.isPWO_support.image_of_monotone f.symm.monotone).mono fun b hb => by
+        contrapose! hb
+        rw [Function.mem_support]
+        rwa [OrderIso.image_eq_preimage, Set.mem_preimage] at hb }
+  left_inv x := by simp
+  right_inv x := by simp
+
+@[simp]
+theorem equivDomain_coeff {f : Γ ≃o Γ'} {x : HahnSeries Γ R} {a : Γ'} :
+    (equivDomain f x).coeff a = x.coeff (f.symm a) := rfl
+
+theorem equivDomain_eq_embDomain (f : Γ ≃o Γ') (x : HahnSeries Γ R) :
+    equivDomain f x = embDomain f x := by
+  ext g
+  have : g = (RelIso.toRelEmbedding f) (f.symm g) := (OrderIso.symm_apply_eq f).mp rfl
+  rw [equivDomain_coeff, this, embDomain_coeff, ← this]
+
 end Domain
-
-section RevLex
-
-open Prod.RevLex
-
-/-- An equivalence between Lex-valued Hahn series and RevLex-valued Hahn series. -/
-@[simps]
-def RevEquiv (Γ Γ') [PartialOrder Γ] [PartialOrder Γ'] :
-    HahnSeries (Γ' ×ₗ Γ) R ≃ HahnSeries (Γ ×ᵣ Γ') R where
-  toFun := embDomain (LexEquiv Γ' Γ)
-  invFun := embDomain (LexEquiv Γ' Γ).symm
-  left_inv x := by
-    ext g
-    nth_rw 1 [show g = (RelIso.toRelEmbedding (LexEquiv Γ' Γ).symm)
-      ((RelIso.toRelEmbedding (LexEquiv Γ' Γ)) g) by rfl]
-    rw [embDomain_coeff, embDomain_coeff]
-  right_inv x := by
-    ext g
-    nth_rw 1 [show g = (RelIso.toRelEmbedding (LexEquiv Γ' Γ))
-      ((RelIso.toRelEmbedding (LexEquiv Γ' Γ).symm) g) by rfl]
-    rw [embDomain_coeff, embDomain_coeff]
-
-end RevLex
 
 end Zero
 

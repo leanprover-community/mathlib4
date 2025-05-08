@@ -3,8 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
---import Mathlib.Algebra.Order.Monoid.Prod
-import Mathlib.Data.Prod.RevLex
+import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.RingTheory.HahnSeries.Binomial
 
 /-!
@@ -162,6 +161,57 @@ instance instHahnModule : Module (HahnSeries Γ R) (HVertexOperator Γ₁ R V W)
 theorem smul_eq {x : HahnSeries Γ R} {A : HVertexOperator Γ₁ R V W} {v : V} :
     (x • A) v = x • (A v) :=
   rfl
+
+--#synth Module (HahnSeries Γ R) (V →ₛₗ[HahnSeries.C (Γ := Γ) (R := R)] HahnModule Γ₁ R W)
+/-- Move this to Algebra.Module.Equiv.Basic -/
+def semilinearEquiv  :
+    HVertexOperator Γ₁ R V W ≃ₗ[HahnSeries Γ R]
+      (V →ₛₗ[HahnSeries.C (Γ := Γ) (R := R)] HahnModule Γ₁ R W) where
+  toFun f := {
+    toFun v := f v
+    map_add' _ _ := by simp
+    map_smul' _ _ := by simp }
+  map_add' f g := by
+    ext
+    simp
+  map_smul' r f := by
+    ext
+    simp
+  invFun f := {
+    toFun v := f v
+    map_add' _ _ := by simp
+    map_smul' _ _ := by simp }
+  left_inv f := by
+    ext
+    simp
+  right_inv f := by
+    ext
+    simp
+
+local instance {Γ' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
+    [Semiring R] (f : Γ ≃o Γ') (hf : ∀ (x y : Γ), f (x + y) = f x + f y) :
+    RingHomInvPair (HahnSeries.equivDomainRingHom (R := R) f hf).toRingHom
+      (HahnSeries.equivDomainRingHom f hf).symm.toRingHom where
+  comp_eq := by simp
+  comp_eq₂ := by simp
+
+local instance {Γ' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
+    [Semiring R] (f : Γ ≃o Γ') (hf : ∀ (x y : Γ), f (x + y) = f x + f y) :
+    RingHomInvPair (HahnSeries.equivDomainRingHom (R := R) f hf).symm.toRingHom
+      (HahnSeries.equivDomainRingHom f hf).toRingHom where
+  comp_eq := by simp
+  comp_eq₂ := by simp
+
+/-!
+/-- An isomorphism of heterogeneous vertex operator spaces induced by ordered isomorphisms. -/
+def EquivDomain {Γ' Γ₁' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
+    [PartialOrder Γ₁'] [AddAction Γ' Γ₁'] [IsOrderedCancelVAdd Γ' Γ₁'] (f : Γ ≃o Γ')
+    (hf : ∀ x y, f (x + y) = f x + f y) (f₁ : Γ₁ ≃o Γ₁') (hf₁ : ∀ x y, f₁ (x +ᵥ y) = f x +ᵥ f₁ y) :
+    HVertexOperator Γ₁ R V W ≃ₛₗ[(HahnSeries.equivDomainRingHom (R := R) f hf).toRingHom]
+      HVertexOperator Γ₁' R V W :=
+  LinearEquiv.semiCongrRight V
+    (HahnModule.equivDomainModuleHom (R := R) (V := W) Γ₁ Γ₁' f hf f₁ hf₁)
+-/
 
 end  Module
 
@@ -388,12 +438,27 @@ def Lexx (x y : ∀ i, β i) : Prop :=
 
 theorem xxx (x y : ∀ i, β i) : Lexx r s x y ↔ Pi.Lex r s x y := Iff.rfl
 
-
-
-theorem lex_basis_lt : (toLex (0,1) : ℤ ×ₗ ℤ) < (toLex (1,0) : ℤ ×ₗ ℤ) := by decide
+theorem lex_basis_lt : (toLex (0,1) : ℤ ×ₗ ℤ) < (toLex (1,0) : ℤ ×ₗ ℤ) :=
+  compareOfLessAndEq_eq_lt.mp rfl
 --#find_home! lex_basis_lt --[Mathlib.Data.Prod.Lex]
 
+theorem revLex_basis_lt : (toRevLex (1, 0) : ℤ ×ᵣ ℤ) < (toRevLex (0, 1) : ℤ ×ᵣ ℤ) :=
+  Prod.RevLex.lt_iff.mpr <| Or.inl <| compareOfLessAndEq_eq_lt.mp rfl
+--#find_home! revLex_basis_lt --[Mathlib.Data.Prod.RevLex]
+
 end PiLex
+
+section RevLex
+
+open Prod.RevLex HahnSeries
+
+/-- An equivalence between Lex-valued Hahn series and RevLex-valued Hahn series. -/
+def RevLexEquiv (Γ Γ') [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+    [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ'] [Semiring R]:
+    HahnSeries (Γ' ×ₗ Γ) R ≃+* HahnSeries (Γ ×ᵣ Γ') R :=
+    equivDomainRingHom (R := R) (LexEquiv Γ' Γ) (LexEquiv_add)
+
+end RevLex
 
 section binomialPow
 
@@ -656,30 +721,36 @@ theorem toLex_vAdd_of_sub (k l m n : ℤ) :
 variable [PartialOrder Γ] [AddCommMonoid Γ] [CommRing R]
   [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
+-- Don't bother defining this!!!
+
 /-- `-Y + X` as a unit of `R((X))((Y))` -/
-def subLeft (R) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
-  HahnSeries.UnitBinomial (AddGroup.isAddUnit (toLex (0,1))) lex_basis_lt (isUnit_neg_one (α := R))
-    (1 : R)
+def subLeft (R) [CommRing R] : HahnSeries (ℤ ×ₗ ℤ) R :=
+  HahnSeries.binomialPow R lex_basis_lt (1 : ℤ) --(isUnit_neg_one (α := R)) (1 : R)
 
-theorem subLeft_eq : (subLeft R).val = HahnSeries.single (toLex (1,0)) 1 +
-    HahnSeries.single (toLex (0,1)) (-1 : R) := by
-  rw [subLeft, HahnSeries.unitBinomial_eq_single_add_single, add_comm]
-
-@[simp]
-theorem subLeft_smul_eq {A : HVertexOperator (ℤ ×ₗ ℤ) R V W} :
-    subLeft R • A = (subLeft R).val • A :=
-  rfl
+theorem subLeft_eq : subLeft R = HahnSeries.single (toLex (0,1)) 1 -
+    HahnSeries.single (toLex (1,0)) (1 : R) := by
+  rw [subLeft, ← HahnSeries.binomialPow_one (R := ℤ) R lex_basis_lt, Int.natCast_one]
 
 @[simp]
-theorem subLeft_leadingCoeff [Nontrivial R] : (subLeft R).val.leadingCoeff = (-1 : R) := by
-  rw [subLeft_eq, add_comm, HahnSeries.leadingCoeff_single_add_single lex_basis_lt (by simp)]
+theorem subLeft_leadingCoeff [Nontrivial R] : (subLeft R).leadingCoeff = (1 : R) := by
+  rw [subLeft_eq, HahnSeries.leadingCoeff_sub, HahnSeries.leadingCoeff_of_single]
+  rw [HahnSeries.orderTop_single one_ne_zero, HahnSeries.orderTop_single one_ne_zero,
+    WithTop.coe_lt_coe]
+  exact lex_basis_lt
 
-theorem subLeft_order [Nontrivial R] : (subLeft R).val.order = toLex (0,1) := by
-  rw [subLeft_eq, add_comm, HahnSeries.order_single_add_single lex_basis_lt (by simp)]
+theorem subLeft_order [Nontrivial R] : (subLeft R).order = toLex (0,1) := by
+  rw [subLeft_eq, ← WithTop.coe_eq_coe, HahnSeries.order_eq_orderTop_of_ne, HahnSeries.orderTop_sub,
+    HahnSeries.orderTop_single one_ne_zero]
+  · rw [HahnSeries.orderTop_single one_ne_zero, HahnSeries.orderTop_single one_ne_zero]
+    exact compareOfLessAndEq_eq_lt.mp rfl
+  · refine HahnSeries.leadingCoeff_ne_iff.mp ?_
+    rw [← subLeft_eq, subLeft_leadingCoeff]
+    exact one_ne_zero
 
+/-!
 @[simp]
 theorem coeff_subLeft_smul (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
-    ((subLeft R).val • A).coeff (toLex (k, l)) =
+    ((subLeft R) • A).coeff (toLex (k, l)) =
       A.coeff (toLex (k - 1, l)) - A.coeff (toLex (k, l - 1)) := by
   rw [subLeft_eq, add_smul, coeff_add, Pi.add_apply]
   ext v
@@ -688,20 +759,21 @@ theorem coeff_subLeft_smul (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : �
   rw [sub_zero, HahnModule.coeff_single_smul_vadd, one_smul, ← toLex_vAdd_of_sub k l 0 1,
     sub_zero, HahnModule.coeff_single_smul_vadd, neg_one_smul, ← sub_eq_add_neg]
 
-/-!
+
 --describe coefficients of powers
 theorem coeff_subLeft_pow_smul (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l n : ℤ) :
     ((subLeft R) ^ n • A).coeff (toLex (k, l)) = ∑??
 -/
 
-/-- `X - Y` as a unit of `R((Y))((X))`.  This is `-1` times subLeft, so it may be superfluous. -/
-def subRight (R : Type*) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
-    HahnSeries.UnitBinomial (AddGroup.isAddUnit (toLex (0,1))) lex_basis_lt (isUnit_one (M := R))
-    (-1 : R)
+/-- `X - Y` as a unit of `R((Y))((X))`. -/
+def subRight (R) [CommRing R] : HahnSeries (ℤ ×ᵣ ℤ) R :=
+    HahnSeries.binomialPow (Γ := ℤ ×ᵣ ℤ) R revLex_basis_lt (1 : ℤ)
 
-theorem subRight_eq : (subRight R).val = HahnSeries.single (toLex (1,0)) (-1 : R) +
-    HahnSeries.single (toLex (0,1)) (1 : R) := by
-  rw [subRight, HahnSeries.unitBinomial_eq_single_add_single, add_comm]
+/-!
+theorem subRight_eq : subRight R = HahnSeries.single (toRevLex (1,0)) (-1 : R) +
+    HahnSeries.single (toRevLex (0,1)) (1 : R) := by
+  rw [subRight]
+
 
 theorem subRight_leadingCoeff [Nontrivial R] : (subRight R).val.leadingCoeff = (1 : R) := by
   rw [subRight_eq, add_comm, HahnSeries.leadingCoeff_single_add_single lex_basis_lt one_ne_zero]
@@ -729,6 +801,7 @@ theorem subLeft_smul_eq_subRight_smul (A B : HVertexOperator (ℤ ×ₗ ℤ) R V
     (h : ∀ (k l : ℤ), A.coeff (toLex (k, l)) = B.coeff (toLex (l, k))) (k l : ℤ) :
     ((subLeft R) • A).coeff (toLex (k, l)) = ((subRight R) • B).coeff (toLex (l, k)) := by
   rw [subLeft_smul_eq, coeff_subLeft_smul, coeff_subRight_smul, h k (l-1), h (k-1) l]
+-/
 
 end Binomial
 

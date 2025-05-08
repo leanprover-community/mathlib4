@@ -165,6 +165,7 @@ def commutator_formula (a b c : V) (r s : ℤ) : Prop :=
   Finset.sum (Finset.range (Int.toNat (- order Y a b))) (fun i ↦ (Ring.choose r i) •
   ncoeff (Y (ncoeff (Y a) i b)) (r+s-i) c)
 
+/-!
 /-- The locality property, asserting that `(x-y)^N Y(a,x)Y(b,y) = (x-y)^N Y(b,y)Y(a,x)` for
 sufficiently large `N`.  That is, the vertex operators commute up to finite order poles on the
 diagonal. -/
@@ -172,7 +173,7 @@ def IsLocal (a b : V) : Prop :=
   ∃ n, IsLocalToOrderLeq (Y a) (Y b) n
 -- was Borcherds_sum_2 R a b c r s t + Borcherds_sum_3 R a b c r s t = 0
 -- weak associativity needs to be changed to the vertex operator definition.
-
+-/
 /-- The weak associativity property for vertex algebras. -/
 def weak_associativity (a b c : V) (r s t: ℤ) : Prop :=
   Borcherds_sum_1 Y a b c r s t = Borcherds_sum_2 Y a b c r s t

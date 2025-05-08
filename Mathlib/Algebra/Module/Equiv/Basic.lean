@@ -491,6 +491,39 @@ section Semiring
 
 open LinearMap
 
+section
+
+variable {R₁ R₂ R₃ R₄ : Type*}
+variable [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
+variable {M₁ M₂ M₃ M₄ : Type*}
+variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+variable [Module R₁ M₁] [Module R₂ M₂] [Module R₃ M₃] [Module R₄ M₄]
+variable {σ₁₃ : R₁ →+* R₃} {σ₃₁ : R₃ →+* R₁}
+variable {re₁₃ : RingHomInvPair σ₁₃ σ₃₁} {re₃₁ : RingHomInvPair σ₃₁ σ₁₃}
+variable {σ₁₂ : R₁ →+* R₂} {σ₃₂ : R₃ →+* R₂} [RingHomCompTriple σ₃₁ σ₁₂ σ₃₂]
+variable {σ₂₄ : R₂ →+* R₄} {σ₄₂ : R₄ →+* R₂}
+variable {re₂₄ : RingHomInvPair σ₂₄ σ₄₂} {re₄₂ : RingHomInvPair σ₄₂ σ₂₄}
+variable {σ₃₄ : R₃ →+* R₄} [RingHomCompTriple σ₃₂ σ₂₄ σ₃₄]
+variable {σ₁₄ : R₁ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₄ σ₄₂ σ₁₂]
+
+/-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives an
+additive isomorphism between the two function spaces. This is the semilinear version. -/
+@[simps] def arrowSemiCongrAddEquiv (e₁ : M₁ ≃ₛₗ[σ₁₃] M₃) (e₂ : M₂ ≃ₛₗ[σ₂₄] M₄) :
+    (M₁ →ₛₗ[σ₁₂] M₂) ≃+ (M₃ →ₛₗ[σ₃₄] M₄) where
+  toFun f := e₂.comp (f.comp e₁.symm.toLinearMap)
+  invFun f := e₂.symm.comp (f.comp e₁.toLinearMap)
+  left_inv f := by
+    ext x
+    simp only [symm_apply_apply, Function.comp_apply, coe_comp, coe_coe]
+  right_inv f := by
+    ext x
+    simp only [Function.comp_apply, apply_symm_apply, coe_comp, coe_coe]
+  map_add' f g := by
+    ext x
+    simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
+
+end
+
 variable {M₂₁ M₂₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
   [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁] [Module R M₂₂]
 
@@ -583,6 +616,20 @@ theorem arrowCongr_trans {M₁ M₂ M₃ N₁ N₂ N₃ : Sort _} [AddCommMonoid
 and `M` into `M₃` are linearly isomorphic. -/
 def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ[R] M₃ :=
   arrowCongr (LinearEquiv.refl R M) f
+
+variable (M) in
+/-- A semilinear isomorphism between two modules `M₂` and `M₃` induces a semilinear
+isomorphism between linear map spaces from a common source, if the actions of the various rings
+on target spaces commute. -/
+def semiCongrRight {R₂ R₃} [CommSemiring R₂] [CommSemiring R₃] {σ₂ : R →+* R₂} {σ₃ : R →+* R₃}
+    {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} {re₂₃ : RingHomInvPair σ₂₃ σ₃₂}
+    {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomCompTriple σ₃ σ₃₂ σ₂] [RingHomCompTriple σ₂ σ₂₃ σ₃]
+    [Module R₂ M₂] [Module R₃ M₃] (e : M₂ ≃ₛₗ[σ₂₃] M₃) :
+    (M →ₛₗ[σ₂] M₂) ≃ₛₗ[σ₂₃] (M →ₛₗ[σ₃] M₃) where
+  __ := (LinearEquiv.refl R M).arrowSemiCongrAddEquiv e
+  map_smul' _ _ := by
+    ext
+    simp [LinearEquiv.map_smulₛₗ]
 
 /-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
 themselves are linearly isomorphic.

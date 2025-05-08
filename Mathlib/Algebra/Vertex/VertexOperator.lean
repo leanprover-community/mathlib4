@@ -271,7 +271,7 @@ lemma commute_symm : Commute A B ↔ Commute B A := by
     specialize h u
     simp_all only [Prod.mk.eta, coeff_apply, LinearMap.coe_mk, AddHom.coe_mk,
       Equiv.symm_apply_apply]
-
+/-!
 /-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
 vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
 since `BA` takes values in the opposite-order Hahn series. -/
@@ -301,7 +301,7 @@ def IsLocalToOrderLeq' (n : ℕ) : Prop :=
     Int.negOnePow n • ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) R (lex_basis_lt) (n : ℤ)) •
       (comp B A)).coeff (toLex (l, k))
 
-/-!
+
 theorem isLocalToOrderLeq_add (m n : ℕ) (h : IsLocalToOrderLeq' A B n) :
     IsLocalToOrderLeq' A B (n + m) := by
   induction m with
@@ -491,7 +491,7 @@ def isLocal (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
 section ResidueProduct
 
 open HVertexOperator
-
+/-!
 /-- The left side of the `m`-th residue product, given by the residue of `(x-y)^m A(x)B(y)` at
 `x=0`, where we formally expand `(x-y)^m` as `x^m(1-y/x)^m` in `R((x))((y))` using binomials. -/
 noncomputable def res_prod_left (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
@@ -526,7 +526,7 @@ theorem res_prod_left_one_nat (A : VertexOperator R V) (m : ℕ) : res_prod_left
   simp_rw [subLeft_smul_HComp_one_left_eq]
   simp
 
-/-!
+
 theorem res_prod_neg_one_one_left (A : VertexOperator R V) : res_prod 1 A (-1) = A := by
   ext x n
 

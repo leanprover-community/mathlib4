@@ -186,4 +186,20 @@ def LexEquiv (α β : Type*) [PartialOrder α] [PartialOrder β] : α ×ₗ β �
     intro a b
     simp [le_iff, Lex.le_iff]
 
+theorem LexEquiv_le (α β : Type*) [PartialOrder α] [PartialOrder β] (a b : α ×ₗ β) :
+    LexEquiv α β a ≤ LexEquiv α β b ↔ a ≤ b :=
+  OrderIso.le_iff_le (LexEquiv α β)
+
+theorem LexEquiv_symm_le (α β : Type*) [PartialOrder α] [PartialOrder β] (a b : β ×ᵣ α) :
+    (LexEquiv α β).symm a ≤ (LexEquiv α β).symm b ↔ a ≤ b :=
+  (OrderIso.le_iff_le (LexEquiv α β)).symm
+
+instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ᵣ β) where
+  le_total x y := by
+    rw [← LexEquiv_symm_le, ← LexEquiv_symm_le]
+    exact LinearOrder.le_total ((LexEquiv β α).symm x) ((LexEquiv β α).symm y)
+  toDecidableLE x y := by
+    rw [← LexEquiv_symm_le]
+    exact Lex.instDecidableRelOfDecidableEq ((LexEquiv β α).symm x) ((LexEquiv β α).symm y)
+
 end Prod.RevLex
