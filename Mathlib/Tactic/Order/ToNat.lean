@@ -98,6 +98,8 @@ theorem exists_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n 
       · cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
           <;> simp [h_aux2, h_aux3, h_aux4, h_imax, ← h2, Fin.removeNth]
 
+/-- Auxiliary definition used by the `order` tactic to
+transfer facts in a linear order to `Nat`. -/
 noncomputable def translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α)
     (k : Fin n) : ℕ :=
   (exists_translation val).choose k
