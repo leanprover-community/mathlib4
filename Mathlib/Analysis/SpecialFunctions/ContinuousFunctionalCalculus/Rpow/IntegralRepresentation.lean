@@ -247,7 +247,7 @@ lemma le_integral_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) :
   _ = (1 / 2) * -((1 : ℝ) ^ (p - 1)) / (p - 1) := by rw [← div_div]; simp [neg_div]
   _ = ∫ t in Ioi 1, (1 / 2) * t ^ (p - 2) := by
         simp only [mem_Ioo] at hp
-        rw [integral_mul_left, integral_Ioi_rpow_of_lt (by linarith) zero_lt_one]
+        rw [integral_const_mul, integral_Ioi_rpow_of_lt (by linarith) zero_lt_one]
         ring_nf   -- ring alone succeeds but gives a warning
   _ ≤ ∫ t in Ioi 1, rpowIntegrand₀₁ p t 1 := by
         refine setIntegral_mono_on ?_ ?_ measurableSet_Ioi ?_
