@@ -370,11 +370,11 @@ noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
   toFun := mfderiv I J f x
   invFun := mfderiv J I hf.localInverse (f x)
   left_inv := by
-    apply LeftInverse.of_composition
+    apply ContinuousLinearMap.LeftInverse.of_composition
     rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_left.mfderiv_eq]
     exact (mfderiv_comp _ (hf.localInverse_mdifferentiableAt hn) (hf.mdifferentiableAt hn)).symm
   right_inv := by
-    apply RightInverse.of_composition
+    apply ContinuousLinearMap.RightInverse.of_composition
     rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_right.mfderiv_eq]
     -- We need to rewrite the base point hf.localInverse (f x) = x twice,
     -- in the differentiability hypothesis and for applying the chain rule.
