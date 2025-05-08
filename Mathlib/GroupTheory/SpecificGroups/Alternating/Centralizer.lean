@@ -269,6 +269,13 @@ section Perfect
 
 open Subgroup Equiv.Perm
 
+theorem alternatingGroup.commutator_perm_le :
+    commutator (Perm α) ≤ alternatingGroup α := by
+  simp only [commutator_eq_closure, closure_le, Set.subset_def, mem_commutatorSet_iff,
+    SetLike.mem_coe, mem_alternatingGroup, forall_exists_index]
+  rintro _ p q rfl
+  simp [map_commutatorElement, commutatorElement_eq_one_iff_commute, Commute.all]
+
 /-- If `n ≥ 5`, then the alternating group on `n` letters is perfect -/
 theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
     commutator (alternatingGroup α) = ⊤ := by
@@ -279,18 +286,11 @@ theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
   rw [← closure_three_cycles_eq_alternating]
   exact Subgroup.closure_closure_coe_preimage
 
-/-- If `n ≥ 5`, then the alternating group on `n` letters is perfect (subgroup version)-/
+/-- If `n ≥ 5`, then the alternating group on `n` letters is perfect (subgroup version) -/
 theorem commutator_alternatingGroup_eq_self (h5 : 5 ≤ Fintype.card α) :
     ⁅alternatingGroup α, alternatingGroup α⁆ = alternatingGroup α := by
   rw [← Subgroup.map_subtype_commutator, commutator_alternatingGroup_eq_top h5,
     ← MonoidHom.range_eq_map, Subgroup.range_subtype]
-
-theorem alternatingGroup.commutator_perm_le :
-    commutator (Perm α) ≤ alternatingGroup α := by
-  simp only [commutator_eq_closure, closure_le, Set.subset_def, mem_commutatorSet_iff,
-    SetLike.mem_coe, mem_alternatingGroup, forall_exists_index]
-  rintro _ p q rfl
-  simp [map_commutatorElement, commutatorElement_eq_one_iff_commute, Commute.all]
 
 /-- The commutator subgroup of the permutation group is the alternating group -/
 theorem alternatingGroup.commutator_perm_eq (h5 : 5 ≤ Fintype.card α) :
