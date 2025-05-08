@@ -86,11 +86,11 @@ def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
 
 /-- The property that a pseudofunctor `F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat`
 satisfies the descent property for morphisms. -/
-class HasDescentOfMorphisms (J : GrothendieckTopology C) : Prop where
+class IsPrestack (J : GrothendieckTopology C) : Prop where
   isSheaf {S : C} (M N : F.obj (.mk (op S))) :
     Presheaf.IsSheaf (J.over S) (F.presheafHom M N)
 
-variable (J : GrothendieckTopology C) [F.HasDescentOfMorphisms J]
+variable (J : GrothendieckTopology C) [F.IsPrestack J]
 
 /-- If `F` is a pseudofunctor from `Cᵒᵖ` to `Cat` which satisfies the descent
 of morphisms for a Grothendieck topology `J`, and `M` and `N` are to objects in
@@ -100,7 +100,7 @@ of morphisms $$p^* M ⟶ p^* N$$. -/
 @[simps]
 def sheafHom : Sheaf (J.over S) (Type v') where
   val := F.presheafHom M N
-  cond := HasDescentOfMorphisms.isSheaf _ _
+  cond := IsPrestack.isSheaf _ _
 
 end Pseudofunctor
 

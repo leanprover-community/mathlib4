@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
-import Mathlib.CategoryTheory.Sites.Descent.Morphisms
-import Mathlib.CategoryTheory.Sites.Descent.CodescentData
+import Mathlib.CategoryTheory.Bicategory.Functor.Cat
 import Mathlib.CategoryTheory.Sites.Descent.PullbackStruct
 
 /-!
@@ -21,163 +20,117 @@ open Opposite Limits
 
 namespace Pseudofunctor
 
-section
-
-@[simp]
-lemma mapComp'_mapLocallyDiscrete_comp
-    {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
-    (G : Pseudofunctor (LocallyDiscrete D) Cat)
-    {X Y Z : LocallyDiscrete C} (f : X ⟶ Y) (g : Y ⟶ Z) (fg : X ⟶ Z) (hfg : f ≫ g = fg) :
-      ((mapLocallyDiscrete F).comp G).mapComp' f g fg hfg =
-      G.mapComp' ((mapLocallyDiscrete F).map f) ((mapLocallyDiscrete F).map g)
-        ((mapLocallyDiscrete F).map fg) (by aesop) := by
-  ext
-  subst hfg
-  rw [mapComp'_eq_mapComp]
-  rfl
-
-end
+macro "aesoptoloc" : tactic => `(tactic|(simp [← Quiver.Hom.comp_toLoc, ← op_comp] <;> aesop))
 
 variable {C : Type u} [Category.{v} C] (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v', u'})
   {ι : Type t} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
 
--- Defining `DescentData` as a wrapper for `CodescentData` is problematic
--- as we do not get good lemmas using `simps`, and we have do state the
--- lemmas like `mk'_iso_hom` by hand. TODO: Redefine `DescentData` using
--- the same inputs as in `mk'` (and probably remove `CodescentData`)
-/-- If `F` is a pseudofunctor from `(LocallyDiscrete Cᵒᵖ)` to `Cat` and `f i : X i ⟶ S`
-is a family of morphisms in `C`, this is the type of family of objects in `F.obj (X i)`
-equipped with a descent datum relative to the morphisms `f i`. -/
-abbrev DescentData :=
-  ((mapLocallyDiscrete (Over.forget S).op).comp F).CodescentData
-    (fun (i : ι) ↦ .mk (op (Over.mk (f i))))
+namespace DescentData
 
-/-- The functor `F.obj (.mk (op S)) ⥤ F.DescentData f`. -/
-def toDescentData : F.obj (.mk (op S)) ⥤ F.DescentData f :=
-  ((mapLocallyDiscrete (Over.forget S).op).comp F).toCodescentDataOfIsInitial
-    (fun (i : ι) ↦ .mk (op (Over.mk (f i)))) (.mk (op (Over.mk (𝟙 _))))
-      (IsInitial.ofUniqueHom
-        (fun Z ↦ .toLoc (Quiver.Hom.op (Over.homMk Z.as.unop.hom)))
-        (fun ⟨⟨Z⟩⟩ ⟨⟨m⟩⟩ ↦ by
-          congr
-          ext
-          simpa using Over.w m))
+variable {F} in
+def pull ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
+    ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
+    (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) ⦃Y' : C⦄ (g : Y' ⟶ Y)
+    (gf₁ : Y' ⟶ X₁) (gf₂ : Y' ⟶ X₂) (hgf₁ : g ≫ f₁ = gf₁ := by aesop_cat)
+    (hgf₂ : g ≫ f₂ = gf₂ := by aesop_cat) :
+    (F.map gf₁.op.toLoc).obj M₁ ⟶ (F.map gf₂.op.toLoc).obj M₂ :=
+  (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by aesoptoloc)).hom.app _ ≫
+    (F.map g.op.toLoc).map φ ≫
+    (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesoptoloc)).inv.app _
+
+end DescentData
+
+open DescentData
+structure DescentData where
+  obj (i : ι) : F.obj (.mk (op (X i)))
+  hom ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
+    (_hf₁ : f₁ ≫ f i₁ = q := by aesop_cat) (_hf₂ : f₂ ≫ f i₂ = q := by aesop_cat) :
+      (F.map f₁.op.toLoc).obj (obj i₁) ⟶ (F.map f₂.op.toLoc).obj (obj i₂)
+  pull_hom ⦃Y' Y : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
+    ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q)
+    (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂) (hgf₁ : g ≫ f₁ = gf₁) (hgf₂ : g ≫ f₂ = gf₂) :
+      pull (hom q f₁ f₂) g gf₁ gf₂ = hom q' gf₁ gf₂ := by aesop_cat
+  hom_self ⦃Y : C⦄ (q : Y ⟶ S) ⦃i : ι⦄ (g : Y ⟶ X i) (_ : g ≫ f i = q) :
+      hom q g g = 𝟙 _ := by aesop_cat
+  hom_comp ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ i₃ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (f₃ : Y ⟶ X i₃)
+      (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) (hf₃ : f₃ ≫ f i₃ = q) :
+      hom q f₁ f₂ hf₁ hf₂ ≫ hom q f₂ f₃ hf₂ hf₃ = hom q f₁ f₃ hf₁ hf₃ := by aesop_cat
 
 namespace DescentData
 
-variable {F f}
+variable {F f} (D : F.DescentData f)
 
-nonrec def iso (D : F.DescentData f) ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
-    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q := by aesop) (hf₂ : f₂ ≫ f i₂ = q := by aesop) :
-    (F.map f₁.op.toLoc).obj (D.obj i₁) ≅ (F.map f₂.op.toLoc).obj (D.obj i₂) := by
-  exact D.iso (Y := .mk (op (Over.mk q)))
-    ((Over.homMk f₁).op.toLoc) ((Over.homMk f₂).op.toLoc)
+attribute [simp] hom_self
+attribute [reassoc (attr := simp)] hom_comp
 
-nonrec lemma iso_comp' (D : F.DescentData f)
-    ⦃Y' Y : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
-    ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q)
-    (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂) (hgf₁ : g ≫ f₁ = gf₁) (hgf₂ : g ≫ f₂ = gf₂) :
-    D.iso q' gf₁ gf₂ (by aesop) (by aesop) =
-    (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by
-      simp only [← Quiver.Hom.comp_toLoc, ← op_comp, hgf₁])).app _ ≪≫
-        (F.map g.op.toLoc).mapIso (D.iso q f₁ f₂) ≪≫
-      (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by
-        simp only [← Quiver.Hom.comp_toLoc, ← op_comp, hgf₂])).symm.app _ := by
-  ext : 1
-  simpa using congr_arg Iso.hom (D.iso_comp' (Y' := .mk (op (Over.mk q')))
-    (Y := .mk (op (Over.mk q))) (Over.homMk g).op.toLoc (Over.homMk f₁).op.toLoc
-    (Over.homMk f₂).op.toLoc (Over.homMk gf₁).op.toLoc (Over.homMk gf₂).op.toLoc (by
-      simp only [← Quiver.Hom.comp_toLoc, ← op_comp]
-      congr 2
-      aesop) (by
-      simp only [← Quiver.Hom.comp_toLoc, ← op_comp]
-      congr 2
-      aesop))
+@[simps]
+def iso ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
+    (_hf₁ : f₁ ≫ f i₁ = q := by aesop_cat) (_hf₂ : f₂ ≫ f i₂ = q := by aesop_cat) :
+    (F.map f₁.op.toLoc).obj (D.obj i₁) ≅ (F.map f₂.op.toLoc).obj (D.obj i₂) where
+  hom := D.hom q f₁ f₂
+  inv := D.hom q f₂ f₁
 
-nonrec lemma iso_trans (D : F.DescentData f) ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ i₃ : ι⦄ (f₁ : Y ⟶ X i₁)
-    (f₂ : Y ⟶ X i₂) (f₃ : Y ⟶ X i₃) (hf₁ : f₁ ≫ f i₁ = q)
-    (hf₂ : f₂ ≫ f i₂ = q) (hf₃ : f₃ ≫ f i₃ = q) :
-    D.iso q f₁ f₂ hf₁ hf₂ ≪≫ D.iso q f₂ f₃ hf₂ hf₃ = D.iso q f₁ f₃ hf₁ hf₃ := by
-  apply D.iso_trans
+instance {Y : C} (q : Y ⟶ S) {i₁ i₂ : ι} (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
+    (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
+    IsIso (D.hom q f₁ f₂ hf₁ hf₂) :=
+  (D.iso q f₁ f₂).isIso_hom
 
-@[reassoc (attr := simp)]
-nonrec lemma iso_hom_iso_hom
-    (D : F.DescentData f) ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ i₃ : ι⦄ (f₁ : Y ⟶ X i₁)
-    (f₂ : Y ⟶ X i₂) (f₃ : Y ⟶ X i₃) (hf₁ : f₁ ≫ f i₁ = q)
-    (hf₂ : f₂ ≫ f i₂ = q) (hf₃ : f₃ ≫ f i₃ = q) :
-    (D.iso q f₁ f₂ hf₁ hf₂).hom ≫ (D.iso q f₂ f₃ hf₂ hf₃).hom =
-      (D.iso q f₁ f₃ hf₁ hf₃).hom := by
-  apply D.iso_hom_iso_hom
+@[ext]
+structure Hom (D₁ D₂ : F.DescentData f) where
+  hom (i : ι) : D₁.obj i ⟶ D₂.obj i
+  comm ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
+    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
+    (F.map f₁.op.toLoc).map (hom i₁) ≫ D₂.hom q f₁ f₂ =
+        D₁.hom q f₁ f₂ ≫ (F.map f₂.op.toLoc).map (hom i₂) := by aesop_cat
+
+attribute [reassoc (attr := simp)] Hom.comm
+
+@[simps]
+def Hom.id (D : F.DescentData f) : Hom D D where
+  hom i := 𝟙 _
+
+@[simps]
+def Hom.comp {D₁ D₂ D₃ : F.DescentData f} (φ : Hom D₁ D₂) (φ' : Hom D₂ D₃) : Hom D₁ D₃ where
+  hom i := φ.hom i ≫ φ'.hom i
+
+instance : Category (F.DescentData f) where
+  Hom := Hom
+  id := Hom.id
+  comp := Hom.comp
 
 @[ext]
 lemma hom_ext {D₁ D₂ : F.DescentData f} {φ φ' : D₁ ⟶ D₂}
-    (h : ∀ i, φ.hom i = φ'.hom i): φ = φ' :=
-  CodescentData.hom_ext h
-
-section
-
-variable (obj : ∀ i, F.obj (.mk (op (X i))))
-    (hom : ∀ ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
-      (_hf₁ : f₁ ≫ f i₁ = q) (_hf₂ : f₂ ≫ f i₂ = q),
-        (F.map f₁.op.toLoc).obj (obj i₁) ⟶ (F.map f₂.op.toLoc).obj (obj i₂))
-    (hom_comp' : ∀ ⦃Y Y' : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
-      ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q)
-      (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂) (hgf₁ : g ≫ f₁ = gf₁) (hgf₂ : g ≫ f₂ = gf₂),
-      hom q' gf₁ gf₂ (by aesop_cat) (by aesop_cat) =
-        (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc
-          (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, hgf₁])).hom.app _ ≫
-          (F.map (.toLoc g.op)).map (hom q f₁ f₂ hf₁ hf₂) ≫
-          (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc
-          (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, hgf₂])).inv.app _)
-    (hom_self : ∀ ⦃Y : C⦄ (q : Y ⟶ S) ⦃i : ι⦄ (g : Y ⟶ X i) (hg : g ≫ f i = q),
-      hom q g g hg hg = 𝟙 _)
-    (comp_hom : ∀ ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ i₃ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
-      (f₃ : Y ⟶ X i₃) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) (hf₃ : f₃ ≫ f i₃ = q),
-        hom q f₁ f₂ hf₁ hf₂ ≫ hom q f₂ f₃ hf₂ hf₃ = hom q f₁ f₃ hf₁ hf₃)
-
-@[simps! obj]
-def mk' : F.DescentData f :=
-  CodescentData.mk' obj
-    (fun Y i₁ i₂ f₁ f₂ ↦ hom Y.as.unop.hom f₁.as.unop.left f₂.as.unop.left
-      (Over.w f₁.as.unop) (Over.w f₂.as.unop))
-    (fun Y' Y g i₁ i₂ f₁ f₂ f₁g f₂g hf₁g hf₂g ↦ by
-      simpa using hom_comp' g.as.unop.left Y.as.unop.hom Y'.as.unop.hom
-        (Over.w g.as.unop) f₁.as.unop.left f₂.as.unop.left
-        (Over.w f₁.as.unop) (Over.w f₂.as.unop) f₁g.as.unop.left f₂g.as.unop.left
-        (by simp [← hf₁g]) (by simp [← hf₂g]))
-    (fun _ _ _ ↦ hom_self _ _ _)
-    (fun Y i₁ i₂ i₃ f₁ f₂ f₃ ↦ comp_hom _ _ _ _ _ _ _)
+    (h : ∀ i, φ.hom i = φ'.hom i) : φ = φ' :=
+  Hom.ext (funext h)
 
 @[simp]
-lemma mk'_iso_hom ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
-    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
-    ((mk' obj hom hom_comp' hom_self comp_hom).iso q f₁ f₂ hf₁ hf₂).hom =
-      hom q f₁ f₂ hf₁ hf₂ := rfl
+lemma id_hom (D : F.DescentData f) (i : ι) : Hom.hom (𝟙 D) i = 𝟙 _ := rfl
 
-end
+@[simp, reassoc]
+lemma comp_hom {D₁ D₂ D₃ : F.DescentData f} (φ : D₁ ⟶ D₂) (φ' : D₂ ⟶ D₃) (i : ι) :
+    (φ ≫ φ').hom i = φ.hom i ≫ φ'.hom i := rfl
 
 @[simps]
-def homMk {D₁ D₂ : F.DescentData f} (φ : ∀ i, D₁.obj i ⟶ D₂.obj i)
-    (hφ : ∀ ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
-    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q),
-      (F.map f₁.op.toLoc).map (φ i₁) ≫ (D₂.iso q f₁ f₂ hf₁ hf₂).hom =
-        (D₁.iso q f₁ f₂ hf₁ hf₂).hom ≫ (F.map f₂.op.toLoc).map (φ i₂) := by aesop_cat) :
-    D₁ ⟶ D₂ where
-  hom i := φ i
-  comm Y _ _ f₁ f₂ :=
-    hφ Y.as.unop.hom f₁.as.unop.left f₂.as.unop.left
-      (Over.w f₁.as.unop) (Over.w f₂.as.unop)
-
-@[reassoc]
-lemma comm {D₁ D₂ : F.DescentData f} (φ : D₁ ⟶ D₂)
-    ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
-    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
-    (F.map f₁.op.toLoc).map (φ.hom i₁) ≫ (D₂.iso q f₁ f₂ hf₁ hf₂).hom =
-        (D₁.iso q f₁ f₂ hf₁ hf₂).hom ≫ (F.map f₂.op.toLoc).map (φ.hom i₂) := by
-  exact φ.comm (Y := .mk (op (Over.mk q)))
-    (Over.homMk f₁).op.toLoc (Over.homMk f₂).op.toLoc
+def ofObj (M : F.obj (.mk (op S))) : F.DescentData f where
+  obj i := (F.map (f i).op.toLoc).obj M
+  hom Y q i₁ i₂ f₁ f₂ hf₁ hf₂ :=
+    (F.mapComp' (f i₁).op.toLoc f₁.op.toLoc q.op.toLoc (by aesoptoloc)).inv.app _ ≫
+      (F.mapComp' (f i₂).op.toLoc f₂.op.toLoc q.op.toLoc (by aesoptoloc)).hom.app _
+  pull_hom Y' Y g q q' hq i₁ i₂ f₁ f₂ hf₁ hf₂ gf₁ gf₂ hgf₁ hgf₂ := by
+    dsimp
+    simp only [pull, Functor.map_comp, Category.assoc,
+      F.mapComp'₀₁₃_inv_app (f i₁).op.toLoc f₁.op.toLoc g.op.toLoc q.op.toLoc
+        gf₁.op.toLoc q'.op.toLoc (by aesoptoloc) (by aesoptoloc) (by aesoptoloc),
+      F.mapComp'_hom_app_comp_mapComp'_inv_app
+        (f i₂).op.toLoc f₂.op.toLoc g.op.toLoc q.op.toLoc gf₂.op.toLoc q'.op.toLoc
+        (by aesoptoloc) (by aesoptoloc) (by aesoptoloc) M]
 
 end DescentData
+
+/-- The functor `F.obj (.mk (op S)) ⥤ F.DescentData f`. -/
+def toDescentData : F.obj (.mk (op S)) ⥤ F.DescentData f where
+  obj M := .ofObj M
+  map {M M'} φ := { hom i := (F.map (f i).op.toLoc).map φ }
 
 end Pseudofunctor
 

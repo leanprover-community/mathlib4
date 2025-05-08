@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Sites.Descent.HasEffectiveDescent
+import Mathlib.CategoryTheory.Sites.Descent.IsStack
 import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 

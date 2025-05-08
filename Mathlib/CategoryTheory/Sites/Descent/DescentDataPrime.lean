@@ -34,38 +34,29 @@ variable {obj obj' : ∀ (i : ι), F.obj (.mk (op (X i)))}
 noncomputable def pullHom ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
     (hf₁ : f₁ ≫ f i₁ = q := by aesop_cat) (hf₂ : f₂ ≫ f i₂ = q := by aesop_cat) :
     (F.map f₁.op.toLoc).obj (obj i₁) ⟶ (F.map f₂.op.toLoc).obj (obj' i₂) :=
-  let p : Y ⟶ (sq i₁ i₂).pullback := (sq i₁ i₂).isPullback.lift f₁ f₂ (by aesop)
-  (F.mapComp' (sq i₁ i₂).p₁.op.toLoc p.op.toLoc f₁.op.toLoc
-        (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsPullback.lift_fst])).hom.app _ ≫
-      (F.map (.toLoc p.op)).map (hom i₁ i₂) ≫
-      (F.mapComp' (sq i₁ i₂).p₂.op.toLoc p.op.toLoc f₂.op.toLoc
-        (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsPullback.lift_snd])).inv.app _
+  DescentData.pull (hom i₁ i₂) ((sq i₁ i₂).isPullback.lift f₁ f₂ (by aesop)) f₁ f₂
 
 @[reassoc]
-lemma pullHom_eq ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
+lemma pullHom_eq_pull ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
     (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) (p : Y ⟶ (sq i₁ i₂).pullback)
     (hp₁ : p ≫ (sq i₁ i₂).p₁ = f₁) (hp₂ : p ≫ (sq i₁ i₂).p₂ = f₂) :
   pullHom hom q f₁ f₂ hf₁ hf₂ =
-    (F.mapComp' (sq i₁ i₂).p₁.op.toLoc p.op.toLoc f₁.op.toLoc (by aesop)).hom.app _ ≫
-      (F.map (.toLoc p.op)).map (hom i₁ i₂) ≫
-      (F.mapComp' (sq i₁ i₂).p₂.op.toLoc p.op.toLoc f₂.op.toLoc (by aesop)).inv.app _ := by
+    DescentData.pull (hom i₁ i₂) p f₁ f₂ := by
   obtain rfl : p = (sq i₁ i₂).isPullback.lift f₁ f₂ (by rw [hf₁, hf₂]) := by
     apply (sq i₁ i₂).isPullback.hom_ext <;> aesop
   rfl
 
 @[reassoc]
-  lemma pullHom_comp' ⦃Y Y' : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
+  lemma pull_pullHom ⦃Y Y' : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
     ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q)
     (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂) (hgf₁ : g ≫ f₁ = gf₁) (hgf₂ : g ≫ f₂ = gf₂) :
-    pullHom hom q' gf₁ gf₂ =
-      (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by aesop)).hom.app (obj i₁) ≫
-        (F.map g.op.toLoc).map (pullHom hom q f₁ f₂ hf₁ hf₂) ≫
-          (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).inv.app (obj' i₂) := by
+    DescentData.pull (pullHom hom q f₁ f₂ hf₁ hf₂) g gf₁ gf₂ =
+      pullHom hom q' gf₁ gf₂ := by
   let p := (sq i₁ i₂).isPullback.lift f₁ f₂ (by aesop)
   dsimp
-  rw [pullHom_eq _ _ _ _ _ _ p (by aesop) (by aesop),
-    pullHom_eq _ _ _ _ _ _ (g ≫ p) (by aesop) (by aesop)]
-  dsimp
+  rw [pullHom_eq_pull _ _ _ _ _ _ p (by aesop) (by aesop),
+    pullHom_eq_pull _ _ _ _ _ _ (g ≫ p) (by aesop) (by aesop)]
+  dsimp [DescentData.pull]
   simp only [Functor.map_comp, Category.assoc]
   rw [← F.mapComp'_hom_app_comp_mapComp'_hom_app_map_obj_assoc
     _ _ _ _ _ _ (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsPullback.lift_fst]) rfl
@@ -87,15 +78,15 @@ variable {obj : ∀ (i : ι), F.obj (.mk (op (X i)))}
 @[simp]
 lemma pullHom_p₁_p₂ (i : ι) :
     pullHom hom (sq i i).p (sq i i).p₁ (sq i i).p₂ (by simp) (by simp) = hom i i := by
-  rw [pullHom_eq hom (sq i i).p (sq i i).p₁ (sq i i).p₂ (by simp) (by simp)
+  rw [pullHom_eq_pull hom (sq i i).p (sq i i).p₁ (sq i i).p₂ (by simp) (by simp)
     (𝟙 _) (by simp)  (by simp)]
-  simp [mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app]
+  simp [DescentData.pull, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app]
 
 lemma pullHom_self' (hom_self : ∀ i, pullHom hom (f i) (𝟙 (X i)) (𝟙 (X i)) = 𝟙 _)
     ⦃Y : C⦄ (q : Y ⟶ S) ⦃i : ι⦄ (g : Y ⟶ X i) (hg : g ≫ f i = q) :
     pullHom hom q g g hg hg = 𝟙 _ := by
-  simp [pullHom_comp' hom g (f i) q hg (𝟙 (X i)) (𝟙 (X i)) (by simp) (by simp) g g
-    (by simp) (by simp), hom_self]
+  simp [← pull_pullHom hom g (f i) q hg (𝟙 (X i)) (𝟙 (X i)) (by simp) (by simp) g g
+    (by simp) (by simp), hom_self, DescentData.pull]
 
 variable {sq₃} in
 @[reassoc]
@@ -108,9 +99,11 @@ lemma comp_pullHom' (hom_comp : ∀ (i₁ i₂ i₃ : ι),
     (hf₂ : f₂ ≫ f i₂ = q) (hf₃ : f₃ ≫ f i₃ = q) :
     pullHom hom q f₁ f₂ ≫ pullHom hom q f₂ f₃ = pullHom hom q f₁ f₃ := by
   obtain ⟨φ, _, _, _⟩ := (sq₃ i₁ i₂ i₃).exists_lift f₁ f₂ f₃ q hf₁ hf₂ hf₃
-  rw [pullHom_comp'_assoc hom φ (sq₃ i₁ i₂ i₃).p _ _ (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₂,
-    pullHom_comp' hom φ (sq₃ i₁ i₂ i₃).p _ _ (sq₃ i₁ i₂ i₃).p₂ (sq₃ i₁ i₂ i₃).p₃,
-    pullHom_comp' hom φ (sq₃ i₁ i₂ i₃).p _ _ (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃,
+  rw [← pull_pullHom_assoc hom φ (sq₃ i₁ i₂ i₃).p _ _ (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₂,
+    DescentData.pull, Category.assoc, Category.assoc,
+    ← pull_pullHom hom φ (sq₃ i₁ i₂ i₃).p _ _ (sq₃ i₁ i₂ i₃).p₂ (sq₃ i₁ i₂ i₃).p₃,
+    ← pull_pullHom hom φ (sq₃ i₁ i₂ i₃).p _ _ (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃,
+    DescentData.pull, DescentData.pull,
     Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc, hom_comp]
   all_goals aesop
 
@@ -195,24 +188,22 @@ lemma comm {D₁ D₂ : F.DescentData' sq sq₃} (φ : D₁ ⟶ D₂)
     (F.map f₁.op.toLoc).map (φ.hom i₁) ≫ pullHom D₂.hom q f₁ f₂ hf₁ hf₂ =
   pullHom D₁.hom q f₁ f₂ hf₁ hf₂ ≫ (F.map f₂.op.toLoc).map (φ.hom i₂) := sorry
 
-@[simps! obj]
-noncomputable def descentData (D : F.DescentData' sq sq₃) : F.DescentData f :=
-  .mk' D.obj (fun _ _ _ _ _ _ _ _ ↦ pullHom D.hom _ _ _ (by aesop) (by aesop))
-    (fun _ _ _ _ _ hq _ _ _ _ _ _ ↦ pullHom_comp' _ _ _ _ hq _ _ _ _) (by simp) (by simp)
+@[simps]
+noncomputable def descentData (D : F.DescentData' sq sq₃) : F.DescentData f where
+  obj := D.obj
+  hom _ _ _ _ _ _ hf₁ hf₂ := pullHom D.hom _ _ _ hf₁ hf₂
+  pull_hom _ _ _ _ _ hq _ _ _ _ _ _ _ _ hgf₁ hgf₂ :=
+    pull_pullHom _ _ _ _ hq _ _ _ _ _ _ hgf₁ hgf₂
 
-@[simp]
-lemma descentData_iso_hom (D : F.DescentData' sq sq₃)
-    ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
-    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
-    (D.descentData.iso q f₁ f₂ hf₁ hf₂).hom = pullHom D.hom q f₁ f₂ hf₁ hf₂ :=
-  rfl
 
 end DescentData'
 
 @[simps]
 noncomputable def DescentData'.toDescentData : F.DescentData' sq sq₃ ⥤ F.DescentData f where
   obj D := D.descentData
-  map {D₁ D₂} φ := DescentData.homMk φ.hom (by simp [DescentData'.comm])
+  map {D₁ D₂} φ :=
+    { hom := φ.hom
+      comm := comm φ }
 
 end Pseudofunctor
 

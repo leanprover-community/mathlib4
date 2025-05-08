@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
 import Mathlib.CategoryTheory.Sites.Descent.DescentData
+import Mathlib.CategoryTheory.Sites.Descent.IsPrestack
 
 /-!
 # Effectiveness of descent
@@ -151,18 +152,18 @@ lemma toDescentData_fullyFaithful_iff :
     rw [← Function.Bijective.of_comp_iff' α.bijective, this,
       Function.Bijective.of_comp_iff _ β.bijective]
 
-class HasEffectiveDescent (J : GrothendieckTopology C) : Prop where
+class IsStack (J : GrothendieckTopology C) : Prop where
   hasEffectiveDescentRelativeTo_of_sieve_mem {S : C} (U : Sieve S) (hU : U ∈ J S) :
     F.HasEffectiveDescentRelativeTo (f := fun (i : U.arrows.category) ↦ i.obj.hom)
 
 lemma hasEffectiveDescentRelativeTo_of_sieve_mem (J : GrothendieckTopology C)
-    [F.HasEffectiveDescent J]
+    [F.IsStack J]
     {S : C} (U : Sieve S) (hU : U ∈ J S) :
     F.HasEffectiveDescentRelativeTo (f := fun (i : U.arrows.category) ↦ i.obj.hom) :=
-  HasEffectiveDescent.hasEffectiveDescentRelativeTo_of_sieve_mem _ hU
+  IsStack.hasEffectiveDescentRelativeTo_of_sieve_mem _ hU
 
-instance (J : GrothendieckTopology C) [F.HasEffectiveDescent J] :
-    F.HasDescentOfMorphisms J where
+instance (J : GrothendieckTopology C) [F.IsStack J] :
+    F.IsPrestack J where
   isSheaf {S} M N := by
     rw [isSheaf_iff_isSheaf_of_type]
     rintro ⟨X, ⟨⟩, p : X ⟶ S⟩ U hU
