@@ -941,7 +941,26 @@ theorem coe_neg : (neg R : E → E) = fun x => -x :=
 theorem symm_neg : (neg R : E ≃ₗᵢ[R] E).symm = neg R :=
   rfl
 
-variable (R E E₂ E₃)
+variable (R E E₂)
+
+/-- The natural equivalence `E × E₂ ≃ E₂ × E` is a linear isometry. -/
+def prodComm [Module R E₂] : E × E₂ ≃ₗᵢ[R] E₂ × E :=
+  ⟨LinearEquiv.prodComm R E E₂, by intro; simp [norm, sup_comm]⟩
+
+@[simp]
+theorem coe_prodComm [Module R E₂] :
+    (prodComm R E E₂ : E × E₂ → E₂ × E) = Equiv.prodComm E E₂ := by
+  rfl
+
+@[simp]
+theorem coe_prodComm_symm [Module R E₂] :
+    ((prodComm R E E₂).symm : E₂ × E → E × E₂) = (Equiv.prodComm E E₂).symm :=
+  rfl
+
+theorem prodComm_symm [Module R E₂] : (prodComm R E E₂).symm = prodComm R E₂ E :=
+  rfl
+
+variable (E₃)
 
 /-- The natural equivalence `(E × E₂) × E₃ ≃ E × (E₂ × E₃)` is a linear isometry. -/
 def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R] E × E₂ × E₃ :=
