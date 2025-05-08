@@ -105,7 +105,7 @@ def allScriptsDocumented : IO Bool := do
       {String.intercalate "," undocumented.toList}"
   return undocumented.size == 0
 
-/-- Verifies that all modules `modules` are named in `UpperCamelCase`
+/-- Verifies that all modules in `modules` are named in `UpperCamelCase`
 (except for explicitly discussed exceptions, which are hard-coded here). -/
 def checkModulesUpperCamelCase (modules : Array Lean.Name) : IO Bool := do
   -- Exceptions to this list should be discussed on zulip!
@@ -115,8 +115,10 @@ def checkModulesUpperCamelCase (modules : Array Lean.Name) : IO Bool := do
     `Mathlib.Analysis.Normed.Lp.lpSpace
   ]
   -- We allow only names in UpperCamelCase, possibly with a trailing underscore.
-  let badNames := modules.filter fun name ↦!exceptions.contains name &&
-    (Lake.toUpperCamelCase name != name && s!"{Lake.toUpperCamelCase name}_" != name.toString)
+  let badNames := modules.filter fun name ↦
+    let upperCamelName := Lake.toUpperCamelCase name
+    !exceptions.contains name &&
+    (upperCamelName != name && s!"{upperCamelName}_" != name.toString)
   for bad in badNames do
     IO.eprintln s!"error: module name {bad} is not in 'UpperCamelCase': it should be {Lake.toUpperCamelCase bad} instead"
   return badNames.size == 0
