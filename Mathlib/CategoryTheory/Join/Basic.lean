@@ -555,14 +555,14 @@ def mapPairEquiv (e : C ≌ C') (e' : D ≌ D') : C ⋆ D ≌ C' ⋆ D' where
   inverse := mapPair e.inverse e'.inverse
   unitIso :=
     mapPairId.symm ≪≫
-    mapIsoWhiskerRight e.unitIso _ ≪≫
-    mapIsoWhiskerLeft _ e'.unitIso ≪≫
-    mapPairComp _ _ _ _
+      mapIsoWhiskerRight e.unitIso _ ≪≫
+      mapIsoWhiskerLeft _ e'.unitIso ≪≫
+      mapPairComp _ _ _ _
   counitIso :=
     (mapPairComp _ _ _ _).symm ≪≫
-    mapIsoWhiskerRight e.counitIso _ ≪≫
-    mapIsoWhiskerLeft _ e'.counitIso ≪≫
-    mapPairId
+      mapIsoWhiskerRight e.counitIso _ ≪≫
+      mapIsoWhiskerLeft _ e'.counitIso ≪≫
+      mapPairId
   functor_unitIso_comp x := by
     cases x <;>
     simp [← (inclLeft C' D').map_comp, ← (inclRight C' D').map_comp]
