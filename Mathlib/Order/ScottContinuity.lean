@@ -138,19 +138,25 @@ lemma ScottContinuous_prod_of_ScottContinuous {γ : Type*} [Preorder α] [Preord
   simp_all only [image, Prod.exists, exists_and_right, exists_eq_right, mem_setOf_eq, Prod.mk.eta,
     coe_setOf, Subtype.exists, exists_prop]
 
-
 /- TODO: Provide a `ScottContinuousOn` version -/
 /- TODO: Can we then deduce `ScottContinuousOn.sup₂` from this? -/
 /- `f` is Scott continuous on a product space if it is Scott continuous in each variable -/
--- aesop is slow
-set_option maxHeartbeats 4000000 in
--- aesop is slow
 lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} {D : Set (Set (α × β))} (hD : ∀ a b : (α × β), a ≤ b → {a, b} ∈ D)
     (h₁ : ∀ a, ScottContinuousOn ((fun d => Prod.snd '' d) '' D) (fun b => f (a,b)))
     (h₂ : ∀ b, ScottContinuousOn ((fun d => Prod.fst '' d) '' D) (fun a => f (a,b))) :
     ScottContinuousOn D f := fun d hX hd₁ hd₂ ⟨p1, p2⟩ hdp => by
-  rw [isLUB_congr ((monotone_prod_iff.mpr ⟨(fun a => (h₁ a).monotone _ (by aesop)),
+  have helper1 : ∀ b₁ b₂ : β , b₁ ≤ b₂ → {b₁, b₂} ∈ ((fun d => Prod.snd '' d) '' D) := by
+    intro b₁ b₂ hb
+    simp_all
+    obtain ⟨⟨a, b⟩,hq⟩ := hd₁
+    obtain e := hD a b₁ a b₂ (Preorder.le_refl a) hb
+    use {(a, b₁), (a, b₂)}
+    constructor
+    · exact e
+    · rw [image_insert_eq]
+      simp only [image_singleton]
+  rw [isLUB_congr ((monotone_prod_iff.mpr ⟨(fun a => (h₁ a).monotone _ (helper1)),
     (fun a => (h₂ a).monotone _ (by aesop))⟩).upperBounds_image_of_directedOn_prod hd₂),
     ← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion,
     ← isLUB_iUnion_iff_of_isLUB (fun a => by
