@@ -64,9 +64,6 @@ theorem eventually_eventually_nhdsWithin {a : α} {s : Set α} {p : α → Prop}
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 
-@[deprecated (since := "2024-10-04")]
-alias eventually_nhdsWithin_nhdsWithin := eventually_eventually_nhdsWithin
-
 @[simp]
 theorem eventually_mem_nhdsWithin_iff {x : α} {s t : Set α} :
     (∀ᶠ x' in 𝓝[s] x, t ∈ 𝓝[s] x') ↔ t ∈ 𝓝[s] x :=
@@ -79,8 +76,8 @@ theorem nhdsWithin_eq (a : α) (s : Set α) :
 @[simp] lemma nhdsWithin_univ (a : α) : 𝓝[Set.univ] a = 𝓝 a := by
   rw [nhdsWithin, principal_univ, inf_top_eq]
 
-theorem nhdsWithin_hasBasis {p : β → Prop} {s : β → Set α} {a : α} (h : (𝓝 a).HasBasis p s)
-    (t : Set α) : (𝓝[t] a).HasBasis p fun i => s i ∩ t :=
+theorem nhdsWithin_hasBasis {ι : Sort*} {p : ι → Prop} {s : ι → Set α} {a : α}
+    (h : (𝓝 a).HasBasis p s) (t : Set α) : (𝓝[t] a).HasBasis p fun i => s i ∩ t :=
   h.inf_principal t
 
 theorem nhdsWithin_basis_open (a : α) (t : Set α) :
@@ -231,9 +228,10 @@ theorem nhds_of_Ici_Iic [LinearOrder α] {b : α}
     (inter_mem hL self_mem_nhdsWithin) (inter_mem hR self_mem_nhdsWithin)
 
 theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
-    𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
-  Set.Finite.induction_on _ hI (by simp) fun _ _ hT ↦ by
-    simp only [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
+    𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a := by
+  induction I, hI using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ hT => simp only [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
 
 theorem nhdsWithin_sUnion {S : Set (Set α)} (hS : S.Finite) (a : α) :
     𝓝[⋃₀ S] a = ⨆ s ∈ S, 𝓝[s] a := by
@@ -719,9 +717,6 @@ theorem ContinuousWithinAt.mono_of_mem_nhdsWithin (h : ContinuousWithinAt f t x)
     ContinuousWithinAt f s x :=
   h.mono_left (nhdsWithin_le_of_mem hs)
 
-@[deprecated (since := "2024-10-18")]
-alias ContinuousWithinAt.mono_of_mem := ContinuousWithinAt.mono_of_mem_nhdsWithin
-
 /-- If two sets coincide around `x`, then being continuous within one or the other at `x` is
 equivalent. See also `continuousWithinAt_congr_set'` which requires that the sets coincide
 locally away from a point `y`, in a T1 space. -/
@@ -729,15 +724,9 @@ theorem continuousWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
   simp only [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEq.mpr h]
 
-@[deprecated (since := "2024-10-18")]
-alias continuousWithinAt_congr_nhds := continuousWithinAt_congr_set
-
 theorem ContinuousWithinAt.congr_set (hf : ContinuousWithinAt f s x) (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f t x :=
   (continuousWithinAt_congr_set h).1 hf
-
-@[deprecated (since := "2024-10-18")]
-alias ContinuousWithinAt.congr_nhds := ContinuousWithinAt.congr_set
 
 theorem continuousWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     ContinuousWithinAt f (s ∩ t) x ↔ ContinuousWithinAt f s x := by
@@ -765,9 +754,6 @@ theorem continuousWithinAt_insert_self :
   simp only [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton, true_and]
 
 protected alias ⟨_, ContinuousWithinAt.insert⟩ := continuousWithinAt_insert_self
-
-@[deprecated (since := "2024-10-10")]
-protected alias ContinuousWithinAt.insert_self := ContinuousWithinAt.insert
 
 /- `continuousWithinAt_insert` gives the same equivalence but at a point `y` possibly different
 from `x`. As this requires the space to be T1, and this property is not available in this file,
@@ -940,9 +926,6 @@ theorem ContinuousWithinAt.comp_inter {g : β → γ} {t : Set β}
     (hg : ContinuousWithinAt g t (f x)) (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (g ∘ f) (s ∩ f ⁻¹' t) x :=
   hg.comp (hf.mono inter_subset_left) inter_subset_right
-
-@[deprecated (since := "2024-10-10")]
-protected alias ContinuousWithinAt.comp' := ContinuousWithinAt.comp_inter
 
 theorem ContinuousWithinAt.comp_inter_of_eq {g : β → γ} {t : Set β} {y : β}
     (hg : ContinuousWithinAt g t y) (hf : ContinuousWithinAt f s x) (hy : f x = y) :
@@ -1334,9 +1317,6 @@ theorem Topology.IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf 
   rw [hf.isEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
   apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.isOpen_range
   rw [inter_assoc, inter_self]
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.map_nhdsWithin_preimage_eq := IsOpenEmbedding.map_nhdsWithin_preimage_eq
 
 theorem Topology.IsQuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h : IsQuotientMap f)
     {s : Set β} (hs : IsOpen s) : ContinuousOn g s ↔ ContinuousOn (g ∘ f) (f ⁻¹' s) := by

@@ -8,12 +8,12 @@ import Mathlib.Data.Matrix.ConjTranspose
 /-!
 # Row and column matrices
 
-This file provides results about row and column matrices
+This file provides results about row and column matrices.
 
 ## Main definitions
 
-* `Matrix.row r : Matrix Unit n α`: a matrix with a single row
-* `Matrix.col c : Matrix m Unit α`: a matrix with a single column
+* `Matrix.replicateRow ι r : Matrix ι n α`: the matrix where every row is the vector `r : n → α`
+* `Matrix.replicateCol ι c : Matrix m ι α`: the matrix where every column is the vector `c : m → α`
 * `Matrix.updateRow M i r`: update the `i`th row of `M` to `r`
 * `Matrix.updateCol M j c`: update the `j`th column of `M` to `c`
 
@@ -27,140 +27,199 @@ variable {R : Type*} {α : Type v} {β : Type w}
 namespace Matrix
 
 /--
-`Matrix.col ι u` the matrix with all columns equal to the vector `u`.
+`Matrix.replicateCol ι u` is the matrix with all columns equal to the vector `u`.
 
-To get a column matrix with exactly one column, `Matrix.col (Fin 1) u` is the canonical choice.
+To get a column matrix with exactly one column,
+`Matrix.replicateCol (Fin 1) u` is the canonical choice.
 -/
-def col (ι : Type*) (w : m → α) : Matrix m ι α :=
+def replicateCol (ι : Type*) (w : m → α) : Matrix m ι α :=
   of fun x _ => w x
 
--- TODO: set as an equation lemma for `col`, see https://github.com/leanprover-community/mathlib4/pull/3024
+-- TODO: set as an equation lemma for `replicateCol`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
-theorem col_apply {ι : Type*} (w : m → α) (i) (j : ι) : col ι w i j = w i :=
+theorem replicateCol_apply {ι : Type*} (w : m → α) (i) (j : ι) : replicateCol ι w i j = w i :=
   rfl
 
 /--
-`Matrix.row ι u` the matrix with all rows equal to the vector `u`.
+`Matrix.replicateRow ι u` is the matrix with all rows equal to the vector `u`.
 
-To get a row matrix with exactly one row, `Matrix.row (Fin 1) u` is the canonical choice.
+To get a row matrix with exactly one row, `Matrix.replicateRow (Fin 1) u` is the canonical choice.
 -/
-def row (ι : Type*) (v : n → α) : Matrix ι n α :=
+def replicateRow (ι : Type*) (v : n → α) : Matrix ι n α :=
   of fun _ y => v y
 
 variable {ι : Type*}
 
--- TODO: set as an equation lemma for `row`, see https://github.com/leanprover-community/mathlib4/pull/3024
+-- TODO: set as an equation lemma for `replicateRow`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
-theorem row_apply (v : n → α) (i : ι) (j) : row ι v i j = v j :=
+theorem replicateRow_apply (v : n → α) (i : ι) (j) : replicateRow ι v i j = v j :=
   rfl
 
-theorem col_injective [Nonempty ι] : Function.Injective (col ι : (m → α) → Matrix m ι α) := by
+theorem replicateCol_injective [Nonempty ι] :
+    Function.Injective (replicateCol ι : (m → α) → Matrix m ι α) := by
   inhabit ι
   exact fun _x _y h => funext fun i => congr_fun₂ h i default
 
-@[simp] theorem col_inj [Nonempty ι] {v w : m → α} : col ι v = col ι w ↔ v = w :=
-  col_injective.eq_iff
+@[deprecated (since := "2025-03-20")] alias col_injective := replicateCol_injective
 
-@[simp] theorem col_zero [Zero α] : col ι (0 : m → α) = 0 := rfl
+@[simp] theorem replicateCol_inj [Nonempty ι] {v w : m → α} :
+    replicateCol ι v = replicateCol ι w ↔ v = w :=
+  replicateCol_injective.eq_iff
 
-@[simp] theorem col_eq_zero [Zero α] [Nonempty ι] (v : m → α) : col ι v = 0 ↔ v = 0 := col_inj
+@[deprecated (since := "2025-03-20")] alias col_inj := replicateCol_inj
+
+@[simp] theorem replicateCol_zero [Zero α] : replicateCol ι (0 : m → α) = 0 := rfl
+
+@[deprecated (since := "2025-03-20")] alias col_zero := replicateCol_zero
+
+@[simp] theorem replicateCol_eq_zero [Zero α] [Nonempty ι] (v : m → α) :
+    replicateCol ι v = 0 ↔ v = 0 :=
+  replicateCol_inj
+
+@[deprecated (since := "2025-03-20")] alias col_eq_zero := replicateCol_eq_zero
 
 @[simp]
-theorem col_add [Add α] (v w : m → α) : col ι (v + w) = col ι v + col ι w := by
+theorem replicateCol_add [Add α] (v w : m → α) :
+    replicateCol ι (v + w) = replicateCol ι v + replicateCol ι w := by
   ext
   rfl
 
+@[deprecated (since := "2025-03-20")] alias col_add := replicateCol_add
+
 @[simp]
-theorem col_smul [SMul R α] (x : R) (v : m → α) : col ι (x • v) = x • col ι v := by
+theorem replicateCol_smul [SMul R α] (x : R) (v : m → α) :
+    replicateCol ι (x • v) = x • replicateCol ι v := by
   ext
   rfl
 
-theorem row_injective [Nonempty ι] : Function.Injective (row ι : (n → α) → Matrix ι n α) := by
+@[deprecated (since := "2025-03-20")] alias col_smul := replicateCol_smul
+
+theorem replicateRow_injective [Nonempty ι] :
+    Function.Injective (replicateRow ι : (n → α) → Matrix ι n α) := by
   inhabit ι
   exact fun _x _y h => funext fun j => congr_fun₂ h default j
 
-@[simp] theorem row_inj [Nonempty ι] {v w : n → α} : row ι v = row ι w ↔ v = w :=
-  row_injective.eq_iff
+@[deprecated (since := "2025-03-20")] alias row_injective := replicateRow_injective
 
-@[simp] theorem row_zero [Zero α] : row ι (0 : n → α) = 0 := rfl
+@[simp] theorem replicateRow_inj [Nonempty ι] {v w : n → α} :
+    replicateRow ι v = replicateRow ι w ↔ v = w :=
+  replicateRow_injective.eq_iff
 
-@[simp] theorem row_eq_zero [Zero α] [Nonempty ι] (v : n → α) : row ι v = 0 ↔ v = 0 := row_inj
+@[simp] theorem replicateRow_zero [Zero α] : replicateRow ι (0 : n → α) = 0 := rfl
 
-@[simp]
-theorem row_add [Add α] (v w : m → α) : row ι (v + w) = row ι v + row ι w := by
-  ext
-  rfl
+@[deprecated (since := "2025-03-20")] alias row_zero := replicateRow_zero
 
-@[simp]
-theorem row_smul [SMul R α] (x : R) (v : m → α) : row ι (x • v) = x • row ι v := by
-  ext
-  rfl
+@[simp] theorem replicateRow_eq_zero [Zero α] [Nonempty ι] (v : n → α) :
+    replicateRow ι v = 0 ↔ v = 0 :=
+  replicateRow_inj
 
-@[simp]
-theorem transpose_col (v : m → α) : (Matrix.col ι v)ᵀ = Matrix.row ι v := by
-  ext
-  rfl
+@[deprecated (since := "2025-03-20")] alias row_eq_zero := replicateRow_eq_zero
 
 @[simp]
-theorem transpose_row (v : m → α) : (Matrix.row ι v)ᵀ = Matrix.col ι v := by
+theorem replicateRow_add [Add α] (v w : m → α) :
+    replicateRow ι (v + w) = replicateRow ι v + replicateRow ι w := by
   ext
   rfl
+
+@[deprecated (since := "2025-03-20")] alias row_add := replicateRow_add
 
 @[simp]
-theorem conjTranspose_col [Star α] (v : m → α) : (col ι v)ᴴ = row ι (star v) := by
+theorem replicateRow_smul [SMul R α] (x : R) (v : m → α) :
+    replicateRow ι (x • v) = x • replicateRow ι v := by
   ext
   rfl
+
+@[deprecated (since := "2025-03-20")] alias row_smul := replicateRow_smul
 
 @[simp]
-theorem conjTranspose_row [Star α] (v : m → α) : (row ι v)ᴴ = col ι (star v) := by
+theorem transpose_replicateCol (v : m → α) : (replicateCol ι v)ᵀ = replicateRow ι v := by
   ext
-  rfl
-
-theorem row_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : m → α) :
-    Matrix.row ι (v ᵥ* M) = Matrix.row ι v * M := by
-  ext
-  rfl
-
-theorem col_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : m → α) :
-    Matrix.col ι (v ᵥ* M) = (Matrix.row ι v * M)ᵀ := by
-  ext
-  rfl
-
-theorem col_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
-    Matrix.col ι (M *ᵥ v) = M * Matrix.col ι v := by
-  ext
-  rfl
-
-theorem row_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
-    Matrix.row ι (M *ᵥ v) = (M * Matrix.col ι v)ᵀ := by
-  ext
-  rfl
-
-theorem row_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
-    Matrix.row ι v *ᵥ w = Function.const _ (v ⬝ᵥ w) := rfl
-
-theorem mulVec_col_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
-    v ᵥ* Matrix.col ι w = Function.const _ (v ⬝ᵥ w) := rfl
-
-theorem row_mul_col [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
-    row ι v * col ι w = of fun _ _ => v ⬝ᵥ w :=
   rfl
 
 @[simp]
-theorem row_mul_col_apply [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) (i j) :
-    (row ι v * col ι w) i j = v ⬝ᵥ w :=
+theorem transpose_replicateRow (v : m → α) : (replicateRow ι v)ᵀ = replicateCol ι v := by
+  ext
   rfl
 
 @[simp]
-theorem diag_col_mul_row [Mul α] [AddCommMonoid α] [Unique ι] (a b : n → α) :
-    diag (col ι a * row ι b) = a * b := by
+theorem conjTranspose_replicateCol [Star α] (v : m → α) :
+    (replicateCol ι v)ᴴ = replicateRow ι (star v) := by
   ext
-  simp [Matrix.mul_apply, col, row]
+  rfl
+
+@[deprecated (since := "2025-03-20")] alias conjTranspose_col := conjTranspose_replicateCol
+
+@[simp]
+theorem conjTranspose_replicateRow [Star α] (v : m → α) :
+    (replicateRow ι v)ᴴ = replicateCol ι (star v) := by
+  ext
+  rfl
+
+@[deprecated (since := "2025-03-20")] alias conjTranspose_row := conjTranspose_replicateRow
+
+theorem replicateRow_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α)
+    (v : m → α) : replicateRow ι (v ᵥ* M) = replicateRow ι v * M := by
+  ext
+  rfl
+
+@[deprecated (since := "2025-03-20")] alias row_vecMul := replicateRow_vecMul
+
+theorem replicateCol_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α)
+    (v : m → α) : replicateCol ι (v ᵥ* M) = (replicateRow ι v * M)ᵀ := by
+  ext
+  rfl
+
+@[deprecated (since := "2025-03-20")] alias col_vecMul := replicateCol_vecMul
+
+theorem replicateCol_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α)
+    (v : n → α) : replicateCol ι (M *ᵥ v) = M * replicateCol ι v := by
+  ext
+  rfl
+
+@[deprecated (since := "2025-03-20")] alias col_mulVec := replicateCol_mulVec
+
+theorem replicateRow_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α)
+    (v : n → α) : replicateRow ι (M *ᵥ v) = (M * replicateCol ι v)ᵀ := by
+  ext
+  rfl
+
+@[deprecated (since := "2025-03-20")] alias row_mulVec := replicateRow_mulVec
+
+theorem replicateRow_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
+    replicateRow ι v *ᵥ w = Function.const _ (v ⬝ᵥ w) := rfl
+
+@[deprecated (since := "2025-03-20")] alias row_mulVec_eq_const := replicateRow_mulVec_eq_const
+
+theorem mulVec_replicateCol_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
+    v ᵥ* replicateCol ι w = Function.const _ (v ⬝ᵥ w) := rfl
+
+@[deprecated (since := "2025-03-20")] alias mulVec_col_eq_const := mulVec_replicateCol_eq_const
+
+theorem replicateRow_mul_replicateCol [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
+    replicateRow ι v * replicateCol ι w = of fun _ _ => v ⬝ᵥ w :=
+  rfl
+
+@[deprecated (since := "2025-03-20")] alias row_mul_col := replicateRow_mul_replicateCol
+
+@[simp]
+theorem replicateRow_mul_replicateCol_apply [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α)
+    (i j) : (replicateRow ι v * replicateCol ι w) i j = v ⬝ᵥ w :=
+  rfl
+
+@[deprecated (since := "2025-03-20")] alias row_mul_col_apply := replicateRow_mul_replicateCol_apply
+
+@[simp]
+theorem diag_replicateCol_mul_replicateRow [Mul α] [AddCommMonoid α] [Unique ι] (a b : n → α) :
+    diag (replicateCol ι a * replicateRow ι b) = a * b := by
+  ext
+  simp [Matrix.mul_apply, replicateCol, replicateRow]
+
+@[deprecated (since := "2025-03-20")] alias diag_col_mul_row := diag_replicateCol_mul_replicateRow
 
 variable (ι)
 
 theorem vecMulVec_eq [Mul α] [AddCommMonoid α] [Unique ι] (w : m → α) (v : n → α) :
-    vecMulVec w v = col ι w * row ι v := by
+    vecMulVec w v = replicateCol ι w * replicateRow ι v := by
   ext
   simp [vecMulVec, mul_apply]
 
@@ -215,7 +274,7 @@ theorem updateCol_apply [DecidableEq n] {j' : n} :
 
 @[simp]
 theorem updateCol_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : m → R) :
-    A.updateCol i b = (col (Fin 1) b).submatrix id (Function.const n 0) := by
+    A.updateCol i b = (replicateCol (Fin 1) b).submatrix id (Function.const n 0) := by
   ext x y
   simp [updateCol_apply, Subsingleton.elim i y]
 
@@ -223,7 +282,7 @@ theorem updateCol_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : 
 
 @[simp]
 theorem updateRow_subsingleton [Subsingleton m] (A : Matrix m n R) (i : m) (b : n → R) :
-    A.updateRow i b = (row (Fin 1) b).submatrix (Function.const m 0) id := by
+    A.updateRow i b = (replicateRow (Fin 1) b).submatrix (Function.const m 0) id := by
   ext x y
   simp [updateCol_apply, Subsingleton.elim i x]
 

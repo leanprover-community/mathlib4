@@ -117,7 +117,7 @@ noncomputable def groupSeminorm : GroupSeminorm (M ⧸ S) where
     rintro ⟨a, rfl⟩ ⟨b, rfl⟩
     refine ciInf_le_of_le ⟨0, forall_mem_range.2 fun _ ↦ dist_nonneg⟩ ⟨a * b, rfl⟩ ?_
     simpa using norm_mul_le' _ _
-  inv' x := eq_of_forall_le_iff fun r ↦  by
+  inv' x := eq_of_forall_le_iff fun r ↦ by
     simp only [le_infDist (norm_aux _)]
     exact (Equiv.inv _).forall_congr (by simp [← inv_eq_iff_eq_inv])
 

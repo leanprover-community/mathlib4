@@ -59,7 +59,7 @@ end Semiring
 
 section OrderedSemiring
 
-variable [OrderedSemiring R] [Fintype n]
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [Fintype n]
 
 lemma dotProduct_nonneg_of_nonneg {v w : n → R} (hv : 0 ≤ v) (hw : 0 ≤ w) : 0 ≤ dotProduct v w :=
   Finset.sum_nonneg (fun i _ => mul_nonneg (hv i) (hw i))
@@ -90,7 +90,8 @@ section Self
 variable [Fintype m] [Fintype n] [Fintype p]
 
 @[simp]
-theorem dotProduct_self_eq_zero [LinearOrderedRing R] {v : n → R} : dotProduct v v = 0 ↔ v = 0 :=
+theorem dotProduct_self_eq_zero [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {v : n → R} :
+    dotProduct v v = 0 ↔ v = 0 :=
   (Finset.sum_eq_zero_iff_of_nonneg fun i _ => mul_self_nonneg (v i)).trans <| by
     simp [funext_iff]
 
@@ -173,8 +174,8 @@ lemma mul_conjTranspose_mul_self_eq_zero {p} (A : Matrix m n R) (B : Matrix p n 
 
 lemma conjTranspose_mul_self_mulVec_eq_zero (A : Matrix m n R) (v : n → R) :
     (Aᴴ * A) *ᵥ v = 0 ↔ A *ᵥ v = 0 := by
-  simpa only [← Matrix.col_mulVec, col_eq_zero] using
-    conjTranspose_mul_self_mul_eq_zero A (col (Fin 1) v)
+  simpa only [← Matrix.replicateCol_mulVec, replicateCol_eq_zero] using
+    conjTranspose_mul_self_mul_eq_zero A (replicateCol (Fin 1) v)
 
 lemma self_mul_conjTranspose_mulVec_eq_zero (A : Matrix m n R) (v : m → R) :
     (A * Aᴴ) *ᵥ v = 0 ↔ Aᴴ *ᵥ v = 0 := by
@@ -182,8 +183,8 @@ lemma self_mul_conjTranspose_mulVec_eq_zero (A : Matrix m n R) (v : m → R) :
 
 lemma vecMul_conjTranspose_mul_self_eq_zero (A : Matrix m n R) (v : n → R) :
     v ᵥ* (Aᴴ * A) = 0 ↔ v ᵥ* Aᴴ = 0 := by
-  simpa only [← Matrix.row_vecMul, row_eq_zero] using
-    mul_conjTranspose_mul_self_eq_zero A (row (Fin 1) v)
+  simpa only [← Matrix.replicateRow_vecMul, replicateRow_eq_zero] using
+    mul_conjTranspose_mul_self_eq_zero A (replicateRow (Fin 1) v)
 
 lemma vecMul_self_mul_conjTranspose_eq_zero (A : Matrix m n R) (v : m → R) :
     v ᵥ* (A * Aᴴ) = 0 ↔ v ᵥ* A = 0 := by
