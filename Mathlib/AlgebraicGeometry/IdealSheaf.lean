@@ -1302,7 +1302,6 @@ lemma inclusion_comp {I J K : IdealSheafData X} (h₁ : I ≤ J) (h₂ : J ≤ K
     inclusion h₂ ≫ inclusion h₁ = inclusion (h₁.trans h₂) :=
   K.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
 
-attribute [-ext] Scheme.Hom.ext in
 /-- The functor taking an ideal sheaf to its associated subscheme. -/
 @[simps]
 noncomputable
