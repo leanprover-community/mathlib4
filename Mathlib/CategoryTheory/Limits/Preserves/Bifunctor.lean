@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier, Joël Riou
 -/
+import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Preservations of limits for bifunctors
@@ -14,6 +16,10 @@ the hypothesis that the curried functor `F : C₁ × C₂ ⥤ C` preserves limit
 `K₁ × K₂ : J₁ × J₂ ⥤ C₁ × C₂`. We give a basic API to extract isomorphisms
 $\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)$
 out of this typeclass.
+
+We show (see `CategoryTheory.Limits.PreservesColimit₂.of_preservesColimits_in_each_variable`)
+that if `C` has enough (co)limits, and that `G` preserves them, in each variable, then `G`
+`PreservesColimit₂`.
 
 -/
 namespace CategoryTheory
@@ -100,6 +106,8 @@ instance [HasLimit K₁] [HasLimit K₂] [PreservesLimit₂ K₁ K₂ G] :
 
 namespace PreservesColimit₂
 
+section
+
 variable [PreservesColimit₂ K₁ K₂ G]
 
 variable {K₁ K₂} in
@@ -165,9 +173,63 @@ lemma map_ι_comp_isoColimitUncurryWhiskeringLeft₂_inv (j : J₁ × J₂) :
   rw [← Category.assoc, Iso.comp_inv_eq]
   simp
 
+end
+
+/-- If a bifunctor preserves separately colimits of `K₁` in the first variable and colimits
+of `K₂` in the second variable, then it preserves colimit of the pair `K₁, K₂`. -/
+instance of_preservesColimits_in_each_variable [HasColimitsOfShape J₁ C]
+    [h₀ : PreservesColimit K₁ G] [∀ x : C₁, PreservesColimit K₂ (G.obj x)] :
+    PreservesColimit₂ K₁ K₂ G where
+  isColimit_mapCocone₂ {c₁} hc₁ {c₂} hc₂ :=
+    letI : PreservesColimit K₁ (G.flip.obj c₂.pt) :=
+      { preserves {c₁'} hc₁' :=
+          ⟨PreservesColimit.preserves (F := evaluation _ _|>.obj c₂.pt)
+            (h₀.preserves hc₁').some |>.some⟩ }
+    let Q₀ : DiagramOfCocones (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
+      { obj j₁ := G.obj (K₁.obj j₁) |>.mapCocone c₂
+        map f := { hom := G.map (K₁.map f)|>.app c₂.pt }}
+    let P : ∀ j₁, IsColimit (Q₀.obj j₁) := fun j ↦ (PreservesColimit.preserves hc₂).some
+    let E₀ : Q₀.coconePoints ≅ K₁ ⋙ G.flip.obj c₂.pt := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+    let E₁ : (Cocones.precompose E₀.hom).obj (coconeOfCoconeUncurry P <| G.mapCocone₂ c₁ c₂) ≅
+        (G.flip.obj c₂.pt).mapCocone c₁ :=
+      Cocones.ext
+        (Iso.refl _)
+        (fun j₁ => by
+          dsimp [E₀, Q₀]
+          simp only [id_comp, comp_id, E₀, Q₀]
+          let s : Cocone (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G |>.obj j₁) := ?_
+          change (P j₁).desc s = _
+          symm
+          apply (P j₁).hom_ext
+          intro j₂
+          haveI := (P j₁).fac s j₂
+          simp only [NatTrans.id_app, NatTrans.comp_app, Functor.mapCocone_pt,
+            Functor.const_obj_obj, Functor.mapCocone_ι_app, Q₀, E₀, s] at this
+          simp only [NatTrans.id_app, NatTrans.comp_app, Functor.mapCocone_pt,
+            Functor.const_obj_obj, Functor.mapCocone_ι_app, NatTrans.naturality, this, Q₀, s, E₀])
+    ⟨IsColimit.ofCoconeUncurry P <| IsColimit.precomposeHomEquiv E₀ _ <|
+      IsColimit.ofIsoColimit (PreservesColimit.preserves hc₁).some E₁.symm⟩
+
+theorem of_preservesColimit₂_flip [PreservesColimit₂ K₁ K₂ G] : PreservesColimit₂ K₂ K₁ G.flip where
+  isColimit_mapCocone₂ {c₁} hc₁ {c₂} hc₂ := by
+    constructor
+    let E₀ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅
+        uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G).flip :=
+      Iso.refl _
+    let E₁ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅
+        Prod.swap _ _ ⋙ uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
+      E₀ ≪≫ uncurryObjFlip _
+    refine IsColimit.precomposeInvEquiv E₁ _ ?_
+    apply IsColimit.ofWhiskerEquivalence (e := Prod.braiding _ _)
+    refine IsColimit.equivOfNatIsoOfIso (Iso.refl _) (G.mapCocone₂ c₂ c₁) _ ?_ |>.toFun
+      (PreservesColimit₂.isColimit_mapCocone₂ hc₂ hc₁).some
+    refine Cocones.ext (Iso.refl _) (fun ⟨j₁, j₂⟩ ↦ by simp [E₁, E₀])
+
 end PreservesColimit₂
 
 namespace PreservesLimit₂
+
+section
 
 variable [PreservesLimit₂ K₁ K₂ G]
 
@@ -233,6 +295,58 @@ lemma map_π_comp_isoLimitUncurryWhiskeringLeft₂_inv (j : J₁ × J₂) :
     limit.π (uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)) j := by
   rw [Eq.comm, ← Iso.inv_comp_eq]
   simp
+
+end
+
+/-- If a bifunctor preserves separately limits of `K₁` in the first variable and limits
+of `K₂` in the second variable, then it preserves colimit of the pair of cones `K₁, K₂`. -/
+instance of_preservesLimits_in_each_variable [HasLimitsOfShape J₁ C]
+    [h₀ : PreservesLimit K₁ G] [∀ x : C₁, PreservesLimit K₂ (G.obj x)] :
+    PreservesLimit₂ K₁ K₂ G where
+  isLimit_mapCone₂ {c₁} hc₁ {c₂} hc₂ :=
+    letI : PreservesLimit K₁ (G.flip.obj c₂.pt) :=
+      { preserves {c₁'} hc₁' :=
+          ⟨PreservesLimit.preserves (F := evaluation _ _|>.obj c₂.pt)
+            (h₀.preserves hc₁').some |>.some⟩ }
+    let Q₀ : DiagramOfCones (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
+      { obj j₁ := G.obj (K₁.obj j₁) |>.mapCone c₂
+        map f := { hom := G.map (K₁.map f)|>.app c₂.pt }}
+    let P : ∀ j₁, IsLimit (Q₀.obj j₁) := fun _ => (PreservesLimit.preserves hc₂).some
+    let E₀ : Q₀.conePoints ≅ K₁ ⋙ G.flip.obj c₂.pt := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+    let E₁ : (Cones.postcompose E₀.hom).obj (coneOfConeUncurry P <| G.mapCone₂ c₁ c₂) ≅
+        (G.flip.obj c₂.pt).mapCone c₁ :=
+      Cones.ext
+        (Iso.refl _)
+        (fun j₁ => by
+          dsimp [E₀, Q₀]
+          simp only [id_comp, comp_id, E₀, Q₀]
+          let s : Cone (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G |>.obj j₁) := ?_
+          change (P j₁).lift s = _
+          symm
+          apply (P j₁).hom_ext
+          intro j₂
+          haveI := (P j₁).fac s j₂
+          simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, NatTrans.id_app, NatTrans.comp_app,
+            Functor.mapCone_pt, Functor.mapCone_π_app, s, Q₀, E₀] at this
+          simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, NatTrans.id_app, NatTrans.comp_app,
+            Functor.mapCone_pt, Functor.mapCone_π_app, this, Q₀, s, E₀])
+    ⟨IsLimit.ofConeOfConeUncurry P <| IsLimit.postcomposeHomEquiv E₀ _ <|
+      IsLimit.ofIsoLimit (PreservesLimit.preserves hc₁).some E₁.symm⟩
+
+theorem of_preservesLimit₂_flip [PreservesLimit₂ K₁ K₂ G] : PreservesLimit₂ K₂ K₁ G.flip where
+  isLimit_mapCone₂ {c₁} hc₁ {c₂} hc₂ := by
+    constructor
+    let E₀ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅
+        uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G).flip :=
+      Iso.refl _
+    let E₁ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅
+        Prod.swap _ _ ⋙ uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
+      E₀ ≪≫ uncurryObjFlip _
+    refine IsLimit.postcomposeHomEquiv E₁ _ ?_
+    apply IsLimit.ofWhiskerEquivalence (e := Prod.braiding _ _)
+    refine IsLimit.equivOfNatIsoOfIso (Iso.refl _) (G.mapCone₂ c₂ c₁) _ ?_ |>.toFun
+      (PreservesLimit₂.isLimit_mapCone₂ hc₂ hc₁).some
+    refine Cones.ext (Iso.refl _) (fun ⟨j₁, j₂⟩ ↦ by simp [E₁, E₀])
 
 end PreservesLimit₂
 
