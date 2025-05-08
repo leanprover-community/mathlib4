@@ -59,7 +59,7 @@ theorem shortExact_kernel_of_epi {X Y : C} (e : X ⟶ Y) [he : Epi e] :
   mono_f := equalizer.ι_mono
   epi_g := he
 
-instance projective_of_hasProjectiveDimensionLT_one [HasProjectiveDimensionLT P 1] :
+instance Projective.of_hasProjectiveDimensionLT_one [HasProjectiveDimensionLT P 1] :
     Projective P where
   factors {E X} f e he := by
     let S := ShortComplex.mk (kernel.ι e) e (kernel.condition e)
@@ -96,7 +96,7 @@ end CategoryTheory
 
 section hom
 
-open Module Free Pointwise
+open Module
 
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
   (I : Ideal R)
@@ -113,7 +113,7 @@ variable [Module.Finite R M] [Free R M] (f : M →ₗ[R] N)
 
 theorem mem_smul_top_of_range_le_smul_top (hf : LinearMap.range f ≤ I • ⊤) :
     f ∈ I • (⊤ : Submodule R (M →ₗ[R] N)) := by
-  let e : Basis _ R M := chooseBasis R M
+  let e : Basis _ R M := Free.chooseBasis R M
   have hx : f = (e.constr R).toLinearMap (fun i ↦ f (e i)) := by
     apply e.ext
     simp
@@ -125,22 +125,15 @@ end hom
 
 universe v u
 
-#check Module.free_of_flat_of_isLocalRing
-
 #check Module.Finite.finite_basis
 
-open IsLocalRing
-open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
+open IsLocalRing RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
 
-lemma free_of_projective_of_isLocalRing [IsLocalRing R] (M : ModuleCat.{v} R) [Module.Finite R M]
-    [proj : Projective M]: Module.Free R M := by
-  have : Module.Projective R M := by
-    --need fix for `IsProjective.iff_projective`
-    sorry
-  #check IsProjective.iff_projective
-  exact Module.free_of_flat_of_isLocalRing
+lemma ModuleCat.free_of_projective_of_isLocalRing [IsLocalRing R] (M : ModuleCat.{v} R)
+    [Module.Finite R M] [Projective M] : Module.Free R M :=
+  Module.free_of_flat_of_isLocalRing
 
 local instance : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
@@ -337,8 +330,8 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     have := ModuleCat.projective_of_free B.2
     infer_instance
   have ker_free : Module.Free R (LinearMap.ker f) := by
-    apply @free_of_projective_of_isLocalRing _ _ _ _ (ModuleCat.of R (LinearMap.ker f)) _ ?_
-    apply @projective_of_hasProjectiveDimensionLT_one _ _ _ _ _ ?_
+    apply @(ModuleCat.of R (LinearMap.ker f)).free_of_projective_of_isLocalRing _ _ _ _ _ ?_
+    apply @Projective.of_hasProjectiveDimensionLT_one _ _ _ _ _ ?_
     have proj : Projective (ModuleCat.of.{v} R (ι →₀ Shrink.{v, u} R)) := by
       rcases free with ⟨⟨B⟩⟩
       exact ModuleCat.projective_of_free B.2
@@ -449,7 +442,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
     · simp only [CharP.cast_eq_zero, IsLocalRing.depth, Ideal.depth, moduleDepth, zero_add]
       have pdz: HasProjectiveDimensionLE M (Nat.find hfinprojdim) := Nat.find_spec hfinprojdim
       simp only [HasProjectiveDimensionLE, h, zero_add] at pdz
-      have : Module.Free R M := free_of_projective_of_isLocalRing M
+      have : Module.Free R M := M.free_of_projective_of_isLocalRing
       congr! 5
       apply finte_free_ext_vanish_iff
     · by_cases eq0 : n = 0
