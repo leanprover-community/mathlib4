@@ -4,9 +4,10 @@ import zulip
 import re
 
 # Usage:
-# python scripts/zulip_emoji_merge_delegate.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $ACTION $LABEL_NAME $PR_NUMBER
-# The first three variables identify the lean4 Zulip chat and allow the bot to access it (see .github/workflows/zulip_emoji_merge_delegate.yaml),
-# and the comment below for $ACTION and $LABEL_NAME.
+# python scripts/zulip_emoji_reactions.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $ACTION $LABEL_NAME $PR_NUMBER
+# The first three variables identify the lean4 Zulip chat and allow the bot to access it
+# (see .github/workflows/zulip_emoji_merge_delegate.yaml),
+# see the comment below for a description of $ACTION and $LABEL_NAME.
 
 ZULIP_API_KEY = sys.argv[1]
 ZULIP_EMAIL = sys.argv[2]
