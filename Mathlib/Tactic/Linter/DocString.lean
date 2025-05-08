@@ -33,6 +33,10 @@ def getDeclModifiers : Syntax → Array Syntax
     (if kind == ``Parser.Command.declModifiers then #[s] else #[]) ++ args.flatMap getDeclModifiers
   | _ => #[]
 
+def deindentString (startColumn : Nat) (docString : String) : String :=
+  let indent : String := ⟨'\n' :: List.replicate startColumn ' '⟩
+  docString.replace indent " "
+
 namespace Style
 
 @[inherit_doc Mathlib.Linter.linter.style.docString]
@@ -41,24 +45,32 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
+  let fm ← getFileMap
   for declMods in getDeclModifiers stx do
     -- `docStx` extracts the `Lean.Parser.Command.docComment` node from the declaration modifiers.
     -- In particular, this ignores parsing `#adaptation_note`s.
     let docStx := declMods[0][0]
-    if docStx.isMissing then return
+
+    let some pos := docStx.getPos? | continue
+    let startColumn := fm.toPosition pos |>.column
+
+    if docStx.isMissing then continue -- this is probably superfluous, thanks to `some pos` above.
     -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
     -- any leading whitespace before the actual string starts.
-    let docString ← try getDocStringText ⟨docStx⟩ catch _ => return
+    let docString ← try getDocStringText ⟨docStx⟩ catch _ => continue
     -- `startSubstring` is the whitespace between `/--` and the actual doc-string text.
     let startSubstring := match docStx with
       | .node _ _ #[(.atom si ..), _] => si.getTrailing?.getD default
       | _ => default
-    let start := startSubstring.toString
+    let start := deindentString startColumn startSubstring.toString
     if !#["\n", " "].contains start then
       let startRange := {start := startSubstring.startPos, stop := startSubstring.stopPos}
       Linter.logLint linter.style.docString (.ofRange startRange)
         s!"error: doc-strings should start with a single space or newline"
-    let docTrim := docString.trimRight
+
+    let deIndentedDocString := deindentString startColumn docString
+
+    let docTrim := deIndentedDocString.trimRight
     let tail := docTrim.length
     -- `endRange` creates an 0-wide range `n` characters from the end of `docStx`
     let endRange (n : Nat) : Syntax := .ofRange
@@ -66,7 +78,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     if docTrim.takeRight 1 == "," then
       Linter.logLint linter.style.docString (endRange (docString.length - tail + 3))
         s!"error: doc-strings should not end with a comma"
-    if tail + 1 != docString.length then
+    if tail + 1 != deIndentedDocString.length then
       Linter.logLint linter.style.docString (endRange 3)
         s!"error: doc-strings should end with a single space or newline"
 
