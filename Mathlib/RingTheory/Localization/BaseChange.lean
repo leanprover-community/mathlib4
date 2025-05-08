@@ -208,6 +208,12 @@ instance IsLocalization.tensor (M : Submonoid R) [IsLocalization M A] :
   rw [Algebra.isLocalization_iff_isPushout _ A]
   infer_instance
 
+attribute [local instance] Algebra.TensorProduct.rightAlgebra
+instance IsLocalization.tensorRight (M : Submonoid R) [IsLocalization M A] :
+    IsLocalization (Algebra.algebraMapSubmonoid S M) (A ⊗[R] S) := by
+  rw [Algebra.isLocalization_iff_isPushout _ A]
+  infer_instance
+
 open Algebra.TensorProduct in
 lemma IsLocalization.tmul_mk' (M : Submonoid R) [IsLocalization M A] (s : S) (x : R) (y : M) :
     s ⊗ₜ IsLocalization.mk' A x y =
@@ -218,14 +224,19 @@ lemma IsLocalization.tmul_mk' (M : Submonoid R) [IsLocalization M A] (s : S) (x 
     IsLocalization.mk'_spec', algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply,
     ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
 
+open Algebra.TensorProduct in
+lemma IsLocalization.mk'_tmul (M : Submonoid R) [IsLocalization M A] (s : S) (x : R) (y : M) :
+    IsLocalization.mk' A x y ⊗ₜ s =
+      IsLocalization.mk' (A ⊗[R] S) (algebraMap R S x * s)
+        ⟨algebraMap R S y.1, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
+  simp [IsLocalization.eq_mk'_iff_mul_eq, map_mul, ← IsScalarTower.algebraMap_apply,
+    RingHom.algebraMap_toAlgebra]
+
 namespace IsLocalization.Away
 
 instance tensor [IsLocalization.Away r A] :
     IsLocalization.Away (algebraMap R S r) (S ⊗[R] A) := by
-  simp only [IsLocalization.Away]
-  have : Submonoid.powers (algebraMap R S r) = Algebra.algebraMapSubmonoid S (.powers r) := by
-    simp [Algebra.algebraMapSubmonoid]
-  rw [this]
+  simp only [IsLocalization.Away, ← Algebra.algebraMapSubmonoid_powers]
   infer_instance
 
 variable (S) in
@@ -238,10 +249,7 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
 instance tensorRight [IsLocalization.Away r A] :
     IsLocalization.Away (algebraMap R S r) (A ⊗[R] S) := by
-  simp only [IsLocalization.Away]
-  have : Submonoid.powers (algebraMap R S r) = Algebra.algebraMapSubmonoid S (.powers r) := by
-    simp [Algebra.algebraMapSubmonoid]
-  rw [this, Algebra.isLocalization_iff_isPushout _ A]
+  simp only [IsLocalization.Away, ← Algebra.algebraMapSubmonoid_powers]
   infer_instance
 
 variable (S) in
