@@ -649,11 +649,6 @@ theorem restrict_prod_eq_prod_univ (s : Set α) :
   have : ν = ν.restrict Set.univ := Measure.restrict_univ.symm
   rw [this, Measure.prod_restrict, ← this]
 
-theorem restrict_prod_eq_univ_prod (t : Set β) :
-    μ.prod (ν.restrict t) = (μ.prod ν).restrict (Set.univ ×ˢ t) := by
-  have : μ = μ.restrict Set.univ := Measure.restrict_univ.symm
-  rw [this, Measure.prod_restrict, ← this]
-
 theorem prod_dirac (y : β) : μ.prod (dirac y) = map (fun x => (x, y)) μ := by
   classical
   rw [← sum_sfiniteSeq μ, prod_sum_left, map_sum measurable_prodMk_right.aemeasurable]

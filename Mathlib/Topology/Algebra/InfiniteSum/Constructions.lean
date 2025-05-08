@@ -266,17 +266,6 @@ lemma HasProd.tprod_fiberwise [T2Space α] {f : β → α} {a : α} (hf : HasPro
   (((Equiv.sigmaFiberEquiv g).hasProd_iff).mpr hf).sigma <|
     fun _ ↦ ((hf.multipliable.subtype _).hasProd_iff).mpr rfl
 
-@[to_additive]
-theorem tprod_card_pow_eq_tprod [T2Space α] {u : β → γ} (hu : ∀ n, {k | u k = n}.Finite)
-    (f : γ → α) (hf : Multipliable (fun n ↦ f (u n))) :
-    ∏' n, f n ^ Nat.card {k | u k = n} = ∏' n, f (u n) := by
-  apply HasProd.tprod_eq
-  convert (HasProd.tprod_fiberwise hf.hasProd u) with n
-  have : Fintype {k | u k = n} := (hu n).fintype
-  rw [← Equiv.tprod_eq (Equiv.setCongr (by rfl :{k | u k = n} = u ⁻¹' {n})), tprod_fintype,
-    Finset.prod_congr rfl (fun x _ ↦ by rw [Equiv.setCongr_apply, x.prop]), Finset.prod_const,
-    Nat.card_eq_fintype_card, Finset.card_univ]
-
 section CompleteT0Space
 
 variable [T0Space α]

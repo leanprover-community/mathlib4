@@ -10,7 +10,6 @@ import Mathlib.NumberTheory.AbelSummation
 import Mathlib.NumberTheory.LSeries.Basic
 
 /-!
-
 # Partial sums of coefficients of L-series
 
 We prove several results involving partial sums of coefficients (or norm of coefficients) of

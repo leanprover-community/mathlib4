@@ -130,7 +130,7 @@ theorem logMap_prod {ι : Type*} {s : Finset ι} {x : ι → mixedSpace K}
   classical
   induction s using Finset.induction with
   | empty => simp
-  | insert hi h_ind =>
+  | insert _ _ hi h_ind =>
       rw [Finset.prod_insert hi, logMap_mul (hx _) h, Finset.sum_insert hi, h_ind]
 
 theorem logMap_apply_of_norm_one (hx : mixedEmbedding.norm x = 1)

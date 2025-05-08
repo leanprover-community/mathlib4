@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Xavier Roblot. All rights reserved.
+Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
@@ -15,9 +15,9 @@ variable (K : Type*) [Field K] [NumberField K]
 
 noncomputable section
 
-namespace NumberField
-
 open Filter Ideal NumberField.InfinitePlace NumberField.Units Topology nonZeroDivisors
+
+namespace NumberField
 
 open scoped Real
 
@@ -84,7 +84,7 @@ theorem dedekindZeta_residue :
         simp_rw [Finset.coe_filter, Set.mem_toFinset, Set.mem_setOf_eq, hI, and_true]
         exact (Finset.mem_Icc.mp hk).2
   simp_rw [← Nat.cast_sum, this]
-  have := (ideal.tendsto_norm_le_div_atop₀ K).comp tendsto_natCast_atTop_atTop
+  have := (Ideal.tendsto_norm_le_div_atTop₀ K).comp tendsto_natCast_atTop_atTop
   simp_rw [Function.comp_def, Nat.cast_le] at this
   exact this
 

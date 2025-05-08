@@ -91,8 +91,6 @@ end coe
 
 open NumberField.InfinitePlace
 
-variable {K}
-
 @[simp]
 protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
     |Algebra.norm ℚ (x : K)| = 1 := by
@@ -101,14 +99,13 @@ protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
 theorem pos_at_place (x : (𝓞 K)ˣ) (w : InfinitePlace K) :
     0 < w x := pos_iff.mpr (coe_ne_zero x)
 
+variable {K} in
 theorem sum_mult_mul_log [NumberField K] (x : (𝓞 K)ˣ) :
     ∑ w : InfinitePlace K, w.mult * Real.log (w x) = 0 := by
   simpa [Units.norm, Real.log_prod, Real.log_pow] using
     congr_arg Real.log (prod_eq_abs_norm (x : K))
 
 section torsion
-
-variable (K)
 
 /-- The torsion subgroup of the group of units. -/
 def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ

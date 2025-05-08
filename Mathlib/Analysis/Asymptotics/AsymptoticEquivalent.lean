@@ -103,9 +103,6 @@ theorem IsEquivalent.trans {l : Filter α} {u v w : α → β} (huv : u ~[l] v) 
     u ~[l] w :=
   (huv.isLittleO.trans_isBigO hvw.isBigO).triangle hvw.isLittleO
 
-theorem isEquivalent_comm : u ~[l] v ↔ v ~[l] u :=
-  ⟨fun h ↦ IsEquivalent.symm h, fun h ↦ IsEquivalent.symm h⟩
-
 theorem IsEquivalent.congr_left {u v w : α → β} {l : Filter α} (huv : u ~[l] v) (huw : u =ᶠ[l] w) :
     w ~[l] v :=
   huv.congr' (huw.sub (EventuallyEq.refl _ _)) (EventuallyEq.refl _ _)
