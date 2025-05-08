@@ -17,6 +17,10 @@ namespace Mathlib.Tactic.Order
 
 section Lemmas
 
+/--
+Auxiliary definition used by the `order` tactic to
+transfer facts in a linear order to `Nat`
+-/
 def translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) (k : Fin n) : ℕ :=
   (Finset.image val {u : Fin n | val u < val k}).card
 
@@ -137,6 +141,10 @@ def mkExpr {u : Level} {α : Q(Type $u)} (atoms : Array Q($α)) (_ : atoms.size 
     Q(BinTree $α) :=
   go 0 atoms.size
 where
+  /--
+  Auxiliary definition for `Mathlib.Tactic.Order.Bintree.mkExpr`. Builds a tree,
+  using `atoms`, with nodes lying between `lo` and `hi`.
+  -/
   go (lo hi : Nat) (_ : lo < hi := by omega) (_ : hi ≤ atoms.size := by omega) : Q(BinTree $α) :=
     let mid := (lo + hi) / 2
     if h : lo = mid then
