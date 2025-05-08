@@ -96,11 +96,6 @@ theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, I
 instance [NoetherianSpace α] : WellFoundedLT (Closeds α) :=
   Iff.mp ((noetherianSpace_TFAE α).out 0 1) ‹_›
 
-@[deprecated "No deprecation message was provided." (since := "2024-10-07")]
-theorem NoetherianSpace.wellFounded_closeds [NoetherianSpace α] :
-    WellFounded fun s t : Closeds α => s < t :=
-  wellFounded_lt
-
 instance {α} : NoetherianSpace (CofiniteTopology α) := by
   simp only [noetherianSpace_iff_isCompact, isCompact_iff_ultrafilter_le_nhds,
     CofiniteTopology.nhds_eq, Ultrafilter.le_sup_iff, Filter.le_principal_iff]
@@ -231,7 +226,7 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     rintro a -
     by_cases h : a ∈ U
     · exact ⟨U, Set.mem_insert _ _, h⟩
-    · rw [Set.mem_diff, Decidable.not_and_iff_or_not_not, not_not, Set.mem_iUnion] at h
+    · rw [Set.mem_diff, Decidable.not_and_iff_not_or_not, not_not, Set.mem_iUnion] at h
       rcases h with (h|⟨i, hi⟩)
       · refine ⟨irreducibleComponent a, Or.inr ?_, mem_irreducibleComponent⟩
         simp only [ι, Set.mem_diff, Set.mem_singleton_iff]
