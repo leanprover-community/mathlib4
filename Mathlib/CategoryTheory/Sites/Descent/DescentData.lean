@@ -60,7 +60,7 @@ namespace DescentData
 
 variable {F f} (D : F.DescentData f)
 
-attribute [simp] hom_self
+attribute [simp] hom_self pull_hom
 attribute [reassoc (attr := simp)] hom_comp
 
 @[simps]
@@ -124,6 +124,23 @@ def ofObj (M : F.obj (.mk (op S))) : F.DescentData f where
       F.mapComp'_hom_app_comp_mapComp'_inv_app
         (f i₂).op.toLoc f₂.op.toLoc g.op.toLoc q.op.toLoc gf₂.op.toLoc q'.op.toLoc
         (by aesoptoloc) (by aesoptoloc) (by aesoptoloc) M]
+
+@[simps]
+def isoMk {D₁ D₂ : F.DescentData f} (e : ∀ (i : ι), D₁.obj i ≅ D₂.obj i)
+    (comm : ∀ ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
+    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q),
+    (F.map f₁.op.toLoc).map (e i₁).hom ≫ D₂.hom q f₁ f₂ =
+        D₁.hom q f₁ f₂ ≫ (F.map f₂.op.toLoc).map (e i₂).hom := by aesop_cat) : D₁ ≅ D₂ where
+  hom :=
+    { hom i := (e i).hom
+      comm := comm }
+  inv :=
+    { hom i := (e i).inv
+      comm Y q i₁ i₂ f₁ f₂ hf₁ hf₂ := by
+        rw [← cancel_mono ((F.map f₂.op.toLoc).map (e i₂).hom), Category.assoc,
+          Category.assoc, Iso.map_inv_hom_id, Category.comp_id,
+          ← cancel_epi ((F.map f₁.op.toLoc).map (e i₁).hom),
+          Iso.map_hom_inv_id_assoc, comm q f₁ f₂ hf₁ hf₂] }
 
 end DescentData
 

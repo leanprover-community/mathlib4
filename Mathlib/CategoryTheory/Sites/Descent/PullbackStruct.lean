@@ -120,6 +120,18 @@ lemma w₃ : h.p₃ ≫ f₃ = h.p := by
 lemma w₂ : h.p₂ ≫ f₂ = h.p := by
   rw [← p₂₃_p₂_assoc, h₂₃.w, ← w₃, p₂₃_p₃_assoc]
 
+@[reassoc (attr := simp)]
+lemma p₁₂_p : h.p₁₂ ≫ h₁₂.p = h.p := by
+  rw [← h₁₂.hp₂, p₁₂_p₂_assoc, w₂]
+
+@[reassoc (attr := simp)]
+lemma p₂₃_p : h.p₂₃ ≫ h₂₃.p = h.p := by
+  rw [← h₂₃.hp₂, p₂₃_p₃_assoc, w₃]
+
+@[reassoc (attr := simp)]
+lemma p₁₃_p : h.p₁₃ ≫ h₁₃.p = h.p := by
+  rw [← h₁₃.hp₁, p₁₃_p₁_assoc, w₁]
+
 lemma exists_lift {Y : C} (g₁ : Y ⟶ X₁) (g₂ : Y ⟶ X₂) (g₃ : Y ⟶ X₃) (b : Y ⟶ S)
     (hg₁ : g₁ ≫ f₁ = b) (hg₂ : g₂ ≫ f₂ = b) (hg₃ : g₃ ≫ f₃ = b) :
     ∃ (φ : Y ⟶ h.chosenPullback.pullback), φ ≫ h.p₁ = g₁ ∧ φ ≫ h.p₂ = g₂ ∧ φ ≫ h.p₃ = g₃ := by
