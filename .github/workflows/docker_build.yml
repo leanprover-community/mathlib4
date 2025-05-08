@@ -1,7 +1,9 @@
 name: Build docker image and push to GHCR
 
 on:
-  push:
+  schedule:
+    - cron: '0 0 * * *'   # Runs at 00:00 UTC every day
+  workflow_dispatch:  
     branches:
       - master
 
