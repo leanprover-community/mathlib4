@@ -210,9 +210,9 @@ theorem Projective.iff_split [Small.{v} R] : Module.Projective R P ↔
   refine ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ (Shrink.{v} R), _, _, Free.of_basis ⟨e⟩, e.symm.toLinearMap ∘ₗ i,
     (linearCombination R id) ∘ₗ e.toLinearMap, ?_⟩,
       fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
-  show linearCombination R id ∘ₗ (e.toLinearMap ∘ₗ e.symm.toLinearMap) ∘ₗ i = LinearMap.id
-  rw [e.comp_symm]
-  exact LinearMap.ext hi
+  apply LinearMap.ext
+  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, e.apply_symm_apply]
+  exact hi
 
 open TensorProduct in
 instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Projective R₀ N] :
