@@ -134,13 +134,12 @@ theorem d_eq [DecidableEq G] :
       (coinvariantsTensorBarResolution A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext g a : 3
-  have := finsuppToCoinvariantsTensorFree_single (A := A) g
-  have := barComplex.d_single (k := k) _ g
-  have := coinvariantsTensorFreeToFinsupp_mk_tmul_single (A := A) (α := Fin n → G)
-  simp_all [instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
-    instMonoidalCategoryStruct_whiskerLeft, ModuleCat.MonoidalCategory.whiskerLeft,
+  simp [coinvariantsTensorFreeToFinsupp_mk_tmul_single (A := A) (α := Fin n → G),
+    finsuppToCoinvariantsTensorFree_single (A := A) g, barComplex.d_single (k := k) _ g,
+    ModuleCat.MonoidalCategory.tensorObj, instMonoidalCategoryStruct_tensorObj,
+    ModuleCat.MonoidalCategory.whiskerLeft, instMonoidalCategoryStruct_whiskerLeft,
     coinvariantsTensorBarResolution, coinvariantsMap, TensorProduct.tmul_add,
-    TensorProduct.tmul_sum, ← Submodule.mkQ_apply _ (Finset.sum _ _)]
+    TensorProduct.tmul_sum, map_add, map_sum]
 
 end inhomogeneousChains
 
@@ -167,6 +166,12 @@ theorem inhomogeneousChains.d_comp_d [DecidableEq G] :
   simpa [ChainComplex.of] using
     congr(ModuleCat.Hom.hom $((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n))
 
+@[ext]
+theorem inhomogeneousChains.X_ext
+    [DecidableEq G] {M : ModuleCat k} {n : ℕ} {f g : (inhomogeneousChains A).X n ⟶ M}
+    (h : ∀ x : Fin n → G, ModuleCat.ofHom (lsingle x) ≫ f = ModuleCat.ofHom (lsingle x) ≫ g) :
+    f = g := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun x => ModuleCat.hom_ext_iff.1 <| h x
+
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousChainsIso [DecidableEq G] :
@@ -186,12 +191,12 @@ abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
 open HomologicalComplex
 
 /-- The natural inclusion of the `n`-cycles `Zₙ(G, A)` into the `n`-chains `Cₙ(G, A).` -/
-abbrev iCycles (n : ℕ) : cycles A n ⟶ ModuleCat.of k ((inhomogeneousChains A).X n) :=
+abbrev iCycles (n : ℕ) : cycles A n ⟶ (inhomogeneousChains A).X n :=
   (inhomogeneousChains A).iCycles n
 
 /-- This is the map from `i`-chains to `j`-cycles induced by the differential in the complex of
 inhomogeneous chains. -/
-abbrev toCycles (i j : ℕ) : ModuleCat.of k ((inhomogeneousChains A).X i) ⟶ cycles A j :=
+abbrev toCycles (i j : ℕ) : (inhomogeneousChains A).X i ⟶ cycles A j :=
   (inhomogeneousChains A).toCycles i j
 
 end groupHomology

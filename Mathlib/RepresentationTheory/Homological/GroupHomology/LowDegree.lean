@@ -40,24 +40,24 @@ variable [DecidableEq G]
 
 /-- The 0th object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def zeroChainsLequiv : (inhomogeneousChains A).X 0 ≃ₗ[k] A :=
-  LinearEquiv.finsuppUnique _ _ _
+def zeroChainsIso : (inhomogeneousChains A).X 0 ≅ A.V :=
+  (LinearEquiv.finsuppUnique _ _ _).toModuleIso
 
 /-- The 1st object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G →₀ A` as a `k`-module. -/
-def oneChainsLequiv : (inhomogeneousChains A).X 1 ≃ₗ[k] G →₀ A :=
-  Finsupp.domLCongr (Equiv.funUnique (Fin 1) G)
+def oneChainsIso : (inhomogeneousChains A).X 1 ≅ ModuleCat.of k (G →₀ A) :=
+  (Finsupp.domLCongr (Equiv.funUnique (Fin 1) G)).toModuleIso
 
 /-- The 2nd object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G² →₀ A` as a `k`-module. -/
-def twoChainsLequiv : (inhomogeneousChains A).X 2 ≃ₗ[k] G × G →₀ A :=
-  Finsupp.domLCongr (piFinTwoEquiv fun _ => G)
+def twoChainsIso : (inhomogeneousChains A).X 2 ≅ ModuleCat.of k (G × G →₀ A) :=
+  (Finsupp.domLCongr (piFinTwoEquiv fun _ => G)).toModuleIso
 
 /-- The 3rd object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G³ → A` as a `k`-module. -/
-def threeChainsLequiv : (inhomogeneousChains A).X 3 ≃ₗ[k] G × G × G →₀ A :=
-  Finsupp.domLCongr ((Fin.consEquiv _).symm.trans
-    ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))
+def threeChainsIso : (inhomogeneousChains A).X 3 ≅ ModuleCat.of k (G × G × G →₀ A) :=
+  (Finsupp.domLCongr ((Fin.consEquiv _).symm.trans
+    ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))).toModuleIso
 
 end Chains
 
@@ -193,12 +193,13 @@ square commutes:
 ```
 where the vertical arrows are `oneChainsLequiv` and `zeroChainsLequiv` respectively.
 -/
-theorem dZero_comp_eq :
-    (oneChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (dZero A) =
-      (inhomogeneousChains A).d 1 0 ≫ (zeroChainsLequiv A).toModuleIso.hom :=
-  ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [inhomogeneousChains.d_def, zeroChainsLequiv, oneChainsLequiv,
-      Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg]
+@[reassoc (attr := simp)]
+theorem eq_comp_dZero :
+    (inhomogeneousChains A).d 1 0 ≫ (zeroChainsIso A).hom =
+      (oneChainsIso A).hom ≫ ModuleCat.ofHom (dZero A) := by
+  ext
+  simp [inhomogeneousChains.d_def, oneChainsIso, zeroChainsIso,
+    Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `dOne` gives a simpler expression for the 1st differential: that is, the following
@@ -213,13 +214,13 @@ square commutes:
 ```
 where the vertical arrows are `twoChainsLequiv` and `oneChainsLequiv` respectively.
 -/
-
-theorem dOne_comp_eq :
-    (twoChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (dOne A) =
-      (inhomogeneousChains A).d 2 1 ≫ (oneChainsLequiv A).toModuleIso.hom :=
-  ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [inhomogeneousChains.d_def, oneChainsLequiv, add_assoc, twoChainsLequiv,
-      -Finsupp.domLCongr_apply, domLCongr_single, sub_eq_add_neg, Fin.contractNth]
+@[reassoc (attr := simp)]
+theorem eq_comp_dOne :
+    (inhomogeneousChains A).d 2 1 ≫ (oneChainsIso A).hom =
+    (twoChainsIso A).hom ≫ ModuleCat.ofHom (dOne A) := by
+  ext
+  simp [inhomogeneousChains.d_def, oneChainsIso, add_assoc, twoChainsIso,
+    -Finsupp.domLCongr_apply, domLCongr_single, sub_eq_add_neg, Fin.contractNth]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `dTwo` gives a simpler expression for the 2nd differential: that is, the following
@@ -234,14 +235,14 @@ square commutes:
 ```
 where the vertical arrows are `threeChainsLequiv` and `twoChainsLequiv` respectively.
 -/
-theorem dTwo_comp_eq :
-    (threeChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (dTwo A) =
-      (inhomogeneousChains A).d 3 2 ≫ (twoChainsLequiv A).toModuleIso.hom :=
-  ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [inhomogeneousChains.d_def, twoChainsLequiv, pow_succ, threeChainsLequiv,
-      -domLCongr_apply, domLCongr_single, dTwo, Fin.sum_univ_three,
-      Fin.contractNth, Fin.tail_def, sub_eq_add_neg, add_assoc,
-      add_rotate' (-(single (_ * _, _) _)), add_left_comm (single (_, _ * _) _)]
+@[reassoc (attr := simp)]
+theorem eq_comp_dTwo :
+    (inhomogeneousChains A).d 3 2 ≫ (twoChainsIso A).hom =
+      (threeChainsIso A).hom ≫ ModuleCat.ofHom (dTwo A) := by
+  ext
+  simp [inhomogeneousChains.d_def, twoChainsIso, pow_succ, threeChainsIso, -domLCongr_apply,
+    domLCongr_single, dTwo, Fin.sum_univ_three, Fin.contractNth, Fin.tail_def, sub_eq_add_neg,
+    add_assoc, add_rotate' (-(single (_ * _, _) _)), add_left_comm (single (_, _ * _) _)]
 
 theorem dZero_comp_dOne : dZero A ∘ₗ dOne A = 0 := by
   ext x g
@@ -249,8 +250,8 @@ theorem dZero_comp_dOne : dZero A ∘ₗ dOne A = 0 := by
 
 theorem dOne_comp_dTwo : dOne A ∘ₗ dTwo A = 0 := by
   apply_fun ModuleCat.ofHom using (fun _ _ h => ModuleCat.hom_ext_iff.1 h)
-  simp [(Iso.eq_inv_comp _).2 (dOne_comp_eq A), (Iso.eq_inv_comp _).2 (dTwo_comp_eq A),
-    ModuleCat.hom_ext_iff, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]
+  simp [(Iso.eq_inv_comp _).2 (eq_comp_dOne A).symm, (Iso.eq_inv_comp _).2 (eq_comp_dTwo A).symm,
+    -eq_comp_dOne, -eq_comp_dTwo, ModuleCat.hom_ext_iff]
 
 end
 end Differentials
@@ -259,11 +260,11 @@ section Cycles
 
 /-- The 1-cycles `Z₁(G, A)` of `A : Rep k G`, defined as the kernel of the map
 `(G →₀ A) → A` sending `single g a ↦ ρ_A(g⁻¹)(a) - a`. -/
-def oneCycles : Submodule k (G →₀ A) := LinearMap.ker (dZero A)
+abbrev oneCycles : Submodule k (G →₀ A) := LinearMap.ker (dZero A)
 
 /-- The 2-cycles `Z₂(G, A)` of `A : Rep k G`, defined as the kernel of the map
 `(G² →₀ A) → (G →₀ A)` sending `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
-def twoCycles : Submodule k (G × G →₀ A) := LinearMap.ker (dOne A)
+abbrev twoCycles : Submodule k (G × G →₀ A) := LinearMap.ker (dOne A)
 
 variable {A}
 
@@ -278,7 +279,8 @@ theorem mem_oneCycles_iff (x : G →₀ A) :
 
 theorem single_mem_oneCycles_iff (g : G) (a : A) :
     single g a ∈ oneCycles A ↔ A.ρ g a = a := by
-  simp [mem_oneCycles_iff, ← (A.ρ.ρ_apply_bijective g).1.eq_iff (a := A.ρ g⁻¹ a), eq_comm]
+  simp [mem_oneCycles_iff (single g a), ← (A.ρ.ρ_apply_bijective g).1.eq_iff (a := A.ρ g⁻¹ a),
+    eq_comm]
 
 theorem single_mem_oneCycles_of_mem_invariants (g : G) (a : A) (ha : a ∈ A.ρ.invariants) :
     single g a ∈ oneCycles A :=
@@ -311,13 +313,13 @@ theorem mem_twoCycles_iff (x : G × G →₀ A) :
 
 theorem single_mem_twoCycles_iff_inv (g : G × G) (a : A) :
     single g a ∈ twoCycles A ↔ single g.2 (A.ρ g.1⁻¹ a) + single g.1 a = single (g.1 * g.2) a := by
-  simp [mem_twoCycles_iff]
+  simp [mem_twoCycles_iff (single g a)]
 
 theorem single_mem_twoCycles_iff (g : G × G) (a : A) :
     single g a ∈ twoCycles A ↔
       single (g.1 * g.2) (A.ρ g.1 a) = single g.2 a + single g.1 (A.ρ g.1 a) := by
   rw [← (mapRange_injective (α := G) _ (map_zero _) (A.ρ.ρ_apply_bijective g.1⁻¹).1).eq_iff]
-  simp [mem_twoCycles_iff, mapRange_add, eq_comm]
+  simp [mem_twoCycles_iff (single g a), mapRange_add, eq_comm]
 
 theorem dTwo_apply_mem_twoCycles [DecidableEq G] (x : G × G × G →₀ A) :
     dTwo A x ∈ twoCycles A :=
@@ -627,17 +629,17 @@ section
 variable [DecidableEq G]
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
-def isoZeroCycles : cycles A 0 ≅ ModuleCat.of k A :=
-  (inhomogeneousChains A).iCyclesIso _ 0 (by aesop) (by aesop) ≪≫ (zeroChainsLequiv A).toModuleIso
+def isoZeroCycles : cycles A 0 ≅ A.V :=
+  (inhomogeneousChains A).iCyclesIso _ 0 (by aesop) (by aesop) ≪≫ zeroChainsIso A
 
 @[reassoc, elementwise]
 lemma isoZeroCycles_inv_comp_iCycles :
-    (isoZeroCycles A).inv ≫ iCycles A 0 = (zeroChainsLequiv A).toModuleIso.inv := by
+    (isoZeroCycles A).inv ≫ iCycles A 0 = (zeroChainsIso A).inv := by
   simp [isoZeroCycles]
 
 lemma isoZeroCycles_inv_apply_eq_cyclesMk (x : A) :
     (isoZeroCycles A).inv x = (inhomogeneousChains A).cyclesMk
-      ((zeroChainsLequiv A).symm x) _ rfl (by simp) := by
+      ((zeroChainsIso A).inv x) _ rfl (by simp) := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousChains A).sc 0).iCycles using
     (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
   simpa only [HomologicalComplex.cyclesMk, i_cyclesMk] using
@@ -654,7 +656,7 @@ the coinvariants of the representation, `A_G`. -/
 abbrev H0 := (shortComplexH0 A).X₃
 
 /-- The quotient map `Z₀(G, A) → H₀(G, A).` -/
-abbrev H0π : ModuleCat.of k A ⟶ H0 A := (shortComplexH0 A).g
+abbrev H0π : A.V ⟶ H0 A := (shortComplexH0 A).g
 
 lemma H0π_eq_zero_iff (x : A) : H0π A x = 0 ↔ x ∈ augmentationSubmodule A.ρ :=
   Submodule.Quotient.mk_eq_zero _
@@ -683,7 +685,7 @@ variable [DecidableEq G]
 @[simps! hom_left hom_right inv_left inv_right]
 def dZeroArrowIso :
     Arrow.mk ((inhomogeneousChains A).d 1 0) ≅ Arrow.mk (ModuleCat.ofHom (dZero A)) :=
-  Arrow.isoMk (oneChainsLequiv A).toModuleIso (zeroChainsLequiv A).toModuleIso (dZero_comp_eq A)
+  Arrow.isoMk (oneChainsIso A) (zeroChainsIso A) (eq_comp_dZero A).symm
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `A.ρ.coinvariants`, which is a simpler type. -/
@@ -695,13 +697,13 @@ def isoZeroOpcycles : (inhomogeneousChains A).opcycles 0 ≅ ModuleCat.of k A.ρ
 @[reassoc (attr := simp)]
 lemma pOpcycles_comp_opcyclesIso_hom :
     (inhomogeneousChains A).pOpcycles 0 ≫ (isoZeroOpcycles A).hom =
-      (zeroChainsLequiv A).toModuleIso.hom ≫ H0π A := by
+      (zeroChainsIso A).hom ≫ H0π A := by
   dsimp [isoZeroOpcycles]
   exact CokernelCofork.π_mapOfIsColimit (φ := (dZeroArrowIso A).hom) _ _
 
 /-- The 0th group homology of `A`, defined as the 0th homology of the complex of inhomogeneous
 chains, is isomorphic to the coinvariants of the representation on `A`. -/
-def isoH0 : groupHomology A 0 ≅ ModuleCat.of k (H0 A) :=
+def isoH0 : groupHomology A 0 ≅ H0 A :=
   ChainComplex.isoHomologyι₀ _ ≪≫ isoZeroOpcycles A
 
 @[reassoc (attr := simp)]
@@ -741,14 +743,19 @@ variable [DecidableEq G]
 def shortComplexH1 : ShortComplex (ModuleCat k) :=
   moduleCatMk (dOne A) (dZero A) (dZero_comp_dOne A)
 
+@[ext]
+lemma shortComplexH1_hom_ext {M : ModuleCat k} {f g : (shortComplexH1 A).X₂ ⟶ M}
+    (h : ∀ x, ModuleCat.ofHom (lsingle x) ≫ f = ModuleCat.ofHom (lsingle x) ≫ g) :
+    f = g := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun x => ModuleCat.hom_ext_iff.1 (h x)
+
 /-- We define the 1st group homology of a `k`-linear `G`-representation `A`, `H₁(G, A)`, to be
 1-cycles (i.e. `Z₁(G, A) := Ker(d₀ : (G →₀ A) → A`) modulo 1-boundaries
 (i.e. `B₁(G, A) := Im(d₁ : (G →₀ A) → A)`). -/
-abbrev H1 := moduleCatHomology <| shortComplexH1 A
+abbrev H1 := (shortComplexH1 A).moduleCatLeftHomologyData.H
 
 /-- The quotient map `Z₁(G, A) → H₁(G, A).` -/
 abbrev H1π : ModuleCat.of k (oneCycles A) ⟶ H1 A :=
-  moduleCatHomologyπ (shortComplexH1 A)
+  (shortComplexH1 A).moduleCatLeftHomologyData.π
 
 variable {A} in
 lemma H1π_eq_zero_iff (x : oneCycles A) : H1π A x = 0 ↔ x.1 ∈ oneBoundaries A := by
@@ -766,8 +773,8 @@ lemma H1π_eq_iff (x y : oneCycles A) :
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
 def shortComplexH1Iso : (inhomogeneousChains A).sc' 2 1 0 ≅ shortComplexH1 A :=
-    isoMk (twoChainsLequiv A).toModuleIso (oneChainsLequiv A).toModuleIso
-      (zeroChainsLequiv A).toModuleIso (dOne_comp_eq A) (dZero_comp_eq A)
+    isoMk (twoChainsIso A) (oneChainsIso A)
+      (zeroChainsIso A) (eq_comp_dOne A).symm (eq_comp_dZero A).symm
 
 /-- The 1-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `oneCycles A`, which is a simpler type. -/
@@ -776,30 +783,28 @@ def isoOneCycles : cycles A 1 ≅ ModuleCat.of k (oneCycles A) :=
     cyclesMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatCyclesIso
 
 @[reassoc (attr := simp)]
-lemma isoOneCycles_hom_comp_subtype :
-    (isoOneCycles A).hom ≫ ModuleCat.ofHom (oneCycles A).subtype =
-      iCycles A 1 ≫ (oneChainsLequiv A).toModuleIso.hom := by
-  have := (shortComplexH1 A).moduleCatCyclesIso_hom_subtype
-  simp_all [shortComplexH1, isoOneCycles, oneCycles]
+lemma isoOneCycles_hom_comp_i :
+    (isoOneCycles A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.i =
+      iCycles A 1 ≫ (oneChainsIso A).hom := by
+  simp [isoOneCycles]
 
 @[reassoc (attr := simp)]
 lemma isoOneCycles_inv_comp_iCycles :
     (isoOneCycles A).inv ≫ iCycles A 1 =
-      ModuleCat.ofHom (oneCycles A).subtype ≫ (oneChainsLequiv A).toModuleIso.inv := by
-  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoOneCycles_hom_comp_subtype]
+      (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ (oneChainsIso A).inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoOneCycles_hom_comp_i]
 
 @[reassoc (attr := simp)]
 lemma toCycles_comp_isoOneCycles_hom :
     toCycles A 2 1 ≫ (isoOneCycles A).hom =
-      (twoChainsLequiv A).toModuleIso.hom ≫
-        ModuleCat.ofHom (shortComplexH1 A).moduleCatToCycles := by
+      (twoChainsIso A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.f' := by
   simp [isoOneCycles]
 
 lemma isoOneCycles_inv_apply_eq_cyclesMk (x : oneCycles A) :
     (isoOneCycles A).inv x =
-    (inhomogeneousChains A).cyclesMk ((oneChainsLequiv A).symm x.1) _ rfl (by
+    (inhomogeneousChains A).cyclesMk ((oneChainsIso A).inv x.1) _ rfl (by
       show ((inhomogeneousChains A).dFrom 1).hom _ = 0
-      have := congr($((CommSq.horiz_inv ⟨dZero_comp_eq A⟩).w) x.1)
+      have := congr($((CommSq.horiz_inv ⟨(eq_comp_dZero A).symm⟩).w) x.1)
       simp_all [(inhomogeneousChains A).dFrom_eq (i := 1) (j := 0) rfl, x.2]) := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousChains A).sc 1).iCycles using
     (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
@@ -808,14 +813,14 @@ lemma isoOneCycles_inv_apply_eq_cyclesMk (x : oneCycles A) :
 
 /-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
 chains, is isomorphic to `oneCycles A ⧸ oneBoundaries A`, which is a simpler type. -/
-def isoH1 : groupHomology A 1 ≅ ModuleCat.of k (H1 A) :=
+def isoH1 : groupHomology A 1 ≅ H1 A :=
   (inhomogeneousChains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
     homologyMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatHomologyIso
 
 @[reassoc (attr := simp)]
 lemma groupHomologyπ_comp_isoH1_hom  :
     groupHomologyπ A 1 ≫ (isoH1 A).hom = (isoOneCycles A).hom ≫ H1π A := by
-  simp [H1π, isoH1, isoOneCycles]
+  simp [isoH1, isoOneCycles]
 
 end H1
 
@@ -827,14 +832,19 @@ variable [DecidableEq G]
 def shortComplexH2 : ShortComplex (ModuleCat k) :=
   moduleCatMk (dTwo A) (dOne A) (dOne_comp_dTwo A)
 
+@[ext]
+lemma shortComplexH2_hom_ext {M : ModuleCat k} {f g : (shortComplexH2 A).X₂ ⟶ M}
+    (h : ∀ x, ModuleCat.ofHom (lsingle x) ≫ f = ModuleCat.ofHom (lsingle x) ≫ g) :
+    f = g := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun x => ModuleCat.hom_ext_iff.1 (h x)
+
 /-- We define the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`, to be
 2-cycles (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) modulo 2-boundaries
 (i.e. `B₂(G, A) := Im(d₂ : (G³ →₀ A) → (G² →₀ A))`). -/
-abbrev H2 := moduleCatHomology <| shortComplexH2 A
+abbrev H2 := (shortComplexH2 A).moduleCatLeftHomologyData.H
 
 /-- The quotient map `Z₂(G, A) → H₂(G, A).` -/
 abbrev H2π : ModuleCat.of k (twoCycles A) ⟶ H2 A :=
-  moduleCatHomologyπ (shortComplexH2 A)
+  (shortComplexH2 A).moduleCatLeftHomologyData.π
 
 variable {A} in
 lemma H2π_eq_zero_iff (x : twoCycles A) : H2π A x = 0 ↔ x.1 ∈ twoBoundaries A := by
@@ -853,8 +863,8 @@ isomorphic to the 2nd short complex associated to the complex of inhomogeneous c
 @[simps! hom inv]
 def shortComplexH2Iso :
     (inhomogeneousChains A).sc' 3 2 1 ≅ shortComplexH2 A :=
-  isoMk (threeChainsLequiv A).toModuleIso (twoChainsLequiv A).toModuleIso
-    (oneChainsLequiv A).toModuleIso (dTwo_comp_eq A) (dOne_comp_eq A)
+  isoMk (threeChainsIso A) (twoChainsIso A) (oneChainsIso A)
+    (eq_comp_dTwo A).symm (eq_comp_dOne A).symm
 
 /-- The 2-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `twoCycles A`, which is a simpler type. -/
@@ -863,30 +873,28 @@ def isoTwoCycles : cycles A 2 ≅ ModuleCat.of k (twoCycles A) :=
     cyclesMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatCyclesIso
 
 @[reassoc (attr := simp)]
-lemma isoTwoCycles_hom_comp_subtype :
-    (isoTwoCycles A).hom ≫ ModuleCat.ofHom (twoCycles A).subtype =
-      iCycles A 2 ≫ (twoChainsLequiv A).toModuleIso.hom := by
-  have := (shortComplexH2 A).moduleCatCyclesIso_hom_subtype
-  simp_all [shortComplexH2, isoTwoCycles, twoCycles]
+lemma isoTwoCycles_hom_comp_i :
+    (isoTwoCycles A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.i =
+      iCycles A 2 ≫ (twoChainsIso A).hom := by
+  simp [isoTwoCycles]
 
 @[reassoc (attr := simp)]
 lemma isoTwoCycles_inv_comp_iCycles :
     (isoTwoCycles A).inv ≫ iCycles A 2 =
-      ModuleCat.ofHom (twoCycles A).subtype ≫ (twoChainsLequiv A).toModuleIso.inv := by
-  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoTwoCycles_hom_comp_subtype]
+      (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ (twoChainsIso A).inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoTwoCycles_hom_comp_i]
 
 @[reassoc (attr := simp)]
 lemma toCycles_comp_isoTwoCycles_hom :
     toCycles A 3 2 ≫ (isoTwoCycles A).hom =
-      (threeChainsLequiv A).toModuleIso.hom ≫
-        ModuleCat.ofHom (shortComplexH2 A).moduleCatToCycles := by
+      (threeChainsIso A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.f' := by
   simp [isoTwoCycles]
 
 lemma isoTwoCycles_inv_apply_eq_cyclesMk (x : twoCycles A) :
     (isoTwoCycles A).inv x =
-    (inhomogeneousChains A).cyclesMk ((twoChainsLequiv A).symm x.1) _ rfl (by
+    (inhomogeneousChains A).cyclesMk ((twoChainsIso A).inv x.1) _ rfl (by
       show ((inhomogeneousChains A).dFrom 2).hom _ = 0
-      have := congr($((CommSq.horiz_inv ⟨dOne_comp_eq A⟩).w) x.1)
+      have := congr($((CommSq.horiz_inv ⟨(eq_comp_dOne A).symm⟩).w) x.1)
       simp_all [(inhomogeneousChains A).dFrom_eq (i := 2) (j := 1) rfl, x.2]) := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousChains A).sc 2).iCycles using
     (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
@@ -895,14 +903,14 @@ lemma isoTwoCycles_inv_apply_eq_cyclesMk (x : twoCycles A) :
 
 /-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
 chains, is isomorphic to `twoCycles A ⧸ twoBoundaries A`, which is a simpler type. -/
-def isoH2 : groupHomology A 2 ≅ ModuleCat.of k (H2 A) :=
+def isoH2 : groupHomology A 2 ≅ H2 A :=
   (inhomogeneousChains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
     homologyMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatHomologyIso
 
 @[reassoc (attr := simp)]
 lemma groupHomologyπ_comp_isoH2_hom  :
     groupHomologyπ A 2 ≫ (isoH2 A).hom = (isoTwoCycles A).hom ≫ H2π A := by
-  simp [H2π, isoH2, isoTwoCycles]
+  simp [isoH2, isoTwoCycles]
 
 end H2
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.ToMove
 
 /-!
 # Functoriality of group homology
@@ -32,7 +33,14 @@ open CategoryTheory Rep Finsupp Representation
 
 variable {k G H : Type u} [CommRing k] [Group G] [Group H]
   {A : Rep k G} {B : Rep k H} (f : G →* H) (φ : A ⟶ (Action.res _ f).obj B) (n : ℕ)
-  [DecidableEq G] [DecidableEq H]
+
+theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ (Action.res _ f₁).obj B} {T : Type*}
+    (F : (f : G →* H) → (φ : A ⟶ (Action.res _ f).obj B) → T) :
+    F f₁ φ = F f₂ (h ▸ φ) := by
+  subst h
+  rfl
+
+variable [DecidableEq G] [DecidableEq H]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to
@@ -47,7 +55,7 @@ noncomputable def chainsMap :
     simpa [Fin.comp_contractNth, map_add, res_obj_ρ] using
       congr(single _ $((hom_comm_apply φ (_)⁻¹ _).symm))
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma lsingle_comp_chainsMap_f (n : ℕ) (x : Fin n → G) :
     ModuleCat.ofHom (lsingle x) ≫ (chainsMap f φ).f n =
       φ.hom ≫ ModuleCat.ofHom (lsingle (f ∘ x)) := by
@@ -139,48 +147,42 @@ noncomputable abbrev fOne : (G →₀ A) →ₗ[k] H →₀ B :=
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·(gᵢ₁, gᵢ₂) : G × G →₀ A` to
-`∑ φ(aᵢ)·(f(gᵢ₁), f(gᵢ₂)) : H × H →₀ B`.  -/
+`∑ φ(aᵢ)·(f(gᵢ₁), f(gᵢ₂)) : H × H →₀ B`. -/
 noncomputable abbrev fTwo : (G × G →₀ A) →ₗ[k] H × H →₀ B :=
   mapRange.linearMap φ.hom.hom ∘ₗ lmapDomain A k (Prod.map f f)
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·(gᵢ₁, gᵢ₂, gᵢ₃) : G × G × G →₀ A` to
-`∑ φ(aᵢ)·(f(gᵢ₁), f(gᵢ₂), f(gᵢ₃)) : H × H × H →₀ B`.  -/
+`∑ φ(aᵢ)·(f(gᵢ₁), f(gᵢ₂), f(gᵢ₃)) : H × H × H →₀ B`. -/
 noncomputable abbrev fThree : (G × G × G →₀ A) →ₗ[k] H × H × H →₀ B :=
   mapRange.linearMap φ.hom.hom ∘ₗ lmapDomain A k (Prod.map f (Prod.map f f))
 
 @[reassoc]
-lemma chainsMap_f_0_comp_zeroChainsLequiv :
-    (chainsMap f φ).f 0 ≫ (zeroChainsLequiv B).toModuleIso.hom =
-      (zeroChainsLequiv A).toModuleIso.hom ≫ φ.hom := by
-  refine ModuleCat.hom_ext <| lhom_ext' fun x => ModuleCat.homEquiv.symm.bijective.1 ?_
-  ext y
-  simp [ModuleCat.homEquiv, zeroChainsLequiv, Unique.eq_default]
+lemma chainsMap_f_0_comp_zeroChainsIso :
+    (chainsMap f φ).f 0 ≫ (zeroChainsIso B).hom = (zeroChainsIso A).hom ≫ φ.hom := by
+  ext
+  simp [zeroChainsIso, Unique.eq_default]
 
 @[reassoc]
-lemma chainsMap_f_1_comp_oneChainsLequiv :
-    (chainsMap f φ).f 1 ≫ (oneChainsLequiv B).toModuleIso.hom =
-      (oneChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fOne f φ) := by
-  refine ModuleCat.hom_ext <| lhom_ext' fun x => ModuleCat.homEquiv.symm.bijective.1 ?_
-  ext y
-  simp [ModuleCat.homEquiv, oneChainsLequiv, fOne]
+lemma chainsMap_f_1_comp_oneChainsIso :
+    (chainsMap f φ).f 1 ≫ (oneChainsIso B).hom =
+      (oneChainsIso A).hom ≫ ModuleCat.ofHom (fOne f φ) := by
+  ext
+  simp [oneChainsIso, fOne]
 
 @[reassoc]
-lemma chainsMap_f_2_comp_twoChainsLequiv :
-    (chainsMap f φ).f 2 ≫ (twoChainsLequiv B).toModuleIso.hom =
-      (twoChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fTwo f φ) := by
-  refine ModuleCat.hom_ext <| lhom_ext' fun x => ModuleCat.homEquiv.symm.bijective.1 ?_
-  ext y
-  simp [ModuleCat.homEquiv, twoChainsLequiv, fTwo]
+lemma chainsMap_f_2_comp_twoChainsIso :
+    (chainsMap f φ).f 2 ≫ (twoChainsIso B).hom =
+      (twoChainsIso A).hom ≫ ModuleCat.ofHom (fTwo f φ) := by
+  ext
+  simp [twoChainsIso, fTwo]
 
 @[reassoc]
-lemma chainsMap_f_3_comp_threeChainsLequiv :
-    (chainsMap f φ).f 3 ≫
-      (threeChainsLequiv B).toModuleIso.hom =
-      (threeChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fThree f φ) := by
-  refine ModuleCat.hom_ext <| lhom_ext' fun x => ModuleCat.homEquiv.symm.bijective.1 ?_
-  ext y
-  simp [ModuleCat.homEquiv, threeChainsLequiv, fThree, ← Fin.comp_tail]
+lemma chainsMap_f_3_comp_threeChainsIso :
+    (chainsMap f φ).f 3 ≫ (threeChainsIso B).hom =
+      (threeChainsIso A).hom ≫ ModuleCat.ofHom (fThree f φ) := by
+  ext
+  simp [threeChainsIso, fThree, ← Fin.comp_tail]
 
 open ShortComplex
 
@@ -203,8 +205,8 @@ theorem H0Map_comp {G H K : Type u} [Group G] [Group H] [Group K]
   ModuleCat.hom_ext <| Submodule.linearMap_qext _ rfl
 
 omit [DecidableEq G] in
-theorem H0Map_eq_coinvariantsFunctor_map {A B : Rep k G} (f : A ⟶ B) :
-    H0Map (MonoidHom.id G) f = (coinvariantsFunctor k G).map f := by
+theorem H0Map_eq_coinvariantsMap {A B : Rep k G} (f : A ⟶ B) :
+    H0Map (MonoidHom.id G) f = ModuleCat.ofHom (coinvariantsMap f) := by
   rfl
 
 instance epi_H0Map_of_epi {A B : Rep k G} (f : A ⟶ B) [Epi f] :
@@ -212,15 +214,15 @@ instance epi_H0Map_of_epi {A B : Rep k G} (f : A ⟶ B) [Epi f] :
   (inferInstanceAs (Epi <| (coinvariantsFunctor k G).map f))
 
 omit [DecidableEq G] [DecidableEq H] in
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem H0π_comp_H0Map :
     H0π A ≫ H0Map f φ = φ.hom ≫ H0π B := rfl
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_comp_isoH0_hom :
     map f φ 0 ≫ (isoH0 B).hom = (isoH0 A).hom ≫ H0Map f φ := by
   simp [isoZeroCycles, ← cancel_epi (groupHomologyπ _ _),
-    chainsMap_f_0_comp_zeroChainsLequiv_assoc f φ, ← LinearEquiv.toModuleIso_hom]
+    chainsMap_f_0_comp_zeroChainsIso_assoc f φ, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map from the short complex `(G × G →₀ A) --dOne--> (G →₀ A) --dZero--> A`
@@ -246,6 +248,14 @@ theorem mapShortComplexH1_zero :
   { refine ModuleCat.hom_ext <| lhom_ext fun _ _ => ?_
     show mapRange.linearMap 0 (mapDomain _ (single _ _)) = 0
     simp [LinearMap.zero_apply (M₂ := B)] }
+
+@[simp]
+theorem mapShortComplexH1_add (φ ψ : A ⟶ (Action.res _ f).obj B) :
+    mapShortComplexH1 f (φ + ψ) = mapShortComplexH1 f φ + mapShortComplexH1 f ψ := by
+  refine ShortComplex.hom_ext _ _ ?_ ?_ rfl
+  all_goals
+  { refine ModuleCat.hom_ext <| lhom_ext fun _ _ => ?_
+    simp [shortComplexH1] }
 
 @[simp]
 theorem mapShortComplexH1_id : mapShortComplexH1 (MonoidHom.id G) (𝟙 A) = 𝟙 _ := by
@@ -279,19 +289,17 @@ noncomputable abbrev mapOneCycles :
     (shortComplexH1 B).moduleCatLeftHomologyData
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma mapOneCycles_comp_subtype :
-    mapOneCycles f φ ≫ ModuleCat.ofHom (oneCycles B).subtype =
-      ModuleCat.ofHom (fOne f φ ∘ₗ (oneCycles A).subtype) :=
+lemma mapOneCycles_comp_i :
+    mapOneCycles f φ ≫ (shortComplexH1 B).moduleCatLeftHomologyData.i =
+      (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fOne f φ) :=
   ShortComplex.cyclesMap'_i (mapShortComplexH1 f φ) (moduleCatLeftHomologyData _)
     (moduleCatLeftHomologyData _)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesMap_comp_isoOneCycles_hom :
-    cyclesMap f φ 1 ≫ (isoOneCycles B).hom =
-      (isoOneCycles A).hom ≫ mapOneCycles f φ := by
-  simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapOneCycles,
-    Category.assoc, cyclesMap'_i, isoOneCycles, ← Category.assoc]
-  simp [chainsMap_f_1_comp_oneChainsLequiv f φ, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
+    cyclesMap f φ 1 ≫ (isoOneCycles B).hom = (isoOneCycles A).hom ≫ mapOneCycles f φ := by
+  simp [← cancel_mono (shortComplexH1 B).moduleCatLeftHomologyData.i,
+    chainsMap_f_1_comp_oneChainsIso f φ, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `H₁(G, A) ⟶ H₁(H, B)`. -/
@@ -323,8 +331,7 @@ lemma H1π_comp_H1Map :
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma map_comp_isoH1_hom :
     map f φ 1 ≫ (isoH1 B).hom = (isoH1 A).hom ≫ H1Map f φ := by
-  simp [← cancel_epi (groupHomologyπ _ _), H1Map, Category.assoc, (leftHomologyπ_naturality'
-    (mapShortComplexH1 f φ) (moduleCatLeftHomologyData _) (moduleCatLeftHomologyData _)).symm]
+  simp [← cancel_epi (groupHomologyπ _ _)]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map from the short complex
@@ -351,6 +358,14 @@ theorem mapShortComplexH2_zero :
   { refine ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => ?_
     show Finsupp.mapRange.linearMap 0 (Finsupp.mapDomain _ (Finsupp.single _ _)) = 0
     simp [LinearMap.zero_apply (M₂ := B)] }
+
+@[simp]
+theorem mapShortComplexH2_add (φ ψ : A ⟶ (Action.res _ f).obj B) :
+    mapShortComplexH2 f (φ + ψ) = mapShortComplexH2 f φ + mapShortComplexH2 f ψ := by
+  refine ShortComplex.hom_ext _ _ ?_ ?_ ?_
+  all_goals
+  { refine ModuleCat.hom_ext <| lhom_ext fun _ _ => ?_
+    simp [shortComplexH2] }
 
 @[simp]
 theorem mapShortComplexH2_id : mapShortComplexH2 (MonoidHom.id _) (𝟙 A) = 𝟙 _ := by
@@ -383,20 +398,18 @@ noncomputable abbrev mapTwoCycles :
   ShortComplex.cyclesMap' (mapShortComplexH2 f φ) (shortComplexH2 A).moduleCatLeftHomologyData
     (shortComplexH2 B).moduleCatLeftHomologyData
 
-@[reassoc (attr := simp)]
-lemma mapTwoCycles_comp_subtype :
-    mapTwoCycles f φ ≫ ModuleCat.ofHom (twoCycles B).subtype =
-      ModuleCat.ofHom (fTwo f φ ∘ₗ (twoCycles A).subtype) :=
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma mapTwoCycles_comp_i :
+    mapTwoCycles f φ ≫ (shortComplexH2 B).moduleCatLeftHomologyData.i =
+      (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fTwo f φ) :=
   ShortComplex.cyclesMap'_i (mapShortComplexH2 f φ) (moduleCatLeftHomologyData _)
     (moduleCatLeftHomologyData _)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesMap_comp_isoTwoCycles_hom :
-    cyclesMap f φ 2 ≫ (isoTwoCycles B).hom =
-      (isoTwoCycles A).hom ≫ mapTwoCycles f φ := by
-  simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 B)).i, mapTwoCycles,
-      Category.assoc, cyclesMap'_i, isoTwoCycles, ← Category.assoc]
-  simp [chainsMap_f_2_comp_twoChainsLequiv f φ, mapShortComplexH2, ← LinearEquiv.toModuleIso_hom]
+    cyclesMap f φ 2 ≫ (isoTwoCycles B).hom = (isoTwoCycles A).hom ≫ mapTwoCycles f φ := by
+  simp [← cancel_mono (shortComplexH2 B).moduleCatLeftHomologyData.i,
+    chainsMap_f_2_comp_twoChainsIso f φ, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `H₂(G, A) ⟶ H₂(H, B)`. -/
@@ -420,17 +433,20 @@ theorem H2Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     H2Map (MonoidHom.id G) (φ ≫ ψ) = H2Map (MonoidHom.id G) φ ≫ H2Map (MonoidHom.id G) ψ :=
   H2Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H2π_comp_H2Map :
-     H2π A ≫ H2Map f φ = mapTwoCycles f φ ≫ H2π B :=
+    H2π A ≫ H2Map f φ = mapTwoCycles f φ ≫ H2π B :=
   leftHomologyπ_naturality' (mapShortComplexH2 f φ) _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma map_comp_isoH2_hom :
     map f φ 2 ≫ (isoH2 B).hom = (isoH2 A).hom ≫ H2Map f φ := by
-  simp [← cancel_epi (groupHomologyπ _ _), H2Map, Category.assoc]
+  simp [← cancel_epi (groupHomologyπ _ _), Category.assoc]
 
-variable (k G) in
+section Functors
+
+variable (k G)
+
 /-- The functor sending a representation to its complex of inhomogeneous chains. -/
 @[simps]
 noncomputable def chainsFunctor [DecidableEq G] :
@@ -441,23 +457,244 @@ noncomputable def chainsFunctor [DecidableEq G] :
   map_comp φ ψ := chainsMap_comp (MonoidHom.id G) (MonoidHom.id G) φ ψ
 
 instance : (chainsFunctor k G).PreservesZeroMorphisms where
-  map_zero X Y := by
-    ext i : 1
-    refine ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => ?_
-    simp
 
-variable (k G) in
+instance : (chainsFunctor k G).Additive where
+
+/-- The functor sending a `G`-representation `A` to `Zₙ(G, A)`. -/
+noncomputable abbrev cyclesFunctor (n : ℕ) : Rep k G ⥤ ModuleCat k :=
+  chainsFunctor k G ⋙ HomologicalComplex.cyclesFunctor _ _ n
+
+instance (n : ℕ) : (cyclesFunctor k G n).PreservesZeroMorphisms where
+instance (n : ℕ) : (cyclesFunctor k G n).Additive := inferInstance
+
+/-- The functor sending a `G`-representation `A` to `Cₙ(G, A)/Bₙ(G, A)`. -/
+noncomputable abbrev opcyclesFunctor (n : ℕ) : Rep k G ⥤ ModuleCat k :=
+  chainsFunctor k G ⋙ HomologicalComplex.opcyclesFunctor _ _ n
+
+instance (n : ℕ) : (opcyclesFunctor k G n).PreservesZeroMorphisms where
+instance (n : ℕ) : (opcyclesFunctor k G n).Additive := inferInstance
+
 /-- The functor sending a `G`-representation `A` to `Hₙ(G, A)`. -/
-@[simps]
-noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
-  obj A := groupHomology A n
-  map {A B} φ := map (MonoidHom.id _) φ n
-  map_id A := by simp [map, groupHomology]
-  map_comp f g := by
-    simp only [← HomologicalComplex.homologyMap_comp, ← chainsMap_comp]
-    rfl
+noncomputable abbrev functor (n : ℕ) : Rep k G ⥤ ModuleCat k :=
+  chainsFunctor k G ⋙ HomologicalComplex.homologyFunctor _ _ n
 
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
   map_zero _ _ := by simp [map]
 
+instance (n : ℕ) : (functor k G n).Additive := inferInstance
+
+section LowDegree
+
+/-- The functor sending a `G`-representation `A` to its augmentation submodule. -/
+@[simps]
+noncomputable def augmentationSubmoduleFunctor : Rep k G ⥤ ModuleCat k where
+  obj X := ModuleCat.of k (augmentationSubmodule X.ρ)
+  map {X Y} f := ModuleCat.ofHom (LinearMap.restrict f.hom.hom fun x hx =>
+    (Submodule.span_le (p := Y.ρ.augmentationSubmodule.comap f.hom.hom)).2 (by
+     rintro y ⟨z, rfl⟩
+     exact mem_augmentationSubmodule_of_eq z.1 (f.hom z.2) _
+       (by simp [(hom_comm_apply f z.1 z.2).symm])) hx)
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
+/-- The functor sending a `G`-representation `A` to `Z₁(G, A)`, using a convenient expression
+for `Z₁`. -/
+@[simps]
+noncomputable def oneCyclesFunctor : Rep k G ⥤ ModuleCat k where
+  obj X := ModuleCat.of k (oneCycles X)
+  map f := mapOneCycles (MonoidHom.id G) f
+  map_id _ := by simp [mapOneCycles, shortComplexH1]
+  map_comp _ _ := by simp [mapOneCycles, ← mapShortComplexH1_id_comp, ← cyclesMap'_comp]
+
+instance : (oneCyclesFunctor k G).PreservesZeroMorphisms where
+instance : (oneCyclesFunctor k G).Additive where
+
+/-- The functor sending a `G`-representation `A` to `C₁(G, A)/B₁(G, A)`, using a convenient
+expression for `C₁/B₁`. . -/
+@[simps]
+noncomputable def oneOpcyclesFunctor : Rep k G ⥤ ModuleCat k where
+  obj X := (shortComplexH1 X).moduleCatRightHomologyData.Q
+  map f := (rightHomologyMapData' (mapShortComplexH1 (MonoidHom.id G) f) _ _).φQ
+  map_id _ := by ext; simp
+  map_comp _ _ := by ext : 1; simp [mapShortComplexH1_id_comp]
+
+instance : (oneOpcyclesFunctor k G).PreservesZeroMorphisms where
+  map_zero _ _ := by
+    simp only [oneOpcyclesFunctor_obj, oneOpcyclesFunctor_map]
+    rw [mapShortComplexH1_zero]
+    ext
+    simp
+
+instance : (oneOpcyclesFunctor k G).Additive where
+  map_add {_ _ _ _} := by
+    simp only [oneOpcyclesFunctor_obj, oneOpcyclesFunctor_map]
+    rw [mapShortComplexH1_add]
+    ext
+    simp
+
+/-- The functor sending a `G`-representation `A` to `H₁(G, A)`, using a convenient expression
+for `H₁`. . -/
+@[simps]
+noncomputable def H1Functor : Rep k G ⥤ ModuleCat k where
+  obj X := H1 X
+  map f := H1Map (MonoidHom.id G) f
+  map_comp _ _ := by rw [← H1Map_comp, congr (MonoidHom.id_comp _) H1Map]; rfl
+
+instance : (H1Functor k G).PreservesZeroMorphisms where
+  map_zero _ _ := ModuleCat.hom_ext <| by simp [H1Map]
+
+instance : (H1Functor k G).Additive where
+  map_add := ModuleCat.hom_ext <| by simp [H1Map, mapShortComplexH1_add (MonoidHom.id G)]
+
+/-- The functor sending a `G`-representation `A` to `Z₂(G, A)`, using a convenient expression
+for `Z₂`. -/
+@[simps]
+noncomputable def twoCyclesFunctor : Rep k G ⥤ ModuleCat k where
+  obj X := ModuleCat.of k (twoCycles X)
+  map f := mapTwoCycles (MonoidHom.id G) f
+  map_id _ := by simp [mapTwoCycles, shortComplexH2]
+  map_comp _ _ := by simp [mapTwoCycles, ← mapShortComplexH2_id_comp, ← cyclesMap'_comp]
+
+instance : (twoCyclesFunctor k G).PreservesZeroMorphisms where
+instance : (twoCyclesFunctor k G).Additive where
+
+/-- The functor sending a `G`-representation `A` to `C₂(G, A)/B₂(G, A)`, using a convenient
+expression for `C₂/B₂`. -/
+@[simps]
+noncomputable def twoOpcyclesFunctor : Rep k G ⥤ ModuleCat k where
+  obj X := (shortComplexH2 X).moduleCatRightHomologyData.Q
+  map f := (rightHomologyMapData' (mapShortComplexH2 (MonoidHom.id G) f) _ _).φQ
+  map_id _ := by ext; simp
+  map_comp _ _ := by ext : 1; simp [mapShortComplexH2_id_comp]
+
+instance : (twoOpcyclesFunctor k G).PreservesZeroMorphisms where
+  map_zero _ _ := by
+    simp only [twoOpcyclesFunctor_obj, twoOpcyclesFunctor_map]
+    rw [mapShortComplexH2_zero]
+    ext
+    simp
+
+instance : (twoOpcyclesFunctor k G).Additive where
+  map_add {_ _ _ _} := by
+    simp only [twoOpcyclesFunctor_obj, twoOpcyclesFunctor_map]
+    rw [mapShortComplexH2_add]
+    ext
+    simp
+
+/-- The functor sending a `G`-representation `A` to `H₂(G, A)`, using a convenient expression
+for `H₂`. -/
+@[simps]
+noncomputable def H2Functor : Rep k G ⥤ ModuleCat k where
+  obj X := H2 X
+  map f := H2Map (MonoidHom.id G) f
+  map_comp _ _ := by rw [← H2Map_comp, congr (MonoidHom.id_comp _) H2Map]; rfl
+
+instance : (H2Functor k G).PreservesZeroMorphisms where
+  map_zero _ _ := ModuleCat.hom_ext <| by simp [H2Map]
+
+instance : (H2Functor k G).Additive where
+  map_add := ModuleCat.hom_ext <| by simp [H2Map, mapShortComplexH2_add (MonoidHom.id G)]
+
+end LowDegree
+section NatIsos
+
+/-- The functor sending a `G`-representation `A` to `H₀(G, A) := A_G` is naturally isomorphic to
+the general group homology functor at 0. -/
+@[simps! hom_app inv_app]
+noncomputable def isoCoinvariantsFunctor :
+    functor k G 0 ≅ coinvariantsFunctor k G :=
+  NatIso.ofComponents (fun _ => isoH0 _) fun f => by simp [H0Map_eq_coinvariantsMap]
+
+/-- The functor sending a `G`-representation `A` to its 0th cycles is naturally isomorphic to the
+forgetful functor `Rep k G ⥤ ModuleCat k`. -/
+@[simps! hom_app inv_app]
+noncomputable def zeroCyclesFunctorIso :
+    cyclesFunctor k G 0 ≅ Action.forget (ModuleCat k) G :=
+  NatIso.ofComponents (fun A => isoZeroCycles A) fun f => by
+    have := chainsMap_f_0_comp_zeroChainsIso (MonoidHom.id G) f
+    simp_all [isoZeroCycles]
+
+/-- The functor sending a `G`-representation `A` to its 0th opcycles is naturally isomorphic to the
+coinvariants functor `Rep k G ⥤ ModuleCat k`. -/
+@[simps! hom_app inv_app]
+noncomputable def zeroOpcyclesFunctorIso :
+    opcyclesFunctor k G 0 ≅ coinvariantsFunctor k G :=
+  NatIso.ofComponents (fun A => isoZeroOpcycles A) fun {X Y} f => by
+    have := chainsMap_f_0_comp_zeroChainsIso_assoc (MonoidHom.id G) f (H0π _)
+    simp_all [← cancel_epi (HomologicalComplex.pOpcycles _ _), ← H0Map_eq_coinvariantsMap]
+
+@[reassoc, elementwise]
+theorem pOpcycles_comp_zeroOpcyclesFunctorIso_hom_app :
+    (inhomogeneousChains A).pOpcycles 0 ≫ (zeroOpcyclesFunctorIso k G).hom.app A =
+      (zeroChainsIso A).hom ≫ (shortComplexH0 A).g := by
+  simp
+
+/-- The functor sending a `G`-representation `A` to `Z₁(G, A)` is naturally isomorphic to the
+general cycles functor at 1. -/
+@[simps! hom_app inv_app]
+noncomputable def isoOneCyclesFunctor :
+    cyclesFunctor k G 1 ≅ oneCyclesFunctor k G :=
+  NatIso.ofComponents (fun _ => isoOneCycles _) fun f => by simp
+
+/-- The functor sending a `G`-representation `A` to `C₁(G, A)/B₁(G, A)` is naturally isomorphic to
+the general opcocycles functor at 1. -/
+@[simps! hom_app inv_app]
+noncomputable def isoOneOpcyclesFunctor :
+    opcyclesFunctor k G 1 ≅ oneOpcyclesFunctor k G :=
+  NatIso.ofComponents
+    (fun A => (inhomogeneousChains A).opcyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫ opcyclesMapIso
+      (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatOpcyclesIso) fun f =>
+        (cancel_epi (pOpcycles _)).1 <| ModuleCat.hom_ext <| Finsupp.lhom_ext fun a b => by
+        have := congr($(chainsMap_f_1_comp_oneChainsIso (MonoidHom.id G) f) (single a b))
+        simp_all [HomologicalComplex.opcyclesIsoSc', HomologicalComplex.opcyclesMap,
+          shortComplexH1]
+
+@[reassoc, elementwise]
+theorem pOpcycles_comp_isoOneOpcyclesFunctor_hom_app :
+    (inhomogeneousChains A).pOpcycles 1 ≫ (isoOneOpcyclesFunctor k G).hom.app A =
+      (oneChainsIso _).hom ≫ (shortComplexH1 A).moduleCatRightHomologyData.p := by
+  simp
+
+/-- The functor sending a `G`-representation `A` to `H₁(G, A)` is naturally isomorphic to the
+general group homology functor at 1. -/
+@[simps! hom_app inv_app]
+noncomputable def isoH1Functor :
+    functor k G 1 ≅ H1Functor k G :=
+  NatIso.ofComponents (fun _ => isoH1 _) fun f => by simp
+
+/-- The functor sending a `G`-representation `A` to `Z₂(G, A)` is naturally isomorphic to the
+general cycles functor at 2. -/
+@[simps! hom_app inv_app]
+noncomputable def isoTwoCyclesFunctor :
+    cyclesFunctor k G 2 ≅ twoCyclesFunctor k G :=
+  NatIso.ofComponents (fun _ => isoTwoCycles _) fun f => by simp
+
+/-- The functor sending a `G`-representation `A` to `C₂(G, A)/B₂(G, A)` is naturally isomorphic to
+the general opcocycles functor at 2. -/
+@[simps! hom_app inv_app]
+noncomputable def isoTwoOpcyclesFunctor :
+    opcyclesFunctor k G 2 ≅ twoOpcyclesFunctor k G :=
+  NatIso.ofComponents
+    (fun A => (inhomogeneousChains A).opcyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫ opcyclesMapIso
+      (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatOpcyclesIso) fun f =>
+        (cancel_epi (pOpcycles _)).1 <| ModuleCat.hom_ext <| Finsupp.lhom_ext fun a b => by
+        have := congr($(chainsMap_f_2_comp_twoChainsIso (MonoidHom.id G) f) (single a b))
+        simp_all [HomologicalComplex.opcyclesIsoSc', HomologicalComplex.opcyclesMap,
+          shortComplexH2]
+
+@[reassoc, elementwise]
+theorem pOpcycles_comp_isoTwoOpcyclesFunctor_hom_app :
+    (inhomogeneousChains A).pOpcycles 2 ≫ (isoTwoOpcyclesFunctor k G).hom.app A =
+      (twoChainsIso _).hom ≫ (shortComplexH2 A).moduleCatRightHomologyData.p := by
+  simp
+
+/-- The functor sending a `G`-representation `A` to `H₂(G, A)` is naturally isomorphic to the
+general group homology functor at 2. -/
+@[simps! hom_app inv_app]
+noncomputable def isoH2Functor :
+    functor k G 2 ≅ H2Functor k G :=
+  NatIso.ofComponents (fun _ => isoH2 _) fun f => by simp
+
+end NatIsos
+end Functors
 end groupHomology
