@@ -36,7 +36,13 @@ def pull ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj 
     (F.map gf₁.op.toLoc).obj M₁ ⟶ (F.map gf₂.op.toLoc).obj M₂ :=
   (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by aesoptoloc)).hom.app _ ≫
     (F.map g.op.toLoc).map φ ≫
-    (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesoptoloc)).inv.app _
+      (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesoptoloc)).inv.app _
+
+/-@[simp]
+lemma pull_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
+    ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
+    (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) :
+      pull φ (𝟙 _) f₁ f₂ = φ := sorry-/
 
 end DescentData
 

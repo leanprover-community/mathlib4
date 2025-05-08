@@ -76,9 +76,9 @@ variable {obj : ∀ (i : ι), F.obj (.mk (op (X i)))}
     (F.map (sq i j).p₂.op.toLoc).obj (obj j))
 
 @[simp]
-lemma pullHom_p₁_p₂ (i : ι) :
-    pullHom hom (sq i i).p (sq i i).p₁ (sq i i).p₂ (by simp) (by simp) = hom i i := by
-  rw [pullHom_eq_pull hom (sq i i).p (sq i i).p₁ (sq i i).p₂ (by simp) (by simp)
+lemma pullHom_p₁_p₂ (i₁ i₂ : ι) :
+    pullHom hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (by simp) (by simp) = hom i₁ i₂ := by
+  rw [pullHom_eq_pull hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (by simp) (by simp)
     (𝟙 _) (by simp)  (by simp)]
   simp [DescentData.pull, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app]
 
@@ -223,6 +223,7 @@ noncomputable def descentData (D : F.DescentData' sq sq₃) : F.DescentData f wh
   pull_hom _ _ _ _ _ hq _ _ _ _ _ _ _ _ hgf₁ hgf₂ :=
     pull_pullHom _ _ _ _ hq _ _ _ _ _ _ hgf₁ hgf₂
 
+variable (sq sq₃) in
 @[simps]
 def ofDescentData (D : F.DescentData f) : F.DescentData' sq sq₃ where
   obj := D.obj
@@ -241,6 +242,20 @@ def ofDescentData (D : F.DescentData f) : F.DescentData' sq sq₃ where
       D.hom_comp]
     all_goals aesop
 
+variable (sq sq₃) in
+@[simp]
+lemma pullHom_ofDescentData_hom (D : F.DescentData f)
+    ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
+    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q):
+    pullHom (ofDescentData sq sq₃ D).hom q f₁ f₂ hf₁ hf₂ = D.hom q f₁ f₂ hf₁ hf₂ := by
+  obtain ⟨p, h₁, h₂⟩ := (sq i₁ i₂).isPullback.exists_lift f₁ f₂ (by aesop)
+  rw [pullHom_eq_pull _ _ _ _ _ _ p (by aesop) (by aesop)]
+  dsimp
+  rw [D.pull_hom _ _ _ (by rw [← (sq i₁ i₂).hp₁, reassoc_of% h₁, hf₁]) _ _
+    (by simp) (by simp) _ _ h₁ h₂]
+
+variable (F sq sq₃)
+
 @[simps]
 noncomputable def toDescentDataFunctor : F.DescentData' sq sq₃ ⥤ F.DescentData f where
   obj D := D.descentData
@@ -250,13 +265,20 @@ noncomputable def toDescentDataFunctor : F.DescentData' sq sq₃ ⥤ F.DescentDa
 
 @[simps]
 noncomputable def fromDescentDataFunctor : F.DescentData f ⥤ F.DescentData' sq sq₃ where
-  obj D := .ofDescentData D
+  obj D := .ofDescentData _ _ D
   map {D₁ D₂} φ :=
     { hom := φ.hom
       comm i₁ i₂ := by
         rw [pullHom_eq_pull _ _ _ _ _ _ (𝟙 _) (by simp) (by simp),
           pullHom_eq_pull _ _ _ _ _ _ (𝟙 _) (by simp) (by simp)]
         simp }
+
+@[simps]
+noncomputable def descentDataEquivalence : F.DescentData' sq sq₃ ≌ F.DescentData f where
+  functor := toDescentDataFunctor _ _ _
+  inverse := fromDescentDataFunctor _ _ _
+  unitIso := NatIso.ofComponents (fun D ↦ isoMk (fun _ ↦ Iso.refl _))
+  counitIso := NatIso.ofComponents (fun D ↦ DescentData.isoMk (fun _ ↦ Iso.refl _))
 
 end DescentData'
 
