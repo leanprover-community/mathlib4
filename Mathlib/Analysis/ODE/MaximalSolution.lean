@@ -319,6 +319,76 @@ lemma IsODESolution.subset_maximal_domain_with_lipschitz
   rw [h_maximal_implies_eq]
   exact subset_union_left
 
+/--
+If `(f₁, I₁)` and `(f₂, I₂)` are two maximal solutions to the same ODE `y' = v(t,y)`
+passing through `(t₀, x₀)`, and `v(t,·)` is Lipschitz continuous with a uniform constant `K_const`
+on the union of their domains `I₁ ∪ I₂`, then the maximal solutions are identical:
+their domains are equal (`I₁ = I₂`), and the functions agree on this common domain.
+-/
+theorem IsMaximalODESolution.unique
+    {f₁ f₂ : ℝ → E} {I₁ I₂ : Set ℝ}
+    (h₁_max : IsMaximalODESolution v t₀ x₀ f₁ I₁)
+    (h₂_max : IsMaximalODESolution v t₀ x₀ f₂ I₂)
+    (K_const : ℝ≥0)
+    (h_v_lipschitz_on_union :
+        ∀ (t_val : ℝ) (_ : t_val ∈ I₁ ∪ I₂), LipschitzWith K_const (v t_val)) :
+    I₁ = I₂ ∧ EqOn f₁ f₂ I₁ := by
+  -- The Lipschitz condition on `v` also holds on the intersection `I₁ ∩ I₂`,
+  -- as `I₁ ∩ I₂ ⊆ I₁ ∪ I₂`.
+  have h_v_lipschitz_on_inter :
+      ∀ (t_val : ℝ) (_ : t_val ∈ I₁ ∩ I₂), LipschitzWith K_const (v t_val) := by
+    intro t_val ht_in_inter
+    exact h_v_lipschitz_on_union t_val (mem_union_left I₂ ht_in_inter.1)
+
+  -- Show I₁ ⊆ I₂:
+  -- `h₁_max.toIsODESolution` is a solution on `I₁`.
+  -- `h₂_max` is a maximal solution on `I₂`.
+  -- By `subset_maximal_domain_with_lipschitz`, the domain of any solution is a subset
+  -- of the domain of a maximal solution, given Lipschitz continuity on the intersection.
+  have h_I₁_subset_I₂ : I₁ ⊆ I₂ :=
+    IsODESolution.subset_maximal_domain_with_lipschitz v t₀ x₀
+      h₁_max.toIsODESolution h₂_max K_const h_v_lipschitz_on_inter
+
+  -- Show I₂ ⊆ I₁ by a symmetric argument:
+  -- `h₂_max.toIsODESolution` is a solution on `I₂`.
+  -- `h₁_max` is a maximal solution on `I₁`.
+  -- The Lipschitz condition on `I₂ ∩ I₁` is the same as on `I₁ ∩ I₂`.
+  have h_v_lipschitz_on_inter_symm :
+      ∀ (t_val : ℝ) (_ : t_val ∈ I₂ ∩ I₁), LipschitzWith K_const (v t_val) := by
+    intro t_val ht_in_inter_symm
+    rw [inter_comm] at ht_in_inter_symm
+    exact h_v_lipschitz_on_inter t_val ht_in_inter_symm
+  have h_I₂_subset_I₁ : I₂ ⊆ I₁ :=
+    IsODESolution.subset_maximal_domain_with_lipschitz v t₀ x₀
+      h₂_max.toIsODESolution h₁_max K_const h_v_lipschitz_on_inter_symm
+
+  -- From `I₁ ⊆ I₂` and `I₂ ⊆ I₁`, conclude that the domains are equal.
+  have h_I_eq : I₁ = I₂ := Set.Subset.antisymm h_I₁_subset_I₂ h_I₂_subset_I₁
+
+  -- Now show that the functions `f₁` and `f₂` agree on this common domain `I₁`.
+  -- The Lipschitz condition `h_v_lipschitz_on_union`
+  -- implies Lipschitz on `I₁` (since `I₁ ⊆ I₁ ∪ I₂`).
+  have h_v_lipschitz_on_I₁ : ∀ (t_val : ℝ) (_ : t_val ∈ I₁), LipschitzWith K_const (v t_val) := by
+    intro t_val ht_in_I₁
+    exact h_v_lipschitz_on_union t_val (mem_union_left I₂ ht_in_I₁)
+
+  -- Apply `eqOn_of_agree_at_t₀_of_lipschitz` to solutions `h₁_max.toIsODESolution` (on `I₁`)
+  -- and `(h_I_eq ▸ h₂_max.toIsODESolution)` (which is `h₂_max` viewed as a solution on `I₁`).
+  -- The intersection of their domains is `I₁ ∩ I₁ = I₁`.
+  -- The Lipschitz condition is needed on this intersection (`I₁`).
+  have h_eq_on_I₁ : EqOn f₁ f₂ (I₁ ∩ I₁) :=
+    IsODESolution.eqOn_of_agree_at_t₀_of_lipschitz v t₀ x₀
+      h₁_max.toIsODESolution
+      (h_I_eq ▸ h₂_max.toIsODESolution) -- Casts h₂_max to be a solution on I₁
+      K_const
+      (by -- Provides the Lipschitz hypothesis on I₁ ∩ I₁ (which is I₁)
+        intro t_val ht_in_I₁_inter_I₁
+        exact h_v_lipschitz_on_I₁ t_val ht_in_I₁_inter_I₁.1)
+  rw [inter_self] at h_eq_on_I₁ -- Simplifies EqOn f₁ f₂ (I₁ ∩ I₁) to EqOn f₁ f₂ I₁
+
+  -- Combine the equality of domains and the agreement of functions.
+  exact ⟨h_I_eq, h_eq_on_I₁⟩
+
 /-! ### Proof of Existence of Maximal Solutions -/
 
 namespace MaximalSolutionExistence
