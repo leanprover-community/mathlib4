@@ -313,11 +313,26 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
     simp
   · exact hb'
 
+lemma IsBasis.exists_finite_of_isCompact {B : Set (Opens α)} (hB : IsBasis B) {U : Opens α}
+    (hU : IsCompact U.1) : ∃ Us ⊆ B, Us.Finite ∧ U = sSup Us := by
+  classical
+  obtain ⟨Us', hsub, hsup⟩ := isBasis_iff_cover.mp hB U
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.1) (fun s ↦ s.1.2) (by simp [hsup])
+  refine ⟨Finset.image Subtype.val t, subset_trans (by simp) hsub, Finset.finite_toSet _, ?_⟩
+  exact le_antisymm (subset_trans ht (by simp)) (le_trans (sSup_le_sSup (by simp)) hsup.ge)
+
 lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
     {Us : Set (Opens α)} (hUs : @IsBasis α t₂ Us) :
     t₁ ≤ t₂ ↔ ∀ U ∈ Us, IsOpen[t₁] U := by
   conv_lhs => rw [hUs.eq_generateFrom]
   simp [Set.subset_def, le_generateFrom_iff_subset_isOpen]
+
+lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)]
+    {B : ∀ i, Set (Opens (α i))} (hB : ∀ i, IsBasis (B i)) :
+    IsBasis (⋃ i : ι, (fun U ↦ ⟨Sigma.mk i '' U.1, isOpenMap_sigmaMk _ U.2⟩) '' B i) := by
+  convert TopologicalSpace.IsTopologicalBasis.sigma hB
+  simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
+  aesop
 
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
@@ -335,6 +350,30 @@ theorem isCompactElement_iff (s : Opens α) :
     simp only [Set.iUnion_subset_iff]
     show ∀ i ∈ t, U i ≤ t.sup U
     exact fun i => Finset.le_sup
+
+/-- If `X` has a basis of compact opens and `f : X → S` is open, every
+compact open of `S` is the image of a compact open of `X`. -/
+lemma _root_.IsOpenMap.exists_opens_image_eq_of_isBasis (f : α → β) {B : Set (Opens α)}
+    (hB : IsBasis B) (hBc : ∀ U ∈ B, IsCompact U.1) (hfc : Continuous f) (h : IsOpenMap f)
+    {U : Set β} (hs : U ⊆ Set.range f) (hU : IsOpen U) (hc : IsCompact U) :
+    ∃ (V : Opens α), IsCompact V.1 ∧ f '' V = U := by
+  obtain ⟨Us, hUs, heq⟩ := isBasis_iff_cover.mp hB ⟨f ⁻¹' U, hU.preimage hfc⟩
+  obtain ⟨t, ht⟩ := by
+    refine hc.elim_finite_subcover (fun s : Us ↦ f '' s.1) (fun s ↦ h _ s.1.2) (fun x hx ↦ ?_)
+    obtain ⟨x, rfl⟩ := hs hx
+    obtain ⟨i, hi, hx⟩ := mem_sSup.mp <| by rwa [← heq]
+    exact Set.mem_iUnion.mpr ⟨⟨i, hi⟩, x, hx, rfl⟩
+  refine ⟨⨆ s ∈ t, s.1, ?_, ?_⟩
+  · simp only [iSup_mk, carrier_eq_coe, coe_mk]
+    exact t.finite_toSet.isCompact_biUnion fun i _ ↦ hBc _ (hUs i.2)
+  · simp only [iSup_mk, carrier_eq_coe, Set.iUnion_coe_set, coe_mk, Set.image_iUnion]
+    convert_to ⋃ i ∈ t, f '' i.1 = U
+    · aesop
+    · refine subset_antisymm (fun x ↦ ?_) ht
+      simp_rw [Set.mem_iUnion]
+      rintro ⟨i, hi, x, hx, rfl⟩
+      have := heq ▸ mem_sSup.mpr ⟨i.1, i.2, hx⟩
+      exact this
 
 /-- The preimage of an open set, as an open set. -/
 def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where

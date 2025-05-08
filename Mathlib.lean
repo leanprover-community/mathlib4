@@ -6226,6 +6226,7 @@ import Mathlib.Topology.Separation.Regular
 import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Sequences
 import Mathlib.Topology.Sets.Closeds
+import Mathlib.Topology.Sets.CompactOpenCovered
 import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Sets.OpenCover
 import Mathlib.Topology.Sets.Opens
