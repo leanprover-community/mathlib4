@@ -35,7 +35,7 @@ namespace Pseudofunctor
 
 variable {C : Type*} [Category C] (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) (Adj Cat))
 
-namespace ToAdjCat
+namespace LocallyDiscreteToAdjCat
 
 set_option quotPrecheck false in
 scoped notation g:80 " _* " M:81 => ((_ : Pseudofunctor _ (Adj Cat)).map
@@ -45,9 +45,9 @@ set_option quotPrecheck false in
 scoped notation g:80 " ^* " M:81 => ((_ : Pseudofunctor _ (Adj Cat)).map
   (Quiver.Hom.op g).toLoc).f.obj M
 
-end ToAdjCat
+end LocallyDiscreteToAdjCat
 
-open ToAdjCat
+open LocallyDiscreteToAdjCat
 
 structure DescentDataAsCoalgebra {ι : Type*} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S) where
   obj (i : ι) : (F.obj (.mk (op (X i)))).obj
