@@ -3,18 +3,21 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+import Mathlib.Geometry.Euclidean.Projection
 
 /-!
 # Altitudes of a simplex
 
-This file defines the altitudes of a simplex.
+This file defines the altitudes of a simplex and their feet.
 
 ## Main definitions
 
 * `altitude` is the line that passes through a vertex of a simplex and
   is orthogonal to the opposite face.
+
+* `altitudeFoot` is the orthogonal projection of a vertex of a simplex onto the opposite face.
+
+* `height` is the distance between a vertex of a simplex and its `altitudeFoot`.
 
 ## References
 
@@ -28,7 +31,7 @@ namespace Affine
 
 namespace Simplex
 
-open Finset AffineSubspace
+open Finset AffineSubspace EuclideanGeometry
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -120,6 +123,52 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} (s : Simplex ℝ P (n + 1)) (i
     · rw [finrank_direction_altitude, finrank_span_set_eq_card]
       · simp
       · exact LinearIndepOn.id_singleton _ <| by simpa using hne
+
+/-- The foot of an altitude is the orthogonal projection of a vertex of a simplex onto the
+opposite face. -/
+def altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : P :=
+  (s.faceOpposite i).orthogonalProjectionSpan (s.points i)
+
+@[simp] lemma ne_altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) :
+    s.points i ≠ s.altitudeFoot i := by
+  intro h
+  rw [eq_comm, altitudeFoot, orthogonalProjectionSpan, orthogonalProjection_eq_self_iff,
+    mem_affineSpan_range_faceOpposite_points_iff] at h
+  simp at h
+
+lemma altitudeFoot_mem_affineSpan_faceOpposite {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
+    (i : Fin (n + 1)) : s.altitudeFoot i ∈ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
+  orthogonalProjection_mem _
+
+lemma altitudeFoot_mem_affineSpan {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
+    (i : Fin (n + 1)) : s.altitudeFoot i ∈ affineSpan ℝ (Set.range s.points) := by
+  refine SetLike.le_def.1 (affineSpan_mono _ ?_) (s.altitudeFoot_mem_affineSpan_faceOpposite _)
+  simp
+
+lemma affineSpan_pair_altitudeFoot_eq_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
+    line[ℝ, s.altitudeFoot i, s.points i] = s.altitude i := by
+  rw [affineSpan_pair_eq_altitude_iff]
+  refine ⟨(s.ne_altitudeFoot i).symm, s.altitudeFoot_mem_affineSpan _, ?_⟩
+  rw [altitudeFoot, orthogonalProjectionSpan]
+  convert orthogonalProjection_vsub_mem_direction_orthogonal
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)) _
+  rw [range_faceOpposite_points]
+  convert rfl using 2
+  ext j
+  simp
+
+lemma altitudeFoot_mem_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
+    s.altitudeFoot i ∈ s.altitude i := by
+  rw [← affineSpan_pair_altitudeFoot_eq_altitude]
+  exact left_mem_affineSpan_pair _ _ _
+
+/-- The height of a vertex of a simplex is the distance between it and the foot of the altitude
+from that vertex. -/
+def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
+  dist (s.points i) (s.altitudeFoot i)
+
+lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
+  simp [height]
 
 end Simplex
 
