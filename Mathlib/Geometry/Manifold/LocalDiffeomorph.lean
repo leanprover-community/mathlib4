@@ -352,3 +352,62 @@ noncomputable def IslocalDiffeomorph.diffeomorph_of_bijective
       exact this ▸ (Φ x).map_source hx }
 
 end Basic
+
+section helper -- FIXME: move to Algebra.Module.Basic
+variable {R : Type*} [Ring R]
+variable {E : Type*} [TopologicalSpace E] [AddCommMonoid E] [Module R E]
+variable {F : Type*} [TopologicalSpace F] [AddCommMonoid F] [Module R F]
+
+/-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
+lemma LeftInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
+    (hinv : g.comp f = ContinuousLinearMap.id R E) : Function.LeftInverse g f := by
+  have : g ∘ f = id := calc g ∘ f
+      _ = ↑(g.comp f) := by rw [ContinuousLinearMap.coe_comp']
+      _ = ↑( ContinuousLinearMap.id R E) := by rw [hinv]
+      _ = id := by rw [ContinuousLinearMap.coe_id']
+  exact congrFun this
+
+/-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
+lemma RightInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
+    (hinv : f.comp g = ContinuousLinearMap.id R F) : Function.RightInverse g f :=
+  LeftInverse.of_composition hinv
+
+end helper
+
+variable {f : M → N} {s : Set M} {x : M}
+
+variable {I I' J n} in
+/-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≥ 1`,
+  the differential `df_x` is a linear equivalence. -/
+noncomputable def IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
+    (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
+    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) where
+  toFun := mfderiv I J f x
+  invFun := mfderiv J I hf.localInverse (f x)
+  left_inv := by
+    apply LeftInverse.of_composition
+    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_left.mfderiv_eq]
+    have hf'' : MDifferentiableAt I J f x := hf.mdifferentiableAt hn
+    have hg'' : MDifferentiableAt J I hf.localInverse (f x) := hf.localInverse_mdifferentiableAt hn
+    symm
+    --apply mfderiv_comp (g := f) (f := hf.localInverse) (x := f x) (I := J) (I'' := J) (I' := I)
+    sorry -- apply mfderiv_comp hg'' hf''
+  right_inv := by
+    apply RightInverse.of_composition
+    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_right.mfderiv_eq]
+    have hf'' : MDifferentiableAt I J f x := hf.mdifferentiableAt hn
+    have hf''' : MDifferentiableAt I J f (hf.localInverse (f x)) := sorry -- hf.mdifferentiableAt hn
+    have hg'' : MDifferentiableAt J I hf.localInverse (f x) := hf.localInverse_mdifferentiableAt hn
+    symm
+    --#check mfderiv_comp hf''' hg''
+    --apply mfderiv_comp (g := f) (f := hf.localInverse) (x := f x) (I := J) (I'' := J) (I' := I)
+    sorry
+  continuous_toFun := (mfderiv I J f x).cont
+  continuous_invFun := (mfderiv J I hf.localInverse (f x)).cont
+  map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add _ x_1 y
+  map_smul' := by intros; simp
+
+variable {I I' J n} in
+@[simp, mfld_simps]
+lemma mfderiv_toContinuousLinearEquiv_coe (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
+    hf.mfderiv_toContinuousLinearEquiv hn = mfderiv I J f x := rfl
