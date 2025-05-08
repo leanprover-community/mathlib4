@@ -145,7 +145,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
       _ = ∫ x in t, φ i x * δ ∂μ := by
         apply setIntegral_congr_fun ht fun x hx => ?_
         rw [Real.norm_of_nonneg (hφpos _ (hts hx))]
-      _ = (∫ x in t, φ i x ∂μ) * δ := by rw [integral_mul_right]
+      _ = (∫ x in t, φ i x ∂μ) * δ := by rw [integral_mul_const]
       _ ≤ 2 * δ := by gcongr; linarith [(le_abs_self _).trans h'i.le]
   have C : ‖∫ x in s \ u, φ i x • g x ∂μ‖ ≤ δ * ∫ x in s, ‖g x‖ ∂μ :=
     calc
@@ -159,7 +159,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
         apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
         simpa only [Pi.zero_apply, dist_zero_left] using (hi x hx).le
       _ ≤ δ * ∫ x in s, ‖g x‖ ∂μ := by
-        rw [integral_mul_left]
+        rw [integral_const_mul]
         apply mul_le_mul_of_nonneg_left (setIntegral_mono_set hmg.norm _ _) δpos.le
         · filter_upwards with x using norm_nonneg _
         · filter_upwards using diff_subset (s := s) (t := u)
@@ -276,7 +276,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     apply (hμ u u_open x₀_u).trans_le
     exact measure_mono fun x hx => ⟨ne_of_gt (pow_pos (a := c x) (hu hx) _), hx.2⟩
   have hiφ : ∀ n, ∫ x in s, φ n x ∂μ = 1 := fun n => by
-    rw [integral_mul_left, inv_mul_cancel₀ (P n).ne']
+    rw [integral_const_mul, inv_mul_cancel₀ (P n).ne']
   have A : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 atTop (s \ u) := by
     intro u u_open x₀u
     obtain ⟨t, t_pos, tx₀, ht⟩ : ∃ t, 0 ≤ t ∧ t < c x₀ ∧ ∀ x ∈ s \ u, c x ≤ t := by
@@ -433,7 +433,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
       exact (aecover_closedBall tendsto_id).integral_tendsto_of_countably_generated I
     apply this.congr'
     filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
-    rw [integral_mul_left, setIntegral_comp_smul_of_pos _ _ _ hc, smul_eq_mul, ← mul_assoc,
+    rw [integral_const_mul, setIntegral_comp_smul_of_pos _ _ _ hc, smul_eq_mul, ← mul_assoc,
       mul_inv_cancel₀ (by positivity), _root_.smul_closedBall _ _ zero_le_one]
     simp [abs_of_nonneg hc.le]
   · filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)

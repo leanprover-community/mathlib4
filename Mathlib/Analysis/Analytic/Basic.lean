@@ -1322,6 +1322,14 @@ protected theorem AnalyticAt.continuousAt (hf : AnalyticAt 𝕜 f x) : Continuou
   let ⟨_, hp⟩ := hf
   hp.continuousAt
 
+protected theorem AnalyticAt.eventually_continuousAt (hf : AnalyticAt 𝕜 f x) :
+    ∀ᶠ y in 𝓝 x, ContinuousAt f y := by
+  rcases hf with ⟨g, r, hg⟩
+  have : EMetric.ball x r ∈ 𝓝 x := EMetric.ball_mem_nhds _ hg.r_pos
+  filter_upwards [this] with y hy
+  apply hg.continuousOn.continuousAt
+  exact EMetric.isOpen_ball.mem_nhds hy
+
 protected theorem AnalyticOnNhd.continuousOn {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) :
     ContinuousOn f s :=
   fun x hx => (hf x hx).continuousAt.continuousWithinAt
