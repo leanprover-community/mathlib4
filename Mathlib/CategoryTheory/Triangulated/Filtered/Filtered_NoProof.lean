@@ -175,6 +175,8 @@ variable {C}
 variable [∀ p : ℤ × ℤ, Functor.Additive (CategoryTheory.shiftFunctor C p)]
   [hC : Pretriangulated C] [hP : FilteredTriangulated C]
 
+instance (n : ℤ) : (shiftFunctor₂ C n).IsTriangulated := hP.shift₂_triangle n
+
 lemma LE_monotone : Monotone (fun n ↦ (hP.LE n).P) := by
   let H := fun (a : ℕ) => ∀ (n : ℤ), (LE n).P ≤ (hP.LE (n + a)).P
   suffices ∀ (a : ℕ), H a by
@@ -535,7 +537,7 @@ def truncLEGEToGELE (a b : ℤ) : truncLEGE (C := C) a b ⟶ truncGELE a b := by
     whiskerLeft (reflector (FilteredTriangulated.LE b).P.ι) (𝟙 _)  ≫
     (Functor.associator _ _ _).inv
 
-lemma truncLEGEIsoGELE (a b : ℤ) : IsIso (truncLEGEToGELE a b (C := C)) := sorry
+instance truncLEGEIsoGELE (a b : ℤ) : IsIso (truncLEGEToGELE a b (C := C)) := sorry
 
 lemma truncLEGEToGELE_comm (a b : ℤ) :
     truncGEι (C := C) b ≫ truncLEπ a =
@@ -644,6 +646,7 @@ abbrev shiftFunctor₂' (n m n' : ℤ) (h : n' + m = n) :
       map_id X := (shiftFunctor₂ C m).map_id X.1
       map_comp := (shiftFunctor₂ C m).map_comp
 
+-- Maybe this construction and the next should use `conjugateEquiv` instead?
 def truncLE_commShift_hom (n m n' : ℤ) (h : n' + m = n) :
     shiftFunctor₂ C m ⋙ truncLE n ⟶ truncLE n' ⋙ shiftFunctor₂ C m := by
   set u : TwoSquare (FilteredTriangulated.LE (C := C) n').P.ι (shiftFunctor₂' C n m n' h)
@@ -725,29 +728,30 @@ variable (L : isFilteredTriangulated_over C A)
 
 def ForgetFiltration (L : isFilteredTriangulated_over C A) : C ⥤ A := sorry
 
--- The functor should be triangulated.
--- (This actually follows from the other conditions, but is
--- not stated in the paper. Note that the first instance contains
--- data!)
-
-instance : (ForgetFiltration L).CommShift ℤ := sorry
-
-instance : (ForgetFiltration L).IsTriangulated := sorry
-
 -- Property (a). Note that this is an existence statement (it asserts the existence
 -- of an adjunction).
 
 def ForgetFiltration_leftAdjoint :
-    Adjunction (fullSubcategoryInclusion (fun (X : C) ↦ IsLE X 0) ⋙ ForgetFiltration L)
-    (FullSubcategory.lift _ L.functor
+    Adjunction (ObjectProperty.ι (fun (X : C) ↦ IsLE X 0) ⋙ ForgetFiltration L)
+    (ObjectProperty.lift _ L.functor
     (fun X ↦ (isFilteredTriangulated_over_image L X).1)) := sorry
 
 -- Property (b). Same remark as for (a).
 
 def ForgetFiltration_rightAdjoint :
-    Adjunction (FullSubcategory.lift _ L.functor
+    Adjunction (ObjectProperty.lift _ L.functor
     (fun X ↦ (isFilteredTriangulated_over_image L X).2))
-    (fullSubcategoryInclusion (fun (X : C) ↦ IsGE X 0) ⋙ ForgetFiltration L) := sorry
+    (ObjectProperty.ι (fun (X : C) ↦ IsGE X 0) ⋙ ForgetFiltration L) := sorry
+
+/-
+Property (a) gives an isomorphism `L.functor ≫ ForgetFiltration ≅ 𝟭 A` (by taking the counit
+of the adjunction), and property (b) gives an isomorphism in the other direction
+(by taking the unit of the adjunction). Although this is not stated in the paper, we want these
+isomorphisms to be inverses of each other.
+-/
+
+lemma ForgetFiltration_iso_comp :
+    (ForgetFiltration_rightAdjoint L).unit ≫ (ForgetFiltration_leftAdjoint L).counit = 𝟙 _ := sorry
 
 -- Property (c).
 
@@ -765,27 +769,37 @@ def ForgetFiltration_commShift :
 lemma ForgetFiltration_ff (X Y : C) (hX : IsLE X 0) (hY : IsGE Y 0) :
     Function.Bijective (fun (f : X ⟶ Y) ↦ (ForgetFiltration L).map f) := sorry
 
+-- The functor should also be triangulated.
+-- (This actually follows from the other conditions, but is
+-- not stated in the paper. Note that the first instance contains
+-- data! So I am actually cheating here, because the data is determined
+-- by the other properties of `ForgetFiltration`.)
+
+instance : (ForgetFiltration L).CommShift ℤ := sorry
+
+instance : (ForgetFiltration L).IsTriangulated := sorry
+
 -- The uniqueness statements are painful to state because we don't just want an
 -- isomorphism, we want it to respect the extra structure (i.e. the adjunction).
 
 def ForgetFiltration_uniq_left (G : C ⥤ A)
-    (left_adj : Adjunction (fullSubcategoryInclusion (fun (X : C) ↦ IsLE X 0) ⋙ G)
-    (FullSubcategory.lift _ L.functor
+    (left_adj : Adjunction (ObjectProperty.ι (fun (X : C) ↦ IsLE X 0) ⋙ G)
+    (ObjectProperty.lift _ L.functor
     (fun X ↦ (isFilteredTriangulated_over_image L X).1)))
     (shift : ∀ (X : C), IsIso (G.map (hCP.α.app X))) :
     ForgetFiltration L ≅ G := sorry
 
 lemma ForgetFiltration_uniq_left_compat (G : C ⥤ A)
-    (left_adj : Adjunction (fullSubcategoryInclusion (fun (X : C) ↦ IsLE X 0) ⋙ G)
-    (FullSubcategory.lift _ L.functor
+    (left_adj : Adjunction (ObjectProperty.ι (fun (X : C) ↦ IsLE X 0) ⋙ G)
+    (ObjectProperty.lift _ L.functor
     (fun X ↦ (isFilteredTriangulated_over_image L X).1)))
     (shift : ∀ (X : C), IsIso (G.map (hCP.α.app X))) :
     left_adj = Adjunction.ofNatIsoLeft (ForgetFiltration_leftAdjoint L)
     (isoWhiskerLeft _ (ForgetFiltration_uniq_left L G left_adj shift)) := sorry
 
 lemma ForgetFiltration_uniq_left_uniq (G : C ⥤ A)
-    (left_adj : Adjunction (fullSubcategoryInclusion (fun (X : C) ↦ IsLE X 0) ⋙ G)
-    (FullSubcategory.lift _ L.functor
+    (left_adj : Adjunction (ObjectProperty.ι (fun (X : C) ↦ IsLE X 0) ⋙ G)
+    (ObjectProperty.lift _ L.functor
     (fun X ↦ (isFilteredTriangulated_over_image L X).1)))
     (shift : ∀ (X : C), IsIso (G.map (hCP.α.app X))) (e : ForgetFiltration L ≅ G)
     (compat : left_adj = Adjunction.ofNatIsoLeft (ForgetFiltration_leftAdjoint L)
@@ -794,38 +808,38 @@ lemma ForgetFiltration_uniq_left_uniq (G : C ⥤ A)
 
 -- Second uniqueness statement: this is similar, let's not state it.
 
--- Property (a) implies that we have an isomorphism `L.functor ≫ ForgetFiltration ≅ 𝟭 A`.
--- (Here we see that we are missing a compatibility, since (b) also gives such an isomorphism,
--- and we want both isomorphisms to be the same!)
-
+/- Property (a) implies that we have an isomorphism `L.functor ≫ ForgetFiltration ≅ 𝟭 A`.
+Property (b) gives an isomorphism in the other direction, and lemma `ForgetFiltration_iso_comp`
+implies that these isomorphisms are inverses of each other.
+-/
 def ForgetFiltration_functor : L.functor ⋙ ForgetFiltration L ≅ 𝟭 A := by
   have := L.ff.full
   have := L.ff.faithful
   set e := (ForgetFiltration_leftAdjoint L).counit
   have : IsIso e := inferInstance
-  exact isoWhiskerRight (FullSubcategory.lift_comp_inclusion (fun X ↦ IsLE X 0) L.functor
+  exact isoWhiskerRight (ObjectProperty.liftCompιIso (fun X ↦ IsLE X 0) L.functor
     (fun X ↦ (isFilteredTriangulated_over_image L X).1)).symm _ ≪≫
     Functor.associator _ _ _ ≪≫ asIso e
 
+/-
+The composition in the other direction is isomorphic to `truncGELE 0 0`.
+-/
+
+def Functor_forgetFiltration : ForgetFiltration L ⋙ L.functor ≅ truncGELE 0 0 := sorry
+
+
 -- So `ForgetFiltration` gives a quasi-inverse of the equivalence
 -- `(isFilteredTriangulated_over_equiv L)`.
+-- (Is this useful?)
 
 def ForgetFiltration_vs_equiv :
-    (fullSubcategoryInclusion (fun X ↦ IsLE X 0 ∧ IsGE X 0)) ⋙ ForgetFiltration L ≅
+    (ObjectProperty.ι (fun X ↦ IsLE X 0 ∧ IsGE X 0)) ⋙ ForgetFiltration L ≅
     (isFilteredTriangulated_over_equiv L).inv := by
   refine ?_ ≪≫ Functor.rightUnitor _
   refine (Iso.inverseCompIso (G := (isFilteredTriangulated_over_equiv L).asEquivalence) ?_).symm
   refine ?_ ≪≫ Functor.associator _ _ _
-  refine (ForgetFiltration_functor L).symm ≪≫ isoWhiskerRight (FullSubcategory.lift_comp_inclusion
+  refine (ForgetFiltration_functor L).symm ≪≫ isoWhiskerRight (ObjectProperty.liftCompιIso
     (fun X ↦ IsLE X 0 ∧ IsGE X 0) _ (isFilteredTriangulated_over_image L)).symm _
-
--- Thanks to this, we get a new definition of `Gr` (up to isomorphism, of course).
-
-def ForgetFiltration_for_Gr (n : ℤ) : truncGELE n n ⋙ ForgetFiltration L ≅ Gr L n :=
-  isoWhiskerLeft _ ((ForgetFiltration_commShift L).iso (-n) (-n) 0 (zero_add _).symm).symm
-    ≪≫ (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (FullSubcategory.lift_comp_inclusion
-    (fun X ↦ IsLE X 0 ∧ IsGE X 0) _ (Gr_aux_image n)).symm _ ≪≫ Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ (ForgetFiltration_vs_equiv L)
 
 end Forget
 
@@ -835,29 +849,57 @@ variable (L : isFilteredTriangulated_over C A) (n : ℤ)
 
 def Gr_aux : C ⥤ C := truncGELE n n ⋙ shiftFunctor₂ C (-n)
 
+-- `Gr_aux` is triangulated.
+
+instance (n : ℤ) : (Gr_aux (C := C) n).CommShift ℤ := by
+  dsimp [Gr_aux]; infer_instance
+
+instance (n : ℤ) : (Gr_aux (C := C) n).IsTriangulated := by
+  dsimp [Gr_aux]; infer_instance
+
+/- The essential image of `Gr_aux` is contained in the full subcategory of objects that
+are both `≤ 0` and `≥ 0`.
+-/
 lemma Gr_aux_image (X : C) : IsLE ((Gr_aux n).obj X) 0 ∧ IsGE ((Gr_aux n).obj X) 0 := by
   dsimp [Gr_aux]
   constructor
   · have : IsLE ((shiftFunctor₂ C (-n)).obj ((truncLEGE n n).obj X)) 0 := by
       dsimp [truncLEGE]
       exact isLE_shift _ n (-n) 0 (neg_add_cancel _)
-    refine isLE_of_iso ((shiftFunctor₂ C (-n)).mapIso ((truncLEGEIsoGELE n n).app X)) 0
+    refine isLE_of_iso ((shiftFunctor₂ C (-n)).mapIso ((asIso (truncLEGEToGELE n n)).app X)) 0
   · dsimp [truncGELE]
     exact isGE_shift _ n (-n) 0 (neg_add_cancel _)
 
+def Gr_aux_trunc : Gr_aux (C := C) n ⋙ truncGELE 0 0 ≅ Gr_aux n := by
+  refine NatIso.ofComponents (fun X ↦ ?_) (fun {X Y} f ↦ ?_)
+  · have := (Gr_aux_image n X).1
+    have := (Gr_aux_image n X).2
+    have : IsGE ((truncLE 0).obj ((Gr_aux n).obj X)) 0 := inferInstance
+    exact asIso ((truncGEι 0).app ((truncLE 0).obj ((Gr_aux n).obj X))) ≪≫
+      (asIso ((truncLEπ 0).app ((Gr_aux n).obj X))).symm
+  · dsimp
+    slice_lhs 1 2 => rw [(truncGEι 0).naturality, Functor.id_map]
+    have := (Gr_aux_image n Y).1
+    rw [← cancel_mono ((truncLEπ 0).app ((Gr_aux n).obj Y))]
+    simp only [Functor.id_obj, assoc, IsIso.inv_hom_id, comp_id]
+    have := (truncLEπ 0).naturality ((Gr_aux n).map f)
+    simp only [Functor.id_obj, Functor.id_map] at this
+    rw [this]
+    simp only [IsIso.inv_hom_id_assoc]
+
 def Gr : C ⥤ A :=
-  (FullSubcategory.lift _ (Gr_aux n) (Gr_aux_image n)) ⋙ (isFilteredTriangulated_over_equiv L).inv
+  Gr_aux n ⋙ ForgetFiltration L
 
 def Gr_Gr_aux : Gr L n ⋙ L.functor ≅ Gr_aux n :=
-  Functor.associator _ _ _ ≪≫
-  isoWhiskerLeft _ (isFilteredTriangulated_over_equiv_inv_comp L) ≪≫
-  FullSubcategory.lift_comp_inclusion _ _ _
+  Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Functor_forgetFiltration L) ≪≫ Gr_aux_trunc n
 
--- `Gr` is triangulated. We can prove this now, but let's admit this temporarily.
+-- `Gr` is triangulated.
 
-instance (n : ℤ) : (Gr L n).CommShift ℤ := sorry
+instance (n : ℤ) : (Gr L n).CommShift ℤ := by
+  dsimp [Gr]; infer_instance
 
-instance (n : ℤ) : (Gr L n).IsTriangulated := sorry
+instance (n : ℤ) : (Gr L n).IsTriangulated := by
+  dsimp [Gr]; infer_instance
 
 -- Proposition A.1.5(i).
 
