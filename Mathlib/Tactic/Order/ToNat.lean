@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Order.CollectFacts
-import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Fin.Tuple.Basic
+-- import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Facts preprocessing for the `order` tactic
@@ -21,91 +22,208 @@ section Lemmas
 Auxiliary definition used by the `order` tactic to
 transfer facts in a linear order to `Nat`
 -/
-def translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) (k : Fin n) : ℕ :=
-  (Finset.image val {u : Fin n | val u < val k}).card
+-- def translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) (k : Fin n) : ℕ :=
+--   (Finset.image val {u : Fin n | val u < val k}).card
 
-theorem translation_le_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, translation val i ≤ translation val j ↔ val i ≤ val j := by
+lemma exists_max {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin (n + 1) → α) :
+    ∃ imax, ∀ j, val j ≤ val imax := by
+  induction n with
+  | zero => simp [Fin.forall_fin_one, Fin.exists_fin_one]
+  | succ n ih =>
+    cases val using Fin.consCases with
+    | h x val =>
+    obtain ⟨i, hi⟩ := ih val
+    by_cases h_max : val i < x
+    · use 0
+      intro j
+      cases j using Fin.cases with
+      | zero => simp
+      | succ j =>
+        simp
+        apply (hi _).trans
+        exact le_of_lt h_max
+    · use i.succ
+      intro j
+      cases j using Fin.cases with
+      | zero => simpa using h_max
+      | succ j =>
+        simp [hi]
+
+lemma exists_bound {n : ℕ} (tr : Fin n → ℕ) : ∃ M, ∀ i, tr i < M := by
+  cases n with
+  | zero => simp
+  | succ n =>
+    obtain ⟨i, hi⟩ := exists_max tr
+    use tr i + 1
+    intro j
+    specialize hi j
+    omega
+
+theorem exists_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) : ∃ tr : Fin n → ℕ,
+    (∀ i j, val i = val j ↔ tr i = tr j) ∧
+    (∀ i j, val i ≤ val j ↔ tr i ≤ tr j) := by
+  induction n with
+  | zero =>
+    simp
+  | succ n ih =>
+    obtain ⟨imax, h_imax⟩ := exists_max val
+    obtain ⟨tr, h1, h2⟩ := ih (Fin.removeNth imax val)
+    by_cases h_imax' : ∃ j : Fin n, val (imax.succAbove j) = val imax
+    · obtain ⟨imax2, h3⟩ := h_imax'
+      use Fin.insertNth imax (tr imax2) tr
+      refine ⟨fun i j ↦ ?_, fun i j ↦ ?_⟩
+      · cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
+          <;> simp [← h3, ← h1, Fin.removeNth]
+      · cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
+          <;> simp [← h3, ← h2, Fin.removeNth]
+    · push_neg at h_imax'
+      obtain ⟨M, hM⟩ : ∃ M, ∀ i, tr i < M := exists_bound tr
+      use Fin.insertNth imax M tr
+      have h_aux (i : _) : M ≠ tr i := by
+        specialize hM i
+        omega
+      have h_aux2 (i : _) : ¬ M ≤ tr i := by
+        specialize hM i
+        omega
+      have h_aux3 (i : _) : tr i ≤ M := by
+        specialize hM i
+        omega
+      have h_aux4 : ∀ i, val (Fin.succAbove imax i) < val imax := by
+        intro i
+        exact lt_of_le_of_ne (h_imax (Fin.succAbove imax i)) (h_imax' i)
+      refine ⟨fun i j ↦ ?_, fun i j ↦ ?_⟩
+      · cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
+          <;> simp [h_aux, fun i ↦ (h_aux i).symm, h_imax', fun i ↦ (h_imax' i).symm,
+            ← h1, Fin.removeNth]
+      · cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
+          <;> simp [h_aux2, h_aux3, h_aux4, h_imax, ← h2, Fin.removeNth]
+
+noncomputable def translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α)
+    (k : Fin n) : ℕ :=
+  (exists_translation val).choose k
+
+-- theorem translation_le_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+--     ∀ i j, translation val i ≤ translation val j ↔ val i ≤ val j := by
+--   intro i j
+--   have hi := Finset.mem_univ i
+--   have hj := Finset.mem_univ j
+--   generalize @Finset.univ (Fin n) _ = s at hi hj
+--   induction s using Finset.strongInduction with | _ s ih =>
+--   have hs : s.Nonempty := ⟨i, hi⟩
+--   obtain ⟨m, hms, hm⟩ := Set.Finite.exists_maximal_wrt val s s.finite_toSet hs.to_set
+--   rw [Finset.mem_coe] at hms
+--   let t : Finset (Fin n) := {u ∈ s | val u < val m}
+--   have ht : t ⊂ s := by
+--     rw [Finset.ssubset_def]
+--     constructor
+--     · apply Finset.filter_subset
+--     · intro hst
+--       apply lt_irrefl (val m)
+--       exact (Finset.mem_filter.mp (hst hms)).right
+--   have hmm (k : Fin n) (hk : k ∈ s) : val k ≤ val m :=
+--     (le_total (val k) (val m)).elim id fun h => by rw [hm k hk h]
+--   obtain him | him := lt_or_eq_of_le (hmm i hi) <;> obtain hjm | hjm := lt_or_eq_of_le (hmm j hj)
+--   · exact ih t ht (Finset.mem_filter.mpr ⟨hi, him⟩) (Finset.mem_filter.mpr ⟨hj, hjm⟩)
+--   · rw [hjm, iff_true_right him.le]
+--     apply Finset.card_le_card
+--     apply Finset.image_subset_image
+--     apply Finset.monotone_filter_right
+--     intro u hu
+--     rw [hjm]
+--     exact hu.trans him
+--   · rw [him, iff_false_right hjm.not_le, not_le]
+--     apply Finset.card_lt_card
+--     rw [him, Finset.ssubset_def]
+--     constructor
+--     · apply Finset.image_subset_image
+--       apply Finset.monotone_filter_right
+--       intro u hu
+--       exact hu.trans hjm
+--     · intro hii
+--       have hjj :=
+--         hii (Finset.mem_image.mpr ⟨j, Finset.mem_filter.mpr ⟨Finset.mem_univ j, hjm⟩, rfl⟩)
+--       rw [Finset.mem_image] at hjj
+--       obtain ⟨k, hk, hkj⟩ := hjj
+--       rw [Finset.mem_filter] at hk
+--       rw [hkj] at hk
+--       exact hk.right.false
+--   · rw [him, hjm, iff_true_right le_rfl, translation, him, translation, hjm]
+
+theorem translation_le_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, translation' val i ≤ translation' val j ↔ val i ≤ val j := by
+  simp [translation', (exists_translation val).choose_spec.right]
+
+-- theorem translation_lt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+--     ∀ i j, translation val i < translation val j ↔ val i < val j := by
+--   intro i j
+--   simpa using (translation_le_translation val j i).not
+
+theorem translation_lt_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, translation' val i < translation' val j ↔ val i < val j := by
   intro i j
-  have hi := Finset.mem_univ i
-  have hj := Finset.mem_univ j
-  generalize @Finset.univ (Fin n) _ = s at hi hj
-  induction s using Finset.strongInduction with | _ s ih =>
-  have hs : s.Nonempty := ⟨i, hi⟩
-  obtain ⟨m, hms, hm⟩ := Set.Finite.exists_maximal_wrt val s s.finite_toSet hs.to_set
-  rw [Finset.mem_coe] at hms
-  let t : Finset (Fin n) := {u ∈ s | val u < val m}
-  have ht : t ⊂ s := by
-    rw [Finset.ssubset_def]
-    constructor
-    · apply Finset.filter_subset
-    · intro hst
-      apply lt_irrefl (val m)
-      exact (Finset.mem_filter.mp (hst hms)).right
-  have hmm (k : Fin n) (hk : k ∈ s) : val k ≤ val m :=
-    (le_total (val k) (val m)).elim id fun h => by rw [hm k hk h]
-  obtain him | him := lt_or_eq_of_le (hmm i hi) <;> obtain hjm | hjm := lt_or_eq_of_le (hmm j hj)
-  · exact ih t ht (Finset.mem_filter.mpr ⟨hi, him⟩) (Finset.mem_filter.mpr ⟨hj, hjm⟩)
-  · rw [hjm, iff_true_right him.le]
-    apply Finset.card_le_card
-    apply Finset.image_subset_image
-    apply Finset.monotone_filter_right
-    intro u hu
-    rw [hjm]
-    exact hu.trans him
-  · rw [him, iff_false_right hjm.not_le, not_le]
-    apply Finset.card_lt_card
-    rw [him, Finset.ssubset_def]
-    constructor
-    · apply Finset.image_subset_image
-      apply Finset.monotone_filter_right
-      intro u hu
-      exact hu.trans hjm
-    · intro hii
-      have hjj :=
-        hii (Finset.mem_image.mpr ⟨j, Finset.mem_filter.mpr ⟨Finset.mem_univ j, hjm⟩, rfl⟩)
-      rw [Finset.mem_image] at hjj
-      obtain ⟨k, hk, hkj⟩ := hjj
-      rw [Finset.mem_filter] at hk
-      rw [hkj] at hk
-      exact hk.right.false
-  · rw [him, hjm, iff_true_right le_rfl, translation, him, translation, hjm]
+  simpa using (translation_le_translation' val j i).not
 
-theorem translation_lt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, translation val i < translation val j ↔ val i < val j := by
+-- theorem translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+--     ∀ i j, translation val i = translation val j ↔ val i = val j := by
+--   simp_rw [le_antisymm_iff, translation_le_translation, implies_true]
+
+theorem translation_eq_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, translation' val i = translation' val j ↔ val i = val j := by
+  simp [translation', (exists_translation val).choose_spec.left]
+
+-- theorem translation_ne_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+--     ∀ i j, translation val i ≠ translation val j ↔ val i ≠ val j := by
+--   intro i j
+--   simpa using (translation_eq_translation val i j).not
+
+theorem translation_ne_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, translation' val i ≠ translation' val j ↔ val i ≠ val j := by
   intro i j
-  simpa using (translation_le_translation val j i).not
+  simpa using (translation_eq_translation' val i j).not
 
-theorem translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, translation val i = translation val j ↔ val i = val j := by
-  simp_rw [le_antisymm_iff, translation_le_translation, implies_true]
+-- theorem translation_nle_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+--     ∀ i j, ¬translation val i ≤ translation val j ↔ ¬val i ≤ val j := by
+--   intro i j
+--   simpa using translation_lt_translation val j i
 
-theorem translation_ne_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, translation val i ≠ translation val j ↔ val i ≠ val j := by
+theorem translation_nle_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, ¬translation' val i ≤ translation' val j ↔ ¬val i ≤ val j := by
   intro i j
-  simpa using (translation_eq_translation val i j).not
+  simpa using translation_lt_translation' val j i
 
-theorem translation_nle_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, ¬translation val i ≤ translation val j ↔ ¬val i ≤ val j := by
+-- theorem translation_nlt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+--     ∀ i j, ¬translation val i < translation val j ↔ ¬val i < val j := by
+--   intro i j
+--   simpa using translation_le_translation val j i
+
+theorem translation_nlt_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, ¬translation' val i < translation' val j ↔ ¬val i < val j := by
   intro i j
-  simpa using translation_lt_translation val j i
+  simpa using translation_le_translation' val j i
 
-theorem translation_nlt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, ¬translation val i < translation val j ↔ ¬val i < val j := by
-  intro i j
-  simpa using translation_le_translation val j i
+-- theorem translation_sup_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
+--     (val : Fin n → α) : ∀ i j k, translation val i ⊔ translation val j = translation val k ↔
+--       val i ⊔ val j = val k := by
+--   intro i j k
+--   simp_rw [le_antisymm_iff, sup_le_iff, le_sup_iff, translation_le_translation]
 
-theorem translation_sup_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
-    (val : Fin n → α) : ∀ i j k, translation val i ⊔ translation val j = translation val k ↔
+theorem translation_sup_translation_eq_translation' {α : Type*} [LinearOrder α] {n : ℕ}
+    (val : Fin n → α) : ∀ i j k, translation' val i ⊔ translation' val j = translation' val k ↔
       val i ⊔ val j = val k := by
   intro i j k
-  simp_rw [le_antisymm_iff, sup_le_iff, le_sup_iff, translation_le_translation]
+  simp_rw [le_antisymm_iff, sup_le_iff, le_sup_iff, translation_le_translation']
 
-theorem translation_inf_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
-    (val : Fin n → α) : ∀ i j k, translation val i ⊓ translation val j = translation val k ↔
+-- theorem translation_inf_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
+--     (val : Fin n → α) : ∀ i j k, translation val i ⊓ translation val j = translation val k ↔
+--       val i ⊓ val j = val k := by
+--   intro i j k
+--   simp_rw [le_antisymm_iff, inf_le_iff, le_inf_iff, translation_le_translation]
+
+theorem translation_inf_translation_eq_translation' {α : Type*} [LinearOrder α] {n : ℕ}
+    (val : Fin n → α) : ∀ i j k, translation' val i ⊓ translation' val j = translation' val k ↔
       val i ⊓ val j = val k := by
   intro i j k
-  simp_rw [le_antisymm_iff, inf_le_iff, le_inf_iff, translation_le_translation]
+  simp_rw [le_antisymm_iff, inf_le_iff, le_inf_iff, translation_le_translation']
 
 end Lemmas
 
@@ -191,42 +309,42 @@ def translateToNat {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $ty
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q($finFun $lhsFin = $finFun $rhsFin) := prf
-        .eq lhs rhs q((translation_eq_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .eq lhs rhs q((translation_eq_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .ne lhs rhs prf =>
       (curr, map, facts.push (
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q($finFun $lhsFin ≠ $finFun $rhsFin) := prf
-        .ne lhs rhs q((translation_ne_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .ne lhs rhs q((translation_ne_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .le lhs rhs prf =>
       (curr, map, facts.push (
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q($finFun $lhsFin ≤ $finFun $rhsFin) := prf
-        .le lhs rhs q((translation_le_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .le lhs rhs q((translation_le_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .lt lhs rhs prf =>
       (curr, map, facts.push (
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q($finFun $lhsFin < $finFun $rhsFin) := prf
-        .lt lhs rhs q((translation_lt_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .lt lhs rhs q((translation_lt_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .nle lhs rhs prf =>
       (curr, map, facts.push (
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q(¬$finFun $lhsFin ≤ $finFun $rhsFin) := prf
-        .nle lhs rhs q((translation_nle_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .nle lhs rhs q((translation_nle_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .nlt lhs rhs prf =>
       (curr, map, facts.push (
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q(¬$finFun $lhsFin < $finFun $rhsFin) := prf
-        .nlt lhs rhs q((translation_nlt_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .nlt lhs rhs q((translation_nlt_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .isBot _
     | .isTop _ => (curr, map, facts)
@@ -235,9 +353,9 @@ def translateToNat {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $ty
       haveI rhsFin := toFinUnsafe rhs
       haveI valFin := toFinUnsafe val
       haveI heq : max («$finFun» «$lhsFin») («$finFun» «$rhsFin») =Q «$finFun» «$valFin» := ⟨⟩
-      (curr + 1, map.insert curr q(translation $finFun $lhsFin ⊔ translation $finFun $rhsFin),
+      (curr + 1, map.insert curr q(translation' $finFun $lhsFin ⊔ translation' $finFun $rhsFin),
         (facts.push (.isSup lhs rhs curr)).push (.eq curr val
-          q((translation_sup_translation_eq_translation $finFun $lhsFin $rhsFin $valFin).mpr $heq)
+          q((translation_sup_translation_eq_translation' $finFun $lhsFin $rhsFin $valFin).mpr $heq)
         )
       )
     | .isInf lhs rhs val =>
@@ -245,13 +363,13 @@ def translateToNat {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $ty
       haveI rhsFin := toFinUnsafe rhs
       haveI valFin := toFinUnsafe val
       haveI heq : min («$finFun» «$lhsFin») («$finFun» «$rhsFin») =Q «$finFun» «$valFin» := ⟨⟩
-      (curr + 1, map.insert curr q(translation $finFun $lhsFin ⊓ translation $finFun $rhsFin),
+      (curr + 1, map.insert curr q(translation' $finFun $lhsFin ⊓ translation' $finFun $rhsFin),
         (facts.push (.isInf lhs rhs curr)).push (.eq curr val
-          q((translation_inf_translation_eq_translation $finFun $lhsFin $rhsFin $valFin).mpr $heq)
+          q((translation_inf_translation_eq_translation' $finFun $lhsFin $rhsFin $valFin).mpr $heq)
         )
       ))
     (idxToAtom.size, idxToAtom.map fun k _ =>
       haveI kFin := toFinUnsafe k
-      q(translation $finFun $kFin), Array.emptyWithCapacity idxToAtom.size)
+      q(translation' $finFun $kFin), Array.emptyWithCapacity idxToAtom.size)
 
 end Mathlib.Tactic.Order
