@@ -73,10 +73,6 @@ lemma rpow_eq_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y = 0 ↔ x = 0 := by
 lemma rpow_ne_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y ≠ 0 ↔ x ≠ 0 :=
   Real.rpow_eq_zero hx hy |>.not
 
-@[simp]
-theorem rpow_ne_zero_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : x ^ y ≠ 0 := by
-  rw [rpow_def_of_pos hx]; apply exp_ne_zero _
-
 open Real
 
 theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * y) * cos (y * π) := by
@@ -399,9 +395,6 @@ theorem rpow_mul {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ 
       Complex.ofReal_cpow hx, Complex.ofReal_mul, Complex.cpow_mul, Complex.ofReal_cpow hx] <;>
     simp only [(Complex.ofReal_mul _ _).symm, (Complex.ofReal_log hx).symm, Complex.ofReal_im,
       neg_lt_zero, pi_pos, le_of_lt pi_pos]
-
-lemma rpow_comm {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : (x ^ y) ^ z = (x ^ z) ^ y := by
-  rw [← rpow_mul hx, ← rpow_mul hx, mul_comm]
 
 lemma rpow_pow_comm {x : ℝ} (hx : 0 ≤ x) (y : ℝ) (n : ℕ) : (x ^ y) ^ n = (x ^ n) ^ y := by
   simp_rw [← rpow_natCast, ← rpow_mul hx, mul_comm y]
