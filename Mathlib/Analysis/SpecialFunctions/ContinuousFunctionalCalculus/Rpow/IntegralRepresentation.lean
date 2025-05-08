@@ -60,9 +60,9 @@ lemma rpowIntegrand₀₁_zero_left (hp : 0 < p) : rpowIntegrand₀₁ p 0 x = 0
 lemma rpowIntegrand₀₁_nonneg (hp : 0 < p) (ht : 0 ≤ t) (hx : 0 ≤ x) :
     0 ≤ rpowIntegrand₀₁ p t x := by
   unfold rpowIntegrand₀₁
-  rcases eq_or_gt_of_le ht with ht_zero|ht_pos
-  case inl => simp [ht_zero, Real.zero_rpow (ne_of_gt hp)]
-  case inr =>
+  cases eq_or_gt_of_le ht with
+  | inl ht_zero => simp [ht_zero, Real.zero_rpow (ne_of_gt hp)]
+  | inr ht_pos =>
     refine mul_nonneg (by positivity) ?_
     rw [sub_nonneg]
     gcongr
@@ -297,6 +297,6 @@ lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
     exact ht
   · rw [integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx]
-    rfl
+    simp [C, NNReal.smul_def]
 
 end Real

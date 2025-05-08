@@ -496,9 +496,8 @@ theorem toGlueL_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toG
 theorem toGlueR_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toGlueR hΦ hΨ) :=
   Isometry.of_dist_eq fun _ _ => rfl
 
-end Gluing
+end Gluing --section
 
---section
 section InductiveLimit
 
 /-!
@@ -621,9 +620,9 @@ theorem dense_iUnion_range_toInductiveLimit
   refine mem_iUnion.2 ⟨n, mem_range.2 ⟨x, rfl⟩⟩
 
 theorem separableSpaceInductiveLimit_of_separableSpace
-  {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]
-  [hs : (n : ℕ) → TopologicalSpace.SeparableSpace (X n)] {f : (n : ℕ) → X n → X (n + 1)}
-  (I : ∀ (n : ℕ), Isometry (f n)) :
+    {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]
+    [hs : (n : ℕ) → TopologicalSpace.SeparableSpace (X n)] {f : (n : ℕ) → X n → X (n + 1)}
+    (I : ∀ (n : ℕ), Isometry (f n)) :
     TopologicalSpace.SeparableSpace (Metric.InductiveLimit I) := by
   choose hsX hcX hdX using (fun n ↦ TopologicalSpace.exists_countable_dense (X n))
   let s := ⋃ (i : ℕ), (toInductiveLimit I i '' (hsX i))
@@ -634,9 +633,6 @@ theorem separableSpaceInductiveLimit_of_separableSpace
       (toInductiveLimit_isometry I i |>.continuous).range_subset_closure_image_dense (hdX i)
     _ ⊆ closure s := closure_mono <| subset_iUnion (fun j ↦ toInductiveLimit I j '' hsX j) i
 
-end InductiveLimit
+end InductiveLimit --section
 
---section
-end Metric
-
---namespace
+end Metric --namespace
