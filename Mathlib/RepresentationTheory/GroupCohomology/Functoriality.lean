@@ -263,12 +263,11 @@ noncomputable abbrev mapOneCocycles :
   ShortComplex.cyclesMap' (mapShortComplexH1 f φ) (shortComplexH1 A).moduleCatLeftHomologyData
     (shortComplexH1 B).moduleCatLeftHomologyData
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 lemma mapOneCocycles_comp_i :
     mapOneCocycles f φ ≫ (shortComplexH1 B).moduleCatLeftHomologyData.i =
-      (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fOne f φ) :=
-  ShortComplex.cyclesMap'_i (mapShortComplexH1 f φ) (moduleCatLeftHomologyData _)
-    (moduleCatLeftHomologyData _)
+      (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fOne f φ) := by
+  simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoOneCocycles_hom :
@@ -299,10 +298,10 @@ theorem H1Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     H1Map (MonoidHom.id G) (φ ≫ ψ) = H1Map (MonoidHom.id G) φ ≫ H1Map (MonoidHom.id G) ψ :=
   H1Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 lemma H1π_comp_H1Map :
-    H1π A ≫ H1Map f φ = mapOneCocycles f φ ≫ H1π B :=
-  leftHomologyπ_naturality' (mapShortComplexH1 f φ) _ _
+    H1π A ≫ H1Map f φ = mapOneCocycles f φ ≫ H1π B := by
+  simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma map_comp_isoH1_hom :
@@ -356,12 +355,11 @@ noncomputable abbrev mapTwoCocycles :
   ShortComplex.cyclesMap' (mapShortComplexH2 f φ) (shortComplexH2 A).moduleCatLeftHomologyData
     (shortComplexH2 B).moduleCatLeftHomologyData
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 lemma mapTwoCocycles_comp_i :
     mapTwoCocycles f φ ≫ (shortComplexH2 B).moduleCatLeftHomologyData.i =
-      (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fTwo f φ) :=
-  ShortComplex.cyclesMap'_i (mapShortComplexH2 f φ) (moduleCatLeftHomologyData _)
-    (moduleCatLeftHomologyData _)
+      (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fTwo f φ) := by
+  simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoTwoCocycles_hom :
@@ -392,10 +390,10 @@ theorem H2Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     H2Map (MonoidHom.id G) (φ ≫ ψ) = H2Map (MonoidHom.id G) φ ≫ H2Map (MonoidHom.id G) ψ :=
   H2Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 lemma H2π_comp_H2Map :
-    H2π A ≫ H2Map f φ = mapTwoCocycles f φ ≫ H2π B :=
-  leftHomologyπ_naturality' (mapShortComplexH2 f φ) _ _
+    H2π A ≫ H2Map f φ = mapTwoCocycles f φ ≫ H2π B := by
+  simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma map_comp_isoH2_hom :
