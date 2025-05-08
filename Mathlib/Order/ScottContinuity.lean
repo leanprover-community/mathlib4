@@ -124,21 +124,6 @@ alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
 
 end CompleteLattice
 
-lemma ScottContinuous_prod_of_ScottContinuous {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
-    {f : α × β → γ} (h₁ : ∀ a, ScottContinuous (fun b => f (a,b)))
-    (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) : ScottContinuous f := fun d hd₁ hd₂ p hdp => by
-  rw [isLUB_congr ((monotone_prod_iff.mpr ⟨(fun a => (h₁ a).monotone),
-    (fun a => (h₂ a).monotone)⟩).upperBounds_image_of_directedOn_prod hd₂),
-    ← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion,
-    ← isLUB_iUnion_iff_of_isLUB (fun a => by
-      rw [singleton_prod, image_image f (fun b ↦ (a, b))]
-      exact h₁ _ (Nonempty.image Prod.snd hd₁) hd₂.snd ((isLUB_prod (_,_)).mp hdp).2) _, Set.range]
-  have e2 : IsLUB ((fun a ↦ f (a, p.2)) '' (Prod.fst '' d)) (f (p.1,p.2)) :=
-    h₂ p.2 (Nonempty.image Prod.fst hd₁) hd₂.fst ((isLUB_prod (p.1,p.2)).mp hdp).1
-  simp_all only [image, Prod.exists, exists_and_right, exists_eq_right, mem_setOf_eq, Prod.mk.eta,
-    coe_setOf, Subtype.exists, exists_prop]
-
-/- TODO: Provide a `ScottContinuousOn` version -/
 /- TODO: Can we then deduce `ScottContinuousOn.sup₂` from this? -/
 /- `f` is Scott continuous on a product space if it is Scott continuous in each variable -/
 lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
@@ -165,6 +150,15 @@ lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Pr
   ext : 1
   simp_all only [Prod.forall, Prod.mk_le_mk, and_imp, Subtype.exists, mem_image, Prod.exists,
     exists_and_right, exists_eq_right, exists_prop, mem_setOf_eq]
+
+lemma ScottContinuous_prod_of_ScottContinuous {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
+    {f : α × β → γ} (h₁ : ∀ a, ScottContinuous (fun b => f (a,b)))
+    (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) : ScottContinuous f := by
+  rw [← scottContinuousOn_univ]
+  simp_rw [← scottContinuousOn_univ] at h₁
+  simp_rw [← scottContinuousOn_univ] at h₂
+  exact ScottContinuousOn_prod_of_ScottContinuousOn (fun _ _ _=> by trivial)
+    (fun a ⦃d⦄ a_1 ↦ h₁ a trivial) (fun b ⦃d⦄ a ↦ h₂ b trivial)
 
 /- The join operation is Scott continuous -/
 lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
