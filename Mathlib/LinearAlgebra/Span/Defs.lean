@@ -521,19 +521,14 @@ theorem mem_span_finite_of_mem_span {S : Set M} {x : M} (hx : x ∈ span R S) :
 theorem subset_span_finite_of_subset_span {s : Set M} {t : Finset M} (ht : (t : Set M) ⊆ span R s) :
     ∃ T : Finset M, ↑T ⊆ s ∧ (t : Set M) ⊆ span R (T : Set M) := by
   classical
-  use (Finset.subtype (· ∈ t) t).biUnion
-    fun ⟨m, hm⟩ ↦ (mem_span_finite_of_mem_span <| mem_of_subset_of_mem ht hm).choose
-  split_ands
-  · simp
-    intro a ha
-    generalize_proofs h
-    exact h.choose_spec.1
-  intro m hm
-  simp
-  generalize_proofs h
-  rw [span_iUnion]
-  apply mem_iSup_of_mem ⟨m, hm⟩
-  exact (h <| Subtype.mk m hm).choose_spec.2
+  induction t using Finset.induction_on with
+  | empty => exact ⟨∅, by simp⟩
+  | insert a t hat IH =>
+    obtain ⟨T, hTs, htT⟩ := IH (by simp_all [Set.insert_subset_iff])
+    obtain ⟨T', hT's, haT'⟩ := mem_span_finite_of_mem_span (ht (Finset.mem_insert_self _ _))
+    refine ⟨T ∪ T', by aesop, ?_⟩
+    simp only [Finset.coe_insert, Finset.coe_union, span_union, insert_subset_iff, SetLike.mem_coe]
+    exact ⟨mem_sup_right haT', htT.trans (le_sup_left (a := span R _))⟩
 
 end
 
