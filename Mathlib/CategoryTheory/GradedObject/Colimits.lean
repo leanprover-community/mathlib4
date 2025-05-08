@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject
+import Mathlib.CategoryTheory.GradedObject.Bifunctor
 
 /-!
 # Colimits in graded objects
@@ -15,6 +15,8 @@ namespace CategoryTheory
 open Limits
 
 namespace GradedObject
+
+section
 
 variable {C : Type*} [Category C]
 
@@ -67,11 +69,10 @@ end
 
 end HasColimitsOfShape
 
-variable (C) {I J : Type*} (p : I → J)
-  [∀ (j : J), HasColimitsOfShape (Discrete (p ⁻¹' {j})) C]
-  (K : Type*) [Category K] [HasColimitsOfShape K C]
-
-instance : PreservesColimitsOfShape K (map C p) where
+instance {I J : Type*} (p : I → J)
+    [∀ (j : J), HasColimitsOfShape (Discrete (p ⁻¹' {j})) C]
+    (K : Type*) [Category K] [HasColimitsOfShape K C] :
+  PreservesColimitsOfShape K (map C p) where
   preservesColimit {F} :=
     preservesColimit_of_preserves_colimit_cocone
       (isColimitColimitCocone F)
@@ -84,6 +85,44 @@ instance : PreservesColimitsOfShape K (map C p) where
               dsimp at hm ⊢
               ext k
               simp [← hm] ) }))
+
+end
+
+section
+
+variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+  (F : C₁ ⥤ C₂ ⥤ C₃) {I J K : Type*} (p : I × J → K)
+  [∀ (j : K), HasColimitsOfShape (Discrete ↑(p ⁻¹' {j})) C₃]
+  (B : Type*) [Category B]
+
+instance (X : GradedObject I C₁) [HasColimitsOfShape B C₂]
+    [∀ i, PreservesColimitsOfShape B (F.obj (X i))] :
+    PreservesColimitsOfShape B ((mapBifunctor F I J).obj X) where
+  preservesColimit := ⟨fun hc ↦ ⟨evalJointlyReflectsColimits (fun ⟨i, j⟩ ↦
+    isColimitOfPreserves (F.obj (X i)) (isColimitOfPreserves (eval j) hc))⟩⟩
+
+instance (Y : GradedObject J C₂) [HasColimitsOfShape B C₁]
+    [∀ j, PreservesColimitsOfShape B (F.flip.obj (Y j))] :
+    PreservesColimitsOfShape B ((mapBifunctor F I J).flip.obj Y) where
+  preservesColimit := ⟨fun hc ↦ ⟨evalJointlyReflectsColimits (fun ⟨i, j⟩ ↦
+    isColimitOfPreserves (F.flip.obj (Y j)) (isColimitOfPreserves (eval i) hc))⟩⟩
+
+variable [HasColimitsOfShape B C₃]
+
+instance (X : GradedObject I C₁) [HasColimitsOfShape B C₂]
+    [∀ i, PreservesColimitsOfShape B (F.obj (X i))] :
+    PreservesColimitsOfShape B ((mapBifunctorMap F p).obj X) :=
+  preservesColimitsOfShape_of_natIso
+    (show (mapBifunctor F I J).obj X ⋙ map C₃ p ≅ _ from (mapBifunctorMapIso F p).symm.app X)
+
+instance (Y : GradedObject J C₂) [HasColimitsOfShape B C₁]
+    [∀ j, PreservesColimitsOfShape B (F.flip.obj (Y j))] :
+    PreservesColimitsOfShape B ((mapBifunctorMap F p).flip.obj Y) :=
+  preservesColimitsOfShape_of_natIso
+    (show (mapBifunctor F I J).flip.obj Y ⋙ map C₃ p ≅ _ from
+      ((flipFunctor _ _ _).mapIso (mapBifunctorMapIso F p).symm).app Y)
+
+end
 
 end GradedObject
 

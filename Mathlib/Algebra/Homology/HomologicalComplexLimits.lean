@@ -7,6 +7,7 @@ import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.GradedObject.Colimits
 
 /-!
 # Limits and colimits in the category of homological complexes
@@ -253,6 +254,20 @@ def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G :=
       intro X
       apply hG
     · apply hG⟩⟩⟩
+
+end
+
+section
+
+instance [HasColimitsOfShape J C] :
+    ReflectsColimitsOfShape J (HomologicalComplex.forget C c) where
+  reflectsColimit := ⟨fun hc ↦ ⟨isColimitOfEval _ _ (fun i ↦
+    isColimitOfPreserves (GradedObject.eval i) hc)⟩⟩
+
+instance [HasColimitsOfShape J C] :
+    PreservesColimitsOfShape J (HomologicalComplex.forget C c) where
+  preservesColimit := ⟨fun hc ↦ ⟨GradedObject.evalJointlyReflectsColimits
+    (fun i ↦ isColimitOfPreserves (eval _ _ i) hc)⟩⟩
 
 end
 

@@ -21,7 +21,7 @@ on `GradedObject I C` (TODO @joelriou).
 
 namespace CategoryTheory
 
-open Category
+open Category Limits
 
 variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
   (F : C₁ ⥤ C₂ ⥤ C₃)
@@ -148,6 +148,12 @@ noncomputable def mapBifunctorMap [∀ X Y, HasMap (((mapBifunctor F I J).obj X)
         dsimp
         simp only [Functor.map_id, NatTrans.id_app, id_comp, comp_id,
           ← mapMap_comp, NatTrans.naturality] }
+
+@[simps!]
+noncomputable def mapBifunctorMapIso
+    [∀ (j : K), HasColimitsOfShape (Discrete ↑(p ⁻¹' {j})) C₃] :
+    mapBifunctorMap F p ≅ mapBifunctor F I J ⋙ (whiskeringRight _ _ _).obj (map C₃ p) :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ Iso.refl _))
 
 end
 
