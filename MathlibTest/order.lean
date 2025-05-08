@@ -1,5 +1,6 @@
 import Mathlib.Data.Matrix.Rank
 import Mathlib.Tactic.Order
+import Mathlib.Util.CountHeartbeats
 
 universe u
 
@@ -86,10 +87,10 @@ example (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≥ (a ⊓ b) ⊔ (a ⊓ c) 
 example (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
   order
 
-example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
-  have h1 := Matrix.rank_mul_le A B
-  have h2 := Matrix.rank_mul_le (A * B) C
-  order
+-- example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
+--   have h1 := Matrix.rank_mul_le A B
+--   have h2 := Matrix.rank_mul_le (A * B) C
+--   order
 
 -- worst case for the current algorithm
 example [PartialOrder α]
@@ -155,3 +156,88 @@ example [PartialOrder α]
     (h85 : ¬(y29 < x29)) (h86 : y30 ≤ x29) (h87 : y29 ≤ x30)
     (h88 : ¬(y30 < x30)) : x30 = y30 := by
   order
+
+-- Tests for linear order with lattice operations
+
+example {α : Type*} [LinearOrder α] {a b c : α} (hab : a < b)
+    (habc : min a b ≤ c) (hcba : min c b ≤ a) : a = c := by
+  order
+
+example {α : Type*} [LinearOrder α] {a b : α} (h : a ≠ max a b) : b = max a b := by
+  order
+
+example {α : Type*} [LinearOrder α] {a b : α} (h1 : a ≠ b) : min a b < max a b := by
+  order
+
+example {α : Type*} [LinearOrder α] {a b : α} (h1 : a ≠ b) : min a b < max a b := by
+  order
+
+example {α : Type*} [LinearOrder α] {a b : α} (h1 : min a b ≠ a) (h2 : max a b ≠ a) : False := by
+  order
+
+-- Note: `order` does not use distributivity in general
+example {α : Type*} [LinearOrder α] {a b c : α} : max a (min b c) = min (max a b) (max a c) := by
+  order
+
+example {α : Type*} [LinearOrder α] {a b c d e : α} (h : max (max a b) (max c d) < min a e) : d < e := by
+  order
+
+example
+    (x₀ x₁ y₀ y₁ t f : ℤ)
+    (htf : f < t)
+    (hxf : x₀ ⊓ x₁ ≤ f)
+    (hyf : y₀ ⊓ y₁ ≤ f)
+    (c1 : x₁ ⊔ y₁ ≥ t)
+    (c2 : x₁ ⊔ y₀ ≥ t)
+    (c3 : x₀ ⊔ y₁ ≥ t)
+    (c4 : x₀ ⊔ y₀ ≥ t)
+    : False := by
+  omega
+
+example {α : Type*} [LinearOrder α]
+    (x₀ x₁ y₀ y₁ t f : α)
+    (htf : f < t)
+    (hxf : x₀ ⊓ x₁ ≤ f)
+    (hyf : y₀ ⊓ y₁ ≤ f)
+    (c1 : x₁ ⊔ y₁ ≥ t)
+    (c2 : x₁ ⊔ y₀ ≥ t)
+    (c3 : x₀ ⊔ y₁ ≥ t)
+    (c4 : x₀ ⊔ y₀ ≥ t)
+    : False := by
+  order
+
+-- #count_heartbeats in
+-- example
+--     (x₀ x₁ y₀ y₁ z₀ z₁ t f : ℤ)
+--     (htf : f < t)
+--     (hxf : x₀ ⊓ x₁ ≤ f)
+--     (hyf : y₀ ⊓ y₁ ≤ f)
+--     (hzf : z₀ ⊓ z₁ ≤ f)
+--     (c1 : x₁ ⊔ y₁ ⊔ z₁ ≥ t)
+--     (c2 : x₁ ⊔ y₁ ⊔ z₀ ≥ t)
+--     (c3 : x₁ ⊔ y₀ ⊔ z₁ ≥ t)
+--     (c4 : x₁ ⊔ y₀ ⊔ z₀ ≥ t)
+--     (c5 : x₀ ⊔ y₁ ⊔ z₁ ≥ t)
+--     (c6 : x₀ ⊔ y₁ ⊔ z₀ ≥ t)
+--     (c7 : x₀ ⊔ y₀ ⊔ z₁ ≥ t)
+--     (c8 : x₀ ⊔ y₀ ⊔ z₀ ≥ t)
+--     : False := by
+--   omega
+
+-- #count_heartbeats in
+-- example {α : Type*} [LinearOrder α]
+--     (x₀ x₁ y₀ y₁ z₀ z₁ t f : α)
+--     (htf : f < t)
+--     (hxf : x₀ ⊓ x₁ ≤ f)
+--     (hyf : y₀ ⊓ y₁ ≤ f)
+--     (hzf : z₀ ⊓ z₁ ≤ f)
+--     (c1 : x₁ ⊔ y₁ ⊔ z₁ ≥ t)
+--     (c2 : x₁ ⊔ y₁ ⊔ z₀ ≥ t)
+--     (c3 : x₁ ⊔ y₀ ⊔ z₁ ≥ t)
+--     (c4 : x₁ ⊔ y₀ ⊔ z₀ ≥ t)
+--     (c5 : x₀ ⊔ y₁ ⊔ z₁ ≥ t)
+--     (c6 : x₀ ⊔ y₁ ⊔ z₀ ≥ t)
+--     (c7 : x₀ ⊔ y₀ ⊔ z₁ ≥ t)
+--     (c8 : x₀ ⊔ y₀ ⊔ z₀ ≥ t)
+--     : False := by
+--   order

@@ -126,7 +126,7 @@ variable {α : Type*}
 Get a value out of a binary tree, deciding at each fork whether to go left or right
 by comparing to the label.
 -/
-def get (tree : BinTree α) (n : Nat) : α :=
+def get (tree : BinTree α) {m : Nat} (n : Fin m) : α :=
   match tree with
   | leaf a => a
   | node m l r => if n < m then l.get n else r.get n
@@ -163,7 +163,8 @@ Given an array `atoms : Array α`, create an expression representing a function
 def mkFinFun {u : Level} {α : Q(Type $u)} (atoms : Array Q($α)) : Expr :=
   if h : atoms.isEmpty then q(Fin.elim0 : Fin 0 → $α) else
   let tree := BinTree.mkExpr atoms (mt Array.isEmpty_iff_size_eq_zero.mpr h)
-  q(($tree).get)
+  let m : Q(ℕ) := mkNatLit atoms.size
+  q(($tree).get (m := $m))
 
 end BinTree
 
@@ -175,7 +176,7 @@ def translateToNat {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $ty
     (idxToAtom : Std.HashMap ℕ Q($type))
     (facts : Array AtomicFact) :
     Std.HashMap ℕ Q(ℕ) × Array AtomicFact :=
-  haveI mkNatQ : ℕ → Q(ℕ) := Lean.mkRawNatLit
+  haveI mkNatQ : ℕ → Q(ℕ) := Lean.mkNatLit
   haveI nE : Q(ℕ) := mkNatQ idxToAtom.size
   haveI finFun : Q(Fin $nE → $type) :=
     BinTree.mkFinFun (Array.ofFn fun (n : Fin idxToAtom.size) => idxToAtom[n]!)
