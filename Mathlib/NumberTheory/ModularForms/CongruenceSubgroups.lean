@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.LinearAlgebra.Matrix.Integer
 
 /-!
 # Congruence subgroups
@@ -240,6 +241,86 @@ theorem conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
   refine ⟨N, ?_⟩
   rw [← Gamma_cong_eq_self N g, Subgroup.pointwise_smul_le_pointwise_smul_iff]
   exact HN
+
+/-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g x g⁻¹ ∈ Γ(M)` for all
+`x ∈ Γ(N)`. -/
+theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
+    ∃ N ≠ 0, ∀ x ∈ Gamma N, g * (x.map (Int.castRingHom ℚ)).toGL * g⁻¹ ∈
+      (fun x : SL(2, ℤ) ↦ (x.map (Int.castRingHom ℚ)).toGL) '' (Gamma M) := by
+  -- Give names to the numerators and denominators of `g` and `g⁻¹`
+  let A₁ := g.1
+  let A₂ := (g⁻¹).1
+  have hA₁₂ : A₁ * A₂ = 1 := by simp only [← Matrix.GeneralLinearGroup.coe_mul,
+    mul_inv_cancel, Matrix.GeneralLinearGroup.coe_one, A₁, A₂]
+  let a₁ := A₁.den
+  let a₂ := A₂.den
+  -- we take `N = a₁ * a₂`
+  refine ⟨a₁ * a₂ * M, mul_ne_zero (mul_ne_zero A₁.den_ne_zero A₂.den_ne_zero) (NeZero.ne _),
+    fun ⟨y, hy⟩ hy' ↦ ?_⟩
+  -- Show that `y` is of the form `1 + (a₁ * a₂) • k` for some integer matrix `k`.
+  obtain ⟨k, hk⟩ : ∃ k, y = 1 + (a₁ * a₂ * M) • k := by
+    replace hy' : y.map (Int.cast : ℤ → ZMod (a₁ * a₂ * M)) = 1 := by
+      rw [CongruenceSubgroup.Gamma_mem', Subtype.ext_iff] at hy'
+      simpa using hy'
+    use Matrix.of fun i j ↦ (y - 1) i j / (a₁ * a₂ * M)
+    rw [← sub_eq_iff_eq_add']
+    ext i j
+    simp_rw [Matrix.smul_apply, Matrix.of_apply, nsmul_eq_mul, Nat.cast_mul]
+    refine (Int.mul_ediv_cancel_of_dvd ?_).symm
+    rw [← Matrix.map_one Int.cast (by simp) (by simp), ← sub_eq_zero,
+      ← Matrix.map_sub _ (by simp)] at hy'
+    simpa only [Matrix.zero_apply, Matrix.map_apply, ZMod.intCast_zmod_eq_zero_iff_dvd,
+      Nat.cast_mul] using congr_fun₂ hy' i j
+  -- use this `k` to cook up a new integer matrix, which we will show comes from `SL(2, ℤ)`
+  let z := 1 + M • (A₁.num * k * A₂.num)
+  have hz_coe : z.map Int.cast = A₁ * (y.map Int.cast) * A₂ := by
+    simp only [Matrix.map_add _ Int.cast_add, Matrix.map_one _ Int.cast_zero Int.cast_one, hk,
+      mul_add, mul_one, add_mul, hA₁₂, add_right_inj, z]
+    conv_rhs => rw [A₁.inv_denom_smul_num, A₂.inv_denom_smul_num, Matrix.map_smul _ _ (by simp)]
+    simp only [Matrix.smul_mul, Matrix.mul_smul, Matrix.map_smul (Int.cast : ℤ → ℚ) M (by simp),
+      Matrix.map_mul_intCast]
+    rw [← Nat.cast_smul_eq_nsmul ℚ (_ * M), ← MulAction.mul_smul, ← MulAction.mul_smul,
+      mul_comm a₁ a₂, Nat.cast_mul, Nat.cast_mul, mul_assoc _ _ (M : ℚ), mul_comm _ (M : ℚ),
+      inv_mul_cancel_left₀ (mod_cast A₂.den_ne_zero),
+      mul_inv_cancel_right₀ (mod_cast A₁.den_ne_zero), Nat.cast_smul_eq_nsmul]
+  have hz_det : z.det = 1 := by
+    have := congr_arg Matrix.det hz_coe
+    simp_rw [Matrix.det_mul, ← Int.cast_det] at this
+    rwa [mul_right_comm, ← Matrix.det_mul, hA₁₂, Matrix.det_one, one_mul, hy, Int.cast_inj] at this
+  refine ⟨⟨z, hz_det⟩, ?_, by simpa only [Subtype.ext_iff, Subgroup.coe_mul, Units.ext_iff,
+    Units.val_mul] using hz_coe⟩
+  rw [SetLike.mem_coe, CongruenceSubgroup.Gamma_mem', Subtype.ext_iff]
+  ext i j
+  simp_rw [map_apply_coe, z, map_add, map_one, RingHom.mapMatrix_apply, Int.coe_castRingHom,
+    add_apply, map_apply, coe_one, add_eq_left, Matrix.smul_apply, nsmul_eq_mul, Int.cast_mul,
+    Int.cast_natCast, ZMod.natCast_self M, zero_mul]
+
+protected def GLPos.map
+    (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K] (g : GL(2, ℚ)⁺) : GL(2, K)⁺ :=
+  ⟨g.1.map (algebraMap ℚ K),
+    by simpa [Matrix.det_apply, Units.smul_def] using (Rat.cast_pos (K := K)).mpr g.2⟩
+
+@[simps apply]
+def GLPos.mapHom (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K] :
+    GL(2, ℚ)⁺ →* GL(2, K)⁺ where
+  toFun := GLPos.map K
+  map_one' := by simp only [GLPos.map, OneMemClass.coe_one, Matrix.GeneralLinearGroup.map_one,
+    Subgroup.mk_eq_one]
+  map_mul' g h := by simp only [GLPos.map, Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk]
+
+/-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g Γ(N) g⁻¹ ≤ Γ(M)`. -/
+theorem exists_Gamma_le_conj' (g : GL(2, ℚ)⁺) (M : ℕ) [NeZero M] :
+    ∃ N ≠ 0, (toConjAct <| GLPos.map ℝ g) • ((Gamma N).map ModularGroup.coeHom)
+      ≤ (Gamma M).map ModularGroup.coeHom := by
+  obtain ⟨N, hN, h⟩ := exists_Gamma_le_conj g M
+  refine ⟨N, hN, fun y hy ↦ ?_⟩
+  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, Subgroup.mem_map,
+    eq_inv_smul_iff] at hy
+  obtain ⟨x, hx, rfl⟩ := hy
+  obtain ⟨z, hz, hz'⟩ := h x hx
+  use z, hz
+  simpa only [Subtype.ext_iff, Units.ext_iff, map_mul] using
+    congr_arg (Matrix.GeneralLinearGroup.map (algebraMap ℚ ℝ)) hz'
 
 end Conjugation
 
