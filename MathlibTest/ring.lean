@@ -109,7 +109,7 @@ example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
 
 -- Example with ring failing to discharge, to normalizing the goal
 /--
-info: Try this: ring_nf
+trace: Try this: ring_nf
 -/
 #guard_msgs in
 example : (22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 47) = (74 = 75) := by
@@ -123,7 +123,7 @@ example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
 
 -- Example with ring failing to discharge, to normalizing the goal
 /--
-info: Try this: ring_nf
+trace: Try this: ring_nf
 -/
 #guard_msgs in
 example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
@@ -171,7 +171,7 @@ example {n : ℝ} :
 -- We can't use `guard_target =ₛ` here, as while it does detect stray `OfNat`s, it also complains
 -- about differing instance paths.
 /--
-info: n : ℝ
+trace: n : ℝ
 _hn : 0 ≤ n
 ⊢ 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 ≤ 1 / 3 + n * (5 / 3) + n ^ 2 * (7 / 3) + n ^ 3
 -/
@@ -192,7 +192,7 @@ We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId 
 about differing instance paths.
 -/
 /--
-info: x : ℤ
+trace: x : ℤ
 R : ℤ → ℤ → Prop
 h : R (myId x * 2) (myId x * 2)
 ⊢ True

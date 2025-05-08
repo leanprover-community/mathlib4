@@ -393,7 +393,7 @@ example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by f
 end MultipleLambdaTheorems
 
 
-/-- info: `?m` is not a `fun_prop` goal! -/
+/-- trace: `?m` is not a `fun_prop` goal! -/
 #guard_msgs in
 #check_failure ((by fun_prop) : ?m)
 
@@ -536,7 +536,7 @@ example [Add α] (a : α) :
 
 -- Test that local theorem is being used
 /--
-info: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
+trace: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
   [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
     [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
     [Meta.Tactic.fun_prop] removing argument to later use this : Con f
@@ -614,7 +614,7 @@ end PerformanceTests
 
 
 /--
-info: Con
+trace: Con
   add_Con, args: [4, 5], form: simple
   add_Con', args: [4, 5], form: compositional
 -/
