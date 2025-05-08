@@ -119,7 +119,7 @@ variable [HasColimit K₁] [HasColimit K₂]
 /-- Get a colimit cocone over `(whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)` provided the
 relevant colimits exist. This colimit cocone has definitionally
 `(G.obj <| colimit K₁).obj (colimit K₂)` as its cocone point. -/
-noncomputable abbrev getColimitCocone₂ :
+noncomputable def getColimitCocone₂ :
     ColimitCocone <| uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
   mkColimitCocone₂ G (getColimitCocone K₁) (getColimitCocone K₂)
 
@@ -188,7 +188,7 @@ variable [HasLimit K₁] [HasLimit K₂]
 /-- Get a limit cone over `(whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)` provided the
 relevant limits exist. This limit cone has definitionally `(G.obj <| limit K₁).obj (limit K₂)` as
 its cone point. -/
-noncomputable abbrev getLimitCone₂ :
+noncomputable def getLimitCone₂ :
     LimitCone <| uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
   mkLimitCone₂ G (getLimitCone K₁) (getLimitCone K₂)
 
