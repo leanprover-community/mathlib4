@@ -87,7 +87,6 @@ lemma IsODESolution.eqOn_of_agree_at_t₀_of_lipschitz
     EqOn f₁ f₂ (I₁ ∩ I₂) := by
   -- Let K_int be the intersection of the solution domains.
   let K_int := I₁ ∩ I₂
-  have hK_int_open : IsOpen K_int := h₁.isOpen.inter h₂.isOpen
   have ht₀_mem_K_int : t₀ ∈ K_int := ⟨h₁.t₀_mem, h₂.t₀_mem⟩
   have hK_int_nonempty : K_int.Nonempty := ⟨t₀, ht₀_mem_K_int⟩
 
