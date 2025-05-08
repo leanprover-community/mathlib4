@@ -142,7 +142,7 @@ for message in messages:
                 add_reaction('ready-to-merge', 'bors')
             case 'delegated':
                 add_reaction('delegated', 'peace_sign')
-            case 'LABELED':
+            case 'labeled':
                 if LABEL_NAME == 'awaiting-author':
                     add_reaction('awaiting-author', 'writing')
             case 'maintainer-merge':
