@@ -67,7 +67,7 @@ jobs:
           if grep ^deprecated_module "${file}" ; then
             printf 'info: removed file %s contains a deprecation\n' "${file}"
           else
-            printf '**error**: file %s was removed without a module deprecation\n' "${file}" >> moved_without_deprecation.txt
+            printf '\n**warning**: file `%s` was removed without a module deprecation\n' "${file}" | tee -a moved_without_deprecation.txt
           fi
         done
 
