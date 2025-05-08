@@ -38,11 +38,12 @@ def pull ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj 
     (F.map g.op.toLoc).map φ ≫
       (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesoptoloc)).inv.app _
 
-/-@[simp]
+@[simp]
 lemma pull_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
     ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
     (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) :
-      pull φ (𝟙 _) f₁ f₂ = φ := sorry-/
+      pull φ (𝟙 _) f₁ f₂ = φ := by
+  simp [pull, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app]
 
 end DescentData
 
@@ -66,7 +67,7 @@ namespace DescentData
 
 variable {F f} (D : F.DescentData f)
 
-attribute [simp] hom_self pull_hom
+attribute [local simp] hom_self pull_hom
 attribute [reassoc (attr := simp)] hom_comp
 
 @[simps]
@@ -89,7 +90,7 @@ structure Hom (D₁ D₂ : F.DescentData f) where
     (F.map f₁.op.toLoc).map (hom i₁) ≫ D₂.hom q f₁ f₂ =
         D₁.hom q f₁ f₂ ≫ (F.map f₂.op.toLoc).map (hom i₂) := by aesop_cat
 
-attribute [reassoc (attr := simp)] Hom.comm
+attribute [reassoc (attr := local simp)] Hom.comm
 
 @[simps]
 def Hom.id (D : F.DescentData f) : Hom D D where

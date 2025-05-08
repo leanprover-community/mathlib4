@@ -146,10 +146,8 @@ lemma comp_pullHom (D : F.DescentData' sq sq₃)
 structure Hom (D₁ D₂ : F.DescentData' sq sq₃) where
   hom (i : ι) : D₁.obj i ⟶ D₂.obj i
   comm (i₁ i₂ : ι) :
-    (F.map (sq i₁ i₂).p₁.op.toLoc).map (hom i₁) ≫
-      pullHom D₂.hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ =
-    pullHom D₁.hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ ≫
-      (F.map (sq i₁ i₂).p₂.op.toLoc).map (hom i₂) := by aesop_cat
+    (F.map (sq i₁ i₂).p₁.op.toLoc).map (hom i₁) ≫ D₂.hom i₁ i₂  =
+    D₁.hom i₁ i₂ ≫ (F.map (sq i₁ i₂).p₂.op.toLoc).map (hom i₂) := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.comm
 
@@ -191,20 +189,18 @@ lemma comm {D₁ D₂ : F.DescentData' sq sq₃} (φ : D₁ ⟶ D₂)
   rw [← pull_pullHom D₂.hom p (sq i₁ i₂).p q (by aesop) (sq i₁ i₂).p₁ (sq i₁ i₂).p₂
     (by simp) (by simp) f₁ f₂ (by aesop) (by aesop),
     ← pull_pullHom D₁.hom p (sq i₁ i₂).p q (by aesop) (sq i₁ i₂).p₁ (sq i₁ i₂).p₂
-      (by simp) (by simp) f₁ f₂ (by aesop) (by aesop)]
+      (by simp) (by simp) f₁ f₂ (by aesop) (by aesop), pullHom_p₁_p₂, pullHom_p₁_p₂]
   dsimp only [DescentData.pull]
   rw [NatTrans.naturality_assoc]
   dsimp
-  rw [← Functor.map_comp_assoc, φ.comm i₁ i₂, Functor.map_comp_assoc,
-    mapComp'_inv_naturality]
+  rw [← Functor.map_comp_assoc, φ.comm, Functor.map_comp_assoc, mapComp'_inv_naturality]
   simp only [Category.assoc]
 
 @[simps]
 def isoMk {D₁ D₂ : F.DescentData' sq sq₃} (e : ∀ (i : ι), D₁.obj i ≅ D₂.obj i)
-    (comm : ∀ (i₁ i₂ : ι), (F.map (sq i₁ i₂).p₁.op.toLoc).map (e i₁).hom ≫
-      pullHom D₂.hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ =
-    pullHom D₁.hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ ≫
-      (F.map (sq i₁ i₂).p₂.op.toLoc).map (e i₂).hom := by aesop_cat) : D₁ ≅ D₂ where
+    (comm : ∀ (i₁ i₂ : ι), (F.map (sq i₁ i₂).p₁.op.toLoc).map (e i₁).hom ≫ D₂.hom i₁ i₂ =
+    D₁.hom i₁ i₂ ≫ (F.map (sq i₁ i₂).p₂.op.toLoc).map (e i₂).hom := by aesop_cat) :
+    D₁ ≅ D₂ where
   hom :=
     { hom i := (e i).hom
       comm := comm }
@@ -263,15 +259,11 @@ noncomputable def toDescentDataFunctor : F.DescentData' sq sq₃ ⥤ F.DescentDa
     { hom := φ.hom
       comm := comm φ }
 
+attribute [local simp] DescentData.Hom.comm
 @[simps]
 noncomputable def fromDescentDataFunctor : F.DescentData f ⥤ F.DescentData' sq sq₃ where
   obj D := .ofDescentData _ _ D
-  map {D₁ D₂} φ :=
-    { hom := φ.hom
-      comm i₁ i₂ := by
-        rw [pullHom_eq_pull _ _ _ _ _ _ (𝟙 _) (by simp) (by simp),
-          pullHom_eq_pull _ _ _ _ _ _ (𝟙 _) (by simp) (by simp)]
-        simp }
+  map {D₁ D₂} φ := { hom := φ.hom }
 
 @[simps]
 noncomputable def descentDataEquivalence : F.DescentData' sq sq₃ ≌ F.DescentData f where

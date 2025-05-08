@@ -48,6 +48,7 @@ of morphisms $$p^* M ⟶ p^* N$$. -/
 def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
   obj T := (F.map (.toLoc T.unop.hom.op)).obj M ⟶ (F.map (.toLoc T.unop.hom.op)).obj N
   map {T₁ T₂} p f := by
+    -- this should be reconciled with `DescentData.pull`
     letI e := F.mapComp' (.toLoc T₁.unop.hom.op) (.toLoc p.unop.left.op)
       (.toLoc T₂.unop.hom.op) (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, Over.w p.unop])
     exact e.hom.app M ≫ (F.map (.toLoc p.unop.left.op)).map f ≫ e.inv.app N

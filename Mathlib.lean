@@ -2470,9 +2470,9 @@ import Mathlib.CategoryTheory.Sites.Descent.Coalgebra
 import Mathlib.CategoryTheory.Sites.Descent.CodescentData
 import Mathlib.CategoryTheory.Sites.Descent.DescentData
 import Mathlib.CategoryTheory.Sites.Descent.DescentDataPrime
-import Mathlib.CategoryTheory.Sites.Descent.HasEffectiveDescent
+import Mathlib.CategoryTheory.Sites.Descent.IsPrestack
+import Mathlib.CategoryTheory.Sites.Descent.IsStack
 import Mathlib.CategoryTheory.Sites.Descent.ModuleCat
-import Mathlib.CategoryTheory.Sites.Descent.Morphisms
 import Mathlib.CategoryTheory.Sites.Descent.PullbackStruct
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Mathlib.CategoryTheory.Sites.EpiMono
