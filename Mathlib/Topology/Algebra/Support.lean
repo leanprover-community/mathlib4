@@ -214,9 +214,6 @@ theorem comp_isClosedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
   rw [hg.isEmbedding.closure_eq_preimage_closure_image]
   exact preimage_mono (closure_mono <| image_preimage_subset _ _)
 
-@[deprecated (since := "2024-10-20")]
-alias comp_closedEmbedding := comp_isClosedEmbedding
-
 @[to_additive]
 theorem comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :

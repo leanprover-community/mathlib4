@@ -1009,19 +1009,19 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Filter α) (Filter β) (Filter γ) :=
   ⟨fun _ _ _ => map₂_left_comm smul_comm⟩
 
-@[to_additive vaddAssocClass]
+@[to_additive]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Filter γ) :=
   ⟨fun a b f => by simp only [← Filter.map_smul, map_map, smul_assoc]; rfl⟩
 
-@[to_additive vaddAssocClass']
+@[to_additive]
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Filter β) (Filter γ) :=
   ⟨fun a f g => by
     refine (map_map₂_distrib_left fun _ _ => ?_).symm
     exact (smul_assoc a _ _).symm⟩
 
-@[to_additive vaddAssocClass'']
+@[to_additive]
 instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Filter α) (Filter β) (Filter γ) :=
   ⟨fun _ _ _ => map₂_assoc smul_assoc⟩
@@ -1058,8 +1058,8 @@ protected def distribMulActionFilter [Monoid α] [AddMonoid β] [DistribMulActio
   smul_zero _ := (map_pure _ _).trans <| by rw [smul_zero, pure_zero]
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
-protected def mulDistribMulActionFilter [Monoid α] [Monoid β] [MulDistribMulAction α β] :
-    MulDistribMulAction α (Set β) where
+protected noncomputable def mulDistribMulActionFilter
+    [Monoid α] [Monoid β] [MulDistribMulAction α β] : MulDistribMulAction α (Set β) where
   smul_mul _ _ _ := image_image2_distrib <| smul_mul' _
   smul_one _ := image_singleton.trans <| by rw [smul_one, singleton_one]
 
