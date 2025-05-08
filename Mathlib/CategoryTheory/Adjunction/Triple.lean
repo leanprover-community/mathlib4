@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Ben Eltschig
 -/
 import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Monad.Adjunction
 /-!
 
@@ -24,26 +23,22 @@ bundle the adjunctions in a structure `Triple F G H`.
   counits is also given.
 * `counit_unit_eq_whiskerRight`: when `G` is fully faithful, the natural transformation
   `H ⋙ G ⟶ F ⋙ G` given by `adj₂.counit ≫ adj₁.unit` is just `rightToLeft` whiskered with `G`.
-* `rightToLeft_epi_iff_whiskerRight_unit_epi`: assuming `D` has all pushouts, `rightToLeft : H ⟶ F`
-  is epic iff the whiskering `H ⟶ F ⋙ G ⋙ H` of `adj₁.unit` and `H` is. For the components this
-  holds even without assumptions on `D`.
-* `rightToLeft_epi_iff_counit_unit_epi`: assuming `D` has all pushouts, `rightToLeft : H ⟶ F` is
-  epic iff `adj₂.counit ≫ adj₁.unit : H ⋙ G ⟶ F ⋙ G` is. For the components this holds even without
-  assumptions on `D`.
+* `rightToLeft_app_epi_iff_map_unit_app_epi`: `rightToLeft : H ⟶ F` is epi at `X` iff the image of
+  `adj₁.unit.app X` under `H` is.
+* `rightToLeft_app_epi_iff_counit_unit_app_epi`: when `H` preserves epimorphisms,
+  `rightToLeft : H ⟶ F` is epic at `X` iff `adj₂.counit ≫ adj₁.unit : H ⋙ G ⟶ F ⋙ G` is.
 * `leftToRight`: the canonical natural transformation `F ⟶ H` that exists whenever `F` and `G` are
   fully faithful. This is defined in terms of the units of the adjunctions, but a formula in terms
   of the counits is also given.
 * `counit_unit_eq_whiskerLeft`: when `F` and `H` are fully faithful, the natural transformation
   `G ⋙ F ⟶ G ⋙ H` given by `adj₁.counit ≫ adj₂.unit` is just `G` whiskered with `leftToRight`.
-* `leftToRight_mono_iff_whiskerLeft_unit_mono`: assuming `D` has all pullbacks,
-  `leftToRight : F ⟶ H` is monic iff the whiskering `F ⟶ F ⋙ G ⋙ H` of `F` and `adj₂.unit` is.
-  For the components this holds even without assumptions on `D`.
-* `leftToRight_mono_iff_counit_unit_mono`: assuming `D` has all pullbacks, `leftToRight : H ⟶ F` is
-  monic iff `adj₁.counit ≫ adj₂.unit : G ⋙ F ⟶ G ⋙ H` is. For the components this holds even
-  without assumptions on `D`.
+* `leftToRight_app_mono_iff_unit_app_mono`: `leftToRight : F ⟶ H` is monic at `X` iff `adj₂.unit`
+  is monic at `F.obj X`.
+* `leftToRight_app_mono_iff_counit_unit_app_mono`: all components of `leftToRight : H ⟶ F` are
+  monic iff all components of `adj₁.counit ≫ adj₂.unit : G ⋙ F ⟶ G ⋙ H` are.
 -/
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable {C D : Type*} [Category C] [Category D]
 variable (F : C ⥤ D) (G : D ⥤ C) (H : C ⥤ D)
@@ -185,14 +180,6 @@ lemma rightToLeft_app_epi_iff_map_unit_app_epi {X : C} :
     ← H.map_comp, counit_unit_app_eq_map_rightToLeft]
   exact Functor.epi_map_congr_iso _ (asIso t.adj₂.unit)
 
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful and its codomain has
-all pushouts, the natural transformation `H ⟶ F` is epic iff the unit of the adjunction `F ⊣ G`
-whiskered with `H` is. -/
-lemma rightToLeft_epi_iff_whiskerRight_unit_epi [HasPushouts D] :
-    Epi t.rightToLeft ↔ Epi (whiskerRight t.adj₁.unit H) := by
-  repeat rw [NatTrans.epi_iff_epi_app]
-  exact forall_congr' fun _ ↦ t.rightToLeft_app_epi_iff_map_unit_app_epi
-
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful and `H` preserves epimorphisms
 (which is for example the case if `H` has a further right adjoint), the components of the natural
 transformation `H ⟶ F` are epic iff the respective components of the natural transformation
@@ -203,16 +190,6 @@ lemma rightToLeft_app_epi_iff_counit_unit_app_epi [H.PreservesEpimorphisms] {X :
   refine ⟨fun h ↦ by rw [counit_unit_app_eq_map_rightToLeft]; exact G.map_epi _, fun h ↦ ?_⟩
   rw [rightToLeft_app, ← t.homEquiv_counit_unit_app_eq_H_map_unit, t.adj₂.homEquiv_apply]
   infer_instance
-
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, `H` preserves epimorphisms
-(which is for example the case if `H` has a further right adjoint) and both categories have
-all pushouts, the natural transformation `H ⟶ F` is epic iff the natural transformation
-`H ⋙ G ⟶ F ⋙ G` obtained from the units and counits of the adjunctions is. -/
-lemma rightToLeft_epi_iff_counit_unit_epi [HasPushouts C] [HasPushouts D]
-    [H.PreservesEpimorphisms] :
-    Epi t.rightToLeft ↔ Epi (t.adj₂.counit ≫ t.adj₁.unit) := by
-  repeat rw [NatTrans.epi_iff_epi_app]
-  exact forall_congr' fun _ ↦ t.rightToLeft_app_epi_iff_counit_unit_app_epi
 
 end InnerFullyFaithful
 
@@ -285,15 +262,6 @@ lemma leftToRight_app_mono_iff_unit_app_mono {X : C} :
     counit_unit_app_eq_leftToRight_app]
   exact NatTrans.mono_app_congr_iso (asIso (t.adj₁.unit.app X))
 
-omit [H.Full] [H.Faithful] in
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful and their codomain has
-all pullbacks, the natural transformation `F ⟶ H` is monic iff `F` whiskered with the unit of the
-adjunction `G ⊣ H` is. -/
-lemma leftToRight_mono_iff_whiskerLeft_unit_mono [HasPullbacks D] :
-    Mono t.leftToRight ↔ Mono (whiskerLeft F t.adj₂.unit) := by
-  repeat rw [NatTrans.mono_iff_mono_app]
-  exact forall_congr' fun _ ↦ t.leftToRight_app_mono_iff_unit_app_mono
-
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, all components of the
 natural transformation `F ⟶ H` are monic iff all components of the natural transformation
 `G ⋙ F ⟶ G ⋙ H` obtained from the units and counits of the adjunctions are.
@@ -306,14 +274,6 @@ lemma leftToRight_app_mono_iff_counit_unit_app_mono :
   specialize h (H.obj X)
   rw [counit_unit_app_eq_leftToRight_app] at h
   exact (NatTrans.mono_app_congr_iso (asIso (t.adj₂.counit.app X))).1 h
-
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful and their codomain has
-all pullbacks, the natural transformation `F ⟶ H` is monic iff the natural transformation
-`G ⋙ F ⟶ G ⋙ H` obtained from the units and counits of the adjunctions is. -/
-lemma leftToRight_mono_iff_counit_unit_mono [HasPullbacks D] :
-    Mono t.leftToRight ↔ Mono (t.adj₁.counit ≫ t.adj₂.unit) := by
-  repeat rw [NatTrans.mono_iff_mono_app]
-  exact t.leftToRight_app_mono_iff_counit_unit_app_mono
 
 end OuterFullyFaithful
 
