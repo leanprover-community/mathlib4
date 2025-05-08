@@ -486,6 +486,30 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
             simp only [finte_free_ext_vanish_iff]
             exact ext_subsingleton_of_lt_moduleDepth lt
         have eq_add1 : IsLocalRing.depth S.X₁ = IsLocalRing.depth M + 1 := by
-
-          sorry
+          by_cases eqtop : IsLocalRing.depth S.X₁ = ⊤
+          · simp only [eqtop, add_top, f, S] at h_ker
+            have M_depth_eqtop : IsLocalRing.depth M = ⊤ := by
+              apply (moduleDepth_eq_top_iff _ _).mpr (fun i ↦ ?_)
+              have lt : i + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R)) := by
+                rw [← h_ker, ENat.add_lt_top]
+                exact ⟨ENat.coe_lt_top i, ENat.coe_lt_top 1⟩
+              have := ext_iso i lt
+              rw [(asIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K
+                (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
+              apply ext_subsingleton_of_lt_moduleDepth
+              exact lt_of_lt_of_eq (ENat.coe_lt_top (i + 1)) eqtop.symm
+            simp [M_depth_eqtop, eqtop]
+          · have lttop : IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R)) < ⊤ := by
+              rw [← h_ker]
+              exact ENat.add_lt_top.mpr ⟨ENat.coe_lt_top n, Ne.lt_top' (Ne.symm eqtop)⟩
+            have exist := (moduleDepth_lt_top_iff _ _).mp (Ne.lt_top' (Ne.symm eqtop))
+            let k := Nat.find exist
+            have eq_find : IsLocalRing.depth S.X₁ = k := by
+              simp only [IsLocalRing.depth, Ideal.depth, moduleDepth_eq_find _ _ exist, k]
+            simp only [eq_find, gt_iff_lt, Nat.cast_pos] at depth_pos
+            have eq : k - 1 + 1 = k := Nat.sub_add_cancel depth_pos
+            have : IsLocalRing.depth M = (k - 1 : ℕ) := by
+              -- Nat.find_spec exist
+              sorry
+            simpa [eq_find, this] using ENat.coe_inj.mpr eq.symm
         simpa [add_assoc, add_comm 1 (IsLocalRing.depth M), ← eq_add1] using h_ker
