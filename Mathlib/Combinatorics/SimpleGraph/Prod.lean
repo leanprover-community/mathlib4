@@ -62,7 +62,7 @@ theorem neighborSet_boxProd (x : α × β) :
   simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, Set.mem_singleton_iff]
   simp only [eq_comm, and_comm]
 
-@[deprecated (since := "2025-04-22")] alias boxProd_neighborSet := neighborSet_boxProd
+@[deprecated (since := "2025-05-08")] alias boxProd_neighborSet := neighborSet_boxProd
 
 variable (G H)
 
@@ -207,7 +207,7 @@ protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connect
 theorem connected_boxProd : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
   ⟨fun h => ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h => h.1.boxProd h.2⟩
 
-@[deprecated (since := "2025-04-22")] alias boxProd_connected := connected_boxProd
+@[deprecated (since := "2025-05-08")] alias boxProd_connected := connected_boxProd
 
 instance boxProdFintypeNeighborSet (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] :
@@ -230,7 +230,7 @@ theorem neighborFinset_boxProd (x : α × β)
   convert_to (G □ H).neighborFinset x = _ using 2
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
 
-@[deprecated (since := "2025-04-22")] alias boxProd_neighborFinset := neighborFinset_boxProd
+@[deprecated (since := "2025-05-08")] alias boxProd_neighborFinset := neighborFinset_boxProd
 
 theorem degree_boxProd (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
@@ -238,7 +238,7 @@ theorem degree_boxProd (x : α × β)
   rw [degree, degree, degree, neighborFinset_boxProd, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
 
-@[deprecated (since := "2025-04-22")] alias boxProd_degree := degree_boxProd
+@[deprecated (since := "2025-05-08")] alias boxProd_degree := degree_boxProd
 
 lemma reachable_boxProd {x y : α × β} :
     (G □ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
@@ -249,7 +249,7 @@ lemma reachable_boxProd {x y : α × β} :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
-@[deprecated (since := "2025-04-22")] alias boxProd_reachable := reachable_boxProd
+@[deprecated (since := "2025-05-08")] alias boxProd_reachable := reachable_boxProd
 
 @[simp]
 lemma edist_boxProd (x y : α × β) :
@@ -275,6 +275,6 @@ lemma edist_boxProd (x y : α × β) :
       rw [← hw, Walk.length_boxProd]
       exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)
 
-@[deprecated (since := "2025-04-22")] alias boxProd_edist := edist_boxProd
+@[deprecated (since := "2025-05-08")] alias boxProd_edist := edist_boxProd
 
 end SimpleGraph
