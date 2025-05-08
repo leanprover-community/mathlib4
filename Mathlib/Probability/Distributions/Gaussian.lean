@@ -102,7 +102,7 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
   have hf : 0 ≤ₐₛ gaussianPDFReal μ v := ae_of_all _ (gaussianPDFReal_nonneg μ v)
   rw [← integral_eq_lintegral_of_nonneg_ae hf hfm]
   simp only [gaussianPDFReal, zero_lt_two, mul_nonneg_iff_of_pos_right, one_div,
-    Nat.cast_ofNat, integral_mul_left]
+    Nat.cast_ofNat, integral_const_mul]
   rw [integral_sub_right_eq_self (μ := volume) (fun a ↦ rexp (-a ^ 2 / ((2 : ℝ) * v))) μ]
   simp only [zero_lt_two, mul_nonneg_iff_of_pos_right, div_eq_inv_mul, mul_inv_rev,
     mul_neg]
@@ -380,7 +380,7 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
         * ∫ x : ℝ, cexp (-(2 * v)⁻¹ * x ^ 2 + (z + μ / v) * x + -μ ^ 2 / (2 * v)) ∂ℙ := by
       unfold gaussianPDFReal
       push_cast
-      simp_rw [mul_assoc, integral_mul_left, ← Complex.exp_add]
+      simp_rw [mul_assoc, integral_const_mul, ← Complex.exp_add]
       congr with x
       congr 1
       ring

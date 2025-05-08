@@ -31,6 +31,9 @@ def IsRkFinite (M : Matroid α) (X : Set α) : Prop := (M ↾ X).RankFinite
 lemma IsRkFinite.rankFinite (hX : M.IsRkFinite X) : (M ↾ X).RankFinite :=
   hX
 
+@[simp] lemma RankFinite.isRkFinite [RankFinite M] (X : Set α) : M.IsRkFinite X :=
+  inferInstanceAs (M ↾ X).RankFinite
+
 lemma IsBasis'.finite_iff_isRkFinite (hI : M.IsBasis' I X) : I.Finite ↔ M.IsRkFinite X :=
   ⟨fun h ↦ ⟨I, hI, h⟩, fun (_ : (M ↾ X).RankFinite) ↦ hI.isBase_restrict.finite⟩
 
@@ -91,6 +94,7 @@ lemma Indep.isRkFinite_iff_finite (hI : M.Indep I) : M.IsRkFinite I ↔ I.Finite
 
 alias ⟨Indep.finite_of_isRkFinite, _⟩ := Indep.isRkFinite_iff_finite
 
+@[simp]
 lemma isRkFinite_of_finite (M : Matroid α) (hX : X.Finite) : M.IsRkFinite X :=
   let ⟨_, hI⟩ := M.exists_isBasis' X
   hI.isRkFinite_of_finite (hX.subset hI.subset)
@@ -103,10 +107,9 @@ lemma Indep.subset_finite_isBasis_of_subset_of_isRkFinite (hI : M.Indep I) (hIX 
     (hX : M.IsRkFinite X) (hXE : X ⊆ M.E := by aesop_mat) : ∃ J, M.IsBasis J X ∧ I ⊆ J ∧ J.Finite :=
   (hI.subset_isBasis_of_subset hIX).imp fun _ hJ => ⟨hJ.1, hJ.2, hJ.1.finite_of_isRkFinite hX⟩
 
-lemma isRkFinite_singleton : M.IsRkFinite {e} :=
-  isRkFinite_of_finite M (finite_singleton e)
+lemma isRkFinite_singleton : M.IsRkFinite {e} := by
+  simp
 
-@[simp]
 lemma IsRkFinite.empty (M : Matroid α) : M.IsRkFinite ∅ :=
   isRkFinite_of_finite M finite_empty
 
