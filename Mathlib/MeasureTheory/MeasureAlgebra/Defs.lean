@@ -16,9 +16,9 @@ class MeasurableAlgebra (α : Type*) extends SigmaOrderCompleteLattice α, Boole
 
 structure MeasureAlgebraMeasure (α : Type*) [MeasurableAlgebra α] where
   protected measureOf : α → ℝ≥0∞
-  protected zero : measureOf ⊥ = 0
-  protected nonzero : ∀ s, s ≠ ⊥ → measureOf s > 0
-  protected disjoint : ∀ s : ℕ → α, Pairwise (Disjoint on s) →
+  protected zero' : measureOf ⊥ = 0
+  protected nonzero' : ∀ x, x ≠ ⊥ → measureOf x > 0
+  protected disjoint' : ∀ s : ℕ → α, Pairwise (Disjoint on s) →
     measureOf (⨆i s) = ∑' i, measureOf (s i)
 
 -- scoped notation "MeasureAlgebraMeasure[" mα "] " α:arg => @MeasureAlgebraMeasure α mα
@@ -30,3 +30,17 @@ instance MeasureAlgebraMeasure.instFunLike [MeasurableAlgebra α] :
 
 class MeasureAlgebra (α : Type*) extends MeasurableAlgebra α where
   measure : MeasureAlgebraMeasure α
+
+variable {m : MeasurableAlgebra α} {μ : MeasureAlgebraMeasure α}
+
+namespace MeasureAlgebraMeasure
+
+lemma zero : μ ⊥ = 0 := by exact μ.zero'
+
+lemma nonzero {x : α} : x ≠ ⊥ → μ x > 0 := by exact μ.nonzero' x
+
+lemma disjoint {s : ℕ → α} :
+  Pairwise (Disjoint on s) → μ (⨆i s) = ∑' i, μ (s i) := by
+  exact μ.disjoint' s
+
+end MeasureAlgebraMeasure
