@@ -206,7 +206,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
 (in fact, equal) to the diagram factored through `OpensLeCover U`.
 -/
 def pairwiseDiagramIso :
-    Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ fullSubcategoryInclusion _ where
+    Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ ObjectProperty.ι _ where
   hom := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
   inv := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
 

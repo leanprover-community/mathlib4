@@ -340,9 +340,6 @@ theorem separated_by_isOpenEmbedding [TopologicalSpace Y] [T2Space X]
   ⟨f '' u, f '' v, hf.isOpenMap _ uo, hf.isOpenMap _ vo, mem_image_of_mem _ xu,
     mem_image_of_mem _ yv, disjoint_image_of_injective hf.injective uv⟩
 
-@[deprecated (since := "2024-10-18")]
-alias separated_by_openEmbedding := separated_by_isOpenEmbedding
-
 instance {p : X → Prop} [T2Space X] : T2Space (Subtype p) := inferInstance
 
 instance Prod.t2Space [T2Space X] [TopologicalSpace Y] [T2Space Y] : T2Space (X × Y) :=
@@ -534,9 +531,6 @@ theorem Function.LeftInverse.isClosedEmbedding [T2Space X] {f : X → Y} {g : Y 
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosedEmbedding g :=
   ⟨.of_leftInverse h hf hg, h.isClosed_range hf hg⟩
 
-@[deprecated (since := "2024-10-20")]
-alias Function.LeftInverse.closedEmbedding := Function.LeftInverse.isClosedEmbedding
-
 theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsCompact s)
     (ht : IsCompact t) (hst : Disjoint s t) : SeparatedNhds s t := by
   simp only [SeparatedNhds, prod_subset_compl_diagonal_iff_disjoint.symm] at hst ⊢
@@ -661,9 +655,6 @@ protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X →
 theorem Continuous.isClosedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} (h : Continuous f)
     (hf : Function.Injective f) : IsClosedEmbedding f :=
   .of_continuous_injective_isClosedMap h hf h.isClosedMap
-
-@[deprecated (since := "2024-10-20")]
-alias Continuous.closedEmbedding := Continuous.isClosedEmbedding
 
 /-- A continuous surjective map from a compact space to a Hausdorff space is a quotient map. -/
 theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}

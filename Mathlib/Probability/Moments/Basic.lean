@@ -221,7 +221,7 @@ theorem mgf_smul_left (α : ℝ) : mgf (α • X) μ t = mgf X μ (α * t) := by
   simp_rw [mgf, Pi.smul_apply, smul_eq_mul, mul_comm α t, mul_assoc]
 
 theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α) * mgf X μ t := by
-  rw [mgf, mgf, ← integral_mul_left]
+  rw [mgf, mgf, ← integral_const_mul]
   congr with x
   dsimp
   rw [mul_add, exp_add]

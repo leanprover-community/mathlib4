@@ -274,17 +274,22 @@ theorem integral_smul [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G] (c : 𝕜)
     exact setToFun_smul (dominatedFinMeasAdditive_weightedSMul μ) weightedSMul_smul c f
   · simp [integral, hG]
 
-theorem integral_mul_left {L : Type*} [RCLike L] (r : L) (f : α → L) :
+theorem integral_const_mul {L : Type*} [RCLike L] (r : L) (f : α → L) :
     ∫ a, r * f a ∂μ = r * ∫ a, f a ∂μ :=
   integral_smul r f
 
-theorem integral_mul_right {L : Type*} [RCLike L] (r : L) (f : α → L) :
-    ∫ a, f a * r ∂μ = (∫ a, f a ∂μ) * r := by
-  simp only [mul_comm]; exact integral_mul_left r f
+@[deprecated (since := "2025-04-27")]
+alias integral_mul_left := integral_const_mul
+
+theorem integral_mul_const {L : Type*} [RCLike L] (r : L) (f : α → L) :
+    ∫ a, f a * r ∂μ = (∫ a, f a ∂μ) * r := by simp only [mul_comm]; exact integral_const_mul r f
+
+@[deprecated (since := "2025-04-27")]
+alias integral_mul_right := integral_mul_const
 
 theorem integral_div {L : Type*} [RCLike L] (r : L) (f : α → L) :
     ∫ a, f a / r ∂μ = (∫ a, f a ∂μ) / r := by
-  simpa only [← div_eq_mul_inv] using integral_mul_right r⁻¹ f
+  simpa only [← div_eq_mul_inv] using integral_mul_const r⁻¹ f
 
 theorem integral_congr_ae {f g : α → G} (h : f =ᵐ[μ] g) : ∫ a, f a ∂μ = ∫ a, g a ∂μ := by
   by_cases hG : CompleteSpace G
@@ -617,6 +622,51 @@ lemma integral_mono_measure {f : α → E} {ν : Measure α} (hle : μ ≤ ν)
     (Eventually.of_forall <| SimpleFunc.approxOn_range_nonneg hg_nonneg n) hle
     (SimpleFunc.integrable_approxOn_range _ hfi n)
 
+lemma integral_monotoneOn_of_integrand_ae {β : Type*} [Preorder β] {f : α → β → E}
+    {s : Set β} (hf_mono : ∀ᵐ x ∂μ, MonotoneOn (f x) s)
+    (hf_int : ∀ a ∈ s, Integrable (f · a) μ) : MonotoneOn (fun b => ∫ x, f x b ∂μ) s := by
+  intro a ha b hb hab
+  refine integral_mono_ae (hf_int a ha) (hf_int b hb) ?_
+  filter_upwards [hf_mono] with x hx
+  exact hx ha hb hab
+
+lemma integral_antitoneOn_of_integrand_ae {β : Type*} [Preorder β] {f : α → β → E}
+    {s : Set β} (hf_anti : ∀ᵐ x ∂μ, AntitoneOn (f x) s)
+    (hf_int : ∀ a ∈ s, Integrable (f · a) μ) : AntitoneOn (fun b => ∫ x, f x b ∂μ) s := by
+  intro a ha b hb hab
+  refine integral_mono_ae (hf_int b hb) (hf_int a ha) ?_
+  filter_upwards [hf_anti] with x hx
+  exact hx ha hb hab
+
+lemma integral_convexOn_of_integrand_ae {β : Type*} [AddCommMonoid β]
+    [Module ℝ β] {f : α → β → E} {s : Set β} (hs : Convex ℝ s)
+    (hf_conv : ∀ᵐ x ∂μ, ConvexOn ℝ s (f x)) (hf_int : ∀ a ∈ s, Integrable (f · a) μ) :
+    ConvexOn ℝ s (fun b => ∫ x, f x b ∂μ) := by
+  refine ⟨hs, ?_⟩
+  intro a ha b hb p q hp hq hpq
+  calc ∫ x, f x (p • a + q • b) ∂μ ≤ ∫ x, p • f x a + q • f x b ∂μ := by
+                  refine integral_mono_ae ?lhs ?rhs ?ae_le
+                  case lhs =>
+                    refine hf_int _ ?_
+                    rw [convex_iff_add_mem] at hs
+                    exact hs ha hb hp hq hpq
+                  case rhs => fun_prop (disch := aesop)
+                  case ae_le =>
+                    filter_upwards [hf_conv] with x hx
+                    exact hx.2 ha hb hp hq hpq
+            _ = ∫ x, p • f x a ∂μ + ∫ x, q • f x b ∂μ := by
+                  apply integral_add
+                  all_goals fun_prop (disch := aesop)
+            _ = p • ∫ x, f x a ∂μ + q • ∫ x, f x b ∂μ := by simp [integral_smul]
+
+lemma integral_concaveOn_of_integrand_ae {β : Type*} [AddCommMonoid β]
+    [Module ℝ β] {f : α → β → E} {s : Set β} (hs : Convex ℝ s)
+    (hf_conc : ∀ᵐ x ∂μ, ConcaveOn ℝ s (f x)) (hf_int : ∀ a ∈ s, Integrable (f · a) μ) :
+    ConcaveOn ℝ s (fun b => ∫ x, f x b ∂μ) := by
+  simp_rw [← neg_convexOn_iff] at hf_conc ⊢
+  simpa only [Pi.neg_apply, integral_neg] using
+    integral_convexOn_of_integrand_ae hs hf_conc (hf_int · · |>.neg)
+
 end Order
 
 theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x => (f x : ℝ)) μ) :
@@ -942,7 +992,7 @@ theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G}
     ∫ a, f a ∂(∑ i ∈ s, μ i) = ∑ i ∈ s, ∫ a, f a ∂μ i := by
   induction s using Finset.cons_induction_on with
   | empty => simp
-  | cons h ih =>
+  | cons _ _ h ih =>
     rw [Finset.forall_mem_cons] at hf
     rw [Finset.sum_cons, Finset.sum_cons, ← ih hf.2]
     exact integral_add_measure hf.1 (integrable_finset_sum_measure.2 hf.2)
@@ -1045,19 +1095,14 @@ theorem _root_.Topology.IsClosedEmbedding.integral_map {β} [TopologicalSpace α
     (f : β → G) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   hφ.measurableEmbedding.integral_map _
 
-@[deprecated (since := "2024-10-20")]
-alias _root_.ClosedEmbedding.integral_map := IsClosedEmbedding.integral_map
-
 theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β → G) :
     ∫ y, f y ∂Measure.map e μ = ∫ x, f (e x) ∂μ :=
   e.measurableEmbedding.integral_map f
 
 omit hE in
 lemma integral_domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
-    -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
-    -- assume `MeasurableSpace G` + `MeasurableSMul G A`
-    [MeasurableSpace A] [MeasurableSpace G] [MeasurableSMul G A] {μ : Measure A}
-    (g : Gᵈᵐᵃ) (f : A → E) : ∫ x, f x ∂g • μ = ∫ x, f ((DomMulAct.mk.symm g)⁻¹ • x) ∂μ :=
+    [MeasurableSpace A] [MeasurableConstSMul G A] {μ : Measure A} (g : Gᵈᵐᵃ) (f : A → E) :
+    ∫ x, f x ∂g • μ = ∫ x, f ((DomMulAct.mk.symm g)⁻¹ • x) ∂μ :=
   integral_map_equiv (MeasurableEquiv.smul ((DomMulAct.mk.symm g : G)⁻¹)) f
 
 theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α → β} {ν}
