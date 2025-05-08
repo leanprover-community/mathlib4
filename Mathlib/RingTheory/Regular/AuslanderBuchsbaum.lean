@@ -134,12 +134,12 @@ open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
 
-lemma free_of_projectiveOverLocalRing [IsLocalRing R] (M : ModuleCat.{v} R) [Module.Finite R M]
+lemma free_of_projective_of_isLocalRing [IsLocalRing R] (M : ModuleCat.{v} R) [Module.Finite R M]
     [proj : Projective M]: Module.Free R M := by
   have : Module.Projective R M := by
     --need fix for `IsProjective.iff_projective`
     sorry
-  have : Module.Flat R M := Module.Flat.of_projective
+  #check IsProjective.iff_projective
   exact Module.free_of_flat_of_isLocalRing
 
 local instance : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
@@ -294,7 +294,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     have := ModuleCat.projective_of_free B.2
     infer_instance
   have ker_free : Module.Free R (LinearMap.ker f) := by
-    apply @free_of_projectiveOverLocalRing _ _ _ _ (ModuleCat.of R (LinearMap.ker f)) _ ?_
+    apply @free_of_projective_of_isLocalRing _ _ _ _ (ModuleCat.of R (LinearMap.ker f)) _ ?_
     apply @projective_of_hasProjectiveDimensionLT_one _ _ _ _ _ ?_
     have proj : Projective (ModuleCat.of.{v} R (ι →₀ Shrink.{v, u} R)) := by
       rcases free with ⟨⟨B⟩⟩
@@ -406,7 +406,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
     · simp only [CharP.cast_eq_zero, IsLocalRing.depth, Ideal.depth, moduleDepth, zero_add]
       have pdz: HasProjectiveDimensionLE M (Nat.find hfinprojdim) := Nat.find_spec hfinprojdim
       simp only [HasProjectiveDimensionLE, h, zero_add] at pdz
-      have : Module.Free R M := by apply free_of_projectiveOverLocalRing
+      have : Module.Free R M := free_of_projective_of_isLocalRing M
       congr! 5
       apply finte_free_ext_vanish_iff
     · by_cases eq0 : n = 0
