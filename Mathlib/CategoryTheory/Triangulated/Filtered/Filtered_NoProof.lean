@@ -908,11 +908,35 @@ def Gr_commShift : leftCommShift (fun n ↦ Gr (C := C) L n) (E := FilteredShift
 
 -- Proposition A.1.5(ii).
 
+lemma Gr_aux_pure_zero_of_ne_zero {n : ℤ} (h : n ≠ 0) (X : A) :
+    Limits.IsZero ((Gr_aux n).obj (L.functor.obj X)) := sorry
+
 lemma Gr_pure_zero_of_ne_zero {n : ℤ} (h : n ≠ 0) (X : A) :
     Limits.IsZero ((Gr L n).obj (L.functor.obj X)) := sorry
 
--- This should be an explicit isomorphism.
-def Gr_pure_of_zero (n : ℤ) (h : n = 0) : L.functor ⋙ Gr L n ≅ 𝟭 A := sorry
+def Gr_aux_pure_of_zero (n : ℤ) (h : n = 0) : L.functor ⋙ Gr_aux n ≅ L.functor := by
+  refine isoWhiskerLeft L.functor (eqToIso (by rw [h])) ≪≫ ?_
+  refine (Functor.associator _ _ _).symm ≪≫ isoWhiskerLeft (L.functor ⋙ truncGELE 0 0)
+    (shiftFunctorZero' _ (-0) neg_zero) ≪≫ Functor.rightUnitor _ ≪≫ ?_
+  refine NatIso.ofComponents (fun X ↦ ?_) (fun {X Y} f ↦ ?_)
+  · have := (isFilteredTriangulated_over_image L X).1
+    have := (isFilteredTriangulated_over_image L X).2
+    have : IsGE ((truncLE 0).obj (L.functor.obj X)) 0 := inferInstance
+    exact asIso ((truncGEι 0).app ((truncLE 0).obj (L.functor.obj X))) ≪≫
+      (asIso ((truncLEπ 0).app (L.functor.obj X))).symm
+  · dsimp
+    slice_lhs 1 2 => rw [(truncGEι 0).naturality, Functor.id_map]
+    have := (isFilteredTriangulated_over_image L Y).1
+    rw [← cancel_mono ((truncLEπ 0).app (L.functor.obj Y))]
+    simp only [Functor.id_obj, assoc, IsIso.inv_hom_id, comp_id]
+    have := (truncLEπ 0).naturality (L.functor.map f)
+    simp only [Functor.id_obj, Functor.id_map] at this
+    rw [this]
+    simp only [IsIso.inv_hom_id_assoc]
+
+def Gr_pure_of_zero (n : ℤ) (h : n = 0) : L.functor ⋙ Gr L n ≅ 𝟭 A :=
+  (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (Gr_aux_pure_of_zero L n h) _ ≪≫
+  ForgetFiltration_functor L
 
 -- Proposition A.1.5(iii).
 -- Here the math statement doesn't say everything we want it to, because the
