@@ -509,7 +509,19 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
             simp only [eq_find, gt_iff_lt, Nat.cast_pos] at depth_pos
             have eq : k - 1 + 1 = k := Nat.sub_add_cancel depth_pos
             have : IsLocalRing.depth M = (k - 1 : ℕ) := by
-              -- Nat.find_spec exist
-              sorry
+              simp only [IsLocalRing.depth, Ideal.depth, moduleDepth_eq_iff]
+              have lt : (k - 1 : ℕ) + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R)) := by
+                simp only [← h_ker, eq_find, ← ENat.coe_one, ← ENat.coe_add, eq, ENat.coe_lt_coe]
+                omega
+              refine ⟨?_, fun i hi ↦ ?_⟩
+              · have := ext_iso (k - 1) lt
+                rw [(asIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K
+                  (Eq.refl (k - 1 + 1))))).addCommGroupIsoToAddEquiv.nontrivial_congr, eq]
+                exact Nat.find_spec exist
+              · have := ext_iso i <| lt_trans (ENat.add_one_lt_of_lt (ENat.coe_lt_coe.mpr hi)) lt
+                rw [(asIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K
+                  (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
+                exact not_nontrivial_iff_subsingleton.mp
+                  (Nat.find_min exist (Nat.add_lt_of_lt_sub hi))
             simpa [eq_find, this] using ENat.coe_inj.mpr eq.symm
         simpa [add_assoc, add_comm 1 (IsLocalRing.depth M), ← eq_add1] using h_ker
