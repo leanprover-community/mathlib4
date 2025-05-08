@@ -38,5 +38,5 @@ jobs:
           printf $'Scanning commits:\n%s\n\nContinuing\n' "$(git log --since="10 minutes ago" --pretty=oneline)"
           while read -r pr_number; do
             printf $'Running the python script with pr "%s"\n' "${pr_number}"
-            python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "${pr_number}"
+            python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "none" "${pr_number}"
           done < <(git log --oneline -n 10 | awk -F# '{ gsub(/)$/, ""); print $NF}')
