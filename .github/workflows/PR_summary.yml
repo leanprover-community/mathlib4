@@ -57,9 +57,14 @@ jobs:
         git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt
         # Get all files which were removed or renamed.
         echo "Checking for removed files..."
+        # Shows the `D`eleted files, one per line.
         git diff --name-only --diff-filter D origin/${{ github.base_ref }}... | tee removed_files.txt
         echo "Checking for renamed files..."
-        git diff --summary --diff-filter=R origin/${{ github.base_ref }}... | awk '{print $2}' | tee renamed_files.txt
+        # Shows the `R`enamed files, in the format
+        # ` rename oldName => newName (100%)`
+        # one per line. The `awk` then keeps the second word, namely `oldName`.
+        git diff --summary --diff-filter=R origin/${{ github.base_ref }}... |
+          awk '{print $2}' | tee renamed_files.txt
 
     - name: Compute (re)moved files without deprecation
       run: |
