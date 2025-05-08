@@ -37,35 +37,59 @@ open Opposite Bicategory
 
 namespace Pseudofunctor
 
-variable {C : Type u} [Category.{v} C] (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v', u'})
-  {S : C} (M N : F.obj (.mk (op S)))
+variable {C : Type u} [Category.{v} C] {F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v', u'}}
 
+namespace LocallyDiscreteOpToCat
+
+def pullHom ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
+    ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
+    (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) ⦃Y' : C⦄ (g : Y' ⟶ Y)
+    (gf₁ : Y' ⟶ X₁) (gf₂ : Y' ⟶ X₂) (hgf₁ : g ≫ f₁ = gf₁ := by aesop_cat)
+    (hgf₂ : g ≫ f₂ = gf₂ := by aesop_cat) :
+    (F.map gf₁.op.toLoc).obj M₁ ⟶ (F.map gf₂.op.toLoc).obj M₂ :=
+  (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by aesop)).hom.app _ ≫
+    (F.map g.op.toLoc).map φ ≫
+      (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).inv.app _
+
+@[simp]
+lemma pullHom_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
+    ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
+    (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) :
+      pullHom φ (𝟙 _) f₁ f₂ = φ := by
+  simp [pullHom, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app]
+
+@[simp]
+lemma pullHom_pullHom
+    ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
+    ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
+    (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) ⦃Y' : C⦄ (g : Y' ⟶ Y)
+    (gf₁ : Y' ⟶ X₁) (gf₂ : Y' ⟶ X₂) ⦃Y'' : C⦄
+    (g' : Y'' ⟶ Y') (g'f₁ : Y'' ⟶ X₁) (g'f₂ : Y'' ⟶ X₂)
+    (hgf₁ : g ≫ f₁ = gf₁ := by aesop_cat)
+    (hgf₂ : g ≫ f₂ = gf₂ := by aesop_cat)
+    (hg'f₁ : g' ≫ gf₁ = g'f₁ := by aesop_cat)
+    (hg'f₂ : g' ≫ gf₂ = g'f₂ := by aesop_cat) :
+    pullHom (pullHom φ g gf₁ gf₂ hgf₁ hgf₂) g' g'f₁ g'f₂ hg'f₁ hg'f₂ =
+      pullHom φ (g' ≫ g) g'f₁ g'f₂ := by
+  dsimp [pullHom]
+  rw [Functor.map_comp_assoc, Functor.map_comp_assoc,
+    F.map_map_mapComp'_inv_app_comp_mapComp'_inv_app _ _ _ _ _ _ _ rfl (by aesop),
+    F.mapComp'_hom_app_comp_map_map_mapComp'_hom_app_assoc _ _ _ _ _ _ _ rfl (by aesop),
+    mapComp'_inv_naturality_assoc, Iso.hom_inv_id_app_assoc]
+
+end LocallyDiscreteOpToCat
+
+open LocallyDiscreteOpToCat
+
+variable (F) {S : C} (M N : F.obj (.mk (op S)))
 /-- If `F` is a pseudofunctor from `Cᵒᵖ` to `Cat`, and `M` and `N` are objects in
 `F.obj (.mk (op S))`, this is the presheaf of morphisms from `M` to `N`: it sends
 an object `T : Over S` corresponding to a morphism `p : X ⟶ S` to the type
 of morphisms $$p^* M ⟶ p^* N$$. -/
-@[simps -isSimp obj map]
+@[simps]
 def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
   obj T := (F.map (.toLoc T.unop.hom.op)).obj M ⟶ (F.map (.toLoc T.unop.hom.op)).obj N
-  map {T₁ T₂} p f := by
-    -- this should be reconciled with `DescentData.pull`
-    letI e := F.mapComp' (.toLoc T₁.unop.hom.op) (.toLoc p.unop.left.op)
-      (.toLoc T₂.unop.hom.op) (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, Over.w p.unop])
-    exact e.hom.app M ≫ (F.map (.toLoc p.unop.left.op)).map f ≫ e.inv.app N
-  map_id T := by
-    ext
-    simp [mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app]
-  map_comp {T₁ T₂ T₃} p q := by
-    ext f
-    dsimp
-    rw [Functor.map_comp_assoc, Functor.map_comp_assoc,
-      F.map_map_mapComp'_inv_app_comp_mapComp'_inv_app _ _ _ _ _ _
-        (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, Over.w p.unop]) rfl
-        (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, Over.w q.unop]),
-      F.mapComp'_hom_app_comp_map_map_mapComp'_hom_app_assoc _ _ _ _ _ _
-        (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, Over.w p.unop]) rfl
-        (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, Over.w q.unop]),
-      ← mapComp'_hom_naturality_assoc, Iso.hom_inv_id_app_assoc]
+  map {T₁ T₂} p f := pullHom f p.unop.left T₂.unop.hom T₂.unop.hom
 
 /-- Compatiblity isomorphism of `Pseudofunctor.presheafHom` with the "restrictions". -/
 def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
@@ -77,11 +101,8 @@ def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
     exact (Iso.homFromEquiv (e.app M)).trans (Iso.homToEquiv (e.app N)))) (by
       rintro ⟨T₁⟩ ⟨T₂⟩ ⟨f⟩
       ext g
-      dsimp
-      erw [Iso.homToEquiv_apply, Iso.homToEquiv_apply,
-        Iso.homFromEquiv_apply, Iso.homFromEquiv_apply]
-      dsimp [presheafHom_obj, presheafHom_map]
-      simp only [Functor.map_comp, Category.assoc]
+      dsimp [pullHom]
+      simp only [Category.assoc, Functor.map_comp]
       rw [F.mapComp'_inv_app_comp_mapComp'_hom_app_assoc _ _ _ _ _ _ rfl _ rfl,
         F.mapComp'_inv_app_comp_mapComp'_hom_app' _ _ _ _ _ _ _ _ rfl])
 

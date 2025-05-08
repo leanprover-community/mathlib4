@@ -6,6 +6,7 @@ Authors: Joël Riou, Christian Merten
 import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Functor.Cat
 import Mathlib.CategoryTheory.Sites.Descent.PullbackStruct
+import Mathlib.CategoryTheory.Sites.Descent.IsPrestack
 
 /-!
 # Descent data
@@ -20,43 +21,23 @@ open Opposite Limits
 
 namespace Pseudofunctor
 
-macro "aesoptoloc" : tactic => `(tactic|(simp [← Quiver.Hom.comp_toLoc, ← op_comp] <;> aesop))
+macro "aesoptoloc" : tactic =>
+  `(tactic|(simp [← Quiver.Hom.comp_toLoc, ← op_comp] <;> aesop))
+
+open LocallyDiscreteOpToCat
 
 variable {C : Type u} [Category.{v} C] (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v', u'})
   {ι : Type t} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
 
-namespace DescentData
-
-variable {F} in
-def pull ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
-    ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
-    (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) ⦃Y' : C⦄ (g : Y' ⟶ Y)
-    (gf₁ : Y' ⟶ X₁) (gf₂ : Y' ⟶ X₂) (hgf₁ : g ≫ f₁ = gf₁ := by aesop_cat)
-    (hgf₂ : g ≫ f₂ = gf₂ := by aesop_cat) :
-    (F.map gf₁.op.toLoc).obj M₁ ⟶ (F.map gf₂.op.toLoc).obj M₂ :=
-  (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by aesoptoloc)).hom.app _ ≫
-    (F.map g.op.toLoc).map φ ≫
-      (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesoptoloc)).inv.app _
-
-@[simp]
-lemma pull_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
-    ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
-    (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) :
-      pull φ (𝟙 _) f₁ f₂ = φ := by
-  simp [pull, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app]
-
-end DescentData
-
-open DescentData
 structure DescentData where
   obj (i : ι) : F.obj (.mk (op (X i)))
   hom ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
     (_hf₁ : f₁ ≫ f i₁ = q := by aesop_cat) (_hf₂ : f₂ ≫ f i₂ = q := by aesop_cat) :
       (F.map f₁.op.toLoc).obj (obj i₁) ⟶ (F.map f₂.op.toLoc).obj (obj i₂)
-  pull_hom ⦃Y' Y : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
+  pullHom_hom ⦃Y' Y : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
     ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q)
     (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂) (hgf₁ : g ≫ f₁ = gf₁) (hgf₂ : g ≫ f₂ = gf₂) :
-      pull (hom q f₁ f₂) g gf₁ gf₂ = hom q' gf₁ gf₂ := by aesop_cat
+      pullHom (hom q f₁ f₂) g gf₁ gf₂ = hom q' gf₁ gf₂ := by aesop_cat
   hom_self ⦃Y : C⦄ (q : Y ⟶ S) ⦃i : ι⦄ (g : Y ⟶ X i) (_ : g ≫ f i = q) :
       hom q g g = 𝟙 _ := by aesop_cat
   hom_comp ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ i₃ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (f₃ : Y ⟶ X i₃)
@@ -67,7 +48,7 @@ namespace DescentData
 
 variable {F f} (D : F.DescentData f)
 
-attribute [local simp] hom_self pull_hom
+attribute [local simp] hom_self pullHom_hom
 attribute [reassoc (attr := simp)] hom_comp
 
 @[simps]
@@ -123,9 +104,9 @@ def ofObj (M : F.obj (.mk (op S))) : F.DescentData f where
   hom Y q i₁ i₂ f₁ f₂ hf₁ hf₂ :=
     (F.mapComp' (f i₁).op.toLoc f₁.op.toLoc q.op.toLoc (by aesoptoloc)).inv.app _ ≫
       (F.mapComp' (f i₂).op.toLoc f₂.op.toLoc q.op.toLoc (by aesoptoloc)).hom.app _
-  pull_hom Y' Y g q q' hq i₁ i₂ f₁ f₂ hf₁ hf₂ gf₁ gf₂ hgf₁ hgf₂ := by
+  pullHom_hom Y' Y g q q' hq i₁ i₂ f₁ f₂ hf₁ hf₂ gf₁ gf₂ hgf₁ hgf₂ := by
     dsimp
-    simp only [pull, Functor.map_comp, Category.assoc,
+    simp only [pullHom, Functor.map_comp, Category.assoc,
       F.mapComp'₀₁₃_inv_app (f i₁).op.toLoc f₁.op.toLoc g.op.toLoc q.op.toLoc
         gf₁.op.toLoc q'.op.toLoc (by aesoptoloc) (by aesoptoloc) (by aesoptoloc),
       F.mapComp'_hom_app_comp_mapComp'_inv_app
