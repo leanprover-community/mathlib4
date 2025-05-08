@@ -20,8 +20,10 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
 
 ## Main results
 
-* `Matrix.posSemidef_iff_eq_transpose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
+* `Matrix.posSemidef_iff_eq_conjTranspose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
   semidefinite iff it has the form `Bᴴ * B` for some `B`.
+* `Matrix.posDef_iff_eq_conjTranspose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
+  definite iff it has the form `Bᴴ * B` for some _invertible_ `B`.
 * `Matrix.PosSemidef.sqrt` : the unique positive semidefinite square root of a positive semidefinite
   matrix. (See `Matrix.PosSemidef.eq_sqrt_of_sq_eq` for the proof of uniqueness.)
 -/
@@ -254,13 +256,41 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
   exact hv <| dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
     (RCLike.ofReal_ne_zero.mpr ht) aux
 
+include hA in
+lemma sq_eq_sq_iff {B : Matrix n n 𝕜} (hB : PosSemidef B) : A ^ 2 = B ^ 2 ↔ A = B :=
+  ⟨eq_of_sq_eq_sq hA hB, fun h => h ▸ rfl⟩
+
 lemma sqrt_sq : (hA.pow 2 : PosSemidef (A ^ 2)).sqrt = A :=
   (hA.pow 2).posSemidef_sqrt.eq_of_sq_eq_sq hA (hA.pow 2).sq_sqrt
 
 include hA in
-lemma eq_sqrt_of_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B) : A = hB.sqrt := by
-  subst B
-  rw [hA.sqrt_sq]
+lemma eq_sqrt_iff_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) : A = hB.sqrt ↔ A ^ 2 = B :=
+  ⟨fun h => h ▸ hB.sq_sqrt, fun h => by subst h; rw [hA.sqrt_sq]⟩
+
+include hA in
+lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : hA.sqrt = B ↔ A = B ^ 2 := by
+  simpa [eq_comm] using eq_sqrt_iff_sq_eq hB hA
+
+include hA in
+@[deprecated eq_sqrt_iff_sq_eq (since := "2025-05-07")]
+lemma eq_sqrt_of_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B) : A = hB.sqrt :=
+  eq_sqrt_iff_sq_eq hA hB |>.2 hAB
+
+@[simp]
+lemma sqrt_eq_zero_iff : hA.sqrt = 0 ↔ A = 0 := by
+  rw [sqrt_eq_iff_eq_sq _ .zero, zero_pow two_ne_zero]
+
+@[simp]
+lemma sqrt_eq_one_iff : hA.sqrt = 1 ↔ A = 1 := by
+  rw [sqrt_eq_iff_eq_sq _ .one, one_pow]
+
+@[simp]
+lemma isUnit_sqrt_iff : IsUnit hA.sqrt ↔ IsUnit A := by
+  conv_rhs => rw [← hA.sqrt_mul_self]
+  rw [isUnit_mul_self_iff]
+
+lemma inv_sqrt : hA.sqrt⁻¹ = hA.inv.sqrt := by
+  rw [eq_sqrt_iff_sq_eq hA.posSemidef_sqrt.inv, sq, ← Matrix.mul_inv_rev, ← sq, sq_sqrt]
 
 end sqrt
 
@@ -292,12 +322,15 @@ lemma eigenvalues_self_mul_conjTranspose_nonneg (A : Matrix m n 𝕜) [Decidable
   (posSemidef_self_mul_conjTranspose _).eigenvalues_nonneg _
 
 /-- A matrix is positive semidefinite if and only if it has the form `Bᴴ * B` for some `B`. -/
-lemma posSemidef_iff_eq_transpose_mul_self {A : Matrix n n 𝕜} :
+lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
     PosSemidef A ↔ ∃ (B : Matrix n n 𝕜), A = Bᴴ * B := by
   classical
   refine ⟨fun hA ↦ ⟨hA.sqrt, ?_⟩, fun ⟨B, hB⟩ ↦ (hB ▸ posSemidef_conjTranspose_mul_self B)⟩
   simp_rw [← PosSemidef.sq_sqrt hA, pow_two]
   rw [hA.posSemidef_sqrt.1]
+
+@[deprecated (since := "2025-05-07")]
+alias posSemidef_iff_eq_transpose_mul_self := posSemidef_iff_eq_conjTranspose_mul_self
 
 lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A := by
@@ -310,7 +343,7 @@ theorem PosSemidef.dotProduct_mulVec_zero_iff
     {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
     star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
   constructor
-  · obtain ⟨B, rfl⟩ := posSemidef_iff_eq_transpose_mul_self.mp hA
+  · obtain ⟨B, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hA
     rw [← Matrix.mulVec_mulVec, dotProduct_mulVec,
       vecMul_conjTranspose, star_star, dotProduct_star_self_eq_zero]
     intro h0
@@ -449,6 +482,12 @@ lemma mul_mul_conjTranspose_same {A : Matrix n n R} {B : Matrix m n R} (hA : A.P
   simp_rw [Function.comp_def, star_vecMul, star_star] at hB
   simpa using hA.conjTranspose_mul_mul_same (B := Bᴴ) hB
 
+theorem conjTranspose_mul_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matrix m n R)
+    (hA : Function.Injective A.mulVec) :
+    PosDef (Aᴴ * A) := by
+  classical
+  simpa using conjTranspose_mul_mul_same .one hA
+
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosDef) : Mᴴ.PosDef := hM.1.symm ▸ hM
 
 @[simp]
@@ -497,6 +536,24 @@ theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
     letI := (Matrix.isUnit_nonsing_inv_iff.1 <| h.isUnit).invertible
     Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
 
+lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
+    PosDef hM.posSemidef.sqrt := by
+  apply PosDef.mul_mul_conjTranspose_same
+  · rw [posDef_diagonal_iff]
+    simpa using hM.eigenvalues_pos
+  · apply Matrix.vecMul_injective_of_isUnit
+    convert (Group.isUnit _).map (unitaryGroup n 𝕜).subtype
+
+/--
+A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
+-/
+lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
+    PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B := by
+  classical
+  refine ⟨fun hA ↦ ⟨_, hA.posDef_sqrt.isUnit, ?_⟩, fun ⟨B, hB, hA⟩ ↦ (hA ▸ ?_)⟩
+  · simp [hA.posDef_sqrt.isHermitian.eq]
+  · exact conjTranspose_mul_self _ (mulVec_injective_of_isUnit hB)
+
 end PosDef
 
 end Matrix
@@ -530,10 +587,10 @@ noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
     NormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
     { inner := fun x y => dotProduct (M *ᵥ y) (star x)
-      conj_symm := fun x y => by
+      conj_inner_symm := fun x y => by
         rw [dotProduct_comm, star_dotProduct, starRingEnd_apply, star_star,
           star_mulVec, dotProduct_comm (M *ᵥ y), dotProduct_mulVec, hM.isHermitian.eq]
-      nonneg_re := fun x => by
+      re_inner_nonneg := fun x => by
         by_cases h : x = 0
         · simp [h]
         · exact (dotProduct_comm _ (M *ᵥ x) ▸ hM.re_dotProduct_pos h).le
