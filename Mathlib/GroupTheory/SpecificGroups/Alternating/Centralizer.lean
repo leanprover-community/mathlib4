@@ -269,7 +269,7 @@ section Perfect
 
 open Subgroup Equiv.Perm
 
-/-- If n ≥ 5, then the alternating group on n letters is perfect -/
+/-- If `n ≥ 5`, then the alternating group on `n` letters is perfect -/
 theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
     commutator (alternatingGroup α) = ⊤ := by
   suffices closure {b : alternatingGroup α | (b : Perm α).IsThreeCycle} = ⊤ by
@@ -279,7 +279,7 @@ theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
   rw [← closure_three_cycles_eq_alternating]
   exact Subgroup.closure_closure_coe_preimage
 
-/-- If n ≥ 5, then the alternating group on n letters is perfect (subgroup version)-/
+/-- If `n ≥ 5`, then the alternating group on `n` letters is perfect (subgroup version)-/
 theorem commutator_alternatingGroup_eq_self (h5 : 5 ≤ Fintype.card α) :
     ⁅alternatingGroup α, alternatingGroup α⁆ = alternatingGroup α := by
   rw [← Subgroup.map_subtype_commutator, commutator_alternatingGroup_eq_top h5,
