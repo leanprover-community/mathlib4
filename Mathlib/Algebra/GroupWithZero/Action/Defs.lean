@@ -327,7 +327,12 @@ def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
 
 end DistribSMul
 
-/-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
+/-- Typeclass for multiplicative actions on additive structures.
+
+For example, if `G` is a group (with group law written as multiplication) and `A` is an
+abelian group (with group law written as addition), then the way to give `A` a `G`-module
+structure is to say `[DistribMulAction G A]`.
+-/
 @[ext]
 class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
   /-- Multiplying `0` by a scalar gives `0` -/
