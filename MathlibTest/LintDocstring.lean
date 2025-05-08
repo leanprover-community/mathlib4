@@ -66,3 +66,16 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 #guard_msgs in
 /-- Let's give an example ending in a comma, -/
 example : Nat := 1
+
+/--
+warning: error: doc-strings should start with a single space or newline
+note: this linter can be disabled with `set_option linter.style.docString false`
+---
+warning: error: doc-strings should end with a single space or newline
+note: this linter can be disabled with `set_option linter.style.docString false`
+-/
+#guard_msgs in
+/-- The structure `X`. -/
+structure X where
+  /--  A field of `X`.-/
+  x : Unit
