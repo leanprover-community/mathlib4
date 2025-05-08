@@ -21,15 +21,18 @@ namespace CategoryTheory.Preadditive
 
 open CategoryTheory Limits MonoidalCategory ChosenFiniteProducts
 
-variable {C : Type u} [Category.{v} C] [Preadditive C]
-  [ChosenFiniteProducts C] [BraidedCategory C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [ChosenFiniteProducts C]
 
 @[simps]
 instance (X : C) : Grp_Class X where
   one := 0
   mul := fst _ _ + snd _ _
   inv := -𝟙 X
+  one_mul' := by simp [← leftUnitor_hom]
+  mul_one' := by simp [← rightUnitor_hom]
   mul_assoc' := by simp [add_assoc]
+
+variable [BraidedCategory C]
 
 instance (X : C) : IsCommMon X where
   mul_comm' := by simp [add_comm]

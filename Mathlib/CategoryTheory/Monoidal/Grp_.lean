@@ -172,7 +172,7 @@ theorem inv_inv (A : C) [Grp_Class A] : CategoryTheory.inv ι = ι[A] := by
   rw [eq_comm, ← CategoryTheory.inv_comp_eq_id, IsIso.inv_inv, inv_comp_inv]
 
 @[reassoc]
-theorem mul_inv (A : C) [Grp_Class A] :
+theorem mul_inv [BraidedCategory C] (A : C) [Grp_Class A] :
     μ ≫ ι = (β_ A A).hom ≫ (ι ⊗ ι) ≫ μ := by
   apply lift_left_mul_ext μ
   nth_rw 2 [← Category.comp_id μ]
@@ -183,7 +183,7 @@ theorem mul_inv (A : C) [Grp_Class A] :
     lift_comp_inv_left, comp_toUnit_assoc]
 
 @[reassoc (attr := simp)]
-theorem tensorHom_inv_inv_mul (A : C) [Grp_Class A] :
+theorem tensorHom_inv_inv_mul [BraidedCategory C] (A : C) [Grp_Class A] :
     (ι[A] ⊗ ι[A]) ≫ μ = (β_ A A).hom ≫ μ ≫ ι := by
   rw [mul_inv A, SymmetricCategory.symmetry_assoc]
 
