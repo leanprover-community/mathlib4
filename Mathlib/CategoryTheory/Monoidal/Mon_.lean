@@ -390,7 +390,7 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.LaxMonoidal] [a.IsMonoidal]
 
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to monoid objects. -/
-@[simps!] noncomputable def mapMon : F.mapMon ⊣ G.mapMon where
+@[simps] noncomputable def mapMon : F.mapMon ⊣ G.mapMon where
   unit := mapMonIdIso.inv ≫ mapMonNatTrans a.unit ≫ mapMonCompIso.hom
   counit := mapMonCompIso.inv ≫ mapMonNatTrans a.counit ≫ mapMonIdIso.hom
 
@@ -399,6 +399,7 @@ end Adjunction
 namespace Equivalence
 
 /-- An equivalence of categories lifts to an equivalence of their monoid objects. -/
+@[simps]
 noncomputable def mapMon (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal] :
     Mon_ C ≌ Mon_ D where
   functor := e.functor.mapMon

@@ -193,7 +193,7 @@ variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.LaxBraided] [a
 
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative monoid
 objects. -/
-@[simps!] noncomputable def mapCommMon : F.mapCommMon ⊣ G.mapCommMon where
+@[simps] noncomputable def mapCommMon : F.mapCommMon ⊣ G.mapCommMon where
   unit := mapCommMonIdIso.inv ≫ mapCommMonNatTrans a.unit ≫ mapCommMonCompIso.hom
   counit := mapCommMonCompIso.inv ≫ mapCommMonNatTrans a.counit ≫ mapCommMonIdIso.hom
 
@@ -202,6 +202,7 @@ end Adjunction
 namespace Equivalence
 
 /-- An equivalence of categories lifts to an equivalence of their commutative monoid objects. -/
+@[simps]
 noncomputable def mapCommMon (e : C ≌ D) [e.functor.Braided] [e.inverse.Braided] [e.IsMonoidal] :
     CommMon_ C ≌ CommMon_ D where
   functor := e.functor.mapCommMon

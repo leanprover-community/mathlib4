@@ -385,7 +385,7 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
 
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
-@[simps!] noncomputable def mapGrp : F.mapGrp ⊣ G.mapGrp where
+@[simps] noncomputable def mapGrp : F.mapGrp ⊣ G.mapGrp where
   unit := mapGrpIdIso.inv ≫ mapGrpNatTrans a.unit ≫ mapGrpCompIso.hom
   counit := mapGrpCompIso.inv ≫ mapGrpNatTrans a.counit ≫ mapGrpIdIso.hom
 
@@ -395,7 +395,7 @@ namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
-@[simps!] noncomputable def mapGrp : Grp_ C ≌ Grp_ D where
+@[simps] noncomputable def mapGrp : Grp_ C ≌ Grp_ D where
   functor := e.functor.mapGrp
   inverse := e.inverse.mapGrp
   unitIso := mapGrpIdIso.symm ≪≫ mapGrpNatIso e.unitIso ≪≫ mapGrpCompIso

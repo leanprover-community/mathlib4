@@ -209,7 +209,7 @@ variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.Braided]
 
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative group
 objects. -/
-@[simps!] noncomputable def mapCommGrp : F.mapCommGrp ⊣ G.mapCommGrp where
+@[simps] noncomputable def mapCommGrp : F.mapCommGrp ⊣ G.mapCommGrp where
   unit := mapCommGrpIdIso.inv ≫ mapCommGrpNatTrans a.unit ≫ mapCommGrpCompIso.hom
   counit := mapCommGrpCompIso.inv ≫ mapCommGrpNatTrans a.counit ≫ mapCommGrpIdIso.hom
 
@@ -219,7 +219,7 @@ namespace Equivalence
 variable (e : C ≌ D) [e.functor.Braided] [e.inverse.Braided]
 
 /-- An equivalence of categories lifts to an equivalence of their commutative group objects. -/
-@[simps!] noncomputable def mapCommGrp : CommGrp_ C ≌ CommGrp_ D where
+@[simps] noncomputable def mapCommGrp : CommGrp_ C ≌ CommGrp_ D where
   functor := e.functor.mapCommGrp
   inverse := e.inverse.mapCommGrp
   unitIso := mapCommGrpIdIso.symm ≪≫ mapCommGrpNatIso e.unitIso ≪≫ mapCommGrpCompIso
