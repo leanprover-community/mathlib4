@@ -1,4 +1,13 @@
+/-
+Copyright (c) 2025 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Dynamics.Ergodic.Conservative
+
+/-!
+# Dissipative systems and Hopf decomposition
+-/
 
 open Function Set Filter MeasureTheory Measure
 open scoped Topology ENNReal
@@ -7,29 +16,52 @@ namespace MeasureTheory
 
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → α} {s t : Set α}
 
+/-- A set is called *dissipative* for a self-map `f` and a measure `μ`,
+if its preimages under iterations of `f` are a.e. disjoint with the original set.
+
+Usually, this notion is used for a quasi measure preserving map `f` and a null measurable set `s`,
+when it is equivalent to either of the following:
+
+- the preimages of the set under the iterations of `f` are pairwise a.e. disjoint;
+- there exists a measurable set `t ⊆ s` that is a.e. equal to `s`
+  such that the preimages of `t` under the iterations of `f` are pairwise disjoint.
+
+The choice of a specific definition
+in the case of a non quasi measure preserving map or a non null measurable set
+should be considered an implementation detail and can change in the future.
+-/
 structure IsDissipativeSet (f : α → α) (μ : Measure α) (s : Set α) : Prop where
   aedisjoint_iterate ⦃n : ℕ⦄ : 0 < n → AEDisjoint μ (f^[n] ⁻¹' s) s
 
 namespace IsDissipativeSet
 
+/-- A set of measure zero is a dissipative for any map. -/
 theorem of_null (h : μ s = 0) : IsDissipativeSet f μ s :=
   ⟨fun _ _ ↦ measure_mono_null inter_subset_right h⟩
 
 @[simp]
 protected theorem empty : IsDissipativeSet f μ ∅ := of_null measure_empty
 
+/-- If `s` is a null measurable dissipative set for a quasi measure preserving map `f`,
+then there exists there exists a measurable set `t ⊆ s` that is a.e. equal to `s`
+such that the preimages of `t` under the iterations of `f` are pairwise disjoint. -/
 theorem exists_measurableSet (h : IsDissipativeSet f μ s) (hf : QuasiMeasurePreserving f μ μ)
     (hs : NullMeasurableSet s μ) :
-    ∃ t ⊆ s, MeasurableSet t ∧ t =ᵐ[μ] s ∧ ∀ n > 0, Disjoint (f^[n] ⁻¹' t) t := by
+    ∃ t ⊆ s, MeasurableSet t ∧ t =ᵐ[μ] s ∧ Pairwise (Disjoint on (f^[·] ⁻¹' t)) := by
   have : NullMeasurableSet (s \ ⋃ n > 0, f^[n] ⁻¹' s) μ :=
     hs.diff <| .iUnion fun n ↦ .iUnion fun _ ↦ hs.preimage <| hf.iterate _
   rcases this.exists_measurable_subset_ae_eq with ⟨t, htsub, htm, hteq⟩
-  refine ⟨t, htsub.trans diff_subset, htm, hteq.trans ?_, fun n hn ↦ ?_⟩
-  · rw [diff_ae_eq_self, ← AEDisjoint]
+  refine ⟨t, htsub.trans diff_subset, htm, hteq.trans ?ae_eq, ?disj⟩
+  case ae_eq =>
+    rw [diff_ae_eq_self, ← AEDisjoint]
     simpa only [AEDisjoint.iUnion_right_iff, AEDisjoint.comm] using h.1
-  · apply Disjoint.mono (preimage_mono htsub) htsub
-    refine disjoint_sdiff_right.mono_left ?_
-    exact (preimage_mono diff_subset).trans <| subset_iUnion₂ (s := fun n _ ↦ f^[n] ⁻¹' s) n hn
+  case disj =>
+    rw [pairwise_disjoint_on]
+    intro m n hlt
+    rcases exists_pos_add_of_lt hlt with ⟨k, hk, rfl⟩
+    rw [add_comm m, iterate_add, preimage_comp]
+    refine disjoint_sdiff_left.mono_right ?_ |>.mono htsub (preimage_mono htsub) |>.preimage _
+    exact (preimage_mono diff_subset).trans <| subset_iUnion₂ (s := fun n _ ↦ f^[n] ⁻¹' s) k hk
 
 theorem rightInverse' {g : α → α} (h : IsDissipativeSet f μ s) (hgf : RightInverse g f)
     (hg : QuasiMeasurePreserving g μ μ) :
@@ -40,16 +72,15 @@ theorem rightInverse' {g : α → α} (h : IsDissipativeSet f μ s) (hgf : Right
     rwa [mem_preimage, hgf.iterate n]
 
 /-- If `s` is a dissipative set of a quasi measure preserving map `f`,
-then all of its preimages -/
+then its preimages under the iterates of `f` are pairwise a.e. disjoint. -/
 theorem aedisjoint_iterate_iterate (h : IsDissipativeSet f μ s)
-    (hf : QuasiMeasurePreserving f μ μ) :
-    Pairwise (AEDisjoint μ on (f^[·] ⁻¹' s)) := by
+    (hf : QuasiMeasurePreserving f μ μ) : Pairwise (AEDisjoint μ on (f^[·] ⁻¹' s)) := by
   rw [AEDisjoint.symmetric.pairwise_on]
   intro m n hlt
   rw [← Nat.sub_add_cancel hlt.le, iterate_add, preimage_comp]
   refine ((h.aedisjoint_iterate ?_).preimage (hf.iterate _)).symm
   rwa [Nat.sub_pos_iff_lt]
-  
+
 theorem disjointed_iUnion {e : α ≃ α} {s : ℕ → Set α} (hs : ∀ i, IsDissipativeSet e μ (s i)) :
     IsDissipativeSet e μ (⋃ i, s i \ ⋃ j < i, ⋃ n ≠ (0 : ℤ), (e^n : α ≃ α) ⁻¹' s j) where
  aedisjoint_iterate n hn := by
@@ -93,7 +124,7 @@ theorem exists_saturation_eq_union {e : α ≃ α}
 
 variable (μ) in
 /-- There exists a measurable dissipative set
-with the maximal possible value of the measure of the saturation.  -/
+with the maximal possible value of the measure of the saturation. -/
 theorem exists_max_measure {e : α ≃ α} (hem : Measurable e) (hem' : Measurable e.symm) :
     ∃ s : Set α, IsDissipativeSet e μ s ∧ MeasurableSet s ∧
       ∀ t, IsDissipativeSet e μ t → MeasurableSet t →
@@ -171,4 +202,3 @@ theorem exists_hopf_decomposition [SFinite μ] {e : α ≃ α}
   exact hsd.ae_le_of_max_measure this hem' hsm hs (measure_ne_top _ _) htd htm
 
 end MeasureTheory
-

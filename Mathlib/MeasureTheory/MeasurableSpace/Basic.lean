@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Nat.Cast.Basic
@@ -264,11 +265,10 @@ theorem Measurable.iterate {f : α → α} (hf : Measurable f) : ∀ n, Measurab
   | 0 => measurable_id
   | n + 1 => (Measurable.iterate hf n).comp hf
 
-@[measurability]
-theorem Measurable.equivZPow {f : α ≃ α} (hf : Measurable f) (hf' : Measurable f.symm) :
-    ∀ n : ℤ, Measurable (f^n)
-  | (n : ℕ) => hf.iterate n
-  | Int.negSucc n => hf'.iterate (n + 1)
+theorem Measurable.equivZPow {e : α ≃ α} (he : Measurable e) (hsymm : Measurable e.symm) :
+    ∀ n : ℤ, Measurable (e ^ n)
+  | (n : ℕ) => he.iterate _
+  | .negSucc n => hsymm.iterate (n + 1)
 
 variable {mβ : MeasurableSpace β}
 
