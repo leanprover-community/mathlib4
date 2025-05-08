@@ -186,7 +186,18 @@ lemma comm {D₁ D₂ : F.DescentData' sq sq₃} (φ : D₁ ⟶ D₂)
     ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
     (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
     (F.map f₁.op.toLoc).map (φ.hom i₁) ≫ pullHom D₂.hom q f₁ f₂ hf₁ hf₂ =
-  pullHom D₁.hom q f₁ f₂ hf₁ hf₂ ≫ (F.map f₂.op.toLoc).map (φ.hom i₂) := sorry
+      pullHom D₁.hom q f₁ f₂ hf₁ hf₂ ≫ (F.map f₂.op.toLoc).map (φ.hom i₂) := by
+  obtain ⟨p, _, _⟩  := (sq i₁ i₂).isPullback.exists_lift f₁ f₂ (by aesop)
+  rw [← pull_pullHom D₂.hom p (sq i₁ i₂).p q (by aesop) (sq i₁ i₂).p₁ (sq i₁ i₂).p₂
+    (by simp) (by simp) f₁ f₂ (by aesop) (by aesop),
+    ← pull_pullHom D₁.hom p (sq i₁ i₂).p q (by aesop) (sq i₁ i₂).p₁ (sq i₁ i₂).p₂
+      (by simp) (by simp) f₁ f₂ (by aesop) (by aesop)]
+  dsimp only [DescentData.pull]
+  rw [NatTrans.naturality_assoc]
+  dsimp
+  rw [← Functor.map_comp_assoc, φ.comm i₁ i₂, Functor.map_comp_assoc,
+    mapComp'_inv_naturality]
+  simp only [Category.assoc]
 
 @[simps]
 noncomputable def descentData (D : F.DescentData' sq sq₃) : F.DescentData f where
@@ -194,7 +205,6 @@ noncomputable def descentData (D : F.DescentData' sq sq₃) : F.DescentData f wh
   hom _ _ _ _ _ _ hf₁ hf₂ := pullHom D.hom _ _ _ hf₁ hf₂
   pull_hom _ _ _ _ _ hq _ _ _ _ _ _ _ _ hgf₁ hgf₂ :=
     pull_pullHom _ _ _ _ hq _ _ _ _ _ _ hgf₁ hgf₂
-
 
 end DescentData'
 
