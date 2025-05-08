@@ -124,6 +124,8 @@ alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
 
 end CompleteLattice
 
+/- TODO: Provide a `ScottContinuousOn` version -/
+/- TODO: Can we then deduce `ScottContinuousOn.sup₂` from this? -/
 /- `f` is Scott continuous on a product space if it is Scott continuous in each variable -/
 lemma ScottContinuous_prod_of_ScottContinuous {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} (h₁ : ∀ a, ScottContinuous (fun b => f (a,b)))
