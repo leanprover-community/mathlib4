@@ -1204,7 +1204,6 @@ abbrev normAtAllPlaces (x : mixedSpace K) : realSpace K :=
 theorem normAtAllPlaces_apply (x : mixedSpace K) (w : InfinitePlace K) :
     normAtAllPlaces x w = normAtPlace w x := rfl
 
-
 variable (K) in
 theorem continuous_normAtAllPlaces :
     Continuous (normAtAllPlaces : mixedSpace K → realSpace K) := by fun_prop
