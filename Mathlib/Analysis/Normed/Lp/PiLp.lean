@@ -675,6 +675,19 @@ instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup 
       simp_rw [← NNReal.mul_rpow, smul_apply]
       exact Finset.sum_le_sum fun i _ => NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le
 
+instance instNormSMulClass [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+    [∀ i, Module 𝕜 (β i)] [∀ i, NormSMulClass 𝕜 (β i)] :
+    NormSMulClass 𝕜 (PiLp p β) :=
+  .of_nnnorm_smul fun c f => by
+    rcases p.dichotomy with (rfl | hp)
+    · rw [← nnnorm_equiv, ← nnnorm_equiv, WithLp.equiv_smul, nnnorm_smul]
+    · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
+      have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
+      rw [nnnorm_eq_sum hpt, nnnorm_eq_sum hpt, one_div, NNReal.rpow_inv_eq_iff hp0.ne',
+        NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one,
+        Finset.mul_sum]
+      simp_rw [← NNReal.mul_rpow, smul_apply, nnnorm_smul]
+
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
 instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
     [∀ i, NormedSpace 𝕜 (β i)] : NormedSpace 𝕜 (PiLp p β) where
