@@ -30,6 +30,7 @@ variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V}
 /-- A set certifying non-existence of a perfect matching -/
 def IsTutteViolator (G : SimpleGraph V) (u : Set V) : Prop :=
   u.ncard < ((⊤ : G.Subgraph).deleteVerts u).coe.oddComponents.ncard
+
 /-- This lemma shows an alternating cycle exists in a specific subcase of the proof
 of Tutte's theorem. -/
 private lemma tutte_exists_isAlternating_isCycles {x b a c : V} {M : Subgraph (G ⊔ edge a c)}
@@ -67,6 +68,7 @@ lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u
 /-- Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, there exists a matching that covers
 everything except some universal vertices.
+
 This lemma is marked private, because
 it is strictly weaker than `IsPerfectMatching.exists_of_isClique_supp`. -/
 private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
@@ -271,13 +273,13 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     · exact hr
   simp only [Finset.mem_insert, Finset.mem_singleton, cycles] at hx'
   obtain hl | hl := hx' <;> subst hl
-  · exact tutte_exists_IsAlternating_IsCycles hM2 p hp hcalt (hnM2 x' hnxc) hpac hnpxb hM2ac
+  · exact tutte_exists_isAlternating_isCycles hM2 p hp hcalt (hnM2 x' hnxc) hpac hnpxb hM2ac
       hxa hnxc hab.ne hle (aux (by simp))
   · conv =>
       enter [1, G', 2, 2, 1, 1]
       rw [adj_comm]
     rw [Subgraph.adj_comm] at hnpxb
-    apply tutte_exists_IsAlternating_IsCycles hM2 p hp hcalt (hnM2 _ hnbc) hpac hnpxb hM2ac
+    apply tutte_exists_isAlternating_isCycles hM2 p hp hcalt (hnM2 _ hnbc) hpac hnpxb hM2ac
       hab.symm hnbc hxa.ne.symm hle (aux (by simp))
 
 /-- From a graph on an even number of vertices with no perfect matching, we can remove an odd number
@@ -308,7 +310,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     obtain ⟨K, hK⟩ := h'
     obtain ⟨x, y, hxy⟩ := (not_isClique_iff _).mp hK
     obtain ⟨p , hp⟩ := SimpleGraph.Reachable.exists_path_of_dist (K.connected_induce_supp x y)
-    obtain ⟨x, ⟨a, ⟨b, ⟨hxa, hxb, hnadjxb, hnxb⟩⟩⟩⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
+    obtain ⟨x, a, b, hxa, hxb, hnadjxb, hnxb⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
       (Reachable.one_lt_dist_of_ne_of_not_adj (Walk.reachable p) hxy.1 hxy.2)
     simp only [deleteUniversalVerts, universalVerts, ne_eq, Subgraph.induce_verts,
       Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype, Subgraph.coe_adj,
