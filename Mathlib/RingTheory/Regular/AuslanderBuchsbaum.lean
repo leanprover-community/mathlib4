@@ -145,11 +145,55 @@ lemma free_of_projectiveOverLocalRing [IsLocalRing R] (M : ModuleCat.{v} R) [Mod
 local instance : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
 
+omit [Small.{v, u} R] in
+lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module R M]
+    [ntr : Nontrivial M] : Nontrivial R := by
+  apply not_subsingleton_iff_nontrivial.mp
+  by_contra h
+  absurd ntr
+  apply not_nontrivial_iff_subsingleton.mpr
+  apply subsingleton_of_forall_eq 0 (fun m ↦ ?_)
+  rw [← one_smul R m, Subsingleton.elim (1 : R) 0, zero_smul]
+
 lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] (i : ℕ) : Subsingleton (Ext N M i) ↔
     Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
-  -- Add your proof here
-  sorry
+  have : Nontrivial R := nontrivial_ring_of_nontrivial_module M
+  rcases Module.Free.exists_set R M with ⟨S, ⟨B⟩⟩
+  have fin' : Finite S := Module.Finite.finite_basis B
+  have fin : S.Finite := fin'
+  let e : M ≅ (ModuleCat.of R (S →₀ Shrink.{v} R)) := LinearEquiv.toModuleIso
+    (B.repr.trans (Finsupp.mapRange.linearEquiv (α := S) (Shrink.linearEquiv R R).symm))
+  show Subsingleton ((extFunctorObj N i).obj M) ↔ _
+  rw [((extFunctorObj.{max u v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr]
+  simp only [extFunctorObj]
+  have ne : S.Nonempty := @Set.Nonempty.of_subtype _ _ (Basis.index_nonempty B)
+  refine Set.Finite.induction_on (motive := fun T ↦ (fun (h : T.Finite) ↦
+    (T.Nonempty → (Subsingleton (Ext N (ModuleCat.of R (↑T →₀ Shrink.{v, u} R)) i) ↔
+    Subsingleton (Ext N (ModuleCat.of R (Shrink.{v, u} R)) i))))) S fin ?_ ?_ ne
+  · simp
+  · intro m T nmem fin ih _
+    by_cases empty : T = ∅
+    · rw [empty, ← Set.singleton_def m]
+
+      sorry
+    · let m' : ↑(insert m T) := ⟨m, Set.mem_insert m T⟩
+      let i : T → ↑(insert m T) := fun t ↦ ⟨t.1, Set.mem_insert_of_mem m t.2⟩
+      let S : ShortComplex (ModuleCat.{v} R) := {
+        X₁ := ModuleCat.of R (T →₀ Shrink.{v, u} R)
+        X₂ := ModuleCat.of R (↑(insert m T) →₀ Shrink.{v, u} R)
+        X₃ := ModuleCat.of R (Shrink.{v, u} R)
+        f := sorry
+        g := sorry
+        zero := sorry
+        }
+      sorry
+
+lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
+    [Nontrivial M] : moduleDepth N M = moduleDepth N (ModuleCat.of R (Shrink.{v} R)) := by
+  simp only [moduleDepth]
+  congr! 5
+  apply finte_free_ext_vanish_iff
 
 instance (ι : Type*) : Module.Free R (ι →₀ Shrink.{v, u} R) :=
   Module.Free.of_equiv (Finsupp.mapRange.linearEquiv (α := ι) (Shrink.linearEquiv R R).symm)
@@ -473,7 +517,17 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
         have h_ker := ih S.X₁ hfinprojdim' find_eq
         let K := ModuleCat.of R (Shrink.{v} (R ⧸ (maximalIdeal R)))
         have depth_pos : IsLocalRing.depth S.X₁ > 0 := by
-          sorry
+          apply pos_of_ne_zero
+          have : IsLocalRing.depth S.X₂ ≠ 0 := by
+            simp only [IsLocalRing.depth, Ideal.depth, free_depth_eq_ring_depth S.X₂ _]
+            show IsLocalRing.depth _ ≠ 0
+            simp [← h_ker, eq0]
+          simp only [IsLocalRing.depth, Ideal.depth, ne_eq,
+            moduleDepth_eq_zero_of_hom_nontrivial, not_nontrivial_iff_subsingleton] at this ⊢
+          apply subsingleton_of_forall_eq 0 (fun F ↦ LinearMap.ext (fun x ↦ ?_))
+          apply (LinearMap.ker f).subtype_injective
+          rw [← LinearMap.comp_apply, Subsingleton.eq_zero ((LinearMap.ker f).subtype.comp F)]
+          simp
         have ext_iso (i : ℕ) (lt : i + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R))) :
           IsIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K (Eq.refl (i + 1)))) := by
           apply (CategoryTheory.isIso_iff_mono_and_epi _).mpr ⟨?_, ?_⟩
