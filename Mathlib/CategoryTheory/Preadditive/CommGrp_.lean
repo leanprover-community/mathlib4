@@ -21,7 +21,8 @@ namespace CategoryTheory.Preadditive
 
 open CategoryTheory Limits MonoidalCategory ChosenFiniteProducts
 
-variable {C : Type u} [Category.{v} C] [Preadditive C] [ChosenFiniteProducts C]
+variable {C : Type u} [Category.{v} C] [Preadditive C]
+  [ChosenFiniteProducts C] [BraidedCategory C]
 
 @[simps]
 instance (X : C) : Grp_Class X where
@@ -43,11 +44,12 @@ def toCommGrp : C ⥤ CommGrp_ C where
 
 -- PROJECT: develop `ChosenFiniteCoproducts`, and construct `ChosenFiniteCoproducts` from
 -- `ChosenFiniteProducts` in preadditive categories, to give this lemma a proper home.
+omit [BraidedCategory C] in
 private theorem monoidal_hom_ext {X Y Z : C} {f g : X ⊗ Y ⟶ Z}
     (h₁ : lift (𝟙 X) 0 ≫ f = lift (𝟙 X) 0 ≫ g) (h₂ : lift 0 (𝟙 Y) ≫ f = lift 0 (𝟙 Y) ≫ g) :
     f = g :=
   BinaryCofan.IsColimit.hom_ext
-    (binaryBiconeIsBilimitOfLimitConeOfIsLimit (product X Y).isLimit).isColimit h₁ h₂
+    (binaryBiconeIsBilimitOfLimitConeOfIsLimit (tensorProductIsBinaryProduct X Y)).isColimit h₁ h₂
 
 /-- Auxiliary definition for `commGrpEquivalence`. -/
 @[simps!]

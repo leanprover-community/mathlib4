@@ -54,8 +54,6 @@ jobs:
           ZULIP_SITE: https://leanprover.zulipchat.com
         run: |
           # ${{ github.event.action }} is either "closed" or "reopened"
-          # however, it only matters that it is either "closed" or
-          # something different from "closed"
-          # the effect is to add the "closed-pr" emoji to the message, if it is "closed"
-          # and to remove it otherwise
-          python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ github.event.action }}" "${{ github.event.pull_request.number }}"
+          # We add the "closed-pr" emoji to the message, if it is "closed"
+          # and to remove the emoji if the action is "reopen".
+          python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ github.event.action }}" "none" "${{ github.event.pull_request.number }}"
