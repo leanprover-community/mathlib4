@@ -179,9 +179,9 @@ def whiskerLeft (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') : α ≫ β �
   τf := _ ◁ y.τf
   τg := y.τg ▷ _
   conjugateEquiv_τf := by
-    dsimp
-    rw [← iterated_mateEquiv_conjugateEquiv]
     rw [← Hom₂.conjugateEquiv_τf]
+    -- there should be lemma `conjugateEquiv_whiskerLeft`
+    --rw [← iterated_mateEquiv_conjugateEquiv]
     sorry
 
 /-- The right whiskering in the bicategory `Adj B`. -/
