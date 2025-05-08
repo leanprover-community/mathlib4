@@ -197,7 +197,6 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
       map_zero, Pi.zero_apply, LinearMap.zero_apply]
     rfl
 
-@[simp]
 theorem inhomogeneousCochains.d_def (n : ℕ) :
     (inhomogeneousCochains A).d n (n + 1) = ModuleCat.ofHom (inhomogeneousCochains.d n A) :=
   CochainComplex.of_d _ _ _ _

@@ -134,34 +134,33 @@ noncomputable abbrev fThree : (H × H × H → A) →ₗ[k] (G × G × G → B) 
   φ.hom.hom.compLeft (G × G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f (Prod.map f f))
 
 @[reassoc]
-lemma cochainsMap_f_0_comp_zeroCochainsLequiv :
-    (cochainsMap f φ).f 0 ≫ (zeroCochainsLequiv B).toModuleIso.hom =
-      (zeroCochainsLequiv A).toModuleIso.hom ≫ φ.hom := by
+lemma cochainsMap_f_0_comp_zeroCochainsIso :
+    (cochainsMap f φ).f 0 ≫ (zeroCochainsIso B).hom = (zeroCochainsIso A).hom ≫ φ.hom := by
   ext x
   simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
   rfl
 
 @[reassoc]
-lemma cochainsMap_f_1_comp_oneCochainsLequiv :
-    (cochainsMap f φ).f 1 ≫ (oneCochainsLequiv B).toModuleIso.hom =
-      (oneCochainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fOne f φ) := by
+lemma cochainsMap_f_1_comp_oneCochainsIso :
+    (cochainsMap f φ).f 1 ≫ (oneCochainsIso B).hom =
+      (oneCochainsIso A).hom ≫ ModuleCat.ofHom (fOne f φ) := by
   ext x
   simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
   rfl
 
 @[reassoc]
-lemma cochainsMap_f_2_comp_twoCochainsLequiv :
-    (cochainsMap f φ).f 2 ≫ (twoCochainsLequiv B).toModuleIso.hom =
-      (twoCochainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fTwo f φ) := by
+lemma cochainsMap_f_2_comp_twoCochainsIso :
+    (cochainsMap f φ).f 2 ≫ (twoCochainsIso B).hom =
+      (twoCochainsIso A).hom ≫ ModuleCat.ofHom (fTwo f φ) := by
   ext x g
   show φ.hom (x _) = φ.hom (x _)
   rcongr x
   fin_cases x <;> rfl
 
 @[reassoc]
-lemma cochainsMap_f_3_comp_threeCochainsLequiv :
-    (cochainsMap f φ).f 3 ≫ (threeCochainsLequiv B).toModuleIso.hom =
-      (threeCochainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fThree f φ) := by
+lemma cochainsMap_f_3_comp_threeCochainsIso :
+    (cochainsMap f φ).f 3 ≫ (threeCochainsIso B).hom =
+      (threeCochainsIso A).hom ≫ ModuleCat.ofHom (fThree f φ) := by
   ext x g
   show φ.hom (x _) = φ.hom (x _)
   rcongr x
@@ -204,7 +203,7 @@ theorem cocyclesMap_comp_isoZeroCocycles_hom :
     cocyclesMap f φ 0 ≫ (isoZeroCocycles B).hom = (isoZeroCocycles A).hom ≫ H0Map f φ := by
   rw [← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq, ← cancel_mono (iCocycles _ _)]
   ext x
-  have := congr($((CommSq.vert_inv ⟨cochainsMap_f_0_comp_zeroCochainsLequiv f φ⟩).w.symm) x)
+  have := congr($((CommSq.vert_inv ⟨cochainsMap_f_0_comp_zeroCochainsIso f φ⟩).w.symm) x)
   simp_all
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -271,7 +270,7 @@ lemma cocyclesMap_comp_isoOneCocycles_hom :
     cocyclesMap f φ 1 ≫ (isoOneCocycles B).hom = (isoOneCocycles A).hom ≫ mapOneCocycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapOneCocycles,
       Category.assoc, cyclesMap'_i, isoOneCocycles, ← Category.assoc]
-  simp [cochainsMap_f_1_comp_oneCochainsLequiv f, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
+  simp [cochainsMap_f_1_comp_oneCochainsIso f, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `H¹(H, A) ⟶ H¹(G, B)`. -/
@@ -365,7 +364,7 @@ lemma cocyclesMap_comp_isoTwoCocycles_hom :
     cocyclesMap f φ 2 ≫ (isoTwoCocycles B).hom = (isoTwoCocycles A).hom ≫ mapTwoCocycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 B)).i, mapTwoCocycles,
       Category.assoc, cyclesMap'_i, isoTwoCocycles, ← Category.assoc]
-  simp [cochainsMap_f_2_comp_twoCochainsLequiv f, mapShortComplexH2, ← LinearEquiv.toModuleIso_hom]
+  simp [cochainsMap_f_2_comp_twoCochainsIso f, mapShortComplexH2, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `H²(H, A) ⟶ H²(G, B)`. -/
