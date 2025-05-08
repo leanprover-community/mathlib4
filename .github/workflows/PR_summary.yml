@@ -68,6 +68,7 @@ jobs:
         # The `awk` pipe
         # * extracts into an array the old name as the key and the new name as the value
         # * eventually prints "`oldName` was renamed to `newName`" for each key-value pair.
+        git diff -p --summary --diff-filter=R origin/${{ github.base_ref }}...
         git diff -p --summary --diff-filter=R origin/${{ github.base_ref }}... |
           awk '
             /^rename from / {
