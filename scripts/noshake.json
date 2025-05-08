@@ -214,6 +214,16 @@
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.Use": ["Batteries.Logic", "Mathlib.Tactic.WithoutCDot"],
+  "Mathlib.Tactic.UnifyDenoms":
+  ["Batteries.Data.Nat.Lemmas",
+   "Mathlib.Algebra.EuclideanDomain.Basic",
+   "Mathlib.Algebra.Field.Basic",
+   "Mathlib.Algebra.Group.Basic",
+   "Mathlib.Algebra.GroupWithZero.Units.Lemmas",
+   "Mathlib.Algebra.Order.Field.Basic",
+   "Mathlib.Data.Int.Order.Basic",
+   "Mathlib.Data.Int.Order.Lemmas",
+   "Mathlib.Data.Nat.Order.Lemmas"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TautoSet":
   ["Mathlib.Data.Set.Disjoint", "Mathlib.Data.Set.SymmDiff"],
@@ -293,6 +303,13 @@
   "Mathlib.Tactic.Continuity": ["Mathlib.Tactic.Continuity.Init"],
   "Mathlib.Tactic.CongrM": ["Mathlib.Tactic.WithoutCDot"],
   "Mathlib.Tactic.CongrExclamation": ["Mathlib.Logic.Basic"],
+  "Mathlib.Tactic.CollectSigns":
+  ["Mathlib.Algebra.Field.Basic",
+   "Mathlib.Algebra.Group.Basic",
+   "Mathlib.Algebra.GroupWithZero.Units.Lemmas",
+   "Mathlib.Algebra.Order.Field.Basic",
+   "Mathlib.Algebra.Order.Group.Defs",
+   "Mathlib.Algebra.Order.Sub.Defs"],
   "Mathlib.Tactic.Choose": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Tactic.CategoryTheory.ToApp":
   ["Mathlib.CategoryTheory.Category.Cat"],
