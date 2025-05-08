@@ -91,6 +91,14 @@ theorem ext_of_singleton [Countable α] {μ ν : Measure α} (h : ∀ a, μ {a} 
 theorem ext_iff_singleton [Countable α] {μ ν : Measure α} : μ = ν ↔ ∀ a, μ {a} = ν {a} :=
   ⟨fun h _ ↦ h ▸ rfl, ext_of_singleton⟩
 
+theorem _root_.MeasureTheory.ext_iff_measureReal_singleton [Countable α]
+    {μ1 μ2 : Measure α} [SigmaFinite μ1] [SigmaFinite μ2] :
+    μ1 = μ2 ↔ ∀ x, μ1.real {x} = μ2.real {x} := by
+  rw [Measure.ext_iff_singleton]
+  congr! with x
+  rw [measureReal_def, measureReal_def, ENNReal.toReal_eq_toReal_iff]
+  simp [measure_singleton_lt_top, ne_of_lt]
+
 /-- If `f` is a map with countable codomain, then `μ.map f` is a sum of Dirac measures. -/
 theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α) (f : α → β)
     (hf : Measurable f) : μ.map f = sum fun b : β => μ (f ⁻¹' {b}) • dirac b := by

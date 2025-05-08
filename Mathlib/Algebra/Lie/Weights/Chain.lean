@@ -40,6 +40,16 @@ We provide basic definitions and results to support `α`-chain techniques in thi
    `corootSpace α` of `H`, we may find an integral linear combination between
    `α` and any weight `χ` of a representation.
 
+## TODO
+
+It should be possible to unify some of the definitions here such as `LieModule.chainBotCoeff`,
+`LieModule.chainTopCoeff` with corresponding definitions such as `RootPairing.chainBotCoeff`,
+`RootPairing.chainTopCoeff`. This is not quite trivial since:
+ * The definitions here allow for chains in representations of Lie algebras.
+ * The proof that the roots of a Lie algebra are a root system currently depends on these results.
+   (This can be resolved by proving the root reflection formula using the approach outlined in
+   Bourbaki Ch. VIII §2.2 Lemma 1 (page 80 of English translation, 88 of English PDF).)
+
 -/
 
 open Module Function Set
@@ -209,7 +219,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ ?_⟩
   let N : ℤ → Submodule R M := fun k ↦ genWeightSpace M (k • α + χ)
   have h₁ : iSupIndep fun (i : Finset.Ioo p q) ↦ N i := by
-    rw [← LieSubmodule.iSupIndep_iff_toSubmodule]
+    rw [LieSubmodule.iSupIndep_toSubmodule]
     refine (iSupIndep_genWeightSpace R H M).comp fun i j hij ↦ ?_
     exact SetCoe.ext <| smul_left_injective ℤ hα <| by rwa [add_left_inj] at hij
   have h₂ : ∀ i, MapsTo (toEnd R H M x) ↑(N i) ↑(N i) := fun _ _ ↦ LieSubmodule.lie_mem _
@@ -379,7 +389,7 @@ variable {K : Type*} [Field K] [CharZero K] [LieAlgebra K L]
 lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (toEnd K L M x) := by
-  refine Module.Finite.Module.End.isNilpotent_iff_of_finite.mpr fun m ↦ ?_
+  refine Module.End.isNilpotent_iff_of_finite.mpr fun m ↦ ?_
   have hm : m ∈ ⨆ χ : LieModule.Weight K H M, genWeightSpace M χ := by
     simp [iSup_genWeightSpace_eq_top' K H M]
   induction hm using LieSubmodule.iSup_induction' with
@@ -393,8 +403,8 @@ lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
     obtain ⟨n₁, hn₁⟩ := hm₁'
     obtain ⟨n₂, hn₂⟩ := hm₂'
     refine ⟨max n₁ n₂, ?_⟩
-    rw [map_add, LinearMap.pow_map_zero_of_le le_sup_left hn₁,
-      LinearMap.pow_map_zero_of_le le_sup_right hn₂, add_zero]
+    rw [map_add, Module.End.pow_map_zero_of_le le_sup_left hn₁,
+      Module.End.pow_map_zero_of_le le_sup_right hn₂, add_zero]
 
 lemma LieAlgebra.isNilpotent_ad_of_mem_rootSpace
     [IsTriangularizable K H L] [FiniteDimensional K L]

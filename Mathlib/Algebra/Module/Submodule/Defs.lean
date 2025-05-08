@@ -53,6 +53,8 @@ instance setLike : SetLike (Submodule R M) M where
 
 initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 
+@[simp] lemma carrier_eq_coe (s : Submodule R M) : s.carrier = s := rfl
+
 /-- The actual `Submodule` obtained from an element of a `SMulMemClass` and `AddSubmonoidClass`. -/
 @[simps]
 def ofClass {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
@@ -104,7 +106,7 @@ theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :
 theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 
-@[simp]
+@[deprecated SetLike.coe_set_eq (since := "2025-04-20")]
 theorem carrier_inj : p.carrier = q.carrier ↔ p = q :=
   (SetLike.coe_injective (A := Submodule R M)).eq_iff
 
