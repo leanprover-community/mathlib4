@@ -1,21 +1,20 @@
 /-
-Copyright (c) 2025 Yaël Dillies, Markus Himmel. All rights reserved.
+Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Markus Himmel
+Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
-# Monoid objects in cartesian monoidal categories
+# Additional results about monoid objects in cartesian monoidal categories
 -/
 
-universe v₁ v₂ u₁ u₂
+universe v₁ u₁
 
-open CategoryTheory Limits MonoidalCategory ChosenFiniteProducts
+open CategoryTheory MonoidalCategory ChosenFiniteProducts
 
 variable {C : Type u₁} [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C]
-variable {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D]
 
 namespace Mon_
 
@@ -37,4 +36,3 @@ theorem lift_comp_one_right {A : C} {B : Mon_ C} (f : A ⟶ B.X) (g : A ⟶ 𝟙
   rwa [lift_whiskerLeft_assoc, lift_rightUnitor_hom] at this
 
 end Mon_
-
