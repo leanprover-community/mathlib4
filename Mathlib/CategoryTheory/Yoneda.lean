@@ -80,7 +80,7 @@ instance yoneda_faithful : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Faithful :=
 /-- Extensionality via Yoneda. The typical usage would be
 ```
 -- Goal is `X ≅ Y`
-apply yoneda.ext,
+apply Yoneda.ext
 -- Goals are now functions `(Z ⟶ X) → (Z ⟶ Y)`, `(Z ⟶ Y) → (Z ⟶ X)`, and the fact that these
 -- functions are inverses and natural in `Z`.
 ```
@@ -126,6 +126,25 @@ instance coyoneda_full : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Full :=
 instance coyoneda_faithful : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Faithful :=
   fullyFaithful.faithful
 
+/-- Extensionality via Coyoneda. The typical usage would be
+```
+-- Goal is `X ≅ Y`
+apply Coyoneda.ext
+-- Goals are now functions `(X ⟶ Z) → (Y ⟶ Z)`, `(Y ⟶ Z) → (X ⟶ Z)`, and the fact that these
+-- functions are inverses and natural in `Z`.
+```
+-/
+def ext (X Y : C) (p : ∀ {Z : C}, (X ⟶ Z) → (Y ⟶ Z))
+    (q : ∀ {Z : C}, (Y ⟶ Z) → (X ⟶ Z))
+    (h₁ : ∀ {Z : C} (f : X ⟶ Z), q (p f) = f) (h₂ : ∀ {Z : C} (f : Y ⟶ Z), p (q f) = f)
+    (n : ∀ {Z Z' : C} (f : Y ⟶ Z) (g : Z ⟶ Z'), q (f ≫ g) = q f ≫ g) : X ≅ Y :=
+  fullyFaithful.preimageIso
+    (NatIso.ofComponents (fun Z =>
+      { hom := q
+        inv := p })
+    ) |>.unop
+
+
 /-- If `coyoneda.map f` is an isomorphism, so was `f`.
 -/
 theorem isIso {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso (coyoneda.map f)] : IsIso f :=
@@ -141,6 +160,11 @@ def punitIso : coyoneda.obj (Opposite.op PUnit) ≅ 𝟭 (Type v₁) :=
 @[simps!]
 def objOpOp (X : C) : coyoneda.obj (op (op X)) ≅ yoneda.obj X :=
   NatIso.ofComponents fun _ => (opEquiv _ _).toIso
+
+/-- Taking the `unop` of morphisms is a natural isomorphism. -/
+def opIso : yoneda ⋙ (whiskeringLeft _ _ _).obj (opOp C) ≅ coyoneda :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ (opEquiv (op Y) X).toIso)
+    (fun _ ↦ rfl)) (fun _ ↦ rfl)
 
 end Coyoneda
 
@@ -198,6 +222,22 @@ lemma CorepresentableBy.homEquiv_eq {F : C ⥤ Type v} {X : C} (e : F.Corepresen
     {Y : C} (f : X ⟶ Y) :
     e.homEquiv f = F.map f (e.homEquiv (𝟙 X)) := by
   conv_lhs => rw [← Category.id_comp f, e.homEquiv_comp]
+
+/-- Representing objects are unique up to isomorphism. -/
+@[simps!]
+def RepresentableBy.uniqueUpToIso {F : Cᵒᵖ ⥤ Type v} {Y Y' : C} (e : F.RepresentableBy Y)
+    (e' : F.RepresentableBy Y') : Y ≅ Y' :=
+  let ε {X} := (@e.homEquiv X).trans e'.homEquiv.symm
+  Yoneda.ext _ _ ε ε.symm (by simp) (by simp)
+    (by simp [ε, comp_homEquiv_symm, homEquiv_comp])
+
+/-- Corepresenting objects are unique up to isomorphism. -/
+@[simps!]
+def CorepresentableBy.uniqueUpToIso {F : C ⥤ Type v} {X X' : C} (e : F.CorepresentableBy X)
+    (e' : F.CorepresentableBy X') : X ≅ X' :=
+  let ε {Y} := (@e.homEquiv Y).trans e'.homEquiv.symm
+  Coyoneda.ext _ _ ε ε.symm (by simp) (by simp)
+    (by simp [ε, homEquiv_symm_comp, homEquiv_comp])
 
 @[ext]
 lemma RepresentableBy.ext {F : Cᵒᵖ ⥤ Type v} {Y : C} {e e' : F.RepresentableBy Y}
@@ -262,8 +302,6 @@ which may also be rephrased as a natural isomorphism `yoneda.obj X ≅ F` when `
 class IsRepresentable (F : Cᵒᵖ ⥤ Type v) : Prop where
   has_representation : ∃ (Y : C), Nonempty (F.RepresentableBy Y)
 
-@[deprecated (since := "2024-10-03")] alias Representable := IsRepresentable
-
 lemma RepresentableBy.isRepresentable {F : Cᵒᵖ ⥤ Type v} {Y : C} (e : F.RepresentableBy Y) :
     F.IsRepresentable where
   has_representation := ⟨Y, ⟨e⟩⟩
@@ -282,8 +320,6 @@ instance {X : C} : IsRepresentable (yoneda.obj X) :=
 @[stacks 001Q]
 class IsCorepresentable (F : C ⥤ Type v) : Prop where
   has_corepresentation : ∃ (X : C), Nonempty (F.CorepresentableBy X)
-
-@[deprecated (since := "2024-10-03")] alias Corepresentable := IsCorepresentable
 
 lemma CorepresentableBy.isCorepresentable {F : C ⥤ Type v} {X : C} (e : F.CorepresentableBy X) :
     F.IsCorepresentable where
@@ -311,6 +347,11 @@ noncomputable def reprX : C :=
 /-- A chosen term in `F.RepresentableBy (reprX F)` when `F.IsRepresentable` holds. -/
 noncomputable def representableBy : F.RepresentableBy F.reprX :=
   hF.has_representation.choose_spec.some
+
+/-- Any representing object for a representable functor `F` is isomorphic to `reprX F`. -/
+noncomputable def RepresentableBy.isoReprX {Y : C} (e : F.RepresentableBy Y) :
+    Y ≅ F.reprX :=
+  RepresentableBy.uniqueUpToIso e (representableBy F)
 
 /-- The representing element for the representable functor `F`, sometimes called the universal
 element of the functor.
@@ -343,6 +384,12 @@ noncomputable def coreprX : C :=
 /-- A chosen term in `F.CorepresentableBy (coreprX F)` when `F.IsCorepresentable` holds. -/
 noncomputable def corepresentableBy : F.CorepresentableBy F.coreprX :=
   hF.has_corepresentation.choose_spec.some
+
+variable {F} in
+/-- Any corepresenting object for a corepresentable functor `F` is isomorphic to `coreprX F`. -/
+noncomputable def CorepresentableBy.isoCoreprX {Y : C} (e : F.CorepresentableBy Y) :
+    Y ≅ F.coreprX :=
+  CorepresentableBy.uniqueUpToIso e (corepresentableBy F)
 
 /-- The representing element for the corepresentable functor `F`, sometimes called the universal
 element of the functor.
@@ -535,9 +582,7 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C :=
     (by intro (X, F) (Y, G) f
         ext (a : yoneda.obj X.unop ⟶ F)
         apply ULift.ext
-        simp only [Functor.prod_obj, Functor.id_obj, types_comp_apply, yonedaEvaluation_map_down]
-        erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down]
-        dsimp [yonedaEquiv]
+        dsimp [yonedaEvaluation, yonedaEquiv]
         simp [← FunctorToTypes.naturality])
 
 variable {C}
@@ -715,9 +760,8 @@ def coyonedaLemma : coyonedaPairing C ≅ coyonedaEvaluation C :=
     (by intro (X, F) (Y, G) f
         ext (a : coyoneda.obj (op X) ⟶ F)
         apply ULift.ext
-        simp only [Functor.prod_obj, Functor.id_obj, types_comp_apply, coyonedaEvaluation_map_down]
-        erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down]
-        simp [coyonedaEquiv, ← FunctorToTypes.naturality])
+        dsimp [coyonedaEquiv, coyonedaEvaluation]
+        simp [← FunctorToTypes.naturality])
 
 variable {C}
 
@@ -797,6 +841,45 @@ def yonedaMap (X : C) : yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X) where
 @[simp]
 lemma yonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
     (yonedaMap F Y).app X f = F.map f := rfl
+
+end
+
+section
+
+variable {C : Type u₁} [Category.{v₁} C]
+
+/-- A type-level equivalence between sections of a functor and morphisms from a terminal functor
+to it. We use the constant functor on a given singleton type here as a specific choice of terminal
+functor. -/
+@[simps apply_app]
+def Functor.sectionsEquivHom (F : C ⥤ Type u₂) (X : Type u₂) [Unique X] :
+    F.sections ≃ ((const _).obj X ⟶ F) where
+  toFun s :=
+    { app j x := s.1 j
+      naturality _ _ _ := by ext x; simp }
+  invFun τ := ⟨fun j ↦ τ.app _ (default : X), fun φ ↦ (congr_fun (τ.naturality φ) _).symm⟩
+  left_inv s := rfl
+  right_inv τ := by
+    ext _ (x : X)
+    rw [Unique.eq_default x]
+
+lemma Functor.sectionsEquivHom_naturality {F G : C ⥤ Type u₂} (f : F ⟶ G) (X : Type u₂) [Unique X]
+    (x : F.sections) :
+    (G.sectionsEquivHom X) ((sectionsFunctor C).map f x) = (F.sectionsEquivHom X) x ≫ f := by
+  rfl
+
+lemma Functor.sectionsEquivHom_naturality_symm {F G : C ⥤ Type u₂} (f : F ⟶ G) (X : Type u₂)
+    [Unique X] (τ : (const C).obj X ⟶ F) :
+    (G.sectionsEquivHom X).symm (τ ≫ f) =
+      (sectionsFunctor C).map f ((F.sectionsEquivHom X).symm τ) := by
+  rfl
+
+/-- A natural isomorphism between the sections functor `(C ⥤ Type _) ⥤ Type _` and the co-Yoneda
+embedding of a terminal functor, specifically a constant functor on a given singleton type `X`. -/
+@[simps!]
+noncomputable def sectionsFunctorNatIsoCoyoneda (X : Type max u₁ u₂) [Unique X] :
+    Functor.sectionsFunctor.{v₁, max u₁ u₂} C ≅ coyoneda.obj (op ((Functor.const C).obj X)) :=
+  NatIso.ofComponents fun F ↦ (F.sectionsEquivHom X).toIso
 
 end
 

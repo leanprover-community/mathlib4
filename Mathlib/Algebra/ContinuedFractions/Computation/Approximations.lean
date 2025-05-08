@@ -51,7 +51,7 @@ open GenContFract (of)
 
 open Int
 
-variable {K : Type*} {v : K} {n : ℕ} [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} {v : K} {n : ℕ} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
 namespace GenContFract
 
@@ -97,6 +97,7 @@ theorem one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
     ((nth_stream_fr_nonneg nth_stream_eq).lt_of_ne' stream_nth_fr_ne_zero)]
   exact (nth_stream_fr_lt_one nth_stream_eq).le
 
+omit [IsStrictOrderedRing K] in
 /--
 Shows that the `n + 1`th integer part `bₙ₊₁` of the stream is smaller or equal than the inverse of
 the `n`th fractional part `frₙ` of the stream.

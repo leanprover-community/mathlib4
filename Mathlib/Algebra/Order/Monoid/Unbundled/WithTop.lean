@@ -188,13 +188,13 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     w + x < y + z :=
   (WithTop.add_lt_add_right hx hwy).trans_le <| add_le_add_left hxz _
 
-lemma addLECancellable_of_ne_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+lemma addLECancellable_of_ne_top [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hx : x ≠ ⊤) : AddLECancellable x := fun _b _c ↦ WithTop.le_of_add_le_add_left hx
 
 lemma addLECancellable_of_lt_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hx : x < ⊤) : AddLECancellable x := addLECancellable_of_ne_top hx.ne
 
-lemma addLECancellable_coe [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
+lemma addLECancellable_coe [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
     AddLECancellable (a : WithTop α) := addLECancellable_of_ne_top coe_ne_top
 
 lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
@@ -357,7 +357,7 @@ theorem zero_lt_coe [Zero α] [LT α] (a : α) : (0 : WithTop α) < a ↔ 0 < a 
   coe_lt_coe
 
 /-- A version of `WithTop.map` for `OneHom`s. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "A version of `WithTop.map` for `ZeroHom`s"]
 protected def _root_.OneHom.withTopMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithTop M) (WithTop N) where
@@ -365,14 +365,14 @@ protected def _root_.OneHom.withTopMap {M N : Type*} [One M] [One N] (f : OneHom
   map_one' := by rw [WithTop.map_one, map_one, coe_one]
 
 /-- A version of `WithTop.map` for `AddHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddHom.withTopMap {M N : Type*} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
   map_add' := WithTop.map_add f
 
 /-- A version of `WithTop.map` for `AddMonoidHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddMonoidHom.withTopMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithTop M →+ WithTop N :=
   { ZeroHom.withTopMap f.toZeroHom, AddHom.withTopMap f.toAddHom with toFun := WithTop.map f }
@@ -536,13 +536,13 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     w + x < y + z :=
   (WithBot.add_lt_add_right hx hwy).trans_le <| add_le_add_left hxz _
 
-lemma addLECancellable_of_ne_bot [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+lemma addLECancellable_of_ne_bot [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hx : x ≠ ⊥) : AddLECancellable x := fun _b _c ↦ WithBot.le_of_add_le_add_left hx
 
 lemma addLECancellable_of_lt_bot [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hx : x < ⊥) : AddLECancellable x := addLECancellable_of_ne_bot hx.ne
 
-lemma addLECancellable_coe [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
+lemma addLECancellable_coe [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
     AddLECancellable (a : WithBot α) := addLECancellable_of_ne_bot coe_ne_bot
 
 lemma addLECancellable_iff_ne_bot [Nonempty α] [Preorder α]
@@ -646,7 +646,7 @@ instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (
   WithTop.addCommMonoidWithOne
 
 /-- A version of `WithBot.map` for `OneHom`s. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "A version of `WithBot.map` for `ZeroHom`s"]
 protected def _root_.OneHom.withBotMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithBot M) (WithBot N) where
@@ -654,14 +654,14 @@ protected def _root_.OneHom.withBotMap {M N : Type*} [One M] [One N] (f : OneHom
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
 
 /-- A version of `WithBot.map` for `AddHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddHom.withBotMap {M N : Type*} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f
   map_add' := WithBot.map_add f
 
 /-- A version of `WithBot.map` for `AddMonoidHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithBot M →+ WithBot N :=
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }

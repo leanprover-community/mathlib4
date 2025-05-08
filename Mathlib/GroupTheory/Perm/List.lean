@@ -137,7 +137,7 @@ theorem formPerm_apply_getLast (x : α) (xs : List α) :
 @[simp]
 theorem formPerm_apply_getElem_length (x : α) (xs : List α) :
     formPerm (x :: xs) (x :: xs)[xs.length] = x := by
-  rw [getElem_cons_length _ _ _ rfl, formPerm_apply_getLast]
+  rw [getElem_cons_length rfl, formPerm_apply_getLast]
 
 theorem formPerm_apply_head (x y : α) (xs : List α) (h : Nodup (x :: y :: xs)) :
     formPerm (x :: y :: xs) x = y := by simp [formPerm_apply_of_not_mem h.not_mem]
@@ -324,11 +324,11 @@ theorem formPerm_eq_self_of_not_mem (l : List α) (x : α) (h : x ∉ l) : formP
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
   rcases l with - | ⟨hd, tl⟩
   · simp
-  · rw [← formPerm_apply_mem_eq_self_iff _ hl hd (mem_cons_self _ _)]
+  · rw [← formPerm_apply_mem_eq_self_iff _ hl hd mem_cons_self]
     constructor
     · simp +contextual
     · intro h
-      simp only [(hd :: tl).formPerm_apply_mem_eq_self_iff hl hd (mem_cons_self hd tl),
+      simp only [(hd :: tl).formPerm_apply_mem_eq_self_iff hl hd mem_cons_self,
         add_le_iff_nonpos_left, length, nonpos_iff_eq_zero, length_eq_zero_iff] at h
       simp [h]
 

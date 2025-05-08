@@ -3,11 +3,13 @@ Copyright (c) 2020 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
+import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Fintype.Order
+import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Data.Set.Functor
 
 /-!
@@ -53,7 +55,7 @@ assert_not_exists Field TwoSidedIdeal
 open Function
 
 namespace SimpleGraph
-variable {V W : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
+variable {V W : Type*} {G G' : SimpleGraph V} {M M' : Subgraph G} {u v w : V}
 
 namespace Subgraph
 
@@ -90,15 +92,17 @@ lemma IsMatching.map_ofLE (h : M.IsMatching) (hGG' : G ≤ G') :
   use w
   simpa using hv' ▸ hw
 
-lemma IsMatching.not_adj_left_of_ne {M : Subgraph G} {u v w : V} (hM : M.IsMatching) (huv : v ≠ w)
-    (hadj : M.Adj u v) : ¬M.Adj u w := by
-  intro hadj'
-  obtain ⟨x, hx⟩ := hM (M.edge_vert hadj)
-  exact huv (hx.2 _ hadj ▸ (hx.2 _ hadj').symm)
+lemma IsMatching.eq_of_adj_left (hM : M.IsMatching) (huv : M.Adj u v) (huw : M.Adj u w) : v = w :=
+  (hM <| M.edge_vert huv).unique huv huw
 
-lemma IsMatching.not_adj_right_of_ne {M : Subgraph G} {u v w : V} (hM : M.IsMatching) (huw : u ≠ w)
-    (hadj : M.Adj u v) : ¬M.Adj w v  :=
-  fun hadj' ↦ hM.not_adj_left_of_ne huw hadj.symm hadj'.symm
+lemma IsMatching.eq_of_adj_right (hM : M.IsMatching) (huw : M.Adj u w) (hvw : M.Adj v w) : u = v :=
+  hM.eq_of_adj_left huw.symm hvw.symm
+
+lemma IsMatching.not_adj_left_of_ne (hM : M.IsMatching) (hvw : v ≠ w) (huv : M.Adj u v) :
+    ¬M.Adj u w := fun huw ↦ hvw <| hM.eq_of_adj_left huv huw
+
+lemma IsMatching.not_adj_right_of_ne (hM : M.IsMatching) (huv : u ≠ v) (huw : M.Adj u w) :
+    ¬M.Adj v w := fun hvw ↦ huv <| hM.eq_of_adj_right huw hvw
 
 lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by
@@ -144,12 +148,12 @@ lemma IsMatching.subgraphOfAdj (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching 
   | inr => use v; aesop
 
 lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsMatching) :
-    M.coeSubgraph.IsMatching := by
+    (Subgraph.coeSubgraph M).IsMatching := by
   intro _ hv
-  obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| M.verts_coeSubgraph.symm ▸ hv
+  obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| (Subgraph.verts_coeSubgraph M).symm ▸ hv
   use w
   refine ⟨?_, fun y hy => ?_⟩
-  · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| M.verts_coeSubgraph.symm ▸ hv
+  · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| (Subgraph.verts_coeSubgraph M).symm ▸ hv
     simp only [coeSubgraph_adj, Subtype.coe_eta, Subtype.coe_prop, exists_const]
     exact ⟨hv.2 ▸ v.2, hw.1⟩
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
@@ -260,6 +264,20 @@ lemma IsPerfectMatching.toSubgraph_iff (h : M.spanningCoe ≤ G') :
 
 end Subgraph
 
+lemma IsClique.even_iff_exists_isMatching {u : Set V} (hc : G.IsClique u)
+    (hu : u.Finite) : Even u.ncard ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
+  refine ⟨fun h ↦ ?_, by
+    rintro ⟨M, rfl, hMr⟩
+    simpa [Set.ncard_eq_toFinset_card _ hu, Set.toFinite_toFinset,
+      ← Set.toFinset_card] using @hMr.even_card _ _ _ hu.fintype⟩
+  obtain ⟨t, u, rfl, hd, hcard⟩ := Set.exists_union_disjoint_ncard_eq_of_even h
+  obtain ⟨f⟩ : Nonempty (t ≃ u) := by
+    rw [← Cardinal.eq, ← t.cast_ncard (Set.finite_union.mp hu).1,
+      ← u.cast_ncard (Set.finite_union.mp hu).2]
+    exact congrArg Nat.cast hcard
+  exact Subgraph.IsMatching.exists_of_disjoint_sets_of_equiv hd f
+    fun v ↦ hc (by simp) (by simp) <| hd.ne_of_mem (by simp) (by simp)
+
 namespace ConnectedComponent
 
 section Finite
@@ -276,11 +294,10 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
   simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
 lemma odd_matches_node_outside [Finite V] {u : Set V}
-    {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
-    (hM : M.IsPerfectMatching) (codd : Odd c.supp.ncard) :
-    ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.supp := by
+    (hM : M.IsPerfectMatching) (c : (Subgraph.deleteVerts ⊤ u).coe.oddComponents) :
+    ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.val.supp := by
   by_contra! h
-  have hMmatch : (M.induce c.supp).IsMatching := by
+  have hMmatch : (M.induce c.val.supp).IsMatching := by
     intro v hv
     obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
     obtain ⟨⟨v', hv'⟩, ⟨hv , rfl⟩⟩ := hv
@@ -292,10 +309,10 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
       Subgraph.induce_adj, hwnu, not_false_eq_true, and_self, Subgraph.top_adj, M.adj_sub hw.1,
       and_true] at hv' ⊢
     trivial
-  apply Nat.not_even_iff_odd.2 codd
-  haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
+  apply Nat.not_even_iff_odd.2 c.prop
+  haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
   classical
-  haveI : Fintype (c.supp) := Fintype.ofFinite _
+  haveI : Fintype (c.val.supp) := Fintype.ofFinite _
   simpa [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image, Nat.card_eq_fintype_card,
     Set.toFinset_image,Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card,
     ← Set.Nat.card_coe_set_eq] using hMmatch.even_card

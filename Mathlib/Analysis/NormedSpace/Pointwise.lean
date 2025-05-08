@@ -24,7 +24,7 @@ variable {𝕜 E : Type*}
 section SMulZeroClass
 
 variable [SeminormedAddCommGroup 𝕜] [SeminormedAddCommGroup E]
-variable [SMulZeroClass 𝕜 E] [BoundedSMul 𝕜 E]
+variable [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem ediam_smul_le (c : 𝕜) (s : Set E) : EMetric.diam (c • s) ≤ ‖c‖₊ • EMetric.diam s :=
   (lipschitzWith_smul c).ediam_image_le s
@@ -34,7 +34,7 @@ end SMulZeroClass
 section DivisionRing
 
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
-variable [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖₊ • EMetric.diam s := by
   refine le_antisymm (ediam_smul_le c s) ?_
