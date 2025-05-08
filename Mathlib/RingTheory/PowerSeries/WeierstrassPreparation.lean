@@ -3,9 +3,9 @@ Copyright (c) 2025 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
+import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 
@@ -64,49 +64,7 @@ such ring has only on maximal ideal, and hence such ring is a complete local rin
 
 open scoped Polynomial PowerSeries
 
-/-!
-
-## Results should be added to mathlib
-
--/
-
 namespace PowerSeries
-
-section
-
-variable {A B : Type*} [CommRing A] [CommRing B] {I J : Ideal A}
-
-theorem coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal
-    (f g : A⟦X⟧) (n : ℕ) (hf : ∀ i ≤ n, coeff A i f ∈ I)
-    (hg : ∀ i ≤ n, coeff A i g ∈ J) : ∀ i ≤ n, coeff A i (f * g) ∈ I * J := fun i hi ↦ by
-  rw [coeff_mul]
-  exact Ideal.sum_mem _ fun p hp ↦ Ideal.mul_mem_mul
-    (hf _ ((Finset.antidiagonal.fst_le hp).trans hi))
-    (hg _ ((Finset.antidiagonal.snd_le hp).trans hi))
-
-theorem coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal'
-    (f g : A⟦X⟧) (hf : ∀ i, coeff A i f ∈ I)
-    (hg : ∀ i, coeff A i g ∈ J) : ∀ i, coeff A i (f * g) ∈ I * J :=
-  fun i ↦ f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal g i
-    (fun i _ ↦ hf i) (fun i _ ↦ hg i) i le_rfl
-
-theorem coeff_mul_mem_ideal_of_coeff_left_mem_ideal
-    (f g : A⟦X⟧) (n : ℕ) (hf : ∀ i ≤ n, coeff A i f ∈ I) : ∀ i ≤ n, coeff A i (f * g) ∈ I := by
-  simpa using f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal (J := ⊤) g n hf (by simp)
-
-theorem coeff_mul_mem_ideal_of_coeff_right_mem_ideal
-    (f g : A⟦X⟧) (n : ℕ) (hg : ∀ i ≤ n, coeff A i g ∈ I) : ∀ i ≤ n, coeff A i (f * g) ∈ I := by
-  simpa using f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal (I := ⊤) g n (by simp) hg
-
-theorem coeff_mul_mem_ideal_of_coeff_left_mem_ideal'
-    (f g : A⟦X⟧) (hf : ∀ i, coeff A i f ∈ I) : ∀ i, coeff A i (f * g) ∈ I := by
-  simpa using f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal' (J := ⊤) g hf (by simp)
-
-theorem coeff_mul_mem_ideal_of_coeff_right_mem_ideal'
-    (f g : A⟦X⟧) (hg : ∀ i, coeff A i g ∈ I) : ∀ i, coeff A i (f * g) ∈ I := by
-  simpa using f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal' (I := ⊤) g (by simp) hg
-
-end
 
 variable {A : Type*} [CommRing A]
 
