@@ -169,10 +169,10 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   simp only [extFunctorObj]
   have ne : S.Nonempty := @Set.Nonempty.of_subtype _ _ (Basis.index_nonempty B)
   refine Set.Finite.induction_on (motive := fun T ↦ (fun (h : T.Finite) ↦
-    (T.Nonempty → (Subsingleton (Ext N (ModuleCat.of R (↑T →₀ Shrink.{v, u} R)) i) ↔
-    Subsingleton (Ext N (ModuleCat.of R (Shrink.{v, u} R)) i))))) S fin ?_ ?_ ne
+    (T.Nonempty → ∀ (i : ℕ), (Subsingleton (Ext N (ModuleCat.of R (↑T →₀ Shrink.{v, u} R)) i) ↔
+    Subsingleton (Ext N (ModuleCat.of R (Shrink.{v, u} R)) i))))) S fin ?_ ?_ ne i
   · simp
-  · intro m T nmem fin ih _
+  · intro m T nmem fin ih _ i
     by_cases empty : T = ∅
     · rw [empty, ← Set.singleton_def m]
 
@@ -183,10 +183,9 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
         X₁ := ModuleCat.of R (T →₀ Shrink.{v, u} R)
         X₂ := ModuleCat.of R (↑(insert m T) →₀ Shrink.{v, u} R)
         X₃ := ModuleCat.of R (Shrink.{v, u} R)
-        f := sorry
-        g := sorry
-        zero := sorry
-        }
+        f := ModuleCat.ofHom (Finsupp.lmapDomain (Shrink.{v, u} R) R i)
+        g := ModuleCat.ofHom (Finsupp.lapply m')
+        zero := sorry }
       sorry
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
