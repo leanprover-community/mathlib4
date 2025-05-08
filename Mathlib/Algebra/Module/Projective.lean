@@ -203,11 +203,22 @@ variable {R₀ M N} [CommSemiring R₀] [Algebra R₀ R] [AddCommMonoid M] [Modu
 variable [IsScalarTower R₀ R M] [AddCommMonoid N] [Module R₀ N]
 
 /-- A module is projective iff it is the direct summand of a free module. -/
-theorem Projective.iff_split : Module.Projective R P ↔
-    ∃ (M : Type max u v) (_ : AddCommMonoid M) (_ : Module R M) (_ : Module.Free R M)
-      (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id :=
-  ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.linearCombination R id, LinearMap.ext hi⟩,
+theorem Projective.iff_split [Small.{v} R] : Module.Projective R P ↔
+    ∃ (M : Type v) (_ : AddCommMonoid M) (_ : Module R M) (_ : Module.Free R M)
+      (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id := by
+  let e : (P →₀ Shrink.{v} R) ≃ₗ[R] P →₀ R := Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R)
+  have : Module.Free R (P →₀ Shrink.{v} R) := by exact Free.of_basis ⟨e⟩
+  refine ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ (Shrink.{v} R), _, _, inferInstance, e.symm.toLinearMap ∘ₗ i,
+    (linearCombination R id) ∘ₗ e.toLinearMap, ?_⟩,
     fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
+  show linearCombination R id ∘ₗ (e.toLinearMap ∘ₗ e.symm.toLinearMap) ∘ₗ i = LinearMap.id
+  have : e.toLinearMap ∘ₗ e.symm.toLinearMap = LinearMap.id := by
+    apply LinearMap.ext
+    intro x
+    show e (e.symm x) = x
+    exact LinearEquiv.apply_symm_apply e x
+  rw [this, LinearMap.id_comp]
+  exact LinearMap.ext_iff.mpr hi
 
 open TensorProduct in
 instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Projective R₀ N] :
