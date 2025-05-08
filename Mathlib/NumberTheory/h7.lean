@@ -118,8 +118,34 @@ lemma eq_order_sub_one (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f
   ∀ z : ℂ, AnalyticAt.order (hfdev z) = AnalyticAt.order (hf z) - 1 := by {
     intros z
     have := AnalyticAt.iterated_deriv (hf z) k
+    by_contra H
     sorry
   }
+
+-- lemma: if the order of f is n > 0, then the order of the *single* derivative of f is n - 1
+lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
+   (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z)  :
+ (∀ z : ℂ, 0 < AnalyticAt.order (hf z)) →
+   ∀ z, AnalyticAt.order (hfdev z) = AnalyticAt.order (hf z) - 1 := by {
+    intros H
+    intros z
+    sorry
+   }
+
+lemma order_geq_k_then_deriv_n_neg_1 (f : ℂ → ℂ) (z₀ : ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
+   (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z) :
+   (∀ z : ℂ, k ≤ AnalyticAt.order (hf z)) → ∀ z, AnalyticAt.order (hfdev z) = n - k := by {
+    intros hof z
+    induction' k with k hk
+    · simp only [iteratedDeriv_zero, CharP.cast_eq_zero, tsub_zero]
+      have (z₀ : ℂ) :  (hf z).order = n.toNat ↔ ∃ g, AnalyticAt ℂ g z₀ ∧ g z₀ ≠ 0 ∧
+         ∀ᶠ (z : ℂ ) in nhds z₀, f z = (z - z₀) ^ n.toNat • g z := by {
+        rw [order_eq_nat_iff]
+        sorry
+      }
+      sorry
+    · sorry
+   }
 
 -- lemma: if the order of f is n > 0, then the order of the *single* derivative of f is n - 1
 --   this follows from the definition (characterization?) of the order as being (z - z₀)^n*g(z)
@@ -129,17 +155,15 @@ lemma eq_order_sub_one (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f
  -- by {exact fun z ↦ analytic_iter_deriv k f hf z}
 -- have := order_inf_if_zero (iteratedDeriv k f) z hfoo
 
--- the statement below is not correct
--- iteratedDeriv k f z = 0 should be *AnalyticAt.order* of iteratedDeriv k f
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
-  ∀ n (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z) (ho : AnalyticAt.order (hf z) ≠ ⊤),
-  (∀ k < n, iteratedDeriv k f z = 0) ∧ (iteratedDeriv k f z ≠ 0)
+  ∀ n (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z) (ho : AnalyticAt.order (hf z) ≠ ⊤)
+   (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z),
+  (∀ k < n, AnalyticAt.order (hfdev z) = 0) ∧ (iteratedDeriv k f z ≠ 0)
     ↔ AnalyticAt.order (hf z) = n := by
-  intros n f z hf hord
+  intros n f z hf hord hfdev
   constructor
   · intros H
     obtain ⟨H1, H2⟩ := H
-    refine (AnalyticAt.order_eq_nat_iff (hf z)).mpr ?_
     sorry
   · intros H
     constructor
@@ -147,12 +171,9 @@ lemma iterated_deriv_eq_zero_iff_order_eq_n :
       sorry
     · by_contra H
       sorry
-      -- have hfoo : ∀ (z : ℂ), AnalyticAt ℂ (iteratedDeriv k f) z :=
-       -- by {exact fun z ↦ analytic_iter_deriv k f hf z}
-      -- have := order_inf_if_zero (iteratedDeriv k f) z hfoo
 
 lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ (f : ℂ → ℂ) z₀ (hf : ∀ z, AnalyticAt ℂ f z)
-   (ho : ∀z, AnalyticAt.order (hf z) ≠ ⊤),
+   (ho : ∀ z, AnalyticAt.order (hf z) ≠ ⊤),
  (∀ k < n, iteratedDeriv k f z₀ = 0) → n ≤ AnalyticAt.order (hf z₀) := by
 
 intros f z hf ho hd
@@ -161,7 +182,8 @@ left
 apply Eq.symm
 rw [← iterated_deriv_eq_zero_iff_order_eq_n]
 constructor
-· apply hd
+· intros k hkn
+  sorry
 · sorry
 · exact ho z
 · sorry
@@ -1371,6 +1393,8 @@ def order := AnalyticAt.order
 --zero_iff_order_inf
 lemma order_neq_top :
   order α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq ≠ ⊤ := by {
+  unfold _root_.order
+  intros H
   sorry
 }
 
@@ -1410,22 +1434,52 @@ lemma foo :
   unfold _root_.order
   apply iterated_deriv_eq_zero_imp_n_leq_order
   · intros z
+    have := order_neq_top α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+    unfold _root_.order at this
     sorry
     --apply analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   · have := iteratedDeriv_vanishes α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
     intros k hk
     specialize this k hk
+    rw [← this]
     sorry
   · exact fun z ↦ analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq z
   }
 
 lemma rgeqn :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  n K q  ≤ r  := sorry
+  n K q ≤ r  := sorry
 
--- for the next lemma you need that if you take  the minimum over a set, there is a value
+-- for the next lemma you need that if you take the minimum over a set, there is a value
 -- in the set where the minimum is attained.
+lemma exists_minimum_of_finset {α : Type _} [LinearOrder α] {s : Finset α} (hs : s.Nonempty) :
+  ∃ x ∈ s, x = s.min' hs := by
+  use s.min' hs
+  constructor
+  · exact s.min'_mem hs
+  · rfl
+
+-- you want somewhere a lemma that the order of R in l₀ is r
+
 -- so yet another lemma: "there exists l₀ where the order of R in l₀ is r"
+lemma exists_l₀_with_order_r :
+  let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  let R := R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t
+  ∃ l₀ : Fin (m K), AnalyticAt.order
+    (analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq l₀) = r := by
+  intros r R
+  let s := Finset.range (m K + 1)
+  have hs : s.Nonempty := nonempty_range_succ
+  have hmn : ∃ x ∈ s, x = s.min' hs := exists_minimum_of_finset hs
+  obtain ⟨l₀, hl₀, hmin⟩ := hmn
+  simp only at hmin
+  use Fin.ofNat l₀
+  rw [hmin]
+  sorry
+
+
+def l₀ : Fin (m K) :=
+  (exists_l₀_with_order_r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).choose
 -- after that, you can define l₀ already!
 -- these lemmas should go directly after the defintion of r
 --on the board 1st lemma
@@ -1437,37 +1491,35 @@ lemma exists_nonzero_iteratedFDeriv :
   let k : ℕ := (finProdFinEquiv.symm.1 u).2
   ∃ (l₀ : Fin (m K)), iteratedDeriv r R l₀ ≠ 0 := by {
   intros r R o l k
-
+  use l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   have := iterated_deriv_eq_zero_iff_order_eq_n (k := k) (n K q) R l ?_ ?_
   · sorry
   · exact analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   · sorry
   }
 
-def l₀ : Fin (m K) :=
-  (exists_nonzero_iteratedFDeriv α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).choose
 
 -- you want somewhere a lemma that the order of R in each l is ≥ n
---   this follows from the fact that the R^(k)(l) = 0 for each k < n
---     which in turn follows from the equations that are solved in lemma 8.2
---   and the equivalence between derivatives being zero and the order
--- you want somewhere a lemma that the order of R in l₀ is r
+-- this follows from the fact that the R^(k)(l) = 0 for each k < n
+-- which in turn follows from the equations that are solved in lemma 8.2
+-- and the equivalence between derivatives being zero and the order
 -- together this gives that r ≥ n
 -- each of these lines should be a separate lemma!
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- you want somewhere a lemma that the order of R in each l is ≥ n
+--   this follows from the fact that the R^(k)(l) = 0 for each k < n
+lemma order_geq_n :
+  let R := R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t
+  let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  ∀ l, n K q ≤
+    AnalyticAt.order (analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq l) := by
+  intros R r l
+  apply iterated_deriv_eq_zero_imp_n_leq_order
+  · intros z
+    have := order_neq_top α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+    unfold _root_.order at this
+    sorry
+  · sorry
 
 def cρ : ℤ := abs ((c₁ K α' β' γ')^(r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq) *
   (c₁ K α' β' γ')^(2*m K * q))
