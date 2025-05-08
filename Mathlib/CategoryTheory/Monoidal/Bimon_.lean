@@ -267,7 +267,6 @@ theorem Bimon_ClassAux_comul (M : Bimon_ C) :
     Δ[((toComon_ C).obj M).X] = Δ[M.X].hom :=
   Category.comp_id _
 
-@[simps counit comul]
 instance (M : Bimon_ C) : Bimon_Class M.X.X where
   counit := ε[M.X].hom
   comul := Δ[M.X].hom
