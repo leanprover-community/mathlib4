@@ -39,8 +39,6 @@ chain together.
 ## TODO
 
 * Implement the compact exit lemma ("lemme des bouts").
-* Connect to global existence theorems and criteria for when the maximal interval of existence
-  is `(-∞, ∞)`.
 -/
 
 open Set Filter NNReal Topology TopologicalSpace
