@@ -3,9 +3,8 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
@@ -105,6 +104,19 @@ instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe_injective' f g h := by cases f; cases g; cases h; rfl
 
 initialize_simps_projections MultilinearMap (toFun → apply)
+
+/-- Constructor for `MultilinearMap R M₁ M₂` when the
+index type `ι` is already endowed with a `DecidableEq` instance. -/
+@[simps]
+def mk' [DecidableEq ι] (f : (∀ i, M₁ i) → M₂)
+    (h₁ : ∀ (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i),
+      f (update m i (x + y)) = f (update m i x) + f (update m i y) := by aesop)
+    (h₂ : ∀ (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i),
+      f (update m i (c • x)) = c • f (update m i x) := by aesop) :
+    MultilinearMap R M₁ M₂ where
+  toFun := f
+  map_update_add' m i x y := by convert h₁ m i x y
+  map_update_smul' m i c x := by convert h₂ m i c x
 
 @[simp]
 theorem toFun_eq_coe : f.toFun = ⇑f :=
@@ -591,7 +603,7 @@ theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g
   classical
     induction t using Finset.induction with
     | empty => simp
-    | insert has ih => simp [Finset.sum_insert has, ih]
+    | insert _ _ has ih => simp [Finset.sum_insert has, ih]
 
 end ApplySum
 
@@ -797,7 +809,7 @@ theorem add_compMultilinearMap (g₁ g₂ : M₂ →ₗ[R] M₃) (f : Multilinea
     (g₁ + g₂).compMultilinearMap f = g₁.compMultilinearMap f + g₂.compMultilinearMap f := rfl
 
 @[simp]
-theorem compMultilinearMap_smul [Monoid S] [DistribMulAction S M₂] [DistribMulAction S M₃]
+theorem compMultilinearMap_smul [DistribSMul S M₂] [DistribSMul S M₃]
     [SMulCommClass R S M₂] [SMulCommClass R S M₃] [CompatibleSMul M₂ M₃ S R]
     (g : M₂ →ₗ[R] M₃) (s : S) (f : MultilinearMap R M₁ M₂) :
     g.compMultilinearMap (s • f) = s • g.compMultilinearMap f :=
@@ -875,7 +887,7 @@ section OfSubsingleton
 
 /-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
 and one-multilinear maps `MultilinearMap R (fun _ : ι ↦ M₂) M₃`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def ofSubsingletonₗ [Subsingleton ι] (i : ι) :
     (M₂ →ₗ[R] M₃) ≃ₗ[S] MultilinearMap R (fun _ : ι ↦ M₂) M₃ :=
   { ofSubsingleton R M₂ M₃ i with
@@ -1137,19 +1149,15 @@ to `m` the product of all the `m i`.
 
 See also `MultilinearMap.mkPiAlgebra` for a version that assumes `[CommSemiring A]` but works
 for `A^ι` with any finite type `ι`. -/
-protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A where
-  toFun m := (List.ofFn m).prod
-  map_update_add' {dec} m i x y := by
-    rw [Subsingleton.elim dec (by infer_instance)]
-    have : (List.finRange n).idxOf i < n := by
-      simpa using List.idxOf_lt_length_iff.2 (List.mem_finRange i)
-    simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul, this,
-      mul_add, add_mul]
-  map_update_smul' {dec} m i c x := by
-    rw [Subsingleton.elim dec (by infer_instance)]
-    have : (List.finRange n).idxOf i < n := by
-      simpa using List.idxOf_lt_length_iff.2 (List.mem_finRange i)
-    simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, this]
+protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A :=
+  MultilinearMap.mk' (fun m ↦ (List.ofFn m).prod)
+    (fun m i x y ↦ by
+      have : (List.finRange n).idxOf i < n := by simp
+      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul, this,
+        mul_add, add_mul])
+    (fun m i c x ↦ by
+      have : (List.finRange n).idxOf i < n := by simp
+      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, this])
 
 variable {R A n}
 
@@ -1357,6 +1365,7 @@ protected def piRingEquiv [Fintype ι] : M₂ ≃ₗ[R] MultilinearMap R (fun _ 
   right_inv f := f.mkPiRing_apply_one_eq_self
 
 end CommSemiring
+
 section Submodule
 
 variable [Ring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M'] [AddCommMonoid M₂]

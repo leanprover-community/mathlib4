@@ -22,8 +22,10 @@ universe u
 
 namespace Nat
 
-/-- `bit b` appends the digit `b` to the binary representation of its natural number input. -/
-def bit (b : Bool) : Nat → Nat := cond b (2 * · + 1) (2 * ·)
+/-- `bit b` appends the digit `b` to the little end of the binary representation of
+its natural number input. -/
+def bit (b : Bool) (n : Nat) : Nat :=
+  cond b (2 * n + 1) (2 * n)
 
 theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
@@ -146,7 +148,5 @@ theorem binaryRec_eq {z : motive 0} {f : ∀ b n, motive n → motive (bit b n)}
     generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
     rw [testBit_bit_zero, bit_shiftRight_one]
     intros; rfl
-
-@[deprecated (since := "2024-10-21")] alias binaryRec_eq' := binaryRec_eq
 
 end Nat

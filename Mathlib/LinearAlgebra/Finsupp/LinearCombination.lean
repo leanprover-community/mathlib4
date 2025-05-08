@@ -205,11 +205,10 @@ theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : 
       linearCombination R (fun b => linearCombination R A (B b)) f := by
   classical
   simp only [linearCombination_apply]
-  apply induction_linear f
-  · simp only [sum_zero_index]
-  · intro f₁ f₂ h₁ h₂
-    simp [sum_add_index, h₁, h₂, add_smul]
-  · simp [sum_single_index, sum_smul_index, smul_sum, mul_smul]
+  induction f using induction_linear with
+  | zero => simp only [sum_zero_index]
+  | add f₁ f₂ h₁ h₂ => simp [sum_add_index, h₁, h₂, add_smul]
+  | single => simp [sum_single_index, sum_smul_index, smul_sum, mul_smul]
 
 theorem linearCombination_smul [Module R S] [Module S M] [IsScalarTower R S M] {w : α' → S} :
     linearCombination R (fun i : α × α' ↦ w i.2 • v i.1) = (linearCombination S v).restrictScalars R

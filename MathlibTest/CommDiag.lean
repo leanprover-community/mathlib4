@@ -34,7 +34,7 @@ example {fButActuallyTheNameIsReallyLong g : Nat ⟶ Bool}: fButActuallyTheNameI
 
 -- from Sina Hazratpour
 example {X Y Z : Type} {f g : X ⟶ Y} {k : Y ⟶ Y} {f' : Y ⟶ Z} {i : X ⟶ Z}
-    (h': g ≫ f' = i) :
+    (h' : g ≫ f' = i) :
     (f ≫ k) = g → ((f ≫ k) ≫ f') = (g ≫ 𝟙 Y ≫ f') := by
   with_panel_widgets [GoalTypePanel]
     intro h

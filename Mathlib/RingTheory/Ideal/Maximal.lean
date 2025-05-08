@@ -99,7 +99,7 @@ theorem IsMaximal.exists_inv {I : Ideal α} (hI : I.IsMaximal) {x} (hx : x ∉ I
   rwa [← span_eq I]
 
 theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : IsChain (· ≤ ·) s)
-    (H : ∀ p ∈ s, Ideal.IsPrime p) : (sInf s).IsPrime :=
+    (H : ∀ p ∈ s, p.IsPrime) : (sInf s).IsPrime :=
   ⟨fun e =>
     let ⟨x, hx⟩ := hs
     (H x hx).ne_top (eq_top_iff.mpr (e.symm.trans_le (sInf_le hx))),
