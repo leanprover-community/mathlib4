@@ -81,6 +81,7 @@ jobs:
             printf '\n⚠️ **warning**: file `%s` was removed without a module deprecation\n' "${file}" | tee -a moved_without_deprecation.txt
           fi
         done
+        IFS=$'\n'
         for file in $(cat renamed_files.txt) ; do
           printf '\n⚠️ **warning**: file %s without a module deprecation\n' "${file}" | tee -a moved_without_deprecation.txt
         done
