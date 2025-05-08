@@ -165,7 +165,8 @@ lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Pr
       exact h₁ _ (mem_image_of_mem (fun d ↦ Prod.snd '' d) hX) (Nonempty.image Prod.snd hd₁)
         (DirectedOn.snd hd₂) ((isLUB_prod (_,_)).mp hdp).2) _, Set.range]
   simp_all
-  sorry
+  convert e2
+  aesop
 
 
 /- The join operation is Scott continuous -/
