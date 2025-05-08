@@ -129,18 +129,13 @@ end CompleteLattice
 /- TODO: Can we then deduce `ScottContinuousOn.sup₂` from this? -/
 /- `f` is Scott continuous on a product space if it is Scott continuous in each variable -/
 lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
-    {f : α × β → γ} {D : Set (Set (α × β))} (hD : ∀ a b : (α × β), a ≤ b → {a, b} ∈ D)
+    {f : α × β → γ} {D : Set (Set (α × β))}
     (h₁ : ∀ a, ScottContinuousOn ((fun d => Prod.snd '' d) '' D) (fun b => f (a,b)))
-    (h₂ : ∀ b, ScottContinuousOn ((fun d => Prod.fst '' d) '' D) (fun a => f (a,b))) :
+    (h₂ : ∀ b, ScottContinuousOn ((fun d => Prod.fst '' d) '' D) (fun a => f (a,b)))
+    (h₁' : ∀ a, Monotone (fun b => f (a,b))) (h₂' : ∀ b, Monotone (fun a => f (a,b))) :
     ScottContinuousOn D f := fun d hX hd₁ hd₂ ⟨p1, p2⟩ hdp => by
-  have helper1 : ∀ b₁ b₂ : β , b₁ ≤ b₂ → {b₁, b₂} ∈ ((fun d => Prod.snd '' d) '' D) :=
-    fun b₁ b₂ hb => by
-      simp_all only [Prod.forall, Prod.mk_le_mk, and_imp, mem_image]
-      obtain ⟨⟨a, b⟩,hq⟩ := hd₁
-      obtain e := hD a b₁ a b₂ (Preorder.le_refl a) hb
-      exact ⟨{(a, b₁), (a, b₂)}, ⟨e, by rw [image_insert_eq, image_singleton]⟩⟩
-  rw [isLUB_congr ((monotone_prod_iff.mpr ⟨(fun a => (h₁ a).monotone _ (helper1)),
-    (fun a => (h₂ a).monotone _ (by aesop))⟩).upperBounds_image_of_directedOn_prod hd₂),
+  rw [isLUB_congr ((monotone_prod_iff.mpr ⟨(fun a => (h₁' a)),
+    ((fun b => (h₂' b)))⟩).upperBounds_image_of_directedOn_prod hd₂),
     ← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion,
     ← isLUB_iUnion_iff_of_isLUB (fun a => by
       rw [singleton_prod, image_image f (fun b ↦ (a, b))]
@@ -159,8 +154,10 @@ lemma ScottContinuous_prod_of_ScottContinuous {γ : Type*} [Preorder α] [Preord
   rw [← scottContinuousOn_univ]
   simp_rw [← scottContinuousOn_univ] at h₁
   simp_rw [← scottContinuousOn_univ] at h₂
-  exact ScottContinuousOn_prod_of_ScottContinuousOn (fun _ _ _=> by trivial)
+  exact ScottContinuousOn_prod_of_ScottContinuousOn
     (fun a ⦃d⦄ a_1 ↦ h₁ a trivial) (fun b ⦃d⦄ a ↦ h₂ b trivial)
+    (fun a ↦ ScottContinuous.monotone fun ⦃d⦄ ↦ h₁ a trivial)
+    (fun b ↦ ScottContinuous.monotone fun ⦃d⦄ ↦ h₂ b trivial)
 
 /- The join operation is Scott continuous -/
 lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
