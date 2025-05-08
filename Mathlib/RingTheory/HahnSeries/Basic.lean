@@ -466,6 +466,35 @@ theorem embDomain_injective {f : Γ ↪o Γ'} :
   have xyg := xy (f g)
   rwa [embDomain_coeff, embDomain_coeff] at xyg
 
+/-- The equivalence of HahnSeries induced by an order isomorphism. -/
+def equivDomain (f : Γ ≃o Γ') : HahnSeries Γ R ≃ HahnSeries Γ' R where
+  toFun x := {
+    coeff g := x.coeff (f.symm g)
+    isPWO_support' :=
+      (x.isPWO_support.image_of_monotone f.monotone).mono fun _ h => by
+        contrapose! h
+        rw [Function.mem_support]
+        rwa [OrderIso.image_eq_preimage, Set.mem_preimage] at h }
+  invFun x := {
+    coeff g := x.coeff (f g)
+    isPWO_support' :=
+      (x.isPWO_support.image_of_monotone f.symm.monotone).mono fun _ h => by
+        contrapose! h
+        rw [Function.mem_support]
+        rwa [OrderIso.image_eq_preimage, Set.mem_preimage] at h }
+  left_inv x := by simp
+  right_inv x := by simp
+
+@[simp]
+theorem equivDomain_coeff {f : Γ ≃o Γ'} {x : HahnSeries Γ R} {a : Γ'} :
+    (equivDomain f x).coeff a = x.coeff (f.symm a) := rfl
+
+theorem equivDomain_eq_embDomain (f : Γ ≃o Γ') (x : HahnSeries Γ R) :
+    equivDomain f x = embDomain f x := by
+  ext g
+  have : g = (RelIso.toRelEmbedding f) (f.symm g) := (OrderIso.symm_apply_eq f).mp rfl
+  rw [equivDomain_coeff, this, embDomain_coeff, ←this]
+
 end Domain
 
 end Zero
