@@ -409,6 +409,19 @@ lemma moduleDepth_lt_top_iff (N M : ModuleCat.{v} R) :
   · push_neg
     exact exists_congr (fun i ↦ not_subsingleton_iff_nontrivial.symm)
 
+lemma moduleDepth_eq_iff (N M : ModuleCat.{v} R) (n : ℕ) : moduleDepth N M = n ↔
+    Nontrivial (Ext.{max u v} N M n) ∧ ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
+  classical
+  refine ⟨fun h ↦ ?_, fun ⟨ntr, h⟩ ↦ ?_⟩
+  · have exist := (moduleDepth_lt_top_iff N M).mp (by simp [h])
+    simp only [moduleDepth_eq_find _ _ exist, Nat.cast_inj] at h
+    refine ⟨h ▸ Nat.find_spec exist, fun i hi ↦ ?_⟩
+    exact not_nontrivial_iff_subsingleton.mp (Nat.find_min exist (lt_of_lt_of_eq hi h.symm))
+  · have exist : ∃ n, Nontrivial (Ext.{max u v} N M n) := by use n
+    simp only [moduleDepth_eq_find _ _ exist, Nat.cast_inj, Nat.find_eq_iff, ntr, true_and]
+    intro i hi
+    exact not_nontrivial_iff_subsingleton.mpr (h i hi)
+
 lemma ext_subsingleton_of_lt_moduleDepth {N M : ModuleCat.{v} R} {i : ℕ}
     (lt : i < moduleDepth N M) : Subsingleton (Ext.{max u v} N M i) := by
   by_cases lttop : moduleDepth N M < ⊤
