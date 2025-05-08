@@ -29,6 +29,8 @@ noncomputable abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCatego
     fun Y Z ↦ ⟨pullbackConeEquivBinaryFan.functor.obj (pullback.cone Y.hom Z.hom),
     (pullback.isLimit _ _).pullbackConeEquivBinaryFanFunctor⟩
 
+@[deprecated (since := "2025-05-15")] alias chosenFiniteProducts := cartesianMonoidalCategory
+
 attribute [local instance] cartesianMonoidalCategory
 
 /-- `Over X` is braided wrt the cartesian monoidal structure given by `Limits.pullback`. -/

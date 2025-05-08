@@ -150,6 +150,9 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
         · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc, snd] }
 
+@[deprecated (since := "2025-05-15")]
+alias reflectiveChosenFiniteProducts := CartesianMonoidalCategory.ofReflective
+
 variable [CartesianMonoidalCategory C] [Reflective i] [CartesianClosed C]
   [CartesianMonoidalCategory D]
 
