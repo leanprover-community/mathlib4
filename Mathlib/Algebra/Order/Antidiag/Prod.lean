@@ -123,7 +123,7 @@ lemma antidiagonal_congr' (hp : p ∈ antidiagonal n) (hq : q ∈ antidiagonal n
 end AddCancelCommMonoid
 
 section CanonicallyOrderedAdd
-variable [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A] [HasAntidiagonal A]
+variable [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A] [HasAntidiagonal A]
 
 @[simp]
 theorem antidiagonal_zero : antidiagonal (0 : A) = {(0, 0)} := by
@@ -143,7 +143,7 @@ theorem antidiagonal.snd_le {n : A} {kl : A × A} (hlk : kl ∈ antidiagonal n) 
 end CanonicallyOrderedAdd
 
 section OrderedSub
-variable [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A] [Sub A] [OrderedSub A]
+variable [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A] [Sub A] [OrderedSub A]
 variable [AddLeftReflectLE A]
 variable [HasAntidiagonal A]
 
@@ -184,7 +184,7 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
   right_inv _ := rfl
 
 variable {A : Type*}
-  [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A]
+  [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A]
   [LocallyFiniteOrder A] [DecidableEq A]
 
 /-- In a canonically ordered add monoid, the antidiagonal can be construct by filtering.

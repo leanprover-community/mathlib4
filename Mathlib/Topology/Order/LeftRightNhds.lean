@@ -365,7 +365,8 @@ end LinearOrder
 
 section LinearOrderedCommGroup
 
-variable [TopologicalSpace α] [LinearOrderedCommGroup α] [OrderTopology α]
+variable [TopologicalSpace α] [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
+  [OrderTopology α]
 variable {l : Filter β} {f g : β → α}
 
 @[to_additive]
@@ -376,7 +377,8 @@ theorem nhds_eq_iInf_mabs_div (a : α) : 𝓝 a = ⨅ r > 1, 𝓟 { b | |a / b|�
   · refine (Equiv.divRight a).iInf_congr fun x => ?_; simp [Iio]
 
 @[to_additive]
-theorem orderTopology_of_nhds_mabs {α : Type*} [TopologicalSpace α] [LinearOrderedCommGroup α]
+theorem orderTopology_of_nhds_mabs {α : Type*} [TopologicalSpace α] [CommGroup α] [LinearOrder α]
+    [IsOrderedMonoid α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 1, 𝓟 { b | |a / b|ₘ < r }) : OrderTopology α := by
   refine ⟨TopologicalSpace.ext_nhds fun a => ?_⟩
   rw [h_nhds]

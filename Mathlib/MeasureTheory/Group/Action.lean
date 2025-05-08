@@ -148,7 +148,7 @@ theorem measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
       exact SMulInvariantMeasure.measure_preimage_smul c hs }
 
 @[to_additive (attr := simp)]
-theorem map_smul : map (c • ·) μ = μ :=
+protected theorem map_smul : map (c • ·) μ = μ :=
   (measurePreserving_smul c μ).map_eq
 
 end MeasurableSMul

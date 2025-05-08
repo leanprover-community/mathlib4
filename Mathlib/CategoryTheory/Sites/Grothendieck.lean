@@ -20,6 +20,7 @@ Alternate versions of the axioms (in arrow form) are also described.
 Two explicit examples of Grothendieck topologies are given:
 * The dense topology
 * The atomic topology
+
 as well as the complete lattice structure on Grothendieck topologies (which gives two additional
 explicit topologies: the discrete and trivial topologies.)
 
