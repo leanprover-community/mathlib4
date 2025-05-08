@@ -25,7 +25,7 @@ theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [Ad
     obtain ⟨f, h⟩ := Module.projective_lifting_property X.hom E.hom
       ((ModuleCat.epi_iff_surjective _).mp epi)
     exact ⟨ofHom f, hom_ext h⟩
-  · refine Module.Projective.of_lifting_property.{u,v} ?_
+  · refine Module.Projective.of_lifting_property.{v, u} ?_
     intro E X mE mX sE sX f g s
     haveI : Epi (↟f) := (ModuleCat.epi_iff_surjective (↟f)).mpr s
     letI : Projective (ModuleCat.of R P) := h
