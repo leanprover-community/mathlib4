@@ -1279,8 +1279,6 @@ instance {R} [Semiring R] : NonUnitalSubsemiringClass (Ideal R) R where
   mul_mem _ hb := Ideal.mul_mem_left _ _ hb
 instance {R} [Ring R] : NonUnitalSubringClass (Ideal R) R where
 
-section
-
 lemma Ideal.exists_subset_radical_span_sup_span_of_subset_radical_sup {R : Type*} [CommSemiring R]
     (s : Set R) (I J : Ideal R) (hs : s ⊆ (I ⊔ J).radical) :
     ∃ (t₁ t₂ : s → R), Set.range t₁ ⊆ I ∧ Set.range t₂ ⊆ J ∧
@@ -1295,5 +1293,3 @@ lemma Ideal.exists_subset_radical_span_sup_span_of_subset_radical_sup {R : Type*
     fun z hz ↦ ⟨m ⟨z, hz⟩, heq ⟨z, hz⟩ ▸ ?_⟩⟩
   exact Ideal.add_mem _ (mem_sup_left (subset_span ⟨⟨z, hz⟩, rfl⟩))
      (mem_sup_right (subset_span ⟨⟨z, hz⟩, rfl⟩))
-
-end
