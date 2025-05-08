@@ -370,11 +370,11 @@ noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
   toFun := mfderiv I J f x
   invFun := mfderiv J I hf.localInverse (f x)
   left_inv := by
-    apply ContinuousLinearMap.LeftInverse.of_composition
+    apply ContinuousLinearMap.leftInverse_of_comp
     rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_left.mfderiv_eq]
     exact (mfderiv_comp _ (hf.localInverse_mdifferentiableAt hn) (hf.mdifferentiableAt hn)).symm
   right_inv := by
-    apply ContinuousLinearMap.RightInverse.of_composition
+    apply ContinuousLinearMap.rightInverse_of_comp
     rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_right.mfderiv_eq]
     -- We need to rewrite the base point hf.localInverse (f x) = x twice,
     -- in the differentiability hypothesis and for applying the chain rule.
@@ -401,7 +401,7 @@ noncomputable def Diffeomorph.mfderivToContinuousLinearEquiv
   (Φ.isLocalDiffeomorph x).mfderivToContinuousLinearEquiv hn
 
 lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
-    (Φ.mfderivToContinuousLinearEquiv hn x).toFun = mfderiv I J Φ x := by rfl
+    Φ.mfderivToContinuousLinearEquiv hn x = mfderiv I J Φ x := by rfl
 
 /-- If `f` is a `C^n` local diffeomorphism of Banach manifolds (`n ≥ 1`),
 each differential is a linear equivalence. -/

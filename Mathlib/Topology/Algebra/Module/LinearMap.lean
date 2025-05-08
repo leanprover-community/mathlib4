@@ -448,14 +448,14 @@ variable {R E F : Type*} [Semiring R]
   [TopologicalSpace F] [AddCommMonoid F] [Module R F]
 
 /-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
-lemma LeftInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
+lemma leftInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
     (hinv : g.comp f = ContinuousLinearMap.id R E) : Function.LeftInverse g f := by
   simpa [← Function.rightInverse_iff_comp] using congr(⇑$hinv)
 
 /-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
-lemma RightInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
+lemma rightInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
     (hinv : f.comp g = ContinuousLinearMap.id R F) : Function.RightInverse g f :=
-  LeftInverse.of_composition hinv
+  leftInverse_of_comp hinv
 
 end
 
