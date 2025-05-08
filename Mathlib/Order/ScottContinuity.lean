@@ -124,14 +124,10 @@ alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
 
 end CompleteLattice
 
-section Products
-
-variable {γ : Type*}
-
 /- `f` is Scott continuous on a product space if it is Scott continuous in each variable -/
-lemma ScottContinuous_prod_of_ScottContinuous [Preorder α] [Preorder β] [Preorder γ] {f : α × β → γ}
-    (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
-    ScottContinuous f := fun d hd₁ hd₂ p hdp => by
+lemma ScottContinuous_prod_of_ScottContinuous {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
+    {f : α × β → γ} (h₁ : ∀ a, ScottContinuous (fun b => f (a,b)))
+    (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) : ScottContinuous f := fun d hd₁ hd₂ p hdp => by
   rw [isLUB_congr ((monotone_prod_iff.mpr ⟨(fun a => (h₁ a).monotone),
     (fun a => (h₂ a).monotone)⟩).upperBounds_image_of_directedOn_prod hd₂),
     ← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion,
@@ -142,8 +138,6 @@ lemma ScottContinuous_prod_of_ScottContinuous [Preorder α] [Preorder β] [Preor
     h₂ p.2 (Nonempty.image Prod.fst hd₁) hd₂.fst ((isLUB_prod (p.1,p.2)).mp hdp).1
   simp_all only [image, Prod.exists, exists_and_right, exists_eq_right, mem_setOf_eq, Prod.mk.eta,
     coe_setOf, Subtype.exists, exists_prop]
-
-variable (β : Type*)
 
 /- The join operation is Scott continuous -/
 lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
@@ -168,25 +162,30 @@ lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     intro b₁ b₂ hb'
     exact sup_le_iff.mp (hb b₁ b₂ hb' rfl)
 
-lemma inf_sSup_eq_sSup_map  [CompleteLinearOrder β] (a : β) (d : Set β) :
+/- In a complete linear order, the Scott Topology coincides with the Upper topology, see
+`Topology.IsScott.scott_eq_upper_of_completeLinearOrder` -/
+section CompleteLinearOrder
+
+variable [CompleteLinearOrder β]
+
+lemma inf_sSup_eq_sSup_map   (a : β) (d : Set β) :
     a ⊓ sSup d = sSup ((fun b ↦ a ⊓ b) '' d) := eq_of_forall_ge_iff fun _ => by
   simp only [inf_le_iff, sSup_le_iff, ← forall_or_left, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
 
-lemma sSup_inf_eq_sSup_map [CompleteLinearOrder β] (b : β) (d : Set β) :
+lemma sSup_inf_eq_sSup_map (b : β) (d : Set β) :
     sSup d ⊓ b = sSup ((fun a ↦ a ⊓ b) '' d) := eq_of_forall_ge_iff fun _ => by
   simp [inf_le_iff, sSup_le_iff, ← forall_or_right, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
 
-lemma left_cont_inf [CompleteLinearOrder β] (a : β) : ScottContinuous fun b ↦ a ⊓ b := by
+lemma left_cont_inf (a : β) : ScottContinuous fun b ↦ a ⊓ b := by
   refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [inf_sSup_eq_sSup_map])
 
-lemma right_cont_inf [CompleteLinearOrder β] (b : β) : ScottContinuous fun a ↦ a ⊓ b := by
+lemma right_cont_inf (b : β) : ScottContinuous fun a ↦ a ⊓ b := by
   refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [sSup_inf_eq_sSup_map])
 
 /- The meet operation is Scott continuous -/
-lemma ScottContinuousOn.inf₂ [CompleteLinearOrder β] :
-    ScottContinuous fun (a, b) => (a ⊓ b : β) :=
-  ScottContinuous_prod_of_ScottContinuous (left_cont_inf _) (right_cont_inf _)
+lemma ScottContinuousOn.inf₂ : ScottContinuous fun (a, b) => (a ⊓ b : β) :=
+  ScottContinuous_prod_of_ScottContinuous left_cont_inf right_cont_inf
 
-end Products
+end CompleteLinearOrder
