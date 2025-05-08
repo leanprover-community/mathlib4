@@ -15,7 +15,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 
 namespace PowerSeries
 
-variable {A B : Type*} [CommRing A] [CommRing B] {I J : Ideal A}
+variable {A : Type*} [Semiring A] {I J : Ideal A}
 
 theorem coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal
     (f g : A⟦X⟧) (n : ℕ) (hf : ∀ i ≤ n, coeff A i f ∈ I)
@@ -31,20 +31,24 @@ theorem coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal'
   fun i ↦ f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal g i
     (fun i _ ↦ hf i) (fun i _ ↦ hg i) i le_rfl
 
-theorem coeff_mul_mem_ideal_of_coeff_left_mem_ideal
-    (f g : A⟦X⟧) (n : ℕ) (hf : ∀ i ≤ n, coeff A i f ∈ I) : ∀ i ≤ n, coeff A i (f * g) ∈ I := by
-  simpa using f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal (J := ⊤) g n hf (by simp)
-
 theorem coeff_mul_mem_ideal_of_coeff_right_mem_ideal
     (f g : A⟦X⟧) (n : ℕ) (hg : ∀ i ≤ n, coeff A i g ∈ I) : ∀ i ≤ n, coeff A i (f * g) ∈ I := by
   simpa using f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal (I := ⊤) g n (by simp) hg
 
-theorem coeff_mul_mem_ideal_of_coeff_left_mem_ideal'
-    (f g : A⟦X⟧) (hf : ∀ i, coeff A i f ∈ I) : ∀ i, coeff A i (f * g) ∈ I := by
-  simpa using f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal' (J := ⊤) g hf (by simp)
-
 theorem coeff_mul_mem_ideal_of_coeff_right_mem_ideal'
     (f g : A⟦X⟧) (hg : ∀ i, coeff A i g ∈ I) : ∀ i, coeff A i (f * g) ∈ I := by
   simpa using f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal' (I := ⊤) g (by simp) hg
+
+variable [I.IsTwoSided]
+
+theorem coeff_mul_mem_ideal_of_coeff_left_mem_ideal
+    (f g : A⟦X⟧) (n : ℕ) (hf : ∀ i ≤ n, coeff A i f ∈ I) : ∀ i ≤ n, coeff A i (f * g) ∈ I := by
+  simpa only [Ideal.IsTwoSided.mul_one] using
+    f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal (J := 1) g n hf (by simp)
+
+theorem coeff_mul_mem_ideal_of_coeff_left_mem_ideal'
+    (f g : A⟦X⟧) (hf : ∀ i, coeff A i f ∈ I) : ∀ i, coeff A i (f * g) ∈ I := by
+  simpa only [Ideal.IsTwoSided.mul_one] using
+    f.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal' (J := 1) g hf (by simp)
 
 end PowerSeries
