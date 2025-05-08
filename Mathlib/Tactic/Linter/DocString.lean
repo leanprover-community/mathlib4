@@ -33,6 +33,12 @@ def getDeclModifiers : Syntax → Array Syntax
     (if kind == ``Parser.Command.declModifiers then #[s] else #[]) ++ args.flatMap getDeclModifiers
   | _ => #[]
 
+/--
+Currently, this function simply removes `startColumn` spaces after each `\n`
+in the input string `docString`.
+
+If/when the `docString` linter expands, it may take on more string processing.
+-/
 def deindentString (startColumn : Nat) (docString : String) : String :=
   let indent : String := ⟨'\n' :: List.replicate startColumn ' '⟩
   docString.replace indent " "
