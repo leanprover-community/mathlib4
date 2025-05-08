@@ -3,11 +3,8 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Antoine Labelle
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.LinearAlgebra.TensorProduct.Basis
-import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 
@@ -61,7 +58,7 @@ projective module
 
 -/
 
-universe u v
+universe v u
 
 open LinearMap hiding id
 open Finsupp
@@ -206,11 +203,16 @@ variable {R₀ M N} [CommSemiring R₀] [Algebra R₀ R] [AddCommMonoid M] [Modu
 variable [IsScalarTower R₀ R M] [AddCommMonoid N] [Module R₀ N]
 
 /-- A module is projective iff it is the direct summand of a free module. -/
-theorem Projective.iff_split : Module.Projective R P ↔
-    ∃ (M : Type max u v) (_ : AddCommMonoid M) (_ : Module R M) (_ : Module.Free R M)
-      (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id :=
-  ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.linearCombination R id, LinearMap.ext hi⟩,
-    fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
+theorem Projective.iff_split [Small.{v} R] : Module.Projective R P ↔
+    ∃ (M : Type v) (_ : AddCommMonoid M) (_ : Module R M) (_ : Module.Free R M)
+      (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id := by
+  let e : (P →₀ Shrink.{v} R) ≃ₗ[R] P →₀ R := Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R)
+  refine ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ (Shrink.{v} R), _, _, Free.of_basis ⟨e⟩, e.symm.toLinearMap ∘ₗ i,
+    (linearCombination R id) ∘ₗ e.toLinearMap, ?_⟩,
+      fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
+  apply LinearMap.ext
+  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, e.apply_symm_apply]
+  exact hi
 
 open TensorProduct in
 instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Projective R₀ N] :
@@ -230,34 +232,35 @@ instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Proj
 
 end Ring
 
---This is in a different section because special universe restrictions are required.
 section OfLiftingProperty
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `P : Type v`?
-/-- A module which satisfies the universal property is projective. Note that the universe variables
-in `huniv` are somewhat restricted. -/
-theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max u v}
-    [AddCommMonoid P] [Module R P]
+/-- A module which satisfies the universal property is projective. -/
+theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type v}
+    [AddCommMonoid P] [Module R P] [Small.{v} R]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,
-    (huniv : ∀ {M : Type max v u} {N : Type max u v} [AddCommMonoid M] [AddCommMonoid N]
+    (h : ∀ {M : Type v} {N : Type v} [AddCommMonoid M] [AddCommMonoid N]
       [Module R M] [Module R N] (f : M →ₗ[R] N) (g : P →ₗ[R] N),
         Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :
     -- then `P` is projective.
-    Projective R P :=
-  .of_lifting_property'' (huniv · _)
+    Projective R P := by
+  refine of_lifting_property'' (fun p hp ↦ ?_)
+  let e := Finsupp.mapRange.linearEquiv (α := P) (Shrink.linearEquiv R R)
+  rcases h (p ∘ₗ e.toLinearMap) LinearMap.id (hp.comp e.surjective) with ⟨g, hg⟩
+  exact ⟨e.toLinearMap ∘ₗ g, hg⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `P : Type v`?
-/-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
-which only requires quantifying over modules with an `AddCommGroup` instance. -/
-theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
-    [Module R P]
+/-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`. -/
+theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type v} [AddCommGroup P]
+    [Module R P] [Small.{v} R]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,
-    (huniv : ∀ {M : Type max v u} {N : Type max u v} [AddCommGroup M] [AddCommGroup N]
+    (h : ∀ {M : Type v} {N : Type v} [AddCommGroup M] [AddCommGroup N]
       [Module R M] [Module R N] (f : M →ₗ[R] N) (g : P →ₗ[R] N),
         Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :
     -- then `P` is projective.
-    Projective R P :=
-  .of_lifting_property'' (huniv · _)
+    Projective R P := by
+  refine of_lifting_property'' (fun p hp ↦ ?_)
+  let e := Finsupp.mapRange.linearEquiv (α := P) (Shrink.linearEquiv R R)
+  rcases h (p ∘ₗ e.toLinearMap) LinearMap.id (hp.comp e.surjective) with ⟨g, hg⟩
+  exact ⟨e.toLinearMap ∘ₗ g, hg⟩
 
 end OfLiftingProperty
 
