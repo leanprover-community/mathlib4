@@ -64,11 +64,26 @@ jobs:
         git diff --name-only --diff-filter D origin/${{ github.base_ref }}... | tee removed_files.txt
         echo "Checking for renamed files..."
 
-        # Shows the `R`enamed files, in the format
-        # ` rename oldName => newName (100%)`
-        # one per line. The `awk` pipe then prints "`oldName` was renamed to `newName`".
-        git diff --summary --diff-filter=R origin/${{ github.base_ref }}... |
-          awk '{printf("`%s` was renamed to `%s`\n", $2, $4)}' | tee renamed_files.txt
+        # Shows the `R`enamed files, in human readable format
+        # The `awk` pipe
+        # * extracts into an array the old name as the key and the new name as the value
+        # * eventually prints "`oldName` was renamed to `newName`" for each key-value pair.
+        git diff -p --summary --diff-filter=R origin/${{ github.base_ref }}... |
+          awk '
+            /^rename from / {
+                file=$0
+                gsub(/rename from /, "", file)
+                oldFile=file
+              }
+            /^rename to / {
+                file=$0
+                gsub(/rename to /, "", file)
+                oldNew[oldFile]=file
+              } END {
+                for(old in oldNew) {
+                  printf(""`%s` was renamed to `%s`\n", old, oldNew[old])
+                }
+              }' | tee renamed_files.txt
 
     - name: Compute (re)moved files without deprecation
       run: |
