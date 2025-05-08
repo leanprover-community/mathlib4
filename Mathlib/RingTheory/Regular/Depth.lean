@@ -402,6 +402,13 @@ lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
   · simp [moduleDepth]
     exact csSup_eq_top_of_top_mem (fun i _ ↦ h i)
 
+lemma moduleDepth_lt_top_iff (N M : ModuleCat.{v} R) :
+    moduleDepth N M < ⊤ ↔ ∃ n, Nontrivial (Ext.{max u v} N M n) := by
+  convert (moduleDepth_eq_top_iff N M).not
+  · exact lt_top_iff_ne_top
+  · push_neg
+    exact exists_congr (fun i ↦ not_subsingleton_iff_nontrivial.symm)
+
 lemma ext_subsingleton_of_lt_moduleDepth {N M : ModuleCat.{v} R} {i : ℕ}
     (lt : i < moduleDepth N M) : Subsingleton (Ext.{max u v} N M i) := by
   by_cases lttop : moduleDepth N M < ⊤
