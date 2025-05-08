@@ -402,7 +402,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
     Nat.find hfinprojdim + IsLocalRing.depth M =
     IsLocalRing.depth.{v} (ModuleCat.of R (Shrink.{v} R)) := by
     generalize h: Nat.find hfinprojdim = n
-    induction' n with n ih
+    induction' n with n ih generalizing M
     · simp only [CharP.cast_eq_zero, IsLocalRing.depth, Ideal.depth, moduleDepth, zero_add]
       have pdz: HasProjectiveDimensionLE M (Nat.find hfinprojdim) := Nat.find_spec hfinprojdim
       simp only [HasProjectiveDimensionLE, h, zero_add] at pdz
@@ -412,4 +412,80 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
     · by_cases eq0 : n = 0
       · simp only [eq0, zero_add, Nat.find_eq_iff, Nat.lt_one_iff, forall_eq, Nat.cast_one] at h ⊢
         exact AuslanderBuchsbaum_one M h.1 h.2
-      · sorry
+      · rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
+          with ⟨ι, ⟨B⟩⟩
+        let fin := FiniteDimensional.fintypeBasisIndex B
+        let f := Classical.choose (Module.projective_lifting_property
+          (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
+          ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp
+          (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
+          (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
+        have hf : (maximalIdeal R • (⊤ : Submodule R M)).mkQ.comp f = _ :=
+          Classical.choose_spec (Module.projective_lifting_property
+          (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
+          ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp
+          (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
+          (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
+        have surjf : Function.Surjective f := basis_lift M ι B
+        have : Module.Finite R (ι →₀ Shrink.{v, u} R) := by
+          simp [Module.finite_finsupp_iff, Module.Finite.equiv (Shrink.linearEquiv R R).symm,
+            fin.finite]
+        have : Module.Finite R (LinearMap.ker f) := Module.IsNoetherian.finite R (LinearMap.ker f)
+        have free : Module.Free R (ι →₀ Shrink.{v, u} R) := inferInstance
+        let S : ShortComplex (ModuleCat.{v} R) := {
+          f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
+          g := ModuleCat.ofHom.{v} f
+          zero := by
+            ext x
+            simp }
+        have S_exact : S.ShortExact := {
+          exact := by
+            apply (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr
+            intro x
+            simp [S]
+          mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
+          epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf }
+        have ntr2 : Nontrivial S.X₂ := Function.Surjective.nontrivial surjf
+        have ntr1 : Nontrivial S.X₁ := by
+          by_contra H
+          have : Subsingleton (LinearMap.ker f) := not_nontrivial_iff_subsingleton.mp H
+          let ef : (ι →₀ Shrink.{v, u} R) ≃ₗ[R] M := LinearEquiv.ofBijective f
+            ⟨LinearMap.ker_eq_bot.mp Submodule.eq_bot_of_subsingleton, surjf⟩
+          obtain ⟨⟨B⟩⟩ := Module.Free.of_equiv ef
+          absurd Nat.find_min hfinprojdim (lt_of_lt_of_eq (Nat.zero_lt_succ n) h.symm)
+          have := ModuleCat.projective_of_free B.2
+          infer_instance
+        have le_n : HasProjectiveDimensionLE S.X₁ n := by
+          rcases free with ⟨⟨B⟩⟩
+          have : HasProjectiveDimensionLT S.X₃ (n + 1 + 1) := by
+            rw [← h]
+            exact Nat.find_spec hfinprojdim
+          exact (ShortComplex.ShortExact.hasProjectiveDimensionLT_X₃_iff S_exact n
+            (ModuleCat.projective_of_free B.2)).mp this
+        have hfinprojdim' : ∃ i, HasProjectiveDimensionLE S.X₁ i := by use n
+        have find_eq : Nat.find hfinprojdim' = n := by
+          simp only [Nat.find_eq_iff, le_n, true_and]
+          intro k hk
+          rcases free with ⟨⟨B⟩⟩
+          apply (ShortComplex.ShortExact.hasProjectiveDimensionLT_X₃_iff S_exact k
+            (ModuleCat.projective_of_free B.2)).not.mp
+          exact Nat.find_min hfinprojdim (lt_of_lt_of_eq (Nat.add_lt_add_right hk 1) h.symm)
+        have h_ker := ih S.X₁ hfinprojdim' find_eq
+        let K := ModuleCat.of R (Shrink.{v} (R ⧸ (maximalIdeal R)))
+        have depth_pos : IsLocalRing.depth S.X₁ > 0 := by
+          sorry
+        have ext_iso (i : ℕ) (lt : i + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R))) :
+          IsIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K (Eq.refl (i + 1)))) := by
+          apply (CategoryTheory.isIso_iff_mono_and_epi _).mpr ⟨?_, ?_⟩
+          · apply ShortComplex.Exact.mono_g (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl)
+            apply IsZero.eq_zero_of_src (@AddCommGrp.isZero_of_subsingleton _ ?_)
+            rw [finte_free_ext_vanish_iff]
+            exact ext_subsingleton_of_lt_moduleDepth (lt_of_le_of_lt (le_self_add) lt)
+          · apply ShortComplex.Exact.epi_f (Ext.covariant_sequence_exact₁' K S_exact i (i + 1) rfl)
+            apply IsZero.eq_zero_of_tgt (@AddCommGrp.isZero_of_subsingleton _ ?_)
+            simp only [finte_free_ext_vanish_iff]
+            exact ext_subsingleton_of_lt_moduleDepth lt
+        have eq_add1 : IsLocalRing.depth S.X₁ = IsLocalRing.depth M + 1 := by
+
+          sorry
+        simpa [add_assoc, add_comm 1 (IsLocalRing.depth M), ← eq_add1] using h_ker
