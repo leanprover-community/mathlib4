@@ -1120,6 +1120,12 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
   right_inv := fun ⟨j, hj⟩ => by simp [-Set.coe_setOf]
 
 @[simp]
+theorem normalizedFactorsEquivOfQuotEquiv_apply (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
+    (L : {L | L ∈ normalizedFactors I}) :
+    (normalizedFactorsEquivOfQuotEquiv f hI hJ L : Ideal A) =
+      comap (Ideal.Quotient.mk J) (map f (map (Ideal.Quotient.mk I) L)) := rfl
+
+@[simp]
 theorem normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     (normalizedFactorsEquivOfQuotEquiv f hI hJ).symm =
       normalizedFactorsEquivOfQuotEquiv f.symm hJ hI := rfl
@@ -1401,6 +1407,10 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
       · exact (Submodule.IsPrincipal.mem_iff_generator_dvd i).mp
           ((show Ideal.span {r} ≤ i from dvd_iff_le.mp (dvd_of_mem_normalizedFactors hi))
             (mem_span_singleton.mpr (dvd_refl r)))
+
+@[simp]
+theorem normalizedFactorsEquivSpanNormalizedFactors_apply {r : R} (d) (hr : r ≠ 0) :
+    (normalizedFactorsEquivSpanNormalizedFactors hr d : Ideal R) = Ideal.span {↑d} := rfl
 
 /-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
     factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See

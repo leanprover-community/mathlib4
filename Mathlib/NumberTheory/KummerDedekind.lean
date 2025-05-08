@@ -230,7 +230,7 @@ variable [NoZeroSMulDivisors R S]
 
 attribute [local instance] Ideal.Quotient.field
 
-private noncomputable def f (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
+noncomputable def quotMapEquivQuotQuotMap (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) :
     S ⧸ I.map (algebraMap R S) ≃+* (R ⧸ I)[X] ⧸ span {(minpoly R x).map (Ideal.Quotient.mk I)} :=
   (quotAdjoinEquivQuotMap hx (FaithfulSMul.algebraMap_injective
@@ -238,12 +238,12 @@ private noncomputable def f (hx : (conductor R x).comap (algebraMap R S) ⊔ I =
     ((Algebra.adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap I).toRingEquiv.trans <|
     quotEquivOfEq (by rw [Algebra.adjoin.powerBasis'_minpoly_gen hx'])
 
-private lemma f_symm_aux (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
+lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) (Q : R[X]) :
-    (f hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
-  apply (f hx hx').injective
-  rw [f, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.symm_trans_apply, RingEquiv.symm_symm,
-    RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
+    (quotMapEquivQuotQuotMap hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
+  apply (quotMapEquivQuotQuotMap hx hx').injective
+  rw [quotMapEquivQuotQuotMap, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.symm_trans_apply,
+    RingEquiv.symm_symm, RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
     RingEquiv.symm_trans_apply, quotEquivOfEq_symm, quotEquivOfEq_mk]
   congr
   convert (adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap_symm_apply_mk I Q
@@ -261,7 +261,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     {J : Ideal S | J ∈ normalizedFactors (I.map (algebraMap R S))} ≃
       {d : (R ⧸ I)[X] |
         d ∈ normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))} := by
-  refine (normalizedFactorsEquivOfQuotEquiv (f hx hx') ?_ ?_).trans ?_
+  refine (normalizedFactorsEquivOfQuotEquiv (quotMapEquivQuotQuotMap hx hx') ?_ ?_).trans ?_
   · rwa [Ne, map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S), ← Ne]
   · by_contra h
     exact (show Polynomial.map (Ideal.Quotient.mk I) (minpoly R x) ≠ 0 from
@@ -372,7 +372,7 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
     normalizedFactorsEquivSpanNormalizedFactors]
   rw [normalizedFactorsEquivOfQuotEquiv_symm]
   dsimp [normalizedFactorsEquivOfQuotEquiv, idealFactorsEquivOfQuotEquiv, OrderIso.ofHomInv]
-  simp only [map_span, image_singleton, coe_coe,f_symm_aux hx hx' Q]
+  simp only [map_span, image_singleton, coe_coe,quotMapEquivQuotQuotMap_symm_apply hx hx' Q]
   refine le_antisymm (fun a ha ↦ ?_) (span_le.mpr <| union_subset_iff.mpr <|
     ⟨le_comap_of_map_le (by simp), by simp [mem_span_singleton]⟩)
   rw [mem_comap, Ideal.mem_span_singleton] at ha

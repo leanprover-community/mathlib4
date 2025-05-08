@@ -1,15 +1,10 @@
 import Mathlib
 import Mathlib.Sandbox
 
-theorem IsCoatom.sup_eq_top_iff {α : Type*} {a b : α} [SemilatticeSup α] [OrderTop α]
-    (ha : IsCoatom a) :
-    a ⊔ b = ⊤ ↔ ¬ b ≤ a := by
-  by_cases hb : b = ⊤
-  · simpa [hb] using ha.1
-  · exact ⟨fun h ↦ left_lt_sup.mp (h ▸ IsCoatom.lt_top ha), fun h ↦ ha.2 _ (left_lt_sup.mpr h)⟩
+
 
 noncomputable section
-open NumberField Polynomial Ideal
+open NumberField Polynomial Ideal KummerDedekind
 
 variable {K : Type*} [Field K] [NumberField K]
 
@@ -18,7 +13,7 @@ variable (θ : 𝓞 K)
 def index : ℕ := absNorm (under ℤ (conductor ℤ θ))
 -- AddSubgroup.index (Algebra.adjoin ℤ {θ}).toSubring.toAddSubgroup
 
-variable (p : ℕ+) [hp : Fact (Nat.Prime p)]
+variable (p : ℕ+) [h : Fact (Nat.Prime p)]
 
 -- Thats basically normalizedFactors (map (Int.castRingHom (ZMod p)) A)
 abbrev monicFactorsMod (A : ℤ[X]) : Set ((ZMod p)[X]) :=
@@ -50,10 +45,100 @@ theorem not_dvd_index_iff :
   exact isMaximal_def.mp <| Int.ideal_span_isMaximal_of_prime p
 
 variable (p) in
-omit hp in
+omit h in
 theorem equiv₁_aux (A : Type*) [Semiring A] [Algebra ℤ A] :
     Ideal.map (algebraMap ℤ A) (span {↑↑p}) = span {(p : A)} := by
   rw [Ideal.map_span, Set.image_singleton, map_natCast]
+
+def equiv (hp : ¬ ↑p ∣ index θ) :
+    (ZMod p)[X] ⧸ span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)} ≃+*
+      𝓞 K ⧸ span {(p : 𝓞 K)} :=
+  have : Ideal.map ((mapEquiv (Int.quotientSpanNatEquivZMod p)))
+      (span {Polynomial.map (Ideal.Quotient.mk (span {↑↑p})) (minpoly ℤ θ)}) =
+        span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)} := by
+    simp_rw [map_span, mapEquiv_apply, Set.image_singleton, Polynomial.map_map]
+    have : RingHom.comp (Int.quotientSpanNatEquivZMod ↑p) (Ideal.Quotient.mk (span {(p : ℤ)}))=
+      Int.castRingHom (ZMod ↑p) := by ext; simp
+    rw [this]
+  (quotientEquivAlgOfEq ℤ sorry).toRingEquiv.trans
+    ((quotientEquiv _ _ (mapEquiv (Int.quotientSpanNatEquivZMod p)) rfl).symm.trans
+      ((quotMapEquivQuotQuotMap (not_dvd_index_iff.mp hp) θ.isIntegral).symm.trans
+        (quotientEquivAlgOfEq ℤ (equiv₁_aux p (𝓞 K))).toRingEquiv))
+--      (f₁.symm.trans f₂).symm)
+  -- RingEquiv.trans (quotientEquivAlgOfEq ℤ sorry).toRingEquiv
+  --   ((f₁.symm.trans f₂).trans
+  --   (quotientEquiv _ _ (mapEquiv (Int.quotientSpanNatEquivZMod p)) rfl)).symm
+  -- RingEquiv.trans (quotientEquivAlgOfEq ℤ sorry).toRingEquiv
+  --   (((quotientEquivAlgOfEq ℤ (equiv₁_aux p (𝓞 K))).toRingEquiv.symm.trans
+  --   (quotMapEquivQuotQuotMap (not_dvd_index_iff.mp hp) θ.isIntegral)).trans
+  --   (quotientEquiv _ _ (mapEquiv (Int.quotientSpanNatEquivZMod p)) rfl)).symm
+--  rw [← this, map_coe]
+
+theorem equiv_apply (hp : ¬ ↑p ∣ index θ) (Q : ℤ[X]) :
+    equiv hp (map (Int.castRingHom (ZMod p)) Q) = aeval θ Q := by
+  unfold equiv
+  dsimp only
+  simp only [AlgEquiv.toRingEquiv_eq_coe, algebraMap_int_eq, RingEquiv.trans_apply,
+    AlgEquiv.coe_ringEquiv, quotientEquivAlgOfEq_mk, quotientEquiv_symm_apply, quotientMap_mk,
+    RingHom.coe_coe, mapEquiv_symm_apply]
+  rw [Polynomial.map_map]
+  have : RingHom.comp ((Int.quotientSpanNatEquivZMod p).symm) (Int.castRingHom (ZMod p)) =
+    Ideal.Quotient.mk (span {(p : ℤ)}) := by ext; simp
+  rw [this]
+
+  have := quotMapEquivQuotQuotMap_symm_apply (not_dvd_index_iff.mp hp) θ.isIntegral Q
+  erw [this]
+  rfl
+
+open UniqueFactorizationMonoid Ideal in
+def Ideal.primesOverSpanEquivMonicFactorsMod (hp : ¬ ↑p ∣ index θ) :
+    primesOver (span {(p : ℤ)}) (𝓞 K) ≃ monicFactorsMod p (minpoly ℤ θ) := by
+  refine Equiv.trans (Equiv.setCongr ?_)
+    ((normalizedFactorsEquivOfQuotEquiv (equiv hp) ?_ ?_).symm.trans ?_)
+  · ext P
+    rw [primesOver, Set.mem_setOf_eq, Set.mem_setOf_eq, mem_normalizedFactors_iff', liesOver_iff]
+    rw [under_def, normalize_eq, irreducible_iff_prime, prime_iff_isPrime, dvd_iff_le]
+    rw [algebraMap_int_eq]
+    simp only [true_and, and_congr_right_iff]
+    intro hP
+    sorry
+    sorry
+    sorry
+  ·
+    sorry
+  · sorry
+  · unfold monicFactorsMod
+    simp_rw [← normalize_eq_self_iff_monic sorry, ← mem_normalizedFactors_iff' sorry]
+    refine (normalizedFactorsEquivSpanNormalizedFactors ?_).symm
+    sorry
+
+#exit
+
+  erw [quotMapEquivQuotQuotMap_symm_apply]
+  simp?
+  simp only [algebraMap_int_eq, AlgEquiv.toRingEquiv_eq_coe, AlgEquiv.coe_ringEquiv,
+    quotientEquivAlgOfEq_mk, quotientEquiv_symm_apply, quotientMap_mk, RingHom.coe_coe,
+    mapEquiv_symm_apply]
+#exit
+
+    RingEquiv.symm_symm,
+    quotMapEquivQuotQuotMap_symm_apply]
+  simp only [AlgEquiv.toRingEquiv_eq_coe, algebraMap_int_eq, RingEquiv.coe_trans,
+    AlgEquiv.coe_ringEquiv, Function.comp_apply, quotientEquivAlgOfEq_mk,
+    RingEquiv.symm_trans_apply, quotientEquiv_symm_apply, quotientMap_mk, RingHom.coe_coe,
+    mapEquiv_symm_apply, RingEquiv.symm_symm]
+
+  sorry
+
+
+
+#exit
+
+
+
+
+
+
 
 omit [NumberField K] in
 def equiv₁ (hp : ¬ ↑p ∣ index θ) : (Algebra.adjoin ℤ {θ}) ⧸ span {(p : Algebra.adjoin ℤ {θ})}
@@ -64,6 +149,7 @@ def equiv₁ (hp : ¬ ↑p ∣ index θ) : (Algebra.adjoin ℤ {θ}) ⧸ span {(
         (quotientEquivAlgOfEq ℤ (equiv₁_aux p (𝓞 K))).toRingEquiv)
 
 omit [NumberField K] in
+@[simp]
 theorem equiv₁_apply_mk (hp : ¬ ↑p ∣ index θ) (x : Algebra.adjoin ℤ {θ}) :
     equiv₁ hp x = x := rfl -- ((Ideal.Quotient.mk (span {(p : Algebra.adjoin ℤ {θ})})) x) =
 --      (Ideal.Quotient.mk (span {(p : 𝓞 K)})) ↑x := rfl
@@ -80,6 +166,7 @@ def equiv₂ : (ZMod p)[X] ⧸ span {map (Int.castRingHom (ZMod p)) (minpoly ℤ
         (quotientEquivAlgOfEq ℤ (by simp [map_span])).toRingEquiv))).trans
           (quotientEquiv _ _ (minpoly.equivAdjoin θ.isIntegral).toRingEquiv.symm rfl).symm
 
+@[simp]
 theorem equiv₂_apply_mk (Q : ℤ[X]) :
     equiv₂ θ p (map (Int.castRingHom (ZMod p)) Q) =
       (⟨aeval θ Q, aeval_mem_adjoin_singleton ℤ θ⟩ : Algebra.adjoin ℤ {θ}) := by
@@ -88,10 +175,23 @@ theorem equiv₂_apply_mk (Q : ℤ[X]) :
       Ideal.Quotient.mk (span {(p : ℤ)}) := by ext; simp
   rw [Polynomial.map_map, this, AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk,
     quotientEquivAlgOfEq_mk, quotientMap_mk, RingHom.coe_coe, minpoly.equivAdjoin_apply]
+  have : AdjoinRoot.mk (minpoly ℤ θ) Q = QuotientAddGroup.mk Q := rfl
+  rw [this, QuotientAddGroup.lift_mk]
   congr
-  ext
-  simp
-  ext
+  simp only [algebraMap_int_eq, AddMonoidHom.coe_coe, coe_eval₂RingHom]
+  refine Subtype.ext (RingOfIntegers.ext ?_)
+  simp only [IsFractionRing.coe_inj]
+  change (algebraMap (Algebra.adjoin ℤ {θ}) (𝓞 K)) _ = _
+  simp only [ringHom_eval₂_intCastRingHom]
+  rfl
+
+def equiv (hp : ¬ ↑p ∣ index θ) :
+    (ZMod p)[X] ⧸ span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)} ≃+* 𝓞 K ⧸ span {(p : 𝓞 K)} :=
+  (equiv₂ θ p).trans (equiv₁ hp)
+
+example (hp : ¬ ↑p ∣ index θ) (Q : ℤ[X]) :
+    equiv hp (map (Int.castRingHom (ZMod p)) Q) = aeval θ Q := by
+  simp [equiv]
 
 
 
@@ -99,7 +199,7 @@ theorem equiv₂_apply_mk (Q : ℤ[X]) :
 
 
 
-  sorry
+
 
 
 
