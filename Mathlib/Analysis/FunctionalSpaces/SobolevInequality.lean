@@ -512,7 +512,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     rw [← inv_pos, hp', sub_pos]
     exact inv_strictAnti₀ hq.pos h2p
   have h2q : 1 / n' - 1 / q = 1 / p' := by
-    simp_rw (config := {zeta := false}) [one_div, hp']
+    simp_rw -zeta [one_div, hp']
     rw [← hq.one_sub_inv, ← hn.coe.one_sub_inv, sub_sub_sub_cancel_left]
     simp only [NNReal.coe_natCast, NNReal.coe_inv]
   let γ : ℝ≥0 := ⟨p * (n - 1) / (n - p), by positivity⟩

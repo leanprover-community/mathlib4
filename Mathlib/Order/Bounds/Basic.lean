@@ -26,7 +26,7 @@ variable {α : Type u} {γ : Type v}
 
 section
 
-variable [Preorder α] {s t : Set α} {a b : α}
+variable [Preorder α] {s t u : Set α} {a b : α}
 
 theorem mem_upperBounds : a ∈ upperBounds s ↔ ∀ x ∈ s, x ≤ a :=
   Iff.rfl
@@ -125,6 +125,38 @@ theorem isLUB_congr (h : upperBounds s = upperBounds t) : IsLUB s a ↔ IsLUB t 
 theorem isGLB_congr (h : lowerBounds s = lowerBounds t) : IsGLB s a ↔ IsGLB t a := by
   rw [IsGLB, IsGLB, h]
 
+@[simp] lemma IsCofinalFor.of_subset (hst : s ⊆ t) : IsCofinalFor s t :=
+  fun a ha ↦ ⟨a, hst ha, le_rfl⟩
+
+@[simp] lemma IsCoinitialFor.of_subset (hst : s ⊆ t) : IsCoinitialFor s t :=
+  fun a ha ↦ ⟨a, hst ha, le_rfl⟩
+
+alias HasSubset.Subset.iscofinalfor := IsCofinalFor.of_subset
+alias HasSubset.Subset.iscoinitialfor := IsCoinitialFor.of_subset
+
+@[refl] protected lemma IsCofinalFor.rfl : IsCofinalFor s s := .of_subset .rfl
+@[refl] protected lemma IsCoinitialFor.rfl : IsCoinitialFor s s := .of_subset .rfl
+
+protected lemma IsCofinalFor.trans (hst : IsCofinalFor s t) (htu : IsCofinalFor t u) :
+    IsCofinalFor s u :=
+  fun _a ha ↦ let ⟨_b, hb, hab⟩ := hst ha; let ⟨c, hc, hbc⟩ := htu hb; ⟨c, hc, hab.trans hbc⟩
+
+protected lemma IsCoinitialFor.trans (hst : IsCoinitialFor s t) (htu : IsCoinitialFor t u) :
+    IsCoinitialFor s u :=
+  fun _a ha ↦ let ⟨_b, hb, hba⟩ := hst ha; let ⟨c, hc, hcb⟩ := htu hb; ⟨c, hc, hcb.trans hba⟩
+
+protected lemma IsCofinalFor.mono_left (hst : s ⊆ t) (htu : IsCofinalFor t u) :
+    IsCofinalFor s u := hst.iscofinalfor.trans htu
+
+protected lemma IsCoinitialFor.mono_left (hst : s ⊆ t) (htu : IsCoinitialFor t u) :
+    IsCoinitialFor s u := hst.iscoinitialfor.trans htu
+
+protected lemma IsCofinalFor.mono_right (htu : t ⊆ u) (hst : IsCofinalFor s t) :
+    IsCofinalFor s u := hst.trans htu.iscofinalfor
+
+protected lemma IsCoinitialFor.mono_right (htu : t ⊆ u) (hst : IsCoinitialFor s t) :
+    IsCoinitialFor s u := hst.trans htu.iscoinitialfor
+
 /-!
 ### Monotonicity
 -/
@@ -135,6 +167,14 @@ theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t 
 
 theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
   fun _ hb _ h => hb <| hst h
+
+@[gcongr]
+lemma upperBounds_mono_of_iscofinalfor (hst : IsCofinalFor s t) : upperBounds t ⊆ upperBounds s :=
+  fun _a ha _b hb ↦ let ⟨_c, hc, hbc⟩ := hst hb; hbc.trans (ha hc)
+
+@[gcongr]
+lemma lowerBounds_mono_of_iscofinalfor (hst : IsCoinitialFor s t) : lowerBounds t ⊆ lowerBounds s :=
+  fun _a ha _b hb ↦ let ⟨_c, hc, hcb⟩ := hst hb; hcb.trans' (ha hc)
 
 theorem upperBounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : a ∈ upperBounds s → b ∈ upperBounds s :=
   fun ha _ h => le_trans (ha h) hab
