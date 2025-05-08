@@ -68,7 +68,7 @@ jobs:
         # ` rename oldName => newName (100%)`
         # one per line. The `awk` pipe then prints `oldName was renamed to newName`.
         git diff --summary --diff-filter=R origin/${{ github.base_ref }}... |
-          awk '{printf("%s was renamed to %s\n", $2, $4)}' | tee renamed_files.txt
+          awk '{printf("`%s` was renamed to `%s`\n", $2, $4)}' | tee renamed_files.txt
 
     - name: Compute (re)moved files without deprecation
       run: |
@@ -82,7 +82,7 @@ jobs:
           fi
         done
         for file in $(cat renamed_files.txt) ; do
-          printf '\n⚠️ **warning**: file `%s` without a module deprecation\n' "${file}" | tee -a moved_without_deprecation.txt
+          printf '\n⚠️ **warning**: file %s without a module deprecation\n' "${file}" | tee -a moved_without_deprecation.txt
         done
 
     - name: Compute transitive imports
