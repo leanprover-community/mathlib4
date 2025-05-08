@@ -30,11 +30,9 @@ variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V}
 /-- A set certifying non-existence of a perfect matching -/
 def IsTutteViolator (G : SimpleGraph V) (u : Set V) : Prop :=
   u.ncard < ((⊤ : G.Subgraph).deleteVerts u).coe.oddComponents.ncard
-
-
 /-- This lemma shows an alternating cycle exists in a specific subcase of the proof
-of Tutte's theorem -/
-private lemma tutte_exists_IsAlternating_IsCycles {x b a c : V} {M : Subgraph (G ⊔ edge a c)}
+of Tutte's theorem. -/
+private lemma tutte_exists_isAlternating_isCycles {x b a c : V} {M : Subgraph (G ⊔ edge a c)}
     (hM2 : M.IsPerfectMatching) (p : G'.Walk a x) (hp : p.IsPath)
     (hcalt : G'.IsAlternating M.spanningCoe) (hM2nadj : ¬M.Adj x a)
     (hpac : p.toSubgraph.Adj a c) (hnpxb : ¬p.toSubgraph.Adj x b) (hM2ac : M.Adj a c)
@@ -282,7 +280,10 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     apply tutte_exists_IsAlternating_IsCycles hM2 p hp hcalt (hnM2 _ hnbc) hpac hnpxb hM2ac
       hab.symm hnbc hxa.ne.symm hle (aux (by simp))
 
-/-- Proofs the sufficiency side of Tutte's theorem -/
+/-- From a graph on an even number of vertices with no perfect matching, we can remove an odd number
+of vertices such that there are more odd components in the resulting graph than vertices we removed.
+
+This is the sufficiency side of Tutte's theorem. -/
 lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     (hvEven : Even (Nat.card V)) :
     ∃ u, G.IsTutteViolator u := by
@@ -305,7 +306,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
   · -- Deleting universal vertices does not result in only cliques
     push_neg at h'
     obtain ⟨K, hK⟩ := h'
-    obtain ⟨x, ⟨y, hxy⟩⟩ := (not_isClique_iff _).mp hK
+    obtain ⟨x, y, hxy⟩ := (not_isClique_iff _).mp hK
     obtain ⟨p , hp⟩ := SimpleGraph.Reachable.exists_path_of_dist (K.connected_induce_supp x y)
     obtain ⟨x, ⟨a, ⟨b, ⟨hxa, hxb, hnadjxb, hnxb⟩⟩⟩⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
       (Reachable.one_lt_dist_of_ne_of_not_adj (Walk.reachable p) hxy.1 hxy.2)

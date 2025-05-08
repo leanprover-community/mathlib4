@@ -46,8 +46,7 @@ theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
   Iff.rfl
 
 lemma not_isClique_iff : ¬G.IsClique s ↔ ∃ (v w : s), v ≠ w ∧ ¬ G.Adj v w := by
-  simp only [isClique_iff, Set.Pairwise]
-  aesop
+  aesop (add simp [isClique_iff, Set.Pairwise])
 
 /-- A clique is a set of vertices whose induced graph is complete. -/
 theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
