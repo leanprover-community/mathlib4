@@ -146,16 +146,12 @@ lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Pr
     (h₁ : ∀ a, ScottContinuousOn ((fun d => Prod.snd '' d) '' D) (fun b => f (a,b)))
     (h₂ : ∀ b, ScottContinuousOn ((fun d => Prod.fst '' d) '' D) (fun a => f (a,b))) :
     ScottContinuousOn D f := fun d hX hd₁ hd₂ ⟨p1, p2⟩ hdp => by
-  have helper1 : ∀ b₁ b₂ : β , b₁ ≤ b₂ → {b₁, b₂} ∈ ((fun d => Prod.snd '' d) '' D) := by
-    intro b₁ b₂ hb
-    simp_all
-    obtain ⟨⟨a, b⟩,hq⟩ := hd₁
-    obtain e := hD a b₁ a b₂ (Preorder.le_refl a) hb
-    use {(a, b₁), (a, b₂)}
-    constructor
-    · exact e
-    · rw [image_insert_eq]
-      simp only [image_singleton]
+  have helper1 : ∀ b₁ b₂ : β , b₁ ≤ b₂ → {b₁, b₂} ∈ ((fun d => Prod.snd '' d) '' D) :=
+    fun b₁ b₂ hb => by
+      simp_all only [Prod.forall, Prod.mk_le_mk, and_imp, mem_image]
+      obtain ⟨⟨a, b⟩,hq⟩ := hd₁
+      obtain e := hD a b₁ a b₂ (Preorder.le_refl a) hb
+      exact ⟨{(a, b₁), (a, b₂)}, ⟨e, by rw [image_insert_eq, image_singleton]⟩⟩
   rw [isLUB_congr ((monotone_prod_iff.mpr ⟨(fun a => (h₁ a).monotone _ (helper1)),
     (fun a => (h₂ a).monotone _ (by aesop))⟩).upperBounds_image_of_directedOn_prod hd₂),
     ← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion,
