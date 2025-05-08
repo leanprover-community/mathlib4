@@ -244,33 +244,31 @@ end
 
 section
 
-/-- When `f` is an isomorphism, `f ≫ g` is epic iff `g` is. -/
+/-- When `f` is an epimorphism, `f ≫ g` is epic iff `g` is. -/
 @[simp]
-lemma epi_isIso_comp_iff {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) :
+lemma epi_comp_iff_of_epi {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) :
     Epi (f ≫ g) ↔ Epi g := by
-  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
-  simpa using (inferInstance : Epi (inv f ≫ f ≫ g))
+  refine ⟨fun h ↦ epi_of_epi f _, fun h ↦ inferInstance⟩
 
 /-- When `g` is an isomorphism, `f ≫ g` is epic iff `f` is. -/
 @[simp]
-lemma epi_comp_isIso_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+lemma epi_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     Epi (f ≫ g) ↔ Epi f := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
   simpa using (inferInstance : Epi ((f ≫ g) ≫ inv g ))
 
 /-- When `f` is an isomorphism, `f ≫ g` is monic iff `g` is. -/
 @[simp]
-lemma mono_isIso_comp_iff {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) :
+lemma mono_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) :
     Mono (f ≫ g) ↔ Mono g := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
   simpa using (inferInstance : Mono (inv f ≫ f ≫ g))
 
-/-- When `g` is an isomorphism, `f ≫ g` is monic iff `f` is. -/
+/-- When `g` is a monomorphism, `f ≫ g` is monic iff `f` is. -/
 @[simp]
-lemma mono_comp_isIso_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+lemma mono_comp_iff_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono g] :
     Mono (f ≫ g) ↔ Mono f := by
-  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
-  simpa using (inferInstance : Mono ((f ≫ g) ≫ inv g ))
+  refine ⟨fun h ↦ mono_of_mono _ g, fun h ↦ inferInstance⟩
 
 /-- For any natural transformation `f : F ⟶ G`, if `X` and `Y` are isomorphic, the component of
 `f` at `X` is epic iff the component of `f` at `Y` is. -/
