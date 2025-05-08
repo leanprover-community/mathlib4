@@ -142,6 +142,9 @@ instance [NumberField K] : NeZero (torsionOrder K) := by
   unfold torsionOrder
   infer_instance
 
+theorem torsionOrder_ne_zero [NumberField K] :
+    torsionOrder K ≠ 0 := NeZero.ne (torsionOrder K)
+
 theorem torsionOrder_pos [NumberField K] :
     0 < torsionOrder K := Nat.pos_of_neZero (torsionOrder K)
 
