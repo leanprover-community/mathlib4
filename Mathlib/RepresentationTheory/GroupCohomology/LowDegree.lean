@@ -38,7 +38,7 @@ The file also contains an identification between the definitions in
 1-coboundaries (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`).
 * `groupCohomology.H2 A`: 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo
 2-coboundaries (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`).
-* `groupCohomology.H1IsoOfIsTrivial`: the isomorphism `H¹(G, A) ≃ Hom(G, A)` when the
+* `groupCohomology.H1LEquivOfIsTrivial`: the isomorphism `H¹(G, A) ≃ Hom(G, A)` when the
 representation on `A` is trivial.
 * `groupCohomology.isoHn` for `n = 0, 1, 2`: an isomorphism
 `groupCohomology A n ≅ groupCohomology.Hn A`.
@@ -289,7 +289,7 @@ theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
 variable (A) in
 /-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
-@[simps] def oneCocyclesIsoOfIsTrivial [hA : A.IsTrivial] :
+@[simps] def oneCocyclesLEquivOfIsTrivial [hA : A.IsTrivial] :
     oneCocycles A ≃ₗ[k] Additive G →+ A where
   toFun f :=
     { toFun := f ∘ Additive.toMul
@@ -726,17 +726,17 @@ end Cohomology
 section H0
 
 /-- When the representation on `A` is trivial, then `H⁰(G, A)` is all of `A.` -/
-def H0IsoOfIsTrivial [A.IsTrivial] :
+def H0LEquivOfIsTrivial [A.IsTrivial] :
     H0 A ≃ₗ[k] A := LinearEquiv.ofTop _ (invariants_eq_top A.ρ)
 
-@[simp] theorem H0IsoOfIsTrivial_eq_subtype [A.IsTrivial] :
-    H0IsoOfIsTrivial A = A.ρ.invariants.subtype := rfl
+@[simp] theorem H0LEquivOfIsTrivial_eq_subtype [A.IsTrivial] :
+    H0LEquivOfIsTrivial A = A.ρ.invariants.subtype := rfl
 
-theorem H0IsoOfIsTrivial_apply [A.IsTrivial] (x : H0 A) :
-    H0IsoOfIsTrivial A x = x := rfl
+theorem H0LEquivOfIsTrivial_apply [A.IsTrivial] (x : H0 A) :
+    H0LEquivOfIsTrivial A x = x := rfl
 
-@[simp] theorem H0IsoOfIsTrivial_symm_apply [A.IsTrivial] (x : A) :
-    (H0IsoOfIsTrivial A).symm x = x := rfl
+@[simp] theorem H0LEquivOfIsTrivial_symm_apply [A.IsTrivial] (x : A) :
+    (H0LEquivOfIsTrivial A).symm x = x := rfl
 
 end H0
 
@@ -744,22 +744,22 @@ section H1
 
 /-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
-def H1IsoOfIsTrivial [A.IsTrivial] :
+def H1LEquivOfIsTrivial [A.IsTrivial] :
     H1 A ≃ₗ[k] Additive G →+ A :=
   (Submodule.quotEquivOfEqBot _
     (by simp [shortComplexH1, ShortComplex.moduleCatToCycles, Submodule.eq_bot_iff])).trans
-  (oneCocyclesIsoOfIsTrivial A)
+  (oneCocyclesLEquivOfIsTrivial A)
 
-theorem H1IsoOfIsTrivial_comp_H1π [A.IsTrivial] :
-    (H1IsoOfIsTrivial A).comp (H1π A).hom = oneCocyclesIsoOfIsTrivial A := by
+theorem H1LEquivOfIsTrivial_comp_H1π [A.IsTrivial] :
+    (H1LEquivOfIsTrivial A).comp (H1π A).hom = oneCocyclesLEquivOfIsTrivial A := by
   ext; rfl
 
-@[simp] theorem H1IsoOfIsTrivial_H1_π_apply_apply
+@[simp] theorem H1LEquivOfIsTrivial_H1_π_apply_apply
     [A.IsTrivial] (f : oneCocycles A) (x : Additive G) :
-    H1IsoOfIsTrivial A (Submodule.Quotient.mk f) x = f x.toMul := rfl
+    H1LEquivOfIsTrivial A (Submodule.Quotient.mk f) x = f x.toMul := rfl
 
-@[simp] theorem H1IsoOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
-    (H1IsoOfIsTrivial A).symm f = H1π A ((oneCocyclesIsoOfIsTrivial A).symm f) :=
+@[simp] theorem H1LEquivOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
+    (H1LEquivOfIsTrivial A).symm f = H1π A ((oneCocyclesLEquivOfIsTrivial A).symm f) :=
   rfl
 
 end H1
