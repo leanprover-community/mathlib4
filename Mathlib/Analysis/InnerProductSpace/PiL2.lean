@@ -114,7 +114,9 @@ open Mathlib.Tactic (subscriptTerm)
 This also works for other subscripts. -/
 syntax (name := PiLp.vecNotation) "!" noWs subscriptTerm noWs "[" term,* "]" : term
 macro_rules | `(!$p:subscript[$e:term,*]) => do
-  `(WithLp.toLp $p ![$e,*])
+  -- override the `Fin n.succ` to a literal
+  let n := e.getElems.size
+  `(WithLp.toLp $p (V := ∀ _ : Fin $(quote n), _) ![$e,*])
 
 /-- Unexpander for the `!₂[x, y, ...]` notation. -/
 @[app_delab DFunLike.coe]
