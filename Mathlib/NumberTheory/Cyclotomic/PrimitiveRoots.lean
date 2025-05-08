@@ -300,7 +300,8 @@ theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
     exact (totient_even <| h1.lt_of_ne hn.symm).neg_one_pow
 
 /-- If `K` is linearly ordered, the norm of a primitive root is `1` if `n` is odd. -/
-theorem norm_eq_one_of_linearly_ordered {K : Type*} [LinearOrderedField K] [Algebra K L]
+theorem norm_eq_one_of_linearly_ordered {K : Type*}
+    [Field K] [LinearOrder K] [IsStrictOrderedRing K] [Algebra K L]
     (hodd : Odd (n : ℕ)) : norm K ζ = 1 := by
   have hz := congr_arg (norm K) ((IsPrimitiveRoot.iff_def _ n).1 hζ).1
   rw [← (algebraMap K L).map_one, Algebra.norm_algebraMap, one_pow, map_pow, ← one_pow ↑n] at hz
@@ -310,8 +311,8 @@ theorem norm_of_cyclotomic_irreducible [IsDomain L] [IsCyclotomicExtension {n} K
     (hirr : Irreducible (cyclotomic n K)) : norm K ζ = ite (n = 2) (-1) 1 := by
   split_ifs with hn
   · subst hn
-    convert norm_eq_neg_one_pow (K := K) hζ
-    erw [IsCyclotomicExtension.finrank _ hirr, totient_two, pow_one]
+    rw [norm_eq_neg_one_pow (K := K) hζ, IsCyclotomicExtension.finrank _ hirr]
+    norm_cast
   · exact hζ.norm_eq_one hn hirr
 
 end CommRing
@@ -520,7 +521,7 @@ theorem norm_pow_sub_one_eq_prime_pow_of_ne_zero {k s : ℕ} (hζ : IsPrimitiveR
       rw [hp, ← PNat.coe_inj, PNat.pow_coe] at htwo
       nth_rw 2 [← pow_one 2] at htwo
       replace htwo := Nat.pow_right_injective rfl.le htwo
-      rw [add_left_eq_self, Nat.sub_eq_zero_iff_le] at htwo
+      rw [add_eq_right, Nat.sub_eq_zero_iff_le] at htwo
       exact le_antisymm hs htwo
     simp only [hs, hp, one_coe, cast_one, pow_coe, show ((2 : ℕ+) : ℕ) = 2 from rfl]
       at hζ hirr hcycl ⊢

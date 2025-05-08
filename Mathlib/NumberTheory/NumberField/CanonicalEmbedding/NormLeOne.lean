@@ -13,7 +13,7 @@ import Mathlib.NumberTheory.NumberField.Units.Regulator
 In this file, we study the subset `NormLeOne` of the `fundamentalCone` of elements `x` with
 `mixedEmbedding.norm x ≤ 1`.
 
-Mainly, we prove that this is bounded, its frontier has volume zero and compute its volume.
+Mainly, we prove that it is bounded, its frontier has volume zero and compute its volume.
 
 ## Strategy of proof
 
@@ -34,13 +34,98 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
   `basisUnitLattice K`, we define the map `expMap : realSpace K → realSpace K` that is, in
   some way, the right inverse of `logMap`, see `logMap_expMap`.
 
+4. Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
+  see the description of `logSpace` below) the fundamental system of units given by
+  `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector
+  `(w (ηᵢ))_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
+  subspace `{x : realSpace K | ∑ w, x w = 0}`. We complete by adding the vector `(mult w)_w` to
+  get a basis, called `completeBasis`, of `realSpace K`. The basis `completeBasis K` has
+  the property that, for `i ≠ w₀`, the image of `completeBasis K i` by the
+  natural restriction map `realSpace K → logSpace K` is `basisUnitLattice K`.
+
+5. At this point, we can construct the map `expMapBasis` that plays a crucial part in the proof.
+  It is the map that sends `x : realSpace K` to `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i`, see
+  `expMapBasis_apply'`. Then, we prove a change of variable formula for `expMapBasis`, see
+  `setLIntegral_expMapBasis_image`.
+
+6. We define a set `paramSet` in `realSpace K` and prove that
+  `normAtAllPlaces '' (normLeOne K) = expMapBasis (paramSet K)`, see
+  `normAtAllPlaces_normLeOne_eq_image`. Using this, `setLIntegral_expMapBasis_image` and the results
+  from `mixedEmbedding.polarCoord`, we can then compute the volume of `normLeOne K`, see
+  `volume_normLeOne`.
+
+7. Finally, we need to prove that the frontier of `normLeOne K` has zero-volume (we will prove
+  in passing that `normLeOne K` is bounded.) For that we prove that
+  `volume (interior (normLeOne K)) = volume (closure (normLeOne K))`, see
+  `volume_interior_eq_volume_closure`. Since we now that the volume of `interior (normLeOne K)` is
+  finite since it is bounded by the volume of `normLeOne K`, the result follows, see
+  `volume_frontier_normLeOne`. We proceed in several steps.
+
+  7.1. We prove first that
+    `normAtAllPlaces⁻¹' (expMapBasis '' interior (paramSet K)) ⊆ interior (normLeOne K)`, see
+    `subset_interior_normLeOne` (Note that here again we identify `realSpace K` with its image
+    in `mixedSpace K`). The main argument is that `expMapBasis` is a partial homeomorphism
+    and that `interior (paramSet K)` is a subset of its source, so its image by `expMapBasis`
+    is still open.
+
+  7.2. The same kind of argument does not work with `closure (paramSet)` since it is not contained
+    in the source of `expMapBasis`. So we define a compact set, called `compactSet K`, such that
+    `closure (normLeOne K) ⊆ normAtAllPlaces⁻¹' (compactSet K)`, see `closure_normLeOne_subset`,
+    and it is almost equal to `expMapBasis '' closure (paramSet K)`, see `compactSet_ae`.
+
+  7.3. We get from the above that `normLeOne K ⊆ normAtAllPlaces⁻¹' (compactSet K)`, from which
+    it follows easily that `normLeOne K` is bounded, see `isBounded_normLeOne`.
+
+  7.4. Finally, we prove that `volume (normAtAllPlaces ⁻¹' compactSet K) =
+    volume (normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K)))`, which implies that
+    `volume (interior (normLeOne K)) = volume (closure (normLeOne K))` by the above and the fact
+    that `volume (interior (normLeOne K)) ≤ volume (closure (normLeOne K))`, which boils down to
+    the fact that the interior and closure of `paramSet K` are almost equal, see
+    `closure_paramSet_ae_interior`.
+
+## Spaces and maps
+
+To help understand the proof, we make a list of (almost) all the spaces and maps used and
+their connections (as hinted above, we do not mention the map `mixedSpaceOfRealSpace` since we
+identify `realSpace K` with its image in `mixedSpace K`).
+
+* `mixedSpace`: the set `({w // IsReal w} → ℝ) × (w // IsComplex w → ℂ)` where `w` denote the
+  infinite places of `K`.
+
+* `realSpace`: the set `w → ℝ` where `w` denote the infinite places of `K`
+
+* `logSpace`: the set `{w // w ≠ w₀} → ℝ` where `w₀` is a distinguished place of `K`. It is the set
+  used in the proof of Dirichlet Unit Theorem.
+
+* `mixedEmbedding : K → mixedSpace K`: the map that sends `x : K` to `φ_w(x)` where, for all
+  infinite place `w`, `φ_w : K → ℝ` or `ℂ`, resp. if `w` is real or if `w` is complex, denote a
+  complex embedding associated to `w`.
+
+* `logEmbedding : (𝓞 K)ˣ → logSpace K`: the map that sends the unit `u : (𝓞 K)ˣ` to
+  `(mult w * log (w u))_w` for `w ≠ w₀`. Its image is `unitLattice K`, a `ℤ`-lattice of
+  `logSpace K`, that admits `basisUnitLattice K` as a basis.
+
+* `logMap : mixedSpace K → logSpace K`: this map is defined such that it factors `logEmbedding`,
+  that is, for `u : (𝓞 K)ˣ`, `logMap (mixedEmbedding x) = logEmbedding x`, and that
+  `logMap (c • x) = logMap x` for `c ≠ 0` and `norm x ≠ 0`. The inverse image of the fundamental
+  domain of `basisUnitLattice K` by `logMap` (minus the elements of norm zero) is
+  `fundamentalCone K`.
+
+* `expMap : realSpace K → realSpace K`: the right inverse of `logMap` in the sense that
+  `logMap (expMap x) = (x_w)_{w ≠ w₀}`.
+
+* `expMapBasis : realSpace K → realSpace K`: the map that sends `x : realSpace K` to
+  `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i` where `|ηᵢ|` denote the vector of `realSpace K` given
+  by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`.
+
 -/
 
 variable (K : Type*) [Field K]
 
-open Finset NumberField InfinitePlace mixedEmbedding Units dirichletUnitTheorem
+open Finset NumberField NumberField.InfinitePlace NumberField.mixedEmbedding NumberField.Units
+  NumberField.Units.dirichletUnitTheorem
 
-namespace NumberField.mixedEmbedding
+namespace NumberField.mixedEmbedding.fundamentalCone
 
 section normAtAllPlaces
 
@@ -72,19 +157,16 @@ variable [NumberField K]
 /--
 The set of elements of the `fundamentalCone` of `norm ≤ 1`.
 -/
-abbrev normLeOne : Set (mixedSpace K) :=
-  {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1}
+abbrev normLeOne : Set (mixedSpace K) := fundamentalCone K ∩ {x | mixedEmbedding.norm x ≤ 1}
 
 variable {K} in
 theorem mem_normLeOne {x : mixedSpace K} :
     x ∈ normLeOne K ↔ x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1 := Set.mem_sep_iff
 
-variable {K} in
- -- incorporate?
- theorem mem_normLeOne_iff (x : mixedSpace K):
-     x ∈ normLeOne K ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ normLeOne K := by
-   simp only [normLeOne, Set.mem_setOf_eq, normAtAllPlaces_mem_fundamentalCone_iff,
-     norm_normAtAllPlaces]
+theorem measurableSet_normLeOne :
+    MeasurableSet (normLeOne K) :=
+  (measurableSet_fundamentalCone K).inter <|
+    measurableSet_le (mixedEmbedding.continuous_norm K).measurable measurable_const
 
 theorem normLeOne_eq_primeage_image :
     normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K)) := by
@@ -110,7 +192,7 @@ theorem normAtAllPlaces_normLeOne :
     · rwa [Set.mem_preimage, ← logMap_normAtAllPlaces] at h₁
     · exact fun w ↦ normAtPlace_nonneg w y
     · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₂
-    · rwa [← norm_normAtAllPlaces] at h₃
+    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₃
   · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨h₁, h₃⟩, h₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace h₂⟩
 
 end normLeOne_def
@@ -138,7 +220,7 @@ def expMap_single (w : InfinitePlace K) : PartialHomeomorph ℝ ℝ where
   continuousOn_invFun := continuousOn_const.mul (Real.continuousOn_log.mono (by aesop))
 
 /--
-Docstring.
+The derivative of `expMap_single`, see `hasDerivAt_expMap_single`.
 -/
 abbrev deriv_expMap_single (w : InfinitePlace K) (x : ℝ) : ℝ :=
   (expMap_single w x) * (w.mult : ℝ)⁻¹
@@ -147,6 +229,7 @@ theorem hasDerivAt_expMap_single (w : InfinitePlace K) (x : ℝ) :
     HasDerivAt (expMap_single w) (deriv_expMap_single w x) x := by
   simpa [expMap_single, mul_comm] using
     (HasDerivAt.comp x (Real.hasDerivAt_exp _) (hasDerivAt_mul_const (w.mult : ℝ)⁻¹))
+
 
 variable [NumberField K]
 
@@ -182,19 +265,13 @@ variable {K}
 theorem expMap_apply (x : realSpace K) (w : InfinitePlace K) :
     expMap x w = Real.exp ((↑w.mult)⁻¹ * x w) := rfl
 
-@[simp]
-theorem expMap_symm_apply (x : realSpace K) (w : InfinitePlace K) :
-    expMap.symm x w = ↑w.mult * Real.log (x w) := rfl
-
-theorem logMap_expMap {x : realSpace K}
-    (hx : mixedEmbedding.norm (mixedSpaceOfRealSpace (expMap x)) = 1) :
-    logMap (mixedSpaceOfRealSpace (expMap x)) = fun w ↦ x w.1 := by
-  ext
-  rw [logMap, normAtPlace_mixedSpaceOfRealSpace (Real.exp_nonneg _), expMap_apply, Real.log_exp,
-    mul_sub, mul_inv_cancel_left₀ mult_coe_ne_zero, hx, Real.log_one, zero_mul, mul_zero, sub_zero]
-
 theorem expMap_pos (x : realSpace K) (w : InfinitePlace K) :
     0 < expMap x w := Real.exp_pos _
+
+theorem expMap_smul (c : ℝ) (x : realSpace K) :
+    expMap (c • x) = (expMap x) ^ c := by
+  ext
+  simp [mul_comm c _, ← mul_assoc, Real.exp_mul]
 
 theorem expMap_add (x y : realSpace K) :
     expMap (x + y) = expMap x * expMap y := by
@@ -206,10 +283,16 @@ theorem expMap_sum {ι : Type*} (s : Finset ι) (f : ι → realSpace K) :
   ext
   simp [← Real.exp_sum, ← mul_sum]
 
-theorem expMap_smul (c : ℝ) (x : realSpace K) :
-    expMap (c • x) = (expMap x) ^ c := by
+@[simp]
+theorem expMap_symm_apply (x : realSpace K) (w : InfinitePlace K) :
+    expMap.symm x w = ↑w.mult * Real.log (x w) := rfl
+
+theorem logMap_expMap {x : realSpace K}
+    (hx : mixedEmbedding.norm (mixedSpaceOfRealSpace (expMap x)) = 1) :
+    logMap (mixedSpaceOfRealSpace (expMap x)) = fun w ↦ x w.1 := by
   ext
-  simp [mul_comm c _, ← mul_assoc, Real.exp_mul]
+  rw [logMap, normAtPlace_mixedSpaceOfRealSpace (Real.exp_nonneg _), expMap_apply, Real.log_exp,
+    mul_sub, mul_inv_cancel_left₀ mult_coe_ne_zero, hx, Real.log_one, zero_mul, mul_zero, sub_zero]
 
 theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
     ∑ w : InfinitePlace K, expMap.symm ((normAtAllPlaces (mixedEmbedding K x))) w =
@@ -218,7 +301,7 @@ theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
     Real.log_pow, expMap_symm_apply, normAtAllPlaces_mixedEmbedding]
 
 /--
-Docstring.
+The derivative of `expMap`, see `hasFDerivAt_expMap`.
 -/
 abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   .pi fun w ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (deriv_expMap_single w (x w))).comp
@@ -239,21 +322,32 @@ variable {K}
 
 open scoped Classical in
 /--
-Docstring.
+A fixed equiv between `Fin (rank K)` and `{w : InfinitePlace K // w ≠ w₀}`.
 -/
 def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
   Fintype.equivOfCardEq <| by
     rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank]
 
+open scoped Classical in
+variable (K) in
 /--
-Docstring.
+A family of elements in the `realSpace K` formed of the image of the fundamental units
+and the vector `(mult w)_w`. This family is in fact a basis of `realSpace K`, see `completeBasis`.
 -/
-def realSpaceToLogSpace : realSpace K →ₗ[ℝ] logSpace K where
+def completeFamily : InfinitePlace K → realSpace K :=
+  fun i ↦ if hi : i = w₀ then fun w ↦ mult w else
+    expMap.symm <| normAtAllPlaces <| mixedEmbedding K <| fundSystem K <| equivFinRank.symm ⟨i, hi⟩
+
+/--
+An auxiliary map from `realSpace K` to `logSpace K` used to prove that `completeFamily` is
+linearly independent, see `linearIndependent_completeFamily`.
+-/
+def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
   toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
   map_add' := fun _ _ ↦ funext fun _ ↦ by simpa [sum_add_distrib] using by ring
   map_smul' := fun _ _ ↦ funext fun _ ↦ by simpa [← mul_sum] using by ring
 
-theorem realSpaceToLogSpace_apply (x :realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
+theorem realSpaceToLogSpace_apply (x : realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
     realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
 
 theorem realSpaceToLogSpace_expMap_symm {x : K} (hx : x ≠ 0) :
@@ -263,17 +357,6 @@ theorem realSpaceToLogSpace_expMap_symm {x : K} (hx : x ≠ 0) :
   simp_rw [realSpaceToLogSpace_apply, sum_expMap_symm_apply hx, expMap_symm_apply,
     logMap, normAtPlace_apply, mul_sub, mul_assoc, norm_eq_norm]
 
-variable (K) in
-/--
-Docstring.
--/
-def completeFamily : InfinitePlace K → realSpace K := by
-  intro i
-  by_cases hi : i = w₀
-  · exact fun w ↦ mult w
-  · exact expMap.symm
-      (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm ⟨i, hi⟩))))
-
 theorem realSpaceToLogSpace_completeFamily_of_eq :
     realSpaceToLogSpace (completeFamily K w₀) = 0 := by
   ext
@@ -281,10 +364,10 @@ theorem realSpaceToLogSpace_completeFamily_of_eq :
     mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr Module.finrank_pos.ne'), sub_self, Pi.zero_apply]
 
 theorem realSpaceToLogSpace_completeFamily_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
-    realSpaceToLogSpace (completeFamily K i) =
-      (logEmbedding K) (Additive.ofMul (fundSystem K (equivFinRank.symm i))) := by
+    realSpaceToLogSpace (completeFamily K i) = basisUnitLattice K (equivFinRank.symm i) := by
   ext
-  rw [← logMap_eq_logEmbedding, completeFamily, dif_neg, realSpaceToLogSpace_expMap_symm]
+  rw [← logEmbedding_fundSystem, ← logMap_eq_logEmbedding, completeFamily, dif_neg,
+    realSpaceToLogSpace_expMap_symm]
   exact coe_ne_zero _
 
 theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
@@ -306,7 +389,7 @@ theorem linearIndependent_completeFamily :
   classical
   have h₁ : LinearIndependent ℝ (fun w : {w // w ≠ w₀} ↦ completeFamily K w.1) := by
     refine LinearIndependent.of_comp realSpaceToLogSpace ?_
-    simp_rw [Function.comp_def, realSpaceToLogSpace_completeFamily_of_ne, logEmbedding_fundSystem]
+    simp_rw [Function.comp_def, realSpaceToLogSpace_completeFamily_of_ne]
     convert (((basisUnitLattice K).ofZLatticeBasis ℝ _).reindex equivFinRank).linearIndependent
     simp
   have h₂ : completeFamily K w₀ ∉ Submodule.span ℝ
@@ -319,7 +402,10 @@ theorem linearIndependent_completeFamily :
   exact ⟨h₁, h₂⟩
 
 /--
-Docstring.
+A basis of `realSpace K` formed by the image of the fundamental units
+(which form a basis of a subspace `{x : realSpace K | ∑ w, x w = 0}`) and the vector `(mult w)_w`.
+For `i ≠ w₀`, the image of `completeBasis K i` by the natural restriction map
+`realSpace K → logSpace K` is `basisUnitLattice K`
 -/
 def completeBasis : Basis (InfinitePlace K) ℝ (realSpace K) :=
   basisOfLinearIndependentOfCardEqFinrank (linearIndependent_completeFamily K)
@@ -342,9 +428,7 @@ theorem expMap_basis_of_eq :
 theorem expMap_basis_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
     expMap (completeBasis K i) =
       normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i))) := by
-  rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _ (by simp only [expMap_target, ne_eq,
-    Set.mem_pi, Set.mem_univ, normAtAllPlaces_apply, normAtPlace_apply, Set.mem_Ioi, pos_at_place,
-    imp_self, implies_true])]
+  rw [completeBasis_apply_of_ne, expMap.right_inv (by simp [expMap_target, pos_at_place])]
 
 theorem abs_det_completeBasis_equivFunL_symm :
     |((completeBasis K).equivFunL.symm : realSpace K →L[ℝ] realSpace K).det| =
@@ -369,12 +453,18 @@ variable [NumberField K]
 variable {K}
 
 /--
-Docstring.
+The map that sends `x : realSpace K` to
+`Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i` where `|ηᵢ|` denote the vector of `realSpace K` given
+by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`, see `expMapBasis_apply'`.
 -/
 def expMapBasis : PartialHomeomorph (realSpace K) (realSpace K) :=
   (completeBasis K).equivFunL.symm.toHomeomorph.transPartialHomeomorph expMap
 
 variable (K)
+
+theorem expMapBasis_source :
+    expMapBasis.source = (Set.univ : Set (realSpace K)) := by
+  simp [expMapBasis, expMap_source]
 
 theorem injective_expMapBasis :
     Function.Injective (expMapBasis : realSpace K → realSpace K) :=
@@ -383,10 +473,6 @@ theorem injective_expMapBasis :
 theorem continuous_expMapBasis :
     Continuous (expMapBasis : realSpace K → realSpace K) :=
   (continuous_expMap K).comp (ContinuousLinearEquiv.continuous _)
-
-theorem expMapBasis_source :
-    expMapBasis.source = (Set.univ : Set (realSpace K)) := by
-  simp [expMapBasis, expMap_source]
 
 variable {K}
 
@@ -417,10 +503,6 @@ theorem expMapBasis_apply'' (x : realSpace K) :
    enter [2, w, 2, i]
    rw [if_neg i.prop]
 
-theorem normAtAllPlaces_expMapBasis (x : realSpace K) :
-    normAtAllPlaces (mixedSpaceOfRealSpace (expMapBasis x)) = expMapBasis x := by
-  rw [normAtAllPlaces_mixedSpaceOfRealSpace fun _ ↦ expMapBasis_nonneg _ _]
-
 theorem prod_expMapBasis_pow (x : realSpace K) :
     ∏ w, (expMapBasis x w) ^ w.mult = Real.exp (x w₀) ^ Module.finrank ℚ K := by
   simp_rw [expMapBasis_apply', Pi.smul_def, smul_eq_mul, mul_pow, prod_mul_distrib,
@@ -429,19 +511,6 @@ theorem prod_expMapBasis_pow (x : realSpace K) :
   simp_rw [Real.rpow_pow_comm (apply_nonneg _ _), Real.finset_prod_rpow _ _
     fun _ _ ↦ pow_nonneg (apply_nonneg _ _) _, prod_eq_abs_norm, Units.norm, Rat.cast_one,
     Real.one_rpow, prod_const_one, mul_one]
-
-open scoped Classical in
-theorem prod_deriv_expMap_single (x : realSpace K) :
-    ∏ w, deriv_expMap_single w ((completeBasis K).equivFun.symm x w) =
-      Real.exp (x w₀) ^ Module.finrank ℚ K * (∏ w : {w // IsComplex w}, expMapBasis x w.1)⁻¹ *
-        (2⁻¹) ^ nrComplexPlaces K := by
-  simp only [deriv_expMap_single, expMap_single_apply]
-  rw [Finset.prod_mul_distrib]
-  congr 1
-  · simp_rw [← prod_expMapBasis_pow, prod_eq_prod_mul_prod, expMapBasis_apply, expMap_apply,
-      mult_isReal, mult_isComplex, pow_one, Finset.prod_pow, pow_two, mul_assoc, mul_inv_cancel₀
-      (Finset.prod_ne_zero_iff.mpr <| fun _ _ ↦ Real.exp_ne_zero _), mul_one]
-  · simp [prod_eq_prod_mul_prod, mult_isReal, mult_isComplex]
 
 theorem norm_expMapBasis (x : realSpace K) :
     mixedEmbedding.norm (mixedSpaceOfRealSpace (expMapBasis x)) =
@@ -481,14 +550,23 @@ theorem normAtAllPlaces_image_preimage_expMapBasis (s : Set (realSpace K)) :
   rintro _ ⟨x, _, rfl⟩ w
   exact (expMapBasis_pos _ _).le
 
-section setLIntegral
-
-open ENNReal MeasureTheory
+open scoped Classical in
+theorem prod_deriv_expMap_single (x : realSpace K) :
+    ∏ w, deriv_expMap_single w ((completeBasis K).equivFun.symm x w) =
+      Real.exp (x w₀) ^ Module.finrank ℚ K * (∏ w : {w // IsComplex w}, expMapBasis x w.1)⁻¹ *
+        (2⁻¹) ^ nrComplexPlaces K := by
+  simp only [deriv_expMap_single, expMap_single_apply]
+  rw [Finset.prod_mul_distrib]
+  congr 1
+  · simp_rw [← prod_expMapBasis_pow, prod_eq_prod_mul_prod, expMapBasis_apply, expMap_apply,
+      mult_isReal, mult_isComplex, pow_one, Finset.prod_pow, pow_two, mul_assoc, mul_inv_cancel₀
+      (Finset.prod_ne_zero_iff.mpr <| fun _ _ ↦ Real.exp_ne_zero _), mul_one]
+  · simp [prod_eq_prod_mul_prod, mult_isReal, mult_isComplex]
 
 variable (K)
 
 /--
-Docstring.
+The derivative of `expMapBasis`, see `hasFDerivAt_expMapBasis`.
 -/
 abbrev fderiv_expMapBasis (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   (fderiv_expMap ((completeBasis K).equivFun.symm x)).comp
@@ -512,6 +590,10 @@ theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
     abs_inv, abs_prod, abs_of_nonneg (expMapBasis_nonneg _ _), Nat.abs_ofNat]
   ring
 
+variable {K}
+
+open ENNReal MeasureTheory
+
 open scoped Classical in
 theorem setLIntegral_expMapBasis_image {s : Set (realSpace K)} (hs : MeasurableSet s)
     {f : (InfinitePlace K → ℝ) → ℝ≥0∞} (hf : Measurable f) :
@@ -534,17 +616,16 @@ theorem setLIntegral_expMapBasis_image {s : Set (realSpace K)} (hs : MeasurableS
     ofReal_prod_of_nonneg (fun _ _ ↦ (expMapBasis_pos _ _).le)]
   ring
 
-end setLIntegral
-
 end expMapBasis
 
-section param
+section paramSet
 
 variable [NumberField K]
 
 open scoped Classical in
 /--
-Docstring.
+The set that parametrizes `normAtAllPlaces '' (normLeOne K)`, see
+`normAtAllPlaces_normLeOne_eq_image`.
 -/
 abbrev paramSet : Set (realSpace K) :=
   Set.univ.pi fun w ↦ if w = w₀ then Set.Iic 0 else Set.Ico 0 1
@@ -555,11 +636,6 @@ theorem measurableSet_paramSet :
   split_ifs
   · exact measurableSet_Iic
   · exact measurableSet_Ico
-
-open scoped Classical in
-theorem closure_paramSet :
-    closure (paramSet K) = Set.univ.pi fun w ↦ if w = w₀ then Set.Iic 0 else Set.Icc 0 1 := by
-  simp [closure_pi_set, apply_ite]
 
 open scoped Classical in
 theorem interior_paramSet :
@@ -573,6 +649,11 @@ theorem measurableSet_interior_paramSet :
   split_ifs
   · exact measurableSet_Iio
   · exact measurableSet_Ioo
+
+open scoped Classical in
+theorem closure_paramSet :
+    closure (paramSet K) = Set.univ.pi fun w ↦ if w = w₀ then Set.Iic 0 else Set.Icc 0 1 := by
+  simp [closure_pi_set, apply_ite]
 
 theorem normAtAllPlaces_normLeOne_eq_image :
     normAtAllPlaces '' (normLeOne K) = expMapBasis '' (paramSet K) := by
@@ -606,12 +687,12 @@ theorem subset_interior_normLeOne :
     expMapBasis.isOpen_image_of_subset_source isOpen_interior (by simp [expMapBasis_source])
   exact interior_maximal (Set.image_mono interior_subset) this
 
-open ENNReal MeasureTheory MeasureTheory.Measure
+open ENNReal MeasureTheory
 
-theorem closure_paramSet_eq_interior :
+theorem closure_paramSet_ae_interior :
   closure (paramSet K) =ᵐ[volume] interior (paramSet K) := by
   rw [closure_paramSet, interior_paramSet, volume_pi]
-  refine ae_eq_set_pi fun w _ ↦ ?_
+  refine Measure.ae_eq_set_pi fun w _ ↦ ?_
   split_ifs
   · exact Iio_ae_eq_Iic.symm
   · exact Ioo_ae_eq_Icc.symm
@@ -619,21 +700,17 @@ theorem closure_paramSet_eq_interior :
 theorem setLIntegral_paramSet_exp {n : ℕ} (hn : 0 < n) :
     ∫⁻ (x : realSpace K) in paramSet K, .ofReal (Real.exp (x w₀ * n)) = (n : ℝ≥0∞)⁻¹ := by
   classical
+  have hn : 0 < (n : ℝ) := Nat.cast_pos.mpr hn
   rw [volume_pi, paramSet, Measure.restrict_pi_pi, lintegral_eq_lmarginal_univ 0,
     lmarginal_erase' _ (by fun_prop) (Finset.mem_univ w₀), if_pos rfl]
   simp_rw [Function.update_self, lmarginal, lintegral_const, Measure.pi_univ, if_neg
-    (Finset.ne_of_mem_erase (Subtype.prop _)), restrict_apply_univ, Real.volume_Ico, sub_zero,
-    ofReal_one, prod_const_one, mul_one]
-  rw [← ofReal_integral_eq_lintegral_ofReal]
-  · rw [← setIntegral_congr_set Iio_ae_eq_Iic, integral_comp_mul_right_Iio _ _
-      (Nat.cast_pos.mpr hn), zero_mul, setIntegral_congr_set Iio_ae_eq_Iic, integral_exp_Iic,
-      Real.exp_zero, smul_eq_mul, mul_one, ofReal_inv_of_pos (Nat.cast_pos.mpr hn), ofReal_natCast]
-  · rw [← IntegrableOn, integrableOn_Iic_iff_integrableOn_Iio, integrableOn_Iio_comp_mul_right_iff _
-      _ (Nat.cast_pos.mpr hn), zero_mul, ← integrableOn_Iic_iff_integrableOn_Iio]
-    exact integrableOn_exp_Iic 0
-  · filter_upwards with _ using Real.exp_nonneg _
+    (Finset.ne_of_mem_erase (Subtype.prop _)), Measure.restrict_apply_univ, Real.volume_Ico,
+    sub_zero, ofReal_one, prod_const_one, mul_one, mul_comm _ (n : ℝ)]
+  rw [← ofReal_integral_eq_lintegral_ofReal (integrableOn_exp_mul_Iic hn _), integral_exp_mul_Iic
+    hn, mul_zero, Real.exp_zero, ofReal_div_of_pos hn, ofReal_one, ofReal_natCast, one_div]
+  filter_upwards with _ using Real.exp_nonneg _
 
-end param
+end paramSet
 
 section compactSet
 
@@ -643,10 +720,19 @@ open Pointwise
 
 open scoped Classical in
 /--
-Docstring.
+A compact set that contains `expMapBasis '' closure (paramSet K)` and furthermore is almost
+equal to it, see `compactSet_ae`.
 -/
 abbrev compactSet : Set (realSpace K) :=
   (Set.Icc (0 : ℝ) 1) • (expMapBasis '' Set.univ.pi fun w ↦ if w = w₀ then {0} else Set.Icc 0 1)
+
+theorem isCompact_compactSet :
+    IsCompact (compactSet K) := by
+  refine isCompact_Icc.smul_set <| (isCompact_univ_pi fun w ↦ ?_).image_of_continuousOn
+    (continuous_expMapBasis K).continuousOn
+  split_ifs
+  · exact isCompact_singleton
+  · exact isCompact_Icc
 
 theorem zero_mem_compactSet :
     0 ∈ compactSet K := by
@@ -658,13 +744,41 @@ theorem nonneg_of_mem_compactSet {x : realSpace K} (hx : x ∈ compactSet K) (w 
   obtain ⟨c, hc, ⟨_, ⟨⟨a, ha, rfl⟩, _, rfl⟩⟩⟩ := hx
   exact mul_nonneg hc.1 (expMapBasis_pos _ _).le
 
-theorem isCompact_compactSet :
-    IsCompact (compactSet K) := by
-  refine isCompact_Icc.smul_set <| (isCompact_univ_pi fun w ↦ ?_).image_of_continuousOn
-    (continuous_expMapBasis K).continuousOn
-  split_ifs
-  · exact isCompact_singleton
-  · exact isCompact_Icc
+variable {K} in
+theorem compactSet_eq_union_aux₁ {x : realSpace K} (hx₀ : x ≠ 0)
+    (hx₁ : x ∈ compactSet K) :
+    x ∈ expMapBasis '' closure (paramSet K) := by
+  classical
+  obtain ⟨c, hc, ⟨_, ⟨y, hy, rfl⟩, rfl⟩⟩ := hx₁
+  refine ⟨fun w ↦ if w = w₀ then Real.log c else y w, ?_, ?_⟩
+  · rw [closure_paramSet, Set.mem_univ_pi]
+    intro w
+    split_ifs with h
+    · refine Real.log_nonpos hc.1 hc.2
+    · simpa [h] using hy w (Set.mem_univ _)
+  · have hc' : 0 < c := by
+      contrapose! hx₀
+      rw [le_antisymm hx₀ hc.1, zero_smul]
+    rw [expMapBasis_apply'', if_pos rfl, Real.exp_log hc']
+    congr with w
+    split_ifs with h
+    · simpa [h, eq_comm] using hy w₀
+    · rfl
+
+variable {K} in
+theorem compactSet_eq_union_aux₂ {x : realSpace K} (hx₀ : x ≠ 0)
+    (hx₁ : x ∈ expMapBasis '' closure (paramSet K)) :
+    x ∈ compactSet K := by
+  classical
+  simp only [closure_paramSet, Set.mem_image, Set.mem_smul, exists_exists_and_eq_and] at hx₁ ⊢
+  obtain ⟨y, hy, rfl⟩ := hx₁
+  refine ⟨Real.exp (y w₀), ⟨Real.exp_nonneg _, ?_⟩,
+        fun i ↦ if i = w₀ then 0 else y i, Set.mem_univ_pi.mpr fun w ↦ ?_,
+        by rw [expMapBasis_apply'' y]⟩
+  · exact Real.exp_le_one_iff.mpr (by simpa using hy w₀ (Set.mem_univ _))
+  · split_ifs with h
+    · rfl
+    · simpa [h] using hy w (Set.mem_univ _)
 
 theorem compactSet_eq_union :
     compactSet K = expMapBasis '' closure (paramSet K) ∪ {0} := by
@@ -672,30 +786,9 @@ theorem compactSet_eq_union :
   ext x
   by_cases hx₀ : x = 0
   · simpa [hx₀] using zero_mem_compactSet K
-  · simp only [Set.union_singleton, Set.mem_insert_iff, hx₀, false_or, closure_paramSet,
-      Set.mem_image, Set.mem_smul, exists_exists_and_eq_and]
-    refine ⟨?_, ?_⟩
-    · rintro ⟨c, hc, ⟨a, ha, rfl⟩⟩
-      have hc' : c > 0 := by
-        contrapose! hx₀
-        rw [le_antisymm hx₀ hc.1, zero_smul]
-      refine ⟨fun w ↦ if w = w₀ then Real.log c else a w, Set.mem_univ_pi.mpr fun w ↦ ?_, ?_⟩
-      · split_ifs with h
-        · exact Real.log_nonpos hc.1 hc.2
-        · simpa [h] using ha w (Set.mem_univ _)
-      · rw [expMapBasis_apply'', if_pos rfl, Real.exp_log hc']
-        congr with w
-        split_ifs with h
-        · simpa [h, eq_comm] using ha w₀
-        · rfl
-    · rintro ⟨a, ha, rfl⟩
-      refine ⟨Real.exp (a w₀), ⟨Real.exp_nonneg _, ?_⟩,
-        fun i ↦ if i = w₀ then 0 else a i, Set.mem_univ_pi.mpr fun w ↦ ?_,
-        by rw [expMapBasis_apply'' a]⟩
-      · exact Real.exp_le_one_iff.mpr (by simpa using ha w₀ (Set.mem_univ _))
-      · split_ifs with h
-        · rfl
-        · simpa [h] using ha w (Set.mem_univ _)
+  · refine ⟨fun hx ↦ Set.mem_union_left _ (compactSet_eq_union_aux₁ hx₀ hx), fun hx ↦ ?_⟩
+    simp only [Set.union_singleton, Set.mem_insert_iff, hx₀, false_or] at hx
+    exact compactSet_eq_union_aux₂ hx₀ hx
 
 theorem expMapBasis_closure_subset_compactSet :
     expMapBasis '' closure (paramSet K) ⊆ compactSet K := by
@@ -718,14 +811,11 @@ theorem compactSet_ae :
 
 end compactSet
 
+section main_results
+
 variable [NumberField K]
 
-open ENNReal Bornology MeasureTheory
-
-theorem measurableSet_normLeOne :
-    MeasurableSet (normLeOne K) :=
-  (measurableSet_fundamentalCone K).inter <|
-    measurableSet_le (mixedEmbedding.continuous_norm K).measurable measurable_const
+open Bornology ENNReal MeasureTheory
 
 theorem isBounded_normLeOne :
     IsBounded (normLeOne K) := by
@@ -744,10 +834,10 @@ theorem isBounded_normLeOne :
 open scoped Classical in
 theorem volume_normLeOne : volume (normLeOne K) =
     2 ^ nrRealPlaces K * NNReal.pi ^ nrComplexPlaces K * .ofReal (regulator K) := by
-  rw [volume_eq_two_pow_mul_two_pi_pow_mul_integral (fun x ↦ mem_normLeOne_iff x)
+  rw [volume_eq_two_pow_mul_two_pi_pow_mul_integral (normLeOne_eq_primeage_image K).symm
     (measurableSet_normLeOne K), normLeOne_eq_preimage,
     normAtAllPlaces_image_preimage_expMapBasis,
-    setLIntegral_expMapBasis_image K (measurableSet_paramSet K) (by fun_prop)]
+    setLIntegral_expMapBasis_image (measurableSet_paramSet K) (by fun_prop)]
   simp_rw [ENNReal.inv_mul_cancel_right
     (Finset.prod_ne_zero_iff.mpr fun _ _ ↦ ofReal_ne_zero_iff.mpr (expMapBasis_pos _ _))
     (prod_ne_top fun _ _ ↦ ofReal_ne_top)]
@@ -762,7 +852,7 @@ theorem volume_interior_eq_volume_closure :
     volume (interior (normLeOne K)) = volume (closure (normLeOne K)) := by
   have h₁ : MeasurableSet (normAtAllPlaces ⁻¹' compactSet K) :=
     (isCompact_compactSet K).measurableSet.preimage (continuous_normAtAllPlaces K).measurable
-  have h₂ :  MeasurableSet (normAtAllPlaces ⁻¹' (↑expMapBasis '' interior (paramSet K))) := by
+  have h₂ :  MeasurableSet (normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K))) := by
     refine MeasurableSet.preimage ?_ (continuous_normAtAllPlaces K).measurable
     refine MeasurableSet.image_of_continuousOn_injOn ?_ (continuous_expMapBasis K).continuousOn
       (injective_expMapBasis K).injOn
@@ -770,13 +860,13 @@ theorem volume_interior_eq_volume_closure :
   refine le_antisymm (measure_mono interior_subset_closure) ?_
   refine (measure_mono (closure_normLeOne_subset K)).trans ?_
   refine le_of_eq_of_le ?_ (measure_mono (subset_interior_normLeOne K))
-  rw [volume_eq_two_pow_mul_two_pi_pow_mul_integral (forall_mem_iff_normAtAllPlaces_mem rfl) h₁,
+  rw [volume_eq_two_pow_mul_two_pi_pow_mul_integral Set.preimage_image_preimage h₁,
     normAtAllPlaces_image_preimage_of_nonneg (fun x a w ↦ nonneg_of_mem_compactSet K a w),
-    volume_eq_two_pow_mul_two_pi_pow_mul_integral (forall_mem_iff_normAtAllPlaces_mem rfl) h₂,
+    volume_eq_two_pow_mul_two_pi_pow_mul_integral Set.preimage_image_preimage h₂,
     normAtAllPlaces_image_preimage_expMapBasis, setLIntegral_congr (compactSet_ae K),
-    setLIntegral_expMapBasis_image K measurableSet_closure (by fun_prop),
-    setLIntegral_expMapBasis_image K measurableSet_interior (by fun_prop),
-    setLIntegral_congr (closure_paramSet_eq_interior K)]
+    setLIntegral_expMapBasis_image measurableSet_closure (by fun_prop),
+    setLIntegral_expMapBasis_image measurableSet_interior (by fun_prop),
+    setLIntegral_congr (closure_paramSet_ae_interior K)]
 
 open scoped Classical in
 theorem volume_frontier_normLeOne :
@@ -788,4 +878,6 @@ theorem volume_frontier_normLeOne :
     rw [volume_normLeOne]
     exact Batteries.compareOfLessAndEq_eq_lt.mp rfl
 
-end NumberField.mixedEmbedding
+end main_results
+
+end NumberField.mixedEmbedding.fundamentalCone

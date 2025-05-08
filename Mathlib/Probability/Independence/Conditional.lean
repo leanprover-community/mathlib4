@@ -370,7 +370,7 @@ theorem CondIndepSets.union {s₁ s₂ s' : Set (Set Ω)}
   Kernel.IndepSets.union h₁ h₂
 
 @[simp]
-theorem CondIndepSets.union_iff {s₁ s₂ s' : Set (Set Ω)}  :
+theorem CondIndepSets.union_iff {s₁ s₂ s' : Set (Set Ω)} :
     CondIndepSets m' hm' (s₁ ∪ s₂) s' μ
       ↔ CondIndepSets m' hm' s₁ s' μ ∧ CondIndepSets m' hm' s₂ s' μ :=
   Kernel.IndepSets.union_iff
@@ -696,7 +696,7 @@ theorem CondIndepFun.comp {γ γ' : Type*} {_mβ : MeasurableSpace β} {_mβ' : 
   Kernel.IndepFun.comp hfg hφ hψ
 
 theorem CondIndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
-    [MeasurableNeg β'] (hfg : CondIndepFun m' hm' f g μ)  :
+    [MeasurableNeg β'] (hfg : CondIndepFun m' hm' f g μ) :
     CondIndepFun m' hm' f (-g) μ := hfg.comp measurable_id measurable_neg
 
 theorem CondIndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β]

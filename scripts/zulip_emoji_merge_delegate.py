@@ -4,16 +4,32 @@ import zulip
 import re
 
 # Usage:
-# python scripts/zulip_emoji_merge_delegate.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $LABEL $PR_NUMBER
-# See .github/workflows/zulip_emoji_merge_delegate.yaml for the meaning of these variables
+# python scripts/zulip_emoji_merge_delegate.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $ACTION $LABEL_NAME $PR_NUMBER
+# The first three variables identify the lean4 Zulip chat and allow the bot to access it (see .github/workflows/zulip_emoji_merge_delegate.yaml),
+# and the comment below for $ACTION and $LABEL_NAME.
 
 ZULIP_API_KEY = sys.argv[1]
 ZULIP_EMAIL = sys.argv[2]
 ZULIP_SITE = sys.argv[3]
-LABEL = sys.argv[4]
-PR_NUMBER = sys.argv[5]
+# Describes the "action" that is performed to the PR. Depending on which action calls this script,
+# this takes rather different values:
+# - if a PR is closed/reopened, it is 'closed' resp. 'reopened' (though the particular value for
+#   reopening is not used in this script)
+# - if a PR was just merged by bors, it is '[Merged by Bors]'
+# - if a PR was labeled or unlabeled (with e.g. maintainer-merge or awaiting-review),
+#   it is 'labeled' resp. 'unlabeled' (and the next argument is the label name)
+# - if a PR was delegated or sent to bors (via a bors r+, bors merge, bors delegate or bors d+
+#   command), it is 'ready-to-merge' or 'delegated'. On a bors merge-, bors r- or bors d- command,
+#   it is 'remove-label'. (This particular value is not used in this script.)
+#   Note that `bors d-` is *not* a bors command, so only has an effect on mathlib's PR labels.
+ACTION = sys.argv[4]
+# Name of the label that was applied or removed
+# (if applicable; is 'none' if a PR was closed, reopened or merged)
+LABEL_NAME = sys.argv[5]
+PR_NUMBER = sys.argv[6]
 
-print(f"LABEL: '{LABEL}'")
+print(f"ACTION: '{ACTION}'")
+print(f"LABEL_NAME: '{LABEL_NAME}'")
 print(f"PR_NUMBER: '{PR_NUMBER}'")
 
 # Initialize Zulip client
@@ -52,9 +68,15 @@ print(f"reviewers_response:{reviewers_response}")
 
 messages = (public_response['messages']) + (reviewers_response['messages'])
 
-pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/{PR_NUMBER}')
+hashPR = re.compile(f'#{PR_NUMBER}')
+urlPR = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/{PR_NUMBER}')
 
-print(f"Searching for: '{pr_pattern}'")
+print(f"Searching for: '{urlPR}'")
+
+# we store in `first_by_subject` the ID of the messages in a thread whose subject matches
+# the PR number and that we already visited. We use this to only react to the first message
+# in each thread in `PR reviews` that matches the PR number.
+first_by_subject = {}
 
 for message in messages:
     if message['display_recipient'] == 'rss':
@@ -62,91 +84,74 @@ for message in messages:
     content = message['content']
     # Check for emoji reactions
     reactions = message['reactions']
-    has_peace_sign = any(reaction['emoji_name'] == 'peace_sign' for reaction in reactions)
-    has_bors = any(reaction['emoji_name'] == 'bors' for reaction in reactions)
-    has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
-    has_awaiting_author = any(reaction['emoji_name'] == 'writing' for reaction in reactions)
-    has_closed = any(reaction['emoji_name'] == 'closed-pr' for reaction in reactions)
-    match = pr_pattern.search(content)
+    # Does this message have any reaction with an emoji |name|?
+    def has_reaction(name: str) -> bool:
+        return any(reaction['emoji_name'] == name for reaction in reactions)
+
+    has_peace_sign = has_reaction('peace_sign')
+    has_bors = has_reaction('bors')
+    has_merge = has_reaction('merge')
+    has_awaiting_author = has_reaction('writing')
+    has_maintainer_merge = has_reaction('hammer')
+    has_closed = has_reaction('closed-pr')
+    first_in_thread = hashPR.search(message['subject']) and message['display_recipient'] == 'PR reviews' and message['subject'] not in first_by_subject
+    first_by_subject[message['subject']] = message['id']
+    match = urlPR.search(content) or first_in_thread
     if match:
         print(f"matched: '{message}'")
 
-        # removing previous emoji reactions
-        # if the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well
+        # Removing all previous emoji reactions.
+        # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
+        print("Removing previous reactions, if present.")
+        def remove_reaction(name: str, emoji_name: str, **kwargs) -> None:
+            print(f'Removing {name}')
+            result = client.remove_reaction({
+                "message_id": message['id'],
+                "emoji_name": emoji_name,
+                **kwargs
+            })
+            print(f"result: '{result}'")
+
+        # Remove all previous emoji reactions.
+        # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
         print("Removing previous reactions, if present.")
         if has_peace_sign:
-            print('Removing peace_sign')
-            result = client.remove_reaction({
-                "message_id": message['id'],
-                "emoji_name": "peace_sign"
-            })
-            print(f"result: '{result}'")
+            remove_reaction('delegated', 'peace_sign')
         if has_bors:
-            print('Removing bors')
-            result = client.remove_reaction({
-                "message_id": message['id'],
-                "emoji_name": "bors",
-                "emoji_code": "22134",
-                "reaction_type": "realm_emoji",
-            })
-            print(f"result: '{result}'")
+            remove_reaction("bors", "bors", emoji_code="22134", reaction_type="realm_emoji")
         if has_merge:
-            print('Removing merge')
-            result = client.remove_reaction({
-                "message_id": message['id'],
-                "emoji_name": "merge"
-            })
-            print(f"result: '{result}'")
+            remove_reaction('merge', 'merge')
+        if has_maintainer_merge:
+            remove_reaction('maintainer-merge', 'hammer')
         if has_awaiting_author:
-            print('Removing awaiting-author')
-            result = client.remove_reaction({
-                "message_id": message['id'],
-                "emoji_name": "writing"
-            })
-            print(f"result: '{result}'")
+            remove_reaction('awaiting-author', 'writing')
         if has_closed:
-            print('Removing closed-pr')
-            result = client.remove_reaction({
-                "message_id": message['id'],
-                "emoji_name": "closed-pr",
-                "emoji_code": "61293",  # 61282 was the earlier version of the emoji
-                "reaction_type": "realm_emoji",
-            })
-            print(f"result: '{result}'")
+            # 61282 was the earlier version of the emoji.
+            remove_reaction('closed-pr', 'closed-pr', emoji_code="61293", reaction_type="realm_emoji")
 
-
-        # applying appropriate emoji reaction
+        # Apply the appropriate emoji reaction.
         print("Applying reactions, as appropriate.")
-        if 'ready-to-merge' == LABEL:
-            print('adding ready-to-merge')
+        def add_reaction(name: str, emoji_name: str) -> None:
+            print(f'adding {name} emoji')
             client.add_reaction({
                 "message_id": message['id'],
-                "emoji_name": "bors"
+                "emoji_name": emoji_name
             })
-        elif 'delegated' == LABEL:
-            print('adding delegated')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": "peace_sign"
-            })
-        elif LABEL == 'labeled':
-            print('adding awaiting-author')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": "writing"
-            })
-        elif LABEL == 'closed':
-            print('adding closed-pr')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": "closed-pr"
-            })
-        elif LABEL == 'unlabeled':
-            print('awaiting-author removed')
-            # the reaction was already removed.
-        elif LABEL.startswith("[Merged by Bors]"):
-            print('adding [Merged by Bors]')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": "merge"
-            })
+        match ACTION:
+            case 'ready-to-merge':
+                add_reaction('ready-to-merge', 'bors')
+            case 'delegated':
+                add_reaction('delegated', 'peace_sign')
+            case 'labeled':
+                if LABEL_NAME == 'awaiting-author':
+                    add_reaction('awaiting-author', 'writing')
+            case 'maintainer-merge':
+                add_reaction('maintainer-merge', 'hammer')
+            case 'unlabeled':
+                if LABEL_NAME == 'awaiting-author':
+                    print('awaiting-author removed')
+                    # The reaction was already removed.
+            case 'closed':
+                add_reaction('closed-pr', 'closed-pr')
+            case "[Merged by Bors]":
+                add_reaction('[Merged by Bors]', 'merge')

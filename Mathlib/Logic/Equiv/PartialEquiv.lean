@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Attr.Core
@@ -684,8 +684,6 @@ theorem EqOnSource.source_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.sour
 theorem EqOnSource.eqOn {e e' : PartialEquiv α β} (h : e ≈ e') : e.source.EqOn e e' :=
   h.2
 
--- Porting note: A lot of dot notation failures here. Maybe we should not use `≈`
-
 /-- Two equivalent partial equivs have the same target. -/
 theorem EqOnSource.target_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.target = e'.target := by
   simp only [← image_source_eq_target, ← source_eq h, h.2.image_eq]
@@ -790,7 +788,6 @@ theorem prod_symm (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
 @[simp, mfld_simps]
 theorem refl_prod_refl :
     (PartialEquiv.refl α).prod (PartialEquiv.refl β) = PartialEquiv.refl (α × β) := by
-  -- Porting note: `ext1 ⟨x, y⟩` insufficient number of binders
   ext ⟨x, y⟩ <;> simp
 
 @[simp, mfld_simps]

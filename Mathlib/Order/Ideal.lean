@@ -3,12 +3,11 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
-import Mathlib.Order.Chain
 import Mathlib.Order.Cofinal
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma
@@ -63,7 +62,7 @@ structure Ideal (P) [LE P] extends LowerSet P where
   /-- The ideal is upward directed. -/
   directed' : DirectedOn (· ≤ ·) carrier
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
+-- TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections Ideal (+toLowerSet, -carrier)
 
@@ -313,6 +312,13 @@ theorem sup_mem (hx : x ∈ s) (hy : y ∈ s) : x ⊔ y ∈ s :=
 theorem sup_mem_iff : x ⊔ y ∈ I ↔ x ∈ I ∧ y ∈ I :=
   ⟨fun h ↦ ⟨I.lower le_sup_left h, I.lower le_sup_right h⟩, fun h ↦ sup_mem h.1 h.2⟩
 
+@[simp]
+lemma finsetSup_mem_iff {P : Type*} [SemilatticeSup P] [OrderBot P]
+    (t : Ideal P) {ι : Type*}
+    {f : ι → P} {s : Finset ι} : s.sup f ∈ t ↔ ∀ i ∈ s, f i ∈ t := by
+  classical
+  induction s using Finset.induction_on <;> simp [*]
+
 end SemilatticeSup
 
 section SemilatticeSupDirected
@@ -366,7 +372,6 @@ instance : Lattice (Ideal P) :=
 theorem coe_sup : ↑(s ⊔ t) = { x | ∃ a ∈ s, ∃ b ∈ t, x ≤ a ⊔ b } :=
   rfl
 
--- Porting note: Modified `s ∩ t` to `↑s ∩ ↑t`.
 @[simp]
 theorem coe_inf : (↑(s ⊓ t) : Set P) = ↑s ∩ ↑t :=
   rfl

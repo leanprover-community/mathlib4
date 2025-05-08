@@ -396,7 +396,7 @@ lemma jacobiTheta₂_add_left (z τ : ℂ) : jacobiTheta₂ (z + 1) τ = jacobiT
 /-- The two-variable Jacobi theta function is quasi-periodic in `z` with period `τ`. -/
 lemma jacobiTheta₂_add_left' (z τ : ℂ) :
     jacobiTheta₂ (z + τ) τ = cexp (-π * I * (τ + 2 * z)) * jacobiTheta₂ z τ := by
-  conv_rhs => erw [← tsum_mul_left, ← (Equiv.addRight 1).tsum_eq]
+  conv_rhs => rw [jacobiTheta₂, ← tsum_mul_left, ← (Equiv.addRight 1).tsum_eq]
   refine tsum_congr (fun n ↦ ?_)
   simp_rw [jacobiTheta₂_term, ← Complex.exp_add, Equiv.coe_addRight, Int.cast_add]
   ring_nf
@@ -443,7 +443,7 @@ lemma jacobiTheta₂'_add_left' (z τ : ℂ) :
     ring
   rw [jacobiTheta₂', funext this, tsum_mul_left, ← (Equiv.subRight (1 : ℤ)).tsum_eq]
   simp only [jacobiTheta₂, jacobiTheta₂', Equiv.subRight_apply, sub_add_cancel,
-    tsum_sub (hasSum_jacobiTheta₂'_term z hτ).summable
+    (hasSum_jacobiTheta₂'_term z hτ).summable.tsum_sub
     ((hasSum_jacobiTheta₂_term z hτ).summable.mul_left _), tsum_mul_left]
 
 lemma jacobiTheta₂'_neg_left (z τ : ℂ) : jacobiTheta₂' (-z) τ = -jacobiTheta₂' z τ := by
@@ -530,6 +530,7 @@ theorem jacobiTheta₂'_functional_equation (z τ : ℂ) :
     exact (((differentiableAt_pow 2).const_mul _).mul_const _).cexp
   _ = _ := by
     rw [hj.deriv]
-    erw [deriv_cexp (((differentiableAt_pow _).const_mul _).mul_const _)]
-    rw [mul_comm, deriv_mul_const_field, deriv_const_mul_field, deriv_pow]
+    simp only [div_eq_mul_inv _ τ]
+    rw [deriv_cexp (((differentiableAt_pow _).const_mul _).mul_const _), mul_comm,
+      deriv_mul_const_field, deriv_const_mul_field, deriv_pow]
     ring_nf

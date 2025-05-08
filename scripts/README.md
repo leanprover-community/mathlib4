@@ -95,6 +95,9 @@ Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
 
 **API surrounding CI**
+- `parse_lake_manifest_changes.py` compares two versions of `lake-manifest.json` to report
+  dependency changes in Zulip notifications. Used by the `update_dependencies_zulip.yml` workflow
+  to show which dependencies were updated, added, or removed, with links to GitHub diffs.
 - `update_PR_comment.sh` is a script that edits an existing message (or creates a new one).
   It is used by the `PR_summary` workflow to maintain an up-to-date report with a searchable history.
 - `get_tlabel.sh` extracts the `t-`label that a PR has (assuming that there is exactly one).
@@ -103,11 +106,16 @@ please do not add new entries to these files. PRs removing (the need for) entrie
 - `count-trans-deps.py`, `import-graph-report.py` and `import_trans_difference.sh` produce various
   summaries of changes in transitive imports that the `PR_summary` message incorporates.
 - `zulip_emoji_merge_delegate.py` is called
-  * every time a `bors d`, `bors merge` or `bors r+` comment is added to a PR and
-  * on every push to `master`.
+  * every time a `bors d`, `bors merge` or `bors r` comment is added to a PR,
+  * whenever bors merges a PR,
+  * whenever a PR is closed or reopened
+  * whenever a PR is labelled or unlabelled with `awaiting-author` or `maintainer-merge`
   It looks through all zulip posts containing a reference to the relevant PR
-  (delegated, or sent to bors, or merged) and it will post an emoji reaction
-  `:peace_sign:`, or `:bors:`, or `:merge:` respectively to the message.
+  and will post or update an emoji reaction corresponding to the current PR state to the message.
+  This reaction is ✌️ (`:peace_sign:`) for delegated, `:bors:` for PRs sent to bors,
+  `:merge` for merged PRs, ✍️ (`:writing:`) for PRs awaiting-author,
+  🔨 (`:hammer:`) for maintainer-merged PRs and `:closed-pr:` for closed PRs.
+  Two of these are custom emojis configured on zulip.
 - `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
   the `linter.minImports` output, summarizing the data in a table.  See the module docs of
   `late_importers.sh` for further details.

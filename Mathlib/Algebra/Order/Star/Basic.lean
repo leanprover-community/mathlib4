@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Group.Opposite
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Tactic.ContinuousFunctionalCalculus
@@ -31,10 +31,10 @@ It is important to note that while a `StarOrderedRing` is an `OrderedAddCommMono
 ## TODO
 
 * In a Banach star algebra without a well-defined square root, the natural ordering is given by the
-positive cone which is the _closure_ of the sums of elements `star r * r`. A weaker version of
-`StarOrderedRing` could be defined for this case (again, see
-[*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
-the advantage of not requiring a topology.
+  positive cone which is the _closure_ of the sums of elements `star r * r`. A weaker version of
+  `StarOrderedRing` could be defined for this case (again, see
+  [*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
+  the advantage of not requiring a topology.
 -/
 
 open Set
@@ -58,8 +58,8 @@ class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R]
 namespace StarOrderedRing
 
 -- see note [lower instance priority]
-instance (priority := 100) toOrderedAddCommMonoid [NonUnitalSemiring R] [PartialOrder R]
-    [StarRing R] [StarOrderedRing R] : OrderedAddCommMonoid R where
+instance (priority := 100) toIsOrderedAddMonoid [NonUnitalSemiring R] [PartialOrder R]
+    [StarRing R] [StarOrderedRing R] : IsOrderedAddMonoid R where
   add_le_add_left := fun x y hle z ↦ by
     rw [StarOrderedRing.le_iff] at hle ⊢
     refine hle.imp fun s hs ↦ ?_
@@ -72,11 +72,6 @@ instance (priority := 100) toExistsAddOfLE [NonUnitalSemiring R] [PartialOrder R
   exists_add_of_le h :=
     match (le_iff _ _).mp h with
     | ⟨p, _, hp⟩ => ⟨p, hp⟩
-
--- see note [lower instance priority]
-instance (priority := 100) toOrderedAddCommGroup [NonUnitalRing R] [PartialOrder R]
-    [StarRing R] [StarOrderedRing R] : OrderedAddCommGroup R where
-  add_le_add_left := @add_le_add_left _ _ _ _
 
 /-- To construct a `StarOrderedRing` instance it suffices to show that `x ≤ y` if and only if
 `y = x + star s * s` for some `s : R`.
@@ -303,6 +298,20 @@ protected theorem IsSelfAdjoint.sq_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤
   simp [sq, ha.mul_self_nonneg]
 
 end Semiring
+
+namespace MulOpposite
+
+instance [NonUnitalSemiring R] [StarRing R] [PartialOrder R] [StarOrderedRing R] :
+    StarOrderedRing Rᵐᵒᵖ where
+  le_iff x y := by
+    rw [← unop_le_unop, StarOrderedRing.le_iff, op_surjective.exists,
+      ← (AddSubmonoid.closure _).comap_map_eq_of_injective opAddEquiv.injective]
+    congr! with p
+    · simp [AddMonoidHom.map_mclosure, ← range_comp', Function.comp_def,
+        ← (star_involutive.surjective.comp op_surjective).range_comp]
+    · simp [← op_inj (α := R)]
+
+end MulOpposite
 
 section StarModule
 
