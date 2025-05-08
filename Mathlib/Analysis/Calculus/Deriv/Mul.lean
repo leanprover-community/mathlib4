@@ -160,6 +160,15 @@ theorem derivWithin_const_smul (c : R) (hf : DifferentiableWithinAt 𝕜 f s x) 
   · exact (hf.hasDerivWithinAt.const_smul c).derivWithin hsx
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
+/-- A variant of `derivWithin_const_smul` without differentiability assumption when the scalar
+multiplication is by field elements. -/
+lemma derivWithin_const_smul' {f : 𝕜 → F} {x : 𝕜} {R : Type*} [Field R] [Module R F]
+    [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F] (c : R) :
+    derivWithin (fun y ↦ c • f y) s x = c • derivWithin f s x := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · simp [← fderivWithin_derivWithin, ← Pi.smul_def, fderivWithin_const_smul_field c hsx]
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
+
 theorem deriv_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
     deriv (fun y => c • f y) x = c • deriv f x :=
   (hf.hasDerivAt.const_smul c).deriv
@@ -169,15 +178,7 @@ multiplication is by field elements. -/
 lemma deriv_const_smul' {f : 𝕜 → F} {x : 𝕜} {R : Type*} [Field R] [Module R F] [SMulCommClass 𝕜 R F]
     [ContinuousConstSMul R F] (c : R) :
     deriv (fun y ↦ c • f y) x = c • deriv f x := by
-  by_cases hf : DifferentiableAt 𝕜 f x
-  · exact deriv_const_smul c hf
-  · rcases eq_or_ne c 0 with rfl | hc
-    · simp only [zero_smul, deriv_const']
-    · have H : ¬DifferentiableAt 𝕜 (fun y ↦ c • f y) x := by
-        contrapose! hf
-        conv => enter [2, y]; rw [← inv_smul_smul₀ hc (f y)]
-        exact DifferentiableAt.const_smul hf c⁻¹
-      rw [deriv_zero_of_not_differentiableAt hf, deriv_zero_of_not_differentiableAt H, smul_zero]
+  simp only [← derivWithin_univ, derivWithin_const_smul']
 
 end ConstSMul
 

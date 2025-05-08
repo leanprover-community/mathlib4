@@ -727,6 +727,10 @@ theorem toSpanSingleton_smul (R) {M₁} [CommSemiring R] [AddCommMonoid M₁] [M
     toSpanSingleton R (c • x) = c • toSpanSingleton R x :=
   toSpanSingleton_smul' R c x
 
+theorem one_smulRight_eq_toSpanSingleton (x : M₁) :
+    (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
+  rfl
+
 end ToSpanSingleton
 
 end Semiring
