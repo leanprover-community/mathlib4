@@ -34,6 +34,23 @@ namespace Bicategory
 
 variable (B : Type u) [Bicategory.{w, v} B]
 
+section
+
+variable {B} {c d e f : B} {g : c ⟶ e} {h : d ⟶ f}
+  {l₁ : c ⟶ d} {r₁ : d ⟶ c} {l₂ : e ⟶ f} {r₂ : f ⟶ e}
+  (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂)
+
+/-
+--Would this be helpful?
+lemma mateEquiv_eq_iff (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : r₁ ≫ g ⟶ h ≫ r₂) :
+  mateEquiv adj₁ adj₂ α = β ↔
+    (λ_ _).inv ≫ adj₁.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l₁ ◁ β =
+      (ρ_ _).inv ≫ g ◁ adj₂.unit ≫
+        (α_ _ _ _).inv ≫ α ▷ r₂ ≫ (α_ _ _ _).hom := by
+  sorry-/
+
+end
+
 /--
 The bicategory that has the same objects as a bicategory `B`, in which `1`-morphisms
 are adjunctions, and `2`-morphisms are tuples of mate maps between the left and right
@@ -137,7 +154,9 @@ def iso₂Mk {α β : a ⟶ b} (ef : α.f ≅ β.f) (eg : β.g ≅ α.g)
   inv :=
     { τf := ef.inv
       τg := eg.inv
-      conjugateEquiv_τf := sorry }
+      conjugateEquiv_τf := by
+        rw [← cancel_mono eg.hom, Iso.inv_hom_id, ← h,
+          conjugateEquiv_comp, Iso.hom_inv_id, conjugateEquiv_id] }
 
 /-- The associator in the bicategory `Adj B`. -/
 @[simps!]
