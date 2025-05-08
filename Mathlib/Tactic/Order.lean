@@ -5,6 +5,7 @@ Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Tactic.Order.Preprocessing
+import Mathlib.Tactic.Order.ToNat
 import Mathlib.Tactic.Order.Graph.Basic
 import Mathlib.Tactic.Order.Graph.Tarjan
 
@@ -229,10 +230,6 @@ def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
     return .some .pre
   return .none
 
-def translateToNat (type : Expr) (idxToAtom : Std.HashMap ℕ Expr) (facts : Array AtomicFact) :
-    MetaM <| Std.HashMap ℕ Expr × Array AtomicFact :=
-  sorry
-
 /-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
 or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 elab "order" : tactic => focus do
@@ -252,14 +249,17 @@ elab "order" : tactic => focus do
     if orderType == .pre then
       if let .some pf ← findContradictionWithNle graph idxToAtom facts then
         g.assign pf
-        break
+        return
     else
       if let .some pf ← findContradictionWithNe graph idxToAtom facts then
         g.assign pf
-        break
+        return
     -- if fast procedure failed and order is linear, we try `omega`
     if orderType == .lin then
-      let (_, factsNat) ← translateToNat type idxToAtom facts
+      let u ← getLevel type
+      let instLinearOrder ← synthInstance (← mkAppM ``LinearOrder #[type])
+      let (_, factsNat) := translateToNat (u := u) type
+        instLinearOrder idxToAtom facts
       let factsExpr : Array Expr := factsNat.filterMap fun factNat =>
         match factNat with
         | .eq _ _ proof => some proof
@@ -271,7 +271,7 @@ elab "order" : tactic => focus do
         | _ => none
       try
         Omega.omega factsExpr.toList g
-        break
+        return
       catch _ => pure ()
   throwError "No contradiction found"
 
