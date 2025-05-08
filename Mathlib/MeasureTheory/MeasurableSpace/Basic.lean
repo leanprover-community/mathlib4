@@ -265,6 +265,7 @@ theorem Measurable.iterate {f : α → α} (hf : Measurable f) : ∀ n, Measurab
   | 0 => measurable_id
   | n + 1 => (Measurable.iterate hf n).comp hf
 
+@[measurability, fun_prop]
 theorem Measurable.equivZPow {e : α ≃ α} (he : Measurable e) (hsymm : Measurable e.symm) :
     ∀ n : ℤ, Measurable (e ^ n)
   | (n : ℕ) => he.iterate _
