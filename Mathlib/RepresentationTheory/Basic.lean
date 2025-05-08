@@ -88,12 +88,12 @@ variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k 
 @[simp]
 theorem inv_self_apply (g : G) (x : V) :
     ρ g⁻¹ (ρ g x) = x := by
-  simp [← LinearMap.mul_apply, ← map_mul]
+  simp [← Module.End.mul_apply, ← map_mul]
 
 @[simp]
 theorem self_inv_apply (g : G) (x : V) :
     ρ g (ρ g⁻¹ x) = x := by
-  simp [← LinearMap.mul_apply, ← map_mul]
+  simp [← Module.End.mul_apply, ← map_mul]
 
 lemma apply_bijective (g : G) :
     Function.Bijective (ρ g) :=
@@ -312,7 +312,7 @@ lemma apply_eq_of_coe_eq [IsTrivial (ρ.comp S.subtype)] (g h : G) (hgh : (g : G
     ρ g = ρ h := by
   ext x
   apply (ρ.apply_bijective g⁻¹).1
-  simpa [← LinearMap.mul_apply, ← map_mul, -isTrivial_def] using
+  simpa [← Module.End.mul_apply, ← map_mul, -isTrivial_def] using
     (congr($(isTrivial_def (ρ.comp S.subtype) ⟨g⁻¹ * h, QuotientGroup.eq.1 hgh⟩) x)).symm
 
 variable [S.Normal]
