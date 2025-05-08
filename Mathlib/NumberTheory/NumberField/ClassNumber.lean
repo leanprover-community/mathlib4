@@ -17,11 +17,11 @@ on the class number.
 
 ## Main definitions
 - `NumberField.classNumber`: the class number of a number field is the (finite)
-cardinality of the class group of its ring of integers
+  cardinality of the class group of its ring of integers
 - `RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_mem_primesOver_of_le`: to show that the
-ring of integer of a number field is a PID it is enough to show that all ideals above any (natural)
-prime `p` smaller than Minkowski bound are principal. This is the standard technique to prove that
-`𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
+  ring of integer of a number field is a PID it is enough to show that all ideals above any
+  (natural) prime `p` smaller than Minkowski bound are principal. This is the standard technique to
+  prove that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
 -/
 
 namespace NumberField
