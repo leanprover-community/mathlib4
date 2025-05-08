@@ -150,9 +150,6 @@ lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Pr
     (h₁ : ∀ a, ScottContinuousOn ((fun d => Prod.snd '' d) '' D) (fun b => f (a,b)))
     (h₂ : ∀ b, ScottContinuousOn ((fun d => Prod.fst '' d) '' D) (fun a => f (a,b))) :
     ScottContinuousOn D f := fun d hX hd₁ hd₂ ⟨p1, p2⟩ hdp => by
-  have e2 : IsLUB ((fun a ↦ f (a, p2)) '' (Prod.fst '' d)) (f (p1, p2)) := h₂ _
-    (mem_image_of_mem (fun d ↦ Prod.fst '' d) hX) (Nonempty.image Prod.fst hd₁) (DirectedOn.fst hd₂)
-    ((isLUB_prod (p1,p2)).mp hdp).1
   rw [isLUB_congr ((monotone_prod_iff.mpr ⟨(fun a => (h₁ a).monotone _ (by aesop)),
     (fun a => (h₂ a).monotone _ (by aesop))⟩).upperBounds_image_of_directedOn_prod hd₂),
     ← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion,
@@ -160,7 +157,9 @@ lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Pr
       rw [singleton_prod, image_image f (fun b ↦ (a, b))]
       exact h₁ _ (mem_image_of_mem (fun d ↦ Prod.snd '' d) hX) (Nonempty.image Prod.snd hd₁)
         (DirectedOn.snd hd₂) ((isLUB_prod (_,_)).mp hdp).2) _, Set.range]
-  convert e2
+  convert (h₂ _
+    (mem_image_of_mem (fun d ↦ Prod.fst '' d) hX) (Nonempty.image Prod.fst hd₁) (DirectedOn.fst hd₂)
+    ((isLUB_prod (p1,p2)).mp hdp).1)
   ext : 1
   simp_all only [Prod.forall, Prod.mk_le_mk, and_imp, Subtype.exists, mem_image, Prod.exists,
     exists_and_right, exists_eq_right, exists_prop, mem_setOf_eq]
