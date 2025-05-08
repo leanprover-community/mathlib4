@@ -340,7 +340,7 @@ theorem comp_symm : e.toLinearMap ∘ₛₗ e.symm.toLinearMap = LinearMap.id :=
   LinearMap.ext e.apply_symm_apply
 
 @[simp]
-theorem symm_somp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap= LinearMap.id :=
+theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap= LinearMap.id :=
   LinearMap.ext e.symm_apply_apply
 
 @[simp]
