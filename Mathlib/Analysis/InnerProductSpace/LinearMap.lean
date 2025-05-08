@@ -41,7 +41,7 @@ open scoped InnerProductSpace
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 section Complex_Seminormed
 
@@ -122,7 +122,7 @@ theorem LinearIsometryEquiv.inner_map_eq_flip (f : E ≃ₗᵢ[𝕜] E') (x : E)
 
 /-- A linear map that preserves the inner product is a linear isometry. -/
 def LinearMap.isometryOfInner (f : E →ₗ[𝕜] E') (h : ∀ x y, ⟪f x, f y⟫ = ⟪x, y⟫) : E →ₗᵢ[𝕜] E' :=
-  ⟨f, fun x => by simp only [@norm_eq_sqrt_inner 𝕜, h]⟩
+  ⟨f, fun x => by simp only [@norm_eq_sqrt_re_inner 𝕜, h]⟩
 
 @[simp]
 theorem LinearMap.coe_isometryOfInner (f : E →ₗ[𝕜] E') (h) : ⇑(f.isometryOfInner h) = f :=
@@ -279,7 +279,7 @@ section ReApplyInnerSelf
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- Extract a real bilinear form from an operator `T`,
 by taking the pairing `fun x ↦ re ⟪T x, x⟫`. -/
@@ -296,7 +296,7 @@ section ReApplyInnerSelf_Seminormed
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
     Continuous T.reApplyInnerSelf :=

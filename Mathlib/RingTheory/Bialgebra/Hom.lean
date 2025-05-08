@@ -24,7 +24,7 @@ homomorphism.
 
 -/
 
-open TensorProduct Bialgebra
+open TensorProduct Bialgebra Coalgebra
 
 universe u v w
 
@@ -126,6 +126,15 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
     (f : α →ₐc[R] β) : α → β := f
 
 initialize_simps_projections BialgHom (toFun → apply)
+
+/-- Construct a bialgebra hom from an algebra hom respecting counit and comultiplication. -/
+@[simps] def ofAlgHom (f : A →ₐ[R] B) (counit_comp : counit ∘ₗ f.toLinearMap = counit)
+    (map_comp_comul : map f.toLinearMap f.toLinearMap ∘ₗ comul = comul ∘ₗ f.toLinearMap) :
+    A →ₐc[R] B where
+  __ := f
+  map_smul' := map_smul f
+  counit_comp := counit_comp
+  map_comp_comul := map_comp_comul
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
@@ -297,7 +306,7 @@ variable (R : Type u) (A : Type v)
 variable [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 /-- The counit of a bialgebra as a `BialgHom`. -/
-def counitBialgHom : A →ₐc[R] R :=
+noncomputable def counitBialgHom : A →ₐc[R] R :=
   { Coalgebra.counitCoalgHom R A, counitAlgHom R A with }
 
 @[simp]

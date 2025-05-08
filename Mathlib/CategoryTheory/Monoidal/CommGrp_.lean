@@ -14,7 +14,7 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory Category Limits MonoidalCategory ChosenFiniteProducts Mon_ Grp_ CommMon_
 
-variable (C : Type u₁) [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C]
+variable (C : Type u₁) [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C] [BraidedCategory C]
 
 /-- A commutative group object internal to a cartesian monoidal category. -/
 structure CommGrp_ extends Grp_ C, CommMon_ C where
@@ -39,6 +39,7 @@ variable {C}
 instance : Category (CommGrp_ C) :=
   InducedCategory.category CommGrp_.toGrp_
 
+omit [BraidedCategory C] in
 @[simp]
 theorem id_hom (A : Grp_ C) : Mon_.Hom.hom (𝟙 A) = 𝟙 A.X :=
   rfl
@@ -148,15 +149,18 @@ instance : HasInitial (CommGrp_ C) :=
 
 end CommGrp_
 
-namespace CategoryTheory.Functor
+namespace CategoryTheory
+variable {C}
+  {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts D] [BraidedCategory D]
 
-variable {C} {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D)
-variable [PreservesFiniteProducts F]
+namespace Functor
+variable {F : C ⥤ D} [F.Braided]
 
-attribute [local instance] braidedOfChosenFiniteProducts
+open Monoidal
 
+variable (F) in
 /-- A finite-product-preserving functor takes commutative group objects to commutative group
-    objects. -/
+objects. -/
 @[simps!]
 noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
   obj A :=
@@ -166,7 +170,8 @@ noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
         rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, A.mul_comm] }
   map f := F.mapMon.map f
 
-/-- `mapGrp` is functorial in the left-exact functor. -/
+attribute [local instance] Functor.Braided.ofChosenFiniteProducts in
+/-- `mapCommGrp` is functorial in the left-exact functor. -/
 @[simps]
 noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp_ C ⥤ CommGrp_ D where
   obj F := F.1.mapCommGrp
