@@ -124,6 +124,8 @@ alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
 
 end CompleteLattice
 
+-- TODO: Replace `(hD : ∀ a b : (α × β), a ≤ b → {a, b} ∈ D)` with the condition that
+-- `fun a => f (a,b)` and `fun b => f (a,b)` are monotone?
 /- TODO: Can we then deduce `ScottContinuousOn.sup₂` from this? -/
 /- `f` is Scott continuous on a product space if it is Scott continuous in each variable -/
 lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
@@ -163,6 +165,9 @@ lemma ScottContinuous_prod_of_ScottContinuous {γ : Type*} [Preorder α] [Preord
 /- The join operation is Scott continuous -/
 lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := by
+  apply ScottContinuousOn_prod_of_ScottContinuousOn
+
+/-
   simp only
   intro d _ _ _ ⟨p₁, p₂⟩ hdp
   rw [IsLUB, IsLeast, upperBounds] at hdp
@@ -182,6 +187,7 @@ lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     apply e1
     intro b₁ b₂ hb'
     exact sup_le_iff.mp (hb b₁ b₂ hb' rfl)
+-/
 
 /- In a complete linear order, the Scott Topology coincides with the Upper topology, see
 `Topology.IsScott.scott_eq_upper_of_completeLinearOrder` -/
