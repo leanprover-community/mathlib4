@@ -57,7 +57,9 @@ jobs:
         git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt
         # Get all files which were removed or renamed.
         echo "Checking for removed files..."
-        git diff --name-only --diff-filter DR origin/${{ github.base_ref }}... | tee removed_renamed_files.txt
+        git diff --name-only --diff-filter D origin/${{ github.base_ref }}... | tee removed_renamed_files.txt
+        echo "Checking for renamed files..."
+        git diff --summary --diff-filter=R origin/${{ github.base_ref }}... | awk '{print $2}' | tee renamed_files.txt
 
     - name: Compute (re)moved files without deprecation
       run: |
@@ -69,6 +71,9 @@ jobs:
           else
             printf '\n⚠️ **warning**: file `%s` was removed without a module deprecation\n' "${file}" | tee -a moved_without_deprecation.txt
           fi
+        done
+        for file in $(cat renamed_files.txt) ; do
+          printf '\n⚠️ **warning**: file `%s` was renamed without a module deprecation\n' "${file}" | tee -a moved_without_deprecation.txt
         done
 
     - name: Compute transitive imports
