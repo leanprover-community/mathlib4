@@ -142,8 +142,9 @@ namespace IsWeierstrassDivisorAt
 variable {g I} (H : g.IsWeierstrassDivisorAt I)
 include H
 
+set_option linter.unusedVariables false in
 /-- The `n` is the order of the image of `g` in `(A / I)⟦X⟧`. -/
-noncomputable abbrev n (_H : g.IsWeierstrassDivisorAt I) :=
+noncomputable abbrev n (H : g.IsWeierstrassDivisorAt I) :=
   (g.map (Ideal.Quotient.mk I)).order.toNat
 
 theorem coeff_g_of_lt : ∀ i < H.n, coeff A i g ∈ I := fun i hi ↦ by
