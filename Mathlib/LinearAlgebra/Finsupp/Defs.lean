@@ -252,6 +252,7 @@ noncomputable def finsuppProdLEquiv {α β : Type*} (R : Type*) {M : Type*} [Sem
     map_add' f g := by ext; simp
     map_smul' c f := by ext; simp }
 
+@[simp]
 theorem finsuppProdLEquiv_symm_apply_apply
     {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     (f : α →₀ β →₀ M) (xy) : (finsuppProdLEquiv R).symm f xy = f xy.1 xy.2 := by

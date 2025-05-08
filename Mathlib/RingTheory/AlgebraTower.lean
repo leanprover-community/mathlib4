@@ -123,7 +123,7 @@ def Basis.smulTower : Basis (ι × ι') R A :=
 @[simp]
 theorem Basis.smulTower_repr (x ij) :
     (b.smulTower c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
-  simp [smulTower, Finsupp.uncurry_apply]
+  simp [smulTower]
 
 theorem Basis.smulTower_repr_mk (x i j) : (b.smulTower c).repr x (i, j) = b.repr (c.repr x j) i :=
   b.smulTower_repr c x (i, j)
