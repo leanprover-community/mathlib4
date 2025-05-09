@@ -19,7 +19,6 @@ out of this typeclass.
 
 We show (see `CategoryTheory.Limits.PreservesColimit₂.of_preservesColimits_in_each_variable`)
 that if `G` preserves colimits in each variable, then `G` `PreservesColimit₂`.
-
 -/
 
 namespace CategoryTheory
