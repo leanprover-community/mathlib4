@@ -339,4 +339,5 @@ theorem tutte :
   by_cases hvOdd : Odd (Nat.card V)
   · exact ⟨∅, .empty hvOdd⟩
   · exact exists_isTutteViolator h (Nat.not_odd_iff_even.mp hvOdd)
+
 end SimpleGraph
