@@ -44,8 +44,9 @@ The Lebesgue decomposition provides the Radon-Nikodym theorem readily.
 Lebesgue decomposition theorem
 -/
 
-open scoped MeasureTheory NNReal ENNReal
+assert_not_exists MeasureTheory.VectorMeasure
 
+open scoped MeasureTheory NNReal ENNReal
 open Set
 
 namespace MeasureTheory

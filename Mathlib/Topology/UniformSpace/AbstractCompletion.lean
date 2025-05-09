@@ -46,8 +46,6 @@ uniform spaces, completion, universal property
 
 noncomputable section
 
-attribute [local instance] Classical.propDecidable
-
 open Filter Set Function
 
 universe u
@@ -80,8 +78,6 @@ variable {α : Type*} [UniformSpace α] (pkg : AbstractCompletion α)
 local notation "hatα" => pkg.space
 
 local notation "ι" => pkg.coe
-
-@[deprecated (since := "2024-10-08")] alias uniformInducing := isUniformInducing
 
 /-- If `α` is complete, then it is an abstract completion of itself. -/
 def ofComplete [T0Space α] [CompleteSpace α] : AbstractCompletion α :=
@@ -116,6 +112,7 @@ section Extend
 
 /-- Extension of maps to completions -/
 protected def extend (f : α → β) : hatα → β :=
+  open scoped Classical in
   if UniformContinuous f then pkg.isDenseInducing.extend f else fun x => f (pkg.dense.some x)
 
 variable {f : α → β}
@@ -133,7 +130,7 @@ theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
   by_cases hf : UniformContinuous f
   · rw [pkg.extend_def hf]
     exact uniformContinuous_uniformly_extend pkg.isUniformInducing pkg.dense hf
-  · change UniformContinuous (ite _ _ _)
+  · unfold AbstractCompletion.extend
     rw [if_neg hf]
     exact uniformContinuous_of_const fun a b => by congr 1
 

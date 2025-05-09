@@ -44,6 +44,9 @@ If `μ, ν` are two measures with `ν` s-finite, then there exists a set `s` suc
 
 -/
 
+assert_not_exists MeasureTheory.Measure.rnDeriv
+assert_not_exists MeasureTheory.VectorMeasure
+
 open scoped ENNReal Topology
 
 open Filter
