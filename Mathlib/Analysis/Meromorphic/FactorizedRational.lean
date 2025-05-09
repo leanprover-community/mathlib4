@@ -223,9 +223,9 @@ theorem MeromorphicOn.extract_zeros_poles {f : 𝕜 → E} (h₁f : MeromorphicO
     rw [WithTop.untop₀_coe, (by rfl : -↑(n : WithTop ℤ) = (↑(-n) : WithTop ℤ)), ← WithTop.coe_add]
     simp
   · -- f =ᶠ[codiscreteWithin U] (∏ᶠ (u : 𝕜), fun z ↦ (z - u) ^ (divisor f U) u) * g
-    filter_upwards [(divisor f U).discreteWithinSupport,
+    filter_upwards [(divisor f U).eq_zero_codiscreteWithin,
       (hφ.inv.smul h₁f).meromorphicNFAt_mem_codiscreteWithin,
-      codiscreteWithin_self U] with a h₂a h₃a h₄a
+      self_mem_codiscreteWithin U] with a h₂a h₃a h₄a
     unfold g
     simp only [Pi.smul_apply', toMeromorphicNFOn_eq_toMeromorphicNFAt (hφ.inv.smul h₁f) h₄a,
       toMeromorphicNFAt_eq_self.2 h₃a, Pi.inv_apply]
@@ -267,8 +267,7 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
     simp [hx]
   rw [not_not] at h₃f
   -- General case
-  filter_upwards [h, D.discreteWithinSupport,
-    codiscreteWithin_self U] with z hz h₂z h₃z
+  filter_upwards [h, D.eq_zero_codiscreteWithin, self_mem_codiscreteWithin U] with z hz h₂z h₃z
   rw [hz, finprod_eq_prod_of_mulSupport_subset (s := h₃f.toFinset) _
     (by simp_all [mulSupport]), finsum_eq_sum_of_support_subset (s := h₃f.toFinset) _ (by simp_all)]
   have : ∀ x ∈ h₃f.toFinset, ‖z - x‖ ^ D x ≠ 0 := by
