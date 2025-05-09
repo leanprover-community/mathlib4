@@ -1143,7 +1143,7 @@ lemma Nat.cast_finprod [Finite ι] {R : Type*} [CommSemiring R] (f : ι → ℕ)
     ↑(∏ᶠ x, f x : ℕ) = ∏ᶠ x, (f x : R) :=
   (Nat.castRingHom R).map_finprod <| Set.toFinite (Function.mulSupport f)
 
-lemma Nat.cast_bfinprod {s : Set ι} (hs : s.Finite) {R : Type*} [CommSemiring R] (f : ι → ℕ) :
+lemma Nat.cast_finprod_mem {s : Set ι} (hs : s.Finite) {R : Type*} [CommSemiring R] (f : ι → ℕ) :
     ↑(∏ᶠ x ∈ s, f x : ℕ) = ∏ᶠ x ∈ s, (f x : R) :=
   (Nat.castRingHom R).map_finprod_mem _ hs
 
