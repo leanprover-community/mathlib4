@@ -35,12 +35,12 @@ lemma preservesColimit_of_braided_and_preservesColimit_tensor_right
     PreservesColimit F (tensorLeft c) :=
   preservesColimit_of_natIso F (BraidedCategory.tensorLeftIsoTensorRight c).symm
 
-instance preservesCoLimit_curriedTensor [h : ∀ c : C, PreservesColimit F (tensorRight c)] :
+lemma preservesCoLimit_curriedTensor [h : ∀ c : C, PreservesColimit F (tensorRight c)] :
     PreservesColimit F (curriedTensor C) :=
   preservesColimit_of_evaluation _ _
     (fun c ↦ inferInstanceAs (PreservesColimit F (tensorRight c)))
 
-instance preservesColimit_curriedTensor_obj (c : C) [PreservesColimit F (tensorLeft c)] :
+lemma preservesColimit_curriedTensor_obj (c : C) [PreservesColimit F (tensorLeft c)] :
     PreservesColimit F ((curriedTensor C).obj c) :=
   by assumption
 
@@ -64,14 +64,14 @@ lemma preservesLimit_of_braided_and_preservesLimit_tensor_right
     PreservesLimit F (tensorLeft c) :=
   preservesLimit_of_natIso F (NatIso.ofComponents (fun _ ↦ β_ _ _) : tensorRight c ≅ tensorLeft c)
 
-instance preservesLimit_curriedTensor [h : ∀ c : C, PreservesLimit F (tensorRight c)] :
+lemma preservesLimit_curriedTensor [h : ∀ c : C, PreservesLimit F (tensorRight c)] :
     PreservesLimit F (curriedTensor C) :=
   preservesLimit_of_evaluation _ _ <| fun c ↦
     preservesLimit_of_natIso F
       (NatIso.ofComponents (fun _ ↦ Iso.refl _) :
         tensorRight c ≅ curriedTensor C ⋙ (evaluation C C).obj c)
 
-instance preservesLimit_curriedTensor_obj (c : C) [PreservesLimit F (tensorLeft c)] :
+lemma preservesLimit_curriedTensor_obj (c : C) [PreservesLimit F (tensorLeft c)] :
     PreservesLimit F ((curriedTensor C).obj c) :=
     preservesLimit_of_natIso F (NatIso.ofComponents (fun _ ↦ Iso.refl _) : tensorLeft c ≅ _)
 
