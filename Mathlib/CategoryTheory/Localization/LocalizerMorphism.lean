@@ -34,6 +34,14 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {D₁ : Type u
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} D₁] [Category.{v₅} D₂]
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
 
+def ObjectProperty.localizerMorphism :
+    ObjectProperty (C₁ ⥤ C₂) := fun F ↦ W₁ ≤ W₂.inverseImage F
+
+instance [W₂.RespectsIso] :
+    (ObjectProperty.localizerMorphism W₁ W₂).IsClosedUnderIsomorphisms where
+  of_iso e h _ _ f hf :=
+    (W₂.arrow_mk_iso_iff (Arrow.isoMk (e.app _) (e.app _))).1 (h _ hf)
+
 /-- If `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂`, a `LocalizerMorphism W₁ W₂`
 is the datum of a functor `C₁ ⥤ C₂` which sends morphisms in `W₁` to morphisms in `W₂` -/
 structure LocalizerMorphism where

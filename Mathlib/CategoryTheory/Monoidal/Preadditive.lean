@@ -68,6 +68,9 @@ instance tensoringLeft_additive (X : C) : ((tensoringLeft C).obj X).Additive whe
 
 instance tensoringRight_additive (X : C) : ((tensoringRight C).obj X).Additive where
 
+instance : (curriedTensor C).Additive where
+instance (X : C) : ((curriedTensor C).obj X).Additive where
+
 /-- A faithful additive monoidal functor to a monoidal preadditive category
 ensures that the domain is monoidal preadditive. -/
 theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [MonoidalCategory D]

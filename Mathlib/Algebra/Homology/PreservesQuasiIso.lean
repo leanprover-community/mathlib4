@@ -3,35 +3,47 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Homology.Localization
+import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.DoubleHomology
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory
 
 /-!
 # Exact functors preserves quasi-isomorphisms
 
 -/
 
-namespace HomologicalComplex
+section
 
 open CategoryTheory Limits
 
-variable {C₁ C₂ : Type*} [Category C₁] [Category C₂] [HasZeroMorphisms C₁] [HasZeroMorphisms C₂]
+variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
   {ι₁ ι₂ : Type*} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂}
-  [CategoryWithHomology C₁] [CategoryWithHomology C₂]
 
-def preservesQuasiIso :
+abbrev HomologicalComplex.preservesQuasiIso [HasZeroMorphisms C₁] [HasZeroMorphisms C₂]
+    [CategoryWithHomology C₁] [CategoryWithHomology C₂] :
     ObjectProperty (HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂) :=
-  fun F ↦ (HomologicalComplex.quasiIso C₁ c₁ ≤ (HomologicalComplex.quasiIso C₂ c₂).inverseImage F)
+  ObjectProperty.localizerMorphism
+    (HomologicalComplex.quasiIso C₁ c₁) (HomologicalComplex.quasiIso C₂ c₂)
 
+abbrev HomotopyCategory.preservesQuasiIso [Preadditive C₁] [Preadditive C₂]
+    [CategoryWithHomology C₁] [CategoryWithHomology C₂] :
+    ObjectProperty (HomotopyCategory C₁ c₁ ⥤ HomotopyCategory C₂ c₂) :=
+  ObjectProperty.localizerMorphism
+    (HomotopyCategory.quasiIso C₁ c₁) (HomotopyCategory.quasiIso C₂ c₂)
 
-end HomologicalComplex
+end
 
 namespace CategoryTheory
 
 open Limits ZeroObject
 
 variable {C D : Type*} [Category C] [Category D]
-  [HasZeroMorphisms C] [HasZeroMorphisms D]
+
+section
+
+variable [HasZeroMorphisms C] [HasZeroMorphisms D]
   [CategoryWithHomology C] [CategoryWithHomology D]
   (F : C ⥤ D) [F.PreservesZeroMorphisms]
 
@@ -111,6 +123,56 @@ lemma preservesQuasiIso_mapHomologicalComplex_iff {C D : Type*} [Category C]
       ((doubleFunctorCompMapHomologicalComplex hi₀₁ hi₀₁' F).app _) (by
         dsimp
         ext <;> simp [mapHomologicalComplexObjDoubleXIso, doubleFunctor_map, e])
+
+lemma exactFunctor_iff_preservesQuasiIso {C D : Type*} [Category C]
+    [Category D] [Abelian C] [Abelian D] (F : C ⥤ D) [F.Additive]
+    {ι : Type*} (c : ComplexShape ι)
+    {i₀ i₁ : ι} (hi₀₁ : c.Rel i₀ i₁) (hi₀₁' : i₀ ≠ i₁) :
+    ObjectProperty.exactFunctor F ↔
+      HomologicalComplex.preservesQuasiIso (F.mapHomologicalComplex c) := by
+  rw [preservesQuasiIso_mapHomologicalComplex_iff _ c hi₀₁ hi₀₁',
+    ObjectProperty.exactFunctor]
+  exact ⟨fun ⟨_, _⟩ ↦ inferInstance,
+    fun _ ↦ ⟨preservesFiniteLimits_of_preservesHomology _,
+      preservesFiniteColimits_of_preservesHomology _⟩⟩
+
+end Functor
+
+end
+
+namespace Functor
+
+variable [Preadditive C] [Preadditive D]
+    [CategoryWithHomology C] [CategoryWithHomology D]
+
+lemma preservesQuasiIso_iff_of_factors
+    {ι₁ ι₂ : Type*} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂}
+    {F : HomologicalComplex C c₁ ⥤ HomologicalComplex D c₂}
+    {F' : HomotopyCategory C c₁ ⥤ HomotopyCategory D c₂}
+    (e : HomotopyCategory.quotient _ _ ⋙ F' ≅ F ⋙ HomotopyCategory.quotient _ _) :
+    HomotopyCategory.preservesQuasiIso F' ↔ HomologicalComplex.preservesQuasiIso F := by
+  refine ⟨fun h K₁ K₂ f hf ↦ ?_, fun h K₁ K₂ f hf ↦ ?_⟩
+  · rw [MorphismProperty.inverseImage_iff, ← HomotopyCategory.quotient_map_mem_quasiIso_iff]
+    replace h := h ((HomotopyCategory.quotient _ _).map f)
+      (by rwa [HomotopyCategory.quotient_map_mem_quasiIso_iff])
+    simp only [MorphismProperty.inverseImage_iff] at h
+    exact (MorphismProperty.arrow_mk_iso_iff _
+      (((Functor.mapArrowFunctor _ _).mapIso e).app (Arrow.mk f))).1 h
+  · obtain ⟨K₁, rfl⟩ := K₁.quotient_obj_surjective
+    obtain ⟨K₂, rfl⟩ := K₂.quotient_obj_surjective
+    obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
+    simp only [HomotopyCategory.quotient_map_mem_quasiIso_iff] at hf
+    replace h := h _ hf
+    simp only [MorphismProperty.inverseImage_iff] at h ⊢
+    rw [← HomotopyCategory.quotient_map_mem_quasiIso_iff] at h
+    exact (MorphismProperty.arrow_mk_iso_iff _
+      (((Functor.mapArrowFunctor _ _).mapIso e).app (Arrow.mk f))).2 h
+
+lemma preservesQuasiIso_mapHomotopyCategory_iff
+    (F : C ⥤ D) [F.Additive] {ι : Type*} (c : ComplexShape ι) :
+    HomotopyCategory.preservesQuasiIso (F.mapHomotopyCategory c) ↔
+      HomologicalComplex.preservesQuasiIso (F.mapHomologicalComplex c) :=
+  preservesQuasiIso_iff_of_factors (F.mapHomotopyCategoryFactors c)
 
 end Functor
 

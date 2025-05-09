@@ -23,8 +23,14 @@ namespace MorphismProperty
 variable (W : MorphismProperty C) (L : C ⥤ D)
 
 def kFlat : ObjectProperty C := fun X ↦
-  W ≤ W.inverseImage (tensorLeft X) ∧
-    W ≤ W.inverseImage (tensorRight X)
+  ObjectProperty.localizerMorphism W W (tensorLeft X) ∧
+    ObjectProperty.localizerMorphism W W (tensorRight X)
+
+instance [W.RespectsIso] : W.kFlat.IsClosedUnderIsomorphisms where
+  of_iso := by
+    rintro _ _ e ⟨h₁, h₂⟩
+    exact ⟨(ObjectProperty.localizerMorphism W W).prop_of_iso ((curriedTensor C).mapIso e) h₁,
+      (ObjectProperty.localizerMorphism W W).prop_of_iso ((curriedTensor C).flip.mapIso e) h₂⟩
 
 section
 
