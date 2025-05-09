@@ -30,8 +30,6 @@ variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V}
 /-- A set certifying non-existence of a perfect matching -/
 def IsTutteViolator (G : SimpleGraph V) (u : Set V) : Prop :=
   u.ncard < ((⊤ : G.Subgraph).deleteVerts u).coe.oddComponents.ncard
-
-
 /-- This lemma shows an alternating cycle exists in a specific subcase of the proof
 of Tutte's theorem. -/
 private lemma tutte_exists_isAlternating_isCycles {x b a c : V} {M : Subgraph (G ⊔ edge a c)}
@@ -181,7 +179,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   -- We state conditions for our cycle that hold in all cases and show that that suffices
   suffices ∃ (G' : SimpleGraph V), G'.IsAlternating M2.spanningCoe ∧ G'.IsCycles ∧ ¬G'.Adj x b ∧
       G'.Adj a c ∧ G' ≤ G ⊔ edge a c by
-    obtain ⟨G', ⟨hG', hG'cyc, hG'xb, hnG'ac, hle⟩⟩ := this
+    obtain ⟨G', hG', hG'cyc, hG'xb, hnG'ac, hle⟩ := this
     have : M2.spanningCoe ∆ G' ≤ G := by
       apply Disjoint.left_le_of_le_sup_right (symmDiff_le (le_sup_of_le_right M2.spanningCoe_le)
         (le_sup_of_le_right hle))
@@ -329,14 +327,16 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
       hxb hnadjxb (fun hadj ↦ hc.2 hadj.symm) (by aesop) hcnex.symm hc.1 hbnec hG1 hG2
     exact hMatchingFree Mcon hMcon
 
-/-- Tutte's theorem -/
-theorem tutte : (∃ (M : Subgraph G) , M.IsPerfectMatching) ↔
-    (∀ (u : Set V), ¬ G.IsTutteViolator u) := by
+/-- **Tutte's theorem**
+
+ Informal explanation here -/
+theorem tutte :
+    (∃ M : Subgraph G, M.IsPerfectMatching) ↔ ∀ u, ¬ G.IsTutteViolator u := by
   classical
   refine ⟨by rintro ⟨M, hM⟩; apply not_isTutteViolator_of_isPerfectMatching hM, ?_⟩
   contrapose!
   intro h
   by_cases hvOdd : Odd (Nat.card V)
-  · exact ⟨∅, IsTutteViolator.empty hvOdd⟩
+  · exact ⟨∅, .empty hvOdd⟩
   · exact exists_isTutteViolator h (Nat.not_odd_iff_even.mp hvOdd)
 end SimpleGraph
