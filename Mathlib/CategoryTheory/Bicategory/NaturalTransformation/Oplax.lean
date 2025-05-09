@@ -18,13 +18,6 @@ oplax functors):
 These differ in the direction (and invertibility) of the 2-morphisms involved in the naturality
 condition.
 
-In this file we define both oplax and strong natural transformations.
-
-
-The equality in the naturality of natural transformations is replaced by a
-specified 2-morphism `F.map f ≫ app b ⟶ app a ≫ G.map f` in the case of oplax natural
-transformations.
-
 ## Main definitions
 
 * `OplaxTrans F G` : oplax transformations between oplax functors `F` and `G`. The naturality
@@ -72,19 +65,16 @@ structure OplaxTrans (F G : OplaxFunctor B C) where
   /-- The 2-morphisms underlying the oplax naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ app b ⟶ app a ≫ G.map f
   /-- Naturality of the oplax naturality constraint. -/
-  naturality_naturality :
-    ∀ {a b : B} {f g : a ⟶ b} (η : f ⟶ g),
+  naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       F.map₂ η ▷ app b ≫ naturality g = naturality f ≫ app a ◁ G.map₂ η := by
     aesop_cat
   /-- Oplax unity. -/
-  naturality_id :
-    ∀ a : B,
+  naturality_id (a : B) :
       naturality (𝟙 a) ≫ app a ◁ G.mapId a =
         F.mapId a ▷ app a ≫ (λ_ (app a)).hom ≫ (ρ_ (app a)).inv := by
     aesop_cat
   /-- Oplax functoriality. -/
-  naturality_comp :
-    ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
+  naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       naturality (f ≫ g) ≫ app a ◁ G.mapComp f g =
         F.mapComp f g ▷ app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ naturality g ≫
           (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).hom := by
@@ -202,17 +192,14 @@ More precisely, it consists of the following:
 structure StrongOplaxTrans (F G : OplaxFunctor B C) where
   app (a : B) : F.obj a ⟶ G.obj a
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ app b ≅ app a ≫ G.map f
-  naturality_naturality :
-    ∀ {a b : B} {f g : a ⟶ b} (η : f ⟶ g),
+  naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       F.map₂ η ▷ app b ≫ (naturality g).hom = (naturality f).hom ≫ app a ◁ G.map₂ η := by
     aesop_cat
-  naturality_id :
-    ∀ a : B,
+  naturality_id (a : B) :
       (naturality (𝟙 a)).hom ≫ app a ◁ G.mapId a =
         F.mapId a ▷ app a ≫ (λ_ (app a)).hom ≫ (ρ_ (app a)).inv := by
     aesop_cat
-  naturality_comp :
-    ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
+  naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       (naturality (f ≫ g)).hom ≫ app a ◁ G.mapComp f g =
         F.mapComp f g ▷ app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (naturality g).hom ≫
         (α_ _ _ _).inv ≫ (naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom := by
