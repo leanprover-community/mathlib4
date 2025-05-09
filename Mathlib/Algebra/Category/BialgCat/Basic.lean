@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Category.CoalgCat.Basic
-import Mathlib.Algebra.Category.Alg.Basic
+import Mathlib.Algebra.Category.AlgCat.Basic
 import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!
 # The category of bialgebras over a commutative ring
 
 We introduce the bundled category `BialgCat` of bialgebras over a fixed commutative ring `R`
-along with the forgetful functors to `CoalgCat` and `Alg`.
+along with the forgetful functors to `CoalgCat` and `AlgCat`.
 
 This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
 
@@ -107,19 +107,19 @@ instance hasForget : HasForget.{v} (BialgCat.{v} R) where
   forget_faithful :=
     { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
 
-instance hasForgetToAlgebra : HasForget₂ (BialgCat R) (Alg R) where
+instance hasForgetToAlgebra : HasForget₂ (BialgCat R) (AlgCat R) where
   forget₂ :=
-    { obj := fun X => Alg.of R X
-      map := fun {X Y} f => Alg.ofHom f.toBialgHom }
+    { obj := fun X => AlgCat.of R X
+      map := fun {X Y} f => AlgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_algebra_obj (X : BialgCat R) :
-    (forget₂ (BialgCat R) (Alg R)).obj X = Alg.of R X :=
+    (forget₂ (BialgCat R) (AlgCat R)).obj X = AlgCat.of R X :=
   rfl
 
 @[simp]
 theorem forget₂_algebra_map (X Y : BialgCat R) (f : X ⟶ Y) :
-    (forget₂ (BialgCat R) (Alg R)).map f = Alg.ofHom f.toBialgHom :=
+    (forget₂ (BialgCat R) (AlgCat R)).map f = AlgCat.ofHom f.toBialgHom :=
   rfl
 
 instance hasForgetToCoalgebra : HasForget₂ (BialgCat R) (CoalgCat R) where

@@ -3,7 +3,7 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.Alg.Monoidal
+import Mathlib.Algebra.Category.AlgCat.Monoidal
 import Mathlib.Algebra.Category.BialgCat.Basic
 import Mathlib.Algebra.Category.CoalgCat.Monoidal
 import Mathlib.RingTheory.Bialgebra.TensorProduct
@@ -44,22 +44,22 @@ noncomputable instance instMonoidalCategoryStruct :
 `BialgCat.instMonoidalCategoryStruct` and the forgetful functor to algebras. -/
 @[simps]
 noncomputable def MonoidalCategory.inducingFunctorData :
-    Monoidal.InducingFunctorData (forget₂ (BialgCat R) (Alg R)) where
+    Monoidal.InducingFunctorData (forget₂ (BialgCat R) (AlgCat R)) where
   μIso _ _ := Iso.refl _
   whiskerLeft_eq _ _ _ _ := by ext; rfl
   whiskerRight_eq _ _ := by ext; rfl
   tensorHom_eq _ _ := by ext; rfl
   εIso := Iso.refl _
-  associator_eq _ _ _ := Alg.hom_ext _ <| Algebra.TensorProduct.ext
+  associator_eq _ _ _ := AlgCat.hom_ext _ <| Algebra.TensorProduct.ext
     (Algebra.TensorProduct.ext (by ext; rfl) (by ext; rfl)) (by ext; rfl)
-  leftUnitor_eq _ := Alg.hom_ext _ <| Algebra.TensorProduct.ext rfl (by ext; rfl)
-  rightUnitor_eq _ := Alg.hom_ext _ <| Algebra.TensorProduct.ext (by ext; rfl) rfl
+  leftUnitor_eq _ := AlgCat.hom_ext _ <| Algebra.TensorProduct.ext rfl (by ext; rfl)
+  rightUnitor_eq _ := AlgCat.hom_ext _ <| Algebra.TensorProduct.ext (by ext; rfl) rfl
 
 noncomputable instance instMonoidalCategory : MonoidalCategory (BialgCat R) :=
-  Monoidal.induced (forget₂ _ (Alg R)) (MonoidalCategory.inducingFunctorData R)
+  Monoidal.induced (forget₂ _ (AlgCat R)) (MonoidalCategory.inducingFunctorData R)
 
-/-- `forget₂ (BialgCat R) (Alg R)` as a monoidal functor. -/
-noncomputable instance : (forget₂ (BialgCat R) (Alg R)).Monoidal where
+/-- `forget₂ (BialgCat R) (AlgCat R)` as a monoidal functor. -/
+noncomputable instance : (forget₂ (BialgCat R) (AlgCat R)).Monoidal where
 
 set_option maxHeartbeats 400000 in
 -- nightly-2025-02-18: added `maxHeartbeats`

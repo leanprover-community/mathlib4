@@ -3,7 +3,7 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib.Algebra.Category.Alg.Basic
+import Mathlib.Algebra.Category.AlgCat.Basic
 import Mathlib.Algebra.Central.Defs
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.Matrix.Reindex
@@ -32,7 +32,7 @@ universe u v
 
 /-- `CSA` is the set of all finite dimensional central simple algebras over field `K`, for its
   generalisation over a `CommRing` please find `IsAzumaya` in `Mathlib.Algebra.Azumaya.Defs`. -/
-structure CSA (K : Type u) [Field K] extends Alg.{v} K where
+structure CSA (K : Type u) [Field K] extends AlgCat.{v} K where
   /-- Any member of `CSA` is central. -/
   [isCentral : Algebra.IsCentral K carrier]
   /-- Any member of `CSA` is simple. -/

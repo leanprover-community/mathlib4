@@ -22,7 +22,7 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 universe u v w u₁ v₁
 
-/-- Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. -/
+/-- Defining the homomorphism in the category R-AlgCat, denoted `A →ₐ[R] B`. -/
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
@@ -267,7 +267,7 @@ theorem comp_assoc (φ₁ : C →ₐ[R] D) (φ₂ : B →ₐ[R] C) (φ₃ : A �
     (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
   rfl
 
-/-- R-Alg ⥤ R-Mod -/
+/-- R-AlgCat ⥤ R-Mod -/
 def toLinearMap : A →ₗ[R] B where
   toFun := φ
   map_add' := map_add _

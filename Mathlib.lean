@@ -80,10 +80,10 @@ import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.BigOperators.Sym
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.BrauerGroup.Defs
-import Mathlib.Algebra.Category.Alg.Basic
-import Mathlib.Algebra.Category.Alg.Limits
-import Mathlib.Algebra.Category.Alg.Monoidal
-import Mathlib.Algebra.Category.Alg.Symmetric
+import Mathlib.Algebra.Category.AlgCat.Basic
+import Mathlib.Algebra.Category.AlgCat.Limits
+import Mathlib.Algebra.Category.AlgCat.Monoidal
+import Mathlib.Algebra.Category.AlgCat.Symmetric
 import Mathlib.Algebra.Category.BialgCat.Basic
 import Mathlib.Algebra.Category.BialgCat.Monoidal
 import Mathlib.Algebra.Category.BoolRing

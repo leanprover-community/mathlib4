@@ -197,7 +197,7 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
       algebraMap R S r • RestrictScalars.ringEquiv R S A x :=
   rfl
 
-/-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
+/-- `R ⟶ S` induces `S-AlgCat ⥤ R-AlgCat` -/
 instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) where
   algebraMap := (algebraMap S A).comp (algebraMap R S)
   smul := (· • ·)

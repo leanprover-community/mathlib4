@@ -241,7 +241,7 @@ variable {R : Type*} [Semiring R]
 -- Lower the priority so that `Algebra.id` is picked most of the time when working with
 -- `ℕ`-algebras.
 -- TODO: is this still needed?
-/-- Semiring ⥤ ℕ-Alg -/
+/-- Semiring ⥤ ℕ-AlgCat -/
 instance (priority := 99) Semiring.toNatAlgebra : Algebra ℕ R where
   commutes' := Nat.cast_commute
   smul_def' _ _ := nsmul_eq_mul _ _
@@ -264,7 +264,7 @@ variable (R : Type*) [Ring R]
 -- Lower the priority so that `Algebra.id` is picked most of the time when working with
 -- `ℤ`-algebras.
 -- TODO: is this still needed?
-/-- Ring ⥤ ℤ-Alg -/
+/-- Ring ⥤ ℤ-AlgCat -/
 instance (priority := 99) Ring.toIntAlgebra : Algebra ℤ R where
   commutes' := Int.cast_commute
   smul_def' _ _ := zsmul_eq_mul _ _
