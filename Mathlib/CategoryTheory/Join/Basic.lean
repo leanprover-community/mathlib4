@@ -541,6 +541,38 @@ lemma mapIsoWhiskerLeft_inv (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (�
 
 end NaturalTransforms
 
+section mapPairEquiv
+
+variable {C' : Type u₃} [Category.{v₃} C']
+  {D' : Type u₄} [Category.{v₄} D']
+
+variable {C D}
+
+/-- Equivalent categories have equivalent joins. -/
+@[simps]
+def mapPairEquiv (e : C ≌ C') (e' : D ≌ D') : C ⋆ D ≌ C' ⋆ D' where
+  functor := mapPair e.functor e'.functor
+  inverse := mapPair e.inverse e'.inverse
+  unitIso :=
+    mapPairId.symm ≪≫
+      mapIsoWhiskerRight e.unitIso _ ≪≫
+      mapIsoWhiskerLeft _ e'.unitIso ≪≫
+      mapPairComp _ _ _ _
+  counitIso :=
+    (mapPairComp _ _ _ _).symm ≪≫
+      mapIsoWhiskerRight e.counitIso _ ≪≫
+      mapIsoWhiskerLeft _ e'.counitIso ≪≫
+      mapPairId
+  functor_unitIso_comp x := by
+    cases x <;>
+    simp [← (inclLeft C' D').map_comp, ← (inclRight C' D').map_comp]
+
+instance isEquivalenceMapPair {F : C ⥤ C'} {F' : D ⥤ D'} [F.IsEquivalence] [F'.IsEquivalence] :
+    (mapPair F F').IsEquivalence :=
+  inferInstanceAs (mapPairEquiv F.asEquivalence F'.asEquivalence).functor.IsEquivalence
+
+end mapPairEquiv
+
 end Join
 
 end CategoryTheory

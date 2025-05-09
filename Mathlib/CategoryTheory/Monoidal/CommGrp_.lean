@@ -14,7 +14,7 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory Category Limits MonoidalCategory ChosenFiniteProducts Mon_ Grp_ CommMon_
 
-variable (C : Type u₁) [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C]
+variable (C : Type u₁) [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C] [BraidedCategory C]
 
 /-- A commutative group object internal to a cartesian monoidal category. -/
 structure CommGrp_ extends Grp_ C, CommMon_ C where
@@ -39,6 +39,7 @@ variable {C}
 instance : Category (CommGrp_ C) :=
   InducedCategory.category CommGrp_.toGrp_
 
+omit [BraidedCategory C] in
 @[simp]
 theorem id_hom (A : Grp_ C) : Mon_.Hom.hom (𝟙 A) = 𝟙 A.X :=
   rfl
@@ -150,7 +151,7 @@ end CommGrp_
 
 namespace CategoryTheory
 variable {C}
-  {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts D]
+  {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts D] [BraidedCategory D]
 
 namespace Functor
 variable {F : C ⥤ D} [F.Braided]
