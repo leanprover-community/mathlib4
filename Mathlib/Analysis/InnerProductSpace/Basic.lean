@@ -42,7 +42,7 @@ open scoped InnerProductSpace
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local postfix:90 "†" => starRingEnd _
 
@@ -223,7 +223,7 @@ theorem inner_sub_right (x y z : E) : ⟪x, y - z⟫ = ⟪x, y⟫ - ⟪x, z⟫ :
 
 theorem inner_mul_symm_re_eq_norm (x y : E) : re (⟪x, y⟫ * ⟪y, x⟫) = ‖⟪x, y⟫ * ⟪y, x⟫‖ := by
   rw [← inner_conj_symm, mul_comm]
-  exact re_eq_norm_of_mul_conj (inner y x)
+  exact re_eq_norm_of_mul_conj ⟪y, x⟫
 
 /-- Expand `⟪x + y, x + y⟫` -/
 theorem inner_add_add_self (x y : E) : ⟪x + y, x + y⟫ = ⟪x, x⟫ + ⟪x, y⟫ + ⟪y, x⟫ + ⟪y, y⟫ := by
@@ -272,7 +272,7 @@ section BasicProperties
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 export InnerProductSpace (norm_sq_eq_re_inner)
 
@@ -316,7 +316,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
     (ho : Pairwise fun i j => ⟪v i, v j⟫ = 0) : LinearIndependent 𝕜 v := by
   rw [linearIndependent_iff']
   intro s g hg i hi
-  have h' : g i * inner (v i) (v i) = inner (v i) (∑ j ∈ s, g j • v j) := by
+  have h' : g i * ⟪v i, v i⟫ = ⟪v i, ∑ j ∈ s, g j • v j⟫ := by
     rw [inner_sum]
     symm
     convert Finset.sum_eq_single (M := 𝕜) i ?_ ?_
@@ -335,7 +335,7 @@ open scoped InnerProductSpace
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local notation "IK" => @RCLike.I 𝕜 _
 
@@ -426,7 +426,7 @@ theorem nnnorm_inner_le_nnnorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * 
   norm_inner_le_norm x y
 
 theorem re_inner_le_norm (x y : E) : re ⟪x, y⟫ ≤ ‖x‖ * ‖y‖ :=
-  le_trans (re_le_norm (inner x y)) (norm_inner_le_norm x y)
+  le_trans (re_le_norm ⟪x, y⟫) (norm_inner_le_norm x y)
 
 /-- Cauchy–Schwarz inequality with norm -/
 theorem abs_real_inner_le_norm (x y : F) : |⟪x, y⟫_ℝ| ≤ ‖x‖ * ‖y‖ :=
@@ -608,7 +608,7 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 variable {ι : Type*}
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- Formula for the distance between the images of two nonzero points under an inversion with center
 zero. See also `EuclideanGeometry.dist_inversion_inversion` for inversions around a general
@@ -620,7 +620,7 @@ theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) 
         √(‖(R / ‖x‖) ^ 2 • x - (R / ‖y‖) ^ 2 • y‖ ^ 2) := by
       rw [dist_eq_norm, sqrt_sq (norm_nonneg _)]
     _ = √((R ^ 2 / (‖x‖ * ‖y‖)) ^ 2 * ‖x - y‖ ^ 2) :=
-      congr_arg sqrt <| by
+      congr_arg (√·) <| by
         field_simp [sq, norm_sub_mul_self_real, norm_smul, real_inner_smul_left, inner_smul_right,
           Real.norm_of_nonneg (mul_self_nonneg _)]
         ring
@@ -803,7 +803,7 @@ end Norm
 
 section RCLike
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A field `𝕜` satisfying `RCLike` is itself a `𝕜`-inner product space. -/
 instance RCLike.innerProductSpace : InnerProductSpace 𝕜 𝕜 where
@@ -830,7 +830,7 @@ variable {G : Type*}
 variable (𝕜 E)
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A general inner product implies a real inner product. This is not registered as an instance
 since `𝕜` does not appear in the return type `Inner ℝ E`. -/
@@ -862,16 +862,16 @@ abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
 variable {E}
 
 theorem real_inner_eq_re_inner (x y : E) :
-    @Inner.inner ℝ E (Inner.rclikeToReal 𝕜 E) x y = re ⟪x, y⟫ :=
+    (Inner.rclikeToReal 𝕜 E).inner x y = re ⟪x, y⟫ :=
   rfl
 
 theorem real_inner_I_smul_self (x : E) :
-    @Inner.inner ℝ E (Inner.rclikeToReal 𝕜 E) x ((I : 𝕜) • x) = 0 := by
+    (Inner.rclikeToReal 𝕜 E).inner x ((I : 𝕜) • x) = 0 := by
   simp [real_inner_eq_re_inner 𝕜, inner_smul_right]
 
 /-- A complex inner product implies a real inner product. This cannot be an instance since it
-creates a diamond with `PiLp.innerProductSpace` because `re (sum i, inner (x i) (y i))` and
-`sum i, re (inner (x i) (y i))` are not defeq. -/
+creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
+`sum i, re ⟪x i, y i⟫` are not defeq. -/
 def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G

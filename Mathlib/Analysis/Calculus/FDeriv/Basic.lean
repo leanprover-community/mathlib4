@@ -624,6 +624,80 @@ theorem HasFDerivWithinAt.differentiableWithinAt (h : HasFDerivWithinAt f f' s x
 theorem HasFDerivAt.differentiableAt (h : HasFDerivAt f f' x) : DifferentiableAt 𝕜 f x :=
   ⟨f', h⟩
 
+@[simp]
+theorem hasFDerivWithinAt_univ : HasFDerivWithinAt f f' univ x ↔ HasFDerivAt f f' x := by
+  simp only [HasFDerivWithinAt, nhdsWithin_univ, HasFDerivAt]
+
+alias ⟨HasFDerivWithinAt.hasFDerivAt_of_univ, _⟩ := hasFDerivWithinAt_univ
+
+theorem differentiableWithinAt_univ :
+    DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
+  simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
+
+theorem fderiv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : fderiv 𝕜 f x = 0 := by
+  rw [fderiv, fderivWithin_zero_of_not_differentiableWithinAt]
+  rwa [differentiableWithinAt_univ]
+
+theorem hasFDerivWithinAt_of_mem_nhds (h : s ∈ 𝓝 x) :
+    HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x := by
+  rw [HasFDerivAt, HasFDerivWithinAt, nhdsWithin_eq_nhds.mpr h]
+
+lemma hasFDerivWithinAt_of_isOpen (h : IsOpen s) (hx : x ∈ s) :
+    HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x :=
+  hasFDerivWithinAt_of_mem_nhds (h.mem_nhds hx)
+
+@[simp]
+theorem hasFDerivWithinAt_insert {y : E} :
+    HasFDerivWithinAt f f' (insert y s) x ↔ HasFDerivWithinAt f f' s x := by
+  rcases eq_or_ne x y with (rfl | h)
+  · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleOTVS]
+    apply isLittleOTVS_insert
+    simp only [sub_self, map_zero]
+  refine ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem_nhdsWithin ?_⟩
+  simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
+
+alias ⟨HasFDerivWithinAt.of_insert, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
+
+protected theorem HasFDerivWithinAt.insert (h : HasFDerivWithinAt g g' s x) :
+    HasFDerivWithinAt g g' (insert x s) x :=
+  h.insert'
+
+@[simp]
+theorem hasFDerivWithinAt_diff_singleton (y : E) :
+    HasFDerivWithinAt f f' (s \ {y}) x ↔ HasFDerivWithinAt f f' s x := by
+  rw [← hasFDerivWithinAt_insert, insert_diff_singleton, hasFDerivWithinAt_insert]
+
+@[simp]
+protected theorem HasFDerivWithinAt.empty : HasFDerivWithinAt f f' ∅ x := by
+  simp [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleOTVS]
+
+@[simp]
+protected theorem DifferentiableWithinAt.empty : DifferentiableWithinAt 𝕜 f ∅ x :=
+  ⟨0, .empty⟩
+
+theorem HasFDerivWithinAt.of_finite (h : s.Finite) : HasFDerivWithinAt f f' s x := by
+  induction s, h using Set.Finite.induction_on with
+  | empty => exact .empty
+  | insert _ _ ih => exact ih.insert'
+
+theorem DifferentiableWithinAt.of_finite (h : s.Finite) : DifferentiableWithinAt 𝕜 f s x :=
+  ⟨0, .of_finite h⟩
+
+@[simp]
+protected theorem HasFDerivWithinAt.singleton {y} : HasFDerivWithinAt f f' {x} y :=
+  .of_finite <| finite_singleton _
+
+@[simp]
+protected theorem DifferentiableWithinAt.singleton {y} : DifferentiableWithinAt 𝕜 f {x} y :=
+  ⟨0, .singleton⟩
+
+theorem HasFDerivWithinAt.of_subsingleton (h : s.Subsingleton) : HasFDerivWithinAt f f' s x :=
+  .of_finite h.finite
+
+theorem DifferentiableWithinAt.of_subsingleton (h : s.Subsingleton) :
+    DifferentiableWithinAt 𝕜 f s x :=
+  .of_finite h.finite
+
 theorem HasStrictFDerivAt.isBigO_sub (hf : HasStrictFDerivAt f f' x) :
     (fun p : E × E => f p.1 - f p.2) =O[𝓝 (x, x)] fun p : E × E => p.1 - p.2 :=
   hf.isLittleO.isBigO.congr_of_sub.2 (f'.isBigO_comp _ _)
@@ -700,7 +774,8 @@ theorem HasFDerivWithinAt.of_not_accPt (h : ¬AccPt x (𝓟 s)) : HasFDerivWithi
 /-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
 @[deprecated HasFDerivWithinAt.of_not_accPt (since := "2025-04-20")]
-theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) : HasFDerivWithinAt f f' s x :=
+theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s \ {x}] x = ⊥) :
+    HasFDerivWithinAt f f' s x :=
   .of_not_accPt <| by rwa [accPt_principal_iff_nhdsWithin, not_neBot]
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,

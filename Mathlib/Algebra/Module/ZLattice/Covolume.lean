@@ -205,13 +205,12 @@ private theorem tendsto_card_le_div''_aux
 see the `Naming conventions` section in the introduction. -/
 theorem tendsto_card_le_div'' [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     [Nonempty ι] {X : Set E} (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
-    {F : E → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r →  F (r • x) = r ^ card ι * (F x))
+    {F : E → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ card ι * (F x))
     (h₂ : IsBounded {x ∈ X | F x ≤ 1}) (h₃ : MeasurableSet {x ∈ X | F x ≤ 1})
     (h₄ : volume (frontier ((b.ofZLatticeBasis ℝ L).equivFun '' {x | x ∈ X ∧ F x ≤ 1})) = 0) :
     Tendsto (fun c : ℝ ↦
       Nat.card ({x ∈ X | F x ≤ c} ∩ L : Set E) / (c : ℝ))
         atTop (𝓝 (volume.real ((b.ofZLatticeBasis ℝ).equivFun '' {x ∈ X | F x ≤ 1}))) := by
-
   refine Tendsto.congr' ?_ <| (tendsto_card_div_pow_atTop_volume'
       ((b.ofZLatticeBasis ℝ).equivFun '' {x ∈ X | F x ≤ 1}) ?_ ?_ h₄ fun x y hx hy ↦ ?_).comp
         (tendsto_rpow_atTop <| inv_pos.mpr
@@ -271,7 +270,7 @@ theorem tendsto_card_div_pow (b : Basis ι ℤ L) {s : Set (ι → ℝ)} (hs₁ 
   · rw [frontier_equivFun, volume_image_eq_volume_div_covolume, hs₃, ENNReal.zero_div]
 
 theorem tendsto_card_le_div {X : Set (ι → ℝ)} (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
-    {F : (ι → ℝ) → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r →  F (r • x) = r ^ card ι * (F x))
+    {F : (ι → ℝ) → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ card ι * (F x))
     (h₂ : IsBounded {x ∈ X | F x ≤ 1}) (h₃ : MeasurableSet {x ∈ X | F x ≤ 1})
     (h₄ : volume (frontier {x | x ∈ X ∧ F x ≤ 1}) = 0) [Nonempty ι] :
     Tendsto (fun c : ℝ ↦
@@ -317,7 +316,7 @@ theorem tendsto_card_div_pow' {s : Set E} (hs₁ : IsBounded s) (hs₂ : Measura
 see the `Naming convention` section in the introduction. -/
 theorem tendsto_card_le_div' [Nontrivial E] {X : Set E} {F : E → ℝ}
     (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
-    (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r →  F (r • x) = r ^ finrank ℝ E * (F x))
+    (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ finrank ℝ E * (F x))
     (h₂ : IsBounded {x ∈ X | F x ≤ 1}) (h₃ : MeasurableSet {x ∈ X | F x ≤ 1})
     (h₄ : volume (frontier {x ∈ X | F x ≤ 1}) = 0) :
     Tendsto (fun c : ℝ ↦

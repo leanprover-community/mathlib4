@@ -33,7 +33,7 @@ thus reducing the definition to the classical one.
 This frees the user from having to chose a canonical norm, at the expense of having to pick a
 specific base field.
 This is exactly the tradeoff we want in `HasFDerivAtFilter`,
-as there the base ring is already chosen,
+as there the base field is already chosen,
 and this removes the choice of norm being part of the statement.
 
 These definitions were added to the library in order to migrate Fréchet derivatives
@@ -69,7 +69,7 @@ namespace Asymptotics
 section Defs
 
 variable (𝕜 : Type*) {α E F : Type*}
-  [NNNorm 𝕜] [TopologicalSpace E] [TopologicalSpace F] [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F]
+  [ENorm 𝕜] [TopologicalSpace E] [TopologicalSpace F] [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F]
 
 /-- `f =o[𝕜; l] g` (`IsLittleOTVS 𝕜 l f g`) is a generalization of `f =o[l] g` (`IsLittleO l f g`)
 that works in topological `𝕜`-vector spaces.
@@ -95,7 +95,7 @@ notation:100 f " =o[" 𝕜 "; " l "] " g:100 => IsLittleOTVS 𝕜 l f g
 that works in topological `𝕜`-vector spaces.
 
 Given two functions `f` and `g` taking values in topological vector spaces
-over a normed field `K`,
+over a normed field `𝕜`,
 we say that $f = O(g)$ if for any neighborhood of zero `U` in the codomain of `f`
 there exists a neighborhood of zero `V` in the codomain of `g`
 such that $\operatorname{gauge}_{K, U} (f(x)) \le \operatorname{gauge}_{K, V} (g(x))$,
@@ -107,7 +107,7 @@ structure IsBigOTVS (l : Filter α) (f : α → E) (g : α → F) : Prop where
     (egauge 𝕜 U <| f ·) ≤ᶠ[l] (egauge 𝕜 V <| g ·)
 
 @[inherit_doc]
-notation:100 f " =O[" 𝕜 ";" l "] " g:100 => IsBigOTVS 𝕜 l f g
+notation:100 f " =O[" 𝕜 "; " l "] " g:100 => IsBigOTVS 𝕜 l f g
 
 end Defs
 
@@ -175,6 +175,7 @@ theorem IsLittleOTVS.isBigOTVS (h : f =o[𝕜; l] g) : f =O[𝕜; l] g := by
   use V, hV₀
   simpa using hV 1 one_ne_zero
 
+@[trans]
 theorem IsBigOTVS.trans {k : α → G} (hfg : f =O[𝕜; l] g) (hgk : g =O[𝕜; l] k) : f =O[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
   obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
@@ -183,7 +184,7 @@ theorem IsBigOTVS.trans {k : α → G} (hfg : f =O[𝕜; l] g) (hgk : g =O[𝕜;
   filter_upwards [hV, hW] with x hx₁ hx₂ using hx₁.trans hx₂
 
 instance instTransIsBigOTVSIsBigOTVS :
-    @Trans (α → E) (α → F) (α → G) (· =O[𝕜; l] ·) (· =O[𝕜; l] ·) (· =O[𝕜; l] ·) where
+    @Trans (α → E) (α → F) (α → G) (IsBigOTVS 𝕜 l) (IsBigOTVS 𝕜 l) (IsBigOTVS 𝕜 l) where
   trans := IsBigOTVS.trans
 
 theorem IsLittleOTVS.trans_isBigOTVS {k : α → G} (hfg : f =o[𝕜; l] g) (hgk : g =O[𝕜; l] k) :
@@ -195,7 +196,7 @@ theorem IsLittleOTVS.trans_isBigOTVS {k : α → G} (hfg : f =o[𝕜; l] g) (hgk
   filter_upwards [hV ε hε, hW] with x hx₁ hx₂ using hx₁.trans <| by gcongr
 
 instance instTransIsLittleOTVSIsBigOTVS :
-    @Trans (α → E) (α → F) (α → G) (· =o[𝕜; l] ·) (· =O[𝕜; l] ·) (· =o[𝕜; l] ·) where
+    @Trans (α → E) (α → F) (α → G) (IsLittleOTVS 𝕜 l) (IsBigOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) where
   trans := IsLittleOTVS.trans_isBigOTVS
 
 theorem IsBigOTVS.trans_isLittleOTVS {k : α → G} (hfg : f =O[𝕜; l] g) (hgk : g =o[𝕜; l] k) :
@@ -207,7 +208,7 @@ theorem IsBigOTVS.trans_isLittleOTVS {k : α → G} (hfg : f =O[𝕜; l] g) (hgk
   filter_upwards [hV, hW ε hε] with x hx₁ hx₂ using hx₁.trans hx₂
 
 instance instTransIsBigOTVSIsLittleOTVS :
-    @Trans (α → E) (α → F) (α → G) (· =O[𝕜; l] ·) (· =o[𝕜; l] ·) (· =o[𝕜; l] ·) where
+    @Trans (α → E) (α → F) (α → G) (IsBigOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) where
   trans := IsBigOTVS.trans_isLittleOTVS
 
 @[trans]
@@ -215,7 +216,7 @@ theorem IsLittleOTVS.trans {k : α → G} (hfg : f =o[𝕜; l] g) (hgk : g =o[�
   hfg.trans_isBigOTVS hgk.isBigOTVS
 
 instance instTransIsLittleOTVSIsLittleOTVS :
-    @Trans (α → E) (α → F) (α → G) (· =o[𝕜; l] ·) (· =o[𝕜; l] ·) (· =o[𝕜; l] ·) where
+    @Trans (α → E) (α → F) (α → G) (IsLittleOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) where
   trans := IsLittleOTVS.trans
 
 protected theorem _root_.Filter.HasBasis.isLittleOTVS_iff
@@ -294,8 +295,11 @@ lemma _root_.ContinuousLinearMap.isBigOTVS_id {l : Filter E} (f : E →L[𝕜] F
   ⟨fun U hU ↦ ⟨f ⁻¹' U, (map_continuous f).tendsto' 0 0 (map_zero f) hU, .of_forall <|
     (mapsTo_preimage f U).egauge_le 𝕜 f⟩⟩
 
-lemma _root_.ContinuousLinearMap.isBigOTVS_comp (g : E →L[𝕜] F) : (g <| f ·) =O[𝕜; l] f :=
+lemma _root_.ContinuousLinearMap.isBigOTVS_comp (g : E →L[𝕜] F) : (g ∘ f) =O[𝕜; l] f :=
   g.isBigOTVS_id.comp_tendsto tendsto_top
+
+lemma _root_.ContinuousLinearMap.isBigOTVS_fun_comp (g : E →L[𝕜] F) : (g <| f ·) =O[𝕜; l] f :=
+  g.isBigOTVS_comp
 
 @[simp]
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜; l] g := by
@@ -392,7 +396,7 @@ protected theorem IsLittleOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCom
 theorem IsLittleOTVS.proj {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] {f : α → ∀ i, E i}
     (h : f =o[𝕜; l] g) (i : ι) : (f · i) =o[𝕜; l] g :=
-  ContinuousLinearMap.proj i |>.isBigOTVS_comp |>.trans_isLittleOTVS h
+  ContinuousLinearMap.proj i |>.isBigOTVS_fun_comp |>.trans_isLittleOTVS h
 
 theorem isLittleOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
@@ -415,7 +419,7 @@ protected theorem IsBigOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGr
 theorem IsBigOTVS.proj {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] {f : α → ∀ i, E i}
     (h : f =O[𝕜; l] g) (i : ι) : (f · i) =O[𝕜; l] g :=
-  ContinuousLinearMap.proj i |>.isBigOTVS_comp |>.trans h
+  ContinuousLinearMap.proj i |>.isBigOTVS_fun_comp |>.trans h
 
 theorem isBigOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]

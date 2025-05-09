@@ -480,9 +480,9 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
           Nat.Primrec.id.pair <| (@Primcodable.prim α).comp Nat.Primrec.left).of_eq
       fun n => by
       simp only [Nat.unpaired, id_eq, Nat.unpair_pair, decode_prod_val, decode_nat,
-        Option.some_bind, Option.map_map, Option.map_some']
+        Option.some_bind, Option.map_map, Option.map_some]
       rcases @decode α _ n.unpair.1 with - | a; · rfl
-      simp only [Nat.pred_eq_sub_one, encode_some, Nat.succ_eq_add_one, encodek, Option.map_some',
+      simp only [Nat.pred_eq_sub_one, encode_some, Nat.succ_eq_add_one, encodek, Option.map_some,
         Option.some_bind, Option.map_map]
       induction' n.unpair.2 with m <;> simp [encodek]
       simp [*, encodek]
@@ -628,7 +628,7 @@ theorem nat_lt : PrimrecRel ((· < ·) : ℕ → ℕ → Prop) :=
 
 theorem option_guard {p : α → β → Prop} [∀ a b, Decidable (p a b)] (hp : PrimrecRel p) {f : α → β}
     (hf : Primrec f) : Primrec fun a => Option.guard (p a) (f a) :=
-  ite (hp.comp Primrec.id hf) (option_some_iff.2 hf) (const none)
+  ite (by simpa using hp.comp Primrec.id hf) (option_some_iff.2 hf) (const none)
 
 theorem option_orElse : Primrec₂ ((· <|> ·) : Option α → Option α → Option α) :=
   (option_casesOn fst snd (fst.comp fst).to₂).of_eq fun ⟨o₁, o₂⟩ => by cases o₁ <;> cases o₂ <;> rfl
@@ -653,7 +653,7 @@ theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
     refine ((list_getElem?₁ (l.map f)).comp (list_idxOf₁ l)).of_eq fun a => ?_
-    rw [List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some']
+    rw [List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some]
 
 -- Porting note: These are new lemmas
 -- I added it because it actually simplified the proofs
@@ -819,7 +819,7 @@ instance list : Primcodable (List α) :=
         apply Nat.case_strong_induction_on n; · simp
         intro n IH; simp
         rcases @decode α _ n.unpair.1 with - | a; · rfl
-        simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind, Option.map_some']
+        simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind, Option.map_some]
         suffices ∀ (o : Option (List ℕ)) (p), encode o = encode p →
             encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p) from
           this _ _ (IH _ (Nat.unpair_right_le n))
@@ -1118,7 +1118,7 @@ theorem mem_range_encode : PrimrecPred (fun n => n ∈ Set.range (encode : α �
     .not
       (Primrec.eq.comp
         (.option_bind .decode
-          (.ite (Primrec.eq.comp (Primrec.encode.comp .snd) .fst)
+          (.ite (by simpa using Primrec.eq.comp (Primrec.encode.comp .snd) .fst)
             (Primrec.option_some.comp .snd) (.const _)))
         (.const _))
   this.of_eq fun _ => decode₂_ne_none_iff
