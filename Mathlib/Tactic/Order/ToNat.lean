@@ -87,7 +87,7 @@ theorem exists_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n 
 
 /-- Auxiliary definition used by the `order` tactic to
 transfer facts in a linear order to `Nat`. -/
-noncomputable def translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α)
+noncomputable def translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α)
     (k : Fin n) : ℕ :=
   (exists_translation val).choose k
 
@@ -138,57 +138,57 @@ noncomputable def translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fi
 --       exact hk.right.false
 --   · rw [him, hjm, iff_true_right le_rfl, translation, him, translation, hjm]
 
-theorem translation_le_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, translation' val i ≤ translation' val j ↔ val i ≤ val j := by
-  simp [translation', (exists_translation val).choose_spec]
+theorem translation_le_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, translation val i ≤ translation val j ↔ val i ≤ val j := by
+  simp [translation, (exists_translation val).choose_spec]
 
 -- theorem translation_lt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
 --     ∀ i j, translation val i < translation val j ↔ val i < val j := by
 --   intro i j
 --   simpa using (translation_le_translation val j i).not
 
-theorem translation_lt_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, translation' val i < translation' val j ↔ val i < val j := by
+theorem translation_lt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, translation val i < translation val j ↔ val i < val j := by
   intro i j
-  simpa using (translation_le_translation' val j i).not
+  simpa using (translation_le_translation val j i).not
 
 -- theorem translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
 --     ∀ i j, translation val i = translation val j ↔ val i = val j := by
 --   simp_rw [le_antisymm_iff, translation_le_translation, implies_true]
 
-theorem translation_eq_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, translation' val i = translation' val j ↔ val i = val j := by
-  simp [translation_le_translation', le_antisymm_iff]
+theorem translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, translation val i = translation val j ↔ val i = val j := by
+  simp [translation_le_translation, le_antisymm_iff]
 
 -- theorem translation_ne_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
 --     ∀ i j, translation val i ≠ translation val j ↔ val i ≠ val j := by
 --   intro i j
 --   simpa using (translation_eq_translation val i j).not
 
-theorem translation_ne_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, translation' val i ≠ translation' val j ↔ val i ≠ val j := by
+theorem translation_ne_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, translation val i ≠ translation val j ↔ val i ≠ val j := by
   intro i j
-  simpa using (translation_eq_translation' val i j).not
+  simpa using (translation_eq_translation val i j).not
 
 -- theorem translation_nle_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
 --     ∀ i j, ¬translation val i ≤ translation val j ↔ ¬val i ≤ val j := by
 --   intro i j
 --   simpa using translation_lt_translation val j i
 
-theorem translation_nle_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, ¬translation' val i ≤ translation' val j ↔ ¬val i ≤ val j := by
+theorem translation_nle_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, ¬translation val i ≤ translation val j ↔ ¬val i ≤ val j := by
   intro i j
-  simpa using translation_lt_translation' val j i
+  simpa using translation_lt_translation val j i
 
 -- theorem translation_nlt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
 --     ∀ i j, ¬translation val i < translation val j ↔ ¬val i < val j := by
 --   intro i j
 --   simpa using translation_le_translation val j i
 
-theorem translation_nlt_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
-    ∀ i j, ¬translation' val i < translation' val j ↔ ¬val i < val j := by
+theorem translation_nlt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
+    ∀ i j, ¬translation val i < translation val j ↔ ¬val i < val j := by
   intro i j
-  simpa using translation_le_translation' val j i
+  simpa using translation_le_translation val j i
 
 -- theorem translation_sup_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
 --     (val : Fin n → α) : ∀ i j k, translation val i ⊔ translation val j = translation val k ↔
@@ -196,11 +196,11 @@ theorem translation_nlt_translation' {α : Type*} [LinearOrder α] {n : ℕ} (va
 --   intro i j k
 --   simp_rw [le_antisymm_iff, sup_le_iff, le_sup_iff, translation_le_translation]
 
-theorem translation_sup_translation_eq_translation' {α : Type*} [LinearOrder α] {n : ℕ}
-    (val : Fin n → α) : ∀ i j k, translation' val i ⊔ translation' val j = translation' val k ↔
+theorem translation_sup_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
+    (val : Fin n → α) : ∀ i j k, translation val i ⊔ translation val j = translation val k ↔
       val i ⊔ val j = val k := by
   intro i j k
-  simp_rw [le_antisymm_iff, sup_le_iff, le_sup_iff, translation_le_translation']
+  simp_rw [le_antisymm_iff, sup_le_iff, le_sup_iff, translation_le_translation]
 
 -- theorem translation_inf_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
 --     (val : Fin n → α) : ∀ i j k, translation val i ⊓ translation val j = translation val k ↔
@@ -208,11 +208,11 @@ theorem translation_sup_translation_eq_translation' {α : Type*} [LinearOrder α
 --   intro i j k
 --   simp_rw [le_antisymm_iff, inf_le_iff, le_inf_iff, translation_le_translation]
 
-theorem translation_inf_translation_eq_translation' {α : Type*} [LinearOrder α] {n : ℕ}
-    (val : Fin n → α) : ∀ i j k, translation' val i ⊓ translation' val j = translation' val k ↔
+theorem translation_inf_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
+    (val : Fin n → α) : ∀ i j k, translation val i ⊓ translation val j = translation val k ↔
       val i ⊓ val j = val k := by
   intro i j k
-  simp_rw [le_antisymm_iff, inf_le_iff, le_inf_iff, translation_le_translation']
+  simp_rw [le_antisymm_iff, inf_le_iff, le_inf_iff, translation_le_translation]
 
 end Lemmas
 
@@ -298,42 +298,42 @@ def translateToNat {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $ty
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q($finFun $lhsFin = $finFun $rhsFin) := prf
-        .eq lhs rhs q((translation_eq_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .eq lhs rhs q((translation_eq_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .ne lhs rhs prf =>
       (curr, map, facts.push (
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q($finFun $lhsFin ≠ $finFun $rhsFin) := prf
-        .ne lhs rhs q((translation_ne_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .ne lhs rhs q((translation_ne_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .le lhs rhs prf =>
       (curr, map, facts.push (
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q($finFun $lhsFin ≤ $finFun $rhsFin) := prf
-        .le lhs rhs q((translation_le_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .le lhs rhs q((translation_le_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .lt lhs rhs prf =>
       (curr, map, facts.push (
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q($finFun $lhsFin < $finFun $rhsFin) := prf
-        .lt lhs rhs q((translation_lt_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .lt lhs rhs q((translation_lt_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .nle lhs rhs prf =>
       (curr, map, facts.push (
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q(¬$finFun $lhsFin ≤ $finFun $rhsFin) := prf
-        .nle lhs rhs q((translation_nle_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .nle lhs rhs q((translation_nle_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .nlt lhs rhs prf =>
       (curr, map, facts.push (
         haveI lhsFin := toFinUnsafe lhs
         haveI rhsFin := toFinUnsafe rhs
         haveI prfQ : Q(¬$finFun $lhsFin < $finFun $rhsFin) := prf
-        .nlt lhs rhs q((translation_nlt_translation' $finFun $lhsFin $rhsFin).mpr $prfQ)
+        .nlt lhs rhs q((translation_nlt_translation $finFun $lhsFin $rhsFin).mpr $prfQ)
       ))
     | .isBot _
     | .isTop _ => (curr, map, facts)
@@ -342,9 +342,9 @@ def translateToNat {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $ty
       haveI rhsFin := toFinUnsafe rhs
       haveI valFin := toFinUnsafe val
       haveI heq : max («$finFun» «$lhsFin») («$finFun» «$rhsFin») =Q «$finFun» «$valFin» := ⟨⟩
-      (curr + 1, map.insert curr q(translation' $finFun $lhsFin ⊔ translation' $finFun $rhsFin),
+      (curr + 1, map.insert curr q(translation $finFun $lhsFin ⊔ translation $finFun $rhsFin),
         (facts.push (.isSup lhs rhs curr)).push (.eq curr val
-          q((translation_sup_translation_eq_translation' $finFun $lhsFin $rhsFin $valFin).mpr $heq)
+          q((translation_sup_translation_eq_translation $finFun $lhsFin $rhsFin $valFin).mpr $heq)
         )
       )
     | .isInf lhs rhs val =>
@@ -352,13 +352,13 @@ def translateToNat {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $ty
       haveI rhsFin := toFinUnsafe rhs
       haveI valFin := toFinUnsafe val
       haveI heq : min («$finFun» «$lhsFin») («$finFun» «$rhsFin») =Q «$finFun» «$valFin» := ⟨⟩
-      (curr + 1, map.insert curr q(translation' $finFun $lhsFin ⊓ translation' $finFun $rhsFin),
+      (curr + 1, map.insert curr q(translation $finFun $lhsFin ⊓ translation $finFun $rhsFin),
         (facts.push (.isInf lhs rhs curr)).push (.eq curr val
-          q((translation_inf_translation_eq_translation' $finFun $lhsFin $rhsFin $valFin).mpr $heq)
+          q((translation_inf_translation_eq_translation $finFun $lhsFin $rhsFin $valFin).mpr $heq)
         )
       ))
     (idxToAtom.size, idxToAtom.map fun k _ =>
       haveI kFin := toFinUnsafe k
-      q(translation' $finFun $kFin), Array.emptyWithCapacity idxToAtom.size)
+      q(translation $finFun $kFin), Array.emptyWithCapacity idxToAtom.size)
 
 end Mathlib.Tactic.Order
