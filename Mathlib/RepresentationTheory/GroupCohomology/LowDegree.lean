@@ -810,6 +810,9 @@ lemma isoZeroCocycles_hom_comp_f :
   dsimp [isoZeroCocycles]
   apply KernelFork.mapOfIsLimit_ι
 
+@[deprecated (since := "2025-05-09")]
+alias isoZeroCocycles_hom_comp_subtype := isoZeroCocycles_hom_comp_f
+
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoZeroCocycles_inv_comp_iCocycles :
     (isoZeroCocycles A).inv ≫ iCocycles A 0 =
@@ -850,6 +853,9 @@ lemma isoOneCocycles_hom_comp_i :
     (isoOneCocycles A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.i =
       iCocycles A 1 ≫ (oneCochainsLequiv A).toModuleIso.hom := by
   simp [shortComplexH1, isoOneCocycles, oneCocycles]
+
+@[deprecated (since := "2025-05-09")]
+alias isoOneCocycles_hom_comp_subtype := isoOneCocycles_hom_comp_i
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoOneCocycles_hom :
@@ -894,6 +900,9 @@ lemma isoTwoCocycles_hom_comp_i :
     (isoTwoCocycles A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.i =
       iCocycles A 2 ≫ (twoCochainsLequiv A).toModuleIso.hom := by
   simp [shortComplexH2, isoTwoCocycles, twoCocycles]
+
+@[deprecated (since := "2025-05-09")]
+alias isoTwoCocycles_hom_comp_subtype := isoTwoCocycles_hom_comp_f
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoTwoCocycles_hom :

@@ -269,6 +269,9 @@ lemma mapOneCocycles_comp_i :
       (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fOne f φ) := by
   simp
 
+@[deprecated (since := "2025-05-09")]
+alias mapOneCocycles_comp_subtype := mapOneCocycles_comp_i
+
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoOneCocycles_hom :
     cocyclesMap f φ 1 ≫ (isoOneCocycles B).hom = (isoOneCocycles A).hom ≫ mapOneCocycles f φ := by
@@ -360,6 +363,9 @@ lemma mapTwoCocycles_comp_i :
     mapTwoCocycles f φ ≫ (shortComplexH2 B).moduleCatLeftHomologyData.i =
       (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fTwo f φ) := by
   simp
+
+@[deprecated (since := "2025-05-09")]
+alias mapTwoCocycles_comp_subtype := mapTwoCocycles_comp_i
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoTwoCocycles_hom :
