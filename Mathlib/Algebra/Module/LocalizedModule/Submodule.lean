@@ -197,26 +197,6 @@ lemma localized'_le_localized'_of_smul_le {P Q : Submodule R M} (x : p) (h : x �
     P.localized' S p f ≤ Q.localized' S p f :=
   localized₀_le_localized₀_of_smul_le p f x h
 
-section numerator
-
-variable {R : Type*} [CommSemiring R] (S : Submonoid R)
-variable {M M': Type*} [AddCommMonoid M']
-variable {R' : Type*} [CommSemiring R'] [Algebra R R'] [Module R' M'] [IsLocalization S R']
-variable [Module R M'] [IsScalarTower R R' M']
-variable (f : M → M')
-
-/-- If `x` in a `R' = S⁻¹ R`-module `M'` such that `Den • x = f Num` for some `Num : M` and
-`Den : S`, then `x` is in the submodule `N'` of `M'` if `f Num` is in `N'`.
-In particular, if `M` is a localized module, then `x` is in the submodule `N'` if its
-numerator under the image of `f` also lies in `N`. -/
-lemma mem_of_numerator_image_mem {N' : Submodule R' M'} {x : M'} {Num : M} {Den : S}
-    (h : Den • x = f Num) (hNum : f Num ∈ N') : x ∈ N' := by
-  rw [← smul_mem_iff_of_isUnit N' (IsLocalization.map_units R' Den), algebraMap_smul]
-  show Den • x ∈ N'
-  simpa [h] using hNum
-
-end numerator
-
 end Submodule
 
 section Quotient
