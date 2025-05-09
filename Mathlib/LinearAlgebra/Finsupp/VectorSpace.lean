@@ -177,12 +177,6 @@ theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :
   simp only [apply_ite (Finsupp.single _), Finsupp.single_zero, Finset.sum_ite_eq,
     if_pos (Finset.mem_univ _)]
 
-@[simp]
-theorem equivFun_symm_single [Finite n] (b : Basis n R M) (i : n) :
-    b.equivFun.symm (Pi.single i 1) = b i := by
-  cases nonempty_fintype n
-  simp [Pi.single_apply]
-
 end Basis
 
 section Algebra

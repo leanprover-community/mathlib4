@@ -303,6 +303,7 @@ Note that the forward-direction does not require `DecidableEq` and is `Matrix.ve
 def Matrix.toLin' : Matrix m n R ≃ₗ[R] (n → R) →ₗ[R] m → R :=
   LinearMap.toMatrix'.symm
 
+@[simp]
 theorem Matrix.toLin'_apply' (M : Matrix m n R) : Matrix.toLin' M = M.mulVecLin :=
   rfl
 
@@ -317,42 +318,45 @@ theorem Matrix.toLin'_symm :
   rfl
 
 @[simp]
+theorem LinearMap.toMatrix'_mulVecLin (M : Matrix m n R) : M.mulVecLin.toMatrix' = M :=
+  LinearMap.toMatrix'.apply_symm_apply M
+
 theorem LinearMap.toMatrix'_toLin' (M : Matrix m n R) : LinearMap.toMatrix' (Matrix.toLin' M) = M :=
   LinearMap.toMatrix'.apply_symm_apply M
 
 @[simp]
+theorem LinearMap.mulVecLin_toMatrix' (f : (n → R) →ₗ[R] m → R) :
+    f.toMatrix'.mulVecLin = f :=
+  Matrix.toLin'.apply_symm_apply f
+
 theorem Matrix.toLin'_toMatrix' (f : (n → R) →ₗ[R] m → R) :
     Matrix.toLin' (LinearMap.toMatrix' f) = f :=
   Matrix.toLin'.apply_symm_apply f
 
 @[simp]
 theorem LinearMap.toMatrix'_apply (f : (n → R) →ₗ[R] m → R) (i j) :
-    LinearMap.toMatrix' f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
-  simp [toMatrix', ← Pi.single_apply]
+    LinearMap.toMatrix' f i j = f (Pi.single j 1) i := by
+  simp [toMatrix']
 
-@[simp]
 theorem Matrix.toLin'_apply (M : Matrix m n R) (v : n → R) : Matrix.toLin' M v = M *ᵥ v :=
   rfl
 
-@[simp]
 theorem Matrix.toLin'_one : Matrix.toLin' (1 : Matrix n n R) = LinearMap.id :=
   Matrix.mulVecLin_one
 
 @[simp]
 theorem LinearMap.toMatrix'_id : LinearMap.toMatrix' (LinearMap.id : (n → R) →ₗ[R] n → R) = 1 := by
   ext
-  rw [Matrix.one_apply, LinearMap.toMatrix'_apply, id_apply]
+  rw [Matrix.one_apply, LinearMap.toMatrix'_apply, id_apply, Pi.single_apply]
 
 @[simp]
 theorem LinearMap.toMatrix'_one : LinearMap.toMatrix' (1 : (n → R) →ₗ[R] n → R) = 1 :=
   LinearMap.toMatrix'_id
 
-@[simp]
 theorem Matrix.toLin'_mul [Fintype m] [DecidableEq m] (M : Matrix l m R) (N : Matrix m n R) :
     Matrix.toLin' (M * N) = (Matrix.toLin' M).comp (Matrix.toLin' N) :=
   Matrix.mulVecLin_mul _ _
 
-@[simp]
 theorem Matrix.toLin'_submatrix [Fintype l] [DecidableEq l] (f₁ : m → k) (e₂ : n ≃ l)
     (M : Matrix k l R) :
     Matrix.toLin' (M.submatrix f₁ e₂) =
@@ -401,12 +405,11 @@ and `n → A` corresponding to `M.mulVec` and `M'.mulVec`. -/
 @[simps]
 def Matrix.toLin'OfInv [Fintype m] [DecidableEq m] {M : Matrix m n R} {M' : Matrix n m R}
     (hMM' : M * M' = 1) (hM'M : M' * M = 1) : (m → R) ≃ₗ[R] n → R :=
-  { Matrix.toLin' M' with
-    toFun := Matrix.toLin' M'
-    invFun := Matrix.toLin' M
-    left_inv := fun x ↦ by rw [← Matrix.toLin'_mul_apply, hMM', Matrix.toLin'_one, id_apply]
-    right_inv := fun x ↦ by
-      rw [← Matrix.toLin'_mul_apply, hM'M, Matrix.toLin'_one, id_apply] }
+  { M'.mulVecLin with
+    toFun := M'.mulVec
+    invFun := M.mulVec
+    left_inv := fun x ↦ by simp [Matrix.mulVec_mulVec, hMM']
+    right_inv := fun x ↦ by simp [Matrix.mulVec_mulVec, hM'M] }
 
 /-- Linear maps `(n → R) →ₗ[R] (n → R)` are algebra equivalent to `Matrix n n R`. -/
 def LinearMap.toMatrixAlgEquiv' : ((n → R) →ₗ[R] n → R) ≃ₐ[R] Matrix n n R :=
@@ -438,7 +441,7 @@ theorem Matrix.toLinAlgEquiv'_toMatrixAlgEquiv' (f : (n → R) →ₗ[R] n → R
 
 @[simp]
 theorem LinearMap.toMatrixAlgEquiv'_apply (f : (n → R) →ₗ[R] n → R) (i j) :
-    LinearMap.toMatrixAlgEquiv' f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
+    LinearMap.toMatrixAlgEquiv' f i j = f (Pi.single j 1) i := by
   simp [LinearMap.toMatrixAlgEquiv']
 
 @[simp]
@@ -517,13 +520,7 @@ theorem LinearMap.toMatrix_toLin (M : Matrix m n R) :
 theorem LinearMap.toMatrix_apply (f : M₁ →ₗ[R] M₂) (i : m) (j : n) :
     LinearMap.toMatrix v₁ v₂ f i j = v₂.repr (f (v₁ j)) i := by
   rw [LinearMap.toMatrix, LinearEquiv.trans_apply, LinearMap.toMatrix'_apply,
-    LinearEquiv.arrowCongr_apply, Basis.equivFun_symm_apply, Finset.sum_eq_single j, if_pos rfl,
-    one_smul, Basis.equivFun_apply]
-  · intro j' _ hj'
-    rw [if_neg hj', zero_smul]
-  · intro hj
-    have := Finset.mem_univ j
-    contradiction
+    LinearEquiv.arrowCongr_apply, Basis.equivFun_symm_single, v₂.equivFun_apply]
 
 theorem LinearMap.toMatrix_transpose_apply (f : M₁ →ₗ[R] M₂) (j : n) :
     (LinearMap.toMatrix v₁ v₂ f)ᵀ j = v₂.repr (f (v₁ j)) :=
@@ -772,7 +769,7 @@ lemma LinearMap.toMatrix_prodMap [DecidableEq m] [DecidableEq (n ⊕ m)]
     (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) :
     toMatrix (v₁.prod v₂) (v₁.prod v₂) (φ₁.prodMap φ₂) =
       Matrix.fromBlocks (toMatrix v₁ v₁ φ₁) 0 0 (toMatrix v₂ v₂ φ₂) := by
-  ext (i|i) (j|j) <;> simp [toMatrix]
+  ext (i|i) (j|j) <;> simp [toMatrix, Pi.single_apply]
 
 end ToMatrix
 
@@ -854,7 +851,7 @@ lemma _root_.LinearMap.restrictScalars_toMatrix (f : M →ₗ[A] M) :
     (f.restrictScalars R).toMatrix (bA.smulTower' bM) (bA.smulTower' bM) =
       ((f.toMatrix bM bM).map (leftMulMatrix bA)).comp _ _ _ _ _ := by
   ext; simp [toMatrix, Basis.repr, Algebra.leftMulMatrix_apply,
-    Basis.smulTower'_repr, Basis.smulTower'_apply, mul_comm]
+    Basis.smulTower'_repr, Basis.smulTower'_apply, mul_comm, Pi.single_apply]
 
 end Lmul
 
