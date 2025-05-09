@@ -6,7 +6,7 @@ Authors: Robin Carlier, Joël Riou
 import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preservations of limits for bifunctors
