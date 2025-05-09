@@ -516,15 +516,23 @@ def truncGE (n : ℤ) : C ⥤ C := coreflector (FilteredTriangulated.GE (C := C)
   (FilteredTriangulated.GE (C := C) n).ι
 -- The "right adjoint" of the inclusion.
 
-instance (X : C) (n : ℤ) : IsLE ((truncLE n).obj X) n := sorry
+instance (X : C) (n : ℤ) : IsLE ((truncLE n).obj X) n :=
+  {le := Triangulated.Subcategory.ι_obj_mem _ _}
 
-instance (X : C) (n : ℤ) : IsGE ((truncGE n).obj X) n := sorry
+instance (X : C) (n : ℤ) : IsGE ((truncGE n).obj X) n :=
+  {ge := Triangulated.Subcategory.ι_obj_mem _ _}
 
-def essImage_of_LE (X : C) (n : ℤ) [IsLE X n] : (ObjectProperty.ι
-    (FilteredTriangulated.LE (C := C) n).P).essImage X := sorry
+def essImage_of_LE (X : C) (n : ℤ) [IsLE X n] :
+    (FilteredTriangulated.LE (C := C) n).ι.essImage X := by
+  have : (hCP.LE n).P X := IsLE.le
+  use ⟨X, this⟩
+  exact Nonempty.intro (Iso.refl _)
 
-def essImage_of_GE (X : C) (n : ℤ) [IsGE X n] : (ObjectProperty.ι
-    (FilteredTriangulated.GE (C := C) n).P).essImage X := sorry
+def essImage_of_GE (X : C) (n : ℤ) [IsGE X n] :
+    (FilteredTriangulated.GE (C := C) n).ι.essImage X := by
+  have : (hCP.GE n).P X := IsGE.ge
+  use ⟨X, this⟩
+  exact Nonempty.intro (Iso.refl _)
 
 def truncLEπ (n : ℤ) : 𝟭 _ ⟶ truncLE (C := C) n :=
   (reflectorAdjunction (FilteredTriangulated.LE (C := C) n).ι).unit
@@ -622,6 +630,56 @@ abbrev truncLE_onGE (n m : ℤ) :
   · have : IsGE X.1 m := {ge := X.2}
     exact (instIsGEObjTruncLE n m X.1).ge
 
+-- We need to switch the order, because the proof of A.1.3 (ii) uses A.1.3 (iii).
+-- Prop A.1.3 (iii) but with general indices
+
+-- Existence. Version with and without the `n + 1`.
+-- This is cheating in a way, because the connecting morphism in the triangle is not arbitrary,
+-- it's given by the axioms. (The statements are still okay thanks to the uniqueness.)
+
+def truncLEδGE' (n m : ℤ) (h : n + 1 = m) :
+    truncLE n ⟶ truncGE m ⋙ shiftFunctor C (1 : ℤ) := sorry
+
+@[simps!]
+noncomputable def triangleGELE' (n m : ℤ) (h : n + 1 = m) : C ⥤ Triangle C :=
+  Triangle.functorMk (truncGEι m) (truncLEπ n) (truncLEδGE' n m h)
+
+lemma triangleGELE'_distinguished (n m : ℤ) (h : n + 1 = m) (X : C) :
+    (triangleGELE' n m h).obj X ∈ distTriang C := sorry
+
+def truncLEδGE (n : ℤ) :
+    truncLE n ⟶ truncGE (n + 1) ⋙ shiftFunctor C (1 : ℤ) := truncLEδGE' n (n + 1) rfl
+
+@[simps!]
+def triangleGELE (n : ℤ) : C ⥤ Triangle C := triangleGELE' n (n + 1) rfl
+
+lemma triangleGELE_distinguished (n : ℤ) (X : C) :
+    (triangleGELE n).obj X ∈ distTriang C :=
+  triangleGELE'_distinguished n (n + 1) rfl X
+
+-- Uniqueness.
+-- In the paper, this says that any distinguished triangle `A ⟶ X ⟶ B ⟶ A[1]` with `A ≤ n` and
+-- `B ≥ n + 1` is isomorphic to `triangleGELE n X` in a unique way. Actually, this is not
+-- quite correct, because we only have uniqueness if we require the morphism of triangles
+-- to be `𝟙 X` on the second objects. Also, the other morphisms are already explicit and
+-- uniquely determined, they are given by `descTruncLE` and `liftTruncGE`, so the real content
+-- is that these morphisms are isomorphisms.
+
+lemma isIso_descTruncLE_of_fiber_ge (n : ℤ) {T : Triangle C} (dT : T ∈ distTriang C)
+    [IsGE T.obj₁ (n + 1)] [IsLE T.obj₃ n] : IsIso (descTruncLE T.mor₂ n) := sorry
+
+lemma isIso_liftTruncGE_of_cone_le (n : ℤ) {T : Triangle C} (dT : T ∈ distTriang C)
+    [IsGE T.obj₁ n] [IsLE T.obj₃ (n - 1)] : IsIso (liftTruncGE T.mor₁ n) := sorry
+
+/-
+Before proving A.1.3 (ii), we establish a criterion for triangulated endofunctors of `C`
+to commute with the truncation functors (up to an isomorphism which will arise naturally).
+It is better to make this more general, as it will be used again.
+-/
+
+
+
+
 -- Prop A.1.3 (ii)
 
 abbrev truncLEGE (a b : ℤ) : C ⥤ C := truncGE a ⋙ truncLE b
@@ -659,33 +717,7 @@ lemma truncLEGEToGELE_uniq {a b : ℤ} {X : C}
     (truncLEπ a).app ((truncGE b).obj X) ≫ f ≫ (truncGEι b).app ((truncLE a).obj X)) :
     f = (truncLEGEToGELE b a).app X := sorry
 
--- Prop A.1.3 (iii) but with general indices
-
--- Existence. Version with and without the `n + 1`.
--- This is cheating in a way, because the connecting morphism in the triangle is not arbitrary,
--- it's given by the axioms. (The statements are still okay thanks to the uniqueness.)
-
-def truncLEδGE' (n m : ℤ) (h : n + 1 = m) :
-    truncLE n ⟶ truncGE m ⋙ shiftFunctor C (1 : ℤ) := sorry
-
-@[simps!]
-noncomputable def triangleGELE' (n m : ℤ) (h : n + 1 = m) : C ⥤ Triangle C :=
-  Triangle.functorMk (truncGEι m) (truncLEπ n) (truncLEδGE' n m h)
-
-lemma triangleGELE'_distinguished (n m : ℤ) (h : n + 1 = m) (X : C) :
-    (triangleGELE' n m h).obj X ∈ distTriang C := sorry
-
-def truncLEδGE (n : ℤ) :
-    truncLE n ⟶ truncGE (n + 1) ⋙ shiftFunctor C (1 : ℤ) := truncLEδGE' n (n + 1) rfl
-
-@[simps!]
-def triangleGELE (n : ℤ) : C ⥤ Triangle C := triangleGELE' n (n + 1) rfl
-
-lemma triangleGELE_distinguished (n : ℤ) (X : C) :
-    (triangleGELE n).obj X ∈ distTriang C :=
-  triangleGELE'_distinguished n (n + 1) rfl X
-
--- More general triangles, same remarks as before on cheating.
+-- More general version of A.1.3 (iii), same remarks as before on cheating.
 
 def truncGELE_le_up (a b c : ℤ) (h : b ≤ c) :
     truncGELE (C := C) a b ⟶ truncGELE a c := by
@@ -705,19 +737,6 @@ def truncGELE_triangle (a b c : ℤ) (h : a ≤ b) (h' : b ≤ c) : C ⥤ Triang
 lemma truncGELE_triangle_distinguished (a b c : ℤ) (h : a ≤ b) (h' : b ≤ c) (X : C) :
     (truncGELE_triangle a b c h h').obj X ∈ distTriang C := sorry
 
--- Uniqueness.
--- In the paper, this says that any distinguished triangle `A ⟶ X ⟶ B ⟶ A[1]` with `A ≤ n` and
--- `B ≥ n + 1` is isomorphic to `triangleGELE n X` in a unique way. Actually, this is not
--- quite correct, because we only have uniqueness if we require the morphism of triangles
--- to be `𝟙 X` on the second objects. Also, the other morphisms are already explicit and
--- uniquely determined, they are given by `descTruncLE` and `liftTruncGE`, so the real content
--- is that these morphisms are isomorphisms.
-
-lemma isIso_descTruncLE_of_fiber_ge (n : ℤ) {T : Triangle C} (dT : T ∈ distTriang C)
-    [IsGE T.obj₁ (n + 1)] [IsLE T.obj₃ n] : IsIso (descTruncLE T.mor₂ n) := sorry
-
-lemma isIso_liftTruncGE_of_cone_le (n : ℤ) {T : Triangle C} (dT : T ∈ distTriang C)
-    [IsGE T.obj₁ n] [IsLE T.obj₃ (n - 1)] : IsIso (liftTruncGE T.mor₁ n) := sorry
 
 -- Prop A.1.3 (iv): we need to explain what compatibilities are hidden under the
 -- adjective "canonical".
