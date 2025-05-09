@@ -106,7 +106,7 @@ abbrev moduleCatHomologyπ : ModuleCat.of R (LinearMap.ker S.g.hom) ⟶ S.module
 
 /-- The explicit left homology data of a short complex of modules that is
 given by a kernel and a quotient given by the `LinearMap` API. -/
-@[simps! i_hom π_hom]
+@[simps! i_hom π_hom, simps! -isSimp K H]
 def moduleCatLeftHomologyData : S.LeftHomologyData where
   K := ModuleCat.of R (LinearMap.ker S.g.hom)
   H := S.moduleCatHomology
@@ -116,14 +116,6 @@ def moduleCatLeftHomologyData : S.LeftHomologyData where
   hi := ModuleCat.kernelIsLimit _
   wπ := by aesop
   hπ := ModuleCat.cokernelIsColimit (ModuleCat.ofHom S.moduleCatToCycles)
-
-lemma moduleCatLeftHomologyData_K :
-    S.moduleCatLeftHomologyData.K = ModuleCat.of R (LinearMap.ker S.g.hom) :=
-  rfl
-
-lemma moduleCatLeftHomologyData_H :
-    S.moduleCatLeftHomologyData.H = S.moduleCatHomology :=
-  rfl
 
 @[simp]
 lemma moduleCatLeftHomologyData_f'_hom :
