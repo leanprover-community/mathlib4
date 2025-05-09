@@ -1,0 +1,85 @@
+/-
+Copyright (c) 2024 Robin Carlier. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robin Carlier
+-/
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+
+/-!
+# Miscellany about preservations of (co)limits in monoidal categories
+
+This file records some `PreservesColimits` instance on tensors products on monoidal categories.
+
+
+-/
+
+namespace CategoryTheory.MonoidalCategory.Limits
+open _root_.CategoryTheory.Limits
+
+variable {C : Type*} [Category C] [MonoidalCategory C]
+  {J : Type*} [Category J] (F : J ⥤ C)
+
+section Colimits
+
+/-- When `C` is braided and `tensorLeft c` preserves a colimit, then so does `tensorRight k`. -/
+instance preservesColimit_of_braided_and_preservesColimit_tensor_left
+    [BraidedCategory C] (c : C)
+    [PreservesColimit F (tensorLeft c)] :
+    PreservesColimit F (tensorRight c) :=
+  preservesColimit_of_natIso F (NatIso.ofComponents (fun _ ↦ β_ _ _) : tensorLeft c ≅ tensorRight c)
+
+/-- When `C` is braided and `tensorRight c` preserves a colimit, then so does `tensorLeft k`.
+We are not making this an instance to avoid an instance loop with
+`preservesColimit_of_braided_and_preservesColimit_tensor_left`. -/
+lemma preservesColimit_of_braided_and_preservesColimit_tensor_right
+    [BraidedCategory C] (c : C)
+    [PreservesColimit F (tensorRight c)] :
+    PreservesColimit F (tensorLeft c) :=
+  preservesColimit_of_natIso F (NatIso.ofComponents (fun _ ↦ β_ _ _) : tensorRight c ≅ tensorLeft c)
+
+instance preservesCoLimit_curriedTensor [h : ∀ c : C, PreservesColimit F (tensorRight c)] :
+    PreservesColimit F (curriedTensor C) :=
+  preservesColimit_of_evaluation _ _ <| fun c ↦
+    preservesColimit_of_natIso F
+      (NatIso.ofComponents (fun _ ↦ Iso.refl _) :
+        tensorRight c ≅ curriedTensor C ⋙ (evaluation C C).obj c)
+
+instance preservesColimit_curriedTensor_obj (c : C) [PreservesColimit F (tensorLeft c)] :
+    PreservesColimit F ((curriedTensor C).obj c) :=
+    preservesColimit_of_natIso F (NatIso.ofComponents (fun _ ↦ Iso.refl _) : tensorLeft c ≅ _)
+
+end Colimits
+
+section Limits
+
+/-- When `C` is braided and `tensorLeft c` preserves a limit, then so does `tensorRight k`. -/
+instance preservesLimit_of_braided_and_preservesLimit_tensor_left
+    [BraidedCategory C] (c : C)
+    [PreservesLimit F (tensorLeft c)] :
+    PreservesLimit F (tensorRight c) :=
+  preservesLimit_of_natIso F (NatIso.ofComponents (fun _ ↦ β_ _ _) : tensorLeft c ≅ tensorRight c)
+
+/-- When `C` is braided and `tensorRight c` preserves a limit, then so does `tensorLeft k`.
+We are not making this an instance to avoid an instance loop with
+`preservesLimit_of_braided_and_preservesLimit_tensor_left`. -/
+lemma preservesLimit_of_braided_and_preservesLimit_tensor_right
+    [BraidedCategory C] (c : C)
+    [PreservesLimit F (tensorRight c)] :
+    PreservesLimit F (tensorLeft c) :=
+  preservesLimit_of_natIso F (NatIso.ofComponents (fun _ ↦ β_ _ _) : tensorRight c ≅ tensorLeft c)
+
+instance preservesLimit_curriedTensor [h : ∀ c : C, PreservesLimit F (tensorRight c)] :
+    PreservesLimit F (curriedTensor C) :=
+  preservesLimit_of_evaluation _ _ <| fun c ↦
+    preservesLimit_of_natIso F
+      (NatIso.ofComponents (fun _ ↦ Iso.refl _) :
+        tensorRight c ≅ curriedTensor C ⋙ (evaluation C C).obj c)
+
+instance preservesLimit_curriedTensor_obj (c : C) [PreservesLimit F (tensorLeft c)] :
+    PreservesLimit F ((curriedTensor C).obj c) :=
+    preservesLimit_of_natIso F (NatIso.ofComponents (fun _ ↦ Iso.refl _) : tensorLeft c ≅ _)
+
+end Limits
+
+end CategoryTheory.MonoidalCategory.Limits
