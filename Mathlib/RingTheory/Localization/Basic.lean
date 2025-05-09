@@ -237,7 +237,7 @@ end AlgEquivOfAlgEquiv
 
 section smul
 
-variable {R : Type*} [CommSemiring R] (S : Submonoid R)
+variable {R : Type*} [CommSemiring R] {S : Submonoid R}
 variable {R' : Type*} [CommSemiring R'] [Algebra R R'] [IsLocalization S R']
 variable {M': Type*} [AddCommMonoid M'] [Module R' M'] [Module R M'] [IsScalarTower R R' M']
 
