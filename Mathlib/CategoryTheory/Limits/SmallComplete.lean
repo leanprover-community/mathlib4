@@ -6,8 +6,6 @@ Authors: Bhavik Mehta
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.SetTheory.Cardinal.Basic
 
-#align_import category_theory.limits.small_complete from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Any small complete category is a preorder
 
@@ -53,20 +51,20 @@ instance (priority := 100) : Quiver.IsThin C := fun X Y =>
       let md := ΣZ W : C, Z ⟶ W
       let α := #md
       apply not_le_of_lt (Cardinal.cantor α)
-      let yp : C := ∏ fun _ : md => Y
-      refine' _root_.trans _ _
+      let yp : C := ∏ᶜ fun _ : md => Y
+      apply _root_.trans _ _
       · exact #(X ⟶ yp)
       · apply le_trans (Cardinal.power_le_power_right z)
         rw [Cardinal.power_def]
         apply le_of_eq
         rw [Cardinal.eq]
-        refine' ⟨⟨Pi.lift, fun f k => f ≫ Pi.π _ k, _, _⟩⟩
+        refine ⟨⟨Pi.lift, fun f k => f ≫ Pi.π _ k, ?_, ?_⟩⟩
         · intro f
           ext k
-          simp
+          simp [yp]
         · intro f
           ext ⟨j⟩
-          simp
+          simp [yp]
       · apply Cardinal.mk_le_of_injective _
         · intro f
           exact ⟨_, _, f⟩

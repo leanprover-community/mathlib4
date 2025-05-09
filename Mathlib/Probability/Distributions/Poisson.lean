@@ -4,17 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
 
-import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Probability.Notation
 import Mathlib.Probability.ProbabilityMassFunction.Basic
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-! # Poisson distributions over ℕ
 
 Define the Poisson measure over the natural numbers
 
 ## Main definitions
-* `poissonPMFReal`: the function `λ n ↦ exp (- λ) * λ ^ n / n!`
+* `poissonPMFReal`: the function `fun n ↦ exp (- λ) * λ ^ n / n!`
   for `n ∈ ℕ`, which is the probability density function of a Poisson distribution with
   rate `λ > 0`.
 * `poissonPMF`: `ℝ≥0∞`-valued pdf,
@@ -32,7 +31,7 @@ section PoissonPMF
 
 /-- The pmf of the Poisson distribution depending on its rate, as a function to ℝ -/
 noncomputable
-def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := (exp (- r) * r ^ n / n !)
+def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (- r) * r ^ n / n !
 
 lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 := by
   let r := r.toReal

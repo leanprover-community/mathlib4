@@ -3,8 +3,8 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Rodriguez
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Center
 import Mathlib.GroupTheory.ClassEquation
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
 /-!
@@ -34,11 +34,10 @@ below proof is free, then the proof works nearly verbatim.
 
 -/
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 open Fintype
 
-/- Everything in this namespace is internal to the proof of Wedderburn's little theorem. -/
-
+/-! Everything in this namespace is internal to the proof of Wedderburn's little theorem. -/
 namespace LittleWedderburn
 
 variable (D : Type*) [DivisionRing D]
@@ -48,7 +47,7 @@ private def InductionHyp : Prop :=
 
 namespace InductionHyp
 
-open FiniteDimensional Polynomial
+open Module Polynomial
 
 variable {D}
 
@@ -69,7 +68,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   set q := card Z with card_Z
   have hq : 1 < q := by rw [card_Z]; exact one_lt_card
   let n := finrank Z D
-  have card_D : card D = q ^ n := card_eq_pow_finrank
+  have card_D : card D = q ^ n := Module.card_eq_pow_finrank
   have h1qn : 1 ≤ q ^ n := by rw [← card_D]; exact card_pos
   -- We go about this by looking at the class equation for `Dˣ`:
   -- `q ^ n - 1 = q - 1 + ∑ x : conjugacy classes (D ∖ Dˣ), |x|`.
@@ -83,8 +82,8 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   let Φₙ := cyclotomic n ℤ
   apply_fun (Nat.cast : ℕ → ℤ) at key
   rw [Nat.cast_add, Nat.cast_sub h1qn, Nat.cast_sub hq.le, Nat.cast_one, Nat.cast_pow] at key
-  suffices : Φₙ.eval ↑q ∣ ↑(∑ x in (ConjClasses.noncenter Dˣ).toFinset, x.carrier.toFinset.card)
-  · have contra : Φₙ.eval _ ∣ _ := eval_dvd (cyclotomic.dvd_X_pow_sub_one n ℤ) (x := (q : ℤ))
+  suffices Φₙ.eval ↑q ∣ ↑(∑ x ∈ (ConjClasses.noncenter Dˣ).toFinset, x.carrier.toFinset.card) by
+    have contra : Φₙ.eval _ ∣ _ := eval_dvd (cyclotomic.dvd_X_pow_sub_one n ℤ) (x := (q : ℤ))
     rw [eval_sub, eval_pow, eval_X, eval_one, ← key, Int.dvd_add_left this] at contra
     refine (Nat.le_of_dvd ?_ ?_).not_lt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
     · exact tsub_pos_of_lt hq
@@ -96,11 +95,11 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
       refine not_le_of_lt hZ.lt_top (fun y _ ↦ Subring.mem_center_iff.mpr fun z ↦ ?_)
       obtain ⟨r, rfl⟩ := hx y
       obtain ⟨s, rfl⟩ := hx z
-      rw [smul_mul_smul, smul_mul_smul, mul_comm]
+      rw [smul_mul_smul_comm, smul_mul_smul_comm, mul_comm]
   rw [Nat.cast_sum]
   apply Finset.dvd_sum
   rintro ⟨x⟩ hx
-  simp (config := {zeta := false}) only [ConjClasses.quot_mk_eq_mk, Set.mem_toFinset] at hx ⊢
+  simp -zeta only [ConjClasses.quot_mk_eq_mk, Set.mem_toFinset] at hx ⊢
   set Zx := Subring.centralizer ({↑x} : Set D)
   -- The key thing is then to note that for all conjugacy classes `x`, `|x|` is given by
   -- `|Dˣ| / |Zxˣ|`, where `Zx` is the centralizer of `x`; but `Zx` is an algebra over `Z`, and
@@ -113,14 +112,14 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   have hZx : Zx ≠ ⊤ := by
     by_contra! hZx
     refine (ConjClasses.mk_bijOn (Dˣ)).mapsTo (Set.subset_center_units ?_) hx
-    refine Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
+    exact Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
   letI : Field Zx := hD.field hZx.lt_top
   letI : Algebra Z Zx := (Subring.inclusion <| Subring.center_le_centralizer {(x : D)}).toAlgebra
   let d := finrank Z Zx
-  have card_Zx : card Zx = q ^ d := card_eq_pow_finrank
+  have card_Zx : card Zx = q ^ d := Module.card_eq_pow_finrank
   have h1qd : 1 ≤ q ^ d := by rw [← card_Zx]; exact card_pos
   haveI : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
-  rw [card_units, card_Zx, Int.coe_nat_div, Nat.cast_sub h1qd, Nat.cast_sub h1qn, Nat.cast_one,
+  rw [card_units, card_Zx, Int.natCast_div, Nat.cast_sub h1qd, Nat.cast_sub h1qn, Nat.cast_one,
       Nat.cast_pow, Nat.cast_pow]
   apply Int.dvd_div_of_mul_dvd
   have aux : ∀ {k : ℕ}, ((X : ℤ[X]) ^ k - 1).eval ↑q = (q : ℤ) ^ k - 1 := by
@@ -128,7 +127,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   rw [← aux, ← aux, ← eval_mul]
   refine (evalRingHom ↑q).map_dvd (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
   refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
-  rw [← pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
+  rw [← Nat.pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
   obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hZx.lt_top
   refine card_lt_of_injective_of_not_mem _ Subtype.val_injective (?_ : b ∉ _)
   rintro ⟨b, rfl⟩
@@ -142,14 +141,14 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   induction' hn : Fintype.card D using Nat.strong_induction_on with n IH generalizing D
   apply InductionHyp.center_eq_top
   intro R hR x y hx hy
-  suffices : (⟨y, hy⟩ : R) ∈ Subring.center R
-  · rw [Subring.mem_center_iff] at this
+  suffices (⟨y, hy⟩ : R) ∈ Subring.center R by
+    rw [Subring.mem_center_iff] at this
     simpa using this ⟨x, hx⟩
   let R_dr : DivisionRing R := Fintype.divisionRingOfIsDomain R
   rw [IH (Fintype.card R) _ R inferInstance rfl]
   · trivial
   rw [← hn, ← Subring.card_top D]
-  exact Set.card_lt_card hR
+  convert Set.card_lt_card hR
 
 end LittleWedderburn
 
