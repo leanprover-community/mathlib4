@@ -124,9 +124,7 @@ alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
 
 end CompleteLattice
 
--- TODO: Replace `(hD : ∀ a b : (α × β), a ≤ b → {a, b} ∈ D)` with the condition that
--- `fun a => f (a,b)` and `fun b => f (a,b)` are monotone?
-/- TODO: Can we then deduce `ScottContinuousOn.sup₂` from this? -/
+/- TODO: Can we deduce `ScottContinuousOn.sup₂` from this? -/
 /- `f` is Scott continuous on a product space if it is Scott continuous in each variable -/
 lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} {D : Set (Set (α × β))}
