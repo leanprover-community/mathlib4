@@ -516,15 +516,15 @@ lemma free_single_single (g h : G) (i : α) (r : k) :
 variable (k G) (α : Type*)
 
 /-- The free `k[G]`-module on a type `α` is isomorphic to the representation `free k G α`. -/
-def finsuppLEquivFreeAsModule :
+noncomputable def finsuppLEquivFreeAsModule :
     (α →₀ MonoidAlgebra k G) ≃ₗ[MonoidAlgebra k G] (free k G α).asModule :=
   { AddEquiv.refl _ with
     map_smul' _ x := by
       simp only [AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
         AddEquiv.refl_apply, RingHom.id_apply]
       induction x using Finsupp.induction with
-      | h0 => simp only [smul_zero]
-      | @ha _ _ _ _ _ h =>
+      | zero => simp only [smul_zero]
+      | single_add _ _ _ _ _ h =>
         rw [smul_add, h]
         show _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
         simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
@@ -532,7 +532,7 @@ def finsuppLEquivFreeAsModule :
         simp [free, MonoidAlgebra, asModule, ofMulAction_def, mapDomain, smul_sum, single_sum] }
 
 /-- `α` gives a `k[G]`-basis of the representation `free k G α`. -/
-def freeAsModuleBasis :
+noncomputable def freeAsModuleBasis :
     Basis α (MonoidAlgebra k G) (free k G α).asModule where
   repr := (finsuppLEquivFreeAsModule k G α).symm
 
