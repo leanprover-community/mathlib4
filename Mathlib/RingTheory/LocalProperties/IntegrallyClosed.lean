@@ -22,9 +22,11 @@ open scoped nonZeroDivisors
 
 open Localization Ideal IsLocalization
 
+variable {R K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
+
 /-- An integral domain `R` is integral closed if `Rₘ` is integral closed
   for any maximal ideal `m` of `R`. -/
-theorem IsIntegrallyClosed.of_localization_maximal {R : Type*} [CommRing R] [IsDomain R]
+theorem IsIntegrallyClosed.of_localization_maximal [IsDomain R]
     (h : ∀ p : Ideal R, p ≠ ⊥ → [p.IsMaximal] → IsIntegrallyClosed (Localization.AtPrime p)) :
     IsIntegrallyClosed R := by
   by_cases hf : IsField R
@@ -61,8 +63,6 @@ theorem IsIntegrallyClosed.of_localization_maximal {R : Type*} [CommRing R] [IsD
 theorem isIntegrallyClosed_ofLocalizationMaximal :
     OfLocalizationMaximal fun R _ => ([IsDomain R] → IsIntegrallyClosed R) :=
   fun _ _ h _ ↦ IsIntegrallyClosed.of_localization_maximal fun p _ hpm ↦ h p hpm
-
-variable {R K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
 
 theorem IsIntegrallyClosed.iInf {ι : Type*} (S : ι → Subalgebra R K)
     (h : ∀ i : ι, IsIntegrallyClosed (S i)) :
