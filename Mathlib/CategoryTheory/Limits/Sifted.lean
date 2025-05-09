@@ -163,7 +163,7 @@ instance : IsIso (ChosenFiniteProducts.prodComparison colim X Y) := by
   rw [← factorization_prod_comparison_colim]
   iterate apply IsIso.comp_isIso' <;> infer_instance
 
-instance colimPreservesLimitsOfPairsOfIsSifted {X Y : C ⥤ Type u} :
+instance colim_preservesLimits_of_pairs_of_sSifted {X Y : C ⥤ Type u} :
     PreservesLimit (pair X Y) colim := preservesLimit_pair_of_isIso_prodComparison _ _ _
 
 /-- Sifted colimits commute with binary products -/
@@ -174,7 +174,7 @@ instance colim_preserves_binary_products_of_isSifted :
   apply preservesLimit_of_iso_diagram colim (diagramIsoPair F).symm
 
 /-- If `C` is sifted, the `colimit` functor `(C ⥤ Type) ⥤ Type` preserves terminal objects -/
-instance colimPreservesTerminalObjectOfIsSifted :
+instance colim_preservesTerminal_of_isSifted :
     PreservesLimit (Functor.empty.{0} (C ⥤ Type u)) colim := by
   apply preservesTerminal_of_iso
   symm
@@ -185,12 +185,12 @@ instance colimPreservesTerminalObjectOfIsSifted :
     exact isLimitChangeEmptyCone _ Types.isTerminalPunit _ <| Iso.refl _
   · exact Types.isTerminalEquivIsoPUnit (⊤_ (Type u))|>.toFun terminalIsTerminal
 
-instance colimPreservesLimitsOfShapePEmtyOfIsSifted :
+instance colim_preservesLimitsOfShape_pempty_of_isSifted :
     PreservesLimitsOfShape (Discrete PEmpty.{1}) (colim : (C ⥤ _) ⥤ Type u) :=
   preservesLimitsOfShape_pempty_of_preservesTerminal _
 
 /-- If `C` is sifted, the `colim` functor `(C ⥤ Type) ⥤ Type` preserves finite products. -/
-instance colimPreservesFiniteProductsOfIsSifted :
+instance colim_preservesFiniteProducts_of_isSifted :
     PreservesFiniteProducts (colim : (C ⥤ _) ⥤ Type u ) :=
   PreservesFiniteProducts.of_preserves_binary_and_terminal colim
 
