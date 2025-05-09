@@ -504,8 +504,7 @@ instance LE_reflective (n : ℤ) : Reflective ((FilteredTriangulated.LE (C := C)
       L := leftAdjointOfStructuredArrowInitials (FilteredTriangulated.LE (C := C) n).ι
       adj := adjunctionOfStructuredArrowInitials _
 
-instance GE_coreflective (n : ℤ) : Coreflective (ObjectProperty.ι
-    (FilteredTriangulated.GE (C := C) n).P) := sorry
+instance GE_coreflective (n : ℤ) : Coreflective (FilteredTriangulated.GE (C := C) n).ι := sorry
 -- Use `CategoryTheory.isLeftAdjoint_of_costructuredArrowTerminals`.
 
 def truncLE (n : ℤ) : C ⥤ C := (reflector ((FilteredTriangulated.LE (C := C) n).ι) : C ⥤
@@ -513,9 +512,8 @@ def truncLE (n : ℤ) : C ⥤ C := (reflector ((FilteredTriangulated.LE (C := C)
     ((FilteredTriangulated.LE (C := C) n).ι)
 -- The "left adjoint" of the inclusion.
 
-def truncGE (n : ℤ) : C ⥤ C := coreflector (ObjectProperty.ι
-    (FilteredTriangulated.GE (C := C) n).P) ⋙ (ObjectProperty.ι
-    (FilteredTriangulated.GE (C := C) n).P)
+def truncGE (n : ℤ) : C ⥤ C := coreflector (FilteredTriangulated.GE (C := C) n).ι ⋙
+  (FilteredTriangulated.GE (C := C) n).ι
 -- The "right adjoint" of the inclusion.
 
 instance (X : C) (n : ℤ) : IsLE ((truncLE n).obj X) n := sorry
@@ -545,7 +543,7 @@ lemma π_descTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsLE Y n] :
   rw [← assoc, ← (truncLEπ n).naturality, assoc, IsIso.hom_inv_id, Functor.id_map, comp_id]
 
 def truncGEι (n : ℤ) : truncGE (C := C) n ⟶ 𝟭 _ :=
-  (coreflectorAdjunction (FilteredTriangulated.GE (C := C) n).P.ι).counit
+  (coreflectorAdjunction (FilteredTriangulated.GE (C := C) n).ι).counit
 -- Counit of the adjunction.
 
 instance truncGEι_iso_of_GE (X : C) (n : ℤ) [IsGE X n] : IsIso ((truncGEι n).app X) :=
@@ -562,19 +560,40 @@ lemma liftTruncGE_ι {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsGE X n] :
 
 -- Second sentence.
 -- The truncation functors are triangulated.
+
+instance (n : ℤ) : (reflector (FilteredTriangulated.LE (C := C) n).ι).CommShift ℤ :=
+  (reflectorAdjunction _).leftAdjointCommShift ℤ
+
+instance (n : ℤ) : (reflectorAdjunction (FilteredTriangulated.LE (C := C) n).ι).CommShift ℤ :=
+  (reflectorAdjunction _).commShift_of_rightAdjoint ℤ
+
 instance (n : ℤ) : (truncLE (C := C) n).CommShift ℤ := by
   dsimp [truncLE]
-  have : (reflector (FilteredTriangulated.LE (C := C) n).ι).CommShift ℤ :=
-    (reflectorAdjunction _).leftAdjointCommShift ℤ
   infer_instance
+
+instance (n : ℤ  ) : (reflector (FilteredTriangulated.LE (C := C) n).ι).IsTriangulated :=
+  (reflectorAdjunction _).isTriangulated_leftAdjoint
 
 instance (n : ℤ) : (truncLE (C := C) n).IsTriangulated := by
   dsimp [truncLE]
   infer_instance
 
-instance (n : ℤ) : (truncGE (C := C) n).CommShift ℤ := sorry
+instance (n : ℤ) : (coreflector (FilteredTriangulated.GE (C := C) n).ι).CommShift ℤ :=
+  (coreflectorAdjunction _).rightAdjointCommShift ℤ
 
-instance (n : ℤ) : (truncGE (C := C) n).IsTriangulated := sorry
+instance (n : ℤ) : (coreflectorAdjunction (FilteredTriangulated.GE (C := C) n).ι).CommShift ℤ :=
+  (coreflectorAdjunction _).commShift_of_leftAdjoint ℤ
+
+instance (n : ℤ) : (truncGE (C := C) n).CommShift ℤ := by
+  dsimp [truncGE]
+  infer_instance
+
+instance (n : ℤ  ) : (coreflector (FilteredTriangulated.GE (C := C) n).ι).IsTriangulated :=
+  (coreflectorAdjunction _).isTriangulated_rightAdjoint
+
+instance (n : ℤ) : (truncGE (C := C) n).IsTriangulated := by
+  dsimp [truncGE]
+  infer_instance
 
 -- The truncation functors preserve the subcategories `hCP.LE m` and `hCP.GE m` for
 -- every `m : ℤ`.
@@ -610,14 +629,14 @@ abbrev truncLEGE (a b : ℤ) : C ⥤ C := truncGE a ⋙ truncLE b
 abbrev truncGELE (a b : ℤ) : C ⥤ C := truncLE b ⋙ truncGE a
 
 def truncLEGEToGELE (a b : ℤ) : truncLEGE (C := C) a b ⟶ truncGELE a b := by
-  set u : TwoSquare (FilteredTriangulated.LE (C := C) b).P.ι (truncGE_onLE a b) (truncGE a)
-      (FilteredTriangulated.LE b).P.ι := by
+  set u : TwoSquare (FilteredTriangulated.LE (C := C) b).ι (truncGE_onLE a b) (truncGE a)
+      (FilteredTriangulated.LE b).ι := by
     refine {app X := ?_, naturality X Y f := ?_}
     · dsimp; exact 𝟙 _
-    · dsimp; simp
+    · dsimp; simp; rfl
   exact (Functor.associator _ _ _).inv ≫ whiskerRight ((mateEquiv (reflectorAdjunction _)
-    (reflectorAdjunction _)).symm u) _ ≫ (Functor.associator _ _ _).hom ≫
-    whiskerLeft (reflector (FilteredTriangulated.LE b).P.ι) (𝟙 _)  ≫
+    (reflectorAdjunction (FilteredTriangulated.LE b).ι)).symm u) _ ≫
+    (Functor.associator _ _ _).hom ≫ whiskerLeft (reflector (FilteredTriangulated.LE b).ι) (𝟙 _)  ≫
     (Functor.associator _ _ _).inv
 
 instance truncLEGEIsoGELE (a b : ℤ) : IsIso (truncLEGEToGELE a b (C := C)) := sorry
@@ -630,8 +649,8 @@ lemma truncLEGEToGELE_comm (a b : ℤ) :
   dsimp [truncLEGEToGELE, truncGEι, truncLEπ]
   simp only [Functor.map_id, id_comp, comp_id, assoc]
   erw [id_comp]
-  have := (reflectorAdjunction (FilteredTriangulated.LE (C := C) a).P.ι).unit.naturality
-  have := (reflectorAdjunction (FilteredTriangulated.LE (C := C) a).P.ι).counit.naturality
+  have := (reflectorAdjunction (FilteredTriangulated.LE (C := C) a).ι).unit.naturality
+  have := (reflectorAdjunction (FilteredTriangulated.LE (C := C) a).ι).counit.naturality
   sorry
 
 lemma truncLEGEToGELE_uniq {a b : ℤ} {X : C}
@@ -745,12 +764,12 @@ abbrev shiftFunctor₂' (n m n' : ℤ) (h : n' + m = n) :
 -- Maybe this construction and the next should use `conjugateEquiv` instead?
 def truncLE_commShift_hom (n m n' : ℤ) (h : n' + m = n) :
     shiftFunctor₂ C m ⋙ truncLE n ⟶ truncLE n' ⋙ shiftFunctor₂ C m := by
-  set u : TwoSquare (FilteredTriangulated.LE (C := C) n').P.ι (shiftFunctor₂' C n m n' h)
-      (shiftFunctor₂ C m) (FilteredTriangulated.LE n).P.ι :=
-    {app X := 𝟙 _, naturality X Y f := by dsimp; rw [id_comp, comp_id]}
+  set u : TwoSquare (FilteredTriangulated.LE (C := C) n').ι (shiftFunctor₂' C n m n' h)
+      (shiftFunctor₂ C m) (FilteredTriangulated.LE n).ι :=
+    {app X := 𝟙 _, naturality X Y f := by dsimp; rw [id_comp, comp_id]; rfl}
   refine (Functor.associator _ _ _).inv ≫ whiskerRight ((mateEquiv (reflectorAdjunction _)
-    (reflectorAdjunction _)).symm u) _ ≫ (Functor.associator _ _ _).hom ≫
-    whiskerLeft _ (𝟙 _)
+    (reflectorAdjunction ((FilteredTriangulated.LE n).ι))).symm u) _ ≫
+    (Functor.associator _ _ _).hom ≫ whiskerLeft _ (𝟙 _)
 
 instance (n m n' : ℤ) (h : n' + m = n) : IsIso (truncLE_commShift_hom (C := C) n m n' h) := sorry
 
@@ -771,11 +790,11 @@ abbrev shiftFunctor₂'' (n m n' : ℤ) (h : n' + m = n) :
 
 def truncGE_commShift_inv (n m n' : ℤ) (h : n' + m = n) :
     truncGE n' ⋙ shiftFunctor₂ C m ⟶ shiftFunctor₂ C m ⋙ truncGE n := by
-  set u : TwoSquare (shiftFunctor₂'' C n m n' h) (FilteredTriangulated.GE (C := C) n').P.ι
-      (FilteredTriangulated.GE (C := C) n).P.ι (shiftFunctor₂ C m) :=
-    {app X := 𝟙 _, naturality X Y f := by dsimp; rw [id_comp, comp_id]}
-  refine ?_ ≫ whiskerRight ((mateEquiv (coreflectorAdjunction _) (coreflectorAdjunction _) u)) _
-    ≫ (Functor.associator _ _ _).hom
+  set u : TwoSquare (shiftFunctor₂'' C n m n' h) (FilteredTriangulated.GE (C := C) n').ι
+      (FilteredTriangulated.GE (C := C) n).ι (shiftFunctor₂ C m) :=
+    {app X := 𝟙 _, naturality X Y f := by dsimp; rw [id_comp, comp_id]; rfl}
+  refine ?_ ≫ whiskerRight ((mateEquiv (coreflectorAdjunction (GE n').ι)
+    (coreflectorAdjunction (GE n).ι) u)) _ ≫ (Functor.associator _ _ _).hom
   exact 𝟙 _
 
 instance (n m n' : ℤ) (h : n' + m = n) : IsIso (truncGE_commShift_inv (C := C) n m n' h) := sorry
