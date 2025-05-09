@@ -70,10 +70,7 @@ lemma preservesLimit_of_braided_and_preservesLimit_tensor_right
 
 lemma preservesLimit_curriedTensor [h : ∀ c : C, PreservesLimit F (tensorRight c)] :
     PreservesLimit F (curriedTensor C) :=
-  preservesLimit_of_evaluation _ _ <| fun c ↦
-    preservesLimit_of_natIso F
-      (NatIso.ofComponents (fun _ ↦ Iso.refl _) :
-        tensorRight c ≅ curriedTensor C ⋙ (evaluation C C).obj c)
+  preservesLimit_of_evaluation _ _ <| fun c ↦ inferInstanceAs (PreservesLimit F (tensorRight c))
 
 lemma preservesLimit_curriedTensor_obj (c : C) [PreservesLimit F (tensorLeft c)] :
     PreservesLimit F ((curriedTensor C).obj c) := by
