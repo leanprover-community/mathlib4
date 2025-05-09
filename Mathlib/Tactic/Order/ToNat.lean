@@ -5,7 +5,6 @@ Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Data.Fin.Tuple.Basic
--- import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Facts preprocessing for the `order` tactic
@@ -17,13 +16,6 @@ See `Mathlib.Tactic.Order` for details of preprocessing.
 namespace Mathlib.Tactic.Order
 
 section Lemmas
-
-/--
-Auxiliary definition used by the `order` tactic to
-transfer facts in a linear order to `Nat`
--/
--- def translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) (k : Fin n) : ℕ :=
---   (Finset.image val {u : Fin n | val u < val k}).card
 
 lemma exists_max {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin (n + 1) → α) :
     ∃ imax, ∀ j, val j ≤ val imax := by
@@ -85,122 +77,39 @@ noncomputable def translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin
     (k : Fin n) : ℕ :=
   (exists_translation val).choose k
 
--- theorem translation_le_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
---     ∀ i j, translation val i ≤ translation val j ↔ val i ≤ val j := by
---   intro i j
---   have hi := Finset.mem_univ i
---   have hj := Finset.mem_univ j
---   generalize @Finset.univ (Fin n) _ = s at hi hj
---   induction s using Finset.strongInduction with | _ s ih =>
---   have hs : s.Nonempty := ⟨i, hi⟩
---   obtain ⟨m, hms, hm⟩ := Set.Finite.exists_maximal_wrt val s s.finite_toSet hs.to_set
---   rw [Finset.mem_coe] at hms
---   let t : Finset (Fin n) := {u ∈ s | val u < val m}
---   have ht : t ⊂ s := by
---     rw [Finset.ssubset_def]
---     constructor
---     · apply Finset.filter_subset
---     · intro hst
---       apply lt_irrefl (val m)
---       exact (Finset.mem_filter.mp (hst hms)).right
---   have hmm (k : Fin n) (hk : k ∈ s) : val k ≤ val m :=
---     (le_total (val k) (val m)).elim id fun h => by rw [hm k hk h]
---   obtain him | him := lt_or_eq_of_le (hmm i hi) <;> obtain hjm | hjm := lt_or_eq_of_le (hmm j hj)
---   · exact ih t ht (Finset.mem_filter.mpr ⟨hi, him⟩) (Finset.mem_filter.mpr ⟨hj, hjm⟩)
---   · rw [hjm, iff_true_right him.le]
---     apply Finset.card_le_card
---     apply Finset.image_subset_image
---     apply Finset.monotone_filter_right
---     intro u hu
---     rw [hjm]
---     exact hu.trans him
---   · rw [him, iff_false_right hjm.not_le, not_le]
---     apply Finset.card_lt_card
---     rw [him, Finset.ssubset_def]
---     constructor
---     · apply Finset.image_subset_image
---       apply Finset.monotone_filter_right
---       intro u hu
---       exact hu.trans hjm
---     · intro hii
---       have hjj :=
---         hii (Finset.mem_image.mpr ⟨j, Finset.mem_filter.mpr ⟨Finset.mem_univ j, hjm⟩, rfl⟩)
---       rw [Finset.mem_image] at hjj
---       obtain ⟨k, hk, hkj⟩ := hjj
---       rw [Finset.mem_filter] at hk
---       rw [hkj] at hk
---       exact hk.right.false
---   · rw [him, hjm, iff_true_right le_rfl, translation, him, translation, hjm]
-
 theorem translation_le_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
     ∀ i j, translation val i ≤ translation val j ↔ val i ≤ val j := by
   simp [translation, (exists_translation val).choose_spec]
-
--- theorem translation_lt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
---     ∀ i j, translation val i < translation val j ↔ val i < val j := by
---   intro i j
---   simpa using (translation_le_translation val j i).not
 
 theorem translation_lt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
     ∀ i j, translation val i < translation val j ↔ val i < val j := by
   intro i j
   simpa using (translation_le_translation val j i).not
 
--- theorem translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
---     ∀ i j, translation val i = translation val j ↔ val i = val j := by
---   simp_rw [le_antisymm_iff, translation_le_translation, implies_true]
-
 theorem translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
     ∀ i j, translation val i = translation val j ↔ val i = val j := by
   simp [translation_le_translation, le_antisymm_iff]
-
--- theorem translation_ne_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
---     ∀ i j, translation val i ≠ translation val j ↔ val i ≠ val j := by
---   intro i j
---   simpa using (translation_eq_translation val i j).not
 
 theorem translation_ne_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
     ∀ i j, translation val i ≠ translation val j ↔ val i ≠ val j := by
   intro i j
   simpa using (translation_eq_translation val i j).not
 
--- theorem translation_nle_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
---     ∀ i j, ¬translation val i ≤ translation val j ↔ ¬val i ≤ val j := by
---   intro i j
---   simpa using translation_lt_translation val j i
-
 theorem translation_nle_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
     ∀ i j, ¬translation val i ≤ translation val j ↔ ¬val i ≤ val j := by
   intro i j
   simpa using translation_lt_translation val j i
-
--- theorem translation_nlt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
---     ∀ i j, ¬translation val i < translation val j ↔ ¬val i < val j := by
---   intro i j
---   simpa using translation_le_translation val j i
 
 theorem translation_nlt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
     ∀ i j, ¬translation val i < translation val j ↔ ¬val i < val j := by
   intro i j
   simpa using translation_le_translation val j i
 
--- theorem translation_sup_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
---     (val : Fin n → α) : ∀ i j k, translation val i ⊔ translation val j = translation val k ↔
---       val i ⊔ val j = val k := by
---   intro i j k
---   simp_rw [le_antisymm_iff, sup_le_iff, le_sup_iff, translation_le_translation]
-
 theorem translation_sup_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
     (val : Fin n → α) : ∀ i j k, translation val i ⊔ translation val j = translation val k ↔
       val i ⊔ val j = val k := by
   intro i j k
   simp_rw [le_antisymm_iff, sup_le_iff, le_sup_iff, translation_le_translation]
-
--- theorem translation_inf_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
---     (val : Fin n → α) : ∀ i j k, translation val i ⊓ translation val j = translation val k ↔
---       val i ⊓ val j = val k := by
---   intro i j k
---   simp_rw [le_antisymm_iff, inf_le_iff, le_inf_iff, translation_le_translation]
 
 theorem translation_inf_translation_eq_translation {α : Type*} [LinearOrder α] {n : ℕ}
     (val : Fin n → α) : ∀ i j k, translation val i ⊓ translation val j = translation val k ↔
