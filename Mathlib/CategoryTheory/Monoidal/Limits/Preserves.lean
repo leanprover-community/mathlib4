@@ -24,7 +24,7 @@ instance preservesColimit_of_braided_and_preservesColimit_tensor_left
     [BraidedCategory C] (c : C)
     [PreservesColimit F (tensorLeft c)] :
     PreservesColimit F (tensorRight c) :=
-  preservesColimit_of_natIso F (NatIso.ofComponents (fun _ ↦ β_ _ _) : tensorLeft c ≅ tensorRight c)
+  preservesColimit_of_natIso F (BraidedCategory.tensorLeftIsoTensorRight c)
 
 /-- When `C` is braided and `tensorRight c` preserves a colimit, then so does `tensorLeft k`.
 We are not making this an instance to avoid an instance loop with
@@ -33,18 +33,16 @@ lemma preservesColimit_of_braided_and_preservesColimit_tensor_right
     [BraidedCategory C] (c : C)
     [PreservesColimit F (tensorRight c)] :
     PreservesColimit F (tensorLeft c) :=
-  preservesColimit_of_natIso F (NatIso.ofComponents (fun _ ↦ β_ _ _) : tensorRight c ≅ tensorLeft c)
+  preservesColimit_of_natIso F (BraidedCategory.tensorLeftIsoTensorRight c).symm
 
 instance preservesCoLimit_curriedTensor [h : ∀ c : C, PreservesColimit F (tensorRight c)] :
     PreservesColimit F (curriedTensor C) :=
-  preservesColimit_of_evaluation _ _ <| fun c ↦
-    preservesColimit_of_natIso F
-      (NatIso.ofComponents (fun _ ↦ Iso.refl _) :
-        tensorRight c ≅ curriedTensor C ⋙ (evaluation C C).obj c)
+  preservesColimit_of_evaluation _ _
+    (fun c ↦ inferInstanceAs (PreservesColimit F (tensorRight c)))
 
 instance preservesColimit_curriedTensor_obj (c : C) [PreservesColimit F (tensorLeft c)] :
     PreservesColimit F ((curriedTensor C).obj c) :=
-    preservesColimit_of_natIso F (NatIso.ofComponents (fun _ ↦ Iso.refl _) : tensorLeft c ≅ _)
+  by assumption
 
 end Colimits
 
