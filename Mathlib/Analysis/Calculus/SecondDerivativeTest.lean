@@ -6,7 +6,6 @@ Authors: Bjørn Kjos-Hanssen, Jireh Loreaux, Floris van Doorn, Eric Wieser
 import Mathlib.Analysis.Calculus.FirstDerivativeTest
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Slope
-import Mathlib.LinearAlgebra.AffineSpace.Ordered
 
 /-!
 # The Second-Derivative Test
