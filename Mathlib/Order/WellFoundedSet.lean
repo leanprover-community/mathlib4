@@ -679,6 +679,25 @@ namespace Set.PartiallyWellOrderedOn
 
 variable {r : α → α → Prop}
 
+theorem bddAbove_preimage {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
+    (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
+    BddAbove (s.preimage f) := by
+  contrapose! hf
+  rw [not_bddAbove_iff] at hf
+  obtain ⟨φ, hφm, hφs⟩ := Nat.exists_strictMono_subsequence
+    fun n ↦ (hf n).casesOn fun m h ↦ h.casesOn fun hs hmn ↦ Exists.intro m ⟨hmn, hs⟩
+  rw [partiallyWellOrderedOn_iff_exists_lt] at hs
+  obtain ⟨m, n, hmn, hr⟩ := hs (fun n ↦ f (φ n)) hφs
+  use (φ m), (φ n)
+  exact ⟨hφm hmn, hr⟩
+
+theorem exists_not_mem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
+    (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
+    ∃ k : ℕ, ∀ m, k < m → ¬ (f m) ∈ s := by
+  have := hs.bddAbove_preimage hf
+  contrapose! this
+  simpa [not_bddAbove_iff, and_comm]
+
 -- TODO: move this material to the main file on WQOs.
 
 /-- In the context of partial well-orderings, a bad sequence is a nonincreasing sequence
@@ -776,13 +795,13 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreo
     split_ifs at hmn with hm
     · apply hf1.2 m (g n') (lt_of_lt_of_le hm (g.monotone n'.zero_le))
       exact _root_.trans hmn (List.tail_sublistForall₂_self _)
-    · rw [← Nat.sub_lt_iff_lt_add (le_of_not_lt hm)] at mn
+    · rw [← Nat.sub_lt_iff_lt_add' (le_of_not_lt hm)] at mn
       apply hf1.2 _ _ (g.lt_iff_lt.2 mn)
       rw [← List.cons_head!_tail (hnil (g (m - g 0))), ← List.cons_head!_tail (hnil (g n'))]
       exact List.SublistForall₂.cons (hg _ _ (le_of_lt mn)) hmn
 
 theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
-    (hα : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO)
+    (hα : ((fun (x : α ×ₗ β) => (ofLex x).1) '' s).IsPWO)
     (hβ : ∀ a, {y | toLex (a, y) ∈ s}.IsPWO) : s.IsPWO := by
   rw [IsPWO, partiallyWellOrderedOn_iff_exists_lt]
   intro f hf

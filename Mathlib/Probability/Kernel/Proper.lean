@@ -69,7 +69,7 @@ alias ⟨IsProper.inter_eq_indicator_mul, IsProper.of_inter_eq_indicator_mul⟩ 
 lemma IsProper.setLIntegral_eq_comp (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) {μ : Measure[𝓧] X}
     (hA : MeasurableSet[𝓧] A) (hB : MeasurableSet[𝓑] B) :
     ∫⁻ a in B, π a A ∂μ = (π ∘ₘ μ) (A ∩ B) := by
-  rw [Measure.bind_apply (by measurability) (π.measurable.mono h𝓑𝓧 le_rfl)]
+  rw [Measure.bind_apply (by measurability) (π.measurable.mono h𝓑𝓧 le_rfl).aemeasurable]
   simp only [hπ.inter_eq_indicator_mul h𝓑𝓧 hA hB, ← indicator_mul_const, Pi.one_apply, one_mul]
   rw [← lintegral_indicator (h𝓑𝓧 _ hB)]
   rfl

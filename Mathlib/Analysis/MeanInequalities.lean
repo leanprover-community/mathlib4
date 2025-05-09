@@ -548,15 +548,15 @@ theorem inner_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.Hold
     intro s
     refine le_trans (inner_le_Lp_mul_Lq s f g hpq) (mul_le_mul ?_ ?_ bot_le bot_le)
     · rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr hpq.pos)]
-      exact sum_le_tsum _ (fun _ _ => zero_le _) hf
+      exact hf.sum_le_tsum _ (fun _ _ => zero_le _)
     · rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr hpq.symm.pos)]
-      exact sum_le_tsum _ (fun _ _ => zero_le _) hg
+      exact hg.sum_le_tsum _ (fun _ _ => zero_le _)
   have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, f i * g i) := by
     refine ⟨(∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q), ?_⟩
     rintro a ⟨s, rfl⟩
     exact H₁ s
   have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
-  exact ⟨H₂, tsum_le_of_sum_le H₂ H₁⟩
+  exact ⟨H₂, H₂.tsum_le_of_sum_le H₁⟩
 
 theorem summable_mul_of_Lp_Lq {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.HolderConjugate q)
     (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :
@@ -656,7 +656,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
     rw [one_div, ← NNReal.rpow_inv_le_iff pos, ← one_div]
     refine le_trans (Lp_add_le s f g hp) (add_le_add ?_ ?_) <;>
         rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr pos)] <;>
-      refine sum_le_tsum _ (fun _ _ => zero_le _) ?_
+      refine Summable.sum_le_tsum _ (fun _ _ => zero_le _) ?_
     exacts [hf, hg]
   have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, (f i + g i) ^ p) := by
     refine ⟨((∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p)) ^ p, ?_⟩
@@ -665,7 +665,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
   have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
   refine ⟨H₂, ?_⟩
   rw [one_div, NNReal.rpow_inv_le_iff pos, ← one_div]
-  exact tsum_le_of_sum_le H₂ H₁
+  exact H₂.tsum_le_of_sum_le H₁
 
 theorem summable_Lp_add {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Summable fun i => f i ^ p)
     (hg : Summable fun i => g i ^ p) : Summable fun i => (f i + g i) ^ p :=

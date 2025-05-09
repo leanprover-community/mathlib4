@@ -394,11 +394,11 @@ instance (D : GlueData' C) (i : D.J) :
 instance (D : GlueData' C) (i j k : D.J) :
     HasPullback (D.f' i j) (D.f' i k) := by
   if hij : i = j then
-    apply (config := { allowSynthFailures := true}) hasPullback_of_left_iso
+    apply (config := { allowSynthFailures := true }) hasPullback_of_left_iso
     simp only [GlueData'.f', dif_pos hij]
     infer_instance
   else if hik : i = k then
-    apply (config := { allowSynthFailures := true}) hasPullback_of_right_iso
+    apply (config := { allowSynthFailures := true }) hasPullback_of_right_iso
     simp only [GlueData'.f', dif_pos hik]
     infer_instance
   else
@@ -420,7 +420,7 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
       eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
   else if hjk : j = k then
     have : IsIso (pullback.snd (D.f' j k) (D.f' j i)) := by
-      apply (config := { allowSynthFailures := true}) pullback_snd_iso_of_left_iso
+      apply (config := { allowSynthFailures := true }) pullback_snd_iso_of_left_iso
       simp only [hjk, GlueData'.f', ↓reduceDIte]
       infer_instance
     pullback.fst _ _ ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
@@ -450,10 +450,11 @@ def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
   t' := D.t''
   t_fac i j k := by
     delta GlueData'.t''
-    split_ifs
+    obtain rfl | _ := eq_or_ne i j
+    · simp
+    obtain rfl | _ := eq_or_ne i k
     · simp [*]
-    · cases ‹i ≠ j› (‹i = k›.trans ‹j = k›.symm)
-    · simp [‹j ≠ k›.symm, *]
+    obtain rfl | _ := eq_or_ne j k
     · simp [*]
     · simp [*, reassoc_of% D.t_fac]
   cocycle i j k := by

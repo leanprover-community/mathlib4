@@ -57,7 +57,7 @@ instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
 @[simps! -isSimp apply]
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 
-theorem map_toCotangent_ker : I.toCotangent.ker.map I.subtype = I ^ 2 := by
+theorem map_toCotangent_ker : (LinearMap.ker I.toCotangent).map I.subtype = I ^ 2 := by
   rw [Ideal.toCotangent, Submodule.ker_mkQ, pow_two, Submodule.map_smul'' I ⊤ (Submodule.subtype I),
     Algebra.id.smul_eq_mul, Submodule.map_subtype_top]
 
@@ -185,7 +185,7 @@ def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRing
     exact f.map_algebraMap r
 
 theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
-    RingHom.ker f.kerSquareLift.toRingHom = f.toRingHom.ker.cotangentIdeal := by
+    RingHom.ker f.kerSquareLift.toRingHom = (RingHom.ker f.toRingHom).cotangentIdeal := by
   apply le_antisymm
   · intro x hx; obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x; exact ⟨x, hx, rfl⟩
   · rintro _ ⟨x, hx, rfl⟩; exact hx

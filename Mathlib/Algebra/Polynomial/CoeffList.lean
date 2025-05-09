@@ -19,7 +19,7 @@ This is useful for talking about polynomials in terms of list operations. It is 
 the sense that `Polynomial` is already a `Finsupp` (of its coefficients), and `Polynomial.coeff`
 turns this into a function, and these have exactly the same data as `coeffList`. The difference is
 that `coeffList` is intended for working together with list operations: getting `List.head`,
-comparing adjacent coefficients with each other, or anything that involves induction on Pollynomials
+comparing adjacent coefficients with each other, or anything that involves induction on Polynomials
 by dropping the leading term (which is `Polynomial.eraseLead`).
 
 Note that `coeffList` _starts_ with the highest-degree terms and _ends_ with the constant term. This
@@ -138,17 +138,17 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ (Nat.lt_of_not_le hkd))
   rw [List.getElem?_reverse (by simpa [withBotSucc_degree_eq_natDegree_add_one h] using hkd),
     List.getElem?_cons_succ, List.length_map, List.length_range, List.getElem?_map,
-    List.getElem?_range (by omega), Option.map_some']
+    List.getElem?_range (by omega), Option.map_some]
   conv_lhs => arg 1; equals P.eraseLead.coeff dk =>
     rw [eraseLead_coeff_of_ne (f := P) dk (by omega)]
     congr
     omega
   by_cases hkn : k < n
   · simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by omega)
-  · rw [List.getElem?_append_right (List.length_replicate _ _ ▸ Nat.le_of_not_gt hkn),
+  · rw [List.getElem?_append_right (List.length_replicate ▸ Nat.le_of_not_gt hkn),
       List.length_replicate, List.getElem?_reverse, List.getElem?_map]
     · rw [List.length_map, List.length_range,
-        List.getElem?_range (by omega), Option.map_some']
+        List.getElem?_range (by omega), Option.map_some]
       congr 2
       omega
     · simpa using by omega
