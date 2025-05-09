@@ -140,6 +140,9 @@ lemma cochainsMap_f_0_comp_zeroCochainsIso :
   simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
   rfl
 
+@[deprecated (since := "2025-05-09")]
+alias cochainsMap_f_0_comp_zeroCochainsLequiv := cochainsMap_f_0_comp_zeroCochainsIso
+
 @[reassoc]
 lemma cochainsMap_f_1_comp_oneCochainsIso :
     (cochainsMap f φ).f 1 ≫ (oneCochainsIso B).hom =
@@ -147,6 +150,9 @@ lemma cochainsMap_f_1_comp_oneCochainsIso :
   ext x
   simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
   rfl
+
+@[deprecated (since := "2025-05-09")]
+alias cochainsMap_f_1_comp_oneCochainsLequiv := cochainsMap_f_1_comp_oneCochainsIso
 
 @[reassoc]
 lemma cochainsMap_f_2_comp_twoCochainsIso :
@@ -157,6 +163,9 @@ lemma cochainsMap_f_2_comp_twoCochainsIso :
   rcongr x
   fin_cases x <;> rfl
 
+@[deprecated (since := "2025-05-09")]
+alias cochainsMap_f_2_comp_twoCochainsLequiv := cochainsMap_f_2_comp_twoCochainsIso
+
 @[reassoc]
 lemma cochainsMap_f_3_comp_threeCochainsIso :
     (cochainsMap f φ).f 3 ≫ (threeCochainsIso B).hom =
@@ -165,6 +174,9 @@ lemma cochainsMap_f_3_comp_threeCochainsIso :
   show φ.hom (x _) = φ.hom (x _)
   rcongr x
   fin_cases x <;> rfl
+
+@[deprecated (since := "2025-05-09")]
+alias cochainsMap_f_3_comp_threeCochainsLequiv := cochainsMap_f_3_comp_threeCochainsIso
 
 open ShortComplex
 

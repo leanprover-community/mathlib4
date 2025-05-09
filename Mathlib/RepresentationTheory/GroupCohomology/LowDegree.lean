@@ -68,21 +68,29 @@ to `A` as a `k`-module. -/
 def zeroCochainsIso : (inhomogeneousCochains A).X 0 ≅ A.V :=
   (LinearEquiv.funUnique (Fin 0 → G) k A).toModuleIso
 
+@[deprecated (since := "2025-05-09")] noncomputable alias zeroCochainsLequiv := zeroCochainsIso
+
 /-- The 1st object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G, A)` as a `k`-module. -/
 def oneCochainsIso : (inhomogeneousCochains A).X 1 ≅ ModuleCat.of k (G → A) :=
   (LinearEquiv.funCongrLeft k A (Equiv.funUnique (Fin 1) G)).toModuleIso.symm
+
+@[deprecated (since := "2025-05-09")] noncomputable alias oneCochainsLequiv := oneCochainsIso
 
 /-- The 2nd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G², A)` as a `k`-module. -/
 def twoCochainsIso : (inhomogeneousCochains A).X 2 ≅ ModuleCat.of k (G × G → A) :=
   (LinearEquiv.funCongrLeft k A <| (piFinTwoEquiv fun _ => G)).toModuleIso.symm
 
+@[deprecated (since := "2025-05-09")] noncomputable alias twoCochainsLequiv := twoCochainsIso
+
 /-- The 3rd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G³, A)` as a `k`-module. -/
 def threeCochainsIso : (inhomogeneousCochains A).X 3 ≅ ModuleCat.of k (G × G × G → A) :=
   (LinearEquiv.funCongrLeft k A <| ((Fin.consEquiv _).symm.trans
     ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))).toModuleIso.symm
+
+@[deprecated (since := "2025-05-09")] noncomputable alias threeCochainsLequiv := threeCochainsIso
 
 end Cochains
 
@@ -155,6 +163,8 @@ theorem comp_dZero_eq : (zeroCochainsIso A).hom ≫ ModuleCat.ofHom (dZero A) =
     Finset.sum_singleton, sub_eq_add_neg]
   rcongr i <;> exact Fin.elim0 i
 
+@[deprecated (since := "2025-05-09")] alias dZero_comp_eq := comp_dZero_eq
+
 /-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `dOne` gives a simpler expression for the 1st differential: that is, the following
 square commutes:
@@ -176,6 +186,8 @@ theorem comp_dOne_eq : (oneCochainsIso A).hom ≫ ModuleCat.ofHom (dOne A) =
   simp only [Fin.val_zero, zero_add, pow_one, neg_smul, one_smul, Fin.val_one,
     Nat.one_add, neg_one_sq, sub_eq_add_neg, add_assoc]
   rcongr i <;> rw [Subsingleton.elim i 0] <;> rfl
+
+@[deprecated (since := "2025-05-09")] alias dOne_comp_eq := comp_dOne_eq
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `dTwo` gives a simpler expression for the 2nd differential: that is, the following
@@ -199,6 +211,8 @@ theorem comp_dTwo_eq : (twoCochainsIso A).hom ≫ ModuleCat.ofHom (dTwo A) =
   simp only [sub_eq_add_neg, add_assoc, Fin.val_zero, zero_add, pow_one, neg_smul,
     one_smul, Fin.val_one, Fin.val_two, pow_succ' (-1 : k) 2, neg_sq, Nat.one_add, one_pow, mul_one]
   rcongr i <;> fin_cases i <;> rfl
+
+@[deprecated (since := "2025-05-09")] alias dTwo_comp_eq := comp_dTwo_eq
 
 theorem dOne_comp_dZero : dOne A ∘ₗ dZero A = 0 := by
   ext x g
@@ -302,6 +316,9 @@ group homs `G → A`. -/
       property := mem_oneCocycles_of_addMonoidHom f }
   left_inv f := by ext; rfl
   right_inv f := by ext; rfl
+
+@[deprecated (since := "2025-05-09")]
+noncomputable alias oneCocyclesLequivOfIsTrivial := oneCocyclesLEquivOfIsTrivial
 
 instance : FunLike (twoCocycles A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
@@ -729,14 +746,26 @@ section H0
 def H0LEquivOfIsTrivial [A.IsTrivial] :
     H0 A ≃ₗ[k] A := LinearEquiv.ofTop _ (invariants_eq_top A.ρ)
 
+@[deprecated (since := "2025-05-09")]
+noncomputable alias H0LequivOfIsTrivial := H0LEquivOfIsTrivial
+
 @[simp] theorem H0LEquivOfIsTrivial_eq_subtype [A.IsTrivial] :
     H0LEquivOfIsTrivial A = A.ρ.invariants.subtype := rfl
+
+@[deprecated (since := "2025-05-09")]
+alias H0LequivOfIsTrivial_eq_subtype := H0LEquivOfIsTrivial_eq_subtype
 
 theorem H0LEquivOfIsTrivial_apply [A.IsTrivial] (x : H0 A) :
     H0LEquivOfIsTrivial A x = x := rfl
 
+@[deprecated (since := "2025-05-09")]
+alias H0LequivOfIsTrivial_apply := H0LEquivOfIsTrivial_apply
+
 @[simp] theorem H0LEquivOfIsTrivial_symm_apply [A.IsTrivial] (x : A) :
     (H0LEquivOfIsTrivial A).symm x = x := rfl
+
+@[deprecated (since := "2025-05-09")]
+alias H0LequivOfIsTrivial_symm_apply := H0LEquivOfIsTrivial_symm_apply
 
 end H0
 
@@ -750,17 +779,29 @@ def H1LEquivOfIsTrivial [A.IsTrivial] :
     (by simp [shortComplexH1, ShortComplex.moduleCatToCycles, Submodule.eq_bot_iff])).trans
   (oneCocyclesLEquivOfIsTrivial A)
 
+@[deprecated (since := "2025-05-09")]
+noncomputable alias H1LequivOfIsTrivial := H1LEquivOfIsTrivial
+
 theorem H1LEquivOfIsTrivial_comp_H1π [A.IsTrivial] :
     (H1LEquivOfIsTrivial A).comp (H1π A).hom = oneCocyclesLEquivOfIsTrivial A := by
   ext; rfl
 
-@[simp] theorem H1LEquivOfIsTrivial_H1_π_apply_apply
+@[deprecated (since := "2025-05-09")]
+alias H1LequivOfIsTrivial_comp_H1π := H1LEquivOfIsTrivial_comp_H1π
+
+@[simp] theorem H1LEquivOfIsTrivial_H1π_apply_apply
     [A.IsTrivial] (f : oneCocycles A) (x : Additive G) :
     H1LEquivOfIsTrivial A (Submodule.Quotient.mk f) x = f x.toMul := rfl
+
+@[deprecated (since := "2025-05-09")]
+alias H1LequivOfIsTrivial_comp_H1_π_apply_apply := H1LEquivOfIsTrivial_H1π_apply_apply
 
 @[simp] theorem H1LEquivOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
     (H1LEquivOfIsTrivial A).symm f = H1π A ((oneCocyclesLEquivOfIsTrivial A).symm f) :=
   rfl
+
+@[deprecated (since := "2025-05-09")]
+alias H1LequivOfIsTrivial_symm_apply := H1LEquivOfIsTrivial_symm_apply
 
 end H1
 
