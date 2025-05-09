@@ -43,9 +43,6 @@ alias embedding_coe := isEmbedding_coe
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ → EReal) :=
   ⟨isEmbedding_coe, by simp only [range_coe_eq_Ioo, isOpen_Ioo]⟩
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_coe := isOpenEmbedding_coe
-
 @[norm_cast]
 theorem tendsto_coe {α : Type*} {f : Filter α} {m : α → ℝ} {a : ℝ} :
     Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
@@ -90,9 +87,6 @@ alias embedding_coe_ennreal := isEmbedding_coe_ennreal
 
 theorem isClosedEmbedding_coe_ennreal : IsClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   ⟨isEmbedding_coe_ennreal, by rw [range_coe_ennreal]; exact isClosed_Ici⟩
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_coe_ennreal := isClosedEmbedding_coe_ennreal
 
 @[norm_cast]
 theorem tendsto_coe_ennreal {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :

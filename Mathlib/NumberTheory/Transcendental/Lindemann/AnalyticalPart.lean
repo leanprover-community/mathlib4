@@ -72,7 +72,7 @@ private theorem P_le_aux (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
   gcongr
   rw [intervalIntegral.integral_of_le zero_le_one, ← mul_one (_ * _)]
   convert MeasureTheory.norm_setIntegral_le_of_norm_le_const _ _
-  · rw [Real.volume_Ioc, sub_zero, ENNReal.toReal_ofReal zero_le_one]
+  · rw [Real.volume_real_Ioc_of_le zero_le_one, sub_zero]
   · rw [Real.volume_Ioc, sub_zero]; exact ENNReal.ofReal_lt_top
   intro x hx
   rw [norm_mul, norm_exp]

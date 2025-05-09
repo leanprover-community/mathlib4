@@ -95,9 +95,6 @@ theorem isSeparatedMap_iff_isClosedEmbedding {f : X → Y} :
   rw [isSeparatedMap_iff_isClosed_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨.toPullbackDiag f, h⟩, fun h ↦ h.isClosed_range⟩
 
-@[deprecated (since := "2024-10-20")]
-alias isSeparatedMap_iff_closedEmbedding := isSeparatedMap_iff_isClosedEmbedding
-
 theorem isSeparatedMap_iff_isClosedMap {f : X → Y} :
     IsSeparatedMap f ↔ IsClosedMap (toPullbackDiag f) :=
   isSeparatedMap_iff_isClosedEmbedding.trans
@@ -152,9 +149,6 @@ theorem IsLocallyInjective_iff_isOpenEmbedding {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenEmbedding (toPullbackDiag f) := by
   rw [isLocallyInjective_iff_isOpen_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨.toPullbackDiag f, h⟩, fun h ↦ h.isOpen_range⟩
-
-@[deprecated (since := "2024-10-18")]
-alias IsLocallyInjective_iff_openEmbedding := IsLocallyInjective_iff_isOpenEmbedding
 
 theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenMap (toPullbackDiag f) :=
