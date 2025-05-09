@@ -499,19 +499,13 @@ lemma covariance_add_right [IsFiniteMeasure μ]
 
 lemma covariance_smul_left (c : ℝ) :
     cov[c • X, Y; μ] = c * cov[X, Y; μ] := by
-  simp_rw [covariance]
-  simp only [Pi.smul_apply, smul_eq_mul]
-  simp_rw [← integral_const_mul, ← mul_assoc, mul_sub]
-  congr with ω
-  congr <;> rw [integral_const_mul]
+  simp_rw [covariance, Pi.smul_apply, smul_eq_mul, ← integral_const_mul, ← mul_assoc, mul_sub,
+    integral_const_mul]
 
 lemma covariance_smul_right (c : ℝ) :
     cov[X, c • Y; μ] = c * cov[X, Y; μ] := by
-  simp_rw [covariance]
-  simp only [Pi.smul_apply, smul_eq_mul]
-  simp_rw [← integral_const_mul, ← mul_assoc, mul_comm c, mul_assoc, mul_sub, mul_comm c]
-  congr with ω
-  rw [integral_mul_const]
+  simp_rw [covariance, Pi.smul_apply, smul_eq_mul, ← integral_const_mul, ← mul_assoc, mul_comm c,
+    mul_assoc, mul_sub, mul_comm c, integral_mul_const]
 
 @[simp]
 lemma covariance_neg_left : cov[-X, Y; μ] = -cov[X, Y; μ] := by
@@ -528,14 +522,12 @@ lemma covariance_neg_right : cov[X, -Y; μ] = -cov[X, Y; μ] := by
 lemma covariance_sub_left [IsFiniteMeasure μ]
     (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
     cov[X - Y, Z; μ] = cov[X, Z; μ] - cov[Y, Z; μ] := by
-  simp_rw [sub_eq_add_neg]
-  rw [covariance_add_left hX hY.neg hZ, covariance_neg_left]
+  simp_rw [sub_eq_add_neg, covariance_add_left hX hY.neg hZ, covariance_neg_left]
 
 lemma covariance_sub_right [IsFiniteMeasure μ]
     (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
     cov[X, Y - Z; μ] = cov[X, Y; μ] - cov[X, Z; μ] := by
-  simp_rw [sub_eq_add_neg]
-  rw [covariance_add_right hX hY hZ.neg, covariance_neg_right]
+  simp_rw [sub_eq_add_neg, covariance_add_right hX hY hZ.neg, covariance_neg_right]
 
 end Covariance
 

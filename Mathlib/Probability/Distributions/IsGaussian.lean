@@ -14,7 +14,7 @@ import Mathlib.Probability.Moments.CovarianceBanach
 
 ## Main definitions
 
-* `FooBar`
+* `IsGaussian`
 
 ## Main statements
 
@@ -84,15 +84,47 @@ lemma exists_between' {t : ℕ → ℝ} (ht_mono : StrictMono t) (ht_tendsto : T
     rw [Nat.sub_add_cancel]
     simp [hx0]
 
+lemma two_mul_mul_le_mul_add_div {a b ε : ℝ} (hε : 0 < ε) :
+    2 * a * b ≤ ε * a ^ 2 + (1 / ε) * b ^ 2 := by
+  have h : 2 * (ε * a) * b ≤ (ε * a) ^ 2 + b ^ 2 := two_mul_le_add_sq (ε * a) b
+  calc 2 * a * b
+  _ = (2 * (ε * a) * b) / ε := by field_simp; ring
+  _ ≤ ((ε * a) ^ 2 + b ^ 2) / ε := by gcongr
+  _ = ε * a ^ 2 + (1 / ε) * b ^ 2  := by field_simp; ring
+
 end Aux
 
 namespace ProbabilityTheory
+
+section Centered
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+
+/-- A measure `μ` is centered if `μ[L] = 0` for all continuous linear forms `L`. -/
+def IsCentered (μ : Measure E) : Prop := ∀ L : E →L[ℝ] ℝ, μ[L] = 0
+
+lemma isCentered_dirac_zero [OpensMeasurableSpace E] : IsCentered (Measure.dirac (0 : E)) := by
+  intro L; simp
+
+lemma isCentered_map_sub_integral_id [CompleteSpace E] [BorelSpace E]
+    {μ : Measure E} [IsProbabilityMeasure μ] (h_Lp : MemLp id 1 μ) :
+    IsCentered (μ.map (fun x ↦ x - μ[id])) := by
+  intro L
+  rw [integral_map]
+  · simp only [map_sub]
+    rw [integral_sub (h_Lp.integrable_continuousLinearMap L) (integrable_const _)]
+    simp [← ContinuousLinearMap.integral_comm_of_memLp_id h_Lp]
+  · fun_prop
+  · exact Measurable.aestronglyMeasurable <| by fun_prop
+
+end Centered
 
 /-- A measure is Gaussian if its map by every continuous linear form is a real Gaussian measure. -/
 class IsGaussian {E : Type*} [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
   {mE : MeasurableSpace E} (μ : Measure E) : Prop where
   map_eq_gaussianReal (L : E →L[ℝ] ℝ) : μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal
 
+/-- A real Gaussian measure is Gaussian. -/
 instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianReal m v) where
   map_eq_gaussianReal L := by
     rw [gaussianReal_map_continuousLinearMap]
@@ -104,14 +136,15 @@ instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianR
     simp only [left_eq_sup]
     positivity
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {mE : MeasurableSpace E} [BorelSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+  {μ : Measure E} [IsGaussian μ]
 
+/-- Dirac measures are Gaussian. -/
 instance {x : E} : IsGaussian (Measure.dirac x) where
   map_eq_gaussianReal L := by rw [Measure.map_dirac (by fun_prop)]; simp
 
 /-- A Gaussian measure is a probability measure. -/
-instance {μ : Measure E} [IsGaussian μ] : IsProbabilityMeasure μ where
+instance : IsProbabilityMeasure μ where
   measure_univ := by
     let L : E →L[ℝ] ℝ := Nonempty.some inferInstance
     have : μ.map L Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal L]
@@ -132,44 +165,6 @@ lemma IsGaussian.integrable_continuousLinearMap (μ : Measure E) [IsGaussian μ]
     Integrable L μ := by
   rw [← memLp_one_iff_integrable]
   exact IsGaussian.memLp_continuousLinearMap μ L 1 (by simp)
-
-lemma isGaussian_map_prod_add [SecondCountableTopology E]
-    {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :
-    IsGaussian ((μ.prod ν).map (fun p ↦ p.1 + p.2)) where
-  map_eq_gaussianReal := by
-    intro L
-    have h1 : ((μ.prod ν).map (fun p ↦ p.1 + p.2)).map L
-        = ((μ.map L).prod (ν.map L)).map (fun p ↦ p.1 + p.2) := by
-      rw [Measure.map_map (by fun_prop) (by fun_prop)]
-      have : (L ∘ fun (p : E × E) ↦ p.1 + p.2)
-          = (fun p : ℝ × ℝ ↦ p.1 + p.2) ∘ (Prod.map L L) := by ext; simp
-      rw [this, ← Measure.map_map (by fun_prop) (by fun_prop),
-        ← Measure.map_prod_map]
-      · fun_prop
-      · fun_prop
-    have : ∫ x, L x ∂((μ.prod ν).map (fun p ↦ p.1 + p.2))
-          = ∫ x, x ∂(((μ.map L).prod (ν.map L)).map (fun p ↦ p.1 + p.2)) := by
-        rw [← h1, integral_map (φ := L)]
-        · fun_prop
-        · exact measurable_id.aestronglyMeasurable
-    rw [h1, this, ← variance_id_map (by fun_prop), h1, IsGaussian.map_eq_gaussianReal L,
-      IsGaussian.map_eq_gaussianReal L, gaussianReal_map_prod_add]
-    congr
-    · simp
-    · simp [variance_nonneg]
-
-instance isGaussian_conv [SecondCountableTopology E]
-    {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :
-    IsGaussian (μ ∗ ν) := isGaussian_map_prod_add
-
-section Centered
-
-/-- A measure `μ` is centered if `μ[L] = 0` for all continuous linear forms `L`. -/
-def IsCentered (μ : Measure E) : Prop := ∀ L : E →L[ℝ] ℝ, μ[L] = 0
-
-lemma isCentered_dirac_zero : IsCentered (Measure.dirac (0 : E)) := by intro L; simp
-
-end Centered
 
 section CharFunCLM
 
@@ -210,10 +205,38 @@ alias ⟨_, isGaussian_of_charFunCLM_eq⟩ := isGaussian_iff_charFunCLM_eq
 
 end CharFunCLM
 
+lemma isGaussian_map_prod_add [SecondCountableTopology E]
+    {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :
+    IsGaussian ((μ.prod ν).map (fun p ↦ p.1 + p.2)) where
+  map_eq_gaussianReal := by
+    intro L
+    have h1 : ((μ.prod ν).map (fun p ↦ p.1 + p.2)).map L
+        = ((μ.map L).prod (ν.map L)).map (fun p ↦ p.1 + p.2) := by
+      rw [Measure.map_map (by fun_prop) (by fun_prop)]
+      have : (L ∘ fun (p : E × E) ↦ p.1 + p.2)
+          = (fun p : ℝ × ℝ ↦ p.1 + p.2) ∘ (Prod.map L L) := by ext; simp
+      rw [this, ← Measure.map_map (by fun_prop) (by fun_prop),
+        ← Measure.map_prod_map]
+      · fun_prop
+      · fun_prop
+    have : ∫ x, L x ∂((μ.prod ν).map (fun p ↦ p.1 + p.2))
+          = ∫ x, x ∂(((μ.map L).prod (ν.map L)).map (fun p ↦ p.1 + p.2)) := by
+        rw [← h1, integral_map (φ := L)]
+        · fun_prop
+        · exact measurable_id.aestronglyMeasurable
+    rw [h1, this, ← variance_id_map (by fun_prop), h1, IsGaussian.map_eq_gaussianReal L,
+      IsGaussian.map_eq_gaussianReal L, gaussianReal_map_prod_add]
+    congr
+    · simp
+    · simp [variance_nonneg]
+
+instance isGaussian_conv [SecondCountableTopology E]
+    {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :
+    IsGaussian (μ ∗ ν) := isGaussian_map_prod_add
+
 section Rotation
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {mF : MeasurableSpace F} [BorelSpace F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
   {μ : Measure E} [IsGaussian μ] {ν : Measure F} [IsGaussian ν]
 
 instance isGaussian_map (L : E →L[ℝ] F) : IsGaussian (μ.map L) where
@@ -381,25 +404,15 @@ def _root_.ContinuousLinearMap.rotation (θ : ℝ) :
   toFun := fun x ↦ (Real.cos θ • x.1 + Real.sin θ • x.2, - Real.sin θ • x.1 + Real.cos θ • x.2)
   map_add' x y := by
     simp only [Prod.fst_add, smul_add, Prod.snd_add, neg_smul, Prod.mk_add_mk]
-    ext
-    · simp_rw [add_assoc]
-      congr 1
-      rw [add_comm, add_assoc]
-      congr 1
-      rw [add_comm]
-    · simp only
-      simp_rw [add_assoc]
-      congr 1
-      rw [add_comm, add_assoc]
-      congr 1
-      rw [add_comm]
+    abel_nf
   map_smul' c x := by
     simp only [Prod.smul_fst, Prod.smul_snd, neg_smul, RingHom.id_apply, Prod.smul_mk, smul_add,
       smul_neg]
     simp_rw [smul_comm c]
   cont := by fun_prop
 
-lemma _root_.ContinuousLinearMap.rotation_apply (θ : ℝ) (x : E × E) :
+lemma _root_.ContinuousLinearMap.rotation_apply {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] (θ : ℝ) (x : E × E) :
     ContinuousLinearMap.rotation θ x
      = (Real.cos θ • x.1 + Real.sin θ • x.2, - Real.sin θ • x.1 + Real.cos θ • x.2) := rfl
 
@@ -474,7 +487,7 @@ end Rotation
 
 section Fernique
 
-variable [SecondCountableTopology E] [CompleteSpace E] {μ : Measure E} [IsGaussian μ]
+variable [SecondCountableTopology E] [CompleteSpace E]
 
 lemma IsGaussian.measure_le_mul_measure_gt_le (hμ : IsCentered μ) (a b : ℝ) :
     μ {x | ‖x‖ ≤ a} * μ {x | b < ‖x‖} ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 := by
@@ -859,15 +872,8 @@ lemma IsGaussian.exists_integrable_exp_sq_of_isCentered (hμ : IsCentered μ) :
       rw [ENNReal.toReal_lt_toReal hc_one_sub_lt_top.ne hc_lt_top.ne]
       exact h_one_sub_lt_self
 
-lemma two_mul_mul_le_mul_add_div {a b ε : ℝ} (hε : 0 < ε) :
-    2 * a * b ≤ ε * a ^ 2 + (1 / ε) * b ^ 2 := by
-  have h : 2 * (ε * a) * b ≤ (ε * a) ^ 2 + b ^ 2 := two_mul_le_add_sq (ε * a) b
-  calc 2 * a * b
-  _ = (2 * (ε * a) * b) / ε := by field_simp; ring
-  _ ≤ ((ε * a) ^ 2 + b ^ 2) / ε := by gcongr
-  _ = ε * a ^ 2 + (1 / ε) * b ^ 2  := by field_simp; ring
-
-/-- **Fernique's theorem** -/
+/-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
+`x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
 theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
     ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
   obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq_of_isCentered
@@ -933,6 +939,8 @@ theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
       simp only [add_sub_cancel]
       rw [mul_div_cancel₀ _ (by positivity)]
 
+/-- A Gaussian measure has moments of all orders.
+That is, the identity is in Lp for all finite `p`. -/
 lemma IsGaussian.memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞) :
     MemLp id p μ := by
   suffices MemLp (fun x ↦ ‖x‖ ^ 2) (p / 2) μ by
@@ -960,26 +968,10 @@ end Fernique
 
 section Mean
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {mE : MeasurableSpace E} {μ : Measure E}
-  {p : ℝ≥0∞}
-
-variable [CompleteSpace E]
-
-lemma isCentered_map_sub_integral_id [BorelSpace E] [IsProbabilityMeasure μ] (h_Lp : MemLp id 1 μ) :
-    IsCentered (μ.map (fun x ↦ x - μ[id])) := by
-  intro L
-  rw [integral_map]
-  · simp only [map_sub]
-    rw [integral_sub (h_Lp.integrable_continuousLinearMap L) (integrable_const _)]
-    simp [← integral_continuousLinearMap_of_memLp_id h_Lp]
-  · fun_prop
-  · exact Measurable.aestronglyMeasurable <| by fun_prop
-
-variable [BorelSpace E] [SecondCountableTopology E] {μ : Measure E} [IsGaussian μ]
+variable [CompleteSpace E] [SecondCountableTopology E]
 
 lemma IsGaussian.integral_continuousLinearMap (L : E →L[ℝ] ℝ) : μ[L] = L (∫ x, x ∂μ) :=
-  integral_continuousLinearMap_of_memLp_id (IsGaussian.memLp_id μ 1 (by simp)) L
+  L.integral_comm_of_memLp_id (IsGaussian.memLp_id μ 1 (by simp))
 
 lemma eq_dirac_of_variance_eq_zero (h : ∀ L : E →L[ℝ] ℝ, Var[L; μ] = 0) :
     μ = Measure.dirac (∫ x, x ∂μ) := by

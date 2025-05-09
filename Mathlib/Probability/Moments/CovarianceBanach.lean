@@ -15,23 +15,16 @@ We define the covariance of a measure in a Banach space, as a continous bilinear
 
 ## Main definitions
 
-* `FooBar`
+Let `μ` be a finite measure on a Banach space `E` with the Borel σ-algebra, such that
+`∫ x, ‖x‖^2 ∂μ < ∞`.
+
+* `covarianceBilin` : covariance of the measure `μ` as a continuous bilinear form
+  `(E →L[ℝ] ℝ) →L[ℝ] (E →L[ℝ] ℝ) →L[ℝ] ℝ`
 
 ## Main statements
 
-* `fooBar_unique`
-
-## Notation
-
-
-
-## Implementation details
-
-
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
+* `covarianceBilin_apply` : the covariance of `μ` on `L₁, L₂ : E →L[ℝ] ℝ` is equal to
+  `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ`.
 
 -/
 
@@ -67,7 +60,7 @@ end Aux
 namespace ProbabilityTheory
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {mE : MeasurableSpace E}  {μ : Measure E}
+  {mE : MeasurableSpace E} {μ : Measure E}
 
 section ToLp
 
@@ -133,7 +126,7 @@ lemma norm_toLpₗ_le (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) (hp : p ≠ 0
     exact L.le_opNorm x
   _ = ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ := by rw [lintegral_const_mul]; fun_prop
 
-/-- `MemLp.toLp` as a `ContinuousLinearMap` from the continuous linear maps. -/
+/-- `MemLp.toLp` as a `ContinuousLinearMap` from the continuous linear forms. -/
 def ContinuousLinearMap.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ)
     (hp : p ≠ ∞) :
     (E →L[ℝ] ℝ) →L[ℝ] Lp ℝ p μ where
@@ -157,23 +150,6 @@ lemma ContinuousLinearMap.toLp_apply (L : E →L[ℝ] ℝ)
     L.toLp μ p h_Lp hp = MemLp.toLp L (h_Lp.continuousLinearMap L) := rfl
 
 end ToLp
-
-section Mean
-
-lemma _root_.ContinuousLinearMap.integral_comm_of_memLp_id [CompleteSpace E]
-    (h_Lp : MemLp id 1 μ) (L : E →L[ℝ] ℝ) :
-    μ[L] = L (∫ x, x ∂μ) := by
-  have h := L.integral_comp_L1_comm (h_Lp.toLp id)
-  refine (trans ?_ h).trans ?_
-  · refine integral_congr_ae ?_
-    filter_upwards [MemLp.coeFn_toLp h_Lp] with x hx
-    rw [hx, id_eq]
-  · congr 1
-    refine integral_congr_ae ?_
-    filter_upwards [MemLp.coeFn_toLp h_Lp] with x hx
-    rw [hx, id_eq]
-
-end Mean
 
 section Covariance
 

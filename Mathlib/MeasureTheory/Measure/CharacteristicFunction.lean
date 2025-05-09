@@ -220,19 +220,6 @@ lemma charFun_conv [IsFiniteMeasure μ] [IsFiniteMeasure ν] (t : E) :
 
 end InnerProductSpace
 
-lemma _root_.IsBoundedBilinearMap.symm {E F G 𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-    [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
-    {f : E × F → G} (h : IsBoundedBilinearMap 𝕜 f) :
-    IsBoundedBilinearMap 𝕜 (fun p ↦ f (p.2, p.1)) where
-  add_left x₁ x₂ y := h.add_right _ _ _
-  smul_left c x y := h.smul_right _ _ _
-  add_right x y₁ y₂ := h.add_left _ _ _
-  smul_right c x y := h.smul_left _ _ _
-  bound := by
-    obtain ⟨C, hC_pos, hC⟩ := h.bound
-    exact ⟨C, hC_pos, fun x y ↦ (hC y x).trans_eq (by ring)⟩
-
 lemma _root_.ContinuousLinearMap.comp_inl_add_comp_inr
     {E F : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
     [SeminormedAddCommGroup F] [NormedSpace ℝ F]
@@ -306,8 +293,7 @@ lemma charFun_map_eq_charFunCLM_smul [OpensMeasurableSpace E] (L : E →L[ℝ] �
   rw [this, charFun_apply]
   simp
 
-lemma charFunCLM_map [OpensMeasurableSpace E] [BorelSpace F] {μ : Measure E}
-    (L : E →L[ℝ] F) (L' : F →L[ℝ] ℝ) :
+lemma charFunCLM_map [OpensMeasurableSpace E] [BorelSpace F] (L : E →L[ℝ] F) (L' : F →L[ℝ] ℝ) :
     charFunCLM (μ.map L) L' = charFunCLM μ (L'.comp L) := by
   rw [charFunCLM_eq_charFun_map_one, charFunCLM_eq_charFun_map_one,
     Measure.map_map (by fun_prop) (by fun_prop)]
