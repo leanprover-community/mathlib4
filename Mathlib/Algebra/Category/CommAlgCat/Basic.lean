@@ -116,18 +116,18 @@ instance : Ring ((forget (CommAlgCat R)).obj A) := inferInstanceAs <| Ring A
 
 instance : Algebra R ((forget (CommAlgCat R)).obj A) := inferInstanceAs <| Algebra R A
 
-instance hasForgetToCommRing : HasForget₂ (CommAlgCat.{v} R) CommRingCat.{v} where
+instance hasForgetToCommRingCat : HasForget₂ (CommAlgCat.{v} R) CommRingCat.{v} where
   forget₂.obj A := .of A
   forget₂.map f := CommRingCat.ofHom f.hom.toRingHom
 
-instance hasForgetToAlg : HasForget₂ (CommAlgCat.{v} R) (AlgebraCat.{v} R) where
+instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgebraCat.{v} R) where
   forget₂.obj A := .of R A
   forget₂.map f := AlgebraCat.ofHom f.hom
 
-@[simp] lemma forget₂_commAlg_obj (A : CommAlgCat.{v} R) :
+@[simp] lemma forget₂_commAlgCat_obj (A : CommAlgCat.{v} R) :
     (forget₂ (CommAlgCat.{v} R) (AlgebraCat.{v} R)).obj A = .of R A := rfl
 
-@[simp] lemma forget₂_commAlg_map (f : A ⟶ B) :
+@[simp] lemma forget₂_commAlgCat_map (f : A ⟶ B) :
     (forget₂ (CommAlgCat.{v} R) (AlgebraCat.{v} R)).map f = AlgebraCat.ofHom f.hom := rfl
 
 /-- Forgetting to the underlying type and then building the bundled object returns the original
@@ -160,7 +160,8 @@ def isoEquivalgEquiv : (of R X ≅ of R Y) ≅ (X ≃ₐ[R] Y) where
   hom := ofIso
   inv := isoMk
 
-instance reflectsIsomorphisms_forget_commAlg : (forget (CommAlgCat.{u} R)).ReflectsIsomorphisms where
+instance reflectsIsomorphisms_forget_commAlgCat :
+    (forget (CommAlgCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (CommAlgCat.{u} R)).map f)
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
@@ -171,7 +172,7 @@ end CommAlgCat
 /-- The category of commutative algebras over a commutative ring `R` is the same as rings under `R`.
 -/
 @[simps]
-def commAlgEquivUnder (R : CommRingCat) : CommAlgCat R ≌ Under R where
+def commAlgCatEquivUnder (R : CommRingCat) : CommAlgCat R ≌ Under R where
   functor.obj A := R.mkUnder A
   functor.map {A B} f := f.hom.toUnder
   inverse.obj A := .of _ A
