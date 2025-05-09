@@ -109,7 +109,7 @@ lemma fun_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Me
 
 /-- Finite products of meromorphic functions are analytic. -/
 @[fun_prop]
-theorem _root_.Finset.meromorphicAt_prod  {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
+theorem prod  {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
     (h : ∀ σ, MeromorphicAt (f σ) x) :
     MeromorphicAt (∏ n ∈ s, f n) x := by
   classical
@@ -122,10 +122,10 @@ theorem _root_.Finset.meromorphicAt_prod  {ι : Type*} {s : Finset ι} {f : ι �
 
 /-- Finite products of meromorphic functions are analytic. -/
 @[fun_prop]
-theorem _root_.Finset.meromorphicAt_fun_prod  {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
+theorem fun_prod  {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
     (h : ∀ σ, MeromorphicAt (f σ) x) :
     MeromorphicAt (fun z ↦ ∏ n ∈ s, f n z) x := by
-  convert s.meromorphicAt_prod h
+  convert prod h (s := s)
   simp
 
 @[fun_prop]
@@ -391,16 +391,16 @@ include hs ht in
 lemma fun_mul : MeromorphicOn (fun z ↦ s z * t z) U := fun x hx ↦ (hs x hx).mul (ht x hx)
 
 /-- Finite products of meromorphic functions are analytic. -/
-lemma _root_.Finset.meromorphicOn_prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+lemma prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (h : ∀ σ, MeromorphicOn (f σ) U) :
     MeromorphicOn (∏ n ∈ s, f n) U :=
-  fun z hz ↦ s.meromorphicAt_prod (fun σ ↦ h σ z hz)
+  fun z hz ↦ MeromorphicAt.prod (fun σ ↦ h σ z hz)
 
 /-- Finite products of meromorphic functions are analytic. -/
-lemma _root_.Finset.meromorphicOn_fun_prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+lemma fun_prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (h : ∀ σ, MeromorphicOn (f σ) U) :
     MeromorphicOn (fun z ↦ ∏ n ∈ s, f n z) U :=
-  fun z hz ↦ s.meromorphicAt_fun_prod (fun σ ↦ h σ z hz)
+  fun z hz ↦ MeromorphicAt.fun_prod (fun σ ↦ h σ z hz)
 
 include hs in
 lemma inv : MeromorphicOn s⁻¹ U := fun x hx ↦ (hs x hx).inv
