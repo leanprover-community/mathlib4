@@ -26,8 +26,6 @@ universe v u
 variable (C : Type u) [Category.{v} C] [Abelian C]
   [MonoidalCategory C] [MonoidalPreadditive C]
   [∀ (X₁ X₂ : GradedObject ℤ C), X₁.HasTensor X₂]
-  [∀ (X₁ : C), PreservesColimit (Functor.empty C) ((curriedTensor C).obj X₁)]
-  [∀ (X₂ : C), PreservesColimit (Functor.empty C) ((curriedTensor C).flip.obj X₂)]
   [∀ (X₁ X₂ X₃ X₄ : GradedObject ℤ C), GradedObject.HasTensor₄ObjExt X₁ X₂ X₃ X₄]
   [∀ (X₁ X₂ X₃ : GradedObject ℤ C), GradedObject.HasGoodTensor₁₂Tensor X₁ X₂ X₃]
   [∀ (X₁ X₂ X₃ : GradedObject ℤ C), GradedObject.HasGoodTensorTensor₂₃ X₁ X₂ X₃]
@@ -42,20 +40,20 @@ lemma kFlat_iff_preservesQuasiIso (K : CochainComplex C ℤ) :
     (quasiIso C (.up ℤ)).kFlat K ↔
       preservesQuasiIso (tensorLeft K) ∧ preservesQuasiIso (tensorRight K) := Iff.rfl
 
-/-instance : (quasiIso C (.up ℤ)).kFlat.IsStableUnderShift ℤ where
+instance : (quasiIso C (.up ℤ)).kFlat.IsStableUnderShift ℤ where
   isStableUnderShiftBy n := ⟨fun K hK ↦ by
     rw [ObjectProperty.prop_shift_iff, kFlat_iff_preservesQuasiIso]
     constructor
-    · have e : tensorLeft (K⟦n⟧) ≅ tensorLeft K ⋙ shiftFunctor _ n := sorry
-      exact (preservesQuasiIso.prop_iff_of_iso e).2 (hK.1.comp
-        (preservesQuasiIso_shiftFunctor C n))
-    · have e : tensorRight (K⟦n⟧) ≅ tensorRight K ⋙ shiftFunctor _ n := sorry
-      exact (preservesQuasiIso.prop_iff_of_iso e).2 (hK.2.comp
-        (preservesQuasiIso_shiftFunctor C n))⟩
+    · exact (preservesQuasiIso.prop_iff_of_iso
+        (bifunctorMapHomologicalComplexObjShiftIso (curriedTensor C) K n)).2
+          (hK.1.comp (preservesQuasiIso_shiftFunctor C n))
+    · exact (preservesQuasiIso.prop_iff_of_iso
+        (bifunctorMapHomologicalComplexFlipObjShiftIso (curriedTensor C) K n)).2
+          (hK.2.comp (preservesQuasiIso_shiftFunctor C n))⟩
 
 lemma kFlat_shift_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (quasiIso C (.up ℤ)).kFlat (K⟦n⟧) ↔ (quasiIso C (.up ℤ)).kFlat K := by
-  apply ObjectProperty.prop_shift_iff_of_isStableUnderShift-/
+  apply ObjectProperty.prop_shift_iff_of_isStableUnderShift
 
 end CochainComplex
 
@@ -71,7 +69,7 @@ lemma kFlat_quotient_obj_iff (K : CochainComplex C ℤ) :
   rw [kFlat_iff_preservesQuasiIso, CochainComplex.kFlat_iff_preservesQuasiIso]
   apply and_congr <;> exact Functor.preservesQuasiIso_iff_of_factors (Iso.refl _)
 
-/-instance : (quasiIso C (.up ℤ)).kFlat.IsStableUnderShift ℤ where
+instance : (quasiIso C (.up ℤ)).kFlat.IsStableUnderShift ℤ where
   isStableUnderShiftBy n := ⟨fun K hK ↦ by
     obtain ⟨K, rfl⟩ := K.quotient_obj_surjective
     rw [kFlat_quotient_obj_iff] at hK
@@ -80,7 +78,7 @@ lemma kFlat_quotient_obj_iff (K : CochainComplex C ℤ) :
       (((quotient C (.up ℤ)).commShiftIso n).app K)).1 ?_
     dsimp
     rw [kFlat_quotient_obj_iff]
-    exact (HomologicalComplex.quasiIso C (.up ℤ)).kFlat.le_shift n _ hK⟩-/
+    exact (HomologicalComplex.quasiIso C (.up ℤ)).kFlat.le_shift n _ hK⟩
 
 end HomotopyCategory
 
@@ -88,9 +86,8 @@ namespace CochainComplex
 
 open HomologicalComplex
 
-/-lemma kFlat_single_obj_iff_flat (X : C) (n : ℤ) :
-    (quasiIso C (.up ℤ)).kFlat ((single _ _ n).obj X) ↔
-      ObjectProperty.flat X := by
+lemma kFlat_single_obj_iff_flat (X : C) (n : ℤ) :
+    (quasiIso C (.up ℤ)).kFlat ((single _ _ n).obj X) ↔ ObjectProperty.flat X := by
   trans (quasiIso C (.up ℤ)).kFlat ((single _ _ 0).obj X)
   · rw [← kFlat_shift_iff ((single _ _ 0).obj X) (-n)]
     exact ((quasiIso C (ComplexShape.up ℤ)).kFlat.prop_iff_of_iso
@@ -101,6 +98,6 @@ open HomologicalComplex
     · exact preservesQuasiIso.prop_iff_of_iso
         (bifunctorMapHomologicalComplexObjSingleIso (curriedTensor C) X)
     · exact preservesQuasiIso.prop_iff_of_iso
-        (bifunctorMapHomologicalComplexFlipObjSingleIso (curriedTensor C) X)-/
+        (bifunctorMapHomologicalComplexFlipObjSingleIso (curriedTensor C) X)
 
 end CochainComplex
