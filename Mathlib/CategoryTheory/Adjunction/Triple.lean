@@ -277,5 +277,4 @@ lemma leftToRight_app_mono_iff_counit_unit_app_mono :
 
 end OuterFullyFaithful
 
-#check (⟨t.adj₁, t.adj₂⟩ : Triple F G H).adj₁
 end CategoryTheory.Adjunction.Triple
