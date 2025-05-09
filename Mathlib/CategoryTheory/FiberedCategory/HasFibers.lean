@@ -16,7 +16,7 @@ In this file we introduce a typeclass `HasFibers` for a functor `p : 𝒳 ⥤ �
 - Functors `ι : Fib S ⥤ 𝒳` such that `ι ⋙ p = const (Fib S) S
 - The induced functor `Fib S ⥤ Fiber p S` is an equivalence.
 
-We also provide a default `HasFibers` instance, which uses the standard fibers `Fiber p S`
+We also provide a canonical `HasFibers` instance, which uses the standard fibers `Fiber p S`
 (see Fiber.lean). This makes it so that any result proven about `HasFibers` can be used for the
 standard fibers as well.
 
@@ -75,7 +75,6 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
 namespace HasFibers
 
 /-- The `HasFibers` on `p : 𝒳 ⥤ 𝒮` given by the fibers of `p` -/
-@[default_instance]
 def canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
   Fib := Fiber p
   ι S := fiberInclusion
