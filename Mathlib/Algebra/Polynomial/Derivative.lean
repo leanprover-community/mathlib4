@@ -627,7 +627,7 @@ theorem iterate_derivative_X_sub_pow (n k : ℕ) (c : R) :
   rw [sub_eq_add_neg, ← C_neg, iterate_derivative_X_add_pow]
 
 theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
-    derivative^[n] ((X - C c) ^ n) = n.factorial := by
+    derivative^[n] ((X - C c) ^ n) = n ! := by
   rw [iterate_derivative_X_sub_pow, n.sub_self, pow_zero, nsmul_one, n.descFactorial_self]
 
 end CommRing

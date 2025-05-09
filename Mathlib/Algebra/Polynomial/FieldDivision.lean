@@ -21,6 +21,7 @@ This file starts looking like the ring theory of $R[X]$
 noncomputable section
 
 open Polynomial
+open scoped Nat
 
 namespace Polynomial
 
@@ -65,7 +66,7 @@ theorem isRoot_iterate_derivative_of_lt_rootMultiplicity {p : R[X]} {t : R} {n :
 open Finset in
 theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
     (derivative^[p.rootMultiplicity t] p).eval t =
-      (p.rootMultiplicity t).factorial • (p /ₘ (X - C t) ^ p.rootMultiplicity t).eval t := by
+      (p.rootMultiplicity t)! • (p /ₘ (X - C t) ^ p.rootMultiplicity t).eval t := by
   set m := p.rootMultiplicity t with hm
   conv_lhs => rw [← p.pow_mul_divByMonic_rootMultiplicity_eq t, ← hm]
   rw [iterate_derivative_mul, eval_finset_sum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
@@ -79,12 +80,12 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
 theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors
     {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
     (hroot : ∀ m ≤ n, (derivative^[m] p).IsRoot t)
-    (hnzd : (n.factorial : R) ∈ nonZeroDivisors R) :
+    (hnzd : (n ! : R) ∈ nonZeroDivisors R) :
     n < p.rootMultiplicity t := by
   by_contra! h'
   replace hroot := hroot _ h'
   simp only [IsRoot, eval_iterate_derivative_rootMultiplicity] at hroot
-  obtain ⟨q, hq⟩ := Nat.cast_dvd_cast (α := R) <| Nat.factorial_dvd_factorial h'
+  obtain ⟨q, hq⟩ : ((rootMultiplicity t p)! : R) ∣ n ! := by gcongr
   rw [hq, mul_mem_nonZeroDivisors] at hnzd
   rw [nsmul_eq_mul, mul_left_mem_nonZeroDivisors_eq_zero_iff hnzd.1] at hroot
   exact eval_divByMonic_pow_rootMultiplicity_ne_zero t h hroot
@@ -106,7 +107,7 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors'
 
 theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative_of_mem_nonZeroDivisors
     {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
-    (hnzd : (n.factorial : R) ∈ nonZeroDivisors R) :
+    (hnzd : (n ! : R) ∈ nonZeroDivisors R) :
     n < p.rootMultiplicity t ↔ ∀ m ≤ n, (derivative^[m] p).IsRoot t :=
   ⟨fun hn _ hm ↦ isRoot_iterate_derivative_of_lt_rootMultiplicity <| hm.trans_lt hn,
     fun hr ↦ lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors h hr hnzd⟩

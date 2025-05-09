@@ -86,7 +86,7 @@ to `K⟦X⟧`.
 -/
 universe u
 
-open scoped PowerSeries
+open scoped PowerSeries Nat
 open HahnSeries Polynomial
 
 noncomputable section
@@ -173,7 +173,7 @@ theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1
   exact rfl
 
 theorem derivative_iterate (k : ℕ) (f : LaurentSeries V) :
-    (derivative R)^[k] f = k.factorial • (hasseDeriv R k f) := by
+    (derivative R)^[k] f = k ! • (hasseDeriv R k f) := by
   ext n
   induction k generalizing f with
   | zero => simp

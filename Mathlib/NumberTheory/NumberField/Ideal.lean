@@ -75,7 +75,7 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
       (Nat.card {I : (Ideal (𝓞 K))⁰ //
         absNorm (I : Ideal (𝓞 K)) ≤ s ∧ ClassGroup.mk0 I = C} : ℝ) / s) atTop
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K) /
-            (torsionOrder K *  Real.sqrt |discr K|))) := by
+            (torsionOrder K *  √|discr K|))) := by
   classical
   have h₁ : ∀ s : ℝ,
     {x | x ∈ toMixed K ⁻¹' fundamentalCone K ∧ mixedEmbedding.norm (toMixed K x) ≤ s} =
@@ -122,7 +122,7 @@ theorem tendsto_norm_le_div_atTop₀ :
     Tendsto (fun s : ℝ ↦
       (Nat.card {I : (Ideal (𝓞 K))⁰ // absNorm (I : Ideal (𝓞 K)) ≤ s} : ℝ) / s) atTop
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
-            (torsionOrder K *  Real.sqrt |discr K|))) := by
+            (torsionOrder K *  √|discr K|))) := by
   classical
   convert Filter.Tendsto.congr' ?_
     (tendsto_finset_sum Finset.univ (fun C _  ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))

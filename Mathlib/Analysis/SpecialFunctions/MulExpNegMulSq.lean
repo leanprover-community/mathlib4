@@ -117,7 +117,7 @@ theorem lipschitzWith_one_mulExpNegMulSq (hε : 0 < ε) :
   exact nnnorm_deriv_mulExpNegMulSq_le_one hε
 
 theorem mulExpNegMulSq_eq_sqrt_mul_mulExpNegMulSq_one (hε : 0 < ε) (x : ℝ) :
-    mulExpNegMulSq ε x = (√ε)⁻¹ * mulExpNegMulSq 1 (sqrt ε * x) := by
+    mulExpNegMulSq ε x = (√ε)⁻¹ * mulExpNegMulSq 1 (√ε * x) := by
   simp only [mulExpNegMulSq, one_mul]
   have h : √ε * x * (√ε * x) = ε * x * x := by
     ring_nf
