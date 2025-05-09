@@ -1142,11 +1142,6 @@ theorem embDomainRingHom_C [NonAssocSemiring R] {f : Γ →+ Γ'} {hfi : Functio
     {hf : ∀ g g' : Γ, f g ≤ f g' ↔ g ≤ g'} {r : R} : embDomainRingHom f hfi hf (C r) = C r :=
   embDomain_single.trans (by simp)
 
-theorem equivDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ≃o Γ')
-    (hf : ∀ x y, f (x + y) = f x + f y) (x y : HahnSeries Γ R) :
-    equivDomain f (x * y) = equivDomain f x * equivDomain f y := by
-  simp only [equivDomain_eq_embDomain, embDomain_mul (RelIso.toRelEmbedding f) hf]
-
 /-- Extending the domain of Hahn series is a ring homomorphism. -/
 @[simps]
 def equivDomainRingHom [NonAssocSemiring R] (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) :
@@ -1155,8 +1150,34 @@ def equivDomainRingHom [NonAssocSemiring R] (f : Γ ≃o Γ') (hf : ∀ x y, f (
   invFun x := (equivDomain f).symm x
   left_inv x := by simp
   right_inv x := by simp
-  map_mul' x y := equivDomain_mul f hf x y
+  map_mul' x y := by simp [equivDomain_eq_embDomain, embDomain_mul (RelIso.toRelEmbedding f) hf]
   map_add' x y := by simp [equivDomain_eq_embDomain, embDomain_add]
+
+instance [Semiring R] (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) :
+    RingHomCompTriple HahnSeries.C (HahnSeries.equivDomainRingHom (R := R) f hf).symm.toRingHom
+      HahnSeries.C where
+  comp_eq := by
+    have h : f 0 = 0 := (left_eq_add (a := f 0)).mp (by rw [← hf 0 0, add_zero])
+    ext _ g
+    by_cases hg : g = 0
+    · simp [hg, h]
+    · have : f g ≠ 0 := by
+        contrapose! hg
+        exact f.injective (h.symm ▸ hg)
+      simp [hg, this]
+
+instance [Semiring R] (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) :
+    RingHomCompTriple HahnSeries.C (HahnSeries.equivDomainRingHom (R := R) f hf).toRingHom
+      HahnSeries.C where
+  comp_eq := by
+    have h : f.symm 0 = 0 := (left_eq_add (a := f.symm 0)).mp <| (f.injective) (by simp [hf])
+    ext r g
+    by_cases hg : g = 0
+    · simp [h, hg]
+    · have : f.symm g ≠ 0 := by
+        contrapose! hg
+        exact f.symm.injective (h.symm ▸ hg)
+      simp [this, hg]
 
 end HahnSeries
 

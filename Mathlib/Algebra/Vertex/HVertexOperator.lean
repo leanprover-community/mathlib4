@@ -162,32 +162,6 @@ theorem smul_eq {x : HahnSeries Γ R} {A : HVertexOperator Γ₁ R V W} {v : V} 
     (x • A) v = x • (A v) :=
   rfl
 
---#synth Module (HahnSeries Γ R) (V →ₛₗ[HahnSeries.C (Γ := Γ) (R := R)] HahnModule Γ₁ R W)
-/-- Move this to Algebra.Module.Equiv.Basic -/
-def semilinearEquiv  :
-    HVertexOperator Γ₁ R V W ≃ₗ[HahnSeries Γ R]
-      (V →ₛₗ[HahnSeries.C (Γ := Γ) (R := R)] HahnModule Γ₁ R W) where
-  toFun f := {
-    toFun v := f v
-    map_add' _ _ := by simp
-    map_smul' _ _ := by simp }
-  map_add' f g := by
-    ext
-    simp
-  map_smul' r f := by
-    ext
-    simp
-  invFun f := {
-    toFun v := f v
-    map_add' _ _ := by simp
-    map_smul' _ _ := by simp }
-  left_inv f := by
-    ext
-    simp
-  right_inv f := by
-    ext
-    simp
-
 local instance {Γ' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
     [Semiring R] (f : Γ ≃o Γ') (hf : ∀ (x y : Γ), f (x + y) = f x + f y) :
     RingHomInvPair (HahnSeries.equivDomainRingHom (R := R) f hf).toRingHom
@@ -202,16 +176,35 @@ local instance {Γ' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCa
   comp_eq := by simp
   comp_eq₂ := by simp
 
-/-!
 /-- An isomorphism of heterogeneous vertex operator spaces induced by ordered isomorphisms. -/
-def EquivDomain {Γ' Γ₁' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
+def equivDomain {Γ' Γ₁' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
     [PartialOrder Γ₁'] [AddAction Γ' Γ₁'] [IsOrderedCancelVAdd Γ' Γ₁'] (f : Γ ≃o Γ')
     (hf : ∀ x y, f (x + y) = f x + f y) (f₁ : Γ₁ ≃o Γ₁') (hf₁ : ∀ x y, f₁ (x +ᵥ y) = f x +ᵥ f₁ y) :
-    HVertexOperator Γ₁ R V W ≃ₛₗ[(HahnSeries.equivDomainRingHom (R := R) f hf).toRingHom]
+    HVertexOperator Γ₁ R V W ≃ₛₗ[(HahnSeries.equivDomainRingHom (Γ := Γ) (R := R) f hf).toRingHom]
       HVertexOperator Γ₁' R V W :=
-  LinearEquiv.semiCongrRight V
-    (HahnModule.equivDomainModuleHom (R := R) (V := W) Γ₁ Γ₁' f hf f₁ hf₁)
--/
+  ((LinearEquiv.congrSemilinear (R := R) (M := V) (R₂ := HahnSeries Γ R) (M₂ := HahnModule Γ₁ R W)
+    (σ₂ := HahnSeries.C) (by simp)).trans
+    (LinearEquiv.semiCongrRight (HahnSeries.C) (σ₃ := HahnSeries.C)
+      (HahnModule.equivDomainModuleHom (R := R) (V := W) Γ₁ Γ₁' f hf f₁ hf₁))).trans
+    (LinearEquiv.congrSemilinear (R := R) (M := V) (R₂ := HahnSeries Γ' R)
+      (M₂ := HahnModule Γ₁' R W) (σ₂ := HahnSeries.C) (by simp)).symm
+
+@[simp]
+theorem equivDomain_apply_apply {Γ' Γ₁' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ']
+    [IsOrderedCancelAddMonoid Γ'] [PartialOrder Γ₁'] [AddAction Γ' Γ₁'] [IsOrderedCancelVAdd Γ' Γ₁']
+    (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) (f₁ : Γ₁ ≃o Γ₁')
+    (hf₁ : ∀ x y, f₁ (x +ᵥ y) = f x +ᵥ f₁ y) (A : HVertexOperator Γ₁ R V W) (v : V) :
+    equivDomain f hf f₁ hf₁ A v = HahnModule.equivDomainModuleHom Γ₁ Γ₁' f hf f₁ hf₁ (A v) := by
+  simp [equivDomain]
+
+@[simp]
+theorem equivDomain_symm_apply_apply {Γ' Γ₁' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ']
+    [IsOrderedCancelAddMonoid Γ'] [PartialOrder Γ₁'] [AddAction Γ' Γ₁'] [IsOrderedCancelVAdd Γ' Γ₁']
+    (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) (f₁ : Γ₁ ≃o Γ₁')
+    (hf₁ : ∀ x y, f₁ (x +ᵥ y) = f x +ᵥ f₁ y) (A : HVertexOperator Γ₁' R V W) (v : V) :
+    (equivDomain f hf f₁ hf₁).symm A v =
+      (HahnModule.equivDomainModuleHom Γ₁ Γ₁' f hf f₁ hf₁).symm (A v) := by
+  simp [equivDomain]
 
 end  Module
 
@@ -581,7 +574,7 @@ variable {Γ}
 /-- Composition of state-field maps by left-insertion. In traditional notation, if `Y₁(-,z)` and
 `Y₂(-,w)` are state-field maps, then this is `Y₁(Y₂(u₀,w)u₁,z)u₂`. -/
 @[simps!]
-def CompLeft [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
+def compLeft [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
     (Y₂ : HStateFieldMap Γ₁ R U₀ U₁ V) :
     U₀ →ₗ[R] U₁ →ₗ[R] U₂ →ₗ[R] HahnModule (Γ₁ ×ₗ Γ) R W where
   toFun u₀ := {
@@ -621,7 +614,7 @@ theorem compRight_isPWO {Γ} [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HSta
 /-- Composition of state-field maps by right-insertion. In traditional notation, if `Y₁(-,z)` and
 `Y₂(-,w)` are state-field maps, then this is `Y₁(u₀,z)Y₂(u₁,w)u₂`. -/
 @[simps!]
-def CompRight [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R U₀ V W)
+def compRight [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R U₀ V W)
     (Y₂ : HStateFieldMap Γ₁ R U₁ U₂ V) :
     U₀ →ₗ[R] U₁ →ₗ[R] U₂ →ₗ[R] HahnModule (Γ₁ ×ₗ Γ) R W where
   toFun u₀ := {
@@ -636,11 +629,11 @@ def CompRight [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-theorem CompRight_eq_comp [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R U₀ V W)
+theorem compRight_eq_comp [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R U₀ V W)
     (Y₂ : HStateFieldMap Γ₁ R U₁ U₂ V) (u₀ : U₀) (u₁ : U₁) (u₂ : U₂) :
-    CompRight R U₀ U₁ U₂ V W Y₁ Y₂ u₀ u₁ u₂ = comp (Y₁ u₀) (Y₂ u₁) u₂ := by
+    compRight R U₀ U₁ U₂ V W Y₁ Y₂ u₀ u₁ u₂ = comp (Y₁ u₀) (Y₂ u₁) u₂ := by
   ext
-  simp [CompRight, HahnSeries.ofIterate]
+  simp [compRight, HahnSeries.ofIterate]
 
 end HStateField
 
