@@ -318,8 +318,13 @@ theorem Matrix.toLin'_symm :
   rfl
 
 @[simp]
-theorem LinearMap.toMatrix'_mulVecLin (M : Matrix m n R) : M.mulVecLin.toMatrix' = M :=
+theorem Matrix.toMatrix'_mulVecLin (M : Matrix m n R) : M.mulVecLin.toMatrix' = M :=
   LinearMap.toMatrix'.apply_symm_apply M
+
+@[simp]
+theorem Matrix.toMatrix'_vecMulLinear (M : Matrix n m R) :
+    M.vecMulLinear.toMatrix' = Mᵀ := by
+  simpa using Mᵀ.toMatrix'_mulVecLin
 
 theorem LinearMap.toMatrix'_toLin' (M : Matrix m n R) : LinearMap.toMatrix' (Matrix.toLin' M) = M :=
   LinearMap.toMatrix'.apply_symm_apply M
