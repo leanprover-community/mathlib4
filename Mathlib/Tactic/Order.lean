@@ -260,16 +260,6 @@ elab "order" : tactic => focus do
       let type : Q(Type u) := type
       let instLinearOrder ← synthInstanceQ q(LinearOrder $type)
       let (_, factsNat) := translateToNat type instLinearOrder idxToAtom facts
-      -- for f in factsNat do
-      --   dbg_trace f
-      --   match f with
-      --   | .eq _ _ proof => dbg_trace (← ppExpr (← inferType proof))
-      --   | .ne _ _ proof => dbg_trace (← ppExpr (← inferType proof))
-      --   | .le _ _ proof => dbg_trace (← ppExpr (← inferType proof))
-      --   | .nle _ _ proof => dbg_trace (← ppExpr (← inferType proof))
-      --   | .lt _ _ proof => dbg_trace (← ppExpr (← inferType proof))
-      --   | .nlt _ _ proof => dbg_trace (← ppExpr (← inferType proof))
-      --   | _ => pure ()
       let factsExpr : Array Expr := factsNat.filterMap fun factNat =>
         match factNat with
         | .eq _ _ proof => some proof
