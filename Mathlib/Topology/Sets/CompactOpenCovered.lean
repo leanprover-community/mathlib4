@@ -3,7 +3,7 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.Spectral.Prespectral
 
 /-!
 # Compact open covered sets
@@ -95,13 +95,11 @@ lemma of_iUnion_eq_of_finite (s : Set (Set S)) (hs : ⋃ t ∈ s, t = U) (hf : s
   · simp [Set.image_iUnion, ← hs]
     aesop
 
-variable {B : ∀ i, Set (Opens (X i))} (hB : ∀ i, IsBasis (B i))
-    (hBc : ∀ (i : ι), ∀ U ∈ B i, IsCompact U.1)
-
-include hB hBc in
 /-- If `U` is compact-open covered and the `X i` have a basis of compact opens,
 `U` can be written as the union of images of elements of the basis. -/
-lemma exists_mem_of_isBasis {U : Set S} (hU : IsCompactOpenCovered f U) :
+lemma exists_mem_of_isBasis {B : ∀ i, Set (Opens (X i))} (hB : ∀ i, IsBasis (B i))
+    (hBc : ∀ (i : ι), ∀ U ∈ B i, IsCompact U.1)
+    {U : Set S} (hU : IsCompactOpenCovered f U) :
     ∃ (n : ℕ) (a : Fin n → ι) (V : ∀ i, Opens (X (a i))),
       (∀ i, V i ∈ B (a i)) ∧ ⋃ i, f (a i) '' V i = U := by
   suffices h : ∃ (κ : Type _) (_ : Finite κ) (a : κ → ι) (V : ∀ i, Opens (X (a i))),
@@ -126,17 +124,13 @@ lemma exists_mem_of_isBasis {U : Set S} (hU : IsCompactOpenCovered f U) :
   simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop] at ha
   use ⟨⟨i, hi⟩, ⟨a, ha.1⟩⟩, h, ha.2, heq
 
-include hB hBc in
-lemma of_isOpenMap [TopologicalSpace S] (hfc : ∀ i, Continuous (f i)) (h : ∀ i, IsOpenMap (f i))
+lemma of_isOpenMap [TopologicalSpace S] [∀ i, PrespectralSpace (X i)]
+    (hfc : ∀ i, Continuous (f i)) (h : ∀ i, IsOpenMap (f i))
     {U : Set S} (hs : ∀ x ∈ U, ∃ i y, f i y = x) (hU : IsOpen U) (hc : IsCompact U) :
     IsCompactOpenCovered f U := by
   rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
-  refine (isOpenMap_sigma.mpr h).exists_opens_image_eq_of_isBasis
-      (fun p : Σ i, X i ↦ f p.1 p.2) (isBasis_sigma hB) ?_ (continuous_sigma_iff.mpr hfc)
-      (fun x hx ↦ ?_) hU hc
-  · simp only [Set.mem_iUnion, carrier_eq_coe, Set.mem_image, forall_exists_index, and_imp]
-    rintro U x hx hBx rfl
-    exact (hBc _ _ hBx).image continuous_sigmaMk
-  · simpa using hs x hx
+  refine (isOpenMap_sigma.mpr h).exists_opens_image_eq_of_prespectralSpace
+      (continuous_sigma_iff.mpr hfc) (fun x hx ↦ ?_) hU hc
+  simpa using hs x hx
 
 end IsCompactOpenCovered

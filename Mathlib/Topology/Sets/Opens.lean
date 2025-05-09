@@ -351,30 +351,6 @@ theorem isCompactElement_iff (s : Opens α) :
     show ∀ i ∈ t, U i ≤ t.sup U
     exact fun i => Finset.le_sup
 
-/-- If `X` has a basis of compact opens and `f : X → S` is open, every
-compact open of `S` is the image of a compact open of `X`. -/
-lemma _root_.IsOpenMap.exists_opens_image_eq_of_isBasis (f : α → β) {B : Set (Opens α)}
-    (hB : IsBasis B) (hBc : ∀ U ∈ B, IsCompact U.1) (hfc : Continuous f) (h : IsOpenMap f)
-    {U : Set β} (hs : U ⊆ Set.range f) (hU : IsOpen U) (hc : IsCompact U) :
-    ∃ (V : Opens α), IsCompact V.1 ∧ f '' V = U := by
-  obtain ⟨Us, hUs, heq⟩ := isBasis_iff_cover.mp hB ⟨f ⁻¹' U, hU.preimage hfc⟩
-  obtain ⟨t, ht⟩ := by
-    refine hc.elim_finite_subcover (fun s : Us ↦ f '' s.1) (fun s ↦ h _ s.1.2) (fun x hx ↦ ?_)
-    obtain ⟨x, rfl⟩ := hs hx
-    obtain ⟨i, hi, hx⟩ := mem_sSup.mp <| by rwa [← heq]
-    exact Set.mem_iUnion.mpr ⟨⟨i, hi⟩, x, hx, rfl⟩
-  refine ⟨⨆ s ∈ t, s.1, ?_, ?_⟩
-  · simp only [iSup_mk, carrier_eq_coe, coe_mk]
-    exact t.finite_toSet.isCompact_biUnion fun i _ ↦ hBc _ (hUs i.2)
-  · simp only [iSup_mk, carrier_eq_coe, Set.iUnion_coe_set, coe_mk, Set.image_iUnion]
-    convert_to ⋃ i ∈ t, f '' i.1 = U
-    · aesop
-    · refine subset_antisymm (fun x ↦ ?_) ht
-      simp_rw [Set.mem_iUnion]
-      rintro ⟨i, hi, x, hx, rfl⟩
-      have := heq ▸ mem_sSup.mpr ⟨i.1, i.2, hx⟩
-      exact this
-
 /-- The preimage of an open set, as an open set. -/
 def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
   toFun s := ⟨f ⁻¹' s, s.2.preimage f.continuous⟩
