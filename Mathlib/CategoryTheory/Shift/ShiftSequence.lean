@@ -298,7 +298,7 @@ noncomputable def ShiftSequenceHom_of_natTrans (F' G' : C ⥤ A) (α : F' ⟶ G'
   simp only [ShiftSequence.tautological, comp_obj, whiskerLeft_twice, shiftIso, Iso.trans_hom,
     Iso.symm_hom, isoWhiskerRight_hom, NatTrans.comp_app, whiskerLeft_app, associator_inv_app,
     whiskerRight_app, assoc, NatTrans.naturality]
-  erw [id_comp, id_comp]
+  erw [id_comp, id_comp, id_comp, id_comp]
 
 /-- Constructing an `Iso` between the tautological `ShiftSequence`s from a natural isomorphism.
 -/
@@ -312,7 +312,7 @@ noncomputable def ShiftSequenceIso_of_natIso (F' G' : C ⥤ A) (α : F' ≅ G') 
   simp only [ShiftSequence.tautological, comp_obj, isoWhiskerLeft_hom, whiskerLeft_twice, shiftIso,
     Iso.trans_hom, Iso.symm_hom, isoWhiskerRight_hom, NatTrans.comp_app, whiskerLeft_app,
     associator_inv_app, whiskerRight_app, assoc, NatTrans.naturality]
-  erw [id_comp, id_comp]
+  erw [id_comp, id_comp, id_comp, id_comp]
 
 end Hom
 

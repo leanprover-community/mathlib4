@@ -316,8 +316,8 @@ class HasHeart where
   hι : ι.essImage = t.heart := by simp
 
 def hasHeartFullSubcategory : t.HasHeart where
-  H := FullSubcategory t.heart
-  ι := fullSubcategoryInclusion t.heart
+  H := ObjectProperty.FullSubcategory t.heart
+  ι := ObjectProperty.ι t.heart
   hι := by
     ext X
     constructor
@@ -400,7 +400,7 @@ class HasInducedTStructure : Prop where
 
 variable [h : S.HasInducedTStructure t]
 
-def tStructure : TStructure S.category where
+noncomputable def tStructure : TStructure S.category where
   LE n X := t.LE n (S.ι.obj X)
   GE n X := t.GE n (S.ι.obj X)
   LE_closedUnderIsomorphisms n := ⟨fun {X Y} e hX => prop_of_iso (t.LE n) (S.ι.mapIso e) hX⟩

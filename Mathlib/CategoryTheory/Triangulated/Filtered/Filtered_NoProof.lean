@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.Triangulated.Lemmas
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Reflective
+import Mathlib.CategoryTheory.Triangulated.Adjunction
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -71,6 +72,9 @@ instance [Preadditive C] : Preadditive (FilteredShift C) := by
 
 variable (C) in
 def shiftFunctor₂ (n : ℤ) : C ⥤ C := shiftFunctor (FilteredShift C) n
+
+instance (n : ℤ) : (shiftFunctor₂ C n).IsEquivalence :=
+  instIsEquivalenceShiftFunctor (FilteredShift C) n
 
 instance [Preadditive C] (n : ℤ) [(shiftFunctor C (Prod.mk (0 : ℤ) n)).Additive] :
     (shiftFunctor (FilteredShift C) n).Additive := by
@@ -319,6 +323,51 @@ lemma isGE_shift_iff (X : C) (n a n' : ℤ) (hn' : a + n = n') :
   · intro
     exact isGE_shift X n a n' hn'
 
+lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
+    [IsGE X n₁] [IsLE Y n₀] : f = 0 := by
+  have := isLE_shift Y n₀ (-n₀) 0 (by simp only [neg_add_cancel])
+  have := isGE_shift X n₁ (-n₀) (n₁-n₀) (by linarith)
+  have := isGE_of_GE (X⟪-n₀⟫) 1 (n₁-n₀) (by linarith)
+  apply (shiftFunctor₂ C (-n₀)).map_injective
+  simp only [Functor.map_zero]
+  apply zero'
+  · apply mem_of_isGE
+  · apply mem_of_isLE
+
+lemma zero_of_isGE_of_isLE {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
+    (_ : IsGE X n₁) (_ : IsLE Y n₀) : f = 0 :=
+  zero f n₀ n₁ h
+
+lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁)
+    [IsGE X n₁] [IsLE X n₀] : IsZero X := by
+  rw [IsZero.iff_id_eq_zero]
+  exact zero _ n₀ n₁ h
+
+section Triangle
+
+/-! Generalization of `exists_triangle_one_zero`.
+-/
+lemma exists_triangle (X : C) (n m : ℤ) (h : m + 1 = n) : ∃ (A : C) (B : C) (_ : IsGE A n)
+    (_ : IsLE B m) (f : A ⟶ X) (g : X ⟶ B) (h : B ⟶ A⟦1⟧),
+    Triangle.mk f g h ∈ distinguishedTriangles := by
+  obtain ⟨A', B', hA', hB', f', g', h', dT'⟩ := hP.exists_triangle_one_zero (X⟪-m⟫)
+  have : IsLE B' 0 := {le := hB'}
+  have : IsGE A' 1 := {ge := hA'}
+  use A'⟪m⟫, B'⟪m⟫, isGE_shift A' 1 m n h, isLE_shift B' 0 m m (add_zero _),
+    f'⟪m⟫' ≫ (shiftNegShift (C := FilteredShift C) X m).hom,
+    (shiftNegShift (C := FilteredShift C) X m).inv ≫ g'⟪m⟫',
+    h'⟪m⟫' ≫ ((shiftFunctor₂ C m).commShiftIso (1 : ℤ)).hom.app A'
+  refine (Pretriangulated.distinguished_iff_of_iso (Pretriangulated.Triangle.isoMk _ _
+    ?_ ?_ ?_ ?_ ?_ ?_)).mp ((hP.shift₂_triangle m).map_distinguished _ dT')
+  · exact Iso.refl _
+  · exact shiftNegShift (C := FilteredShift C) X m
+  · exact Iso.refl _
+  · dsimp; simp only [id_comp]
+  · dsimp; simp only [comp_id, Iso.hom_inv_id_app_assoc]
+  · dsimp; simp only [Functor.map_id, comp_id, id_comp]
+
+end Triangle
+
 end FilteredTriangulated
 
 open FilteredTriangulated
@@ -423,15 +472,45 @@ section Truncation
 -- Prop A.1.3 (i)
 -- First sentence.
 
-instance LE_reflective (n : ℤ) : Reflective (ObjectProperty.ι
-    (FilteredTriangulated.LE (C := C) n).P) := sorry
+instance LE_reflective_aux (n : ℤ) (X : C) : Limits.HasInitial (StructuredArrow X
+    (FilteredTriangulated.LE (C := C) n).ι) := by
+  obtain ⟨A, B, hA, hB, f, g, h, dT⟩ := exists_triangle X (n + 1) n rfl
+  set B' : (FilteredTriangulated.LE (C := C) n).category := ⟨B, hB.le⟩
+  set Y : StructuredArrow X (FilteredTriangulated.LE (C := C) n).ι := StructuredArrow.mk (Y := B') g
+  have : ∀ Z, Nonempty (Y ⟶ Z) := by
+    intro Z
+    refine Nonempty.intro ?_
+    set hyp := Pretriangulated.Triangle.yoneda_exact₂ _ dT Z.hom (zero_of_isGE_of_isLE (f ≫ Z.hom)
+      n (n + 1) (by simp only [lt_add_iff_pos_right, zero_lt_one]) hA {le := Z.right.2})
+    exact StructuredArrow.homMk (Classical.choose hyp) (Classical.choose_spec hyp).symm
+  have : ∀ Z, Subsingleton (Y ⟶ Z) := by
+    intro Z
+    have eq : ∀ (u : Y ⟶ Z), g ≫ u.right = Z.hom := by
+      intro u
+      have := u.w
+      dsimp at this
+      simp only [id_comp] at this
+      exact this.symm
+    refine Subsingleton.intro (fun u v ↦ StructuredArrow.hom_ext _ _ ?_)
+    rw [← sub_eq_zero]
+    obtain ⟨w, eq⟩ := Pretriangulated.Triangle.yoneda_exact₃ _ dT (u.right - v.right)
+      (by dsimp; rw [comp_sub, eq u, eq v, sub_self])
+    rw [eq, zero_of_isGE_of_isLE w n (n + 1) (by simp only [lt_add_iff_pos_right, zero_lt_one])
+      (shift_isGE_of_isGE A (n + 1) 1) {le := Z.right.2}, comp_zero]
+  exact Limits.hasInitial_of_unique Y
+
+instance LE_reflective (n : ℤ) : Reflective ((FilteredTriangulated.LE (C := C) n).ι :
+    (FilteredTriangulated.LE n).category ⥤ C) where
+      L := leftAdjointOfStructuredArrowInitials (FilteredTriangulated.LE (C := C) n).ι
+      adj := adjunctionOfStructuredArrowInitials _
 
 instance GE_coreflective (n : ℤ) : Coreflective (ObjectProperty.ι
     (FilteredTriangulated.GE (C := C) n).P) := sorry
+-- Use `CategoryTheory.isLeftAdjoint_of_costructuredArrowTerminals`.
 
-def truncLE (n : ℤ) : C ⥤ C := reflector (ObjectProperty.ι
-    (FilteredTriangulated.LE (C := C) n).P) ⋙ (ObjectProperty.ι
-    (FilteredTriangulated.LE (C := C) n).P)
+def truncLE (n : ℤ) : C ⥤ C := (reflector ((FilteredTriangulated.LE (C := C) n).ι) : C ⥤
+    (FilteredTriangulated.LE n).category) ⋙
+    ((FilteredTriangulated.LE (C := C) n).ι)
 -- The "left adjoint" of the inclusion.
 
 def truncGE (n : ℤ) : C ⥤ C := coreflector (ObjectProperty.ι
@@ -450,18 +529,20 @@ def essImage_of_GE (X : C) (n : ℤ) [IsGE X n] : (ObjectProperty.ι
     (FilteredTriangulated.GE (C := C) n).P).essImage X := sorry
 
 def truncLEπ (n : ℤ) : 𝟭 _ ⟶ truncLE (C := C) n :=
-  (reflectorAdjunction (FilteredTriangulated.LE (C := C) n).P.ι).unit
+  (reflectorAdjunction (FilteredTriangulated.LE (C := C) n).ι).unit
 -- Unit of the adjunction.
 
 instance truncLEπ_iso_of_LE (X : C) (n : ℤ) [IsLE X n] : IsIso ((truncLEπ n).app X) :=
   Functor.essImage.unit_isIso (essImage_of_LE X n)
 
 noncomputable def descTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsLE Y n] :
-    (truncLE n).obj X ⟶ Y := sorry
+    (truncLE n).obj X ⟶ Y := (truncLE n).map f ≫ inv ((truncLEπ n).app Y)
 
 @[reassoc (attr := simp)]
 lemma π_descTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsLE Y n] :
-    (truncLEπ n).app X ≫ descTruncLE f n = f := sorry
+    (truncLEπ n).app X ≫ descTruncLE f n = f := by
+  dsimp [descTruncLE]
+  rw [← assoc, ← (truncLEπ n).naturality, assoc, IsIso.hom_inv_id, Functor.id_map, comp_id]
 
 def truncGEι (n : ℤ) : truncGE (C := C) n ⟶ 𝟭 _ :=
   (coreflectorAdjunction (FilteredTriangulated.GE (C := C) n).P.ι).counit
@@ -471,17 +552,25 @@ instance truncGEι_iso_of_GE (X : C) (n : ℤ) [IsGE X n] : IsIso ((truncGEι n)
   Functor.essImage.counit_isIso (essImage_of_GE X n)
 
 def liftTruncGE {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsGE X n] :
-    X ⟶ (truncGE n).obj Y := sorry
+    X ⟶ (truncGE n).obj Y := inv ((truncGEι n).app X) ≫ (truncGE n).map f
 
 @[reassoc (attr := simp)]
 lemma liftTruncGE_ι {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsGE X n] :
-    liftTruncGE f n ≫ (truncGEι n).app Y = f := sorry
+    liftTruncGE f n ≫ (truncGEι n).app Y = f := by
+  dsimp [liftTruncGE]
+  rw [assoc, (truncGEι n).naturality, Functor.id_map, ← assoc, IsIso.inv_hom_id, id_comp]
 
 -- Second sentence.
 -- The truncation functors are triangulated.
-instance (n : ℤ) : (truncLE (C := C) n).CommShift ℤ := sorry
+instance (n : ℤ) : (truncLE (C := C) n).CommShift ℤ := by
+  dsimp [truncLE]
+  have : (reflector (FilteredTriangulated.LE (C := C) n).ι).CommShift ℤ :=
+    (reflectorAdjunction _).leftAdjointCommShift ℤ
+  infer_instance
 
-instance (n : ℤ) : (truncLE (C := C) n).IsTriangulated := sorry
+instance (n : ℤ) : (truncLE (C := C) n).IsTriangulated := by
+  dsimp [truncLE]
+  infer_instance
 
 instance (n : ℤ) : (truncGE (C := C) n).CommShift ℤ := sorry
 
@@ -505,12 +594,6 @@ abbrev truncGE_onLE (n m : ℤ) :
   · exact ObjectProperty.ι _ ⋙ truncGE n
   · have : IsLE X.1 m := {le := X.2}
     exact (instIsLEObjTruncGE n m X.1).le
-
-/-
-def truncGE_onLE_comp (n m :  ℤ) :
-    truncGE_onLE (C := C) n m ⋙ (FilteredTriangulated.LE m).P.ι ≅
-    (FilteredTriangulated.LE m).P.ι ⋙ truncGE n := Iso.refl _
--/
 
 abbrev truncLE_onGE (n m : ℤ) :
     (FilteredTriangulated.GE (C := C) m).P.FullSubcategory ⥤
@@ -583,8 +666,7 @@ lemma triangleGELE_distinguished (n : ℤ) (X : C) :
     (triangleGELE n).obj X ∈ distTriang C :=
   triangleGELE'_distinguished n (n + 1) rfl X
 
--- Uniqueness.
--- Here we are cheating too, because the maps are specific ones!
+-- More general triangles, same remarks as before on cheating.
 
 def truncGELE_le_up (a b c : ℤ) (h : b ≤ c) :
     truncGELE (C := C) a b ⟶ truncGELE a c := by
@@ -603,6 +685,20 @@ def truncGELE_triangle (a b c : ℤ) (h : a ≤ b) (h' : b ≤ c) : C ⥤ Triang
 
 lemma truncGELE_triangle_distinguished (a b c : ℤ) (h : a ≤ b) (h' : b ≤ c) (X : C) :
     (truncGELE_triangle a b c h h').obj X ∈ distTriang C := sorry
+
+-- Uniqueness.
+-- In the paper, this says that any distinguished triangle `A ⟶ X ⟶ B ⟶ A[1]` with `A ≤ n` and
+-- `B ≥ n + 1` is isomorphic to `triangleGELE n X` in a unique way. Actually, this is not
+-- quite correct, because we only have uniqueness if we require the morphism of triangles
+-- to be `𝟙 X` on the second objects. Also, the other morphisms are already explicit and
+-- uniquely determined, they are given by `descTruncLE` and `liftTruncGE`, so the real content
+-- is that these morphisms are isomorphisms.
+
+lemma isIso_descTruncLE_of_fiber_ge (n : ℤ) {T : Triangle C} (dT : T ∈ distTriang C)
+    [IsGE T.obj₁ (n + 1)] [IsLE T.obj₃ n] : IsIso (descTruncLE T.mor₂ n) := sorry
+
+lemma isIso_liftTruncGE_of_cone_le (n : ℤ) {T : Triangle C} (dT : T ∈ distTriang C)
+    [IsGE T.obj₁ n] [IsLE T.obj₃ (n - 1)] : IsIso (liftTruncGE T.mor₁ n) := sorry
 
 -- Prop A.1.3 (iv): we need to explain what compatibilities are hidden under the
 -- adjective "canonical".
