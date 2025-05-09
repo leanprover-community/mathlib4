@@ -73,17 +73,11 @@ theorem exists_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n 
     · push_neg at h_imax'
       obtain ⟨M, hM⟩ : ∃ M, ∀ i, tr i < M := exists_bound tr
       use Fin.insertNth imax M tr
-      have h_aux2 (i : Fin n) : ¬M ≤ tr i := by
-        specialize hM i
-        omega
-      have h_aux3 (i : Fin n) : tr i ≤ M := by
-        specialize hM i
-        omega
-      have h_aux4 (i : Fin n) : val (Fin.succAbove imax i) < val imax :=
+      have h_succ (i : Fin n) : val (Fin.succAbove imax i) < val imax :=
         lt_of_le_of_ne (h_imax (Fin.succAbove imax i)) (h_imax' i)
       intro i j
       cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
-        <;> simp [h_aux2, h_aux3, h_aux4, h_imax, ← h2, Fin.removeNth]
+        <;> simp [(hM _).not_le, (hM _).le, h_succ, h_imax, ← h2, Fin.removeNth]
 
 /-- Auxiliary definition used by the `order` tactic to
 transfer facts in a linear order to `Nat`. -/
