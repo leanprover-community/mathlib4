@@ -2302,6 +2302,7 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Comon_
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Mod_
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Center
@@ -2325,7 +2326,8 @@ import Mathlib.CategoryTheory.Monoidal.Internal.Module
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
-import Mathlib.CategoryTheory.Monoidal.Limits
+import Mathlib.CategoryTheory.Monoidal.Limits.Basic
+import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Mod_
 import Mathlib.CategoryTheory.Monoidal.Mon_
