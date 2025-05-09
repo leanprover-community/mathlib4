@@ -8,8 +8,8 @@ import Mathlib.CategoryTheory.Monoidal.ExternalProduct
 import Mathlib.CategoryTheory.Closed.Types
 import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Limits.IsConnected
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 /-!
 # Sifted categories
 
