@@ -14,6 +14,7 @@ jobs:
         run: |
           curl --output assignments.json --silent https://leanprover-community.github.io/queueboard/automatic_assignments.json
 
+      # Perhaps this is necessary, perhaps not.
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@f0e10f46ff84f4d32178b4b76e1ef180b16f82c3 # v3.1.1
@@ -22,7 +23,9 @@ jobs:
       - name: parse assignments file and assign reviewers
         run: |
           echo "TODO: parsing the assignments file is not implemented yet!"
-          # placeholder logic: assign PR 18754 to grunweg
+          # the above files has entries of the form number: "user".
+          # for each pair (number, user) in the file, I want to run the following
+          # placeholder values: as an example, assign PR 18754 to grunweg
           number=18754
           user=grunweg
           printf 'about to assign PR "%s" to "%s"' "${number}" "${user}"
