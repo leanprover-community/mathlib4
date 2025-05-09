@@ -4,16 +4,31 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.DoubleHomology
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
 /-!
 # Exact functors preserves quasi-isomorphisms
 
 -/
 
+namespace HomologicalComplex
+
+open CategoryTheory Limits
+
+variable {C₁ C₂ : Type*} [Category C₁] [Category C₂] [HasZeroMorphisms C₁] [HasZeroMorphisms C₂]
+  {ι₁ ι₂ : Type*} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂}
+  [CategoryWithHomology C₁] [CategoryWithHomology C₂]
+
+def preservesQuasiIso :
+    ObjectProperty (HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂) :=
+  fun F ↦ (HomologicalComplex.quasiIso C₁ c₁ ≤ (HomologicalComplex.quasiIso C₂ c₂).inverseImage F)
+
+
+end HomologicalComplex
 
 namespace CategoryTheory
 
-open Limits
+open Limits ZeroObject
 
 variable {C D : Type*} [Category C] [Category D]
   [HasZeroMorphisms C] [HasZeroMorphisms D]
@@ -33,14 +48,6 @@ lemma mem_quasiIso_iff {K L : ShortComplex C} (f : K ⟶ L) :
 end ShortComplex
 
 namespace Functor
-
-def preservesQuasiIso {ι₁ ι₂ : Type*} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂} :
-    ObjectProperty (HomologicalComplex C c₁ ⥤ HomologicalComplex D c₂) :=
-  fun F ↦ (HomologicalComplex.quasiIso C c₁ ≤ (HomologicalComplex.quasiIso D c₂).inverseImage F)
-
-abbrev PreservesQuasiIso {ι₁ ι₂ : Type*} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂}
-    (F : HomologicalComplex C c₁ ⥤ HomologicalComplex D c₂) : Prop :=
-  preservesQuasiIso.Is F
 
 lemma preserves_shortComplexQuasiIso [F.PreservesHomology] :
     ShortComplex.quasiIso C ≤ (ShortComplex.quasiIso D).inverseImage F.mapShortComplex := by
@@ -62,10 +69,10 @@ instance [F.PreservesHomology] {ι : Type*} (c : ComplexShape ι) {K L : Homolog
 
 instance preservesQuasiIso_mapHomologicalComplex
     [F.PreservesHomology] {ι : Type*} (c : ComplexShape ι) :
-    (F.mapHomologicalComplex c).PreservesQuasiIso := ⟨by
+    HomologicalComplex.preservesQuasiIso  (F.mapHomologicalComplex c) := by
   intro _ _ _ hf
   simp only [HomologicalComplex.mem_quasiIso_iff, MorphismProperty.inverseImage_iff] at hf ⊢
-  infer_instance⟩
+  infer_instance
 
 noncomputable def mapHomologicalComplexCompShortComplexFunctorIso
     {C D : Type*} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D]
@@ -83,13 +90,27 @@ noncomputable def mapHomologicalComplexHomologyIso [F.PreservesHomology]
     (associator _ _ _).symm ≪≫
       isoWhiskerRight (HomologicalComplex.homologyFunctorIso C c i).symm _
 
-/-lemma preservesQuasiIso_mapHomologicalComplex_iff {ι : Type*} (c : ComplexShape ι)
+open HomologicalComplex in
+lemma preservesQuasiIso_mapHomologicalComplex_iff {C D : Type*} [Category C]
+    [Category D] [Abelian C] [Abelian D] (F : C ⥤ D) [F.Additive]
+    {ι : Type*} (c : ComplexShape ι)
     {i₀ i₁ : ι} (hi₀₁ : c.Rel i₀ i₁) (hi₀₁' : i₀ ≠ i₁) :
-    (F.mapHomologicalComplex c).PreservesQuasiIso ↔ F.PreservesHomology where
-  mpr _ := inferInstance
+    preservesQuasiIso (F.mapHomologicalComplex c) ↔ F.PreservesHomology where
+  mpr _ _ _ _ hf := by
+    simp only [mem_quasiIso_iff, MorphismProperty.inverseImage_iff] at hf ⊢
+    infer_instance
   mp h := by
-    -- use ShortComplex.quasiIso_doubleFunctor_map_arrowHomToG_iff_exact
-    sorry -/
+    apply (F.exact_tfae.out 0 2).1
+    intro S hS
+    rw [← ShortComplex.quasiIso_doubleFunctor_map_arrowHomToG_iff_exact _ hi₀₁ hi₀₁'] at hS ⊢
+    let e : Arrow.mk (F.map (0 : S.X₁ ⟶ 0)) ≅ Arrow.mk (0 : F.obj S.X₁ ⟶ 0) :=
+      Arrow.isoMk (Iso.refl _) (IsZero.iso (F.map_isZero (isZero_zero C)) (isZero_zero D))
+    refine ((quasiIso _ _).arrow_mk_iso_iff ?_).1 (h _ hS)
+    refine Arrow.isoMk ((doubleFunctorCompMapHomologicalComplex hi₀₁ hi₀₁' F).app _ ≪≫
+        (doubleFunctor D hi₀₁ hi₀₁').mapIso e)
+      ((doubleFunctorCompMapHomologicalComplex hi₀₁ hi₀₁' F).app _) (by
+        dsimp
+        ext <;> simp [mapHomologicalComplexObjDoubleXIso, doubleFunctor_map, e])
 
 end Functor
 
