@@ -565,12 +565,12 @@ theorem preconnectedSpace_of_forall_constant
       hs f (continuous_iff_continuousOn_univ.mpr hf) x y⟩
 
 theorem preconnectedSpace_iff_clopen :
-    PreconnectedSpace α ↔ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ :=
-  ⟨fun _ _ => isClopen_iff.mp, fun h ↦ preconnectedSpace_of_forall_constant fun f hf x y =>
-    (h (f ⁻¹' {true}) ((isClopen_discrete {true}).preimage hf)).elim
-      (fun h => (eq_false_of_ne_true fun hx => Set.preimage_singleton_eq_empty.mp h ⟨x, hx⟩).trans
-        (eq_false_of_ne_true fun hy => Set.preimage_singleton_eq_empty.mp h ⟨y, hy⟩).symm)
-      (by aesop)⟩
+    PreconnectedSpace α ↔ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by
+  refine ⟨fun _ _ => isClopen_iff.mp, fun h ↦ ?_⟩
+  refine preconnectedSpace_of_forall_constant fun f hf x y ↦ ?_
+  have : f ⁻¹' {false} = (f ⁻¹' {true})ᶜ := by
+    rw [← Set.preimage_compl, Bool.compl_singleton, Bool.not_true]
+  obtain (h | h) := h _ ((isClopen_discrete {true}).preimage hf) <;> simp_all
 
 theorem connectedSpace_iff_clopen :
     ConnectedSpace α ↔ Nonempty α ∧ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by
