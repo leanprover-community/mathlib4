@@ -206,7 +206,9 @@ variable [Module R M'] [IsScalarTower R R' M']
 variable (f : M → M')
 
 /-- If `x` in a `R' = S⁻¹ R`-module `M'` such that `Den • x = f Num` for some `Num : M` and
-`Den : S`, then `x` is in the submodule `N'` of `M'` if `f Num` is in `N'`. -/
+`Den : S`, then `x` is in the submodule `N'` of `M'` if `f Num` is in `N'`.
+In particular, if `M` is a localized module, then `x` is in the submodule `N'` if its
+numerator under the image of `f` also lies in `N`. -/
 lemma mem_of_numerator_image_mem {N' : Submodule R' M'} {x : M'} {Num : M} {Den : S}
     (h : Den • x = f Num) (hNum : f Num ∈ N') : x ∈ N' := by
   rw [← Submodule.smul_mem_iff_IsUnit N' (r := (algebraMap R R') Den)
