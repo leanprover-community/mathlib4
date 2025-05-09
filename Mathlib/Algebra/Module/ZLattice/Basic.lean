@@ -28,11 +28,11 @@ point of view are in the `ZLattice` namespace.
 ## Main results and definitions
 
 * `ZSpan.isAddFundamentalDomain`: for a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that
-the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
+  the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
 * `ZLattice.module_free`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is a free
 `ℤ`-module
 * `ZLattice.rank`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is free
-of `ℤ`-rank equal to the `K`-rank of `E`
+  of `ℤ`-rank equal to the `K`-rank of `E`
 * `ZLattice.comap`: for `e : E → F` a linear map and `L : Submodule ℤ E`, define the pullback of
 `L` by `e`. If `L` is a `IsZLattice` and `e` is a continuous linear equiv, then it is also a
 `IsZLattice`, see `instIsZLatticeComap`.
@@ -374,6 +374,12 @@ theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace
     ext
     simp [Basis.toMatrix_apply, LinearMap.toMatrix_apply, LinearEquiv.coe_coe, Basis.equiv_apply]
 
+theorem measureReal_fundamentalDomain
+    [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
+    [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
+    μ.real (fundamentalDomain b) = |b₀.det b| * μ.real (fundamentalDomain b₀) := by
+  simp [measureReal_def, measure_fundamentalDomain b μ b₀]
+
 @[simp]
 theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ (ι → ℝ)) :
     volume (fundamentalDomain b) = ENNReal.ofReal |(Matrix.of b).det| := by
@@ -381,6 +387,11 @@ theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ
     volume_pi, Measure.pi_pi, Real.volume_Ico, sub_zero, ENNReal.ofReal_one, Finset.prod_const_one,
     mul_one, ← Matrix.det_transpose]
   rfl
+
+@[simp]
+theorem volume_real_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ (ι → ℝ)) :
+    volume.real (fundamentalDomain b) = |(Matrix.of b).det| := by
+  simp [measureReal_def]
 
 theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] :
@@ -426,6 +437,8 @@ instance instIsZLatticeRealSpan {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
     [Finite ι] (b : Basis ι ℝ E) :
     IsZLattice ℝ (span ℤ (Set.range b)) where
   span_top := ZSpan.span_top b
+
+@[deprecated (since := "2025-05-08")] alias ZSpan.isZLattice := instIsZLatticeRealSpan
 
 section NormedLinearOrderedField
 

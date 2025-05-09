@@ -531,3 +531,26 @@ theorem finrank_le_one (v : M) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank
   · exact (finrank_eq_one v hn h).le
 
 end RankOne
+
+namespace Module
+variable {ι : Type*}
+
+@[simp] lemma finite_finsupp_iff :
+    Module.Finite R (ι →₀ M) ↔ IsEmpty ι ∨ Subsingleton M ∨ Module.Finite R M ∧ Finite ι where
+  mp := by
+    simp only [or_iff_not_imp_left, not_subsingleton_iff_nontrivial, not_isEmpty_iff]
+    rintro h ⟨i⟩ _
+    obtain ⟨s, hs⟩ := id h
+    exact ⟨.of_surjective (Finsupp.lapply (R := R) (M := M) i) (Finsupp.apply_surjective i),
+       finite_of_span_finite_eq_top_finsupp s.finite_toSet hs⟩
+  mpr
+  | .inl _ => inferInstance
+  | .inr <| .inl h => inferInstance
+  | .inr <| .inr h => by cases h; infer_instance
+
+@[simp high]
+lemma finite_finsupp_self_iff : Module.Finite R (ι →₀ R) ↔ Subsingleton R ∨ Finite ι := by
+  simp only [finite_finsupp_iff, Finite.self, true_and, or_iff_right_iff_imp]
+  exact fun _ ↦ .inr inferInstance
+
+end Module

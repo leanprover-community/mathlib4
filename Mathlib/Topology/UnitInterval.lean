@@ -107,6 +107,17 @@ theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 
+@[simp]
+theorem symm_projIcc (x : ℝ) :
+    symm (projIcc 0 1 zero_le_one x) = projIcc 0 1 zero_le_one (1 - x) := by
+  ext
+  rcases le_total x 0 with h₀ | h₀
+  · simp [projIcc_of_le_left, projIcc_of_right_le, h₀]
+  · rcases le_total x 1 with h₁ | h₁
+    · lift x to I using ⟨h₀, h₁⟩
+      simp_rw [← coe_symm_eq, projIcc_val]
+    · simp [projIcc_of_le_left, projIcc_of_right_le, h₁]
+
 @[continuity, fun_prop]
 theorem continuous_symm : Continuous σ :=
   Continuous.subtype_mk (by fun_prop) _

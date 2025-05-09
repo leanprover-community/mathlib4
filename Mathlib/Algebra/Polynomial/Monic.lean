@@ -258,6 +258,15 @@ theorem monic_prod_of_monic (s : Finset ι) (f : ι → R[X]) (hs : ∀ i ∈ s,
     Monic (∏ i ∈ s, f i) :=
   monic_multiset_prod_of_monic s.1 f hs
 
+theorem monic_finprod_of_monic (α : Type*) (f : α → R[X])
+    (hf : ∀ i ∈ Function.mulSupport f, Monic (f i)) :
+    Monic (finprod f) := by
+  classical
+  rw [finprod_def]
+  split_ifs
+  · exact monic_prod_of_monic _ _ fun a ha => hf a ((Set.Finite.mem_toFinset _).mp ha)
+  · exact monic_one
+
 theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : ∀ i ∈ t, Monic (f i)) :
     nextCoeff (t.map f).prod = (t.map fun i => nextCoeff (f i)).sum := by
   revert h
@@ -280,7 +289,7 @@ variable [NoZeroDivisors R] {p q : R[X]}
 lemma irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
     Irreducible p ↔ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f = 1 ∨ g = 1 := by
   refine
-    ⟨fun h f g hf hg hp => (h.2 f g hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
+    ⟨fun h f g hf hg hp => (h.2 hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
       ⟨hp1 ∘ hp.eq_one_of_isUnit, fun f g hfg =>
         (h (g * C f.leadingCoeff) (f * C g.leadingCoeff) ?_ ?_ ?_).symm.imp
           (isUnit_of_mul_eq_one f _)
