@@ -34,13 +34,13 @@ def getDeclModifiers : Syntax → Array Syntax
   | _ => #[]
 
 /--
-Currently, this function simply removes `startColumn` spaces after each `\n`
+Currently, this function simply removes `currIndent` spaces after each `\n`
 in the input string `docString`.
 
 If/when the `docString` linter expands, it may take on more string processing.
 -/
-def deindentString (startColumn : Nat) (docString : String) : String :=
-  let indent : String := ⟨'\n' :: List.replicate startColumn ' '⟩
+def deindentString (currIndent : Nat) (docString : String) : String :=
+  let indent : String := ⟨'\n' :: List.replicate currIndent ' '⟩
   docString.replace indent " "
 
 namespace Style
@@ -58,7 +58,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let docStx := declMods[0][0]
 
     let some pos := docStx.getPos? | continue
-    let startColumn := fm.toPosition pos |>.column
+    let currIndent := fm.toPosition pos |>.column
 
     if docStx.isMissing then continue -- this is probably superfluous, thanks to `some pos` above.
     -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
@@ -68,13 +68,14 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let startSubstring := match docStx with
       | .node _ _ #[(.atom si ..), _] => si.getTrailing?.getD default
       | _ => default
-    let start := deindentString startColumn startSubstring.toString
+    -- We replace all line-breaks followed by `currIndent` spaces with a single space.
+    let start := deindentString currIndent startSubstring.toString
     if !#["\n", " "].contains start then
       let startRange := {start := startSubstring.startPos, stop := startSubstring.stopPos}
       Linter.logLint linter.style.docString (.ofRange startRange)
         s!"error: doc-strings should start with a single space or newline"
 
-    let deIndentedDocString := deindentString startColumn docString
+    let deIndentedDocString := deindentString currIndent docString
 
     let docTrim := deIndentedDocString.trimRight
     let tail := docTrim.length
