@@ -335,8 +335,7 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
   toFun f :=
     { hom := ModuleCat.ofHom <| (TensorProduct.curry f.hom.hom).flip
       comm g := ModuleCat.hom_ext <| LinearMap.ext fun x => LinearMap.ext fun y => by
-        simpa [ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
-          ModuleCat.MonoidalCategory.tensorObj, ModuleCat.endRingEquiv] using
+        simpa [moduleCat_simp, ModuleCat.endRingEquiv] using
           hom_comm_apply f g (A.ρ g⁻¹ y ⊗ₜ[k] x) }
   invFun f :=
     { hom := ModuleCat.ofHom <| TensorProduct.uncurry k _ _ _ f.hom.hom.flip
