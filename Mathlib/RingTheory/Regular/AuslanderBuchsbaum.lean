@@ -77,6 +77,7 @@ instance Abelian.Ext.subsingleton_of_projective [Projective P] (n : ℕ) [hn : N
 variable {S : ShortComplex C} (hS : S.ShortExact) [Projective S.X₂]
   (n₀ n₁ : ℕ) (h : 1 + n₀ = n₁) [NeZero n₀]
 
+variable (Y) in
 noncomputable def projective_dim_shifting : Ext S.X₁ Y n₀ ≃+ Ext S.X₃ Y n₁ :=
   have : NeZero n₁ := by
     rw [← h]
@@ -88,7 +89,7 @@ noncomputable def projective_dim_shifting : Ext S.X₁ Y n₀ ≃+ Ext S.X₃ Y 
   (CategoryTheory.asIso (AddCommGrp.ofHom (hS.extClass.precomp Y h))).addCommGroupIsoToAddEquiv
 
 lemma projective_dim_shifting_apply (e : Ext S.X₁ Y n₀) :
-  projective_dim_shifting hS n₀ n₁ h e = hS.extClass.precomp Y h e := rfl
+  projective_dim_shifting Y hS n₀ n₁ h e = hS.extClass.precomp Y h e := rfl
 
 end Projective
 
@@ -152,66 +153,17 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
     [Nontrivial M] (i : ℕ) : Subsingleton (Ext N M i) ↔
     Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
   have : Nontrivial R := nontrivial_ring_of_nontrivial_module M
-  rcases Module.Free.exists_set R M with ⟨S, ⟨B⟩⟩
-  have fin' : Finite S := Module.Finite.finite_basis B
-  have fin : S.Finite := fin'
-  let e : M ≅ (ModuleCat.of R (S →₀ Shrink.{v} R)) := LinearEquiv.toModuleIso
-    (B.repr.trans (Finsupp.mapRange.linearEquiv (α := S) (Shrink.linearEquiv R R).symm))
-  show Subsingleton ((extFunctorObj N i).obj M) ↔ _
-  rw [((extFunctorObj.{max u v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr]
-  simp only [extFunctorObj]
-  have ne : S.Nonempty := @Set.Nonempty.of_subtype _ _ (Basis.index_nonempty B)
-  refine Set.Finite.induction_on (motive := fun T ↦ (fun (h : T.Finite) ↦
-    (T.Nonempty → ∀ (i : ℕ), (Subsingleton (Ext N (ModuleCat.of R (↑T →₀ Shrink.{v, u} R)) i) ↔
-    Subsingleton (Ext N (ModuleCat.of R (Shrink.{v, u} R)) i))))) S fin ?_ ?_ ne i
-  · simp
-  · intro m T nmem fin ih _ i
-    by_cases empty : T = ∅
-    · rw [empty, ← Set.singleton_def m]
-
-      sorry
-    · let m' : ↑(insert m T) := ⟨m, Set.mem_insert m T⟩
-      let ic : T → ↑(insert m T) := Set.inclusion (Set.subset_insert m T)
-      have inj_ic : Function.Injective ic := Set.inclusion_injective _
-      have nmem_range : m' ∉ Set.range ic := by
-        by_contra mem
-        rcases mem with ⟨z, hz⟩
-        have : z = m := congrArg Subtype.val hz
-        absurd nmem
-        simp [← this]
-      have exac : Function.Exact (Finsupp.lmapDomain (Shrink.{v, u} R) R ic)
-        (Finsupp.lapply (R := R) m') := by
-        intro x
-        simp only [Finsupp.lapply_apply, Set.mem_range, Finsupp.lmapDomain_apply]
-        refine ⟨fun h ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩
-        · let y : T →₀ Shrink.{v, u} R := {
-            support := Finset.preimage x.support ic (fun x _ y _ hxy ↦ inj_ic hxy)
-            toFun := fun t ↦ x (ic t)
-            mem_support_toFun t := by simp }
-          use y
-          ext t
-          simp only [EmbeddingLike.apply_eq_iff_eq, y]
-          by_cases eq : t = m'
-          · simp [eq, Finsupp.mapDomain_notin_range _ _ nmem_range, h]
-          · have mem := Set.mem_of_mem_insert_of_ne t.2 (Subtype.coe_ne_coe.mpr eq)
-            have : t = ic ⟨t.1, mem⟩ := rfl
-            rw [this, Finsupp.mapDomain_apply inj_ic]
-            rfl
-        · simpa [← hy] using Finsupp.mapDomain_notin_range _ _ nmem_range
-      let S : ShortComplex (ModuleCat.{v} R) := {
-        X₁ := ModuleCat.of R (T →₀ Shrink.{v, u} R)
-        X₂ := ModuleCat.of R (↑(insert m T) →₀ Shrink.{v, u} R)
-        X₃ := ModuleCat.of R (Shrink.{v, u} R)
-        f := ModuleCat.ofHom (Finsupp.lmapDomain (Shrink.{v, u} R) R ic)
-        g := ModuleCat.ofHom (Finsupp.lapply m')
-        zero := ConcreteCategory.hom_ext _ _ (fun y ↦ exac.apply_apply_eq_zero y) }
-      have S_exact : S.ShortExact := {
-        exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr exac
-        mono_f := (ModuleCat.mono_iff_injective S.f).mpr (Finsupp.mapDomain_injective inj_ic)
-        epi_g := (ModuleCat.epi_iff_surjective S.g).mpr (Finsupp.apply_surjective m') }
-      #check Ext.covariant_sequence_exact₂' N S_exact i
-
-      sorry
+  induction' i with i ih generalizing N
+  · simp only [Ext.addEquiv₀.subsingleton_congr, ModuleCat.homAddEquiv.subsingleton_congr]
+    sorry
+  · rcases EnoughProjectives.presentation N with ⟨⟨P, f⟩⟩
+    let S := (ShortComplex.mk (kernel.ι f) f (kernel.condition f))
+    have S_exact := shortExact_kernel_of_epi f
+    by_cases eq0 : i = 0
+    · sorry
+    · have : NeZero i := ⟨eq0⟩
+      simpa [← (projective_dim_shifting _ S_exact i (i + 1) (add_comm 1 i)).subsingleton_congr]
+        using ih (kernel f)
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] : moduleDepth N M = moduleDepth N (ModuleCat.of R (Shrink.{v} R)) := by
