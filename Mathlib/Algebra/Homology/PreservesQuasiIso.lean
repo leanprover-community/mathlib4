@@ -18,14 +18,21 @@ section
 
 open CategoryTheory Limits
 
-variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
-  {ι₁ ι₂ : Type*} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂}
+variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+  {ι₁ ι₂ ι₃ : Type*} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂} {c₃ : ComplexShape ι₃}
 
 abbrev HomologicalComplex.preservesQuasiIso [HasZeroMorphisms C₁] [HasZeroMorphisms C₂]
     [CategoryWithHomology C₁] [CategoryWithHomology C₂] :
     ObjectProperty (HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂) :=
   ObjectProperty.localizerMorphism
     (HomologicalComplex.quasiIso C₁ c₁) (HomologicalComplex.quasiIso C₂ c₂)
+
+nonrec lemma HomologicalComplex.preservesQuasiIso.comp [HasZeroMorphisms C₁] [HasZeroMorphisms C₂]
+    [HasZeroMorphisms C₃] [CategoryWithHomology C₁] [CategoryWithHomology C₂]
+    [CategoryWithHomology C₃] {F : HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂}
+    (hF : preservesQuasiIso F) {G : HomologicalComplex C₂ c₂ ⥤ HomologicalComplex C₃ c₃}
+    (hG : preservesQuasiIso G) : preservesQuasiIso (F ⋙ G) :=
+  hF.comp hG
 
 abbrev HomotopyCategory.preservesQuasiIso [Preadditive C₁] [Preadditive C₂]
     [CategoryWithHomology C₁] [CategoryWithHomology C₂] :

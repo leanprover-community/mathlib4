@@ -37,6 +37,12 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {D₁ : Type u
 def ObjectProperty.localizerMorphism :
     ObjectProperty (C₁ ⥤ C₂) := fun F ↦ W₁ ≤ W₂.inverseImage F
 
+variable {W₁ W₂ W₃} in
+lemma ObjectProperty.localizerMorphism.comp {F : C₁ ⥤ C₂}
+    (h : localizerMorphism W₁ W₂ F) {G : C₂ ⥤ C₃} (h' : localizerMorphism W₂ W₃ G) :
+    localizerMorphism W₁ W₃ (F ⋙ G) :=
+  fun _ _ _ hf ↦ h' _ (h _ hf)
+
 instance [W₂.RespectsIso] :
     (ObjectProperty.localizerMorphism W₁ W₂).IsClosedUnderIsomorphisms where
   of_iso e h _ _ f hf :=
