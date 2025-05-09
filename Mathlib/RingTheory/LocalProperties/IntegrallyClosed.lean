@@ -64,26 +64,34 @@ theorem isIntegrallyClosed_ofLocalizationMaximal :
 
 variable {R K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
 
-theorem IsIntegrallyClosed.of_inf {ι : Type*} (S : ι → Subalgebra R K)
-    (h : ∀ i : ι, IsIntegrallyClosed (S i)) (hs : ⨅ i : ι, S i = ⊥) : IsIntegrallyClosed R := by
-  rw [isIntegrallyClosed_iff K]
-  intro x hx
-  show x ∈ (⊥ : Subalgebra R K)
-  rw [← hs]
-  refine Algebra.mem_iInf.mpr (fun i ↦ ?_)
+theorem IsIntegrallyClosed.iInf {ι : Type*} (S : ι → Subalgebra R K)
+    (h : ∀ i : ι, IsIntegrallyClosed (S i)) :
+    IsIntegrallyClosed (⨅ i : ι, S i : Subalgebra R K) := by
+  refine (isIntegrallyClosed_iff K).mpr (fun {x} hx ↦ CanLift.prf x (Algebra.mem_iInf.mpr ?_))
+  intro i
+  have le : (⨅ i : ι, S i : Subalgebra R K) ≤ (S i) := iInf_le S i
+  algebraize [(Subalgebra.inclusion le).toRingHom]
+  have : IsScalarTower ↥(⨅ i, S i) (S i) K := Subalgebra.inclusion.isScalarTower_right le K
   rcases ((isIntegrallyClosed_iff K).mp (h i)) hx.tower_top with ⟨⟨_, hin⟩, hy⟩
   rwa [← hy]
+
+theorem IsIntegrallyClosed.of_iInf_eq_bot {ι : Type*} (S : ι → Subalgebra R K)
+    (h : ∀ i : ι, IsIntegrallyClosed (S i)) (hs : ⨅ i : ι, S i = ⊥) : IsIntegrallyClosed R := by
+  have f : (⊥ : Subalgebra R K) ≃ₐ[R] R :=
+    Algebra.botEquivOfInjective (FaithfulSMul.algebraMap_injective R K)
+  rw [← hs] at f
+  exact (IsIntegrallyClosed.iInf S h).of_equiv f.toRingEquiv
 
 theorem IsIntegrallyClosed.of_localization_submonoid [IsDomain R] {ι : Type*} (S : ι → Submonoid R)
     (h : ∀ i : ι, S i ≤ R⁰) (hi : ∀ i : ι, IsIntegrallyClosed (Localization (S i)))
     (hs : ⨅ i : ι, (Localization.subalgebra (FractionRing R) (S i) (h i)) = ⊥) :
     IsIntegrallyClosed R :=
-  IsIntegrallyClosed.of_inf (fun i ↦ Localization.subalgebra (FractionRing R) (S i) (h i))
+  IsIntegrallyClosed.of_iInf_eq_bot (fun i ↦ Localization.subalgebra (FractionRing R) (S i) (h i))
     (fun i ↦ (hi i).of_equiv (IsLocalization.algEquiv (S i) (Localization (S i)) _).toRingEquiv) hs
 
 /-- An integral domain $R$ is integrally closed if there exists a set of prime ideals $S$ such that
-  $\bigcap_{\mathrm{p} \in S} R_{\mathrm{p}} = R$ and for every $\mathrm{p} \in S$, $R_{\mathrm{p}}$
-  is integrally closed. -/
+  $\bigcap_{\mathfrak{p} \in S} R_{\mathfrak{p}} = R$ and for every $\mathfrak{p} \in S$,
+  $R_{\mathfrak{p}}$ is integrally closed. -/
 theorem IsIntegrallyClosed.of_localization [IsDomain R] (S : Set (PrimeSpectrum R))
     (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
     (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl
