@@ -6,9 +6,6 @@ Authors: Pim Otte
 
 import Mathlib.Data.Set.Card
 import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Instances.ENat
 
 /-!
 # Results using cardinal arithmetic
