@@ -130,8 +130,13 @@ instance isLocalization_ofField : IsLocalization S (subalgebra.ofField K S hS) :
   rw [Subalgebra.copy_eq]
   infer_instance
 
+instance _root_.Subalgebra.isFractionRing (S : Subalgebra A K) : IsFractionRing S K := by
+  refine IsFractionRing.of_field S K fun z ↦ ?_
+  rcases IsFractionRing.div_surjective (A := A) z with ⟨x, y, _, eq⟩
+  exact ⟨algebraMap A S x, algebraMap A S y, eq.symm⟩
+
 instance isFractionRing_ofField : IsFractionRing (subalgebra.ofField K S hS) K :=
-  IsFractionRing.isFractionRing_of_isLocalization S _ _ hS
+  inferInstance
 
 end subalgebra
 
