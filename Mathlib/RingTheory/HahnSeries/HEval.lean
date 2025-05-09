@@ -142,7 +142,6 @@ theorem hsum_powerSeriesFamily_mul {x : HahnSeries Γ V} (a b : PowerSeries R) :
       powerSeriesFamily_hsum_zero, map_mul, hsum_mul]
     rw [smul_mul_smul_comm, mul_one]
 
-
 end PowerSeriesFamily
 
 end SummableFamily
