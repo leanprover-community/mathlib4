@@ -6,7 +6,6 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
 -/
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.MinImports
 
 /-!
 # Instances on spaces of monoid and group morphisms

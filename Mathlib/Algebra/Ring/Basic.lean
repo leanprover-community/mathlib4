@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.MinImports
 
 /-!
 # Semirings and rings
