@@ -362,7 +362,7 @@ private lemma aux_X (i : Q.vars ⊕ P.vars) : (Q.aux P) (X i) = Sum.elim X (C �
 /-- The pre-images constructed in `comp_relation_aux` are indeed pre-images under `aux`. -/
 private lemma comp_relation_aux_map (r : Q.rels) :
     (Q.aux P) (Q.comp_relation_aux P r) = Q.relation r := by
-  simp only [aux, comp_relation_aux, Generators.comp_vars, Sum.elim_inl, map_finsupp_sum]
+  simp only [aux, comp_relation_aux, Generators.comp_vars, Sum.elim_inl, map_finsuppSum]
   simp only [map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr]
   conv_rhs => rw [← Finsupp.sum_single (Q.relation r)]
   congr
@@ -489,6 +489,12 @@ lemma isFinite_reindex_iff {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rel
     fun h ↦ ⟨e.finite_iff.mpr h.1, f.finite_iff.mpr h.2⟩⟩
 
 alias ⟨_, IsFinite.reindex⟩ := isFinite_reindex_iff
+
+@[simp]
+lemma dimension_reindex (P : Presentation.{w, t} R S) {ι κ : Type*} (e : ι ≃ P.vars)
+    (f : κ ≃ P.rels) :
+    (P.reindex e f).dimension = P.dimension := by
+  simp [dimension, Generators.reindex_vars, reindex_rels, Nat.card_congr e, Nat.card_congr f]
 
 end Construction
 

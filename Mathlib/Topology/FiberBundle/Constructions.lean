@@ -326,13 +326,11 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
       (continuous_snd.comp_continuousOn <|
         e.continuousOn.comp (Pullback.continuous_lift F E f).continuousOn Subset.rfl)
   continuousOn_invFun := by
-    dsimp only
     simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp_def,
       pullbackTotalSpaceEmbedding]
     exact continuousOn_fst.prodMk
       (e.continuousOn_symm.comp ((map_continuous f).prodMap continuous_id).continuousOn Subset.rfl)
   source_eq := by
-    dsimp only
     rw [e.source_eq]
     rfl
   target_eq := rfl

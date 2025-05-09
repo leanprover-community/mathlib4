@@ -47,11 +47,11 @@ variable {p}
 
 @[simp]
 theorem countP_cons_of_pos {a : α} (s) : p a → countP p (a ::ₘ s) = countP p s + 1 :=
-  Quot.inductionOn s <| by simpa using List.countP_cons_of_pos (p ·)
+  Quot.inductionOn s <| by simpa using fun _ => List.countP_cons_of_pos (p := (p ·))
 
 @[simp]
 theorem countP_cons_of_neg {a : α} (s) : ¬p a → countP p (a ::ₘ s) = countP p s :=
-  Quot.inductionOn s <| by simpa using List.countP_cons_of_neg (p ·)
+  Quot.inductionOn s <| by simpa using fun _ => List.countP_cons_of_neg (p := (p ·))
 
 variable (p)
 
@@ -59,14 +59,14 @@ theorem countP_cons (b : α) (s) : countP p (b ::ₘ s) = countP p s + if p b th
   Quot.inductionOn s <| by simp [List.countP_cons]
 
 theorem countP_le_card (s) : countP p s ≤ card s :=
-  Quot.inductionOn s fun _l => countP_le_length (p ·)
+  Quot.inductionOn s fun _l => countP_le_length (p := (p ·))
 
 theorem card_eq_countP_add_countP (s) : card s = countP p s + countP (fun x => ¬p x) s :=
   Quot.inductionOn s fun l => by simp [l.length_eq_countP_add_countP p]
 
 @[gcongr]
 theorem countP_le_of_le {s t} (h : s ≤ t) : countP p s ≤ countP p t :=
-  leInductionOn h (fun s => s.countP_le _)
+  leInductionOn h fun s => s.countP_le
 
 @[simp]
 theorem countP_True {s : Multiset α} : countP (fun _ => True) s = card s :=
@@ -78,7 +78,7 @@ theorem countP_False {s : Multiset α} : countP (fun _ => False) s = 0 :=
 
 lemma countP_attach (s : Multiset α) : s.attach.countP (fun a : {a // a ∈ s} ↦ p a) = s.countP p :=
   Quotient.inductionOn s fun l => by
-    simp only [quot_mk_to_coe, coe_countP, coe_attach, coe_countP, ← List.countP_attach l]
+    simp only [quot_mk_to_coe, coe_countP, coe_attach, coe_countP, ← List.countP_attach (l := l)]
     rfl
 
 variable {p}

@@ -55,7 +55,11 @@ For a free module over any ring satisfying the strong rank condition
 (e.g. left-noetherian rings, commutative rings, and in particular division rings and fields),
 this is the same as the dimension of the space (i.e. the cardinality of any basis).
 
-In particular this agrees with the usual notion of the dimension of a vector space. -/
+In particular this agrees with the usual notion of the dimension of a vector space.
+
+See also `Module.finrank` for a `ℕ`-valued function which returns the correct value
+for a finite-dimensional vector space (but 0 for an infinite-dimensional vector space).
+-/
 @[stacks 09G3 "first part"]
 protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.1)
@@ -63,7 +67,7 @@ protected irreducible_def Module.rank : Cardinal :=
 theorem rank_le_card : Module.rank R M ≤ #M :=
   (Module.rank_def _ _).trans_le (ciSup_le' fun _ ↦ mk_set_le _)
 
-lemma nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s } :=
+instance nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s} :=
   ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
 
 end
@@ -355,8 +359,6 @@ theorem Submodule.rank_le (s : Submodule R M) : Module.rank R s ≤ Module.rank 
   rw [← rank_top R M]
   exact rank_mono le_top
 
-@[deprecated (since := "2024-10-02")] alias rank_submodule_le := Submodule.rank_le
-
 theorem LinearMap.lift_rank_le_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     lift.{v} (Module.rank R M') ≤ lift.{v'} (Module.rank R M) := by
   rw [← rank_range_of_surjective f h]
@@ -366,17 +368,6 @@ theorem LinearMap.rank_le_of_surjective (f : M →ₗ[R] M₁) (h : Surjective f
     Module.rank R M₁ ≤ Module.rank R M := by
   rw [← rank_range_of_surjective f h]
   apply rank_range_le
-
-@[nontriviality, simp]
-theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
-  haveI := Module.subsingleton R M
-  have : Nonempty { s : Set M // LinearIndepOn R id s} := ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
-  rw [Module.rank_def, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
-  · rintro ⟨s, hs⟩
-    rw [Cardinal.mk_le_one_iff_set_subsingleton]
-    apply subsingleton_of_subsingleton
-  intro w hw
-  exact ⟨⟨{0}, LinearIndepOn.of_subsingleton⟩, hw.trans_eq (Cardinal.mk_singleton _).symm⟩
 
 lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (L L' : Submodule R M) {s : S} (hr : IsSMulRegular M s)

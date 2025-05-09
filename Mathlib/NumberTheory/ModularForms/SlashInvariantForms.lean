@@ -91,7 +91,7 @@ theorem slash_action_eqn'' {F : Type*} [FunLike F ℍ ℂ] {k : ℤ} {Γ : Subgr
   SlashInvariantForm.slash_action_eqn' f hγ z
 
 instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
-  ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f }⟩
+  ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f, .. }⟩
 
 instance instAdd : Add (SlashInvariantForm Γ k) :=
   ⟨fun f g ↦

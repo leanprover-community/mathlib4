@@ -17,7 +17,7 @@ theorem Algebra.leftMulMatrix_complex (z : ℂ) :
   ext i j
   rw [Algebra.leftMulMatrix_eq_repr_mul, Complex.coe_basisOneI_repr, Complex.coe_basisOneI, mul_re,
     mul_im, Matrix.of_apply]
-  fin_cases j
+  fin_cases j <;> dsimp only [Fin.zero_eta, Fin.mk_one, Matrix.cons_val]
   · simp only [Fin.zero_eta, id_eq, Matrix.cons_val_zero, one_re, mul_one, one_im, mul_zero,
       sub_zero, zero_add, Matrix.cons_val_fin_one]
     fin_cases i <;> rfl
