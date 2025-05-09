@@ -178,14 +178,46 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
 
       sorry
     · let m' : ↑(insert m T) := ⟨m, Set.mem_insert m T⟩
-      let i : T → ↑(insert m T) := fun t ↦ ⟨t.1, Set.mem_insert_of_mem m t.2⟩
+      let ic : T → ↑(insert m T) := Set.inclusion (Set.subset_insert m T)
+      have inj_ic : Function.Injective ic := Set.inclusion_injective _
+      have nmem_range : m' ∉ Set.range ic := by
+        by_contra mem
+        rcases mem with ⟨z, hz⟩
+        have : z = m := congrArg Subtype.val hz
+        absurd nmem
+        simp [← this]
+      have exac : Function.Exact (Finsupp.lmapDomain (Shrink.{v, u} R) R ic)
+        (Finsupp.lapply (R := R) m') := by
+        intro x
+        simp only [Finsupp.lapply_apply, Set.mem_range, Finsupp.lmapDomain_apply]
+        refine ⟨fun h ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩
+        · let y : T →₀ Shrink.{v, u} R := {
+            support := Finset.preimage x.support ic (fun x _ y _ hxy ↦ inj_ic hxy)
+            toFun := fun t ↦ x (ic t)
+            mem_support_toFun t := by simp }
+          use y
+          ext t
+          simp only [EmbeddingLike.apply_eq_iff_eq, y]
+          by_cases eq : t = m'
+          · simp [eq, Finsupp.mapDomain_notin_range _ _ nmem_range, h]
+          · have mem := Set.mem_of_mem_insert_of_ne t.2 (Subtype.coe_ne_coe.mpr eq)
+            have : t = ic ⟨t.1, mem⟩ := rfl
+            rw [this, Finsupp.mapDomain_apply inj_ic]
+            rfl
+        · simpa [← hy] using Finsupp.mapDomain_notin_range _ _ nmem_range
       let S : ShortComplex (ModuleCat.{v} R) := {
         X₁ := ModuleCat.of R (T →₀ Shrink.{v, u} R)
         X₂ := ModuleCat.of R (↑(insert m T) →₀ Shrink.{v, u} R)
         X₃ := ModuleCat.of R (Shrink.{v, u} R)
-        f := ModuleCat.ofHom (Finsupp.lmapDomain (Shrink.{v, u} R) R i)
+        f := ModuleCat.ofHom (Finsupp.lmapDomain (Shrink.{v, u} R) R ic)
         g := ModuleCat.ofHom (Finsupp.lapply m')
-        zero := sorry }
+        zero := ConcreteCategory.hom_ext _ _ (fun y ↦ exac.apply_apply_eq_zero y) }
+      have S_exact : S.ShortExact := {
+        exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr exac
+        mono_f := (ModuleCat.mono_iff_injective S.f).mpr (Finsupp.mapDomain_injective inj_ic)
+        epi_g := (ModuleCat.epi_iff_surjective S.g).mpr (Finsupp.apply_surjective m') }
+      #check Ext.covariant_sequence_exact₂' N S_exact i
+
       sorry
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
