@@ -183,9 +183,9 @@ lemma Infinite.iUnion {ι : Sort*} {s : ι → Set α} (i : ι) (hi : (s i).Infi
     (⋃ i, s i).Infinite :=
   fun h ↦ hi (h.subset (Set.subset_iUnion s i))
 
-lemma Infinite.iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set α} (i : ι) (j : κ i) (hij : (s i j).Infinite) :
-    (⋃ i j, s i j).Infinite :=
-  fun hc ↦ hi (hc.subset <| subset_biUnion_of_mem h)
+lemma Infinite.iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set α} (i : ι) (j : κ i)
+    (hij : (s i j).Infinite) : (⋃ (i) (j), s i j).Infinite :=
+  fun hc ↦ hij (hc.subset <| subset_iUnion₂ _ _)
 
 @[simp] lemma finite_iUnion_of_subsingleton {ι : Sort*} [Subsingleton ι] {s : ι → Set α} :
     (⋃ i, s i).Finite ↔ ∀ i, (s i).Finite := by

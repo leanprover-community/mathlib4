@@ -7,6 +7,8 @@ Authors: Pim Otte
 import Mathlib.Data.Set.Card
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Instances.ENat
 
 /-!
 # Results using cardinal arithmetic
@@ -38,8 +40,13 @@ theorem Finset.exists_disjoint_union_of_even_card_iff [DecidableEq α] (s : Fins
     simp_all⟩
 
 @[simp]
-lemma finsum_one {s : Set α} (hs : s.Finite) : ∑ᶠ i ∈ s, 1 = s.ncard := by
-  simp [finsum_mem_eq_finite_toFinset_sum _ hs, Set.ncard_eq_toFinset_card s hs]
+lemma finsum_one {s : Set α} : ∑ᶠ i ∈ s, 1 = s.ncard := by
+  obtain hs | hs := s.infinite_or_finite
+  · rw [hs.ncard]
+    by_cases h : 1 = 0
+    · simp [h]
+    · exact finsum_mem_eq_zero_of_infinite (by simpa [Function.support_const h])
+  · simp [finsum_mem_eq_finite_toFinset_sum _ hs, Set.ncard_eq_toFinset_card s hs]
 
 namespace Set
 
@@ -90,16 +97,15 @@ variable {ι : Type*}
 
 lemma ncard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α} (hs : ∀ i ∈ t, (s i).Finite)
     (h : t.PairwiseDisjoint s) : (⋃ i ∈ t, s i).ncard = ∑ᶠ i ∈ t, (s i).ncard := by
-  rw [← finsum_one (Finite.biUnion' ht hs), finsum_mem_biUnion h ht hs,
-    finsum_mem_congr rfl fun i hi ↦ finsum_one (hs i hi)]
+  rw [← finsum_one, finsum_mem_biUnion h ht hs, finsum_mem_congr rfl fun i hi ↦ finsum_one]
 
 lemma ncard_iUnion [Finite ι] {s : ι → Set α} (hs : ∀ i, (s i).Finite)
     (h : Pairwise (Disjoint on s)) : (⋃ i, s i).ncard = ∑ᶠ i : ι, (s i).ncard := by
   rw [← finsum_mem_univ, ← Set.ncard_biUnion finite_univ (by simpa) (fun _ _ _ _ hab ↦ h hab)]
   simp
 
-lemma encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α} (hs : t.PairwiseDisjoint s) :
-    (⋃ i ∈ t, s i).encard = ∑ᶠ i ∈ t, (s i).encard := by
+lemma Finite.encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α}
+    (hs : t.PairwiseDisjoint s) : (⋃ i ∈ t, s i).encard = ∑ᶠ i ∈ t, (s i).encard := by
   classical
   by_cases h : ∀ i ∈ t, (s i).Finite
   · have : (⋃ i ∈ t, s i).Finite := ht.biUnion (fun i hi ↦ h i hi)
@@ -109,11 +115,46 @@ lemma encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α} (hs : t.Pa
     obtain ⟨i, hi, (hn : (s i).Infinite)⟩ := h
     rw [← Set.insert_diff_self_of_mem hi,
       finsum_mem_insert _ (not_mem_diff_of_mem <| mem_singleton i) ht.diff]
-    simp [hn, hn.biUnion' hi]
+    simp [hn]
 
-lemma encard_iUnion [Finite ι] {s : ι → Set α} (hs : Pairwise (Disjoint on s)) :
+/-- See `Set.encard_iUnion` for a `tsum` version without `Finite ι`. -/
+lemma encard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : Pairwise (Disjoint on s)) :
     (⋃ i, s i).encard = ∑ᶠ i, (s i).encard := by
-  rw [← finsum_mem_univ, ← Set.encard_biUnion finite_univ (fun a _ b _ hab ↦ hs hab)]
+  rw [← finsum_mem_univ, ← finite_univ.encard_biUnion (fun a _ b _ hab ↦ hs hab)]
   simp
+
+lemma encard_biUnion {t : Set ι} {s : ι → Set α} (hs : t.PairwiseDisjoint s) :
+    (⋃ i ∈ t, s i).encard = ∑' (i : ι), (t.indicator (fun j ↦ (s j).encard) i) := by
+  classical
+  let t' : Set ι := { i : ι | i ∈ t ∧ (s i) ≠ ∅ }
+  have heq : (⋃ i ∈ t, s i) = (⋃ i ∈ t', s i) := by
+    refine subset_antisymm ?_ (Set.biUnion_mono (by simp [t']) (by simp))
+    simp_rw [Set.iUnion_subset_iff]
+    intro i hi
+    by_cases h : (s i) ≠ ∅
+    · exact Set.subset_iUnion₂_of_subset i ⟨hi, h⟩ subset_rfl
+    · convert Set.empty_subset _
+      simpa using h
+  obtain (h|h) := Set.finite_or_infinite t'
+  · rw [heq, h.encard_biUnion (hs.subset (by simp [t'])), tsum_eq_finsum]
+    · refine finsum_congr fun i ↦ ?_
+      rw [Set.indicator_apply, finsum_eq_if]
+      have (h : s i = ∅) : (s i).encard = 0 := by simpa
+      aesop
+    · refine h.subset fun i hi ↦ ?_
+      simp only [support_indicator, mem_inter_iff, Function.mem_support, ne_eq,
+        encard_eq_zero] at hi
+      exact ⟨hi.1, hi.2⟩
+  · have : (⋃ i ∈ t, s i).Infinite :=
+      heq ▸ h.biUnion fun i hi j hj h ↦ hs.elim hi.1 hj.1 (by simp [h, hj.2])
+    rw [this.encard_eq, eq_comm, ENat.tsum_eq_top_of_infinite_support]
+    apply h.mono
+    simp only [ne_eq, support_indicator, subset_inter_iff, sep_subset, true_and, t']
+    intro i hi
+    simp [hi.2]
+
+lemma encard_iUnion {s : ι → Set α} (hs : Pairwise (Disjoint on s)) :
+    (⋃ i, s i).encard = ∑' i, (s i).encard := by
+  simp [← biUnion_univ, encard_biUnion (fun a _ b _ hab ↦ hs hab)]
 
 end Set
