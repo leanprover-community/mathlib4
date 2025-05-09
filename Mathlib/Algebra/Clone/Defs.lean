@@ -3,7 +3,6 @@ Copyright (c) 2024 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
-import Mathlib.Data.One.Defs
 import Mathlib.Tactic.TypeStar
 
 /-! This file defines the notation typeclasse `Superposable` used for working with `Clone`.
