@@ -23,6 +23,7 @@ open Set LinearMap Submodule
 universe u v w
 
 namespace DFinsupp
+
 variable {ι : Type*} {R : Type*} {M : ι → Type*}
 variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
