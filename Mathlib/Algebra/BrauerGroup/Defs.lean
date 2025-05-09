@@ -3,7 +3,7 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib.Algebra.Category.AlgCat.Basic
+import Mathlib.Algebra.Category.Alg.Basic
 import Mathlib.Algebra.Central.Defs
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.Matrix.Reindex

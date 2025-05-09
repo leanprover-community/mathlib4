@@ -3,8 +3,8 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.BialgCat.Monoidal
-import Mathlib.Algebra.Category.HopfAlgCat.Basic
+import Mathlib.Algebra.Category.Bialg.Monoidal
+import Mathlib.Algebra.Category.HopfAlg.Basic
 import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 
 /-!

@@ -3,7 +3,7 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.BialgCat.Basic
+import Mathlib.Algebra.Category.Bialg.Basic
 import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!

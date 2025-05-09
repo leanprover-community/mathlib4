@@ -3,8 +3,8 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.CoalgCat.Basic
-import Mathlib.Algebra.Category.AlgCat.Basic
+import Mathlib.Algebra.Category.Coalg.Basic
+import Mathlib.Algebra.Category.Alg.Basic
 import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!

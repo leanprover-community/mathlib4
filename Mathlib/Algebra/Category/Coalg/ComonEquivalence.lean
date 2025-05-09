@@ -6,7 +6,7 @@ Authors: Amelia Livingston
 import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.CategoryTheory.Monoidal.Comon_
-import Mathlib.Algebra.Category.CoalgCat.Basic
+import Mathlib.Algebra.Category.Coalg.Basic
 
 /-!
 # The category equivalence between `R`-coalgebras and comonoid objects in `R-Mod`
@@ -23,7 +23,7 @@ We make the definition `CoalgCat.instMonoidalCategoryAux` in this file, which is
 monoidal structure on `CoalgCat` induced by the equivalence with `Comon(R-Mod)`. We
 use this to show the comultiplication and counit on a tensor product of coalgebras satisfy
 the coalgebra axioms, but our actual `MonoidalCategory` instance on `CoalgCat` is
-constructed in `Mathlib.Algebra.Category.CoalgCat.Monoidal` to have better
+constructed in `Mathlib.Algebra.Category.Coalg.Monoidal` to have better
 definitional equalities.
 
 -/
@@ -99,7 +99,7 @@ variable {R}
 
 /-- The monoidal category structure on the category of `R`-coalgebras induced by the
 equivalence with `Comon(R-Mod)`. This is just an auxiliary definition; the `MonoidalCategory`
-instance we make in `Mathlib.Algebra.Category.CoalgCat.Monoidal` has better
+instance we make in `Mathlib.Algebra.Category.Coalg.Monoidal` has better
 definitional equalities. -/
 noncomputable def instMonoidalCategoryAux : MonoidalCategory (CoalgCat R) :=
   Monoidal.transport (comonEquivalence R).symm
