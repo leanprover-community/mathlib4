@@ -3,10 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Distributions.Gaussian
-import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
-import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
+import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
 # Covariance in Banach spaces
@@ -216,14 +215,14 @@ variable [BorelSpace E] [SecondCountableTopology E] [CompleteSpace E]
 noncomputable
 def covarianceBilin (μ : Measure E) [IsFiniteMeasure μ] (h : MemLp id 2 μ) :
     (E →L[ℝ] ℝ) →L[ℝ] (E →L[ℝ] ℝ) →L[ℝ] ℝ :=
-  centeredCovariance (μ.map (fun x ↦ x - μ[id])) <| by
+  centeredCovariance (μ.map (fun x ↦ x - ∫ x, x ∂μ)) <| by
     rw [memLp_map_measure_iff]
     · exact h.sub (memLp_const _)
     · exact Measurable.aestronglyMeasurable <| by fun_prop
     · fun_prop
 
 lemma covarianceBilin_apply [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
-    covarianceBilin μ h L₁ L₂ = ∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ := by
+    covarianceBilin μ h L₁ L₂ = ∫ x, (L₁ x - ∫ x, L₁ x ∂μ) * (L₂ x - ∫ x, L₂ x ∂μ) ∂μ := by
   rw [covarianceBilin, centeredCovariance_apply, integral_map]
   · simp [← ContinuousLinearMap.integral_comm_of_memLp_id (h.mono_exponent (by simp))]
   · fun_prop
