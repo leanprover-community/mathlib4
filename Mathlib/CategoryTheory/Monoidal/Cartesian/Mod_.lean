@@ -15,6 +15,8 @@ open CategoryTheory MonoidalCategory ChosenFiniteProducts
 universe v u
 variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
 
+attribute [local simp] leftUnitor_hom
+
 /-- Every object is a module over a monoid object via the trivial action. -/
 @[simps]
 def Mod_.trivialAction (M : Mon_ C) (X : C) : Mod_ M where
