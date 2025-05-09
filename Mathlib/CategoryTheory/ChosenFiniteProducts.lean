@@ -137,9 +137,9 @@ end ofChosenFiniteProducts
 
 open ofChosenFiniteProducts
 
-/-- A category with a terminal object and binary products has a natural cartesian monoidal
-structure. -/
-private abbrev monoidalCategory : MonoidalCategory C :=
+/-- Construct an instance of `ChosenFiniteProducts C` given a terminal object and limit cones
+over arbitrary pairs of objects. -/
+abbrev ofChosenFiniteProducts : ChosenFiniteProducts C :=
   letI : MonoidalCategoryStruct C := {
     tensorUnit := 𝒯.cone.pt
     tensorObj := tensorObj ℬ
@@ -150,7 +150,8 @@ private abbrev monoidalCategory : MonoidalCategory C :=
     leftUnitor X := BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X).isLimit
     rightUnitor X := BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit
   }
-  .ofTensorHom
+  {
+  toMonoidalCategory := .ofTensorHom
     (tensor_id := tensor_id ℬ)
     (tensor_comp := tensor_comp ℬ)
     (pentagon := pentagon ℬ)
@@ -158,11 +159,6 @@ private abbrev monoidalCategory : MonoidalCategory C :=
     (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)
     (rightUnitor_naturality := rightUnitor_naturality 𝒯 ℬ)
     (associator_naturality := associator_naturality ℬ)
-
-/-- Construct an instance of `ChosenFiniteProducts C` given a terminal object and limit cones
-over arbitrary pairs of objects. -/
-abbrev ofChosenFiniteProducts : ChosenFiniteProducts C where
-  __ := monoidalCategory 𝒯 ℬ
   isTerminalTensorUnit :=
     .ofUniqueHom (𝒯.isLimit.lift <| asEmptyCone ·) fun _ _ ↦ 𝒯.isLimit.hom_ext (by simp)
   fst X Y := BinaryFan.fst (ℬ X Y).cone
@@ -177,6 +173,7 @@ abbrev ofChosenFiniteProducts : ChosenFiniteProducts C where
     (BinaryFan.mk _ _) ⟨.left⟩).trans (Category.comp_id _)).symm
   snd_def X Y := (((ℬ 𝒯.cone.pt Y).isLimit.fac
     (BinaryFan.mk _ _) ⟨.right⟩).trans (Category.comp_id _)).symm
+  }
 
 omit 𝒯 in
 /-- Construct an instance of `ChosenFiniteProducts C` given the existence of finite products
