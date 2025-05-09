@@ -105,7 +105,7 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   to the appropriate topic on zulip.
 - `count-trans-deps.py`, `import-graph-report.py` and `import_trans_difference.sh` produce various
   summaries of changes in transitive imports that the `PR_summary` message incorporates.
-- `zulip_emoji_merge_delegate.py` is called
+- `zulip_emoji_reactions.py` is called
   * every time a `bors d`, `bors merge` or `bors r` comment is added to a PR,
   * whenever bors merges a PR,
   * whenever a PR is closed or reopened

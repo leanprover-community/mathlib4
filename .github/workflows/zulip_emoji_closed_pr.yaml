@@ -37,15 +37,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install zulip
 
-      - name: checkout zulip_emoji_merge_delegate script
+      - name: checkout the zulip_emoji_reactions script
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
                 github.event_name == 'reopened' }}
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           sparse-checkout: |
-            scripts/zulip_emoji_merge_delegate.py
+            scripts/zulip_emoji_reactions.py
 
-      - name: Run Zulip Emoji Merge Delegate Script
+      - name: Update zulip emoji reactions
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
                 github.event_name == 'reopened' }}
         env:
@@ -56,4 +56,4 @@ jobs:
           # ${{ github.event.action }} is either "closed" or "reopened"
           # We add the "closed-pr" emoji to the message, if it is "closed"
           # and to remove the emoji if the action is "reopen".
-          python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ github.event.action }}" "none" "${{ github.event.pull_request.number }}"
+          python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ github.event.action }}" "none" "${{ github.event.pull_request.number }}"
