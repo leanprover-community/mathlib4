@@ -272,7 +272,7 @@ lemma IsODESolution.subset_maximal_domain_with_lipschitz
 
         have h_phi_deriv_zero : HasDerivAt φ (0:E) t := by
             apply hasDerivAtFilter_iff_tendsto_slope.mpr
-            -- The slope (y - t)¯¹ ⬝ (φ y - φ t) is (y - t)¯¹ ⬝ (φ y) since φ t = 0.
+            -- The slope (y - t)⁻¹ ⬝ (φ y - φ t) is (y - t)⁻¹ ⬝ (φ y) since φ t = 0.
             -- This slope is 0 for y in (I_loc \ {t}) because:
             -- If y ∈ I_max (and y ∈ I_loc), then φ y = f_max y - f_loc y = 0 by h_agree_on_inter.
             -- If y ∉ I_max (and y ∈ I_loc), then φ y = 0 by definition of φ.
