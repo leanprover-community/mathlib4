@@ -547,6 +547,13 @@ theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
   have : mapDomain f v₁ (f a) = mapDomain f v₂ (f a) := by rw [eq]
   rwa [mapDomain_apply hf, mapDomain_apply hf] at this
 
+lemma mapDomain_surjective {f : α → β} (hf : f.Surjective) :
+    (mapDomain (M := M) f).Surjective := by
+  intro x
+  choose y hy using hf
+  use mapDomain y x
+  simp_all [mapDomain, sum_sum_index]
+
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
 def mapDomainEmbedding {α β : Type*} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
