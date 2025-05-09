@@ -465,12 +465,12 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     solve_by_elim [mul_pos]
   · -- we can cancel multiplication by `conts.b` and addition with `pred_conts.b`
     suffices gp.b * conts.b ≤ ifp_n.fr⁻¹ * conts.b by
-      simp only [den, den']; gcongr; positivity
+      simp only [den, den']; gcongr
     suffices (ifp_succ_n.b : K) * conts.b ≤ ifp_n.fr⁻¹ * conts.b by rwa [← ifp_succ_n_b_eq_gp_b]
     have : (ifp_succ_n.b : K) ≤ ifp_n.fr⁻¹ :=
       IntFractPair.succ_nth_stream_b_le_nth_stream_fr_inv stream_nth_eq succ_nth_stream_eq
     have : 0 ≤ conts.b := le_of_lt zero_lt_conts_b
-    gcongr; exact this
+    gcongr
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in
 `GenContFract.abs_sub_convs_le`, but sometimes it is easier to apply and
@@ -492,8 +492,7 @@ theorem abs_sub_convergents_le' {b : K}
       apply_rules [mul_pos]
     · conv_rhs => rw [mul_comm]
       gcongr
-      · positivity
-      · exact le_of_succ_get?_den nth_partDen_eq
+      exact le_of_succ_get?_den nth_partDen_eq
 
 end ErrorTerm
 
