@@ -138,21 +138,41 @@ lemma order_geq_k_then_deriv_n_neg_1 (f : ℂ → ℂ) (z₀ : ℂ) (hf : ∀ z,
     intros hof z
     induction' k with k hk
     · simp only [iteratedDeriv_zero, CharP.cast_eq_zero, tsub_zero]
-      have (z₀ : ℂ) :  (hf z).order = n.toNat ↔ ∃ g, AnalyticAt ℂ g z₀ ∧ g z₀ ≠ 0 ∧
+      have (z₀ : ℂ) :  (hf z).order = n ↔ ∃ g, AnalyticAt ℂ g z₀ ∧ g z₀ ≠ 0 ∧
          ∀ᶠ (z : ℂ ) in nhds z₀, f z = (z - z₀) ^ n.toNat • g z := by {
         rw [order_eq_nat_iff]
         sorry
       }
+      have this := this z₀
+      rw [this]
+      use (iteratedDeriv 0 f)
+      simp only [iteratedDeriv_zero, ne_eq, smul_eq_mul]
+      constructor
+      exact hf z₀
+      · constructor
+        · sorry
+        · sorry
+    · have hfdev_plus_one : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv (k + 1) f) z := sorry
+      simp only at hk
+      have (z₀ : ℂ) : (hfdev_plus_one z).order = n - ↑(k + 1) ↔ ∃ g, AnalyticAt ℂ g z₀ ∧ g z₀ ≠ 0 ∧
+         ∀ᶠ (z : ℂ ) in nhds z₀, f z = (z - z₀) ^(n.toNat - ↑(k + 1) : ℕ) • g z := by {
+        --rw [order_eq_nat_iff]
+        sorry
+      }
+      have this := this z₀
+      rw [this]
       sorry
-    · sorry
    }
 
+#exit
 -- lemma: if the order of f is n > 0, then the order of the *single* derivative of f is n - 1
 --   this follows from the definition (characterization?) of the order as being (z - z₀)^n*g(z)
+
 -- lemma: by induction if the order ≥ k, then the order of the k-th derivative is n - k
 
 -- have hfoo : ∀ (z : ℂ), AnalyticAt ℂ (iteratedDeriv k f) z :=
  -- by {exact fun z ↦ analytic_iter_deriv k f hf z}
+
 -- have := order_inf_if_zero (iteratedDeriv k f) z hfoo
 
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
@@ -183,14 +203,12 @@ apply Eq.symm
 rw [← iterated_deriv_eq_zero_iff_order_eq_n]
 constructor
 · intros k hkn
+  have := hd k.toNat
   sorry
 · sorry
 · exact ho z
 · sorry
-
-
-
-
+· sorry
 
 
 
@@ -1395,7 +1413,9 @@ lemma order_neq_top :
   order α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq ≠ ⊤ := by {
   unfold _root_.order
   intros H
-  sorry
+  rw [order_eq_top_iff] at H
+
+
 }
 
 include α β σ K σ α' β' γ' u in
@@ -1492,6 +1512,7 @@ lemma exists_nonzero_iteratedFDeriv :
   ∃ (l₀ : Fin (m K)), iteratedDeriv r R l₀ ≠ 0 := by {
   intros r R o l k
   use l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  have hfdev : ∀ (z : ℂ), AnalyticAt ℂ (iteratedDeriv k R) z := sorry
   have := iterated_deriv_eq_zero_iff_order_eq_n (k := k) (n K q) R l ?_ ?_
   · sorry
   · exact analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
@@ -1520,6 +1541,44 @@ lemma order_geq_n :
     unfold _root_.order at this
     sorry
   · sorry
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def cρ : ℤ := abs ((c₁ K α' β' γ')^(r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq) *
   (c₁ K α' β' γ')^(2*m K * q))
