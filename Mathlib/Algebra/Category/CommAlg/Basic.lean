@@ -5,29 +5,17 @@ Authors: Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yang
 -/
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.Ring.Under.Basic
-import Mathlib.CategoryTheory.ChosenFiniteProducts
 
 /-!
-# Category of commutative algebras over a commutative ring
+# The category of commutative algebras over a commutative ring
 
-We introduce the bundled category `CommAlg` of algebras over a fixed commutative ring `R` along
-with the forgetful functors to `RingCat` and `ModuleCat`. We furthermore show that the functor
-associating to a type the free `R`-algebra on that type is left adjoint to the forgetful functor.
-
-## Implementation notes
-
-`CommAlg R` is the same as `Under R` up to two details:
-* `A : CommAlg R` contains the data of both `algebraMap R A : R → A` and
-  `Algebra.smul : R → A → A`. `A : Under R` only contains `algebraMap R A`, meaning that going
-  from an unbundled algebra to `Under R` and back to an unbundled algebra gives a propeq but not
-  defeq algebra. In comparison, going from an unbundled algebra to `CommAlg R` and back to an
-  unbundled algebra gives a defeq algebra.
-* If `A : Under R`, then `A` must live in the same universe as `R`. This is not terribly important,
-  because if `R : Type u` then `CommAlg.{v} R` is cartesian-monoidal only if `u ≤ v` and,
-  for convenience, we only provide the `ChosenFiniteProducts (CommAlg.{u} R)` instance.
+This file defines the bundled category `CommAlg` of commutative algebras over a fixed commutative
+ring `R` along with the forgetful functors to `RingCat` and `AlgebraCat`.
 -/
 
-open CategoryTheory Limits
+namespace CategoryTheory
+
+open Limits
 
 universe v u
 
@@ -39,19 +27,20 @@ structure CommAlg where
   private mk ::
   /-- The underlying type. -/
   carrier : Type v
-  [isCommRing : CommRing carrier]
-  [isAlgebra : Algebra R carrier]
-
-attribute [instance] CommAlg.isCommRing CommAlg.isAlgebra
-
-initialize_simps_projections CommAlg (-isCommRing, -isAlgebra)
+  [commRing : CommRing carrier]
+  [algebra : Algebra R carrier]
 
 namespace CommAlg
-variable {A B C : CommAlg.{v} R}
+variable {A B C : CommAlg.{v} R} {X Y Z : Type v} [CommRing X] [Algebra R X]
+  [CommRing Y] [Algebra R Y] [CommRing Z] [Algebra R Z]
 
-instance : CoeSort (CommAlg R) (Type v) := ⟨CommAlg.carrier⟩
+attribute [instance] commRing algebra
 
-attribute [coe] CommAlg.carrier
+initialize_simps_projections CommAlg (-commRing, -algebra)
+
+instance : CoeSort (CommAlg R) (Type v) := ⟨carrier⟩
+
+attribute [coe] carrier
 
 variable (R) in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
@@ -78,13 +67,10 @@ instance : ConcreteCategory (CommAlg.{v} R) (· →ₐ[R] ·) where
   ofHom := Hom.mk
 
 /-- Turn a morphism in `CommAlg` back into an `AlgHom`. -/
-abbrev Hom.hom {A B : CommAlg.{v} R} (f : Hom A B) :=
-  ConcreteCategory.hom (C := CommAlg R) f
+abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := CommAlg R) f
 
 /-- Typecheck an `AlgHom` as a morphism in `CommAlg`. -/
-abbrev ofHom {A B : Type v} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
-    of R A ⟶ of R B :=
-  ConcreteCategory.ofHom (C := CommAlg R) f
+abbrev ofHom (f : X →ₐ[R] Y) : of R X ⟶ of R Y := ConcreteCategory.ofHom (C := CommAlg R) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
 def Hom.Simps.hom (A B : CommAlg.{v} R) (f : Hom A B) := f.hom
@@ -95,7 +81,7 @@ initialize_simps_projections Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp] lemma hom_id {A : CommAlg.{v} R} : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
+@[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
 
 /- Provided for rewriting. -/
 lemma id_apply (A : CommAlg.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
@@ -107,25 +93,17 @@ lemma comp_apply (f : A ⟶ B) (g : B ⟶ C) (a : A) : (f ≫ g) a = g (f a) := 
 
 @[ext] lemma hom_ext {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g := Hom.ext hf
 
-@[simp]
-lemma hom_ofHom {X Y : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y]
-    (f : X →ₐ[R] Y) : (ofHom f).hom = f := rfl
+@[simp] lemma hom_ofHom (f : X →ₐ[R] Y) : (ofHom f).hom = f := rfl
+@[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom f.hom = f := rfl
 
-@[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom (Hom.hom f) = f := rfl
-
-@[simp]
-lemma ofHom_id {X : Type v} [CommRing X] [Algebra R X] : ofHom (AlgHom.id R X) = 𝟙 (of R X) := rfl
+@[simp] lemma ofHom_id : ofHom (.id R X) = 𝟙 (of R X) := rfl
 
 @[simp]
-lemma ofHom_comp {X Y Z : Type v} [CommRing X] [CommRing Y] [CommRing Z] [Algebra R X] [Algebra R Y]
-    [Algebra R Z] (f : X →ₐ[R] Y) (g : Y →ₐ[R] Z) :
-    ofHom (g.comp f) = ofHom f ≫ ofHom g := rfl
+lemma ofHom_comp (f : X →ₐ[R] Y) (g : Y →ₐ[R] Z) : ofHom (g.comp f) = ofHom f ≫ ofHom g := rfl
 
-lemma ofHom_apply {X Y : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y]
-    (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
+lemma ofHom_apply (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
 
 lemma inv_hom_apply (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by simp [← comp_apply]
-
 lemma hom_inv_apply (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by simp [← comp_apply]
 
 instance : Inhabited (CommAlg R) := ⟨of R R⟩
@@ -134,186 +112,72 @@ lemma forget_obj (A : CommAlg.{v} R) : (forget (CommAlg.{v} R)).obj A = A := rfl
 
 lemma forget_map (f : A ⟶ B) : (forget (CommAlg.{v} R)).map f = f := rfl
 
-instance {S : CommAlg.{v} R} : Ring ((forget (CommAlg R)).obj S) :=
-  inferInstanceAs <| Ring S.carrier
+instance : Ring ((forget (CommAlg R)).obj A) := inferInstanceAs <| Ring A
 
-instance {S : CommAlg.{v} R} : Algebra R ((forget (CommAlg R)).obj S) :=
-  inferInstanceAs <| Algebra R S.carrier
+instance : Algebra R ((forget (CommAlg R)).obj A) := inferInstanceAs <| Algebra R A
 
 instance hasForgetToCommRing : HasForget₂ (CommAlg.{v} R) CommRingCat.{v} where
-  forget₂.obj A := CommRingCat.of A
+  forget₂.obj A := .of A
   forget₂.map f := CommRingCat.ofHom f.hom.toRingHom
 
-instance hasForgetToAlgebra : HasForget₂ (CommAlg.{v} R) (AlgebraCat.{v} R) where
-  forget₂.obj M := .of R M
+instance hasForgetToAlg : HasForget₂ (CommAlg.{v} R) (AlgebraCat.{v} R) where
+  forget₂.obj A := .of R A
   forget₂.map f := AlgebraCat.ofHom f.hom
 
-@[simp]
-lemma forget₂_Algebra_obj (X : CommAlg.{v} R) :
-    (forget₂ (CommAlg.{v} R) (AlgebraCat.{v} R)).obj X = .of R X := rfl
+@[simp] lemma forget₂_commAlg_obj (A : CommAlg.{v} R) :
+    (forget₂ (CommAlg.{v} R) (AlgebraCat.{v} R)).obj A = .of R A := rfl
 
-@[simp]
-lemma forget₂_Algebra_map {X Y : CommAlg.{v} R} (f : X ⟶ Y) :
+@[simp] lemma forget₂_commAlg_map (f : A ⟶ B) :
     (forget₂ (CommAlg.{v} R) (AlgebraCat.{v} R)).map f = AlgebraCat.ofHom f.hom := rfl
 
 /-- Forgetting to the underlying type and then building the bundled object returns the original
 algebra. -/
 @[simps]
-def ofSelfIso (M : CommAlg.{v} R) : CommAlg.of R M ≅ M where
-  hom := 𝟙 M
-  inv := 𝟙 M
-
-end CommAlg
-
-variable {X₁ X₂ : Type u}
+def ofSelfIso (A : CommAlg.{v} R) : of R A ≅ A where
+  hom := 𝟙 A
+  inv := 𝟙 A
 
 /-- Build an isomorphism in the category `CommAlg R` from a `AlgEquiv` between `Algebra`s. -/
 @[simps]
-def AlgEquiv.toCommAlgIso
-    {g₁ : CommRing X₁} {g₂ : CommRing X₂} {m₁ : Algebra R X₁} {m₂ : Algebra R X₂}
-    (e : X₁ ≃ₐ[R] X₂) : CommAlg.of R X₁ ≅ CommAlg.of R X₂ where
-  hom := CommAlg.ofHom (e : X₁ →ₐ[R] X₂)
-  inv := CommAlg.ofHom (e.symm : X₂ →ₐ[R] X₁)
-
-namespace CategoryTheory.Iso
+def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Algebra R X} {_ : Algebra R Y}
+    (e : X ≃ₐ[R] Y) : of R X ≅ of R Y where
+  hom := ofHom (e : X →ₐ[R] Y)
+  inv := ofHom (e.symm : Y →ₐ[R] X)
 
 /-- Build a `AlgEquiv` from an isomorphism in the category `CommAlg R`. -/
 @[simps]
-def commAlgIsoToAlgEquiv {X Y : CommAlg R} (i : X ≅ Y) : X ≃ₐ[R] Y where
+def ofIso (i : A ≅ B) : A ≃ₐ[R] B where
   __ := i.hom.hom
   toFun := i.hom
   invFun := i.inv
   left_inv x := by simp
   right_inv x := by simp
 
-end CategoryTheory.Iso
+/-- Algebra equivalences between `Algebra`s are the same as (isomorphic to) isomorphisms in
+`CommAlg`. -/
+@[simps]
+def isoEquivalgEquiv : (of R X ≅ of R Y) ≅ (X ≃ₐ[R] Y) where
+  hom := ofIso
+  inv := isoMk
 
-/-- Algebra equivalences between `Algebra`s are the same as isomorphisms in `CommAlg`. -/
-@[simps!]
-def algEquivEquivCommAlgIso {X Y : Type u} [CommRing X] [CommRing Y] [Algebra R X] [Algebra R Y] :
-    (X ≃ₐ[R] Y) ≃ (CommAlg.of R X ≅ CommAlg.of R Y) where
-  toFun := AlgEquiv.toCommAlgIso
-  invFun := Iso.commAlgIsoToAlgEquiv
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-instance CommAlg.forget_reflects_isos : (forget (CommAlg.{u} R)).ReflectsIsomorphisms where
+instance reflectsIsomorphisms_forget_commAlg : (forget (CommAlg.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (CommAlg.{u} R)).map f)
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
-    exact e.toCommAlgIso.isIso_hom
-
-namespace CommAlg
-
-noncomputable section Coprod
-
-open TensorProduct
-
-variable (A B C : CommAlg.{v} R)
-
-/-- The explicit cocone with tensor products as the fibered product in `CommRingCat`. -/
-def binaryCofan : BinaryCofan A B :=
-  .mk (ofHom Algebra.TensorProduct.includeLeft)
-    (ofHom (Algebra.TensorProduct.includeRight (R := R) (A := A)))
-
-@[simp]
-lemma binaryCofan_inl : (binaryCofan A B).inl = ofHom Algebra.TensorProduct.includeLeft := rfl
-
-@[simp]
-lemma binaryCofan_inr : (binaryCofan A B).inr = ofHom Algebra.TensorProduct.includeRight := rfl
-
-@[simp] lemma binaryCofan_pt : (binaryCofan A B).pt = .of R (A ⊗[R] B) := rfl
-
-/-- Verify that the `pushout_cocone` is indeed the colimit. -/
-def binaryCofanIsColimit : IsColimit (binaryCofan A B) :=
-  BinaryCofan.IsColimit.mk _
-    (fun f g ↦ ofHom (Algebra.TensorProduct.lift f.hom g.hom fun _ _ ↦ .all _ _))
-    (fun f g ↦ by ext1; exact Algebra.TensorProduct.lift_comp_includeLeft _ _ fun _ _ ↦ .all _ _)
-    (fun f g ↦ by ext1; exact Algebra.TensorProduct.lift_comp_includeRight _ _ fun _ _ ↦ .all _ _)
-    (fun f g m hm₁ hm₂ ↦ by
-      ext1
-      refine Algebra.TensorProduct.liftEquiv.symm_apply_eq (y := ⟨⟨_, _⟩, fun _ _ ↦ .all _ _⟩).mp ?_
-      exact Subtype.ext (Prod.ext congr(($hm₁).hom) congr(($hm₂).hom)))
-
-/-- The initial `R`-algebra is `R`. -/
-def isInitialSelf : IsInitial (of R R) := .ofUniqueHom (fun A ↦ ofHom (Algebra.ofId R A))
-  fun _ _ ↦ hom_ext (Algebra.ext_id _ _ _)
-
-open Opposite
-
-instance : ChosenFiniteProducts (CommAlg.{u} R)ᵒᵖ where
-  product A B := ⟨(binaryCofan (unop A) (unop B)).op,
-    BinaryCofan.IsColimit.op <| binaryCofanIsColimit (unop A) (unop B)⟩
-  terminal := ⟨_, terminalOpOfInitial isInitialSelf⟩
-
-open MonoidalCategory
-
-variable {A B C D : CommAlg.{u} R}
-
-lemma rightWhisker_hom (f : A ⟶ B) (C : CommAlg.{u} R) :
-    (f.op ▷ op C).unop.hom = Algebra.TensorProduct.map f.hom (.id _ _) := by
-  suffices f.op ▷ op C = (CommAlg.ofHom (Algebra.TensorProduct.map f.hom (.id _ _))).op by
-    rw [this]; rfl
-  ext
-  · simp
-    rfl
-  simp only [ChosenFiniteProducts.whiskerRight_snd]
-  apply Quiver.Hom.unop_inj
-  ext x
-  show 1 ⊗ₜ[R] x = f 1 ⊗ₜ[R] x
-  simp
-
-lemma leftWhisker_hom (C : CommAlg.{u} R) (f : A ⟶ B) :
-    (op C ◁ f.op).unop.hom = Algebra.TensorProduct.map (.id _ _) f.hom := by
-  suffices op C ◁ f.op = (CommAlg.ofHom (Algebra.TensorProduct.map (.id _ _) f.hom)).op by
-    rw [this]; rfl
-  ext
-  swap
-  · simp
-    rfl
-  simp only [ChosenFiniteProducts.whiskerLeft_fst]
-  apply Quiver.Hom.unop_inj
-  ext x
-  show x ⊗ₜ[R] 1 = x ⊗ₜ[R] f 1
-  simp
-
-lemma associator_hom_unop_hom (A B C : CommAlg.{u} R) :
-    (α_ (op A) (op B) (op C)).hom.unop.hom =
-      (Algebra.TensorProduct.assoc R A B C).symm.toAlgHom := by
-  suffices (α_ (op A) (op B) (op C)).hom =
-      (CommAlg.ofHom (Algebra.TensorProduct.assoc R A B C).symm.toAlgHom).op by
-    rw [this]; rfl
-  ext <;> simp <;> rfl
-
-lemma associator_inv_unop_hom (A B C : CommAlg.{u} R) :
-    (α_ (op A) (op B) (op C)).inv.unop.hom = (Algebra.TensorProduct.assoc R A B C).toAlgHom := by
-  suffices (α_ (op A) (op B) (op C)).inv =
-      (CommAlg.ofHom (Algebra.TensorProduct.assoc R A B C).toAlgHom).op by
-    rw [this]; rfl
-  ext <;> simp <;> rfl
-
-lemma tensorHom_unop_hom (f : A ⟶ C) (g : B ⟶ D) :
-    (MonoidalCategoryStruct.tensorHom f.op g.op).unop.hom =
-      (Algebra.TensorProduct.map f.hom g.hom) := by
-  rw [MonoidalCategory.tensorHom_def]
-  ext
-  simp only [unop_comp, CommAlg.hom_comp, CommAlg.rightWhisker_hom, CommAlg.hom_ofHom,
-    CommAlg.leftWhisker_hom]
-  rw [← Algebra.TensorProduct.map_comp]
-  simp
-
-end Coprod
+    exact (isoMk e).isIso_hom
 
 end CommAlg
 
 /-- The category of commutative algebras over a commutative ring `R` is the same as rings under `R`.
 -/
 @[simps]
-def commAlgEquivUnder (R : CommRingCat.{u}) : CommAlg.{u} R ≌ Under.{u} R where
+def commAlgEquivUnder (R : CommRingCat) : CommAlg R ≌ Under R where
   functor.obj A := R.mkUnder A
   functor.map {A B} f := f.hom.toUnder
-  inverse.obj A := CommAlg.of _ A
+  inverse.obj A := .of _ A
   inverse.map {A B} f := CommAlg.ofHom <| CommRingCat.toAlgHom f
   unitIso := NatIso.ofComponents fun A ↦
-    AlgEquiv.toCommAlgIso { __ := RingEquiv.refl A, commutes' _ := rfl }
+    CommAlg.isoMk { toRingEquiv := .refl A, commutes' _ := rfl }
   counitIso := .refl _
+
+end CategoryTheory
