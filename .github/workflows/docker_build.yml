@@ -44,6 +44,8 @@ jobs:
           tags: |
             type=schedule,pattern={{date 'YYYY-MM-DD'}}
             type=sha
+            type=ref,event=branch
+            type=ref,event=tag
             type=raw,value=latest
           labels: |
             org.opencontainers.image.licenses=Apache-2.0
