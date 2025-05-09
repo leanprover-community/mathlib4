@@ -137,7 +137,7 @@ example : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
 /-- `Matrix.unitaryGroup.toLinearEquiv A` is matrix multiplication of vectors by `A`, as a linear
 equivalence. -/
 def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
-  { Matrix.toLin' A.1 with
+  { toLin' A with
     invFun := toLin' A⁻¹
     left_inv := fun x =>
       calc

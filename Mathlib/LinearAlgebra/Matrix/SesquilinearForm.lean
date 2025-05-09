@@ -288,16 +288,16 @@ theorem LinearMap.toMatrix₂'_compl₂ (B : (n → R) →ₗ[R] (m → R) →�
 
 theorem LinearMap.mul_toMatrix₂'_mul (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (M : Matrix n' n R)
     (N : Matrix m m' R) :
-    M * toMatrix₂' R B * N = toMatrix₂' R (B.compl₁₂ (toLin' Mᵀ) (toLin' N)) := by
+    M * toMatrix₂' R B * N = toMatrix₂' R (B.compl₁₂ Mᵀ.mulVecLin N.mulVecLin) := by
   simp
 
 theorem LinearMap.mul_toMatrix' (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (M : Matrix n' n R) :
-    M * toMatrix₂' R B = toMatrix₂' R (B.comp <| toLin' Mᵀ) := by
-  simp only [B.toMatrix₂'_comp, transpose_transpose, toMatrix'_toLin']
+    M * toMatrix₂' R B = toMatrix₂' R (B ∘ₗ Mᵀ.mulVecLin) := by
+  simp only [B.toMatrix₂'_comp, transpose_transpose, Matrix.toMatrix'_mulVecLin]
 
 theorem LinearMap.toMatrix₂'_mul (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (M : Matrix m m' R) :
-    toMatrix₂' R B * M = toMatrix₂' R (B.compl₂ <| toLin' M) := by
-  simp only [B.toMatrix₂'_compl₂, toMatrix'_toLin']
+    toMatrix₂' R B * M = toMatrix₂' R (B.compl₂ M.mulVecLin) := by
+  simp only [B.toMatrix₂'_compl₂, M.toMatrix'_mulVecLin]
 
 theorem Matrix.toLinearMap₂'_comp (M : Matrix n m R) (P : Matrix n n' R) (Q : Matrix m m' R) :
     LinearMap.compl₁₂ (Matrix.toLinearMap₂' R M) (toLin' P) (toLin' Q) =
