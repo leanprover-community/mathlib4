@@ -173,7 +173,7 @@ end Mod_Class
 /-- Construct an object of `Mod_ (Mon_.mk' M)` from an object `X : C` and a
 `Mod_Class M X` instance. -/
 @[simps]
-def Mod_.mk' (X : C) [Mod_Class M X] : Mod_ (.mk' M) where
+def Mod_.mk' (X : C) [Mod_Class M X] : Mod_ (.mk M) where
   X := X
   smul := γ[M]
 
