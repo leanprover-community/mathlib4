@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Associator
 import Mathlib.CategoryTheory.Monoidal.Linear
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # The monoidal category structure on R-modules
@@ -102,6 +103,15 @@ instance instMonoidalCategoryStruct : MonoidalCategoryStruct (ModuleCat.{u} R) w
   associator := associator
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
+
+attribute [moduleCat_simps] ModuleCat.MonoidalCategory.tensorObj
+  ModuleCat.MonoidalCategory.tensorHom ModuleCat.MonoidalCategory.whiskerRight
+  ModuleCat.MonoidalCategory.whiskerLeft ModuleCat.MonoidalCategory.associator
+  ModuleCat.MonoidalCategory.leftUnitor ModuleCat.MonoidalCategory.rightUnitor
+  instMonoidalCategoryStruct_tensorObj instMonoidalCategoryStruct_tensorHom
+  instMonoidalCategoryStruct_whiskerRight instMonoidalCategoryStruct_whiskerLeft
+  instMonoidalCategoryStruct_associator instMonoidalCategoryStruct_leftUnitor
+  instMonoidalCategoryStruct_rightUnitor
 
 theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
     (f₃ : X₃ ⟶ Y₃) :
