@@ -195,6 +195,7 @@ lemma of_trim {m₀' : MeasurableSpace α} (hm₀ : m₀' ≤ m₀)
     (hf : AEStronglyMeasurable[m] f (μ.trim hm₀)) : AEStronglyMeasurable[m] f μ := by
   obtain ⟨g, hg_meas, hfg⟩ := hf; exact ⟨g, hg_meas, ae_eq_of_ae_eq_trim hfg⟩
 
+@[fun_prop]
 protected theorem restrict (hfm : AEStronglyMeasurable[m] f μ) {s} :
     AEStronglyMeasurable[m] f (μ.restrict s) :=
   hfm.mono_measure Measure.restrict_le_self
@@ -408,7 +409,7 @@ section SecondCountableAEStronglyMeasurable
 variable [MeasurableSpace β]
 
 /-- In a space with second countable topology, measurable implies strongly measurable. -/
-@[aesop 90% apply (rule_sets := [Measurable])]
+@[fun_prop, aesop 90% apply (rule_sets := [Measurable])]
 theorem _root_.AEMeasurable.aestronglyMeasurable [PseudoMetrizableSpace β] [OpensMeasurableSpace β]
     [SecondCountableTopology β] (hf : AEMeasurable f μ) : AEStronglyMeasurable f μ :=
   ⟨hf.mk f, hf.measurable_mk.stronglyMeasurable, hf.ae_eq_mk⟩
