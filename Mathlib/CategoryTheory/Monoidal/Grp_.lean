@@ -168,7 +168,7 @@ theorem inv_inv (A : Grp_ C) : CategoryTheory.inv A.inv = A.inv := by
   rw [eq_comm, ← CategoryTheory.inv_comp_eq_id, IsIso.inv_inv, inv_comp_inv]
 
 @[reassoc]
-theorem mul_inv (A : Grp_ C) :
+theorem mul_inv [BraidedCategory C] (A : Grp_ C) :
     A.mul ≫ A.inv = (β_ A.X A.X).hom ≫ (A.inv ⊗ A.inv) ≫ A.mul := by
   apply lift_left_mul_ext A.mul
   nth_rw 2 [← Category.comp_id A.mul]
@@ -179,7 +179,7 @@ theorem mul_inv (A : Grp_ C) :
     lift_comp_inv_left, comp_toUnit_assoc]
 
 @[reassoc (attr := simp)]
-theorem tensorHom_inv_inv_mul (A : Grp_ C) :
+theorem tensorHom_inv_inv_mul [BraidedCategory C] (A : Grp_ C) :
     (A.inv ⊗ A.inv) ≫ A.mul = (β_ A.X A.X).hom ≫ A.mul ≫ A.inv := by
   rw [mul_inv A, SymmetricCategory.symmetry_assoc]
 
@@ -325,10 +325,7 @@ end Grp_
 
 namespace CategoryTheory.Functor
 
-variable {C} {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D)
-variable [PreservesFiniteProducts F]
-
-attribute [local instance] monoidalOfChosenFiniteProducts
+variable {C} {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D) [F.Monoidal]
 
 /-- A finite-product-preserving functor takes group objects to group objects. -/
 @[simps!]
@@ -344,6 +341,7 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
           Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] }
   map f := F.mapMon.map f
 
+attribute [local instance] Monoidal.ofChosenFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
 @[simps]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where

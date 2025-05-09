@@ -552,6 +552,27 @@ theorem supSpanSingleton_apply_mk_of_mem (f : E →ₗ.[K] F) {x : E} (y : F) (h
     f.supSpanSingleton x y hx ⟨x', SetLike.le_def.mp le_sup_left hx'⟩ = f ⟨x', hx'⟩ :=
   supSpanSingleton_apply_of_mem f y hx _ hx'
 
+@[simp]
+theorem supSpanSingleton_apply_smul_self (f : E →ₗ.[K] F) {x : E} (y : F) (hx : x ∉ f.domain)
+    (c : K) :
+    f.supSpanSingleton x y hx ⟨c • x, mem_sup_right <| mem_span_singleton.2 ⟨c, rfl⟩⟩ = c • y := by
+  simpa [(mk_eq_zero _ _).mpr rfl] using supSpanSingleton_apply_mk f x y hx 0 (zero_mem _) c
+
+@[simp]
+theorem supSpanSingleton_apply_self (f : E →ₗ.[K] F) {x : E} (y : F) (hx : x ∉ f.domain) :
+    f.supSpanSingleton x y hx ⟨x, mem_sup_right <| mem_span_singleton_self _⟩ = y := by
+  simpa using supSpanSingleton_apply_smul_self f y hx 1
+
+theorem supSpanSingleton_apply_of_mem (f : E →ₗ.[K] F) {x : E} (y : F) (hx : x ∉ f.domain)
+    (x' : (f.supSpanSingleton x y hx).domain) (hx' : (x' : E) ∈ f.domain) :
+    f.supSpanSingleton x y hx x' = f ⟨x', hx'⟩ := by
+  simpa using supSpanSingleton_apply_mk f x y hx x' hx' 0
+
+theorem supSpanSingleton_apply_mk_of_mem (f : E →ₗ.[K] F) {x : E} (y : F) (hx : x ∉ f.domain)
+    {x' : E} (hx' : (x' : E) ∈ f.domain) :
+    f.supSpanSingleton x y hx ⟨x', mem_sup_left hx'⟩ = f ⟨x', hx'⟩ :=
+  supSpanSingleton_apply_of_mem f y hx _ hx'
+
 end
 
 private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) :
