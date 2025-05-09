@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-import Mathlib.LinearAlgebra.RootSystem.Finite.g2
+import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 import Mathlib.Order.Interval.Set.OrdConnectedLinear
 
 /-!
