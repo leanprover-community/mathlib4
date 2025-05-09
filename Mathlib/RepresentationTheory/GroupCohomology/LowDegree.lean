@@ -902,7 +902,7 @@ lemma isoTwoCocycles_hom_comp_i :
   simp [shortComplexH2, isoTwoCocycles, twoCocycles]
 
 @[deprecated (since := "2025-05-09")]
-alias isoTwoCocycles_hom_comp_subtype := isoTwoCocycles_hom_comp_f
+alias isoTwoCocycles_hom_comp_subtype := isoTwoCocycles_hom_comp_i
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoTwoCocycles_hom :
