@@ -176,7 +176,7 @@ lemma counit_unit_eq_whiskerRight : t.adj₂.counit ≫ t.adj₁.unit = whiskerR
 `H ⟶ F` is epic at `X` iff the image of the unit of the adjunction `F ⊣ G` under `H` is. -/
 lemma rightToLeft_app_epi_iff_map_unit_app_epi {X : C} :
     Epi (t.rightToLeft.app X) ↔ Epi (H.map (t.adj₁.unit.app X)) := by
-  rw [← epi_isIso_comp_iff (H.map (t.adj₂.counit.app _)) (H.map (t.adj₁.unit.app _)),
+  rw [← epi_comp_iff_of_epi (H.map (t.adj₂.counit.app _)) (H.map (t.adj₁.unit.app _)),
     ← H.map_comp, counit_unit_app_eq_map_rightToLeft]
   exact Functor.epi_map_congr_iso _ (asIso t.adj₂.unit)
 
@@ -258,7 +258,7 @@ transformation `F ⟶ H` is monic at `X` iff the unit of the adjunction `G ⊣ H
 at `F.obj X`. -/
 lemma leftToRight_app_mono_iff_unit_app_mono {X : C} :
     Mono (t.leftToRight.app X) ↔ Mono (t.adj₂.unit.app (F.obj X)) := by
-  rw [← mono_isIso_comp_iff (t.adj₁.counit.app _) (t.adj₂.unit.app _),
+  rw [← mono_comp_iff_of_isIso (t.adj₁.counit.app _) (t.adj₂.unit.app _),
     counit_unit_app_eq_leftToRight_app]
   exact NatTrans.mono_app_congr_iso (asIso (t.adj₁.unit.app X))
 
