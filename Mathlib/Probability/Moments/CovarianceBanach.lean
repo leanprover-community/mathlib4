@@ -80,6 +80,7 @@ lemma _root_.MeasureTheory.MemLp.integrable_continuousLinearMap
   exact h_Lp.continuousLinearMap L
 
 /-- `MemLp.toLp` as a `LinearMap` from the continuous linear maps. -/
+noncomputable
 def ContinuousLinearMap.toLpₗ (μ : Measure E) (p : ℝ≥0∞) (h_Lp : MemLp id p μ) :
     (E →L[ℝ] ℝ) →ₗ[ℝ] Lp ℝ p μ where
   toFun := fun L ↦ MemLp.toLp L (h_Lp.continuousLinearMap L)
@@ -126,6 +127,7 @@ lemma norm_toLpₗ_le (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) (hp : p ≠ 0
   _ = ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ := by rw [lintegral_const_mul]; fun_prop
 
 /-- `MemLp.toLp` as a `ContinuousLinearMap` from the continuous linear forms. -/
+noncomputable
 def ContinuousLinearMap.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ)
     (hp : p ≠ ∞) :
     (E →L[ℝ] ℝ) →L[ℝ] Lp ℝ p μ where
