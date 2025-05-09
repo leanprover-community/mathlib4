@@ -129,8 +129,8 @@ variable {X : C} {K : J ⥤ Under X} {F : C ⥤ D} {t : Cocone K}
 namely the comma category constructed from the identity of the category of functors
 `J ⥤ C` and the functor that maps `X : C` to the constant functor `J ⥤ C`.
 
-Given a functor `K : J ⥤ Under X`, it is mapped to a natural transformation from the
-obvious functor `J ⥤ C` to the constant functor `X`. -/
+Given a functor `K : J ⥤ Under X`, it is mapped to a natural transformation to the
+obvious functor `J ⥤ C` from the constant functor `X`. -/
 @[simps]
 def commaFromUnder : (J ⥤ Under X) ⥤ Comma (Functor.const J) (𝟭 (J ⥤ C)) where
   obj K := {
@@ -148,7 +148,7 @@ def commaFromUnder : (J ⥤ Under X) ⥤ Comma (Functor.const J) (𝟭 (J ⥤ C)
 @[simps!]
 def liftFromUnder : (J ⥤ Under X) ⥤ WithInitial J ⥤ C := commaFromUnder ⋙ equivComma.inverse
 
-/-- The extension of a functor to over categories behaves well with compositions. -/
+/-- The extension of a functor to under categories behaves well with compositions. -/
 @[simps]
 def liftFromUnderComp : liftFromUnder.obj (K ⋙ Under.post F) ≅ liftFromUnder.obj K ⋙ F where
   hom.app | star | of a => 𝟙 _
