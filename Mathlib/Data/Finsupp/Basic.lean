@@ -1075,6 +1075,11 @@ theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f 
     · intro _
       rw [single_zero, single_zero, coe_zero, Pi.zero_apply, coe_zero, Pi.zero_apply]
 
+@[simp]
+lemma curry_single (a : α × β) (m : M) :
+    (single a m).curry = single a.1 (single a.2 m) := by
+  simp [Finsupp.curry]
+
 theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg₀ : ∀ a b, g a b 0 = 0)
     (hg₁ : ∀ a b c₀ c₁, g a b (c₀ + c₁) = g a b c₀ + g a b c₁) :
     (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
@@ -1100,6 +1105,15 @@ protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (x : α) (y : �
   rw [← curry_apply (f.uncurry) x y]
   simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
     forall_true_iff, sum_single_index, single_zero, ← single_sum, sum_single]
+
+protected theorem uncurry_apply (f : α →₀ β →₀ M) (x : α × β) :
+    f.uncurry x = f x.1 x.2 := by
+  rw [← Prod.mk.eta (p := x), Finsupp.uncurry_apply_pair]
+
+@[simp]
+lemma uncurry_single (a : α) (b : β) (m : M) :
+    (single a (single b m)).uncurry = single (a, b) m := by
+  simp [Finsupp.uncurry]
 
 @[simp]
 theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
