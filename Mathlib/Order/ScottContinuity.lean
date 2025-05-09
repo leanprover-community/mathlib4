@@ -162,9 +162,6 @@ lemma ScottContinuous_prod_of_ScottContinuous {γ : Type*} [Preorder α] [Preord
 /- The join operation is Scott continuous -/
 lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := by
-  apply ScottContinuousOn_prod_of_ScottContinuousOn
-
-/-
   simp only
   intro d _ _ _ ⟨p₁, p₂⟩ hdp
   rw [IsLUB, IsLeast, upperBounds] at hdp
@@ -184,7 +181,6 @@ lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     apply e1
     intro b₁ b₂ hb'
     exact sup_le_iff.mp (hb b₁ b₂ hb' rfl)
--/
 
 /- In a complete linear order, the Scott Topology coincides with the Upper topology, see
 `Topology.IsScott.scott_eq_upper_of_completeLinearOrder` -/
