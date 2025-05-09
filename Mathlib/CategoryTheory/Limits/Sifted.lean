@@ -133,7 +133,7 @@ open MonoidalCategory ChosenFiniteProducts
 
 namespace IsSifted
 
-variable {C : Type u} [SmallCategory.{u} C]
+variable {C : Type u} [SmallCategory C]
 
 section
 
