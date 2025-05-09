@@ -44,6 +44,10 @@ lemma preservesColimit_curriedTensor_obj (c : C) [PreservesColimit F (tensorLeft
     PreservesColimit F ((curriedTensor C).obj c) :=
   by assumption
 
+lemma preservesColimit_curriedTensor_flip_obj (c : C) [PreservesColimit F (tensorRight c)] :
+    PreservesColimit F ((curriedTensor C).flip.obj c) :=
+  by assumption
+
 end Colimits
 
 section Limits
@@ -53,7 +57,7 @@ instance preservesLimit_of_braided_and_preservesLimit_tensor_left
     [BraidedCategory C] (c : C)
     [PreservesLimit F (tensorLeft c)] :
     PreservesLimit F (tensorRight c) :=
-  preservesLimit_of_natIso F (NatIso.ofComponents (fun _ ↦ β_ _ _) : tensorLeft c ≅ tensorRight c)
+  preservesLimit_of_natIso F (BraidedCategory.tensorLeftIsoTensorRight c)
 
 /-- When `C` is braided and `tensorRight c` preserves a limit, then so does `tensorLeft k`.
 We are not making this an instance to avoid an instance loop with
@@ -62,18 +66,19 @@ lemma preservesLimit_of_braided_and_preservesLimit_tensor_right
     [BraidedCategory C] (c : C)
     [PreservesLimit F (tensorRight c)] :
     PreservesLimit F (tensorLeft c) :=
-  preservesLimit_of_natIso F (NatIso.ofComponents (fun _ ↦ β_ _ _) : tensorRight c ≅ tensorLeft c)
+  preservesLimit_of_natIso F (BraidedCategory.tensorLeftIsoTensorRight c).symm
 
 lemma preservesLimit_curriedTensor [h : ∀ c : C, PreservesLimit F (tensorRight c)] :
     PreservesLimit F (curriedTensor C) :=
-  preservesLimit_of_evaluation _ _ <| fun c ↦
-    preservesLimit_of_natIso F
-      (NatIso.ofComponents (fun _ ↦ Iso.refl _) :
-        tensorRight c ≅ curriedTensor C ⋙ (evaluation C C).obj c)
+  preservesLimit_of_evaluation _ _ <| fun c ↦ inferInstanceAs (PreservesLimit F (tensorRight c))
 
 lemma preservesLimit_curriedTensor_obj (c : C) [PreservesLimit F (tensorLeft c)] :
-    PreservesLimit F ((curriedTensor C).obj c) :=
-    preservesLimit_of_natIso F (NatIso.ofComponents (fun _ ↦ Iso.refl _) : tensorLeft c ≅ _)
+    PreservesLimit F ((curriedTensor C).obj c) := by
+  assumption
+
+lemma preservesLimit_curriedTensor_flip_obj (c : C) [PreservesLimit F (tensorRight c)] :
+    PreservesLimit F ((curriedTensor C).flip.obj c) := by
+  assumption
 
 end Limits
 
