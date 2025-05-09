@@ -8,8 +8,6 @@ env:
   REPO_NAME: ${{ github.repository }}
 jobs:
   build-and-push-docker-images:
-    # documentation at
-    # https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-docker-images
     strategy:
       fail-fast: false
       matrix:
@@ -27,6 +25,8 @@ jobs:
     outputs:
       tagname: ${{ steps.output-tag-name.outputs.tagname }}
     steps:
+      # documentation at
+      # https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-docker-images
       - uses: actions/checkout@v4
       - name: Log in to the container registry
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
@@ -38,7 +38,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract metadata (tags, labels) for docker
         id: meta
-        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v 5.7.0
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.REPO_NAME }}/${{ matrix.image }}
           tags: |
