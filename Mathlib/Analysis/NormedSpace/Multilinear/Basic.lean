@@ -1040,7 +1040,7 @@ def flipMultilinearEquiv : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') ≃
     (flipMultilinearEquivₗ 𝕜 E G G') 1 1
     ?_ ?_
   · intro f
-    simp only [flipMultilinearEquivₗ, LinearEquiv.coe_mk, one_mul]
+    simp only [flipMultilinearEquivₗ, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, one_mul]
     apply MultilinearMap.mkContinuous_norm_le
     positivity
   · intro f
