@@ -60,9 +60,9 @@ type checks. -/
 def externalProductCompDiagIso :
     externalProductBifunctor J₁ J₁ C ⋙ (whiskeringLeft _ _ _|>.obj <| Functor.diag J₁) ≅
     tensor (J₁ ⥤ C) :=
-  NatIso.ofComponents (fun _ ↦
-    NatIso.ofComponents (fun _ ↦ Iso.refl _)
-      (by simp [tensorHom_def])) (fun f ↦ by ext x; simp [tensorHom_def])
+  NatIso.ofComponents
+    (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [tensorHom_def]))
+    (fun _ ↦ by ext; simp [tensorHom_def])
 
 /-- When `C` is braided, there is an isomorphism `Prod.swap _ _ ⋙ F₁ ⊠ F₂ ≅ F₂ ⊠ F₁`, natural
 in both `F₁` and `F₂`.
@@ -72,17 +72,17 @@ type checks. -/
 def externalProductSwap [BraidedCategory C] :
     externalProductBifunctor J₁ J₂ C ⋙ (whiskeringLeft _ _ _|>.obj <| Prod.swap _ _)
     ≅ Prod.swap _ _ ⋙ externalProductBifunctor J₂ J₁ C :=
-  NatIso.ofComponents (fun _ ↦
-    NatIso.ofComponents (fun _ ↦ β_ _ _) (by simp [tensorHom_def, whisker_exchange]))
-    (fun f ↦ by ext x; simp [tensorHom_def, whisker_exchange])
+  NatIso.ofComponents
+    (fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _) (by simp [tensorHom_def, whisker_exchange]))
+    (fun _ ↦ by ext; simp [tensorHom_def, whisker_exchange])
 
 /-- A version of `externalProductSwap` phrased in terms of the uncurried functors. -/
 @[simps!]
 def externalProductFlip [BraidedCategory C] :
     (Functor.postcompose₂.obj <| flipFunctor _ _ _).obj (externalProductBifunctorUncurried J₁ J₂ C)
     ≅ (externalProductBifunctorUncurried J₂ J₁ C).flip :=
-  NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents <| fun _ ↦
-    NatIso.ofComponents (fun _ ↦ β_ _ _)
+  NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents <|
+    fun _ ↦ NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _)
 
 section Composition
 
