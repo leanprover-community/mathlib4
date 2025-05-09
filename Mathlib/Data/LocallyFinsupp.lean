@@ -105,7 +105,7 @@ lemma apply_eq_zero_of_not_mem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
 On a T1 space, the support of a functions with locally finite support within `U` is discrete within
 `U`.
 -/
-theorem discreteWithinSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
+theorem eq_zero_codiscreteWithin [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
     D =ᶠ[Filter.codiscreteWithin U] 0 := by
   apply codiscreteWithin_iff_locallyFiniteComplementWithin.2
   have : D.support = (U \ {x | D x = (0 : X → Y) x}) := by
