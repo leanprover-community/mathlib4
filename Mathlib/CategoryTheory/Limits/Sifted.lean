@@ -141,6 +141,8 @@ open scoped MonoidalCategory.ExternalProduct
 
 variable (X Y : C ⥤ Type u)
 
+attribute [local instance] MonoidalCategory.Limits.preservesColimit_curriedTensor_obj in
+attribute [local instance] MonoidalCategory.Limits.preservesColimit_curriedTensor_flip_obj in
 /-- Through the isomorphisms `PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` and
 `externalProductCompDiagIso`, the comparison map `colimit.pre (diag C)` identifies with the
 product comparison map for the colimit functor. -/
