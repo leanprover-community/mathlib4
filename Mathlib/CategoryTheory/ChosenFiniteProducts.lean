@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Adam Topaz. All rights reserved.
+Copyright (c) 2019 Kim Morrison, Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Robin Carlier
+Authors: Kim Morrison, Simon Hudon, Adam Topaz, Robin Carlier
 -/
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.FullSubcategory
