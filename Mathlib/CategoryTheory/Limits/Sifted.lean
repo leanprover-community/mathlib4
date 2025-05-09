@@ -258,13 +258,9 @@ theorem of_final_functor_from_sifted'
       (colim : (D ⥤ _) ⥤ Type u) :=
     NatIso.ofComponents
       (fun c ↦ Final.colimitIso F _)
-      (by intro x y f
-          dsimp [Final.colimitIso]
-          apply colimit.hom_ext
-          intro t
-          simp only [comp_obj, colimit.ι_pre_assoc]
-          rw [ι_colimMap, ι_colimMap_assoc]
-          simp)
+      (fun _ ↦ by
+        apply colimit.hom_ext
+        simp [comp_obj, colimit.ι_pre_assoc, ι_colimMap, ι_colimMap_assoc])
   apply preservesLimit_of_natIso K colim_comp_iso
 
 end
