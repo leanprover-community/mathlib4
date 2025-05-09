@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Order.Lattice
 
 /-!
 # Characteristic of semirings
@@ -38,7 +38,7 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
 @[mk_iff]
-class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : ℕ) : Prop where
+class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : semiOutParam ℕ) : Prop where
   cast_eq_zero_iff (R p) : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
 
 variable [CharP R p] {a b : ℕ}
@@ -46,6 +46,11 @@ variable [CharP R p] {a b : ℕ}
 @[deprecated CharP.cast_eq_zero_iff (since := "2025-04-03")]
 lemma cast_eq_zero_iff' (R : Type*) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (a : ℕ) :
     (a : R) = 0 ↔ p ∣ a := cast_eq_zero_iff R p a
+
+lemma _root_.CharP.ofNat_eq_zero' (p : ℕ) [CharP R p]
+    (a : ℕ) [a.AtLeastTwo] (h : p ∣ a) :
+    (ofNat(a) : R) = 0 := by
+  rwa [← CharP.cast_eq_zero_iff R p] at h
 
 variable {R} in
 lemma congr {q : ℕ} (h : p = q) : CharP R q := h ▸ ‹CharP R p›
@@ -74,7 +79,7 @@ variable [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ}
 lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   rcases lt_trichotomy a 0 with (h | rfl | h)
   · rw [← neg_eq_zero, ← Int.cast_neg, ← Int.dvd_neg]
-    lift -a to ℕ using neg_nonneg.mpr (le_of_lt h) with b
+    lift -a to ℕ using Int.neg_nonneg.mpr (le_of_lt h) with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
   · simp only [Int.cast_zero, eq_self_iff_true, Int.dvd_zero]
   · lift a to ℕ using le_of_lt h with b
@@ -161,7 +166,8 @@ lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 
 end ringChar
 
-lemma CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1 : R) ≠ (1 : R) := by
+lemma CharP.neg_one_ne_one [AddGroupWithOne R] (p : ℕ) [CharP R p] [Fact (2 < p)] :
+    (-1 : R) ≠ (1 : R) := by
   rw [ne_comm, ← sub_ne_zero, sub_neg_eq_add, one_add_one_eq_two, ← Nat.cast_two, Ne,
     CharP.cast_eq_zero_iff R p 2]
   exact fun h ↦ (Fact.out : 2 < p).not_le <| Nat.le_of_dvd Nat.zero_lt_two h

@@ -24,6 +24,13 @@ jobs:
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"
 
+    - name: Configure Lean
+      uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+      with:
+        auto-config: false
+        use-github-cache: false
+        use-mathlib-cache: false
+
     - name: Determine old and new lean-toolchain
       id: determine-toolchains
       run: |
@@ -172,36 +179,37 @@ jobs:
         SUCCESSFUL_MERGES="${{ steps.execute-merges.outputs.successful_merges }}"
         FAILED_MERGES="${{ steps.execute-merges.outputs.failed_merges }}"
 
-        {
-          printf $'msg<<EOF\n'
+        # Start building the message
+        MESSAGE=""
 
-          # Report successful merges
-          if [ -n "$SUCCESSFUL_MERGES" ]; then
-            printf $'### ✅ Successfully merged branches:\n\n'
-            for MERGE_INFO in $SUCCESSFUL_MERGES; do
-              IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
-              printf $'- lean#%s ([diff](%s))\n' "$PR_NUMBER" "$GITHUB_DIFF"
-            done
-            printf $'\n'
-          else
-            printf $'No branches were successfully merged.\n\n'
-          fi
+        # Report successful merges
+        if [ -n "$SUCCESSFUL_MERGES" ]; then
+          MESSAGE+=$'### ✅ Successfully merged branches:\n\n'
+          for MERGE_INFO in $SUCCESSFUL_MERGES; do
+            IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
+            MESSAGE+=$(printf -- '- lean#%s ([diff](%s))\n\n' "$PR_NUMBER" "$GITHUB_DIFF")
+          done
+          MESSAGE+=$'\n'
+        else
+          MESSAGE+=$'No branches were successfully merged.\n\n'
+        fi
 
-          # Report failed merges
-          if [ -n "$FAILED_MERGES" ]; then
-            printf $'### ❌ Failed merges:\n\nThe following branches need to be merged manually:\n\n```bash\n'
-            for MERGE_INFO in $FAILED_MERGES; do
-              IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
-              printf $'# Diff: %s\n' "$GITHUB_DIFF"
-              printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n\n' "$PR_NUMBER" "$BRANCH"
-            done
-            printf $'```\n'
-          else
-            printf $'All branches were successfully merged! 🎉\n'
-          fi
+        # Report failed merges
+        if [ -n "$FAILED_MERGES" ]; then
+          MESSAGE+=$'### ❌ Failed merges:\n\nThe following branches need to be merged manually:\n\n'
+          for MERGE_INFO in $FAILED_MERGES; do
+            IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
+            MESSAGE+=$(printf 'Diff: %s\n\n' "$GITHUB_DIFF")
+            MESSAGE+=$'```bash\n'
+            MESSAGE+=$(printf 'scripts/merge-lean-testing-pr.sh %s\n' "$PR_NUMBER")
+            MESSAGE+=$'```\n\n'
+          done
+        else
+          MESSAGE+=$'All branches were successfully merged! 🎉\n'
+        fi
 
-          printf "EOF"
-        } >> "$GITHUB_OUTPUT"
+        # Output the message using the correct GitHub Actions syntax
+        printf 'msg<<EOF\n%s\nEOF' "$MESSAGE" >> "$GITHUB_OUTPUT"
 
     - name: Send message on Zulip
       if: env.branches_exist == 'true'

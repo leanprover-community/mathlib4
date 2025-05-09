@@ -152,8 +152,6 @@ lemma hom_surjective {M N : ModuleCat.{v} R} :
     Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
   hom_bijective.surjective
 
-@[deprecated (since := "2024-10-06")] alias asHom := ModuleCat.ofHom
-
 @[simp]
 lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
     [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
@@ -257,8 +255,6 @@ open ModuleCat
 
 /-- Reinterpreting a linear map in the category of `R`-modules -/
 scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.ofHom f
-
-@[deprecated (since := "2024-10-06")] alias ModuleCat.asHom_apply := ModuleCat.ofHom_apply
 
 -- Since `of` and the coercion now roundtrip reducibly, we don't need to distinguish in which place
 -- we need to add `of` when coercing from linear maps to morphisms.
@@ -375,6 +371,11 @@ instance forget₂_addCommGrp_additive :
 def homAddEquiv : (M ⟶ N) ≃+ (M →ₗ[R] N) :=
   { homEquiv with
     map_add' := fun _ _ => rfl }
+
+theorem subsingleton_of_isZero (h : IsZero M) : Subsingleton M := by
+  refine subsingleton_of_forall_eq 0 (fun x ↦ ?_)
+  rw [← LinearMap.id_apply (R := R) x, ← ModuleCat.hom_id]
+  simp only [(CategoryTheory.Limits.IsZero.iff_id_eq_zero M).mp h, hom_zero, LinearMap.zero_apply]
 
 end AddCommGroup
 

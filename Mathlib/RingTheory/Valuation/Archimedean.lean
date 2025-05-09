@@ -4,11 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.Archimedean.Submonoid
-import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.GroupTheory.ArchimedeanDensely
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
-import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
