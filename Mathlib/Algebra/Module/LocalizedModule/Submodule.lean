@@ -211,8 +211,7 @@ In particular, if `M` is a localized module, then `x` is in the submodule `N'` i
 numerator under the image of `f` also lies in `N`. -/
 lemma mem_of_numerator_image_mem {N' : Submodule R' M'} {x : M'} {Num : M} {Den : S}
     (h : Den • x = f Num) (hNum : f Num ∈ N') : x ∈ N' := by
-  rw [← Submodule.smul_mem_iff_IsUnit N' (r := (algebraMap R R') Den)
-    (IsLocalization.map_units R' Den), algebraMap_smul]
+  rw [← Submodule.smul_mem_iff_IsUnit N' (IsLocalization.map_units R' Den), algebraMap_smul]
   show Den • x ∈ N'
   simpa [h] using hNum
 
