@@ -150,4 +150,30 @@ example {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.Fooo) : Tru
   guard_hyp algebraizeInst : @Algebra.Fooo A B _ _ b.f.toAlgebra
   trivial
 
+structure Buz (A B : Type*) [CommRing A] [CommRing B] where
+  x : (A →+* B) ⊕ (A →+* B)
+
+@[algebraize Buz.fooo]
+def Buz.Fooo {A B : Type*} [CommRing A] [CommRing B] (b : Buz A B) :=
+  b.x.elim (@Algebra.Fooo A B _ _ ·.toAlgebra) (fun _ => False)
+
+lemma Buz.fooo {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) :
+  Buz.Fooo ⟨.inl f⟩ → @Algebra.Fooo A B _ _ f.toAlgebra := id
+
+-- check that this also works when the argument *contains* a ringhom
+example {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
+  (hf : Buz.Fooo ⟨.inl f⟩) : True := by
+  algebraize [f]
+  guard_hyp algebraizeInst : @Algebra.Fooo A B _ _ f.toAlgebra
+  trivial
+
+-- check that there is no issue with trying the lemma on a mismatching argument.
+example {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
+  (hf : Buz.Fooo ⟨.inr f⟩) : True := by
+  algebraize [f]
+  fail_if_success
+    guard_hyp algebraizeInst : @Algebra.Fooo A B _ _ f.toAlgebra
+  trivial
+
+
 end
