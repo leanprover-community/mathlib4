@@ -20,9 +20,10 @@ universe v u
 
 namespace CategoryTheory
 
-instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) where
-  product := Types.binaryProductLimitCone
-  terminal := Types.terminalLimitCone
+instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) :=
+  .ofChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
+
+instance : BraidedCategory (Type u) := .ofChosenFiniteProducts
 
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :

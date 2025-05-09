@@ -62,7 +62,8 @@ private lemma list_mul_sum {R : Type*} [Semiring R] {T : Type*} (l : List T) (y 
 -- Geometric sum for lists
 private lemma list_geom {T : Type*} {F : Type*} [DivisionRing F] (l : List T) {y : F} (hy : y ≠ 1) :
     (l.mapIdx fun i _ => y ^ i).sum = (y ^ l.length - 1) / (y - 1) := by
-  rw [← geom_sum_eq hy l.length, List.mapIdx_eq_zipIdx_map, Finset.sum_range, ← Fin.sum_univ_get']
+  rw [← geom_sum_eq hy l.length, List.mapIdx_eq_zipIdx_map, Finset.sum_range,
+    ← Fin.sum_univ_fun_getElem]
   simp only [List.getElem_zipIdx, Function.uncurry_apply_pair]
   let e : Fin l.zipIdx.length ≃ Fin l.length := finCongr List.length_zipIdx
   exact Fintype.sum_bijective e e.bijective _ _ fun _ ↦ by simp [e]

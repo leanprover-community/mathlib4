@@ -731,13 +731,13 @@ lemma isUnit_iff : IsUnit a ↔ a ≠ 0 ∧ a ≠ ∞ := by
 
 /-- Left multiplication by a nonzero finite `a` as an order isomorphism. -/
 @[simps! toEquiv apply symm_apply]
-def mulLeftOrderIso (a  : ℝ≥0∞) (ha : IsUnit a) : ℝ≥0∞ ≃o ℝ≥0∞ where
+def mulLeftOrderIso (a : ℝ≥0∞) (ha : IsUnit a) : ℝ≥0∞ ≃o ℝ≥0∞ where
   toEquiv := ha.unit.mulLeft
   map_rel_iff' := by simp [ENNReal.mul_le_mul_left, ha.ne_zero, (isUnit_iff.1 ha).2]
 
 /-- Right multiplication by a nonzero finite `a` as an order isomorphism. -/
 @[simps! toEquiv apply symm_apply]
-def mulRightOrderIso (a  : ℝ≥0∞) (ha : IsUnit a) : ℝ≥0∞ ≃o ℝ≥0∞ where
+def mulRightOrderIso (a : ℝ≥0∞) (ha : IsUnit a) : ℝ≥0∞ ≃o ℝ≥0∞ where
   toEquiv := ha.unit.mulRight
   map_rel_iff' := by simp [ENNReal.mul_le_mul_right, ha.ne_zero, (isUnit_iff.1 ha).2]
 
