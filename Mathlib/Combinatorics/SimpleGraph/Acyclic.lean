@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Data.Fintype.Order
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Linarith
 

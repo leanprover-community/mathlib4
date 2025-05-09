@@ -8,7 +8,6 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Atoms
-import Mathlib.Order.Minimal
 
 /-!
 # Order structures on finite types

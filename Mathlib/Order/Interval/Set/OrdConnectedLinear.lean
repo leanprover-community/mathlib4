@@ -3,7 +3,6 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Bhavik Mehta, Oliver Nash
 -/
-import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Int.ConditionallyCompleteOrder
 import Mathlib.Data.Int.Interval
