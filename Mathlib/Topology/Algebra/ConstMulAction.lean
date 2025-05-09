@@ -6,11 +6,9 @@ Authors: Alex Kontorovich, Heather Macbeth
 import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.Bases
 
 /-!
 # Monoid actions continuous in the second variable
@@ -43,6 +41,8 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
 Hausdorff, discrete group, properly discontinuous, quotient space
 
 -/
+
+assert_not_exists IsOrderedRing
 
 open Topology Pointwise Filter Set TopologicalSpace
 
