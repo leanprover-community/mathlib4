@@ -52,12 +52,12 @@ theorem continuous_infEdist_hausdorffEdist :
   calc
     infEdist x s ≤ infEdist x t + hausdorffEdist (t : Set α) s :=
       infEdist_le_infEdist_add_hausdorffEdist
-    _ ≤ infEdist y t + edist x y + hausdorffEdist (t : Set α) s :=
-      (add_le_add_right infEdist_le_infEdist_add_edist _)
+    _ ≤ infEdist y t + edist x y + hausdorffEdist (t : Set α) s := by
+      gcongr; apply infEdist_le_infEdist_add_edist
     _ = infEdist y t + (edist x y + hausdorffEdist (s : Set α) t) := by
       rw [add_assoc, hausdorffEdist_comm]
-    _ ≤ infEdist y t + (edist (x, s) (y, t) + edist (x, s) (y, t)) :=
-      (add_le_add_left (add_le_add (le_max_left _ _) (le_max_right _ _)) _)
+    _ ≤ infEdist y t + (edist (x, s) (y, t) + edist (x, s) (y, t)) := by
+      gcongr <;> apply_rules [le_max_left, le_max_right]
     _ = infEdist y t + 2 * edist (x, s) (y, t) := by rw [← mul_two, mul_comm]
 
 /-- Subsets of a given closed subset form a closed set -/
@@ -132,7 +132,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
           (by
             simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop, Set.mem_preimage,
               Set.preimage_iUnion]
-            exact ⟨k, fun m hm => ⟨n + m, zero_add k ▸ add_le_add (zero_le n) hm, (z m).2⟩⟩)
+            exact ⟨k, fun m hm => ⟨n + m, by omega, (z m).2⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
     -- is the limit of `z k`, and the distance between `z n` and `z k` has already been estimated.
@@ -157,7 +157,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
       ⟨y, hy,
         calc
           edist x y ≤ edist x z + edist z y := edist_triangle _ _ _
-          _ ≤ B n + B n := add_le_add (le_of_lt Dxz) (le_of_lt Dzy)
+          _ ≤ B n + B n := by gcongr
           _ = 2 * B n := (two_mul _).symm
           ⟩
   -- Deduce from the above inequalities that the distance between `s n` and `t0` is at most `2 B n`.
