@@ -39,10 +39,14 @@ variable {C}
 
 @[simp] theorem counit_eq_toUnit (A : Comon_ C) : A.counit = toUnit _ := by ext
 
+@[deprecated (since := "2025-05-09")] alias counit_eq_from := counit_eq_toUnit
+
 @[simp] theorem comul_eq_lift (A : Comon_ C) : A.comul = lift (𝟙 _) (𝟙 _) := by
   ext
   · simpa using A.comul_counit =≫ fst _ _
   · simpa using A.counit_comul =≫ snd _ _
+
+@[deprecated (since := "2025-05-09")] alias comul_eq_diag := comul_eq_lift
 
 /--
 Every comonoid object in a cartesian monoidal category is equivalent to
