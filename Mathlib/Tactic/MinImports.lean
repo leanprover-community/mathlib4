@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.DefView
 import Lean.Util.CollectAxioms
-import Mathlib.Init
 import ImportGraph.Imports
 import ImportGraph.RequiredModules
 
