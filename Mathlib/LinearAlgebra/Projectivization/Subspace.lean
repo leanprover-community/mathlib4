@@ -108,8 +108,6 @@ instance instInf : Min (Subspace K V) :=
     ⟨A ⊓ B, fun _v _w hv hw _hvw h1 h2 =>
       ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩⟩
 
--- Porting note: delete the name of this instance since it causes problem since hasInf is already
--- defined above
 /-- Infimums of arbitrary collections of subspaces exist. -/
 instance instInfSet : InfSet (Subspace K V) :=
   ⟨fun A =>

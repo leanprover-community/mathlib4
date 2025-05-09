@@ -15,7 +15,7 @@ coefficients in `R`, whose supports are partially well-ordered. With further str
 a linearly ordered abelian group and `R` is a field, in which case `HahnSeries Γ R` is a
 valued field, with value group `Γ`.
 These generalize Laurent series (with value group `ℤ`), and Laurent series are implemented that way
-in the file `RingTheory/LaurentSeries`.
+in the file `Mathlib/RingTheory/LaurentSeries.lean`.
 
 ## Main Definitions
 * If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
@@ -138,8 +138,7 @@ def ofIterate [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
 
 @[simp]
 lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
-  rw [HahnSeries.ext_iff]
-  rfl
+  simp_rw [HahnSeries.ext_iff, funext_iff, coeff_zero, Pi.zero_apply]
 
 /-- Change a Hahn series on a lex product to a Hahn series with coefficients in a Hahn series. -/
 def toIterate [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
@@ -269,8 +268,8 @@ theorem orderTop_eq_of_le {x : HahnSeries Γ R} {g : Γ} (hg : g ∈ x.support)
 theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
     WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx) =
       x.isWF_support.min (support_nonempty_iff.2 hx) :=
-    WithTop.coe_inj.mp ((WithTop.coe_untop (orderTop x) (ne_zero_iff_orderTop.mp hx)).trans
-      (orderTop_of_ne hx))
+  WithTop.coe_inj.mp ((WithTop.coe_untop (orderTop x) (ne_zero_iff_orderTop.mp hx)).trans
+    (orderTop_of_ne hx))
 
 theorem coeff_orderTop_ne {x : HahnSeries Γ R} {g : Γ} (hg : x.orderTop = g) :
     x.coeff g ≠ 0 := by
@@ -357,7 +356,7 @@ theorem coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.ord
   rw [order_of_ne hx]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
 
-theorem order_le_of_coeff_ne_zero {Γ} [AddMonoid Γ] [LinearOrder Γ] {x : HahnSeries Γ R}
+theorem order_le_of_coeff_ne_zero {Γ} [Zero Γ] [LinearOrder Γ] {x : HahnSeries Γ R}
     {g : Γ} (h : x.coeff g ≠ 0) : x.order ≤ g :=
   le_trans (le_of_eq (order_of_ne (ne_zero_of_coeff_ne_zero h)))
     (Set.IsWF.min_le _ _ ((mem_support _ _).2 h))
@@ -475,7 +474,7 @@ section LocallyFiniteLinearOrder
 
 variable [Zero R] [LinearOrder Γ]
 
-theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
+theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
   simp only [BddBelow, Set.Nonempty, lowerBounds]
   use n
@@ -503,7 +502,7 @@ theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 
   rfl
 
 theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
-    (hn : ∀(m : Γ), m < n → f m = 0) :
+    (hn : ∀ (m : Γ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
   dsimp only [order]
   by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0

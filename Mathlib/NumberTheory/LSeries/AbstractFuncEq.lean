@@ -110,6 +110,12 @@ lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
 
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
 def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
+  f := P.g
+  g := P.f
+  k := P.k
+  ε := P.ε⁻¹
+  f₀ := P.g₀
+  g₀ := P.f₀
   hf_int := P.hg_int
   hg_int := P.hf_int
   hf_top := P.hg_top
@@ -295,6 +301,12 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`. -/
 def toStrongFEPair : StrongFEPair E where
+  f := P.f_modif
+  g := P.symm.f_modif
+  k := P.k
+  ε := P.ε
+  f₀ := 0
+  g₀ := 0
   hf_int   := P.hf_modif_int
   hg_int   := P.symm.hf_modif_int
   h_feq    := P.hf_modif_FE

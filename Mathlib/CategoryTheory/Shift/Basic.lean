@@ -356,7 +356,7 @@ abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
 theorem shift_shift' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).hom := by
   symm
-  rw [← Functor.comp_map, NatIso.app_inv]
+  rw [← Functor.comp_map, Iso.app_inv]
   apply NatIso.naturality_1
 
 variable (A)
@@ -367,7 +367,7 @@ abbrev shiftZero : X⟦(0 : A)⟧ ≅ X :=
 
 theorem shiftZero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
   symm
-  rw [NatIso.app_inv, NatIso.app_hom]
+  rw [Iso.app_inv, Iso.app_hom]
   apply NatIso.naturality_2
 
 variable (C) {A}

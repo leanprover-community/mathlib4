@@ -306,6 +306,45 @@ theorem contMDiffAt_iff_target {x : M} :
 
 @[deprecated (since := "2024-11-20")] alias smoothAt_iff_target := contMDiffAt_iff_target
 
+/-- One can reformulate being `Cⁿ` within a set at a point as being `Cⁿ` in the source space when
+composing with the extended chart. -/
+theorem contMDiffWithinAt_iff_source :
+    ContMDiffWithinAt I I' n f s x ↔
+      ContMDiffWithinAt 𝓘(𝕜, E) I' n (f ∘ (extChartAt I x).symm)
+        ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff']
+  have : ContinuousWithinAt f s x
+      ↔ ContinuousWithinAt (f ∘ ↑(extChartAt I x).symm) (↑(extChartAt I x).symm ⁻¹' s ∩ range ↑I)
+        (extChartAt I x x) := by
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · apply h.comp_of_eq
+      · exact (continuousAt_extChartAt_symm x).continuousWithinAt
+      · exact (mapsTo_preimage _ _).mono_left inter_subset_left
+      · exact extChartAt_to_inv x
+    · rw [← continuousWithinAt_inter (extChartAt_source_mem_nhds (I := I) x)]
+      have : ContinuousWithinAt ((f ∘ ↑(extChartAt I x).symm) ∘ ↑(extChartAt I x))
+          (s ∩ (extChartAt I x).source) x := by
+        apply h.comp (continuousAt_extChartAt x).continuousWithinAt
+        intro y hy
+        have : (chartAt H x).symm ((chartAt H x) y) = y :=
+          PartialHomeomorph.left_inv _ (by simpa using hy.2)
+        simpa [this] using hy.1
+      apply this.congr
+      · intro y hy
+        have : (chartAt H x).symm ((chartAt H x) y) = y :=
+          PartialHomeomorph.left_inv _ (by simpa using hy.2)
+        simp [this]
+      · simp
+  rw [← this]
+  simp only [ContDiffWithinAtProp, mfld_simps, preimage_comp, comp_assoc]
+
+/-- One can reformulate being `Cⁿ` at a point as being `Cⁿ` in the source space when
+composing with the extended chart. -/
+theorem contMDiffAt_iff_source :
+    ContMDiffAt I I' n f x ↔
+      ContMDiffWithinAt 𝓘(𝕜, E) I' n (f ∘ (extChartAt I x).symm) (range I) (extChartAt I x x) := by
+  rw [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_source]
+  simp
 
 section IsManifold
 
@@ -618,6 +657,30 @@ theorem contMDiffWithinAt_iff_nat {n : ℕ∞} :
   obtain - | n := n
   · exact contMDiffWithinAt_infty.2 fun n => h n le_top
   · exact h n le_rfl
+
+theorem contMDiffAt_iff_nat {n : ℕ∞} :
+    ContMDiffAt I I' n f x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffAt I I' m f x := by
+  simp [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_nat]
+
+/-- A function is `C^n` within a set at a point iff it is `C^m` within this set at this point, for
+any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
+`C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/
+theorem contMDiffWithinAt_iff_le_ne_infty :
+    ContMDiffWithinAt I I' n f s x ↔ ∀ m, m ≤ n → m ≠ ∞ → ContMDiffWithinAt I I' m f s x := by
+  refine ⟨fun h m hm h'm ↦ h.of_le hm, fun h ↦ ?_⟩
+  cases n with
+  | top =>
+    exact h _ le_rfl (by simp)
+  | coe n =>
+    exact contMDiffWithinAt_iff_nat.2 (fun m hm ↦ h _ (mod_cast hm) (by simp))
+
+/-- A function is `C^n`at a point iff it is `C^m`at this point, for
+any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
+`C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/
+theorem contMDiffAt_iff_le_ne_infty :
+    ContMDiffAt I I' n f x ↔ ∀ m, m ≤ n → m ≠ ∞ → ContMDiffAt I I' m f x := by
+  simp only [← contMDiffWithinAt_univ]
+  rw [contMDiffWithinAt_iff_le_ne_infty]
 
 /-! ### Restriction to a smaller set -/
 

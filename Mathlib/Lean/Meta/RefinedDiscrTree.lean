@@ -141,9 +141,9 @@ partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie �
   | .values vs =>
       .values (insertInArray vs v)
   | .path ks c => Id.run do
-    for n in [:ks.size] do
+    for h : n in [:ks.size] do
       let k1 := keys[i+n]!
-      let k2 := ks[n]!
+      let k2 := ks[n]
       if k1 != k2 then
         let shared := ks[:n]
         let rest := ks[n+1:]

@@ -21,8 +21,9 @@ relation, `functor_map_eq_iff` says that no unnecessary identifications have bee
 /-- A `HomRel` on `C` consists of a relation on every hom-set. -/
 def HomRel (C) [Quiver C] :=
   ∀ ⦃X Y : C⦄, (X ⟶ Y) → (X ⟶ Y) → Prop
+-- The `Inhabited` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting Note: `deriving Inhabited` was not able to deduce this typeclass
 instance (C) [Quiver C] : Inhabited (HomRel C) where
   default := fun _ _ _ _ ↦ PUnit
 
