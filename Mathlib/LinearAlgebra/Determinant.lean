@@ -201,8 +201,11 @@ theorem det_toLin (b : Basis ι R M) (f : Matrix ι ι R) :
   rw [← LinearMap.det_toMatrix b, LinearMap.toMatrix_toLin]
 
 @[simp]
+theorem _root_.Matrix.det_mulVecLin (f : Matrix ι ι R) : f.mulVecLin.det = Matrix.det f := by
+  simp only [← f.toLin'_apply', ← toLin_eq_toLin', det_toLin]
+
 theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matrix.det f := by
-  simp only [← toLin_eq_toLin', det_toLin]
+  simp
 
 /-- To show `P (LinearMap.det f)` it suffices to consider `P (Matrix.det (toMatrix _ _ f))` and
 `P 1`. -/

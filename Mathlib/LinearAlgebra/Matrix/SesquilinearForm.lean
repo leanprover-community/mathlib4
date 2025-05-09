@@ -505,7 +505,7 @@ variable [DecidableEq n] [DecidableEq n']
 @[simp]
 theorem isAdjointPair_toLinearMap₂' :
     LinearMap.IsAdjointPair (Matrix.toLinearMap₂' R J) (Matrix.toLinearMap₂' R J')
-        (Matrix.toLin' A) (Matrix.toLin' A') ↔
+        A.mulVecLin A'.mulVecLin ↔
       Matrix.IsAdjointPair J J' A A' := by
   rw [isAdjointPair_iff_comp_eq_compl₂]
   have h :
@@ -516,8 +516,7 @@ theorem isAdjointPair_toLinearMap₂' :
     · rw [h]
     · exact (LinearMap.toMatrix₂' R).injective h
   simp_rw [h, LinearMap.toMatrix₂'_comp, LinearMap.toMatrix₂'_compl₂,
-    LinearMap.toMatrix'_toLin', LinearMap.toMatrix'_toLinearMap₂']
-  rfl
+    Matrix.toMatrix'_mulVecLin, LinearMap.toMatrix'_toLinearMap₂', Matrix.IsAdjointPair]
 
 @[simp]
 theorem isAdjointPair_toLinearMap₂ :
@@ -588,7 +587,7 @@ def selfAdjointMatricesSubmodule : Submodule R (Matrix n n R) :=
 @[simp]
 theorem mem_selfAdjointMatricesSubmodule :
     A₁ ∈ selfAdjointMatricesSubmodule J ↔ J.IsSelfAdjoint A₁ := by
-  erw [mem_pairSelfAdjointMatricesSubmodule]
+  rw [selfAdjointMatricesSubmodule, mem_pairSelfAdjointMatricesSubmodule]
   rfl
 
 /-- The submodule of skew-adjoint matrices with respect to the bilinear form corresponding to
@@ -599,7 +598,7 @@ def skewAdjointMatricesSubmodule : Submodule R (Matrix n n R) :=
 @[simp]
 theorem mem_skewAdjointMatricesSubmodule :
     A₁ ∈ skewAdjointMatricesSubmodule J ↔ J.IsSkewAdjoint A₁ := by
-  erw [mem_pairSelfAdjointMatricesSubmodule]
+  rw [skewAdjointMatricesSubmodule, mem_pairSelfAdjointMatricesSubmodule]
   simp [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair]
 
 end MatrixAdjoints

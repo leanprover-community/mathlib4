@@ -54,7 +54,7 @@ def toLinearEquiv' (P : Matrix n n R) (_ : Invertible P) : (n → R) ≃ₗ[R] n
 
 @[simp]
 theorem toLinearEquiv'_apply (P : Matrix n n R) (h : Invertible P) :
-    (P.toLinearEquiv' h : Module.End R (n → R)) = Matrix.toLin' P :=
+    (P.toLinearEquiv' h : Module.End R (n → R)) = P.mulVecLin :=
   rfl
 
 @[simp]
@@ -110,8 +110,8 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M :
     exact eq_zero_of_mulVec_eq_zero hv mul_eq
   · contrapose!
     intro h
-    have : Function.Injective (Matrix.toLin' M) := by
-      simpa only [← LinearMap.ker_eq_bot, ker_toLin'_eq_bot_iff, not_imp_not] using h
+    have : Function.Injective M.mulVecLin := by
+      simpa only [← LinearMap.ker_eq_bot, ker_mulVecLin_eq_bot_iff, not_imp_not] using h
     have :
       M *
           LinearMap.toMatrix'
