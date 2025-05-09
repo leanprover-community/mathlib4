@@ -45,9 +45,9 @@ variable (F : C ⥤ D) (G : D ⥤ C) (H : C ⥤ D)
 
 /-- Structure containing the two adjunctions of an adjoint triple `F ⊣ G ⊣ H`. -/
 structure CategoryTheory.Adjunction.Triple where
-  /- Adjunction `F ⊣ G` of the adjoint triple `F ⊣ G ⊣ H`. -/
+  /-- Adjunction `F ⊣ G` of the adjoint triple `F ⊣ G ⊣ H`. -/
   adj₁ : F ⊣ G
-  /- Adjunction `G ⊣ H` of the adjoint triple `F ⊣ G ⊣ H`. -/
+  /-- Adjunction `G ⊣ H` of the adjoint triple `F ⊣ G ⊣ H`. -/
   adj₂ : G ⊣ H
 
 namespace CategoryTheory.Adjunction.Triple
@@ -277,4 +277,5 @@ lemma leftToRight_app_mono_iff_counit_unit_app_mono :
 
 end OuterFullyFaithful
 
+#check (⟨t.adj₁, t.adj₂⟩ : Triple F G H).adj₁
 end CategoryTheory.Adjunction.Triple
