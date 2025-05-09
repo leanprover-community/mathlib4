@@ -45,7 +45,8 @@ open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjuga
 
 namespace BoundedContinuousFunction
 
-variable {E : Type*} [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E F : Type*} [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
+  [SeminormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- The bounded continuous map `x ↦ exp(⟪x, t⟫ * I)`. -/
 noncomputable
@@ -56,6 +57,17 @@ lemma innerProbChar_apply (t x : E) : innerProbChar t x = exp (⟪x, t⟫ * I) :
 
 @[simp]
 lemma innerProbChar_zero : innerProbChar (0 : E) = 1 := by simp [innerProbChar]
+
+/-- The bounded continuous map `x ↦ exp (L x * I)`, for a continuous linear form `L`. -/
+noncomputable
+def probCharCLM (L : F →L[ℝ] ℝ) : F →ᵇ ℂ :=
+  char continuous_probChar (L := isBoundedBilinearMap_apply.symm.toContinuousLinearMap.toLinearMap₂)
+    isBoundedBilinearMap_apply.symm.continuous L
+
+lemma probCharCLM_apply (L : F →L[ℝ] ℝ) (x : F) : probCharCLM L x = exp (L x * I) := rfl
+
+@[simp]
+lemma probCharCLM_zero : probCharCLM (0 : F →L[ℝ] ℝ) = 1 := by simp [probCharCLM]
 
 end BoundedContinuousFunction
 
@@ -220,31 +232,7 @@ lemma charFun_conv [IsFiniteMeasure μ] [IsFiniteMeasure ν] (t : E) :
 
 end InnerProductSpace
 
-lemma _root_.ContinuousLinearMap.comp_inl_add_comp_inr
-    {E F : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
-    [SeminormedAddCommGroup F] [NormedSpace ℝ F]
-    (L : E × F →L[ℝ] ℝ) (v : E × F) :
-    L.comp (.inl ℝ E F) v.1 + L.comp (.inr ℝ E F) v.2 = L v := by
-  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply,
-    ContinuousLinearMap.inl_apply, ContinuousLinearMap.inr_apply, ← ContinuousLinearMap.map_add]
-  simp
-
-namespace BoundedContinuousFunction
-
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
-
-/-- The bounded continuous function `x ↦ exp (L x * I)`, for a continuous linear form `L`. -/
-noncomputable
-def probCharCLM (L : E →L[ℝ] ℝ) : E →ᵇ ℂ :=
-  char continuous_probChar (L := isBoundedBilinearMap_apply.symm.toContinuousLinearMap.toLinearMap₂)
-    isBoundedBilinearMap_apply.symm.continuous L
-
-lemma probCharCLM_apply (L : E →L[ℝ] ℝ) (x : E) : probCharCLM L x = exp (L x * I) := rfl
-
-@[simp]
-lemma probCharCLM_zero : probCharCLM (0 : E →L[ℝ] ℝ) = 1 := by simp [probCharCLM]
-
-end BoundedContinuousFunction
+section NormedSpace
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
   [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
@@ -253,8 +241,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : Measurab
 /-- The characteristic function of a measure in a normed space, function from `E →L[ℝ] ℝ` to `ℂ`
 with `charFunCLM μ L = ∫ v, exp (L v * I) ∂μ`. -/
 noncomputable
-def charFunCLM (μ : Measure E) (L : E →L[ℝ] ℝ) : ℂ :=
-  ∫ v, BoundedContinuousFunction.probCharCLM L v ∂μ
+def charFunCLM (μ : Measure E) (L : E →L[ℝ] ℝ) : ℂ := ∫ v, probCharCLM L v ∂μ
 
 lemma charFunCLM_apply (L : E →L[ℝ] ℝ) : charFunCLM μ L = ∫ v, exp (L v * I) ∂μ := rfl
 
@@ -314,5 +301,7 @@ theorem ext_of_charFunCLM {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeas
     by_contra! h
     exact hv (NormedSpace.eq_zero_of_forall_dual_eq_zero _ h)
   · exact isBoundedBilinearMap_apply.symm.continuous
+
+end NormedSpace
 
 end MeasureTheory
