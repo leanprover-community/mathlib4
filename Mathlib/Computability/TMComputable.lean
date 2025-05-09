@@ -301,7 +301,7 @@ instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
 
 /--
 For any two polynomial time Multi-tape Turing Machines,
-There exists another polynomial time Multi-tape Turing Machine that composes their operations.
+there exists another polynomial time multi-tape Turing Machine that composes their operations.
 This machine can work by simply having one tape for each tape in both of the composed TMs.
 It first carries out the operations of the first TM on the tapes associated with the first TM,
 then copies the output tape of the first TM to the input tape of the second TM,
