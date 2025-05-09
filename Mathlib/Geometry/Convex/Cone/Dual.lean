@@ -76,9 +76,8 @@ variable (s) in
 @[simp] lemma dual_dual_flip_dual : dual p (dual p.flip (dual p s)) = dual p s :=
   le_antisymm (dual_le_dual subset_dual_dual) subset_dual_dual
 
-variable (p) in
 @[simp] lemma dual_flip_dual_dual_flip (s : Set N) :
-    dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual ..
+    dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual _
 
 @[simp]
 lemma dual_span (s : Set M) : dual p (Submodule.span R≥0 s) = dual p s := by
