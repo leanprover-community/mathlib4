@@ -27,7 +27,7 @@ def chosenTerminalIsTerminal : IsTerminal chosenTerminal :=
   IsTerminal.ofUniqueHom (fun _ ↦ (Functor.const _).obj ⟨⟨⟨⟩⟩⟩) fun _ _ ↦ rfl
 
 /-- The chosen product of categories `C × D` yields a product cone in `Cat`. -/
-def prodCone (C D : Cat.{v,u}) : BinaryFan C D :=
+def prodCone (C D : Cat.{v, u}) : BinaryFan C D :=
   .mk (P := .of (C × D)) (Prod.fst _ _) (Prod.snd _ _)
 
 /-- The product cone in `Cat` is indeed a product. -/
@@ -37,9 +37,11 @@ def isLimitProdCone (X Y : Cat) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk
       (fun _ ↦ Prod.ext (by simp [← h1]) (by simp [← h2]))
       (fun _ _ _ ↦ by dsimp; rw [← h1, ← h2]; rfl))
 
-instance : ChosenFiniteProducts Cat where
-  product (X Y : Cat) := { isLimit := isLimitProdCone X Y }
-  terminal  := { isLimit := chosenTerminalIsTerminal }
+instance : ChosenFiniteProducts Cat :=
+  .ofChosenFiniteProducts ⟨_, chosenTerminalIsTerminal⟩ fun X Y ↦
+    { cone := X.prodCone Y, isLimit := isLimitProdCone X Y }
+
+instance : BraidedCategory Cat := .ofChosenFiniteProducts
 
 /-- A monoidal instance for Cat is provided through monoidalOfChosenFiniteProducts -/
 example : MonoidalCategory Cat := by infer_instance
@@ -89,10 +91,10 @@ lemma associator_inv (X : Cat) (Y : Cat) (Z : Cat) :
 
 lemma leftUnitor_hom (C : Cat) : (λ_ C).hom = Prod.snd _ _ := rfl
 
-lemma leftUnitor_inv (C : Cat) : (λ_ C).inv = Prod.sectr ⟨⟨⟨⟩⟩⟩ _ := rfl
+lemma leftUnitor_inv (C : Cat) : (λ_ C).inv = Prod.sectR ⟨⟨⟨⟩⟩⟩ _ := rfl
 
 lemma rightUnitor_hom (C : Cat) : (ρ_ C).hom = Prod.fst _ _ := rfl
 
-lemma rightUnitor_inv (C : Cat) : (ρ_ C).inv = Prod.sectl _ ⟨⟨⟨⟩⟩⟩ := rfl
+lemma rightUnitor_inv (C : Cat) : (ρ_ C).inv = Prod.sectL _ ⟨⟨⟨⟩⟩⟩ := rfl
 
 end CategoryTheory.Monoidal

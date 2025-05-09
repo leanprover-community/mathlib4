@@ -3,11 +3,12 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Order.Defs
-import Mathlib.Tactic.Core
-import Mathlib.Tactic.GCongr.ForwardAttr
+import Lean
 import Batteries.Lean.Except
 import Batteries.Tactic.Exact
+import Mathlib.Tactic.Core
+import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -78,8 +79,8 @@ functions which have different theories when different typeclass assumptions app
 the following lemma is stored with the same `@[gcongr]` data as `mul_le_mul` above, and the two
 lemmas are simply tried in succession to determine which has the typeclasses relevant to the goal:
 ```
-theorem mul_le_mul' [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
-    [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
+theorem mul_le_mul' [Mul α] [Preorder α] [MulLeftMono α]
+    [MulRightMono α] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
     a * c ≤ b * d
 ```
 
@@ -236,19 +237,19 @@ open Elab Tactic
 @[gcongr_forward] def exactRefl : ForwardExt where
   eval h goal := do
     let m ← mkFreshExprMVar none
-    goal.assignIfDefeq (← mkAppOptM ``Eq.subst #[h, m])
+    goal.assignIfDefEq (← mkAppOptM ``Eq.subst #[h, m])
     goal.applyRfl
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
 @[gcongr_forward] def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.assignIfDefeq (← mkAppM ``le_of_lt #[h])
+  eval h goal := do goal.assignIfDefEq (← mkAppM ``le_of_lt #[h])
 
 /-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
 @[gcongr_forward] def symmExact : ForwardExt where
-  eval h goal := do (← goal.applySymm).assignIfDefeq h
+  eval h goal := do (← goal.applySymm).assignIfDefEq h
 
 @[gcongr_forward] def exact : ForwardExt where
-  eval e m := m.assignIfDefeq e
+  eval e m := m.assignIfDefEq e
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
@@ -366,7 +367,7 @@ partial def _root_.Lean.MVarId.gcongr
   for lem in (gcongrExt.getState (← getEnv)).getD (relName, lhsHead, varyingArgs) #[] do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
-      Except.ok <$> g.apply (← mkConstWithFreshMVarLevels lem.declName)
+      Except.ok <$> withReducibleAndInstances (g.apply (← mkConstWithFreshMVarLevels lem.declName))
     catch e => pure (Except.error e)
     match gs with
     | .error e =>

@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.RingTheory.Algebraic
-import Mathlib.FieldTheory.Tower
 import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.FieldTheory.Tower
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
 # Results on finite dimensionality and algebraicity of intermediate fields.
@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 open Module
 
-variable {K : Type*} {L : Type*} [Field K] [Field L] [Algebra K L]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
   {S : IntermediateField K L}
 
 theorem IntermediateField.coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
@@ -33,12 +33,13 @@ def Subalgebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : S.IsAl
 abbrev Algebra.IsAlgebraic.toIntermediateField (S : Subalgebra K L) [Algebra.IsAlgebraic K S] :
     IntermediateField K L := (S.isAlgebraic_iff.mpr ‹_›).toIntermediateField
 
-/-- The algebraic closure of a field `K` in an extension `L`, the subalgebra `integralClosure K L`
-upgraded to an intermediate field (when `K` and `L` are both fields). -/
-def algebraicClosure : IntermediateField K L :=
-  Algebra.IsAlgebraic.toIntermediateField (integralClosure K L)
-
 namespace IntermediateField
+
+instance isAlgebraic_tower_bot [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic K S :=
+  Algebra.IsAlgebraic.of_injective S.val S.val.injective
+
+instance isAlgebraic_tower_top [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic S L :=
+  Algebra.IsAlgebraic.tower_top (K := K) S
 
 section FiniteDimensional
 
@@ -56,11 +57,6 @@ theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :
   rfl
 
 variable {F} {E}
-
-@[simp]
-theorem toSubalgebra_eq_iff : F.toSubalgebra = E.toSubalgebra ↔ F = E := by
-  rw [SetLike.ext_iff, SetLike.ext'_iff, Set.ext_iff]
-  rfl
 
 /-- If `F ≤ E` are two intermediate fields of `L / K` such that `[E : K] ≤ [F : K]` are finite,
 then `F = E`. -/
@@ -100,6 +96,15 @@ then `F = E`. -/
 theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
+
+/-- Mapping a finite dimensional intermediate field along an algebra equivalence gives
+a finite-dimensional intermediate field. -/
+instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
+    FiniteDimensional K (E.map f) :=
+  LinearEquiv.finiteDimensional (IntermediateField.equivMap E f).toLinearEquiv
+
+@[deprecated (since := "2025-05-02")]
+alias _root_.im_finiteDimensional := IntermediateField.finiteDimensional_map
 
 end FiniteDimensional
 

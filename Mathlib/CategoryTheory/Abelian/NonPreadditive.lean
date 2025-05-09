@@ -65,8 +65,8 @@ variable (C : Type u) [Category.{v} C]
 
 /-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, binary
     products and coproducts, and every monomorphism and every epimorphism is normal. -/
-class NonPreadditiveAbelian extends HasZeroMorphisms C, NormalMonoCategory C,
-    NormalEpiCategory C where
+class NonPreadditiveAbelian extends HasZeroMorphisms C, IsNormalMonoCategory C,
+    IsNormalEpiCategory C where
   [has_zero_object : HasZeroObject C]
   [has_kernels : HasKernels C]
   [has_cokernels : HasCokernels C]
@@ -265,7 +265,6 @@ abbrev σ {A : C} : A ⨯ A ⟶ A :=
 
 end
 
--- Porting note (#10618): simp can prove these
 @[reassoc]
 theorem diag_σ {X : C} : diag X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
 

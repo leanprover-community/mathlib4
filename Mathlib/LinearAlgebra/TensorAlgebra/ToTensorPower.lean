@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.LinearAlgebra.TensorPower
+import Mathlib.LinearAlgebra.TensorPower.Basic
 
 /-!
 # Tensor algebras as direct sums of tensor powers
@@ -103,7 +103,9 @@ theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
     ofDirectSum (TensorAlgebra.toDirectSum x) = x :=
   AlgHom.congr_fun ofDirectSum_comp_toDirectSum x
 
-@[simp, nolint simpNF] -- see std4#365 for the simpNF issue
+-- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
+-- It seems the side condition `h` is not applied by `simpNF`.
+@[simp, nolint simpNF]
 theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
     (PiTensorProduct.reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg Fin h) x) =

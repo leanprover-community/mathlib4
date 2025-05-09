@@ -5,12 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
-import Mathlib.Algebra.CharP.Two
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Data.ZMod.Basic
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Ideal
 
@@ -139,7 +134,7 @@ theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
 /-- The 1-form on $K^3$, the kernel of which we will take a quotient by.
 
 Our source uses $αx - βy - γz$, though since this is characteristic two we just use $αx + βy + γz$.
- -/
+-/
 @[simps!]
 def lFunc : (Fin 3 → K) →ₗ[K] K :=
   letI proj : Fin 3 → (Fin 3 → K) →ₗ[K] K := LinearMap.proj
@@ -240,7 +235,7 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
     ← Submodule.Quotient.mk_sub]
   convert LinearMap.map_zero _ using 2
   rw [Submodule.Quotient.mk_eq_zero]
-  simp (config := {decide := true}) [sub_zero, Ideal.span, Pi.single_apply]
+  simp +decide [sub_zero, Ideal.span, Pi.single_apply]
 
 /-- The core of the proof - scaling `1` by `α * β * γ` gives zero -/
 theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by

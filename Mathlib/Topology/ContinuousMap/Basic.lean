@@ -5,7 +5,8 @@ Authors: Nicolò Cavalleri
 -/
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Continuous bundled maps
@@ -17,8 +18,7 @@ be satisfied by itself and all stricter types.
 -/
 
 
-open Function
-open scoped Topology
+open Function Topology
 
 section ContinuousMapClass
 
@@ -72,7 +72,7 @@ variable (α)
 protected def id : C(α, α) where
   toFun := id
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(ContinuousMap.id α) = id :=
   rfl
 
@@ -85,7 +85,7 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
   rfl
 
 /-- `Function.const α b` as a bundled continuous function of `b`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constPi : C(β, α → β) where
   toFun b := Function.const α b
 
@@ -155,12 +155,12 @@ variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [Topological
   [TopologicalSpace β₂]
 
 /-- `Prod.fst : (x, y) ↦ x` as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def fst : C(α × β, α) where
   toFun := Prod.fst
 
 /-- `Prod.snd : (x, y) ↦ y` as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def snd : C(α × β, β) where
   toFun := Prod.snd
 
@@ -228,7 +228,7 @@ theorem pi_eval (f : ∀ i, C(A, X i)) (a : A) : (pi f) a = fun i : I => (f i) a
   rfl
 
 /-- Evaluation at point as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def eval (i : I) : C(∀ j, X j, X i) where
   toFun := Function.eval i
 
@@ -304,7 +304,7 @@ noncomputable def liftCover : C(α, β) :=
     Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
-    simpa (config := { unfoldPartialApp := true }) only [Set.restrict, Set.liftCover_coe]
+    simpa +unfoldPartialApp only [Set.restrict, Set.liftCover_coe]
       using map_continuous (φ i)
 
 variable {S φ hφ hS}
@@ -313,7 +313,7 @@ variable {S φ hφ hS}
 theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := by
   rw [liftCover, coe_mk, Set.liftCover_coe _]
 
--- @[simp] -- Porting note: the simpNF linter complained
+@[simp]
 theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
   simp only [coe_restrict, Function.comp_apply, liftCover_coe]
@@ -326,13 +326,10 @@ variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`
 of sets in `α` which contain a neighbourhood of each point in `α` and (2) the functions `F s` agree
 pairwise on intersections, can be glued to construct a continuous map in `C(α, β)`. -/
-noncomputable def liftCover' : C(α, β) := by
-  let S : A → Set α := (↑)
+noncomputable def liftCover' : C(α, β) :=
   let F : ∀ i : A, C(i, β) := fun i => F i i.prop
-  refine liftCover S F (fun i j => hF i i.prop j j.prop) ?_
-  intro x
-  obtain ⟨s, hs, hsx⟩ := hA x
-  exact ⟨⟨s, hs⟩, hsx⟩
+  liftCover ((↑) : A → Set α) F (fun i j => hF i i.prop j j.prop)
+    fun x => let ⟨s, hs, hsx⟩ := hA x; ⟨⟨s, hs⟩, hsx⟩
 
 variable {A F hF hA}
 
@@ -342,14 +339,18 @@ variable {A F hF hA}
 @[simp]
 theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
   let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
-  by delta liftCover'; exact liftCover_coe x'
+  by delta liftCover'; exact ContinuousMap.liftCover_coe x'
 
--- Porting note: porting program suggested `ext <| liftCover_coe'`
 @[simp]
 theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
     (liftCover' A F hF hA).restrict s = F s hs := ext <| liftCover_coe' (hF := hF) (hA := hA)
 
 end Gluing
+
+/-- `Set.inclusion` as a bundled continuous map. -/
+def inclusion {s t : Set α} (h : s ⊆ t) : C(s, t) where
+  toFun := Set.inclusion h
+  continuous_toFun := continuous_inclusion h
 
 end ContinuousMap
 
@@ -363,19 +364,19 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
 def Function.RightInverse.homeomorph {f' : C(Y, X)} (hf : Function.RightInverse f' f) :
     Quotient (Setoid.ker f) ≃ₜ Y where
   toEquiv := Setoid.quotientKerEquivOfRightInverse _ _ hf
-  continuous_toFun := quotientMap_quot_mk.continuous_iff.mpr (map_continuous f)
+  continuous_toFun := isQuotientMap_quot_mk.continuous_iff.mpr (map_continuous f)
   continuous_invFun := continuous_quotient_mk'.comp (map_continuous f')
 
-namespace QuotientMap
+namespace Topology.IsQuotientMap
 
 /--
 The homeomorphism from the quotient of a quotient map to its codomain. This is
 `Setoid.quotientKerEquivOfSurjective` as a homeomorphism.
 -/
 @[simps!]
-noncomputable def homeomorph (hf : QuotientMap f) : Quotient (Setoid.ker f) ≃ₜ Y where
+noncomputable def homeomorph (hf : IsQuotientMap f) : Quotient (Setoid.ker f) ≃ₜ Y where
   toEquiv := Setoid.quotientKerEquivOfSurjective _ hf.surjective
-  continuous_toFun := quotientMap_quot_mk.continuous_iff.mpr hf.continuous
+  continuous_toFun := isQuotientMap_quot_mk.continuous_iff.mpr hf.continuous
   continuous_invFun := by
     rw [hf.continuous_iff]
     convert continuous_quotient_mk'
@@ -384,7 +385,7 @@ noncomputable def homeomorph (hf : QuotientMap f) : Quotient (Setoid.ker f) ≃�
       (Setoid.quotientKerEquivOfSurjective f hf.surjective).symm_apply_eq]
     rfl
 
-variable (hf : QuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
+variable (hf : IsQuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
 
 /-- Descend a continuous map, which is constant on the fibres, along a quotient map. -/
 @[simps]
@@ -394,7 +395,7 @@ noncomputable def lift : C(Y, Z) where
   continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
 
 /--
-The obvious triangle induced by `QuotientMap.lift` commutes:
+The obvious triangle induced by `IsQuotientMap.lift` commutes:
 ```
      g
   X --→ Z
@@ -409,7 +410,7 @@ theorem lift_comp : (hf.lift g h).comp f = g := by
   ext
   simpa using h (Function.rightInverse_surjInv _ _)
 
-/-- `QuotientMap.lift` as an equivalence. -/
+/-- `IsQuotientMap.lift` as an equivalence. -/
 @[simps]
 noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ C(Y, Z) where
   toFun g := hf.lift g g.prop
@@ -420,8 +421,7 @@ noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ 
     ext a
     simpa using congrArg g (Function.rightInverse_surjInv hf.surjective a)
 
-end QuotientMap
-
+end Topology.IsQuotientMap
 end Lift
 
 namespace Homeomorph
@@ -431,13 +431,6 @@ variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 
 instance instContinuousMapClass : ContinuousMapClass (α ≃ₜ β) α β where
   map_continuous f := f.continuous_toFun
-
-/-- The forward direction of a homeomorphism, as a bundled continuous map. -/
-@[simps, deprecated _root_.toContinuousMap (since := "2024-10-12")]
-protected def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
-  ⟨e, e.continuous_toFun⟩
-
-attribute [deprecated ContinuousMap.coe_apply (since := "2024-10-12")] toContinuousMap_apply
 
 @[simp]
 theorem coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=

@@ -603,7 +603,7 @@ theorem integral_mul_upcrossingsBefore_le_integral [IsFiniteMeasure μ] (hf : Su
   calc
     (b - a) * μ[upcrossingsBefore a b f N] ≤
         μ[∑ k ∈ Finset.range N, upcrossingStrat a b f N k * (f (k + 1) - f k)] := by
-      rw [← integral_mul_left]
+      rw [← integral_const_mul]
       refine integral_mono_of_nonneg ?_ ((hf.sum_upcrossingStrat_mul a b N).integrable N) ?_
       · exact Eventually.of_forall fun ω => mul_nonneg (sub_nonneg.2 hab.le) (Nat.cast_nonneg _)
       · filter_upwards with ω
@@ -625,7 +625,7 @@ theorem crossing_pos_eq (hab : a < b) :
   have hf' (ω i) : (f i ω - a)⁺ ≤ 0 ↔ f i ω ≤ a := by rw [posPart_nonpos, sub_nonpos]
   induction' n with k ih
   · refine ⟨rfl, ?_⟩
-    simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
+    simp +unfoldPartialApp only [lowerCrossingTime_zero, hitting,
       Set.mem_Icc, Set.mem_Iic]
     ext ω
     split_ifs with h₁ h₂ h₂
@@ -762,7 +762,7 @@ noncomputable def upcrossings [Preorder ι] [OrderBot ι] [InfSet ι] (a b : ℝ
 
 theorem Adapted.measurable_upcrossings (hf : Adapted ℱ f) (hab : a < b) :
     Measurable (upcrossings a b f) :=
-  measurable_iSup fun _ => measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)
+  .iSup fun _ => measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)
 
 theorem upcrossings_lt_top_iff :
     upcrossings a b f ω < ∞ ↔ ∃ k, ∀ N, upcrossingsBefore a b f N ω ≤ k := by

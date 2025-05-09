@@ -23,15 +23,13 @@ We apply this API to `CompHaus` and define the functor
 
 universe w w' v u
 
-open CategoryTheory Opposite Limits regularTopology ContinuousMap
-
-attribute [local instance] ConcreteCategory.instFunLike
+open CategoryTheory Opposite Limits regularTopology ContinuousMap Topology
 
 variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{w})
   (X : Type w') [TopologicalSpace X]
 
 /--
-An auxiliary lemma to that allows us to use `QuotientMap.lift` in the proof of
+An auxiliary lemma to that allows us to use `IsQuotientMap.lift` in the proof of
 `equalizerCondition_yonedaPresheaf`.
 -/
 theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullback π π]
@@ -61,7 +59,7 @@ condition which is required to be a sheaf for the regular topology.
 -/
 theorem equalizerCondition_yonedaPresheaf
     [∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) G]
-    (hq : ∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], QuotientMap (G.map π)) :
+    (hq : ∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], IsQuotientMap (G.map π)) :
       EqualizerCondition (yonedaPresheaf G X) := by
   apply EqualizerCondition.mk
   intro Z B π _ _
@@ -89,8 +87,8 @@ the extensive topology.
 -/
 noncomputable instance [PreservesFiniteCoproducts G] :
     PreservesFiniteProducts (yonedaPresheaf G X) :=
-  have := preservesFiniteProductsOp G
-  ⟨fun _ ↦ compPreservesLimitsOfShape G.op (yonedaPresheaf' X)⟩
+  have := preservesFiniteProducts_op G
+  ⟨fun _ ↦ comp_preservesLimitsOfShape G.op (yonedaPresheaf' X)⟩
 
 section
 
@@ -109,11 +107,11 @@ def TopCat.toSheafCompHausLike :
   cond := by
     have := CompHausLike.preregular hs
     rw [Presheaf.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-    refine ⟨⟨inferInstance⟩, ?_⟩
+    refine ⟨inferInstance, ?_⟩
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
       (CompHausLike.compHausLikeToTop.{u} P) X
     intro Z B π he
-    apply QuotientMap.of_surjective_continuous (hs _ he) π.continuous
+    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.hom.continuous
 
 /--
 `TopCat.toSheafCompHausLike` yields a functor from `TopCat.{max u w}` to
@@ -124,7 +122,7 @@ noncomputable def topCatToSheafCompHausLike :
     have := CompHausLike.preregular hs
     TopCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
   obj X := X.toSheafCompHausLike P hs
-  map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩
+  map f := ⟨⟨fun _ g ↦ f.hom.comp g, by aesop⟩⟩
 
 end
 
@@ -132,7 +130,7 @@ end
 Associate to a `(u+1)`-small topological space the corresponding condensed set, given by
 `yonedaPresheaf`.
 -/
-noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
+noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u + 1}) : CondensedSet.{u} :=
   toSheafCompHausLike.{u+1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /--

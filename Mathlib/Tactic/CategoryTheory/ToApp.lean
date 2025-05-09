@@ -73,8 +73,8 @@ def toCatExpr (e : Expr) : MetaM Expr := do
   /-- Recursive function which applies `mkLambdaFVars` stepwise
   (so that each step can have different binderinfos) -/
     apprec (i : Nat) (e : Expr) : MetaM Expr := do
-      if i < args.size then
-        let arg := args[i]!
+      if h : i < args.size then
+        let arg := args[i]
         let bi := binderInfos[i]!
         let e' ← apprec (i + 1) e
         unless arg != B && arg != inst do return e'

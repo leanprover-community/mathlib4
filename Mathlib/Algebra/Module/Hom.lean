@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Group.Hom.Instances
+import Mathlib.Algebra.GroupWithZero.Action.End
+import Mathlib.Algebra.Module.End
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
@@ -67,7 +69,9 @@ instance instDomMulActModule
   add_smul s s' f := AddMonoidHom.ext fun m ↦ by
     simp_rw [AddMonoidHom.add_apply, DomMulAct.smul_addMonoidHom_apply, ← map_add, ← add_smul]; rfl
   zero_smul _ := AddMonoidHom.ext fun _ ↦ by
-    erw [DomMulAct.smul_addMonoidHom_apply, zero_smul, map_zero]; rfl
+    rw [DomMulAct.smul_addMonoidHom_apply]
+    -- TODO there should be a simp lemma for `DomMulAct.mk.symm 0`
+    simp [DomMulAct.mk, MulOpposite.opEquiv]
 
 end AddMonoidHom
 
@@ -125,7 +129,7 @@ end AddMonoid.End
 namespace AddMonoidHom
 
 /-- Scalar multiplication on the left as an additive monoid homomorphism. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 protected def smulLeft [Monoid M] [AddMonoid A] [DistribMulAction M A] (c : M) : A →+ A :=
   DistribMulAction.toAddMonoidHom _ c
 

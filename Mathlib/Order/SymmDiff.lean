@@ -49,18 +49,19 @@ boolean ring, generalized boolean algebra, boolean algebra, symmetric difference
 Heyting
 -/
 
+assert_not_exists RelIso
 
 open Function OrderDual
 
 variable {ι α β : Type*} {π : ι → Type*}
 
 /-- The symmetric difference operator on a type with `⊔` and `\` is `(A \ B) ⊔ (B \ A)`. -/
-def symmDiff [Sup α] [SDiff α] (a b : α) : α :=
+def symmDiff [Max α] [SDiff α] (a b : α) : α :=
   a \ b ⊔ b \ a
 
 /-- The Heyting bi-implication is `(b ⇨ a) ⊓ (a ⇨ b)`. This generalizes equivalence of
 propositions. -/
-def bihimp [Inf α] [HImp α] (a b : α) : α :=
+def bihimp [Min α] [HImp α] (a b : α) : α :=
   (b ⇨ a) ⊓ (a ⇨ b)
 
 /-- Notation for symmDiff -/
@@ -71,10 +72,10 @@ scoped[symmDiff] infixl:100 " ⇔ " => bihimp
 
 open scoped symmDiff
 
-theorem symmDiff_def [Sup α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
+theorem symmDiff_def [Max α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
   rfl
 
-theorem bihimp_def [Inf α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
+theorem bihimp_def [Min α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
   rfl
 
 theorem symmDiff_eq_Xor' (p q : Prop) : p ∆ q = Xor' p q :=
@@ -372,7 +373,7 @@ theorem symmDiff_eq_sup : a ∆ b = a ⊔ b ↔ Disjoint a b := by
 theorem le_symmDiff_iff_left : a ≤ a ∆ b ↔ Disjoint a b := by
   refine ⟨fun h => ?_, fun h => h.symmDiff_eq_sup.symm ▸ le_sup_left⟩
   rw [symmDiff_eq_sup_sdiff_inf] at h
-  exact disjoint_iff_inf_le.mpr (le_sdiff_iff.1 <| inf_le_of_left_le h).le
+  exact disjoint_iff_inf_le.mpr (le_sdiff_right.1 <| inf_le_of_left_le h).le
 
 @[simp]
 theorem le_symmDiff_iff_right : b ≤ a ∆ b ↔ Disjoint a b := by

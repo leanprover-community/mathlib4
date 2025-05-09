@@ -5,7 +5,7 @@ Authors: Justus Springer
 -/
 import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.Topology.Sheaves.Sheaf
-import Mathlib.CategoryTheory.Sites.DenseSubsite
+import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
 /-!
 
@@ -24,10 +24,9 @@ induce cover preserving functors, and that open embeddings induce continuous fun
 
 noncomputable section
 
+open CategoryTheory TopologicalSpace Topology
 
 universe w v u
-
-open CategoryTheory TopologicalSpace
 
 namespace TopCat.Presheaf
 
@@ -40,7 +39,7 @@ def coveringOfPresieve (U : Opens X) (R : Presieve U) : (ΣV, { f : V ⟶ U // R
   fun f => f.1
 
 @[simp]
-theorem coveringOfPresieve_apply (U : Opens X) (R : Presieve U) (f : ΣV, { f : V ⟶ U // R f }) :
+theorem coveringOfPresieve_apply (U : Opens X) (R : Presieve U) (f : Σ V, { f : V ⟶ U // R f }) :
     coveringOfPresieve U R f = f.1 := rfl
 
 namespace coveringOfPresieve
@@ -106,10 +105,10 @@ def homOfIndex (i : ι) : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f } :=
 /-- By using the axiom of choice, a dependent pair `(V, f)` where `f : V ⟶ iSup U` is a member of
 `presieveOfCovering U f` can be turned into an index `i : ι`, such that `V = U i`.
 -/
-def indexOfHom (f : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
+def indexOfHom (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
   f.2.2.choose
 
-theorem indexOfHom_spec (f : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f }) :
+theorem indexOfHom_spec (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) :
     f.1 = U (indexOfHom U f) :=
   f.2.2.choose_spec
 
@@ -143,17 +142,14 @@ open TopCat.Presheaf Opposite
 variable {C : Type u} [Category.{v} C]
 variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
-theorem IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
+theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
     CompatiblePreserving (Opens.grothendieckTopology Y) hf.isOpenMap.functor := by
-  haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.inj
+  haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
   apply compatiblePreservingOfDownwardsClosed
   intro U V i
   refine ⟨(Opens.map f).obj V, eqToIso <| Opens.ext <| Set.image_preimage_eq_of_subset fun x h ↦ ?_⟩
   obtain ⟨_, _, rfl⟩ := i.le h
   exact ⟨_, rfl⟩
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.compatiblePreserving := IsOpenEmbedding.compatiblePreserving
 
 theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
     CoverPreserving (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) hf.functor := by
@@ -163,23 +159,17 @@ theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
   exact ⟨_, hf.functor.map i, ⟨_, i, 𝟙 _, hV, rfl⟩, Set.mem_image_of_mem f hxV⟩
 
 
-lemma IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
+lemma Topology.IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
     h.isOpenMap.functor.IsContinuous (Opens.grothendieckTopology X)
       (Opens.grothendieckTopology Y) := by
   apply Functor.isContinuous_of_coverPreserving
   · exact h.compatiblePreserving
   · exact h.isOpenMap.coverPreserving
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.functor_isContinuous := IsOpenEmbedding.functor_isContinuous
-
 theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF : F.IsSheaf) :
     IsSheaf (h.isOpenMap.functor.op ⋙ F) := by
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
-
-@[deprecated (since := "2024-10-18")]
-alias TopCat.Presheaf.isSheaf_of_openEmbedding := TopCat.Presheaf.isSheaf_of_isOpenEmbedding
 
 variable (f)
 

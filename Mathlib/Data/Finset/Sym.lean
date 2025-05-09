@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Data.Multiset.Sym
 
@@ -156,8 +156,6 @@ section Sym2
 
 variable {m : Sym2 α}
 
--- Porting note: add this lemma and remove simp in the next lemma since simpNF lint
--- warns that its LHS is not in normal form
 @[simp]
 theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈ s := by
   rw [← mem_sym2_iff]
@@ -174,10 +172,6 @@ end Sym2
 section Sym
 
 variable [DecidableEq α] {n : ℕ}
-
--- Porting note: instance needed
-instance : DecidableEq (Sym α n) :=
-  inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- Lifts a finset to `Sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
 with elements in `s`. -/
