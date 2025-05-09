@@ -390,10 +390,10 @@ where
       if fvars.contains fvar then
         -- This is one of the hypotheses that was intentionally reverted.
         let tgt ← instantiateMVars <| ← g.getType
-        let ty := tgt.bindingDomain!.cleanupAnnotations
+        let ty := (if tgt.isLet then tgt.letType! else tgt.bindingDomain!).cleanupAnnotations
         if ← pure tgt.isLet <&&> Meta.isProp ty then
           -- Clear the proof value (using proof irrelevance) and `go` again
-          let tgt' := Expr.forallE tgt.bindingName! ty tgt.bindingBody! .default
+          let tgt' := Expr.forallE tgt.letName! ty tgt.letBody! .default
           let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
           g.assign <| .app g' tgt.letValue!
           return ← go g'.mvarId! i hs

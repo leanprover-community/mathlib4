@@ -373,8 +373,7 @@ instance partialOrder : PartialOrder Num where
 
 instance isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid Num where
   add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
-  le_of_add_le_add_left a b c :=
-    show a + b ≤ a + c → b ≤ c by transfer_rw; apply le_of_add_le_add_left
+  le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
 
 instance linearOrder : LinearOrder Num :=
   { le_total := by
@@ -723,7 +722,7 @@ theorem pred_to_nat : ∀ n : Num, (pred n : ℕ) = Nat.pred n
 theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
   | 0 => rfl
   | pos p => by
-    rw [ppred, Option.map_some, Nat.ppred_eq_some.2]
+    rw [ppred, Option.map_eq_map, Option.map_some, Nat.ppred_eq_some.2]
     rw [PosNum.pred'_to_nat, Nat.succ_pred_eq_of_pos (PosNum.to_nat_pos _)]
     rfl
 

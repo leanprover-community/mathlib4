@@ -51,11 +51,11 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
   simp only [dom_iff_mem, Code.evaln_complete, Option.mem_def] at h
   obtain ⟨x, k, e⟩ | ⟨x, k, e⟩ := h
   · refine ⟨k, x, ?_⟩
-    simp only [e, Option.some_orElse, Option.mem_def]
+    simp only [e, Option.some_orElse, Option.mem_def, Option.orElse_eq_orElse]
   · refine ⟨k, ?_⟩
     rcases cf.evaln k n with - | y
-    · exact ⟨x, by simp only [e, Option.mem_def, Option.none_orElse]⟩
-    · exact ⟨y, by simp only [Option.some_orElse, Option.mem_def]⟩
+    · exact ⟨x, by simp only [e, Option.mem_def, Option.orElse_eq_orElse, Option.none_orElse]⟩
+    · exact ⟨y, by simp only [Option.orElse_eq_orElse, Option.some_orElse, Option.mem_def]⟩
 
 end Nat.Partrec
 
