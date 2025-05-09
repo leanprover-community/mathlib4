@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # The Weierstrass approximation theorem for continuous functions on `[a,b]`
@@ -28,18 +29,15 @@ open scoped unitInterval
 This is just a matter of unravelling definitions and using the Bernstein approximations.
 -/
 theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologicalClosure = ⊤ := by
-  rw [eq_top_iff]
+  apply top_unique
   rintro f -
-  refine Filter.Frequently.mem_closure ?_
-  refine Filter.Tendsto.frequently (bernsteinApproximation_uniform f) ?_
-  apply Frequently.of_forall
-  intro n
-  simp only [SetLike.mem_coe]
+  refine mem_closure_of_tendsto (bernsteinApproximation_uniform f) <| .of_forall fun n ↦ ?_
   apply Subalgebra.sum_mem
-  rintro n -
-  apply Subalgebra.smul_mem
-  dsimp [bernstein, polynomialFunctions]
-  simp
+  rintro i -
+  rw [← SetLike.mem_coe, polynomialFunctions_coe]
+  use bernsteinPolynomial ℝ n i * .C (f (bernstein.z i))
+  ext
+  simp [bernstein]
 
 /-- The **Weierstrass Approximation Theorem**:
 polynomials functions on `[a, b] ⊆ ℝ` are dense in `C([a,b],ℝ)`

@@ -128,8 +128,8 @@ theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
 
 theorem multinomial_univ_two (a b : ℕ) :
     multinomial Finset.univ ![a, b] = (a + b)! / (a ! * b !) := by
-  rw [multinomial, Fin.sum_univ_two, Fin.prod_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one,
-    Matrix.head_cons]
+  rw [multinomial, Fin.sum_univ_two, Fin.prod_univ_two]
+  dsimp only [Matrix.cons_val]
 
 theorem multinomial_univ_three (a b c : ℕ) :
     multinomial Finset.univ ![a, b, c] = (a + b + c)! / (a ! * b ! * c !) := by

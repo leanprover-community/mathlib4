@@ -716,8 +716,6 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [LinearOrder k] [IsStrictO
   [AddCommGroup V]
 variable [Module k V] [AffineSpace V P] {ι : Type*}
 
-attribute [local instance] LinearOrderedRing.decidableLT
-
 /-- Given an affinely independent family of points, suppose that an affine combination lies in
 the span of two points given as affine combinations, and suppose that, for two indices, the
 coefficients in the first point in the span are zero and those in the second point in the span
