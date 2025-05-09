@@ -18,9 +18,7 @@ $\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)$
 out of this typeclass.
 
 We show (see `CategoryTheory.Limits.PreservesColimit₂.of_preservesColimits_in_each_variable`)
-that if `C` has enough (co)limits, and that `G` preserves them, in each variable, then `G`
-`PreservesColimit₂`.
-
+that if `G` preserves colimits in each variable, then `G` `PreservesColimit₂`.
 -/
 
 namespace CategoryTheory
@@ -178,14 +176,10 @@ end
 
 /-- If a bifunctor preserves separately colimits of `K₁` in the first variable and colimits
 of `K₂` in the second variable, then it preserves colimit of the pair `K₁, K₂`. -/
-instance of_preservesColimits_in_each_variable [HasColimitsOfShape J₁ C]
-    [h₀ : PreservesColimit K₁ G] [∀ x : C₁, PreservesColimit K₂ (G.obj x)] :
+instance of_preservesColimits_in_each_variable
+    [∀ x : C₂, PreservesColimit K₁ (G.flip.obj x)] [∀ x : C₁, PreservesColimit K₂ (G.obj x)] :
     PreservesColimit₂ K₁ K₂ G where
   isColimit_mapCocone₂ {c₁} hc₁ {c₂} hc₂ :=
-    letI : PreservesColimit K₁ (G.flip.obj c₂.pt) :=
-      { preserves {c₁'} hc₁' :=
-          ⟨PreservesColimit.preserves (F := evaluation _ _|>.obj c₂.pt)
-            (h₀.preserves hc₁').some |>.some⟩ }
     let Q₀ : DiagramOfCocones (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
       { obj j₁ := G.obj (K₁.obj j₁) |>.mapCocone c₂
         map f := { hom := G.map (K₁.map f)|>.app c₂.pt }}
@@ -301,14 +295,10 @@ end
 
 /-- If a bifunctor preserves separately limits of `K₁` in the first variable and limits
 of `K₂` in the second variable, then it preserves colimit of the pair of cones `K₁, K₂`. -/
-instance of_preservesLimits_in_each_variable [HasLimitsOfShape J₁ C]
-    [h₀ : PreservesLimit K₁ G] [∀ x : C₁, PreservesLimit K₂ (G.obj x)] :
+instance of_preservesLimits_in_each_variable
+    [∀ x : C₂, PreservesLimit K₁ (G.flip.obj x)] [∀ x : C₁, PreservesLimit K₂ (G.obj x)] :
     PreservesLimit₂ K₁ K₂ G where
   isLimit_mapCone₂ {c₁} hc₁ {c₂} hc₂ :=
-    letI : PreservesLimit K₁ (G.flip.obj c₂.pt) :=
-      { preserves {c₁'} hc₁' :=
-          ⟨PreservesLimit.preserves (F := evaluation _ _|>.obj c₂.pt)
-            (h₀.preserves hc₁').some |>.some⟩ }
     let Q₀ : DiagramOfCones (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
       { obj j₁ := G.obj (K₁.obj j₁) |>.mapCone c₂
         map f := { hom := G.map (K₁.map f)|>.app c₂.pt }}
