@@ -22,6 +22,7 @@ that if `C` has enough (co)limits, and that `G` preserves them, in each variable
 `PreservesColimit₂`.
 
 -/
+
 namespace CategoryTheory
 
 open Category Limits
