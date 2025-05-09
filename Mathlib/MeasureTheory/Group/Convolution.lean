@@ -32,10 +32,10 @@ noncomputable def mconv (μ : Measure M) (ν : Measure M) :
     Measure M := Measure.map (fun x : M × M ↦ x.1 * x.2) (μ.prod ν)
 
 /-- Scoped notation for the multiplicative convolution of measures. -/
-scoped[MeasureTheory] infixl:80 " ∗ " => MeasureTheory.Measure.mconv
+scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.mconv
 
 /-- Scoped notation for the additive convolution of measures. -/
-scoped[MeasureTheory] infixl:80 " ∗ " => MeasureTheory.Measure.conv
+scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.conv
 
 @[to_additive]
 theorem lintegral_mconv [MeasurableMul₂ M] {μ ν : Measure M} [SFinite ν]
@@ -117,14 +117,11 @@ instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasu
 theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
     [SFinite ν] [SFinite ρ] :
     (μ ∗ ν) ∗ ρ = μ ∗ (ν ∗ ρ) := by
-  apply ext_of_lintegral
-  intro f hf
-  repeat
-    rw [lintegral_mconv (by first | fun_prop | apply Measurable.lintegral_prod_right; fun_prop)]
+  refine ext_of_lintegral _ fun f hf ↦ ?_
+  repeat rw [lintegral_mconv (by fun_prop)]
   refine lintegral_congr fun x ↦ ?_
   rw [lintegral_mconv (by fun_prop)]
   repeat refine lintegral_congr fun x ↦ ?_
-  apply congr_arg
   simp [mul_assoc]
 
 @[to_additive]

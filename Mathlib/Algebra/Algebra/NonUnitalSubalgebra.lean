@@ -653,20 +653,6 @@ theorem adjoin_induction₂ {s : Set A} {p : ∀ x y, x ∈ adjoin R s → y ∈
   | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
   | smul _ _ _ h => exact smul_right _ _ _ _ _ h
 
-/-- The difference with `NonUnitalAlgebra.adjoin_induction` is that this acts on the subtype. -/
-@[elab_as_elim, deprecated adjoin_induction (since := "2024-10-11")]
-lemma adjoin_induction_subtype {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
-    (mem : ∀ x (h : x ∈ s), p ⟨x, subset_adjoin R h⟩)
-    (add : ∀ x y, p x → p y → p (x + y)) (zero : p 0)
-    (mul : ∀ x y, p x → p y → p (x * y)) (smul : ∀ (r : R) x, p x → p (r • x)) : p a :=
-  Subtype.recOn a fun b hb => by
-    induction hb using adjoin_induction with
-    | mem _ h => exact mem _ h
-    | zero => exact zero
-    | mul _ _ _ _ h₁ h₂ => exact mul _ _ h₁ h₂
-    | add _ _ _ _ h₁ h₂ => exact add _ _ h₁ h₂
-    | smul _ _ _ h => exact smul _ _ h
-
 open Submodule in
 lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigroup.closure s) := by
   apply le_antisymm
@@ -886,7 +872,8 @@ variable [NonUnitalNonAssocSemiring A] [Module R A]
 variable (S : NonUnitalSubalgebra R A)
 
 theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) = S :=
-  ext <| Set.ext_iff.1 <| (NonUnitalSubalgebraClass.subtype S).coe_range.trans Subtype.range_val
+  ext <| Set.ext_iff.1 <|
+    (NonUnitalAlgHom.coe_range <| NonUnitalSubalgebraClass.subtype S).trans Subtype.range_val
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) :=
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩

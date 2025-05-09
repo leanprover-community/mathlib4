@@ -265,7 +265,7 @@ Analysis:
 
   Normed vector spaces/Banach spaces:
     normed vector space over a normed field: 'NormedSpace'
-    topology on a normed vector space: 'NormedSpace.isBoundedSMul'
+    topology on a normed vector space: 'NormSMulClass.toIsBoundedSMul'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
     finite dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
     Heine-Borel theorem (finite dimensional normed spaces are proper): 'FiniteDimensional.proper'
@@ -283,8 +283,8 @@ Analysis:
     Cauchy-Schwarz inequality: 'inner_mul_inner_self_le'
     adjoint operator: 'LinearPMap.adjoint'
     self-adjoint operator: 'IsSelfAdjoint'
-    orthogonal projection: 'orthogonalProjection'
-    reflection: 'reflection'
+    orthogonal projection: 'Submodule.orthogonalProjection'
+    reflection: 'Submodule.reflection'
     orthogonal complement: 'Submodule.orthogonal'
     existence of Hilbert basis: 'exists_hilbertBasis'
     eigenvalues from Rayleigh quotient: 'IsSelfAdjoint.hasEigenvector_of_isLocalExtrOn'

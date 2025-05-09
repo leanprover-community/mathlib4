@@ -427,7 +427,8 @@ theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m := by
   rw [smul_mk', mk'_mul_cancel_left]
 
 @[simps]
-instance invertible_mk'_one (s : M) : Invertible (IsLocalization.mk' S (1 : R) s) where
+noncomputable instance invertible_mk'_one (s : M) :
+    Invertible (IsLocalization.mk' S (1 : R) s) where
   invOf := algebraMap R S s
   invOf_mul_self := by simp
   mul_invOf_self := by simp
