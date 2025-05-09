@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 /-!
 # Circle Averages
 
-For a function `f` on the complex plane, this file introduces the notation `circleAverage f c R` as
+For a function `f` on the complex plane, this file introduces the definition `Real.circleAverage f c R` as
 a shorthand for the average of `f` on the circle with center `c` and radius `R`, equipped with the
 rotation-invariant measure of total volume one. Like `IntervalAverage`, this notion exists as a
 convenience. It avoids notationally inconvenient compositions of `f` with `circleMap` and avoids the
@@ -18,7 +18,7 @@ need to manually elemininate `2 * π` every time an average is computed.
 
 Note: Like the interval average defined in `Mathlib.MeasureTheory.Integral.IntervalAverage`, the
 `circleAverage` defined here is a purely measure-theoretic average. It should not be confused with
-`CircleIntegral`, which is the path integral over the circle path. The relevant integrability
+`circleIntegral`, which is the path integral over the circle path. The relevant integrability
 property `circleAverage` is `CircleIntegrable`, as defined in
 `Mathlib.MeasureTheory.Integral.CircleIntegral`.
 
@@ -128,7 +128,7 @@ theorem circleAverage_smul :
   rw [smul_comm]
   simp [intervalIntegral.integral_smul]
 
-/-- Circle averages commute with skalar multiplication. -/
+/-- Circle averages commute with scalar multiplication. -/
 theorem circleAverage_fun_smul :
     circleAverage (fun z ↦ a • f z) c R = a • circleAverage f c R :=
   circleAverage_smul
