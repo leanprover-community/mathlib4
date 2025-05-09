@@ -46,7 +46,6 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
   id X := ⟨⟨le_refl X⟩⟩
   comp f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
 
--- Porting note: added to ease the port of `CategoryTheory.Subobject.Basic`
 instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
   Subsingleton (U ⟶ V) := ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
 
@@ -218,3 +217,14 @@ theorem Equivalence.toOrderIso_symm_apply (e : X ≌ Y) (y : Y) :
 end PartialOrder
 
 end CategoryTheory
+
+open CategoryTheory
+
+lemma PartialOrder.isIso_iff_eq {X : Type u} [PartialOrder X]
+    {a b : X} (f : a ⟶ b) : IsIso f ↔ a = b := by
+  constructor
+  · intro _
+    exact (asIso f).to_eq
+  · rintro rfl
+    rw [Subsingleton.elim f (𝟙 _)]
+    infer_instance

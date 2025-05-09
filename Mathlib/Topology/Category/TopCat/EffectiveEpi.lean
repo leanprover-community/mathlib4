@@ -64,22 +64,7 @@ theorem effectiveEpi_iff_isQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
     a coequalizer of two maps into `X`. It suffices to prove that `π` followed by the isomorphism to
     an arbitrary coequalizer is a quotient map. -/
   have hπ : RegularEpi π := inferInstance
-  let F := parallelPair hπ.left hπ.right
-  let i : B ≅ colimit F := hπ.isColimit.coconePointUniqueUpToIso (colimit.isColimit _)
-  suffices IsQuotientMap (homeoOfIso i ∘ π) by
-    simpa [← Function.comp_assoc] using (homeoOfIso i).symm.isQuotientMap.comp this
-  constructor
-  /- Effective epimorphisms are epimorphisms and epimorphisms in `TopCat` are surjective. -/
-  · change Function.Surjective (π ≫ i.hom)
-    rw [← epi_iff_surjective]
-    infer_instance
-  /- The key to proving that the coequalizer has the quotient topology is
-    `TopCat.coequalizer_isOpen_iff` which characterises the open sets in a coequalizer. -/
-  · ext U
-    have : π ≫ i.hom = colimit.ι F WalkingParallelPair.one := by
-      simp [F, i, ← Iso.eq_comp_inv]
-    rw [isOpen_coinduced (f := (homeoOfIso i ∘ π)), coequalizer_isOpen_iff _ U, ← this]
-    rfl
+  exact isQuotientMap_of_isColimit_cofork _ hπ.isColimit
 
 @[deprecated (since := "2024-10-22")]
 alias effectiveEpi_iff_quotientMap := effectiveEpi_iff_isQuotientMap

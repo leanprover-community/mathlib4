@@ -168,7 +168,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     have := hs' r ⟨X.basicOpen (f.appLE ⊤ U le_top r.1), U.2.basicOpen (f.appLE ⊤ U le_top r.1)⟩
       (by simp [Scheme.Hom.appLE])
     rwa [IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2, CommRingCat.hom_ofHom,
-      ← h₁.is_localization_away_iff] at this
+      ← h₁.isLocalization_away_iff] at this
 
 variable {P}
 
@@ -390,7 +390,7 @@ lemma isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget
       (inferInstanceAs (P.inverseImage Scheme.Spec).unop.RespectsIso)
   constructor
   · intro R S _ _ f r R' S' _ _ _ _ _ _ H
-    refine (RingHom.RespectsIso.is_localization_away_iff hP ..).mp ?_
+    refine (RingHom.RespectsIso.isLocalization_away_iff hP ..).mp ?_
     exact (MorphismProperty.arrow_mk_iso_iff P (SpecMapRestrictBasicOpenIso
       (CommRingCat.ofHom f) r)).mp (IsLocalAtTarget.restrict H (basicOpen r))
   · intros R S _ _ f s hs H
@@ -676,9 +676,9 @@ lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x).hom)
 /-- Let `Q` be a property of ring maps that is stable under localization.
 Then if the associated property of scheme morphisms holds for `f`, `Q` holds on all stalks. -/
 lemma stalkMap
-      (hQ : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (_ : Q f)
-        (J : Ideal S) (_ : J.IsPrime), Q (Localization.localRingHom _ J f rfl))
-      (hf : P f) (x : X) : Q (f.stalkMap x).hom := by
+    (hQ : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (_ : Q f)
+      (J : Ideal S) (_ : J.IsPrime), Q (Localization.localRingHom _ J f rfl))
+    (hf : P f) (x : X) : Q (f.stalkMap x).hom := by
   have hQi := (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
   wlog h : IsAffine X ∧ IsAffine Y generalizing X Y f
   · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open Y)

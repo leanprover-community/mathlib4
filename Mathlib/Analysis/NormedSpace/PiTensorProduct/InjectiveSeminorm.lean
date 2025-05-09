@@ -285,15 +285,12 @@ theorem liftIsometry_apply_apply (f : ContinuousMultilinearMap 𝕜 E F) (x : �
   simp only [liftIsometry, LinearIsometryEquiv.coe_mk, liftEquiv_apply,
     LinearMap.mkContinuous_apply]
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The canonical continuous multilinear map from `E = Πᵢ Eᵢ` to `⨂[𝕜] i, Eᵢ`.
 -/
 @[simps!]
 noncomputable def tprodL : ContinuousMultilinearMap 𝕜 E (⨂[𝕜] i, E i) :=
   (liftIsometry 𝕜 E _).symm (ContinuousLinearMap.id 𝕜 _)
-
-variable {𝕜}
 
 @[simp]
 theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by

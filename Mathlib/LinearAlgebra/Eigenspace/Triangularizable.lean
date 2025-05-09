@@ -78,8 +78,10 @@ linear endomorphism span the whole space. -/
 theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
     ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ := by
   -- We prove the claim by strong induction on the dimension of the vector space.
-  induction' h_dim : finrank K V using Nat.strong_induction_on with n ih generalizing V
-  cases' n with n
+  suffices ∀ n, finrank K V = n → ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ by exact this _ rfl
+  intro n h_dim
+  induction n using Nat.strong_induction_on generalizing V with | h n ih =>
+  rcases n with - | n
   -- If the vector space is 0-dimensional, the result is trivial.
   · rw [← top_le_iff]
     simp only [Submodule.finrank_eq_zero.1 (Eq.trans (finrank_top _ _) h_dim), bot_le]
@@ -178,7 +180,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     (Commute.sub_right rfl <| Algebra.commute_algebraMap_right _ _).pow_right _
   have hg₀ : g (m.sum fun _μ mμ ↦ mμ) = g (m μ) := by
     suffices ∀ μ' ∈ m.support, g (m μ') = if μ' = μ then g (m μ) else 0 by
-      rw [map_finsupp_sum, Finsupp.sum_congr (g2 := fun μ' _ ↦ if μ' = μ then g (m μ) else 0) this,
+      rw [map_finsuppSum, Finsupp.sum_congr (g2 := fun μ' _ ↦ if μ' = μ then g (m μ) else 0) this,
         Finsupp.sum_ite_eq', if_pos hμ]
     rintro μ' hμ'
     split_ifs with hμμ'

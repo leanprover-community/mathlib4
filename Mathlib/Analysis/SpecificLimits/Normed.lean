@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
@@ -162,7 +162,7 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
   rw [tendsto_zero_iff_norm_tendsto_zero]
   simpa [div_eq_mul_inv] using tendsto_pow_const_div_const_pow_of_one_lt k hr'
 
-/--For `k ≠ 0` and a constant `r` the function `r / n ^ k` tends to zero. -/
+/-- For `k ≠ 0` and a constant `r` the function `r / n ^ k` tends to zero. -/
 lemma tendsto_const_div_pow (r : ℝ) (k : ℕ) (hk : k ≠ 0) :
     Tendsto (fun n : ℕ => r / n ^ k) atTop (𝓝 0) := by
   simpa using Filter.Tendsto.const_div_atTop (tendsto_natCast_atTop_atTop (R := ℝ).comp
@@ -226,7 +226,7 @@ normed ring satisfies the axiom `‖1‖ = 1`. -/
 theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     ‖∑' n : ℕ, x ^ n‖ ≤ ‖(1 : R)‖ - 1 + (1 - ‖x‖)⁻¹ := by
   by_cases hx : Summable (fun n ↦ x ^ n)
-  · rw [tsum_eq_zero_add hx]
+  · rw [hx.tsum_eq_zero_add]
     simp only [_root_.pow_zero]
     refine le_trans (norm_add_le _ _) ?_
     have : ‖∑' b : ℕ, (fun n ↦ x ^ (n + 1)) b‖ ≤ (1 - ‖x‖)⁻¹ - 1 := by
@@ -259,7 +259,7 @@ theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, 
   rw [← mul_neg_geom_sum, Finset.mul_sum]
 
 theorem geom_series_succ (x : R) (h : ‖x‖ < 1) : ∑' i : ℕ, x ^ (i + 1) = ∑' i : ℕ, x ^ i - 1 := by
-  rw [eq_sub_iff_add_eq, tsum_eq_zero_add (summable_geometric_of_norm_lt_one h),
+  rw [eq_sub_iff_add_eq, (summable_geometric_of_norm_lt_one h).tsum_eq_zero_add,
     pow_zero, add_comm]
 
 theorem geom_series_mul_shift (x : R) (h : ‖x‖ < 1) :
@@ -729,7 +729,8 @@ end
 
 section
 
-variable {E : Type*} [OrderedRing E] [TopologicalSpace E] [OrderClosedTopology E]
+variable {E : Type*} [Ring E] [PartialOrder E] [IsOrderedRing E]
+  [TopologicalSpace E] [OrderClosedTopology E]
   {l : E} {f : ℕ → E}
 
 /-- Partial sums of an alternating monotone series with an even number of terms provide
@@ -812,9 +813,3 @@ theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / 
       rw [_root_.pow_succ', Nat.factorial_succ, Nat.cast_mul, ← _root_.div_mul_div_comm, norm_mul,
         norm_div, Real.norm_natCast, Nat.cast_succ]
     _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / (n !)‖ := by gcongr
-
-@[deprecated "`Real.tendsto_pow_div_factorial_atTop` has been deprecated, use
-`FloorSemiring.tendsto_pow_div_factorial_atTop` instead" (since := "2024-10-05")]
-theorem Real.tendsto_pow_div_factorial_atTop (x : ℝ) :
-    Tendsto (fun n ↦ x ^ n / n ! : ℕ → ℝ) atTop (𝓝 0) :=
-  (Real.summable_pow_div_factorial x).tendsto_atTop_zero

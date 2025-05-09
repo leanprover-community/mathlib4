@@ -67,10 +67,10 @@ variable [FiniteDimensional K V] (f : End K V)
 variable {f} {μ : K}
 
 theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue μ := by
-  cases' dvd_iff_isRoot.2 h with p hp
+  obtain ⟨p, hp⟩ := dvd_iff_isRoot.2 h
   rw [hasEigenvalue_iff, eigenspace_def]
   intro con
-  cases' (LinearMap.isUnit_iff_ker_eq_bot _).2 con with u hu
+  obtain ⟨u, hu⟩ := (LinearMap.isUnit_iff_ker_eq_bot _).2 con
   have p_ne_0 : p ≠ 0 := by
     intro con
     apply minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := K) f)

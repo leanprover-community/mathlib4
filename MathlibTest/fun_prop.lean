@@ -50,7 +50,7 @@ Let's mark the product constructor.
 -/
 
 attribute [fun_prop]
-  Measurable.prod_mk -- Measurable f → Measurable g → Measurable fun x => (f x, g x)
+  Measurable.prodMk -- Measurable f → Measurable g → Measurable fun x => (f x, g x)
 
 /-!
 When it comes to product projection, their properties are usually stated in two different ways
@@ -152,7 +152,7 @@ attribute [fun_prop]
   Continuous.comp'
   continuous_pi
   continuous_apply
-  Continuous.prod_mk
+  Continuous.prodMk
   Continuous.fst
   Continuous.snd
 

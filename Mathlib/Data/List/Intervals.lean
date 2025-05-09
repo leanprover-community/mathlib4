@@ -32,7 +32,7 @@ namespace List
 See also `Mathlib/Order/Interval/Basic.lean` for modelling intervals in general preorders, as well
 as sibling definitions alongside it such as `Set.Ico`, `Multiset.Ico` and `Finset.Ico`
 for sets, multisets and finite sets respectively.
- -/
+-/
 def Ico (n m : ℕ) : List ℕ :=
   range' n (m - n)
 
@@ -66,7 +66,7 @@ theorem map_add (n m k : ℕ) : (Ico n m).map (k + ·) = Ico (n + k) (m + k) := 
 
 theorem map_sub (n m k : ℕ) (h₁ : k ≤ n) :
     ((Ico n m).map fun x => x - k) = Ico (n - k) (m - k) := by
-  rw [Ico, Ico, Nat.sub_sub_sub_cancel_right h₁, map_sub_range' _ _ _ h₁]
+  rw [Ico, Ico, Nat.sub_sub_sub_cancel_right h₁, map_sub_range' h₁]
 
 @[simp]
 theorem self_empty {n : ℕ} : Ico n n = [] :=
@@ -79,7 +79,7 @@ theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
-  convert range'_append n (m-n) (l-m) 1 using 2
+  convert range'_append using 2
   · rw [Nat.one_mul, Nat.add_sub_cancel' hnm]
   · omega
 

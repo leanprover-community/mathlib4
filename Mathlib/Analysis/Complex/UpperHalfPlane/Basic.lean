@@ -54,7 +54,6 @@ scoped notation:1024 "↑ₘ[" R "]" A:1024 =>
 /-- Canonical embedding of the upper half-plane into `ℂ`. -/
 @[coe] protected def coe (z : ℍ) : ℂ := z.1
 
--- Porting note: added to replace `deriving`
 instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 
 instance : Inhabited ℍ :=
@@ -184,11 +183,9 @@ lemma ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
   have h1 := z.2
   aesop
 
--- Porting note: removed `@[simp]` because it broke `field_simp` calls below.
 /-- Numerator of the formula for a fractional linear transformation -/
 def num (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ := g 0 0 * z + g 0 1
 
--- Porting note: removed `@[simp]` because it broke `field_simp` calls below.
 /-- Denominator of the formula for a fractional linear transformation -/
 def denom (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ := g 1 0 * z + g 1 1
 
@@ -250,7 +247,6 @@ theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
 
 theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux x (smulAux y z) := by
   ext1
-  -- Porting note: was `change _ / _ = (_ * (_ / _) + _) * _`
   change _ / _ = (_ * (_ / _) + _) / _
   rw [denom_cocycle]
   field_simp [denom_ne_zero]
@@ -368,7 +364,6 @@ theorem modular_S_smul (z : ℍ) : ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.i
 
 theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
   rw [UpperHalfPlane.ext_iff, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk]
-  -- Porting note: added `coeToGL` and merged `rw` and `simp`
   simp [toGL, ModularGroup.coe_T_zpow,
     of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,
     head_cons, algebraMap.coe_zero, zero_mul, zero_add, div_one]
@@ -382,7 +377,6 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : g 1 
   refine ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, ?_⟩
   ext1 ⟨z, hz⟩; ext1
   suffices ↑a * z * a + b * a = b * a + a * a * z by
-    -- Porting note: added `coeToGL` and merged `rw` and `simpa`
     simpa [toGL, specialLinearGroup_apply, add_mul]
   ring
 
@@ -391,12 +385,11 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
       (g • · : ℍ → ℍ) =
         (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
   have h_denom := denom_ne_zero g
-  induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h
+  induction g using Matrix.SpecialLinearGroup.fin_two_induction with | _ a b c d h => ?_
   replace hc : c ≠ 0 := by simpa using hc
   refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩
   ext1 ⟨z, hz⟩; ext1
   suffices (↑a * z + b) / (↑c * z + d) = a / c - (c * d + ↑c * ↑c * z)⁻¹ by
-    -- Porting note: golfed broken proof
     simpa only [modular_S_smul, inv_neg, Function.comp_apply, coe_vadd, Complex.ofReal_mul,
       coe_pos_real_smul, Complex.real_smul, Complex.ofReal_div, coe_mk]
   replace hc : (c : ℂ) ≠ 0 := by norm_cast
@@ -437,7 +430,7 @@ theorem det_coe {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe g) = 1 :
 @[deprecated (since := "2024-11-19")] alias det_coe' := det_coe
 
 lemma coe_one : coe 1 = 1 := by
-  simp only [coe, _root_.map_one]
+  simp only [coe, map_one]
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩

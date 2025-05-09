@@ -63,11 +63,22 @@ The similarly named `IsPicardLindelof` is a bundled `Prop` holding the long hypo
 Picard-Lindelöf theorem as named arguments. It is used as part of the public API.
 -/
 structure PicardLindelof (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
+  /-- Function of the initial value problem -/
   toFun : ℝ → E → E
-  (tMin tMax : ℝ)
+  /-- Lower limit of `t` -/
+  tMin : ℝ
+  /-- Upper limit of `t` -/
+  tMax : ℝ
+  /-- Initial value of `t` -/
   t₀ : Icc tMin tMax
+  /-- Initial value of `x` -/
   x₀ : E
-  (C R L : ℝ≥0)
+  /-- Bound of the function over the region of interest -/
+  C : ℝ≥0
+  /-- Radius of closed ball in `x` over which the bound `C` holds -/
+  R : ℝ≥0
+  /-- Lipschitz constant of the function -/
+  L : ℝ≥0
   isPicardLindelof : IsPicardLindelof toFun tMin t₀ tMax x₀ L R C
 
 namespace PicardLindelof
@@ -142,6 +153,7 @@ Lipschitz continuous with constant $C$. The map sending $γ$ to
 $\mathbf Pγ(t)=x₀ + ∫_{t₀}^{t} v(τ, γ(τ))\,dτ$ is a contracting map on this space, and its fixed
 point is a solution of the ODE $\dot x=v(t, x)$. -/
 structure FunSpace where
+  /-- The particular curve represented by this object. -/
   toFun : Icc v.tMin v.tMax → E
   map_t₀' : toFun v.t₀ = v.x₀
   lipschitz' : LipschitzWith v.C toFun
@@ -173,9 +185,6 @@ instance : MetricSpace v.FunSpace :=
 theorem isUniformInducing_toContinuousMap : IsUniformInducing (@toContinuousMap _ _ _ v) :=
   ⟨rfl⟩
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_toContinuousMap := isUniformInducing_toContinuousMap
-
 theorem range_toContinuousMap :
     range toContinuousMap =
       {f : C(Icc v.tMin v.tMax, E) | f v.t₀ = v.x₀ ∧ LipschitzWith v.C f} := by
@@ -203,7 +212,7 @@ theorem vComp_apply_coe (t : Icc v.tMin v.tMax) : f.vComp t = v t (f t) := by
   simp only [vComp, proj_coe]
 
 theorem continuous_vComp : Continuous f.vComp := by
-  have := (continuous_subtype_val.prod_mk f.continuous).comp v.continuous_proj
+  have := (continuous_subtype_val.prodMk f.continuous).comp v.continuous_proj
   refine ContinuousOn.comp_continuous v.continuousOn this fun x => ?_
   exact ⟨(v.proj x).2, f.mem_closedBall _⟩
 

@@ -66,7 +66,7 @@ theorem convexBodyLT_neg_mem (x : mixedSpace K) (hx : x ∈ (convexBodyLT K f)) 
     -x ∈ (convexBodyLT K f) := by
   simp only [Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
     mem_ball_zero_iff, norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall,
-    Prod.snd_neg, Complex.norm_eq_abs] at hx ⊢
+    Prod.snd_neg] at hx ⊢
   exact hx
 
 theorem convexBodyLT_convex : Convex ℝ (convexBodyLT K f) :=
@@ -106,13 +106,8 @@ theorem convexBodyLT_volume :
       simp_rw [convexBodyLTFactor, coe_mul, ENNReal.coe_pow]
       ring
     _ = (convexBodyLTFactor K) * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [mult, pow_ite, pow_one, Finset.prod_ite, ofReal_coe_nnreal, not_isReal_iff_isComplex,
-        coe_mul, coe_finset_prod, ENNReal.coe_pow]
-      congr 2
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞))).symm
-        exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞) ^ 2)).symm
-        exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finset_prod, mult_isReal, mult_isComplex,
+        pow_one, ENNReal.coe_pow, ofReal_coe_nnreal]
 
 variable {f}
 
@@ -242,13 +237,8 @@ theorem convexBodyLT'_volume :
       simp_rw [coe_mul, ENNReal.coe_pow]
       ring
     _ = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [mult, pow_ite, pow_one, Finset.prod_ite, ofReal_coe_nnreal, not_isReal_iff_isComplex,
-        coe_mul, coe_finset_prod, ENNReal.coe_pow, mul_assoc]
-      congr 3
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞))).symm
-        exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞) ^ 2)).symm
-        exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finset_prod, mult_isReal, mult_isComplex,
+        pow_one, ENNReal.coe_pow, ofReal_coe_nnreal, mul_assoc]
 
 end convexBodyLT'
 
@@ -271,15 +261,9 @@ theorem convexBodySumFun_apply (x : mixedSpace K) :
 open scoped Classical in
 theorem convexBodySumFun_apply' (x : mixedSpace K) :
     convexBodySumFun x = ∑ w, ‖x.1 w‖ + 2 * ∑ w, ‖x.2 w‖ := by
-  simp_rw [convexBodySumFun_apply, ← Finset.sum_add_sum_compl {w | IsReal w}.toFinset,
-    Set.toFinset_setOf, Finset.compl_filter, not_isReal_iff_isComplex, ← Finset.subtype_univ,
-    ← Finset.univ.sum_subtype_eq_sum_filter, Finset.mul_sum]
-  congr
-  · ext w
-    rw [mult, if_pos w.prop, normAtPlace_apply_isReal, Nat.cast_one, one_mul]
-  · ext w
-    rw [mult, if_neg (not_isReal_iff_isComplex.mpr w.prop), normAtPlace_apply_isComplex,
-      Nat.cast_ofNat]
+  simp_rw [convexBodySumFun_apply, sum_eq_sum_add_sum, mult_isReal, mult_isComplex,
+    Nat.cast_one, one_mul, Nat.cast_ofNat, normAtPlace_apply_of_isReal (Subtype.prop _),
+    normAtPlace_apply_of_isComplex (Subtype.prop _), Finset.mul_sum]
 
 theorem convexBodySumFun_nonneg (x : mixedSpace K) :
     0 ≤ convexBodySumFun x :=
@@ -326,7 +310,7 @@ theorem convexBodySumFun_continuous :
   refine continuous_finset_sum Finset.univ fun w ↦ ?_
   obtain hw | hw := isReal_or_isComplex w
   all_goals
-  · simp only [normAtPlace_apply_isReal, normAtPlace_apply_isComplex, hw]
+  · simp only [normAtPlace_apply_of_isReal, normAtPlace_apply_of_isComplex, hw]
     fun_prop
 
 /-- The convex body equal to the set of points `x : mixedSpace K` such that
@@ -580,7 +564,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
     · rw [if_pos rfl] at h_le₀
       dsimp only at h_le₀
       rw [h_eq, ← norm_embedding_eq, Real.lt_sqrt (norm_nonneg _), ← Complex.re_add_im
-        (embedding w₀ _), Complex.norm_eq_abs, Complex.abs_add_mul_I, Real.sq_sqrt (by positivity)]
+        (embedding w₀ _), Complex.norm_add_mul_I, Real.sq_sqrt (by positivity)]
       refine add_lt_add ?_ ?_
       · rw [← sq_abs, sq_lt_one_iff₀ (abs_nonneg _)]
         exact h_le₀.1

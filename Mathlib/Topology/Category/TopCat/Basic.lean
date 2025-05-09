@@ -3,7 +3,7 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
@@ -15,12 +15,13 @@ with the corresponding discrete, resp. trivial, topology. For a proof that these
 resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.TopCat.Adjunctions`.
 -/
 
+assert_not_exists Module
 
 open CategoryTheory TopologicalSpace Topology
 
 universe u
 
-/-- The category of semirings. -/
+/-- The category of topological spaces. -/
 structure TopCat where
   private mk ::
   /-- The underlying type. -/
@@ -130,13 +131,11 @@ lemma ofHom_comp {X Y Z : Type u} [TopologicalSpace X] [TopologicalSpace Y] [Top
 lemma ofHom_apply {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[simp]
-lemma hom_inv_id_apply {X Y : TopCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
-  CategoryTheory.congr_fun f.hom_inv_id x
+lemma hom_inv_id_apply {X Y : TopCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x := by
+  simp
 
-@[simp]
-lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
-  CategoryTheory.congr_fun f.inv_hom_id y
+lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
+  simp
 
 /--
 Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally

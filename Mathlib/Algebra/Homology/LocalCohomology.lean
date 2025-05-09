@@ -64,7 +64,7 @@ section
 variable {R : Type u} [CommRing R] {D : Type v} [SmallCategory D]
 
 /-- The directed system of `R`-modules of the form `R/J`, where `J` is an ideal of `R`,
-determined by the functor `I`  -/
+determined by the functor `I` -/
 def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   obj t := ModuleCat.of R <| R ⧸ I.obj t
   map w := ModuleCat.ofHom <| Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
@@ -95,11 +95,11 @@ will be where `I` is (cofinal with) the diagram of powers of a single given idea
 
 Below, we give two equivalent definitions of the usual local cohomology with support
 in an ideal `J`, `localCohomology` and `localCohomology.ofSelfLERadical`.
- -/
+-/
 /-- `localCohomology.ofDiagram I i` is the functor sending a module `M` over a commutative
 ring `R` to the direct limit of `Ext^i(R/J, M)`, where `J` ranges over a collection of ideals
 of `R`, represented as a functor `I`. -/
-def ofDiagram (I : D ⥤ Ideal R) (i : ℕ) : ModuleCatMax.{u, v} R ⥤ ModuleCatMax.{u, v} R :=
+def ofDiagram (I : D ⥤ Ideal R) (i : ℕ) : ModuleCat.{max u v} R ⥤ ModuleCat.{max u v} R :=
   have := hasColimitDiagram.{u, v} I i
   colimit (diagram I i)
 
@@ -137,8 +137,8 @@ def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
 def SelfLERadical (J : Ideal R) : Type u :=
   FullSubcategory fun J' : Ideal R => J ≤ J'.radical
 
--- Porting note: `deriving Category` is not able to derive this instance
--- https://github.com/leanprover-community/mathlib4/issues/5020
+-- The `Category` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance (J : Ideal R) : Category (SelfLERadical J) :=
   (FullSubcategory.category _)
 
@@ -197,7 +197,7 @@ valued in `SelfLERadical J`. -/
 def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
   FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
-    cases' unop k with n
+    rcases unop k with - | n
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]
     · simp only [J.radical_pow n.succ_ne_zero, Ideal.le_radical]
 

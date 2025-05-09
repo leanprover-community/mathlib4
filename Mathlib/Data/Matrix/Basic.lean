@@ -37,7 +37,6 @@ variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
 
--- Porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
   Fintype.decidablePiFintype
 
@@ -235,15 +234,7 @@ theorem map_algebraMap (r : R) (f : α → β) (hf : f 0 = 0)
     (hf₂ : f (algebraMap R α r) = algebraMap R β r) :
     (algebraMap R (Matrix n n α) r).map f = algebraMap R (Matrix n n β) r := by
   rw [algebraMap_eq_diagonal, algebraMap_eq_diagonal, diagonal_map hf]
-  -- Porting note: (congr) the remaining proof was
-  -- ```
-  -- congr 1
-  -- simp only [hf₂, Pi.algebraMap_apply]
-  -- ```
-  -- But some `congr 1` doesn't quite work.
-  simp only [Pi.algebraMap_apply, diagonal_eq_diagonal_iff]
-  intro
-  rw [hf₂]
+  simp [hf₂]
 
 variable (R)
 
@@ -261,7 +252,7 @@ section AddHom
 variable [Add α]
 
 variable (R α) in
-/-- Extracting entries from a matrix as an additive homomorphism.  -/
+/-- Extracting entries from a matrix as an additive homomorphism. -/
 @[simps]
 def entryAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
   toFun M := M i j

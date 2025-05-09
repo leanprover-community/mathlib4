@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Bind
+import Mathlib.Data.Multiset.Range
 
 /-!
 # The powerset of a multiset

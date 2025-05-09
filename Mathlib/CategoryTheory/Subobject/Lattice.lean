@@ -11,7 +11,7 @@ import Mathlib.Data.Finset.Lattice.Fold
 /-!
 # The lattice of subobjects
 
-We provide the `SemilatticeInf` with `OrderTop (subobject X)` instance when `[HasPullback C]`,
+We provide the `SemilatticeInf` with `OrderTop (Subobject X)` instance when `[HasPullback C]`,
 and the `SemilatticeSup (Subobject X)` instance when `[HasImages C] [HasBinaryCoproducts C]`.
 -/
 
@@ -241,6 +241,11 @@ theorem mk_eq_top_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : mk f = ⊤ :=
 
 theorem eq_top_of_isIso_arrow {Y : C} (P : Subobject Y) [IsIso P.arrow] : P = ⊤ :=
   (isIso_arrow_iff_eq_top P).mp inferInstance
+
+lemma epi_iff_mk_eq_top [Balanced C] (f : X ⟶ Y) [Mono f] :
+    Epi f ↔ Subobject.mk f = ⊤ := by
+  rw [← isIso_iff_mk_eq_top]
+  exact ⟨fun _ ↦ isIso_of_mono_of_epi f, fun _ ↦ inferInstance⟩
 
 section
 
@@ -652,6 +657,21 @@ instance {B : C} : CompleteLattice (Subobject B) :=
     Subobject.completeSemilatticeInf, Subobject.completeSemilatticeSup with }
 
 end CompleteLattice
+
+lemma subsingleton_of_isInitial {X : C} (hX : IsInitial X) : Subsingleton (Subobject X) := by
+  suffices ∀ (S : Subobject X), S = .mk (𝟙 _) from ⟨by simp [this]⟩
+  intro S
+  obtain ⟨A, i, _, rfl⟩ := S.mk_surjective
+  have fac : hX.to A ≫ i = 𝟙 X := hX.hom_ext _ _
+  let e : A ≅ X :=
+    { hom := i
+      inv := hX.to A
+      hom_inv_id := by rw [← cancel_mono i, assoc, fac, id_comp, comp_id]
+      inv_hom_id := fac }
+  exact mk_eq_mk_of_comm i (𝟙 X) e (by simp [e])
+
+lemma subsingleton_of_isZero {X : C} (hX : IsZero X) : Subsingleton (Subobject X) :=
+  subsingleton_of_isInitial hX.isInitial
 
 section ZeroObject
 

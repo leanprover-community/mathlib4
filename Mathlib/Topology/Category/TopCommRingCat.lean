@@ -26,7 +26,7 @@ structure TopCommRingCat where
   α : Type u
   [isCommRing : CommRing α]
   [isTopologicalSpace : TopologicalSpace α]
-  [isTopologicalRing : TopologicalRing α]
+  [isTopologicalRing : IsTopologicalRing α]
 
 namespace TopCommRingCat
 
@@ -46,35 +46,23 @@ instance : Category TopCommRingCat.{u} where
       -- TODO automate
       cases f
       cases g
-      dsimp; apply Continuous.comp <;> assumption⟩
+      continuity⟩
 
-instance : HasForget TopCommRingCat.{u} where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f.val }
-  -- Porting note: Old proof was `forget_faithful := { }`
-  forget_faithful :=
-    { map_injective := fun {_ _ _ _} h => Subtype.ext <| RingHom.coe_inj h }
+instance (R S : TopCommRingCat.{u}) : FunLike { f : R →+* S // Continuous f } R S where
+  coe f := f.val
+  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+
+instance : ConcreteCategory TopCommRingCat.{u} fun R S => { f : R →+* S // Continuous f } where
+  hom f := f
+  ofHom f := f
 
 /-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
 -/
-def of (X : Type u) [CommRing X] [TopologicalSpace X] [TopologicalRing X] : TopCommRingCat :=
+abbrev of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing X] : TopCommRingCat :=
   ⟨X⟩
 
-@[simp]
-theorem coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [TopologicalRing X] :
+theorem coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing X] :
     (of X : Type u) = X := rfl
-
-instance forgetTopologicalSpace (R : TopCommRingCat) :
-    TopologicalSpace ((forget TopCommRingCat).obj R) :=
-  R.isTopologicalSpace
-
-instance forgetCommRing (R : TopCommRingCat) : CommRing ((forget TopCommRingCat).obj R) :=
-  R.isCommRing
-
-instance forgetTopologicalRing (R : TopCommRingCat) :
-    TopologicalRing ((forget TopCommRingCat).obj R) :=
-  R.isTopologicalRing
 
 instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat :=
   HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl)
@@ -93,7 +81,7 @@ instance forgetToTopCatCommRing (R : TopCommRingCat) :
   R.isCommRing
 
 instance forgetToTopCatTopologicalRing (R : TopCommRingCat) :
-    TopologicalRing ((forget₂ TopCommRingCat TopCat).obj R) :=
+    IsTopologicalRing ((forget₂ TopCommRingCat TopCat).obj R) :=
   R.isTopologicalRing
 
 /-- The forgetful functors to `Type` do not reflect isomorphisms,

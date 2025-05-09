@@ -19,7 +19,7 @@ We do not use `to_additive` too much because it can't map `Multiplicative ℕ` t
 variable {α : Type*} (p : α → Prop) [DecidablePred p]
 
 namespace FreeMonoid
-/-- `List.countP` lifted to free monoids-/
+/-- `List.countP` lifted to free monoids -/
 @[to_additive "`List.countP` lifted to free additive monoids"]
 def countP' (l : FreeMonoid α) : ℕ := l.toList.countP p
 

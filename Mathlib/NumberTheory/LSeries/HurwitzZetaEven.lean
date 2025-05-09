@@ -110,7 +110,7 @@ lemma cosKernel_neg (a : UnitAddCircle) (x : ℝ) : cosKernel (-a) x = cosKernel
   | H => simp [← QuotientAddGroup.mk_neg, ← ofReal_inj, cosKernel_def]
 
 lemma continuousOn_evenKernel (a : UnitAddCircle) : ContinuousOn (evenKernel a) (Ioi 0) := by
-  induction' a using QuotientAddGroup.induction_on with a'
+  induction a using QuotientAddGroup.induction_on with | H a' =>
   apply continuous_re.comp_continuousOn (f := fun x ↦ (evenKernel a' x : ℂ))
   simp only [evenKernel_def]
   refine continuousOn_of_forall_continuousAt (fun x hx ↦ .mul (by fun_prop) ?_)
@@ -118,7 +118,7 @@ lemma continuousOn_evenKernel (a : UnitAddCircle) : ContinuousOn (evenKernel a) 
     (f := fun u : ℝ ↦ (a' * I * u, I * u)) (by fun_prop)
 
 lemma continuousOn_cosKernel (a : UnitAddCircle) : ContinuousOn (cosKernel a) (Ioi 0) := by
-  induction' a using QuotientAddGroup.induction_on with a'
+  induction a using QuotientAddGroup.induction_on with | H a' =>
   apply continuous_re.comp_continuousOn (f := fun x ↦ (cosKernel a' x : ℂ))
   simp only [cosKernel_def]
   refine continuousOn_of_forall_continuousAt (fun x hx ↦ ?_)
@@ -130,7 +130,7 @@ lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
   rcases le_or_lt x 0 with hx | hx
   · rw [evenKernel_undef _ hx, cosKernel_undef, mul_zero]
     exact div_nonpos_of_nonneg_of_nonpos zero_le_one hx
-  induction' a using QuotientAddGroup.induction_on with a
+  induction a using QuotientAddGroup.induction_on with | H a =>
   rw [← ofReal_inj, ofReal_mul, evenKernel_def, cosKernel_def, jacobiTheta₂_functional_equation]
   have h1 : I * ↑(1 / x) = -1 / (I * x) := by
     push_cast
@@ -219,7 +219,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
 `a = 0` and `L = 0` otherwise. -/
 lemma isBigO_atTop_evenKernel_sub (a : UnitAddCircle) : ∃ p : ℝ, 0 < p ∧
     (evenKernel a · - (if a = 0 then 1 else 0)) =O[atTop] (rexp <| -p * ·) := by
-  induction' a using QuotientAddGroup.induction_on with b
+  induction a using QuotientAddGroup.induction_on with | H b =>
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_int_zero_sub b
   refine ⟨p, hp, (EventuallyEq.isBigO ?_).trans hp'⟩
   filter_upwards [eventually_gt_atTop 0] with t h
@@ -228,7 +228,7 @@ lemma isBigO_atTop_evenKernel_sub (a : UnitAddCircle) : ∃ p : ℝ, 0 < p ∧
 /-- The function `cosKernel a - 1` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_cosKernel_sub (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (cosKernel a · - 1) (fun x ↦ Real.exp (-p * x)) := by
-  induction' a using QuotientAddGroup.induction_on with a
+  induction a using QuotientAddGroup.induction_on with | H a =>
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_nat_zero_sub zero_le_one
   refine ⟨p, hp, (Eventually.isBigO ?_).trans (hp'.const_mul_left 2)⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
@@ -255,7 +255,9 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
     measurableSet_Ioi
   hg_int := (continuous_ofReal.comp_continuousOn (continuousOn_cosKernel a)).locallyIntegrableOn
     measurableSet_Ioi
+  k := 1 / 2
   hk := one_half_pos
+  ε := 1
   hε := one_ne_zero
   f₀ := if a = 0 then 1 else 0
   hf_top r := by
@@ -267,8 +269,7 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   g₀ := 1
   hg_top r := by
     obtain ⟨p, hp, hp'⟩ := isBigO_atTop_cosKernel_sub a
-    rw [← isBigO_norm_left] at hp' ⊢
-    simpa [← abs_ofReal] using hp'.trans (isLittleO_exp_neg_mul_rpow_atTop hp _).isBigO
+    simpa using isBigO_ofReal_left.mpr <| hp'.trans (isLittleO_exp_neg_mul_rpow_atTop hp r).isBigO
   h_feq x hx := by simp [← ofReal_mul, evenKernel_functional_equation, inv_rpow (le_of_lt hx)]
 
 @[simp]
@@ -575,7 +576,7 @@ lemma differentiableAt_update_of_residue
     · exact eventually_of_mem self_mem_nhdsWithin fun x hx hx' ↦ (hx <| inv_eq_zero.mp hx').elim
 
 /-- The even part of the Hurwitz zeta function, i.e. the meromorphic function of `s` which agrees
-with `1 / 2 * ∑' (n : ℤ), 1 / |n + a| ^ s` for `1 < re s`-/
+with `1 / 2 * ∑' (n : ℤ), 1 / |n + a| ^ s` for `1 < re s` -/
 noncomputable def hurwitzZetaEven (a : UnitAddCircle) :=
   Function.update (fun s ↦ completedHurwitzZetaEven a s / Gammaℝ s)
   0 (if a = 0 then -1 / 2 else 0)
@@ -679,7 +680,7 @@ lemma hasSum_nat_hurwitzZetaEven_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : 
     (hurwitzZetaEven a s) := by
   refine (hasSum_nat_hurwitzZetaEven a hs).congr_fun fun n ↦ ?_
   congr 2 <;>
-  rw [_root_.abs_of_nonneg (by linarith [ha.1, ha.2])] <;>
+  rw [abs_of_nonneg (by linarith [ha.1, ha.2])] <;>
   simp
 
 /-!

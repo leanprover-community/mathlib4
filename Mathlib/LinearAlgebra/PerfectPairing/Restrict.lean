@@ -108,12 +108,13 @@ private lemma restrictScalarsAux_injective
   refine (Submodule.eq_bot_iff _).mpr fun x (hx : f x = 0) ↦ ?_
   replace hx (n : N) : p (i x) n = 0 := by
     have hn : n ∈ span R (LinearMap.range j : Set N) := hN ▸ Submodule.mem_top
-    induction' hn using Submodule.span_induction with z hz
-    · obtain ⟨n', rfl⟩ := hz
+    induction hn using Submodule.span_induction with
+    | mem z hz =>
+      obtain ⟨n', rfl⟩ := hz
       simpa [f] using LinearMap.congr_fun hx n'
-    · simp
-    · rw [← p.toLin_apply, map_add]; aesop
-    · rw [← p.toLin_apply, map_smul]; aesop
+    | zero => simp
+    | add => rw [← p.toLin_apply, map_add]; aesop
+    | smul => rw [← p.toLin_apply, map_smul]; aesop
   rw [← i.map_eq_zero_iff hi, ← p.toLin.map_eq_zero_iff p.bijectiveLeft.injective]
   ext n
   simpa using hx n
@@ -181,7 +182,7 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
     replace hv₃ := hv₃.restrict_scalars (R := K) <| by
       simp_rw [← Algebra.algebraMap_eq_smul_one]
       exact FaithfulSMul.algebraMap_injective K L
-    rw [show ((↑) : v → M) = M'.subtype ∘ v' from rfl] at hv₃
+    rw [show ((↑) : v → M) = M'.subtype ∘ v' by ext; simp [v']] at hv₃
     exact hv₃.of_comp
   suffices span K (Set.range v') = ⊤ by
     let e := (Module.Finite.finite_basis b).equivFin

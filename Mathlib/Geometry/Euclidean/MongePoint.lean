@@ -165,7 +165,7 @@ theorem mongePointVSubFaceCentroidWeightsWithCircumcenter_eq_sub {n : ℕ} {i₁
     mongePointVSubFaceCentroidWeightsWithCircumcenter i₁ i₂ =
       mongePointWeightsWithCircumcenter n - centroidWeightsWithCircumcenter {i₁, i₂}ᶜ := by
   ext i
-  cases' i with i
+  obtain i | i := i
   · rw [Pi.sub_apply, mongePointWeightsWithCircumcenter, centroidWeightsWithCircumcenter,
       mongePointVSubFaceCentroidWeightsWithCircumcenter]
     have hu : #{i₁, i₂}ᶜ = n + 1 := by
@@ -396,8 +396,7 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} (s : Simplex ℝ P (n + 1)) (i
       simpa using h
     · rw [finrank_direction_altitude, finrank_span_set_eq_card]
       · simp
-      · refine linearIndependent_singleton ?_
-        simpa using hne
+      · exact LinearIndepOn.id_singleton _ <| by simpa using hne
 
 end Simplex
 
@@ -505,7 +504,7 @@ theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i�
 the altitude. -/
 theorem affineSpan_orthocenter_point_le_altitude (t : Triangle ℝ P) (i : Fin 3) :
     line[ℝ, t.orthocenter, t.points i] ≤ t.altitude i := by
-  refine spanPoints_subset_coe_of_subset_coe ?_
+  refine affineSpan_le_of_subset_coe ?_
   rw [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨t.orthocenter_mem_altitude, t.mem_altitude i⟩
 
@@ -525,7 +524,7 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   have he : affineSpan ℝ (Set.range t₂.points) = affineSpan ℝ (Set.range t₁.points) := by
     refine ext_of_direction_eq ?_
       ⟨t₁.points i₃, mem_affineSpan ℝ ⟨j₃, h₃⟩, mem_affineSpan ℝ (Set.mem_range_self _)⟩
-    refine Submodule.eq_of_le_of_finrank_eq (direction_le (spanPoints_subset_coe_of_subset_coe ?_))
+    refine Submodule.eq_of_le_of_finrank_eq (direction_le (affineSpan_le_of_subset_coe ?_))
       ?_
     · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
         clear h₁ h₂ h₃
@@ -641,7 +640,7 @@ theorem exists_dist_eq_circumradius_of_subset_insert_orthocenter {t : Triangle �
     intro p₁ hp₁
     rcases hp₁ with ⟨i, rfl⟩
     have h₁₂₃ := h₁₂₃ i
-    repeat' cases' h₁₂₃ with h₁₂₃ h₁₂₃
+    repeat' rcases h₁₂₃ with h₁₂₃ | h₁₂₃
     · convert Triangle.dist_orthocenter_reflection_circumcenter t hj₂₃
     · rw [← h₂, dist_reflection_eq_of_mem _
        (mem_affineSpan ℝ (Set.mem_image_of_mem _ (Set.mem_insert _ _)))]

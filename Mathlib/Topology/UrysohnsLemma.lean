@@ -198,19 +198,23 @@ theorem approx_le_approx_of_U_sub_C {c₁ c₂ : CU P} (h : c₁.U ⊆ c₂.C) (
 
 theorem approx_mem_Icc_right_left (c : CU P) (n : ℕ) (x : X) :
     c.approx n x ∈ Icc (c.right.approx n x) (c.left.approx n x) := by
-  induction' n with n ihn generalizing c
-  · exact ⟨le_rfl, indicator_le_indicator_of_subset (compl_subset_compl.2 c.left_U_subset)
+  induction n generalizing c with
+  | zero =>
+    exact ⟨le_rfl, indicator_le_indicator_of_subset (compl_subset_compl.2 c.left_U_subset)
       (fun _ => zero_le_one) _⟩
-  · simp only [approx, mem_Icc]
+  | succ n ihn =>
+    simp only [approx, mem_Icc]
     refine ⟨midpoint_le_midpoint ?_ (ihn _).1, midpoint_le_midpoint (ihn _).2 ?_⟩ <;>
       apply approx_le_approx_of_U_sub_C
     exacts [subset_closure, subset_closure]
 
 theorem approx_le_succ (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ c.approx (n + 1) x := by
-  induction' n with n ihn generalizing c
-  · simp only [approx, right_U, right_le_midpoint]
+  induction n generalizing c with
+  | zero =>
+    simp only [approx, right_U, right_le_midpoint]
     exact (approx_mem_Icc_right_left c 0 x).2
-  · rw [approx, approx]
+  | succ n ihn =>
+    rw [approx, approx]
     exact midpoint_le_midpoint (ihn _) (ihn _)
 
 theorem approx_mono (c : CU P) (x : X) : Monotone fun n => c.approx n x :=
@@ -262,11 +266,13 @@ theorem continuous_lim (c : CU P) : Continuous c.lim := by
     continuous_iff_continuousAt.2 fun x =>
       (Metric.nhds_basis_closedBall_pow (h0.trans h1234) h1).tendsto_right_iff.2 fun n _ => ?_
   simp only [Metric.mem_closedBall]
-  induction' n with n ihn generalizing c
-  · filter_upwards with y
+  induction n generalizing c with
+  | zero =>
+    filter_upwards with y
     rw [pow_zero]
     exact Real.dist_le_of_mem_Icc_01 (c.lim_mem_Icc _) (c.lim_mem_Icc _)
-  · by_cases hxl : x ∈ c.left.U
+  | succ n ihn =>
+    by_cases hxl : x ∈ c.left.U
     · filter_upwards [IsOpen.mem_nhds c.left.open_U hxl, ihn c.left] with _ hyl hyd
       rw [pow_succ', c.lim_eq_midpoint, c.lim_eq_midpoint,
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hyl),
@@ -451,13 +457,13 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
     have fnx : f n x = 0 := fm _ (by simp [hn])
     have : g x < 1 := by
       apply lt_of_lt_of_le ?_ hu.le
-      exact tsum_lt_tsum (i := n) (fun i ↦ I i x) (by simp [fnx, u_pos n]) (S x) u_sum
+      exact (S x).tsum_lt_tsum (i := n) (fun i ↦ I i x) (by simp [fnx, u_pos n]) u_sum
     simpa using this.ne
   · exact HasCompactSupport.of_support_subset_isCompact m_comp
       (Function.support_subset_iff'.mpr hgmc)
   · exact tsum_nonneg (fun n ↦ mul_nonneg (u_pos n).le (f_range n x).1)
   · apply le_trans _ hu.le
-    exact tsum_le_tsum (fun n ↦ I n x) (S x) u_sum
+    exact (S x).tsum_le_tsum (fun n ↦ I n x) u_sum
 
 /-- A variation of Urysohn's lemma. In a `T2Space X`, for a closed set `t` and a relatively
 compact open set `s` such that `t ⊆ s`, there is a continuous function `f` supported in `s`,

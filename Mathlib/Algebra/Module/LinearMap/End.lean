@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.Equiv.Opposite
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
@@ -308,8 +306,8 @@ variable [Semiring S] [Module R S] [Module S M] [IsScalarTower R S M]
 map. -/
 def smulRight (f : M₁ →ₗ[R] S) (x : M) : M₁ →ₗ[R] M where
   toFun b := f b • x
-  map_add' x y := by dsimp only; rw [f.map_add, add_smul]
-  map_smul' b y := by dsimp; rw [map_smul, smul_assoc]
+  map_add' x y := by rw [f.map_add, add_smul]
+  map_smul' b y := by rw [RingHom.id_apply, map_smul, smul_assoc]
 
 @[simp]
 theorem coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ → M) = fun c => f c • x :=
@@ -413,3 +411,13 @@ theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) (c : M₂) :
 end CommSemiring
 
 end LinearMap
+
+namespace Module.End
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : Module.End R M)
+
+lemma commute_id_left : Commute LinearMap.id f := by ext; simp
+
+lemma commute_id_right : Commute f LinearMap.id := by ext; simp
+
+end Module.End

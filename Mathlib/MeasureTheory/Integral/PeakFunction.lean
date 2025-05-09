@@ -69,14 +69,14 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
   have I : IntegrableOn (φ i) t μ := .of_integral_ne_zero (fun h ↦ by simp [h] at h'i)
   have A : IntegrableOn (fun x => φ i x • g x) (s \ u) μ := by
     refine Integrable.smul_of_top_right (hmg.mono diff_subset le_rfl) ?_
-    apply memℒp_top_of_bound (h''i.mono_set diff_subset) 1
+    apply memLp_top_of_bound (h''i.mono_set diff_subset) 1
     filter_upwards [self_mem_ae_restrict (hs.diff u_open.measurableSet)] with x hx
     simpa only [Pi.zero_apply, dist_zero_left] using (hi x hx).le
   have B : IntegrableOn (fun x => φ i x • g x) (s ∩ u) μ := by
     apply Integrable.smul_of_top_left
     · exact IntegrableOn.mono_set I ut
     · apply
-        memℒp_top_of_bound (hmg.mono_set inter_subset_left).aestronglyMeasurable (‖a‖ + 1)
+        memLp_top_of_bound (hmg.mono_set inter_subset_left).aestronglyMeasurable (‖a‖ + 1)
       filter_upwards [self_mem_ae_restrict (hs.inter u_open.measurableSet)] with x hx
       rw [inter_comm] at hx
       exact (norm_lt_of_mem_ball (hu x hx)).le
@@ -241,7 +241,7 @@ integrable on `s` and continuous at `x₀`.
 Version assuming that `μ` gives positive mass to all neighborhoods of `x₀` within `s`.
 For a less precise but more usable version, see
 `tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`.
- -/
+-/
 theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_nhdsWithin_pos
     [MetrizableSpace α] [IsLocallyFiniteMeasure μ] (hs : IsCompact s)
     (hμ : ∀ u, IsOpen u → x₀ ∈ u → 0 < μ (u ∩ s)) {c : α → ℝ} (hc : ContinuousOn c s)
@@ -396,7 +396,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
     Tendsto (fun (c : ℝ) ↦ ∫ x, (c ^ (finrank ℝ F) * φ (c • x)) • g x ∂μ) atTop (𝓝 (g 0)) := by
   have I : Integrable φ μ := integrable_of_integral_eq_one h'φ
   apply tendsto_integral_peak_smul_of_integrable_of_tendsto (t := closedBall 0 1) (x₀ := 0)
-  · exact isClosed_ball.measurableSet
+  · exact isClosed_closedBall.measurableSet
   · exact closedBall_mem_nhds _ zero_lt_one
   · exact (isCompact_closedBall 0 1).measure_ne_top
   · filter_upwards [Ici_mem_atTop 0] with c (hc : 0 ≤ c) x using mul_nonneg (by positivity) (hφ _)

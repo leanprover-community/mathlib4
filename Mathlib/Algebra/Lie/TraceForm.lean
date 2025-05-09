@@ -175,7 +175,7 @@ lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
     conv_lhs => rw [pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
       ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
   suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
-    apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
+    refine LieSubmodule.iSup_induction (motive := fun m ↦ (B m₀) m = 0) _ hm₁ this (map_zero _) ?_
     aesop
   clear hm₁ m₁; intro x m₁ hm₁
   simp only [mem_genWeightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm₀
@@ -226,7 +226,7 @@ lemma traceForm_eq_sum_genWeightSpaceOf
     convert finite_genWeightSpaceOf_ne_bot R L M z
     exact LieSubmodule.toSubmodule_eq_bot (genWeightSpaceOf M _ _)
   classical
-  have h := LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpaceOf R L M z
+  have h := LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpaceOf R L M z
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top h <| by
     simp [← LieSubmodule.iSup_toSubmodule]
   simp only [LinearMap.coeFn_sum, Finset.sum_apply, traceForm_apply_apply,
@@ -408,8 +408,8 @@ lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   classical
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
-    (LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpace' K L M)
-    (LieSubmodule.iSup_eq_top_iff_toSubmodule.mp <| iSup_genWeightSpace_eq_top' K L M)
+    (LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpace' K L M)
+    (LieSubmodule.iSup_toSubmodule_eq_top.mpr <| iSup_genWeightSpace_eq_top' K L M)
   simp_rw [traceForm_apply_apply, LinearMap.trace_eq_sum_trace_restrict hds hxy,
     ← traceForm_genWeightSpace_eq K L M _ x y]
   rfl

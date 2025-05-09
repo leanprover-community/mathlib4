@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
 
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.GroupTheory.Index
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Closed subgroups of a topological group
@@ -94,7 +94,7 @@ lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
   push_cast
   apply isClosed_iInter
   intro g
-  convert IsClosed.preimage (TopologicalGroup.continuous_conj (ConjAct.ofConjAct g⁻¹)) h
+  convert IsClosed.preimage (IsTopologicalGroup.continuous_conj (ConjAct.ofConjAct g⁻¹)) h
   exact Set.ext (fun t ↦ Set.mem_smul_set_iff_inv_smul_mem)
 
 @[to_additive]

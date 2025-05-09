@@ -3,9 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Interval.Set.IsoIoo
-import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Topology.ContinuousMap.Bounded.Normed
 import Mathlib.Topology.UrysohnsBounded
 
 /-!
@@ -408,7 +407,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
         _ = dg y := (dgb rfl).symm
     · exact ((sub_le_self_iff _).2 (dgmem _).1).trans_lt hlt
   rcases hb.exists_between hyb with ⟨_, ⟨xu, rfl⟩, hyxu, _⟩
-  cases' lt_or_le c (g y) with hc hc
+  rcases lt_or_le c (g y) with hc | hc
   · rcases em (a ∈ range f) with (⟨x, rfl⟩ | _)
     · refine ⟨x, xu, ?_, hyxu.le⟩
       calc

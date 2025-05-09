@@ -52,6 +52,7 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 measure, almost everywhere, measure space
 -/
 
+assert_not_exists Basis
 
 noncomputable section
 
@@ -72,7 +73,7 @@ structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α wher
   trim_le : toOuterMeasure.trim ≤ toOuterMeasure
 
 /-- Notation for `Measure` with respect to a non-standard σ-algebra in the domain. -/
-scoped notation "Measure[" mα "]" α:arg => @Measure α mα
+scoped notation "Measure[" mα "] " α:arg => @Measure α mα
 
 theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
@@ -236,6 +237,9 @@ theorem exists_measure_pos_of_not_measure_iUnion_null [Countable ι] {s : ι →
 
 theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < ∞ :=
   lt_of_le_of_lt (μ.mono hst) hs.lt_top
+
+theorem measure_ne_top_of_subset (h : t ⊆ s) (ht : μ s ≠ ∞) : μ t ≠ ∞ :=
+  (measure_lt_top_of_subset h ht).ne
 
 theorem measure_inter_lt_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) < ∞ :=
   measure_lt_top_of_subset inter_subset_left hs_finite
@@ -417,5 +421,22 @@ theorem Measurable.comp_aemeasurable [MeasurableSpace δ] {f : α → δ} {g : �
 theorem Measurable.comp_aemeasurable' [MeasurableSpace δ] {f : α → δ} {g : δ → β}
     (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ g (f x)) μ :=
   Measurable.comp_aemeasurable hg hf
+
+variable {δ : Type*} [Countable δ] {X : δ → Type*} {mX : ∀ a, MeasurableSpace (X a)}
+
+theorem aemeasurable_pi_iff {g : α → Π a, X a} :
+    AEMeasurable g μ ↔ ∀ a, AEMeasurable (fun x ↦ g x a) μ := by
+  constructor
+  · intro hg a
+    use fun x ↦ hg.mk g x a, hg.measurable_mk.eval
+    exact hg.ae_eq_mk.mono fun _ h ↦ congrFun h _
+  · intro h
+    use fun x a ↦ (h a).mk _ x, measurable_pi_lambda _ fun a ↦ (h a).measurable_mk
+    exact (eventually_countable_forall.mpr fun a ↦ (h a).ae_eq_mk).mono fun _ h ↦ funext h
+
+@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+theorem aemeasurable_pi_lambda (f : α → Π a, X a) (hf : ∀ a, AEMeasurable (fun c ↦ f c a) μ) :
+    AEMeasurable f μ :=
+  aemeasurable_pi_iff.mpr hf
 
 end

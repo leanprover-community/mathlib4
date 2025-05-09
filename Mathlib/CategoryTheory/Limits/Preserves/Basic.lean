@@ -179,9 +179,6 @@ section
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
 variable (F : C ⥤ D) (G : D ⥤ E)
 
--- Porting note: made this global by removing local
-attribute [elab_without_expected_type] PreservesLimit.preserves PreservesColimit.preserves
-
 instance comp_preservesLimit [PreservesLimit K F] [PreservesLimit (K ⋙ F) G] :
     PreservesLimit K (F ⋙ G) where
   preserves hc := ⟨isLimitOfPreserves G (isLimitOfPreserves F hc)⟩

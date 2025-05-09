@@ -246,7 +246,7 @@ theorem IsGδ.measurableSet (h : IsGδ s) : MeasurableSet s := by
   rcases h with ⟨S, hSo, hSc, rfl⟩
   exact MeasurableSet.sInter hSc fun t ht => (hSo t ht).measurableSet
 
-theorem measurableSet_of_continuousAt {β} [EMetricSpace β] (f : α → β) :
+theorem measurableSet_of_continuousAt {β} [PseudoEMetricSpace β] (f : α → β) :
     MeasurableSet { x | ContinuousAt f x } :=
   (IsGδ.setOf_continuousAt f).measurableSet
 
@@ -345,19 +345,19 @@ instance (priority := 100) OpensMeasurableSpace.toMeasurableSingletonClass [T1Sp
     MeasurableSingletonClass α :=
   ⟨fun _ => isClosed_singleton.measurableSet⟩
 
-instance Pi.opensMeasurableSpace {ι : Type*} {π : ι → Type*} [Countable ι]
-    [t' : ∀ i, TopologicalSpace (π i)] [∀ i, MeasurableSpace (π i)]
-    [∀ i, SecondCountableTopology (π i)] [∀ i, OpensMeasurableSpace (π i)] :
-    OpensMeasurableSpace (∀ i, π i) := by
+instance Pi.opensMeasurableSpace {ι : Type*} {X : ι → Type*} [Countable ι]
+    [t' : ∀ i, TopologicalSpace (X i)] [∀ i, MeasurableSpace (X i)]
+    [∀ i, SecondCountableTopology (X i)] [∀ i, OpensMeasurableSpace (X i)] :
+    OpensMeasurableSpace (∀ i, X i) := by
   constructor
-  have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (π a)) (i : Finset ι),
-      (∀ a ∈ i, s a ∈ countableBasis (π a)) ∧ t = pi (↑i) s } := by
-    simp only [funext fun a => @eq_generateFrom_countableBasis (π a) _ _, pi_generateFrom_eq]
+  have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (X a)) (i : Finset ι),
+      (∀ a ∈ i, s a ∈ countableBasis (X a)) ∧ t = pi (↑i) s } := by
+    simp only [funext fun a => @eq_generateFrom_countableBasis (X a) _ _, pi_generateFrom_eq]
   rw [borel_eq_generateFrom_of_subbasis this]
   apply generateFrom_le
   rintro _ ⟨s, i, hi, rfl⟩
   refine MeasurableSet.pi i.countable_toSet fun a ha => IsOpen.measurableSet ?_
-  rw [eq_generateFrom_countableBasis (π a)]
+  rw [eq_generateFrom_countableBasis (X a)]
   exact .basic _ (hi a ha)
 
 /-- The typeclass `SecondCountableTopologyEither α β` registers the fact that at least one of
@@ -554,13 +554,13 @@ theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} 
 theorem Continuous.measurable2 [SecondCountableTopologyEither α β] {f : δ → α}
     {g : δ → β} {c : α → β → γ} (h : Continuous fun p : α × β => c p.1 p.2) (hf : Measurable f)
     (hg : Measurable g) : Measurable fun a => c (f a) (g a) :=
-  h.measurable.comp (hf.prod_mk hg)
+  h.measurable.comp (hf.prodMk hg)
 
 theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
     {f : δ → α} {g : δ → β} {c : α → β → γ} {μ : Measure δ}
     (h : Continuous fun p : α × β => c p.1 p.2) (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => c (f a) (g a)) μ :=
-  h.measurable.comp_aemeasurable (hf.prod_mk hg)
+  h.measurable.comp_aemeasurable (hf.prodMk hg)
 
 instance (priority := 100) HasContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
     [HasContinuousInv₀ γ] : MeasurableInv γ :=
@@ -589,10 +589,10 @@ variable [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [Topological
   [MeasurableSpace β] [BorelSpace β] [TopologicalSpace γ] [MeasurableSpace γ] [BorelSpace γ]
   [MeasurableSpace δ]
 
-theorem pi_le_borel_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, MeasurableSpace (π i)] [∀ i, BorelSpace (π i)] :
-      MeasurableSpace.pi ≤ borel (∀ i, π i) := by
-  have : ‹∀ i, MeasurableSpace (π i)› = fun i => borel (π i) :=
+theorem pi_le_borel_pi {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, MeasurableSpace (X i)] [∀ i, BorelSpace (X i)] :
+      MeasurableSpace.pi ≤ borel (∀ i, X i) := by
+  have : ‹∀ i, MeasurableSpace (X i)› = fun i => borel (X i) :=
     funext fun i => BorelSpace.measurable_eq
   rw [this]
   exact iSup_le fun i => comap_le_iff_le_map.2 <| (continuous_apply i).borel_measurable
@@ -603,9 +603,9 @@ theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   · exact comap_le_iff_le_map.mpr continuous_fst.borel_measurable
   · exact comap_le_iff_le_map.mpr continuous_snd.borel_measurable
 
-instance Pi.borelSpace {ι : Type*} {π : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (π i)]
-    [∀ i, MeasurableSpace (π i)] [∀ i, SecondCountableTopology (π i)] [∀ i, BorelSpace (π i)] :
-    BorelSpace (∀ i, π i) :=
+instance Pi.borelSpace {ι : Type*} {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)]
+    [∀ i, MeasurableSpace (X i)] [∀ i, SecondCountableTopology (X i)] [∀ i, BorelSpace (X i)] :
+    BorelSpace (∀ i, X i) :=
   ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
 
 instance Prod.borelSpace [SecondCountableTopologyEither α β] :

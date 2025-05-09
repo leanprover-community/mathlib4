@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
@@ -283,20 +283,20 @@ theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
 If `C` holds for `0` and all elements of `p i` for all `i`, and is preserved under addition,
 then it holds for all elements of the supremum of `p`. -/
 @[elab_as_elim]
-theorem iSup_induction {ι : Sort*} (p : ι → Submodule R M) {C : M → Prop} {x : M}
-    (hx : x ∈ ⨆ i, p i) (hp : ∀ (i), ∀ x ∈ p i, C x) (h0 : C 0)
-    (hadd : ∀ x y, C x → C y → C (x + y)) : C x := by
+theorem iSup_induction {ι : Sort*} (p : ι → Submodule R M) {motive : M → Prop} {x : M}
+    (hx : x ∈ ⨆ i, p i) (mem : ∀ (i), ∀ x ∈ p i, motive x) (zero : motive 0)
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive x := by
   rw [← mem_toAddSubmonoid, iSup_toAddSubmonoid] at hx
-  exact AddSubmonoid.iSup_induction (x := x) _ hx hp h0 hadd
+  exact AddSubmonoid.iSup_induction (x := x) _ hx mem zero add
 
 /-- A dependent version of `submodule.iSup_induction`. -/
 @[elab_as_elim]
-theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {C : ∀ x, (x ∈ ⨆ i, p i) → Prop}
-    (mem : ∀ (i) (x) (hx : x ∈ p i), C x (mem_iSup_of_mem i hx)) (zero : C 0 (zero_mem _))
-    (add : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
-    (hx : x ∈ ⨆ i, p i) : C x hx := by
-  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, p i) (hc : C x hx) => hc
-  refine iSup_induction p (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, p i), C x hx) hx
+theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {motive : ∀ x, (x ∈ ⨆ i, p i) → Prop}
+    (mem : ∀ (i) (x) (hx : x ∈ p i), motive x (mem_iSup_of_mem i hx)) (zero : motive 0 (zero_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›)) {x : M}
+    (hx : x ∈ ⨆ i, p i) : motive x hx := by
+  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, p i) (hc : motive x hx) => hc
+  refine iSup_induction p (motive := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, p i), motive x hx) hx
     (fun i x hx => ?_) ?_ fun x y => ?_
   · exact ⟨_, mem _ _ hx⟩
   · exact ⟨_, zero⟩
@@ -379,7 +379,7 @@ theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ �
 /-- If a bilinear map takes values in a submodule along two sets, then the same is true along
 the span of these sets. -/
 lemma _root_.LinearMap.BilinMap.apply_apply_mem_of_mem_span {R M N P : Type*} [CommSemiring R]
-    [AddCommGroup M] [AddCommMonoid N] [AddCommMonoid P] [Module R M] [Module R N] [Module R P]
+    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [Module R M] [Module R N] [Module R P]
     (P' : Submodule R P) (s : Set M) (t : Set N)
     (B : M →ₗ[R] N →ₗ[R] P) (hB : ∀ x ∈ s, ∀ y ∈ t, B x y ∈ P')
     (x : M) (y : N) (hx : x ∈ span R s) (hy : y ∈ span R t) :
@@ -436,6 +436,46 @@ theorem comap_map_eq (f : F) (p : Submodule R M) : comap f (map f p) = p ⊔ Lin
 
 theorem comap_map_eq_self {f : F} {p : Submodule R M} (h : LinearMap.ker f ≤ p) :
     comap f (map f p) = p := by rw [Submodule.comap_map_eq, sup_of_le_left h]
+
+theorem comap_map_sup_of_comap_le {f : F} {p : Submodule R M} {q : Submodule R₂ M₂}
+    (le : comap f q ≤ p) : comap f (map f p ⊔ q) = p := by
+  refine le_antisymm (fun x h ↦ ?_) (map_le_iff_le_comap.mp le_sup_left)
+  obtain ⟨_, ⟨y, hy, rfl⟩, z, hz, eq⟩ := mem_sup.mp h
+  rw [add_comm, ← eq_sub_iff_add_eq, ← map_sub] at eq; subst eq
+  simpa using p.add_mem (le hz) hy
+
+theorem isCoatom_comap_or_eq_top (f : F) {p : Submodule R₂ M₂} (hp : IsCoatom p) :
+    IsCoatom (comap f p) ∨ comap f p = ⊤ :=
+  or_iff_not_imp_right.mpr fun h ↦ ⟨h, fun q lt ↦ by
+    rw [← comap_map_sup_of_comap_le lt.le, hp.2 (map f q ⊔ p), comap_top]
+    simpa only [right_lt_sup, map_le_iff_le_comap] using lt.not_le⟩
+
+theorem isCoatom_comap_iff {f : F} (hf : Surjective f) {p : Submodule R₂ M₂} :
+    IsCoatom (comap f p) ↔ IsCoatom p := by
+  have := comap_injective_of_surjective hf
+  rw [IsCoatom, IsCoatom, ← comap_top f, this.ne_iff]
+  refine and_congr_right fun _ ↦
+    ⟨fun h m hm ↦ this (h _ <| comap_strictMono_of_surjective hf hm), fun h m hm ↦ ?_⟩
+  rw [← h _ (lt_map_of_comap_lt_of_surjective hf hm),
+    comap_map_eq_self ((comap_mono bot_le).trans hm.le)]
+
+theorem isCoatom_map_of_ker_le {f : F} (hf : Surjective f) {p : Submodule R M}
+    (le : LinearMap.ker f ≤ p) (hp : IsCoatom p) : IsCoatom (map f p) :=
+  (isCoatom_comap_iff hf).mp <| by rwa [comap_map_eq_self le]
+
+theorem map_iInf_of_ker_le {f : F} (hf : Surjective f) {ι} {p : ι → Submodule R M}
+    (h : LinearMap.ker f ≤ ⨅ i, p i) : map f (⨅ i, p i) = ⨅ i, map f (p i) := by
+  conv_rhs => rw [← map_comap_eq_of_surjective hf (⨅ _, _), comap_iInf]
+  simp_rw [fun i ↦ comap_map_eq_self (le_iInf_iff.mp h i)]
+
+lemma comap_covBy_of_surjective {f : F} (hf : Surjective f)
+    {p q : Submodule R₂ M₂} (h : p ⋖ q) :
+    p.comap f ⋖ q.comap f := by
+  refine ⟨lt_of_le_of_ne (comap_mono h.1.le) ((comap_injective_of_surjective hf).ne h.1.ne), ?_⟩
+  intro N h₁ h₂
+  refine h.2 (lt_map_of_comap_lt_of_surjective hf h₁) ?_
+  rwa [← comap_lt_comap_iff_of_surjective hf, comap_map_eq, sup_eq_left.mpr]
+  refine (LinearMap.ker_le_comap (f : M →ₛₗ[τ₁₂] M₂)).trans h₁.le
 
 lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ S ⊔ (LinearMap.ker f) = ⊤ := by

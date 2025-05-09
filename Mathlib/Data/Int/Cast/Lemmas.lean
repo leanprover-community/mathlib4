@@ -22,7 +22,7 @@ which were not available in the import dependencies of `Data.Int.Cast.Basic`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists RelIso OrderedCommMonoid Field
 
 open Additive Function Multiplicative Nat
 
@@ -37,7 +37,7 @@ def ofNatHom : ℕ →+* ℤ :=
 section cast
 
 @[simp, norm_cast]
-theorem cast_ite [AddGroupWithOne α] (P : Prop) [Decidable P] (m n : ℤ) :
+theorem cast_ite [IntCast α] (P : Prop) [Decidable P] (m n : ℤ) :
     ((ite P m n : ℤ) : α) = ite P (m : α) (n : α) :=
   apply_ite _ _ _ _
 
@@ -118,7 +118,7 @@ lemma _root_.Odd.intCast (hn : Odd n) : Odd (n : α) := hn.map (castRingHom α)
 
 end Ring
 
-theorem cast_dvd_cast [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
+theorem cast_dvd_cast [Ring α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
   RingHom.map_dvd (Int.castRingHom α) h
 
 end cast

@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Finset.Fin
-import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fintype
@@ -24,8 +22,9 @@ open Equiv Function Fintype Finset
 variable {α : Type u} {β : Type v}
 
 -- An example on how to determine the order of an element of a finite group.
-example : orderOf (-1 : ℤˣ) = 2 :=
-  orderOf_eq_prime (Int.units_sq _) (by decide)
+-- import Mathlib.Data.Int.Order.Units
+-- example : orderOf (-1 : ℤˣ) = 2 :=
+--   orderOf_eq_prime (Int.units_sq _) (by decide)
 
 namespace Equiv.Perm
 
@@ -77,11 +76,9 @@ theorem perm_inv_mapsTo_iff_mapsTo {f : Perm α} {s : Set α} [Finite s] :
   ⟨perm_inv_mapsTo_of_mapsTo f⁻¹, perm_inv_mapsTo_of_mapsTo f⟩
 
 theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { x // p x }]
-    (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f⁻¹ x) :=
-  -- Porting note: relies heavily on the definitions of `Subtype` and `setOf` unfolding to their
-  -- underlying predicate.
-  have : Finite { x | p x } := ‹_›
-  perm_inv_mapsTo_of_mapsTo (s := {x | p x}) f h hx
+    (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f⁻¹ x) := by
+  have : Finite { x | p x } := by simpa
+  simpa using perm_inv_mapsTo_of_mapsTo (s := {x | p x}) f h hx
 
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
   on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for
@@ -107,7 +104,7 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
       classical
         rw [← perm_inv_mapsTo_iff_mapsTo] at h
         intro x
-        cases' hx : σ x with l r)
+        rcases hx : σ x with l | r)
   · rintro ⟨a, rfl⟩
     obtain ⟨y, hy⟩ := h ⟨l, rfl⟩
     rw [← hx, σ.inv_apply_self] at hy
@@ -141,16 +138,16 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
     use σ₁, σ₂
     rw [Perm.sumCongrHom_apply]
     ext x
-    cases' x with a b
+    rcases x with a | b
     · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inl_injective]
       rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [subtypePerm_apply]
+      dsimp [Set.range]
+      rw [subtypePerm_apply]
     · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
-        apply_ofInjective_symm Sum.inr_injective]
-      erw [subtypePerm_apply]
-      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
+        apply_ofInjective_symm Sum.inr_injective, ofInjective_apply]
+      dsimp [Set.range]
+      rw [subtypePerm_apply]
 
 nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
     orderOf (σ * τ) = Nat.lcm (orderOf σ) (orderOf τ) :=
@@ -184,16 +181,16 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
     have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
     refine isConj_of_support_equiv ?_ ?_
     · refine
-          ((Equiv.Set.ofEq hd1').trans (Equiv.Set.union hd1'')).trans
+          ((Equiv.setCongr hd1').trans (Equiv.Set.union hd1'')).trans
             ((Equiv.sumCongr (subtypeEquiv f fun a => ?_) (subtypeEquiv g fun a => ?_)).trans
-              ((Equiv.Set.ofEq hd2').trans (Equiv.Set.union hd2'')).symm) <;>
+              ((Equiv.setCongr hd2').trans (Equiv.Set.union hd2'')).symm) <;>
       · simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
           apply_eq_iff_eq]
     · intro x hx
-      simp only [trans_apply, symm_trans_apply, Equiv.Set.ofEq_apply, Equiv.Set.ofEq_symm_apply,
+      simp only [trans_apply, symm_trans_apply, Equiv.setCongr_apply, Equiv.setCongr_symm_apply,
         Equiv.sumCongr_apply]
       rw [hd1', Set.mem_union] at hx
-      cases' hx with hxσ hxτ
+      rcases hx with hxσ | hxτ
       · rw [mem_coe, mem_support] at hxσ
         rw [Set.union_apply_left, Set.union_apply_left]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,

@@ -25,7 +25,7 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
 ## Main definitions and results
 
 * `BoxIntegral.hasIntegralVertices`: a `Prop` that states that the vertices of the box have
-coordinates in `ℤ`
+  coordinates in `ℤ`
 
 * `BoxIntegral.unitPartition.box`: a `BoxIntegral`, indexed by `ν : ι → ℤ`, with vertices
 `ν i / n` and of side length `1 / n`.
@@ -34,21 +34,21 @@ coordinates in `ℤ`
 `unitPartition.box` that are subsets of `B`. This is a finite set.
 
 * `BoxIntegral.unitPartition.prepartition_isPartition`: For `B : BoxIntegral.Box`, if `B`
-has integral vertices, then the prepartition of `unitPartition.box` admissible for `B` is a
-partition of `B`.
+  has integral vertices, then the prepartition of `unitPartition.box` admissible for `B` is a
+  partition of `B`.
 
 * `tendsto_tsum_div_pow_atTop_integral`: let `s` be a bounded, measurable set of `ι → ℝ`
-whose frontier has zero volume and let `F` be a continuous function. Then the limit as `n → ∞`
-of `∑ F x / n ^ card ι`, where the sum is over the points in `s ∩ n⁻¹ • (ι → ℤ)`, tends to the
-integral of `F` over `s`.
+  whose frontier has zero volume and let `F` be a continuous function. Then the limit as `n → ∞`
+  of `∑ F x / n ^ card ι`, where the sum is over the points in `s ∩ n⁻¹ • (ι → ℤ)`, tends to the
+  integral of `F` over `s`.
 
 * `tendsto_card_div_pow_atTop_volume`: let `s` be a bounded, measurable set of `ι → ℝ` whose
-frontier has zero volume. Then the limit as `n → ∞` of `card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι`
-tends to the volume of `s`.
+  frontier has zero volume. Then the limit as `n → ∞` of `card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι`
+  tends to the volume of `s`.
 
 * `tendsto_card_div_pow_atTop_volume'`: a version of `tendsto_card_div_pow_atTop_volume` where we
-assume in addition that `x • s ⊆ y • s` whenever `0 < x ≤ y`. Then we get the same limit
-`card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι → volume s` but the limit is over a real variable `x`.
+  assume in addition that `x • s ⊆ y • s` whenever `0 < x ≤ y`. Then we get the same limit
+  `card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι → volume s` but the limit is over a real variable `x`.
 
 -/
 
@@ -104,7 +104,7 @@ theorem box_lower [NeZero n] (ν : ι → ℤ) :
 
 @[simp]
 theorem box_upper [NeZero n] (ν : ι → ℤ) :
-    (box n ν).upper = fun i ↦ ((ν i + 1)/ n : ℝ) := rfl
+    (box n ν).upper = fun i ↦ ((ν i + 1) / n : ℝ) := rfl
 
 variable {n} in
 @[simp]
@@ -372,7 +372,7 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
   · rw [Set.mem_toFinset] at hx
     rw [volume_box, prepartition_tag n (mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1)),
       tag_index_eq_self_of_mem_smul_span n hx.2, ENNReal.toReal_div,
-      ENNReal.one_toReal, ENNReal.toReal_pow, ENNReal.toReal_nat, mul_comm_div, one_mul]
+      ENNReal.toReal_one, ENNReal.toReal_pow, ENNReal.toReal_natCast, mul_comm_div, one_mul]
 
 open Filter
 

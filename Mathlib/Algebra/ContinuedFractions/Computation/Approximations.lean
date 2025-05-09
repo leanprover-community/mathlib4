@@ -51,7 +51,7 @@ open GenContFract (of)
 
 open Int
 
-variable {K : Type*} {v : K} {n : ℕ} [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} {v : K} {n : ℕ} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
 namespace GenContFract
 
@@ -97,6 +97,7 @@ theorem one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
     ((nth_stream_fr_nonneg nth_stream_eq).lt_of_ne' stream_nth_fr_ne_zero)]
   exact (nth_stream_fr_lt_one nth_stream_eq).le
 
+omit [IsStrictOrderedRing K] in
 /--
 Shows that the `n + 1`th integer part `bₙ₊₁` of the stream is smaller or equal than the inverse of
 the `n`th fractional part `frₙ` of the stream.
@@ -455,7 +456,6 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
           haveI zero_le_ifp_n_fract : 0 ≤ ifp_n.fr :=
             IntFractPair.nth_stream_fr_nonneg stream_nth_eq
           inv_pos.2 (lt_of_le_of_ne zero_le_ifp_n_fract stream_nth_fr_ne_zero.symm)
-        -- Porting note: replaced complicated positivity proof with tactic.
         positivity
       rw [abs_of_pos this]
     rwa [this]
@@ -476,7 +476,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in
 `GenContFract.abs_sub_convs_le`, but sometimes it is easier to apply and
 sufficient for one's use case.
- -/
+-/
 theorem abs_sub_convergents_le' {b : K}
     (nth_partDen_eq : (of v).partDens.get? n = some b) :
     |v - (of v).convs n| ≤ 1 / (b * (of v).dens n * (of v).dens n) := by

@@ -65,10 +65,8 @@ abbrev of : CompHaus := CompHausLike.of _ X
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
--- Porting note: `semireducible` -> `.default`.
 abbrev compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
   CompHausLike.compHausLikeToTop _
-  -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
 
 /-- (Implementation) The object part of the compactification functor from topological spaces to
 compact Hausdorff spaces.
@@ -191,7 +189,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     let Z := of (ULift.{u} <| Set.Icc (0 : ℝ) 1)
     let g : Y ⟶ Z := ofHom _
       ⟨fun y' => ⟨⟨φ y', hφ01 y'⟩⟩,
-        continuous_uLift_up.comp (φ.continuous.subtype_mk fun y' => hφ01 y')⟩
+        continuous_uliftUp.comp (φ.continuous.subtype_mk fun y' => hφ01 y')⟩
     let h : Y ⟶ Z := ofHom _
       ⟨fun _ => ⟨⟨0, Set.left_mem_Icc.mpr zero_le_one⟩⟩, continuous_const⟩
     have H : h = g := by

@@ -3,9 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.NumberTheory.LegendreSymbol.Basic
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Lemmas of Gauss and Eisenstein
@@ -143,7 +143,7 @@ theorem eisenstein_lemma_aux (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : �
   have ha2 : (a : ZMod 2) = (1 : ℕ) := (eq_iff_modEq_nat _).2 ha2
   (eq_iff_modEq_nat 2).1 <| sub_eq_zero.1 <| by
     simpa [add_left_comm, sub_eq_add_neg, ← mul_sum, mul_comm, ha2, Nat.cast_sum,
-      add_neg_eq_iff_eq_add.symm, neg_eq_self_mod_two, add_assoc] using
+      add_neg_eq_iff_eq_add.symm, add_assoc] using
       Eq.symm (eisenstein_lemma_aux₁ p hap)
 
 theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :

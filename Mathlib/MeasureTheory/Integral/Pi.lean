@@ -69,7 +69,7 @@ theorem integral_fin_nat_prod_eq_prod {n : ℕ} {E : Fin n → Type*}
   induction n with
   | zero =>
       simp only [volume_pi, Finset.univ_eq_empty, Finset.prod_empty, integral_const,
-        pi_empty_univ, ENNReal.one_toReal, smul_eq_mul, mul_one, pow_zero, one_smul]
+        pi_empty_univ, ENNReal.toReal_one, smul_eq_mul, mul_one, pow_zero, one_smul]
   | succ n n_ih =>
       calc
         _ = ∫ x : E 0 × ((i : Fin n) → E (Fin.succ i)),

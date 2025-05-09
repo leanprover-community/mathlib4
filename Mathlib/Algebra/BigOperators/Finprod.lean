@@ -111,12 +111,12 @@ open Batteries.ExtendedBinder
 
 /-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the
 support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or
-conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
+conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x` -/
 notation3"∑ᶠ "(...)", "r:67:(scoped f => finsum f) => r
 
 /-- `∏ᶠ x, f x` is notation for `finprod f`. It is the product of `f x`, where `x` ranges over the
 multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
-arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
+arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x` -/
 notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
 
 -- Porting note: The following ports the lean3 notation for this file, but is currently very fickle.
@@ -249,12 +249,14 @@ theorem finprod_induction {f : α → M} (p : M → Prop) (hp₀ : p 1)
   split_ifs
   exacts [Finset.prod_induction _ _ hp₁ hp₀ fun i _ => hp₂ _, hp₀]
 
-theorem finprod_nonneg {R : Type*} [OrderedCommSemiring R] {f : α → R} (hf : ∀ x, 0 ≤ f x) :
+theorem finprod_nonneg {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
+    {f : α → R} (hf : ∀ x, 0 ≤ f x) :
     0 ≤ ∏ᶠ x, f x :=
   finprod_induction (fun x => 0 ≤ x) zero_le_one (fun _ _ => mul_nonneg) hf
 
 @[to_additive finsum_nonneg]
-theorem one_le_finprod' {M : Type*} [OrderedCommMonoid M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
+theorem one_le_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+    {f : α → M} (hf : ∀ i, 1 ≤ f i) :
     1 ≤ ∏ᶠ i, f i :=
   finprod_induction _ le_rfl (fun _ _ => one_le_mul) hf
 
@@ -286,6 +288,11 @@ theorem MonoidHom.map_finprod_of_injective (g : M →* N) (hg : Injective g) (f 
 @[to_additive]
 theorem MulEquiv.map_finprod (g : M ≃* N) (f : α → M) : g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
   g.toMonoidHom.map_finprod_of_injective (EquivLike.injective g) f
+
+@[to_additive]
+theorem MulEquivClass.map_finprod {F : Type*} [EquivLike F M N] [MulEquivClass F M N] (g : F)
+    (f : α → M) : g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
+  MulEquiv.map_finprod (MulEquivClass.toMulEquiv g) f
 
 /-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `(support f).Finite` instead, see `finsum_smul'`. -/
@@ -378,6 +385,11 @@ theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, 
   finprod_eq_prod_of_mulSupport_toFinset_subset _ (Set.toFinite _) <| Finset.subset_univ _
 
 @[to_additive]
+theorem map_finset_prod {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
+    (g : α → M) : f (∏ i : α, g i) = ∏ i : α, f (g i) := by
+  simp [← finprod_eq_prod_of_fintype, MulEquivClass.map_finprod]
+
+@[to_additive]
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}
     (h : ∀ {x}, f x ≠ 1 → (p x ↔ x ∈ t)) : (∏ᶠ (i) (_ : p i), f i) = ∏ i ∈ t, f i := by
   set s := { x | p x }
@@ -426,7 +438,7 @@ theorem finprod_mem_eq_prod (f : α → M) {s : Set α} (hf : (s ∩ mulSupport 
 @[to_additive]
 theorem finprod_mem_eq_prod_filter (f : α → M) (s : Set α) [DecidablePred (· ∈ s)]
     (hf : (mulSupport f).Finite) :
-    ∏ᶠ i ∈ s, f i = ∏ i ∈ Finset.filter (· ∈ s) hf.toFinset, f i :=
+    ∏ᶠ i ∈ s, f i = ∏ i ∈ hf.toFinset with i ∈ s, f i :=
   finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by
     ext x
     simp [and_comm]
@@ -494,7 +506,8 @@ theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : �
   simp +contextual [h]
 
 @[to_additive finsum_pos']
-theorem one_lt_finprod' {M : Type*} [OrderedCancelCommMonoid M] {f : ι → M}
+theorem one_lt_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
+    {f : ι → M}
     (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : (mulSupport f).Finite) : 1 < ∏ᶠ i, f i := by
   rcases h' with ⟨i, hi⟩
   rw [finprod_eq_prod _ hf]
@@ -592,9 +605,9 @@ theorem finsum_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {
 
 /-- See also `smul_finsum` for a version that works even when the support of `f` is not finite,
 but with slightly stronger typeclass requirements. -/
-theorem smul_finsum' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (c : R) {f : ι → M}
-    (hf : (support f).Finite) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i :=
-  (smulAddHom R M c).map_finsum hf
+theorem smul_finsum' {R M : Type*} [Monoid R] [AddCommMonoid M] [DistribMulAction R M] (c : R)
+    {f : ι → M} (hf : (support f).Finite) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i :=
+  (DistribMulAction.toAddMonoidHom M c).map_finsum hf
 
 /-- A more general version of `MonoidHom.map_finprod_mem` that requires `s ∩ mulSupport f` rather
 than `s` to be finite. -/
@@ -972,12 +985,14 @@ theorem finprod_mem_induction (p : M → Prop) (hp₀ : p 1) (hp₁ : ∀ x y, p
     (hp₂ : ∀ x ∈ s, p <| f x) : p (∏ᶠ i ∈ s, f i) :=
   finprod_induction _ hp₀ hp₁ fun x => finprod_induction _ hp₀ hp₁ <| hp₂ x
 
-theorem finprod_cond_nonneg {R : Type*} [OrderedCommSemiring R] {p : α → Prop} {f : α → R}
+theorem finprod_cond_nonneg {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
+    {p : α → Prop} {f : α → R}
     (hf : ∀ x, p x → 0 ≤ f x) : 0 ≤ ∏ᶠ (x) (_ : p x), f x :=
   finprod_nonneg fun x => finprod_nonneg <| hf x
 
 @[to_additive]
-theorem single_le_finprod {M : Type*} [OrderedCommMonoid M] (i : α) {f : α → M}
+theorem single_le_finprod {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+    (i : α) {f : α → M}
     (hf : (mulSupport f).Finite) (h : ∀ j, 1 ≤ f j) : f i ≤ ∏ᶠ j, f j := by
   classical calc
       f i ≤ ∏ j ∈ insert i hf.toFinset, f j :=
@@ -1034,10 +1049,10 @@ lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : (mulSupport f).F
 
 @[to_additive]
 theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : Finset α) (f : α → M)
-    (g : α → β) : (mulSupport fun b => (s.filter fun a => g a = b).prod f) ⊆ s.image g := by
+    (g : α → β) : (mulSupport fun b => ∏ a ∈ s with g a = b, f a) ⊆ s.image g := by
   simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe, Function.support_subset_iff]
   intro b h
-  suffices (s.filter fun a : α => g a = b).Nonempty by
+  suffices {a ∈ s | g a = b}.Nonempty by
     simpa only [fiber_nonempty_iff_mem_image, Finset.mem_image, exists_prop]
   exact Finset.nonempty_of_prod_ne_one h
 

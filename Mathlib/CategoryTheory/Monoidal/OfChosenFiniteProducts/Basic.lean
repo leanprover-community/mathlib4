@@ -78,6 +78,28 @@ def BinaryFan.braiding {X Y : C} {s : BinaryFan X Y} (P : IsLimit s) {t : Binary
     (Q : IsLimit t) : s.pt ≅ t.pt :=
   IsLimit.conePointUniqueUpToIso P Q.swapBinaryFan
 
+section
+
+variable {X Y : C} {s : BinaryFan X Y} (P : IsLimit s) {t : BinaryFan Y X} (Q : IsLimit t)
+
+@[reassoc (attr := simp)]
+theorem BinaryFan.braiding_hom_fst : (braiding P Q).hom ≫ t.fst = s.snd :=
+  IsLimit.conePointUniqueUpToIso_hom_comp P _ ⟨WalkingPair.right⟩
+
+@[reassoc (attr := simp)]
+theorem BinaryFan.braiding_hom_snd : (braiding P Q).hom ≫ t.snd = s.fst :=
+  IsLimit.conePointUniqueUpToIso_hom_comp P _ ⟨WalkingPair.left⟩
+
+@[reassoc (attr := simp)]
+theorem BinaryFan.braiding_inv_fst : (braiding P Q).inv ≫ s.fst = t.snd :=
+  IsLimit.conePointUniqueUpToIso_inv_comp P _ ⟨WalkingPair.left⟩
+
+@[reassoc (attr := simp)]
+theorem BinaryFan.braiding_inv_snd : (braiding P Q).inv ≫ s.snd = t.fst :=
+  IsLimit.conePointUniqueUpToIso_inv_comp P _ ⟨WalkingPair.right⟩
+
+end
+
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `sXY.X Z`,
 if `sYZ` is a limit cone we can construct a binary fan over `X sYZ.X`.
 

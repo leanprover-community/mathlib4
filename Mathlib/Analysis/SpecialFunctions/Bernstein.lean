@@ -89,7 +89,7 @@ namespace bernstein
 -/
 def z {n : ℕ} (k : Fin (n + 1)) : I :=
   ⟨(k : ℝ) / n, by
-    cases' n with n
+    rcases n with - | n
     · norm_num
     · have h₁ : 0 < (n.succ : ℝ) := mod_cast Nat.succ_pos _
       have h₂ : ↑k ≤ n.succ := mod_cast Fin.le_last k
@@ -180,15 +180,13 @@ def S (f : C(I, ℝ)) (ε : ℝ) (h : 0 < ε) (n : ℕ) (x : I) : Finset (Fin (n
 theorem lt_of_mem_S {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : I} {k : Fin (n + 1)}
     (m : k ∈ S f ε h n x) : |f k/ₙ - f x| < ε / 2 := by
   apply f.dist_lt_of_dist_lt_modulus (ε / 2) (half_pos h)
-  -- Porting note: `simp` fails to apply `Set.mem_toFinset` on its own
-  simpa [S, (Set.mem_toFinset)] using m
+  simpa [S] using m
 
 /-- If `k ∉ S`, then as `δ ≤ |x - k/n|`, we have the inequality `1 ≤ δ^-2 * (x - k/n)^2`.
 This particular formulation will be helpful later.
 -/
 theorem le_of_mem_S_compl {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : I} {k : Fin (n + 1)}
     (m : k ∈ (S f ε h n x)ᶜ) : (1 : ℝ) ≤ δ f ε h ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 := by
-  -- Porting note: added parentheses to help `simp`
   simp only [Finset.mem_compl, not_lt, Set.mem_toFinset, Set.mem_setOf_eq, S] at m
   rw [zpow_neg, ← div_eq_inv_mul, zpow_two, ← pow_two, one_le_div (pow_pos δ_pos 2), sq_le_sq,
     abs_of_pos δ_pos]

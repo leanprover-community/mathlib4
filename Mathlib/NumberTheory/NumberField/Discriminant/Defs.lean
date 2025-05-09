@@ -114,6 +114,6 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     rw [RingHom.map_mul, hr, hr', ← Matrix.det_mul,
       Basis.toMatrix_mul_toMatrix_flip, Matrix.det_one]
   rw [← RingHom.map_one (algebraMap ℤ ℚ), ← hr]
-  cases' Int.isUnit_iff.1 hunit with hp hm
+  rcases Int.isUnit_iff.1 hunit with hp | hm
   · simp [hp]
   · simp [hm]

@@ -3,12 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Preadditive.SingleObj
@@ -62,8 +62,10 @@ variable (C : Type u₁) [Category.{v₁} C] [Preadditive C]
 /-- An object in `Mat_ C` is a finite tuple of objects in `C`.
 -/
 structure Mat_ where
+  /-- The index type `ι` -/
   ι : Type
   [fintype : Fintype ι]
+  /-- The map from `ι` to objects in `C` -/
   X : ι → C
 
 attribute [instance] Mat_.fintype
@@ -402,7 +404,6 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
   obj X := ⨁ fun i => F.obj (X.X i)
   map f := biproduct.matrix fun i j => F.map (f i j)
   map_id X := by
-    dsimp
     ext i j
     by_cases h : j = i
     · subst h; simp
@@ -497,7 +498,7 @@ instance (R : Type u) : Inhabited (Mat R) := by
   infer_instance
 
 instance (R : Type u) : CoeSort (Mat R) (Type u) :=
-  Bundled.coeSort
+  FintypeCat.instCoeSort
 
 open Matrix
 
@@ -580,7 +581,7 @@ instance : (equivalenceSingleObjInverse R).Full where
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=
     ⟨{  ι := X
-        X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
+        X := fun _ => PUnit.unit }, ⟨eqToIso (by cases X; congr)⟩⟩
 
 instance : (equivalenceSingleObjInverse R).IsEquivalence where
 

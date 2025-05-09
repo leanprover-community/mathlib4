@@ -157,20 +157,12 @@ theorem iff_quotient_mvPolynomial' :
     refine
       ⟨ULift (Fin n), inferInstance, f.comp ulift_var.toAlgHom, hfs.comp ulift_var.surjective,
         Ideal.fg_ker_comp _ _ ?_ hfk ulift_var.surjective⟩
-    erw [RingHom.ker_coe_equiv ulift_var.toRingEquiv]
-    exact Submodule.fg_bot
-    -- Porting note: was
-    -- convert Submodule.fg_bot
-    -- exact RingHom.ker_coe_equiv ulift_var.toRingEquiv
+    simpa using Submodule.fg_bot
   · rintro ⟨ι, hfintype, f, hf⟩
     have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
     use Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective
     refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
-    erw [RingHom.ker_coe_equiv equiv.symm.toRingEquiv]
-    exact Submodule.fg_bot
-    -- Porting note: was
-    -- convert Submodule.fg_bot
-    -- exact RingHom.ker_coe_equiv equiv.symm.toRingEquiv
+    simpa using Submodule.fg_bot
 
 universe v in
 -- Porting note: make universe level explicit to ensure `ι, ι'` has the same universe level
@@ -190,11 +182,8 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation.{w₁, w₂} R A]
     ⟨ι ⊕ ι', by infer_instance, g,
       (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (AlgEquiv.surjective _),
       Ideal.fg_ker_comp _ _ ?_ ?_ (AlgEquiv.surjective _)⟩
-  · erw [RingHom.ker_coe_equiv (MvPolynomial.sumAlgEquiv R ι ι').toRingEquiv]
+  · rw [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, AlgHom.ker_coe_equiv]
     exact Submodule.fg_bot
-    -- Porting note: was
-    -- convert Submodule.fg_bot
-    -- exact RingHom.ker_coe_equiv (MvPolynomial.sumAlgEquiv R ι ι').toRingEquiv
   · rw [AlgHom.toRingHom_eq_coe, MvPolynomial.mapAlgHom_coe_ringHom, MvPolynomial.ker_map]
     exact hf_ker.map MvPolynomial.C
 
@@ -248,7 +237,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       RingHom.ker (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)) := by
       rw [Ideal.span_le]
       rintro _ (⟨x, hx, rfl⟩ | ⟨⟨x, hx⟩, rfl⟩) <;>
-      erw [RingHom.mem_ker]
+      rw [SetLike.mem_coe, RingHom.mem_ker]
       · rw [MvPolynomial.aeval_map_algebraMap (R := R) (A := A), ← aeval_unique]
         have := Ideal.subset_span hx
         rwa [hs] at this
@@ -400,6 +389,13 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 def FinitePresentation (f : A →+* B) : Prop :=
   @Algebra.FinitePresentation A B _ _ f.toAlgebra
 
+@[simp]
+lemma finitePresentation_algebraMap [Algebra A B] :
+    (algebraMap A B).FinitePresentation ↔ Algebra.FinitePresentation A B := by
+  delta RingHom.FinitePresentation
+  congr!
+  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+
 namespace FiniteType
 
 theorem of_finitePresentation {f : A →+* B} (hf : f.FinitePresentation) : f.FiniteType :=
@@ -409,12 +405,9 @@ end FiniteType
 
 namespace FinitePresentation
 
-variable (A)
-
+variable (A) in
 theorem id : FinitePresentation (RingHom.id A) :=
   Algebra.FinitePresentation.self A
-
-variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FinitePresentation) (hg : Surjective g)
     (hker : g.ker.FG) : (g.comp f).FinitePresentation := by

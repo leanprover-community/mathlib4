@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Two
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Data.Nat.Periodic
@@ -77,21 +78,17 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   conv_lhs => rw [← Nat.mod_add_div n a]
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
-    simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
-      zero_add]
+    simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos), zero_add]
     gcongr
-    exact Ico_subset_Ico rfl.le (add_le_add_left (le_of_lt (mod_lt n a_pos)) k)
+    exact le_of_lt (mod_lt n a_pos)
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
     #{x ∈ Ico k (k + n % a + a * i + a) | a.Coprime x}
-      = #{x ∈ Ico k (k + n % a + a * i) ∪
+      ≤ #{x ∈ Ico k (k + n % a + a * i) ∪
         Ico (k + n % a + a * i) (k + n % a + a * i + a) | a.Coprime x} := by
-      congr
-      rw [Ico_union_Ico_eq_Ico]
-      · rw [add_assoc]
-        exact le_self_add
-      exact le_self_add
+      gcongr
+      apply Ico_subset_Ico_union_Ico
     _ ≤ #{x ∈ Ico k (k + n % a + a * i) | a.Coprime x} + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
       apply card_union_le
@@ -123,7 +120,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
 
 theorem totient_mul {m n : ℕ} (h : m.Coprime n) : φ (m * n) = φ m * φ n :=
   if hmn0 : m * n = 0 then by
-    cases' Nat.mul_eq_zero.1 hmn0 with h h <;>
+    rcases Nat.mul_eq_zero.1 hmn0 with h | h <;>
       simp only [totient_zero, mul_zero, zero_mul, h]
   else by
     haveI : NeZero (m * n) := ⟨hmn0⟩
@@ -229,7 +226,7 @@ theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
 
 theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
-  cases' eq_zero_or_neZero p with hp hp
+  rcases eq_zero_or_neZero p with hp | hp
   · subst hp
     simp only [ZMod, not_prime_zero, false_iff, zero_tsub]
     -- the subst created a non-defeq but subsingleton instance diamond; resolve it

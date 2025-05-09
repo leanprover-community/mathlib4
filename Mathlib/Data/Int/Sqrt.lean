@@ -3,9 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Int.Defs
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Tactic.Common
+import Mathlib.Data.Int.Init
 
 /-!
 # Square root of integers

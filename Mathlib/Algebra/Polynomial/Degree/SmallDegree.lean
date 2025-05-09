@@ -62,7 +62,6 @@ theorem ne_zero_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : p ≠ 0 :=
   zero_le_degree_iff.mp <| (WithBot.coe_le_coe.mpr n.zero_le).trans hdeg
 
 theorem le_natDegree_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : n ≤ p.natDegree :=
-  -- Porting note: `.. ▸ ..` → `rwa [..] at ..`
   WithBot.coe_le_coe.mp <| by
     rwa [degree_eq_natDegree <| ne_zero_of_coe_le_degree hdeg] at hdeg
 

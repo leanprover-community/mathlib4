@@ -3,9 +3,9 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
-import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Quadratic form structures related to `Module.Dual`
@@ -84,12 +84,10 @@ variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Modu
 def dualProd : QuadraticForm R (Module.Dual R M × M) where
   toFun p := p.1 p.2
   toFun_smul a p := by
-    dsimp only  -- Porting note: added
     rw [Prod.smul_fst, Prod.smul_snd, LinearMap.smul_apply, LinearMap.map_smul, smul_eq_mul,
       smul_eq_mul, smul_eq_mul, mul_assoc]
   exists_companion' :=
     ⟨LinearMap.dualProd R M, fun p q => by
-      dsimp only  -- Porting note: added
       rw [LinearMap.dualProd_apply_apply, Prod.fst_add, Prod.snd_add, LinearMap.add_apply, map_add,
         map_add, add_right_comm _ (q.1 q.2), add_comm (q.1 p.2) (p.1 q.2), ← add_assoc, ←
         add_assoc]⟩
@@ -104,7 +102,7 @@ variable {R M N}
 /-- Any module isomorphism induces a quadratic isomorphism between the corresponding `dual_prod.` -/
 @[simps!]
 def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualProd R N) where
-  toLinearEquiv := f.dualMap.symm.prod f
+  toLinearEquiv := f.dualMap.symm.prodCongr f
   map_app' x := DFunLike.congr_arg x.fst <| f.symm_apply_apply _
 
 /-- `QuadraticForm.dualProd` commutes (isometrically) with `QuadraticForm.prod`. -/
@@ -112,7 +110,7 @@ def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualPro
 def dualProdProdIsometry :
     (dualProd R (M × N)).IsometryEquiv ((dualProd R M).prod (dualProd R N)) where
   toLinearEquiv :=
-    (Module.dualProdDualEquivDual R M N).symm.prod (LinearEquiv.refl R (M × N)) ≪≫ₗ
+    (Module.dualProdDualEquivDual R M N).symm.prodCongr (LinearEquiv.refl R (M × N)) ≪≫ₗ
       LinearEquiv.prodProdProdComm R _ _ M N
   map_app' m :=
     (m.fst.map_add _ _).symm.trans <| DFunLike.congr_arg m.fst <| Prod.ext (add_zero _) (zero_add _)
