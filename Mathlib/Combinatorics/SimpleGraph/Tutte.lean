@@ -318,10 +318,10 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
       simpa [universalVerts] using a.1.2.2
     have hbnec : b.val.val ≠ c := fun h ↦ hc.2 (h ▸ hxb.symm)
     obtain ⟨_, hG1⟩ := hMaximal _ <| left_lt_sup.mpr (by
-      rw [edge_le_iff _ (fun h ↦ hnxb (Subtype.val_injective (Subtype.val_injective h)))]
-      exact hnadjxb)
+      rw [edge_le_iff (v := x.1.1) (w := b.1.1)]
+      simp [not_and, hnxb, hnadjxb, Subtype.val_injective.ne <| Subtype.val_injective.ne hnxb])
     obtain ⟨_, hG2⟩ := hMaximal _ <| left_lt_sup.mpr (by
-      rw [edge_le_iff _ (fun h ↦ hc.1 h), adj_comm]; exact hc.2)
+      rwa [edge_le_iff (v := a.1.1) (w := c), adj_comm, not_or])
     have hcnex : c ≠ x.val.val := fun hxc ↦ hc.2 (hxc ▸ hxa)
     obtain ⟨Mcon, hMcon⟩ := tutte_exists_isPerfectMatching_of_near_matchings hxa
       hxb hnadjxb (fun hadj ↦ hc.2 hadj.symm) (by aesop) hcnex.symm hc.1 hbnec hG1 hG2
