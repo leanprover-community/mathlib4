@@ -30,8 +30,7 @@ lemma exists_max {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin (n + 1) → 
   induction n with
   | zero => simp [Fin.forall_fin_one, Fin.exists_fin_one]
   | succ n ih =>
-    cases val using Fin.consCases with
-    | h x val =>
+    cases val using Fin.consCases with | _ x val =>
     obtain ⟨i, hi⟩ := ih val
     by_cases h_max : val i < x
     · use 0
@@ -39,15 +38,14 @@ lemma exists_max {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin (n + 1) → 
       cases j using Fin.cases with
       | zero => simp
       | succ j =>
-        simp
+        simp only [Fin.cons_succ, Fin.cons_zero]
         apply (hi _).trans
         exact le_of_lt h_max
     · use i.succ
       intro j
       cases j using Fin.cases with
       | zero => simpa using h_max
-      | succ j =>
-        simp [hi]
+      | succ j => simp [hi]
 
 lemma exists_bound {n : ℕ} (tr : Fin n → ℕ) : ∃ M, ∀ i, tr i < M := by
   cases n with
@@ -60,43 +58,32 @@ lemma exists_bound {n : ℕ} (tr : Fin n → ℕ) : ∃ M, ∀ i, tr i < M := by
     omega
 
 theorem exists_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) : ∃ tr : Fin n → ℕ,
-    (∀ i j, val i = val j ↔ tr i = tr j) ∧
-    (∀ i j, val i ≤ val j ↔ tr i ≤ tr j) := by
+    ∀ i j, val i ≤ val j ↔ tr i ≤ tr j := by
   induction n with
-  | zero =>
-    simp
+  | zero => simp
   | succ n ih =>
     obtain ⟨imax, h_imax⟩ := exists_max val
-    obtain ⟨tr, h1, h2⟩ := ih (Fin.removeNth imax val)
+    obtain ⟨tr, h2⟩ := ih (Fin.removeNth imax val)
     by_cases h_imax' : ∃ j : Fin n, val (imax.succAbove j) = val imax
     · obtain ⟨imax2, h3⟩ := h_imax'
       use Fin.insertNth imax (tr imax2) tr
-      refine ⟨fun i j ↦ ?_, fun i j ↦ ?_⟩
-      · cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
-          <;> simp [← h3, ← h1, Fin.removeNth]
-      · cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
-          <;> simp [← h3, ← h2, Fin.removeNth]
+      intro i j
+      cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
+        <;> simp [← h3, ← h2, Fin.removeNth]
     · push_neg at h_imax'
       obtain ⟨M, hM⟩ : ∃ M, ∀ i, tr i < M := exists_bound tr
       use Fin.insertNth imax M tr
-      have h_aux (i : _) : M ≠ tr i := by
+      have h_aux2 (i : Fin n) : ¬M ≤ tr i := by
         specialize hM i
         omega
-      have h_aux2 (i : _) : ¬ M ≤ tr i := by
+      have h_aux3 (i : Fin n) : tr i ≤ M := by
         specialize hM i
         omega
-      have h_aux3 (i : _) : tr i ≤ M := by
-        specialize hM i
-        omega
-      have h_aux4 : ∀ i, val (Fin.succAbove imax i) < val imax := by
-        intro i
-        exact lt_of_le_of_ne (h_imax (Fin.succAbove imax i)) (h_imax' i)
-      refine ⟨fun i j ↦ ?_, fun i j ↦ ?_⟩
-      · cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
-          <;> simp [h_aux, fun i ↦ (h_aux i).symm, h_imax', fun i ↦ (h_imax' i).symm,
-            ← h1, Fin.removeNth]
-      · cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
-          <;> simp [h_aux2, h_aux3, h_aux4, h_imax, ← h2, Fin.removeNth]
+      have h_aux4 (i : Fin n) : val (Fin.succAbove imax i) < val imax :=
+        lt_of_le_of_ne (h_imax (Fin.succAbove imax i)) (h_imax' i)
+      intro i j
+      cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
+        <;> simp [h_aux2, h_aux3, h_aux4, h_imax, ← h2, Fin.removeNth]
 
 /-- Auxiliary definition used by the `order` tactic to
 transfer facts in a linear order to `Nat`. -/
@@ -153,7 +140,7 @@ noncomputable def translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fi
 
 theorem translation_le_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
     ∀ i j, translation' val i ≤ translation' val j ↔ val i ≤ val j := by
-  simp [translation', (exists_translation val).choose_spec.right]
+  simp [translation', (exists_translation val).choose_spec]
 
 -- theorem translation_lt_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
 --     ∀ i j, translation val i < translation val j ↔ val i < val j := by
@@ -171,7 +158,7 @@ theorem translation_lt_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val
 
 theorem translation_eq_translation' {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
     ∀ i j, translation' val i = translation' val j ↔ val i = val j := by
-  simp [translation', (exists_translation val).choose_spec.left]
+  simp [translation_le_translation', le_antisymm_iff]
 
 -- theorem translation_ne_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α) :
 --     ∀ i j, translation val i ≠ translation val j ↔ val i ≠ val j := by
