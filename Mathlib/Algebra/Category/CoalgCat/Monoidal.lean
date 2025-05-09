@@ -22,7 +22,7 @@ using `Monoidal.induced`.
 
 universe v u
 
-namespace Coalg
+namespace CoalgCat
 variable (R : Type u) [CommRing R]
 
 open CategoryTheory Coalgebra
@@ -30,21 +30,21 @@ open scoped TensorProduct MonoidalCategory
 
 @[simps]
 noncomputable instance instMonoidalCategoryStruct :
-    MonoidalCategoryStruct.{u} (Coalg R) where
+    MonoidalCategoryStruct.{u} (CoalgCat R) where
   tensorObj X Y := of R (X ⊗[R] Y)
   whiskerLeft X _ _ f := ofHom (f.1.lTensor X)
   whiskerRight f X := ofHom (f.1.rTensor X)
   tensorHom f g := ofHom (Coalgebra.TensorProduct.map f.1 g.1)
-  tensorUnit := Coalg.of R R
+  tensorUnit := CoalgCat.of R R
   associator X Y Z := (Coalgebra.TensorProduct.assoc R X Y Z).toCoalgIso
   leftUnitor X := (Coalgebra.TensorProduct.lid R X).toCoalgIso
   rightUnitor X := (Coalgebra.TensorProduct.rid R X).toCoalgIso
 
 /-- The data needed to induce a `MonoidalCategory` structure via
-`Coalg.instMonoidalCategoryStruct` and the forgetful functor to modules. -/
+`CoalgCat.instMonoidalCategoryStruct` and the forgetful functor to modules. -/
 @[simps]
 noncomputable def MonoidalCategory.inducingFunctorData :
-    Monoidal.InducingFunctorData (forget₂ (Coalg R) (ModuleCat R)) where
+    Monoidal.InducingFunctorData (forget₂ (CoalgCat R) (ModuleCat R)) where
   μIso _ _ := Iso.refl _
   whiskerLeft_eq X Y Z f := by ext; rfl
   whiskerRight_eq X f := by ext; rfl
@@ -54,7 +54,7 @@ noncomputable def MonoidalCategory.inducingFunctorData :
   leftUnitor_eq X := ModuleCat.hom_ext <| TensorProduct.ext <| by ext; rfl
   rightUnitor_eq X := ModuleCat.hom_ext <| TensorProduct.ext <| by ext; rfl
 
-noncomputable instance instMonoidalCategory : MonoidalCategory (Coalg R) :=
+noncomputable instance instMonoidalCategory : MonoidalCategory (CoalgCat R) :=
   Monoidal.induced (forget₂ _ (ModuleCat R)) (MonoidalCategory.inducingFunctorData R)
 
-end Coalg
+end CoalgCat
