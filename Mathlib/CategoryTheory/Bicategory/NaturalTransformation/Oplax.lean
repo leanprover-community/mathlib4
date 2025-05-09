@@ -259,7 +259,7 @@ naturality 2-morphism is an isomorphism. -/
 noncomputable def mkOfOplax' {F G : OplaxFunctor B C} (η : F ⟶ G)
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongOplaxTrans F G where
   app := η.app
-  naturality := fun _ => asIso (η.naturality _)
+  naturality _ := asIso (η.naturality _)
 
 variable (F : OplaxFunctor B C)
 
