@@ -110,8 +110,8 @@ variable {I : Type u} [DecidableEq I] {i : I} -- The type of the indexing set
   (maps : {i : I} → A i →ₐ[R] B) -- A family of `R`algebra homomorphisms
 
 namespace LinearAlgebra.FreeProduct
-open scoped Function TensorProduct
 
+open scoped Function TensorProduct
 
 instance : Module R (⨁ i, A i) := by infer_instance
 
@@ -141,10 +141,10 @@ of tensor powers are (noncomputably) equivalent as `R`-algebras. -/
 /-- The generating equivalence relation for elements of the free tensor algebra
 that are identified in the free product -/
 inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
-  /--`rel` relates the image of any `(1 : A i)` to `1`.-/
+  /-- `rel` relates the image of any `(1 : A i)` to `1`. -/
   | id  : ∀ {i : I}, rel (ι R <| lof R I A i 1) 1
-  /--`rel` relates the product of the images of two terms from the same `A i` to the image of their
-  product in `A i`.-/
+  /-- `rel` relates the product of the images of two terms from the same `A i` to the image of their
+  product in `A i`. -/
   | prod : ∀ {i : I} {a₁ a₂ : A i},
       rel
         (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))
