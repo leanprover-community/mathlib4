@@ -118,3 +118,24 @@ theorem lineMap_slope_lineMap_slope_lineMap (f : k → PE) (a b r : k) :
   convert lineMap_slope_slope_sub_div_sub f b (lineMap a b r) a hab.symm using 2
   rw [lineMap_apply_ring, eq_div_iff (sub_ne_zero.2 hab), sub_mul, one_mul, mul_sub, ← sub_sub,
     sub_sub_cancel]
+
+lemma slope_pos_iff {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜} (hb : x₀ < b) :
+    0 < slope f x₀ b ↔ f x₀ < f b := by
+  simp [slope, hb]
+
+lemma slope_pos_iff_gt {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜} (hb : b < x₀) :
+    0 < slope f x₀ b ↔ f b < f x₀ := by
+  rw [slope_comm, slope_pos_iff hb]
+
+lemma pos_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
+    (hb : x₀ < b) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : 0 < f b := by
+  simp_all [slope, hf]
+
+lemma neg_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
+    (hb : b < x₀) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : f b < 0 := by
+  rwa [slope_pos_iff_gt, hf] at hbf
+  exact hb
