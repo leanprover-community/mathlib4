@@ -16,6 +16,7 @@ $\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)$
 out of this typeclass.
 
 -/
+
 namespace CategoryTheory
 
 open Category Limits
