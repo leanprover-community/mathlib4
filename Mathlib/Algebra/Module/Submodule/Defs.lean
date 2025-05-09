@@ -212,8 +212,7 @@ lemma smul_mem_iff'' [Invertible r] :
   rw [← invOf_smul_smul r x]
   exact p.smul_mem _ h
 
-@[simp]
-lemma smul_mem_iff_IsUnit (hr : IsUnit r) :
+lemma smul_mem_iff_of_isUnit (hr : IsUnit r) :
     r • x ∈ p ↔ x ∈ p :=
   let _ : Invertible r := hr.invertible
   smul_mem_iff'' p
