@@ -67,7 +67,7 @@ protected irreducible_def Module.rank : Cardinal :=
 theorem rank_le_card : Module.rank R M ≤ #M :=
   (Module.rank_def _ _).trans_le (ciSup_le' fun _ ↦ mk_set_le _)
 
-instance nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s } :=
+instance nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s} :=
   ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
 
 end
