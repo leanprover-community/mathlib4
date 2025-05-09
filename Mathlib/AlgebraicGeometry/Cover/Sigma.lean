@@ -30,7 +30,7 @@ noncomputable def sigma (𝒰 : Cover.{v} P S) : S.Cover P where
   covers s := by
     obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq s
     refine ⟨(Sigma.ι 𝒰.obj i).base y, by simp [← Scheme.comp_base_apply]⟩
-  map_prop _ := by simp [IsLocalAtSource.iff_of_openCover (sigmaOpenCover _), 𝒰.map_prop]
+  map_prop _ := IsLocalAtSource.sigmaDesc 𝒰.map_prop
 
 variable [P.IsMultiplicative] {𝒰 𝒱 : Scheme.Cover.{v} P S}
 
