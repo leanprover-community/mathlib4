@@ -1116,11 +1116,6 @@ lemma uncurry_single (a : α) (b : β) (m : M) :
   simp [Finsupp.uncurry]
 
 @[simp]
-lemma uncurry_single (a : α) (b : β) (m : M) :
-    (single a (single b m)).uncurry = single (a, b) m := by
-  simp [Finsupp.uncurry]
-
-@[simp]
 theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
   ext a b
   rw [curry_apply, Finsupp.uncurry_apply_pair]
