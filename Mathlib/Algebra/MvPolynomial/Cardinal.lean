@@ -20,8 +20,6 @@ universe u v
 
 open Cardinal
 
-open Cardinal
-
 namespace MvPolynomial
 
 section TwoUniverses
@@ -42,13 +40,18 @@ theorem cardinalMk_eq_lift [IsEmpty σ] : #(MvPolynomial σ R) = Cardinal.lift.{
 
 @[deprecated (since := "2024-11-10")] alias cardinal_mk_eq_lift := cardinalMk_eq_lift
 
-theorem cardinal_lift_mk_le_max {σ : Type u} {R : Type v} [CommSemiring R] : #(MvPolynomial σ R) ≤
+@[nontriviality]
+theorem cardinalMk_eq_one [Subsingleton R] : #(MvPolynomial σ R) = 1 := mk_eq_one _
+
+theorem cardinalMk_le_max_lift {σ : Type u} {R : Type v} [CommSemiring R] : #(MvPolynomial σ R) ≤
     max (max (Cardinal.lift.{u} #R) <| Cardinal.lift.{v} #σ) ℵ₀ := by
   cases subsingleton_or_nontrivial R
   · exact (mk_eq_one _).trans_le (le_max_of_le_right one_le_aleph0)
   cases isEmpty_or_nonempty σ
   · exact cardinalMk_eq_lift.trans_le (le_max_of_le_left <| le_max_left _ _)
   · exact cardinalMk_eq_max_lift.le
+
+@[deprecated (since := "2024-11-21")] alias cardinal_lift_mk_le_max := cardinalMk_le_max_lift
 
 end TwoUniverses
 
@@ -59,10 +62,12 @@ theorem cardinalMk_eq_max [Nonempty σ] [Nontrivial R] :
 
 @[deprecated (since := "2024-11-10")] alias cardinal_mk_eq_max := cardinalMk_eq_max
 
+theorem cardinalMk_eq [IsEmpty σ] : #(MvPolynomial σ R) = #R := by simp
+
 /-- The cardinality of the multivariate polynomial ring, `MvPolynomial σ R` is at most the maximum
 of `#R`, `#σ` and `ℵ₀` -/
 theorem cardinalMk_le_max : #(MvPolynomial σ R) ≤ max (max #R #σ) ℵ₀ :=
-  cardinal_lift_mk_le_max.trans <| by rw [lift_id, lift_id]
+  cardinalMk_le_max_lift.trans <| by rw [lift_id, lift_id]
 
 @[deprecated (since := "2024-11-10")] alias cardinal_mk_le_max := cardinalMk_le_max
 

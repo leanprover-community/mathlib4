@@ -46,13 +46,13 @@ def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
 def isLimitFanMkObjOfIsLimit [PreservesLimit (Discrete.functor f) G] {P : C} (g : ∀ j, P ⟶ f j)
     (t : IsLimit (Fan.mk _ g)) :
     IsLimit (Fan.mk (G.obj P) fun j => G.map (g j) : Fan fun j => G.obj (f j)) :=
-  isLimitMapConeFanMkEquiv _ _ _ (PreservesLimit.preserves t)
+  isLimitMapConeFanMkEquiv _ _ _ (isLimitOfPreserves G t)
 
 /-- The property of reflecting products expressed in terms of fans. -/
 def isLimitOfIsLimitFanMkObj [ReflectsLimit (Discrete.functor f) G] {P : C} (g : ∀ j, P ⟶ f j)
     (t : IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j))) :
     IsLimit (Fan.mk P g) :=
-  ReflectsLimit.reflects ((isLimitMapConeFanMkEquiv _ _ _).symm t)
+  isLimitOfReflects G ((isLimitMapConeFanMkEquiv _ _ _).symm t)
 
 section
 
@@ -69,13 +69,12 @@ def isLimitOfHasProductOfPreservesLimit [PreservesLimit (Discrete.functor f) G] 
 variable [HasProduct fun j : J => G.obj (f j)]
 
 /-- If `pi_comparison G f` is an isomorphism, then `G` preserves the limit of `f`. -/
-def PreservesProduct.ofIsoComparison [i : IsIso (piComparison G f)] :
+lemma PreservesProduct.of_iso_comparison [i : IsIso (piComparison G f)] :
     PreservesLimit (Discrete.functor f) G := by
-  apply preservesLimitOfPreservesLimitCone (productIsProduct f)
+  apply preservesLimit_of_preserves_limit_cone (productIsProduct f)
   apply (isLimitMapConeFanMkEquiv _ _ _).symm _
-  refine @IsLimit.ofPointIso _ _ _ _ _ _ _
-    (limit.isLimit (Discrete.functor fun j : J => G.obj (f j))) ?_
-  apply i
+  exact @IsLimit.ofPointIso _ _ _ _ _ _ _
+    (limit.isLimit (Discrete.functor fun j : J => G.obj (f j))) i
 
 variable [PreservesLimit (Discrete.functor f) G]
 
@@ -110,14 +109,14 @@ def isColimitMapCoconeCofanMkEquiv {P : C} (g : ∀ j, f j ⟶ P) :
 def isColimitCofanMkObjOfIsColimit [PreservesColimit (Discrete.functor f) G] {P : C}
     (g : ∀ j, f j ⟶ P) (t : IsColimit (Cofan.mk _ g)) :
     IsColimit (Cofan.mk (G.obj P) fun j => G.map (g j) : Cofan fun j => G.obj (f j)) :=
-  isColimitMapCoconeCofanMkEquiv _ _ _ (PreservesColimit.preserves t)
+  isColimitMapCoconeCofanMkEquiv _ _ _ (isColimitOfPreserves G t)
 
 /-- The property of reflecting coproducts expressed in terms of cofans. -/
 def isColimitOfIsColimitCofanMkObj [ReflectsColimit (Discrete.functor f) G] {P : C}
     (g : ∀ j, f j ⟶ P)
     (t : IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j))) :
     IsColimit (Cofan.mk P g) :=
-  ReflectsColimit.reflects ((isColimitMapCoconeCofanMkEquiv _ _ _).symm t)
+  isColimitOfReflects G ((isColimitMapCoconeCofanMkEquiv _ _ _).symm t)
 
 section
 
@@ -133,13 +132,12 @@ def isColimitOfHasCoproductOfPreservesColimit [PreservesColimit (Discrete.functo
 variable [HasCoproduct fun j : J => G.obj (f j)]
 
 /-- If `sigma_comparison G f` is an isomorphism, then `G` preserves the colimit of `f`. -/
-def PreservesCoproduct.ofIsoComparison [i : IsIso (sigmaComparison G f)] :
+lemma PreservesCoproduct.of_iso_comparison [i : IsIso (sigmaComparison G f)] :
     PreservesColimit (Discrete.functor f) G := by
-  apply preservesColimitOfPreservesColimitCocone (coproductIsCoproduct f)
+  apply preservesColimit_of_preserves_colimit_cocone (coproductIsCoproduct f)
   apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
-  refine @IsColimit.ofPointIso _ _ _ _ _ _ _
-    (colimit.isColimit (Discrete.functor fun j : J => G.obj (f j))) ?_
-  apply i
+  exact @IsColimit.ofPointIso _ _ _ _ _ _ _
+    (colimit.isColimit (Discrete.functor fun j : J => G.obj (f j))) i
 
 variable [PreservesColimit (Discrete.functor f) G]
 
@@ -158,5 +156,19 @@ instance : IsIso (sigmaComparison G f) := by
   infer_instance
 
 end
+
+/-- If `F` preserves the limit of every `Discrete.functor f`, it preserves all limits of shape
+`Discrete J`. -/
+lemma preservesLimitsOfShape_of_discrete (F : C ⥤ D)
+    [∀ (f : J → C), PreservesLimit (Discrete.functor f) F] :
+    PreservesLimitsOfShape (Discrete J) F where
+  preservesLimit := preservesLimit_of_iso_diagram F (Discrete.natIsoFunctor).symm
+
+/-- If `F` preserves the colimit of every `Discrete.functor f`, it preserves all colimits of shape
+`Discrete J`. -/
+lemma preservesColimitsOfShape_of_discrete (F : C ⥤ D)
+    [∀ (f : J → C), PreservesColimit (Discrete.functor f) F] :
+    PreservesColimitsOfShape (Discrete J) F where
+  preservesColimit := preservesColimit_of_iso_diagram F (Discrete.natIsoFunctor).symm
 
 end CategoryTheory.Limits

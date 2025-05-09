@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.Units
+import Mathlib.Algebra.Group.Int.Units
 
 /-!
 # Basic lemmas for `ℤˣ`.
@@ -18,8 +19,7 @@ This file contains lemmas on the units of `ℤ`.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists DenselyOrdered
-assert_not_exists Set.Subsingleton
+assert_not_exists DenselyOrdered Set.Subsingleton
 
 namespace Int
 

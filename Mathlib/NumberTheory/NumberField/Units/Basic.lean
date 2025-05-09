@@ -3,8 +3,9 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.GroupTheory.Torsion
 
 /-!
 # Units of a number field
@@ -26,7 +27,7 @@ places `w` of `K`.
 
 ## Tags
 number field, units
- -/
+-/
 
 open scoped NumberField
 
@@ -95,6 +96,15 @@ protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
     |Algebra.norm ℚ (x : K)| = 1 := by
   rw [← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
 
+theorem pos_at_place (x : (𝓞 K)ˣ) (w : InfinitePlace K) :
+    0 < w x := pos_iff.mpr (coe_ne_zero x)
+
+variable {K} in
+theorem sum_mult_mul_log [NumberField K] (x : (𝓞 K)ˣ) :
+    ∑ w : InfinitePlace K, w.mult * Real.log (w x) = 0 := by
+  simpa [Units.norm, Real.log_prod, Real.log_pow] using
+    congr_arg Real.log (prod_eq_abs_norm (x : K))
+
 section torsion
 
 /-- The torsion subgroup of the group of units. -/
@@ -152,6 +162,33 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
   · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
     exact ⟨↑(torsionOrder K), (torsionOrder K).prop, h⟩
   · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
+
+section odd
+
+variable {K}
+
+theorem torsion_eq_one_or_neg_one_of_odd_finrank [NumberField K]
+    (h : Odd (Module.finrank ℚ K)) (x : torsion K) : (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 := by
+  by_cases hc : 2 < orderOf (x : (𝓞 K)ˣ)
+  · rw [← orderOf_units, ← orderOf_submonoid] at hc
+    linarith [IsPrimitiveRoot.nrRealPlaces_eq_zero_of_two_lt hc (IsPrimitiveRoot.orderOf (x.1 : K)),
+        NumberField.InfinitePlace.nrRealPlaces_pos_of_odd_finrank h]
+  · push_neg at hc
+    interval_cases hi : orderOf (x : (𝓞 K)ˣ)
+    · linarith [orderOf_pos_iff.2 ((CommGroup.mem_torsion _ x.1).1 x.2)]
+    · exact Or.intro_left _ (orderOf_eq_one_iff.1 hi)
+    · rw [← orderOf_units, CharP.orderOf_eq_two_iff 0 (by decide)] at hi
+      simp [← Units.eq_iff, ← Units.eq_iff, Units.val_neg, Units.val_one, hi]
+
+theorem torsionOrder_eq_two_of_odd_finrank [NumberField K]
+    (h : Odd (Module.finrank ℚ K)) : torsionOrder K = 2 := by
+  classical
+  refine PNat.eq (Finset.card_eq_two.2 ⟨1, ⟨-1, neg_one_mem_torsion⟩,
+    by simp [← Subtype.coe_ne_coe], Finset.ext fun x ↦ ⟨fun _ ↦ ?_, fun _ ↦ Finset.mem_univ _⟩⟩)
+  rw [Finset.mem_insert, Finset.mem_singleton, ← Subtype.val_inj, ← Subtype.val_inj]
+  exact torsion_eq_one_or_neg_one_of_odd_finrank h x
+
+end odd
 
 end torsion
 

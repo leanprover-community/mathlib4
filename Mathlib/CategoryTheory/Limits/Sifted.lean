@@ -30,7 +30,7 @@ preserves finite products. We achieve this characterization in this file.
 - [*Algebraic Theories*, Chapter 2.][Adamek_Rosicky_Vitale_2010]
 -/
 
-universe w v v₁ u u₁
+universe w v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory
 
@@ -46,10 +46,14 @@ abbrev IsSiftedOrEmpty : Prop := Final (diag C)
 /-- A category `C` `IsSfited` if
 1. the diagonal functor `C ⥤ C × C` is final.
 2. there exists some object. -/
-class IsSifted extends IsSiftedOrEmpty C : Prop where
+class IsSifted : Prop extends IsSiftedOrEmpty C where
   [nonempty : Nonempty C]
 
-attribute [instance] IsSifted.nonempty
+/- This instance is scoped since
+- it applies unconditionally (which can be a performance drain),
+- infers a *very* generic typeclass,
+- and does so from a *very* specialised class. -/
+attribute [scoped instance] IsSifted.nonempty
 
 namespace IsSifted
 
@@ -108,6 +112,16 @@ instance isSifted_of_hasBinaryCoproducts_and_nonempty [_root_.Nonempty C] [HasBi
     IsSifted C where
 
 end IsSifted
+
+end
+
+section
+
+variable {C : Type u} [Category.{v} C] [IsSiftedOrEmpty C] {D : Type u₁} [Category.{v₁} D]
+  {D' : Type u₂} [Category.{v₂} D'] (F : C ⥤ D) (G : C ⥤ D')
+
+instance [F.Final] [G.Final] : (F.prod' G).Final :=
+  show (diag C ⋙ F.prod G).Final from final_comp _ _
 
 end
 

@@ -5,12 +5,12 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Logic.Equiv.Defs
+import Mathlib.Data.Int.Basic
+import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
-import Mathlib.Data.Subtype
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -20,8 +20,8 @@ We also define `Ring.inverse`, a globally defined function on any ring
 -/
 
 -- Guard against import creep
-assert_not_exists Multiplicative
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Equiv Subtype.restrict Multiplicative
+
 
 variable {α M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
@@ -86,10 +86,6 @@ noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.u
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
   rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
 
-theorem IsUnit.ringInverse {x : M₀} (h : IsUnit x) : IsUnit (inverse x) :=
-  match h with
-  | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (inverse_unit u).symm⟩
-
 theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : inverse x = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
@@ -140,11 +136,14 @@ variable {M₀}
 
 end Ring
 
-theorem IsUnit.ring_inverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
+theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
   | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (Ring.inverse_unit u).symm⟩
 
+@[deprecated (since := "2025-04-22")] alias IsUnit.ring_inverse := IsUnit.ringInverse
+@[deprecated (since := "2025-04-22")] protected alias Ring.IsUnit.ringInverse := IsUnit.ringInverse
+
 @[simp]
-theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
+theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
     · convert h
@@ -152,7 +151,9 @@ theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
       rw [Ring.inverse_non_unit _ h]
       exact not_isUnit_zero
       ,
-    IsUnit.ring_inverse⟩
+    IsUnit.ringInverse⟩
+
+@[deprecated (since := "2025-04-22")] alias isUnit_ring_inverse := isUnit_ringInverse
 
 namespace Units
 
@@ -198,7 +199,6 @@ figure out `p` when using `Units.exists0` from right to left. -/
 theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
     (∃ (g : G₀) (hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
   Iff.trans (by simp_rw [val_mk0]) exists0.symm
-  -- Porting note: had to add the `rfl`
 
 @[simp]
 theorem exists_iff_ne_zero {p : G₀ → Prop} : (∃ u : G₀ˣ, p u) ↔ ∃ x ≠ 0, p x := by
@@ -314,10 +314,6 @@ lemma div_eq_one_iff_eq (hb : b ≠ 0) : a / b = 1 ↔ a = b := hb.isUnit.div_eq
 lemma div_mul_cancel_right₀ (hb : b ≠ 0) (a : G₀) : b / (a * b) = a⁻¹ :=
   hb.isUnit.div_mul_cancel_right _
 
-set_option linter.deprecated false in
-@[deprecated div_mul_cancel_right₀ (since := "2024-03-20")]
-lemma div_mul_left (hb : b ≠ 0) : b / (a * b) = 1 / a := hb.isUnit.div_mul_left
-
 lemma mul_div_mul_right (a b : G₀) (hc : c ≠ 0) : a * c / (b * c) = a / b :=
   hc.isUnit.mul_div_mul_right _ _
 
@@ -372,9 +368,6 @@ lemma zpow_ne_zero {a : G₀} : ∀ n : ℤ, a ≠ 0 → a ^ n ≠ 0
 
 lemma eq_zero_of_zpow_eq_zero {n : ℤ} : a ^ n = 0 → a = 0 := not_imp_not.1 (zpow_ne_zero _)
 
-@[deprecated (since := "2024-05-07")] alias zpow_ne_zero_of_ne_zero := zpow_ne_zero
-@[deprecated (since := "2024-05-07")] alias zpow_eq_zero := eq_zero_of_zpow_eq_zero
-
 lemma zpow_eq_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
   ⟨eq_zero_of_zpow_eq_zero, fun ha => ha.symm ▸ zero_zpow _ hn⟩
 
@@ -391,14 +384,6 @@ theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
 @[simp]
 theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
-
-/-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
-elements. -/
-@[simps] def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ {a : α // a ≠ 0} where
-  toFun a := ⟨a, a.ne_zero⟩
-  invFun a := Units.mk0 _ a.prop
-  left_inv _ := Units.ext rfl
-  right_inv _ := rfl
 
 end GroupWithZero
 
@@ -421,10 +406,6 @@ instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
 
 lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _
-
-set_option linter.deprecated false in
-@[deprecated div_mul_cancel_left₀ (since := "2024-03-22")]
-lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := ha.isUnit.div_mul_right _
 
 lemma mul_div_cancel_left_of_imp (h : a = 0 → b = 0) : a * b / a = b := by
   rw [mul_comm, mul_div_cancel_of_imp h]
@@ -451,7 +432,9 @@ lemma div_eq_div_iff_div_eq_div' (hb : b ≠ 0) (hc : c ≠ 0) : a / b = c / d �
   conv_rhs => rw [← mul_left_inj' hc, div_mul_cancel₀ _ hc]
   rw [mul_comm _ c, div_mul_eq_mul_div, mul_div_assoc]
 
-lemma div_div_cancel' (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
+@[simp] lemma div_div_cancel₀ (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
+
+@[deprecated (since := "2024-11-25")] alias div_div_cancel' := div_div_cancel₀
 
 lemma div_div_cancel_left' (ha : a ≠ 0) : a / b / a = b⁻¹ := ha.isUnit.div_div_cancel_left
 
@@ -490,5 +473,3 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
   { groupWithZeroOfIsUnitOrEqZero h, hM with }
 
 end NoncomputableDefs
-
-@[deprecated (since := "2024-03-20")] alias mul_div_cancel' := mul_div_cancel₀

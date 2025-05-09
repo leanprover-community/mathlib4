@@ -30,7 +30,6 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 
 * `Finset.instUnionFinset`: see "The lattice structure on subsets of finsets"
 * `Finset.instInterFinset`: see "The lattice structure on subsets of finsets"
-* `Finset.instSDiffFinset`: Defines the set difference `s \ t` for finsets `s` and `t`.
 
 ## Tags
 
@@ -40,18 +39,13 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists CompleteLattice
-
-assert_not_exists OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
 
 open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 
@@ -62,7 +56,7 @@ attribute [local trans] Subset.trans Superset.trans
 
 section Lattice
 
-variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a b : α}
+variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a : α}
 
 /-- `s ∪ t` is the set such that `a ∈ s ∪ t` iff `a ∈ s` or `a ∈ t`. -/
 instance : Union (Finset α) :=
@@ -123,9 +117,8 @@ theorem coe_union (s₁ s₂ : Finset α) : ↑(s₁ ∪ s₂) = (s₁ ∪ s₂ 
 theorem union_subset (hs : s ⊆ u) : t ⊆ u → s ∪ t ⊆ u :=
   sup_le <| le_iff_subset.2 hs
 
-theorem subset_union_left {s₁ s₂ : Finset α} : s₁ ⊆ s₁ ∪ s₂ := fun _x => mem_union_left _
-
-theorem subset_union_right {s₁ s₂ : Finset α} : s₂ ⊆ s₁ ∪ s₂ := fun _x => mem_union_right _
+@[simp] lemma subset_union_left : s₁ ⊆ s₁ ∪ s₂ := fun _ ↦ mem_union_left _
+@[simp] lemma subset_union_right : s₂ ⊆ s₁ ∪ s₂ := fun _ ↦  mem_union_right _
 
 @[gcongr]
 theorem union_subset_union (hsu : s ⊆ u) (htv : t ⊆ v) : s ∪ t ⊆ u ∪ v :=
@@ -179,7 +172,6 @@ theorem union_self (s : Finset α) : s ∪ s = s :=
 
 @[simp] lemma right_eq_union : s = t ∪ s ↔ t ⊆ s := by rw [eq_comm, union_eq_right]
 
--- Porting note: replaced `⊔` in RHS
 theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ∪ u :=
   sup_congr_left ht hu
 
@@ -212,9 +204,8 @@ theorem mem_of_mem_inter_right {a : α} {s₁ s₂ : Finset α} (h : a ∈ s₁ 
 theorem mem_inter_of_mem {a : α} {s₁ s₂ : Finset α} : a ∈ s₁ → a ∈ s₂ → a ∈ s₁ ∩ s₂ :=
   and_imp.1 mem_inter.2
 
-theorem inter_subset_left {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₁ := fun _a => mem_of_mem_inter_left
-
-theorem inter_subset_right {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₂ := fun _a => mem_of_mem_inter_right
+@[simp] lemma inter_subset_left : s₁ ∩ s₂ ⊆ s₁ := fun _ ↦ mem_of_mem_inter_left
+@[simp] lemma inter_subset_right : s₁ ∩ s₂ ⊆ s₂ := fun _ ↦ mem_of_mem_inter_right
 
 theorem subset_inter {s₁ s₂ u : Finset α} : s₁ ⊆ s₂ → s₁ ⊆ u → s₁ ⊆ s₂ ∩ u := by
   simp +contextual [subset_iff, mem_inter]
@@ -297,10 +288,6 @@ theorem union_inter_distrib_left (s t u : Finset α) : s ∪ t ∩ u = (s ∪ t)
 theorem inter_union_distrib_right (s t u : Finset α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
   sup_inf_right _ _ _
 
-@[deprecated (since := "2024-03-22")] alias inter_distrib_left := inter_union_distrib_left
-@[deprecated (since := "2024-03-22")] alias inter_distrib_right := union_inter_distrib_right
-@[deprecated (since := "2024-03-22")] alias union_distrib_left := union_inter_distrib_left
-@[deprecated (since := "2024-03-22")] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Finset α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _

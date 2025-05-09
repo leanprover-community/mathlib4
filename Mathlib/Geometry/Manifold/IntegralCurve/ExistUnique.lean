@@ -6,7 +6,7 @@ Authors: Winston Yin
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Geometry.Manifold.IntegralCurve.Transform
-import Mathlib.Geometry.Manifold.InteriorBoundary
+import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 # Existence and uniqueness of integral curves
@@ -49,10 +49,10 @@ open Function Set
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
   {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} (t₀ : ℝ) {x₀ : M}
 
-/-- Existence of local integral curves for a $C^1$ vector field at interior points of a smooth
+/-- Existence of local integral curves for a $C^1$ vector field at interior points of a `C^1`
 manifold. -/
 theorem exists_isIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀)
@@ -106,7 +106,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
   rw [← (extChartAt I x₀).right_inv hf3']
   exact hasFDerivWithinAt_tangentCoordChange ⟨hft1, hft2⟩
 
-/-- Existence of local integral curves for a $C^1$ vector field on a smooth manifold without
+/-- Existence of local integral curves for a $C^1$ vector field on a `C^1` manifold without
 boundary. -/
 lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless
     [CompleteSpace E] [BoundarylessManifold I M]
@@ -162,7 +162,7 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
   -- main proof
   suffices (extChartAt I (γ t₀)) ∘ γ =ᶠ[𝓝 t₀] (extChartAt I (γ' t₀)) ∘ γ' from
     (heq hγ).trans <| (this.fun_comp (extChartAt I (γ t₀)).symm).trans (h ▸ (heq hγ').symm)
-  exact ODE_solution_unique_of_eventually hlip
+  exact ODE_solution_unique_of_eventually (.of_forall hlip)
     (hdrv hγ rfl) (hdrv hγ' h) (by rw [Function.comp_apply, Function.comp_apply, h])
 
 theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
@@ -250,7 +250,7 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I
 period `a - b`. -/
 lemma IsIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
     (hγ : IsIntegralCurve γ v)
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     (heq : γ a = γ b) : Periodic γ (a - b) := by
   intro t
   apply congrFun <|
@@ -260,7 +260,7 @@ lemma IsIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
 /-- A global integral curve is injective xor periodic with positive period. -/
 lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
     (hγ : IsIntegralCurve γ v)
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
     Xor' (∃ T > 0, Periodic γ T) (Injective γ) := by
   rw [xor_iff_iff_not]
   refine ⟨fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT), ?_⟩

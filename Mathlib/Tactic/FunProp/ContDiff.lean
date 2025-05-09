@@ -61,7 +61,7 @@ variable {K : Type*} [NontriviallyNormedField K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
 variable {s}
 
-theorem ContDiffOn.div' [CompleteSpace K] {f g : E → K} {n} (hf : ContDiffOn K n f s)
+theorem ContDiffOn.div' {f g : E → K} {n} (hf : ContDiffOn K n f s)
     (hg : ContDiffOn K n g s) (h₀ : ∀ x ∈ s, g x ≠ 0) : ContDiffOn K n (fun x => f x / g x) s :=
   ContDiffOn.div hf hg h₀
 
@@ -80,7 +80,7 @@ the smallest possible value i.e. `n=m+1`.
 
 In conjunction with `ContDiff.of_le` we can recover the full power of the original theorem. -/
 theorem ContDiff.differentiable_iteratedDeriv' {m : ℕ} {f : K → F}
-    (hf : ContDiff K (m+1) f) : Differentiable K (iteratedDeriv m f) :=
+    (hf : ContDiff K (m + 1) f) : Differentiable K (iteratedDeriv m f) :=
   ContDiff.differentiable_iteratedDeriv m hf (Nat.cast_lt.mpr m.lt_succ_self)
 
 end deriv

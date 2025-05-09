@@ -54,7 +54,7 @@ theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
   Mon_.Hom.ext h
 
--- Porting note (#10688): the following two lemmas `id'` and `comp'`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): the following two lemmas `id'` and `comp'`
 -- have been added to ease automation;
 @[simp]
 lemma id' (A : CommMon_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
@@ -75,22 +75,37 @@ def forget₂Mon_ : CommMon_ C ⥤ Mon_ C :=
 is fully faithful. -/
 def fullyFaithfulForget₂Mon_ : (forget₂Mon_ C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : (forget₂Mon_ C).Full := InducedCategory.full _
 instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
 
 @[simp]
-theorem forget₂_Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
+theorem forget₂Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
   rfl
 
 @[simp]
-theorem forget₂_Mon_obj_mul (A : CommMon_ C) : ((forget₂Mon_ C).obj A).mul = A.mul :=
+theorem forget₂Mon_obj_mul (A : CommMon_ C) : ((forget₂Mon_ C).obj A).mul = A.mul :=
   rfl
 
 @[simp]
-theorem forget₂_Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
+theorem forget₂Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
   rfl
+
+@[deprecated (since := "2025-02-07")] alias forget₂_Mon_obj_one := forget₂Mon_obj_one
+@[deprecated (since := "2025-02-07")] alias forget₂_Mon_obj_mul := forget₂Mon_obj_mul
+@[deprecated (since := "2025-02-07")] alias forget₂_Mon_map_hom := forget₂Mon_map_hom
+
+/-- The forgetful functor from commutative monoid objects to the ambient category. -/
+@[simps!]
+def forget : CommMon_ C ⥤ C :=
+  forget₂Mon_ C ⋙ Mon_.forget C
+
+instance : (forget C).Faithful where
+
+@[simp]
+theorem forget₂Mon_comp_forget : forget₂Mon_ C ⋙ Mon_.forget C = forget C := rfl
 
 end
 
@@ -137,7 +152,6 @@ def mapCommMon (F : C ⥤ D) [F.LaxBraided] : CommMon_ C ⥤ CommMon_ D where
 
 variable (C) (D)
 
--- Porting note (#10688): added @[simps] to ease automation
 /-- `mapCommMon` is functorial in the lax braided functor. -/
 @[simps]
 def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D where
@@ -218,5 +232,20 @@ def equivLaxBraidedFunctorPUnit : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C �
   inverse := commMonToLaxBraided C
   unitIso := unitIso C
   counitIso := counitIso C
+
+end CommMon_
+
+namespace CommMon_
+
+variable {C}
+
+/-- Construct an object of `CommMon_ C` from an object `X : C` a `Mon_Class X` instance
+and a `IsCommMon X` instance. -/
+def mk' (X : C) [Mon_Class X] [IsCommMon X] : CommMon_ C where
+  __ := Mon_.mk' X
+  mul_comm := IsCommMon.mul_comm X
+
+instance (X : CommMon_ C) : IsCommMon X.X where
+  mul_comm' := X.mul_comm
 
 end CommMon_

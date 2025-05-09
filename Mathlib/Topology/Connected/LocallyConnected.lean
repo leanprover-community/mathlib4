@@ -31,15 +31,18 @@ class LocallyConnectedSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- Open connected neighborhoods form a basis of the neighborhoods filter. -/
   open_connected_basis : ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id
 
-theorem locallyConnectedSpace_iff_open_connected_basis :
+theorem locallyConnectedSpace_iff_hasBasis_isOpen_isConnected :
     LocallyConnectedSpace α ↔
       ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id :=
   ⟨@LocallyConnectedSpace.open_connected_basis _ _, LocallyConnectedSpace.mk⟩
 
-theorem locallyConnectedSpace_iff_open_connected_subsets :
+@[deprecated (since := "2024-11-18")] alias locallyConnectedSpace_iff_open_connected_basis :=
+  locallyConnectedSpace_iff_hasBasis_isOpen_isConnected
+
+theorem locallyConnectedSpace_iff_subsets_isOpen_isConnected :
     LocallyConnectedSpace α ↔
       ∀ x, ∀ U ∈ 𝓝 x, ∃ V : Set α, V ⊆ U ∧ IsOpen V ∧ x ∈ V ∧ IsConnected V := by
-  simp_rw [locallyConnectedSpace_iff_open_connected_basis]
+  simp_rw [locallyConnectedSpace_iff_hasBasis_isOpen_isConnected]
   refine forall_congr' fun _ => ?_
   constructor
   · intro h U hU
@@ -49,10 +52,13 @@ theorem locallyConnectedSpace_iff_open_connected_subsets :
       let ⟨V, hVU, hV⟩ := h U hU
       ⟨V, hV, hVU⟩, fun ⟨V, ⟨hV, hxV, _⟩, hVU⟩ => mem_nhds_iff.mpr ⟨V, hVU, hV, hxV⟩⟩⟩
 
+@[deprecated (since := "2024-11-18")] alias locallyConnectedSpace_iff_open_connected_subsets :=
+  locallyConnectedSpace_iff_subsets_isOpen_isConnected
+
 /-- A space with discrete topology is a locally connected space. -/
 instance (priority := 100) DiscreteTopology.toLocallyConnectedSpace (α) [TopologicalSpace α]
     [DiscreteTopology α] : LocallyConnectedSpace α :=
-  locallyConnectedSpace_iff_open_connected_subsets.2 fun x _U hU =>
+  locallyConnectedSpace_iff_subsets_isOpen_isConnected.2 fun x _U hU =>
     ⟨{x}, singleton_subset_iff.2 <| mem_of_mem_nhds hU, isOpen_discrete _, rfl,
       isConnected_singleton⟩
 
@@ -85,7 +91,7 @@ theorem locallyConnectedSpace_iff_connectedComponentIn_open :
   · intro h
     exact fun F hF x _ => hF.connectedComponentIn
   · intro h
-    rw [locallyConnectedSpace_iff_open_connected_subsets]
+    rw [locallyConnectedSpace_iff_subsets_isOpen_isConnected]
     refine fun x U hU =>
         ⟨connectedComponentIn (interior U) x,
           (connectedComponentIn_subset _ _).trans interior_subset, h _ isOpen_interior x ?_,
@@ -95,7 +101,7 @@ theorem locallyConnectedSpace_iff_connectedComponentIn_open :
 theorem locallyConnectedSpace_iff_connected_subsets :
     LocallyConnectedSpace α ↔ ∀ (x : α), ∀ U ∈ 𝓝 x, ∃ V ∈ 𝓝 x, IsPreconnected V ∧ V ⊆ U := by
   constructor
-  · rw [locallyConnectedSpace_iff_open_connected_subsets]
+  · rw [locallyConnectedSpace_iff_subsets_isOpen_isConnected]
     intro h x U hxU
     rcases h x U hxU with ⟨V, hVU, hV₁, hxV, hV₂⟩
     exact ⟨V, hV₁.mem_nhds hxV, hV₂.isPreconnected, hVU⟩
@@ -128,9 +134,6 @@ lemma Topology.IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] 
   rw [h.nhds_eq_comap]
   exact LocallyConnectedSpace.open_connected_basis (f x) |>.restrict_subset
     (h.isOpen_range.mem_nhds <| mem_range_self _) |>.comap _
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.locallyConnectedSpace := IsOpenEmbedding.locallyConnectedSpace
 
 theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU : IsOpen U) :
     LocallyConnectedSpace U :=

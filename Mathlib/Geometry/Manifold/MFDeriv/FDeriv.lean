@@ -21,7 +21,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {f : E → E'}
   {s : Set E} {x : E}
 
-section MFDerivFderiv
+section MFDerivFDeriv
 
 theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
     UniqueMDiffWithinAt 𝓘(𝕜, E) s x ↔ UniqueDiffWithinAt 𝕜 s x := by
@@ -110,4 +110,4 @@ theorem mfderiv_eq_fderiv : mfderiv 𝓘(𝕜, E) 𝓘(𝕜, E') f x = fderiv �
   rw [← mfderivWithin_univ, ← fderivWithin_univ]
   exact mfderivWithin_eq_fderivWithin
 
-end MFDerivFderiv
+end MFDerivFDeriv

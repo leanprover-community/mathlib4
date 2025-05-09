@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Reid Barton
 -/
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # The shrinking lemma
@@ -46,7 +46,6 @@ namespace ShrinkingLemma
 This type is equipped with the following partial order: `v ≤ v'` if `v.carrier ⊆ v'.carrier`
 and `v i = v' i` for `i ∈ v.carrier`. We will use Zorn's lemma to prove that this type has
 a maximal element, then show that the maximal element must have `carrier = univ`. -/
--- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 @[ext] structure PartialRefinement (u : ι → Set X) (s : Set X) (p : Set X → Prop) where
   /-- A family of sets that form a partial refinement of `u`. -/
   toFun : ι → Set X
@@ -150,7 +149,6 @@ def chainSup (c : Set (PartialRefinement u s p)) (hc : IsChain (· ≤ ·) c) (n
   pred_of_mem {i} hi := by
     obtain ⟨v, hv⟩ := Set.mem_iUnion.mp hi
     simp only [mem_iUnion, exists_prop] at hv
-    simp only
     rw [find_apply_of_mem hc ne hv.1 hv.2]
     exact v.pred_of_mem hv.2
   apply_eq hi := (find c ne _).apply_eq (mt (mem_find_carrier_iff _).1 hi)
@@ -181,21 +179,21 @@ theorem exists_gt [NormalSpace X] (v : PartialRefinement u s ⊤) (hs : IsClosed
   · refine fun x hx => mem_iUnion.2 ?_
     rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
     · use j
-      rwa [update_noteq hji]
+      rwa [update_of_ne hji]
     · push_neg at h
       use i
-      rw [update_same]
+      rw [update_self]
       exact hvi ⟨hx, mem_biInter h⟩
   · rintro j (rfl | hj)
-    · rwa [update_same, ← v.apply_eq hi]
-    · rw [update_noteq (ne_of_mem_of_not_mem hj hi)]
+    · rwa [update_self, ← v.apply_eq hi]
+    · rw [update_of_ne (ne_of_mem_of_not_mem hj hi)]
       exact v.closure_subset hj
   · exact fun _ => trivial
   · intro j hj
     rw [mem_insert_iff, not_or] at hj
-    rw [update_noteq hj.1, v.apply_eq hj.2]
+    rw [update_of_ne hj.1, v.apply_eq hj.2]
   · refine ⟨subset_insert _ _, fun j hj => ?_⟩
-    exact (update_noteq (ne_of_mem_of_not_mem hj hi) _ _).symm
+    exact (update_of_ne (ne_of_mem_of_not_mem hj hi) _ _).symm
   · exact fun hle => hi (hle.1 <| mem_insert _ _)
 
 end PartialRefinement
@@ -206,7 +204,7 @@ section NormalSpace
 
 open ShrinkingLemma
 
-variable {u : ι → Set X} {s : Set X} {p : Set X → Prop} [NormalSpace X]
+variable {u : ι → Set X} {s : Set X} [NormalSpace X]
 
 /-- **Shrinking lemma**. A point-finite open cover of a closed subset of a normal space can be
 "shrunk" to a new open cover so that the closure of each new open set is contained in the
@@ -255,3 +253,122 @@ theorem exists_iUnion_eq_closed_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, {
   ⟨v, univ_subset_iff.1 vU, hv⟩
 
 end NormalSpace
+
+section T2LocallyCompactSpace
+
+open ShrinkingLemma
+
+variable {u : ι → Set X} {s : Set X} [T2Space X] [LocallyCompactSpace X]
+
+/-- In a locally compact Hausdorff space `X`, if `s` is a compact set, `v` is a partial refinement,
+and `i` is an index such that `i ∉ v.carrier`, then there exists a partial refinement that is
+strictly greater than `v`. -/
+theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closure w)))
+    (hs : IsCompact s) (i : ι) (hi : i ∉ v.carrier) :
+    ∃ v' : PartialRefinement u s (fun w => IsCompact (closure w)),
+      v < v' ∧ IsCompact (closure (v' i)) := by
+  -- take `v i` such that `closure (v i)` is compact
+  set si := s ∩ (⋃ j ≠ i, v j)ᶜ with hsi
+  simp only [ne_eq, compl_iUnion] at hsi
+  have hsic : IsCompact si := by
+    apply IsCompact.of_isClosed_subset hs _ Set.inter_subset_left
+    · have : IsOpen (⋃ j ≠ i, v j) := by
+        apply isOpen_biUnion
+        intro j _
+        exact v.isOpen j
+      exact IsClosed.inter (IsCompact.isClosed hs) (IsOpen.isClosed_compl this)
+  have : si ⊆ v i := by
+    intro x hx
+    have (j) (hj : j ≠ i) : x ∉ v j := by
+      rw [hsi] at hx
+      apply Set.not_mem_of_mem_compl
+      have hsi' : x ∈ (⋂ i_1, ⋂ (_ : ¬i_1 = i), (v.toFun i_1)ᶜ) := Set.mem_of_mem_inter_right hx
+      rw [ne_eq] at hj
+      rw [Set.mem_iInter₂] at hsi'
+      exact hsi' j hj
+    obtain ⟨j, hj⟩ := Set.mem_iUnion.mp
+      (v.subset_iUnion (Set.mem_of_mem_inter_left hx))
+    obtain rfl : j = i := by
+      by_contra! h
+      exact this j h hj
+    exact hj
+  obtain ⟨vi, hvi⟩ := exists_open_between_and_isCompact_closure hsic (v.isOpen i) this
+  classical
+  refine ⟨⟨update v i vi, insert i v.carrier, ?_, ?_, ?_, ?_, ?_⟩, ⟨?_, ?_⟩, ?_⟩
+  · intro j
+    rcases eq_or_ne j i with (rfl| hne) <;> simp [*, v.isOpen]
+  · refine fun x hx => mem_iUnion.2 ?_
+    rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
+    · use j
+      rwa [update_of_ne hji]
+    · push_neg at h
+      use i
+      rw [update_self]
+      apply hvi.2.1
+      rw [hsi]
+      exact ⟨hx, mem_iInter₂_of_mem h⟩
+  · rintro j (rfl | hj)
+    · rw [update_self]
+      exact subset_trans hvi.2.2.1 <| PartialRefinement.subset v j
+    · rw [update_of_ne (ne_of_mem_of_not_mem hj hi)]
+      exact v.closure_subset hj
+  · intro j hj
+    rw [mem_insert_iff] at hj
+    by_cases h : j = i
+    · rw [← h]
+      simp only [update_self]
+      exact hvi.2.2.2
+    · apply hj.elim
+      · intro hji
+        exact False.elim (h hji)
+      · intro hjmemv
+        rw [update_of_ne h]
+        exact v.pred_of_mem hjmemv
+  · intro j hj
+    rw [mem_insert_iff, not_or] at hj
+    rw [update_of_ne hj.1, v.apply_eq hj.2]
+  · refine ⟨subset_insert _ _, fun j hj => ?_⟩
+    exact (update_of_ne (ne_of_mem_of_not_mem hj hi) _ _).symm
+  · exact fun hle => hi (hle.1 <| mem_insert _ _)
+  · simp only [update_self]
+    exact hvi.2.2.2
+
+/-- **Shrinking lemma** . A point-finite open cover of a compact subset of a `T2Space`
+`LocallyCompactSpace` can be "shrunk" to a new open cover so that the closure of each new open set
+is contained in the corresponding original open set. -/
+theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀ i, IsOpen (u i))
+    (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
+    ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsOpen (v i)) ∧ (∀ i, closure (v i) ⊆ u i)
+      ∧ (∀ i, IsCompact (closure (v i))) := by
+  haveI : Nonempty (PartialRefinement u s (fun w => IsCompact (closure w))) :=
+    ⟨⟨u, ∅, uo, us, False.elim, False.elim, fun _ => rfl⟩⟩
+  have : ∀ c : Set (PartialRefinement u s (fun w => IsCompact (closure w))),
+      IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
+    fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
+  rcases zorn_le_nonempty this with ⟨v, hv⟩
+  suffices ∀ i, i ∈ v.carrier from
+    ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i), ?_⟩
+  · intro i
+    exact v.pred_of_mem (this i)
+  · intro i
+    by_contra! hi
+    rcases exists_gt_t2space v hs i hi with ⟨v', hlt, _⟩
+    exact hv.not_lt hlt
+
+/-- **Shrinking lemma**. A point-finite open cover of a compact subset of a locally compact T2 space
+can be "shrunk" to a new closed cover so that each new closed set is contained in the corresponding
+original open set. See also `exists_subset_iUnion_closure_subset_t2space` for a stronger statement.
+-/
+theorem exists_subset_iUnion_compact_subset_t2space (hs : IsCompact s) (uo : ∀ i, IsOpen (u i))
+    (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
+    ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsClosed (v i)) ∧ (∀ i, v i ⊆ u i)
+      ∧ ∀ i, IsCompact (v i) := by
+  let ⟨v, hsv, _, hv⟩ := exists_subset_iUnion_closure_subset_t2space hs uo uf us
+  use fun i => closure (v i)
+  refine ⟨?_, ?_, ?_⟩
+  · exact Subset.trans hsv (iUnion_mono fun _ => subset_closure)
+  · simp only [isClosed_closure, implies_true]
+  · simp only
+    exact And.intro (fun i => hv.1 i) (fun i => hv.2 i)
+
+end T2LocallyCompactSpace

@@ -36,7 +36,7 @@ variable {x : ℝ}
 
 /-- For 0 < x, we have sin x < x. -/
 theorem sin_lt (h : 0 < x) : sin x < x := by
-  cases' lt_or_le 1 x with h' h'
+  rcases lt_or_le 1 x with h' | h'
   · exact (sin_le_one x).trans_lt h'
   have hx : |x| = x := abs_of_nonneg h.le
   have := le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])
@@ -135,14 +135,9 @@ lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_le hx₀
   rw [abs_of_nonneg hx₀] at hx
   have : x / π ≤ sin (x / 2) := by simpa using mul_le_sin (x := x / 2) (by positivity) (by linarith)
-  have := (pow_le_pow_left (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)
+  have := (pow_le_pow_left₀ (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)
   ring_nf at this ⊢
   linarith
-
-@[deprecated (since := "2024-08-29")] alias two_div_pi_mul_le_sin := mul_le_sin
-@[deprecated (since := "2024-08-29")] alias sin_le_two_div_pi_mul := sin_le_mul
-@[deprecated (since := "2024-08-29")] alias one_sub_two_div_pi_mul_le_cos := one_sub_mul_le_cos
-@[deprecated (since := "2024-08-29")] alias cos_quadratic_upper_bound := cos_le_one_sub_mul_cos_sq
 
 /-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
 
@@ -207,7 +202,7 @@ theorem le_tan {x : ℝ} (h1 : 0 ≤ x) (h2 : x < π / 2) : x ≤ tan x := by
 
 theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2)
     (hx3 : x ≠ 0) : cos x < (1 / √(x ^ 2 + 1) : ℝ) := by
-  suffices ∀ {y : ℝ}, 0 < y → y ≤ 3 * π / 2 → cos y < 1 / sqrt (y ^ 2 + 1) by
+  suffices ∀ {y : ℝ}, 0 < y → y ≤ 3 * π / 2 → cos y < 1 / √(y ^ 2 + 1) by
     rcases lt_or_lt_iff_ne.mpr hx3.symm with ⟨h⟩
     · exact this h hx2
     · convert this (by linarith : 0 < -x) (by linarith) using 1

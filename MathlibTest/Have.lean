@@ -26,7 +26,7 @@ example {a : Nat} : a = a := by
   exact this
 
 example : True := by
-  let _N; -- FIXME: lean4#1670
+  let _N; -- FIXME: https://github.com/leanprover/lean4/issues/1670
   exact Nat
   have
   · exact 0

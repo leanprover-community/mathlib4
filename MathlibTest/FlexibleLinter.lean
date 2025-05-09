@@ -325,5 +325,5 @@ end
 /-- info: #[h] -/ #guard_msgs in
 #eval show CoreM _ from do
   let h := mkIdent `h
-  let hc : TSyntax `Lean.Parser.Tactic.casesTarget := ⟨h⟩
+  let hc ← `(Lean.Parser.Tactic.elimTarget|$h:ident)
   IO.println s!"{(toStained (← `(tactic| cases $hc))).toArray}"

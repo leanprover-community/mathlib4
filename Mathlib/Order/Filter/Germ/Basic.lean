@@ -3,8 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Order.Filter.Tendsto
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+import Mathlib.Data.Int.Cast.Pi
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Germ of a function at a filter
@@ -50,6 +53,7 @@ filter, germ
 
 assert_not_exists OrderedSemiring
 
+open scoped Relator
 namespace Filter
 
 variable {α β γ δ : Type*} {l : Filter α} {f g h : α → β}
@@ -96,7 +100,6 @@ end Product
 
 namespace Germ
 
--- Porting note: added
 @[coe]
 def ofFun : (α → β) → (Germ l β) := @Quotient.mk' _ (germSetoid _ _)
 
@@ -195,7 +198,7 @@ theorem map_map (op₁ : γ → δ) (op₂ : β → γ) (f : Germ l β) :
 
 /-- Lift a binary function `β → γ → δ` to a function `Germ l β → Germ l γ → Germ l δ`. -/
 def map₂ (op : β → γ → δ) : Germ l β → Germ l γ → Germ l δ :=
-  Quotient.map₂' (fun f g x => op (f x) (g x)) fun f f' Hf g g' Hg =>
+  Quotient.map₂ (fun f g x => op (f x) (g x)) fun f f' Hf g g' Hg =>
     Hg.mp <| Hf.mono fun x Hf Hg => by simp only [Hf, Hg]
 
 @[simp]
@@ -235,7 +238,10 @@ theorem coe_compTendsto (f : α → β) {lc : Filter γ} {g : γ → α} (hg : T
     (f : Germ l β).compTendsto g hg = f ∘ g :=
   rfl
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
+-- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
+-- simp can't match the LHS.
+-- It seems the side condition `hg` is not applied by `simpNF`.
+@[simp, nolint simpNF]
 theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
   rfl
@@ -392,7 +398,7 @@ theorem coe_pow [Pow G M] (f : α → G) (n : M) : ↑(f ^ n) = (f : Germ l G) ^
 theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : Germ l G) ^ n :=
   rfl
 
--- TODO: #7432
+-- TODO: https://github.com/leanprover-community/mathlib4/pull/7432
 @[to_additive]
 instance instMonoid [Monoid M] : Monoid (Germ l M) :=
   { Function.Surjective.monoid ofFun Quot.mk_surjective (by rfl)
@@ -422,25 +428,20 @@ theorem natCast_def [NatCast M] (n : ℕ) : ((fun _ ↦ n : α → M) : Germ l M
 @[simp, norm_cast]
 theorem const_nat [NatCast M] (n : ℕ) : ((n : M) : Germ l M) = n := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : α → M)) : Germ l M) = OfNat.ofNat n :=
+    ((ofNat(n) : α → M) : Germ l M) = OfNat.ofNat n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem const_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : M)) : Germ l M) = OfNat.ofNat n :=
+    ((ofNat(n) : M) : Germ l M) = OfNat.ofNat n :=
   rfl
 
 instance instIntCast [IntCast M] : IntCast (Germ l M) where intCast n := (n : α → M)
 
 @[simp]
 theorem intCast_def [IntCast M] (n : ℤ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
-
-@[deprecated (since := "2024-04-05")] alias coe_nat := natCast_def
-@[deprecated (since := "2024-04-05")] alias coe_int := intCast_def
 
 instance instAddMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) where
   natCast_zero := congrArg ofFun <| by simp; rfl

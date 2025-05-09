@@ -5,7 +5,6 @@ Authors: Bolton Bailey
 -/
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Pi
-import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Fin-indexed tuples of finsets
@@ -29,9 +28,6 @@ lemma mem_piFinset_iff_last_init :
 lemma mem_piFinset_iff_pivot_removeNth (p : Fin (n + 1)) :
     f ∈ piFinset s ↔ f p ∈ s p ∧ removeNth p f ∈ piFinset (removeNth p s) := by
   simp only [Fintype.mem_piFinset, forall_iff_succAbove p, removeNth]
-
-@[deprecated (since := "2024-09-20")] alias mem_piFinset_succ := mem_piFinset_iff_zero_tail
-@[deprecated (since := "2024-09-20")] alias mem_piFinset_succ' := mem_piFinset_iff_last_init
 
 lemma cons_mem_piFinset_cons {x_zero : α 0} {x_tail : (i : Fin n) → α i.succ}
     {s_zero : Finset (α 0)} {s_tail : (i : Fin n) → Finset (α i.succ)} :

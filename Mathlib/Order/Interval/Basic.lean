@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Data.SetLike.Basic
 
 /-!
@@ -109,7 +109,6 @@ theorem mem_mk {hx : x.1 ≤ x.2} : a ∈ mk x hx ↔ x.1 ≤ a ∧ a ≤ x.2 :=
 theorem mem_def : a ∈ s ↔ s.fst ≤ a ∧ a ≤ s.snd :=
   Iff.rfl
 
--- @[simp] -- Porting note: not in simpNF
 theorem coe_nonempty (s : NonemptyInterval α) : (s : Set α).Nonempty :=
   nonempty_Icc.2 s.fst_le_snd
 
@@ -153,7 +152,7 @@ theorem map_map (g : β →o γ) (f : α →o β) (a : NonemptyInterval α) :
 
 @[simp]
 theorem dual_map (f : α →o β) (a : NonemptyInterval α) :
-    dual (a.map f) = a.dual.map (OrderHom.dual f) :=
+    dual (a.map f) = a.dual.map f.dual :=
   rfl
 
 /-- Binary pushforward of nonempty intervals. -/
@@ -201,11 +200,11 @@ instance setLike : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
   coe_injective' := coeHom.injective
 
-@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
   (@coeHom α _).le_iff_le
 
-@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 
@@ -229,7 +228,7 @@ theorem coe_top [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Set α) = uni
 
 @[simp, norm_cast]
 theorem coe_dual (s : NonemptyInterval α) : (dual s : Set αᵒᵈ) = ofDual ⁻¹' s :=
-  dual_Icc
+  Icc_toDual
 
 theorem subset_coe_map (f : α →o β) (s : NonemptyInterval α) : f '' s ⊆ s.map f :=
   image_subset_iff.2 fun _ ha => ⟨f.mono ha.1, f.mono ha.2⟩
@@ -263,9 +262,8 @@ end NonemptyInterval
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
--- Porting note: added reducible, it seems to help with coercions
 abbrev Interval (α : Type*) [LE α] :=
-  WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
+  WithBot (NonemptyInterval α)
 
 namespace Interval
 
@@ -273,7 +271,8 @@ section LE
 
 variable [LE α]
 
--- Porting note: previously found using `deriving`
+-- The `Inhabited, LE, OrderBot` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : Inhabited (Interval α) := WithBot.inhabited
 instance : LE (Interval α) := WithBot.le
 instance : OrderBot (Interval α) := WithBot.orderBot
@@ -293,7 +292,7 @@ def recBotCoe {C : Interval α → Sort*} (bot : C ⊥) (coe : ∀ a : NonemptyI
 theorem coe_injective : Injective ((↑) : NonemptyInterval α → Interval α) :=
   WithBot.coe_injective
 
-@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_inj {s t : NonemptyInterval α} : (s : Interval α) = t ↔ s = t :=
   WithBot.coe_inj
 
@@ -360,7 +359,7 @@ theorem map_map (g : β →o γ) (f : α →o β) (s : Interval α) : (s.map f).
   Option.map_map _ _ _
 
 @[simp]
-theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map (OrderHom.dual f) := by
+theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map f.dual := by
   cases s
   · rfl
   · exact WithBot.map_comm rfl _
@@ -401,11 +400,11 @@ instance setLike : SetLike (Interval α) α where
   coe := coeHom
   coe_injective' := coeHom.injective
 
-@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=
   (@coeHom α _).le_iff_le
 
-@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_sSubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 
@@ -452,7 +451,7 @@ instance semilatticeSup : SemilatticeSup (Interval α) :=
 
 section Decidable
 
-variable [@DecidableRel α (· ≤ ·)]
+variable [DecidableLE α]
 
 instance lattice : Lattice (Interval α) :=
   { Interval.semilatticeSup with
@@ -575,8 +574,7 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
-    CompleteLattice (Interval α) := by
+noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Interval α) := by
   classical
   exact
       { Interval.lattice, Interval.boundedOrder with
@@ -590,7 +588,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
                 lift s to NonemptyInterval α using ha
                 exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
         le_sSup := fun s s ha => by
-          dsimp only -- Porting note (#10752): added `dsimp only`
+          dsimp only
           split_ifs with h
           · exact (h ha).le
           cases s
@@ -604,7 +602,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
               exact ha
             · exact le_iSup₂_of_le _ ha le_rfl
         sSup_le := fun s s ha => by
-          dsimp only -- Porting note (#10752): added `dsimp only`
+          dsimp only
           split_ifs with h
           · exact bot_le
           obtain ⟨b, hs, hb⟩ := not_subset.1 h
@@ -624,7 +622,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
                 iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
           else ⊥
         sInf_le := fun s₁ s ha => by
-          dsimp only -- Porting note (#10752): added `dsimp only`
+          dsimp only
           split_ifs with h
           · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
             -- Porting note: Lean failed to figure out the function `f` by itself,
@@ -637,7 +635,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           cases s with
           | bot => exact bot_le
           | coe s =>
-            dsimp -- Porting note (#11227): added a `dsimp`
+            dsimp only
             split_ifs with h
             · exact WithBot.coe_le_coe.2
                 ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
@@ -660,11 +658,8 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
   }
 
 @[simp, norm_cast]
-theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
-    ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by
-  classical -- Porting note: added
-  -- Porting note: this `change` was
-  -- change ↑ (dite _ _ _) = _
+theorem coe_sInf [DecidableLE α] (S : Set (Interval α)) : ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by
+  classical
   change ((dite _ _ _ : Interval α) : Set α) = ⋂ (s : Interval α) (_ : s ∈ S), (s : Set α)
   split_ifs with h
   · ext
@@ -679,12 +674,11 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
     exact h fun s ha t hb => (hx _ ha).1.trans (hx _ hb).2
 
 @[simp, norm_cast]
-theorem coe_iInf [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
+theorem coe_iInf [DecidableLE α] (f : ι → Interval α) :
     ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [iInf]
 
--- @[simp] -- Porting note: not in simpNF
 @[norm_cast]
-theorem coe_iInf₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
+theorem coe_iInf₂ [DecidableLE α] (f : ∀ i, κ i → Interval α) :
     ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_iInf]
 
 end CompleteLattice

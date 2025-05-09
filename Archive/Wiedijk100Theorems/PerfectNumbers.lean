@@ -55,8 +55,8 @@ theorem even_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Pr
     Even (2 ^ k * mersenne (k + 1)) := by simp [ne_zero_of_prime_mersenne k pr, parity_simps]
 
 theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k * m ∧ ¬Even m := by
-  have h := Nat.multiplicity_finite_iff.2 ⟨Nat.prime_two.ne_one, hpos⟩
-  cases' pow_multiplicity_dvd 2 n with m hm
+  have h := Nat.finiteMultiplicity_iff.2 ⟨Nat.prime_two.ne_one, hpos⟩
+  obtain ⟨m, hm⟩ := pow_multiplicity_dvd 2 n
   use multiplicity 2 n, m
   refine ⟨hm, ?_⟩
   rw [even_iff_two_dvd]

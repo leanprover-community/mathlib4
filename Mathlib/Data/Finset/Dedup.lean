@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Defs
 import Mathlib.Data.Multiset.Dedup
+import Mathlib.Data.Multiset.Basic
 
 /-!
 # Deduplicating Multisets to make Finsets
@@ -19,12 +20,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists CompleteLattice
-
-assert_not_exists OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
 
 open Multiset Subtype Function
 

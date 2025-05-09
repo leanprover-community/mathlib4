@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Data.Set.UnionLift
 
 /-!
@@ -37,7 +37,7 @@ theorem coe_iSup_of_directed (dir : Directed (· ≤ ·) K) : ↑(iSup K) = ⋃ 
 
 variable (K)
 
--- Porting note (#11215): TODO: turn `hT` into an assumption `T ≤ iSup K`.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: turn `hT` into an assumption `T ≤ iSup K`.
 -- That's what `Set.iUnionLift` needs
 -- Porting note: the proofs of `map_{zero,one,add,mul}` got a bit uglier, probably unification trbls
 /-- Define an algebra homomorphism on a directed supremum of subalgebras by defining
