@@ -9,6 +9,11 @@ import Mathlib.Probability.Moments.CovarianceBanach
 /-!
 # Gaussian distributions in Banach spaces
 
+We introduce a predicate `IsGaussian` for measures on a Banach space `E` such that the map by
+any continuous linear form is a Gaussian measure on `ℝ`.
+
+For Gaussian distributions in `ℝ`, see `Mathlib.Probability.Distributions.Gaussian.Real`.
+
 ## Main definitions
 
 * `IsGaussian`
@@ -31,8 +36,8 @@ import Mathlib.Probability.Moments.CovarianceBanach
 
 -/
 
-open MeasureTheory ProbabilityTheory Complex NormedSpace
-open scoped ENNReal NNReal Real Topology
+open MeasureTheory ProbabilityTheory Complex
+open scoped ENNReal NNReal Real
 
 namespace ProbabilityTheory
 
@@ -122,16 +127,14 @@ lemma IsGaussian.charFunCLM_eq {μ : Measure E} [IsGaussian μ] (L : E →L[ℝ]
     · simp only [sup_eq_left]
       exact variance_nonneg _ _
 
-lemma IsGaussian.charFunCLM_eq_of_isCentered {μ : Measure E} [IsGaussian μ]
-    (hμ : IsCentered μ) (L : E →L[ℝ] ℝ) :
+lemma IsGaussian.charFunCLM_eq_of_isCentered (hμ : IsCentered μ) (L : E →L[ℝ] ℝ) :
     charFunCLM μ L = cexp (- Var[L; μ] / 2) := by
   rw [IsGaussian.charFunCLM_eq L, integral_complex_ofReal, hμ L]
   simp [neg_div]
 
 theorem isGaussian_iff_charFunCLM_eq {μ : Measure E} [IsFiniteMeasure μ] :
     IsGaussian μ ↔ ∀ L : E →L[ℝ] ℝ, charFunCLM μ L = cexp (μ[L] * I - Var[L; μ] / 2) := by
-  refine ⟨fun h ↦ h.charFunCLM_eq, fun h ↦ ⟨fun L ↦ ?_⟩⟩
-  refine Measure.ext_of_charFun ?_
+  refine ⟨fun h ↦ h.charFunCLM_eq, fun h ↦ ⟨fun L ↦ Measure.ext_of_charFun ?_⟩⟩
   ext u
   rw [charFun_map_eq_charFunCLM_smul L u, h (u • L), charFun_gaussianReal]
   simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul, ofReal_mul,
@@ -174,10 +177,9 @@ instance isGaussian_conv [SecondCountableTopology E]
     {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :
     IsGaussian (μ ∗ ν) := isGaussian_map_prod_add
 
-section Rotation
+section Map
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
-  {μ : Measure E} [IsGaussian μ] {ν : Measure F} [IsGaussian ν]
 
 instance isGaussian_map (L : E →L[ℝ] F) : IsGaussian (μ.map L) where
   map_eq_gaussianReal L' := by
@@ -214,6 +216,13 @@ lemma isCentered_conv_map_neg [SecondCountableTopology E] :
     rw [integral_map (by fun_prop)]
     · simp [integral_neg]
     · exact Measurable.aestronglyMeasurable <| by fun_prop
+
+end Map
+
+section Rotation
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
+  {ν : Measure F} [IsGaussian ν]
 
 lemma memLp_comp_inl_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p ≠ ∞) :
     MemLp (fun x ↦ (L.comp (.inl ℝ E F) x.1)) p (μ.prod ν) := by
