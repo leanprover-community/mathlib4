@@ -186,6 +186,26 @@ noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
   map f := F.mapMon.map f
   map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon_) = _ by aesop_cat
 
+@[simp]
+theorem mapCommGrp_id_one (A : CommGrp_ C) :
+    η[((𝟭 C).mapCommGrp.obj A).X] = 𝟙 _ ≫ η[A.X] :=
+  rfl
+
+@[simp]
+theorem maCommpGrp_id_mul (A : CommGrp_ C) :
+    μ[((𝟭 C).mapCommGrp.obj A).X] = 𝟙 _ ≫ μ[A.X] :=
+  rfl
+
+@[simp]
+theorem comp_mapCommGrp_one (A : CommGrp_ C) :
+    η[((F ⋙ G).mapCommGrp.obj A).X] = LaxMonoidal.ε (F ⋙ G) ≫ (F ⋙ G).map η[A.X] :=
+  rfl
+
+@[simp]
+theorem comp_mapCommGrp_mul (A : CommGrp_ C) :
+    μ[((F ⋙ G).mapCommGrp.obj A).X] = LaxMonoidal.μ (F ⋙ G) _ _ ≫ (F ⋙ G).map μ[A.X] :=
+  rfl
+
 /-- The identity functor is also the identity on commutative group objects. -/
 @[simps!]
 noncomputable def mapCommGrpIdIso : mapCommGrp (𝟭 C) ≅ 𝟭 (CommGrp_ C) :=
