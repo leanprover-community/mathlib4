@@ -4,16 +4,33 @@ import zulip
 import re
 
 # Usage:
-# python scripts/zulip_emoji_merge_delegate.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $LABEL $PR_NUMBER
-# See .github/workflows/zulip_emoji_merge_delegate.yaml for the meaning of these variables
+# python scripts/zulip_emoji_reactions.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $ACTION $LABEL_NAME $PR_NUMBER
+# The first three variables identify the lean4 Zulip chat and allow the bot to access it
+# (see .github/workflows/zulip_emoji_merge_delegate.yaml),
+# see the comment below for a description of $ACTION and $LABEL_NAME.
 
 ZULIP_API_KEY = sys.argv[1]
 ZULIP_EMAIL = sys.argv[2]
 ZULIP_SITE = sys.argv[3]
-LABEL = sys.argv[4]
-PR_NUMBER = sys.argv[5]
+# Describes the "action" that is performed to the PR. Depending on which action calls this script,
+# this takes rather different values:
+# - if a PR is closed/reopened, it is 'closed' resp. 'reopened' (though the particular value for
+#   reopening is not used in this script)
+# - if a PR was just merged by bors, it is '[Merged by Bors]'
+# - if a PR was labeled or unlabeled (with e.g. maintainer-merge or awaiting-review),
+#   it is 'labeled' resp. 'unlabeled' (and the next argument is the label name)
+# - if a PR was delegated or sent to bors (via a bors r+, bors merge, bors delegate or bors d+
+#   command), it is 'ready-to-merge' or 'delegated'. On a bors merge-, bors r- or bors d- command,
+#   it is 'remove-label'. (This particular value is not used in this script.)
+#   Note that `bors d-` is *not* a bors command, so only has an effect on mathlib's PR labels.
+ACTION = sys.argv[4]
+# Name of the label that was applied or removed
+# (if applicable; is 'none' if a PR was closed, reopened or merged)
+LABEL_NAME = sys.argv[5]
+PR_NUMBER = sys.argv[6]
 
-print(f"LABEL: '{LABEL}'")
+print(f"ACTION: '{ACTION}'")
+print(f"LABEL_NAME: '{LABEL_NAME}'")
 print(f"PR_NUMBER: '{PR_NUMBER}'")
 
 # Initialize Zulip client
@@ -69,7 +86,8 @@ for message in messages:
     # Check for emoji reactions
     reactions = message['reactions']
     # Does this message have any reaction with an emoji |name|?
-    has_reaction = lambda name: any(reaction['emoji_name'] == name for reaction in reactions)
+    def has_reaction(name: str) -> bool:
+        return any(reaction['emoji_name'] == name for reaction in reactions)
 
     has_peace_sign = has_reaction('peace_sign')
     has_bors = has_reaction('bors')
@@ -83,9 +101,6 @@ for message in messages:
     if match:
         print(f"matched: '{message}'")
 
-        # Removing all previous emoji reactions.
-        # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
-        print("Removing previous reactions, if present.")
         def remove_reaction(name: str, emoji_name: str, **kwargs) -> None:
             print(f'Removing {name}')
             result = client.remove_reaction({
@@ -94,41 +109,52 @@ for message in messages:
                 **kwargs
             })
             print(f"result: '{result}'")
+        def add_reaction(name: str, emoji_name: str) -> None:
+            print(f'adding {name} emoji')
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": emoji_name
+            })
 
+        # The maintainer merge label is different from the others, as it is not mutually exclusive
+        # with them: just add or remove it manually and leave the other emojis alone.
+        if LABEL_NAME == "maintainer-merge":
+            if ACTION == "labeled":
+                add_reaction('maintainer-merge', 'hammer')
+            elif ACTION == "unlabeled":
+                remove_reaction('maintainer-merge', 'hammer')
+            continue
+
+        # Othewise, remove all previous mutually exclusive emoji reactions.
+        # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
+        print("Removing previous reactions, if present.")
         if has_peace_sign:
             remove_reaction('delegated', 'peace_sign')
         if has_bors:
             remove_reaction("bors", "bors", emoji_code="22134", reaction_type="realm_emoji")
         if has_merge:
             remove_reaction('merge', 'merge')
-        if has_maintainer_merge:
-            remove_reaction('maintainer-merge', 'hammer')
         if has_awaiting_author:
             remove_reaction('awaiting-author', 'writing')
         if has_closed:
             # 61282 was the earlier version of the emoji.
             remove_reaction('closed-pr', 'closed-pr', emoji_code="61293", reaction_type="realm_emoji")
 
-        # applying appropriate emoji reaction
+        # Apply the appropriate emoji reaction.
         print("Applying reactions, as appropriate.")
-        def add_reaction(name: str, emoji_name: str) -> None:
-            print(f'adding {name}')
-            result = client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": emoji_name
-            })
-        if 'ready-to-merge' == LABEL:
-            add_reaction('ready-to-merge', 'bors')
-        elif 'delegated' == LABEL:
-            add_reaction('delegated', 'peace_sign')
-        elif 'maintainer-merge' == LABEL:
-            add_reaction('maintainer-merge', 'hammer')
-        elif LABEL == 'labeled':
-            add_reaction('awaiting-author', 'writing')
-        elif LABEL == 'closed':
-            add_reaction('closed-pr', 'closed-pr')
-        elif LABEL == 'unlabeled':
-            print('awaiting-author removed')
-            # The reaction was already removed.
-        elif LABEL.startswith("[Merged by Bors]"):
-            add_reaction('[Merged by Bors]', 'merge')
+        match ACTION:
+            case 'ready-to-merge':
+                add_reaction('ready-to-merge', 'bors')
+            case 'delegated':
+                add_reaction('delegated', 'peace_sign')
+            case 'labeled':
+                if LABEL_NAME == 'awaiting-author':
+                    add_reaction('awaiting-author', 'writing')
+            case 'unlabeled':
+                if LABEL_NAME == 'awaiting-author':
+                    print('awaiting-author removed')
+                    # The reaction was already removed.
+            case 'closed':
+                add_reaction('closed-pr', 'closed-pr')
+            case "[Merged by Bors]":
+                add_reaction('[Merged by Bors]', 'merge')
