@@ -406,8 +406,7 @@ lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
   rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc]; dsimp
   rw [← uncurry_eq, uncurry_curry, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
     ← uncurry_eq, uncurry_curry]
-  simp only [comp_whiskerRight, tensorLeft_obj, Category.assoc, pentagon_inv_assoc,
-    whiskerRight_tensor, Iso.hom_inv_id_assoc]
+  simp
 
 end Enriched
 
