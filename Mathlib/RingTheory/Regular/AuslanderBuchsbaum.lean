@@ -24,7 +24,23 @@ universe w v u
 
 open Abelian Limits ZeroObject Abelian.Ext
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C] {X I P Y : C}
+variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+
+section Additive
+
+instance (X : C) (n : ℕ) : Functor.Additive (extFunctorObj X n) where
+  map_add {Y Z} {f g} := by
+    ext x
+    simp [mk₀_add]
+
+instance (n : ℕ) : Functor.Additive (extFunctor (C := C) n) where
+  map_add {Y Z} {f g} := by
+    ext x
+    simp [mk₀_add]
+
+end Additive
+
+variable {X I P Y : C}
 
 section Injective
 
@@ -96,12 +112,6 @@ end Projective
 
 section coproduct
 
-instance (n : ℕ) : (extFunctorObj X n).Additive where
-  map_add := by
-    intros
-    simp only [extFunctorObj_map, mk₀_add, map_add]
-    rfl
-
 noncomputable def Abelian.Ext.coprodIso {ι : Type} [Finite ι] (Y : ι → C) (n : ℕ) :
     AddCommGrp.of (Ext X (∐ Y) n) ≅ ∐ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
   have : PreservesColimit (Discrete.functor Y) (extFunctorObj X n) :=
@@ -168,7 +178,7 @@ lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module 
   apply subsingleton_of_forall_eq 0 (fun m ↦ ?_)
   rw [← one_smul R m, Subsingleton.elim (1 : R) 0, zero_smul]
 
-lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
+lemma free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] (i : ℕ) : Subsingleton (Ext N M i) ↔
     Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
   have : Nontrivial R := nontrivial_ring_of_nontrivial_module M
@@ -183,6 +193,11 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
     · have : NeZero i := ⟨eq0⟩
       simpa [← (projective_dim_shifting _ S_exact i (i + 1) (add_comm 1 i)).subsingleton_congr]
         using ih (kernel f)
+
+lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
+    [Nontrivial M] (i : ℕ) : Subsingleton (Ext N M i) ↔
+    Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
+  sorry
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] : moduleDepth N M = moduleDepth N (ModuleCat.of R (Shrink.{v} R)) := by
