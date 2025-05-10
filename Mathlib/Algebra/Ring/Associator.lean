@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bernhard Reinke
 -/
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Tactic.Abel
 
