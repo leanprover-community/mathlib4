@@ -1311,7 +1311,7 @@ instance : Inv (GrothendieckGroup M) where
     fun {m₁ m₂ s₁ s₂} h ↦ by simpa [r_iff_exists, mk_eq_mk_iff, eq_comm, mul_comm] using h
 
 @[to_additive (attr := simp)]
-lemma mk_inv (m : M) (s : (⊤ : Submonoid M)) : (mk m s)⁻¹ = .mk s ⟨m, Submonoid.mem_top m⟩ := rfl
+lemma inv_mk (m : M) (s : (⊤ : Submonoid M)) : (mk m s)⁻¹ = .mk s ⟨m, Submonoid.mem_top m⟩ := rfl
 
 /-- The Grothendieck group is a group. -/
 @[to_additive "The Grothendieck group is a group."]
@@ -1319,7 +1319,7 @@ instance instCommGroup : CommGroup (GrothendieckGroup M) where
   __ : CommMonoid (GrothendieckGroup M) := inferInstance
   inv_mul_cancel a := by
     induction' a using ind
-    rw [mk_inv, mk_eq_monoidOf_mk', ←Submonoid.LocalizationMap.mk'_mul]
+    rw [inv_mk, mk_eq_monoidOf_mk', ←Submonoid.LocalizationMap.mk'_mul]
     convert Submonoid.LocalizationMap.mk'_self' _ _
     rw [mul_comm, Submonoid.coe_mul]
 
