@@ -136,7 +136,7 @@ noncomputable def leftDerivedNatIso (τ : F' ≅ F) :
 noncomputable abbrev leftDerivedUnique [LF'.IsLeftDerivedFunctor α'₂ W] : LF ≅ LF' :=
   leftDerivedNatIso LF LF' α α'₂ W (Iso.refl F)
 
-lemma isLeftDerivedFunctor_iff_isIso_rightDerivedDesc (G : D ⥤ H) (β : L ⋙ G ⟶ F) :
+lemma isLeftDerivedFunctor_iff_isIso_leftDerivedLift (G : D ⥤ H) (β : L ⋙ G ⟶ F) :
     G.IsLeftDerivedFunctor β W ↔ IsIso (LF.leftDerivedLift α W G β) := by
   rw [isLeftDerivedFunctor_iff_isRightKanExtension]
   have := IsLeftDerivedFunctor.isRightKanExtension _ α W
