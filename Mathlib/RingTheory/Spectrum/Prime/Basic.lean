@@ -58,17 +58,24 @@ section CommSemiRing
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
 
+lemma nonempty_iff_nontrivial : Nonempty (PrimeSpectrum R) ↔ Nontrivial R := by
+  refine ⟨fun ⟨p⟩ ↦ ⟨0, 1, fun h ↦ p.2.ne_top ?_⟩, fun h ↦ ?_⟩
+  · simp [Ideal.eq_top_iff_one p.asIdeal, ← h]
+  · obtain ⟨I, hI⟩ := Ideal.exists_maximal R
+    exact ⟨⟨I, hI.isPrime⟩⟩
+
+lemma isEmpty_iff_subsingleton : IsEmpty (PrimeSpectrum R) ↔ Subsingleton R := by
+  rw [← not_iff_not, not_isEmpty_iff, not_subsingleton_iff_nontrivial, nonempty_iff_nontrivial]
+
 instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
-  let ⟨I, hI⟩ := Ideal.exists_maximal R
-  ⟨⟨I, hI.isPrime⟩⟩
+  nonempty_iff_nontrivial.mpr inferInstance
 
 /-- The prime spectrum of the zero ring is empty. -/
 instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
-  ⟨fun x ↦ x.isPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
+  isEmpty_iff_subsingleton.mpr inferInstance
 
-lemma nontrivial (p : PrimeSpectrum R) : Nontrivial R := by
-  refine ⟨0, 1, fun h ↦ p.2.ne_top ?_⟩
-  simp [Ideal.eq_top_iff_one p.asIdeal, ← h]
+lemma nontrivial (p : PrimeSpectrum R) : Nontrivial R :=
+  nonempty_iff_nontrivial.mp ⟨p⟩
 
 variable (R S)
 

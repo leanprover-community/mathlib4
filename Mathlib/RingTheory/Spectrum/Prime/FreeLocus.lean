@@ -356,9 +356,4 @@ lemma rankAtStalk_eq (p : PrimeSpectrum R) :
     AlgebraTensorModule.cancelBaseChange _ _ _ _ _
   rw [← e.finrank_eq, finrank_baseChange, rankAtStalk_eq_finrank_tensorProduct]
 
-/-- `M` has positive rank at `p` if the "fiber" over `p` is non-trivial. -/
-lemma rankAtStalk_pos_iff_nontrivial (p : PrimeSpectrum R) :
-    0 < rankAtStalk M p ↔ Nontrivial (p.asIdeal.ResidueField ⊗[R] M) := by
-  rw [rankAtStalk_eq, finrank_pos_iff]
-
 end Module
