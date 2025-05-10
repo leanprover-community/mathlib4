@@ -1,0 +1,73 @@
+/-
+Copyright (c) 2025 Yunge Yu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yunge Yu
+-/
+import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
+import Mathlib.Combinatorics.SimpleGraph.Trails
+
+/-!
+
+# Singleton Graphs
+
+This module introduces *singleton graphs*.
+
+## Main definitions
+
+* `SimpleGraph.Singleton` is a predicate for a graph being a singleton graph
+
+## Tags
+
+singleton graphs
+-/
+
+namespace SimpleGraph
+
+variable {V : Type*} (G : SimpleGraph V)
+
+variable [Fintype V]
+
+/-- A graph is a *singleton* if it only has one vertex. -/
+def Singleton (G : SimpleGraph V) : Prop := 1 = Fintype.card V
+
+namespace Singleton
+
+lemma one_elem (s : G.Singleton) (u v : V) : u = v := by
+  unfold Singleton at s
+  have : (Finset.univ : Finset V).card ≤ 1 := by simp [s]
+  apply ((Finset.univ : Finset V).card_le_one).mp this u (Finset.mem_univ u) v (Finset.mem_univ v)
+
+lemma Connected (s : G.Singleton) : G.Connected := by
+  have : Nonempty V := by
+    unfold Singleton at s
+    rw [← Fintype.card_pos_iff]
+    simp [<- s]
+  simp only [connected_iff, this, and_true, Preconnected]
+  intro u v
+  have : u = v := by apply s.one_elem
+  simp [this, Reachable.refl]
+
+lemma no_edges (s : G.Singleton) : G.edgeSet = ∅ := by
+  by_contra h
+  simp only [Set.eq_empty_iff_forall_not_mem, not_forall, not_not] at h
+  obtain ⟨⟨u, v⟩, he⟩ := h
+  simp only [mem_edgeSet] at he
+  have : u = v := by apply s.one_elem
+  simp [this] at he
+
+variable [DecidableEq V]
+
+theorem IsEulerian (s : G.Singleton) : ∃ (v : V) (p : G.Walk v v), p.IsEulerian := by
+  obtain ⟨v⟩ := (s.Connected).2
+  use v
+  use Walk.nil
+  simp [Walk.isEulerian_iff, s.no_edges]
+
+lemma IsHamiltonian (s : G.Singleton) : G.IsHamiltonian := by
+  unfold SimpleGraph.IsHamiltonian
+  unfold Singleton at s
+  simp [s]
+
+end Singleton
+
+end SimpleGraph
