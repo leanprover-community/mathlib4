@@ -80,6 +80,27 @@ theorem isTrivial_apply (ρ : Representation k G V) [IsTrivial ρ] (g : G) (x : 
 
 end trivial
 
+section Group
+
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+  (ρ : Representation k G V)
+
+@[simp]
+theorem inv_self_apply (g : G) (x : V) :
+    ρ g⁻¹ (ρ g x) = x := by
+  simp [← Module.End.mul_apply, ← map_mul]
+
+@[simp]
+theorem self_inv_apply (g : G) (x : V) :
+    ρ g (ρ g⁻¹ x) = x := by
+  simp [← Module.End.mul_apply, ← map_mul]
+
+lemma apply_bijective (g : G) :
+    Function.Bijective (ρ g) :=
+  Equiv.bijective ⟨ρ g, ρ g⁻¹, inv_self_apply ρ g, self_inv_apply ρ g⟩
+
+end Group
+
 section MonoidAlgebra
 
 variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
@@ -249,6 +270,69 @@ instance : IsScalarTower k (MonoidAlgebra k G) ρ.asModule where
       aesop
 
 end MonoidAlgebra
+
+section Subrepresentation
+
+variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+  (ρ : Representation k G V)
+
+/-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
+restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
+@[simps]
+def subrepresentation (W : Submodule k V) (le_comap : ∀ g, W ≤ W.comap (ρ g)) :
+    Representation k G W where
+  toFun g := (ρ g).restrict <| le_comap g
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+
+end Subrepresentation
+
+section Quotient
+
+variable {k G V : Type*} [CommRing k] [Monoid G] [AddCommGroup V] [Module k V]
+  (ρ : Representation k G V)
+
+/-- Given a `k`-linear `G`-representation `(V, ρ)` and a `G`-invariant `k`-submodule `W ≤ V`, this
+is the representation induced on `V ⧸ W` by `ρ`. -/
+@[simps]
+def quotient (W : Submodule k V) (le_comap : ∀ g, W ≤ W.comap (ρ g)) :
+    Representation k G (V ⧸ W) where
+  toFun g := Submodule.mapQ _ _ (ρ g) <| le_comap g
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+
+end Quotient
+
+section OfQuotient
+
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+variable (ρ : Representation k G V) (S : Subgroup G)
+
+lemma apply_eq_of_coe_eq [IsTrivial (ρ.comp S.subtype)] (g h : G) (hgh : (g : G ⧸ S) = h) :
+    ρ g = ρ h := by
+  ext x
+  apply (ρ.apply_bijective g⁻¹).1
+  simpa [← Module.End.mul_apply, ← map_mul, -isTrivial_def] using
+    (congr($(isTrivial_def (ρ.comp S.subtype) ⟨g⁻¹ * h, QuotientGroup.eq.1 hgh⟩) x)).symm
+
+variable [S.Normal]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
+through `G ⧸ S`. -/
+def ofQuotient [IsTrivial (ρ.comp S.subtype)] :
+    Representation k (G ⧸ S) V :=
+  (QuotientGroup.con S).lift ρ <| by
+    rintro x y ⟨⟨z, hz⟩, rfl⟩
+    ext w
+    show ρ (_ * z.unop) _ = _
+    exact congr($(apply_eq_of_coe_eq ρ S _ _ (by simp_all)) w)
+
+@[simp]
+lemma ofQuotient_coe_apply [IsTrivial (ρ.comp S.subtype)] (g : G) (x : V) :
+    ofQuotient ρ S (g : G ⧸ S) x = ρ g x :=
+  rfl
+
+end OfQuotient
 
 section AddCommGroup
 
