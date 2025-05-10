@@ -125,14 +125,14 @@ lemma multiplicativeClosure_isGenerator_eq_top : generators.multiplicativeClosur
 
 /-- An unrolled version of the induction principle obtained in the previous lemma. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
-    (id : ∀ {n : ℕ}, P (𝟙 (mk n)))
-    (comp_δ : ∀ {n m : ℕ} (u : mk n ⟶ mk m) (i : Fin (m + 2)), P u → P (u ≫ δ i))
-    (comp_σ : ∀ {n m : ℕ} (u : mk n ⟶ mk (m + 1)) (i : Fin (m + 1)), P u → P (u ≫ σ i))
+lemma hom_induction (motive : MorphismProperty SimplexCategoryGenRel)
+    (id : ∀ {n : ℕ}, motive (𝟙 (mk n)))
+    (comp_δ : ∀ {n m : ℕ} (u : mk n ⟶ mk m) (i : Fin (m + 2)), motive u → motive (u ≫ δ i))
+    (comp_σ : ∀ {n m : ℕ} (u : mk n ⟶ mk (m + 1)) (i : Fin (m + 1)), motive u → motive (u ≫ σ i))
     {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
-    P f :=
+    motive f :=
   by
-  suffices generators.multiplicativeClosure ≤ P by
+  suffices generators.multiplicativeClosure ≤ motive by
     rw [multiplicativeClosure_isGenerator_eq_top, top_le_iff] at this
     rw [this]
     apply MorphismProperty.top_apply

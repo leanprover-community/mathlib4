@@ -162,8 +162,9 @@ theorem mk_surjective : Function.Surjective <| @mk _ _ s :=
 lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_eq_univ.mpr mk_surjective
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (QuotientGroup.mk z)) : C x :=
-  Quotient.inductionOn' x H
+theorem induction_on {motive : α ⧸ s → Prop} (x : α ⧸ s) (mk : ∀ z, motive (QuotientGroup.mk z)) :
+    motive x :=
+  Quotient.inductionOn' x mk
 
 @[to_additive]
 instance : Coe α (α ⧸ s) :=
