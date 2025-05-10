@@ -3,7 +3,7 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 
 /-!
 # Congruence subgroups
@@ -17,7 +17,7 @@ It also contains basic results about congruence subgroups.
 
 open Matrix.SpecialLinearGroup Matrix
 
-open scoped MatrixGroups ModularGroup
+open scoped MatrixGroups ModularGroup Real
 
 variable (N : ℕ)
 
@@ -73,6 +73,8 @@ lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
     Int.cast_zero, and_self, and_true, true_and]
   refine Iff.mpr (ZMod.intCast_zmod_eq_zero_iff_dvd M (Int.natAbs N)) ?_
   simp only [Int.natCast_natAbs, abs_dvd, hNM]
+
+instance instFiniteIndexGamma [NeZero N] : (Gamma N).FiniteIndex := Subgroup.finiteIndex_ker _
 
 /-- The congruence subgroup of `SL(2, ℤ)` of matrices whose lower left-hand entry reduces to zero
 modulo `N`. -/
@@ -169,32 +171,65 @@ theorem Gamma1_in_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N := by
 section CongruenceSubgroups
 
 /-- A congruence subgroup is a subgroup of `SL(2, ℤ)` which contains some `Gamma N` for some
-`(N : ℕ+)`. -/
+`N ≠ 0`. -/
 def IsCongruenceSubgroup (Γ : Subgroup SL(2, ℤ)) : Prop :=
-  ∃ N : ℕ+, Gamma N ≤ Γ
+  ∃ N ≠ 0, Gamma N ≤ Γ
 
 theorem isCongruenceSubgroup_trans (H K : Subgroup SL(2, ℤ)) (h : H ≤ K)
     (h2 : IsCongruenceSubgroup H) : IsCongruenceSubgroup K := by
   obtain ⟨N, hN⟩ := h2
-  exact ⟨N, le_trans hN h⟩
+  exact ⟨N, hN.1, hN.2.trans h⟩
 
-theorem Gamma_is_cong_sub (N : ℕ+) : IsCongruenceSubgroup (Gamma N) :=
-  ⟨N, by simp only [le_refl]⟩
+theorem Gamma_is_cong_sub (N : ℕ) [NeZero N] : IsCongruenceSubgroup (Gamma N) :=
+  ⟨N, NeZero.ne _, le_rfl⟩
 
-theorem Gamma1_is_congruence (N : ℕ+) : IsCongruenceSubgroup (Gamma1 N) := by
-  refine ⟨N, ?_⟩
-  intro A hA
-  simp only [Gamma1_mem, Gamma_mem] at *
-  simp only [hA, eq_self_iff_true, and_self_iff]
+theorem Gamma1_is_congruence (N : ℕ) [NeZero N] : IsCongruenceSubgroup (Gamma1 N) := by
+  refine ⟨N, NeZero.ne _, fun A hA ↦ ?_⟩
+  simp_all [Gamma1_mem, Gamma_mem]
 
-theorem Gamma0_is_congruence (N : ℕ+) : IsCongruenceSubgroup (Gamma0 N) :=
+theorem Gamma0_is_congruence (N : ℕ) [NeZero N] : IsCongruenceSubgroup (Gamma0 N) :=
   isCongruenceSubgroup_trans _ _ (Gamma1_in_Gamma0 N) (Gamma1_is_congruence N)
+
+lemma IsCongruenceSubgroup.finiteIndex {Γ : Subgroup SL(2, ℤ)}
+    (h : IsCongruenceSubgroup Γ) : Γ.FiniteIndex := by
+  obtain ⟨N, hN⟩ := h
+  have : NeZero N := ⟨hN.1⟩
+  exact Subgroup.finiteIndex_of_le hN.2
+
+instance instFiniteIndexGamma0 [NeZero N] : (Gamma0 N).FiniteIndex :=
+  (Gamma0_is_congruence N).finiteIndex
+
+instance instFiniteIndexGamma1 [NeZero N] : (Gamma1 N).FiniteIndex :=
+  (Gamma1_is_congruence N).finiteIndex
 
 end CongruenceSubgroups
 
 section Conjugation
 
-open Pointwise
+open Pointwise ConjAct
+
+/-- The subgroup `SL(2, ℤ) ∩ g⁻¹ Γ g`, for `Γ` a subgroup of `SL(2, ℤ)` and `g in GL(2, ℝ)⁺`. -/
+def conjGLPos (Γ : Subgroup SL(2, ℤ)) (g : GL(2, ℝ)⁺) : Subgroup SL(2, ℤ) :=
+  ((toConjAct g⁻¹) • (Γ.map ModularGroup.coeHom)).comap ModularGroup.coeHom
+
+@[simp] lemma mem_conjGLPos {Γ : Subgroup SL(2, ℤ)} {g : GL(2, ℝ)⁺} {x : SL(2, ℤ)} :
+    x ∈ conjGLPos Γ g ↔ ∃ y ∈ Γ, y = g * x * g⁻¹ := by
+  simp_rw [conjGLPos, Subgroup.mem_comap, toConjAct_inv, Subgroup.mem_inv_pointwise_smul_iff,
+    Subgroup.mem_map, ModularGroup.coeHom_apply, toConjAct_smul]
+
+lemma mem_conjGLPos' {Γ : Subgroup SL(2, ℤ)} {g : GL(2, ℝ)⁺} {x : SL(2, ℤ)} :
+    x ∈ conjGLPos Γ g ↔ ∃ y ∈ Γ, g⁻¹ * y * g = x := by
+  rw [mem_conjGLPos]
+  refine exists_congr fun y ↦ and_congr_right fun hy ↦ ?_
+  rw [eq_mul_inv_iff_mul_eq, mul_assoc, inv_mul_eq_iff_eq_mul]
+
+@[simp]
+lemma conjGLPos_coe (Γ : Subgroup SL(2, ℤ)) (g : SL(2, ℤ)) :
+    conjGLPos Γ g = (toConjAct g⁻¹) • Γ := by
+  ext x
+  simp_rw [mem_conjGLPos, ← ModularGroup.coeHom_apply, ← map_inv, ← map_mul,
+    ModularGroup.coeHom_apply, ModularGroup.coe_inj, exists_eq_right,
+    toConjAct_inv, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
 
 theorem Gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • Gamma N = Gamma N := by
   apply Subgroup.Normal.conjAct (Gamma_normal N)

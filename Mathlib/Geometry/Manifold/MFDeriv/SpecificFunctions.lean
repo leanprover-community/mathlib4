@@ -257,17 +257,23 @@ theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
   rw [MDifferentiable.mfderivWithin mdifferentiableAt_fst hxs]; exact mfderiv_fst
 
 @[simp, mfld_simps]
-theorem tangentMap_prod_fst {p : TangentBundle (I.prod I') (M × M')} :
+theorem tangentMap_prodFst {p : TangentBundle (I.prod I') (M × M')} :
     tangentMap (I.prod I') I Prod.fst p = ⟨p.proj.1, p.2.1⟩ := by
   simp [tangentMap]; rfl
 
-theorem tangentMapWithin_prod_fst {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
+@[deprecated (since := "2025-04-18")]
+alias tangentMap_prod_fst := tangentMap_prodFst
+
+theorem tangentMapWithin_prodFst {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
     (hs : UniqueMDiffWithinAt (I.prod I') s p.proj) :
     tangentMapWithin (I.prod I') I Prod.fst s p = ⟨p.proj.1, p.2.1⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_fst]
   · rcases p with ⟨⟩; rfl
   · exact hs
+
+@[deprecated (since := "2025-04-18")]
+alias tangentMapWithin_prod_fst := tangentMapWithin_prodFst
 
 theorem hasMFDerivAt_snd (x : M × M') :
     HasMFDerivAt (I.prod I') I' Prod.snd x
@@ -400,57 +406,79 @@ variable {f : M → M'} {g : N → N'} {r : Set N} {y : N}
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
-theorem MDifferentiableWithinAt.prod_map' {p : M × N} (hf : MDifferentiableWithinAt I I' f s p.1)
+theorem MDifferentiableWithinAt.prodMap' {p : M × N} (hf : MDifferentiableWithinAt I I' f s p.1)
     (hg : MDifferentiableWithinAt J J' g r p.2) :
     MDifferentiableWithinAt (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) p :=
   (hf.comp p mdifferentiableWithinAt_fst (prod_subset_preimage_fst _ _)).prodMk <|
     hg.comp p mdifferentiableWithinAt_snd (prod_subset_preimage_snd _ _)
 
-theorem MDifferentiableWithinAt.prod_map (hf : MDifferentiableWithinAt I I' f s x)
+@[deprecated (since := "2025-04-18")]
+alias MDifferentiableWithinAt.prod_map' := MDifferentiableWithinAt.prodMap'
+
+theorem MDifferentiableWithinAt.prodMap (hf : MDifferentiableWithinAt I I' f s x)
     (hg : MDifferentiableWithinAt J J' g r y) :
     MDifferentiableWithinAt (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) (x, y) :=
-  MDifferentiableWithinAt.prod_map' hf hg
+  MDifferentiableWithinAt.prodMap' hf hg
 
-theorem MDifferentiableAt.prod_map
-    (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt J J' g y) :
+@[deprecated (since := "2025-04-18")]
+alias MDifferentiableWithinAt.prod_map := MDifferentiableWithinAt.prodMap
+
+theorem MDifferentiableAt.prodMap (hf : MDifferentiableAt I I' f x)
+    (hg : MDifferentiableAt J J' g y) :
     MDifferentiableAt (I.prod J) (I'.prod J') (Prod.map f g) (x, y) := by
   rw [← mdifferentiableWithinAt_univ] at *
-  convert hf.prod_map hg
+  convert hf.prodMap hg
   exact univ_prod_univ.symm
+
+@[deprecated (since := "2025-04-18")]
+alias MDifferentiableAt.prod_map := MDifferentiableAt.prodMap
 
 /-- Variant of `MDifferentiableAt.prod_map` in which the point in the product is given as `p`
 instead of a pair `(x, y)`. -/
-theorem MDifferentiableAt.prod_map' {p : M × N}
-    (hf : MDifferentiableAt I I' f p.1) (hg : MDifferentiableAt J J' g p.2) :
-    MDifferentiableAt (I.prod J) (I'.prod J') (Prod.map f g) p := by
-  rcases p with ⟨⟩
-  exact hf.prod_map hg
+theorem MDifferentiableAt.prodMap' {p : M × N} (hf : MDifferentiableAt I I' f p.1)
+    (hg : MDifferentiableAt J J' g p.2) :
+    MDifferentiableAt (I.prod J) (I'.prod J') (Prod.map f g) p :=
+  hf.prodMap hg
 
-theorem MDifferentiableOn.prod_map
-    (hf : MDifferentiableOn I I' f s) (hg : MDifferentiableOn J J' g r) :
+@[deprecated (since := "2025-04-18")]
+alias MDifferentiableAt.prod_map' := MDifferentiableAt.prodMap'
+
+theorem MDifferentiableOn.prodMap (hf : MDifferentiableOn I I' f s)
+    (hg : MDifferentiableOn J J' g r) :
     MDifferentiableOn (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) :=
   (hf.comp mdifferentiableOn_fst (prod_subset_preimage_fst _ _)).prodMk <|
     hg.comp mdifferentiableOn_snd (prod_subset_preimage_snd _ _)
 
-theorem MDifferentiable.prod_map (hf : MDifferentiable I I' f) (hg : MDifferentiable J J' g) :
-    MDifferentiable (I.prod J) (I'.prod J') (Prod.map f g) := by
-  intro p
-  exact (hf p.1).prod_map' (hg p.2)
+@[deprecated (since := "2025-04-18")]
+alias MDifferentiableOn.prod_map := MDifferentiableOn.prodMap
+
+theorem MDifferentiable.prodMap (hf : MDifferentiable I I' f) (hg : MDifferentiable J J' g) :
+    MDifferentiable (I.prod J) (I'.prod J') (Prod.map f g) := fun p ↦
+  (hf p.1).prodMap' (hg p.2)
+
+@[deprecated (since := "2025-04-18")]
+alias MDifferentiable.prod_map := MDifferentiable.prodMap
 
 end prodMap
 
 @[simp, mfld_simps]
-theorem tangentMap_prod_snd {p : TangentBundle (I.prod I') (M × M')} :
+theorem tangentMap_prodSnd {p : TangentBundle (I.prod I') (M × M')} :
     tangentMap (I.prod I') I' Prod.snd p = ⟨p.proj.2, p.2.2⟩ := by
   simp [tangentMap]; rfl
 
-theorem tangentMapWithin_prod_snd {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
+@[deprecated (since := "2025-04-18")]
+alias tangentMap_prod_snd := tangentMap_prodSnd
+
+theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
     (hs : UniqueMDiffWithinAt (I.prod I') s p.proj) :
     tangentMapWithin (I.prod I') I' Prod.snd s p = ⟨p.proj.2, p.2.2⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_snd]
   · rcases p with ⟨⟩; rfl
   · exact hs
+
+@[deprecated (since := "2025-04-18")]
+alias tangentMapWithin_prod_snd := tangentMapWithin_prodSnd
 
 theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
     (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt I I'' g x) :

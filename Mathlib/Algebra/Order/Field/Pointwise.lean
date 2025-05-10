@@ -6,7 +6,7 @@ Authors: Alex J. Best, Yaël Dillies
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Order.Interval.Set.OrderIso
 

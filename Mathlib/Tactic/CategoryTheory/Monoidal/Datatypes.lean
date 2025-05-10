@@ -89,7 +89,7 @@ instance : MonadMor₁ MonoidalM where
   id₁M a := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
-    return .id (q(MonoidalCategory.tensorUnit) : Q($ctx.C)) a
+    return .id (q(𝟙_ _) : Q($ctx.C)) a
   comp₁M f g := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -404,7 +404,7 @@ def id₁? (e : Expr) : MonoidalM (Option Obj) := do
   let ctx ← read
   match ctx.instMonoidal? with
   | .some _monoidal => do
-    if ← withDefault <| isDefEq e (q(MonoidalCategory.tensorUnit) : Q($ctx.C)) then
+    if ← withDefault <| isDefEq e (q(𝟙_ _) : Q($ctx.C)) then
       return some ⟨none⟩
     else
       return none

@@ -13,7 +13,14 @@ import Mathlib.Data.PFun
 The partial recursive functions are defined similarly to the primitive
 recursive functions, but now all functions are partial, implemented
 using the `Part` monad, and there is an additional operation, called
-μ-recursion, which performs unbounded minimization.
+μ-recursion, which performs unbounded minimization: `μ f` returns the
+least natural number `n` for which `f n = 0`, or diverges if such `n` doesn't exist.
+
+## Main definitions
+
+- `Nat.Partrec f`: `f` is partial recursive, for functions `f : ℕ →. ℕ`
+- `Partrec f`: `f` is partial recursive, for partial functions between `Primcodable` types
+- `Computable f`: `f` is partial recursive, for total functions between `Primcodable` types
 
 ## References
 
@@ -141,7 +148,7 @@ theorem rfindOpt_mono {α} {f : ℕ → Option α} (H : ∀ {a m n}, m ≤ n →
     have := (H (le_max_left _ _) h).symm.trans (H (le_max_right _ _) hk)
     simp at this; simp [this, get_mem]⟩
 
-/-- `PartRec f` means that the partial function `f : ℕ → ℕ` is partially recursive. -/
+/-- `Partrec f` means that the partial function `f : ℕ → ℕ` is partially recursive. -/
 inductive Partrec : (ℕ →. ℕ) → Prop
   | zero : Partrec (pure 0)
   | succ : Partrec succ
@@ -555,7 +562,7 @@ theorem bind_decode_iff {f : α → β → Option σ} :
             snd).bind
         (Computable.comp hf fst).to₂.partrec₂)
       fun n => by
-        simp only [decode_prod_val, decode_nat, Option.map_some', PFun.coe_val, bind_eq_bind,
+        simp only [decode_prod_val, decode_nat, Option.map_some, PFun.coe_val, bind_eq_bind,
           bind_some, Part.map_bind, map_some]
         cases decode (α := α) n.unpair.1 <;> simp
         cases decode (α := β) n.unpair.2 <;> simp,
@@ -756,7 +763,7 @@ theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := b
   let p a n := @Part.map _ Bool (fun s => Sum.casesOn s (fun _ => true) fun _ => false) (F a n)
   have hp : Partrec₂ p :=
     hF.map ((sumCasesOn Computable.id (const true).to₂ (const false).to₂).comp snd).to₂
-  exact (hp.rfind.bind (hF.bind (sumCasesOn_right snd snd.to₂ none.to₂).to₂).to₂).of_eq fun a =>
-    ext fun b => by simpa [p] using fix_aux f _ _
+  exact ((Partrec.rfind hp).bind (hF.bind (sumCasesOn_right snd snd.to₂ none.to₂).to₂).to₂).of_eq
+    fun a => ext fun b => by simpa [p] using fix_aux f _ _
 
 end Partrec

@@ -174,16 +174,6 @@ theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g 
   rw [← lTensor_comp_rTensor, coe_comp]
   exact Function.Surjective.comp (lTensor_surjective _ hg') (rTensor_surjective _ hg)
 
-variable (M R) in
-theorem TensorProduct.mk_surjective (S) [Semiring S] [Algebra R S]
-    (h : Function.Surjective (algebraMap R S)) :
-    Function.Surjective (TensorProduct.mk R S M 1) := by
-  rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
-  rintro _ ⟨x, y, rfl⟩
-  obtain ⟨x, rfl⟩ := h x
-  rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
-  exact ⟨x • y, rfl⟩
-
 end Semiring
 
 variable {R M N P : Type*} [CommRing R]
@@ -454,12 +444,10 @@ variable
 lemma Ideal.map_includeLeft_eq (I : Ideal A) :
     (I.map (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B)).restrictScalars R
       = LinearMap.range (LinearMap.rTensor B (Submodule.subtype (I.restrictScalars R))) := by
-  rw [← Submodule.carrier_inj]
+  rw [← SetLike.coe_set_eq]
   apply le_antisymm
-  · intro x
-    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-      Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem, LinearMap.mem_range]
-    intro hx
+  · intro x hx
+    simp only [Submodule.coe_restrictScalars, SetLike.mem_coe, LinearMap.mem_range]
     rw [Ideal.map, ← submodule_span_eq] at hx
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
     · intro x
@@ -505,8 +493,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
     | tmul a b =>
         simp only [LinearMap.rTensor_tmul, Submodule.coe_subtype]
         suffices (a : A) ⊗ₜ[R] b = ((1 : A) ⊗ₜ[R] b) * ((a : A) ⊗ₜ[R] (1 : B)) by
-          simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-            Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
+          simp only [Submodule.coe_restrictScalars, SetLike.mem_coe]
           rw [this]
           apply Ideal.mul_mem_left
           -- Note: adding `includeLeft` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
@@ -522,12 +509,10 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
 lemma Ideal.map_includeRight_eq (I : Ideal B) :
     (I.map (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B)).restrictScalars R
       = LinearMap.range (LinearMap.lTensor A (Submodule.subtype (I.restrictScalars R))) := by
-  rw [← Submodule.carrier_inj]
+  rw [← SetLike.coe_set_eq]
   apply le_antisymm
-  · intro x
-    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-      Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem, LinearMap.mem_range]
-    intro hx
+  · intro x hx
+    simp only [SetLike.mem_coe, LinearMap.mem_range]
     rw [Ideal.map, ← submodule_span_eq] at hx
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
     · intro x
@@ -574,8 +559,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype]
         suffices a ⊗ₜ[R] (b : B) = (a ⊗ₜ[R] (1 : B)) * ((1 : A) ⊗ₜ[R] (b : B)) by
           rw [this]
-          simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-            Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
+          simp only [Submodule.coe_restrictScalars, SetLike.mem_coe]
           apply Ideal.mul_mem_left
           -- Note: adding `includeRight` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeRight

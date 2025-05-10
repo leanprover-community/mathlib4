@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Michael Howes, Antoine Chambert-Loir
 -/
 import Mathlib.Data.Finite.Card
-import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.Finiteness
+import Mathlib.GroupTheory.Rank
 
 /-!
 # The abelianization of a group
@@ -353,7 +352,7 @@ theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} 
 /-- If `N` is a normal subgroup of `G` and `H` a commutative subgroup such that `H ⊔ N = ⊤`,
   then `N` contains `commutator G`. -/
 theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top {N : Subgroup G} [N.Normal]
-    {H : Subgroup G} (hHN : N ⊔ H = ⊤) (hH : Subgroup.IsCommutative H) :
+    {H : Subgroup G} (hHN : N ⊔ H = ⊤) (hH : IsMulCommutative H) :
     _root_.commutator G ≤ N := by
   -- It is enough to prove that Q = G ⧸ N is commutative
   rw [← quotient_commutative_iff_commutator_le]
