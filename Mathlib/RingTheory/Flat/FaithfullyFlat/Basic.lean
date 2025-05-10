@@ -210,6 +210,32 @@ end
 instance [Nontrivial M] [Module.Free R M] : FaithfullyFlat R M :=
   of_linearEquiv _ _ (Free.repr R M)
 
+section
+
+variable {N : Type*} [AddCommGroup N] [Module R N]
+
+@[simp]
+lemma subsingleton_tensorProduct_iff_right [Module.FaithfullyFlat R M] :
+    Subsingleton (M ⊗[R] N) ↔ Subsingleton N := by
+  exact ⟨fun h ↦ lTensor_reflects_triviality R M N, fun h ↦ inferInstance⟩
+
+@[simp]
+lemma subsingleton_tensorProduct_iff_left [Module.FaithfullyFlat R N] :
+    Subsingleton (M ⊗[R] N) ↔ Subsingleton M := by
+  exact ⟨fun h ↦ rTensor_reflects_triviality R N M, fun h ↦ inferInstance⟩
+
+@[simp]
+lemma nontrivial_tensorProduct_iff_right [Module.FaithfullyFlat R M] :
+    Nontrivial (M ⊗[R] N) ↔ Nontrivial N := by
+  simp [← not_iff_not, not_nontrivial_iff_subsingleton]
+
+@[simp]
+lemma nontrivial_tensorProduct_iff_left [Module.FaithfullyFlat R N] :
+    Nontrivial (M ⊗[R] N) ↔ Nontrivial M := by
+  simp [← not_iff_not, not_nontrivial_iff_subsingleton]
+
+end
+
 section exact
 
 /-!
