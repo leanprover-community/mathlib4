@@ -2557,6 +2557,7 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Yoneda
+import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.CategoryTheory.Types.Monomorphisms
 import Mathlib.CategoryTheory.UnivLE
