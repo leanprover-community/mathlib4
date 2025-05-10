@@ -114,7 +114,7 @@ lemma mono : Mono f := by
 end isStableUnderTransfiniteCompositionOfShape_monomorphisms
 
 instance : (monomorphisms (Type u)).IsStableUnderTransfiniteCompositionOfShape J where
-  le _ _ _ hf := isStableUnderTransfiniteCompositionOfShape_monomorphisms.mono (Classical.choice hf)
+  le _ _ _ hf := isStableUnderTransfiniteCompositionOfShape_monomorphisms.mono hf.some
 
 instance : IsStableUnderTransfiniteComposition.{u'} (monomorphisms (Type u)) where
 
