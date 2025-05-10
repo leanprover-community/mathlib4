@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.Order.Group.Action
 import Mathlib.LinearAlgebra.Finsupp.Supported
 import Mathlib.LinearAlgebra.Span.Basic
@@ -30,9 +30,9 @@ These actions are available in the `Pointwise` locale.
 
 ## Implementation notes
 
-For an `R`-module `M`, The action of a subset of `R` acting on a submodule of `M` introduced in
-section `set_acting_on_submodules` does not have a counterpart in the file
-`Mathlib.Algebra.Group.Submonoid.Pointwise`.
+For an `R`-module `M`, the action of a subset of `R` acting on a submodule of `M` introduced in
+section `set_acting_on_submodules` does not have a counterpart in the files
+`Mathlib.Algebra.Group.Submonoid.Pointwise` and `Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise`.
 
 Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
 lemmas from the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
@@ -101,16 +101,18 @@ def negOrderIso : Submodule R M ≃o Submodule R M where
   toEquiv := Equiv.neg _
   map_rel_iff' := @neg_le_neg _ _ _ _ _
 
-theorem closure_neg (s : Set M) : span R (-s) = -span R s := by
+theorem span_neg_eq_neg (s : Set M) : span R (-s) = -span R s := by
   apply le_antisymm
   · rw [span_le, coe_set_neg, ← Set.neg_subset, neg_neg]
     exact subset_span
   · rw [neg_le, span_le, coe_set_neg, ← Set.neg_subset]
     exact subset_span
 
+@[deprecated (since := "2025-04-08")]
+alias closure_neg := span_neg_eq_neg
+
 @[simp]
-theorem neg_inf (S T : Submodule R M) : -(S ⊓ T) = -S ⊓ -T :=
-  SetLike.coe_injective Set.inter_neg
+theorem neg_inf (S T : Submodule R M) : -(S ⊓ T) = -S ⊓ -T := rfl
 
 @[simp]
 theorem neg_sup (S T : Submodule R M) : -(S ⊔ T) = -S ⊔ -T :=
@@ -165,9 +167,8 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 
-instance : OrderedAddCommMonoid (Submodule R M) :=
-  { Submodule.pointwiseAddCommMonoid with
-    add_le_add_left := fun _a _b => sup_le_sup_left }
+instance : IsOrderedAddMonoid (Submodule R M) :=
+  { add_le_add_left := fun _a _b => sup_le_sup_left }
 
 instance : CanonicallyOrderedAdd (Submodule R M) where
   exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
@@ -501,7 +502,7 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
 -- does not make sense. If we just focus on `R`-submodules that are also `S`-submodule, then this
 -- should be true.
 /-- A subset of a ring `R` has a multiplicative action on submodules of a module over `R`. -/
-protected def pointwiseSetMulAction [SMulCommClass R R M] :
+protected noncomputable def pointwiseSetMulAction [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where
   one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
     (mem_singleton_set_smul _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
@@ -520,7 +521,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
 
 -- This cannot be generalized to `Set S` because `MulAction` can't be generalized already.
 /-- In a ring, sets acts on submodules. -/
-protected def pointwiseSetDistribMulAction [SMulCommClass R R M] :
+protected noncomputable def pointwiseSetDistribMulAction [SMulCommClass R R M] :
     DistribMulAction (Set R) (Submodule R M) where
   smul_zero s := set_smul_bot s
   smul_add s x y := le_antisymm

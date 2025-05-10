@@ -3,6 +3,7 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, David Loeffler
 -/
+import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.MetricSpace.Defs
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 

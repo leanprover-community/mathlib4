@@ -70,7 +70,7 @@ notation:25 M " →ₚₗ[" R:25 "] " N:0 => PolynomialLaw R M N
 @[local simp]
 theorem PolynomialLaw.isCompat_apply'
     {R : Type u} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
-    {N : Type*} [AddCommMonoid N] [Module R N]{f : M →ₚₗ[R] N}
+    {N : Type*} [AddCommMonoid N] [Module R N] {f : M →ₚₗ[R] N}
     {S : Type u} [CommSemiring S] [Algebra R S] {S' : Type u} [CommSemiring S'] [Algebra R S']
     (φ : S →ₐ[R] S') (x : S ⊗[R] M) :
     (φ.toLinearMap.rTensor N) ((f.toFun' S) x) = (f.toFun' S') (φ.toLinearMap.rTensor M x) := by
