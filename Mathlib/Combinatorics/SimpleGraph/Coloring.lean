@@ -65,7 +65,7 @@ variable {V : Type u} (G : SimpleGraph V) {n : ℕ}
 /-- An `α`-coloring of a simple graph `G` is a homomorphism of `G` into the complete graph on `α`.
 This is also known as a proper coloring.
 -/
-abbrev Coloring (α : Type v) := G →g (⊤ : SimpleGraph α)
+abbrev Coloring (α : Type v) := G →g completeGraph α
 
 variable {G}
 variable {α β : Type*} (C : G.Coloring α)
@@ -116,7 +116,7 @@ theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.color
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
   classical
-  change Fintype (RelHom G.Adj (⊤ : SimpleGraph α).Adj)
+  change Fintype (RelHom G.Adj (completeGraph α).Adj)
   apply Fintype.ofInjective _ RelHom.coe_fn_injective
 
 variable (G)
