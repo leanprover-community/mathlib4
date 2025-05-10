@@ -104,7 +104,7 @@ jobs:
         done
 
         # we return to the PR branch, since the next step wants it!
-        git switch -
+        git checkout -
 
     - name: Compute transitive imports
       run: |
