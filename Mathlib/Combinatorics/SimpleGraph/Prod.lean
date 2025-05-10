@@ -56,11 +56,13 @@ theorem boxProd_adj_left {a₁ : α} {b : β} {a₂ : α} :
 theorem boxProd_adj_right {a : α} {b₁ b₂ : β} : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
   simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
 
-theorem boxProd_neighborSet (x : α × β) :
+theorem neighborSet_boxProd (x : α × β) :
     (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by
   ext ⟨a', b'⟩
   simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, Set.mem_singleton_iff]
   simp only [eq_comm, and_comm]
+
+@[deprecated (since := "2025-05-08")] alias boxProd_neighborSet := neighborSet_boxProd
 
 variable (G H)
 
@@ -133,14 +135,17 @@ theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a�
     · exact ⟨h, rfl⟩
 
 @[simp]
-theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b₁ b₂ : α} :
+theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b₁ b₂ : α} :
     ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
   | nil => rfl
   | cons' x y z h w => by
     rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dif_pos, ←
       Walk.boxProdRight]
-    · simp [ofBoxProdLeft_boxProdRight]
+    · simp [ofBoxProdRight_boxProdRight]
     · exact ⟨h, rfl⟩
+
+@[deprecated (since := "2025-03-30")]
+alias ofBoxProdLeft_boxProdRight := ofBoxProdRight_boxProdRight
 
 lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
     [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
@@ -199,8 +204,10 @@ protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connect
   exact ⟨h.preconnected.ofBoxProdRight⟩
 
 @[simp]
-theorem boxProd_connected : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
+theorem connected_boxProd : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
   ⟨fun h => ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h => h.1.boxProd h.2⟩
+
+@[deprecated (since := "2025-05-08")] alias boxProd_connected := connected_boxProd
 
 instance boxProdFintypeNeighborSet (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] :
@@ -213,7 +220,7 @@ instance boxProdFintypeNeighborSet (x : α × β)
         mem_neighborSet, Equiv.refl_apply, boxProd_adj]
       simp only [eq_comm, and_comm])
 
-theorem boxProd_neighborFinset (x : α × β)
+theorem neighborFinset_boxProd (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).neighborFinset x =
       (G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2)
@@ -223,13 +230,17 @@ theorem boxProd_neighborFinset (x : α × β)
   convert_to (G □ H).neighborFinset x = _ using 2
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
 
-theorem boxProd_degree (x : α × β)
+@[deprecated (since := "2025-05-08")] alias boxProd_neighborFinset := neighborFinset_boxProd
+
+theorem degree_boxProd (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
-  rw [degree, degree, degree, boxProd_neighborFinset, Finset.card_disjUnion]
+  rw [degree, degree, degree, neighborFinset_boxProd, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
 
-lemma boxProd_reachable {x y : α × β} :
+@[deprecated (since := "2025-05-08")] alias boxProd_degree := degree_boxProd
+
+lemma reachable_boxProd {x y : α × β} :
     (G □ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
   classical
   constructor
@@ -238,13 +249,15 @@ lemma boxProd_reachable {x y : α × β} :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
+@[deprecated (since := "2025-05-08")] alias boxProd_reachable := reachable_boxProd
+
 @[simp]
-lemma boxProd_edist (x y : α × β) :
+lemma edist_boxProd (x y : α × β) :
     (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
   classical
   -- The case `(G □ H).edist x y = ⊤` is used twice, so better to factor it out.
   have top_case : (G □ H).edist x y = ⊤ ↔ G.edist x.1 y.1 = ⊤ ∨ H.edist x.2 y.2 = ⊤ := by
-    simp_rw [← not_ne_iff, edist_ne_top_iff_reachable, boxProd_reachable, not_and_or]
+    simp_rw [← not_ne_iff, edist_ne_top_iff_reachable, reachable_boxProd, not_and_or]
   by_cases h : (G □ H).edist x y = ⊤
   · rw [top_case] at h
     aesop
@@ -261,5 +274,7 @@ lemma boxProd_edist (x y : α × β) :
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
       rw [← hw, Walk.length_boxProd]
       exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)
+
+@[deprecated (since := "2025-05-08")] alias boxProd_edist := edist_boxProd
 
 end SimpleGraph
