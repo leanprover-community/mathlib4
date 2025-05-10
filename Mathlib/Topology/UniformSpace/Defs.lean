@@ -256,9 +256,45 @@ lemma IsSymmetricRel.sInter {s : Set (Set (α × α))} (h : ∀ i ∈ s, IsSymme
   rw [sInter_eq_iInter]
   exact IsSymmetricRel.iInter (by simpa)
 
+lemma isSymmetricRel_idRel : IsSymmetricRel (idRel : Set (α × α)) := by
+  simp [IsSymmetricRel, idRel, eq_comm]
+
+lemma isSymmetricRel_univ : IsSymmetricRel (Set.univ : Set (α × α)) := by
+  simp [IsSymmetricRel, idRel, eq_comm]
+
 lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
   Set.ext fun _ ↦ ht.mk_mem_comm
+
+lemma IsSymmetricRel.image_prodMap {U : Set (α × α)} (ht : IsSymmetricRel U) (f : α → β) :
+    IsSymmetricRel (Prod.map f f '' U) := by
+  rw [IsSymmetricRel]
+  simp_rw [← Set.image_swap_eq_preimage_swap, Set.image_image]
+  ext ⟨a, b⟩
+  simp only [Set.mem_image, Prod.exists, Prod.map_apply, Prod.swap_prod_mk, Prod.mk.injEq]
+  constructor <;>
+  · rintro ⟨x, y, h, rfl, rfl⟩
+    refine ⟨y, x, ?_, rfl, rfl⟩
+    rwa [ht.mk_mem_comm]
+
+lemma IsSymmetricRel.prod_subset_comm {s : Set (α × α)} {t u : Set α}
+    (hs : IsSymmetricRel s) :
+    t ×ˢ u ⊆ s ↔ u ×ˢ t ⊆ s := by
+  constructor <;>
+  · rintro h ⟨a, b⟩ hab
+    simp only [mem_prod] at hab
+    rw [hs.mk_mem_comm]
+    apply h
+    simp [hab]
+
+lemma IsSymmetricRel.mem_filter_prod_comm {s : Set (α × α)} {f g : Filter α}
+    (hs : IsSymmetricRel s) :
+    s ∈ f ×ˢ g ↔ s ∈ g ×ˢ f := by
+  simp only [mem_prod_iff]
+  constructor <;>
+  · rintro ⟨t, ht, u, hu, hut⟩
+    rw [hs.prod_subset_comm] at hut
+    exact ⟨u, hu, t, ht, hut⟩
 
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
