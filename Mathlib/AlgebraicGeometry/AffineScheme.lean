@@ -1146,49 +1146,6 @@ lemma specTargetImageFactorization_comp :
 
 open RingHom
 
-variable {Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y)
-
-/-- The scheme-theoretic image of a morphism `f : X ⟶ Y` with affine target.
-`f` factors as `affineTargetImageFactorization f ≫ affineTargetImageInclusion f`
-(see `affineTargetImageFactorization_comp`). -/
-def affineTargetImage (f : X ⟶ Y) : Scheme.{u} :=
-  Spec <| specTargetImage (f ≫ Y.isoSpec.hom)
-
-instance : IsAffine (affineTargetImage f) := inferInstanceAs <| IsAffine <| Spec _
-
-/-- The inclusion of the scheme-theoretic image of a morphism with affine target. -/
-def affineTargetImageInclusion (f : X ⟶ Y) : affineTargetImage f ⟶ Y :=
-  Spec.map (specTargetImageRingHom (f ≫ Y.isoSpec.hom)) ≫ Y.isoSpec.inv
-
-lemma affineTargetImageInclusion_app_surjective :
-    Function.Surjective <| (affineTargetImageInclusion f).appTop := by
-  simp only [Scheme.comp_coeBase, Opens.map_comp_obj, Opens.map_top, Scheme.comp_app,
-    CommRingCat.hom_comp, affineTargetImageInclusion, RingHom.coe_comp]
-  apply Function.Surjective.comp
-  · haveI : (toMorphismProperty (fun f ↦ Function.Surjective f)).RespectsIso := by
-      rw [← toMorphismProperty_respectsIso_iff]
-      exact surjective_respectsIso
-    exact (MorphismProperty.arrow_mk_iso_iff
-      (toMorphismProperty (fun f ↦ Function.Surjective f))
-      (arrowIsoΓSpecOfIsAffine (specTargetImageRingHom (f ≫ Y.isoSpec.hom))).symm).mpr <|
-        specTargetImageRingHom_surjective (f ≫ Y.isoSpec.hom)
-  · apply Function.Bijective.surjective
-    exact ConcreteCategory.bijective_of_isIso (Scheme.Hom.app Y.isoSpec.inv ⊤)
-
-/-- The induced morphism from `X` to the scheme-theoretic image
-of a morphism `f : X ⟶ Y` with affine target. -/
-def affineTargetImageFactorization (f : X ⟶ Y) : X ⟶ affineTargetImage f :=
-  specTargetImageFactorization (f ≫ Y.isoSpec.hom)
-
-lemma affineTargetImageFactorization_app_injective :
-    Function.Injective <| (affineTargetImageFactorization f).appTop :=
-  specTargetImageFactorization_app_injective (f ≫ Y.isoSpec.hom)
-
-@[reassoc (attr := simp)]
-lemma affineTargetImageFactorization_comp :
-    affineTargetImageFactorization f ≫ affineTargetImageInclusion f = f := by
-  simp [affineTargetImageFactorization, affineTargetImageInclusion]
-
 end Factorization
 
 section Stalks
