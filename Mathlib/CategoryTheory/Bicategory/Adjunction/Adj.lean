@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.Opposite
 
 /-!
 # The bicategory of adjunctions in a bicategory
@@ -200,11 +201,27 @@ instance : Bicategory (Adj B) where
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
 
+@[simp] lemma whiskerRight_τg' {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) :
+    (x ▷ β).τg = β.g ◁ x.τg := rfl
+
+@[simp] lemma whiskerRight_τf' {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) :
+    (x ▷ β).τf = x.τf ▷ β.f := rfl
+
 -- this forgets the right adjoints
+@[simps obj map, simps -isSimp map₂ mapId mapComp]
 def forget₁ : Pseudofunctor (Adj B) B where
   obj a := a.obj
   map x := x.f
   map₂ α := α.τf
+  mapId _ := Iso.refl _
+  mapComp _ _ := Iso.refl _
+
+-- this forgets the left adjoints
+@[simps obj map, simps -isSimp map₂ mapId mapComp]
+def forget₂ : Pseudofunctor (Adj B)ᵒᵖ B where
+  obj a := a.unop.obj
+  map x := x.unop.g
+  map₂ α := α.unop.τg
   mapId _ := Iso.refl _
   mapComp _ _ := Iso.refl _
 
