@@ -29,8 +29,8 @@ namespace Types
 
 instance : (monomorphisms (Type u)).IsStableUnderCobaseChange where
   of_isPushout {X₁ X₂ X₃ X₄ t l r b} sq ht := by
-    simp only [monomorphisms.iff, mono_iff_injective] at ht ⊢
-    exact Limits.Types.pushoutCocone_inr_injective_of_isColimit sq.flip.isColimit ht
+    simp only [monomorphisms.iff] at ht ⊢
+    exact Limits.Types.pushoutCocone_inr_mono_of_isColimit sq.flip.isColimit
 
 lemma isStableUnderColimitsOfShape_monomorphisms_of_isFiltered
     (J : Type u') [Category.{v'} J] [IsFiltered J] :
