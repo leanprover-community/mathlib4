@@ -114,6 +114,11 @@ protected theorem map_rel (f : r →r s) {a b} : r a b → s (f a) (f b) :=
 theorem coe_fn_toFun (f : r →r s) : f.toFun = (f : α → β) :=
   rfl
 
+@[simp]
+theorem coeFn_mk (f : α → β) (h : ∀ {a b}, r a b → s (f a) (f b)) :
+    RelHom.mk f @h = f :=
+  rfl
+
 /-- The map `coe_fn : (r →r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun (f : r →r s) => (f : α → β) :=
   DFunLike.coe_injective
@@ -137,6 +142,7 @@ protected def swap (f : r →r s) : swap r →r swap s :=
   ⟨f, f.map_rel⟩
 
 /-- A function is a relation homomorphism from the preimage relation of `s` to `s`. -/
+@[simps]
 def preimage (f : α → β) (s : β → β → Prop) : f ⁻¹'o s →r s :=
   ⟨f, id⟩
 
@@ -710,8 +716,12 @@ lemma copy_eq (e : r ≃r s) (f : α → β) (g : β → α) (hf hg) : e.copy f 
   DFunLike.coe_injective hf
 
 /-- Any equivalence lifts to a relation isomorphism between `s` and its preimage. -/
-protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s :=
-  ⟨f, Iff.rfl⟩
+@[simps]
+protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s where
+  toFun := f
+  invFun := f.symm
+  __ := f
+  map_rel_iff' := Iff.rfl
 
 instance IsWellOrder.preimage {α : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     IsWellOrder β (f ⁻¹'o r) :=
@@ -725,6 +735,19 @@ instance IsWellOrder.ulift {α : Type u} (r : α → α → Prop) [IsWellOrder �
 @[simps! apply]
 noncomputable def ofSurjective (f : r ↪r s) (H : Surjective f) : r ≃r s :=
   ⟨Equiv.ofBijective f ⟨f.injective, H⟩, f.map_rel_iff⟩
+
+/-- Transport a `RelHom` across a pair of `RelIso`s, by pre- and post-composition.
+
+This is `Equiv.arrowCongr` for `RelHom`. -/
+@[simps]
+def relHomCongr {α₁ β₁ α₂ β₂}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂):
+    (r₁ →r s₁) ≃ (r₂ →r s₂) where
+  toFun f₁ := e₂.toRelEmbedding.toRelHom.comp <| f₁.comp e₁.symm.toRelEmbedding.toRelHom
+  invFun f₂ := e₂.symm.toRelEmbedding.toRelHom.comp <| f₂.comp e₁.toRelEmbedding.toRelHom
+  left_inv f₁ := by ext; simp
+  right_inv f₂ := by ext; simp
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the sum.
