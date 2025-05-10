@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Hom
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -120,41 +120,3 @@ protected def compLeft (f : A →ₐ[R] B) (ι : Type*) : (ι → A) →ₐ[R] �
       exact f.commutes' c }
 
 end AlgHom
-
-namespace AlgEquiv
-
-variable {R ι : Type*} {A₁ A₂ A₃ : ι → Type*}
-variable [CommSemiring R] [∀ i, Semiring (A₁ i)] [∀ i, Semiring (A₂ i)] [∀ i, Semiring (A₃ i)]
-variable [∀ i, Algebra R (A₁ i)] [∀ i, Algebra R (A₂ i)] [∀ i, Algebra R (A₃ i)]
-
-/-- A family of algebra equivalences `∀ i, (A₁ i ≃ₐ A₂ i)` generates a
-multiplicative equivalence between `Π i, A₁ i` and `Π i, A₂ i`.
-
-This is the `AlgEquiv` version of `Equiv.piCongrRight`, and the dependent version of
-`AlgEquiv.arrowCongr`.
--/
-@[simps apply]
-def piCongrRight (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) : (Π i, A₁ i) ≃ₐ[R] Π i, A₂ i :=
-  { @RingEquiv.piCongrRight ι A₁ A₂ _ _ fun i ↦ (e i).toRingEquiv with
-    toFun := fun x j ↦ e j (x j)
-    invFun := fun x j ↦ (e j).symm (x j)
-    commutes' := fun r ↦ by
-      ext i
-      simp }
-
-@[simp]
-theorem piCongrRight_refl :
-    (piCongrRight fun i ↦ (AlgEquiv.refl : A₁ i ≃ₐ[R] A₁ i)) = AlgEquiv.refl :=
-  rfl
-
-@[simp]
-theorem piCongrRight_symm (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) :
-    (piCongrRight e).symm = piCongrRight fun i ↦ (e i).symm :=
-  rfl
-
-@[simp]
-theorem piCongrRight_trans (e₁ : ∀ i, A₁ i ≃ₐ[R] A₂ i) (e₂ : ∀ i, A₂ i ≃ₐ[R] A₃ i) :
-    (piCongrRight e₁).trans (piCongrRight e₂) = piCongrRight fun i ↦ (e₁ i).trans (e₂ i) :=
-  rfl
-
-end AlgEquiv
