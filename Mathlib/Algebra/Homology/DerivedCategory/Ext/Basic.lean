@@ -439,7 +439,6 @@ noncomputable def Ext.coprodIso (X : C) {ι : Type*} [Finite ι] (Y : ι → C) 
   PreservesCoproduct.iso (extFunctorObj X n) Y
 
 /-- `Ext` commutes with finite products. -/
--- TODO: Prove that `Ext` commutes with arbitrary products.
 noncomputable def Ext.prodIso (X : C) {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
     AddCommGrp.of (Ext X (∏ᶜ Y) n) ≅ ∏ᶜ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
   PreservesProduct.iso (extFunctorObj X n) Y
