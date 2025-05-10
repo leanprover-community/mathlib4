@@ -200,7 +200,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   have hCpos : 0 < C := mul_pos (inv_pos.2 hδ) (ENNReal.toNNReal_pos hne hg.eLpNorm_lt_top.ne)
   have : ∀ n, μ {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} ≤ ENNReal.ofReal δ := by
     intro n
-    have := mul_meas_ge_le_pow_eLpNorm' μ one_ne_zero ENNReal.one_ne_top
+    have := mul_meas_ge_le_pow_eLpNorm'' μ one_ne_zero ENNReal.one_ne_top
       ((stronglyMeasurable_condExp (m := ℱ n) (μ := μ) (f := g)).mono (hℱ n)).aestronglyMeasurable C
     rw [ENNReal.toReal_one, ENNReal.rpow_one, ENNReal.rpow_one, mul_comm, ←
       ENNReal.le_div_iff_mul_le (Or.inl (ENNReal.coe_ne_zero.2 hCpos.ne'))
