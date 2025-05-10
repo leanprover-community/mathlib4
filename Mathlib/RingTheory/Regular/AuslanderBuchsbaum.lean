@@ -40,7 +40,7 @@ instance (n : ℕ) : Functor.Additive (extFunctor (C := C) n) where
 
 end Additive
 
-variable {X I P Y : C}
+variable (X I P Y : C)
 
 section Injective
 
@@ -63,7 +63,7 @@ noncomputable def injective_dim_shifting : Ext X S.X₃ n₀ ≃+ Ext X S.X₁ n
   (CategoryTheory.asIso (AddCommGrp.ofHom (hS.extClass.postcomp X h))).addCommGroupIsoToAddEquiv
 
 lemma injective_dim_shifting_apply (e : Ext X S.X₃ n₀) :
-  injective_dim_shifting hS n₀ n₁ h e = hS.extClass.postcomp X h e := rfl
+  injective_dim_shifting X hS n₀ n₁ h e = hS.extClass.postcomp X h e := rfl
 
 end Injective
 
@@ -94,7 +94,6 @@ instance Abelian.Ext.subsingleton_of_projective [Projective P] (n : ℕ) [hn : N
 variable {S : ShortComplex C} (hS : S.ShortExact) [Projective S.X₂]
   (n₀ n₁ : ℕ) (h : 1 + n₀ = n₁) [NeZero n₀]
 
-variable (Y) in
 noncomputable def projective_dim_shifting : Ext S.X₁ Y n₀ ≃+ Ext S.X₃ Y n₁ :=
   have : NeZero n₁ := by
     rw [← h]
@@ -112,7 +111,6 @@ end Projective
 
 section coproduct
 
-variable (X) in
 noncomputable def Abelian.Ext.coprodIso {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
     AddCommGrp.of (Ext X (∐ Y) n) ≅ ∐ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
   have : PreservesColimit (Discrete.functor Y) (extFunctorObj X n) :=
