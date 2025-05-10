@@ -8,6 +8,9 @@ import Mathlib.Order.Minimal
 
 /-!
 # Finite preorders and finite sets in a preorder
+
+This file shows that non-empty finite sets in a preorder have minimal/maximal elements, and
+contrapositively that non-empty sets without minimal or maximal elements are infinite.
 -/
 
 variable {ι α β : Type*}
