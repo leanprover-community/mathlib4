@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Finiteness.Quotient
+import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Ramification index and inertia degree
@@ -238,6 +239,23 @@ lemma inertiaDeg_map_eq [p.IsMaximal] (P : Ideal S)
 
 end DecEq
 
+
+section absNorm
+
+/-- The absolute norm of an ideal `P` above a rational prime `p` is
+`|p| ^ ((span {p}).inertiaDeg P)`. -/
+lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
+      (P : Ideal R) [P.LiesOver (span {p})] (hp: Prime p) :
+    absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
+  have : (span {p}).IsMaximal :=
+    (isPrime_of_prime (prime_span_singleton_iff.mpr hp)).isMaximal (by simp [hp.ne_zero])
+  have h : Module.Finite (ℤ ⧸ span {p}) (R ⧸ P) := module_finite_of_liesOver P (span {p})
+  let _ : Field (ℤ ⧸ span {p}) := Quotient.field (span {p})
+  rw [inertiaDeg_algebraMap, absNorm_apply, Submodule.cardQuot_apply,
+    Module.natCard_eq_pow_finrank (K := ℤ ⧸ span {p})]
+  simp [Nat.card_congr (Int.quotientSpanEquivZMod p).toEquiv]
+
+end absNorm
 section FinrankQuotientMap
 
 open scoped nonZeroDivisors
