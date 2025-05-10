@@ -244,6 +244,11 @@ lemma isDominant_of_of_injective_appTop [CompactSpace X]
 @[deprecated (since := "2025-05-10")]
 alias surjective_of_isClosed_range_of_injective := isDominant_of_of_injective_appTop
 
+instance [CompactSpace X] : IsDominant X.toSpecΓ :=
+  isDominant_of_of_injective_appTop (by
+    simpa only [Scheme.toSpecΓ_appTop] using
+      (ConcreteCategory.bijective_of_isIso (Scheme.ΓSpecIso Γ(X, ⊤)).hom).1)
+
 /-- If `f : X ⟶ Y` is open, injective, `X` is quasi-compact and `Y` is affine, then `f` is stalkwise
 injective if it is injective on global sections. -/
 lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
