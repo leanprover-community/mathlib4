@@ -431,17 +431,39 @@ instance (X : C) (n : ℕ) : (extFunctorObj X n).Additive where
 
 instance (n : ℕ) : (extFunctor (C := C) n).Additive where
 
+lemma Ext.comp_sum {X Y Z : C} {p : ℕ} (α : Ext X Y p) {ι : Type*} [Fintype ι] {q : ℕ}
+    (β : ι → Ext Y Z q) {n : ℕ} (h : p + q = n) :
+    α.comp (∑ i, β i) h = ∑ i, α.comp (β i) h :=
+  map_sum (α.precomp Z h) _ _
+
+lemma Ext.sum_comp {X Y Z : C} {p : ℕ} {ι : Type*} [Fintype ι] (α : ι → Ext X Y p) {q : ℕ}
+    (β : Ext Y Z q) {n : ℕ} (h : p + q = n) :
+    (∑ i, α i).comp β h = ∑ i, (α i).comp β h :=
+  map_sum (β.postcomp X h) _ _
+
+lemma Ext.mk₀_sum {X Y : C} {ι : Type*} [Fintype ι]
+    (f : ι → (X ⟶ Y)) :
+    mk₀ (∑ i, f i) = ∑ i, mk₀ (f i) :=
+  map_sum addEquiv₀.symm _ _
+
+variable {X : C} {ι : Type*} [Fintype ι] {Y : ι → C} {c : Bicone Y} (hc : c.IsBilimit) (n : ℕ)
+
+/-- `Ext` commutes with finite biproducts. -/
+noncomputable def Ext.addEquivBiproduct : Ext X c.pt n ≃+ Π i, Ext X (Y i) n where
+  toFun e i := e.comp (Ext.mk₀ (c.π i)) (add_zero n)
+  invFun e := ∑ (i : ι), (e i).comp (Ext.mk₀ (c.ι i)) (add_zero n)
+  left_inv e := by
+    simp only [comp_assoc_of_second_deg_zero, mk₀_comp_mk₀, ← Ext.comp_sum,
+      ← Ext.mk₀_sum, IsBilimit.total hc, comp_mk₀_id]
+  right_inv e := by
+    ext i
+    simp only [Ext.sum_comp, comp_assoc_of_second_deg_zero, mk₀_comp_mk₀]
+    rw [Finset.sum_eq_single i _ (by simp), bicone_ι_π_self, comp_mk₀_id]
+    intro j _ hij
+    rw [c.ι_π, dif_neg hij, mk₀_zero, comp_zero]
+  map_add' := by aesop
+
 end
-
-/-- `Ext` commutes with finite coproducts. -/
-noncomputable def Ext.coprodIso (X : C) {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
-    AddCommGrp.of (Ext X (∐ Y) n) ≅ ∐ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
-  PreservesCoproduct.iso (extFunctorObj X n) Y
-
-/-- `Ext` commutes with finite products. -/
-noncomputable def Ext.prodIso (X : C) {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
-    AddCommGrp.of (Ext X (∏ᶜ Y) n) ≅ ∏ᶜ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
-  PreservesProduct.iso (extFunctorObj X n) Y
 
 section ChangeOfUniverse
 
