@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
+import Batteries.Tactic.Alias
 
 /-!
 # Extra definitions on `Option`
@@ -16,6 +17,12 @@ Other basic operations on `Option` are defined in the core library.
 
 namespace Option
 
+-- Pending rename in core.
+alias map_eq_none_iff := map_eq_none'
+alias map_eq_some_iff := map_eq_some'
+alias forall_ne_none := ball_ne_none
+alias bind_eq_some_iff := bind_eq_some
+
 /-- Traverse an object of `Option α` with a function `f : α → F β` for an applicative `F`. -/
 protected def traverse.{u, v}
     {F : Type u → Type v} [Applicative F] {α : Type*} {β : Type u} (f : α → F β) :
@@ -25,9 +32,6 @@ protected def traverse.{u, v}
 
 variable {α : Type*} {β : Type*}
 
--- Porting note: Would need to add the attribute directly in `Init.Prelude`.
--- attribute [inline] Option.isSome Option.isNone
-
 /-- An elimination principle for `Option`. It is a nondependent version of `Option.rec`. -/
 protected def elim' (b : β) (f : α → β) : Option α → β
   | some a => f a
@@ -35,11 +39,14 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 
 @[simp]
 theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
+
 @[simp]
 theorem elim'_some {a : α} (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
 
--- Porting note: this lemma was introduced because it is necessary
--- in `CategoryTheory.Category.PartialFun`
+@[simp]
+theorem elim'_none_some (f : Option α → β) : (Option.elim' (f none) (f ∘ some)) = f :=
+  funext fun o ↦ by cases o <;> rfl
+
 lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
     Option.elim' b f a = Option.elim a b f := by
   cases a <;> rfl

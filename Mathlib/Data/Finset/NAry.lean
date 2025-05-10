@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Lattice.Prod
 import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # N-ary images of finsets
@@ -472,8 +473,6 @@ theorem subset_set_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s 
   simp only [coe_image, Set.image_subset_iff, image₂_image_left, image₂_image_right,
     image_subset_iff]
   exact ⟨fun _ h ↦ (hu h).1, fun _ h ↦ (hu h).2, fun x hx ↦ mem_image₂_of_mem hx hx⟩
-
-@[deprecated (since := "2024-09-22")] alias subset_image₂ := subset_set_image₂
 
 end
 section UnionInter

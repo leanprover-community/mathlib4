@@ -3,7 +3,8 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
@@ -51,9 +52,6 @@ for some `r : α`."]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
 @[to_additive (attr := simp)] lemma IsSquare.mul_self (r : α) : IsSquare (r * r) := ⟨r, rfl⟩
-
-@[deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
-@[deprecated (since := "2024-08-27")] alias even_add_self := Even.add_self
 
 @[to_additive]
 lemma isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
@@ -152,8 +150,6 @@ variable [DivisionMonoid α] {a : α}
 @[to_additive Even.zsmul_right] lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_zpow _⟩
 
-@[deprecated (since := "2024-01-19")] alias Even.zsmul := Even.zsmul_right
-
 end DivisionMonoid
 
 @[to_additive]
@@ -163,5 +159,3 @@ lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : Is
 @[to_additive (attr := simp) Even.zsmul_left]
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, zpow_add _ _ _⟩
-
-@[deprecated (since := "2024-01-07")] alias Even.zsmul' := Even.zsmul_left

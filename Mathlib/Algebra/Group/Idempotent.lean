@@ -6,7 +6,9 @@ Authors: Christopher Hoskin
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Data.Subtype
+import Mathlib.Tactic.Conv
 import Mathlib.Tactic.MinImports
 
 /-!
@@ -76,11 +78,17 @@ variable [Monoid M] {a : M}
 lemma pow (n : ℕ) (h : IsIdempotentElem a) : IsIdempotentElem (a ^ n) :=
   Nat.recOn n ((pow_zero a).symm ▸ one) fun n _ =>
     show a ^ n.succ * a ^ n.succ = a ^ n.succ by
-      conv_rhs => rw [← h.eq] -- Porting note: was `nth_rw 3 [← h.eq]`
+      conv_rhs => rw [← h.eq]
       rw [← sq, ← sq, ← pow_mul, ← pow_mul']
 
 lemma pow_succ_eq (n : ℕ) (h : IsIdempotentElem a) : a ^ (n + 1) = a :=
   Nat.recOn n ((Nat.zero_add 1).symm ▸ pow_one a) fun n ih => by rw [pow_succ, ih, h.eq]
+
+theorem iff_eq_one_of_isUnit (h : IsUnit a) : IsIdempotentElem a ↔ a = 1 where
+  mp idem := by
+    have ⟨q, eq⟩ := h.exists_left_inv
+    rw [← eq, ← idem.eq, ← mul_assoc, eq, one_mul, idem.eq]
+  mpr := by rintro rfl; exact .one
 
 end Monoid
 

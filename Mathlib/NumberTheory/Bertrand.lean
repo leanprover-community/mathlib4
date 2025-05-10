@@ -135,7 +135,7 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
   rw [not_le, div_lt_iff_lt_mul three_pos, mul_comm x] at h2x
   replace no_prime := not_exists.mp no_prime x
   rw [← and_assoc, not_and', not_and_or, not_lt] at no_prime
-  cases' no_prime hx with h h
+  rcases no_prime hx with h | h
   · rw [factorization_eq_zero_of_non_prime n.centralBinom h, Nat.pow_zero]
   · rw [factorization_centralBinom_of_two_mul_self_lt_three_mul n_large h h2x, Nat.pow_zero]
 
@@ -152,7 +152,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
     centralBinom n ≤ (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) := by
   have n_pos : 0 < n := (Nat.zero_le _).trans_lt n_large
   have n2_pos : 1 ≤ 2 * n := mul_pos (zero_lt_two' ℕ) n_pos
-  let S := (Finset.range (2 * n / 3 + 1)).filter Nat.Prime
+  let S := {p ∈ Finset.range (2 * n / 3 + 1) | Nat.Prime p}
   let f x := x ^ n.centralBinom.factorization x
   have : ∏ x ∈ S, f x = ∏ x ∈ Finset.range (2 * n / 3 + 1), f x := by
     refine Finset.prod_filter_of_ne fun p _ h => ?_
@@ -211,7 +211,7 @@ it, but no more than twice as large.
 theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
     ∃ p, Nat.Prime p ∧ n < p ∧ p ≤ 2 * n := by
   -- Split into cases whether `n` is large or small
-  cases' lt_or_le 511 n with h h
+  rcases lt_or_le 511 n with h | h
   -- If `n` is large, apply the lemma derived from the inequalities on the central binomial
   -- coefficient.
   · exact exists_prime_lt_and_le_two_mul_eventually n h

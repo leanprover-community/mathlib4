@@ -323,7 +323,6 @@ theorem indefiniteDiagonal_assoc :
       Matrix.reindexLieEquiv (Equiv.sumAssoc Unit l l).symm
         (Matrix.fromBlocks 1 0 0 (indefiniteDiagonal l l R)) := by
   ext ⟨⟨i₁ | i₂⟩ | i₃⟩ ⟨⟨j₁ | j₂⟩ | j₃⟩ <;>
-  -- Porting note: added `Sum.inl_injective.eq_iff`, `Sum.inr_injective.eq_iff`
     simp only [indefiniteDiagonal, Matrix.diagonal_apply, Equiv.sumAssoc_apply_inl_inl,
       Matrix.reindexLieEquiv_apply, Matrix.submatrix_apply, Equiv.symm_symm, Matrix.reindex_apply,
       Sum.elim_inl, if_true, eq_self_iff_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,

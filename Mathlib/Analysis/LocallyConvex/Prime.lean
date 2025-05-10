@@ -14,7 +14,7 @@ import Mathlib.Analysis.Convex.Exposed
 
 See my notes, 10th Feb 2001
 
-Edwards and Ruttimann "On the facial structure of the unit balls in a GL-space and its dual"
+Edwards and Rüttimann "On the facial structure of the unit balls in a GL-space and its dual"
 
 Mathlib has a concept of exposed in Analysis/Convex/Exposed - is this related?
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Fintype instance for `Shrink`

@@ -109,12 +109,7 @@ theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
     ∑ i, mongePointWeightsWithCircumcenter n i = 1 := by
   simp_rw [sum_pointsWithCircumcenter, mongePointWeightsWithCircumcenter, sum_const, card_fin,
     nsmul_eq_mul]
-  -- Porting note: replaced
-  -- have hn1 : (n + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
-  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [n.cast_add_one_ne_zero]`, but was really slow
-  -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [Nat.cast_add, Nat.cast_ofNat, Nat.cast_one,
-    inv_eq_one_div, mul_div_assoc', mul_one, add_div', div_mul_cancel₀, div_eq_iff, one_mul]
+  field_simp
   ring
 
 /-- The Monge point of an (n+2)-simplex, in terms of
@@ -142,11 +137,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
     have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by norm_cast
     field_simp [hn1, hn3, mul_comm]
-  · -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [hn1]`, but was really slow
-  -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-    simp (disch := field_simp_discharge) only
-      [Nat.cast_add, Nat.cast_ofNat, Nat.cast_one, zero_sub, mul_neg, mul_one, neg_div',
-      neg_add_rev, div_add', one_mul, eq_div_iff, div_mul_cancel₀]
+  · field_simp [hn1]
     ring
 
 /-- The weights for the Monge point of an (n+2)-simplex, minus the
@@ -165,7 +156,7 @@ theorem mongePointVSubFaceCentroidWeightsWithCircumcenter_eq_sub {n : ℕ} {i₁
     mongePointVSubFaceCentroidWeightsWithCircumcenter i₁ i₂ =
       mongePointWeightsWithCircumcenter n - centroidWeightsWithCircumcenter {i₁, i₂}ᶜ := by
   ext i
-  cases' i with i
+  obtain i | i := i
   · rw [Pi.sub_apply, mongePointWeightsWithCircumcenter, centroidWeightsWithCircumcenter,
       mongePointVSubFaceCentroidWeightsWithCircumcenter]
     have hu : #{i₁, i₂}ᶜ = n + 1 := by
@@ -396,8 +387,7 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} (s : Simplex ℝ P (n + 1)) (i
       simpa using h
     · rw [finrank_direction_altitude, finrank_span_set_eq_card]
       · simp
-      · refine linearIndependent_singleton ?_
-        simpa using hne
+      · exact LinearIndepOn.id_singleton _ <| by simpa using hne
 
 end Simplex
 
@@ -505,7 +495,7 @@ theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i�
 the altitude. -/
 theorem affineSpan_orthocenter_point_le_altitude (t : Triangle ℝ P) (i : Fin 3) :
     line[ℝ, t.orthocenter, t.points i] ≤ t.altitude i := by
-  refine spanPoints_subset_coe_of_subset_coe ?_
+  refine affineSpan_le_of_subset_coe ?_
   rw [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨t.orthocenter_mem_altitude, t.mem_altitude i⟩
 
@@ -525,7 +515,7 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   have he : affineSpan ℝ (Set.range t₂.points) = affineSpan ℝ (Set.range t₁.points) := by
     refine ext_of_direction_eq ?_
       ⟨t₁.points i₃, mem_affineSpan ℝ ⟨j₃, h₃⟩, mem_affineSpan ℝ (Set.mem_range_self _)⟩
-    refine Submodule.eq_of_le_of_finrank_eq (direction_le (spanPoints_subset_coe_of_subset_coe ?_))
+    refine Submodule.eq_of_le_of_finrank_eq (direction_le (affineSpan_le_of_subset_coe ?_))
       ?_
     · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
         clear h₁ h₂ h₃
@@ -641,7 +631,7 @@ theorem exists_dist_eq_circumradius_of_subset_insert_orthocenter {t : Triangle �
     intro p₁ hp₁
     rcases hp₁ with ⟨i, rfl⟩
     have h₁₂₃ := h₁₂₃ i
-    repeat' cases' h₁₂₃ with h₁₂₃ h₁₂₃
+    repeat' rcases h₁₂₃ with h₁₂₃ | h₁₂₃
     · convert Triangle.dist_orthocenter_reflection_circumcenter t hj₂₃
     · rw [← h₂, dist_reflection_eq_of_mem _
        (mem_affineSpan ℝ (Set.mem_image_of_mem _ (Set.mem_insert _ _)))]

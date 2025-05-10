@@ -63,7 +63,7 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
         MulAction.mul_smul])
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, smul_add, sum_add_distrib])
     (fun _ v w => by
-      simp only [Pi.smul_apply, smul_eq_mul, _root_.map_mul, MulAction.mul_smul, smul_sum])
+      simp only [Pi.smul_apply, smul_eq_mul, map_mul, MulAction.mul_smul, smul_sum])
 
 variable [DecidableEq n] [DecidableEq m]
 
@@ -197,25 +197,10 @@ theorem Matrix.toLinearMapₛₗ₂'_single (M : Matrix n m N₂) (i : n) (j : m
     Matrix.toLinearMapₛₗ₂' R σ₁ σ₂ M (Pi.single i 1) (Pi.single j 1) = M i j :=
   Matrix.toLinearMap₂'Aux_single σ₁ σ₂ M i j
 
-set_option linter.deprecated false in
-@[simp, deprecated Matrix.toLinearMapₛₗ₂'_single (since := "2024-08-09")]
-theorem Matrix.toLinearMapₛₗ₂'_stdBasis (M : Matrix n m N₂) (i : n) (j : m) :
-    Matrix.toLinearMapₛₗ₂' R σ₁ σ₂ M (LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
-      (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j :=
-  Matrix.toLinearMapₛₗ₂'_single ..
-
 @[simp]
 theorem Matrix.toLinearMap₂'_single (M : Matrix n m N₂) (i : n) (j : m) :
     Matrix.toLinearMap₂' R M (Pi.single i 1) (Pi.single j 1) = M i j :=
   Matrix.toLinearMap₂'Aux_single _ _ M i j
-
-set_option linter.deprecated false in
-@[simp, deprecated Matrix.toLinearMap₂'_single (since := "2024-08-09")]
-theorem Matrix.toLinearMap₂'_stdBasis (M : Matrix n m N₂) (i : n) (j : m) :
-    Matrix.toLinearMap₂' R M (LinearMap.stdBasis R (fun _ => R) i 1)
-      (LinearMap.stdBasis R (fun _ => R) j 1) = M i j :=
-  show Matrix.toLinearMap₂' R M (Pi.single i 1) (Pi.single j 1) = M i j
-  from Matrix.toLinearMap₂'Aux_single _ _ M i j
 
 @[simp]
 theorem LinearMap.toMatrixₛₗ₂'_symm :

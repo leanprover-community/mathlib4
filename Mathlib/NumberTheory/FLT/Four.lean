@@ -80,7 +80,7 @@ theorem exists_minimal {a b c : ℤ} (h : Fermat42 a b c) : ∃ a0 b0 c0, Minima
 
 /-- a minimal solution to `a ^ 4 + b ^ 4 = c ^ 2` must have `a` and `b` coprime. -/
 theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := by
-  apply Int.gcd_eq_one_iff_coprime.mp
+  apply Int.isCoprime_iff_gcd_eq_one.mpr
   by_contra hab
   obtain ⟨p, hp, hpa, hpb⟩ := Nat.Prime.not_coprime_iff_dvd.mp hab
   obtain ⟨a1, rfl⟩ := Int.natCast_dvd.mpr hpa
@@ -93,7 +93,7 @@ theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := 
   have hf : Fermat42 a1 b1 c1 :=
     (Fermat42.mul (Int.natCast_ne_zero.mpr (Nat.Prime.ne_zero hp))).mpr h.1
   apply Nat.le_lt_asymm (h.2 _ _ _ hf)
-  rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_ofNat]
+  rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_natCast]
   · exact Nat.one_lt_pow two_ne_zero (Nat.Prime.one_lt hp)
   · exact Nat.pos_of_ne_zero (Int.natAbs_ne_zero.2 (ne_zero hf))
 
@@ -114,12 +114,12 @@ theorem neg_of_minimal {a b c : ℤ} : Minimal a b c → Minimal a b (-c) := by
 theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
     ∃ a0 b0 c0, Minimal a0 b0 c0 ∧ a0 % 2 = 1 := by
   obtain ⟨a0, b0, c0, hf⟩ := exists_minimal h
-  cases' Int.emod_two_eq_zero_or_one a0 with hap hap
-  · cases' Int.emod_two_eq_zero_or_one b0 with hbp hbp
+  rcases Int.emod_two_eq_zero_or_one a0 with hap | hap
+  · rcases Int.emod_two_eq_zero_or_one b0 with hbp | hbp
     · exfalso
       have h1 : 2 ∣ (Int.gcd a0 b0 : ℤ) :=
-        Int.dvd_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
-      rw [Int.gcd_eq_one_iff_coprime.mpr (coprime_of_minimal hf)] at h1
+        Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
+      rw [Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal hf)] at h1
       revert h1
       decide
     · exact ⟨b0, ⟨a0, ⟨c0, minimal_comm hf, hbp⟩⟩⟩
@@ -164,7 +164,8 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     delta PythagoreanTriple
     linear_combination h.1.2.2
   -- coprime requirement:
-  have h2 : Int.gcd (a ^ 2) (b ^ 2) = 1 := Int.gcd_eq_one_iff_coprime.mpr (coprime_of_minimal h).pow
+  have h2 : Int.gcd (a ^ 2) (b ^ 2) = 1 :=
+    Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal h).pow
   -- in order to reduce the possibilities we get from the classification of pythagorean triples
   -- it helps if we know the parity of a ^ 2 (and the sign of c):
   have ha22 : a ^ 2 % 2 = 1 := by
@@ -179,10 +180,10 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     linear_combination ht1
   -- a and n are coprime, because a ^ 2 = m ^ 2 - n ^ 2 and m and n are coprime.
   have h3 : Int.gcd a n = 1 := by
-    apply Int.gcd_eq_one_iff_coprime.mpr
+    apply Int.isCoprime_iff_gcd_eq_one.mp
     apply @IsCoprime.of_mul_left_left _ _ _ a
     rw [← sq, ht1, (by ring : m ^ 2 - n ^ 2 = m ^ 2 + -n * n)]
-    exact (Int.gcd_eq_one_iff_coprime.mp ht4).pow_left.add_mul_right_left (-n)
+    exact (Int.isCoprime_iff_gcd_eq_one.mpr ht4).pow_left.add_mul_right_left (-n)
   -- m is positive because b is non-zero and b ^ 2 = 2 * m * n and we already have 0 ≤ m.
   have hb20 : b ^ 2 ≠ 0 := mt pow_eq_zero h.1.2.1
   have h4 : 0 < m := by
@@ -197,14 +198,14 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   -- m and r * s are coprime because m = r ^ 2 + s ^ 2 and r and s are coprime.
   have hcp : Int.gcd m (r * s) = 1 := by
     rw [htt3]
-    exact
-      Int.gcd_eq_one_iff_coprime.mpr (Int.isCoprime_of_sq_sum' (Int.gcd_eq_one_iff_coprime.mp htt4))
+    exact Int.isCoprime_iff_gcd_eq_one.mp
+      (Int.isCoprime_of_sq_sum' (Int.isCoprime_iff_gcd_eq_one.mpr htt4))
   -- b is even because b ^ 2 = 2 * m * n.
   have hb2 : 2 ∣ b := by
     apply @Int.Prime.dvd_pow' _ 2 _ Nat.prime_two
     rw [ht2, mul_assoc]
     exact dvd_mul_right 2 (m * n)
-  cases' hb2 with b' hb2'
+  obtain ⟨b', hb2'⟩ := hb2
   have hs : b' ^ 2 = m * (r * s) := by
     apply (mul_right_inj' (by norm_num : (4 : ℤ) ≠ 0)).mp
     linear_combination (-b - 2 * b') * hb2' + ht2 + 2 * m * htt2
@@ -257,11 +258,11 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     rw [h0, zero_pow two_ne_zero, neg_zero, or_self_iff] at hk
     apply right_ne_zero_of_mul hrsz hk
   have hj2 : r ^ 2 = j ^ 4 := by
-    cases' hj with hjp hjp <;>
+    rcases hj with hjp | hjp <;>
       · rw [hjp]
         ring
   have hk2 : s ^ 2 = k ^ 4 := by
-    cases' hk with hkp hkp <;>
+    rcases hk with hkp | hkp <;>
       · rw [hkp]
         ring
   -- from m = r ^ 2 + s ^ 2 we now get a new solution to a ^ 4 + b ^ 4 = c ^ 2:
@@ -272,7 +273,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   -- and it has a smaller c: from c = m ^ 2 + n ^ 2 we see that m is smaller than c, and i ^ 2 = m.
   have hic : Int.natAbs i < Int.natAbs c := by
     apply Int.ofNat_lt.mp
-    rw [← Int.eq_natAbs_of_zero_le (le_of_lt hc)]
+    rw [← Int.eq_natAbs_of_nonneg (le_of_lt hc)]
     apply gt_of_gt_of_ge _ (Int.natAbs_le_self_sq i)
     rw [← hi, ht3]
     apply gt_of_gt_of_ge _ (Int.le_self_sq m)

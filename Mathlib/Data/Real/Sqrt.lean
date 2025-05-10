@@ -38,7 +38,7 @@ namespace NNReal
 variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
--- Porting note (kmill): `pp_nodot` has no affect here
+-- Porting note (kmill): `pp_nodot` has no effect here
 -- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
@@ -144,10 +144,6 @@ theorem sqrt_eq_cases : √x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 :
 theorem sqrt_eq_iff_mul_self_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ x = y * y :=
   ⟨fun h => by rw [← h, mul_self_sqrt hx], fun h => by rw [h, sqrt_mul_self hy]⟩
 
-@[deprecated sqrt_eq_iff_mul_self_eq (since := "2024-08-25")]
-theorem sqrt_eq_iff_eq_mul_self (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y * y = x := by
-  rw [sqrt_eq_iff_mul_self_eq hx hy, eq_comm]
-
 theorem sqrt_eq_iff_mul_self_eq_of_pos (h : 0 < y) : √x = y ↔ y * y = x := by
   simp [sqrt_eq_cases, h.ne', h.le]
 
@@ -165,10 +161,6 @@ theorem sqrt_sq (h : 0 ≤ x) : √(x ^ 2) = x := by rw [sq, sqrt_mul_self h]
 
 theorem sqrt_eq_iff_eq_sq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ x = y ^ 2 := by
   rw [sq, sqrt_eq_iff_mul_self_eq hx hy]
-
-@[deprecated sqrt_eq_iff_eq_sq (since := "2024-08-25")]
-theorem sqrt_eq_iff_sq_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y ^ 2 = x := by
-  rw [sqrt_eq_iff_eq_sq hx hy, eq_comm]
 
 theorem sqrt_mul_self_eq_abs (x : ℝ) : √(x * x) = |x| := by
   rw [← abs_mul_abs_self x, sqrt_mul_self (abs_nonneg _)]

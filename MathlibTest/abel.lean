@@ -170,3 +170,20 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) (hR : Reflexive R) : True := by
   trivial
 
 end
+
+-- Test that `abel_nf` doesn't unfold local let expressions, and `abel_nf!` does
+example [AddCommGroup α] (x : α) (f : α → α) : True := by
+  let y := x
+  have : x = y := by
+    fail_if_success abel_nf
+    abel_nf!
+  have : x - y = 0 := by
+    abel_nf
+    abel_nf!
+  have : f x = f y := by
+    fail_if_success abel_nf
+    abel_nf!
+  have : f x - f y = 0 := by
+    abel_nf
+    abel_nf!
+  trivial

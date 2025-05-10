@@ -14,12 +14,12 @@ import Mathlib.Data.Rat.Cast.CharZero
 This file could usefully be split further.
 -/
 
+assert_not_exists Subgroup
+
 variable {F R S : Type*}
 
 namespace RingHom
 
--- Porting note: changed `[Ring R] [Ring S]` to `[Semiring R] [Semiring S]`
--- otherwise, Lean failed to find a `Subsingleton (ℚ →+* S)` instance
 @[simp]
 theorem map_rat_algebraMap [Semiring R] [Semiring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S)
     (r : ℚ) : f (algebraMap ℚ R r) = algebraMap ℚ S r :=
@@ -105,9 +105,6 @@ instance instSMulCommClass' [SMulCommClass S R S] : SMulCommClass R ℚ S :=
   have := SMulCommClass.symm S R S; SMulCommClass.symm _ _ _
 
 end DivisionRing
-
-@[deprecated Algebra.id.map_eq_id (since := "2024-07-30")]
-lemma _root_.algebraMap_rat_rat : algebraMap ℚ ℚ = RingHom.id ℚ := rfl
 
 instance algebra_rat_subsingleton {R} [Semiring R] : Subsingleton (Algebra ℚ R) :=
   ⟨fun x y => Algebra.algebra_ext x y <| RingHom.congr_fun <| Subsingleton.elim _ _⟩

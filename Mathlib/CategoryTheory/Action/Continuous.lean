@@ -29,7 +29,7 @@ universe u v
 open CategoryTheory Limits
 
 variable (V : Type (u + 1)) [LargeCategory V] [HasForget V] [HasForget₂ V TopCat]
-variable (G : MonCat.{u}) [TopologicalSpace G]
+variable (G : Type u) [Monoid G] [TopologicalSpace G]
 
 namespace Action
 
@@ -61,15 +61,20 @@ open Action
 
 /-- For `HasForget₂ V TopCat`, this is the full subcategory of `Action V G` where the induced
 action is continuous. -/
-def ContAction : Type _ := FullSubcategory (IsContinuous (V := V) (G := G))
+def ContAction : Type _ := ObjectProperty.FullSubcategory (IsContinuous (V := V) (G := G))
 
 namespace ContAction
 
 instance : Category (ContAction V G) :=
-  FullSubcategory.category (IsContinuous (V := V) (G := G))
+  ObjectProperty.FullSubcategory.category (IsContinuous (V := V) (G := G))
 
 instance : HasForget (ContAction V G) :=
   FullSubcategory.hasForget (IsContinuous (V := V) (G := G))
+
+instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+    [ConcreteCategory V FV] :
+    ConcreteCategory (ContAction V G) (fun X Y => Action.HomSubtype V G X.1 Y.1) :=
+  FullSubcategory.concreteCategory (IsContinuous (V := V) (G := G))
 
 instance : HasForget₂ (ContAction V G) (Action V G) :=
   FullSubcategory.hasForget₂ (IsContinuous (V := V) (G := G))
@@ -95,15 +100,20 @@ end ContAction
 open ContAction
 
 /-- The subcategory of `ContAction V G` where the topology is discrete. -/
-def DiscreteContAction : Type _ := FullSubcategory (IsDiscrete (V := V) (G := G))
+def DiscreteContAction : Type _ := ObjectProperty.FullSubcategory (IsDiscrete (V := V) (G := G))
 
 namespace DiscreteContAction
 
 instance : Category (DiscreteContAction V G) :=
-  FullSubcategory.category (IsDiscrete (V := V) (G := G))
+  ObjectProperty.FullSubcategory.category (IsDiscrete (V := V) (G := G))
 
 instance : HasForget (DiscreteContAction V G) :=
   FullSubcategory.hasForget (IsDiscrete (V := V) (G := G))
+
+instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+    [ConcreteCategory V FV] :
+    ConcreteCategory (DiscreteContAction V G) (fun X Y => Action.HomSubtype V G X.1 Y.1) :=
+  FullSubcategory.concreteCategory (IsDiscrete (V := V) (G := G))
 
 instance : HasForget₂ (DiscreteContAction V G) (ContAction V G) :=
   FullSubcategory.hasForget₂ (IsDiscrete (V := V) (G := G))

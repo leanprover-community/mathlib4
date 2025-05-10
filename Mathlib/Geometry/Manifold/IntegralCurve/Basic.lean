@@ -137,7 +137,7 @@ lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
 variable [IsManifold I 1 M]
 
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
-  expressed in the local chart around the initial point `γ t₀`. -/
+expressed in the local chart around the initial point `γ t₀`. -/
 lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
     (hsrc : γ t ∈ (extChartAt I (γ t₀)).source) :
     HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)

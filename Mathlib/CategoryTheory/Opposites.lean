@@ -60,10 +60,8 @@ namespace CategoryTheory
 
 variable [Category.{v₁} C]
 
-/-- The opposite category.
-
-See <https://stacks.math.columbia.edu/tag/001M>.
--/
+/-- The opposite category. -/
+@[stacks 001M]
 instance Category.opposite : Category.{v₁} Cᵒᵖ where
   comp f g := (g.unop ≫ f.unop).op
   id X := (𝟙 (unop X)).op
@@ -115,6 +113,12 @@ def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
   inverse := opOp C
   unitIso := Iso.refl (𝟭 Cᵒᵖᵒᵖ)
   counitIso := Iso.refl (opOp C ⋙ unopUnop C)
+
+instance : (opOp C).IsEquivalence :=
+  (opOpEquivalence C).isEquivalence_inverse
+
+instance : (unopUnop C).IsEquivalence :=
+  (opOpEquivalence C).isEquivalence_functor
 
 end
 

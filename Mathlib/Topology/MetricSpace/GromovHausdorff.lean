@@ -3,6 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Logic.Encodable.Pi
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Topology.MetricSpace.Closeds
 import Mathlib.Topology.MetricSpace.Completion
@@ -96,7 +97,7 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
   · rcases Setoid.symm h with ⟨e⟩
     have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange.trans e
     use fun x => f x, isometry_subtype_coe.comp f.isometry
-    erw [range_comp, f.range_eq_univ, Set.image_univ, Subtype.range_coe]
+    rw [range_comp', f.range_eq_univ, Set.image_univ, Subtype.range_coe]
   · rintro ⟨Ψ, ⟨isomΨ, rangeΨ⟩⟩
     have f :=
       ((kuratowskiEmbedding.isometry X).isometryEquivOnRange.symm.trans
@@ -311,7 +312,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     let Fb := candidatesBOfCandidates F Fgood
     have : hausdorffDist (range (optimalGHInjl X Y)) (range (optimalGHInjr X Y)) ≤ HD Fb :=
       hausdorffDist_optimal_le_HD _ _ (candidatesBOfCandidates_mem F Fgood)
-    refine le_trans this (le_of_forall_le_of_dense fun r hr => ?_)
+    refine le_trans this (le_of_forall_gt_imp_ge_of_dense fun r hr => ?_)
     have I1 : ∀ x : X, (⨅ y, Fb (inl x, inr y)) ≤ r := by
       intro x
       have : f (inl x) ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
@@ -626,7 +627,7 @@ instance : SecondCountableTopology GHSpace := by
   have εpos : 0 < ε := mul_pos (by norm_num) δpos
   have : ∀ p : GHSpace, ∃ s : Set p.Rep, s.Finite ∧ univ ⊆ ⋃ x ∈ s, ball x ε := fun p => by
     simpa only [subset_univ, true_and] using
-      finite_cover_balls_of_compact (α := p.Rep) isCompact_univ εpos
+      finite_cover_balls_of_compact (X := p.Rep) isCompact_univ εpos
   -- for each `p`, `s p` is a finite `ε`-dense subset of `p` (or rather the metric space
   -- `p.rep` representing `p`)
   choose s hs using this
@@ -780,16 +781,14 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     intro p
     by_cases hp : p ∉ t
     · have : Nonempty (Equiv (∅ : Set p.Rep) (Fin 0)) := by
-        rw [← Fintype.card_eq]
-        simp only [empty_card', Fintype.card_fin]
+        rw [← Fintype.card_eq, card_empty, Fintype.card_fin]
       use ∅, 0, bot_le, this.some
-      -- Porting note: unclear why this next line wasn't needed in Lean 3
       exact fun hp' => (hp hp').elim
     · rcases hcov _ (Set.not_not_mem.1 hp) n with ⟨s, ⟨scard, scover⟩⟩
       rcases Cardinal.lt_aleph0.1 (lt_of_le_of_lt scard (Cardinal.nat_lt_aleph0 _)) with ⟨N, hN⟩
       rw [hN, Nat.cast_le] at scard
       have : #s = #(Fin N) := by rw [hN, Cardinal.mk_fin]
-      cases' Quotient.exact this with E
+      obtain ⟨E⟩ := Quotient.exact this
       use s, N, scard, E
       simp only [scover, imp_true_iff]
   choose s N hN E hs using this

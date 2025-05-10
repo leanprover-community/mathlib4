@@ -135,7 +135,7 @@ theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ suppor
     extChartAt I c '' s =
       closedBall (extChartAt I c c) f.rOut ∩ range I ∩ (extChartAt I c).symm ⁻¹' s := by
   rw [support_eq_inter_preimage, subset_inter_iff, ← extChartAt_source I, ← image_subset_iff] at hs
-  cases' hs with hse hsf
+  obtain ⟨hse, hsf⟩ := hs
   apply Subset.antisymm
   · refine subset_inter (subset_inter (hsf.trans ball_subset_closedBall) ?_) ?_
     · rintro _ ⟨x, -, rfl⟩; exact mem_range_self _
@@ -146,7 +146,7 @@ theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ suppor
 
 theorem mem_Icc : f x ∈ Icc (0 : ℝ) 1 := by
   have : f x = 0 ∨ f x = _ := indicator_eq_zero_or_self _ _ _
-  cases' this with h h <;> rw [h]
+  rcases this with h | h <;> rw [h]
   exacts [left_mem_Icc.2 zero_le_one, ⟨f.nonneg, f.le_one⟩]
 
 theorem nonneg : 0 ≤ f x :=
@@ -207,7 +207,7 @@ theorem isClosed_image_of_isClosed {s : Set M} (hsc : IsClosed s) (hs : s ⊆ su
   rw [f.image_eq_inter_preimage_of_subset_support hs]
   refine ContinuousOn.preimage_isClosed_of_isClosed
     ((continuousOn_extChartAt_symm _).mono f.closedBall_subset) ?_ hsc
-  exact IsClosed.inter isClosed_ball I.isClosed_range
+  exact IsClosed.inter isClosed_closedBall I.isClosed_range
 
 /-- If `f` is a smooth bump function and `s` closed subset of the support of `f` (i.e., of the open
 ball of radius `f.rOut`), then there exists `0 < r < f.rOut` such that `s` is a subset of the open

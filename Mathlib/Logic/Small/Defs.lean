@@ -59,8 +59,7 @@ protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink �
     (h : ∀ X, F (equivShrink _ X)) : ∀ X, F X :=
   fun X => ((equivShrink _).apply_symm_apply X) ▸ (h _)
 
--- Porting note: Priority changed to 101
-instance (priority := 101) small_self (α : Type v) : Small.{v} α :=
+instance small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 
 theorem small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=

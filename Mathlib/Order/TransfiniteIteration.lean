@@ -12,7 +12,7 @@ import Mathlib.Order.SuccPred.Limit
 Given `φ : I → I` where `[SupSet I]`, we define the `j`th transfinite iteration of `φ`
 for any `j : J`, with `J` a well-ordered type: this is `transfiniteIterate φ j : I → I`.
 If `i₀ : I`, then `transfiniteIterate φ ⊥ i₀ = i₀`; if `j` is a non maximal element,
-than `transfiniteIterate φ (Order.succ j) i₀ = φ (transfiniteIterate φ j i₀)`; and
+then `transfiniteIterate φ (Order.succ j) i₀ = φ (transfiniteIterate φ j i₀)`; and
 if `j` is a limit element, `transfiniteIterate φ j i₀` is the supremum
 of the `transfiniteIterate φ l i₀` for `l < j`.
 
@@ -75,26 +75,26 @@ lemma monotone_transfiniteIterate (hφ : ∀ (i : I), i ≤ φ i) :
     Monotone (fun (j : J) ↦ transfiniteIterate φ j i₀) := by
   intro k j hkj
   induction j using SuccOrder.limitRecOn with
-  | hm k hk =>
-      obtain rfl := hk.eq_bot
-      obtain rfl : k = ⊥ := by simpa using hkj
-      rfl
-  | hs k' hk' hkk' =>
-      obtain hkj | rfl := hkj.lt_or_eq
-      · refine (hkk' ((Order.lt_succ_iff_of_not_isMax hk').mp hkj)).trans ?_
-        dsimp
-        rw [transfiniteIterate_succ _ _ _ hk']
-        apply hφ
-      · rfl
-  | hl k' hk' _ =>
-      obtain hkj | rfl := hkj.lt_or_eq
-      · dsimp
-        rw [transfiniteIterate_limit _ _ _ hk']
-        exact le_iSup (fun (⟨l, hl⟩ : Set.Iio k') ↦ transfiniteIterate φ l i₀) ⟨k, hkj⟩
-      · rfl
+  | isMin k hk =>
+    obtain rfl := hk.eq_bot
+    obtain rfl : k = ⊥ := by simpa using hkj
+    rfl
+  | succ k' hk' hkk' =>
+    obtain hkj | rfl := hkj.lt_or_eq
+    · refine (hkk' ((Order.lt_succ_iff_of_not_isMax hk').mp hkj)).trans ?_
+      dsimp
+      rw [transfiniteIterate_succ _ _ _ hk']
+      apply hφ
+    · rfl
+  | isSuccLimit k' hk' _ =>
+    obtain hkj | rfl := hkj.lt_or_eq
+    · dsimp
+      rw [transfiniteIterate_limit _ _ _ hk']
+      exact le_iSup (fun (⟨l, hl⟩ : Set.Iio k') ↦ transfiniteIterate φ l i₀) ⟨k, hkj⟩
+    · rfl
 
 lemma top_mem_range_transfiniteIterate
-    (hφ' : ∀ (i : I) (_ : i ≠ ⊤), i < φ i) (φtop : φ ⊤ = ⊤)
+    (hφ' : ∀ i ≠ (⊤ : I), i < φ i) (φtop : φ ⊤ = ⊤)
     (H : ¬ Function.Injective (fun (j : J) ↦ transfiniteIterate φ j i₀)) :
     ∃ (j : J), transfiniteIterate φ j i₀ = ⊤ := by
   have hφ (i : I) : i ≤ φ i := by

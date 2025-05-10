@@ -290,7 +290,7 @@ theorem degreeOf_mul_X_of_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
   simp only [degreeOf_eq_sup i, support_mul_X, Finset.sup_map]
   congr
   ext
-  simp only [Finsupp.single, add_right_eq_self, addRightEmbedding_apply, coe_mk,
+  simp only [Finsupp.single, add_eq_left, addRightEmbedding_apply, coe_mk,
     Pi.add_apply, comp_apply, ite_eq_right_iff, Finsupp.coe_add, Pi.single_eq_of_ne h]
 
 @[deprecated (since := "2024-12-01")] alias degreeOf_mul_X_ne := degreeOf_mul_X_of_ne
@@ -524,6 +524,51 @@ theorem totalDegree_rename_le (f : σ → τ) (p : MvPolynomial σ R) :
 
 end TotalDegree
 
+section degreesLE
+variable {s t : Multiset σ}
+
+variable (R σ s) in
+/-- The submodule of multivariate polynomials of degrees bounded by a monomial `s`. -/
+def degreesLE : Submodule R (MvPolynomial σ R) where
+  carrier := {p | p.degrees ≤ s}
+  add_mem' {a b} ha hb := by classical exact degrees_add_le.trans (sup_le ha hb)
+  zero_mem' := by simp
+  smul_mem' c {x} hx := by
+    dsimp
+    rw [Algebra.smul_def]
+    refine degrees_mul_le.trans ?_
+    simpa [degrees_C] using hx
+
+@[simp] lemma mem_degreesLE : p ∈ degreesLE R σ s ↔ p.degrees ≤ s := Iff.rfl
+
+variable (s t) in
+lemma degreesLE_add : degreesLE R σ (s + t) = degreesLE R σ s * degreesLE R σ t := by
+  classical
+  rw [le_antisymm_iff, Submodule.mul_le]
+  refine ⟨fun x hx ↦ x.as_sum ▸ sum_mem fun i hi ↦ ?_,
+    fun x hx y hy ↦ degrees_mul_le.trans (add_le_add hx hy)⟩
+  replace hi : i.toMultiset ≤ s + t := (Finset.le_sup hi).trans hx
+  let a := (i.toMultiset - t).toFinsupp
+  let b := (i.toMultiset ⊓ t).toFinsupp
+  have : a + b = i := Multiset.toFinsupp.symm.injective (by simp [a, b, Multiset.sub_add_inter])
+  have ha : a.toMultiset ≤ s := by simpa [a, add_comm (a := t)] using hi
+  have hb : b.toMultiset ≤ t := by simp [b, Multiset.inter_le_right]
+  rw [show monomial i (x.coeff i) = monomial a (x.coeff i) * monomial b 1 by simp [this]]
+  exact Submodule.mul_mem_mul ((degrees_monomial _ _).trans ha) ((degrees_monomial _ _).trans hb)
+
+@[simp] lemma degreesLE_zero : degreesLE R σ 0 = 1 := by
+  refine le_antisymm (fun x hx ↦ ?_) (by simp)
+  simp only [mem_degreesLE, nonpos_iff_eq_zero] at hx
+  have := (totalDegree_eq_zero_iff_eq_C (p := x)).mp
+    (Nat.eq_zero_of_le_zero (x.totalDegree_le_degrees_card.trans (by simp [hx])))
+  exact ⟨x.coeff 0, by simp [Algebra.smul_def, ← this]⟩
+
+variable (s) in
+lemma degreesLE_nsmul : ∀ n, degreesLE R σ (n • s) = degreesLE R σ s ^ n
+  | 0 => by simp
+  | k + 1 => by simp only [pow_succ, degreesLE_nsmul, degreesLE_add, add_smul, one_smul]
+
+end degreesLE
 end CommSemiring
 
 end MvPolynomial

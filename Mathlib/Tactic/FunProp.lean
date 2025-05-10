@@ -37,7 +37,7 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ => 1/x) y := by fun
 **Basic debugging:**
 The most common issue is that a function is missing the appropriate theorem. For example:
 ```lean
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Data.Complex.Trigonometric
 example : Continuous (fun x : ℝ => x * Real.sin x) := by fun_prop
 ```
 Fails with the error:

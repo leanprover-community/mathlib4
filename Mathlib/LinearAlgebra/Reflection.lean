@@ -3,12 +3,16 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 -/
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.Submodule.Invariant
+import Mathlib.Algebra.Module.Torsion
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
 import Mathlib.RingTheory.Polynomial.Chebyshev
-import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Reflections in linear algebra
@@ -121,6 +125,29 @@ lemma invOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) :
 lemma bijOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) (h' : MapsTo (reflection h) Φ Φ) :
     BijOn (reflection h) Φ Φ :=
   (invOn_reflection_of_mapsTo h).bijOn h' h'
+
+lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem (h : f x = 2)
+    (p : Submodule R M) (hx : x ∈ p) :
+    p ∈ End.invtSubmodule (reflection h) := by
+  suffices ∀ y ∈ p, reflection h y ∈ p from
+    (End.mem_invtSubmodule _).mpr fun y hy ↦ by simpa using this y hy
+  intro y hy
+  simpa only [reflection_apply, p.sub_mem_iff_right hy] using p.smul_mem (f y) hx
+
+lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M]
+    (h : f x = 2) {p : Submodule R M} (hp : Disjoint p (R ∙ x)) :
+    p ∈ End.invtSubmodule (reflection h) ↔ p ≤ LinearMap.ker f := by
+  refine ⟨fun h' y hy ↦ ?_, fun h' y hy ↦ ?_⟩
+  · have hx : x ≠ 0 := by rintro rfl; exact two_ne_zero (α := R) <| by simp [← h]
+    suffices f y • x ∈ p by
+      have aux : f y • x ∈ p ⊓ (R ∙ x) := ⟨this, Submodule.mem_span_singleton.mpr ⟨f y, rfl⟩⟩
+      rw [hp.eq_bot, Submodule.mem_bot, smul_eq_zero] at aux
+      exact aux.resolve_right hx
+    specialize h' hy
+    simp only [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply] at h'
+    simpa using p.sub_mem h' hy
+  · have hy' : f y = 0 := by simpa using h' hy
+    simpa [reflection_apply, hy']
 
 /-! ### Powers of the product of two reflections
 
@@ -252,7 +279,7 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
   have S_eval_t_sub_two (k : ℤ) :
       (S R (k - 2)).eval t = (f y * g x - 2) * (S R (k - 1)).eval t - (S R k).eval t := by
     simp [S_sub_two, ht]
-  induction m using Int.induction_on with
+  induction m with
   | hz => simp
   | hp m ih =>
     -- Apply the inductive hypothesis.
@@ -320,7 +347,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
   have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
     ext y
     simp only [u, reflection_apply, hg₁, two_smul, LinearEquiv.coe_toLinearMap_mul,
-      LinearMap.id_coe, LinearEquiv.coe_coe, LinearMap.mul_apply, LinearMap.add_apply, id_eq,
+      LinearMap.id_coe, LinearEquiv.coe_coe, Module.End.mul_apply, LinearMap.add_apply, id_eq,
       LinearMap.coe_smulRight, LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel_left,
       smul_neg, sub_neg_eq_add, sub_smul]
     abel
@@ -333,7 +360,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
       have : ((f - g).smulRight x).comp ((n : R) • (f - g).smulRight x) = 0 := by
         ext; simp [hf₁, hg₁]
       rw [pow_succ', LinearEquiv.coe_toLinearMap_mul, ih, hu, add_mul, mul_add, mul_add]
-      simp_rw [LinearMap.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero,
+      simp_rw [Module.End.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero,
         add_assoc, Nat.cast_succ, add_smul, one_smul]
   suffices IsOfFinOrder u by
     obtain ⟨n, hn₀, hn₁⟩ := isOfFinOrder_iff_pow_eq_one.mp this

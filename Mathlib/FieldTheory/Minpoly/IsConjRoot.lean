@@ -288,7 +288,7 @@ conjugate root of some element `algebraMap R S r` in the image of the base ring,
 theorem isConjRoot_iff_eq_algebraMap_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {r : R}
     {x : S} (hf : Function.Injective (algebraMap R S)) :
     IsConjRoot R (algebraMap R S r) x ↔ x = algebraMap R S r :=
-    ⟨fun h => eq_algebraMap_of_injective h hf, fun h => h.symm ▸ rfl⟩
+  ⟨fun h => eq_algebraMap_of_injective h hf, fun h => h.symm ▸ rfl⟩
 
 /--
 An element `x` is a conjugate root of some element `algebraMap R S r` in the image of the base ring

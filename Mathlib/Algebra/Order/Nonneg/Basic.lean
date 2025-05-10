@@ -3,7 +3,7 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.Ring.Defs
@@ -128,6 +128,7 @@ instance addMonoid : AddMonoid { x : α // 0 ≤ x } :=
   Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Coercion `{x : α // 0 ≤ x} → α` as an `AddMonoidHom`. -/
+@[simps]
 def coeAddMonoidHom : { x : α // 0 ≤ x } →+ α :=
   { toFun := ((↑) : { x : α // 0 ≤ x } → α)
     map_zero' := Nonneg.coe_zero
@@ -160,15 +161,9 @@ instance natCast : NatCast { x : α // 0 ≤ x } :=
 protected theorem coe_natCast (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := Nonneg.coe_natCast
-
 @[simp]
 theorem mk_natCast (n : ℕ) : (⟨n, n.cast_nonneg'⟩ : { x : α // 0 ≤ x }) = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias mk_nat_cast := mk_natCast
 
 instance addMonoidWithOne : AddMonoidWithOne { x : α // 0 ≤ x } :=
   { Nonneg.one (α := α) with
@@ -262,7 +257,7 @@ theorem toNonneg_coe {a : { x : α // 0 ≤ x }} : toNonneg (a : α) = a :=
 
 @[simp]
 theorem toNonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ a ≤ b := by
-  cases' b with b hb
+  obtain ⟨b, hb⟩ := b
   simp [toNonneg, hb]
 
 instance sub [Sub α] : Sub { x : α // 0 ≤ x } :=
@@ -280,7 +275,7 @@ variable [Zero α] [LinearOrder α]
 
 @[simp]
 theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b := by
-  cases' a with a ha
+  obtain ⟨a, ha⟩ := a
   simp [toNonneg, ha.not_lt]
 
 end LinearOrder
