@@ -176,26 +176,29 @@ noncomputable def coprodIsoDirectSum [HasCoproduct Z] : ∐ Z ≅ AddCommGrp.of 
 
 end AddCommGrp
 
+lemma subsingleton_of_pi {α β : Type*} [Nonempty α] (h : Subsingleton (α → β)) :
+    Subsingleton β := by
+  contrapose h
+  have : Nontrivial β := not_subsingleton_iff_nontrivial.mp h
+  exact not_subsingleton_iff_nontrivial.mpr Function.nontrivial
+
 lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] (i : ℕ) : Subsingleton (Ext.{max u v} N M i) ↔
     Subsingleton (Ext.{max u v} N (ModuleCat.of R (Shrink.{v} R)) i) := by
   classical
   have : Nontrivial R := nontrivial_ring_of_nontrivial_module M
   rcases Module.Free.exists_set R M with ⟨S, ⟨B⟩⟩
-  have fin' : Finite S := Module.Finite.finite_basis B
-  have fin : S.Finite := fin'
-  let e : M ≅ ∐ fun s ↦ ModuleCat.of R (Shrink.{v, u} R) := (LinearEquiv.toModuleIso <|
+  have : Fintype S := Set.Finite.fintype (Module.Finite.finite_basis B)
+  have h := Ext.addEquivBiproduct N (biconeIsBilimitOfColimitCoconeOfIsColimit <|
+    ModuleCat.coproductCoconeIsColimit (fun s : S ↦ ModuleCat.of R (Shrink.{v, u} R))) i
+  simp only [ModuleCat.coproductCocone, Bicone.ofColimitCocone_pt, Cofan.mk_pt] at h
+  have : Nonempty S := Basis.index_nonempty B
+  let e := LinearEquiv.toModuleIso <|
     (B.repr.trans (Finsupp.mapRange.linearEquiv (α := S) (Shrink.linearEquiv R R).symm)).trans
-    (finsuppLEquivDirectSum R (Shrink.{v} R) S)).trans
-    (ModuleCat.coprodIsoDirectSum (ι := S) (fun s ↦ ModuleCat.of R (Shrink.{v} R))).symm
+      (finsuppLEquivDirectSum R (Shrink.{v} R) S)
   show Subsingleton ((extFunctorObj N i).obj M) ↔ _
   rw [((extFunctorObj.{max u v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr]
-  simp only [extFunctorObj, (Ext.coprodIso N _ i).addCommGroupIsoToAddEquiv.subsingleton_congr]
-  rw [(AddCommGrp.coprodIsoDirectSum _).addCommGroupIsoToAddEquiv.subsingleton_congr]
-  refine ⟨fun h ↦ ?_, fun h ↦ @Unique.instSubsingleton _ DirectSum.unique⟩
-  let m := Classical.choice (Basis.index_nonempty B)
-  exact Function.Injective.subsingleton (DirectSum.of_injective
-    (β := fun s ↦ (AddCommGrp.of (Ext N (ModuleCat.of R (Shrink.{v, u} R)) i))) m)
+  exact h.subsingleton_congr.trans ⟨subsingleton_of_pi, fun h ↦ Pi.instSubsingleton⟩
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] : moduleDepth N M = moduleDepth N (ModuleCat.of R (Shrink.{v} R)) := by
