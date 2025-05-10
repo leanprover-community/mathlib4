@@ -21,7 +21,7 @@ on the class number.
 cardinality of the class group of its ring of integers
 - `isPrincipalIdealRing_of_isPrincipal_of_le_pow_inertiaDeg_of_mem_primesOver_of_mem_Icc`: let `K`
 be a number field and let `M K` be the Minkowski bound of `K`. To show that `𝓞 K` is a PID it is
-enough to show that, for all (natural) prime `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P` above `p`
+enough to show that, for all (natural) primes `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P` above `p`
 such that `p ^ (span ({p}).inertiaDeg P)` are principal. This is the standard technique to prove
 that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
 
@@ -113,7 +113,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime
       UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hJ).trans hI
 
 /-- Let `K` be a number field and let `M K` be the Minkowski bound of `K`. To show that `𝓞 K` is a
-PID it is enough to show that, for all (natural) prime `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P`
+PID it is enough to show that, for all (natural) primes `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P`
 above `p` such that `p ^ (span ({p}).inertiaDeg P)` are principal. This is the standard technique to
 prove that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
 
