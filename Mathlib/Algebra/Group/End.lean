@@ -662,6 +662,16 @@ theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
   rfl
 
 @[simp]
+theorem inv_symm (e : MulAut M) : e⁻¹.symm = e := rfl
+
+@[simp]
+theorem symm_inv (e : MulAut M) : (e.symm)⁻¹ = e := rfl
+
+@[simp]
+theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by
+  rw [inv_def]
+
+@[simp]
 theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ m) :=
   rfl
 
@@ -669,11 +679,9 @@ theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ 
 theorem one_apply (m : M) : (1 : MulAut M) m = m :=
   rfl
 
-@[simp]
 theorem apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
   MulEquiv.apply_symm_apply _ _
 
-@[simp]
 theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
   MulEquiv.apply_symm_apply _ _
 
@@ -768,11 +776,9 @@ theorem mul_apply (e₁ e₂ : AddAut A) (a : A) : (e₁ * e₂) a = e₁ (e₂ 
 theorem one_apply (a : A) : (1 : AddAut A) a = a :=
   rfl
 
-@[simp]
 theorem apply_inv_self (e : AddAut A) (a : A) : e⁻¹ (e a) = a :=
   AddEquiv.apply_symm_apply _ _
 
-@[simp]
 theorem inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
   AddEquiv.apply_symm_apply _ _
 
