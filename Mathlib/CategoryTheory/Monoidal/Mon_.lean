@@ -263,7 +263,7 @@ instance : HasInitial (Mon_ C) :=
 end Mon_
 
 namespace CategoryTheory
-variable {C}
+variable
   {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D]
   {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E]
   {F F' : C ⥤ D} {G : D ⥤ E}
