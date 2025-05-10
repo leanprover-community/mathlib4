@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wang
+Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wang, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
 import Mathlib.LinearAlgebra.Dimension.Basic
@@ -23,21 +23,24 @@ import Mathlib.RingTheory.MvPolynomial
 * `SymmetricAlgebra.rank_eq`: the rank of `SymmetricAlgebra R M` when `M` is a nontrivial free
   module is equal to `max (Module.rank R M) Cardinal.aleph0`.
 
--/
+## Implementation notes
 
-universe uR uM
+This file closely mirrors the corresponding file for `TensorAlgebra`.
+-/
 
 namespace SymmetricAlgebra
 
-section equivMvPolynomial
+universe uκ uR uM
+variable {κ : Type uκ} {R : Type uR} {M : Type uM}
 
-variable {R : Type uR} {M : Type uM} [CommSemiring R] [AddCommMonoid M] [Module R M]
+section CommSemiring
+variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- `SymmetricAlgebra.equivMvPolynomial` give an algebra isomorphism between symmetric algebra over
 a free module and multivariate polynomial over the basis. This is analogous to
 `TensorAlgebra.equivFreeAlgebra`. -/
-noncomputable def equivMvPolynomial {I : Type*} (b : Basis I R M) :
-    SymmetricAlgebra R M ≃ₐ[R] MvPolynomial I R :=
+noncomputable def equivMvPolynomial (b : Basis κ R M) :
+    SymmetricAlgebra R M ≃ₐ[R] MvPolynomial κ R :=
   .ofAlgHom
     (SymmetricAlgebra.lift <| Basis.constr b R .X)
     (MvPolynomial.aeval fun i ↦ ι R M (b i))
@@ -45,48 +48,53 @@ noncomputable def equivMvPolynomial {I : Type*} (b : Basis I R M) :
     (algHom_ext <| b.ext fun i ↦ by simp)
 
 @[simp]
-lemma equivMvPolynomial_ι_apply {I : Type*} (b : Basis I R M) (i : I) :
+lemma equivMvPolynomial_ι_apply (b : Basis κ R M) (i : κ) :
     equivMvPolynomial b (ι R M (b i)) = .X (R := R) i :=
   (SymmetricAlgebra.lift_ι_apply _ _).trans <| by simp
 
 @[simp]
-lemma equivMvPolynomial_symm_X {I : Type*} (b : Basis I R M) (i : I) :
+lemma equivMvPolynomial_symm_X (b : Basis κ R M) (i : κ) :
     (equivMvPolynomial b).symm (MvPolynomial.X i) = ι R M (b i) :=
   (equivMvPolynomial b).toEquiv.symm_apply_eq.mpr <| equivMvPolynomial_ι_apply b i |>.symm
 
-end equivMvPolynomial
-
-section Basis
-
-variable {R : Type uR} {M : Type uM} [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 /-- A basis on `M` can be lifted to a basis on `SymmetricAlgebra R M`. -/
 @[simps! repr_apply]
-noncomputable def _root_.Basis.symmetricAlgebra {I : Type*} (b : Basis I R M) :
-    Basis (I →₀ ℕ) R (SymmetricAlgebra R M) :=
-  (MvPolynomial.basisMonomials I R).map <| (SymmetricAlgebra.equivMvPolynomial b).symm.toLinearEquiv
+noncomputable def _root_.Basis.symmetricAlgebra (b : Basis κ R M) :
+    Basis (κ →₀ ℕ) R (SymmetricAlgebra R M) :=
+  (MvPolynomial.basisMonomials κ R).map <| (SymmetricAlgebra.equivMvPolynomial b).symm.toLinearEquiv
 
 /-- `SymmetricAlgebra R M` is free when `M` is. -/
 instance instModuleFree [Module.Free R M] : Module.Free R (SymmetricAlgebra R M) :=
   let ⟨⟨_I, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   .of_basis b.symmetricAlgebra
 
-end Basis
+/-- The `SymmetricAlgebra` of a free module over a commutative semiring with no zero-divisors has
+no zero-divisors. -/
+instance instNoZeroDivisors [NoZeroDivisors R] [Module.Free R M] :
+    NoZeroDivisors (SymmetricAlgebra R M) :=
+  have ⟨⟨_, b⟩⟩ := ‹Module.Free R M›
+  (equivMvPolynomial b).toMulEquiv.noZeroDivisors
 
-section rank
+end CommSemiring
 
-variable {R : Type uR} {M : Type uM} [CommRing R] [AddCommMonoid M] [Module R M]
+section CommRing
+variable [CommRing R] [AddCommGroup M] [Module R M]
+
+/-- The `TensorAlgebra` of a free module over an integral domain is a domain. -/
+instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (SymmetricAlgebra R M) :=
+  NoZeroDivisors.to_isDomain _
+
+attribute [pp_with_univ] Cardinal.lift
 
 open Cardinal in
 lemma rank_eq [Nontrivial M] [Module.Free R M] :
-    Module.rank R (SymmetricAlgebra R M) =
-      Cardinal.lift.{uR} (max (Module.rank R M) Cardinal.aleph0) := by
-  let ⟨⟨I, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
-  have : Nonempty I := Basis.index_nonempty b
+    Module.rank R (SymmetricAlgebra R M) = Cardinal.lift.{uR} (max (Module.rank R M) ℵ₀) := by
+  let ⟨⟨κ, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
+  have : Nonempty κ := Basis.index_nonempty b
   have : Nontrivial R := Module.nontrivial R M
   rw [(equivMvPolynomial b).toLinearEquiv.rank_eq, MvPolynomial.rank_eq_lift,
     Cardinal.mk_finsupp_nat, Basis.mk_eq_rank'' b]
 
-end rank
+end CommRing
 
 end SymmetricAlgebra

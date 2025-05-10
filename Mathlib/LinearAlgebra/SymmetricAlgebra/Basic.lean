@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wang
+Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wang, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
@@ -110,5 +110,32 @@ lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
   apply algHom_ext
   rw [lift_comp_ι]
   rfl
+
+/-- The left-inverse of `algebraMap`. -/
+def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=
+  lift (0 : M →ₗ[R] R)
+
+variable (M)
+
+theorem algebraMap_leftInverse :
+    Function.LeftInverse algebraMapInv (algebraMap R <| SymmetricAlgebra R M) := fun x => by
+  simp [algebraMapInv]
+
+@[simp]
+theorem algebraMap_inj (x y : R) :
+    algebraMap R (SymmetricAlgebra R M) x = algebraMap R (SymmetricAlgebra R M) y ↔ x = y :=
+  (algebraMap_leftInverse M).injective.eq_iff
+
+@[simp]
+theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (SymmetricAlgebra R M) x = 0 ↔ x = 0 :=
+  map_eq_zero_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
+
+@[simp]
+theorem algebraMap_eq_one_iff (x : R) : algebraMap R (SymmetricAlgebra R M) x = 1 ↔ x = 1 :=
+  map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
+
+/-- A `SymmetricAlgebra` over a nontrivial semiring is nontrivial. -/
+instance [Nontrivial R] : Nontrivial (SymmetricAlgebra R M) :=
+  (algebraMap_leftInverse M).injective.nontrivial
 
 end SymmetricAlgebra
