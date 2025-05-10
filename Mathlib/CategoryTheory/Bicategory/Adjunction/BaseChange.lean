@@ -151,6 +151,26 @@ def baseChangeComparison {P X Y S : C} {p₁ : P ⟶ Y} {p₂ : P ⟶ X} {f : X 
       (F.map g.op.toLoc).adj.counit ≫
     (Functor.rightUnitor _).hom
 
+/-
+Let us think that `sq` is a square in `LocallyDiscrete B₀ᵒᵖ` that is dual to a square in `B₀`
+```
+    t                      b.unop
+ X₁ ⟶ Y₁                  Y₂ ⟶ X₂
+l|    |r   dual of  r.unop|    | l.unop
+ v    v                   v    v
+ X₂ ⟶ Y₂                  Y₁ ⟶ X₁
+    b                      t.unop
+```
+This is the base change natural transformation
+`l_* ≫ t^* ⟶ b^* ≫ r_*`
+-/
+def baseChangeAlt
+    {B C : Type*} [Bicategory B] [Strict B] [Bicategory C] (F : Pseudofunctor B (Adj C))
+    {X₁ X₂ Y₁ Y₂ : B} {t : X₁ ⟶ Y₁} {l : X₁ ⟶ X₂}
+    {r : Y₁ ⟶ Y₂} {b : X₂ ⟶ Y₂} (sq : CommSq t l r b) :
+    (F.map l).g ≫ (F.map t).f ⟶ (F.map b).f ≫ (F.map r).g :=
+  Bicategory.mateEquiv (F.map l).adj (F.map r).adj (F.isoMapOfCommSq sq).hom.τf
+
 section Horizontal
 
 variable {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C} {t : X₁ ⟶ Y₁} {t' : Y₁ ⟶ Z₁}
