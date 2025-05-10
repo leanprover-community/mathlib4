@@ -390,8 +390,7 @@ protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanning
   SimpleGraph.Embedding.map (Function.Embedding.subtype _) G
 
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
-protected def completeGraph {α β : Type*} (f : α ↪ β) :
-    (⊤ : SimpleGraph α) ↪g (⊤ : SimpleGraph β) :=
+protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α ↪g completeGraph β :=
   { f with map_rel_iff' := by simp }
 
 @[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
@@ -566,8 +565,7 @@ protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
 @[simps]
-protected def completeGraph {α β : Type*} (f : α ≃ β) :
-    (⊤ : SimpleGraph α) ≃g (⊤ : SimpleGraph β) where
+protected def completeGraph {α β : Type*} (f : α ≃ β) : completeGraph α ≃g completeGraph β where
   toFun := f
   invFun := f.symm
   left_inv := f.left_inv'

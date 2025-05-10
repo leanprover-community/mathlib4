@@ -433,7 +433,7 @@ theorem blocksFun_congr {n₁ n₂ : ℕ} (c₁ : Composition n₁) (c₂ : Comp
 
 /-- Two compositions (possibly of different integers) coincide if and only if they have the
 same sequence of blocks. -/
-theorem sigma_eq_iff_blocks_eq {c : Σn, Composition n} {c' : Σn, Composition n} :
+theorem sigma_eq_iff_blocks_eq {c : Σ n, Composition n} {c' : Σ n, Composition n} :
     c = c' ↔ c.2.blocks = c'.2.blocks := by
   refine ⟨fun H => by rw [H], fun H => ?_⟩
   rcases c with ⟨n, c⟩

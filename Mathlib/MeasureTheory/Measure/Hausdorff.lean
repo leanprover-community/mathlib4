@@ -143,7 +143,7 @@ theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {
   classical
   induction I using Finset.induction_on with
   | empty => simp
-  | @insert i I hiI ihI =>
+  | insert i I hiI ihI =>
     simp only [Finset.mem_insert] at hI
     rw [Finset.set_biUnion_insert, hm, ihI, Finset.sum_insert hiI]
     exacts [fun i hi j hj hij => hI i (Or.inr hi) j (Or.inr hj) hij,
