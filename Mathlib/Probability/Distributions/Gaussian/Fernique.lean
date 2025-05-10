@@ -191,7 +191,7 @@ lemma IsGaussian.noAtoms_of_isCentered (hμ : IsCentered μ) (h : μ ≠ Measure
     have hL_zero : μ.map L {L x} = 0 := by
       have : NoAtoms (μ.map L) := by
         rw [IsGaussian.map_eq_gaussianReal L]
-        refine noAtoms_gaussianReal _ _ ?_
+        refine noAtoms_gaussianReal ?_
         simp only [ne_eq, Real.toNNReal_eq_zero, not_le]
         exact lt_of_le_of_ne (variance_nonneg _ _) hL.symm
       rw [measure_singleton]
@@ -221,7 +221,7 @@ lemma IsGaussian.measure_closedBall_lt_one (hμ : IsCentered μ) (h : μ ≠ Mea
     _ ≤ a * ‖L‖ := by rw [mul_comm]; gcongr
   have h_lt_one : μ.map L {y | |y| ≤ a * ‖L‖} < 1 := by
     rw [IsGaussian.map_eq_gaussianReal L]
-    refine gaussianReal_closedBall_lt_one _ _ ?_ (a * ‖L‖)
+    refine gaussianReal_closedBall_lt_one ?_ (a * ‖L‖)
     simp only [ne_eq, Real.toNNReal_eq_zero, not_le]
     exact lt_of_le_of_ne (variance_nonneg _ _) hL.symm
   exact h_lt_one.ne h_eq_one'
@@ -599,7 +599,7 @@ lemma IsGaussian.noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
     have hL_zero : μ.map L {L x} = 0 := by
       have : NoAtoms (μ.map L) := by
         rw [IsGaussian.map_eq_gaussianReal L]
-        refine noAtoms_gaussianReal _ _ ?_
+        refine noAtoms_gaussianReal ?_
         simp only [ne_eq, Real.toNNReal_eq_zero, not_le]
         exact lt_of_le_of_ne (variance_nonneg _ _) hL.symm
       rw [measure_singleton]

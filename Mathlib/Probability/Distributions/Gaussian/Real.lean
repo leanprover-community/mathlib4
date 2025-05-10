@@ -178,6 +178,14 @@ lemma gaussianPDF_lt_top {μ : ℝ} {v : ℝ≥0} {x : ℝ} : gaussianPDF μ v x
 
 lemma gaussianPDF_ne_top {μ : ℝ} {v : ℝ≥0} {x : ℝ} : gaussianPDF μ v x ≠ ∞ := by simp [gaussianPDF]
 
+@[simp]
+lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
+    Function.support (gaussianPDF μ v) = Set.univ := by
+  rw [Function.support]
+  ext x
+  simp only [ne_eq, Set.mem_setOf_eq, Set.mem_univ, iff_true]
+  exact (gaussianPDF_pos _ hv x).ne'
+
 @[measurability, fun_prop]
 lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) :=
   (measurable_gaussianPDFReal _ _).ennreal_ofReal
@@ -205,6 +213,10 @@ lemma gaussianReal_zero_var (μ : ℝ) : gaussianReal μ 0 = Measure.dirac μ :=
 instance instIsProbabilityMeasureGaussianReal (μ : ℝ) (v : ℝ≥0) :
     IsProbabilityMeasure (gaussianReal μ v) where
   measure_univ := by by_cases h : v = 0 <;> simp [gaussianReal_of_var_ne_zero, h]
+
+lemma noAtoms_gaussianReal {μ : ℝ} {v : ℝ≥0} (h : v ≠ 0) : NoAtoms (gaussianReal μ v) := by
+  rw [gaussianReal_of_var_ne_zero _ h]
+  infer_instance
 
 lemma gaussianReal_apply (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) (s : Set ℝ) :
     gaussianReal μ v s = ∫⁻ x in s, gaussianPDF μ v x := by
@@ -440,53 +452,17 @@ theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
   rw [← mgf_id_map hX_meas, ← complexMGF_ofReal, hX, complexMGF_id_gaussianReal, mul_comm μ]
   norm_cast
 
+theorem mgf_id_gaussianReal :
+    mgf (fun x ↦ x) (gaussianReal μ v) = fun t ↦ rexp (μ * t + v * t ^ 2 / 2) := by
+  ext t
+  rw [mgf_gaussianReal]
+  simp
+
 /-- The cumulant generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `t ↦ μ * t + v * t ^ 2 / 2`. -/
 theorem cgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     cgf X p t = μ * t + v * t ^ 2 / 2 := by
   rw [cgf, mgf_gaussianReal hX t, Real.log_exp]
-
-end CharacteristicFunction
-
-
-section Aux
-
-instance noAtoms_withDensity {X : Type*} {mX : MeasurableSpace X} {μ : Measure X}
-    [NoAtoms μ] (f : X → ℝ≥0∞) :
-    NoAtoms (μ.withDensity f) where
-  measure_singleton x := by
-    have h : μ {x} = 0 := by rw [measure_singleton]
-    exact withDensity_absolutelyContinuous μ f h
-
-end Aux
-
-open Complex
-
-variable (μ : ℝ) (v : ℝ≥0)
-
--- `∗` notation not used because of ambiguous notation : `conv` vs `mconv`
-lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
-    Measure.conv (gaussianReal m₁ v₁) (gaussianReal m₂ v₂) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
-  refine Measure.ext_of_charFun ?_
-  ext t
-  rw [charFun_conv]
-  simp_rw [charFun_gaussianReal]
-  rw [← Complex.exp_add]
-  simp only [ofReal_add, NNReal.coe_add]
-  congr
-  ring
-
-lemma gaussianReal_map_prod_add {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
-    ((gaussianReal m₁ v₁).prod (gaussianReal m₂ v₂)).map (fun p ↦ p.1 + p.2)
-      = gaussianReal (m₁ + m₂) (v₁ + v₂) :=
-  gaussianReal_conv_gaussianReal
-
-theorem mgf_id_gaussianReal {μ : ℝ} {v : ℝ≥0} :
-    mgf (fun x ↦ x) (gaussianReal μ v) = fun t ↦ rexp (μ * t + v * t ^ 2 / 2) := by
-  ext t
-  suffices (mgf id (gaussianReal μ v) t : ℂ) = rexp (μ * t + ↑v * t ^ 2 / 2) from mod_cast this
-  rw [← complexMGF_ofReal, complexMGF_id_gaussianReal, mul_comm μ]
-  norm_cast
 
 lemma integrable_exp_mul_gaussianReal (t : ℝ) :
     Integrable (fun x ↦ rexp (t * x)) (gaussianReal μ v) := by
@@ -496,46 +472,40 @@ lemma integrable_exp_mul_gaussianReal (t : ℝ) :
 @[simp]
 lemma integrableExpSet_id_gaussianReal : integrableExpSet id (gaussianReal μ v) = Set.univ := by
   ext
-  simpa [integrableExpSet] using integrable_exp_mul_gaussianReal _ _ _
+  simpa [integrableExpSet] using integrable_exp_mul_gaussianReal _
 
 @[simp]
 lemma integrableExpSet_id_gaussianReal' :
     integrableExpSet (fun x ↦ x) (gaussianReal μ v) = Set.univ :=
-  integrableExpSet_id_gaussianReal _ _
+  integrableExpSet_id_gaussianReal
+
+end CharacteristicFunction
+
+section Moments
+
+variable {μ : ℝ} {v : ℝ≥0}
 
 @[simp]
-lemma integral_id_gaussianReal :
-    ∫ x, x ∂gaussianReal μ v = μ := by
-  rw [← deriv_mgf_zero, mgf_id_gaussianReal]
-  · rw [_root_.deriv_exp (by fun_prop)]
-    simp only [mul_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_div,
-      add_zero, Real.exp_zero, one_mul]
-    rw [deriv_add (by fun_prop) (by fun_prop)]
-    simp only [deriv_div_const, differentiableAt_const, differentiableAt_id', DifferentiableAt.pow,
-      deriv_mul, deriv_const', ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, mul_zero,
-      deriv_pow'', Nat.cast_ofNat, Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, add_zero,
-      zero_div]
-    change deriv (fun x ↦ μ * x) 0 = μ
-    rw [deriv_mul (by fun_prop) (by fun_prop)]
-    simp
-  · simp
+lemma integral_id_gaussianReal : ∫ x, x ∂gaussianReal μ v = μ := by
+  rw [← deriv_mgf_zero (by simp), mgf_id_gaussianReal, _root_.deriv_exp (by fun_prop)]
+  simp only [mul_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_div,
+    add_zero, Real.exp_zero, one_mul]
+  rw [deriv_add (by fun_prop) (by fun_prop), deriv_mul (by fun_prop) (by fun_prop)]
+  simp
 
 @[simp]
 lemma variance_id_gaussianReal : Var[fun x ↦ x; gaussianReal μ v] = v := by
   rw [variance_eq_integral measurable_id'.aemeasurable]
   simp only [integral_id_gaussianReal]
   calc ∫ ω, (ω - μ) ^ 2 ∂gaussianReal μ v
-  _ = ∫ ω, ω ^ 2 ∂(gaussianReal μ v).map (fun x ↦ x + -μ) := by
-    rw [integral_map]
-    · simp [sub_eq_add_neg]
-    · fun_prop
-    · refine Measurable.aestronglyMeasurable <| by fun_prop
-  _ = ∫ ω, ω ^ 2 ∂(gaussianReal 0 v) := by simp [gaussianReal_map_add_const]
+  _ = ∫ ω, ω ^ 2 ∂(gaussianReal μ v).map (fun x ↦ x - μ) := by
+    rw [integral_map (by fun_prop) (Measurable.aestronglyMeasurable <| by fun_prop)]
+  _ = ∫ ω, ω ^ 2 ∂(gaussianReal 0 v) := by simp [gaussianReal_map_sub_const]
   _ = iteratedDeriv 2 (mgf (fun x ↦ x) (gaussianReal 0 v)) 0 := by
     rw [iteratedDeriv_mgf_zero] <;> simp
   _ = v := by
-    simp_rw [mgf_id_gaussianReal, zero_mul, zero_add]
-    rw [iteratedDeriv_succ, iteratedDeriv_one]
+    rw [mgf_id_gaussianReal, iteratedDeriv_succ, iteratedDeriv_one]
+    simp only [zero_mul, zero_add]
     have : deriv (fun t ↦ rexp (v * t ^ 2 / 2)) = fun t ↦ v * t * rexp (v * t ^ 2 / 2) := by
       ext t
       rw [_root_.deriv_exp (by fun_prop)]
@@ -543,27 +513,21 @@ lemma variance_id_gaussianReal : Var[fun x ↦ x; gaussianReal μ v] = v := by
         DifferentiableAt.pow, deriv_mul, deriv_const', zero_mul, deriv_pow'', Nat.cast_ofNat,
         Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, zero_add]
       ring
-    rw [this, deriv_mul (by fun_prop) (by fun_prop)]
-    simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, mul_zero, zero_div,
-      Real.exp_zero, mul_one, zero_mul, add_zero]
-    change deriv (fun x : ℝ ↦ v * x) 0 = v
-    rw [deriv_mul (by fun_prop) (by fun_prop)]
+    rw [this, deriv_mul (by fun_prop) (by fun_prop), deriv_mul (by fun_prop) (by fun_prop)]
     simp
 
 @[simp]
 lemma variance_id_gaussianReal' : Var[id; gaussianReal μ v] = v :=
-  variance_id_gaussianReal _ _
+  variance_id_gaussianReal
 
 lemma memLp_id_gaussianReal (p : ℝ≥0) : MemLp id p (gaussianReal μ v) :=
   memLp_of_mem_interior_integrableExpSet (by simp) p
 
-lemma integrable_pow_gaussianReal {n : ℕ} :
-    Integrable (fun x ↦ |x| ^ n) (gaussianReal μ v) := by
-  have h := (memLp_id_gaussianReal μ v n).integrable_norm_pow
-  simp only [ne_eq, id_eq, Real.norm_eq_abs] at h
-  by_cases hn : n = 0
-  · simp [hn]
-  · exact h hn
+end Moments
+
+section LinearMap
+
+variable {μ : ℝ} {v : ℝ≥0}
 
 lemma gaussianReal_map_linearMap (L : ℝ →ₗ[ℝ] ℝ) :
     (gaussianReal μ v).map L = gaussianReal (L μ) ((L 1 ^ 2).toNNReal * v) := by
@@ -578,7 +542,7 @@ lemma gaussianReal_map_linearMap (L : ℝ →ₗ[ℝ] ℝ) :
 
 lemma gaussianReal_map_continuousLinearMap (L : ℝ →L[ℝ] ℝ) :
     (gaussianReal μ v).map L = gaussianReal (L μ) ((L 1 ^ 2).toNNReal * v) :=
-  gaussianReal_map_linearMap _ _ L
+  gaussianReal_map_linearMap L
 
 @[simp]
 lemma integral_linearMap_gaussianReal (L : ℝ →ₗ[ℝ] ℝ) :
@@ -590,7 +554,7 @@ lemma integral_linearMap_gaussianReal (L : ℝ →ₗ[ℝ] ℝ) :
 
 @[simp]
 lemma integral_continuousLinearMap_gaussianReal (L : ℝ →L[ℝ] ℝ) :
-    ∫ x, L x ∂(gaussianReal μ v) = L μ := integral_linearMap_gaussianReal _ _ L
+    ∫ x, L x ∂(gaussianReal μ v) = L μ := integral_linearMap_gaussianReal L
 
 @[simp]
 lemma variance_linearMap_gaussianReal (L : ℝ →ₗ[ℝ] ℝ) :
@@ -602,18 +566,28 @@ lemma variance_linearMap_gaussianReal (L : ℝ →ₗ[ℝ] ℝ) :
 @[simp]
 lemma variance_continuousLinearMap_gaussianReal (L : ℝ →L[ℝ] ℝ) :
     Var[L; gaussianReal μ v] = (L 1 ^ 2).toNNReal * v :=
-  variance_linearMap_gaussianReal _ _ L
+  variance_linearMap_gaussianReal L
 
-lemma noAtoms_gaussianReal (h : v ≠ 0) : NoAtoms (gaussianReal μ v) := by
-  rw [gaussianReal_of_var_ne_zero _ h]
-  infer_instance
+end LinearMap
 
-@[simp]
-lemma support_gaussianPDF (hv : v ≠ 0) : Function.support (gaussianPDF μ v) = Set.univ := by
-  rw [Function.support]
-  ext x
-  simp only [ne_eq, Set.mem_setOf_eq, Set.mem_univ, iff_true]
-  exact (gaussianPDF_pos _ hv x).ne'
+open Complex
+
+variable {μ : ℝ} {v : ℝ≥0}
+
+-- `∗` notation not used because of ambiguous notation : `conv` vs `mconv`
+lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
+    Measure.conv (gaussianReal m₁ v₁) (gaussianReal m₂ v₂) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
+  refine Measure.ext_of_charFun ?_
+  ext t
+  simp_rw [charFun_conv, charFun_gaussianReal]
+  rw [← Complex.exp_add]
+  simp only [ofReal_add, NNReal.coe_add]
+  ring_nf
+
+lemma gaussianReal_map_prod_add {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
+    ((gaussianReal m₁ v₁).prod (gaussianReal m₂ v₂)).map (fun p ↦ p.1 + p.2)
+      = gaussianReal (m₁ + m₂) (v₁ + v₂) :=
+  gaussianReal_conv_gaussianReal
 
 lemma gaussianReal_Ioi_pos (hv : v ≠ 0) (x : ℝ) : 0 < gaussianReal μ v (Set.Ioi x) := by
   rw [gaussianReal_of_var_ne_zero _ hv]
@@ -628,7 +602,7 @@ lemma gaussianReal_closedBall_lt_one (hv : v ≠ 0) (x : ℝ) : gaussianReal μ 
     · simpa using this
     · exact measurableSet_le (by fun_prop) (by fun_prop)
     · simp
-  refine (gaussianReal_Ioi_pos μ _ hv x).trans_le (measure_mono fun y hy ↦ ?_)
+  refine (gaussianReal_Ioi_pos hv x).trans_le (measure_mono fun y hy ↦ ?_)
   simp only [Set.mem_Ioi, Set.mem_setOf_eq] at hy ⊢
   exact hy.trans_le (le_abs_self y)
 

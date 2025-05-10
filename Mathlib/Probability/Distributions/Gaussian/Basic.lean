@@ -100,7 +100,7 @@ lemma IsGaussian.memLp_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L :
     MemLp L p μ := by
   suffices MemLp (id ∘ L) p μ from this
   rw [← memLp_map_measure_iff, IsGaussian.map_eq_gaussianReal L]
-  · convert memLp_id_gaussianReal _ _ p.toNNReal
+  · convert memLp_id_gaussianReal p.toNNReal
     simp [hp]
   · exact Measurable.aestronglyMeasurable <| by fun_prop
   · fun_prop
