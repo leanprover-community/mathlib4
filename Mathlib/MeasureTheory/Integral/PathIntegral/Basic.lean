@@ -45,6 +45,8 @@ noncomputable def pathIntegral (ω : E → E →L[ℝ] F) (γ : Path a b) : F :=
   ∫ t in (0)..1, pathIntegralFun ω γ t
 
 -- TODO: use `∈`
+-- TODO: fix priorities
+@[inherit_doc pathIntegral]
 notation3 "∫ᵖ "(...)" in " γ ", "r:60:(scoped ω => pathIntegral ω γ) => r
 
 /-- Path integral is defined using Bochner integral,
@@ -187,8 +189,6 @@ end PathOperations
 
 /-!
 ### Algebraic operations on the 1-form
-
-TODO: add `smul`
 -/
 
 variable {ω ω₁ ω₂ : E → E →L[ℝ] F} {γ : Path a b} {t : ℝ}
@@ -251,3 +251,26 @@ theorem pathIntegral_neg : pathIntegral (-ω) γ = -∫ᵖ x in γ, ω x := by
 
 @[simp]
 theorem pathIntegral_fun_neg : ∫ᵖ x in γ, -ω x = -∫ᵖ x in γ, ω x := pathIntegral_neg
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] {c : 𝕜}
+
+@[simp]
+theorem pathIntegralFun_smul : pathIntegralFun (c • ω) γ = c • pathIntegralFun ω γ := rfl
+
+nonrec theorem PathIntegrable.smul (h : PathIntegrable ω γ) : PathIntegrable (c • ω) γ :=
+  h.smul c
+
+@[simp]
+theorem PathIntegrable.smul_iff : PathIntegrable (c • ω) γ ↔ c = 0 ∨ PathIntegrable ω γ := by
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp [PathIntegrable.zero]
+  · simp only [hc, false_or]
+    refine ⟨fun h ↦ ?_, .smul⟩
+    simpa [hc] using h.smul (c := c⁻¹)
+
+@[simp]
+theorem pathIntegral_smul : pathIntegral (c • ω) γ = c • pathIntegral ω γ :=
+  intervalIntegral.integral_smul _ _
+
+@[simp]
+theorem pathIntegral_fun_smul : ∫ᵖ x in γ, c • ω x = c • ∫ᵖ x in γ, ω x := pathIntegral_smul
