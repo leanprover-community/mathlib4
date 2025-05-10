@@ -338,6 +338,14 @@ protected theorem mono {m m' : MeasurableSpace α} [TopologicalSpace β]
       (SimpleFunc.finite_range (hf.approx n))
   exact ⟨f_approx, hf.tendsto_approx⟩
 
+protected theorem fst {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
+    {f : α → β × γ} (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ (f x).1 :=
+  continuous_fst.comp_stronglyMeasurable hf
+
+protected theorem snd {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
+    {f : α → β × γ} (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ (f x).2 :=
+  continuous_snd.comp_stronglyMeasurable hf
+
 protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
     {f : α → β} {g : α → γ} (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     StronglyMeasurable fun x => (f x, g x) := by
@@ -366,12 +374,12 @@ protected theorem prod_swap {_ : MeasurableSpace α} {_ : MeasurableSpace β} [T
     StronglyMeasurable (fun z : α × β => f z.swap) :=
   hf.comp_measurable measurable_swap
 
-protected theorem fst {_ : MeasurableSpace α} [mβ : MeasurableSpace β] [TopologicalSpace γ]
+protected theorem comp_fst {_ : MeasurableSpace α} [mβ : MeasurableSpace β] [TopologicalSpace γ]
     {f : α → γ} (hf : StronglyMeasurable f) :
     StronglyMeasurable (fun z : α × β => f z.1) :=
   hf.comp_measurable measurable_fst
 
-protected theorem snd [mα : MeasurableSpace α] {_ : MeasurableSpace β} [TopologicalSpace γ]
+protected theorem comp_snd [mα : MeasurableSpace α] {_ : MeasurableSpace β} [TopologicalSpace γ]
     {f : β → γ} (hf : StronglyMeasurable f) :
     StronglyMeasurable (fun z : α × β => f z.2) :=
   hf.comp_measurable measurable_snd
