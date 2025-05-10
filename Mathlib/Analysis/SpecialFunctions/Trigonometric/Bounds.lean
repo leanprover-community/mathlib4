@@ -68,7 +68,7 @@ theorem le_sin_mul {x : ℝ} (hx : 0 ≤ x) (hx' : x ≤ 1) : x ≤ sin (π / 2 
 theorem mul_lt_sin {x : ℝ} (hx : 0 < x) (hx' : x < π / 2) : 2 / π * x < sin x := by
   rw [← inv_div]
   simpa [-inv_div, mul_inv_cancel_left₀ pi_div_two_pos.ne'] using @lt_sin_mul ((π / 2)⁻¹ * x)
-    (mul_pos (inv_pos.2 pi_div_two_pos) hx) (by rwa [← div_eq_inv_mul, div_lt_one pi_div_two_pos])
+    (mul_pos (inv_pos.2 pi_div_two_pos) hx) (by rwa [← div_eq_inv_mul, div_lt_one₀ pi_div_two_pos])
 
 /-- One half of **Jordan's inequality**.
 
@@ -79,7 +79,7 @@ theorem mul_le_sin {x : ℝ} (hx : 0 ≤ x) (hx' : x ≤ π / 2) : 2 / π * x �
   rw [← inv_div]
   simpa [-inv_div, mul_inv_cancel_left₀ pi_div_two_pos.ne'] using @le_sin_mul ((π / 2)⁻¹ * x)
     (mul_nonneg (inv_nonneg.2 pi_div_two_pos.le) hx)
-    (by rwa [← div_eq_inv_mul, div_le_one pi_div_two_pos])
+    (by rwa [← div_eq_inv_mul, div_le_one₀ pi_div_two_pos])
 
 /-- Half of **Jordan's inequality** for negative values. -/
 lemma sin_le_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤ 2 / π * x := by

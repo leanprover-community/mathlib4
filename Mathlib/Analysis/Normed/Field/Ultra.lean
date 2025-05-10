@@ -53,7 +53,7 @@ lemma isUltrametricDist_of_forall_norm_add_one_of_norm_le_one
   rcases le_or_lt ‖x‖ 1 with H|H
   · exact (h _ H).trans (le_max_right _ _)
   · suffices ‖x + 1‖ ≤ ‖x‖ from this.trans (le_max_left _ _)
-    rw [← div_le_one (by positivity), ← norm_div, add_div,
+    rw [← div_le_one₀ (by positivity), ← norm_div, add_div,
       div_self (by simpa using H.trans' zero_lt_one), add_comm]
     apply h
     simp [inv_le_one_iff₀, H.le]
@@ -82,7 +82,7 @@ lemma isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm
   -- by the virtue of exponential growth being faster than linear growth
   obtain ⟨m, hm⟩ : ∃ m : ℕ, ((m + 1) : ℕ) < (a / (max 1 ‖x‖)) ^ m := by
     apply_mod_cast Real.exists_natCast_add_one_lt_pow_of_one_lt
-    rwa [one_lt_div (by positivity)]
+    rwa [one_lt_div₀ (by positivity)]
   -- and we rearrange again to get `(m + 1) • max 1 ‖x‖ ^ m < a ^ m`
   rw [div_pow, lt_div_iff₀ (by positivity), ← nsmul_eq_mul] at hm
   -- which squeezes down to get our `‖x + 1‖ ≤ a` using our to-be-proven hypothesis of

@@ -436,7 +436,7 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
     norm_cast
   refine fract_eq_iff.mpr ⟨?_, ?_, m / n, ?_⟩
   · positivity
-  · simpa only [div_lt_one hn', Nat.cast_lt] using m.mod_lt hn
+  · simpa only [div_lt_one₀ hn', Nat.cast_lt] using m.mod_lt hn
   · rw [sub_eq_iff_eq_add', ← mul_right_inj' hn'.ne', mul_div_cancel₀ _ hn'.ne', mul_add,
       mul_div_cancel₀ _ hn'.ne']
     norm_cast

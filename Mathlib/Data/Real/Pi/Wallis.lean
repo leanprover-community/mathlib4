@@ -75,8 +75,8 @@ theorem W_eq_integral_sin_pow_div_integral_sin_pow (k : ℕ) : (π / 2)⁻¹ * W
   rfl
 
 theorem W_le (k : ℕ) : W k ≤ π / 2 := by
-  rw [← div_le_one pi_div_two_pos, div_eq_inv_mul]
-  rw [W_eq_integral_sin_pow_div_integral_sin_pow, div_le_one (integral_sin_pow_pos _)]
+  rw [← div_le_one₀ pi_div_two_pos, div_eq_inv_mul]
+  rw [W_eq_integral_sin_pow_div_integral_sin_pow, div_le_one₀ (integral_sin_pow_pos _)]
   apply integral_sin_pow_succ_le
 
 theorem le_W (k : ℕ) : ((2 : ℝ) * k + 1) / (2 * k + 2) * (π / 2) ≤ W k := by

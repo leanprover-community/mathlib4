@@ -101,7 +101,7 @@ theorem rOut_pos {c : E} (f : ContDiffBump c) : 0 < f.rOut :=
   f.rIn_pos.trans f.rIn_lt_rOut
 
 theorem one_lt_rOut_div_rIn {c : E} (f : ContDiffBump c) : 1 < f.rOut / f.rIn := by
-  rw [one_lt_div f.rIn_pos]
+  rw [one_lt_div₀ f.rIn_pos]
   exact f.rIn_lt_rOut
 
 instance (c : E) : Inhabited (ContDiffBump c) :=
@@ -133,7 +133,7 @@ open Metric
 theorem one_of_mem_closedBall (hx : x ∈ closedBall c f.rIn) : f x = 1 := by
   apply ContDiffBumpBase.eq_one _ _ f.one_lt_rOut_div_rIn
   simpa only [norm_smul, Real.norm_eq_abs, abs_inv, abs_of_nonneg f.rIn_pos.le, ← div_eq_inv_mul,
-    div_le_one f.rIn_pos] using mem_closedBall_iff_norm.1 hx
+    div_le_one₀ f.rIn_pos] using mem_closedBall_iff_norm.1 hx
 
 theorem nonneg : 0 ≤ f x :=
   (ContDiffBumpBase.mem_Icc (someContDiffBumpBase E) _ _).1

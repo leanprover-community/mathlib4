@@ -130,7 +130,7 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
     apply (cantorFunction_le (le_of_lt h1) h3 hf_max).trans_lt
     refine lt_of_lt_of_le ?_ (cantorFunction_le (le_of_lt h1) h3 hg_min)
     have : c / (1 - c) < 1 := by
-      rw [div_lt_one, lt_sub_iff_add_lt]
+      rw [div_lt_one₀, lt_sub_iff_add_lt]
       · convert _root_.add_lt_add h2 h2
         norm_num
       rwa [sub_pos]

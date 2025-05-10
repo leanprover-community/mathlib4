@@ -176,7 +176,7 @@ theorem isBigO_const_left_iff_pos_le_norm {c : E''} (hc : c ≠ 0) :
   · rintro ⟨b, hb₀, hb⟩
     refine IsBigO.of_bound (‖c‖ / b) (hb.mono fun x hx => ?_)
     rw [div_mul_eq_mul_div, mul_div_assoc]
-    exact le_mul_of_one_le_right (norm_nonneg _) ((one_le_div hb₀).2 hx)
+    exact le_mul_of_one_le_right (norm_nonneg _) ((one_le_div₀ hb₀).2 hx)
 
 theorem IsBigO.trans_tendsto (hfg : f'' =O[l] g'') (hg : Tendsto g'' l (𝓝 0)) :
     Tendsto f'' l (𝓝 0) :=
@@ -767,7 +767,7 @@ protected theorem isBigOWith_rev_principal
   rw [mul_comm_div]
   replace hs := hs.image_of_continuousOn hf |>.image continuous_norm
   have h_sInf := hs.isGLB_sInf <| Set.image_nonempty.mpr <| Set.image_nonempty.mpr ⟨x, hx⟩
-  refine le_mul_of_one_le_right (norm_nonneg c) <| (one_le_div ?_).mpr <|
+  refine le_mul_of_one_le_right (norm_nonneg c) <| (one_le_div₀ ?_).mpr <|
     h_sInf.1 <| Set.mem_image_of_mem _ <| Set.mem_image_of_mem _ hx
   obtain ⟨_, ⟨x, hx, hCx⟩, hnormCx⟩ := hs.sInf_mem h_sInf.nonempty
   rw [← hnormCx, ← hCx]

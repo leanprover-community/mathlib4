@@ -194,7 +194,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
         have w₃ : (x : ℝ) - a ≤ b - a := sub_le_sub_right x.2.2 a
         fconstructor
         · exact mul_nonneg w₂ (le_of_lt w₁)
-        · rw [← div_eq_mul_inv, div_le_one (sub_pos.mpr h)]
+        · rw [← div_eq_mul_inv, div_le_one₀ (sub_pos.mpr h)]
           exact w₃
   · rintro ⟨p, ⟨-, rfl⟩⟩
     let q := p.comp ((b - a) • Polynomial.X + Polynomial.C a)

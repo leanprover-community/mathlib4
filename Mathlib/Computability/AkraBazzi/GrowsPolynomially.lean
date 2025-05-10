@@ -146,7 +146,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
     have : 0 ≤ -logb 2 (x / x₀) := by
       rw [neg_nonneg]
       refine logb_nonpos (by norm_num) (by positivity) ?_
-      rw [div_le_one x₀_pos]
+      rw [div_le_one₀ x₀_pos]
       exact le_of_max_le_left hx₀_ge
     exact_mod_cast Nat.floor_le this
 

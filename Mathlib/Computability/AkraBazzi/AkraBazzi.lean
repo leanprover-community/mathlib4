@@ -309,7 +309,7 @@ lemma one_add_smoothingFn_le_two {x : ℝ} (hx : exp 1 ≤ x) : 1 + ε x ≤ 2 :
     calc 1 = exp 0 := by simp
          _ < exp 1 := by simp
          _ ≤ x := hx
-  rw [div_le_one (log_pos this)]
+  rw [div_le_one₀ (log_pos this)]
   calc 1 = log (exp 1) := by simp
        _ ≤ log x := log_le_log (exp_pos _) hx
 

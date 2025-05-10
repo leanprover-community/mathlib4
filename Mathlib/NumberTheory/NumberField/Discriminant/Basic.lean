@@ -205,7 +205,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
     refine le_trans (this (finrank ℚ K) h) ?_
     simp only [a]
     gcongr
-    · exact (one_le_div Real.pi_pos).2 Real.pi_le_four
+    · exact (one_le_div₀ Real.pi_pos).2 Real.pi_le_four
     · rw [← card_add_two_mul_card_eq_rank, mul_comm]
       exact Nat.le_add_left _ _
   intro n hn

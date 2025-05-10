@@ -529,7 +529,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
     rw [div_mul_eq_div_mul_one_div, ← ENNReal.ofReal_toReal (measure_lt_top μ tᶜ).ne,
       ENNReal.ofReal_rpow_of_nonneg ENNReal.toReal_nonneg hdivp, ← ENNReal.ofReal_mul, mul_assoc]
     · refine ENNReal.ofReal_le_ofReal (mul_le_of_le_one_right hε'.le ?_)
-      rw [mul_comm, mul_one_div, div_le_one]
+      rw [mul_comm, mul_one_div, div_le_one₀]
       · refine Real.rpow_le_rpow ENNReal.toReal_nonneg
           (ENNReal.toReal_le_of_le_ofReal (measureUnivNNReal_pos hμ).le ?_) hdivp
         rw [ENNReal.ofReal_coe_nnreal, coe_measureUnivNNReal]

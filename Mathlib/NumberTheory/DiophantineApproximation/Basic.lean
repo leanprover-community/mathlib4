@@ -232,7 +232,7 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
     · have hξ₀ : (0 : ℚ) < ξ.den := Nat.cast_pos.mpr ξ.pos
       rw [← Rat.num_div_den ξ, div_mul_eq_mul_div, div_sub' hξ₀.ne', abs_div, abs_of_pos hξ₀,
         div_lt_iff₀ hξ₀, div_mul_comm, mul_one] at h
-      refine Nat.cast_le.mp ((one_lt_div hq₀).mp <| lt_of_le_of_lt ?_ h).le
+      refine Nat.cast_le.mp ((one_lt_div₀ hq₀).mp <| lt_of_le_of_lt ?_ h).le
       norm_cast
       rw [mul_comm _ q.num]
       exact Int.one_le_abs (sub_ne_zero_of_ne <| mt Rat.eq_iff_mul_eq_mul.mpr H)
@@ -453,7 +453,7 @@ private theorem aux₃ :
     rw [hu'ℝ, add_div, mul_div_cancel_right₀ _ Hv.ne', ← sub_sub, sub_right_comm, self_sub_floor,
       lt_sub_iff_add_lt, ← mul_lt_mul_left Hv', this] at h
     refine LE.le.trans ?_ h.le
-    rw [sub_le_sub_iff_left, div_le_one Hv, add_comm]
+    rw [sub_le_sub_iff_left, div_le_one₀ Hv, add_comm]
     exact mod_cast huv
   have help₁ {a b c : ℝ} : a ≠ 0 → b ≠ 0 → c ≠ 0 → |a⁻¹ - b / c| = |(a - c / b) * (b / c / a)| := by
     intros; rw [abs_sub_comm]; congr 1; field_simp; ring

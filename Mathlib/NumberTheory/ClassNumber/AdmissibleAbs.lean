@@ -39,7 +39,7 @@ theorem exists_partition_int (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : ℤ} (hb :
   · rw [← ofNat_lt, natAbs_of_nonneg (hfloor i), floor_lt, Algebra.smul_def, eq_intCast, ← div_div]
     apply lt_of_lt_of_le _ (Nat.le_ceil _)
     gcongr
-    rw [div_lt_one hb', cast_lt]
+    rw [div_lt_one₀ hb', cast_lt]
     exact Int.emod_lt_abs _ hb
   intro i₀ i₁ hi
   have hi : (⌊↑(A i₀ % b) / abs b • ε⌋.natAbs : ℤ) = ⌊↑(A i₁ % b) / abs b • ε⌋.natAbs :=
