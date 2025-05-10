@@ -21,7 +21,7 @@ Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →
 assert_not_exists Star.star
 
 open LinearMap (ker range)
-open Topology Filter Pointwise
+open Function Topology Filter Pointwise
 
 universe u v w u'
 
@@ -687,27 +687,40 @@ variable [ContinuousSMul R₁ M₁]
 
 /-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
 linear map from `R` to `M` by taking multiples of `x`. -/
-def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
-  toLinearMap := LinearMap.toSpanSingleton R₁ M₁ x
-  cont := continuous_id.smul continuous_const
+@[simps symm_apply]
+def toSpanSingleton : M₁ ≃ (R₁ →L[R₁] M₁) where
+  toFun x := ⟨LinearMap.toSpanSingleton R₁ M₁ x, continuous_id.smul continuous_const⟩
+  invFun f := f 1
+  left_inv _ := by simp
+  right_inv _ := by ext; simp
 
+@[simp]
 theorem toSpanSingleton_apply (x : M₁) (r : R₁) : toSpanSingleton R₁ x r = r • x :=
   rfl
 
+@[simp]
+theorem toSpanSingleton_zero : toSpanSingleton R₁ (0 : M₁) = 0 := by ext1; simp
+
+@[simp]
 theorem toSpanSingleton_add [ContinuousAdd M₁] (x y : M₁) :
     toSpanSingleton R₁ (x + y) = toSpanSingleton R₁ x + toSpanSingleton R₁ y := by
-  ext1; simp [toSpanSingleton_apply]
+  ext1; simp
 
-theorem toSpanSingleton_smul' {α} [Monoid α] [DistribMulAction α M₁] [ContinuousConstSMul α M₁]
-    [SMulCommClass R₁ α M₁] (c : α) (x : M₁) :
+@[simp]
+theorem toSpanSingleton_self_apply_one (f : R₁ →L[R₁] M₁) : toSpanSingleton R₁ (f 1) = f :=
+  (toSpanSingleton R₁).apply_symm_apply f
+
+@[simp]
+theorem toSpanSingleton_smul {N} [Monoid N] [DistribMulAction N M₁] [ContinuousConstSMul N M₁]
+    [SMulCommClass R₁ N M₁] (c : N) (x : M₁) :
     toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x := by
-  ext1; rw [toSpanSingleton_apply, smul_apply, toSpanSingleton_apply, smul_comm]
+  ext1; simp
 
-/-- A special case of `to_span_singleton_smul'` for when `R` is commutative. -/
-theorem toSpanSingleton_smul (R) {M₁} [CommSemiring R] [AddCommMonoid M₁] [Module R M₁]
-    [TopologicalSpace R] [TopologicalSpace M₁] [ContinuousSMul R M₁] (c : R) (x : M₁) :
-    toSpanSingleton R (c • x) = c • toSpanSingleton R x :=
-  toSpanSingleton_smul' R c x
+@[simp]
+theorem smulRight_one (x : M₁) : (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x := rfl
+
+@[simp]
+theorem smulRight_id (x : M₁) : smulRight (.id R₁ R₁) x = toSpanSingleton R₁ x := rfl
 
 end ToSpanSingleton
 

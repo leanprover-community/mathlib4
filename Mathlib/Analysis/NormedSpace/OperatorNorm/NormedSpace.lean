@@ -113,7 +113,7 @@ theorem norm_id [Nontrivial E] : ‖id 𝕜 E‖ = 1 := by
 @[simp]
 lemma nnnorm_id [Nontrivial E] : ‖id 𝕜 E‖₊ = 1 := NNReal.eq norm_id
 
-instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
+instance instNormOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
   ⟨norm_id⟩
 
 /-- Continuous linear maps themselves form a normed space with respect to
@@ -125,6 +125,14 @@ instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (
 instance toNormedRing : NormedRing (E →L[𝕜] E) where
   __ := toNormedAddCommGroup
   __ := toSeminormedRing
+
+@[simp]
+theorem nnnorm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖₊ = ‖x‖₊ := by
+  simpa using nnnorm_smulRight_apply (1 : 𝕜 →L[𝕜] 𝕜) x
+
+@[simp]
+theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
+  simp only [← coe_nnnorm, nnnorm_toSpanSingleton]
 
 variable {f} in
 theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[σ₁₂] F) {a : ℝ}
