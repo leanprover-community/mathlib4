@@ -46,15 +46,15 @@ lemma AcyclicImageHasZeroHomology {X : t₁.Heart} (hX : AcyclicObject F t₁ t�
   · have := hX.2
     exact t₂.isZero_homology_of_isGE (F.obj X.1) n 0 (lt_iff_not_le.mpr h)
 
-abbrev AcyclicCategory := FullSubcategory (AcyclicObject F t₁ t₂)
+abbrev AcyclicCategory := ObjectProperty.FullSubcategory (AcyclicObject F t₁ t₂)
 
 namespace Functor
 
 abbrev FromAcyclic : (AcyclicCategory F t₁ t₂) ⥤ t₂.Heart := by
-  refine FullSubcategory.lift t₂.heart
-    (fullSubcategoryInclusion (AcyclicObject F t₁ t₂) ⋙ t₁.ιHeart ⋙ F) ?_
+  refine ObjectProperty.lift t₂.heart
+    (ObjectProperty.ι (AcyclicObject F t₁ t₂) ⋙ t₁.ιHeart ⋙ F) ?_
   intro ⟨_, h⟩
-  simp only [comp_obj, fullSubcategoryInclusion.obj]
+  simp only [comp_obj, ι_obj]
   exact h
 
 abbrev FromHeart : t₁.Heart ⥤ D := t₁.ιHeart ⋙ F
@@ -67,7 +67,7 @@ instance : Functor.Additive (F.FromHeart t₁) where
 noncomputable abbrev FromHeartToHeart : t₁.Heart ⥤ t₂.Heart :=
   t₁.ιHeart ⋙ F ⋙ t₂.homology 0
 
-def AcyclicToHeart : (AcyclicCategory F t₁ t₂) ⥤ t₁.Heart := fullSubcategoryInclusion _
+def AcyclicToHeart : (AcyclicCategory F t₁ t₂) ⥤ t₁.Heart := ObjectProperty.ι _
 
 end Functor
 
@@ -99,7 +99,7 @@ instance : HasTerminal (AcyclicCategory F t₁ t₂) := by
   let Z : AcyclicCategory F t₁ t₂ := ⟨0, zero F t₁ t₂ (isZero_zero t₁.Heart)⟩
   have : ∀ X, Inhabited (X ⟶ Z) := fun X => ⟨0⟩
   have : ∀ X, Unique (X ⟶ Z) := fun X =>
-    { uniq := fun f => (fullSubcategoryInclusion (AcyclicObject F t₁ t₂)).map_injective
+    { uniq := fun f => (ObjectProperty.ι (AcyclicObject F t₁ t₂)).map_injective
           ((isZero_zero t₁.Heart).eq_of_tgt _ _) }
   exact hasTerminal_of_unique Z
 
@@ -122,13 +122,12 @@ end AcyclicCategory
 instance : Functor.Additive (F.FromAcyclic t₁ t₂) where
   map_add := by
     intro X Y f g
-    simp only [FullSubcategory.lift_map, Functor.comp_map, fullSubcategoryInclusion.obj,
-      fullSubcategoryInclusion.map, Functor.map_add]
+    simp only [lift_map, Functor.comp_map, ι_obj, ι_map, Functor.map_add]
 
 instance : Functor.Additive (F.AcyclicToHeart t₁ t₂) where
   map_add := by
     intro X Y f g
-    simp only [Functor.AcyclicToHeart, fullSubcategoryInclusion.obj, fullSubcategoryInclusion.map]
+    simp only [AcyclicToHeart, ι_obj, ι_map]
 
 omit [IsTriangulated D] in
 lemma AcyclicExtension {S : ShortComplex t₁.Heart} (SE : S.ShortExact)
@@ -185,11 +184,11 @@ lemma ShortExactComplexImageShortExact {S : ShortComplex t₁.Heart} (he : S.Sho
   exact := ShortExactComplexImageExact F t₁ t₂ he
   mono_f := MonoOfMonoAcyclicCokernel F t₁ t₂ S.f he.mono_f
     (IsZero.of_iso hv₂ ((t₂.homology (-1 : ℤ)).mapIso (F.mapIso
-    ((fullSubcategoryInclusion _).mapIso (IsColimit.coconePointUniqueUpToIso
+    ((ObjectProperty.ι _).mapIso (IsColimit.coconePointUniqueUpToIso
     (cokernelIsCokernel S.f) he.gIsCokernel)))))
   epi_g := EpiOfEpiAcyclicKernel F t₁ t₂ S.g he.epi_g
     (IsZero.of_iso hv₁ ((t₂.homology (1 : ℤ)).mapIso (F.mapIso
-    ((fullSubcategoryInclusion _).mapIso (IsLimit.conePointUniqueUpToIso
+    ((ObjectProperty.ι _).mapIso (IsLimit.conePointUniqueUpToIso
     (kernelIsKernel S.g) he.fIsKernel)))))
 
 lemma ShortExactComplexImageShortExact' {S : ShortComplex t₁.Heart} (he : S.ShortExact)
@@ -385,12 +384,12 @@ noncomputable def IsoCohomologyOfAcyclicAndExact (S : CochainComplex t₁.Heart 
     (h₂ : S.ExactAt l) {n : ℤ} (hn : n ≠ -1 ∧ n ≠ 0) :
     (t₂.homology n).obj (F.obj (Limits.kernel (S.d l m)).1) ≅ (t₂.homology (n + 1)).obj
     (F.obj (Limits.kernel (S.d r k)).1) :=
-  (((t₂.homology n).mapIso (F.mapIso ((fullSubcategoryInclusion _).mapIso
+  (((t₂.homology n).mapIso (F.mapIso ((ObjectProperty.ι _).mapIso
   ((S.sc' r l m).isoAbelianImageToKernelOfExact ((S.exactAt_iff' r l m
   (by simp only [CochainComplex.prev]; linarith [hrk, hkl])
   (by simp only [CochainComplex.next, hlm])).mp h₂))))).symm.trans
   (ShortExactComplexHomology F t₁ t₂ (kernelImageComplexShortExact (S.d r l)) h₁ hn)).trans
-  ((t₂.homology (n + 1)).mapIso (F.mapIso ((fullSubcategoryInclusion _).mapIso
+  ((t₂.homology (n + 1)).mapIso (F.mapIso ((ObjectProperty.ι _).mapIso
   (kernel.mapIso (S.d r l) (S.d r k) (Iso.refl _) (S.XIsoOfEq hkl.symm)
   (by simp only [HomologicalComplex.d_comp_XIsoOfEq_hom, Iso.refl_hom, id_comp])))))
 
@@ -400,7 +399,7 @@ noncomputable def RightAcyclicKer_aux (S : CochainComplex t₁.Heart ℤ) {r k l
     (t₂.homology r).obj (F.obj (Limits.kernel (S.d k l)).1) ≅ (t₂.homology (r + n)).obj
     (F.obj (Limits.kernel (S.d (k - n) (l - n))).1) := by
   induction' n with n hn
-  · simp only [CharP.cast_eq_zero, add_zero, Int.Nat.cast_ofNat_Int]
+  · simp only [CharP.cast_eq_zero, add_zero, Int.cast_ofNat_Int]
     erw [sub_zero, sub_zero]
   · have : r + ↑(n + 1) = (r + n) + 1 := by simp only [Nat.cast_add, Nat.cast_one]; ring
     rw [this]
@@ -420,7 +419,7 @@ lemma RightAcyclicKerOfBoundedComplex (S : CochainComplex t₁.Heart ℤ) {r k l
   refine IsZero.of_iso ?_ (RightAcyclicKer_aux F t₁ t₂ S hkl hr hk1 hk2 (k - a).natAbs)
   suffices h : IsZero (kernel (S.d (k - ↑(k - a).natAbs) (l - ↑(k - a).natAbs))) by
     refine Functor.map_isZero _ (Functor.map_isZero _ ?_)
-    change IsZero ((fullSubcategoryInclusion _).obj _)
+    change IsZero ((ObjectProperty.ι _).obj _)
     refine Functor.map_isZero _ h
   refine IsZero.of_mono (kernel.ι (S.d (k - (k - a).natAbs) (l - (k - a).natAbs))) (ha _ ?_)
   rw [tsub_le_iff_right, ← tsub_le_iff_left]; exact Int.le_natAbs
@@ -439,7 +438,7 @@ noncomputable def LeftAcyclicKer_aux (S : CochainComplex t₁.Heart ℤ) {r k l 
     (t₂.homology r).obj (F.obj (Limits.kernel (S.d k l)).1) ≅ (t₂.homology (r - n)).obj
     (F.obj (Limits.kernel (S.d (k + n) (l + n))).1) := by
   induction' n with n hn
-  · simp only [CharP.cast_eq_zero, sub_zero, Int.Nat.cast_ofNat_Int]
+  · simp only [CharP.cast_eq_zero, sub_zero, Int.cast_ofNat_Int]
     erw [add_zero, add_zero]
   · refine hn.trans ?_
     have : r - n = r - (n + 1) + 1 := by ring
@@ -457,7 +456,7 @@ lemma LeftAcyclicKerOfBoundedComplex (S : CochainComplex t₁.Heart ℤ) {r k l 
   refine IsZero.of_iso ?_ (LeftAcyclicKer_aux F t₁ t₂ S hkl hr hk1 hk2 (b - k).natAbs)
   suffices h : IsZero (kernel (S.d (k + ↑(b - k).natAbs) (l + ↑(b - k).natAbs))) by
     refine Functor.map_isZero _ (Functor.map_isZero _ ?_)
-    change IsZero ((fullSubcategoryInclusion _).obj _)
+    change IsZero ((ObjectProperty.ι _).obj _)
     refine Functor.map_isZero _ h
   refine IsZero.of_mono (kernel.ι (S.d (k + (b - k).natAbs) (l + (b - k).natAbs))) (hb _ ?_)
   rw [← tsub_le_iff_left]; exact Int.le_natAbs

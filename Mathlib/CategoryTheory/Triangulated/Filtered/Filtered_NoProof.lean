@@ -886,18 +886,18 @@ lemma truncLEGEToGELE_uniq {a b : ℤ} {X : C}
 -- More general version of A.1.3 (iii), same remarks as before on cheating.
 
 def truncGELE_le_up (a b c : ℤ) (h : b ≤ c) :
-    truncGELE (C := C) a b ⟶ truncGELE a c := by
+    truncGELE (C := C) a c ⟶ truncGELE a b := by
   dsimp [truncGELE]
   sorry
 
 def truncGELE_le_down (a b c : ℤ) (h : a ≤ b) :
-    truncGELE (C := C) a c ⟶ truncGELE b c := sorry
+    truncGELE (C := C) b c ⟶ truncGELE a c := sorry
 
 def truncGELE_δ (a b c : ℤ) :
-    truncGELE (C := C) (b + 1) c ⟶ truncGELE a b ⋙ shiftFunctor C (1 : ℤ) := sorry
+    truncGELE (C := C) a b ⟶ truncGELE (b + 1) c ⋙ shiftFunctor C (1 : ℤ) := sorry
 
 def truncGELE_triangle (a b c : ℤ) (h : a ≤ b) (h' : b ≤ c) : C ⥤ Triangle C :=
-  Triangle.functorMk (truncGELE_le_up a b c h') (truncGELE_le_down a (b + 1) c (by linarith))
+  Triangle.functorMk (truncGELE_le_down a (b + 1) c (by linarith)) (truncGELE_le_up a b c h')
   (truncGELE_δ a b c)
 
 lemma truncGELE_triangle_distinguished (a b c : ℤ) (h : a ≤ b) (h' : b ≤ c) (X : C) :

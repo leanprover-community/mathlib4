@@ -87,7 +87,7 @@ def CategoryTheory.Limits.KernelFork.functoriality {C : Type u} [CategoryTheory.
     CategoryTheory.Limits.KernelFork f ⥤ CategoryTheory.Limits.KernelFork (F.map f) where
 obj c := F.mapKernelFork c
 map α :=
-  {hom := by simp only; rw [F.mapKernelFork_pt, F.mapKernelFork_pt]; exact F.map α.hom
+  {hom := by rw [F.mapKernelFork_pt, F.mapKernelFork_pt]; exact F.map α.hom
    w := by
      intro j
      cases j with
@@ -154,7 +154,7 @@ def CategoryTheory.Limits.CokernelCofork.functoriality {C : Type u}
     CategoryTheory.Limits.CokernelCofork f ⥤ CategoryTheory.Limits.CokernelCofork (F.map f) where
 obj c := F.mapCokernelCofork c
 map α :=
-  {hom := by simp only; rw [F.mapCokernelCofork_pt, F.mapCokernelCofork_pt]; exact F.map α.hom
+  {hom := by rw [F.mapCokernelCofork_pt, F.mapCokernelCofork_pt]; exact F.map α.hom
    w := by
      intro j
      cases j with
@@ -404,22 +404,14 @@ lemma imageComparisonEpiOfExact (hc : IsIso (cokernelComparison f F))
   have hR₂ : R₂.Exact :=
     ShortComplex.Exact.exact_toComposableArrows (kernelComplexExact (cokernel.π (F.map f)))
   have hR₂' : Mono (R₂.map' 0 1) := by
-    simp only [R₂, ShortComplex.toComposableArrows]
-    simp only [Nat.reduceAdd, equalizer_as_kernel, ComposableArrows.mk₂, id_eq, Int.reduceNeg,
-      Int.Nat.cast_ofNat_Int, Nat.cast_ofNat, Int.reduceSub, Int.reduceAdd, Fin.zero_eta,
-      ComposableArrows.precomp_obj, ComposableArrows.Precomp.obj_zero, Fin.mk_one,
-      ComposableArrows.Precomp.obj_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj,
-      ComposableArrows.map', ComposableArrows.precomp_map, ComposableArrows.Precomp.map_zero_one]
+    dsimp [R₂, ShortComplex.toComposableArrows]
     exact inferInstance
   have h₀ : Epi (ComposableArrows.app' φ 1) := by
-    simp only [id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int, Nat.cast_ofNat, Int.reduceAdd,
-      Int.reduceSub, ComposableArrows.obj', Nat.reduceAdd, Fin.mk_one, ComposableArrows.app',
-      ComposableArrows.homMk_app, φ]
+    dsimp [φ]
     exact inferInstance
   have h₁ : Mono (ComposableArrows.app' φ 2) := by
-    simp only [ComposableArrows.obj', Nat.reduceAdd, Fin.reduceFinMk, ComposableArrows.app',
-      ComposableArrows.homMk_app, φ]
-    exact inferInstance
+    dsimp [φ]
+    infer_instance
   exact Abelian.epi_of_mono_of_epi_of_mono φ hR₁ hR₂ hR₂' h₀ h₁
 
 lemma imageComparisonIsoOfMonoAndExact (hc : IsIso (cokernelComparison f F))
@@ -475,17 +467,10 @@ lemma kernelComparisonEpiOfImageComparisonMono (hc : Mono (cokernelComparison f 
   have hR₂ : R₂.Exact := ShortComplex.Exact.exact_toComposableArrows
     (kernelImageComplexShortExact (F.map f)).exact
   have hR₂' : Mono (R₂.map' 0 1) := by
-    simp only [Nat.reduceAdd, equalizer_as_kernel, id_eq, eq_mpr_eq_cast, Int.reduceNeg,
-      Int.Nat.cast_ofNat_Int, Nat.cast_ofNat, Int.reduceSub, Int.reduceAdd, Fin.zero_eta,
-      ShortComplex.toComposableArrows_obj, ComposableArrows.Precomp.obj_zero, Fin.mk_one,
-      ComposableArrows.Precomp.obj_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj,
-      ComposableArrows.map', ShortComplex.toComposableArrows_map,
-      ComposableArrows.Precomp.map_zero_one, R₂]
+    dsimp [R₂]
     exact inferInstance
   have h₀ : Epi (ComposableArrows.app' φ 1) := by
-    simp only [id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int, Nat.cast_ofNat, Int.reduceAdd,
-      Int.reduceSub, ComposableArrows.obj', Nat.reduceAdd, Fin.mk_one, ComposableArrows.app',
-      ComposableArrows.homMk_app, φ]
+    dsimp [φ]
     exact inferInstance
   have h₁ : Mono (ComposableArrows.app' φ 2) := hm
   exact Abelian.epi_of_mono_of_epi_of_mono φ hR₁ hR₂ hR₂' h₀ h₁
