@@ -525,10 +525,11 @@ theorem AnalyticAt.comp_sub (hf : AnalyticAt 𝕜 f x) (y : E) :
   use p
   apply hf.comp_sub
 
+open Pointwise in
 theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
-    AnalyticOnNhd 𝕜 (fun (z : E) ↦ f (z - y)) ((fun x ↦ x + y) '' s) := by
+    AnalyticOnNhd 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) := by
   intro x hx
-  simp only [image_add_right, mem_preimage] at hx
+  simp only [add_singleton, image_add_right, mem_preimage] at hx
   specialize hf (x - y) (by convert hx using 1; abel)
   rw [show x = (x - y) + y by abel]
   apply hf.comp_sub
