@@ -297,8 +297,8 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     inf := (· ⊓ ·)
     compl := HasCompl.compl
     sdiff := (· \ ·)
-    top := { Adj := Ne }
-    bot := { Adj _ _ := False }
+    top.Adj := Ne
+    bot.Adj _ _ := False
     le_top := fun x _ _ h => x.ne_of_adj h
     bot_le := fun _ _ _ h => h.elim
     sdiff_eq := fun x y => by
