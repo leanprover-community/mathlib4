@@ -95,7 +95,13 @@ theorem deriv_pow (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
 end NormedCommRing
 
 section NontriviallyNormedField
-variable [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
+variable [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜} {c : 𝕜 → 𝕜}
+
+theorem derivWithin_pow_field (hc : DifferentiableWithinAt 𝕜 c s x) (n : ℕ) :
+    derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact derivWithin_pow hc hsx n
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 theorem hasStrictDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) (n * x ^ (n - 1)) x := by
