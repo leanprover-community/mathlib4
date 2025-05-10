@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.Algebra.Ring.Subring.Units
+import Mathlib.Algebra.Algebra.Rat
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -30,9 +31,7 @@ namespace Matrix
 
 universe u v
 
-open Matrix
-
-open LinearMap
+open Matrix LinearMap
 
 -- disable this instance so we do not accidentally use it in lemmas.
 attribute [-instance] SpecialLinearGroup.instCoeFun
@@ -206,23 +205,20 @@ theorem coeToGL_det (g : SpecialLinearGroup n R) :
 
 end SpecialLinearGroup
 
-section
+section GLPos
 
-variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n]
+variable {n R : Type*} [DecidableEq n] [Fintype n]
   [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 
 section
 
-variable (n R)
-
+variable (n R) in
 /-- This is the subgroup of `nxn` matrices with entries over a
 linear ordered ring and positive determinant. -/
 def GLPos : Subgroup (GL n R) :=
   (Units.posSubgroup R).comap GeneralLinearGroup.det
 
 @[inherit_doc] scoped[MatrixGroups] notation "GL(" n ", " R ")" "⁺" => GLPos (Fin n) R
-
-end
 
 @[simp]
 theorem mem_glpos (A : GL n R) : A ∈ GLPos n R ↔ 0 < (Matrix.GeneralLinearGroup.det A : R) :=
@@ -235,9 +231,7 @@ end
 
 section Neg
 
-variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n]
-  [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
-  [Fact (Even (Fintype.card n))]
+variable [Fact (Even (Fintype.card n))]
 
 /-- Formal operation of negation on general linear group on even cardinality `n` given by negating
 each element. -/
@@ -265,6 +259,34 @@ instance : HasDistribNeg (GLPos n R) :=
   Subtype.coe_injective.hasDistribNeg _ GLPos.coe_neg_GL (GLPos n R).coe_mul
 
 end Neg
+
+section map
+
+variable {S : Type*} [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+
+/-- Strictly monotone ring homomorphisms induce maps on `GLPos`. -/
+protected def GLPos.map {f : R →+* S} (hf : StrictMono f) (g : GLPos n R) : GLPos n S :=
+  ⟨g.1.map f, by simpa [f.map_det] using hf g.2⟩
+
+/-- Strictly monotone ring homomorphisms induce group homomorphisms on `GLPos`. -/
+@[simps apply]
+def GLPos.mapHom {f : R →+* S} (hf : StrictMono f) : GLPos n R →* GLPos n S where
+  toFun := GLPos.map hf
+  map_one' := by simp only [GLPos.map, OneMemClass.coe_one, GeneralLinearGroup.map_one,
+    Subgroup.mk_eq_one]
+  map_mul' g h := by simp only [GLPos.map, Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk]
+
+variable (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+
+/-- Map from `GLPos n ℚ` to `GLPos n K` for any linearly ordered field `K`. -/
+abbrev GLPos.mapRat (g : GLPos n ℚ) : GLPos n K :=
+  GLPos.map (show StrictMono (Rat.castHom K) from Rat.cast_strictMono) g
+
+/-- Group hom from `GLPos n ℚ` to `GLPos n K` for any linearly ordered field `K`. -/
+abbrev GLPos.mapRatHom : GLPos n ℚ →* GLPos n K :=
+  GLPos.mapHom (show StrictMono (Rat.castHom K) from Rat.cast_strictMono)
+
+end map
 
 namespace SpecialLinearGroup
 
@@ -306,5 +328,7 @@ theorem coe_GLPos_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(↑g : GLPos n 
   Subtype.ext <| Units.ext rfl
 
 end SpecialLinearGroup
+
+end GLPos
 
 end Matrix

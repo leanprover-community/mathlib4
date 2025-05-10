@@ -295,22 +295,9 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     add_apply, map_apply, coe_one, add_eq_left, Matrix.smul_apply, nsmul_eq_mul, Int.cast_mul,
     Int.cast_natCast, ZMod.natCast_self M, zero_mul]
 
-protected def GLPos.map
-    (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K] (g : GL(2, ℚ)⁺) : GL(2, K)⁺ :=
-  ⟨g.1.map (algebraMap ℚ K),
-    by simpa [Matrix.det_apply, Units.smul_def] using (Rat.cast_pos (K := K)).mpr g.2⟩
-
-@[simps apply]
-def GLPos.mapHom (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K] :
-    GL(2, ℚ)⁺ →* GL(2, K)⁺ where
-  toFun := GLPos.map K
-  map_one' := by simp only [GLPos.map, OneMemClass.coe_one, Matrix.GeneralLinearGroup.map_one,
-    Subgroup.mk_eq_one]
-  map_mul' g h := by simp only [GLPos.map, Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk]
-
 /-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g Γ(N) g⁻¹ ≤ Γ(M)`. -/
 theorem exists_Gamma_le_conj' (g : GL(2, ℚ)⁺) (M : ℕ) [NeZero M] :
-    ∃ N ≠ 0, (toConjAct <| GLPos.map ℝ g) • ((Gamma N).map ModularGroup.coeHom)
+    ∃ N ≠ 0, (toConjAct <| GLPos.mapRat ℝ g) • ((Gamma N).map ModularGroup.coeHom)
       ≤ (Gamma M).map ModularGroup.coeHom := by
   obtain ⟨N, hN, h⟩ := exists_Gamma_le_conj g M
   refine ⟨N, hN, fun y hy ↦ ?_⟩
