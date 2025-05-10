@@ -23,26 +23,21 @@ universe w v u
 
 open Abelian Limits ZeroObject Abelian.Ext
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+variable {C : Type u} [Category.{v} C] [Abelian C]
 
-variable (X Y P: C)
-
-omit [HasExt C] in
 theorem shortExact_kernel_of_epi {X Y : C} (e : X ⟶ Y) [he : Epi e] :
     (ShortComplex.mk (kernel.ι e) e (kernel.condition e)).ShortExact where
   exact := ShortComplex.exact_kernel e
   mono_f := equalizer.ι_mono
   epi_g := he
 
-instance Projective.of_hasProjectiveDimensionLT_one [HasProjectiveDimensionLT P 1] :
-    Projective P where
-  factors {E X} f e he := by
-    let S := ShortComplex.mk (kernel.ι e) e (kernel.condition e)
-    have hS : S.ShortExact := shortExact_kernel_of_epi e
-    rcases covariant_sequence_exact₃ P hS (addEquiv₀.symm f) rfl
-      (eq_zero_of_hasProjectiveDimensionLT _ 1 (Eq.le rfl)) with ⟨g, h⟩
+instance Projective.of_hasProjectiveDimensionLT_one [HasExt.{w} C]
+    (P : C) [HasProjectiveDimensionLT P 1] : Projective P where
+  factors f e _ := by
+    obtain ⟨g, h⟩ := covariant_sequence_exact₃ P (shortExact_kernel_of_epi e) (addEquiv₀.symm f) rfl
+      (eq_zero_of_hasProjectiveDimensionLT _ 1 (Eq.le rfl))
     rw [← addEquiv₀.eq_symm_apply.mp h, ← AddEquiv.symm_apply_apply addEquiv₀ g]
-    exact ⟨addEquiv₀ g, addEquiv₀.symm_apply_eq.mp (mk₀_comp_mk₀ (addEquiv₀ g) S.g).symm⟩
+    exact ⟨addEquiv₀ g, addEquiv₀.symm_apply_eq.mp (mk₀_comp_mk₀ (addEquiv₀ g) e).symm⟩
 
 end CategoryTheory
 
@@ -356,7 +351,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
         exact (finte_free_ext_vanish_iff S.X₁ K (i + 1)).mp this
     · have zero1 : IsZero (AddCommGrp.of (Ext K S.X₂ i)) :=
         @AddCommGrp.isZero_of_subsingleton _ ((finte_free_ext_vanish_iff _ _ i).mpr h1)
-      have zero3 : IsZero  (AddCommGrp.of (Ext K S.X₁ (i + 1))) :=
+      have zero3 : IsZero (AddCommGrp.of (Ext K S.X₁ (i + 1))) :=
         @AddCommGrp.isZero_of_subsingleton _ ((finte_free_ext_vanish_iff _ _ (i + 1)).mpr h3)
       exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl)
