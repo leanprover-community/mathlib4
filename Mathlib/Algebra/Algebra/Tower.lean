@@ -183,7 +183,7 @@ open IsScalarTower
 
 namespace AlgHom
 
-/-- R ⟶ S induces S-Alg ⥤ R-Alg -/
+/-- R ⟶ S induces S-AlgCat ⥤ R-AlgCat -/
 def restrictScalars (f : A →ₐ[S] B) : A →ₐ[R] B :=
   { (f : A →+* B) with
     commutes' := fun r => by
@@ -206,7 +206,7 @@ end AlgHom
 
 namespace AlgEquiv
 
-/-- R ⟶ S induces S-Alg ⥤ R-Alg -/
+/-- R ⟶ S induces S-AlgCat ⥤ R-AlgCat -/
 def restrictScalars (f : A ≃ₐ[S] B) : A ≃ₐ[R] B :=
   { (f : A ≃+* B) with
     commutes' := fun r => by
