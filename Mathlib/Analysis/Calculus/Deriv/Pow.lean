@@ -76,21 +76,19 @@ nonrec theorem HasDerivWithinAt.pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
   simpa using h.hasFDerivWithinAt.pow n |>.hasDerivWithinAt
 
 theorem HasDerivAt.pow (h : HasDerivAt f f' x) (n : ℕ) :
-    HasDerivAt (fun x ↦ f x ^ n)
-      (n * f x ^ (n - 1) * f') x := by
+    HasDerivAt (fun x ↦ f x ^ n) (n * f x ^ (n - 1) * f') x := by
   simpa using h.hasFDerivAt.pow n |>.hasDerivAt
 
 @[simp]
 theorem derivWithin_pow
     (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
-    derivWithin (fun x => f x ^ n) s x =
-      n * f x ^ (n - 1) * derivWithin f s x :=
+    derivWithin (fun x => f x ^ n) s x = n * f x ^ (n - 1) * derivWithin f s x :=
   (h.hasDerivWithinAt.pow n).derivWithin hu
 
 @[simp]
 theorem deriv_pow (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
-    deriv (fun x => f x ^ n) x = ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * deriv f x * f x ^ i :=
-  (h.hasDerivAt.pow' n).deriv
+    deriv (fun x => f x ^ n) x = n * f x ^ (n - 1) *   deriv f x  :=
+  (h.hasDerivAt.pow n).deriv
 
 end NormedCommRing
 
