@@ -3,25 +3,50 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Homology.BicomplexColumns
 import Mathlib.Algebra.Homology.BifunctorSingle
 import Mathlib.Algebra.Homology.BifunctorShift
 import Mathlib.Algebra.Homology.BifunctorColimits
 import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
+import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.Localization
 import Mathlib.Algebra.Homology.PreservesQuasiIso
 import Mathlib.CategoryTheory.Abelian.Flat.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 import Mathlib.CategoryTheory.Monoidal.KFlat
 import Mathlib.CategoryTheory.ObjectProperty.Shift
+import Mathlib.CategoryTheory.Triangulated.Subcategory
+import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
 /-!
 # Flat objects and K-flat complexes
 
 -/
 
-open CategoryTheory MonoidalCategory Limits
+open CategoryTheory MonoidalCategory Limits Opposite
+
+section
+
+@[simps obj]
+def Antitone.functor {α β : Type*} [Preorder α] [Preorder β]
+    {f : α → β} (hf : Antitone f) :
+    αᵒᵖ ⥤ β where
+  obj := fun a ↦ f a.unop
+  map φ := homOfLE (hf (leOfHom φ.unop))
+
+lemma Int.antitone_neg : Antitone (fun (n : ℤ) ↦ -n) := fun _ _ _ ↦ by dsimp; omega
+
+@[simps]
+def Int.opEquivalence : ℤᵒᵖ ≌ ℤ where
+  functor := Int.antitone_neg.functor
+  inverse := Int.antitone_neg.functor.rightOp
+  unitIso := NatIso.ofComponents (fun n ↦ eqToIso (by simp))
+  counitIso := NatIso.ofComponents (fun n ↦ eqToIso (by simp))
+
+end
 
 universe v u
 
@@ -58,6 +83,7 @@ lemma kFlat_shift_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (quasiIso C (.up ℤ)).kFlat (K⟦n⟧) ↔ (quasiIso C (.up ℤ)).kFlat K := by
   apply ObjectProperty.prop_shift_iff_of_isStableUnderShift
 
+variable (C) in
 lemma closedUnderColimitsOfShape_kFlat (J : Type*) [Category J]
     [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
     [∀ (X : C), PreservesColimitsOfShape J ((curriedTensor C).flip.obj X)]
@@ -79,6 +105,8 @@ lemma closedUnderColimitsOfShape_kFlat (J : Type*) [Category J]
 end CochainComplex
 
 namespace HomotopyCategory
+
+variable {C}
 
 lemma kFlat_iff_preservesQuasiIso (K : HomotopyCategory C (.up ℤ)) :
     (quasiIso C (.up ℤ)).kFlat K ↔
@@ -105,6 +133,8 @@ end HomotopyCategory
 
 namespace CochainComplex
 
+variable {C}
+
 open HomologicalComplex
 
 lemma kFlat_single_obj_iff_flat (X : C) (n : ℤ) :
@@ -120,5 +150,68 @@ lemma kFlat_single_obj_iff_flat (X : C) (n : ℤ) :
         (bifunctorMapHomologicalComplexObjSingleIso (curriedTensor C) X)
     · exact preservesQuasiIso.prop_iff_of_iso
         (bifunctorMapHomologicalComplexFlipObjSingleIso (curriedTensor C) X)
+
+-- TODO: prove it
+variable [(HomotopyCategory.quasiIso C (.up ℤ)).kFlat.IsTriangulated]
+
+lemma kFlat_of_bounded_of_flat (K : CochainComplex C ℤ) (a b : ℤ)
+    [K.IsStrictlyGE a] [K.IsStrictlyLE b]
+    (hK : ∀ n, ObjectProperty.flat (K.X n)) :
+    (quasiIso C (.up ℤ)).kFlat K := by
+  rw [← HomotopyCategory.kFlat_quotient_obj_iff]
+  apply HomotopyCategory.mem_subcategory_of_strictly_bounded _ K a b
+  intro n _ _
+  replace hK := hK n
+  rw [← kFlat_single_obj_iff_flat _ 0,
+    ← HomotopyCategory.kFlat_quotient_obj_iff] at hK
+  exact ObjectProperty.prop_of_iso _
+    ((HomotopyCategory.singleFunctorPostcompQuotientIso C 0).symm.app (K.X n)) hK
+
+section
+
+variable (K : CochainComplex C ℤ)
+
+@[simps]
+noncomputable def coconeStupidFiltrationGE :
+    Cocone K.stupidFiltrationGE where
+  pt := K
+  ι := { app n := K.ιStupidTrunc _ }
+
+noncomputable def isColimitCoconeStupidFiltrationGE :
+    IsColimit K.coconeStupidFiltrationGE :=
+  HomologicalComplex.isColimitOfEval _ _ (fun n ↦ by
+    apply isColimitOfIsEventuallyConstant _ (op n)
+    rintro ⟨j⟩ ⟨h⟩
+    obtain ⟨i, rfl⟩ := Int.le.dest (leOfHom h)
+    exact isIso_ιStupidTrunc_f _ _ rfl)
+
+variable [∀ (X : C), PreservesColimitsOfShape ℤ ((curriedTensor C).flip.obj X)]
+  [∀ (X : C), PreservesColimitsOfShape ℤ ((curriedTensor C).obj X)]
+
+-- TODO: prove it
+variable [(ObjectProperty.flat (A := C)).ContainsZero]
+
+lemma kFlat_of_isStrictlyLE_of_flat (b : ℤ) [K.IsStrictlyLE b]
+    [HasColimitsOfShape ℤ C] [HasExactColimitsOfShape ℤ C]
+    (hK : ∀ n, ObjectProperty.flat (K.X n)) :
+    (quasiIso C (.up ℤ)).kFlat K := by
+  apply (closedUnderColimitsOfShape_kFlat C ℤ)
+    (K.isColimitCoconeStupidFiltrationGE.whiskerEquivalence
+      Int.opEquivalence.symm)
+  intro i
+  apply kFlat_of_bounded_of_flat (K.stupidTrunc (ComplexShape.embeddingUpIntGE (-i))) (-i) b
+  intro n
+  by_cases hn : -i ≤ n
+  · obtain ⟨k, hk⟩ := Int.le.dest hn
+    let φ := (ιStupidTrunc K (ComplexShape.embeddingUpIntGE (-i))).f n
+    have : IsIso φ := isIso_ιStupidTrunc_f K _ (i := k) (by dsimp; omega)
+    exact ObjectProperty.prop_of_iso _ (asIso φ).symm (hK n)
+  · apply ObjectProperty.prop_of_isZero
+    apply isZero_stupidTrunc_X K (ComplexShape.embeddingUpIntGE (-i)) n
+    intro
+    dsimp
+    omega
+
+end
 
 end CochainComplex
