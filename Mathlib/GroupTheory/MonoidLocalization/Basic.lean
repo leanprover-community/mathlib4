@@ -1297,6 +1297,32 @@ theorem mulEquivOfQuotient_symm_monoidOf (x) :
     (mulEquivOfQuotient f).symm (f.toMap x) = (monoidOf S).toMap x :=
   f.lift_eq (monoidOf S).map_units _
 
+/-! #### Grothendieck group -/
+
+variable (M) in
+/-- The Grothendieck group of a monoid `M` is the localization at its top submonoid. -/
+@[to_additive
+"The Grothendieck group of an additive monoid `M` is the localization at its top submonoid."]
+abbrev GrothendieckGroup : Type _ := Localization (⊤ : Submonoid M)
+
+@[to_additive]
+instance : Inv (GrothendieckGroup M) where
+  inv := rec (fun m s ↦ (.mk s ⟨m, Submonoid.mem_top m⟩ : GrothendieckGroup M))
+    fun {m₁ m₂ s₁ s₂} h ↦ by simpa [r_iff_exists, mk_eq_mk_iff, eq_comm, mul_comm] using h
+
+@[to_additive (attr := simp)]
+lemma inv_mk (m : M) (s : (⊤ : Submonoid M)) : (mk m s)⁻¹ = .mk s ⟨m, Submonoid.mem_top m⟩ := rfl
+
+/-- The Grothendieck group is a group. -/
+@[to_additive "The Grothendieck group is a group."]
+instance instCommGroup : CommGroup (GrothendieckGroup M) where
+  __ : CommMonoid (GrothendieckGroup M) := inferInstance
+  inv_mul_cancel a := by
+    induction' a using ind
+    rw [inv_mk, mk_eq_monoidOf_mk', ←Submonoid.LocalizationMap.mk'_mul]
+    convert Submonoid.LocalizationMap.mk'_self' _ _
+    rw [mul_comm, Submonoid.coe_mul]
+
 end Localization
 
 end CommMonoid
