@@ -86,7 +86,7 @@ TODO: show that there always exists an equivalent valuation taking values in a t
 the same universe as the ring.
 
 See Note [forgetful inheritance] for why we extend `UniformSpace`, `IsUniformAddGroup`. -/
-class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
+class Valued (R : Type u) [Ring R] (Γ₀ : Type v)
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, IsUniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
@@ -118,7 +118,8 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
 theorem toUniformSpace_eq :
-    toUniformSpace = @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _ :=
+    toUniformSpace Γ₀ =
+    @IsTopologicalAddGroup.toUniformSpace R _ (v.subgroups_basis (Γ₀ := Γ₀)).topology _ :=
   UniformSpace.ext
     ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
 
@@ -131,7 +132,7 @@ theorem mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔ ∃ γ : Γ₀ˣ, { y | 
 theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x | v x < (γ : Γ₀) } ⊆ s := by
   simp only [mem_nhds, sub_zero]
 
-theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
+theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = (v x : Γ₀) } ∈ 𝓝 x := by
   rw [mem_nhds]
   use Units.mk0 _ h
   rw [Units.val_mk0]
