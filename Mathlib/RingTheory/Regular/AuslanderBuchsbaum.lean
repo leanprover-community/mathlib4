@@ -26,20 +26,6 @@ open Abelian Limits ZeroObject Abelian.Ext
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
-section Additive
-
-instance (X : C) (n : ℕ) : Functor.Additive (extFunctorObj X n) where
-  map_add {Y Z} {f g} := by
-    ext x
-    simp [mk₀_add]
-
-instance (n : ℕ) : Functor.Additive (extFunctor (C := C) n) where
-  map_add {Y Z} {f g} := by
-    ext x
-    simp [mk₀_add]
-
-end Additive
-
 variable (X I P Y : C)
 
 section Injective
@@ -108,16 +94,6 @@ lemma projective_dim_shifting_apply (e : Ext S.X₁ Y n₀) :
   projective_dim_shifting Y hS n₀ n₁ h e = hS.extClass.precomp Y h e := rfl
 
 end Projective
-
-section coproduct
-
-noncomputable def Abelian.Ext.coprodIso {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
-    AddCommGrp.of (Ext X (∐ Y) n) ≅ ∐ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
-  have : PreservesColimit (Discrete.functor Y) (extFunctorObj X n) :=
-    preservesCoproduct_of_preservesBiproduct (extFunctorObj X n)
-  PreservesCoproduct.iso (extFunctorObj X n) Y
-
-end coproduct
 
 end CategoryTheory
 
