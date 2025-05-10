@@ -36,6 +36,14 @@ infixr:25 " →ₐ " => AlgHom _
 @[inherit_doc]
 notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
+/-- The algebra morphism underlying `algebraMap` -/
+def Algebra.algHom (R A B : Type*)
+    [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    [Algebra A B] [IsScalarTower R A B] :
+    A →ₐ[R] B where
+  toRingHom := algebraMap A B
+  commutes' r := by simpa [Algebra.smul_def] using smul_assoc r (1 : A) (1 : B)
+
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`. -/
 class AlgHomClass (F : Type*) (R A B : outParam Type*)
@@ -151,6 +159,14 @@ theorem coe_toMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →* B) = f :=
 theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
+@[simp]
+theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →* B) = f :=
+  rfl
+
+@[simp]
+theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →+ B) = f :=
+  rfl
+
 variable (φ : A →ₐ[R] B)
 
 theorem coe_fn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :=
@@ -220,7 +236,10 @@ end
 theorem id_apply (p : A) : AlgHom.id R A p = p :=
   rfl
 
-/-- Composition of algebra homeomorphisms. -/
+/-- If `φ₁` and `φ₂` are `R`-algebra homomorphisms with the
+domain of `φ₁` equal to the codomain of `φ₂`, then
+`φ₁.comp φ₂` is the algebra homomorphism `x ↦ φ₁ (φ₂ x)`.
+-/
 def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
   { φ₁.toRingHom.comp ↑φ₂ with
     commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
@@ -315,6 +334,9 @@ theorem one_apply (x : A) : (1 : A →ₐ[R] A) x = x :=
 @[simp]
 theorem mul_apply (φ ψ : A →ₐ[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
+
+@[simp] theorem coe_pow (φ : A →ₐ[R] A) (n : ℕ) : ⇑(φ ^ n) = φ^[n] :=
+   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
 
 theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap R A y = x) :
     algebraMap R B y = f x :=

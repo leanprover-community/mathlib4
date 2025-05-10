@@ -124,7 +124,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     simp only [Finset.univ_eq_attach, I, Ideal.mem_span_singleton] at hp
     obtain ⟨q, rfl⟩ := hp
     simp only [map_mul, map_sub, map_sum, map_one, hg', hh']
-    erw [Finsupp.linearCombination_apply_of_mem_supported S (s := s.attach)] at hl
+    rw [Finsupp.linearCombination_apply_of_mem_supported (α := (s : Set S)) S (s := s.attach)] at hl
     · rw [← hl]
       simp only [Finset.coe_sort_coe, smul_eq_mul, mul_comm, sub_self, mul_zero, zero_mul]
     · rintro a -

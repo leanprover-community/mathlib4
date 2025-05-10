@@ -3,8 +3,7 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.CompleteLattice
+import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -52,7 +51,6 @@ namespace Rel
 
 variable (r : Rel α β)
 
--- Porting note: required for later theorems.
 @[ext] theorem ext {r s : Rel α β} : (∀ a, r a = s a) → r = s := funext
 
 /-- The inverse relation : `r.inv x y ↔ r y x`. Note that this is *not* a groupoid inverse. -/
@@ -85,8 +83,8 @@ theorem dom_inv : r.inv.dom = r.codom := by
 /-- Composition of relation; note that it follows the `CategoryTheory/` order of arguments. -/
 def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y ∧ s y z
 
--- Porting note: the original `∘` syntax can't be overloaded here, lean considers it ambiguous.
 /-- Local syntax for composition of relations. -/
+-- TODO: this could be replaced with `local infixr:90 " ∘ " => Rel.comp`.
 local infixr:90 " • " => Rel.comp
 
 theorem comp_assoc {δ : Type*} (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) :
@@ -333,7 +331,7 @@ theorem graph_injective : Injective (graph : (α → β) → Rel α β) := by
 
 @[simp] lemma graph_inj {f g : α → β} : f.graph = g.graph ↔ f = g := graph_injective.eq_iff
 
-theorem graph_id : graph id = @Eq α := by simp (config := { unfoldPartialApp := true }) [graph]
+theorem graph_id : graph id = @Eq α := by simp +unfoldPartialApp [graph]
 
 theorem graph_comp {f : β → γ} {g : α → β} : graph (f ∘ g) = Rel.comp (graph g) (graph f) := by
   ext x y

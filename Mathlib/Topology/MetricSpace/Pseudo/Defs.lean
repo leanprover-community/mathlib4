@@ -99,16 +99,22 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     _ = 2 * dist x y := by rw [two_mul, dist_comm]
   nonneg_of_mul_nonneg_right this two_pos
 
-/-- Pseudo metric and Metric spaces
+/-- A pseudometric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
+reflexivity `dist x x = 0`, commutativity `dist x y = dist y x`, and the triangle inequality
+`dist x z ≤ dist x y + dist y z`.
 
-A pseudo metric space is endowed with a distance for which the requirement `d(x,y)=0 → x = y` might
-not hold. A metric space is a pseudo metric space such that `d(x,y)=0 → x = y`.
-Each pseudo metric space induces a canonical `UniformSpace` and hence a canonical
-`TopologicalSpace` This is enforced in the type class definition, by extending the `UniformSpace`
-structure. When instantiating a `PseudoMetricSpace` structure, the uniformity fields are not
-necessary, they will be filled in by default. In the same way, each (pseudo) metric space induces a
-(pseudo) emetric space structure. It is included in the structure, but filled in by default.
--/
+Note that we do not require `dist x y = 0 → x = y`. See metric spaces (`MetricSpace`) for the
+similar class with that stronger assumption.
+
+Any pseudometric space is a topological space and a uniform space (see `TopologicalSpace`,
+`UniformSpace`), where the topology and uniformity come from the metric.
+Note that a T1 pseudometric space is just a metric space.
+
+We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
+ensures that we do not get a diamond when doing
+`[PseudoMetricSpace α] [PseudoMetricSpace β] : TopologicalSpace (α × β)`:
+The product metric and product topology agree, but not definitionally so.
+See Note [forgetful inheritance]. -/
 class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_self : ∀ x : α, dist x x = 0
   dist_comm : ∀ x y : α, dist x y = dist y x
@@ -760,7 +766,7 @@ theorem nhds_basis_closedBall_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
 theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ball x ε ⊆ s := by
   simp only [isOpen_iff_mem_nhds, mem_nhds_iff]
 
-theorem isOpen_ball : IsOpen (ball x ε) :=
+@[simp] theorem isOpen_ball : IsOpen (ball x ε) :=
   isOpen_iff.2 fun _ => exists_ball_subset_ball
 
 theorem ball_mem_nhds (x : α) {ε : ℝ} (ε0 : 0 < ε) : ball x ε ∈ 𝓝 x :=

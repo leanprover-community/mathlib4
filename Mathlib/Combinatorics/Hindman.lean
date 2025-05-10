@@ -72,7 +72,7 @@ attribute [local instance] Ultrafilter.semigroup Ultrafilter.addSemigroup
 
 -- We don't prove `continuous_mul_right`, because in general it is false!
 @[to_additive]
-theorem Ultrafilter.continuous_mul_left {M} [Semigroup M] (V : Ultrafilter M) :
+theorem Ultrafilter.continuous_mul_left {M} [Mul M] (V : Ultrafilter M) :
     Continuous (· * V) :=
   ultrafilterBasis_is_basis.continuous_iff.2 <| Set.forall_mem_range.mpr fun s ↦
     ultrafilter_isOpen_basic { m : M | ∀ᶠ m' in V, m * m' ∈ s }

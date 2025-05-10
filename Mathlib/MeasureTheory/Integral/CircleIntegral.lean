@@ -3,11 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
-import Mathlib.Analysis.Calculus.Deriv.ZPow
-import Mathlib.Analysis.NormedSpace.Pointwise
-import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
+import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 
 /-!
 # Integral over a circle in `ℂ`
@@ -18,8 +16,6 @@ prove some properties of this integral. We give definition and prove most lemmas
 some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 
 ## Main definitions
-
-* `circleMap c R`: the exponential map $θ ↦ c + R e^{θi}$;
 
 * `CircleIntegrable f c R`: a function `f : ℂ → E` is integrable on the circle with center `c` and
   radius `R` if `f ∘ circleMap c R` is integrable on `[0, 2π]`;
@@ -66,7 +62,6 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 integral, circle, Cauchy integral
 -/
 
-
 variable {E : Type*} [NormedAddCommGroup E]
 
 noncomputable section
@@ -76,80 +71,24 @@ open scoped Real NNReal Interval Pointwise Topology
 open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptotics
 
 /-!
-### `circleMap`, a parametrization of a circle
+### Facts about `circleMap`
 -/
-
-/-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
-`c` and radius `|R|`. -/
-def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ => c + R * exp (θ * I)
-
-/-- `circleMap` is `2π`-periodic. -/
-theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
-  simp [circleMap, add_mul, exp_periodic _]
-
-theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
-    (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=
-  show (((↑) : ℝ → ℂ) ⁻¹' ((· * I) ⁻¹'
-      (exp ⁻¹' ((R * ·) ⁻¹' ((c + ·) ⁻¹' s))))).Countable from
-    (((hs.preimage (add_right_injective _)).preimage <|
-      mul_right_injective₀ <| ofReal_ne_zero.2 hR).preimage_cexp.preimage <|
-        mul_left_injective₀ I_ne_zero).preimage ofReal_injective
-
-@[simp]
-theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ - c = circleMap 0 R θ := by
-  simp [circleMap]
-
-theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) :=
-  zero_add _
-
-@[simp]
-theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖= |R| := by simp [circleMap]
-
-@[deprecated (since := "2025-02-17")] alias abs_circleMap_zero := norm_circleMap_zero
-
-theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
-
-theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
-    circleMap c R θ ∈ sphere c R := by
-  simpa only [abs_of_nonneg hR] using circleMap_mem_sphere' c R θ
-
-theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
-    circleMap c R θ ∈ closedBall c R :=
-  sphere_subset_closedBall (circleMap_mem_sphere c hR θ)
-
-theorem circleMap_not_mem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
-  simp [dist_eq, le_abs_self]
-
-theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R) (θ : ℝ) :
-    circleMap c R θ ≠ w :=
-  (ne_of_mem_of_not_mem hw (circleMap_not_mem_ball _ _ _)).symm
 
 /-- The range of `circleMap c R` is the circle with center `c` and radius `|R|`. -/
 @[simp]
 theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |R| :=
   calc
     range (circleMap c R) = c +ᵥ R • range fun θ : ℝ => exp (θ * I) := by
-      simp (config := { unfoldPartialApp := true }) only [← image_vadd, ← image_smul, ← range_comp,
-        vadd_eq_add, circleMap, Function.comp_def, real_smul]
+      simp +unfoldPartialApp only [← image_vadd, ← image_smul, ← range_comp,
+        vadd_eq_add, circleMap, comp_def, real_smul]
     _ = sphere c |R| := by
-      rw [Complex.range_exp_mul_I, smul_sphere R 0 zero_le_one]
+      rw [range_exp_mul_I, smul_sphere R 0 zero_le_one]
       simp
 
 /-- The image of `(0, 2π]` under `circleMap c R` is the circle with center `c` and radius `|R|`. -/
 @[simp]
 theorem image_circleMap_Ioc (c : ℂ) (R : ℝ) : circleMap c R '' Ioc 0 (2 * π) = sphere c |R| := by
   rw [← range_circleMap, ← (periodic_circleMap c R).image_Ioc Real.two_pi_pos 0, zero_add]
-
-@[simp]
-theorem circleMap_eq_center_iff {c : ℂ} {R : ℝ} {θ : ℝ} : circleMap c R θ = c ↔ R = 0 := by
-  simp [circleMap, exp_ne_zero]
-
-@[simp]
-theorem circleMap_zero_radius (c : ℂ) : circleMap c 0 = const ℝ c :=
-  funext fun _ => circleMap_eq_center_iff.2 rfl
-
-theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circleMap c R θ ≠ c :=
-  mt circleMap_eq_center_iff.1 hR
 
 theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
     HasDerivAt (circleMap c R) (circleMap 0 R θ * I) θ := by
@@ -165,7 +104,7 @@ theorem analyticOnNhd_circleMap (c : ℂ) (R : ℝ) :
   intro z hz
   apply analyticAt_const.add
   apply analyticAt_const.mul
-  rw [(by rfl : (fun θ ↦ exp (θ * I) : ℝ → ℂ) = cexp ∘ (fun θ : ℝ ↦ (θ * I)))]
+  rw [← Function.comp_def]
   apply analyticAt_cexp.restrictScalars.comp ((ofRealCLM.analyticAt z).mul (by fun_prop))
 
 /-- The circleMap is continuously differentiable. -/
@@ -215,10 +154,13 @@ theorem circleMap_preimage_codiscrete {c : ℂ} {R : ℝ} (hR : R ≠ 0) :
     simp [hR] at this
   · rwa [Set.image_univ, range_circleMap]
 
+theorem circleMap_neg_radius {r x : ℝ} {c : ℂ} :
+    circleMap c (-r) x = circleMap c r (x + π) := by
+  simp [circleMap, add_mul, Complex.exp_add]
+
 /-!
 ### Integrability of a function on a circle
 -/
-
 
 /-- We say that a function `f : ℂ → E` is integrable on the circle with center `c` and radius `R` if
 the function `f ∘ circleMap c R` is integrable on `[0, 2π]`.
@@ -268,8 +210,9 @@ theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ :
   · simp [hR]
   apply (intervalIntegrable_congr_codiscreteWithin _).1 hf₁
   rw [eventuallyEq_iff_exists_mem]
-  use (circleMap c R)⁻¹' {z | f₁ z = f₂ z}, codiscreteWithin.mono
-    (by simp only [Set.subset_univ]) (circleMap_preimage_codiscrete hR hf), (by tauto)
+  exact ⟨(circleMap c R)⁻¹' {z | f₁ z = f₂ z},
+    codiscreteWithin.mono (by simp only [Set.subset_univ]) (circleMap_preimage_codiscrete hR hf),
+    by tauto⟩
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
 theorem circleIntegrable_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
@@ -282,7 +225,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
     CircleIntegrable f c R ↔ IntervalIntegrable (fun θ : ℝ =>
       deriv (circleMap c R) θ • f (circleMap c R θ)) volume 0 (2 * π) := by
   by_cases h₀ : R = 0
-  · simp (config := { unfoldPartialApp := true }) [h₀, const]
+  · simp +unfoldPartialApp [h₀, const]
   refine ⟨fun h => h.out, fun h => ?_⟩
   simp only [CircleIntegrable, intervalIntegrable_iff, deriv_circleMap] at h ⊢
   refine (h.norm.const_mul |R|⁻¹).mono' ?_ ?_
@@ -360,7 +303,7 @@ namespace circleIntegral
 
 @[simp]
 theorem integral_radius_zero (f : ℂ → E) (c : ℂ) : (∮ z in C(c, 0), f z) = 0 := by
-  simp (config := { unfoldPartialApp := true }) [circleIntegral, const]
+  simp +unfoldPartialApp [circleIntegral, const]
 
 theorem integral_congr {f g : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R) (h : EqOn f g (sphere c R)) :
     (∮ z in C(c, R), f z) = ∮ z in C(c, R), g z :=
@@ -647,7 +590,7 @@ theorem integral_sub_inv_of_mem_ball {c w : ℂ} {R : ℝ} (hw : w ∈ ball c R)
   simp only [div_eq_mul_inv, mul_pow, integral_const_mul, mul_assoc]
   rw [(integral_congr hR.le fun z hz => _).trans (H n hn), mul_zero]
   intro z _
-  rw [← pow_succ, ← zpow_natCast, inv_zpow, ← zpow_neg, Int.ofNat_succ, neg_add,
+  rw [← pow_succ, ← zpow_natCast, inv_zpow, ← zpow_neg, Int.natCast_succ, neg_add,
     sub_eq_add_neg _ (1 : ℤ)]
 
 end circleIntegral

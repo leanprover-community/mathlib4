@@ -144,7 +144,7 @@ theorem IsIntegral.minpoly_splits_tower_top [Algebra K L] [Algebra R L] [IsScala
 /-- If `K / E / F` is a ring extension tower, `L` is a subalgebra of `K / F`,
 then `[E[L] : E] ≤ [L : F]`. -/
 lemma Subalgebra.adjoin_rank_le {F : Type*} (E : Type*) {K : Type*}
-    [CommRing F] [StrongRankCondition F] [CommRing E] [StrongRankCondition E] [Ring K]
+    [CommSemiring F] [StrongRankCondition F] [CommSemiring E] [StrongRankCondition E] [Semiring K]
     [SMul F E] [Algebra E K] [Algebra F K] [IsScalarTower F E K]
     (L : Subalgebra F K) [Module.Free F L] :
     Module.rank E (Algebra.adjoin E (L : Set K)) ≤ Module.rank F L := by

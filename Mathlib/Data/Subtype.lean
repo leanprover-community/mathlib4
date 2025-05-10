@@ -73,8 +73,7 @@ theorem coe_eta (a : { a // p a }) (h : p a) : mk (↑a) h = a :=
 theorem coe_mk (a h) : (@mk α p a h : α) = a :=
   rfl
 
--- Porting note: not clear if "built-in reduction doesn't always work" is still relevant
--- built-in reduction doesn't always work
+/-- Restatement of `subtype.mk.injEq` as an iff. -/
 theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' := by simp
 
 theorem coe_eq_of_eq_mk {a : { a // p a }} {b : α} (h : ↑a = b) : a = ⟨b, h ▸ a.2⟩ :=
@@ -109,6 +108,12 @@ theorem _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
 theorem _root_.Function.extend_val_apply {p : β → Prop} {g : {x // p x} → γ} {j : β → γ}
     {b : β} (hb : p b) : val.extend g j b = g ⟨b, hb⟩ :=
   val_injective.extend_apply g j ⟨b, hb⟩
+
+theorem _root_.Function.extend_val_apply' {p : β → Prop} {g : {x // p x} → γ} {j : β → γ}
+    {b : β} (hb : ¬ p b) : val.extend g j b = j b := by
+  refine Function.extend_apply' g j b ?_
+  rintro ⟨a, rfl⟩
+  exact hb a.2
 
 /-- Restrict a (dependent) function to a subtype -/
 def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=

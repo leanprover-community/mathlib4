@@ -15,7 +15,8 @@ import Mathlib.Data.Fintype.Basic
 We split this from `Algebra.Order.Field.Basic` to avoid importing the finiteness hierarchy there.
 -/
 
-variable {α ι : Type*} [LinearOrderedCancelAddCommMonoid α] [Nontrivial α] [DenselyOrdered α]
+variable {α ι : Type*} [AddCommMonoid α] [LinearOrder α] [IsOrderedCancelAddMonoid α]
+  [Nontrivial α] [DenselyOrdered α]
 
 theorem Pi.exists_forall_pos_add_lt [ExistsAddOfLE α] [Finite ι] {x y : ι → α}
     (h : ∀ i, x i < y i) : ∃ ε, 0 < ε ∧ ∀ i, x i + ε < y i := by
