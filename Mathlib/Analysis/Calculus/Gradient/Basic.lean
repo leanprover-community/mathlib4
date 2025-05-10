@@ -312,7 +312,7 @@ theorem hasGradientAt_const : HasGradientAt (fun _ => c) 0 x :=
   hasGradientAtFilter_const _ _ _
 
 theorem gradient_const : ∇ (fun _ => c) x = 0 := by
-  rw [gradient, fderiv_const, Pi.zero_apply, map_zero]
+  rw [gradient, fderiv_fun_const, Pi.zero_apply, map_zero]
 
 @[simp]
 theorem gradient_const' : (∇ fun _ : 𝕜 => c) = fun _ => 0 :=
