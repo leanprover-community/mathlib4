@@ -1872,6 +1872,7 @@ import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
+import Mathlib.CategoryTheory.Bicategory.Adjunction.BaseChange
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 import Mathlib.CategoryTheory.Bicategory.Basic
@@ -1895,6 +1896,7 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
+import Mathlib.CategoryTheory.Bicategory.Opposite
 import Mathlib.CategoryTheory.Bicategory.SingleObj
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.CatCommSq
