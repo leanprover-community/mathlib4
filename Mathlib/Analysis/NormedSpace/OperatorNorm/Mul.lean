@@ -191,27 +191,16 @@ def lsmul : R →L[𝕜] E →L[𝕜] E :=
 theorem lsmul_apply (c : R) (x : E) : lsmul 𝕜 R c x = c • x :=
   rfl
 
-variable {R}
-
-theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
-  refine opNorm_eq_of_bounds (norm_nonneg _) (fun x => ?_) fun N _ h => ?_
-  · rw [toSpanSingleton_apply, norm_smul, mul_comm]
-  · specialize h 1
-    rw [toSpanSingleton_apply, norm_smul, mul_comm] at h
-    exact (mul_le_mul_right (by simp)).mp h
-
-variable {𝕜}
+variable {R} {𝕜}
 
 theorem opNorm_lsmul_apply_le (x : R) : ‖(lsmul 𝕜 R x : E →L[𝕜] E)‖ ≤ ‖x‖ :=
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg x) fun y => norm_smul_le x y
-
 
 /-- The norm of `lsmul` is at most 1 in any semi-normed group. -/
 theorem opNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ ≤ 1 := by
   refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun x => ?_
   simp_rw [one_mul]
   exact opNorm_lsmul_apply_le _
-
 
 end SMulLinear
 
