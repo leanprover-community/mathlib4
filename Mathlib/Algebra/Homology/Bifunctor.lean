@@ -277,11 +277,37 @@ lemma ι_mapBifunctorMap (i₁ : I₁) (i₂ : I₂) (j : J)
 
 end
 
+@[simp]
+lemma mapBifunctorMap_map_add₁ {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+    [Preadditive C₁] [HasZeroMorphisms C₂]
+    {I₁ I₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
+    {K₁ L₁ : HomologicalComplex C₁ c₁} (f g : K₁ ⟶ L₁) {K₂ L₂ : HomologicalComplex C₂ c₂}
+    (h : K₂ ⟶ L₂) (F : C₁ ⥤ C₂ ⥤ D) [F.Additive]
+    [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
+    {J : Type*} [DecidableEq J] (c : ComplexShape J) [TotalComplexShape c₁ c₂ c]
+    [HasMapBifunctor K₁ K₂ F c] [HasMapBifunctor L₁ L₂ F c] :
+    mapBifunctorMap (f + g) h F c = mapBifunctorMap f h F c + mapBifunctorMap g h F c := by
+  aesop_cat
+
+@[simp]
+lemma mapBifunctorMap_map_add₂ {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+    [HasZeroMorphisms C₁] [Preadditive C₂]
+    {I₁ I₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
+    {K₁ L₁ : HomologicalComplex C₁ c₁} (f : K₁ ⟶ L₁) {K₂ L₂ : HomologicalComplex C₂ c₂}
+    (g h : K₂ ⟶ L₂) (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms]
+    [∀ X₁, (F.obj X₁).Additive]
+    {J : Type*} [DecidableEq J] (c : ComplexShape J) [TotalComplexShape c₁ c₂ c]
+    [HasMapBifunctor K₁ K₂ F c] [HasMapBifunctor L₁ L₂ F c] :
+    mapBifunctorMap f (g + h) F c = mapBifunctorMap f g F c + mapBifunctorMap f h F c := by
+  aesop_cat
+
 end HomologicalComplex
 
 namespace CategoryTheory.Functor
 
 open HomologicalComplex
+
+section
 
 variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [Preadditive D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
@@ -302,5 +328,37 @@ noncomputable def bifunctorMapHomologicalComplex :
       naturality _ _ _ := by ext; dsimp; simp }
   map_id _ := by ext; dsimp; simp
   map_comp _ _ := by ext; dsimp; simp
+
+end
+
+section
+
+variable [Preadditive C₁] [HasZeroMorphisms C₂] [Preadditive D]
+  (F : C₁ ⥤ C₂ ⥤ D) [F.Additive] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
+  {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
+  (c : ComplexShape J) [TotalComplexShape c₁ c₂ c] [DecidableEq J]
+  [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂), HasMapBifunctor K₁ K₂ F c]
+
+instance : (bifunctorMapHomologicalComplex F c₁ c₂ c).Additive where
+
+instance (K₂ : HomologicalComplex C₂ c₂) :
+    ((bifunctorMapHomologicalComplex F c₁ c₂ c).flip.obj K₂).Additive where
+
+end
+
+section
+
+variable [HasZeroMorphisms C₁] [Preadditive C₂] [Preadditive D]
+  (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).Additive]
+  {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
+  (c : ComplexShape J) [TotalComplexShape c₁ c₂ c] [DecidableEq J]
+  [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂), HasMapBifunctor K₁ K₂ F c]
+
+instance : (bifunctorMapHomologicalComplex F c₁ c₂ c).flip.Additive where
+
+instance (K₁ : HomologicalComplex C₁ c₁) :
+    ((bifunctorMapHomologicalComplex F c₁ c₂ c).obj K₁).Additive where
+
+end
 
 end CategoryTheory.Functor

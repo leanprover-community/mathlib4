@@ -26,7 +26,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
 -/
 
-open CategoryTheory MonoidalCategory Limits Opposite
+open CategoryTheory MonoidalCategory Limits Opposite ZeroObject
 
 section
 
@@ -67,6 +67,21 @@ open HomologicalComplex
 lemma kFlat_iff_preservesQuasiIso (K : CochainComplex C ℤ) :
     (quasiIso C (.up ℤ)).kFlat K ↔
       preservesQuasiIso (tensorLeft K) ∧ preservesQuasiIso (tensorRight K) := Iff.rfl
+
+instance : (quasiIso C (.up ℤ)).kFlat.ContainsZero where
+  exists_zero := ⟨_, isZero_zero _, by
+    rw [kFlat_iff_preservesQuasiIso]
+    constructor
+    · apply ObjectProperty.prop_of_isZero
+      rw [IsZero.iff_id_eq_zero]
+      ext K : 2
+      dsimp
+      rw [← tensor_id, id_zero, MonoidalPreadditive.zero_tensor]
+    · apply ObjectProperty.prop_of_isZero
+      rw [IsZero.iff_id_eq_zero]
+      ext K : 2
+      dsimp
+      rw [← tensor_id, id_zero, MonoidalPreadditive.tensor_zero]⟩
 
 instance : (quasiIso C (.up ℤ)).kFlat.IsStableUnderShift ℤ where
   isStableUnderShiftBy n := ⟨fun K hK ↦ by
@@ -118,6 +133,11 @@ lemma kFlat_quotient_obj_iff (K : CochainComplex C ℤ) :
   rw [kFlat_iff_preservesQuasiIso, CochainComplex.kFlat_iff_preservesQuasiIso]
   apply and_congr <;> exact Functor.preservesQuasiIso_iff_of_factors (Iso.refl _)
 
+instance : (quasiIso C (.up ℤ)).kFlat.ContainsZero where
+  exists_zero := ⟨(quotient _ _).obj 0, Functor.map_isZero _ (isZero_zero _), by
+    rw [kFlat_quotient_obj_iff]
+    exact ObjectProperty.prop_zero _⟩
+
 instance : (quasiIso C (.up ℤ)).kFlat.IsStableUnderShift ℤ where
   isStableUnderShiftBy n := ⟨fun K hK ↦ by
     obtain ⟨K, rfl⟩ := K.quotient_obj_surjective
@@ -151,8 +171,17 @@ lemma kFlat_single_obj_iff_flat (X : C) (n : ℤ) :
     · exact preservesQuasiIso.prop_iff_of_iso
         (bifunctorMapHomologicalComplexFlipObjSingleIso (curriedTensor C) X)
 
+instance : (ObjectProperty.flat (A := C)).ContainsZero where
+  exists_zero := ⟨0, isZero_zero C, by
+    rw [← kFlat_single_obj_iff_flat _ 0]
+    apply ObjectProperty.prop_of_isZero
+    apply Functor.map_isZero
+    apply Limits.isZero_zero⟩
+
 -- TODO: prove it
-variable [(HomotopyCategory.quasiIso C (.up ℤ)).kFlat.IsTriangulated]
+variable [(HomotopyCategory.quasiIso C (.up ℤ)).kFlat.IsTriangulatedClosed₂]
+
+instance : (HomotopyCategory.quasiIso C (.up ℤ)).kFlat.IsTriangulated where
 
 lemma kFlat_of_bounded_of_flat (K : CochainComplex C ℤ) (a b : ℤ)
     [K.IsStrictlyGE a] [K.IsStrictlyLE b]
@@ -187,9 +216,6 @@ noncomputable def isColimitCoconeStupidFiltrationGE :
 
 variable [∀ (X : C), PreservesColimitsOfShape ℤ ((curriedTensor C).flip.obj X)]
   [∀ (X : C), PreservesColimitsOfShape ℤ ((curriedTensor C).obj X)]
-
--- TODO: prove it
-variable [(ObjectProperty.flat (A := C)).ContainsZero]
 
 lemma kFlat_of_isStrictlyLE_of_flat (b : ℤ) [K.IsStrictlyLE b]
     [HasColimitsOfShape ℤ C] [HasExactColimitsOfShape ℤ C]

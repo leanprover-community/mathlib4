@@ -16,8 +16,8 @@ namespace CategoryTheory
 
 open MonoidalCategory
 
-variable {A : Type*} [Category A] --[Abelian A]
-  [MonoidalCategory A] --[MonoidalPreadditive A]
+variable {A : Type*} [Category A]
+  [MonoidalCategory A]
 
 namespace ObjectProperty
 

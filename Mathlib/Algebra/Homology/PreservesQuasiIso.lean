@@ -8,6 +8,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.DoubleHomology
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory
+import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 
 /-!
 # Exact functors preserves quasi-isomorphisms
@@ -16,7 +17,7 @@ import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory
 
 section
 
-open CategoryTheory Limits
+open CategoryTheory Limits ZeroObject
 
 variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
   {ι₁ ι₂ ι₃ : Type*} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂} {c₃ : ComplexShape ι₃}
@@ -26,6 +27,17 @@ abbrev HomologicalComplex.preservesQuasiIso [HasZeroMorphisms C₁] [HasZeroMorp
     ObjectProperty (HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂) :=
   ObjectProperty.localizerMorphism
     (HomologicalComplex.quasiIso C₁ c₁) (HomologicalComplex.quasiIso C₂ c₂)
+
+instance [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroObject C₂]
+    [CategoryWithHomology C₁] [CategoryWithHomology C₂] :
+    (HomologicalComplex.preservesQuasiIso (C₁ := C₁) (C₂ := C₂)
+      (c₁ := c₁) (c₂ := c₂)).ContainsZero where
+  exists_zero := ⟨(Functor.const _).obj 0, by
+      rw [IsZero.iff_id_eq_zero]
+      aesop, fun _ _ _ _ ↦ by
+    rw [MorphismProperty.inverseImage_iff, Functor.const_obj_map,
+      HomologicalComplex.mem_quasiIso_iff]
+    infer_instance⟩
 
 nonrec lemma HomologicalComplex.preservesQuasiIso.comp [HasZeroMorphisms C₁] [HasZeroMorphisms C₂]
     [HasZeroMorphisms C₃] [CategoryWithHomology C₁] [CategoryWithHomology C₂]
