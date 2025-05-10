@@ -3,8 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Finset.Image
 import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Tactic.Nontriviality
 
@@ -882,80 +880,9 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   contrapose! h
   rwa [injective_codRestrict, ← injOn_iff_injective]
 
-/-! ### Order properties -/
-
-section Preorder
-
-variable [Preorder α] [Nonempty α] {s : Set α}
-
-theorem infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite := by
-  inhabit α
-  set f : ℕ → α := fun n => Nat.recOn n (h default).choose fun _ a => (h a).choose
-  have hf : ∀ n, f n ∈ s := by rintro (_ | _) <;> exact (h _).choose_spec.1
-  exact infinite_of_injective_forall_mem
-    (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
-
-theorem infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
-  infinite_of_forall_exists_gt (α := αᵒᵈ) h
-
-end Preorder
-
-theorem finite_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Finite :=
-  (subsingleton_isTop α).finite
-
-theorem finite_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Finite :=
-  (subsingleton_isBot α).finite
-
-theorem Infinite.exists_lt_map_eq_of_mapsTo [LinearOrder α] {s : Set α} {t : Set β} {f : α → β}
-    (hs : s.Infinite) (hf : MapsTo f s t) (ht : t.Finite) : ∃ x ∈ s, ∃ y ∈ s, x < y ∧ f x = f y :=
-  let ⟨x, hx, y, hy, hxy, hf⟩ := hs.exists_ne_map_eq_of_mapsTo hf ht
-  hxy.lt_or_lt.elim (fun hxy => ⟨x, hx, y, hy, hxy, hf⟩) fun hyx => ⟨y, hy, x, hx, hyx, hf.symm⟩
-
-theorem Finite.exists_lt_map_eq_of_forall_mem [LinearOrder α] [Infinite α] {t : Set β} {f : α → β}
-    (hf : ∀ a, f a ∈ t) (ht : t.Finite) : ∃ a b, a < b ∧ f a = f b := by
-  rw [← mapsTo_univ_iff] at hf
-  obtain ⟨a, -, b, -, h⟩ := infinite_univ.exists_lt_map_eq_of_mapsTo hf ht
-  exact ⟨a, b, h⟩
-
 theorem finite_range_findGreatest {P : α → ℕ → Prop} [∀ x, DecidablePred (P x)] {b : ℕ} :
     (range fun x => Nat.findGreatest (P x) b).Finite :=
   (finite_le_nat b).subset <| range_subset_iff.2 fun _ => Nat.findGreatest_le _
-
-theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)
-    (hs : s.Nonempty) : ∃ a ∈ s, ∀ a' ∈ s, f a ≤ f a' → f a = f a' := by
-  induction s, h using Set.Finite.induction_on with
-  | empty => exact absurd hs not_nonempty_empty
-  | @insert a s his _ ih =>
-    rcases s.eq_empty_or_nonempty with h | h
-    · use a
-      simp [h]
-    rcases ih h with ⟨b, hb, ih⟩
-    by_cases h : f b ≤ f a
-    · refine ⟨a, Set.mem_insert _ _, fun c hc hac => le_antisymm hac ?_⟩
-      rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
-      · rfl
-      · rwa [← ih c hcs (le_trans h hac)]
-    · refine ⟨b, Set.mem_insert_of_mem _ hb, fun c hc hbc => ?_⟩
-      rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
-      · exact (h hbc).elim
-      · exact ih c hcs hbc
-
-/-- A version of `Finite.exists_maximal_wrt` with the (weaker) hypothesis that the image of `s`
-  is finite rather than `s` itself. -/
-theorem Finite.exists_maximal_wrt' [PartialOrder β] (f : α → β) (s : Set α) (h : (f '' s).Finite)
-    (hs : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a ≤ f a' → f a = f a') := by
-  obtain ⟨_, ⟨a, ha, rfl⟩, hmax⟩ := Finite.exists_maximal_wrt id (f '' s) h (hs.image f)
-  exact ⟨a, ha, fun a' ha' hf ↦ hmax _ (mem_image_of_mem f ha') hf⟩
-
-theorem Finite.exists_minimal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)
-    (hs : s.Nonempty) : ∃ a ∈ s, ∀ a' ∈ s, f a' ≤ f a → f a = f a' :=
-  Finite.exists_maximal_wrt (β := βᵒᵈ) f s h hs
-
-/-- A version of `Finite.exists_minimal_wrt` with the (weaker) hypothesis that the image of `s`
-  is finite rather than `s` itself. -/
-lemma Finite.exists_minimal_wrt' [PartialOrder β] (f : α → β) (s : Set α) (h : (f '' s).Finite)
-    (hs : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a' ≤ f a → f a = f a') :=
-  Set.Finite.exists_maximal_wrt' (β := βᵒᵈ) f s h hs
 
 end Set
 
