@@ -130,8 +130,6 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_le_pow_inertiaDeg_of_mem_primesOv
     eq_bot_of_comap_eq_bot (R := ℤ) <| by simpa only [hp, submodule_span_eq, span_singleton_eq_bot]
   have hpprime := (span_singleton_prime hp0).mp
   simp only [← submodule_span_eq, ← hp] at hpprime
-  have hle : algebraMap ℤ (𝓞 K) p ∈ P := (mem_of_liesOver P (under ℤ P) p).mp <|
-    hp ▸ Submodule.mem_span_singleton_self p
   have hlies : P.LiesOver (span {p}) := by
     rcases abs_choice p with h | h <;>
     simpa [h, span_singleton_neg p, ← submodule_span_eq, ← hp] using over_under P
