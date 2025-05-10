@@ -536,6 +536,13 @@ theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
   congr 3
   rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one, one_mul]
 
+lemma div_C : p / C a = C a⁻¹ * p := by
+  nth_rw 2 [← EuclideanDomain.div_one p]
+  rw [← div_C_mul, mul_one]
+
+lemma C_div : C (a / b) = C a / C b := by
+  rw [Polynomial.div_C, ← C_mul, div_eq_mul_inv, mul_comm]
+
 theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
   ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
