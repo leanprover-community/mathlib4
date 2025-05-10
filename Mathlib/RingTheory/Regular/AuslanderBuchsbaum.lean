@@ -3,6 +3,7 @@ Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yongle Hu, Yijun Yuan
 -/
+import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 import Mathlib.RingTheory.LocalRing.Module
@@ -92,6 +93,24 @@ lemma projective_dim_shifting_apply (e : Ext S.X₁ Y n₀) :
   projective_dim_shifting Y hS n₀ n₁ h e = hS.extClass.precomp Y h e := rfl
 
 end Projective
+
+section coproduct
+
+instance (n : ℕ) : (extFunctorObj X n).Additive where
+  map_add := by
+    intros
+    simp only [extFunctorObj_map, mk₀_add, map_add]
+    rfl
+
+noncomputable def Abelian.Ext.coproductIso {ι : Type} [Finite ι] (Y : ι → C) (n : ℕ) :
+    AddCommGrp.of (Ext X (∐ Y) n) ≅ ∐ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
+  have : PreservesColimit (Discrete.functor Y) (extFunctorObj X n) :=
+    preservesCoproduct_of_preservesBiproduct (extFunctorObj X n)
+  PreservesCoproduct.iso (extFunctorObj X n) Y
+
+#check ModuleCat.coprodIsoDirectSum
+
+end coproduct
 
 end CategoryTheory
 
