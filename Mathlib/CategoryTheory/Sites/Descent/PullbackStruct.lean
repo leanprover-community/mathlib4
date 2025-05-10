@@ -37,6 +37,9 @@ variable {X₁ X₂ S : C} {f₁ : X₁ ⟶ S} {f₂ : X₂ ⟶ S}
 lemma w : h.p₁ ≫ f₁ = h.p₂ ≫ f₂ :=
   h.isPullback.w
 
+lemma commSq : CommSq h.p₁ h.p₂ f₁ f₂ where
+  w := h.w
+
 attribute [reassoc (attr := simp)] hp₁
 
 @[reassoc (attr := simp)]
