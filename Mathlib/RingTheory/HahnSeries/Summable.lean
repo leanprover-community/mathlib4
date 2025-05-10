@@ -12,19 +12,33 @@ function. This theory is applied to characterize invertible Hahn series whose co
 commutative domain.
 
 ## Main Definitions
-  * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of the supports
+  * `HahnSeries.SummableFamily` is a family of Hahn series such that the union of the supports
   is partially well-ordered and only finitely many are nonzero at any given coefficient. Note that
   this is different from `Summable` in the valuation topology, because there are topologically
   summable families that do not satisfy the axioms of `HahnSeries.SummableFamily`, and formally
   summable families whose sums do not converge topologically.
-  * The formal sum, `HahnSeries.SummableFamily.hsum` can be bundled as a `LinearMap` via
-  `HahnSeries.SummableFamily.lsum`.
+  * `HahnSeries.SummableFamily.hsum` is the formal sum of a summable family.
+  * `HahnSeries.SummableFamily.lsum` is the formal sum bundled as a `LinearMap`.
+  * `HahnSeries.SummableFamily.smul` is the summable family given by pointwise scalar multiplication
+  of component Hahn series.
+  * `HahnSeries.SummableFamily.mul` is the summable family given by pointwise multiplication.
+  * `HahnSeries.SummableFamily.powers` is the summable family given by non-negative powers of a
+  Hahn series, if the series has strictly positive order. If the series has non-positive order, then
+  the summable family takes the junk value of zero.
   * `FamilySMul`, `FamilyMul`, and `PiFamily` are the pointwise scalar multiplication and
   multiplication operations on a pair or collection of summable families.
 
 ## Main results
   * `FamilySMul`, `FamilyMul`, and `PiFamily` are compatible with `hsum`.  That is, the product of
   sums is equal to the sum of pointwise products.
+  * `HahnSeries.isUnit_iff`: If `R` is a commutative domain, and `Γ` is a linearly ordered additive
+  commutative group, then a Hahn series is a unit if and only if its leading term is a unit in `R`.
+  * `HahnSeries.SummableFamily.hsum_smul`:   `smul` is compatible with `hsum`.
+  * `HahnSeries.SummableFamily.hsum_mul`: `mul` is compatible with `hsum`.  That is, the product of
+  sums is equal to the sum of pointwise products.
+
+## TODO
+  * Summable Pi families
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -537,11 +551,11 @@ def mul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
     isPWO_iUnion_support_prod_mul s.isPWO_iUnion_support t.isPWO_iUnion_support
   finite_co_support' g := finite_co_support_prod_mul s t g
 
-theorem mul_eq_smul {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
+theorem mul_eq_smul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
     mul s t = smul s t :=
   rfl
 
-theorem coeff_hsum_mul {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) (g : Γ) :
+theorem coeff_hsum_mul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) (g : Γ) :
     (mul s t).hsum.coeff g = ∑ gh ∈ addAntidiagonal s.isPWO_iUnion_support
       t.isPWO_iUnion_support g, (s.hsum.coeff gh.1) * (t.hsum.coeff gh.2) := by
   simp_rw [← smul_eq_mul, mul_eq_smul]
@@ -549,7 +563,7 @@ theorem coeff_hsum_mul {β : Type*} (s : SummableFamily Γ R α) (t : SummableFa
 
 @[deprecated (since := "2025-01-31")] alias mul_coeff := coeff_hsum_mul
 
-theorem hsum_mul {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
+theorem hsum_mul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
     (mul s t).hsum = s.hsum * t.hsum := by
   rw [← smul_eq_mul, mul_eq_smul]
   exact smul_hsum s t
@@ -928,25 +942,63 @@ theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : �
       simp only [mem_coe, mem_addAntidiagonal, mem_support, ne_eq, Set.mem_iUnion]
       exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 
-/-- A summable family of powers of a Hahn series `x` with strictly positive orderTop. -/
+/-- A summable family of powers of a Hahn series `x`. If `x` has non-positive `orderTop`, then
+return a junk value given by pretending `x = 0`. -/
 @[simps]
-def powers (x : HahnSeries Γ R) (hx : 0 < x.orderTop) : SummableFamily Γ R ℕ where
-  toFun n := x ^ n
-  isPWO_iUnion_support' :=
-    isPWO_iUnion_support_powers (zero_le_orderTop_iff.mp <| le_of_lt hx)
-  finite_co_support' g := pow_finite_co_support hx g
+def powers (x : HahnSeries Γ R) : SummableFamily Γ R ℕ where
+  toFun n := if 0 < x.orderTop then x ^ n else 0 ^ n
+  isPWO_iUnion_support' := by
+    by_cases h : 0 < x.orderTop
+    · simp only [h, ↓reduceIte]
+      exact
+    isPWO_iUnion_support_powers (zero_le_orderTop_iff.mp <| le_of_lt h)
+    · simp only [h, ↓reduceIte]
+      apply isPWO_iUnion_support_powers
+      rw [order_zero]
+  finite_co_support' g := by
+    by_cases h : 0 < x.orderTop
+    · simp only [h, ↓reduceIte]
+      exact pow_finite_co_support h g
+    · simp only [h, ↓reduceIte]
+      exact pow_finite_co_support (orderTop_zero (R := R) (Γ := Γ) ▸ WithTop.top_pos) g
+
+theorem powers_of_orderTop_pos {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (n : ℕ) :
+    powers x n = x ^ n := by
+  simp [hx]
+
+theorem powers_of_not_orderTop_pos {x : HahnSeries Γ R} (hx : ¬ 0 < x.orderTop) (n : ℕ) :
+    powers x n = 0 ^ n := by
+  simp [hx]
 
 variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
 
+include hx in
 @[simp]
-theorem coe_powers : ⇑(powers x hx) = HPow.hPow x :=
-  rfl
+theorem coe_powers : ⇑(powers x) = HPow.hPow x := by
+  ext1 n
+  simp [hx]
 
+include hx in
 theorem embDomain_succ_smul_powers :
-    (x • powers x hx).embDomain ⟨Nat.succ, Nat.succ_injective⟩ =
-      powers x hx - ofFinsupp (Finsupp.single 0 1) := by
+    (x • powers x).embDomain ⟨Nat.succ, Nat.succ_injective⟩ =
+      powers x - ofFinsupp (Finsupp.single 0 1) := by
   apply SummableFamily.ext
   rintro (_ | n)
+  · simp [hx]
+  · simp only [coe_sub, coe_ofFinsupp, Pi.sub_apply, powers_of_orderTop_pos hx, ne_eq,
+    right_eq_add, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true,
+    Finsupp.single_eq_of_ne, sub_zero]
+    simp only [embDomain_apply, Embedding.coeFn_mk, Nat.range_succ, Set.mem_setOf_eq,
+      lt_add_iff_pos_left, add_pos_iff, Nat.lt_one_iff, pos_of_gt, or_true, ↓reduceDIte,
+      Nat.succ_eq_add_one, add_left_inj, Classical.choose_eq, smul_apply, powers_of_orderTop_pos hx,
+      smul_eq_mul]
+    rw [add_comm, pow_add, pow_one]
+    exact rfl
+
+include hx in
+theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x).hsum = 1 := by
+  rw [← hsum_smul, sub_smul 1 x (powers x), one_smul, hsum_sub, ←
+    hsum_embDomain (x • powers x) ⟨Nat.succ, Nat.succ_injective⟩, embDomain_succ_smul_powers hx]
   · simp [hx]
   · simp only [coe_sub, coe_ofFinsupp, Pi.sub_apply, powers_toFun, ne_eq,
     right_eq_add, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true,
@@ -1040,6 +1092,7 @@ instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [F
     if x0 : x = 0 then 0
     else
       (single (IsAddUnit.addUnit (AddGroup.isAddUnit x.order)).neg) (x.leadingCoeff)⁻¹ *
+        (SummableFamily.powers _).hsum
         (SummableFamily.powers _ _).hsum
   inv_zero := dif_pos rfl
   mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
