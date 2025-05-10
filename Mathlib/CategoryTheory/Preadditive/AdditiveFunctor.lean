@@ -162,6 +162,22 @@ instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
             simp_rw [F.mapBicone_π, F.mapBicone_ι, ← F.map_comp]
             erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])⟩ } }
 
+instance (priority := 100) preservesFiniteBiproductsOfShapeOfAdditive [Additive F]
+    (J : Type*) [Finite J] : PreservesBiproductsOfShape J F where
+  preserves := ⟨fun hb =>
+    have : Fintype J := Fintype.ofFinite J
+    ⟨isBilimitOfTotal _ (by
+      simp_rw [F.mapBicone_π, F.mapBicone_ι, ← F.map_comp]
+      erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])⟩⟩
+
+instance (priority := 100) preservesCoproductOfAdditive [Additive F] {J : Type*} [Finite J]
+    (Y : J → C) : PreservesColimit (Discrete.functor Y) F :=
+  preservesCoproduct_of_preservesBiproduct F
+
+instance (priority := 100) preservesProductOfAdditive [Additive F] {J : Type*} [Finite J]
+    (Y : J → C) : PreservesLimit (Discrete.functor Y) F :=
+  preservesProduct_of_preservesBiproduct F
+
 theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
     [PreservesBinaryBiproducts F] : Additive F where
   map_add {X Y f g} := by
