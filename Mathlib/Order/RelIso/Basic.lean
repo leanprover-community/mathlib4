@@ -716,12 +716,16 @@ lemma copy_eq (e : r ≃r s) (f : α → β) (g : β → α) (hf hg) : e.copy f 
   DFunLike.coe_injective hf
 
 /-- Any equivalence lifts to a relation isomorphism between `s` and its preimage. -/
-@[simps]
-protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s where
-  toFun := f
-  invFun := f.symm
-  __ := f
-  map_rel_iff' := Iff.rfl
+protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s :=
+  ⟨f, Iff.rfl⟩
+
+-- `simps` crashes if asked to generate these
+@[simp]
+theorem preimage_apply (f : α ≃ β) (s : β → β → Prop) (a : α) : RelIso.preimage f s a = f a := rfl
+
+@[simp]
+theorem preimage_symm_apply (f : α ≃ β) (s : β → β → Prop) (a : β) :
+    (RelIso.preimage f s).symm a = f.symm a := rfl
 
 instance IsWellOrder.preimage {α : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     IsWellOrder β (f ⁻¹'o r) :=
