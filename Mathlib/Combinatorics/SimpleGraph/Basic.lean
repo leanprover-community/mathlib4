@@ -134,6 +134,9 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
     (SimpleGraph.fromRel r).Adj v w ↔ v ≠ w ∧ (r v w ∨ r w v) :=
   Iff.rfl
 
+attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
+attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
+
 /-- Two vertices are adjacent in the complete bipartite graph on two vertex types
 if and only if they are not from the same side.
 Any bipartite graph may be regarded as a subgraph of one of these. -/
@@ -320,9 +323,6 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     sInf_le := fun _ _ hG _ _ hab => hab.1 hG
     le_sInf := fun _ _ hG _ _ hab => ⟨fun _ hH => hG _ hH hab, hab.ne⟩
     iInf_iSup_eq := fun f => by ext; simp [Classical.skolem] }
-
-attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
-attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices. -/
 abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
