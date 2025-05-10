@@ -385,7 +385,6 @@ theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
   rw [← hh, vadd_vadd, vadd_vadd]
   simp
 
-@[to_additive existing]
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (H.map (MulAut.conj g).toMonoidHom) (g • B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]

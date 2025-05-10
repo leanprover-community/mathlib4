@@ -279,7 +279,6 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G
 
 end AddAction
 
-attribute [to_additive existing] MulAction.stabilizer_smul_eq_stabilizer_map_conj
 attribute [to_additive existing] MulAction.stabilizerEquivStabilizerOfOrbitRel
 
 theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a b : α} :

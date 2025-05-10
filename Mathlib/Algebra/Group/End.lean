@@ -542,6 +542,8 @@ end Swap
 section AddGroup
 variable [AddGroup α] (a b : α)
 
+-- we can't use `to_additive`, because it tries to translate `1` into `0`
+
 @[simp] lemma addLeft_zero : Equiv.addLeft (0 : α) = 1 := ext zero_add
 
 @[simp] lemma addRight_zero : Equiv.addRight (0 : α) = 1 := ext add_zero
@@ -575,41 +577,31 @@ end AddGroup
 section Group
 variable [Group α] (a b : α)
 
-@[to_additive existing (attr := simp)]
-lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
+@[simp] lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
 
-@[to_additive existing (attr := simp)]
-lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
+@[simp] lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 
-@[to_additive existing (attr := simp)]
-lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
+@[simp] lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
   ext <| mul_assoc _ _
 
-@[to_additive existing (attr := simp)]
-lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
+@[simp] lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
   ext fun _ ↦ (mul_assoc _ _ _).symm
 
-@[to_additive existing (attr := simp) inv_addLeft]
-lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
+@[simp] lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
 
-@[to_additive existing (attr := simp) inv_addRight]
-lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
+@[simp] lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
 
-@[to_additive existing (attr := simp) pow_addLeft]
-lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
+@[simp] lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
   ext; simp [Perm.coe_pow]
 
-@[to_additive existing (attr := simp) pow_addRight]
-lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
+@[simp] lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
   ext; simp [Perm.coe_pow]
 
-@[to_additive existing (attr := simp) zpow_addLeft]
-lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
+@[simp] lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
   (map_zpow ({ toFun := Equiv.mulLeft, map_one' := mulLeft_one, map_mul' := mulLeft_mul } :
               α →* Perm α) _ _).symm
 
-@[to_additive existing (attr := simp) zpow_addRight]
-lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
+@[simp] lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
   | Int.ofNat n => by simp
   | Int.negSucc n => by simp
 

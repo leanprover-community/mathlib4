@@ -299,7 +299,6 @@ def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral
 
 /-- Given `f : M →* K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
 `M →* 𝓞 K`. -/
-@[to_additive existing] -- TODO: why doesn't it figure this out by itself?
 def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ (f x)) : M →* 𝓞 K where
   toFun := restrict f h
   map_one' := by simp only [restrict, map_one, mk_one]
