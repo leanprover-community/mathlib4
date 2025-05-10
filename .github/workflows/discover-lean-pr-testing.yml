@@ -158,7 +158,7 @@ jobs:
 
           # Find the most recent nightly-testing-YYYY-MM-DD tag that is an ancestor of the branch
           # Temporarily checkout the branch
-          git checkout --quiet origin/"$BRANCH" || {
+          git checkout origin/"$BRANCH" || {
             echo "Failed to checkout branch origin/$BRANCH, skipping"
             continue
           }
