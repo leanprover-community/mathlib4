@@ -434,13 +434,13 @@ instance (n : ℕ) : (extFunctor (C := C) n).Additive where
     simp [Ext.mk₀_add]
 
 /-- `Ext` commutes with finite coproducts. -/
-noncomputable def coprodIso (X : C) {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
+noncomputable def Ext.coprodIso (X : C) {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
     AddCommGrp.of (Ext X (∐ Y) n) ≅ ∐ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
   PreservesCoproduct.iso (extFunctorObj X n) Y
 
 /-- `Ext` commutes with finite products. -/
 -- TODO: Prove that `Ext` commutes with arbitrary products.
-noncomputable def prodIso (X : C) {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
+noncomputable def Ext.prodIso (X : C) {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
     AddCommGrp.of (Ext X (∏ᶜ Y) n) ≅ ∏ᶜ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
   PreservesProduct.iso (extFunctorObj X n) Y
 
