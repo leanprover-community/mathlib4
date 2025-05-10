@@ -31,19 +31,21 @@ universe v u
 
 namespace CoalgebraCat
 
-open CategoryTheory MonoidalCategory
+open CategoryTheory MonoidalCategory Comon_Class
 
 variable {R : Type u} [CommRing R]
 
-/-- An `R`-coalgebra is a comonoid object in the category of `R`-modules. -/
-@[simps X counit comul]
-noncomputable def toComonObj (X : CoalgebraCat R) : Comon_ (ModuleCat R) where
-  X := ModuleCat.of R X
+@[simps counit comul]
+noncomputable instance (X : CoalgebraCat R) : Comon_Class (ModuleCat.of R X) where
   counit := ModuleCat.ofHom Coalgebra.counit
   comul := ModuleCat.ofHom Coalgebra.comul
-  counit_comul := ModuleCat.hom_ext <| by simpa using Coalgebra.rTensor_counit_comp_comul
-  comul_counit := ModuleCat.hom_ext <| by simpa using Coalgebra.lTensor_counit_comp_comul
-  comul_assoc := ModuleCat.hom_ext <| by simp_rw [ModuleCat.of_coe]; exact Coalgebra.coassoc.symm
+  counit_comul' := ModuleCat.hom_ext <| by simpa using Coalgebra.rTensor_counit_comp_comul
+  comul_counit' := ModuleCat.hom_ext <| by simpa using Coalgebra.lTensor_counit_comp_comul
+  comul_assoc' := ModuleCat.hom_ext <| by simp_rw [ModuleCat.of_coe]; exact Coalgebra.coassoc.symm
+
+/-- An `R`-coalgebra is a comonoid object in the category of `R`-modules. -/
+@[simps X]
+noncomputable def toComonObj (X : CoalgebraCat R) : Comon_ (ModuleCat R) := ⟨ModuleCat.of R X⟩
 
 variable (R) in
 /-- The natural functor from `R`-coalgebras to comonoid objects in the category of `R`-modules. -/
@@ -58,26 +60,26 @@ noncomputable def toComon : CoalgebraCat R ⥤ Comon_ (ModuleCat R) where
 /-- A comonoid object in the category of `R`-modules has a natural comultiplication
 and counit. -/
 @[simps]
-noncomputable instance ofComonObjCoalgebraStruct (X : Comon_ (ModuleCat R)) :
-    CoalgebraStruct R X.X where
-  comul := X.comul.hom
-  counit := X.counit.hom
+noncomputable instance ofComonObjCoalgebraStruct (X : ModuleCat R) [Comon_Class X] :
+    CoalgebraStruct R X where
+  comul := Δ[X].hom
+  counit := ε[X].hom
 
 /-- A comonoid object in the category of `R`-modules has a natural `R`-coalgebra
 structure. -/
-noncomputable def ofComonObj (X : Comon_ (ModuleCat R)) : CoalgebraCat R :=
-  { ModuleCat.of R X.X with
+noncomputable def ofComonObj (X : ModuleCat R) [Comon_Class X] : CoalgebraCat R :=
+  { ModuleCat.of R X with
     instCoalgebra :=
       { ofComonObjCoalgebraStruct X with
-        coassoc := ModuleCat.hom_ext_iff.mp X.comul_assoc.symm
-        rTensor_counit_comp_comul := ModuleCat.hom_ext_iff.mp X.counit_comul
-        lTensor_counit_comp_comul := ModuleCat.hom_ext_iff.mp X.comul_counit } }
+        coassoc := ModuleCat.hom_ext_iff.mp (comul_assoc X).symm
+        rTensor_counit_comp_comul := ModuleCat.hom_ext_iff.mp (counit_comul X)
+        lTensor_counit_comp_comul := ModuleCat.hom_ext_iff.mp (comul_counit X) } }
 
 variable (R)
 
 /-- The natural functor from comonoid objects in the category of `R`-modules to `R`-coalgebras. -/
 noncomputable def ofComon : Comon_ (ModuleCat R) ⥤ CoalgebraCat R where
-  obj X := ofComonObj X
+  obj X := ofComonObj X.X
   map f :=
     { toCoalgHom' :=
       { f.hom.hom with
@@ -118,8 +120,10 @@ theorem tensorObj_comul (K L : CoalgebraCat R) :
       ∘ₗ TensorProduct.map Coalgebra.comul Coalgebra.comul := by
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
-  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X, ModuleCat.of_coe, toComonObj_comul,
-    tensorμ_eq_tensorTensorTensorComm]
+  simp only [Comon_.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
+    comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe,
+    instComon_ClassModuleCatOfCarrier_comul, tensorμ_eq_tensorTensorTensorComm, ModuleCat.hom_comp,
+    ModuleCat.hom_ofHom, LinearEquiv.comp_toLinearMap_eq_iff]
   rfl
 
 theorem tensorHom_toLinearMap (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
@@ -147,8 +151,9 @@ theorem comul_tensorObj :
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
     instCoalgebraStruct_comul]
-  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X,
-    toComonObj_comul, tensorμ_eq_tensorTensorTensorComm]
+  simp only [Comon_.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
+    comonEquivalence_functor, toComon_obj, toComonObj_X, tensorμ_eq_tensorTensorTensorComm,
+    ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearEquiv.comp_toLinearMap_eq_iff]
   rfl
 
 theorem comul_tensorObj_tensorObj_right :
@@ -158,12 +163,10 @@ theorem comul_tensorObj_tensorObj_right :
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
     instCoalgebraStruct_comul]
-  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X, ModuleCat.of_coe, toComonObj_comul]
-  rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
+  simp only [Comon_.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
+    comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe, ModuleCat.hom_comp]
   simp only [instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
-    ModuleCat.coe_of, Comon_.monoidal_tensorObj_comul, toComonObj_X, toComonObj_comul,
-    tensorμ_eq_tensorTensorTensorComm]
+    ModuleCat.coe_of, tensorμ_eq_tensorTensorTensorComm, ModuleCat.hom_ofHom]
   rfl
 
 theorem comul_tensorObj_tensorObj_left :
@@ -173,12 +176,10 @@ theorem comul_tensorObj_tensorObj_left :
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
     instCoalgebraStruct_comul]
-  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X, ModuleCat.of_coe, toComonObj_comul]
-  rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
+  simp only [Comon_.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
+    comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe, ModuleCat.hom_comp]
   simp only [instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
-    ModuleCat.coe_of, Comon_.monoidal_tensorObj_comul, toComonObj_X, toComonObj_comul,
-    tensorμ_eq_tensorTensorTensorComm]
+    ModuleCat.coe_of, tensorμ_eq_tensorTensorTensorComm, ModuleCat.hom_ofHom]
   rfl
 
 theorem counit_tensorObj :
