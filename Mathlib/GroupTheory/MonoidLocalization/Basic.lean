@@ -1297,11 +1297,7 @@ theorem mulEquivOfQuotient_symm_monoidOf (x) :
     (mulEquivOfQuotient f).symm (f.toMap x) = (monoidOf S).toMap x :=
   f.lift_eq (monoidOf S).map_units _
 
-/-! ### Grothendieck group -/
-
-open Localization
-
-variable {M : Type*} [CommMonoid M]
+/-! #### Grothendieck group -/
 
 variable (M) in
 /-- The Grothendieck group of a monoid `M` is the localization at its top submonoid. -/
