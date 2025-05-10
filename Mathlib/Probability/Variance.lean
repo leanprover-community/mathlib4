@@ -161,7 +161,7 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
     evariance (fun ω => c * X ω) μ = ENNReal.ofReal (c ^ 2) * evariance X μ := by
   rw [evariance, evariance, ← lintegral_const_mul' _ _ ENNReal.ofReal_lt_top.ne]
   congr with ω
-  rw [integral_mul_left, ← mul_sub, enorm_mul, mul_pow, ← enorm_pow,
+  rw [integral_const_mul, ← mul_sub, enorm_mul, mul_pow, ← enorm_pow,
     Real.enorm_of_nonneg (sq_nonneg _)]
 
 @[simp]
@@ -195,8 +195,8 @@ theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2
   · apply hX.integrable_sq.add
     apply integrable_const
   · exact ((hX.integrable one_le_two).const_mul 2).mul_const' _
-  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul, integral_mul_right,
-    integral_mul_left, Pi.pow_apply]
+  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul, integral_mul_const,
+    integral_const_mul, Pi.pow_apply]
   ring
 
 theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
@@ -276,7 +276,7 @@ theorem IndepFun.variance_add [IsProbabilityMeasure μ] {X Y : Ω → ℝ} (hX :
       simp [variance_def' (hX.add hY), add_sq']
     _ = μ[X ^ 2] + μ[Y ^ 2] + (2 : ℝ) * μ[X * Y] - (μ[X] + μ[Y]) ^ 2 := by
       simp only [Pi.add_apply, Pi.pow_apply, Pi.mul_apply, mul_assoc]
-      rw [integral_add, integral_add, integral_add, integral_mul_left]
+      rw [integral_add, integral_add, integral_add, integral_const_mul]
       · exact hX.integrable one_le_two
       · exact hY.integrable one_le_two
       · exact hX.integrable_sq
@@ -342,7 +342,7 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
           MemLp.integrable one_le_two (hs _ (mem_insert_of_mem hi)),
         mul_sum, mul_sum, ← sum_sub_distrib]
       apply Finset.sum_eq_zero fun i hi => ?_
-      rw [integral_mul_left, IndepFun.integral_mul', sub_self]
+      rw [integral_const_mul, IndepFun.integral_mul', sub_self]
       · apply h (mem_insert_self _ _) (mem_insert_of_mem hi)
         exact fun hki => ks (hki.symm ▸ hi)
       · exact MemLp.aestronglyMeasurable (hs _ (mem_insert_self _ _))
@@ -377,7 +377,7 @@ lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
         integral_sub (by fun_prop) (integrable_const (a * b))
       _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - a * b := by simp
       _ = - μ[X ^ 2] + (a + b) * μ[X] - a * b := by
-        simp [← integral_neg, ← integral_mul_left, integral_add hX_int₂ hX_int₁]
+        simp [← integral_neg, ← integral_const_mul, integral_add hX_int₂ hX_int₁]
   calc
     _ ≤ (a + b) * μ[X] - a * b - μ[X] ^ 2 := by
       rw [variance_def' (memLp_of_bounded h hX.aestronglyMeasurable 2)]

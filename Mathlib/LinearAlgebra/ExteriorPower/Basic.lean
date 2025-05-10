@@ -109,7 +109,7 @@ variable {R} in
 /-- The solutions in a module `N` to the linear equations
 given by `exteriorPower.relations R ι M` identify to alternating maps to `N`. -/
 @[simps!]
-def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type*}
+noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type*}
     [AddCommGroup M] [Module R M] :
     (relations R ι M).Solution N ≃ AlternatingMap R M N ι where
   toFun s :=
@@ -141,7 +141,7 @@ def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type*}
   right_inv _ := rfl
 
 /-- The universal property of the exterior power. -/
-def isPresentationCore :
+noncomputable def isPresentationCore :
     (relationsSolutionEquiv.symm (ιMulti R n (M := M))).IsPresentationCore where
   desc s := LinearMap.comp (ExteriorAlgebra.liftAlternating
       (Function.update 0 n (relationsSolutionEquiv s))) (Submodule.subtype _)

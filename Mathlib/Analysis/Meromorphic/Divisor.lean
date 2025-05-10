@@ -11,15 +11,14 @@ import Mathlib.Data.LocallyFinsupp
 # The Divisor of a meromorphic function
 
 This file defines the divisor of a meromorphic function and proves the most basic lemmas about those
-divisors.
-
-## TODO
-
-- Congruence lemmas for `codiscreteWithin`
+divisors. The lemma `MeromorphicOn.divisor_restrict` guarantees compatibility between restrictions
+of divisors and of meromorphic functions to subsets of their domain of definition.
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+open Filter Topology
 
 namespace MeromorphicOn
 
@@ -67,6 +66,51 @@ lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
     divisor f U z = (hf z hz).order.untop₀ := by simp_all [MeromorphicOn.divisor_def, hz]
 
 /-!
+## Congruence Lemmas
+-/
+
+/--
+If `f₁` is meromorphic on `U`, if `f₂` agrees with `f₁` on a codiscrete subset of `U` and outside of
+`U`, then `f₁` and `f₂` induce the same divisors on `U`.
+-/
+theorem divisor_congr_codiscreteWithin_of_eqOn_compl {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
+    (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : Set.EqOn f₁ f₂ Uᶜ) :
+    divisor f₁ U = divisor f₂ U := by
+  ext x
+  by_cases hx : x ∈ U
+  · simp only [hf₁, hx, divisor_apply, hf₁.congr_codiscreteWithin_of_eqOn_compl h₁ h₂]
+    congr 1
+    apply (hf₁ x hx).order_congr
+    simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
+      disjoint_principal_right] at h₁
+    filter_upwards [h₁ x hx] with a ha
+    simp at ha
+    tauto
+  · simp [hx]
+
+/--
+If `f₁` is meromorphic on an open set `U`, if `f₂` agrees with `f₁` on a codiscrete subset of `U`,
+then `f₁` and `f₂` induce the same divisors on`U`.
+-/
+theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
+    (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : IsOpen U) :
+    divisor f₁ U = divisor f₂ U := by
+  ext x
+  by_cases hx : x ∈ U
+  · simp only [hf₁, hx, divisor_apply, hf₁.congr_codiscreteWithin h₁ h₂]
+    congr 1
+    apply (hf₁ x hx).order_congr
+    simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
+      disjoint_principal_right] at h₁
+    have : U ∈ 𝓝[≠] x := by
+      apply mem_nhdsWithin.mpr
+      use U, h₂, hx, Set.inter_subset_left
+    filter_upwards [this, h₁ x hx] with a h₁a h₂a
+    simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, Decidable.not_not] at h₂a
+    tauto
+  · simp [hx]
+
+/-!
 ## Divisors of Analytic Functions
 -/
 
@@ -90,7 +134,7 @@ See `MeromorphicOn.exists_order_ne_top_iff_forall` and
 `MeromorphicOn.order_ne_top_of_isPreconnected` for two convenient criteria to guarantee conditions
 `h₂f₁` and `h₂f₂`.
 -/
-theorem divisor_smul [CompleteSpace 𝕜] {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ U)
+theorem divisor_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
     (h₂f₂ : ∀ z, (hz : z ∈ U) → (h₁f₂ z hz).order ≠ ⊤) :
     divisor (f₁ • f₂) U = divisor f₁ U + divisor f₂ U := by
@@ -110,7 +154,7 @@ See `MeromorphicOn.exists_order_ne_top_iff_forall` and
 `MeromorphicOn.order_ne_top_of_isPreconnected` for two convenient criteria to guarantee conditions
 `h₂f₁` and `h₂f₂`.
 -/
-theorem divisor_mul [CompleteSpace 𝕜] {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f₁ U)
+theorem divisor_mul {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
     (h₂f₂ : ∀ z, (hz : z ∈ U) → (h₁f₂ z hz).order ≠ ⊤) :
     divisor (f₁ * f₂) U = divisor f₁ U + divisor f₂ U :=
@@ -118,7 +162,7 @@ theorem divisor_mul [CompleteSpace 𝕜] {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ :
 
 /-- The divisor of the inverse is the negative of the divisor. -/
 @[simp]
-theorem divisor_inv [CompleteSpace 𝕜] {f : 𝕜 → 𝕜} :
+theorem divisor_inv {f : 𝕜 → 𝕜} :
     divisor f⁻¹ U = -divisor f U := by
   ext z
   by_cases h : MeromorphicOn f U ∧ z ∈ U
