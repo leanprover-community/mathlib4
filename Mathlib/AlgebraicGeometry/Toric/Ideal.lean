@@ -40,7 +40,7 @@ lemma monoidIdeal_comap :
 class IsToricIdeal (I : Ideal R[M]) extends I.IsPrime where
   /-- Use `IsToricIdeal.exists_monoidIdeal_eq` instead. -/
   exists_monoidIdeal_eq' :
-    ∃ s : AddSubgroup (AddLocalization (⊤ : AddSubmonoid M)),
+    ∃ s : AddSubgroup (GrothendieckAddGroup M),
       monoidIdeal (AddLocalization.addMonoidOf (⊤ : AddSubmonoid M)) s.toAddSubmonoid = I
 
 variable (f) in
@@ -68,7 +68,7 @@ lemma isToricIdeal_iff_exists_span_single_sub_single :
       ↔ I.IsPrime ∧ ∃ s : Set (M × M), .span ((fun (a, b) ↦ single a 1 - single b 1) '' s) = I where
   mp := by rintro ⟨s, rfl⟩; exact ⟨inferInstance, _, rfl⟩
   mpr := by
-    let G := AddLocalization (⊤ : AddSubmonoid M)
+    let G := GrothendieckAddGroup M
     rintro ⟨_, s, hsI⟩
     letI V := Spec (.of <| k[M] ⧸ I)
     let _ : V.Over (Spec (.of k[M])) := sorry
