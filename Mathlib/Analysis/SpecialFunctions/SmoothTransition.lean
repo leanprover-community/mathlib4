@@ -72,7 +72,7 @@ theorem tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
   refine tendsto_const_nhds.if ?_
   simp only [not_le]
   have : Tendsto (fun x ↦ p.eval x⁻¹ / exp x⁻¹) (𝓝[>] 0) (𝓝 0) :=
-    p.tendsto_div_exp_atTop.comp tendsto_inv_zero_atTop
+    p.tendsto_div_exp_atTop.comp tendsto_inv_nhdsGT_zero
   refine this.congr' <| mem_of_superset self_mem_nhdsWithin fun x hx ↦ ?_
   simp [expNegInvGlue, hx.out.not_le, exp_neg, div_eq_mul_inv]
 

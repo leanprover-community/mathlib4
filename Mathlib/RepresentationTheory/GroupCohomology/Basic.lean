@@ -115,11 +115,10 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
 
 variable [Group G] (n) (A : Rep k G)
 
-/- Porting note: linter says the statement doesn't typecheck, so we add `@[nolint checkType]` -/
 /-- The theorem that our isomorphism `Fun(Gⁿ, A) ≅ Hom(k[Gⁿ⁺¹], A)` (where the righthand side is
 morphisms in `Rep k G`) commutes with the differentials in the complex of inhomogeneous cochains
 and the homogeneous `linearYonedaObjResolution`. -/
-@[nolint checkType] theorem d_eq :
+theorem d_eq :
     d n A =
       ((diagonalHomEquiv n A).toModuleIso.inv ≫
         (linearYonedaObjResolution A).d n (n + 1) ≫
@@ -146,8 +145,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   change d n A f g = diagonalHomEquiv (n + 1) A
     ((resolution k G).d (n + 1) n ≫ (diagonalHomEquiv n A).symm f) g
-  rw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.hom_comp, LinearMap.comp_apply,
-    resolution.d_eq]
+  rw [diagonalHomEquiv_apply, Action.comp_hom, ConcreteCategory.comp_apply, resolution.d_eq]
   erw [resolution.d_of (Fin.partialProd g)]
   simp only [map_sum, ← Finsupp.smul_single_one _ ((-1 : k) ^ _)]
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
@@ -188,8 +186,9 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
       ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2)))
     simp only [ModuleCat.hom_comp, LinearMap.comp_apply] at this
     dsimp only
-    simp only [d_eq, LinearEquiv.toModuleIso_inv_hom, LinearEquiv.toModuleIso_hom_hom,
-      ModuleCat.hom_comp, LinearMap.comp_apply, LinearEquiv.coe_coe, ModuleCat.hom_zero]
+    simp only [d_eq, LinearEquiv.toModuleIso_inv, LinearEquiv.toModuleIso_hom,
+      ModuleCat.hom_comp, LinearMap.comp_apply, LinearEquiv.coe_coe, ModuleCat.hom_zero,
+      ModuleCat.ofHom_comp]
     /- Porting note: I can see I need to rewrite `LinearEquiv.coe_coe` twice to at
       least reduce the need for `symm_apply_apply` to be an `erw`. However, even `erw` refuses to
       rewrite the second `coe_coe`... -/
@@ -213,11 +212,11 @@ def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolu
   ext
   simp only [ChainComplex.linearYonedaObj_X, linearYoneda_obj_obj_carrier, CochainComplex.of_x,
     linearYoneda_obj_obj_isAddCommGroup, linearYoneda_obj_obj_isModule, Iso.symm_hom,
-    ChainComplex.linearYonedaObj_d, ModuleCat.hom_comp, linearYoneda_obj_map_hom,
-    Quiver.Hom.unop_op, LinearEquiv.toModuleIso_inv_hom, LinearMap.coe_comp, Function.comp_apply,
-    Linear.leftComp_apply, inhomogeneousCochains.d_def, d_eq, LinearEquiv.toModuleIso_hom_hom,
-    ModuleCat.ofHom_comp, Category.assoc, LinearEquiv.comp_coe, LinearEquiv.self_trans_symm,
-    LinearEquiv.refl_toLinearMap, LinearMap.id_comp, LinearEquiv.coe_coe]
+    LinearEquiv.toModuleIso_inv, ChainComplex.linearYonedaObj_d, ModuleCat.hom_comp,
+    ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, Linear.leftComp_apply,
+    inhomogeneousCochains.d_def, d_eq, LinearEquiv.toModuleIso_hom, ModuleCat.ofHom_comp,
+    Category.assoc, LinearEquiv.comp_coe, LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap,
+    LinearMap.id_comp, LinearEquiv.coe_coe]
   rfl
 
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the

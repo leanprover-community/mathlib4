@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.Order.Interval.Set.Infinite
 
 /-!
 # Complex number as a finite dimensional vector space over `ℝ`
@@ -65,7 +66,7 @@ lemma Real.rank_rat_real : Module.rank ℚ ℝ = continuum := by
 /-- `C` has an uncountable basis over `ℚ`. -/
 @[simp, stacks 09G0]
 lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
-  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℂ ?_).trans mk_complex
+  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℂ ?_).trans Cardinal.mk_complex
   simpa using aleph0_lt_continuum
 
 /-- `ℂ` and `ℝ` are isomorphic as vector spaces over `ℚ`, or equivalently,

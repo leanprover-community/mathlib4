@@ -27,7 +27,7 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 * Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`.
 -/
 
-variable {α R : Type*}
+variable {α β R : Type*}
 
 namespace RingCon
 
@@ -42,13 +42,25 @@ The operation of scalar multiplication `•` descends naturally to the quotient.
 
 section SMul
 
-variable [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R] (c : RingCon R)
+variable [Add R] [MulOneClass R]
+variable [SMul α R] [IsScalarTower α R R]
+variable [SMul β R] [IsScalarTower β R R]
+variable (c : RingCon R)
 
 instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
   rfl
+
+instance [SMulCommClass α β R] : SMulCommClass α β c.Quotient :=
+  inferInstanceAs (SMulCommClass α β c.toCon.Quotient)
+
+instance [SMul α β] [IsScalarTower α β R] : IsScalarTower α β c.Quotient :=
+  inferInstanceAs (IsScalarTower α β c.toCon.Quotient)
+
+instance [SMul αᵐᵒᵖ R] [IsCentralScalar α R] : IsCentralScalar α c.Quotient :=
+  inferInstanceAs (IsCentralScalar α c.toCon.Quotient)
 
 end SMul
 
@@ -174,6 +186,17 @@ instance [Nontrivial R] : Nontrivial (RingCon R) where
   exists_pair_ne :=
     let ⟨x, y, ne⟩ := exists_pair_ne R
     ⟨⊥, ⊤, ne_of_apply_ne (· x y) <| by simp [ne]⟩
+
+instance [Subsingleton R] : Subsingleton (RingCon R) where
+  allEq c c' := ext fun r r' ↦ by simp_rw [Subsingleton.elim r' r, c.refl, c'.refl]
+
+theorem nontrivial_iff : Nontrivial (RingCon R) ↔ Nontrivial R := by
+  cases subsingleton_or_nontrivial R
+  on_goal 1 => simp_rw [← not_subsingleton_iff_nontrivial, not_iff_not]
+  all_goals exact iff_of_true inferInstance ‹_›
+
+theorem subsingleton_iff : Subsingleton (RingCon R) ↔ Subsingleton R := by
+  simp_rw [← not_nontrivial_iff_subsingleton, nontrivial_iff]
 
 /-- The inductively defined smallest congruence relation containing a binary relation `r` equals
     the infimum of the set of congruence relations containing `r`. -/

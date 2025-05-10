@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Nat.Hom
+import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # The forget functor is corepresentable
@@ -15,21 +17,13 @@ and `MonCat`.
 
 -/
 
+assert_not_exists MonoidWithZero
+
 universe u
 
 open CategoryTheory Opposite
 
 namespace MonoidHom
-
-/-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
-a multiplicative equivalence `e : α ≃* β`. -/
-@[simps]
-def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (β →* γ) ≃ (α →* γ) where
-  toFun f := f.comp e
-  invFun g := g.comp e.symm
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
 
 /-- The equivalence `(Multiplicative ℕ →* α) ≃ α` for any monoid `α`. -/
 @[simps]
@@ -49,16 +43,6 @@ end MonoidHom
 
 namespace AddMonoidHom
 
-/-- The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
-an additive equivalence `e : α ≃+ β`. -/
-@[simps]
-def precompEquiv {α β : Type*} [AddMonoid α] [AddMonoid β] (e : α ≃+ β) (γ : Type*) [AddMonoid γ] :
-    (β →+ γ) ≃ (α →+ γ) where
-  toFun f := f.comp e
-  invFun g := g.comp e.symm
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-
 /-- The equivalence `(ℤ →+ α) ≃ α` for any additive group `α`. -/
 @[simps]
 def fromNatEquiv (α : Type u) [AddMonoid α] : (ℕ →+ α) ≃ α where
@@ -77,23 +61,27 @@ end AddMonoidHom
 /-- The forgetful functor `MonCat.{u} ⥤ Type u` is corepresentable. -/
 def MonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℕ)))) ≅ forget MonCat.{u} :=
-  (NatIso.ofComponents (fun M => (MonoidHom.fromULiftMultiplicativeNatEquiv M.α).toIso))
+  (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
+    (MonoidHom.fromULiftMultiplicativeNatEquiv M.carrier)).toIso))
 
 
 /-- The forgetful functor `CommMonCat.{u} ⥤ Type u` is corepresentable. -/
 def CommMonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℕ)))) ≅ forget CommMonCat.{u} :=
-  (NatIso.ofComponents (fun M => (MonoidHom.fromULiftMultiplicativeNatEquiv M.α).toIso))
+  (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
+    (MonoidHom.fromULiftMultiplicativeNatEquiv M.carrier)).toIso))
 
 /-- The forgetful functor `AddMonCat.{u} ⥤ Type u` is corepresentable. -/
 def AddMonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} ℕ))) ≅ forget AddMonCat.{u} :=
-  (NatIso.ofComponents (fun M => (AddMonoidHom.fromULiftNatEquiv M.α).toIso))
+  (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
+    (AddMonoidHom.fromULiftNatEquiv M.carrier)).toIso))
 
 /-- The forgetful functor `AddCommMonCat.{u} ⥤ Type u` is corepresentable. -/
 def AddCommMonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} ℕ))) ≅ forget AddCommMonCat.{u} :=
-  (NatIso.ofComponents (fun M => (AddMonoidHom.fromULiftNatEquiv M.α).toIso))
+  (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
+    (AddMonoidHom.fromULiftNatEquiv M.carrier)).toIso))
 
 instance MonCat.forget_isCorepresentable :
     (forget MonCat.{u}).IsCorepresentable :=

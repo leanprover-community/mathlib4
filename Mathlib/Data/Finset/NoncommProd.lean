@@ -3,9 +3,10 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Commute.Hom
-import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Products (respectively, sums) over a finset or a multiset.
@@ -162,7 +163,7 @@ lemma noncommProd_induction (s : Multiset α) (comm)
 variable [FunLike F α β]
 
 @[to_additive]
-protected theorem map_noncommProd_aux [MonoidHomClass F α β] (s : Multiset α)
+protected theorem map_noncommProd_aux [MulHomClass F α β] (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise Commute) (f : F) : { x | x ∈ s.map f }.Pairwise Commute := by
   simp only [Multiset.mem_map]
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ _
@@ -173,13 +174,6 @@ theorem map_noncommProd [MonoidHomClass F α β] (s : Multiset α) (comm) (f : F
     f (s.noncommProd comm) = (s.map f).noncommProd (Multiset.map_noncommProd_aux s comm f) := by
   induction s using Quotient.inductionOn
   simpa using map_list_prod f _
-
-@[deprecated (since := "2024-07-23")] alias noncommProd_map := map_noncommProd
-@[deprecated (since := "2024-07-23")] alias noncommSum_map := map_noncommSum
-@[deprecated (since := "2024-07-23")]
-protected alias noncommProd_map_aux := Multiset.map_noncommProd_aux
-@[deprecated (since := "2024-07-23")]
-protected alias noncommSum_map_aux := Multiset.map_noncommSum_aux
 
 @[to_additive noncommSum_eq_card_nsmul]
 theorem noncommProd_eq_pow_card (s : Multiset α) (comm) (m : α) (h : ∀ x ∈ s, x = m) :
@@ -228,6 +222,7 @@ namespace Finset
 
 variable [Monoid β] [Monoid γ]
 
+open scoped Function -- required for scoped `on` notation
 
 /-- Proof used in definition of `Finset.noncommProd` -/
 @[to_additive]
@@ -319,9 +314,6 @@ theorem map_noncommProd [MonoidHomClass F β γ] (s : Finset α) (f : α → β)
     g (s.noncommProd f comm) =
       s.noncommProd (fun i => g (f i)) fun _ hx _ hy _ => (comm.of_refl hx hy).map g := by
   simp [noncommProd, Multiset.map_noncommProd]
-
-@[deprecated (since := "2024-07-23")] alias noncommProd_map := map_noncommProd
-@[deprecated (since := "2024-07-23")] alias noncommSum_map := map_noncommSum
 
 @[to_additive noncommSum_eq_card_nsmul]
 theorem noncommProd_eq_pow_card (s : Finset α) (f : α → β) (comm) (m : β) (h : ∀ x ∈ s, f x = m) :

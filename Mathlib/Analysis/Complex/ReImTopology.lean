@@ -150,7 +150,7 @@ theorem closure_reProdIm (s t : Set ℝ) : closure (s ×ℂ t) = closure s ×ℂ
     equivRealProdCLM.symm.toHomeomorph.preimage_closure] using @closure_prod_eq _ _ _ _ s t
 
 theorem interior_reProdIm (s t : Set ℝ) : interior (s ×ℂ t) = interior s ×ℂ interior t := by
-  rw [Set.reProdIm, Set.reProdIm, interior_inter, interior_preimage_re, interior_preimage_im]
+  rw [reProdIm, reProdIm, interior_inter, interior_preimage_re, interior_preimage_im]
 
 theorem frontier_reProdIm (s t : Set ℝ) :
     frontier (s ×ℂ t) = closure s ×ℂ frontier t ∪ frontier s ×ℂ closure t := by

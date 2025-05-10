@@ -35,8 +35,7 @@ instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   rfl
 
 /-- The object in the category of quadratic R-modules associated to a quadratic R-module. -/
-@[simps form]
-def of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :
+abbrev of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :
     QuadraticModuleCat R :=
   { ModuleCat.of R X with
     form := Q }
@@ -46,31 +45,36 @@ algebraic spellings of composition. -/
 @[ext]
 structure Hom (V W : QuadraticModuleCat.{v} R) where
   /-- The underlying isometry -/
-  toIsometry : V.form →qᵢ W.form
+  toIsometry' : V.form →qᵢ W.form
+
+instance category : Category (QuadraticModuleCat.{v} R) where
+  Hom M N := Hom M N
+  id M := ⟨Isometry.id M.form⟩
+  comp f g := ⟨Isometry.comp g.toIsometry' f.toIsometry'⟩
+
+instance concreteCategory : ConcreteCategory (QuadraticModuleCat.{v} R)
+    fun V W => V.form →qᵢ W.form where
+  hom f := f.toIsometry'
+  ofHom f := ⟨f⟩
+
+/-- Turn a morphism in `QuadraticModuleCat` back into a `Isometry`. -/
+abbrev Hom.toIsometry {X Y : QuadraticModuleCat R} (f : Hom X Y) :=
+  ConcreteCategory.hom (C := QuadraticModuleCat R) f
+
+/-- Typecheck a `QuadraticForm.Isometry` as a morphism in `Module R`. -/
+abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+    {Q₁ : QuadraticForm R X} {Q₂ : QuadraticForm R Y} (f : Q₁ →qᵢ Q₂) :
+    of Q₁ ⟶ of Q₂ :=
+  ConcreteCategory.ofHom f
 
 lemma Hom.toIsometry_injective (V W : QuadraticModuleCat.{v} R) :
     Function.Injective (Hom.toIsometry : Hom V W → _) :=
   fun ⟨f⟩ ⟨g⟩ _ => by congr
 
-instance category : Category (QuadraticModuleCat.{v} R) where
-  Hom M N := Hom M N
-  id M := ⟨Isometry.id M.form⟩
-  comp f g := ⟨Isometry.comp g.toIsometry f.toIsometry⟩
-  id_comp g := Hom.ext <| Isometry.id_comp g.toIsometry
-  comp_id f := Hom.ext <| Isometry.comp_id f.toIsometry
-  assoc f g h := Hom.ext <| Isometry.comp_assoc h.toIsometry g.toIsometry f.toIsometry
-
--- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
 @[ext]
 lemma hom_ext {M N : QuadraticModuleCat.{v} R} (f g : M ⟶ N) (h : f.toIsometry = g.toIsometry) :
     f = g :=
   Hom.ext h
-
-/-- Typecheck a `QuadraticForm.Isometry` as a morphism in `Module R`. -/
-abbrev ofHom {X : Type v} [AddCommGroup X] [Module R X]
-    {Q₁ : QuadraticForm R X} {Q₂ : QuadraticForm R X} (f : Q₁ →qᵢ Q₂) :
-    of Q₁ ⟶ of Q₂ :=
-  ⟨f⟩
 
 @[simp] theorem toIsometry_comp {M N U : QuadraticModuleCat.{v} R} (f : M ⟶ N) (g : N ⟶ U) :
     (f ≫ g).toIsometry = g.toIsometry.comp f.toIsometry :=
@@ -79,13 +83,6 @@ abbrev ofHom {X : Type v} [AddCommGroup X] [Module R X]
 @[simp] theorem toIsometry_id {M : QuadraticModuleCat.{v} R} :
     Hom.toIsometry (𝟙 M) = Isometry.id _ :=
   rfl
-
-instance concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) where
-  forget :=
-    { obj := fun M => M
-      map := fun f => f.toIsometry }
-  forget_faithful :=
-    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toIsometry_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
   forget₂ :=
@@ -111,8 +108,8 @@ variable {Q₁ : QuadraticForm R X} {Q₂ : QuadraticForm R Y} {Q₃ : Quadratic
 `QuadraticForm.IsometryEquiv`. -/
 @[simps]
 def ofIso (e : Q₁.IsometryEquiv Q₂) : QuadraticModuleCat.of Q₁ ≅ QuadraticModuleCat.of Q₂ where
-  hom := ⟨e.toIsometry⟩
-  inv := ⟨e.symm.toIsometry⟩
+  hom := ofHom e.toIsometry
+  inv := ofHom e.symm.toIsometry
   hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 

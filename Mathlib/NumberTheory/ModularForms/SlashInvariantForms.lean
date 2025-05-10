@@ -84,14 +84,14 @@ theorem slash_action_eqn' {k : ℤ} {Γ : Subgroup SL(2, ℤ)} [SlashInvariantFo
     f (γ • z) = (γ 1 0 * z + γ 1 1) ^ k * f z := by
   rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn f γ hγ]
 
-/--Every `SlashInvariantForm` `f` satisfies ` f (γ • z) = (denom γ z) ^ k * f z`. -/
+/-- Every `SlashInvariantForm` `f` satisfies ` f (γ • z) = (denom γ z) ^ k * f z`. -/
 theorem slash_action_eqn'' {F : Type*} [FunLike F ℍ ℂ] {k : ℤ} {Γ : Subgroup SL(2, ℤ)}
     [SlashInvariantFormClass F Γ k] (f : F) {γ : SL(2, ℤ)} (hγ : γ ∈ Γ) (z : ℍ) :
     f (γ • z) = (denom γ z) ^ k * f z :=
   SlashInvariantForm.slash_action_eqn' f hγ z
 
 instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
-  ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f }⟩
+  ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f, .. }⟩
 
 instance instAdd : Add (SlashInvariantForm Γ k) :=
   ⟨fun f g ↦
@@ -175,7 +175,7 @@ instance : Module ℂ (SlashInvariantForm Γ k) :=
   coeHom_injective.module ℂ coeHom fun _ _ => rfl
 
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def const (x : ℂ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
   slash_action_eq' A _ := ModularForm.is_invariant_const A x

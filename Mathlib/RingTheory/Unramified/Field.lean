@@ -3,8 +3,8 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.PurelyInseparable
-import Mathlib.RingTheory.Artinian
+import Mathlib.FieldTheory.PurelyInseparable.Basic
+import Mathlib.RingTheory.Artinian.Ring
 import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.Algebra.Polynomial.Taylor
 import Mathlib.RingTheory.Unramified.Finite
@@ -31,7 +31,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 universe u
 
-variable (K A L : Type u) [Field K] [Field L] [CommRing A] [Algebra K A] [Algebra K L]
+variable (K A L : Type*) [Field K] [Field L] [CommRing A] [Algebra K A] [Algebra K L]
 
 open Algebra Polynomial
 
@@ -65,11 +65,9 @@ theorem bijective_of_isAlgClosed_of_isLocalRing
     rw [← IsLocalRing.jacobson_eq_maximalIdeal ⊥]
     · exact IsArtinianRing.isNilpotent_jacobson_bot
     · exact bot_ne_top
-  have : Function.Bijective (Algebra.ofId K (A ⧸ IsLocalRing.maximalIdeal A)) :=
-    ⟨RingHom.injective _, IsAlgClosed.algebraMap_surjective_of_isIntegral⟩
   let e : K ≃ₐ[K] A ⧸ IsLocalRing.maximalIdeal A := {
     __ := Algebra.ofId K (A ⧸ IsLocalRing.maximalIdeal A)
-    __ := Equiv.ofBijective _ this }
+    __ := Equiv.ofBijective _ IsAlgClosed.algebraMap_bijective_of_isIntegral }
   let e' : A ⊗[K] (A ⧸ IsLocalRing.maximalIdeal A) ≃ₐ[A] A :=
     (Algebra.TensorProduct.congr AlgEquiv.refl e.symm).trans (Algebra.TensorProduct.rid K A A)
   let f : A ⧸ IsLocalRing.maximalIdeal A →ₗ[A] A := e'.toLinearMap.comp (sec K A _)
@@ -177,7 +175,7 @@ theorem range_eq_top_of_isPurelyInseparable
     have inst : IsReduced (L ⊗[K] L) := isReduced_of_field L _
     exact sub_eq_zero.mp (IsNilpotent.eq_zero ⟨_, this⟩)
   by_cases h' : LinearIndependent K ![1, x]
-  · have h := h'.coe_range
+  · have h := h'.linearIndepOn_id
     let S := h.extend (Set.subset_univ _)
     let a : S := ⟨1, h.subset_extend _ (by simp)⟩
     have ha : Basis.extend h a = 1 := by simp [a]

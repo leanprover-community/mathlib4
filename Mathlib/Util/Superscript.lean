@@ -29,7 +29,7 @@ universe u
 
 namespace Mathlib.Tactic
 
-open Lean Parser PrettyPrinter Std
+open Lean Parser PrettyPrinter Delaborator Std
 
 namespace Superscript
 
@@ -99,7 +99,7 @@ returns `i`, by binary search. -/
 def partitionPoint (lo := 0) (hi := as.size) : Nat :=
   if lo < hi then
     let m := (lo + hi)/2
-    let a := as.get! m
+    let a := as[m]!
     if leftOfPartition a then
       partitionPoint (m+1) hi
     else
@@ -181,7 +181,8 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
 * `errorMsg`: shown when the parser does not match
 * `p`: the inner parser (usually `term`), to be called on the body of the superscript
 * `many`: if false, whitespace is not allowed inside the superscript
-* `kind`: the term will be wrapped in a node with this kind
+* `kind`: the term will be wrapped in a node with this kind;
+  generally this is a name of the parser declaration itself.
 -/
 def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
     (many := true) (kind : SyntaxNodeKind := by exact decl_name%) : Parser :=
@@ -251,6 +252,17 @@ def superscript.parenthesizer := Superscript.scriptParser.parenthesizer ``supers
 def superscript.formatter :=
   Superscript.scriptParser.formatter "superscript" .superscript ``superscript
 
+/-- Shorthand for `superscript(term)`.
+
+This is needed because the initializer below does not always run, and if it has not run then
+downstream parsers using the combinators will crash.
+
+See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
+for some context. -/
+@[term_parser]
+def superscriptTerm := leading_parser (withAnonymousAntiquot := false) superscript termParser
+
+initialize register_parser_alias superscript
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
@@ -276,8 +288,43 @@ def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscrip
 @[combinator_formatter subscript]
 def subscript.formatter := Superscript.scriptParser.formatter "subscript" .subscript ``subscript
 
-initialize
-  register_parser_alias superscript
-  register_parser_alias subscript
+/-- Shorthand for `subscript(term)`.
+
+This is needed because the initializer below does not always run, and if it has not run then
+downstream parsers using the combinators will crash.
+
+See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
+for some context. -/
+@[term_parser]
+def subscriptTerm := leading_parser (withAnonymousAntiquot := false) subscript termParser
+
+initialize register_parser_alias subscript
+
+/-- Returns true if every character in `stx : Syntax` can be superscripted
+(or subscripted). -/
+private partial def Superscript.isValid (m : Mapping) : Syntax → Bool
+  | .node _ kind args => !(scripted kind) && args.all (isValid m)
+  | .atom _ s => valid s
+  | .ident _ _ s _ => valid s.toString
+  | _ => false
+where
+  valid (s : String) : Bool :=
+    s.all ((m.toSpecial.insert ' ' ' ').contains ·)
+  scripted : SyntaxNodeKind → Bool :=
+    #[``subscript, ``superscript].contains
+
+/-- Successfully delaborates only if the resulting expression can be superscripted.
+
+See `Mapping.superscript` in this file for legal superscript characters. -/
+def delabSuperscript : Delab := do
+  let stx ← delab
+  if Superscript.isValid .superscript stx.raw then pure stx else failure
+
+/-- Successfully delaborates only if the resulting expression can be subscripted.
+
+See `Mapping.subscript` in this file for legal subscript characters. -/
+def delabSubscript : Delab := do
+  let stx ← delab
+  if Superscript.isValid .subscript stx.raw then pure stx else failure
 
 end Mathlib.Tactic

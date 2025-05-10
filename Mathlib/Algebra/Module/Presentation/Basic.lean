@@ -32,8 +32,7 @@ generators and relations.
 
 ## TODO
 * Relate this to `Module.FinitePresentation`
-* Behaviour of presentations with respect to the extension of scalars and
-the restriction of scalars
+* Behaviour of presentations with respect to the extension of scalars and the restriction of scalars
 
 -/
 
@@ -214,7 +213,7 @@ variable (π : (relations.G →₀ A) →ₗ[A] M) (hπ : ∀ (r : relations.R),
 for `relations.Solution M` for which the data is given as
 a linear map `π : (relations.G →₀ A) →ₗ[A] M`. (See also `ofπ'` for an alternate
 vanishing criterion.) -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 noncomputable def ofπ : relations.Solution M where
   var g := π (Finsupp.single g 1)
   linearCombination_var_relation r := by
@@ -233,7 +232,7 @@ variable (π : (relations.G →₀ A) →ₗ[A] M) (hπ : π.comp relations.map 
 
 /-- Variant of `ofπ` where the vanishing condition is expressed in terms
 of a composition of linear maps. -/
-@[simps! (config := .lemmasOnly)]
+@[simps! -isSimp]
 noncomputable def ofπ' : relations.Solution M :=
   ofπ π (fun r ↦ by
     simpa using DFunLike.congr_fun hπ (Finsupp.single r 1))
@@ -354,8 +353,8 @@ certain linear equations. -/
 noncomputable def linearMapEquiv : (M →ₗ[A] N) ≃ relations.Solution N where
   toFun f := solution.postcomp f
   invFun s := h.desc s
-  left_inv f := h.postcomp_injective (by aesop)
-  right_inv s := by aesop
+  left_inv f := h.postcomp_injective (by simp)
+  right_inv s := by simp
 
 section
 
@@ -500,6 +499,7 @@ variable {A M}
 def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
     {solution : relations.Solution M} (h : solution.IsPresentation) :
     Presentation.{w₀, w₁} A M where
+  __ := relations
   toSolution := solution
   toIsPresentation := h
 

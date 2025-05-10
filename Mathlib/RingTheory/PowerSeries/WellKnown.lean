@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
@@ -93,8 +92,7 @@ theorem mk_one_pow_eq_mk_choose_add :
       rw [pow_add, hd, pow_one, mul_comm, coeff_mul]
       simp_rw [coeff_mk, Pi.one_apply, one_mul]
       norm_cast
-      rw [Finset.sum_antidiagonal_choose_add, ← Nat.choose_succ_succ, Nat.succ_eq_add_one,
-        add_right_comm]
+      rw [Finset.sum_antidiagonal_choose_add, add_right_comm]
 
 /--
 Given a natural number `d : ℕ` and a commutative ring `S`, `PowerSeries.invOneSubPow S d` is the

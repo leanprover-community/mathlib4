@@ -154,15 +154,9 @@ theorem isUniformInducing_pureCauchy : IsUniformInducing (pureCauchy : α → Ca
       _ = 𝓤 α := by simp [this]
       ⟩
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_pureCauchy := isUniformInducing_pureCauchy
-
 theorem isUniformEmbedding_pureCauchy : IsUniformEmbedding (pureCauchy : α → CauchyFilter α) where
   __ := isUniformInducing_pureCauchy
   injective _a₁ _a₂ h := pure_injective <| Subtype.ext_iff_val.1 h
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_pureCauchy := isUniformEmbedding_pureCauchy
 
 theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α) := fun f => by
   have h_ex : ∀ s ∈ 𝓤 (CauchyFilter α), ∃ y : α, (f, pureCauchy y) ∈ s := fun s hs =>
@@ -175,7 +169,7 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
       mem_prod_iff.mpr
         ⟨t, ht, { y : α | (x, y) ∈ t' }, h <| mk_mem_prod hx hx,
           fun ⟨a, b⟩ ⟨(h₁ : a ∈ t), (h₂ : (x, b) ∈ t')⟩ =>
-          ht'₂ <| prod_mk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
+          ht'₂ <| prodMk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
     ⟨x, ht''₂ <| by dsimp [gen]; exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
     Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
@@ -191,9 +185,6 @@ theorem isDenseInducing_pureCauchy : IsDenseInducing (pureCauchy : α → Cauchy
 
 theorem isDenseEmbedding_pureCauchy : IsDenseEmbedding (pureCauchy : α → CauchyFilter α) :=
   isUniformEmbedding_pureCauchy.isDenseEmbedding denseRange_pureCauchy
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_pureCauchy := isDenseEmbedding_pureCauchy
 
 theorem nonempty_cauchyFilter_iff : Nonempty (CauchyFilter α) ↔ Nonempty α := by
   constructor <;> rintro ⟨c⟩
@@ -310,12 +301,13 @@ instance completeSpace : CompleteSpace (Completion α) :=
 
 instance t0Space : T0Space (Completion α) := SeparationQuotient.instT0Space
 
+variable {α} in
 /-- The map from a uniform space to its completion. -/
 @[coe] def coe' : α → Completion α := SeparationQuotient.mk ∘ pureCauchy
 
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
 instance : Coe α (Completion α) :=
-  ⟨coe' α⟩
+  ⟨coe'⟩
 
 -- note [use has_coe_t]
 protected theorem coe_eq : ((↑) : α → Completion α) = SeparationQuotient.mk ∘ pureCauchy := rfl
@@ -323,20 +315,14 @@ protected theorem coe_eq : ((↑) : α → Completion α) = SeparationQuotient.m
 theorem isUniformInducing_coe : IsUniformInducing ((↑) : α → Completion α) :=
   SeparationQuotient.isUniformInducing_mk.comp isUniformInducing_pureCauchy
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_coe := isUniformInducing_coe
-
 theorem comap_coe_eq_uniformity :
     ((𝓤 _).comap fun p : α × α => ((p.1 : Completion α), (p.2 : Completion α))) = 𝓤 α :=
   (isUniformInducing_coe _).1
 
-variable {α}
-
+variable {α} in
 theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
   SeparationQuotient.surjective_mk.denseRange.comp denseRange_pureCauchy
     SeparationQuotient.continuous_mk
-
-variable (α)
 
 /-- The Haudorff completion as an abstract completion. -/
 def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
@@ -367,9 +353,6 @@ theorem isUniformEmbedding_coe [T0Space α] : IsUniformEmbedding ((↑) : α →
   { comap_uniformity := comap_coe_eq_uniformity α
     injective := separated_pureCauchy_injective }
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_coe := isUniformEmbedding_coe
-
 theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completion α) :=
   IsUniformEmbedding.injective (isUniformEmbedding_coe _)
 
@@ -389,9 +372,6 @@ instance separableSpace_completion [SeparableSpace α] : SeparableSpace (Complet
 
 theorem isDenseEmbedding_coe [T0Space α] : IsDenseEmbedding ((↑) : α → Completion α) :=
   { isDenseInducing_coe with injective := separated_pureCauchy_injective }
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_coe := isDenseEmbedding_coe
 
 theorem denseRange_coe₂ :
     DenseRange fun x : α × β => ((x.1 : Completion α), (x.2 : Completion β)) :=

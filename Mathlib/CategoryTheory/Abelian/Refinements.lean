@@ -26,7 +26,7 @@ In this file, the basic result is `epi_iff_surjective_up_to_refinements`
 which states that `f : X ⟶ Y` is a morphism in an abelian category,
 then it is an epimorphism if and only if for all `y : A ⟶ Y`,
 there exists an epimorphism `π : A' ⟶ A` and `x : A' ⟶ X` such
-that `π ≫ y = x ≫ f`. In order words, if we allow a precomposition
+that `π ≫ y = x ≫ f`. In other words, if we allow a precomposition
 with an epimorphism, we may lift a morphism to `Y` to a morphism to `X`.
 Following unpublished notes by George Bergman, we shall say that the
 precomposition by an epimorphism `π ≫ y` is a refinement of `y`. Then,
@@ -63,8 +63,8 @@ these morphisms and sometimes introducing an auxiliary epimorphism `A' ⟶ A`.
 
 ## References
 * George Bergman, A note on abelian categories – translating element-chasing proofs,
-and exact embedding in abelian groups (1974)
-http://math.berkeley.edu/~gbergman/papers/unpub/elem-chase.pdf
+  and exact embedding in abelian groups (1974)
+  http://math.berkeley.edu/~gbergman/papers/unpub/elem-chase.pdf
 
 -/
 

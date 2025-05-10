@@ -18,7 +18,7 @@ subgroup of `E` such that `L` spans `E` over `K`.
 
 A `ℤ`-lattice `L` can be defined in two ways:
 * For `b` a basis of `E`, then `L = Submodule.span ℤ (Set.range b)` is a ℤ-lattice of `E`
-* As an`ℤ-submodule` of `E` with the additional properties:
+* As a `ℤ-submodule` of `E` with the additional properties:
   * `DiscreteTopology L`, that is `L` is discrete
   * `Submodule.span ℝ (L : Set E) = ⊤`, that is `L` spans `E` over `K`.
 
@@ -28,14 +28,19 @@ point of view are in the `ZLattice` namespace.
 ## Main results and definitions
 
 * `ZSpan.isAddFundamentalDomain`: for a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that
-the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
+  the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
 * `ZLattice.module_free`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is a free
 `ℤ`-module
 * `ZLattice.rank`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is free
-of `ℤ`-rank equal to the `K`-rank of `E`
+  of `ℤ`-rank equal to the `K`-rank of `E`
 * `ZLattice.comap`: for `e : E → F` a linear map and `L : Submodule ℤ E`, define the pullback of
 `L` by `e`. If `L` is a `IsZLattice` and `e` is a continuous linear equiv, then it is also a
 `IsZLattice`, see `instIsZLatticeComap`.
+
+## Note
+
+There is also `Submodule.IsLattice` which has slightly different applications. There no
+topology is needed and the discrete condition is replaced by finitely generated.
 
 ## Implementation Notes
 
@@ -56,13 +61,13 @@ variable {E ι : Type*}
 
 section NormedLatticeField
 
-variable {K : Type*} [NormedLinearOrderedField K]
+variable {K : Type*} [NormedField K]
 variable [NormedAddCommGroup E] [NormedSpace K E]
 variable (b : Basis ι K E)
 
 theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
 
-theorem map {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
+theorem map {F : Type*} [AddCommGroup F] [Module K F] (f : E ≃ₗ[K] F) :
     Submodule.map (f.restrictScalars ℤ) (span ℤ (Set.range b)) = span ℤ (Set.range (b.map f)) := by
   simp_rw [Submodule.map_span, LinearEquiv.restrictScalars_apply, Basis.coe_map, Set.range_comp]
 
@@ -72,6 +77,8 @@ theorem smul {c : K} (hc : c ≠ 0) :
   rw [smul_span, Set.smul_set_range]
   congr!
   rw [Basis.isUnitSMul_apply]
+
+variable [LinearOrder K]
 
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `ZSpan.isAddFundamentalDomain`
 for the proof that it is a fundamental domain. -/
@@ -95,6 +102,8 @@ theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
   simp_rw [mem_fundamentalDomain, Basis.repr_reindex_apply]
   rw [Equiv.forall_congr' e]
   simp_rw [implies_true]
+
+variable [IsStrictOrderedRing K]
 
 lemma fundamentalDomain_pi_basisFun [Fintype ι] :
     fundamentalDomain (Pi.basisFun ℝ ι) = Set.pi Set.univ fun _ : ι ↦ Set.Ico (0 : ℝ) 1 := by
@@ -173,13 +182,10 @@ theorem fract_zSpan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
 theorem fract_add_ZSpan (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
     fract b (m + v) = fract b m := by rw [add_comm, fract_zSpan_add b m h]
 
-variable {b}
-
+variable {b} in
 theorem fract_eq_self {x : E} : fract b x = x ↔ x ∈ fundamentalDomain b := by
   classical simp only [Basis.ext_elem_iff b, repr_fract_apply, Int.fract_eq_self,
     mem_fundamentalDomain, Set.mem_Ico]
-
-variable (b)
 
 theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b :=
   fract_eq_self.mp (fract_fract b _)
@@ -319,7 +325,7 @@ theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.
     Set.Finite (s ∩ span ℤ (Set.range b)) := by
   have : DiscreteTopology (span ℤ (Set.range b)) := inferInstance
   refine Metric.finite_isBounded_inter_isClosed hs ?_
-  change IsClosed ((span ℤ (Set.range b)).toAddSubgroup : Set E)
+  rw [← coe_toAddSubgroup]
   exact AddSubgroup.isClosed_of_discrete
 
 @[measurability]
@@ -354,7 +360,7 @@ theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [Borel
     {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
     μ (fundamentalDomain b) ≠ 0 := by
   convert (ZSpan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
-  exact (inferInstance : VAddInvariantMeasure (span ℤ (Set.range b)).toAddSubgroup E μ)
+  exact inferInstanceAs <| VAddInvariantMeasure (span ℤ (Set.range b)).toAddSubgroup E μ
 
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
@@ -368,6 +374,12 @@ theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace
     ext
     simp [Basis.toMatrix_apply, LinearMap.toMatrix_apply, LinearEquiv.coe_coe, Basis.equiv_apply]
 
+theorem measureReal_fundamentalDomain
+    [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
+    [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
+    μ.real (fundamentalDomain b) = |b₀.det b| * μ.real (fundamentalDomain b₀) := by
+  simp [measureReal_def, measure_fundamentalDomain b μ b₀]
+
 @[simp]
 theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ (ι → ℝ)) :
     volume (fundamentalDomain b) = ENNReal.ofReal |(Matrix.of b).det| := by
@@ -375,6 +387,11 @@ theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ
     volume_pi, Measure.pi_pi, Real.volume_Ico, sub_zero, ENNReal.ofReal_one, Finset.prod_const_one,
     mul_one, ← Matrix.det_transpose]
   rfl
+
+@[simp]
+theorem volume_real_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ (ι → ℝ)) :
+    volume.real (fundamentalDomain b) = |(Matrix.of b).det| := by
+  simp [measureReal_def]
 
 theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] :
@@ -416,14 +433,15 @@ class IsZLattice (K : Type*) [NormedField K] {E : Type*} [NormedAddCommGroup E] 
   /-- `L` spans the full space `E` over `K`. -/
   span_top : span K (L : Set E) = ⊤
 
-theorem _root_.ZSpan.isZLattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+instance instIsZLatticeRealSpan {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [Finite ι] (b : Basis ι ℝ E) :
     IsZLattice ℝ (span ℤ (Set.range b)) where
   span_top := ZSpan.span_top b
 
 section NormedLinearOrderedField
 
-variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
+variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
+  [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] (L : Submodule ℤ E) [DiscreteTopology L]
 
@@ -530,8 +548,8 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     -- `e` is a `K`-basis of `E` formed of vectors of `b`
     let e : Basis t K E := Basis.mk ht_lin (by simp [ht_span, h_spanE])
     have : Fintype t := Set.Finite.fintype ((Set.range b).toFinite.subset ht_inc)
-    have h : LinearIndependent ℤ (fun x : (Set.range b) => (x : E)) := by
-      rwa [linearIndependent_subtype_range (Subtype.coe_injective.comp b₀.injective)]
+    have h : LinearIndepOn ℤ id (Set.range b) := by
+      rwa [linearIndepOn_id_range_iff (Subtype.coe_injective.comp b₀.injective)]
     contrapose! h
     -- Since `finrank ℤ L > finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
     obtain ⟨v, hv⟩ : (Set.range b \ Set.range e).Nonempty := by
@@ -543,14 +561,14 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
         finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
-    suffices ¬ LinearIndependent ℤ (fun x : ↥(insert v (Set.range e)) => (x : E)) by
+    suffices ¬ LinearIndepOn ℤ id (insert v (Set.range e)) by
       contrapose! this
-      refine LinearIndependent.mono ?_ this
+      refine this.mono ?_
       exact Set.insert_subset (Set.mem_of_mem_diff hv) (by simp [e, ht_inc])
     -- We prove finally that `e ∪ {v}` is not ℤ-linear independent or, equivalently,
     -- not ℚ-linear independent by showing that `v ∈ span ℚ e`.
-    rw [LinearIndependent.iff_fractionRing ℤ ℚ,
-      linearIndependent_insert (Set.not_mem_of_mem_diff hv),  not_and, not_not]
+    rw [LinearIndepOn, LinearIndependent.iff_fractionRing ℤ ℚ, ← LinearIndepOn,
+      linearIndepOn_id_insert (Set.not_mem_of_mem_diff hv), not_and, not_not]
     intro _
     -- But that follows from the fact that there exist `n, m : ℕ`, `n ≠ m`
     -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ ZSpan.fract e (n • v)`
@@ -707,5 +725,23 @@ theorem Basis.ofZLatticeComap_repr_apply (e : F ≃ₗ[K] E) {ι : Type*} (b : B
   simp [Basis.ofZLatticeComap]
 
 end comap
+
+section NormedLinearOrderedField_comap
+
+variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K] [HasSolidNorm K]
+  [FloorRing K]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
+  [ProperSpace E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] [FiniteDimensional K F]
+  [ProperSpace F]
+variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice K L]
+
+theorem Basis.ofZLatticeBasis_comap (e : F ≃L[K] E) {ι : Type*} (b : Basis ι ℤ L) :
+    (b.ofZLatticeComap K L e.toLinearEquiv).ofZLatticeBasis K (ZLattice.comap K L e.toLinearMap) =
+    (b.ofZLatticeBasis K L).map e.symm.toLinearEquiv := by
+  ext
+  simp
+
+end NormedLinearOrderedField_comap
 
 end ZLattice

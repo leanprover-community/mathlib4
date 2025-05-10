@@ -1,5 +1,5 @@
 import Mathlib.Tactic.ApplyCongr
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 example (f g : ℤ → ℤ) (S : Finset ℤ) (h : ∀ m ∈ S, f m = g m) :
     Finset.sum S f = Finset.sum S g := by

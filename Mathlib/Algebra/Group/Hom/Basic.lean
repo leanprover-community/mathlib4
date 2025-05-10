@@ -167,9 +167,8 @@ sending `x` to `f x * g x`. -/
 instance mul : Mul (M →* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
-      map_one' := show f 1 * g 1 = 1 by simp,
+      map_one' := by simp,
       map_mul' := fun x y => by
-        show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
 /-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,
@@ -227,5 +226,15 @@ lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.c
   ext; simp only [Function.comp_apply, div_apply, map_div, coe_comp]
 
 end InvDiv
+
+/-- If `H` is commutative and `G →* H` is injective, then `G` is commutative. -/
+def commGroupOfInjective [Group G] [CommGroup H] (f : G →* H) (hf : Function.Injective f) :
+    CommGroup G :=
+  ⟨by simp_rw [← hf.eq_iff, map_mul, mul_comm, implies_true]⟩
+
+/-- If `G` is commutative and `G →* H` is surjective, then `H` is commutative. -/
+def commGroupOfSurjective [CommGroup G] [Group H] (f : G →* H) (hf : Function.Surjective f) :
+    CommGroup H :=
+  ⟨by simp_rw [hf.forall₂, ← map_mul, mul_comm, implies_true]⟩
 
 end MonoidHom

@@ -50,6 +50,5 @@ theorem IsGδ.setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (𝓤 Y)
   rintro ⟨s, ⟨hsx, hso⟩, hsU⟩
   filter_upwards [IsOpen.mem_nhds hso hsx] with _ hy using ⟨s, ⟨hy, hso⟩, hsU⟩
 
-@[deprecated (since := "2024-02-15")] alias isGδ_setOf_continuousAt := IsGδ.setOf_continuousAt
 
 end ContinuousAt

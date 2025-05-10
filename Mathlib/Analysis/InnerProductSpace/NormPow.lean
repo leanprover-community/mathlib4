@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
@@ -47,9 +46,7 @@ theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
   · apply HasStrictFDerivAt.hasFDerivAt
     convert (hasStrictFDerivAt_norm_sq x).rpow_const (p := p / 2) (by simp [hx]) using 0
     simp_rw [← Real.rpow_natCast_mul (norm_nonneg _), ← Nat.cast_smul_eq_nsmul ℝ, smul_smul]
-    ring_nf -- doesn't close the goal?
-    congr! 2
-    ring
+    ring_nf
 
 theorem differentiable_norm_rpow {p : ℝ} (hp : 1 < p) :
     Differentiable ℝ (fun x : E ↦ ‖x‖ ^ p) :=
@@ -97,6 +94,12 @@ theorem nnnorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
     {x : F} {p : ℝ≥0} (hp : 1 < p) :
     ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ (p : ℝ)) x‖₊ ≤ p * ‖f x‖₊ ^ ((p : ℝ) - 1) * ‖fderiv ℝ f x‖₊ :=
   norm_fderiv_norm_rpow_le hf hp
+
+lemma enorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
+    {x : F} {p : ℝ≥0} (hp : 1 < p) :
+    ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ (p : ℝ)) x‖ₑ ≤ p * ‖f x‖ₑ ^ ((p : ℝ) - 1) * ‖fderiv ℝ f x‖ₑ := by
+  simpa [enorm, ← ENNReal.coe_rpow_of_nonneg _ (sub_nonneg.2 <| NNReal.one_le_coe.2 hp.le),
+    ← ENNReal.coe_mul] using nnnorm_fderiv_norm_rpow_le hf hp
 
 theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E ↦ ‖x‖ ^ p) := by
   rw [contDiff_one_iff_fderiv]
