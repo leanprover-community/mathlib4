@@ -196,17 +196,17 @@ variable {n : ℕ}
 /--
 Unsorted eigenvalues and eigenvectors.  These are composed with a permutation below. -/
 private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
-  (i : Fin n) : ℝ := @RCLike.re 𝕜 _ <|
-    (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
-      hT.orthogonalFamily_eigenspaces').val
+    (i : Fin n) : ℝ :=
+  @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+    hT.orthogonalFamily_eigenspaces').val
 
 private noncomputable def unsortedEigenvectorBasis (hT : T.IsSymmetric)
-  (hn : Module.finrank 𝕜 E = n) : OrthonormalBasis (Fin n) 𝕜 E :=
-    hT.direct_sum_isInternal.subordinateOrthonormalBasis hn hT.orthogonalFamily_eigenspaces'
+    (hn : Module.finrank 𝕜 E = n) : OrthonormalBasis (Fin n) 𝕜 E :=
+  hT.direct_sum_isInternal.subordinateOrthonormalBasis hn hT.orthogonalFamily_eigenspaces'
 
 private theorem hasEigenvector_eigenvectorBasis_helper (hT : T.IsSymmetric)
     (hn : Module.finrank 𝕜 E = n) (i : Fin n) :
-        HasEigenvector T (hT.unsortedEigenvalues hn i) (hT.unsortedEigenvectorBasis hn i) := by
+    HasEigenvector T (hT.unsortedEigenvalues hn i) (hT.unsortedEigenvectorBasis hn i) := by
   let v : E := hT.unsortedEigenvectorBasis hn i
   let μ : 𝕜 :=
     (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
@@ -235,10 +235,10 @@ noncomputable irreducible_def eigenvalues (hT : T.IsSymmetric) (hn : Module.finr
 finite-dimensional inner product space `E`.  Eigenvectors are sorted in decreasing
 order of their eigenvalues. -/
 noncomputable irreducible_def eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
-  OrthonormalBasis (Fin n) 𝕜 E :=
-    (hT.direct_sum_isInternal.subordinateOrthonormalBasis
-      hn hT.orthogonalFamily_eigenspaces').reindex
-        (Tuple.sort (hT.unsortedEigenvalues hn) * @Fin.revPerm n).symm
+    OrthonormalBasis (Fin n) 𝕜 E :=
+  (hT.direct_sum_isInternal.subordinateOrthonormalBasis
+    hn hT.orthogonalFamily_eigenspaces').reindex
+      (Tuple.sort (hT.unsortedEigenvalues hn) * @Fin.revPerm n).symm
 
 theorem hasEigenvector_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (i : Fin n) : HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
