@@ -334,6 +334,12 @@ lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (�
   simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
   aesop
 
+lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
+    IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by
+  simp only [IsBasis] at H ⊢
+  convert H.isInducing h
+  ext; simp
+
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
     CompleteLattice.IsCompactElement s ↔ IsCompact (s : Set α) := by
