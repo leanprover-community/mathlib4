@@ -232,7 +232,9 @@ instance : (FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T).IsEquivalenc
 
 def FilteredAcyclicToComplexAcyclic_functor :
     FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T ⋙ (T.FromAcyclic t₁ t₂).mapHomologicalComplex _
-    ≅ FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t₂ tF₂ T FT ⋙ tF₂.ιHeart ⋙ FilteredToComplex L₂ t₂ :=
+    ≅ FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t₂ tF₂ T FT ⋙ tF₂.ιHeart
+    -- maybe `(FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor` instead?
+    ⋙ FilteredToComplex L₂ t₂ :=
   sorry
 
 #exit
