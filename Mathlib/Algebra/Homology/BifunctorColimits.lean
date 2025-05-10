@@ -46,6 +46,18 @@ instance (K₂ : HomologicalComplex C₂ c₂) [HasColimitsOfShape B C₁]
   exact preservesColimitsOfShape_of_reflects_of_preserves _
     (HomologicalComplex.forget D c)
 
+instance [HasColimitsOfShape B C₁]
+    [∀ X, PreservesColimitsOfShape B (F.flip.obj X)] :
+    PreservesColimitsOfShape B (bifunctorMapHomologicalComplex F c₁ c₂ c) where
+  preservesColimit := ⟨fun hc ↦ ⟨evaluationJointlyReflectsColimits _ (fun K₂ ↦
+    isColimitOfPreserves ((bifunctorMapHomologicalComplex F c₁ c₂ c).flip.obj K₂) hc)⟩⟩
+
+instance [HasColimitsOfShape B C₂]
+    [∀ X, PreservesColimitsOfShape B (F.obj X)] :
+    PreservesColimitsOfShape B (bifunctorMapHomologicalComplex F c₁ c₂ c).flip where
+  preservesColimit := ⟨fun hc ↦ ⟨evaluationJointlyReflectsColimits _ (fun K₁ ↦
+    isColimitOfPreserves ((bifunctorMapHomologicalComplex F c₁ c₂ c).obj K₁) hc)⟩⟩
+
 end Functor
 
 end CategoryTheory

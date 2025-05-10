@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.BifunctorSingle
 import Mathlib.Algebra.Homology.BifunctorShift
+import Mathlib.Algebra.Homology.BifunctorColimits
 import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
@@ -14,7 +15,6 @@ import Mathlib.CategoryTheory.Abelian.Flat.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 import Mathlib.CategoryTheory.Monoidal.KFlat
 import Mathlib.CategoryTheory.ObjectProperty.Shift
-import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
 # Flat objects and K-flat complexes
@@ -27,7 +27,8 @@ universe v u
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
   [MonoidalCategory C] [MonoidalPreadditive C]
-  [∀ (X₁ X₂ : GradedObject ℤ C), X₁.HasTensor X₂]
+  [∀ (j : ℤ), HasColimitsOfShape
+    (Discrete ↑((ComplexShape.up ℤ).π (ComplexShape.up ℤ) (ComplexShape.up ℤ) ⁻¹' {j})) C]
   [∀ (X₁ X₂ X₃ X₄ : GradedObject ℤ C), GradedObject.HasTensor₄ObjExt X₁ X₂ X₃ X₄]
   [∀ (X₁ X₂ X₃ : GradedObject ℤ C), GradedObject.HasGoodTensor₁₂Tensor X₁ X₂ X₃]
   [∀ (X₁ X₂ X₃ : GradedObject ℤ C), GradedObject.HasGoodTensorTensor₂₃ X₁ X₂ X₃]
@@ -57,12 +58,23 @@ lemma kFlat_shift_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (quasiIso C (.up ℤ)).kFlat (K⟦n⟧) ↔ (quasiIso C (.up ℤ)).kFlat K := by
   apply ObjectProperty.prop_shift_iff_of_isStableUnderShift
 
-/-lemma closedUnderLimitsOfShape_kFlat (J : Type*) [Category J]
+lemma closedUnderColimitsOfShape_kFlat (J : Type*) [Category J]
     [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
-    [∀ (X : C), PreservesColimitsOfShape J (tensorLeft X)]
-    [∀ (X : C), PreservesColimitsOfShape J (tensorRight X)] :
-    ClosedUnderLimitsOfShape J (quasiIso C (.up ℤ)).kFlat := by
-  sorry-/
+    [∀ (X : C), PreservesColimitsOfShape J ((curriedTensor C).flip.obj X)]
+    [∀ (X : C), PreservesColimitsOfShape J ((curriedTensor C).obj X)] :
+    ClosedUnderColimitsOfShape J (quasiIso C (.up ℤ)).kFlat := by
+  intro F c hc hF
+  rw [kFlat_iff_preservesQuasiIso]
+  have hJ := isStableUnderColimitsOfShape_preservesQuasiIso C C (.up ℤ) (.up ℤ) J
+  constructor
+  · have : PreservesColimitsOfShape J (curriedTensor (CochainComplex C ℤ)) :=
+      inferInstanceAs (PreservesColimitsOfShape _
+        (Functor.bifunctorMapHomologicalComplex _ _ _ _))
+    exact hJ (isColimitOfPreserves (curriedTensor _) hc) (fun j ↦ (hF j).1)
+  · have : PreservesColimitsOfShape J (curriedTensor (CochainComplex C ℤ)).flip :=
+      inferInstanceAs (PreservesColimitsOfShape _
+        (Functor.bifunctorMapHomologicalComplex _ _ _ _).flip)
+    exact hJ (isColimitOfPreserves (curriedTensor _).flip hc) (fun j ↦ (hF j).2)
 
 end CochainComplex
 

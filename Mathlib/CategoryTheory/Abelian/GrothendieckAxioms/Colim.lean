@@ -11,6 +11,7 @@ import Mathlib.Algebra.Homology.PreservesQuasiIso
 import Mathlib.Algebra.Homology.HomologicalComplexFunctorEquiv
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
 # Exactness of colimits
@@ -216,5 +217,21 @@ lemma isStableUnderColimitsOfShape_quasiIso
   dsimp
   simp only [mem_quasiIso_iff]
   infer_instance
+
+lemma isStableUnderColimitsOfShape_preservesQuasiIso
+    (C₁ C₂ : Type*) [Category C₁] [Abelian C₁] [Category C₂] [Abelian C₂]
+    {ι₁ ι₂ : Type*} (c₁ : ComplexShape ι₁) (c₂ : ComplexShape ι₂)
+    (J : Type*) [Category J]
+    [HasColimitsOfShape J C₂] [HasExactColimitsOfShape J C₂] :
+    ClosedUnderColimitsOfShape J
+      (preservesQuasiIso (C₁ := C₁) (C₂ := C₂) (c₁ := c₁) (c₂ := c₂)) := by
+  intro F c hc hF K₁ L₁ f hf
+  simp only [MorphismProperty.inverseImage_iff]
+  have pif := isColimitOfPreserves ((evaluation _ _).obj K₁) hc
+  let hcK := isColimitOfPreserves ((evaluation _ _).obj K₁) hc
+  let hcL := isColimitOfPreserves ((evaluation _ _).obj L₁) hc
+  convert isStableUnderColimitsOfShape_quasiIso C₂ c₂ J _ _ _ _
+    hcK hcL (whiskerLeft F ((evaluation _ _).map f)) (fun j ↦ hF j _ hf)
+  exact hcK.hom_ext (fun j ↦ by rw [hcK.fac]; simp)
 
 end HomologicalComplex
