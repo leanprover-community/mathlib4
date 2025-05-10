@@ -134,21 +134,20 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_le_pow_inertiaDeg_of_mem_primesOv
     hp ▸ Submodule.mem_span_singleton_self p
   have hlies : P.LiesOver (span {p}) := by
     rcases abs_choice p with h | h <;>
-    simpa [h, span_singleton_neg p, ← submodule_span_eq, ← hp] using over_under (A := ℤ) P
+    simpa [h, span_singleton_neg p, ← submodule_span_eq, ← hp] using over_under P
   have hspan : span {↑p.natAbs} = span {p} := by
     rcases abs_choice p with h | h <;> simp [h]
   have hple : p.natAbs ^ (span {(p.natAbs : ℤ)}).inertiaDeg P ≤ M K := by
     simpa only [hspan, ← cast_pow, ← absNorm_eq_pow_inertiaDeg P (hpprime (hP.under _))] using hPN
   have hpabsprime := Int.prime_iff_natAbs_prime.mp (hpprime (hP.under _))
-  refine h p.natAbs ?_ hpabsprime _ ⟨hP, ?_⟩ hple
+  refine h _ ?_ hpabsprime _ ⟨hP, ?_⟩ hple
   · suffices 0 < (span {(p.natAbs : ℤ)}).inertiaDeg P by
       refine Finset.mem_Icc.mpr ⟨hpabsprime.one_le, le_floor <| le_trans ?_ hple⟩
       simpa only [← cast_pow, cast_le] using le_pow this
-    rw [hspan]
-    have : (span {p}).IsMaximal := (isPrime_of_prime (prime_span_singleton_iff.mpr <|
+    have := (isPrime_of_prime (prime_span_singleton_iff.mpr <|
       hpprime (hP.under _))).isMaximal <| by simp [((hpprime (hP.under _))).ne_zero]
-    exact inertiaDeg_pos ..
-  · simpa only [hspan] using hlies
+    exact hspan ▸ inertiaDeg_pos ..
+  · exact hspan ▸ hlies
 
 theorem isPrincipalIdealRing_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ nrComplexPlaces K *
