@@ -144,6 +144,9 @@ theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure 
   rw [withDensity_apply _ hs₁]
   exact setLIntegral_measure_zero _ _ hs₂
 
+instance noAtoms_withDensity [NoAtoms μ] (f : α → ℝ≥0∞) : NoAtoms (μ.withDensity f) where
+  measure_singleton _ := withDensity_absolutelyContinuous μ f (measure_singleton _)
+
 @[simp]
 theorem withDensity_zero : μ.withDensity 0 = 0 := by
   ext1 s hs

@@ -199,6 +199,41 @@ theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2
     integral_const_mul, Pi.pow_apply]
   ring
 
+lemma variance_add_const [IsProbabilityMeasure μ] (hX : Integrable X μ) (c : ℝ) :
+    Var[fun ω ↦ X ω + c; μ] = Var[X; μ] := by
+  rw [variance_eq_integral (hX.1.add_const _).aemeasurable,
+    integral_add hX (by fun_prop), integral_const, variance_eq_integral hX.1.aemeasurable]
+  simp
+
+lemma variance_const_add [IsProbabilityMeasure μ] (hX : Integrable X μ) (c : ℝ) :
+    Var[fun ω ↦ c + X ω; μ] = Var[X; μ] := by
+  simp_rw [add_comm c, variance_add_const hX c]
+
+lemma variance_sub_const [IsProbabilityMeasure μ] (hX : Integrable X μ) (c : ℝ) :
+    Var[fun ω ↦ X ω - c; μ] = Var[X; μ] := by
+  simp_rw [sub_eq_add_neg, variance_add_const hX (-c)]
+
+@[simp]
+lemma variance_dirac [MeasurableSingletonClass Ω] (x : Ω) :
+    Var[X; Measure.dirac x] = 0 := by
+  rw [variance_eq_integral]
+  · simp
+  · exact aemeasurable_dirac
+
+lemma variance_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
+    {Y : Ω' → Ω} (hX : AEMeasurable X (μ.map Y)) (hY : AEMeasurable Y μ) :
+    Var[X; μ.map Y] = Var[X ∘ Y; μ] := by
+  rw [variance_eq_integral hX, integral_map hY, variance_eq_integral (hX.comp_aemeasurable hY),
+    integral_map hY]
+  · congr
+  · exact hX.aestronglyMeasurable
+  · refine AEStronglyMeasurable.pow ?_ _
+    exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+
+lemma variance_id_map (hX : AEMeasurable X μ) :
+    Var[id; μ.map X] = Var[X; μ] := by
+  simp [variance_map measurable_id.aemeasurable hX]
+
 theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
     (hm : AEStronglyMeasurable X μ) : variance X μ ≤ μ[X ^ 2] := by
   by_cases hX : MemLp X 2 μ
@@ -395,5 +430,105 @@ lemma variance_le_sq_of_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω �
     _ ≤ (b - μ[X]) * (μ[X] - a) := variance_le_sub_mul_sub h hX
     _ = ((b - a) / 2) ^ 2 - (μ[X] - (b + a) / 2) ^ 2 := by ring
     _ ≤ ((b - a) / 2) ^ 2 := sub_le_self _ (sq_nonneg _)
+
+section Covariance
+
+variable {Y Z : Ω → ℝ}
+
+/-- The covariance of two real-valued random variables defined as
+the integral of `(X - 𝔼[X])(Y - 𝔼[Y])`. -/
+noncomputable def covariance (X Y : Ω → ℝ) (μ : Measure Ω) : ℝ :=
+  ∫ ω, (X ω - μ[X]) * (Y ω - μ[Y]) ∂μ
+
+@[inherit_doc]
+scoped notation "cov[" X ", " Y "; " μ "]" => ProbabilityTheory.covariance X Y μ
+
+/-- The covariance of the real-valued random variables `X` and `Y`
+according to the volume measure. -/
+scoped notation "cov[" X ", " Y "]" => cov[X, Y; MeasureTheory.MeasureSpace.volume]
+
+lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
+    cov[X, X; μ] = Var[X; μ] := by
+  rw [covariance, variance_eq_integral hX]
+  congr with x
+  ring
+
+@[simp] lemma covariance_zero_left : cov[0, Y; μ] = 0 := by simp [covariance]
+
+@[simp] lemma covariance_zero_right : cov[X, 0; μ] = 0 := by simp [covariance]
+
+@[simp] lemma covariance_zero_measure : cov[X, Y; (0 : Measure Ω)] = 0 := by simp [covariance]
+
+lemma covariance_add_left [IsFiniteMeasure μ]
+    (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
+    cov[X + Y, Z; μ] = cov[X, Z; μ] + cov[Y, Z; μ] := by
+  simp_rw [covariance]
+  simp only [Pi.add_apply]
+  rw [← integral_add]
+  · congr with x
+    rw [integral_add]
+    rotate_left
+    · exact hX.integrable (by simp)
+    · exact hY.integrable (by simp)
+    ring
+  · refine MemLp.integrable_mul (q := 2) (p := 2) ?_ ?_
+    · exact hX.sub (memLp_const _)
+    · exact hZ.sub (memLp_const _)
+  · refine MemLp.integrable_mul (q := 2) (p := 2) ?_ ?_
+    · exact hY.sub (memLp_const _)
+    · exact hZ.sub (memLp_const _)
+
+lemma covariance_add_right [IsFiniteMeasure μ]
+    (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
+    cov[X, Y + Z; μ] = cov[X, Y; μ] + cov[X, Z; μ] := by
+  simp_rw [covariance]
+  simp only [Pi.add_apply]
+  rw [← integral_add]
+  · congr with x
+    rw [integral_add]
+    rotate_left
+    · exact hY.integrable (by simp)
+    · exact hZ.integrable (by simp)
+    ring
+  · refine MemLp.integrable_mul (q := 2) (p := 2) ?_ ?_
+    · exact hX.sub (memLp_const _)
+    · exact hY.sub (memLp_const _)
+  · refine MemLp.integrable_mul (q := 2) (p := 2) ?_ ?_
+    · exact hX.sub (memLp_const _)
+    · exact hZ.sub (memLp_const _)
+
+lemma covariance_smul_left (c : ℝ) :
+    cov[c • X, Y; μ] = c * cov[X, Y; μ] := by
+  simp_rw [covariance, Pi.smul_apply, smul_eq_mul, ← integral_const_mul, ← mul_assoc, mul_sub,
+    integral_const_mul]
+
+lemma covariance_smul_right (c : ℝ) :
+    cov[X, c • Y; μ] = c * cov[X, Y; μ] := by
+  simp_rw [covariance, Pi.smul_apply, smul_eq_mul, ← integral_const_mul, ← mul_assoc, mul_comm c,
+    mul_assoc, mul_sub, mul_comm c, integral_mul_const]
+
+@[simp]
+lemma covariance_neg_left : cov[-X, Y; μ] = -cov[X, Y; μ] := by
+  calc cov[-X, Y; μ]
+  _ = cov[(-1 : ℝ) • X, Y; μ] := by simp
+  _ = - cov[X, Y; μ] := by rw [covariance_smul_left]; simp
+
+@[simp]
+lemma covariance_neg_right : cov[X, -Y; μ] = -cov[X, Y; μ] := by
+  calc cov[X, -Y; μ]
+  _ = cov[X, (-1 : ℝ) • Y; μ] := by simp
+  _ = - cov[X, Y; μ] := by rw [covariance_smul_right]; simp
+
+lemma covariance_sub_left [IsFiniteMeasure μ]
+    (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
+    cov[X - Y, Z; μ] = cov[X, Z; μ] - cov[Y, Z; μ] := by
+  simp_rw [sub_eq_add_neg, covariance_add_left hX hY.neg hZ, covariance_neg_left]
+
+lemma covariance_sub_right [IsFiniteMeasure μ]
+    (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
+    cov[X, Y - Z; μ] = cov[X, Y; μ] - cov[X, Z; μ] := by
+  simp_rw [sub_eq_add_neg, covariance_add_right hX hY hZ.neg, covariance_neg_right]
+
+end Covariance
 
 end ProbabilityTheory
