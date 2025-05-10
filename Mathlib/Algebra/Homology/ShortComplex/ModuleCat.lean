@@ -106,7 +106,7 @@ abbrev moduleCatHomologyπ : ModuleCat.of R (LinearMap.ker S.g.hom) ⟶ S.module
 
 /-- The explicit left homology data of a short complex of modules that is
 given by a kernel and a quotient given by the `LinearMap` API. -/
-@[simps K H i π]
+@[simps! i_hom π_hom, simps! -isSimp K H]
 def moduleCatLeftHomologyData : S.LeftHomologyData where
   K := ModuleCat.of R (LinearMap.ker S.g.hom)
   H := S.moduleCatHomology
@@ -117,9 +117,30 @@ def moduleCatLeftHomologyData : S.LeftHomologyData where
   wπ := by aesop
   hπ := ModuleCat.cokernelIsColimit (ModuleCat.ofHom S.moduleCatToCycles)
 
+@[deprecated (since := "2025-05-09")]
+alias moduleCatLeftHomologyData_i := moduleCatLeftHomologyData_i_hom
+
+@[deprecated (since := "2025-05-09")]
+alias moduleCatLeftHomologyData_π := moduleCatLeftHomologyData_π_hom
+
 @[simp]
-lemma moduleCatLeftHomologyData_f' :
-    S.moduleCatLeftHomologyData.f' = ModuleCat.ofHom S.moduleCatToCycles := rfl
+lemma moduleCatLeftHomologyData_f'_hom :
+    S.moduleCatLeftHomologyData.f'.hom = S.moduleCatToCycles := rfl
+
+@[deprecated (since := "2025-05-09")]
+alias moduleCatLeftHomologyData_f' := moduleCatLeftHomologyData_f'_hom
+
+@[simp]
+lemma moduleCatLeftHomologyData_descH_hom {M : ModuleCat R}
+    (φ : S.moduleCatLeftHomologyData.K ⟶ M) (h : S.moduleCatLeftHomologyData.f' ≫ φ = 0) :
+    (S.moduleCatLeftHomologyData.descH φ h).hom =
+      (LinearMap.range <| ModuleCat.Hom.hom _).liftQ
+         φ.hom (LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.1 h) := rfl
+
+@[simp]
+lemma moduleCatLeftHomologyData_liftK_hom {M : ModuleCat R} (φ : M ⟶ S.X₂) (h : φ ≫ S.g = 0) :
+    (S.moduleCatLeftHomologyData.liftK φ h).hom =
+      φ.hom.codRestrict (LinearMap.ker S.g.hom) (fun m => congr($h m)) := rfl
 
 instance : Epi S.moduleCatHomologyπ :=
   (inferInstance : Epi S.moduleCatLeftHomologyData.π)
@@ -127,25 +148,26 @@ instance : Epi S.moduleCatHomologyπ :=
 /-- Given a short complex `S` of modules, this is the isomorphism between
 the abstract `S.cycles` of the homology API and the more concrete description as
 `LinearMap.ker S.g`. -/
-noncomputable def moduleCatCyclesIso : S.cycles ≅ ModuleCat.of R (LinearMap.ker S.g.hom) :=
+noncomputable def moduleCatCyclesIso : S.cycles ≅ S.moduleCatLeftHomologyData.K :=
   S.moduleCatLeftHomologyData.cyclesIso
 
 @[reassoc (attr := simp, elementwise)]
-lemma moduleCatCyclesIso_hom_subtype :
-    S.moduleCatCyclesIso.hom ≫ ModuleCat.ofHom (LinearMap.ker S.g.hom).subtype = S.iCycles :=
+lemma moduleCatCyclesIso_hom_i :
+    S.moduleCatCyclesIso.hom ≫ S.moduleCatLeftHomologyData.i = S.iCycles :=
   S.moduleCatLeftHomologyData.cyclesIso_hom_comp_i
+
+@[deprecated (since := "2025-05-09")]
+alias moduleCatCyclesIso_hom_subtype := moduleCatCyclesIso_hom_i
 
 @[reassoc (attr := simp, elementwise)]
 lemma moduleCatCyclesIso_inv_iCycles :
-    S.moduleCatCyclesIso.inv ≫ S.iCycles = ModuleCat.ofHom (LinearMap.ker S.g.hom).subtype :=
+    S.moduleCatCyclesIso.inv ≫ S.iCycles = S.moduleCatLeftHomologyData.i :=
   S.moduleCatLeftHomologyData.cyclesIso_inv_comp_iCycles
 
 @[reassoc (attr := simp, elementwise)]
 lemma toCycles_moduleCatCyclesIso_hom :
-    S.toCycles ≫ S.moduleCatCyclesIso.hom = ModuleCat.ofHom S.moduleCatToCycles := by
-  rw [← cancel_mono S.moduleCatLeftHomologyData.i, moduleCatLeftHomologyData_i,
-    Category.assoc, S.moduleCatCyclesIso_hom_subtype, toCycles_i]
-  rfl
+    S.toCycles ≫ S.moduleCatCyclesIso.hom = S.moduleCatLeftHomologyData.f' := by
+  simp [← cancel_mono S.moduleCatLeftHomologyData.i]
 
 theorem mapCyclesIso_trans_forget₂_moduleCatCyclesIso (M : ShortComplex (ModuleCat R)) :
     (M.mapCyclesIso (forget₂ (ModuleCat R) Ab)) ≪≫
@@ -168,26 +190,25 @@ the abstract `S.homology` of the homology API and the more explicit
 quotient of `LinearMap.ker S.g` by the image of
 `S.moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g`. -/
 noncomputable def moduleCatHomologyIso :
-    S.homology ≅ S.moduleCatHomology :=
+    S.homology ≅ S.moduleCatLeftHomologyData.H :=
   S.moduleCatLeftHomologyData.homologyIso
 
 @[reassoc (attr := simp, elementwise)]
 lemma π_moduleCatCyclesIso_hom :
     S.homologyπ ≫ S.moduleCatHomologyIso.hom =
-      S.moduleCatCyclesIso.hom ≫ S.moduleCatHomologyπ :=
+      S.moduleCatCyclesIso.hom ≫ S.moduleCatLeftHomologyData.π :=
   S.moduleCatLeftHomologyData.homologyπ_comp_homologyIso_hom
 
 @[reassoc (attr := simp, elementwise)]
 lemma moduleCatCyclesIso_inv_π :
     S.moduleCatCyclesIso.inv ≫ S.homologyπ =
-       S.moduleCatHomologyπ ≫ S.moduleCatHomologyIso.inv :=
+       S.moduleCatLeftHomologyData.π ≫ S.moduleCatHomologyIso.inv :=
   S.moduleCatLeftHomologyData.π_comp_homologyIso_inv
 
 lemma exact_iff_surjective_moduleCatToCycles :
     S.Exact ↔ Function.Surjective S.moduleCatToCycles := by
-  rw [S.moduleCatLeftHomologyData.exact_iff_epi_f', moduleCatLeftHomologyData_f',
-    ModuleCat.epi_iff_surjective]
-  rfl
+  simp [S.moduleCatLeftHomologyData.exact_iff_epi_f',
+    ModuleCat.epi_iff_surjective, moduleCatLeftHomologyData_K]
 
 end ShortComplex
 
