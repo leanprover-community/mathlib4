@@ -330,7 +330,7 @@ instance : HasInitial (Grp_ C) :=
 end Grp_
 
 namespace CategoryTheory
-variable {C}
+variable
   {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts D]
   {E : Type u₃} [Category.{v₃} E] [ChosenFiniteProducts E]
 
@@ -354,6 +354,26 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
           simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
             Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] } }
   map f := F.mapMon.map f
+
+@[simp]
+theorem mapCommMon_id_one (A : Grp_ C) :
+    η[((𝟭 C).mapGrp.obj A).X] = 𝟙 _ ≫ η[A.X] :=
+  rfl
+
+@[simp]
+theorem mapCommMon_id_mul (A : Grp_ C) :
+    μ[((𝟭 C).mapGrp.obj A).X] = 𝟙 _ ≫ μ[A.X] :=
+  rfl
+
+@[simp]
+theorem comp_mapCommMon_one (A : Grp_ C) :
+    η[((F ⋙ G).mapGrp.obj A).X] = LaxMonoidal.ε (F ⋙ G) ≫ (F ⋙ G).map η[A.X] :=
+  rfl
+
+@[simp]
+theorem comp_mapCommMon_mul (A : Grp_ C) :
+    μ[((F ⋙ G).mapGrp.obj A).X] = LaxMonoidal.μ (F ⋙ G) _ _ ≫ (F ⋙ G).map μ[A.X] :=
+  rfl
 
 /-- The identity functor is also the identity on group objects. -/
 @[simps!]

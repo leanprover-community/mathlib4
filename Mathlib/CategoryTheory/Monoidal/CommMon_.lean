@@ -140,7 +140,7 @@ instance : HasInitial (CommMon_ C) :=
 end CommMon_
 
 namespace CategoryTheory
-variable {C}
+variable
   {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D] [BraidedCategory D]
   {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E] [BraidedCategory E]
   {F F' : C ⥤ D} [F.LaxBraided] [F'.LaxBraided] {G : D ⥤ E} [G.LaxBraided]
@@ -161,6 +161,26 @@ def mapCommMon : CommMon_ C ⥤ CommMon_ D where
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
   map f := F.mapMon.map f
+
+@[simp]
+theorem mapCommMon_id_one (A : CommMon_ C) :
+    η[((𝟭 C).mapCommMon.obj A).X] = 𝟙 _ ≫ η[A.X] :=
+  rfl
+
+@[simp]
+theorem mapCommMon_id_mul (A : CommMon_ C) :
+    μ[((𝟭 C).mapCommMon.obj A).X] = 𝟙 _ ≫ μ[A.X] :=
+  rfl
+
+@[simp]
+theorem comp_mapCommMon_one (A : CommMon_ C) :
+    η[((F ⋙ G).mapCommMon.obj A).X] = LaxMonoidal.ε (F ⋙ G) ≫ (F ⋙ G).map η[A.X] :=
+  rfl
+
+@[simp]
+theorem comp_mapCommMon_mul (A : CommMon_ C) :
+    μ[((F ⋙ G).mapCommMon.obj A).X] = LaxMonoidal.μ (F ⋙ G) _ _ ≫ (F ⋙ G).map μ[A.X] :=
+  rfl
 
 /-- The identity functor is also the identity on commutative monoid objects. -/
 @[simps!]
