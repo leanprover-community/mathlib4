@@ -185,15 +185,19 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   rcases Module.Free.exists_set R M with ⟨S, ⟨B⟩⟩
   have fin' : Finite S := Module.Finite.finite_basis B
   have fin : S.Finite := fin'
+  have ne := Basis.index_nonempty B
   let e : M ≅ ∐ fun s ↦ ModuleCat.of R (Shrink.{v, u} R) := (LinearEquiv.toModuleIso <|
     (B.repr.trans (Finsupp.mapRange.linearEquiv (α := S) (Shrink.linearEquiv R R).symm)).trans
     (finsuppLEquivDirectSum R (Shrink.{v} R) S)).trans
     (ModuleCat.coprodIsoDirectSum (ι := S) (fun s ↦ ModuleCat.of R (Shrink.{v} R))).symm
   show Subsingleton ((extFunctorObj N i).obj M) ↔ _
   rw [((extFunctorObj.{max u v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr]
-  simp only [extFunctorObj]
-  --#check Ext.coprodIso N (fun (s : S) ↦ ModuleCat.of R (Shrink.{v, u} R)) i
-  sorry
+  simp only [extFunctorObj, (Ext.coprodIso N _ i).addCommGroupIsoToAddEquiv.subsingleton_congr]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  ·
+    sorry
+  ·
+    sorry
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] : moduleDepth N M = moduleDepth N (ModuleCat.of R (Shrink.{v} R)) := by
