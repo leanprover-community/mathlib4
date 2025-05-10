@@ -189,16 +189,15 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   have : Nontrivial R := nontrivial_ring_of_nontrivial_module M
   rcases Module.Free.exists_set R M with ⟨S, ⟨B⟩⟩
   have : Fintype S := Set.Finite.fintype (Module.Finite.finite_basis B)
+  have : Nonempty S := B.index_nonempty
   have h := Ext.addEquivBiproduct N (biconeIsBilimitOfColimitCoconeOfIsColimit <|
     ModuleCat.coproductCoconeIsColimit (fun s : S ↦ ModuleCat.of R (Shrink.{v, u} R))) i
   simp only [ModuleCat.coproductCocone, Bicone.ofColimitCocone_pt, Cofan.mk_pt] at h
-  have : Nonempty S := Basis.index_nonempty B
-  let e := LinearEquiv.toModuleIso <|
-    (B.repr.trans (Finsupp.mapRange.linearEquiv (α := S) (Shrink.linearEquiv R R).symm)).trans
-      (finsuppLEquivDirectSum R (Shrink.{v} R) S)
   show Subsingleton ((extFunctorObj N i).obj M) ↔ _
+  let e := B.repr ≪≫ₗ Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R).symm ≪≫ₗ
+    finsuppLEquivDirectSum R (Shrink.{v, u} R) ↑S |>.toModuleIso
   rw [((extFunctorObj.{max u v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr]
-  exact h.subsingleton_congr.trans ⟨subsingleton_of_pi, fun h ↦ Pi.instSubsingleton⟩
+  exact h.subsingleton_congr.trans ⟨subsingleton_of_pi, fun _ ↦ Pi.instSubsingleton⟩
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] : moduleDepth N M = moduleDepth N (ModuleCat.of R (Shrink.{v} R)) := by
