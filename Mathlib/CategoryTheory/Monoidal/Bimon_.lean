@@ -176,14 +176,14 @@ def toTrivial (A : Bimon_ C) : A ⟶ trivial C :=
 variable {C}
 
 @[reassoc]
-theorem one_comul (M : Bimon_ C) :
-    M.X.one ≫ M.comul.hom = (λ_ _).inv ≫ (M.X.one ⊗ M.X.one) := by
-  simp
+theorem one_comul (M : C) [Bimon_Class M] :
+    η[M] ≫ Δ[M] = (λ_ _).inv ≫ (η[M] ⊗ η[M]) := by
+  simp only [Bimon_Class.one_comul, Mon_.instMon_ClassTensorObj_one]
 
 @[reassoc]
-theorem mul_counit (M : Bimon_ C) :
-    M.X.mul ≫ M.counit.hom = (M.counit.hom ⊗ M.counit.hom) ≫ (λ_ _).hom := by
-  simp
+theorem mul_counit (M : C) [Bimon_Class M] :
+    μ[M] ≫ ε[M] = (ε[M] ⊗ ε[M]) ≫ (λ_ _).hom := by
+  simp only [Bimon_Class.mul_counit]
 
 /-- Compatibility of the monoid and comonoid structures, in terms of morphisms in `C`. -/
 @[reassoc (attr := simp)] theorem compatibility (M : Bimon_ C) :
