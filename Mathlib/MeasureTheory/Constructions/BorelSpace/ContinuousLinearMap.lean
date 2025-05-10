@@ -6,6 +6,7 @@ Authors: Patrick Massot
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.Algebra.Module.FiniteDimension
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 
 /-!
 # Measurable functions in normed spaces
