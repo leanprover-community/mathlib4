@@ -218,6 +218,45 @@ theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f := by
   ext
   rw [fderiv]
 
+/-- If a function f has a derivative f' at x, a rescaled version of f around x converges to f',
+i.e., `n (f (x + (1/n) v) - f x)` converges to `f' v`. More generally, if `c n` tends to infinity
+and `c n * d n` tends to `v`, then `c n * (f (x + d n) - f x)` tends to `f' v`. This lemma expresses
+this fact, for functions having a derivative within a set. Its specific formulation is useful for
+tangent cone related discussions. -/
+theorem HasFDerivWithinAt.tendsto_smul_sub [ContinuousAdd E] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
+    (h : HasFDerivWithinAt f f' s x) {α : Type*} {l : Filter α}
+    {c : α → 𝕜} {d : α → E} {v : E} (dtop : ∀ᶠ n in l, x + d n ∈ s)
+    (dlim : Tendsto d l (𝓝 0)) (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
+    Tendsto (fun n => c n • (f (x + d n) - f x)) l (𝓝 (f' v)) := by
+  have tendsto_arg : Tendsto (fun n => x + d n) l (𝓝[s] x) := by
+    conv in 𝓝[s] x => rw [← add_zero x]
+    rw [nhdsWithin, tendsto_inf]
+    constructor
+    · apply tendsto_const_nhds.add dlim
+    · rwa [tendsto_principal]
+  have : (fun y => f y - f x - f' (y - x)) =o[𝕜; 𝓝[s] x] fun y => y - x := h.isLittleOTVS
+  have : (fun n => f (x + d n) - f x - f' (x + d n - x)) =o[𝕜; l] fun n => x + d n - x :=
+    this.comp_tendsto tendsto_arg
+  have : (fun n => f (x + d n) - f x - f' (d n)) =o[𝕜; l] d := by simpa only [add_sub_cancel_left]
+  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[𝕜; l] fun n => c n • d n :=
+    this.smul_left c
+  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[𝕜; l] fun _ => (1 : 𝕜) := by
+    sorry -- this.trans_isBigOTVS (cdlim.isBigOTVS_one 𝕜)
+  have L1 : Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n))) l (𝓝 0) :=
+    (isLittleOTVS_one).1 this
+  have L2 : Tendsto (fun n => f' (c n • d n)) l (𝓝 (f' v)) :=
+    Tendsto.comp f'.cont.continuousAt cdlim
+  have L3 :
+    Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) l (𝓝 (0 + f' v)) :=
+    L1.add L2
+  have :
+    (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) = fun n =>
+      c n • (f (x + d n) - f x) := by
+    ext n
+    simp [smul_add, smul_sub]
+  rwa [this, zero_add] at L3
+
+
 end TVS
 
 section
@@ -251,6 +290,7 @@ section DerivativeUniqueness
 /- In this section, we discuss the uniqueness of the derivative.
 We prove that the definitions `UniqueDiffWithinAt` and `UniqueDiffOn` indeed imply the
 uniqueness of the derivative. -/
+
 /-- If a function f has a derivative f' at x, a rescaled version of f around x converges to f',
 i.e., `n (f (x + (1/n) v) - f x)` converges to `f' v`. More generally, if `c n` tends to infinity
 and `c n * d n` tends to `v`, then `c n * (f (x + d n) - f x)` tends to `f' v`. This lemma expresses
@@ -258,13 +298,13 @@ this fact, for functions having a derivative within a set. Its specific formulat
 tangent cone related discussions. -/
 theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l : Filter α)
     {c : α → 𝕜} {d : α → E} {v : E} (dtop : ∀ᶠ n in l, x + d n ∈ s)
-    (clim : Tendsto (fun n => ‖c n‖) l atTop) (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
+    (dlim : Tendsto d l (𝓝 0)) (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
     Tendsto (fun n => c n • (f (x + d n) - f x)) l (𝓝 (f' v)) := by
   have tendsto_arg : Tendsto (fun n => x + d n) l (𝓝[s] x) := by
     conv in 𝓝[s] x => rw [← add_zero x]
     rw [nhdsWithin, tendsto_inf]
     constructor
-    · apply tendsto_const_nhds.add (tangentConeAt.lim_zero l clim cdlim)
+    · apply tendsto_const_nhds.add dlim
     · rwa [tendsto_principal]
   have : (fun y => f y - f x - f' (y - x)) =o[𝓝[s] x] fun y => y - x := h.isLittleO
   have : (fun n => f (x + d n) - f x - f' (x + d n - x)) =o[l] fun n => x + d n - x :=
