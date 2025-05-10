@@ -5,8 +5,7 @@ Authors: Yaël Dillies, Michał Mrugała
 -/
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Toric.Mathlib.GroupTheory.MonoidLocalization.DivPairs
-import Toric.Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.GroupTheory.MonoidLocalization.DivPairs
 
 /-!
 # Toric ideals
@@ -36,7 +35,7 @@ lemma monoidIdeal_comap :
   congr!
   exact AddSubmonoid.subPairs_comap ..
 
-/-- An ideal is toric if it's prime and a group ideal. -/
+/-- An ideal is toric if it's prime and a monoid ideal. -/
 @[mk_iff isToricIdeal_iff_exists_monoidIdeal_eq']
 class IsToricIdeal (I : Ideal R[M]) extends I.IsPrime where
   /-- Use `IsToricIdeal.exists_monoidIdeal_eq` instead. -/
