@@ -26,7 +26,7 @@ open Finset BigOperators
 
 suppress_compilation
 
-variable {Γ R A : Type*}
+variable {Γ R : Type*} (A : Type*)
 
 namespace HahnSeries
 
@@ -37,42 +37,53 @@ variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [CommRing R]
 
 /-- A Hahn series formally expanding `(X g - X g') ^ r` where `r` is an element of a binomial ring.
 -/
-def binomialPow {g g' : Γ} (h : g < g') (r : R) : HahnSeries Γ A :=
+def binomialPow (g g' : Γ) (r : R) : HahnSeries Γ A :=
   single (r • g) (1 : A) *
-    (PowerSeries.heval (pos_orderTop_single_sub h (-1 : A)) (PowerSeries.binomialSeries A r))
-
-theorem binomialPow_apply {g g' : Γ} (h : g < g') (r : R) :
-    binomialPow h r = single (r • g) 1 *
-      (PowerSeries.heval (pos_orderTop_single_sub h (-1 : A)) (PowerSeries.binomialSeries A r)) :=
-  rfl
-
-theorem binomialPow_add {g g' : Γ} (h : g < g') (r r' : R) :
-    binomialPow h (r + r') = binomialPow (A := A) h r * binomialPow h r' := by
-  simp only [binomialPow, add_smul, PowerSeries.binomialSeries_add, PowerSeries.heval_mul]
-  rw [mul_left_comm _ ((single (r' • g)) 1), ← mul_assoc, ← mul_assoc, ← mul_assoc,
-    single_mul_single, mul_one, add_comm, mul_assoc]
-
-theorem binomialPow_one {g g' : Γ} (h : g < g') :
-    binomialPow h (Nat.cast (R := R) 1) = ((single g) (1 : A) - (single g') 1) := by
-  rw [binomialPow_apply, PowerSeries.binomialSeries_nat 1, pow_one, map_add,
-        PowerSeries.heval_X (pos_orderTop_single_sub h (-1)),
-        ← RingHom.map_one (f := PowerSeries.C A),
-        PowerSeries.heval_C (pos_orderTop_single_sub h (-1)), one_smul, mul_add, mul_one,
-        single_mul_single, one_mul, single_neg, Nat.cast_one, one_smul, add_sub_cancel,
-        sub_eq_add_neg]
+    (PowerSeries.heval ((single (g' - g)) (-1 : A)) (PowerSeries.binomialSeries A r))
 
 @[simp]
+theorem binomialPow_apply (g g' : Γ) (r : R) :
+    binomialPow A g g' r = single (r • g) 1 *
+      (PowerSeries.heval ((single (g' - g)) (-1 : A)) (PowerSeries.binomialSeries A r)) :=
+  rfl
+
+theorem binomialPow_apply_of_not_gt {g g' : Γ} (h : ¬ g < g') (r : R) :
+    binomialPow A g g' r = single (r • g) (1 : A) := by
+  cases subsingleton_or_nontrivial A
+  · have _ : Subsingleton (HahnSeries Γ A) := instSubsingleton
+    exact Subsingleton.elim _ _
+  · have : ¬ 0 < (single (g' - g) (-1 : A)).orderTop := by
+      rw [orderTop_single (neg_ne_zero.mpr one_ne_zero), WithTop.coe_pos, sub_pos]
+      exact h
+    rw [binomialPow_apply, PowerSeries.heval_of_orderTop_not_pos _ this]
+    simp
+
+theorem binomialPow_add {g g' : Γ} (r r' : R) :
+    binomialPow A g g' r * binomialPow A g g' r' =
+      binomialPow A g g' (r + r') := by
+  simp only [binomialPow, PowerSeries.binomialSeries_add, PowerSeries.heval_mul, add_smul]
+  rw [mul_left_comm, ← mul_assoc, ← mul_assoc, single_mul_single, mul_one, add_comm, ← mul_assoc]
+
+theorem binomialPow_one {g g' : Γ} (h : g < g') :
+    binomialPow A g g' (Nat.cast (R := R) 1) = ((single g) (1 : A) - (single g') 1) := by
+  rw [binomialPow_apply, PowerSeries.binomialSeries_nat 1, pow_one, map_add,
+    PowerSeries.heval_X _ (pos_orderTop_single_sub h (-1)),
+    ← RingHom.map_one (f := PowerSeries.C A), PowerSeries.heval_C _, one_smul, mul_add, mul_one,
+    single_mul_single, one_mul, single_neg, Nat.cast_one, one_smul, add_sub_cancel,
+    sub_eq_add_neg]
+
 theorem binomialPow_nat {g g' : Γ} (h : g < g') (n : ℕ) :
-    binomialPow h (n : R) = ((single g (1 : A)) - single g' 1) ^ n := by
+    binomialPow A g g' (n : R) = ((single g (1 : A)) - single g' 1) ^ n := by
   induction n with
-  | zero => simp [PowerSeries.binomialSeries_zero, map_one, binomialPow_apply]
+  | zero => simp [PowerSeries.binomialSeries_zero, map_one]
   | succ n ih =>
-    rw [Nat.cast_add, binomialPow_add, pow_add, ih, binomialPow_one h, pow_one]
+    rw [Nat.cast_add, ← binomialPow_add, pow_add, ih, binomialPow_one A h, pow_one]
 
 theorem binomialPow_one_add {g₀ g₁ g₂ : Γ} (h₀₁ : g₀ < g₁) (h₁₂ : g₁ < g₂) :
-    binomialPow (A := A) h₀₁ (Nat.cast (R := R) 1) + binomialPow h₁₂ (Nat.cast (R := R) 1) =
-      binomialPow (h₀₁.trans h₁₂) (Nat.cast (R := R) 1) := by
-  rw [binomialPow_one h₀₁, binomialPow_one h₁₂, binomialPow_one (h₀₁.trans h₁₂), sub_add_sub_cancel]
+    binomialPow A g₀ g₁ (Nat.cast (R := R) 1) + binomialPow A g₁ g₂ (Nat.cast (R := R) 1) =
+      binomialPow A g₀ g₂ (Nat.cast (R := R) 1) := by
+  rw [binomialPow_one A h₀₁, binomialPow_one A h₁₂, binomialPow_one A (h₀₁.trans h₁₂),
+    sub_add_sub_cancel]
 
 end BinomialPow
 

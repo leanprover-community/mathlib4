@@ -47,6 +47,11 @@ lemma binomialSeries_coeff [Semiring A] [SMul R A] (r : R) (n : ℕ) :
   coeff_mk n fun n ↦ Ring.choose r n • 1
 
 @[simp]
+lemma binomialSeries_constantCoeff [Semiring A] [Algebra R A] (r : R) :
+    (constantCoeff A) (binomialSeries A r) = 1 := by
+  simp [← coeff_zero_eq_constantCoeff_apply]
+
+@[simp]
 lemma binomialSeries_add [Semiring A] [Algebra R A] (r s : R) :
     binomialSeries A (r + s) = binomialSeries A r * binomialSeries A s := by
   ext n
