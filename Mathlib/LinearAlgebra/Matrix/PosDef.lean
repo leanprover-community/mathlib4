@@ -174,7 +174,7 @@ lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
 theorem det_nonneg [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
     0 ≤ M.det := by
   rw [hM.isHermitian.det_eq_prod_eigenvalues]
-  exact Finset.prod_nonneg (fun i _ ↦ by simpa using hM.eigenvalues_nonneg i)
+  exact Finset.prod_nonneg fun i _ ↦ by simpa using hM.eigenvalues_nonneg i
 
 section sqrt
 
