@@ -321,6 +321,9 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     le_sInf := fun _ _ hG _ _ hab => ⟨fun _ hH => hG _ hH hab, hab.ne⟩
     iInf_iSup_eq := fun f => by ext; simp [Classical.skolem] }
 
+attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
+attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
+
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices. -/
 abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
 
