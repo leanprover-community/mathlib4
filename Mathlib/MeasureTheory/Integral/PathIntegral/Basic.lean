@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.Analysis.Calculus.Deriv.CompMul
 import Mathlib.Analysis.Calculus.Deriv.Shift
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 open MeasureTheory unitInterval Topology Set Interval
 
@@ -55,7 +57,7 @@ theorem PathIntegrable.refl (ω : E → E →L[ℝ] F) (a : E) : PathIntegrable 
 
 theorem pathIntegralFun_symm_apply (ω : E → E →L[ℝ] F) (γ : Path a b) (t : ℝ) :
     pathIntegralFun ω γ.symm t = -pathIntegralFun ω γ (1 - t) := by
-  simp [pathIntegralFun, γ.extend_symm, derivWithin_comp_sub_left]
+  simp [pathIntegralFun, γ.extend_symm, derivWithin_comp_const_sub]
 
 @[simp]
 theorem pathIntegralFun_symm (ω : E → E →L[ℝ] F) (γ : Path a b):
@@ -98,7 +100,7 @@ theorem pathIntegralFun_trans_of_half_lt (ω : E → E →L[ℝ] F) (γ₁ : Pat
   have : (γ₁.trans γ₂).extend =ᶠ[𝓝 t] (fun s ↦ γ₂.extend (2 * s - 1)) :=
     (eventually_ge_nhds ht₀).mono fun _ ↦ Path.extend_trans_of_half_le _ _
   rw [pathIntegralFun, this.self_of_nhds, derivWithin_of_mem_nhds, this.deriv_eq, pathIntegralFun,
-    derivWithin_of_mem_nhds, deriv_comp_mul_left (γ₂.extend <| · - 1), deriv_comp_sub_const,
+    derivWithin_of_mem_nhds, deriv_comp_mul_left _ (γ₂.extend <| · - 1), deriv_comp_sub_const,
     map_smul] <;> apply Icc_mem_nhds <;> linarith
 
 theorem pathIntegralFun_trans_aeEq_right (ω : E → E →L[ℝ] F) (γ₁ : Path a b) (γ₂ : Path b c) :
@@ -139,8 +141,6 @@ theorem pathIntegral_trans {ω : E → E →L[ℝ] F} {γ₁ : Path a b} {γ₂ 
     intervalIntegral.integral_comp_sub_right]
   norm_num [pathIntegral]
 
--- ω (γ.extend t) (derivWithin γ.extend I t)
-
 /-- If a 1-form `ω` is continuous on a set `s`,
 then it is path integrable along any $C^1$ path in this set. -/
 theorem ContinuousOn.pathIntegrable_of_contDiffOn {ω : E → E →L[ℝ] F} {γ : Path a b}
@@ -151,4 +151,3 @@ theorem ContinuousOn.pathIntegrable_of_contDiffOn {ω : E → E →L[ℝ] F} {γ
   apply ContinuousOn.clm_apply
   · exact hω.comp (by fun_prop) fun _ _ ↦ hγs _
   · exact hγ.continuousOn_derivWithin uniqueDiffOn_Icc_zero_one le_rfl
-
