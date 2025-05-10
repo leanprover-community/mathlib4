@@ -11,8 +11,10 @@ import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.Localization
 import Mathlib.Algebra.Homology.PreservesQuasiIso
 import Mathlib.CategoryTheory.Abelian.Flat.Basic
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 import Mathlib.CategoryTheory.Monoidal.KFlat
 import Mathlib.CategoryTheory.ObjectProperty.Shift
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
 # Flat objects and K-flat complexes
@@ -54,6 +56,13 @@ instance : (quasiIso C (.up ℤ)).kFlat.IsStableUnderShift ℤ where
 lemma kFlat_shift_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (quasiIso C (.up ℤ)).kFlat (K⟦n⟧) ↔ (quasiIso C (.up ℤ)).kFlat K := by
   apply ObjectProperty.prop_shift_iff_of_isStableUnderShift
+
+/-lemma closedUnderLimitsOfShape_kFlat (J : Type*) [Category J]
+    [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
+    [∀ (X : C), PreservesColimitsOfShape J (tensorLeft X)]
+    [∀ (X : C), PreservesColimitsOfShape J (tensorRight X)] :
+    ClosedUnderLimitsOfShape J (quasiIso C (.up ℤ)).kFlat := by
+  sorry-/
 
 end CochainComplex
 
