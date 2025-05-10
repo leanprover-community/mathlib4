@@ -96,3 +96,6 @@ register_simp_attr enat_to_nat_coe
 
 /-- A simp set for the `pnat_to_nat` tactic. -/
 register_simp_attr pnat_to_nat_coe
+
+/-- A simp set for unfolding the category theory in `ModuleCat` API. -/
+register_simp_attr moduleCat_simps
