@@ -72,7 +72,7 @@ theorem mem_closure {s : Set α} {x : α} : x ∈ Closeds.closure s ↔ x ∈ cl
 theorem gc : GaloisConnection Closeds.closure ((↑) : Closeds α → Set α) := fun _ U =>
   ⟨subset_closure.trans, fun h => closure_minimal h U.isClosed⟩
 
-/-- The galois coinsertion between sets and opens. -/
+/-- The galois insertion between sets and closeds. -/
 def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   choice s hs := ⟨s, closure_eq_iff_isClosed.1 <| hs.antisymm subset_closure⟩
   gc := gc

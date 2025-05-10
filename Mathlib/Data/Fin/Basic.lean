@@ -21,22 +21,7 @@ This file expands on the development in the core library.
 ### Induction principles
 
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
-* `Fin.succRec` : Define `C n i` by induction on `i : Fin n` interpreted
-  as `(0 : Fin (n - i)).succ.succ…`. This function has two arguments: `H0 n` defines
-  `0`-th element `C (n+1) 0` of an `(n+1)`-tuple, and `Hs n i` defines `(i+1)`-st element
-  of `(n+1)`-tuple based on `n`, `i`, and `i`-th element of `n`-tuple.
-* `Fin.succRecOn` : same as `Fin.succRec` but `i : Fin n` is the first argument;
-* `Fin.induction` : Define `C i` by induction on `i : Fin (n + 1)`, separating into the
-  `Nat`-like base cases of `C 0` and `C (i.succ)`.
-* `Fin.inductionOn` : same as `Fin.induction` but with `i : Fin (n + 1)` as the first argument.
-* `Fin.cases` : define `f : Π i : Fin n.succ, C i` by separately handling the cases `i = 0` and
-  `i = Fin.succ j`, `j : Fin n`, defined using `Fin.induction`.
-* `Fin.reverseInduction`: reverse induction on `i : Fin (n + 1)`; given `C (Fin.last n)` and
-  `∀ i : Fin n, C (Fin.succ i) → C (Fin.castSucc i)`, constructs all values `C i` by going down;
-* `Fin.lastCases`: define `f : Π i, Fin (n + 1), C i` by separately handling the cases
-  `i = Fin.last n` and `i = Fin.castSucc j`, a special case of `Fin.reverseInduction`;
-* `Fin.addCases`: define a function on `Fin (m + n)` by separately handling the cases
-  `Fin.castAdd n i` and `Fin.natAdd m i`.
+Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 
 ### Embeddings and isomorphisms
 
@@ -52,8 +37,6 @@ This file expands on the development in the core library.
 
 ### Other casts
 
-* `Fin.ofNat'`: given a positive number `n` (deduced from `[NeZero n]`), `Fin.ofNat' i` is
-  `i % n` interpreted as an element of `Fin n`;
 * `Fin.divNat i` : divides `i : Fin (m * n)` by `n`;
 * `Fin.modNat i` : takes the mod of `i : Fin (m * n)` by `n`;
 

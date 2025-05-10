@@ -129,7 +129,7 @@ section Topology
 instance : IsTopologicalRing (FiniteAdeleRing R K) :=
   haveI : Fact (∀ v : HeightOneSpectrum R,
       IsOpen (v.adicCompletionIntegers K : Set (v.adicCompletion K))) :=
-    ⟨fun _ ↦ Valued.valuationSubring_isOpen _⟩
+    ⟨fun _ ↦ Valued.isOpen_valuationSubring _⟩
   RestrictedProduct.isTopologicalRing (fun (v : HeightOneSpectrum R) ↦ v.adicCompletion K)
 
 end Topology

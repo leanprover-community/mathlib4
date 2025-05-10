@@ -116,7 +116,7 @@ def CWComplex.mk.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (continuousOn_symm : ∀ (n : ℕ) (i : cell n), ContinuousOn (map n i).symm (map n i).target)
     (pairwiseDisjoint' :
       (univ : Set (Σ n, cell n)).PairwiseDisjoint (fun ni ↦ map ni.1 ni.2 '' ball 0 1))
-    (mapsTo: ∀ n i, ∃ I : Π m, Finset (cell m),
+    (mapsTo : ∀ n i, ∃ I : Π m, Finset (cell m),
       MapsTo (map n i) (sphere 0 1) (⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1))
     (closed' : ∀ (A : Set X), (asubc : A ⊆ C) →
       (∀ n j, IsClosed (A ∩ map n j '' closedBall 0 1)) → IsClosed A)

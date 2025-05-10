@@ -47,14 +47,17 @@ variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedSpace.isBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E :=
-  IsBoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
+instance (priority := 100) NormedSpace.toNormSMulClass [NormedSpace 𝕜 E] : NormSMulClass 𝕜 E :=
+  haveI : IsBoundedSMul 𝕜 E := .of_norm_smul_le NormedSpace.norm_smul_le
+  NormedDivisionRing.toNormSMulClass
+
+/-- This is a shortcut instance, which was found to help with performance in
+https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Normed.20modules/near/516757412.
+
+It is implied via `NormedSpace.toNormSMulClass`. -/
+instance NormedSpace.toIsBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E := inferInstance
 
 instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
-
--- shortcut instance
-instance NormedField.to_isBoundedSMul : IsBoundedSMul 𝕜 𝕜 :=
-  NormedSpace.isBoundedSMul
 
 variable (𝕜) in
 theorem norm_zsmul (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
