@@ -197,7 +197,7 @@ noncomputable def totalLeftDerivedCounit : L ⋙ F.totalLeftDerived L W ⟶ F :=
 
 instance : (F.totalLeftDerived L W).IsLeftDerivedFunctor
     (F.totalLeftDerivedCounit L W) W where
-  isRightKanExtension' := by
+  isRightKanExtension := by
     dsimp [totalLeftDerived, totalLeftDerivedCounit]
     infer_instance
 
