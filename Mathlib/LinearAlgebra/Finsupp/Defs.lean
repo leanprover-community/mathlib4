@@ -248,6 +248,7 @@ This is the `LinearEquiv` version of `Finsupp.finsuppProdEquiv`. -/
 @[simps]
 noncomputable def finsuppProdLEquiv {α β : Type*} (R : Type*) {M : Type*} [Semiring R]
     [AddCommMonoid M] [Module R M] : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M :=
+  letI := Classical.decEq α
   { finsuppProdEquiv with
     map_add' f g := by ext; simp
     map_smul' c f := by ext; simp }
