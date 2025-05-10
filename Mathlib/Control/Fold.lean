@@ -8,7 +8,7 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Control.Traversable.Instances
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.Tactic.AdaptationNote
 
