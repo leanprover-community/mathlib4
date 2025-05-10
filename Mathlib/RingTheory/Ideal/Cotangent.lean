@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Ring.Idempotent
+import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.RingTheory.Filtration
