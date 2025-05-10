@@ -450,16 +450,18 @@ variable (X : C) {ι : Type*} [Fintype ι] {Y : ι → C} {c : Bicone Y} (hc : c
 noncomputable def Ext.addEquivBiproduct : Ext X c.pt n ≃+ Π i, Ext X (Y i) n where
   toFun e i := e.comp (Ext.mk₀ (c.π i)) (add_zero n)
   invFun e := ∑ (i : ι), (e i).comp (Ext.mk₀ (c.ι i)) (add_zero n)
-  left_inv e := by
+  left_inv _ := by
     simp only [comp_assoc_of_second_deg_zero, mk₀_comp_mk₀, ← Ext.comp_sum,
       ← Ext.mk₀_sum, IsBilimit.total hc, comp_mk₀_id]
-  right_inv e := by
+  right_inv _ := by
     ext i
     simp only [Ext.sum_comp, comp_assoc_of_second_deg_zero, mk₀_comp_mk₀]
     rw [Finset.sum_eq_single i _ (by simp), bicone_ι_π_self, comp_mk₀_id]
-    intro j _ hij
+    intro _ _ hij
     rw [c.ι_π, dif_neg hij, mk₀_zero, comp_zero]
-  map_add' := by aesop
+  map_add' _ _ := by
+    simp only [add_comp]
+    rfl
 
 end
 
