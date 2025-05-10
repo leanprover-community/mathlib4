@@ -159,9 +159,9 @@ instance : CompleteLattice (ConvexCone 𝕜 E) :=
     bot_le := fun _ _ => False.elim
     top := ⊤
     le_top := fun _ x _ => mem_top 𝕜 x
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     sInf := InfSet.sInf
-    sup := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
+    max := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
     sSup := fun s => sInf { T | ∀ S ∈ s, S ≤ T }
     le_sup_left := fun _ _ => fun _ hx => mem_sInf.2 fun _ hs => hs.1 hx
     le_sup_right := fun _ _ => fun _ hx => mem_sInf.2 fun _ hs => hs.2 hx

@@ -398,7 +398,7 @@ theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=
 
 instance : DistribLattice ℝ :=
   { Real.partialOrder with
-    sup := (· ⊔ ·)
+    max := (· ⊔ ·)
     le := (· ≤ ·)
     le_sup_left := by
       intros a b
@@ -419,7 +419,7 @@ instance : DistribLattice ℝ :=
       induction c using Real.ind_mk
       simp_rw [← mk_sup, mk_le]
       exact CauSeq.sup_le
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     inf_le_left := by
       intros a b
       induction a using Real.ind_mk

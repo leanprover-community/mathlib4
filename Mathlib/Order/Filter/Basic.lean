@@ -222,8 +222,8 @@ section CompleteLattice
 
 /-- Complete lattice structure on `Filter α`. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
-  inf a b := min a b
-  sup a b := max a b
+  min a b := min a b
+  max a b := max a b
   le_sup_left _ _ _ h := h.1
   le_sup_right _ _ _ h := h.2
   sup_le _ _ _ h₁ h₂ _ h := ⟨h₁ h, h₂ h⟩

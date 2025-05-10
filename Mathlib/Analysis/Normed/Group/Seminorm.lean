@@ -360,7 +360,7 @@ theorem inf_apply : (p ⊓ q) x = ⨅ y, p y + q (x / y) :=
 @[to_additive]
 noncomputable instance : Lattice (GroupSeminorm E) :=
   { GroupSeminorm.semilatticeSup with
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     inf_le_left := fun p q x =>
       ciInf_le_of_le mul_bddBelow_range_add x <| by rw [div_self', map_one_eq_zero q, add_zero]
     inf_le_right := fun p q x =>

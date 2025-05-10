@@ -143,7 +143,7 @@ instance : OrderBot (IdealSheafData X) where
   bot_le I U := bot_le
 
 instance : SemilatticeInf (IdealSheafData X) where
-  inf I J :=
+  min I J :=
   { ideal := I.ideal ⊓ J.ideal
     map_ideal_basicOpen U f := by
       dsimp
