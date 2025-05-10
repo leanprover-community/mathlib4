@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Robin Carlier
 -/
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.Lean.Meta.Simp
@@ -66,20 +66,40 @@ Note that if you want both the lemma and the reassociated lemma to be
 `simp` lemmas, you should tag the lemma `@[reassoc (attr := simp)]`.
 The variant `@[simp, reassoc]` on a lemma `F` will tag `F` with `@[simp]`,
 but not `F_assoc` (this is sometimes useful).
+
+This attribute also works for lemmas of shape `∀ .., f = g` where `f g : X ≅ Y` are
+isomorphisms, provided that `Tactic.CategoryTheory.IsoReassoc` has been imported.
 -/
 syntax (name := reassoc) "reassoc" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
+
+/--
+First implementation of the `reassoc` attribute.
+Will be overriden in `Tactic.CategoryTheory.IsoReassoc.lean` to allow use on equality of
+isomorphisms.
+-/
+initialize reassocImplRef : IO.Ref (Name → Syntax → AttributeKind → AttrM Unit) ←
+  IO.mkRef fun src ref kind => match ref with
+    | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
+      if (kind != AttributeKind.global) then
+        throwError "`reassoc` can only be used as a global attribute"
+      addRelatedDecl src "_assoc" ref stx? fun type value levels => do
+        pure (← reassocExpr (← mkExpectedTypeHint value type), levels)
+    | _ => throwUnsupportedSyntax
+
+/--
+First implementation of the `reassoc_of%` elaborator.
+Will be overriden in `Tactic.CategoryTheory.IsoReassoc.lean` to allow use on equality of
+isomorphisms.
+-/
+initialize reassocOfImplRef : IO.Ref (TSyntax `term → TermElabM Expr) ←
+  IO.mkRef fun t => do reassocExpr (← Term.elabTerm t none)
+
 
 initialize registerBuiltinAttribute {
   name := `reassoc
   descr := ""
   applicationTime := .afterCompilation
-  add := fun src ref kind => match ref with
-  | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
-    if (kind != AttributeKind.global) then
-      throwError "`reassoc` can only be used as a global attribute"
-    addRelatedDecl src "_assoc" ref stx? fun type value levels => do
-      pure (← reassocExpr (← mkExpectedTypeHint value type), levels)
-  | _ => throwUnsupportedSyntax }
+  add := fun src ref kind => do (← reassocImplRef.get) src ref kind }
 
 open Term in
 /--
@@ -87,8 +107,10 @@ open Term in
 an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),
 produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
 but with compositions fully right associated and identities removed.
+This also works for equations between isomorphisms, provided that
+`Tactic.CategoryTheory.IsoReassoc` has been imported.
 -/
 elab "reassoc_of% " t:term : term => do
-  reassocExpr (← elabTerm t none)
+  (← reassocOfImplRef.get) t
 
 end CategoryTheory
