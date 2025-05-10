@@ -423,15 +423,15 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
     apply Ext.comp_assoc
     all_goals omega
 
+section
+
+attribute [local simp] Ext.mk₀_add
+
 instance (X : C) (n : ℕ) : (extFunctorObj X n).Additive where
-  map_add {_ _ _ _} := by
-    apply AddCommGrp.hom_ext
-    simp [Ext.mk₀_add]
 
 instance (n : ℕ) : (extFunctor (C := C) n).Additive where
-  map_add {_ _ _ _} := by
-    ext
-    simp [Ext.mk₀_add]
+
+end
 
 /-- `Ext` commutes with finite coproducts. -/
 noncomputable def Ext.coprodIso (X : C) {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
