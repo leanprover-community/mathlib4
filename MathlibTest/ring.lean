@@ -211,16 +211,16 @@ set_option linter.unusedTactic false in
 example (x : ℝ) (f : ℝ → ℝ) : True := by
   let y := x
   have : x = y := by
-    ring_nf
+    ring_nf -failIfUnchanged
     ring_nf!
   have : x - y = 0 := by
-    ring_nf
+    ring_nf -failIfUnchanged
     ring_nf!
   have : f x = f y := by
-    ring_nf
+    ring_nf -failIfUnchanged
     ring_nf!
   have : f x - f y = 0 := by
-    ring_nf
+    ring_nf -failIfUnchanged
     ring_nf!
   trivial
 
