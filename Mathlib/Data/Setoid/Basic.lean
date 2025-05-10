@@ -77,12 +77,6 @@ theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
 theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (Setoid.ker f)).out = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 
-set_option linter.deprecated false in
-@[deprecated ker_apply_mk_out (since := "2024-10-19")]
-theorem ker_apply_mk_out' {f : α → β} (a : α) :
-    f (Quotient.mk _ a : Quotient <| Setoid.ker f).out' = f a :=
-  @Quotient.mk_out' _ (Setoid.ker f) a
-
 theorem ker_def {f : α → β} {x y : α} : ker f x y ↔ f x = f y :=
   Iff.rfl
 

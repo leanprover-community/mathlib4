@@ -263,7 +263,7 @@ instance Prod.instNeBotNhdsWithinIio [Preorder X] [Preorder Y] {x : X × Y}
   exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩
 
 instance Prod.instNeBotNhdsWithinIoi [Preorder X] [Preorder Y] {x : X × Y}
-    [hx₁: (𝓝[>] x.1).NeBot] [hx₂ : (𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot := by
+    [hx₁ : (𝓝[>] x.1).NeBot] [hx₂ : (𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot := by
   refine (hx₁.prod hx₂).mono ?_
   rw [← nhdsWithin_prod_eq]
   exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩
@@ -603,9 +603,6 @@ protected lemma Topology.IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf
     (hg : IsOpenEmbedding g) : IsOpenEmbedding (Prod.map f g) :=
   .of_isEmbedding_isOpenMap (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.prodMap := IsOpenEmbedding.prodMap
-
 lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
   .of_comp (continuous_id.prodMk hf) continuous_fst .id
 
@@ -691,16 +688,10 @@ protected lemma Topology.IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
 
 @[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inl := IsOpenEmbedding.inl
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_inl := IsOpenEmbedding.inl
-
 protected lemma Topology.IsOpenEmbedding.inr : IsOpenEmbedding (@inr X Y) :=
   .of_continuous_injective_isOpenMap continuous_inr inr_injective isOpenMap_inr
 
 @[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inr := IsOpenEmbedding.inr
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_inr := IsOpenEmbedding.inr
 
 protected lemma Topology.IsEmbedding.inl : IsEmbedding (@inl X Y) := IsOpenEmbedding.inl.1
 protected lemma Topology.IsEmbedding.inr : IsEmbedding (@inr X Y) := IsOpenEmbedding.inr.1
@@ -724,16 +715,10 @@ theorem Topology.IsClosedEmbedding.inl : IsClosedEmbedding (inl : X → X ⊕ Y)
 
 @[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inl := IsClosedEmbedding.inl
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_inl := IsClosedEmbedding.inl
-
 theorem Topology.IsClosedEmbedding.inr : IsClosedEmbedding (inr : Y → X ⊕ Y) :=
   ⟨.inr, isClosed_range_inr⟩
 
 @[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inr := IsClosedEmbedding.inr
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_inr := IsClosedEmbedding.inr
 
 theorem nhds_inl (x : X) : 𝓝 (inl x : X ⊕ Y) = map inl (𝓝 x) :=
   (IsOpenEmbedding.inl.map_nhds_eq _).symm
@@ -980,7 +965,7 @@ variable {W X Y Z}
 @[simps!]
 def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
   Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
+    (Equiv.sumProdDistrib X Y Z).symm.toHomeomorphOfContinuousOpen
         ((continuous_inl.prodMap continuous_id).sumElim
           (continuous_inr.prodMap continuous_id)) <|
       (isOpenMap_inl.prodMap IsOpenMap.id).sumElim (isOpenMap_inr.prodMap IsOpenMap.id)

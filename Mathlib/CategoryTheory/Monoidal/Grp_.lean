@@ -18,7 +18,7 @@ morphisms of group objects commute with taking inverses.
 We show that a finite-product-preserving functor takes group objects to group objects.
 -/
 
-universe v₁ v₂ u₁ u₂ u
+universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 open CategoryTheory Category Limits MonoidalCategory ChosenFiniteProducts Mon_
 
@@ -168,7 +168,7 @@ theorem inv_inv (A : Grp_ C) : CategoryTheory.inv A.inv = A.inv := by
   rw [eq_comm, ← CategoryTheory.inv_comp_eq_id, IsIso.inv_inv, inv_comp_inv]
 
 @[reassoc]
-theorem mul_inv (A : Grp_ C) :
+theorem mul_inv [BraidedCategory C] (A : Grp_ C) :
     A.mul ≫ A.inv = (β_ A.X A.X).hom ≫ (A.inv ⊗ A.inv) ≫ A.mul := by
   apply lift_left_mul_ext A.mul
   nth_rw 2 [← Category.comp_id A.mul]
@@ -179,7 +179,7 @@ theorem mul_inv (A : Grp_ C) :
     lift_comp_inv_left, comp_toUnit_assoc]
 
 @[reassoc (attr := simp)]
-theorem tensorHom_inv_inv_mul (A : Grp_ C) :
+theorem tensorHom_inv_inv_mul [BraidedCategory C] (A : Grp_ C) :
     (A.inv ⊗ A.inv) ≫ A.mul = (β_ A.X A.X).hom ≫ A.mul ≫ A.inv := by
   rw [mul_inv A, SymmetricCategory.symmetry_assoc]
 
@@ -323,13 +323,17 @@ instance : HasInitial (Grp_ C) :=
 
 end Grp_
 
-namespace CategoryTheory.Functor
+namespace CategoryTheory
+variable {C}
+  {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts D]
+  {E : Type u₃} [Category.{v₃} E] [ChosenFiniteProducts E]
 
-variable {C} {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D)
-variable [PreservesFiniteProducts F]
+namespace Functor
+variable {F F' : C ⥤ D} [F.Monoidal] [F'.Monoidal] {G : D ⥤ E} [G.Monoidal]
 
-attribute [local instance] monoidalOfChosenFiniteProducts
+open Monoidal
 
+variable (F) in
 /-- A finite-product-preserving functor takes group objects to group objects. -/
 @[simps!]
 noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
@@ -344,10 +348,57 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
           Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] }
   map f := F.mapMon.map f
 
+/-- The identity functor is also the identity on group objects. -/
+@[simps!]
+noncomputable def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp_ C) :=
+  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp [ε_of_chosenFiniteProducts])
+    (by simp [μ_of_chosenFiniteProducts]))
+
+/-- The composition functor is also the composition on group objects. -/
+@[simps!]
+noncomputable def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
+  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp [ε_of_chosenFiniteProducts])
+    (by simp [μ_of_chosenFiniteProducts]))
+
+/-- Natural transformations between functors lift to group objects. -/
+@[simps!]
+noncomputable def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
+  app X := .mk (f.app _)
+
+/-- Natural isomorphisms between functors lift to group objects. -/
+@[simps!]
+noncomputable def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
+  NatIso.ofComponents fun X ↦ Grp_.mkIso (e.app _)
+
+attribute [local instance] Monoidal.ofChosenFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
 @[simps]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
   obj F := F.1.mapGrp
   map {F G} α := { app := fun A => { hom := α.app A.X } }
 
-end CategoryTheory.Functor
+end Functor
+
+open Functor
+
+namespace Adjunction
+variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
+
+/-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
+@[simps] noncomputable def mapGrp : F.mapGrp ⊣ G.mapGrp where
+  unit := mapGrpIdIso.inv ≫ mapGrpNatTrans a.unit ≫ mapGrpCompIso.hom
+  counit := mapGrpCompIso.inv ≫ mapGrpNatTrans a.counit ≫ mapGrpIdIso.hom
+
+end Adjunction
+
+namespace Equivalence
+variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
+
+/-- An equivalence of categories lifts to an equivalence of their group objects. -/
+@[simps] noncomputable def mapGrp : Grp_ C ≌ Grp_ D where
+  functor := e.functor.mapGrp
+  inverse := e.inverse.mapGrp
+  unitIso := mapGrpIdIso.symm ≪≫ mapGrpNatIso e.unitIso ≪≫ mapGrpCompIso
+  counitIso := mapGrpCompIso.symm ≪≫ mapGrpNatIso e.counitIso ≪≫ mapGrpIdIso
+
+end CategoryTheory.Equivalence
