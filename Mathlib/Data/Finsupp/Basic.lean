@@ -1105,7 +1105,7 @@ variable [DecidableEq α] [Zero M]
 /-- Given a finitely supported function `f` from a product type `α × β` to `γ`,
 `curry f` is the "curried" finitely supported function from `α` to the type of
 finitely supported functions from `β` to `γ`. -/
-protected def curry [DecidableEq α] (f : α × β →₀ M) : α →₀ β →₀ M where
+protected def curry (f : α × β →₀ M) : α →₀ β →₀ M where
   toFun a :=
     { toFun b := f (a, b)
       support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) (by simp +contextual)
