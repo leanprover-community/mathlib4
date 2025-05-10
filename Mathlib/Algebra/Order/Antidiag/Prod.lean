@@ -185,7 +185,7 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
 
 variable {A : Type*}
   [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A]
-  [LocallyFiniteOrder A] [DecidableEq A]
+  [LocallyFiniteOrderBot A] [DecidableEq A]
 
 /-- In a canonically ordered add monoid, the antidiagonal can be construct by filtering.
 

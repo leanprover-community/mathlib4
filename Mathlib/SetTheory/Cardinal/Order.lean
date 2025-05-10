@@ -297,7 +297,9 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
 
-instance orderBot : OrderBot Cardinal.{u} := inferInstance
+instance orderBot : OrderBot Cardinal.{u} where
+  bot := 0
+  bot_le := zero_le
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>

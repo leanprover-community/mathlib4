@@ -63,7 +63,7 @@ namespace NNReal
 instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
 instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
-instance : OrderBot ℝ≥0 := inferInstance
+instance : OrderBot ℝ≥0 := Nonneg.orderBot
 instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
 instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 instance : Min ℝ≥0 := SemilatticeInf.toMin
