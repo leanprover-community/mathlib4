@@ -163,12 +163,15 @@ theorem derivFamily_strictMono [Small.{u} ι] (f : ι → Ordinal.{u} → Ordina
 
 theorem derivFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (o : Ordinal) :
     f i (derivFamily f o) = derivFamily f o := by
-  induction' o using limitRecOn with o _ o l IH
-  · rw [derivFamily_zero]
+  induction o using limitRecOn with
+  | zero =>
+    rw [derivFamily_zero]
     exact nfpFamily_fp H 0
-  · rw [derivFamily_succ]
+  | succ =>
+    rw [derivFamily_succ]
     exact nfpFamily_fp H _
-  · have : Nonempty (Set.Iio o) := ⟨0, l.pos⟩
+  | isLimit o l IH =>
+    have : Nonempty (Set.Iio o) := ⟨0, l.pos⟩
     rw [derivFamily_limit _ l, H.map_iSup]
     refine eq_of_forall_ge_iff fun c => ?_
     rw [Ordinal.iSup_le_iff, Ordinal.iSup_le_iff]
@@ -181,18 +184,21 @@ theorem le_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
     suffices ∀ (o), a ≤ derivFamily f o → ∃ o, derivFamily f o = a from
       this a (isNormal_derivFamily _).le_apply
     intro o
-    induction' o using limitRecOn with o IH o l IH
-    · intro h₁
+    induction o using limitRecOn with
+    | zero =>
+      intro h₁
       refine ⟨0, le_antisymm ?_ h₁⟩
       rw [derivFamily_zero]
       exact nfpFamily_le_fp (fun i => (H i).monotone) (Ordinal.zero_le _) ha
-    · intro h₁
+    | succ o IH =>
+      intro h₁
       rcases le_or_lt a (derivFamily f o) with h | h
       · exact IH h
       refine ⟨succ o, le_antisymm ?_ h₁⟩
       rw [derivFamily_succ]
       exact nfpFamily_le_fp (fun i => (H i).monotone) (succ_le_of_lt h) ha
-    · intro h₁
+    | isLimit o l IH =>
+      intro h₁
       rcases eq_or_lt_of_le h₁ with h | h
       · exact ⟨_, h.symm⟩
       rw [derivFamily_limit _ l, ← not_le, Ordinal.iSup_le_iff, not_forall] at h
