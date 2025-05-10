@@ -131,3 +131,49 @@ example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (
   guard_hyp algebraizeInst : Algebra.testProperty1 A C
   guard_hyp scalarTowerInst := IsScalarTower.of_algebraMap_eq' rfl
   trivial
+
+section
+/- Test that the algebraize tactic also works on non-RingHom types -/
+class Algebra.Fooo (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] : Prop where
+
+structure Bar (A B : Type*) [CommRing A] [CommRing B] where
+  f : A →+* B
+
+@[algebraize fooo]
+def Bar.Fooo {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) : Prop := True
+
+lemma fooo {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.Fooo) :
+  @Algebra.Fooo A B _ _ b.f.toAlgebra := @Algebra.Fooo.mk A B _ _ b.f.toAlgebra
+
+example {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.Fooo) : True := by
+  algebraize [b.f]
+  guard_hyp algebraizeInst : @Algebra.Fooo A B _ _ b.f.toAlgebra
+  trivial
+
+structure Buz (A B : Type*) [CommRing A] [CommRing B] where
+  x : (A →+* B) ⊕ (A →+* B)
+
+@[algebraize Buz.fooo]
+def Buz.Fooo {A B : Type*} [CommRing A] [CommRing B] (b : Buz A B) :=
+  b.x.elim (@Algebra.Fooo A B _ _ ·.toAlgebra) (fun _ => False)
+
+lemma Buz.fooo {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) :
+  Buz.Fooo ⟨.inl f⟩ → @Algebra.Fooo A B _ _ f.toAlgebra := id
+
+-- check that this also works when the argument *contains* a ringhom
+example {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
+  (hf : Buz.Fooo ⟨.inl f⟩) : True := by
+  algebraize [f]
+  guard_hyp algebraizeInst : @Algebra.Fooo A B _ _ f.toAlgebra
+  trivial
+
+-- check that there is no issue with trying the lemma on a mismatching argument.
+example {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
+  (hf : Buz.Fooo ⟨.inr f⟩) : True := by
+  algebraize [f]
+  fail_if_success
+    guard_hyp algebraizeInst : @Algebra.Fooo A B _ _ f.toAlgebra
+  trivial
+
+
+end
