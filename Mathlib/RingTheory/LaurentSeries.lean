@@ -515,8 +515,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     (Polynomial.idealX K).intValuation P = (idealX K).intValuation (P : K⟦X⟧) := by
   by_cases hP : P = 0
   · rw [hP, Valuation.map_zero, Polynomial.coe_zero, Valuation.map_zero]
-  simp only [intValuation_apply]
-  rw [intValuationDef_if_neg _ hP, intValuationDef_if_neg _ <| coe_ne_zero hP]
+  rw [intValuation_if_neg _ hP, intValuation_if_neg _ <| coe_ne_zero hP]
   simp only [idealX_span, ofAdd_neg, inv_inj, WithZero.coe_inj, EmbeddingLike.apply_eq_iff_eq,
     Nat.cast_inj]
   have span_ne_zero :
@@ -538,8 +537,8 @@ theorem intValuation_eq_of_coe (P : K[X]) :
 
 /-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤₘ₀`. -/
 @[simp]
-theorem intValuation_X : (idealX K).intValuationDef X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
-  rw [← Polynomial.coe_X, ← intValuation_apply, ← intValuation_eq_of_coe]
+theorem intValuation_X : (idealX K).intValuation X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
+  rw [← Polynomial.coe_X, ← intValuation_eq_of_coe]
   apply intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
 
 end PowerSeries
@@ -575,7 +574,7 @@ theorem valuation_X_pow (s : ℕ) :
     Valued.v (((X : K⟦X⟧) : K⸨X⸩) ^ s) = Multiplicative.ofAdd (-(s : ℤ)) := by
   rw [map_pow, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul, WithZero.coe_zpow,
     ofAdd_neg, WithZero.coe_inv, zpow_natCast, valuation_def, ← LaurentSeries.coe_algebraMap,
-    valuation_of_algebraMap, intValuation_toFun, intValuation_X, ofAdd_neg, WithZero.coe_inv]
+    valuation_of_algebraMap, intValuation_X, ofAdd_neg, WithZero.coe_inv]
 
 theorem valuation_single_zpow (s : ℤ) :
     Valued.v (HahnSeries.single s (1 : K) : K⸨X⸩) =
@@ -597,7 +596,7 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     n < d → coeff K n f = 0 := by
   intro hnd
   apply (PowerSeries.X_pow_dvd_iff).mp _ n hnd
-  rwa [← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap, intValuation_apply,
+  rwa [← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap,
     intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d, PowerSeries.idealX,
     Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd] at H
 
