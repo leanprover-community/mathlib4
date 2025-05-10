@@ -24,18 +24,18 @@ commutative domain.
   * `HahnSeries.SummableFamily.mul` is the summable family given by pointwise multiplication.
   * `HahnSeries.SummableFamily.powers` is the summable family given by non-negative powers of a
   Hahn series, if the series has strictly positive order. If the series has non-positive order, then
-  the summable family takes the junk value of zero.
-  * `FamilySMul`, `FamilyMul`, and `PiFamily` are the pointwise scalar multiplication and
-  multiplication operations on a pair or collection of summable families.
+  the summable family is given by powers of zero.
+  * `HahnSeries.SummableFamily.PiFamily` is the pointwise multiplication operation on a collection
+  of summable families.
 
 ## Main results
-  * `FamilySMul`, `FamilyMul`, and `PiFamily` are compatible with `hsum`.  That is, the product of
-  sums is equal to the sum of pointwise products.
   * `HahnSeries.isUnit_iff`: If `R` is a commutative domain, and `Γ` is a linearly ordered additive
   commutative group, then a Hahn series is a unit if and only if its leading term is a unit in `R`.
-  * `HahnSeries.SummableFamily.hsum_smul`:   `smul` is compatible with `hsum`.
+  * `HahnSeries.SummableFamily.hsum_smul`: `smul` is compatible with `hsum`.
   * `HahnSeries.SummableFamily.hsum_mul`: `mul` is compatible with `hsum`.  That is, the product of
   sums is equal to the sum of pointwise products.
+  * `HahnSeries.SummableFamily.hsum_pi_family`: `PiFamily` is compatible with `hsum`.  That is, the
+  product of sums is equal to the sum of pointwise products.
 
 ## TODO
   * Summable Pi families
@@ -999,21 +999,6 @@ include hx in
 theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x).hsum = 1 := by
   rw [← hsum_smul, sub_smul 1 x (powers x), one_smul, hsum_sub, ←
     hsum_embDomain (x • powers x) ⟨Nat.succ, Nat.succ_injective⟩, embDomain_succ_smul_powers hx]
-  · simp [hx]
-  · simp only [coe_sub, coe_ofFinsupp, Pi.sub_apply, powers_toFun, ne_eq,
-    right_eq_add, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true,
-    Finsupp.single_eq_of_ne, sub_zero]
-    simp only [embDomain_apply, Embedding.coeFn_mk, Nat.range_succ, Set.mem_setOf_eq,
-      lt_add_iff_pos_left, add_pos_iff, Nat.lt_one_iff, pos_of_gt, or_true, ↓reduceDIte,
-      Nat.succ_eq_add_one, add_left_inj, Classical.choose_eq, smul_apply, powers_toFun,
-      smul_eq_mul]
-    rw [add_comm, pow_add, pow_one]
-    exact rfl
-
-include hx in
-theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x hx).hsum = 1 := by
-  rw [← hsum_smul, sub_smul 1 x (powers x hx), one_smul, hsum_sub, ←
-    hsum_embDomain (x • powers x hx) ⟨Nat.succ, Nat.succ_injective⟩, embDomain_succ_smul_powers]
   simp
 
 end powers
@@ -1093,7 +1078,6 @@ instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [F
     else
       (single (IsAddUnit.addUnit (AddGroup.isAddUnit x.order)).neg) (x.leadingCoeff)⁻¹ *
         (SummableFamily.powers _).hsum
-        (SummableFamily.powers _ _).hsum
   inv_zero := dif_pos rfl
   mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
     have h :=

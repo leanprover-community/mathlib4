@@ -115,7 +115,7 @@ instance : LieRing (ofTwoCocycleTrivModule c) where
   bracket x y := (⁅x.1, y.1⁆, c.toFun x.1 y.1)
   add_lie x y z := by simp [ofTwoCocycleTrivModule]
   lie_add x y z := by simp [ofTwoCocycleTrivModule]
-  lie_self x := by simp [c.map_eq_zero_of_eq']
+  lie_self x := by simp [c.map_eq_zero_of_eq', Prod.mk_zero_zero]
   leibniz_lie x y z := by simp [ofTwoCocycleTrivModule, c.cocycle x.1 y.1 z.1]
 
 @[simp]

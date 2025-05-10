@@ -465,14 +465,13 @@ theorem exists_binomialPow_smul_support_bound {g g' : Γ} (g₁ : Γ₁) (h : g 
     (A : HVertexOperator Γ₁ R V W) (v : V) :
     ∃ (k : ℕ), ∀ (m : ℕ) (_ : k < m),
       (-(n • g) - m • (g' - g)) +ᵥ g₁ ∉ ((HahnModule.of R).symm (A v)).support :=
-  Set.PartiallyWellOrderedOn.exists_not_mem_of_gt ((HahnModule.of R).symm (A v)).support
-    ((HahnModule.of R).symm (A v)).isPWO_support (fun k ↦ ((-(n • g) - k • (g' - g)) +ᵥ g₁))
+  Set.PartiallyWellOrderedOn.exists_not_mem_of_gt ((HahnModule.of R).symm (A v)).isPWO_support
     fun _ _ hkl ↦ not_le_of_lt <| VAdd.vadd_lt_vadd_of_lt_of_le
       (sub_lt_sub_left (nsmul_lt_nsmul_left (sub_pos.mpr h) hkl) (-(n • g))) <| Preorder.le_refl g₁
 
 theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     (A : HVertexOperator Γ₁ R V W) (v : V) :
-    ((HahnModule.of R).symm (HahnSeries.binomialPow (A := R) h n • A v)).coeff g₁ =
+    ((HahnModule.of R).symm (HahnSeries.binomialPow (A := R) g g' n • A v)).coeff g₁ =
       ∑ᶠ m : ℕ, Int.negOnePow m • Ring.choose n m •
         ((HahnModule.of R).symm (A v)).coeff ((- (n • g) - (m • (g' - g))) +ᵥ g₁) := by
   let f : ℕ → Γ × Γ₁ := fun k ↦  ((n • g) + k • (g' - g), (- (n • g) - (k • (g' - g))) +ᵥ g₁)
@@ -480,7 +479,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
   rw [HahnModule.coeff_smul, finsum_eq_sum_of_support_subset (s := s)]
   · classical
     refine Eq.trans (b := ∑ ij ∈ (Finset.image f s),
-      (HahnSeries.binomialPow R h n).coeff ij.1 •
+      (HahnSeries.binomialPow R g g' n).coeff ij.1 •
         ((HahnModule.of R).symm (A v)).coeff ij.2) ?_ ?_
     · refine Finset.sum_of_injOn (fun k ↦ k) (Function.Injective.injOn fun ⦃x y⦄ a ↦ a) ?_ ?_ ?_
       · rw [Set.mapsTo', Set.image_id', Finset.coe_subset]
@@ -505,7 +504,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
           obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hij
           simp only [f, Prod.eq_iff_fst_eq_snd_eq] at hk₂
           rw [← hk₂.1, ← hk₂.2, vadd_vadd, add_add_sub_cancel, add_neg_cancel, zero_vadd]
-        by_cases h1 : (HahnSeries.binomialPow R h n).coeff ij.1 = 0
+        by_cases h1 : (HahnSeries.binomialPow R g g' n).coeff ij.1 = 0
         · rw [h1, zero_smul]
         · specialize hn h1
           by_cases h2 : ((HahnModule.of R).symm (A v)).coeff ij.2 = 0
@@ -718,7 +717,7 @@ variable [PartialOrder Γ] [AddCommMonoid Γ] [CommRing R]
 
 /-- `-Y + X` as a unit of `R((X))((Y))` -/
 def subLeft (R) [CommRing R] : HahnSeries (ℤ ×ₗ ℤ) R :=
-  HahnSeries.binomialPow R lex_basis_lt (1 : ℤ) --(isUnit_neg_one (α := R)) (1 : R)
+  HahnSeries.binomialPow R (toLex (0, 1)) (toLex (1, 0)) (1 : ℤ) --(isUnit_neg_one (α := R)) (1 : R)
 
 theorem subLeft_eq : subLeft R = HahnSeries.single (toLex (0,1)) 1 -
     HahnSeries.single (toLex (1,0)) (1 : R) := by
@@ -760,7 +759,7 @@ theorem coeff_subLeft_pow_smul (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l 
 
 /-- `X - Y` as a unit of `R((Y))((X))`. -/
 def subRight (R) [CommRing R] : HahnSeries (ℤ ×ᵣ ℤ) R :=
-    HahnSeries.binomialPow (Γ := ℤ ×ᵣ ℤ) R revLex_basis_lt (1 : ℤ)
+    HahnSeries.binomialPow (Γ := ℤ ×ᵣ ℤ) R (toRevLex (1, 0)) (toRevLex (0, 1)) (1 : ℤ)
 
 /-!
 theorem subRight_eq : subRight R = HahnSeries.single (toRevLex (1,0)) (-1 : R) +
