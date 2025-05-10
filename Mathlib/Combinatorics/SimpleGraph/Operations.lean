@@ -170,6 +170,12 @@ lemma sup_edge_self : G ⊔ edge s s = G := by
 lemma lt_sup_edge (hne : s ≠ t) (hn : ¬ G.Adj s t) : G < G ⊔ edge s t :=
   left_lt_sup.2 fun h ↦ hn <| h <| (edge_adj ..).mpr ⟨Or.inl ⟨rfl, rfl⟩, hne⟩
 
+lemma edge_le_iff {v w : V} : edge v w ≤ G ↔ v = w ∨ G.Adj v w := by
+  by_cases h : v = w
+  · simp [h, edge_self_eq_bot]
+  · refine ⟨fun h ↦ .inr <| h (by simp_all [edge_adj, h]), fun hadj v' w' hvw' ↦ ?_⟩
+    aesop (add simp [edge_adj, adj_symm])
+
 variable {s t}
 
 lemma edge_edgeSet_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by
