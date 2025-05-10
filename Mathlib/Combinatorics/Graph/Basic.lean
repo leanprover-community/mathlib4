@@ -113,7 +113,7 @@ lemma exists_isLink_of_mem_edgeSet (h : e ∈ E(G)) : ∃ x y, G.IsLink e x y :=
   (edge_mem_iff_exists_isLink ..).1 h
 
 lemma edgeSet_eq_setOf_exists_isLink : E(G) = {e | ∃ x y, G.IsLink e x y} :=
-  Set.ext fun e ↦ G.edge_mem_iff_exists_isLink e
+  Set.ext G.edge_mem_iff_exists_isLink
 
 lemma IsLink.left_eq_or_eq_of_isLink (h : G.IsLink e x y) (h' : G.IsLink e z w) : x = z ∨ x = w :=
   G.eq_or_eq_of_isLink_of_isLink h h'
