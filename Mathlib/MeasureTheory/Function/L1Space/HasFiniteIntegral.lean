@@ -31,8 +31,9 @@ open Topology ENNReal MeasureTheory NNReal
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
-variable {α β γ ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
+variable {α β γ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 variable [NormedAddCommGroup β] [NormedAddCommGroup γ] [ENorm ε] [ENorm ε']
+  [TopologicalSpace ε''] [ENormedAddMonoid ε'']
 
 namespace MeasureTheory
 
@@ -56,13 +57,13 @@ theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable 
   apply edist_triangle_right
 
 -- Yaël: Why do the following four lemmas even exist?
-theorem lintegral_enorm_zero : ∫⁻ _ : α, ‖(0 : β)‖ₑ ∂μ = 0 := by simp
+theorem lintegral_enorm_zero : ∫⁻ _ : α, ‖(0 : ε'')‖ₑ ∂μ = 0 := by simp
 
-theorem lintegral_enorm_add_left {f : α → β} (hf : AEStronglyMeasurable f μ) (g : α → γ) :
+theorem lintegral_enorm_add_left {f : α → ε''} (hf : AEStronglyMeasurable f μ) (g : α → ε') :
     ∫⁻ a, ‖f a‖ₑ + ‖g a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ + ∫⁻ a, ‖g a‖ₑ ∂μ :=
   lintegral_add_left' hf.enorm _
 
-theorem lintegral_enorm_add_right (f : α → β) {g : α → γ} (hg : AEStronglyMeasurable g μ) :
+theorem lintegral_enorm_add_right (f : α → ε') {g : α → ε''} (hg : AEStronglyMeasurable g μ) :
     ∫⁻ a, ‖f a‖ₑ + ‖g a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ + ∫⁻ a, ‖g a‖ₑ ∂μ :=
   lintegral_add_right' _ hg.enorm
 
@@ -177,6 +178,14 @@ theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
     HasFiniteIntegral (fun _ : α => c) μ :=
   hasFiniteIntegral_const_iff.2 <| .inr ‹_›
 
+theorem HasFiniteIntegral.of_mem_Icc_enorm [IsFiniteMeasure μ]
+    {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞}
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    HasFiniteIntegral X μ := by
+  have : ‖max ‖a‖ₑ ‖b‖ₑ‖ₑ ≠ ⊤ := by simp [ha, hb]
+  apply (hasFiniteIntegral_const_enorm this (μ := μ)).mono'_enorm
+  filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω h₁ h₂ using by simp [h₂]
+
 theorem HasFiniteIntegral.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ}
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     HasFiniteIntegral X μ := by
@@ -250,7 +259,7 @@ theorem HasFiniteIntegral.norm {f : α → β} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => ‖f a‖) μ := by simpa [hasFiniteIntegral_iff_enorm] using hfi
 
 theorem hasFiniteIntegral_enorm_iff (f : α → ε) :
-    HasFiniteIntegral (fun a => ‖f a‖ₑ) μ ↔ HasFiniteIntegral f μ :=
+    HasFiniteIntegral (‖f ·‖ₑ) μ ↔ HasFiniteIntegral f μ :=
   hasFiniteIntegral_congr'_enorm <| Eventually.of_forall fun x => enorm_enorm (f x)
 
 theorem hasFiniteIntegral_norm_iff (f : α → β) :

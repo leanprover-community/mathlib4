@@ -500,6 +500,32 @@ theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg (norm_nonneg _) _), mul_comm p,
     ← ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hq_pos.le, ENNReal.rpow_mul]
 
+theorem eLpNorm'_enorm_rpow (f : α → ε) (p q : ℝ) (hq_pos : 0 < q) :
+    eLpNorm' (‖f ·‖ₑ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
+  simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
+    mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one, enorm_eq_self, ← ENNReal.rpow_mul, mul_comm]
+
+theorem eLpNorm_enorm_rpow (f : α → ε) (hq_pos : 0 < q) :
+    eLpNorm (‖f ·‖ₑ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
+  by_cases h0 : p = 0
+  · simp [h0, ENNReal.zero_rpow_of_pos hq_pos]
+  by_cases hp_top : p = ∞
+  · simp only [hp_top, eLpNorm_exponent_top, ENNReal.top_mul', hq_pos.not_le,
+      ENNReal.ofReal_eq_zero, if_false, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm]
+    have h_rpow : essSup (‖‖f ·‖ₑ ^ q‖ₑ) μ = essSup (‖f ·‖ₑ ^ q) μ := by congr
+    rw [h_rpow]
+    have h_rpow_mono := ENNReal.strictMono_rpow_of_pos hq_pos
+    have h_rpow_surj := (ENNReal.rpow_left_bijective hq_pos.ne.symm).2
+    let iso := h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj
+    exact (iso.essSup_apply (fun x => ‖f x‖ₑ) μ).symm
+  rw [eLpNorm_eq_eLpNorm' h0 hp_top, eLpNorm_eq_eLpNorm' _ _]
+  swap
+  · refine mul_ne_zero h0 ?_
+    rwa [Ne, ENNReal.ofReal_eq_zero, not_le]
+  swap; · exact ENNReal.mul_ne_top hp_top ENNReal.ofReal_ne_top
+  rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hq_pos.le]
+  exact eLpNorm'_enorm_rpow f p.toReal q hq_pos
+
 theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
     eLpNorm (fun x => ‖f x‖ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
   by_cases h0 : p = 0
@@ -953,6 +979,8 @@ theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
   simp_rw [eLpNorm_one_eq_lintegral_enorm]
   rw [lintegral_add_measure _ μ ν]
 
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+
 theorem eLpNorm_le_add_measure_right (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
     eLpNorm f p μ ≤ eLpNorm f p (μ + ν) :=
   eLpNorm_mono_measure f <| Measure.le_add_right <| le_refl _
@@ -1077,6 +1105,7 @@ variable {ε : Type*} [ENorm ε] in
 theorem meas_eLpNormEssSup_lt {f : α → ε} : μ { y | eLpNormEssSup f μ < ‖f y‖ₑ } = 0 :=
   meas_essSup_lt
 
+variable {ε : Type u_8} [ENorm ε] in
 lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] : eLpNorm f p μ < ∞ := by
   obtain rfl | hp₀ := eq_or_ne p 0
   · simp
