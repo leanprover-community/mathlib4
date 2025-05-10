@@ -540,7 +540,7 @@ lemma div_C : p / C a = p * C a⁻¹ := by
   simpa [mul_comm] using div_C_mul (q := 1) (a := a)
 
 lemma C_div : C (a / b) = C a / C b := by
-  rw [Polynomial.div_C, ← C_mul, div_eq_mul_inv]
+  rw [div_C, ← C_mul, div_eq_mul_inv]
 
 theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
   ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
