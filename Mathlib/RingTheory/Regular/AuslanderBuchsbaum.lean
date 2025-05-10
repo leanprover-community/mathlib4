@@ -117,8 +117,6 @@ noncomputable def Abelian.Ext.coprodIso {ι : Type*} [Finite ι] (Y : ι → C) 
     preservesCoproduct_of_preservesBiproduct (extFunctorObj X n)
   PreservesCoproduct.iso (extFunctorObj X n) Y
 
-#check ModuleCat.coprodIsoDirectSum
-
 end coproduct
 
 end CategoryTheory
@@ -154,8 +152,6 @@ end hom
 
 universe v u
 
-#check Module.Finite.finite_basis
-
 open IsLocalRing RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
@@ -177,15 +173,41 @@ lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module 
   apply subsingleton_of_forall_eq 0 (fun m ↦ ?_)
   rw [← one_smul R m, Subsingleton.elim (1 : R) 0, zero_smul]
 
+namespace AddCommGrp
+
+variable {ι : Type v} [DecidableEq ι] (Z : ι → AddCommGrp.{max u v})
+
+open DirectSum
+
+def coproductCocone : Cofan Z :=
+  Cofan.mk (of (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.of (fun i ↦ Z i) i)
+
+def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
+  desc s := ofHom <| DirectSum.toAddMonoid fun i ↦ (s.ι.app ⟨i⟩).hom
+  fac := by
+    rintro s ⟨i⟩
+    ext (x : Z i)
+    simp [coproductCocone, hom_comp]
+  uniq := by
+    rintro s f h
+    ext : 1
+    refine DirectSum.addHom_ext fun i x ↦ ?_
+    simpa [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
+      congr($(h ⟨i⟩) x)
+
+noncomputable def coprodIsoDirectSum [HasCoproduct Z] : ∐ Z ≅ AddCommGrp.of (⨁ i, Z i) :=
+  colimit.isoColimitCocone ⟨_, coproductCoconeIsColimit Z⟩
+
+end AddCommGrp
+
 lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
-    [Nontrivial M] (i : ℕ) : Subsingleton (Ext N M i) ↔
-    Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
+    [Nontrivial M] (i : ℕ) : Subsingleton (Ext.{max u v} N M i) ↔
+    Subsingleton (Ext.{max u v} N (ModuleCat.of R (Shrink.{v} R)) i) := by
   classical
   have : Nontrivial R := nontrivial_ring_of_nontrivial_module M
   rcases Module.Free.exists_set R M with ⟨S, ⟨B⟩⟩
   have fin' : Finite S := Module.Finite.finite_basis B
   have fin : S.Finite := fin'
-  have ne := Basis.index_nonempty B
   let e : M ≅ ∐ fun s ↦ ModuleCat.of R (Shrink.{v, u} R) := (LinearEquiv.toModuleIso <|
     (B.repr.trans (Finsupp.mapRange.linearEquiv (α := S) (Shrink.linearEquiv R R).symm)).trans
     (finsuppLEquivDirectSum R (Shrink.{v} R) S)).trans
@@ -193,11 +215,11 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   show Subsingleton ((extFunctorObj N i).obj M) ↔ _
   rw [((extFunctorObj.{max u v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr]
   simp only [extFunctorObj, (Ext.coprodIso N _ i).addCommGroupIsoToAddEquiv.subsingleton_congr]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  ·
-    sorry
-  ·
-    sorry
+  rw [(AddCommGrp.coprodIsoDirectSum _).addCommGroupIsoToAddEquiv.subsingleton_congr]
+  refine ⟨fun h ↦ ?_, fun h ↦ @Unique.instSubsingleton _ DirectSum.unique⟩
+  let m := Classical.choice (Basis.index_nonempty B)
+  exact Function.Injective.subsingleton (DirectSum.of_injective
+    (β := fun s ↦ (AddCommGrp.of (Ext N (ModuleCat.of R (Shrink.{v, u} R)) i))) m)
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] : moduleDepth N M = moduleDepth N (ModuleCat.of R (Shrink.{v} R)) := by
