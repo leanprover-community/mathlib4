@@ -217,12 +217,12 @@ variable {N : Type*} [AddCommGroup N] [Module R N]
 @[simp]
 lemma subsingleton_tensorProduct_iff_right [Module.FaithfullyFlat R M] :
     Subsingleton (M ⊗[R] N) ↔ Subsingleton N :=
-  ⟨fun h ↦ lTensor_reflects_triviality R M N, fun h ↦ inferInstance⟩
+  ⟨fun _ ↦ lTensor_reflects_triviality R M N, fun _ ↦ inferInstance⟩
 
 @[simp]
 lemma subsingleton_tensorProduct_iff_left [Module.FaithfullyFlat R N] :
     Subsingleton (M ⊗[R] N) ↔ Subsingleton M :=
-  ⟨fun h ↦ rTensor_reflects_triviality R N M, fun h ↦ inferInstance⟩
+  ⟨fun _ ↦ rTensor_reflects_triviality R N M, fun _ ↦ inferInstance⟩
 
 @[simp]
 lemma nontrivial_tensorProduct_iff_right [Module.FaithfullyFlat R M] :
