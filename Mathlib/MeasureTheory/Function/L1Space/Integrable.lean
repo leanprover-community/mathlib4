@@ -61,10 +61,12 @@ scoped notation "Integrable[" mα "]" => @Integrable _ _ _ _ mα
 theorem memLp_one_iff_integrable {f : α → β} : MemLp f 1 μ ↔ Integrable f μ := by
   simp_rw [Integrable, hasFiniteIntegral_iff_enorm, MemLp, eLpNorm_one_eq_lintegral_enorm]
 
+@[fun_prop]
 theorem Integrable.aestronglyMeasurable {f : α → β} (hf : Integrable f μ) :
     AEStronglyMeasurable f μ :=
   hf.1
 
+@[fun_prop]
 theorem Integrable.aemeasurable [MeasurableSpace β] [BorelSpace β] {f : α → β}
     (hf : Integrable f μ) : AEMeasurable f μ :=
   hf.aestronglyMeasurable.aemeasurable
@@ -509,12 +511,12 @@ lemma integrable_of_le_of_le {f g₁ g₂ : α → ℝ} (hf : AEStronglyMeasurab
     refine hx.trans ?_
     conv_rhs => rw [Real.norm_of_nonneg (by positivity)]
     exact max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)
-  exact Integrable.mono (h_int₁.norm.add h_int₂.norm) hf h_le_add
+  exact Integrable.mono (by fun_prop) hf h_le_add
 
 @[fun_prop]
 theorem Integrable.prodMk {f : α → β} {g : α → γ} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (fun x => (f x, g x)) μ :=
-  ⟨hf.aestronglyMeasurable.prodMk hg.aestronglyMeasurable,
+  ⟨by fun_prop,
     (hf.norm.add' hg.norm).mono <|
       Eventually.of_forall fun x =>
         calc
@@ -588,8 +590,7 @@ theorem LipschitzWith.integrable_comp_iff_of_antilipschitz {K K'} {f : α → β
 @[fun_prop]
 theorem Integrable.real_toNNReal {f : α → ℝ} (hf : Integrable f μ) :
     Integrable (fun x => ((f x).toNNReal : ℝ)) μ := by
-  refine
-    ⟨hf.aestronglyMeasurable.aemeasurable.real_toNNReal.coe_nnreal_real.aestronglyMeasurable, ?_⟩
+  refine ⟨by fun_prop, ?_⟩
   rw [hasFiniteIntegral_iff_norm]
   refine lt_of_le_of_lt ?_ ((hasFiniteIntegral_iff_norm _).1 hf.hasFiniteIntegral)
   apply lintegral_mono
@@ -824,7 +825,7 @@ variable {𝕜 : Type*}
 @[fun_prop]
 theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
     {f : α → β} (hf : Integrable f μ) : Integrable (c • f) μ :=
-  ⟨hf.aestronglyMeasurable.const_smul c, hf.hasFiniteIntegral.smul c⟩
+  ⟨by fun_prop, hf.hasFiniteIntegral.smul c⟩
 
 @[fun_prop]
 theorem Integrable.fun_smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
@@ -980,7 +981,7 @@ theorem Integrable.trim (hm : m ≤ m0) (hf_int : Integrable f μ') (hf : Strong
   refine ⟨hf.aestronglyMeasurable, ?_⟩
   rw [HasFiniteIntegral, lintegral_trim hm _]
   · exact hf_int.2
-  · exact @StronglyMeasurable.enorm _ m _ _ f hf
+  · fun_prop
 
 theorem integrable_of_integrable_trim (hm : m ≤ m0) (hf_int : Integrable f (μ'.trim hm)) :
     Integrable f μ' := by
@@ -1031,7 +1032,7 @@ variable {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [NontriviallyNormedFi
 theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →L[𝕜] E) (φ_int : Integrable φ μ) :
     Integrable (fun a : α => L (φ a)) μ :=
   ((Integrable.norm φ_int).const_mul ‖L‖).mono'
-    (L.continuous.comp_aestronglyMeasurable φ_int.aestronglyMeasurable)
+    (by fun_prop)
     (Eventually.of_forall fun a => L.le_opNorm (φ a))
 
 @[simp]

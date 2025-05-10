@@ -175,11 +175,11 @@ theorem eLpNorm_lt_top (f : Lp E p μ) : eLpNorm f p μ < ∞ :=
 theorem eLpNorm_ne_top (f : Lp E p μ) : eLpNorm f p μ ≠ ∞ :=
   (eLpNorm_lt_top f).ne
 
-@[measurability]
+@[fun_prop, measurability]
 protected theorem stronglyMeasurable (f : Lp E p μ) : StronglyMeasurable f :=
   f.val.stronglyMeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 protected theorem aestronglyMeasurable (f : Lp E p μ) : AEStronglyMeasurable f μ :=
   f.val.aestronglyMeasurable
 
