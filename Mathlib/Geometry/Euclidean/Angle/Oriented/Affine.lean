@@ -670,7 +670,8 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
 fourth point between the first and second or second and third points have the same sign. -/
 theorem _root_.Sbtw.oangle_sign_eq {p₁ p₂ p₃ : P} (p₄ : P) (h : Sbtw ℝ p₁ p₂ p₃) :
     (∡ p₁ p₄ p₂).sign = (∡ p₂ p₄ p₃).sign :=
-  haveI hc : Collinear ℝ ({p₁, p₂, p₂, p₃} : Set P) := by simpa using h.wbtw.collinear
+  haveI hc : Collinear ℝ ({p₁, p₂, p₂, p₃} : Set P) := by
+    simpa [Set.insert_eq_of_mem] using h.wbtw.collinear
   hc.oangle_sign_of_sameRay_vsub _ h.left_ne h.ne_right h.wbtw.sameRay_vsub
 
 /-- Given three points in weak order on the same line, with the first not equal to the second,
@@ -679,7 +680,7 @@ third points have the same sign. -/
 theorem _root_.Wbtw.oangle_sign_eq_of_ne_left {p₁ p₂ p₃ : P} (p₄ : P) (h : Wbtw ℝ p₁ p₂ p₃)
     (hne : p₁ ≠ p₂) : (∡ p₁ p₄ p₂).sign = (∡ p₁ p₄ p₃).sign :=
   haveI hc : Collinear ℝ ({p₁, p₂, p₁, p₃} : Set P) := by
-    simpa [Set.insert_comm p₂] using h.collinear
+    simpa [Set.insert_eq_of_mem, Set.insert_comm p₂] using h.collinear
   hc.oangle_sign_of_sameRay_vsub _ hne (h.left_ne_right_of_ne_left hne.symm) h.sameRay_vsub_left
 
 /-- Given three points in strict order on the same line, and a fourth point, the angles at the

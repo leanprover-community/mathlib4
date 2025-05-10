@@ -602,7 +602,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
         apply restrictScalars_injective K
         rw [restrictScalars_top, adjoin_adjoin_left, Set.union_comm, ← adjoin_adjoin_left,
           adjoin_root_eq_top p, restrictScalars_adjoin]
-        simp
+        simp [Set.insert_eq_of_mem]
       rw [← finrank_top', ← this, adjoin.finrank]
       exact IsIntegral.of_finite _ _
     · simp [← key₂]

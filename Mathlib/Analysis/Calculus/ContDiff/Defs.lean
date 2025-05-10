@@ -611,7 +611,7 @@ theorem contDiffWithinAt_zero (hx : x ∈ s) :
   · intro h
     obtain ⟨u, H, p, hp⟩ := h 0 le_rfl
     refine ⟨u, ?_, ?_⟩
-    · simpa [hx] using H
+    · simpa [insert_eq_of_mem hx] using H
     · simp only [Nat.cast_zero, hasFTaylorSeriesUpToOn_zero_iff] at hp
       exact hp.1.mono inter_subset_right
   · rintro ⟨u, H, hu⟩
@@ -980,7 +980,7 @@ theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :
 
 nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h' : m = ∞ → n = ω):
     ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 m f u := by
-  simpa [nhdsWithin_univ] using h.contDiffOn hm h'
+  simpa [insert_eq_of_mem, nhdsWithin_univ] using h.contDiffOn hm h'
 
 /-- A function is `C^(n + 1)` at a point iff locally, it has a derivative which is `C^n`. -/
 theorem contDiffAt_succ_iff_hasFDerivAt {n : ℕ} :
@@ -1015,7 +1015,7 @@ theorem iteratedFDerivWithin_eq_iteratedFDeriv {n : ℕ}
   · exact inter_subset_inter_left _ (subset_univ _)
   · exact hs.inter u_open
   · apply uniqueDiffOn_univ.inter u_open
-  · simpa using hu
+  · simpa [insert_eq_of_mem] using hu
   · exact ⟨hx, xu⟩
 
 /-! ### Smooth functions -/
