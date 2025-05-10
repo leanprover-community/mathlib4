@@ -493,15 +493,16 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
       convert hf.hasSum hz using 2
       abel }
 
+open Pointwise in
 theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) (y : E) :
-    HasFPowerSeriesWithinOnBall (fun (z : E) ↦ f (z - y)) p ((fun x ↦ x + y) '' s) (x + y) r where
+    HasFPowerSeriesWithinOnBall (fun (z : E) ↦ f (z - y)) p (s + {y}) (x + y) r where
   r_le := hf.r_le
   r_pos := hf.r_pos
   hasSum := fun {z} hz1 hz2 => by
     have : x + z ∈ insert x s := by
-      simp only [image_add_right, mem_insert_iff, add_eq_left, mem_preimage] at hz1
+      simp only [add_singleton, image_add_right, mem_insert_iff, add_eq_left, mem_preimage] at hz1 ⊢
       abel_nf at hz1
-      rcases hz1 with (hz1 | hz1) <;> simp [hz1]
+      assumption
     convert hf.hasSum (y := z) this hz2 using 2
     abel
 
@@ -511,8 +512,9 @@ theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y : E) :
   use r
   apply HasFPowerSeriesOnBall.comp_sub hf
 
+open Pointwise in
 theorem HasFPowerSeriesWithinAt.comp_sub (hf : HasFPowerSeriesWithinAt f p s x) (y : E) :
-    HasFPowerSeriesWithinAt (fun (z : E) ↦ f (z - y)) p ((fun x ↦ x + y) '' s) (x + y) := by
+    HasFPowerSeriesWithinAt (fun (z : E) ↦ f (z - y)) p (s + {y}) (x + y) := by
   obtain ⟨r, hf⟩ := hf
   use r
   apply HasFPowerSeriesWithinOnBall.comp_sub hf
@@ -531,16 +533,18 @@ theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
   rw [show x = (x - y) + y by abel]
   apply hf.comp_sub
 
+open Pointwise in
 theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y : E) :
-    AnalyticWithinAt 𝕜 (fun (z : E) ↦ f (z - y)) ((fun x ↦ x + y) '' s) (x + y) := by
+    AnalyticWithinAt 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) (x + y) := by
   obtain ⟨p, hf⟩ := hf
   use p
   apply hf.comp_sub
 
+open Pointwise in
 theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y : E) :
-    AnalyticOn 𝕜 (fun (z : E) ↦ f (z - y)) ((fun x ↦ x + y) '' s) := by
+    AnalyticOn 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) := by
   intro x hx
-  simp only [image_add_right, mem_preimage] at hx
+  simp only [add_singleton, image_add_right, mem_preimage] at hx
   specialize hf (x - y) (by convert hx using 1; abel)
   rw [show x = (x - y) + y by abel]
   apply hf.comp_sub
