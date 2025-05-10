@@ -356,22 +356,22 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
   map f := F.mapMon.map f
 
 @[simp]
-theorem mapCommMon_id_one (A : Grp_ C) :
+theorem mapGrp_id_one (A : Grp_ C) :
     η[((𝟭 C).mapGrp.obj A).X] = 𝟙 _ ≫ η[A.X] :=
   rfl
 
 @[simp]
-theorem mapCommMon_id_mul (A : Grp_ C) :
+theorem mapGrp_id_mul (A : Grp_ C) :
     μ[((𝟭 C).mapGrp.obj A).X] = 𝟙 _ ≫ μ[A.X] :=
   rfl
 
 @[simp]
-theorem comp_mapCommMon_one (A : Grp_ C) :
+theorem comp_mapGrp_one (A : Grp_ C) :
     η[((F ⋙ G).mapGrp.obj A).X] = LaxMonoidal.ε (F ⋙ G) ≫ (F ⋙ G).map η[A.X] :=
   rfl
 
 @[simp]
-theorem comp_mapCommMon_mul (A : Grp_ C) :
+theorem comp_mapGrp_mul (A : Grp_ C) :
     μ[((F ⋙ G).mapGrp.obj A).X] = LaxMonoidal.μ (F ⋙ G) _ _ ≫ (F ⋙ G).map μ[A.X] :=
   rfl
 
