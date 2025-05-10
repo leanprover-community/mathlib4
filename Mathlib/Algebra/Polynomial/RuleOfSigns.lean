@@ -383,7 +383,6 @@ theorem succ_sign_lin_mul (hη : 0 < η) (hq : P ≠ 0) :
   -- do induction on the degree
   generalize hd : P.natDegree = d
   induction' d using Nat.strong_induction_on with d ih generalizing P
-  -- rw [eq_comm] at hd
   -- can assume it starts positive, otherwise negate P
   wlog hqpos : 0 < leadingCoeff P generalizing P with H
   · have h : leadingCoeff P < 0 :=
