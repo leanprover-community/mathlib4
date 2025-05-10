@@ -364,6 +364,58 @@ def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ :=
 
 @[simp] lemma prodComm_symm [Module R₁ M₂] : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
 
+section
+
+variable [Module R M₁] [Module R M₂] [Unique M₂]
+
+/-- The natural equivalence `M × N ≃L[R] M` for any trivial module `N`.
+This is `Equiv.prodUnique` as a continuous linear equivalence. -/
+def prodUnique : (M₁ × M₂) ≃L[R] M₁ where
+  toLinearEquiv := LinearEquiv.prodUnique
+  continuous_toFun := by
+    show Continuous (Equiv.prodUnique M₁ M₂)
+    dsimp; fun_prop
+  continuous_invFun := by
+    show Continuous fun x ↦ (x, default)
+    fun_prop
+
+omit [TopologicalSpace R] in
+@[simp]
+lemma prodUnique_toEquiv : (prodUnique R M₁ M₂).toEquiv = Equiv.prodUnique M₁ M₂ := rfl
+
+omit [TopologicalSpace R] in
+@[simp]
+lemma prodUnique_apply (x : M₁ × M₂) : prodUnique R M₁ M₂ x = x.1 := rfl
+
+omit [TopologicalSpace R] in
+@[simp]
+lemma prodUnique_symm_apply (x : M₁) : (prodUnique R M₁ M₂).symm x = (x, default) := rfl
+
+/-- The natural equivalence `N × M ≃L[R] M` for any trivial module `N`.
+This is `Equiv.uniqueProd` as a continuous linear equivalence. -/
+def uniqueProd : (M₂ × M₁) ≃L[R] M₁ where
+  toLinearEquiv := LinearEquiv.uniqueProd
+  continuous_toFun := by
+    show Continuous (Prod.snd)
+    fun_prop
+  continuous_invFun := by
+    show Continuous fun x ↦ ( default, x)
+    fun_prop
+
+omit [TopologicalSpace R] in
+@[simp]
+lemma uniqueProd_toEquiv : (uniqueProd R M₁ M₂).toEquiv = Equiv.uniqueProd M₁ M₂ := rfl
+
+omit [TopologicalSpace R] in
+@[simp]
+lemma uniqueProd_apply (x : M₂ × M₁) : uniqueProd R M₁ M₂ x = x.2 := rfl
+
+omit [TopologicalSpace R] in
+@[simp]
+lemma uniqueProd_symm_apply (x : M₁) : (uniqueProd R M₁ M₂).symm x = (default, x) := rfl
+
+end
+
 variable {R₁ M₁ M₂}
 
 protected theorem bijective (e : M₁ ≃SL[σ₁₂] M₂) : Function.Bijective e :=
