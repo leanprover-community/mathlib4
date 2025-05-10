@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 import Mathlib.CategoryTheory.Generator.Sheaf
 import Mathlib.CategoryTheory.Sites.Abelian
+import Mathlib.CategoryTheory.Sites.Equivalence
 
 /-!
 
@@ -67,6 +68,14 @@ instance ab5ofSize [HasFiniteLimits A] [HasSheafify J A]
 instance {C : Type v} [SmallCategory.{v} C] (J : GrothendieckTopology C)
     (A : Type u₁) [Category.{v} A] [Abelian A] [IsGrothendieckAbelian.{v} A]
     [HasSheafify J A] : IsGrothendieckAbelian.{v} (Sheaf J A) where
+
+instance {C : Type (v + 1)} [LargeCategory C] [EssentiallySmall.{v} C]
+    (J : GrothendieckTopology C)
+    (A : Type u₁) [Category.{v} A] [Abelian A] [IsGrothendieckAbelian.{v} A]
+    [HasSheafify ((equivSmallModel C).inverse.inducedTopology J) A] :
+      IsGrothendieckAbelian.{v} (Sheaf J A) :=
+  IsGrothendieckAbelian.of_equivalence
+    ((equivSmallModel C).inverse.sheafInducedTopologyEquivOfIsCoverDense J A)
 
 end Sheaf
 
