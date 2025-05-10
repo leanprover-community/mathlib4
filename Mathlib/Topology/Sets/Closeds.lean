@@ -54,7 +54,7 @@ def Simps.coe (s : Closeds α) : Set α := s
 initialize_simps_projections Closeds (carrier → coe, as_prefix coe)
 
 @[simp]
-lemma carrier_eq_coe {s : Closeds α} : s.carrier = (s : Set α) := rfl
+lemma carrier_eq_coe (s : Closeds α) : s.carrier = (s : Set α) := rfl
 
 @[ext]
 protected theorem ext {s t : Closeds α} (h : (s : Set α) = t) : s = t :=
