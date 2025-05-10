@@ -249,7 +249,7 @@ instance : HasInitial (Mon_ C) :=
 end Mon_
 
 namespace CategoryTheory
-variable {C}
+variable
   {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D]
   {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E]
   {F F' : C ⥤ D} {G : D ⥤ E}
@@ -294,6 +294,22 @@ That is, a lax monoidal functor `F : C ⥤ D` induces a functor `Mon_ C ⥤ Mon_
 def mapMon : Mon_ C ⥤ Mon_ D where
   obj A := .mk (F.obj A.X)
   map f := .mk' (F.map f.hom)
+
+@[simp]
+theorem id_mapMon_one (X : Mon_ C) : η[((𝟭 C).mapMon.obj X).X] = 𝟙 _ ≫ η[X.X] := rfl
+
+@[simp]
+theorem id_mapMon_mul (X : Mon_ C) : μ[((𝟭 C).mapMon.obj X).X] = 𝟙 _ ≫ μ[X.X] := rfl
+
+@[simp]
+theorem comp_mapMon_one (X : Mon_ C) :
+    η[((F ⋙ G).mapMon.obj X).X] = ε (F ⋙ G) ≫ (F ⋙ G).map η[X.X] :=
+  rfl
+
+@[simp]
+theorem comp_mapMon_mul (X : Mon_ C) :
+    μ[((F ⋙ G).mapMon.obj X).X] = «μ» (F ⋙ G) _ _ ≫ (F ⋙ G).map μ[X.X] :=
+  rfl
 
 /-- The identity functor is also the identity on monoid objects. -/
 @[simps!]
