@@ -454,6 +454,7 @@
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
+  "Mathlib.Combinatorics.Graph.Basic": ["Mathlib.Data.Set.Basic"],
   "Mathlib.Combinatorics.Additive.ApproximateSubgroup":
   ["Mathlib.Tactic.Bound"],
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
