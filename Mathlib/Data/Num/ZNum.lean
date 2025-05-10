@@ -443,7 +443,7 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
 instance commRing : CommRing ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul := (· * ·)
-    mul_assoc a b c := show a * b * c = a * (b * c) by transfer
+    mul_assoc a b c := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
     one_mul := by transfer
