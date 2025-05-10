@@ -100,14 +100,13 @@ theorem star_mul_self_mul_eq_diagonal :
   apply Basis.ext (EuclideanSpace.basisFun n 𝕜).toBasis
   intro i
   simp only [toEuclideanLin_apply, OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply,
-    WithLp.equiv_single, ← mulVec_mulVec, eigenvectorUnitary_mulVec, ← mulVec_mulVec,
+    EuclideanSpace.ofLp_single, ← mulVec_mulVec, eigenvectorUnitary_mulVec, ← mulVec_mulVec,
     mulVec_eigenvectorBasis, Matrix.diagonal_mulVec_single, mulVec_smul,
-    star_eigenvectorUnitary_mulVec, RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.equiv_symm_smul,
-    WithLp.equiv_symm_single, Function.comp_apply, mul_one, WithLp.equiv_symm_single]
+    star_eigenvectorUnitary_mulVec, RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.toLp_smul,
+    EuclideanSpace.toLp_single, Function.comp_apply, mul_one]
   apply PiLp.ext
   intro j
   simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
-
 
 /-- **Diagonalization theorem**, **spectral theorem** for matrices; A hermitian matrix can be
 diagonalized by a change of basis. For the spectral theorem on linear maps, see
