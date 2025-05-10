@@ -257,3 +257,10 @@ theorem ker_toSpanSingleton_one_sub_eq_span :
   rw [ker_toSpanSingleton_eq_span he.one_sub, sub_sub_cancel]
 
 end IsIdempotentElem
+
+section PrincipalIdeal
+
+instance {R : Type*} [Semiring R] {x : R} : (Ideal.span {x}).IsPrincipal :=
+  ⟨x, rfl⟩
+
+end PrincipalIdeal

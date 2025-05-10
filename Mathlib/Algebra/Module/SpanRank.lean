@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Jingting Wang, Andrew Yang
+Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Christian Merten, Jingting Wang, Andrew Yang
 -/
 import Mathlib.Data.Set.Card
 import Mathlib.Data.ENat.Lattice
@@ -192,6 +192,11 @@ lemma FG.generators_ncard {p : Submodule R M} (h : p.FG) :
   rw [← Nat.cast_inj (R := Cardinal), ← fg_iff_spanRank_eq_spanFinrank.mpr h, Set.ncard, Set.encard,
      ENat.card, generators_card, toNat_toENat, ← spanFinrank]
   exact (fg_iff_spanRank_eq_spanFinrank.mpr h).symm
+
+lemma FG.finite_generators {p : Submodule R M} (hp : p.FG) :
+    p.generators.Finite := by
+  rw [← Cardinal.lt_aleph0_iff_set_finite, Submodule.generators_card]
+  exact spanRank_finite_iff_fg.mpr hp
 
 /-- The span of the generators equals the submodule. -/
 lemma span_generators (p : Submodule R M) : span R (generators p) = p :=
