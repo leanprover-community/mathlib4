@@ -3,8 +3,6 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Colimits
-import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 
@@ -446,7 +444,7 @@ lemma Ext.mk₀_sum {X Y : C} {ι : Type*} [Fintype ι]
     mk₀ (∑ i, f i) = ∑ i, mk₀ (f i) :=
   map_sum addEquiv₀.symm _ _
 
-variable {X : C} {ι : Type*} [Fintype ι] {Y : ι → C} {c : Bicone Y} (hc : c.IsBilimit) (n : ℕ)
+variable (X : C) {ι : Type*} [Fintype ι] {Y : ι → C} {c : Bicone Y} (hc : c.IsBilimit) (n : ℕ)
 
 /-- `Ext` commutes with finite biproducts. -/
 noncomputable def Ext.addEquivBiproduct : Ext X c.pt n ≃+ Π i, Ext X (Y i) n where
