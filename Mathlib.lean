@@ -4,8 +4,6 @@ import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.AddConstMap.Equiv
 import Mathlib.Algebra.AddConstMap.Mono.Basic
 import Mathlib.Algebra.AddConstMap.Order
-import Mathlib.Algebra.AddTorsor
-import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.AddTorsor.Basic
 import Mathlib.Algebra.AddTorsor.Defs
 import Mathlib.Algebra.Algebra.Basic
