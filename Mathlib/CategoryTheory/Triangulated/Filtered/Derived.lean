@@ -167,14 +167,75 @@ def DerivedFunctor : DerivedCategory t₁.Heart ⥤ DerivedCategory t₂.Heart :
 
 -- Second statement of Proposition A.3.2: the "commutative" diagram.
 -- This is an existence statement.
+-- To prove this statement, we will use the category of filtered acyclic objects of the
+-- heart of `C`, and its equivalent with the category of complexes of acyclic objects.
 
-/-
-def DerivedFunctor_comp :
-    Realization L₁ t₁ tF₁ ⋙ T ≅ DerivedFunctor t₁ t₂ T ⋙ Realization L₂ t₂ tF₂ := sorry
--/
+def FilteredAcyclic : ObjectProperty tF₁.Heart :=
+  fun X ↦ ∀ n, AcyclicObject T t₁ t₂ ((t₁.homology n).obj ((Gr L₁ n).obj X.1))
 
--- The equivalence from the heart of `tF₁` to the category of complexes of the heart of `t₁`.
-def G : tF₁.Heart ⥤ CochainComplex t₁.Heart ℤ := tF₁.ιHeart ⋙ FilteredToComplex L₁ t₁
+lemma FilteredAcyclic_image (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory) :
+    tF₂.heart (FT.functor.obj X.1.1) := sorry
+
+def FilteredAcyclicToHeart : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory ⥤ tF₂.Heart :=
+  ObjectProperty.lift tF₂.heart ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor)
+  (FilteredAcyclic_image L₁ t₁ tF₁ L₂ t₂ tF₂ T FT)
+
+def FilteredAcyclicToHeart_comp : FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t₂ tF₂ T FT ⋙
+    tF₂.ιHeart ≅ (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor :=
+  ObjectProperty.liftCompιIso _ _ _ ≪≫ (Functor.associator _ _ _).symm
+
+abbrev FilteredAcyclicToComplex_aux₁ (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
+    (n : ℤ) : (AcyclicObject T t₁ t₂).FullSubcategory :=
+  ⟨FilteredToComplex_aux₁ L₁ t₁ X.1.1 n, X.2 n⟩
+
+def FilteredAcyclicToComplexObj (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory) :
+    CochainComplex (AcyclicObject T t₁ t₂).FullSubcategory ℤ :=
+  CochainComplex.of (FilteredAcyclicToComplex_aux₁ L₁ t₁ tF₁ t₂ T X)
+    (FilteredToComplex_aux₂ L₁ t₁ X.1.1)
+    (FilteredToComplex_aux₃ L₁ t₁ X.1.1)
+
+def FilteredAcyclicToComplexAcyclic :
+    (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory ⥤
+    CochainComplex (AcyclicObject T t₁ t₂).FullSubcategory ℤ where
+  obj X := FilteredAcyclicToComplexObj L₁ t₁ tF₁ t₂ T X
+  map f :=
+    {
+      f := (FilteredToComplexHom L₁ t₁ f).f,
+      comm' := (FilteredToComplexHom L₁ t₁ f).comm'
+    }
+  map_id X := by
+    ext
+    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_aux₁, Gr]
+    erw [Functor.map_id, Functor.map_id, Functor.map_id, Functor.map_id]
+    rfl
+  map_comp f g := by
+    ext
+    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_aux₁]
+    erw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp]
+    rfl
+
+def FilteredAcyclicToComplexAcyclic_compat :
+    FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T ⋙
+    (AcyclicObject T t₁ t₂).ι.mapHomologicalComplex _ ≅
+    (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FilteredToComplex L₁ t₁ := by
+  refine NatIso.ofComponents (fun _ ↦ ?_) (fun _ ↦ ?_)
+  · refine HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) (fun _ _ _ ↦ ?_)
+    dsimp
+    erw [Category.id_comp, Category.comp_id]
+    rfl
+  · ext
+    dsimp
+    erw [Category.comp_id, Category.id_comp]
+    rfl
+
+instance : (FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T).IsEquivalence := sorry
+
+def FilteredAcyclicToComplexAcyclic_functor :
+    FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T ⋙ (T.FromAcyclic t₁ t₂).mapHomologicalComplex _
+    ≅ FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t₂ tF₂ T FT ⋙ tF₂.ιHeart ⋙ FilteredToComplex L₂ t₂ :=
+  sorry
+
+#exit
 
 def DerivedFunctor_comp :
     DerivedFunctor t₁ t₂ T ⋙ Realization L₂ t₂ tF₂ ≅ Realization L₁ t₁ tF₁ ⋙ T := by
@@ -214,8 +275,32 @@ def DerivedFunctor_comp :
     HomotopyCategory.quotient t₁.Heart (ComplexShape.up ℤ) ⋙ DerivedCategory.Qh ⋙
     Realization L₁ t₁ tF₁ ⋙ T)
     _ _ ?_
-  -- Compose by the restriction of `G` to the subcategory of filtered acyclic objects.
-  sorry
+  refine isoWhiskerLeft _ (Functor.associator _ _ _).symm ≪≫ isoWhiskerLeft _ (isoWhiskerRight
+    (DerivedCategory.quotientCompQhIso t₂.Heart) _) ≪≫ ?_ ≪≫ isoWhiskerLeft _ (isoWhiskerRight
+    (DerivedCategory.quotientCompQhIso t₁.Heart).symm _) ≪≫
+    isoWhiskerLeft _ (Functor.associator _ _ _)
+  refine (Functor.leftUnitor _).symm ≪≫ ?_
+  refine isoWhiskerRight (FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂
+    T).asEquivalence.counitIso.symm _ ≪≫ ?_
+  refine Functor.associator _ _ _ ≪≫ Iso.inverseCompIso ?_
+  dsimp
+  refine (Functor.associator _ _ _).symm ≪≫ ?_
+  refine isoWhiskerRight (FilteredAcyclicToComplexAcyclic_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT) _ ≪≫ ?_
+  refine Functor.associator _ _ (DerivedCategory.Q ⋙ Realization L₂ t₂ tF₂) ≪≫ ?_
+  refine isoWhiskerLeft _ (Realization_comp_Q L₂ t₂ tF₂) ≪≫ ?_
+  refine ?_ ≪≫ Functor.associator _ _ _
+  refine ?_ ≪≫ isoWhiskerRight (FilteredAcyclicToComplexAcyclic_compat L₁ t₁ tF₁ t₂ T).symm _
+  refine (Functor.associator _ _ _).symm ≪≫ ?_
+  refine isoWhiskerRight (FilteredAcyclicToHeart_comp L₁ t₁ tF₁ L₂ t₂ tF₂ T FT) _ ≪≫ ?_
+  refine Functor.associator _ _ _ ≪≫ ?_ ≪≫
+    (Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι (tF₁.ιHeart ⋙ FilteredToComplex L₁ t₁)
+    (DerivedCategory.Q ⋙ Realization L₁ t₁ tF₁ ⋙ T)).symm
+  refine isoWhiskerLeft (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ?_
+  refine ?_ ≪≫ Functor.associator _ _ _ ≪≫ Functor.associator _ _ _
+  refine ?_ ≪≫ isoWhiskerRight (Functor.associator _ _ _).symm T
+  refine ?_ ≪≫ isoWhiskerRight (Realization_comp_Q L₁ t₁ tF₁).symm T
+  refine Functor.associator tF₁.Heart _ _ ≪≫ ?_ ≪≫ (Functor.associator tF₁.Heart _ _).symm
+  exact isoWhiskerLeft tF₁.ιHeart (lifting_forgetFiltrating_comm L₁ L₂ FT)
 
 end Triangulated.Filtered
 

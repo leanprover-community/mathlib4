@@ -130,8 +130,7 @@ noncomputable local instance : tF.homology₀.ShiftSequence ℤ :=
 -- Theorem A.2.3(i):
 -- The functor is well-defined.
 abbrev FilteredToComplex_aux₁ (X : C) (n : ℤ) : t.Heart :=
-  (t.homology n).obj ((ForgetFiltration L).obj
-    ((CategoryTheory.truncGELE n n).obj X))
+  (t.homology n).obj ((Gr L n).obj X)
 
 def FilteredToComplex_aux₂ (X : C) (n : ℤ) :
     FilteredToComplex_aux₁ L t X n ⟶ FilteredToComplex_aux₁ L t X (n + 1) :=
@@ -168,7 +167,7 @@ def FilteredToComplex : C ⥤ CochainComplex t.Heart ℤ where
   map f := FilteredToComplexHom L t f
   map_id X := by
     ext
-    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_aux₁]
+    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_aux₁, Gr]
     simp
   map_comp f g := by
     ext
@@ -208,7 +207,17 @@ def Realization : DerivedCategory t.Heart ⥤ A :=
     (HomologicalComplex.quasiIso t.Heart (ComplexShape.up ℤ))
   Localization.lift ((tF.ιHeart ⋙ FilteredToComplex L t).inv ⋙ tF.ιHeart ⋙
     (ForgetFiltration L)) (Realization_aux L t tF)
-    (HomologicalComplex.quasiIso t.Heart (ComplexShape.up ℤ)).Q'
+    DerivedCategory.Q
+
+def Realization_comp_Q :
+    (tF.ιHeart ⋙ FilteredToComplex L t) ⋙ DerivedCategory.Q ⋙ Realization L t tF ≅
+    tF.ιHeart ⋙ ForgetFiltration L := by
+  dsimp [Realization]
+  exact isoWhiskerLeft _ (Localization.Lifting.iso _ (HomologicalComplex.quasiIso t.Heart
+    (ComplexShape.up ℤ)) ((tF.ιHeart ⋙ FilteredToComplex L t).inv ⋙ tF.ιHeart ⋙
+    (ForgetFiltration L)) _) ≪≫ (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight
+    (tF.ιHeart ⋙ FilteredToComplex L t).asEquivalence.unitIso.symm _ ≪≫
+    (Functor.rightUnitor _).symm
 
 end Realization
 

@@ -998,10 +998,13 @@ an arbitrary quasi-inverse of the fully faithful functor `i : A ⥤ C` on the es
 `i`.
 
 Rather than using an arbitrary quasi-inverse, it makes things much simpler to use the one
-given by the "forget the filtration" functor `ω : C ⥤ A`, which has the addditional pleasant
-property that it is defined on all of `C` and so avoids an `ObjectProperty.lift`. For this,
-we need to change the order of statements and do Proposition A.1.6 first (this is possible as
-that proposition makes no use of the functors `Gr n`).
+given by the "forget the filtration" functor `ForgetFiltration : C ⥤ A`, which has the
+additional pleasant property that it is defined on all of `C` and so avoids an
+`ObjectProperty.lift`. In fact, this is even better, as `ForgetFiltration` commutes with the
+second shift, so we can directy defined `Gr n` as `truncGELE n n ⋙ ForgetFiltration`.
+
+For this, we need to change the order of statements and do Proposition A.1.6 first (this is
+possible as that proposition makes no use of the functors `Gr n`).
 -/
 
 -- First a technical definition. (Is this really useful?)
@@ -1146,6 +1149,21 @@ section Graded
 -- Definition A.1.4.
 variable (L : isFilteredTriangulated_over C A) (n : ℤ)
 
+def Gr : C ⥤ A := truncGELE n n ⋙ ForgetFiltration L
+
+-- `Gr` is triangulated.
+
+instance (n : ℤ) : (Gr L n).CommShift ℤ := by
+  dsimp [Gr]; infer_instance
+
+instance (n : ℤ) : (Gr L n).IsTriangulated := by
+  dsimp [Gr]; infer_instance
+
+-- Comparison with the definition in the paper:
+def Gr_vs_Gr : Gr L n ≅ truncGELE n n ⋙ shiftFunctor₂ C (-n) ⋙ ForgetFiltration L := sorry
+-- Use `ForgetFiltration_commShift`.
+
+/-
 def Gr_aux : C ⥤ C := truncGELE n n ⋙ shiftFunctor₂ C (-n)
 
 -- `Gr_aux` is triangulated.
@@ -1199,6 +1217,7 @@ instance (n : ℤ) : (Gr L n).CommShift ℤ := by
 
 instance (n : ℤ) : (Gr L n).IsTriangulated := by
   dsimp [Gr]; infer_instance
+-/
 
 -- Proposition A.1.5(i).
 
@@ -1207,12 +1226,15 @@ def Gr_commShift : leftCommShift (fun n ↦ Gr (C := C) L n) (E := FilteredShift
 
 -- Proposition A.1.5(ii).
 
+/-
 lemma Gr_aux_pure_zero_of_ne_zero {n : ℤ} (h : n ≠ 0) (X : A) :
     Limits.IsZero ((Gr_aux n).obj (L.functor.obj X)) := sorry
+-/
 
 lemma Gr_pure_zero_of_ne_zero {n : ℤ} (h : n ≠ 0) (X : A) :
     Limits.IsZero ((Gr L n).obj (L.functor.obj X)) := sorry
 
+/-
 def Gr_aux_pure_of_zero (n : ℤ) (h : n = 0) : L.functor ⋙ Gr_aux n ≅ L.functor := by
   refine isoWhiskerLeft L.functor (eqToIso (by rw [h])) ≪≫ ?_
   refine (Functor.associator _ _ _).symm ≪≫ isoWhiskerLeft (L.functor ⋙ truncGELE 0 0)
@@ -1232,10 +1254,12 @@ def Gr_aux_pure_of_zero (n : ℤ) (h : n = 0) : L.functor ⋙ Gr_aux n ≅ L.fun
     simp only [Functor.id_obj, Functor.id_map] at this
     rw [this]
     simp only [IsIso.inv_hom_id_assoc]
+-/
 
-def Gr_pure_of_zero (n : ℤ) (h : n = 0) : L.functor ⋙ Gr L n ≅ 𝟭 A :=
-  (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (Gr_aux_pure_of_zero L n h) _ ≪≫
+def Gr_pure_of_zero (n : ℤ) (h : n = 0) : L.functor ⋙ Gr L n ≅ 𝟭 A := sorry
+/-  (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (Gr_aux_pure_of_zero L n h) _ ≪≫
   ForgetFiltration_functor L
+-/
 
 -- Proposition A.1.5(iii).
 -- Here the math statement doesn't say everything we want it to, because the
@@ -1260,10 +1284,12 @@ section FunctorLiftCompat
 variable (L₁ : isFilteredTriangulated_over C A) (L₂ : isFilteredTriangulated_over D B)
   {T : A ⥤ B} [T.CommShift ℤ] [T.IsTriangulated] (FT : T.filteredLifting L₁ L₂)
 
+/-
 def filteredLifting_compat_Gr (n : ℤ) :
     Gr L₁ n ⋙ T ⋙ L₂.functor ≅ Gr_aux n ⋙ FT.functor :=
   isoWhiskerLeft _ FT.compat ≪≫ (Functor.associator _ _ _).symm ≪≫
   isoWhiskerRight (Gr_Gr_aux L₁ n) _
+-/
 
 -- Proposition A.1.8 is a mess.
 -- Again this is not precise, the natural isomorphisms are not arbitrary!
@@ -1292,6 +1318,7 @@ instance liftFunctor_truncGE_comm (n : ℤ) : IsIso (liftFunctor_commute_truncGE
 -- Now the square with `Gr` follows from the ones with `truncLE` and `truncGE`,
 -- since we already know that `FT` "commutes" with `s`.
 
+/-
 def lifting_Gr_aux_comm (n : ℤ) :
     FT.functor ⋙ Gr_aux n ≅ Gr_aux n ⋙ FT.functor :=
   (Functor.associator _ _ _).symm ≪≫
@@ -1303,11 +1330,14 @@ def lifting_Gr_aux_comm (n : ℤ) :
   Functor.associator _ _ _ ≪≫
   isoWhiskerLeft _ (FT.commShift.iso ((0, -n) : ℤ × ℤ)).symm ≪≫
   (Functor.associator _ _ _).symm
+-/
 
 def liftin_Gr_comm_aux (n : ℤ) :
     FT.functor ⋙ Gr L₂ n ⋙ L₂.functor ≅ Gr L₁ n ⋙ T ⋙ L₂.functor :=
-  isoWhiskerLeft _ (Gr_Gr_aux L₂ n) ≪≫ lifting_Gr_aux_comm L₁ L₂ FT n ≪≫
+  sorry
+/-  isoWhiskerLeft _ (Gr_Gr_aux L₂ n) ≪≫ lifting_Gr_aux_comm L₁ L₂ FT n ≪≫
   (filteredLifting_compat_Gr L₁ L₂ FT n).symm
+-/
 
 def lifting_Gr_comm (n : ℤ) : FT.functor ⋙ Gr L₂ n ≅  Gr L₁ n ⋙ T := by
   have := L₂.ff.faithful

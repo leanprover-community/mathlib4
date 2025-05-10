@@ -34,7 +34,7 @@ noncomputable local instance : t₂.HasHomology₀ := t₂.hasHomology₀
 noncomputable local instance : t₂.homology₀.ShiftSequence ℤ :=
   Functor.ShiftSequence.tautological _ _
 
-abbrev AcyclicObject (X : t₁.Heart) := t₂.heart (F.obj X.1)
+abbrev AcyclicObject : ObjectProperty t₁.Heart := fun X ↦ t₂.heart (F.obj X.1)
 
 omit [IsTriangulated C] [F.CommShift ℤ] [F.IsTriangulated] in
 lemma AcyclicImageHasZeroHomology {X : t₁.Heart} (hX : AcyclicObject F t₁ t₂ X) (n : ℤ)
@@ -67,7 +67,7 @@ instance : Functor.Additive (F.FromHeart t₁) where
 noncomputable abbrev FromHeartToHeart : t₁.Heart ⥤ t₂.Heart :=
   t₁.ιHeart ⋙ F ⋙ t₂.homology 0
 
-def AcyclicToHeart : (AcyclicCategory F t₁ t₂) ⥤ t₁.Heart := ObjectProperty.ι _
+abbrev AcyclicToHeart : (AcyclicCategory F t₁ t₂) ⥤ t₁.Heart := ObjectProperty.ι _
 
 end Functor
 
