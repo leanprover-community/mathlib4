@@ -333,7 +333,6 @@ lemma natTransTriangleLTGEOfLE_refl (a : ℤ) :
     t.natTransTriangleLTGEOfLE a a (by rfl) = 𝟙 _ :=
   TruncAux.triangleFunctorNatTransOfLE_refl t a
 
-set_option maxHeartbeats 400000 in
 lemma natTransTriangleLTGEOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c):
     t.natTransTriangleLTGEOfLE a b hab ≫ t.natTransTriangleLTGEOfLE b c hbc =
       t.natTransTriangleLTGEOfLE a c (hab.trans hbc) :=
@@ -344,7 +343,6 @@ lemma natTransTruncLTOfLE_refl (a : ℤ) :
     t.natTransTruncLTOfLE a a (by rfl) = 𝟙 _ :=
   congr_arg (fun x => whiskerRight x (Triangle.π₁)) (t.natTransTriangleLTGEOfLE_refl a)
 
-set_option maxHeartbeats 400000 in
 @[simp]
 lemma natTransTruncLTOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
     t.natTransTruncLTOfLE a b hab ≫ t.natTransTruncLTOfLE b c hbc =
@@ -366,7 +364,6 @@ lemma natTransTruncGEOfLE_refl (a : ℤ) :
     t.natTransTruncGEOfLE a a (by rfl) = 𝟙 _ :=
   congr_arg (fun x => whiskerRight x (Triangle.π₃)) (t.natTransTriangleLTGEOfLE_refl a)
 
-set_option maxHeartbeats 400000 in
 @[simp]
 lemma natTransTruncGEOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
     t.natTransTruncGEOfLE a b hab ≫ t.natTransTruncGEOfLE b c hbc =

@@ -342,7 +342,8 @@ variable {A' B : Type*} [Category A'] [Category B] (G' : C ⥤ A') [G'.ShiftSequ
 
 variable (H : D ⥤ C) [H.CommShift ℤ] [(H ⋙ F).ShiftSequence ℤ] (T'' : Triangle D)
 
-set_option maxHeartbeats 500000 in
+set_option maxHeartbeats 300000 in
+-- this timeouts without the increased heartbeat limit :(
 noncomputable def homologySequenceComposableArrows₅_mapTriangle_iso :
     F.homologySequenceComposableArrows₅ (H.mapTriangle.obj T'') n₀ n₁ h ≅
     @Functor.homologySequenceComposableArrows₅ _ _ _ _ _ (H ⋙ F) (ShiftSequence.comp_left F ℤ H)

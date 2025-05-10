@@ -62,7 +62,6 @@ def compatible : TStructure C where
     exact t.isGE_of_iso ((shiftFunctor A i).mapIso (((Gr L i).commShiftIso a).app X)
       ≪≫ shiftComm _ a i).symm n'
   zero' X Y f hX hY := by
-    dsimp at hX hY
     sorry -- this one actually takes nontrivial work (the fact that each object of `C` is
           -- a successive extension of its graded pieces)
   LE_zero_le X hX i := t.isLE_of_LE _ 0 1 zero_le_one
@@ -77,8 +76,7 @@ instance compatible_is_compatible : t.IsCompatible L (t.compatible L) where
   exact_functor := by
     refine {rightTExact := {objGE := fun X n _ ↦ {ge i := ?_}},
             leftTExact := {objLE := fun X n _ ↦ {le i := ?_}}}
-    · dsimp [compatible]
-      by_cases h : i = 0
+    · by_cases h : i = 0
       · have : t.IsGE (((𝟭 A).obj X)⟦i⟧) n := by
           have : t.IsGE ((𝟭 A).obj X) n := by dsimp; infer_instance
           exact t.isGE_of_iso ((shiftFunctorZero' A i h).app X).symm n
@@ -131,7 +129,7 @@ noncomputable local instance : tF.homology₀.ShiftSequence ℤ :=
 
 -- Theorem A.2.3(i):
 -- The functor is well-defined.
-def FilteredToComplex_aux₁ (X : C) (n : ℤ) : t.Heart :=
+abbrev FilteredToComplex_aux₁ (X : C) (n : ℤ) : t.Heart :=
   (t.homology n).obj ((ForgetFiltration L).obj
     ((CategoryTheory.truncGELE n n).obj X))
 

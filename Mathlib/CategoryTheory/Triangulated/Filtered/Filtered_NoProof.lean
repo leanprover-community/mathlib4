@@ -393,17 +393,29 @@ variable {B : Type u₂} [Category.{v₂} B] [HasShift B ℤ] [Preadditive B] [H
 
 namespace Functor
 
+variable (F : C ⥤ D)
+
 /-- Definition A.1.1(2).
 A filtered triangulated functor is a functor `F : C ⥤ D` that commutes with
-both shifts (i.e. with the shifts from `ℤ × ℤ`), that sends the objects of `LE 0`
+both shifts (i.e. with the shifts from `ℤ × ℤ`), is triangulated and sends the objects of `LE 0`
 (resp. `GE 0`) to objects of `LE 0` (resp. `GE 0`) and that is compatible with the
 morphisms `α`.
 -/
-class IsFilteredTriangulated (F : C ⥤ D) [F.CommShift (ℤ × ℤ)] where
+class IsFilteredTriangulated [F.CommShift (ℤ × ℤ)] where
   preserves_LE : ∀ (X : C), IsLE X 0 → IsLE (F.obj X) 0
   preserves_GE : ∀ (X : C), IsGE X 0 → IsGE (F.obj X) 0
   commutes_α : ∀ (X : C),
     hDP.α.app (F.obj X) ≫ (F.commShiftIso ((0,1) : ℤ × ℤ)).inv.app X = F.map (hCP.α.app X)
+
+instance [F.CommShift (ℤ × ℤ)] : F.CommShift ℤ := sorry
+
+instance [F.CommShift (ℤ × ℤ)] [F.IsFilteredTriangulated] : F.IsTriangulated := sorry
+
+instance preserves_LE_of_isFilteredTriangulated [F.CommShift (ℤ × ℤ)] [F.IsFilteredTriangulated]
+    (X : C) (n : ℤ) [IsLE X n] : IsLE (F.obj X) n := sorry
+
+instance preserves_GE_of_isFilteredTriangulated [F.CommShift (ℤ × ℤ)] [F.IsFilteredTriangulated]
+    (X : C) (n : ℤ) [IsGE X n] : IsGE (F.obj X) n := sorry
 
 end Functor
 
@@ -464,6 +476,14 @@ structure Functor.filteredLifting (L₁ : isFilteredTriangulated_over C A)
   compat : F ⋙ L₂.functor ≅ L₁.functor ⋙ functor
 -- I am guessing that the compatibility isomorphism should satisfy some compatibilities,
 -- notably with the "commutation with shifts" isomorphisms.
+
+variable (L₁ : isFilteredTriangulated_over C A)
+    (L₂ : isFilteredTriangulated_over D B) (F : A ⥤ B)
+    [F.CommShift ℤ] [F.IsTriangulated] (FT : F.filteredLifting L₁ L₂)
+
+instance : FT.functor.CommShift (ℤ × ℤ) := FT.commShift
+
+instance : FT.functor.IsFilteredTriangulated := FT.triang
 
 end Over
 
@@ -566,6 +586,36 @@ lemma liftTruncGE_ι {X Y : C} (f : X ⟶ Y) (n : ℤ) [IsGE X n] :
   dsimp [liftTruncGE]
   rw [assoc, (truncGEι n).naturality, Functor.id_map, ← assoc, IsIso.inv_hom_id, id_comp]
 
+/-
+Bonus: Morphism from a `(truncLE n).obj X` to an object `≤ n` are equal if they are so after
+composing on the left with `truncLEπ`, and morphism from an object `≥ n` to a
+`(truncGE n).obj X` are equal if they are so after composing on the right with `truncGEι`.
+-/
+
+lemma from_truncLE_obj_ext (n : ℤ) {Y : C} {X : C}
+    (f₁ f₂ : (truncLE n).obj X ⟶ Y) (h : (truncLEπ n).app X ≫ f₁ =
+    (truncLEπ n).app X ≫ f₂) [IsLE Y n] :
+    f₁ = f₂ := by
+  rw [← cancel_mono ((truncLEπ n).app Y)]
+  apply ((reflectorAdjunction (LE (C := C) n).ι).homEquiv _ _).injective
+  dsimp
+  simp only [Adjunction.homEquiv_apply, Functor.comp_obj]
+  change (truncLEπ n).app X ≫ f₁ ≫ _ = _
+  rw [← assoc, h, assoc]
+  rfl
+
+lemma to_truncGE_obj_ext (n : ℤ) {X : C} {Y : C}
+    (f₁ f₂ : X ⟶ (truncGE n).obj Y) (h : f₁ ≫ (truncGEι n).app Y =
+    f₂ ≫ (truncGEι n).app Y) [IsGE X n] :
+    f₁ = f₂ := by
+  rw [← cancel_epi ((truncGEι n).app X)]
+  apply ((coreflectorAdjunction (GE (C := C) n).ι).homEquiv _ _).symm.injective
+  dsimp
+  simp only [Adjunction.homEquiv_symm_apply]
+  change (_ ≫ f₁) ≫ (truncGEι n).app Y = _
+  rw [assoc, h, ← assoc]
+  rfl
+
 -- Second sentence.
 -- The truncation functors are triangulated.
 
@@ -614,22 +664,6 @@ instance (n m : ℤ) (X : C) [IsLE X m] : IsLE ((truncGE n).obj X) m := sorry
 
 instance (n m : ℤ) (X : C) [IsGE X m] : IsGE ((truncGE n).obj X) m := sorry
 
-abbrev truncGE_onLE (n m : ℤ) :
-    (FilteredTriangulated.LE (C := C) m).P.FullSubcategory ⥤
-    (FilteredTriangulated.LE (C := C) m).P.FullSubcategory := by
-  refine ObjectProperty.lift _ ?_ (fun X ↦ ?_)
-  · exact ObjectProperty.ι _ ⋙ truncGE n
-  · have : IsLE X.1 m := {le := X.2}
-    exact (instIsLEObjTruncGE n m X.1).le
-
-abbrev truncLE_onGE (n m : ℤ) :
-    (FilteredTriangulated.GE (C := C) m).P.FullSubcategory ⥤
-    (FilteredTriangulated.GE (C := C) m).P.FullSubcategory := by
-  refine ObjectProperty.lift _ ?_ (fun X ↦ ?_)
-  · exact ObjectProperty.ι _ ⋙ truncLE n
-  · have : IsGE X.1 m := {ge := X.2}
-    exact (instIsGEObjTruncLE n m X.1).ge
-
 -- We need to switch the order, because the proof of A.1.3 (ii) uses A.1.3 (iii).
 -- Prop A.1.3 (iii) but with general indices
 
@@ -671,14 +705,141 @@ lemma isIso_descTruncLE_of_fiber_ge (n : ℤ) {T : Triangle C} (dT : T ∈ distT
 lemma isIso_liftTruncGE_of_cone_le (n : ℤ) {T : Triangle C} (dT : T ∈ distTriang C)
     [IsGE T.obj₁ n] [IsLE T.obj₃ (n - 1)] : IsIso (liftTruncGE T.mor₁ n) := sorry
 
+section Commute
 /-
 Before proving A.1.3 (ii), we establish a criterion for triangulated endofunctors of `C`
 to commute with the truncation functors (up to an isomorphism which will arise naturally).
 It is better to make this more general, as it will be used again.
 -/
 
+variable (F : C ⥤ D)
 
+/-! If `F` preserves the subcategories of objects `≤ n`, then we get a morphism
+`F ⋙ truncLE n ⟶ truncLE n ⋙ F`.
+-/
+def commute_truncLE (n : ℤ) (hF : ∀ (X : C), IsLE X n → IsLE (F.obj X) n) :
+    F ⋙ truncLE n ⟶ truncLE n ⋙ F :=
+      have : ∀ X, IsLE (F.obj ((truncLE n).obj X)) n := fun _ ↦ hF _ inferInstance
+      {
+        app X := descTruncLE (F.map ((truncLEπ n).app X)) n
+        naturality X Y f := by
+          dsimp
+          refine from_truncLE_obj_ext n _ _ ?_
+          dsimp [descTruncLE]
+          rw [← cancel_mono ((truncLEπ n).app (F.obj ((truncLE n).obj Y)))]
+          simp only [Functor.id_obj, assoc, IsIso.inv_hom_id, comp_id, NatIso.naturality_2'_assoc,
+            Functor.id_map]
+          slice_rhs 1 2 => rw [← F.map_comp, ← (truncLEπ n).naturality, Functor.id_map, F.map_comp]
+          slice_lhs 1 2 => rw [← (truncLEπ n).naturality, Functor.id_map]
+          slice_lhs 2 3 => rw [← (truncLEπ n).naturality, Functor.id_map]
+          rw [assoc]
+      }
 
+lemma commute_truncLE_app (n : ℤ) (hF : ∀ (X : C), IsLE X n → IsLE (F.obj X) n) (X : C) :
+    have : IsLE (F.obj ((truncLE n).obj X)) n := hF _ inferInstance
+    (commute_truncLE F n hF).app X = descTruncLE (F.map ((truncLEπ n).app X)) n := rfl
+
+/-
+Old definition using `Mates` (it complicated the proof of `commute_truncLE_app`):
+
+abbrev Functor.onLE (n : ℤ) (hF : ∀ (X : C), IsLE X n → IsLE (F.obj X) n) :
+    (FilteredTriangulated.LE (C := C) n).category ⥤
+    (FilteredTriangulated.LE (C := D) n).category :=
+  ObjectProperty.lift _ (ObjectProperty.ι _ ⋙ F) (fun X ↦ (hF X.1 {le := X.2}).le)
+
+def commute_truncLE (n : ℤ) (hF : ∀ (X : C), IsLE X n → IsLE (F.obj X) n) :
+    F ⋙ truncLE n ⟶ truncLE n ⋙ F :=
+    set u : TwoSquare (FilteredTriangulated.LE (C := C) n).ι (F.onLE n hF) F
+      (FilteredTriangulated.LE n).ι := by
+    refine {app X := ?_, naturality X Y f := ?_}
+    · dsimp; exact 𝟙 _
+    · dsimp; simp; rfl
+  exact (Functor.associator _ _ _).inv ≫ whiskerRight ((mateEquiv (reflectorAdjunction _)
+    (reflectorAdjunction (FilteredTriangulated.LE n).ι)).symm u) _ ≫
+    (Functor.associator _ _ _).hom ≫ whiskerLeft (reflector (FilteredTriangulated.LE n).ι) (𝟙 _)  ≫
+    (Functor.associator _ _ _).inv-/
+
+/-! If `F` preserves the subcategories of objects `≤ n`, then we get a morphism
+`F ⋙ truncLE n ⟶ truncLE n ⋙ F`.
+-/
+def commute_truncGE (n : ℤ) (hF : ∀ (X : C), IsGE X n → IsGE (F.obj X) n) :
+    truncGE n ⋙ F ⟶ F ⋙ truncGE n :=
+      have : ∀ X, IsGE (F.obj ((truncGE n).obj X)) n := fun _ ↦ hF _ inferInstance
+      {
+        app X := liftTruncGE (F.map ((truncGEι n).app X)) n
+        naturality X Y f := by
+          dsimp
+          refine to_truncGE_obj_ext n _ _ ?_
+          dsimp [liftTruncGE]
+          rw [← cancel_epi ((truncGEι n).app (F.obj ((truncGE n).obj X)))]
+          simp only [Functor.id_obj, assoc, NatTrans.naturality, Functor.id_map,
+            IsIso.inv_hom_id_assoc, NatTrans.naturality_assoc]
+          slice_lhs 2 3 => rw [← Functor.map_comp, (truncGEι n).naturality, Functor.id_map,
+            Functor.map_comp]
+      }
+
+lemma commute_truncGE_app (n : ℤ) (hF : ∀ (X : C), IsGE X n → IsGE (F.obj X) n) (X : C) :
+    have : IsGE (F.obj ((truncGE n).obj X)) n := hF _ inferInstance
+    (commute_truncGE F n hF).app X = liftTruncGE (F.map ((truncGEι n).app X)) n := rfl
+
+/-
+Old definition using `Mates` (it complicated the proof of `commute_truncGE_app`):
+
+abbrev Functor.onGE (n : ℤ) (hF : ∀ (X : C), IsGE X n → IsGE (F.obj X) n) :
+    (FilteredTriangulated.GE (C := C) n).category ⥤
+    (FilteredTriangulated.GE (C := D) n).category :=
+  ObjectProperty.lift _ (ObjectProperty.ι _ ⋙ F) (fun X ↦ (hF X.1 {ge := X.2}).ge)
+
+def commute_truncGE (n : ℤ) (hF : ∀ (X : C), IsGE X n → IsGE (F.obj X) n) :
+    truncGE n ⋙ F ⟶ F ⋙ truncGE n := by
+  set u : TwoSquare (F.onGE n hF) (FilteredTriangulated.GE (C := C) n).ι
+      (FilteredTriangulated.GE (C := D) n).ι F := by
+    refine {app X := ?_, naturality X Y f := ?_}
+    · dsimp; exact 𝟙 _
+    · dsimp; simp; rfl
+  refine ?_ ≫ whiskerRight (mateEquiv (coreflectorAdjunction _) (coreflectorAdjunction _) u) _
+    ≫ (Functor.associator _ _ _).hom
+  exact (Functor.associator _ _ _).hom ≫ whiskerLeft _ (𝟙 _) ≫ (Functor.associator _ _ _).inv
+-/
+
+/-!
+If `F` is triangulated and preserves the categories of objects `≤ n` and `≥ n + 1`, then
+`commute_truncLE` is an isomorphism.
+-/
+lemma isIso_commute_truncLE [F.CommShift ℤ] [F.IsTriangulated] (n : ℤ)
+    (hFL : ∀ (X : C), IsLE X n → IsLE (F.obj X) n)
+    (hFG : ∀ (X : C), IsGE X (n + 1) → IsGE (F.obj X) (n + 1)) :
+    IsIso (commute_truncLE F n hFL) := by
+  have : ∀ (X : C), IsIso ((commute_truncLE F n hFL).app X) := by
+    intro X
+    rw [commute_truncLE_app]
+    have : IsLE (F.mapTriangle.obj ((triangleGELE n).obj X)).obj₃ n :=
+      hFL ((truncLE n).obj X) inferInstance
+    have : IsGE (F.mapTriangle.obj ((triangleGELE n).obj X)).obj₁ (n + 1) :=
+      hFG ((truncGE (n + 1)).obj X) inferInstance
+    exact isIso_descTruncLE_of_fiber_ge n (F.map_distinguished _ (triangleGELE_distinguished n X))
+  exact NatIso.isIso_of_isIso_app _
+
+/-!
+If `F` is triangulated and preserves the categories of objects `≥ n` and `≤ n - 1`, then
+`commute_truncGE` is an isomorphism.
+-/
+lemma isIso_commute_truncGE [F.CommShift ℤ] [F.IsTriangulated] (n : ℤ)
+    (hFL : ∀ (X : C), IsLE X (n - 1) → IsLE (F.obj X) (n - 1))
+    (hFG : ∀ (X : C), IsGE X n → IsGE (F.obj X) n) :
+    IsIso (commute_truncGE F n hFG) := by
+  have : ∀ (X : C), IsIso ((commute_truncGE F n hFG).app X) := by
+    intro X
+    rw [commute_truncGE_app]
+    have : IsGE (F.mapTriangle.obj ((triangleGELE' (n - 1) n
+        (sub_add_cancel _ _)).obj X)).obj₁ n := hFG ((truncGE n).obj X) inferInstance
+    have : IsLE (F.mapTriangle.obj ((triangleGELE' (n - 1) n
+        (sub_add_cancel _ _)).obj X)).obj₃ (n - 1) := hFL ((truncLE (n - 1)).obj X) inferInstance
+    exact isIso_liftTruncGE_of_cone_le n (F.map_distinguished _ (triangleGELE'_distinguished
+      (n - 1) n (sub_add_cancel _ _) X))
+  exact NatIso.isIso_of_isIso_app _
+
+end Commute
 
 -- Prop A.1.3 (ii)
 
@@ -686,36 +847,41 @@ abbrev truncLEGE (a b : ℤ) : C ⥤ C := truncGE a ⋙ truncLE b
 
 abbrev truncGELE (a b : ℤ) : C ⥤ C := truncLE b ⋙ truncGE a
 
-def truncLEGEToGELE (a b : ℤ) : truncLEGE (C := C) a b ⟶ truncGELE a b := by
-  set u : TwoSquare (FilteredTriangulated.LE (C := C) b).ι (truncGE_onLE a b) (truncGE a)
-      (FilteredTriangulated.LE b).ι := by
-    refine {app X := ?_, naturality X Y f := ?_}
-    · dsimp; exact 𝟙 _
-    · dsimp; simp; rfl
-  exact (Functor.associator _ _ _).inv ≫ whiskerRight ((mateEquiv (reflectorAdjunction _)
-    (reflectorAdjunction (FilteredTriangulated.LE b).ι)).symm u) _ ≫
-    (Functor.associator _ _ _).hom ≫ whiskerLeft (reflector (FilteredTriangulated.LE b).ι) (𝟙 _)  ≫
-    (Functor.associator _ _ _).inv
+abbrev truncLE_onGE (n m : ℤ) :
+    (FilteredTriangulated.GE (C := C) m).P.FullSubcategory ⥤
+    (FilteredTriangulated.GE (C := C) m).P.FullSubcategory := by
+  refine ObjectProperty.lift _ ?_ (fun X ↦ ?_)
+  · exact ObjectProperty.ι _ ⋙ truncLE n
+  · have : IsGE X.1 m := {ge := X.2}
+    exact (instIsGEObjTruncLE n m X.1).ge
 
-instance truncLEGEIsoGELE (a b : ℤ) : IsIso (truncLEGEToGELE a b (C := C)) := sorry
+abbrev truncLEGEToGELE (a b : ℤ) : truncLEGE (C := C) a b ⟶ truncGELE a b :=
+  commute_truncLE (truncGE a) b (fun _ _ ↦ inferInstance)
+
+instance truncLEGEIsoGELE (a b : ℤ) : IsIso (truncLEGEToGELE a b (C := C)) :=
+  isIso_commute_truncLE (truncGE a) b (fun _ _ ↦ inferInstance) (fun _ _ ↦ inferInstance)
 
 lemma truncLEGEToGELE_comm (a b : ℤ) :
     truncGEι (C := C) b ≫ truncLEπ a =
     whiskerLeft (truncGE b) (truncLEπ a) ≫ truncLEGEToGELE b a ≫
     whiskerLeft (truncLE a) (truncGEι b) := by
   ext X
-  dsimp [truncLEGEToGELE, truncGEι, truncLEπ]
-  simp only [Functor.map_id, id_comp, comp_id, assoc]
-  erw [id_comp]
-  have := (reflectorAdjunction (FilteredTriangulated.LE (C := C) a).ι).unit.naturality
-  have := (reflectorAdjunction (FilteredTriangulated.LE (C := C) a).ι).counit.naturality
-  sorry
+  dsimp [truncLEGEToGELE, commute_truncLE]
+  simp only [π_descTruncLE_assoc, NatTrans.naturality, Functor.id_obj, Functor.id_map]
 
 lemma truncLEGEToGELE_uniq {a b : ℤ} {X : C}
     {f : (truncLEGE b a).obj X ⟶ (truncGELE b a).obj X}
     (comm : (truncGEι b).app X ≫ (truncLEπ a).app X =
     (truncLEπ a).app ((truncGE b).obj X) ≫ f ≫ (truncGEι b).app ((truncLE a).obj X)) :
-    f = (truncLEGEToGELE b a).app X := sorry
+    f = (truncLEGEToGELE b a).app X := by
+  have : IsLE ((truncGELE b a).obj X) a := by
+    dsimp [truncGELE]; infer_instance
+  refine from_truncLE_obj_ext a _ _ ?_
+  have : IsGE ((𝟭 C).obj ((truncGE b).obj X)) b := by
+    rw [Functor.id_obj]; infer_instance
+  refine to_truncGE_obj_ext b _ _ ?_
+  rw [assoc, ← comm, ← NatTrans.comp_app, truncLEGEToGELE_comm]
+  simp
 
 -- More general version of A.1.3 (iii), same remarks as before on cheating.
 
@@ -961,7 +1127,6 @@ The composition in the other direction is isomorphic to `truncGELE 0 0`.
 
 def Functor_forgetFiltration : ForgetFiltration L ⋙ L.functor ≅ truncGELE 0 0 := sorry
 
-
 -- So `ForgetFiltration` gives a quasi-inverse of the equivalence
 -- `(isFilteredTriangulated_over_equiv L)`.
 -- (Is this useful?)
@@ -1106,59 +1271,23 @@ def filteredLifting_compat_Gr (n : ℤ) :
 -- with `truncGELE`, as well as compatibilities with the connecting
 -- morphisms in the triangles of `truncGELE`.
 
-/- Let's do `truncLE`. The "commutative" square says two things:
-(1) `FT` sends objects that are `LE n` to objects that are `LE n`.
-This gives an isomorphism from `FT.obj ((truncLE n).obj X)` to
-`(truncLEπ n).obj (FT.obj ((truncLE n).obj X))` for every `X : C`,
-and we want that:
-(2) The composition of `(FT ⋙ truncLE n).map ((truncLEπ n).app X)` (going from
-`(FT ⋙ truncLE n).obj X` to `(truncLEπ n).obj (FT.obj ((truncLE n).obj X))` with
-the inverse of this isomorphism is an isomorphism. Of course, we don't need
-to compose with an isomorphism to state that property.
-
-This will give the natural isomorphism that makes the diagram commute.
+/- By what we did in the section `Commute`, the commutative squares for `truncLE` and
+`truncGE` follow from the facts that :
+(1) `FT` is triangulated;
+(2) `FT` sends objects that are `≤ n` (resp. `≥ n`) to objects that are `≤ n` (resp. `≥ n`).
 -/
-instance truncLE_lifting_iso_of_le (X : C) (n : ℤ) [IsLE X n] :
-    IsIso ((truncLEπ n).app (FT.functor.obj X)) := sorry
 
-instance truncLEπ_lifting_truncLE_iso (n : ℤ) :
-    IsIso (whiskerRight (truncLEπ n) (FT.functor ⋙ truncLE n)) := sorry
+abbrev liftFunctor_commute_truncLE (n : ℤ) : FT.functor ⋙ truncLE n ⟶ truncLE n ⋙ FT.functor :=
+  commute_truncLE FT.functor n (fun _ _ ↦ inferInstance)
 
-instance truncLE_lifting_truncLEπ_iso (n : ℤ) :
-    IsIso (whiskerLeft (truncLE n ⋙ FT.functor) (truncLEπ n)) := by
-  rw [NatTrans.isIso_iff_isIso_app]
-  intro X
-  simp only [Functor.comp_obj, Functor.id_obj, whiskerLeft_app]
-  infer_instance
+instance liftFunctor_truncLE_comm (n : ℤ) : IsIso (liftFunctor_commute_truncLE L₁ L₂ FT n) :=
+  isIso_commute_truncLE FT.functor n (fun _ _ ↦ inferInstance) (fun _ _ ↦ inferInstance)
 
-def lifting_truncLE_comm (n : ℤ) :
-    FT.functor ⋙ truncLE n ≅ truncLE n ⋙ FT.functor :=
-  (Functor.leftUnitor _).symm ≪≫
-  asIso (whiskerRight (truncLEπ n) (FT.functor ⋙ truncLE n))
-  ≪≫ (asIso (whiskerLeft (truncLE n ⋙ FT.functor) (truncLEπ n))).symm
-  ≪≫ Functor.rightUnitor _
+abbrev liftFunctor_commute_truncGE (n : ℤ) : truncGE n ⋙ FT.functor ⟶ FT.functor ⋙ truncGE n :=
+  commute_truncGE FT.functor n (fun _ _ ↦ inferInstance)
 
--- Same idea for `truncGE`.
-
-instance truncGE_lifting_iso_of_le (X : C) (n : ℤ) [IsGE X n] :
-    IsIso ((truncGEι n).app (FT.functor.obj X)) := sorry
-
-instance truncGEι_lifting_truncLE_iso (n : ℤ) :
-    IsIso (whiskerRight (truncGEι n) (FT.functor ⋙ truncGE n)) := sorry
-
-instance truncGE_lifting_truncGEι_iso (n : ℤ) :
-    IsIso (whiskerLeft (truncGE n ⋙ FT.functor) (truncGEι n)) := by
-  rw [NatTrans.isIso_iff_isIso_app]
-  intro X
-  simp only [Functor.comp_obj, Functor.id_obj, whiskerLeft_app]
-  infer_instance
-
-def lifting_truncGE_comm (n : ℤ) :
-    FT.functor ⋙ truncGE n ≅ truncGE n ⋙ FT.functor :=
-  (Functor.leftUnitor _).symm ≪≫
-  (asIso (whiskerRight (truncGEι n) (FT.functor ⋙ truncGE n))).symm ≪≫
-  asIso (whiskerLeft (truncGE n ⋙ FT.functor) (truncGEι n)) ≪≫
-  Functor.rightUnitor _
+instance liftFunctor_truncGE_comm (n : ℤ) : IsIso (liftFunctor_commute_truncGE L₁ L₂ FT n) :=
+  isIso_commute_truncGE FT.functor n (fun _ _ ↦ inferInstance) (fun _ _ ↦ inferInstance)
 
 -- Now the square with `Gr` follows from the ones with `truncLE` and `truncGE`,
 -- since we already know that `FT` "commutes" with `s`.
@@ -1167,9 +1296,9 @@ def lifting_Gr_aux_comm (n : ℤ) :
     FT.functor ⋙ Gr_aux n ≅ Gr_aux n ⋙ FT.functor :=
   (Functor.associator _ _ _).symm ≪≫
   isoWhiskerRight (Functor.associator _ _ _).symm _ ≪≫
-  isoWhiskerRight (isoWhiskerRight (lifting_truncLE_comm L₁ L₂ FT n) _) _ ≪≫
+  isoWhiskerRight (isoWhiskerRight (asIso (liftFunctor_commute_truncLE L₁ L₂ FT n)) _) _ ≪≫
   isoWhiskerRight (Functor.associator _ _ _) _ ≪≫
-  isoWhiskerRight (isoWhiskerLeft _ (lifting_truncGE_comm L₁ L₂ FT n)) _ ≪≫
+  isoWhiskerRight (isoWhiskerLeft _ (asIso (liftFunctor_commute_truncGE L₁ L₂ FT n)).symm) _ ≪≫
   isoWhiskerRight (Functor.associator _ _ _).symm _ ≪≫
   Functor.associator _ _ _ ≪≫
   isoWhiskerLeft _ (FT.commShift.iso ((0, -n) : ℤ × ℤ)).symm ≪≫
@@ -1187,6 +1316,14 @@ def lifting_Gr_comm (n : ℤ) : FT.functor ⋙ Gr L₂ n ≅  Gr L₁ n ⋙ T :=
 
 -- Commutativity by `ForgetFiltration`. Here too there must be extra compatibilities,
 -- but I'm not sure what they all are. Let's see what happens later.
+/-
+More precisely, on `C(≤ 0)` (where `ForgetFiltration` is left adjoint to `i`) and on `C(≥ 0)`
+(where it is right adjoint to `i`), the morphism should be given by the `Mates` construction.
+As `FT` commutes with the second shift and `ForgetFiltration` intertwines it with the identity,
+the restriction of the commuting isomorphism to either `C(≤ 0)` or `C(≥ 0)` determines it,
+so there might be a hidden compatibility in the construction of `ForgetFiltration` that we
+are missing.
+-/
 
 def lifting_forgetFiltrating_comm :
     FT.functor ⋙ ForgetFiltration L₂ ≅ ForgetFiltration L₁ ⋙ T := sorry
