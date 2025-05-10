@@ -3,9 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
-
-import Mathlib.Data.Nat.Basic
 import Batteries.WF
+import Mathlib.Data.Nat.Basic
+import Mathlib.Order.Bounds.Defs
 
 /-!
 # `Nat.find` and `Nat.findGreatest`
@@ -146,6 +146,20 @@ lemma find_add {hₘ : ∃ m, p (m + n)} {hₙ : ∃ n, p n} (hn : n ≤ Nat.fin
     refine (le_find_iff _ _).2 fun m hm hpm => Nat.not_le.2 hm ?_
     rw [Nat.sub_le_iff_le_add]
     exact find_le hpm
+
+section Order
+
+/-- `Nat.find` is the minimum natural number satisfying a predicate `p`. -/
+lemma isLeast_find {p : ℕ → Prop} [DecidablePred p] (hp : ∃ n, p n) :
+    IsLeast {n | p n} (Nat.find hp) :=
+  ⟨Nat.find_spec hp, fun _ ↦ Nat.find_min' hp⟩
+
+/-- `Nat.find` is the minimum element of a nonempty set of natural numbers. -/
+lemma _root_.Set.Nonempty.isLeast_natFind {s : Set ℕ} [DecidablePred (· ∈ s)] (hs : s.Nonempty) :
+    IsLeast s (Nat.find hs) :=
+  Nat.isLeast_find hs
+
+end Order
 
 end Find
 
