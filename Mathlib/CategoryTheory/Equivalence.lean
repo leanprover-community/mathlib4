@@ -140,7 +140,7 @@ lemma asNatTrans_mkHom {e f : C ≌ D} (η : e ⟶ f) :
 @[simp]
 lemma id_asNatTrans {e : C ≌ D} : asNatTrans (𝟙 e) = 𝟙 _ := rfl
 
-@[simp]
+@[simp, reassoc]
 lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
     asNatTrans (α ≫ β) = asNatTrans α ≫ asNatTrans β :=
   rfl
@@ -148,9 +148,9 @@ lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
 @[simp]
 lemma mkHom_id_functor {e : C ≌ D} : mkHom (𝟙 e.functor) = 𝟙 e := rfl
 
-@[simp]
+@[simp, reassoc]
 lemma mkHom_comp {e f g: C ≌ D} (α : e.functor ⟶ f.functor) (β : f.functor ⟶ g.functor) :
-    mkHom (α ≫ β) = (mkHom α) ≫ (mkHom β) :=
+    mkHom (α ≫ β) = mkHom α ≫ mkHom β :=
   rfl
 
 /-- Construct an isomorphism in `C ≌ D` from a natural isomorphism between the functors
@@ -163,7 +163,7 @@ def mkIso {e f : C ≌ D} (η : e.functor ≅ f.functor) : e ≅ f where
 variable (C D) in
 /-- The `functor` functor that sends an equivalence of categories to its functor. -/
 @[simps!]
-def functorFunctor : (C ≌ D) ⥤ (C ⥤ D) where
+def functorFunctor : (C ≌ D) ⥤ C ⥤ D where
   obj f := f.functor
   map α := asNatTrans α
 
