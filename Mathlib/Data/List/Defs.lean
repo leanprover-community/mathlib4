@@ -229,12 +229,15 @@ section Chain
 instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
-  | nil => simp only [List.Chain.nil]; infer_instance
-  | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
+  | nil => exact decidable_of_decidable_of_iff (p := True) (by simp)
+  | cons b as ih =>
+    haveI := ih; exact decidable_of_decidable_of_iff (p := (R a b ∧ Chain R b as)) (by simp)
 
 instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
     Decidable (Chain' R l) := by
-  cases l <;> dsimp only [List.Chain'] <;> infer_instance
+  cases l
+  · exact inferInstanceAs (Decidable True)
+  · exact inferInstanceAs (Decidable (Chain _ _ _))
 
 end Chain
 
@@ -268,7 +271,7 @@ variable (p : α → Prop) [DecidablePred p] (l : List α)
 choose the first element with this property. This version returns both `a` and proofs
 of `a ∈ l` and `p a`. -/
 def chooseX : ∀ l : List α, ∀ _ : ∃ a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a }
-  | [], hp => False.elim (Exists.elim hp fun a h => not_mem_nil a h.left)
+  | [], hp => False.elim (Exists.elim hp fun _ h => not_mem_nil h.left)
   | l :: ls, hp =>
     if pl : p l then ⟨l, ⟨mem_cons.mpr <| Or.inl rfl, pl⟩⟩
     else
@@ -477,7 +480,5 @@ theorem length_mapAccumr₂ :
   | _, [], [], _ => rfl
 
 end MapAccumr
-
-alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 
 end List

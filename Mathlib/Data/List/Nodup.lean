@@ -340,7 +340,7 @@ theorem Nodup.diff_eq_filter [BEq α] [LawfulBEq α] :
   | l₁, [], _ => by simp
   | l₁, a :: l₂, hl₁ => by
     rw [diff_cons, (hl₁.erase _).diff_eq_filter, hl₁.erase_eq_filter, filter_filter]
-    simp only [decide_not, bne, Bool.and_comm, mem_cons, not_or, decide_mem_cons, Bool.not_or]
+    simp only [decide_not, bne, Bool.and_comm, decide_mem_cons, Bool.not_or]
 
 theorem Nodup.mem_diff_iff [DecidableEq α] (hl₁ : l₁.Nodup) : a ∈ l₁.diff l₂ ↔ a ∈ l₁ ∧ a ∉ l₂ := by
   rw [hl₁.diff_eq_filter, mem_filter, decide_eq_true_iff]
@@ -352,7 +352,7 @@ protected theorem Nodup.set :
   | _ :: _, _ + 1, _, hl, ha =>
     nodup_cons.2
       ⟨fun h =>
-        (mem_or_eq_of_mem_set h).elim (nodup_cons.1 hl).1 fun hba => ha (hba ▸ mem_cons_self _ _),
+        (mem_or_eq_of_mem_set h).elim (nodup_cons.1 hl).1 fun hba => ha (hba ▸ mem_cons_self),
         hl.of_cons.set (mt (mem_cons_of_mem _) ha)⟩
 
 theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α → β) (x : α) (y : β) :
@@ -386,7 +386,7 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     refine List.filter_congr ?_
     intro x hx
     have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
-    simp (config := {contextual := true}) [List.mem_filter, this, hx]
+    simp +contextual [List.mem_filter, this, hx]
 end List
 
 theorem Option.toList_nodup : ∀ o : Option α, o.toList.Nodup

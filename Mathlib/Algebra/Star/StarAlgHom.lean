@@ -6,7 +6,9 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.Prod
+import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Star.Prod
+import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.StarRingHom
 
 /-!
@@ -519,6 +521,30 @@ def prodEquiv : (A →⋆ₙₐ[R] B) × (A →⋆ₙₐ[R] C) ≃ (A →⋆ₙ�
   right_inv f := by ext <;> rfl
 
 end Prod
+
+section Pi
+
+variable {ι : Type*}
+
+/-- `Function.eval` as a `NonUnitalStarAlgHom`. -/
+@[simps]
+def _root_.Pi.evalNonUnitalStarAlgHom (R : Type*) (A : ι → Type*) (j : ι) [Monoid R]
+    [∀ i, NonUnitalNonAssocSemiring (A i)] [∀ i, DistribMulAction R (A i)] [∀ i, Star (A i)] :
+    (∀ i, A i) →⋆ₙₐ[R] A j:=
+  { Pi.evalMulHom A j, Pi.evalAddHom A j with
+    map_smul' _ _ := rfl
+    map_zero' := rfl
+    map_star' _ := rfl }
+
+/-- `Function.eval` as a `StarAlgHom`. -/
+@[simps]
+def _root_.Pi.evalStarAlgHom (R : Type*) (A : ι → Type*) (j : ι) [CommSemiring R]
+    [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] [∀ i, Star (A i)] :
+    (∀ i, A i) →⋆ₐ[R] A j :=
+  { Pi.evalNonUnitalStarAlgHom R A j, Pi.evalRingHom A j with
+    commutes' _ := rfl }
+
+end Pi
 
 section InlInr
 

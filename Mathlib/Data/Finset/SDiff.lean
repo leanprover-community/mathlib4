@@ -171,7 +171,7 @@ theorem insert_sdiff_of_mem (s : Finset α) {x : α} (h : x ∈ t) : insert x s 
   exact Set.insert_diff_of_mem _ h
 
 @[simp] lemma insert_sdiff_cancel (ha : a ∉ s) : insert a s \ s = {a} := by
-  rw [insert_sdiff_of_not_mem _ ha, Finset.sdiff_self, insert_emptyc_eq]
+  rw [insert_sdiff_of_not_mem _ ha, Finset.sdiff_self, insert_empty_eq]
 
 @[simp]
 theorem insert_sdiff_insert (s t : Finset α) (x : α) : insert x s \ insert x t = s \ insert x t :=
@@ -232,8 +232,6 @@ theorem union_eq_sdiff_union_sdiff_union_inter (s t : Finset α) : s ∪ t = s \
 
 theorem sdiff_eq_self_iff_disjoint : s \ t = s ↔ Disjoint s t :=
   sdiff_eq_self_iff_disjoint'
-
-@[deprecated (since := "2024-10-01")] alias sdiff_eq_self := sdiff_eq_self_iff_disjoint
 
 theorem sdiff_eq_self_of_disjoint (h : Disjoint s t) : s \ t = s :=
   sdiff_eq_self_iff_disjoint.2 h

@@ -115,15 +115,30 @@ variable {R v}
 theorem LinearIndepOn.linearIndependent {s : Set ι} (h : LinearIndepOn R v s) :
     LinearIndependent R (fun x : s ↦ v x) := h
 
-theorem linearIndependent_iff_injective_linearCombination :
+theorem linearIndependent_iff_injective_finsuppLinearCombination :
     LinearIndependent R v ↔ Injective (Finsupp.linearCombination R v) := Iff.rfl
 
-alias ⟨LinearIndependent.injective_linearCombination, _⟩ :=
-  linearIndependent_iff_injective_linearCombination
+@[deprecated (since := "2025-03-18")]
+alias linearIndependent_iff_injective_linearCombination :=
+  linearIndependent_iff_injective_finsuppLinearCombination
 
-theorem Fintype.linearIndependent_iff_injective [Fintype ι] :
+alias ⟨LinearIndependent.finsuppLinearCombination_injective, _⟩ :=
+  linearIndependent_iff_injective_finsuppLinearCombination
+
+@[deprecated (since := "2025-03-18")]
+alias LinearIndependent.linearCombination_injective :=
+  LinearIndependent.finsuppLinearCombination_injective
+
+theorem linearIndependent_iff_injective_fintypeLinearCombination [Fintype ι] :
     LinearIndependent R v ↔ Injective (Fintype.linearCombination R v) := by
   simp [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearIndependent]
+
+@[deprecated (since := "2025-03-18")]
+alias Fintype.linearIndependent_iff_injective :=
+  linearIndependent_iff_injective_fintypeLinearCombination
+
+alias ⟨LinearIndependent.fintypeLinearCombination_injective, _⟩ :=
+  linearIndependent_iff_injective_fintypeLinearCombination
 
 theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) : Injective v := by
   simpa [comp_def]
@@ -159,6 +174,11 @@ theorem linearIndependent_zero_iff [Nontrivial R] : LinearIndependent R (0 : ι 
 @[simp]
 theorem linearIndepOn_zero_iff [Nontrivial R] : LinearIndepOn R (0 : ι → M) s ↔ s = ∅ :=
   linearIndependent_zero_iff.trans isEmpty_coe_sort
+
+@[simp]
+theorem linearIndependent_subsingleton_iff [Nontrivial R] [Subsingleton M] (f : ι → M) :
+    LinearIndependent R f ↔ IsEmpty ι := by
+  rw [Subsingleton.elim f 0, linearIndependent_zero_iff]
 
 variable (R M) in
 theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) :=
@@ -245,7 +265,7 @@ theorem not_linearIndependent_iffₛ :
 
 theorem Fintype.linearIndependent_iffₛ [Fintype ι] :
     LinearIndependent R v ↔ ∀ f g : ι → R, ∑ i, f i • v i = ∑ i, g i • v i → ∀ i, f i = g i := by
-  simp_rw [Fintype.linearIndependent_iff_injective,
+  simp_rw [linearIndependent_iff_injective_fintypeLinearCombination,
     Injective, Fintype.linearCombination_apply, funext_iff]
 
 theorem Fintype.not_linearIndependent_iffₛ [Fintype ι] :
@@ -581,7 +601,7 @@ theorem linearIndependent_iff'' :
 
 theorem linearIndependent_add_smul_iff {c : ι → R} {i : ι} (h₀ : c i = 0) :
     LinearIndependent R (v + (c · • v i)) ↔ LinearIndependent R v := by
-  simp [linearIndependent_iff_injective_linearCombination,
+  simp [linearIndependent_iff_injective_finsuppLinearCombination,
     ← Finsupp.linearCombination_comp_addSingleEquiv i c h₀]
 
 theorem not_linearIndependent_iff :

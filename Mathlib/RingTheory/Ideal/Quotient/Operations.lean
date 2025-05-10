@@ -124,7 +124,7 @@ theorem map_mk_eq_bot_of_le {I J : Ideal R} [J.IsTwoSided] (h : I ≤ J) :
 
 theorem ker_quotient_lift {I : Ideal R} [I.IsTwoSided] (f : R →+* S)
     (H : I ≤ ker f) :
-    ker (Ideal.Quotient.lift I f H) = f.ker.map (Quotient.mk I) := by
+    ker (Ideal.Quotient.lift I f H) = (RingHom.ker f).map (Quotient.mk I) := by
   apply Ideal.ext
   intro x
   constructor
@@ -428,6 +428,11 @@ theorem Quotient.liftₐ_comp (I : Ideal A) [I.IsTwoSided]
     (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈ I → f a = 0) :
     (Ideal.Quotient.liftₐ I f hI).comp (Ideal.Quotient.mkₐ R₁ I) = f :=
   AlgHom.ext fun _ => (Ideal.Quotient.lift_mk I (f : A →+* B) hI :)
+
+theorem Quotient.span_singleton_one (I : Ideal A) [I.IsTwoSided] :
+    Submodule.span A {(1 : A ⧸ I)} = ⊤ := by
+  rw [← map_one (mk _), ← Submodule.range_mkQ I, ← Submodule.map_top, ← Ideal.span_singleton_one,
+    Ideal.span, Submodule.map_span, Set.image_singleton, Submodule.mkQ_apply, Quotient.mk_eq_mk]
 
 theorem KerLift.map_smul (f : A →ₐ[R₁] B) (r : R₁) (x : A ⧸ (RingHom.ker f)) :
     f.kerLift (r • x) = r • f.kerLift x := by

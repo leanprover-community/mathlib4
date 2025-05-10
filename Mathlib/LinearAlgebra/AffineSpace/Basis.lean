@@ -133,7 +133,6 @@ noncomputable def coord (i : ι) : P →ᵃ[k] k where
   toFun q := 1 - (b.basisOf i).sumCoords (q -ᵥ b i)
   linear := -(b.basisOf i).sumCoords
   map_vadd' q v := by
-    dsimp only
     rw [vadd_vsub_assoc, LinearMap.map_add, vadd_eq_add, LinearMap.neg_apply,
       sub_add_eq_sub_sub_swap, add_comm, sub_eq_add_neg]
 

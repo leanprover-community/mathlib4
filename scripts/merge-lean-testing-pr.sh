@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -eu
 
 if [ "$#" -ne 1 ]; then
     echo "Usage: $0 <PR number>"

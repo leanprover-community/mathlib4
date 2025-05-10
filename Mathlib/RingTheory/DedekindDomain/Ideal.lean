@@ -40,7 +40,7 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
@@ -569,6 +569,8 @@ noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A�
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `mul_left_cancel_of_ne_zero` field.
+TODO(kmill) There is trouble calculating the type of the `IsLeftCancelMulZero` parent. -/
 /-- Fractional ideals have cancellative multiplication in a Dedekind domain.
 
 Although this instance is a direct consequence of the instance
@@ -578,8 +580,9 @@ a computable alternative.
 instance FractionalIdeal.cancelCommMonoidWithZero :
     CancelCommMonoidWithZero (FractionalIdeal A⁰ K) where
   __ : CommSemiring (FractionalIdeal A⁰ K) := inferInstance
+  mul_left_cancel_of_ne_zero := mul_left_cancel₀
 
-instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
+noncomputable instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
   { Function.Injective.cancelCommMonoidWithZero (coeIdealHom A⁰ (FractionRing A)) coeIdeal_injective
     (RingHom.map_zero _) (RingHom.map_one _) (RingHom.map_mul _) (RingHom.map_pow _) with }
 
@@ -623,9 +626,9 @@ instance : WfDvdMonoid (Ideal A) where
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by
       intro P
-      exact ⟨fun hirr => ⟨hirr.ne_zero, hirr.not_unit, fun I J => by
+      exact ⟨fun hirr => ⟨hirr.ne_zero, hirr.not_isUnit, fun I J => by
         have : P.IsMaximal := by
-          refine ⟨⟨mt Ideal.isUnit_iff.mpr hirr.not_unit, ?_⟩⟩
+          refine ⟨⟨mt Ideal.isUnit_iff.mpr hirr.not_isUnit, ?_⟩⟩
           intro J hJ
           obtain ⟨_J_ne, H, hunit, P_eq⟩ := Ideal.dvdNotUnit_iff_lt.mpr hJ
           exact Ideal.isUnit_iff.mp ((hirr.isUnit_or_isUnit P_eq).resolve_right hunit)
@@ -637,7 +640,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
           ⟨x * y, Ideal.mul_mem_mul x_mem y_mem,
             mt this.isPrime.mem_or_mem (not_or_intro x_not_mem y_not_mem)⟩⟩, Prime.irreducible⟩ }
 
-instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) := .ofUniqueUnits
+noncomputable instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) := .ofUniqueUnits
 
 @[simp]
 theorem Ideal.dvd_span_singleton {I : Ideal A} {x : A} : I ∣ Ideal.span {x} ↔ x ∈ I :=
@@ -813,7 +816,7 @@ theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
 
 /-- Ideals in a Dedekind domain have gcd and lcm operators that (trivially) are compatible with
 the normalization operator. -/
-instance : NormalizedGCDMonoid (Ideal A) :=
+noncomputable instance : NormalizedGCDMonoid (Ideal A) :=
   { Ideal.normalizationMonoid with
     gcd := (· ⊔ ·)
     gcd_dvd_left := fun _ _ => by simpa only [dvd_iff_le] using le_sup_left
