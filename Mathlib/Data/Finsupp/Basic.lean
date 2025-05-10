@@ -1087,10 +1087,14 @@ lemma uncurry_single (a : α) (b : β) (m : M) :
   ext ⟨x, y⟩
   rcases eq_or_ne a x with rfl | hne <;> classical simp [single_apply, *]
 
-theorem sum_uncurry_index [AddCommMonoid N] (f : α →₀ β →₀ M) (g : α → β → M → N) :
-    f.uncurry.sum (fun p c => g p.1 p.2 c) = (f.sum fun a f => f.sum (g a)) := by
+theorem sum_uncurry_index [AddCommMonoid N] (f : α →₀ β →₀ M) (g : α × β → M → N) :
+    f.uncurry.sum (fun p c => g p c) = f.sum fun a f => f.sum fun b ↦ g (a, b) := by
   simp only [Finsupp.sum, Finsupp.uncurry, Finset.sum_disjiUnion]
   simp
+
+theorem sum_uncurry_index' [AddCommMonoid N] (f : α →₀ β →₀ M) (g : α → β → M → N) :
+    f.uncurry.sum (fun p c => g p.1 p.2 c) = f.sum fun a f => f.sum (g a) :=
+  sum_uncurry_index ..
 
 end Uncurry
 
@@ -1129,7 +1133,7 @@ lemma curry_single (a : α × β) (m : M) :
 
 theorem sum_curry_index [AddCommMonoid N] (f : α × β →₀ M) (g : α → β → M → N) :
     (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
-   rw [← sum_uncurry_index, uncurry_curry]
+   rw [← sum_uncurry_index', uncurry_curry]
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
