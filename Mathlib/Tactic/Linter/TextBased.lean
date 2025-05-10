@@ -293,9 +293,11 @@ Return the number of files which had new style errors.
 `nolints` is a list of style exceptions to take into account.
 `moduleNames` are the names of all the modules to lint,
 `mode` specifies what kind of output this script should produce,
+`isMathlib` should be true when running this on mathlib: if so, also run the Python style
+linters using `print-script-errors.sh`.
 `fix` configures whether fixable errors should be corrected in-place. -/
 def lintModules (nolints : Array String) (moduleNames : Array Lean.Name) (style : ErrorFormat)
-    (fix : Bool) : IO UInt32 := do
+    (isMathlib : Bool) (fix : Bool) : IO UInt32 := do
   let styleExceptions := parseStyleExceptions nolints
   let mut numberErrorFiles : UInt32 := 0
   let mut allUnexpectedErrors := #[]
@@ -314,15 +316,18 @@ def lintModules (nolints : Array String) (moduleNames : Array Lean.Name) (style 
   -- Run the remaining python linters. It is easier to just run on all files.
   -- If this poses an issue, I can either filter the output
   -- or wait until lint-style.py is fully rewritten in Lean.
+  -- NB. We don't run this on non-mathlib libraries, as that is much easier to implement:
+  -- these linters should be rewritten in Lean instead of fixing the script!
   let args := if fix then #["--fix"] else #[]
-  let output ← IO.Process.output { cmd := "./scripts/print-style-errors.sh", args := args }
-  if output.exitCode != 0 then
-    numberErrorFiles := numberErrorFiles + 1
-    IO.eprintln s!"error: `print-style-error.sh` exited with code {output.exitCode}"
-    IO.eprint output.stderr
-  else if output.stdout != "" then
-    numberErrorFiles := numberErrorFiles + 1
-    IO.eprint output.stdout
+  if isMathlib then
+    let output ← IO.Process.output { cmd := "./scripts/print-style-errors.sh", args := args }
+    if output.exitCode != 0 then
+      numberErrorFiles := numberErrorFiles + 1
+      IO.eprintln s!"error: `print-style-error.sh` exited with code {output.exitCode}"
+      IO.eprint output.stderr
+    else if output.stdout != "" then
+      numberErrorFiles := numberErrorFiles + 1
+      IO.eprint output.stdout
   formatErrors allUnexpectedErrors style
   if allUnexpectedErrors.size > 0 then
     IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)"
