@@ -42,10 +42,10 @@ variable {R : Type*} [Semiring R] [LinearOrder R] (P : Polynomial R)
 
 /-- Counts the number of times that the coefficients in a polynomial change sign, with
 the convention that 0 can count as either sign. -/
-noncomputable def SignVariations : ℕ :=
-    let coeff_signs := (coeffList P).map SignType.sign;
-    let nonzero_signs := coeff_signs.filter (· ≠ 0);
-    (nonzero_signs.destutter (· ≠ ·)).length - 1
+def SignVariations : ℕ :=
+  let coeff_signs := (coeffList P).map SignType.sign;
+  let nonzero_signs := coeff_signs.filter (· ≠ 0);
+  (nonzero_signs.destutter (· ≠ ·)).length - 1
 
 variable (R) in
 @[simp]
