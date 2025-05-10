@@ -138,6 +138,7 @@ protected def comp (g : s →r t) (f : r →r s) : r →r t :=
   ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
 
 /-- A relation homomorphism is also a relation homomorphism between dual relations. -/
+@[simps]
 protected def swap (f : r →r s) : swap r →r swap s :=
   ⟨f, f.map_rel⟩
 
@@ -185,11 +186,6 @@ structure RelEmbedding {α β : Type*} (r : α → α → Prop) (s : β → β �
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 infixl:25 " ↪r " => RelEmbedding
-
-/-- The induced relation on a subtype is an embedding under the natural inclusion. -/
-def Subtype.relEmbedding {X : Type*} (r : X → X → Prop) (p : X → Prop) :
-    (Subtype.val : Subtype p → X) ⁻¹'o r ↪r r :=
-  ⟨Embedding.subtype p, Iff.rfl⟩
 
 theorem preimage_equivalence {α β} (f : α → β) {s : β → β → Prop} (hs : Equivalence s) :
     Equivalence (f ⁻¹'o s) :=
@@ -280,10 +276,16 @@ theorem coe_trans (f : r ↪r s) (g : s ↪r t) : (f.trans g) = g ∘ f :=
 protected def swap (f : r ↪r s) : swap r ↪r swap s :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
 
+@[simp]
+theorem swap_apply (f : r ↪r s) (a : α) : f.swap a = f a := rfl
+
 /-- If `f` is injective, then it is a relation embedding from the
   preimage relation of `s` to `s`. -/
 def preimage (f : α ↪ β) (s : β → β → Prop) : f ⁻¹'o s ↪r s :=
   ⟨f, Iff.rfl⟩
+
+@[simp]
+theorem preimage_apply (f : α ↪ β) (s : β → β → Prop) (a : α) : preimage f s a = f a := rfl
 
 theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
   ext a b
@@ -346,6 +348,12 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
   | f, H => { f.isStrictTotalOrder with wf := f.wellFounded H.wf }
 
 end RelEmbedding
+
+/-- The induced relation on a subtype is an embedding under the natural inclusion. -/
+@[simps!]
+def Subtype.relEmbedding {X : Type*} (r : X → X → Prop) (p : X → Prop) :
+    (Subtype.val : Subtype p → X) ⁻¹'o r ↪r r :=
+  ⟨Embedding.subtype p, Iff.rfl⟩
 
 instance Subtype.wellFoundedLT [LT α] [WellFoundedLT α] (p : α → Prop) :
     WellFoundedLT (Subtype p) :=
@@ -716,6 +724,7 @@ lemma copy_eq (e : r ≃r s) (f : α → β) (g : β → α) (hf hg) : e.copy f 
   DFunLike.coe_injective hf
 
 /-- Any equivalence lifts to a relation isomorphism between `s` and its preimage. -/
+@[simps!]
 protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s :=
   ⟨f, Iff.rfl⟩
 
