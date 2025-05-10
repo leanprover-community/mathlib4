@@ -8,7 +8,7 @@ import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
-import Mathlib.RingTheory.RingHom.Surjective
+import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.Topology.Sheaves.CommRingCat
 
 /-!

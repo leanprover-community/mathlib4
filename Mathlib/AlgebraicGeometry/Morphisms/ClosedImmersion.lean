@@ -191,11 +191,10 @@ def overEquivIdealSheafData (X : Scheme.{u}) :
   counitIso := NatIso.ofComponents (fun I ↦ eqToIso (by simp))
 
 lemma overEquivIdealSheafData_functor_obj_of_isIso {X Y : Scheme.{u}} (f : Y ⟶ X) [IsIso f] :
-    (overEquivIdealSheafData X).functor.obj (op <| .mk _ (𝟙 X) inferInstance) = ⊥ := by
+    (overEquivIdealSheafData X).functor.obj (op <| .mk _ f inferInstance) = ⊥ := by
   dsimp [overEquivIdealSheafData]
   ext U
   simp [map_eq_zero_iff _ (ConcreteCategory.bijective_of_isIso (f.app U)).1]
-  rfl
 
 instance {X : Scheme} : IsIso (⊥ : X.IdealSheafData).subschemeι := by
   rw [← overEquivIdealSheafData_functor_obj_of_isIso (𝟙 _)]
