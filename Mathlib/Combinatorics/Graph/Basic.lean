@@ -40,13 +40,13 @@ Unlike the design of `SimpleGraph`, the vertex and edge sets of `G` are modelled
 This mimics the 'embedded set' design used in `Matroid`, which seems to be more convenient for
 formalizing real-world proofs in combinatorics.
 
-A specific advantage is that this will allow subgraphs of `G : Graph α β` to also exist on
+A specific advantage is that this allows subgraphs of `G : Graph α β` to also exist on
 an equal footing with `G` as terms in `Graph α β`,
-and so there is no need for an extensive `Graph.subgraph` API and all the associated
+and so there is no need for a `Graph.subgraph` type and all the associated
 definitions and canonical coercion maps. The same will go for minors and the various other
 partial orders on multigraphs.
 
-The main tradeoff is that parts of the API will require caring about whether a term
+The main tradeoff is that parts of the API will need to care about whether a term
 `x : α` or `e : β` is a 'real' vertex or edge of the graph, rather than something outside
 the vertex or edge set. This is an issue, but is likely amenable to automation.
 
@@ -61,23 +61,23 @@ variable {α β : Type*} {x y z u v w : α} {e f : β}
 
 open Set
 
-/-- A multigraph with vertex set `V : Set α` and edge set `E : Set β`,
+/-- A multigraph with vertex set `vertexSet : Set α` and edge set `edgeSet : Set β`,
 as described by a predicate describing whether an edge `e : β` has ends `x` and `y`.
-For definitional reasons, we include the edge set `E` as a structure field
+For definitional reasons, we include `edgeSet` as a structure field
 even though it can be inferred from `IsLink` via `edge_mem_iff_exists_isLink`;
-see `Graph.mk'` for a constructor that does not use `E`. -/
+see `Graph.mk'` for a constructor that does not use `edgeSet`. -/
 structure Graph (α β : Type*) where
   /-- The vertex set. -/
   vertexSet : Set α
   /-- The edge set. -/
   edgeSet : Set β
-  /-- The binary incidence predicate, stating that `x` and `y` are the ends of an edge `e` -/
+  /-- The binary incidence predicate, stating that `x` and `y` are the ends of an edge `e`. -/
   IsLink : β → α → α → Prop
   /-- If `e` goes from `x` to `y`, it goes from `y` to `x`. -/
   isLink_symm : ∀ ⦃e⦄, e ∈ edgeSet → (Symmetric <| IsLink e)
   /-- An edge is incident with at most one pair of vertices. -/
   eq_or_eq_of_isLink_of_isLink : ∀ ⦃e x y v w⦄, IsLink e x y → IsLink e v w → x = v ∨ x = w
-  /-- An edge `e` is incident to something if and only if `e` is in the edge set -/
+  /-- An edge `e` is incident to something if and only if `e` is in the edge set. -/
   edge_mem_iff_exists_isLink : ∀ e, e ∈ edgeSet ↔ ∃ x y, IsLink e x y
   /-- If some edge `e` is incident to `x`, then `x ∈ V`. -/
   vx_mem_left_of_isLink : ∀ ⦃e x y⦄, IsLink e x y → x ∈ vertexSet
