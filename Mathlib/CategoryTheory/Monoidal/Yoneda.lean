@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
-import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
@@ -16,11 +16,11 @@ showing that it is fully faithful and its (essential) image is the representable
 
 -/
 
-open CategoryTheory MonoidalCategory Limits Opposite ChosenFiniteProducts Mon_Class
+open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory Mon_Class
 
 universe w v u
 
-variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 variable (X : C)
 
 section Mon_

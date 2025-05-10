@@ -3,7 +3,7 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
@@ -12,9 +12,9 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 
 universe v₁ u₁
 
-open CategoryTheory MonoidalCategory ChosenFiniteProducts
+open CategoryTheory MonoidalCategory CartesianMonoidalCategory
 
-variable {C : Type u₁} [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C]
+variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C]
 
 namespace Mon_
 

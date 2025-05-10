@@ -26,11 +26,11 @@ def binaryProductLimitCone (G H : Grp.{u}) : LimitCone (pair G H) where
 
 /-- We choose `Grp.of (G × H)` as the product of `G` and `H` and `Grp.of PUnit` as
 the terminal object. -/
-noncomputable instance chosenFiniteProductsGrp : ChosenFiniteProducts Grp.{u} :=
+noncomputable instance cartesianMonoidalCategoryGrp : CartesianMonoidalCategory Grp.{u} :=
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (Grp.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-noncomputable instance : BraidedCategory Grp.{u} := .ofChosenFiniteProducts
+noncomputable instance : BraidedCategory Grp.{u} := .ofCartesianMonoidalCategory
 
 noncomputable instance : (forget Grp.{u}).Braided := .ofChosenFiniteProducts _
 
@@ -56,11 +56,11 @@ def binaryProductLimitCone (G H : AddGrp.{u}) : LimitCone (pair G H) where
 
 /-- We choose `AddGrp.of (G × H)` as the product of `G` and `H` and `AddGrp.of PUnit` as
 the terminal object. -/
-noncomputable instance chosenFiniteProductsAddGrp : ChosenFiniteProducts AddGrp.{u} :=
+noncomputable instance cartesianMonoidalCategoryAddGrp : CartesianMonoidalCategory AddGrp.{u} :=
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddGrp.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-noncomputable instance : BraidedCategory AddGrp.{u} := .ofChosenFiniteProducts
+noncomputable instance : BraidedCategory AddGrp.{u} := .ofCartesianMonoidalCategory
 
 noncomputable instance : (forget AddGrp.{u}).Braided := .ofChosenFiniteProducts _
 
@@ -86,11 +86,11 @@ def binaryProductLimitCone (G H : CommGrp.{u}) : LimitCone (pair G H) where
 
 /-- We choose `CommGrp.of (G × H)` as the product of `G` and `H` and `CommGrp.of PUnit` as
 the terminal object. -/
-noncomputable instance chosenFiniteProductsCommGrp : ChosenFiniteProducts CommGrp.{u} :=
+noncomputable instance cartesianMonoidalCategoryCommGrp : CartesianMonoidalCategory CommGrp.{u} :=
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (CommGrp.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-noncomputable instance : BraidedCategory CommGrp.{u} := .ofChosenFiniteProducts
+noncomputable instance : BraidedCategory CommGrp.{u} := .ofCartesianMonoidalCategory
 
 noncomputable instance : (forget CommGrp.{u}).Braided := .ofChosenFiniteProducts _
 
@@ -109,13 +109,13 @@ namespace AddCommGrp
 
 /-- We choose `AddCommGrp.of (G × H)` as the product of `G` and `H` and `AddGrp.of PUnit` as
 the terminal object. -/
-noncomputable def chosenFiniteProductsAddCommGrp : ChosenFiniteProducts AddCommGrp.{u} :=
+noncomputable def cartesianMonoidalCategoryAddCommGrp : CartesianMonoidalCategory AddCommGrp.{u} :=
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddCommGrp.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-attribute [local instance] chosenFiniteProductsAddCommGrp
+attribute [local instance] cartesianMonoidalCategoryAddCommGrp
 
-noncomputable instance : BraidedCategory AddCommGrp.{u} := .ofChosenFiniteProducts
+noncomputable instance : BraidedCategory AddCommGrp.{u} := .ofCartesianMonoidalCategory
 
 noncomputable instance : (forget AddCommGrp.{u}).Braided := .ofChosenFiniteProducts _
 

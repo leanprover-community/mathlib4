@@ -3,8 +3,8 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Kim Morrison
 -/
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
@@ -20,10 +20,10 @@ universe v u
 
 namespace CategoryTheory
 
-instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) :=
+instance typesCartesianMonoidalCategory : CartesianMonoidalCategory (Type u) :=
   .ofChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
 
-instance : BraidedCategory (Type u) := .ofChosenFiniteProducts
+instance : BraidedCategory (Type u) := .ofCartesianMonoidalCategory
 
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :
@@ -105,7 +105,7 @@ theorem braiding_inv_apply {X Y : Type u} {x : X} {y : Y} :
   rfl
 
 @[simp]
-theorem ChosenFiniteProducts.lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g : X ⟶ Z} {x : X} :
+theorem CartesianMonoidalCategory.lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g : X ⟶ Z} {x : X} :
     lift f g x = (f x, g x) :=
   rfl
 
