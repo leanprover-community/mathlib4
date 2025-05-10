@@ -3,6 +3,7 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.RingTheory.Regular.Depth
 
 /-!
@@ -10,6 +11,75 @@ import Mathlib.RingTheory.Regular.Depth
 # The Ischebeck theorem and its corollary
 
 -/
+
+namespace CategoryTheory
+
+universe w v u
+
+open Abelian Limits ZeroObject Abelian.Ext
+
+variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+
+variable (X I P Y : C)
+
+section Injective
+
+instance Abelian.Ext.subsingleton_of_injective [Injective I] (n : ℕ) [hn : NeZero n] :
+    Subsingleton (Ext X I n) := by
+  rw [← Nat.succ_pred_eq_of_ne_zero hn.1]
+  exact subsingleton_of_forall_eq 0 eq_zero_of_injective
+
+variable {S : ShortComplex C} (hS : S.ShortExact) [Injective S.X₂]
+  (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) [NeZero n₀]
+
+noncomputable def injective_dim_shifting : Ext X S.X₃ n₀ ≃+ Ext X S.X₁ n₁ :=
+  have : NeZero n₁ := by
+    rw [← h]
+    infer_instance
+  have : IsIso (AddCommGrp.ofHom (hS.extClass.postcomp X h)) :=
+    ComposableArrows.Exact.isIso_map' (covariantSequence_exact X hS n₀ n₁ h) 1 (by decide)
+      (IsZero.eq_zero_of_src (AddCommGrp.of (Ext X S.X₂ n₀)).isZero_of_subsingleton _)
+      (IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext X S.X₂ n₁)).isZero_of_subsingleton _)
+  (CategoryTheory.asIso (AddCommGrp.ofHom (hS.extClass.postcomp X h))).addCommGroupIsoToAddEquiv
+
+lemma injective_dim_shifting_apply (e : Ext X S.X₃ n₀) :
+  injective_dim_shifting X hS n₀ n₁ h e = hS.extClass.postcomp X h e := rfl
+
+end Injective
+
+section Projective
+
+omit [HasExt C] in
+theorem shortExact_kernel_of_epi {X Y : C} (e : X ⟶ Y) [he : Epi e] :
+    (ShortComplex.mk (kernel.ι e) e (kernel.condition e)).ShortExact where
+  exact := ShortComplex.exact_kernel e
+  mono_f := equalizer.ι_mono
+  epi_g := he
+
+instance Abelian.Ext.subsingleton_of_projective [Projective P] (n : ℕ) [hn : NeZero n] :
+    Subsingleton (Ext P Y n) := by
+  rw [← Nat.succ_pred_eq_of_ne_zero hn.1]
+  exact subsingleton_of_forall_eq 0 eq_zero_of_projective
+
+variable {S : ShortComplex C} (hS : S.ShortExact) [Projective S.X₂]
+  (n₀ n₁ : ℕ) (h : 1 + n₀ = n₁) [NeZero n₀]
+
+noncomputable def projective_dim_shifting : Ext S.X₁ Y n₀ ≃+ Ext S.X₃ Y n₁ :=
+  have : NeZero n₁ := by
+    rw [← h]
+    infer_instance
+  have : IsIso (AddCommGrp.ofHom (hS.extClass.precomp Y h)) :=
+    ComposableArrows.Exact.isIso_map' (contravariantSequence_exact hS Y n₀ n₁ h) 1 (by decide)
+      (IsZero.eq_zero_of_src (AddCommGrp.of (Ext S.X₂ Y n₀)).isZero_of_subsingleton _)
+      (IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext S.X₂ Y n₁)).isZero_of_subsingleton _)
+  (CategoryTheory.asIso (AddCommGrp.ofHom (hS.extClass.precomp Y h))).addCommGroupIsoToAddEquiv
+
+lemma projective_dim_shifting_apply (e : Ext S.X₁ Y n₀) :
+  projective_dim_shifting Y hS n₀ n₁ h e = hS.extClass.precomp Y h e := rfl
+
+end Projective
+
+end CategoryTheory
 
 open IsLocalRing LinearMap ModuleCat Pointwise
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
@@ -180,7 +250,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
         (AddCommGrp.of (Ext.{max u v} (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
         @AddCommGrp.isZero_of_subsingleton _ this
       have epi' : Function.Surjective
-        (x • LinearMap.id (R := R) (M := (Ext.{max u v} (of R L) M i))) := by
+        ⇑(x • LinearMap.id (R := R) (M := (Ext.{max u v} (of R L) M i))) := by
         convert (AddCommGrp.epi_iff_surjective _).mp <| ShortComplex.Exact.epi_f
           (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
           (zero.eq_zero_of_tgt _)
@@ -194,7 +264,8 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       have range : LinearMap.range (x • LinearMap.id) =
         x • (⊤ : Submodule R (Ext.{max u v} (of R L) M i)) := by
         ext y
-        simp [Submodule.mem_smul_pointwise_iff_exists]
+        simp only [mem_range, smul_apply, id_coe, id_eq, Submodule.mem_smul_pointwise_iff_exists,
+          Submodule.mem_top, true_and]
       by_contra ntr
       rw [not_subsingleton_iff_nontrivial] at ntr
       have mem : x ∈ (Module.annihilator R (Ext.{max u v} (of R L) M i)).jacobson :=
@@ -291,20 +362,7 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
     Module.supportDim_eq_of_equiv R _ _ (Shrink.linearEquiv (R ⧸ P.1) R)]
 
 /-
-lemma has_finite_depth [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{v} R)
-  [Module.Finite R M] [Small.{v} (R ⧸ (IsLocalRing.maximalIdeal R))]: Prop :=
-  depth M ≠ ⊤
-noncomputable def finite_depth [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{v} R)
-    [Module.Finite R M] [Small.{v} (R ⧸ (IsLocalRing.maximalIdeal R))]
-    (hfindep : has_finite_depth M): ℕ :=
-  WithTop.untop (WithBot.unbot (depth M) (hfindep.1)) hfindep.2
 theorem depth_le_ringKrullDim [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{v} R)
     [Module.Finite R M] [Nontrivial M] [Small.{v} (R ⧸ IsLocalRing.maximalIdeal R)] :
-    depth M ≤ ringKrullDim R := sorry
-theorem exist_nontrivial_ext [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{v} R)
-    [Module.Finite R M] [Nontrivial M] [Small.{v} (R ⧸ IsLocalRing.maximalIdeal R)] : ∃ i : ℕ,
-    Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v} (R ⧸ IsLocalRing.maximalIdeal R))) M i) := sorry
-theorem depth_eq_nat_find [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{v} R)
-    [Module.Finite R M] [Nontrivial M] [Small.{v} (R ⧸ IsLocalRing.maximalIdeal R)] :
-    depth M = Nat.find (exist_nontrivial_ext M) := sorry
- -/
+    IsLocalRing.depth M ≤ ringKrullDim R := sorry
+-/
