@@ -340,28 +340,18 @@ theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜} (hc : c
   apply eq_of_le_of_le _ radius_le_smul
   exact radius_le_smul.trans_eq (congr_arg _ <| inv_smul_smul₀ hc p)
 
+lemma norm_compContinuousLinearMap_le {p : FormalMultilinearSeries 𝕜 F G} {u : E →L[𝕜] F} {n : ℕ} :
+    ‖p.compContinuousLinearMap u n‖ ≤ ‖p n‖ * ‖u‖^n := by
+  simp only [compContinuousLinearMap]
+  apply le_trans (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _)
+  simp
+
 theorem radius_compContinuousLinearMap_ge (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
     p.radius / ‖u‖₊ ≤ (p.compContinuousLinearMap u).radius := by
   by_cases h_zero : ‖u‖₊ = 0
   · simp only [nnnorm_eq_zero] at h_zero
-    simp only [h_zero, nnnorm_zero, ENNReal.coe_zero]
-    by_cases hr : p.radius = 0
-    · rw [hr]
-      simp
-    · rw [ENNReal.div_zero hr, top_le_iff]
-      apply FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ 1
-      intro m
-      ext v
-      simp only [compContinuousLinearMap_apply, ContinuousMultilinearMap.zero_apply]
-      change (p (m + 1)) 0 = 0
-      simp
+    simp [h_zero]
   simp only [radius, ENNReal.iSup_div]
-  -- Maybe it should be separate lemma?
-  have h : ∀ n, ‖p.compContinuousLinearMap u n‖ ≤ ‖p n‖ * ‖u‖^n := by
-    intro
-    simp only [compContinuousLinearMap]
-    apply le_trans (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _)
-    simp
   apply iSup_mono'
   intro r
   use r / ‖u‖₊
@@ -376,7 +366,7 @@ theorem radius_compContinuousLinearMap_ge (p : FormalMultilinearSeries 𝕜 F G)
     calc
       _ ≤ (‖p n‖ * ‖u‖ ^ n) * (↑r / ‖u‖) ^ n := by
         gcongr
-        exact h n
+        apply norm_compContinuousLinearMap_le
       _ ≤ _ := by
         ring_nf
         move_mul [← ‖u‖⁻¹ ^ n, ← ‖u‖ ^ n]
@@ -405,7 +395,7 @@ theorem radius_compContinuousLinearMap_le [Nontrivial F]
 
 @[simp]
 theorem radius_compContinuousLinearMap_eq [Nontrivial E] [Nontrivial F]
-    (p : FormalMultilinearSeries 𝕜 F G) (u : E ≃ₛₗᵢ[.id _] F) :
+    (p : FormalMultilinearSeries 𝕜 F G) (u : E ≃ₗᵢ[𝕜] F) :
     (p.compContinuousLinearMap u.toLinearIsometry.toContinuousLinearMap).radius = p.radius := by
   apply eq_of_le_of_le
   · trans ‖(1 : 𝕜)‖₊ * p.radius
