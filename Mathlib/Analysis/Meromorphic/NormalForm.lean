@@ -8,20 +8,17 @@ import Mathlib.Analysis.Meromorphic.Divisor
 /-!
 # Normal form of meromorphic functions and continuous extension
 
-If a function `f` is meromorphic on `U` and if `g` differs from `f` only along a
-set that is codiscrete within `U`, then `g` is likewise meromorphic. The set of
-meromorphic functions is therefore huge, and `=ᶠ[codiscreteWithin U]` defines an
-equivalence relation.
+If a function `f` is meromorphic on `U` and if `g` differs from `f` only along a set that is
+codiscrete within `U`, then `g` is likewise meromorphic. The set of meromorphic functions is
+therefore huge, and `=ᶠ[codiscreteWithin U]` defines an equivalence relation.
 
-This file implements continuous extension to provide an API that allows picking
-the 'unique best' representative of any given equivalence class, where 'best'
-means that the representative can locally near any point `x` be written 'in
-normal form', as `f =ᶠ[𝓝 x] fun z ↦ (z - x) ^ n • g` where `g` is analytic and
-does not vanish at `x`.
+This file implements continuous extension to provide an API that allows picking the 'unique best'
+representative of any given equivalence class, where 'best' means that the representative can
+locally near any point `x` be written 'in normal form', as `f =ᶠ[𝓝 x] fun z ↦ (z - x) ^ n • g`
+where `g` is analytic and does not vanish at `x`.
 
-## TODO
-
-Establish the analogous notion `MeromorphicNFOn`.
+The relevant notions are `MeromorphicNFAt` and `MeromorphicNFOn`; these guarantee normal
+form at a single point and along a set, respectively.
 -/
 
 open Topology WithTop

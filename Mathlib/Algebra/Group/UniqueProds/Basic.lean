@@ -604,7 +604,7 @@ open MulOpposite in
   multiplication is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
   "This instance asserts that if `G` has a left-cancellative addition, a linear order, and
-  addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`." ]
+  addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`."]
 instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
     [LinearOrder G] [MulRightStrictMono G] :
     TwoUniqueProds G :=

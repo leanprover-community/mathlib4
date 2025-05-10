@@ -6,6 +6,7 @@ Authors: Eric Rodriguez
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.EquivFin
 
@@ -176,5 +177,8 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
 
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
+
+-- Verify that we can use `ZMod n` in `grind`.
+example (n : ℕ) : Lean.Grind.CommRing (ZMod n) := inferInstance
 
 end ZMod

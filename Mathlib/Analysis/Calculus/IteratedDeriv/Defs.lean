@@ -300,7 +300,7 @@ lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   obtain ⟨p, hp⟩ := h
   convert hp
   obtain ⟨r, hpr⟩ := hp
-  ext n u
+  ext n
   have h_fact_smul := hpr.factorial_smul 1
   simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, Finset.prod_const, Finset.card_univ,
     Fintype.card_fin, smul_eq_mul, nsmul_eq_mul, one_pow, one_mul] at h_fact_smul

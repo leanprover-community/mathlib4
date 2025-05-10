@@ -603,7 +603,7 @@ theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g
   classical
     induction t using Finset.induction with
     | empty => simp
-    | insert has ih => simp [Finset.sum_insert has, ih]
+    | insert _ _ has ih => simp [Finset.sum_insert has, ih]
 
 end ApplySum
 
@@ -1116,6 +1116,18 @@ theorem map_update_smul_left [DecidableEq ι] [Fintype ι]
     map_piecewise_smul f _ _ _
   simpa [← Function.update_smul c m] using this
 
+/-- If two `R`-multilinear maps from `R` are equal on 1, then they are equal.
+
+This is the multilinear version of `LinearMap.ext_ring`. -/
+@[ext]
+theorem ext_ring [Finite ι] ⦃f g : MultilinearMap R (fun _ : ι => R) M₂⦄
+    (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g := by
+  ext x
+  obtain ⟨_⟩ := nonempty_fintype ι
+  have hf := f.map_smul_univ x (fun _ ↦ 1)
+  have hg := g.map_smul_univ x (fun _ ↦ 1)
+  simp_all [h, hf, hg]
+
 section
 
 variable (R ι)
@@ -1198,12 +1210,8 @@ theorem mkPiRing_apply [Fintype ι] (z : M₂) (m : ι → R) :
 
 theorem mkPiRing_apply_one_eq_self [Fintype ι] (f : MultilinearMap R (fun _ : ι => R) M₂) :
     MultilinearMap.mkPiRing R ι (f fun _ => 1) = f := by
-  ext m
-  have : m = fun i => m i • (1 : R) := by
-    ext j
-    simp
-  conv_rhs => rw [this, f.map_smul_univ]
-  rfl
+  ext
+  simp
 
 theorem mkPiRing_eq_iff [Fintype ι] {z₁ z₂ : M₂} :
     MultilinearMap.mkPiRing R ι z₁ = MultilinearMap.mkPiRing R ι z₂ ↔ z₁ = z₂ := by
@@ -1356,11 +1364,11 @@ protected def piRingEquiv [Fintype ι] : M₂ ≃ₗ[R] MultilinearMap R (fun _ 
   toFun z := MultilinearMap.mkPiRing R ι z
   invFun f := f fun _ => 1
   map_add' z z' := by
-    ext m
-    simp [smul_add]
+    ext
+    simp
   map_smul' c z := by
-    ext m
-    simp [smul_smul, mul_comm]
+    ext
+    simp
   left_inv z := by simp
   right_inv f := f.mkPiRing_apply_one_eq_self
 
