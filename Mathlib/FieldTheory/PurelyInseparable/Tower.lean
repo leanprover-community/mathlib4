@@ -153,6 +153,30 @@ theorem sepDegree_mul_sepDegree_of_isAlgebraic (K : Type v) [Field K] [Algebra F
     sepDegree F E * sepDegree E K = sepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E K
 
+@[stacks 09HK "Part 2, `finInsepDegree` variant for finite extensions"]
+lemma finInsepDegree_mul_finInsepDegree_of_finite [Module.Finite F K] :
+    finInsepDegree F E * finInsepDegree E K = finInsepDegree F K := by
+  have : Module.Finite E K := .of_restrictScalars_finite F _ _
+  apply mul_right_injective₀ (NeZero.ne (finSepDegree F K))
+  dsimp only
+  rw [Field.finSepDegree_mul_finInsepDegree,
+    ← Field.finSepDegree_mul_finSepDegree_of_isAlgebraic F E K,
+    mul_mul_mul_comm, Field.finSepDegree_mul_finInsepDegree, Field.finSepDegree_mul_finInsepDegree,
+    Module.finrank_mul_finrank]
+
+variable {F K} in
+lemma finInsepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂)
+    [Module.Finite E₁ K] :
+    finInsepDegree E₂ K ≤ finInsepDegree E₁ K := by
+  letI inst := (IntermediateField.inclusion H).toAlgebra
+  letI := inst.toModule
+  have : IsScalarTower E₁ E₂ K := .of_algebraMap_eq' rfl
+  have : Module.Finite E₁ E₂ := .of_injective (IsScalarTower.toAlgHom E₁ E₂ K).toLinearMap
+    (algebraMap E₂ K).injective
+  rw [← Field.finInsepDegree_mul_finInsepDegree_of_finite E₁ E₂ K]
+  refine Nat.le_mul_of_pos_left (finInsepDegree (↥E₂) K) ?_
+  exact Nat.pos_iff_ne_zero.mpr ((NeZero.ne _))
+
 end Field
 
 variable {F K} in
