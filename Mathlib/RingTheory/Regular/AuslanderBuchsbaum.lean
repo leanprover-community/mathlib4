@@ -102,7 +102,7 @@ instance (n : ℕ) : (extFunctorObj X n).Additive where
     simp only [extFunctorObj_map, mk₀_add, map_add]
     rfl
 
-noncomputable def Abelian.Ext.coproductIso {ι : Type} [Finite ι] (Y : ι → C) (n : ℕ) :
+noncomputable def Abelian.Ext.coprodIso {ι : Type} [Finite ι] (Y : ι → C) (n : ℕ) :
     AddCommGrp.of (Ext X (∐ Y) n) ≅ ∐ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
   have : PreservesColimit (Discrete.functor Y) (extFunctorObj X n) :=
     preservesCoproduct_of_preservesBiproduct (extFunctorObj X n)
