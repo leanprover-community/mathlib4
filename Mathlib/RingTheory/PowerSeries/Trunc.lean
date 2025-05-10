@@ -143,6 +143,19 @@ lemma trunc_C_mul (n : ℕ) (r : R) (f : R⟦X⟧) : trunc n (C R r * f) = .C r 
 lemma trunc_mul_C (n : ℕ) (f : R⟦X⟧) (r : R) : trunc n (f * C R r) = trunc n f * .C r := by
   ext i; simp [coeff_trunc]
 
+/-- Split off the first `n` coefficients. -/
+lemma eq_shift_mul_X_pow_add_trunc (n : ℕ) (f : R⟦X⟧) :
+    f = (mk fun i ↦ coeff R (i + n) f) * X ^ n + (f.trunc n : R⟦X⟧) := by
+  ext j
+  rw [map_add, Polynomial.coeff_coe, coeff_mul_X_pow', coeff_trunc]
+  simp_rw [← not_le]
+  split_ifs with h <;> simp [h]
+
+/-- Split off the first `n` coefficients. -/
+lemma eq_X_pow_mul_shift_add_trunc (n : ℕ) (f : R⟦X⟧) :
+    f = X ^ n * (mk fun i ↦ coeff R (i + n) f) + (f.trunc n : R⟦X⟧) := by
+  rw [← (commute_X_pow _ n).eq, ← eq_shift_mul_X_pow_add_trunc]
+
 end Trunc
 
 section Trunc
