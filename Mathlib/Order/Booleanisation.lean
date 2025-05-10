@@ -163,7 +163,7 @@ instance instSDiff : SDiff (Booleanisation α) where
 
 instance instPreorder : Preorder (Booleanisation α) where
   lt := (· < ·)
-  lt_iff_le_not_le
+  lt_iff_le_not_ge
     | lift a, lift b => by simp [lt_iff_le_not_le]
     | lift a, comp b => by simp
     | comp a, lift b => by simp
