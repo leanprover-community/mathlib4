@@ -5,9 +5,9 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
+import Mathlib.Analysis.Convex.PathSegment
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
@@ -419,38 +419,6 @@ TODO Generalise this from convex sets to sets that are balanced / star-shaped ab
 theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Convex ℝ s) {x : E}
     (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) : s ⊆ interior (homothety x t '' s) :=
   subset_closure.trans <| hs.closure_subset_interior_image_homothety_of_one_lt hx t ht
-
-theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
-    [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
-    {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
-  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by fun_prop
-  apply JoinedIn.ofLine A.continuousOn (by simp) (by simp)
-  convert h
-  rw [segment_eq_image ℝ x y]
-
-/-- A nonempty convex set is path connected. -/
-protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne : s.Nonempty) :
-    IsPathConnected s := by
-  refine isPathConnected_iff.mpr ⟨hne, ?_⟩
-  intro x x_in y y_in
-  exact JoinedIn.of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
-
-/-- A nonempty convex set is connected. -/
-protected theorem Convex.isConnected {s : Set E} (h : Convex ℝ s) (hne : s.Nonempty) :
-    IsConnected s :=
-  (h.isPathConnected hne).isConnected
-
-/-- A convex set is preconnected. -/
-protected theorem Convex.isPreconnected {s : Set E} (h : Convex ℝ s) : IsPreconnected s :=
-  s.eq_empty_or_nonempty.elim (fun h => h.symm ▸ isPreconnected_empty) fun hne =>
-    (h.isConnected hne).isPreconnected
-
-/-- Every topological vector space over ℝ is path connected.
-
-Not an instance, because it creates enormous TC subproblems (turn on `pp.all`).
--/
-protected theorem IsTopologicalAddGroup.pathConnectedSpace : PathConnectedSpace E :=
-  pathConnectedSpace_iff_univ.mpr <| convex_univ.isPathConnected ⟨(0 : E), trivial⟩
 
 end ContinuousSMul
 
