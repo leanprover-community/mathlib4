@@ -68,7 +68,6 @@ lemma IsStandardSmoothOfRelativeDimension.equiv (e : R ≃+* S) :
   exact Algebra.IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective e.bijective
 
 variable {T : Type*} [CommRing T]
-set_option tactic.hygienic false
 lemma IsStandardSmooth.comp {g : S →+* T} {f : R →+* S}
     (hg : IsStandardSmooth g) (hf : IsStandardSmooth f) :
     IsStandardSmooth (g.comp f) := by
