@@ -5,6 +5,7 @@ Authors: Aaron Liu
 -/
 import Mathlib.Tactic.TypeStar
 import Mathlib.Data.Vector.Defs
+import Mathlib.Algebra.Notation.Defs
 
 namespace Tactic.Polyrith.Groebner
 
@@ -35,7 +36,25 @@ instance {𝕜 m cmp} [Add 𝕜] [Zero 𝕜] [BEq 𝕜] : Add (Polynomial 𝕜 m
     (Array.mergeDedupWith (ord := {compare a b := cmp b.snd a.snd})
     a.toArray b.toArray (fun a b => (a.fst + b.fst, a.snd)))
 
+instance {𝕜 m cmp} [Neg 𝕜] : Neg (Polynomial 𝕜 m cmp) where
+  neg a := .ofArray (a.toArray.map fun c => (-c.fst, c.snd))
+
 instance {𝕜 m cmp} : Zero (Polynomial 𝕜 m cmp) where
   zero := .ofArray #[]
+
+instance {𝕜 m cmp} [Mul 𝕜] : SMul 𝕜 (Polynomial 𝕜 m cmp) where
+  smul a b := .ofArray (b.toArray.map fun p => (a * p.fst, p.snd))
+
+instance {𝕜 m cmp} [Mul m] : SMul m (Polynomial 𝕜 m cmp) where
+  smul a b := .ofArray (b.toArray.map fun p => (p.fst, a * p.snd))
+
+def Polynomial.lead {𝕜 m cmp} (p : Polynomial 𝕜 m cmp) (h : p ≠ 0) : 𝕜 × m :=
+  p.toArray[0]'(Array.size_pos_iff.mpr fun ha => h (congrArg Polynomial.ofArray ha))
+
+def Polynomial.leadCoeff {𝕜 m cmp} (p : Polynomial 𝕜 m cmp) (h : p ≠ 0) : 𝕜 :=
+  (p.toArray[0]'(Array.size_pos_iff.mpr fun ha => h (congrArg Polynomial.ofArray ha))).fst
+
+def Polynomial.leadMon {𝕜 m cmp} (p : Polynomial 𝕜 m cmp) (h : p ≠ 0) : m :=
+  (p.toArray[0]'(Array.size_pos_iff.mpr fun ha => h (congrArg Polynomial.ofArray ha))).snd
 
 end Tactic.Polyrith.Groebner
