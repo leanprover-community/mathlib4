@@ -336,6 +336,14 @@ theorem symm_apply_apply (b : M) : e.symm (e b) = b :=
   e.left_inv b
 
 @[simp]
+theorem comp_symm : e.toLinearMap ∘ₛₗ e.symm.toLinearMap = LinearMap.id :=
+  LinearMap.ext e.apply_symm_apply
+
+@[simp]
+theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap= LinearMap.id :=
+  LinearMap.ext e.symm_apply_apply
+
+@[simp]
 theorem trans_symm : (e₁₂.trans e₂₃ : M₁ ≃ₛₗ[σ₁₃] M₃).symm = e₂₃.symm.trans e₁₂.symm :=
   rfl
 
