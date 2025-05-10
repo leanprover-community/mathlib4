@@ -146,23 +146,23 @@ theorem BilinForm.toMatrix'_compRight (B : BilinForm R₁ (n → R₁)) (f : (n 
   B.toMatrix₂'_compl₂ _
 
 theorem BilinForm.mul_toMatrix'_mul (B : BilinForm R₁ (n → R₁)) (M : Matrix o n R₁)
-    (N : Matrix n o R₁) : M * B.toMatrix' * N = (B.comp (Mᵀ).toLin' N.toLin').toMatrix' :=
+    (N : Matrix n o R₁) : M * B.toMatrix' * N = (B.comp (Mᵀ).mulVecLin N.mulVecLin).toMatrix' :=
   B.mul_toMatrix₂'_mul _ _
 
 theorem BilinForm.mul_toMatrix' (B : BilinForm R₁ (n → R₁)) (M : Matrix n n R₁) :
-    M * B.toMatrix' = (B.compLeft (Mᵀ).toLin').toMatrix' :=
+    M * B.toMatrix' = (B.compLeft (Mᵀ).mulVecLin).toMatrix' :=
   LinearMap.mul_toMatrix' B _
 
 theorem BilinForm.toMatrix'_mul (B : BilinForm R₁ (n → R₁)) (M : Matrix n n R₁) :
-    BilinForm.toMatrix' B * M = BilinForm.toMatrix' (B.compRight (Matrix.toLin' M)) :=
+    BilinForm.toMatrix' B * M = BilinForm.toMatrix' (B.compRight M.mulVecLin) :=
   B.toMatrix₂'_mul _
 
 end LinearMap
 
 theorem Matrix.toBilin'_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
-    M.toBilin'.comp P.toLin' Q.toLin' = (Pᵀ * M * Q).toBilin' :=
-  BilinForm.toMatrix'.injective
-    (by simp only [BilinForm.toMatrix'_comp, BilinForm.toMatrix'_toBilin', toMatrix'_toLin'])
+    M.toBilin'.comp P.mulVecLin Q.mulVecLin = (Pᵀ * M * Q).toBilin' :=
+  BilinForm.toMatrix'.injective <| by
+    simp only [BilinForm.toMatrix'_comp, BilinForm.toMatrix'_toBilin', toMatrix'_mulVecLin]
 
 end ToMatrix'
 

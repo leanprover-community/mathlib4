@@ -185,7 +185,7 @@ theorem Matrix.toLinearMap₂'_apply (M : Matrix n m N₂) (x : n → S₁) (y :
     rw [RingHom.id_apply, RingHom.id_apply, smul_comm]
 
 theorem Matrix.toLinearMap₂'_apply' {T : Type*} [CommSemiring T] (M : Matrix n m T) (v : n → T)
-    (w : m → T) : Matrix.toLinearMap₂' T M v w = dotProduct v (M *ᵥ w) := by
+    (w : m → T) : Matrix.toLinearMap₂' T M v w = v ⬝ᵥ (M *ᵥ w) := by
   simp_rw [Matrix.toLinearMap₂'_apply, dotProduct, Matrix.mulVec, dotProduct]
   refine Finset.sum_congr rfl fun _ _ => ?_
   rw [Finset.mul_sum]
@@ -300,9 +300,9 @@ theorem LinearMap.toMatrix₂'_mul (B : (n → R) →ₗ[R] (m → R) →ₗ[R] 
   simp only [B.toMatrix₂'_compl₂, M.toMatrix'_mulVecLin]
 
 theorem Matrix.toLinearMap₂'_comp (M : Matrix n m R) (P : Matrix n n' R) (Q : Matrix m m' R) :
-    LinearMap.compl₁₂ (Matrix.toLinearMap₂' R M) (toLin' P) (toLin' Q) =
+    LinearMap.compl₁₂ (Matrix.toLinearMap₂' R M) P.mulVecLin Q.mulVecLin =
       toLinearMap₂' R (Pᵀ * M * Q) :=
-  (LinearMap.toMatrix₂' R).injective (by simp)
+  (LinearMap.toMatrix₂' R).injective <| by simp
 
 end CommToMatrix'
 

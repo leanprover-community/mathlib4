@@ -52,7 +52,7 @@ theorem lieEquivMatrix'_apply (f : Module.End R (n → R)) :
 
 @[simp]
 theorem lieEquivMatrix'_symm_apply (A : Matrix n n R) :
-    (@lieEquivMatrix' R _ n _ _).symm A = Matrix.toLin' A :=
+    (@lieEquivMatrix' R _ n _ _).symm A = A.mulVecLin :=
   rfl
 
 /-- An invertible matrix induces a Lie algebra equivalence from the space of matrices to itself. -/
