@@ -113,7 +113,7 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
     have h_univ n : (⋃ m, f n m) = univ := hseq_dense.iUnion_uniformity_ball (hto n).1
     have h3 n (ε : ℝ≥0∞) (hε : 0 < ε) : ∃ m, P (⋂ m' ≤ m, (f n m')ᶜ) < ε := by
       refine exists_measure_iInter_lt (fun m ↦ ?_) hε ⟨0, measure_ne_top P _⟩ ?_
-      · exact (measurable_prod_mk_left (IsOpen.measurableSet (hto n).2.1)).compl.nullMeasurableSet
+      · exact (measurable_prodMk_left (IsOpen.measurableSet (hto n).2.1)).compl.nullMeasurableSet
       · rw [← compl_iUnion, h_univ, compl_univ]
     choose! s' s'bound using h3
     rcases ENNReal.exists_pos_sum_of_countable' (ne_of_gt hε) ℕ with ⟨δ, hδ1, hδ2⟩
@@ -183,7 +183,7 @@ spaces: A finite measure on a Polish space is a tight measure.
 instance InnerRegular_of_polishSpace [TopologicalSpace α]
     [PolishSpace α] [BorelSpace α] (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegular := by
-  letI := upgradePolishSpace α
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
   exact InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable P
 
 /--
@@ -213,7 +213,7 @@ respect to compact sets.
 instance InnerRegularCompactLTTop_of_polishSpace
     [TopologicalSpace α] [PolishSpace α] [BorelSpace α] (μ : Measure α) :
     μ.InnerRegularCompactLTTop := by
-  letI := upgradePolishSpace α
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
   exact InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCountable μ
 
 theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [PseudoEMetricSpace α]
@@ -239,7 +239,7 @@ particular, a finite measure on a Polish space is a tight measure.
 theorem PolishSpace.innerRegular_isCompact_isClosed_measurableSet [TopologicalSpace α]
     [PolishSpace α] [BorelSpace α] (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet := by
-  letI := upgradePolishSpace α
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
   exact innerRegular_isCompact_isClosed_measurableSet_of_finite P
 
 end MeasureTheory

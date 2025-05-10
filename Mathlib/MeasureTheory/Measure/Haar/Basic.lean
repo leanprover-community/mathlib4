@@ -91,9 +91,7 @@ noncomputable def index (K V : Set G) : ℕ :=
   sInf <| Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V }
 
 @[to_additive addIndex_empty]
-theorem index_empty {V : Set G} : index ∅ V = 0 := by
-  simp only [index, Nat.sInf_eq_zero]; left; use ∅
-  simp only [Finset.card_empty, empty_subset, mem_setOf_eq, eq_self_iff_true, and_self_iff]
+theorem index_empty {V : Set G} : index ∅ V = 0 := by simp [index]
 
 variable [TopologicalSpace G]
 
@@ -208,16 +206,14 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   classical
   apply le_antisymm (index_union_le K₁ K₂ hV)
   rcases index_elim (K₁.2.union K₂.2) hV with ⟨s, h1s, h2s⟩; rw [← h2s]
-  have :
-    ∀ K : Set G,
-      (K ⊆ ⋃ g ∈ s, (fun h => g * h) ⁻¹' V) →
-        index K V ≤ (s.filter fun g => ((fun h : G => g * h) ⁻¹' V ∩ K).Nonempty).card := by
-    intro K hK; apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]
+  have (K : Set G) (hK : K ⊆ ⋃ g ∈ s, (g * ·) ⁻¹' V) :
+      index K V ≤ {g ∈ s | ((g * ·) ⁻¹' V ∩ K).Nonempty}.card := by
+    apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]
     intro g hg; rcases hK hg with ⟨_, ⟨g₀, rfl⟩, _, ⟨h1g₀, rfl⟩, h2g₀⟩
     simp only [mem_preimage] at h2g₀
     simp only [mem_iUnion]; use g₀; constructor; swap
     · simp only [Finset.mem_filter, h1g₀, true_and]; use g
-      simp only [hg, h2g₀, mem_inter_iff, mem_preimage, and_self_iff]
+      simp [hg, h2g₀]
     exact h2g₀
   refine
     le_trans

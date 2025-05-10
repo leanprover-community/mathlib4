@@ -92,7 +92,7 @@ def leftUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (R ⊗[R] M) ≅ M :=
 def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
   (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
 
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 instance instMonoidalCategoryStruct : MonoidalCategoryStruct (ModuleCat.{u} R) where
   tensorObj := tensorObj
   whiskerLeft := whiskerLeft
@@ -177,9 +177,6 @@ namespace MonoidalCategory
 theorem tensorHom_tmul {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
     (f ⊗ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
   rfl
-
-@[deprecated (since := "2024-09-30")] alias hom_apply := tensorHom_tmul
-
 
 @[simp]
 theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)

@@ -3,8 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Yury Kudryashov
 -/
-import Mathlib.Topology.Homeomorph
 import Mathlib.Data.Option.Basic
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # Paracompact topological spaces
@@ -95,7 +95,6 @@ indexed by the same type. -/
 theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s) (u : ι → Set X)
     (uo : ∀ i, IsOpen (u i)) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, (∀ i, IsOpen (v i)) ∧ (s ⊆ ⋃ i, v i) ∧ LocallyFinite v ∧ ∀ i, v i ⊆ u i := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof of uc
   have uc : (iUnion fun i => Option.elim' sᶜ u i) = univ := by
     apply Subset.antisymm (subset_univ _)
     · simp_rw [← compl_union_self s, Option.elim', iUnion_option]
@@ -118,9 +117,6 @@ theorem Topology.IsClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X 
     refine ⟨α, fun a ↦ e ⁻¹' (V a), fun a ↦ (hVo a).preimage he.continuous, ?_,
       hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
     simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using heV
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.paracompactSpace := IsClosedEmbedding.paracompactSpace
 
 theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
   ⟨fun _ ↦ e.symm.isClosedEmbedding.paracompactSpace, fun _ ↦ e.isClosedEmbedding.paracompactSpace⟩
@@ -211,8 +207,6 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
     -- `Kdiff (n + 1) ∩ s` such that `B (c n i) (r n i) ∩ s` is disjoint with `K n`
     have : ∀ (n) (x : ↑(Kdiff (n + 1) ∩ s)), (K n)ᶜ ∈ 𝓝 (x : X) :=
       fun n x ↦ (K.isClosed n).compl_mem_nhds fun hx' ↦ x.2.1.2 <| K.subset_interior_succ _ hx'
-    -- Porting note: Commented out `haveI` for now.
-    --haveI : ∀ (n) (x : ↑(Kdiff n ∩ s)), Nonempty (ι x) := fun n x ↦ (hB x x.2.2).nonempty
     choose! r hrp hr using fun n (x : ↑(Kdiff (n + 1) ∩ s)) ↦ (hB x x.2.2).mem_iff.1 (this n x)
     have hxr : ∀ (n x) (hx : x ∈ Kdiff (n + 1) ∩ s), B x (r n ⟨x, hx⟩) ∈ 𝓝 x := fun n x hx ↦
       (hB x hx.2).mem_of_mem (hrp _ ⟨x, hx⟩)

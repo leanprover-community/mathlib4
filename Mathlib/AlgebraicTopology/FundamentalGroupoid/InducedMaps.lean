@@ -136,7 +136,7 @@ many of the paths do not have defeq starting/ending points, so we end up needing
 /-- Interpret a homotopy `H : C(I × X, Y)` as a map `C(ULift I × X, Y)` -/
 def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
   ⟨fun x => H (x.1.down, x.2),
-    H.continuous.comp ((continuous_uliftDown.comp continuous_fst).prod_mk continuous_snd)⟩
+    H.continuous.comp ((continuous_uliftDown.comp continuous_fst).prodMk continuous_snd)⟩
 
 theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
   rfl

@@ -51,7 +51,7 @@ structure ContinuousMultilinearMap (R : Type u) {ι : Type v} (M₁ : ι → Typ
 attribute [inherit_doc ContinuousMultilinearMap] ContinuousMultilinearMap.cont
 
 @[inherit_doc]
-notation:25 M "[×" n "]→L[" R "] " M' => ContinuousMultilinearMap R (fun i : Fin n => M) M'
+notation:25 M " [×" n "]→L[" R "] " M' => ContinuousMultilinearMap R (fun i : Fin n => M) M'
 
 namespace ContinuousMultilinearMap
 
@@ -212,7 +212,7 @@ linear map obtained by fixing all coordinates but `i` equal to those of `m`, and
 /-- The cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
 def prod (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
     ContinuousMultilinearMap R M₁ (M₂ × M₃) :=
-  { f.toMultilinearMap.prod g.toMultilinearMap with cont := f.cont.prod_mk g.cont }
+  { f.toMultilinearMap.prod g.toMultilinearMap with cont := f.cont.prodMk g.cont }
 
 @[simp]
 theorem prod_apply (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃)
@@ -300,7 +300,7 @@ theorem _root_.ContinuousLinearMap.compContinuousMultilinearMap_coe (g : M₂ �
   rfl
 
 /-- `ContinuousMultilinearMap.prod` as an `Equiv`. -/
-@[simps apply symm_apply_fst symm_apply_snd, simps (config := .lemmasOnly) symm_apply]
+@[simps apply symm_apply_fst symm_apply_snd, simps -isSimp symm_apply]
 def prodEquiv :
     (ContinuousMultilinearMap R M₁ M₂ × ContinuousMultilinearMap R M₁ M₃) ≃
       ContinuousMultilinearMap R M₁ (M₂ × M₃) where
@@ -315,7 +315,7 @@ theorem prod_ext_iff {f g : ContinuousMultilinearMap R M₁ (M₂ × M₃)} :
       (ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap g ∧
       (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap f =
       (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap g := by
-  rw [← Prod.mk.inj_iff, ← prodEquiv_symm_apply, ← prodEquiv_symm_apply, Equiv.apply_eq_iff_eq]
+  rw [← Prod.mk_inj, ← prodEquiv_symm_apply, ← prodEquiv_symm_apply, Equiv.apply_eq_iff_eq]
 
 @[ext]
 theorem prod_ext {f g : ContinuousMultilinearMap R M₁ (M₂ × M₃)}
@@ -529,6 +529,15 @@ theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ∀ i, M₁ i) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _
 
+/-- If two continuous `R`-multilinear maps from `R` are equal on 1, then they are equal.
+
+This is the multilinear version of `ContinuousLinearMap.ext_ring`. -/
+@[ext]
+theorem ext_ring [Finite ι] [TopologicalSpace R]
+    ⦃f g : ContinuousMultilinearMap R (fun _ : ι => R) M₂⦄
+    (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=
+  toMultilinearMap_injective <| MultilinearMap.ext_ring h
+
 end CommSemiring
 
 section DistribMulAction
@@ -572,7 +581,7 @@ def toMultilinearMapLinear : ContinuousMultilinearMap A M₁ M₂ →ₗ[R'] Mul
   map_smul' := toMultilinearMap_smul
 
 /-- `ContinuousMultilinearMap.pi` as a `LinearEquiv`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R' (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R' (M' i)] [∀ i, ContinuousConstSMul R' (M' i)] :

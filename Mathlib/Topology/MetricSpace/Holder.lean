@@ -287,10 +287,10 @@ lemma add (hf : HolderWith C r f) (hg : HolderWith C' r g) :
   refine le_trans (edist_add_add_le _ _ _ _) <| le_trans (add_le_add (hf x₁ x₂) (hg x₁ x₂)) ?_
   rw [coe_add, add_mul]
 
-lemma smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul α Y] (a : α)
+lemma smul {α} [SeminormedAddCommGroup α] [SMulZeroClass α Y] [IsBoundedSMul α Y] (a : α)
     (hf : HolderWith C r f) : HolderWith (C * ‖a‖₊) r (a • f) := fun x₁ x₂ => by
-  rw [Pi.smul_apply, coe_mul, Pi.smul_apply, edist_smul₀, mul_comm (C : ℝ≥0∞),
-    ENNReal.smul_def, smul_eq_mul, mul_assoc]
+  refine edist_smul_le _ _ _ |>.trans ?_
+  rw [coe_mul, ENNReal.smul_def, smul_eq_mul, mul_comm (C : ℝ≥0∞), mul_assoc]
   gcongr
   exact hf x₁ x₂
 

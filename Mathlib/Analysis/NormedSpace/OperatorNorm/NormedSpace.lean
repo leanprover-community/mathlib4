@@ -122,8 +122,9 @@ instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (
   NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
 
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
-instance toNormedRing : NormedRing (E →L[𝕜] E) :=
-  { ContinuousLinearMap.toNormedAddCommGroup, ContinuousLinearMap.toSemiNormedRing with }
+instance toNormedRing : NormedRing (E →L[𝕜] E) where
+  __ := toNormedAddCommGroup
+  __ := toSeminormedRing
 
 variable {f} in
 theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[σ₁₂] F) {a : ℝ}

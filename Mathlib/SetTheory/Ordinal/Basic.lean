@@ -86,9 +86,6 @@ namespace WellOrder
 instance inhabited : Inhabited WellOrder :=
   ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty EmptyRelation)⟩⟩
 
-@[deprecated "No deprecation message was provided." (since := "2024-10-24")]
-theorem eta (o : WellOrder) : mk o.α o.r o.wo = o := rfl
-
 end WellOrder
 
 /-- Equivalence relation on well orders on arbitrary types in universe `u`, given by order
@@ -142,20 +139,8 @@ instance inhabited : Inhabited Ordinal :=
 instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
-@[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
-  (since := "2024-10-24")]
-theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := rfl
-
-@[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
-  (since := "2024-10-24")]
-theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := rfl
-
 @[simp]
 theorem type_toType (o : Ordinal) : typeLT o.toType = o :=
-  o.out_eq
-
-@[deprecated type_toType (since := "2024-10-22")]
-theorem type_lt (o : Ordinal) : typeLT o.toType = o :=
   o.out_eq
 
 theorem type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s] :
@@ -315,7 +300,7 @@ instance : LinearOrder Ordinal :=
   {inferInstanceAs (PartialOrder Ordinal) with
     le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
-    decidableLE := Classical.decRel _ }
+    toDecidableLE := Classical.decRel _ }
 
 theorem _root_.InitialSeg.ordinal_type_le {α β} {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (h : r ≼i s) : type r ≤ type s :=
@@ -403,15 +388,6 @@ def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordina
   · refine inductionOn a ?_
     rintro β s wo ⟨g⟩
     exact ⟨_, g.subrelIso.ordinal_type_eq⟩
-
-@[deprecated typein (since := "2024-10-09")]
-alias typein.principalSeg := typein
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-10-09")]
-theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
-    (typein.principalSeg r : α → Ordinal) = typein r :=
-  rfl
 
 @[simp]
 theorem type_subrel (r : α → α → Prop) [IsWellOrder α r] (a : α) :
@@ -525,7 +501,7 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
   relIso_enum' _ _ _ _
 
 /-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
-@[simps! (config := .lemmasOnly)]
+@[simps! -isSimp]
 noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
   toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
@@ -547,11 +523,13 @@ instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc
 
 /-- `o.toType` is an `OrderBot` whenever `o ≠ 0`. -/
 def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
+  bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
 
 /-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
 @[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
 def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
+  bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' ho
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
@@ -641,12 +619,6 @@ theorem type_lift_preimage (r : α → α → Prop) [IsWellOrder α r]
     (f : β ≃ α) : lift.{u} (type (f ⁻¹'o r)) = lift.{v} (type r) :=
   (RelIso.preimage f r).ordinal_lift_type_eq
 
-@[deprecated type_lift_preimage_aux (since := "2024-10-22")]
-theorem type_lift_preimage_aux (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
-    lift.{u} (@type _ (fun x y => r (f x) (f y))
-      (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
-  type_lift_preimage r f
-
 /-- `lift.{max u v, u}` equals `lift.{v, u}`.
 
 Unfortunately, the simp lemma doesn't seem to work. -/
@@ -654,13 +626,6 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a =>
     inductionOn a fun _ r _ =>
       Quotient.sound ⟨(RelIso.preimage Equiv.ulift r).trans (RelIso.preimage Equiv.ulift r).symm⟩
-
-/-- `lift.{max v u, u}` equals `lift.{v, u}`.
-
-Unfortunately, the simp lemma doesn't seem to work. -/
-@[deprecated lift_umax (since := "2024-10-24")]
-theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
-  lift_umax
 
 /-- An ordinal lifted to a lower or equal universe equals itself.
 
@@ -730,16 +695,8 @@ def liftInitialSeg : Ordinal.{v} ≤i Ordinal.{max u v} := by
   use typein r f.top
   rw [RelEmbedding.ofMonotone_coe, ← lift_umax, lift_typein_top, lift_id']
 
-@[deprecated liftInitialSeg (since := "2024-09-21")]
-alias lift.initialSeg := liftInitialSeg
-
 @[simp]
 theorem liftInitialSeg_coe : (liftInitialSeg.{v, u} : Ordinal → Ordinal) = lift.{v, u} :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated liftInitialSeg_coe (since := "2024-09-21")]
-theorem lift.initialSeg_coe : (lift.initialSeg.{v, u} : Ordinal → Ordinal) = lift.{v, u} :=
   rfl
 
 @[simp]
@@ -761,11 +718,6 @@ theorem lift_card (a) : Cardinal.lift.{u, v} (card a) = card (lift.{u} a) :=
 theorem mem_range_lift_of_le {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b ≤ lift.{v} a) :
     b ∈ Set.range lift.{v} :=
   liftInitialSeg.mem_range_of_le h
-
-@[deprecated mem_range_lift_of_le (since := "2024-10-07")]
-theorem lift_down {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b ≤ lift.{v,u} a) :
-    ∃ a', lift.{v,u} a' = b :=
-  mem_range_lift_of_le h
 
 theorem le_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
     b ≤ lift.{v} a ↔ ∃ a' ≤ a, lift.{v} a' = b :=
@@ -916,10 +868,6 @@ theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast,
 theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
   (add_assoc _ _ _).symm
 
-@[deprecated Order.one_le_iff_pos (since := "2024-09-04")]
-protected theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o :=
-  Order.one_le_iff_pos
-
 theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by
   rw [Order.one_le_iff_pos, Ordinal.pos_iff_ne_zero]
 
@@ -954,7 +902,6 @@ theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' 
 instance uniqueToTypeOne : Unique (toType 1) where
   default := enum (α := toType 1) (· < ·) ⟨0, by simp⟩
   uniq a := by
-    unfold default
     rw [← enum_typein (α := toType 1) (· < ·) a]
     congr
     rw [← lt_one_iff_zero]
@@ -1031,36 +978,17 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
         simp only [RelEmbedding.ofMonotone_coe]
         simp [e]⟩
 
-@[deprecated liftPrincipalSeg (since := "2024-09-21")]
-alias lift.principalSeg := liftPrincipalSeg
-
 @[simp]
 theorem liftPrincipalSeg_coe :
     (liftPrincipalSeg.{u, v} : Ordinal → Ordinal) = lift.{max (u + 1) v} :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated liftPrincipalSeg_coe (since := "2024-09-21")]
-theorem lift.principalSeg_coe :
-    (lift.principalSeg.{u, v} : Ordinal → Ordinal) = lift.{max (u + 1) v} :=
   rfl
 
 @[simp]
 theorem liftPrincipalSeg_top : (liftPrincipalSeg.{u, v}).top = univ.{u, v} :=
   rfl
 
-set_option linter.deprecated false in
-@[deprecated liftPrincipalSeg_top (since := "2024-09-21")]
-theorem lift.principalSeg_top : (lift.principalSeg.{u, v}).top = univ.{u, v} :=
-  rfl
-
 theorem liftPrincipalSeg_top' : liftPrincipalSeg.{u, u + 1}.top = typeLT Ordinal := by
   simp only [liftPrincipalSeg_top, univ_id]
-
-set_option linter.deprecated false in
-@[deprecated liftPrincipalSeg_top (since := "2024-09-21")]
-theorem lift.principalSeg_top' : lift.principalSeg.{u, u + 1}.top = typeLT Ordinal := by
-  simp only [lift.principalSeg_top, univ_id]
 
 end Ordinal
 
@@ -1414,11 +1342,6 @@ theorem mem_range_lift_of_card_le {a : Cardinal.{u}} {b : Ordinal.{max u v}}
   rw [card_le_iff, ← lift_succ, ← lift_ord] at h
   exact mem_range_lift_of_le h.le
 
-@[deprecated mem_range_lift_of_card_le (since := "2024-10-07")]
-theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
-    (h : card.{max u v} b ≤ Cardinal.lift.{v, u} a) : ∃ a', lift.{v, u} a' = b :=
-  mem_range_lift_of_card_le h
-
 @[simp]
 theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
     card o = ofNat(n) ↔ o = OfNat.ofNat n :=
@@ -1446,7 +1369,7 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List
     | nil => intro i hi; simp at hi
     | cons b bs =>
       intro i hi
-      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a (mem_cons_self a as)); simpa
+      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a mem_cons_self); simpa
       cases hi with
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
