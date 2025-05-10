@@ -97,7 +97,8 @@ theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
   · simp only [one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero,
       Function.iterate_zero]
   · simp only [Function.iterate_succ_apply', ihk, deriv_const_mul_field', deriv_zpow',
-      Finset.prod_range_succ, Int.ofNat_succ, ← sub_sub, Int.cast_sub, Int.cast_natCast, mul_assoc]
+      Finset.prod_range_succ, Int.natCast_succ, ← sub_sub, Int.cast_sub, Int.cast_natCast,
+      mul_assoc]
 
 theorem iter_deriv_zpow (m : ℤ) (x : 𝕜) (k : ℕ) :
     deriv^[k] (fun y => y ^ m) x = (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) :=

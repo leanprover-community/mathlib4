@@ -542,6 +542,19 @@ theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
     (g₁ g₂ : M [⋀^ι]→ₗ[R] N) : g₁.compLinearMap f = g₂.compLinearMap f ↔ g₁ = g₂ :=
   (compLinearMap_injective _ hf).eq_iff
 
+/-- If two `R`-alternating maps from `R` are equal on 1, then they are equal.
+
+This is the alternating version of `LinearMap.ext_ring`. -/
+@[ext]
+theorem ext_ring {R} [CommSemiring R] [Module R N] [Finite ι] ⦃f g : R [⋀^ι]→ₗ[R] N⦄
+    (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=
+  coe_multilinearMap_injective <| MultilinearMap.ext_ring h
+
+/-- The only `R`-alternating map from two or more copies of `R` is the zero map. -/
+instance uniqueOfCommRing {R} [CommSemiring R] [Module R N] [Finite ι] [Nontrivial ι] :
+    Unique (R [⋀^ι]→ₗ[R] N) where
+  uniq f := let ⟨_, _, hij⟩ := exists_pair_ne ι; ext_ring <| f.map_eq_zero_of_eq _ rfl hij
+
 section DomLcongr
 
 variable (ι R N)

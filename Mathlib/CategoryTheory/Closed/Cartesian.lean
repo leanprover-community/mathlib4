@@ -259,8 +259,9 @@ theorem uncurry_pre (f : B ⟶ A) [Exponentiable B] (X : C) :
 
 theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
     (exp.coev A).app X ≫ (pre f).app (A ⊗ X) =
-      (exp.coev B).app X ≫ (exp B).map (f ⊗ 𝟙 _) :=
-  unit_conjugateEquiv _ _ ((tensoringLeft _).map f) X
+      (exp.coev B).app X ≫ (exp B).map (f ⊗ 𝟙 _) := by
+  rw [tensorHom_id]
+  exact unit_conjugateEquiv _ _ ((tensoringLeft _).map f) X
 
 @[simp]
 theorem pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by
@@ -294,11 +295,11 @@ def zeroMul {I : C} (t : IsInitial I) : A ⊗ I ≅ I where
   inv_hom_id := t.hom_ext _ _
 
 /-- If an initial object `0` exists in a CCC, then `0 ⨯ A ≅ 0`. -/
-def mulZero {I : C} (t : IsInitial I) : I ⊗ A ≅ I :=
+def mulZero [BraidedCategory C] {I : C} (t : IsInitial I) : I ⊗ A ≅ I :=
   β_ _ _ ≪≫ zeroMul t
 
 /-- If an initial object `0` exists in a CCC then `0^B ≅ 1` for any `B`. -/
-def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ 𝟙_ C where
+def powZero [BraidedCategory C] {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ 𝟙_ C where
   hom := default
   inv := CartesianClosed.curry ((mulZero t).hom ≫ t.to _)
   hom_inv_id := by
@@ -363,7 +364,7 @@ Note we didn't require any coherence between the choice of finite products here,
 along the `prodComparison` isomorphism.
 -/
 noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [CartesianClosed C] : CartesianClosed D :=
-  letI := e.inverse.monoidalOfChosenFiniteProducts
+  letI : e.inverse.Monoidal := .ofChosenFiniteProducts _
   MonoidalClosed.ofEquiv e.inverse e.symm.toAdjunction
 
 end Functor

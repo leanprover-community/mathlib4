@@ -355,6 +355,45 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
 
 section
 
+variable {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+
+lemma RingHom.OfLocalizationSpanTarget.and (hP : OfLocalizationSpanTarget P)
+    (hQ : OfLocalizationSpanTarget Q) :
+    OfLocalizationSpanTarget (fun f ↦ P f ∧ Q f) := by
+  introv R hs hf
+  exact ⟨hP f s hs fun r ↦ (hf r).1, hQ f s hs fun r ↦ (hf r).2⟩
+
+lemma RingHom.OfLocalizationSpan.and (hP : OfLocalizationSpan P) (hQ : OfLocalizationSpan Q) :
+    OfLocalizationSpan (fun f ↦ P f ∧ Q f) := by
+  introv R hs hf
+  exact ⟨hP f s hs fun r ↦ (hf r).1, hQ f s hs fun r ↦ (hf r).2⟩
+
+lemma RingHom.LocalizationAwayPreserves.and (hP : LocalizationAwayPreserves P)
+    (hQ : LocalizationAwayPreserves Q) :
+    LocalizationAwayPreserves (fun f ↦ P f ∧ Q f) := by
+  introv R h
+  exact ⟨hP f r R' S' h.1, hQ f r R' S' h.2⟩
+
+lemma RingHom.StableUnderCompositionWithLocalizationAwayTarget.and
+    (hP : StableUnderCompositionWithLocalizationAwayTarget P)
+    (hQ : StableUnderCompositionWithLocalizationAwayTarget Q) :
+    StableUnderCompositionWithLocalizationAwayTarget (fun f ↦ P f ∧ Q f) := by
+  introv R h hf
+  exact ⟨hP T s f hf.1, hQ T s f hf.2⟩
+
+lemma RingHom.PropertyIsLocal.and (hP : PropertyIsLocal P) (hQ : PropertyIsLocal Q) :
+    PropertyIsLocal (fun f ↦ P f ∧ Q f) where
+  localizationAwayPreserves := hP.localizationAwayPreserves.and hQ.localizationAwayPreserves
+  ofLocalizationSpanTarget := hP.ofLocalizationSpanTarget.and hQ.ofLocalizationSpanTarget
+  ofLocalizationSpan := hP.ofLocalizationSpan.and hQ.ofLocalizationSpan
+  StableUnderCompositionWithLocalizationAwayTarget :=
+    hP.StableUnderCompositionWithLocalizationAwayTarget.and
+    hQ.StableUnderCompositionWithLocalizationAwayTarget
+
+end
+
+section
+
 variable (hP : RingHom.IsStableUnderBaseChange @P)
 variable {R S Rᵣ Sᵣ : Type u} [CommRing R] [CommRing S] [CommRing Rᵣ] [CommRing Sᵣ] [Algebra R Rᵣ]
   [Algebra S Sᵣ]
