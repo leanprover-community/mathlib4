@@ -3,7 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Category.Grp.Colimits
+import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 
@@ -17,7 +18,7 @@ the derived category of `C` are `w`-small. Under this assumption,
 we define `Ext.{w} X Y n : Type w` as shrunk versions of suitable
 types of morphisms in the derived category. In particular, when `C` has
 enough projectives or enough injectives, the property `HasExt.{v} C`
-shall hold (TODO).
+shall hold.
 
 Note: in certain situations, `w := v` shall be the preferred
 choice of universe (e.g. if `C := ModuleCat.{v} R` with `R : Type v`).
@@ -421,6 +422,27 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
     rw [← Ext.mk₀_comp_mk₀]
     apply Ext.comp_assoc
     all_goals omega
+
+instance (X : C) (n : ℕ) : (extFunctorObj X n).Additive where
+  map_add {_ _ _ _} := by
+    apply AddCommGrp.hom_ext
+    simp [Ext.mk₀_add]
+
+instance (n : ℕ) : (extFunctor (C := C) n).Additive where
+  map_add {_ _ _ _} := by
+    ext
+    simp [Ext.mk₀_add]
+
+/-- `Ext` commutes with finite coproducts. -/
+noncomputable def coprodIso (X : C) {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
+    AddCommGrp.of (Ext X (∐ Y) n) ≅ ∐ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
+  PreservesCoproduct.iso (extFunctorObj X n) Y
+
+/-- `Ext` commutes with finite products. -/
+-- TODO: Prove that `Ext` commutes with arbitrary products.
+noncomputable def prodIso (X : C) {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
+    AddCommGrp.of (Ext X (∏ᶜ Y) n) ≅ ∏ᶜ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
+  PreservesProduct.iso (extFunctorObj X n) Y
 
 section ChangeOfUniverse
 
