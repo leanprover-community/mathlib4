@@ -238,14 +238,14 @@ theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
 protected alias Matrix.one_dotProduct_one := one_dotProduct_one
 
 theorem dotProduct_single_one [DecidableEq n] (v : n → α) (i : n) :
-    dotProduct v (Pi.single i 1) = v i := by
+    v ⬝ᵥ Pi.single i 1 = v i := by
   rw [dotProduct_single, mul_one]
 
 @[deprecated (since := "2024-12-12")]
 protected alias Matrix.dotProduct_single_one := dotProduct_single_one
 
 theorem single_one_dotProduct [DecidableEq n] (i : n) (v : n → α) :
-    dotProduct (Pi.single i 1) v = v i := by
+    Pi.single i 1 ⬝ᵥ v = v i := by
   rw [single_dotProduct, one_mul]
 
 @[deprecated (since := "2024-12-12")]
