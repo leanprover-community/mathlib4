@@ -176,9 +176,12 @@ end Completeness
 
 section UniformlyExtend
 
-variable [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : DenseRange e)
+section NonField
 
-section
+variable {R R₂ E F Fₗ : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
+  [NormedRing R] [NormedRing R₂] [Module R E] [Module R₂ F] [Module R Fₗ]
+  [IsBoundedSMul R₂ F] [IsBoundedSMul R Fₗ]
+  {σ₁₂ : R →+* R₂} (f g : E →SL[σ₁₂] F) [CompleteSpace F] (e : E →L[R] Fₗ) (h_dense : DenseRange e)
 
 variable (h_e : IsUniformInducing e)
 
@@ -220,9 +223,11 @@ theorem extend_unique (g : Fₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f
 theorem extend_zero : extend (0 : E →SL[σ₁₂] F) e h_dense h_e = 0 :=
   extend_unique _ _ _ _ _ (zero_comp _)
 
-end
+end NonField
 
 section
+
+variable [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : DenseRange e)
 
 variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
 

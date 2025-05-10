@@ -262,9 +262,9 @@ end
 
 section
 
-variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
-instance normedSpace : NormedSpace 𝕜 C(α, E) where
+instance normedSpace {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E] : NormedSpace 𝕜 C(α, E) where
   norm_smul_le := norm_smul_le
 
 section

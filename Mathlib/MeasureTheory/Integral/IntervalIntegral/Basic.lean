@@ -246,8 +246,9 @@ end
 
 variable [NormedRing A] {f g : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
 
-theorem smul [NormedField 𝕜] [NormedSpace 𝕜 E] {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
-    (h : IntervalIntegrable f μ a b) (r : 𝕜) : IntervalIntegrable (r • f) μ a b :=
+theorem smul {R : Type*} [NormedAddCommGroup R] [SMulZeroClass R E] [IsBoundedSMul R E]
+    {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ} (h : IntervalIntegrable f μ a b) (r : R) :
+    IntervalIntegrable (r • f) μ a b :=
   ⟨h.1.smul r, h.2.smul r⟩
 
 @[simp]
@@ -285,7 +286,7 @@ theorem mul_const {f : ℝ → A} (hf : IntervalIntegrable f μ a b) (c : A) :
   hf.mul_continuousOn continuousOn_const
 
 @[simp]
-theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormedField 𝕜] (h : IntervalIntegrable f μ a b)
+theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormedDivisionRing 𝕜] (h : IntervalIntegrable f μ a b)
     (c : 𝕜) : IntervalIntegrable (fun x => f x / c) μ a b := by
   simpa only [div_eq_mul_inv] using mul_const h c⁻¹
 
@@ -639,11 +640,20 @@ theorem integral_sub (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable
     ∫ x in a..b, f x - g x ∂μ = (∫ x in a..b, f x ∂μ) - ∫ x in a..b, g x ∂μ := by
   simpa only [sub_eq_add_neg] using (integral_add hf hg.neg).trans (congr_arg _ integral_neg)
 
+/-- Compatibility with scalar multiplication. Note this assumes `𝕜` is a division ring in order to
+ensure that for `c ≠ 0`, `c • f` is integrable iff `f` is. For scalar multiplication by more
+general rings assuming integrability, see `IntervalIntegrable.integral_smul`. -/
 @[simp]
-nonrec theorem integral_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+nonrec theorem integral_smul [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] (r : 𝕜) (f : ℝ → E) :
     ∫ x in a..b, r • f x ∂μ = r • ∫ x in a..b, f x ∂μ := by
   simp only [intervalIntegral, integral_smul, smul_sub]
+
+theorem _root_.IntervalIntegrable.integral_smul
+    {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℝ R E]
+    {f : ℝ → E} (r : R) (hf : IntervalIntegrable f μ a b) :
+    ∫ x in a..b, r • f x ∂μ = r • ∫ x in a..b, f x ∂μ := by
+  simp only [intervalIntegral, smul_sub, hf.1.integral_smul, hf.2.integral_smul]
 
 @[simp]
 nonrec theorem integral_smul_const [CompleteSpace E]
@@ -652,7 +662,7 @@ nonrec theorem integral_smul_const [CompleteSpace E]
   simp only [intervalIntegral_eq_integral_uIoc, integral_smul_const, smul_assoc]
 
 @[simp]
-theorem integral_const_mul {𝕜 : Type*} [RCLike 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_const_mul [NormedDivisionRing 𝕜] [NormedAlgebra ℝ 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, r * f x ∂μ = r * ∫ x in a..b, f x ∂μ :=
   integral_smul r f
 
