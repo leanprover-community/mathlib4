@@ -292,6 +292,19 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
   · exfalso
     linarith
 
+theorem extend_trans_of_le_half (γ₁ : Path x y) (γ₂ : Path y z) {t : ℝ} (ht : t ≤ 1 / 2) :
+    (γ₁.trans γ₂).extend t = γ₁.extend (2 * t) := by
+  cases le_total t 0 with
+  | inl ht₀ => simp [Path.extend_of_le_zero, ht₀, mul_nonpos_of_nonneg_of_nonpos]
+  | inr ht₀ => simp_all [extend_extends _ ⟨ht₀, by linarith⟩, Path.trans]
+
+theorem extend_trans_of_half_le (γ₁ : Path x y) (γ₂ : Path y z) {t : ℝ} (ht : 1 / 2 ≤ t) :
+    (γ₁.trans γ₂).extend t = γ₂.extend (2 * t - 1) := by
+  conv_lhs => rw [← sub_sub_cancel 1 t]
+  rw [← extend_symm_apply, trans_symm, extend_trans_of_le_half _ _ (by linarith), extend_symm_apply]
+  congr 1
+  linarith
+
 @[simp]
 theorem refl_trans_refl {a : X} :
     (Path.refl a).trans (Path.refl a) = Path.refl a := by
@@ -393,6 +406,10 @@ theorem trans_cast {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
     (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
     (γ.cast ha hb).trans (γ'.cast hb hc) = (γ.trans γ').cast ha hc :=
   rfl
+
+@[simp]
+theorem extend_cast {x' y'} (γ : Path x y) (hx : x' = x) (hy : y' = y) :
+    (γ.cast hx hy).extend = γ.extend := rfl
 
 @[simp]
 theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast hx hy : I → X) = γ :=

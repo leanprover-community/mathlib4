@@ -39,6 +39,4 @@ theorem derivWithin_comp_mul_left :
 
 variable (c f x) in
 theorem deriv_comp_mul_left : deriv (f <| c * ·) x = c • deriv f (c * x) := by
-  rcases eq_or_ne c 0 with rfl | hc
-  · simp
-  · simp only [← derivWithin_univ, derivWithin_comp_mul_left, smul_set_univ₀ hc]
+  simp only [← smul_eq_mul, deriv, fderiv_comp_smul, ContinuousLinearMap.smul_apply]
