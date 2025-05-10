@@ -7,7 +7,7 @@ import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Geometry.Manifold.Algebra.Structures
 import Mathlib.Geometry.Manifold.ContMDiff.Atlas
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-!
 # Manifold structure on the upper half plane.
@@ -19,6 +19,8 @@ open Filter
 
 open scoped Manifold ContDiff MatrixGroups
 
+variable {n : WithTop ℕ∞}
+
 namespace UpperHalfPlane
 
 noncomputable instance : ChartedSpace ℂ ℍ :=
@@ -27,8 +29,8 @@ noncomputable instance : ChartedSpace ℂ ℍ :=
 instance : IsManifold 𝓘(ℂ) ω ℍ :=
   UpperHalfPlane.isOpenEmbedding_coe.isManifold_singleton
 
-/-- The inclusion map `ℍ → ℂ` is an analytic map of manifolds. -/
-theorem contMDiff_coe {n : WithTop ℕ∞} : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n ((↑) : ℍ → ℂ) :=
+/-- The inclusion map `ℍ → ℂ` is a map of `C^n` manifolds. -/
+theorem contMDiff_coe : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n ((↑) : ℍ → ℂ) :=
   fun _ => contMDiffAt_extChartAt
 
 @[deprecated (since := "2024-11-20")] alias smooth_coe := contMDiff_coe
@@ -37,7 +39,7 @@ theorem contMDiff_coe {n : WithTop ℕ∞} : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n ((�
 theorem mdifferentiable_coe : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ → ℂ) :=
   contMDiff_coe.mdifferentiable le_top
 
-lemma contMDiffAt_ofComplex {n : WithTop ℕ∞} {z : ℂ} (hz : 0 < z.im) :
+lemma contMDiffAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
     ContMDiffAt 𝓘(ℂ) 𝓘(ℂ) n ofComplex z := by
   rw [contMDiffAt_iff]
   constructor
@@ -59,6 +61,13 @@ lemma mdifferentiableAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
     MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) ofComplex z :=
   (contMDiffAt_ofComplex hz).mdifferentiableAt le_top
 
+lemma contMDiffAt_iff {f : ℍ → ℂ} {τ : ℍ} :
+    ContMDiffAt 𝓘(ℂ) 𝓘(ℂ) n f τ ↔ ContDiffAt ℂ n (f ∘ ofComplex) τ := by
+  rw [← contMDiffAt_iff_contDiffAt]
+  refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
+  · exact (ofComplex_apply τ ▸ hf).comp _ (contMDiffAt_ofComplex τ.im_pos)
+  · simpa only [Function.comp_def, ofComplex_apply] using hf.comp τ (contMDiff_coe τ)
+
 lemma mdifferentiableAt_iff {f : ℍ → ℂ} {τ : ℍ} :
     MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) f τ ↔ DifferentiableAt ℂ (f ∘ ofComplex) ↑τ := by
   rw [← mdifferentiableAt_iff_differentiableAt]
@@ -72,27 +81,24 @@ lemma mdifferentiable_iff {f : ℍ → ℂ} :
     fun h ⟨z, hz⟩ ↦ mdifferentiableAt_iff.mpr <| (h z hz).differentiableAt
       <| (Complex.continuous_im.isOpen_preimage _ isOpen_Ioi).mem_nhds hz⟩
 
-lemma contMDiff_num (g : GL(2, ℝ)⁺) :
-    ContMDiff 𝓘(ℂ) 𝓘(ℂ) ω (num g) :=
+lemma contMDiff_num (g : GL(2, ℝ)⁺) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (num g) :=
   (contMDiff_const.smul contMDiff_coe).add contMDiff_const
 
-lemma contMDiff_denom (g : GL(2, ℝ)⁺) :
-    ContMDiff 𝓘(ℂ) 𝓘(ℂ) ω (denom g) :=
+lemma contMDiff_denom (g : GL(2, ℝ)⁺) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (denom g) :=
   (contMDiff_const.smul contMDiff_coe).add contMDiff_const
 
 lemma contMDiff_denom_zpow (g : GL(2, ℝ)⁺) (k : ℤ) :
-    ContMDiff 𝓘(ℂ) 𝓘(ℂ) ω (denom g · ^ k) := fun τ ↦ by
+    ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (denom g · ^ k) := fun τ ↦ by
   have : AnalyticAt ℂ (· ^ k) (denom g τ) := (differentiableOn_zpow k _ (by tauto)).analyticOnNhd
     isOpen_compl_singleton _ (denom_ne_zero g τ)
-  exact (this.contDiffAt (n := ω)).contMDiffAt.comp τ (contMDiff_denom g τ)
+  exact this.contDiffAt.contMDiffAt.comp τ (contMDiff_denom g τ)
 
-lemma contMDiff_inv_denom (g : GL(2, ℝ)⁺) :
-    ContMDiff 𝓘(ℂ) 𝓘(ℂ) ω (fun τ ↦ (denom g τ)⁻¹) := by
+lemma contMDiff_inv_denom (g : GL(2, ℝ)⁺) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ ↦ (denom g τ)⁻¹) := by
   simpa using contMDiff_denom_zpow g (-1)
 
-/-- Each element of `GL(2, ℝ)⁺` defines a map of analytic manifolds `ℍ → ℍ`. -/
+/-- Each element of `GL(2, ℝ)⁺` defines a map of `C ^ n` manifolds `ℍ → ℍ`. -/
 lemma contMDiff_smul (g : GL(2, ℝ)⁺) :
-    ContMDiff 𝓘(ℂ) 𝓘(ℂ) ω (fun τ : ℍ ↦ g • τ) := fun τ ↦ by
+    ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ g • τ) := fun τ ↦ by
   refine contMDiffAt_iff_target.mpr ⟨(continuous_const_smul g).continuousAt, ?_⟩
   simpa [smulAux, Function.comp_def] using (contMDiff_num g τ).mul (contMDiff_inv_denom g τ)
 
@@ -114,9 +120,8 @@ lemma mdifferentiable_inv_denom (g : GL(2, ℝ)⁺) :
 
 /-- Each element of `GL(2, ℝ)⁺` defines a complex-differentiable map `ℍ → ℍ`. -/
 lemma mdifferentiable_smul (g : GL(2, ℝ)⁺) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ : ℍ ↦ g • τ) := fun τ ↦ by
-  refine mdifferentiableAt_iff_target.mpr ⟨(continuous_const_smul g).continuousAt, ?_⟩
-  simpa [smulAux, Function.comp_def] using
-    (mdifferentiable_num g τ).mul (mdifferentiable_inv_denom g τ)
+    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ : ℍ ↦ g • τ) :=
+  (contMDiff_smul g).mdifferentiable le_top
+
 
 end UpperHalfPlane
