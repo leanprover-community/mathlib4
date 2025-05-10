@@ -936,6 +936,16 @@ theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
     s = univ ↔ ncard s = Nat.card α := by
   rw [← compl_empty_iff, ← ncard_eq_zero, ← ncard_add_ncard_compl s, left_eq_add]
 
+lemma even_ncard_compl_iff [Finite α] (heven : Even (Nat.card α)) (s : Set α) :
+    Even sᶜ.ncard ↔ Even s.ncard := by
+  simp [compl_eq_univ_diff, ncard_diff (subset_univ _ : s ⊆ Set.univ),
+    Nat.even_sub (ncard_le_ncard (subset_univ _ : s ⊆ Set.univ)),
+    (ncard_univ _).symm ▸ heven]
+
+lemma odd_ncard_compl_iff [Finite α] (heven : Even (Nat.card α)) (s : Set α) :
+    Odd sᶜ.ncard ↔ Odd s.ncard := by
+  rw [← Nat.not_even_iff_odd, even_ncard_compl_iff heven, Nat.not_even_iff_odd]
+
 end Lattice
 
 /-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
