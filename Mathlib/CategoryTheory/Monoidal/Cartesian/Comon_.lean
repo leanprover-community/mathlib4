@@ -21,7 +21,7 @@ noncomputable section
 
 variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C]
 
-attribute [simp] leftUnitor_hom rightUnitor_hom
+attribute [local simp] leftUnitor_hom rightUnitor_hom
 
 /--
 The functor from a cartesian monoidal category to comonoids in that category,
