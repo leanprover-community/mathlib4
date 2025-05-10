@@ -1465,11 +1465,9 @@ import Mathlib.Analysis.Convex.Body
 import Mathlib.Analysis.Convex.Caratheodory
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Cone.Basic
-import Mathlib.Analysis.Convex.Cone.Closure
+import Mathlib.Analysis.Convex.Cone.Dual
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Cone.InnerDual
-import Mathlib.Analysis.Convex.Cone.Pointed
-import Mathlib.Analysis.Convex.Cone.Proper
 import Mathlib.Analysis.Convex.Continuous
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Deriv
@@ -3519,6 +3517,9 @@ import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Tower
+import Mathlib.Geometry.Convex.Cone.Basic
+import Mathlib.Geometry.Convex.Cone.Dual
+import Mathlib.Geometry.Convex.Cone.Pointed
 import Mathlib.Geometry.Euclidean.Altitude
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
@@ -5824,6 +5825,7 @@ import Mathlib.Topology.Algebra.Module.Alternating.Topology
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.Module.Cardinality
 import Mathlib.Topology.Algebra.Module.CharacterSpace
+import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 import Mathlib.Topology.Algebra.Module.Compact
 import Mathlib.Topology.Algebra.Module.Determinant
 import Mathlib.Topology.Algebra.Module.Equiv
@@ -5836,6 +5838,7 @@ import Mathlib.Topology.Algebra.Module.ModuleTopology
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+import Mathlib.Topology.Algebra.Module.PerfectPairing
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Star
 import Mathlib.Topology.Algebra.Module.StrongTopology
