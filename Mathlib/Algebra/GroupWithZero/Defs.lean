@@ -117,6 +117,8 @@ class CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelM
 element, and `0` is left and right absorbing. -/
 class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
 
+attribute [instance high] CommMonoidWithZero.toMonoidWithZero
+
 section CancelMonoidWithZero
 
 variable [CancelMonoidWithZero M₀] {a b c : M₀}
@@ -218,6 +220,8 @@ if it is a commutative monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
 class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
+
+attribute [instance high] CommGroupWithZero.toGroupWithZero
 
 section
 variable [CancelMonoidWithZero M₀] {x : M₀}

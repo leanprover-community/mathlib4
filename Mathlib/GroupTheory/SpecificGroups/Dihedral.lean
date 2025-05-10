@@ -146,7 +146,7 @@ theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by
 
 theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   cases n
-  · rw [Nat.card_eq_zero_of_infinite]
+  · simp [Nat.card_eq_zero_of_infinite]
   · rw [Nat.card_eq_fintype_card, card]
 
 theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by

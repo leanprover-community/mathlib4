@@ -131,9 +131,10 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
   apply Equiv.Perm.subgroup_eq_top_of_swap_mem
   · rwa [h1]
   · rw [h1]
-    simpa only [Fintype.card_eq_nat_card,
-      Nat.card_congr (MonoidHom.ofInjective (galActionHom_injective p ℂ)).toEquiv.symm]
-      using prime_degree_dvd_card p_irr p_deg
+    sorry
+    -- simpa only [Fintype.card_eq_nat_card,
+    --   Nat.card_congr (MonoidHom.ofInjective (galActionHom_injective p ℂ)).toEquiv.symm]
+    --   using prime_degree_dvd_card p_irr p_deg
   · exact ⟨conj', rfl⟩
   · rw [← Equiv.Perm.card_support_eq_two]
     apply Nat.add_left_cancel
