@@ -609,8 +609,6 @@ def subschemeFunctor (Y : Scheme.{u}) : (IdealSheafData Y)ᵒᵖ ⥤ Over Y wher
 
 end IdealSheafData
 
-end subscheme
-
 noncomputable section image
 
 open Limits
