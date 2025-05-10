@@ -112,6 +112,7 @@ end Projective
 
 section coproduct
 
+variable (X) in
 noncomputable def Abelian.Ext.coprodIso {ι : Type*} [Finite ι] (Y : ι → C) (n : ℕ) :
     AddCommGrp.of (Ext X (∐ Y) n) ≅ ∐ (fun i => AddCommGrp.of (Ext X (Y i) n)) :=
   have : PreservesColimit (Discrete.functor Y) (extFunctorObj X n) :=
@@ -178,25 +179,22 @@ lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module 
   apply subsingleton_of_forall_eq 0 (fun m ↦ ?_)
   rw [← one_smul R m, Subsingleton.elim (1 : R) 0, zero_smul]
 
-lemma free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
-    [Nontrivial M] (i : ℕ) : Subsingleton (Ext N M i) ↔
-    Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
-  have : Nontrivial R := nontrivial_ring_of_nontrivial_module M
-  induction' i with i ih generalizing N
-  · simp only [Ext.addEquiv₀.subsingleton_congr, ModuleCat.homAddEquiv.subsingleton_congr]
-    sorry
-  · rcases EnoughProjectives.presentation N with ⟨⟨P, f⟩⟩
-    let S := (ShortComplex.mk (kernel.ι f) f (kernel.condition f))
-    have S_exact := shortExact_kernel_of_epi f
-    by_cases eq0 : i = 0
-    · sorry
-    · have : NeZero i := ⟨eq0⟩
-      simpa [← (projective_dim_shifting _ S_exact i (i + 1) (add_comm 1 i)).subsingleton_congr]
-        using ih (kernel f)
-
 lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] (i : ℕ) : Subsingleton (Ext N M i) ↔
     Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
+  classical
+  have : Nontrivial R := nontrivial_ring_of_nontrivial_module M
+  rcases Module.Free.exists_set R M with ⟨S, ⟨B⟩⟩
+  have fin' : Finite S := Module.Finite.finite_basis B
+  have fin : S.Finite := fin'
+  let e : M ≅ ∐ fun s ↦ ModuleCat.of R (Shrink.{v, u} R) := (LinearEquiv.toModuleIso <|
+    (B.repr.trans (Finsupp.mapRange.linearEquiv (α := S) (Shrink.linearEquiv R R).symm)).trans
+    (finsuppLEquivDirectSum R (Shrink.{v} R) S)).trans
+    (ModuleCat.coprodIsoDirectSum (ι := S) (fun s ↦ ModuleCat.of R (Shrink.{v} R))).symm
+  show Subsingleton ((extFunctorObj N i).obj M) ↔ _
+  rw [((extFunctorObj.{max u v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr]
+  simp only [extFunctorObj]
+  --#check Ext.coprodIso N (fun (s : S) ↦ ModuleCat.of R (Shrink.{v, u} R)) i
   sorry
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
