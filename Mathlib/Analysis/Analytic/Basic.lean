@@ -72,8 +72,6 @@ notion, describing the polydisk of convergence. This notion is more specific, an
 build the general theory. We do not define it here.
 -/
 
-set_option linter.style.longFile 1700
-
 noncomputable section
 
 variable {𝕜 E F G : Type*}
