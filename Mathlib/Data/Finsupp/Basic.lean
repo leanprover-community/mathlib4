@@ -547,6 +547,12 @@ theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
   have : mapDomain f v₁ (f a) = mapDomain f v₂ (f a) := by rw [eq]
   rwa [mapDomain_apply hf, mapDomain_apply hf] at this
 
+theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
+    (mapDomain (M := M) f).Surjective := by
+  intro x
+  use mapDomain (surjInv hf) x
+  rw [← mapDomain_comp, (rightInverse_surjInv hf).id, mapDomain_id]
+
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
 def mapDomainEmbedding {α β : Type*} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
@@ -1075,6 +1081,17 @@ protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (a : α) (b : �
     f.uncurry (a, b) = f a b :=
   rfl
 
+@[simp]
+lemma uncurry_single (a : α) (b : β) (m : M) :
+    (single a (single b m)).uncurry = single (a, b) m := by
+  ext ⟨x, y⟩
+  rcases eq_or_ne a x with rfl | hne <;> classical simp [single_apply, *]
+
+theorem sum_uncurry_index [AddCommMonoid N] (f : α →₀ β →₀ M) (g : α → β → M → N) :
+    f.uncurry.sum (fun p c => g p.1 p.2 c) = (f.sum fun a f => f.sum (g a)) := by
+  simp only [Finsupp.sum, Finsupp.uncurry, Finset.sum_disjiUnion]
+  simp
+
 end Uncurry
 
 section Zero
@@ -1105,25 +1122,18 @@ theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
   ext ⟨a, b⟩
   simp
 
-end Zero
+@[simp]
+lemma curry_single (a : α × β) (m : M) :
+    (single a m).curry = single a.1 (single a.2 m) := by
+  rw [← curry_uncurry (single _ _), uncurry_single]
 
-end Curry
-
-theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg₀ : ∀ a b, g a b 0 = 0)
-    (hg₁ : ∀ a b c₀ c₁, g a b (c₀ + c₁) = g a b c₀ + g a b c₁) :
+theorem sum_curry_index [AddCommMonoid N] (f : α × β →₀ M) (g : α → β → M → N) :
     (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
-  rw [Finsupp.curry]
-  trans
-  · exact
-      sum_sum_index (fun a => sum_zero_index) fun a b₀ b₁ =>
-        sum_add_index' (fun a => hg₀ _ _) fun c d₀ d₁ => hg₁ _ _ _ _
-  congr; funext p c
-  trans
-  · exact sum_single_index sum_zero_index
-  exact sum_single_index (hg₀ _ _)
+   rw [← sum_uncurry_index, uncurry_curry]
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
+@[simps]
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
@@ -1132,22 +1142,15 @@ def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
 
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
-  classical
-    rw [Finsupp.curry, Finsupp.curry, Finsupp.sum, Finsupp.sum, filter_sum, support_filter,
-      sum_filter]
-    refine Finset.sum_congr rfl ?_
-    rintro ⟨a₁, a₂⟩ _
-    split_ifs with h
-    · rw [filter_apply_pos, filter_single_of_pos] <;> exact h
-    · rwa [filter_single_of_neg]
+  ext a b
+  simp [filter_apply, apply_ite (DFunLike.coe · b)]
 
-theorem support_curry [DecidableEq α] (f : α × β →₀ M) :
-    f.curry.support ⊆ f.support.image Prod.fst := by
-  rw [← Finset.biUnion_singleton]
-  refine Finset.Subset.trans support_sum ?_
-  exact Finset.biUnion_mono fun a _ => support_single_subset
+theorem support_curry (f : α × β →₀ M) : f.curry.support = f.support.image Prod.fst :=
+  rfl
 
-end CurryUncurry
+end Zero
+
+end Curry
 
 /-! ### Declarations about finitely supported functions whose support is a `Sum` type -/
 

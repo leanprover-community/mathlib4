@@ -246,7 +246,6 @@ instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
   map_bot f := f.map_bot'
   map_himp := HeytingHom.map_himp'
 
--- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : HeytingHom α β} : f.toFun = ⇑f :=
   rfl
 
@@ -352,7 +351,6 @@ instance : CoheytingHomClass (CoheytingHom α β) α β where
   map_top f := f.map_top'
   map_sdiff := CoheytingHom.map_sdiff'
 
--- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : CoheytingHom α β} : f.toFun = (f : α → β) :=
   rfl
 
@@ -458,7 +456,6 @@ instance : BiheytingHomClass (BiheytingHom α β) α β where
   map_himp f := f.map_himp'
   map_sdiff f := f.map_sdiff'
 
--- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : BiheytingHom α β} : f.toFun = (f : α → β) :=
   rfl
 
