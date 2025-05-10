@@ -155,9 +155,11 @@ theorem coe_coalgHom_mk {f : A →ₗc[R] B} (h h₁) :
     ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := by
   rfl
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑(f : A →ₗc[R] B) = f :=
   rfl
+
+lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rfl
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
@@ -300,11 +302,23 @@ theorem mul_apply (φ ψ : A →ₐc[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
 end BialgHom
 
 namespace Bialgebra
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
-variable (R : Type u) (A : Type v)
+variable (R A) in
+/-- The unit of a bialgebra as a `CoalgHom`. -/
+def unitCoalgHom : R →ₗc[R] A where
+  __ := Algebra.ofId R A
+  map_smul' a b := by simp [map_mul, Algebra.smul_def, Algebra.ofId]
+  counit_comp := by ext; simp
+  map_comp_comul := by ext; simp [Algebra.TensorProduct.one_def]
 
-variable [CommSemiring R] [Semiring A] [Bialgebra R A]
+variable (R A) in
+/-- The unit of a bialgebra as a `BialgHom`. -/
+def unitBialgHom : R →ₐc[R] A where
+  __ := Algebra.ofId R A
+  __ := unitCoalgHom R A
 
+variable (R A) in
 /-- The counit of a bialgebra as a `BialgHom`. -/
 noncomputable def counitBialgHom : A →ₐc[R] R :=
   { Coalgebra.counitCoalgHom R A, counitAlgHom R A with }
@@ -316,8 +330,6 @@ theorem counitBialgHom_apply (x : A) :
 @[simp]
 theorem counitBialgHom_toCoalgHom :
     counitBialgHom R A = Coalgebra.counitCoalgHom R A := rfl
-
-variable {R}
 
 instance subsingleton_to_ring : Subsingleton (A →ₐc[R] R) :=
   ⟨fun _ _ => BialgHom.coe_coalgHom_injective (Subsingleton.elim _ _)⟩
