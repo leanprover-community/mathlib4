@@ -99,7 +99,7 @@ Simplifier lemma: Functions with locally finite support within `U` evaluate to z
 @[simp]
 lemma apply_eq_zero_of_not_mem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
     (hz : z ∉ U) :
-    D z = 0 := nmem_support.mp fun a ↦ hz (D.supportWithinDomain a)
+    D z = 0 := not_mem_support.mp fun a ↦ hz (D.supportWithinDomain a)
 
 /--
 On a T1 space, the support of a functions with locally finite support within `U` is discrete.
@@ -165,7 +165,7 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
     constructor
     · intro x hx
       contrapose! hx
-      simp [nmem_support.1 fun a ↦ hx (hf.1 a), nmem_support.1 fun a ↦ hx (hg.1 a)]
+      simp [not_mem_support.1 fun a ↦ hx (hf.1 a), not_mem_support.1 fun a ↦ hx (hg.1 a)]
     · intro z hz
       obtain ⟨t₁, ht₁⟩ := hf.2 z hz
       obtain ⟨t₂, ht₂⟩ := hg.2 z hz
@@ -245,8 +245,8 @@ instance [SemilatticeSup Y] [Zero Y] : Max (locallyFinsuppWithin U Y) where
       intro x
       contrapose
       intro hx
-      simp [nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-        nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
+      simp [not_mem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
+        not_mem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
     supportLocallyFiniteWithinDomain' := by
       intro z hz
       obtain ⟨t₁, ht₁⟩ := D₁.supportLocallyFiniteWithinDomain z hz
@@ -270,8 +270,8 @@ instance [SemilatticeInf Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
       intro x
       contrapose
       intro hx
-      simp [nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-        nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
+      simp [not_mem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
+        not_mem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
     supportLocallyFiniteWithinDomain' := by
       intro z hz
       obtain ⟨t₁, ht₁⟩ := D₁.supportLocallyFiniteWithinDomain z hz

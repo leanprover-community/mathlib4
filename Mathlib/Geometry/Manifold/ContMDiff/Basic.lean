@@ -279,7 +279,7 @@ theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by
   apply contMDiffWithinAt_const.congr_of_eventuallyEq
     (eventually_nhdsWithin_of_eventually_nhds <| not_mem_mulTSupport_iff_eventuallyEq.mp hx)
-    (image_eq_one_of_nmem_mulTSupport hx)
+    (image_eq_one_of_not_mem_mulTSupport hx)
 
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
 @[to_additive contMDiffAt_of_not_mem]
