@@ -55,6 +55,8 @@ worlds.
 
 ## TODO
 
+This file contains much more than definitions.
+
 Rework proofs to hold in semirings, by avoiding the path through
 `ker (Finsupp.linearCombination R v) = ⊥`.
 
