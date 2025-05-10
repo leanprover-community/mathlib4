@@ -57,7 +57,7 @@ attribute [local instance] Abelian.hasFiniteBiproducts
 instance : AB4 AddCommGrp.{u} := AB4.of_AB5 _
 
 instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
-  apply ( config := {allowSynthFailures := true} ) hasExactLimitsOfShape_of_preservesEpi
+  apply (config := { allowSynthFailures := true }) hasExactLimitsOfShape_of_preservesEpi
   exact {
     preserves {X Y} f hf := by
       let iX : limit X ≅ AddCommGrp.of ((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
