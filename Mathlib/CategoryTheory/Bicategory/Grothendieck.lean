@@ -167,7 +167,7 @@ section
 
 variable (F)
 
-/-- TODO -/
+/-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
   hom := { app := fun _ ↦ eqToHom (by aesop_cat) }
   inv := { app := fun _ ↦ eqToHom (by aesop_cat) }
@@ -200,6 +200,7 @@ abbrev mapCompIso_inv (α : F ⟶ G) (β : G ⟶ H) : map α ⋙ map β ⟶ map 
     simp only [comp_obj, Functor.comp_map, eqToHom_refl, comp_id, id_comp]
     ext <;> simp
 
+/-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`  -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β where
   hom := mapCompIso_hom α β
   inv := mapCompIso_inv α β
