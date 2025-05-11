@@ -3,7 +3,6 @@ Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wang, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Tower
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
@@ -57,7 +56,7 @@ theorem induction {motive : SymmetricAlgebra R M → Prop}
     (a : SymmetricAlgebra R M) : motive a := by
   rcases algHom_surjective _ _ a with ⟨a, rfl⟩
   induction a using TensorAlgebra.induction with
-  | algebraMap r => rw [AlgHom.map_algebraMap]; exact algebraMap r
+  | algebraMap r => rw [AlgHom.commutes]; exact algebraMap r
   | ι x => exact ι x
   | mul x y hx hy => rw [map_mul]; exact mul _ _ hx hy
   | add x y hx hy => rw [map_add]; exact add _ _ hx hy
