@@ -230,20 +230,6 @@ instance : Frame (range n) := .ofMinimalAxioms range.instFrameMinimalAxioms
 the range to the original frame. -/
 def giRestrict (n : Nucleus X) : GaloisInsertion n.restrict Subtype.val := n.giAux
 
-lemma range_coe_preserves_inf (x y : range n) : (x ⊓ y).val = ↑x ⊓ ↑y := by
-  rcases x with ⟨x, ⟨a, h1⟩⟩
-  rcases y with ⟨y, ⟨b, h2⟩⟩
-  subst h1
-  subst h2
-  simp [n.giAux.gc.u_inf]
-
-def sublocale_to_Nucleus (S : Set X) [Order.Frame S] (f : InfHom X S)
-      (gc : GaloisConnection f Subtype.val) (h : ∀ x y : S, (x ⊓ y).val = ↑x ⊓ ↑y) : Nucleus X where
-  toFun x := f x
-  map_inf' x y := by simp [h]
-  le_apply' x := GaloisConnection.le_u_l gc x
-  idempotent' x := by apply gc.l_u_le
-
 lemma factorizes_iff_le : n ∘ m = m ↔ n ≤ m where
   mpr h := by
     ext x
@@ -259,15 +245,71 @@ lemma range_subset_iff : range m ⊆ range n ↔ n ≤ m  where
     exact n.monotone (m.le_apply)
   mpr h := range_subset_range_iff_exists_comp.mpr (Exists.intro ↑m ((factorizes_iff_le.mpr) h).symm)
 
-abbrev Sublocale (X : Type*) [SemilatticeInf X] := (Nucleus X)ᵒᵈ
+def HimpClosed (s : Set X) : Prop := ∀ a b, b ∈ s → a ⇨ b ∈ s
 
-instance : FunLike (Sublocale X) X X where
-  coe x := x.toFun
-  coe_injective' := by
-    simp [Function.Injective]
+structure Sublocale (X : Type*) [Order.Frame X] where
+  carrier : Set X
+  infClosed' : InfClosed carrier
+  HimpClosed' : HimpClosed carrier
 
-def sublocale_range_iso : OrderIso (Sublocale X) (CompleteSublattice X) where
-  toFun x := range x
+instance : SetLike (Sublocale X) X where
+  coe x := x.carrier
+  coe_injective' s1 s2 h := by cases s1; congr
+
+variable (s : Sublocale X)
+
+lemma Sublocale.inf_mem (a b : X) (h1 : a ∈ s) (h2 : b ∈ s) : a ⊓ b ∈ s := s.infClosed' h1 h2
+
+instance instInfCoe : Min s where
+  min x y := ⟨x.val ⊓ y.val, Sublocale.inf_mem s ↑x ↑y (SetLike.coe_mem x) (SetLike.coe_mem y)⟩
+
+instance instSemilatticeInf : SemilatticeInf s where
+  inf x y := x ⊓ y
+  inf_le_left _ _ := inf_le_left
+  inf_le_right _ _ := inf_le_right
+  le_inf _ _ _ h1 h2 := le_inf h1 h2
+
+
+-- TODO instance  : CompleteLattice s
+
+-- TODO instance : Order.Frame s
+def Sublocale.toNucleus (s : Sublocale X) : Nucleus X where
+
+
+structure Sublocale' (X : Type*) [Order.Frame X] where
+  carrier : Set X
+  frm : Order.Frame carrier
+  l : @InfHom  X ↑carrier _ (frm.toMin)
+  gc : @GaloisConnection _ _ _ (frm.toPreorder) l Subtype.val
+
+instance {s : Sublocale X} : Order.Frame s.carrier := s.frm
+
+def Sublocale.toNucleus (s : Sublocale X) : Nucleus X where
+  toFun x := Subtype.val (s.l x)
+  map_inf' x y := by
+    rw [InfHomClass.map_inf]
+
+    let test := @GaloisConnection.u_inf X s.carrier (s.l x) (s.l y) _ _ s.l Subtype.val s.gc
+    let test2 := s.gc
+
+    sorry
+
+  le_apply' x := GaloisConnection.le_u_l s.gc x
+  idempotent' x := s.gc.monotone_u (s.gc.l_u_le _)
+
+def sublocale_to_Nucleus (S : Type*) [Order.Frame S] {l : InfHom X S} {u : S → X}
+      (gc : GaloisConnection l u) : Nucleus X where
+  toFun x := u (l x)
+  map_inf' x y := by
+    rw [InfHomClass.map_inf]
+    exact GaloisConnection.u_inf gc
+  le_apply' x := GaloisConnection.le_u_l gc x
+  idempotent' x := gc.monotone_u (gc.l_u_le _)
+
+lemma Nucleus_equiv_sublocale (n : Nucleus X) :
+    n = sublocale_to_Nucleus (range n) (n.giRestrict.gc) := by
+  ext x
+  simp [sublocale_to_Nucleus]
 
 end Frame
 end Nucleus
