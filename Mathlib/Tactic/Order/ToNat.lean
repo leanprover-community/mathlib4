@@ -73,6 +73,7 @@ theorem exists_translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n 
 
 /-- Auxiliary definition used by the `order` tactic to
 transfer facts in a linear order to `Nat`. -/
+@[irreducible]
 noncomputable def translation {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α)
     (k : Fin n) : ℕ :=
   (exists_translation val).choose k

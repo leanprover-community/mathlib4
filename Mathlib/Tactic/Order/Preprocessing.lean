@@ -32,10 +32,29 @@ lemma le_of_not_lt_le {α : Type u} [Preorder α] {x y : α} (h1 : ¬(x < y)) (h
 
 end Lemmas
 
+/-- Replaces facts of the form `x = ⊤` with `y ≤ x` for all `y`, and similarly for `x = ⊥`. -/
+def replaceBotTop (facts : Array AtomicFact) (idxToAtom : Std.HashMap Nat Expr) :
+    MetaM <| Array AtomicFact := do
+  let mut res : Array AtomicFact := #[]
+  let nAtoms := idxToAtom.size
+  for fact in facts do
+    match fact with
+    | .isBot idx =>
+      for i in [:nAtoms] do
+        if i != idx then
+          res := res.push <| .le idx i  (← mkAppOptM ``bot_le #[none, none, none, idxToAtom.get! i])
+    | .isTop idx =>
+      for i in [:nAtoms] do
+        if i != idx then
+          res := res.push <| .le i idx  (← mkAppOptM ``le_top #[none, none, none, idxToAtom.get! i])
+    | _ =>
+      res := res.push fact
+  return res
+
 /-- Preprocesses facts for preorders. Replaces `x < y` with two equivalent facts: `x ≤ y` and
 `¬ (y ≤ x)`. Replaces `x = y` with `x ≤ y`, `y ≤ x` and removes `x ≠ y`. -/
-def preprocessFactsPreorder (g : MVarId) (facts : Array AtomicFact) :
-    MetaM <| Array AtomicFact := g.withContext do
+def preprocessFactsPreorder (facts : Array AtomicFact) :
+    MetaM <| Array AtomicFact := do
   let mut res : Array AtomicFact := #[]
   for fact in facts do
     match fact with
@@ -54,8 +73,8 @@ def preprocessFactsPreorder (g : MVarId) (facts : Array AtomicFact) :
 /-- Preprocesses facts for partial orders. Replaces `x < y`, `¬ (x ≤ y)`, and `x = y` with
 equivalent facts involving only `≤`, `≠`, and `≮`. For each fact `x = y ⊔ z` adds `y ≤ x`
 and `z ≤ x` facts, and similarly for `⊓`. -/
-def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact)
-    (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := g.withContext do
+def preprocessFactsPartial (facts : Array AtomicFact)
+    (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := do
   let mut res : Array AtomicFact := #[]
   for fact in facts do
     match fact with
@@ -87,8 +106,8 @@ def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact)
 /-- Preprocesses facts for linear orders. Replaces `x < y`, `¬ (x ≤ y)`, `¬ (x < y)`, and `x = y`
 with equivalent facts involving only `≤` and `≠`. For each fact `x = y ⊔ z` adds `y ≤ x`
 and `z ≤ x` facts, and similarly for `⊓`. -/
-def preprocessFactsLinear (g : MVarId) (facts : Array AtomicFact)
-    (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := g.withContext do
+def preprocessFactsLinear (facts : Array AtomicFact)
+    (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := do
   let mut res : Array AtomicFact := #[]
   for fact in facts do
     match fact with

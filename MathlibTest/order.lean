@@ -166,12 +166,6 @@ example {α : Type*} [LinearOrder α] {a b c : α} (hab : a < b)
 example {α : Type*} [LinearOrder α] {a b : α} (h : a ≠ max a b) : b = max a b := by
   order
 
-example {α : Type*} [LinearOrder α] {a b : α} (h1 : a ≠ b) : min a b < max a b := by
-  order
-
-example {α : Type*} [LinearOrder α] {a b : α} (h1 : a ≠ b) : min a b < max a b := by
-  order
-
 example {α : Type*} [LinearOrder α] {a b : α} (h1 : min a b ≠ a) (h2 : max a b ≠ a) : False := by
   order
 
@@ -179,7 +173,14 @@ example {α : Type*} [LinearOrder α] {a b : α} (h1 : min a b ≠ a) (h2 : max 
 example {α : Type*} [LinearOrder α] {a b c : α} : max a (min b c) = min (max a b) (max a c) := by
   order
 
-example {α : Type*} [LinearOrder α] {a b c d e : α} (h : max (max a b) (max c d) < min a e) : d < e := by
+example {α : Type*} [LinearOrder α] [BoundedOrder α] {a b : α} (h1 : a ⊔ b = ⊤)
+    (h2 : b ≠ ⊤) : a = ⊤ := by
+  order
+
+example {α : Type*} [LinearOrder α] [BoundedOrder α] [Nontrivial α] {a b c d : α} (h1 : a ⊓ b = ⊥)
+    (h2 : c ⊓ d = ⊥) (h3 : a ⊔ c = ⊤) (h4 : b ⊔ d = ⊤) (h5 : a ⊔ d = ⊤) (h6 : b ⊔ c = ⊤) : False := by
+  have : (⊥ : α) < ⊤ := bot_lt_top -- TODO: detect `Nontrivial` instance in `order` and add this
+  -- fact automatically
   order
 
 example
@@ -223,6 +224,8 @@ example {α : Type*} [LinearOrder α]
 --     (c8 : x₀ ⊔ y₀ ⊔ z₀ ≥ t)
 --     : False := by
 --   omega
+
+-- set_option trace.profiler true
 
 -- #count_heartbeats in
 -- example {α : Type*} [LinearOrder α]

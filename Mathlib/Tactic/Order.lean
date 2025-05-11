@@ -240,18 +240,19 @@ elab "order" : tactic => focus do
   g.withContext do
   for (type, (idxToAtom, facts)) in TypeToAtoms do
     let .some orderType ← findBestOrderInstance type | continue
-    let facts : Array AtomicFact ← match orderType with
-    | .pre => preprocessFactsPreorder g facts
-    | .part => preprocessFactsPartial g facts idxToAtom
-    | .lin => preprocessFactsLinear g facts idxToAtom
-    let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
-    graph ← updateGraphWithNltInfSup graph idxToAtom facts
+    let facts ← replaceBotTop facts idxToAtom
+    let processedFacts : Array AtomicFact ← match orderType with
+    | .pre => preprocessFactsPreorder facts
+    | .part => preprocessFactsPartial facts idxToAtom
+    | .lin => preprocessFactsLinear facts idxToAtom
+    let mut graph ← Graph.constructLeGraph idxToAtom.size processedFacts
+    graph ← updateGraphWithNltInfSup graph idxToAtom processedFacts
     if orderType == .pre then
-      if let .some pf ← findContradictionWithNle graph idxToAtom facts then
+      if let .some pf ← findContradictionWithNle graph idxToAtom processedFacts then
         g.assign pf
         return
     else
-      if let .some pf ← findContradictionWithNe graph idxToAtom facts then
+      if let .some pf ← findContradictionWithNe graph idxToAtom processedFacts then
         g.assign pf
         return
     -- if fast procedure failed and order is linear, we try `omega`
