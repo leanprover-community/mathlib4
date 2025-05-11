@@ -829,33 +829,35 @@ lemma mk₅_surjective (X : ComposableArrows C 5) :
 def arrow (i : ℕ) (hi : i < n := by valid) :
     ComposableArrows C 1 := mk₁ (F.map' i (i + 1))
 
-section mkOfObjOfMapSucc
-
-variable (obj : Fin (n + 1) → C) (mapSucc : ∀ (i : Fin n), obj i.castSucc ⟶ obj i.succ)
-
-lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj i ≅ obj i),
+/-- Given `obj : Fin (n + 1) → C` and `mapSucc i : obj i.castSucc ⟶ obj i.succ`
+for all `i : Fin n`, this gives `F : ComposableArrows C n` such that `F.obj i` is
+definitionally equal to `obj i` and such that `F.map' i (i + 1) = mapSucc ⟨i, hi⟩`. -/
+def mkOfObjOfMapSuccSpec {n}
+    (obj : Fin (n + 1) → C) (mapSucc : ∀ (i : Fin n), obj i.castSucc ⟶ obj i.succ) :
+    (F : ComposableArrows C n) ×' (e : ∀ i, F.obj i ≅ obj i) ×'
     ∀ (i : ℕ) (hi : i < n), mapSucc ⟨i, hi⟩ =
-      (e ⟨i, _⟩).inv ≫ F.map' i (i + 1) ≫ (e ⟨i + 1, _⟩).hom := by
-  revert obj mapSucc
-  induction' n with n hn
-  · intro obj _
-    exact ⟨mk₀ (obj 0), fun 0 => Iso.refl _, fun i hi => by simp at hi⟩
-  · intro obj mapSucc
-    obtain ⟨F, e, h⟩ := hn (fun i => obj i.succ) (fun i => mapSucc i.succ)
-    refine ⟨F.precomp (mapSucc 0 ≫ (e 0).inv), fun i => match i with
+      (e ⟨i, _⟩).inv ≫ F.map' i (i + 1) ≫ (e ⟨i + 1, _⟩).hom :=
+  match n with
+  | 0 => ⟨.mk₀ (obj 0), fun 0 => Iso.refl _, fun i hi => by simp at hi⟩
+  | n + 1 =>
+    let hn := mkOfObjOfMapSuccSpec (fun i => obj i.succ) (fun i => mapSucc i.succ)
+    ⟨hn.fst.precomp (mapSucc 0 ≫ (hn.snd.fst 0).inv), fun i => match i with
       | 0 => Iso.refl _
-      | ⟨i + 1, hi⟩ => e _, fun i hi => ?_⟩
-    obtain _ | i := i
-    · simp only [← Fin.mk_zero]
-      simp
-    · exact h i (by valid)
+      | ⟨i + 1, hi⟩ => hn.snd.fst _, fun i hi => by
+      obtain _ | i := i
+      · simp only [← Fin.mk_zero]
+        simp
+      · exact hn.snd.snd i (by valid)⟩
+
+section mkOfObjOfMapSucc
+variable (obj : Fin (n + 1) → C) (mapSucc : ∀ (i : Fin n), obj i.castSucc ⟶ obj i.succ)
 
 /-- Given `obj : Fin (n + 1) → C` and `mapSucc i : obj i.castSucc ⟶ obj i.succ`
 for all `i : Fin n`, this is `F : ComposableArrows C n` such that `F.obj i` is
 definitionally equal to `obj i` and such that `F.map' i (i + 1) = mapSucc ⟨i, hi⟩`. -/
-noncomputable def mkOfObjOfMapSucc : ComposableArrows C n :=
-  (mkOfObjOfMapSucc_exists obj mapSucc).choose.copyObj obj
-    (mkOfObjOfMapSucc_exists obj mapSucc).choose_spec.choose
+def mkOfObjOfMapSucc : ComposableArrows C n :=
+  (mkOfObjOfMapSuccSpec obj mapSucc).fst.copyObj obj
+    (mkOfObjOfMapSuccSpec obj mapSucc).snd.fst
 
 @[simp]
 lemma mkOfObjOfMapSucc_obj (i : Fin (n + 1)) :
@@ -863,7 +865,7 @@ lemma mkOfObjOfMapSucc_obj (i : Fin (n + 1)) :
 
 lemma mkOfObjOfMapSucc_map_succ (i : ℕ) (hi : i < n := by valid) :
     (mkOfObjOfMapSucc obj mapSucc).map' i (i + 1) = mapSucc ⟨i, hi⟩ :=
-  ((mkOfObjOfMapSucc_exists obj mapSucc).choose_spec.choose_spec i hi).symm
+  ((mkOfObjOfMapSuccSpec obj mapSucc).snd.snd i hi).symm
 
 lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by valid) :
     (mkOfObjOfMapSucc obj mapSucc).arrow i = mk₁ (mapSucc ⟨i, hi⟩) :=

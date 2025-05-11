@@ -476,7 +476,7 @@ variable (C : Type u) [Category.{v} C]
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine.
 Indeed, this property describes the essential image of the nerve functor. -/
-noncomputable def strictSegal : StrictSegal (nerve C) where
+def strictSegal : StrictSegal (nerve C) where
   spineToSimplex {n} F :=
     ComposableArrows.mkOfObjOfMapSucc (fun i ↦ (F.vertex i).obj 0)
       (fun i ↦ eqToHom (Functor.congr_obj (F.arrow_src i).symm 0) ≫
@@ -503,7 +503,7 @@ instance isStrictSegal : IsStrictSegal (nerve C) :=
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine.
 Indeed, this property describes the essential image of the nerve functor. -/
-noncomputable def strictSegal₂ : Truncated.StrictSegal ((truncation 2).obj (nerve C)) :=
+def strictSegal₂ : Truncated.StrictSegal ((truncation 2).obj (nerve C)) :=
   (strictSegal C).truncation 1
 
 instance isStrictSegal₂ : Truncated.IsStrictSegal ((truncation 2).obj (nerve C)) :=

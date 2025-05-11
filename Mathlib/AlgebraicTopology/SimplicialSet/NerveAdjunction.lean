@@ -257,6 +257,22 @@ def toStrictSegal₂.mk : X ⟶ Y where
   app := fun n => toStrictSegal₂.mk.app sy F n.unop
   naturality _ _ α := MorphismProperty.of_eq_top (toStrictSegal₂.mk_naturality sy F hyp) α.unop
 
+/-- A computation about `toStrictSegal₂.mk`. -/
+theorem oneTruncation₂_toStrictSegal₂Mk :
+    oneTruncation₂.map (toStrictSegal₂.mk sy F hyp) = F := by
+  refine ReflPrefunctor.ext (fun _ ↦ rfl) (fun _ _ f ↦ ?_)
+  · dsimp
+    unfold oneTruncation₂
+    dsimp
+    ext
+    simp
+
+    sorry
+  -- refine ReflPrefunctor.ext (fun _ ↦ ComposableArrows.ext₀ rfl)
+  --   (fun X Y g ↦ eq_of_heq (heq_eqRec_iff_heq.2 <| heq_eqRec_iff_heq.2 ?_))
+  -- simp [oneTruncation₂]
+  -- refine Quiver.heq_of_homOfEq_ext ?_ ?_ (f' := F.map g) ?_
+
 end
 
 /-- An equality between maps into the 2-truncated nerve is detected by an equality between their
@@ -473,7 +489,7 @@ def toNerve₂.mk : X ⟶ nerveFunctor₂.obj (Cat.of C) where
 /-- The morphism `X ⟶ nerveFunctor₂.obj (Cat.of C)` of 2-truncated simplicial sets that is
 constructed from a refl prefunctor `F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C` assuming
 `∀ (φ : : X _⦋2⦌₂), F.map (ev02₂ φ) = F.map (ev01₂ φ) ≫ F.map (ev12₂ φ)`. -/
-@[simps!] noncomputable def toNerve₂.mk'''' : X ⟶ nerveFunctor₂.obj (Cat.of C) := by
+@[simps!] def toNerve₂.mkALT : X ⟶ nerveFunctor₂.obj (Cat.of C) := by
   refine toStrictSegal₂.mk (Nerve.strictSegal₂ C)
     (F ⋙rq (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).inv) ?_
   intro φ
@@ -549,6 +565,16 @@ hypothesis, where that prefunctor the central hypothesis is conjugated by the is
 @[simps!] def toNerve₂.mk' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
   toNerve₂.mk (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
 
+@[simps!] def toNerve₂.mkALT' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
+  toNerve₂.mkALT (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
+
+/-- A computation about `toNerve₂.mk'`. -/
+theorem oneTruncation₂_toNerve₂MkALT : oneTruncation₂.map (toNerve₂.mkALT' F hyp) = F := by
+  unfold toNerve₂.mkALT'
+  unfold toNerve₂.mkALT
+  rw [oneTruncation₂_toStrictSegal₂Mk, ← ReflQuiv.comp_eq_comp]
+  simp
+
 /-- A computation about `toNerve₂.mk'`. -/
 theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F hyp) = F := by
   refine ReflPrefunctor.ext (fun _ ↦ ComposableArrows.ext₀ rfl)
@@ -594,7 +620,7 @@ theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
 
 /-- An equality between maps into the 2-truncated nerve is detected by an equality between their
 underlying refl prefunctors. -/
-theorem toNerve₂.ext' (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
+theorem toNerve₂.extALT (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
     (hyp : SSet.oneTruncation₂.map F = SSet.oneTruncation₂.map G) : F = G := by
   unfold nerveFunctor₂ at F G
   dsimp at F G
@@ -666,7 +692,7 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
       apply Adjunction.left_triangle_components_assoc
     right_triangle := by
       refine NatTrans.ext (funext fun C ↦ ?_)
-      apply toNerve₂.ext
+      apply toNerve₂.extALT
       dsimp
       simp only [id_comp, map_comp, oneTruncation₂_obj, map_id]
       rw [nerve₂Adj.unit.map_app_eq, ReflPrefunctor.comp_assoc]
@@ -753,7 +779,7 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
         apply ComposableArrows.ext₀; rfl
     let fF : X ⥤ Y := ReflPrefunctor.toFunctor uF' this
     have eq : fF.toReflPrefunctor = uF' := rfl
-    refine ⟨fF, toNerve₂.ext (nerveFunctor₂.{u,u}.map fF) F ?_⟩
+    refine ⟨fF, toNerve₂.extALT (nerveFunctor₂.{u,u}.map fF) F ?_⟩
     · have nat := OneTruncation₂.ofNerve₂.natIso.hom.naturality fF
       simp at nat
       rw [eq] at nat
