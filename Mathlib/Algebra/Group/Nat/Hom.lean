@@ -3,10 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.TypeTags.Hom
+import Mathlib.Algebra.Group.ULift
 
 /-!
 # Extensionality of monoid homs from `ℕ`
@@ -16,7 +17,8 @@ assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Additive Multiplicative
 
-variable {M M : Type*}
+universe u
+variable {M : Type*}
 
 section AddMonoidHomClass
 
@@ -50,6 +52,10 @@ def multiplesHom : M ≃ (ℕ →+ M) where
   left_inv := one_nsmul
   right_inv f := AddMonoidHom.ext_nat <| one_nsmul (f 1)
 
+/-- Monoid homomorphisms from `ULift ℕ` are defined by the image of `1`. -/
+def uliftMultiplesHom (M : Type u) [AddMonoid M] : M ≃ (ULift.{u} ℕ →+ M) :=
+  (multiplesHom _).trans <| AddMonoidHom.precompEquiv .ulift _
+
 @[simp] lemma multiplesHom_apply (x : M) (n : ℕ) : multiplesHom M x n = n • x := rfl
 
 lemma multiplesHom_symm_apply (f : ℕ →+ M) : (multiplesHom M).symm f = f 1 := rfl
@@ -68,6 +74,12 @@ of `Multiplicative.ofAdd 1`. -/
 @[to_additive existing]
 def powersHom : M ≃ (Multiplicative ℕ →* M) :=
   Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+
+/-- Monoid homomorphisms from `ULift (Multiplicative ℕ)` are defined by the image
+of `Multiplicative.ofAdd 1`. -/
+@[to_additive existing (attr := simps!)]
+def uliftPowersHom (M : Type u) [Monoid M] : M ≃ (ULift.{u} (Multiplicative ℕ) →* M) :=
+  (powersHom _).trans <| MonoidHom.precompEquiv .ulift _
 
 @[to_additive existing (attr := simp)]
 lemma powersHom_apply (x : M) (n : Multiplicative ℕ) :
