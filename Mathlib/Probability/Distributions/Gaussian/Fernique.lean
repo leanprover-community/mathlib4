@@ -88,6 +88,22 @@ lemma two_mul_mul_le_mul_add_div {a b ε : ℝ} (hε : 0 < ε) :
   _ ≤ ((ε * a) ^ 2 + b ^ 2) / ε := by gcongr
   _ = ε * a ^ 2 + (1 / ε) * b ^ 2  := by field_simp; ring
 
+-- todo: replace `Measurable f`
+@[to_additive]
+lemma integrable_mconv_iff {M F : Type*} [Monoid M] {mM : MeasurableSpace M} [MeasurableMul₂ M]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [SecondCountableTopology F]
+    {_ : MeasurableSpace F} [OpensMeasurableSpace F]
+    {μ ν : Measure M} [SFinite μ] [SFinite ν] {f : M → F} (hf : Measurable f) :
+    Integrable f (μ ∗ ν)
+      ↔ (∀ᵐ x ∂μ, Integrable (fun y ↦ f (x * y)) ν)
+        ∧ Integrable (fun x ↦ ∫ y, ‖f (x * y)‖ ∂ν) μ := by
+  unfold Measure.mconv
+  rw [integrable_map_measure, integrable_prod_iff]
+  · simp
+  · exact Measurable.aestronglyMeasurable <| by fun_prop
+  · fun_prop
+  · fun_prop
+
 end Aux
 
 namespace ProbabilityTheory
@@ -151,6 +167,14 @@ lemma IsGaussian.measure_le_mul_measure_gt_le (hμ : IsCentered μ) (a b : ℝ) 
   _ = (μ.prod μ) ({x | (b - a) / √2 < ‖x‖} ×ˢ {y | (b - a) / √2 < ‖y‖}) := rfl
   _ ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 := by rw [Measure.prod_prod, pow_two]
 
+lemma Nat.le_two_pow (n : ℕ) : n ≤ 2 ^ n := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [pow_succ, mul_two]
+    gcongr
+    exact Nat.one_le_two_pow
+
 lemma aux {c : ℝ} (hc : c < 0) :
     ∑' i, .ofReal (rexp (c * 2 ^ i)) < ∞ := by
   calc ∑' i, .ofReal (rexp (c * 2 ^ i))
@@ -160,14 +184,7 @@ lemma aux {c : ℝ} (hc : c < 0) :
     refine ENNReal.ofReal_le_ofReal ?_
     refine Real.exp_monotone ?_
     refine mul_le_mul_of_nonpos_left ?_ hc.le
-    norm_cast
-    -- `⊢ i ≤ 2 ^ i`
-    induction i with
-    | zero => simp
-    | succ n hn =>
-      rw [pow_succ, mul_two]
-      gcongr
-      exact Nat.one_le_two_pow
+    exact mod_cast Nat.le_two_pow i
   _ < ∞ := by
     have h_sum : Summable fun i : ℕ ↦ rexp (i * c) := Real.summable_exp_nat_mul_iff.mpr hc
     rw [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
@@ -491,14 +508,7 @@ theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
   obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq_of_isCentered
     (isCentered_conv_map_neg (μ := μ))
   have h_int : ∀ᵐ y ∂μ, Integrable (fun x ↦ rexp (C * ‖x - y‖^2)) μ := by
-    -- todo: extract lemma about integrability wrt conv
-    unfold Measure.conv at hC
-    rw [integrable_map_measure] at hC
-    rotate_left
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
-    · fun_prop
-    rw [integrable_prod_iff] at hC
-    swap; · exact Measurable.aestronglyMeasurable <| by fun_prop
+    rw [integrable_conv_iff (by fun_prop)] at hC
     replace hC := hC.1
     simp only [Function.comp_apply, ContinuousLinearEquiv.coe_neg] at hC
     filter_upwards [hC] with y hy
@@ -526,17 +536,16 @@ theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
   intro x
   rw [← Real.exp_add]
   gcongr
-  have h_le ε' (hε' : 0 < ε') : ‖x‖ ^ 2 ≤ (1 + ε') * ‖x - y‖ ^ 2 + (1 + 1 / ε') * ‖y‖ ^ 2 := by
+  have h_le : ‖x‖ ^ 2 ≤ (1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2 := by
     calc ‖x‖ ^ 2
     _ = ‖x - y + y‖ ^ 2 := by simp
     _ ≤ (‖x - y‖  + ‖y‖) ^ 2 := by gcongr; exact norm_add_le (x - y) y
     _ = ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + 2 * ‖x - y‖ * ‖y‖ := by ring
-    _ ≤ ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + ε' * ‖x - y‖ ^ 2 + (1 / ε') * ‖y‖ ^ 2 := by
+    _ ≤ ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + ε * ‖x - y‖ ^ 2 + (1 / ε) * ‖y‖ ^ 2 := by
       simp_rw [add_assoc]
       gcongr
       exact two_mul_mul_le_mul_add_div (by positivity)
-    _ = (1 + ε') * ‖x - y‖ ^ 2 + (1 + 1 / ε') * ‖y‖ ^ 2 := by ring
-  specialize h_le ε hε
+    _ = (1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2 := by ring
   calc C' * ‖x‖ ^ 2
   _ ≤ C' * ((1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2) := by gcongr
   _ = (C' * (1 + 1 / ε)) * ‖y‖ ^ 2 + (C' * (1 + ε)) * ‖x - y‖ ^ 2 := by ring
@@ -550,6 +559,12 @@ theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
     · rw [one_add_div (by positivity)]
       simp only [add_sub_cancel]
       rw [mul_div_cancel₀ _ (by positivity)]
+
+end Fernique
+
+section Mean
+
+variable [CompleteSpace E] [SecondCountableTopology E]
 
 /-- A Gaussian measure has moments of all orders.
 That is, the identity is in Lp for all finite `p`. -/
@@ -575,12 +590,6 @@ lemma IsGaussian.memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp 
     rw [IsOpen.subset_interior_iff isOpen_Ioo]
     exact fun x hx ↦ integrable_exp_mul_of_le_of_le hC_neg hC hx.1.le hx.2.le
   exact h_subset ⟨by simp [hC_pos], hC_pos⟩
-
-end Fernique
-
-section Mean
-
-variable [CompleteSpace E] [SecondCountableTopology E]
 
 lemma IsGaussian.integral_continuousLinearMap (L : E →L[ℝ] ℝ) : μ[L] = L (∫ x, x ∂μ) :=
   L.integral_comm_of_memLp_id (IsGaussian.memLp_id μ 1 (by simp))
