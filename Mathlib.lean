@@ -576,11 +576,10 @@ import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.HomotopyFiber
 import Mathlib.Algebra.Homology.ImageToKernel
-import Mathlib.Algebra.Homology.LeftResolution.Basic
-import Mathlib.Algebra.Homology.LeftResolution.DerivabilityStructure
 import Mathlib.Algebra.Homology.LeftResolutions.Basic
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplex
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplexMinus
+import Mathlib.Algebra.Homology.LeftResolutions.DerivabilityStructure
 import Mathlib.Algebra.Homology.LeftResolutions.Reduced
 import Mathlib.Algebra.Homology.LeftResolutions.Transport
 import Mathlib.Algebra.Homology.Linear
