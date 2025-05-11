@@ -565,6 +565,10 @@ hypothesis, where that prefunctor the central hypothesis is conjugated by the is
 @[simps!] def toNerve₂.mk' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
   toNerve₂.mk (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
 
+/-- An alternate version of `toNerve₂.mk`, which constructs a map of 2-truncated simplicial sets
+`X ⟶ nerveFunctor₂.obj (Cat.of C)` from the underlying refl prefunctor under a composition
+hypothesis, where that prefunctor the central hypothesis is conjugated by the isomorphism
+`nerve₂Adj.NatIso.app C`. The `ALT` pathway includes the new infrastructure above. -/
 @[simps!] def toNerve₂.mkALT' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
   toNerve₂.mkALT (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
 
