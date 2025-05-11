@@ -17,9 +17,9 @@ variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] [BraidedCategory
 variable (X) in
 /-- If `X` represents a presheaf of commutative monoids, then `X` is a commutative monoid object. -/
 lemma IsCommMon.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ forget _).RepresentableBy X) :
-    letI := Mon_Class.ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
+    letI : Mon_Class X := .ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
     IsCommMon X := by
-  letI : Mon_Class X := Mon_Class.ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
+  letI : Mon_Class X := .ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
   have : μ = α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) := rfl
   constructor
   simp_rw [this, ← α.homEquiv.apply_eq_iff_eq, α.homEquiv_comp, Functor.comp_map,

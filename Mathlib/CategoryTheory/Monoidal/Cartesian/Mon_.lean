@@ -44,6 +44,7 @@ end Mon_
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
+@[simps]
 def Mon_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     Mon_Class X where
   one := α.homEquiv.symm 1
@@ -130,7 +131,7 @@ variable (X) in
 /-- If `X` represents a presheaf of monoids `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of monoids. -/
 @[simps!]
-def yonedaMonObjEquivOfRepresentableBy
+def yonedaMonObjIsoOfRepresentableBy
     (F : Cᵒᵖ ⥤ MonCat.{v}) (α : (F ⋙ forget _).RepresentableBy X) :
     letI := Mon_Class.ofRepresentableBy X F α
     yonedaMonObj X ≅ F :=
@@ -152,12 +153,8 @@ def yonedaMon : Mon_ C ⥤ Cᵒᵖ ⥤ MonCat.{v} where
   map {M N} ψ :=
   { app Y := MonCat.ofHom
       { toFun := (· ≫ ψ.hom)
-        map_one' := by
-          show (toUnit _ ≫ M.one) ≫ ψ.hom = toUnit _ ≫ N.one
-          rw [Category.assoc, ψ.one_hom]
-        map_mul' φ₁ φ₂ := by
-          show (lift _ _ ≫ M.mul) ≫ _ = lift (_ ≫ _) (_ ≫ _) ≫ N.mul
-          rw [Category.assoc, ψ.mul_hom, lift_map_assoc] }
+        map_one' := by simp [Hom.one_def, Hom.one_def]
+        map_mul' φ₁ φ₂ := by simp [Hom.mul_def] }
     naturality {M N} φ := MonCat.hom_ext <| MonoidHom.ext fun f ↦ Category.assoc φ.unop f ψ.hom }
   map_id M := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| MonoidHom.ext Category.comp_id
   map_comp _ _ :=
@@ -217,7 +214,7 @@ lemma essImage_yonedaMon :
     exact ⟨M.X, ⟨Functor.representableByEquiv.symm (isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
     letI := Mon_Class.ofRepresentableBy X F e
-    exact ⟨.mk' X, ⟨yonedaMonObjEquivOfRepresentableBy X F e⟩⟩
+    exact ⟨.mk' X, ⟨yonedaMonObjIsoOfRepresentableBy X F e⟩⟩
 
 @[reassoc]
 lemma Mon_Class.one_comp (f : M ⟶ N) [IsMon_Hom f] : (1 : X ⟶ M) ≫ f = 1 := by simp [Hom.one_def]

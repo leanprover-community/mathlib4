@@ -73,21 +73,21 @@ def yonedaGrpObjRepresentableBy : (yonedaGrpObj G ⋙ forget _).RepresentableBy 
 
 variable (G) in
 lemma Grp_Class.ofRepresentableBy_yonedaGrpObjRepresentableBy :
-    ofRepresentableBy G _ (yonedaGrpObjRepresentableBy G) = ‹_› := by
+    ofRepresentableBy G _ (yonedaGrpObjRepresentableBy G) = ‹Grp_Class G› := by
   ext; show lift (fst G G) (snd G G) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
 
 variable (X) in
 /-- If `X` represents a presheaf of groups `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of groups. -/
 @[simps! hom inv]
-def yonedaGrpObjEquivOfRepresentableBy (F : Cᵒᵖ ⥤ Grp.{v}) (α : (F ⋙ forget _).RepresentableBy X) :
+def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ Grp.{v}) (α : (F ⋙ forget _).RepresentableBy X) :
     letI := Grp_Class.ofRepresentableBy X F α
     yonedaGrpObj X ≅ F :=
   letI := Grp_Class.ofRepresentableBy X F α
   NatIso.ofComponents (fun Y ↦ MulEquiv.toGrpIso
     { toEquiv := α.homEquiv
       map_mul' :=
-  ((yonedaMonObjEquivOfRepresentableBy X (F ⋙ forget₂ Grp MonCat) α).hom.app Y).hom.map_mul})
+  ((yonedaMonObjIsoOfRepresentableBy X (F ⋙ forget₂ Grp MonCat) α).hom.app Y).hom.map_mul})
       fun φ ↦ Grp.hom_ext <| MonoidHom.ext <| α.homEquiv_comp φ.unop
 
 /-- The yoneda embedding of `Grp_C` into presheaves of groups. -/
@@ -120,7 +120,7 @@ lemma essImage_yonedaGrp :
     exact ⟨G.X, ⟨Functor.representableByEquiv.symm (isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
     letI := Grp_Class.ofRepresentableBy X F e
-    exact ⟨.mk' X, ⟨yonedaGrpObjEquivOfRepresentableBy X F e⟩⟩
+    exact ⟨.mk' X, ⟨yonedaGrpObjIsoOfRepresentableBy X F e⟩⟩
 
 @[reassoc]
 lemma Grp_Class.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)⁻¹ :=
