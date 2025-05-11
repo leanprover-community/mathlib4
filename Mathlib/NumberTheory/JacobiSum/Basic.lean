@@ -68,7 +68,7 @@ variable {F R : Type*} [CommRing F] [Nontrivial F] [Fintype F] [DecidableEq F] [
 can be written as a sum over `F \ {0,1}`. -/
 lemma jacobiSum_eq_sum_sdiff (χ ψ : MulChar F R) :
     jacobiSum χ ψ = ∑ x ∈ univ \ {0,1}, χ x * ψ (1 - x) := by
-  simp only [jacobiSum, subset_univ, sum_sdiff_eq_sub, sub_eq_add_neg, self_eq_add_right,
+  simp only [jacobiSum, subset_univ, sum_sdiff_eq_sub, sub_eq_add_neg, left_eq_add,
     neg_eq_zero]
   apply sum_eq_zero
   simp only [mem_insert, mem_singleton, forall_eq_or_imp, χ.map_zero, neg_zero, add_zero, map_one,
@@ -123,7 +123,7 @@ theorem jacobiSum_one_nontrivial {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
   classical
   have : ∑ x ∈ univ \ {0, 1}, ((1 : MulChar F R) x - 1) * (χ (1 - x) - 1) = 0 := by
     apply Finset.sum_eq_zero
-    simp (config := { contextual := true }) only [mem_sdiff, mem_univ, mem_insert, mem_singleton,
+    simp +contextual only [mem_sdiff, mem_univ, mem_insert, mem_singleton,
       not_or, ← isUnit_iff_ne_zero, true_and, MulChar.one_apply, sub_self, zero_mul, and_imp,
       implies_true]
   simp only [jacobiSum_eq_aux, MulChar.sum_one_eq_card_units, MulChar.sum_eq_zero_of_ne_one hχ,
@@ -142,10 +142,10 @@ theorem jacobiSum_nontrivial_inv {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
       (fun y hy ↦ ?_) (fun x hx ↦ ?_) (fun y hy ↦ ?_) (fun _ _ ↦ rfl)
     · simp only [mem_sdiff, mem_univ, mem_singleton, true_and] at hx ⊢
       rw [div_eq_iff <| sub_ne_zero.mpr ((ne_eq ..).symm ▸ hx).symm, mul_sub, mul_one,
-        neg_one_mul, sub_neg_eq_add, self_eq_add_left, neg_eq_zero]
+        neg_one_mul, sub_neg_eq_add, right_eq_add, neg_eq_zero]
       exact one_ne_zero
     · simp only [mem_sdiff, mem_univ, mem_singleton, true_and] at hy ⊢
-      rw [div_eq_iff fun h ↦ hy <| eq_neg_of_add_eq_zero_right h, one_mul, self_eq_add_left]
+      rw [div_eq_iff fun h ↦ hy <| eq_neg_of_add_eq_zero_right h, one_mul, right_eq_add]
       exact one_ne_zero
     · simp only [mem_sdiff, mem_univ, mem_singleton, true_and] at hx
       rw [eq_comm, ← sub_eq_zero] at hx
@@ -236,33 +236,33 @@ variable {F R : Type*} [Fintype F] [Field F] [CommRing R] [IsDomain R]
 /-- If `χ` and `φ` are multiplicative characters on a finite field `F` satisfying `χ^n = φ^n = 1`
 and with values in an integral domain `R`, and `μ` is a primitive `n`th root of unity in `R`,
 then the Jacobi sum `J(χ,φ)` is in `ℤ[μ] ⊆ R`. -/
-lemma jacobiSum_mem_algebraAdjoin_of_pow_eq_one {n : ℕ} (hn : n ≠ 0) {χ φ : MulChar F R}
+lemma jacobiSum_mem_algebraAdjoin_of_pow_eq_one {n : ℕ} [NeZero n] {χ φ : MulChar F R}
     (hχ : χ ^ n = 1) (hφ : φ ^ n = 1) {μ : R} (hμ : IsPrimitiveRoot μ n) :
     jacobiSum χ φ ∈ Algebra.adjoin ℤ {μ} :=
   Subalgebra.sum_mem _ fun _ _ ↦ Subalgebra.mul_mem _
-    (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hn hχ hμ _)
-    (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hn hφ hμ _)
+    (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hχ hμ _)
+    (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hφ hμ _)
 
 open Algebra in
 private
-lemma MulChar.exists_apply_sub_one_eq_mul_sub_one {n : ℕ} (hn : n ≠ 0) {χ : MulChar F R} {μ : R}
+lemma MulChar.exists_apply_sub_one_eq_mul_sub_one {n : ℕ} [NeZero n] {χ : MulChar F R} {μ : R}
     (hχ : χ ^ n = 1) (hμ : IsPrimitiveRoot μ n) {x : F} (hx : x ≠ 0) :
     ∃ z ∈ Algebra.adjoin ℤ {μ}, χ x - 1 = z * (μ - 1) := by
-  obtain ⟨k, _, hk⟩ := exists_apply_eq_pow hn hχ hμ hx
+  obtain ⟨k, _, hk⟩ := exists_apply_eq_pow hχ hμ hx
   refine hk ▸ ⟨(Finset.range k).sum (μ ^ ·), ?_, (geom_sum_mul μ k).symm⟩
   exact Subalgebra.sum_mem _ fun m _ ↦ Subalgebra.pow_mem _ (self_mem_adjoin_singleton _ μ) _
 
 private
-lemma MulChar.exists_apply_sub_one_mul_apply_sub_one {n : ℕ} (hn : n ≠ 0) {χ ψ : MulChar F R}
+lemma MulChar.exists_apply_sub_one_mul_apply_sub_one {n : ℕ} [NeZero n] {χ ψ : MulChar F R}
     {μ : R} (hχ : χ ^ n = 1) (hψ : ψ ^ n = 1) (hμ : IsPrimitiveRoot μ n) (x : F) :
     ∃ z ∈ Algebra.adjoin ℤ {μ}, (χ x - 1) * (ψ (1 - x) - 1) = z * (μ - 1) ^ 2 := by
   rcases eq_or_ne x 0 with rfl | hx₀
   · exact ⟨0, Subalgebra.zero_mem _, by rw [sub_zero, ψ.map_one, sub_self, mul_zero, zero_mul]⟩
   rcases eq_or_ne x 1 with rfl | hx₁
   · exact ⟨0, Subalgebra.zero_mem _, by rw [χ.map_one, sub_self, zero_mul, zero_mul]⟩
-  obtain ⟨z₁, hz₁, Hz₁⟩ := MulChar.exists_apply_sub_one_eq_mul_sub_one hn hχ hμ hx₀
+  obtain ⟨z₁, hz₁, Hz₁⟩ := MulChar.exists_apply_sub_one_eq_mul_sub_one hχ hμ hx₀
   obtain ⟨z₂, hz₂, Hz₂⟩ :=
-    MulChar.exists_apply_sub_one_eq_mul_sub_one hn hψ hμ (sub_ne_zero_of_ne hx₁.symm)
+    MulChar.exists_apply_sub_one_eq_mul_sub_one hψ hμ (sub_ne_zero_of_ne hx₁.symm)
   rewrite [Hz₁, Hz₂, sq]
   exact ⟨z₁ * z₂, Subalgebra.mul_mem _ hz₁ hz₂, mul_mul_mul_comm ..⟩
 
@@ -288,7 +288,8 @@ lemma exists_jacobiSum_eq_neg_one_add {n : ℕ} (hn : 2 < n) {χ ψ : MulChar F 
     rw [jacobiSum_comm, hψ₀, jacobiSum_one_nontrivial hχ₀, zero_mul, add_zero]
   · classical
     rw [jacobiSum_eq_aux, MulChar.sum_eq_zero_of_ne_one hχ₀, MulChar.sum_eq_zero_of_ne_one hψ₀, hq]
-    have H := MulChar.exists_apply_sub_one_mul_apply_sub_one (by omega) hχ hψ hμ
+    have : NeZero n := ⟨by omega⟩
+    have H := MulChar.exists_apply_sub_one_mul_apply_sub_one hχ hψ hμ
     have Hcs x := (H x).choose_spec
     refine ⟨-q * z₁ + ∑ x ∈ (univ \ {0, 1} : Finset F), (H x).choose, ?_, ?_⟩
     · refine Subalgebra.add_mem _ (Subalgebra.mul_mem _ (Subalgebra.neg_mem _ ?_) hz₁) ?_

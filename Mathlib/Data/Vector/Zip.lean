@@ -9,7 +9,7 @@ import Mathlib.Data.Vector.Basic
 # The `zipWith` operation on vectors.
 -/
 
-namespace Mathlib
+namespace List
 
 namespace Vector
 
@@ -47,4 +47,4 @@ end ZipWith
 
 end Vector
 
-end Mathlib
+end List

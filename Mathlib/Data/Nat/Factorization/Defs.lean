@@ -29,14 +29,11 @@ and (where appropriate) choose a uniform canonical way of expressing these ideas
 
 * Moreover, the results here should be generalised to an arbitrary unique factorization monoid
 with a normalization function, and then deduplicated.  The basics of this have been started in
-`RingTheory/UniqueFactorizationDomain`.
+`Mathlib/RingTheory/UniqueFactorizationDomain/`.
 
 * Extend the inductions to any `NormalizationMonoid` with unique factorization.
 
 -/
-
--- Workaround for lean4#2038
-attribute [-instance] instBEqNat
 
 open Nat Finset List Finsupp
 
@@ -80,13 +77,9 @@ theorem factorization_eq_primeFactorsList_multiset (n : ℕ) :
   ext p
   simp
 
-@[deprecated (since := "2024-07-16")] alias factors_count_eq := primeFactorsList_count_eq
-@[deprecated (since := "2024-07-16")]
-alias factorization_eq_factors_multiset := factorization_eq_primeFactorsList_multiset
-
 theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ∣ n) :
     0 < n.factorization p := by
-    rwa [← primeFactorsList_count_eq, count_pos_iff, mem_primeFactorsList_iff_dvd hn hp]
+  rwa [← primeFactorsList_count_eq, count_pos_iff, mem_primeFactorsList_iff_dvd hn hp]
 
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     multiplicity p n = n.factorization p := by
@@ -241,28 +234,27 @@ theorem factorization_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
   ext q
   rw [Finsupp.add_apply, factorization_mul_apply_of_coprime hab]
 
-/-! ### Generalisation of the "even part" and "odd part" of a natural number
+/-! ### Generalisation of the "even part" and "odd part" of a natural number -/
 
-We introduce the notations `ord_proj[p] n` for the largest power of the prime `p` that
-divides `n` and `ord_compl[p] n` for the complementary part. The `ord` naming comes from
+/-- We introduce the notations `ordProj[p] n` for the largest power of the prime `p` that
+divides `n` and `ordCompl[p] n` for the complementary part. The `ord` naming comes from
 the $p$-adic order/valuation of a number, and `proj` and `compl` are for the projection and
 complementary projection. The term `n.factorization p` is the $p$-adic order itself.
-For example, `ord_proj[2] n` is the even part of `n` and `ord_compl[2] n` is the odd part. -/
+For example, `ordProj[2] n` is the even part of `n` and `ordCompl[2] n` is the odd part. -/
+notation "ordProj[" p "] " n:arg => p ^ Nat.factorization n p
 
+@[inherit_doc «termOrdProj[_]_»]
+notation "ordCompl[" p "] " n:arg => n / ordProj[p] n
 
--- Porting note: Lean 4 thinks we need `HPow` without this
-set_option quotPrecheck false in
-notation "ord_proj[" p "] " n:arg => p ^ Nat.factorization n p
-
-notation "ord_compl[" p "] " n:arg => n / ord_proj[p] n
-
-theorem ord_proj_dvd (n p : ℕ) : ord_proj[p] n ∣ n := by
+theorem ordProj_dvd (n p : ℕ) : ordProj[p] n ∣ n := by
   if hp : p.Prime then ?_ else simp [hp]
   rw [← primeFactorsList_count_eq]
   apply dvd_of_primeFactorsList_subperm (pow_ne_zero _ hp.ne_zero)
   rw [hp.primeFactorsList_pow, List.subperm_ext_iff]
   intro q hq
   simp [List.eq_of_mem_replicate hq]
+
+@[deprecated (since := "2024-10-24")] alias ord_proj_dvd := ordProj_dvd
 
 /-! ### Factorization LCM definitions -/
 

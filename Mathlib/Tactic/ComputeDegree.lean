@@ -95,9 +95,6 @@ theorem natDegree_natCast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegre
 theorem natDegree_zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
 theorem natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
-@[deprecated (since := "2024-04-17")]
-alias natDegree_nat_cast_le := natDegree_natCast_le
-
 theorem coeff_add_of_eq {n : ℕ} {a b : R} {f g : R[X]}
     (h_add_left : f.coeff n = a) (h_add_right : g.coeff n = b) :
     (f + g).coeff n = a + b := by subst ‹_› ‹_›; apply coeff_add
@@ -137,7 +134,7 @@ theorem coeff_smul {n : ℕ} {a : R} {f : R[X]} : (a • f).coeff n = a * f.coef
 
 section congr_lemmas
 
-/--  The following two lemmas should be viewed as a hand-made "congr"-lemmas.
+/-- The following two lemmas should be viewed as a hand-made "congr"-lemmas.
 They achieve the following goals.
 * They introduce *two* fresh metavariables replacing the given one `deg`,
   one for the `natDegree ≤` computation and one for the `coeff =` computation.
@@ -155,7 +152,7 @@ theorem natDegree_eq_of_le_of_coeff_ne_zero' {deg m o : ℕ} {c : R} {p : R[X]}
   exact natDegree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
 theorem degree_eq_of_le_of_coeff_ne_zero' {deg m o : WithBot ℕ} {c : R} {p : R[X]}
-    (h_deg_le : degree p ≤ m) (coeff_eq : coeff p (WithBot.unbot' 0 deg) = c)
+    (h_deg_le : degree p ≤ m) (coeff_eq : coeff p (WithBot.unbotD 0 deg) = c)
     (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
     degree p = deg := by
   subst coeff_eq coeff_eq_deg deg_eq_deg
@@ -181,17 +178,11 @@ variable [Ring R]
 
 theorem natDegree_intCast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_intCast _).le
 
-@[deprecated (since := "2024-04-17")]
-alias natDegree_int_cast_le := natDegree_intCast_le
-
 theorem coeff_sub_of_eq {n : ℕ} {a b : R} {f g : R[X]} (hf : f.coeff n = a) (hg : g.coeff n = b) :
     (f - g).coeff n = a - b := by subst hf hg; apply coeff_sub
 
 theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
   simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
-
-@[deprecated (since := "2024-04-17")]
-alias coeff_int_cast_ite := coeff_intCast_ite
 
 end ring
 
@@ -379,7 +370,7 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
         else pure [g]
       | none =>
         return [g]
-  return (assignable.join ++ tried_rfl.join)
+  return (assignable.flatten ++ tried_rfl.flatten)
 
 /--
 `splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
@@ -397,7 +388,7 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
   let progress := ← can_progress.mapM fun mv => do
     let lem := dispatchLemma <| twoHeadsArgs (← mv.getType'')
     mv.applyConst <| lem
-  return (progress.join, static ++ curr_static)
+  return (progress.flatten, static ++ curr_static)
 
 /-- `miscomputedDegree? deg false_goals` takes as input
 *  an `Expr`ession `deg`, representing the degree of a polynomial
@@ -440,14 +431,14 @@ def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
 *  `degree f ≤ d`,
 *  `coeff f d = r`, if `d` is the degree of `f`.
 
-The tactic may leave goals of the form `d' = d` `d' ≤ d`, or `r ≠ 0`, where `d'` in `ℕ` or
+The tactic may leave goals of the form `d' = d`, `d' ≤ d`, or `r ≠ 0`, where `d'` in `ℕ` or
 `WithBot ℕ` is the tactic's guess of the degree, and `r` is the coefficient's guess of the
 leading coefficient of `f`.
 
 `compute_degree` applies `norm_num` to the left-hand side of all side goals, trying to close them.
 
 The variant `compute_degree!` first applies `compute_degree`.
-Then it uses `norm_num` on all the whole remaining goals and tries `assumption`.
+Then it uses `norm_num` on all the remaining goals and tries `assumption`.
 -/
 syntax (name := computeDegree) "compute_degree" "!"? : tactic
 
@@ -480,7 +471,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
       evalTactic
         (← `(tactic| try any_goals conv_lhs =>
-                       (simp (config := {decide := true}) only [Nat.cast_withBot]; norm_num)))
+                       (simp +decide only [Nat.cast_withBot]; norm_num)))
       if bang.isSome then
         let mut false_goals : Array MVarId := #[]
         let mut new_goals : Array MVarId := #[]

@@ -37,7 +37,7 @@ abbrev ProblemPredicate' (c n : ℕ) : Prop :=
 
 lemma without_digits {n : ℕ} (hn : ProblemPredicate n) : ∃ c : ℕ, ProblemPredicate' c n := by
   use n / 10
-  cases' n with n
+  rcases n with - | n
   · have hpp : ¬ProblemPredicate 0 := by norm_num [ProblemPredicate]
     contradiction
   · rw [ProblemPredicate, digits_def' (by decide : 2 ≤ 10) n.succ_pos, List.headI, List.tail_cons,
@@ -52,41 +52,32 @@ Now we can eliminate possibilities for `(digits 10 c).length` until we get to th
 
 lemma case_0_digits {c n : ℕ} (hc : (digits 10 c).length = 0) : ¬ProblemPredicate' c n := by
   intro hpp
-  have hpow : 6 * 10 ^ 0 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [hc]
-  have hmul : 6 * 10 ^ 0 + c = 4 * (10 * c + 6) := by rw [hpow, hpp.right, hpp.left]
-  linarith
+  have hpow : 6 * 10 ^ 0 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
+  omega
 
 lemma case_1_digits {c n : ℕ} (hc : (digits 10 c).length = 1) : ¬ProblemPredicate' c n := by
   intro hpp
-  have hpow : 6 * 10 ^ 1 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [hc]
-  have hmul : 6 * 10 ^ 1 + c = 4 * (10 * c + 6) := by rw [hpow, hpp.right, hpp.left]
-  have hpos : c > 0 := by linarith
-  linarith
+  have hpow : 6 * 10 ^ 1 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
+  omega
 
 lemma case_2_digits {c n : ℕ} (hc : (digits 10 c).length = 2) : ¬ProblemPredicate' c n := by
   intro hpp
-  have hpow : 6 * 10 ^ 2 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [hc]
-  have hmul : 6 * 10 ^ 2 + c = 4 * (10 * c + 6) := by rw [hpow, hpp.right, hpp.left]
-  have hgt : c > 14 := by linarith
-  linarith
+  have hpow : 6 * 10 ^ 2 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
+  omega
 
 lemma case_3_digits {c n : ℕ} (hc : (digits 10 c).length = 3) : ¬ProblemPredicate' c n := by
   intro hpp
-  have hpow : 6 * 10 ^ 3 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [hc]
-  have hmul : 6 * 10 ^ 3 + c = 4 * (10 * c + 6) := by rw [hpow, hpp.right, hpp.left]
-  have hgt : c > 153 := by linarith
-  linarith
+  have hpow : 6 * 10 ^ 3 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
+  omega
 
 lemma case_4_digits {c n : ℕ} (hc : (digits 10 c).length = 4) : ¬ProblemPredicate' c n := by
   intro hpp
-  have hpow : 6 * 10 ^ 4 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [hc]
-  have hmul : 6 * 10 ^ 4 + c = 4 * (10 * c + 6) := by rw [hpow, hpp.right, hpp.left]
-  have hgt : c > 1537 := by linarith
-  linarith
+  have hpow : 6 * 10 ^ 4 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
+  omega
 
 /-- Putting this inline causes a deep recursion error, so we separate it out. -/
 private lemma helper_5_digits {c : ℤ} (hc : 6 * 10 ^ 5 + c = 4 * (10 * c + 6)) : c = 15384 := by
-  linarith
+  omega
 
 lemma case_5_digits {c n : ℕ} (hc : (digits 10 c).length = 5) (hpp : ProblemPredicate' c n) :
     c = 15384 := by

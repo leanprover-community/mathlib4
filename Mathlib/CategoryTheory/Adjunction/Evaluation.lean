@@ -22,7 +22,6 @@ open CategoryTheory.Limits
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
-  (E : Type u₃) [Category.{v₃} E]
 
 noncomputable section
 
@@ -68,7 +67,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
           right_inv := fun f => by
             dsimp
             simp }
-      -- This used to be automatic before leanprover/lean4#2644
+      -- This used to be automatic before https://github.com/leanprover/lean4/pull/2644
       homEquiv_naturality_right := by intros; dsimp; simp }
 
 instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint  :=

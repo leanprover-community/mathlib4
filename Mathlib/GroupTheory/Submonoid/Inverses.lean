@@ -24,7 +24,7 @@ related constructions.
 ## TODO
 
 Define the submonoid of right inverses and two-sided inverses.
-See the comments of #10679 for a possible implementation.
+See the comments of https://github.com/leanprover-community/mathlib4/pull/10679 for a possible implementation.
 
 -/
 
@@ -70,7 +70,7 @@ theorem leftInv_leftInv_le : S.leftInv.leftInv ≤ S := by
   rw [← mul_one x, ← h₁, ← mul_assoc, h₂, one_mul]
 
 @[to_additive]
-theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ : _) : M) ∈ S.leftInv :=
+theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ :) : M) ∈ S.leftInv :=
   ⟨⟨x, hx⟩, x.inv_val⟩
 
 @[to_additive]

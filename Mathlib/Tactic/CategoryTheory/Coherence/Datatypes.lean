@@ -3,7 +3,8 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Lean
+import Lean.Meta.Basic
+import Mathlib.Init
 
 /-!
 # Datatypes for bicategory like structures
@@ -112,7 +113,7 @@ class MonadMor₁ (m : Type → Type) where
   comp₁M (f g : Mor₁) : m Mor₁
 
 /-- Expressions for coherence isomorphisms (i.e., structural 2-morphisms
-giveb by `BicategorycalCoherence.iso`). -/
+given by `BicategoricalCoherence.iso`). -/
 structure CoherenceHom where
   /-- The underlying lean expression of a coherence isomorphism. -/
   e : Expr

@@ -20,8 +20,6 @@ variable {R S A K : Type*}
 
 namespace Polynomial
 
-open Polynomial
-
 section Semiring
 
 variable [Semiring R] [Semiring S]
@@ -33,7 +31,7 @@ noncomputable def scaleRoots (p : R[X]) (s : R) : R[X] :=
 @[simp]
 theorem coeff_scaleRoots (p : R[X]) (s : R) (i : ℕ) :
     (scaleRoots p s).coeff i = coeff p i * s ^ (p.natDegree - i) := by
-  simp (config := { contextual := true }) [scaleRoots, coeff_monomial]
+  simp +contextual [scaleRoots, coeff_monomial]
 
 theorem coeff_scaleRoots_natDegree (p : R[X]) (s : R) :
     (scaleRoots p s).coeff p.natDegree = p.leadingCoeff := by
@@ -154,9 +152,8 @@ theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : 
 theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+* K}
     (hf : Function.Injective f) {r s : S} (hr : eval₂ f (f r / f s) p = 0)
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
-  -- The proof works without this option, but *much* slower.
-  set_option tactic.skipAssignedInstances false in
-  nontriviality S using Subsingleton.eq_zero
+  -- if we don't specify the type with `(_ : S)`, the proof is much slower
+  nontriviality S using Subsingleton.eq_zero (_ : S)
   convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
   rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs

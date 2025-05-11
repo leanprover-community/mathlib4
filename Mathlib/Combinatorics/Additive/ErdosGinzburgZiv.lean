@@ -3,10 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Multiset.Fintype
 import Mathlib.FieldTheory.ChevalleyWarning
-import Mathlib.RingTheory.UniqueFactorizationDomain
 
 /-!
 # The Erdős–Ginzburg–Ziv theorem
@@ -70,7 +69,7 @@ private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : #s = 2 *
     Nat.le_of_dvd hN₀ hpN) zero_sol
   -- This common root gives us the required subsequence, namely the `i ∈ s` such that `x i ≠ 0`.
   refine ⟨({a | x.1 a ≠ 0} : Finset _).map ⟨(↑), Subtype.val_injective⟩, ?_, ?_, ?_⟩
-  · simp (config := { contextual := true }) [subset_iff]
+  · simp +contextual [subset_iff]
   -- From `f₁ x = 0`, we get that `p` divides the number of `a` such that `x a ≠ 0`.
   · rw [card_map]
     refine Nat.eq_of_dvd_of_lt_two_mul (Finset.card_pos.2 ?_).ne' ?_ <|
@@ -136,16 +135,17 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
       -- We are done.
       refine ⟨ℬ.biUnion fun x ↦ x, biUnion_subset.2 fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).1, ?_, ?_⟩
       · rw [card_biUnion (h𝒜disj.mono hℬ𝒜), sum_const_nat fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).2.1, hℬcard]
-      rwa [sum_biUnion, natCast_mul, mul_comm, ← Int.dvd_div_iff_mul_dvd, Int.sum_div]
+      rwa [sum_biUnion, Int.natCast_mul, mul_comm, ← Int.dvd_div_iff_mul_dvd, Int.sum_div]
       · exact fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).2.2
       · exact dvd_sum fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).2.2
       · exact h𝒜disj.mono hℬ𝒜
     -- Now, let's find those `2 * m - 1` sets.
     rintro k hk
     -- We induct on the size `k ≤ 2 * m - 1` of the family we are constructing.
-    induction' k with k ih
+    induction k with
     -- For `k = 0`, the empty family trivially works.
-    · exact ⟨∅, by simp⟩
+    | zero => exact ⟨∅, by simp⟩
+    | succ k ih =>
     -- At `k + 1`, call `𝒜` the existing family of size `k ≤ 2 * m - 2`.
     obtain ⟨𝒜, h𝒜card, h𝒜disj, h𝒜⟩ := ih (Nat.le_of_succ_le hk)
     -- There are at least `2 * (m * n) - 1 - k * n ≥ 2 * m - 1` elements in `s` that have not been

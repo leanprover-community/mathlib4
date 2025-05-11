@@ -27,8 +27,7 @@ namespace IsLocalization
 
 section LocalizationLocalization
 
-variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S]
-variable [Algebra R S] {P : Type*} [CommSemiring P]
+variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S]
 variable (N : Submonoid S) (T : Type*) [CommSemiring T] [Algebra R T]
 
 
@@ -144,7 +143,7 @@ instance (p : Ideal (Localization M)) [p.IsPrime] :
     IsScalarTower R (Localization M) (Localization.AtPrime p) :=
   IsScalarTower.of_algebraMap_eq' rfl
 
-instance localization_localization_atPrime_is_localization (p : Ideal (Localization M))
+instance isLocalization_atPrime_localization_atPrime (p : Ideal (Localization M))
     [p.IsPrime] : IsLocalization.AtPrime (Localization.AtPrime p) (p.comap (algebraMap R _)) :=
   isLocalization_isLocalization_atPrime_isLocalization M _ _
 
@@ -251,7 +250,7 @@ end IsLocalization
 
 namespace IsFractionRing
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R)
 
 open IsLocalization
 

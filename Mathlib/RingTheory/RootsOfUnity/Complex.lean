@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 # Complex roots of unity
@@ -52,13 +52,14 @@ theorem isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 *
     isPrimitiveRoot_exp_of_coprime 1 n h0 n.coprime_one_left
 
 theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
-    IsPrimitiveRoot ζ n ↔ ∃ i < (n : ℕ), ∃ _ : i.Coprime n, exp (2 * π * I * (i / n)) = ζ := by
+    IsPrimitiveRoot ζ n ↔ ∃ i < n, ∃ _ : i.Coprime n, exp (2 * π * I * (i / n)) = ζ := by
   have hn0 : (n : ℂ) ≠ 0 := mod_cast hn
   constructor; swap
   · rintro ⟨i, -, hi, rfl⟩; exact isPrimitiveRoot_exp_of_coprime i n hn hi
   intro h
+  have : NeZero n := ⟨hn⟩
   obtain ⟨i, hi, rfl⟩ :=
-    (isPrimitiveRoot_exp n hn).eq_pow_of_pow_eq_one h.pow_eq_one (Nat.pos_of_ne_zero hn)
+    (isPrimitiveRoot_exp n hn).eq_pow_of_pow_eq_one h.pow_eq_one
   refine ⟨i, hi, ((isPrimitiveRoot_exp n hn).pow_iff_coprime (Nat.pos_of_ne_zero hn) i).mp h, ?_⟩
   rw [← exp_nat_mul]
   congr 1
@@ -66,14 +67,14 @@ theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
 
 /-- The complex `n`-th roots of unity are exactly the
 complex numbers of the form `exp (2 * Real.pi * Complex.I * (i / n))` for some `i < n`. -/
-nonrec theorem mem_rootsOfUnity (n : ℕ+) (x : Units ℂ) :
-    x ∈ rootsOfUnity n ℂ ↔ ∃ i < (n : ℕ), exp (2 * π * I * (i / n)) = x := by
+nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
+    x ∈ rootsOfUnity n ℂ ↔ ∃ i < n, exp (2 * π * I * (i / n)) = x := by
   rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
-  have hn0 : (n : ℂ) ≠ 0 := mod_cast n.ne_zero
+  have hn0 : (n : ℂ) ≠ 0 := mod_cast NeZero.out
   constructor
   · intro h
     obtain ⟨i, hi, H⟩ : ∃ i < (n : ℕ), exp (2 * π * I / n) ^ i = x := by
-      simpa only using (isPrimitiveRoot_exp n n.ne_zero).eq_pow_of_pow_eq_one h n.pos
+      simpa only using (isPrimitiveRoot_exp n NeZero.out).eq_pow_of_pow_eq_one h
     refine ⟨i, hi, ?_⟩
     rw [← H, ← exp_nat_mul]
     congr 1
@@ -83,8 +84,8 @@ nonrec theorem mem_rootsOfUnity (n : ℕ+) (x : Units ℂ) :
     use i
     field_simp [hn0, mul_comm ((n : ℕ) : ℂ), mul_comm (i : ℂ)]
 
-theorem card_rootsOfUnity (n : ℕ+) : Fintype.card (rootsOfUnity n ℂ) = n :=
-  (isPrimitiveRoot_exp n n.ne_zero).card_rootsOfUnity
+theorem card_rootsOfUnity (n : ℕ) [NeZero n] : Fintype.card (rootsOfUnity n ℂ) = n :=
+  (isPrimitiveRoot_exp n NeZero.out).card_rootsOfUnity
 
 theorem card_primitiveRoots (k : ℕ) : (primitiveRoots k ℂ).card = φ k := by
   by_cases h : k = 0
@@ -103,7 +104,7 @@ theorem IsPrimitiveRoot.nnnorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot 
 
 theorem IsPrimitiveRoot.arg_ext {n m : ℕ} {ζ μ : ℂ} (hζ : IsPrimitiveRoot ζ n)
     (hμ : IsPrimitiveRoot μ m) (hn : n ≠ 0) (hm : m ≠ 0) (h : ζ.arg = μ.arg) : ζ = μ :=
-  Complex.ext_abs_arg ((hζ.norm'_eq_one hn).trans (hμ.norm'_eq_one hm).symm) h
+  Complex.ext_norm_arg ((hζ.norm'_eq_one hn).trans (hμ.norm'_eq_one hm).symm) h
 
 theorem IsPrimitiveRoot.arg_eq_zero_iff {n : ℕ} {ζ : ℂ} (hζ : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ζ.arg = 0 ↔ ζ = 1 :=
@@ -122,24 +123,13 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   rw [Complex.isPrimitiveRoot_iff _ _ hn] at h
   obtain ⟨i, h, hin, rfl⟩ := h
   rw [mul_comm, ← mul_assoc, Complex.exp_mul_I]
-  refine ⟨if i * 2 ≤ n then i else i - n, ?_, ?_, ?_⟩
-  on_goal 2 =>
+  refine ⟨if i * 2 ≤ n then i else i - n, ?_, ?isCoprime, by omega⟩
+  case isCoprime =>
     replace hin := Nat.isCoprime_iff_coprime.mpr hin
     split_ifs
     · exact hin
     · convert hin.add_mul_left_left (-1) using 1
       rw [mul_neg_one, sub_eq_add_neg]
-  on_goal 2 =>
-    split_ifs with h₂
-    · exact mod_cast h
-    suffices (i - n : ℤ).natAbs = n - i by
-      rw [this]
-      apply tsub_lt_self hn.bot_lt
-      contrapose! h₂
-      rw [Nat.eq_zero_of_le_zero h₂, zero_mul]
-      exact zero_le _
-    rw [← Int.natAbs_neg, neg_sub, Int.natAbs_eq_iff]
-    exact Or.inl (Int.ofNat_sub h.le).symm
   split_ifs with h₂
   · convert Complex.arg_cos_add_sin_mul_I _
     · push_cast; rfl
@@ -173,9 +163,15 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     exact mod_cast not_le.mp h₂
   · exact Nat.cast_pos.mpr hn.bot_lt
 
-lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ+} (hζ : ζ ∈ rootsOfUnity n ℂ) :
+lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n]
+    (hζ : ζ ∈ rootsOfUnity n ℂ) :
     ‖(ζ : ℂ)‖ = 1 := by
-  refine norm_eq_one_of_pow_eq_one ?_ <| n.ne_zero
+  refine norm_eq_one_of_pow_eq_one ?_ <| NeZero.ne n
   norm_cast
   rw [_root_.mem_rootsOfUnity] at hζ
   rw [hζ, Units.val_one]
+
+theorem Complex.conj_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n] (hζ : ζ ∈ rootsOfUnity n ℂ) :
+    (starRingEnd ℂ) ζ = ζ⁻¹ := by
+  rw [← Units.mul_eq_one_iff_eq_inv, conj_mul', norm_eq_one_of_mem_rootsOfUnity hζ, ofReal_one,
+    one_pow]

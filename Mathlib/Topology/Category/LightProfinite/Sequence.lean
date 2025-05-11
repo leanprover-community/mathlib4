@@ -13,7 +13,7 @@ This files defines the light profinite set `ℕ∪{∞}`, defined as the one poi
 `ℕ`.
 -/
 
-open CategoryTheory TopologicalSpace OnePoint
+open CategoryTheory OnePoint TopologicalSpace Topology
 
 namespace LightProfinite
 
@@ -44,9 +44,6 @@ lemma isClosedEmbedding_natUnionInftyEmbedding : IsClosedEmbedding natUnionInfty
         Nat.cast_inj] at h
       rw [h]
   · exact fun _ hC => (hC.isCompact.image natUnionInftyEmbedding.continuous).isClosed
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_natUnionInftyEmbedding := isClosedEmbedding_natUnionInftyEmbedding
 
 instance : MetrizableSpace (OnePoint ℕ) := isClosedEmbedding_natUnionInftyEmbedding.metrizableSpace
 
