@@ -65,11 +65,11 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   rcases le_or_gt 0 r with h | h
   · rw [lt_iff_not_ge] at hx_lt
     refine hx_lt ?_
-    rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, mul_le_mul_right (half_pos pi_pos)]
+    rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_right (half_pos pi_pos)]
     simp [h]
   · rw [lt_iff_not_ge] at hx_gt
     refine hx_gt ?_
-    rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, neg_mul_eq_neg_mul,
+    rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, neg_mul_eq_neg_mul,
       mul_le_mul_right (half_pos pi_pos)]
     have hr_le : r ≤ -1 := by rwa [Int.lt_iff_add_one_le, ← le_neg_iff_add_nonpos_right] at h
     rw [← le_sub_iff_add_le, mul_comm, ← le_div_iff₀]

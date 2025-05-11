@@ -560,7 +560,7 @@ theorem eval₂_T (n : ℤ) : eval₂ f x (T n) = (x ^ n).val := by
   by_cases hn : 0 ≤ n
   · lift n to ℕ using hn
     apply eval₂_T_n
-  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat (Int.le_of_not_ge hn)
+  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat (Int.le_of_not_le hn)
     rw [eval₂_T_neg_n, zpow_neg, zpow_natCast, ← inv_pow, Units.val_pow_eq_pow_val]
 
 @[simp]
@@ -578,7 +578,7 @@ theorem eval₂_C_mul_T (r : R) (n : ℤ) : eval₂ f x (C r * T n) = f r * (x ^
   by_cases hn : 0 ≤ n
   · lift n to ℕ using hn
     rw [map_mul, eval₂_C, eval₂_T_n, zpow_natCast, Units.val_pow_eq_pow_val]
-  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat (Int.le_of_not_ge hn)
+  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat (Int.le_of_not_le hn)
     rw [map_mul, eval₂_C, eval₂_T_neg_n, zpow_neg, zpow_natCast, ← inv_pow,
       Units.val_pow_eq_pow_val]
 
