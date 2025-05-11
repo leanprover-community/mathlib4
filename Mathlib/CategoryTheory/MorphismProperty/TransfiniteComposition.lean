@@ -302,7 +302,25 @@ instance [W.IsMultiplicative] [W.RespectsIso]
     W.IsStableUnderTransfiniteCompositionOfShape J :=
   .of_isStableUnderColimitsOfShape (fun _ _ _ _ _ ↦ by infer_instance)
 
+section isomorphisms
+
 example : (isomorphisms C).IsStableUnderTransfiniteCompositionOfShape J := inferInstance
+
+namespace TransfiniteCompositionOfShape
+
+variable {X Y : C} {f : X ⟶ Y} (h : (isomorphisms C).TransfiniteCompositionOfShape J f)
+
+include h in
+lemma isIso : IsIso f :=
+  (isomorphisms C).transfiniteCompositionsOfShape_le _ _ h.mem
+
+instance {i j : J} (f : i ⟶ j) : IsIso (h.F.map f) := ((h.iic j).ici (⟨i, leOfHom f⟩)).isIso
+
+instance (j : J) : IsIso (h.incl.app j) := (h.ici j).isIso
+
+end TransfiniteCompositionOfShape
+
+end isomorphisms
 
 end
 
