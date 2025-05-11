@@ -144,10 +144,10 @@ def yonedaMon : Mon_ C ⥤ Cᵒᵖ ⥤ MonCat.{v} where
   { app Y := MonCat.ofHom
       { toFun := (· ≫ ψ.hom)
         map_one' := by
-          show (toUnit _ ≫ X₁.one) ≫ ψ.hom = toUnit _ ≫ X₂.one
+          show (toUnit _ ≫ η[X₁.X]) ≫ ψ.hom = toUnit _ ≫ η[X₂.X]
           rw [Category.assoc, ψ.one_hom]
         map_mul' φ₁ φ₂ := by
-          show (lift _ _ ≫ X₁.mul) ≫ _ = lift (_ ≫ _) (_ ≫ _) ≫ X₂.mul
+          show (lift _ _ ≫ μ[X₁.X]) ≫ _ = lift (_ ≫ _) (_ ≫ _) ≫ μ[X₂.X]
           rw [Category.assoc, ψ.mul_hom, lift_map_assoc] }
     naturality {Y₁ Y₂} φ := MonCat.hom_ext (MonoidHom.ext fun f ↦ Category.assoc φ.unop f ψ.hom) }
   map_id X := NatTrans.ext (funext fun _ ↦ MonCat.hom_ext (MonoidHom.ext Category.comp_id))
@@ -166,14 +166,14 @@ def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
     one_hom := by
       dsimp only [yonedaMon_obj] at α ⊢
       rw [← yonedaMon_naturality, Category.comp_id,
-        ← Category.id_comp X₁.one, toUnit_unique (𝟙 _) (toUnit _),
-        ← Category.id_comp X₂.one, toUnit_unique (𝟙 _) (toUnit _)]
+        ← Category.id_comp η[X₁.X], toUnit_unique (𝟙 _) (toUnit _),
+        ← Category.id_comp η[X₂.X], toUnit_unique (𝟙 _) (toUnit _)]
       exact (α.app _).hom.map_one
     mul_hom := by
       dsimp only [yonedaMon_obj] at α ⊢
-      rw [← yonedaMon_naturality, Category.comp_id, ← Category.id_comp X₁.mul, ← lift_fst_snd]
+      rw [← yonedaMon_naturality, Category.comp_id, ← Category.id_comp μ[X₁.X], ← lift_fst_snd]
       refine ((α.app _).hom.map_mul _ _).trans ?_
-      show lift _ _ ≫ X₂.mul = _
+      show lift _ _ ≫ μ[X₂.X] = _
       congr 1
       ext <;> simp only [lift_fst, tensorHom_fst, lift_snd, tensorHom_snd,
         ← yonedaMon_naturality, Category.comp_id] }
@@ -182,7 +182,7 @@ def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
     dsimp only [yonedaMon_obj, yonedaMon_map_app, MonCat.hom_ofHom]
     simp_rw [← yonedaMon_naturality]
     simp
-  preimage_map φ := Mon_.ext (Category.id_comp φ.hom)
+  preimage_map φ := Mon_.Hom.ext (Category.id_comp φ.hom)
 
 instance : yonedaMon (C := C).Full := yonedaMonFullyFaithful.full
 instance : yonedaMon (C := C).Faithful := yonedaMonFullyFaithful.faithful
@@ -195,7 +195,7 @@ lemma essImage_yonedaMon :
     exact ⟨X.X, ⟨Functor.representableByEquiv.symm (isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
     letI := Mon_Class.ofRepresentableBy X F e
-    exact ⟨Mon_.mk' X, ⟨yonedaMonObjMon_Class.ofRepresentableBy X F e⟩⟩
+    exact ⟨Mon_.mk X, ⟨yonedaMonObjMon_Class.ofRepresentableBy X F e⟩⟩
 
 end Mon_
 

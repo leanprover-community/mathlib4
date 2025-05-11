@@ -13,7 +13,7 @@ The category of comonoid objects in a cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.
 -/
 
-open CategoryTheory MonoidalCategory ChosenFiniteProducts Limits
+open CategoryTheory MonoidalCategory ChosenFiniteProducts Limits Comon_Class
 
 universe v u
 
@@ -30,21 +30,23 @@ equipping every object with the diagonal map as a comultiplication.
 def cartesianComon_ : C ⥤ Comon_ C where
   obj X := {
     X := X
-    comul := lift (𝟙 _) (𝟙 _)
-    counit := toUnit _
+    comon := {
+      comul := lift (𝟙 _) (𝟙 _)
+      counit := toUnit _
+    }
   }
   map f := { hom := f }
 
 variable {C}
 
-@[simp] theorem counit_eq_toUnit (A : Comon_ C) : A.counit = toUnit _ := by ext
+@[simp] theorem counit_eq_toUnit (A : C) [Comon_Class A] : ε[A] = toUnit _ := by ext
 
 @[deprecated (since := "2025-05-09")] alias counit_eq_from := counit_eq_toUnit
 
-@[simp] theorem comul_eq_lift (A : Comon_ C) : A.comul = lift (𝟙 _) (𝟙 _) := by
+@[simp] theorem comul_eq_lift (A : C) [Comon_Class A] : Δ[A] = lift (𝟙 _) (𝟙 _) := by
   ext
-  · simpa using A.comul_counit =≫ fst _ _
-  · simpa using A.counit_comul =≫ snd _ _
+  · simpa using comul_counit A =≫ fst _ _
+  · simpa using counit_comul A =≫ snd _ _
 
 @[deprecated (since := "2025-05-09")] alias comul_eq_diag := comul_eq_lift
 

@@ -16,23 +16,23 @@ open CategoryTheory MonoidalCategory ChosenFiniteProducts
 
 variable {C : Type u₁} [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C]
 
-namespace Mon_
+namespace Mon_Class
 
-theorem lift_lift_assoc {A : C} {B : Mon_ C} (f g h : A ⟶ B.X) :
-    lift (lift f g ≫ B.mul) h ≫ B.mul = lift f (lift g h ≫ B.mul) ≫ B.mul := by
-  have := lift (lift f g) h ≫= B.mul_assoc
+theorem lift_lift_assoc {A : C} {B : C} [Mon_Class B] (f g h : A ⟶ B) :
+    lift (lift f g ≫ μ) h ≫ μ = lift f (lift g h ≫ μ) ≫ μ := by
+  have := lift (lift f g) h ≫= mul_assoc B
   rwa [lift_whiskerRight_assoc, lift_lift_associator_hom_assoc, lift_whiskerLeft_assoc] at this
 
 @[reassoc (attr := simp)]
-theorem lift_comp_one_left {A : C} {B : Mon_ C} (f : A ⟶ 𝟙_ C) (g : A ⟶ B.X) :
-    lift (f ≫ B.one) g ≫ B.mul = g := by
-  have := lift f g ≫= B.one_mul
+theorem lift_comp_one_left {A : C} {B : C} [Mon_Class B] (f : A ⟶ 𝟙_ C) (g : A ⟶ B) :
+    lift (f ≫ η) g ≫ μ = g := by
+  have := lift f g ≫= one_mul B
   rwa [lift_whiskerRight_assoc, lift_leftUnitor_hom] at this
 
 @[reassoc (attr := simp)]
-theorem lift_comp_one_right {A : C} {B : Mon_ C} (f : A ⟶ B.X) (g : A ⟶ 𝟙_ C) :
-    lift f (g ≫ B.one) ≫ B.mul = f := by
-  have := lift f g ≫= B.mul_one
+theorem lift_comp_one_right {A : C} {B : C} [Mon_Class B] (f : A ⟶ B) (g : A ⟶ 𝟙_ C) :
+    lift f (g ≫ η) ≫ μ = f := by
+  have := lift f g ≫= mul_one B
   rwa [lift_whiskerLeft_assoc, lift_rightUnitor_hom] at this
 
-end Mon_
+end Mon_Class

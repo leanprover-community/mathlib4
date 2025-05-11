@@ -25,7 +25,7 @@ A monad "is just" a monoid in the category of endofunctors.
 
 namespace CategoryTheory
 
-open Category
+open Category Mon_Class
 
 universe v u -- morphism levels before object levels. See note [category_theory universes].
 
@@ -35,13 +35,16 @@ namespace Monad
 
 attribute [local instance] endofunctorMonoidalCategory
 
+@[simps]
+instance (M : Monad C) : Mon_Class (M : C ⥤ C) where
+  one := M.η
+  mul := M.μ
+  mul_assoc' := by ext; simp [M.assoc]
+
 /-- To every `Monad C` we associated a monoid object in `C ⥤ C`. -/
 @[simps]
 def toMon (M : Monad C) : Mon_ (C ⥤ C) where
   X := (M : C ⥤ C)
-  one := M.η
-  mul := M.μ
-  mul_assoc := by ext; simp [M.assoc]
 
 variable (C) in
 /-- Passing from `Monad C` to `Mon_ (C ⥤ C)` is functorial. -/
@@ -51,23 +54,23 @@ def monadToMon : Monad C ⥤ Mon_ (C ⥤ C) where
   map f := { hom := f.toNatTrans }
 
 /-- To every monoid object in `C ⥤ C` we associate a `Monad C`. -/
-@[simps η μ]
+@[simps «η» «μ»]
 def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   toFunctor := M.X
-  η := M.one
-  μ := M.mul
+  «η» := η[M.X]
+  «μ» := μ[M.X]
   left_unit := fun X => by
     -- Porting note: now using `erw`
-    erw [← whiskerLeft_app, ← NatTrans.comp_app, M.mul_one]
+    erw [← whiskerLeft_app, ← NatTrans.comp_app, mul_one M.X]
     rfl
   right_unit := fun X => by
     -- Porting note: now using `erw`
-    erw [← whiskerRight_app, ← NatTrans.comp_app, M.one_mul]
+    erw [← whiskerRight_app, ← NatTrans.comp_app, one_mul M.X]
     rfl
   assoc := fun X => by
     rw [← whiskerLeft_app, ← whiskerRight_app, ← NatTrans.comp_app]
     -- Porting note: had to add this step:
-    erw [M.mul_assoc]
+    erw [mul_assoc M.X]
     simp
 
 -- Porting note: `@[simps]` fails to generate `ofMon_obj`:
