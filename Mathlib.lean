@@ -84,6 +84,7 @@ import Mathlib.Algebra.Category.AlgCat.Basic
 import Mathlib.Algebra.Category.AlgCat.Limits
 import Mathlib.Algebra.Category.AlgCat.Monoidal
 import Mathlib.Algebra.Category.AlgCat.Symmetric
+import Mathlib.Algebra.Category.AlgebraCat.Symmetric
 import Mathlib.Algebra.Category.BialgCat.Basic
 import Mathlib.Algebra.Category.BialgCat.Monoidal
 import Mathlib.Algebra.Category.BoolRing
