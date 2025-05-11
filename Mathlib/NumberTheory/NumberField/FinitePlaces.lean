@@ -121,8 +121,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
     constructor
     · simpa only [ne_eq, map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff]
     · apply ne_of_lt
-      rw [valuation_of_algebraMap, intValuation_lt_one_iff_dvd]
-      exact dvd_span_singleton.mpr hx1
+      rwa [valuation_of_algebraMap, intValuation_lt_one_iff_mem]
 
 /-- The `v`-adic completion of `K` is a normed field. -/
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
@@ -196,8 +195,7 @@ theorem FinitePlace.norm_le_one (x : 𝓞 (WithVal (v.valuation K))) : ‖embedd
 theorem FinitePlace.norm_eq_one_iff_not_mem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ = 1 ↔ x ∉ v.asIdeal := by
   rw [norm_def_int, NNReal.coe_eq_one, toNNReal_eq_one_iff (v.intValuation x)
-    (absNorm_ne_zero v) (one_lt_absNorm_nnreal v).ne', ← dvd_span_singleton,
-    ← intValuation_lt_one_iff_dvd, not_lt]
+    (absNorm_ne_zero v) (one_lt_absNorm_nnreal v).ne', ← intValuation_lt_one_iff_mem, not_lt]
   exact (intValuation_le_one v x).ge_iff_eq.symm
 
 @[deprecated (since := "2025-02-28")]
@@ -207,8 +205,7 @@ theorem FinitePlace.norm_eq_one_iff_not_mem (x : 𝓞 (WithVal (v.valuation K)))
 theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ < 1 ↔ x ∈ v.asIdeal := by
   rw [norm_def_int, NNReal.coe_lt_one, toNNReal_lt_one_iff (one_lt_absNorm_nnreal v),
-    intValuation_lt_one_iff_dvd]
-  exact dvd_span_singleton
+    intValuation_lt_one_iff_mem]
 
 @[deprecated (since := "2025-02-28")] alias norm_lt_one_iff_mem := FinitePlace.norm_lt_one_iff_mem
 

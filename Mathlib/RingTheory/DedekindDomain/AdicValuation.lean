@@ -232,7 +232,7 @@ theorem intValuation_lt_one_iff_dvd (r : R) :
 /-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `r ∈ v`. -/
 theorem intValuation_lt_one_iff_mem (r : R) :
     v.intValuation r < 1 ↔ r ∈ v.asIdeal := by
-  rw [intValuation_lt_one_iff_dvd, Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
+  rw [intValuation_lt_one_iff_dvd, Ideal.dvd_span_singleton]
 
 /-- The `v`-adic valuation of `r ∈ R` is less than `Multiplicative.ofAdd (-n)` if and only if
 `vⁿ` divides the ideal `(r)`. -/
@@ -250,7 +250,7 @@ theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
 `r ∈ vⁿ`. -/
 theorem intValuation_le_pow_iff_mem (r : R) (n : ℕ) :
     v.intValuation r ≤ Multiplicative.ofAdd (-(n : ℤ)) ↔ r ∈ v.asIdeal ^ n := by
-  rw [intValuation_le_pow_iff_dvd, Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
+  rw [intValuation_le_pow_iff_dvd, Ideal.dvd_span_singleton]
 
 /-- There exists `π ∈ R` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
 theorem intValuation_exists_uniformizer :
@@ -325,6 +325,12 @@ open scoped algebraMap in
 theorem valuation_lt_one_iff_dvd (r : R) :
     v.valuation K r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
   rw [valuation_of_algebraMap]; exact v.intValuation_lt_one_iff_dvd r
+
+open scoped algebraMap in
+/-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `r ∈ v`. -/
+theorem valuation_lt_one_iff_mem (r : R) :
+    v.valuation K r < 1 ↔ r ∈ v.asIdeal := by
+  rw [valuation_of_algebraMap]; exact v.intValuation_lt_one_iff_mem r
 
 variable (K)
 
