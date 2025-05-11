@@ -195,13 +195,16 @@ def FilteredAcyclicToComplex_deg_functor (n : ℤ) :
     FilteredToComplex_deg L₂ t₂ n := by
   refine Functor.fullyFaithfulCancelRight t₂.ιHeart ?_
   dsimp [FilteredToComplex_deg, FilteredAcyclicToComplex_deg, Functor.FromAcyclic]
-  refine Functor.associator _ _ _ ≪≫ ?_
+  refine Functor.associator _ _ t₂.ιHeart ≪≫ ?_
   refine isoWhiskerLeft _ (ObjectProperty.liftCompιIso t₂.heart _ _) ≪≫ ?_
-  refine (Functor.associator _ _ _).symm ≪≫ ?_
-  refine isoWhiskerRight (ObjectProperty.liftCompιIso _ _ _) _ ≪≫ ?_
-  refine isoWhiskerRight (Functor.associator _ _ _).symm (t₁.ιHeart ⋙ T) ≪≫ ?_
-  refine isoWhiskerRight (Functor.associator _ _ _).symm (t₁.ιHeart ⋙ T) ≪≫ ?_
-  refine Functor.associator _ (t₁.homology n) (t₁.ιHeart ⋙ T) ≪≫ ?_
+  refine (Functor.associator _ (AcyclicObject T t₁ t₂).ι (t₁.ιHeart ⋙ T)).symm ≪≫ ?_
+  refine isoWhiskerRight (ObjectProperty.liftCompιIso (AcyclicObject T t₁ t₂) _ _)
+    (t₁.ιHeart ⋙ T) ≪≫ ?_
+  refine isoWhiskerRight ((Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι tF₁.ιHeart
+    (Gr L₁ n ⋙ t₁.homology n)).symm ≪≫ (Functor.associator ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙
+    tF₁.ιHeart) (Gr L₁ n) (t₁.homology n)).symm) (t₁.ιHeart ⋙ T) ≪≫ ?_
+  refine Functor.associator (((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart) ⋙ Gr L₁ n)
+    (t₁.homology n) (t₁.ιHeart ⋙ T) ≪≫ ?_
   refine isoWhiskerLeft (((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart) ⋙ Gr L₁ n)
     ((Functor.leftUnitor (t₁.homology n ⋙ t₁.ιHeart ⋙ T)).symm ≪≫
     isoWhiskerRight (shiftEquiv A₁ n).unitIso (t₁.homology n ⋙ t₁.ιHeart ⋙ T) ≪≫
