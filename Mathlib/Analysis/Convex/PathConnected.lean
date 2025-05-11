@@ -62,7 +62,7 @@ theorem JoinedIn.of_segment_subset {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s
 
 protected theorem StarConvex.isPathConnected {s : Set E} {a : E} (h : StarConvex ℝ a s)
     (ha : a ∈ s) : IsPathConnected s :=
-  ⟨a, ha, fun hy ↦ .of_segment_subset <| h.segment_subset hy⟩
+  ⟨a, ha, fun _y hy ↦ .of_segment_subset <| h.segment_subset hy⟩
 
 /-- A nonempty convex set is path connected. -/
 protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne : s.Nonempty) :
