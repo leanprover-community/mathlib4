@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Basic
+import Mathlib.LinearAlgebra.Projection
 import Mathlib.Topology.Connected.PathConnected
 
 /-!
@@ -88,3 +89,15 @@ Not an instance, because it creates enormous TC subproblems (turn on `pp.all`).
 -/
 protected theorem IsTopologicalAddGroup.pathConnectedSpace : PathConnectedSpace E :=
   pathConnectedSpace_iff_univ.mpr <| convex_univ.isPathConnected ⟨(0 : E), trivial⟩
+
+/-- Given two complementary subspaces `p` and `q` in `E`, if the complement of `{0}`
+is path connected in `p` then the complement of `q` is path connected in `E`. -/
+theorem isPathConnected_compl_of_isPathConnected_compl_zero {p q : Submodule ℝ E}
+    (hpq : IsCompl p q) (hpc : IsPathConnected ({0}ᶜ : Set p)) : IsPathConnected (qᶜ : Set E) := by
+  convert (hpc.image continuous_subtype_val).add q.isPathConnected using 1
+  trans Submodule.prodEquivOfIsCompl p q hpq '' ({0}ᶜ ×ˢ univ)
+  · rw [prod_univ, LinearEquiv.image_eq_preimage]
+    ext
+    simp
+  · ext
+    simp [mem_add, and_assoc]
