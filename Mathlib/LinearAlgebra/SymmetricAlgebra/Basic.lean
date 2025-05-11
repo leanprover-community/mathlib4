@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wang
+Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wang, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
@@ -13,15 +13,15 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
 
 ## Notation
 
-1. `SymmetricAlgebra R M` is a concrete construction of the symmetric algebra defined as a
+* `SymmetricAlgebra R M`: a concrete construction of the symmetric algebra defined as a
    quotient of the tensor algebra. It is endowed with an R-algebra structure and a commutative
    ring structure.
-2. `SymmetricAlgebra.ι R` is the canonical R-linear map `M →ₗ[R] SymmetricAlgebra R M`.
-3. Given a morphism `ι : M →ₗ[R] A`, `IsSymmetricAlgebra ι` is a proposition saying that the algebra
-   homomorphism from `SymmetricAlgebra R M` to `A` lifted from `ι` is bijective.
-4. Given a linear map `f : M →ₗ[R] A'` to an commutative R-algebra `A'`, and a morphism
-   `ι : M →ₗ[R] A` with `p : IsSymmetricAlgebra ι`, `IsSymmetricAlgebra.lift p f`
-   is the lift of `f` to an `R`-algebra morphism `A →ₐ[R] A'`.
+* `SymmetricAlgebra.ι R`: the canonical R-linear map `M →ₗ[R] SymmetricAlgebra R M`.
+* Given a morphism `ι : M →ₗ[R] A`, `IsSymmetricAlgebra ι` is a proposition saying that the algebra
+  homomorphism from `SymmetricAlgebra R M` to `A` lifted from `ι` is bijective.
+* Given a linear map `f : M →ₗ[R] A'` to an commutative R-algebra `A'`, and a morphism
+  `ι : M →ₗ[R] A` with `p : IsSymmetricAlgebra ι`, `IsSymmetricAlgebra.lift p f`
+  is the lift of `f` to an `R`-algebra morphism `A →ₐ[R] A'`.
 
 ## Note
 
@@ -61,7 +61,7 @@ theorem induction {motive : SymmetricAlgebra R M → Prop}
     (a : SymmetricAlgebra R M) : motive a := by
   rcases algHom_surjective _ _ a with ⟨a, rfl⟩
   induction a using TensorAlgebra.induction with
-  | algebraMap r => rw [AlgHom.map_algebraMap]; exact algebraMap r
+  | algebraMap r => rw [AlgHom.commutes]; exact algebraMap r
   | ι x => exact ι x
   | mul x y hx hy => rw [map_mul]; exact mul _ _ hx hy
   | add x y hx hy => rw [map_add]; exact add _ _ hx hy
@@ -104,6 +104,7 @@ lemma lift_ι_apply (a : M) : lift f (ι R M a) = f a := by
 @[simp]
 lemma lift_comp_ι : lift f ∘ₗ ι R M = f := LinearMap.ext <| lift_ι_apply f
 
+@[ext]
 theorem algHom_ext {F G : SymmetricAlgebra R M →ₐ[R] A}
     (h : F ∘ₗ ι R M = (G ∘ₗ ι R M : M →ₗ[R] A)) : F = G := by
   ext x
@@ -114,6 +115,33 @@ lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
   apply algHom_ext
   rw [lift_comp_ι]
   rfl
+
+/-- The left-inverse of `algebraMap`. -/
+def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=
+  lift (0 : M →ₗ[R] R)
+
+variable (M)
+
+theorem algebraMap_leftInverse :
+    Function.LeftInverse algebraMapInv (algebraMap R <| SymmetricAlgebra R M) := fun x => by
+  simp [algebraMapInv]
+
+@[simp]
+theorem algebraMap_inj (x y : R) :
+    algebraMap R (SymmetricAlgebra R M) x = algebraMap R (SymmetricAlgebra R M) y ↔ x = y :=
+  (algebraMap_leftInverse M).injective.eq_iff
+
+@[simp]
+theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (SymmetricAlgebra R M) x = 0 ↔ x = 0 :=
+  map_eq_zero_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
+
+@[simp]
+theorem algebraMap_eq_one_iff (x : R) : algebraMap R (SymmetricAlgebra R M) x = 1 ↔ x = 1 :=
+  map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
+
+/-- A `SymmetricAlgebra` over a nontrivial semiring is nontrivial. -/
+instance [Nontrivial R] : Nontrivial (SymmetricAlgebra R M) :=
+  (algebraMap_leftInverse M).injective.nontrivial
 
 end SymmetricAlgebra
 

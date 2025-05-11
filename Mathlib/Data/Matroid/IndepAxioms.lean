@@ -149,7 +149,7 @@ namespace IndepMatroid
     exact ⟨B, hB.1⟩
   isBase_exchange B B' hB hB' e he := by
     have hnotmax : ¬ Maximal M.Indep (B \ {e}) :=
-      fun h ↦ h.not_prop_of_ssuperset (diff_singleton_sSubset.2 he.1) hB.prop
+      fun h ↦ h.not_prop_of_ssuperset (diff_singleton_ssubset.2 he.1) hB.prop
     obtain ⟨f, hf, hfB⟩ := M.indep_aug (M.indep_subset hB.prop diff_subset) hnotmax hB'
     replace hf := show f ∈ B' \ B by simpa [show f ≠ e by rintro rfl; exact he.2 hf.1] using hf
     refine ⟨f, hf, by_contra fun hnot ↦ ?_⟩
@@ -327,10 +327,10 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
 @[simps E] protected def ofBdd (E : Set α) (Indep : Set α → Prop)
     (indep_empty : Indep ∅)
     (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
-    (indep_aug : ∀⦃I B⦄, Indep I → ¬ Maximal Indep I → Maximal Indep B →
+    (indep_aug : ∀ ⦃I B⦄, Indep I → ¬ Maximal Indep I → Maximal Indep B →
       ∃ x ∈ B \ I, Indep (insert x I))
     (subset_ground : ∀ I, Indep I → I ⊆ E)
-    (indep_bdd : ∃ (n : ℕ), ∀ I, Indep I → I.encard ≤ n ) : IndepMatroid α where
+    (indep_bdd : ∃ (n : ℕ), ∀ I, Indep I → I.encard ≤ n) : IndepMatroid α where
   E := E
   Indep := Indep
   indep_empty := indep_empty
@@ -360,7 +360,7 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
     (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
     (indep_aug : ∀ ⦃I J⦄, Indep I → Indep J → I.encard < J.encard →
       ∃ e ∈ J, e ∉ I ∧ Indep (insert e I))
-    (indep_bdd : ∃ (n : ℕ), ∀ I, Indep I → I.encard ≤ n )
+    (indep_bdd : ∃ (n : ℕ), ∀ I, Indep I → I.encard ≤ n)
     (subset_ground : ∀ I, Indep I → I ⊆ E) : IndepMatroid α :=
   IndepMatroid.ofBdd (E := E) (Indep := Indep)
     (indep_empty := indep_empty)

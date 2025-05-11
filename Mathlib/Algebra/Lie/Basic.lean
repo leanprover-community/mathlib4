@@ -3,6 +3,7 @@ Copyright (c) 2019 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Rat
@@ -283,6 +284,30 @@ instance Module.Dual.instLieRingModule : LieRingModule L (M →ₗ[R] R) where
 instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
   smul_lie := fun t x m ↦ by ext n; simp
   lie_smul := fun t x m ↦ by ext n; simp
+
+variable (L) in
+/-- It is sometimes useful to regard a `LieRing` as a `NonUnitalNonAssocRing`. -/
+def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
+  { mul := Bracket.bracket
+    left_distrib := lie_add
+    right_distrib := add_lie
+    zero_mul := zero_lie
+    mul_zero := lie_zero }
+
+variable {ι κ : Type*}
+
+theorem sum_lie (s : Finset ι) (f : ι → L) (a : L) : ⁅∑ i ∈ s, f i, a⁆ = ∑ i ∈ s, ⁅f i, a⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.sum_mul f a
+
+theorem lie_sum (s : Finset ι) (f : ι → L) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.mul_sum f a
+
+theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → L) :
+    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.sum_mul_sum t f g
 
 end BasicProperties
 
