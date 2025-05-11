@@ -22,11 +22,6 @@ universe u v w u'
 
 section
 
-variable {R : Type*} {M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
-  [AddCommGroup M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
-
-variable (R M)
-
 /-- Continuous linear equivalences between modules. We only put the type classes that are necessary
 for the definition, although in applications `M` and `M₂` will be topological modules over the
 topological semiring `R`. -/
@@ -644,6 +639,162 @@ end DistribMulAction
 
 end AddCommMonoid
 
+section Aut
+
+/-!
+### Automorphisms as continuous linear equivalences and as units of the ring of endomorphisms
+
+The next theorems cover the identification between `M ≃L[R] M`and the group of units of the ring
+`M →L[R] M`.
+-/
+
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+
+/-- An invertible continuous linear map `f` determines a continuous equivalence from `M` to itself.
+-/
+def ofUnit (f : (M →L[R] M)ˣ) : M ≃L[R] M where
+  toLinearEquiv :=
+    { toFun := f.val
+      map_add' := by simp
+      map_smul' := by simp
+      invFun := f.inv
+      left_inv := fun x =>
+        show (f.inv * f.val) x = x by
+          rw [f.inv_val]
+          simp
+      right_inv := fun x =>
+        show (f.val * f.inv) x = x by
+          rw [f.val_inv]
+          simp }
+  continuous_toFun := f.val.continuous
+  continuous_invFun := f.inv.continuous
+
+/-- A continuous equivalence from `M` to itself determines an invertible continuous linear map. -/
+def toUnit (f : M ≃L[R] M) : (M →L[R] M)ˣ where
+  val := f
+  inv := f.symm
+  val_inv := by
+    ext
+    simp
+  inv_val := by
+    ext
+    simp
+
+variable (R M)
+
+/-- The units of the algebra of continuous `R`-linear endomorphisms of `M` is multiplicatively
+equivalent to the type of continuous linear equivalences between `M` and itself. -/
+def unitsEquiv : (M →L[R] M)ˣ ≃* M ≃L[R] M where
+  toFun := ofUnit
+  invFun := toUnit
+  left_inv f := by
+    ext
+    rfl
+  right_inv f := by
+    ext
+    rfl
+  map_mul' x y := by
+    ext
+    rfl
+
+@[simp]
+theorem unitsEquiv_apply (f : (M →L[R] M)ˣ) (x : M) : unitsEquiv R M f x = (f : M →L[R] M) x :=
+  rfl
+
+end Aut
+
+section AutRing
+
+/-!
+### Units of a ring as linear automorphisms
+-/
+
+variable (R : Type*) [Semiring R] [TopologicalSpace R] [ContinuousMul R]
+
+/-- Continuous linear equivalences `R ≃L[R] R` are enumerated by `Rˣ`. -/
+def unitsEquivAut : Rˣ ≃ R ≃L[R] R where
+  toFun u :=
+    equivOfInverse (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u)
+      (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u⁻¹) (fun x => by simp) fun x => by simp
+  invFun e :=
+    ⟨e 1, e.symm 1, by rw [← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, symm_apply_apply], by
+      rw [← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, apply_symm_apply]⟩
+  left_inv u := Units.ext <| by simp
+  right_inv e := ext₁ <| by simp
+
+variable {R}
+
+@[simp]
+theorem unitsEquivAut_apply (u : Rˣ) (x : R) : unitsEquivAut R u x = x * u :=
+  rfl
+
+@[simp]
+theorem unitsEquivAut_apply_symm (u : Rˣ) (x : R) : (unitsEquivAut R u).symm x = x * ↑u⁻¹ :=
+  rfl
+
+@[simp]
+theorem unitsEquivAut_symm_apply (e : R ≃L[R] R) : ↑((unitsEquivAut R).symm e) = e 1 :=
+  rfl
+
+end AutRing
+
+section Pi
+
+variable (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M]
+  [TopologicalSpace M]
+
+/-- If `ι` has a unique element, then `ι → M` is continuously linear equivalent to `M`. -/
+def funUnique : (ι → M) ≃L[R] M :=
+  { Homeomorph.funUnique ι M with toLinearEquiv := LinearEquiv.funUnique ι R M }
+
+variable {ι R M}
+
+@[simp]
+theorem coe_funUnique : ⇑(funUnique ι R M) = Function.eval default :=
+  rfl
+
+@[simp]
+theorem coe_funUnique_symm : ⇑(funUnique ι R M).symm = Function.const ι :=
+  rfl
+
+variable (R M)
+
+/-- Continuous linear equivalence between dependent functions `(i : Fin 2) → M i` and `M 0 × M 1`.
+-/
+@[simps! -fullyApplied apply symm_apply]
+def piFinTwo (M : Fin 2 → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+    [∀ i, TopologicalSpace (M i)] : ((i : _) → M i) ≃L[R] M 0 × M 1 :=
+  { Homeomorph.piFinTwo M with toLinearEquiv := LinearEquiv.piFinTwo R M }
+
+/-- Continuous linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
+@[simps! -fullyApplied apply symm_apply]
+def finTwoArrow : (Fin 2 → M) ≃L[R] M × M :=
+  { piFinTwo R fun _ => M with toLinearEquiv := LinearEquiv.finTwoArrow R M }
+
+section
+variable {n : ℕ} {R : Type*} {M : Fin n.succ → Type*} {N : Type*}
+variable [Semiring R]
+variable [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)]
+
+variable (R M) in
+/-- `Fin.consEquiv` as a continuous linear equivalence. -/
+@[simps!]
+def _root_.Fin.consEquivL : (M 0 × Π i, M (Fin.succ i)) ≃L[R] (Π i, M i) where
+  __ := Fin.consLinearEquiv R M
+  continuous_toFun := continuous_id.fst.finCons continuous_id.snd
+  continuous_invFun := .prodMk (continuous_apply 0) (by continuity)
+
+/-- `Fin.cons` in the codomain of continuous linear maps. -/
+abbrev _root_.ContinuousLinearMap.finCons
+    [AddCommMonoid N] [Module R N] [TopologicalSpace N]
+    (f : N →L[R] M 0) (fs : N →L[R] Π i, M (Fin.succ i)) :
+    N →L[R] Π i, M i :=
+  Fin.consEquivL R M ∘L f.prod fs
+
+end
+
+end Pi
+
 section AddCommGroup
 
 variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] {M₂ : Type*}
@@ -710,96 +861,6 @@ theorem map_sub (e : M ≃SL[σ₁₂] M₂) (x y : M) : e (x - y) = e x - e y :
 theorem map_neg (e : M ≃SL[σ₁₂] M₂) (x : M) : e (-x) = -e x :=
   (e : M →SL[σ₁₂] M₂).map_neg x
 
-section
-
-/-! The next theorems cover the identification between `M ≃L[R] M`and the group of units of the ring
-`M →L[R] M`. -/
-
-/-- An invertible continuous linear map `f` determines a continuous equivalence from `M` to itself.
--/
-def ofUnit (f : (M →L[R] M)ˣ) : M ≃L[R] M where
-  toLinearEquiv :=
-    { toFun := f.val
-      map_add' := by simp
-      map_smul' := by simp
-      invFun := f.inv
-      left_inv := fun x =>
-        show (f.inv * f.val) x = x by
-          rw [f.inv_val]
-          simp
-      right_inv := fun x =>
-        show (f.val * f.inv) x = x by
-          rw [f.val_inv]
-          simp }
-  continuous_toFun := f.val.continuous
-  continuous_invFun := f.inv.continuous
-
-/-- A continuous equivalence from `M` to itself determines an invertible continuous linear map. -/
-def toUnit (f : M ≃L[R] M) : (M →L[R] M)ˣ where
-  val := f
-  inv := f.symm
-  val_inv := by
-    ext
-    simp
-  inv_val := by
-    ext
-    simp
-
-variable (R M)
-
-/-- The units of the algebra of continuous `R`-linear endomorphisms of `M` is multiplicatively
-equivalent to the type of continuous linear equivalences between `M` and itself. -/
-def unitsEquiv : (M →L[R] M)ˣ ≃* M ≃L[R] M where
-  toFun := ofUnit
-  invFun := toUnit
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
-  map_mul' x y := by
-    ext
-    rfl
-
-@[simp]
-theorem unitsEquiv_apply (f : (M →L[R] M)ˣ) (x : M) : unitsEquiv R M f x = (f : M →L[R] M) x :=
-  rfl
-
-end
-
-section
-
-variable (R) [TopologicalSpace R]
-variable [ContinuousMul R]
-
-/-- Continuous linear equivalences `R ≃L[R] R` are enumerated by `Rˣ`. -/
-def unitsEquivAut : Rˣ ≃ R ≃L[R] R where
-  toFun u :=
-    equivOfInverse (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u)
-      (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u⁻¹) (fun x => by simp) fun x => by simp
-  invFun e :=
-    ⟨e 1, e.symm 1, by rw [← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, symm_apply_apply], by
-      rw [← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, apply_symm_apply]⟩
-  left_inv u := Units.ext <| by simp
-  right_inv e := ext₁ <| by simp
-
-variable {R}
-
-@[simp]
-theorem unitsEquivAut_apply (u : Rˣ) (x : R) : unitsEquivAut R u x = x * u :=
-  rfl
-
-@[simp]
-theorem unitsEquivAut_apply_symm (u : Rˣ) (x : R) : (unitsEquivAut R u).symm x = x * ↑u⁻¹ :=
-  rfl
-
-@[simp]
-theorem unitsEquivAut_symm_apply (e : R ≃L[R] R) : ↑((unitsEquivAut R).symm e) = e 1 :=
-  rfl
-
-end
-
 variable [Module R M₂] [IsTopologicalAddGroup M]
 
 /-- A pair of continuous linear maps such that `f₁ ∘ f₂ = id` generates a continuous
@@ -829,71 +890,12 @@ theorem equivOfRightInverse_symm_apply (f₁ : M →L[R] M₂) (f₂ : M₂ →L
 
 end Ring
 
-section
-
-variable (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M]
-  [TopologicalSpace M]
-
-/-- If `ι` has a unique element, then `ι → M` is continuously linear equivalent to `M`. -/
-def funUnique : (ι → M) ≃L[R] M :=
-  { Homeomorph.funUnique ι M with toLinearEquiv := LinearEquiv.funUnique ι R M }
-
-variable {ι R M}
-
-@[simp]
-theorem coe_funUnique : ⇑(funUnique ι R M) = Function.eval default :=
-  rfl
-
-@[simp]
-theorem coe_funUnique_symm : ⇑(funUnique ι R M).symm = Function.const ι :=
-  rfl
-
-variable (R M)
-
-/-- Continuous linear equivalence between dependent functions `(i : Fin 2) → M i` and `M 0 × M 1`.
--/
-@[simps! -fullyApplied apply symm_apply]
-def piFinTwo (M : Fin 2 → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-    [∀ i, TopologicalSpace (M i)] : ((i : _) → M i) ≃L[R] M 0 × M 1 :=
-  { Homeomorph.piFinTwo M with toLinearEquiv := LinearEquiv.piFinTwo R M }
-
-/-- Continuous linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
-@[simps! -fullyApplied apply symm_apply]
-def finTwoArrow : (Fin 2 → M) ≃L[R] M × M :=
-  { piFinTwo R fun _ => M with toLinearEquiv := LinearEquiv.finTwoArrow R M }
-
-section
-variable {n : ℕ} {R : Type*} {M : Fin n.succ → Type*} {N : Type*}
-variable [Semiring R]
-variable [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)]
-
-variable (R M) in
-/-- `Fin.consEquiv` as a continuous linear equivalence. -/
-@[simps!]
-def _root_.Fin.consEquivL : (M 0 × Π i, M (Fin.succ i)) ≃L[R] (Π i, M i) where
-  __ := Fin.consLinearEquiv R M
-  continuous_toFun := continuous_id.fst.finCons continuous_id.snd
-  continuous_invFun := .prodMk (continuous_apply 0) (by continuity)
-
-/-- `Fin.cons` in the codomain of continuous linear maps. -/
-abbrev _root_.ContinuousLinearMap.finCons
-    [AddCommMonoid N] [Module R N] [TopologicalSpace N]
-    (f : N →L[R] M 0) (fs : N →L[R] Π i, M (Fin.succ i)) :
-    N →L[R] Π i, M i :=
-  Fin.consEquivL R M ∘L f.prod fs
-
-end
-
-end
-
 end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
 
 variable {R : Type*} {M M₂ M₃ : Type*}
   [TopologicalSpace M] [TopologicalSpace M₂] [TopologicalSpace M₃]
-
-section
 
 variable [Semiring R]
   [AddCommMonoid M] [Module R M]
@@ -1031,14 +1033,6 @@ lemma IsInvertible.inverse_comp_apply_of_right {g : M₂ →L[R] M₃} {f : M �
     (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
   simp only [hf.inverse_comp_of_right, coe_comp', Function.comp_apply]
 
-end
-
-section
-
-variable [Ring R]
-variable [AddCommGroup M] [Module R M]
-variable [AddCommGroup M₂] [Module R M₂]
-
 @[simp]
 theorem ringInverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M →L[R] M) := by
   suffices Ring.inverse ((ContinuousLinearEquiv.unitsEquiv _ _).symm e : M →L[R] M) = inverse ↑e by
@@ -1079,8 +1073,6 @@ alias ring_inverse_eq_map_inverse := ringInverse_eq_inverse
 @[simp] theorem inverse_id : (id R M).inverse = id R M := by
   rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
-
-end
 
 end ContinuousLinearMap
 
