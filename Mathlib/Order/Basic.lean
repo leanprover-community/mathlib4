@@ -121,6 +121,8 @@ theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
 lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
   simp [not_lt_iff_not_le_or_ge, or_iff_not_imp_left]
 
+@[deprecated (since := "2025-05-11")] alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
+
 /-- If `x = y` then `y ≤ x`. Note: this lemma uses `y ≤ x` instead of `x ≥ y`, because `le` is used
 almost exclusively in mathlib. -/
 lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
@@ -151,6 +153,8 @@ alias Eq.le := le_of_eq
 @[inherit_doc ge_of_eq] alias Eq.ge := ge_of_eq
 alias LT.lt.asymm := lt_asymm
 alias LT.lt.not_lt := lt_asymm
+
+@[deprecated (since := "2025-05-11")] alias LE.le.lt_of_not_le := LE.le.lt_of_not_ge
 
 theorem ne_of_not_le (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
 
@@ -215,10 +219,14 @@ lemma le_imp_eq_iff_le_imp_ge' : (a ≤ b → b = a) ↔ (a ≤ b → b ≤ a) w
   mp h hab := (h hab).le
   mpr h hab := (h hab).antisymm hab
 
+@[deprecated (since := "2025-05-11")] alias le_imp_eq_iff_le_imp_le := le_imp_eq_iff_le_imp_ge'
+
 -- Unnecessary brackets are here for readability
 lemma le_imp_eq_iff_le_imp_ge : (a ≤ b → a = b) ↔ (a ≤ b → b ≤ a) where
   mp h hab := (h hab).ge
   mpr h hab := hab.antisymm (h hab)
+
+@[deprecated (since := "2025-05-11")] alias ge_imp_eq_iff_le_imp_le := le_imp_eq_iff_le_imp_ge
 
 namespace LE.le
 
@@ -323,6 +331,9 @@ lemma lt_or_ge (h : a ≤ b) (c : α) : a < c ∨ c ≤ b := (lt_or_ge a c).imp 
 lemma le_or_gt (h : a ≤ b) (c : α) : a ≤ c ∨ c < b := (le_or_gt a c).imp id h.trans_lt'
 lemma le_or_le (h : a ≤ b) (c : α) : a ≤ c ∨ c ≤ b := (h.lt_or_ge c).imp le_of_lt id
 
+@[deprecated (since := "2025-05-11")] alias lt_or_le := lt_or_ge
+@[deprecated (since := "2025-05-11")] alias le_or_lt := le_or_gt
+
 end LE.le
 
 namespace LT.lt
@@ -351,8 +362,12 @@ theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
 theorem lt_of_not_ge (h : ¬b ≤ a) : a < b :=
   ((le_total _ _).resolve_right h).lt_of_not_ge h
 
+@[deprecated (since := "2025-05-11")] alias lt_of_not_le := lt_of_not_ge
+
 theorem lt_iff_not_ge : a < b ↔ ¬b ≤ a :=
   ⟨not_le_of_lt, lt_of_not_le⟩
+
+@[deprecated (since := "2025-05-11")] alias lt_iff_not_le := lt_iff_not_ge
 
 theorem Ne.lt_or_lt (h : a ≠ b) : a < b ∨ b < a :=
   lt_or_gt_of_ne h
