@@ -258,7 +258,8 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type v}
   rcases h (p ∘ₗ e.toLinearMap) LinearMap.id (hp.comp e.surjective) with ⟨g, hg⟩
   exact ⟨e.toLinearMap ∘ₗ g, hg⟩
 
-/-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`. -/
+/-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
+  which only requires quantifying over modules with an `AddCommGroup` instance. -/
 theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type v} [AddCommGroup P]
     [Module R P] [Small.{v} R]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,
