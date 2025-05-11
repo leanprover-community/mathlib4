@@ -607,7 +607,7 @@ private lemma exists_lt_mul_right_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 
   exact exists_lt_mul_left_of_nonneg hb.le hc h
 
 private lemma exists_mul_left_lt₀ {a b c : α} (hc : a * b < c) : ∃ a' > a, a' * b < c := by
-  rcases le_or_lt b 0 with hb | hb
+  rcases le_or_gt b 0 with hb | hb
   · obtain ⟨a', ha'⟩ := exists_gt a
     exact ⟨a', ha', hc.trans_le' (antitone_mul_right hb ha'.le)⟩
   · obtain ⟨a', ha', hc'⟩ := exists_between ((lt_div_iff₀ hb).2 hc)
@@ -625,7 +625,7 @@ lemma le_mul_of_forall_lt₀ {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' 
 lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
     (h : ∀ a' ≥ 0, a' < a → ∀ b' ≥ 0, b' < b → a' * b' ≤ c) : a * b ≤ c := by
   refine le_of_forall_lt_imp_le_of_dense fun d d_ab ↦ ?_
-  rcases lt_or_le d 0 with hd | hd
+  rcases lt_or_ge d 0 with hd | hd
   · exact hd.le.trans hc
   obtain ⟨a', ha', d_ab⟩ := exists_lt_mul_left_of_nonneg ha hd d_ab
   obtain ⟨b', hb', d_ab⟩ := exists_lt_mul_right_of_nonneg ha'.1 hd d_ab
@@ -656,7 +656,7 @@ theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n 
     ∃ δ > 0, ∀ q r : α, |r| ≤ B → |q - r| ≤ δ → |q ^ n - r ^ n| < ε := by
   wlog B_pos : 0 < B generalizing B
   · have ⟨δ, δ_pos, cont⟩ := this 1 zero_lt_one
-    exact ⟨δ, δ_pos, fun q r hr ↦ cont q r (hr.trans ((le_of_not_lt B_pos).trans zero_le_one))⟩
+    exact ⟨δ, δ_pos, fun q r hr ↦ cont q r (hr.trans ((le_of_not_gt B_pos).trans zero_le_one))⟩
   have pos : 0 < 1 + ↑n * (B + 1) ^ (n - 1) := zero_lt_one.trans_le <| le_add_of_nonneg_right <|
     mul_nonneg n.cast_nonneg <| (pow_pos (B_pos.trans <| lt_add_of_pos_right _ zero_lt_one) _).le
   refine ⟨min 1 (ε / (1 + n * (B + 1) ^ (n - 1))), lt_min zero_lt_one (div_pos hε pos),

@@ -241,7 +241,7 @@ theorem cthickening_singleton {α : Type*} [PseudoMetricSpace α] (x : α) {δ :
 
 theorem closedBall_subset_cthickening_singleton {α : Type*} [PseudoMetricSpace α] (x : α) (δ : ℝ) :
     closedBall x δ ⊆ cthickening δ ({x} : Set α) := by
-  rcases lt_or_le δ 0 with (hδ | hδ)
+  rcases lt_or_ge δ 0 with (hδ | hδ)
   · simp only [closedBall_eq_empty.mpr hδ, empty_subset]
   · simp only [cthickening_singleton x hδ, Subset.rfl]
 

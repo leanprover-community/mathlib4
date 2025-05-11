@@ -133,7 +133,7 @@ theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
 
 @[simp]
 theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
-  not_lt_of_le n.one_le
+  not_lt_of_ge n.one_le
 
 instance : Inhabited ℕ+ :=
   ⟨1⟩

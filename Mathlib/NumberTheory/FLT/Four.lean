@@ -281,7 +281,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have hic' : Int.natAbs c ≤ Int.natAbs i := by
     apply h.2 j k i
     exact ⟨hj0, hk0, hh.symm⟩
-  apply absurd (not_le_of_lt hic) (not_not.mpr hic')
+  apply absurd (not_le_of_gt hic) (not_not.mpr hic')
 
 end Fermat42
 

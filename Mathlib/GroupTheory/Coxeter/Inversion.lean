@@ -341,7 +341,7 @@ theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
   rw [getD_rightInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 1 [← take_append_drop (j + 1) ω]
   rw [take_succ]
-  obtain lt | le := lt_or_le j ω.length
+  obtain lt | le := lt_or_ge j ω.length
   · simp only [getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
     simp
   · simp only [getElem?_eq_none le]
@@ -352,7 +352,7 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
   rw [getD_leftInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 4 [← take_append_drop (j + 1) ω]
   rw [take_succ]
-  obtain lt | le := lt_or_le j ω.length
+  obtain lt | le := lt_or_ge j ω.length
   · simp only [getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
     simp
   · simp only [getElem?_eq_none le]

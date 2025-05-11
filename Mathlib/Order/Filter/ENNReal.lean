@@ -127,7 +127,7 @@ lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
     zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
-  simpa using (le_or_lt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
+  simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
 @[simp, norm_cast]
 lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
@@ -141,7 +141,7 @@ lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
     zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
-  simpa using (le_or_lt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
+  simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
 end NNReal
 

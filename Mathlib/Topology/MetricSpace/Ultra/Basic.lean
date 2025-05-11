@@ -72,7 +72,7 @@ lemma ball_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ ball x r) : ball x r = ball 
   exact (dist_triangle_max _ _ _).trans_lt (max_lt h' (dist_comm x _ ▸ h))
 
 lemma mem_ball_iff {x y : X} {r : ℝ} : y ∈ ball x r ↔ x ∈ ball y r := by
-  cases lt_or_le 0 r with
+  cases lt_or_ge 0 r with
   | inl hr =>
     constructor <;> intro h <;>
     rw [← ball_eq_of_mem h] <;>
@@ -83,7 +83,7 @@ lemma ball_subset_trichotomy :
     ball x r ⊆ ball y s ∨ ball y s ⊆ ball x r ∨ Disjoint (ball x r) (ball y s) := by
   wlog hrs : r ≤ s generalizing x y r s
   · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ⊆ _), or_assoc]
-    exact this y x s r (lt_of_not_le hrs).le
+    exact this y x s r (lt_of_not_ge hrs).le
   · refine Set.disjoint_or_nonempty_inter (ball x r) (ball y s) |>.symm.imp (fun h ↦ ?_) (Or.inr ·)
     obtain ⟨hxz, hyz⟩ := (Set.mem_inter_iff _ _ _).mp h.some_mem
     have hx := ball_subset_ball hrs (x := x)
@@ -105,7 +105,7 @@ lemma closedBall_eq_of_mem {x y: X} {r : ℝ} (h : y ∈ closedBall x r) :
 
 lemma mem_closedBall_iff {x y: X} {r : ℝ} :
     y ∈ closedBall x r ↔ x ∈ closedBall y r := by
-  cases le_or_lt 0 r with
+  cases le_or_gt 0 r with
   | inl hr =>
     constructor <;> intro h <;>
     rw [← closedBall_eq_of_mem h] <;>
@@ -117,7 +117,7 @@ lemma closedBall_subset_trichotomy :
     Disjoint (closedBall x r) (closedBall y s) := by
   wlog hrs : r ≤ s generalizing x y r s
   · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ⊆ _), or_assoc]
-    exact this y x s r (lt_of_not_le hrs).le
+    exact this y x s r (lt_of_not_ge hrs).le
   · refine Set.disjoint_or_nonempty_inter (closedBall x r) (closedBall y s) |>.symm.imp
       (fun h ↦ ?_) (Or.inr ·)
     obtain ⟨hxz, hyz⟩ := (Set.mem_inter_iff _ _ _).mp h.some_mem
@@ -125,7 +125,7 @@ lemma closedBall_subset_trichotomy :
     rwa [closedBall_eq_of_mem hyz |>.trans (closedBall_eq_of_mem <| hx hxz).symm]
 
 lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
-  cases le_or_lt r 0 with
+  cases le_or_gt r 0 with
   | inl hr =>
     simp [ball_eq_empty.mpr hr]
   | inr h =>

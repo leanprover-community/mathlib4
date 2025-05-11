@@ -399,7 +399,7 @@ theorem exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' 
 theorem ball_eq_empty_iff : ball x ε = ∅ ↔ ε = 0 :=
   eq_empty_iff_forall_not_mem.trans
     ⟨fun h => le_bot_iff.1 (le_of_not_gt fun ε0 => h _ (mem_ball_self ε0)), fun ε0 _ h =>
-      not_lt_of_le (le_of_eq ε0) (pos_of_mem_ball h)⟩
+      not_lt_of_ge (le_of_eq ε0) (pos_of_mem_ball h)⟩
 
 theorem ordConnected_setOf_closedBall_subset (x : α) (s : Set α) :
     OrdConnected { r | closedBall x r ⊆ s } :=

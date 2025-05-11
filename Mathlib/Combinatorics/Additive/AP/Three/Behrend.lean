@@ -488,7 +488,7 @@ theorem lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) :
 theorem roth_lower_bound : (N : ℝ) * exp (-4 * √(log N)) ≤ rothNumberNat N := by
   obtain rfl | hN := Nat.eq_zero_or_pos N
   · norm_num
-  obtain h₁ | h₁ := le_or_lt 4096 N
+  obtain h₁ | h₁ := le_or_gt 4096 N
   · exact (roth_lower_bound_explicit h₁).le
   · apply (lower_bound_le_one hN h₁.le).trans
     simpa using rothNumberNat.monotone hN

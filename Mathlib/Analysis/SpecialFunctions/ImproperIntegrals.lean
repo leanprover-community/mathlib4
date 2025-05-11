@@ -148,7 +148,7 @@ theorem integrableAtFilter_rpow_atTop_iff {s : ℝ} :
 /-- The real power function with any exponent is not integrable on `(0, +∞)`. -/
 theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi (0 : ℝ)) := by
   intro h
-  rcases le_or_lt s (-1) with hs|hs
+  rcases le_or_gt s (-1) with hs|hs
   · have : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) 1) := h.mono Ioo_subset_Ioi_self le_rfl
     rw [integrableOn_Ioo_rpow_iff zero_lt_one] at this
     exact hs.not_lt this
@@ -214,7 +214,7 @@ theorem integrableOn_Ioi_deriv_norm_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t)
 theorem not_integrableOn_Ioi_cpow (s : ℂ) :
     ¬ IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi (0 : ℝ)) := by
   intro h
-  rcases le_or_lt s.re (-1) with hs|hs
+  rcases le_or_gt s.re (-1) with hs|hs
   · have : IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioo (0 : ℝ) 1) :=
       h.mono Ioo_subset_Ioi_self le_rfl
     rw [integrableOn_Ioo_cpow_iff zero_lt_one] at this

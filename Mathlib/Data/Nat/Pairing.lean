@@ -134,7 +134,7 @@ theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
 
 theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]
-  rcases lt_or_le m n with h | h
+  rcases lt_or_ge m n with h | h
   · rw [if_pos h, max_eq_right h.le, min_eq_left h.le, Nat.pow_two]
   rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, Nat.pow_two, Nat.add_assoc,
     Nat.add_le_add_iff_left]

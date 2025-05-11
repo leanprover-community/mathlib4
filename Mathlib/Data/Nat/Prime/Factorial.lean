@@ -17,7 +17,7 @@ open Nat
 namespace Nat
 
 theorem Prime.dvd_factorial : ∀ {n p : ℕ} (_ : Prime p), p ∣ n ! ↔ p ≤ n
-  | 0, _, hp => iff_of_false hp.not_dvd_one (not_le_of_lt hp.pos)
+  | 0, _, hp => iff_of_false hp.not_dvd_one (not_le_of_gt hp.pos)
   | n + 1, p, hp => by
     rw [factorial_succ, hp.dvd_mul, Prime.dvd_factorial hp]
     exact

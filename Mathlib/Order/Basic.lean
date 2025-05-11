@@ -115,10 +115,10 @@ theorem lt_of_eq_of_lt' : b = c → a < b → a < c :=
   flip lt_of_lt_of_eq
 
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
-  rw [lt_iff_le_not_le, Classical.not_and_iff_not_or_not, Classical.not_not]
+  rw [lt_iff_le_not_ge, Classical.not_and_iff_not_or_not, Classical.not_not]
 
 -- Unnecessary brackets are here for readability
-lemma not_lt_iff_le_imp_le : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
+lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
   simp [not_lt_iff_not_le_or_ge, or_iff_not_imp_left]
 
 /-- If `x = y` then `y ≤ x`. Note: this lemma uses `y ≤ x` instead of `x ≥ y`, because `le` is used
@@ -143,7 +143,7 @@ alias Eq.trans_le := le_of_eq_of_le
 alias Eq.trans_ge := le_of_eq_of_le'
 alias Eq.trans_lt := lt_of_eq_of_lt
 alias Eq.trans_gt := lt_of_eq_of_lt'
-alias LE.le.lt_of_not_le := lt_of_le_not_le
+alias LE.le.lt_of_not_ge := lt_of_le_not_ge
 alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 alias LT.lt.le := le_of_lt
 alias LT.lt.ne := ne_of_lt
@@ -211,12 +211,12 @@ alias LE.le.lt_of_ne' := lt_of_le_of_ne'
 alias LE.le.lt_or_eq := lt_or_eq_of_le
 
 -- Unnecessary brackets are here for readability
-lemma le_imp_eq_iff_le_imp_le : (a ≤ b → b = a) ↔ (a ≤ b → b ≤ a) where
+lemma le_imp_eq_iff_le_imp_ge' : (a ≤ b → b = a) ↔ (a ≤ b → b ≤ a) where
   mp h hab := (h hab).le
   mpr h hab := (h hab).antisymm hab
 
 -- Unnecessary brackets are here for readability
-lemma ge_imp_eq_iff_le_imp_le : (a ≤ b → a = b) ↔ (a ≤ b → b ≤ a) where
+lemma le_imp_eq_iff_le_imp_ge : (a ≤ b → a = b) ↔ (a ≤ b → b ≤ a) where
   mp h hab := (h hab).ge
   mpr h hab := hab.antisymm (h hab)
 
@@ -258,7 +258,7 @@ alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 -- See Note [decidable namespace]
 protected theorem Decidable.eq_iff_le_not_lt [DecidableLE α] : a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
-    h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_le h₃)⟩
+    h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_ge h₃)⟩
 
 theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b :=
   haveI := Classical.dec
@@ -319,9 +319,9 @@ variable [LinearOrder α] {a b : α}
 
 namespace LE.le
 
-lemma lt_or_le (h : a ≤ b) (c : α) : a < c ∨ c ≤ b := (lt_or_ge a c).imp id h.trans'
-lemma le_or_lt (h : a ≤ b) (c : α) : a ≤ c ∨ c < b := (le_or_gt a c).imp id h.trans_lt'
-lemma le_or_le (h : a ≤ b) (c : α) : a ≤ c ∨ c ≤ b := (h.lt_or_le c).imp le_of_lt id
+lemma lt_or_ge (h : a ≤ b) (c : α) : a < c ∨ c ≤ b := (lt_or_ge a c).imp id h.trans'
+lemma le_or_gt (h : a ≤ b) (c : α) : a ≤ c ∨ c < b := (le_or_gt a c).imp id h.trans_lt'
+lemma le_or_le (h : a ≤ b) (c : α) : a ≤ c ∨ c ≤ b := (h.lt_or_ge c).imp le_of_lt id
 
 end LE.le
 
@@ -348,10 +348,10 @@ theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
   · rw [if_pos eq.le, if_pos eq.ge, eq]
   · rw [if_neg (not_le.mpr gt.gt), if_pos gt.le]
 
-theorem lt_of_not_le (h : ¬b ≤ a) : a < b :=
-  ((le_total _ _).resolve_right h).lt_of_not_le h
+theorem lt_of_not_ge (h : ¬b ≤ a) : a < b :=
+  ((le_total _ _).resolve_right h).lt_of_not_ge h
 
-theorem lt_iff_not_le : a < b ↔ ¬b ≤ a :=
+theorem lt_iff_not_ge : a < b ↔ ¬b ≤ a :=
   ⟨not_le_of_lt, lt_of_not_le⟩
 
 theorem Ne.lt_or_lt (h : a ≠ b) : a < b ∨ b < a :=
@@ -377,13 +377,13 @@ lemma exists_forall_ge_and {p q : α → Prop} :
     ⟨c, fun _d hcd ↦ ⟨ha _ <| hac.trans hcd, hb _ <| hbc.trans hcd⟩⟩
 
 theorem le_of_forall_lt (H : ∀ c, c < a → c < b) : a ≤ b :=
-  le_of_not_lt fun h ↦ lt_irrefl _ (H _ h)
+  le_of_not_gt fun h ↦ lt_irrefl _ (H _ h)
 
 theorem forall_lt_iff_le : (∀ ⦃c⦄, c < a → c < b) ↔ a ≤ b :=
   ⟨le_of_forall_lt, fun h _ hca ↦ lt_of_lt_of_le hca h⟩
 
 theorem le_of_forall_lt' (H : ∀ c, a < c → b < c) : b ≤ a :=
-  le_of_not_lt fun h ↦ lt_irrefl _ (H _ h)
+  le_of_not_gt fun h ↦ lt_irrefl _ (H _ h)
 
 theorem forall_lt_iff_le' : (∀ ⦃c⦄, a < c → b < c) ↔ b ≤ a :=
   ⟨le_of_forall_lt', fun h _ hac ↦ lt_of_le_of_lt h hac⟩
@@ -540,7 +540,7 @@ end LinearOrder
 
 lemma lt_imp_lt_of_le_imp_le {β} [LinearOrder α] [Preorder β] {a b : α} {c d : β}
     (H : a ≤ b → c ≤ d) (h : d < c) : b < a :=
-  lt_of_not_le fun h' ↦ (H h').not_lt h
+  lt_of_not_ge fun h' ↦ (H h').not_lt h
 
 lemma le_imp_le_iff_lt_imp_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β} :
     a ≤ b → c ≤ d ↔ d < c → b < a :=
@@ -548,7 +548,7 @@ lemma le_imp_le_iff_lt_imp_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} 
 
 lemma lt_iff_lt_of_le_iff_le' {β} [Preorder α] [Preorder β] {a b : α} {c d : β}
     (H : a ≤ b ↔ c ≤ d) (H' : b ≤ a ↔ d ≤ c) : b < a ↔ d < c :=
-  lt_iff_le_not_le.trans <| (and_congr H' (not_congr H)).trans lt_iff_le_not_le.symm
+  lt_iff_le_not_ge.trans <| (and_congr H' (not_congr H)).trans lt_iff_le_not_ge.symm
 
 lemma lt_iff_lt_of_le_iff_le {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β}
     (H : a ≤ b ↔ c ≤ d) : b < a ↔ d < c := not_le.symm.trans <| (not_congr H).trans <| not_le
@@ -567,8 +567,8 @@ lemma rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [IsSym
 @[ext]
 lemma Preorder.toLE_injective : Function.Injective (@Preorder.toLE α) :=
   fun
-  | { lt := A_lt, lt_iff_le_not_le := A_iff, .. },
-    { lt := B_lt, lt_iff_le_not_le := B_iff, .. } => by
+  | { lt := A_lt, lt_iff_le_not_ge := A_iff, .. },
+    { lt := B_lt, lt_iff_le_not_ge := B_iff, .. } => by
     rintro ⟨⟩
     have : A_lt = B_lt := by
       funext a b
@@ -659,7 +659,7 @@ instance instInf (α : Type*) [Max α] : Min αᵒᵈ :=
 instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
-  lt_iff_le_not_le := fun _ _ ↦ lt_iff_le_not_le
+  lt_iff_le_not_ge := fun _ _ ↦ lt_iff_le_not_ge
 
 instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ where
   __ := inferInstanceAs (Preorder αᵒᵈ)
@@ -752,7 +752,7 @@ instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
 
 theorem Pi.lt_def [∀ i, Preorder (π i)] {x y : ∀ i, π i} :
     x < y ↔ x ≤ y ∧ ∃ i, x i < y i := by
-  simp +contextual [lt_iff_le_not_le, Pi.le_def]
+  simp +contextual [lt_iff_le_not_ge, Pi.le_def]
 
 instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π i) where
   __ := Pi.preorder
@@ -839,10 +839,10 @@ theorem le_update_self_iff : x ≤ update x i a ↔ x i ≤ a := by simp [le_upd
 theorem update_le_self_iff : update x i a ≤ x ↔ a ≤ x i := by simp [update_le_iff]
 
 @[simp]
-theorem lt_update_self_iff : x < update x i a ↔ x i < a := by simp [lt_iff_le_not_le]
+theorem lt_update_self_iff : x < update x i a ↔ x i < a := by simp [lt_iff_le_not_ge]
 
 @[simp]
-theorem update_lt_self_iff : update x i a < x ↔ a < x i := by simp [lt_iff_le_not_le]
+theorem update_lt_self_iff : update x i a < x ↔ a < x i := by simp [lt_iff_le_not_ge]
 
 end Function
 
@@ -879,7 +879,7 @@ abbrev Preorder.lift [Preorder β] (f : α → β) : Preorder α where
   le_refl _ := le_rfl
   le_trans _ _ _ := _root_.le_trans
   lt x y := f x < f y
-  lt_iff_le_not_le _ _ := _root_.lt_iff_le_not_le
+  lt_iff_le_not_ge _ _ := _root_.lt_iff_le_not_ge
 
 /-- Transfer a `PartialOrder` on `β` to a `PartialOrder` on `α` using an injective
 function `f : α → β`. See note [reducible non-instances]. -/
@@ -1103,8 +1103,8 @@ theorem mk_lt_mk_iff_right : (a, b₁) < (a, b₂) ↔ b₁ < b₂ :=
 theorem lt_iff : x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2 := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · by_cases h₁ : y.1 ≤ x.1
-    · exact Or.inr ⟨h.1.1, LE.le.lt_of_not_le h.1.2 fun h₂ ↦ h.2 ⟨h₁, h₂⟩⟩
-    · exact Or.inl ⟨LE.le.lt_of_not_le h.1.1 h₁, h.1.2⟩
+    · exact Or.inr ⟨h.1.1, LE.le.lt_of_not_ge h.1.2 fun h₂ ↦ h.2 ⟨h₁, h₂⟩⟩
+    · exact Or.inl ⟨LE.le.lt_of_not_ge h.1.1 h₁, h.1.2⟩
   · rintro (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)
     · exact ⟨⟨h₁.le, h₂⟩, fun h ↦ h₁.not_le h.1⟩
     · exact ⟨⟨h₁, h₂.le⟩, fun h ↦ h₂.not_le h.2⟩
@@ -1253,7 +1253,7 @@ instance instLinearOrder : LinearOrder PUnit where
   le_trans    := by intros; trivial
   le_total    := by intros; exact Or.inl trivial
   le_antisymm := by intros; rfl
-  lt_iff_le_not_le := by simp only [not_true, and_false, forall_const]
+  lt_iff_le_not_ge := by simp only [not_true, and_false, forall_const]
 
 theorem max_eq : max a b = unit :=
   rfl

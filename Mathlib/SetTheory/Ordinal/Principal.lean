@@ -59,7 +59,7 @@ theorem principal_iff_of_monotone
     Principal op o ↔ ∀ a < o, op a a < o := by
   use fun h a ha => h ha ha
   intro H a b ha hb
-  obtain hab | hba := le_or_lt a b
+  obtain hab | hba := le_or_gt a b
   · exact (h₂ b hab).trans_lt <| H b hb
   · exact (h₁ a hba.le).trans_lt <| H a ha
 
@@ -140,7 +140,7 @@ theorem isLimit_of_principal_add (ho₁ : 1 < o) (ho : Principal (· + ·) o) : 
 
 theorem principal_add_iff_add_left_eq_self : Principal (· + ·) o ↔ ∀ a < o, a + o = o := by
   refine ⟨fun ho a hao => ?_, fun h a b hao hbo => ?_⟩
-  · rcases lt_or_le 1 o with ho₁ | ho₁
+  · rcases lt_or_ge 1 o with ho₁ | ho₁
     · exact op_eq_self_of_principal hao (isNormal_add_right a) ho (isLimit_of_principal_add ho₁ ho)
     · rcases le_one_iff.1 ho₁ with (rfl | rfl)
       · exact (Ordinal.not_lt_zero a hao).elim
@@ -206,7 +206,7 @@ theorem principal_add_iff_zero_or_omega0_opow :
     rcases lt_omega0.1 ao with ⟨n, rfl⟩
     clear ao
     revert h'
-    apply not_lt_of_le
+    apply not_lt_of_ge
     suffices e : ω ^ log ω o * n + o = o by
       simpa only [e] using le_add_right (ω ^ log ω o * ↑n) o
     induction' n with n IH
@@ -346,7 +346,7 @@ theorem principal_add_of_principal_mul_opow (hb : 1 < b) (ho : Principal (· * �
 theorem principal_mul_iff_le_two_or_omega0_opow_opow :
     Principal (· * ·) o ↔ o ≤ 2 ∨ o ∈ Set.range (ω ^ ω ^ · : Ordinal → Ordinal) := by
   refine ⟨fun ho => ?_, ?_⟩
-  · rcases le_or_lt o 2 with ho₂ | ho₂
+  · rcases le_or_gt o 2 with ho₂ | ho₂
     · exact Or.inl ho₂
     · rcases principal_add_iff_zero_or_omega0_opow.1 (principal_add_of_principal_mul ho ho₂.ne')
         with (rfl | ⟨a, rfl⟩)

@@ -144,7 +144,7 @@ theorem eq_of_Ico_disjoint {x₁ x₂ y₁ y₂ : α} (h : Disjoint (Ico x₁ x�
     (h2 : x₂ ∈ Ico y₁ y₂) : y₁ = x₂ := by
   rw [Ico_disjoint_Ico, min_eq_left (le_of_lt h2.2), le_max_iff] at h
   apply le_antisymm h2.1
-  exact h.elim (fun h => absurd hx (not_lt_of_le h)) id
+  exact h.elim (fun h => absurd hx (not_lt_of_ge h)) id
 
 @[simp]
 theorem iUnion_Ico_eq_Iio_self_iff {f : ι → α} {a : α} :

@@ -97,7 +97,7 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
   rcases eq_or_lt_of_le hs with rfl | hs
   · rwa [add_neg_cancel, zero_rpow hp'.ne', mul_neg_one, add_neg_lt_iff_lt_add, zero_add]
   have hs1 : 0 < 1 + s := neg_lt_iff_pos_add'.mp hs
-  rcases le_or_lt (1 + p * s) 0 with hs2 | hs2
+  rcases le_or_gt (1 + p * s) 0 with hs2 | hs2
   · exact hs2.trans_lt (rpow_pos_of_pos hs1 _)
   have hs3 : 1 + s ≠ 1 := hs' ∘ add_eq_left.mp
   have hs4 : 1 + p * s ≠ 1 := by

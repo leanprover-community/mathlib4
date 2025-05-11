@@ -91,7 +91,7 @@ protected lemma isNilpotent_iff :
 @[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N) :
     IsNilpotent (reflect N P) ↔ IsNilpotent P := by
   simp only [Polynomial.isNilpotent_iff, coeff_reverse]
-  refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_lt i N with hi | hi
+  refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_gt i N with hi | hi
   · simpa [tsub_tsub_cancel_of_le hi] using h (N - i)
   · simp [coeff_eq_zero_of_natDegree_lt <| lt_of_le_of_lt hN hi]
   · simpa [hi, revAt_le] using h (N - i)

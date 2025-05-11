@@ -475,7 +475,7 @@ open Finset
     [TwoUniqueProds G] : TwoUniqueProds H where
   uniqueMul_of_one_lt_card {A B} hc := by
     classical
-    obtain hc' | hc' := lt_or_le 1 (#(A.image f) * #(B.image f))
+    obtain hc' | hc' := lt_or_ge 1 (#(A.image f) * #(B.image f))
     · obtain ⟨⟨a1, b1⟩, h1, ⟨a2, b2⟩, h2, hne, hu1, hu2⟩ := uniqueMul_of_one_lt_card hc'
       simp_rw [mem_product, mem_image] at h1 h2 ⊢
       obtain ⟨⟨a1, ha1, rfl⟩, b1, hb1, rfl⟩ := h1

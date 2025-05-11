@@ -139,7 +139,7 @@ theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
 
 theorem isClique_map_finset_iff :
     (G.map f).IsClique t ↔ #t ≤ 1 ∨ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
-  obtain (ht | ht) := le_or_lt #t 1
+  obtain (ht | ht) := le_or_gt #t 1
   · simp only [ht, true_or, iff_true]
     exact IsClique.of_subsingleton <| card_le_one.1 ht
   rw [isClique_map_finset_iff_of_nontrivial, ← not_lt]
@@ -377,7 +377,7 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
 
 @[simp] theorem cliqueFree_map_iff {f : α ↪ β} [Nonempty α] :
     (G.map f).CliqueFree n ↔ G.CliqueFree n := by
-  obtain (hle | hlt) := le_or_lt n 1
+  obtain (hle | hlt) := le_or_gt n 1
   · obtain (rfl | rfl) := Nat.le_one_iff_eq_zero_or_eq_one.1 hle
     · simp [CliqueFree]
     simp [CliqueFree, show ∃ (_ : β), True from ⟨f (Classical.arbitrary _), trivial⟩]

@@ -151,7 +151,7 @@ theorem dist_coe_center (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) =
 theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
     cmp (dist z w) r = cmp (dist (z : ℂ) (w.center r)) (w.im * Real.sinh r) := by
   letI := metricSpaceAux
-  rcases lt_or_le r 0 with hr₀ | hr₀
+  rcases lt_or_ge r 0 with hr₀ | hr₀
   · trans Ordering.gt
     exacts [(hr₀.trans_le dist_nonneg).cmp_eq_gt,
       ((mul_neg_of_pos_of_neg w.im_pos (sinh_neg_iff.2 hr₀)).trans_le dist_nonneg).cmp_eq_gt.symm]

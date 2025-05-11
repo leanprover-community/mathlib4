@@ -373,7 +373,7 @@ section abs
 variable [LinearOrder R] [AddLeftMono R]
 
 lemma abs_left_iff (x y : R) : IsCoprime |x| y ↔ IsCoprime x y := by
-  cases le_or_lt 0 x with
+  cases le_or_gt 0 x with
   | inl h => rw [abs_of_nonneg h]
   | inr h => rw [abs_of_neg h, IsCoprime.neg_left_iff]
 

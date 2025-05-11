@@ -375,7 +375,7 @@ theorem StrictAntiOn.eq_iff_eq (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s)
 
 theorem StrictMonoOn.lt_iff_lt (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a < f b ↔ a < b := by
-  rw [lt_iff_le_not_le, lt_iff_le_not_le, hf.le_iff_le ha hb, hf.le_iff_le hb ha]
+  rw [lt_iff_le_not_ge, lt_iff_le_not_ge, hf.le_iff_le ha hb, hf.le_iff_le hb ha]
 
 theorem StrictAntiOn.lt_iff_lt (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a < f b ↔ b < a :=
@@ -479,16 +479,16 @@ lemma not_monotone_not_antitone_iff_exists_le_le :
     · exact ⟨c, d, b, hcd, hda.trans hab, Or.inl ⟨hfcd, hfba.trans_le hfad⟩⟩
     · exact ⟨c, a, b, hcd.trans hda, hab, Or.inl ⟨hfcd.trans_le hfda, hfba⟩⟩
   obtain hac | hca := le_total a c
-  · obtain hfdb | hfbd := le_or_lt (f d) (f b)
+  · obtain hfdb | hfbd := le_or_gt (f d) (f b)
     · exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans <| hfdb.trans_lt hfba, hfcd⟩⟩
-    obtain hfca | hfac := lt_or_le (f c) (f a)
+    obtain hfca | hfac := lt_or_ge (f c) (f a)
     · exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfca, hfcd⟩⟩
     obtain hbd | hdb := le_total b d
     · exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩
     · exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩
-  · obtain hfdb | hfbd := le_or_lt (f d) (f b)
+  · obtain hfdb | hfbd := le_or_gt (f d) (f b)
     · exact ⟨c, a, b, hca, hab, Or.inl ⟨hfcd.trans <| hfdb.trans_lt hfba, hfba⟩⟩
-    obtain hfca | hfac := lt_or_le (f c) (f a)
+    obtain hfca | hfac := lt_or_ge (f c) (f a)
     · exact ⟨c, a, b, hca, hab, Or.inl ⟨hfca, hfba⟩⟩
     obtain hbd | hdb := le_total b d
     · exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩

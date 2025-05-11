@@ -182,7 +182,7 @@ theorem eventually_iInf_lowerCentralSeries_eq [IsArtinian R M] :
   obtain ⟨n, hn : ∀ m, n ≤ m → lowerCentralSeries R L M n = lowerCentralSeries R L M m⟩ :=
     h_wf.monotone_chain_condition ⟨_, antitone_lowerCentralSeries R L M⟩
   refine Filter.eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
-  rcases le_or_lt l m with h | h
+  rcases le_or_gt l m with h | h
   · rw [← hn _ hl, ← hn _ (hl.trans h)]
   · exact antitone_lowerCentralSeries R L M (le_of_lt h)
 

@@ -111,7 +111,7 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   · rw [concat_left hfg hxb]
     refine hf ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
     simp [projIccCM, projIcc, hxb, x.2.1]
-  · replace hxb : b ≤ x := lt_of_not_le hxb |>.le
+  · replace hxb : b ≤ x := lt_of_not_ge hxb |>.le
     rw [concat_right hfg hxb]
     refine hg ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
     simp [projIccCM, projIcc, hxb, x.2.2]
