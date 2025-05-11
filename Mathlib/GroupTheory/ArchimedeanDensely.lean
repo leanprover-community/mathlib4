@@ -72,7 +72,7 @@ lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg 
   suffices e 1 = 1 ∨ - e 1 = 1 by
     rw [neg_eq_iff_eq_neg] at this
     simp_rw [← AddEquiv.toAddMonoidHom_injective.eq_iff]
-    refine this.imp ?_ ?_ <;> (intro h; ext; exact h)
+    exact this.imp (AddMonoidHom.ext_int ·) (AddMonoidHom.ext_int ·)
   rw [← AddSubgroup.zmultiples_eq_zmultiples_iff]
   simpa [e.surjective, eq_comm] using (AddMonoidHom.map_zmultiples (G := ℤ) (N := ℤ) (e : ℤ →+ ℤ) 1)
 
