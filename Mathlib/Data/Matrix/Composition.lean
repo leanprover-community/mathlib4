@@ -43,33 +43,37 @@ theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
   comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
 
 @[simp]
-theorem comp_stdBasisMatrix_stdBasisMatrix
+theorem comp_single_single
     [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (i j k l r) :
-    comp I J K L R (stdBasisMatrix i j (stdBasisMatrix k l r))
-      = stdBasisMatrix (i, k) (j, l) r := by
+    comp I J K L R (single i j (single k l r))
+      = single (i, k) (j, l) r := by
   ext ⟨i', k'⟩ ⟨j', l'⟩
   dsimp [comp_apply]
   obtain hi | rfl := ne_or_eq i i'
-  · rw [StdBasisMatrix.apply_of_row_ne hi,
-      StdBasisMatrix.apply_of_row_ne (ne_of_apply_ne Prod.fst hi), Matrix.zero_apply]
+  · rw [single_apply_of_row_ne hi,
+      single_apply_of_row_ne (ne_of_apply_ne Prod.fst hi), Matrix.zero_apply]
   obtain hj | rfl := ne_or_eq j j'
-  · rw [StdBasisMatrix.apply_of_col_ne _ _ hj,
-      StdBasisMatrix.apply_of_col_ne _ _ (ne_of_apply_ne Prod.fst hj), Matrix.zero_apply]
-  rw [StdBasisMatrix.apply_same]
+  · rw [single_apply_of_col_ne _ _ hj,
+      single_apply_of_col_ne _ _ (ne_of_apply_ne Prod.fst hj), Matrix.zero_apply]
+  rw [single_apply_same]
   obtain hk | rfl := ne_or_eq k k'
-  · rw [StdBasisMatrix.apply_of_row_ne hk,
-      StdBasisMatrix.apply_of_row_ne (ne_of_apply_ne Prod.snd hk)]
+  · rw [single_apply_of_row_ne hk,
+      single_apply_of_row_ne (ne_of_apply_ne Prod.snd hk)]
   obtain hj | rfl := ne_or_eq l l'
-  · rw [StdBasisMatrix.apply_of_col_ne _ _ hj,
-      StdBasisMatrix.apply_of_col_ne _ _ (ne_of_apply_ne Prod.snd hj)]
-  rw [StdBasisMatrix.apply_same, StdBasisMatrix.apply_same]
+  · rw [single_apply_of_col_ne _ _ hj,
+      single_apply_of_col_ne _ _ (ne_of_apply_ne Prod.snd hj)]
+  rw [single_apply_same, single_apply_same]
+
+@[deprecated (since := "2025-05-05")] alias comp_stdBasisMatrix_stdBasisMatrix := comp_single_single
 
 @[simp]
-theorem comp_symm_stdBasisMatrix
+theorem comp_symm_single
     [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (ii jj r) :
-    (comp I J K L R).symm (stdBasisMatrix ii jj r) =
-      (stdBasisMatrix ii.1 jj.1 (stdBasisMatrix ii.2 jj.2 r)) :=
-  (comp I J K L R).symm_apply_eq.2 <| comp_stdBasisMatrix_stdBasisMatrix _ _ _ _ _ |>.symm
+    (comp I J K L R).symm (single ii jj r) =
+      (single ii.1 jj.1 (single ii.2 jj.2 r)) :=
+  (comp I J K L R).symm_apply_eq.2 <| comp_single_single _ _ _ _ _ |>.symm
+
+@[deprecated (since := "2025-05-05")] alias comp_symm_stdBasisMatrix := comp_symm_single
 
 @[simp]
 theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I → J → R) :
