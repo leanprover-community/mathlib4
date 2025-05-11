@@ -87,34 +87,58 @@ theorem vec_hadamard [Mul R] (A B : Matrix m n R) : vec (A ⊙ B) = vec A * vec 
 section Kronecker
 open scoped Kronecker
 
-section NonUnitalCommSemiring
-variable [NonUnitalCommSemiring R] [Fintype m] [Fintype n]
+section NonUnitalSemiring
+variable [NonUnitalSemiring R] [Fintype m] [Fintype n]
 
-theorem kronecker_mulVec_vec (A : Matrix l m R) (X : Matrix m n R) (B : Matrix p n R) :
+/-- Technical lemma shared with `kronecker_mulVec_vec` and `vec_mul_eq_mulVec`. -/
+theorem kronecker_mulVec_vec_of_comm (A : Matrix l m R) (X : Matrix m n R) (B : Matrix p n R)
+    (hB : ∀ x i j, Commute x (B i j)) :
     B ⊗ₖ A *ᵥ vec X = vec (A * X * Bᵀ) := by
   ext ⟨k, l⟩
   simp_rw [vec, Matrix.mulVec, Matrix.mul_apply, dotProduct, Matrix.kroneckerMap_apply,
     Finset.sum_mul, transpose_apply, ← Finset.univ_product_univ, Finset.sum_product,
-    mul_right_comm _ _ (B _ _), vec, mul_comm _ (B _ _)]
+    (hB _ _ _).right_comm, vec, (hB _ _ _).eq]
+
+/-- Technical lemma shared with `vec_vecMul_kronecker` and `vec_mul_eq_vecMul`. -/
+theorem vec_vecMul_kronecker_of_comm (A : Matrix m l R) (X : Matrix m n R) (B : Matrix n p R)
+    (hA : ∀ x i j, Commute (A i j) x) :
+    vec X ᵥ* B ⊗ₖ A = vec (Aᵀ * X * B) := by
+  ext ⟨k, l⟩
+  simp_rw [vec, Matrix.vecMul, Matrix.mul_apply, dotProduct, Matrix.kroneckerMap_apply,
+    Finset.sum_mul, transpose_apply, ← Finset.univ_product_univ, Finset.sum_product,
+    (hA _ _ _).eq, (hA _ _ _).right_comm, mul_assoc, vec]
+
+end NonUnitalSemiring
+
+section NonUnitalCommSemiring
+variable [NonUnitalCommSemiring R] [Fintype m] [Fintype n]
+
+theorem kronecker_mulVec_vec (A : Matrix l m R) (X : Matrix m n R) (B : Matrix p n R) :
+    B ⊗ₖ A *ᵥ vec X = vec (A * X * Bᵀ) :=
+  kronecker_mulVec_vec_of_comm _ _ _ fun _ _ _ => Commute.all _ _
 
 theorem vec_vecMul_kronecker (A : Matrix m l R) (X : Matrix m n R) (B : Matrix n p R) :
-    vec X ᵥ* B ⊗ₖ A = vec (Aᵀ * X * B) := by
-  rw [← mulVec_transpose, ← kroneckerMap_transpose, kronecker_mulVec_vec, transpose_transpose]
+    vec X ᵥ* B ⊗ₖ A = vec (Aᵀ * X * B) :=
+  vec_vecMul_kronecker_of_comm _ _ _ fun _ _ _ => Commute.all _ _
 
 end NonUnitalCommSemiring
 
-section CommSemiring
-variable [CommSemiring R] [Fintype m] [Fintype n]
+section Semiring
+variable [Semiring R] [Fintype m] [Fintype n]
 
 theorem vec_mul_eq_mulVec [DecidableEq n] (A : Matrix l m R) (B : Matrix m n R) :
     vec (A * B) = (1 ⊗ₖ A) *ᵥ vec B := by
-  rw [kronecker_mulVec_vec, transpose_one, Matrix.mul_one]
+  rw [kronecker_mulVec_vec_of_comm, transpose_one, Matrix.mul_one]
+  intros x i j
+  obtain rfl | hij := eq_or_ne i j <;> simp [*]
 
 theorem vec_mul_eq_vecMul [DecidableEq m] (A : Matrix m n R) (B : Matrix n p R) :
     vec (A * B) = A.vec ᵥ* (B ⊗ₖ 1) := by
-  rw [vec_vecMul_kronecker, transpose_one,  Matrix.one_mul]
+  rw [vec_vecMul_kronecker_of_comm, transpose_one, Matrix.one_mul]
+  intros x i j
+  obtain rfl | hij := eq_or_ne i j <;> simp [*]
 
-end CommSemiring
+end Semiring
 
 end Kronecker
 
