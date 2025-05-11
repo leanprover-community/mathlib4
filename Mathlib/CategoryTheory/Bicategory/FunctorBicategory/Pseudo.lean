@@ -17,7 +17,7 @@ Given bicategories `B` and `C`, we give a bicategory structure on `Pseudofunctor
 -/
 
 
-namespace CategoryTheory.Pseudofunctor
+namespace CategoryTheory.Pseudofunctor.StrongTrans
 
 open Category Bicategory
 
@@ -26,8 +26,6 @@ open scoped Bicategory
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-
-namespace StrongTrans
 
 variable {F G H I : Pseudofunctor B C}
 
@@ -61,8 +59,6 @@ between pseudofunctors. -/
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
   ModificationIso.ofComponents (fun a => ρ_ (η.app a))
 
-end StrongTrans
-
 variable (B C)
 
 /-- A bicategory structure on the pseudofunctors between two bicategories. -/
@@ -76,4 +72,4 @@ instance bicategory : Bicategory (Pseudofunctor B C) where
   rightUnitor {F G} := StrongTrans.rightUnitor
   whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
 
-end CategoryTheory.Pseudofunctor
+end CategoryTheory.Pseudofunctor.StrongTrans
