@@ -1895,6 +1895,7 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
+import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 import Mathlib.CategoryTheory.Bicategory.SingleObj
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.CatCommSq
