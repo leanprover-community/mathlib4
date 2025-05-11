@@ -118,18 +118,19 @@ theorem vandermonde_transpose_mul_vandermonde (v : Fin n → R) (i j) :
   simp only [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, pow_add]
 
 theorem rectVandermonde_apply_zero_right {α : Type*} {v w : α → R} {i : α} (hw : w i = 0) :
-    rectVandermonde v w (n+1) i = Pi.single (Fin.last n) ((v i) ^ n) := by
+    rectVandermonde v w (n + 1) i = Pi.single (Fin.last n) ((v i) ^ n) := by
   ext j
   obtain rfl | hlt := j.le_last.eq_or_lt
   · simp [rectVandermonde_apply]
   rw [rectVandermonde_apply, Pi.single_eq_of_ne hlt.ne, hw, zero_pow, mul_zero]
   simpa [Nat.sub_eq_zero_iff_le] using hlt
 
-theorem projVandermonde_apply_of_ne_zero {v w : Fin (n+1) → K} {i j : Fin (n+1)} (hw : w i ≠ 0) :
+theorem projVandermonde_apply_of_ne_zero
+    {v w : Fin (n + 1) → K} {i j : Fin (n + 1)} (hw : w i ≠ 0) :
     projVandermonde v w i j = (v i) ^ j.1 * (w i) ^ n / (w i) ^ j.1 := by
   rw [projVandermonde_apply, eq_div_iff (by simp [hw]), mul_assoc, ← pow_add, rev_add_cast]
 
-theorem projVandermonde_apply_zero_right {v w : Fin (n+1) → R} {i : Fin (n+1)} (hw : w i = 0) :
+theorem projVandermonde_apply_zero_right {v w : Fin (n + 1) → R} {i : Fin (n + 1)} (hw : w i = 0) :
     projVandermonde v w i = Pi.single (Fin.last n) ((v i) ^ n)  := by
   ext j
   obtain rfl | hlt := j.le_last.eq_or_lt
@@ -165,7 +166,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
   /- Let `W` be obtained from the matrix by subtracting `r = (v 0) / (w 0)` times each column
   from the next column, starting from the penultimate column. This doesn't change the determinant.-/
   set r := v 0 / w 0 with hr
-  set W : Matrix (Fin (n+1)) (Fin (n+1)) K := .of fun i ↦ (cons (projVandermonde v w i 0)
+  set W : Matrix (Fin (n + 1)) (Fin (n + 1)) K := .of fun i ↦ (cons (projVandermonde v w i 0)
     (fun j ↦ projVandermonde v w i j.succ - r * projVandermonde v w i j.castSucc))
   -- deleting the first row and column of `W` gives a row-scaling of a Vandermonde matrix.
   have hW_eq : (W.submatrix succ succ) = .of fun i j ↦ (v (succ i) - r * w (succ i)) *
@@ -182,13 +183,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
     (fun i j ↦ by simp [W, r, projVandermonde_apply]), det_succ_row_zero,
     Finset.sum_eq_single 0 _ (by simp)]
   · rw [succAbove_zero, hW_eq, det_mul_column, ih]
-    simp only [Nat.succ_eq_add_one, val_zero, pow_zero, projVandermonde_apply, val_rev,
-      Nat.reduceSubDiff, tsub_zero, one_mul, val_succ, coe_castSucc, cons_zero,
-      Function.comp_apply, W, r, of_apply]
-    rw [prod_univ_succ, ← mul_assoc (a := _ ^ n), show (w 0) ^ n = ∏ x : Fin n, w 0 by simp,
-      ← Finset.prod_mul_distrib]
-    simp_rw [mul_sub, ← mul_assoc (a := w 0), mul_div_cancel₀ _ h0, mul_comm (w 0)]
-    simp
+    field_simp [show W 0 0 = w 0 ^ n by simp [W, projVandermonde_apply], prod_univ_succ, hr]
   intro j _ hj0
   obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero hj0
   rw [mul_eq_zero, mul_eq_zero]

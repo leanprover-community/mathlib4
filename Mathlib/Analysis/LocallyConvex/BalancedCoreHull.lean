@@ -90,6 +90,9 @@ theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆
     s ⊆ balancedCore 𝕜 t :=
   subset_sUnion_of_mem ⟨hs, h⟩
 
+lemma Balanced.balancedCore_eq (h : Balanced 𝕜 s) : balancedCore 𝕜 s = s :=
+  le_antisymm (balancedCore_subset _) (h.subset_balancedCore_of_subset (subset_refl _))
+
 theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜, 1 ≤ ‖r‖ → x ∈ r • s :=
   mem_iInter₂
 
@@ -127,6 +130,10 @@ theorem balancedCore_nonempty_iff : (balancedCore 𝕜 s).Nonempty ↔ (0 : E) �
       balancedCore_subset _,
     fun h => ⟨0, balancedCore_zero_mem h⟩⟩
 
+lemma Balanced.zero_mem (hs : Balanced 𝕜 s) (hs_nonempty : s.Nonempty) : (0 : E) ∈ s := by
+  rw [← hs.balancedCore_eq] at hs_nonempty
+  exact balancedCore_nonempty_iff.mp hs_nonempty
+
 variable (𝕜) in
 theorem subset_balancedHull [NormOneClass 𝕜] {s : Set E} : s ⊆ balancedHull 𝕜 s := fun _ hx =>
   mem_balancedHull_iff.2 ⟨1, norm_one.le, _, hx, one_smul _ _⟩
@@ -136,7 +143,7 @@ theorem balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) 
   simp_rw [balancedHull, smul_set_iUnion₂, subset_def, mem_iUnion₂]
   rintro x ⟨r, hr, hx⟩
   rw [← smul_assoc] at hx
-  exact ⟨a • r, (SeminormedRing.norm_mul _ _).trans (mul_le_one₀ ha (norm_nonneg r) hr), hx⟩
+  exact ⟨a • r, (norm_mul_le _ _).trans (mul_le_one₀ ha (norm_nonneg r) hr), hx⟩
 
 open Balanced in
 theorem balancedHull_add_subset [NormOneClass 𝕜] {t : Set E} :

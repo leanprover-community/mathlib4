@@ -33,7 +33,7 @@ namespace Limits
 /-- Assume that `colim : (J ⥤ C) ⥤ C` preserves monomorphisms, and
 `φ : X₁ ⟶ X₂` is a monomorphism in `J ⥤ C`, then if `f : c₁.pt ⟶ c₂.pt` is a morphism
 between the points of colimit cocones for `X₁` and `X₂` in such a way that `f`
-idenfities to `colim.map φ`, then `f` is a monomorphism. -/
+identifies to `colim.map φ`, then `f` is a monomorphism. -/
 lemma colim.map_mono' [HasColimitsOfShape J C]
     [(colim : (J ⥤ C) ⥤ C).PreservesMonomorphisms]
     {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [Mono φ]

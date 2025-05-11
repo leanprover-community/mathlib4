@@ -104,11 +104,9 @@ theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
 
 theorem mem_smul_top_iff (N : Submodule R M) (x : N) :
     x ∈ I • (⊤ : Submodule R N) ↔ (x : M) ∈ I • N := by
-  change _ ↔ N.subtype x ∈ I • N
   have : Submodule.map N.subtype (I • ⊤) = I • N := by
     rw [Submodule.map_smul'', Submodule.map_top, Submodule.range_subtype]
-  rw [← this]
-  exact (Function.Injective.mem_set_image N.injective_subtype).symm
+  simp [← this, -map_smul'']
 
 @[simp]
 theorem smul_comap_le_comap_smul (f : M →ₗ[R] M') (S : Submodule R M') (I : Ideal R) :
@@ -174,7 +172,7 @@ theorem map_pointwise_smul (r : R) (N : Submodule R M) (f : M →ₗ[R] M') :
 theorem mem_smul_span {s : Set M} {x : M} :
     x ∈ I • Submodule.span R s ↔ x ∈ Submodule.span R (⋃ (a ∈ I) (b ∈ s), ({a • b} : Set M)) := by
   rw [← I.span_eq, Submodule.span_smul_span, I.span_eq]
-  rfl
+  simp
 
 variable (I)
 
@@ -314,7 +312,7 @@ theorem pow_le_pow_right {m n : ℕ} (h : m ≤ n) : I ^ n ≤ I ^ m := by
   obtain _ | m := m
   · rw [Submodule.pow_zero, one_eq_top]; exact le_top
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
-  simp_rw [add_comm, (· ^ ·), Pow.pow, npowRec_add _ _ m.succ_ne_zero _ I.one_mul]
+  rw [add_comm, Submodule.pow_add _ m.add_one_ne_zero]
   exact mul_le_left
 
 theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
@@ -343,7 +341,8 @@ instance (priority := low) : (I ^ n).IsTwoSided :=
     (fun _ _ ↦ by rw [Submodule.pow_succ]; infer_instance)
 
 protected theorem mul_one : I * 1 = I :=
-  mul_le_right.antisymm fun i hi ↦ mul_one i ▸ mul_mem_mul hi (one_eq_top (R := R) ▸ trivial)
+  mul_le_right.antisymm
+    fun i hi ↦ mul_one i ▸ mul_mem_mul hi (one_eq_top (R := R) ▸ Submodule.mem_top)
 
 protected theorem pow_add : I ^ (m + n) = I ^ m * I ^ n := by
   obtain rfl | h := eq_or_ne n 0
@@ -584,7 +583,7 @@ theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s
     (fun _ _ hJ hK => (sup_mul_eq_of_coprime_left hJ).trans hK)
     (by simp_rw [one_eq_top, sup_top_eq]) h
 
-theorem sup_multiset_prod_eq_top {s : Multiset (Ideal R)} (h : ∀  p ∈ s, I ⊔ p = ⊤) :
+theorem sup_multiset_prod_eq_top {s : Multiset (Ideal R)} (h : ∀ p ∈ s, I ⊔ p = ⊤) :
     I ⊔ Multiset.prod s = ⊤ :=
   Multiset.prod_induction (I ⊔ · = ⊤) s (fun _ _ hp hq ↦ (sup_mul_eq_of_coprime_left hp).trans hq)
     (by simp only [one_eq_top, ge_iff_le, top_le_iff, le_top, sup_of_le_right]) h
@@ -619,7 +618,7 @@ theorem mul_top : I * ⊤ = I :=
 
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
 @[simp]
-lemma multiset_prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
+lemma multiset_prod_eq_bot {R : Type*} [CommSemiring R] [IsDomain R] {s : Multiset (Ideal R)} :
     s.prod = ⊥ ↔ ⊥ ∈ s :=
   Multiset.prod_eq_zero_iff
 
@@ -688,7 +687,7 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
   induction s using Finset.induction with
   | empty =>
       simp
-  | @insert i s _ hs =>
+  | insert i s _ hs =>
       rw [Finset.iInf_insert, inf_comm, one_eq_top, eq_top_iff, ← one_eq_top]
       set K := ⨅ j ∈ s, J j
       calc
@@ -912,8 +911,6 @@ theorem IsPrime.pow_le_iff {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (hn : n �
     true_and, exists_eq_left] at h
   exact h
 
-@[deprecated (since := "2024-10-06")] alias pow_le_prime_iff := IsPrime.pow_le_iff
-
 theorem IsPrime.le_of_pow_le {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (h : I ^ n ≤ P) :
     I ≤ P := by
   by_cases hn : n = 0
@@ -921,13 +918,9 @@ theorem IsPrime.le_of_pow_le {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (h : I ^
     exact fun ⦃_⦄ _ ↦ h Submodule.mem_top
   · exact (pow_le_iff hn).mp h
 
-@[deprecated (since := "2024-10-06")] alias le_of_pow_le_prime := IsPrime.le_of_pow_le
-
 theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
     s.prod f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   hp.multiset_prod_map_le f
-
-@[deprecated (since := "2024-10-06")] alias prod_le_prime := IsPrime.prod_le
 
 /-- The product of a finite number of elements in the commutative semiring `R` lies in the
   prime ideal `p` if and only if at least one of those elements is in `p`. -/
@@ -1123,7 +1116,8 @@ In a Dedekind domain, to divide and contain are equivalent, see `Ideal.dvd_iff_l
 theorem le_of_dvd {I J : Ideal R} : I ∣ J → J ≤ I
   | ⟨_, h⟩ => h.symm ▸ le_trans mul_le_inf inf_le_left
 
-@[simp]
+/-- See also `isUnit_iff_eq_one`. -/
+@[simp high]
 theorem isUnit_iff {I : Ideal R} : IsUnit I ↔ I = ⊤ :=
   isUnit_iff_dvd_one.trans
     ((@one_eq_top R _).symm ▸
@@ -1190,9 +1184,12 @@ theorem Finsupp.mem_ideal_span_range_iff_exists_finsupp {x : R} {v : α → R} :
 
 /-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
-theorem mem_ideal_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} :
+theorem Ideal.mem_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} :
     x ∈ Ideal.span (Set.range v) ↔ ∃ c : α → R, ∑ i, c i * v i = x :=
-  mem_span_range_iff_exists_fun _
+  Submodule.mem_span_range_iff_exists_fun _
+
+@[deprecated (since := "2025-04-02")] alias mem_ideal_span_range_iff_exists_fun :=
+  Ideal.mem_span_range_iff_exists_fun
 
 end span_range
 
@@ -1274,3 +1271,18 @@ end Submodule
 instance {R} [Semiring R] : NonUnitalSubsemiringClass (Ideal R) R where
   mul_mem _ hb := Ideal.mul_mem_left _ _ hb
 instance {R} [Ring R] : NonUnitalSubringClass (Ideal R) R where
+
+lemma Ideal.exists_subset_radical_span_sup_span_of_subset_radical_sup {R : Type*} [CommSemiring R]
+    (s : Set R) (I J : Ideal R) (hs : s ⊆ (I ⊔ J).radical) :
+    ∃ (t₁ t₂ : s → R), Set.range t₁ ⊆ I ∧ Set.range t₂ ⊆ J ∧
+      s ⊆ (span (Set.range t₁) ⊔ span (Set.range t₂)).radical := by
+  replace hs : ∀ z : s, ∃ (m : ℕ) (a b : R) (ha : a ∈ I) (hb : b ∈ J), a + b = z ^ m := by
+    rintro ⟨z, hzs⟩
+    simp only [Ideal.radical, Submodule.mem_sup, Ideal.mem_span_singleton'] at hs
+    obtain ⟨m, y, hyq, b, hb, hy⟩ := hs hzs
+    exact ⟨m, y, b, hyq, hb, hy⟩
+  choose m a b ha hb heq using hs
+  refine ⟨a, b, by rwa [Set.range_subset_iff], by rwa [Set.range_subset_iff],
+    fun z hz ↦ ⟨m ⟨z, hz⟩, heq ⟨z, hz⟩ ▸ ?_⟩⟩
+  exact Ideal.add_mem _ (mem_sup_left (subset_span ⟨⟨z, hz⟩, rfl⟩))
+     (mem_sup_right (subset_span ⟨⟨z, hz⟩, rfl⟩))

@@ -64,7 +64,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         obtain ⟨j, hj⟩ := le_iff_exists_add.mp hi
         rw [← Nat.lt_succ_iff, Nat.succ_eq_add_one, hj, not_lt, add_le_iff_nonpos_right,
           nonpos_iff_eq_zero] at h
-        rw [← add_left_inj 1, hj, self_eq_add_right, h]
+        rw [← add_left_inj 1, hj, left_eq_add, h]
       rcases n with _|n
       · fin_cases i
         dsimp at h hi
