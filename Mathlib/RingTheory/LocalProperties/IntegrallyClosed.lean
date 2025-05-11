@@ -76,11 +76,10 @@ theorem IsIntegrallyClosed.iInf {ι : Type*} (S : ι → Subalgebra R K)
   rwa [← hy]
 
 theorem IsIntegrallyClosed.of_iInf_eq_bot {ι : Type*} (S : ι → Subalgebra R K)
-    (h : ∀ i : ι, IsIntegrallyClosed (S i)) (hs : ⨅ i : ι, S i = ⊥) : IsIntegrallyClosed R := by
+    (h : ∀ i : ι, IsIntegrallyClosed (S i)) (hs : ⨅ i : ι, S i = ⊥) : IsIntegrallyClosed R :=
   have f : (⊥ : Subalgebra R K) ≃ₐ[R] R :=
     Algebra.botEquivOfInjective (FaithfulSMul.algebraMap_injective R K)
-  rw [← hs] at f
-  exact (IsIntegrallyClosed.iInf S h).of_equiv f.toRingEquiv
+  (IsIntegrallyClosed.iInf S h).of_equiv (hs ▸ f).toRingEquiv
 
 theorem IsIntegrallyClosed.of_localization_submonoid [IsDomain R] {ι : Type*} (S : ι → Submonoid R)
     (h : ∀ i : ι, S i ≤ R⁰) (hi : ∀ i : ι, IsIntegrallyClosed (Localization (S i)))
