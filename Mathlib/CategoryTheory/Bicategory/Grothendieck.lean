@@ -185,6 +185,7 @@ lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
 
 end
 
+/-- Auxillary definition for `Grothendieck.mapCompIso`. -/
 abbrev mapCompIso_hom (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ⟶ map α ⋙ map β where
   app a := eqToHom (by aesop_cat)
   naturality := by
@@ -193,6 +194,7 @@ abbrev mapCompIso_hom (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ⟶ map α
     simp only [comp_obj, eqToHom_refl, comp_id, Functor.comp_map, id_comp]
     ext <;> simp
 
+/-- Auxillary definition for `Grothendieck.mapCompIso`. -/
 abbrev mapCompIso_inv (α : F ⟶ G) (β : G ⟶ H) : map α ⋙ map β ⟶ map (α ≫ β) where
   app a := eqToHom (by aesop_cat)
   naturality := by
@@ -200,7 +202,7 @@ abbrev mapCompIso_inv (α : F ⟶ G) (β : G ⟶ H) : map α ⋙ map β ⟶ map 
     simp only [comp_obj, Functor.comp_map, eqToHom_refl, comp_id, id_comp]
     ext <;> simp
 
-/-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`  -/
+/-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β where
   hom := mapCompIso_hom α β
   inv := mapCompIso_inv α β
