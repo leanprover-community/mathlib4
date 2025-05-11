@@ -106,9 +106,11 @@ lemma IsLocalRing.maximalIdeal_mem_support [IsLocalRing R] (M : Type*)
 variable (R) in
 lemma zeroLocus_eq_singleton (m : Ideal R) [max : m.IsMaximal] :
     PrimeSpectrum.zeroLocus m = {⟨m, IsMaximal.isPrime' m⟩} := by
-  rw [← PrimeSpectrum.closure_singleton ⟨m, IsMaximal.isPrime' m⟩]
-  exact closure_eq_iff_isClosed.mpr
-    ((PrimeSpectrum.isClosed_singleton_iff_isMaximal ⟨m, IsMaximal.isPrime' m⟩).mpr (by assumption))
+  ext I
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp only [PrimeSpectrum.mem_zeroLocus, SetLike.coe_subset_coe] at h
+    simpa using PrimeSpectrum.ext_iff.mpr (Ideal.IsMaximal.eq_of_le max I.2.ne_top h).symm
+  · simp [Set.mem_singleton_iff.mp h]
 
 lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
