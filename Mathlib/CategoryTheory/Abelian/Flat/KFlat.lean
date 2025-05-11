@@ -3,26 +3,15 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.BicomplexColumns
 import Mathlib.Algebra.Homology.BifunctorSingle
 import Mathlib.Algebra.Homology.BifunctorShift
 import Mathlib.Algebra.Homology.BifunctorColimits
 import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
 import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
-import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
-import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
-import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
-import Mathlib.Algebra.Homology.Localization
-import Mathlib.Algebra.Homology.ObjectProperty
-import Mathlib.Algebra.Homology.PreservesQuasiIso
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplex
 import Mathlib.Algebra.Homology.LeftResolutions.DerivabilityStructure
 import Mathlib.CategoryTheory.Abelian.Flat.Basic
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 import Mathlib.CategoryTheory.Monoidal.KFlat
-import Mathlib.CategoryTheory.ObjectProperty.Shift
-import Mathlib.CategoryTheory.Triangulated.Subcategory
-import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
 /-!
 # Flat objects and K-flat complexes
@@ -37,7 +26,7 @@ section
 def Antitone.functor {α β : Type*} [Preorder α] [Preorder β]
     {f : α → β} (hf : Antitone f) :
     αᵒᵖ ⥤ β where
-  obj := fun a ↦ f a.unop
+  obj a := f a.unop
   map φ := homOfLE (hf (leOfHom φ.unop))
 
 lemma Int.antitone_neg : Antitone (fun (n : ℤ) ↦ -n) := fun _ _ _ ↦ by dsimp; omega
@@ -296,15 +285,13 @@ instance (K : CochainComplex A ℤ) : QuasiIso ((Λ.kFlatResolutionNatTrans hι)
 
 include Λ hι
 
-open HomologicalComplex in
 lemma cochainComplex_kFlat_isLeftDerivabilityStructure :
-    (quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure :=
-  isLeftDerivabilityStructure_of_functorial_left_resolutions _ rfl
+    (HomologicalComplex.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure :=
+  HomologicalComplex.isLeftDerivabilityStructure_of_functorial_left_resolutions _ rfl
     (Λ.kFlatResolutionNatTrans hι)
 
-/-open HomotopyCategory in
-lemma homotopyCategory_kFlat_isLeftDerivabilityStructure :
-    (quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure :=
+/-lemma homotopyCategory_kFlat_isLeftDerivabilityStructure :
+    (HomotopyCategory.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure :=
   sorry-/
 
 end LeftResolutions
