@@ -50,6 +50,8 @@ theorem isIsotypic : IsIsotypic R R :=
 instance (priority := low) : IsSemisimpleRing R :=
   (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).1
 
+/-- The Wedderburn–Artin Theorem: an Artinian simple ring is isomorphic to a matrix
+ring over the opposite of the endomorphism ring of its simple module. -/
 theorem exists_ringEquiv_matrix_end_mulOpposite :
     ∃ (n : ℕ) (_ : NeZero n) (I : Ideal R) (_ : IsSimpleModule R I),
       Nonempty (R ≃+* Matrix (Fin n) (Fin n) (Module.End R I)ᵐᵒᵖ) := by
@@ -57,12 +59,16 @@ theorem exists_ringEquiv_matrix_end_mulOpposite :
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
   exact .trans (.moduleEndSelf R) <| .trans e.conjRingEquiv (endVecRingEquivMatrixEnd ..)
 
+/-- The Wedderburn–Artin Theorem: an Artinian simple ring is isomorphic to a matrix
+ring over a division ring. -/
 theorem exists_ringEquiv_matrix_divisionRing :
     ∃ (n : ℕ) (_ : NeZero n) (D : Type u) (_ : DivisionRing D),
       Nonempty (R ≃+* Matrix (Fin n) (Fin n) D) := by
   have ⟨n, hn, I, _, ⟨e⟩⟩ := exists_ringEquiv_matrix_end_mulOpposite R
   classical exact ⟨n, hn, _, _, ⟨e⟩⟩
 
+/-- The Wedderburn–Artin Theorem, algebra form: an Artinian simple algebra is isomorphic
+to a matrix algebra over the opposite of the endomorphism algebra of its simple module. -/
 theorem exists_algEquiv_matrix_end_mulOpposite :
     ∃ (n : ℕ) (_ : NeZero n) (I : Ideal R) (_ : IsSimpleModule R I),
       Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) (Module.End R I)ᵐᵒᵖ) := by
@@ -70,12 +76,16 @@ theorem exists_algEquiv_matrix_end_mulOpposite :
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R₀ R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
   exact .trans (.moduleEndSelf R₀) <| .trans (e.algConj R₀) (endVecAlgEquivMatrixEnd ..)
 
+/-- The Wedderburn–Artin Theorem, algebra form: an Artinian simple algebra is isomorphic
+to a matrix algebra over a division algebra. -/
 theorem exists_algEquiv_matrix_divisionRing :
     ∃ (n : ℕ) (_ : NeZero n) (D : Type u) (_ : DivisionRing D) (_ : Algebra R₀ D),
       Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) D) := by
   have ⟨n, hn, I, _, ⟨e⟩⟩ := exists_algEquiv_matrix_end_mulOpposite R₀ R
   classical exact ⟨n, hn, _, _, _, ⟨e⟩⟩
 
+/-- The Wedderburn–Artin Theorem, algebra form, finite case: a finite Artinian simple algebra is
+isomorphic to a matrix algebra over a finite division algebra. -/
 theorem exists_algEquiv_matrix_divisionRing_finite [Module.Finite R₀ R] :
     ∃ (n : ℕ) (_ : NeZero n) (D : Type u) (_ : DivisionRing D) (_ : Algebra R₀ D)
       (_ : Module.Finite R₀ D), Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) D) := by
