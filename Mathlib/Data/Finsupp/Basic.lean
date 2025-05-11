@@ -1058,8 +1058,6 @@ theorem mem_support_finset_sum [AddCommMonoid M] {s : Finset ι} {h : ι → α 
 /-! ### Declarations about `curry` and `uncurry` -/
 
 
-section Curry
-
 section Uncurry
 
 variable [Zero M]
@@ -1098,7 +1096,7 @@ theorem sum_uncurry_index' [AddCommMonoid N] (f : α →₀ β →₀ M) (g : α
 
 end Uncurry
 
-section Zero
+section Curry
 
 variable [DecidableEq α] [Zero M]
 
@@ -1108,13 +1106,17 @@ finitely supported functions from `β` to `γ`. -/
 protected def curry (f : α × β →₀ M) : α →₀ β →₀ M where
   toFun a :=
     { toFun b := f (a, b)
-      support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) (by simp +contextual)
+      support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) <| by simp +contextual
       mem_support_toFun := by simp }
   support := f.support.image Prod.fst
   mem_support_toFun := by simp [DFunLike.ext_iff]
 
 @[simp]
 theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f (x, y) := rfl
+
+@[simp]
+theorem support_curry (f : α × β →₀ M) : f.curry.support = f.support.image Prod.fst :=
+  rfl
 
 @[simp]
 theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
@@ -1148,11 +1150,6 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p]
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
   ext a b
   simp [filter_apply, apply_ite (DFunLike.coe · b)]
-
-theorem support_curry (f : α × β →₀ M) : f.curry.support = f.support.image Prod.fst :=
-  rfl
-
-end Zero
 
 end Curry
 
