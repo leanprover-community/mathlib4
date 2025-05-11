@@ -485,32 +485,32 @@ theorem mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRigh
   inferInstance
 
 @[to_additive]
-instance covariant_swap_mul_of_covariant_mul [CommSemigroup N]
+instance covariant_swap_mul_of_covariant_mul [CommMagma N]
     [CovariantClass N N (· * ·) r] : CovariantClass N N (swap (· * ·)) r where
   elim := (covariant_flip_iff N r (· * ·)).mpr CovariantClass.elim
 
 @[to_additive]
-theorem mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
+theorem mulRightMono_of_mulLeftMono [CommMagma N] [LE N] [MulLeftMono N] :
     MulRightMono N :=
   inferInstance
 
 @[to_additive]
-theorem mulRightStrictMono_of_mulLeftStrictMono [CommSemigroup N] [LT N] [MulLeftStrictMono N] :
+theorem mulRightStrictMono_of_mulLeftStrictMono [CommMagma N] [LT N] [MulLeftStrictMono N] :
     MulRightStrictMono N :=
   inferInstance
 
 @[to_additive]
-instance contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
+instance contravariant_swap_mul_of_contravariant_mul [CommMagma N]
     [ContravariantClass N N (· * ·) r] : ContravariantClass N N (swap (· * ·)) r where
   elim := (contravariant_flip_iff N r (· * ·)).mpr ContravariantClass.elim
 
 @[to_additive]
-theorem mulRightReflectLE_of_mulLeftReflectLE [CommSemigroup N] [LE N] [MulLeftReflectLE N] :
+theorem mulRightReflectLE_of_mulLeftReflectLE [CommMagma N] [LE N] [MulLeftReflectLE N] :
     MulRightReflectLE N :=
   inferInstance
 
 @[to_additive]
-theorem mulRightReflectLT_of_mulLeftReflectLT [CommSemigroup N] [LT N] [MulLeftReflectLT N] :
+theorem mulRightReflectLT_of_mulLeftReflectLT [CommMagma N] [LT N] [MulLeftReflectLT N] :
     MulRightReflectLT N :=
   inferInstance
 

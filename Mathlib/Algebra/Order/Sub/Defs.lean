@@ -60,7 +60,7 @@ theorem tsub_le_iff_right [LE α] [Add α] [Sub α] [OrderedSub α] {a b c : α}
     a - b ≤ c ↔ a ≤ c + b :=
   OrderedSub.tsub_le_iff_right a b c
 
-variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b : α}
+variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c : α}
 
 /-- See `add_tsub_cancel_right` for the equality if `AddLeftReflectLE α`. -/
 theorem add_tsub_le_right : a + b - b ≤ a :=
@@ -74,16 +74,13 @@ end Add
 /-! ### Preorder -/
 
 
-section OrderedAddCommSemigroup
-
 section Preorder
 
 variable [Preorder α]
 
-section AddCommSemigroup
+section AddCommMagma
 
-variable [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
-/- TODO: Most results can be generalized to [Add α] [@Std.Commutative α (· + ·)] -/
+variable [AddCommMagma α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem tsub_le_iff_left : a - b ≤ c ↔ a ≤ b + c := by rw [tsub_le_iff_right, add_comm]
 
@@ -114,6 +111,59 @@ variable [AddLeftMono α]
   (tsub_le_tsub_right hab _).trans <| tsub_le_tsub_left hcd _
 
 theorem antitone_const_tsub : Antitone fun x => c - x := fun _ _ hxy => tsub_le_tsub rfl.le hxy
+
+end Cov
+
+/-! #### Lemmas that assume that an element is `AddLECancellable` -/
+
+
+namespace AddLECancellable
+
+protected theorem le_add_tsub_swap (hb : AddLECancellable b) : a ≤ b + a - b :=
+  hb le_add_tsub
+
+protected theorem le_add_tsub (hb : AddLECancellable b) : a ≤ a + b - b := by
+  rw [add_comm]
+  exact hb.le_add_tsub_swap
+
+protected theorem le_tsub_of_add_le_left (ha : AddLECancellable a) (h : a + b ≤ c) : b ≤ c - a :=
+  ha <| h.trans le_add_tsub
+
+protected theorem le_tsub_of_add_le_right (hb : AddLECancellable b) (h : a + b ≤ c) : a ≤ c - b :=
+  hb.le_tsub_of_add_le_left <| by rwa [add_comm]
+
+end AddLECancellable
+
+/-! ### Lemmas where addition is order-reflecting -/
+
+
+section Contra
+
+variable [AddLeftReflectLE α]
+
+theorem le_add_tsub_swap : a ≤ b + a - b :=
+  Contravariant.AddLECancellable.le_add_tsub_swap
+
+theorem le_add_tsub' : a ≤ a + b - b :=
+  Contravariant.AddLECancellable.le_add_tsub
+
+theorem le_tsub_of_add_le_left (h : a + b ≤ c) : b ≤ c - a :=
+  Contravariant.AddLECancellable.le_tsub_of_add_le_left h
+
+theorem le_tsub_of_add_le_right (h : a + b ≤ c) : a ≤ c - b :=
+  Contravariant.AddLECancellable.le_tsub_of_add_le_right h
+
+end Contra
+
+end AddCommMagma
+
+section AddCommSemigroup
+
+variable [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
+
+section Cov
+
+variable [AddLeftMono α]
 
 /-- See `add_tsub_assoc_of_le` for the equality. -/
 theorem add_tsub_le_assoc : a + b - c ≤ a + (b - c) := by
@@ -167,47 +217,6 @@ theorem add_tsub_add_le_tsub_right : a + c - (b + c) ≤ a - b := by
 
 end Cov
 
-/-! #### Lemmas that assume that an element is `AddLECancellable` -/
-
-
-namespace AddLECancellable
-
-protected theorem le_add_tsub_swap (hb : AddLECancellable b) : a ≤ b + a - b :=
-  hb le_add_tsub
-
-protected theorem le_add_tsub (hb : AddLECancellable b) : a ≤ a + b - b := by
-  rw [add_comm]
-  exact hb.le_add_tsub_swap
-
-protected theorem le_tsub_of_add_le_left (ha : AddLECancellable a) (h : a + b ≤ c) : b ≤ c - a :=
-  ha <| h.trans le_add_tsub
-
-protected theorem le_tsub_of_add_le_right (hb : AddLECancellable b) (h : a + b ≤ c) : a ≤ c - b :=
-  hb.le_tsub_of_add_le_left <| by rwa [add_comm]
-
-end AddLECancellable
-
-/-! ### Lemmas where addition is order-reflecting -/
-
-
-section Contra
-
-variable [AddLeftReflectLE α]
-
-theorem le_add_tsub_swap : a ≤ b + a - b :=
-  Contravariant.AddLECancellable.le_add_tsub_swap
-
-theorem le_add_tsub' : a ≤ a + b - b :=
-  Contravariant.AddLECancellable.le_add_tsub
-
-theorem le_tsub_of_add_le_left (h : a + b ≤ c) : b ≤ c - a :=
-  Contravariant.AddLECancellable.le_tsub_of_add_le_left h
-
-theorem le_tsub_of_add_le_right (h : a + b ≤ c) : a ≤ c - b :=
-  Contravariant.AddLECancellable.le_tsub_of_add_le_right h
-
-end Contra
-
 end AddCommSemigroup
 
 variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b : α}
@@ -220,23 +229,11 @@ end Preorder
 
 /-! ### Partial order -/
 
+section PartialOrder
 
-variable [PartialOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
+section AddCommMagma
 
-theorem tsub_tsub (b a c : α) : b - a - c = b - (a + c) := by
-  apply le_antisymm
-  · rw [tsub_le_iff_left, tsub_le_iff_left, ← add_assoc, ← tsub_le_iff_left]
-  · rw [tsub_le_iff_left, add_assoc, ← tsub_le_iff_left, ← tsub_le_iff_left]
-
-theorem tsub_add_eq_tsub_tsub (a b c : α) : a - (b + c) = a - b - c :=
-  (tsub_tsub _ _ _).symm
-
-theorem tsub_add_eq_tsub_tsub_swap (a b c : α) : a - (b + c) = a - c - b := by
-  rw [add_comm]
-  apply tsub_add_eq_tsub_tsub
-
-theorem tsub_right_comm : a - b - c = a - c - b := by
-  rw [← tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
+variable [PartialOrder α] [AddCommMagma α] [Sub α] [OrderedSub α] {a b c d : α}
 
 /-! ### Lemmas that assume that an element is `AddLECancellable`. -/
 
@@ -250,31 +247,15 @@ protected theorem tsub_eq_of_eq_add (hb : AddLECancellable b) (h : a = c + b) : 
     rw [h]
     exact hb.le_add_tsub
 
-/-- Weaker version of `AddLECancellable.tsub_eq_of_eq_add` assuming that `a = c + b` itself is
-cancellable rather than `b`. -/
-protected lemma tsub_eq_of_eq_add' [AddLeftMono α] (ha : AddLECancellable a)
-    (h : a = c + b) : a - b = c := (h ▸ ha).of_add_right.tsub_eq_of_eq_add h
-
 /-- See `AddLECancellable.eq_tsub_of_add_eq'` for a version assuming that `b = a + c` itself is
 cancellable rather than `c`. -/
 protected theorem eq_tsub_of_add_eq (hc : AddLECancellable c) (h : a + c = b) : a = b - c :=
   (hc.tsub_eq_of_eq_add h.symm).symm
 
-/-- Weaker version of `AddLECancellable.eq_tsub_of_add_eq` assuming that `b = a + c` itself is
-cancellable rather than `c`. -/
-protected lemma eq_tsub_of_add_eq' [AddLeftMono α] (hb : AddLECancellable b)
-    (h : a + c = b) : a = b - c := (hb.tsub_eq_of_eq_add' h.symm).symm
-
 /-- See `AddLECancellable.tsub_eq_of_eq_add_rev'` for a version assuming that `a = b + c` itself is
 cancellable rather than `b`. -/
 protected theorem tsub_eq_of_eq_add_rev (hb : AddLECancellable b) (h : a = b + c) : a - b = c :=
   hb.tsub_eq_of_eq_add <| by rw [add_comm, h]
-
-/-- Weaker version of `AddLECancellable.tsub_eq_of_eq_add_rev` assuming that `a = b + c` itself is
-cancellable rather than `b`. -/
-protected lemma tsub_eq_of_eq_add_rev' [AddLeftMono α]
-    (ha : AddLECancellable a) (h : a = b + c) : a - b = c :=
-  ha.tsub_eq_of_eq_add' <| by rw [add_comm, h]
 
 @[simp]
 protected theorem add_tsub_cancel_right (hb : AddLECancellable b) : a + b - b = a :=
@@ -331,12 +312,6 @@ theorem add_tsub_cancel_right (a b : α) : a + b - b = a :=
 theorem add_tsub_cancel_left (a b : α) : a + b - a = b :=
   Contravariant.AddLECancellable.add_tsub_cancel_left
 
-/-- A more general version of the reverse direction of `sub_eq_sub_iff_add_eq_add` -/
-theorem tsub_eq_tsub_of_add_eq_add (h : a + d = c + b) : a - b = c - d := by
-  calc a - b = a + d - d - b := by rw [add_tsub_cancel_right]
-           _ = c + b - b - d := by rw [h, tsub_right_comm]
-           _ = c - d := by rw [add_tsub_cancel_right]
-
 theorem lt_add_of_tsub_lt_left (h : a - b < c) : a < b + c :=
   Contravariant.AddLECancellable.lt_add_of_tsub_lt_left h
 
@@ -350,6 +325,65 @@ theorem lt_tsub_of_add_lt_left : a + c < b → c < b - a :=
 
 theorem lt_tsub_of_add_lt_right : a + c < b → a < b - c :=
   Contravariant.AddLECancellable.lt_tsub_of_add_lt_right
+
+end Contra
+
+end AddCommMagma
+
+section AddCommSemigroup
+
+variable [PartialOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
+
+theorem tsub_tsub (b a c : α) : b - a - c = b - (a + c) := by
+  apply le_antisymm
+  · rw [tsub_le_iff_left, tsub_le_iff_left, ← add_assoc, ← tsub_le_iff_left]
+  · rw [tsub_le_iff_left, add_assoc, ← tsub_le_iff_left, ← tsub_le_iff_left]
+
+theorem tsub_add_eq_tsub_tsub (a b c : α) : a - (b + c) = a - b - c :=
+  (tsub_tsub _ _ _).symm
+
+theorem tsub_add_eq_tsub_tsub_swap (a b c : α) : a - (b + c) = a - c - b := by
+  rw [add_comm]
+  apply tsub_add_eq_tsub_tsub
+
+theorem tsub_right_comm : a - b - c = a - c - b := by
+  rw [← tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
+
+/-! ### Lemmas that assume that an element is `AddLECancellable`. -/
+
+
+namespace AddLECancellable
+
+/-- Weaker version of `AddLECancellable.tsub_eq_of_eq_add` assuming that `a = c + b` itself is
+cancellable rather than `b`. -/
+protected lemma tsub_eq_of_eq_add' [AddLeftMono α] (ha : AddLECancellable a)
+    (h : a = c + b) : a - b = c := (h ▸ ha).of_add_right.tsub_eq_of_eq_add h
+
+/-- Weaker version of `AddLECancellable.eq_tsub_of_add_eq` assuming that `b = a + c` itself is
+cancellable rather than `c`. -/
+protected lemma eq_tsub_of_add_eq' [AddLeftMono α] (hb : AddLECancellable b)
+    (h : a + c = b) : a = b - c := (hb.tsub_eq_of_eq_add' h.symm).symm
+
+/-- Weaker version of `AddLECancellable.tsub_eq_of_eq_add_rev` assuming that `a = b + c` itself is
+cancellable rather than `b`. -/
+protected lemma tsub_eq_of_eq_add_rev' [AddLeftMono α]
+    (ha : AddLECancellable a) (h : a = b + c) : a - b = c :=
+  ha.tsub_eq_of_eq_add' <| by rw [add_comm, h]
+
+end AddLECancellable
+
+/-! #### Lemmas where addition is order-reflecting. -/
+
+
+section Contra
+
+variable [AddLeftReflectLE α]
+
+/-- A more general version of the reverse direction of `sub_eq_sub_iff_add_eq_add` -/
+theorem tsub_eq_tsub_of_add_eq_add (h : a + d = c + b) : a - b = c - d := by
+  calc a - b = a + d - d - b := by rw [add_tsub_cancel_right]
+           _ = c + b - b - d := by rw [h, tsub_right_comm]
+           _ = c - d := by rw [add_tsub_cancel_right]
 
 end Contra
 
@@ -368,14 +402,18 @@ theorem add_tsub_add_eq_tsub_left (a b c : α) : a + b - (a + c) = b - c := by
 
 end Both
 
-end OrderedAddCommSemigroup
+end AddCommSemigroup
+
+end PartialOrder
 
 /-! ### Lemmas in a linearly ordered monoid. -/
 
 
 section LinearOrder
 
-variable {a b c : α} [LinearOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α]
+section AddCommMagma
+
+variable {a b c : α} [LinearOrder α] [AddCommMagma α] [Sub α] [OrderedSub α]
 
 /-- See `lt_of_tsub_lt_tsub_right_of_le` for a weaker statement in a partial order. -/
 theorem lt_of_tsub_lt_tsub_right (h : a - c < b - c) : a < b :=
@@ -401,6 +439,8 @@ theorem lt_of_tsub_lt_tsub_left (h : a - b < a - c) : c < b :=
   lt_imp_lt_of_le_imp_le (fun h => tsub_le_tsub_left h a) h
 
 end Cov
+
+end AddCommMagma
 
 end LinearOrder
 
