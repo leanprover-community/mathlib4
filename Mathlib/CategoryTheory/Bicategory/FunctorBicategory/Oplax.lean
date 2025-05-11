@@ -65,7 +65,7 @@ variable (B C)
 
 /-- A bicategory structure on the oplax functors between bicategories. -/
 @[simps!]
-instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
+scoped instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
   whiskerLeft {_ _ _} η _ _ Γ := whiskerLeft η Γ
   whiskerRight {_ _ _} _ _ Γ η := whiskerRight Γ η
   associator {_ _ _} _ := associator

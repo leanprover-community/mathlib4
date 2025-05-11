@@ -20,10 +20,10 @@ condition.
 
 ## Main definitions
 
-* `OplaxTrans F G` : oplax transformations between oplax functors `F` and `G`. The naturality
+* `OplaxTrans F G`: oplax transformations between oplax functors `F` and `G`. The naturality
   condition is given by a 2-morphism `F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
   `f : a ⟶ b`.
-* `StrongTrans F G` : Strong natural transformations between oplax functors `F` and `G`.
+* `StrongTrans F G`: Strong natural transformations between oplax functors `F` and `G`.
 
 Using these, we define two `CategoryStruct` (scoped) instances on `OplaxFunctor B C`, one in the
 `Oplax.OplaxTrans` namespace and one in the `Oplax.StrongTrans` namespace. The arrows in these
@@ -32,7 +32,7 @@ CategoryStruct's are given by oplax transformations and strong transformations r
 We also provide API for going between oplax transformations and strong transformations:
 * `StrongCore F G`: a structure on an oplax transformation between pseudofunctors that promotes
 it to a strong transformation.
-* `mkOfOplax η η'` : given an oplax natural transformation `η` such that each component 2-morphism
+* `mkOfOplax η η'`: given an oplax natural transformation `η` such that each component 2-morphism
   is an isomorphism, `mkOfOplax` gives the corresponding strong natural transformation.
 
 # TODO

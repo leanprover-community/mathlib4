@@ -92,7 +92,7 @@ end Modification
 
 /-- Category structure on the oplax natural transformations between OplaxFunctors. -/
 @[simps]
-instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
+scoped instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   Hom := Modification
   id := Modification.id
   comp := Modification.vcomp
