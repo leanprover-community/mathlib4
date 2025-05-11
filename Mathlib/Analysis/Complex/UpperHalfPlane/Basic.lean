@@ -411,10 +411,21 @@ section ModularScalarTowers
 @[coe]
 def coe (g : SL(2, ℤ)) : GL(2, ℝ)⁺ := ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
 
+@[simp]
+lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
+  refine ⟨fun h ↦ a.ext b fun i j ↦ ?_, congr_arg _⟩
+  simp only [Subtype.ext_iff, GeneralLinearGroup.ext_iff] at h
+  simpa [coe] using h i j
+
 @[deprecated (since := "2024-11-19")] noncomputable alias coe' := coe
 
 instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨coe⟩
+
+/-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`, bundled as a group hom. -/
+def coeHom : SL(2, ℤ) →* GL(2, ℝ)⁺ := toGLPos.comp <| map <| Int.castRingHom _
+
+@[simp] lemma coeHom_apply (g : SL(2, ℤ)) : coeHom g = coe g := rfl
 
 @[simp]
 theorem coe_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :

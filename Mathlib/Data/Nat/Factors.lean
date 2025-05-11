@@ -17,8 +17,8 @@ This file deals with the factors of natural numbers.
 
 ## Important declarations
 
-- `Nat.factors n`: the prime factorization of `n`
-- `Nat.factors_unique`: uniqueness of the prime factorisation
+- `Nat.primeFactorsList n`: the prime factorization of `n`
+- `Nat.primeFactorsList_unique`: uniqueness of the prime factorisation
 
 -/
 
