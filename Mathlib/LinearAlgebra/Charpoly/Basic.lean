@@ -5,6 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
@@ -43,6 +44,11 @@ def charpoly : R[X] :=
 
 theorem charpoly_def : f.charpoly = (toMatrix (chooseBasis R M) (chooseBasis R M) f).charpoly :=
   rfl
+
+theorem eval_charpoly (r : R) :
+    f.charpoly.eval r = (algebraMap _ _ r - f).det := by
+  rw [charpoly, Matrix.eval_charpoly, ← LinearMap.det_toMatrix (chooseBasis R M), map_sub,
+    scalar_apply, toMatrix_algebraMap, scalar_apply]
 
 @[simp]
 theorem charpoly_zero [StrongRankCondition R] :

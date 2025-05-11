@@ -65,8 +65,7 @@ theorem charmatrix_zero : charmatrix (0 : Matrix n n R) = Matrix.scalar n (X : R
 @[simp]
 theorem charmatrix_diagonal (d : n → R) :
     charmatrix (diagonal d) = diagonal fun i => X - C (d i) := by
-  rw [charmatrix, scalar_apply, RingHom.mapMatrix_apply, Matrix.diagonal_map (map_zero _),
-    diagonal_sub]
+  rw [charmatrix, scalar_apply, RingHom.mapMatrix_apply, diagonal_map (map_zero _), diagonal_sub]
 
 @[simp]
 theorem charmatrix_one : charmatrix (1 : Matrix n n R) = diagonal fun _ => X - 1 :=
@@ -124,10 +123,16 @@ lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n 
 
 alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
-/-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$.
--/
+/-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$. -/
 def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
+
+theorem eval_charpoly (A : Matrix m m R) (r : R) :
+    A.charpoly.eval r = (Matrix.scalar _ r - A).det := by
+  rw [Matrix.charpoly, ← Polynomial.coe_evalRingHom, RingHom.map_det, Matrix.charmatrix]
+  congr
+  ext i j
+  obtain rfl | hij := eq_or_ne i j <;> simp [*]
 
 @[simp]
 theorem charpoly_zero : charpoly (0 : Matrix n n R) = X ^ Fintype.card n := by
@@ -135,7 +140,6 @@ theorem charpoly_zero : charpoly (0 : Matrix n n R) = X ^ Fintype.card n := by
 
 theorem charpoly_diagonal (d : n → R) : charpoly (diagonal d) = ∏ i, (X - C (d i)) := by
   simp [charpoly]
-
 
 theorem charpoly_one : charpoly (1 : Matrix n n R) = (X - 1) ^ Fintype.card n := by
   simp [charpoly]
@@ -147,13 +151,6 @@ theorem charpoly_natCast (k : ℕ) :
 theorem charpoly_ofNat (k : ℕ) [k.AtLeastTwo] :
     charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n:=
   charpoly_natCast _
-
-theorem eval_charpoly (A : Matrix m m R) (r : R) :
-    A.charpoly.eval r = (Matrix.scalar _ r - A).det := by
-  rw [Matrix.charpoly, ← Polynomial.coe_evalRingHom, RingHom.map_det, Matrix.charmatrix]
-  congr
-  ext i j
-  obtain rfl | hij := eq_or_ne i j <;> simp [*]
 
 @[simp]
 theorem charpoly_transpose (M : Matrix n n R) : (Mᵀ).charpoly = M.charpoly := by
