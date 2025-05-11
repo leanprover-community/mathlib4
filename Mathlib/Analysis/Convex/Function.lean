@@ -672,7 +672,7 @@ variable [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f g :
 theorem ConvexOn.le_left_of_right_le' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) (hfy : f y ≤ f (a • x + b • y)) :
     f (a • x + b • y) ≤ f x :=
-  le_of_not_lt fun h ↦ lt_irrefl (f (a • x + b • y)) <|
+  le_of_not_gt fun h ↦ lt_irrefl (f (a • x + b • y)) <|
     calc
       f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha.le hb hab
       _ < a • f (a • x + b • y) + b • f (a • x + b • y) := add_lt_add_of_lt_of_le

@@ -642,7 +642,7 @@ theorem le_toNNReal_iff_coe_le {r : ℝ≥0} {p : ℝ} (hp : 0 ≤ p) : r ≤ Re
   rw [← NNReal.coe_le_coe, Real.coe_toNNReal p hp]
 
 theorem le_toNNReal_iff_coe_le' {r : ℝ≥0} {p : ℝ} (hr : 0 < r) : r ≤ Real.toNNReal p ↔ ↑r ≤ p :=
-  (le_or_lt 0 p).elim le_toNNReal_iff_coe_le fun hp => by
+  (le_or_gt 0 p).elim le_toNNReal_iff_coe_le fun hp => by
     simp only [(hp.trans_le r.coe_nonneg).not_le, toNNReal_eq_zero.2 hp.le, hr.not_le]
 
 theorem toNNReal_lt_iff_lt_coe {r : ℝ} {p : ℝ≥0} (ha : 0 ≤ r) : Real.toNNReal r < p ↔ r < ↑p := by

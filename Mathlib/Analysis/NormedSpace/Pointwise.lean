@@ -197,7 +197,7 @@ theorem exists_dist_lt_lt (hδ : 0 < δ) (hε : 0 < ε) (h : dist x z < ε + δ)
 -- This is also true for `ℚ`-normed spaces
 theorem disjoint_ball_ball_iff (hδ : 0 < δ) (hε : 0 < ε) :
     Disjoint (ball x δ) (ball y ε) ↔ δ + ε ≤ dist x y := by
-  refine ⟨fun h => le_of_not_lt fun hxy => ?_, ball_disjoint_ball⟩
+  refine ⟨fun h => le_of_not_gt fun hxy => ?_, ball_disjoint_ball⟩
   rw [add_comm] at hxy
   obtain ⟨z, hxz, hzy⟩ := exists_dist_lt_lt hδ hε hxy
   rw [dist_comm] at hxz
@@ -206,7 +206,7 @@ theorem disjoint_ball_ball_iff (hδ : 0 < δ) (hε : 0 < ε) :
 -- This is also true for `ℚ`-normed spaces
 theorem disjoint_ball_closedBall_iff (hδ : 0 < δ) (hε : 0 ≤ ε) :
     Disjoint (ball x δ) (closedBall y ε) ↔ δ + ε ≤ dist x y := by
-  refine ⟨fun h => le_of_not_lt fun hxy => ?_, ball_disjoint_closedBall⟩
+  refine ⟨fun h => le_of_not_gt fun hxy => ?_, ball_disjoint_closedBall⟩
   rw [add_comm] at hxy
   obtain ⟨z, hxz, hzy⟩ := exists_dist_lt_le hδ hε hxy
   rw [dist_comm] at hxz
@@ -230,7 +230,7 @@ open EMetric ENNReal
 @[simp]
 theorem infEdist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
     infEdist x (thickening δ s) = infEdist x s - ENNReal.ofReal δ := by
-  obtain hs | hs := lt_or_le (infEdist x s) (ENNReal.ofReal δ)
+  obtain hs | hs := lt_or_ge (infEdist x s) (ENNReal.ofReal δ)
   · rw [infEdist_zero_of_mem, tsub_eq_zero_of_le hs.le]
     exact hs
   refine (tsub_le_iff_right.2 infEdist_le_infEdist_thickening_add).antisymm' ?_
@@ -278,7 +278,7 @@ theorem closure_thickening (hδ : 0 < δ) (s : Set E) :
 @[simp]
 theorem infEdist_cthickening (δ : ℝ) (s : Set E) (x : E) :
     infEdist x (cthickening δ s) = infEdist x s - ENNReal.ofReal δ := by
-  obtain hδ | hδ := le_or_lt δ 0
+  obtain hδ | hδ := le_or_gt δ 0
   · rw [cthickening_of_nonpos hδ, infEdist_closure, ofReal_of_nonpos hδ, tsub_zero]
   · rw [← closure_thickening hδ, infEdist_closure, infEdist_thickening hδ]
 

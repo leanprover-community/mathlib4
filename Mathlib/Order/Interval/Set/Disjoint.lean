@@ -74,7 +74,7 @@ theorem Ioi_disjoint_Iio_of_not_lt (h : ¬a < b) : Disjoint (Ioi a) (Iio b) :=
   disjoint_left.mpr fun _ hx hy ↦ h (hx.trans hy)
 
 theorem Ioi_disjoint_Iio_of_le (h : a ≤ b) : Disjoint (Ioi b) (Iio a) :=
-  Ioi_disjoint_Iio_of_not_lt (not_lt_of_le h)
+  Ioi_disjoint_Iio_of_not_lt (not_lt_of_ge h)
 
 @[simp]
 theorem Ioi_disjoint_Iio_same : Disjoint (Ioi a) (Iio a) :=
@@ -174,7 +174,7 @@ theorem eq_of_Ico_disjoint {x₁ x₂ y₁ y₂ : α} (h : Disjoint (Ico x₁ x�
     (h2 : x₂ ∈ Ico y₁ y₂) : y₁ = x₂ := by
   rw [Ico_disjoint_Ico, min_eq_left (le_of_lt h2.2), le_max_iff] at h
   apply le_antisymm h2.1
-  exact h.elim (fun h => absurd hx (not_lt_of_le h)) id
+  exact h.elim (fun h => absurd hx (not_lt_of_ge h)) id
 
 @[simp]
 theorem iUnion_Ico_eq_Iio_self_iff {f : ι → α} {a : α} :

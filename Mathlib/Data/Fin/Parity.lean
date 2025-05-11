@@ -25,7 +25,7 @@ variable {n : ℕ} {k : Fin n}
 
 theorem even_succAbove_add_predAbove (i : Fin (n + 1)) (j : Fin n) :
     Even (i.succAbove j + j.predAbove i : ℕ) ↔ Odd (i + j : ℕ) := by
-  rcases lt_or_le j.castSucc i with hji | hij
+  rcases lt_or_ge j.castSucc i with hji | hij
   · have : 1 ≤ (i : ℕ) := (Nat.zero_le j).trans_lt hji
     simp [succAbove_of_castSucc_lt _ _ hji, predAbove_of_castSucc_lt _ _ hji, this, iff_comm,
       parity_simps]

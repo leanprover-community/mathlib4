@@ -290,12 +290,12 @@ lemma eq_of_not_mem_uIoc_of_not_mem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
   rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;>
       apply le_antisymm <;>
     first |assumption|exact le_of_lt ‹_›|
-    exact absurd hb (not_le_of_lt ‹c < b›)|exact absurd ha (not_le_of_lt ‹c < a›)
+    exact absurd hb (not_le_of_gt ‹c < b›)|exact absurd ha (not_le_of_gt ‹c < a›)
 
 lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h
   rw [Set.ext_iff] at h
-  obtain ha | ha := le_or_lt b a
+  obtain ha | ha := le_or_gt b a
   · have hb := (h b).not
     simp only [ha, left_mem_uIoc, not_lt, true_iff, not_mem_uIoc, ← not_le,
       and_true, not_true, false_and, not_false_iff, or_false] at hb
@@ -311,7 +311,7 @@ lemma uIoc_injective_left (a : α) : Injective (Ι a) := by
 
 lemma uIoc_union_uIoc (h : b ∈ [[a, c]]) : Ι a b ∪ Ι b c = Ι a c := by
   wlog hac : a ≤ c generalizing a c
-  · rw [uIoc_comm, union_comm, uIoc_comm, this _ (le_of_not_le hac), uIoc_comm]
+  · rw [uIoc_comm, union_comm, uIoc_comm, this _ (le_of_not_ge hac), uIoc_comm]
     rwa [uIcc_comm]
   rw [uIcc_of_le hac] at h
   rw [uIoc_of_le h.1, uIoc_of_le h.2, uIoc_of_le hac, Ioc_union_Ioc_eq_Ioc h.1 h.2]

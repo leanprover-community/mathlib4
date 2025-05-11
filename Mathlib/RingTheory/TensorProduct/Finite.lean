@@ -115,7 +115,7 @@ lemma Module.exists_isPrincipal_quotient_of_finite  :
   obtain ⟨n, f, hf⟩ := @Module.Finite.exists_fin R M _ _ _ _
   let s := { m : ℕ | Submodule.span R (f '' (Fin.val ⁻¹' (Set.Iio m))) ≠ ⊤ }
   have hns : ∀ x ∈ s, x < n := by
-    refine fun x hx ↦ lt_iff_not_le.mpr fun e ↦ ?_
+    refine fun x hx ↦ lt_iff_not_ge.mpr fun e ↦ ?_
     have : (Fin.val ⁻¹' Set.Iio x : Set (Fin n)) = Set.univ := by ext y; simpa using y.2.trans_le e
     simp [s, this, hf] at hx
   have hs₁ : s.Nonempty := ⟨0, by simp [s, show Set.Iio 0 = ∅ by ext; simp]⟩

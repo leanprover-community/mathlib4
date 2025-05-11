@@ -229,7 +229,7 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
     exact mod_lt i ha.bot_lt
   intro hia
   have hn := Nat.mod_add_div n a
-  obtain hi | hi := lt_or_le i (n % a)
+  obtain hi | hi := lt_or_ge i (n % a)
   · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
     · rw [add_comm (n / a), Nat.mul_add, mul_one, ← add_assoc]
       refine hn.symm.le.trans (Nat.add_le_add_right ?_ _)
@@ -320,7 +320,7 @@ theorem Nat.cauchy_induction' (seed : ℕ) (h : ∀ n, P (n + 1) → P n) (hs : 
   apply Nat.decreasing_induction_of_infinite h fun hf => _
   intro hf
   obtain ⟨m, hP, hm⟩ := hf.exists_maximal_wrt id _ ⟨seed, hs⟩
-  obtain ⟨y, hl, hy⟩ := hi m (le_of_not_lt fun hl => hl.ne <| hm seed hs hl.le) hP
+  obtain ⟨y, hl, hy⟩ := hi m (le_of_not_gt fun hl => hl.ne <| hm seed hs hl.le) hP
   exact hl.ne (hm y hy hl.le)
 
 theorem Nat.cauchy_induction (h : ∀ n, P (n + 1) → P n) (seed : ℕ) (hs : P seed) (f : ℕ → ℕ)

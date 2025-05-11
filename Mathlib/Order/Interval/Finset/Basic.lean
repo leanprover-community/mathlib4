@@ -1091,7 +1091,7 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
   /- and if `¬ y ≤ x`, then `x < y`, not because it is a linear order, but because `x ≤ y`
   already. In that case, since `z` is maximal in `Ico x y`, then `z ⩿ y` and we can use the
   induction hypothesis to show that `Relation.TransGen (· ⩿ ·) x z`. -/
-  · have h_non : (Ico x y).Nonempty := ⟨x, mem_Ico.mpr ⟨le_rfl, lt_of_le_not_le hxy hxy'⟩⟩
+  · have h_non : (Ico x y).Nonempty := ⟨x, mem_Ico.mpr ⟨le_rfl, lt_of_le_not_ge hxy hxy'⟩⟩
     obtain ⟨z, z_mem, hz⟩ := (Ico x y).exists_maximal h_non
     have z_card := calc
       #(Icc x z) ≤ #(Ico x y) := card_le_card <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
@@ -1137,7 +1137,7 @@ lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
   · exact .tail (transGen_covBy_of_lt hxz) hzy
   /- when `¬ x < z`, then actually `z ≤ x` (not because it's a linear order, but because
   `x ≤ z`), and since `z ⋖ y` we conclude that `x ⋖ y` , then `Relation.TransGen.single`. -/
-  · simp only [lt_iff_le_not_le, not_and, not_not] at hxz
+  · simp only [lt_iff_le_not_ge, not_and, not_not] at hxz
     exact .single (hzy.of_le_of_lt (hxz (mem_Ico.mp z_mem).1) hxy)
 termination_by #(Ico x y)
 

@@ -127,7 +127,7 @@ theorem edist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y �
     edist (f x) (f y) ≤ eVariationOn f s := by
   wlog hxy : y ≤ x generalizing x y
   · rw [edist_comm]
-    exact this hy hx (le_of_not_le hxy)
+    exact this hy hx (le_of_not_ge hxy)
   let u : ℕ → α := fun n => if n = 0 then y else x
   have hu : Monotone u := monotone_nat_of_le_succ fun
   | 0 => hxy
@@ -212,7 +212,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
     ∃ (v : ℕ → α) (m : ℕ), Monotone v ∧ (∀ i, v i ∈ s) ∧ x ∈ v '' Iio m ∧
       (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
         ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) := by
-  rcases le_or_lt (u n) x with (h | h)
+  rcases le_or_gt (u n) x with (h | h)
   · let v i := if i ≤ n then u i else x
     have vs : ∀ i, v i ∈ s := fun i ↦ by
       simp only [v]
@@ -272,7 +272,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       have D : i + 1 - 1 = i := Nat.pred_succ i
       rw [if_neg A, if_neg B, if_neg C, D]
       split_ifs
-      · exact hN.2.le.trans (hu (le_of_not_lt A))
+      · exact hN.2.le.trans (hu (le_of_not_gt A))
       · exact hu (Nat.pred_le _)
   refine ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), ?_⟩, ?_⟩
   · dsimp only [w]; rw [if_neg (lt_irrefl N), if_pos rfl]
@@ -637,7 +637,7 @@ protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
     edist (f a) (f b) = 0 := by
   wlog h' : a ≤ b
   · rw [edist_comm]
-    apply this hf hb ha _ (le_of_not_le h')
+    apply this hf hb ha _ (le_of_not_ge h')
     rw [variationOnFromTo.eq_neg_swap, h, neg_zero]
   · apply le_antisymm _ (zero_le _)
     rw [← ENNReal.ofReal_zero, ← h, variationOnFromTo.eq_of_le f s h',

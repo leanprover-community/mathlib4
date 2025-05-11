@@ -167,7 +167,7 @@ theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
   obtain ⟨m, hm⟩ := nonempty_of_pos_sInf h
   refine
     le_csInf ⟨m + n, ?_⟩ fun b hb ↦
-      le_of_not_lt fun hbn ↦
+      le_of_not_gt fun hbn ↦
         ne_of_mem_of_not_mem ?_ (not_mem_of_lt_sInf h) (Nat.sub_eq_zero_of_le hbn.le)
   · dsimp
     rwa [Nat.add_sub_cancel_right]

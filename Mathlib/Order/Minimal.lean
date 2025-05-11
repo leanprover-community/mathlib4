@@ -165,7 +165,7 @@ section Preorder
 variable [Preorder α]
 
 theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬ P y := by
-  simp [Minimal, lt_iff_le_not_le, not_imp_not, imp.swap]
+  simp [Minimal, lt_iff_le_not_ge, not_imp_not, imp.swap]
 
 theorem maximal_iff_forall_gt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
   minimal_iff_forall_lt (α := αᵒᵈ)
@@ -195,7 +195,7 @@ theorem Maximal.not_gt (h : Maximal P x) (hy : P y) : ¬ (x < y) :=
   minimal_lt_iff (α := αᵒᵈ)
 
 theorem not_minimal_iff_exists_lt (hx : P x) : ¬ Minimal P x ↔ ∃ y, y < x ∧ P y := by
-  simp_rw [not_minimal_iff hx, lt_iff_le_not_le, and_comm]
+  simp_rw [not_minimal_iff hx, lt_iff_le_not_ge, and_comm]
 
 alias ⟨exists_lt_of_not_minimal, _⟩ := not_minimal_iff_exists_lt
 

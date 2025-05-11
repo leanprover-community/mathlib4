@@ -153,7 +153,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
     simp [this.right.le, this.right, mabs]
   · wlog ha : 1 ≤ a generalizing a
-    · convert @this (a⁻¹) ?_ (by simpa using le_of_not_le ha) using 4
+    · convert @this (a⁻¹) ?_ (by simpa using le_of_not_ge ha) using 4
       · simp
       · rwa [mabs_inv]
     rw [mabs, sup_eq_left.mpr ((inv_le_one'.mpr ha).trans ha)] at h

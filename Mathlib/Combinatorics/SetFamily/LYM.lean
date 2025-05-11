@@ -89,7 +89,7 @@ than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem local_lubell_yamamoto_meshalkin_inequality_div (hr : r ≠ 0)
     (h𝒜 : (𝒜 : Set (Finset α)).Sized r) : (#𝒜 : 𝕜) / (Fintype.card α).choose r
     ≤ #(∂ 𝒜) / (Fintype.card α).choose (r - 1) := by
-  obtain hr' | hr' := lt_or_le (Fintype.card α) r
+  obtain hr' | hr' := lt_or_ge (Fintype.card α) r
   · rw [choose_eq_zero_of_lt hr', cast_zero, div_zero]
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
   replace h𝒜 := local_lubell_yamamoto_meshalkin_inequality_mul h𝒜

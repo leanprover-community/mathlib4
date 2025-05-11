@@ -155,7 +155,7 @@ lemma valuation_pos_iff_ne_zero (hv : Integers v O) {x : O} :
 
 theorem dvdNotUnit_iff_lt (hv : Integers v O) {x y : O} :
     DvdNotUnit x y ↔ v (algebraMap O F y) < v (algebraMap O F x) := by
-  rw [lt_iff_le_not_le, hv.le_iff_dvd, hv.le_iff_dvd]
+  rw [lt_iff_le_not_ge, hv.le_iff_dvd, hv.le_iff_dvd]
   refine ⟨?_, And.elim dvdNotUnit_of_dvd_of_not_dvd⟩
   rintro ⟨hx0, d, hdu, rfl⟩
   refine ⟨⟨d, rfl⟩, ?_⟩

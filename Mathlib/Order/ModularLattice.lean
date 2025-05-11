@@ -230,7 +230,7 @@ theorem wellFounded_lt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ
     (gi : GaloisInsertion g₂ g₁) (hf : ∀ a, f₁ (f₂ a) = a ⊓ K) (hg : ∀ a, g₁ (g₂ a) = a ⊔ K) :
     WellFoundedLT α :=
   StrictMono.wellFoundedLT (f := fun A ↦ (f₂ A, g₂ A)) fun A B hAB ↦ by
-    simp only [Prod.le_def, lt_iff_le_not_le, ← gci.l_le_l_iff, ← gi.u_le_u_iff, hf, hg]
+    simp only [Prod.le_def, lt_iff_le_not_ge, ← gci.l_le_l_iff, ← gi.u_le_u_iff, hf, hg]
     exact strictMono_inf_prod_sup hAB
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
