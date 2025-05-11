@@ -48,6 +48,9 @@ theorem vec_zero [Zero R] : vec (0 : Matrix m n R) = 0 :=
 theorem vec_add [Add R] (A B : Matrix m n R) : vec (A + B) = vec A + vec B :=
   rfl
 
+theorem vec_neg [Neg R] (A : Matrix m n R) : vec (-A) = -vec A :=
+  rfl
+
 @[simp]
 theorem vec_sub [Sub R] (A B : Matrix m n R) : vec (A - B) = vec A - vec B :=
   rfl
