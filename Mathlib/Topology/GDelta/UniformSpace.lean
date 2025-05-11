@@ -7,4 +7,4 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.Separation.GDelta
 
-deprecated_module (since := "2025-05-09")
+deprecated_module (since := "2025-05-07")
