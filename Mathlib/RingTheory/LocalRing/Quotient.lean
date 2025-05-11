@@ -7,7 +7,12 @@ Authors: Andrew Yang, Riccardo Brasca
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.DiscreteValuationRing.TFAE
+import Mathlib.RingTheory.Artinian.Ring
+import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Ideal.Quotient.Index
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.Nakayama
 
 /-!
 
@@ -17,9 +22,9 @@ We gather results about the quotients of local rings.
 
 open Submodule FiniteDimensional Module
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [LocalRing R] [Module.Finite R S]
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R] [Module.Finite R S]
 
-namespace LocalRing
+namespace IsLocalRing
 
 local notation "p" => maximalIdeal R
 local notation "pS" => Ideal.map (algebraMap R S) p
@@ -44,7 +49,8 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
       rw [← this, ← comap_map_eq, mem_comap, ← H, hs, restrictScalars_top]
       exact mem_top
   · intro hs
-    rwa [hs, Submodule.map_top, LinearMap.range_eq_top.mpr, restrictScalars_eq_top_iff] at H
+    rwa [hs, Submodule.map_top, LinearMap.range_eq_top.mpr,
+      restrictScalars_eq_top_iff] at H
     rw [IsScalarTower.coe_toAlgHom', Ideal.Quotient.algebraMap_eq]
     exact Ideal.Quotient.mk_surjective
 
@@ -94,10 +100,50 @@ lemma basisQuotient_repr {ι} [Fintype ι] (b : Basis ι R S) (x) (i) :
   apply (basisQuotient b).repr.symm.injective
   simp only [Finsupp.linearEquivFunOnFinite_symm_coe, LinearEquiv.symm_apply_apply,
     Basis.repr_symm_apply]
-  rw [Finsupp.linearCombination_eq_fintype_linearCombination_apply _ (R ⧸ p),
+  rw [Finsupp.linearCombination_eq_fintype_linearCombination_apply (R ⧸ p),
     Fintype.linearCombination_apply]
   simp only [Function.comp_apply, basisQuotient_apply,
     Ideal.Quotient.mk_smul_mk_quotient_map_quotient, ← Algebra.smul_def]
   rw [← map_sum, Basis.sum_repr b x]
 
-end LocalRing
+lemma exists_maximalIdeal_pow_le_of_finite_quotient (I : Ideal R) [Finite (R ⧸ I)] :
+    ∃ n, maximalIdeal R ^ n ≤ I := by
+  by_cases hI : I = ⊤
+  · simp [hI]
+  have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial hI
+  have := IsLocalRing.of_surjective' (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+  have := IsLocalHom.of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+  obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson_bot (R := R ⧸ I)
+  have : (maximalIdeal R).map (Ideal.Quotient.mk I) = maximalIdeal (R ⧸ I) := by
+    ext x
+    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+    simp [sup_eq_left.mpr (le_maximalIdeal hI)]
+  rw [jacobson_eq_maximalIdeal _ bot_ne_top, ← this, ← Ideal.map_pow, Ideal.zero_eq_bot,
+    Ideal.map_eq_bot_iff_le_ker, Ideal.mk_ker] at hn
+  exact ⟨n, hn⟩
+
+lemma finite_quotient_iff [IsNoetherianRing R] [Finite (ResidueField R)] {I : Ideal R} :
+    Finite (R ⧸ I) ↔ ∃ n, (maximalIdeal R) ^ n ≤ I := by
+  refine ⟨fun _ ↦ exists_maximalIdeal_pow_le_of_finite_quotient I, ?_⟩
+  rintro ⟨n, hn⟩
+  have : Finite (R ⧸ maximalIdeal R) := ‹_›
+  have := (Ideal.finite_quotient_pow (IsNoetherian.noetherian (maximalIdeal R)) n)
+  exact Finite.of_surjective _ (Ideal.Quotient.factor_surjective hn)
+
+end IsLocalRing
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.quotient_span_eq_top_iff_span_eq_top :=
+  IsLocalRing.quotient_span_eq_top_iff_span_eq_top
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.finrank_quotient_map := IsLocalRing.finrank_quotient_map
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.basisQuotient := IsLocalRing.basisQuotient
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.basisQuotient_apply := IsLocalRing.basisQuotient_apply
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.basisQuotient_repr := IsLocalRing.basisQuotient_repr

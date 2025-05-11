@@ -3,9 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Logic.Relation
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Lex
+import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Relation
 
 /-!
 # Relation chain
@@ -40,7 +41,7 @@ theorem Chain.iff_mem {a : α} {l : List α} :
     | nil => exact nil
     | @cons _ _ _ r _ IH =>
       constructor
-      · exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩
+      · exact ⟨mem_cons_self, mem_cons_self, r⟩
       · exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩,
     Chain.imp fun _ _ h => h.2.2⟩
 
@@ -127,7 +128,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       · intro _
         exact R
       intro i w
-      cases' i with i
+      rcases i with - | i
       · apply h0
       · exact h i (by simp only [length_cons] at w; omega)
     rintro ⟨h0, h⟩; constructor
@@ -192,6 +193,19 @@ theorem chain'_split {a : α} :
 theorem chain'_append_cons_cons {b c : α} {l₁ l₂ : List α} :
     Chain' R (l₁ ++ b :: c :: l₂) ↔ Chain' R (l₁ ++ [b]) ∧ R b c ∧ Chain' R (c :: l₂) := by
   rw [chain'_split, chain'_cons]
+
+theorem chain'_iff_forall_rel_of_append_cons_cons {l : List α} :
+    Chain' R l ↔ ∀ ⦃a b l₁ l₂⦄, l = l₁ ++ a :: b :: l₂ → R a b := by
+  refine ⟨fun h _ _ _ _ eq => (chain'_append_cons_cons.mp (eq ▸ h)).2.1, ?_⟩
+  induction l with
+  | nil => exact fun _ ↦ chain'_nil
+  | cons head tail ih =>
+    match tail with
+    | nil => exact fun _ ↦ chain'_singleton head
+    | cons head' tail =>
+      refine fun h ↦ chain'_cons.mpr ⟨h (nil_append _).symm, ih fun ⦃a b l₁ l₂⦄ eq => ?_⟩
+      apply h
+      rw [eq, cons_append]
 
 theorem chain'_map (f : β → α) {l : List β} :
     Chain' R (map f l) ↔ Chain' (fun a b : β => R (f a) (f b)) l := by
@@ -307,17 +321,37 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
   h₁.append h₂.right_of_append <| by
     simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
 
-lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
-    (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
+lemma chain'_flatten : ∀ {L : List (List α)}, [] ∉ L →
+    (Chain' R L.flatten ↔ (∀ l ∈ L, Chain' R l) ∧
     L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
 | [], _ => by simp
-| [l], _ => by simp [join]
+| [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
     rw [mem_cons, not_or, ← Ne] at hL
-    rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
+    rw [flatten, chain'_append, chain'_flatten hL.2, forall_mem_cons, chain'_cons]
     rw [mem_cons, not_or, ← Ne] at hL
-    simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
+    simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
+
+theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
+    {r : {a // p a} → {a // p a} → Prop} :
+    (l.attachWith p h).Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ := by
+  induction l with
+  | nil => rfl
+  | cons a l IH =>
+    rw [attachWith_cons, chain'_cons', chain'_cons', IH, and_congr_left]
+    simp_rw [head?_attachWith]
+    intros
+    constructor <;>
+    intro hc b (hb : _ = _)
+    · simp_rw [hb, Option.pbind_some] at hc
+      have hb' := h b (mem_cons_of_mem a (mem_of_mem_head? hb))
+      exact ⟨h a mem_cons_self, hb', hc ⟨b, hb'⟩ rfl⟩
+    · cases l <;> aesop
+
+theorem chain'_attach {l : List α} {r : {a // a ∈ l} → {a // a ∈ l} → Prop} :
+    l.attach.Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ :=
+  chain'_attachWith fun _ ↦ id
 
 /-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
 `r`-chain starting from `a` and ending on `b`.
@@ -378,7 +412,7 @@ That is, we can propagate the predicate all the way up the chain.
 theorem Chain.backwards_induction_head (p : α → Prop) (l : List α) (h : Chain r a l)
     (hb : getLast (a :: l) (cons_ne_nil _ _) = b) (carries : ∀ ⦃x y : α⦄, r x y → p y → p x)
     (final : p b) : p a :=
-  (Chain.backwards_induction p l h hb carries final) _ (mem_cons_self _ _)
+  (Chain.backwards_induction p l h hb carries final) _ mem_cons_self
 
 /--
 If there is an `r`-chain starting from `a` and ending at `b`, then `a` and `b` are related by the
@@ -399,17 +433,17 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
     cases as with
     | nil =>
       simp only [le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
-      exact (List.Lex.not_nil_right (·<·) _ hmas).elim
+      exact (List.not_lt_nil _ hmas).elim
     | cons a' as =>
       rw [List.chain'_cons] at ha
       refine gt_of_gt_of_ge ha.1 ?_
       rw [le_iff_lt_or_eq] at hmas
-      cases' hmas with hmas hmas
+      rcases hmas with hmas | hmas
       · by_contra! hh
         rw [← not_le] at hmas
         apply hmas
         apply le_of_lt
-        exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
+        exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel hh)
       · simp_all only [List.cons.injEq, le_refl]
 
 lemma Chain'.chain {α : Type*} {R : α → α → Prop} {l : List α} {v : α}
@@ -473,7 +507,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
     have hl' := (List.chain'_cons'.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
     have : Acc (List.lex_chains r) l' := by
-      cases' l with b l
+      rcases l with - | ⟨b, l⟩
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       /- l' is accessible by induction hypothesis -/
       · apply ih b (List.chain'_cons.1 hl).1
@@ -487,8 +521,8 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       apply Acc.intro
       rintro ⟨_ | ⟨b, m⟩, hm⟩ (_ | hr | hr)
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
-      · apply ihl ⟨m, (List.chain'_cons'.1 hm).2⟩ hr
       · apply ih b hr
+      · apply ihl ⟨m, (List.chain'_cons'.1 hm).2⟩ hr
 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
 theorem WellFounded.list_chain' (hwf : WellFounded r) :

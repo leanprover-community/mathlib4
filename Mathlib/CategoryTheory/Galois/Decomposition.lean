@@ -66,7 +66,7 @@ private lemma has_decomp_connected_components_aux_initial (X : C) (h : IsInitial
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
   refine ⟨Empty, fun _ ↦ X, fun _ ↦ 𝟙 X, ?_⟩
-  use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by aesop)
+  use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by simp)
     (fun s m _ ↦ IsInitial.hom_ext h m _)
   exact ⟨by simp only [IsEmpty.forall_iff], inferInstance⟩
 
@@ -154,12 +154,14 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   have : IsIso v := IsConnected.noTrivialComponent Y v hn
   use (asIso u).symm ≪≫ asIso v
   have hu : G.map u y = a := by
-    simp only [y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv, Iso.toEquiv_comp,
-      Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply, inv_hom_id_apply]
+    simp only [u, G, y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv,
+      Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
+      inv_hom_id_apply]
     erw [Types.pullbackIsoPullback_inv_fst_apply (F.map i) (F.map j)]
   have hv : G.map v y = b := by
-    simp only [y, e, ← PreservesPullback.iso_hom_snd G, fiberPullbackEquiv, Iso.toEquiv_comp,
-      Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply, inv_hom_id_apply]
+    simp only [v, G, y, e, ← PreservesPullback.iso_hom_snd G, fiberPullbackEquiv,
+      Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
+      inv_hom_id_apply]
     erw [Types.pullbackIsoPullback_inv_snd_apply (F.map i) (F.map j)]
   rw [← hu, ← hv]
   show (F.toPrefunctor.map u ≫ F.toPrefunctor.map _) y = F.toPrefunctor.map v y

@@ -123,8 +123,4 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
         simpa using
           congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
 
--- open Oplax in
--- def ModificationIso.ofOplax (Γ : η.toOplax ≅ θ.toOplax) : η ≅ θ :=
---   ModificationIso.ofComponents (fun a => Γ.app a) Γ.naturality
-
 end CategoryTheory.Pseudofunctor

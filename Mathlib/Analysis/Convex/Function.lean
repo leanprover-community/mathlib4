@@ -26,15 +26,13 @@ a convex set.
 * `StrictConcaveOn 𝕜 s f`: The function `f` is strictly concave on `s` with scalars `𝕜`.
 -/
 
-
-open scoped Classical
 open LinearMap Set Convex Pointwise
 
 variable {𝕜 E F α β ι : Type*}
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommMonoid
 
@@ -42,7 +40,7 @@ variable [AddCommMonoid E] [AddCommMonoid F]
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β]
+variable [AddCommMonoid α] [PartialOrder α] [AddCommMonoid β] [PartialOrder β]
 
 section SMul
 
@@ -186,7 +184,7 @@ end SMul
 
 section DistribMulAction
 
-variable [SMul 𝕜 E] [DistribMulAction 𝕜 β] {s : Set E} {f g : E → β}
+variable [IsOrderedAddMonoid β] [SMul 𝕜 E] [DistribMulAction 𝕜 β] {s : Set E} {f g : E → β}
 
 theorem ConvexOn.add (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) : ConvexOn 𝕜 s (f + g) :=
   ⟨hf.1, fun x hx y hy a b ha hb hab =>
@@ -211,11 +209,11 @@ theorem convexOn_const (c : β) (hs : Convex 𝕜 s) : ConvexOn 𝕜 s fun _ : E
 theorem concaveOn_const (c : β) (hs : Convex 𝕜 s) : ConcaveOn 𝕜 s fun _ => c :=
   convexOn_const (β := βᵒᵈ) _ hs
 
-theorem ConvexOn.add_const (hf : ConvexOn 𝕜 s f) (b : β) :
+theorem ConvexOn.add_const [IsOrderedAddMonoid β] (hf : ConvexOn 𝕜 s f) (b : β) :
     ConvexOn 𝕜 s (f + fun _ => b) :=
   hf.add (convexOn_const _ hf.1)
 
-theorem ConcaveOn.add_const (hf : ConcaveOn 𝕜 s f) (b : β) :
+theorem ConcaveOn.add_const [IsOrderedAddMonoid β] (hf : ConcaveOn 𝕜 s f) (b : β) :
     ConcaveOn 𝕜 s (f + fun _ => b) :=
   hf.add (concaveOn_const _ hf.1)
 
@@ -232,7 +230,7 @@ end Module
 
 section OrderedSMul
 
-variable [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
+variable [IsOrderedAddMonoid β] [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
 
 theorem ConvexOn.convex_le (hf : ConvexOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x ∈ s | f x ≤ r }) :=
   fun x hx y hy a b ha hb hab =>
@@ -366,7 +364,7 @@ theorem StrictConcaveOn.concaveOn {s : Set E} {f : E → β} (hf : StrictConcave
 
 section OrderedSMul
 
-variable [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
+variable [IsOrderedAddMonoid β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
 
 theorem StrictConvexOn.convex_lt (hf : StrictConvexOn 𝕜 s f) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) :=
@@ -469,7 +467,7 @@ end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
 
-variable [OrderedCancelAddCommMonoid β]
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
 
 section DistribMulAction
 
@@ -507,11 +505,13 @@ theorem StrictConcaveOn.add (hf : StrictConcaveOn 𝕜 s f) (hg : StrictConcaveO
     StrictConcaveOn 𝕜 s (f + g) :=
   hf.dual.add hg
 
-theorem StrictConvexOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
+theorem StrictConvexOn.add_const {γ : Type*} {f : E → γ}
+    [AddCommMonoid γ] [PartialOrder γ] [IsOrderedCancelAddMonoid γ]
     [Module 𝕜 γ] (hf : StrictConvexOn 𝕜 s f) (b : γ) : StrictConvexOn 𝕜 s (f + fun _ => b) :=
   hf.add_convexOn (convexOn_const _ hf.1)
 
-theorem StrictConcaveOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
+theorem StrictConcaveOn.add_const {γ : Type*} {f : E → γ}
+    [AddCommMonoid γ] [PartialOrder γ] [IsOrderedCancelAddMonoid γ]
     [Module 𝕜 γ] (hf : StrictConcaveOn 𝕜 s f) (b : γ) : StrictConcaveOn 𝕜 s (f + fun _ => b) :=
   hf.add_concaveOn (concaveOn_const _ hf.1)
 
@@ -564,7 +564,8 @@ end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [LinearOrderedAddCommMonoid β] [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E}
+variable [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β]
+  [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E}
   {f g : E → β}
 
 /-- The pointwise maximum of convex functions is convex. -/
@@ -662,7 +663,7 @@ end LinearOrderedAddCommMonoid
 
 section LinearOrderedCancelAddCommMonoid
 
-variable [LinearOrderedCancelAddCommMonoid β]
+variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
 
 section OrderedSMul
 
@@ -770,7 +771,8 @@ end LinearOrderedCancelAddCommMonoid
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup β] [SMul 𝕜 E] [Module 𝕜 β] {s : Set E} {f g : E → β}
+variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [SMul 𝕜 E] [Module 𝕜 β]
+  {s : Set E} {f g : E → β}
 
 /-- A function `-f` is convex iff `f` is concave. -/
 @[simp]
@@ -857,7 +859,8 @@ end AddCommMonoid
 
 section AddCancelCommMonoid
 
-variable [AddCancelCommMonoid E] [OrderedAddCommMonoid β] [Module 𝕜 E] [SMul 𝕜 β] {s : Set E}
+variable [AddCancelCommMonoid E] [AddCommMonoid β] [PartialOrder β] [Module 𝕜 E] [SMul 𝕜 β]
+  {s : Set E}
   {f : E → β}
 
 /-- Right translation preserves strict convexity. -/
@@ -890,11 +893,11 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [OrderedCommSemiring 𝕜] [AddCommMonoid E]
+variable [CommSemiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β]
+variable [AddCommMonoid β] [PartialOrder β]
 
 section Module
 
@@ -919,11 +922,11 @@ end OrderedCommSemiring
 
 section OrderedRing
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [AddCommGroup F]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [AddCommGroup F]
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β]
+variable [AddCommMonoid β] [PartialOrder β]
 
 section Module
 
@@ -951,11 +954,11 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [AddCommMonoid E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommMonoid E]
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β]
+variable [AddCommMonoid β] [PartialOrder β]
 
 section SMul
 
@@ -1004,8 +1007,9 @@ end LinearOrderedField
 
 section OrderIso
 
-variable [OrderedSemiring 𝕜] [OrderedAddCommMonoid α] [SMul 𝕜 α]
-  [OrderedAddCommMonoid β] [SMul 𝕜 β]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+  [AddCommMonoid α] [PartialOrder α] [SMul 𝕜 α]
+  [AddCommMonoid β] [PartialOrder β] [SMul 𝕜 β]
 
 theorem OrderIso.strictConvexOn_symm (f : α ≃o β) (hf : StrictConcaveOn 𝕜 univ f) :
     StrictConvexOn 𝕜 univ f.symm := by
@@ -1049,10 +1053,11 @@ end OrderIso
 
 
 section LinearOrderedField
-variable [LinearOrderedField 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid β] [AddCommMonoid E] [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [AddCommMonoid E] [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β]
   {f : E → β} {s : Set E} {x y : E}
 
 /-- A strictly convex function admits at most one global minimum. -/
@@ -1075,7 +1080,8 @@ lemma StrictConcaveOn.eq_of_isMaxOn (hf : StrictConcaveOn 𝕜 s f) (hfx : IsMax
 end OrderedAddCommMonoid
 
 section LinearOrderedCancelAddCommMonoid
-variable [LinearOrderedCancelAddCommMonoid β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
+  [Module 𝕜 β] [OrderedSMul 𝕜 β]
   {x y z : 𝕜} {s : Set 𝕜} {f : 𝕜 → β}
 
 theorem ConvexOn.le_right_of_left_le'' (hf : ConvexOn 𝕜 s f) (hx : x ∈ s) (hz : z ∈ s) (hxy : x < y)

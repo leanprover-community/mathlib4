@@ -30,7 +30,7 @@ open scoped Nat
 
 open Nat hiding zero_le Prime
 
-open Finset multiplicity
+open Finset
 
 namespace Imo2019Q4
 

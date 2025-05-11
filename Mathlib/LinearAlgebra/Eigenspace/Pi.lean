@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 
 In finite dimensions, the theory of simultaneous eigenvalues for a family of linear endomorphisms
 `i ↦ f i` enjoys similar properties to that of a single endomorphism, provided the family obeys a
-compatibilty condition. This condition is that the maximum generalised eigenspaces of each
+compatibility condition. This condition is that the maximum generalised eigenspaces of each
 endomorphism are invariant under the action of all members of the family. It is trivially satisfied
 for commuting endomorphisms but there are important more general situations where it also holds
 (e.g., representations of nilpotent Lie algebras).
@@ -85,7 +85,7 @@ lemma injOn_iInf_maxGenEigenspace :
 
 lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
     (h : ∀ i j φ, MapsTo (f i) ((f j).maxGenEigenspace φ) ((f j).maxGenEigenspace φ)) :
-    CompleteLattice.Independent fun χ : ι → R ↦ ⨅ i, (f i).maxGenEigenspace (χ i) := by
+    iSupIndep fun χ : ι → R ↦ ⨅ i, (f i).maxGenEigenspace (χ i) := by
   replace h (l : ι) (χ : ι → R) :
       MapsTo (f l) (⨅ i, (f i).maxGenEigenspace (χ i)) (⨅ i, (f i).maxGenEigenspace (χ i)) := by
     intro x hx
@@ -95,13 +95,12 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
   suffices ∀ χ (s : Finset (ι → R)) (_ : χ ∉ s),
       Disjoint (⨅ i, (f i).maxGenEigenspace (χ i))
         (s.sup fun (χ : ι → R) ↦ ⨅ i, (f i).maxGenEigenspace (χ i)) by
-    simpa only [CompleteLattice.independent_iff_supIndep_of_injOn (injOn_iInf_maxGenEigenspace f),
+    simpa only [iSupIndep_iff_supIndep_of_injOn (injOn_iInf_maxGenEigenspace f),
       Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.not_mem_erase χ)
   intro χ₁ s
   induction s using Finset.induction_on with
   | empty => simp
-  | insert _n ih =>
-  rename_i χ₂ s
+  | @insert χ₂ s _n ih =>
   intro hχ₁₂
   obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
   specialize ih hχ₁
@@ -158,7 +157,7 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo [FiniteDimensional K M]
     simp_rw [eq_top_iff] at hχ ⊢
     exact le_trans hχ <| le_iSup (fun χ : ι → K ↦ ⨅ i, (f i).maxGenEigenspace (χ i)) χ
   · replace hy : ∀ φ, finrank K ((f i).maxGenEigenspace φ) < n := fun φ ↦ by
-      simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ)
+      simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ).ne
     have hi (j : ι) (φ : K) :
         MapsTo (f j) ((f i).maxGenEigenspace φ) ((f i).maxGenEigenspace φ) := by
       exact h j i φ
@@ -188,5 +187,14 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo [FiniteDimensional K M]
       simp_rw [biSup_congr this, ← Submodule.map_iSup, ih, Submodule.map_top,
         Submodule.range_subtype]
     simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using h' i
+
+/-- A commuting family of triangularizable endomorphisms is simultaneously triangularizable. -/
+theorem iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute
+    [FiniteDimensional K M] (f : ι → Module.End K M) (h : Pairwise fun i j ↦ Commute (f i) (f j))
+    (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
+    ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
+  refine Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo _
+    (fun i j ↦ Module.End.mapsTo_maxGenEigenspace_of_comm ?_) h'
+  rcases eq_or_ne j i with rfl | hij <;> tauto
 
 end Module.End

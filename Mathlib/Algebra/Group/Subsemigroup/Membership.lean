@@ -29,7 +29,7 @@ subsemigroup
 
 assert_not_exists MonoidWithZero
 
-variable {ι : Sort*} {M A B : Type*}
+variable {ι : Sort*} {M : Type*}
 
 section NonAssoc
 

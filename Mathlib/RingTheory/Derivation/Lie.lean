@@ -18,7 +18,7 @@ namespace Derivation
 
 variable {R : Type*} [CommRing R]
 variable {A : Type*} [CommRing A] [Algebra R A]
-variable (D : Derivation R A A) {D1 D2 : Derivation R A A} (a : A)
+variable {D1 D2 : Derivation R A A} (a : A)
 
 section LieStructures
 

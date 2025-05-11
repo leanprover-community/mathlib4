@@ -24,16 +24,6 @@ is an isomorphism.
 * `StrongTrans.category F G` : a category structure on Pseudofunctors between `F` and `G`,
   where the morphisms are strong transformations.
 
-## TODO
-
-After having defined lax functors, we should define 3 different types of strong natural
-transformations:
-* strong transformations between oplax functors (as defined here).
-* strong transformations between lax functors.
-* strong transformations between Pseudofunctors. From these types of strong natural
-  transformations, we can define the underlying natural transformations between the underlying
-  oplax resp. lax functors. Many properties can then be inferred from these.
-
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
@@ -140,19 +130,19 @@ section
 
 variable {a b c : B} {a' : C}
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), to_app]
 theorem whiskerLeft_naturality_naturality (f : a' ⟶ G.obj a) {g h : a ⟶ b} (β : g ⟶ h) :
     f ◁ G.map₂ β ▷ θ.app b ≫ f ◁ (θ.naturality h).hom =
       f ◁ (θ.naturality g).hom ≫ f ◁ θ.app a ◁ H.map₂ β :=
   θ.toOplax.whiskerLeft_naturality_naturality _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), to_app]
 theorem whiskerRight_naturality_naturality {f g : a ⟶ b} (β : f ⟶ g) (h : G.obj b ⟶ a') :
     F.map₂ β ▷ η.app b ▷ h ≫ (η.naturality g).hom ▷ h =
       (η.naturality f).hom ▷ h ≫ (α_ _ _ _).hom ≫ η.app a ◁ G.map₂ β ▷ h ≫ (α_ _ _ _).inv :=
   η.toOplax.whiskerRight_naturality_naturality _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), to_app]
 theorem whiskerLeft_naturality_comp (f : a' ⟶ G.obj a) (g : a ⟶ b) (h : b ⟶ c) :
     f ◁ (θ.naturality (g ≫ h)).hom ≫ f ◁ θ.app a ◁ (H.mapComp g h).hom =
       f ◁ (G.mapComp g h).hom ▷ θ.app c ≫
@@ -161,7 +151,7 @@ theorem whiskerLeft_naturality_comp (f : a' ⟶ G.obj a) (g : a ⟶ b) (h : b �
             f ◁ (α_ _ _ _).inv ≫ f ◁ (θ.naturality g).hom ▷ H.map h ≫ f ◁ (α_ _ _ _).hom :=
   θ.toOplax.whiskerLeft_naturality_comp _ _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), to_app]
 theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c ⟶ a') :
     (η.naturality (f ≫ g)).hom ▷ h ≫ (α_ _ _ _).hom ≫ η.app a ◁ (G.mapComp f g).hom ▷ h =
       (F.mapComp f g).hom ▷ η.app c ▷ h ≫
@@ -173,13 +163,13 @@ theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c �
                  (η.naturality f).hom ▷ G.map g ▷ h ≫ (α_ _ _ _).hom ▷ h ≫ (α_ _ _ _).hom :=
   η.toOplax.whiskerRight_naturality_comp _ _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), to_app]
 theorem whiskerLeft_naturality_id (f : a' ⟶ G.obj a) :
     f ◁ (θ.naturality (𝟙 a)).hom ≫ f ◁ θ.app a ◁ (H.mapId a).hom =
       f ◁ (G.mapId a).hom ▷ θ.app a ≫ f ◁ (λ_ (θ.app a)).hom ≫ f ◁ (ρ_ (θ.app a)).inv :=
   θ.toOplax.whiskerLeft_naturality_id _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), to_app]
 theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
     (η.naturality (𝟙 a)).hom ▷ f ≫ (α_ _ _ _).hom ≫ η.app a ◁ (G.mapId a).hom ▷ f =
     (F.mapId a).hom ▷ η.app a ▷ f ≫ (λ_ (η.app a)).hom ▷ f ≫ (ρ_ (η.app a)).inv ▷ f ≫
@@ -211,7 +201,6 @@ end StrongTrans
 
 variable (B C)
 
--- TODO: custom names?
 @[simps! id_app id_naturality_hom id_naturality_inv comp_naturality_hom
 comp_naturality_inv]
 instance categoryStruct : CategoryStruct (Pseudofunctor B C) where

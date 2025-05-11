@@ -11,6 +11,8 @@ import Mathlib.Data.Int.Cast.Lemmas
 # Field structure on the multiplicative/additive opposite
 -/
 
+assert_not_exists RelIso
+
 variable {α : Type*}
 
 namespace MulOpposite

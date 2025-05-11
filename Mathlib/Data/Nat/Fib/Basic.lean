@@ -3,13 +3,14 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Fibonacci Numbers
@@ -166,7 +167,6 @@ theorem fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib 
 theorem fib_two_mul_add_two (n : ℕ) :
     fib (2 * n + 2) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
   rw [fib_add_two, fib_two_mul, fib_two_mul_add_one]
-  -- Porting note: A bunch of issues similar to [this zulip thread](https://github.com/leanprover-community/mathlib4/pull/1576) with `zify`
   have : fib n ≤ 2 * fib (n + 1) :=
     le_trans fib_le_fib_succ (mul_comm 2 _ ▸ Nat.le_mul_of_pos_right _ two_pos)
   zify [this]
@@ -205,7 +205,7 @@ theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
   · simp [fastFibAux]
   · rintro (_|_) n' ih <;>
       simp only [fast_fib_aux_bit_ff, fast_fib_aux_bit_tt, congr_arg Prod.fst ih,
-        congr_arg Prod.snd ih, Prod.mk.inj_iff] <;>
+        congr_arg Prod.snd ih, Prod.mk_inj] <;>
       simp [bit, fib_two_mul, fib_two_mul_add_one, fib_two_mul_add_two]
 
 theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
@@ -240,7 +240,7 @@ theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
     rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
 
 theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
-  rwa [gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mp]
+  rwa [← gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mpr]
 
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=

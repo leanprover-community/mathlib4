@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Order.Directed
+import Mathlib.Order.BoundedOrder.Monotone
 import Mathlib.Order.Interval.Set.Basic
 
 /-!
@@ -19,9 +20,9 @@ open Function Set
 
 open OrderDual (toDual ofDual)
 
-universe u v w x
+universe u v
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
+variable {α : Type u} {γ : Type v}
 
 section
 
@@ -117,6 +118,12 @@ abbrev IsGreatest.orderTop (h : IsGreatest s a) :
     OrderTop s where
   top := ⟨a, h.1⟩
   le_top := Subtype.forall.2 h.2
+
+theorem isLUB_congr (h : upperBounds s = upperBounds t) : IsLUB s a ↔ IsLUB t a := by
+  rw [IsLUB, IsLUB, h]
+
+theorem isGLB_congr (h : lowerBounds s = lowerBounds t) : IsGLB s a ↔ IsGLB t a := by
+  rw [IsGLB, IsGLB, h]
 
 /-!
 ### Monotonicity
@@ -451,7 +458,7 @@ theorem exists_glb_Ioi (i : γ) : ∃ j, IsGLB (Ioi i) j :=
 variable [DenselyOrdered γ]
 
 theorem isLUB_Iio {a : γ} : IsLUB (Iio a) a :=
-  ⟨fun _ hx => le_of_lt hx, fun _ hy => le_of_forall_ge_of_dense hy⟩
+  ⟨fun _ hx => le_of_lt hx, fun _ hy => le_of_forall_lt_imp_le_of_dense hy⟩
 
 theorem isGLB_Ioi {a : γ} : IsGLB (Ioi a) a :=
   @isLUB_Iio γᵒᵈ _ _ a
@@ -587,13 +594,13 @@ section
 variable [SemilatticeInf γ] [DenselyOrdered γ]
 
 theorem isLUB_Ioo {a b : γ} (hab : a < b) : IsLUB (Ioo a b) b := by
-  simpa only [dual_Ioo] using isGLB_Ioo hab.dual
+  simpa only [Ioo_toDual] using isGLB_Ioo hab.dual
 
 theorem upperBounds_Ioo {a b : γ} (hab : a < b) : upperBounds (Ioo a b) = Ici b :=
   (isLUB_Ioo hab).upperBounds_eq
 
 theorem isLUB_Ico {a b : γ} (hab : a < b) : IsLUB (Ico a b) b := by
-  simpa only [dual_Ioc] using isGLB_Ioc hab.dual
+  simpa only [Ioc_toDual] using isGLB_Ioc hab.dual
 
 theorem upperBounds_Ico {a b : γ} (hab : a < b) : upperBounds (Ico a b) = Ici b :=
   (isLUB_Ico hab).upperBounds_eq
@@ -642,20 +649,25 @@ theorem isGLB_univ [OrderBot α] : IsGLB (univ : Set α) ⊥ :=
   isLeast_univ.isGLB
 
 @[simp]
-theorem NoMaxOrder.upperBounds_univ [NoMaxOrder α] : upperBounds (univ : Set α) = ∅ :=
+theorem NoTopOrder.upperBounds_univ [NoTopOrder α] : upperBounds (univ : Set α) = ∅ :=
   eq_empty_of_subset_empty fun b hb =>
-    let ⟨_, hx⟩ := exists_gt b
-    not_le_of_lt hx (hb trivial)
+    not_isTop b fun x => hb (mem_univ x)
+
+@[deprecated (since := "2025-04-18")]
+alias NoMaxOrder.upperBounds_univ := NoTopOrder.upperBounds_univ
 
 @[simp]
-theorem NoMinOrder.lowerBounds_univ [NoMinOrder α] : lowerBounds (univ : Set α) = ∅ :=
-  @NoMaxOrder.upperBounds_univ αᵒᵈ _ _
+theorem NoBotOrder.lowerBounds_univ [NoBotOrder α] : lowerBounds (univ : Set α) = ∅ :=
+  @NoTopOrder.upperBounds_univ αᵒᵈ _ _
+
+@[deprecated (since := "2025-04-18")]
+alias NoMinOrder.lowerBounds_univ := NoBotOrder.lowerBounds_univ
 
 @[simp]
-theorem not_bddAbove_univ [NoMaxOrder α] : ¬BddAbove (univ : Set α) := by simp [BddAbove]
+theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by simp [BddAbove]
 
 @[simp]
-theorem not_bddBelow_univ [NoMinOrder α] : ¬BddBelow (univ : Set α) :=
+theorem not_bddBelow_univ [NoBotOrder α] : ¬BddBelow (univ : Set α) :=
   @not_bddAbove_univ αᵒᵈ _ _
 
 /-!
@@ -691,12 +703,11 @@ theorem isGLB_empty [OrderTop α] : IsGLB ∅ (⊤ : α) :=
 theorem isLUB_empty [OrderBot α] : IsLUB ∅ (⊥ : α) :=
   @isGLB_empty αᵒᵈ _ _
 
-theorem IsLUB.nonempty [NoMinOrder α] (hs : IsLUB s a) : s.Nonempty :=
-  let ⟨a', ha'⟩ := exists_lt a
+theorem IsLUB.nonempty [NoBotOrder α] (hs : IsLUB s a) : s.Nonempty :=
   nonempty_iff_ne_empty.2 fun h =>
-    not_le_of_lt ha' <| hs.right <| by rw [h, upperBounds_empty]; exact mem_univ _
+    not_isBot a fun _ => hs.right <| by rw [h, upperBounds_empty]; exact mem_univ _
 
-theorem IsGLB.nonempty [NoMaxOrder α] (hs : IsGLB s a) : s.Nonempty :=
+theorem IsGLB.nonempty [NoTopOrder α] (hs : IsGLB s a) : s.Nonempty :=
   hs.dual.nonempty
 
 theorem nonempty_of_not_bddAbove [ha : Nonempty α] (h : ¬BddAbove s) : s.Nonempty :=
@@ -904,3 +915,19 @@ theorem IsGLB.exists_between' (h : IsGLB s a) (h' : a ∉ s) (hb : a < b) : ∃ 
   ⟨c, hcs, hac.lt_of_ne fun hac => h' <| hac.symm ▸ hcs, hcb⟩
 
 end LinearOrder
+
+theorem isGreatest_himp [GeneralizedHeytingAlgebra α] (a b : α) :
+    IsGreatest {w | w ⊓ a ≤ b} (a ⇨ b) := by
+  simp [IsGreatest, mem_upperBounds]
+
+theorem isLeast_sdiff [GeneralizedCoheytingAlgebra α] (a b : α) :
+    IsLeast {w | a ≤ b ⊔ w} (a \ b) := by
+  simp [IsLeast, mem_lowerBounds]
+
+theorem isGreatest_compl [HeytingAlgebra α] (a : α) :
+    IsGreatest {w | Disjoint w a} (aᶜ) := by
+  simpa only [himp_bot, disjoint_iff_inf_le] using isGreatest_himp a ⊥
+
+theorem isLeast_hnot [CoheytingAlgebra α] (a : α) :
+    IsLeast {w | Codisjoint a w} (￢a) := by
+  simpa only [CoheytingAlgebra.top_sdiff, codisjoint_iff_le_sup] using isLeast_sdiff ⊤ a

@@ -193,7 +193,7 @@ theorem infEdist_image (hΦ : Isometry Φ) : infEdist (Φ x) (Φ '' t) = infEdis
   simp only [infEdist, iInf_image, hΦ.edist_eq]
 
 @[to_additive (attr := simp)]
-theorem infEdist_smul {M} [SMul M α] [IsometricSMul M α] (c : M) (x : α) (s : Set α) :
+theorem infEdist_smul {M} [SMul M α] [IsIsometricSMul M α] (c : M) (x : α) (s : Set α) :
     infEdist (c • x) (c • s) = infEdist x s :=
   infEdist_image (isometry_smul _ _)
 
@@ -249,7 +249,7 @@ irreducible_def hausdorffEdist {α : Type u} [PseudoEMetricSpace α] (s t : Set 
 
 section HausdorffEdist
 
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x y : α} {s t u : Set α} {Φ : α → β}
+variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x : α} {s t u : Set α} {Φ : α → β}
 
 /-- The Hausdorff edistance of a set to itself vanishes. -/
 @[simp]
@@ -445,6 +445,10 @@ value `∞` instead, use `EMetric.infEdist`, which takes values in `ℝ≥0∞`)
 @[simp]
 theorem infDist_empty : infDist x ∅ = 0 := by simp [infDist]
 
+lemma isGLB_infDist (hs : s.Nonempty) : IsGLB ((dist x ·) '' s) (infDist x s) := by
+  simpa [infDist_eq_iInf, sInf_image']
+    using isGLB_csInf (hs.image _) ⟨0, by simp [lowerBounds, dist_nonneg]⟩
+
 /-- In a metric space, the minimal edistance to a nonempty set is finite. -/
 theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
   rcases h with ⟨y, hy⟩
@@ -471,10 +475,13 @@ theorem infDist_le_dist_of_mem (h : y ∈ s) : infDist x s ≤ dist x y := by
 theorem infDist_le_infDist_of_subset (h : s ⊆ t) (hs : s.Nonempty) : infDist x t ≤ infDist x s :=
   ENNReal.toReal_mono (infEdist_ne_top hs) (infEdist_anti h)
 
+lemma le_infDist {r : ℝ} (hs : s.Nonempty) : r ≤ infDist x s ↔ ∀ ⦃y⦄, y ∈ s → r ≤ dist x y := by
+  simp_rw [infDist, ← ENNReal.ofReal_le_iff_le_toReal (infEdist_ne_top hs), le_infEdist,
+    ENNReal.ofReal_le_iff_le_toReal (edist_ne_top _ _), ← dist_edist]
+
 /-- The minimal distance to a set `s` is `< r` iff there exists a point in `s` at distance `< r`. -/
 theorem infDist_lt_iff {r : ℝ} (hs : s.Nonempty) : infDist x s < r ↔ ∃ y ∈ s, dist x y < r := by
-  simp_rw [infDist, ← ENNReal.lt_ofReal_iff_toReal_lt (infEdist_ne_top hs), infEdist_lt_iff,
-    ENNReal.lt_ofReal_iff_toReal_lt (edist_ne_top _ _), ← dist_edist]
+  simp [← not_le, le_infDist hs]
 
 /-- The minimal distance from `x` to `s` is bounded by the distance from `y` to `s`, modulo
 the distance between `x` and `y`. -/
@@ -534,6 +541,10 @@ theorem infDist_zero_of_mem_closure (hx : x ∈ closure s) : infDist x s = 0 := 
 /-- A point belongs to the closure of `s` iff its infimum distance to this set vanishes. -/
 theorem mem_closure_iff_infDist_zero (h : s.Nonempty) : x ∈ closure s ↔ infDist x s = 0 := by
   simp [mem_closure_iff_infEdist_zero, infDist, ENNReal.toReal_eq_zero_iff, infEdist_ne_top h]
+
+theorem infDist_pos_iff_not_mem_closure (hs : s.Nonempty) :
+    x ∉ closure s ↔ 0 < infDist x s :=
+  (mem_closure_iff_infDist_zero hs).not.trans infDist_nonneg.gt_iff_ne.symm
 
 /-- Given a closed set `s`, a point belongs to `s` iff its infimum distance to this set vanishes -/
 theorem _root_.IsClosed.mem_iff_infDist_zero (h : IsClosed s) (hs : s.Nonempty) :
@@ -665,24 +676,15 @@ theorem hausdorffDist_empty' : hausdorffDist ∅ s = 0 := by simp [hausdorffDist
 in each set to the other set -/
 theorem hausdorffDist_le_of_infDist {r : ℝ} (hr : 0 ≤ r) (H1 : ∀ x ∈ s, infDist x t ≤ r)
     (H2 : ∀ x ∈ t, infDist x s ≤ r) : hausdorffDist s t ≤ r := by
-  by_cases h1 : hausdorffEdist s t = ⊤
-  · rwa [hausdorffDist, h1, ENNReal.top_toReal]
   rcases s.eq_empty_or_nonempty with hs | hs
   · rwa [hs, hausdorffDist_empty']
   rcases t.eq_empty_or_nonempty with ht | ht
   · rwa [ht, hausdorffDist_empty]
   have : hausdorffEdist s t ≤ ENNReal.ofReal r := by
     apply hausdorffEdist_le_of_infEdist _ _
-    · intro x hx
-      have I := H1 x hx
-      rwa [infDist, ← ENNReal.toReal_ofReal hr,
-        ENNReal.toReal_le_toReal (infEdist_ne_top ht) ENNReal.ofReal_ne_top] at I
-    · intro x hx
-      have I := H2 x hx
-      rwa [infDist, ← ENNReal.toReal_ofReal hr,
-        ENNReal.toReal_le_toReal (infEdist_ne_top hs) ENNReal.ofReal_ne_top] at I
-  rwa [hausdorffDist, ← ENNReal.toReal_ofReal hr,
-    ENNReal.toReal_le_toReal h1 ENNReal.ofReal_ne_top]
+    · simpa only [infDist, ← ENNReal.le_ofReal_iff_toReal_le (infEdist_ne_top ht) hr] using H1
+    · simpa only [infDist, ← ENNReal.le_ofReal_iff_toReal_le (infEdist_ne_top hs) hr] using H2
+  exact ENNReal.toReal_le_of_le_ofReal hr this
 
 /-- Bounding the Hausdorff distance by exhibiting, for any point in each set,
 another point in the other set at controlled distance -/

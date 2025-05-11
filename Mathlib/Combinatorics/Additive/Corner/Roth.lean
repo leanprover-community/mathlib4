@@ -23,8 +23,7 @@ open Finset SimpleGraph TripartiteFromTriangles
 open Function hiding graph
 open Fintype (card)
 
-variable {G : Type*} [AddCommGroup G] {A B : Finset (G × G)}
-  {a b c d x y : G} {n : ℕ} {ε : ℝ}
+variable {G : Type*} [AddCommGroup G] {A : Finset (G × G)} {a b c : G} {n : ℕ} {ε : ℝ}
 
 namespace Corners
 
@@ -45,7 +44,7 @@ private lemma mk_mem_triangleIndices : (a, b, c) ∈ triangleIndices A ↔ (a, b
 private instance triangleIndices.instExplicitDisjoint : ExplicitDisjoint (triangleIndices A) := by
   constructor
   all_goals
-    simp only [mk_mem_triangleIndices, Prod.mk.inj_iff, exists_prop, forall_exists_index, and_imp]
+    simp only [mk_mem_triangleIndices, Prod.mk_inj, exists_prop, forall_exists_index, and_imp]
     rintro a b _ a' - rfl - h'
     simp [Fin.val_eq_val, *] at * <;> assumption
 

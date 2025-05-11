@@ -53,4 +53,36 @@ theorem hasFDerivWithinAt_piLp :
   rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_hasFDerivWithinAt_iff, hasFDerivWithinAt_pi']
   rfl
 
+namespace PiLp
+
+theorem hasStrictFDerivAt_equiv (f : PiLp p E) :
+    HasStrictFDerivAt (WithLp.equiv p (∀ i, E i))
+      (PiLp.continuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
+  .of_isLittleO <| (Asymptotics.isLittleO_zero _ _).congr_left fun _ => (sub_self _).symm
+
+theorem hasStrictFDerivAt_equiv_symm (f : PiLp p E) :
+    HasStrictFDerivAt (WithLp.equiv p (∀ i, E i)).symm
+      (PiLp.continuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
+  .of_isLittleO <| (Asymptotics.isLittleO_zero _ _).congr_left fun _ => (sub_self _).symm
+
+nonrec theorem hasStrictFDerivAt_apply (f : PiLp p E) (i : ι) :
+    HasStrictFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
+  (hasStrictFDerivAt_apply i f).comp f (hasStrictFDerivAt_equiv (𝕜 := 𝕜) p f)
+
+theorem hasFDerivAt_equiv (f : PiLp p E) :
+    HasFDerivAt (WithLp.equiv p (∀ i, E i))
+      (PiLp.continuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
+  (hasStrictFDerivAt_equiv p f).hasFDerivAt
+
+theorem hasFDerivAt_equiv_symm (f : PiLp p E) :
+    HasFDerivAt (WithLp.equiv p (∀ i, E i)).symm
+      (PiLp.continuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
+  (hasStrictFDerivAt_equiv_symm p f).hasFDerivAt
+
+nonrec theorem hasFDerivAt_apply (f : PiLp p E) (i : ι) :
+    HasFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
+  (hasStrictFDerivAt_apply p f i).hasFDerivAt
+
+end PiLp
+
 end PiLp

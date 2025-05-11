@@ -1,0 +1,61 @@
+name: Add "closed-pr" emoji in Zulip
+# adds a reaction to Zulip messages that refer to a PR that was closed, but not merged
+
+# triggers the action when
+on:
+  pull_request:
+    # the pull request is closed or reopened, to add or remove the emoji
+    types: [closed, reopened]
+
+jobs:
+  add_closed_pr_emoji:
+    # we set the `TITLE` of the PR as a variable, this shields from possible code injection
+    env:
+      TITLE: ${{ github.event.pull_request.title }}
+
+    name: Add closed-pr emoji in Zulip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debugging information
+        run: |
+          # may be superfluous: GitHub may print the values of the environment variables by default
+          printf '%s' "${TITLE}" | hexdump -cC
+          printf 'PR title:"%s"\n' "${TITLE}"
+          printf 'issue number: "%s"\npull request number: "%s"\n' "${{ github.event.issue.number }}" "${{ github.event.pull_request.number }}"
+
+      - name: Set up Python
+        if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
+                github.event_name == 'reopened' }}
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
+                github.event_name == 'reopened' }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install zulip
+
+      - name: checkout zulip_emoji_merge_delegate script
+        if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
+                github.event_name == 'reopened' }}
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          sparse-checkout: |
+            scripts/zulip_emoji_merge_delegate.py
+
+      - name: Run Zulip Emoji Merge Delegate Script
+        if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
+                github.event_name == 'reopened' }}
+        env:
+          ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+          ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
+          ZULIP_SITE: https://leanprover.zulipchat.com
+        run: |
+          # ${{ github.event.action }} is either "closed" or "reopened"
+          # however, it only matters that it is either "closed" or
+          # something different from "closed"
+          # the effect is to add the "closed-pr" emoji to the message, if it is "closed"
+          # and to remove it otherwise
+          python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ github.event.action }}" "${{ github.event.pull_request.number }}"

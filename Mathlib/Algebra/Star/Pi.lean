@@ -70,8 +70,10 @@ theorem update_star [∀ i, Star (f i)] [DecidableEq I] (h : ∀ i : I, f i) (i 
     Function.update (star h) i (star a) = star (Function.update h i a) :=
   funext fun j => (apply_update (fun _ => star) h i a j).symm
 
-theorem star_sum_elim {I J α : Type*} (x : I → α) (y : J → α) [Star α] :
+theorem star_sumElim {I J α : Type*} (x : I → α) (y : J → α) [Star α] :
     star (Sum.elim x y) = Sum.elim (star x) (star y) := by
   ext x; cases x <;> simp only [Pi.star_apply, Sum.elim_inl, Sum.elim_inr]
+
+@[deprecated (since := "2025-02-21")] alias star_sum_elim := Function.star_sumElim
 
 end Function

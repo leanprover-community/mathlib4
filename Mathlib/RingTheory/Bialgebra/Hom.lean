@@ -24,7 +24,7 @@ homomorphism.
 
 -/
 
-open TensorProduct Bialgebra
+open TensorProduct Bialgebra Coalgebra
 
 universe u v w
 
@@ -48,8 +48,8 @@ notation:25 A " →ₐc[" R "] " B => BialgHom R A B
 from `A` to `B`. -/
 class BialgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
-    extends CoalgHomClass F R A B, MonoidHomClass F A B : Prop
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
+    extends CoalgHomClass F R A B, MonoidHomClass F A B
 
 namespace BialgHomClass
 
@@ -126,6 +126,15 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
     (f : α →ₐc[R] β) : α → β := f
 
 initialize_simps_projections BialgHom (toFun → apply)
+
+/-- Construct a bialgebra hom from an algebra hom respecting counit and comultiplication. -/
+@[simps] def ofAlgHom (f : A →ₐ[R] B) (counit_comp : counit ∘ₗ f.toLinearMap = counit)
+    (map_comp_comul : map f.toLinearMap f.toLinearMap ∘ₗ comul = comul ∘ₗ f.toLinearMap) :
+    A →ₐc[R] B where
+  __ := f
+  map_smul' := map_smul f
+  counit_comp := counit_comp
+  map_comp_comul := map_comp_comul
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
@@ -224,7 +233,7 @@ variable (R A)
 
 variable {R A}
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BialgHom.id R A) = id :=
   rfl
 
@@ -272,7 +281,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐc[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
