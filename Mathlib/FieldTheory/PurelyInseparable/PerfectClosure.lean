@@ -309,7 +309,7 @@ theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable [Algebra.IsSeparabl
     adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' F E _ q n,
     adjoin_algebraic_toSubalgebra fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x,
     Set.image_univ, Algebra.adjoin_eq_span]
-  have := (powMonoidHom (α := E) (q ^ n)).mrange.closure_eq
+  have := (MonoidHom.mrange (powMonoidHom (α := E) (q ^ n))).closure_eq
   simp only [MonoidHom.mrange, powMonoidHom, MonoidHom.coe_mk, OneHom.coe_mk,
     Submonoid.coe_copy] at this
   rw [this]
