@@ -160,6 +160,7 @@ protected lemma Eq.not_gt (hab : a = b) : ¬b < a := hab.symm.not_lt
 @[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
 
 -- Making this a @[simp] lemma causes confluence problems downstream.
+@[nontriviality]
 lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
 
 namespace LT.lt
@@ -584,11 +585,11 @@ lemma PartialOrder.toPreorder_injective : Function.Injective (@PartialOrder.toPr
 lemma LinearOrder.toPartialOrder_injective : Function.Injective (@LinearOrder.toPartialOrder α) :=
   fun
   | { le := A_le, lt := A_lt,
-      decidableLE := A_decidableLE, decidableEq := A_decidableEq, decidableLT := A_decidableLT
+      toDecidableLE := A_decidableLE, toDecidableEq := A_decidableEq, toDecidableLT := A_decidableLT
       min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
       compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical, .. },
     { le := B_le, lt := B_lt,
-      decidableLE := B_decidableLE, decidableEq := B_decidableEq, decidableLT := B_decidableLT
+      toDecidableLE := B_decidableLE, toDecidableEq := B_decidableEq, toDecidableLT := B_decidableLT
       min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
       compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
     rintro ⟨⟩
@@ -673,9 +674,9 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
-  decidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
-  decidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
-  decidableEq := (inferInstance : DecidableEq α)
+  toDecidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
+  toDecidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
+  toDecidableEq := (inferInstance : DecidableEq α)
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
@@ -913,9 +914,9 @@ abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj 
   letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj, instOrdα with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidableLE := decidableLE
-    decidableLT := decidableLT
-    decidableEq := decidableEq
+    toDecidableLE := decidableLE
+    toDecidableLT := decidableLT
+    toDecidableEq := decidableEq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -957,9 +958,9 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
   letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidableLE := decidableLE
-    decidableLT := decidableLT
-    decidableEq := decidableEq
+    toDecidableLE := decidableLE
+    toDecidableLT := decidableLT
+    toDecidableEq := decidableEq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -1054,30 +1055,29 @@ type synonym `α ×ₗ β = α × β`.
 
 
 namespace Prod
+section LE
+variable [LE α] [LE β] {x y : α × β} {a a₁ a₂ : α} {b b₁ b₂ : β}
 
-instance (α β : Type*) [LE α] [LE β] : LE (α × β) :=
-  ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
+instance : LE (α × β) where le p q := p.1 ≤ q.1 ∧ p.2 ≤ q.2
 
-instance instDecidableLE (α β : Type*) [LE α] [LE β] (x y : α × β)
-    [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
+instance instDecidableLE [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
   inferInstanceAs (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
 
-theorem le_def [LE α] [LE β] {x y : α × β} : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 :=
-  Iff.rfl
+lemma le_def : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 := .rfl
 
-@[simp]
-theorem mk_le_mk [LE α] [LE β] {x₁ x₂ : α} {y₁ y₂ : β} : (x₁, y₁) ≤ (x₂, y₂) ↔ x₁ ≤ x₂ ∧ y₁ ≤ y₂ :=
-  Iff.rfl
+@[simp] lemma mk_le_mk : (a₁, b₁) ≤ (a₂, b₂) ↔ a₁ ≤ a₂ ∧ b₁ ≤ b₂ := .rfl
 
-@[simp]
-theorem swap_le_swap [LE α] [LE β] {x y : α × β} : x.swap ≤ y.swap ↔ x ≤ y :=
-  and_comm
+@[simp] lemma swap_le_swap : x.swap ≤ y.swap ↔ x ≤ y := and_comm
+@[simp] lemma swap_le_mk : x.swap ≤ (b, a) ↔ x ≤ (a, b) := and_comm
+@[simp] lemma mk_le_swap : (b, a) ≤ x.swap ↔ (a, b) ≤ x := and_comm
+
+end LE
 
 section Preorder
 
 variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
 
-instance (α β : Type*) [Preorder α] [Preorder β] : Preorder (α × β) where
+instance : Preorder (α × β) where
   __ := inferInstanceAs (LE (α × β))
   le_refl := fun ⟨a, b⟩ ↦ ⟨le_refl a, le_refl b⟩
   le_trans := fun ⟨_, _⟩ ⟨_, _⟩ ⟨_, _⟩ ⟨hac, hbd⟩ ⟨hce, hdf⟩ ↦ ⟨le_trans hac hce, le_trans hbd hdf⟩
@@ -1085,6 +1085,9 @@ instance (α β : Type*) [Preorder α] [Preorder β] : Preorder (α × β) where
 @[simp]
 theorem swap_lt_swap : x.swap < y.swap ↔ x < y :=
   and_congr swap_le_swap (not_congr swap_le_swap)
+
+@[simp] lemma swap_lt_mk : x.swap < (b, a) ↔ x < (a, b) := by rw [← swap_lt_swap]; simp
+@[simp] lemma mk_lt_swap : (b, a) < x.swap ↔ (a, b) < x := by rw [← swap_lt_swap]; simp
 
 theorem mk_le_mk_iff_left : (a₁, b) ≤ (a₂, b) ↔ a₁ ≤ a₂ :=
   and_iff_left le_rfl
@@ -1244,9 +1247,9 @@ instance instLinearOrder : LinearOrder PUnit where
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit
   min := fun _ _ ↦ unit
-  decidableEq := inferInstance
-  decidableLE := fun _ _ ↦ Decidable.isTrue trivial
-  decidableLT := fun _ _ ↦ Decidable.isFalse id
+  toDecidableEq := inferInstance
+  toDecidableLE := fun _ _ ↦ Decidable.isTrue trivial
+  toDecidableLT := fun _ _ ↦ Decidable.isFalse id
   le_refl     := by intros; trivial
   le_trans    := by intros; trivial
   le_total    := by intros; exact Or.inl trivial
@@ -1305,4 +1308,4 @@ noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (
     LinearOrder (AsLinearOrder α) where
   __ := inferInstanceAs (PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
-  decidableLE := Classical.decRel _
+  toDecidableLE := Classical.decRel _

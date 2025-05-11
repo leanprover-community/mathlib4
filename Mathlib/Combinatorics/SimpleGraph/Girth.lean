@@ -11,6 +11,12 @@ import Mathlib.Data.ENat.Lattice
 
 This file defines the girth and the extended girth of a simple graph as the length of its smallest
 cycle, they give `0` or `∞` respectively if the graph is acyclic.
+
+## TODO
+
+- Prove that `G.egirth ≤ 2 * G.ediam + 1` and `G.girth ≤ 2 * G.diam + 1` when the diameter is
+  non-zero.
+
 -/
 
 namespace SimpleGraph

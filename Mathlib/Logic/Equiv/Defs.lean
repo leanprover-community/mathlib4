@@ -194,6 +194,12 @@ instance permUnique [Subsingleton α] : Unique (Perm α) :=
 theorem Perm.subsingleton_eq_refl [Subsingleton α] (e : Perm α) : e = Equiv.refl α :=
   Subsingleton.elim _ _
 
+protected theorem nontrivial {α β} (e : α ≃ β) [Nontrivial β] : Nontrivial α :=
+  e.surjective.nontrivial
+
+theorem nontrivial_congr {α β} (e : α ≃ β) : Nontrivial α ↔ Nontrivial β :=
+  ⟨fun _ ↦ e.symm.nontrivial, fun _ ↦ e.nontrivial⟩
+
 /-- Transfer `DecidableEq` across an equivalence. -/
 protected def decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
   e.injective.decidableEq
@@ -391,6 +397,7 @@ def equivEmptyEquiv (α : Sort u) : α ≃ Empty ≃ IsEmpty α :=
 def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty := @equivPEmpty p <| IsEmpty.prop_iff.2 h
 
 /-- If both `α` and `β` have a unique element, then `α ≃ β`. -/
+@[simps]
 def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   toFun := default
   invFun := default
@@ -400,6 +407,7 @@ def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
 @[deprecated (since := "2024-12-26")] alias equivOfUnique := ofUnique
 
 /-- If `α` has a unique element, then it is equivalent to any `PUnit`. -/
+@[simps!]
 def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := ofUnique α _
 
 /-- The `Sort` of proofs of a true proposition is equivalent to `PUnit`. -/
