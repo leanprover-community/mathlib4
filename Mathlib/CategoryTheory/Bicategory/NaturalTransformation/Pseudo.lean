@@ -181,6 +181,8 @@ end
 
 variable (B C)
 
+/-- `CategoryStruct` on `Pseudofunctor B C` where the (1-)morphisms are given by strong
+transformations. -/
 @[simps! id_app id_naturality_hom id_naturality_inv comp_naturality_hom
 comp_naturality_inv]
 scoped instance categoryStruct : CategoryStruct (Pseudofunctor B C) where

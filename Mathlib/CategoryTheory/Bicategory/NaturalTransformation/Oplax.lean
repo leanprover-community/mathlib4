@@ -169,6 +169,8 @@ def vcomp : OplaxTrans F H where
         rw [whisker_exchange_assoc]; simp
       _ = _ := by simp
 
+/-- `CategoryStruct` on `OplaxFunctor B C` where the (1-)morphisms are given by oplax
+transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
 scoped instance : CategoryStruct (OplaxFunctor B C) where
   Hom := OplaxTrans
@@ -270,6 +272,8 @@ def vcomp : StrongTrans F H :=
         (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
         (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
 
+/-- `CategoryStruct` on `OplaxFunctor B C` where the (1-)morphisms are given by strong
+transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
 scoped instance : CategoryStruct (OplaxFunctor B C) where
   Hom := StrongTrans
