@@ -490,6 +490,29 @@ theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (
   apply eq_iff_eq_cancel_right.mpr
   rfl
 
+lemma mem_range_map_of_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S₁}
+    (hx : (x.coeffs : Set _) ⊆ Set.range f) : x ∈ Set.range (MvPolynomial.map f) := by
+  classical
+  induction x using MvPolynomial.induction_on'' with
+  | C a =>
+    by_cases h : a = 0
+    · subst h
+      exact ⟨0, by simp⟩
+    · simp only [coeffs_C, h, reduceIte, Finset.coe_singleton, Set.singleton_subset_iff] at hx
+      obtain ⟨b, rfl⟩ := hx
+      exact ⟨C b, by simp⟩
+  | mul_X p n ih =>
+    rw [coeffs_mul_X] at hx
+    obtain ⟨q, rfl⟩ := ih hx
+    exact ⟨q * X n, by simp⟩
+  | monomial_add a s p ha hs hp ih =>
+    rw [coeffs_add] at hx
+    · simp only [Finset.coe_union, Set.union_subset_iff] at hx
+      obtain ⟨q, hq⟩ := ih hx.1
+      obtain ⟨u, hu⟩ := hp hx.2
+      exact ⟨q + u, by simp [hq, hu]⟩
+    · simpa [support_monomial, hs] using not_mem_support_iff.mp ha
+
 /-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `MvPolynomial.map f`. -/
 @[simps!]
 def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
