@@ -103,7 +103,7 @@ namespace Real
 /-- The square root of a real number. This returns 0 for negative inputs.
 
 This has notation `√x`. Note that `√x⁻¹` is parsed as `√(x⁻¹)`. -/
-noncomputable def sqrt (x : ℝ) : ℝ :=
+@[irreducible] noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)
 
 -- TODO: replace this with a typeclass
@@ -117,12 +117,15 @@ theorem coe_sqrt {x : ℝ≥0} : (NNReal.sqrt x : ℝ) = √(x : ℝ) := by
   rw [Real.sqrt, Real.toNNReal_coe]
 
 @[continuity]
-theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) :=
-  NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
+theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) := by
+  simp only [sqrt]
+  exact NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
 
 theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : sqrt x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
 
-@[simp] theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x := NNReal.coe_nonneg _
+@[simp] theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x := by
+  simp only [sqrt]
+  exact NNReal.coe_nonneg _
 
 @[simp]
 theorem mul_self_sqrt (h : 0 ≤ x) : √x * √x = x := by
@@ -439,7 +442,5 @@ lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ) :
 lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i) :
     ∑ i ∈ s, √(f i) * √(g i) ≤ √(∑ i ∈ s, f i) * √(∑ i ∈ s, g i) := by
   simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ √(f x)) (fun x ↦ √(g x))
-
-attribute [irreducible] sqrt
 
 end Real
