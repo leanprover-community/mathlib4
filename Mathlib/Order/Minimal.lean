@@ -216,6 +216,25 @@ theorem not_maximal_iff_exists_gt (hx : P x) : ¬ Maximal P x ↔ ∃ y, x < y �
 
 alias ⟨exists_gt_of_not_maximal, _⟩ := not_maximal_iff_exists_gt
 
+variable (P) in
+lemma exists_minimal_of_wellFoundedLT [WellFoundedLT α] (hP : ∃ a, P a) : ∃ a, Minimal (P ·) a := by
+  simpa [not_lt_iff_le_imp_le] using wellFounded_lt.has_min _ hP
+
+variable (P) in
+lemma exists_maximal_of_wellFoundedGT [WellFoundedGT α] (hP : ∃ a, P a) : ∃ a, Maximal (P ·) a := by
+  simpa [not_lt_iff_le_imp_le] using wellFounded_gt.has_min _ hP
+
+variable (P a) in
+lemma exists_minimal_le_of_wellFoundedLT [WellFoundedLT α] (ha : P a) :
+    ∃ b ≤ a, Minimal (P ·) b := by
+  obtain ⟨b, ⟨hba, hb⟩, hbmin⟩ :=
+    exists_minimal_of_wellFoundedLT (fun b ↦ b ≤ a ∧ P b) ⟨a, le_rfl, ha⟩
+  exact ⟨b, hba, hb, fun c hc hcb ↦ hbmin ⟨hcb.trans hba, hc⟩ hcb⟩
+
+variable (P a) in
+lemma exists_maximal_ge_of_wellFoundedGT [WellFoundedGT α] (ha : P a) :
+    ∃ b, a ≤ b ∧ Maximal (P ·) b := exists_minimal_le_of_wellFoundedLT (α := αᵒᵈ) P a ha
+
 end Preorder
 
 section PartialOrder
