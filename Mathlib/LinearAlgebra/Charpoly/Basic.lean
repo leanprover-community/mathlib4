@@ -45,8 +45,8 @@ def charpoly : R[X] :=
 theorem charpoly_def : f.charpoly = (toMatrix (chooseBasis R M) (chooseBasis R M) f).charpoly :=
   rfl
 
-theorem eval_charpoly (r : R) :
-    f.charpoly.eval r = (algebraMap _ _ r - f).det := by
+theorem eval_charpoly (t : R) :
+    f.charpoly.eval t = (algebraMap _ _ t - f).det := by
   rw [charpoly, Matrix.eval_charpoly, ← LinearMap.det_toMatrix (chooseBasis R M), map_sub,
     scalar_apply, toMatrix_algebraMap, scalar_apply]
 

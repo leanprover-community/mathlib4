@@ -127,8 +127,8 @@ alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmat
 def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 
-theorem eval_charpoly (A : Matrix m m R) (r : R) :
-    A.charpoly.eval r = (Matrix.scalar _ r - A).det := by
+theorem eval_charpoly (M : Matrix m m R) (t : R) :
+    M.charpoly.eval t = (Matrix.scalar _ t - M).det := by
   rw [Matrix.charpoly, ← Polynomial.coe_evalRingHom, RingHom.map_det, Matrix.charmatrix]
   congr
   ext i j
