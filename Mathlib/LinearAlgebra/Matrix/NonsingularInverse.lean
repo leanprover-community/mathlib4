@@ -737,8 +737,7 @@ theorem inv_kronecker [Fintype m] [DecidableEq m]
   · apply inv_eq_right_inv
     rw [← mul_kronecker_mul, ← one_kronecker_one, mul_nonsing_inv _ hA, mul_nonsing_inv _ hB]
 
-lemma _root_.LinearEquiv.toMatrix_inv [Fintype m] [DecidableEq m] (v w : Basis n α (m → α))
-    (f : (m → α) ≃ₗ[α] (m → α)) :
+lemma _root_.LinearEquiv.toMatrix_inv (v w : Basis n α (m → α)) (f : (m → α) ≃ₗ[α] (m → α)) :
     (f.toMatrix v w)⁻¹ = f⁻¹.toMatrix w v :=
   inv_eq_right_inv (by simp [←LinearEquiv.mul_eq_trans, ←LinearMap.toMatrix_comp,
     LinearMap.toMatrix_id])
