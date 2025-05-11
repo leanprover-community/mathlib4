@@ -52,6 +52,7 @@ Spectral theory for compact self-adjoint operators, bounded self-adjoint operato
 ## Tags
 
 self-adjoint operator, spectral theorem, diagonalization theorem
+
 -/
 
 variable {𝕜 : Type*} [RCLike 𝕜]
@@ -192,8 +193,7 @@ section Version2
 
 variable {n : ℕ}
 
-/--
-Unsorted eigenvalues and eigenvectors.  These private definitions should not be used directly.
+/-- Unsorted eigenvalues and eigenvectors.  These private definitions should not be used directly.
 Instead use the functions eigenvalues and eigenvectorBasis defined below. -/
 private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (i : Fin n) : ℝ :=
