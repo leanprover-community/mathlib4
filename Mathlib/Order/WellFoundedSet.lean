@@ -679,6 +679,25 @@ namespace Set.PartiallyWellOrderedOn
 
 variable {r : α → α → Prop}
 
+theorem bddAbove_preimage {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
+    (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
+    BddAbove (s.preimage f) := by
+  contrapose! hf
+  rw [not_bddAbove_iff] at hf
+  obtain ⟨φ, hφm, hφs⟩ := Nat.exists_strictMono_subsequence
+    fun n ↦ (hf n).casesOn fun m h ↦ h.casesOn fun hs hmn ↦ Exists.intro m ⟨hmn, hs⟩
+  rw [partiallyWellOrderedOn_iff_exists_lt] at hs
+  obtain ⟨m, n, hmn, hr⟩ := hs (fun n ↦ f (φ n)) hφs
+  use (φ m), (φ n)
+  exact ⟨hφm hmn, hr⟩
+
+theorem exists_not_mem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
+    (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
+    ∃ k : ℕ, ∀ m, k < m → ¬ (f m) ∈ s := by
+  have := hs.bddAbove_preimage hf
+  contrapose! this
+  simpa [not_bddAbove_iff, and_comm]
+
 -- TODO: move this material to the main file on WQOs.
 
 /-- In the context of partial well-orderings, a bad sequence is a nonincreasing sequence

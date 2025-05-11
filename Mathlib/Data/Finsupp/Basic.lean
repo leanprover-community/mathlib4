@@ -547,6 +547,12 @@ theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
   have : mapDomain f v₁ (f a) = mapDomain f v₂ (f a) := by rw [eq]
   rwa [mapDomain_apply hf, mapDomain_apply hf] at this
 
+theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
+    (mapDomain (M := M) f).Surjective := by
+  intro x
+  use mapDomain (surjInv hf) x
+  rw [← mapDomain_comp, (rightInverse_surjInv hf).id, mapDomain_id]
+
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
 def mapDomainEmbedding {α β : Type*} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
@@ -702,6 +708,10 @@ theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
     mapDomain f (comapDomain f l hf.injOn) = l := by
   conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
   rfl
+
+theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
+    comapDomain f (mapDomain f l) hf.injOn = l := by
+  ext; rw [comapDomain_apply, mapDomain_apply hf]
 
 end FInjective
 
@@ -1075,6 +1085,11 @@ theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f 
     · intro _
       rw [single_zero, single_zero, coe_zero, Pi.zero_apply, coe_zero, Pi.zero_apply]
 
+@[simp]
+lemma curry_single (a : α × β) (m : M) :
+    (single a m).curry = single a.1 (single a.2 m) := by
+  simp [Finsupp.curry]
+
 theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg₀ : ∀ a b, g a b 0 = 0)
     (hg₁ : ∀ a b c₀ c₁, g a b (c₀ + c₁) = g a b c₀ + g a b c₁) :
     (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
@@ -1101,6 +1116,15 @@ protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (x : α) (y : �
   simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
     forall_true_iff, sum_single_index, single_zero, ← single_sum, sum_single]
 
+protected theorem uncurry_apply (f : α →₀ β →₀ M) (x : α × β) :
+    f.uncurry x = f x.1 x.2 := by
+  rw [← Prod.mk.eta (p := x), Finsupp.uncurry_apply_pair]
+
+@[simp]
+lemma uncurry_single (a : α) (b : β) (m : M) :
+    (single a (single b m)).uncurry = single (a, b) m := by
+  simp [Finsupp.uncurry]
+
 @[simp]
 theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
   ext a b
@@ -1113,6 +1137,7 @@ theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
+@[simps]
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
@@ -1473,3 +1498,5 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 end Sigma
 
 end Finsupp
+
+set_option linter.style.longFile 1700
