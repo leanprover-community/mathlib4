@@ -353,7 +353,7 @@ theorem not_primrec₂_ack : ¬Primrec₂ ack := fun h =>
 
 namespace Nat.Partrec.Code
 
-/-- The code for the partial applied Ackermann function.
+/-- The code for the partially applied Ackermann function.
 This is used to prove that the Ackermann function is computable. -/
 def pappAck : ℕ → Code
   | 0 => .succ
