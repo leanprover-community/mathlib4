@@ -157,6 +157,7 @@ theorem comp_measurable {f : α → δ} {g : δ → β} (hg : AEMeasurable g (μ
     (hf : Measurable f) : AEMeasurable (g ∘ f) μ :=
   hg.comp_aemeasurable hf.aemeasurable
 
+@[fun_prop]
 theorem comp_quasiMeasurePreserving {ν : Measure δ} {f : α → δ} {g : δ → β} (hg : AEMeasurable g ν)
     (hf : QuasiMeasurePreserving f μ ν) : AEMeasurable (g ∘ f) μ :=
   (hg.mono' hf.absolutelyContinuous).comp_measurable hf.measurable
@@ -166,6 +167,16 @@ theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurab
   ext1 s hs
   rw [map_apply_of_aemeasurable hg hs, map_apply₀ hf (hg.nullMeasurable hs),
     map_apply_of_aemeasurable (hg.comp_aemeasurable hf) hs, preimage_comp]
+
+@[fun_prop, measurability]
+protected theorem fst {f : α → β × γ} (hf :AEMeasurable f μ) :
+    AEMeasurable (fun x ↦ (f x).1) μ :=
+  measurable_fst.comp_aemeasurable hf
+
+@[fun_prop, measurability]
+protected theorem snd {f : α → β × γ} (hf :AEMeasurable f μ) :
+    AEMeasurable (fun x ↦ (f x).2) μ :=
+  measurable_snd.comp_aemeasurable hf
 
 @[fun_prop, measurability]
 theorem prodMk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :

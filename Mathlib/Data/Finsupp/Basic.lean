@@ -547,6 +547,12 @@ theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
   have : mapDomain f v₁ (f a) = mapDomain f v₂ (f a) := by rw [eq]
   rwa [mapDomain_apply hf, mapDomain_apply hf] at this
 
+theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
+    (mapDomain (M := M) f).Surjective := by
+  intro x
+  use mapDomain (surjInv hf) x
+  rw [← mapDomain_comp, (rightInverse_surjInv hf).id, mapDomain_id]
+
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
 def mapDomainEmbedding {α β : Type*} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
@@ -702,6 +708,10 @@ theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
     mapDomain f (comapDomain f l hf.injOn) = l := by
   conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
   rfl
+
+theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
+    comapDomain f (mapDomain f l) hf.injOn = l := by
+  ext; rw [comapDomain_apply, mapDomain_apply hf]
 
 end FInjective
 
@@ -1488,3 +1498,5 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 end Sigma
 
 end Finsupp
+
+set_option linter.style.longFile 1700
