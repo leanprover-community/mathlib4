@@ -117,8 +117,11 @@ lemma ScottContinuous.sup₂ :
   simp only [IsLUB, IsLeast, upperBounds, mem_image, Prod.exists, forall_exists_index, and_imp]
   have e1 : (p₁, p₂) ∈ lowerBounds {x | ∀ (b₁ b₂ : β), (b₁, b₂) ∈ d → (b₁, b₂) ≤ x} := hdp.2
   simp only [lowerBounds, mem_setOf_eq, Prod.forall, Prod.mk_le_mk] at e1
-  exact ⟨fun a b₁ b₂ hbd hba => by rw [← hba]; exact sup_le_sup (hdp.1 _ _ hbd).1 (hdp.1 _ _ hbd).2,
-    fun b hb => sup_le_iff.mpr (e1 _ _ (fun b₁ b₂ hb' => sup_le_iff.mp (hb b₁ b₂ hb' rfl)))⟩
+  refine ⟨fun a b₁ b₂ hbd hba => ?_,fun b hb => ?_⟩
+  · rw [← hba]
+    exact sup_le_sup (hdp.1 _ _ hbd).1 (hdp.1 _ _ hbd).2
+  · rw [sup_le_iff]
+    exact e1 _ _ fun b₁ b₂ hb' => sup_le_iff.mp (hb b₁ b₂ hb' rfl)
 
 lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) :=
