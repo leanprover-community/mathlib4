@@ -37,12 +37,9 @@ def mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by aesop_cat) :
     F.map f ≅ 𝟙 _ :=
   F.map₂Iso (eqToIso (by rw [hf])) ≪≫ F.mapId _
 
-lemma mapId'_def {b : B} (f : b ⟶ b) (hf : f = 𝟙 b) :
-    F.mapId' f hf = F.map₂Iso (eqToIso (by rw [hf])) ≪≫ F.mapId _ := rfl
-
 lemma mapId'_eq_mapId (b : B) :
     F.mapId' (𝟙 b) rfl = F.mapId b := by
-  simp [mapId'_def]
+  simp [mapId']
 
 /-- More flexible variant of `mapComp`. -/
 def mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
@@ -50,21 +47,16 @@ def mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : 
     F.map fg ≅ F.map f ≫ F.map g :=
   F.map₂Iso (eqToIso (by rw [h])) ≪≫ F.mapComp f g
 
-lemma mapComp'_def {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
-    (h : f ≫ g = fg) :
-    F.mapComp' f g fg h = F.map₂Iso (eqToIso (by rw [h])) ≪≫ F.mapComp f g := rfl
-
 lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) :
     F.mapComp' f g _ rfl = F.mapComp f g := by
-  simp [mapComp'_def]
+  simp [mapComp']
 
 variable [Strict B]
 
 lemma mapComp'_comp_id {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     F.mapComp' f (𝟙 b₁) f = (ρ_ _).symm ≪≫ whiskerLeftIso _ (F.mapId b₁).symm := by
   ext
-  rw [mapComp'_def]
-  dsimp
+  dsimp [mapComp']
   rw [F.mapComp_id_right_hom f, Strict.rightUnitor_eqToIso, eqToIso.hom,
     ← F.map₂_comp_assoc, eqToHom_trans, eqToHom_refl, PrelaxFunctor.map₂_id,
     Category.id_comp]
@@ -72,8 +64,7 @@ lemma mapComp'_comp_id {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
 lemma mapComp'_id_comp {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     F.mapComp' (𝟙 b₀) f f = (λ_ _).symm ≪≫ whiskerRightIso (F.mapId b₀).symm _ := by
   ext
-  rw [mapComp'_def]
-  dsimp
+  dsimp [mapComp']
   rw [F.mapComp_id_left_hom f, Strict.leftUnitor_eqToIso, eqToIso.hom,
     ← F.map₂_comp_assoc, eqToHom_trans, eqToHom_refl, PrelaxFunctor.map₂_id,
     Category.id_comp]
