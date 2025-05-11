@@ -95,7 +95,14 @@ end NormedCommRing
 section NontriviallyNormedField
 variable [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜} {c : 𝕜 → 𝕜}
 
-theorem derivWithin_pow_field (hc : DifferentiableWithinAt 𝕜 c s x) (n : ℕ) :
+theorem deriv_pow_field (n : ℕ) : deriv (fun x => x ^ n) x = (n : 𝕜) * x ^ (n - 1) := by
+  simp
+
+theorem derivWithin_pow_field (h : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
+    derivWithin (fun x => x ^ n) s x = (n : 𝕜) * x ^ (n - 1) := by
+  rw [derivWithin_pow (differentiableWithinAt_id' (s := s)) h n, derivWithin_id' _ _ h, mul_one]
+
+theorem derivWithin_pow_field' (hc : DifferentiableWithinAt 𝕜 c s x) (n : ℕ) :
     derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x := by
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
   · exact derivWithin_pow hc hsx n
