@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Triangulated.Filtered.Filtered_NoProof
+import Mathlib.Algebra.Homology.Functor
 import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 import Mathlib.Algebra.Homology.HomologicalComplex
@@ -136,50 +137,30 @@ lemma mem_filtered_heart_iff (X : C) :
 
 -- Theorem A.2.3(i):
 -- The functor is well-defined.
-abbrev FilteredToComplex_deg (X : C) (n : ℤ) : t.Heart :=
-  (t.homology n).obj ((Gr L n).obj X)
+abbrev FilteredToComplex_deg (n : ℤ) : C ⥤ t.Heart :=
+  Gr L n ⋙ t.homology n
 
-def FilteredToComplex_diff (X : C) (n : ℤ) :
-    FilteredToComplex_deg L t X n ⟶ FilteredToComplex_deg L t X (n + 1) :=
-  t.homologyδ ((ForgetFiltration L).mapTriangle.obj ((truncGELE_triangle n n (n + 1)
+def FilteredToComplex_diff (n : ℤ) :
+    FilteredToComplex_deg L t n ⟶ FilteredToComplex_deg L t (n + 1) where
+  app X := t.homologyδ ((ForgetFiltration L).mapTriangle.obj ((truncGELE_triangle n n (n + 1)
     (le_refl _) (by simp)).obj X)) n (n + 1) rfl
+  naturality f := sorry
 
-def FilteredToComplex_condition (X : C) (n : ℤ) :
-    FilteredToComplex_diff L t X n ≫ FilteredToComplex_diff L t X (n + 1) = 0 := by
+def FilteredToComplex_condition (n : ℤ) :
+    FilteredToComplex_diff L t n ≫ FilteredToComplex_diff L t (n + 1) = 0 := by
 -- We don't need the triangle to be distinguished to define the connecting
 -- morphism, but we will need it to check that the differentials
 -- compose to 0.
+  ext X
   have := (ForgetFiltration L).map_distinguished _ (truncGELE_triangle_distinguished
       n n (n + 1) (le_refl _) (by simp) X)
   sorry
 
-def FilteredToComplexObj (X : C) : CochainComplex t.Heart ℤ :=
-  CochainComplex.of (FilteredToComplex_deg L t X)
-    (FilteredToComplex_diff L t X) (FilteredToComplex_condition L t X)
+def FilteredToComplexObj : CochainComplex (C ⥤ t.Heart) ℤ :=
+  CochainComplex.of (FilteredToComplex_deg L t)
+    (FilteredToComplex_diff L t) (FilteredToComplex_condition L t)
 
-def FilteredToComplexHom {X Y : C} (f : X ⟶ Y) :
-    FilteredToComplexObj L (t := t) X ⟶ FilteredToComplexObj L (t := t) Y := by
-  refine CochainComplex.ofHom (FilteredToComplex_deg L t X)
-    (FilteredToComplex_diff L t X) (FilteredToComplex_condition L t X)
-    (FilteredToComplex_deg L t Y)
-    (FilteredToComplex_diff L t Y) (FilteredToComplex_condition L t Y)
-    (fun n ↦ ?_) (fun n ↦ ?_)
-  · exact (t.homology n).map ((ForgetFiltration L).map
-      ((CategoryTheory.truncGELE n n).map f))
-  · dsimp [FilteredToComplex_diff]
-    sorry
-
-def FilteredToComplex : C ⥤ CochainComplex t.Heart ℤ where
-  obj X := FilteredToComplexObj L t X
-  map f := FilteredToComplexHom L t f
-  map_id X := by
-    ext
-    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_deg, Gr]
-    simp
-  map_comp f g := by
-    ext
-    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_deg]
-    simp
+def FilteredToComplex : C ⥤ CochainComplex t.Heart ℤ := (FilteredToComplexObj L t).asFunctor
 
 -- Theorem A.2.3(i):
 -- The restriction of `FilteredToComplex` to the heart of `tF` is

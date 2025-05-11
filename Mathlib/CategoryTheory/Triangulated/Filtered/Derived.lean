@@ -184,10 +184,57 @@ def FilteredAcyclicToHeart_comp : FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t�
     tF₂.ιHeart ≅ (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor :=
   ObjectProperty.liftCompιIso _ _ _ ≪≫ (Functor.associator _ _ _).symm
 
-abbrev FilteredAcyclicToComplex_deg (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
-    (n : ℤ) : (AcyclicObject T t₁ t₂).FullSubcategory :=
-  ⟨FilteredToComplex_deg L₁ t₁ X.1.1 n, X.2 n⟩
+abbrev FilteredAcyclicToComplex_deg (n : ℤ) :
+    (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory ⥤ (AcyclicObject T t₁ t₂).FullSubcategory :=
+  (AcyclicObject T t₁ t₂).lift ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙
+  FilteredToComplex_deg L₁ t₁ n) (fun X ↦ X.2 n)
 
+def FilteredAcyclicToComplex_deg_functor (n : ℤ) :
+    FilteredAcyclicToComplex_deg L₁ t₁ tF₁ t₂ T n ⋙ T.FromAcyclic t₁ t₂ ≅
+    (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor ⋙
+    FilteredToComplex_deg L₂ t₂ n := by
+  refine Functor.fullyFaithfulCancelRight t₂.ιHeart ?_
+  dsimp [FilteredToComplex_deg, FilteredAcyclicToComplex_deg, Functor.FromAcyclic]
+  refine Functor.associator _ _ _ ≪≫ ?_
+  refine isoWhiskerLeft _ (ObjectProperty.liftCompιIso t₂.heart _ _) ≪≫ ?_
+  refine (Functor.associator _ _ _).symm ≪≫ ?_
+  refine isoWhiskerRight (ObjectProperty.liftCompιIso _ _ _) _ ≪≫ ?_
+  refine isoWhiskerRight (Functor.associator _ _ _).symm (t₁.ιHeart ⋙ T) ≪≫ ?_
+  refine isoWhiskerRight (Functor.associator _ _ _).symm (t₁.ιHeart ⋙ T) ≪≫ ?_
+  refine Functor.associator _ (t₁.homology n) (t₁.ιHeart ⋙ T) ≪≫ ?_
+  refine isoWhiskerLeft (((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart) ⋙ Gr L₁ n)
+    ((Functor.leftUnitor (t₁.homology n ⋙ t₁.ιHeart ⋙ T)).symm ≪≫
+    isoWhiskerRight (shiftEquiv A₁ n).unitIso (t₁.homology n ⋙ t₁.ιHeart ⋙ T) ≪≫
+    Functor.associator (shiftFunctor A₁ n) (shiftFunctor A₁ (-n)) _ ≪≫
+    isoWhiskerLeft (shiftFunctor A₁ n)
+    (Functor.associator (shiftFunctor A₁ (-n)) (t₁.homology n) _).symm ≪≫
+    isoWhiskerLeft (shiftFunctor A₁ n) (isoWhiskerRight
+    (t₁.homology₀.shiftIso (-n) n 0 (neg_add_cancel _)) (t₁.ιHeart ⋙ T))) ≪≫ ?_
+  refine (Functor.associator (((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart) ⋙ Gr L₁ n)
+    (shiftFunctor A₁ n) (t₁.homology₀.shift 0 ⋙ t₁.ιHeart ⋙ T)).symm ≪≫ ?_
+  refine isoWhiskerRight (ObjectProperty.liftCompιIso t₁.heart
+    ((((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart) ⋙ Gr L₁ n) ⋙ shiftFunctor A₁ n)
+    (fun X ↦ (mem_filtered_heart_iff L₁ t₁ tF₁ X.1.1).mp X.1.2 n)).symm
+    (t₁.homology₀.shift 0 ⋙ t₁.ιHeart ⋙ T) ≪≫ ?_
+  refine Functor.associator _ t₁.ιHeart (t₁.homology₀.shift 0 ⋙ t₁.ιHeart ⋙ T) ≪≫ ?_
+  refine isoWhiskerLeft _ ((Functor.associator t₁.ιHeart (t₁.homology₀.shift 0) _).symm ≪≫
+    isoWhiskerRight (t₁.ιHeartHomology_zero) (t₁.ιHeart ⋙ T) ≪≫
+    Functor.leftUnitor (t₁.ιHeart ⋙ T)) ≪≫ ?_
+  refine (Functor.associator _ t₁.ιHeart T).symm ≪≫  ?_
+  refine isoWhiskerRight (ObjectProperty.liftCompιIso t₁.heart
+    ((((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart) ⋙ Gr L₁ n) ⋙ shiftFunctor A₁ n)
+    (fun X ↦ (mem_filtered_heart_iff L₁ t₁ tF₁ X.1.1).mp X.1.2 n)) T ≪≫ ?_
+  refine Functor.associator (((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart) ⋙ Gr L₁ n)
+    (shiftFunctor A₁ n) T ≪≫ ?_
+  refine isoWhiskerLeft (((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart) ⋙ Gr L₁ n)
+    (T.commShiftIso n) ≪≫ ?_
+  refine Functor.associator ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart) (Gr L₁ n)
+    (T ⋙ shiftFunctor A₂ n) ≪≫ ?_
+  refine isoWhiskerLeft ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart)
+    ((Functor.associator (Gr L₁ n) T (shiftFunctor A₂ n)).symm ≪≫
+    isoWhiskerRight (lifting_Gr_comm L₁ L₂ FT n).symm (shiftFunctor A₂ n)) ≪≫ ?_
+
+#exit
 -- Need to make this a natural isomorphism.
 def FilteredAcyclicToComplex_deg_functor (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
     (n : ℤ) : (T.FromAcyclic t₁ t₂).obj (FilteredAcyclicToComplex_deg L₁ t₁ tF₁ t₂ T X n) ≅
