@@ -127,18 +127,25 @@ noncomputable local instance : t.homology₀.ShiftSequence ℤ :=
 noncomputable local instance : tF.homology₀.ShiftSequence ℤ :=
   Functor.ShiftSequence.tautological _ _
 
+/-!
+Characterization of the heart of the t-structure on `C`.
+-/
+
+lemma mem_filtered_heart_iff (X : C) :
+    tF.heart X ↔ ∀ (n : ℤ), t.heart (((Gr L n).obj X)⟦n⟧) := sorry
+
 -- Theorem A.2.3(i):
 -- The functor is well-defined.
-abbrev FilteredToComplex_aux₁ (X : C) (n : ℤ) : t.Heart :=
+abbrev FilteredToComplex_deg (X : C) (n : ℤ) : t.Heart :=
   (t.homology n).obj ((Gr L n).obj X)
 
-def FilteredToComplex_aux₂ (X : C) (n : ℤ) :
-    FilteredToComplex_aux₁ L t X n ⟶ FilteredToComplex_aux₁ L t X (n + 1) :=
+def FilteredToComplex_diff (X : C) (n : ℤ) :
+    FilteredToComplex_deg L t X n ⟶ FilteredToComplex_deg L t X (n + 1) :=
   t.homologyδ ((ForgetFiltration L).mapTriangle.obj ((truncGELE_triangle n n (n + 1)
     (le_refl _) (by simp)).obj X)) n (n + 1) rfl
 
-def FilteredToComplex_aux₃ (X : C) (n : ℤ) :
-    FilteredToComplex_aux₂ L t X n ≫ FilteredToComplex_aux₂ L t X (n + 1) = 0 := by
+def FilteredToComplex_condition (X : C) (n : ℤ) :
+    FilteredToComplex_diff L t X n ≫ FilteredToComplex_diff L t X (n + 1) = 0 := by
 -- We don't need the triangle to be distinguished to define the connecting
 -- morphism, but we will need it to check that the differentials
 -- compose to 0.
@@ -147,19 +154,19 @@ def FilteredToComplex_aux₃ (X : C) (n : ℤ) :
   sorry
 
 def FilteredToComplexObj (X : C) : CochainComplex t.Heart ℤ :=
-  CochainComplex.of (FilteredToComplex_aux₁ L t X)
-    (FilteredToComplex_aux₂ L t X) (FilteredToComplex_aux₃ L t X)
+  CochainComplex.of (FilteredToComplex_deg L t X)
+    (FilteredToComplex_diff L t X) (FilteredToComplex_condition L t X)
 
 def FilteredToComplexHom {X Y : C} (f : X ⟶ Y) :
     FilteredToComplexObj L (t := t) X ⟶ FilteredToComplexObj L (t := t) Y := by
-  refine CochainComplex.ofHom (FilteredToComplex_aux₁ L t X)
-    (FilteredToComplex_aux₂ L t X) (FilteredToComplex_aux₃ L t X)
-    (FilteredToComplex_aux₁ L t Y)
-    (FilteredToComplex_aux₂ L t Y) (FilteredToComplex_aux₃ L t Y)
+  refine CochainComplex.ofHom (FilteredToComplex_deg L t X)
+    (FilteredToComplex_diff L t X) (FilteredToComplex_condition L t X)
+    (FilteredToComplex_deg L t Y)
+    (FilteredToComplex_diff L t Y) (FilteredToComplex_condition L t Y)
     (fun n ↦ ?_) (fun n ↦ ?_)
   · exact (t.homology n).map ((ForgetFiltration L).map
       ((CategoryTheory.truncGELE n n).map f))
-  · dsimp [FilteredToComplex_aux₂]
+  · dsimp [FilteredToComplex_diff]
     sorry
 
 def FilteredToComplex : C ⥤ CochainComplex t.Heart ℤ where
@@ -167,11 +174,11 @@ def FilteredToComplex : C ⥤ CochainComplex t.Heart ℤ where
   map f := FilteredToComplexHom L t f
   map_id X := by
     ext
-    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_aux₁, Gr]
+    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_deg, Gr]
     simp
   map_comp f g := by
     ext
-    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_aux₁]
+    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_deg]
     simp
 
 -- Theorem A.2.3(i):

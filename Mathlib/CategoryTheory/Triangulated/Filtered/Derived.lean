@@ -184,15 +184,53 @@ def FilteredAcyclicToHeart_comp : FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t�
     tF₂.ιHeart ≅ (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor :=
   ObjectProperty.liftCompιIso _ _ _ ≪≫ (Functor.associator _ _ _).symm
 
-abbrev FilteredAcyclicToComplex_aux₁ (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
+abbrev FilteredAcyclicToComplex_deg (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
     (n : ℤ) : (AcyclicObject T t₁ t₂).FullSubcategory :=
-  ⟨FilteredToComplex_aux₁ L₁ t₁ X.1.1 n, X.2 n⟩
+  ⟨FilteredToComplex_deg L₁ t₁ X.1.1 n, X.2 n⟩
+
+-- Need to make this a natural isomorphism.
+def FilteredAcyclicToComplex_deg_functor (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
+    (n : ℤ) : (T.FromAcyclic t₁ t₂).obj (FilteredAcyclicToComplex_deg L₁ t₁ tF₁ t₂ T X n) ≅
+    FilteredToComplex_deg L₂ t₂ (FT.functor.obj X.1.1) n := by
+  refine ObjectProperty.isoMk t₂.heart ?_
+  dsimp [FilteredToComplex_deg]
+  refine (T.mapIso (t₁.ιHeart.mapIso ((t₁.homology n).mapIso (shiftShiftNeg
+    ((Gr L₁ n).obj X.1.1) n).symm))) ≪≫ ?_
+  refine (T.mapIso (t₁.ιHeart.mapIso ((t₁.homology₀.shiftIso (-n) n 0
+    (neg_add_cancel _)).app (((Gr L₁ n).obj X.1.1)⟦n⟧)))) ≪≫ ?_
+  have eq : ((Gr L₁ n).obj X.obj.obj)⟦n⟧ = t₁.ιHeart.obj ⟨((Gr L₁ n).obj X.obj.obj)⟦n⟧,
+    (mem_filtered_heart_iff L₁ t₁ tF₁ X.1.1).mp X.1.2 n⟩ := rfl
+  refine T.mapIso (t₁.ιHeart.mapIso ((t₁.homology₀.shift 0).mapIso (eqToIso eq))) ≪≫ ?_
+  refine (T.mapIso (t₁.ιHeart.mapIso ((t₁.ιHeartHomology_zero).app
+    ⟨((Gr L₁ n).obj X.obj.obj)⟦n⟧, (mem_filtered_heart_iff L₁ t₁ tF₁ X.1.1).mp X.1.2 n⟩))) ≪≫ ?_
+  refine T.mapIso (eqToIso eq.symm) ≪≫ ?_
+  refine ((T.commShiftIso n).app ((Gr L₁ n).obj X.1.1)) ≪≫ ?_
+  refine ((shiftFunctor A₂ n).mapIso
+    (((lifting_Gr_comm L₁ L₂ FT n).app X.1.1).symm)) ≪≫ ?_
+  refine ?_ ≪≫ t₂.ιHeart.mapIso ((t₂.homology n).mapIso (shiftShiftNeg ((Gr L₂ n).obj
+    (FT.functor.obj X.1.1)) n))
+  refine ?_ ≪≫ t₂.ιHeart.mapIso ((t₂.homology₀.shiftIso (-n) n 0
+    (neg_add_cancel _)).app (((Gr L₂ n).obj (FT.functor.obj X.1.1))⟦n⟧)).symm
+  have prop : t₂.heart (((Gr L₂ n).obj (FT.functor.obj X.1.1))⟦n⟧) :=
+    (mem_filtered_heart_iff L₂ t₂ tF₂ (FT.functor.obj X.1.1)).mp
+    (FilteredAcyclic_image L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X) n
+  have eq' : ((Gr L₂ n).obj (FT.functor.obj X.1.1))⟦n⟧ = t₂.ιHeart.obj
+    ⟨((Gr L₂ n).obj (FT.functor.obj X.1.1))⟦n⟧, prop⟩ := rfl
+  refine ?_≪≫ t₂.ιHeart.mapIso ((t₂.homology₀.shift 0).mapIso (eqToIso eq'.symm))
+  refine ?_ ≪≫ t₂.ιHeart.mapIso ((t₂.ιHeartHomology_zero).app _).symm
+  exact eqToIso eq'
+
+lemma FilteredAcyclicToComplex_diff_functor (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
+    (n : ℤ) : (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X n).hom ≫
+    FilteredToComplex_diff L₂ t₂ (FT.functor.obj X.1.1) n =
+    (T.FromAcyclic t₁ t₂).map (FilteredToComplex_diff L₁ t₁ X.1.1 n) ≫
+    (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X (n + 1)).hom := sorry
 
 def FilteredAcyclicToComplexObj (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory) :
     CochainComplex (AcyclicObject T t₁ t₂).FullSubcategory ℤ :=
-  CochainComplex.of (FilteredAcyclicToComplex_aux₁ L₁ t₁ tF₁ t₂ T X)
-    (FilteredToComplex_aux₂ L₁ t₁ X.1.1)
-    (FilteredToComplex_aux₃ L₁ t₁ X.1.1)
+  CochainComplex.of (FilteredAcyclicToComplex_deg L₁ t₁ tF₁ t₂ T X)
+    (FilteredToComplex_diff L₁ t₁ X.1.1)
+    (FilteredToComplex_condition L₁ t₁ X.1.1)
 
 def FilteredAcyclicToComplexAcyclic :
     (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory ⥤
@@ -205,12 +243,12 @@ def FilteredAcyclicToComplexAcyclic :
     }
   map_id X := by
     ext
-    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_aux₁, Gr]
+    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_deg, Gr]
     erw [Functor.map_id, Functor.map_id, Functor.map_id, Functor.map_id]
     rfl
   map_comp f g := by
     ext
-    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_aux₁]
+    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_deg]
     erw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp]
     rfl
 
@@ -236,6 +274,23 @@ def FilteredAcyclicToComplexAcyclic_functor :
     -- maybe `(FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor` instead?
     ⋙ FilteredToComplex L₂ t₂ :=
   sorry
+
+def FilteredAcyclicToComplexAcyclic_functor' :
+    FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T ⋙ (T.FromAcyclic t₁ t₂).mapHomologicalComplex _
+    ≅ (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor
+    ⋙ FilteredToComplex L₂ t₂ := by
+  refine NatIso.ofComponents (fun X ↦ ?_) ?_
+  · refine HomologicalComplex.Hom.isoOfComponents (FilteredAcyclicToComplex_deg_functor
+      L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X) (fun n m rel ↦ ?_)
+    simp only [ComplexShape.up_Rel] at rel
+    rw [← rel]
+    dsimp [FilteredToComplex, FilteredToComplexObj, FilteredAcyclicToComplexAcyclic,
+      FilteredAcyclicToComplexObj]
+    simp only [CochainComplex.of_d]
+    exact FilteredAcyclicToComplex_diff_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X n
+  · intro X Y f
+    ext n
+    sorry
 
 #exit
 

@@ -433,6 +433,10 @@ structure isFilteredTriangulated_over where
   ff : functor.FullyFaithful
   essImage (X : C) : functor.essImage X ↔ IsLE X 0 ∧ IsGE X 0
 
+instance (L : isFilteredTriangulated_over C A) : L.functor.Faithful := L.ff.faithful
+
+instance (L : isFilteredTriangulated_over C A) : L.functor.Full := L.ff.full
+
 lemma isFilteredTriangulated_over_image (L : isFilteredTriangulated_over C A) (X : A) :
     IsLE (L.functor.obj X) 0 ∧ IsGE (L.functor.obj X) 0 := by
   rw [← L.essImage]
