@@ -91,13 +91,6 @@ instance instIsAnisotropicOfIsCrystallographic [CharZero R] [P.IsCrystallographi
   ne_zero := IsAnisotropic.rootForm_root_ne_zero
   isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
 
-omit [Fintype ι] in
-lemma pairingIn_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
-    [P.IsValuedIn S] [IsDomain R] [NeZero (2 : R)] {i j : ι} :
-    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
-  simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn,
-    P.pairing_zero_iff' (i := i) (j := j)]
-
 section DomainAlg
 
 variable (S : Type*) [CommRing S] [IsDomain R] [IsDomain S] [Algebra S R] [FaithfulSMul S R]
@@ -221,6 +214,11 @@ lemma disjoint_rootSpan_ker_rootForm :
 lemma disjoint_corootSpan_ker_corootForm :
     Disjoint (P.corootSpan R) (LinearMap.ker P.CorootForm) :=
   P.flip.disjoint_rootSpan_ker_rootForm
+
+lemma _root_.RootSystem.rootForm_nondegenerate (P : RootSystem ι R M N) [P.IsAnisotropic] :
+    P.RootForm.Nondegenerate :=
+  LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr <| by
+    simpa using P.disjoint_rootSpan_ker_rootForm
 
 end IsDomain
 
