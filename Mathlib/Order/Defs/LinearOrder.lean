@@ -82,6 +82,8 @@ lemma le_of_not_ge : ¬a ≥ b → a ≤ b := (le_total b a).resolve_left
 lemma le_of_not_ge : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
 lemma lt_of_not_ge (h : ¬a ≥ b) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
 
+@[deprecated (since := "2025-05-11")] alias le_of_not_le := le_of_not_ge
+
 lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
   Or.elim (le_total a b)
     (fun h : a ≤ b =>
@@ -97,14 +99,20 @@ lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
   | Or.inr (Or.inl HEq) => HEq ▸ le_refl a
   | Or.inr (Or.inr hgt) => absurd hgt h
 
+@[deprecated (since := "2025-05-11")] alias le_of_not_lt := le_of_not_gt
+
 lemma le_of_not_gt : ¬a > b → a ≤ b := le_of_not_gt
 
 lemma lt_or_ge (a b : α) : a < b ∨ b ≤ a :=
   if hba : b ≤ a then Or.inr hba else Or.inl <| lt_of_not_ge hba
 
+@[deprecated (since := "2025-05-11")] alias lt_or_le := lt_or_ge
+
 lemma le_or_gt (a b : α) : a ≤ b ∨ b < a := (lt_or_ge b a).symm
 lemma lt_or_ge : ∀ a b : α, a < b ∨ a ≥ b := lt_or_ge
 lemma le_or_gt : ∀ a b : α, a ≤ b ∨ a > b := le_or_gt
+
+@[deprecated (since := "2025-05-11")] alias le_or_lt := le_or_gt
 
 lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ a > b := by simpa [h] using lt_trichotomy a b
 
@@ -117,6 +125,8 @@ lemma lt_iff_not_ge (x y : α) : x < y ↔ ¬x ≥ y := ⟨not_le_of_gt, lt_of_n
 
 lemma eq_or_lt_of_not_gt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
+
+@[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_lt_of_not_gt
 
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
 def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
