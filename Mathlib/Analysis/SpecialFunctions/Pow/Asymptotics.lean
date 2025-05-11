@@ -246,11 +246,11 @@ theorem IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
   refine (h.forall_isBigOWith ?_).rpow ?_ ?_ hg <;> positivity
 
 protected lemma IsBigO.sqrt (hfg : f =O[l] g) (hg : 0 ≤ᶠ[l] g) :
-    (Real.sqrt <| f ·) =O[l] (Real.sqrt <| g ·) := by
+    (fun x ↦ √(f x)) =O[l] (fun x ↦ √(g x)) := by
   simpa [Real.sqrt_eq_rpow] using hfg.rpow one_half_pos.le hg
 
 protected lemma IsLittleO.sqrt (hfg : f =o[l] g) (hg : 0 ≤ᶠ[l] g) :
-    (Real.sqrt <| f ·) =o[l] (Real.sqrt <| g ·) := by
+    (fun x ↦ √(f x)) =o[l] (fun x ↦ √(g x)) := by
   simpa [Real.sqrt_eq_rpow] using hfg.rpow one_half_pos hg
 
 protected lemma IsTheta.sqrt (hfg : f =Θ[l] g) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) :

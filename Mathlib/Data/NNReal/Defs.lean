@@ -454,10 +454,6 @@ instance addLeftMono : AddLeftMono ℝ≥0 := inferInstance
 instance addLeftReflectLT : AddLeftReflectLT ℝ≥0 := inferInstance
 instance mulLeftMono : MulLeftMono ℝ≥0 := inferInstance
 
-@[deprecated le_of_forall_pos_le_add (since := "2024-10-17")]
-protected theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=
-   le_of_forall_pos_le_add h
-
 theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ Real.toNNReal q < b :=
   Iff.intro

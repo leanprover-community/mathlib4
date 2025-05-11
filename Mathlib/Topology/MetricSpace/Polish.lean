@@ -95,9 +95,6 @@ theorem _root_.Topology.IsClosedEmbedding.polishSpace [TopologicalSpace α] [Top
     exact hf.isClosed_range.isComplete
   infer_instance
 
-@[deprecated (since := "2024-10-20")]
-alias _root_.ClosedEmbedding.polishSpace := IsClosedEmbedding.polishSpace
-
 /-- Pulling back a Polish topology under an equiv gives again a Polish topology. -/
 theorem _root_.Equiv.polishSpace_induced [t : TopologicalSpace β] [PolishSpace β] (f : α ≃ β) :
     @PolishSpace α (t.induced f) :=
