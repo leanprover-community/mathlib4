@@ -329,6 +329,10 @@ theorem mk_self (a : S) : mk (a : M) a = 1 := by
   rw [← mk_one, mk_eq_mk_iff]
   exact one_rel a
 
+@[to_additive (attr := simp)]
+lemma mk_self_mk (a : M) (haS : a ∈ S) : mk a ⟨a, haS⟩ = 1 :=
+  mk_self ⟨a, haS⟩
+
 section Scalar
 
 variable {R R₁ R₂ : Type*}
