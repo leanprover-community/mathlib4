@@ -23,7 +23,7 @@ A modification `Γ` between oplax transformations `η` and `θ` consists of a fa
 
 -/
 
-namespace CategoryTheory.Oplax
+namespace CategoryTheory.Oplax.OplaxTrans
 
 open Category Bicategory
 
@@ -130,4 +130,4 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
       naturality := fun {a b} f => by
         simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
 
-end CategoryTheory.Oplax
+end CategoryTheory.Oplax.OplaxTrans
