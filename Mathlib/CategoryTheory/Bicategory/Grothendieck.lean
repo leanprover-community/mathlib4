@@ -25,12 +25,15 @@ The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first
 
 ## Future work / TODO
 
-1. Implement more functoriality for the Grothendieck construction (make things into pseudofunctors).
-2. Obtain the results in `CategoryTheory.Grothendieck` as a specialization of these results?
+1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
+pseudofunctor from `Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat` to `Cat`.
+2. One could probably deduce the results in `CategoryTheory.Grothendieck` as a specialization of the
+results in this file.
 
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
 Angelo Vistoli
+
 -/
 
 namespace CategoryTheory.Pseudofunctor
