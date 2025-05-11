@@ -38,7 +38,7 @@ theorem vec_eq_uncurry (A : Matrix m n R) : vec A = Function.uncurry fun i j => 
 theorem vec_inj {A B : Matrix m n R} : A.vec = B.vec ↔ A = B := by
   simp_rw [← Matrix.ext_iff, funext_iff, Prod.forall, @forall_comm m n, vec]
 
-theorem vec_map (A : Matrix m n R) (f : R → S): vec (A.map f) = f ∘ vec A := rfl
+theorem vec_map (A : Matrix m n R) (f : R → S) : vec (A.map f) = f ∘ vec A := rfl
 
 @[simp]
 theorem vec_zero [Zero R] : vec (0 : Matrix m n R) = 0 :=
