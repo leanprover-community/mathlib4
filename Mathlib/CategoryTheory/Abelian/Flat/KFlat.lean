@@ -294,12 +294,18 @@ instance (K : CochainComplex A ℤ) : QuasiIso ((Λ.kFlatResolutionNatTrans hι)
   dsimp [kFlatResolutionNatTrans]
   infer_instance
 
-include Λ hι in
+include Λ hι
+
 open HomologicalComplex in
 lemma cochainComplex_kFlat_isLeftDerivabilityStructure :
     (quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure :=
   isLeftDerivabilityStructure_of_functorial_left_resolutions _ rfl
     (Λ.kFlatResolutionNatTrans hι)
+
+/-open HomotopyCategory in
+lemma homotopyCategory_kFlat_isLeftDerivabilityStructure :
+    (quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure :=
+  sorry-/
 
 end LeftResolutions
 
