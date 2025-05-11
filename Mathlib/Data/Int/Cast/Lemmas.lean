@@ -196,6 +196,17 @@ theorem eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A 
 
 end AddMonoidHom
 
+namespace AddEquiv
+variable {A : Type*}
+
+/-- Two additive monoid isomorphisms `f`, `g` from `ℤ` to an additive monoid are equal
+if `f 1 = g 1`. -/
+@[ext high]
+theorem ext_int [AddMonoid A] {f g : ℤ ≃+ A} (h1 : f 1 = g 1) : f = g :=
+  toAddMonoidHom_injective <| AddMonoidHom.ext_int h1
+
+end AddEquiv
+
 theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F ℤ α]
     (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=

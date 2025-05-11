@@ -69,12 +69,9 @@ lemma Subgroup.zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] 
   simp +contextual
 
 lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg _ := by
-  suffices e 1 = 1 ∨ - e 1 = 1 by
-    rw [neg_eq_iff_eq_neg] at this
-    simp_rw [← AddEquiv.toAddMonoidHom_injective.eq_iff]
-    exact this.imp (AddMonoidHom.ext_int ·) (AddMonoidHom.ext_int ·)
+  suffices e 1 = 1 ∨ - e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
   rw [← AddSubgroup.zmultiples_eq_zmultiples_iff]
-  simpa [e.surjective, eq_comm] using (AddMonoidHom.map_zmultiples (G := ℤ) (N := ℤ) (e : ℤ →+ ℤ) 1)
+  simpa [e.surjective, eq_comm] using (e : ℤ →+ ℤ).map_zmultiples 1
 
 instance : Unique (ℤ ≃+o ℤ) where
   uniq e := OrderAddMonoidIso.toAddEquiv_injective <|
