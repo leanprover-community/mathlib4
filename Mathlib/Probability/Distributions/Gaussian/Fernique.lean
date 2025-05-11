@@ -173,8 +173,9 @@ lemma aux {c : ℝ} (hc : c < 0) :
     rw [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
     simp
 
--- todo: remove IsCentered (once we know that `∫ x, x ∂μ` is a thing)
-lemma eq_dirac_of_variance_eq_zero_of_isCentered (hμ : IsCentered μ)
+/-- See `IsGaussian.eq_dirac_of_variance_eq_zero` for the same statement without the `IsCentered μ`
+hypothesis. -/
+private lemma IsGaussian.eq_dirac_of_variance_eq_zero_of_isCentered (hμ : IsCentered μ)
     (h : ∀ (L : E →L[ℝ] ℝ), Var[L; μ] = 0) :
     μ = Measure.dirac 0 := by
   refine ext_of_charFunCLM ?_
@@ -182,7 +183,8 @@ lemma eq_dirac_of_variance_eq_zero_of_isCentered (hμ : IsCentered μ)
   rw [charFunCLM_dirac, IsGaussian.charFunCLM_eq_of_isCentered hμ L, h L]
   simp
 
-lemma IsGaussian.noAtoms_of_isCentered (hμ : IsCentered μ) (h : μ ≠ Measure.dirac 0) :
+/-- See `IsGaussian.noAtoms` for the same statement without the `IsCentered μ` hypothesis. -/
+private lemma IsGaussian.noAtoms_of_isCentered (hμ : IsCentered μ) (h : μ ≠ Measure.dirac 0) :
     NoAtoms μ where
   measure_singleton x := by
     obtain ⟨L, hL⟩ : ∃ L : E →L[ℝ] ℝ, Var[L; μ] ≠ 0 := by
@@ -583,7 +585,7 @@ variable [CompleteSpace E] [SecondCountableTopology E]
 lemma IsGaussian.integral_continuousLinearMap (L : E →L[ℝ] ℝ) : μ[L] = L (∫ x, x ∂μ) :=
   L.integral_comm_of_memLp_id (IsGaussian.memLp_id μ 1 (by simp))
 
-lemma eq_dirac_of_variance_eq_zero (h : ∀ L : E →L[ℝ] ℝ, Var[L; μ] = 0) :
+lemma IsGaussian.eq_dirac_of_variance_eq_zero (h : ∀ L : E →L[ℝ] ℝ, Var[L; μ] = 0) :
     μ = Measure.dirac (∫ x, x ∂μ) := by
   refine ext_of_charFunCLM ?_
   ext L
