@@ -33,26 +33,26 @@ The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first
 Angelo Vistoli
 -/
 
-namespace CategoryTheory
+namespace CategoryTheory.Pseudofunctor
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
-open CategoryTheory Functor Category Opposite Discrete Bicategory
+open Functor Category Opposite Discrete Bicategory StrongTrans
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮] {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
 
 /-- The type of objects in the fibered category associated to a presheaf valued in types. -/
 @[ext]
-structure Pseudofunctor.Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
+structure Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
   /-- The underlying object in the base category. -/
   base : 𝒮
   /-- The object in the fiber of the base object. -/
   fiber : F.obj ⟨op base⟩
 
-namespace Pseudofunctor.Grothendieck
+namespace Grothendieck
 
 /-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
-scoped prefix:75 "∫ " => Pseudofunctor.Grothendieck
+scoped prefix:75 "∫ " => Grothendieck
 
 /-- A morphism in the Grothendieck category `F : C ⥤ Cat` consists of
 `base : X.base ⟶ Y.base` and `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`.
