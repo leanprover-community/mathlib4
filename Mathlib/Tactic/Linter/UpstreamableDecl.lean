@@ -5,7 +5,6 @@ Authors: Damiano Testa, Anne Baanen
 -/
 import ImportGraph.Imports
 import Mathlib.Init
-import Mathlib.Tactic.MinImports
 
 /-! # The `upstreamableDecl` linter
 
