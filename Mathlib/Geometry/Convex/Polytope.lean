@@ -18,8 +18,7 @@ open scoped Pointwise
 variable {R 𝕜 E : Type*}
 
 section Semiring
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommMonoid E] [Module R E] {s t : Set E} {x y : E}
+variable [Semiring R] [PartialOrder R] [AddCommMonoid E] [Module R E] {s t : Set E} {x y : E}
 
 variable (R) in
 /-- A set is a polytope if it is the convex hull of finitely many points. -/
@@ -28,17 +27,18 @@ def IsPolytope (s : Set E) : Prop := ∃ t : Finset E, s = convexHull R t
 @[simp] protected lemma IsPolytope.empty : IsPolytope R (∅ : Set E) := ⟨∅, by simp⟩
 @[simp] protected lemma IsPolytope.singleton : IsPolytope R {x} := ⟨{x}, by simp⟩
 
-@[simp] protected lemma IsPolytope.segment : IsPolytope R <| segment R x y := by
-  classical exact ⟨{x, y}, by simp⟩
-
 @[simp]
 lemma IsPolytope.convexHull_finset {s : Finset E} : IsPolytope R <| convexHull R s.toSet := by use s
+
+variable [IsOrderedRing R]
+
+@[simp] protected lemma IsPolytope.segment : IsPolytope R <| segment R x y := by
+  classical exact ⟨{x, y}, by simp⟩
 
 end Semiring
 
 section Ring
-variable [Ring R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommGroup E] [Module R E] {s t : Set E} {x y : E}
+variable [Ring R] [PartialOrder R] [AddCommGroup E] [Module R E] {s t : Set E} {x y : E}
 
 protected lemma IsPolytope.neg : IsPolytope R s → IsPolytope R (-s) := by
   classical rintro ⟨A, rfl⟩; exact ⟨-A, by simp [convexHull_neg]⟩
