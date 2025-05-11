@@ -119,6 +119,13 @@ lemma mapComp'_hom_comp_mapComp'_hom_whiskerRight (hf : f₀₂ ≫ f₂₃ = f)
   simp
 
 @[reassoc]
+lemma mapComp'_inv_comp_mapComp'_hom' (hf : f₀₂ ≫ f₂₃ = f) :
+    (F.mapComp' f₀₁ f₁₃ f).inv ≫ (F.mapComp' f₀₂ f₂₃ f).hom  =
+     F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
+      (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃:= by
+  sorry
+
+@[reassoc]
 lemma mapComp'_inv_whiskerRight_comp_mapComp'_inv (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ ≫ (F.mapComp' f₀₂ f₂₃ f).inv =
     (α_ _ _ _).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv ≫
@@ -170,6 +177,34 @@ lemma isoMapOfCommSq_vert_id (f : X₁ ⟶ X₂) :
   ext
   rw [isoMapOfCommSq_eq _ _ f (by simp), mapComp'_comp_id, mapComp'_id_comp]
   simp
+
+lemma isoMapOfCommSq_horiz_comp
+    {t : X₁ ⟶ Y₁} {t' : Y₁ ⟶ Z₁} {l : X₁ ⟶ X₂} {m : Y₁ ⟶ Y₂} {r : Z₁ ⟶ Z₂}
+    {b : X₂ ⟶ Y₂} {b' : Y₂ ⟶ Z₂} (sq : CommSq t l m b) (sq' : CommSq t' m r b')
+    {t'' : X₁ ⟶ Z₁} {b'' : X₂ ⟶ Z₂} (ht : t ≫ t' = t'') (hb : b ≫ b' = b'') :
+    F.isoMapOfCommSq (sq.horiz_comp' sq' ht hb) =
+      whiskerRightIso (F.mapComp' t t' t'' (by rw [← ht])) (F.map r) ≪≫
+      α_ _ _ _ ≪≫ whiskerLeftIso (F.map t) (F.isoMapOfCommSq sq') ≪≫
+      (α_ _ _ _).symm ≪≫ whiskerRightIso (F.isoMapOfCommSq sq) (F.map b') ≪≫
+      α_ _ _ _ ≪≫ whiskerLeftIso (F.map l)
+        ((F.mapComp' b b' b'' (by rw [← hb])).symm) := by
+  ext
+  obtain ⟨φ, hφ⟩ : ∃ φ, t ≫ m = φ := ⟨_, rfl⟩
+  obtain ⟨ψ, hψ⟩ : ∃ ψ, t' ≫ r = ψ := ⟨_, rfl⟩
+  obtain ⟨δ, hδ⟩ : ∃ δ, t ≫ ψ = δ := ⟨_, rfl⟩
+  have hδ' : t'' ≫ r = δ := by rw [← hδ, ← hψ, reassoc_of% ht]
+  rw [F.isoMapOfCommSq_eq ((sq.horiz_comp' sq' ht hb)) δ hδ',
+    F.isoMapOfCommSq_eq sq' ψ hψ, F.isoMapOfCommSq_eq sq φ hφ]
+  dsimp
+  simp only [Bicategory.whiskerLeft_comp, comp_whiskerRight, Category.assoc]
+  rw [← F.mapComp'_inv_comp_mapComp'_hom_assoc _ _ _ _ _ _ _ _ hδ,
+    F.mapComp'_hom_comp_mapComp'_hom_whiskerRight_assoc _ _ _ _ _ _ _ hb
+    (by rw [← hδ, ← hφ, Category.assoc, ← sq'.w, hψ]),
+    Iso.inv_hom_id_assoc, whiskerLeft_hom_inv, Category.comp_id,
+    ← cancel_epi (F.mapComp' t'' r δ hδ').hom,
+    F.mapComp'_hom_comp_mapComp'_hom_whiskerRight_assoc _ _ _ _ ψ _ ht hψ hδ',
+    Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc,
+    whiskerLeft_hom_inv_assoc, Iso.hom_inv_id_assoc]
 
 end CommSq
 
