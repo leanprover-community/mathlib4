@@ -7,6 +7,7 @@ import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Metric properties of convex sets in normed spaces

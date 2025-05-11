@@ -5,10 +5,10 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
-import Mathlib.Analysis.Convex.PathConnected
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.MetricSpace.ProperSpace.Real
+import Mathlib.Topology.UnitInterval
 
 /-!
 # Topological properties of convex sets
