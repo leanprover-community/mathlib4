@@ -444,12 +444,31 @@ lemma Ext.mk₀_sum {X Y : C} {ι : Type*} [Fintype ι]
     mk₀ (∑ i, f i) = ∑ i, mk₀ (f i) :=
   map_sum addEquiv₀.symm _ _
 
-variable (X : C) {ι : Type*} [Fintype ι] {Y : ι → C} {c : Bicone Y} (hc : c.IsBilimit) (n : ℕ)
+variable {J : Type*} [Fintype J] {X : J → C} {c : Bicone X} (hc : c.IsBilimit) (Y : C) (n : ℕ)
 
-/-- `Ext` commutes with finite biproducts. -/
+/-- `Ext` commutes with biproducts in its first variable. -/
+noncomputable def Ext.biproductAddEquiv : Ext c.pt Y n ≃+ Π i, Ext (X i) Y n where
+  toFun e i := (Ext.mk₀ (c.ι i)).comp e (zero_add n)
+  invFun e := ∑ (i : J), (Ext.mk₀ (c.π i)).comp (e i) (zero_add n)
+  left_inv x := by
+    simp only [← comp_assoc_of_second_deg_zero, mk₀_comp_mk₀]
+    rw [← Ext.sum_comp, ← Ext.mk₀_sum, IsBilimit.total hc, mk₀_id_comp]
+  right_inv _ := by
+    ext i
+    simp only [Ext.comp_sum, ← comp_assoc_of_second_deg_zero, mk₀_comp_mk₀]
+    rw [Finset.sum_eq_single i _ (by simp), bicone_ι_π_self, mk₀_id_comp]
+    intro _ _ hij
+    rw [c.ι_π, dif_neg hij.symm, mk₀_zero, zero_comp]
+  map_add' _ _ := by
+    simp only [comp_add]
+    rfl
+
+variable (X : C) {J : Type*} [Fintype J] {Y : J → C} {c : Bicone Y} (hc : c.IsBilimit) (n : ℕ)
+
+/-- `Ext` commutes with biproducts in its second variable. -/
 noncomputable def Ext.addEquivBiproduct : Ext X c.pt n ≃+ Π i, Ext X (Y i) n where
   toFun e i := e.comp (Ext.mk₀ (c.π i)) (add_zero n)
-  invFun e := ∑ (i : ι), (e i).comp (Ext.mk₀ (c.ι i)) (add_zero n)
+  invFun e := ∑ (i : J), (e i).comp (Ext.mk₀ (c.ι i)) (add_zero n)
   left_inv _ := by
     simp only [comp_assoc_of_second_deg_zero, mk₀_comp_mk₀, ← Ext.comp_sum,
       ← Ext.mk₀_sum, IsBilimit.total hc, comp_mk₀_id]
