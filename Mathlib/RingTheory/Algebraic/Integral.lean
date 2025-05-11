@@ -349,8 +349,8 @@ theorem IsAlgebraic.isAlgebraic_iff_top [Algebra.IsAlgebraic R S]
   simp_rw [Algebra.isAlgebraic_def, Algebra.IsAlgebraic.isAlgebraic_iff R S]
 
 theorem IsAlgebraic.isAlgebraic_iff_bot [Algebra.IsAlgebraic S A] [FaithfulSMul S A] :
-    Algebra.IsAlgebraic R S ↔ Algebra.IsAlgebraic R A :=
-  ⟨fun _ ↦ .trans R S A, fun _ ↦ .tower_bot_of_injective (FaithfulSMul.algebraMap_injective S A)⟩
+    Algebra.IsAlgebraic R A ↔ Algebra.IsAlgebraic R S :=
+  ⟨fun _ ↦ .tower_bot_of_injective (FaithfulSMul.algebraMap_injective S A), fun _ ↦ .trans R S A⟩
 
 end Algebra
 
