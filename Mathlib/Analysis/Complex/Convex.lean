@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Convex.PathSegment
+import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Theorems about convexity on the complex plane
