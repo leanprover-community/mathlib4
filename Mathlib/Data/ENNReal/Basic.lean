@@ -402,7 +402,6 @@ lemma coe_ne_one : (r : ℝ≥0∞) ≠ 1 ↔ r ≠ 1 := coe_eq_one.not
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ≥0∞) = ofNat(n) := rfl
 
-
 -- TODO: add lemmas about `OfNat.ofNat` and `<`/`≤`
 
 theorem coe_two : ((2 : ℝ≥0) : ℝ≥0∞) = 2 := rfl
