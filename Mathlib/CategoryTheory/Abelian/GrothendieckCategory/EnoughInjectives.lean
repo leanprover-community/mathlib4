@@ -324,10 +324,12 @@ instance : HasSmallObjectArgument.{w} (generatingMonomorphisms G) := by
               refine (?_ : _ ≤ monomorphisms C) _ this
               simp only [pushouts_le_iff, coproducts_le_iff]
               exact generatingMonomorphisms_le_monomorphisms G }
-        have := hf'.mono_map
+        have (j j' : κ.ord.toType) (φ : j ⟶ j') : Mono (hf'.F.map φ) :=
+          (monomorphisms C).transfiniteCompositionsOfShape_le _ _
+            ((hf'.iic j').ici ⟨j, leOfHom φ⟩).mem
         apply preservesColimit_coyoneda_obj_of_mono (Y := hf'.F) (κ := κ)
         obtain ⟨S⟩ := hi
-        exact Subobject.hasCardinalLT_of_mono hκ S.arrow }⟩
+        exact Subobject.hasCardinalLT_of_mono hκ S.arrow}⟩
 
 lemma llp_rlp_monomorphisms (hG : IsSeparator G) :
     (monomorphisms C).rlp.llp = monomorphisms C := by
