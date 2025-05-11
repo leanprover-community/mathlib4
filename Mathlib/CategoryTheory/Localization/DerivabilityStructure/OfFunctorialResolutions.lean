@@ -145,6 +145,20 @@ lemma hasLeftResolutions_arrow_of_functorial_resolutions :
 
 variable [Φ.functor.Full] [Φ.functor.Faithful] [W₂.HasTwoOutOfThreeProperty]
 
+include hp in
+lemma isConnected_leftResolution_of_functorial_resolutions
+    [W₂.IsMultiplicative] (X₂ : C₂) :
+    letI : W₁.IsMultiplicative := by rw [hW₁]; infer_instance
+    IsConnected (Φ.LeftResolution X₂) := by
+  letI : W₁.IsMultiplicative := by rw [hW₁]; infer_instance
+  have : Φ.op.functor.Faithful := by dsimp; infer_instance
+  have : Φ.op.functor.Full := by dsimp; infer_instance
+  have : IsConnected (Φ.op.RightResolution (Opposite.op X₂)) :=
+    Φ.op.isConnected_rightResolution_of_functorial_resolutions (ρ := ρ.op)
+      (NatTrans.op p) (fun _ ↦ hp _) (by simp only [hW₁]; rfl) _
+  have := isConnected_of_equivalent (LeftResolution.opEquivalence Φ X₂).symm
+  exact isConnected_of_isConnected_op
+
 include hp hW₁
 
 lemma isLocalizedEquivalence_of_functorial_left_resolutions :

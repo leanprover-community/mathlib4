@@ -105,6 +105,16 @@ lemma mem_quasiIso_iff {X Y : HomotopyCategory C c} (f : X ⟶ Y) :
     quasiIso C c f ↔ ∀ (n : ι), IsIso ((homologyFunctor _ _ n).map f) := by
   rfl
 
+instance : (quasiIso C c).IsMultiplicative where
+  id_mem K := by
+    rw [mem_quasiIso_iff]
+    intro
+    infer_instance
+  comp_mem _ _ hf hg := by
+    rw [mem_quasiIso_iff] at hf hg ⊢
+    simp only [Functor.map_comp]
+    infer_instance
+
 lemma quotient_map_mem_quasiIso_iff {K L : HomologicalComplex C c} (f : K ⟶ L) :
     quasiIso C c ((quotient C c).map f) ↔ HomologicalComplex.quasiIso C c f := by
   have eq := fun (i : ι) => NatIso.isIso_map_iff (homologyFunctorFactors C c i) f

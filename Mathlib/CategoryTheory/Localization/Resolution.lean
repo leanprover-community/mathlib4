@@ -130,6 +130,19 @@ lemma hom_ext {R R' : Φ.RightResolution X₂} {φ₁ φ₂ : R ⟶ R'} (h : φ�
     φ₁ = φ₂ :=
   Hom.ext h
 
+@[simps]
+def isoMk {R R' : Φ.RightResolution X₂} [W₁.RespectsIso] (e : R.X₁ ≅ R'.X₁)
+    (comm : R.w ≫ Φ.functor.map e.hom = R'.w := by aesop_cat) : R ≅ R' where
+  hom :=
+    { f := e.hom
+      hf := W₁.of_isIso _
+      comm := comm }
+  inv :=
+    { f := e.inv
+      hf := W₁.of_isIso _
+      comm := by
+        rw [← comm, Category.assoc, Iso.map_hom_inv_id, comp_id] }
+
 end RightResolution
 
 namespace LeftResolution
@@ -178,6 +191,19 @@ lemma comp_f {L L' L'' : Φ.LeftResolution X₂} (φ : L ⟶ L') (ψ : L' ⟶ L'
 lemma hom_ext {L L' : Φ.LeftResolution X₂} {φ₁ φ₂ : L ⟶ L'} (h : φ₁.f = φ₂.f) :
     φ₁ = φ₂ :=
   Hom.ext h
+
+@[simps]
+def isoMk {L L' : Φ.LeftResolution X₂} [W₁.RespectsIso] (e : L.X₁ ≅ L'.X₁)
+    (comm : Φ.functor.map e.hom ≫ L'.w = L.w := by aesop_cat) : L ≅ L' where
+  hom :=
+    { f := e.hom
+      hf := W₁.of_isIso _
+      comm := comm }
+  inv :=
+    { f := e.inv
+      hf := W₁.of_isIso _
+      comm := by
+        rw [← comm, Iso.map_inv_hom_id_assoc] }
 
 end LeftResolution
 

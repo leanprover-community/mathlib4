@@ -79,7 +79,7 @@ variable (Φ : LocalizerMorphism W₁ W₂)
 /-- The opposite localizer morphism `LocalizerMorphism W₁.op W₂.op` deduced
 from `Φ : LocalizerMorphism W₁ W₂`. -/
 @[simps]
-def op : LocalizerMorphism W₁.op W₂.op where
+protected def op : LocalizerMorphism W₁.op W₂.op where
   functor := Φ.functor.op
   map _ _ _ hf := Φ.map _ hf
 
