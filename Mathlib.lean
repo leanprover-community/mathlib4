@@ -2454,6 +2454,7 @@ import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.CartesianClosed
 import Mathlib.CategoryTheory.Sites.CartesianMonoidal
+import Mathlib.CategoryTheory.Sites.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Sites.Closed
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
