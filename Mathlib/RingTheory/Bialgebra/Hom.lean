@@ -306,7 +306,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 variable (R A) in
 /-- The unit of a bialgebra as a `BialgHom`. -/
-def unitBialgHom : R →ₐc[R] A :=
+noncomputable def unitBialgHom : R →ₐc[R] A :=
   .ofAlgHom (Algebra.ofId R A) (by ext; simp) (by ext; simp [Algebra.TensorProduct.one_def])
 
 variable (R A) in
