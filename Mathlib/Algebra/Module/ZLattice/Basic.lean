@@ -652,35 +652,22 @@ instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] 
   infer_instance
 
 /--
-Assume that the set `s` span over `ℤ` a discrete set. Then its `ℝ`-rank is equal to its `ℤ`-rank.
+Assume that the set `s` spans over `ℤ` a discrete set. Then its `ℝ`-rank is equal to its `ℤ`-rank.
 -/
 theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {s : Set E} (hs : DiscreteTopology (span ℤ s)) :
     Set.finrank ℝ s = Set.finrank ℤ s := by
-  obtain hs | hs := isEmpty_or_nonempty s
-  · rw [Set.isEmpty_coe_sort.mp hs, Set.finrank_empty, Set.finrank_empty]
   let F := span ℝ s
-  let L : Submodule ℤ F := comap (F.restrictScalars ℤ).subtype (span ℤ s)
+  let L : Submodule ℤ (span ℝ s) := comap (F.restrictScalars ℤ).subtype (span ℤ s)
   let f := Submodule.comapSubtypeEquivOfLe (span_le_restrictScalars ℤ ℝ s)
-  suffices finrank ℤ L = finrank ℝ F by
-    rw [Set.finrank, Set.finrank, ← this]
-    exact f.finrank_eq
   have : DiscreteTopology L := by
     let e : span ℤ s ≃L[ℤ] L :=
       ⟨f.symm, continuous_of_discreteTopology, Isometry.continuous fun _ ↦ congrFun rfl⟩
     exact e.toHomeomorph.discreteTopology
-  have : IsZLattice ℝ L :=
-  { span_top := by
-      unfold L
-      rw [← Submodule.span_preimage_eq Set.Nonempty.of_subtype (by simpa using subset_span),
-        Submodule.span_span_of_tower, ← (map_injective_of_injective (injective_subtype F)).eq_iff,
-        map_subtype_top, LinearMap.map_span]
-      congr
-      have : ((↑) : F → E) '' (((↑) : F → E)⁻¹' s) = s := by
-        rw [Set.image_preimage_eq_iff, Subtype.range_coe_subtype]
-        exact subset_span
-      exact this }
-  exact ZLattice.rank ℝ L
+  have : IsZLattice ℝ L := ⟨eq_top_iff.mpr <|
+    span_span_coe_preimage.symm.le.trans (span_mono (Set.preimage_mono subset_span))⟩
+  rw [Set.finrank, Set.finrank, ← f.finrank_eq]
+  exact (ZLattice.rank ℝ L).symm
 
 end NormedLinearOrderedField
 
