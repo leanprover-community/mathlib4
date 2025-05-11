@@ -21,8 +21,10 @@ as well as the bundled version of `mulLeft₃` and `mulRight₃`, the multiplica
 
 universe u
 
+variable {R : Type u}
+
 section NonUnitalNonAssocRing
-variable {R : Type u} [NonUnitalNonAssocRing R]
+variable [NonUnitalNonAssocRing R]
 
 /-- The associator `(x * y) * z - x * (y * z)` -/
 def associator (x y z : R) : R := (x * y) * z - x * (y * z)
@@ -43,7 +45,7 @@ theorem associator_cocycle (a b c d : R) :
 end NonUnitalNonAssocRing
 
 section NonUnitalRing
-variable {R : Type u} [NonUnitalRing R]
+variable [NonUnitalRing R]
 
 @[simp]
 theorem associator_eq_zero : associator (R := R) = 0 :=
@@ -54,7 +56,7 @@ end NonUnitalRing
 namespace AddMonoidHom
 
 section NonUnitalNonAssocSemiring
-variable {R : Type u} [NonUnitalNonAssocSemiring R]
+variable [NonUnitalNonAssocSemiring R]
 
 /-- The multiplication `(x * y) * z` of three elements of a (non-associative)
 (semi)-ring is an `AddMonoidHom` in each argument. See also `LinearMap.mulLeftRight` for a
@@ -87,7 +89,7 @@ theorem mulLeft₃_eq_mulRight₃_iff_associative :
 end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
-variable {R : Type u} [NonUnitalSemiring R]
+variable [NonUnitalSemiring R]
 
 theorem mulLeft₃_eq_mulRight₃ : mulLeft₃ (R := R) = mulRight₃ :=
   mulLeft₃_eq_mulRight₃_iff_associative.2 inferInstance
@@ -95,7 +97,7 @@ theorem mulLeft₃_eq_mulRight₃ : mulLeft₃ (R := R) = mulRight₃ :=
 end NonUnitalSemiring
 
 section NonUnitalNonAssocRing
-variable {R : Type u} [NonUnitalNonAssocRing R] (a b c : R)
+variable [NonUnitalNonAssocRing R] (a b c : R)
 
 /-- The associator for a non-associative ring is `(x * y) * z - x * (y * z)`. It is an
 `AddMonoidHom` in each argument. -/
@@ -113,7 +115,7 @@ theorem associator_eq_zero_iff_associative :
 end NonUnitalNonAssocRing
 
 section NonUnitalRing
-variable {R : Type u} [NonUnitalRing R]
+variable [NonUnitalRing R]
 
 @[simp]
 theorem associator_eq_zero : associator (R := R) = 0 :=
