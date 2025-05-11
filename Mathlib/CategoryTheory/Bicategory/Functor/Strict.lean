@@ -149,6 +149,12 @@ lemma isoMapOfCommSq_eq (φ : X₁ ⟶ Y₂) (hφ : t ≫ r = φ) :
   subst hφ
   simp [isoMapOfCommSq, mapComp'_eq_mapComp]
 
+lemma isoMapOfCommSq_flip : F.isoMapOfCommSq sq.flip =
+    (F.isoMapOfCommSq sq).symm := by
+  rw [F.isoMapOfCommSq_eq sq.flip (t ≫ r) sq.w.symm,
+    F.isoMapOfCommSq_eq sq (t ≫ r) rfl,
+    Iso.trans_symm, Iso.symm_symm_eq]
+
 end
 
 /-- Equational lemma for `Pseudofunctor.isoMapOfCommSq` when
@@ -206,7 +212,12 @@ lemma isoMapOfCommSq_vert_comp
         (α_ _ _ _).symm ≪≫ whiskerRightIso (F.isoMapOfCommSq sq) (F.map r') ≪≫
         α_ _ _ _ ≪≫ whiskerLeftIso (F.map l) (F.isoMapOfCommSq sq') ≪≫
         (α_ _ _ _).symm ≪≫ whiskerRightIso (F.mapComp' l l' l'' hl).symm (F.map b) := by
-  sorry
+  rw [← Iso.symm_eq_iff, ← isoMapOfCommSq_flip,
+    F.isoMapOfCommSq_horiz_comp sq.flip sq'.flip hl hr,
+    F.isoMapOfCommSq_flip sq', F.isoMapOfCommSq_flip sq]
+  ext
+  dsimp
+  simp only [Category.assoc]
 
 end CommSq
 
