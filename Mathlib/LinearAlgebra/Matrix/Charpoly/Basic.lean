@@ -130,18 +130,22 @@ def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 
 @[simp]
-theorem charpoly_zero : charpoly (0 : Matrix n n R) = X^Fintype.card n := by
+theorem charpoly_zero : charpoly (0 : Matrix n n R) = X ^ Fintype.card n := by
   simp [charpoly]
 
 theorem charpoly_diagonal (d : n → R) : charpoly (diagonal d) = ∏ i, (X - C (d i)) := by
   simp [charpoly]
 
+
+theorem charpoly_one : charpoly (1 : Matrix n n R) = (X - 1) ^ Fintype.card n := by
+  simp [charpoly]
+
 theorem charpoly_natCast (k : ℕ) :
-    charpoly (k : Matrix n n R) = (X - (k : R[X]))^Fintype.card n := by
+    charpoly (k : Matrix n n R) = (X - (k : R[X])) ^ Fintype.card n := by
   simp [charpoly]
 
 theorem charpoly_ofNat (k : ℕ) [k.AtLeastTwo] :
-    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k))^Fintype.card n:=
+    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n:=
   charpoly_natCast _
 
 theorem eval_charpoly (A : Matrix m m R) (r : R) :

@@ -44,6 +44,15 @@ def charpoly : R[X] :=
 theorem charpoly_def : f.charpoly = (toMatrix (chooseBasis R M) (chooseBasis R M) f).charpoly :=
   rfl
 
+@[simp]
+theorem charpoly_zero [StrongRankCondition R] :
+    (0 : M →ₗ[R] M).charpoly = X ^ Module.finrank R M := by
+  simp [charpoly, Module.finrank_eq_card_chooseBasisIndex]
+
+theorem charpoly_one [StrongRankCondition R] :
+    (1 : M →ₗ[R] M).charpoly = (X - 1) ^ Module.finrank R M := by
+  simp [charpoly, Module.finrank_eq_card_chooseBasisIndex, Matrix.charpoly_one]
+
 end Basic
 
 section Coeff
