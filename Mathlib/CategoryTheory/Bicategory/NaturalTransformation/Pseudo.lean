@@ -74,16 +74,6 @@ structure StrongTrans (F G : Pseudofunctor B C) where
 attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
   StrongTrans.naturality_id StrongTrans.naturality_comp
 
-/-- A structure on an oplax transformation that promotes it to a strong transformation.
-See `Pseudofunctor.StrongTrans.mkOfOplax`. -/
-structure StrongCore {F G : Pseudofunctor B C} (η : OplaxTrans F.toOplax G) where
-  /-- The underlying 2-isomorphisms of the naturality constraint. -/
-  naturality {a b : B} (f : a ⟶ b) : F.map f ≫ η.app b ≅ η.app a ≫ G.map f
-  /-- The 2-isomorphisms agree with the underlying 2-morphism of the oplax transformation. -/
-  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by aesop_cat
-
-attribute [simp] StrongCore.naturality_hom
-
 namespace StrongTrans
 
 section
@@ -102,7 +92,7 @@ instance hasCoeToOplax : Coe (StrongTrans F G) (Oplax.StrongTrans F.toOplax G.to
 /-- Construct a strong transformation of pseudofunctors from a strong transformation of the
 underlying oplax functors. -/
 @[simps]
-def mkOfOplax {F G : Pseudofunctor B C} (η : Oplax.StrongTrans F.toOplax G.toOplax) :
+def mkOfOplax (η : Oplax.StrongTrans F.toOplax G.toOplax) :
     StrongTrans F G where
   app := η.app
   naturality := η.naturality
@@ -178,8 +168,6 @@ def vcomp (η : StrongTrans F G) (θ : StrongTrans G H) : StrongTrans F H :=
   mkOfOplax (Oplax.StrongTrans.vcomp η.toOplax θ.toOplax)
 
 end
-
-variable (B C)
 
 /-- `CategoryStruct` on `Pseudofunctor B C` where the (1-)morphisms are given by strong
 transformations. -/
