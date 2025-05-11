@@ -75,7 +75,7 @@ instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
 
 @[ext]
-theorem ext' {C D : Cat} {F G : C ⟶ D} {α β : F ⟶ G} (w : α.app = β.app) : α = β :=
+theorem ext {C D : Cat} {F G : C ⟶ D} {α β : F ⟶ G} (w : α.app = β.app) : α = β :=
   NatTrans.ext w
 
 @[simp]
@@ -89,12 +89,6 @@ theorem id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f 
 @[simp]
 theorem comp_obj {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) (X : C) : (F ≫ G).obj X = G.obj (F.obj X) :=
   rfl
-
-
-@[reassoc (attr := simp)]
-theorem naturality {C D : Cat} {F G : C ⟶ D} (α : F ⟶ G) {X Y : C} (f : X ⟶ Y) :
-    F.map f ≫ α.app Y = α.app X ≫ G.map f :=
-  α.naturality f
 
 @[simp]
 theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
