@@ -158,14 +158,16 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
 
 @[simp]
 lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
-  -- TODO: why does aesop not work here?
   ext <;> simp
 
 @[simp]
 theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
 
+section
+
+variable (F)
+
 /-- TODO -/
--- TODO: explicit arg
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
   hom := { app := fun _ ↦ eqToHom (by aesop_cat) }
   inv := { app := fun _ ↦ eqToHom (by aesop_cat) }
@@ -179,7 +181,9 @@ def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
     · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
 
 lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
-  Functor.ext_of_iso (mapIdIso) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
+  Functor.ext_of_iso (mapIdIso F) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
+
+end
 
 abbrev mapCompIso_hom (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ⟶ map α ⋙ map β where
   app a := eqToHom (by aesop_cat)
