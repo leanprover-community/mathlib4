@@ -63,10 +63,12 @@ lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussian
   positivity
 
 /-- The gaussian pdf is measurable. -/
+@[fun_prop]
 lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) :=
   (((measurable_id.add_const _).pow_const _).neg.div_const _).exp.const_mul _
 
 /-- The gaussian pdf is strongly measurable. -/
+@[fun_prop]
 lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     StronglyMeasurable (gaussianPDFReal μ v) :=
   (measurable_gaussianPDFReal μ v).stronglyMeasurable
@@ -97,8 +99,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
 lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPDFReal μ v x) = 1 := by
   rw [← ENNReal.toReal_eq_one_iff]
-  have hfm : AEStronglyMeasurable (gaussianPDFReal μ v) volume :=
-    (stronglyMeasurable_gaussianPDFReal μ v).aestronglyMeasurable
+  have hfm : AEStronglyMeasurable (gaussianPDFReal μ v) volume := by fun_prop
   have hf : 0 ≤ₐₛ gaussianPDFReal μ v := ae_of_all _ (gaussianPDFReal_nonneg μ v)
   rw [← integral_eq_lintegral_of_nonneg_ae hf hfm]
   simp only [gaussianPDFReal, zero_lt_two, mul_nonneg_iff_of_pos_right, one_div,
