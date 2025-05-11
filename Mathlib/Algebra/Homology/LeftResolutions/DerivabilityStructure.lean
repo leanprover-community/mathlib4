@@ -100,24 +100,27 @@ lemma hasLeftResolutions_arrow_of_functorial_left_resolutions :
 
 variable [Ψ.functor.EssSurj] [Φ.functor.Full] [Φ.functor.Faithful]
 
-/-include hW₀ π iso in
+include hW₀ π iso in
 lemma isConnected_leftResolution_of_functorial_left_resolutions
     (K : HomotopyCategory A c) :
     letI : W₀ₕ.IsMultiplicative := by rw [hW₀ₕ]; infer_instance
     IsConnected (Φₕ.LeftResolution K) := by
   have : W₀ₕ.IsMultiplicative := by rw [hW₀ₕ]; infer_instance
   have : W₀.IsMultiplicative := by rw [hW₀]; infer_instance
-  have : W₀ₕ.RespectsIso := sorry
+  have : W₀ₕ.RespectsIso := by rw [hW₀ₕ]; infer_instance
   have := hasLeftResolutions_of_functorial_left_resolutions π iso
   obtain ⟨K, rfl⟩ := K.quotient_obj_surjective
   let P : Φ.LeftResolution K ⥤ Φₕ.LeftResolution ((quotient _ _).obj K) :=
     { obj R :=
         { X₁ := Ψ.functor.obj R.X₁
           w := iso.inv.app _ ≫ (quotient _ _).map R.w
-          hw := sorry }
+          hw := by
+            apply MorphismProperty.comp_mem _ _ _ (MorphismProperty.of_isIso _ _) _
+            rw [quotient_map_mem_quasiIso_iff]
+            exact R.hw }
       map φ :=
         { f := Ψ.functor.map φ.f
-          hf := sorry
+          hf := Ψ.map _ (φ.hf)
           comm := by
             have := iso.inv.naturality φ.f
             dsimp at this ⊢
@@ -129,23 +132,23 @@ lemma isConnected_leftResolution_of_functorial_left_resolutions
         let R' : Φ.LeftResolution K :=
           { X₁ := Ψ.functor.objPreimage R.X₁
             w := f
-            hw := sorry }
+            hw := by
+              rw [← quotient_map_mem_quasiIso_iff, hf, ← Category.assoc]
+              exact MorphismProperty.comp_mem _ _ _ (MorphismProperty.of_isIso _ _) R.hw }
         exact ⟨R', ⟨LocalizerMorphism.LeftResolution.isoMk (Ψ.functor.objObjPreimageIso R.X₁)
-          (by simp [P, R', hf])
-          ⟩⟩ }
+          (by simp [P, R', hf]) ⟩⟩ }
   have := HomologicalComplex.isConnected_leftResolution_of_functorial_left_resolutions Φ hW₀ π K
-  exact P.isConnected_of_isConnected_of_essSurj-/
+  exact P.isConnected_of_isConnected_of_essSurj
 
 variable [Ψ.IsLocalizedEquivalence]
-  [Φₕ.functor.Full] [Φₕ.functor.Faithful] [W₀ₕ.IsMultiplicative]
 
 /-include hW₀ π hW₀ₕ iso in
 lemma isLeftDerivabilityStructure_of_functorial_left_resolutions :
-    Φₕ.IsLeftDerivabilityStructure :=
+    Φₕ.IsLeftDerivabilityStructure := by
   have : W₀ₕ.IsMultiplicative := by rw [hW₀ₕ]; infer_instance
   have := isLocalizedEquivalence_of_functorial_left_resolutions hW₀ π iso
   have := hasLeftResolutions_arrow_of_functorial_left_resolutions π iso
   have := isConnected_leftResolution_of_functorial_left_resolutions hW₀ π hW₀ₕ iso
-  sorry-/
+  apply LocalizerMorphism.IsLeftDerivabilityStructure.mk'-/
 
 end HomotopyCategory

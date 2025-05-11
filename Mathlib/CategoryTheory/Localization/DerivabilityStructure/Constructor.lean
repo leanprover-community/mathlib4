@@ -138,6 +138,27 @@ end
 
 end IsRightDerivabilityStructure
 
+/-- If a localizer morphism `Φ` is a localized equivalence, then it is a left
+derivability structure if the categories of left resolutions are connected and the
+categories of left resolutions of arrows are nonempty. -/
+
+lemma IsLeftDerivabilityStructure.mk' (Φ : LocalizerMorphism W₁ W₂)
+    [W₁.IsMultiplicative] [∀ (X₂ : C₂), IsConnected (Φ.LeftResolution X₂)]
+    [Φ.arrow.HasLeftResolutions] [W₂.ContainsIdentities] [Φ.IsLocalizedEquivalence] :
+    Φ.IsLeftDerivabilityStructure := by
+  rw [isLeftDerivabilityStructure_iff_op]
+  have : Φ.op.arrow.HasRightResolutions := by
+    rintro ⟨⟨X⟩, ⟨Y⟩, ⟨f : Y ⟶ X⟩⟩
+    have h : Φ.arrow.LeftResolution (Arrow.mk f) := Classical.arbitrary _
+    exact ⟨{
+      X₁ := Arrow.mk h.X₁.hom.op
+      w := Arrow.homMk h.w.right.op h.w.left.op (Quiver.Hom.unop_inj h.w.w.symm)
+      hw := ⟨h.hw.2, h.hw.1⟩
+    }⟩
+  have (X₂ : C₂ᵒᵖ) : IsConnected (Φ.op.RightResolution X₂) :=
+    isConnected_of_equivalent (LeftResolution.opEquivalence Φ X₂.unop)
+  apply IsRightDerivabilityStructure.mk'
+
 end LocalizerMorphism
 
 end CategoryTheory
