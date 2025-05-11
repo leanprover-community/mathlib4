@@ -1,40 +1,25 @@
-import Mathlib.RingTheory.Presentation
+/-
+Copyright (c) 2025 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+import Mathlib.RingTheory.Extension.Presentation.Basic
+
+/-!
+# Presentations on subrings
+
+In this file we establish the API for realising a presentation over a
+subring of `R`. If `P` is a presentation of `S` as an `R`-algebra, any
+subring `R₀` of `R` that contains the coefficients of the relations
+of `P` is called a core of the presentation. In this case there exists an `R₀`-algebra `S₀`
+such that `S` is isomorphic to `R ⊗[R₀] S₀`.
+
+If the presentation is finite, `R₀` may be chosen as a Noetherian ring. In this case,
+this API can be used to remove Noetherian hypothesis in certain cases.
+
+-/
 
 open TensorProduct
-
-section
-
-@[simp]
-lemma _root_.AlgEquiv.restrictScalars_symm_apply (R : Type*) {S A B : Type*}
-    [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B] [Algebra R S]
-    [Algebra S A] [Algebra S B] [Algebra R A] [Algebra R B]
-    [IsScalarTower R S A] [IsScalarTower R S B] (e : A ≃ₐ[S] B) (b : B) :
-    (e.restrictScalars R).symm b = e.symm b := rfl
-
-@[simp]
-lemma _root_.MvPolynomial.algebraTensorAlgEquiv_symm_comp_aeval (R : Type*) [CommSemiring R]
-    {σ : Type*} (A : Type*) [CommSemiring A] [Algebra R A] :
-    (((MvPolynomial.algebraTensorAlgEquiv (σ := σ) R A).symm.restrictScalars R) :
-        MvPolynomial σ A →ₐ[R] A ⊗[R] MvPolynomial σ R).comp
-      (MvPolynomial.mapAlgHom (R := R) (S₁ := R) (S₂ := A) (Algebra.ofId R A)) =
-      MvPolynomial.aeval fun i ↦ 1 ⊗ₜ MvPolynomial.X i := by
-  ext
-  simp
-
-@[simp]
-lemma _root_.MvPolynomial.algebraTensorAlgEquiv_symm_map (R : Type*) [CommSemiring R]
-    {σ : Type*} (A : Type*) [CommSemiring A] [Algebra R A] (x : MvPolynomial σ R) :
-    (MvPolynomial.algebraTensorAlgEquiv R A).symm
-      (MvPolynomial.map (algebraMap R A) x) = 1 ⊗ₜ x := by
-  have : (MvPolynomial.aeval fun i ↦ 1 ⊗ₜ[R] MvPolynomial.X i) x = (1 : A) ⊗ₜ x := by
-    induction x using MvPolynomial.induction_on
-    · simp [Algebra.TensorProduct.tmul_one_eq_one_tmul]
-    · simp_all [TensorProduct.tmul_add]
-    · simp_all
-  rw [← this]
-  exact DFunLike.congr_fun (MvPolynomial.algebraTensorAlgEquiv_symm_comp_aeval R A) x
-
-end
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
