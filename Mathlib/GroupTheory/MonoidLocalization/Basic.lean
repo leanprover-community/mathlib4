@@ -1334,7 +1334,7 @@ end OreLocalization
 open Localization
 
 namespace Algebra
-variable {M : Type*} [CommMonoid M]
+variable {M G : Type*} [CommMonoid M] [CommGroup G]
 
 /-! #### Grothendieck group -/
 
@@ -1368,5 +1368,18 @@ instance instCommGroup : CommGroup (GrothendieckGroup M) where
 lemma mk_div_mk (m₁ m₂ : M) (s₁ s₂ : (⊤ : Submonoid M)) :
     mk m₁ s₁ / mk m₂ s₂ = .mk (m₁ * s₂) ⟨s₁ * m₂, Submonoid.mem_top _⟩ := by
   simp [div_eq_mul_inv, mk_mul]; rfl
+
+/-- A monoid homomorphism from a monoid `M` to a group `G` lifts to a group homomorphism from the
+Grothendieck group of `M` to `G`. -/
+@[to_additive
+"A monoid homomorphism from a monoid `M` to a group `G` lifts to a group homomorphism from the
+Grothendieck group of `M` to `G`."]
+noncomputable def lift (f : M →* G) : GrothendieckGroup M →* G :=
+  Submonoid.LocalizationMap.lift (monoidOf ⊤) (g := f) fun _ ↦ Group.isUnit _
+
+@[to_additive]
+lemma lift_apply (f : M →* G) (x : GrothendieckGroup M) :
+    lift f x = f ((monoidOf ⊤).sec x).1 / f ((monoidOf ⊤).sec x).2 := by
+  simp [lift, Submonoid.LocalizationMap.lift_apply, div_eq_mul_inv]; congr
 
 end Algebra.GrothendieckGroup
