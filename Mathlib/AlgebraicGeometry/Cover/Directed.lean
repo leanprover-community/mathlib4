@@ -6,9 +6,9 @@ Authors: Christian Merten
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
-# Directed covers
+# Locally directed covers
 
-A directed `P`-cover of a scheme `X` is a cover `𝒰` with an ordering
+A locally directed `P`-cover of a scheme `X` is a cover `𝒰` with an ordering
 on the indices and compatible transition maps `𝒰ᵢ ⟶ 𝒰ⱼ` for `i ≤ j` such that
 every `x : 𝒰ᵢ ×[X] 𝒰ⱼ` comes from some `𝒰ₖ` for a `k ≤ i` and `k ≤ j`.
 
@@ -32,7 +32,7 @@ variable {P : MorphismProperty Scheme.{u}} {X : Scheme.{u}}
 /-- A directed `P`-cover of a scheme `X` is a cover `𝒰` with an ordering
 on the indices and compatible transition maps `𝒰ᵢ ⟶ 𝒰ⱼ` for `i ≤ j` such that
 every `x : 𝒰ᵢ ×[X] 𝒰ⱼ` comes from some `𝒰ₖ` for a `k ≤ i` and `k ≤ j`. -/
-class Cover.Directed (𝒰 : X.Cover P) extends LE 𝒰.J where
+class Cover.LocallyDirected (𝒰 : X.Cover P) extends LE 𝒰.J where
   /-- The transition map `𝒰ᵢ ⟶ 𝒰ⱼ` for `i ≤ j`. -/
   trans {i j : 𝒰.J} (hij : i ≤ j) : 𝒰.obj i ⟶ 𝒰.obj j
   w {i j : 𝒰.J} (hij : i ≤ j) : trans hij ≫ 𝒰.map j = 𝒰.map i := by aesop_cat
@@ -41,27 +41,27 @@ class Cover.Directed (𝒰 : X.Cover P) extends LE 𝒰.J where
       (pullback.lift (trans hki) (trans hkj) (by simp [w])).base y = x
   property_trans {i j : 𝒰.J} (hij : i ≤ j) : P (trans hij) := by infer_instance
 
-variable (𝒰 : X.Cover P) [𝒰.Directed]
+variable (𝒰 : X.Cover P) [𝒰.LocallyDirected]
 
 /-- The transition maps of a directed cover. -/
-def Cover.trans {i j : 𝒰.J} (hij : i ≤ j) : 𝒰.obj i ⟶ 𝒰.obj j := Directed.trans hij
+def Cover.trans {i j : 𝒰.J} (hij : i ≤ j) : 𝒰.obj i ⟶ 𝒰.obj j := LocallyDirected.trans hij
 
 @[simp]
 lemma Cover.trans_map {i j : 𝒰.J} (hij : i ≤ j) : 𝒰.trans hij ≫ 𝒰.map j = 𝒰.map i :=
-  Directed.w hij
+  LocallyDirected.w hij
 
 lemma Cover.exists_lift_trans_eq {i j : 𝒰.J} (x : (pullback (𝒰.map i) (𝒰.map j)).carrier) :
     ∃ (k : 𝒰.J) (hki : k ≤ i) (hkj : k ≤ j) (y : 𝒰.obj k),
       (pullback.lift (𝒰.trans hki) (𝒰.trans hkj) (by simp)).base y = x :=
-  Directed.directed x
+  LocallyDirected.directed x
 
 lemma Cover.property_trans {i j : 𝒰.J} (hij : i ≤ j) : P (𝒰.trans hij) :=
-  Directed.property_trans hij
+  LocallyDirected.property_trans hij
 
 /-- If `𝒰` is a directed cover of `X`, this is the cover of `𝒰ᵢ ×[X] 𝒰ⱼ` by `{𝒰ₖ}` where
 `k ≤ i` and `k ≤ j`. -/
 @[simps map]
-def Cover.intersectionOfDirected [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
+def Cover.intersectionOfLocallyDirected [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
     (i j : 𝒰.J) : (pullback (𝒰.map i) (𝒰.map j)).Cover P where
   J := { k : 𝒰.J | k ≤ i ∧ k ≤ j }
   obj k := 𝒰.obj k
@@ -76,43 +76,44 @@ def Cover.intersectionOfDirected [P.IsStableUnderBaseChange] [P.HasOfPostcompPro
 
 /-- If `𝒰` is a directed open cover of `X`, to glue morphisms `{gᵢ : 𝒰ᵢ ⟶ Y}` it suffices
 to check compatibility with the transition maps. -/
-def OpenCover.glueMorphismsOfDirected (𝒰 : X.OpenCover) [𝒰.Directed] {Y : Scheme.{u}}
+def OpenCover.glueMorphismsOfLocallyDirected (𝒰 : X.OpenCover) [𝒰.LocallyDirected] {Y : Scheme.{u}}
     (g : ∀ i, 𝒰.obj i ⟶ Y) (h : ∀ {i j : 𝒰.J} (hij : i ≤ j), 𝒰.trans hij ≫ g j = g i) :
     X ⟶ Y :=
   𝒰.glueMorphisms g <| fun i j ↦ by
-    apply (𝒰.intersectionOfDirected i j).hom_ext
+    apply (𝒰.intersectionOfLocallyDirected i j).hom_ext
     intro k
     simp [h]
 
 @[reassoc (attr := simp)]
-lemma OpenCover.map_glueMorphismsOfDirected (𝒰 : X.OpenCover) [𝒰.Directed] {Y : Scheme.{u}}
-    (g : ∀ i, 𝒰.obj i ⟶ Y) (h : ∀ {i j : 𝒰.J} (hij : i ≤ j), 𝒰.trans hij ≫ g j = g i) (i : 𝒰.J) :
-    𝒰.map i ≫ 𝒰.glueMorphismsOfDirected g h = g i := by
-  simp [glueMorphismsOfDirected]
+lemma OpenCover.map_glueMorphismsOfLocallyDirected (𝒰 : X.OpenCover) [𝒰.LocallyDirected]
+    {Y : Scheme.{u}} (g : ∀ i, 𝒰.obj i ⟶ Y)
+    (h : ∀ {i j : 𝒰.J} (hij : i ≤ j), 𝒰.trans hij ≫ g j = g i) (i : 𝒰.J) :
+    𝒰.map i ≫ 𝒰.glueMorphismsOfLocallyDirected g h = g i := by
+  simp [glueMorphismsOfLocallyDirected]
 
 /-- If `𝒰` is a directed open cover of `X`, to glue morphisms `{gᵢ : 𝒰ᵢ ⟶ Y}` over `S` it suffices
 to check compatibility with the transition maps. -/
-def OpenCover.glueMorphismsOverOfDirected {S : Scheme.{u}} {X : Over S}
-    (𝒰 : X.left.OpenCover) [𝒰.Directed] {Y : Over S} (g : ∀ i, 𝒰.obj i ⟶ Y.left)
+def OpenCover.glueMorphismsOverOfLocallyDirected {S : Scheme.{u}} {X : Over S}
+    (𝒰 : X.left.OpenCover) [𝒰.LocallyDirected] {Y : Over S} (g : ∀ i, 𝒰.obj i ⟶ Y.left)
     (h : ∀ {i j : 𝒰.J} (hij : i ≤ j), 𝒰.trans hij ≫ g j = g i)
     (w : ∀ i, g i ≫ Y.hom = 𝒰.map i ≫ X.hom) :
     X ⟶ Y :=
-  Over.homMk (𝒰.glueMorphismsOfDirected g h) <| by
+  Over.homMk (𝒰.glueMorphismsOfLocallyDirected g h) <| by
     apply 𝒰.hom_ext
     intro i
     simp [w]
 
 @[reassoc (attr := simp)]
-lemma OpenCover.map_glueMorphismsOverOfDirected_left {S : Scheme.{u}} {X : Over S}
-    (𝒰 : X.left.OpenCover) [𝒰.Directed] {Y : Over S} (g : ∀ i, 𝒰.obj i ⟶ Y.left)
+lemma OpenCover.map_glueMorphismsOverOfLocallyDirected_left {S : Scheme.{u}} {X : Over S}
+    (𝒰 : X.left.OpenCover) [𝒰.LocallyDirected] {Y : Over S} (g : ∀ i, 𝒰.obj i ⟶ Y.left)
     (h : ∀ {i j : 𝒰.J} (hij : i ≤ j), 𝒰.trans hij ≫ g j = g i)
     (w : ∀ i, g i ≫ Y.hom = 𝒰.map i ≫ X.hom) (i : 𝒰.J) :
-    𝒰.map i ≫ (𝒰.glueMorphismsOverOfDirected g h w).left = g i := by
-  simp [glueMorphismsOverOfDirected]
+    𝒰.map i ≫ (𝒰.glueMorphismsOverOfLocallyDirected g h w).left = g i := by
+  simp [glueMorphismsOverOfLocallyDirected]
 
-instance Cover.directedPullbackCover [P.IsStableUnderBaseChange] (𝒰 : X.Cover P) [𝒰.Directed]
-    {Y : Scheme.{u}} (f : Y ⟶ X) :
-    (𝒰.pullbackCover f).Directed where
+instance Cover.locallyDirectedPullbackCover [P.IsStableUnderBaseChange] (𝒰 : X.Cover P)
+    [𝒰.LocallyDirected] {Y : Scheme.{u}} (f : Y ⟶ X) :
+    (𝒰.pullbackCover f).LocallyDirected where
   le (x : 𝒰.J) (y : 𝒰.J) := x ≤ y
   trans {i j} hij := pullback.map f (𝒰.map i) f (𝒰.map j) (𝟙 _) (𝒰.trans hij) (𝟙 _)
     (by simp) (by simp)
@@ -148,10 +149,10 @@ instance Cover.directedPullbackCover [P.IsStableUnderBaseChange] (𝒰 : X.Cover
 
 /-- If `𝒰` is an open cover such that the images of the components form a basis of the topology
 of `X`, `𝒰` is directed by the ordering of subset inclusion of the images. -/
-def Cover.Directed.ofIsBasisOpensRange {𝒰 : X.OpenCover} [LE 𝒰.J]
+def Cover.LocallyDirected.ofIsBasisOpensRange {𝒰 : X.OpenCover} [LE 𝒰.J]
     (hle : ∀ {i j : 𝒰.J}, i ≤ j ↔ (𝒰.map i).opensRange ≤ (𝒰.map j).opensRange)
     (H : TopologicalSpace.Opens.IsBasis (Set.range <| fun i ↦ (𝒰.map i).opensRange)) :
-    𝒰.Directed where
+    𝒰.LocallyDirected where
   trans {i j} hij := IsOpenImmersion.lift (𝒰.map j) (𝒰.map i) (hle.mp hij)
   directed {i j} x := by
     have : (pullback.fst (𝒰.map i) (𝒰.map j) ≫ 𝒰.map i).base x ∈
@@ -172,12 +173,12 @@ variable {𝒰 : X.OpenCover} [LE 𝒰.J]
   (H : TopologicalSpace.Opens.IsBasis (Set.range <| fun i ↦ (𝒰.map i).opensRange))
 
 include hle in
-lemma Cover.Directed.ofIsBasisOpensRange_le_iff (i j : 𝒰.J) :
-    letI := Cover.Directed.ofIsBasisOpensRange hle H
+lemma Cover.LocallyDirected.ofIsBasisOpensRange_le_iff (i j : 𝒰.J) :
+    letI := Cover.LocallyDirected.ofIsBasisOpensRange hle H
     i ≤ j ↔ (𝒰.map i).opensRange ≤ (𝒰.map j).opensRange := hle
 
-lemma Cover.Directed.ofIsBasisOpensRange_trans {i j : 𝒰.J} :
-    letI := Cover.Directed.ofIsBasisOpensRange hle H
+lemma Cover.LocallyDirected.ofIsBasisOpensRange_trans {i j : 𝒰.J} :
+    letI := Cover.LocallyDirected.ofIsBasisOpensRange hle H
     (hij : i ≤ j) → 𝒰.trans hij = IsOpenImmersion.lift (𝒰.map j) (𝒰.map i) (hle.mp hij) :=
   fun _ ↦ rfl
 
@@ -198,7 +199,7 @@ def directedAffineCover : X.OpenCover where
 
 instance : LE X.directedAffineCover.J := inferInstanceAs <| LE X.affineOpens
 
-instance : Scheme.Cover.Directed X.directedAffineCover :=
+instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
   .ofIsBasisOpensRange (by simp) <| by
     convert isBasis_affine_open X
     simp
