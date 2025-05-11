@@ -157,6 +157,12 @@ protected lemma IsCofinalFor.mono_right (htu : t ⊆ u) (hst : IsCofinalFor s t)
 protected lemma IsCoinitialFor.mono_right (htu : t ⊆ u) (hst : IsCoinitialFor s t) :
     IsCoinitialFor s u := hst.trans htu.iscoinitialfor
 
+lemma DirectedOn.isCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β] {s : Set (α × β)}
+    (hs : DirectedOn (· ≤ ·) s) : IsCofinalFor ((Prod.fst '' s) ×ˢ (Prod.snd '' s)) s := by
+  rintro ⟨_, _⟩ ⟨⟨x, hx, rfl⟩, y, hy, rfl⟩
+  obtain ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
+  exact ⟨z, hz, hxz.1, hyz.2⟩
+
 /-!
 ### Monotonicity
 -/
@@ -169,11 +175,12 @@ theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t 
   fun _ hb _ h => hb <| hst h
 
 @[gcongr]
-lemma upperBounds_mono_of_iscofinalfor (hst : IsCofinalFor s t) : upperBounds t ⊆ upperBounds s :=
+lemma upperBounds_mono_of_isCofinalFor (hst : IsCofinalFor s t) : upperBounds t ⊆ upperBounds s :=
   fun _a ha _b hb ↦ let ⟨_c, hc, hbc⟩ := hst hb; hbc.trans (ha hc)
 
 @[gcongr]
-lemma lowerBounds_mono_of_iscofinalfor (hst : IsCoinitialFor s t) : lowerBounds t ⊆ lowerBounds s :=
+lemma lowerBounds_mono_of_isCoinitialFor (hst : IsCoinitialFor s t) :
+    lowerBounds t ⊆ lowerBounds s :=
   fun _a ha _b hb ↦ let ⟨_c, hc, hcb⟩ := hst hb; hcb.trans' (ha hc)
 
 theorem upperBounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : a ∈ upperBounds s → b ∈ upperBounds s :=

@@ -164,6 +164,7 @@ protected lemma Eq.not_gt (hab : a = b) : ¬b < a := hab.symm.not_lt
 @[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
 
 -- Making this a @[simp] lemma causes confluence problems downstream.
+@[nontriviality]
 lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
 
 namespace LT.lt

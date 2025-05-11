@@ -137,13 +137,6 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
-/-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices
-adjacent. In `Mathlib`, this is usually referred to as `⊤`. -/
-def completeGraph (V : Type u) : SimpleGraph V where Adj := Ne
-
-/-- The graph with no edges on a given vertex type `V`. `Mathlib` prefers the notation `⊥`. -/
-def emptyGraph (V : Type u) : SimpleGraph V where Adj _ _ := False
-
 /-- Two vertices are adjacent in the complete bipartite graph on two vertex types
 if and only if they are not from the same side.
 Any bipartite graph may be regarded as a subgraph of one of these. -/
@@ -307,8 +300,8 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     min := (· ⊓ ·)
     compl := HasCompl.compl
     sdiff := (· \ ·)
-    top := completeGraph V
-    bot := emptyGraph V
+    top.Adj := Ne
+    bot.Adj _ _ := False
     le_top := fun x _ _ h => x.ne_of_adj h
     bot_le := fun _ _ _ h => h.elim
     sdiff_eq := fun x y => by
@@ -330,6 +323,12 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     sInf_le := fun _ _ hG _ _ hab => hab.1 hG
     le_sInf := fun _ _ hG _ _ hab => ⟨fun _ hH => hG _ hH hab, hab.ne⟩
     iInf_iSup_eq := fun f => by ext; simp [Classical.skolem] }
+
+/-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices. -/
+abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
+
+/-- The graph with no edges on a given vertex type `V`. -/
+abbrev emptyGraph (V : Type u) : SimpleGraph V := ⊥
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
@@ -560,6 +559,9 @@ variable (s : Set (Sym2 V))
 def fromEdgeSet : SimpleGraph V where
   Adj := Sym2.ToRel s ⊓ Ne
   symm _ _ h := ⟨Sym2.toRel_symmetric s h.1, h.2.symm⟩
+
+instance [DecidablePred (· ∈ s)] [DecidableEq V] : DecidableRel (fromEdgeSet s).Adj :=
+  inferInstanceAs <| DecidableRel fun v w ↦ s(v, w) ∈ s ∧ v ≠ w
 
 @[simp]
 theorem fromEdgeSet_adj : (fromEdgeSet s).Adj v w ↔ s(v, w) ∈ s ∧ v ≠ w :=
