@@ -15,10 +15,10 @@ A modification `Γ` between oplax transformations `η` and `θ` consists of a fa
 
 ## Main definitions
 
-* `Modification η θ` : modifications between oplax transformations `η` and `θ`
-* `Modification.vcomp η θ` : the vertical composition of oplax transformations `η`
+* `Modification η θ`: modifications between oplax transformations `η` and `θ`
+* `Modification.vcomp η θ`: the vertical composition of oplax transformations `η`
   and `θ`
-* `OplaxTrans.category F G` : the category structure on the oplax transformations
+* `OplaxTrans.category F G`: the category structure on the oplax transformations
   between `F` and `G`
 
 -/

@@ -18,10 +18,10 @@ In this file we define strong transformations, which require the 2-morphism to b
 
 ## Main definitions
 
-* `StrongTrans F G` : strong transformations between pseudofunctors `F` and `G`.
-* `mkOfOplax η η'` : given an oplax transformation `η` such that each component 2-morphism
+* `StrongTrans F G`: strong transformations between pseudofunctors `F` and `G`.
+* `mkOfOplax η η'`: given an oplax transformation `η` such that each component 2-morphism
   is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
-* `StrongTrans.vcomp η θ` : the vertical composition of strong transformations `η` and `θ`.
+* `StrongTrans.vcomp η θ`: the vertical composition of strong transformations `η` and `θ`.
 
 Using this we obtain a `CategoryStruct` on pseudofunctors, where the arrows are given by
 strong transformations. See `Pseudofunctor.categoryStruct`.
