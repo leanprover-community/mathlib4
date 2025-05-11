@@ -299,7 +299,7 @@ theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
 
 theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     IsLUB ((fun b => a * b) '' s) (a * b) := by
-  rcases lt_or_eq_of_le ha with (ha | rfl)
+  obtain ha | rfl := ha.lt_or_eq
   · exact (OrderIso.mulLeft₀ _ ha).isLUB_image'.2 hs
   · simp_rw [zero_mul]
     obtain rfl | ne := s.eq_empty_or_nonempty
