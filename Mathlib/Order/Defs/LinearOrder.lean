@@ -78,9 +78,8 @@ attribute [instance 900] LinearOrder.toDecidableEq
 
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
-lemma le_of_not_ge : ¬a ≥ b → a ≤ b := (le_total b a).resolve_left
 lemma le_of_not_ge : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
-lemma lt_of_not_ge (h : ¬a ≥ b) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
+lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
 
 @[deprecated (since := "2025-05-11")] alias le_of_not_le := le_of_not_ge
 
@@ -101,27 +100,23 @@ lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
 
 @[deprecated (since := "2025-05-11")] alias le_of_not_lt := le_of_not_gt
 
-lemma le_of_not_gt : ¬a > b → a ≤ b := le_of_not_gt
-
 lemma lt_or_ge (a b : α) : a < b ∨ b ≤ a :=
   if hba : b ≤ a then Or.inr hba else Or.inl <| lt_of_not_ge hba
 
 @[deprecated (since := "2025-05-11")] alias lt_or_le := lt_or_ge
 
 lemma le_or_gt (a b : α) : a ≤ b ∨ b < a := (lt_or_ge b a).symm
-lemma lt_or_ge : ∀ a b : α, a < b ∨ a ≥ b := lt_or_ge
-lemma le_or_gt : ∀ a b : α, a ≤ b ∨ a > b := le_or_gt
 
 @[deprecated (since := "2025-05-11")] alias le_or_lt := le_or_gt
 
-lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ a > b := by simpa [h] using lt_trichotomy a b
+lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ b < a := by simpa [h] using lt_trichotomy a b
 
-lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ a > b := ⟨lt_or_gt_of_ne, (Or.elim · ne_of_lt ne_of_gt)⟩
+lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.elim · ne_of_lt ne_of_gt)⟩
 
-lemma lt_iff_not_ge (x y : α) : x < y ↔ ¬x ≥ y := ⟨not_le_of_gt, lt_of_not_ge⟩
+lemma lt_iff_not_ge : a < b ↔ ¬b ≤ a := ⟨not_le_of_gt, lt_of_not_ge⟩
 
 @[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
-@[simp] lemma not_le : ¬a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
+@[simp] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
 
 lemma eq_or_lt_of_not_gt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
@@ -240,7 +235,7 @@ lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   split_ifs <;> simp only [*, lt_irrefl, reduceCtorEq]
 
-lemma compare_gt_iff_gt : compare a b = .gt ↔ a > b := by
+lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt, reduceCtorEq]
   case _ h₁ h₂ =>
@@ -260,7 +255,7 @@ lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
   · exact le_of_eq <| compare_eq_iff_eq.1 h
   · exact compare_gt_iff_gt.1 h
 
-lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ a ≥ b := by
+lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ b ≤ a := by
   cases h : compare a b <;> simp
   · exact compare_lt_iff_lt.1 h
   · exact le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h

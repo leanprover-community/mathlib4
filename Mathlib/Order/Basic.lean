@@ -328,8 +328,8 @@ variable [LinearOrder α] {a b : α}
 
 namespace LE.le
 
-lemma lt_or_ge (h : a ≤ b) (c : α) : a < c ∨ c ≤ b := (lt_or_ge a c).imp id h.trans'
-lemma le_or_gt (h : a ≤ b) (c : α) : a ≤ c ∨ c < b := (le_or_gt a c).imp id h.trans_lt'
+nonrec lemma lt_or_ge (h : a ≤ b) (c : α) : a < c ∨ c ≤ b := (lt_or_ge a c).imp id h.trans'
+nonrec lemma le_or_gt (h : a ≤ b) (c : α) : a ≤ c ∨ c < b := (le_or_gt a c).imp id h.trans_lt'
 lemma le_or_le (h : a ≤ b) (c : α) : a ≤ c ∨ c ≤ b := (h.lt_or_ge c).imp le_of_lt id
 
 @[deprecated (since := "2025-05-11")] alias lt_or_le := lt_or_ge
@@ -360,14 +360,7 @@ theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
   · rw [if_pos eq.le, if_pos eq.ge, eq]
   · rw [if_neg (not_le.mpr gt.gt), if_pos gt.le]
 
-theorem lt_of_not_ge (h : ¬b ≤ a) : a < b :=
-  ((le_total _ _).resolve_right h).lt_of_not_ge h
-
 @[deprecated (since := "2025-05-11")] alias lt_of_not_le := lt_of_not_ge
-
-theorem lt_iff_not_ge : a < b ↔ ¬b ≤ a :=
-  ⟨not_le_of_lt, lt_of_not_le⟩
-
 @[deprecated (since := "2025-05-11")] alias lt_iff_not_le := lt_iff_not_ge
 
 theorem Ne.lt_or_lt (h : a ≠ b) : a < b ∨ b < a :=

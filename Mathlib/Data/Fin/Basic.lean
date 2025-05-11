@@ -151,6 +151,9 @@ section Order
 ### order
 -/
 
+protected alias lt_or_ge := Fin.lt_or_le
+protected alias le_or_gt := Fin.le_or_lt
+
 theorem le_iff_val_le_val {a b : Fin n} : a ≤ b ↔ (a : ℕ) ≤ b :=
   Iff.rfl
 
