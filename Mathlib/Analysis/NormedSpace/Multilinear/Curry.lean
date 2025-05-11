@@ -54,42 +54,36 @@ variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Typ
   [∀ i, NormedSpace 𝕜 (E i)] [∀ i, NormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
   [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
+theorem ContinuousLinearMap.norm_map_removeNth_le {i : Fin (n + 1)}
+    (f : Ei i →L[𝕜] ContinuousMultilinearMap 𝕜 (fun j ↦ Ei (i.succAbove j)) G) (m : ∀ i, Ei i) :
+    ‖f (m i) (i.removeNth m)‖ ≤ ‖f‖ * ∏ j, ‖m j‖ := by
+  rw [i.prod_univ_succAbove, ← mul_assoc]
+  exact (f (m i)).le_of_opNorm_le (f.le_opNorm _) _
 
 theorem ContinuousLinearMap.norm_map_tail_le
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) (m : ∀ i, Ei i) :
     ‖f (m 0) (tail m)‖ ≤ ‖f‖ * ∏ i, ‖m i‖ :=
-  calc
-    ‖f (m 0) (tail m)‖ ≤ ‖f (m 0)‖ * ∏ i, ‖(tail m) i‖ := (f (m 0)).le_opNorm _
-    _ ≤ ‖f‖ * ‖m 0‖ * ∏ i, ‖tail m i‖ := mul_le_mul_of_nonneg_right (f.le_opNorm _) <| by positivity
-    _ = ‖f‖ * (‖m 0‖ * ∏ i, ‖(tail m) i‖) := by ring
-    _ = ‖f‖ * ∏ i, ‖m i‖ := by simp only [prod_univ_succ, Fin.tail]
+  ContinuousLinearMap.norm_map_removeNth_le (i := 0) f m
 
 theorem ContinuousMultilinearMap.norm_map_init_le
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G))
-    (m : ∀ i, Ei i) : ‖f (init m) (m (last n))‖ ≤ ‖f‖ * ∏ i, ‖m i‖ :=
-  calc
-    ‖f (init m) (m (last n))‖ ≤ ‖f (init m)‖ * ‖m (last n)‖ := (f (init m)).le_opNorm _
-    _ ≤ (‖f‖ * ∏ i, ‖(init m) i‖) * ‖m (last n)‖ :=
-      (mul_le_mul_of_nonneg_right (f.le_opNorm _) (norm_nonneg _))
-    _ = ‖f‖ * ((∏ i, ‖(init m) i‖) * ‖m (last n)‖) := mul_assoc _ _ _
-    _ = ‖f‖ * ∏ i, ‖m i‖ := by simp only [prod_univ_castSucc, Fin.init]
+    (m : ∀ i, Ei i) : ‖f (init m) (m (last n))‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := by
+  rw [prod_univ_castSucc, ← mul_assoc]
+  exact (f (init m)).le_of_opNorm_le (f.le_opNorm _) _
+
+theorem ContinuousMultilinearMap.norm_map_insertNth_le (f : ContinuousMultilinearMap 𝕜 Ei G)
+    {i : Fin (n + 1)} (x : Ei i) (m : ∀ j, Ei (i.succAbove j)) :
+    ‖f (i.insertNth x m)‖ ≤ ‖f‖ * ‖x‖ * ∏ i, ‖m i‖ := by
+  simpa [i.prod_univ_succAbove, mul_assoc] using f.le_opNorm (i.insertNth x m)
 
 theorem ContinuousMultilinearMap.norm_map_cons_le (f : ContinuousMultilinearMap 𝕜 Ei G) (x : Ei 0)
-    (m : ∀ i : Fin n, Ei i.succ) : ‖f (cons x m)‖ ≤ ‖f‖ * ‖x‖ * ∏ i, ‖m i‖ :=
-  calc
-    ‖f (cons x m)‖ ≤ ‖f‖ * ∏ i, ‖cons x m i‖ := f.le_opNorm _
-    _ = ‖f‖ * ‖x‖ * ∏ i, ‖m i‖ := by
-      rw [prod_univ_succ]
-      simp [mul_assoc]
+    (m : ∀ i : Fin n, Ei i.succ) : ‖f (cons x m)‖ ≤ ‖f‖ * ‖x‖ * ∏ i, ‖m i‖ := by
+  simpa [prod_univ_succ, mul_assoc] using f.le_opNorm (cons x m)
 
 theorem ContinuousMultilinearMap.norm_map_snoc_le (f : ContinuousMultilinearMap 𝕜 Ei G)
     (m : ∀ i : Fin n, Ei <| castSucc i) (x : Ei (last n)) :
-    ‖f (snoc m x)‖ ≤ (‖f‖ * ∏ i, ‖m i‖) * ‖x‖ :=
-  calc
-    ‖f (snoc m x)‖ ≤ ‖f‖ * ∏ i, ‖snoc m x i‖ := f.le_opNorm _
-    _ = (‖f‖ * ∏ i, ‖m i‖) * ‖x‖ := by
-      rw [prod_univ_castSucc]
-      simp [mul_assoc]
+    ‖f (snoc m x)‖ ≤ (‖f‖ * ∏ i, ‖m i‖) * ‖x‖ := by
+  simpa [prod_univ_castSucc, mul_assoc] using f.le_opNorm (snoc m x)
 
 /-! #### Left currying -/
 
@@ -341,6 +335,118 @@ theorem ContinuousMultilinearMap.uncurryRight_norm
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G)) :
     ‖f.uncurryRight‖ = ‖f‖ :=
   (continuousMultilinearCurryRightEquiv 𝕜 Ei G).symm.norm_map f
+
+/-!
+### Currying a variable in the middle
+-/
+
+/-- Given a continuous linear map `f` from `E i` to continuous multilinear maps on `n` variables,
+construct the corresponding continuous multilinear map on `n+1` variables obtained by concatenating
+the variables, given by `m ↦ f (m i) (i.removeNth m)` -/
+def ContinuousLinearMap.uncurryMid (i : Fin (n + 1))
+    (f : Ei i →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
+    ContinuousMultilinearMap 𝕜 Ei G :=
+  (@LinearMap.uncurryLeft 𝕜 n Ei G _ _ _ _ _
+      (ContinuousMultilinearMap.toMultilinearMapLinear.comp f.toLinearMap)).mkContinuous
+    ‖f‖ fun m => by exact ContinuousLinearMap.norm_map_tail_le f m
+
+@[simp]
+theorem ContinuousLinearMap.uncurryLeft_apply
+    (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) (m : ∀ i, Ei i) :
+    f.uncurryLeft m = f (m 0) (tail m) :=
+  rfl
+
+/-- Given a continuous multilinear map `f` in `n+1` variables, split the first variable to obtain
+a continuous linear map into continuous multilinear maps in `n` variables, given by
+`x ↦ (m ↦ f (cons x m))`. -/
+def ContinuousMultilinearMap.curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) :
+    Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G :=
+  LinearMap.mkContinuous
+    { -- define a linear map into `n` continuous multilinear maps
+      -- from an `n+1` continuous multilinear map
+      toFun := fun x =>
+        (f.toMultilinearMap.curryLeft x).mkContinuous (‖f‖ * ‖x‖) (f.norm_map_cons_le x)
+      map_add' := fun x y => by
+        ext m
+        exact f.cons_add m x y
+      map_smul' := fun c x => by
+        ext m
+        exact
+          f.cons_smul m c x }-- then register its continuity thanks to its boundedness properties.
+    ‖f‖ fun x => by
+      rw [LinearMap.coe_mk, AddHom.coe_mk]
+      exact MultilinearMap.mkContinuous_norm_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
+
+@[simp]
+theorem ContinuousMultilinearMap.curryLeft_apply (f : ContinuousMultilinearMap 𝕜 Ei G) (x : Ei 0)
+    (m : ∀ i : Fin n, Ei i.succ) : f.curryLeft x m = f (cons x m) :=
+  rfl
+
+@[simp]
+theorem ContinuousLinearMap.curry_uncurryLeft
+    (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
+    f.uncurryLeft.curryLeft = f := by
+  ext m x
+  rw [ContinuousMultilinearMap.curryLeft_apply, ContinuousLinearMap.uncurryLeft_apply, tail_cons,
+    cons_zero]
+
+@[simp]
+theorem ContinuousMultilinearMap.uncurry_curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) :
+    f.curryLeft.uncurryLeft = f :=
+  ContinuousMultilinearMap.toMultilinearMap_injective <| f.toMultilinearMap.uncurry_curryLeft
+
+variable (𝕜 Ei G)
+
+/-- The space of continuous multilinear maps on `Π(i : Fin (n+1)), E i` is canonically isomorphic to
+the space of continuous linear maps from `E 0` to the space of continuous multilinear maps on
+`Π(i : Fin n), E i.succ`, by separating the first variable. We register this isomorphism in
+`continuousMultilinearCurryLeftEquiv 𝕜 E E₂`. The algebraic version (without topology) is given
+in `multilinearCurryLeftEquiv 𝕜 E E₂`.
+
+The direct and inverse maps are given by `f.curryLeft` and `f.uncurryLeft`. Use these
+unless you need the full framework of linear isometric equivs. -/
+def continuousMultilinearCurryLeftEquiv :
+    ContinuousMultilinearMap 𝕜 Ei G ≃ₗᵢ[𝕜]
+      Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G :=
+  LinearIsometryEquiv.ofBounds
+    { toFun := ContinuousMultilinearMap.curryLeft
+      map_add' := fun _ _ => rfl
+      map_smul' := fun _ _ => rfl
+      invFun := ContinuousLinearMap.uncurryLeft
+      left_inv := ContinuousMultilinearMap.uncurry_curryLeft
+      right_inv := ContinuousLinearMap.curry_uncurryLeft }
+    (fun f => by
+      simp only [LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
+      exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
+    (fun f => by
+      simp only [LinearEquiv.coe_symm_mk]
+      exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
+
+variable {𝕜 Ei G}
+
+@[simp]
+theorem continuousMultilinearCurryLeftEquiv_apply
+    (f : ContinuousMultilinearMap 𝕜 Ei G) (x : Ei 0) (v : Π i : Fin n, Ei i.succ) :
+    continuousMultilinearCurryLeftEquiv 𝕜 Ei G f x v = f (cons x v) :=
+  rfl
+
+@[simp]
+theorem continuousMultilinearCurryLeftEquiv_symm_apply
+    (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) (v : Π i, Ei i) :
+    (continuousMultilinearCurryLeftEquiv 𝕜 Ei G).symm f v = f (v 0) (tail v) :=
+  rfl
+
+@[simp]
+theorem ContinuousMultilinearMap.curryLeft_norm (f : ContinuousMultilinearMap 𝕜 Ei G) :
+    ‖f.curryLeft‖ = ‖f‖ :=
+  (continuousMultilinearCurryLeftEquiv 𝕜 Ei G).norm_map f
+
+@[simp]
+theorem ContinuousLinearMap.uncurryLeft_norm
+    (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
+    ‖f.uncurryLeft‖ = ‖f‖ :=
+  (continuousMultilinearCurryLeftEquiv 𝕜 Ei G).symm.norm_map f
+
 
 /-!
 #### Currying with `0` variables
