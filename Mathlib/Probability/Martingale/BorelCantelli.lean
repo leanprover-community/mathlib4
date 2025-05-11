@@ -17,9 +17,9 @@ Borel-Cantelli lemmas. With this generalization, one can easily deduce the Borel
 by choosing appropriate filtrations. This file also contains the one sided martingale bound which
 is required to prove the generalized Borel-Cantelli.
 
-**Note**: the usual Borel-Cantelli lemmas are not in this file. See
-`MeasureTheory.measure_limsup_eq_zero` for the first (which does not depend on the results here),
-and `ProbabilityTheory.measure_limsup_eq_one` for the second (which does).
+**Note**: the usual Borel-Cantelli lemmas are not in this file.
+See `MeasureTheory.measure_limsup_atTop_eq_zero` for the first (which does not depend on
+the results here), and `ProbabilityTheory.measure_limsup_eq_one` for the second (which does).
 
 ## Main results
 
@@ -249,13 +249,13 @@ theorem Martingale.ae_not_tendsto_atTop_atTop [IsFiniteMeasure μ] (hf : Marting
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, ¬Tendsto (fun n => f n ω) atTop atTop := by
   filter_upwards [hf.bddAbove_range_iff_bddBelow_range hbdd] with ω hω htop using
-    unbounded_of_tendsto_atTop htop (hω.2 <| bddBelow_range_of_tendsto_atTop_atTop htop)
+    not_bddAbove_of_tendsto_atTop htop (hω.2 <| bddBelow_range_of_tendsto_atTop_atTop htop)
 
 theorem Martingale.ae_not_tendsto_atTop_atBot [IsFiniteMeasure μ] (hf : Martingale f ℱ μ)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, ¬Tendsto (fun n => f n ω) atTop atBot := by
   filter_upwards [hf.bddAbove_range_iff_bddBelow_range hbdd] with ω hω htop using
-    unbounded_of_tendsto_atBot htop (hω.1 <| bddAbove_range_of_tendsto_atTop_atBot htop)
+    not_bddBelow_of_tendsto_atBot htop (hω.1 <| bddAbove_range_of_tendsto_atTop_atBot htop)
 
 namespace BorelCantelli
 

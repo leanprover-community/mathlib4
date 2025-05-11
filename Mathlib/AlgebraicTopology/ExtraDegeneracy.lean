@@ -152,23 +152,22 @@ namespace Augmented
 
 namespace StandardSimplex
 
-/-- When `[HasZero X]`, the shift of a map `f : Fin n → X`
+/-- When `[Zero X]`, the shift of a map `f : Fin n → X`
 is a map `Fin (n+1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
 def shiftFun {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) : X :=
-  dite (i = 0) (fun _ => 0) fun h => f (i.pred h)
+  Matrix.vecCons 0 f i
 
 @[simp]
-theorem shiftFun_0 {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) : shiftFun f 0 = 0 :=
+theorem shiftFun_zero {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) : shiftFun f 0 = 0 :=
   rfl
+
+@[deprecated (since := "2025-04-19")]
+alias shiftFun_0 := shiftFun_zero
 
 @[simp]
 theorem shiftFun_succ {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin n) :
-    shiftFun f i.succ = f i := by
-  dsimp [shiftFun]
-  split_ifs with h
-  · exfalso
-    simp only [Fin.ext_iff, Fin.val_succ, Fin.val_zero, add_eq_zero, and_false, reduceCtorEq] at h
-  · simp only [Fin.pred_succ]
+    shiftFun f i.succ = f i :=
+  rfl
 
 /-- The shift of a morphism `f : ⦋n⦌ → Δ` in `SimplexCategory` corresponds to
 the monotone map which sends `0` to `0` and `i.succ` to `f.toOrderHom i`. -/
@@ -179,7 +178,7 @@ def shift {n : ℕ} {Δ : SimplexCategory} (f : ⦋n⦌ ⟶ Δ) : ⦋n + 1⦌ �
       monotone' := fun i₁ i₂ hi => by
         by_cases h₁ : i₁ = 0
         · subst h₁
-          simp only [shiftFun_0, Fin.zero_le]
+          simp only [shiftFun_zero, Fin.zero_le]
         · have h₂ : i₂ ≠ 0 := by
             intro h₂
             subst h₂
@@ -194,42 +193,40 @@ open SSet.stdSimplex in
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     SimplicialObject.Augmented.ExtraDegeneracy (stdSimplex.obj Δ) where
   s' _ := objMk (OrderHom.const _ 0)
-  s  _ f := (objEquiv _ _).symm
-    (shift (objEquiv _ _ f))
+  s _ f := objEquiv.symm (shift (objEquiv f))
   s'_comp_ε := by
     dsimp
     subsingleton
   s₀_comp_δ₁ := by
     dsimp
     ext1 x
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     ext j
     fin_cases j
     rfl
   s_comp_δ₀ n := by
     ext1 φ
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     apply SimplexCategory.Hom.ext
     ext i : 2
     dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.stdSimplex,
       objEquiv, Equiv.ulift, uliftFunctor]
-    simp only [shiftFun_succ]
   s_comp_δ n i := by
     ext1 φ
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     apply SimplexCategory.Hom.ext
     ext j : 2
     dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.stdSimplex,
       objEquiv, Equiv.ulift, uliftFunctor]
     by_cases h : j = 0
     · subst h
-      simp only [Fin.succ_succAbove_zero, shiftFun_0]
+      simp only [Fin.succ_succAbove_zero, shiftFun_zero]
     · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero <| h
       simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply,
         Fin.succAboveOrderEmb_apply]
   s_comp_σ n i := by
     ext1 φ
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     apply SimplexCategory.Hom.ext
     ext j : 2
     dsimp [SimplicialObject.σ, SimplexCategory.σ, SSet.stdSimplex,
@@ -287,8 +284,7 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
       @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
         S.section_ := by
   dsimp [ExtraDegeneracy.s]
-  simp only [WidePullback.lift_π]
-  rfl
+  simp [WidePullback.lift_π]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :

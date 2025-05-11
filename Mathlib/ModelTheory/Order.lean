@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Data.Rat.Encodable
+import Mathlib.Data.Finset.Sort
 import Mathlib.ModelTheory.Complexity
 import Mathlib.ModelTheory.Fraisse
 import Mathlib.Order.CountableDenseLinearOrder
@@ -366,7 +367,7 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
 def decidableLEOfStructure
     [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
     letI := L.leOfStructure M
-    DecidableRel ((· : M) ≤ ·) := h
+    DecidableLE M := h
 
 /-- Any model of a theory of preorders is a preorder. -/
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
@@ -389,7 +390,7 @@ def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
   __ := L.partialOrderOfModels M
   le_total := Relations.realize_total.1 ((Theory.model_iff _).1 h _
     (by simp only [linearOrderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, true_or]))
-  decidableLE := inferInstance
+  toDecidableLE := inferInstance
 
 end structure_to_order
 

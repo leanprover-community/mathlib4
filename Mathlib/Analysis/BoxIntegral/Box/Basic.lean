@@ -252,10 +252,10 @@ theorem coe_coe : ((I : WithBot (Box ι)) : Set (ι → ℝ)) = I := rfl
 
 theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → ℝ)).Nonempty
   | ⊥ => by
-    erw [Option.isSome]
+    unfold Option.isSome
     simp
   | (I : Box ι) => by
-    erw [Option.isSome]
+    unfold Option.isSome
     simp [I.nonempty_coe]
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :

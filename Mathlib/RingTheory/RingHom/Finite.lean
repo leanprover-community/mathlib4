@@ -60,10 +60,11 @@ variable {R S : Type u} [CommRing R] [CommRing S] (M : Submonoid R) (f : R →+*
 variable (R' S' : Type u) [CommRing R'] [CommRing S']
 variable [Algebra R R'] [Algebra S S']
 
-lemma Module.Finite_of_isLocalization (R S Rₚ Sₚ) [CommSemiring R] [CommRing S] [CommRing Rₚ]
-    [CommRing Sₚ] [Algebra R S] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ] [Algebra Rₚ Sₚ]
-    [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] (M : Submonoid R) [IsLocalization M Rₚ]
-    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ] [hRS : Module.Finite R S] :
+lemma Module.Finite_of_isLocalization (R S Rₚ Sₚ) [CommSemiring R] [CommSemiring S]
+    [CommSemiring Rₚ] [CommSemiring Sₚ] [Algebra R S] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
+    [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] (M : Submonoid R)
+    [IsLocalization M Rₚ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ]
+    [hRS : Module.Finite R S] :
     Module.Finite Rₚ Sₚ := by
   classical
   have : algebraMap Rₚ Sₚ = IsLocalization.map (T := Algebra.algebraMapSubmonoid S M) Sₚ
@@ -128,6 +129,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
         (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
   let g : S →ₐ[R] S' :=
     AlgHom.mk' (algebraMap S S') fun c x => by simp [Algebra.algebraMap_eq_smul_one]
+  have g_apply : ∀ x, g x = algebraMap S S' x := fun _ => rfl
   -- We first obtain the `y' ∈ M` such that `s' = y' • s` is falls in the image of `S` in `S'`.
   let y := IsLocalization.commonDenomOfFinset (M.map (algebraMap R S)) s
   have hx₁ : (y : S) • (s : Set S') = g '' _ :=
@@ -139,8 +141,8 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   replace hx₁ := congr_arg (Submodule.span R) hx₁
   rw [Submodule.span_smul] at hx₁
   replace hx : _ ∈ y' • Submodule.span R (s : Set S') := Set.smul_mem_smul_set hx
-  rw [hx₁] at hx
-  erw [← _root_.map_smul g, ← Submodule.map_span (g : S →ₗ[R] S')] at hx
+  rw [hx₁, ← g_apply, ← map_smul g, g_apply, ← Algebra.linearMap_apply, ← Submodule.map_span]
+    at hx
   -- Since `x` falls in the span of `s` in `S'`, `y' • x : S` falls in the span of `s'` in `S'`.
   -- That is, there exists some `x' : S` in the span of `s'` in `S` and `x' = y' • x` in `S'`.
   -- Thus `a • (y' • x) = a • x' ∈ span s'` in `S` for some `a ∈ M`.

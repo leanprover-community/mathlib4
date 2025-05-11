@@ -12,7 +12,7 @@ import Mathlib.Algebra.Ring.Center
 import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Ring.Submonoid
+import Mathlib.Algebra.Ring.Submonoid.Basic
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.GroupTheory.Submonoid.Center
 import Mathlib.GroupTheory.Subsemigroup.Centralizer

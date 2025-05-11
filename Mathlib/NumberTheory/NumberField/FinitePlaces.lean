@@ -49,7 +49,7 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
   rw [← absNorm_eq_one_iff]
   have : 0 < absNorm v.asIdeal := by
     rw [Nat.pos_iff_ne_zero, absNorm_ne_zero_iff]
-    exact (v.asIdeal.fintypeQuotientOfFreeOfNeBot v.ne_bot).finite
+    exact v.asIdeal.finiteQuotientOfFreeOfNeBot v.ne_bot
   omega
 
 @[deprecated (since := "2025-02-28")] alias one_lt_norm := one_lt_absNorm
@@ -69,7 +69,7 @@ lemma absNorm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 :=
 valuation -/
 noncomputable def adicAbv : AbsoluteValue K ℝ where
   toFun x := toNNReal (absNorm_ne_zero v) (v.valuation K x)
-  map_mul' _ _ := by simp only [_root_.map_mul, NNReal.coe_mul]
+  map_mul' _ _ := by simp only [map_mul, NNReal.coe_mul]
   nonneg' _ := NNReal.zero_le_coe
   eq_zero' _ := by simp only [NNReal.coe_eq_zero, map_eq_zero]
   add_le' x y := by

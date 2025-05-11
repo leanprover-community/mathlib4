@@ -19,7 +19,7 @@ open Topology
 
 noncomputable section
 
-variable {R S : Type*} [OrderedSemiring S]
+variable {R S : Type*} [Semiring S] [PartialOrder S] [IsOrderedRing S]
 
 namespace WithAbs
 

@@ -627,7 +627,7 @@ instance : SecondCountableTopology GHSpace := by
   have εpos : 0 < ε := mul_pos (by norm_num) δpos
   have : ∀ p : GHSpace, ∃ s : Set p.Rep, s.Finite ∧ univ ⊆ ⋃ x ∈ s, ball x ε := fun p => by
     simpa only [subset_univ, true_and] using
-      finite_cover_balls_of_compact (α := p.Rep) isCompact_univ εpos
+      finite_cover_balls_of_compact (X := p.Rep) isCompact_univ εpos
   -- for each `p`, `s p` is a finite `ε`-dense subset of `p` (or rather the metric space
   -- `p.rep` representing `p`)
   choose s hs using this

@@ -43,7 +43,7 @@ def LiftP {α : TypeVec n} (P : ∀ i, α i → Prop) (x : F α) : Prop :=
   ∃ u : F (fun i => Subtype (P i)), (fun i => @Subtype.val _ (P i)) <$$> u = x
 
 /-- relational lifting over multivariate functors -/
-def LiftR {α : TypeVec n} (R : ∀ {i}, α i → α i → Prop) (x y : F α) : Prop :=
+def LiftR {α : TypeVec n} (R : ∀ ⦃i⦄, α i → α i → Prop) (x y : F α) : Prop :=
   ∃ u : F (fun i => { p : α i × α i // R p.fst p.snd }),
     (fun i (t : { p : α i × α i // R p.fst p.snd }) => t.val.fst) <$$> u = x ∧
       (fun i (t : { p : α i × α i // R p.fst p.snd }) => t.val.snd) <$$> u = y
@@ -200,7 +200,7 @@ private def g' :
   | _, _, Fin2.fz, x => ⟨x.val, x.property⟩
 
 theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
-    LiftR' (RelLast' _ rr) x y ↔ LiftR (RelLast (i := _) _ rr) x y := by
+    LiftR' (RelLast' _ rr) x y ↔ LiftR (RelLast _ rr) x y := by
   dsimp only [LiftR, LiftR']
   apply exists_iff_exists_of_mono F (f' rr _ _) (g' rr _ _)
   · ext i ⟨x, _⟩ : 2

@@ -42,7 +42,7 @@ theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
 theorem antisymmRel_swap_apply : AntisymmRel (swap r) a b ↔ AntisymmRel r a b :=
   and_comm
 
-@[refl]
+@[simp, refl]
 theorem AntisymmRel.refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
   ⟨_root_.refl _, _root_.refl _⟩
 
@@ -150,19 +150,15 @@ theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ AntisymmRel (· ≤ ·)
   rw [lt_iff_le_not_le, AntisymmRel]
   tauto
 
-@[trans]
 theorem le_of_le_of_antisymmRel (h₁ : a ≤ b) (h₂ : AntisymmRel (· ≤ ·) b c) : a ≤ c :=
   h₁.trans h₂.le
 
-@[trans]
 theorem le_of_antisymmRel_of_le (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b ≤ c) : a ≤ c :=
   h₁.le.trans h₂
 
-@[trans]
 theorem lt_of_lt_of_antisymmRel (h₁ : a < b) (h₂ : AntisymmRel (· ≤ ·) b c) : a < c :=
   h₁.trans_le h₂.le
 
-@[trans]
 theorem lt_of_antisymmRel_of_lt (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b < c) : a < c :=
   h₁.le.trans_lt h₂
 
@@ -266,12 +262,12 @@ instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) 
 instance [WellFoundedGT α] : WellFoundedGT (Antisymmetrization α (· ≤ ·)) :=
   wellFoundedGT_antisymmetrization_iff.mpr ‹_›
 
-instance [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)] [IsTotal α (· ≤ ·)] :
+instance [DecidableLE α] [DecidableLT α] [IsTotal α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
-    decidableLE := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance,
-    decidableLT := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance }
+    toDecidableLE := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance,
+    toDecidableLT := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance }
 
 @[simp]
 theorem toAntisymmetrization_le_toAntisymmetrization_iff :

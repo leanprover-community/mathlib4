@@ -83,6 +83,17 @@ lemma Submodule.index_smul_le [Finite (R ⧸ I)]
 
 variable {I}
 
+lemma Ideal.finite_quotient_prod {ι : Type*} (I : ι → Ideal R) (s : Finset ι)
+    (hI : ∀ i ∈ s, (I i).FG) (hI' : ∀ i ∈ s, Finite (R ⧸ I i)) : Finite (R ⧸ (∏ i ∈ s, I i)) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp only [Finset.prod_empty, one_eq_top]; infer_instance
+  | @insert a s has IH =>
+    rw [Finset.prod_insert has, mul_comm]
+    have := hI' a (by simp)
+    have := IH (fun i hi ↦ hI _ (by simp [hi])) (fun i hi ↦ hI' _ (by simp [hi]))
+    exact Submodule.finite_quotient_smul _ (hI a (by simp))
+
 lemma Ideal.finite_quotient_pow (hI : I.FG) [Finite (R ⧸ I)] (n) : Finite (R ⧸ I ^ n) := by
   induction n with
   | zero =>

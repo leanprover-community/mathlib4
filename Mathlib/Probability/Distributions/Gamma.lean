@@ -108,7 +108,7 @@ lemma lintegral_gammaPDF_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
   rw [← ENNReal.toReal_eq_one_iff, ← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
     leftSide, rightSide, add_zero, ← integral_eq_lintegral_of_nonneg_ae]
   · simp_rw [integral_Ici_eq_integral_Ioi, mul_assoc]
-    rw [integral_mul_left, integral_rpow_mul_exp_neg_mul_Ioi ha hr, div_mul_eq_mul_div,
+    rw [integral_const_mul, integral_rpow_mul_exp_neg_mul_Ioi ha hr, div_mul_eq_mul_div,
       ← mul_assoc, mul_div_assoc, div_self (Gamma_pos_of_pos ha).ne', mul_one,
       div_rpow zero_le_one hr.le, one_rpow, mul_one_div, div_self (rpow_pos_of_pos hr _).ne']
   · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
@@ -140,7 +140,8 @@ def gammaCDFReal (a r : ℝ) : StieltjesFunction :=
 lemma gammaCDFReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     gammaCDFReal a r x = ∫ x in Iic x, gammaPDFReal a r x := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
-  rw [gammaCDFReal, cdf_eq_toReal, gammaMeasure, withDensity_apply _ measurableSet_Iic]
+  rw [gammaCDFReal, cdf_eq_real, gammaMeasure, measureReal_def,
+    withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
   · exact ae_of_all _ fun b ↦ by simp only [Pi.zero_apply, gammaPDFReal_nonneg ha hr]
   · exact (measurable_gammaPDFReal a r).aestronglyMeasurable.restrict
@@ -148,8 +149,8 @@ lemma gammaCDFReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
 lemma gammaCDFReal_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     gammaCDFReal a r x = ENNReal.toReal (∫⁻ x in Iic x, gammaPDF a r x) := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
-  simp only [gammaPDF, gammaCDFReal, cdf_eq_toReal]
-  simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPDF]
+  simp only [gammaPDF, gammaCDFReal, cdf_eq_real]
+  simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPDF, measureReal_def]
 
 end GammaCDF
 

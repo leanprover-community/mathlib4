@@ -432,13 +432,6 @@ variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 instance instContinuousMapClass : ContinuousMapClass (α ≃ₜ β) α β where
   map_continuous f := f.continuous_toFun
 
-/-- The forward direction of a homeomorphism, as a bundled continuous map. -/
-@[simps, deprecated _root_.toContinuousMap (since := "2024-10-12")]
-protected def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
-  ⟨e, e.continuous_toFun⟩
-
-attribute [deprecated ContinuousMap.coe_apply (since := "2024-10-12")] toContinuousMap_apply
-
 @[simp]
 theorem coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=
   rfl

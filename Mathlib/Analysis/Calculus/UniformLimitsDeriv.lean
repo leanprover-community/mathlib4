@@ -378,7 +378,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
       rw [Metric.tendsto_nhds] at h1 ⊢
       exact fun ε hε => (h1 ε hε).curry.mono fun n hn => hn.self_of_nhds
     refine squeeze_zero_norm ?_
-      (tendsto_zero_iff_norm_tendsto_zero.mp (tendsto_fst.comp (h2.prod_map tendsto_id)))
+      (tendsto_zero_iff_norm_tendsto_zero.mp (tendsto_fst.comp (h2.prodMap tendsto_id)))
     intro n
     simp_rw [norm_smul, norm_inv, RCLike.norm_coe_norm]
     by_cases hx : x = n.2; · simp [hx]

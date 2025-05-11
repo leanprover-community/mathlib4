@@ -7,6 +7,7 @@ import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.CategoryTheory.ChosenFiniteProducts.Over
 
 /-!
 # Fibred products of schemes
@@ -451,7 +452,7 @@ instance : HasPullbacks Scheme :=
 instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
     (f : X ⟶ Z) (g : Y ⟶ Z) [IsAffine X] [IsAffine Y] [IsAffine Z] :
     IsAffine (pullback f g) :=
-  isAffine_of_isIso
+  .of_isIso
     (pullback.map f g (Spec.map (Γ.map f.op)) (Spec.map (Γ.map g.op))
         X.toSpecΓ Y.toSpecΓ Z.toSpecΓ
         (Scheme.toSpecΓ_naturality f) (Scheme.toSpecΓ_naturality g) ≫
@@ -688,5 +689,12 @@ lemma diagonal_Spec_map :
   · congr 1; ext x; show x = Algebra.TensorProduct.lmul' R (S := S) (1 ⊗ₜ[R] x); simp
 
 end Spec
+
+section ChosenFiniteProducts
+variable {S : Scheme}
+
+noncomputable instance : ChosenFiniteProducts (Over S) := Over.chosenFiniteProducts _
+
+end ChosenFiniteProducts
 
 end AlgebraicGeometry

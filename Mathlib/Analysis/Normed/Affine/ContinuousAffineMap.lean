@@ -98,7 +98,7 @@ theorem contLinear_eq_zero_iff_exists_const (f : P →ᴬ[R] Q) :
     intro q
     refine ⟨fun h => ?_, fun h => ?_⟩ <;> ext
     · rw [h]; rfl
-    · rw [← coe_toAffineMap, h]; rfl
+    · rw [← coe_toAffineMap, h, AffineMap.const_apply, coe_const, Function.const_apply]
   simp_rw [h₁, h₂]
   exact (f : P →ᵃ[R] Q).linear_eq_zero_iff_exists_const
 
@@ -131,6 +131,30 @@ theorem decomp (f : V →ᴬ[R] W) : (f : V → W) = f.contLinear + Function.con
   rcases f with ⟨f, h⟩
   rw [coe_mk_const_linear_eq_linear, coe_mk, f.decomp, Pi.add_apply, LinearMap.map_zero, zero_add,
     ← Function.const_def]
+
+/-- The space of continuous affine maps from `P` to `Q` is an affine space over the space of
+continuous affine maps from `P` to `W`. -/
+instance : AddTorsor (P →ᴬ[R] W) (P →ᴬ[R] Q) where
+  vadd f g := { __ := f.toAffineMap +ᵥ g.toAffineMap, cont := f.cont.vadd g.cont }
+  zero_vadd _ := ext fun _ ↦ zero_vadd _ _
+  add_vadd _ _ _ := ext fun _ ↦ add_vadd _ _ _
+  vsub f g := { __ := f.toAffineMap -ᵥ g.toAffineMap, cont := f.cont.vsub g.cont }
+  vsub_vadd' _ _ := ext fun _ ↦ vsub_vadd _ _
+  vadd_vsub' _ _ := ext fun _ ↦ vadd_vsub _ _
+
+@[simp] lemma vadd_apply (f : P →ᴬ[R] W) (g : P →ᴬ[R] Q) (p : P) : (f +ᵥ g) p = f p +ᵥ g p :=
+  rfl
+
+@[simp] lemma vsub_apply (f g : P →ᴬ[R] Q) (p : P) : (f -ᵥ g) p = f p -ᵥ g p :=
+  rfl
+
+@[simp] lemma vadd_toAffineMap (f : P →ᴬ[R] W) (g : P →ᴬ[R] Q) :
+    (f +ᵥ g).toAffineMap = f.toAffineMap +ᵥ g.toAffineMap :=
+  rfl
+
+@[simp] lemma vsub_toAffineMap (f g : P →ᴬ[R] Q) :
+    (f -ᵥ g).toAffineMap = f.toAffineMap -ᵥ g.toAffineMap :=
+  rfl
 
 section NormedSpaceStructure
 

@@ -63,8 +63,9 @@ class IsAlgClosed : Prop where
 
 See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
 -/
-theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [Field K] {f : K →+* k}
-    (p : K[X]) : p.Splits f := by convert IsAlgClosed.splits (p.map f); simp [splits_map_iff]
+theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [CommRing K]
+    {f : K →+* k} (p : K[X]) : p.Splits f := by
+  convert IsAlgClosed.splits (p.map f); simp [splits_map_iff]
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed.
 
@@ -107,18 +108,18 @@ theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
     simp at hz
 
-theorem exists_eval₂_eq_zero_of_injective {R : Type*} [Ring R] [IsAlgClosed k] (f : R →+* k)
+theorem exists_eval₂_eq_zero_of_injective {R : Type*} [Semiring R] [IsAlgClosed k] (f : R →+* k)
     (hf : Function.Injective f) (p : R[X]) (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
   let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective hf])
   ⟨x, by rwa [eval₂_eq_eval_map, ← IsRoot]⟩
 
-theorem exists_eval₂_eq_zero {R : Type*} [Field R] [IsAlgClosed k] (f : R →+* k) (p : R[X])
+theorem exists_eval₂_eq_zero {R : Type*} [DivisionRing R] [IsAlgClosed k] (f : R →+* k) (p : R[X])
     (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
   exists_eval₂_eq_zero_of_injective f f.injective p hp
 
 variable (k)
 
-theorem exists_aeval_eq_zero_of_injective {R : Type*} [CommRing R] [IsAlgClosed k] [Algebra R k]
+theorem exists_aeval_eq_zero_of_injective {R : Type*} [CommSemiring R] [IsAlgClosed k] [Algebra R k]
     (hinj : Function.Injective (algebraMap R k)) (p : R[X]) (hp : p.degree ≠ 0) :
     ∃ x : k, aeval x p = 0 :=
   exists_eval₂_eq_zero_of_injective (algebraMap R k) hinj p hp
@@ -317,7 +318,9 @@ instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K :=
   have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp [n]) one_ne_zero
   apply Nat.not_succ_le_self (Fintype.card K)
   have hroot : n.succ = Fintype.card (f.rootSet K) := by
-    erw [card_rootSet_eq_natDegree hfsep (IsAlgClosed.splits_domain _), natDegree_X_pow_sub_C]
+    rw [card_rootSet_eq_natDegree hfsep (IsAlgClosed.splits_domain _)]
+    unfold f
+    rw [← C_1, natDegree_X_pow_sub_C]
   rw [hroot]
   exact Fintype.card_le_of_injective _ Subtype.coe_injective
 

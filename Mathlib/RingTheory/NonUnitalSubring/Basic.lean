@@ -429,21 +429,6 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
       zero_mem' := ⟨_, zero⟩ }
   closure_le (t := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
-/-- The difference with `NonUnitalSubring.closure_induction` is that this acts on the
-subtype. -/
-@[elab_as_elim, deprecated closure_induction (since := "2024-10-11")]
-theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
-    (mem : ∀ (x) (hx : x ∈ s), p ⟨x, subset_closure hx⟩) (zero : p 0)
-    (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x, p x → p (-x))
-    (mul : ∀ x y, p x → p y → p (x * y)) : p a :=
-  Subtype.recOn a fun b hb => by
-    induction hb using closure_induction with
-    | mem x hx => exact mem x hx
-    | zero => exact zero
-    | add x y hx hy h₁ h₂ => exact add _ _ h₁ h₂
-    | neg x hx h => exact neg _ h
-    | mul x y hx hy h₁ h₂ => exact mul _ _ h₁ h₂
-
 /-- An induction principle for closure membership, for predicates with two arguments. -/
 @[elab_as_elim]
 theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → y ∈ closure s → Prop}

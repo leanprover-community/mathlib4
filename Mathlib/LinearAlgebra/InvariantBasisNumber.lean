@@ -287,9 +287,8 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
 
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
-private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] ι' → R) :
+private def inducedEquiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] ι' → R) :
     ((ι → R) ⧸ Ideal.pi fun _ ↦ I) ≃ₗ[R ⧸ I] (ι' → R) ⧸ Ideal.pi fun _ ↦ I where
-  -- Porting note: Lean couldn't correctly infer `(I.pi ι)` and `(I.pi ι')` on their own
   toFun := induced_map I e
   invFun := induced_map I e.symm
   map_add' := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (map_add ..)
@@ -317,6 +316,6 @@ instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : T
   ⟨fun e =>
     let ⟨I, _hI⟩ := Ideal.exists_maximal R
     eq_of_fin_equiv (R ⧸ I)
-      ((Ideal.piQuotEquiv _ _).symm ≪≫ₗ induced_equiv _ e ≪≫ₗ Ideal.piQuotEquiv _ _)⟩
+      ((Ideal.piQuotEquiv _ _).symm ≪≫ₗ inducedEquiv _ e ≪≫ₗ Ideal.piQuotEquiv _ _)⟩
 
 end

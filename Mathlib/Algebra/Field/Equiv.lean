@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.GroupWithZero.Equiv
 
 /-!
 # If a semiring is a field, any isomorphic semiring is also a field.

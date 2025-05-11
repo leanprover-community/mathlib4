@@ -45,6 +45,14 @@ instance : QuasiSober X := by
   · rw [Set.top_eq_univ, Set.sUnion_range, Set.eq_univ_iff_forall]
     intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.covers x⟩
 
+instance {X : Scheme.{u}} : PrespectralSpace X :=
+  have (Y : Scheme.{u}) (_ : IsAffine Y) : PrespectralSpace Y :=
+    .of_isClosedEmbedding (Y := PrimeSpectrum _) _
+      Y.isoSpec.hom.homeomorph.isClosedEmbedding
+  have (i) : PrespectralSpace (X.affineCover.map i).opensRange.1 :=
+    this (X.affineCover.map i).opensRange (isAffineOpen_opensRange (X.affineCover.map i))
+  .of_isOpenCover X.affineCover.isOpenCover_opensRange
+
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
 class IsReduced : Prop where
   component_reduced : ∀ U, _root_.IsReduced Γ(X, U) := by infer_instance

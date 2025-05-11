@@ -239,7 +239,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         apply sum_le_sum fun i _ => ?_
         have I : (i : ℝ) ≤ (i + 1 : ℕ) := by
           simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
-        simp_rw [intervalIntegral.integral_of_le I, ← integral_mul_left]
+        simp_rw [intervalIntegral.integral_of_le I, ← integral_const_mul]
         apply setIntegral_mono_on
         · exact continuous_const.integrableOn_Ioc
         · exact (continuous_id.add continuous_const).integrableOn_Ioc
@@ -262,9 +262,9 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
       _ ≤ 𝔼[X] + 1 := by
         refine add_le_add le_rfl ?_
         rw [intervalIntegral.integral_of_le (Nat.cast_nonneg _)]
-        simp only [integral_const, Measure.restrict_apply', measurableSet_Ioc, Set.univ_inter,
+        simp only [integral_const, measureReal_restrict_apply', measurableSet_Ioc, Set.univ_inter,
           Algebra.id.smul_eq_mul, mul_one]
-        rw [← ENNReal.one_toReal]
+        rw [← ENNReal.toReal_one]
         exact ENNReal.toReal_mono ENNReal.one_ne_top prob_le_one
   have B : ∀ a b, ℙ {ω | X ω ∈ Set.Ioc a b} = ENNReal.ofReal (∫ _ in Set.Ioc a b, (1 : ℝ) ∂ρ) := by
     intro a b
@@ -275,9 +275,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
     ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} =
         ∑ j ∈ range K, ENNReal.ofReal (∫ _ in Set.Ioc (j : ℝ) N, (1 : ℝ) ∂ρ) := by simp_rw [B]
     _ = ENNReal.ofReal (∑ j ∈ range K, ∫ _ in Set.Ioc (j : ℝ) N, (1 : ℝ) ∂ρ) := by
-      rw [ENNReal.ofReal_sum_of_nonneg]
-      simp only [integral_const, Algebra.id.smul_eq_mul, mul_one, ENNReal.toReal_nonneg,
-        imp_true_iff]
+      simp [ENNReal.ofReal_sum_of_nonneg]
     _ = ENNReal.ofReal (∑ j ∈ range K, ∫ _ in (j : ℝ)..N, (1 : ℝ) ∂ρ) := by
       congr 1
       refine sum_congr rfl fun j hj => ?_
@@ -480,7 +478,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
   convert hω; simp only [Y, S, u, C, sum_apply]
 
 include hint hindep hident hnonneg in
-/- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
+/-- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
 (with respect to the truncated expectation) along the sequence
 `c^n`, for any `c > 1`. This follows from `strong_law_aux1` by varying `ε`. -/
 theorem strong_law_aux2 {c : ℝ} (c_one : 1 < c) :
@@ -513,7 +511,7 @@ theorem strong_law_aux3 :
   exact ((hident i).symm.integrable_snd hint).1.integrable_truncation
 
 include hint hindep hident hnonneg in
-/- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
+/-- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
 (with respect to the original expectation) along the sequence
 `c^n`, for any `c > 1`. This follows from the version from the truncated expectation, and the
 fact that the truncated and the original expectations have the same asymptotic behavior. -/
@@ -556,7 +554,7 @@ theorem strong_law_aux5 :
   rw [sum_sub_distrib]
 
 include hint hindep hident hnonneg in
-/- `Xᵢ` satisfies the strong law of large numbers along the sequence
+/-- `Xᵢ` satisfies the strong law of large numbers along the sequence
 `c^n`, for any `c > 1`. This follows from the version for the truncated `Xᵢ`, and the fact that
 `Xᵢ` and its truncated version have the same asymptotic behavior. -/
 theorem strong_law_aux6 {c : ℝ} (c_one : 1 < c) :
@@ -660,7 +658,7 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
   -- this follows from the one-dimensional version when `φ` takes a single value, and is then
   -- extended to the general case by linearity.
   classical
-  refine SimpleFunc.induction (P := fun ψ ↦ ∀ᵐ ω ∂μ,
+  refine SimpleFunc.induction (motive := fun ψ ↦ ∀ᵐ ω ∂μ,
     Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i ∈ range n, ψ (X i ω))) atTop (𝓝 μ[ψ ∘ (X 0)])) ?_ ?_ φ
   · intro c s hs
     simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
@@ -818,7 +816,7 @@ theorem strong_law_ae (X : ℕ → Ω → E) (hint : Integrable (X 0) μ)
   have C : ∀ᵐ ω ∂μ,
       Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i ∈ range n, Y i ω)) atTop (𝓝 μ[Y 0]) := by
     apply strong_law_ae_of_measurable Y Yint ((A 0).1.stronglyMeasurable_mk)
-      (fun i j hij ↦ IndepFun.ae_eq (hindep hij) (A i).1.ae_eq_mk (A j).1.ae_eq_mk)
+      (fun i j hij ↦ IndepFun.congr (hindep hij) (A i).1.ae_eq_mk (A j).1.ae_eq_mk)
       (fun i ↦ ((A i).1.identDistrib_mk.symm.trans (hident i)).trans (A 0).1.identDistrib_mk)
   filter_upwards [B, C] with ω h₁ h₂
   have : μ[X 0] = μ[Y 0] := integral_congr_ae (AEStronglyMeasurable.ae_eq_mk (A 0).1)

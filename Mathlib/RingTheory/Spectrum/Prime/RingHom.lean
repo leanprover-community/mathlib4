@@ -138,6 +138,49 @@ theorem sigmaToPi_not_surjective_of_infinite : ¬ (sigmaToPi R).Surjective := fu
   have ⟨_, _, nmem⟩ := exists_maximal_nmem_range_sigmaToPi_of_infinite R
   (Set.range_eq_univ.mpr surj ▸ nmem) ⟨⟩
 
+lemma exists_comap_evalRingHom_eq
+    {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)] [Finite ι]
+    (p : PrimeSpectrum (Π i, R i)) :
+    ∃ (i : ι) (q : PrimeSpectrum (R i)), (Pi.evalRingHom R i).specComap q = p := by
+  classical
+  cases nonempty_fintype ι
+  let e (i) : Π i, R i := Function.update 1 i 0
+  have H : ∏ i, e i = 0 := by
+    ext j
+    rw [Finset.prod_apply, Pi.zero_apply, Finset.prod_eq_zero (Finset.mem_univ j)]
+    simp [e]
+  obtain ⟨i, hi⟩ : ∃ i, e i ∈ p.asIdeal := by
+    simpa [← H, Ideal.IsPrime.prod_mem_iff] using p.asIdeal.zero_mem
+  let h₁ : Function.Surjective (Pi.evalRingHom R i) := RingHomSurjective.is_surjective
+  have h₂ : RingHom.ker (Pi.evalRingHom R i) ≤ p.asIdeal := by
+    intro x hx
+    convert p.asIdeal.mul_mem_left x hi
+    ext j
+    by_cases hj : i = j
+    · subst hj; simpa [e]
+    · simp [e, Function.update_of_ne (.symm hj)]
+  have : (p.asIdeal.map (Pi.evalRingHom R i)).comap (Pi.evalRingHom R i) = p.asIdeal := by
+    rwa [Ideal.comap_map_of_surjective _ h₁, sup_eq_left]
+  exact ⟨i, ⟨_, Ideal.map_isPrime_of_surjective h₁ h₂⟩, PrimeSpectrum.ext this⟩
+
+lemma sigmaToPi_bijective {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)] [Finite ι] :
+    Function.Bijective (sigmaToPi R) := by
+  refine ⟨sigmaToPi_injective R, ?_⟩
+  intro q
+  obtain ⟨i, q, rfl⟩ := exists_comap_evalRingHom_eq q
+  exact ⟨⟨i, q⟩, rfl⟩
+
+lemma iUnion_range_specComap_comp_evalRingHom
+    {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)] [Finite ι]
+    {S : Type*} [CommRing S] (f : S →+* Π i, R i) :
+    ⋃ i, Set.range ((Pi.evalRingHom R i).comp f).specComap = Set.range f.specComap := by
+  simp_rw [specComap_comp]
+  apply subset_antisymm
+  · exact Set.iUnion_subset fun _ ↦ Set.range_comp_subset_range _ _
+  · rintro _ ⟨p, rfl⟩
+    obtain ⟨i, p, rfl⟩ := exists_comap_evalRingHom_eq p
+    exact Set.mem_iUnion_of_mem i ⟨p, rfl⟩
+
 end Pi
 
 end PrimeSpectrum

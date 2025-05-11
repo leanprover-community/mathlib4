@@ -517,9 +517,6 @@ theorem isUniformEmbedding_toProdMulOpposite :
     IsUniformEmbedding (toProdMulOpposite (𝕜 := 𝕜) (A := A)) :=
   isUniformEmbedding_comap toProdMulOpposite_injective
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toProdMulOpposite := isUniformEmbedding_toProdMulOpposite
-
 instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range isUniformEmbedding_toProdMulOpposite.isUniformInducing]
   apply IsClosed.isComplete
@@ -646,6 +643,8 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
 
 end DenselyNormed
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance {A : Type*} [NonUnitalCStarAlgebra A] : CStarAlgebra 𝓜(ℂ, A) where
+  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 end DoubleCentralizer

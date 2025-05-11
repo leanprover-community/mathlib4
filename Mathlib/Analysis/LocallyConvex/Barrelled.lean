@@ -145,7 +145,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [IsTopologicalAddGro
 
 namespace WithSeminorms
 
-variable [UniformSpace E] [UniformSpace F] [UniformAddGroup E] [UniformAddGroup F]
+variable [UniformSpace E] [UniformSpace F] [IsUniformAddGroup E] [IsUniformAddGroup F]
     [ContinuousSMul 𝕜₁ E] [BarrelledSpace 𝕜₁ E] {𝓕 : ι → E →SL[σ₁₂] F}
     {q : SeminormFamily 𝕜₂ F κ} (hq : WithSeminorms q)
 include hq

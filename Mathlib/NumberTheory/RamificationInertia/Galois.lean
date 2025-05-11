@@ -92,7 +92,7 @@ instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
   mul_smul σ τ Q := by
     apply Subtype.val_inj.mp
     show map _ Q.1 = map _ (map _ Q.1)
-    rw [_root_.map_mul]
+    rw [map_mul]
     exact (Q.1.map_map ((galRestrict A K L B) τ).toRingHom ((galRestrict A K L B) σ).toRingHom).symm
 
 theorem coe_smul_primesOver_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : primesOver p B):

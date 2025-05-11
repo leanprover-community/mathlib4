@@ -99,7 +99,7 @@ def leftRegular : Representation k G (G → k) where
 @[simp]
 lemma leftRegular_apply (s t : G) (f : G → k) : leftRegular s f t = f (s⁻¹ * t) := rfl
 
-variable [Fintype G]
+variable [Finite G]
 
 /-- The right regular representation `rightRegular` on `G → k` as a `FDRep k G`. -/
 @[simp]
@@ -107,13 +107,52 @@ def rightFDRep : FDRep k G := FDRep.of rightRegular
 
 end definitions
 
-variable [Fintype G]
+variable [Finite G]
 
-lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom k G) := by
+lemma equivHom_injective [Nontrivial k] : Function.Injective (equivHom k G) := by
   intro s t h
+  classical
   apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
+
+@[deprecated (since := "2025-04-27")]
+alias equivHom_inj := equivHom_injective
+
+/-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
+def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
+  hom := ofHom (LinearMap.mul' k (G → k))
+  comm := by
+    intro
+    ext u
+    refine TensorProduct.induction_on u rfl (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
+    simp only [map_add, hx, hy]
+
+/-- The `rightFDRep` component of `η : Aut (forget k G)` preserves multiplication -/
+lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
+    let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom
+    α (f * g) = (α f) * (α g) := by
+  have nat := η.hom.hom.naturality mulRepHom
+  have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ η.hom.hom.app Y) :=
+    η.hom.isMonoidal.tensor X Y
+  rw [tensor] at nat
+  apply_fun (Hom.hom · (f ⊗ₜ[k] g)) at nat
+  exact nat
+
+/-- The `rightFDRep` component of `η : Aut (forget k G)` gives rise to
+an algebra morphism `(G → k) →ₐ[k] (G → k)`. -/
+def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → k) := by
+  let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom
+  let α_inv : (G → k) →ₗ[k] (G → k) := (η.inv.hom.app rightFDRep).hom
+  refine AlgHom.ofLinearMap α ?_ (map_mul_toRightFDRepComp η)
+  suffices α (α_inv 1) = (1 : G → k) by
+    have h := this
+    rwa [← one_mul (α_inv 1), map_mul_toRightFDRepComp, h, mul_one] at this
+  have := η.inv_hom_id
+  apply_fun (fun x ↦ (x.hom.app rightFDRep).hom (1 : G → k)) at this
+  exact this
 
 end FiniteGroup
 
 end TannakaDuality
+
+end

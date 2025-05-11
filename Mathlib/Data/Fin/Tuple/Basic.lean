@@ -635,9 +635,7 @@ theorem cons_snoc_eq_snoc_cons {β : Sort*} (a : β) (q : Fin n → β) (b : β)
     @cons n.succ (fun _ ↦ β) a (snoc q b) = snoc (cons a q) b := by
   ext i
   by_cases h : i = 0
-  · rw [h]
-    -- Porting note: `refl` finished it here in Lean 3, but I had to add more.
-    simp [snoc, castLT]
+  · simp [h, snoc, castLT]
   set j := pred i h with ji
   have : i = j.succ := by rw [ji, succ_pred]
   rw [this, cons_succ]
@@ -1160,14 +1158,14 @@ end ContractNth
 /-- To show two sigma pairs of tuples agree, it to show the second elements are related via
 `Fin.cast`. -/
 theorem sigma_eq_of_eq_comp_cast {α : Type*} :
-    ∀ {a b : Σii, Fin ii → α} (h : a.fst = b.fst), a.snd = b.snd ∘ Fin.cast h → a = b
+    ∀ {a b : Σ ii, Fin ii → α} (h : a.fst = b.fst), a.snd = b.snd ∘ Fin.cast h → a = b
   | ⟨ai, a⟩, ⟨bi, b⟩, hi, h => by
     dsimp only at hi
     subst hi
     simpa using h
 
 /-- `Fin.sigma_eq_of_eq_comp_cast` as an `iff`. -/
-theorem sigma_eq_iff_eq_comp_cast {α : Type*} {a b : Σii, Fin ii → α} :
+theorem sigma_eq_iff_eq_comp_cast {α : Type*} {a b : Σ ii, Fin ii → α} :
     a = b ↔ ∃ h : a.fst = b.fst, a.snd = b.snd ∘ Fin.cast h :=
   ⟨fun h ↦ h ▸ ⟨rfl, funext <| Fin.rec fun _ _ ↦ rfl⟩, fun ⟨_, h'⟩ ↦
     sigma_eq_of_eq_comp_cast _ h'⟩

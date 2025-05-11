@@ -5,7 +5,6 @@ Authors: Fox Thomson, Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.List.Flatten
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.DeriveFintype
 
@@ -14,10 +13,36 @@ import Mathlib.Tactic.DeriveFintype
 
 This file contains the definition and operations on formal languages over an alphabet.
 Note that "strings" are implemented as lists over the alphabet.
+
 Union and concatenation define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
 over the languages.
+
 In addition to that, we define a reversal of a language and prove that it behaves well
 with respect to other language operations.
+
+## Notation
+
+* `l + m`: union of languages `l` and `m`
+* `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
+* `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
+* `1`: language consisting of only the empty string.
+  This is because it is the unit of the `*` operator.
+* `l∗`: Kleene's star – language of strings consisting of arbitrarily many
+  members of `l` concatenated together
+  (Note that this is the Unicode asterisk `∗`, and not the more common star `*`)
+
+## Main definitions
+
+* `Language α`: a set of strings over the alphabet `α`
+* `l.map f`: transform a language `l` over `α` into a language over `β`
+  by translating through `f : α → β`
+
+## Main theorems
+
+* `Language.self_eq_mul_add_iff`: Arden's lemma – if a language `l` satisfies the equation
+  `l = m * l + n`, and `m` doesn't contain the empty string,
+  then `l` is the language `m∗ * n`
+
 -/
 
 
@@ -142,7 +167,7 @@ def map (f : α → β) : Language α →+* Language β where
   map_zero' := image_empty _
   map_one' := image_singleton
   map_add' := image_union _
-  map_mul' _ _ := image_image2_distrib <| map_append _
+  map_mul' _ _ := image_image2_distrib <| fun _ _ => map_append
 
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]
@@ -262,6 +287,32 @@ instance : KleeneAlgebra (Language α) :=
         rw [pow_succ, ← mul_assoc m (l^n) l]
         exact le_trans (le_mul_congr ih le_rfl) h }
 
+/-- **Arden's lemma** -/
+theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where
+  mp h := by
+    apply le_antisymm
+    · intro x hx
+      induction' hlen : x.length using Nat.strong_induction_on with _ ih generalizing x
+      subst hlen
+      rw [h] at hx
+      obtain hx | hx := hx
+      · obtain ⟨a, ha, b, hb, rfl⟩ := mem_mul.mp hx
+        rw [length_append] at ih
+        have hal : 0 < a.length := length_pos_iff.mpr <| ne_of_mem_of_not_mem ha hm
+        specialize ih b.length (Nat.lt_add_left_iff_pos.mpr hal) hb rfl
+        rw [← one_add_self_mul_kstar_eq_kstar, one_add_mul, mul_assoc]
+        right
+        exact ⟨_, ha, _, ih, rfl⟩
+      · exact ⟨[], nil_mem_kstar _, _, ⟨hx, nil_append _⟩⟩
+    · rw [kstar_eq_iSup_pow, iSup_mul, iSup_le_iff]
+      intro i
+      induction' i with _ ih <;> rw [h]
+      · rw [pow_zero, one_mul, add_comm]
+        exact le_self_add
+      · rw [add_comm, pow_add, pow_one, mul_assoc]
+        exact le_add_right (mul_le_mul_left' ih _)
+  mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
+
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
 
@@ -338,7 +389,7 @@ end Language
 inductive Symbol (T N : Type*)
   /-- Terminal symbols (of the same type as the language) -/
   | terminal    (t : T) : Symbol T N
-  /-- Nonterminal symbols (must not be present at the end of word being generated) -/
+  /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
   | nonterminal (n : N) : Symbol T N
 deriving
   DecidableEq, Repr, Fintype

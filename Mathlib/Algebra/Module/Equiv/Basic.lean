@@ -58,16 +58,19 @@ theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :
 
 end RestrictScalars
 
-theorem _root_.Module.End_isUnit_iff [Module R M] (f : Module.End R M) :
+theorem _root_.Module.End.isUnit_iff [Module R M] (f : Module.End R M) :
     IsUnit f ↔ Function.Bijective f :=
   ⟨fun h ↦
     Function.bijective_iff_has_inverse.mpr <|
       ⟨h.unit.inv,
-        ⟨Module.End_isUnit_inv_apply_apply_of_isUnit h,
-        Module.End_isUnit_apply_inv_apply_of_isUnit h⟩⟩,
+        ⟨Module.End.isUnit_inv_apply_apply_of_isUnit h,
+        Module.End.isUnit_apply_inv_apply_of_isUnit h⟩⟩,
     fun H ↦
     let e : M ≃ₗ[R] M := { f, Equiv.ofBijective f H with }
     ⟨⟨_, e.symm, LinearMap.ext e.right_inv, LinearMap.ext e.left_inv⟩, rfl⟩⟩
+
+@[deprecated (since := "2025-04-28")]
+alias _root_.Module.End_isUnit_iff := _root_.Module.End.isUnit_iff
 
 section Automorphisms
 
@@ -81,6 +84,9 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   mul_one _ := ext fun _ ↦ rfl
   one_mul _ := ext fun _ ↦ rfl
   inv_mul_cancel f := ext <| f.left_inv
+
+lemma one_eq_refl : (1 : M ≃ₗ[R] M) = refl R M := rfl
+lemma mul_eq_trans (f g : M ≃ₗ[R] M) : f * g = g.trans f := rfl
 
 @[simp]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl
@@ -311,7 +317,7 @@ def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃�
     invFun := smulRight (1 : R →ₗ[R] R)
     left_inv := fun f ↦ by
       ext
-      simp only [coe_smulRight, one_apply, smul_eq_mul, ← map_smul f, mul_one]
+      simp only [coe_smulRight, Module.End.one_apply, smul_eq_mul, ← map_smul f, mul_one]
     right_inv := fun x ↦ by simp }
 
 end LinearMap
@@ -724,6 +730,7 @@ namespace LinearEquiv
 
 This is `Equiv.sumPiEquivProdPi` as a `LinearEquiv`.
 -/
+@[simps -fullyApplied +simpRhs]
 def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Type*)
     [∀ st, AddCommMonoid (A st)] [∀ st, Module R (A st)] :
     (Π (st : S ⊕ T), A st) ≃ₗ[R] (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where

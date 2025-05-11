@@ -176,13 +176,10 @@ applying the right coefficient of `p` to each block of the composition, and then
 the resulting vector. It is called `f.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
     (f : F [×c.length]→L[𝕜] G) : E [×n]→L[𝕜] G where
-  toFun v := f (p.applyComposition c v)
-  map_update_add' v i x y := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_add]
-  map_update_smul' v i c x := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_smul]
+  toMultilinearMap :=
+    MultilinearMap.mk' (fun v ↦ f (p.applyComposition c v))
+      (fun v i x y ↦ by simp only [applyComposition_update, map_update_add])
+      (fun v i c x ↦ by simp only [applyComposition_update, map_update_smul])
   cont :=
     f.cont.comp <|
       continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
@@ -746,7 +743,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
   -- First step: the partial sum of `p` converges to `f (x + y)`.
   have A : Tendsto (fun n ↦ (n, ∑ a ∈ Finset.Ico 1 n, p a fun _ ↦ y))
       atTop (atTop ×ˢ 𝓝 (f (x + y) - f x)) := by
-    apply Tendsto.prod_mk tendsto_id
+    apply Tendsto.prodMk tendsto_id
     have L : ∀ᶠ n in atTop, (∑ a ∈ Finset.range n, p a fun _b ↦ y) - f x
         = ∑ a ∈ Finset.Ico 1 n, p a fun _b ↦ y := by
       rw [eventually_atTop]
@@ -845,9 +842,6 @@ lemma AnalyticOn.comp {f : F → G} {g : E → F} {s : Set F}
     AnalyticOn 𝕜 (f ∘ g) t :=
   fun x m ↦ (hf _ (h m)).comp (hg x m) h
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticWithinOn.comp := AnalyticOn.comp
-
 /-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, then `g ∘ f` is
 analytic at `x`. -/
 @[fun_prop]
@@ -892,9 +886,6 @@ theorem AnalyticOnNhd.comp' {s : Set E} {g : F → G} {f : E → F} (hg : Analyt
     (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (g ∘ f) s :=
   fun z hz => (hg (f z) (Set.mem_image_of_mem f hz)).comp (hf z hz)
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.comp' := AnalyticOnNhd.comp'
-
 theorem AnalyticOnNhd.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
     (hg : AnalyticOnNhd 𝕜 g t) (hf : AnalyticOnNhd 𝕜 f s) (st : Set.MapsTo f s t) :
     AnalyticOnNhd 𝕜 (g ∘ f) s :=
@@ -904,9 +895,6 @@ lemma AnalyticOnNhd.comp_analyticOn {f : F → G} {g : E → F} {s : Set F}
     {t : Set E} (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOn 𝕜 g t) (h : Set.MapsTo g t s) :
     AnalyticOn 𝕜 (f ∘ g) t :=
   fun x m ↦ (hf _ (h m)).comp_analyticWithinAt (hg x m)
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.comp_analyticWithinOn := AnalyticOnNhd.comp_analyticOn
 
 /-!
 ### Associativity of the composition of formal multilinear series
@@ -1109,7 +1097,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     have : sizeUpTo b i + Nat.succ j = (sizeUpTo b i + j).succ := rfl
     rw [this, sizeUpTo_succ _ D, IHj A, sizeUpTo_succ _ B]
     simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
-    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop, getElem_take' _ _ C]
+    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop, getElem_take]
 
 /-- Natural equivalence between `(Σ (a : Composition n), Composition a.length)` and
 `(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocksFun i))`, that shows up as a

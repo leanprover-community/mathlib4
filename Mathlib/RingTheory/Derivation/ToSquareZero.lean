@@ -82,7 +82,6 @@ def liftOfDerivationToSquareZero [IsScalarTower R A B]  (hI : I ^ 2 = ⊥) (f : 
       A →ₗ[R] B) with
     toFun := fun x => f x + algebraMap A B x
     map_one' := by
-      dsimp
       -- Note: added the `(algebraMap _ _)` hint because otherwise it would match `f 1`
       rw [map_one (algebraMap _ _), f.map_one_eq_zero, Submodule.coe_zero, zero_add]
     map_mul' := fun x y => by
