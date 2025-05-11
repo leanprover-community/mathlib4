@@ -165,6 +165,8 @@ instance instTopologicalSpace : TopologicalSpace (Path x y) :=
 
 instance : ContinuousEval (Path x y) I X := .of_continuous_forget continuous_induced_dom
 
+theorem isInducing_toContinuousMap : IsInducing ((↑) : Path x y → C(I, X)) := ⟨rfl⟩
+
 theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
     Continuous ↿g ↔ Continuous g :=
   Iff.symm <| continuous_induced_rng.trans
