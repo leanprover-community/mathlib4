@@ -287,18 +287,19 @@ abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct.asPowers R A :=
 
 theorem ι_apply (x : ⨁ i, A i) :
     ⟨Quot.mk (Rel <| rel' R A) (PowerAlgebra.ι R A x)⟩ = ι' R A x := by
-  simp_rw [ι', mkAlgHom, RingQuot.mkAlgHom, mkRingHom, LinearMap.coe_comp, comp_apply,
-           AlgHom.toLinearMap_apply, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk,
-           OneHom.coe_mk]
+  have ext {R : Type _} [Semiring R] (rel : R → R → Prop) {x y : RingQuot rel} :
+    x.toQuot = y.toQuot → x = y := by cases x; cases y; simp
+  apply ext
+  simp [ι', RingQuot.mkAlgHom, mkRingHom]
 
 /-- The injection into the free product of any `1 : A i` is the 1 of the free product. -/
-theorem identify_one (i : I) : ι' R A (DirectSum.lof R I A i 1) = 1 := by
+theorem ι'_one (i : I) : ι' R A (DirectSum.lof R I A i 1) = 1 := by
   suffices ι' R A (DirectSum.lof R I A i 1) = mkAlgHom R A 1 by simpa
   exact RingQuot.mkAlgHom_rel R <| rel'_id R A (i := i)
 
 /-- Multiplication in the free product of the injections of any two `aᵢ aᵢ': A i` for
 the same `i` is just the injection of multiplication `aᵢ * aᵢ'` in `A i`. -/
-theorem mul_injections (a₁ a₂ : A i) :
+theorem ι'_mul_ι' (a₁ a₂ : A i) :
     ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
   convert RingQuot.mkAlgHom_rel R <| rel'_prod R A i a₁ a₂
