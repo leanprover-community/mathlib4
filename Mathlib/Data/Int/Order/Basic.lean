@@ -34,7 +34,7 @@ instance instLinearOrder : LinearOrder ℤ where
   le_trans := @Int.le_trans
   le_antisymm := @Int.le_antisymm
   lt := (·<·)
-  lt_iff_le_not_ge := @Int.lt_iff_le_not_ge
+  lt_iff_le_not_ge := @Int.lt_iff_le_not_le
   le_total := Int.le_total
   toDecidableEq := by infer_instance
   toDecidableLE := by infer_instance
