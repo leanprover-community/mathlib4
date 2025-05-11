@@ -216,10 +216,6 @@ theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
 
 section Indexed
 
-theorem LinearIndepOn.mono {t s : Set ι} (hs : LinearIndepOn R v s) (h : t ⊆ s) :
-    LinearIndepOn R v t :=
-  hs.comp _ <| Set.inclusion_injective h
-
 @[deprecated (since := "2025-02-15")] alias LinearIndependent.mono := LinearIndepOn.mono
 
 theorem linearIndepOn_of_finite (s : Set ι) (H : ∀ t ⊆ s, Set.Finite t → LinearIndepOn R v t) :
@@ -611,12 +607,5 @@ theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M
   obtain ⟨_⟩ := (unique_iff_subsingleton_and_nonempty (α := ι)).2 ⟨by assumption, he⟩
   rw [linearIndependent_unique_iff]
   exact ⟨fun h i ↦ by rwa [Unique.eq_default i], fun h ↦ h _⟩
-
-@[simp]
-theorem linearIndependent_subsingleton_iff [Subsingleton M] (f : ι → M) :
-    LinearIndependent R f ↔ IsEmpty ι := by
-  obtain h | i := isEmpty_or_nonempty ι
-  · simpa
-  exact iff_of_false (fun hli ↦ hli.ne_zero i.some (Subsingleton.eq_zero (f i.some))) (by simp)
 
 end Nontrivial
