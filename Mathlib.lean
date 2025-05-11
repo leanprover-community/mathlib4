@@ -2024,6 +2024,7 @@ import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Functor.CurryingThree
+import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
 import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 import Mathlib.CategoryTheory.Functor.EpiMono
 import Mathlib.CategoryTheory.Functor.Flat
@@ -5092,6 +5093,7 @@ import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.IsPrincipal
 import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.Ideal.Lattice
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Maximal
@@ -5141,6 +5143,7 @@ import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.Kaehler.TensorProduct
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.KrullDimension.Field
+import Mathlib.RingTheory.KrullDimension.Module
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.KrullDimension.Zero
 import Mathlib.RingTheory.Lasker
@@ -6059,6 +6062,7 @@ import Mathlib.Topology.FiberPartition
 import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta.Basic
 import Mathlib.Topology.GDelta.MetrizableSpace
+import Mathlib.Topology.GDelta.UniformSpace
 import Mathlib.Topology.Germ
 import Mathlib.Topology.Gluing
 import Mathlib.Topology.Hom.ContinuousEval
