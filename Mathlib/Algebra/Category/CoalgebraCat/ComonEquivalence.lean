@@ -150,7 +150,7 @@ theorem comul_tensorObj :
       = Coalgebra.comul (A := M ⊗[R] N) := by
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
-    instCoalgebraStruct_comul]
+    TensorProduct.comul_def]
   simp only [Comon_.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
     comonEquivalence_functor, toComon_obj, toComonObj_X, tensorμ_eq_tensorTensorTensorComm,
     ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearEquiv.comp_toLinearMap_eq_iff]
@@ -162,7 +162,7 @@ theorem comul_tensorObj_tensorObj_right :
       = Coalgebra.comul (A := M ⊗[R] N ⊗[R] P) := by
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
-    instCoalgebraStruct_comul]
+    comul_def]
   simp only [Comon_.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
     comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe, ModuleCat.hom_comp]
   simp only [instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
@@ -175,7 +175,7 @@ theorem comul_tensorObj_tensorObj_left :
       = Coalgebra.comul (A := (M ⊗[R] N) ⊗[R] P) := by
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
-    instCoalgebraStruct_comul]
+    comul_def]
   simp only [Comon_.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
     comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe, ModuleCat.hom_comp]
   simp only [instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,

@@ -3,8 +3,8 @@ Copyright (c) 2023 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Monoidal.Comon_
-import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 
 /-!
 # Comonoid objects in a cartesian monoidal category.
@@ -13,38 +13,42 @@ The category of comonoid objects in a cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.
 -/
 
-open CategoryTheory MonoidalCategory Limits Comon_Class
+open CategoryTheory MonoidalCategory ChosenFiniteProducts Limits Comon_Class
 
 universe v u
 
 noncomputable section
 
-variable (C : Type u) [Category.{v} C] [HasTerminal C] [HasBinaryProducts C]
+variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C]
 
-attribute [local instance] monoidalOfHasFiniteProducts
-open monoidalOfHasFiniteProducts
-attribute [local simp] associator_hom associator_inv
+attribute [local simp] leftUnitor_hom rightUnitor_hom
 
 /--
 The functor from a cartesian monoidal category to comonoids in that category,
 equipping every object with the diagonal map as a comultiplication.
 -/
 def cartesianComon_ : C ⥤ Comon_ C where
-  obj := fun X =>
-  { X := X
-    comon :=
-    { comul := diag X
-      counit := terminal.from X } }
-  map := fun f => { hom := f }
+  obj X := {
+    X := X
+    comon := {
+      comul := lift (𝟙 _) (𝟙 _)
+      counit := toUnit _
+    }
+  }
+  map f := { hom := f }
 
 variable {C}
 
-@[simp] theorem counit_eq_from (A : C) [Comon_Class A] : ε[A] = terminal.from A := by ext
+@[simp] theorem counit_eq_toUnit (A : C) [Comon_Class A] : ε[A] = toUnit _ := by ext
 
-@[simp] theorem comul_eq_diag (A : C) [Comon_Class A] : Δ[A] = diag A := by
+@[deprecated (since := "2025-05-09")] alias counit_eq_from := counit_eq_toUnit
+
+@[simp] theorem comul_eq_lift (A : C) [Comon_Class A] : Δ[A] = lift (𝟙 _) (𝟙 _) := by
   ext
-  · simpa using comul_counit A =≫ prod.fst
-  · simpa using counit_comul A =≫ prod.snd
+  · simpa using comul_counit A =≫ fst _ _
+  · simpa using counit_comul A =≫ snd _ _
+
+@[deprecated (since := "2025-05-09")] alias comul_eq_diag := comul_eq_lift
 
 /--
 Every comonoid object in a cartesian monoidal category is equivalent to
