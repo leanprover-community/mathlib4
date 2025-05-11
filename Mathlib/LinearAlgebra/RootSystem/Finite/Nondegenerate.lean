@@ -215,6 +215,11 @@ lemma disjoint_corootSpan_ker_corootForm :
     Disjoint (P.corootSpan R) (LinearMap.ker P.CorootForm) :=
   P.flip.disjoint_rootSpan_ker_rootForm
 
+lemma _root_.RootSystem.rootForm_nondegenerate (P : RootSystem ι R M N) [P.IsAnisotropic] :
+    P.RootForm.Nondegenerate :=
+  LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr <| by
+    simpa using P.disjoint_rootSpan_ker_rootForm
+
 end IsDomain
 
 section Field
