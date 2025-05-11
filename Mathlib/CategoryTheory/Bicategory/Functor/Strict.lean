@@ -120,10 +120,12 @@ lemma mapComp'_hom_comp_mapComp'_hom_whiskerRight (hf : f₀₂ ≫ f₂₃ = f)
 
 @[reassoc]
 lemma mapComp'_inv_comp_mapComp'_hom' (hf : f₀₂ ≫ f₂₃ = f) :
-    (F.mapComp' f₀₁ f₁₃ f).inv ≫ (F.mapComp' f₀₂ f₂₃ f).hom  =
+    (F.mapComp' f₀₁ f₁₃ f).inv ≫ (F.mapComp' f₀₂ f₂₃ f).hom =
      F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
       (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃:= by
-  sorry
+  simp only [← cancel_mono ((F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom ▷ F.map f₂₃),
+    mapComp'_hom_comp_mapComp'_hom_whiskerRight _ _ _ _ _ _ _ h₀₂ h₁₃ hf,
+    Category.assoc, Iso.inv_hom_id_assoc, inv_hom_whiskerRight, Category.comp_id]
 
 @[reassoc]
 lemma mapComp'_inv_whiskerRight_comp_mapComp'_inv (hf : f₀₂ ≫ f₂₃ = f) :
