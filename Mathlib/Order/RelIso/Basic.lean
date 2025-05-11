@@ -754,7 +754,7 @@ This is `Equiv.arrowCongr` for `RelHom`. -/
 @[simps]
 def relHomCongr {α₁ β₁ α₂ β₂}
     {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
-    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂):
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) :
     (r₁ →r s₁) ≃ (r₂ →r s₂) where
   toFun f₁ := e₂.toRelEmbedding.toRelHom.comp <| f₁.comp e₁.symm.toRelEmbedding.toRelHom
   invFun f₂ := e₂.symm.toRelEmbedding.toRelHom.comp <| f₂.comp e₁.toRelEmbedding.toRelHom
