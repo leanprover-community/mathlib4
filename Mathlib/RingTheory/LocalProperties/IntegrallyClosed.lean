@@ -69,10 +69,10 @@ theorem IsIntegrallyClosed.iInf {ι : Type*} (S : ι → Subalgebra R K)
     IsIntegrallyClosed (⨅ i : ι, S i : Subalgebra R K) := by
   refine (isIntegrallyClosed_iff K).mpr (fun {x} hx ↦ CanLift.prf x (Algebra.mem_iInf.mpr ?_))
   intro i
-  have le : (⨅ i : ι, S i : Subalgebra R K) ≤ (S i) := iInf_le S i
+  have le : (⨅ i : ι, S i : Subalgebra R K) ≤ S i := iInf_le S i
   algebraize [(Subalgebra.inclusion le).toRingHom]
   have : IsScalarTower ↥(⨅ i, S i) (S i) K := Subalgebra.inclusion.isScalarTower_right le K
-  rcases ((isIntegrallyClosed_iff K).mp (h i)) hx.tower_top with ⟨⟨_, hin⟩, hy⟩
+  rcases (isIntegrallyClosed_iff K).mp (h i) hx.tower_top with ⟨⟨_, hin⟩, hy⟩
   rwa [← hy]
 
 theorem IsIntegrallyClosed.of_iInf_eq_bot {ι : Type*} (S : ι → Subalgebra R K)
