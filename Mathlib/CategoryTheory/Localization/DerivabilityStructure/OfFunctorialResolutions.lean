@@ -25,6 +25,8 @@ variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
 
 namespace LocalizerMorphism
 
+section right
+
 variable (Φ : LocalizerMorphism W₁ W₂)
   {ρ : C₂ ⥤ C₁} (i : 𝟭 C₂ ⟶ ρ ⋙ Φ.functor) (hi : ∀ X₂, W₂ (i.app X₂))
   (hW₁ : W₁ = W₂.inverseImage Φ.functor)
@@ -124,6 +126,44 @@ lemma isRightDerivabilityStructure_of_functorial_resolutions :
   have := Φ.hasRightResolutions_arrow_of_functorial_resolutions i hi
   have := Φ.isConnected_rightResolution_of_functorial_resolutions i hi hW₁
   apply IsRightDerivabilityStructure.mk'
+
+end right
+
+section left
+
+variable (Φ : LocalizerMorphism W₁ W₂)
+  {ρ : C₂ ⥤ C₁} (p : ρ ⋙ Φ.functor ⟶ 𝟭 C₂) (hp : ∀ X₂, W₂ (p.app X₂))
+  (hW₁ : W₁ = W₂.inverseImage Φ.functor)
+
+include hp in
+lemma hasLeftResolutions_arrow_of_functorial_resolutions :
+    Φ.arrow.HasLeftResolutions :=
+  fun f ↦ ⟨{
+    X₁ := Arrow.mk (ρ.map f.hom)
+    w := Arrow.homMk (p.app _) (p.app _) ((p.naturality f.hom).symm)
+    hw := ⟨hp _, hp _⟩ }⟩
+
+variable [Φ.functor.Full] [Φ.functor.Faithful] [W₂.HasTwoOutOfThreeProperty]
+
+include hp hW₁
+
+lemma isLocalizedEquivalence_of_functorial_left_resolutions :
+    Φ.IsLocalizedEquivalence := by
+  rw [← Φ.isLocalizedEquivalence_op_iff]
+  have : Φ.op.functor.Full := by dsimp; infer_instance
+  have : Φ.op.functor.Faithful := by dsimp; infer_instance
+  exact Φ.op.isLocalizedEquivalence_of_functorial_right_resolutions (ρ := ρ.op)
+    (NatTrans.op p) (fun _ ↦ hp _) (by simp only [hW₁]; rfl)
+
+lemma isLeftDerivabilityStructure_of_functorial_resolutions [W₂.IsMultiplicative] :
+    Φ.IsLeftDerivabilityStructure := by
+  rw [isLeftDerivabilityStructure_iff_op]
+  have : Φ.op.functor.Full := by dsimp; infer_instance
+  have : Φ.op.functor.Faithful := by dsimp; infer_instance
+  exact Φ.op.isRightDerivabilityStructure_of_functorial_resolutions (ρ := ρ.op)
+    (NatTrans.op p) (fun _ ↦ hp _) (by simp only [hW₁]; rfl)
+
+end left
 
 end LocalizerMorphism
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.Equivalence
+import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!
 # Morphisms of localizers
@@ -218,6 +219,23 @@ lemma isLocalizedEquivalence_of_unit_of_unit (Ψ : LocalizerMorphism W₂ W₁)
 def arrow : LocalizerMorphism W₁.arrow W₂.arrow where
   functor := Φ.functor.mapArrow
   map _ _ _ hf := ⟨Φ.map _ hf.1, Φ.map _ hf.2⟩
+
+lemma isLocalizedEquivalence_op_iff :
+    Φ.op.IsLocalizedEquivalence ↔ Φ.IsLocalizedEquivalence := by
+  constructor
+  · intro
+    let G := Φ.op.localizedFunctor W₁.Q.op W₂.Q.op
+    have : CatCommSq Φ.functor W₁.Q W₂.Q G.unop :=
+      ⟨NatIso.unop (CatCommSq.iso Φ.op.functor W₁.Q.op W₂.Q.op G).symm⟩
+    exact IsLocalizedEquivalence.mk' Φ W₁.Q W₂.Q G.unop
+  · intro
+    let G := Φ.localizedFunctor W₁.Q W₂.Q
+    have : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+      ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
+    exact IsLocalizedEquivalence.mk' Φ.op W₁.Q.op W₂.Q.op G.op
+
+instance [Φ.IsLocalizedEquivalence] : Φ.op.IsLocalizedEquivalence := by
+  rwa [isLocalizedEquivalence_op_iff]
 
 end LocalizerMorphism
 

@@ -16,6 +16,7 @@ import Mathlib.Algebra.Homology.Localization
 import Mathlib.Algebra.Homology.ObjectProperty
 import Mathlib.Algebra.Homology.PreservesQuasiIso
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplex
+import Mathlib.Algebra.Homology.LeftResolutions.DerivabilityStructure
 import Mathlib.CategoryTheory.Abelian.Flat.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 import Mathlib.CategoryTheory.Monoidal.KFlat
@@ -292,6 +293,13 @@ noncomputable def kFlatResolutionNatTrans :
 instance (K : CochainComplex A ℤ) : QuasiIso ((Λ.kFlatResolutionNatTrans hι).app K) := by
   dsimp [kFlatResolutionNatTrans]
   infer_instance
+
+include Λ hι in
+open HomologicalComplex in
+lemma cochainComplex_kFlat_isLeftDerivabilityStructure :
+    (quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure :=
+  isLeftDerivabilityStructure_of_functorial_left_resolutions _ rfl
+    (Λ.kFlatResolutionNatTrans hι)
 
 end LeftResolutions
 

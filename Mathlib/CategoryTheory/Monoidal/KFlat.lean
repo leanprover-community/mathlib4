@@ -66,10 +66,14 @@ instance [W.ContainsIdentities] : W.WKFlat.ContainsIdentities := by
   dsimp only [WKFlat]
   infer_instance
 
+@[simps]
 def localizerMorphismKFlat :
     LocalizerMorphism W.WKFlat W where
   functor := W.ιKFlat
   map := by rfl
+
+instance : W.localizerMorphismKFlat.functor.Faithful := by dsimp; infer_instance
+instance : W.localizerMorphismKFlat.functor.Full := by dsimp; infer_instance
 
 instance [W.RespectsIso] :
     W.localizerMorphismKFlat.functor.Monoidal :=
