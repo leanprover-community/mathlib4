@@ -327,14 +327,15 @@ abbrev of {i : I} : A i →ₐ[R] FreeProduct.asPowers R A := ι R A i
 
 end asPowers
 
-@[simp] theorem ι_equiv_ι aᵢ : asPowersEquiv R A (asPowers.ι R A i aᵢ) = ι R A i aᵢ := by
+@[simp] theorem asPowersEquiv_ι (aᵢ) : asPowersEquiv R A (asPowers.ι R A i aᵢ) = ι R A i aᵢ := by
   simp_rw [asPowersEquiv, asPowers.ι, ι, powerAlgebraEquivFreeTensorAlgebra, algEquivQuotAlgEquiv]
   convert RingQuot.liftAlgHom_mkAlgHom_apply R _ _ _
   aesop (add simp [Function.onFun, lof_eq_of])
 
-@[simp] theorem ι_equiv_ι' aᵢ : (asPowersEquiv R A).symm (ι R A i aᵢ) = asPowers.ι R A i aᵢ := by
+@[simp] theorem asPowersEquiv_symm_ι (aᵢ) :
+    (asPowersEquiv R A).symm (ι R A i aᵢ) = asPowers.ι R A i aᵢ := by
   apply asPowersEquiv R A |>.injective
-  rw [ι_equiv_ι, AlgEquiv.apply_symm_apply]
+  rw [asPowersEquiv_ι, AlgEquiv.apply_symm_apply]
 
 /-- Universal property of the free product of algebras:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
