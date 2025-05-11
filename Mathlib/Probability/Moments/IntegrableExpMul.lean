@@ -153,8 +153,9 @@ lemma integrable_exp_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ exp ((v + 
     · simp only [ht, zero_mul, zero_add, add_zero] at ht_int_pos ⊢
       exact ht_int_pos.1
     have hX : AEMeasurable X μ := aemeasurable_of_integrable_exp_mul ?_ ht_int_pos ht_int_neg
-    swap; · rw [← sub_ne_zero]; simp [ht]
-    fun_prop
+    · fun_prop
+    · rw [← sub_ne_zero]
+      simp [ht]
   · simp only [norm_eq_abs, abs_exp]
     conv_rhs => rw [abs_of_nonneg (by positivity)]
     -- ⊢ exp (t * |X ω| + v * X ω) ≤ exp ((v + t) * X ω) + exp ((v - t) * X ω)
