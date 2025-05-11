@@ -3,6 +3,7 @@ Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wang, Eric Wieser
 -/
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
