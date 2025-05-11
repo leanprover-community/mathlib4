@@ -84,9 +84,7 @@ instance instUnitizationRing : Ring (WithLp 1 (Unitization 𝕜 A)) :=
   inferInstanceAs (Ring (Unitization 𝕜 A))
 
 @[simp]
-lemma unitization_mul (x y : WithLp 1 (Unitization 𝕜 A)) :
-    ofLp (x * y) = (ofLp x) * (ofLp y) :=
-  rfl
+lemma unitization_mul (x y : WithLp 1 (Unitization 𝕜 A)) : ofLp (x * y) = ofLp x * ofLp y := rfl
 
 instance {R : Type*} [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A] [IsScalarTower R 𝕜 A] :
     Algebra R (WithLp 1 (Unitization 𝕜 A)) :=
@@ -94,9 +92,7 @@ instance {R : Type*} [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A] [I
 
 @[simp]
 lemma unitization_algebraMap (r : 𝕜) :
-    ofLp (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A)) r) =
-      algebraMap 𝕜 (Unitization 𝕜 A) r :=
-  rfl
+    ofLp (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A)) r) = algebraMap 𝕜 (Unitization 𝕜 A) r := rfl
 
 /-- `equiv` bundled as an algebra isomorphism with `Unitization 𝕜 A`. -/
 @[simps!]
