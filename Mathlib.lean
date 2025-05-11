@@ -360,7 +360,6 @@ import Mathlib.Algebra.Group.Graph
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.Idempotent
 import Mathlib.Algebra.Group.Indicator
@@ -1104,6 +1103,7 @@ import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Algebra.Ring.Hom.End
 import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.Algebra.Ring.Identities
