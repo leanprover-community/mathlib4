@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Iso
 For the most part, natural isomorphisms are just another sort of isomorphism.
 
 We provide some special support for extracting components:
-* if `α : F ≅ G`, then `a.app X : F.obj X ≅ G.obj X`,
+* if `α : F ≅ G`, then `α.app X : F.obj X ≅ G.obj X`,
 and building natural isomorphisms from components:
 *
 ```
@@ -162,9 +162,7 @@ theorem cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X 
     f ≫ g ≫ α.inv.app Y = f' ≫ g' ≫ α.inv.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono, refl]
 
-
-
-attribute [grind] CategoryTheory.IsIso.inv_eq_of_hom_inv_id
+attribute [grind ←=] CategoryTheory.IsIso.inv_eq_of_hom_inv_id
 
 @[simp]
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
