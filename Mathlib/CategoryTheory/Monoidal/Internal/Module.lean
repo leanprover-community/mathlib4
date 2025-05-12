@@ -106,44 +106,19 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   mul := ofHom <| LinearMap.mul' R A
   one_mul := by
     ext : 1
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
-    refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
-    rw [compr₂_apply, compr₂_apply, hom_comp, LinearMap.comp_apply]
-    -- Porting note: this `dsimp` does nothing
-    -- dsimp [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
-    --    LinearMap.compr₂_apply, Function.comp_apply, RingHom.map_one,
-    --    ModuleCat.MonoidalCategory.tensorHom_tmul, AlgebraCat.hom_comp,
-    --    ModuleCat.MonoidalCategory.leftUnitor_hom_apply]
-    -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
     dsimp
-    erw [LinearMap.mul'_apply, MonoidalCategory.leftUnitor_hom_apply, ← Algebra.smul_def]
-    dsimp
+    ext
+    simp
   mul_one := by
     ext : 1
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
-    refine TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext_ring ?_
-    -- Porting note: this `dsimp` does nothing
-    -- dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
-    --   LinearMap.compr₂_apply, Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply,
-    --   AlgebraCat.coe_comp]
-    -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
-    erw [compr₂_apply, compr₂_apply]
-    rw [ModuleCat.hom_comp, LinearMap.comp_apply]
-    erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
-      ← Algebra.smul_def]
     dsimp
+    ext
+    simp
   mul_assoc := by
     ext : 1
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
-    refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
-      LinearMap.ext fun z => ?_
-    dsimp only [compr₂_apply, TensorProduct.mk_apply]
-    rw [hom_comp, LinearMap.comp_apply, hom_comp, LinearMap.comp_apply, hom_comp,
-        LinearMap.comp_apply]
-    erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
-    dsimp only [id_coe, id_eq]
-    erw [TensorProduct.mk_apply, TensorProduct.mk_apply, mul'_apply, LinearMap.id_apply, mul'_apply]
-    simp only [LinearMap.mul'_apply, mul_assoc]
+    dsimp
+    ext
+    simp [mul_assoc]
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
@@ -175,9 +150,8 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                   map_smul' := fun _ _ => rfl }
               mul_hom := by
                 ext : 1
-                -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
-                refine TensorProduct.ext ?_
-                dsimp at *
+                dsimp
+                ext
                 rfl }
           inv :=
             { hom := ofHom
@@ -186,9 +160,8 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                   map_smul' := fun _ _ => rfl }
               mul_hom := by
                 ext : 1
-                -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
-                refine TensorProduct.ext ?_
-                dsimp at *
+                dsimp
+                ext
                 rfl } })
   counitIso :=
     NatIso.ofComponents
