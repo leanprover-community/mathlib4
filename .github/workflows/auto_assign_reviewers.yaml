@@ -19,21 +19,34 @@ jobs:
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@f0e10f46ff84f4d32178b4b76e1ef180b16f82c3 # v3.1.1
 
-      # Parse the json file: TODO, that step is missing.
+      # Parse the json file: TODO complete this step
       - name: parse assignments file and assign reviewers
         run: |
-          echo "TODO: parsing the assignments file is not implemented yet!"
-          # the above files has entries of the form number: "user".
-          # for each pair (number, user) in the file, I want to run the following
-          # placeholder values: as an example, assign PR 18754 to grunweg
-          number=18754
-          user=grunweg
-          printf 'about to assign PR "%s" to "%s"\n' "${number}" "${user}"
-          # This keeps any existing assignee on the PR.
-          curl --location \
-            --request POST \
-            --header "Accept: application/vnd.github+json" \
-            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-            --header "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/leanprover-community/mathlib4/issues/$number/assignees \
-            --data '{"assignees":["$user"]}'
+          # Extract the list of PR names in the assignments.
+          # jq's output is of the form
+          # [
+          #   "123",
+          #   "345"
+          # ]
+          # Grepping by the quote filters out all PR numbers only, then cut removes the
+          # initial whitespace and sed any trailing comma.
+          PRs=$(jq 'keys' assignments.json | grep '"' | cut -c 3- | sed 's/,*$//')
+          echo "trace: parsed PR numbers are $PRs"
+
+          # For each PR number, extract the corresponding assigned user from assignments.json
+          for pr_number in $PRs ; do
+            # FIXME: is this sufficient quoting? I want literal quotes around the PR number...
+            user=$(jq '.["$pr_number"]' assignments.json)
+            echo "trace: tried to extract the user for PR $pr_number, found $user"
+            # # as an example, assign PR 18754 to grunweg
+            # user=grunweg
+            # printf 'about to assign PR "%s" to "%s"\n' "${pr_number}" "${user}"
+            # # This keeps any existing assignee on the PR.
+            # curl --location \
+            #   --request POST \
+            #   --header "Accept: application/vnd.github+json" \
+            #   --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+            #   --header "X-GitHub-Api-Version: 2022-11-28" \
+            #   https://api.github.com/repos/leanprover-community/mathlib4/issues/$pr_number/assignees \
+            #   --data '{"assignees":["$user"]}'
+          done
