@@ -544,7 +544,7 @@ lemma invtSubmodule_reflection:
       simp [I] at hy
       induction hy using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
       | mem x₁ hx₁ =>
-        obtain ⟨i, hi, hx₂⟩ := Set.mem_iUnion₂.mp hx₁
+        obtain ⟨i, hi, x₁_mem⟩ := Set.mem_iUnion₂.mp hx₁
         have r₁ (j : LieModule.Weight K H L) : j = 0 ∨ j ∈ H.root := by
           rcases (eq_or_ne j 0) with h | h
           · left
@@ -553,28 +553,20 @@ lemma invtSubmodule_reflection:
           refine Finset.mem_filter.mpr ?_
           exact ⟨Finset.mem_univ j, LieModule.Weight.isNonZero_iff_ne_zero.mpr h⟩
         rcases (r₁ j) with h | h
-        have rrrr : ⁅x, x₁⁆ ∈ g := by
-          have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx hx₂
+        have h₁ : ⁅x, x₁⁆ ∈ g := by
+          have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
           rw [h, coe_zero, zero_add] at ttt
           exact Set.mem_biUnion hi ttt
-        exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
-        let jj : H.root := ⟨j, h⟩
-        rcases (Classical.em (jj ∈ Φ)) with h | h
-        --simp at jj
-        have hx2 : x ∈ LieModule.genWeightSpace L jj.1 := hx
-        have rrrr : x ∈ g := by
-          exact Set.mem_biUnion h hx2
-        have rrrr2 : x ∈ I := by
-          exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
-        have rrrr3 : x₁ ∈ I := by
-           exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a hx₁
-        exact LieSubalgebra.lie_mem I rrrr2 rrrr3
+        exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
+        let j₂ : H.root := ⟨j, h⟩
+        rcases (Classical.em (j₂ ∈ Φ)) with h | h
+        exact LieSubalgebra.lie_mem I
+          (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h hx))
+          (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a hx₁)
         have key : ⁅x₁, x⁆ = 0 := by
-          have := s₄ i jj hi h
-          simp at this
-          have ssss2 := this x₁ hx₂
-          have ssss3 := ssss2 x hx
-          exact ssss3
+          have := s₄ i j₂ hi h
+          simp only [Subtype.forall] at this
+          exact (this x₁ x₁_mem) x hx
         have : ⁅x, x₁⁆ = 0 := by
           rw [← neg_eq_zero, lie_skew x₁ x, key]
         rw [this]
