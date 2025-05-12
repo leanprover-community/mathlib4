@@ -352,7 +352,7 @@ lemma IsRkFinite.eRk_lt_top (h : M.IsRkFinite X) : M.eRk X < ⊤ :=
 
 @[deprecated (since := "2025-04-13")] alias eRk_lt_top_of_finite := IsRkFinite.eRk_lt_top
 
-/-- If `X` is a finite-rank-set, and `I` is a subset of `X` of cardinality
+/-- If `X` is a finite-rank set, and `I` is a subset of `X` of cardinality
 no larger than the rank of `X` that spans `X`, then `I` is a basis for `X`. -/
 lemma IsRkFinite.isBasis_of_subset_closure_of_subset_of_encard_le (hX : M.IsRkFinite X)
     (hXI : X ⊆ M.closure I) (hIX : I ⊆ X) (hI : I.encard ≤ M.eRk X) : M.IsBasis I X := by
