@@ -223,7 +223,7 @@ lemma elem_P0 (p : ℕ) (P : Sylow p (Equiv.Perm (Fin (1)))) (x:P):
   x = 1 := Subsingleton.eq_one x
 
 theorem iter_wreath_card {p n : ℕ}
-  (G : Type) [Group G] [Finite G] (h : Nat.card G = p) :
+  (G : Type) [Finite G] (h : Nat.card G = p) :
   Nat.card (IteratedWreathProduct G n) = p ^ (∑ i ∈ Finset.range n, p ^ i) := by
   induction n with
   | zero => simp
@@ -374,7 +374,7 @@ lemma f_injective {p n : ℕ} [Fact (Nat.Prime p)] (D : Sylow p (Equiv.Perm (Fin
         (aux_injective (((Equiv.prodCongrRight fun _ =>
         (Finite.equivFinOfCardEq h)).trans finProdFinEquiv))) this
 
-/-The Sylow p-subgroups of S_{p^n} are isomorphic to the iterated wreathproduct -/
+/-- The Sylow p-subgroups of S_{p^n} are isomorphic to the iterated wreathproduct -/
 noncomputable def sylowIsIteratedWreathProduct (p n : ℕ) [Fact (Nat.Prime p)]
   (Z_p : Type) [Group Z_p] [Finite Z_p] (h: Nat.card Z_p = p)
   (P : Sylow p (Equiv.Perm (Fin (p^n)))) :
