@@ -42,8 +42,14 @@ def free : Type u ⥤ ModuleCat R where
 
 variable {R}
 
+@[simp]
+theorem carrier_obj_free {X : Type u} : ((free R).obj X).carrier = (X →₀ R) := rfl
+@[simp]
+theorem hom_map_free {X Y : Type u} (f : X → Y) :
+    ((free R).map f).hom = Finsupp.lmapDomain _ _ f := rfl
+
 /-- Constructor for elements in the module `(free R).obj X`. -/
-noncomputable def freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single x 1
+noncomputable abbrev freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single x 1
 
 @[ext 1200]
 lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
@@ -58,13 +64,16 @@ noncomputable def freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
   ofHom <| Finsupp.lift M R X f
 
 @[simp]
+lemma hom_freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
+    ConcreteCategory.hom (freeDesc f) = Finsupp.lift M R X f :=
+  rfl
+
 lemma freeDesc_apply {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
     freeDesc f (freeMk x) = f x := by
-  dsimp [freeDesc]
+  erw [hom_freeDesc]
   erw [Finsupp.lift_apply, Finsupp.sum_single_index]
   all_goals simp
 
-@[simp]
 lemma free_map_apply {X Y : Type u} (f : X → Y) (x : X) :
     (free R).map f (freeMk x) = freeMk (f x) := by
   apply Finsupp.mapDomain_single
@@ -117,16 +126,18 @@ def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
   inv_hom_id := by
     ext ⟨⟩
     dsimp [freeMk]
-    erw [Finsupp.lapply_apply, Finsupp.lsingle_apply]
     rw [Finsupp.single_eq_same]
 
 @[simp]
-lemma εIso_hom_one : (εIso R).hom 1 = freeMk PUnit.unit := rfl
+lemma hom_hom_εIso : (εIso R).hom.hom = Finsupp.lsingle PUnit.unit := rfl
 
 @[simp]
+lemma inv_hom_εIso : (εIso R).inv.hom = Finsupp.lapply PUnit.unit := rfl
+
+lemma εIso_hom_one : (εIso R).hom 1 = freeMk PUnit.unit := rfl
+
 lemma εIso_inv_freeMk (x : PUnit) : (εIso R).inv (freeMk x) = 1 := by
   dsimp [εIso, freeMk]
-  erw [Finsupp.lapply_apply]
   rw [Finsupp.single_eq_same]
 
 /-- The canonical isomorphism `(free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y)`
