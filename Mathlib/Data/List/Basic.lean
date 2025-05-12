@@ -247,8 +247,6 @@ theorem mem_pure (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
 theorem bind_eq_flatMap {α β} (f : α → List β) (l : List α) : l >>= f = l.flatMap f :=
   rfl
 
-@[deprecated (since := "2024-10-16")] alias bind_eq_bind := bind_eq_flatMap
-
 /-! ### concat -/
 
 /-! ### reverse -/
@@ -315,11 +313,6 @@ theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) 
 
 @[simp]
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
-
-@[simp]
-theorem getLast_cons_cons (a₁ a₂ : α) (l : List α) :
-    getLast (a₁ :: a₂ :: l) (cons_ne_nil _ _) = getLast (a₂ :: l) (cons_ne_nil a₂ l) :=
-  rfl
 
 theorem dropLast_append_getLast : ∀ {l : List α} (h : l ≠ []), dropLast l ++ [getLast l h] = l
   | [], h => absurd rfl h
@@ -545,7 +538,7 @@ theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a 
     · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
     · simp only [Ne.symm h, false_or]
       rw [← ih]
-      exact succ_inj'
+      exact succ_inj
 
 @[simp]
 theorem idxOf_of_not_mem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
@@ -692,13 +685,6 @@ theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0
 
 end deprecated
 
-@[deprecated (since := "2024-10-21")]
-alias modifyNthTail_modifyNthTail_le := modifyTailIdx_modifyTailIdx_le
-
-@[deprecated (since := "2024-10-21")]
-alias modifyNthTail_modifyNthTail_same := modifyTailIdx_modifyTailIdx_self
-@[deprecated (since := "2024-10-21")] alias modifyNth_eq_set := modify_eq_set
-
 @[simp]
 theorem getElem_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (hj : j < (l.set i a).length) :
@@ -716,19 +702,13 @@ attribute [simp] map_const'
 theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ f) = map f l :=
   .symm <| map_eq_flatMap ..
 
-@[deprecated (since := "2024-10-16")] alias bind_pure_eq_map := flatMap_pure_eq_map
-
 theorem flatMap_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
     l.flatMap f = l.flatMap g :=
   (congr_arg List.flatten <| map_congr_left h :)
 
-@[deprecated (since := "2024-10-16")] alias bind_congr := flatMap_congr
-
 theorem infix_flatMap_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
     f a <:+: as.flatMap f :=
   infix_of_mem_flatten (mem_map_of_mem h)
-
-@[deprecated (since := "2024-10-16")] alias infix_bind_of_mem := infix_flatMap_of_mem
 
 @[simp]
 theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
@@ -1032,8 +1012,6 @@ theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
     l.filterMap f = l.flatMap fun a ↦ (f a).toList := by
   induction l with | nil => ?_ | cons a l ih => ?_ <;> simp [filterMap_cons]
   rcases f a <;> simp [ih]
-
-@[deprecated (since := "2024-10-16")] alias filterMap_eq_bind_toList := filterMap_eq_flatMap_toList
 
 theorem filterMap_congr {f g : α → Option β} {l : List α}
     (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by

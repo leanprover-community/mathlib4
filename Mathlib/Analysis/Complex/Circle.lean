@@ -53,7 +53,7 @@ variable {x y : Circle}
 
 instance instCoeOut : CoeOut Circle ℂ := subtypeCoe
 
-instance instCommGroup : CommGroup Circle := Metric.sphere.commGroup
+instance instCommGroup : CommGroup Circle := Metric.sphere.instCommGroup
 instance instMetricSpace : MetricSpace Circle := Subtype.metricSpace
 
 @[ext] lemma ext : (x : ℂ) = y → x = y := Subtype.ext
@@ -93,7 +93,7 @@ def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 @[simp] lemma toUnits_apply (z : Circle) : toUnits z = Units.mk0 ↑z z.coe_ne_zero := rfl
 
 instance : CompactSpace Circle := Metric.sphere.compactSpace _ _
-instance : IsTopologicalGroup Circle := Metric.sphere.topologicalGroup
+instance : IsTopologicalGroup Circle := Metric.sphere.instIsTopologicalGroup
 instance instUniformSpace : UniformSpace Circle := instUniformSpaceSubtype
 instance : IsUniformGroup Circle := by
   convert topologicalGroup_is_uniform_of_compactSpace Circle
