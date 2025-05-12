@@ -24,6 +24,8 @@ We also register continuous linear equiv versions of these correspondences, in
   `continuousMultilinearCurryLeftEquiv`
 * `ContinuousMultilinearMap.curryRight`, `ContinuousMultilinearMap.uncurryRight` and
   `continuousMultilinearCurryRightEquiv`.
+* `ContinuousMultilinearMap.curryMid`, `ContinuousLinearMap.uncurryMid` and
+  `ContinuousMultilinearMap.curryMidEquiv`
 -/
 
 suppress_compilation
@@ -320,6 +322,9 @@ theorem ContinuousMultilinearMap.uncurryRight_norm
 ### Currying a variable in the middle
 -/
 
+/-- Given a continuous linear map from `M p` to the space of continuous multilinear maps
+in `n` variables `M 0`, ..., `M n` with `M p` removed,
+returns a continuous multilinear map in all `n + 1` variables. -/
 @[simps! apply]
 def ContinuousLinearMap.uncurryMid (p : Fin (n + 1))
     (f : Ei p →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i ↦ Ei (p.succAbove i)) G) :
@@ -327,6 +332,9 @@ def ContinuousLinearMap.uncurryMid (p : Fin (n + 1))
   (ContinuousMultilinearMap.toMultilinearMapLinear ∘ₗ f.toLinearMap).uncurryMid p
     |>.mkContinuous ‖f‖ fun m => by exact ContinuousLinearMap.norm_map_removeNth_le f m
   
+/-- Interpret a continuous multilinear map in `n + 1` variables
+as a continuous linear map in `p`th variable
+with values in the continuous multilinear maps in the other variables. -/
 def ContinuousMultilinearMap.curryMid (p : Fin (n + 1)) (f : ContinuousMultilinearMap 𝕜 Ei G) :
     Ei p →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i ↦ Ei (p.succAbove i)) G :=
   MultilinearMap.mkContinuousLinear (f.toMultilinearMap.curryMid p) ‖f‖ f.norm_map_insertNth_le
@@ -349,6 +357,7 @@ theorem ContinuousMultilinearMap.uncurryMid_curryMid (p : Fin (n + 1))
 
 variable (𝕜 Ei G)
 
+/-- `ContinuousMultilinearMap.curryMid` as a linear isometry equivalence. -/
 @[simps! apply symm_apply]
 def ContinuousMultilinearMap.curryMidEquiv (p : Fin (n + 1)) :
     ContinuousMultilinearMap 𝕜 Ei G ≃ₗᵢ[𝕜]
