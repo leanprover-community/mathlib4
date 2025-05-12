@@ -115,11 +115,10 @@ theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
         simp only [ne_eq, mul_eq_zero]
         intro H
         rcases H with  H | H <;>
-        · exact weightedHomogeneousComponent_of_weightedOrder
-            (by simp [p, q, ENat.coe_toNat_eq_self, ← lt_top_iff_ne_top]
-                rw [← ne_eq, ne_zero_iff_weightedOrder_finite w]
-                apply ENat.coe_toNat (LT.lt.ne_top (by simpa))
-                ) H
+        · refine weightedHomogeneousComponent_of_weightedOrder ?_ H
+          simp only [ENat.coe_toNat_eq_self, ne_eq, weightedOrder_eq_top_iff, p, q]
+          rw [← ne_eq, ne_zero_iff_weightedOrder_finite w]
+          exact ENat.coe_toNat (ne_top_of_lt (by simpa))
       rw [← weightedHomogeneousComponent_mul_of_le_weightedOrder
           (le_of_eq hp) (le_of_eq hq)] at this
       rw [← hp, ← hq, ← Nat.cast_add, ← not_lt]
