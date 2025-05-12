@@ -533,7 +533,7 @@ lemma invtSubmodule_reflection:
     have x_mem_I : x ∈ I := LieSubalgebra.mem_lieSpan.mpr (fun _ a ↦ a x_in_gg)
     by_contra h
     exact hx₂ ((LieSubalgebra.eq_bot_iff I).mp h x x_mem_I)
-  have rr7 : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
+  have s₇ : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
     have help : ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule = ⊤ := by
       exact LieModule.iSup_genWeightSpace_as_module_eq_top' K H L
     intro x y
@@ -621,7 +621,7 @@ lemma invtSubmodule_reflection:
     | add x1 y1 _ _ hx hy =>
       simp only [add_lie]
       exact LieSubalgebra.add_mem I hx hy
-  have rr8 := (LieSubalgebra.exists_lieIdeal_coe_eq_iff (R := K) (L := L) (K := I)).2 rr7
+  have rr8 := (LieSubalgebra.exists_lieIdeal_coe_eq_iff (R := K) (L := L) (K := I)).2 s₇
   obtain ⟨I', hhh⟩ := rr8
   have rr9 : LieAlgebra.IsSimple K L := inferInstance
   have := rr9.eq_bot_or_eq_top I'
