@@ -3,7 +3,7 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Data.Fintype.Perm
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Data.Matrix.Mul
 import Mathlib.GroupTheory.Perm.Sign
 
@@ -60,7 +60,7 @@ theorem detp_mul :
       ofSign (t * s) = (ofSign t).map (mulRightEmbedding σ) := by
     ext τ
     simp_rw [mem_map, mulRightEmbedding_apply, ← eq_mul_inv_iff_mul_eq, exists_eq_right,
-      mem_ofSign, _root_.map_mul, _root_.map_inv, mul_inv_eq_iff_eq_mul, mem_ofSign.mp hσ]
+      mem_ofSign, map_mul, map_inv, mul_inv_eq_iff_eq_mul, mem_ofSign.mp hσ]
   have h {s t} : detp s A * detp t B =
       ∑ σ ∈ ofSign s, ∑ τ ∈ ofSign (t * s), ∏ k, A k (σ k) * B (σ k) (τ k) := by
     simp_rw [detp, sum_mul_sum, prod_mul_distrib]

@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RepresentationTheory.Rep
 import Mathlib.RingTheory.TensorProduct.Free
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # The structure of the `k[G]`-module `k[Gⁿ]`
@@ -108,9 +109,10 @@ def actionDiagonalSucc (G : Type u) [Group G] :
 
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
     (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
-  induction' n with n hn
-  · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
-  · refine Prod.ext rfl (funext fun x => ?_)
+  induction n with
+  | zero => exact Prod.ext rfl (funext fun x => Fin.elim0 x)
+  | succ n hn =>
+    refine Prod.ext rfl (funext fun x => ?_)
     /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
     · dsimp only [actionDiagonalSucc]
       simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
@@ -127,12 +129,14 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
 theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
     (actionDiagonalSucc G n).inv.hom (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) := by
   revert g
-  induction' n with n hn
-  · intro g
+  induction n with
+  | zero =>
+    intro g
     funext (x : Fin 1)
     simp only [Subsingleton.elim x 0, Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one]
     rfl
-  · intro g
+  | succ n hn =>
+    intro g
     /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
     ext
     dsimp only [actionDiagonalSucc]
@@ -233,9 +237,10 @@ of the righthand side. -/
 def ofMulActionBasisAux :
     MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]
       (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (diagonalSucc k G n).symm).toLinearEquiv with
+  haveI e := (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (diagonalSucc k G n).symm).toLinearEquiv
+  { e with
     map_smul' := fun r x => by
-      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
+      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul e]
       congr 1
       /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
@@ -331,7 +336,7 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
     · simp only [one_smul]
       erw [Representation.linHom_apply]
-      simp only [LinearMap.comp_apply, MonoidHom.one_apply, LinearMap.one_apply]
+      simp only [LinearMap.comp_apply, MonoidHom.one_apply, Module.End.one_apply]
       erw [Finsupp.llift_apply]
       rw [Finsupp.lift_apply]
       erw [Finsupp.sum_single_index]
@@ -347,7 +352,7 @@ theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fi
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1)
       = f (Fin.contractNth a (· * ·) g) := by
   simp only [diagonalHomEquiv_symm_apply, Function.comp_apply, Fin.succ_succAbove_zero,
-    Fin.partialProd_zero, map_one, Fin.succ_succAbove_succ, LinearMap.one_apply,
+    Fin.partialProd_zero, map_one, Fin.succ_succAbove_succ, Module.End.one_apply,
     Fin.partialProd_succ]
   congr
   ext
@@ -359,7 +364,7 @@ variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
 def classifyingSpaceUniversalCover [Monoid G] :
-    SimplicialObject (Action (Type u) <| MonCat.of G) where
+    SimplicialObject (Action (Type u) G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
     { hom := fun x => x ∘ f.unop.toOrderHom
@@ -564,7 +569,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   · rw [ModuleCat.hom_comp]
     congr
     · ext x
-      dsimp (config := { unfoldPartialApp := true }) [HomotopyEquiv.ofIso,
+      dsimp +unfoldPartialApp [HomotopyEquiv.ofIso,
         Finsupp.LinearEquiv.finsuppUnique]
       rw [@Unique.eq_default _ Types.terminalIso.toEquiv.unique x]
       simp
@@ -615,11 +620,11 @@ variable [Group G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
 def groupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) where
+  complex := resolution k G
   π := εToSingle₀ k G
 
 instance : EnoughProjectives (Rep k G) :=
-  Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2
-    ModuleCat.moduleCat_enoughProjectives.{u}
+  Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives
 
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the

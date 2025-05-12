@@ -90,11 +90,10 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem Module
 variable [NumberField K] {K}
 
 open Classical in
-/-- The map from the mixed space to `{w : InfinitePlace K // w ≠ w₀} → ℝ` (with `w₀` the fixed
-place from the proof of Dirichlet Unit Theorem) defined in such way that: 1) it factors the map
+/-- The map from the mixed space to `logSpace K` defined in such way that: 1) it factors the map
 `logEmbedding`, see `logMap_eq_logEmbedding`; 2) it is constant on the sets
 `{c • x | c ∈ ℝ, c ≠ 0}` if `norm x ≠ 0`, see `logMap_real_smul`. -/
-def logMap (x : mixedSpace K) : {w : InfinitePlace K // w ≠ w₀} → ℝ := fun w ↦
+def logMap (x : mixedSpace K) : logSpace K := fun w ↦
   mult w.val * (Real.log (normAtPlace w.val x) -
     Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
 
@@ -177,6 +176,17 @@ of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem
 def fundamentalCone : Set (mixedSpace K) :=
   logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
       {x | mixedEmbedding.norm x = 0}
+
+theorem measurableSet_fundamentalCone :
+    MeasurableSet (fundamentalCone K) := by
+  classical
+  refine MeasurableSet.diff ?_ ?_
+  · unfold logMap
+    refine MeasurableSet.preimage (ZSpan.fundamentalDomain_measurableSet _) <|
+      measurable_pi_iff.mpr fun w ↦ measurable_const.mul ?_
+    exact (continuous_normAtPlace _).measurable.log.sub <|
+      (mixedEmbedding.continuous_norm _).measurable.log.mul measurable_const
+  · exact measurableSet_eq_fun (mixedEmbedding.continuous_norm K).measurable measurable_const
 
 namespace fundamentalCone
 
@@ -460,7 +470,7 @@ theorem card_isPrincipal_norm_eq_mul_torsion (n : ℕ) :
     Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
       absNorm (I : Ideal (𝓞 K)) = n} * torsionOrder K =
         Nat.card {a : integerSet K | mixedEmbedding.norm (a : mixedSpace K) = n} := by
-  rw [torsionOrder, PNat.mk_coe, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
+  rw [torsionOrder, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
   exact Nat.card_congr (integerSetEquivNorm K n).symm
 
 variable (J : (Ideal (𝓞 K))⁰)
@@ -567,7 +577,7 @@ theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
         Nat.card {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
   obtain hs | hs := le_or_gt 0 s
   · simp_rw [← intNorm_idealSetEquiv_apply, ← Nat.le_floor_iff hs]
-    rw [torsionOrder, PNat.mk_coe, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
+    rw [torsionOrder, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
     refine Nat.card_congr <| @Equiv.ofFiberEquiv _ (γ := Finset.Iic ⌊s⌋₊) _
       (fun I ↦ ⟨absNorm I.1.val.1, Finset.mem_Iic.mpr I.1.prop.2.2⟩)
       (fun a ↦ ⟨intNorm (idealSetEquiv K J a.1).1, Finset.mem_Iic.mpr a.prop⟩) fun ⟨i, hi⟩ ↦ ?_

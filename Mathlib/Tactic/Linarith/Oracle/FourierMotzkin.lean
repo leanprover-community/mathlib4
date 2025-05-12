@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.Std.Data.HashMap
 import Batteries.Lean.HashMap
+import Batteries.Data.RBMap.Basic
 import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
@@ -31,7 +32,29 @@ we conclude that the original system was unsatisfiable.
 -/
 
 open Batteries
-open Std (format ToFormat)
+open Std (format ToFormat TreeSet)
+
+namespace Std.TreeSet
+
+variable {α : Type*} {cmp}
+
+/--
+`O(n₂ * log (n₁ + n₂))`. Merges the maps `t₁` and `t₂`.
+If equal keys exist in both, the key from `t₂` is preferred.
+-/
+def union (t₁ t₂ : TreeSet α cmp) : TreeSet α cmp :=
+  t₂.foldl .insert t₁
+
+instance : Union (TreeSet α cmp) := ⟨TreeSet.union⟩
+
+/--
+`O(n₁ * (log n₁ + log n₂))`. Constructs the set of all elements of `t₁` that are not in `t₂`.
+-/
+def sdiff (t₁ t₂ : TreeSet α cmp) : TreeSet α cmp := t₁.filter (!t₂.contains ·)
+
+instance : SDiff (TreeSet α cmp) := ⟨TreeSet.sdiff⟩
+
+end Std.TreeSet
 
 namespace Linarith
 
@@ -47,7 +70,7 @@ they are not shared with other components of `linarith`.
 The atomic source of a comparison is an assumption, indexed by a natural number.
 Two comparisons can be added to produce a new comparison,
 and one comparison can be scaled by a natural number to produce a new comparison.
- -/
+-/
 inductive CompSource : Type
   | assump : Nat → CompSource
   | add : CompSource → CompSource → CompSource
@@ -61,9 +84,9 @@ to the number of copies of that assumption that appear in the history of `cs`.
 For example, suppose `cs` is produced by scaling assumption 2 by 5,
 and adding to that the sum of assumptions 1 and 2.
 `cs.flatten` maps `1 ↦ 1, 2 ↦ 6`.
- -/
+-/
 def CompSource.flatten : CompSource → Std.HashMap Nat Nat
-  | (CompSource.assump n) => Std.HashMap.empty.insert n 1
+  | (CompSource.assump n) => (∅ : Std.HashMap Nat Nat).insert n 1
   | (CompSource.add c1 c2) =>
       (CompSource.flatten c1).mergeWith (fun _ b b' => b + b') (CompSource.flatten c2)
   | (CompSource.scale n c) => (CompSource.flatten c).mapVal (fun _ v => v * n)
@@ -107,17 +130,17 @@ structure PComp : Type where
   back to the original assumptions. -/
   src : CompSource
   /-- The set of original assumptions which have been used in constructing this comparison. -/
-  history : RBSet ℕ Ord.compare
+  history : TreeSet ℕ Ord.compare
   /-- The variables which have been *effectively eliminated*,
   i.e. by running the elimination algorithm on that variable. -/
-  effective : RBSet ℕ Ord.compare
+  effective : TreeSet ℕ Ord.compare
   /-- The variables which have been *implicitly eliminated*.
   These are variables that appear in the historical set,
   do not appear in `c` itself, and are not in `effective. -/
-  implicit : RBSet ℕ Ord.compare
+  implicit : TreeSet ℕ Ord.compare
   /-- The union of all variables appearing in those original assumptions
   which appear in the `history` set. -/
-  vars : RBSet ℕ Ord.compare
+  vars : TreeSet ℕ Ord.compare
 
 /--
 Any comparison whose history is not minimal is redundant,
@@ -190,7 +213,7 @@ No variables have been eliminated (effectively or implicitly).
 def PComp.assump (c : Comp) (n : ℕ) : PComp where
   c := c
   src := CompSource.assump n
-  history := RBSet.empty.insert n
+  history := {n}
   effective := .empty
   implicit := .empty
   vars := .ofList c.vars _

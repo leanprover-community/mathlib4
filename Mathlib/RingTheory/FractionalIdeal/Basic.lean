@@ -132,7 +132,7 @@ noncomputable def equivNum [Nontrivial P] [NoZeroSMulDivisors R P]
     (LinearEquiv.ofBijective ((DistribMulAction.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
       ⟨fun _ _ hxy ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩)
     (Submodule.equivMapOfInjective (Algebra.linearMap R P)
-      (NoZeroSMulDivisors.algebraMap_injective R P) (num I)).symm
+      (FaithfulSMul.algebraMap_injective R P) (num I)).symm
   · rw [← den_mul_self_eq_num]
     exact Submodule.smul_mem_pointwise_smul _ _ _ hx
   · simp_rw [LinearMap.restrict_apply, DistribMulAction.toLinearMap_apply, Subtype.mk.injEq] at hxy

@@ -123,7 +123,7 @@ def Basis.smulTower : Basis (ι × ι') R A :=
 @[simp]
 theorem Basis.smulTower_repr (x ij) :
     (b.smulTower c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
-  simp [smulTower]
+  simp [smulTower, Finsupp.uncurry_apply]
 
 theorem Basis.smulTower_repr_mk (x i j) : (b.smulTower c).repr x (i, j) = b.repr (c.repr x j) i :=
   b.smulTower_repr c x (i, j)
@@ -167,7 +167,7 @@ variable [CommRing R] [Ring S] [Algebra R S]
 theorem Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S]
     (b : @Basis ι R S _ _ Algebra.toModule) : Function.Injective (algebraMap R S) :=
   have : NoZeroSMulDivisors R S := b.noZeroSMulDivisors
-  NoZeroSMulDivisors.algebraMap_injective R S
+  FaithfulSMul.algebraMap_injective R S
 
 end Ring
 

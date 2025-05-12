@@ -134,7 +134,7 @@ end LeftHomologyData
 both left homology data `h₁` and `h₂` are preserved by a functor `F`, this is
 the induced left homology map data for the morphism `F.mapShortComplex.map φ`. -/
 @[simps]
-def LeftHomologyMapData.map {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData}
+noncomputable def LeftHomologyMapData.map {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData}
     {h₂ : S₂.LeftHomologyData} (ψ : LeftHomologyMapData φ h₁ h₂) (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [h₁.IsPreservedBy F] [h₂.IsPreservedBy F] :
     LeftHomologyMapData (F.mapShortComplex.map φ) (h₁.map F) (h₂.map F) where
@@ -216,7 +216,7 @@ end RightHomologyData
 both right homology data `h₁` and `h₂` are preserved by a functor `F`, this is
 the induced right homology map data for the morphism `F.mapShortComplex.map φ`. -/
 @[simps]
-def RightHomologyMapData.map {φ : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData}
+noncomputable def RightHomologyMapData.map {φ : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData}
     {h₂ : S₂.RightHomologyData} (ψ : RightHomologyMapData φ h₁ h₂) (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [h₁.IsPreservedBy F] [h₂.IsPreservedBy F] :
     RightHomologyMapData (F.mapShortComplex.map φ) (h₁.map F) (h₂.map F) where
@@ -242,7 +242,7 @@ noncomputable def HomologyData.map (h : S.HomologyData) (F : C ⥤ D) [F.Preserv
 `h₁.left`, `h₁.right`, `h₂.left` and `h₂.right` are all preserved by a functor `F`, this is
 the induced homology map data for the morphism `F.mapShortComplex.map φ`. -/
 @[simps]
-def HomologyMapData.map {φ : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData}
+noncomputable def HomologyMapData.map {φ : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData}
     (ψ : HomologyMapData φ h₁ h₂) (F : C ⥤ D) [F.PreservesZeroMorphisms]
     [h₁.left.IsPreservedBy F] [h₁.right.IsPreservedBy F]
     [h₂.left.IsPreservedBy F] [h₂.right.IsPreservedBy F] :
@@ -641,7 +641,7 @@ the left homology of a short complex `S`, and a left homology data for `S`,
 this is the left homology map data for the morphism `S.mapNatTrans τ`
 obtained by evaluating `τ`. -/
 @[simps]
-def LeftHomologyMapData.natTransApp (h : LeftHomologyData S) (τ : F ⟶ G) :
+noncomputable def LeftHomologyMapData.natTransApp (h : LeftHomologyData S) (τ : F ⟶ G) :
     LeftHomologyMapData (S.mapNatTrans τ) (h.map F) (h.map G) where
   φK := τ.app h.K
   φH := τ.app h.H
@@ -651,7 +651,7 @@ the right homology of a short complex `S`, and a right homology data for `S`,
 this is the right homology map data for the morphism `S.mapNatTrans τ`
 obtained by evaluating `τ`. -/
 @[simps]
-def RightHomologyMapData.natTransApp (h : RightHomologyData S) (τ : F ⟶ G) :
+noncomputable def RightHomologyMapData.natTransApp (h : RightHomologyData S) (τ : F ⟶ G) :
     RightHomologyMapData (S.mapNatTrans τ) (h.map F) (h.map G) where
   φQ := τ.app h.Q
   φH := τ.app h.H
@@ -661,7 +661,7 @@ the homology of a short complex `S`, and a homology data for `S`,
 this is the homology map data for the morphism `S.mapNatTrans τ`
 obtained by evaluating `τ`. -/
 @[simps]
-def HomologyMapData.natTransApp (h : HomologyData S) (τ : F ⟶ G) :
+noncomputable def HomologyMapData.natTransApp (h : HomologyData S) (τ : F ⟶ G) :
     HomologyMapData (S.mapNatTrans τ) (h.map F) (h.map G) where
   left := LeftHomologyMapData.natTransApp h.left τ
   right := RightHomologyMapData.natTransApp h.right τ
@@ -681,7 +681,7 @@ variable [HasKernels C] [HasCokernels C] [HasKernels D] [HasCokernels D]
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ cyclesFunctor D ≅ cyclesFunctor C ⋙ F`
-for a functor `F : C ⥤ D` which preserves homology. --/
+for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def cyclesFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.cyclesFunctor D ≅
       ShortComplex.cyclesFunctor C ⋙ F :=
@@ -690,7 +690,7 @@ noncomputable def cyclesFunctorIso [F.PreservesHomology] :
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ leftHomologyFunctor D ≅ leftHomologyFunctor C ⋙ F`
-for a functor `F : C ⥤ D` which preserves homology. --/
+for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def leftHomologyFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.leftHomologyFunctor D ≅
       ShortComplex.leftHomologyFunctor C ⋙ F :=
@@ -699,7 +699,7 @@ noncomputable def leftHomologyFunctorIso [F.PreservesHomology] :
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ opcyclesFunctor D ≅ opcyclesFunctor C ⋙ F`
-for a functor `F : C ⥤ D` which preserves homology. --/
+for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def opcyclesFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.opcyclesFunctor D ≅
       ShortComplex.opcyclesFunctor C ⋙ F :=
@@ -708,7 +708,7 @@ noncomputable def opcyclesFunctorIso [F.PreservesHomology] :
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ rightHomologyFunctor D ≅ rightHomologyFunctor C ⋙ F`
-for a functor `F : C ⥤ D` which preserves homology. --/
+for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def rightHomologyFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.rightHomologyFunctor D ≅
       ShortComplex.rightHomologyFunctor C ⋙ F :=
@@ -719,7 +719,7 @@ end
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ homologyFunctor D ≅ homologyFunctor C ⋙ F`
-for a functor `F : C ⥤ D` which preserves homology. --/
+for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def homologyFunctorIso
     [CategoryWithHomology C] [CategoryWithHomology D] [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.homologyFunctor D ≅

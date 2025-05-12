@@ -32,7 +32,7 @@ namespace GenContFract
 
 open GenContFract (of)
 
-variable {K : Type*} [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
 /-
 We will have to constantly coerce along our structures in the following proofs using their provided
@@ -163,9 +163,7 @@ theorem coe_stream_nth_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
       IntFractPair.stream v n := by
   induction n with
   | zero =>
-    -- Porting note: was
-    -- simp [IntFractPair.stream, coe_of_rat_eq v_eq_q]
-    simp only [IntFractPair.stream, Option.map_some', coe_of_rat_eq v_eq_q]
+    simp only [IntFractPair.stream, Option.map_some, coe_of_rat_eq v_eq_q]
   | succ n IH =>
     rw [v_eq_q] at IH
     cases stream_q_nth_eq : IntFractPair.stream q n with
@@ -211,7 +209,6 @@ theorem coe_of_s_rat_eq (v_eq_q : v = (↑q : K)) :
 theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
     (⟨(of q).h, (of q).s.map (Pair.map (↑))⟩ : GenContFract K) = of v := by
   rcases gcf_v_eq : of v with ⟨h, s⟩; subst v
-  -- Porting note: made coercion target explicit
   obtain rfl : ↑⌊(q : K)⌋ = h := by injection gcf_v_eq
   simp [coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl, gcf_v_eq]
 
@@ -220,7 +217,7 @@ theorem of_terminates_iff_of_rat_terminates {v : K} {q : ℚ} (v_eq_q : v = (q :
   constructor <;> intro h <;> obtain ⟨n, h⟩ := h <;> use n <;>
     simp only [Stream'.Seq.TerminatedAt, (coe_of_s_get?_rat_eq v_eq_q n).symm] at h ⊢ <;>
     cases h' : (of q).s.get? n <;>
-    simp only [h'] at h <;> -- Porting note: added
+    simp only [h'] at h <;>
     trivial
 
 end RatTranslation
@@ -279,7 +276,7 @@ theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
   | succ n IH =>
     intro ifp_succ_n stream_succ_nth_eq
     suffices ifp_succ_n.fr.num + 1 ≤ (IntFractPair.of q).fr.num - n by
-      rw [Int.ofNat_succ, sub_add_eq_sub_sub]
+      rw [Int.natCast_succ, sub_add_eq_sub_sub]
       solve_by_elim [le_sub_right_of_add_le]
     rcases succ_nth_stream_eq_some_iff.mp stream_succ_nth_eq with ⟨ifp_n, stream_nth_eq, -⟩
     have : ifp_succ_n.fr.num < ifp_n.fr.num :=
@@ -297,8 +294,6 @@ theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.s
       stream_nth_fr_num_le_fr_num_sub_n_rat stream_nth_eq
     have : fract_q_num - n = -1 := by
       have : 0 ≤ fract_q_num := Rat.num_nonneg.mpr (Int.fract_nonneg q)
-      -- Porting note: was
-      -- simp [Int.natAbs_of_nonneg this, sub_add_eq_sub_sub_swap, sub_right_comm]
       simp only [n, Nat.cast_add, Int.natAbs_of_nonneg this, Nat.cast_one,
         sub_add_eq_sub_sub_swap, sub_right_comm, sub_self, zero_sub]
     have : 0 ≤ ifp.fr := (nth_stream_fr_nonneg_lt_one stream_nth_eq).left

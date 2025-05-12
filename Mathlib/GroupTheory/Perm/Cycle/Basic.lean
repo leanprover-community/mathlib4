@@ -5,8 +5,10 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.GroupTheory.Perm.List
+import Mathlib.GroupTheory.Perm.Sign
 
 /-!
 # Cycles of a permutation
@@ -74,6 +76,7 @@ theorem SameCycle.equivalence : Equivalence (SameCycle f) :=
 
 /-- The setoid defined by the `SameCycle` relation. -/
 def SameCycle.setoid (f : Perm α) : Setoid α where
+  r := f.SameCycle
   iseqv := SameCycle.equivalence f
 
 @[simp]
@@ -312,7 +315,7 @@ noncomputable def IsCycle.zpowersEquivSupport {σ : Perm α} (hσ : IsCycle σ) 
     (fun (τ : ↥ ((Subgroup.zpowers σ) : Set (Perm α))) =>
       ⟨(τ : Perm α) (Classical.choose hσ), by
         obtain ⟨τ, n, rfl⟩ := τ
-        erw [Finset.mem_coe, Subtype.coe_mk, zpow_apply_mem_support, mem_support]
+        rw [Subtype.coe_mk, zpow_apply_mem_support, mem_support]
         exact (Classical.choose_spec hσ).1⟩)
     (by
       constructor
@@ -324,7 +327,7 @@ noncomputable def IsCycle.zpowersEquivSupport {σ : Perm α} (hσ : IsCycle σ) 
           rw [Subtype.coe_mk, Subtype.coe_mk, zpow_apply_comm σ m i, zpow_apply_comm σ n i]
           exact congr_arg _ (Subtype.ext_iff.mp h)
       · rintro ⟨y, hy⟩
-        erw [Finset.mem_coe, mem_support] at hy
+        rw [mem_support] at hy
         obtain ⟨n, rfl⟩ := (Classical.choose_spec hσ).2 hy
         exact ⟨⟨σ ^ n, n, rfl⟩, rfl⟩)
 
@@ -372,7 +375,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
     ∀ (n : ℤ) {b x : α} {f : Perm α} (_ : (swap x (f x) * f) b ≠ b) (_ : (f ^ n) (f x) = b),
       ∃ i : ℤ, ((swap x (f x) * f) ^ i) (f x) = b := by
   intro n
-  induction n with
+  cases n with
   | ofNat n => exact isCycle_swap_mul_aux₁ n
   | negSucc n =>
     intro b x f hb h
@@ -409,9 +412,9 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
       else by
         rw [swap_apply_of_ne_of_ne hyx hfyx]
         refine by_contradiction fun hy => ?_
-        cases' hz.2 hy with j hj
+        obtain ⟨j, hj⟩ := hz.2 hy
         rw [← sub_add_cancel j i, zpow_add, mul_apply, hi] at hj
-        cases' zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji hji
+        rcases zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji | hji
         · rw [← hj, hji] at hyx
           tauto
         · rw [← hj, hji] at hfyx
@@ -422,8 +425,7 @@ theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCyc
   ⟨f x, by simp [swap_apply_def, mul_apply, if_neg hffx, f.injective.eq_iff, if_neg hx, hx],
     fun y hy =>
     let ⟨i, hi⟩ := hf.exists_zpow_eq hx (ne_and_ne_of_swap_mul_apply_ne_self hy).1
-    -- Porting note: Needed to add Perm α typehint, otherwise does not know how to coerce to fun
-    have hi : (f ^ (i - 1) : Perm α) (f x) = y :=
+    have hi : (f ^ (i - 1)) (f x) = y :=
       calc
         (f ^ (i - 1) : Perm α) (f x) = (f ^ (i - 1) * f ^ (1 : ℤ) : Perm α) x := by simp
         _ = y := by rwa [← zpow_add, sub_add_cancel]
@@ -459,7 +461,7 @@ theorem IsCycle.of_pow {n : ℕ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f ^
     exact (support_pow_le _ n).antisymm h2
   obtain ⟨x, hx1, hx2⟩ := h1
   refine ⟨x, (key x).mp hx1, fun y hy => ?_⟩
-  cases' hx2 ((key y).mpr hy) with i _
+  obtain ⟨i, _⟩ := hx2 ((key y).mpr hy)
   exact ⟨n * i, by rwa [zpow_mul]⟩
 
 -- The lemma `support_zpow_le` is relevant. It means that `h2` is equivalent to
@@ -544,7 +546,7 @@ theorem IsCycle.pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
         simp [pow_mul, pow_orderOf_eq_one]
       have : orderOf (f ^ n) = orderOf f := by rw [h.orderOf, hr, hf.orderOf]
       rw [orderOf_pow, Nat.div_eq_self] at this
-      cases' this with h
+      rcases this with h | _
       · exact absurd h (orderOf_pos _).ne'
       · rwa [Nat.coprime_iff_gcd_eq_one, Nat.gcd_comm]
     · intro h
@@ -646,14 +648,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : #σ.support = 
   intro x hx
   simp only [Perm.mul_apply, Equiv.trans_apply, Equiv.sumCongr_apply]
   obtain ⟨n, rfl⟩ := hσ.exists_pow_eq (Classical.choose_spec hσ).1 (mem_support.1 hx)
-  erw [hσ.zpowersEquivSupport_symm_apply n]
-  simp only [← Perm.mul_apply, ← pow_succ']
-  erw [hσ.zpowersEquivSupport_symm_apply (n + 1)]
-  -- This used to be a `simp only` before https://github.com/leanprover/lean4/pull/2644
-  erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply, zpowersEquivSupport_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  simp_rw [pow_succ', Perm.mul_apply]
-  rfl
+  simp [← Perm.mul_apply, ← pow_succ']
 
 theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
     IsConj σ τ ↔ #σ.support = #τ.support where
@@ -773,10 +768,7 @@ theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ 
     rw [← this, orderOf_dvd_iff_pow_eq_one,
       (hf.isCycle_subtypePerm hs).pow_eq_one_iff'
         (ne_of_apply_ne ((↑) : s → α) <| hf.apply_ne hs (⟨a, ha⟩ : s).2)]
-    simp
-    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
-    erw [subtypePerm_apply]
-    simp
+    simp [-coe_sort_coe]
 
 theorem IsCycleOn.zpow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
     ∀ {n : ℤ}, (f ^ n) a = a ↔ (#s : ℤ) ∣ n
@@ -930,7 +922,7 @@ theorem product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
   classical
     rintro m hm n hn hmn
     simp only [disjoint_left, Function.onFun, mem_map, Function.Embedding.coeFn_mk, exists_prop,
-      not_exists, not_and, forall_exists_index, and_imp, Prod.forall, Prod.mk.inj_iff]
+      not_exists, not_and, forall_exists_index, and_imp, Prod.forall, Prod.mk_inj]
     rintro _ _ _ - rfl rfl a ha rfl h
     rw [hf.pow_apply_eq_pow_apply ha] at h
     rw [mem_coe, mem_range] at hm hn
@@ -954,7 +946,7 @@ theorem product_self_eq_disjiUnion_perm (hf : f.IsCycleOn s) :
         (product_self_eq_disjiUnion_perm_aux hf) := by
   ext ⟨a, b⟩
   simp only [mem_product, Equiv.Perm.coe_pow, mem_disjiUnion, mem_range, mem_map,
-    Function.Embedding.coeFn_mk, Prod.mk.inj_iff, exists_prop]
+    Function.Embedding.coeFn_mk, Prod.mk_inj, exists_prop]
   refine ⟨fun hx => ?_, ?_⟩
   · obtain ⟨n, hn, rfl⟩ := hf.exists_pow_eq hx.1 hx.2
     exact ⟨n, hn, a, hx.1, rfl, by rw [f.iterate_eq_pow]⟩

@@ -100,7 +100,7 @@ def compConstIso (F : C ⥤ D) :
     (by aesop_cat)
 
 /-- The canonical isomorphism
-`const D ⋙ (whiskeringLeft J _ _).obj F ≅ const J`.-/
+`const D ⋙ (whiskeringLeft J _ _).obj F ≅ const J` -/
 @[simps!]
 def constCompWhiskeringLeftIso (F : J ⥤ D) :
     const D ⋙ (whiskeringLeft J D C).obj F ≅ const J :=

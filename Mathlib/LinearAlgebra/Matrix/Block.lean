@@ -142,16 +142,21 @@ variable [DecidableEq m]
 theorem blockTriangular_one [One R] : BlockTriangular (1 : Matrix m m R) b :=
   blockTriangular_diagonal _
 
-theorem blockTriangular_stdBasisMatrix {i j : m} (hij : b i ≤ b j) (c : R) :
-    BlockTriangular (stdBasisMatrix i j c) b := by
+theorem blockTriangular_single {i j : m} (hij : b i ≤ b j) (c : R) :
+    BlockTriangular (single i j c) b := by
   intro r s hrs
-  apply StdBasisMatrix.apply_of_ne
+  apply single_apply_of_ne
   rintro ⟨rfl, rfl⟩
   exact (hij.trans_lt hrs).false
 
-theorem blockTriangular_stdBasisMatrix' {i j : m} (hij : b j ≤ b i) (c : R) :
-    BlockTriangular (stdBasisMatrix i j c) (toDual ∘ b) :=
-  blockTriangular_stdBasisMatrix (by exact toDual_le_toDual.mpr hij) _
+@[deprecated (since := "2025-05-05")] alias blockTriangular_stdBasisMatrix := blockTriangular_single
+
+theorem blockTriangular_single' {i j : m} (hij : b j ≤ b i) (c : R) :
+    BlockTriangular (single i j c) (toDual ∘ b) :=
+  blockTriangular_single (by exact toDual_le_toDual.mpr hij) _
+
+@[deprecated (since := "2025-05-05")]
+alias blockTriangular_stdBasisMatrix' := blockTriangular_single'
 
 end Zero
 
@@ -159,11 +164,11 @@ variable [CommRing R] [DecidableEq m]
 
 theorem blockTriangular_transvection {i j : m} (hij : b i ≤ b j) (c : R) :
     BlockTriangular (transvection i j c) b :=
-  blockTriangular_one.add (blockTriangular_stdBasisMatrix hij c)
+  blockTriangular_one.add (blockTriangular_single hij c)
 
 theorem blockTriangular_transvection' {i j : m} (hij : b j ≤ b i) (c : R) :
     BlockTriangular (transvection i j c) (OrderDual.toDual ∘ b) :=
-  blockTriangular_one.add (blockTriangular_stdBasisMatrix' hij c)
+  blockTriangular_one.add (blockTriangular_single' hij c)
 
 end Preorder
 
@@ -235,7 +240,10 @@ theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePr
 
 protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : BlockTriangular M b) :
     M.det = ∏ a ∈ univ.image b, (M.toSquareBlock b a).det := by
-  induction' hs : univ.image b using Finset.strongInduction with s ih generalizing m
+  suffices ∀ hs : Finset α, univ.image b = hs → M.det = ∏ a ∈ hs, (M.toSquareBlock b a).det by
+    exact this _ rfl
+  intro s hs
+  induction s using Finset.strongInduction generalizing m with | H s ih =>
   subst hs
   cases isEmpty_or_nonempty m
   · simp
@@ -353,7 +361,9 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
 /-- The inverse of a block-triangular matrix is block-triangular. -/
 theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
     (hM : BlockTriangular M b) : BlockTriangular M⁻¹ b := by
-  induction' hs : univ.image b using Finset.strongInduction with s ih generalizing m
+  suffices ∀ hs : Finset α, univ.image b = hs → BlockTriangular M⁻¹ b by exact this _ rfl
+  intro s hs
+  induction s using Finset.strongInduction generalizing m with | H s ih =>
   subst hs
   intro i j hij
   haveI : Inhabited m := ⟨i⟩

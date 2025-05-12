@@ -113,7 +113,7 @@ end algebraicClosure
 
 protected theorem Transcendental.algebraicClosure {a : E} (ha : Transcendental F a) :
     Transcendental (algebraicClosure F E) a :=
-  ha.extendScalars Subtype.val_injective
+  ha.extendScalars _
 
 variable (F E K)
 

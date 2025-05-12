@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.NoetherianSpace
 
 /-!
@@ -89,9 +90,6 @@ theorem Topology.IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s
     H (f '' U) (f '' V) (Set.image_subset _ hU) (h.isOpenMap _ hU') (hU''.image h.continuous)
       (Set.image_subset _ hV) (h.isOpenMap _ hV') (hV''.image h.continuous)
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.isQuasiSeparated_iff := IsOpenEmbedding.isQuasiSeparated_iff
-
 theorem isQuasiSeparated_iff_quasiSeparatedSpace (s : Set α) (hs : IsOpen s) :
     IsQuasiSeparated s ↔ QuasiSeparatedSpace s := by
   rw [← isQuasiSeparated_univ_iff]
@@ -131,11 +129,12 @@ lemma QuasiSeparatedSpace.of_isOpenEmbedding {f : β → α} (h : IsOpenEmbeddin
     QuasiSeparatedSpace β :=
   isQuasiSeparated_univ_iff.mp (h.isQuasiSeparated_iff.mpr <| .of_quasiSeparatedSpace _)
 
-@[deprecated (since := "2024-10-18")]
-alias QuasiSeparatedSpace.of_openEmbedding := QuasiSeparatedSpace.of_isOpenEmbedding
-
 lemma IsCompact.inter_of_isOpen (hUcomp : IsCompact U) (hVcomp : IsCompact V) (hUopen : IsOpen U)
     (hVopen : IsOpen V) : IsCompact (U ∩ V) :=
   QuasiSeparatedSpace.inter_isCompact _ _ hUopen hUcomp hVopen hVcomp
 
 end QuasiSeparatedSpace
+
+lemma quasiSeparatedSpace_congr (e : α ≃ₜ β) : QuasiSeparatedSpace α ↔ QuasiSeparatedSpace β where
+  mp _ := .of_isOpenEmbedding e.symm.isOpenEmbedding
+  mpr _ := .of_isOpenEmbedding e.isOpenEmbedding

@@ -137,7 +137,7 @@ theorem minSqFacProp_div (n) {k} (pk : Prime k) (dk : k ∣ n) (dkk : ¬k * k �
         subst e
         contradiction
     (coprime_mul_iff_right.2 ⟨this, this⟩).mul_dvd_of_dvd_of_dvd dk dp
-  cases' o with d
+  rcases o with - | d
   · rw [MinSqFacProp, squarefree_iff_prime_squarefree] at H ⊢
     exact fun p pp dp => H p pp ((dvd_div_iff_mul_dvd dk).2 (this _ pp dp))
   · obtain ⟨H1, H2, H3⟩ := H
@@ -222,7 +222,7 @@ theorem minSqFac_le_of_dvd {n d : ℕ} (h : n.minSqFac = some d) {m} (m2 : 2 ≤
 theorem squarefree_iff_minSqFac {n : ℕ} : Squarefree n ↔ n.minSqFac = none := by
   have := minSqFac_has_prop n
   constructor <;> intro H
-  · cases' e : n.minSqFac with d
+  · rcases e : n.minSqFac with - | d
     · rfl
     rw [e] at this
     cases squarefree_iff_prime_squarefree.1 H _ this.1 this.2.1
@@ -301,7 +301,7 @@ theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [Ad
 
 theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
     ∃ a b : ℕ, 0 < a ∧ 0 < b ∧ b ^ 2 * a = n ∧ Squarefree a := by
-  classical -- Porting note: This line is not needed in Lean 3
+  classical
   set S := {s ∈ range (n + 1) | s ∣ n ∧ ∃ x, s = x ^ 2}
   have hSne : S.Nonempty := by
     use 1
@@ -319,7 +319,6 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
   rw [Nat.isUnit_iff]
   by_contra hx
   refine Nat.lt_le_asymm ?_ (Finset.le_max' S ((b * x) ^ 2) ?_)
-  -- Porting note: these two goals were in the opposite order in Lean 3
   · convert lt_mul_of_one_lt_right hlts
       (one_lt_pow two_ne_zero (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
       using 1
@@ -333,7 +332,7 @@ theorem sq_mul_squarefree_of_pos' {n : ℕ} (h : 0 < n) :
   refine ⟨a₁.pred, b₁.pred, ?_, ?_⟩ <;> simpa only [add_one, succ_pred_eq_of_pos, ha₁, hb₁]
 
 theorem sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefree a := by
-  cases' n with n
+  rcases n with - | n
   · exact ⟨1, 0, by simp, squarefree_one⟩
   · obtain ⟨a, b, -, -, h₁, h₂⟩ := sq_mul_squarefree_of_pos (succ_pos n)
     exact ⟨a, b, h₁, h₂⟩
@@ -379,7 +378,7 @@ lemma primeFactors_div_gcd (hm : Squarefree m) (hn : n ≠ 0) :
   have : m / m.gcd n ≠ 0 := by simp [gcd_ne_zero_right hn, gcd_le_left _ hm.ne_zero.bot_lt]
   simp only [mem_primeFactors, ne_eq, this, not_false_eq_true, and_true, not_and, mem_sdiff,
     hm.ne_zero, hn, dvd_div_iff_mul_dvd (gcd_dvd_left _ _)]
-  refine ⟨fun hp ↦ ⟨⟨hp.1, dvd_of_mul_left_dvd hp.2⟩, fun _ hpn ↦ hp.1.not_unit <| hm _ <|
+  refine ⟨fun hp ↦ ⟨⟨hp.1, dvd_of_mul_left_dvd hp.2⟩, fun _ hpn ↦ hp.1.not_isUnit <| hm _ <|
     (mul_dvd_mul_right (dvd_gcd (dvd_of_mul_left_dvd hp.2) hpn) _).trans hp.2⟩, fun hp ↦
       ⟨hp.1.1, Coprime.mul_dvd_of_dvd_of_dvd ?_ (gcd_dvd_left _ _) hp.1.2⟩⟩
   rw [coprime_comm, hp.1.1.coprime_iff_not_dvd]

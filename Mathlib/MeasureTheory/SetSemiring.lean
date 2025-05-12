@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Order.CompleteLattice
 import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets
@@ -157,7 +156,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
     refine ⟨{s}, singleton_subset_set_iff.mpr hs, ?_⟩
     simp only [coe_singleton, pairwiseDisjoint_singleton, sUnion_singleton, eq_self_iff_true,
       and_self_iff]
-  | @insert t I' _ h => ?_
+  | insert t I' _ h => ?_
 
   rw [coe_insert] at hI
   have ht : t ∈ C := hI (Set.mem_insert _ _)
@@ -397,7 +396,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
 a `Finset (Set α)` such that `K j := hC.disjointOfUnion hJ` are disjoint
 and `⋃₀ K j ⊆ j`, for `j ∈ J`.
 Using these we write `⋃₀ J` as a disjoint union `⋃₀ J = ⋃₀ ⋃ x ∈ J, (K x)`.
-See `MeasureTheory.IsSetSemiring.disjointOfUnion_props`.-/
+See `MeasureTheory.IsSetSemiring.disjointOfUnion_props`. -/
 noncomputable def disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : Set α) :=
   (hC.disjointOfUnion_props hJ).choose j
 
@@ -432,7 +431,7 @@ lemma empty_nmem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : 
 
 lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     ⋃₀ ⋃ x ∈ J, (hC.disjointOfUnion hJ x : Set (Set α)) = ⋃₀ J :=
-    (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2.symm
+  (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2.symm
 
 end disjointOfUnion
 
@@ -442,8 +441,8 @@ end IsSetSemiring
 It is then also stable by intersection (see `IsSetRing.inter_mem`). -/
 structure IsSetRing (C : Set (Set α)) : Prop where
   empty_mem : ∅ ∈ C
-  union_mem ⦃s t⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
-  diff_mem ⦃s t⦄ : s ∈ C → t ∈ C → s \ t ∈ C
+  union_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
+  diff_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s \ t ∈ C
 
 namespace IsSetRing
 
@@ -466,7 +465,7 @@ lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
   classical
   induction S using Finset.induction with
   | empty => simp [hC.empty_mem]
-  | @insert i S _ h =>
+  | insert i S _ h =>
     simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     refine hC.union_mem (hs i (mem_insert_self i S)) ?_
     exact h (fun n hnS ↦ hs n (mem_insert_of_mem hnS))
@@ -489,7 +488,7 @@ lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α} {t : Fin
   classical
   induction t using Finset.induction_on with
   | empty => exact hC.empty_mem
-  | @insert m t hm ih =>
+  | insert m t hm ih =>
     simpa only [sup_insert] using
       hC.union_mem (hs m <| mem_insert_self m t) (ih <| fun i hi ↦ hs _ <| mem_insert_of_mem hi)
 

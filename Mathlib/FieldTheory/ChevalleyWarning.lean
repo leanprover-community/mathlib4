@@ -174,9 +174,6 @@ theorem char_dvd_card_solutions {f : MvPolynomial σ K} (h : f.totalDegree < Fin
     p ∣ Fintype.card { x : σ → K // eval x f = 0 } := by
   let F : Unit → MvPolynomial σ K := fun _ => f
   have : (∑ i : Unit, (F i).totalDegree) < Fintype.card σ := h
-  -- Porting note: was
-  -- `simpa only [F, Fintype.univ_punit, forall_eq, mem_singleton] using`
-  -- `  char_dvd_card_solutions_of_sum_lt p this`
   convert char_dvd_card_solutions_of_sum_lt p this
   aesop
 

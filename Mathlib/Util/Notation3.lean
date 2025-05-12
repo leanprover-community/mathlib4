@@ -51,7 +51,12 @@ macro_rules
     term.replaceM fun x' ↦ do
       unless x == x' do return none
       `(fun _%$ph : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
-  | `(expand_binders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
+  | `(expand_binders% ($x => $term) ($y:binderIdent $pred:binderPred) $binders*, $res) => do
+    let y ←
+      match y with
+      | `(binderIdent| $y:ident) => pure y
+      | `(binderIdent| _)        => Term.mkFreshIdent y
+      | _                        => Macro.throwUnsupported
     term.replaceM fun x' ↦ do
       unless x == x' do return none
       `(fun $y:ident ↦ expand_binders% ($x => $term) (h : satisfies_binder_pred% $y $pred)

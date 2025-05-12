@@ -3,8 +3,10 @@ Copyright (c) 2021 Aaron Anderson, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
-import Mathlib.Data.Finset.Sigma
+import Mathlib.Data.Finset.Lattice.Union
 import Mathlib.Data.Finset.Pairwise
+import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Order.CompleteLatticeIntervals
 
@@ -205,7 +207,7 @@ protected theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × �
   replace hj := hu hj
   rw [mem_product] at hi hj
   obtain rfl | hij := eq_or_ne i j
-  · refine (ht.pairwiseDisjoint hi.2 hj.2 <| (Prod.mk.inj_left _).ne_iff.1 hij).mono ?_ ?_
+  · refine (ht.pairwiseDisjoint hi.2 hj.2 <| (Prod.mk_right_injective _).ne_iff.1 hij).mono ?_ ?_
     · convert le_sup (α := α) hi.1; simp
     · convert le_sup (α := α) hj.1; simp
   · refine (hs.pairwiseDisjoint hi.1 hj.1 hij).mono ?_ ?_

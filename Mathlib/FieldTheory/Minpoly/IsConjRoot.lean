@@ -71,7 +71,7 @@ If `y` is a conjugate root of `x`, then `x` is also a conjugate root of `y`.
 If `y` is a conjugate root of `x` and `z` is a conjugate root of `y`, then `z` is a conjugate
 root of `x`.
 -/
-@[trans] theorem trans {x y z: A} (h₁ : IsConjRoot R x y) (h₂ : IsConjRoot R y z) :
+@[trans] theorem trans {x y z : A} (h₁ : IsConjRoot R x y) (h₂ : IsConjRoot R y z) :
     IsConjRoot R x z := Eq.trans h₁ h₂
 
 variable (R A) in
@@ -176,7 +176,7 @@ Let `L / K` be a normal field extension. For any two elements `x` and `y` in `L`
 conjugate root of `x`, then there exists a `K`-automorphism `σ : L ≃ₐ[K] L` such
 that `σ y = x`.
 -/
-theorem IsConjRoot.exists_algEquiv [Normal K L] {x y: L} (h : IsConjRoot K x y) :
+theorem IsConjRoot.exists_algEquiv [Normal K L] {x y : L} (h : IsConjRoot K x y) :
     ∃ σ : L ≃ₐ[K] L, σ y = x := by
   obtain ⟨σ, hσ⟩ :=
     exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K x)
@@ -288,7 +288,7 @@ conjugate root of some element `algebraMap R S r` in the image of the base ring,
 theorem isConjRoot_iff_eq_algebraMap_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {r : R}
     {x : S} (hf : Function.Injective (algebraMap R S)) :
     IsConjRoot R (algebraMap R S r) x ↔ x = algebraMap R S r :=
-    ⟨fun h => eq_algebraMap_of_injective h hf, fun h => h.symm ▸ rfl⟩
+  ⟨fun h => eq_algebraMap_of_injective h hf, fun h => h.symm ▸ rfl⟩
 
 /--
 An element `x` is a conjugate root of some element `algebraMap R S r` in the image of the base ring

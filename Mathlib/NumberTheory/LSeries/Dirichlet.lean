@@ -63,8 +63,7 @@ lemma LSeriesSummable_moebius_iff {s : ℂ} : LSeriesSummable ↗μ s ↔ 1 < s.
   refine ⟨fun H ↦ ?_, LSeriesSummable_of_bounded_of_one_lt_re (m := 1) fun n _ ↦ ?_⟩
   · by_contra! h
     exact not_LSeriesSummable_moebius_at_one <| LSeriesSummable.of_re_le_re (by simpa) H
-  · rw [abs_intCast] -- not done by `norm_cast`
-    norm_cast
+  · norm_cast
     exact abs_moebius_le_one
 
 /-- The abscissa of absolute convergence of the L-series of the Möbius function is `1`. -/
@@ -84,7 +83,7 @@ end Moebius
 open Nat
 
 open scoped ArithmeticFunction.zeta in
-lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [Semiring R] {n : ℕ} (hn : n ≠ 0) :
+lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [AddMonoidWithOne R] {n : ℕ} (hn : n ≠ 0) :
     (1 : ℕ → R) n = (ζ ·) n := by
   simp [hn]
 
@@ -154,7 +153,7 @@ lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   simp_all [χ.map_nonunit this, delta]
 
 /-- The Dirichlet character mod `1` corresponds to the constant function `1`. -/
-lemma modOne_eq_one {R : Type*} [CommSemiring R] {χ : DirichletCharacter R 1} :
+lemma modOne_eq_one {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter R 1} :
     ((χ ·) : ℕ → R) = 1 := by
   ext
   rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _), Pi.one_apply]
@@ -344,7 +343,7 @@ lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable �
   rw [LSeriesSummable, ← summable_norm_iff] at hf ⊢
   refine hf.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n ↦ norm_term_le s ?_)
   have hΛ : ‖↗Λ n‖ ≤ ‖Complex.log n‖ := by
-    simpa [_root_.abs_of_nonneg, vonMangoldt_nonneg, ← natCast_log, Real.log_natCast_nonneg]
+    simpa [abs_of_nonneg, vonMangoldt_nonneg, ← natCast_log, Real.log_natCast_nonneg]
       using vonMangoldt_le_log
   exact hΛ.trans <| by simp
 
@@ -369,8 +368,7 @@ equals the negative logarithmic derivative of the L-series of `χ` when `re s > 
 lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
     L (↗χ * ↗Λ) s = - deriv (L ↗χ) s / L ↗χ s := by
   rcases eq_or_ne N 0 with rfl | hN
-  · simpa [-deriv_const', modZero_eq_delta, delta_mul_eq_smul_delta, LSeries_delta]
-      using deriv_const s (1 : ℂ)
+  · simp [modZero_eq_delta, delta_mul_eq_smul_delta, LSeries_delta]
   -- now `N ≠ 0`
   have hχ : LSeriesSummable ↗χ s := (LSeriesSummable_iff hN χ).mpr hs
   have hs' : abscissaOfAbsConv ↗χ < s.re := by

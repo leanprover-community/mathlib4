@@ -3,10 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.RingTheory.HahnSeries.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Additive properties of Hahn series
@@ -86,7 +86,7 @@ protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
 Hahn series over `Γ` with coefficients in the opposite additive monoid `Rᵃᵒᵖ`
 and the additive opposite of Hahn series over `Γ` with coefficients `R`.
 -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def addOppositeEquiv : HahnSeries Γ (Rᵃᵒᵖ) ≃+ (HahnSeries Γ R)ᵃᵒᵖ where
   toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert x.isPWO_support; ext; simp⟩
   invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert x.unop.isPWO_support; ext; simp⟩
@@ -208,6 +208,47 @@ theorem leadingCoeff_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   simpa [← map_add, ← AddOpposite.op_add, hxy] using leadingCoeff_add_eq_left
     (x := addOppositeEquiv.symm (.op y))
     (y := addOppositeEquiv.symm (.op x))
+
+theorem ne_zero_of_eq_add_single [Zero Γ] {x y : HahnSeries Γ R}
+    (hxy : x = y + single x.order x.leadingCoeff) (hy : y ≠ 0) : x ≠ 0 := by
+  by_contra h
+  simp only [h, order_zero, leadingCoeff_zero, map_zero, add_zero] at hxy
+  exact hy hxy.symm
+
+theorem coeff_order_of_eq_add_single {R} [AddCancelCommMonoid R] [Zero Γ] {x y : HahnSeries Γ R}
+    (hxy : x = y + single x.order x.leadingCoeff) (h : x ≠ 0) :
+    y.coeff x.order = 0 := by
+  let xo := x.isWF_support.min (support_nonempty_iff.2 h)
+  have : xo = x.order := (order_of_ne h).symm
+  have hx : x.coeff xo = y.coeff xo + (single x.order x.leadingCoeff).coeff xo := by
+    nth_rw 1 [hxy, coeff_add]
+  have hxx :
+      (single x.order x.leadingCoeff).coeff xo = (single x.order x.leadingCoeff).leadingCoeff := by
+    simp [leadingCoeff_of_single, coeff_single, this]
+  rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_of_single, right_eq_add, this] at hx
+  exact hx
+
+theorem order_lt_order_of_eq_add_single {R} {Γ} [LinearOrder Γ] [Zero Γ] [AddCancelCommMonoid R]
+    {x y : HahnSeries Γ R} (hxy : x = y + single x.order x.leadingCoeff) (hy : y ≠ 0) :
+    x.order < y.order := by
+  have : x.order ≠ y.order := by
+    intro h
+    have hyne : single y.order y.leadingCoeff ≠ 0 := single_ne_zero <| leadingCoeff_ne_iff.mpr hy
+    rw [leadingCoeff_eq, ← h, coeff_order_of_eq_add_single hxy <| ne_zero_of_eq_add_single hxy hy,
+      single_eq_zero] at hyne
+    exact hyne rfl
+  refine lt_of_le_of_ne ?_ this
+  simp only [order, ne_zero_of_eq_add_single hxy hy, ↓reduceDIte, hy]
+  have : y.support ⊆ x.support := by
+    intro g hg
+    by_cases hgx : g = x.order
+    · refine (mem_support x g).mpr ?_
+      have : x.coeff x.order ≠ 0 := coeff_order_ne_zero <| ne_zero_of_eq_add_single hxy hy
+      rwa [← hgx] at this
+    · have : x.coeff g = (y + (single x.order) x.leadingCoeff).coeff g := by rw [← hxy]
+      rw [coeff_add, coeff_single_of_ne hgx, add_zero] at this
+      simpa [this] using hg
+  exact Set.IsWF.min_le_min_of_subset this
 
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
