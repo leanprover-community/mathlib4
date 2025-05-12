@@ -3,40 +3,31 @@ import Mathlib.Order.Nucleus
 variable {X : Type*} [Order.Frame X]
 open Set
 
-def HimpClosed (s : Set X) : Prop := ∀ a b, b ∈ s → a ⇨ b ∈ s
-
-def sInfClosed (s : Set X) : Prop := ∀ a, sInf a ∈ s
-
-lemma sInf_Closed_to_Inf_Closed {s : Set X} : sInfClosed s → InfClosed s :=  by
-  simp [sInfClosed, InfClosed]
-  intro a a_1 a_2 b a_3
-  let x :=  (a {a_1, b})
-  simp at x
-  exact x
-
-
+--TODO create separate Defintions for sInfClosed and HImpClosed (also useful for CompleteSublattice)
 structure Sublocale (X : Type*) [Order.Frame X] where
   carrier : Set X
-  sInfClosed' : sInfClosed carrier
+  sInfClosed' : ∀ a ⊆ carrier , sInf a ∈ carrier
+  HImpClosed' : ∀ a b, b ∈ carrier → a ⇨ b ∈ carrier
 
-  HimpClosed' : HimpClosed carrier
 namespace Sublocale
+
+variable {S : Sublocale X}
 
 instance : SetLike (Sublocale X) X where
   coe x := x.carrier
   coe_injective' s1 s2 h := by cases s1; congr
 
+lemma sInfClosed {s : Set X} (h : s ⊆ S) : sInf s ∈ S := S.sInfClosed' s h
 
-variable {s : Sublocale X}
+lemma inf_mem (a b : X) (h1 : a ∈ S) (h2 : b ∈ S) : a ⊓ b ∈ S := by
+  rw [← sInf_pair]
+  exact S.sInfClosed (pair_subset h1 h2)
 
 
-lemma inf_mem (a b : X) (h1 : a ∈ s) (h2 : b ∈ s) : a ⊓ b ∈ s :=
-   sInf_Closed_to_Inf_Closed (s.sInfClosed') h1 h2
+instance : InfSet S where
+  sInf x := ⟨sInf (Subtype.val '' x), S.sInfClosed (by simp; simp [@subset_def])⟩
 
-instance : InfSet s where
-  sInf x := ⟨sInf (Subtype.val '' x), s.sInfClosed' _⟩
-
-lemma test (s_1 : Set ↥s) : IsGLB s_1 (sInf s_1) := by
+lemma test (s_1 : Set ↥S) : IsGLB s_1 (sInf s_1) := by
   simp only [IsGLB, IsGreatest, lowerBounds, Subtype.forall, sInf, mem_setOf_eq, Subtype.mk_le_mk,
     upperBounds, le_sInf_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
     forall_exists_index, imp_self, implies_true, and_true]
@@ -44,7 +35,7 @@ lemma test (s_1 : Set ↥s) : IsGLB s_1 (sInf s_1) := by
   apply sInf_le
   simp_all only [mem_image, Subtype.exists, exists_and_right, exists_eq_right, exists_const]
 
-instance instCompleteLattice : CompleteLattice s where
+instance instCompleteLattice : CompleteLattice S where
   inf x y := ⟨x.val ⊓ y.val, s.inf_mem ↑x ↑y (SetLike.coe_mem x) (SetLike.coe_mem y)⟩
   inf_le_left _ _ := inf_le_left
   inf_le_right _ _ := inf_le_right
@@ -86,14 +77,71 @@ def gc (S : Sublocale X) : GaloisConnection S.embedding Subtype.val := by
     apply sInf_le
     simp [h]
 
-lemma embedding.le_apply {x : X} : x ≤ s.embedding x := s.gc.le_u_l _
+
+lemma embedding.le_apply (S : Sublocale X) {x : X} : x ≤ S.embedding x := S.gc.le_u_l _
+
+lemma test2 (a b: X) : a = b ↔ (∀ c, a ≤ c ↔ b ≤ c) := by
+  apply Iff.intro
+  . intro h
+    subst h
+    simp
+  . intro h
+    apply le_antisymm
+    . apply (h b).mpr
+      simp
+    . apply (h a).mp
+      simp
 
 def embedding_frameHom (S : Sublocale X) : FrameHom X S where
   toFun x := S.embedding x
   map_inf' a b := by
-
-    have h (s : S) : s ≤ S.embedding s := by
+    apply le_antisymm
+    . simp only [le_inf_iff]
+      apply And.intro
+      . apply S.gc.monotone_l
+        simp
+      . apply S.gc.monotone_l
+        simp
+    .
+      apply le_himp_iff.mp
       sorry
+  map_sSup' s := by rw [S.gc.l_sSup, sSup_image]
+  map_top' := by
+    apply le_antisymm
+    . simp
+    . rw [← Subtype.coe_le_coe, S.gc.u_top]
+      exact embedding.le_apply S
+
+def gi (S : Sublocale X) : GaloisInsertion S.embedding_frameHom Subtype.val where
+
+
+
+def toNucleus (S : Sublocale X) : Nucleus X where
+  toFun x := S.embedding_frameHom x
+  map_inf' a b := by simp [S.gc.u_inf]
+  idempotent' a := by
+    rw [S.gc.l_u_l]
+
+
+
+
+/-
+/-
+
+    rw [test2]
+    intro s
+    symm
+    rw [@iff_eq_eq]
+    calc  (S.embedding a ⊓ S.embedding b ≤ s)
+      _ = (S.embedding a ≤ S.embedding b ⇨ s) := by simp
+      _ = (a ≤ S.embedding b ⇨ s ) := by
+        rw [← Subtype.coe_le_coe]
+        simp only [Subtype.coe_le_coe, le_himp_iff, eq_iff_iff]
+
+      _ = (S.embedding b ≤ a ⇨ s ) := by sorry
+      _ = ( b ≤ a ⇨ s) := by sorry
+      _ = ( a ⊓ b ≤ s ) := by sorry
+      _ = (S.embedding (a ⊓ b) ≤ s) := by sorry
 
     have h1 (s : S) : S.embedding a ⊓ S.embedding b ≤ s ↔ S.embedding a ≤ S.embedding b ⇨ s := by
       simp
@@ -111,9 +159,11 @@ def embedding_frameHom (S : Sublocale X) : FrameHom X S where
 
 
 
+
 def toNucleus (S : Sublocale X) : Nucleus X where
   toFun x := S.embedding x
 
 
 
 end Sublocale
+-/-/
