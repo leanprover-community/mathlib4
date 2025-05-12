@@ -15,14 +15,15 @@ A modification `Γ` between oplax transformations `η` and `θ` consists of a fa
 
 ## Main definitions
 
-* `Modification η θ` : modifications between oplax transformations `η` and `θ`.
-* `Oplax.homcategory F G` : the category structure on oplax transformations
-  between `F` and `G`, where the morphisms are modifications, and composition is given by vertical
-  composition of modifications.
+* `Modification η θ`: modifications between oplax transformations `η` and `θ`
+* `Modification.vcomp η θ`: the vertical composition of oplax transformations `η`
+  and `θ`
+* `OplaxTrans.homCategory F G`: the category structure on the oplax transformations
+  between `F` and `G`
 
 -/
 
-namespace CategoryTheory.Oplax
+namespace CategoryTheory.Oplax.OplaxTrans
 
 open Category Bicategory
 
@@ -74,7 +75,7 @@ end Modification
 
 /-- Category structure on the oplax natural transformations between OplaxFunctors. -/
 @[simps]
-instance homcategory (F G : OplaxFunctor B C) : Category (F ⟶ G) where
+scoped instance homCategory (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   Hom := Modification
   id η := { app := fun a ↦ 𝟙 (η.app a) }
   comp Γ Δ := { app := fun a => Γ.app a ≫ Δ.app a }
@@ -102,4 +103,4 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
       naturality := fun {a b} f => by
         simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
 
-end CategoryTheory.Oplax
+end CategoryTheory.Oplax.OplaxTrans

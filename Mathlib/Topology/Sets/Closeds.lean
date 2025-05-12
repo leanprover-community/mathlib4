@@ -53,6 +53,9 @@ def Simps.coe (s : Closeds α) : Set α := s
 
 initialize_simps_projections Closeds (carrier → coe, as_prefix coe)
 
+@[simp]
+lemma carrier_eq_coe (s : Closeds α) : s.carrier = (s : Set α) := rfl
+
 @[ext]
 protected theorem ext {s t : Closeds α} (h : (s : Set α) = t) : s = t :=
   SetLike.ext' h
@@ -60,6 +63,10 @@ protected theorem ext {s t : Closeds α} (h : (s : Set α) = t) : s = t :=
 @[simp]
 theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
   rfl
+
+@[simp]
+lemma mem_mk {s : Set α} {hs : IsClosed s} {x : α} : x ∈ (⟨s, hs⟩ : Closeds α) ↔ x ∈ s :=
+  .rfl
 
 /-- The closure of a set, as an element of `TopologicalSpace.Closeds`. -/
 @[simps]
@@ -72,7 +79,11 @@ theorem mem_closure {s : Set α} {x : α} : x ∈ Closeds.closure s ↔ x ∈ cl
 theorem gc : GaloisConnection Closeds.closure ((↑) : Closeds α → Set α) := fun _ U =>
   ⟨subset_closure.trans, fun h => closure_minimal h U.isClosed⟩
 
-/-- The galois coinsertion between sets and opens. -/
+@[simp]
+lemma closure_le {s : Set α} {t : Closeds α} : .closure s ≤ t ↔ s ⊆ t :=
+  t.isClosed.closure_subset_iff
+
+/-- The galois insertion between sets and closeds. -/
 def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   choice s hs := ⟨s, closure_eq_iff_isClosed.1 <| hs.antisymm subset_closure⟩
   gc := gc
@@ -179,6 +190,11 @@ def singleton [T1Space α] (x : α) : Closeds α :=
   ⟨{x}, isClosed_singleton⟩
 
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
+
+/-- The preimage of a closed set under a coninuous map. -/
+@[simps]
+def preimage (s : Closeds β) {f : α → β} (hf : Continuous f) : Closeds α :=
+  ⟨f ⁻¹' s, s.isClosed.preimage hf⟩
 
 end Closeds
 
@@ -332,7 +348,7 @@ lemma coe_finset_sup (s : Finset ι) (U : ι → Clopens α) :
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | insert _ IH => simp [IH]
+  | insert _ _ _ IH => simp [IH]
 
 @[simp, norm_cast]
 lemma coe_disjoint {s t : Clopens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by

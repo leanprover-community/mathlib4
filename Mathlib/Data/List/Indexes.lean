@@ -115,14 +115,14 @@ set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : List α) :
     indexesValues p as = filter (p ∘ Prod.snd) (enum as) := by
-  simp (config := { unfoldPartialApp := true }) [indexesValues, foldrIdx_eq_foldr_enum, uncurry,
+  simp +unfoldPartialApp [indexesValues, foldrIdx_eq_foldr_enum, uncurry,
     filter_eq_foldr, cond_eq_if]
 
 set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : List α) :
     findIdxs p as = map Prod.fst (indexesValues p as) := by
-  simp (config := { unfoldPartialApp := true }) only [indexesValues_eq_filter_enum,
+  simp +unfoldPartialApp only [indexesValues_eq_filter_enum,
     map_filter_eq_foldr, findIdxs, uncurry, foldrIdx_eq_foldr_enum, decide_eq_true_eq, comp_apply,
     Bool.cond_decide]
 
@@ -166,7 +166,7 @@ set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem foldrIdxM_eq_foldrM_enum {β} (f : ℕ → α → β → m β) (b : β) (as : List α) [LawfulMonad m] :
     foldrIdxM f b as = foldrM (uncurry f) b (enum as) := by
-  simp (config := { unfoldPartialApp := true }) only [foldrIdxM, foldrM_eq_foldr,
+  simp +unfoldPartialApp only [foldrIdxM, foldrM_eq_foldr,
     foldrIdx_eq_foldr_enum, uncurry]
 
 set_option linter.deprecated false in

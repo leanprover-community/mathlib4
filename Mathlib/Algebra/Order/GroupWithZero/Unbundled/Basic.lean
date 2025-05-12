@@ -716,10 +716,65 @@ section GroupWithZero
 variable [GroupWithZero G₀]
 
 section Preorder
-variable [Preorder G₀] [ZeroLEOneClass G₀]
+variable [Preorder G₀] {a b c : G₀}
+
+/-- Equality holds when `a ≠ 0`. See `mul_inv_cancel_left`. -/
+lemma mul_inv_left_le (hb : 0 ≤ b) : a * (a⁻¹ * b) ≤ b := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+
+/-- Equality holds when `a ≠ 0`. See `mul_inv_cancel_left`. -/
+lemma le_mul_inv_left (hb : b ≤ 0) : b ≤ a * (a⁻¹ * b) := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+
+/-- Equality holds when `a ≠ 0`. See `inv_mul_cancel_left`. -/
+lemma inv_mul_left_le (hb : 0 ≤ b) : a⁻¹ * (a * b) ≤ b := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+
+/-- Equality holds when `a ≠ 0`. See `inv_mul_cancel_left`. -/
+lemma le_inv_mul_left (hb : b ≤ 0) : b ≤ a⁻¹ * (a * b) := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+
+/-- Equality holds when `b ≠ 0`. See `mul_inv_cancel_right`. -/
+lemma mul_inv_right_le (ha : 0 ≤ a) : a * b * b⁻¹ ≤ a := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
+
+/-- Equality holds when `b ≠ 0`. See `mul_inv_cancel_right`. -/
+lemma le_mul_inv_right (ha : a ≤ 0) : a ≤ a * b * b⁻¹ := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
+
+/-- Equality holds when `b ≠ 0`. See `inv_mul_cancel_right`. -/
+lemma inv_mul_right_le (ha : 0 ≤ a) : a * b⁻¹ * b ≤ a := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
+
+/-- Equality holds when `b ≠ 0`. See `inv_mul_cancel_right`. -/
+lemma le_inv_mul_right (ha : a ≤ 0) : a ≤ a * b⁻¹ * b := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_right`. -/
+lemma mul_div_mul_right_le (h : 0 ≤ a / b) : a * c / (b * c) ≤ a / b := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_right _ _ hc]
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_right`. -/
+lemma le_mul_div_mul_right (h : a / b ≤ 0) : a / b ≤ a * c / (b * c) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_right _ _ hc]
+
+end Preorder
+
+section Preorder
+variable [Preorder G₀] [ZeroLEOneClass G₀] {a b c : G₀}
 
 /-- See `div_self` for the version with equality when `a ≠ 0`. -/
 lemma div_self_le_one (a : G₀) : a / a ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+
+/-- Equality holds when `a ≠ 0`. See `mul_inv_cancel`. -/
+lemma mul_inv_le_one : a * a⁻¹ ≤ 1 := by simpa only [div_eq_mul_inv] using div_self_le_one a
+
+/-- Equality holds when `a ≠ 0`. See `inv_mul_cancel`. -/
+lemma inv_mul_le_one : a⁻¹ * a ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
 end Preorder
 
@@ -1236,6 +1291,24 @@ variable [MulPosStrictMono G₀]
 end GroupWithZero.LinearOrder
 
 section CommGroupWithZero
+
+section Preorder
+variable [CommGroupWithZero G₀] [Preorder G₀] {a b c : G₀}
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_left`. -/
+lemma mul_div_mul_left_le (h : 0 ≤ a / b) : c * a / (c * b) ≤ a / b := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_left _ _ hc]
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_left`. -/
+lemma le_mul_div_mul_left (h : a / b ≤ 0) : a / b ≤ c * a / (c * b) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_left _ _ hc]
+
+end Preorder
+
 variable [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀] {a b c d : G₀}
 
 attribute [local instance] PosMulReflectLT.toPosMulStrictMono PosMulMono.toMulPosMono
