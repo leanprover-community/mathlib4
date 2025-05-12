@@ -160,7 +160,7 @@ lemma pointwiseLeftKanExtensionCompIsoOfPreserves_fac :
     (α := whiskerRight (L.pointwiseLeftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
     (β := L.pointwiseLeftKanExtensionUnit (F ⋙ G))
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma pointwiseLeftKanExtensionCompIsoOfPreserves_fac_app (a : A) :
     G.map ((L.pointwiseLeftKanExtensionUnit F).app a) ≫
       (G.pointwiseLeftKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) =
@@ -328,7 +328,7 @@ lemma pointwiseRightKanExtensionCompIsoOfPreserves_fac :
     ((Functor.associator _ _ _).inv ≫ whiskerRight (L.pointwiseRightKanExtensionCounit F) G):= by
   simp [pointwiseRightKanExtensionCompIsoOfPreserves]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma pointwiseRightKanExtensionCompIsoOfPreserves_fac_app (a : A) :
     (G.pointwiseRightKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) ≫
       (L.pointwiseRightKanExtensionCounit (F ⋙ G)).app a =
