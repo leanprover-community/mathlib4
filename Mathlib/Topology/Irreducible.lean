@@ -119,7 +119,7 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
     exact le_trans subset_closure this
 
 @[stacks 004W "part 3"]
-lemma exists_irreducibleComponent_of_Irreducible (s : Set X) (hs : IsIrreducible s) :
+lemma exists_irreducibleComponent_subset_of_isIrreducible (s : Set X) (hs : IsIrreducible s) :
     ∃ u ∈ irreducibleComponents X, s ⊆ u := by
   obtain ⟨u,hu⟩ := exists_preirreducible s hs.isPreirreducible
   use u, ⟨⟨hs.left.mono hu.right.left,hu.left⟩,fun _ h hl => (hu.right.right _ h.right hl).le⟩
