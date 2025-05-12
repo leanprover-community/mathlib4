@@ -115,8 +115,8 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     aesop
   exact ⟨M1 ⊔ M2, hM1.2.sup hM2 disjointM12, this⟩
 
-/-- Given a graph in which the universal vertices do not violate Tutte's condition,
-if the graph decomposes into cliques, it has a perfect matching. -/
+/-- If the universal vertices of a graph `G` decompose `G` into cliques such that the Tutte isn't
+violated, then `G` has a perfect matching. -/
 theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
     (hveven : Even (Nat.card V)) (h : ¬G.IsTutteViolator G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
@@ -126,21 +126,14 @@ theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
   obtain ⟨M', hM'⟩ := ((G.isClique_universalVerts.subset hsub).even_iff_exists_isMatching
     (Set.toFinite _)).mp (by simpa [Set.even_ncard_compl_iff hveven, -Set.toFinset_card,
       ← Set.ncard_eq_toFinset_card'] using hM.even_card)
-  use M ⊔ M'
-  have hspan : (M ⊔ M').IsSpanning := by
-    rw [Subgraph.isSpanning_iff, Subgraph.verts_sup, hM'.1]
+  refine ⟨M ⊔ M', hM.sup hM'.2 ?_, ?_⟩
+  · simp [hM.support_eq_verts, hM'.2.support_eq_verts, hM'.1, disjoint_compl_right]
+  · rw [Subgraph.isSpanning_iff, Subgraph.verts_sup, hM'.1]
     exact M.verts.union_compl_self
-  exact ⟨hM.sup hM'.2 (by
-    simp only [hM.support_eq_verts, hM'.2.support_eq_verts, hM'.1, Subgraph.verts_sup]
-    exact (Set.disjoint_compl_left_iff_subset.mpr fun ⦃a⦄ a ↦ a).symm), hspan⟩
 
 theorem IsTutteViolator.empty (hodd : Odd (Nat.card V)) : G.IsTutteViolator ∅ := by
-  have c :=
-    Finite.card_pos_iff.mp
-    ((odd_ncard_oddComponents ((⊤ : Subgraph G).deleteVerts ∅).coe).mpr (by
-    simpa [Fintype.card_congr (Equiv.Set.univ V)] using hodd)).pos
-  rw [IsTutteViolator, Set.ncard_empty, Set.ncard_pos]
-  exact Set.Nonempty.of_subtype
+  rw [IsTutteViolator, Set.ncard_empty]
+  exact ((odd_ncard_oddComponents _).mpr <| by simpa using hodd).pos
 
 /-- Proves the necessity part of Tutte's theorem -/
 lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfectMatching)
