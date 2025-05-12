@@ -387,10 +387,12 @@ theorem adjoin_rank_eq_rank_left_of_isAlgebraic (H : A.LinearDisjoint L)
   rfl
 
 theorem adjoin_rank_eq_rank_left_of_isAlgebraic_left (H : A.LinearDisjoint L)
-    [Algebra.IsAlgebraic F A] := H.adjoin_rank_eq_rank_left_of_isAlgebraic (.inl ‹_›)
+    [Algebra.IsAlgebraic F A] : Module.rank L (adjoin L (A : Set E)) = Module.rank F A :=
+  H.adjoin_rank_eq_rank_left_of_isAlgebraic (.inl ‹_›)
 
 theorem adjoin_rank_eq_rank_left_of_isAlgebraic_right (H : A.LinearDisjoint L)
-    [Algebra.IsAlgebraic F L] := H.adjoin_rank_eq_rank_left_of_isAlgebraic (.inr ‹_›)
+    [Algebra.IsAlgebraic F L] : Module.rank L (adjoin L (A : Set E)) = Module.rank F A :=
+  H.adjoin_rank_eq_rank_left_of_isAlgebraic (.inr ‹_›)
 
 /-- If `A` and `L` are linearly disjoint, one of them is algebraic, then `[L(A) : A] = [L : F]`.
 Note that in Lean `L(A)` is not naturally an `A`-algebra,
@@ -417,10 +419,18 @@ theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (H : A.LinearDisjoint
   rfl
 
 theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic_left (H : A.LinearDisjoint L)
-    [Algebra.IsAlgebraic F A] := H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (.inl ‹_›)
+    [Algebra.IsAlgebraic F A] :
+    Cardinal.lift.{w} (Module.rank A (extendScalars
+      (show A ≤ (adjoin L (A : Set E)).restrictScalars F from subset_adjoin L (A : Set E)))) =
+    Cardinal.lift.{v} (Module.rank F L) :=
+  H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (.inl ‹_›)
 
 theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic_right (H : A.LinearDisjoint L)
-    [Algebra.IsAlgebraic F L] := H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (.inr ‹_›)
+    [Algebra.IsAlgebraic F L] :
+    Cardinal.lift.{w} (Module.rank A (extendScalars
+      (show A ≤ (adjoin L (A : Set E)).restrictScalars F from subset_adjoin L (A : Set E)))) =
+    Cardinal.lift.{v} (Module.rank F L) :=
+  H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (.inr ‹_›)
 
 /-- If `A` and `L` are linearly disjoint, one of them is algebraic, then
 `[L : F] * [E : L(A)] = [E : A]`. -/
@@ -432,6 +442,18 @@ theorem lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic (H : A.LinearDisj
     Cardinal.lift_inj]
   exact rank_mul_rank A (extendScalars
     (show A ≤ (adjoin L (A : Set E)).restrictScalars F from subset_adjoin L (A : Set E))) E
+
+theorem lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic_left (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F A] :
+    Cardinal.lift.{v} (Module.rank F L) * Cardinal.lift.{w} (Module.rank (adjoin L (A : Set E)) E) =
+      Cardinal.lift.{w} (Module.rank A E) :=
+  H.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic (.inl ‹_›)
+
+theorem lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic_right (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F L] :
+    Cardinal.lift.{v} (Module.rank F L) * Cardinal.lift.{w} (Module.rank (adjoin L (A : Set E)) E) =
+      Cardinal.lift.{w} (Module.rank A E) :=
+  H.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic (.inr ‹_›)
 
 section
 
@@ -446,10 +468,16 @@ theorem adjoin_rank_eq_rank_right_of_isAlgebraic (H : A.LinearDisjoint L)
   simpa only [Cardinal.lift_id] using H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic halg
 
 theorem adjoin_rank_eq_rank_right_of_isAlgebraic_left (H : A.LinearDisjoint L)
-    [Algebra.IsAlgebraic F A] := H.adjoin_rank_eq_rank_right_of_isAlgebraic (.inl ‹_›)
+    [Algebra.IsAlgebraic F A] :
+    Module.rank A (extendScalars (show A ≤ (adjoin L (A : Set E)).restrictScalars F from
+      subset_adjoin L (A : Set E))) = Module.rank F L :=
+  H.adjoin_rank_eq_rank_right_of_isAlgebraic (.inl ‹_›)
 
 theorem adjoin_rank_eq_rank_right_of_isAlgebraic_right (H : A.LinearDisjoint L)
-    [Algebra.IsAlgebraic F L] := H.adjoin_rank_eq_rank_right_of_isAlgebraic (.inr ‹_›)
+    [Algebra.IsAlgebraic F L] :
+    Module.rank A (extendScalars (show A ≤ (adjoin L (A : Set E)).restrictScalars F from
+      subset_adjoin L (A : Set E))) = Module.rank F L :=
+  H.adjoin_rank_eq_rank_right_of_isAlgebraic (.inr ‹_›)
 
 /-- The same-universe version of
 `IntermediateField.LinearDisjoint.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic`. -/
@@ -459,10 +487,14 @@ theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic (H : A.LinearDisjoint L)
   simpa only [Cardinal.lift_id] using H.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic halg
 
 theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic_left (H : A.LinearDisjoint L)
-    [Algebra.IsAlgebraic F A] := H.rank_right_mul_adjoin_rank_eq_of_isAlgebraic (.inl ‹_›)
+    [Algebra.IsAlgebraic F A] :
+    Module.rank F L * Module.rank (adjoin L (A : Set E)) E = Module.rank A E :=
+  H.rank_right_mul_adjoin_rank_eq_of_isAlgebraic (.inl ‹_›)
 
 theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic_right (H : A.LinearDisjoint L)
-    [Algebra.IsAlgebraic F L] := H.rank_right_mul_adjoin_rank_eq_of_isAlgebraic (.inr ‹_›)
+    [Algebra.IsAlgebraic F L] :
+    Module.rank F L * Module.rank (adjoin L (A : Set E)) E = Module.rank A E :=
+  H.rank_right_mul_adjoin_rank_eq_of_isAlgebraic (.inr ‹_›)
 
 end
 
