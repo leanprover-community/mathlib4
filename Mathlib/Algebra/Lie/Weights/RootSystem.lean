@@ -501,16 +501,12 @@ lemma invtSubmodule_reflection:
   let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
   let I := LieSubalgebra.lieSpan K L gg
   have rr5 : I ≠ ⊤ := by
-    have : ∃ (j : H.root), j ∉ Φ := by
-      exact (Set.ne_univ_iff_exists_not_mem Φ).mp hc
-    obtain ⟨j, hj⟩ := this
+    obtain ⟨j, hj⟩ := (Set.ne_univ_iff_exists_not_mem Φ).mp hc
     obtain ⟨z, hz₁, hz₂⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
-    by_contra!
+    by_contra! hI
     have center_element : z ∈ LieAlgebra.center K L := by
       have rrr (x : L) : ⁅x, z⁆ = 0 := by
-        have qq : x ∈ I := by
-          rw [this]
-          exact trivial
+        have qq : x ∈ I := by rw [hI]; exact trivial
         induction qq using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
         | mem x hx =>
           obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
