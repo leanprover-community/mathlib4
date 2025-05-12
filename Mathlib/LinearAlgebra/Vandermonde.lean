@@ -183,13 +183,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
     (fun i j ↦ by simp [W, r, projVandermonde_apply]), det_succ_row_zero,
     Finset.sum_eq_single 0 _ (by simp)]
   · rw [succAbove_zero, hW_eq, det_mul_column, ih]
-    simp only [Nat.succ_eq_add_one, val_zero, pow_zero, projVandermonde_apply, val_rev,
-      Nat.reduceSubDiff, tsub_zero, one_mul, val_succ, coe_castSucc, cons_zero,
-      Function.comp_apply, W, r, of_apply]
-    rw [prod_univ_succ, ← mul_assoc (a := _ ^ n), show (w 0) ^ n = ∏ x : Fin n, w 0 by simp,
-      ← Finset.prod_mul_distrib]
-    simp_rw [mul_sub, ← mul_assoc (a := w 0), mul_div_cancel₀ _ h0, mul_comm (w 0)]
-    simp
+    field_simp [show W 0 0 = w 0 ^ n by simp [W, projVandermonde_apply], prod_univ_succ, hr]
   intro j _ hj0
   obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero hj0
   rw [mul_eq_zero, mul_eq_zero]

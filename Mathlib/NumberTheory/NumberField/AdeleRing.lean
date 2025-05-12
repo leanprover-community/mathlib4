@@ -27,7 +27,7 @@ direct product of the infinite adele ring and the finite adele ring.
    locally compact space.
 
 ## References
- * [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+ * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 
 ## Tags
 infinite adele ring, adele ring, number field
@@ -37,7 +37,7 @@ noncomputable section
 
 namespace NumberField
 
-open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion DedekindDomain IsDedekindDomain
+open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion IsDedekindDomain
 
 /-! ## The infinite adele ring
 

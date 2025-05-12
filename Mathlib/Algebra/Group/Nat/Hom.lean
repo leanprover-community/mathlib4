@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Tactic.MinImports
 
 /-!
 # Extensionality of monoid homs from `ℕ`
@@ -17,13 +16,13 @@ assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Additive Multiplicative
 
-variable {M M : Type*}
+variable {M : Type*}
 
 section AddMonoidHomClass
 
 variable {A B F : Type*} [FunLike F ℕ A]
 
-lemma ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
+lemma ext_nat' [AddZeroClass A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
   DFunLike.ext f g <| by
     intro n
     induction n with
@@ -32,7 +31,7 @@ lemma ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 
       simp [h, ihn]
 
 @[ext]
-lemma AddMonoidHom.ext_nat [AddMonoid A] {f g : ℕ →+ A} : f 1 = g 1 → f = g :=
+lemma AddMonoidHom.ext_nat [AddZeroClass A] {f g : ℕ →+ A} : f 1 = g 1 → f = g :=
   ext_nat' f g
 
 end AddMonoidHomClass

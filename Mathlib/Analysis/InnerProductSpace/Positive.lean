@@ -45,7 +45,7 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F]
 variable [CompleteSpace E] [CompleteSpace F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A continuous linear endomorphism `T` of a Hilbert space is **positive** if it is self adjoint
   and `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
@@ -90,13 +90,13 @@ theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F 
 theorem IsPositive.conj_orthogonalProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
     [CompleteSpace U] :
     (U.subtypeL ∘L
-        orthogonalProjection U ∘L T ∘L U.subtypeL ∘L orthogonalProjection U).IsPositive := by
-  have := hT.conj_adjoint (U.subtypeL ∘L orthogonalProjection U)
+        U.orthogonalProjection ∘L T ∘L U.subtypeL ∘L U.orthogonalProjection).IsPositive := by
+  have := hT.conj_adjoint (U.subtypeL ∘L U.orthogonalProjection)
   rwa [(orthogonalProjection_isSelfAdjoint U).adjoint_eq] at this
 
 theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPositive) (U : Submodule 𝕜 E)
-    [CompleteSpace U] : (orthogonalProjection U ∘L T ∘L U.subtypeL).IsPositive := by
-  have := hT.conj_adjoint (orthogonalProjection U : E →L[𝕜] U)
+    [CompleteSpace U] : (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
+  have := hT.conj_adjoint (U.orthogonalProjection : E →L[𝕜] U)
   rwa [U.adjoint_orthogonalProjection] at this
 
 open scoped NNReal

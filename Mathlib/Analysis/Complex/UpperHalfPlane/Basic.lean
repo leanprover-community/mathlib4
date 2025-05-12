@@ -171,7 +171,7 @@ theorem normSq_ne_zero (z : ℍ) : Complex.normSq (z : ℂ) ≠ 0 :=
   (normSq_pos z).ne'
 
 theorem im_inv_neg_coe_pos (z : ℍ) : 0 < (-z : ℂ)⁻¹.im := by
-  simpa using div_pos z.property (normSq_pos z)
+  simpa [neg_div] using div_pos z.property (normSq_pos z)
 
 lemma ne_nat (z : ℍ) : ∀ n : ℕ, z.1 ≠ n := by
   intro n
@@ -385,7 +385,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
       (g • · : ℍ → ℍ) =
         (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
   have h_denom := denom_ne_zero g
-  induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h
+  induction g using Matrix.SpecialLinearGroup.fin_two_induction with | _ a b c d h => ?_
   replace hc : c ≠ 0 := by simpa using hc
   refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩
   ext1 ⟨z, hz⟩; ext1
@@ -411,10 +411,21 @@ section ModularScalarTowers
 @[coe]
 def coe (g : SL(2, ℤ)) : GL(2, ℝ)⁺ := ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
 
+@[simp]
+lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
+  refine ⟨fun h ↦ a.ext b fun i j ↦ ?_, congr_arg _⟩
+  simp only [Subtype.ext_iff, GeneralLinearGroup.ext_iff] at h
+  simpa [coe] using h i j
+
 @[deprecated (since := "2024-11-19")] noncomputable alias coe' := coe
 
 instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨coe⟩
+
+/-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`, bundled as a group hom. -/
+def coeHom : SL(2, ℤ) →* GL(2, ℝ)⁺ := toGLPos.comp <| map <| Int.castRingHom _
+
+@[simp] lemma coeHom_apply (g : SL(2, ℤ)) : coeHom g = coe g := rfl
 
 @[simp]
 theorem coe_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
@@ -430,7 +441,7 @@ theorem det_coe {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe g) = 1 :
 @[deprecated (since := "2024-11-19")] alias det_coe' := det_coe
 
 lemma coe_one : coe 1 = 1 := by
-  simp only [coe, _root_.map_one]
+  simp only [coe, map_one]
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩

@@ -60,6 +60,8 @@ structure Coalgebra.Repr (R : Type u) {A : Type v}
 def Coalgebra.Repr.arbitrary (R : Type u) {A : Type v}
     [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) :
     Coalgebra.Repr R a where
+  left := Prod.fst
+  right := Prod.snd
   index := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose
   eq := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose_spec.symm
 
@@ -386,9 +388,28 @@ variable {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
   [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
 
 /-- See `Mathlib.RingTheory.Coalgebra.TensorProduct` for the `Coalgebra` instance. -/
-@[simps] instance instCoalgebraStruct :
-    CoalgebraStruct R (A ⊗[R] B) where
+instance instCoalgebraStruct : CoalgebraStruct R (A ⊗[R] B) where
   comul := TensorProduct.tensorTensorTensorComm R A A B B ∘ₗ TensorProduct.map comul comul
   counit := LinearMap.mul' R R ∘ₗ TensorProduct.map counit counit
+
+lemma comul_def :
+    Coalgebra.comul (R := R) (A := A ⊗[R] B) =
+    tensorTensorTensorComm R A A B B ∘ₗ map comul comul :=
+  rfl
+
+@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_comul := comul_def
+
+@[simp] lemma comul_tmul (a : A) (b : B) :
+    comul (R := R) (a ⊗ₜ[R] b) =
+      tensorTensorTensorComm _ _ _ _ _ (comul (R := R) a ⊗ₜ[R] comul (R := R) b) := rfl
+
+lemma counit_def :
+    Coalgebra.counit (R := R) (A := A ⊗[R] B) = LinearMap.mul' R R ∘ₗ map counit counit :=
+  rfl
+
+@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
+
+@[simp] lemma counit_tmul (a : A) (b : B) :
+    counit (R := R) (a ⊗ₜ[R] b) = counit a * counit b := rfl
 
 end TensorProduct

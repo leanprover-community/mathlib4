@@ -57,8 +57,7 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
     ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
   exact Equiv.ofBijective f this
 
--- Porting note: simpNF is not happy with universe levels.
-@[simp, nolint simpNF]
+-- `simp` can't figure out universe levels: normal form is `lift_mk_shrink'`.
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
     Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α :=
   lift_mk_eq.2 ⟨(equivShrink α).symm⟩
@@ -260,22 +259,6 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
 theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
   simp [Pow.pow]
 
-@[deprecated Nat.cast_le (since := "2024-10-16")]
-theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := Nat.cast_le
-
-@[deprecated Nat.cast_lt (since := "2024-10-16")]
-theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := Nat.cast_lt
-
-@[deprecated Nat.cast_inj (since := "2024-10-16")]
-theorem natCast_inj {m n : ℕ} : (m : Cardinal) = n ↔ m = n := Nat.cast_inj
-
-@[deprecated Nat.cast_injective (since := "2024-10-16")]
-theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) := Nat.cast_injective
-
-@[deprecated Nat.cast_pow (since := "2024-10-16")]
-theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) :=
-  Nat.cast_pow m n
-
 @[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   rw [Nat.cast_succ]
@@ -393,28 +376,6 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
 
 theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
   aleph0_le_of_isSuccLimit H.isSuccLimit
-
-section deprecated
-
-set_option linter.deprecated false in
-@[deprecated isSuccLimit_aleph0 (since := "2024-09-17")]
-theorem isLimit_aleph0 : IsLimit ℵ₀ :=
-  ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
-
-set_option linter.deprecated false in
-@[deprecated not_isSuccLimit_natCast (since := "2024-09-17")]
-lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
-  | 0, e => e.1 rfl
-  | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
-
-set_option linter.deprecated false in
-@[deprecated aleph0_le_of_isSuccLimit (since := "2024-09-17")]
-theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
-  by_contra! h'
-  rcases lt_aleph0.1 h' with ⟨n, rfl⟩
-  exact not_isLimit_natCast n h
-
-end deprecated
 
 lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
     (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n :=
@@ -621,8 +582,11 @@ theorem exists_nat_eq_of_le_nat {c : Cardinal} {n : ℕ} (h : c ≤ n) : ∃ m, 
 theorem mk_int : #ℤ = ℵ₀ :=
   mk_denumerable ℤ
 
-theorem mk_pNat : #ℕ+ = ℵ₀ :=
+theorem mk_pnat : #ℕ+ = ℵ₀ :=
   mk_denumerable ℕ+
+
+@[deprecated (since := "2025-04-27")]
+alias mk_pNat := mk_pnat
 
 /-! ### Cardinalities of basic sets and types -/
 

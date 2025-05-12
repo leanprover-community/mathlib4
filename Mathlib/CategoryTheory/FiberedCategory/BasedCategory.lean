@@ -7,7 +7,7 @@ Authors: Paul Lezeau, Calle Sönne
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # The bicategory of based categories

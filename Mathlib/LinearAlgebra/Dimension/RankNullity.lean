@@ -164,7 +164,7 @@ theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule R M) :
   conv_rhs => enter [2]; rw [show t = (s ⊔ t) ⊓ t by simp]
   rw [← rank_quotient_add_rank ((s ⊓ t).comap s.subtype),
     ← rank_quotient_add_rank (t.comap (s ⊔ t).subtype),
-    (quotientInfEquivSupQuotient s t).rank_eq,
+    comap_inf, (quotientInfEquivSupQuotient s t).rank_eq, ← comap_inf,
     (equivSubtypeMap s (comap _ (s ⊓ t))).rank_eq, Submodule.map_comap_subtype,
     (equivSubtypeMap (s ⊔ t) (comap _ t)).rank_eq, Submodule.map_comap_subtype,
     ← inf_assoc, inf_idem, add_right_comm]
