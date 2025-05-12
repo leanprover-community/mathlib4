@@ -66,7 +66,86 @@ theorem add_pow' (h : Commute x y) (n : ℕ) :
   simp_rw [Nat.sum_antidiagonal_eq_sum_range_succ fun m p ↦ n.choose m • (x ^ m * y ^ p),
     nsmul_eq_mul, cast_comm, h.add_pow]
 
+theorem exists_add_pow_eq_of_dvd_sq (h : Commute x y) (p : R) (dvd : p ∣ y ^ 2) (n : ℕ) :
+    ∃ r, (x + y) ^ (n + 1) = x ^ (n + 1) + (n + 1) * x ^ n * y + p * r := by
+  have ⟨r, eq⟩ := dvd
+  use r * ∑ i ∈ range n, x ^ i * y ^ (n - i - 1) * (n + 1).choose i
+  simp_rw [h.add_pow, sum_range_succ_comm, ← mul_assoc p r, ← eq, mul_sum,
+    mul_assoc, (h.symm.pow_pow 2 _).left_comm, add_assoc]
+  congr 2
+  · simp
+  · rw [← n.cast_succ, ← (n.succ.commute_cast _).eq, mul_assoc]; simp
+  refine sum_congr rfl fun i lt ↦ ?_
+  rw [← mul_assoc (y ^ 2), ← pow_add]; congr
+  rw [mem_range] at lt; omega
+
 end Commute
+
+section one_add_pow
+
+variable [Semiring R]
+
+theorem exists_one_add_pow_eq_of_dvd_sq (p x : R) (dvd : p ∣ x ^ 2) (n : ℕ) :
+    ∃ r, (1 + x) ^ (n + 1) = 1 + (n + 1) * x + p * r := by
+  simpa using (Commute.one_left _).exists_add_pow_eq_of_dvd_sq p dvd n
+
+theorem exists_one_add_sq_mul_pow_pow_eq (p m : ℕ) (x : R) :
+    ∃ r, (1 + p ^ 2 * x) ^ (p ^ m) = 1 + p ^ (m + 2) * (x + p * r) := by
+  obtain _ | p := p
+  · simp
+  induction' m with m hm
+  · use 0; simp
+  have ⟨r, eq1⟩ := hm
+  have ⟨r', eq2⟩ := exists_one_add_pow_eq_of_dvd_sq ((p + 1 : R) ^ (m + 4))
+    ((p + 1) ^ (m + 2) * (x + (p + 1) * r)) ?_ p
+  on_goal 2 =>
+    rw [← Nat.cast_succ, ((p.succ.commute_cast _).symm.pow_left _).mul_pow, ← pow_mul]
+    exact (pow_dvd_pow _ <| by omega).mul_right _
+  use r + r'
+  rw [pow_succ (p + 1) m, pow_mul, eq1, Nat.cast_succ, eq2, ← mul_assoc, ← pow_succ' (p + 1 : R),
+    add_assoc, pow_succ _ (m + 3), mul_assoc, ← mul_add, add_assoc, add_assoc, ← mul_add]
+
+theorem exists_one_add_sq_mul_pow_eq (p : ℕ) (x : R) :
+    ∃ r, (1 + p ^ 2 * x) ^ p = 1 + p ^ 3 * (x + p * r) := by
+  simpa using exists_one_add_sq_mul_pow_pow_eq p 1 x
+
+theorem Odd.exists_one_add_mul_pow_eq {p : ℕ} (odd : Odd p) (x : R) :
+    ∃ r, (1 + p * x) ^ p = 1 + p ^ 2 * (x + p * r) := by
+  _
+
+theorem Odd.exists_one_add_mul_pow_pow_eq {p : ℕ} (odd : Odd p) (m : ℕ) (x : R) :
+    ∃ r, (1 + p * x) ^ (p ^ m) = 1 + p ^ (m + 1) * (x + p * r) := by
+  obtain _ | m := m
+  · use 0; simp
+  have ⟨r, eq⟩ := odd.exists_one_add_mul_pow_eq x
+  rw [pow_succ', pow_mul, eq]
+  have ⟨r, eq⟩ := exists_one_add_sq_mul_pow_pow_eq p m (x + p * r)
+  rw [eq, add_assoc, ← mul_add]
+  exact ⟨_, rfl⟩
+
+theorem exists_one_add_mul_pow_eq (p : ℕ) (x : R) :
+    ∃ r, (1 + p * x) ^ p = 1 + p ^ 2 * r := by
+  obtain _ | p := p
+  · simp
+  use x + ∑ i ∈ range p, ((p + 1) * x) ^ (p - i - 1) * (p + 1).choose i
+  rw [(Commute.one_left _).add_pow]
+  simp_rw [sum_range_succ_comm, ← p.cast_succ, mul_add, mul_sum]
+  congr 2
+  · simp
+  · rw [sq, (p.succ.commute_cast x).symm.right_comm]; simp
+  refine sum_congr rfl fun i lt ↦ ?_
+  simp
+
+theorem exists_one_add_mul_pow_pow_eq (p m : ℕ) (x : R) :
+    ∃ r, (1 + p * x) ^ (p ^ m) = 1 + p ^ (m + 1) * r := by
+  obtain _ | m := m
+  · use x; simp
+  have ⟨r, eq⟩ := exists_one_add_mul_pow_eq p x
+  rw [pow_succ', pow_mul, eq]
+  have ⟨r, eq⟩ := exists_one_add_sq_mul_pow_pow_eq p m r
+  exact ⟨_, eq⟩
+
+end one_add_pow
 
 /-- The **binomial theorem** -/
 theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
