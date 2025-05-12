@@ -234,6 +234,9 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
       simp_rw [p, support_reverse, List.mem_reverse]; exact hmax
     obtain ⟨m, hm⟩ := exists_getVert_first p hy (fun x hx ↦ hmaxp x hx.1)
     let c := (p.drop m).cons (hm.1.1)
+    have h111:= hm.1.1
+    have h112:= hm.1.2
+
     have hcy := hq.reverse.cons_drop_isCycle hm.1.1 hm.1.2
     have hmlt : m < p.length := by
       by_contra!
@@ -257,7 +260,7 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
       rw [card_sdiff hsub.1]
       apply hn.le.trans_lt'
       rw [Nat.sub_lt_iff_lt_add (card_le_card hsub.1)]
-      exact Nat.lt_add_of_pos_left <| card_pos.2 ⟨_, List.mem_toFinset.2 c.start_mem_support⟩
+      exact Nat.lt_add_of_pos_right <| card_pos.2 ⟨_, List.mem_toFinset.2 c.start_mem_support⟩
     -- Two subcases either `c` has a neighbor in `s \ c` or not
     by_cases hnbc : ∃ x, x ∈ c.support ∧ ∃ y, y ∈ s \ c.support.toFinset ∧ G.Adj x y
     · obtain ⟨x, hx, y, hy, had⟩ := hnbc

@@ -506,6 +506,29 @@ lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.su
     simp
   exact isPath_of_append_left (not_nil_of_ne hvw) <| (take_spec c h) ▸ hc
 
+variable {u v x : V} {p : G.Walk u v}
+
+lemma IsPath.eq_snd_of_start_mem_edge (hp : p.IsPath) (hs : s(x, u) ∈ p.edges) : x = p.snd := by
+   cases p with
+  | nil => simp at hs
+  | cons h p =>
+    simp_all only [cons_isPath_iff, edges_cons, List.mem_cons, Sym2.eq, Sym2.rel_iff',
+      Prod.mk.injEq, Prod.swap_prod_mk, and_true, getVert_cons_succ, getVert_zero, forall_const]
+    cases hs with
+    | inl hs =>
+      cases hs with
+      | inl h => exact h.1 ▸ h.2
+      | inr h => exact h
+    | inr h =>
+      exfalso
+      apply hp.2 <| snd_mem_support_of_mem_edges _ h
+
+lemma IsPath.eq_penultimate_of_end_mem_edge (hp : p.IsPath) (hs : s(x, v) ∈ p.edges) :
+    x = p.penultimate := by
+  have h' : s(x, v) ∈ p.reverse.edges := by simp [hs]
+  convert hp.reverse.eq_snd_of_start_mem_edge h' using 1
+  simp
+
 lemma IsPath.cons_takeUntil_isCycle  (hp : p.IsPath) (ha : G.Adj x u) (hx : x ∈ p.support)
     (hs : x ≠ p.snd) : ((p.takeUntil x hx).cons ha).IsCycle :=
   cons_isCycle_iff _ ha|>.2 ⟨hp.takeUntil _, fun hf ↦
@@ -515,6 +538,11 @@ lemma IsPath.cons_dropUntil_isCycle (hp : p.IsPath) (ha : G.Adj v x) (hx : x ∈
     (hs : x ≠ p.penultimate) : ((p.dropUntil x hx).cons ha).IsCycle :=
   cons_isCycle_iff _ ha|>.2 ⟨hp.dropUntil _, fun hf ↦ (fun hf ↦ hs
     <| hp.eq_penultimate_of_end_mem_edge hf) <| (edges_dropUntil_subset ..) (Sym2.eq_swap ▸ hf)⟩
+
+lemma IsPath.cons_drop_isCycle (hp : p.IsPath) {m : ℕ}  (ha : G.Adj v (p.getVert m))
+    (hs : p.getVert m ≠ p.penultimate) : ((p.drop m).cons ha).IsCycle :=
+  cons_isCycle_iff _ ha|>.2 ⟨hp.drop _, fun hf ↦ (fun hf ↦ hs
+    <| hp.eq_penultimate_of_end_mem_edge hf) <| (edges_drop_subset ..) (Sym2.eq_swap ▸ hf)⟩
 
 lemma IsPath.support_takeUntil_disjoint_dropUntil_tail (hp : p.IsPath) (hx : x ∈ p.support) :
     List.Disjoint (p.takeUntil x hx).support (p.dropUntil x hx).support.tail := by
