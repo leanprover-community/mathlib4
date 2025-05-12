@@ -69,7 +69,7 @@ section Separation
 /-- A T₀ space, also known as a Kolmogorov space, is a topological space such that for every pair
 `x ≠ y`, there is an open set containing one but not the other. We formulate the definition in terms
 of the `Inseparable` relation. -/
-@[stacks 004X]
+@[stacks 004X "(2)"]
 class T0Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Two inseparable points in a T₀ space are equal. -/
   t0 : ∀ ⦃x y : X⦄, Inseparable x y → x = y

@@ -31,7 +31,7 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 section genericPoint
 
 /-- `x` is a generic point of `S` if `S` is the closure of `x`. -/
-@[stacks 004X]
+@[stacks 004X "(1)"]
 def IsGenericPoint (x : α) (S : Set α) : Prop :=
   closure ({x} : Set α) = S
 

@@ -161,7 +161,7 @@ class PreirreducibleSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 /-- An irreducible space is one that is nonempty
 and where there is no non-trivial pair of disjoint opens. -/
-@[stacks 004V "part 1, predicate on a Space"]
+@[stacks 004V "part 1, predicate on a space"]
 class IrreducibleSpace (X : Type*) [TopologicalSpace X] : Prop extends PreirreducibleSpace X where
   toNonempty : Nonempty X
 
