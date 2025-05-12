@@ -506,8 +506,8 @@ lemma invtSubmodule_reflection:
     by_contra! hI
     have center_element : z ∈ LieAlgebra.center K L := by
       have rrr (x : L) : ⁅x, z⁆ = 0 := by
-        have qq : x ∈ I := by rw [hI]; exact trivial
-        induction qq using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
+        have x_mem_I : x ∈ I := by rw [hI]; exact trivial
+        induction x_mem_I using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
         | mem x hx =>
           obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
           have := s₄ i j hi hj
