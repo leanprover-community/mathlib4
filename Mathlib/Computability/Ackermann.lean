@@ -363,9 +363,9 @@ where
   step (c : Code) : Code :=
     .curry (.prec (.comp c (.const 1)) (.comp c (.comp .right .right))) 0
 
-lemma pappAck_step_prim : Primrec pappAck.step := by
+lemma primrec_pappAck_step : Primrec pappAck.step := by
   apply_rules
-    [Code.curry_prim.comp, Code.prec_prim.comp, Code.comp_prim.comp,
+    [Code.primrec_curry.comp, Code.primrec_prec.comp, Code.primrec_comp.comp,
       _root_.Primrec.id, Primrec.const]
 
 @[simp]
@@ -377,10 +377,10 @@ lemma eval_pappAck_step_succ (c : Code) (n) :
     (pappAck.step c).eval (n + 1) = ((pappAck.step c).eval n).bind c.eval := by
   simp [pappAck.step, Code.eval]
 
-lemma pappAck_prim : Primrec pappAck := by
+lemma primrec_pappAck : Primrec pappAck := by
   suffices Primrec (Nat.rec Code.succ (fun _ c => pappAck.step c)) by
     convert this using 2 with n; induction n <;> simp [pappAck, *]
-  apply_rules [Primrec.nat_rec₁, pappAck_step_prim.comp, Primrec.snd]
+  apply_rules [Primrec.nat_rec₁, primrec_pappAck_step.comp, Primrec.snd]
 
 @[simp]
 lemma eval_pappAck (m n) : (pappAck m).eval n = Part.some (ack m n) := by
@@ -395,7 +395,7 @@ theorem _root_.computable₂_ack : Computable₂ ack := by
     (f := fun p : ℕ × ℕ => (pappAck p.1).eval p.2) (g := fun p : ℕ × ℕ => ack p.1 p.2)
   · change Partrec₂ (fun m n => (pappAck m).eval n)
     apply_rules only
-      [Code.eval_part.comp₂, Computable.fst, Computable.snd, pappAck_prim.to_comp.comp]
+      [Code.eval_part.comp₂, Computable.fst, Computable.snd, primrec_pappAck.to_comp.comp]
   · simp
 
 end Nat.Partrec.Code
