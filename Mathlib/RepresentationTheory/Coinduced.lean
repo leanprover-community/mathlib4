@@ -27,14 +27,14 @@ coinduction functor and hence that the coinduction functor preserves limits.
 ## Main definitions
 
 * `Representation.coind φ ρ` : the coinduction of `ρ` along `φ` defined as the `k`-submodule of
-`G`-equivariant functions `H → A`, with `H`-action given by `(h • f) h₁ := f (h₁ * h)` for
-`f : H → A`, `h, h₁ : H`.
+  `G`-equivariant functions `H → A`, with `H`-action given by `(h • f) h₁ := f (h₁ * h)` for
+  `f : H → A`, `h, h₁ : H`.
 * `Representation.coind' φ A` : the coinduction of `A` along `φ` defined as the set of
-`G`-representation morphisms `k[H] ⟶ A`, with `H`-action given by
-`(h • f) (r • h₁) := r • f(h₁ * h)` for `f : k[H] ⟶ A`, `h, h₁ : H`, `r : k`.
+  `G`-representation morphisms `k[H] ⟶ A`, with `H`-action given by
+  `(h • f) (r • h₁) := r • f(h₁ * h)` for `f : k[H] ⟶ A`, `h, h₁ : H`, `r : k`.
 * `Rep.resCoindAdjunction k φ`: given a monoid homomorphism `φ : G →* H`, this is the adjunction
-between the restriction functor `Rep k H ⥤ Rep k G` along `φ` and  the coinduction functor along
-`φ`.
+  between the restriction functor `Rep k H ⥤ Rep k G` along `φ` and  the coinduction functor
+  along `φ`.
 
 -/
 
