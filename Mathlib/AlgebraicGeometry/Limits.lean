@@ -212,6 +212,7 @@ def sigmaOpenCover [Small.{u} σ] : (∐ g).OpenCover :=
   rw [Sigma.ι_reindex_hom]
   simp
 
+/-- The underlying topological space of the coproduct is homeomorphic to the disjoint union. -/
 noncomputable
 def sigmaMk : (Σ i, f i) ≃ₜ (∐ f :) :=
   TopCat.homeoOfIso ((colimit.isoColimitCocone ⟨_, TopCat.sigmaCofanIsColimit _⟩).symm ≪≫
