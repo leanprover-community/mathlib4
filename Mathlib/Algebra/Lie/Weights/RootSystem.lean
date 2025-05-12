@@ -544,7 +544,7 @@ lemma invtSubmodule_reflection:
       simp [I] at hy
       induction hy using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
       | mem x₁ hx₁ =>
-        obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx₁
+        obtain ⟨i, hi, hx₂⟩ := Set.mem_iUnion₂.mp hx₁
         have r₁ (j : LieModule.Weight K H L) : j = 0 ∨ j ∈ H.root := by
           rcases (eq_or_ne j 0) with h | h
           · left
@@ -553,16 +553,12 @@ lemma invtSubmodule_reflection:
           refine Finset.mem_filter.mpr ?_
           exact ⟨Finset.mem_univ j, LieModule.Weight.isNonZero_iff_ne_zero.mpr h⟩
         rcases (r₁ j) with h | h
-        have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx hx1_mem
-        simp at ttt
-        rw [h] at ttt
-        simp at ttt
         have rrrr : ⁅x, x₁⁆ ∈ g := by
+          have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx hx₂
+          rw [h, coe_zero, zero_add] at ttt
           exact Set.mem_biUnion hi ttt
         exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
-        --obtain ⟨j1, j2⟩ := j
         let jj : H.root := ⟨j, h⟩
-        --simp only [Finset.mem_filter, Finset.mem_univ, true_and, I] at jj
         rcases (Classical.em (jj ∈ Φ)) with h | h
         --simp at jj
         have hx2 : x ∈ LieModule.genWeightSpace L jj.1 := hx
@@ -576,7 +572,7 @@ lemma invtSubmodule_reflection:
         have key : ⁅x₁, x⁆ = 0 := by
           have := s₄ i jj hi h
           simp at this
-          have ssss2 := this x₁ hx1_mem
+          have ssss2 := this x₁ hx₂
           have ssss3 := ssss2 x hx
           exact ssss3
         have : ⁅x, x₁⁆ = 0 := by
