@@ -526,8 +526,33 @@ theorem eLpNorm_enorm_rpow (f : α → ε) (hq_pos : 0 < q) :
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hq_pos.le]
   exact eLpNorm'_enorm_rpow f p.toReal q hq_pos
 
+--set_option pp.all true
+
 theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
     eLpNorm (fun x => ‖f x‖ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
+  rw [← eLpNorm_enorm_rpow f hq_pos]
+  -- This should be obvious, as the enorm is never infinite.
+  apply eLpNorm_congr_enorm_ae
+  filter_upwards with x
+  simp only [enorm_eq_self]
+  simp only [enorm_eq_nnnorm]
+  set A := ‖f x‖ ^ q
+  have : 0 < ‖f x‖ ^ q := by sorry
+  have : ENNReal.ofReal ‖A‖₊ = ENNReal.ofReal A := sorry
+  -- XXX: why does this not fire? and how to debug this easily?
+  rw [this]
+
+  suffices h: ‖f x‖ ^ q = ↑‖f x‖₊ ^ q by
+    rw [h]
+    simp only [coe_nnnorm, enorm_eq_self]--congr
+
+    sorry--rfl
+  apply congrArg _ rfl
+  #exit
+  ext
+  apply congrArg
+
+
   by_cases h0 : p = 0
   · simp [h0, ENNReal.zero_rpow_of_pos hq_pos]
   by_cases hp_top : p = ∞
@@ -550,6 +575,8 @@ theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
   swap; · exact ENNReal.mul_ne_top hp_top ENNReal.ofReal_ne_top
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hq_pos.le]
   exact eLpNorm'_norm_rpow f p.toReal q hq_pos
+
+#exit
 
 theorem eLpNorm_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) : eLpNorm f p μ = eLpNorm g p μ :=
   eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx => hx ▸ rfl
