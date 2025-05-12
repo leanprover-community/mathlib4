@@ -290,7 +290,7 @@ theorem convexBodySumFun_eq_zero_iff (x : mixedSpace K) :
   conv =>
     enter [1, w, hw]
     rw [mul_left_mem_nonZeroDivisors_eq_zero_iff
-      (mem_nonZeroDivisors_iff_ne_zero.mpr mult_coe_ne_zero)]
+      (mem_nonZeroDivisors_iff_ne_zero.mpr <| Nat.cast_ne_zero.mpr mult_ne_zero)]
   simp_rw [Finset.mem_univ, true_implies]
 
 open scoped Classical in
