@@ -3,7 +3,7 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
@@ -11,35 +11,36 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 Given functors `F : A ⥤ B`, `L : B ⥤ C`, and `G : B ⥤ D`,
 we introduce a typeclass `G.PreservesLeftKanExtension F L`, which encodes the fact that
-the left Kan extension of `F` along `L` is preserved by the functor `G`.
+the left/right Kan extension of `F` along `L` is preserved by the functor `G`.
 
-When the Kan extension is pointwise, It suffices that `G` preserves colimits of the relevant
+When the Kan extension is pointwise, It suffices that `G` preserves (co)limits of the relevant
 diagrams.
-
-TODO: better namespaces
 
 -/
 
 namespace CategoryTheory.Functor
 
-variable {A B C D: Type*} [Category A] [Category B] [Category C] [Category D]
+variable {A B C D : Type*} [Category A] [Category B] [Category C] [Category D]
   (G : B ⥤ D) (F : A ⥤ B) (L : A ⥤ C)
 
 section LeftKanExtension
 
-/-- TODO -/
+/-- `G.PreservesLeftKanExtension F L` asserts that `G` preserves all left kan extensions
+of `F` along `L`. -/
 class PreservesLeftKanExtension where
   preserves : ∀ (F' : C ⥤ B) (α : F ⟶ L ⋙ F') [IsLeftKanExtension F' α],
     IsLeftKanExtension (F' ⋙ G) <| whiskerRight α G ≫ (Functor.associator _ _ _).hom
 
 attribute [instance] PreservesLeftKanExtension.preserves
 
-/-- TODO -/
+/-- `G.PreservesLeftKanExtensionAt F L c` asserts that `G` preserves pointwise all left kan
+extensions of `F` along `L` at the point `c`. -/
 class PreservesPointwiseLeftKanExtensionAt (c : C) where
   preserves : ∀ (E : LeftExtension L F), E.IsPointwiseLeftKanExtensionAt c →
     (LeftExtension.whiskerRight L F G|>.obj E).IsPointwiseLeftKanExtensionAt c
 
-/-- TODO -/
+/-- `G.PreservesLeftKanExtension F L` asserts that `G` preserves all pointwise left kan extensions
+of `F` along `L`. -/
 abbrev PreservesPointwiseLeftKanExtension := ∀ c : C, PreservesPointwiseLeftKanExtensionAt G F L c
 
 /-- Given a pointwise left kan extension of `F` at `L`, exhibits
@@ -52,14 +53,15 @@ def PreservesPointwiseLeftKanExtension.preserves [h : PreservesPointwiseLeftKanE
 /-- The cocone at a point of the whiskering right by `G`of an extension is isomorphic to the
 action of `G` on the cocone at that point for the original extension. -/
 @[simps!]
-def coconeAtWhiskerRightIso (E : LeftExtension L F) (c : C) :
+def LeftExtension.coconeAtWhiskerRightIso (E : LeftExtension L F) (c : C) :
     ((LeftExtension.whiskerRight L F G).obj E).coconeAt c ≅ G.mapCocone (E.coconeAt c) :=
   Limits.Cocones.ext (Iso.refl _)
 
 instance hasLeftKanExtension_of_preserves [L.HasLeftKanExtension F]
     [PreservesLeftKanExtension G F L] : L.HasLeftKanExtension (F ⋙ G) :=
   @HasLeftKanExtension.mk _ _ _ _ _ _ _ _ _ _ <|
-    letI : (L.leftKanExtension F).IsLeftKanExtension <| L.leftKanExtensionUnit F := by infer_instance
+    letI : (L.leftKanExtension F).IsLeftKanExtension <| L.leftKanExtensionUnit F := by
+      infer_instance
     PreservesLeftKanExtension.preserves (L.leftKanExtension F) (L.leftKanExtensionUnit F)
 
 instance hasPointwiseLeftKanExtension_of_preserves [L.HasPointwiseLeftKanExtension F]
@@ -87,7 +89,7 @@ noncomputable instance preservesPointwiseLeftKanExtensionAtOfPreservesColimit (c
   preserves E p :=
     Limits.IsColimit.ofIsoColimit
       (Limits.PreservesColimit.preserves p).some
-      (coconeAtWhiskerRightIso G _ _ E c).symm
+      (E.coconeAtWhiskerRightIso G _ _ c).symm
 
 /-- If there is a pointwise left Kan extension of `F` along `L`, and if `G` preserves them,
 then `G` preserves left Kan extensions of `F` along `L`. -/
@@ -103,7 +105,8 @@ noncomputable instance preservesPointwiseLKEOfHasPointwiseAndPreservesPointwise
 `(pointwiseLeftKanExtension L F) ⋙ G ≅ pointwiseLeftKanExtension L (F ⋙ G)` when `G` preserves
 left Kan extensions. -/
 @[simps!]
-noncomputable def pointwiseLeftKanExtensionCompIsoOfPreserves [PreservesPointwiseLeftKanExtension G F L]
+noncomputable def pointwiseLeftKanExtensionCompIsoOfPreserves
+    [PreservesPointwiseLeftKanExtension G F L]
     [L.HasPointwiseLeftKanExtension F] :
     L.pointwiseLeftKanExtension F ⋙ G ≅ L.pointwiseLeftKanExtension (F ⋙ G) :=
   leftKanExtensionUnique
@@ -114,29 +117,55 @@ noncomputable def pointwiseLeftKanExtensionCompIsoOfPreserves [PreservesPointwis
 
 /-- `G.PreservesLeftKanExtensions L` means that `G : B ⥤ D` preserves all left Kan extensions along
 `L : A ⥤ C` of every functor `A ⥤ B`. -/
-abbrev preservesLeftKanExtensions := ∀ (F : A ⥤ B), G.PreservesLeftKanExtension F L
+abbrev PreservesLeftKanExtensions := ∀ (F : A ⥤ B), G.PreservesLeftKanExtension F L
 
-/-- `G.PreservesPointwiseLeftKanExtensions L` means that `G : B ⥤ D` preserves all pointwise left Kan
-extensions along `L : A ⥤ C` of every functor `A ⥤ B`. -/
-abbrev preservesPointwiseLeftKanExtensions := ∀ (F : A ⥤ B), G.PreservesPointwiseLeftKanExtension F L
+/-- `G.PreservesPointwiseLeftKanExtensions L` means that `G : B ⥤ D` preserves all pointwise left
+Kan extensions along `L : A ⥤ C` of every functor `A ⥤ B`. -/
+abbrev PreservesPointwiseLeftKanExtensions :=
+  ∀ (F : A ⥤ B), G.PreservesPointwiseLeftKanExtension F L
+
+/-- Commuting a functor that preserves left Kan extensions with the `lan` functor. -/
+@[simps!]
+noncomputable def lanFunctorCompOfPreserves [G.PreservesLeftKanExtensions L]
+    [∀ F : A ⥤ B, HasLeftKanExtension L F]
+    [∀ F : A ⥤ D, HasLeftKanExtension L F] :
+    L.lan ⋙ (whiskeringRight _ _ _).obj G ≅ (whiskeringRight _ _ _).obj G ⋙ L.lan :=
+  NatIso.ofComponents (fun F ↦ leftKanExtensionCompIsoOfPreserves _ _ _)
+    (fun {F F'} η ↦ by
+      apply hom_ext_of_isLeftKanExtension (L.leftKanExtension F ⋙ G)
+        (whiskerRight (L.leftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
+      dsimp [lan]
+      ext
+      simp only [comp_obj, leftKanExtensionCompIsoOfPreserves_hom, Category.assoc,
+        NatTrans.comp_app, whiskerRight_app, associator_hom_app, whiskerLeft_app, Category.id_comp,
+        ← G.map_comp_assoc]
+      have h := descOfIsLeftKanExtension_fac_app (L.leftKanExtension F' ⋙ G)
+        (whiskerRight (L.leftKanExtensionUnit F') G ≫ (Functor.associator _ _ _).hom)
+      have h' := descOfIsLeftKanExtension_fac_app (L.leftKanExtension F ⋙ G)
+        (whiskerRight (L.leftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
+      simp at h h'
+      simp [h, reassoc_of% h'])
 
 end LeftKanExtension
 
 section RightKanExtension
 
-/-- TODO -/
+/-- `G.PreservesRightKanExtension F L` asserts that `G` preserves all right kan extensions
+of `F` along `L` -/
 class PreservesRightKanExtension where
   preserves : ∀ (F' : C ⥤ B) (α : L ⋙ F' ⟶ F) [IsRightKanExtension F' α],
     IsRightKanExtension (F' ⋙ G) <| (Functor.associator _ _ _).inv ≫ whiskerRight α G
 
 attribute [instance] PreservesRightKanExtension.preserves
 
-/-- TODO -/
+/-- `G.PreservesRightKanExtensionAt F L c` asserts that `G` preserves all right pointwise right kan
+extensions of `F` along `L` at `c`. -/
 class PreservesPointwiseRightKanExtensionAt (c : C) where
   preserves : ∀ (E : RightExtension L F), E.IsPointwiseRightKanExtensionAt c →
     (RightExtension.whiskerRight L F G|>.obj E).IsPointwiseRightKanExtensionAt c
 
-/-- TODO -/
+/-- `G.PreservesRightKanExtensions L` asserts that `G` preserves all pointwise right kan
+extensions of `F` along `L` for every `F`. -/
 abbrev PreservesPointwiseRightKanExtension := ∀ c : C, PreservesPointwiseRightKanExtensionAt G F L c
 
 /-- Given a pointwise left kan extension of `F` at `L`, exhibits
@@ -149,14 +178,15 @@ def PreservesPointwiseRightKanExtension.preserves [h : PreservesPointwiseRightKa
 /-- The cocone at a point of the whiskering right by `G`of an extension is isomorphic to the
 action of `G` on the cocone at that point for the original extension. -/
 @[simps!]
-def coneAtWhiskerRightIso (E : RightExtension L F) (c : C) :
+def RightExtension.coneAtWhiskerRightIso (E : RightExtension L F) (c : C) :
     (RightExtension.whiskerRight L F G|>.obj E).coneAt c ≅ G.mapCone (E.coneAt c) :=
   Limits.Cones.ext (Iso.refl _)
 
 instance hasRightKanExtension_of_preserves [L.HasRightKanExtension F]
     [PreservesRightKanExtension G F L] : L.HasRightKanExtension (F ⋙ G) :=
   @HasRightKanExtension.mk _ _ _ _ _ _ _ _ _ _ <|
-    letI : (L.rightKanExtension F).IsRightKanExtension <| L.rightKanExtensionCounit F := by infer_instance
+    letI : (L.rightKanExtension F).IsRightKanExtension <| L.rightKanExtensionCounit F := by
+      infer_instance
     PreservesRightKanExtension.preserves (L.rightKanExtension F) (L.rightKanExtensionCounit F)
 
 instance hasPointwiseRightKanExtension_of_preserves [L.HasPointwiseRightKanExtension F]
@@ -176,18 +206,18 @@ noncomputable def rightKanExtensionCompIsoOfPreserves [PreservesRightKanExtensio
     (L.rightKanExtension <| F ⋙ G)
     (L.rightKanExtensionCounit <| F ⋙ G)
 
-/-- A functor that preserves the colimit of `(CostructuredArrow.proj L c ⋙ F)` preserves
-the pointwise left kan extension of `F` along `L` at c. -/
+/-- A functor that preserves the colimit of `(StructuredArrow.proj L c ⋙ F)` preserves
+the pointwise right kan extension of `F` along `L` at c. -/
 noncomputable instance preservesPointwiseRightKanExtensionAtOfPreservesColimit (c : C)
     [Limits.PreservesLimit (StructuredArrow.proj c L ⋙ F) G] :
     G.PreservesPointwiseRightKanExtensionAt F L c where
   preserves E p :=
     Limits.IsLimit.ofIsoLimit
       (Limits.PreservesLimit.preserves p).some
-      (coneAtWhiskerRightIso G _ _ E c).symm
+      (E.coneAtWhiskerRightIso G _ _ c).symm
 
-/-- If there is a pointwise left Kan extension of `F` along `L`, and if `G` preserves them,
-then `G` preserves left Kan extensions of `F` along `L`. -/
+/-- If there is a pointwise right Kan extension of `F` along `L`, and if `G` preserves them,
+then `G` preserves right Kan extensions of `F` along `L`. -/
 noncomputable instance preservesPointwiseRKEOfHasPointwiseAndPreservesPointwise
     [HasPointwiseRightKanExtension L F] [G.PreservesPointwiseRightKanExtension F L] :
     G.PreservesRightKanExtension F L where
@@ -198,9 +228,10 @@ noncomputable instance preservesPointwiseRKEOfHasPointwiseAndPreservesPointwise
 
 /-- Extract an isomorphism
 `(pointwiseRightKanExtension L F) ⋙ G ≅ pointwiseRightKanExtension L (F ⋙ G)` when `G` preserves
-left Kan extensions. -/
+right Kan extensions. -/
 @[simps!]
-noncomputable def pointwiseRightKanExtensionCompIsoOfPreserves [PreservesPointwiseRightKanExtension G F L]
+noncomputable def pointwiseRightKanExtensionCompIsoOfPreserves
+    [PreservesPointwiseRightKanExtension G F L]
     [L.HasPointwiseRightKanExtension F] :
     L.pointwiseRightKanExtension F ⋙ G ≅ L.pointwiseRightKanExtension (F ⋙ G) :=
   rightKanExtensionUnique
@@ -208,6 +239,39 @@ noncomputable def pointwiseRightKanExtensionCompIsoOfPreserves [PreservesPointwi
     ((Functor.associator _ _ _).inv ≫ whiskerRight (L.pointwiseRightKanExtensionCounit F) G)
     (L.pointwiseRightKanExtension <| F ⋙ G)
     (L.pointwiseRightKanExtensionCounit <| F ⋙ G)
+
+/-- `G.PreservesRightKanExtensions L` means that `G : B ⥤ D` preserves all right Kan extensions
+along `L : A ⥤ C` of every functor `A ⥤ B`. -/
+abbrev PreservesRightKanExtensions := ∀ (F : A ⥤ B), G.PreservesRightKanExtension F L
+
+/-- `G.PreservesPointwiseRightKanExtensions L` means that `G : B ⥤ D` preserves all pointwise right
+Kan extensions along `L : A ⥤ C` of every functor `A ⥤ B`. -/
+abbrev PreservesPointwiseRightKanExtensions :=
+  ∀ (F : A ⥤ B), G.PreservesPointwiseRightKanExtension F L
+
+/-- Commuting a functor that preserves right Kan extensions with the `ran` functor. -/
+@[simps!]
+noncomputable def ranFunctorCompOfPreserves [G.PreservesRightKanExtensions L]
+    [∀ F : A ⥤ B, HasRightKanExtension L F] [∀ F : A ⥤ D, HasRightKanExtension L F] :
+    L.ran ⋙ (whiskeringRight _ _ _).obj G ≅ (whiskeringRight _ _ _).obj G ⋙ L.ran :=
+  NatIso.ofComponents (fun F ↦ rightKanExtensionCompIsoOfPreserves _ _ _)
+    (fun {F F'} η ↦ by
+      apply hom_ext_of_isRightKanExtension
+        (L.rightKanExtension <| F' ⋙ G)
+        (L.rightKanExtensionCounit <| F' ⋙ G)
+      dsimp [ran]
+      ext
+      simp only [comp_obj, rightKanExtensionCompIsoOfPreserves_hom, Category.assoc,
+        NatTrans.comp_app, whiskerRight_app, associator_hom_app, whiskerLeft_app, Category.id_comp,
+        ← G.map_comp_assoc]
+      have h := liftOfIsRightKanExtension_fac_app (L.rightKanExtension F' ⋙ G)
+        ((Functor.associator _ _ _).inv ≫ whiskerRight (L.rightKanExtensionCounit F') G)
+      have h' := liftOfIsRightKanExtension_fac_app (L.rightKanExtension F ⋙ G)
+        ((Functor.associator _ _ _).inv ≫ whiskerRight (L.rightKanExtensionCounit F) G)
+      simp only [comp_obj, NatTrans.comp_app, associator_inv_app, whiskerRight_app,
+        Category.id_comp] at h h'
+      simp only [liftOfIsRightKanExtension_fac_app, NatTrans.comp_app, comp_obj, associator_inv_app,
+        whiskerRight_app, Category.id_comp, liftOfIsRightKanExtension_fac_app_assoc, ← G.map_comp])
 
 end RightKanExtension
 
