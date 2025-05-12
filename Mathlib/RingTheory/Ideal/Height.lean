@@ -200,18 +200,19 @@ theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
     simp only [h, ← Ideal.height_eq_primeHeight, Ideal.height_top, WithBot.coe_top] at e
     exact ringKrullDim_ne_top e.symm
   obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h
-  rcases lt_or_eq_of_le hM' with (hM' | hM')
+  rcases lt_or_eq_of_le hM' with (hM' | rfl)
   · have h1 := Ideal.primeHeight_strict_mono hM'
     have h2 := e ▸ M.primeHeight_le_ringKrullDim
     simp [← not_lt, h1] at h2
-  · exact hM' ▸ hM
+  · exact hM
 
 /-- The prime height of the maximal ideal equals the Krull dimension in a local ring -/
 @[simp]
 theorem IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim [IsLocalRing R] :
     (IsLocalRing.maximalIdeal R).primeHeight = ringKrullDim R := by
   rw [ringKrullDim, Ideal.primeHeight, ← Order.height_top_eq_krullDim]
-  rfl
+  -- TODO missing API
+  simp [IsLocalRing.instOrderTopPrimeSpectrum, closedPoint]
 
 /-- The height of the maximal ideal equals the Krull dimension in a local ring. -/
 @[simp]
