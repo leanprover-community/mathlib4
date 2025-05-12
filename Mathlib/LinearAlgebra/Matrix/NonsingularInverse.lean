@@ -740,12 +740,12 @@ theorem inv_kronecker [Fintype m] [DecidableEq m]
 lemma _root_.LinearEquiv.toMatrix_inv {M : Type*} [AddCommMonoid M] [Module α M]
     (v w : Basis n α M) (f : M ≃ₗ[α] M) :
     (f.toMatrix v w)⁻¹ = f⁻¹.toMatrix w v :=
-  inv_eq_right_inv (by simp [← LinearEquiv.mul_eq_trans, ← LinearMap.toMatrix_comp,
-    LinearMap.toMatrix_id])
+  inv_eq_right_inv (by
+    simpa [LinearMap.toMatrix_id] using (f.toMatrix_comp w v w f.symm.toLinearMap).symm)
 
 lemma _root_.LinearEquiv.toMatrix'_inv [Fintype m] [DecidableEq m] (f : (m → α) ≃ₗ[α] (m → α)) :
     f.toMatrix'⁻¹ = f⁻¹.toMatrix' :=
-  inv_eq_right_inv (by simpa using (f.toLinearMap.toMatrix'_comp f.symm.toLinearMap).symm)
+  inv_eq_right_inv (by simpa using (f.toMatrix'_comp f.symm.toLinearMap).symm)
 
 
 /-! ### More results about determinants -/
