@@ -93,7 +93,7 @@ def inducedFunctor : Fib p S ⥤ Fiber p S :=
   Fiber.inducedFunctor (comp_const S)
 
 /-- The natural transformation `ι S ≅ (inducedFunctor p S) ⋙ (fiberInclusion p S)` -/
-def inducedFunctor.NatIso : ι S ≅ (inducedFunctor p S) ⋙ fiberInclusion :=
+def inducedFunctor.natIso : ι S ≅ (inducedFunctor p S) ⋙ fiberInclusion :=
   Fiber.inducedFunctorCompIsoSelf (comp_const S)
 
 lemma inducedFunctor_comp : ι S = (inducedFunctor p S) ⋙ fiberInclusion :=
@@ -102,7 +102,7 @@ lemma inducedFunctor_comp : ι S = (inducedFunctor p S) ⋙ fiberInclusion :=
 instance : Functor.IsEquivalence (inducedFunctor p S) := equiv S
 
 instance : Functor.Faithful (ι (p:=p) S) :=
-  Functor.Faithful.of_iso (inducedFunctor.NatIso p S).symm
+  Functor.Faithful.of_iso (inducedFunctor.natIso p S).symm
 
 end
 
