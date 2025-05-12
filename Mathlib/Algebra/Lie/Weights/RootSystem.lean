@@ -493,14 +493,11 @@ lemma invtSubmodule_reflection:
         _ = i.1.1 (coroot i) + j.1.1 (coroot i) := rfl
         _ = 2 := by rw [e₁, e₂, add_zero]
       simp at this
-  have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1)
+  have s₄ (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1)
       (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
-    have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace li.2 lj.2
-    have := s₃ i j h1 h2
-    rw [this] at ttt
-    exact ttt
-  have help : ⨆ χ : LieModule.Weight K H L, LieModule.genWeightSpace L χ = ⊤ := by
-    exact LieModule.iSup_genWeightSpace_eq_top' K H L
+    have h₃ := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace li.2 lj.2
+    rw [s₃ i j h1 h2] at h₃
+    exact h₃
   let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
   let I := LieSubalgebra.lieSpan K L gg
   have rr5 : I ≠ ⊤ := by
@@ -519,7 +516,7 @@ lemma invtSubmodule_reflection:
         refine LieSubalgebra.lieSpan_induction (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ qq
         intro x hx
         obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
-        have := rr4 i j hi hj
+        have := s₄ i j hi hj
         simp at this
         have ssss2 := this x hx1_mem
         have ssss3 := ssss2 z hz1
@@ -609,7 +606,7 @@ lemma invtSubmodule_reflection:
          exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a hx1
       exact LieSubalgebra.lie_mem I rrrr2 rrrr3
       have key : ⁅x1, x⁆ = 0 := by
-        have := rr4 i jj hi h
+        have := s₄ i jj hi h
         simp at this
         have ssss2 := this x1 hx1_mem
         have ssss3 := ssss2 x hx
