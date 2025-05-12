@@ -524,24 +524,15 @@ lemma invtSubmodule_reflection:
     rw [LieAlgebra.center_eq_bot (R := K) (L := L)] at center_element
     exact hz₂ center_element
   have s₆ : I ≠ ⊥ := by
-    have : ∃ (rrrr : H.root), rrrr ∈ Φ := by
-      refine Set.nonempty_def.mp ?_
-      exact hΦ₁
-    obtain ⟨rrrr, rrrr1⟩ := this
-    obtain ⟨x, hx1, hx2⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) rrrr
-    have : x ∈ gg := by
-      apply Set.mem_iUnion_of_mem rrrr
-      simp only [LieModule.Weight.coe_coe, Set.mem_iUnion, SetLike.mem_coe, exists_prop]
-      constructor
-      exact rrrr1
-      exact hx1
-    have cc : x ∈ I := by
-      exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a this
-    by_contra!
-    have dddd := LieSubalgebra.eq_bot_iff I
-    have dddd2 := dddd.1 this
-    have dddd3 := dddd2 x cc
-    exact hx2 dddd3
+    obtain ⟨r, hr⟩ := Set.nonempty_def.mp hΦ₁
+    obtain ⟨x, hx₁, hx₂⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) r
+    have x_in_gg : x ∈ gg := by
+      apply Set.mem_iUnion_of_mem r
+      simp only [Set.mem_iUnion]
+      exact ⟨hr, hx₁⟩
+    have x_mem_I : x ∈ I := LieSubalgebra.mem_lieSpan.mpr (fun _ a ↦ a x_in_gg)
+    by_contra h
+    exact hx₂ (((LieSubalgebra.eq_bot_iff I).1 h) x x_mem_I)
   have rr7 : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
     have help : ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule = ⊤ := by
       exact LieModule.iSup_genWeightSpace_as_module_eq_top' K H L
