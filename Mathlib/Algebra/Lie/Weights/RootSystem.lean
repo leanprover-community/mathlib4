@@ -532,7 +532,7 @@ lemma invtSubmodule_reflection:
       exact ⟨hr, hx₁⟩
     have x_mem_I : x ∈ I := LieSubalgebra.mem_lieSpan.mpr (fun _ a ↦ a x_in_gg)
     by_contra h
-    exact hx₂ (((LieSubalgebra.eq_bot_iff I).1 h) x x_mem_I)
+    exact hx₂ ((LieSubalgebra.eq_bot_iff I).mp h x x_mem_I)
   have rr7 : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
     have help : ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule = ⊤ := by
       exact LieModule.iSup_genWeightSpace_as_module_eq_top' K H L
