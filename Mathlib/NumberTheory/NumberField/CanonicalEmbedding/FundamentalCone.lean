@@ -513,7 +513,7 @@ def idealSetEquiv : idealSet K J ≃
     ⟨fun _ _ h ↦ (by
         simp_rw [Subtype.ext_iff_val, idealSetMap_apply] at h
         rwa [Subtype.ext_iff_val]),
-    fun ⟨a, ha₂⟩ ↦ ⟨⟨a.val,  mem_idealSet.mpr ⟨a.prop.1,
+    fun ⟨a, ha₂⟩ ↦ ⟨⟨a.val, mem_idealSet.mpr ⟨a.prop.1,
         ⟨preimageOfMemIntegerSet a, ha₂, mixedEmbedding_preimageOfMemIntegerSet a⟩⟩⟩, rfl⟩⟩
 
 variable {K J}
