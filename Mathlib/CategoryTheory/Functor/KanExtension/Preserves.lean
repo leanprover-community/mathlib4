@@ -72,7 +72,6 @@ instance hasPointwiseLeftKanExtension_of_preserves [L.HasPointwiseLeftKanExtensi
 
 /-- Extract an isomorphism `(leftKanExtension L F) ⋙ G ≅ leftKanExtension L (F ⋙ G)` when `G`
 preserves left Kan extensions. -/
-@[simps!]
 noncomputable def leftKanExtensionCompIsoOfPreserves [PreservesLeftKanExtension G F L]
     [L.HasLeftKanExtension F] :
     L.leftKanExtension F ⋙ G ≅ L.leftKanExtension (F ⋙ G) :=
@@ -81,6 +80,29 @@ noncomputable def leftKanExtensionCompIsoOfPreserves [PreservesLeftKanExtension 
     (whiskerRight (L.leftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
     (L.leftKanExtension <| F ⋙ G)
     (L.leftKanExtensionUnit <| F ⋙ G)
+
+section
+
+variable [PreservesLeftKanExtension G F L] [L.HasLeftKanExtension F]
+
+@[reassoc (attr := simp)]
+lemma leftKanExtensionCompIsoOfPreserves_fac :
+    whiskerRight (L.leftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom ≫
+      whiskerLeft L (leftKanExtensionCompIsoOfPreserves G F L).hom =
+    (L.leftKanExtensionUnit <| F ⋙ G) := by
+  simpa [leftKanExtensionCompIsoOfPreserves] using descOfIsLeftKanExtension_fac
+    (α := whiskerRight (L.leftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
+    (β := L.leftKanExtensionUnit (F ⋙ G))
+
+@[reassoc (attr := simp)]
+lemma leftKanExtensionCompIsoOfPreserves_fac_app (a : A) :
+    G.map ((L.leftKanExtensionUnit F).app a) ≫
+      (G.leftKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) =
+    (L.leftKanExtensionUnit (F ⋙ G)).app a := by
+  simpa [- leftKanExtensionCompIsoOfPreserves_fac] using congrArg (fun t ↦ t.app a)
+    (leftKanExtensionCompIsoOfPreserves_fac G F L)
+
+end
 
 /-- A functor that preserves the colimit of `(CostructuredArrow.proj L c ⋙ F)` preserves
 the pointwise left kan extension of `F` along `L` at c. -/
@@ -105,7 +127,6 @@ noncomputable instance preservesPointwiseLKEOfHasPointwiseAndPreservesPointwise
 /-- Extract an isomorphism
 `(pointwiseLeftKanExtension L F) ⋙ G ≅ pointwiseLeftKanExtension L (F ⋙ G)` when `G` preserves
 left Kan extensions. -/
-@[simps!]
 noncomputable def pointwiseLeftKanExtensionCompIsoOfPreserves
     [PreservesPointwiseLeftKanExtension G F L]
     [L.HasPointwiseLeftKanExtension F] :
@@ -115,6 +136,29 @@ noncomputable def pointwiseLeftKanExtensionCompIsoOfPreserves
     (whiskerRight (L.pointwiseLeftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
     (L.pointwiseLeftKanExtension <| F ⋙ G)
     (L.pointwiseLeftKanExtensionUnit <| F ⋙ G)
+
+section
+
+variable [PreservesPointwiseLeftKanExtension G F L] [L.HasPointwiseLeftKanExtension F]
+
+@[reassoc (attr := simp)]
+lemma pointwiseLeftKanExtensionCompIsoOfPreserves_fac :
+    whiskerRight (L.pointwiseLeftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom ≫
+      whiskerLeft L (pointwiseLeftKanExtensionCompIsoOfPreserves G F L).hom =
+    (L.pointwiseLeftKanExtensionUnit <| F ⋙ G) := by
+  simpa [pointwiseLeftKanExtensionCompIsoOfPreserves] using descOfIsLeftKanExtension_fac
+    (α := whiskerRight (L.pointwiseLeftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
+    (β := L.pointwiseLeftKanExtensionUnit (F ⋙ G))
+
+@[reassoc (attr := simp)]
+lemma pointwiseLeftKanExtensionCompIsoOfPreserves_fac_app (a : A) :
+    G.map ((L.pointwiseLeftKanExtensionUnit F).app a) ≫
+      (G.pointwiseLeftKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) =
+    (L.pointwiseLeftKanExtensionUnit (F ⋙ G)).app a := by
+  simpa [- pointwiseLeftKanExtensionCompIsoOfPreserves_fac] using congrArg (fun t ↦ t.app a)
+    (pointwiseLeftKanExtensionCompIsoOfPreserves_fac G F L)
+
+end
 
 /-- `G.PreservesLeftKanExtensions L` means that `G : B ⥤ D` preserves all left Kan extensions along
 `L : A ⥤ C` of every functor `A ⥤ B`. -/
@@ -137,16 +181,7 @@ noncomputable def lanFunctorCompOfPreserves [G.PreservesLeftKanExtensions L]
         (whiskerRight (L.leftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
       dsimp [lan]
       ext
-      simp only [comp_obj, leftKanExtensionCompIsoOfPreserves_hom, Category.assoc,
-        NatTrans.comp_app, whiskerRight_app, associator_hom_app, whiskerLeft_app, Category.id_comp,
-        ← G.map_comp_assoc]
-      have h := descOfIsLeftKanExtension_fac_app (L.leftKanExtension F' ⋙ G)
-        (whiskerRight (L.leftKanExtensionUnit F') G ≫ (Functor.associator _ _ _).hom)
-      have h' := descOfIsLeftKanExtension_fac_app (L.leftKanExtension F ⋙ G)
-        (whiskerRight (L.leftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
-      simp only [comp_obj, NatTrans.comp_app, whiskerRight_app, associator_hom_app,
-        Category.comp_id] at h h'
-      simp [h, reassoc_of% h'])
+      simp [← G.map_comp_assoc])
 
 end LeftKanExtension
 
@@ -199,7 +234,6 @@ instance hasPointwiseRightKanExtension_of_preserves [L.HasPointwiseRightKanExten
 
 /-- Extract an isomorphism `(rightKanExtension L F) ⋙ G ≅ rightKanExtension L (F ⋙ G)` when `G`
 preserves left Kan extensions. -/
-@[simps!]
 noncomputable def rightKanExtensionCompIsoOfPreserves [PreservesRightKanExtension G F L]
     [L.HasRightKanExtension F] :
     L.rightKanExtension F ⋙ G ≅ L.rightKanExtension (F ⋙ G) :=
@@ -208,6 +242,26 @@ noncomputable def rightKanExtensionCompIsoOfPreserves [PreservesRightKanExtensio
     ((Functor.associator _ _ _).inv ≫ whiskerRight (L.rightKanExtensionCounit F) G)
     (L.rightKanExtension <| F ⋙ G)
     (L.rightKanExtensionCounit <| F ⋙ G)
+
+section
+
+variable [PreservesRightKanExtension G F L] [L.HasRightKanExtension F]
+
+@[reassoc (attr := simp)]
+lemma rightKanExtensionCompIsoOfPreserves_fac :
+    whiskerLeft L (rightKanExtensionCompIsoOfPreserves G F L).hom ≫
+      (L.rightKanExtensionCounit <| F ⋙ G) =
+    ((Functor.associator _ _ _).inv ≫ whiskerRight (L.rightKanExtensionCounit F) G):= by
+  simp [rightKanExtensionCompIsoOfPreserves]
+
+@[reassoc (attr := simp)]
+lemma rightKanExtensionCompIsoOfPreserves_fac_app (a : A) :
+    (G.rightKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) ≫
+      (L.rightKanExtensionCounit (F ⋙ G)).app a =
+    G.map ((L.rightKanExtensionCounit F).app a) := by
+  simp [rightKanExtensionCompIsoOfPreserves]
+
+end
 
 /-- A functor that preserves the colimit of `(StructuredArrow.proj L c ⋙ F)` preserves
 the pointwise right kan extension of `F` along `L` at c. -/
@@ -232,7 +286,6 @@ noncomputable instance preservesPointwiseRKEOfHasPointwiseAndPreservesPointwise
 /-- Extract an isomorphism
 `(pointwiseRightKanExtension L F) ⋙ G ≅ pointwiseRightKanExtension L (F ⋙ G)` when `G` preserves
 right Kan extensions. -/
-@[simps!]
 noncomputable def pointwiseRightKanExtensionCompIsoOfPreserves
     [PreservesPointwiseRightKanExtension G F L]
     [L.HasPointwiseRightKanExtension F] :
@@ -242,6 +295,28 @@ noncomputable def pointwiseRightKanExtensionCompIsoOfPreserves
     ((Functor.associator _ _ _).inv ≫ whiskerRight (L.pointwiseRightKanExtensionCounit F) G)
     (L.pointwiseRightKanExtension <| F ⋙ G)
     (L.pointwiseRightKanExtensionCounit <| F ⋙ G)
+
+section
+
+variable [PreservesPointwiseRightKanExtension G F L]
+    [L.HasPointwiseRightKanExtension F]
+
+@[reassoc (attr := simp)]
+lemma pointwiseRightKanExtensionCompIsoOfPreserves_fac :
+    whiskerLeft L (pointwiseRightKanExtensionCompIsoOfPreserves G F L).hom ≫
+      (L.pointwiseRightKanExtensionCounit <| F ⋙ G) =
+    ((Functor.associator _ _ _).inv ≫ whiskerRight (L.pointwiseRightKanExtensionCounit F) G):= by
+  simp [pointwiseRightKanExtensionCompIsoOfPreserves]
+
+@[reassoc (attr := simp)]
+lemma pointwiseRightKanExtensionCompIsoOfPreserves_fac_app (a : A) :
+    (G.pointwiseRightKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) ≫
+      (L.pointwiseRightKanExtensionCounit (F ⋙ G)).app a =
+    G.map ((L.pointwiseRightKanExtensionCounit F).app a) := by
+  simpa [-pointwiseRightKanExtensionCompIsoOfPreserves_fac] using
+    congrArg (fun t ↦ t.app a) <| pointwiseRightKanExtensionCompIsoOfPreserves_fac G F L
+
+end
 
 /-- `G.PreservesRightKanExtensions L` means that `G : B ⥤ D` preserves all right Kan extensions
 along `L : A ⥤ C` of every functor `A ⥤ B`. -/
@@ -264,17 +339,10 @@ noncomputable def ranFunctorCompOfPreserves [G.PreservesRightKanExtensions L]
         (L.rightKanExtensionCounit <| F' ⋙ G)
       dsimp [ran]
       ext
-      simp only [comp_obj, rightKanExtensionCompIsoOfPreserves_hom, Category.assoc,
-        NatTrans.comp_app, whiskerRight_app, associator_hom_app, whiskerLeft_app, Category.id_comp,
-        ← G.map_comp_assoc]
-      have h := liftOfIsRightKanExtension_fac_app (L.rightKanExtension F' ⋙ G)
-        ((Functor.associator _ _ _).inv ≫ whiskerRight (L.rightKanExtensionCounit F') G)
-      have h' := liftOfIsRightKanExtension_fac_app (L.rightKanExtension F ⋙ G)
-        ((Functor.associator _ _ _).inv ≫ whiskerRight (L.rightKanExtensionCounit F) G)
-      simp only [comp_obj, NatTrans.comp_app, associator_inv_app, whiskerRight_app,
-        Category.id_comp] at h h'
-      simp only [liftOfIsRightKanExtension_fac_app, NatTrans.comp_app, comp_obj, associator_inv_app,
-        whiskerRight_app, Category.id_comp, liftOfIsRightKanExtension_fac_app_assoc, ← G.map_comp])
+      simp only [comp_obj, Category.assoc, rightKanExtensionCompIsoOfPreserves_fac,
+        NatTrans.comp_app, whiskerLeft_app, whiskerRight_app, associator_inv_app, Category.id_comp,
+        liftOfIsRightKanExtension_fac, rightKanExtensionCompIsoOfPreserves_fac_assoc, ← G.map_comp ]
+      simp)
 
 end RightKanExtension
 
