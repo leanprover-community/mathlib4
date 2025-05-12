@@ -724,13 +724,8 @@ lemma copy_eq (e : r ≃r s) (f : α → β) (g : β → α) (hf hg) : e.copy f 
   DFunLike.coe_injective hf
 
 /-- Any equivalence lifts to a relation isomorphism between `s` and its preimage. -/
-@[simps]
-protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s where
-  toFun := f
-  invFun := f.symm
-  left_inv := f.left_inv'
-  right_inv := f.right_inv'
-  map_rel_iff' := Iff.rfl
+protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s :=
+  ⟨f, Iff.rfl⟩
 
 -- `simps` crashes if asked to generate these
 @[simp]
