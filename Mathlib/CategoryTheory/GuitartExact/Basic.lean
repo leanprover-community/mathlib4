@@ -253,6 +253,14 @@ instance [hw : w.GuitartExact] {X₂ : C₂} (g : StructuredArrow (R.obj X₂) B
   rw [guitartExact_iff_isConnected_downwards] at hw
   apply hw
 
+lemma costructuredArrowRightWards_final_iff_of_iso {X₃ X₃' : C₃} (e : X₃ ≅ X₃') :
+    (w.costructuredArrowRightwards X₃).Final ↔
+      (w.costructuredArrowRightwards X₃').Final := by
+  rw [Functor.final_iff_comp_equivalence _ (CostructuredArrow.mapIso (B.mapIso e)).functor,
+    Functor.final_iff_equivalence_comp (CostructuredArrow.mapIso e).functor]
+  exact Functor.final_natIso_iff
+    (NatIso.ofComponents (fun A ↦ CostructuredArrow.isoMk (Iso.refl _)))
+
 lemma guitartExact_iff_final :
     w.GuitartExact ↔ ∀ (X₃ : C₃), (w.costructuredArrowRightwards X₃).Final :=
   ⟨fun _ _ => ⟨fun _ => inferInstance⟩, fun _ => ⟨fun _ => inferInstance⟩⟩

@@ -44,7 +44,7 @@ lemma whiskerVertical [w.GuitartExact] (α : L ≅ L') (β : R ≅ R') :
   rw [guitartExact_iff_initial]
   intro X₂
   let e : structuredArrowDownwards (w.whiskerVertical α.hom β.inv) X₂ ≅
-      w.structuredArrowDownwards X₂ ⋙ (StructuredArrow.mapIso (β.app X₂) ).functor :=
+      w.structuredArrowDownwards X₂ ⋙ (StructuredArrow.mapIso (β.app X₂)).functor :=
     NatIso.ofComponents (fun f => StructuredArrow.isoMk (α.symm.app f.right) (by
       dsimp
       simp only [NatTrans.naturality_assoc, assoc, NatIso.cancel_natIso_inv_left, ← B.map_comp,
