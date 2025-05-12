@@ -139,7 +139,7 @@ theorem measurePreserving_mul_prod_inv [IsMulLeftInvariant ν] :
   ext1 ⟨x, y⟩
   simp_rw [Function.comp_apply, mul_inv_rev, inv_mul_cancel_right]
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem quasiMeasurePreserving_inv : QuasiMeasurePreserving (Inv.inv : G → G) μ μ := by
   refine ⟨measurable_inv, AbsolutelyContinuous.mk fun s hsm hμs => ?_⟩
   rw [map_apply measurable_inv hsm, inv_preimage]
@@ -424,7 +424,7 @@ theorem quasiMeasurePreserving_inv_mul_swap [IsMulLeftInvariant μ] :
     QuasiMeasurePreserving (fun p => p.2⁻¹ * p.1) (μ.prod ν) μ :=
   quasiMeasurePreserving_snd.comp (measurePreserving_prod_inv_mul_swap _ _).quasiMeasurePreserving
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem quasiMeasurePreserving_inv_of_right_invariant [IsMulRightInvariant μ] :
     QuasiMeasurePreserving (Inv.inv : G → G) μ μ := by
   rw [← μ.inv_inv]
