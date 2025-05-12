@@ -122,8 +122,25 @@ def modulesNotUpperCamelCase (modules : Array Lean.Name) : IO Nat := do
     !exceptions.contains name &&
     (upperCamelName != name && s!"{upperCamelName}_" != name.toString)
   for bad in badNames do
-    IO.eprintln s!"error: module name {bad} is not in 'UpperCamelCase': it should be {Lake.toUpperCamelCase bad} instead"
+    let upperCamelName := Lake.toUpperCamelCase bad
+    let good := if bad.toString.endsWith "_" then s!"{upperCamelName}_" else upperCamelName.toString
+    IO.eprintln s!"error: module name {bad} is not in 'UpperCamelCase': it should be {good} instead"
   return badNames.size
+
+/-- Some unit tests for `modulesNotUpperCamelCase` -/
+def testModulesNotUpperCamelCase : IO Unit := do
+  assert!((← modulesNotUpperCamelCase #[]) == 0)
+  assert!((← modulesNotUpperCamelCase #[`Mathlib.Fine]) == 0)
+  assert!((← modulesNotUpperCamelCase #[`Mathlib.AlsoFine_]) == 0)
+  assert!((← modulesNotUpperCamelCase #[`Mathlib.NotFine_.Foo]) == 1)
+
+  assert!((← modulesNotUpperCamelCase #[`bad_module]) == 1)
+  assert!((← modulesNotUpperCamelCase #[`GoodName, `bad_module, `bad_module]) == 2)
+  assert!((← modulesNotUpperCamelCase #[`Mathlib.BadModule__]) == 1)
+  assert!((← modulesNotUpperCamelCase #[`Mathlib.lowerCase]) == 1)
+  assert!((← modulesNotUpperCamelCase #[`Mathlib.snake_case]) == 1)
+
+#eval testModulesNotUpperCamelCase
 
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
