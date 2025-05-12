@@ -33,7 +33,7 @@ class PreservesLeftKanExtension where
 
 /-- Alternative constructor for `PreservesLeftKanExtension`, phrased in terms of
 `LeftExtension.IsUniversal` instead. -/
-def PreservesLeftKanExtension.mk'
+lemma PreservesLeftKanExtension.mk'
     (preserves : ∀ {E : LeftExtension L F}, E.IsUniversal →
       Nonempty (LeftExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
     G.PreservesLeftKanExtension F L where
@@ -235,7 +235,7 @@ class PreservesRightKanExtension where
 
 /-- Alternative constructor for `PreservesRightKanExtension`, phrased in terms of
 `RightExtension.IsUniversal` instead. -/
-def PreservesRightKanExtension.mk'
+lemma PreservesRightKanExtension.mk'
     (preserves : ∀ {E : RightExtension L F}, E.IsUniversal →
       Nonempty (RightExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
     G.PreservesRightKanExtension F L where
