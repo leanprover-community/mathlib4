@@ -87,11 +87,10 @@ structure DividedPowers where
   dpow_comp : ∀ {m n x} (_ : n ≠ 0) (_ : x ∈ I),
     dpow m (dpow n x) = uniformBell m n * dpow (m * n) x
 
-open Classical in
 variable (A) in
 /-- The canonical `DividedPowers` structure on the zero ideal -/
 noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
-  dpow n a := ite (a = 0 ∧ n = 0) 1 0
+  dpow n a := open Classical in ite (a = 0 ∧ n = 0) 1 0
   dpow_null {n a} ha := by
     simp only [mem_bot] at ha
     rw [if_neg]
