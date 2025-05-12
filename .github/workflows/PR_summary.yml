@@ -103,6 +103,9 @@ jobs:
             tee -a moved_without_deprecation.txt
         done
 
+        # we return to the PR branch, since the next step wants it!
+        git checkout -
+
     - name: Compute transitive imports
       run: |
         # the checkout dance, to avoid a detached head

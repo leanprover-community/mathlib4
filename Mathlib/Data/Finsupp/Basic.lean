@@ -709,6 +709,10 @@ theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
   conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
   rfl
 
+theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
+    comapDomain f (mapDomain f l) hf.injOn = l := by
+  ext; rw [comapDomain_apply, mapDomain_apply hf]
+
 end FInjective
 
 end ComapDomain
@@ -1488,3 +1492,5 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 end Sigma
 
 end Finsupp
+
+set_option linter.style.longFile 1700
