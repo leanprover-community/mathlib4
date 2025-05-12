@@ -40,15 +40,8 @@ at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorph
 
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image
-* each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence.
-* if `f` is a local diffeomorphism at `x`, the differential `mfderiv I J n f x`
-  is a continuous linear isomorphism.
-* conversely, if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
-  `f` is a local diffeomorphism at `x`.
-* if `f` is a local diffeomorphism, each differential `mfderiv I J n f x`
-  is a continuous linear isomorphism.
-* Conversely, if `f` is `C^n` and each differential is a linear isomorphism,
-  `f` is a local diffeomorphism.
+* if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
+  `f` is a local diffeomorphism at `x` (using the inverse function theorem).
 
 ## Implementation notes
 
