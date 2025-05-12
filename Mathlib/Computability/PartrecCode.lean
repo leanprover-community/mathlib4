@@ -207,7 +207,7 @@ section
 open Primrec
 namespace Nat.Partrec.Code
 
-theorem primrec_pair : Primrec₂ pair :=
+theorem primrec₂_pair : Primrec₂ pair :=
   Primrec₂.ofNat_iff.2 <|
     Primrec₂.encode_iff.1 <|
       nat_add.comp
@@ -217,10 +217,10 @@ theorem primrec_pair : Primrec₂ pair :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-alias primrec₂_pair := primrec_pair
-@[deprecated (since := "2025-05-12")] alias pair_prim := primrec_pair
+alias primrec_pair := primrec₂_pair
+@[deprecated (since := "2025-05-12")] alias pair_prim := primrec₂_pair
 
-theorem primrec_comp : Primrec₂ comp :=
+theorem primrec₂_comp : Primrec₂ comp :=
   Primrec₂.ofNat_iff.2 <|
     Primrec₂.encode_iff.1 <|
       nat_add.comp
@@ -230,10 +230,10 @@ theorem primrec_comp : Primrec₂ comp :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-alias primrec₂_comp := primrec_comp
-@[deprecated (since := "2025-05-12")] alias comp_prim := primrec_comp
+alias primrec_comp := primrec₂_comp
+@[deprecated (since := "2025-05-12")] alias comp_prim := primrec₂_comp
 
-theorem primrec_prec : Primrec₂ prec :=
+theorem primrec₂_prec : Primrec₂ prec :=
   Primrec₂.ofNat_iff.2 <|
     Primrec₂.encode_iff.1 <|
       nat_add.comp
@@ -243,8 +243,8 @@ theorem primrec_prec : Primrec₂ prec :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-alias primrec₂_prec := primrec_prec
-@[deprecated (since := "2025-05-12")] alias prec_prim := primrec_prec
+alias primrec_prec := primrec₂_prec
+@[deprecated (since := "2025-05-12")] alias prec_prim := primrec₂_prec
 
 theorem primrec_rfind' : Primrec rfind' :=
   ofNat_iff.2 <|
@@ -523,12 +523,12 @@ theorem primrec_const : Primrec Code.const :=
 
 @[deprecated (since := "2025-05-12")] alias const_prim := primrec_const
 
-theorem primrec_curry : Primrec₂ curry :=
+theorem primrec₂_curry : Primrec₂ curry :=
   primrec_comp.comp Primrec.fst <| primrec₂_pair.comp (primrec_const.comp Primrec.snd)
     (_root_.Primrec.const Code.id)
 
-alias primrec₂_curry := primrec_curry
-@[deprecated (since := "2025-05-12")] alias curry_prim := primrec_curry
+alias primrec_curry := primrec₂_curry
+@[deprecated (since := "2025-05-12")] alias curry_prim := primrec₂_curry
 
 theorem curry_inj {c₁ c₂ n₁ n₂} (h : curry c₁ n₁ = curry c₂ n₂) : c₁ = c₂ ∧ n₁ = n₂ :=
   ⟨by injection h, by
