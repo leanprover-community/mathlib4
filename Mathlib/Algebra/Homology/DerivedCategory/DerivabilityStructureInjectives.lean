@@ -244,10 +244,8 @@ instance [EnoughInjectives C] (X : HomotopyCategory.Plus C) :
       have := Localization.inverts (DerivedCategory.Plus.Qh) _ _ Y.hw
       have := Localization.inverts (DerivedCategory.Plus.Qh) _ _ Z.hw
       exact IsIso.of_isIso_fac_left hφ
-    have hφ' : IsIso φ := isIso_of_reflects_iso φ
-      ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)
     exact Relation.ReflTransGen.single
-      (Or.inl ⟨LocalizerMorphism.RightResolution.Hom.mk φ hφ' hφ⟩))
+      (Or.inl ⟨LocalizerMorphism.RightResolution.Hom.mk φ hφ⟩))
 
 /-- The inclusion functor from the homotopy category `K^+` of injective objects
 into the homotopy category `K^+` induces a right derivability structure, which allow
