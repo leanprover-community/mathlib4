@@ -35,7 +35,7 @@ times a divided power
 without multinomial coefficients.
 * `DividedPowers.ofRingEquiv`: transfer divided powers along `RingEquiv`
 * `DividedPowers.equiv`: the equivalence `DividedPowers I ≃ DividedPowers J`,
-for `e : R ≃+* S`, and `I : Ideal R`,  `J : Ideal S` such that `I.map e = J`
+for `e : R ≃+* S`, and `I : Ideal R`, `J : Ideal S` such that `I.map e = J`
 * `DividedPowers.exp`: the power series `Σ (dpow n a) X ^n`
 * `DividedPowers.exp_add`: its multiplicativity
 

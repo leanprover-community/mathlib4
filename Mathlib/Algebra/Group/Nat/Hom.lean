@@ -16,7 +16,7 @@ assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Additive Multiplicative
 
-variable {M M : Type*}
+variable {M : Type*}
 
 section AddMonoidHomClass
 
