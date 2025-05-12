@@ -396,22 +396,42 @@ def DerivedFunctor_comp :
   refine Functor.associator _ _ _ ≪≫ Iso.inverseCompIso ?_
   dsimp
   refine (Functor.associator _ _ _).symm ≪≫ ?_
-  refine isoWhiskerRight (FilteredAcyclicToComplexAcyclic_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT) _ ≪≫ ?_
-
-  refine Functor.associator _ _ (DerivedCategory.Q ⋙ Realization L₂ t₂ tF₂) ≪≫ ?_
-  refine isoWhiskerLeft _ (Realization_comp_Q L₂ t₂ tF₂) ≪≫ ?_
-  refine ?_ ≪≫ Functor.associator _ _ _
-  refine ?_ ≪≫ isoWhiskerRight (FilteredAcyclicToComplexAcyclic_compat L₁ t₁ tF₁ t₂ T).symm _
-  refine (Functor.associator _ _ _).symm ≪≫ ?_
-  refine isoWhiskerRight (FilteredAcyclicToHeart_comp L₁ t₁ tF₁ L₂ t₂ tF₂ T FT) _ ≪≫ ?_
-  refine Functor.associator _ _ _ ≪≫ ?_ ≪≫
-    (Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι (tF₁.ιHeart ⋙ FilteredToComplex L₁ t₁)
-    (DerivedCategory.Q ⋙ Realization L₁ t₁ tF₁ ⋙ T)).symm
+  refine isoWhiskerRight (FilteredAcyclicToComplexAcyclic_functor' L₁ t₁ tF₁ L₂ t₂ tF₂ T FT) _ ≪≫ ?_
+  refine isoWhiskerRight ((Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι tF₁.ιHeart
+    (FT.functor ⋙ FilteredToComplex L₂ t₂)).symm ≪≫ (Functor.associator
+    ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart) FT.functor (FilteredToComplex L₂ t₂)).symm
+    ≪≫ isoWhiskerRight (Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι tF₁.ιHeart
+    FT.functor) (FilteredToComplex L₂ t₂) ≪≫
+    isoWhiskerRight (FilteredAcyclicToHeart_comp L₁ t₁ tF₁ L₂ t₂ tF₂ T FT).symm
+    (FilteredToComplex L₂ t₂) ≪≫ Functor.associator
+    (FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t₂ tF₂ T FT) tF₂.ιHeart (FilteredToComplex L₂ t₂))
+    (DerivedCategory.Q ⋙ Realization L₂ t₂ tF₂) ≪≫ ?_
+  refine Functor.associator (FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t₂ tF₂ T FT)
+    (tF₂.ιHeart ⋙ FilteredToComplex L₂ t₂) (DerivedCategory.Q ⋙ Realization L₂ t₂ tF₂) ≪≫ ?_
+  refine isoWhiskerLeft (FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t₂ tF₂ T FT)
+    (Realization_comp_Q L₂ t₂ tF₂) ≪≫ ?_
+  refine (Functor.associator (FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t₂ tF₂ T FT) tF₂.ιHeart
+    (ForgetFiltration L₂)).symm  ≪≫ ?_
+  refine isoWhiskerRight (FilteredAcyclicToHeart_comp L₁ t₁ tF₁ L₂ t₂ tF₂ T FT)
+    (ForgetFiltration L₂) ≪≫ ?_
+  refine ?_ ≪≫ Functor.associator (FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T)
+    ((AcyclicObject T t₁ t₂).ι.mapHomologicalComplex (ComplexShape.up ℤ))
+    (DerivedCategory.Q ⋙ Realization L₁ t₁ tF₁ ⋙ T)
+  refine ?_ ≪≫ isoWhiskerRight (FilteredAcyclicToComplexAcyclic_compat L₁ t₁ tF₁ t₂ T).symm
+    (DerivedCategory.Q ⋙ Realization L₁ t₁ tF₁ ⋙ T)
+  refine ?_ ≪≫ (Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι
+    (tF₁.ιHeart ⋙ FilteredToComplex L₁ t₁) (DerivedCategory.Q ⋙ Realization L₁ t₁ tF₁ ⋙ T)).symm
+  refine ?_ ≪≫ isoWhiskerLeft (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι (isoWhiskerRight
+    (Realization_comp_Q L₁ t₁ tF₁).symm T ≪≫ isoWhiskerRight
+    (Functor.associator (tF₁.ιHeart ⋙ FilteredToComplex L₁ t₁) DerivedCategory.Q
+    (Realization L₁ t₁ tF₁)).symm T ≪≫ Functor.associator ((tF₁.ιHeart ⋙ FilteredToComplex L₁ t₁)
+    ⋙ DerivedCategory.Q) (Realization L₁ t₁ tF₁) T ≪≫ Functor.associator (tF₁.ιHeart ⋙
+    FilteredToComplex L₁ t₁) DerivedCategory.Q (Realization L₁ t₁ tF₁ ⋙ T))
+  refine Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι (tF₁.ιHeart ⋙ FT.functor)
+    (ForgetFiltration L₂) ≪≫ ?_
   refine isoWhiskerLeft (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ?_
-  refine ?_ ≪≫ Functor.associator _ _ _ ≪≫ Functor.associator _ _ _
-  refine ?_ ≪≫ isoWhiskerRight (Functor.associator _ _ _).symm T
-  refine ?_ ≪≫ isoWhiskerRight (Realization_comp_Q L₁ t₁ tF₁).symm T
-  refine Functor.associator tF₁.Heart _ _ ≪≫ ?_ ≪≫ (Functor.associator tF₁.Heart _ _).symm
+  refine Functor.associator tF₁.ιHeart FT.functor (ForgetFiltration L₂) ≪≫ ?_
+    ≪≫ (Functor.associator tF₁.ιHeart (ForgetFiltration L₁) T).symm
   exact isoWhiskerLeft tF₁.ιHeart (lifting_forgetFiltrating_comm L₁ L₂ FT)
 
 end Triangulated.Filtered
