@@ -369,20 +369,22 @@ theorem of_finrank_sup [FiniteDimensional F A] [FiniteDimensional F B]
 theorem adjoin_rank_eq_rank_left_of_isAlgebraic (H : A.LinearDisjoint L)
     (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
     Module.rank L (adjoin L (A : Set E)) = Module.rank F A := by
-  let L' := (IsScalarTower.toAlgHom F L E).range
+  refine Eq.trans ?_ (Subalgebra.LinearDisjoint.adjoin_rank_eq_rank_left H)
+  set L' := (IsScalarTower.toAlgHom F L E).range
   let i : L ≃ₐ[F] L' := AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)
-  have hrange : Set.range (algebraMap L' E) = Set.range (algebraMap L E) := by
+  have heq : (adjoin L (A : Set E)).toSubalgebra.toSubsemiring =
+      (Algebra.adjoin L' (A : Set E)).toSubsemiring := by
+    rw [adjoin_toSubalgebra_of_isAlgebraic _ _ halg.symm, Algebra.adjoin_toSubsemiring,
+      Algebra.adjoin_toSubsemiring]
+    congr 2
     ext x
-    simp only [Set.mem_range, Subtype.exists, AlgHom.mem_range, IsScalarTower.coe_toAlgHom']
-    exact ⟨fun ⟨a, ⟨y, h1⟩, h2⟩ ↦ ⟨y, h1.trans h2⟩, fun ⟨y, h⟩ ↦ ⟨x, ⟨y, h⟩, rfl⟩⟩
-  let j : Algebra.adjoin L (A : Set E) ≃+* Algebra.adjoin L' (A : Set E) :=
-    RingEquiv.subsemiringCongr (by simp_rw [Algebra.adjoin_toSubsemiring, hrange])
-  have h := rank_eq_of_equiv_equiv i j.toAddEquiv i.bijective fun a x ↦ by
-    ext
-    simp_rw [Algebra.smul_def]
-    rfl
-  rw [← adjoin_toSubalgebra_of_isAlgebraic _ _ halg.symm] at h
-  exact h.trans (Subalgebra.LinearDisjoint.adjoin_rank_eq_rank_left H)
+    simp only [Set.mem_range, Subtype.exists]
+    exact ⟨fun ⟨y, h⟩ ↦ ⟨x, ⟨y, h⟩, rfl⟩, fun ⟨a, ⟨y, h1⟩, h2⟩ ↦ ⟨y, h1.trans h2⟩⟩
+  refine rank_eq_of_equiv_equiv i (RingEquiv.subsemiringCongr heq).toAddEquiv
+    i.bijective fun a ⟨x, hx⟩ ↦ ?_
+  ext
+  simp_rw [Algebra.smul_def]
+  rfl
 
 /-- If `A` and `L` are linearly disjoint, one of them is algebraic, then `[L(A) : A] = [L : F]`.
 Note that in Lean `L(A)` is not naturally an `A`-algebra,
@@ -430,8 +432,8 @@ theorem lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic (H : A.LinearDisj
 
 /-- The same-universe version of
 `IntermediateField.LinearDisjoint.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic`. -/
-theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic {L : Type v} [Field L] [Algebra F L] [Algebra L E]
-    [IsScalarTower F L E] (H : A.LinearDisjoint L)
+theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic {L : Type v} [Field L] [Algebra F L]
+    [Algebra L E] [IsScalarTower F L E] (H : A.LinearDisjoint L)
     (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
     Module.rank F L * Module.rank (adjoin L (A : Set E)) E = Module.rank A E := by
   simpa only [Cardinal.lift_id] using H.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic halg
