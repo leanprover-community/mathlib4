@@ -504,22 +504,19 @@ lemma invtSubmodule_reflection:
     have : ∃ (j : H.root), j ∉ Φ := by
       exact (Set.ne_univ_iff_exists_not_mem Φ).mp hc
     obtain ⟨j, hj⟩ := this
-    obtain ⟨z, hz1, hz2⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
+    obtain ⟨z, hz₁, hz₂⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
     by_contra!
-    have lll : z ∈ LieAlgebra.center K L := by
+    have center_element : z ∈ LieAlgebra.center K L := by
       have rrr (x : L) : ⁅x, z⁆ = 0 := by
         have qq : x ∈ I := by
           rw [this]
           exact trivial
-        simp [I] at qq
         refine LieSubalgebra.lieSpan_induction (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ qq
         intro x hx
         obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
         have := s₄ i j hi hj
-        simp at this
-        have ssss2 := this x hx1_mem
-        have ssss3 := ssss2 z hz1
-        exact ssss3
+        simp only [Subtype.forall] at this
+        exact(this x hx1_mem) z hz₁
         exact zero_lie z
         intro a b c d e f
         simp only [add_lie]
@@ -532,9 +529,8 @@ lemma invtSubmodule_reflection:
         simp only [lie_lie]
         rw [e, f, lie_zero, lie_zero, sub_self]
       exact rrr
-    have cent := LieAlgebra.center_eq_bot (R := K) (L := L)
-    rw [cent] at lll
-    exact hz2 lll
+    rw [LieAlgebra.center_eq_bot (R := K) (L := L)] at center_element
+    exact hz₂ center_element
   have rr6 : I ≠ ⊥ := by
     have : ∃ (rrrr : H.root), rrrr ∈ Φ := by
       refine Set.nonempty_def.mp ?_
