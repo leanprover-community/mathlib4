@@ -18,7 +18,9 @@ In this file, we define and prove results about the Dedekind zeta function of a 
 * `NumberField.dedekindZeta_residue`: **Dirichlet class number formula** computation of the
   residue of the dedekind zeta function at `s = 1`.
 
+# TODO
 
+Generalize the construction of the Dedekind zeta function.
 -/
 
 variable (K : Type*) [Field K] [NumberField K]
