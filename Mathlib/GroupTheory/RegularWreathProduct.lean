@@ -23,7 +23,7 @@ There an hom into the regular wreath product `inl : D →* D ≀ᵣ Q`.
 This file introduces the global notation `D ≀ᵣ Q` for `RegularWreathProduct D Q`
 
 ## Tags
-group, regular wreath product
+group, regular wreath product, sylow p-subgroup
 -/
 
 variable (D Q: Type*) [Group D] [Group Q]
