@@ -20,7 +20,6 @@ and we show that it has both calculus of left and right fractions.
 
 ## TODO
 
-* obtain (pre)triangulated instances on the localized category with respect to `S.W`
 * show that the fullsubcategory attached to `P` (such that `P.IsTriangulated`)
 is a pretriangulated category.
 

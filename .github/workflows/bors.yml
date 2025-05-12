@@ -204,7 +204,8 @@ jobs:
             cp ../lean-toolchain .
             MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
             lake exe cache get || (sleep 1; lake exe cache get)
-            lake build Plausible ProofWidgets
+            # We need to run `lake build ProofWidgets` here to retrieve ProofWidgets via Reservoir.
+            lake build ProofWidgets
             lake build --no-build Mathlib
           fi
 
@@ -353,8 +354,6 @@ jobs:
     needs: [style_lint, build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - id: PR
         uses: 8BitJonny/gh-get-current-pr@08e737c57a3a4eb24cec6487664b243b77eb5e36 # 3.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
