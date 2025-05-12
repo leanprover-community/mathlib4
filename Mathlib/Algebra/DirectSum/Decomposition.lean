@@ -354,7 +354,7 @@ lemma id_comp (f : DecompositionHom FA FB) :
     (id FA).comp f = f := rfl
 
 lemma comp_component (i : ι) :
-    (f.comp g).component i = g.component i ∘ f.component i := rfl
+    (f.comp g).component i = (g.component i).comp (f.component i) := rfl
 
 end DecompositionHom
 
