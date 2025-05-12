@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Yury Kudryashov. All rights reserved.
+Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.LinearAlgebra.Projection
@@ -15,6 +15,7 @@ to be the path going from `a` to `b` along the straight segment with constant ve
 
 We also prove basic properties of this construction,
 then use it to show that a nonempty convex set is path connected.
+In particular, a topological vector space over `ℝ` is path connected.
 -/
 
 open Set
