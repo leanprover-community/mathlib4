@@ -37,13 +37,14 @@ def explicitImports : Array Lean.Name := #[`Batteries, `Std]
 def eraseExplicitImports (names : Array Lean.Name) : Array Lean.Name :=
   explicitImports.foldl Array.erase names
 
-/-- Check that `Mathlib.Init` is transitively imported in all of Mathlib.
+/-- Check that `Mathlib.Init` is transitively imported in all of Mathlib:
+if not, return the number of modules which did not import `Mathlib.Init`.
 
 Every file imported in `Mathlib.Init` should in turn import the `Header` linter
 (except for the header linter itself, of course).
 Return `true` iff there was an error.
 -/
-def checkInitImports : IO Bool := do
+def missingInitImports : IO Nat := do
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
   -- We simply parse `Mathlib.lean`, as CI ensures this file is up to date.
   let allModuleNames := eraseExplicitImports (← findImports "Mathlib.lean")
@@ -71,7 +72,7 @@ def checkInitImports : IO Bool := do
       directly, but should import Mathlib.Init instead: {mismatch}\n\
       The `header` linter is included in Mathlib.Init, and every file in Mathlib \
       should import Mathlib.Init.\nPlease adjust the imports accordingly."
-    return true
+    return mismatch.size
 
   -- Now, it only remains to check that every module (except for the Header linter itself)
   -- imports some file in Mathlib.
@@ -81,13 +82,13 @@ def checkInitImports : IO Bool := do
   if missing.size > 0 then
     IO.eprintln s!"error: the following {missing.size} module(s) do not import Mathlib.Init: \
       {missing}"
-    return true
-  return false
+    return missing.size
+  return 0
 
 
 /-- Verifies that every file in the `scripts` directory is documented in `scripts/README.md`.
-Return `True` if there are undocumented scripts, otherwise `False`. -/
-def allScriptsDocumented : IO Bool := do
+Return the number of undocumented scripts (if any). -/
+def undocumentedScripts : IO Nat := do
   -- Retrieve all scripts (except for the `bench` directory).
   let allScripts ← (walkDir "scripts" fun p ↦ pure (p.components.getD 1 "" != "bench"))
   let allScripts := allScripts.erase ("scripts" / "bench")|>.erase ("scripts" / "README.md")
@@ -103,11 +104,12 @@ def allScriptsDocumented : IO Bool := do
     IO.println s!"error: found {undocumented.size} undocumented script(s): \
       please describe the script(s) in 'scripts/README.md'\n  \
       {String.intercalate "," undocumented.toList}"
-  return undocumented.size == 0
+  return undocumented.size
 
 /-- Verifies that all modules in `modules` are named in `UpperCamelCase`
-(except for explicitly discussed exceptions, which are hard-coded here). -/
-def checkModulesUpperCamelCase (modules : Array Lean.Name) : IO Bool := do
+(except for explicitly discussed exceptions, which are hard-coded here).
+Return the number of modules violating this. -/
+def modulesNotUpperCamelCase (modules : Array Lean.Name) : IO Nat := do
   -- Exceptions to this list should be discussed on zulip!
   let exceptions := [
     `Mathlib.Analysis.CStarAlgebra.lpSpace,
@@ -121,7 +123,7 @@ def checkModulesUpperCamelCase (modules : Array Lean.Name) : IO Bool := do
     (upperCamelName != name && s!"{upperCamelName}_" != name.toString)
   for bad in badNames do
     IO.eprintln s!"error: module name {bad} is not in 'UpperCamelCase': it should be {Lake.toUpperCamelCase bad} instead"
-  return badNames.size == 0
+  return badNames.size
 
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
@@ -144,10 +146,8 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- (For syntax linters, such a bug actually occurred in mathlib.)
   -- This script is re-run each time, hence is immune to such issues.
   let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
-  let mut numberErrors ← lintModules nolints allModuleNames style fix
-  if ← checkInitImports then numberErrors := numberErrors + 1
-  if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
-  if !(← checkModulesUpperCamelCase allModuleNames) then numberErrors := numberErrors + 1
+  let numberErrors := (← lintModules nolints allModuleNames style fix)
+    + (← missingInitImports) + (← undocumentedScripts) + (← modulesNotUpperCamelCase allModuleNames)
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
