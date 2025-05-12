@@ -13,7 +13,7 @@ import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-! # Riemannian metrics -/
 
-universe uE uH uM uF
+universe uι uE uH uM uF
 
 open Bundle Function Filter Module Set
 open scoped Topology Manifold ContDiff
@@ -35,6 +35,11 @@ variable (E : Type uE) [NormedAddCommGroup E] [NormedSpace ℝ E]
 -- Each tangent space `TangentSpace I x` is a normed space, and `ContinuousSMul`
 -- is part of the `NormedSpace` structure.
 instance (x : M) : ContinuousSMul ℝ (TangentSpace I x) := inferInstance
+
+-- These instances are needed for ContinuousLinearMap operations on tangent spaces
+instance (x : M) : SeminormedAddCommGroup (TangentSpace I x) :=
+  inferInstanceAs (SeminormedAddCommGroup E)
+instance (x : M) : NormedSpace ℝ (TangentSpace I x) := inferInstanceAs (NormedSpace ℝ E)
 
 /-- The cotangent space at a point `x` in a smooth manifold `M`.
 This is the space of continuous linear maps from the tangent space at `x` to `ℝ`. -/
@@ -143,7 +148,7 @@ variable {E M I}
 
 /-- A Riemannian metric on `M` is a smooth, symmetric, positive-definite section of the bundle of
 continuous bilinear maps from the tangent bundle of `M` to `ℝ`.
-The bundle is `BicotangentBundle E M I`. A section `g` has `g x : BicotangentSpace I x`.
+The bundle is `BicotangentBundle E M I`. A section `g` has `g x : BicotangentSpace E I M x`.
 So `g x v w` is `(g x v) w`. -/
 structure RiemannianMetric
     (g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
@@ -190,64 +195,66 @@ noncomputable def riemannianMetricCone :
     smul_mem' := fun _ hc _ hg => hg.smul hc,
     add_mem' := fun _ hg₁ _ hg₂ => hg₁.add hg₂ }
 
-variable
-  -- Model space for manifold M, now denoted F
-  (F : Type uF) [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-  -- M is charted over F
-  [ChartedSpace F M]
-  (IF : ModelWithCorners ℝ F M) [SmoothManifoldWithCorners IF M]
-  [FiniteDimensional ℝ F] [SigmaCompactSpace M] [T2Space M]
+variable [FiniteDimensional ℝ E] [T2Space M] [SigmaCompactSpace M]
 
 -- chartsPartitionOfUnity needs M (manifold), IF (its model with corners),
 -- and F (the model space for the charts).
-def chartsPartitionOfUnity : SmoothPartitionOfUnity M IF F :=
-  let U : M → Set M := fun x => (chartAt F x).source
-  have hU_isOpen : ∀ i, IsOpen (U i) := fun x => (chartAt F x).isOpen_source
+def chartsPartitionOfUnity : SmoothPartitionOfUnity M I M :=
+  let U : M → Set M := fun x => (chartAt H x).source
+  have hU_isOpen : ∀ i, IsOpen (U i) := fun x => (chartAt H x).open_source
   have hU_covers : univ ⊆ ⋃ i, U i := by
     intro x _
     simp only [mem_iUnion, mem_univ]
-    exact ⟨x, mem_chart_source F x⟩
-  (SmoothPartitionOfUnity.exists_isSubordinate IF univ U hU_isOpen hU_covers).choose
+    exact ⟨x, mem_chart_source H x⟩
+  (SmoothPartitionOfUnity.exists_isSubordinate I isClosed_univ U hU_isOpen hU_covers).choose
 
 lemma chartsPartitionOfUnity_isSubordinate :
-    (chartsPartitionOfUnity E M I F IF).isSubordinate (fun x => (chartAt F x).source) :=
-  let U : M → Set M := fun x => (chartAt F x).source
-  have hU_isOpen : ∀ i, IsOpen (U i) := fun x => (chartAt F x).isOpen_source
+    (chartsPartitionOfUnity E I M).IsSubordinate (fun x => (chartAt H x).source) :=
+  let U : M → Set M := fun x => (chartAt H x).source
+  have hU_isOpen : ∀ i, IsOpen (U i) := fun x => (chartAt H x).open_source
   have hU_covers : univ ⊆ ⋃ i, U i := by
     intro x _
     simp only [mem_iUnion, mem_univ]
-    exact ⟨x, mem_chart_source F x⟩
-  (SmoothPartitionOfUnity.exists_isSubordinate IF univ U hU_isOpen hU_covers).choose_spec
+    exact ⟨x, mem_chart_source H x⟩
+  (SmoothPartitionOfUnity.exists_isSubordinate I isClosed_univ U hU_isOpen hU_covers).choose_spec
 
--- The patch function constructs a BicotangentSpace IF x element (a bilinear form on TangentSpace IF x).
--- It depends on the manifold M, its model F, and its smooth structure IF.
-def patch (x : M) : BicotangentSpace IF x :=
-  let s : SmoothPartitionOfUnity M IF F := chartsPartitionOfUnity E M I F IF
+variable (F : Type uF) [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
+  (I : ModelWithCorners ℝ F H) [IsManifold I ∞ M]
+
+-- The patch function constructs a BicotangentSpace F I M x element (a bilinear form on
+-- TangentSpace I x). It depends on the manifold M, its model H, and its smooth structure I.
+def patch (x : M) : BicotangentSpace F I M x :=
+  let s : SmoothPartitionOfUnity M I M := chartsPartitionOfUnity F I M
   -- g₀ is the model inner product on F, as a continuous bilinear map.
-  let g₀ : F →L[ℝ] F →L[ℝ] ℝ := innerSL ℝ -- .[2, 3, 5, 6]
-  -- For each point y in M (potential center of a chart),
-  -- `e y` maps vectors in `TangentSpace IF x` to the model space `F`.
-  -- This is achieved by taking the derivative of the chart map φ_y at x.
-  -- `mfderiv IF (modelWithCornersSelf ℝ F) (chartAt F y) x` maps
-  -- `TangentSpace IF x` to `TangentSpace (modelWithCornersSelf ℝ F) (chartAt F y x)`.
-  -- Since the target chart is into F (itself a vector space), its tangent space at any point is F.
-  let e (y : M) : TangentSpace IF x →L[ℝ] F :=
-    mfderiv IF (modelWithCornersSelf ℝ F) (chartAt F y) x -- .[1]
-  -- G y is a bilinear form on TangentSpace IF x, defined by pulling back g₀ by e y.
-  -- (v, w) ↦ g₀ ((e y) v) ((e y) w)
-  let G (y : M) : BicotangentSpace IF x :=
-    (g₀.comp (e y)).flip.comp (e y)
+  -- set_option diagnostics true in
+  let g₀ : F →L[ℝ] (F →L[ℝ] ℝ) := @innerSL ℝ F _ _ _
+  -- For each point y_center in M (potential center of a chart),
+  -- `e y_center` maps vectors in `TangentSpace I x` to the model vector space `F`.
+  -- This is achieved by taking the derivative of the extended chart map I ∘ φ_{y_center} at x.
+  -- `extChartAt I y_center` maps `M → F`.
+  -- `mfderiv I (𝓘(ℝ, E)) (extChartAt I y_center) x` maps
+  -- `TangentSpace I x` (which is F) to `TangentSpace (𝓘(ℝ, F)) ((extChartAt I y_center) x)`
+  -- (which is F).
+  let e (y_center : M) : TangentSpace I x →L[ℝ] F :=
+    mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I y_center) x
+  -- G y_center is a bilinear form on TangentSpace I x, defined by pulling back g₀ by e y_center.
+  -- (v, w) ↦ g₀ ((e y_center) v) ((e y_center) w)
+  let G (y_center : M) : BicotangentSpace F I M x :=
+    ContinuousLinearMap.comp (ContinuousLinearMap.flip (ContinuousLinearMap.comp g₀ (e y_center)))
+      (e y_center)
   -- This is a finite sum because `s` is a partition of unity, so for a given `x`,
-  -- `s.funMap y x` (which is `(s y) x`) is non-zero for only finitely many `y`.
-  ∑ᶠ ySupport ∈ s.support, (s.funMap ySupport x) • (G ySupport)
+  -- `(s y_idx x)` is non-zero for only finitely many `y_idx`.
+  ∑ᶠ (y_idx : M), ((s y_idx) x) • (G y_idx)
 
 /- A (sigma-compact, Hausdorff, finite-dimensional) manifold admits a Riemannian metric. -/
 lemma exists_riemannian_metric :
-    ∃ g : SmoothSection IF (BicotangentBundle F M IF), RiemannianMetric g := by
+    ∃ g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber F) ∞
+      (BicotangentSpace.BicotangentBundle F I M), RiemannianMetric g := by
   -- Define the section `g_val` by `g_val x = patch x`.
-  let g_val (x : M) : BicotangentSpace IF x := patch E M I F IF x
+  let g_val (x : M) : BicotangentSpace F I M x := patch M F I x
   -- We need to show this section is smooth. This is the hard part.
-  have hs_g_val : SmoothSection IF (BicotangentBundle F M IF) :=
+  have hs_g_val : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber F) ∞
+      (BicotangentSpace.BicotangentBundle F I M) :=
     ⟨g_val, by sorry⟩ -- Proof of smoothness for `x ↦ patch x`
   exists hs_g_val
   constructor
@@ -260,8 +267,10 @@ lemma exists_riemannian_metric :
   · -- Prove positive definiteness: `v ≠ 0 → 0 < g_val x v v`
     -- `g_val x v v = ∑ᶠ y ∈ s.support, (s.funMap y x) • (G y v v)`
     -- where `G y v v = g₀ (e y v) (e y v) = ∥e y v∥² ≥ 0`.
-    -- Since `s.funMap y x ≥ 0` and `∑ y, s.funMap y x = 1` (for `x` in the manifold, assuming `s.locallyFinite` and `s.sum_eq_one`).
-    -- If `v ≠ 0`, then for some chart `chartAt F x` centered at `x`, `e x` (which is `mfderiv ... (chartAt F x) x`)
+    -- Since `s.funMap y x ≥ 0` and `∑ y, s.funMap y x = 1`
+    -- (for `x` in the manifold, assuming `s.locallyFinite` and `s.sum_eq_one`).
+    -- If `v ≠ 0`, then for some chart `chartAt F x` centered at `x`, `e x`
+    -- (which is `mfderiv ... (chartAt F x) x`)
     -- is a linear isomorphism, so `e x v ≠ 0`. Thus `G x v v > 0`.
     -- If `s.funMap x x > 0` (i.e., `x` is in the support of `s x`), this term is positive.
     -- Need to argue that the sum is positive.
