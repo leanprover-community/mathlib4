@@ -16,10 +16,11 @@ So given `G` and `s` we need a `SimpleGraph α` on which `SimpleGraph.Coloring`s
 The obvious choice is `(G.induce s).spanningCoe` but an alternative choice is
 `(⊤ : Subgraph G).induce s).spanningCoe`.
 
-Propositionally these are the same thing but `(⊤ : Subgraph G).induce s).spanningCoe` has nicer
-definitional properties.
+Propositionally these are the same thing but `(⊤ : Subgraph G).induce s).spanningCoe` is easier
+to work with.
 
-If  `H := (⊤ : Subgraph G).induce s).spanningCoe` then `H.Adj a b` is `a ∈ s ∧ b ∈ s ∧ G.Adj a b`
+In particular if  `H := (⊤ : Subgraph G).induce s).spanningCoe` then
+  `H.Adj a b` is `a ∈ s ∧ b ∈ s ∧ G.Adj a b`
 while if `H := (G.induce s).spanningCoe` then `H.Adj a b` is
 `(G.comap (Function.Embedding.subtype s)).map (Function.Embedding.subtype _).Adj a b`.
 -/
