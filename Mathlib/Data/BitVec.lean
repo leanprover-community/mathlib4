@@ -49,6 +49,9 @@ lemma toFin_pow (x : BitVec w) (n : ℕ)    : toFin (x ^ n) = x.toFin ^ n := by
 ## Ring
 -/
 
+-- Verify that the `HPow` instance from Lean agrees definitionally with the instance via `Monoid`.
+example : @instHPow (Fin (2 ^ w)) ℕ Monoid.toNatPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
+
 instance : CommSemiring (BitVec w) :=
   toFin_injective.commSemiring _
     rfl /- toFin_zero -/
@@ -56,7 +59,7 @@ instance : CommSemiring (BitVec w) :=
     toFin_add
     toFin_mul
     toFin_nsmul
-    toFin_pow
+    (by convert toFin_pow)
     (fun _ => rfl) /- toFin_natCast -/
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
@@ -69,19 +72,97 @@ instance : CommSemiring (BitVec w) :=
 lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
   rfl
 
+-- theorem intCast_val {n : Nat} [NeZero n] (a : Int) : (a : Fin n).val = (a % n).toNat := sorry
+
+theorem toInt_eq_bmod {w : Nat} (x : BitVec w) : x.toInt = Int.bmod x.toNat (2^w) := by
+  unfold BitVec.toInt
+  unfold Int.bmod
+  split <;> rename_i h
+  · rw [if_pos]
+    · rw [toNat_mod_cancel']
+    · rw [toNat_mod_cancel']
+      omega
+  · rw [if_neg]
+    · rw [toNat_mod_cancel']
+    · rw [toNat_mod_cancel']
+      omega
+
+@[simp] theorem toInt_ofFin {w : Nat} (x : Fin (2^w)) :
+    (BitVec.ofFin x).toInt = Int.bmod x (2^w) := by
+  simp [toInt_eq_bmod]
+
+@[simp] theorem toNat_intCast {w : Nat} (x : Int) : (x : BitVec w).toNat = (x % 2^w).toNat := by
+  change (BitVec.ofInt w x).toNat = _
+  simp
+
+@[simp] theorem toInt_intCast {w : Nat} (x : Int) : (x : BitVec w).toInt = Int.bmod x (2^w) := by
+  rw [toInt_eq_bmod]
+  rw [toNat_intCast]
+  rw [Int.natCast_toNat_eq_self.mpr]
+  · have h : (2 ^ w : Int) = (2 ^ w : Nat) := by simp
+    rw [h, Int.emod_bmod]
+  · apply Int.emod_nonneg
+    exact pow_ne_zero w (by decide)
+
+theorem _root_.Fin.intCast_def {n : Nat} [NeZero n] (x : Int) :
+    (x : Fin n) = if 0 ≤ x then Fin.ofNat' n x.natAbs else -Fin.ofNat' n x.natAbs := rfl
+
+theorem _root_.Int.mod_natAbs_of_nonneg {x : Int} (h : 0 ≤ x) {n : Nat} :
+    x.natAbs % n = (x % n).toNat := by
+  match x, h with
+  | (x : ℕ), _ => rw [Int.natAbs_natCast, Int.ofNat_mod_ofNat, Int.toNat_natCast]
+
+theorem _root_.Int.mod_natAbs_of_neg {x : Int} (h : x < 0) {n : Nat} (w : n ≠ 0) :
+    x.natAbs % n = if (n : Int) ∣ x then 0 else n - (x % n).toNat := by
+  match x, h with
+  | -(x + 1 : ℕ), _ =>
+    rw [Int.natAbs_neg]
+    rw [Int.natAbs_cast]
+    rw [Int.neg_emod]
+    simp only [Int.dvd_neg]
+    simp only [Int.natCast_dvd_natCast]
+    split <;> rename_i h
+    · rw [Nat.mod_eq_zero_of_dvd h]
+    · rw [← Int.natCast_emod]
+      simp only [Int.natAbs_natCast]
+      have : (x + 1) % n < n := Nat.mod_lt (x + 1) (by omega)
+      omega
+
+theorem _root_.Fin.val_neg {n : Nat} [NeZero n] (x : Fin n) :
+    (-x).val = if x = 0 then 0 else n - x.val := by
+  change (n - ↑x) % n = _
+  split <;> rename_i h
+  · simp_all
+  · rw [Nat.mod_eq_of_lt]
+    have := Fin.val_ne_zero_iff.mpr h
+    omega
+
+@[simp] theorem _root_.Fin.val_intCast {n : Nat} [NeZero n] (x : Int) :
+    (x : Fin n).val = (x % n).toNat := by
+  rw [Fin.intCast_def]
+  split <;> rename_i h
+  · simp [Int.mod_natAbs_of_nonneg h]
+  · simp only [Fin.ofNat'_eq_cast, Fin.val_neg, Fin.natCast_eq_zero, Fin.val_natCast]
+    split <;> rename_i h
+    · rw [← Int.natCast_dvd] at h
+      rw [Int.emod_eq_zero_of_dvd h, Int.toNat_zero]
+    · rw [Int.mod_natAbs_of_neg (by omega) (NeZero.ne n), if_neg (by rwa [← Int.natCast_dvd] at h)]
+      have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; omega)
+      omega
+
 theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
   cases w
   case zero =>
     simp only [eq_nil]
   case succ w =>
-    simp only [Int.cast, IntCast.intCast]
-    unfold Int.castDef
-    rcases z with z | z
-    · rfl
-    · rw [ofInt_negSucc_eq_not_ofNat]
-      simp only [Nat.cast_add, Nat.cast_one, neg_add_rev]
-      rw [← add_ofFin, ofFin_neg, ofFin_ofNat, ofNat_eq_ofNat, ofFin_neg, ofFin_natCast,
-        natCast_eq_ofNat, neg_one_eq_allOnes, ← sub_eq_add_neg, allOnes_sub_eq_not]
+    apply BitVec.eq_of_toInt_eq
+    rw [toInt_ofFin, Fin.val_intCast, Int.natCast_pow, Nat.cast_ofNat, Int.ofNat_toNat,
+      toInt_intCast]
+    rw [Int.max_eq_left]
+    · have h : (2 ^ (w + 1) : Int) = (2 ^ (w + 1) : Nat) := by simp
+      rw [h, Int.emod_bmod]
+    · refine Int.emod_nonneg z ?_
+      exact pow_ne_zero (w + 1) (by decide)
 
 theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
   apply toFin_inj.mpr <| (ofFin_intCast z).symm
