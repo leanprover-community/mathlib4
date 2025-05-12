@@ -298,9 +298,9 @@ variable (FA : ι → α) (FB : ι → β) (FC : ι → γ)
 variable [AddMonoidHomClass F A B] [AddMonoidHomClass F B C]
 variable [Decomposition FA] [Decomposition FB] [Decomposition FC]
 
-/-- `AddMonoidHom` that preserves the structrue of `DirectSum.Decomposition`. -/
+/-- `AddMonoidHom` that preserves the structure of `DirectSum.Decomposition`. -/
 @[ext]
-class DecompositionHom extends A →+ B where
+structure DecompositionHom extends A →+ B where
   component_wise {i a} : a ∈ FA i → toFun a ∈ FB i
 
 instance : FunLike (DecompositionHom FA FB) A B where
@@ -321,17 +321,21 @@ variable (f : DecompositionHom FA FB) (g : DecompositionHom FB FC)
 variable {FA FB} in
 /-- The AddMonoidHom obtained from the
 restriction of a `DecompositionHom` to its `i`-th component. -/
-def component_wise_hom (i : ι) : FA i →+ FB i where
+def component (i : ι) : FA i →+ FB i where
   toFun := Subtype.map f (fun _ ha ↦ f.component_wise ha)
   map_zero' := Subtype.ext (by simp)
   map_add' := fun x y ↦ Subtype.ext (by simp)
 
-/-- The identity map as a `DecompositionHom` of same decomposition. -/
+@[simps]
+/- The identity map as a `DecompositionHom` of same decomposition. -/
 def id : DecompositionHom FA FA where
   toFun := _root_.id
   map_zero' := by simp
   map_add' := by simp
   component_wise h := h
+
+omit [DecidableEq ι] [Decomposition FA] in
+lemma id_component (i : ι) : (id FA).component i = AddMonoidHom.id (FA i) := rfl
 
 variable {FA FB FC} in
 /-- The composition of two decomposition morphisms,
