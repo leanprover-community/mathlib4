@@ -9,7 +9,7 @@ import Mathlib.Topology.Piecewise
 import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Compactness.LocallyCompact
 import Mathlib.Topology.Bases
-
+import Mathlib.Tactic.StacksAttribute
 /-!
 # Separation properties of topological spaces
 
@@ -68,6 +68,7 @@ section Separation
 /-- A T₀ space, also known as a Kolmogorov space, is a topological space such that for every pair
 `x ≠ y`, there is an open set containing one but not the other. We formulate the definition in terms
 of the `Inseparable` relation. -/
+@[stacks 004X]
 class T0Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Two inseparable points in a T₀ space are equal. -/
   t0 : ∀ ⦃x y : X⦄, Inseparable x y → x = y
@@ -230,6 +231,7 @@ alias Embedding.t0Space := IsEmbedding.t0Space
 protected theorem Homeomorph.t0Space [TopologicalSpace Y] [T0Space X] (h : X ≃ₜ Y) : T0Space Y :=
   h.symm.isEmbedding.t0Space
 
+@[stacks 0B31 "part 1"]
 instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
   IsEmbedding.subtypeVal.t0Space
 
