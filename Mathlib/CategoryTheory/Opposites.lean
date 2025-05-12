@@ -499,6 +499,12 @@ def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
     dsimp
     simp
 
+/-- An equivalence between `C` and `Dᵒᵖ` gives an equivalence between `Cᵒᵖ` and `D`. -/
+@[simps!] def leftOp (e : C ≌ Dᵒᵖ) : Cᵒᵖ ≌ D := e.op.trans (opOpEquivalence D)
+
+/-- An equivalence between `Cᵒᵖ` and `D` gives an equivalence between `C` and `Dᵒᵖ`. -/
+@[simps!] def rightOp (e : Cᵒᵖ ≌ D) : C ≌ Dᵒᵖ := (opOpEquivalence C).symm.trans e.op
+
 end Equivalence
 
 /-- The equivalence between arrows of the form `A ⟶ B` and `B.unop ⟶ A.unop`. Useful for building

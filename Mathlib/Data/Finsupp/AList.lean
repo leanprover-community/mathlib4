@@ -63,13 +63,14 @@ noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M where
     (l.lookup a).getD 0
   mem_support_toFun a := by
     classical
-      simp_rw [@mem_toFinset _ _, List.mem_keys, List.mem_filter, ← mem_lookup_iff]
+      simp_rw [mem_toFinset, List.mem_keys, List.mem_filter, ← mem_lookup_iff]
       cases lookup a l <;> simp
 
 @[simp]
 theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun _x : α => M) (a : α) :
     l.lookupFinsupp a = (l.lookup a).getD 0 := by
-    convert rfl; congr
+  simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]
+  congr
 
 @[simp]
 theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun _x : α => M) :

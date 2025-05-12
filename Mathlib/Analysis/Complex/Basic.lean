@@ -118,7 +118,7 @@ instance : CompleteSpace ℂ :=
 instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpace
 
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
   equivRealProdLm.toContinuousLinearEquivOfBounds 1 (√2) equivRealProd_apply_le' fun p =>
     norm_le_sqrt_two_mul_max (equivRealProd.symm p)
