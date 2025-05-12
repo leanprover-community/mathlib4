@@ -523,7 +523,7 @@ lemma invtSubmodule_reflection:
       exact commutes_with_all
     rw [LieAlgebra.center_eq_bot (R := K) (L := L)] at center_element
     exact hz₂ center_element
-  have rr6 : I ≠ ⊥ := by
+  have s₆ : I ≠ ⊥ := by
     have : ∃ (rrrr : H.root), rrrr ∈ Φ := by
       refine Set.nonempty_def.mp ?_
       exact hΦ₁
@@ -638,8 +638,8 @@ lemma invtSubmodule_reflection:
     rw [← hhh] at s₅
     exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₅
   have rr62 : I' ≠ ⊥ := by
-    rw [← hhh] at rr6
-    exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) rr6
+    rw [← hhh] at s₆
+    exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₆
   rcases this with h_bot | h_top
   · contradiction
   contradiction
