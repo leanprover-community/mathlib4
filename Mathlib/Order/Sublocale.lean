@@ -79,32 +79,18 @@ lemma coeEmbedding (S : Sublocale X) (x : X) (h : x ∈ S) : embeddingAux S x = 
     simp [h]
   . simp_all
 
-
-lemma test2 (a b: X) : a = b ↔ (∀ c, a ≤ c ↔ b ≤ c) := by
-  apply Iff.intro
-  . intro h
-    subst h
-    simp
-  . intro h
-    apply le_antisymm
-    . apply (h b).mpr
-      simp
-    . apply (h a).mp
-      simp
-
-
 def embedding (S : Sublocale X) : FrameHom X S where
   toFun x := sInf {s : S | x ≤ s}
   map_inf' a b := by
     repeat rw [← embeddingAux]
-    rw [test2]
+    apply eq_of_forall_ge_iff
     intro s
     symm
     rw [@iff_eq_eq]
     calc  (S.embeddingAux a ⊓ S.embeddingAux b ≤ s)
       _ = (S.embeddingAux a ≤ S.embeddingAux b ⇨ s) := by simp
-      _ = (a ≤ S.embeddingAux b ⇨ s ) := by rw [S.gcAux.le_iff_le]
-      _ = (S.embeddingAux b ≤ a ⇨ s ) := by
+      _ = (a ≤ S.embeddingAux b ⇨ s) := by rw [S.gcAux.le_iff_le]
+      _ = (S.embeddingAux b ≤ a ⇨ s) := by
         rw [@le_himp_comm, coe_himp]
 
       _ = ( b ≤ a ⇨ s) := by
