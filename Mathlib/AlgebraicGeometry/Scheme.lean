@@ -263,7 +263,7 @@ unif_hint forget_obj_eq_coe (X : Scheme) where ⊢
   forget.obj X ≟ (X : Type*)
 
 @[simp] lemma forget_obj (X) : Scheme.forget.obj X = X := rfl
-@[simp] def forget_map {X Y} (f : X ⟶ Y) : forget.map f = (f.base : X → Y) := rfl
+@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = (f.base : X → Y) := rfl
 
 @[simp]
 theorem id.base (X : Scheme) : (𝟙 X :).base = 𝟙 _ :=
