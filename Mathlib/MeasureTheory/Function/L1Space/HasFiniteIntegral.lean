@@ -450,10 +450,16 @@ theorem HasFiniteIntegral.mul_const [NormedRing 𝕜] {f : α → 𝕜} (h : Has
 
 section count
 
-variable [MeasurableSingletonClass α] {f : α → β}
+variable [MeasurableSingletonClass α]
+
+/-- A function has finite integral for the counting measure iff its enorm has finite `tsum`. -/
+-- Note that asking for mere summability makes no sense, as every sequence in ℝ≥0∞ is summable.
+lemma hasFiniteIntegral_count_iff_enorm {f : α → ε} :
+    HasFiniteIntegral f Measure.count ↔ tsum (‖f ·‖ₑ) < ⊤ := by
+  simp only [hasFiniteIntegral_iff_enorm, enorm, lintegral_count]
 
 /-- A function has finite integral for the counting measure iff its norm is summable. -/
-lemma hasFiniteIntegral_count_iff :
+lemma hasFiniteIntegral_count_iff {f : α → β} :
     HasFiniteIntegral f Measure.count ↔ Summable (‖f ·‖) := by
   simp only [hasFiniteIntegral_iff_enorm, enorm, lintegral_count, lt_top_iff_ne_top,
     tsum_coe_ne_top_iff_summable, ← summable_coe, coe_nnnorm]
