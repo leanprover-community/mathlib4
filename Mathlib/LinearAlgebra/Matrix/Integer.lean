@@ -1,0 +1,75 @@
+/-
+Copyright (c) 2025 David Loeffler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
+-/
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.GCDMonoid.Finset
+import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.Data.Matrix.Mul
+import Mathlib.Data.Rat.Cast.CharZero
+
+/-!
+# Lemmas on integer matrices
+
+Here we collect some results about matrices over `ℚ` and `ℤ`.
+-/
+
+namespace Matrix
+
+variable {m n : Type*} [Fintype m] [Fintype n]
+
+/-!
+### Casts
+
+These results are useful shortcuts because the canonical casting maps out of `ℕ`, `ℤ`, and `ℚ` to
+suitable types are bare functions, not ring homs, so we cannot apply `Matrix.map_mul` directly to
+them.
+-/
+
+lemma map_mul_natCast {α : Type*} [NonAssocSemiring α] (A B : Matrix n n ℕ) :
+    map (A * B) ((↑) : ℕ → α) = map A (↑) * map B (↑) := by
+  simpa using Matrix.map_mul (f := Nat.castRingHom α)
+
+lemma map_mul_intCast {α : Type*} [NonAssocRing α]  (A B : Matrix n n ℤ) :
+    map (A * B) ((↑) : ℤ → α) = map A (↑) * map B (↑) := by
+  simpa using Matrix.map_mul (f := Int.castRingHom α)
+
+lemma map_mul_ratCast {α : Type*} [DivisionRing α] [CharZero α] (A B : Matrix n n ℚ) :
+    map (A * B) ((↑) : ℚ → α) = map A (↑) * map B (↑) := by
+  simpa using Matrix.map_mul (f := Rat.castHom α)
+
+/-!
+### Denominator of a rational matrix
+-/
+
+/-- The denominator of a matrix of rationals (as a `Nat`, defined as the LCM of the denominators of
+the entries). -/
+def den (A : Matrix m n ℚ) : ℕ := Finset.univ.lcm (fun P : m × n ↦ (A P.1 P.2).den)
+
+/-- The numerator of a matrix of rationals (a matrix of integers, defined so that
+`A.num / A.den = A`). -/
+def num (A : Matrix m n ℚ) : Matrix m n ℤ := fun i j ↦ (A i j * A.den).num
+
+lemma den_ne_zero (A : Matrix m n ℚ) : A.den ≠ 0 := by
+  simp [den, Finset.lcm_eq_zero_iff]
+
+lemma den_dvd_iff {A : Matrix m n ℚ} {r : ℕ} :
+    A.den ∣ r ↔ ∀ i j, (A i j).den ∣ r := by
+  simp only [Matrix.den, Finset.lcm_dvd_iff, Finset.mem_univ, forall_const, Prod.forall]
+
+lemma num_div_den (A : Matrix m n ℚ) (i : m) (j : n) :
+    A i j = A.num i j / A.den := by
+  rw [Matrix.num, eq_div_iff (Nat.cast_ne_zero.mpr A.den_ne_zero)]
+  obtain ⟨k, hk⟩ := den_dvd_iff.mp (dvd_refl A.den) i j
+  simp only [hk, Nat.cast_mul, ← mul_assoc, Rat.mul_den_eq_num]
+  rw [← Int.cast_natCast k, ← Int.cast_mul, Rat.num_intCast]
+
+lemma inv_denom_smul_num (A : Matrix m n ℚ) : A = (A.den⁻¹ : ℚ) • (A.num.map (↑)) := by
+  ext i j
+  simp only [Matrix.num_div_den (A := A), smul_apply, map_apply, smul_eq_mul, div_eq_inv_mul]
+
+lemma den_int (A : Matrix m n ℤ) : (A.map (↑)).den = 1 := by
+  simp [← Nat.dvd_one, Matrix.den_dvd_iff]
+
+end Matrix
