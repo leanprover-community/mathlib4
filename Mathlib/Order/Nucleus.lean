@@ -245,37 +245,7 @@ lemma range_subset_iff : range m ⊆ range n ↔ n ≤ m  where
     exact n.monotone (m.le_apply)
   mpr h := range_subset_range_iff_exists_comp.mpr (Exists.intro ↑m ((factorizes_iff_le.mpr) h).symm)
 
-def HimpClosed (s : Set X) : Prop := ∀ a b, b ∈ s → a ⇨ b ∈ s
-
-structure Sublocale (X : Type*) [Order.Frame X] where
-  carrier : Set X
-  infClosed' : InfClosed carrier
-  HimpClosed' : HimpClosed carrier
-
-instance : SetLike (Sublocale X) X where
-  coe x := x.carrier
-  coe_injective' s1 s2 h := by cases s1; congr
-
-variable (s : Sublocale X)
-
-lemma Sublocale.inf_mem (a b : X) (h1 : a ∈ s) (h2 : b ∈ s) : a ⊓ b ∈ s := s.infClosed' h1 h2
-
-instance instInfCoe : Min s where
-  min x y := ⟨x.val ⊓ y.val, Sublocale.inf_mem s ↑x ↑y (SetLike.coe_mem x) (SetLike.coe_mem y)⟩
-
-instance instSemilatticeInf : SemilatticeInf s where
-  inf x y := x ⊓ y
-  inf_le_left _ _ := inf_le_left
-  inf_le_right _ _ := inf_le_right
-  le_inf _ _ _ h1 h2 := le_inf h1 h2
-
-
--- TODO instance  : CompleteLattice s
-
--- TODO instance : Order.Frame s
-def Sublocale.toNucleus (s : Sublocale X) : Nucleus X where
-
-
+/-
 structure Sublocale' (X : Type*) [Order.Frame X] where
   carrier : Set X
   frm : Order.Frame carrier
@@ -310,6 +280,7 @@ lemma Nucleus_equiv_sublocale (n : Nucleus X) :
     n = sublocale_to_Nucleus (range n) (n.giRestrict.gc) := by
   ext x
   simp [sublocale_to_Nucleus]
+-/
 
 end Frame
 end Nucleus
