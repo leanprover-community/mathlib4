@@ -11,8 +11,10 @@ import Mathlib.Topology.Covering.Basic
 /-!
 # Galois Covering Maps
 
-This file defines Galois covering maps and provides construction of them from free and
-properly discontinuous group actions.
+This file constructs of them from free and properly discontinuous group actions.
+
+TODO: show the construction yields Galois covering maps (to be defined) when the action is
+on a path-connected space.
 -/
 
 namespace Topology.IsQuotientMap

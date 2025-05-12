@@ -226,14 +226,14 @@ noncomputable def IsOpen.trivialization_discrete (hE : Nonempty E ∨ f.Surjecti
       source := f ⁻¹' V,
       target := V ×ˢ Set.univ,
       map_source' := fun x hx ↦ ⟨hx, trivial⟩
-      map_target' := fun x ⟨hx, _⟩ ↦ by dsimp only; rw [dif_pos hx]; apply (f_inv _ hx).symm ▸ hx,
+      map_target' := fun x ⟨hx, _⟩ ↦ by rw [dif_pos hx]; apply (f_inv _ hx).symm ▸ hx,
       left_inv' := fun e he ↦ ?_,
       right_inv' := fun x hx ↦ ?_ }
-    · change f e ∈ V at he; dsimp only; simp_rw [dif_pos he]
+    · change f e ∈ V at he; simp_rw [dif_pos he]
       exact inj _ (inv_U _ he) (idx_U e he) (f_inv _ _)
-    · dsimp only; rw [dif_pos hx.1]
+    · rw [dif_pos hx.1]
       refine Prod.ext (f_inv _ hx.1) ?_
-      dsimp only; rw [dif_pos ((f_inv _ hx.1).symm ▸ hx.1)]
+      rw [dif_pos ((f_inv _ hx.1).symm ▸ hx.1)]
       by_contra h; exact (disjoint h).le_bot ⟨idx_U _ _, inv_U _ _⟩
   have open_preim {W} (hWV: W ⊆ V) (open_W : IsOpen W) : IsOpen (f ⁻¹' W) := by
     convert isOpen_iUnion (fun i ↦ (open_iff i hWV).mp open_W)

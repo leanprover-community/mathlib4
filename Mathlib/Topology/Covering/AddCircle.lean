@@ -7,12 +7,11 @@ import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Covering.Galois
 
 /-!
-# Basic examples of Galois covering maps
+# Covering maps involving `AddCircle`
 
 -/
 
-theorem isCoveringMap_coe_addCircle (p : ℝ) : IsCoveringMap ((↑) : ℝ → AddCircle p) :=
-  AddSubgroup.isCoveringMap _
+example (p : ℝ) : IsCoveringMap ((↑) : ℝ → AddCircle p) := AddSubgroup.isCoveringMap _
 
 open Topology in
 theorem isCoveringMap_nsmul (p : ℝ) [Fact (0 < p)] {n : ℕ} (hn : 0 < n) :
