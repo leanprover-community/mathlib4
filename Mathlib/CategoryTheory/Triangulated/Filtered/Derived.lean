@@ -276,12 +276,27 @@ def FilteredAcyclicToComplex_deg_functor (n : ℤ) :
   exact (Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι
     (tF₁.ιHeart ⋙ FT.functor ⋙ Gr L₂ n) (shiftFunctor A₂ n)).symm
 
+example (n : ℤ) (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory) :
+    (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT n).hom.app X = 0 := by
+  dsimp [FilteredAcyclicToComplex_deg_functor, FilteredAcyclicToComplex_deg_functor_half]
+  erw [id_comp, id_comp, Functor.map_id, Functor.map_id, Functor.map_id, Functor.map_id,
+    Functor.map_id, Functor.map_id, Functor.map_id, Functor.map_id, id_comp, id_comp, id_comp,
+    id_comp, id_comp, id_comp, id_comp, Functor.map_id, id_comp, id_comp, id_comp, id_comp,
+    id_comp, id_comp, id_comp, id_comp, id_comp, id_comp, id_comp, id_comp, id_comp, id_comp,
+    comp_id, comp_id, comp_id, comp_id, comp_id, comp_id, comp_id, comp_id]
+  simp only [assoc]
+
+
 lemma FilteredAcyclicToComplex_diff_functor (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
     (n : ℤ) : (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT n).hom.app X ≫
     (FilteredToComplex_diff L₂ t₂ n).app (FT.functor.obj X.1.1) =
     (T.FromAcyclic t₁ t₂).map ((FilteredToComplex_diff L₁ t₁ n).app X.1.1) ≫
-    (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT (n + 1)).hom.app X := sorry
+    (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT (n + 1)).hom.app X := by
+  dsimp [FilteredToComplex_diff]
+  sorry
 
+
+#exit
 def FilteredAcyclicToComplexAcyclicObj :
     CochainComplex ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory ⥤
     (AcyclicObject T t₁ t₂).FullSubcategory) ℤ :=
