@@ -621,7 +621,7 @@ over `L`. -/
 @[stacks 09H2 "first part"]
 theorem IsSeparable.tower_top
     {x : E} (h : IsSeparable F x) : IsSeparable L x :=
-  (Polynomial.Separable.map h).of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
+  .of_dvd (.map h) (minpoly.dvd_map_of_isScalarTower ..)
 
 variable (F E) in
 /-- If `E / K / F` is an extension tower, `E` is separable over `F`, then it's also separable

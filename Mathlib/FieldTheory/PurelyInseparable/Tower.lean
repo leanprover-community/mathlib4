@@ -168,14 +168,12 @@ variable {F K} in
 lemma finInsepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂)
     [Module.Finite E₁ K] :
     finInsepDegree E₂ K ≤ finInsepDegree E₁ K := by
-  letI inst := (IntermediateField.inclusion H).toAlgebra
-  letI := inst.toModule
+  letI := (IntermediateField.inclusion H).toAlgebra
   have : IsScalarTower E₁ E₂ K := .of_algebraMap_eq' rfl
   have : Module.Finite E₁ E₂ := .of_injective (IsScalarTower.toAlgHom E₁ E₂ K).toLinearMap
     (algebraMap E₂ K).injective
   rw [← Field.finInsepDegree_mul_finInsepDegree_of_finite E₁ E₂ K]
-  refine Nat.le_mul_of_pos_left (finInsepDegree (↥E₂) K) ?_
-  exact Nat.pos_iff_ne_zero.mpr ((NeZero.ne _))
+  exact Nat.le_mul_of_pos_left (finInsepDegree E₂ K) (NeZero.pos _)
 
 end Field
 
