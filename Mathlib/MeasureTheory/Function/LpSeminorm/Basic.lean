@@ -526,11 +526,28 @@ theorem eLpNorm_enorm_rpow (f : α → ε) (hq_pos : 0 < q) :
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hq_pos.le]
   exact eLpNorm'_enorm_rpow f p.toReal q hq_pos
 
---set_option pp.all true
+lemma foo (f : α → ℝ) (hf : ∀ x, 0 ≤ f x) : eLpNorm f p μ = eLpNorm (ENNReal.ofReal ∘ f) p μ := by
+  apply eLpNorm_congr_enorm_ae
+  filter_upwards with x
+  rw [Function.comp_apply]
+  -- Should this be added to mathlib? ENNReal.ofReal_of_nonneg
+  have {a : ℝ} (ha : 0 ≤ a) : ‖a‖ₑ = ‖ENNReal.ofReal a‖ₑ := by
+    simp only [enorm_eq_self]
+    exact Real.enorm_of_nonneg ha
+  exact this (hf x)
 
 theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
     eLpNorm (fun x => ‖f x‖ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
   rw [← eLpNorm_enorm_rpow f hq_pos]
+  convert foo (fun x ↦ ‖f x‖ ^ q) (p := p) (μ := μ) (fun x ↦ by positivity)
+  rw [Function.comp_apply, ← ofReal_norm_eq_enorm]
+  exact ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity)
+
+-- old attempt, does not work but I don't know why!
+theorem eLpNorm_norm_rpow_old (f : α → F) (hq_pos : 0 < q) :
+    eLpNorm (fun x => ‖f x‖ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
+  rw [← eLpNorm_enorm_rpow f hq_pos]
+  -- rw [enorm_eq_nnnorm]
   -- This should be obvious, as the enorm is never infinite.
   apply eLpNorm_congr_enorm_ae
   filter_upwards with x
