@@ -432,8 +432,6 @@ variable (K L : Type*) [Field K] [CharZero K]
   [LieAlgebra.IsKilling K L] -- Follows from simplicity; will be redundant after #10068 done
   (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L]
 
-set_option maxHeartbeats 2000000
-
 lemma invtSubmodule_reflection:
    ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
       ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
@@ -454,7 +452,7 @@ lemma invtSubmodule_reflection:
   have s₁ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root i (S.coroot j) = 0 :=
     (hΦ₃ j h₂) (hΦ₂' i h₁)
   have s₁' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root j (S.coroot i) = 0 :=
-    (S.pairing_zero_iff (i := i) (j := j)).1 (s₁ i j h₁ h₂)
+    (S.pairing_eq_zero_iff (i := i) (j := j)).1 (s₁ i j h₁ h₂)
   have s₂ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : i.1 (LieAlgebra.IsKilling.coroot j) = 0 :=
     s₁ i j h₁ h₂
   have s₂' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : j.1 (LieAlgebra.IsKilling.coroot i) = 0 :=
