@@ -498,12 +498,26 @@ theorem eLpNorm'_enorm_rpow (f : α → ε) (p q : ℝ) (hq_pos : 0 < q) :
   simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
     mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one, enorm_eq_self, ← ENNReal.rpow_mul, mul_comm]
 
+lemma foo (f : α → ℝ) (hf : ∀ x, 0 ≤ f x) : eLpNorm f p μ = eLpNorm (ENNReal.ofReal ∘ f) p μ := by
+  apply eLpNorm_congr_enorm_ae
+  filter_upwards with x
+  rw [Function.comp_apply]
+  -- Should this be added to mathlib? ENNReal.ofReal_of_nonneg
+  have {a : ℝ} (ha : 0 ≤ a) : ‖a‖ₑ = ‖ENNReal.ofReal a‖ₑ := by
+    simp only [enorm_eq_self]
+    exact Real.enorm_of_nonneg ha
+  exact this (hf x)
+
+lemma foo' (f : α → ℝ) (hf : ∀ x, 0 ≤ f x) (p : ℝ) :
+    eLpNorm' f p μ = eLpNorm' (ENNReal.ofReal ∘ f) p μ := by
+  sorry -- similar to foo
+
 theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
-  simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
-    mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one, ← ofReal_norm_eq_enorm,
-    Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg (norm_nonneg _) _), mul_comm p,
-    ← ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hq_pos.le, ENNReal.rpow_mul]
+  rw [← eLpNorm'_enorm_rpow _ _ _ hq_pos]
+  convert foo' (fun x ↦ ‖f x‖ ^ q) (p := p) (μ := μ) (fun _ ↦ by positivity)
+  rw [Function.comp_apply, ← ofReal_norm_eq_enorm]
+  exact ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity)
 
 theorem eLpNorm_enorm_rpow (f : α → ε) (hq_pos : 0 < q) :
     eLpNorm (‖f ·‖ₑ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
@@ -525,16 +539,6 @@ theorem eLpNorm_enorm_rpow (f : α → ε) (hq_pos : 0 < q) :
   swap; · exact ENNReal.mul_ne_top hp_top ENNReal.ofReal_ne_top
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hq_pos.le]
   exact eLpNorm'_enorm_rpow f p.toReal q hq_pos
-
-lemma foo (f : α → ℝ) (hf : ∀ x, 0 ≤ f x) : eLpNorm f p μ = eLpNorm (ENNReal.ofReal ∘ f) p μ := by
-  apply eLpNorm_congr_enorm_ae
-  filter_upwards with x
-  rw [Function.comp_apply]
-  -- Should this be added to mathlib? ENNReal.ofReal_of_nonneg
-  have {a : ℝ} (ha : 0 ≤ a) : ‖a‖ₑ = ‖ENNReal.ofReal a‖ₑ := by
-    simp only [enorm_eq_self]
-    exact Real.enorm_of_nonneg ha
-  exact this (hf x)
 
 theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
     eLpNorm (fun x => ‖f x‖ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
@@ -562,38 +566,8 @@ theorem eLpNorm_norm_rpow_old (f : α → F) (hq_pos : 0 < q) :
   suffices h: ‖f x‖ ^ q = ↑‖f x‖₊ ^ q by
     rw [h]
     simp only [coe_nnnorm, enorm_eq_self]--congr
-
     sorry--rfl
   apply congrArg _ rfl
-  #exit
-  ext
-  apply congrArg
-
-
-  by_cases h0 : p = 0
-  · simp [h0, ENNReal.zero_rpow_of_pos hq_pos]
-  by_cases hp_top : p = ∞
-  · simp only [hp_top, eLpNorm_exponent_top, ENNReal.top_mul', hq_pos.not_le,
-      ENNReal.ofReal_eq_zero, if_false, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm]
-    have h_rpow : essSup (‖‖f ·‖ ^ q‖ₑ) μ = essSup (‖f ·‖ₑ ^ q) μ := by
-      congr
-      ext1 x
-      conv_rhs => rw [← enorm_norm]
-      rw [← Real.enorm_rpow_of_nonneg (norm_nonneg _) hq_pos.le]
-    rw [h_rpow]
-    have h_rpow_mono := ENNReal.strictMono_rpow_of_pos hq_pos
-    have h_rpow_surj := (ENNReal.rpow_left_bijective hq_pos.ne.symm).2
-    let iso := h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj
-    exact (iso.essSup_apply (fun x => ‖f x‖ₑ) μ).symm
-  rw [eLpNorm_eq_eLpNorm' h0 hp_top, eLpNorm_eq_eLpNorm' _ _]
-  swap
-  · refine mul_ne_zero h0 ?_
-    rwa [Ne, ENNReal.ofReal_eq_zero, not_le]
-  swap; · exact ENNReal.mul_ne_top hp_top ENNReal.ofReal_ne_top
-  rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hq_pos.le]
-  exact eLpNorm'_norm_rpow f p.toReal q hq_pos
-
-#exit
 
 theorem eLpNorm_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) : eLpNorm f p μ = eLpNorm g p μ :=
   eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx => hx ▸ rfl
