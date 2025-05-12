@@ -511,23 +511,23 @@ lemma invtSubmodule_reflection:
         have qq : x ∈ I := by
           rw [this]
           exact trivial
-        refine LieSubalgebra.lieSpan_induction (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ qq
-        intro x hx
-        obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
-        have := s₄ i j hi hj
-        simp only [Subtype.forall] at this
-        exact(this x hx1_mem) z hz₁
-        exact zero_lie z
-        intro a b c d e f
-        simp only [add_lie]
-        rw [e, f, add_zero]
-        intro a b c d
-        simp only [smul_lie, smul_eq_zero]
-        right
-        exact d
-        intro a b c d e f
-        simp only [lie_lie]
-        rw [e, f, lie_zero, lie_zero, sub_self]
+        induction qq using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
+        | mem x hx =>
+          obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
+          have := s₄ i j hi hj
+          simp only [Subtype.forall] at this
+          exact(this x hx1_mem) z hz₁
+        | zero => exact zero_lie z
+        | add a b c d e f =>
+          simp only [add_lie]
+          rw [e, f, add_zero]
+        | smul a b c d =>
+          simp only [smul_lie, smul_eq_zero]
+          right
+          exact d
+        | lie a b c d e f =>
+          simp only [lie_lie]
+          rw [e, f, lie_zero, lie_zero, sub_self]
       exact rrr
     rw [LieAlgebra.center_eq_bot (R := K) (L := L)] at center_element
     exact hz₂ center_element
