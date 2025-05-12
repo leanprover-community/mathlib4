@@ -172,8 +172,13 @@ instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCatego
 instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
   inferInstanceAs <| CommRing R
 
+@[simp]
 theorem carrier_tensorObj {M N : ModuleCat.{u} R} :
     (M ⊗ N).carrier = TensorProduct R M.carrier N.carrier :=
+  rfl
+
+@[simp]
+theorem carrier_tensorUnit : (𝟙_ _ : ModuleCat.{u} R).carrier = R :=
   rfl
 
 @[simp]
