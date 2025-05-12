@@ -534,7 +534,8 @@ lemma invtSubmodule_reflection:
     exact hx₂ ((LieSubalgebra.eq_bot_iff I).mp h x x_mem_I)
   have s₇ : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
     have gen : ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule = ⊤ := by
-      exact LieModule.iSup_genWeightSpace_as_module_eq_top' K H L
+      simp only [LieSubmodule.iSup_toSubmodule_eq_top]
+      exact iSup_genWeightSpace_eq_top' K (↥H) L
     intro x y hy
     have hx : x ∈ ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule := by
       simp only [gen, Submodule.mem_top]
