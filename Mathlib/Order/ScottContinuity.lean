@@ -124,7 +124,6 @@ alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
 
 end CompleteLattice
 
-/- TODO: Can we deduce `ScottContinuousOn.sup₂` from this? -/
 /- `f` is Scott continuous on a product space if it is Scott continuous in each variable -/
 lemma ScottContinuousOn_prod_of_ScottContinuousOn {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} {D : Set (Set (α × β))}
@@ -158,27 +157,21 @@ lemma ScottContinuous_prod_of_ScottContinuous {γ : Type*} [Preorder α] [Preord
     (fun b ↦ ScottContinuous.monotone fun ⦃d⦄ ↦ h₂ b trivial)
 
 /- The join operation is Scott continuous -/
-lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
-    ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := by
-  simp only
-  intro d _ _ _ ⟨p₁, p₂⟩ hdp
-  rw [IsLUB, IsLeast, upperBounds] at hdp
-  simp only [Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp
-  rw [IsLUB, IsLeast, upperBounds]
-  constructor
-  · simp only [mem_image, Prod.exists, forall_exists_index, and_imp, mem_setOf_eq]
-    intro a b₁ b₂ hbd hba
-    rw [← hba]
+lemma ScottContinuous.sup₂ :
+    ScottContinuous fun b : β × β => (b.1 ⊔ b.2 : β) := fun d _ _ ⟨p₁, p₂⟩ hdp => by
+  simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp
+  simp only [IsLUB, IsLeast, upperBounds, mem_image, Prod.exists, forall_exists_index, and_imp]
+  have e1 : (p₁, p₂) ∈ lowerBounds {x | ∀ (b₁ b₂ : β), (b₁, b₂) ∈ d → (b₁, b₂) ≤ x} := hdp.2
+  simp only [lowerBounds, mem_setOf_eq, Prod.forall, Prod.mk_le_mk] at e1
+  refine ⟨fun a b₁ b₂ hbd hba => ?_,fun b hb => ?_⟩
+  · rw [← hba]
     exact sup_le_sup (hdp.1 _ _ hbd).1 (hdp.1 _ _ hbd).2
-  · simp only [mem_image, Prod.exists, forall_exists_index, and_imp]
-    intro b hb
-    simp only [sup_le_iff]
-    have e1 : (p₁, p₂) ∈ lowerBounds {x | ∀ (b₁ b₂ : β), (b₁, b₂) ∈ d → (b₁, b₂) ≤ x} := hdp.2
-    rw [lowerBounds] at e1
-    simp only [mem_setOf_eq, Prod.forall, Prod.mk_le_mk] at e1
-    apply e1
-    intro b₁ b₂ hb'
-    exact sup_le_iff.mp (hb b₁ b₂ hb' rfl)
+  · rw [sup_le_iff]
+    exact e1 _ _ fun b₁ b₂ hb' => sup_le_iff.mp (hb b₁ b₂ hb' rfl)
+
+lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
+    ScottContinuousOn D fun (a, b) => (a ⊔ b : β) :=
+  ScottContinuous.sup₂.scottContinuousOn
 
 /- In a complete linear order, the Scott Topology coincides with the Upper topology, see
 `Topology.IsScott.scott_eq_upper_of_completeLinearOrder` -/
