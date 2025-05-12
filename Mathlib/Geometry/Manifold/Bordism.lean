@@ -143,6 +143,7 @@ def map.{u} {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {k : WithTop
     {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
     [TopologicalSpace H] {I : ModelWithCorners ℝ E H} (s : SingularManifold.{u} X k I)
     {φ : X → Y} (hφ : Continuous φ) : SingularManifold.{u} Y k I where
+  M := s.M
   f := φ ∘ s.f
   hf := hφ.comp s.hf
 
