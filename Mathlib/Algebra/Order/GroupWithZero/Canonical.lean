@@ -399,4 +399,32 @@ scoped[Multiplicative] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
 /-- Notation for `WithZero (Multiplicative ℤ)` -/
 scoped[Multiplicative] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
 
+-- **CHECK FROM HERE ON**
+open Multiplicative
+
+instance : IsCyclic ℤₘ₀ˣ :=
+  isCyclic_of_surjective WithZero.unitsWithZeroEquiv.symm (MulEquiv.surjective _)
+
+instance : Nontrivial ℤₘ₀ˣ :=
+  Function.Surjective.nontrivial (f := WithZero.unitsWithZeroEquiv) (MulEquiv.surjective _)
+
+open Subgroup
+lemma top_eq_zpowers_neg_one :
+    zpowers (ofAdd (-1 : ℤ)) = (⊤ : Subgroup (Multiplicative ℤ)) := by
+  rw [← coe_eq_univ, ← ofAdd_image_zmultiples_eq_zpowers_ofAdd]
+  simp
+
+open LinearOrderedCommGroup WithZero in
+lemma genLTOne_eq_neg_one : unitsWithZeroEquiv.symm (ofAdd (-1 : ℤ)) = (genLTOne (ℤₘ₀ˣ)) :=  by
+  let e := (unitsWithZeroEquiv (α := Multiplicative ℤ)).symm
+  refine genLTOne_unique (e (ofAdd (-1 : ℤ))) ⟨?_, ?_⟩
+  · simpa only [Int.reduceNeg, ofAdd_neg, map_inv, Left.inv_lt_one_iff] using
+      compareOfLessAndEq_eq_lt.mp rfl
+  rw [← map_top_of_surjective e.toMonoidHom (MulEquiv.surjective _), ← top_eq_zpowers_neg_one,
+    MonoidHom.map_zpowers]
+  rfl
+
+
+end Multiplicative
+
 end MultiplicativeNotation
