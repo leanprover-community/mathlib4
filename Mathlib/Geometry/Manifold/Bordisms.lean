@@ -10,7 +10,7 @@ import Mathlib.Geometry.Manifold.Instances.Real
 
 This file defines the beginnings of unoriented bordism theory. We define singular manifolds,
 the building blocks of unoriented bordism groups. Future pull requests will define bordisms
-and the bordism groups of a topological space, and prove it these are abelian groups.
+and the bordism groups of a topological space, and prove these are abelian groups.
 
 The basic notion of bordism theory is that of a bordism between smooth manifolds.
 Two compact smooth `n`-dimensional manifolds `M` and `N` are **bordant** if there exists a smooth
@@ -30,7 +30,7 @@ is a compact smooth `n+1`-dimensional manifold `W` whose boundary is (diffeomorp
 union of `s` and `t`, together with a map `W → X` which restricts to the maps on `s` and `t`.
 We call `s` and `t` bordant if there exists a bordism between them: again, this defines an
 equivalence relation. The `n`-th bordism group of `X` is the set of bordism classes of
-`n`-dimensional singular manifolds on`X`. If `X` is a single point, this recovers the bordism groups
+`n`-dimensional singular manifolds on `X`. If `X` is a single point, this recovers the bordism groups
 from the preceding paragraph.
 
 These absolute bordism groups can be generalised further to relative bordism groups, for each
@@ -51,7 +51,7 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
 - `SingularManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
   of singular manifolds. This will be used to define functoriality of bordism groups.
 - `SingularManifold.comap`: if `(N, f)` is a singular manifold on `X`
-  and `φ: M → N` is continuous, the `comap` of `(N, f)` and `φ`
+  and `φ : M → N` is continuous, the `comap` of `(N, f)` and `φ`
   is the induced singular manifold `(M, f ∘ φ)` on `X`.
 - `SingularManifold.empty`: the empty set `M`, viewed as a manifold,
   as a singular manifold over any space `X`.
