@@ -24,9 +24,9 @@ variable (E : Type uE) [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type uH} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   (M : Type uM) [TopologicalSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
 
--- These instances should exist in Mathlib4 if the topology on the fibers
+-- These instances should exist in Mathlib if the topology on the fibers
 -- of the trivial bundle is correctly set up.
--- The fiber (Bundle.Trivial M ℝ x) is ℝ. ℝ has these instances.
+-- The fiber `Bundle.Trivial M ℝ x` is `ℝ`. `ℝ` has these instances.
 -- instance (x : M) : HasContinuousAdd (Bundle.Trivial M ℝ x) := by infer_instance
 -- instance (x : M) : TopologicalAddGroup (Bundle.Trivial M ℝ x) := by infer_instance
 -- instance (x : M) : HasContinuousSMul ℝ (Bundle.Trivial M ℝ x) := by infer_instance
@@ -36,7 +36,7 @@ variable (E : Type uE) [NormedAddCommGroup E] [NormedSpace ℝ E]
 -- is part of the `NormedSpace` structure.
 instance (x : M) : ContinuousSMul ℝ (TangentSpace I x) := inferInstance
 
--- These instances are needed for ContinuousLinearMap operations on tangent spaces
+-- These instances are needed for `ContinuousLinearMap` operations on tangent spaces.
 instance (x : M) : SeminormedAddCommGroup (TangentSpace I x) :=
   inferInstanceAs (SeminormedAddCommGroup E)
 instance (x : M) : NormedSpace ℝ (TangentSpace I x) := inferInstanceAs (NormedSpace ℝ E)
@@ -45,10 +45,10 @@ instance (x : M) : NormedSpace ℝ (TangentSpace I x) := inferInstanceAs (Normed
 This is the space of continuous linear maps from the tangent space at `x` to `ℝ`. -/
 def CotangentSpace (x : M) := (TangentSpace I x) →L[ℝ] ℝ
 
--- Note: In Mathlib4, CotangentBundle is
+-- Note: In Mathlib, `CotangentBundle` is
 -- `Bundle.ContinuousLinearMap (RingHom.id ℝ) (TangentBundle I M) (Bundle.Trivial M ℝ)`
 -- and `CotangentSpace I x` would be the fiber of this bundle.
--- The definition above is directly the fiber type.
+-- The definition of `CotangentSpace` above is directly the fiber type.
 
 namespace CotangentSpace
 
@@ -61,8 +61,8 @@ instance (x : M) : IsTopologicalAddGroup (CotangentSpace E I M x) :=
   ContinuousLinearMap.topologicalAddGroup
 instance (x : M) : ContinuousSMul ℝ (CotangentSpace E I M x) := ContinuousLinearMap.continuousSMul
 
--- We need to define the CotangentBundle as a type to have sections of it.
--- Let F_cotangent be the model fiber E →L[ℝ] ℝ
+/-- The model fiber for the cotangent bundle, which is `E →L[ℝ] ℝ`.
+This is used to type `ContMDiffSection`s of the cotangent bundle. -/
 def CotangentBundleModelFiber := E →L[ℝ] ℝ
 instance : SeminormedAddCommGroup (CotangentBundleModelFiber E) :=
   ContinuousLinearMap.toSeminormedAddCommGroup
@@ -71,12 +71,11 @@ instance : NormedAddCommGroup (CotangentBundleModelFiber E) :=
   (ContinuousLinearMap.opNorm_zero_iff f).mp
 instance : NormedSpace ℝ (CotangentBundleModelFiber E) := ContinuousLinearMap.toNormedSpace
 
--- The cotangent bundle can be defined as follows:
+/-- The cotangent bundle, defined as the bundle of continuous linear maps from the tangent bundle
+to the trivial real line bundle. This is `Hom(TM, M × ℝ)`.
+The fiber at `x` is `CotangentSpace I M x`. -/
 abbrev CotangentBundle :=
   Bundle.ContinuousLinearMap (RingHom.id ℝ) (TangentSpace I) (Trivial M ℝ)
-
--- Check: Fiber of CotangentBundle I M at x is (TangentSpace I x) →L[ℝ] (Bundle.Trivial M ℝ x)
--- Since (Bundle.Trivial M ℝ x) is ℝ, this matches `CotangentSpace I M x`.
 
 instance : TopologicalSpace (TotalSpace (CotangentBundleModelFiber E) (CotangentBundle E I M)) :=
   Bundle.ContinuousLinearMap.topologicalSpaceTotalSpace
@@ -95,8 +94,8 @@ instance (x : M) : ContinuousSMul ℝ (CotangentBundle E I M x) := inferInstance
 end CotangentSpace
 
 /-- The "bicotangent space" at a point `x` in a smooth manifold `M`; that is, the space of bilinear
-maps from `TangentSpace I x` to `ℝ`.
-This is `TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ)`,
+maps from `TangentSpace I x × TangentSpace I x` to `ℝ`.
+This is isomorphic to `TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ)`,
 i.e., `TangentSpace I x →L[ℝ] CotangentSpace I x`. -/
 def BicotangentSpace (x : M) := (TangentSpace I x) →L[ℝ] (CotangentSpace E I M x)
 
@@ -112,6 +111,7 @@ instance (x : M) : IsTopologicalAddGroup (BicotangentSpace E I M x) :=
 instance (x : M) : ContinuousSMul ℝ (BicotangentSpace E I M x) :=
   ContinuousLinearMap.continuousSMul
 
+/-- The model fiber for the bicotangent bundle, `E →L[ℝ] (E →L[ℝ] ℝ)`. -/
 def BicotangentBundleModelFiber := E →L[ℝ] (E →L[ℝ] ℝ)
 instance : SeminormedAddCommGroup (BicotangentBundleModelFiber E) :=
   ContinuousLinearMap.toSeminormedAddCommGroup
@@ -120,7 +120,9 @@ instance : NormedAddCommGroup (BicotangentBundleModelFiber E) :=
   (ContinuousLinearMap.opNorm_zero_iff f).mp
 instance : NormedSpace ℝ (BicotangentBundleModelFiber E) := ContinuousLinearMap.toNormedSpace
 
--- The bicotangent bundle is Hom(TM, T*M)
+/-- The bicotangent bundle, defined as the bundle of continuous linear maps from the tangent bundle
+to the cotangent bundle. This is `Hom(TM, T*M)`.
+The fiber at `x` is `BicotangentSpace E I M x`. -/
 abbrev BicotangentBundle :=
   Bundle.ContinuousLinearMap (RingHom.id ℝ) (TangentSpace I) (CotangentSpace.CotangentBundle E I M)
 
@@ -148,8 +150,8 @@ variable {E M I}
 
 /-- A Riemannian metric on `M` is a smooth, symmetric, positive-definite section of the bundle of
 continuous bilinear maps from the tangent bundle of `M` to `ℝ`.
-The bundle is `BicotangentBundle E M I`. A section `g` has `g x : BicotangentSpace E I M x`.
-So `g x v w` is `(g x v) w`. -/
+The bundle is `BicotangentBundle E I M`. A section `g` has `g x : BicotangentSpace E I M x`.
+So `g x v w` is `((g x) v) w`. -/
 structure RiemannianMetric
     (g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
       (BicotangentSpace.BicotangentBundle E I M)) : Prop where
@@ -197,8 +199,9 @@ noncomputable def riemannianMetricCone :
 
 variable [FiniteDimensional ℝ E] [T2Space M] [SigmaCompactSpace M]
 
--- chartsPartitionOfUnity needs M (manifold), IF (its model with corners),
--- and F (the model space for the charts).
+/-- A smooth partition of unity on `M` subordinate to the domains of the charts.
+This partition is indexed by `M` itself (each point `x : M` corresponds to the chart `chartAt H x`).
+The manifold `M` is charted on `H`, and its model with corners `I` is over `E`. -/
 def chartsPartitionOfUnity : SmoothPartitionOfUnity M I M :=
   let U : M → Set M := fun x => (chartAt H x).source
   have hU_isOpen : ∀ i, IsOpen (U i) := fun x => (chartAt H x).open_source
@@ -208,6 +211,7 @@ def chartsPartitionOfUnity : SmoothPartitionOfUnity M I M :=
     exact ⟨x, mem_chart_source H x⟩
   (SmoothPartitionOfUnity.exists_isSubordinate I isClosed_univ U hU_isOpen hU_covers).choose
 
+/-- `chartsPartitionOfUnity` is subordinate to the collection of chart domains. -/
 lemma chartsPartitionOfUnity_isSubordinate :
     (chartsPartitionOfUnity E I M).IsSubordinate (fun x => (chartAt H x).source) :=
   let U : M → Set M := fun x => (chartAt H x).source
@@ -221,29 +225,33 @@ lemma chartsPartitionOfUnity_isSubordinate :
 variable (F : Type uF) [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
   (I : ModelWithCorners ℝ F H) [IsManifold I ∞ M]
 
--- The patch function constructs a BicotangentSpace F I M x element (a bilinear form on
--- TangentSpace I x). It depends on the manifold M, its model H, and its smooth structure I.
+/-- Construct a local positive-definite symmetric bilinear form (a `BicotangentSpace` element)
+at point `x` on a manifold `M`.
+This is done by taking a convex combination of inner products pulled back from the model space `F`
+using chart derivatives. The coefficients of the combination are given by a partition of unity.
+This "patch" is a key component in constructing a global Riemannian metric.
+
+The manifold `M` is charted on `H`. The model with corners `I` is over `F`.
+The tangent space `TangentSpace I x` is identified with `F`. -/
 def patch (x : M) : BicotangentSpace F I M x :=
   let s : SmoothPartitionOfUnity M I M := chartsPartitionOfUnity F I M
-  -- g₀ is the model inner product on F, as a continuous bilinear map.
-  -- set_option diagnostics true in
+  -- `g₀` is the model inner product on `F`, as a continuous bilinear map.
   let g₀ : F →L[ℝ] (F →L[ℝ] ℝ) := @innerSL ℝ F _ _ _
-  -- For each point y_center in M (potential center of a chart),
-  -- `e y_center` maps vectors in `TangentSpace I x` to the model vector space `F`.
-  -- This is achieved by taking the derivative of the extended chart map I ∘ φ_{y_center} at x.
-  -- `extChartAt I y_center` maps `M → F`.
-  -- `mfderiv I (𝓘(ℝ, E)) (extChartAt I y_center) x` maps
-  -- `TangentSpace I x` (which is F) to `TangentSpace (𝓘(ℝ, F)) ((extChartAt I y_center) x)`
-  -- (which is F).
+  -- For each point `y_center` in `M` (which indexes a chart in `chartsPartitionOfUnity`),
+  -- `e y_center` is the derivative of the extended chart map `extChartAt I y_center` at `x`.
+  -- It maps vectors in `TangentSpace I x` (i.e., `F`) to the model vector space `F`.
+  -- `extChartAt I y_center : M → F`.
+  -- `mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I y_center) x : TangentSpace I x →L[ℝ] F`.
   let e (y_center : M) : TangentSpace I x →L[ℝ] F :=
     mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I y_center) x
-  -- G y_center is a bilinear form on TangentSpace I x, defined by pulling back g₀ by e y_center.
-  -- (v, w) ↦ g₀ ((e y_center) v) ((e y_center) w)
+  -- `G y_center` is a bilinear form on `TangentSpace I x`
+  -- defined by pulling back `g₀` by `e y_center`.
+  -- `(v, w) ↦ g₀ ((e y_center) v) ((e y_center) w)`.
   let G (y_center : M) : BicotangentSpace F I M x :=
     ContinuousLinearMap.comp (ContinuousLinearMap.flip (ContinuousLinearMap.comp g₀ (e y_center)))
       (e y_center)
-  -- This is a finite sum because `s` is a partition of unity, so for a given `x`,
-  -- `(s y_idx x)` is non-zero for only finitely many `y_idx`.
+  -- This is a finite sum because `s` is a partition of unity. For a given `x`,
+  -- `(s y_idx x)` is non-zero for only finitely many `y_idx` in the support of the partition.
   ∑ᶠ (y_idx : M), ((s y_idx) x) • (G y_idx)
 
 /- A (sigma-compact, Hausdorff, finite-dimensional) manifold admits a Riemannian metric. -/
@@ -260,18 +268,26 @@ lemma exists_riemannian_metric :
   constructor
   · -- Prove symmetry: `g_val x v w = g_val x w v`
     -- This follows from the symmetry of `g₀` (innerSL) and the construction of `G`.
-    -- `(G y) v w = g₀ (e y v) (e y w)`
-    -- `(G y) w v = g₀ (e y w) (e y v)`
+    -- `(G y_center v w) = g₀ ((e y_center) v) ((e y_center) w)`
+    -- `(G y_center w v) = g₀ ((e y_center) w) ((e y_center) v)`
     -- `g₀` is symmetric, so these are equal. The sum inherits symmetry.
     sorry
   · -- Prove positive definiteness: `v ≠ 0 → 0 < g_val x v v`
-    -- `g_val x v v = ∑ᶠ y ∈ s.support, (s.funMap y x) • (G y v v)`
-    -- where `G y v v = g₀ (e y v) (e y v) = ∥e y v∥² ≥ 0`.
-    -- Since `s.funMap y x ≥ 0` and `∑ y, s.funMap y x = 1`
-    -- (for `x` in the manifold, assuming `s.locallyFinite` and `s.sum_eq_one`).
-    -- If `v ≠ 0`, then for some chart `chartAt F x` centered at `x`, `e x`
-    -- (which is `mfderiv ... (chartAt F x) x`)
-    -- is a linear isomorphism, so `e x v ≠ 0`. Thus `G x v v > 0`.
-    -- If `s.funMap x x > 0` (i.e., `x` is in the support of `s x`), this term is positive.
-    -- Need to argue that the sum is positive.
+    -- `g_val x v v = ∑ᶠ y_idx, (s y_idx x) • (G y_idx v v)`
+    -- where `G y_idx v v = g₀ ((e y_idx) v) ((e y_idx) v) = ∥(e y_idx) v∥² ≥ 0`.
+    -- Since `s y_idx x ≥ 0` and `∑ y_idx, s y_idx x = 1` (for `x` in the manifold,
+    -- due to properties of partition of unity `s`).
+    -- If `v ≠ 0`, then for some chart (e.g., indexed by `x_chart_idx`) covering `x`,
+    -- `e x_chart_idx` (which is `mfderiv ... (extChartAt I x_chart_idx) x`)
+    -- is a linear isomorphism if `x` is in the interior of the chart, or injective.
+    -- Thus, `(e x_chart_idx) v ≠ 0`, which implies `G x_chart_idx v v > 0`.
+    -- If `s x_chart_idx x > 0` (i.e., `x` is in the support
+    -- of the partition function `s x_chart_idx`), this term in the sum is positive.
+    -- Need to argue that at least one such term is positive and the sum remains positive.
+    -- Since `∑ (s y_idx x) = 1` and `s y_idx x ≥ 0`, at least one `s y_idx x` must be positive.
+    -- For that `y_idx`, if `(e y_idx v) ≠ 0`, then `G y_idx v v > 0`.
+    -- We need to ensure that for `v ≠ 0`, there's some `y_idx`
+    -- such that `s y_idx x > 0` AND `(e y_idx v) ≠ 0`.
+    -- This typically relies on `v` being expressible in local chart coordinates and the derivative
+    -- of the chart map being an isomorphism.
     sorry
