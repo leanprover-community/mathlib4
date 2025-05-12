@@ -482,7 +482,7 @@ theorem ContDiffWithinAt.contDiffOn' (hm : m ≤ n) (h' : m = ∞ → n = ω)
     refine ⟨u, huo, hxu, ?_⟩
     suffices ContDiffOn 𝕜 ω f (insert x s ∩ u) from this.of_le le_top
     intro y hy
-    refine ⟨insert x s ∩ u, ?_, p, hp.mono hut,  fun i ↦ (h'p i).mono hut⟩
+    refine ⟨insert x s ∩ u, ?_, p, hp.mono hut, fun i ↦ (h'p i).mono hut⟩
     simp only [insert_eq_of_mem, hy, self_mem_nhdsWithin]
   · match m with
     | ω => simp [hn] at hm
