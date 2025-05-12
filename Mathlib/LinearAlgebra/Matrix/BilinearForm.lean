@@ -98,7 +98,7 @@ theorem Matrix.toBilin'_apply (M : Matrix n n R₁) (x y : n → R₁) :
     (by simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm])
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₁) (v w : n → R₁) :
-    Matrix.toBilin' M v w = dotProduct v (M *ᵥ w) := Matrix.toLinearMap₂'_apply' _ _ _
+    Matrix.toBilin' M v w = v ⬝ᵥ M *ᵥ w := Matrix.toLinearMap₂'_apply' _ _ _
 
 @[simp]
 theorem Matrix.toBilin'_single (M : Matrix n n R₁) (i j : n) :
@@ -338,8 +338,9 @@ theorem _root_.Matrix.Nondegenerate.toBilin' {M : Matrix ι ι R₂} (h : M.Nond
 
 @[simp]
 theorem _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₂} :
-    M.toBilin'.Nondegenerate ↔ M.Nondegenerate :=
-  ⟨fun h v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w, Matrix.Nondegenerate.toBilin'⟩
+    M.toBilin'.Nondegenerate ↔ M.Nondegenerate := by
+  refine ⟨fun h ↦ Matrix.nondegenerate_def.mpr ?_, Matrix.Nondegenerate.toBilin'⟩
+  exact fun v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w
 
 theorem _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₂} (h : M.Nondegenerate)
     (b : Basis ι R₂ M₂) : (Matrix.toBilin b M).Nondegenerate :=

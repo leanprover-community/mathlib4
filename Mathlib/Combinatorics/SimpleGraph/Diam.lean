@@ -299,7 +299,7 @@ lemma diam_eq_zero_iff_ediam_eq_top [Nontrivial α] : G.diam = 0 ↔ G.ediam = �
 
 /-- A finite and nontrivial graph is connected if and only if its diameter is not zero.
 See also `connected_iff_ediam_ne_top` for the extended diameter version. -/
-lemma connected_iff_diam_ne_zero [Fintype α] [Nontrivial α] : G.Connected ↔ G.diam ≠ 0 := by
+lemma connected_iff_diam_ne_zero [Finite α] [Nontrivial α] : G.Connected ↔ G.diam ≠ 0 := by
   rw [connected_iff_ediam_ne_top, not_iff_not, diam_eq_zero_iff_ediam_eq_top]
 
 end diam
