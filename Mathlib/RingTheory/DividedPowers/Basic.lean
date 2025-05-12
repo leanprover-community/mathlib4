@@ -89,8 +89,8 @@ structure DividedPowers where
 
 variable (A) in
 /-- The canonical `DividedPowers` structure on the zero ideal -/
-def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
-  dpow n a := ite (a = 0 ∧ n = 0) 1 0
+noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
+  dpow n a := open Classical in ite (a = 0 ∧ n = 0) 1 0
   dpow_null {n a} ha := by
     simp only [mem_bot] at ha
     rw [if_neg]
@@ -138,7 +138,12 @@ def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
     · simp [hm, uniformBell_zero_left, hn]
     · simp only [hm, and_false, ite_false, false_or, if_neg hn]
 
-instance [DecidableEq A] : Inhabited (DividedPowers (⊥ : Ideal A)) :=
+lemma dividedPowersBot_dpow_eq [DecidableEq A] (n : ℕ) (a : A) :
+    (dividedPowersBot A).dpow n a =
+      if a = 0 ∧ n = 0 then 1 else 0 := by
+  simp [dividedPowersBot]
+
+noncomputable instance : Inhabited (DividedPowers (⊥ : Ideal A)) :=
   ⟨dividedPowersBot A⟩
 
 /-- The coercion from the divided powers structures to functions -/
