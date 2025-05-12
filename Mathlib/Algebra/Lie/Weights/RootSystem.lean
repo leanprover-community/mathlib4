@@ -536,85 +536,76 @@ lemma invtSubmodule_reflection:
   have s₇ : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
     have gen : ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule = ⊤ := by
       exact LieModule.iSup_genWeightSpace_as_module_eq_top' K H L
-    intro x y
-    intro hy
+    intro x y hy
     have hx : x ∈ ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule := by
       simp only [gen, Submodule.mem_top]
     induction hx using Submodule.iSup_induction' with
     | mem j x hx =>
-      --simp_all
-      --(p := (y : L) → y ∈ LieSubalgebra.lieSpan K L g → ⁅x, y⁆ ∈ LieSubalgebra.lieSpan K L g)
       simp [I] at hy
-      refine LieSubalgebra.lieSpan_induction (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ hy
-      --intro a x_1
-      intro x1 hx1
-      obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx1
-      have rr79 (j : LieModule.Weight K H L) : j = 0 ∨ j ∈ H.root := by
-        have : j = 0 ∨ j ≠ 0 := by
-          exact eq_or_ne j 0
-        rcases this with h | h
-        · left
-          exact h
-        right
-        refine Finset.mem_filter.mpr ?_
-        constructor
-        · exact Finset.mem_univ j
-        exact LieModule.Weight.isNonZero_iff_ne_zero.mpr h
-      have step1 := rr79 j
-      rcases step1 with h | h
-      have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx hx1_mem
-      simp at ttt
-      rw [h] at ttt
-      simp at ttt
-      have rrrr : ⁅x, x1⁆ ∈ g := by
-        exact Set.mem_biUnion hi ttt
-      exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
-      --obtain ⟨j1, j2⟩ := j
-      let jj : H.root := ⟨j, h⟩
-      --simp only [Finset.mem_filter, Finset.mem_univ, true_and, I] at jj
-      rcases (Classical.em (jj ∈ Φ)) with h | h
-      --simp at jj
-      have hx2 : x ∈ LieModule.genWeightSpace L jj.1 := hx
-      have rrrr : x ∈ g := by
-        exact Set.mem_biUnion h hx2
-      have rrrr2 : x ∈ I := by
+      induction hy using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
+      | mem x1 hx1 =>
+        obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx1
+        have rr79 (j : LieModule.Weight K H L) : j = 0 ∨ j ∈ H.root := by
+          have : j = 0 ∨ j ≠ 0 := by
+            exact eq_or_ne j 0
+          rcases this with h | h
+          · left
+            exact h
+          right
+          refine Finset.mem_filter.mpr ?_
+          constructor
+          · exact Finset.mem_univ j
+          exact LieModule.Weight.isNonZero_iff_ne_zero.mpr h
+        have step1 := rr79 j
+        rcases step1 with h | h
+        have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx hx1_mem
+        simp at ttt
+        rw [h] at ttt
+        simp at ttt
+        have rrrr : ⁅x, x1⁆ ∈ g := by
+          exact Set.mem_biUnion hi ttt
         exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
-      have rrrr3 : x1 ∈ I := by
-         exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a hx1
-      exact LieSubalgebra.lie_mem I rrrr2 rrrr3
-      have key : ⁅x1, x⁆ = 0 := by
-        have := s₄ i jj hi h
-        simp at this
-        have ssss2 := this x1 hx1_mem
-        have ssss3 := ssss2 x hx
-        exact ssss3
-      have : ⁅x, x1⁆ = 0 := by
-        rw [← neg_eq_zero, lie_skew x1 x, key]
-      rw [this]
-      exact LieSubalgebra.zero_mem I
-      · simp only [lie_zero, LieSubalgebra.zero_mem, I]
-      · intro a b c d e f
-        simp only [lie_add, I]
-        exact LieSubalgebra.add_mem I e f
-      · intro a b c d
-        simp only [lie_smul, I]
-        exact LieSubalgebra.smul_mem I a d
-      · intro x_1
-        intro zzz
-        intro x_2
-        intro zzz_2
-        intro hx_1
-        intro hxzzz
-        have x1n : x_1 ∈ I := x_2
-        have z1n : zzz ∈ I := zzz_2
-        have : ⁅x, ⁅x_1, zzz⁆⁆ = ⁅⁅x, x_1⁆, zzz⁆ + ⁅x_1, ⁅x, zzz⁆⁆ := by
-          simp
+        --obtain ⟨j1, j2⟩ := j
+        let jj : H.root := ⟨j, h⟩
+        --simp only [Finset.mem_filter, Finset.mem_univ, true_and, I] at jj
+        rcases (Classical.em (jj ∈ Φ)) with h | h
+        --simp at jj
+        have hx2 : x ∈ LieModule.genWeightSpace L jj.1 := hx
+        have rrrr : x ∈ g := by
+          exact Set.mem_biUnion h hx2
+        have rrrr2 : x ∈ I := by
+          exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
+        have rrrr3 : x1 ∈ I := by
+           exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a hx1
+        exact LieSubalgebra.lie_mem I rrrr2 rrrr3
+        have key : ⁅x1, x⁆ = 0 := by
+          have := s₄ i jj hi h
+          simp at this
+          have ssss2 := this x1 hx1_mem
+          have ssss3 := ssss2 x hx
+          exact ssss3
+        have : ⁅x, x1⁆ = 0 := by
+          rw [← neg_eq_zero, lie_skew x1 x, key]
         rw [this]
-        have p1 : ⁅⁅x, x_1⁆, zzz⁆ ∈ I := by
-          exact LieSubalgebra.lie_mem I hx_1 z1n
-        have p2 : ⁅x_1, ⁅x, zzz⁆⁆ ∈ I := by
-          exact LieSubalgebra.lie_mem I x1n hxzzz
-        exact LieSubalgebra.add_mem I p1 p2
+        exact LieSubalgebra.zero_mem I
+      | zero => simp only [lie_zero, LieSubalgebra.zero_mem, I]
+      | add a b c d e f =>
+          simp only [lie_add, I]
+          exact LieSubalgebra.add_mem I e f
+      | smul a b c d =>
+          simp only [lie_smul, I]
+          exact LieSubalgebra.smul_mem I a d
+      | lie x_1 zzz x_2 zzz_2 hx_1 hxzzz =>
+          have x1n : x_1 ∈ I := x_2
+          have z1n : zzz ∈ I := zzz_2
+          have : ⁅x, ⁅x_1, zzz⁆⁆ = ⁅⁅x, x_1⁆, zzz⁆ + ⁅x_1, ⁅x, zzz⁆⁆ := by
+            simp
+          rw [this]
+          have p1 : ⁅⁅x, x_1⁆, zzz⁆ ∈ I := by
+            exact LieSubalgebra.lie_mem I hx_1 z1n
+          have p2 : ⁅x_1, ⁅x, zzz⁆⁆ ∈ I := by
+            exact LieSubalgebra.lie_mem I x1n hxzzz
+          exact LieSubalgebra.add_mem I p1 p2
     | zero =>
       simp only [zero_lie, LieSubalgebra.zero_mem]
     | add x1 y1 _ _ hx hy =>
