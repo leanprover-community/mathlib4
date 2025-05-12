@@ -102,6 +102,7 @@ theorem integrable_coeFn (f : α →₁[μ] β) : Integrable f μ := by
 theorem hasFiniteIntegral_coeFn (f : α →₁[μ] β) : HasFiniteIntegral f μ :=
   (integrable_coeFn f).hasFiniteIntegral
 
+@[fun_prop]
 theorem stronglyMeasurable_coeFn (f : α →₁[μ] β) : StronglyMeasurable f :=
   Lp.stronglyMeasurable f
 
@@ -109,9 +110,11 @@ theorem stronglyMeasurable_coeFn (f : α →₁[μ] β) : StronglyMeasurable f :
 theorem measurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[μ] β) : Measurable f :=
   (Lp.stronglyMeasurable f).measurable
 
+@[fun_prop]
 theorem aestronglyMeasurable_coeFn (f : α →₁[μ] β) : AEStronglyMeasurable f μ :=
   Lp.aestronglyMeasurable f
 
+@[fun_prop]
 theorem aemeasurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[μ] β) : AEMeasurable f μ :=
   (Lp.stronglyMeasurable f).measurable.aemeasurable
 

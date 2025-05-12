@@ -684,17 +684,29 @@ def expand (e : Expr) : MetaM Expr := do
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
-  if reorder == [] then
+  if let some maxReorder := reorder.flatten.max? then
+    forallBoundedTelescope src (some (maxReorder + 1)) fun xs e => do
+      if xs.size = maxReorder + 1 then
+        mkForallFVars (xs.permute! reorder) e
+      else
+        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
+          large, the type{indentExpr src}\nhas only {xs.size} arguments"
+        return src
+  else
     return src
-  forallTelescope src fun xs e => do
-    mkForallFVars (xs.permute! reorder) e
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
-  if reorder == [] then
+  if let some maxReorder := reorder.flatten.max? then
+    lambdaBoundedTelescope src (maxReorder + 1) fun xs e => do
+      if xs.size = maxReorder + 1 then
+        mkLambdaFVars (xs.permute! reorder) e
+      else
+        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
+          large, the type{indentExpr src}\nhas only {xs.size} arguments"
+        return src
+  else
     return src
-  lambdaTelescope src fun xs e => do
-    mkLambdaFVars (xs.permute! reorder) e
 
 /-- Unfold auxlemmas in the type and value. -/
 def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
@@ -722,12 +734,12 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) 
       value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand info.value }
   return decl
 
-/-- Abstracts the nested proofs in the value of `decl` if it's not a theorem. -/
+/-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
-  if decl.isTheorem || !decl.hasValue then
-    return decl
-  else
+  if decl matches .defnInfo _ then
     return decl.updateValue <| ← Meta.abstractNestedProofs decl.name decl.value!
+  else
+    return decl
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=

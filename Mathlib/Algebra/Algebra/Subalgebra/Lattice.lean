@@ -747,7 +747,7 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ :
   ext fun _x => adjoin_le_equalizer φ₁ φ₂ hs <| h.symm ▸ trivial
 
 /-- Two algebra morphisms are equal on `Algebra.span s`iff they are equal on s -/
-theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A}  :
+theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
     Set.EqOn φ ψ (adjoin R s) ↔ Set.EqOn φ ψ s := by
   have (S : Set A) : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
   simp only [← this, Set.le_eq_subset, SetLike.coe_subset_coe, adjoin_le_iff]

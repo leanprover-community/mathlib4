@@ -291,7 +291,7 @@ theorem comul_comp_lapply (i : ι) :
   ext j : 1
   conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
   obtain rfl | hij := eq_or_ne i j
-  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id,  TensorProduct.map_id, id_comp]
+  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id, TensorProduct.map_id, id_comp]
   · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
       zero_comp]
 
@@ -352,7 +352,7 @@ theorem comul_comp_lapply (i : ι) :
   ext j : 1
   conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
   obtain rfl | hij := eq_or_ne i j
-  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id,  TensorProduct.map_id, id_comp]
+  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id, TensorProduct.map_id, id_comp]
   · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
       zero_comp]
 
@@ -388,9 +388,28 @@ variable {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
   [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
 
 /-- See `Mathlib.RingTheory.Coalgebra.TensorProduct` for the `Coalgebra` instance. -/
-@[simps] instance instCoalgebraStruct :
-    CoalgebraStruct R (A ⊗[R] B) where
+instance instCoalgebraStruct : CoalgebraStruct R (A ⊗[R] B) where
   comul := TensorProduct.tensorTensorTensorComm R A A B B ∘ₗ TensorProduct.map comul comul
   counit := LinearMap.mul' R R ∘ₗ TensorProduct.map counit counit
+
+lemma comul_def :
+    Coalgebra.comul (R := R) (A := A ⊗[R] B) =
+    tensorTensorTensorComm R A A B B ∘ₗ map comul comul :=
+  rfl
+
+@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_comul := comul_def
+
+@[simp] lemma comul_tmul (a : A) (b : B) :
+    comul (R := R) (a ⊗ₜ[R] b) =
+      tensorTensorTensorComm _ _ _ _ _ (comul (R := R) a ⊗ₜ[R] comul (R := R) b) := rfl
+
+lemma counit_def :
+    Coalgebra.counit (R := R) (A := A ⊗[R] B) = LinearMap.mul' R R ∘ₗ map counit counit :=
+  rfl
+
+@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
+
+@[simp] lemma counit_tmul (a : A) (b : B) :
+    counit (R := R) (a ⊗ₜ[R] b) = counit a * counit b := rfl
 
 end TensorProduct
