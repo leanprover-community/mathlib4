@@ -10,6 +10,7 @@ import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Compactness.LocallyCompact
 import Mathlib.Topology.Bases
 import Mathlib.Tactic.StacksAttribute
+
 /-!
 # Separation properties of topological spaces
 
