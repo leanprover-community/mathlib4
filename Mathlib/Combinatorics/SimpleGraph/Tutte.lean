@@ -16,12 +16,14 @@ import Mathlib.Data.Fintype.Card
 ## Main definitions
 * `SimpleGraph.TutteViolator G u` is a set of vertices `u` such that the amount of
   odd components left after deleting `u` from `G` is larger than the number of vertices in `u`.
-  This certificies non-existence of a perfect matching.
+  This certifies non-existence of a perfect matching.
 
 ## Main results
+
 * `SimpleGraph.tutte` states Tutte's theorem: A graph has a perfect matching, if and
   only if no Tutte violators exist.
 -/
+
 namespace SimpleGraph
 
 universe u
@@ -241,7 +243,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   have hle : p.toSubgraph.spanningCoe ≤ G ⊔ edge a c := by
     rw [← sdiff_edge _ (by simpa : ¬p.toSubgraph.spanningCoe.Adj x b), sdiff_le_iff']
     intro v w hvw
-    apply (hsupG ▸ sup_le_sup hM1sub hM2sub)
+    apply hsupG ▸ sup_le_sup hM1sub hM2sub
     have := p.toSubgraph.spanningCoe_le hvw
     simp only [cycles, symmDiff_def] at this
     aesop
@@ -251,20 +253,18 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     intro hc hadj
     have := hadj.adj_sub
     simp only [cycles, symmDiff_def] at this
-    obtain ⟨hl, _⟩ | ⟨hr, _⟩ := this
-    · exfalso
-      obtain ⟨w, hw⟩ := hM1.1 (hM1.2 x')
-      apply hnpxb
-      obtain h1 | h2 := hx'
-      · subst h1
-        rw [hw.2 _ hM1xb, ← hw.2 _ hl.symm]
-        exact hadj.symm
-      · subst h2
-        rw [hw.2 _ hM1xb.symm, ← hw.2 _ hl.symm]
-        exact hadj
-    · exact hr
+    refine (this.resolve_left fun hl ↦ ?_).1
+    obtain ⟨w, hw⟩ := hM1.1 (hM1.2 x')
+    apply hnpxb
+    obtain h1 | h2 := hx'
+    · subst h1
+      rw [hw.2 _ hM1xb, ← hw.2 _ hl.1.symm]
+      exact hadj.symm
+    · subst h2
+      rw [hw.2 _ hM1xb.symm, ← hw.2 _ hl.1.symm]
+      exact hadj
   simp only [Finset.mem_insert, Finset.mem_singleton, cycles] at hx'
-  obtain hl | hl := hx' <;> subst hl
+  obtain rfl | rfl := hx'
   · exact tutte_exists_isAlternating_isCycles hM2 p hp hcalt (hnM2 x' hnxc) hpac hnpxb hM2ac
       hxa hnxc hab.ne hle (aux (by simp))
   · conv =>
@@ -284,8 +284,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
   classical
   -- It suffices to consider the edge-maximal case
   obtain ⟨Gmax, hSubgraph, hMatchingFree, hMaximal⟩ := exists_maximal_isMatchingFree h
-  use Gmax.universalVerts
-  apply IsTutteViolator.mono hSubgraph
+  refine ⟨Gmax.universalVerts, .mono hSubgraph ?_⟩
   by_contra! hc
   simp only [IsTutteViolator, Set.ncard_eq_toFinset_card', Set.toFinset_card] at hc
   by_cases h' : ∀ (K : ConnectedComponent Gmax.deleteUniversalVerts.coe),
@@ -309,13 +308,13 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
       Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and] at hxa hxb hnadjxb
     obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj c a := by
       simpa [universalVerts] using a.1.2.2
-    have hbnec : b.val.val ≠ c := fun h ↦ hc.2 (h ▸ hxb.symm)
+    have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb.symm
     obtain ⟨_, hG1⟩ := hMaximal _ <| left_lt_sup.mpr (by
       rw [edge_le_iff (v := x.1.1) (w := b.1.1)]
       simp [not_and, hnxb, hnadjxb, Subtype.val_injective.ne <| Subtype.val_injective.ne hnxb])
     obtain ⟨_, hG2⟩ := hMaximal _ <| left_lt_sup.mpr (by
       rwa [edge_le_iff (v := a.1.1) (w := c), adj_comm, not_or])
-    have hcnex : c ≠ x.val.val := fun hxc ↦ hc.2 (hxc ▸ hxa)
+    have hcnex : c ≠ x.val.val := by rintro rfl; exact hc.2 hxa
     obtain ⟨Mcon, hMcon⟩ := tutte_exists_isPerfectMatching_of_near_matchings hxa
       hxb hnadjxb (fun hadj ↦ hc.2 hadj.symm) (by aesop) hcnex.symm hc.1 hbnec hG1 hG2
     exact hMatchingFree Mcon hMcon
@@ -325,8 +324,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
 A graph has a perfect matching if and only if: For every subset `u` of vertices, removing this
 subset induces at most `u.ncard` components of odd size. This is formally stated using the
 predicate `IsTutteViolator`, which is satisfied exactly when this condition does not hold. -/
-theorem tutte :
-    (∃ M : Subgraph G, M.IsPerfectMatching) ↔ ∀ u, ¬ G.IsTutteViolator u := by
+theorem tutte : (∃ M : Subgraph G, M.IsPerfectMatching) ↔ ∀ u, ¬ G.IsTutteViolator u := by
   classical
   refine ⟨by rintro ⟨M, hM⟩; apply not_isTutteViolator_of_isPerfectMatching hM, ?_⟩
   contrapose!
