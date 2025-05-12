@@ -17,8 +17,8 @@ object to `SimplexCategory` (using `CategoryTheory.WithInitial`).
 This definition provides a canonical full and faithful inclusion functor
 `inclusion : SimplexCategory ⥤ AugmentedSimplexCategory`.
 
-We prove that functors out of `AugmentedSimplexCategory` are equivalent to cosimplicial objects
-and that functors out of `AugmentedSimplexCategoryᵒᵖ` are equivalent to simplicial objects,
+We prove that functors out of `AugmentedSimplexCategory` are equivalent to augmented cosimplicial objects
+and that functors out of `AugmentedSimplexCategoryᵒᵖ` are equivalent to augmented simplicial objects,
 and we provide a translation of the main constrcutions on (co)simplicial objects
 (i.e `drop`, `point` and `toArrow`) in terms of these equivalences.
 
