@@ -571,11 +571,11 @@ lemma invtSubmodule_reflection:
         rw [this]
         exact LieSubalgebra.zero_mem I
       | zero => simp only [lie_zero, LieSubalgebra.zero_mem, I]
-      | add a b c d e f =>
-          simp only [lie_add, I]
+      | add _ _ _ _ e f =>
+          simp only [lie_add]
           exact LieSubalgebra.add_mem I e f
-      | smul a b c d =>
-          simp only [lie_smul, I]
+      | smul a _ _ d =>
+          simp only [lie_smul]
           exact LieSubalgebra.smul_mem I a d
       | lie x_1 zzz x_2 zzz_2 hx_1 hxzzz =>
           have x1n : x_1 ∈ I := x_2
