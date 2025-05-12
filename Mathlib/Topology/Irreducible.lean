@@ -42,7 +42,7 @@ def IsPreirreducible (s : Set X) : Prop :=
 
 /-- An irreducible set `s` is one that is nonempty and
 where there is no non-trivial pair of disjoint opens on `s`. -/
-@[stacks 004V "part 1, predicate on subsets of a space"]
+@[stacks 004V "(1) as predicate on subsets of a space"]
 def IsIrreducible (s : Set X) : Prop :=
   s.Nonempty ∧ IsPreirreducible s
 
@@ -69,7 +69,7 @@ theorem isPreirreducible_iff_closure : IsPreirreducible (closure s) ↔ IsPreirr
     iterate 3 rw [closure_inter_open_nonempty_iff]
     exacts [hu.inter hv, hv, hu]
 
-@[stacks 004W "part 1"]
+@[stacks 004W "(1)"]
 theorem isIrreducible_iff_closure : IsIrreducible (closure s) ↔ IsIrreducible s :=
   and_congr closure_nonempty_iff isPreirreducible_iff_closure
 
@@ -97,11 +97,11 @@ theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
   ⟨m, hm.prop, hsm, fun _u hu hmu => (hm.eq_of_subset hu hmu).symm⟩
 
 /-- The set of irreducible components of a topological space. -/
-@[stacks 004V "part 2"]
+@[stacks 004V "(2)"]
 def irreducibleComponents (X : Type*) [TopologicalSpace X] : Set (Set X) :=
   {s | Maximal IsIrreducible s}
 
-@[stacks 004W "part 2"]
+@[stacks 004W "(2)"]
 theorem isClosed_of_mem_irreducibleComponents (s) (H : s ∈ irreducibleComponents X) :
     IsClosed s := by
   rw [← closure_eq_iff_isClosed, eq_comm]
@@ -118,7 +118,7 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
     have : closure x ≤ s := H.2 ⟨isClosed_closure, h.closure⟩ (e.trans subset_closure)
     exact le_trans subset_closure this
 
-@[stacks 004W "part 3"]
+@[stacks 004W "(3)"]
 lemma exists_irreducibleComponent_subset_of_isIrreducible (s : Set X) (hs : IsIrreducible s) :
     ∃ u ∈ irreducibleComponents X, s ⊆ u := by
   obtain ⟨u,hu⟩ := exists_preirreducible s hs.isPreirreducible
@@ -126,7 +126,7 @@ lemma exists_irreducibleComponent_subset_of_isIrreducible (s : Set X) (hs : IsIr
   exact hu.right.left
 
 /-- A maximal irreducible set that contains a given point. -/
-@[stacks 004W "part 4"]
+@[stacks 004W "(4)"]
 def irreducibleComponent (x : X) : Set X :=
   Classical.choose (exists_preirreducible {x} isPreirreducible_singleton)
 
@@ -136,7 +136,7 @@ theorem irreducibleComponent_property (x : X) :
         ∀ u, IsPreirreducible u → irreducibleComponent x ⊆ u → u = irreducibleComponent x :=
   Classical.choose_spec (exists_preirreducible {x} isPreirreducible_singleton)
 
-@[stacks 004W "part 4"]
+@[stacks 004W "(4)"]
 theorem mem_irreducibleComponent {x : X} : x ∈ irreducibleComponent x :=
   singleton_subset_iff.1 (irreducibleComponent_property x).2.1
 
@@ -161,7 +161,7 @@ class PreirreducibleSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 /-- An irreducible space is one that is nonempty
 and where there is no non-trivial pair of disjoint opens. -/
-@[stacks 004V "part 1, predicate on a space"]
+@[stacks 004V "(1) as predicate on a space"]
 class IrreducibleSpace (X : Type*) [TopologicalSpace X] : Prop extends PreirreducibleSpace X where
   toNonempty : Nonempty X
 

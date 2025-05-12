@@ -101,7 +101,7 @@ end genericPoint
 section Sober
 
 /-- A space is sober if every irreducible closed subset has a generic point. -/
-@[mk_iff, stacks 004X "part 3"]
+@[mk_iff, stacks 004X "(3)"]
 class QuasiSober (α : Type*) [TopologicalSpace α] : Prop where
   sober : ∀ {S : Set α}, IsIrreducible S → IsClosed S → ∃ x, IsGenericPoint x S
 
