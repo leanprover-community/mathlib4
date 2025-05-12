@@ -6,6 +6,7 @@ Authors: Eric Wieser, Zhangir Azerbayev
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
 import Mathlib.LinearAlgebra.Multilinear.Basis
+import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Alternating Maps
