@@ -47,6 +47,11 @@ theorem vec_eq_uncurry (A : Matrix m n R) : vec A = Function.uncurry fun i j => 
 theorem vec_inj {A B : Matrix m n R} : A.vec = B.vec ↔ A = B := by
   simp_rw [← Matrix.ext_iff, funext_iff, Prod.forall, @forall_comm m n, vec]
 
+theorem vec_bijective : Function.Bijective (vec : Matrix m n R → _) :=
+  -- TODO: use #24821 to simplify this
+  Equiv.curry _ _ _ |>.trans ⟨Function.swap, Function.swap, fun _ => rfl, fun _ => rfl⟩
+    |>.symm.bijective
+
 theorem vec_map (A : Matrix m n R) (f : R → S) : vec (A.map f) = f ∘ vec A := rfl
 
 @[simp]
@@ -98,18 +103,16 @@ theorem kronecker_mulVec_vec_of_commute (A : Matrix l m R) (X : Matrix m n R) (B
     (hB : ∀ x i j, Commute x (B i j)) :
     (B ⊗ₖ A) *ᵥ vec X = vec (A * X * Bᵀ) := by
   ext ⟨k, l⟩
-  simp_rw [vec, Matrix.mulVec, Matrix.mul_apply, dotProduct, Matrix.kroneckerMap_apply,
-    Finset.sum_mul, transpose_apply, ← Finset.univ_product_univ, Finset.sum_product,
-    (hB _ _ _).right_comm, vec, (hB _ _ _).eq]
+  simp_rw [vec, mulVec, mul_apply, dotProduct, kroneckerMap_apply, Finset.sum_mul, transpose_apply,
+    ← Finset.univ_product_univ, Finset.sum_product, (hB ..).right_comm, vec, (hB ..).eq]
 
 /-- Technical lemma shared with `vec_vecMul_kronecker` and `vec_mul_eq_vecMul`. -/
 theorem vec_vecMul_kronecker_of_commute (A : Matrix m l R) (X : Matrix m n R) (B : Matrix n p R)
     (hA : ∀ x i j, Commute (A i j) x) :
     vec X ᵥ* (B ⊗ₖ A) = vec (Aᵀ * X * B) := by
   ext ⟨k, l⟩
-  simp_rw [vec, Matrix.vecMul, Matrix.mul_apply, dotProduct, Matrix.kroneckerMap_apply,
-    Finset.sum_mul, transpose_apply, ← Finset.univ_product_univ, Finset.sum_product,
-    (hA _ _ _).eq, (hA _ _ _).right_comm, mul_assoc, vec]
+  simp_rw [vec, vecMul, mul_apply, dotProduct, kroneckerMap_apply, Finset.sum_mul, transpose_apply,
+    ← Finset.univ_product_univ, Finset.sum_product, (hA ..).eq, (hA ..).right_comm, mul_assoc, vec]
 
 end NonUnitalSemiring
 
@@ -122,7 +125,7 @@ theorem kronecker_mulVec_vec (A : Matrix l m R) (X : Matrix m n R) (B : Matrix p
 
 theorem vec_vecMul_kronecker (A : Matrix m l R) (X : Matrix m n R) (B : Matrix n p R) :
     vec X ᵥ* (B ⊗ₖ A) = vec (Aᵀ * X * B) :=
-  vec_vecMul_kronecker_of_commute _ _ _ fun _ _ _ => Commute.all _ _
+  vec_vecMul_kronecker_of_commute _ _ _ fun _ _ _=> Commute.all _ _
 
 end NonUnitalCommSemiring
 
