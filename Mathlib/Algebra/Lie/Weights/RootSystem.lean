@@ -577,17 +577,11 @@ lemma invtSubmodule_reflection:
       | smul a _ _ d =>
           simp only [lie_smul]
           exact LieSubalgebra.smul_mem I a d
-      | lie x_1 zzz x_2 zzz_2 hx_1 hxzzz =>
-          have x1n : x_1 ∈ I := x_2
-          have z1n : zzz ∈ I := zzz_2
-          have : ⁅x, ⁅x_1, zzz⁆⁆ = ⁅⁅x, x_1⁆, zzz⁆ + ⁅x_1, ⁅x, zzz⁆⁆ := by
-            simp
+      | lie a b c d e f =>
+          have : ⁅x, ⁅a, b⁆⁆ = ⁅⁅x, a⁆, b⁆ + ⁅a, ⁅x, b⁆⁆ := by
+            simp only [lie_lie, sub_add_cancel]
           rw [this]
-          have p1 : ⁅⁅x, x_1⁆, zzz⁆ ∈ I := by
-            exact LieSubalgebra.lie_mem I hx_1 z1n
-          have p2 : ⁅x_1, ⁅x, zzz⁆⁆ ∈ I := by
-            exact LieSubalgebra.lie_mem I x1n hxzzz
-          exact LieSubalgebra.add_mem I p1 p2
+          exact LieSubalgebra.add_mem I (LieSubalgebra.lie_mem I e d) (LieSubalgebra.lie_mem I c f)
     | zero =>
       simp only [zero_lie, LieSubalgebra.zero_mem]
     | add x1 y1 _ _ hx hy =>
