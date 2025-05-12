@@ -1147,10 +1147,10 @@ def subschemeIso : I.subscheme ≅ I.glueData.glued :=
 /-- The inclusion from the subscheme associated to an ideal sheaf. -/
 noncomputable
 def subschemeι : I.subscheme ⟶ X :=
-    (I.subschemeIso.hom ≫ I.gluedTo).copyBase Subtype.val <| by
-  ext x
-  show (I.gluedHomeo (I.gluedHomeo.symm x)).1 = x.1
-  rw [I.gluedHomeo.apply_symm_apply]
+  (I.subschemeIso.hom ≫ I.gluedTo).copyBase Subtype.val <| by
+    ext x
+    show (I.gluedHomeo (I.gluedHomeo.symm x)).1 = x.1
+    rw [I.gluedHomeo.apply_symm_apply]
 
 lemma subschemeι_apply (x : I.subscheme) : I.subschemeι.base x = x.1 := rfl
 

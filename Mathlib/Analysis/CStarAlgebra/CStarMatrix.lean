@@ -439,9 +439,8 @@ def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A
   map_add' := by simp [map_add]
   map_mul' M N := by
     ext
-    simp only [mapₗ_apply, map, LinearMap.coe_coe, ofMatrix_apply]
-    simp_rw [mul_apply, map_sum, map_mul]
-    rfl
+    simp only [mapₗ_apply, map, LinearMap.coe_coe, ofMatrix_apply, mul_apply, map_sum, map_mul,
+      ofMatrix_apply]
   map_star' M := by ext; simp [map, star_apply, map_star]
 
 theorem algebraMap_apply [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A]

@@ -69,8 +69,8 @@ open scoped Nat NNReal ContDiff
 variable {𝕜 𝕜' D E F G V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
-variable (E F)
 
+variable (E F) in
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
   any power of `‖x‖`. -/
 structure SchwartzMap where
@@ -81,8 +81,6 @@ structure SchwartzMap where
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
   any power of `‖x‖`. -/
 scoped[SchwartzMap] notation "𝓢(" E ", " F ")" => SchwartzMap E F
-
-variable {E F}
 
 namespace SchwartzMap
 
@@ -331,9 +329,8 @@ instance instSub : Sub 𝓢(E, F) :=
       refine le_trans ?_ (add_le_add (f.le_seminormAux k n x) (g.le_seminormAux k n x))
       rw [sub_eq_add_neg]
       rw [← decay_neg_aux k n g x]
-      convert decay_add_le_aux k n f (-g) x⟩⟩
+      exact decay_add_le_aux k n f (-g) x⟩⟩
 
--- exact fails with deterministic timeout
 @[simp]
 theorem sub_apply {f g : 𝓢(E, F)} {x : E} : (f - g) x = f x - g x :=
   rfl
@@ -532,14 +529,14 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   choose k C f using hf_temperate.2
   use (Finset.range (n + 1)).sup k
   let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
-  have hC' : 0 ≤ C' := by simp only [C', le_refl, Finset.le_sup'_iff, true_or, le_max_iff]
+  have hC' : 0 ≤ C' := le_max_left _ _
   use C', hC'
   intro N hN x
   rw [← Finset.mem_range_succ_iff] at hN
   refine le_trans (f N x) (mul_le_mul ?_ ?_ (by positivity) hC')
   · simp only [C', Finset.le_sup'_iff, le_max_iff]
     right
-    exact ⟨N, hN, rfl.le⟩
+    exact ⟨N, hN, le_rfl⟩
   gcongr
   · simp
   exact Finset.le_sup hN
@@ -548,7 +545,7 @@ lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
     (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
     Function.HasTemperateGrowth f := by
-  refine ⟨contDiff_succ_iff_fderiv.2 ⟨hf, by simp, h'f.1⟩ , fun n ↦ ?_⟩
+  refine ⟨contDiff_succ_iff_fderiv.2 ⟨hf, by simp, h'f.1⟩, fun n ↦ ?_⟩
   rcases n with rfl|m
   · exact ⟨k, C, fun x ↦ by simpa using h x⟩
   · rcases h'f.2 m with ⟨k', C', h'⟩
@@ -886,16 +883,14 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     gcongr
     apply one_le_pow₀
     simp only [le_add_iff_nonneg_right, norm_nonneg]
-  have hbound :
-    ∀ i, i ≤ n → ‖iteratedFDeriv ℝ i f (g x)‖ ≤ 2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k' := by
-    intro i hi
+  have hbound (i) (hi : i ≤ n) :
+      ‖iteratedFDeriv ℝ i f (g x)‖ ≤ 2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k' := by
     have hpos : 0 < (1 + ‖g x‖) ^ k' := by positivity
     rw [le_div_iff₀' hpos]
     change i ≤ (k', n).snd at hi
     exact one_add_le_sup_seminorm_apply le_rfl hi _ _
-  have hgrowth' : ∀ N : ℕ, 1 ≤ N → N ≤ n →
+  have hgrowth' (N : ℕ) (hN₁ : 1 ≤ N) (hN₂ : N ≤ n) :
       ‖iteratedFDeriv ℝ N g x‖ ≤ ((C + 1) * (1 + ‖x‖) ^ l) ^ N := by
-    intro N hN₁ hN₂
     refine (hgrowth N hN₂ x).trans ?_
     rw [mul_pow]
     have hN₁' := (lt_of_lt_of_le zero_lt_one hN₁).ne'
@@ -1034,8 +1029,7 @@ theorem iteratedPDeriv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E,
     iteratedPDeriv 𝕜 m f = iteratedPDeriv 𝕜 (Fin.init m) (pderivCLM 𝕜 (m (Fin.last n)) f) := by
   induction n with
   | zero =>
-    rw [iteratedPDeriv_zero, iteratedPDeriv_one]
-    rfl
+    rw [iteratedPDeriv_zero, iteratedPDeriv_one, Fin.last_zero]
   -- The proof is `∂^{n + 2} = ∂ ∂^{n + 1} = ∂ ∂^n ∂ = ∂^{n+1} ∂`
   | succ n IH =>
     have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSucc_zero]
@@ -1120,8 +1114,8 @@ def integralCLM : 𝓢(D, V) →L[𝕜] V := by
     rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff₀' (by positivity), rpow_natCast]
     simpa using one_add_le_sup_seminorm_apply (m := m) (k := n) (n := 0) le_rfl le_rfl f x
   apply (integral_mono (by simpa using f.integrable_pow_mul μ 0) _ h').trans
-  · rw [integral_mul_const, ← mul_assoc, mul_comm (2 ^ n)]
-    rfl
+  · unfold schwartzSeminormFamily
+    rw [integral_mul_const, ← mul_assoc, mul_comm (2 ^ n)]
   apply h.mul_const
 
 variable (𝕜) in
