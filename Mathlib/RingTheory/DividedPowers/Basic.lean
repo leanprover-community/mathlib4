@@ -30,12 +30,12 @@ this is the binomial theorem without binomial coefficients.
 * `DividedPowers.dpow_comp` : `dpow m (dpow n x) = uniformBell m n * dpow (m * n) x`
 * `DividedPowers.dividedPowersBot` : the trivial divided powers structure on the zero ideal
 * `DividedPowers.prod_dpow`: a product of divided powers is a multinomial coefficients
-times a divided power
+  times a divided power
 * `DividedPowers.dpow_sum`: the multinomial theorem for divided powers,
-without multinomial coefficients.
+  without multinomial coefficients.
 * `DividedPowers.ofRingEquiv`: transfer divided powers along `RingEquiv`
 * `DividedPowers.equiv`: the equivalence `DividedPowers I ≃ DividedPowers J`,
-for `e : R ≃+* S`, and `I : Ideal R`, `J : Ideal S` such that `I.map e = J`
+  for `e : R ≃+* S`, and `I : Ideal R`, `J : Ideal S` such that `I.map e = J`
 * `DividedPowers.exp`: the power series `Σ (dpow n a) X ^n`
 * `DividedPowers.exp_add`: its multiplicativity
 
