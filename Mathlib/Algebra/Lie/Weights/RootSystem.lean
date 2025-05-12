@@ -477,11 +477,11 @@ lemma invtSubmodule_reflection:
       field_simp at this
     have r₂ : r ∈ H.root := by simp [isNonZero_iff_ne_zero, r₁]
     cases Classical.em (⟨r, r₂⟩ ∈ Φ) with
-    | inl hr =>
+    | inl hl =>
       have e₁ : i.1.1 (coroot j) = 0 := s₂ i j h₁ h₂
       have e₂ : j.1.1 (coroot j) = 2 := root_apply_coroot jnz
       have : (0 : K) = 2 := calc
-        0 = (i.1.1 + j.1.1) (coroot j) := (s₂ ⟨r, r₂⟩ j hr h₂).symm
+        0 = (i.1.1 + j.1.1) (coroot j) := (s₂ ⟨r, r₂⟩ j hl h₂).symm
         _ = i.1.1 (coroot j) + j.1.1 (coroot j) := rfl
         _ = 2 := by rw [e₁, e₂, zero_add]
       simp at this
@@ -504,7 +504,6 @@ lemma invtSubmodule_reflection:
     have : ∃ (j : H.root), j ∉ Φ := by
       exact (Set.ne_univ_iff_exists_not_mem Φ).mp hc
     obtain ⟨j, hj⟩ := this
-    --rrrr : { x // x ∈ LieSubalgebra.root }
     obtain ⟨z, hz1, hz2⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
     by_contra!
     have lll : z ∈ LieAlgebra.center K L := by
