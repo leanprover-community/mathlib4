@@ -139,13 +139,10 @@ lemma exists_coroot_ne [P.IsAnisotropic]
     {x : P.rootSpan S} (hx : x ≠ 0) :
     ∃ i, P.coroot'In S i x ≠ 0 := by
   have hI := P.polarizationIn_Injective S
-  have := (map_ne_zero_iff (P.PolarizationIn S) hI).mpr hx
-  rw [PolarizationIn_apply] at this
-  by_contra h
-  rw [not_exists_not] at h
-  have bad : ∑ i : ι, (P.coroot'In S i) x • P.coroot i = 0 :=
-    Fintype.sum_eq_zero (fun a ↦ (P.coroot'In S a) x • P.coroot a) fun i ↦ by simp [h i]
-  apply this bad
+  have h := (map_ne_zero_iff (P.PolarizationIn S) hI).mpr hx
+  rw [PolarizationIn_apply] at h
+  contrapose! h
+  exact Fintype.sum_eq_zero (fun a ↦ (P.coroot'In S a) x • P.coroot a) fun i ↦ by simp [h i]
 
 end DomainAlg
 
@@ -214,6 +211,11 @@ lemma disjoint_rootSpan_ker_rootForm :
 lemma disjoint_corootSpan_ker_corootForm :
     Disjoint (P.corootSpan R) (LinearMap.ker P.CorootForm) :=
   P.flip.disjoint_rootSpan_ker_rootForm
+
+lemma _root_.RootSystem.rootForm_nondegenerate (P : RootSystem ι R M N) [P.IsAnisotropic] :
+    P.RootForm.Nondegenerate :=
+  LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr <| by
+    simpa using P.disjoint_rootSpan_ker_rootForm
 
 end IsDomain
 

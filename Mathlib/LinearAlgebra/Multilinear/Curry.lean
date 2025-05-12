@@ -56,24 +56,8 @@ the variables, given by `m ↦ f (m 0) (tail m)` -/
 def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂) :
     MultilinearMap R M M₂ :=
   MultilinearMap.mk' (fun m ↦ f (m 0) (tail m))
-    (fun m i x y ↦ by
-      by_cases h : i = 0
-      · subst i
-        simp only [update_self, map_add, tail_update_zero, MultilinearMap.add_apply]
-      · simp_rw [update_of_ne (Ne.symm h)]
-        revert x y
-        rw [← succ_pred i h]
-        intro x y
-        rw [tail_update_succ, MultilinearMap.map_update_add, tail_update_succ, tail_update_succ])
-    (fun m i c x ↦ by
-      by_cases h : i = 0
-      · subst i
-        simp only [update_self, map_smul, tail_update_zero, MultilinearMap.smul_apply]
-      · simp_rw [update_of_ne (Ne.symm h)]
-        revert x
-        rw [← succ_pred i h]
-        intro x
-        rw [tail_update_succ, tail_update_succ, MultilinearMap.map_update_smul])
+    (fun m i x y ↦ by cases i using Fin.cases <;> simp [Ne.symm])
+    (fun m i c x ↦ by cases i using Fin.cases <;> simp [Ne.symm])
 
 @[simp]
 theorem LinearMap.uncurryLeft_apply (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂)
@@ -84,7 +68,7 @@ theorem LinearMap.uncurryLeft_apply (f : M 0 →ₗ[R] MultilinearMap R (fun i :
 a linear map into multilinear maps in `n` variables, given by `x ↦ (m ↦ f (cons x m))`. -/
 def MultilinearMap.curryLeft (f : MultilinearMap R M M₂) :
     M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂ where
-  toFun x := MultilinearMap.mk' (fun m => f (cons x m))
+  toFun x := MultilinearMap.mk' fun m => f (cons x m)
   map_add' x y := by
     ext m
     exact cons_add f m x y
@@ -140,32 +124,8 @@ def MultilinearMap.uncurryRight
     (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂)) :
     MultilinearMap R M M₂ :=
   MultilinearMap.mk' (fun m ↦ f (init m) (m (last n)))
-    (fun m i x y ↦ by
-      by_cases h : i.val < n
-      · have : last n ≠ i := Ne.symm (ne_of_lt h)
-        simp_rw [update_of_ne this]
-        revert x y
-        rw [(castSucc_castLT i h).symm]
-        intro x y
-        rw [init_update_castSucc, MultilinearMap.map_update_add, init_update_castSucc,
-          init_update_castSucc, LinearMap.add_apply]
-      · revert x y
-        rw [eq_last_of_not_lt h]
-        intro x y
-        simp_rw [init_update_last, update_self, LinearMap.map_add])
-    (fun m i c x ↦ by
-      by_cases h : i.val < n
-      · have : last n ≠ i := Ne.symm (ne_of_lt h)
-        simp_rw [update_of_ne this]
-        revert x
-        rw [(castSucc_castLT i h).symm]
-        intro x
-        rw [init_update_castSucc, init_update_castSucc, MultilinearMap.map_update_smul,
-          LinearMap.smul_apply]
-      · revert x
-        rw [eq_last_of_not_lt h]
-        intro x
-        simp_rw [update_self, init_update_last, map_smul])
+    (fun m i x y ↦ by cases i using Fin.lastCases <;> simp [Ne.symm])
+    (fun m i c x ↦ by cases i using Fin.lastCases <;> simp [Ne.symm])
 
 @[simp]
 theorem MultilinearMap.uncurryRight_apply
@@ -178,10 +138,10 @@ a multilinear map in `n` variables taking values in linear maps from `M (last n)
 `m ↦ (x ↦ f (snoc m x))`. -/
 def MultilinearMap.curryRight (f : MultilinearMap R M M₂) :
     MultilinearMap R (fun i : Fin n => M (Fin.castSucc i)) (M (last n) →ₗ[R] M₂) :=
-  MultilinearMap.mk' (fun m ↦
+  MultilinearMap.mk' fun m ↦
     { toFun := fun x => f (snoc m x)
       map_add' := fun x y => by simp_rw [f.snoc_add]
-      map_smul' := fun c x => by simp only [f.snoc_smul, RingHom.id_apply] })
+      map_smul' := fun c x => by simp only [f.snoc_smul, RingHom.id_apply] }
 
 @[simp]
 theorem MultilinearMap.curryRight_apply (f : MultilinearMap R M M₂)
@@ -254,7 +214,7 @@ theorem currySum_apply' {N : Type*} [AddCommMonoid N] [Module R N]
     currySum f u v = f (Sum.elim u v) := rfl
 
 @[simp]
-lemma currySum_add (f₁ f₂ : MultilinearMap R N M₂):
+lemma currySum_add (f₁ f₂ : MultilinearMap R N M₂) :
     currySum (f₁ + f₂) = currySum f₁ + currySum f₂ := rfl
 
 @[simp]
@@ -313,8 +273,8 @@ lemma uncurrySum_currySum (f : MultilinearMap R N M₂) :
 lemma currySum_uncurrySum
     (g : MultilinearMap R (fun i : ι ↦ N (.inl i))
       (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) :
-  currySum (uncurrySum g) = g :=
-    rfl
+    currySum (uncurrySum g) = g :=
+  rfl
 
 /-- Multilinear maps on `N : (ι ⊕ ι') → Type*` identify to multilinear maps
 from `(fun (i : ι) ↦ N (.inl i))` taking values in the space of
