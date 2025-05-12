@@ -423,7 +423,6 @@ instance : (rootSystem H).IsReduced where
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
-section jjj
 
 variable (K L : Type*) [Field K] [CharZero K]
   [LieRing L] [LieAlgebra K L] [LieAlgebra.IsSimple K L] [FiniteDimensional K L]
@@ -603,7 +602,5 @@ lemma invtSubmodule_reflection:
 instance : (rootSystem H).IsIrreducible := by
   have _i := LieModule.nontrivial_of_isIrreducible K L L
   exact RootPairing.IsIrreducible.mk' (rootSystem H).toRootPairing (invtSubmodule_reflection K L H)
-
-end jjj
 
 end LieAlgebra.IsKilling
