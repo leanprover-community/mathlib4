@@ -247,6 +247,17 @@ lemma Indep.encard_le_eRank (hI : M.Indep I) : I.encard ≤ M.eRank := by
   rw [← hI.eRk_eq_encard, eRank_def]
   exact M.eRk_mono hI.subset_ground
 
+/-- A version of `erk_eq_zero_iff'` with no supportedness hypothesis. -/
+lemma erk_eq_zero_iff' : M.eRk X = 0 ↔ X ∩ M.E ⊆ M.loops := by
+  obtain ⟨I, hI⟩ := M.exists_isBasis (X ∩ M.E)
+  rw [← eRk_inter_ground, ← hI.encard_eq_eRk, encard_eq_zero]
+  refine ⟨fun h ↦ by simpa [h] using hI , fun h ↦ eq_empty_iff_forall_not_mem.2 fun e heI ↦ ?_⟩
+  exact (hI.indep.isNonloop_of_mem heI).not_isLoop (h (hI.subset heI))
+
+@[simp]
+lemma erk_eq_zero_iff (hX : X ⊆ M.E := by aesop_mat) : M.eRk X = 0 ↔ X ⊆ M.loops := by
+  rw [erk_eq_zero_iff', inter_eq_self_of_subset_left hX]
+
 /-! ### Submodularity -/
 
 /-- The `ℕ∞`-valued rank function is submodular. -/
@@ -404,10 +415,9 @@ lemma IsRkFinite.closure_eq_closure_of_subset_of_forall_insert (hX : M.IsRkFinit
 
 lemma eRk_eq_of_eRk_insert_le_forall (hXY : X ⊆ Y)
     (hY : ∀ e ∈ Y \ X, M.eRk (insert e X) ≤ M.eRk X) : M.eRk X = M.eRk Y := by
-  refine (M.eRk_mono hXY).eq_of_not_lt <| fun hlt ↦ ?_
-  obtain ⟨e, he, hins⟩ := exists_eRk_insert_eq_add_one_of_lt hlt
-  exact (hins.symm.trans_le <| hY e he).not_lt <|
-    (ENat.lt_add_one_iff (hlt.trans_le le_top).ne).2 rfl.le
+  by_cases hX : M.IsRkFinite X
+  · rw [← eRk_closure_eq, hX.closure_eq_closure_of_subset_of_forall_insert hXY hY, eRk_closure_eq]
+  rw [eRk_eq_top_iff.2 hX, eRk_eq_top_iff.2 (mt (fun h ↦ h.subset hXY) hX)]
 
 /-! ### Independence -/
 
