@@ -176,23 +176,27 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
     -- If it has, `p` will either be the name of the corresponding `Algebra` property, or a
     -- lemma/constructor.
     | some p =>
-      let cinfo ← getConstInfo p
-      let n ← getExpectedNumArgs cinfo.type
-      let pargs := Array.replicate n (none : Option Expr)
+      let cinfo ← try getConstInfo p catch _ => return
       /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
       is definitionally the same as the `RingHom` property. Then, we just need to construct its type
       and the local declaration will already give a valid term. -/
       if cinfo.isInductive then
-        let pargs := pargs.set! 0 args[0]!
-        let pargs := pargs.set! 1 args[1]!
-        let tp ← mkAppOptM p pargs -- This should be the type `Algebra.Property A B`
-        /- find all arguments to `Algebra.Property A B` which are of the form
-          `RingHom.toAlgebra x` -/
-        let rargs ← tp.getAppArgs.filterMapM <| fun x => liftMetaM do
-          ((·.getAppArgs.back?) =<< ·) <$> whnfUntil x ``RingHom.toAlgebra
-        /- check that we're not reproving a result, and that all involved ringhoms are indeed
-          arguments to the tactic -/
-        unless (← synthInstance? tp).isSome || !(← rargs.allM (fun z => t.anyM
+        /- The following dance makes a full application of p, while avoiding universe issues and
+          unwanted instance synthesis. -/
+        let tp' ← mkAppOptM p ((args.take 2).map Option.some)
+        let (pargs,_,_) ← forallMetaTelescope (← inferType tp')
+        let tp ← mkAppOptM' tp' (pargs.map Option.some)
+        -- This should be the type `Algebra.Property A B`
+        if ← isDefEqGuarded decl.type tp then
+        /- Find all arguments to `Algebra.Property A B` which are of the form
+          `RingHom.toAlgebra x` or `Algebra.toModule (ringHom.toAlgebra x)`. -/
+        let algebra_args ← tp.getAppArgs.mapM <| fun x => liftMetaM do
+          let y := (← whnfUntil x ``Algebra.toModule) >>= (·.getAppArgs.back?)
+          whnfUntil (y.getD x) ``RingHom.toAlgebra
+        let ringHom_args := algebra_args.filterMap <| (· >>= (·.getAppArgs.back?))
+        /- Check that we're not reproving a local hypothesis, and that all involved `RingHom`s are
+          indeed arguments to the tactic. -/
+        unless (← synthInstance? tp).isSome || !(← ringHom_args.allM (fun z => t.anyM
           (withoutModifyingMCtx <| isDefEq z ·))) do
         liftMetaTactic fun mvarid => do
           let nm ← mkFreshBinderNameForTactic `algebraizeInst
@@ -202,27 +206,26 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       In this case, we assume that the `RingHom` property is the last argument of the lemma or
       constructor (and that this is all we need to supply explicitly). -/
       else
-        let pargs := pargs.set! (n - 1) decl.toExpr
-        try -- it could be the case that mkAppOptM fails
-          let val ← mkAppOptM p pargs
-          let tp ← inferType val -- This should be the type `Algebra.Property A B`
-          /- find all arguments to `Algebra.Property A B` which are of the form
-            `RingHom.toAlgebra x` -/
-          let rargs ← tp.getAppArgs.filterMapM <| fun x => liftMetaM do
-            ((·.getAppArgs.back?) =<< ·) <$> whnfUntil x ``RingHom.toAlgebra
-          /- check that we're not reproving a result, and that all involved ringhoms are indeed
-            arguments to the tactic -/
-          unless (← synthInstance? tp).isSome ||
-            !(← rargs.allM (fun z => t.anyM (withoutModifyingMCtx <| isDefEq · z))) do
-          liftMetaTactic fun mvarid => do
-            let nm ← mkFreshBinderNameForTactic `algebraizeInst
-            let (_, mvar) ← mvarid.note nm val
-            return [mvar]
-        catch e => do
-          let z ← e.toMessageData.toString
-          unless "application type mismatch".isPrefixOf z do
-            throw e
-          return
+        let p' ← mkConstWithFreshMVarLevels p
+        let (pargs,_,_) ← forallMetaTelescope (← inferType p')
+        let val ← mkAppOptM' p' (pargs.map Option.some)
+        try pargs.back!.mvarId!.assignIfDefEq decl.toExpr catch _ => return
+        let val ← instantiateMVars val
+        let tp ← inferType val -- This should be the type `Algebra.Property A B`.
+        /- Find all arguments to `Algebra.Property A B` which are of the form
+          `RingHom.toAlgebra x` or `Algebra.toModule (ringHom.toAlgebra x)`. -/
+        let algebra_args ← tp.getAppArgs.mapM <| fun x => liftMetaM do
+          let y := (← whnfUntil x ``Algebra.toModule) >>= (·.getAppArgs.back?)
+          whnfUntil (y.getD x) ``RingHom.toAlgebra
+        let ringHom_args := algebra_args.filterMap <| (· >>= (·.getAppArgs.back?))
+        /- Check that we're not reproving a local hypothesis, and that all involved `RingHom`s are
+          indeed arguments to the tactic. -/
+        unless (← synthInstance? tp).isSome || !(← ringHom_args.allM (fun z => t.anyM
+          (withoutModifyingMCtx <| isDefEq z ·))) do
+        liftMetaTactic fun mvarid => do
+          let nm ← mkFreshBinderNameForTactic `algebraizeInst
+          let (_, mvar) ← mvarid.note nm val
+          return [mvar]
     | none => return
 
 /-- Configuration for `algebraize`. -/

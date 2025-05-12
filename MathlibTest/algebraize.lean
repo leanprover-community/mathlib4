@@ -78,7 +78,7 @@ example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) : True := by
   fail_if_success -- Check that this instance is not available by default
     have h : Algebra A B := inferInstance
   algebraize [f']
-  guard_hyp algInst := f'.toAlgebra
+  guard_hyp algInst :=ₛ f'.toAlgebra
   trivial
 
 /-- Synthesize algebra instance from a composition -/
@@ -99,25 +99,38 @@ example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (
   guard_hyp scalarTowerInst := IsScalarTower.of_algebraMap_eq' rfl
   trivial
 
-example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty1) : True := by
+example (A B : Type*) [CommRing A] [CommRing B] (f g : A →+* B) (hf : f.testProperty1)
+    (hg : g.testProperty1) : True := by
   algebraize [f]
-  guard_hyp algebraizeInst : Algebra.testProperty1 A B
+  guard_hyp algebraizeInst : @Algebra.testProperty1 A B _ _ f.toAlgebra
+  fail_if_success
+    guard_hyp algebraizeInst_1
   trivial
 
-example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty2) : True := by
+example (A B : Type*) [CommRing A] [CommRing B] (f g : A →+* B) (hf : f.testProperty2)
+  (hg : g.testProperty2) : True := by
   algebraize [f]
-  guard_hyp algebraizeInst : Module.testProperty2 A B
+  guard_hyp algebraizeInst : @Module.testProperty2 A B _ _ f.toAlgebra.toModule
+  fail_if_success
+    guard_hyp algebraizeInst_1
   trivial
 
-example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty3) : True := by
+-- #print RingHom.testProperty3
+
+example (A B : Type*) [CommRing A] [CommRing B] (f g : A →+* B) (hf : f.testProperty3)
+    (hg : g.testProperty3) : True := by
   algebraize [f]
-  guard_hyp algebraizeInst : Algebra.testProperty3 A B
+  guard_hyp algebraizeInst : @Algebra.testProperty3 A B _ _ f.toAlgebra
+  fail_if_success
+    guard_hyp algebraizeInst_1
   trivial
 
-example (n : ℕ) (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty4 n) :
-    True := by
+example (n m: ℕ) (A B : Type*) [CommRing A] [CommRing B] (f g : A →+* B) (hf : f.testProperty4 n)
+    (hg : g.testProperty4 m): True := by
   algebraize [f]
   guard_hyp algebraizeInst : Algebra.testProperty4 n A B
+  fail_if_success
+    guard_hyp algebraizeInst_1
   trivial
 
 /-- Synthesize from morphism property of a composition (and check that tower is also synthesized). -/
@@ -134,46 +147,67 @@ example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (
 
 section
 /- Test that the algebraize tactic also works on non-RingHom types -/
-class Algebra.Fooo (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] : Prop where
 
 structure Bar (A B : Type*) [CommRing A] [CommRing B] where
   f : A →+* B
 
-@[algebraize fooo]
-def Bar.Fooo {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) : Prop := True
+@[algebraize testProperty1_ofBar]
+def Bar.testProperty1 {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) : Prop :=
+  ∀ z, b.f z = 0
 
-lemma fooo {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.Fooo) :
-  @Algebra.Fooo A B _ _ b.f.toAlgebra := @Algebra.Fooo.mk A B _ _ b.f.toAlgebra
+lemma testProperty1_ofBar {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.testProperty1) :
+  @Algebra.testProperty1 A B _ _ b.f.toAlgebra := @Algebra.testProperty1.mk A B _ _ b.f.toAlgebra h
 
-example {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.Fooo) : True := by
+@[algebraize testProperty2_ofBar]
+def Bar.testProperty2 {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) : Prop :=
+  letI : Algebra A B := b.f.toAlgebra;
+  ∀ (r : A) (M : B), r • M = 0
+
+lemma testProperty2_ofBar {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.testProperty2) :
+  @Module.testProperty2 A B _ _ b.f.toAlgebra.toModule :=
+    @Module.testProperty2.mk A B _ _ b.f.toAlgebra.toModule h
+
+example {A B : Type*} [CommRing A] [CommRing B] (b c: Bar A B) (hb : b.testProperty1)
+    (hc : c.testProperty1) : True := by
   algebraize [b.f]
-  guard_hyp algebraizeInst : @Algebra.Fooo A B _ _ b.f.toAlgebra
+  guard_hyp algebraizeInst : @Algebra.testProperty1 A B _ _ b.f.toAlgebra
+  fail_if_success -- make sure that only arguments are used
+    guard_hyp algebraizeInst_1 : @Algebra.testProperty1 A B _ _ c.f.toAlgebra
+  trivial
+
+example {A B : Type*} [CommRing A] [CommRing B] (b c : Bar A B) (hb : b.testProperty2)
+    (hc : c.testProperty2) : True := by
+  algebraize [b.f]
+  guard_hyp algebraizeInst : @Module.testProperty2 A B _ _ b.f.toAlgebra.toModule
+  fail_if_success
+    guard_hyp algebraizeInst_1 --: @Module.testProperty2 A B _ _ c.f.toAlgebra.toModule
   trivial
 
 structure Buz (A B : Type*) [CommRing A] [CommRing B] where
   x : (A →+* B) ⊕ (A →+* B)
 
-@[algebraize Buz.fooo]
-def Buz.Fooo {A B : Type*} [CommRing A] [CommRing B] (b : Buz A B) :=
-  b.x.elim (@Algebra.Fooo A B _ _ ·.toAlgebra) (fun _ => False)
+@[algebraize testProperty1_ofBuz_inl]
+def Buz.testProperty1 {A B : Type*} [CommRing A] [CommRing B] (b : Buz A B) :=
+  b.x.elim (@Algebra.testProperty1 A B _ _ ·.toAlgebra) (fun _ => False)
 
-lemma Buz.fooo {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) :
-  Buz.Fooo ⟨.inl f⟩ → @Algebra.Fooo A B _ _ f.toAlgebra := id
+lemma testProperty1_ofBuz_inl {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) :
+  Buz.testProperty1 ⟨.inl f⟩ → @Algebra.testProperty1 A B _ _ f.toAlgebra := id
 
 -- check that this also works when the argument *contains* a ringhom
-example {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
-  (hf : Buz.Fooo ⟨.inl f⟩) : True := by
+example {A B : Type*} [CommRing A] [CommRing B] (f g: A →+* B)
+    (hf : Buz.testProperty1 ⟨.inl f⟩) (hg : Buz.testProperty1 ⟨.inl g⟩): True := by
   algebraize [f]
-  guard_hyp algebraizeInst : @Algebra.Fooo A B _ _ f.toAlgebra
+  guard_hyp algebraizeInst : @Algebra.testProperty1 A B _ _ f.toAlgebra
+  fail_if_success
+    guard_hyp algebraizeInst_1 --: @Algebra.testProperty1 A B _ _ g.toAlgebra
   trivial
 
 -- check that there is no issue with trying the lemma on a mismatching argument.
 example {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
-  (hf : Buz.Fooo ⟨.inr f⟩) : True := by
-  algebraize [f]
+  (hf : Buz.testProperty1 ⟨.inr f⟩) : True := by
+  algebraize [f] -- this could error if it tried applying `testProperty1_ofBuz_inl` to `hf`
   fail_if_success
-    guard_hyp algebraizeInst : @Algebra.Fooo A B _ _ f.toAlgebra
+    guard_hyp algebraizeInst
   trivial
-
 
 end
