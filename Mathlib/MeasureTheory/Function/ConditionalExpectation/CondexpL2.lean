@@ -57,9 +57,7 @@ variable {α E E' F G G' 𝕜 : Type*} [RCLike 𝕜]
 
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
-
-local notation "⟪" x ", " y "⟫₂" => @inner 𝕜 (α →₂[μ] E) _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 variable (E 𝕜)
 
@@ -125,7 +123,7 @@ theorem norm_condExpL2_coe_le (hm : m ≤ m0) (f : α →₂[μ] E) :
 @[deprecated (since := "2025-01-21")] alias norm_condexpL2_coe_le := norm_condExpL2_coe_le
 
 theorem inner_condExpL2_left_eq_right (hm : m ≤ m0) {f g : α →₂[μ] E} :
-    ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫₂ = ⟪f, (condExpL2 E 𝕜 hm g : α →₂[μ] E)⟫₂ :=
+    ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫ = ⟪f, (condExpL2 E 𝕜 hm g : α →₂[μ] E)⟫ :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
   Submodule.inner_orthogonalProjection_left_eq_right _ f g
 
@@ -150,7 +148,7 @@ alias condexpL2_indicator_of_measurable := condExpL2_indicator_of_measurable
 
 theorem inner_condExpL2_eq_inner_fun (hm : m ≤ m0) (f g : α →₂[μ] E)
     (hg : AEStronglyMeasurable[m] g μ) :
-    ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫₂ = ⟪f, g⟫₂ := by
+    ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫ = ⟪f, g⟫ := by
   symm
   rw [← sub_eq_zero, ← inner_sub_left, condExpL2]
   simp only [mem_lpMeas_iff_aestronglyMeasurable.mpr hg,
@@ -167,7 +165,7 @@ theorem integral_condExpL2_eq_of_fin_meas_real (f : Lp 𝕜 2 μ) (hs : Measurab
     (hμs : μ s ≠ ∞) : ∫ x in s, (condExpL2 𝕜 𝕜 hm f : α → 𝕜) x ∂μ = ∫ x in s, f x ∂μ := by
   rw [← L2.inner_indicatorConstLp_one (𝕜 := 𝕜) (hm s hs) hμs f]
   have h_eq_inner : ∫ x in s, (condExpL2 𝕜 𝕜 hm f : α → 𝕜) x ∂μ =
-      inner (indicatorConstLp 2 (hm s hs) hμs (1 : 𝕜)) (condExpL2 𝕜 𝕜 hm f) := by
+      ⟪indicatorConstLp 2 (hm s hs) hμs (1 : 𝕜), condExpL2 𝕜 𝕜 hm f⟫ := by
     rw [L2.inner_indicatorConstLp_one (hm s hs) hμs]
   rw [h_eq_inner, ← inner_condExpL2_left_eq_right, condExpL2_indicator_of_measurable hm hs hμs]
 
@@ -562,7 +560,7 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
 @[deprecated (since := "2025-01-21")] alias condexpL2_indicator_nonneg := condExpL2_indicator_nonneg
 
 theorem condExpIndSMul_nonneg {E}
-    [NormedAddCommGroup E] [Lattice E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
+    [NormedAddCommGroup E] [PartialOrder E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
     [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
     (0 : α → E) ≤ᵐ[μ] condExpIndSMul hm hs hμs x := by
   refine EventuallyLE.trans_eq ?_ (condExpIndSMul_ae_eq_smul hm hs hμs x).symm

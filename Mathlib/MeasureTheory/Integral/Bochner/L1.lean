@@ -135,9 +135,10 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
     DominatedFinMeasAdditive μ (weightedSMul μ : Set α → F →L[ℝ] F) 1 :=
   ⟨weightedSMul_union, fun s _ _ => (norm_weightedSMul_le s).trans (one_mul _).symm.le⟩
 
-theorem weightedSMul_nonneg (s : Set α) (x : ℝ) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
+theorem weightedSMul_nonneg [PartialOrder F] [OrderedSMul ℝ F]
+    (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
   simp only [weightedSMul, Algebra.id.smul_eq_mul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
-  exact mul_nonneg toReal_nonneg hx
+  exact smul_nonneg toReal_nonneg hx
 
 end WeightedSMul
 
@@ -262,7 +263,7 @@ theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : In
     · apply mul_ne_top (ht a) (hf'.meas_preimage_singleton_ne_zero a0).ne
   · simp [hg0]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
+variable [NormedSpace ℝ E]
 
 theorem integral_congr {f g : α →ₛ E} (hf : Integrable f μ) (h : f =ᵐ[μ] g) :
     f.integral μ = g.integral μ :=
@@ -288,7 +289,8 @@ theorem integral_sub {f g : α →ₛ E} (hf : Integrable f μ) (hg : Integrable
     integral μ (f - g) = integral μ f - integral μ g :=
   setToSimpleFunc_sub _ weightedSMul_union hf hg
 
-theorem integral_smul (c : 𝕜) {f : α →ₛ E} (hf : Integrable f μ) :
+theorem integral_smul [DistribSMul 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+    (c : 𝕜) {f : α →ₛ E} (hf : Integrable f μ) :
     integral μ (c • f) = c • integral μ f :=
   setToSimpleFunc_smul _ weightedSMul_union weightedSMul_smul c hf
 
@@ -354,10 +356,9 @@ lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν 
   · suffices ν (f ⁻¹' {f x}) = 0 by
       have A : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
       simp [measureReal_def, A, this]
-    rw [← nonpos_iff_eq_zero]
-    refine le_of_le_of_eq (measure_mono fun y hy ↦ ?_) (ae_iff.mp hf)
-    simp only [Set.mem_preimage, mem_singleton_iff, mem_setOf_eq] at hy ⊢
-    exact hy ▸ hx
+    rw [← nonpos_iff_eq_zero, ← ae_iff.mp hf]
+    refine measure_mono fun y hy ↦ ?_
+    simp_all
 
 end Order
 
@@ -407,10 +408,9 @@ section SimpleFuncIntegral
 Define the Bochner integral on `α →₁ₛ[μ] E` by extension from the simple functions `α →₁ₛ[μ] E`,
 and prove basic properties of this integral. -/
 
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
-
-attribute [local instance] simpleFunc.normedSpace
+attribute [local instance] simpleFunc.isBoundedSMul simpleFunc.module simpleFunc.normedSpace
 
 /-- The Bochner integral over simple functions in L1 space. -/
 def integral (f : α →₁ₛ[μ] E) : E :=
@@ -513,12 +513,12 @@ open SimpleFunc
 
 local notation "Integral" => @integralCLM α E _ _ _ _ _ μ _
 
-variable [NormedSpace ℝ E] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable [NormedSpace ℝ E] [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [SMulCommClass ℝ 𝕜 E]
   [CompleteSpace E]
 
 section IntegrationInL1
 
-attribute [local instance] simpleFunc.normedSpace
+attribute [local instance] simpleFunc.isBoundedSMul simpleFunc.module
 
 open ContinuousLinearMap
 

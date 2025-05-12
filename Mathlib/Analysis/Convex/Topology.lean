@@ -122,7 +122,7 @@ end PseudoMetricSpace
 
 section ContinuousConstSMul
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
@@ -201,6 +201,10 @@ theorem Convex.openSegment_self_interior_subset_interior {s : Set E} (hs : Conve
     (hx : x ∈ s) (hy : y ∈ interior s) : openSegment 𝕜 x y ⊆ interior s :=
   hs.openSegment_closure_interior_subset_interior (subset_closure hx) hy
 
+section
+
+variable [AddRightMono 𝕜]
+
 /-- If `x ∈ closure s` and `y ∈ interior s`, then the segment `(x, y]` is included in `interior s`.
 -/
 theorem Convex.add_smul_sub_mem_interior' {s : Set E} (hs : Convex 𝕜 s) {x y : E}
@@ -225,8 +229,11 @@ theorem Convex.add_smul_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E} 
     (hy : x + y ∈ interior s) {t : 𝕜} (ht : t ∈ Ioc (0 : 𝕜) 1) : x + t • y ∈ interior s :=
   hs.add_smul_mem_interior' (subset_closure hx) hy ht
 
+end
+
 /-- In a topological vector space, the interior of a convex set is convex. -/
-protected theorem Convex.interior {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 (interior s) :=
+protected theorem Convex.interior [ZeroLEOneClass 𝕜] {s : Set E} (hs : Convex 𝕜 s) :
+    Convex 𝕜 (interior s) :=
   convex_iff_openSegment_subset.mpr fun _ hx _ hy =>
     hs.openSegment_closure_interior_subset_interior (interior_subset_closure hx) hy
 
@@ -239,6 +246,8 @@ protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 
   show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab
 
 open AffineMap
+
+variable [IsStrictOrderedRing 𝕜]
 
 /-- A convex set `s` is strictly convex provided that for any two distinct points of
 `s \ interior s`, the line passing through these points has nonempty intersection with
@@ -300,7 +309,7 @@ end ContinuousSMul
 
 section TopologicalSpace
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 
 theorem convex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s ∧ IsClosed s) :
@@ -345,7 +354,7 @@ end TopologicalSpace
 
 section ContinuousConstSMul
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
@@ -436,6 +445,10 @@ protected theorem Convex.isPreconnected {s : Set E} (h : Convex ℝ s) : IsPreco
   s.eq_empty_or_nonempty.elim (fun h => h.symm ▸ isPreconnected_empty) fun hne =>
     (h.isConnected hne).isPreconnected
 
+/-- A subspace in a topological vector space over `ℝ` is path connected. -/
+theorem Submodule.isPathConnected (s : Submodule ℝ E) : IsPathConnected (s : Set E) :=
+  s.convex.isPathConnected s.nonempty
+
 /-- Every topological vector space over ℝ is path connected.
 
 Not an instance, because it creates enormous TC subproblems (turn on `pp.all`).
@@ -443,43 +456,19 @@ Not an instance, because it creates enormous TC subproblems (turn on `pp.all`).
 protected theorem IsTopologicalAddGroup.pathConnectedSpace : PathConnectedSpace E :=
   pathConnectedSpace_iff_univ.mpr <| convex_univ.isPathConnected ⟨(0 : E), trivial⟩
 
-end ContinuousSMul
-
-section ComplementsConnected
-
-variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-
-local notation "π" => Submodule.linearProjOfIsCompl _ _
-
-attribute [local instance 100] IsTopologicalAddGroup.pathConnectedSpace
-
 /-- Given two complementary subspaces `p` and `q` in `E`, if the complement of `{0}`
 is path connected in `p` then the complement of `q` is path connected in `E`. -/
-theorem isPathConnected_compl_of_isPathConnected_compl_zero [ContinuousSMul ℝ E]
-    {p q : Submodule ℝ E} (hpq : IsCompl p q) (hpc : IsPathConnected ({0}ᶜ : Set p)) :
-    IsPathConnected (qᶜ : Set E) := by
-  rw [isPathConnected_iff] at hpc ⊢
-  constructor
-  · rcases hpc.1 with ⟨a, ha⟩
-    exact ⟨a, mt (Submodule.eq_zero_of_coe_mem_of_disjoint hpq.disjoint) ha⟩
-  · intro x hx y hy
-    have : π hpq x ≠ 0 ∧ π hpq y ≠ 0 := by
-      constructor <;> intro h <;> rw [Submodule.linearProjOfIsCompl_apply_eq_zero_iff hpq] at h <;>
-        [exact hx h; exact hy h]
-    rcases hpc.2 (π hpq x) this.1 (π hpq y) this.2 with ⟨γ₁, hγ₁⟩
-    let γ₂ := PathConnectedSpace.somePath (π hpq.symm x) (π hpq.symm y)
-    let γ₁' : Path (_ : E) _ := γ₁.map continuous_subtype_val
-    let γ₂' : Path (_ : E) _ := γ₂.map continuous_subtype_val
-    refine ⟨(γ₁'.add γ₂').cast (Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hpq x).symm
-      (Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hpq y).symm, fun t ↦ ?_⟩
-    rw [Path.cast_coe, Path.add_apply]
-    change γ₁ t + (γ₂ t : E) ∉ q
-    rw [← Submodule.linearProjOfIsCompl_apply_eq_zero_iff hpq, LinearMap.map_add,
-      Submodule.linearProjOfIsCompl_apply_right, add_zero,
-      Submodule.linearProjOfIsCompl_apply_eq_zero_iff]
-    exact mt (Submodule.eq_zero_of_coe_mem_of_disjoint hpq.disjoint) (hγ₁ t)
+theorem isPathConnected_compl_of_isPathConnected_compl_zero {p q : Submodule ℝ E}
+    (hpq : IsCompl p q) (hpc : IsPathConnected ({0}ᶜ : Set p)) : IsPathConnected (qᶜ : Set E) := by
+  convert (hpc.image continuous_subtype_val).add q.isPathConnected using 1
+  trans Submodule.prodEquivOfIsCompl p q hpq '' ({0}ᶜ ×ˢ univ)
+  · rw [prod_univ, LinearEquiv.image_eq_preimage]
+    ext
+    simp
+  · ext
+    simp [mem_add, and_assoc]
 
-end ComplementsConnected
+end ContinuousSMul
 
 section LinearOrderedField
 

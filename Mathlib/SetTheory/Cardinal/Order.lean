@@ -247,9 +247,6 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
 theorem power_natCast (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
 
-@[deprecated (since := "2024-10-16")]
-alias power_cast_right := power_natCast
-
 @[simp]
 theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
   lift_injective.eq_iff' lift_one
