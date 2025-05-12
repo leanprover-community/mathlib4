@@ -668,7 +668,7 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
 end Perm
 
 /-- `Function.swap` as an equivalence. -/
-@[simps]
+@[simps -fullyApplied]
 def functionSwap (α β : Sort*) (γ : α → β → Sort*) :
     ((a : α) → (b : β) → γ a b) ≃ ((b : β) → (a : α) → γ a b) where
   toFun := Function.swap
