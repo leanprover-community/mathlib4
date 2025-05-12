@@ -326,13 +326,6 @@ instance : (FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T).IsEquivalenc
 
 def FilteredAcyclicToComplexAcyclic_functor :
     FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T ⋙ (T.FromAcyclic t₁ t₂).mapHomologicalComplex _
-    ≅ FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t₂ tF₂ T FT ⋙ tF₂.ιHeart
-    -- maybe `(FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor` instead?
-    ⋙ FilteredToComplex L₂ t₂ :=
-  sorry
-
-def FilteredAcyclicToComplexAcyclic_functor' :
-    FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T ⋙ (T.FromAcyclic t₁ t₂).mapHomologicalComplex _
     ≅ (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor
     ⋙ FilteredToComplex L₂ t₂ := by
   refine NatIso.ofComponents (fun X ↦ ?_) ?_
@@ -396,7 +389,7 @@ def DerivedFunctor_comp :
   refine Functor.associator _ _ _ ≪≫ Iso.inverseCompIso ?_
   dsimp
   refine (Functor.associator _ _ _).symm ≪≫ ?_
-  refine isoWhiskerRight (FilteredAcyclicToComplexAcyclic_functor' L₁ t₁ tF₁ L₂ t₂ tF₂ T FT) _ ≪≫ ?_
+  refine isoWhiskerRight (FilteredAcyclicToComplexAcyclic_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT) _ ≪≫ ?_
   refine isoWhiskerRight ((Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι tF₁.ιHeart
     (FT.functor ⋙ FilteredToComplex L₂ t₂)).symm ≪≫ (Functor.associator
     ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart) FT.functor (FilteredToComplex L₂ t₂)).symm
