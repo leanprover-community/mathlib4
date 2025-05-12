@@ -35,12 +35,7 @@ theorem mul_meas_ge_le_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞
     exact not_or_intro hp_ne_zero hp_ne_top
   rw [← ENNReal.rpow_one (ε * μ { x | ε ≤ ‖f x‖ₑ ^ p.toReal }), ← this, ENNReal.rpow_mul]
   gcongr
-  exact pow_mul_meas_ge_le_eLpNorm_enorm μ hp_ne_zero hp_ne_top hf ε
-
-theorem mul_meas_ge_le_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
-    {f : α → E} (hf : AEStronglyMeasurable f μ) (ε : ℝ≥0∞) :
-    ε * μ { x | ε ≤ (‖f x‖₊ : ℝ≥0∞) ^ p.toReal } ≤ eLpNorm f p μ ^ p.toReal :=
-  mul_meas_ge_le_pow_eLpNorm_enorm μ hp_ne_zero hp_ne_top hf ε
+  exact pow_mul_meas_ge_le_eLpNorm μ hp_ne_zero hp_ne_top hf ε
 
 /-- A version of Chebyshev-Markov's inequality using Lp-norms. -/
 theorem mul_meas_ge_le_pow_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)

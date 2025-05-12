@@ -979,8 +979,6 @@ theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
   simp_rw [eLpNorm_one_eq_lintegral_enorm]
   rw [lintegral_add_measure _ μ ν]
 
-variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
-
 theorem eLpNorm_le_add_measure_right (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
     eLpNorm f p μ ≤ eLpNorm f p (μ + ν) :=
   eLpNorm_mono_measure f <| Measure.le_add_right <| le_refl _
@@ -1105,7 +1103,6 @@ variable {ε : Type*} [ENorm ε] in
 theorem meas_eLpNormEssSup_lt {f : α → ε} : μ { y | eLpNormEssSup f μ < ‖f y‖ₑ } = 0 :=
   meas_essSup_lt
 
-variable {ε : Type u_8} [ENorm ε] in
 lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] : eLpNorm f p μ < ∞ := by
   obtain rfl | hp₀ := eq_or_ne p 0
   · simp
