@@ -45,13 +45,6 @@ theorem mul_meas_ge_le_pow_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ �
   ext x
   rw [ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp_ne_zero hp_ne_top)]
 
--- TODO: remove its only use in CondExp/Real.lean, then deprecate and remove this
-/-- A version of Chebyshev-Markov's inequality using Lp-norms. -/
-theorem mul_meas_ge_le_pow_eLpNorm'' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
-    {f : α → E} (hf : AEStronglyMeasurable f μ) (ε : ℝ≥0∞) :
-    ε ^ p.toReal * μ { x | ε ≤ ‖f x‖₊ } ≤ eLpNorm f p μ ^ p.toReal :=
-  mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top hf ε
-
 theorem meas_ge_le_mul_pow_eLpNorm_enorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     {f : α → ε'} (hf : AEStronglyMeasurable f μ)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) (hmeas_top : ε = ∞ → μ {x | ‖f x‖ₑ = ⊤} = 0) :
