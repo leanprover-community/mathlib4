@@ -9,6 +9,7 @@ import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Lattice
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Graph cliques
@@ -341,16 +342,19 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
   convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
   exact hb.symm
 
-theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty ((⊤ : SimpleGraph (Fin n)) ↪g G) :=
+theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGraph (Fin n) ↪g G) :=
   ⟨fun h ↦ ⟨topEmbeddingOfNotCliqueFree h⟩, fun ⟨f⟩ ↦ not_cliqueFree_of_top_embedding f⟩
 
-theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty ((⊤ : SimpleGraph (Fin n)) ↪g G) := by
+theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
   rw [← not_iff_not, not_cliqueFree_iff, not_isEmpty_iff]
 
 theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGraph α) ↪g G) :
     ¬G.CliqueFree (card α) := by
   rw [not_cliqueFree_iff]
   exact ⟨(Iso.completeGraph (Fintype.equivFin α)).symm.toEmbedding.trans f⟩
+
+@[simp] lemma not_cliqueFree_zero : ¬ G.CliqueFree 0 :=
+  fun h ↦ h ∅ <| isNClique_empty.mpr rfl
 
 @[simp]
 theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
@@ -407,6 +411,38 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   obtain ⟨v, w, hn, he⟩ := exists_ne_map_eq_of_card_lt (Sigma.fst ∘ f) (by simp [hc])
   rw [← top_adj, ← f.map_adj_iff, comap_adj, top_adj] at hn
   exact absurd he hn
+
+namespace completeMultipartiteGraph
+
+variable {ι : Type*} (V : ι → Type*)
+
+/-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts -/
+@[simps]
+def topEmbedding (f : ∀ (i : ι), V i) :
+    (⊤ : SimpleGraph ι) ↪g completeMultipartiteGraph V where
+  toFun := fun i ↦ ⟨i, f i⟩
+  inj' := fun _ _ h ↦ (Sigma.mk.inj_iff.1 h).1
+  map_rel_iff' := by simp
+
+theorem not_cliqueFree_of_le_card [Fintype ι] (f : ∀ (i : ι), V i) (hc : n ≤ Fintype.card ι) :
+    ¬ (completeMultipartiteGraph V).CliqueFree n :=
+  fun hf ↦ (cliqueFree_iff.1 <| hf.mono hc).elim' <|
+    (topEmbedding V f).comp (Iso.completeGraph (Fintype.equivFin ι).symm).toEmbedding
+
+theorem not_cliqueFree_of_infinite [Infinite ι] (f : ∀ (i : ι), V i) :
+    ¬ (completeMultipartiteGraph V).CliqueFree n :=
+  fun hf ↦ not_cliqueFree_of_top_embedding (topEmbedding V f |>.comp
+            <| Embedding.completeGraph <| Fin.valEmbedding.trans <| Infinite.natEmbedding ι) hf
+
+theorem not_cliqueFree_of_le_enatCard (f : ∀ (i : ι), V i) (hc : n ≤ ENat.card ι) :
+    ¬ (completeMultipartiteGraph V).CliqueFree n := by
+  by_cases h : Infinite ι
+  · exact not_cliqueFree_of_infinite V f
+  · have : Fintype ι := fintypeOfNotInfinite h
+    rw [ENat.card_eq_coe_fintype_card, Nat.cast_le] at hc
+    exact not_cliqueFree_of_le_card V f hc
+
+end completeMultipartiteGraph
 
 /-- Clique-freeness is preserved by `replaceVertex`. -/
 protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n) (s t : α) :
@@ -605,12 +641,14 @@ private lemma fintype_cliqueNum_bddAbove [Fintype α] : BddAbove {n | ∃ s, G.I
   rw [← syc.right]
   exact Finset.card_le_card (Finset.subset_univ s)
 
-lemma IsClique.card_le_cliqueNum [Fintype α] {t : Finset α} {tc : G.IsClique t} :
-    #t ≤ G.cliqueNum :=
-  le_csSup G.fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
+lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} {tc : G.IsClique t} :
+    #t ≤ G.cliqueNum := by
+  cases nonempty_fintype α
+  exact le_csSup G.fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
 
-lemma exists_isNClique_cliqueNum [Fintype α] : ∃ s, G.IsNClique G.cliqueNum s :=
-  Nat.sSup_mem ⟨0, by simp [isNClique_empty.mpr rfl]⟩ G.fintype_cliqueNum_bddAbove
+lemma exists_isNClique_cliqueNum [Finite α] : ∃ s, G.IsNClique G.cliqueNum s := by
+  cases nonempty_fintype α
+  exact Nat.sSup_mem ⟨0, by simp [isNClique_empty.mpr rfl]⟩ G.fintype_cliqueNum_bddAbove
 
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
 structure IsMaximumClique [Fintype α] (G : SimpleGraph α) (s : Finset α) : Prop where
@@ -746,8 +784,9 @@ lemma IsIndepSet.nonempty_mem_compl_mem_edge
   · exact (c vins).left rfl
 
 /-- The neighbors of a vertex `v` form an independent set in a triangle free graph `G`. -/
-theorem isIndepSet_neighborSet_of_triangleFree [DecidableEq α] (h: G.CliqueFree 3) (v : α) :
+theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
     G.IsIndepSet (G.neighborSet v) := by
+  classical
   by_contra nind
   rw [IsIndepSet, Set.Pairwise] at nind
   push_neg at nind
@@ -860,12 +899,13 @@ noncomputable def indepNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNI
   simp [indepNum, cliqueNum]
 
 theorem IsIndepSet.card_le_indepNum
-    [Fintype α] {t : Finset α} (tc : G.IsIndepSet t) : #t ≤ G.indepNum := by
+    [Finite α] {t : Finset α} (tc : G.IsIndepSet t) : #t ≤ G.indepNum := by
+  cases nonempty_fintype α
   rw [← isClique_compl] at tc
   simp_rw [indepNum, ← isNClique_compl]
   exact tc.card_le_cliqueNum
 
-lemma exists_isNIndepSet_indepNum [Fintype α] : ∃ s, G.IsNIndepSet G.indepNum s := by
+lemma exists_isNIndepSet_indepNum [Finite α] : ∃ s, G.IsNIndepSet G.indepNum s := by
   simp_rw [indepNum, ← isNClique_compl]
   exact exists_isNClique_cliqueNum
 

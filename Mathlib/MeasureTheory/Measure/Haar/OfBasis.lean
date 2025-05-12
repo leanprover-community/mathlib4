@@ -55,7 +55,7 @@ theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
   classical
   ext x
   simp_rw [mem_parallelepiped_iff, mem_setOf_eq, b.ext_elem_iff, _root_.map_sum,
-    _root_.map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
+    map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
     mul_one, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ, ite_true, mem_Icc,
     Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
   aesop

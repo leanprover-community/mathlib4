@@ -260,6 +260,7 @@ theorem det_eq_one_of_not_module_finite (h : ¬Module.Finite R M) (f : M →ₗ[
   rw [LinearMap.det, dif_neg, MonoidHom.one_apply]
   exact fun ⟨_, ⟨b⟩⟩ ↦ h (Module.Finite.of_basis b)
 
+@[nontriviality]
 theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
     LinearMap.det (f : M →ₗ[R] M) = 1 := by
   have b : Basis (Fin 0) R M := Basis.empty M
@@ -490,20 +491,16 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
 /-- The determinant of a family of vectors with respect to some basis, as an alternating
 multilinear map. -/
 nonrec def Basis.det : M [⋀^ι]→ₗ[R] R where
-  toFun v := det (e.toMatrix v)
-  map_update_add' := by
-    rename_i hι _
-    intro inst v i x y
-    cases Subsingleton.elim inst hι
-    simp only [e.toMatrix_update, LinearEquiv.map_add, Finsupp.coe_add, det_updateCol_add]
-  map_update_smul' := by
-    rename_i hι _
-    intro inst u i c x
-    cases Subsingleton.elim inst hι
-    simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, LinearEquiv.map_smul]
-    apply det_updateCol_smul
+  toMultilinearMap :=
+    MultilinearMap.mk' (fun v ↦ det (e.toMatrix v))
+      (fun v i x y ↦ by
+        simp only [e.toMatrix_update, map_add, Finsupp.coe_add, det_updateCol_add])
+      (fun u i c x ↦ by
+        simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, LinearEquiv.map_smul]
+        apply det_updateCol_smul)
   map_eq_zero_of_eq' := by
     intro v i j h hij
+    dsimp
     rw [← Function.update_eq_self i v, h, ← det_transpose, e.toMatrix_update, ← updateRow_transpose,
       ← e.toMatrix_transpose_apply]
     apply det_zero_of_row_eq hij

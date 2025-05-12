@@ -202,6 +202,11 @@ def BinaryFan.ext {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) : c ≅ c' :=
   Cones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
 
+@[simp]
+lemma BinaryFan.ext_hom_hom {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
+    (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) :
+    (ext e h₁ h₂).hom.hom = e.hom := rfl
+
 /-- A convenient way to show that a binary fan is a limit. -/
 def BinaryFan.IsLimit.mk {X Y : C} (s : BinaryFan X Y)
     (lift : ∀ {T : C} (_ : T ⟶ X) (_ : T ⟶ Y), T ⟶ s.pt)
@@ -236,6 +241,11 @@ the injections. -/
 def BinaryCofan.ext {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) : c ≅ c' :=
   Cocones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
+
+@[simp]
+lemma BinaryCofan.ext_hom_hom {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
+    (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) :
+    (ext e h₁ h₂).hom.hom = e.hom := rfl
 
 @[simp]
 theorem BinaryCofan.ι_app_left {X Y : C} (s : BinaryCofan X Y) :
@@ -1120,7 +1130,7 @@ theorem prodComparison_comp :
     prodComparison (F ⋙ G) A B =
       G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
   unfold prodComparison
-  ext <;> simp <;> rw [← G.map_comp] <;> simp
+  ext <;> simp [← G.map_comp]
 
 end ProdComparison
 
@@ -1135,7 +1145,7 @@ variable [HasBinaryCoproduct (F.obj A) (F.obj B)] [HasBinaryCoproduct (F.obj A')
 
 /-- The coproduct comparison morphism.
 
-In `CategoryTheory/Limits/Preserves` we show
+In `Mathlib/CategoryTheory/Limits/Preserves/` we show
 this is always an iso iff F preserves binary coproducts.
 -/
 def coprodComparison (F : C ⥤ D) (A B : C) [HasBinaryCoproduct A B]
@@ -1232,7 +1242,9 @@ end CategoryTheory
 namespace CategoryTheory.Limits
 open Opposite
 
-variable {C : Type*} [Category C] {X Y P : C}
+variable {C : Type u} [Category.{v} C] {X Y Z P : C}
+
+section opposite
 
 /-- A binary fan gives a binary cofan in the opposite category. -/
 protected abbrev BinaryFan.op (c : BinaryFan X Y) : BinaryCofan (op X) (op Y) :=
@@ -1292,4 +1304,164 @@ protected def BinaryCofan.IsColimit.unop {c : BinaryCofan (op X) (op Y)} (hc : I
     (fun s m h₁ h₂ ↦ Quiver.Hom.op_inj
       (BinaryCofan.IsColimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
 
+end opposite
+
+section swap
+variable {s : BinaryFan X Y} {t : BinaryFan Y X}
+
+/-- Swap the two sides of a `BinaryFan`. -/
+def BinaryFan.swap (s : BinaryFan X Y) : BinaryFan Y X := .mk s.snd s.fst
+
+@[simp] lemma BinaryFan.swap_fst (s : BinaryFan X Y) : s.swap.fst = s.snd := rfl
+@[simp] lemma BinaryFan.swap_snd (s : BinaryFan X Y) : s.swap.snd = s.fst := rfl
+
+/-- If a binary fan `s` over `X Y` is a limit cone, then `s.swap` is a limit cone over `Y X`. -/
+@[simps]
+def IsLimit.binaryFanSwap (I : IsLimit s) : IsLimit s.swap where
+  lift t := I.lift (BinaryFan.swap t)
+  fac t := by rintro ⟨⟨⟩⟩ <;> simp
+  uniq t m w := by
+    have h := I.uniq (BinaryFan.swap t) m
+    rw [h]
+    rintro ⟨j⟩
+    specialize w ⟨WalkingPair.swap j⟩
+    cases j <;> exact w
+
+@[deprecated (since := "2025-05-04")] alias IsLimit.swapBinaryFan := IsLimit.binaryFanSwap
+
+/-- Construct `HasBinaryProduct Y X` from `HasBinaryProduct X Y`.
+This can't be an instance, as it would cause a loop in typeclass search. -/
+lemma HasBinaryProduct.swap (X Y : C) [HasBinaryProduct X Y] : HasBinaryProduct Y X :=
+  .mk ⟨BinaryFan.swap (limit.cone (pair X Y)), (limit.isLimit (pair X Y)).binaryFanSwap⟩
+
+end swap
+
+section braiding
+variable {X Y : C} {s : BinaryFan X Y} (P : IsLimit s) {t : BinaryFan Y X} (Q : IsLimit t)
+
+/-- Given a limit cone over `X` and `Y`, and another limit cone over `Y` and `X`, we can construct
+an isomorphism between the cone points. Relative to some fixed choice of limits cones for every
+pair, these isomorphisms constitute a braiding. -/
+def BinaryFan.braiding (P : IsLimit s) (Q : IsLimit t) : s.pt ≅ t.pt :=
+  P.conePointUniqueUpToIso Q.binaryFanSwap
+
+@[reassoc (attr := simp)]
+lemma BinaryFan.braiding_hom_fst : (braiding P Q).hom ≫ t.fst = s.snd :=
+  P.conePointUniqueUpToIso_hom_comp _ ⟨.right⟩
+
+@[reassoc (attr := simp)]
+lemma BinaryFan.braiding_hom_snd : (braiding P Q).hom ≫ t.snd = s.fst :=
+  P.conePointUniqueUpToIso_hom_comp _ ⟨.left⟩
+
+@[reassoc (attr := simp)]
+lemma BinaryFan.braiding_inv_fst : (braiding P Q).inv ≫ s.fst = t.snd :=
+  P.conePointUniqueUpToIso_inv_comp _ ⟨.left⟩
+
+@[reassoc (attr := simp)]
+lemma BinaryFan.braiding_inv_snd : (braiding P Q).inv ≫ s.snd = t.fst :=
+  P.conePointUniqueUpToIso_inv_comp _ ⟨.right⟩
+
+end braiding
+
+section assoc
+variable {sXY : BinaryFan X Y} {sYZ : BinaryFan Y Z}
+
+/-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `sXY.X Z`,
+if `sYZ` is a limit cone we can construct a binary fan over `X sYZ.X`.
+
+This is an ingredient of building the associator for a cartesian category. -/
+def BinaryFan.assoc (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) : BinaryFan X sYZ.pt :=
+  mk (s.fst ≫ sXY.fst) (Q.lift (mk (s.fst ≫ sXY.snd) s.snd))
+
+@[simp]
+lemma BinaryFan.assoc_fst (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) :
+    (assoc Q s).fst = s.fst ≫ sXY.fst := rfl
+
+@[simp]
+lemma BinaryFan.assoc_snd (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) :
+    (assoc Q s).snd = Q.lift (mk (s.fst ≫ sXY.snd) s.snd) := rfl
+
+/-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `X sYZ.X`,
+if `sYZ` is a limit cone we can construct a binary fan over `sXY.X Z`.
+
+This is an ingredient of building the associator for a cartesian category. -/
+def BinaryFan.assocInv (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) : BinaryFan sXY.pt Z :=
+  BinaryFan.mk (P.lift (BinaryFan.mk s.fst (s.snd ≫ sYZ.fst))) (s.snd ≫ sYZ.snd)
+
+@[simp]
+lemma BinaryFan.assocInv_fst (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
+    (assocInv P s).fst = P.lift (mk s.fst (s.snd ≫ sYZ.fst)) := rfl
+
+@[simp]
+lemma BinaryFan.assocInv_snd (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
+    (assocInv P s).snd = s.snd ≫ sYZ.snd := rfl
+
+/-- If all the binary fans involved a limit cones, `BinaryFan.assoc` produces another limit cone. -/
+@[simps]
+protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z}
+    (R : IsLimit s) : IsLimit (BinaryFan.assoc Q s) where
+  lift t := R.lift (BinaryFan.assocInv P t)
+  fac t := by rintro ⟨⟨⟩⟩ <;> simp; apply Q.hom_ext; rintro ⟨⟨⟩⟩ <;> simp
+  uniq t m w := by
+    have h := R.uniq (BinaryFan.assocInv P t) m
+    rw [h]
+    rintro ⟨⟨⟩⟩ <;> simp
+    · apply P.hom_ext
+      rintro ⟨⟨⟩⟩ <;> simp
+      · exact w ⟨.left⟩
+      · specialize w ⟨.right⟩
+        simp? at w says
+          simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+            Functor.const_obj_obj, pair_obj_left] at w
+        rw [← w]
+        simp
+    · specialize w ⟨.right⟩
+      simp? at w says
+        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+          Functor.const_obj_obj, pair_obj_left] at w
+      simp [← w]
+
+/-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,
+we obtain an isomorphism between the cone points. -/
+abbrev BinaryFan.associator (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z}
+    (R : IsLimit s) {t : BinaryFan X sYZ.pt} (S : IsLimit t) : s.pt ≅ t.pt :=
+  (P.assoc Q R).conePointUniqueUpToIso S
+
+/-- Given a fixed family of limit data for every pair `X Y`, we obtain an associator. -/
+abbrev BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y Z : C) :
+    (L (L X Y).cone.pt Z).cone.pt ≅ (L X (L Y Z).cone.pt).cone.pt :=
+  associator (L X Y).isLimit (L Y Z).isLimit (L (L X Y).cone.pt Z).isLimit
+    (L X (L Y Z).cone.pt).isLimit
+
+end assoc
+
+section unitor
+
+/-- Construct a left unitor from specified limit cones. -/
+@[simps]
+def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit s)
+    {t : BinaryFan s.pt X} (Q : IsLimit t) : t.pt ≅ X where
+  hom := t.snd
+  inv := Q.lift <| BinaryFan.mk (P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩) (𝟙 _)
+  hom_inv_id := by
+    apply Q.hom_ext
+    rintro ⟨⟨⟩⟩
+    · apply P.hom_ext
+      rintro ⟨⟨⟩⟩
+    · simp
+
+/-- Construct a right unitor from specified limit cones. -/
+@[simps]
+def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit s)
+    {t : BinaryFan X s.pt} (Q : IsLimit t) : t.pt ≅ X where
+  hom := t.fst
+  inv := Q.lift <| BinaryFan.mk (𝟙 _) <| P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩
+  hom_inv_id := by
+    apply Q.hom_ext
+    rintro ⟨⟨⟩⟩
+    · simp
+    · apply P.hom_ext
+      rintro ⟨⟨⟩⟩
+
+end unitor
 end CategoryTheory.Limits

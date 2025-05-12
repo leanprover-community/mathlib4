@@ -323,9 +323,10 @@ lemma dropUntil_dropUntil (p : G.Walk u v) (hw : w ∈ p.support)
   rw [← dropUntil_append_of_mem_right _ _ hxn hx]
   simp_rw [take_spec]
 
-lemma not_mem_support_takeUntil_takeUntil {p : G.Walk u v} {w x : V} (h : x ≠ w)
+lemma not_mem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : V} (h : x ≠ w)
     (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
-    w ∉ ((p.takeUntil w hw).takeUntil x hx).support := by
+    w ∉ (p.takeUntil x (p.support_takeUntil_subset hw hx)).support := by
+  rw [← takeUntil_takeUntil p hw hx]
   intro hw'
   have h1 : (((p.takeUntil w hw).takeUntil x hx).takeUntil w hw').length
       < ((p.takeUntil w hw).takeUntil x hx).length := by
