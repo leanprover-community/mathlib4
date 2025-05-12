@@ -8,7 +8,16 @@ import Mathlib.NumberTheory.NumberField.Ideal
 import Mathlib.Algebra.BigOperators.Ring.Nat
 
 /-!
-# Docstring
+# The Dedekind zeta function of a number field
+
+In this file, we define and prove results about the Dedekind zeta function of a number field.
+
+## Main definitions and results
+
+* `NumberField.dedekindZeta`: the Dedekind zeta function.
+* `NumberField.dedekindZeta_residue`: **Dirichlet class number formula** computation of the
+  residue of the dedekind zeta function at `s = 1`.
+
 
 -/
 
@@ -22,11 +31,16 @@ namespace NumberField
 
 open scoped Real
 
-/-- Docstring. -/
+/--
+The Dedekind zeta function of a number field. It is defined as the `L`-series with coefficients
+the number of integral ideals of norm `n`.
+-/
 def dedekindZeta (s : ℂ) :=
   LSeries (fun n ↦ Nat.card {I : Ideal (𝓞 K) // absNorm I = n}) s
 
-/-- Docstring. -/
+/--
+The value of the residue at `s = 1` of the Dedekind zeta function, see `dedekindZeta_residue`.
+-/
 def residue : ℝ :=
   (2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
     (torsionOrder K *  Real.sqrt |discr K|)
@@ -34,12 +48,14 @@ def residue : ℝ :=
 theorem residue_pos : 0 < residue K := by
   refine div_pos ?_ ?_
   · exact mul_pos (mul_pos (by positivity) (regulator_pos K)) (Nat.cast_pos.mpr (classNumber_pos K))
-  · refine mul_pos ?_ ?_
-    · exact Nat.cast_pos.mpr (torsionOrder_pos K)
-    · exact Real.sqrt_pos_of_pos <| abs_pos.mpr (Int.cast_ne_zero.mpr (discr_ne_zero K))
+  · exact mul_pos (Nat.cast_pos.mpr (torsionOrder_pos K)) <|
+      Real.sqrt_pos_of_pos <| abs_pos.mpr (Int.cast_ne_zero.mpr (discr_ne_zero K))
 
 theorem residue_ne_zero : residue K ≠ 0 := (residue_pos K).ne'
 
+/-
+**Dirichlet class number formula**
+-/
 theorem dedekindZeta_residue :
     Tendsto (fun s  : ℝ ↦ (s - 1) * dedekindZeta K s) (𝓝[>] 1) (𝓝 (residue K)) := by
   refine LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_and_nonneg _ ?_
