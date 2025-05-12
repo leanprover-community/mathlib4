@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.PiTensorProduct
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Algebra.DirectSum.Algebra
 
 /-!
@@ -131,8 +131,7 @@ theorem cast_eq_cast {i j} (h : i = j) :
   rw [cast_refl]
   rfl
 
-variable (R)
-
+variable (R) in
 theorem tprod_mul_tprod {na nb} (a : Fin na → M) (b : Fin nb → M) :
     tprod R a ₜ* tprod R b = tprod R (Fin.append a b) := by
   dsimp [gMul_def, mulEquiv]
@@ -142,8 +141,6 @@ theorem tprod_mul_tprod {na nb} (a : Fin na → M) (b : Fin nb → M) :
   dsimp only [Fin.append, finSumFinEquiv, Equiv.coe_fn_symm_mk]
   apply funext
   apply Fin.addCases <;> simp
-
-variable {R}
 
 theorem one_mul {n} (a : ⨂[R]^n M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a := by
   rw [gMul_def, gOne_def]

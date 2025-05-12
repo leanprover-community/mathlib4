@@ -31,7 +31,7 @@ namespace Polynomial
 
 section
 
-variable [Semiring R] [TopologicalSpace R] [TopologicalSemiring R]
+variable [Semiring R] [TopologicalSpace R] [IsTopologicalSemiring R]
 
 /--
 Every polynomial with coefficients in a topological semiring gives a (bundled) continuous function.
@@ -65,7 +65,7 @@ end
 section
 
 variable {α : Type*} [TopologicalSpace α] [CommSemiring R] [TopologicalSpace R]
-  [TopologicalSemiring R]
+  [IsTopologicalSemiring R]
 
 @[simp]
 theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
@@ -80,7 +80,7 @@ end
 
 noncomputable section
 
-variable [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R]
+variable [CommSemiring R] [TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-- The algebra map from `R[X]` to continuous functions `C(R, R)`.
 -/
@@ -130,13 +130,13 @@ end Polynomial
 
 section
 
-variable [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R]
+variable [CommSemiring R] [TopologicalSpace R] [IsTopologicalSemiring R]
 
 /--
 The subalgebra of polynomial functions in `C(X, R)`, for `X` a subset of some topological semiring
 `R`.
 -/
-noncomputable -- Porting note: added noncomputable
+noncomputable
 def polynomialFunctions (X : Set R) : Subalgebra R C(X, R) :=
   (⊤ : Subalgebra R R[X]).map (Polynomial.toContinuousMapOnAlgHom X)
 

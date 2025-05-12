@@ -3,21 +3,18 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.FieldTheory.Fixed
-import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
-# Invariant Extensions of Rings and Frobenius Elements
-
-In algebraic number theory, if `L/K` is a finite Galois extension of number fields, with rings of
-integers `𝓞L/𝓞K`, and if `q` is prime ideal of `𝓞L` lying over a prime ideal `p` of `𝓞K`, then
-there exists a **Frobenius element** `Frob p` in `Gal(L/K)` with the property that
-`Frob p x ≡ x ^ #(𝓞K/p) (mod q)` for all `x ∈ 𝓞L`.
-
-This file proves the existence of Frobenius elements in a more general setting.
+# Invariant Extensions of Rings
 
 Given an extension of rings `B/A` and an action of `G` on `B`, we introduce a predicate
 `Algebra.IsInvariant A B G` which states that every fixed point of `B` lies in the image of `A`.
+
+The main application is in algebraic number theory, where `G := Gal(L/K)` is the galois group
+of some finite galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their ring of
+integers. This main result in this file implies the existence of Frobenius elements in this setting.
+See `Mathlib/RingTheory/Frobenius.lean`.
 
 ## Main statements
 
@@ -45,6 +42,45 @@ by `G` is `smul_algebraMap` (assuming `SMulCommClass A B G`). -/
   isInvariant : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, algebraMap A B a = b
 
 end Algebra
+
+section Galois
+
+variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
+  [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
+  [Algebra A B] [Algebra K L] [Algebra A L] [IsScalarTower A K L] [IsScalarTower A B L]
+  [IsIntegrallyClosed A] [IsIntegralClosure B A L]
+
+/-- In the AKLB setup, the Galois group of `L/K` acts on `B`. -/
+noncomputable def IsIntegralClosure.MulSemiringAction [Algebra.IsAlgebraic K L] :
+    MulSemiringAction (L ≃ₐ[K] L) B :=
+  MulSemiringAction.compHom B (galRestrict A K L B).toMonoidHom
+
+/-- In the AKLB setup, every fixed point of `B` lies in the image of `A`. -/
+theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K L] :
+    letI := IsIntegralClosure.MulSemiringAction A K L B
+    Algebra.IsInvariant A B (L ≃ₐ[K] L) := by
+  replace h := ((IsGalois.tfae (F := K) (E := L)).out 0 1).mp h
+  letI := IsIntegralClosure.MulSemiringAction A K L B
+  refine ⟨fun b hb ↦ ?_⟩
+  replace hb : algebraMap B L b ∈ IntermediateField.fixedField (⊤ : Subgroup (L ≃ₐ[K] L)) := by
+    rintro ⟨g, -⟩
+    exact (algebraMap_galRestrict_apply A g b).symm.trans (congrArg (algebraMap B L) (hb g))
+  rw [h, IntermediateField.mem_bot] at hb
+  obtain ⟨k, hk⟩ := hb
+  have hb : IsIntegral A b := IsIntegralClosure.isIntegral A L b
+  rw [← isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective B L), ← hk,
+    isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective K L)] at hb
+  obtain ⟨a, rfl⟩ := IsIntegrallyClosed.algebraMap_eq_of_integral hb
+  rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L,
+    (FaithfulSMul.algebraMap_injective B L).eq_iff] at hk
+  exact ⟨a, hk⟩
+
+/-- A variant of `Algebra.isInvariant_of_isGalois`, replacing `Gal(L/K)` by `Aut(B/A)`. -/
+theorem Algebra.isInvariant_of_isGalois' [FiniteDimensional K L] [IsGalois K L] :
+    Algebra.IsInvariant A B (B ≃ₐ[A] B) :=
+  ⟨fun b h ↦ (isInvariant_of_isGalois A K L B).1 b (fun g ↦ h (galRestrict A K L B g))⟩
+
+end Galois
 
 section transitivity
 
@@ -128,12 +164,13 @@ end transitivity
 
 section surjectivity
 
-open IsScalarTower NoZeroSMulDivisors Polynomial
+open FaithfulSMul IsScalarTower Polynomial
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
   (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
-  variable (K L : Type*) [Field K] [Field L]
+
+variable (K L : Type*) [Field K] [Field L]
   [Algebra (A ⧸ P) K] [Algebra (B ⧸ Q) L]
   [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]
@@ -144,7 +181,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
     ∀ g : G, algebraMap B (B ⧸ Q) (g • b) = algebraMap B (B ⧸ Q) (if g • Q = Q then a else 0) := by
   obtain ⟨_⟩ := nonempty_fintype G
-  let P := ((Finset.univ : Finset G).filter (fun g ↦ g • Q ≠ Q)).inf (fun g ↦ g • Q)
+  let P := Finset.inf {g : G | g • Q ≠ Q} (fun g ↦ g • Q)
   have h1 : ¬ P ≤ Q := by
     rw [Ideal.IsPrime.inf_le' inferInstance]
     rintro ⟨g, hg1, hg2⟩

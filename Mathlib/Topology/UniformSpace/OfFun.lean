@@ -3,8 +3,7 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Construct a `UniformSpace` from a `dist`-like function
@@ -26,7 +25,8 @@ namespace UniformSpace
 
 /-- Define a `UniformSpace` using a "distance" function. The function can be, e.g., the
 distance in a (usual or extended) metric space or an absolute value on a ring. -/
-def ofFun [OrderedAddCommMonoid M] (d : X → X → M) (refl : ∀ x, d x x = 0)
+def ofFun [AddCommMonoid M] [PartialOrder M]
+    (d : X → X → M) (refl : ∀ x, d x x = 0)
     (symm : ∀ x y, d x y = d y x) (triangle : ∀ x y z, d x z ≤ d x y + d y z)
     (half : ∀ ε > (0 : M), ∃ δ > (0 : M), ∀ x < δ, ∀ y < δ, x + y < ε) :
     UniformSpace X :=
@@ -40,7 +40,7 @@ def ofFun [OrderedAddCommMonoid M] (d : X → X → M) (refl : ∀ x, d x x = 0)
           (mem_lift' <| mem_iInf_of_mem δ <| mem_iInf_of_mem h0 <| mem_principal_self _)
           fun (x, z) ⟨y, h₁, h₂⟩ => (triangle _ _ _).trans_lt (hδr _ h₁ _ h₂) }
 
-theorem hasBasis_ofFun [LinearOrderedAddCommMonoid M]
+theorem hasBasis_ofFun [AddCommMonoid M] [LinearOrder M]
     (h₀ : ∃ x : M, 0 < x) (d : X → X → M) (refl : ∀ x, d x x = 0) (symm : ∀ x y, d x y = d y x)
     (triangle : ∀ x y z, d x z ≤ d x y + d y z)
     (half : ∀ ε > (0 : M), ∃ δ > (0 : M), ∀ x < δ, ∀ y < δ, x + y < ε) :

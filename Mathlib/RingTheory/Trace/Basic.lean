@@ -119,10 +119,21 @@ open IntermediateField
 variable (K)
 
 theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
-    Algebra.trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
+    trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
   rw [← trace_trace (S := K⟮x⟯)]
-  conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
+  conv in x => rw [← AdjoinSimple.algebraMap_gen K x]
   rw [trace_algebraMap, LinearMap.map_smul_of_tower]
+
+variable {K} in
+/-- Trace of the generator of a simple adjoin equals negative of the next coefficient of
+its minimal polynomial coefficient. -/
+theorem trace_adjoinSimpleGen {x : L} (hx : IsIntegral K x) :
+    trace K K⟮x⟯ (AdjoinSimple.gen K x) = -(minpoly K x).nextCoeff := by
+  simpa [minpoly_gen K x] using PowerBasis.trace_gen_eq_nextCoeff_minpoly <| adjoin.powerBasis hx
+
+theorem trace_eq_finrank_mul_minpoly_nextCoeff [FiniteDimensional K L] (x : L) :
+    trace K L x = finrank K⟮x⟯ L * -(minpoly K x).nextCoeff := by
+  rw [trace_eq_trace_adjoin, trace_adjoinSimpleGen (.of_finite K x), Algebra.smul_def]; rfl
 
 variable {K}
 
@@ -252,7 +263,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
 
 theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :
     algebraMap K L (Algebra.trace K L x) = ∑ σ : L ≃ₐ[K] L, σ x := by
-  apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
+  apply FaithfulSMul.algebraMap_injective L (AlgebraicClosure L)
   rw [_root_.map_sum (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.sum_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
   · rw [← trace_eq_sum_embeddings (AlgebraicClosure L) (x := x)]
@@ -321,9 +332,9 @@ theorem traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
 theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
     traceMatrix A b *ᵥ b.equivFun z = fun i => trace A B (z * b i) := by
   ext i
-  rw [← col_apply (ι := Fin 1) (traceMatrix A b *ᵥ b.equivFun z) i 0, col_mulVec,
+  rw [← replicateCol_apply (ι := Fin 1) (traceMatrix A b *ᵥ b.equivFun z) i 0, replicateCol_mulVec,
     Matrix.mul_apply, traceMatrix]
-  simp only [col_apply, traceForm_apply]
+  simp only [replicateCol_apply, traceForm_apply]
   conv_lhs =>
     congr
     rfl
@@ -479,11 +490,11 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSepar
     map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
     coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
   rw [PowerBasis.coe_basis]
-  simp only [RingHom.map_ite_one_zero, traceForm_apply]
+  simp only [MonoidWithZeroHom.map_ite_one_zero, traceForm_apply]
   rw [← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
   apply Finset.sum_congr rfl
   intro σ _
-  simp only [_root_.map_mul, map_div₀, map_pow]
+  simp only [map_mul, map_div₀, map_pow]
   ring
 
 end DetNeZero

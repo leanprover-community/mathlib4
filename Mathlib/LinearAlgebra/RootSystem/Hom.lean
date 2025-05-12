@@ -207,9 +207,9 @@ lemma weightHom_injective (P : RootPairing ι R M N) : Injective (weightHom P) :
 def coweightHom (P : RootPairing ι R M N) : End P →* (N →ₗ[R] N)ᵐᵒᵖ where
   toFun g := MulOpposite.op (Hom.coweightMap (P := P) (Q := P) g)
   map_mul' g h := by
-    simp only [← MulOpposite.op_mul, coweightMap_mul, LinearMap.mul_eq_comp]
+    simp only [← MulOpposite.op_mul, coweightMap_mul, Module.End.mul_eq_comp]
   map_one' := by
-    simp only [MulOpposite.op_eq_one_iff, coweightMap_one, LinearMap.one_eq_id]
+    simp only [MulOpposite.op_eq_one_iff, coweightMap_one, Module.End.one_eq_id]
 
 lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (coweightHom P) := by
   intro f g hfg
@@ -609,9 +609,9 @@ def reflection (P : RootPairing ι R M N) (i : ι) : Aut P where
       PerfectPairing.toDualRight_apply, LinearMap.dualMap_apply, PerfectPairing.flip_apply_apply,
       LinearEquiv.comp_coe, LinearEquiv.trans_apply]
     rw [RootPairing.reflection_apply, RootPairing.coreflection_apply]
-    simp only [← PerfectPairing.toLin_apply, map_sub, map_smul, LinearMap.sub_apply,
-      toLin_toPerfectPairing, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
-    simp only [PerfectPairing.toLin_apply, PerfectPairing.flip_apply_apply, mul_comm]
+    simp only [← PerfectPairing.toLinearMap_apply, map_sub, map_smul, LinearMap.sub_apply,
+      toLinearMap_eq_toPerfectPairing, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
+    simp [mul_comm]
   root_weightMap := by ext; simp
   coroot_coweightMap := by ext; simp
   bijective_weightMap := by
@@ -644,15 +644,37 @@ lemma reflection_inv (P : RootPairing ι R M N) (i : ι) :
   · exact LinearMap.ext_iff.mpr (fun x => by simp [← coweightEquiv_apply])
   · exact _root_.Equiv.ext (fun j => by simp only [← indexHom_apply, map_inv]; simp)
 
-instance : MulAction P.Aut M where
-  smul w v := Equiv.weightHom P w v
+instance : DistribMulAction P.Aut M where
+  smul w x := weightHom P w x
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
+  smul_zero w := show weightHom P w 0 = 0 by simp
+  smul_add w x y := show weightHom P w (x + y) = weightHom P w x + weightHom P w y by simp
 
-instance : MulAction (P.Aut)ᵐᵒᵖ N where
-  smul w v := (MulOpposite.unop (Equiv.coweightHom P (MulOpposite.unop w))) v
+@[simp] lemma reflection_smul (i : ι) (x : M) : Equiv.reflection P i • x = P.reflection i x := rfl
+
+@[simp] lemma root_indexEquiv_eq_smul (i : ι) (g : P.Aut) :
+    P.root (g.indexEquiv i) = g • P.root i := by
+  simpa using (congr_fun g.root_weightMap i).symm
+
+open MulOpposite in
+instance : DistribMulAction P.Autᵐᵒᵖ N where
+  smul w x := unop (coweightHom P (unop w)) x
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
+  smul_zero w := show unop (coweightHom P (unop w)) 0 = 0 by simp
+  smul_add w x y := by
+    change unop (coweightHom P _) (x + y) = unop (coweightHom P _) x + unop (coweightHom P _) y
+    simp
+
+instance : SMulCommClass P.Aut R M where
+  smul_comm w t x := show weightHom P w (t • x) = t • weightHom P w x by simp
+
+open MulOpposite in
+instance : SMulCommClass P.Autᵐᵒᵖ R N where
+  smul_comm w t x := by
+    change unop (coweightHom P (unop w)) (t • x) = t • unop (coweightHom P (unop w)) x
+    simp
 
 instance : MulAction P.Aut ι where
   smul w i := Equiv.indexHom P w i

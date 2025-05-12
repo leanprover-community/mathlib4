@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Junyan Xu, Sophie Morel
 -/
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Limits
+import Mathlib.CategoryTheory.Limits.Types.Colimits
 import Mathlib.Data.Set.Subsingleton
 
 /-!
@@ -72,6 +73,7 @@ noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} whe
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small colimits.
 -/
 noncomputable instance : CreatesColimitsOfSize.{w, u} uliftFunctor.{v, u} where
-  CreatesColimitsOfShape := { CreatesColimit := fun {_} ↦ createsColimitOfFullyFaithfulOfPreserves }
+  CreatesColimitsOfShape :=
+    { CreatesColimit := fun {_} ↦ createsColimitOfReflectsIsomorphismsOfPreserves }
 
 end CategoryTheory.Limits.Types

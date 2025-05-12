@@ -16,13 +16,14 @@ This file proves some more lemmas about basic Cauchy sequences that involve fini
 open Finset IsAbsoluteValue
 
 namespace IsCauSeq
-variable {α β : Type*} [LinearOrderedField α] [Ring β] {abv : β → α} [IsAbsoluteValue abv]
+variable {α β : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
+  {abv : β → α} [IsAbsoluteValue abv]
   {f g : ℕ → β} {a : ℕ → α}
 
 lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
     IsCauSeq abs (fun n ↦ ∑ i ∈ range n, a i) → IsCauSeq abv fun n ↦ ∑ i ∈ range n, f i := by
   intro hg ε ε0
-  cases' hg (ε / 2) (div_pos ε0 (by norm_num)) with i hi
+  obtain ⟨i, hi⟩ := hg (ε / 2) (div_pos ε0 (by norm_num))
   exists max n i
   intro j ji
   have hi₁ := hi j (le_trans (le_max_right n i) ji)
@@ -156,7 +157,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
   have hl0 : l ≠ 0 := fun hl0 ↦
     not_lt_of_ge (ham m le_rfl)
       (lt_of_lt_of_le (by have := hl m (le_refl m); simpa [hl0] using this) (le_abs_self (f m)))
-  cases' not_forall.1 (Nat.find_min h (Nat.pred_lt hl0)) with i hi
+  obtain ⟨i, hi⟩ := not_forall.1 (Nat.find_min h (Nat.pred_lt hl0))
   rw [Classical.not_imp, not_lt] at hi
   exists i
   intro j hj
@@ -182,7 +183,7 @@ lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
   simp only [abv_pow abv, geom_sum_eq hx1']
   conv in _ / _ => rw [← neg_div_neg_eq, neg_sub, neg_sub]
   have : 0 < 1 - abv x := sub_pos.2 hx1
-  refine @of_mono_bounded _ _ _ _ ((1 : α) / (1 - abv x)) 0 ?_ ?_
+  refine of_mono_bounded _ (a := (1 : α) / (1 - abv x)) (m := 0) ?_ ?_
   · intro n _
     rw [abs_of_nonneg]
     · gcongr

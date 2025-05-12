@@ -71,7 +71,7 @@ def viewKAbstractSubExpr (e : Expr) (pos : SubExpr.Pos) : MetaM (Option (Expr ×
   if subExpr.hasLooseBVars then
     return none
   let positions ← kabstractPositions subExpr e
-  let some n := positions.indexOf? pos | unreachable!
+  let some n := positions.idxOf? pos | unreachable!
   return some (subExpr, if positions.size == 1 then none else some (n + 1))
 
 /-- Determine whether the result of abstracting `subExpr` from `e` at position `pos` results

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.Topology.LocallyConstant.Basic
 
@@ -314,7 +315,7 @@ variable [TopologicalSpace Y] {Z : Type*}
 
 /-- `LocallyConstant.comap` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddMonoidHom`."]
-def comapMonoidHom [MulOneClass Z]  (f : C(X, Y)) :
+def comapMonoidHom [MulOneClass Z] (f : C(X, Y)) :
     LocallyConstant Y Z →* LocallyConstant X Z where
   toFun := comap f
   map_one' := rfl

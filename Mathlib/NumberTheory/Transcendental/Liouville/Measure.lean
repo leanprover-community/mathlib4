@@ -58,8 +58,8 @@ theorem setOf_liouvilleWith_subset_aux :
       _ ≤ (b : ℝ) ^ (2 + 1 / (n + 1 : ℕ) : ℝ) :=
         rpow_le_rpow_of_exponent_le hb (one_le_two.trans ?_)
     simpa using n.cast_add_one_pos.le
-  rw [sub_div' _ _ _ hb0.ne', abs_div, abs_of_pos hb0, div_lt_div_iff_of_pos_right hb0,
-    abs_sub_lt_iff, sub_lt_iff_lt_add, sub_lt_iff_lt_add, ← sub_lt_iff_lt_add'] at hlt
+  rw [sub_div' hb0.ne', abs_div, abs_of_pos hb0, div_lt_div_iff_of_pos_right hb0, abs_sub_lt_iff,
+    sub_lt_iff_lt_add, sub_lt_iff_lt_add, ← sub_lt_iff_lt_add'] at hlt
   rw [Finset.mem_Icc, ← Int.lt_add_one_iff, ← Int.lt_add_one_iff, ← neg_lt_iff_pos_add, add_comm, ←
     @Int.cast_lt ℝ, ← @Int.cast_lt ℝ]
   push_cast
@@ -92,7 +92,7 @@ theorem volume_iUnion_setOf_liouvilleWith :
       volume (⋃ a ∈ Finset.Icc (0 : ℤ) b, B a b) ≤ ∑ a ∈ Finset.Icc (0 : ℤ) b, volume (B a b) :=
         measure_biUnion_finset_le _ _
       _ = ↑((b + 1) * (2 / (b : ℝ≥0) ^ r)) := by
-        simp only [hB, Int.card_Icc, Finset.sum_const, nsmul_eq_mul, sub_zero, ← Int.ofNat_succ,
+        simp only [hB, Int.card_Icc, Finset.sum_const, nsmul_eq_mul, sub_zero, ← Int.natCast_succ,
           Int.toNat_natCast, ← Nat.cast_succ, ENNReal.coe_mul, ENNReal.coe_natCast]
       _ = _ := by
         have : 1 - r ≠ 0 := by linarith

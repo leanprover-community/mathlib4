@@ -13,14 +13,6 @@ This file adds support for the `%`, `/`, and `∣` (divisibility) operators on `
 to the `norm_num` tactic.
 -/
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
-
 namespace Mathlib
 open Lean
 open Meta
@@ -99,7 +91,7 @@ lemma isInt_emod {a b q m a' : ℤ} {b' r : ℕ}
     (hm : q * b' = m) (h : r + m = a') (h₂ : Nat.blt r b' = true) :
     IsNat (a % b) r := ⟨by
   obtain ⟨⟨rfl⟩, ⟨rfl⟩⟩ := ha, hb
-  simp only [← h, ← hm, Int.add_mul_emod_self]
+  simp only [← h, ← hm, Int.add_mul_emod_self_right]
   rw [Int.emod_eq_of_lt] <;> [simp; simpa using h₂]⟩
 
 lemma isInt_emod_neg {a b : ℤ} {r : ℕ} (h : IsNat (a % -b) r) : IsNat (a % b) r :=

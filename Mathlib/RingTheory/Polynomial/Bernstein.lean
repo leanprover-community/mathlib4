@@ -8,7 +8,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
@@ -134,7 +134,7 @@ theorem derivative_zero (n : ℕ) :
 
 theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
     k < ν → (Polynomial.derivative^[k] (bernsteinPolynomial R n ν)).eval 0 = 0 := by
-  cases' ν with ν
+  rcases ν with - | ν
   · rintro ⟨⟩
   · rw [Nat.lt_succ_iff]
     induction' k with k ih generalizing n ν
@@ -239,7 +239,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       simp only [not_exists, not_and, Submodule.mem_map, Submodule.span_image _]
       intro p m
       apply_fun Polynomial.eval (1 : ℚ)
-      simp only [LinearMap.pow_apply]
+      simp only [Module.End.pow_apply]
       -- The right hand side is nonzero,
       -- so it will suffice to show the left hand side is always zero.
       suffices (Polynomial.derivative^[n - k] p).eval 1 = 0 by

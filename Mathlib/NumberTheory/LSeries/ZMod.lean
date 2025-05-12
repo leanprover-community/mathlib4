@@ -55,7 +55,7 @@ Results for completed L-functions:
   the functional equation relating `completedLFunction Φ (1 - s)` to `completedLFunction (𝓕 Φ) s`.
 -/
 
-open HurwitzZeta Complex ZMod Finset Classical Topology Filter Set
+open HurwitzZeta Complex ZMod Finset Topology Filter Set
 
 open scoped Real
 
@@ -66,7 +66,7 @@ variable {N : ℕ} [NeZero N]
 /-- If `Φ` is a periodic function, then the L-series of `Φ` converges for `1 < re s`. -/
 lemma LSeriesSummable_of_one_lt_re (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LSeriesSummable (Φ ·) s := by
-  let c := max' _ <| univ_nonempty.image (Complex.abs ∘ Φ)
+  let c := max' _ <| univ_nonempty.image (norm ∘ Φ)
   refine LSeriesSummable_of_bounded_of_one_lt_re (fun n _ ↦ le_max' _ _ ?_) (m := c) hs
   exact mem_image_of_mem _ (mem_univ _)
 
@@ -76,7 +76,7 @@ latter is convergent. This is constructed as a linear combination of Hurwitz zet
 
 Note that this is not the same as `LSeries Φ`: they agree in the convergence range, but
 `LSeries Φ s` is defined to be `0` if `re s ≤ 1`.
- -/
+-/
 noncomputable def LFunction (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
   N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZeta (toAddCircle j) s
 
@@ -250,7 +250,7 @@ lemma LFunction_def_even (hΦ : Φ.Even) (s : ℂ) :
     LFunction Φ s = N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZetaEven (toAddCircle j) s := by
   simp only [LFunction, hurwitzZeta, mul_add (Φ _), sum_add_distrib]
   congr 1
-  simp only [add_right_eq_self, ← neg_eq_self ℂ, ← sum_neg_distrib]
+  simp only [add_eq_left, ← neg_eq_self ℂ, ← sum_neg_distrib]
   refine Fintype.sum_equiv (.neg _) _ _ fun i ↦ ?_
   simp only [Equiv.neg_apply, hΦ i, map_neg, hurwitzZetaOdd_neg, mul_neg]
 
@@ -258,7 +258,7 @@ lemma LFunction_def_odd (hΦ : Φ.Odd) (s : ℂ) :
     LFunction Φ s = N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZetaOdd (toAddCircle j) s := by
   simp only [LFunction, hurwitzZeta, mul_add (Φ _), sum_add_distrib]
   congr 1
-  simp only [add_left_eq_self, ← neg_eq_self ℂ, ← sum_neg_distrib]
+  simp only [add_eq_right, ← neg_eq_self ℂ, ← sum_neg_distrib]
   refine Fintype.sum_equiv (.neg _) _ _ fun i ↦ ?_
   simp only [Equiv.neg_apply, hΦ i, map_neg, hurwitzZetaEven_neg, neg_mul]
 

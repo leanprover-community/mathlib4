@@ -64,20 +64,20 @@ instance : IsKleinFour (DihedralGroup 2) where
   card_four := by simp only [Nat.card_eq_fintype_card]; rfl
   exponent_two := by simp [DihedralGroup.exponent]
 
-instance {G : Type*} [Group G] [IsKleinFour G] :
-    IsAddKleinFour (Additive G) where
+instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G) where
   card_four := by rw [← IsKleinFour.card_four (G := G)]; congr!
   exponent_two := by simp
 
-instance {G : Type*} [AddGroup G] [IsAddKleinFour G] :
-    IsKleinFour (Multiplicative G) where
+instance {G : Type*} [AddGroup G] [IsAddKleinFour G] : IsKleinFour (Multiplicative G) where
   card_four := by rw [← IsAddKleinFour.card_four (G := G)]; congr!
   exponent_two := by simp
 
 namespace IsKleinFour
 
+/-- This instance is scoped, because it always applies (which makes linting and typeclass inference
+potentially *a lot* slower). -/
 @[to_additive]
-instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
+scoped instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
   Nat.finite_of_card_ne_zero <| by norm_num [IsKleinFour.card_four]
 
 @[to_additive (attr := simp)]
@@ -90,8 +90,8 @@ open Finset
 variable {G : Type*} [Group G] [IsKleinFour G]
 
 @[to_additive]
-lemma not_isCyclic : ¬ IsCyclic G :=
-  fun h ↦ by let _inst := Fintype.ofFinite G; simpa using h.exponent_eq_card
+lemma not_isCyclic : ¬IsCyclic G :=
+  fun h ↦ by simpa using h.exponent_eq_card
 
 @[to_additive]
 lemma inv_eq_self (x : G) : x⁻¹ = x := inv_eq_self_of_exponent_two (by simp) x
