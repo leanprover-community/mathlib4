@@ -67,8 +67,7 @@ theorem vec_smul {α} [SMul α R] (r : α) (A : Matrix m n R) : vec (r • A) = 
 theorem vec_sum [AddCommMonoid R] (s : Finset ι) (A : ι → Matrix m n R) :
     vec (∑ i ∈ s, A i) = ∑ i ∈ s, vec (A i) := by
   ext
-  simp_rw [vec, Finset.sum_apply, vec]
-  erw [Finset.sum_apply, Finset.sum_apply]
+  simp_rw [vec, Finset.sum_apply, vec, Matrix.sum_apply]
 
 theorem vec_dotProduct_vec [NonUnitalNonAssocSemiring R] [Fintype m] [Fintype n]
     (A B : Matrix m n R) :
