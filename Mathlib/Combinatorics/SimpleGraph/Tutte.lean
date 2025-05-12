@@ -33,6 +33,7 @@ variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V}
 /-- A set certifying non-existence of a perfect matching -/
 def IsTutteViolator (G : SimpleGraph V) (u : Set V) : Prop :=
   u.ncard < ((⊤ : G.Subgraph).deleteVerts u).coe.oddComponents.ncard
+
 /-- This lemma shows an alternating cycle exists in a specific subcase of the proof
 of Tutte's theorem. -/
 private lemma tutte_exists_isAlternating_isCycles {x b a c : V} {M : Subgraph (G ⊔ edge a c)}
