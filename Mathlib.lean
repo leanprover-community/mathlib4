@@ -332,6 +332,7 @@ import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Group.Fin.Tuple
 import Mathlib.Algebra.Group.FiniteSupport
+import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.Group.ForwardDiff
 import Mathlib.Algebra.Group.Graph
 import Mathlib.Algebra.Group.Hom.Basic
@@ -5291,6 +5292,7 @@ import Mathlib.RingTheory.PolynomialLaw.Basic
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Binomial
+import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 import Mathlib.RingTheory.PowerSeries.Derivative
 import Mathlib.RingTheory.PowerSeries.Evaluation
 import Mathlib.RingTheory.PowerSeries.Inverse
