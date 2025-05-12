@@ -541,7 +541,6 @@ lemma invtSubmodule_reflection:
       simp only [gen, Submodule.mem_top]
     induction hx using Submodule.iSup_induction' with
     | mem j x hx =>
-      simp [I] at hy
       induction hy using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
       | mem x₁ hx₁ =>
         obtain ⟨i, hi, x₁_mem⟩ := Set.mem_iUnion₂.mp hx₁
@@ -549,9 +548,9 @@ lemma invtSubmodule_reflection:
           rcases (eq_or_ne j 0) with h | h
           · left
             exact h
-          right
-          refine Finset.mem_filter.mpr ?_
-          exact ⟨Finset.mem_univ j, LieModule.Weight.isNonZero_iff_ne_zero.mpr h⟩
+          · right
+            refine Finset.mem_filter.mpr ?_
+            exact ⟨Finset.mem_univ j, LieModule.Weight.isNonZero_iff_ne_zero.mpr h⟩
         rcases (r₁ j) with h | h
         have h₁ : ⁅x, x₁⁆ ∈ g := by
           have h₂ := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
@@ -598,7 +597,7 @@ lemma invtSubmodule_reflection:
     exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₆
   rcases this with h_bot | h_top
   · contradiction
-  contradiction
+  · contradiction
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := LieModule.nontrivial_of_isIrreducible K L L
