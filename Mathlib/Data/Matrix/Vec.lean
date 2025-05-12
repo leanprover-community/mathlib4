@@ -64,7 +64,7 @@ theorem vec_sub [Sub R] (A B : Matrix m n R) : vec (A - B) = vec A - vec B :=
 theorem vec_smul {α} [SMul α R] (r : α) (A : Matrix m n R) : vec (r • A) = r • vec A :=
   rfl
 
-theorem vec_sum [AddCommMonoid R] (s : Finset ι)(A : ι → Matrix m n R) :
+theorem vec_sum [AddCommMonoid R] (s : Finset ι) (A : ι → Matrix m n R) :
     vec (∑ i ∈ s, A i) = ∑ i ∈ s, vec (A i) := by
   ext
   simp_rw [vec, Finset.sum_apply, vec]
