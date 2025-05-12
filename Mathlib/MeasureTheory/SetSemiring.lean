@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.MeasureTheory.MeasurableSpace.Pi
 import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets
@@ -65,6 +66,15 @@ structure IsSetSemiring (C : Set (Set α)) : Prop where
 namespace IsSetSemiring
 
 lemma isPiSystem (hC : IsSetSemiring C) : IsPiSystem C := fun s hs t ht _ ↦ hC.inter_mem s hs t ht
+
+lemma iff (C : Set (Set α)) : IsSetSemiring C ↔
+    (∅ ∈ C ∧ IsPiSystem C ∧ ∀ s ∈ C, ∀ t ∈ C,
+    ∃ I : Finset (Set α), ↑I ⊆ C ∧ PairwiseDisjoint (I : Set (Set α)) id ∧ s \ t = ⋃₀ I) :=
+  ⟨fun hC ↦ ⟨hC.empty_mem, isPiSystem hC, hC.diff_eq_sUnion'⟩,
+    fun ⟨h1, h2, h3⟩ ↦ {
+      empty_mem := h1,
+      inter_mem := (isPiSystem_iff_of_nmem_empty h1).mpr h2,
+      diff_eq_sUnion' := h3} ⟩
 
 section disjointOfDiff
 
@@ -308,7 +318,6 @@ end disjointOfDiffUnion
 
 section disjointOfUnion
 
-
 variable {j : Set α} {J : Finset (Set α)}
 
 open Set MeasureTheory Order
@@ -435,6 +444,48 @@ lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
 
 end disjointOfUnion
 
+section disjointOfSetdiffUnion
+
+variable {j : Set α} {I J : Finset (Set α)}
+
+open Set MeasureTheory Order
+
+example (s : Finset α) (K : α → Finset α) : Finite (⋃ x ∈ s, (K x).toSet) := by
+  exact Finite.Set.finite_biUnion'' (Membership.mem s) fun x ↦ ↑(K x)
+
+theorem disjointOfSetdiffUnion (hC : IsSetSemiring C) (hI : ↑I ⊆ C) (hJ : ↑J ⊆ C) :
+    ∃ K : Finset (Set α), K.toSet ⊆ C
+      ∧ PairwiseDisjoint K.toSet id
+      ∧ ⋃₀ I \ ⋃₀ J = ⋃₀ K.toSet := by
+  let K'' := hC.disjointOfUnion hI
+  have h0 : (⋃₀ ⋃ x ∈ I, K'' x) = ⋃₀ I.toSet := by
+    exact hC.sUnion_disjointOfUnion hI
+  have h1' : ∀ x ∈ I, (K'' x).toSet ⊆ C := by sorry
+  have h1 : ⋃ i ∈ I, K'' i ⊆ C := by
+    refine iUnion₂_subset ?_
+    intro i hi
+    exact disjointOfUnion_subset hC hI hi
+  have h2 : PairwiseDisjoint (⋃ x ∈ I, (K'' x : Set (Set α))) id := by
+    apply hC.pairwiseDisjoint_biUnion_disjointOfUnion
+  let L'' (s : Set α) (hs : s ∈ C):= hC.disjointOfDiffUnion hs hJ
+  let G := ⋃ (x : _) (hx : x ∈ I), ⋃ (y : _) (hy : y ∈ K'' x), (L'' y (h1' x hx hy)).toSet
+  let hG : Finite G := by
+    simp [G]
+
+    -- apply Finite.Set.finite_biUnion''
+    sorry
+  use Set.Finite.toFinset hG
+  simp only [Finite.coe_toFinset, G]
+
+
+
+
+
+  sorry
+
+
+end disjointOfSetdiffUnion
+
 end IsSetSemiring
 
 /-- A ring of sets `C` is a family of sets containing `∅`, stable by union and set difference.
@@ -445,6 +496,34 @@ structure IsSetRing (C : Set (Set α)) : Prop where
   diff_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s \ t ∈ C
 
 namespace IsSetRing
+
+lemma ofSetSemiring {C : Set (Set α)} (hC : IsSetSemiring C) :
+    IsSetRing (sUnion '' ({ L : Set (Set α) | L.Finite ∧ L ⊆ C})) where
+  empty_mem := by
+    use ∅
+    simp
+  union_mem := by
+    intro s t hs ht
+    simp_all only [Set.mem_image, mem_setOf_eq]
+    obtain ⟨K, ⟨⟨hK1, hK2⟩, hK3⟩⟩ := hs
+    obtain ⟨L, ⟨⟨hL1, hL2⟩, hL3⟩⟩ := ht
+    use K ∪ L
+    rw [← hK3, ← hL3]
+    refine ⟨⟨Finite.union hK1 hL1, Set.union_subset hK2 hL2⟩, sUnion_union K L⟩
+  diff_mem := by
+    intro s t hs ht
+    simp_all only [Set.mem_image, mem_setOf_eq]
+    obtain ⟨K, ⟨⟨hK1, hK2⟩, hK3⟩⟩ := hs
+    obtain ⟨L, ⟨⟨hL1, hL2⟩, hL3⟩⟩ := ht
+    simp_rw [← hK3, ← hL3]
+    let K' := hK1.toFinset
+    have hK' : K'.toSet ⊆ C := (Finite.coe_toFinset _) ▸ hK2
+    let L' := hL1.toFinset
+    have hL' : L'.toSet ⊆ C := (Finite.coe_toFinset _) ▸ hL2
+    let K'' := hC.disjointOfUnion hK'
+
+
+    sorry
 
 lemma inter_mem (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) : s ∩ t ∈ C := by
   rw [← diff_diff_right_self]; exact hC.diff_mem hs (hC.diff_mem hs ht)
@@ -526,15 +605,15 @@ section piSemiring
 
 variable {ι : Type*} {hι : Fintype ι} [Inhabited ι] {α : ι → Type*} (C : (i : ι) → Set (Set (α i)))
 
-theorem l (hC : ∀ i, IsSetSemiring (C i)) : IsSetSemiring (univ.pi '' univ.pi C) := {
-  empty_mem := by
-    simp only [Set.mem_image, Set.mem_pi, Set.mem_univ, forall_const, univ_pi_eq_empty_iff]
+theorem l (hC : ∀ i, IsSetSemiring (C i)) : IsSetSemiring (univ.pi '' univ.pi C) := by
+  refine (IsSetSemiring.iff _).mpr ⟨?_, ?_, ?_⟩
+  · simp only [Set.mem_image, Set.mem_pi, Set.mem_univ, forall_const, univ_pi_eq_empty_iff]
     use fun _ ↦ ∅
     simp only [exists_const, and_true]
     exact fun _ ↦ (hC _).empty_mem
-  inter_mem := by sorry,
-  diff_eq_sUnion' := by sorry
-}
+  · exact IsPiSystem.pi (fun i ↦ (hC i).isPiSystem)
+  ·
+    sorry
 
 
 end piSemiring
