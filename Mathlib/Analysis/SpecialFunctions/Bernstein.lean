@@ -216,7 +216,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
       gauge_sum_le hUc (absorbent_nhds_zero hU₀) _ _
     _ = ∑ k : Fin (n + 1), bernstein n k x * gauge U (f k/ₙ - f x) := by
       simp only [gauge_smul_of_nonneg, bernstein_nonneg, smul_eq_mul]
-    _ = (∑ k ∈ S,  bernstein n k x * gauge U (f k/ₙ - f x)) +
+    _ = (∑ k ∈ S, bernstein n k x * gauge U (f k/ₙ - f x)) +
           ∑ k ∈ Sᶜ, bernstein n k x * gauge U (f k/ₙ - f x) :=
       (S.sum_add_sum_compl _).symm
     -- We'll now deal with the terms in `S` and the terms in `Sᶜ` in separate calc blocks.
