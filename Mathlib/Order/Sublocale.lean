@@ -23,48 +23,43 @@ lemma inf_mem (a b : X) (h1 : a ∈ S) (h2 : b ∈ S) : a ⊓ b ∈ S := by
   rw [← sInf_pair]
   exact S.sInfClosed (pair_subset h1 h2)
 
-
 instance : InfSet S where
   sInf x := ⟨sInf (Subtype.val '' x), S.sInfClosed (by simp; simp [@subset_def])⟩
 
-lemma test (s_1 : Set ↥S) : IsGLB s_1 (sInf s_1) := by
-  simp only [IsGLB, IsGreatest, lowerBounds, Subtype.forall, sInf, mem_setOf_eq, Subtype.mk_le_mk,
-    upperBounds, le_sInf_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-    forall_exists_index, imp_self, implies_true, and_true]
-  intro a b c
-  apply sInf_le
-  simp_all only [mem_image, Subtype.exists, exists_and_right, exists_eq_right, exists_const]
-
 instance instCompleteLattice : CompleteLattice S where
-  inf x y := ⟨x.val ⊓ y.val, s.inf_mem ↑x ↑y (SetLike.coe_mem x) (SetLike.coe_mem y)⟩
+  inf x y := ⟨x.val ⊓ y.val, S.inf_mem ↑x ↑y (SetLike.coe_mem x) (SetLike.coe_mem y)⟩
   inf_le_left _ _ := inf_le_left
   inf_le_right _ _ := inf_le_right
   le_inf _ _ _ h1 h2 := le_inf h1 h2
-  __ := completeLatticeOfInf s (test)
+  __ := completeLatticeOfInf S (by simp_all only [IsGLB, IsGreatest, lowerBounds, Subtype.forall,
+    sInf, mem_setOf_eq, Subtype.mk_le_mk, sInf_le_iff, mem_image, Subtype.exists, exists_and_right,
+    exists_eq_right, forall_exists_index, implies_true, upperBounds, le_sInf_iff, and_self])
 
-lemma coe_inf (a b : s) : (a ⊓ b).val = ↑a ⊓ ↑b :=  rfl
+lemma coe_inf (a b : S) : (a ⊓ b).val = ↑a ⊓ ↑b :=  rfl
 
-lemma coe_sInf (a : Set s) : (sInf a).val = sInf (Subtype.val '' a) := rfl
+lemma coe_sInf (a : Set S) : (sInf a).val = sInf (Subtype.val '' a) := rfl
 
-instance : HImp s where
-  himp a b := ⟨a ⇨ b, (s.HimpClosed' a b (Subtype.coe_prop b))⟩
+instance instHImp : HImp S where
+  himp a b := ⟨a ⇨ b, (S.HImpClosed' a b (Subtype.coe_prop b))⟩
 
-instance instHeytingAlgebra : HeytingAlgebra s where
+lemma coe_himp (a b : S) : a.val ⇨ b.val = (a ⇨ b).val := rfl
+
+instance instHeytingAlgebra : HeytingAlgebra S where
   le_himp_iff a b c := by
     simp [← Subtype.coe_le_coe, ← @Sublocale.coe_inf, himp]
   compl a :=  a ⇨ ⊥
   himp_bot _ := rfl
 
-instance : Order.Frame s where
+instance : Order.Frame S where
   __ := instHeytingAlgebra
   __ := instCompleteLattice
 
-def embedding (S : Sublocale X) (x : X) : S := sInf {s : S | x ≤ s}
+private def embeddingAux (S : Sublocale X) (x : X) : S := sInf {s : S | x ≤ s}
 
-def gc (S : Sublocale X) : GaloisConnection S.embedding Subtype.val := by
+private def gcAux (S : Sublocale X) : GaloisConnection S.embeddingAux Subtype.val := by
   intro a b
   apply Iff.intro
-  · simp [embedding]
+  · simp [embeddingAux]
     intro h
     rw [← Subtype.coe_le_coe] at h
     apply le_trans' h
@@ -72,13 +67,18 @@ def gc (S : Sublocale X) : GaloisConnection S.embedding Subtype.val := by
     simp only [le_sInf_iff, mem_image, mem_setOf_eq, Subtype.exists, exists_and_left, exists_prop,
       exists_eq_right_right, and_imp]
     exact fun b a a_1 ↦ a
-  · simp [embedding]
+  · simp [embeddingAux]
     intro h
     apply sInf_le
     simp [h]
 
+lemma coeEmbedding (S : Sublocale X) (x : X) (h : x ∈ S) : embeddingAux S x = x := by
+  simp [Sublocale.embeddingAux, sInf]
+  apply le_antisymm
+  . apply sInf_le
+    simp [h]
+  . simp_all
 
-lemma embedding.le_apply (S : Sublocale X) {x : X} : x ≤ S.embedding x := S.gc.le_u_l _
 
 lemma test2 (a b: X) : a = b ↔ (∀ c, a ≤ c ↔ b ≤ c) := by
   apply Iff.intro
@@ -92,78 +92,41 @@ lemma test2 (a b: X) : a = b ↔ (∀ c, a ≤ c ↔ b ≤ c) := by
     . apply (h a).mp
       simp
 
-def embedding_frameHom (S : Sublocale X) : FrameHom X S where
-  toFun x := S.embedding x
+
+def embedding (S : Sublocale X) : FrameHom X S where
+  toFun x := sInf {s : S | x ≤ s}
   map_inf' a b := by
-    apply le_antisymm
-    . simp only [le_inf_iff]
-      apply And.intro
-      . apply S.gc.monotone_l
-        simp
-      . apply S.gc.monotone_l
-        simp
-    .
-      apply le_himp_iff.mp
-      sorry
-  map_sSup' s := by rw [S.gc.l_sSup, sSup_image]
-  map_top' := by
-    apply le_antisymm
-    . simp
-    . rw [← Subtype.coe_le_coe, S.gc.u_top]
-      exact embedding.le_apply S
-
-def gi (S : Sublocale X) : GaloisInsertion S.embedding_frameHom Subtype.val where
-
-
-
-def toNucleus (S : Sublocale X) : Nucleus X where
-  toFun x := S.embedding_frameHom x
-  map_inf' a b := by simp [S.gc.u_inf]
-  idempotent' a := by
-    rw [S.gc.l_u_l]
-
-
-
-
-/-
-/-
-
+    repeat rw [← embeddingAux]
     rw [test2]
     intro s
     symm
     rw [@iff_eq_eq]
-    calc  (S.embedding a ⊓ S.embedding b ≤ s)
-      _ = (S.embedding a ≤ S.embedding b ⇨ s) := by simp
-      _ = (a ≤ S.embedding b ⇨ s ) := by
-        rw [← Subtype.coe_le_coe]
-        simp only [Subtype.coe_le_coe, le_himp_iff, eq_iff_iff]
+    calc  (S.embeddingAux a ⊓ S.embeddingAux b ≤ s)
+      _ = (S.embeddingAux a ≤ S.embeddingAux b ⇨ s) := by simp
+      _ = (a ≤ S.embeddingAux b ⇨ s ) := by rw [S.gcAux.le_iff_le]
+      _ = (S.embeddingAux b ≤ a ⇨ s ) := by
+        rw [@le_himp_comm, coe_himp]
 
-      _ = (S.embedding b ≤ a ⇨ s ) := by sorry
-      _ = ( b ≤ a ⇨ s) := by sorry
-      _ = ( a ⊓ b ≤ s ) := by sorry
-      _ = (S.embedding (a ⊓ b) ≤ s) := by sorry
-
-    have h1 (s : S) : S.embedding a ⊓ S.embedding b ≤ s ↔ S.embedding a ≤ S.embedding b ⇨ s := by
-      simp
-
-    have h2 (s : S) : S.embedding a ≤ S.embedding b ⇨ s ↔ a ≤ S.embedding b ⇨ s := by
-      sorry
-
-    have h3 (s : S) :  a ≤ S.embedding b ⇨ s ↔ S.embedding b ≤ a ⇨ s := by sorry
-
-    have h4 (s : S) : S.embedding b ≤ a ⇨ s ↔ b ≤ a ⇨ s := by sorry
-
-    have h5 (s : S) : b ≤ a ⇨ s  ↔ a ⊓ b ≤ s  := by sorry
-
-    have h6 (s : S) :  a ⊓ b ≤ s  ↔ S.embedding (a ⊓ b) ≤ s := by sorry
+      _ = ( b ≤ a ⇨ s) := by
+        sorry
+      _ = ( a ⊓ b ≤ s ) := by simp [inf_comm]
+      _ = (S.embeddingAux (a ⊓ b) ≤ s) := sorry
+  map_sSup' s := by rw [← embeddingAux, S.gcAux.l_sSup, sSup_image]; simp_rw [embeddingAux]
+  map_top' := by
+    refine le_antisymm (by simp) ?_
+    rw [← Subtype.coe_le_coe, ← embeddingAux, S.gcAux.u_top]
+    simp [embeddingAux, sInf]
 
 
-
+def giEmbedding (S : Sublocale X) : GaloisInsertion S.embedding Subtype.val :=
+  GaloisInsertion.monotoneIntro S.gcAux.monotone_u S.gcAux.monotone_l S.gcAux.le_u_l (by
+    simp [embedding]
+    exact fun a b ↦ le_antisymm (sInf_le (by simp)) (le_sInf (fun _ a ↦ a)))
 
 def toNucleus (S : Sublocale X) : Nucleus X where
   toFun x := S.embedding x
-
-
+  map_inf' _ _ := by simp [S.giEmbedding.gc.u_inf]
+  idempotent' _ := by rw [S.giEmbedding.gc.l_u_l_eq_l]
+  le_apply' _ := S.giEmbedding.gc.le_u_l _
 
 end Sublocale
--/-/
