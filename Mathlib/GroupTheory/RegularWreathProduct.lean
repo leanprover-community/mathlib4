@@ -129,26 +129,14 @@ theorem card [Finite D][Finite Q] :
   rw [Nat.card_prod (Q → D) Q]
   rw [Nat.card_fun]
 
-def congr_left {D₁ D₂ Q : Type*} [Group D₁] [Group D₂] [Group Q] (f : D₁ ≃* D₂):
-  D₁ ≀ᵣ Q ≃* D₂ ≀ᵣ Q where
-    toFun x := ⟨f ∘ x.left, x.right⟩
-    invFun x := ⟨f.symm ∘ x.left, x.right⟩
-    left_inv _ := by ext <;> simp
-    right_inv _ := by ext <;> simp
-    map_mul' x y := by ext <;> simp
-
-def congr_right {D Q₁ Q₂ : Type*} [Group D] [Group Q₁] [Group Q₂] (f : Q₁ ≃* Q₂):
-  D ≀ᵣ Q₁ ≃* D ≀ᵣ Q₂ where
-    toFun x := ⟨x.1.comp f.symm, f x.2⟩
-    invFun x := ⟨x.1.comp f, f.symm x.2⟩
+def congr {D₁ Q₁ D₂ Q₂ : Type*} [Group D₁] [Group Q₁] [Group D₂] [Group Q₂]
+(f : D₁ ≃* D₂) (g : Q₁ ≃* Q₂):
+  D₁ ≀ᵣ Q₁ ≃* D₂ ≀ᵣ Q₂ where
+    toFun x := ⟨f ∘ (x.left ∘ g.symm), g x.right⟩
+    invFun x := ⟨(f.symm ∘ x.left) ∘ g, g.symm x.right⟩
     left_inv x := by ext <;> simp
     right_inv x := by ext <;> simp
     map_mul' x y := by ext <;> simp
-
-def congr {D₁ Q₁ D₂ Q₂ : Type*} [Group D₁] [Group Q₁] [Group D₂] [Group Q₂]
-  (f : D₁ ≃* D₂) (g : Q₁ ≃* Q₂):
-    D₁ ≀ᵣ Q₁ ≃* D₂ ≀ᵣ Q₂ :=
-    (congr_left f).trans (congr_right g)
 
 section perm
 
@@ -222,7 +210,6 @@ instance [Finite G] : Finite (IteratedWreathProduct G n) := by
   induction n with
   | zero => rw [IteratedWreathProduct_zero]; exact Finite.of_subsingleton
   | succ n h => rw [IteratedWreathProduct_succ]; exact RegularWreathProduct.instFinite
-
 
 lemma elem_P0 (p : ℕ) (P : Sylow p (Equiv.Perm (Fin (1)))) (x:P):
   x = 1 := Subsingleton.eq_one x
