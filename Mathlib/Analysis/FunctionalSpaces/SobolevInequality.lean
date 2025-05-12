@@ -458,7 +458,7 @@ def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
   let n := finrank ℝ E
   eLpNormLESNormFDerivOneConst μ (NNReal.conjExponent n) * (p * (n - 1) / (n - p)).toNNReal
 
-variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
+variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
