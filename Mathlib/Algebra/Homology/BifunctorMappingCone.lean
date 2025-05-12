@@ -32,6 +32,21 @@ section
 
 variable [HasMapBifunctor K₁ K₂ F (ComplexShape.up ℤ)]
 
+noncomputable def ι₁ : Cochain (mapBifunctor K₁ K₂ F (.up ℤ))
+    (mapBifunctor (mappingCone φ) K₂ F (.up ℤ)) (-1) :=
+  Cochain.mk (fun n m hnm ↦ mapBifunctorDesc (fun p q hpq ↦
+    (F.map ((inl φ).v p (p - 1) (by omega))).app _ ≫
+      ιMapBifunctor _ _ _ _ _ _ _ (by dsimp at hpq ⊢; omega)))
+
+@[reassoc]
+lemma ι_ι₁ (p q n : ℤ) (hpq : p + q = n) (m : ℤ) (hnm : n + (-1) = m)
+    (p' : ℤ) (hp' : p' + 1 = p) :
+    ιMapBifunctor K₁ K₂ F (.up ℤ) p q n hpq ≫ (ι₁ φ K₂ F).v n m hnm =
+      (F.map ((inl φ).v p p' (by omega))).app _ ≫
+        ιMapBifunctor _ _ _ _ _ _ _ (by dsimp; omega) := by
+  obtain rfl : p' = p - 1 := by omega
+  simp [ι₁]
+
 noncomputable def p₁₀ : Cochain (mapBifunctor (mappingCone φ) K₂ F (.up ℤ))
     (mapBifunctor K₁ K₂ F (.up ℤ)) 1 :=
   Cochain.mk (fun n m hnm ↦ mapBifunctorDesc (fun p q hpq ↦
@@ -110,6 +125,11 @@ noncomputable def hom : mapBifunctor (mappingCone φ) K₂ F (.up ℤ) ⟶
       ← Functor.map_comp, ← Functor.map_comp_assoc,
       ← NatTrans.comp_app_assoc, ← NatTrans.comp_app, d_snd_v])
 
+/-noncomputable def inv :
+    mappingCone (mapBifunctorMap φ (𝟙 K₂) F (.up ℤ)) ⟶
+      mapBifunctor (mappingCone φ) K₂ F (.up ℤ) :=
+  mappingCone.desc _ (ι₁ φ K₂ F) (mapBifunctorMap (inr φ) (𝟙 K₂) F (.up ℤ)) sorry-/
+
 end mapBifunctorMappingCone₁Iso
 
 variable [HasMapBifunctor (mappingCone φ) K₂ F (ComplexShape.up ℤ)]
@@ -122,7 +142,7 @@ noncomputable def mapBifunctorMappingCone₁Iso :
     mapBifunctor (mappingCone φ) K₂ F (.up ℤ) ≅
       mappingCone (mapBifunctorMap φ (𝟙 K₂) F (.up ℤ)) where
   hom := hom φ K₂ F
-  inv := sorry
+  inv := inv φ K₂ F
   hom_inv_id := sorry
   inv_hom_id := sorry-/
 
