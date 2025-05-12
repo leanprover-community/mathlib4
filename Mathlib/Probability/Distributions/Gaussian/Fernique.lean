@@ -91,9 +91,9 @@ lemma two_mul_mul_le_mul_add_div {a b ε : ℝ} (hε : 0 < ε) :
 -- todo: replace `Measurable f`
 @[to_additive]
 lemma integrable_mconv_iff {M F : Type*} [Monoid M] {mM : MeasurableSpace M} [MeasurableMul₂ M]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [SecondCountableTopology F]
+    [NormedAddCommGroup F] [SecondCountableTopology F]
     {_ : MeasurableSpace F} [OpensMeasurableSpace F]
-    {μ ν : Measure M} [SFinite μ] [SFinite ν] {f : M → F} (hf : Measurable f) :
+    {μ ν : Measure M} [SFinite ν] {f : M → F} (hf : Measurable f) :
     Integrable f (μ ∗ ν)
       ↔ (∀ᵐ x ∂μ, Integrable (fun y ↦ f (x * y)) ν)
         ∧ Integrable (fun x ↦ ∫ y, ‖f (x * y)‖ ∂ν) μ := by
