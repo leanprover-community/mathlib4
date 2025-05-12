@@ -558,13 +558,12 @@ lemma invtSubmodule_reflection:
           rw [h, coe_zero, zero_add] at h₂
           exact Set.mem_biUnion hi h₂
         exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
-        let j₂ : H.root := ⟨j, h⟩
-        rcases (Classical.em (j₂ ∈ Φ)) with h | h
+        rcases (Classical.em (⟨j, h⟩ ∈ Φ)) with h₁ | h₁
         exact LieSubalgebra.lie_mem I
-          (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h hx))
+          (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h₁ hx))
           (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a hx₁)
         have key : ⁅x₁, x⁆ = 0 := by
-          have := s₄ i j₂ hi h
+          have := s₄ i ⟨j, h⟩ hi h₁
           simp only [Subtype.forall] at this
           exact (this x₁ x₁_mem) x hx
         have : ⁅x, x₁⁆ = 0 := by
