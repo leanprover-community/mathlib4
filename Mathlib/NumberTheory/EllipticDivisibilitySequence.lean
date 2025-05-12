@@ -143,7 +143,7 @@ section PreNormEDS
 
 /-- The auxiliary sequence for a normalised EDS `W : ℕ → R`, with initial values
 `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d` and extra parameter `b`. -/
-def preNormEDS' (b c d : R) : ℕ → R
+def preNormEDS' : ℕ → R
   | 0 => 0
   | 1 => 1
   | 2 => 1
@@ -155,13 +155,13 @@ def preNormEDS' (b c d : R) : ℕ → R
     have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3
     have _ : m + 1 < n + 5 := (lt_add_one _).trans h2
     if hn : Even n then
-      preNormEDS' b c d (m + 4) * preNormEDS' b c d (m + 2) ^ 3 * (if Even m then b else 1) -
-        preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) ^ 3 * (if Even m then 1 else b)
+      preNormEDS' (m + 4) * preNormEDS' (m + 2) ^ 3 * (if Even m then b else 1) -
+        preNormEDS' (m + 1) * preNormEDS' (m + 3) ^ 3 * (if Even m then 1 else b)
     else
       have _ : m + 5 < n + 5 := add_lt_add_right
         (Nat.div_lt_self (Nat.not_even_iff_odd.1 hn).pos <| Nat.lt_succ_self 1) 5
-      preNormEDS' b c d (m + 2) ^ 2 * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 5) -
-        preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 4) ^ 2
+      preNormEDS' (m + 2) ^ 2 * preNormEDS' (m + 3) * preNormEDS' (m + 5) -
+        preNormEDS' (m + 1) * preNormEDS' (m + 3) * preNormEDS' (m + 4) ^ 2
 
 @[simp]
 lemma preNormEDS'_zero : preNormEDS' b c d 0 = 0 := by
@@ -256,8 +256,8 @@ lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
     · simp
     · simp
     · simp
-    · simp only [Int.natCast_add, Nat.cast_one]
-      rw [Int.add_sub_cancel, show (m : ℤ) + 1 + 1 + 1 = m + 1 + 2 by rfl, Int.add_sub_cancel]
+    · simp_rw [Int.natCast_add, Nat.cast_one, Int.add_sub_cancel,
+        show (m : ℤ) + 1 + 1 + 1 = m + 1 + 2 by rfl, Int.add_sub_cancel]
       exact preNormEDS_even_ofNat ..
   | neg h m =>
     simp_rw [show 2 * -(m : ℤ) = -(2 * m) by omega, show -(m : ℤ) - 1 = -(m + 1) by omega,
@@ -273,8 +273,8 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
     rcases m with _ | _ | m
     · simp
     · simp
-    · simp only [Int.natCast_add, Nat.cast_one, Int.even_add_one, not_not, Int.even_coe_nat]
-      rw [Int.add_sub_cancel]
+    · simp_rw [Int.natCast_add, Nat.cast_one, Int.even_add_one, not_not, Int.even_coe_nat,
+        Int.add_sub_cancel]
       exact preNormEDS_odd_ofNat ..
   | neg h m =>
     rcases m with _ | m
@@ -362,6 +362,42 @@ lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
 
 end NormEDS
 
+section ComplEDS
+
+/-- The 2-complement sequence `C₂ : ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
+`W(m) ∣ W(2 * m)`. In other words, `C₂(m) * W(m) = W(2 * m)` for any `m ∈ ℤ`. -/
+def complEDS₂ (m : ℤ) : R :=
+  (preNormEDS (b ^ 4) c d (m - 1) ^ 2 * preNormEDS (b ^ 4) c d (m + 2) -
+    preNormEDS (b ^ 4) c d (m - 2) * preNormEDS (b ^ 4) c d (m + 1) ^ 2) * if Even m then 1 else b
+
+@[simp]
+lemma complEDS₂_zero : complEDS₂ b c d 0 = 2 := by
+  simp [complEDS₂, one_add_one_eq_two]
+
+@[simp]
+lemma complEDS₂_one : complEDS₂ b c d 1 = b := by
+  simp [complEDS₂]
+
+@[simp]
+lemma complEDS₂_two : complEDS₂ b c d 2 = d := by
+  simp [complEDS₂]
+
+@[simp]
+lemma complEDS₂_three : complEDS₂ b c d 3 = preNormEDS (b ^ 4) c d 5 * b - d ^ 2 * b := by
+  simp [complEDS₂, if_neg (by decide : ¬Even (3 : ℤ)), sub_mul]
+
+@[simp]
+lemma complEDS₂_four : complEDS₂ b c d 4 =
+    c ^ 2 * preNormEDS (b ^ 4) c d 6 - preNormEDS (b ^ 4) c d 5 ^ 2 := by
+  simp [complEDS₂, if_pos (by decide : Even (4 : ℤ))]
+
+@[simp]
+lemma complEDS₂_neg (m : ℤ) : complEDS₂ b c d (-m) = complEDS₂ b c d m := by
+  simp_rw [complEDS₂, ← neg_add', ← sub_neg_eq_add, ← neg_sub', preNormEDS_neg, even_neg]
+  ring1
+
+end ComplEDS
+
 section Map
 
 variable {S : Type v} [CommRing S] (f : R →+* S)
@@ -378,9 +414,12 @@ lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f
     repeat rw [ih _ <| by linarith only]
 
 lemma map_preNormEDS (n : ℤ) : f (preNormEDS b c d n) = preNormEDS (f b) (f c) (f d) n := by
-  rw [preNormEDS, map_mul, map_intCast, map_preNormEDS', preNormEDS]
+  simp only [preNormEDS, map_preNormEDS', map_mul, map_intCast]
 
 lemma map_normEDS (n : ℤ) : f (normEDS b c d n) = normEDS (f b) (f c) (f d) n := by
-  rw [normEDS, map_mul, map_preNormEDS, map_pow, apply_ite f, map_one, normEDS]
+  simp only [normEDS, map_preNormEDS, apply_ite f, map_pow, map_mul, map_one]
+
+lemma map_complEDS₂ (n : ℤ) : f (complEDS₂ b c d n) = complEDS₂ (f b) (f c) (f d) n := by
+  simp only [complEDS₂, map_preNormEDS, apply_ite f, map_pow, map_mul, map_sub, map_one, ]
 
 end Map
