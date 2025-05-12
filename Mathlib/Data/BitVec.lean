@@ -63,42 +63,25 @@ instance : CommSemiring (BitVec w) :=
     (fun _ => rfl) /- toFin_natCast -/
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
-@[simp] lemma ofFin_neg {x : Fin (2 ^ w)} : ofFin (-x) = -(ofFin x) := by
+@[simp] theorem ofFin_neg {x : Fin (2 ^ w)} : ofFin (-x) = -(ofFin x) := by
   rfl
 
-@[simp] lemma ofFin_natCast (n : ℕ) : ofFin (n : Fin (2^w)) = n := by
+@[simp, norm_cast] theorem ofFin_natCast (n : ℕ) : ofFin (n : Fin (2^w)) = (n : BitVec w) := by
   rfl
 
-lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
+@[simp, norm_cast] theorem toFin_natCast (n : ℕ) : toFin (n : BitVec w) = (n : Fin (2^w)) := by
   rfl
-
--- theorem intCast_val {n : Nat} [NeZero n] (a : Int) : (a : Fin n).val = (a % n).toNat := sorry
-
-theorem toInt_eq_bmod {w : Nat} (x : BitVec w) : x.toInt = Int.bmod x.toNat (2^w) := by
-  unfold BitVec.toInt
-  unfold Int.bmod
-  split <;> rename_i h
-  · rw [if_pos]
-    · rw [toNat_mod_cancel']
-    · rw [toNat_mod_cancel']
-      omega
-  · rw [if_neg]
-    · rw [toNat_mod_cancel']
-    · rw [toNat_mod_cancel']
-      omega
 
 @[simp] theorem toInt_ofFin {w : Nat} (x : Fin (2^w)) :
     (BitVec.ofFin x).toInt = Int.bmod x (2^w) := by
-  simp [toInt_eq_bmod]
+  simp [toInt_eq_toNat_bmod]
 
 @[simp] theorem toNat_intCast {w : Nat} (x : Int) : (x : BitVec w).toNat = (x % 2^w).toNat := by
   change (BitVec.ofInt w x).toNat = _
   simp
 
 @[simp] theorem toInt_intCast {w : Nat} (x : Int) : (x : BitVec w).toInt = Int.bmod x (2^w) := by
-  rw [toInt_eq_bmod]
-  rw [toNat_intCast]
-  rw [Int.natCast_toNat_eq_self.mpr]
+  rw [toInt_eq_toNat_bmod, toNat_intCast, Int.natCast_toNat_eq_self.mpr]
   · have h : (2 ^ w : Int) = (2 ^ w : Nat) := by simp
     rw [h, Int.emod_bmod]
   · apply Int.emod_nonneg
@@ -107,12 +90,12 @@ theorem toInt_eq_bmod {w : Nat} (x : BitVec w) : x.toInt = Int.bmod x.toNat (2^w
 theorem _root_.Fin.intCast_def {n : Nat} [NeZero n] (x : Int) :
     (x : Fin n) = if 0 ≤ x then Fin.ofNat' n x.natAbs else -Fin.ofNat' n x.natAbs := rfl
 
-theorem _root_.Int.mod_natAbs_of_nonneg {x : Int} (h : 0 ≤ x) {n : Nat} :
+theorem _root_.Int.emod_natAbs_of_nonneg {x : Int} (h : 0 ≤ x) {n : Nat} :
     x.natAbs % n = (x % n).toNat := by
   match x, h with
   | (x : ℕ), _ => rw [Int.natAbs_natCast, Int.ofNat_mod_ofNat, Int.toNat_natCast]
 
-theorem _root_.Int.mod_natAbs_of_neg {x : Int} (h : x < 0) {n : Nat} (w : n ≠ 0) :
+theorem _root_.Int.emod_natAbs_of_neg {x : Int} (h : x < 0) {n : Nat} (w : n ≠ 0) :
     x.natAbs % n = if (n : Int) ∣ x then 0 else n - (x % n).toNat := by
   match x, h with
   | -(x + 1 : ℕ), _ =>
@@ -141,12 +124,12 @@ theorem _root_.Fin.val_neg {n : Nat} [NeZero n] (x : Fin n) :
     (x : Fin n).val = (x % n).toNat := by
   rw [Fin.intCast_def]
   split <;> rename_i h
-  · simp [Int.mod_natAbs_of_nonneg h]
+  · simp [Int.emod_natAbs_of_nonneg h]
   · simp only [Fin.ofNat'_eq_cast, Fin.val_neg, Fin.natCast_eq_zero, Fin.val_natCast]
     split <;> rename_i h
     · rw [← Int.natCast_dvd] at h
       rw [Int.emod_eq_zero_of_dvd h, Int.toNat_zero]
-    · rw [Int.mod_natAbs_of_neg (by omega) (NeZero.ne n), if_neg (by rwa [← Int.natCast_dvd] at h)]
+    · rw [Int.emod_natAbs_of_neg (by omega) (NeZero.ne n), if_neg (by rwa [← Int.natCast_dvd] at h)]
       have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; omega)
       omega
 

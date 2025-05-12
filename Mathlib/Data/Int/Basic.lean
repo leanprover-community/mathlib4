@@ -82,7 +82,7 @@ lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injectiv
   mp := by
     rintro ⟨a, h⟩
     obtain rfl | hm := m.eq_zero_or_pos
-    · simpa using h
+    · simpa only [Nat.zero_dvd, cast_ofNat_Int, Int.zero_mul, natCast_eq_zero] using h
     have ha : 0 ≤ a := Int.not_lt.1 fun ha ↦ by
       simpa [← h, Int.not_lt.2 (Int.natCast_nonneg _)]
         using Int.mul_neg_of_pos_of_neg (natCast_pos.2 hm) ha
