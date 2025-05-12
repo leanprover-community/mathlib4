@@ -37,12 +37,10 @@ def explicitImports : Array Lean.Name := #[`Batteries, `Std]
 def eraseExplicitImports (names : Array Lean.Name) : Array Lean.Name :=
   explicitImports.foldl Array.erase names
 
-/-- Check that `Mathlib.Init` is transitively imported in all of Mathlib:
-if not, return the number of modules which did not import `Mathlib.Init`.
-
-Every file imported in `Mathlib.Init` should in turn import the `Header` linter
+/-- Check that `Mathlib.Init` is transitively imported in all of Mathlib.
+Moreover, every file imported in `Mathlib.Init` should in turn import the `Header` linter
 (except for the header linter itself, of course).
-Return `true` iff there was an error.
+Return the number of modules which violated one of these rules.
 -/
 def missingInitImports : IO Nat := do
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
@@ -87,7 +85,7 @@ def missingInitImports : IO Nat := do
 
 
 /-- Verifies that every file in the `scripts` directory is documented in `scripts/README.md`.
-Return the number of undocumented scripts (if any). -/
+Return the number of undocumented scripts. -/
 def undocumentedScripts : IO Nat := do
   -- Retrieve all scripts (except for the `bench` directory).
   let allScripts ← (walkDir "scripts" fun p ↦ pure (p.components.getD 1 "" != "bench"))
@@ -124,7 +122,7 @@ def modulesNotUpperCamelCase (modules : Array Lean.Name) : IO Nat := do
   for bad in badNames do
     let upperCamelName := Lake.toUpperCamelCase bad
     let good := if bad.toString.endsWith "_" then s!"{upperCamelName}_" else upperCamelName.toString
-    IO.eprintln s!"error: module name '{bad}' is not in 'UpperCamelCase': it should be '{upperCamelName}' instead"
+    IO.eprintln s!"error: module name '{bad}' is not in 'UpperCamelCase': it should be '{good}' instead"
   return badNames.size
 
 /-- Some unit tests for `modulesNotUpperCamelCase` -/
