@@ -386,6 +386,12 @@ theorem adjoin_rank_eq_rank_left_of_isAlgebraic (H : A.LinearDisjoint L)
   simp_rw [Algebra.smul_def]
   rfl
 
+theorem adjoin_rank_eq_rank_left_of_isAlgebraic_left (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F A] := H.adjoin_rank_eq_rank_left_of_isAlgebraic (.inl ‹_›)
+
+theorem adjoin_rank_eq_rank_left_of_isAlgebraic_right (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F L] := H.adjoin_rank_eq_rank_left_of_isAlgebraic (.inr ‹_›)
+
 /-- If `A` and `L` are linearly disjoint, one of them is algebraic, then `[L(A) : A] = [L : F]`.
 Note that in Lean `L(A)` is not naturally an `A`-algebra,
 so this result is stated in a cumbersome way. -/
@@ -410,14 +416,11 @@ theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (H : A.LinearDisjoint
   simp_rw [Algebra.smul_def]
   rfl
 
-/-- The same-universe version of
-`IntermediateField.LinearDisjoint.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic`. -/
-theorem adjoin_rank_eq_rank_right_of_isAlgebraic {L : Type v} [Field L] [Algebra F L] [Algebra L E]
-    [IsScalarTower F L E] (H : A.LinearDisjoint L)
-    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
-    Module.rank A (extendScalars (show A ≤ (adjoin L (A : Set E)).restrictScalars F from
-      subset_adjoin L (A : Set E))) = Module.rank F L := by
-  simpa only [Cardinal.lift_id] using H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic halg
+theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic_left (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F A] := H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (.inl ‹_›)
+
+theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic_right (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F L] := H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (.inr ‹_›)
 
 /-- If `A` and `L` are linearly disjoint, one of them is algebraic, then
 `[L : F] * [E : L(A)] = [E : A]`. -/
@@ -430,13 +433,38 @@ theorem lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic (H : A.LinearDisj
   exact rank_mul_rank A (extendScalars
     (show A ≤ (adjoin L (A : Set E)).restrictScalars F from subset_adjoin L (A : Set E))) E
 
+section
+
+variable {L : Type v} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
+
+/-- The same-universe version of
+`IntermediateField.LinearDisjoint.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic`. -/
+theorem adjoin_rank_eq_rank_right_of_isAlgebraic (H : A.LinearDisjoint L)
+    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
+    Module.rank A (extendScalars (show A ≤ (adjoin L (A : Set E)).restrictScalars F from
+      subset_adjoin L (A : Set E))) = Module.rank F L := by
+  simpa only [Cardinal.lift_id] using H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic halg
+
+theorem adjoin_rank_eq_rank_right_of_isAlgebraic_left (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F A] := H.adjoin_rank_eq_rank_right_of_isAlgebraic (.inl ‹_›)
+
+theorem adjoin_rank_eq_rank_right_of_isAlgebraic_right (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F L] := H.adjoin_rank_eq_rank_right_of_isAlgebraic (.inr ‹_›)
+
 /-- The same-universe version of
 `IntermediateField.LinearDisjoint.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic`. -/
-theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic {L : Type v} [Field L] [Algebra F L]
-    [Algebra L E] [IsScalarTower F L E] (H : A.LinearDisjoint L)
+theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic (H : A.LinearDisjoint L)
     (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
     Module.rank F L * Module.rank (adjoin L (A : Set E)) E = Module.rank A E := by
   simpa only [Cardinal.lift_id] using H.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic halg
+
+theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic_left (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F A] := H.rank_right_mul_adjoin_rank_eq_of_isAlgebraic (.inl ‹_›)
+
+theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic_right (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F L] := H.rank_right_mul_adjoin_rank_eq_of_isAlgebraic (.inr ‹_›)
+
+end
 
 /-- If `A` and `L` have coprime degree over `F`, then they are linearly disjoint. -/
 theorem of_finrank_coprime (H : (finrank F A).Coprime (finrank F L)) : A.LinearDisjoint L :=

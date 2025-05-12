@@ -110,7 +110,7 @@ intermediate result used to prove it. -/
 lemma sepDegree_eq_of_isPurelyInseparable_of_isSeparable
     [IsPurelyInseparable F E] [Algebra.IsSeparable E K] : sepDegree F K = Module.rank E K := by
   have h := (separableClosure F K).linearDisjoint_of_isPurelyInseparable_of_isSeparable E
-    |>.adjoin_rank_eq_rank_left_of_isAlgebraic (.inl inferInstance) |>.symm
+    |>.adjoin_rank_eq_rank_left_of_isAlgebraic_left |>.symm
   rwa [separableClosure.adjoin_eq_of_isAlgebraic_of_isSeparable K, rank_top'] at h
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable,
@@ -159,7 +159,7 @@ lemma lift_rank_mul_lift_insepDegree_of_isPurelyInseparable [IsPurelyInseparable
     Cardinal.lift.{w} (Module.rank F E) * Cardinal.lift.{v} (insepDegree E K) =
     Cardinal.lift.{v} (insepDegree F K) := by
   have h := (separableClosure F K).linearDisjoint_of_isPurelyInseparable_of_isSeparable E
-    |>.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic (.inl inferInstance)
+    |>.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic_left
   rwa [separableClosure.adjoin_eq_of_isAlgebraic] at h
 
 /-- The same-universe version of `Field.lift_rank_mul_lift_insepDegree_of_isPurelyInseparable`. -/
