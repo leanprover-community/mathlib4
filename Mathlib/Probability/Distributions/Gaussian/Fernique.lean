@@ -312,7 +312,7 @@ lemma IsGaussian.exists_integrable_exp_sq_of_isCentered (hμ : IsCentered μ) :
     · positivity
   refine ⟨C, hC_pos, ?_⟩
   -- main part of the proof: prove integrability by bounding the measure of a sequence of annuli
-  refine ⟨Measurable.aestronglyMeasurable <| by fun_prop, ?_⟩
+  refine ⟨by fun_prop, ?_⟩
   simp only [HasFiniteIntegral, ← ofReal_norm_eq_enorm, Real.norm_eq_abs, Real.abs_exp]
   -- `⊢ ∫⁻ (a : E), ENNReal.ofReal (rexp (C * ‖a‖ ^ 2)) ∂μ < ⊤`
   let t : ℕ → ℝ := Nat.rec a fun n tn ↦ a + √2 * tn -- t 0 = a; t (n + 1) = a + √2 * t n
@@ -512,10 +512,7 @@ theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
     replace hC := hC.1
     simp only [Function.comp_apply, ContinuousLinearEquiv.coe_neg] at hC
     filter_upwards [hC] with y hy
-    rw [integrable_map_measure] at hy
-    rotate_left
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
-    · exact measurable_id.neg.aemeasurable
+    rw [integrable_map_measure (by fun_prop) (by fun_prop)] at hy
     convert hy with x
     simp only [Function.comp_apply, Pi.neg_apply, id_eq, Real.exp_eq_exp, mul_eq_mul_left_iff,
       norm_nonneg, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_left_inj₀]
@@ -528,9 +525,8 @@ theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
   have hε : 0 < ε := div_pos (by rwa [sub_pos]) (by positivity)
   suffices ∀ x, rexp (C' * ‖x‖ ^ 2) ≤ rexp (C/ε * ‖y‖ ^ 2) * rexp (C * ‖x - y‖ ^ 2) by
     refine integrable_of_le_of_le (g₁ := 0)
-      (g₂ := fun x ↦ rexp (C/ε * ‖y‖ ^ 2) * rexp (C * ‖x - y‖ ^ 2)) ?_ ?_ ?_
+      (g₂ := fun x ↦ rexp (C/ε * ‖y‖ ^ 2) * rexp (C * ‖x - y‖ ^ 2)) (by fun_prop) ?_ ?_
       (integrable_const _) (hy.const_mul _)
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
     · exact ae_of_all _ fun _ ↦ by positivity
     · exact ae_of_all _ this
   intro x
@@ -573,7 +569,7 @@ lemma IsGaussian.memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp 
   suffices MemLp (fun x ↦ ‖x‖ ^ 2) (p / 2) μ by
     rw [← memLp_norm_rpow_iff (q := 2) _ (by simp) (by simp)]
     · simpa using this
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
+    · fun_prop
   lift p to ℝ≥0 using hp
   convert memLp_of_mem_interior_integrableExpSet ?_ (p / 2)
   · simp
@@ -581,7 +577,7 @@ lemma IsGaussian.memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp 
   have hC_neg : Integrable (fun x ↦ rexp (-C * ‖x‖ ^ 2)) μ := by -- `-C` could be any negative
     refine integrable_of_le_of_le (g₁ := 0) (g₂ := 1) ?_ ?_ ?_
       (integrable_const _) (integrable_const _)
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
+    · fun_prop
     · exact ae_of_all _ fun _ ↦ by positivity
     · refine ae_of_all _ fun x ↦ ?_
       simp only [neg_mul, Pi.one_apply, Real.exp_le_one_iff, Left.neg_nonpos_iff]
@@ -633,7 +629,7 @@ instance (μ : Measure E) [IsGaussian μ] :
       rw [integral_map]
       rotate_left
       · fun_prop
-      · exact Measurable.aestronglyMeasurable <| by fun_prop
+      · fun_prop
       simp only [map_sub]
       rw [integral_sub, integral_const, ← IsGaussian.integral_continuousLinearMap]
       · simp

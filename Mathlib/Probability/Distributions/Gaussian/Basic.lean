@@ -55,12 +55,10 @@ lemma isCentered_map_sub_integral_id [CompleteSpace E] [BorelSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] (h_Lp : MemLp id 1 μ) :
     IsCentered (μ.map (fun x ↦ x - μ[id])) := by
   intro L
-  rw [integral_map]
-  · simp only [map_sub]
-    rw [integral_sub (h_Lp.integrable_continuousLinearMap L) (integrable_const _)]
-    simp [← ContinuousLinearMap.integral_comm_of_memLp_id h_Lp]
-  · fun_prop
-  · exact Measurable.aestronglyMeasurable <| by fun_prop
+  rw [integral_map (by fun_prop) (by fun_prop)]
+  simp only [map_sub]
+  rw [integral_sub (h_Lp.integrable_continuousLinearMap L) (integrable_const _)]
+  simp [← ContinuousLinearMap.integral_comm_of_memLp_id h_Lp]
 
 end Centered
 
@@ -99,11 +97,9 @@ lemma IsGaussian.memLp_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L :
     (p : ℝ≥0∞) (hp : p ≠ ∞) :
     MemLp L p μ := by
   suffices MemLp (id ∘ L) p μ from this
-  rw [← memLp_map_measure_iff, IsGaussian.map_eq_gaussianReal L]
-  · convert memLp_id_gaussianReal p.toNNReal
-    simp [hp]
-  · exact Measurable.aestronglyMeasurable <| by fun_prop
-  · fun_prop
+  rw [← memLp_map_measure_iff (by fun_prop) (by fun_prop), IsGaussian.map_eq_gaussianReal L]
+  convert memLp_id_gaussianReal p.toNNReal
+  simp [hp]
 
 @[fun_prop]
 lemma IsGaussian.integrable_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L : E →L[ℝ] ℝ) :
@@ -164,9 +160,7 @@ lemma isGaussian_map_prod_add [SecondCountableTopology E]
       · fun_prop
     have : ∫ x, L x ∂((μ.prod ν).map (fun p ↦ p.1 + p.2))
           = ∫ x, x ∂(((μ.map L).prod (ν.map L)).map (fun p ↦ p.1 + p.2)) := by
-        rw [← h1, integral_map (φ := L)]
-        · fun_prop
-        · exact measurable_id.aestronglyMeasurable
+        rw [← h1, integral_map (φ := L) (by fun_prop) (by fun_prop)]
     rw [h1, this, ← variance_id_map (by fun_prop), h1, IsGaussian.map_eq_gaussianReal L,
       IsGaussian.map_eq_gaussianReal L, gaussianReal_map_prod_add]
     congr
@@ -187,9 +181,8 @@ instance isGaussian_map (L : E →L[ℝ] F) : IsGaussian (μ.map L) where
     change Measure.map (L'.comp L) μ = _
     rw [IsGaussian.map_eq_gaussianReal (L'.comp L)]
     congr
-    · rw [integral_map (by fun_prop)]
-      · simp
-      · exact Measurable.aestronglyMeasurable <| by fun_prop
+    · rw [integral_map (by fun_prop) (by fun_prop)]
+      simp
     · rw [← variance_id_map (by fun_prop)]
       conv_rhs => rw [← variance_id_map (by fun_prop)]
       rw [Measure.map_map (by fun_prop) (by fun_prop)]
@@ -213,9 +206,8 @@ lemma isCentered_conv_map_neg [SecondCountableTopology E] :
     rw [integral_add (by fun_prop) (by fun_prop)]
     simp
   _ = 0 := by
-    rw [integral_map (by fun_prop)]
-    · simp [integral_neg]
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
+    rw [integral_map (by fun_prop) (by fun_prop)]
+    simp [integral_neg]
 
 end Map
 
@@ -318,14 +310,10 @@ lemma variance_continuousLinearMap_prod (L : E × F →L[ℝ] ℝ) :
     congr
     · have : μ = (μ.prod ν).map (fun p ↦ p.1) := by simp
       conv_rhs => rw [this]
-      rw [integral_map]
-      · fun_prop
-      · exact Measurable.aestronglyMeasurable <| by fun_prop
+      rw [integral_map (by fun_prop) (by fun_prop)]
     · have : ν = (μ.prod ν).map (fun p ↦ p.2) := by simp
       conv_rhs => rw [this]
-      rw [integral_map]
-      · fun_prop
-      · exact Measurable.aestronglyMeasurable <| by fun_prop
+      rw [integral_map (by fun_prop) (by fun_prop)]
     · rw [integral_prod_mul]
 
 /-- A product of Gaussian distributions is Gaussian. -/

@@ -501,7 +501,7 @@ lemma variance_id_gaussianReal : Var[fun x ↦ x; gaussianReal μ v] = v := by
   simp only [integral_id_gaussianReal]
   calc ∫ ω, (ω - μ) ^ 2 ∂gaussianReal μ v
   _ = ∫ ω, ω ^ 2 ∂(gaussianReal μ v).map (fun x ↦ x - μ) := by
-    rw [integral_map (by fun_prop) (Measurable.aestronglyMeasurable <| by fun_prop)]
+    rw [integral_map (by fun_prop) (by fun_prop)]
   _ = ∫ ω, ω ^ 2 ∂(gaussianReal 0 v) := by simp [gaussianReal_map_sub_const]
   _ = iteratedDeriv 2 (mgf (fun x ↦ x) (gaussianReal 0 v)) 0 := by
     rw [iteratedDeriv_mgf_zero] <;> simp
@@ -550,8 +550,7 @@ lemma gaussianReal_map_continuousLinearMap (L : ℝ →L[ℝ] ℝ) :
 lemma integral_linearMap_gaussianReal (L : ℝ →ₗ[ℝ] ℝ) :
     ∫ x, L x ∂(gaussianReal μ v) = L μ := by
   have : ∫ x, L x ∂(gaussianReal μ v) = ∫ x, x ∂((gaussianReal μ v).map L) := by
-    rw [integral_map (φ := L) (by fun_prop)]
-    exact measurable_id.aestronglyMeasurable
+    rw [integral_map (φ := L) (by fun_prop) (by fun_prop)]
   simp [this, gaussianReal_map_linearMap]
 
 @[simp]
