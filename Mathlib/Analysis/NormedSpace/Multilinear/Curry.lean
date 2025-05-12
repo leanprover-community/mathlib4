@@ -331,7 +331,7 @@ def ContinuousLinearMap.uncurryMid (p : Fin (n + 1))
     ContinuousMultilinearMap 𝕜 Ei G :=
   (ContinuousMultilinearMap.toMultilinearMapLinear ∘ₗ f.toLinearMap).uncurryMid p
     |>.mkContinuous ‖f‖ fun m => by exact ContinuousLinearMap.norm_map_removeNth_le f m
-  
+
 /-- Interpret a continuous multilinear map in `n + 1` variables
 as a continuous linear map in `p`th variable
 with values in the continuous multilinear maps in the other variables. -/
