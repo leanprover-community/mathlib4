@@ -223,7 +223,7 @@ end GaloisConnection
 choice function, to give better definitional equalities when lifting order structures. Dual
 to `GaloisCoinsertion` -/
 structure GaloisInsertion {α β : Type*} [Preorder α] [Preorder β] (l : α → β) (u : β → α) where
-  /-- A contructive choice function for images of `l`. -/
+  /-- A constructive choice function for images of `l`. -/
   choice : ∀ x : α, u (l x) ≤ x → β
   /-- The Galois connection associated to a Galois insertion. -/
   gc : GaloisConnection l u
@@ -289,7 +289,7 @@ end GaloisInsertion
 choice function, to give better definitional equalities when lifting order structures. Dual to
 `GaloisInsertion` -/
 structure GaloisCoinsertion [Preorder α] [Preorder β] (l : α → β) (u : β → α) where
-  /-- A contructive choice function for images of `u`. -/
+  /-- A constructive choice function for images of `u`. -/
   choice : ∀ x : β, x ≤ l (u x) → α
   /-- The Galois connection associated to a Galois coinsertion. -/
   gc : GaloisConnection l u
