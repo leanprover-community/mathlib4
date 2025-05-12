@@ -20,7 +20,7 @@ by radicals, then its minimal polynomial has solvable Galois group.
 ## Main results
 
 * the Abel-Ruffini Theorem `solvableByRad.isSolvable'` : An irreducible polynomial with a root
-that is solvable by radicals has a solvable Galois group.
+  that is solvable by radicals has a solvable Galois group.
 -/
 
 noncomputable section
