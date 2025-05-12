@@ -500,7 +500,7 @@ lemma invtSubmodule_reflection:
     exact h₃
   let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
   let I := LieSubalgebra.lieSpan K L gg
-  have rr5 : I ≠ ⊤ := by
+  have s₅ : I ≠ ⊤ := by
     obtain ⟨j, hj⟩ := (Set.ne_univ_iff_exists_not_mem Φ).mp hc
     obtain ⟨z, hz₁, hz₂⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
     by_contra! hI
@@ -514,16 +514,12 @@ lemma invtSubmodule_reflection:
           simp only [Subtype.forall] at this
           exact(this x hx1_mem) z hz₁
         | zero => exact zero_lie z
-        | add a b c d e f =>
-          simp only [add_lie]
-          rw [e, f, add_zero]
-        | smul a b c d =>
+        | add _ _ _ _ e f => rw [add_lie, e, f, add_zero]
+        | smul _ _ _ d =>
           simp only [smul_lie, smul_eq_zero]
           right
           exact d
-        | lie a b c d e f =>
-          simp only [lie_lie]
-          rw [e, f, lie_zero, lie_zero, sub_self]
+        | lie _ _ _ _ e f => rw [lie_lie, e, f, lie_zero, lie_zero, sub_self]
       exact rrr
     rw [LieAlgebra.center_eq_bot (R := K) (L := L)] at center_element
     exact hz₂ center_element
@@ -639,8 +635,8 @@ lemma invtSubmodule_reflection:
   have rr9 : LieAlgebra.IsSimple K L := inferInstance
   have := rr9.eq_bot_or_eq_top I'
   have rr52 : I' ≠ ⊤ := by
-    rw [← hhh] at rr5
-    exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) rr5
+    rw [← hhh] at s₅
+    exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₅
   have rr62 : I' ≠ ⊥ := by
     rw [← hhh] at rr6
     exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) rr6
