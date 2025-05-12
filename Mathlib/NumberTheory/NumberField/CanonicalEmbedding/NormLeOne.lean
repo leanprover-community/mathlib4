@@ -376,7 +376,7 @@ theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
   induction hx using Submodule.span_induction with
   | mem _ h =>
       obtain ⟨w, rfl⟩ := h
-      simp_rw [completeFamily,  dif_neg w.prop, sum_expMap_symm_apply (coe_ne_zero _),
+      simp_rw [completeFamily, dif_neg w.prop, sum_expMap_symm_apply (coe_ne_zero _),
         Units.norm, Rat.cast_one, Real.log_one]
   | zero => simp
   | add _ _ _ _ hx hy => simp [sum_add_distrib, hx, hy]
