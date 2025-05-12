@@ -16,7 +16,8 @@ In this file, we define and prove results about the Dedekind zeta function of a 
 
 * `NumberField.dedekindZeta`: the Dedekind zeta function.
 * `NumberField.dedekindZeta_residue`: **Dirichlet class number formula** computation of the
-  residue of the Dedekind zeta function at `s = 1`.
+  residue of the Dedekind zeta function at `s = 1`, see Chap. 7 of
+  [D. Marcus, *Number Fields*][marcus1977number]
 
 # TODO
 
