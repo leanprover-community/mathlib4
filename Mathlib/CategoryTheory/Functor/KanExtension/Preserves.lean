@@ -31,6 +31,16 @@ class PreservesLeftKanExtension where
   preserves : ∀ (F' : C ⥤ B) (α : F ⟶ L ⋙ F') [IsLeftKanExtension F' α],
     IsLeftKanExtension (F' ⋙ G) <| whiskerRight α G ≫ (Functor.associator _ _ _).hom
 
+/-- Alternative constructor for `PreservesLeftKanExtension`, phrased in terms of
+`LeftExtension.IsUniversal` instead. -/
+def PreservesLeftKanExtension.mk'
+    (preserves : ∀ {E : LeftExtension L F}, E.IsUniversal →
+      Nonempty (LeftExtension.whiskerRight L F G|>.obj E).IsUniversal) :
+    G.PreservesLeftKanExtension F L where
+  preserves _ _ h :=
+    ⟨⟨Limits.IsInitial.equivOfIso
+        (LeftExtension.whiskerRightIsoMk _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
+
 attribute [instance] PreservesLeftKanExtension.preserves
 
 /-- `G.PreservesLeftKanExtensionAt F L c` asserts that `G` preserves pointwise all left kan
@@ -192,6 +202,16 @@ of `F` along `L` -/
 class PreservesRightKanExtension where
   preserves : ∀ (F' : C ⥤ B) (α : L ⋙ F' ⟶ F) [IsRightKanExtension F' α],
     IsRightKanExtension (F' ⋙ G) <| (Functor.associator _ _ _).inv ≫ whiskerRight α G
+
+/-- Alternative constructor for `PreservesRightKanExtension`, phrased in terms of
+`RightExtension.IsUniversal` instead. -/
+def PreservesRightKanExtension.mk'
+    (preserves : ∀ {E : RightExtension L F}, E.IsUniversal →
+      Nonempty (RightExtension.whiskerRight L F G|>.obj E).IsUniversal) :
+    G.PreservesRightKanExtension F L where
+  preserves _ _ h :=
+    ⟨⟨Limits.IsTerminal.equivOfIso
+        (RightExtension.whiskerRightIsoMk _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
 
 attribute [instance] PreservesRightKanExtension.preserves
 
