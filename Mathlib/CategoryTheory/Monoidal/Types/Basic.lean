@@ -5,7 +5,7 @@ Authors: Michael Jendrusch, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
 # The category of types is a (symmetric) monoidal category
@@ -20,9 +20,10 @@ universe v u
 
 namespace CategoryTheory
 
-instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) where
-  product := Types.binaryProductLimitCone
-  terminal := Types.terminalLimitCone
+instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) :=
+  .ofChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
+
+instance : BraidedCategory (Type u) := .ofChosenFiniteProducts
 
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :

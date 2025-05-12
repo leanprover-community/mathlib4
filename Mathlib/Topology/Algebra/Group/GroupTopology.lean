@@ -33,7 +33,7 @@ structure GroupTopology (α : Type u) [Group α] : Type u
 /-- An additive group topology on an additive group `α` is a topology for which addition and
 negation are continuous. -/
 structure AddGroupTopology (α : Type u) [AddGroup α] : Type u
-    extends TopologicalSpace α, IsTopologicalAddGroup α
+  extends TopologicalSpace α, IsTopologicalAddGroup α
 
 attribute [to_additive] GroupTopology
 

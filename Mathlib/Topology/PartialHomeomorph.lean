@@ -946,7 +946,7 @@ variable {ι : Type*} [Finite ι] {X Y : ι → Type*} [∀ i, TopologicalSpace 
   [∀ i, TopologicalSpace (Y i)] (ei : ∀ i, PartialHomeomorph (X i) (Y i))
 
 /-- The product of a finite family of `PartialHomeomorph`s. -/
-@[simps toPartialEquiv]
+@[simps! toPartialEquiv apply symm_apply source target]
 def pi : PartialHomeomorph (∀ i, X i) (∀ i, Y i) where
   toPartialEquiv := PartialEquiv.pi fun i => (ei i).toPartialEquiv
   open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
@@ -1138,17 +1138,11 @@ theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) := by
   exact e.isOpen_image_of_subset_source (e.open_source.isOpenMap_subtype_val V hV)
     fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_restrict := isOpenEmbedding_restrict
-
 /-- A partial homeomorphism whose source is all of `X` defines an open embedding of `X` into `Y`.
 The converse is also true; see `IsOpenEmbedding.toPartialHomeomorph`. -/
 theorem to_isOpenEmbedding (h : e.source = Set.univ) : IsOpenEmbedding e :=
   e.isOpenEmbedding_restrict.comp
     ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.isOpenEmbedding
-
-@[deprecated (since := "2024-10-18")]
-alias to_openEmbedding := to_isOpenEmbedding
 
 end PartialHomeomorph
 

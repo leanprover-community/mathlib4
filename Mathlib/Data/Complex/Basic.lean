@@ -3,11 +3,10 @@ Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Image
+import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Tactic.Ring
 
 /-!
@@ -80,8 +79,6 @@ def ofReal (r : ℝ) : ℂ :=
   ⟨r, 0⟩
 instance : Coe ℝ ℂ :=
   ⟨ofReal⟩
-
-@[deprecated (since := "2024-10-12")] alias ofReal' := ofReal
 
 @[simp, norm_cast]
 theorem ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
@@ -270,7 +267,7 @@ theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 +
   ext <;> simp [Complex.equivRealProd, ofReal]
 
 /-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
   { equivRealProd with map_add' := by simp }
 
@@ -400,9 +397,6 @@ def imAddGroupHom : ℂ →+ ℝ where
 @[simp]
 theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
-
-section
-end
 
 /-! ### Cast lemmas -/
 
@@ -614,7 +608,14 @@ lemma ofReal_comp_zsmul (n : ℤ) (f : α → ℝ) : ofReal ∘ (n • f) = n �
 theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
 
 @[simp]
+lemma I_pow_three : I ^ 3 = -I := by rw [pow_succ, I_sq, neg_one_mul]
+
+@[simp]
 theorem I_pow_four : I ^ 4 = 1 := by rw [(by norm_num : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
+
+lemma I_pow_eq_pow_mod (n : ℕ) : I ^ n = I ^ (n % 4) := by
+  conv_lhs => rw [← Nat.div_add_mod n 4]
+  simp [pow_add, pow_mul, I_pow_four]
 
 @[simp]
 theorem sub_re (z w : ℂ) : (z - w).re = z.re - w.re :=

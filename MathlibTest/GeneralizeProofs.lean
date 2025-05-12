@@ -136,3 +136,56 @@ example (H : ∀ x, x = 1) : (if h : ∃ (k : ℕ), k = 1 then Classical.choose 
   apply H
 
 end
+
+section
+
+-- make sure it handles `let` declarations well
+
+-- this was https://github.com/leanprover-community/mathlib4/issues/24222
+example : True := by
+  let n : Fin 1 := ⟨0, id Nat.zero_lt_one⟩
+  generalize_proofs h at *
+  guard_hyp h :ₛ 0 < 1
+  guard_hyp n :=ₛ ⟨0, h⟩
+  trivial
+
+example : True := by
+  have h := Nat.zero_lt_one
+  let n : Fin 1 := ⟨0, id Nat.zero_lt_one⟩
+  generalize_proofs at *
+  guard_hyp h :ₛ 0 < 1
+  guard_hyp n :=ₛ ⟨0, h⟩
+  trivial
+
+example : True := by
+  let p := id Nat.zero_lt_one
+  generalize_proofs at *
+  guard_hyp p :ₛ 0 < 1
+  trivial
+
+example : True := by
+  let p := Nat.zero_lt_one
+  generalize_proofs at *
+  guard_hyp p :ₛ 0 < 1
+  let q := id Nat.zero_lt_one
+  generalize_proofs at *
+  fail_if_success change _ at q
+  guard_hyp p :ₛ 0 < 1
+  trivial
+
+example (P : Sort*) (p : P) : True := by
+  let p' : P := p
+  generalize_proofs at *
+  guard_hyp p :ₛ P
+  guard_hyp p' :=ₛ p
+  trivial
+
+example (P : True → Sort*) (p : True → P (by decide)) : True := by
+  let p' := p (by decide)
+  generalize_proofs h at *
+  guard_hyp h :ₛ True
+  guard_hyp p :ₛ True → P h
+  guard_hyp p' :=ₛ p h
+  exact h
+
+end
