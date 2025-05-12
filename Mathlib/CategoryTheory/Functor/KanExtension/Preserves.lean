@@ -36,6 +36,7 @@ attribute [instance] PreservesLeftKanExtension.preserves
 /-- `G.PreservesLeftKanExtensionAt F L c` asserts that `G` preserves pointwise all left kan
 extensions of `F` along `L` at the point `c`. -/
 class PreservesPointwiseLeftKanExtensionAt (c : C) where
+  /-- `G` preserves every pointwise extensions of `F` along `L` at `c`. -/
   preserves : ∀ (E : LeftExtension L F), E.IsPointwiseLeftKanExtensionAt c →
     (LeftExtension.whiskerRight L F G|>.obj E).IsPointwiseLeftKanExtensionAt c
 
@@ -162,6 +163,7 @@ attribute [instance] PreservesRightKanExtension.preserves
 /-- `G.PreservesRightKanExtensionAt F L c` asserts that `G` preserves all right pointwise right kan
 extensions of `F` along `L` at `c`. -/
 class PreservesPointwiseRightKanExtensionAt (c : C) where
+  /-- `G` preserves every pointwise extensions of `F` along `L` at `c`. -/
   preserves : ∀ (E : RightExtension L F), E.IsPointwiseRightKanExtensionAt c →
     (RightExtension.whiskerRight L F G|>.obj E).IsPointwiseRightKanExtensionAt c
 
