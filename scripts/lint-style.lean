@@ -124,7 +124,7 @@ def modulesNotUpperCamelCase (modules : Array Lean.Name) : IO Nat := do
   for bad in badNames do
     let upperCamelName := Lake.toUpperCamelCase bad
     let good := if bad.toString.endsWith "_" then s!"{upperCamelName}_" else upperCamelName.toString
-    IO.eprintln s!"error: module name {bad} is not in 'UpperCamelCase': it should be {good} instead"
+    IO.eprintln s!"error: module name '{bad}' is not in 'UpperCamelCase': it should be '{upperCamelName}' instead"
   return badNames.size
 
 /-- Some unit tests for `modulesNotUpperCamelCase` -/
@@ -140,6 +140,16 @@ def testModulesNotUpperCamelCase : IO Unit := do
   assert!((← modulesNotUpperCamelCase #[`Mathlib.lowerCase]) == 1)
   assert!((← modulesNotUpperCamelCase #[`Mathlib.snake_case]) == 1)
 
+/--
+info: error: module name 'Mathlib.NotFine_.Foo' is not in 'UpperCamelCase': it should be 'Mathlib.NotFine.Foo' instead
+error: module name 'bad_module' is not in 'UpperCamelCase': it should be 'BadModule' instead
+error: module name 'bad_module' is not in 'UpperCamelCase': it should be 'BadModule' instead
+error: module name 'bad_module' is not in 'UpperCamelCase': it should be 'BadModule' instead
+error: module name 'Mathlib.BadModule__' is not in 'UpperCamelCase': it should be 'Mathlib.BadModule_' instead
+error: module name 'Mathlib.lowerCase' is not in 'UpperCamelCase': it should be 'Mathlib.LowerCase' instead
+error: module name 'Mathlib.snake_case' is not in 'UpperCamelCase': it should be 'Mathlib.SnakeCase' instead
+-/
+#guard_msgs in
 #eval testModulesNotUpperCamelCase
 
 /-- Implementation of the `lint-style` command line program. -/
