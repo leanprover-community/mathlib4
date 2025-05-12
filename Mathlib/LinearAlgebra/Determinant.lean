@@ -260,6 +260,7 @@ theorem det_eq_one_of_not_module_finite (h : ¬Module.Finite R M) (f : M →ₗ[
   rw [LinearMap.det, dif_neg, MonoidHom.one_apply]
   exact fun ⟨_, ⟨b⟩⟩ ↦ h (Module.Finite.of_basis b)
 
+@[nontriviality]
 theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
     LinearMap.det (f : M →ₗ[R] M) = 1 := by
   have b : Basis (Fin 0) R M := Basis.empty M
