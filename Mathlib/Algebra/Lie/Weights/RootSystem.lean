@@ -587,15 +587,14 @@ lemma invtSubmodule_reflection:
     | add x1 y1 _ _ hx hy =>
       simp only [add_lie]
       exact LieSubalgebra.add_mem I hx hy
-  have rr8 := (LieSubalgebra.exists_lieIdeal_coe_eq_iff (R := K) (L := L) (K := I)).2 s₇
-  obtain ⟨I', hhh⟩ := rr8
-  have rr9 : LieAlgebra.IsSimple K L := inferInstance
-  have := rr9.eq_bot_or_eq_top I'
-  have rr52 : I' ≠ ⊤ := by
-    rw [← hhh] at s₅
+  obtain ⟨I', h⟩ := (LieSubalgebra.exists_lieIdeal_coe_eq_iff (R := K) (L := L) (K := I)).2 s₇
+  have : LieAlgebra.IsSimple K L := inferInstance
+  have : I' = ⊥ ∨ I' = ⊤ := this.eq_bot_or_eq_top I'
+  have c₁ : I' ≠ ⊤ := by
+    rw [← h] at s₅
     exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₅
-  have rr62 : I' ≠ ⊥ := by
-    rw [← hhh] at s₆
+  have c₂ : I' ≠ ⊥ := by
+    rw [← h] at s₆
     exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₆
   rcases this with h_bot | h_top
   · contradiction
