@@ -543,8 +543,8 @@ lemma invtSubmodule_reflection:
     | mem j x hx =>
       simp [I] at hy
       induction hy using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
-      | mem x1 hx1 =>
-        obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx1
+      | mem x₁ hx₁ =>
+        obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx₁
         have rr79 (j : LieModule.Weight K H L) : j = 0 ∨ j ∈ H.root := by
           have : j = 0 ∨ j ≠ 0 := by
             exact eq_or_ne j 0
@@ -562,7 +562,7 @@ lemma invtSubmodule_reflection:
         simp at ttt
         rw [h] at ttt
         simp at ttt
-        have rrrr : ⁅x, x1⁆ ∈ g := by
+        have rrrr : ⁅x, x₁⁆ ∈ g := by
           exact Set.mem_biUnion hi ttt
         exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
         --obtain ⟨j1, j2⟩ := j
@@ -575,17 +575,17 @@ lemma invtSubmodule_reflection:
           exact Set.mem_biUnion h hx2
         have rrrr2 : x ∈ I := by
           exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
-        have rrrr3 : x1 ∈ I := by
-           exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a hx1
+        have rrrr3 : x₁ ∈ I := by
+           exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a hx₁
         exact LieSubalgebra.lie_mem I rrrr2 rrrr3
-        have key : ⁅x1, x⁆ = 0 := by
+        have key : ⁅x₁, x⁆ = 0 := by
           have := s₄ i jj hi h
           simp at this
-          have ssss2 := this x1 hx1_mem
+          have ssss2 := this x₁ hx1_mem
           have ssss3 := ssss2 x hx
           exact ssss3
-        have : ⁅x, x1⁆ = 0 := by
-          rw [← neg_eq_zero, lie_skew x1 x, key]
+        have : ⁅x, x₁⁆ = 0 := by
+          rw [← neg_eq_zero, lie_skew x₁ x, key]
         rw [this]
         exact LieSubalgebra.zero_mem I
       | zero => simp only [lie_zero, LieSubalgebra.zero_mem, I]
