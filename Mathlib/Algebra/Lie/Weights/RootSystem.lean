@@ -552,8 +552,7 @@ lemma invtSubmodule_reflection:
           right
           refine Finset.mem_filter.mpr ?_
           exact ⟨Finset.mem_univ j, LieModule.Weight.isNonZero_iff_ne_zero.mpr h⟩
-        have step1 := r₁ j
-        rcases step1 with h | h
+        rcases (r₁ j) with h | h
         have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx hx1_mem
         simp at ttt
         rw [h] at ttt
