@@ -39,10 +39,10 @@ theorem range_segment (a b : E) : Set.range (Path.segment a b) = [a -[ℝ] b] :=
   simp only [← segment_apply]
 
 @[simp]
-theorem segment_same (a : E) : Path.segment a a = .refl a := by ext; simp
+protected theorem segment_same (a : E) : Path.segment a a = .refl a := by ext; simp
 
 @[simp]
-theorem segment_symm (a b : E) : (Path.segment a b).symm = .segment b a := by
+protected theorem segment_symm (a b : E) : (Path.segment a b).symm = .segment b a := by
   ext; simp [AffineMap.lineMap_apply_one_sub]
 
 @[simp]
