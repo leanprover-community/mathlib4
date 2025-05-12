@@ -676,6 +676,10 @@ def functionSwap (α β : Sort*) (γ : α → β → Sort*) :
   left_inv _ := rfl
   right_inv _ := rfl
 
+theorem _root_.Function.swap_bijective {α β : Sort*} {γ : α → β → Sort*} :
+    Function.Bijective (@Function.swap _ _ γ) :=
+  functionSwap _ _ _ |>.bijective
+
 /-- An equivalence `f : α₁ ≃ α₂` generates an equivalence between `Σ a, β (f a)` and `Σ a, β a`. -/
 @[simps apply] def sigmaCongrLeft {α₁ α₂ : Type*} {β : α₂ → Sort _} (e : α₁ ≃ α₂) :
     (Σ a : α₁, β (e a)) ≃ Σ a : α₂, β a where
