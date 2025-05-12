@@ -236,7 +236,7 @@ The tangent space `TangentSpace I x` is identified with `F`. -/
 def patch (x : M) : BicotangentSpace F I M x :=
   let s : SmoothPartitionOfUnity M I M := chartsPartitionOfUnity F I M
   -- `g₀` is the model inner product on `F`, as a continuous bilinear map.
-  let g₀ : F →L[ℝ] (F →L[ℝ] ℝ) := @innerSL ℝ F _ _ _
+  let g₀ : F →L[ℝ] (F →L[ℝ] ℝ) := innerSL ℝ
   -- For each point `y_center` in `M` (which indexes a chart in `chartsPartitionOfUnity`),
   -- `e y_center` is the derivative of the extended chart map `extChartAt I y_center` at `x`.
   -- It maps vectors in `TangentSpace I x` (i.e., `F`) to the model vector space `F`.
