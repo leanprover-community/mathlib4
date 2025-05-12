@@ -143,7 +143,8 @@ noncomputable def lanFunctorCompOfPreserves [G.PreservesLeftKanExtensions L]
         (whiskerRight (L.leftKanExtensionUnit F') G ≫ (Functor.associator _ _ _).hom)
       have h' := descOfIsLeftKanExtension_fac_app (L.leftKanExtension F ⋙ G)
         (whiskerRight (L.leftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
-      simp at h h'
+      simp only [comp_obj, NatTrans.comp_app, whiskerRight_app, associator_hom_app,
+        Category.comp_id] at h h'
       simp [h, reassoc_of% h'])
 
 end LeftKanExtension
