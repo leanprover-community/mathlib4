@@ -4,23 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benoît Guillemet
 -/
 import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Sites.Canonical
+import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # Quasicompact and quasiseparated sheaves
 
-Given a site `(C, J)`, we define a predicates for a sheaf on it being quasicompact, quasiseparated
-or qcqs.
-
-## Main definitions
-
-* `CategoryTheory.Sheaf.IsQuasicompact` is the predicate saying a sheaf is quasicompact.
-* `CategoryTheory.Sheaf.IsQuasiseparated` is the predicate saying a sheaf is quasiseparated.
-* `CategoryTheory.Sheaf.IsQcqs` is the predicate saying a sheaf is qcqs, ie both quasicompact and
-quasiseparated.
+Given a site `(C, J)`, we define structures for being quasicompact, quasiseparated
+or qcqs sheaves.
 
 -/
 
-universe u v u' v'
+universe u v u' v' w
 
 namespace CategoryTheory
 
@@ -33,12 +28,10 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 section Quasicompact
 
--- class Quasicompact (F : Sheaf J A) : Prop where ???
-
 /-- A sheaf `F` is quasicompact if any cover `∐ G ⟶ F` admits a finite subcover. -/
-def IsQuasicompact (F : Sheaf J A) : Prop :=
-  ∀ (I : Type v') (G : I → Sheaf J A) (f : ∐ G ⟶ F),
-  Epi f → ∃ J : Finset I, Epi ((Limits.Sigma.map' Subtype.val (fun (j : J) => 𝟙 (G j))) ≫ f)
+structure Quasicompact (F : Sheaf J A) : Prop where
+  isQuasicompact : ∀ (I : Type v') (G : I → Sheaf J A) (f : ∐ G ⟶ F),
+    Epi f → ∃ J : Finset I, Epi ((Limits.Sigma.map' Subtype.val (fun (j : J) => 𝟙 (G j))) ≫ f)
 
 end Quasicompact
 
@@ -48,21 +41,21 @@ section Quasiseparated
 
 /-- A morphism of sheaves `g : G ⟶ F` is quasicompact if the pullback of any morphism `F' ⟶ F`
   with quasicompact source is again quasicompact. -/
-def IsQuasicompactMap {F G : Sheaf J A} (g : G ⟶ F) : Prop :=
-  ∀ (F' : Sheaf J A) (f : F' ⟶ F), IsQuasicompact F' → IsQuasicompact (Limits.pullback f g)
+structure QuasicompactMap {F G : Sheaf J A} (g : G ⟶ F) : Prop where
+  quasicompact_pullback : ∀ (F' : Sheaf J A) (f : F' ⟶ F),
+    Quasicompact F' → Quasicompact (Limits.pullback f g)
 
 /-- A sheaf `F` is quasiseparated if any morphism `F' ⟶ F` with quasicompact source is
   quasicompact. -/
-def IsQuasiseparated (F : Sheaf J A) : Prop :=
-  ∀ (F' : Sheaf J A) (f : F' ⟶ F), IsQuasicompact F' → IsQuasicompactMap f
+structure Quasiseparated (F : Sheaf J A) : Prop where
+  isQuasiseparated : ∀ (F' : Sheaf J A) (f : F' ⟶ F), Quasicompact F' → QuasicompactMap f
 
 end Quasiseparated
 
 section Qcqs
 
 /-- A sheaf `F` is qcqs if it is both quasicompact and quasiseparated. -/
-def IsQcqs (F : Sheaf J A) : Prop :=
-  IsQuasicompact F ∧ IsQuasiseparated F
+structure Qcqs (F : Sheaf J A) : Prop extends Quasicompact F, Quasiseparated F
 
 end Qcqs
 
