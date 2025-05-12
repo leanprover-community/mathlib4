@@ -61,7 +61,7 @@ open Set ENat
 
 namespace Matroid
 
-variable {α : Type*} {M : Matroid α} {I B X Y Z : Set α} {n : ℕ∞} {e f : α}
+variable {α : Type*} {M : Matroid α} {I B X Y : Set α} {n : ℕ∞} {e f : α}
 
 section Basic
 
@@ -389,12 +389,12 @@ lemma eRk_insert_eq_add_one (he : e ∈ M.E \ M.closure X) : M.eRk (insert e X) 
   rw [← eRk_closure_eq, ← closure_insert_congr_right hI.closure_eq_closure, hI.eRk_eq_encard,
     eRk_closure_eq, Indep.eRk_eq_encard (by tauto), encard_insert_of_not_mem (by tauto)]
 
-lemma exists_eRk_insert_eq_add_one_of_lt (h : M.eRk X < M.eRk Z) :
-    ∃ z ∈ Z \ X, M.eRk (insert z X) = M.eRk X + 1 := by
-  by_cases hz : Z ∩ M.E ⊆ M.closure X
+lemma exists_eRk_insert_eq_add_one_of_lt (h : M.eRk X < M.eRk Y) :
+    ∃ y ∈ Y \ X, M.eRk (insert y X) = M.eRk X + 1 := by
+  by_cases hz : Y ∩ M.E ⊆ M.closure X
   · exact False.elim <| h.not_le <| by simpa using M.eRk_mono hz
-  obtain ⟨e, ⟨⟨heZ, heE⟩, heX⟩⟩ := not_subset.1 hz
-  exact ⟨e, ⟨heZ, fun heX' ↦ heX (mem_closure_of_mem' _ heX')⟩, eRk_insert_eq_add_one ⟨heE, heX⟩⟩
+  obtain ⟨e, ⟨heZ, heE⟩, heX⟩ := not_subset.1 hz
+  refine ⟨e, ⟨heZ, fun heX' ↦ heX (mem_closure_of_mem' _ heX')⟩, eRk_insert_eq_add_one ⟨heE, heX⟩⟩
 
 lemma IsRkFinite.closure_eq_closure_of_subset_of_forall_insert (hX : M.IsRkFinite X) (hXY : X ⊆ Y)
     (hY : ∀ e ∈ Y \ X, M.eRk (Insert.insert e X) ≤ M.eRk X) : M.closure X = M.closure Y := by
@@ -418,6 +418,8 @@ lemma indep_iff_eRk_eq_encard_of_finite (hI : I.Finite) : M.Indep I ↔ M.eRk I 
   · exact hJ.indep
   rw [← h, ← hJ.eRk_eq_encard]
 
+/-- In a matroid known to have finite rank, `Matroid.indep_iff_eRk_eq_encard_of_finite`
+is true without the finiteness assumption. -/
 lemma indep_iff_eRk_eq_encard [M.RankFinite] : M.Indep I ↔ M.eRk I = I.encard := by
   refine ⟨Indep.eRk_eq_encard, fun h ↦ ?_⟩
   obtain hfin | hinf := I.finite_or_infinite
@@ -527,8 +529,8 @@ lemma eRk_le_one_iff [M.Nonempty] (hX : X ⊆ M.E := by aesop_mat) :
   · obtain ⟨I, hI⟩ := M.exists_isBasis X
     rw [hI.eRk_eq_encard, encard_le_one_iff_eq] at h
     obtain (rfl | ⟨e, rfl⟩) := h
-    · exact ⟨M.ground_nonempty.some, M.ground_nonempty.some_mem,
-        hI.subset_closure.trans ((M.closure_subset_closure (empty_subset _)))⟩
+    · obtain ⟨e, he⟩ := M.ground_nonempty
+      exact ⟨e, he, hI.subset_closure.trans ((M.closure_subset_closure (empty_subset _)))⟩
     exact ⟨e, hI.indep.subset_ground rfl,  hI.subset_closure⟩
   refine (M.eRk_mono he).trans ?_
   rw [eRk_closure_eq, ← encard_singleton e]
