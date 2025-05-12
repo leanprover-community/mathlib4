@@ -141,7 +141,7 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
 lemma dividedPowersBot_dpow_eq [DecidableEq A] (n : ℕ) (a : A) :
     (dividedPowersBot A).dpow n a =
       if a = 0 ∧ n = 0 then 1 else 0 := by
-  ext; simp [dividedPowersBot]
+  simp [dividedPowersBot]
 
 noncomputable instance : Inhabited (DividedPowers (⊥ : Ideal A)) :=
   ⟨dividedPowersBot A⟩
