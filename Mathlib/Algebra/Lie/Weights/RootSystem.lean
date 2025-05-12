@@ -498,8 +498,8 @@ lemma invtSubmodule_reflection:
     have h₃ := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace li.2 lj.2
     rw [s₃ i j h1 h2] at h₃
     exact h₃
-  let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
-  let I := LieSubalgebra.lieSpan K L gg
+  let g := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
+  let I := LieSubalgebra.lieSpan K L g
   have s₅ : I ≠ ⊤ := by
     obtain ⟨j, hj⟩ := (Set.ne_univ_iff_exists_not_mem Φ).mp hc
     obtain ⟨z, hz₁, hz₂⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
@@ -526,11 +526,11 @@ lemma invtSubmodule_reflection:
   have s₆ : I ≠ ⊥ := by
     obtain ⟨r, hr⟩ := Set.nonempty_def.mp hΦ₁
     obtain ⟨x, hx₁, hx₂⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) r
-    have x_in_gg : x ∈ gg := by
+    have x_in_g : x ∈ g := by
       apply Set.mem_iUnion_of_mem r
       simp only [Set.mem_iUnion]
       exact ⟨hr, hx₁⟩
-    have x_mem_I : x ∈ I := LieSubalgebra.mem_lieSpan.mpr (fun _ a ↦ a x_in_gg)
+    have x_mem_I : x ∈ I := LieSubalgebra.mem_lieSpan.mpr (fun _ a ↦ a x_in_g)
     by_contra h
     exact hx₂ ((LieSubalgebra.eq_bot_iff I).mp h x x_mem_I)
   have s₇ : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
@@ -544,7 +544,7 @@ lemma invtSubmodule_reflection:
     induction hx using Submodule.iSup_induction' with
     | mem j x hx =>
       --simp_all
-      --(p := (y : L) → y ∈ LieSubalgebra.lieSpan K L gg → ⁅x, y⁆ ∈ LieSubalgebra.lieSpan K L gg)
+      --(p := (y : L) → y ∈ LieSubalgebra.lieSpan K L g → ⁅x, y⁆ ∈ LieSubalgebra.lieSpan K L g)
       simp [I] at hy
       refine LieSubalgebra.lieSpan_induction (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ hy
       --intro a x_1
@@ -567,7 +567,7 @@ lemma invtSubmodule_reflection:
       simp at ttt
       rw [h] at ttt
       simp at ttt
-      have rrrr : ⁅x, x1⁆ ∈ gg := by
+      have rrrr : ⁅x, x1⁆ ∈ g := by
         exact Set.mem_biUnion hi ttt
       exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
       --obtain ⟨j1, j2⟩ := j
@@ -576,7 +576,7 @@ lemma invtSubmodule_reflection:
       rcases (Classical.em (jj ∈ Φ)) with h | h
       --simp at jj
       have hx2 : x ∈ LieModule.genWeightSpace L jj.1 := hx
-      have rrrr : x ∈ gg := by
+      have rrrr : x ∈ g := by
         exact Set.mem_biUnion h hx2
       have rrrr2 : x ∈ I := by
         exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
