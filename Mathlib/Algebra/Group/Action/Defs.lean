@@ -71,7 +71,9 @@ lemma op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : MulOpposite.op a • b =
 @[to_additive (attr := simp)]
 lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * a.unop := rfl
 
-/-- Type class for additive monoid actions.
+/--
+Type class for additive monoid actions. The `AddAction G P` typeclass says that the
+additive monoid `G` acts additively on a type `P`.
 
 For example, if `A` is an additive group and `X` is a type, the way to
 say "let `A` act on `X`" is `[AddAction A X]`.
@@ -82,7 +84,8 @@ class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
   /-- Associativity of `+` and `+ᵥ` -/
   add_vadd : ∀ (g₁ g₂ : G) (p : P), (g₁ + g₂) +ᵥ p = g₁ +ᵥ g₂ +ᵥ p
 
-/-- Typeclass for multiplicative actions by monoids.
+/-- Typeclass for multiplicative actions by monoids. The `MulAction G P` typeclass says that the
+monoid `G` acts multiplicatively on a type `P`.
 
 For example, if `G` is a group (with group law multiplication) and `X` is a type, the way to
 say "let `G` act on `X`" is `[MulAction G X]`.
