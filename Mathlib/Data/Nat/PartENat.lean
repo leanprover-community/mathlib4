@@ -26,7 +26,7 @@ There is no additive analogue of `MonoidWithZero`; if there were then `PartENat`
 be an `AddMonoidWithTop`.
 
 * `toWithTop` : the map from `PartENat` to `ℕ∞`, with theorems that it plays well
-with `+` and `≤`.
+  with `+` and `≤`.
 
 * `withTopAddEquiv : PartENat ≃+ ℕ∞`
 * `withTopOrderIso : PartENat ≃o ℕ∞`

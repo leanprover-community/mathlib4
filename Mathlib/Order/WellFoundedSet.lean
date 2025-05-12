@@ -234,7 +234,7 @@ section Preorder
 variable [Preorder α] {s t : Set α} {a : α}
 
 theorem isWF_iff_no_descending_seq :
-    IsWF s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f (OrderDual.toDual n) ∈ s :=
+    IsWF s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f n ∈ s :=
   wellFoundedOn_iff_no_descending_seq.trans
     ⟨fun H f hf => H ⟨⟨f, hf.injective⟩, hf.lt_iff_lt⟩, fun H f => H f fun _ _ => f.map_rel_iff.2⟩
 
@@ -678,6 +678,25 @@ end LocallyFiniteOrder
 namespace Set.PartiallyWellOrderedOn
 
 variable {r : α → α → Prop}
+
+theorem bddAbove_preimage {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
+    (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
+    BddAbove (s.preimage f) := by
+  contrapose! hf
+  rw [not_bddAbove_iff] at hf
+  obtain ⟨φ, hφm, hφs⟩ := Nat.exists_strictMono_subsequence
+    fun n ↦ (hf n).casesOn fun m h ↦ h.casesOn fun hs hmn ↦ Exists.intro m ⟨hmn, hs⟩
+  rw [partiallyWellOrderedOn_iff_exists_lt] at hs
+  obtain ⟨m, n, hmn, hr⟩ := hs (fun n ↦ f (φ n)) hφs
+  use (φ m), (φ n)
+  exact ⟨hφm hmn, hr⟩
+
+theorem exists_not_mem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
+    (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
+    ∃ k : ℕ, ∀ m, k < m → ¬ (f m) ∈ s := by
+  have := hs.bddAbove_preimage hf
+  contrapose! this
+  simpa [not_bddAbove_iff, and_comm]
 
 -- TODO: move this material to the main file on WQOs.
 
