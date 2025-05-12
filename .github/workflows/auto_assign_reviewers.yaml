@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: download auto-assignments
         run: |
-          curl --output assignments.json --silent https://leanprover-community.github.io/queueboard/automatic_assignments.json
+          curl --output assignments.json https://leanprover-community.github.io/queueboard/automatic_assignments.json
 
       # Perhaps this is necessary, perhaps not.
       # The Hoskinson runners may not have jq installed, so do that now.
@@ -28,7 +28,7 @@ jobs:
           # placeholder values: as an example, assign PR 18754 to grunweg
           number=18754
           user=grunweg
-          printf 'about to assign PR "%s" to "%s"' "${number}" "${user}"
+          printf 'about to assign PR "%s" to "%s"\n' "${number}" "${user}"
           # This keeps any existing assignee on the PR.
           curl --location \
             --request POST \
