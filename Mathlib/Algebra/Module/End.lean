@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Hom.End
-import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.NatInt
 
 /-!

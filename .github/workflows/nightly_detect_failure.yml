@@ -150,6 +150,7 @@ jobs:
       id: latest_bump_branch
       uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
+        result-encoding: string
         script: |
           const branches = await github.paginate(github.rest.repos.listBranches, {
             owner: context.repo.owner,
@@ -175,7 +176,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               path: 'lean-toolchain',
-              ref: ${{ steps.latest_bump_branch.outputs.result }}
+              ref: '${{ steps.latest_bump_branch.outputs.result }}'
             });
             const content = Buffer.from(response.data.content, 'base64').toString();
             const match = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2})/);

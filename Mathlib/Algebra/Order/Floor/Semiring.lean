@@ -348,6 +348,20 @@ theorem ceil_add_le (a b : R) : ⌈a + b⌉₊ ≤ ⌈a⌉₊ + ⌈b⌉₊ := by
   rw [ceil_le, Nat.cast_add]
   gcongr <;> apply le_ceil
 
+variable [Sub R] [OrderedSub R] [ExistsAddOfLE R]
+
+@[simp] lemma ceil_sub_natCast (a : R) (n : ℕ) : ⌈a - n⌉₊ = ⌈a⌉₊ - n := by
+  obtain han | hna := le_total a n
+  · rwa [ceil_eq_zero.2 (tsub_nonpos_of_le han), eq_comm, tsub_eq_zero_iff_le, Nat.ceil_le]
+  · refine eq_tsub_of_add_eq ?_
+    rw [← ceil_add_natCast, tsub_add_cancel_of_le hna]
+    exact le_tsub_of_add_le_left ((add_zero _).trans_le hna)
+
+@[simp] lemma ceil_sub_one (a : R) : ⌈a - 1⌉₊ = ⌈a⌉₊ - 1 := by simpa using ceil_sub_natCast a 1
+
+@[simp] lemma ceil_sub_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] : ⌈a - ofNat(n)⌉₊ = ⌈a⌉₊ - ofNat(n) :=
+  ceil_sub_natCast a n
+
 end LinearOrderedSemiring
 
 section LinearOrderedRing
