@@ -76,8 +76,6 @@ attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
 
 namespace StrongTrans
 
-section
-
 variable {F G : Pseudofunctor B C}
 
 /-- The underlying oplax transformation of a strong transformation. -/
@@ -92,7 +90,7 @@ instance hasCoeToOplax : Coe (StrongTrans F G) (Oplax.StrongTrans F.toOplax G.to
 /-- Construct a strong transformation of pseudofunctors from a strong transformation of the
 underlying oplax functors. -/
 @[simps]
-def mkOfOplax {F G : Pseudofunctor B C} (η : Oplax.StrongTrans F.toOplax G.toOplax) :
+def mkOfOplax (η : Oplax.StrongTrans F.toOplax G.toOplax) :
     StrongTrans F G where
   app := η.app
   naturality := η.naturality
@@ -109,11 +107,11 @@ def id : StrongTrans F F where
 instance : Inhabited (StrongTrans F F) :=
   ⟨id F⟩
 
-/-- Vertical composition of strong transformations. -/
-def vcomp {H : Pseudofunctor B C} (η : StrongTrans F G) (θ : StrongTrans G H) : StrongTrans F H :=
-  mkOfOplax (Oplax.StrongTrans.vcomp η.toOplax θ.toOplax)
+variable {H : Pseudofunctor B C}
 
-end
+/-- Vertical composition of strong transformations. -/
+def vcomp (η : StrongTrans F G) (θ : StrongTrans G H) : StrongTrans F H :=
+  mkOfOplax (Oplax.StrongTrans.vcomp η.toOplax θ.toOplax)
 
 /-- `CategoryStruct` on `Pseudofunctor B C` where the (1-)morphisms are given by strong
 transformations. -/
@@ -124,18 +122,22 @@ scoped instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
   id F := StrongTrans.id F
   comp := StrongTrans.vcomp
 
+variable (η : F ⟶ G) (θ : G ⟶ H)
+
 @[simp]
-lemma comp_app {F G H : Pseudofunctor B C} (η : F ⟶ G) (θ : G ⟶ H) (a : B) :
+lemma comp_app (η : F ⟶ G) (θ : G ⟶ H) (a : B) :
     (η ≫ θ).app a = η.app a ≫ θ.app a :=
   rfl
 
+variable (F) in
 @[simp]
-lemma id.toOplax (F : Pseudofunctor B C) : Oplax.StrongTrans.id F.toOplax = 𝟙 F :=
+lemma id.toOplax : Oplax.StrongTrans.id F.toOplax = 𝟙 F :=
   rfl
+
+
 section
 
-variable {F G H : Pseudofunctor B C} (η : F ⟶ G) (θ : G ⟶ H)
-  {a b c : B} {a' : C}
+variable {a b c : B} {a' : C}
 
 @[reassoc (attr := simp), to_app]
 theorem whiskerLeft_naturality_naturality (f : a' ⟶ G.obj a) {g h : a ⟶ b} (β : g ⟶ h) :

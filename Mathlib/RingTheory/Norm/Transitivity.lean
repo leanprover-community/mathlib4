@@ -171,8 +171,7 @@ theorem LinearMap.det_restrictScalars [AddCommGroup A] [Module R A] [Module S A]
     [IsScalarTower R S A] [Module.Free S A] {f : A →ₗ[S] A} :
     (f.restrictScalars R).det = Algebra.norm R f.det := by
   nontriviality R
-  cases subsingleton_or_nontrivial A
-  · simp_rw [det_eq_one_of_subsingleton, map_one]
+  nontriviality A
   have := Module.nontrivial S A
   let ⟨ιS, bS⟩ := Module.Free.exists_basis (R := R) (M := S)
   let ⟨ιA, bA⟩ := Module.Free.exists_basis (R := S) (M := A)
