@@ -64,7 +64,9 @@ variable {α : Type u} {β : Type v}
 -- TODO: automatic construction of dual definitions / theorems
 /-- A `SemilatticeSup` is a join-semilattice, that is, a partial order
   with a join (a.k.a. lub / least upper bound, sup / supremum) operation
-  `⊔` which is the least element larger than both factors. -/
+  `⊔` which is the least element larger than both factors.
+  To avoid duplication, `a ⊔ b` is the same as `Max.max a b`,
+  but elaboration and pretty printing both support the `a ⊔ b` notation for lattices. -/
 class SemilatticeSup (α : Type u) extends PartialOrder α, Max α where
   /-- The supremum is an upper bound on the first argument -/
   protected le_sup_left : ∀ a b : α, a ≤ a ⊔ b
@@ -260,7 +262,9 @@ end SemilatticeSup
 
 /-- A `SemilatticeInf` is a meet-semilattice, that is, a partial order
   with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
-  `⊓` which is the greatest element smaller than both factors. -/
+  `⊓` which is the greatest element smaller than both factors.
+  To avoid duplication, `a ⊓ b` is the same as `Min.min a b`,
+  but elaboration and pretty printing both support the `a ⊓ b` notation for lattices. -/
 class SemilatticeInf (α : Type u) extends PartialOrder α, Min α where
   /-- The infimum is a lower bound on the first argument -/
   protected inf_le_left : ∀ a b : α, a ⊓ b ≤ a
