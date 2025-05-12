@@ -9,7 +9,7 @@ import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.RowCol
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.LinearAlgebra.Alternating.Curry
+import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 
 /-!

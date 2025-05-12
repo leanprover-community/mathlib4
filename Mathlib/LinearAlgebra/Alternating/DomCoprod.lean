@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.Perm.Basic
-import Mathlib.LinearAlgebra.Alternating.Curry
+import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 
 /-!

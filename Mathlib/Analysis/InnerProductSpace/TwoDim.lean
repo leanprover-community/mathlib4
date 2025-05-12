@@ -8,6 +8,7 @@ import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Orientation
 import Mathlib.Tactic.LinearCombination
+import Mathlib.LinearAlgebra.Alternating.Curry
 
 /-!
 # Oriented two-dimensional real inner product spaces
