@@ -193,17 +193,17 @@ end RegularWreathProduct
 
 section iterated
 
-/- The iterated wreath product of group `G` `n` times. -/
+/-- The wreath product of group `G` iterated `n` times. -/
 def IteratedWreathProduct (G: Type) : (n:ℕ) → Type
 | Nat.zero => PUnit
 | Nat.succ n => (IteratedWreathProduct G n) ≀ᵣ G
 
 @[simp]
-lemma IteratedWreathProduct_zero (G : Type) [Group G] :
+lemma IteratedWreathProduct_zero (G : Type) :
   IteratedWreathProduct G 0 = PUnit := rfl
 
 @[simp]
-lemma IteratedWreathProduct_succ (G : Type) [Group G] (n : ℕ) :
+lemma IteratedWreathProduct_succ (G : Type)(n : ℕ) :
   IteratedWreathProduct G (n+1) = (IteratedWreathProduct G n) ≀ᵣ G := rfl
 
 variable (G: Type) [inst : Group G]
@@ -297,7 +297,6 @@ lemma mu_eq {p n :ℕ} [Fact (Nat.Prime p)]:
     have hf_surj : ∀ k ∈ S, ∃ m ∈ Finset.range (p^n), f m = k := by
       intro k hk
       apply Finset.mem_filter.mp at hk
-      have hk1 := List.mem_range.mp hk.1
       obtain ⟨x,hx⟩ := exists_eq_mul_right_of_dvd hk.2
       have : 0 < p * x := hx ▸ (Nat.zero_lt_succ k)
       have aux : 0 < x := by exact Nat.lt_of_mul_lt_mul_left this
@@ -344,7 +343,7 @@ lemma mu_eq {p n :ℕ} [Fact (Nat.Prime p)]:
     rw [h_back] at res; simp at res; rw [Nat.add_comm (p ^ n) _] at res
     exact res
 
-/- An auxilliary function -/
+/-- An auxilliary function -/
 def aux {A B : Type} (h : A ≃ B) : Equiv.Perm A →* Equiv.Perm B :=
   MonoidHom.mk'
     (fun k => h.symm.trans (k.trans h))
@@ -358,9 +357,8 @@ lemma aux_injective {A B : Type} (h : A ≃ B) : Function.Injective (aux h) := b
   simp at eq_fun
   exact eq_fun
 
-noncomputable
-/- An auxilliary function -/
-def f {p n : ℕ} [Fact (Nat.Prime p)] (D : Sylow p (Equiv.Perm (Fin (p^n))))
+/-- An auxilliary function -/
+noncomputable def f {p n : ℕ} (D : Sylow p (Equiv.Perm (Fin (p^n))))
   (G : Type) [Finite G] [Group G] (h: Nat.card G = p):
     D ≀ᵣ G →* Equiv.Perm (Fin (p^(n+1))) :=
      (aux ((Equiv.prodCongrRight fun _ => (Finite.equivFinOfCardEq h)).trans finProdFinEquiv)).comp
@@ -368,7 +366,7 @@ def f {p n : ℕ} [Fact (Nat.Prime p)] (D : Sylow p (Equiv.Perm (Fin (p^n))))
 
 
 lemma f_injective {p n : ℕ} [Fact (Nat.Prime p)] (D : Sylow p (Equiv.Perm (Fin (p^n))))
-  (G : Type) [Finite G] [Group G] [IsCyclic G] (h: Nat.card G = p):
+  (G : Type) [Finite G] [Group G] (h: Nat.card G = p):
     Function.Injective (f D G h) := by
       have : Function.Injective (RegularWreathProduct.toPerm D G (Fin (p^n))) :=
         RegularWreathProduct.toPermInj D G (Fin (p^n))
@@ -376,10 +374,9 @@ lemma f_injective {p n : ℕ} [Fact (Nat.Prime p)] (D : Sylow p (Equiv.Perm (Fin
         (aux_injective (((Equiv.prodCongrRight fun _ =>
         (Finite.equivFinOfCardEq h)).trans finProdFinEquiv))) this
 
-noncomputable
 /-The Sylow p-subgroups of S_{p^n} are isomorphic to the iterated wreathproduct -/
-def sylowIsIteratedWreathProduct (p n : ℕ) [Fact (Nat.Prime p)]
-  (Z_p : Type) [Group Z_p] [IsCyclic Z_p] [Finite Z_p] (h: Nat.card Z_p = p)
+noncomputable def sylowIsIteratedWreathProduct (p n : ℕ) [Fact (Nat.Prime p)]
+  (Z_p : Type) [Group Z_p] [Finite Z_p] (h: Nat.card Z_p = p)
   (P : Sylow p (Equiv.Perm (Fin (p^n)))) :
   P ≃* (IteratedWreathProduct Z_p n) := by
     induction n with
