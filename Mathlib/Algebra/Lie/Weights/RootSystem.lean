@@ -505,7 +505,7 @@ lemma invtSubmodule_reflection:
     obtain ⟨z, hz₁, hz₂⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
     by_contra! hI
     have center_element : z ∈ LieAlgebra.center K L := by
-      have rrr (x : L) : ⁅x, z⁆ = 0 := by
+      have commutes_with_all (x : L) : ⁅x, z⁆ = 0 := by
         have x_mem_I : x ∈ I := by rw [hI]; exact trivial
         induction x_mem_I using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
         | mem x hx =>
@@ -520,7 +520,7 @@ lemma invtSubmodule_reflection:
           right
           exact d
         | lie _ _ _ _ e f => rw [lie_lie, e, f, lie_zero, lie_zero, sub_self]
-      exact rrr
+      exact commutes_with_all
     rw [LieAlgebra.center_eq_bot (R := K) (L := L)] at center_element
     exact hz₂ center_element
   have rr6 : I ≠ ⊥ := by
