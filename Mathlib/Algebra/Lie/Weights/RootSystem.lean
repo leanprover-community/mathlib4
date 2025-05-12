@@ -423,8 +423,6 @@ instance : (rootSystem H).IsReduced where
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
-end LieAlgebra.IsKilling
-
 section jjj
 
 variable (K L : Type*) [Field K] [CharZero K]
@@ -432,11 +430,14 @@ variable (K L : Type*) [Field K] [CharZero K]
   [LieAlgebra.IsKilling K L] -- Follows from simplicity; will be redundant after #10068 done
   (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L]
 
+open LieModule Module
+open LieModule Weight
+
 lemma invtSubmodule_reflection:
    ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
-      ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
-  have _i := LieModule.nontrivial_of_isIrreducible K L L
-  let S := (LieAlgebra.IsKilling.rootSystem H)
+      ((rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
+  have _i := nontrivial_of_isIrreducible K L L
+  let S := rootSystem H
   by_contra!
   obtain ⟨q, h₀, h₁, h₃⟩ := this
   suffices h₂ : ∀ Φ, Φ.Nonempty → S.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ LinearMap.ker (S.coroot' i)) →
@@ -453,47 +454,43 @@ lemma invtSubmodule_reflection:
     (hΦ₃ j h₂) (hΦ₂' i h₁)
   have s₁' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root j (S.coroot i) = 0 :=
     (S.pairing_eq_zero_iff (i := i) (j := j)).1 (s₁ i j h₁ h₂)
-  have s₂ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : i.1 (LieAlgebra.IsKilling.coroot j) = 0 :=
-    s₁ i j h₁ h₂
-  have s₂' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : j.1 (LieAlgebra.IsKilling.coroot i) = 0 :=
-    s₁' i j h₁ h₂
-  have s₃ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : LieModule.genWeightSpace L (i.1.1 + j.1.1) = ⊥
-      := by
+  have s₂ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : i.1 (coroot j) = 0 := s₁ i j h₁ h₂
+  have s₂' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : j.1 (coroot i) = 0 := s₁' i j h₁ h₂
+  have s₃ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
     by_contra h
     have inz : i.1.IsNonZero := by
-      obtain ⟨val_1, property_1⟩ := i
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at property_1
-      exact property_1
+      obtain ⟨val, hval⟩ := i
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
+      exact hval
     have jnz : j.1.IsNonZero := by
-      obtain ⟨val_1, property_1⟩ := j
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and, S] at property_1
-      exact property_1
-    let r := LieModule.Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
+      obtain ⟨val, hval⟩ := j
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
+      exact hval
+    let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
     have r₁ : r ≠ 0 := by
       intro a
-      have h_eq : i.1 = -j.1 := LieModule.Weight.ext <| congrFun (eq_neg_of_add_eq_zero_left <| by
-        have := congr_arg LieModule.Weight.toFun a
+      have h_eq : i.1 = -j.1 := Weight.ext <| congrFun (eq_neg_of_add_eq_zero_left <| by
+        have := congr_arg Weight.toFun a
         simp at this; exact this)
       have := s₂ i j h₁ h₂
-      rw [h_eq, LieModule.Weight.coe_neg, Pi.neg_apply,
-      LieAlgebra.IsKilling.root_apply_coroot (K := K) (H := H) (L := L) jnz] at this
+      rw [h_eq, coe_neg, Pi.neg_apply, root_apply_coroot (K := K) (H := H) (L := L) jnz] at this
       field_simp at this
-    have r₂ : r ∈ H.root := by simp [LieModule.Weight.isNonZero_iff_ne_zero, r₁]
+    have r₂ : r ∈ H.root := by simp [isNonZero_iff_ne_zero, r₁]
     cases Classical.em (⟨r, r₂⟩ ∈ Φ) with
     | inl hr =>
-      have e₁ : i.1.1 (LieAlgebra.IsKilling.coroot j) = 0 := s₂ i j h₁ h₂
-      have e₂ : j.1.1 (LieAlgebra.IsKilling.coroot j) = 2 := LieAlgebra.IsKilling.root_apply_coroot jnz
+      have e₁ : i.1.1 (coroot j) = 0 := s₂ i j h₁ h₂
+      have e₂ : j.1.1 (coroot j) = 2 := root_apply_coroot jnz
       have : (0 : K) = 2 := calc
-        0 = (i.1.1 + j.1.1) (LieAlgebra.IsKilling.coroot j) := (s₂ ⟨r, r₂⟩ j hr h₂).symm
-        _ = i.1.1 (LieAlgebra.IsKilling.coroot j) + j.1.1 (LieAlgebra.IsKilling.coroot j) := rfl
+        0 = (i.1.1 + j.1.1) (coroot j) := (s₂ ⟨r, r₂⟩ j hr h₂).symm
+        _ = i.1.1 (coroot j) + j.1.1 (coroot j) := rfl
         _ = 2 := by rw [e₁, e₂, zero_add]
       simp at this
     | inr hr =>
-      have e₁ : j.1.1 (LieAlgebra.IsKilling.coroot i) = 0 := s₂' i j h₁ h₂
-      have e₂ : i.1.1 (LieAlgebra.IsKilling.coroot i) = 2 := LieAlgebra.IsKilling.root_apply_coroot inz
+      have e₁ : j.1.1 (coroot i) = 0 := s₂' i j h₁ h₂
+      have e₂ : i.1.1 (coroot i) = 2 := root_apply_coroot inz
       have : (0 : K) = 2 := calc
-        0 = (i.1.1 + j.1.1) (LieAlgebra.IsKilling.coroot i) := (s₂' i ⟨r, r₂⟩ h₁ hr).symm
-        _ = i.1.1 (LieAlgebra.IsKilling.coroot i) + j.1.1 (LieAlgebra.IsKilling.coroot i) := rfl
+        0 = (i.1.1 + j.1.1) (coroot i) := (s₂' i ⟨r, r₂⟩ h₁ hr).symm
+        _ = i.1.1 (coroot i) + j.1.1 (coroot i) := rfl
         _ = 2 := by rw [e₁, e₂, add_zero]
       simp at this
   have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1)
@@ -669,3 +666,5 @@ instance : (LieAlgebra.IsKilling.rootSystem H).IsIrreducible := by
     (invtSubmodule_reflection K L H)
 
 end jjj
+
+end LieAlgebra.IsKilling
