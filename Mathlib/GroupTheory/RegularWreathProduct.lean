@@ -31,6 +31,7 @@ variable (D Q: Type*) [Group D] [Group Q]
 /-- The regular wreath product of groups `Q` and `D`.
     It the product of sets with the group operation
   `⟨n₁, g₁⟩ * ⟨n₂, g₂⟩ = ⟨n₁ * φ g₁ n₂, g₁ * g₂⟩` -/
+
 @[ext]
 structure RegularWreathProduct where
   /-- The function of Q → D -/
