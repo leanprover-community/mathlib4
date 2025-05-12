@@ -329,7 +329,9 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
 
 /-- **Tutte's theorem**
 
- Informal explanation here -/
+A graph has a perfect matching if and only if: For every subset `u` of vertices, removing this
+subset induces at most `u.ncard` components of odd size. This is formally stated using the
+predicate `IsTutteViolator`, which is satisfied exactly when this condition does not hold. -/
 theorem tutte :
     (∃ M : Subgraph G, M.IsPerfectMatching) ↔ ∀ u, ¬ G.IsTutteViolator u := by
   classical
