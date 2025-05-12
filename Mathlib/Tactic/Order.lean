@@ -235,24 +235,24 @@ elab "order" : tactic => focus do
   let g ← getMainGoal
   let .some g ← g.falseOrByContra | return
   setGoals [g]
-  let TypeToAtoms ← collectFacts g
   g.withContext do
-  for (type, (idxToAtom, facts)) in TypeToAtoms do
-    let .some orderType ← findBestOrderInstance type | continue
-    let facts : Array AtomicFact ← match orderType with
-    | .pre => preprocessFactsPreorder g facts
-    | .part => preprocessFactsPartial g facts idxToAtom
-    | .lin => preprocessFactsLinear g facts idxToAtom
-    let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
-    graph ← updateGraphWithNltInfSup graph idxToAtom facts
-    if orderType == .pre then
-      let .some pf ← findContradictionWithNle graph idxToAtom facts | continue
-      g.assign pf
-      return
-    else
-      let .some pf ← findContradictionWithNe graph idxToAtom facts | continue
-      g.assign pf
-      return
-  throwError "No contradiction found"
+    let TypeToAtoms ← collectFacts
+    for (type, (idxToAtom, facts)) in TypeToAtoms do
+      let .some orderType ← findBestOrderInstance type | continue
+      let facts : Array AtomicFact ← match orderType with
+      | .pre => preprocessFactsPreorder facts
+      | .part => preprocessFactsPartial facts idxToAtom
+      | .lin => preprocessFactsLinear facts idxToAtom
+      let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
+      graph ← updateGraphWithNltInfSup graph idxToAtom facts
+      if orderType == .pre then
+        let .some pf ← findContradictionWithNle graph idxToAtom facts | continue
+        g.assign pf
+        return
+      else
+        let .some pf ← findContradictionWithNe graph idxToAtom facts | continue
+        g.assign pf
+        return
+    throwError "No contradiction found"
 
 end Mathlib.Tactic.Order
