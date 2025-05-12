@@ -256,7 +256,7 @@ norm and it used to define `convexBodySum`. -/
 noncomputable abbrev convexBodySumFun (x : mixedSpace K) : ℝ := ∑ w, mult w * normAtPlace w x
 
 theorem convexBodySumFun_apply (x : mixedSpace K) :
-    convexBodySumFun x = ∑ w,  mult w * normAtPlace w x := rfl
+    convexBodySumFun x = ∑ w, mult w * normAtPlace w x := rfl
 
 open scoped Classical in
 theorem convexBodySumFun_apply' (x : mixedSpace K) :
@@ -461,9 +461,9 @@ theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   classical
-  refine ENNReal.mul_lt_top ?_ ?_
-  · exact (fundamentalDomain_isBounded _).measure_lt_top
-  · exact ENNReal.pow_lt_top (lt_top_iff_ne_top.mpr ENNReal.ofNat_ne_top) _
+  -- FIXME: Make `finiteness` work here
+  exact ENNReal.mul_lt_top (fundamentalDomain_isBounded _).measure_lt_top <|
+    ENNReal.pow_lt_top ENNReal.ofNat_lt_top
 
 theorem minkowskiBound_pos : 0 < minkowskiBound K I := by
   classical
@@ -602,7 +602,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   obtain ⟨a, ha, rfl⟩ := hx
   refine ⟨a, ha, by simpa using h_nz, ?_⟩
   rw [← rpow_natCast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
-      (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
+      (rpow_nonneg h2 _) h1, ← rpow_mul h2, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
       (ne_of_gt finrank_pos)), rpow_one, le_div_iff₀' (Nat.cast_pos.mpr finrank_pos)]
   refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
   rw [← le_div_iff₀' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]

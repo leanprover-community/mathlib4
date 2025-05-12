@@ -3,10 +3,10 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Function.EssSup
-import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # ℒp space
@@ -59,7 +59,10 @@ deduce it for `eLpNorm`, and translate it in terms of `MemLp`.
 
 
 /-- `(∫ ‖f a‖^q ∂μ) ^ (1/q)`, which is a seminorm on the space of measurable functions for which
-this quantity is finite -/
+this quantity is finite.
+
+Note: this is a purely auxiliary quantity; lemmas about `eLpNorm'` should only be used to
+prove results about `eLpNorm`; every `eLpNorm'` lemma should have a `eLpNorm'` version. -/
 def eLpNorm' {_ : MeasurableSpace α} (f : α → ε) (q : ℝ) (μ : Measure α) : ℝ≥0∞ :=
   (∫⁻ a, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q)
 
@@ -107,7 +110,7 @@ lemma eLpNorm_nnreal_eq_lintegral {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
   eLpNorm_nnreal_eq_eLpNorm' hp
 
 theorem eLpNorm_one_eq_lintegral_enorm {f : α → ε} : eLpNorm f 1 μ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm one_ne_zero ENNReal.coe_ne_top, ENNReal.one_toReal,
+  simp_rw [eLpNorm_eq_lintegral_rpow_enorm one_ne_zero ENNReal.coe_ne_top, ENNReal.toReal_one,
     one_div_one, ENNReal.rpow_one]
 
 @[deprecated (since := "2025-01-17")]

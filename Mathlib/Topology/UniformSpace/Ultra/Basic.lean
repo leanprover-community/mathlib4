@@ -24,7 +24,7 @@ In this file we define `IsUltraUniformity`, a Prop mixin typeclass.
 
 ## Implementation notes
 
-As in the `Topology/UniformSpace/Defs.lean` file, we do not reuse `Data/Rel.lean`
+As in the `Mathlib/Topology/UniformSpace/Defs.lean` file, we do not reuse `Mathlib/Data/Rel.lean`
 but rather extend the relation properties as needed.
 
 ## TODOs
@@ -83,6 +83,11 @@ lemma IsTransitiveRel.iInter {ι : Type*} {U : (i : ι) → Set (X × X)}
   simp only [mem_iInter] at h h' ⊢
   intro i
   exact hU i (h i) (h' i)
+
+lemma IsTransitiveRel.sInter {s : Set (Set (X × X))} (h : ∀ i ∈ s, IsTransitiveRel i) :
+    IsTransitiveRel (⋂₀ s) := by
+  rw [sInter_eq_iInter]
+  exact IsTransitiveRel.iInter (by simpa)
 
 lemma IsTransitiveRel.preimage_prodMap {Y : Type*} {t : Set (Y × Y)}
     (ht : IsTransitiveRel t) (f : X → Y) :

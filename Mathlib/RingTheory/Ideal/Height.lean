@@ -49,16 +49,7 @@ class Ideal.FiniteHeight : Prop where
 
 lemma Ideal.finiteHeight_iff_lt {I : Ideal R} :
     Ideal.FiniteHeight I ↔ I = ⊤ ∨ I.height < ⊤ := by
-  constructor
-  · intro h
-    cases h.eq_top_or_height_ne_top with
-    | inl h => exact Or.inl h
-    | inr h => exact Or.inr (lt_of_le_of_ne le_top h)
-  · intro h
-    constructor
-    cases h with
-    | inl h => exact Or.inl h
-    | inr h => exact Or.inr (ne_top_of_lt h)
+  rw [Ideal.finiteHeight_iff, lt_top_iff_ne_top]
 
 lemma Ideal.height_ne_top {I : Ideal R} (hI : I ≠ ⊤) [I.FiniteHeight] :
     I.height ≠ ⊤ :=
@@ -217,6 +208,27 @@ theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRin
     exact IsLocalRing.eq_maximalIdeal (Ideal.isMaximal_of_primeHeight_eq_ringKrullDim h)
   · rintro rfl
     exact IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim
+
+lemma Ideal.height_le_iff {p : Ideal R} {n : ℕ} [p.IsPrime] :
+    p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p → q.height < n := by
+  rw [height_eq_primeHeight, primeHeight, Order.height_le_coe_iff,
+    (PrimeSpectrum.equivSubtype R).forall_congr_left, Subtype.forall]
+  congr!
+  rw [height_eq_primeHeight, primeHeight]
+  rfl
+
+lemma Ideal.height_le_iff_covBy {p : Ideal R} {n : ℕ} [p.IsPrime] [IsNoetherianRing R] :
+    p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p →
+      (∀ q' : Ideal R, q'.IsPrime → q < q' → ¬ q' < p) → q.height < n := by
+  rw [Ideal.height_le_iff]
+  constructor
+  · intro H q hq e _
+    exact H q hq e
+  · intro H q hq e
+    obtain ⟨⟨x, hx⟩, hqx, hxp⟩ :=
+      @exists_le_covBy_of_lt { I : Ideal R // I.IsPrime } ⟨q, hq⟩ ⟨p, ‹_›⟩ _ _ e
+    exact (Ideal.height_mono hqx).trans_lt
+      (H _ hx hxp.1 (fun I hI e ↦ hxp.2 (show Subtype.mk x hx < ⟨I, hI⟩ from e)))
 
 theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) [J.IsPrime] :

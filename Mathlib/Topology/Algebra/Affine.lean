@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 # Topological properties of affine spaces and maps

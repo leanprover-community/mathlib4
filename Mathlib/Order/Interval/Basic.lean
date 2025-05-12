@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Data.SetLike.Basic
 
 /-!
@@ -228,7 +228,7 @@ theorem coe_top [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Set α) = uni
 
 @[simp, norm_cast]
 theorem coe_dual (s : NonemptyInterval α) : (dual s : Set αᵒᵈ) = ofDual ⁻¹' s :=
-  dual_Icc
+  Icc_toDual
 
 theorem subset_coe_map (f : α →o β) (s : NonemptyInterval α) : f '' s ⊆ s.map f :=
   image_subset_iff.2 fun _ ha => ⟨f.mono ha.1, f.mono ha.2⟩

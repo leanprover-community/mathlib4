@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Option.Basic
@@ -39,7 +40,7 @@ end One
 section Mul
 variable [Mul α]
 
-instance mulZeroClass : MulZeroClass (WithZero α) where
+instance instMulZeroClass : MulZeroClass (WithZero α) where
   mul := Option.map₂ (· * ·)
   zero_mul := Option.map₂_none_left (· * ·)
   mul_zero := Option.map₂_none_right (· * ·)
@@ -50,23 +51,20 @@ lemma unzero_mul {x y : WithZero α} (hxy : x * y ≠ 0) :
     unzero hxy = unzero (left_ne_zero_of_mul hxy) * unzero (right_ne_zero_of_mul hxy) := by
   simp only [← coe_inj, coe_mul, coe_unzero]
 
-instance noZeroDivisors : NoZeroDivisors (WithZero α) := ⟨Option.map₂_eq_none_iff.1⟩
+instance instNoZeroDivisors : NoZeroDivisors (WithZero α) := ⟨Option.map₂_eq_none_iff.1⟩
 
 end Mul
 
-instance semigroupWithZero [Semigroup α] : SemigroupWithZero (WithZero α) where
-  __ := mulZeroClass
+instance instSemigroupWithZero [Semigroup α] : SemigroupWithZero (WithZero α) where
   mul_assoc _ _ _ := Option.map₂_assoc mul_assoc
 
-instance commSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) where
-  __ := semigroupWithZero
+instance instCommSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) where
   mul_comm _ _ := Option.map₂_comm mul_comm
 
 section MulOneClass
 variable [MulOneClass α]
 
-instance mulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) where
-  __ := mulZeroClass
+instance instMulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) where
   one_mul := Option.map₂_left_identity one_mul
   mul_one := Option.map₂_right_identity mul_one
 
@@ -151,9 +149,7 @@ instance pow : Pow (WithZero α) ℕ where
 
 end Pow
 
-instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) where
-  __ := mulZeroOneClass
-  __ := semigroupWithZero
+instance instMonoidWithZero [Monoid α] : MonoidWithZero (WithZero α) where
   npow n a := a ^ n
   npow_zero
     | 0 => rfl
@@ -162,8 +158,8 @@ instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) where
     | n, 0 => by simp only [mul_zero]; rfl
     | n, some _ => congr_arg some <| pow_succ _ _
 
-instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
-  { WithZero.monoidWithZero, WithZero.commSemigroup with }
+instance instCommMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
+  { WithZero.instMonoidWithZero, WithZero.instCommSemigroup with }
 
 section Inv
 variable [Inv α]
@@ -203,8 +199,7 @@ instance : Pow (WithZero α) ℤ where
 
 end ZPow
 
-instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
-  __ := monoidWithZero
+instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
   div_eq_mul_inv
     | none, _ => rfl
     | some _, none => rfl
@@ -220,16 +215,12 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
     | n, none => rfl
     | n, some _ => congr_arg some (DivInvMonoid.zpow_neg' _ _)
 
-instance divInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) where
-  __ := divInvMonoid
-  __ := invOneClass
+instance instDivInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) where
 
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) where
+instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) where
   inv_inv a := (Option.map_map _ _ _).trans <| by simp [Function.comp]
 
-instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) where
-  __ := divInvMonoid
-  __ := involutiveInv
+instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) where
   mul_inv_rev
     | none, none => rfl
     | none, some _ => rfl
@@ -240,18 +231,13 @@ instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) where
     | some _, some _, h =>
       congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h
 
-instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) where
-  __ := divisionMonoid
-  __ := commSemigroup
+instance instDivisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) where
 
 section Group
 variable [Group α]
 
 /-- If `α` is a group then `WithZero α` is a group with zero. -/
-instance groupWithZero : GroupWithZero (WithZero α) where
-  __ := monoidWithZero
-  __ := divInvMonoid
-  __ := nontrivial
+instance instGroupWithZero : GroupWithZero (WithZero α) where
   inv_zero := WithZero.inv_zero
   mul_inv_cancel a ha := by
     lift a to α using ha
@@ -305,10 +291,9 @@ protected noncomputable def _root_.MulEquiv.unzero [Group β] (e : WithZero α �
 
 end Group
 
-instance commGroupWithZero [CommGroup α] : CommGroupWithZero (WithZero α) :=
-  { WithZero.groupWithZero, WithZero.commMonoidWithZero with }
+instance instCommGroupWithZero [CommGroup α] : CommGroupWithZero (WithZero α) where
 
-instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α) where
+instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α) where
   natCast n := if n = 0 then 0 else (n : α)
   natCast_zero := rfl
   natCast_succ n := by cases n <;> simp
