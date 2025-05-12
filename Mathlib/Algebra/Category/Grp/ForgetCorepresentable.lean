@@ -19,6 +19,22 @@ universe u
 
 open CategoryTheory Opposite
 
+/-!
+### `(ULift ℤ →+ G) ≃ G`
+
+These universe-monomorphic variants of `zmultiplesHom`/`zpowersHom` are put here since they
+shouldn't be useful outside of category theory.
+-/
+
+/-- The equivalence `(ULift ℤ →+ G) ≃ G` for any additive group `G`. -/
+def uliftZMultiplesHom (G : Type u) [AddGroup G] : G ≃ (ULift.{u} ℤ →+ G) :=
+  (zmultiplesHom _).trans <| AddMonoidHom.precompEquiv .ulift _
+
+/-- The equivalence `(ULift (Multiplicative ℤ) →* G) ≃ G` for any group `G`. -/
+@[to_additive existing (attr := simps!)]
+def uliftZPowersHom (G : Type u) [Group G] : G ≃ (ULift.{u} (Multiplicative ℤ) →* G) :=
+  (zpowersHom _).trans <| MonoidHom.precompEquiv .ulift _
+
 namespace MonoidHom
 
 /-- The equivalence `(Multiplicative ℤ →* α) ≃ α` for any group `α`. -/

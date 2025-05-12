@@ -26,7 +26,6 @@ assert_not_exists RelIso OrderedCommMonoid Field
 
 open Additive Function Multiplicative Nat
 
-universe u
 variable {F ι α β : Type*}
 
 namespace Int
@@ -276,15 +275,6 @@ of `Multiplicative.ofAdd 1`. -/
 @[to_additive existing]
 def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
   ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
-
-/-- The equivalence `(ULift ℤ →+ G) ≃ G` for any additive group `G`. -/
-def uliftZMultiplesHom (G : Type u) [AddGroup G] : G ≃ (ULift.{u} ℤ →+ G) :=
-  (zmultiplesHom _).trans <| AddMonoidHom.precompEquiv .ulift _
-
-/-- The equivalence `(ULift (Multiplicative ℤ) →* G) ≃ G` for any group `G`. -/
-@[to_additive existing (attr := simps!)]
-def uliftZPowersHom (G : Type u) [Group G] : G ≃ (ULift.{u} (Multiplicative ℤ) →* G) :=
-  (zpowersHom _).trans <| MonoidHom.precompEquiv .ulift _
 
 lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x := rfl
 
