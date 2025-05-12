@@ -25,8 +25,10 @@ enough to show that, for all (natural) primes `p ∈ Finset.Icc 1 ⌊(M K)⌋₊
 such that `p ^ (span ({p}).inertiaDeg P)` are principal. This is the standard technique to prove
 that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
 
-The way this theorem should be used is to first of all compute `⌊(M K)⌋₊` and then use `fin_cases`
-to deal with the finite number of primes `p` in the interval.
+The theorem is stated using any `n : ℕ` such that `M K ≤ n` and for all `p ∈ Finset.Icc 1 n`. The
+way it should be used is to first of all choose `n` (in practice one should take `n = ⌊(M K)⌋₊` but
+there is no need to prove that `n - 1 ≤ M K`) and then use `fin_cases` to deal with the finite
+number of primes `p` in the interval.
 -/
 
 open scoped nonZeroDivisors Real
@@ -117,10 +119,12 @@ PID it is enough to show that, for all (natural) primes `p ∈ Finset.Icc 1 ⌊(
 above `p` such that `p ^ (span ({p}).inertiaDeg P)` are principal. This is the standard technique to
 prove that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
 
-The way this theorem should be used is to first of all compute `⌊(M K)⌋₊` and then use `fin_cases`
-to deal with the finite number of primes `p` in the interval. -/
+The theorem is stated using any `n : ℕ` such that `M K ≤ n` and for all `p ∈ Finset.Icc 1 n`. The
+way it should be used is to first of all choose `n` (in practice one should take `n = ⌊(M K)⌋₊` but
+there is no need to prove that `n - 1 ≤ M K`) and then use `fin_cases` to deal with the finite
+number of primes `p` in the interval. -/
 theorem isPrincipalIdealRing_of_isPrincipal_of_le_pow_inertiaDeg_of_mem_primesOver_of_mem_Icc
-    (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, p.Prime → ∀ (P : Ideal (𝓞 K)),
+    {n : ℕ } (hn : M K ≤ n) (h : ∀ p ∈ Finset.Icc 1 n, p.Prime → ∀ (P : Ideal (𝓞 K)),
       P ∈ Ideal.primesOver (span {(p : ℤ)}) (𝓞 K) → p ^ ((span ({↑p} : Set ℤ)).inertiaDeg P) ≤ M K →
       Submodule.IsPrincipal P) : IsPrincipalIdealRing (𝓞 K) := by
   refine isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime <|
@@ -140,7 +144,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_le_pow_inertiaDeg_of_mem_primesOv
   have hpabsprime := Int.prime_iff_natAbs_prime.mp (hpprime (hP.under _))
   refine h _ ?_ hpabsprime _ ⟨hP, ?_⟩ hple
   · suffices 0 < (span {(p.natAbs : ℤ)}).inertiaDeg P by
-      refine Finset.mem_Icc.mpr ⟨hpabsprime.one_le, le_floor <| le_trans ?_ hple⟩
+      refine Finset.mem_Icc.mpr ⟨hpabsprime.one_le, cast_le.mp <| le_trans (le_trans ?_ hple) hn⟩
       simpa only [← cast_pow, cast_le] using le_pow this
     have := (isPrime_of_prime (prime_span_singleton_iff.mpr <|
       hpprime (hP.under _))).isMaximal <| by simp [((hpprime (hP.under _))).ne_zero]
