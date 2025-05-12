@@ -192,9 +192,7 @@ def overEquivIdealSheafData (X : Scheme.{u}) :
 
 lemma overEquivIdealSheafData_functor_obj_of_isIso {X Y : Scheme.{u}} (f : Y ⟶ X) [IsIso f] :
     (overEquivIdealSheafData X).functor.obj (op <| .mk _ f inferInstance) = ⊥ := by
-  dsimp [overEquivIdealSheafData]
-  ext U
-  simp [map_eq_zero_iff _ (ConcreteCategory.bijective_of_isIso (f.app U)).1]
+  simp [overEquivIdealSheafData]
 
 instance {X : Scheme} : IsIso (⊥ : X.IdealSheafData).subschemeι := by
   rw [← overEquivIdealSheafData_functor_obj_of_isIso (𝟙 _)]
@@ -228,10 +226,9 @@ variable {X Y : Scheme.{u}} [IsAffine Y] {f : X ⟶ Y}
 
 open IsClosedImmersion LocallyRingedSpace
 
-/-- If `f : X ⟶ Y` is a morphism of schemes with quasi-compact source and affine target, `f`
-has a closed image and `f` induces an injection on global sections, then
-`f` is surjective. -/
-lemma isDominant_of_of_injective_appTop [CompactSpace X]
+/-- If `f : X ⟶ Y` is a morphism of schemes with quasi-compact source and affine target,
+`f` induces an injection on global sections, then `f` is dominant. -/
+lemma isDominant_of_of_appTop_injective [CompactSpace X]
     (hfinj : Function.Injective (f.appTop)) :
     IsDominant f := by
   have : QuasiCompact f := HasAffineProperty.iff_of_isAffine.mpr ‹_›
@@ -241,10 +238,10 @@ lemma isDominant_of_of_injective_appTop [CompactSpace X]
     Closeds.coe_top, ← dense_iff_closure_eq] using (congr((↑($this).support : Set Y)) :)⟩
 
 @[deprecated (since := "2025-05-10")]
-alias surjective_of_isClosed_range_of_injective := isDominant_of_of_injective_appTop
+alias surjective_of_isClosed_range_of_injective := isDominant_of_of_appTop_injective
 
 instance [CompactSpace X] : IsDominant X.toSpecΓ :=
-  isDominant_of_of_injective_appTop (by
+  isDominant_of_of_appTop_injective (by
     simpa only [Scheme.toSpecΓ_appTop] using
       (ConcreteCategory.bijective_of_isIso (Scheme.ΓSpecIso Γ(X, ⊤)).hom).1)
 

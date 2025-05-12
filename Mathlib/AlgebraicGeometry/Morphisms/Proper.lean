@@ -114,7 +114,6 @@ theorem isIntegral_appTop_of_universallyClosed (f : X ⟶ Y) [UniversallyClosed 
     rwa [← Scheme.toSpecΓ_naturality,
       MorphismProperty.cancel_right_of_respectsIso (P := @UniversallyClosed)]
   have : UniversallyClosed X.toSpecΓ := .of_comp_of_isSeparated _ (Spec.map f.appTop)
-  have : Surjective X.toSpecΓ := .of_universallyClosed_of_isDominant _
   rw [← IsIntegralHom.SpecMap_iff, IsIntegralHom.iff_universallyClosed_and_isAffineHom]
   exact ⟨.of_comp_surjective X.toSpecΓ _, inferInstance⟩
 

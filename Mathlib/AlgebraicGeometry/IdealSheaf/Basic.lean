@@ -580,6 +580,14 @@ lemma Hom.le_ker_comp (f : X ⟶ Y) (g : Y.Hom Z) : g.ker ≤ (f ≫ g).ker := b
 lemma ker_eq_top_of_isEmpty (f : X.Hom Y) [IsEmpty X] : f.ker = ⊤ :=
   top_le_iff.mp (le_ofIdeals_iff.mpr fun U x _ ↦ by simpa using Subsingleton.elim _ _)
 
+@[simp]
+lemma Hom.ker_eq_bot_of_isIso (f : X ⟶ Y) [IsIso f] : f.ker = ⊥ := by
+  ext U
+  simp [map_eq_zero_iff _ (ConcreteCategory.bijective_of_isIso (f.app U)).1]
+
+lemma Hom.ker_comp_of_isIso (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] : (f ≫ g).ker = g.ker :=
+  (f.le_ker_comp g).antisymm' (((inv f).le_ker_comp _).trans (by simp))
+
 lemma ker_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
     f.ker = ofIdealTop (RingHom.ker f.appTop.hom) := by
   refine (le_of_isAffine ((f.ideal_ker_le _).trans (by simp))).antisymm
