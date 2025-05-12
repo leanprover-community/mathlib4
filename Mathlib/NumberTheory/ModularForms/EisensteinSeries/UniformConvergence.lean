@@ -43,6 +43,9 @@ lemma norm_eq_max_natAbs (x : Fin 2 → ℤ) : ‖x‖ = max (x 0).natAbs (x 1).
   refine eq_of_forall_ge_iff fun c ↦ ?_
   simp only [pi_nnnorm_le_iff, Fin.forall_fin_two, max_le_iff, NNReal.natCast_natAbs]
 
+lemma norm_symm (x y : ℤ) : ‖![x, y]‖ = ‖![y,x]‖ := by
+  simp_rw [EisensteinSeries.norm_eq_max_natAbs]
+  simp [max_comm]
 section bounding_functions
 
 /-- Auxiliary function used for bounding Eisenstein series, defined as
