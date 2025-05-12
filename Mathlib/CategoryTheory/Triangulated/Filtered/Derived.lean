@@ -282,7 +282,7 @@ lemma FilteredAcyclicToComplex_diff_functor (X : (FilteredAcyclic L₁ t₁ tF�
     (T.FromAcyclic t₁ t₂).map ((FilteredToComplex_diff L₁ t₁ n).app X.1.1) ≫
     (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT (n + 1)).hom.app X := sorry
 
-def FilteredAcyclicToComplexObj :
+def FilteredAcyclicToComplexAcyclicObj :
     CochainComplex ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory ⥤
     (AcyclicObject T t₁ t₂).FullSubcategory) ℤ :=
   CochainComplex.of (FilteredAcyclicToComplex_deg L₁ t₁ tF₁ t₂ T)
@@ -303,22 +303,24 @@ def FilteredAcyclicToComplexObj :
 def FilteredAcyclicToComplexAcyclic :
     (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory ⥤
     CochainComplex (AcyclicObject T t₁ t₂).FullSubcategory ℤ :=
-  (FilteredAcyclicToComplexObj L₁ t₁ tF₁ t₂ T).asFunctor
+  (FilteredAcyclicToComplexAcyclicObj L₁ t₁ tF₁ t₂ T).asFunctor
 
 def FilteredAcyclicToComplexAcyclic_compat :
     FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T ⋙
     (AcyclicObject T t₁ t₂).ι.mapHomologicalComplex _ ≅
     (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FilteredToComplex L₁ t₁ := by
   refine NatIso.ofComponents (fun _ ↦ ?_) (fun _ ↦ ?_)
-  · refine HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) (fun _ _ _ ↦ ?_)
-    dsimp [FilteredAcyclicToComplexAcyclic, FilteredToComplex, FilteredAcyclicToComplexObj,
+  · refine HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) (fun _ _ rel ↦ ?_)
+    simp only [ComplexShape.up_Rel] at rel
+    dsimp [FilteredToComplex, FilteredAcyclicToComplexAcyclic, FilteredAcyclicToComplexAcyclicObj,
       FilteredToComplexObj]
-    erw [Category.id_comp, Category.comp_id]
+    rw [← rel]
+    simp only [CochainComplex.of_d, id_comp, comp_id]
     rfl
   · ext
-    dsimp
-    erw [Category.comp_id, Category.id_comp]
-    rfl
+    dsimp [FilteredToComplex, FilteredAcyclicToComplexAcyclic, FilteredAcyclicToComplexAcyclicObj,
+      FilteredToComplexObj]
+    simp only [comp_id, id_comp]
 
 instance : (FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T).IsEquivalence := sorry
 
@@ -334,19 +336,17 @@ def FilteredAcyclicToComplexAcyclic_functor' :
     ≅ (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor
     ⋙ FilteredToComplex L₂ t₂ := by
   refine NatIso.ofComponents (fun X ↦ ?_) ?_
-  · refine HomologicalComplex.Hom.isoOfComponents (FilteredAcyclicToComplex_deg_functor
-      L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X) (fun n m rel ↦ ?_)
+  · refine HomologicalComplex.Hom.isoOfComponents (fun n ↦ (FilteredAcyclicToComplex_deg_functor
+      L₁ t₁ tF₁ L₂ t₂ tF₂ T FT n).app X) (fun n m rel ↦ ?_)
     simp only [ComplexShape.up_Rel] at rel
     rw [← rel]
     dsimp [FilteredToComplex, FilteredToComplexObj, FilteredAcyclicToComplexAcyclic,
-      FilteredAcyclicToComplexObj]
+      FilteredAcyclicToComplexAcyclicObj]
     simp only [CochainComplex.of_d]
     exact FilteredAcyclicToComplex_diff_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X n
-  · intro X Y f
+  · intro _ _ f
     ext n
-    sorry
-
-#exit
+    exact (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT n).hom.naturality f
 
 def DerivedFunctor_comp :
     DerivedFunctor t₁ t₂ T ⋙ Realization L₂ t₂ tF₂ ≅ Realization L₁ t₁ tF₁ ⋙ T := by
@@ -397,6 +397,7 @@ def DerivedFunctor_comp :
   dsimp
   refine (Functor.associator _ _ _).symm ≪≫ ?_
   refine isoWhiskerRight (FilteredAcyclicToComplexAcyclic_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT) _ ≪≫ ?_
+
   refine Functor.associator _ _ (DerivedCategory.Q ⋙ Realization L₂ t₂ tF₂) ≪≫ ?_
   refine isoWhiskerLeft _ (Realization_comp_Q L₂ t₂ tF₂) ≪≫ ?_
   refine ?_ ≪≫ Functor.associator _ _ _
