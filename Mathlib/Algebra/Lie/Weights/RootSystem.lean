@@ -554,9 +554,9 @@ lemma invtSubmodule_reflection:
           exact ⟨Finset.mem_univ j, LieModule.Weight.isNonZero_iff_ne_zero.mpr h⟩
         rcases (r₁ j) with h | h
         have h₁ : ⁅x, x₁⁆ ∈ g := by
-          have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
-          rw [h, coe_zero, zero_add] at ttt
-          exact Set.mem_biUnion hi ttt
+          have h₂ := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
+          rw [h, coe_zero, zero_add] at h₂
+          exact Set.mem_biUnion hi h₂
         exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
         let j₂ : H.root := ⟨j, h⟩
         rcases (Classical.em (j₂ ∈ Φ)) with h | h
