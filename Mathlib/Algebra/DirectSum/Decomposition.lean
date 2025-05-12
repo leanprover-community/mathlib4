@@ -327,15 +327,11 @@ def component (i : ι) : FA i →+ FB i where
   map_add' := fun x y ↦ Subtype.ext (by simp)
 
 @[simps]
-/- The identity map as a `DecompositionHom` of same decomposition. -/
 def id : DecompositionHom FA FA where
   toFun := _root_.id
   map_zero' := by simp
   map_add' := by simp
   component_wise h := h
-
-omit [DecidableEq ι] [Decomposition FA] in
-lemma id_component (i : ι) : (id FA).component i = AddMonoidHom.id (FA i) := rfl
 
 variable {FA FB FC} in
 /-- The composition of two decomposition morphisms,
@@ -345,6 +341,20 @@ def comp : DecompositionHom FA FC where
   map_zero' := by simp
   map_add' := by simp
   component_wise h := g.component_wise (f.component_wise h)
+
+@[simp]
+lemma component_id (i : ι) : (id FA).component i = AddMonoidHom.id (FA i) := rfl
+
+@[simp]
+lemma comp_id (f : DecompositionHom FA FB) :
+    f.comp (id FB) = f := rfl
+
+@[simp]
+lemma id_comp (f : DecompositionHom FA FB) :
+    (id FA).comp f = f := rfl
+
+lemma comp_component (i : ι) :
+    (f.comp g).component i = g.component i ∘ f.component i := rfl
 
 end DecompositionHom
 
