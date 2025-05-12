@@ -292,7 +292,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
   if githubStyle then
     try
       let (path, inputCtx, header, endHeader) ← parseHeader srcSearchPath s.modNames[i]!
-      for stx in header.raw[1].getArgs do
+      for stx in header.raw[2].getArgs do
         if toRemove.any fun i => s.modNames[i]! == stx[2].getId then
           let pos := inputCtx.fileMap.toPosition stx.getPos?.get!
           println! "{path}:{pos.line}:{pos.column+1}: warning: unused import \
