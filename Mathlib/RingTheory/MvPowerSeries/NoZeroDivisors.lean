@@ -102,7 +102,6 @@ instance : NoZeroDivisors (MvPowerSeries σ R) where
 
 theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
     (f * g).weightedOrder w = f.weightedOrder w + g.weightedOrder w := by
-  classical
   apply le_antisymm _ (le_weightedOrder_mul w)
   by_cases hf : f.weightedOrder w < ⊤
   · by_cases hg : g.weightedOrder w < ⊤
