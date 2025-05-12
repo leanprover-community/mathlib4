@@ -32,6 +32,9 @@ a greatest element -/
 noncomputable scoped instance chosenFiniteProducts : ChosenFiniteProducts C :=
   .ofChosenFiniteProducts ⟨_, Preorder.isTerminalTop C⟩ fun X Y ↦ ⟨_, Preorder.isLimitBinaryFan X Y⟩
 
+/-- Braided structure for the preorder category of a meet-semilattice with a greatest element. -/
+noncomputable scoped instance braidedCategory : BraidedCategory C := .ofChosenFiniteProducts
+
 lemma tensorObj {C : Type u} [SemilatticeInf C] [OrderTop C] {X Y : C} : X ⊗ Y = X ⊓ Y := rfl
 
 lemma tensorUnit {C : Type u} [SemilatticeInf C] [OrderTop C] :
