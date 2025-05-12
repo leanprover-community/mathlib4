@@ -91,6 +91,19 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
   convert map_zero (algebraMap F E)
   exact congr($h i)
 
+variable {F K} in
+/-- If `K / E / F` is a field extension tower such that `E / F` is purely inseparable,
+if `S` is an intermediate field of `K / F` which is separable over `F`, then `S` and `E` are
+linearly disjoint over `F`. -/
+theorem IntermediateField.linearDisjoint_of_isPurelyInseparable_of_isSeparable
+    [IsPurelyInseparable F E] (S : IntermediateField F K) [Algebra.IsSeparable F S] :
+    S.LinearDisjoint E := by
+  obtain ⟨ι, ⟨b⟩⟩ := Basis.exists_basis F S
+  exact .of_basis_left b <| b.linearIndependent.map' S.val.toLinearMap
+    (LinearMap.ker_eq_bot_of_injective S.val.injective)
+    |>.map_of_isPurelyInseparable_of_isSeparable E (fun i ↦
+      by simpa only [IsSeparable, minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i))
+
 namespace Field
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable and `K / E`
@@ -124,6 +137,15 @@ lemma rank_mul_sepDegree_of_isSeparable (K : Type v) [Field K] [Algebra F K]
     [Algebra E K] [IsScalarTower F E K] [Algebra.IsSeparable F E] :
     Module.rank F E * sepDegree E K = sepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_rank_mul_lift_sepDegree_of_isSeparable F E K
+
+/-- If `K / E / F` is a field extension tower, such that `E / F` is separable,
+then $[K:F]_i = [K:E]_i$.
+It is a special case of `XXX`, and is an
+intermediate result used to prove it. -/
+lemma insepDegree_eq_of_isSeparable [Algebra.IsSeparable F E] :
+    insepDegree F K = insepDegree E K := by
+  rw [insepDegree, insepDegree, separableClosure.eq_restrictScalars_of_isSeparable F E K]
+  rfl
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable,
 then $[K:F]_s = [K:E]_s$.
