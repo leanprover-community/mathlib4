@@ -545,18 +545,14 @@ lemma invtSubmodule_reflection:
       induction hy using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
       | mem x₁ hx₁ =>
         obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx₁
-        have rr79 (j : LieModule.Weight K H L) : j = 0 ∨ j ∈ H.root := by
-          have : j = 0 ∨ j ≠ 0 := by
-            exact eq_or_ne j 0
-          rcases this with h | h
+        have r₁ (j : LieModule.Weight K H L) : j = 0 ∨ j ∈ H.root := by
+          rcases (eq_or_ne j 0) with h | h
           · left
             exact h
           right
           refine Finset.mem_filter.mpr ?_
-          constructor
-          · exact Finset.mem_univ j
-          exact LieModule.Weight.isNonZero_iff_ne_zero.mpr h
-        have step1 := rr79 j
+          exact ⟨Finset.mem_univ j, LieModule.Weight.isNonZero_iff_ne_zero.mpr h⟩
+        have step1 := r₁ j
         rcases step1 with h | h
         have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx hx1_mem
         simp at ttt
