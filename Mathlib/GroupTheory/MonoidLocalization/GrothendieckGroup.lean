@@ -20,7 +20,7 @@ obtained by formally making the last term of each short exact sequence invertibl
 * [*Grothendieck group*, Wikipedia](https://en.wikipedia.org/wiki/Grothendieck_group#Grothendieck_group_of_a_commutative_monoid)
 -/
 
-open Localization
+open Function Localization
 
 namespace Algebra
 variable {M G : Type*} [CommMonoid M] [CommGroup G]
@@ -32,6 +32,19 @@ variable (M) in
 abbrev GrothendieckGroup : Type _ := Localization (⊤ : Submonoid M)
 
 namespace GrothendieckGroup
+
+/-- The inclusion from a commutative monoid `M` to its Grothendieck group.
+
+Note that this is only injective if `M` is cancellative. -/
+@[to_additive
+"The inclusion from an additive commutative monoid `M` to its Grothendieck group.
+
+Note that this is only injective if `M` is cancellative."]
+abbrev of : M →* GrothendieckGroup M := (monoidOf ⊤).toMonoidHom
+
+@[to_additive]
+lemma of_injective [IsCancelMul M] : Injective (of (M := M)) :=
+  fun m₁ m₂ ↦ by simp [of, ← mk_one_eq_monoidOf_mk, mk_eq_mk_iff']
 
 @[to_additive]
 instance : Inv (GrothendieckGroup M) where
@@ -58,18 +71,18 @@ lemma mk_div_mk (m₁ m₂ : M) (s₁ s₂ : (⊤ : Submonoid M)) :
 
 /-- A monoid homomorphism from a monoid `M` to a group `G` lifts to a group homomorphism from the
 Grothendieck group of `M` to `G`. -/
-@[to_additive
+@[to_additive (attr := simps symm_apply)
 "A monoid homomorphism from a monoid `M` to a group `G` lifts to a group homomorphism from the
 Grothendieck group of `M` to `G`."]
 noncomputable def lift : (M →* G) ≃ (GrothendieckGroup M →* G) where
-  toFun f := Submonoid.LocalizationMap.lift (monoidOf ⊤) (g := f) fun _ ↦ Group.isUnit _
-  invFun f := f.comp (monoidOf ⊤).toMonoidHom
+  toFun f := (monoidOf ⊤).lift (g := f) fun _ ↦ Group.isUnit _
+  invFun f := f.comp of
   left_inv f := by ext; simp
   right_inv f := by ext; simp
 
 @[to_additive]
 lemma lift_apply (f : M →* G) (x : GrothendieckGroup M) :
     lift f x = f ((monoidOf ⊤).sec x).1 / f ((monoidOf ⊤).sec x).2 := by
-  simp [lift, Submonoid.LocalizationMap.lift_apply, div_eq_mul_inv]; congr
+  simp [lift, (monoidOf ⊤).lift_apply, div_eq_mul_inv]; congr
 
 end Algebra.GrothendieckGroup
