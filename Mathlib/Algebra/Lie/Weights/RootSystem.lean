@@ -457,9 +457,9 @@ lemma invtSubmodule_reflection:
     s₁ i j h₁ h₂
   have s₂' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : j.1 (LieAlgebra.IsKilling.coroot i) = 0 :=
     s₁' i j h₁ h₂
-  have s₃ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) :
-      LieModule.genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
-    by_contra!
+  have s₃ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : LieModule.genWeightSpace L (i.1.1 + j.1.1) = ⊥
+      := by
+    by_contra h
     have inz : i.1.IsNonZero := by
       obtain ⟨val_1, property_1⟩ := i
       simp only [Finset.mem_filter, Finset.mem_univ, true_and] at property_1
@@ -468,44 +468,34 @@ lemma invtSubmodule_reflection:
       obtain ⟨val_1, property_1⟩ := j
       simp only [Finset.mem_filter, Finset.mem_univ, true_and, S] at property_1
       exact property_1
-    let r := LieModule.Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) this
+    let r := LieModule.Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
     have r₁ : r ≠ 0 := by
       intro a
-      have h : i.1 = -j.1 := LieModule.Weight.ext <| congrFun (eq_neg_of_add_eq_zero_left <| by
+      have h_eq : i.1 = -j.1 := LieModule.Weight.ext <| congrFun (eq_neg_of_add_eq_zero_left <| by
         have := congr_arg LieModule.Weight.toFun a
         simp at this; exact this)
       have := s₂ i j h₁ h₂
-      rw [h, LieModule.Weight.coe_neg, Pi.neg_apply,
+      rw [h_eq, LieModule.Weight.coe_neg, Pi.neg_apply,
       LieAlgebra.IsKilling.root_apply_coroot (K := K) (H := H) (L := L) jnz] at this
       field_simp at this
-    have r₂ : r ∈ H.root := by
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
-      exact LieModule.Weight.isNonZero_iff_ne_zero.mpr r₁
-    rcases Classical.em (⟨r, r₂⟩ ∈ Φ) with h | h
-    have abs : (0 : K) = 2 := by
-      calc
-        0 = (i.1.1 + j.1.1) (LieAlgebra.IsKilling.coroot j) := by apply (s₂ ⟨r, r₂⟩ j h h₂).symm
-        _ = i.1.1 (LieAlgebra.IsKilling.coroot j) + j.1.1 (LieAlgebra.IsKilling.coroot j) := by
-          exact rfl
-        _ = 0 + 2 := by
-          have e₁ : i.1.1 (LieAlgebra.IsKilling.coroot j) = 0 := s₂ i j h₁ h₂
-          have e₂ : j.1.1 (LieAlgebra.IsKilling.coroot j) = 2 :=
-            LieAlgebra.IsKilling.root_apply_coroot jnz
-          rw [e₁, e₂]
-        _ = 2 := by rw [zero_add]
-    field_simp at abs
-    have abs : (0 : K) = 2 := by
-      calc
-        0 = (i.1.1 + j.1.1) (LieAlgebra.IsKilling.coroot i) := by apply (s₂' i ⟨r, r₂⟩ h₁ h).symm
-        _ = i.1.1 (LieAlgebra.IsKilling.coroot i) + j.1.1 (LieAlgebra.IsKilling.coroot i) := by
-          exact rfl
-        _ = 2 + 0 := by
-          have e₁ : j.1.1 (LieAlgebra.IsKilling.coroot i) = 0 := s₂' i j h₁ h₂
-          have e₂ : i.1.1 (LieAlgebra.IsKilling.coroot i) = 2 :=
-            LieAlgebra.IsKilling.root_apply_coroot inz
-          rw [e₁, e₂]
-        _ = 2 := by rw [add_zero]
-    field_simp at abs
+    have r₂ : r ∈ H.root := by simp [LieModule.Weight.isNonZero_iff_ne_zero, r₁]
+    cases Classical.em (⟨r, r₂⟩ ∈ Φ) with
+    | inl hr =>
+      have e₁ : i.1.1 (LieAlgebra.IsKilling.coroot j) = 0 := s₂ i j h₁ h₂
+      have e₂ : j.1.1 (LieAlgebra.IsKilling.coroot j) = 2 := LieAlgebra.IsKilling.root_apply_coroot jnz
+      have : (0 : K) = 2 := calc
+        0 = (i.1.1 + j.1.1) (LieAlgebra.IsKilling.coroot j) := (s₂ ⟨r, r₂⟩ j hr h₂).symm
+        _ = i.1.1 (LieAlgebra.IsKilling.coroot j) + j.1.1 (LieAlgebra.IsKilling.coroot j) := rfl
+        _ = 2 := by rw [e₁, e₂, zero_add]
+      simp at this
+    | inr hr =>
+      have e₁ : j.1.1 (LieAlgebra.IsKilling.coroot i) = 0 := s₂' i j h₁ h₂
+      have e₂ : i.1.1 (LieAlgebra.IsKilling.coroot i) = 2 := LieAlgebra.IsKilling.root_apply_coroot inz
+      have : (0 : K) = 2 := calc
+        0 = (i.1.1 + j.1.1) (LieAlgebra.IsKilling.coroot i) := (s₂' i ⟨r, r₂⟩ h₁ hr).symm
+        _ = i.1.1 (LieAlgebra.IsKilling.coroot i) + j.1.1 (LieAlgebra.IsKilling.coroot i) := rfl
+        _ = 2 := by rw [e₁, e₂, add_zero]
+      simp at this
   have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1)
       (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
     have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace li.2 lj.2
