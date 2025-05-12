@@ -30,7 +30,7 @@ theorem Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R M N} {ιM : ι
   ext m
   rcases Function.Surjective.piMap (fun i ↦ (e i).repr.symm.surjective) m with ⟨x, rfl⟩
   unfold Pi.map
-  simp only [(e _).repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum,
+  simp_rw [(e _).repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum,
     map_sum_finset, map_smul_univ, h]
 
 @[deprecated (since := "2025-05-12")]
