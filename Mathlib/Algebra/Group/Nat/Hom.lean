@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Tactic.MinImports
 
 /-!
 # Extensionality of monoid homs from `ℕ`
