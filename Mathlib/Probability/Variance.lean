@@ -94,7 +94,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   by_contra h
   rw [← Ne, ← lt_top_iff_ne_top] at h
   have : MemLp (fun ω => X ω - μ[X]) 2 μ := by
-    refine ⟨hXm.sub aestronglyMeasurable_const, ?_⟩
+    refine ⟨by fun_prop, ?_⟩
     rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
     simp only [ENNReal.toReal_ofNat, ENNReal.toReal_one, ENNReal.rpow_two, Ne]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
@@ -247,7 +247,7 @@ theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
       · exact integral_nonneg fun a => sq_nonneg _
       intro h
       have A : MemLp (X - fun ω : Ω => μ[X]) 2 μ :=
-        (memLp_two_iff_integrable_sq (hint.aestronglyMeasurable.sub aestronglyMeasurable_const)).2 h
+        (memLp_two_iff_integrable_sq (by fun_prop)).2 h
       have B : MemLp (fun _ : Ω => μ[X]) 2 μ := memLp_const _
       apply hX
       convert A.add B

@@ -64,10 +64,12 @@ lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussian
   positivity
 
 /-- The gaussian pdf is measurable. -/
+@[fun_prop]
 lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) :=
   (((measurable_id.add_const _).pow_const _).neg.div_const _).exp.const_mul _
 
 /-- The gaussian pdf is strongly measurable. -/
+@[fun_prop]
 lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     StronglyMeasurable (gaussianPDFReal μ v) :=
   (measurable_gaussianPDFReal μ v).stronglyMeasurable
