@@ -600,10 +600,9 @@ lemma invtSubmodule_reflection:
   · contradiction
   contradiction
 
-instance : (LieAlgebra.IsKilling.rootSystem H).IsIrreducible := by
+instance : (rootSystem H).IsIrreducible := by
   have _i := LieModule.nontrivial_of_isIrreducible K L L
-  exact RootPairing.IsIrreducible.mk' (LieAlgebra.IsKilling.rootSystem H).toRootPairing
-    (invtSubmodule_reflection K L H)
+  exact RootPairing.IsIrreducible.mk' (rootSystem H).toRootPairing (invtSubmodule_reflection K L H)
 
 end jjj
 
