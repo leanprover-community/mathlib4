@@ -42,7 +42,7 @@ namespace IsRightDerivabilityStructure
 section
 
 variable (Φ : LocalizerMorphism W₁ W₂)
-  [W₁.IsMultiplicative] [∀ X₂, IsConnected (Φ.RightResolution X₂)]
+  [∀ X₂, IsConnected (Φ.RightResolution X₂)]
   [Φ.arrow.HasRightResolutions] [W₂.ContainsIdentities]
 
 namespace Constructor
@@ -117,7 +117,7 @@ section
 variable (Φ : LocalizerMorphism W₁ W₂) {D₁ D₂ : Type*} [Category D₁] [Category D₂]
   (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   (F : D₁ ⥤ D₂)
-  [F.Full] [F.Faithful] [W₁.IsMultiplicative] [W₂.ContainsIdentities]
+  [F.Full] [F.Faithful] [W₂.ContainsIdentities]
   [∀ X₂, IsConnected (Φ.RightResolution X₂)]
   [HasRightResolutions Φ.arrow]
 
@@ -143,7 +143,7 @@ derivability structure if the categories of left resolutions are connected and t
 categories of left resolutions of arrows are nonempty. -/
 
 lemma IsLeftDerivabilityStructure.mk' (Φ : LocalizerMorphism W₁ W₂)
-    [W₁.IsMultiplicative] [∀ (X₂ : C₂), IsConnected (Φ.LeftResolution X₂)]
+    [∀ (X₂ : C₂), IsConnected (Φ.LeftResolution X₂)]
     [Φ.arrow.HasLeftResolutions] [W₂.ContainsIdentities] [Φ.IsLocalizedEquivalence] :
     Φ.IsLeftDerivabilityStructure := by
   rw [isLeftDerivabilityStructure_iff_op]

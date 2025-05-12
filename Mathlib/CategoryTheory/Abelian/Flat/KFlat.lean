@@ -9,9 +9,10 @@ import Mathlib.Algebra.Homology.BifunctorColimits
 import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
 import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplex
-import Mathlib.Algebra.Homology.LeftResolutions.DerivabilityStructure
 import Mathlib.CategoryTheory.Abelian.Flat.Basic
 import Mathlib.CategoryTheory.Monoidal.KFlat
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Quotient
 
 /-!
 # Flat objects and K-flat complexes
@@ -287,8 +288,9 @@ include Λ hι
 
 lemma cochainComplex_kFlat_isLeftDerivabilityStructure :
     (HomologicalComplex.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure :=
-  HomologicalComplex.isLeftDerivabilityStructure_of_functorial_left_resolutions _ rfl
-    (Λ.kFlatResolutionNatTrans hι)
+  LocalizerMorphism.isLeftDerivabilityStructure_of_functorial_resolutions
+    (HomologicalComplex.quasiIso A (.up ℤ)).localizerMorphismKFlat (Λ.kFlatResolutionNatTrans hι)
+    (fun _ ↦ by rw [HomologicalComplex.mem_quasiIso_iff]; dsimp; infer_instance)
 
 /-lemma homotopyCategory_kFlat_isLeftDerivabilityStructure :
     (HomotopyCategory.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure :=

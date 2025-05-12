@@ -79,6 +79,9 @@ instance [W.RespectsIso] :
     W.localizerMorphismKFlat.functor.Monoidal :=
   inferInstanceAs W.ιKFlat.Monoidal
 
+instance : W.localizerMorphismKFlat.IsInduced where
+  inverseImage_eq := rfl
+
 lemma whiskerRight_of_kFlat [W.HasTwoOutOfThreeProperty]
     [W.localizerMorphismKFlat.HasLeftResolutions]
     {X₁ X₂ : C} (f : X₁ ⟶ X₂) (hf : W f) (hX₁ : W.kFlat X₁) (hX₂ : W.kFlat X₂) (Y : C) :

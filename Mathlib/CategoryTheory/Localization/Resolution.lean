@@ -92,18 +92,16 @@ variable {Φ} {X₂ : C₂}
 structure Hom (R R' : Φ.RightResolution X₂) where
   /-- a morphism in the source category -/
   f : R.X₁ ⟶ R'.X₁
-  hf : W₁ f
+  --hf : W₁ f
   comm : R.w ≫ Φ.functor.map f = R'.w := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.comm
 
 /-- The identity of a object in `Φ.RightResolution X₂`. -/
 @[simps]
-def Hom.id [W₁.ContainsIdentities] (R : Φ.RightResolution X₂) : Hom R R where
+def Hom.id (R : Φ.RightResolution X₂) : Hom R R where
   f := 𝟙 _
-  hf := W₁.id_mem _
-
-variable [W₁.IsMultiplicative]
+  --hf := W₁.id_mem _
 
 /-- The composition of morphisms in `Φ.RightResolution X₂`. -/
 @[simps]
@@ -111,7 +109,7 @@ def Hom.comp {R R' R'' : Φ.RightResolution X₂}
     (φ : Hom R R') (ψ : Hom R' R'') :
     Hom R R'' where
   f := φ.f ≫ ψ.f
-  hf := W₁.comp_mem _ _ φ.hf ψ.hf
+  --hf := W₁.comp_mem _ _ φ.hf ψ.hf
 
 instance : Category (Φ.RightResolution X₂) where
   Hom := Hom
@@ -131,15 +129,15 @@ lemma hom_ext {R R' : Φ.RightResolution X₂} {φ₁ φ₂ : R ⟶ R'} (h : φ�
   Hom.ext h
 
 @[simps]
-def isoMk {R R' : Φ.RightResolution X₂} [W₁.RespectsIso] (e : R.X₁ ≅ R'.X₁)
+def isoMk {R R' : Φ.RightResolution X₂} (e : R.X₁ ≅ R'.X₁)
     (comm : R.w ≫ Φ.functor.map e.hom = R'.w := by aesop_cat) : R ≅ R' where
   hom :=
     { f := e.hom
-      hf := W₁.of_isIso _
+      --hf := W₁.of_isIso _
       comm := comm }
   inv :=
     { f := e.inv
-      hf := W₁.of_isIso _
+      --hf := W₁.of_isIso _
       comm := by
         rw [← comm, Category.assoc, Iso.map_hom_inv_id, comp_id] }
 
@@ -154,18 +152,16 @@ variable {Φ} {X₂ : C₂}
 structure Hom (L L' : Φ.LeftResolution X₂) where
   /-- a morphism in the source category -/
   f : L.X₁ ⟶ L'.X₁
-  hf : W₁ f
+  --hf : W₁ f
   comm : Φ.functor.map f ≫ L'.w = L.w := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.comm
 
 /-- The identity of a object in `Φ.LeftResolution X₂`. -/
 @[simps]
-def Hom.id [W₁.ContainsIdentities] (L : Φ.LeftResolution X₂) : Hom L L where
+def Hom.id (L : Φ.LeftResolution X₂) : Hom L L where
   f := 𝟙 _
-  hf := W₁.id_mem _
-
-variable [W₁.IsMultiplicative]
+  --hf := W₁.id_mem _
 
 /-- The composition of morphisms in `Φ.LeftResolution X₂`. -/
 @[simps]
@@ -173,7 +169,7 @@ def Hom.comp {L L' L'' : Φ.LeftResolution X₂}
     (φ : Hom L L') (ψ : Hom L' L'') :
     Hom L L'' where
   f := φ.f ≫ ψ.f
-  hf := W₁.comp_mem _ _ φ.hf ψ.hf
+  --hf := W₁.comp_mem _ _ φ.hf ψ.hf
 
 instance : Category (Φ.LeftResolution X₂) where
   Hom := Hom
@@ -193,17 +189,37 @@ lemma hom_ext {L L' : Φ.LeftResolution X₂} {φ₁ φ₂ : L ⟶ L'} (h : φ�
   Hom.ext h
 
 @[simps]
-def isoMk {L L' : Φ.LeftResolution X₂} [W₁.RespectsIso] (e : L.X₁ ≅ L'.X₁)
+def isoMk {L L' : Φ.LeftResolution X₂} (e : L.X₁ ≅ L'.X₁)
     (comm : Φ.functor.map e.hom ≫ L'.w = L.w := by aesop_cat) : L ≅ L' where
   hom :=
     { f := e.hom
-      hf := W₁.of_isIso _
+      --hf := W₁.of_isIso _
       comm := comm }
   inv :=
     { f := e.inv
-      hf := W₁.of_isIso _
+      --hf := W₁.of_isIso _
       comm := by
         rw [← comm, Iso.map_inv_hom_id_assoc] }
+
+variable (Φ)
+
+@[simps!]
+def chgObj {X₂' : C₂} [W₂.IsStableUnderComposition] (π : X₂ ⟶ X₂') (hπ : W₂ π) :
+    Φ.LeftResolution X₂ ⥤ Φ.LeftResolution X₂' where
+  obj R :=
+    { X₁ := R.X₁
+      w := R.w ≫ π
+      hw := W₂.comp_mem _ _ R.hw hπ }
+  map φ :=
+    { f := φ.f }
+
+@[simps]
+def chgObjEquivalence {X₂' : C₂} (e : X₂ ≅ X₂') [W₂.IsMultiplicative] [W₂.RespectsIso] :
+    Φ.LeftResolution X₂ ≌ Φ.LeftResolution X₂' where
+  functor := chgObj Φ e.hom (W₂.of_isIso _)
+  inverse := chgObj Φ e.inv (W₂.of_isIso _)
+  unitIso := NatIso.ofComponents (fun R ↦ isoMk (Iso.refl _))
+  counitIso := NatIso.ofComponents (fun R ↦ isoMk (Iso.refl _))
 
 end LeftResolution
 
@@ -275,28 +291,28 @@ instance [Φ.HasLeftResolutions] : Φ.op.HasRightResolutions := by
 
 /-- The functor `(Φ.LeftResolution X₂)ᵒᵖ ⥤ Φ.op.RightResolution (Opposite.op X₂)`. -/
 @[simps]
-def LeftResolution.opFunctor (X₂ : C₂) [W₁.IsMultiplicative] :
+def LeftResolution.opFunctor (X₂ : C₂) :
     (Φ.LeftResolution X₂)ᵒᵖ ⥤ Φ.op.RightResolution (Opposite.op X₂) where
   obj L := L.unop.op
   map φ :=
     { f := φ.unop.f.op
-      hf := φ.unop.hf
+      --hf := φ.unop.hf
       comm := Quiver.Hom.unop_inj φ.unop.comm }
 
 /-- The functor `(Φ.op.RightResolution X₂)ᵒᵖ ⥤ Φ.LeftResolution X₂.unop`. -/
 @[simps]
-def RightResolution.unopFunctor (X₂ : C₂ᵒᵖ) [W₁.IsMultiplicative] :
+def RightResolution.unopFunctor (X₂ : C₂ᵒᵖ) :
     (Φ.op.RightResolution X₂)ᵒᵖ ⥤ Φ.LeftResolution X₂.unop where
   obj R := R.unop.unop
   map φ :=
     { f := φ.unop.f.unop
-      hf := φ.unop.hf
+      --hf := φ.unop.hf
       comm := Quiver.Hom.op_inj φ.unop.comm }
 
 /-- The equivalence of categories
 `(Φ.LeftResolution X₂)ᵒᵖ ≌ Φ.op.RightResolution (Opposite.op X₂)`. -/
 @[simps]
-def LeftResolution.opEquivalence (X₂ : C₂) [W₁.IsMultiplicative] :
+def LeftResolution.opEquivalence (X₂ : C₂) :
     (Φ.LeftResolution X₂)ᵒᵖ ≌ Φ.op.RightResolution (Opposite.op X₂) where
   functor := LeftResolution.opFunctor Φ X₂
   inverse := (RightResolution.unopFunctor Φ (Opposite.op X₂)).rightOp

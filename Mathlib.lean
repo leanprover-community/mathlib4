@@ -579,7 +579,6 @@ import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.LeftResolutions.Basic
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplex
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplexMinus
-import Mathlib.Algebra.Homology.LeftResolutions.DerivabilityStructure
 import Mathlib.Algebra.Homology.LeftResolutions.Reduced
 import Mathlib.Algebra.Homology.LeftResolutions.Transport
 import Mathlib.Algebra.Homology.Linear
@@ -2372,6 +2371,7 @@ import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Monoidal
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Quotient
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Triangulated
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.FiniteProducts
