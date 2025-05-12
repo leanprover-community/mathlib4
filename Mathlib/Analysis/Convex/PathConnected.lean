@@ -26,7 +26,7 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
 namespace Path
 
-/-- The path from `a` to `b` going along the straight segment. -/
+/-- The path from `a` to `b` going along a straight line segment -/
 @[simps]
 protected def segment (a b : E) : Path a b where
   toFun t := AffineMap.lineMap a b (t : ℝ)
@@ -35,7 +35,8 @@ protected def segment (a b : E) : Path a b where
 
 @[simp]
 theorem range_segment (a b : E) : Set.range (Path.segment a b) = [a -[ℝ] b] := by
-  simp only [segment_eq_image_lineMap, image_eq_range, ← segment_apply]
+  rw [segment_eq_image_lineMap, image_eq_range]
+  simp only [← segment_apply]
 
 @[simp]
 theorem segment_same (a : E) : Path.segment a a = .refl a := by ext; simp
