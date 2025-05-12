@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Alternating.Basic
+import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Currying alternating forms
