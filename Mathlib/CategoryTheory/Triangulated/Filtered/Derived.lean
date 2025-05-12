@@ -6,7 +6,7 @@ import Mathlib.CategoryTheory.Localization.Triangulated
 noncomputable section
 
 open CategoryTheory Preadditive Limits Triangulated CategoryTheory.FilteredTriangulated
-  TStructure Pretriangulated
+  TStructure Pretriangulated Category
 
 open scoped ZeroObject
 
@@ -189,11 +189,10 @@ abbrev FilteredAcyclicToComplex_deg (n : ℤ) :
   (AcyclicObject T t₁ t₂).lift ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙
   FilteredToComplex_deg L₁ t₁ n) (fun X ↦ X.2 n)
 
-def FilteredAcyclicToComplex_deg_functor (n : ℤ) :
-    FilteredAcyclicToComplex_deg L₁ t₁ tF₁ t₂ T n ⋙ T.FromAcyclic t₁ t₂ ≅
-    (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor ⋙
-    FilteredToComplex_deg L₂ t₂ n := by
-  refine Functor.fullyFaithfulCancelRight t₂.ιHeart ?_
+def FilteredAcyclicToComplex_deg_functor_half (n : ℤ) :
+    (FilteredAcyclicToComplex_deg L₁ t₁ tF₁ t₂ T n ⋙ T.FromAcyclic t₁ t₂) ⋙ t₂.ιHeart ≅
+    (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor ⋙ Gr L₂ n ⋙
+    shiftFunctor A₂ n := by
   dsimp [FilteredToComplex_deg, FilteredAcyclicToComplex_deg, Functor.FromAcyclic]
   refine Functor.associator _ _ t₂.ιHeart ≪≫ ?_
   refine isoWhiskerLeft _ (ObjectProperty.liftCompιIso t₂.heart _ _) ≪≫ ?_
@@ -235,72 +234,76 @@ def FilteredAcyclicToComplex_deg_functor (n : ℤ) :
     (T ⋙ shiftFunctor A₂ n) ≪≫ ?_
   refine isoWhiskerLeft ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart)
     ((Functor.associator (Gr L₁ n) T (shiftFunctor A₂ n)).symm ≪≫
-    isoWhiskerRight (lifting_Gr_comm L₁ L₂ FT n).symm (shiftFunctor A₂ n)) ≪≫ ?_
+    isoWhiskerRight (lifting_Gr_comm L₁ L₂ FT n).symm (shiftFunctor A₂ n) ≪≫
+    Functor.associator FT.functor (Gr L₂ n) (shiftFunctor A₂ n)) ≪≫ ?_
+  exact Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι tF₁.ιHeart
+    (FT.functor ⋙ Gr L₂ n ⋙ shiftFunctor A₂ n)
 
-#exit
--- Need to make this a natural isomorphism.
-def FilteredAcyclicToComplex_deg_functor (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
-    (n : ℤ) : (T.FromAcyclic t₁ t₂).obj (FilteredAcyclicToComplex_deg L₁ t₁ tF₁ t₂ T X n) ≅
-    FilteredToComplex_deg L₂ t₂ (FT.functor.obj X.1.1) n := by
-  refine ObjectProperty.isoMk t₂.heart ?_
-  dsimp [FilteredToComplex_deg]
-  refine (T.mapIso (t₁.ιHeart.mapIso ((t₁.homology n).mapIso (shiftShiftNeg
-    ((Gr L₁ n).obj X.1.1) n).symm))) ≪≫ ?_
-  refine (T.mapIso (t₁.ιHeart.mapIso ((t₁.homology₀.shiftIso (-n) n 0
-    (neg_add_cancel _)).app (((Gr L₁ n).obj X.1.1)⟦n⟧)))) ≪≫ ?_
-  have eq : ((Gr L₁ n).obj X.obj.obj)⟦n⟧ = t₁.ιHeart.obj ⟨((Gr L₁ n).obj X.obj.obj)⟦n⟧,
-    (mem_filtered_heart_iff L₁ t₁ tF₁ X.1.1).mp X.1.2 n⟩ := rfl
-  refine T.mapIso (t₁.ιHeart.mapIso ((t₁.homology₀.shift 0).mapIso (eqToIso eq))) ≪≫ ?_
-  refine (T.mapIso (t₁.ιHeart.mapIso ((t₁.ιHeartHomology_zero).app
-    ⟨((Gr L₁ n).obj X.obj.obj)⟦n⟧, (mem_filtered_heart_iff L₁ t₁ tF₁ X.1.1).mp X.1.2 n⟩))) ≪≫ ?_
-  refine T.mapIso (eqToIso eq.symm) ≪≫ ?_
-  refine ((T.commShiftIso n).app ((Gr L₁ n).obj X.1.1)) ≪≫ ?_
-  refine ((shiftFunctor A₂ n).mapIso
-    (((lifting_Gr_comm L₁ L₂ FT n).app X.1.1).symm)) ≪≫ ?_
-  refine ?_ ≪≫ t₂.ιHeart.mapIso ((t₂.homology n).mapIso (shiftShiftNeg ((Gr L₂ n).obj
-    (FT.functor.obj X.1.1)) n))
-  refine ?_ ≪≫ t₂.ιHeart.mapIso ((t₂.homology₀.shiftIso (-n) n 0
-    (neg_add_cancel _)).app (((Gr L₂ n).obj (FT.functor.obj X.1.1))⟦n⟧)).symm
-  have prop : t₂.heart (((Gr L₂ n).obj (FT.functor.obj X.1.1))⟦n⟧) :=
-    (mem_filtered_heart_iff L₂ t₂ tF₂ (FT.functor.obj X.1.1)).mp
-    (FilteredAcyclic_image L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X) n
-  have eq' : ((Gr L₂ n).obj (FT.functor.obj X.1.1))⟦n⟧ = t₂.ιHeart.obj
-    ⟨((Gr L₂ n).obj (FT.functor.obj X.1.1))⟦n⟧, prop⟩ := rfl
-  refine ?_≪≫ t₂.ιHeart.mapIso ((t₂.homology₀.shift 0).mapIso (eqToIso eq'.symm))
-  refine ?_ ≪≫ t₂.ιHeart.mapIso ((t₂.ιHeartHomology_zero).app _).symm
-  exact eqToIso eq'
+def FilteredAcyclicToComplex_deg_functor (n : ℤ) :
+    FilteredAcyclicToComplex_deg L₁ t₁ tF₁ t₂ T n ⋙ T.FromAcyclic t₁ t₂ ≅
+    (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor ⋙
+    FilteredToComplex_deg L₂ t₂ n := by
+  refine Functor.fullyFaithfulCancelRight t₂.ιHeart ?_
+  refine FilteredAcyclicToComplex_deg_functor_half L₁ t₁ tF₁ L₂ t₂ T FT n ≪≫ ?_
+  refine ?_ ≪≫ isoWhiskerRight (isoWhiskerLeft ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙
+    FT.functor ⋙ Gr L₂ n) (shiftEquiv A₂ n).unitIso.symm) (t₂.homology n ⋙ t₂.ιHeart)
+  refine ?_ ≪≫ isoWhiskerLeft ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor ⋙
+    Gr L₂ n) (isoWhiskerLeft (shiftFunctor A₂ n) (Functor.associator (shiftFunctor A₂ (-n))
+    (t₂.homology n) (t₂.ιHeart)) ≪≫ (Functor.associator (shiftFunctor A₂ n) (shiftFunctor A₂ (-n))
+    (t₂.homology n ⋙ t₂.ιHeart)).symm)
+  refine ?_ ≪≫ isoWhiskerLeft ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor ⋙
+    Gr L₂ n) (isoWhiskerLeft (shiftFunctor A₂ n) (isoWhiskerRight
+    (t₂.homology₀.shiftIso (-n) n 0 (neg_add_cancel _)).symm t₂.ιHeart))
+  refine ?_ ≪≫ Functor.associator ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙
+    FT.functor ⋙ Gr L₂ n) (shiftFunctor A₂ n) (t₂.homology₀.shift 0 ⋙ t₂.ιHeart)
+  refine ?_ ≪≫ Functor.associator (((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙
+    FT.functor ⋙ Gr L₂ n) ⋙ shiftFunctor A₂ n) (t₂.homology₀.shift 0) t₂.ιHeart
+  refine ?_ ≪≫ isoWhiskerRight (isoWhiskerRight (ObjectProperty.liftCompιIso t₂.heart
+    (((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor ⋙ Gr L₂ n)
+    ⋙ shiftFunctor A₂ n)
+    (fun X ↦ (mem_filtered_heart_iff L₂ t₂ tF₂ (FT.functor.obj X.1.1)).mp
+             (FilteredAcyclic_image L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X) n))
+    (t₂.homology₀.shift (0 : ℤ))) t₂.ιHeart
+  refine ?_ ≪≫ isoWhiskerRight (Functor.associator _ t₂.ιHeart (t₂.homology₀.shift 0)).symm
+    t₂.ιHeart
+  refine ?_ ≪≫ isoWhiskerRight (isoWhiskerLeft _ (t₂.ιHeartHomology_zero).symm) t₂.ιHeart
+  refine ?_ ≪≫ isoWhiskerRight (Functor.rightUnitor _).symm t₂.ιHeart
+  refine ?_ ≪≫ (ObjectProperty.liftCompιIso t₂.heart
+    (((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FT.functor ⋙ Gr L₂ n)
+    ⋙ shiftFunctor A₂ n)
+    (fun X ↦ (mem_filtered_heart_iff L₂ t₂ tF₂ (FT.functor.obj X.1.1)).mp
+             (FilteredAcyclic_image L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X) n)).symm
+  exact (Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι
+    (tF₁.ιHeart ⋙ FT.functor ⋙ Gr L₂ n) (shiftFunctor A₂ n)).symm
 
 lemma FilteredAcyclicToComplex_diff_functor (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
-    (n : ℤ) : (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X n).hom ≫
-    FilteredToComplex_diff L₂ t₂ (FT.functor.obj X.1.1) n =
-    (T.FromAcyclic t₁ t₂).map (FilteredToComplex_diff L₁ t₁ X.1.1 n) ≫
-    (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT X (n + 1)).hom := sorry
+    (n : ℤ) : (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT n).hom.app X ≫
+    (FilteredToComplex_diff L₂ t₂ n).app (FT.functor.obj X.1.1) =
+    (T.FromAcyclic t₁ t₂).map ((FilteredToComplex_diff L₁ t₁ n).app X.1.1) ≫
+    (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT (n + 1)).hom.app X := sorry
 
-def FilteredAcyclicToComplexObj (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory) :
-    CochainComplex (AcyclicObject T t₁ t₂).FullSubcategory ℤ :=
-  CochainComplex.of (FilteredAcyclicToComplex_deg L₁ t₁ tF₁ t₂ T X)
-    (FilteredToComplex_diff L₁ t₁ X.1.1)
-    (FilteredToComplex_condition L₁ t₁ X.1.1)
+def FilteredAcyclicToComplexObj :
+    CochainComplex ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory ⥤
+    (AcyclicObject T t₁ t₂).FullSubcategory) ℤ :=
+  CochainComplex.of (FilteredAcyclicToComplex_deg L₁ t₁ tF₁ t₂ T)
+    (fun n ↦ {app X := by
+                refine (Functor.FullyFaithful.homEquiv
+                  (AcyclicObject T t₁ t₂).fullyFaithfulι).symm ?_
+                simp only [ObjectProperty.ι_obj, ObjectProperty.lift_obj_obj, Functor.comp_obj]
+                exact (FilteredToComplex_diff L₁ t₁ n).app (tF₁.ιHeart.obj X.obj),
+              naturality _ _ f := by
+                refine (AcyclicObject T t₁ t₂).ι.map_injective ?_
+                rw [Functor.map_comp, Functor.FullyFaithful.homEquiv_symm_apply,
+                  (AcyclicObject T t₁ t₂).fullyFaithfulι.map_preimage,
+                  Functor.map_comp, Functor.FullyFaithful.homEquiv_symm_apply,
+                  (AcyclicObject T t₁ t₂).fullyFaithfulι.map_preimage]
+                exact (FilteredToComplex_diff L₁ t₁ n).naturality f})
+    sorry --(FilteredToComplex_condition L₁ t₁)
 
 def FilteredAcyclicToComplexAcyclic :
     (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory ⥤
-    CochainComplex (AcyclicObject T t₁ t₂).FullSubcategory ℤ where
-  obj X := FilteredAcyclicToComplexObj L₁ t₁ tF₁ t₂ T X
-  map f :=
-    {
-      f := (FilteredToComplexHom L₁ t₁ f).f,
-      comm' := (FilteredToComplexHom L₁ t₁ f).comm'
-    }
-  map_id X := by
-    ext
-    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_deg, Gr]
-    erw [Functor.map_id, Functor.map_id, Functor.map_id, Functor.map_id]
-    rfl
-  map_comp f g := by
-    ext
-    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_deg]
-    erw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp]
-    rfl
+    CochainComplex (AcyclicObject T t₁ t₂).FullSubcategory ℤ :=
+  (FilteredAcyclicToComplexObj L₁ t₁ tF₁ t₂ T).asFunctor
 
 def FilteredAcyclicToComplexAcyclic_compat :
     FilteredAcyclicToComplexAcyclic L₁ t₁ tF₁ t₂ T ⋙
@@ -308,7 +311,8 @@ def FilteredAcyclicToComplexAcyclic_compat :
     (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙ FilteredToComplex L₁ t₁ := by
   refine NatIso.ofComponents (fun _ ↦ ?_) (fun _ ↦ ?_)
   · refine HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) (fun _ _ _ ↦ ?_)
-    dsimp
+    dsimp [FilteredAcyclicToComplexAcyclic, FilteredToComplex, FilteredAcyclicToComplexObj,
+      FilteredToComplexObj]
     erw [Category.id_comp, Category.comp_id]
     rfl
   · ext
