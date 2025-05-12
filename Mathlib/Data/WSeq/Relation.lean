@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.WSeq.Basic
+import Mathlib.Logic.Relation
 
 /-!
 # Relations between and equivalence of weak sequences
@@ -112,7 +113,8 @@ theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (Lif
     apply H
 
 theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (LiftRel R) :=
-  fun s1 s2 (h : Function.swap (LiftRel R) s2 s1) => by rwa [LiftRel.swap, H.swap_eq] at h
+  fun s1 s2 (h : Function.swap (LiftRel R) s2 s1) => by
+    rwa [LiftRel.swap, H.swap_eq] at h
 
 theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (LiftRel R) :=
   fun s t u h1 h2 => by
