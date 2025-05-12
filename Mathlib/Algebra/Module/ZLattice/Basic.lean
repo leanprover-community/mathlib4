@@ -270,7 +270,7 @@ def quotientEquiv [Fintype ι] :
     exact QuotientAddGroup.leftRel_apply.mp h
   · refine Quotient.inductionOn₂ x y (fun _ _ hxy => ?_)
     rw [Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))), fractRestrict,
-      Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))),  fractRestrict,
+      Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))), fractRestrict,
       Subtype.mk.injEq] at hxy
     apply Quotient.sound'
     rwa [QuotientAddGroup.leftRel_apply, mem_toAddSubgroup, ← fract_eq_fract]
@@ -437,6 +437,8 @@ instance instIsZLatticeRealSpan {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
     [Finite ι] (b : Basis ι ℝ E) :
     IsZLattice ℝ (span ℤ (Set.range b)) where
   span_top := ZSpan.span_top b
+
+@[deprecated (since := "2025-05-08")] alias ZSpan.isZLattice := instIsZLatticeRealSpan
 
 section NormedLinearOrderedField
 
@@ -648,6 +650,24 @@ instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] 
     Countable L := by
   simp_rw [← (Module.Free.chooseBasis ℤ L).ofZLatticeBasis_span ℝ]
   infer_instance
+
+/--
+Assume that the set `s` spans over `ℤ` a discrete set. Then its `ℝ`-rank is equal to its `ℤ`-rank.
+-/
+theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] {s : Set E} (hs : DiscreteTopology (span ℤ s)) :
+    Set.finrank ℝ s = Set.finrank ℤ s := by
+  let F := span ℝ s
+  let L : Submodule ℤ (span ℝ s) := comap (F.restrictScalars ℤ).subtype (span ℤ s)
+  let f := Submodule.comapSubtypeEquivOfLe (span_le_restrictScalars ℤ ℝ s)
+  have : DiscreteTopology L := by
+    let e : span ℤ s ≃L[ℤ] L :=
+      ⟨f.symm, continuous_of_discreteTopology, Isometry.continuous fun _ ↦ congrFun rfl⟩
+    exact e.toHomeomorph.discreteTopology
+  have : IsZLattice ℝ L := ⟨eq_top_iff.mpr <|
+    span_span_coe_preimage.symm.le.trans (span_mono (Set.preimage_mono subset_span))⟩
+  rw [Set.finrank, Set.finrank, ← f.finrank_eq]
+  exact (ZLattice.rank ℝ L).symm
 
 end NormedLinearOrderedField
 

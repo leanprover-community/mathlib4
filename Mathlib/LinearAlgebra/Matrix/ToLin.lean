@@ -284,11 +284,12 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
   invFun := Matrix.mulVecLin
   right_inv M := by
     ext i j
-    simp only [Matrix.mulVec_single_one, Matrix.mulVecLin_apply, of_apply, transpose_apply]
+    simp only [Matrix.mulVec_single_one, col_apply, Matrix.mulVecLin_apply, of_apply,
+      transpose_apply]
   left_inv f := by
     apply (Pi.basisFun R n).ext
     intro j; ext i
-    simp only [Pi.basisFun_apply, Matrix.mulVec_single_one,
+    simp only [Pi.basisFun_apply, Matrix.mulVec_single_one, col_apply,
       Matrix.mulVecLin_apply, of_apply, transpose_apply]
   map_add' f g := by
     ext i j
@@ -951,8 +952,8 @@ lemma linearMap_apply (ij : ι₂ × ι₁) :
 lemma linearMap_apply_apply (ij : ι₂ × ι₁) (k : ι₁) :
     (b₁.linearMap b₂ ij) (b₁ k) = if ij.2 = k then b₂ ij.1 else 0 := by
   have := Classical.decEq ι₂
-  rw [linearMap_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
-  dsimp only [Matrix.stdBasisMatrix, of_apply]
+  rw [linearMap_apply, Matrix.stdBasis_eq_single, Matrix.toLin_self]
+  dsimp only [Matrix.single, of_apply]
   simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
 
 /-- The standard basis of the endomorphism algebra of a module
