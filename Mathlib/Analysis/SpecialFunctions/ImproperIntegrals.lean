@@ -71,6 +71,16 @@ theorem integrableOn_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
   simpa using integrableOn_Iic_iff_integrableOn_Iio.mpr
     (integrableOn_exp_mul_complex_Ioi (a := -a) (by simpa) (-c)).comp_neg_Iio
 
+theorem integrableOn_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :
+    IntegrableOn (fun x : ℝ => Real.exp (a * x)) (Ioi c) := by
+  have := Integrable.norm <| integrableOn_exp_mul_complex_Ioi (a := a) (by simpa using ha) c
+  simpa [Complex.norm_exp] using this
+
+theorem integrableOn_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
+    IntegrableOn (fun x : ℝ => Real.exp (a * x)) (Iic c) := by
+  have := Integrable.norm <| integrableOn_exp_mul_complex_Iic (a := a) (by simpa using ha) c
+  simpa [Complex.norm_exp] using this
+
 theorem integral_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
     ∫ x : ℝ in Set.Ioi c, Complex.exp (a * x) = - Complex.exp (a * c) / a := by
   refine tendsto_nhds_unique (intervalIntegral_tendsto_integral_Ioi c
@@ -85,6 +95,18 @@ theorem integral_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
   simpa [neg_mul, ← mul_neg, ← Complex.ofReal_neg,
     integral_comp_neg_Ioi (f := fun x : ℝ ↦ Complex.exp (a * x))]
     using integral_exp_mul_complex_Ioi (a := -a) (by simpa) (-c)
+
+theorem integral_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :
+    ∫ x : ℝ in Set.Ioi c, Real.exp (a * x) = - Real.exp (a * c) / a := by
+  simp_rw [Real.exp, ← RCLike.re_to_complex, Complex.ofReal_mul]
+  rw [integral_re, integral_exp_mul_complex_Ioi (by simpa using ha), RCLike.re_to_complex,
+    RCLike.re_to_complex, Complex.div_ofReal_re, Complex.neg_re]
+  exact integrableOn_exp_mul_complex_Ioi  (by simpa using ha) _
+
+theorem integral_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
+    ∫ x : ℝ in Set.Iic c, Real.exp (a * x) = Real.exp (a * c) / a := by
+  simpa [neg_mul, ← mul_neg, integral_comp_neg_Ioi (f := fun x : ℝ ↦ Real.exp (a * x))]
+    using integral_exp_mul_Ioi (a := -a) (by simpa) (-c)
 
 /-- If `0 < c`, then `(fun t : ℝ ↦ t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
 theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :

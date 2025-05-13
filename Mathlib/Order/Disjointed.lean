@@ -96,7 +96,7 @@ lemma disjointedRec {f : ι → α} {p : α → Prop} (hdiff : ∀ ⦃t i⦄, p 
   intro s
   induction s using Finset.induction with
   | empty => simpa only [sup_empty, sdiff_bot] using hpi
-  | insert ht IH =>
+  | insert _ _ ht IH =>
     rw [sup_insert, sup_comm, ← sdiff_sdiff]
     exact hdiff IH
 

@@ -17,6 +17,4 @@ lemma cast_negOnePow (K : Type*) (n : ℤ) [DivisionRing K] : n.negOnePow = (-1 
   · rw [zpow_add_one₀ (by norm_num), zpow_mul, zpow_ofNat]
     simp
 
-@[deprecated (since := "2024-10-20")] alias coe_negOnePow := cast_negOnePow
-
 end Int
