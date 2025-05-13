@@ -577,8 +577,7 @@ lemma invtSubmodule_reflection:
           simp only [lie_lie, sub_add_cancel]
         rw [this]
         exact add_mem (I.lie_mem e d) (I.lie_mem c f)
-    | zero =>
-      simp only [zero_lie, zero_mem]
+    | zero => simp only [zero_lie, zero_mem]
     | add x1 y1 _ _ hx hy =>
       simp only [add_lie]
       exact add_mem hx hy
