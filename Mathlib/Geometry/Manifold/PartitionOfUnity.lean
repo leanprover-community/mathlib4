@@ -625,55 +625,69 @@ theorem exists_smooth_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (
     let ⟨c, hc⟩ := Hloc x
     ⟨_, hc, fun _ => c, contMDiffOn_const, fun _ => id⟩
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional `C^∞` smooth manifold. Let `t : M → Set F`
-be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
-`U ∈ 𝓝 x` and a function `g : M → F` such that `g` is `C^∞` smooth on `U` and `g y ∈ t y` for all
-`y ∈ U`. Then there exists a global `C^∞` smooth section `s` such that for all `x : M`,
-`s x ∈ t x`.
--/
-theorem exists_smooth_section_forall_mem_convex_of_local
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
-    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-    [IsManifold I ∞ M] [SigmaCompactSpace M] [T2Space M]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (t : M → Set F) (ht_conv : ∀ x, Convex ℝ (t x))
-    (Hloc : ∀ x₀ : M, ∃ U_x₀ ∈ 𝓝 x₀, ∃ g_x₀ : M → F,
-            ContMDiffOn I 𝓘(ℝ, F) ∞ g_x₀ U_x₀ ∧ ∀ y ∈ U_x₀, g_x₀ y ∈ t y) :
-    ∃ s : ContMDiffSection I F ∞ (fun _ => F), ∀ x : M, s x ∈ t x := by
-  choose U hU g hg_smooth hgt using Hloc
+theorem exists_contMDiff_section_forall_mem_convex_of_local
+    {E_M : Type*} [NormedAddCommGroup E_M] [NormedSpace ℝ E_M] [FiniteDimensional ℝ E_M]
+    {H_M : Type*} [TopologicalSpace H_M] {I_M : ModelWithCorners ℝ E_M H_M}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H_M M]
+    [IsManifold I_M ∞ M] [SigmaCompactSpace M] [T2Space M]
+    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber] -- Fiber model
+    (V : M → Type*) [∀ x, NormedAddCommGroup (V x)] [∀ x, Module ℝ (V x)]
+    [TopologicalSpace (TotalSpace F_fiber V)] -- Topology on the total space
+    [FiberBundle F_fiber V]                 -- Fiber bundle structure
+    [VectorBundle ℝ F_fiber V]              -- Vector bundle structure
+    {n : ℕ∞} -- Smoothness degree
+    (t : ∀ x, Set (V x)) (ht_conv : ∀ x, Convex ℝ (t x))
+    (Hloc :
+      ∀ x₀ : M, ∃ U_x₀ ∈ 𝓝 x₀, ∃ (s_loc : (x : M) → V x),
+        (ContMDiffOn I_M (I_M.prod 𝓘(ℝ, F_fiber)) n
+          (fun x => (⟨x, s_loc x⟩ : TotalSpace F_fiber V)) U_x₀) ∧
+        (∀ y ∈ U_x₀, s_loc y ∈ t y)) :
+    ∃ s : Cₛ^n⟮I_M; F_fiber, V⟯, ∀ x : M, s x ∈ t x := by
+  choose U_map h_nhds s_loc h_smooth_s_loc h_mem_t using Hloc
 
-  let U_open_cover : M → Set M := fun x ↦ interior (U x)
+  let U_open_cover (x : M) : Set M := interior (U_map x)
   have hU_isOpen : ∀ x, IsOpen (U_open_cover x) := fun x ↦ isOpen_interior
   have hU_covers_univ : univ ⊆ ⋃ x, U_open_cover x := by
-    intro x _
+    intro x_pt _
     simp only [mem_iUnion, mem_univ]
-    exact ⟨x, mem_interior_iff_mem_nhds.mpr (hU x)⟩
+    exact ⟨x_pt, mem_interior_iff_mem_nhds.mpr (h_nhds x_pt)⟩
 
-  obtain ⟨ρ, hρ_subord⟩ : ∃ ρ : SmoothPartitionOfUnity M I M univ,
+  obtain ⟨ρ, hρ_subord⟩ : ∃ ρ : SmoothPartitionOfUnity M I_M M univ,
       ρ.IsSubordinate U_open_cover :=
-    SmoothPartitionOfUnity.exists_isSubordinate
-      I isClosed_univ U_open_cover hU_isOpen hU_covers_univ
+    SmoothPartitionOfUnity.exists_isSubordinate I_M isClosed_univ U_open_cover hU_isOpen hU_covers_univ
 
-  let s_val (x : M) : F := ∑ᶠ i, ρ i x • g i x
+  let s_val (x : M) : V x := ∑ᶠ (j : M), (ρ j x) • (s_loc j x)
 
-  have hs_val_smooth : ContMDiff I 𝓘(ℝ, F) ∞ s_val := by
-    apply ρ.contMDiff_finsum_smul
-    intro i x hx
-    have : x ∈ U_open_cover i := hρ_subord i hx
-    exact (hg_smooth i).contMDiffAt (mem_interior_iff_mem_nhds.mp (hρ_subord i hx))
-
-  have hs_section : ContMDiff I (I.prod 𝓘(ℝ, F)) ∞ (fun x => TotalSpace.mk' F x (s_val x)) := by
-    simp only [ContMDiff]
+  have hs_val_tot_space_smooth : ContMDiff I_M (I_M.prod 𝓘(ℝ, F_fiber)) n
+                                  (fun x => (TotalSpace.mk x (s_val x) : TotalSpace F_fiber V)) := by
     intro x₀
-    exact (contMDiffWithinAt_section s_val univ x₀).mpr (hs_val_smooth x₀)
+    apply (Bundle.contMDiffAt_section _ _).mpr
+    let e₀ := trivializationAt F_fiber V x₀
+    apply ρ.contMDiffAt_finsum
+    intro j h_x₀_in_tsupport_ρj
+    have h_x₀_in_Umap_j_interior : x₀ ∈ interior (U_map j) := hρ_subord j h_x₀_in_tsupport_ρj
+    have h_x₀_in_Umap_j : x₀ ∈ U_map j := interior_subset h_x₀_in_Umap_j_interior
 
-  refine ⟨⟨s_val, hs_section⟩, fun x => ?_⟩
-  apply (ht_conv x).finsum_mem (fun i => ρ.nonneg i x) (ρ.sum_eq_one (mem_univ x))
-  intro i hi
-  have : x ∈ tsupport (ρ i) := subset_closure (mem_support.mpr hi)
-  have : x ∈ U_open_cover i := hρ_subord i this
-  exact hgt i x (interior_subset this)
+    have h_slocj_smooth_at_x₀ : ContMDiffAt I_M (I_M.prod 𝓘(ℝ, F_fiber)) n
+                                  (fun x => TotalSpace.mk x (s_loc j x)) x₀ :=
+      (h_smooth_s_loc j).contMDiffAt ((isOpen_interior.mem_nhds h_x₀_in_Umap_j_interior))
+
+    let G_j := fun x => TotalSpace.mk x (s_loc j x)
+    let proj_snd_comp_e₀_comp_G_j := fun x => (e₀ (G_j x)).snd
+
+    have : ContMDiffAt I_M 𝓘(ℝ, F_fiber) n proj_snd_comp_e₀_comp_G_j x₀ := by
+      refine ContMDiffAt.snd ?_
+      refine ContMDiffAt.comp x₀ (e₀.contMDiffAt (G_j x₀)) h_slocj_smooth_at_x₀
+      · simp_rw [Trivialization.source_eq, TotalSpace.proj_preimage_eq_source]
+        exact mem_preimage.mpr (e₀.mem_baseSet_at x₀)
+    exact this
+
+  refine ⟨⟨s_val, hs_val_tot_space_smooth⟩, fun x => ?_⟩
+  apply (ht_conv x).finsum_mem (fun j => ρ.nonneg j x) (ρ.sum_eq_one (mem_univ x))
+  intro j h_ρjx_ne_zero
+  have h_x_in_tsupport_ρj : x ∈ tsupport (ρ j) := subset_closure (mem_support.mpr h_ρjx_ne_zero)
+  have h_x_in_Umap_j : x ∈ U_map j := interior_subset (hρ_subord j h_x_in_tsupport_ρj)
+  exact h_mem_t j x h_x_in_Umap_j
 
 /-- Let `M` be a smooth σ-compact manifold with extended distance. Let `K : ι → Set M` be a locally
 finite family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for
