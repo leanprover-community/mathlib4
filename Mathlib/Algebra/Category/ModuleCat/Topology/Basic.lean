@@ -437,16 +437,16 @@ def freeAdj : free.{max v u} R ⊣ forget₂ (TopModuleCat.{max v u} R) TopCat.{
       ext1
       apply ContinuousLinearMap.coe_injective
       refine Finsupp.lhom_ext' fun a ↦ LinearMap.ext_ring ?_
-      dsimp [freeObj, freeMap]
+      dsimp [freeObj, freeMap, coe_of]
       simp }
   left_triangle_components X := by
     ext1
     apply ContinuousLinearMap.coe_injective
     refine Finsupp.lhom_ext' fun a ↦ LinearMap.ext_ring ?_
-    simp [freeMap, freeObj]
+    simp [freeMap, freeObj, coe_of]
   right_triangle_components X := by
     ext
-    simp [freeMap, freeObj]
+    simp [freeMap, freeObj, coe_of]
 
 instance : (forget₂ (TopModuleCat.{max v u} R) TopCat).IsRightAdjoint := ⟨_, ⟨freeAdj R⟩⟩
 instance : (free.{max v u} R).IsLeftAdjoint := ⟨_, ⟨freeAdj R⟩⟩
