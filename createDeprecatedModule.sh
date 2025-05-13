@@ -39,5 +39,5 @@ IFS=$'\n'
 for file in ${removedFiles}
 do
   printf 'Regenerating %s (from %s)\n' "${file}" "${previousHash}"
-  #git checkout "${previousHash}" "${file}"
+  git checkout "${previousHash}" "${file}"
 done
