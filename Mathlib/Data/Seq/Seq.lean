@@ -394,16 +394,18 @@ theorem eq_of_bisim_strong {s₁ s₂ : Seq α}
   simp only [motive'] at ih ⊢
   rcases ih with (h_eq | ih)
   · subst h_eq
-    cases' s₁ with x tl
-    · simp
-    · simp only [cons_ne_nil, and_self, or_false]
+    cases s₁ with
+    | nil => simp
+    | cons x tl =>
+      simp only [cons_ne_nil, and_self, or_false]
       use x, tl, tl
       simp
   rcases h_step s₁ s₂ ih with (h_eq | h_cons)
   · subst h_eq
-    cases' s₁ with x tl
-    · simp
-    · simp only [cons_ne_nil, and_self, or_false]
+    cases s₁ with
+    | nil => simp
+    | cons x tl =>
+      simp only [cons_ne_nil, and_self, or_false]
       use x, tl, tl
       simp
   · left
@@ -1472,9 +1474,10 @@ theorem All.coind {s : Seq α} {p : α → Prop}
       simp at ih
       simp only [drop, ← head_dropn]
       generalize s.drop m = t at ih
-      cases' t with hd tl
-      · simp [ih.right]
-      · simp
+      cases t with
+      | nil => simp [ih.right]
+      | cons hd tl =>
+        simp
         obtain ⟨h1, h2⟩ := ih
         have : motive tl := by
           specialize h_cons hd tl h2
@@ -1512,9 +1515,10 @@ theorem take_All {s : Seq α} {p : α → Prop} (h_all : s.All p) {n : ℕ} :
   induction n generalizing s with
   | zero => simp [take] at hx
   | succ m ih =>
-    cases' s with hd tl
-    · simp at hx
-    · simp only [take_succ_cons, List.mem_cons, All_cons_iff] at hx h_all
+    cases s with
+    | nil => simp at hx
+    | cons hd tl =>
+      simp only [take_succ_cons, List.mem_cons, All_cons_iff] at hx h_all
       rcases hx with (hx | hx)
       · exact hx ▸ h_all.left
       · exact ih h_all.right hx
@@ -1567,9 +1571,9 @@ theorem Pairwise.cons_elim {R : α → α → Prop} {hd : α} {tl : Seq α}
     intro n
     specialize h 0 (n + 1) hd
     simp only [Nat.zero_lt_succ, get?_cons_zero, get?_cons_succ, forall_const] at h
-    cases' h_tl : tl.get? n with y
-    · simp
-    · simp [h y h_tl]
+    cases h_tl : tl.get? n with
+    | none => simp
+    | some y => simp [h y h_tl]
   · simp [Pairwise]
     exact fun i j x y h_ij hx hy ↦ h (i + 1) (j + 1) x y (by omega) hx hy
 
@@ -1605,9 +1609,9 @@ theorem Pairwise.coind {R : α → α → Prop} {s : Seq α}
     | succ m ih =>
       simp only [drop]
       generalize s.drop m = t at *
-      cases' t with hd tl
+      cases t
       · simpa
-      · exact (h_step hd tl ih).right
+      · exact (h_step _ _ ih).right
   simp only [Pairwise]
   intro i j x y h_ij hx hy
   replace h_ij := Nat.exists_eq_add_of_lt h_ij
@@ -1634,9 +1638,9 @@ theorem Pairwise.coind_trans {R : α → α → Prop} [IsTrans _ R] {s : Seq α}
     | succ m ih =>
       simp only [drop]
       generalize s.drop m = t at *
-      cases' t with hd tl
+      cases t
       · simpa
-      · exact (h_step hd tl ih).right
+      · exact (h_step _ _ ih).right
   simp only [Pairwise]
   intro i j x y h_ij hx hy
   replace h_ij := Nat.exists_eq_add_of_lt h_ij
@@ -1659,7 +1663,7 @@ theorem Pairwise.coind_trans {R : α → α → Prop} [IsTrans _ R] {s : Seq α}
 
 theorem Pairwise_tail {R : α → α → Prop} {s : Seq α} (h : s.Pairwise R) :
     s.tail.Pairwise R := by
-  cases' s with hd tl
+  cases s
   · simp
   · simp only [tail_cons]
     exact h.cons_elim.right
@@ -1692,12 +1696,13 @@ theorem AtLeastAsLongAs.cons {a_hd : α} {a_tl : Seq α} {b_hd : β} {b_tl : Seq
 
 theorem AtLeastAsLongAs.cons_elim {a : Seq α} {hd : β} {tl : Seq β}
     (h : a.AtLeastAsLongAs (.cons hd tl)) : ∃ hd' tl', a = .cons hd' tl' := by
-  cases' a with hd' tl'
-  · unfold AtLeastAsLongAs at h
+  cases a with
+  | nil =>
+    unfold AtLeastAsLongAs at h
     simp only [terminatedAt_nil, forall_const] at h
     specialize h 0
     simp [TerminatedAt] at h
-  · use hd', tl'
+  | cons hd' tl' => use hd', tl'
 
 @[simp]
 theorem cons_AtLeastAsLongAs_cons {a_hd : α} {a_tl : Seq α} {b_hd : β}
@@ -1731,9 +1736,10 @@ theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
     | succ m ih =>
       simp only [drop] at hb ⊢
       generalize b.drop m = tb at *
-      cases' tb with tb_hd tb_tl
-      · simp at hb
-      · simp at ih
+      cases tb with
+      | nil => simp at hb
+      | cons tb_hd tb_tl =>
+        simp at ih
         obtain ⟨a_hd, a_tl, ha, h_tail⟩ := h_step (a.drop m) (.cons tb_hd tb_tl) ih _ _ (by rfl)
         rw [ha]
         simpa
@@ -1741,7 +1747,7 @@ theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
   intro hb
   rw [head_eq_none_iff] at hb
   generalize b.drop n = tb at *
-  cases' tb with tb_hd tb_tl
+  cases tb
   · simp at hb
   · obtain ⟨a_hd, a_tl, ha, _⟩ := h_step _ _ (this hb) _ _ (by rfl)
     simp [ha]
