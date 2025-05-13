@@ -72,6 +72,12 @@ namespace MeasureTheory
 
 section NormedAddCommGroup
 
+theorem hasFiniteIntegral_restrict_of_bounded_enorm [ENorm ε] {f : α → ε} {s : Set α}
+    {μ : Measure α} {C} (hC : C ≠ ∞) (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ₑ ≤ C) :
+    HasFiniteIntegral f (μ.restrict s) :=
+  haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
+  hasFiniteIntegral_of_bounded_enorm hf hC
+
 theorem hasFiniteIntegral_restrict_of_bounded [NormedAddCommGroup E] {f : α → E} {s : Set α}
     {μ : Measure α} {C} (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
