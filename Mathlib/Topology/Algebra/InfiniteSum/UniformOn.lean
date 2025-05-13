@@ -31,8 +31,7 @@ variable {α β ι : Type*} [CommMonoid α]  {f : ι → β → α} {g : β → 
 
 section UniformlyOn
 
-variable (f g 𝔖)
-
+variable (f g 𝔖) in
 /-- `HasProdUniformlyOn f g 𝔖` means that the (potentially infinite) product `∏' i, f i b`
 for `b : β` converges uniformly on each `s ∈ 𝔖` to `g`. -/
 @[to_additive "`HasSumUniformlyOn f g 𝔖` means that the (potentially infinite) sum `∑' i, f i b`
@@ -40,14 +39,13 @@ for `b : β` converges uniformly on each `s ∈ 𝔖` to `g`."]
 def HasProdUniformlyOn : Prop :=
   HasProd (fun i ↦ UniformOnFun.ofFun 𝔖 (f i)) (UniformOnFun.ofFun 𝔖 g)
 
+variable (f g 𝔖) in
 /-- `MultipliableUniformlyOn f 𝔖` means that there is some infinite product to which
 `f` converges uniformly on every `s ∈ 𝔖`. Use `fun x ↦ ∏' i, f i x` to get the product function. -/
 @[to_additive "`SummableUniformlyOn f s` means that there is some infinite sum to
 which `f` converges uniformly on every `s ∈ 𝔖`. Use fun x ↦ ∑' i, f i x to get the sum function."]
 def MultipliableUniformlyOn (f : ι → β → α) (𝔖 : Set (Set β)) : Prop :=
   Multipliable (fun i ↦ UniformOnFun.ofFun 𝔖 (f i))
-
-variable {f g 𝔖}
 
 @[to_additive]
 lemma MultipliableUniformlyOn.exists (h : MultipliableUniformlyOn f 𝔖) :
@@ -76,13 +74,11 @@ theorem HasProdUniformlyOn.tprod_eqOn [T2Space α] (h : HasProdUniformlyOn f g �
   fun _ hx ↦ (h.hasProd hs hx).tprod_eq
 
 @[to_additive]
-theorem HasProdUniformlyOn.tprod_eqOn_univ [T2Space α] (h : HasProdUniformlyOn f g 𝔖)
-    (hs2 :⋃₀ 𝔖 = Set.univ) : (∏' b, f b ·) = g := by
-  ext1 x
-  have hx : x ∈ ⋃₀ 𝔖 := by
-    simp [hs2]
-  obtain ⟨s, hs, hx⟩ := Set.mem_sUnion.mp hx
-  refine h.tprod_eqOn hs hx
+theorem HasProdUniformlyOn.tprod_eq [T2Space α] (h : HasProdUniformlyOn f g 𝔖)
+    (hs :⋃₀ 𝔖 = Set.univ) : (∏' b, f b ·) = g := by
+  ext x
+  obtain ⟨s, hs, hx⟩ := by simpa [← hs] using Set.mem_univ x
+  exact h.tprod_eqOn hs hx
 
 @[to_additive]
 theorem MultipliableUniformlyOn.multipliable (h : MultipliableUniformlyOn f 𝔖)
