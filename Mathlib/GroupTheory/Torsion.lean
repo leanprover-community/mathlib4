@@ -132,7 +132,7 @@ variable [CommGroup G]
 
 /-- A nontrivial torsion abelian group is not torsion-free. -/
 @[to_additive "A nontrivial additive torsion abelian group is not torsion-free."]
-lemma not_isMulTorsionFree_of_isTorsion [Nontrivial G] (hG : IsTorsion G) : ¬IsMulTorsionFree G :=
+lemma not_isMulTorsionFree_of_isTorsion [Nontrivial G] (hG : IsTorsion G) : ¬ IsMulTorsionFree G :=
   not_isMulTorsionFree_iff_isOfFinOrder.2 <| let ⟨x, hx⟩ := exists_ne (1 : G); ⟨x, hx, hG x⟩
 
 /-- A nontrivial torsion-free abelian group is not torsion. -/
