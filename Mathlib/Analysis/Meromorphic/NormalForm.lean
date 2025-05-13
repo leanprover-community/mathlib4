@@ -68,7 +68,7 @@ theorem meromorphicNFAt_iff_analyticAt_or :
           zero_zpow n (ne_of_not_le hn).symm]
   · rintro (h | ⟨h₁, h₂, h₃⟩)
     · by_cases h₂f : analyticOrderAt f x = ⊤
-      · rw [h.analyticOrderAt_eq_top] at h₂f
+      · rw [analyticOrderAt_eq_top] at h₂f
         tauto
       · right
         use analyticOrderNatAt f x
