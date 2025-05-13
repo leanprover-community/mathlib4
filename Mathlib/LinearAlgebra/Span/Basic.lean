@@ -71,13 +71,20 @@ theorem map_span_le [RingHomSurjective σ₁₂] (f : F) (s : Set M) (N : Submod
 
 alias _root_.LinearMap.map_span_le := Submodule.map_span_le
 
--- See also `span_preimage_eq` below.
+/-- See also `Submodule.span_preimage_eq`. -/
 theorem span_preimage_le (f : F) (s : Set M₂) :
     span R (f ⁻¹' s) ≤ (span R₂ s).comap f := by
   rw [span_le, comap_coe]
   exact preimage_mono subset_span
 
 alias _root_.LinearMap.span_preimage_le := Submodule.span_preimage_le
+
+include σ₁₂ in
+theorem mapsTo_span {f : F} {s : Set M} {t : Set M₂} (h : MapsTo f s t) :
+    MapsTo f (span R s) (span R₂ t) :=
+  (span_mono h).trans (span_preimage_le (σ₁₂ := σ₁₂) f t)
+
+alias _root_.Set.MapsTo.submoduleSpan := mapsTo_span
 
 section
 
@@ -659,6 +666,16 @@ theorem isIdempotentElem_apply_one_iff {f : Module.End R R} :
     LinearMap.ext_iff]
   simp_rw [Module.End.mul_apply]
   exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
+
+theorem range_toSpanSingleton (x : M) :
+    range (toSpanSingleton R M x) = .span R {x} :=
+  SetLike.coe_injective (Submodule.span_singleton_eq_range R x).symm
+
+theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x ∈ N) :
+    (span R {x}).submoduleOf N = span R {⟨x, hx⟩} := by
+  ext y
+  simp_rw [submoduleOf, mem_comap, subtype_apply, mem_span_singleton]
+  aesop
 
 end
 
