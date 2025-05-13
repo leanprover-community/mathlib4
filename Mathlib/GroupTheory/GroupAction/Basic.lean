@@ -313,16 +313,6 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
 
 variable {g h k : G} {a b c : α}
 
-@[simp]
-theorem _root_.AddAut.inv_apply {A : Type*} [Add A] (e : AddAut A) (x : A) :
-      e⁻¹ x = e.symm x := by
-  rw [AddAut.inv_def]
-
-@[simp]
-theorem _root_.AddAut.symm_inv_apply {A : Type*} [Add A] (e : AddAut A) (x : A) :
-      (e⁻¹).symm x = e x := by
-  simp only [AddAut.inv_def, AddEquiv.symm_symm]
-
 /-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
 def stabilizerEquivStabilizer (hg : b = g +ᵥ a) : stabilizer G a ≃+ stabilizer G b :=
   AddEquiv.trans ((AddAut.conj g).toMul.addSubgroupMap _)
