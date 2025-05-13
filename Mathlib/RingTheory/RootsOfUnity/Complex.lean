@@ -58,6 +58,7 @@ lemma exp_iff (t s : ℝ) :
   · ext : 1
     simp_all only [coe_exp]
 
+open scoped Interval in
 open Real in
 /-- `exp` is injective on `Ι a b` if the distance between `a` and `b` is at most `2π`. -/
 lemma injOn_exp_of_abs_sub_le {x y : ℝ} (hxy : |x - y| ≤ 2 * π) : (Ι x y).InjOn exp :=
