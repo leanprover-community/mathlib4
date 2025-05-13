@@ -192,6 +192,5 @@ end AddCircle
 open AddCircle
 
 -- todo: upgrade this to `IsCoveringMap Circle.exp`.
-lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp := by
-  have : Fact (0 < 2 * π) := ⟨by positivity⟩
-  exact homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
+lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
+  homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
