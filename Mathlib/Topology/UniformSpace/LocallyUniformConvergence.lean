@@ -19,7 +19,7 @@ definition more commonly encountered in the literature. The reason is that in ou
 neighborhood `v` of `x` can depend on the entourage `u`; so our condition is *a priori* weaker than
 the usual one, although the two conditions are equivalent if the domain is locally compact.
 
-We adopt this weaker condition because it is more general but apppears to be sufficient for
+We adopt this weaker condition because it is more general but appears to be sufficient for
 the standard applications of locally-uniform convergence (in particular, for proving that a
 locally-uniform limit of continuous functions is continuous).
 
