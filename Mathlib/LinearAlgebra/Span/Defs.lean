@@ -49,6 +49,8 @@ def span (s : Set M) : Submodule R M :=
 class IsPrincipal (S : Submodule R M) : Prop where
   principal (S) : ∃ a, S = span R {a}
 
+instance (x : R) : (span R {x}).IsPrincipal := ⟨x, rfl⟩
+
 end
 
 variable {s t : Set M}
@@ -369,6 +371,7 @@ theorem sup_eq_top_iff : p ⊔ p' = ⊤ ↔ ∀ m : M, ∃ u ∈ p, ∃ v ∈ p'
 
 end
 
+@[simp]
 theorem mem_span_singleton_self (x : M) : x ∈ R ∙ x :=
   subset_span rfl
 

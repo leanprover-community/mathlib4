@@ -699,7 +699,8 @@ end Spec
 section ChosenFiniteProducts
 variable {S : Scheme}
 
-noncomputable instance : ChosenFiniteProducts (Over S) := Over.chosenFiniteProducts _
+instance : ChosenFiniteProducts (Over S) := Over.chosenFiniteProducts _
+instance : BraidedCategory (Over S) := .ofChosenFiniteProducts
 
 end ChosenFiniteProducts
 
