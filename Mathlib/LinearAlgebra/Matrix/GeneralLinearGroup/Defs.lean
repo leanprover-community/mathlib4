@@ -222,7 +222,7 @@ theorem mem_glpos (A : GL n R) : A ∈ GLPos n R ↔ 0 < (GeneralLinearGroup.det
   Iff.rfl
 
 /-- `Matrix.SpecialLinearGroup n R` embeds into `GL_pos n R` -/
-lemma SpecialLinearGroup.toGL_mem_GLPos (g : SL n R) : g.toGL ∈ GLPos n R := by
+lemma SpecialLinearGroup.toGL_mem_GLPos (g : SpecialLinearGroup n R) : g.toGL ∈ GLPos n R := by
   simp [GLPos, g.prop]
 
 end GLPos
