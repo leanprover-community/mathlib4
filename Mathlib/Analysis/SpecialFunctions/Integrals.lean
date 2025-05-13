@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
 import Mathlib.Analysis.Meromorphic.FactorizedRational
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
@@ -329,6 +330,17 @@ theorem intervalIntegrable_sin : IntervalIntegrable sin μ a b :=
 @[simp]
 theorem intervalIntegrable_cos : IntervalIntegrable cos μ a b :=
   continuous_cos.intervalIntegrable a b
+
+/--
+The function `log ∘ sin` is invervalintegrable over every interval.
+-/
+@[simp]
+theorem intervalIntegrable_log_sin {a b : ℝ} :
+    IntervalIntegrable (log ∘ sin) volume a b := by
+  apply MeromorphicOn.intervalIntegrable_log
+  apply AnalyticOnNhd.meromorphicOn
+  apply analyticOnNhd_sin.mono
+  tauto
 
 theorem intervalIntegrable_one_div_one_add_sq :
     IntervalIntegrable (fun x : ℝ => 1 / (↑1 + x ^ 2)) μ a b := by
