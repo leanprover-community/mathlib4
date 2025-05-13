@@ -16,8 +16,6 @@ In this file, we prove:
 - the `v.Completion` dimension of `w.Completion` is equal to the ramification index.
 -/
 
-open scoped Classical
-
 noncomputable section
 
 namespace NumberField.InfinitePlace
@@ -134,6 +132,7 @@ def sumEquivIsMixedExtension :
       { ψ : L →+* ℂ // IsMixedExtension v.embedding ψ } :=
   Equiv.ofBijective _ ⟨toIsMixedExtension_injective L v, toIsMixedExtension_surjective L v⟩
 
+open scoped Classical in
 theorem two_mul_card_eq [NumberField L] :
     2 * Fintype.card (v.RamifiedExtension L) =
       Fintype.card { ψ : L →+* ℂ // IsMixedExtension v.embedding ψ } := by
@@ -231,6 +230,7 @@ theorem ofIsUnmixedExtension_embedding_isExtension {ψ : L →+* ℂ}
 
 variable (L v)
 
+open scoped Classical in
 /-- If `w` is an unramified place above `v` then there are the following two cases:
 - `v` and `w` are both real;
 - `v` and `w` are both complex.
@@ -260,6 +260,7 @@ theorem toIsUnmixedExtension_ofIsUnmixedExtension {ψ : L →+* ℂ}
     rw [← hr.2, ofIsUnmixedExtension_embedding, mk_conjugate_eq, mk_embedding]
 
 theorem toIsUnmixedExtension_injective : (toIsUnmixedExtension L v).Injective := by
+  classical
   apply Function.Injective.dite _
     (Subtype.map_injective _ <|
       Function.Injective.comp (embedding_injective _) Subtype.val_injective)
@@ -278,6 +279,7 @@ def equivIsUnmixedExtension :
     UnramifiedExtension L v ≃ { ψ : L →+* ℂ // IsUnmixedExtension v.embedding ψ } :=
   Equiv.ofBijective _ ⟨toIsUnmixedExtension_injective L v, toIsUnmixedExtension_surjective L v⟩
 
+open scoped Classical in
 theorem card_eq [NumberField L] :
     Fintype.card (UnramifiedExtension L v) =
       Fintype.card { ψ : L →+* ℂ // IsUnmixedExtension v.embedding ψ } := by
@@ -315,6 +317,7 @@ def algHomEquivIsExtension :
     ⟨fun _ _ h => AlgHom.coe_ringHom_injective (by simpa using h),
       fun ⟨σ, h⟩ => ⟨⟨σ, fun _ => by simp [RingHom.algebraMap_toAlgebra, ← h]; rfl⟩, rfl⟩⟩
 
+open scoped Classical in
 theorem card_isUnramified_add_two_mul_card_isRamified [NumberField K] [NumberField L] :
     Fintype.card (v.UnramifiedExtension L) + 2 * Fintype.card (v.RamifiedExtension L) =
       Module.finrank K L := by
@@ -324,6 +327,7 @@ theorem card_isUnramified_add_two_mul_card_isRamified [NumberField K] [NumberFie
     RamifiedExtension.two_mul_card_eq, UnramifiedExtension.card_eq]
   ring
 
+open scoped Classical in
 theorem sum_ramificationIdx_eq [NumberField K] [NumberField L] :
     ∑ w : v.Extension L, w.1.ramificationIdx K = Module.finrank K L := by
   let e : v.Extension L ≃ v.UnramifiedExtension L ⊕ v.RamifiedExtension L :=
