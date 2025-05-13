@@ -17,6 +17,10 @@ import Mathlib.Topology.Defs.Ultrafilter
 
 * `isCompact_univ_pi`: **Tychonov's theorem** - an arbitrary product of compact sets
   is compact.
+
+* `compactSpace_generateFrom`: **Alexander's subbasis theorem** - if `X` is a topological space with
+  a subbasis `S`, then `X` is compact if any open cover of `X` with elements in `S` has a finite
+  subcover.
 -/
 
 open Set Filter Topology TopologicalSpace Function
@@ -695,11 +699,11 @@ theorem compactSpace_of_finite_subfamily_closed
 
 omit [TopologicalSpace X] in
 /--
-The Alexander Subbasis Theorem. If `X` is a topological space with a subbasis `S`, then `X` is
+**Alexander's Subbasis Theorem**. If `X` is a topological space with a subbasis `S`, then `X` is
 compact if any open cover of `X` with elements in `S` has a finite subcover.
 -/
-theorem compactSpace.generateFrom {S : Set (Set X)}
-    (h : ∀ P ⊆ S, ⋃₀ P = .univ → ∃ Q ⊆ P, Q.Finite ∧ ⋃₀ Q = .univ) :
+theorem compactSpace_generateFrom {S : Set (Set X)}
+    (h : ∀ P ⊆ S, ⋃₀ P = univ → ∃ Q ⊆ P, Q.Finite ∧ ⋃₀ Q = univ) :
     @CompactSpace X (generateFrom S) := by
   rw [← @isCompact_univ_iff, @isCompact_iff_ultrafilter_le_nhds']
   intro F _
