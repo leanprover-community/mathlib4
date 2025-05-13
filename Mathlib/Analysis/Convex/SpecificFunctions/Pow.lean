@@ -34,7 +34,7 @@ namespace NNReal
 lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
     StrictConcaveOn ℝ≥0 univ fun x : ℝ≥0 ↦ x ^ p := by
   have hp₀' : 0 < 1 / p := div_pos zero_lt_one hp₀
-  have hp₁' : 1 < 1 / p := by rw [one_lt_div hp₀]; exact hp₁
+  have hp₁' : 1 < 1 / p := by rw [one_lt_div₀ hp₀]; exact hp₁
   let f := NNReal.orderIsoRpow (1 / p) hp₀'
   have h₁ : StrictConvexOn ℝ≥0 univ f := by
     refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩

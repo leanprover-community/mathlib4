@@ -308,7 +308,7 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * (1 / (2 * a + 1)) ^ (2 * k + 1))
       (log (1 + a⁻¹)) := by
   have h₁ : |1 / (2 * a + 1)| < 1 := by
-    rw [abs_of_pos, div_lt_one]
+    rw [abs_of_pos, div_lt_one₀]
     · linarith
     · linarith
     · exact div_pos one_pos (by linarith)

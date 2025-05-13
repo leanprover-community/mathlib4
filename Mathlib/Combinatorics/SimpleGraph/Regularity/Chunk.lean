@@ -135,7 +135,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
       _ ≤ ↑2 ^ #P.parts * ε ^ 2 / 10 := by
         refine (one_le_sq_iff₀ <| by positivity).1 ?_
         rw [div_pow, mul_pow, pow_right_comm, ← pow_mul ε,
-          one_le_div (sq_pos_of_ne_zero <| by norm_num)]
+          one_le_div₀ (sq_pos_of_ne_zero <| by norm_num)]
         calc
           (↑10 ^ 2) = 100 := by norm_num
           _ ≤ ↑4 ^ #P.parts * ε ^ 5 := hPε
@@ -303,7 +303,7 @@ private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
   intro x y hx hy
   rw [mul_mul_mul_comm, mul_comm (#x : ℝ), mul_comm (#y : ℝ), div_le_iff₀, mul_assoc]
   · refine le_mul_of_one_le_right (cast_nonneg _) ?_
-    rw [div_mul_eq_mul_div, one_le_div]
+    rw [div_mul_eq_mul_div, one_le_div₀]
     · refine le_trans ?_ (mul_le_mul_of_nonneg_right (m_add_one_div_m_le_one_add hPα hPε hε₁) ?_)
       · rw [sq, mul_mul_mul_comm, mul_comm (_ / (m : ℝ)), mul_comm (_ / (m : ℝ))]
         exact mul_le_mul (sum_card_subset_chunk_parts_le (by sz_positivity) hA hx)
@@ -401,7 +401,7 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : #P.parts * 16 ^ #P.pa
       rw [mul_assoc, mul_comm ((4 : ℝ) ^ #P.parts), ← div_div, ← mul_div_assoc, ← mul_comm_div]
       refine mul_le_of_le_one_right (by positivity) ?_
       have hm : (0 : ℝ) < m := by sz_positivity
-      rw [mul_div_assoc', div_le_one hm, ← one_div, one_sub_div hm.ne', mul_div_assoc',
+      rw [mul_div_assoc', div_le_one₀ hm, ← one_div, one_sub_div hm.ne', mul_div_assoc',
         div_le_iff₀ hm]
       linarith
 

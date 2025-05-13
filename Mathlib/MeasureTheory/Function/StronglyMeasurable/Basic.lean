@@ -202,7 +202,7 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
   rw [← one_smul ℝ (f x)]
   refine Tendsto.smul ?_ h_tendsto
   have : min 1 (c / ‖f x‖) = 1 := by
-    rw [min_eq_left_iff, one_le_div (lt_of_le_of_ne (norm_nonneg _) (Ne.symm hfx0))]
+    rw [min_eq_left_iff, one_le_div₀ (lt_of_le_of_ne (norm_nonneg _) (Ne.symm hfx0))]
     exact hfx
   nth_rw 2 [this.symm]
   refine Tendsto.min tendsto_const_nhds ?_
@@ -225,11 +225,11 @@ theorem norm_approxBounded_le {β} {f : α → β} [SeminormedAddCommGroup β] [
   rcases le_total ‖hf.approx n x‖ c with h | h
   · rw [min_eq_left _]
     · simpa only [norm_one, one_mul] using h
-    · rwa [one_le_div (lt_of_le_of_ne (norm_nonneg _) (Ne.symm h0))]
+    · rwa [one_le_div₀ (lt_of_le_of_ne (norm_nonneg _) (Ne.symm h0))]
   · rw [min_eq_right _]
     · rw [norm_div, norm_norm, mul_comm, mul_div, div_eq_mul_inv, mul_comm, ← mul_assoc,
         inv_mul_cancel₀ h0, one_mul, Real.norm_of_nonneg hc]
-    · rwa [div_le_one (lt_of_le_of_ne (norm_nonneg _) (Ne.symm h0))]
+    · rwa [div_le_one₀ (lt_of_le_of_ne (norm_nonneg _) (Ne.symm h0))]
 
 theorem _root_.stronglyMeasurable_bot_iff [Nonempty β] [T2Space β] :
     StronglyMeasurable[⊥] f ↔ ∃ c, f = fun _ => c := by

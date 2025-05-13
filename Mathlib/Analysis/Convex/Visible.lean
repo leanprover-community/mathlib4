@@ -88,13 +88,13 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
   refine hw (z := lineMap x (∑ j ∈ t, w j • a j) ((w i)⁻¹ / ((1 - ε) / ε + (w i)⁻¹)))
     ?_ <| sbtw_lineMap_iff.2 ⟨(ne_of_mem_of_not_mem ((convex_convexHull ..).sum_mem hw₀ hw₁
     fun i hi ↦ subset_convexHull _ _ <| ha _ hi) hx).symm, by positivity,
-    (div_lt_one <| by positivity).2 ?_⟩
+    (div_lt_one₀ <| by positivity).2 ?_⟩
   · have : Wbtw 𝕜
       (lineMap x (a i) ε)
       (lineMap x (∑ j ∈ t, w j • a j) ((w i)⁻¹ / ((1 - ε) / ε + (w i)⁻¹)))
       (∑ j ∈ t.erase i, (w j / (1 - w i)) • a j) := by
       refine ⟨((1 - w i) / w i) / ((1 - ε) / ε + (1 - w i) / w i + 1), ⟨by positivity, ?_⟩, ?_⟩
-      · refine (div_le_one <| by positivity).2 ?_
+      · refine (div_le_one₀ <| by positivity).2 ?_
         calc
           (1 - w i) / w i = 0 + (1 - w i) / w i + 0 := by simp
           _ ≤ (1 - ε) / ε + (1 - w i) / w i + 1 := by gcongr <;> positivity

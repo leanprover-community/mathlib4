@@ -92,7 +92,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
       have H₀' : (0 : ℝ) ≤ (n + 1) / k := by positivity
       have H₁ : (k / (n + 1) : ℂ) = (k / (n + 1) : ℝ) := by push_cast; rfl
       have H₂ : (n + 1) / k < (1 : ℝ) :=
-        (div_lt_one <| mod_cast n.succ_pos.trans H).mpr <| mod_cast H
+        (div_lt_one₀ <| mod_cast n.succ_pos.trans H).mpr <| mod_cast H
       simp only [Set.mem_setOf_eq, H, Set.indicator_of_mem, F]
       conv =>
         enter [1, x]
@@ -110,7 +110,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
       Complex.norm_natCast, F]
     rw [← Nat.cast_one, ← Nat.cast_add, Complex.norm_natCast]
     have hkn : 1 ≤ (k / (n + 1 :) : ℝ) :=
-      (one_le_div (by positivity)).mpr <| mod_cast Nat.le_of_succ_le H
+      (one_le_div₀ (by positivity)).mpr <| mod_cast Nat.le_of_succ_le H
     exact div_le_div_of_nonneg_left (norm_nonneg _)
       (rpow_pos_of_pos (zero_lt_one.trans_le hkn) _) <| rpow_le_rpow_of_exponent_le hkn hy'
   · simp [hF₀ _ H]

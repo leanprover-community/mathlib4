@@ -119,7 +119,7 @@ theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
   congr 1
   · rw [← mul_cpow_ofReal_nonneg ha.le (div_pos hx.1 ha).le, ofReal_div, mul_div_cancel₀ _ ha']
   · rw [(by norm_cast : (1 : ℂ) - ↑(x / a) = ↑(1 - x / a)), ←
-      mul_cpow_ofReal_nonneg ha.le (sub_nonneg.mpr <| (div_le_one ha).mpr hx.2)]
+      mul_cpow_ofReal_nonneg ha.le (sub_nonneg.mpr <| (div_le_one₀ ha).mpr hx.2)]
     push_cast
     rw [mul_sub, mul_one, mul_div_cancel₀ _ ha']
 

@@ -222,7 +222,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
   have hb : ∀ n, ((· / x) ∘ u) n ∈ Metric.closedBall 0 1 := by
     intro
     simp only [Function.comp_apply, Metric.mem_closedBall, dist_zero_right, norm_div]
-    rw [div_le_one (kpos.trans_lt hx)]
+    rw [div_le_one₀ (kpos.trans_lt hx)]
     exact hx.le.trans' (hk (by simp))
   obtain ⟨a, -, ha'⟩ := cauchySeq_tendsto_of_isComplete h hb hu'
   refine ⟨a * x, (((continuous_mul_right x).tendsto a).comp ha').congr ?_⟩

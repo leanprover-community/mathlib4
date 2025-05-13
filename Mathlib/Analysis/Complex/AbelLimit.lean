@@ -82,7 +82,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
       _ ≤ 1 - x / 2 := by
         simp_rw [sub_eq_add_neg, ← neg_div]
         refine sqrt_one_add_le <| neg_le_neg_iff.mpr (hx₁.trans_le ?_).le
-        rw [div_le_one (by positivity)]
+        rw [div_le_one₀ (by positivity)]
         exact le_add_of_nonneg_right <| sq_nonneg s
   calc √(x ^ 2 + y ^ 2)
     _ ≤ √(x ^ 2 + (s * x) ^ 2) := by rw [← sq_abs y]; gcongr

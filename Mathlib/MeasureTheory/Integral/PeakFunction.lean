@@ -317,7 +317,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
         (𝓝 ((μ.real (v ∩ s))⁻¹ * 0)) := by
       apply Tendsto.mul tendsto_const_nhds _
       apply tendsto_pow_atTop_nhds_zero_of_lt_one (div_nonneg t_pos t'_pos.le)
-      exact (div_lt_one t'_pos).2 tt'
+      exact (div_lt_one₀ t'_pos).2 tt'
     rw [mul_zero] at N
     refine tendstoUniformlyOn_iff.2 fun ε εpos => ?_
     filter_upwards [(tendsto_order.1 N).2 ε εpos] with n hn x hx

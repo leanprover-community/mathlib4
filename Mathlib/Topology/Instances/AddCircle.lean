@@ -697,7 +697,7 @@ lemma toAddCircle_injective : Function.Injective (toAddCircle : ZMod N → _) :=
   rwa [toAddCircle_apply, toAddCircle_apply, AddCircle.coe_eq_coe_iff_of_mem_Ico
     (hp := Real.fact_zero_lt_one) (a := 0), div_left_inj' this.ne', Nat.cast_inj,
     (val_injective N).eq_iff] at hxy <;>
-  exact ⟨by positivity, by simpa only [zero_add, div_lt_one this, Nat.cast_lt] using val_lt _⟩
+  exact ⟨by positivity, by simpa only [zero_add, div_lt_one₀ this, Nat.cast_lt] using val_lt _⟩
 
 @[simp] lemma toAddCircle_inj {j k : ZMod N} : toAddCircle j = toAddCircle k ↔ j = k :=
   (toAddCircle_injective N).eq_iff

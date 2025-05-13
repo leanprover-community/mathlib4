@@ -165,13 +165,13 @@ protected theorem projIcc :
   · rw [smoothTransition.one, one_of_one_le hx.le]
 
 theorem le_one (x : ℝ) : smoothTransition x ≤ 1 :=
-  (div_le_one (pos_denom x)).2 <| le_add_of_nonneg_right (nonneg _)
+  (div_le_one₀ (pos_denom x)).2 <| le_add_of_nonneg_right (nonneg _)
 
 theorem nonneg (x : ℝ) : 0 ≤ smoothTransition x :=
   div_nonneg (expNegInvGlue.nonneg _) (pos_denom x).le
 
 theorem lt_one_of_lt_one (h : x < 1) : smoothTransition x < 1 :=
-  (div_lt_one <| pos_denom x).2 <| lt_add_of_pos_right _ <| pos_of_pos <| sub_pos.2 h
+  (div_lt_one₀ <| pos_denom x).2 <| lt_add_of_pos_right _ <| pos_of_pos <| sub_pos.2 h
 
 theorem pos_of_pos (h : 0 < x) : 0 < smoothTransition x :=
   div_pos (expNegInvGlue.pos_of_pos h) (pos_denom x)

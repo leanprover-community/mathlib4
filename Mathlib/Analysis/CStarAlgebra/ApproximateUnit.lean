@@ -273,7 +273,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
           rw [norm_le_one_iff_of_nonneg m hm₁, ← cfc_id' ℝ≥0 m, ← cfc_one (R := ℝ≥0) m,
             cfc_nnreal_le_iff _ _ _ (QuasispectrumRestricts.nnreal_of_nonneg hm₁)] at hm'
           exact hm' y hy
-        · exact div_le_one (by positivity) |>.mpr le_add_self
+        · exact div_le_one₀ (by positivity) |>.mpr le_add_self
       _ = ε ^ 2 := mul_one _
   rw [cfc_mul _ _ m (continuousOn_id' _ |>.mul hg') (continuousOn_id' _),
     cfc_mul _ _ m (continuousOn_id' _) hg', cfc_id' .., hm₁.star_eq]

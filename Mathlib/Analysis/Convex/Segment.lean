@@ -385,7 +385,7 @@ theorem openSegment_subset_union (x y : E) {z : E} (hz : z ∈ range (lineMap x 
   · right
     left
     have hc : 0 < c := h₀.trans hac
-    refine ⟨a / c, ⟨div_pos h₀ hc, (div_lt_one hc).2 hac⟩, ?_⟩
+    refine ⟨a / c, ⟨div_pos h₀ hc, (div_lt_one₀ hc).2 hac⟩, ?_⟩
     simp only [← homothety_eq_lineMap, ← homothety_mul_apply, div_mul_cancel₀ _ hc.ne']
   · left
     rfl
@@ -394,7 +394,7 @@ theorem openSegment_subset_union (x y : E) {z : E} (hz : z ∈ range (lineMap x 
     have hc : 0 < 1 - c := sub_pos.2 (hca.trans h₁)
     simp only [← lineMap_apply_one_sub y]
     refine
-      ⟨(a - c) / (1 - c), ⟨div_pos (sub_pos.2 hca) hc, (div_lt_one hc).2 <| sub_lt_sub_right h₁ _⟩,
+      ⟨(a - c) / (1 - c), ⟨div_pos (sub_pos.2 hca) hc, (div_lt_one₀ hc).2 <| sub_lt_sub_right h₁ _⟩,
         ?_⟩
     simp only [← homothety_eq_lineMap, ← homothety_mul_apply, sub_mul, one_mul,
       div_mul_cancel₀ _ hc.ne', sub_sub_sub_cancel_right]

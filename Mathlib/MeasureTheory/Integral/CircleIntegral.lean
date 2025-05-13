@@ -523,7 +523,7 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
       (∮ z in C(c, R), (z - (c + w))⁻¹ • f z) := by
   have hR : 0 < R := (norm_nonneg w).trans_lt hw
   have hwR : ‖w‖ / R ∈ Ico (0 : ℝ) 1 :=
-    ⟨div_nonneg (norm_nonneg w) hR.le, (div_lt_one hR).2 hw⟩
+    ⟨div_nonneg (norm_nonneg w) hR.le, (div_lt_one₀ hR).2 hw⟩
   refine intervalIntegral.hasSum_integral_of_dominated_convergence
       (fun n θ => ‖f (circleMap c R θ)‖ * (‖w‖ / R) ^ n) (fun n => ?_) (fun n => ?_) ?_ ?_ ?_
   · simp only [deriv_circleMap]

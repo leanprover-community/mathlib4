@@ -5,6 +5,7 @@ Authors: Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Order.Filter.AtTopBot.Finite
+import Mathlib.Algebra.Order.Ring.Abs
 
 /-!
 # `a * c ^ n < (n - d)!` holds true for sufficiently large `n`.

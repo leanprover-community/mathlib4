@@ -290,7 +290,7 @@ private theorem mu_bdd (n : ℕ) : (mu μ hn n : ℝ) / n ∈ Set.Icc (0 : ℝ) 
   refine Set.mem_Icc.mpr ⟨div_nonneg (cast_nonneg (mu μ hn n)) (cast_nonneg n), ?_⟩
   by_cases hn0 : n = 0
   · rw [hn0, cast_zero, div_zero]; exact zero_le_one
-  · rw [div_le_one (cast_pos.mpr (Nat.pos_of_ne_zero hn0)), cast_le]
+  · rw [div_le_one₀ (cast_pos.mpr (Nat.pos_of_ne_zero hn0)), cast_le]
     exact mu_le _ _ _
 
 private theorem μ_bddBelow (s : ℕ → ℕ) {x : R} (ψ : ℕ → ℕ) :

@@ -369,7 +369,7 @@ lemma isExtTangent_iff_dist_center {s₁ s₂ : Sphere P} : s₁.IsExtTangent s�
       · simp only [wbtw_lineMap_iff]
         refine .inr ⟨?_, ?_⟩
         · positivity
-        · rw [div_le_one (by positivity)]
+        · rw [div_le_one₀ (by positivity)]
           linarith
 
 lemma isIntTangent_iff_dist_center [Nontrivial V] {s₁ s₂ : Sphere P} : s₁.IsIntTangent s₂ ↔
@@ -403,7 +403,7 @@ lemma isIntTangent_iff_dist_center [Nontrivial V] {s₁ s₂ : Sphere P} : s₁.
       · rw [wbtw_iff_left_eq_or_right_mem_image_Ici]
         simp only [Ne.symm h0, Set.mem_image, Set.mem_Ici, AffineMap.lineMap_eq_lineMap_iff,
           false_or, exists_eq_right]
-        rw [one_le_div]
+        rw [one_le_div₀]
         · linarith
         · rw [← h]
           simp [Ne.symm h0]

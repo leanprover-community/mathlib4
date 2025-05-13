@@ -101,7 +101,7 @@ theorem tendsto_integral_mul_one_plus_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 
     rw [mul_assoc, inv_mul_eq_div, abs_le]
     refine ⟨?_, (add_le_iff_nonpos_right 1).mpr (Left.neg_nonpos_iff.mpr
       (div_nonneg (mul_nonneg (le_of_lt hε) (mul_self_nonneg (g x))) (le_of_lt hnpos)))⟩
-    apply le_trans (by linarith) (sub_nonneg_of_le ((div_le_one hnpos).mpr _))
+    apply le_trans (by linarith) (sub_nonneg_of_le ((div_le_one₀ hnpos).mpr _))
     apply le_trans (le_trans _ (le_of_lt hgN)) (Nat.cast_le.mpr hn)
     apply mul_le_mul (Preorder.le_refl ε) _ (mul_self_nonneg (g x)) (le_of_lt hε)
     rw [← abs_le_iff_mul_self_le, abs_norm]

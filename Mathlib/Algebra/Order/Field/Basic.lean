@@ -62,80 +62,6 @@ theorem div_lt_div' (hac : a ≤ c) (hbd : d < b) (c0 : 0 < c) (d0 : 0 < d) : a 
   div_lt_div₀' hac hbd c0 d0
 
 /-!
-### Relating one division and involving `1`
--/
-
-
-@[bound]
-theorem div_le_self (ha : 0 ≤ a) (hb : 1 ≤ b) : a / b ≤ a := by
-  simpa only [div_one] using div_le_div_of_nonneg_left ha zero_lt_one hb
-
-@[bound]
-theorem div_lt_self (ha : 0 < a) (hb : 1 < b) : a / b < a := by
-  simpa only [div_one] using div_lt_div_of_pos_left ha zero_lt_one hb
-
-@[bound]
-theorem le_div_self (ha : 0 ≤ a) (hb₀ : 0 < b) (hb₁ : b ≤ 1) : a ≤ a / b := by
-  simpa only [div_one] using div_le_div_of_nonneg_left ha hb₀ hb₁
-
-theorem one_le_div (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff₀ hb, one_mul]
-
-theorem div_le_one (hb : 0 < b) : a / b ≤ 1 ↔ a ≤ b := by rw [div_le_iff₀ hb, one_mul]
-
-theorem one_lt_div (hb : 0 < b) : 1 < a / b ↔ b < a := by rw [lt_div_iff₀ hb, one_mul]
-
-theorem div_lt_one (hb : 0 < b) : a / b < 1 ↔ a < b := by rw [div_lt_iff₀ hb, one_mul]
-
-theorem one_div_le (ha : 0 < a) (hb : 0 < b) : 1 / a ≤ b ↔ 1 / b ≤ a := by
-  simpa using inv_le_comm₀ ha hb
-
-theorem one_div_lt (ha : 0 < a) (hb : 0 < b) : 1 / a < b ↔ 1 / b < a := by
-  simpa using inv_lt_comm₀ ha hb
-
-theorem le_one_div (ha : 0 < a) (hb : 0 < b) : a ≤ 1 / b ↔ b ≤ 1 / a := by
-  simpa using le_inv_comm₀ ha hb
-
-theorem lt_one_div (ha : 0 < a) (hb : 0 < b) : a < 1 / b ↔ b < 1 / a := by
-  simpa using lt_inv_comm₀ ha hb
-
-@[bound] lemma Bound.one_lt_div_of_pos_of_lt (b0 : 0 < b) : b < a → 1 < a / b := (one_lt_div b0).mpr
-
-@[bound] lemma Bound.div_lt_one_of_pos_of_lt (b0 : 0 < b) : a < b → a / b < 1 := (div_lt_one b0).mpr
-
-/-!
-### Relating two divisions, involving `1`
--/
-
-
-theorem one_div_le_one_div_of_le (ha : 0 < a) (h : a ≤ b) : 1 / b ≤ 1 / a := by
-  simpa using inv_anti₀ ha h
-
-theorem one_div_lt_one_div_of_lt (ha : 0 < a) (h : a < b) : 1 / b < 1 / a := by
-  rwa [lt_div_iff₀' ha, ← div_eq_mul_one_div, div_lt_one (ha.trans h)]
-
-theorem le_of_one_div_le_one_div (ha : 0 < a) (h : 1 / a ≤ 1 / b) : b ≤ a :=
-  le_imp_le_of_lt_imp_lt (one_div_lt_one_div_of_lt ha) h
-
-theorem lt_of_one_div_lt_one_div (ha : 0 < a) (h : 1 / a < 1 / b) : b < a :=
-  lt_imp_lt_of_le_imp_le (one_div_le_one_div_of_le ha) h
-
-/-- For the single implications with fewer assumptions, see `one_div_le_one_div_of_le` and
-  `le_of_one_div_le_one_div` -/
-theorem one_div_le_one_div (ha : 0 < a) (hb : 0 < b) : 1 / a ≤ 1 / b ↔ b ≤ a :=
-  div_le_div_iff_of_pos_left zero_lt_one ha hb
-
-/-- For the single implications with fewer assumptions, see `one_div_lt_one_div_of_lt` and
-  `lt_of_one_div_lt_one_div` -/
-theorem one_div_lt_one_div (ha : 0 < a) (hb : 0 < b) : 1 / a < 1 / b ↔ b < a :=
-  div_lt_div_iff_of_pos_left zero_lt_one ha hb
-
-theorem one_lt_one_div (h1 : 0 < a) (h2 : a < 1) : 1 < 1 / a := by
-  rwa [lt_one_div (@zero_lt_one α _ _ _ _ _) h1, one_div_one]
-
-theorem one_le_one_div (h1 : 0 < a) (h2 : a ≤ 1) : 1 ≤ 1 / a := by
-  rwa [le_one_div (@zero_lt_one α _ _ _ _ _) h1, one_div_one]
-
-/-!
 ### Results about halving.
 The equalities also hold in semifields of characteristic `0`.
 -/
@@ -277,7 +203,7 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
   · simp_rw [zero_mul] at h
     exact h 2 one_lt_two
   refine le_of_forall_gt_imp_ge_of_dense fun x hbx => ?_
-  convert h (x / b) ((one_lt_div hb).mpr hbx)
+  convert h (x / b) ((one_lt_div₀ hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
 
 /-! ### Results about `IsGLB` -/
@@ -320,7 +246,6 @@ section
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d : α} {n : ℤ}
 
 /-! ### Lemmas about pos, nonneg, nonpos, neg -/
-
 
 theorem div_pos_iff : 0 < a / b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   simp only [division_def, mul_pos_iff, inv_pos, inv_lt_zero]
@@ -493,25 +418,25 @@ theorem one_lt_div_iff : 1 < a / b ↔ 0 < b ∧ b < a ∨ b < 0 ∧ a < b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
   · simp [hb, hb.not_lt, one_lt_div_of_neg]
   · simp [lt_irrefl, zero_le_one]
-  · simp [hb, hb.not_lt, one_lt_div]
+  · simp [hb, hb.not_lt, one_lt_div₀]
 
 theorem one_le_div_iff : 1 ≤ a / b ↔ 0 < b ∧ b ≤ a ∨ b < 0 ∧ a ≤ b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
   · simp [hb, hb.not_lt, one_le_div_of_neg]
   · simp [lt_irrefl, zero_lt_one.not_le, zero_lt_one]
-  · simp [hb, hb.not_lt, one_le_div]
+  · simp [hb, hb.not_lt, one_le_div₀]
 
 theorem div_lt_one_iff : a / b < 1 ↔ 0 < b ∧ a < b ∨ b = 0 ∨ b < 0 ∧ b < a := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
   · simp [hb, hb.not_lt, hb.ne, div_lt_one_of_neg]
   · simp [zero_lt_one]
-  · simp [hb, hb.not_lt, div_lt_one, hb.ne.symm]
+  · simp [hb, hb.not_lt, div_lt_one₀, hb.ne.symm]
 
 theorem div_le_one_iff : a / b ≤ 1 ↔ 0 < b ∧ a ≤ b ∨ b = 0 ∨ b < 0 ∧ b ≤ a := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
   · simp [hb, hb.not_lt, hb.ne, div_le_one_of_neg]
   · simp [zero_le_one]
-  · simp [hb, hb.not_lt, div_le_one, hb.ne.symm]
+  · simp [hb, hb.not_lt, div_le_one₀, hb.ne.symm]
 
 /-! ### Relating two divisions, involving `1` -/
 

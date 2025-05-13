@@ -27,7 +27,7 @@ def orderIsoIooNegOneOne (k : Type*) [Field k] [LinearOrder k] [IsStrictOrderedR
     have H : 0 < 1 + |x| := (abs_nonneg x).trans_lt (lt_one_add _)
     calc
       |x / (1 + |x|)| = |x| / (1 + |x|) := by rw [abs_div, abs_of_pos H]
-      _ < 1 := (div_lt_one H).2 (lt_one_add _)
+      _ < 1 := (div_lt_one₀ H).2 (lt_one_add _)
   · refine (strictMono_of_odd_strictMonoOn_nonneg ?_ ?_).codRestrict _
     · intro x
       simp only [abs_neg, neg_div]

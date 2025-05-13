@@ -644,7 +644,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
           intro x hx <;>
         rw [Finset.mem_range] at hx
       · positivity
-      · refine (div_le_one <| mod_cast hn).mpr ?_
+      · refine (div_le_one₀ <| mod_cast hn).mpr ?_
         norm_cast
         omega)
 

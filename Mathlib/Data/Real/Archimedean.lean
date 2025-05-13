@@ -371,7 +371,7 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     refine (ha q.den (by positivity)).trans ?_
     rw [← le_sub_iff_add_le, div_le_iff₀ (by positivity), sub_mul, one_mul]
     norm_cast at hq ⊢
-    rw [← q.num_div_den, one_lt_div (by positivity)] at hq
+    rw [← q.num_div_den, one_lt_div₀ (by positivity)] at hq
     rw [q.mul_den_eq_num]
     norm_cast at hq ⊢
     omega

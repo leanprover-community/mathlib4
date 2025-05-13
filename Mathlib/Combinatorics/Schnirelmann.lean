@@ -121,7 +121,8 @@ lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ 
     simpa only [one_div, sub_lt_self_iff, inv_pos, Nat.cast_pos, pos_iff_ne_zero] using hx
   · intro h
     refine le_ciInf fun ⟨n, hn⟩ => ?_
-    rw [one_le_div (Nat.cast_pos.2 hn), Nat.cast_le, filter_true_of_mem, Nat.card_Ioc, Nat.sub_zero]
+    rw [one_le_div₀ (Nat.cast_pos.2 hn), Nat.cast_le, filter_true_of_mem, Nat.card_Ioc,
+      Nat.sub_zero]
     rintro x hx
     exact h (mem_Ioc.1 hx).1.ne'
 

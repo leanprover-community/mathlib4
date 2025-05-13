@@ -101,7 +101,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
     remainder m n < (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) :=
   -- two useful inequalities
   have m0 : 0 < m := zero_lt_one.trans m1
-  have mi : 1 / m < 1 := (div_lt_one m0).mpr m1
+  have mi : 1 / m < 1 := (div_lt_one₀ m0).mpr m1
   -- to show the strict inequality between these series, we prove that:
   calc
     (∑' i, 1 / m ^ (i + (n + 1))!) < ∑' i, 1 / m ^ (i + (n + 1)!) :=
