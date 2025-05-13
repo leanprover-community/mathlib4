@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
-import Mathlib.AlgebraicGeometry.IdealSheaf
+import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 import Mathlib.AlgebraicGeometry.ResidueField
 import Mathlib.AlgebraicGeometry.Properties
+import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 
@@ -147,6 +148,63 @@ instance Spec_map_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
+
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsClosedImmersion f] :
+    IsIso f.toImage := by
+  have := @of_comp_isClosedImmersion _ _ _ f.toImage f.imageι inferInstance
+    (by rw [Scheme.Hom.toImage_imageι]; infer_instance)
+  have : IsHomeomorph f.toImage.base :=
+    isHomeomorph_iff_isEmbedding_surjective.mpr ⟨f.toImage.isEmbedding, by
+      rw [← Set.range_eq_univ, ← f.toImage.isClosedEmbedding.isClosed_range.closure_eq]
+      exact f.toImage.denseRange.closure_eq⟩
+  refine isomorphisms_eq_stalkwise.ge _ ⟨?_, ?_⟩
+  · exact inferInstanceAs (IsIso (TopCat.isoOfHomeo this.homeomorph).hom)
+  · intro x
+    refine ⟨?_, f.toImage.stalkMap_surjective x⟩
+    show Function.Injective (CommRingCat.Hom.hom (((TopCat.Presheaf.stalkFunctor CommRingCat
+      (f.toImage.base x)).map f.toImage.c) ≫ X.presheaf.stalkPushforward _ _ x))
+    simp only [TopCat.Presheaf.stalkFunctor_obj, CommRingCat.hom_comp, RingHom.coe_comp]
+    refine .comp ?_ (f.stalkFunctor_toImage_injective _)
+    have := TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_isInducing CommRingCat
+      (f := f.toImage.base) f.toImage.isEmbedding.isInducing X.presheaf x
+    exact ((ConcreteCategory.isIso_iff_bijective _).mp this).1
+
+/-- The category of closed subschemes is contravariantly equivalent
+to the lattice of ideal sheaves. -/
+noncomputable
+def overEquivIdealSheafData (X : Scheme.{u}) :
+    (MorphismProperty.Over @IsClosedImmersion ⊤ X)ᵒᵖ ≌ X.IdealSheafData where
+  functor := (MorphismProperty.Over.forget _ _ _).op ⋙ X.kerFunctor
+  inverse :=
+  { obj I := .op <| .mk _ I.subschemeι inferInstance
+    map {I J} h := (MorphismProperty.Over.homMk (Scheme.IdealSheafData.inclusion h.le)).op
+    map_comp f g := Quiver.Hom.unop_inj (by ext1; simp) }
+  unitIso := NatIso.ofComponents (fun Y ↦
+    letI : IsClosedImmersion Y.unop.hom := Y.unop.prop
+    ((MorphismProperty.Over.isoMk (asIso Y.unop.hom.toImage).symm).op)) fun {X Y} f ↦ by
+      apply Quiver.Hom.unop_inj
+      ext1
+      dsimp
+      rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq,
+        ← cancel_mono (Scheme.IdealSheafData.subschemeι _)]
+      simp
+  counitIso := NatIso.ofComponents (fun I ↦ eqToIso (by simp))
+
+/-- The universal property of closed immersions:
+For a closed immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z` whose kernel
+contains the kernel of `X` in `Z`, we can lift this morphism to a unique `Y ⟶ X` that
+commutes with these maps.
+-/
+noncomputable
+def lift {X Y Z : Scheme.{u}}
+    (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] (H : f.ker ≤ g.ker) : Y ⟶ X :=
+  g.toImage ≫ Scheme.IdealSheafData.inclusion H ≫ inv f.toImage
+
+@[reassoc (attr := simp)]
+lemma lift_fac {X Y Z : Scheme.{u}}
+    (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] (H : f.ker ≤ g.ker) : lift f g H ≫ f = g := by
+  nth_rw 2 [← f.toImage_imageι]
+  simp [lift, - Scheme.Hom.toImage_imageι, g.toImage_imageι]
 
 end IsClosedImmersion
 
