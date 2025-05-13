@@ -62,8 +62,15 @@ theorem pathIntegral_of_not_completeSpace (h : ¬CompleteSpace F) (ω : E → E 
 
 theorem pathIntegralFun_def [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) :
     pathIntegralFun ω γ t = ω (γ.extend t) (derivWithin γ.extend I t) := by
-  rw [pathIntegralFun]
-  congr
+  simp only [pathIntegralFun, NormedSpace.restrictScalars_eq]
+
+theorem pathIntegral_def [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (γ : Path a b) :
+    pathIntegral ω γ = ∫ t in (0)..1, pathIntegralFun ω γ t := by
+  simp only [pathIntegral, NormedSpace.restrictScalars_eq]
+
+theorem pathIntegral_def' [NormedSpace ℝ E] [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (γ : Path a b) :
+    pathIntegral ω γ = ∫ t in (0)..1, ω (γ.extend t) (derivWithin γ.extend I t) := by
+  simp only [pathIntegral_def, pathIntegralFun_def]
 
 /-!
 ### Operations on paths
@@ -99,7 +106,8 @@ theorem pathIntegral_cast (ω : E → E →L[𝕜] F) (γ : Path a b) (hc : c = 
 
 @[simp]
 theorem PathIntegrable.cast_iff (hc : c = a) (hd : d = b) :
-    PathIntegrable ω (γ.cast hc hd) ↔ PathIntegrable ω γ := .rfl
+    PathIntegrable ω (γ.cast hc hd) ↔ PathIntegrable ω γ := by
+  simp [PathIntegrable]
 
 protected alias ⟨_, PathIntegrable.cast⟩ := PathIntegrable.cast_iff
 
@@ -126,47 +134,49 @@ theorem pathIntegral_symm (ω : E → E →L[𝕜] F) (γ : Path a b) :
 
 theorem pathIntegralFun_trans_of_lt_half (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c)
     (ht₀ : 0 < t) (ht : t < 1 / 2) :
-    pathIntegralFun ω (γab.trans γbc) t = (2 : ℝ) • pathIntegralFun ω γab (2 * t) := by
+    pathIntegralFun ω (γab.trans γbc) t = (2 : ℕ) • pathIntegralFun ω γab (2 * t) := by
+  let instE := NormedSpace.restrictScalars ℝ 𝕜 E
   have : (γab.trans γbc).extend =ᶠ[𝓝 t] (fun s ↦ γab.extend (2 * s)) :=
     (eventually_le_nhds ht).mono fun _ ↦ Path.extend_trans_of_le_half _ _
-  rw [pathIntegralFun, this.self_of_nhds, derivWithin_of_mem_nhds, this.deriv_eq, pathIntegralFun,
-    derivWithin_of_mem_nhds, deriv_comp_mul_left, map_smul] <;>
-    apply Icc_mem_nhds <;> linarith
+  rw [pathIntegralFun_def, this.self_of_nhds, derivWithin_of_mem_nhds, this.deriv_eq,
+    pathIntegralFun_def, derivWithin_of_mem_nhds, deriv_comp_mul_left, ofNat_smul_eq_nsmul,
+    map_nsmul] <;> apply Icc_mem_nhds <;> linarith
 
 theorem pathIntegralFun_trans_aeeq_left (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c) :
     pathIntegralFun ω (γab.trans γbc) =ᵐ[volume.restrict (Ι (0 : ℝ) (1 / 2))]
-      fun t ↦ (2 : ℝ) • pathIntegralFun ω γab (2 * t) := by
+      fun t ↦ (2 : ℕ) • pathIntegralFun ω γab (2 * t) := by
   rw [uIoc_of_le (by positivity), ← restrict_Ioo_eq_restrict_Ioc]
   filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ⟨ht₀, ht⟩
   exact pathIntegralFun_trans_of_lt_half ω γab γbc ht₀ ht
 
 theorem pathIntegralFun_trans_of_half_lt (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c)
     (ht₀ : 1 / 2 < t) (ht : t < 1) :
-    pathIntegralFun ω (γab.trans γbc) t = (2 : ℝ) • pathIntegralFun ω γbc (2 * t - 1) := by
+    pathIntegralFun ω (γab.trans γbc) t = (2 : ℕ) • pathIntegralFun ω γbc (2 * t - 1) := by
+  let instE := NormedSpace.restrictScalars ℝ 𝕜 E
   have : (γab.trans γbc).extend =ᶠ[𝓝 t] (fun s ↦ γbc.extend (2 * s - 1)) :=
     (eventually_ge_nhds ht₀).mono fun _ ↦ Path.extend_trans_of_half_le _ _
-  rw [pathIntegralFun, this.self_of_nhds, derivWithin_of_mem_nhds, this.deriv_eq, pathIntegralFun,
-    derivWithin_of_mem_nhds, deriv_comp_mul_left _ (γbc.extend <| · - 1), deriv_comp_sub_const,
-    map_smul] <;> apply Icc_mem_nhds <;> linarith
+  rw [pathIntegralFun_def, this.self_of_nhds, derivWithin_of_mem_nhds, this.deriv_eq,
+    pathIntegralFun_def, derivWithin_of_mem_nhds, deriv_comp_mul_left _ (γbc.extend <| · - 1),
+    deriv_comp_sub_const, ofNat_smul_eq_nsmul, map_nsmul] <;> apply Icc_mem_nhds <;> linarith
 
 theorem pathIntegralFun_trans_aeeq_right (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c) :
     pathIntegralFun ω (γab.trans γbc) =ᵐ[volume.restrict (Ι (1 / 2 : ℝ) 1)]
-      fun t ↦ (2 : ℝ) • pathIntegralFun ω γbc (2 * t - 1) := by
+      fun t ↦ (2 : ℕ) • pathIntegralFun ω γbc (2 * t - 1) := by
   rw [uIoc_of_le (by linarith), ← restrict_Ioo_eq_restrict_Ioc]
   filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ⟨ht₁, ht₂⟩
   exact pathIntegralFun_trans_of_half_lt ω γab γbc ht₁ ht₂
 
 theorem PathIntegrable.intervalIntegrable_pathIntegralFun_trans_left
     (h : PathIntegrable ω γab) (γbc : Path b c) :
-    IntervalIntegrable (pathIntegralFun ω (γab.trans γbc)) volume 0 (1 / 2) :=
-  .congr (by simpa using (h.comp_mul_left 2).smul (2 : ℝ))
-    (pathIntegralFun_trans_aeeq_left _ _ _).symm
+    IntervalIntegrable (pathIntegralFun ω (γab.trans γbc)) volume 0 (1 / 2) := by
+  refine .congr ?_ (pathIntegralFun_trans_aeeq_left _ _ _).symm
+  simpa [ofNat_smul_eq_nsmul] using h.comp_mul_left 2 |>.smul (2 : 𝕜)
 
 theorem PathIntegrable.intervalIntegrable_pathIntegralFun_trans_right
     (γab : Path a b) (h : PathIntegrable ω γbc) :
-    IntervalIntegrable (pathIntegralFun ω (γab.trans γbc)) volume (1 / 2) 1 :=
-  .congr (by simpa using ((h.comp_sub_right 1).comp_mul_left 2).smul (2 : ℝ))
-    (pathIntegralFun_trans_aeeq_right _ _ _).symm
+    IntervalIntegrable (pathIntegralFun ω (γab.trans γbc)) volume (1 / 2) 1 := by
+  refine .congr ?_ (pathIntegralFun_trans_aeeq_right _ _ _).symm
+  simpa [ofNat_smul_eq_nsmul] using h.comp_sub_right 1 |>.comp_mul_left 2 |>.smul (2 : 𝕜)
 
 protected theorem PathIntegrable.trans (h₁ : PathIntegrable ω γab) (h₂ : PathIntegrable ω γbc) :
     PathIntegrable ω (γab.trans γbc) :=
@@ -175,35 +185,39 @@ protected theorem PathIntegrable.trans (h₁ : PathIntegrable ω γab) (h₂ : P
 
 theorem pathIntegral_trans (h₁ : PathIntegrable ω γab) (h₂ : PathIntegrable ω γbc) :
     ∫ᵖ x in γab.trans γbc, ω x = pathIntegral ω γab + pathIntegral ω γbc := by
-  rw [pathIntegral, ← intervalIntegral.integral_add_adjacent_intervals
+  let instF := NormedSpace.restrictScalars ℝ 𝕜 F
+  rw [pathIntegral_def, ← intervalIntegral.integral_add_adjacent_intervals
     (h₁.intervalIntegrable_pathIntegralFun_trans_left γbc)
     (h₂.intervalIntegrable_pathIntegralFun_trans_right γab),
     intervalIntegral.integral_congr_ae_restrict (pathIntegralFun_trans_aeeq_left _ _ _),
-    intervalIntegral.integral_congr_ae_restrict (pathIntegralFun_trans_aeeq_right _ _ _),
-    intervalIntegral.integral_smul, intervalIntegral.smul_integral_comp_mul_left,
+    intervalIntegral.integral_congr_ae_restrict (pathIntegralFun_trans_aeeq_right _ _ _)]
+  simp only [← ofNat_smul_eq_nsmul (R := ℝ)]
+  rw [intervalIntegral.integral_smul, intervalIntegral.smul_integral_comp_mul_left,
     intervalIntegral.integral_smul,
     intervalIntegral.smul_integral_comp_mul_left (f := (pathIntegralFun ω γbc <| · - 1)),
     intervalIntegral.integral_comp_sub_right]
-  norm_num [pathIntegral]
+  norm_num [pathIntegral_def]
 
-theorem pathIntegralFun_segment (ω : E → E →L[𝕜] F) (a b : E) {t : ℝ} (ht : t ∈ I) :
-    pathIntegralFun ω (.segment a b) t = ω (lineMap a b t) (b - a) := by
+theorem pathIntegralFun_segment [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (a b : E)
+    {t : ℝ} (ht : t ∈ I) : pathIntegralFun ω (.segment a b) t = ω (lineMap a b t) (b - a) := by
   have := Path.eqOn_extend_segment a b
-  simp only [pathIntegralFun, this ht, derivWithin_congr this (this ht),
+  simp only [pathIntegralFun_def, this ht, derivWithin_congr this (this ht),
     (hasDerivWithinAt_lineMap ..).derivWithin (uniqueDiffOn_Icc_zero_one t ht)]
 
-theorem pathIntegral_segment (ω : E → E →L[𝕜] F) (a b : E) :
+theorem pathIntegral_segment [NormedSpace ℝ E] [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (a b : E) :
     pathIntegral ω (.segment a b) = ∫ t in (0)..1, ω (lineMap a b t) (b - a) := by
+  rw [pathIntegral_def]
   refine intervalIntegral.integral_congr fun t ht ↦ ?_
   rw [uIcc_of_le zero_le_one] at ht
   exact pathIntegralFun_segment ω a b ht
 
 /-- If a 1-form `ω` is continuous on a set `s`,
 then it is path integrable along any $C^1$ path in this set. -/
-theorem ContinuousOn.pathIntegrable_of_contDiffOn {s : Set E} (hω : ContinuousOn ω s)
-    (hγ : ContDiffOn ℝ 1 γ.extend I) (hγs : ∀ t, γ t ∈ s) : PathIntegrable ω γ := by
+theorem ContinuousOn.pathIntegrable_of_contDiffOn [NormedSpace ℝ E] {s : Set E}
+    (hω : ContinuousOn ω s) (hγ : ContDiffOn ℝ 1 γ.extend I) (hγs : ∀ t, γ t ∈ s) :
+    PathIntegrable ω γ := by
   apply ContinuousOn.intervalIntegrable_of_Icc zero_le_one
-  unfold pathIntegralFun
+  simp only [funext (pathIntegralFun_def ω γ)]
   apply ContinuousOn.clm_apply
   · exact hω.comp (by fun_prop) fun _ _ ↦ hγs _
   · exact hγ.continuousOn_derivWithin uniqueDiffOn_Icc_zero_one le_rfl
@@ -218,26 +232,30 @@ variable {ω ω₁ ω₂ : E → E →L[𝕜] F} {γ : Path a b} {t : ℝ}
 
 @[simp]
 theorem pathIntegralFun_add :
-    pathIntegralFun (ω₁ + ω₂) γ = pathIntegralFun ω₁ γ + pathIntegralFun ω₂ γ :=
-  rfl
+    pathIntegralFun (ω₁ + ω₂) γ = pathIntegralFun ω₁ γ + pathIntegralFun ω₂ γ := by
+  ext; simp [pathIntegralFun]
 
 protected nonrec theorem PathIntegrable.add (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
-    PathIntegrable (ω₁ + ω₂) γ :=
-  h₁.add h₂
+    PathIntegrable (ω₁ + ω₂) γ := by
+  simpa [PathIntegrable] using h₁.add h₂
 
 theorem pathIntegral_add (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
-    pathIntegral (ω₁ + ω₂) γ = (∫ᵖ x in γ, ω₁ x) + ∫ᵖ x in γ, ω₂ x :=
-  intervalIntegral.integral_add h₁ h₂
+    pathIntegral (ω₁ + ω₂) γ = (∫ᵖ x in γ, ω₁ x) + ∫ᵖ x in γ, ω₂ x := by
+  letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
+  simp only [pathIntegral, pathIntegralFun_add]
+  exact intervalIntegral.integral_add h₁ h₂
 
 theorem pathIntegral_fun_add (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
     ∫ᵖ x in γ, ω₁ x + ω₂ x = (∫ᵖ x in γ, ω₁ x) + ∫ᵖ x in γ, ω₂ x :=
   pathIntegral_add h₁ h₂
 
 @[simp]
-theorem pathIntegralFun_zero : pathIntegralFun (0 : E → E →L[𝕜] F) γ = 0 := rfl
+theorem pathIntegralFun_zero : pathIntegralFun (0 : E → E →L[𝕜] F) γ = 0 := by
+  ext; simp [pathIntegralFun]
 
 @[simp]
-theorem pathIntegralFun_fun_zero : pathIntegralFun (fun _ ↦ 0 : E → E →L[𝕜] F) γ = 0 := rfl
+theorem pathIntegralFun_fun_zero : pathIntegralFun (fun _ ↦ 0 : E → E →L[𝕜] F) γ = 0 := 
+  pathIntegralFun_zero
 
 -- TODO: add `intervalIntegrable_zero`
 theorem PathIntegrable.zero : PathIntegrable (0 : E → E →L[𝕜] F) γ := by
@@ -252,10 +270,11 @@ theorem pathIntegral_zero : pathIntegral (0 : E → E →L[𝕜] F) γ = 0 := by
 theorem pathIntegral_fun_zero : ∫ᵖ _ in γ, (0 : E →L[𝕜] F) = 0 := pathIntegral_zero
 
 @[simp]
-theorem pathIntegralFun_neg : pathIntegralFun (-ω) γ = -pathIntegralFun ω γ := rfl
+theorem pathIntegralFun_neg : pathIntegralFun (-ω) γ = -pathIntegralFun ω γ := by
+  ext; simp [pathIntegralFun]
 
-nonrec theorem PathIntegrable.neg (h : PathIntegrable ω γ) : PathIntegrable (-ω) γ :=
-  h.neg
+nonrec theorem PathIntegrable.neg (h : PathIntegrable ω γ) : PathIntegrable (-ω) γ := by
+  simpa [PathIntegrable] using h.neg
 
 theorem PathIntegrable.fun_neg (h : PathIntegrable ω γ) : PathIntegrable (-ω ·) γ :=
   h.neg
@@ -275,13 +294,25 @@ theorem pathIntegral_neg : pathIntegral (-ω) γ = -∫ᵖ x in γ, ω x := by
 @[simp]
 theorem pathIntegral_fun_neg : ∫ᵖ x in γ, -ω x = -∫ᵖ x in γ, ω x := pathIntegral_neg
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] {c : 𝕜}
+variable {𝕝 : Type*} [RCLike 𝕝] [NormedSpace 𝕝 F] {c : 𝕝}
 
 @[simp]
-theorem pathIntegralFun_smul : pathIntegralFun (c • ω) γ = c • pathIntegralFun ω γ := rfl
+theorem pathIntegralFun_restrictScalars [NormedSpace 𝕝 E] [LinearMap.CompatibleSMul E F 𝕝 𝕜] :
+    pathIntegralFun (fun t ↦ (ω t).restrictScalars 𝕝) γ = pathIntegralFun ω γ := by
+  ext
+  letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
+  simp [pathIntegralFun_def]
 
-nonrec theorem PathIntegrable.smul (h : PathIntegrable ω γ) : PathIntegrable (c • ω) γ :=
-  h.smul c
+variable [SMulCommClass 𝕜 𝕝 F]
+
+@[simp]
+theorem pathIntegralFun_smul : pathIntegralFun (c • ω) γ = c • pathIntegralFun ω γ := by
+  ext
+  simp [pathIntegralFun]
+
+nonrec theorem PathIntegrable.smul (h : PathIntegrable ω γ) :
+    PathIntegrable (c • ω) γ := by
+  simpa [PathIntegrable] using h.smul c
 
 @[simp]
 theorem PathIntegrable.smul_iff : PathIntegrable (c • ω) γ ↔ c = 0 ∨ PathIntegrable ω γ := by
@@ -292,8 +323,9 @@ theorem PathIntegrable.smul_iff : PathIntegrable (c • ω) γ ↔ c = 0 ∨ Pat
     simpa [hc] using h.smul (c := c⁻¹)
 
 @[simp]
-theorem pathIntegral_smul : pathIntegral (c • ω) γ = c • pathIntegral ω γ :=
-  intervalIntegral.integral_smul _ _
+theorem pathIntegral_smul : pathIntegral (c • ω) γ = c • pathIntegral ω γ := by
+  letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
+  simp [pathIntegral_def, intervalIntegral.integral_smul]
 
 @[simp]
 theorem pathIntegral_fun_smul : ∫ᵖ x in γ, c • ω x = c • ∫ᵖ x in γ, ω x := pathIntegral_smul
