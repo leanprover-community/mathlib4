@@ -210,16 +210,16 @@ section Conjugation
 open Pointwise ConjAct
 
 /-- The subgroup `SL(2, ℤ) ∩ g⁻¹ Γ g`, for `Γ` a subgroup of `SL(2, ℤ)` and `g ∈ GL(2, ℝ)`. -/
-def conjGL (Γ : Subgroup SL(2, ℤ)) (g : GL(2, ℝ)) : Subgroup SL(2, ℤ) :=
+def conjGL (Γ : Subgroup SL(2, ℤ)) (g : GL (Fin 2) ℝ) : Subgroup SL(2, ℤ) :=
   ((toConjAct g⁻¹) • (Γ.map (SpecialLinearGroup.toGL.comp
     <| SpecialLinearGroup.map (Int.castRingHom ℝ)))).comap
     (SpecialLinearGroup.toGL.comp  <| SpecialLinearGroup.map (Int.castRingHom ℝ))
 
-@[simp] lemma mem_conjGL {Γ : Subgroup SL(2, ℤ)} {g : GL(2, ℝ)} {x : SL(2, ℤ)} :
+@[simp] lemma mem_conjGL {Γ : Subgroup SL(2, ℤ)} {g : GL (Fin 2) ℝ} {x : SL(2, ℤ)} :
     x ∈ conjGL Γ g ↔ ∃ y ∈ Γ, y = g * x * g⁻¹ := by
   simp [conjGL, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
 
-lemma mem_conjGL' {Γ : Subgroup SL(2, ℤ)} {g : GL(2, ℝ)} {x : SL(2, ℤ)} :
+lemma mem_conjGL' {Γ : Subgroup SL(2, ℤ)} {g : GL (Fin 2) ℝ} {x : SL(2, ℤ)} :
     x ∈ conjGL Γ g ↔ ∃ y ∈ Γ, g⁻¹ * y * g = x := by
   rw [mem_conjGL]
   refine exists_congr fun y ↦ and_congr_right fun hy ↦ ?_

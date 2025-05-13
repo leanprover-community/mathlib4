@@ -63,8 +63,8 @@ namespace ModularForm
 
 noncomputable section
 
-/-- The weight `k` action of `GL(2, ℝ)⁺` on functions `f : ℍ → ℂ`. -/
-def slash (k : ℤ) (γ : GL(2, ℝ)) (f : ℍ → ℂ) (x : ℍ) : ℂ :=
+/-- The weight `k` action of `GL (Fin 2) ℝ` on functions `f : ℍ → ℂ`. -/
+def slash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : ℍ) : ℂ :=
   σ γ (f (γ • x)) * γ.det ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
 
 variable {k : ℤ} (f : ℍ → ℂ)
@@ -74,7 +74,7 @@ section
 -- temporary notation until the instance is built
 local notation:100 f " ∣[" k "]" γ:100 => ModularForm.slash k γ f
 
-private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)) (f : ℍ → ℂ) :
+private theorem slash_mul (k : ℤ) (A B : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
     f ∣[k] (A * B) = (f ∣[k] A) ∣[k] B := by
   ext1 τ
   calc σ (A * B) (f ((A * B) • τ)) * ((A * B).det) ^ (k - 1) * denom (A * B) τ ^ (-k)
@@ -88,7 +88,7 @@ private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)) (f : ℍ → ℂ) :
      ring
   _ = ((f ∣[k] A) ∣[k] B) τ := rfl
 
-private theorem add_slash (k : ℤ) (A : GL(2, ℝ)) (f g : ℍ → ℂ) :
+private theorem add_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
     (f + g) ∣[k] A = f ∣[k] A + g ∣[k] A := by
   ext1 τ
   simp [slash, add_mul]
@@ -96,10 +96,10 @@ private theorem add_slash (k : ℤ) (A : GL(2, ℝ)) (f g : ℍ → ℂ) :
 private theorem slash_one (k : ℤ) (f : ℍ → ℂ) : f ∣[k] 1 = f :=
   funext <| by simp [slash, σ, denom]
 
-private theorem zero_slash (k : ℤ) (A : GL(2, ℝ)) : (0 : ℍ → ℂ) ∣[k]A = 0 :=
+private theorem zero_slash (k : ℤ) (A : GL (Fin 2) ℝ) : (0 : ℍ → ℂ) ∣[k]A = 0 :=
   funext fun _ => by simp [slash]
 
-instance : SlashAction ℤ GL(2, ℝ) (ℍ → ℂ) ℂ where
+instance : SlashAction ℤ (GL (Fin 2) ℝ) (ℍ → ℂ) ℂ where
   map := slash
   zero_slash := zero_slash
   slash_one := slash_one
@@ -108,15 +108,15 @@ instance : SlashAction ℤ GL(2, ℝ) (ℍ → ℂ) ℂ where
 
 end
 
-theorem slash_def (g : GL(2, ℝ)) :
+theorem slash_def (g : GL (Fin 2) ℝ) :
     f ∣[k] g = fun τ ↦ σ g (f (g • τ)) * g.det ^ (k - 1) * denom g τ ^ (-k) :=
   rfl
 
-theorem slash_apply (g : GL(2, ℝ)) (τ : ℍ) :
+theorem slash_apply (g : GL (Fin 2) ℝ) (τ : ℍ) :
     (f ∣[k] g) τ = σ g (f (g • τ)) * g.det ^ (k - 1) * denom g τ ^ (-k) :=
   rfl
 
-theorem smul_slash (k : ℤ) (A : GL(2, ℝ)) (f : ℍ → ℂ) (c : ℂ) :
+theorem smul_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) (c : ℂ) :
     (c • f) ∣[k] A = σ A c • f ∣[k] A := by
   ext τ : 1
   simp only [slash_apply, Pi.smul_apply, smul_eq_mul, map_mul, mul_assoc]
@@ -125,7 +125,7 @@ instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) ℂ :=
   monoidHomSlashAction
     (Matrix.SpecialLinearGroup.toGL.comp (Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ)))
 
-theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)) :=
+theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL (Fin 2) ℝ) :=
   rfl
 
 theorem SL_slash_def (γ : SL(2, ℤ)) :
@@ -160,7 +160,7 @@ theorem slash_action_eq'_iff (k : ℤ) (f : ℍ → ℂ) (γ : SL(2, ℤ)) (z : 
     rfl
   · exact zpow_ne_zero k (denom_ne_zero γ z.im_ne_zero)
 
-theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)) (f g : ℍ → ℂ) :
+theorem mul_slash (k1 k2 : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = (A.det : ℝ) • (f ∣[k1] A * g ∣[k2] A) := by
   ext1 x
   simp only [slash_apply, Pi.mul_apply, Pi.smul_apply, real_smul, map_mul, neg_add,

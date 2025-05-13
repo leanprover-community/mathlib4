@@ -36,7 +36,7 @@ TO DO: Actually this holds for `GL(2, ℝ)` (without the positivity assumption),
 somewhat more annoying to prove: we have to argue that the composite of two anti-holomorphic
 functions is holomorphic. -/
 lemma MDifferentiable.slash {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
-    (k : ℤ) {g : GL(2, ℝ)} (hg : 0 < g.det.val) :
+    (k : ℤ) {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] g) := by
   refine .mul (.mul ?_ mdifferentiable_const) (UpperHalfPlane.mdifferentiable_denom_zpow g _)
   simp only [σ, hg, ↓reduceIte]

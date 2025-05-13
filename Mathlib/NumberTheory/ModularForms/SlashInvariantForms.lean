@@ -216,7 +216,7 @@ instance (Γ : Subgroup SL(2, ℤ)) : IntCast (SlashInvariantForm Γ 0) where
 theorem coe_intCast (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
 
 /-- Translating a `SlashInvariantForm` by `SL(2, ℤ)`, to obtain a new `SlashInvariantForm`. -/
-noncomputable def translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL(2, ℝ)) :
+noncomputable def translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
     SlashInvariantForm (CongruenceSubgroup.conjGL Γ g) k where
   toFun := f ∣[k] g
   slash_action_eq' j hj := by
@@ -227,7 +227,7 @@ noncomputable def translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL(2
       SlashInvariantFormClass.slash_action_eq f _ hy]
 
 @[simp]
-lemma coe_translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL(2, ℝ)) :
+lemma coe_translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
     translateGL f g = ⇑f ∣[k] g :=
   rfl
 

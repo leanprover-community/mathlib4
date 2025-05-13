@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 /-!
 # Group action on the upper half-plane
 
-We equip the upper half-plane with the structure of a `GL(2, ℝ)` action by fractional linear
+We equip the upper half-plane with the structure of a `GL (Fin 2) ℝ` action by fractional linear
 transformations (composing with complex conjugation when needed to extend the action from the
 positive-determinant subgroup, so that `!![-1, 0; 0, 1]` acts as `z ↦ -conj z`.)
 -/
@@ -23,10 +23,10 @@ open scoped MatrixGroups ComplexConjugate
 namespace UpperHalfPlane
 
 /-- Numerator of the formula for a fractional linear transformation -/
-def num (g : GL(2, ℝ)) (z : ℂ) : ℂ := g 0 0 * z + g 0 1
+def num (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := g 0 0 * z + g 0 1
 
 /-- Denominator of the formula for a fractional linear transformation -/
-def denom (g : GL(2, ℝ)) (z : ℂ) : ℂ := g 1 0 * z + g 1 1
+def denom (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := g 1 0 * z + g 1 1
 
 lemma denom_one (z : ℂ) : denom 1 z = 1 := by simp [denom]
 
@@ -42,19 +42,19 @@ theorem linear_ne_zero {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h : cd 
   ext i
   fin_cases i <;> assumption
 
-theorem denom_ne_zero (g : GL(2, ℝ)) {z : ℂ} (hz : z.im ≠ 0) : denom g z ≠ 0 := by
+theorem denom_ne_zero (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) : denom g z ≠ 0 := by
   refine linear_ne_zero hz fun H ↦ g.det.ne_zero ?_
   simp [Matrix.det_fin_two, H]
 
-theorem normSq_denom_pos (g : GL(2, ℝ)) {z : ℂ} (hz : z.im ≠ 0) :
+theorem normSq_denom_pos (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     0 < Complex.normSq (denom g z) :=
   Complex.normSq_pos.mpr (denom_ne_zero g hz)
 
-theorem normSq_denom_ne_zero (g : GL(2, ℝ)) {z : ℂ} (hz : z.im ≠ 0) :
+theorem normSq_denom_ne_zero (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     Complex.normSq (denom g z) ≠ 0 :=
   ne_of_gt (normSq_denom_pos g hz)
 
-lemma denom_cocycle (x y : GL(2, ℝ)) {z : ℂ} (hz : z.im ≠ 0) :
+lemma denom_cocycle (x y : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     denom (x * y) z = denom x (num y z / denom y z) * denom y z := by
   change _ = (_ * (_ / _) + _) * _
   field_simp [denom_ne_zero y hz]
@@ -63,7 +63,7 @@ lemma denom_cocycle (x y : GL(2, ℝ)) {z : ℂ} (hz : z.im ≠ 0) :
     Complex.ofReal_mul, num]
   ring
 
-lemma moebius_im (g : GL(2, ℝ)) (z : ℂ) :
+lemma moebius_im (g : GL (Fin 2) ℝ) (z : ℂ) :
     (num g z / denom g z).im = g.det.val * z.im / Complex.normSq (denom g z) := by
   simp only [num, denom, Complex.div_im, Complex.add_im, Complex.mul_im,
     Complex.ofReal_re, Complex.ofReal_im, zero_mul, add_zero, Complex.add_re, Complex.mul_re,
@@ -71,19 +71,19 @@ lemma moebius_im (g : GL(2, ℝ)) (z : ℂ) :
   ring
 
 /-- Automorphism of `ℂ`: the identity if `0 < det g` and conjugation otherwise. -/
-def σ (g : GL(2, ℝ)) : ℂ ≃+* ℂ := if 0 < g.det.val then RingEquiv.refl ℂ else starRingAut
+def σ (g : GL (Fin 2) ℝ) : ℂ ≃+* ℂ := if 0 < g.det.val then RingEquiv.refl ℂ else starRingAut
 
-lemma σ_ofReal (g : GL(2, ℝ)) (y : ℝ) : σ g y = y := by
+lemma σ_ofReal (g : GL (Fin 2) ℝ) (y : ℝ) : σ g y = y := by
   simp only [σ]
   split_ifs <;> simp
 
-lemma σ_num (x y : GL(2, ℝ)) (z : ℂ) : σ x (num y z) = num y (σ x z) := by
+lemma σ_num (x y : GL (Fin 2) ℝ) (z : ℂ) : σ x (num y z) = num y (σ x z) := by
   simp only [num, σ_ofReal, map_add, map_mul]
 
-lemma σ_denom (x y : GL(2, ℝ)) (z : ℂ) : σ x (denom y z) = denom y (σ x z) := by
+lemma σ_denom (x y : GL (Fin 2) ℝ) (z : ℂ) : σ x (denom y z) = denom y (σ x z) := by
   simp only [denom, σ_ofReal, map_add, map_mul]
 
-lemma σ_sq (g : GL(2, ℝ)) (x : ℂ) : σ g (σ g x) = x := by
+lemma σ_sq (g : GL (Fin 2) ℝ) (x : ℂ) : σ g (σ g x) = x := by
   simp only [σ]
   split_ifs <;> simp
 
@@ -91,7 +91,7 @@ lemma σ_im_ne_zero {g x} : (σ g x).im ≠ 0 ↔ x.im ≠ 0 := by
   simp only [σ]
   split_ifs <;> simp
 
-lemma σ_mul (g g' : GL(2, ℝ)) (x : ℂ) : σ (g * g') x = σ g (σ g' x) := by
+lemma σ_mul (g g' : GL (Fin 2) ℝ) (x : ℂ) : σ (g * g') x = σ g (σ g' x) := by
   simp only [σ, map_mul, Units.val_mul]
   rcases g.det.ne_zero.lt_or_lt with (h | h) <;>
   rcases g'.det.ne_zero.lt_or_lt with (h' | h')
@@ -103,14 +103,14 @@ lemma σ_mul (g g' : GL(2, ℝ)) (x : ℂ) : σ (g * g') x = σ g (σ g' x) := b
       not_lt_of_gt h', RingEquiv.refl_apply]
   · simp only [mul_pos h h', ↓reduceIte, RingEquiv.refl_apply, h, h']
 
-lemma σ_mul_comm (g g' : GL(2, ℝ)) (x : ℂ) : σ g (σ g' x) = σ g' (σ g x) := by
+lemma σ_mul_comm (g g' : GL (Fin 2) ℝ) (x : ℂ) : σ g (σ g' x) = σ g' (σ g x) := by
   simp only [σ]
   split_ifs <;> simp
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
-private def smulAux₁ (g : GL(2, ℝ)) (z : ℂ) : ℂ := σ g (num g z / denom g z)
+private def smulAux₁ (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := σ g (num g z / denom g z)
 
-private lemma smulAux₁_im (g : GL(2, ℝ)) (z : ℂ) :
+private lemma smulAux₁_im (g : GL (Fin 2) ℝ) (z : ℂ) :
     (smulAux₁ g z).im = |g.det.val| * z.im / Complex.normSq (denom g z) := by
   simp only [smulAux₁, σ]
   split_ifs with h <;>
@@ -119,12 +119,12 @@ private lemma smulAux₁_im (g : GL(2, ℝ)) (z : ℂ) :
     neg_mul, neg_div, neg_inj] using moebius_im g z
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
-private def smulAux (g : GL(2, ℝ)) (z : ℍ) : ℍ :=
+private def smulAux (g : GL (Fin 2) ℝ) (z : ℍ) : ℍ :=
   mk (smulAux₁ g z) <| by
     rw [smulAux₁_im]
     exact div_pos (mul_pos (abs_pos.mpr g.det.ne_zero) z.im_pos) (normSq_denom_pos _ z.im_ne_zero)
 
-private lemma denom_cocycle' (x y : GL(2, ℝ)) (z : ℍ) :
+private lemma denom_cocycle' (x y : GL (Fin 2) ℝ) (z : ℍ) :
     denom (x * y) z = σ y (denom x (smulAux y z)) * denom y z := by
   simp only [smulAux, smulAux₁, coe_mk, map_div₀, σ_num, σ_denom, σ_sq]
   change _ = (_ * (_ / _) + _) * _
@@ -134,7 +134,7 @@ private lemma denom_cocycle' (x y : GL(2, ℝ)) (z : ℍ) :
     Complex.ofReal_mul, num]
   ring
 
-private theorem mul_smul' (x y : GL(2, ℝ)) (z : ℍ) :
+private theorem mul_smul' (x y : GL (Fin 2) ℝ) (z : ℍ) :
     smulAux (x * y) z = smulAux x (smulAux y z) := by
   ext : 1
   simp only [smulAux, coe_mk, smulAux₁, map_div₀, σ_num, σ_denom, σ_mul]
@@ -153,32 +153,32 @@ private theorem mul_smul' (x y : GL(2, ℝ)) (z : ℍ) :
     Complex.ofReal_add, Complex.ofReal_mul]
   ring
 
-/-- Action of `GL(2, ℝ)` on the upper half-plane, with `GL(2, ℝ)⁺` acting by Moebius
-transformations in the usual way, extended to all of `GL(2, ℝ)` using complex conjugation. -/
-instance glAction : MulAction GL(2, ℝ) ℍ where
+/-- Action of `GL (Fin 2) ℝ` on the upper half-plane, with `GL(2, ℝ)⁺` acting by Moebius
+transformations in the usual way, extended to all of `GL (Fin 2) ℝ` using complex conjugation. -/
+instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
   smul := smulAux
   one_smul z := by
     show smulAux 1 z = z
     simp [UpperHalfPlane.ext_iff, smulAux, coe_mk, smulAux₁, num, denom, σ]
   mul_smul := mul_smul'
 
-lemma coe_smul (g : GL(2, ℝ)) (z : ℍ) :
+lemma coe_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
     ↑(g • z) = σ g (num g z / denom g z) := rfl
 
-lemma coe_smul_of_det_pos {g : GL(2, ℝ)} (hg : 0 < g.det.val) (z : ℍ) :
+lemma coe_smul_of_det_pos {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
     ↑(g • z) = num g z / denom g z := by
   show smulAux₁ g z = _
   rw [smulAux₁, σ, if_pos hg, RingEquiv.refl_apply, num, denom]
 
-lemma denom_cocycle_σ (x y : GL(2, ℝ)) (z : ℍ) :
+lemma denom_cocycle_σ (x y : GL (Fin 2) ℝ) (z : ℍ) :
     denom (x * y) z = σ y (denom x ↑(y • z)) * denom y z :=
   denom_cocycle' x y z
 
-lemma glPos_smul_def {g : GL(2, ℝ)} (hg : 0 < g.det.val) (z : ℍ) :
+lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
     g • z = mk (num g z / denom g z) (coe_smul_of_det_pos hg z ▸ (g • z).property) := by
   ext; simp [coe_smul_of_det_pos hg]
 
-variable (g : GL(2, ℝ)) (z : ℍ)
+variable (g : GL (Fin 2) ℝ) (z : ℍ)
 
 lemma im_smul_eq_div_normSq : (g • z).im = |g.det.val| * z.im / Complex.normSq (denom g z) :=
   smulAux₁_im g z
@@ -276,7 +276,7 @@ namespace ModularGroup -- results specific to `SL(2, ℤ)`. TODO: move these els
 variable (g : SL(2, ℤ)) (z : ℍ)
 
 @[simp]
-theorem sl_moeb : g • z = (g : GL(2, ℝ)) • z := rfl
+theorem sl_moeb : g • z = (g : GL (Fin 2) ℝ) • z := rfl
 
 @[simp high]
 theorem SL_neg_smul : -g • z = g • z := by
