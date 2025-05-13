@@ -114,6 +114,7 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
 /-- Any set is codiscrete within itself. -/
+@[simp]
 theorem Filter.self_mem_codiscreteWithin (U : Set X) :
     U ∈ Filter.codiscreteWithin U := by simp [mem_codiscreteWithin]
 
