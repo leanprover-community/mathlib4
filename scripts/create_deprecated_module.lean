@@ -19,7 +19,7 @@ open Lean Elab Command
 
 namespace DeprecatedModule
 
-def getHeader (fname : String) (keepTrailing : Bool := false) : IO String := do
+def getHeader (fname : String) (keepTrailing : Bool) : IO String := do
   let fil := fname
   let fileContent ← IO.FS.readFile fil
   let (stx, _) ← Parser.parseHeader (Parser.mkInputContext fileContent fil)
@@ -30,16 +30,32 @@ def getHeader (fname : String) (keepTrailing : Bool := false) : IO String := do
 
 def mkDeprecatedModule
     (fname : String) (customMessage : String := "auto-generated") (keepTrailing : Bool := false) :
-    CommandElabM String := do
+    CommandElabM Unit := do
   let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
   let dateStx := Syntax.mkStrLit s!"{← Std.Time.PlainDate.now}"
   let header ← getHeader fname keepTrailing
   let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
   let fmt ← liftCoreM <| PrettyPrinter.ppCategory `command stx
-  return s!"{header.trimRight}\n\n{fmt}\n"
-
+  let nm := fname ++ "_deprecatedModule"
+  if (← System.FilePath.pathExists nm) then
+    logWarning m!"A file called '{nm}' exists, not writing over it!"
+    return
+  logInfo "Continuing"
+  let fileContent := s!"{header.trimRight}\n\n{fmt}\n"
+  dbg_trace fileContent
+  IO.FS.writeFile nm fileContent
+  --return
+  --return s!"{header.trimRight}\n\n{fmt}\n"
+#check Std.HashSet
 run_cmd
-  logInfo <| ← mkDeprecatedModule (← getFileName) ""
+  let oldFiles := Std.HashSet.ofArray (← IO.FS.lines "oldListOfFiles.txt")
+  let currentFiles := Std.HashSet.ofArray (← IO.FS.lines "currentListOfFiles.txt")
+  let onlyOld := oldFiles.filter (!currentFiles.contains ·)
+
+  dbg_trace onlyOld.toArray
+  --IO.Process.run {cmd := "comm", args := #["-13", "<(sort currentListOfFiles.txt)", "<(sort oldListOfFiles.txt)"]}
+run_cmd
+  mkDeprecatedModule (← getFileName)
 
 run_cmd
   let fname := "Mathlib/Init.lean"
@@ -48,7 +64,7 @@ run_cmd
   let fname := "Mathlib/Tactic/Linter/CommandStart.lean"
   let fname ← getFileName
 
-  let head ← getHeader fname --true
+  let head ← getHeader fname false--true
   logInfo head
 
 /--
@@ -65,7 +81,7 @@ import Mathlib.Tactic.Linter.DeprecatedModule
 #guard_msgs in
 run_cmd
   let fname ← getFileName
-  let head ← getHeader fname
+  let head ← getHeader fname false
   logInfo head
 
 /--
