@@ -134,7 +134,7 @@ theorem Integrable.of_mem_Icc_enorm [IsFiniteMeasure μ]
     {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     Integrable X μ :=
-  ⟨hX.aestronglyMeasurable, .of_mem_Icc_enorm ha hb h⟩
+  ⟨hX.aestronglyMeasurable, .of_mem_Icc_of_ne_top ha hb h⟩
 
 theorem Integrable.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
