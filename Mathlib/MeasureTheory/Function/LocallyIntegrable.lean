@@ -464,19 +464,23 @@ section borel
 variable [OpensMeasurableSpace X]
 variable {K : Set X} {a b : X}
 
+-- TODO: generalise the next two lemmas to enorm classes
+
 /-- A continuous function `f` is locally integrable with respect to any locally finite measure. -/
 theorem Continuous.locallyIntegrable [IsLocallyFiniteMeasure μ] [SecondCountableTopologyEither X E]
-    (hf : Continuous f) : LocallyIntegrable f μ :=
+    {f : X → E} (hf : Continuous f) : LocallyIntegrable f μ :=
   hf.integrableAt_nhds
 
 /-- A function `f` continuous on a set `K` is locally integrable on this set with respect
 to any locally finite measure. -/
 theorem ContinuousOn.locallyIntegrableOn [IsLocallyFiniteMeasure μ]
-    [SecondCountableTopologyEither X E] (hf : ContinuousOn f K)
+    [SecondCountableTopologyEither X E] {f : X → E} (hf : ContinuousOn f K)
     (hK : MeasurableSet K) : LocallyIntegrableOn f K μ := fun _x hx =>
   hf.integrableAt_nhdsWithin hK hx
 
 variable [IsFiniteMeasureOnCompacts μ]
+
+variable {f g : X → E}
 
 /-- A function `f` continuous on a compact set `K` is integrable on this set with respect to any
 locally finite measure. -/
@@ -533,6 +537,7 @@ section Monotone
 
 variable [BorelSpace X] [ConditionallyCompleteLinearOrder X] [ConditionallyCompleteLinearOrder E]
   [OrderTopology X] [OrderTopology E] [SecondCountableTopology E] {p : ℝ≥0∞}
+  {f g : X → E}
 
 theorem MonotoneOn.memLp_top (hmono : MonotoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (h's : MeasurableSet s) :
