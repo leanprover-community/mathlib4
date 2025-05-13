@@ -467,7 +467,6 @@ theorem oangle_sub_right {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0
     o.oangle x z - o.oangle y z = o.oangle x y := by rw [sub_eq_iff_eq_add, o.oangle_add hx hy hz]
 
 /-- Given three nonzero vectors, adding the angles between them in cyclic order results in 0. -/
-@[simp]
 theorem oangle_add_cyc3 {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
     o.oangle x y + o.oangle y z + o.oangle z x = 0 := by simp [hx, hy, hz]
 
@@ -542,10 +541,7 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
   by_cases hy : y = 0; · simp [hy]
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.norm_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
-    -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`; replaced by `simp only ...` to speed up
-    -- Reinstate `field_simp` once it is faster.
-    simp (disch := field_simp_discharge) only [mul_zero, I_im, mul_one, sub_self, add_zero,
-      mul_div_assoc', mul_div_cancel_left₀]
+    field_simp
   · exact o.kahler_ne_zero hx hy
 
 /-- The cosine of the oriented angle between two nonzero vectors is the inner product divided by

@@ -704,35 +704,37 @@ end CoeToLp
 
 section Order
 
-variable {G : Type*} [NormedAddCommGroup G] [Lattice G] [HasSolidNorm G] [IsOrderedAddMonoid G]
+variable {G : Type*} [NormedAddCommGroup G]
 
-omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
-theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
+theorem coeFn_le [PartialOrder G] (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
 
-instance instAddLeftMono : AddLeftMono (Lp.simpleFunc G p μ) := by
+instance instAddLeftMono [PartialOrder G] [IsOrderedAddMonoid G] :
+    AddLeftMono (Lp.simpleFunc G p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   exact add_le_add_left hg₁₂ f
 
 variable (p μ G)
 
-omit [Lattice G] [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem coeFn_zero : (0 : Lp.simpleFunc G p μ) =ᵐ[μ] (0 : α → G) :=
   Lp.coeFn_zero _ _ _
 
 variable {p μ G}
 
-omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
+variable [PartialOrder G]
+
 theorem coeFn_nonneg (f : Lp.simpleFunc G p μ) : (0 : α → G) ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← Subtype.coe_le_coe, Lp.coeFn_nonneg, AddSubmonoid.coe_zero]
 
-omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem exists_simpleFunc_nonneg_ae_eq {f : Lp.simpleFunc G p μ} (hf : 0 ≤ f) :
     ∃ f' : α →ₛ G, 0 ≤ f' ∧ f =ᵐ[μ] f' := by
   rcases f with ⟨⟨f, hp⟩, g, (rfl : _ = f)⟩
   change 0 ≤ᵐ[μ] g at hf
-  refine ⟨g ⊔ 0, le_sup_right, (AEEqFun.coeFn_mk _ _).trans ?_⟩
-  exact hf.mono fun x hx ↦ (sup_of_le_left hx).symm
+  classical
+  refine ⟨g.map ({x : G | 0 ≤ x}.piecewise id 0), fun x ↦ ?_, (AEEqFun.coeFn_mk _ _).trans ?_⟩
+  · simpa using Set.indicator_apply_nonneg id
+  · filter_upwards [hf] with x (hx : 0 ≤ g x)
+    simpa using Set.indicator_of_mem hx id |>.symm
 
 variable (p μ G)
 
@@ -740,7 +742,6 @@ variable (p μ G)
 def coeSimpleFuncNonnegToLpNonneg :
     { g : Lp.simpleFunc G p μ // 0 ≤ g } → { g : Lp G p μ // 0 ≤ g } := fun g => ⟨g, g.2⟩
 
-omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) :
     DenseRange (coeSimpleFuncNonnegToLpNonneg p μ G) := fun g ↦ by
   borelize G

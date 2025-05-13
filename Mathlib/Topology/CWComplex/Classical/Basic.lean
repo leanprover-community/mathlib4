@@ -11,7 +11,8 @@ import Mathlib.Topology.MetricSpace.ProperSpace.Real
 /-!
 # CW complexes
 
-This file defines (relative) CW complexes and proves basic properties about them.
+This file defines (relative) CW complexes and proves basic properties about them using the classical
+approach of Whitehead.
 
 A CW complex is a topological space that is made by gluing closed disks of different dimensions
 together.
@@ -37,6 +38,11 @@ together.
   This way, we avoid having to work with a lot of different topological spaces.
   On the other hand, it requires the union of all cells to be closed.
   If that is not the case, you need to consider that union as a subspace of itself.
+* For a categorical approach that defines CW complexes via colimits and transfinite compositions,
+  see `Mathlib.Topology.CWComplex.Abstract.Basic`.
+  The two approaches are equivalent but serve different purposes:
+  * This approach is more convenient for concrete geometric arguments
+  * The categorical approach is more suitable for abstract arguments and generalizations
 * The definition `RelCWComplex` does not require `X` to be a Hausdorff space.
   A lot of the lemmas will however require this property.
 * This definition is a class to ease working with different constructions and their properties.
@@ -110,7 +116,7 @@ def CWComplex.mk.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (continuousOn_symm : ∀ (n : ℕ) (i : cell n), ContinuousOn (map n i).symm (map n i).target)
     (pairwiseDisjoint' :
       (univ : Set (Σ n, cell n)).PairwiseDisjoint (fun ni ↦ map ni.1 ni.2 '' ball 0 1))
-    (mapsTo: ∀ n i, ∃ I : Π m, Finset (cell m),
+    (mapsTo : ∀ n i, ∃ I : Π m, Finset (cell m),
       MapsTo (map n i) (sphere 0 1) (⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1))
     (closed' : ∀ (A : Set X), (asubc : A ⊆ C) →
       (∀ n j, IsClosed (A ∩ map n j '' closedBall 0 1)) → IsClosed A)

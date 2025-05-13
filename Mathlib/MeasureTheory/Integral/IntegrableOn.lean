@@ -25,11 +25,12 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory
 
-variable {α β ε E F : Type*} [MeasurableSpace α] [ENorm ε] [TopologicalSpace ε]
+variable {α β ε E F : Type*} [MeasurableSpace α]
 
 section
 
-variable [TopologicalSpace β] {l l' : Filter α} {f g : α → β} {μ ν : Measure α}
+variable [TopologicalSpace β] [ENorm ε] [TopologicalSpace ε]
+  {l l' : Filter α} {f g : α → β} {μ ν : Measure α}
 
 /-- A function `f` is strongly measurable at a filter `l` w.r.t. a measure `μ` if it is
 ae strongly measurable w.r.t. `μ.restrict s` for some `s ∈ l`. -/
@@ -78,6 +79,7 @@ theorem hasFiniteIntegral_restrict_of_bounded [NormedAddCommGroup E] {f : α →
   hasFiniteIntegral_of_bounded hf
 
 variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : Measure α}
+  [TopologicalSpace ε] [ContinuousENorm ε]
 
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
 and if the integral of its pointwise norm over `s` is less than infinity. -/
@@ -221,6 +223,15 @@ theorem _root_.MeasurableEmbedding.integrableOn_iff_comap [MeasurableSpace β] {
     IntegrableOn f s μ ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) (μ.comap e) := by
   simp_rw [← he.integrableOn_map_iff, he.map_comap, IntegrableOn,
     Measure.restrict_restrict_of_subset hs]
+
+theorem _root_.MeasurableEmbedding.integrableOn_range_iff_comap [MeasurableSpace β] {e : α → β}
+    (he : MeasurableEmbedding e) {f : β → E} {μ : Measure β} :
+    IntegrableOn f (range e) μ ↔ Integrable (f ∘ e) (μ.comap e) := by
+  rw [he.integrableOn_iff_comap .rfl, preimage_range, integrableOn_univ]
+
+theorem integrableOn_iff_comap_subtypeVal (hs : MeasurableSet s) :
+    IntegrableOn f s μ ↔ Integrable (f ∘ (↑) : s → E) (μ.comap (↑)) := by
+  rw [← (MeasurableEmbedding.subtype_coe hs).integrableOn_range_iff_comap, Subtype.range_val]
 
 theorem integrableOn_map_equiv [MeasurableSpace β] (e : α ≃ᵐ β) {f : β → E} {μ : Measure α}
     {s : Set β} : IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
