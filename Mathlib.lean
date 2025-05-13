@@ -1437,6 +1437,7 @@ import Mathlib.Analysis.Complex.IsIntegral
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.Complex.Meromorphic.CircleIntegrability
 import Mathlib.Analysis.Complex.OpenMapping
 import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.Complex.Periodic

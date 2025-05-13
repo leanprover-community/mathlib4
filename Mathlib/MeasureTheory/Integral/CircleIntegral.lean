@@ -219,7 +219,7 @@ theorem circleIntegrable_zero_radius {f : ℂ → E} {c : ℂ} : CircleIntegrabl
   simp [CircleIntegrable]
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
-theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
+theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
     (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) (hf₁ : CircleIntegrable f₁ c R) :
     CircleIntegrable f₂ c R := by
   by_cases hR : R = 0
@@ -231,7 +231,7 @@ theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ :
     by tauto⟩
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
-theorem circleIntegrable_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
+theorem circleIntegrable_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
     (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) :
     CircleIntegrable f₁ c R ↔ CircleIntegrable f₂ c R :=
   ⟨(CircleIntegrable.congr_codiscreteWithin hf ·),
