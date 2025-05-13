@@ -14,12 +14,12 @@ at most `k` colors.
 
 Proof: By strong induction on `#s`:
 
-`ih : ∀ m < n, ∀ (s : Finset α), #s = m → G.PartColorable k ↑s`.
+`ih : ∀ m < n, ∀ (s : Finset α), #s = m → G.ColorableOn k ↑s`.
 
 Now suppose we have `#s = n`.
 
 If `∃ v ∈ s` such that `s ∩ Γ(v) < k` then apply `ih s.erase v` to obtain
-`C : G.PartColoring s.erase v`then use `C.insert a`
+`C : G.ColoringOn s.erase v`then use `C.insert a`
 (the coloring of `s` given by greedily extending `C`) to complete the proof.
 
 So wlog every vertex in `s` has exactly `k` neighbors in `s` (and hence no neighbors outside `s`).
@@ -90,7 +90,7 @@ lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.
   rw [mem_erase, List.mem_toFinset, List.mem_toFinset, hc.snd_eq_snd_of_rotate_fst_dart hd,
       (hc.rotate hr).mem_tail_tail_support_iff, mem_support_rotate_iff]
 
-open PartColoring
+open ColoringOn
 
 variable {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x₄} {k : ℕ}
 
@@ -98,7 +98,7 @@ lemma Brooks1 [LocallyFinite G] [DecidableEq α] (hk : 3 ≤ k)
     (hbd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hj : xⱼ ∈ p.support) (hj2 : G.Adj xⱼ x₂)
     (h21 : G.Adj x₂ x₁) (h23 : G.Adj x₂ x₃) (hne : x₁ ≠ x₃) (h13 : ¬ G.Adj x₁ x₃)
     (h1 : x₁ ∉ p.support) (h2 : x₂ ∉ p.support) (h3 : x₃ ∉ p.support) :
-    G.PartColorable k ({a | a ∈ p.support} ∪ {x₃, x₂, x₁}) := by
+    G.ColorableOn k ({a | a ∈ p.support} ∪ {x₃, x₂, x₁}) := by
   have htp := ((concat_isPath_iff _ hj2).2 ⟨hp.takeUntil hj,
               fun a ↦ h2 ((p.support_takeUntil_subset hj) a)⟩).reverse
   have hd1 : Disjoint {x₁, x₃} {a | a ∈ (p.dropUntil xⱼ hj).support} := by
@@ -129,7 +129,7 @@ lemma Brooks1 [LocallyFinite G] [DecidableEq α] (hk : 3 ≤ k)
 
 open List
 theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
-    (hbd : ∀ v, G.degree v ≤ k) (s : Finset α) : G.PartColorable k s := by
+    (hbd : ∀ v, G.degree v ≤ k) (s : Finset α) : G.ColorableOn k s := by
   induction hn : #s using Nat.strong_induction_on generalizing s with
   | h n ih =>
   -- Case 0 : there is `v ∈ s` with `G.degreeInduce s v < k`, so we can extend a `k` - coloring of

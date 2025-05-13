@@ -3,13 +3,12 @@ Copyright (c) 2025 John Talbot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot
 -/
---import Mathlib.Combinatorics.SimpleGraph.Brooks.ColoringComponents
 import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
-import Mathlib.Combinatorics.SimpleGraph.Brooks.PartColoring
+import Mathlib.Combinatorics.SimpleGraph.Brooks.ColoringOn
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 
 /-!
-Develop Greedy colorings of a `G : SimpleGraph α` using the`SimpleGraph.PartColoring`.
+Develop Greedy colorings of a `G : SimpleGraph α` using `SimpleGraph.ColoringOn`.
 
 Prove the basic greedy coloring bound `∀ v, G.degree v ≤ n → G.Colorable (n + 1)`
 
@@ -17,13 +16,13 @@ Develop greedy partial colorings along paths to enable a proof of Brooks theorem
 
 Given `C`, a `β` - coloring of `G.induce s`, (where `Fintype β`) the set of `valid` colors
 that we can use to extend `C` to `s.insert a` is:
- `(((G.neighborFinset a).filter (· ∈ s)).image C₁)ᶜ`, so we need this to be Nonempty inorder
+ `(((G.neighborFinset a).filter (· ∈ s)).image C₁)ᶜ`, so we need this to be Nonempty in order
  to proceed.
 -/
 
 
 namespace SimpleGraph
-open Subgraph PartColoring
+open Subgraph ColoringOn
 
 variable {α β : Type*} {G : SimpleGraph α} {s : Set α} [DecidablePred (· ∈ s)]
 
@@ -31,10 +30,10 @@ open Finset
 section greedy
 
 -- variable {γ : Type*} [DecidableEq γ] [LT γ]
--- noncomputable abbrev PartColoring.greedyWF (C₁ : G.PartColoring γ s) (a : α)
+-- noncomputable abbrev ColoringOn.greedyWF (C₁ : G.ColoringOn γ s) (a : α)
 --     (hwf : WellFounded ((· < ·) : γ → γ → Prop)) [Fintype (G.neighborSet a)]
 --     (h : ((((G.neighborFinset a).filter (· ∈ s)).image C₁) : Set γ)ᶜ.Nonempty) :
---     G.PartColoring γ  (insert a s) := by
+--     G.ColoringOn γ  (insert a s) := by
 --   have h' : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C₁ v ≠ hwf.min _  h := by
 --     intro _ hv had he
 --     apply mem_compl.1 <| hwf.min_mem _ h
@@ -50,7 +49,7 @@ variable [DecidableEq α]
 /-- If we have a `β` - coloring of `G.induce s` and `G` has less than `|β|` neighbors in `s` then
 the set of valid colors at `a` is nonempty.
 -/
-lemma PartColoring.nonempty_of_degreeInduce_lt [DecidableRel G.Adj] (C : G.PartColoring β s) (a : α)
+lemma ColoringOn.nonempty_of_degreeInduce_lt [DecidableRel G.Adj] (C : G.ColoringOn β s) (a : α)
     [Fintype (G.neighborSet a)] (h : G.degreeInduce (insert a s) a < Fintype.card β) :
     (((G.neighborFinset a).filter (· ∈ s)).image C)ᶜ.Nonempty := by
   contrapose! h
@@ -63,8 +62,8 @@ lemma PartColoring.nonempty_of_degreeInduce_lt [DecidableRel G.Adj] (C : G.PartC
 at least two of these neighbors received the same color in `C` then the set of valid colors at `a`
 is nonempty.
 -/
-lemma PartColoring.nonempty_of_degreeInduce_le_not_inj {u v : α} [DecidableRel G.Adj]
-    (C : G.PartColoring β s) (a : α) [Fintype (G.neighborSet a)]
+lemma ColoringOn.nonempty_of_degreeInduce_le_not_inj {u v : α} [DecidableRel G.Adj]
+    (C : G.ColoringOn β s) (a : α) [Fintype (G.neighborSet a)]
     (h : G.degreeInduce (insert a s) a ≤ Fintype.card β) (hus : u ∈ s) (hvs : v ∈ s)
     (hu : G.Adj a u) (hv : G.Adj a v) (hne : u ≠ v) (heq : C u = C v) :
     (((G.neighborFinset a).filter (· ∈ s)).image C)ᶜ.Nonempty := by
@@ -79,9 +78,9 @@ lemma PartColoring.nonempty_of_degreeInduce_le_not_inj {u v : α} [DecidableRel 
 variable [LinearOrder β]
 /-- If there is an unused color in the neighborhood of `a` under the coloring of `s` by `C` then
 we can color `insert a s` greedily. -/
-abbrev PartColoring.greedy (C : G.PartColoring β s) (a : α) [Fintype (G.neighborSet a)]
+abbrev ColoringOn.greedy (C : G.ColoringOn β s) (a : α) [Fintype (G.neighborSet a)]
     (h : (((G.neighborFinset a).filter (· ∈ s)).image C)ᶜ.Nonempty) :
-    G.PartColoring β (insert a s) := by
+    G.ColoringOn β (insert a s) := by
   have h' : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C v ≠ (min' _ h) := by
     intro _ hv had he
     apply mem_compl.1 <| min'_mem _ h
@@ -90,18 +89,18 @@ abbrev PartColoring.greedy (C : G.PartColoring β s) (a : α) [Fintype (G.neighb
 
 variable {a : α}
 @[simp]
-lemma PartColoring.greedy_extends_not_mem (C : G.PartColoring β s) (ha : a ∉ s)
+lemma ColoringOn.greedy_extends_not_mem (C : G.ColoringOn β s) (ha : a ∉ s)
     [Fintype (G.neighborSet a)] (h) : (C.greedy a h).Extends C := C.insert_extends_not_mem _ ha
 
 --@[simp]
-lemma PartColoring.greedy_extends (C : G.PartColoring β s) [Fintype (G.neighborSet a)] (h) :
+lemma ColoringOn.greedy_extends (C : G.ColoringOn β s) [Fintype (G.neighborSet a)] (h) :
   (C.greedy a h).Extends (G.partColoringOfSingleton a (min' _ h)) := C.insert_extends _
 
 end DecEq
 
 variable {n : ℕ}
 lemma part_colorable_succ_finset_of_forall_degree_le [LocallyFinite G] (h : ∀ v, G.degree v ≤ n)
-  (s : Finset α) : G.PartColorable (n + 1) s := by
+  (s : Finset α) : G.ColorableOn (n + 1) s := by
   classical
   induction s using Finset.induction_on with
   | empty => exact ⟨fun _ ↦ 0, by simp⟩
@@ -134,9 +133,9 @@ open Walk List
 variable [LinearOrder β] [DecidableEq α]
 /-- We can color greedily along a path to extend a coloring of `s` to a coloring of
 `s ∪ p.support.tail` if the vertices in the path have bounded degree -/
-def PartColoring.of_tail_path {u v : α} {p : G.Walk u v} [LocallyFinite G] (C₁ : G.PartColoring β s)
+def ColoringOn.of_tail_path {u v : α} {p : G.Walk u v} [LocallyFinite G] (C₁ : G.ColoringOn β s)
     (hp : p.IsPath) (hbd : ∀ x, x ∈ p.support → G.degree x ≤ Fintype.card β)
-    (disj : Disjoint s {a | a ∈ p.support}) : G.PartColoring β (s ∪ {a | a ∈ p.support.tail}) := by
+    (disj : Disjoint s {a | a ∈ p.support}) : G.ColoringOn β (s ∪ {a | a ∈ p.support.tail}) := by
   match p with
   | .nil => exact C₁.copy (by simp)
   | .cons h p =>
@@ -156,8 +155,8 @@ def PartColoring.of_tail_path {u v : α} {p : G.Walk u v} [LocallyFinite G] (C�
     exact (C₂.greedy v (C₂.nonempty_of_degreeInduce_lt v h')).copy (by
       ext x; rw [support_eq_cons]; simp [or_left_comm])
 
-lemma PartColoring.of_tail_path_extends {u v : α} {p : G.Walk u v} [LocallyFinite G]
-    (C₁ : G.PartColoring β s) (hp : p.IsPath)
+lemma ColoringOn.of_tail_path_extends {u v : α} {p : G.Walk u v} [LocallyFinite G]
+    (C₁ : G.ColoringOn β s) (hp : p.IsPath)
     (hbd : ∀ x, x ∈ p.support → G.degree x ≤ Fintype.card β)
     (disj : Disjoint s {a | a ∈ p.support}) : (C₁.of_tail_path hp hbd disj).Extends C₁ := by
   cases p with
@@ -189,12 +188,12 @@ lemma PartColoring.of_tail_path_extends {u v : α} {p : G.Walk u v} [LocallyFini
 /-- We can color greedily along a path to extend a coloring of `s` to a coloring of
 `s ∪ {a | a ∈ p.support}` if the vertices in the path have bounded degree and the start of the path
 has two neighbors in `s` that are already colored with the same color. -/
-def PartColoring.of_path_not_inj {u v x y : α} {p : G.Walk u v} [LocallyFinite G]
-    (C₁ : G.PartColoring β s) (hp : p.IsPath)
+def ColoringOn.of_path_not_inj {u v x y : α} {p : G.Walk u v} [LocallyFinite G]
+    (C₁ : G.ColoringOn β s) (hp : p.IsPath)
     (hbd : ∀ x, x ∈ p.support → G.degree x ≤ Fintype.card β)
     (disj : Disjoint s {a | a ∈ p.support}) (hxs : x ∈ s) (hys : y ∈ s) (hux : G.Adj u x)
     (huy : G.Adj u y) (hne : x ≠ y) (heq : C₁ x = C₁ y)  :
-    G.PartColoring β (s ∪ {a | a ∈ p.support}) := by
+    G.ColoringOn β (s ∪ {a | a ∈ p.support}) := by
   let C₂ := C₁.of_tail_path hp hbd disj
   have he : C₂ x = C₂ y := by
     rwa [(C₁.of_tail_path_extends hp hbd disj).2 hxs, (C₁.of_tail_path_extends hp hbd disj).2 hys]
@@ -203,8 +202,8 @@ def PartColoring.of_path_not_inj {u v x y : α} {p : G.Walk u v} [LocallyFinite 
         ((degreeInduce_le_degree ..).trans (hbd u p.start_mem_support)) (Or.inl hxs) (Or.inl hys)
         hux huy hne he)).copy (by ext; rw [support_eq_cons]; simp [or_left_comm])
 
-lemma PartColoring.of_path_not_inj_extends {u v x y : α} {p : G.Walk u v} [LocallyFinite G]
-    (C₁ : G.PartColoring β s) (hp : p.IsPath)
+lemma ColoringOn.of_path_not_inj_extends {u v x y : α} {p : G.Walk u v} [LocallyFinite G]
+    (C₁ : G.ColoringOn β s) (hp : p.IsPath)
     (hbd : ∀ x, x ∈ p.support → G.degree x ≤ Fintype.card β)
     (disj : Disjoint s {a | a ∈ p.support}) (hxs : x ∈ s) (hys : y ∈ s) (hux : G.Adj u x)
     (huy : G.Adj u y) (hne : x ≠ y) (heq : C₁ x = C₁ y) :
