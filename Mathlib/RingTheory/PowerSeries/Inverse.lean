@@ -7,8 +7,7 @@ Authors: Johan Commelin, Kenny Lau, María Inés de Frutos-Fernández, Filippo A
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.PowerSeries.Order
+import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 import Mathlib.Data.ENat.Lattice

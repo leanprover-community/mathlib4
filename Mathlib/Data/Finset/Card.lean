@@ -135,9 +135,8 @@ theorem card_pair_eq_one_or_two : #{a, b} = 1 ∨ #{a, b} = 2 := by
   simp [card_insert_eq_ite]
   tauto
 
-@[simp]
 theorem card_pair (h : a ≠ b) : #{a, b} = 2 := by
-  rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
+  simp [h]
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
@@ -527,8 +526,9 @@ theorem sdiff_nonempty_of_card_lt_card (h : #s < #t) : (t \ s).Nonempty := by
   rw [nonempty_iff_ne_empty, Ne, sdiff_eq_empty_iff_subset]
   exact fun h' ↦ h.not_le (card_le_card h')
 
+omit [DecidableEq α] in
 theorem exists_mem_not_mem_of_card_lt_card (h : #s < #t) : ∃ e, e ∈ t ∧ e ∉ s := by
-  simpa [Finset.Nonempty] using sdiff_nonempty_of_card_lt_card h
+  classical simpa [Finset.Nonempty] using sdiff_nonempty_of_card_lt_card h
 
 @[simp]
 lemma card_sdiff_add_card_inter (s t : Finset α) :

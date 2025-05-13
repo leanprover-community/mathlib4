@@ -10,7 +10,7 @@ import Mathlib.SetTheory.Cardinal.Finite
 # Lagrange's theorem: the order of a subgroup divides the order of the group.
 
 * `Subgroup.card_subgroup_dvd_card`: Lagrange's theorem (for multiplicative groups);
-there is an analogous version for additive groups
+  there is an analogous version for additive groups
 
 -/
 

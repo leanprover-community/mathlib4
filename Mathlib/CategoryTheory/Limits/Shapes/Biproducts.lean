@@ -435,9 +435,9 @@ theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
     biproduct.ι f j ≫ biproduct.π f j = 𝟙 _ := by simp [biproduct.ι_π]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ j') :
-    biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [biproduct.ι_π, h]
+    biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [h]
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- It seems the side condition `w` is not applied by `simpNF`.

@@ -159,7 +159,7 @@ theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
   obtain ⟨S, hS₀, hS⟩ := Group.rank_spec G
   obtain ⟨T, hT₀, hT⟩ := exists_finset_card_le_mul H hS
   calc
-    Group.rank H ≤ #T := Group.rank_le H hT
+    Group.rank H ≤ #T := Group.rank_le hT
     _ ≤ H.index * #S := hT₀
     _ = H.index * Group.rank G := congr_arg (H.index * ·) hS₀
 
