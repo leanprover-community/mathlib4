@@ -113,6 +113,11 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
+/-- Any set is codiscrete within itself. -/
+@[simp]
+theorem Filter.self_mem_codiscreteWithin (U : Set X) :
+    U ∈ Filter.codiscreteWithin U := by simp [mem_codiscreteWithin]
+
 /-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
 lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
    codiscreteWithin U₁ ≤ codiscreteWithin U := by
