@@ -2371,6 +2371,7 @@ import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTwo
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Monoidal
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Quotient

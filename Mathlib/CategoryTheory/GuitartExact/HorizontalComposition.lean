@@ -73,12 +73,21 @@ end GuitartExact
 
 end WhiskerHorizontal
 
-namespace GuitartExact
+section HorizontalComposition
 
 variable {V₁ : C₁ ⥤ D₁} {T₁ : C₁ ⥤ C₂} {B₁ : D₁ ⥤ D₂} {V₂ : C₂ ⥤ D₂}
   (w : TwoSquare T₁ V₁ V₂ B₁)
   {T₂ : C₂ ⥤ C₃} {B₂ : D₂ ⥤ D₃} {V₃ : C₃ ⥤ D₃}
   (w' : TwoSquare T₂ V₂ V₃ B₂)
+
+/-- The horizontal composition of 2-squares. (Variant where we allow the replacement of
+the horizontal compositions by isomorphic functors.) -/
+@[simps!]
+def hComp' {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ ⋙ T₂ ≅ T₁₂) (eB : B₁ ⋙ B₂ ≅ B₁₂) :
+    TwoSquare T₁₂ V₁ V₃ B₁₂ :=
+  (w ≫ₕ w').whiskerHorizontal eT.inv eB.hom
+
+namespace GuitartExact
 
 instance hComp [hw : w.GuitartExact] [hw' : w'.GuitartExact] :
     (w ≫ₕ w').GuitartExact := by
@@ -103,7 +112,17 @@ lemma of_hComp [B₁.EssSurj] [w.GuitartExact] [(w ≫ₕ w').GuitartExact] : w'
   have := Functor.final_of_natIso (costructuredArrowRightwardsComp w w' Y₁).symm
   exact Functor.final_of_final_comp (w.costructuredArrowRightwards Y₁) _
 
+variable {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ ⋙ T₂ ≅ T₁₂) (eB : B₁ ⋙ B₂ ≅ B₁₂)
+
+lemma of_hComp' [B₁.EssSurj] [w.GuitartExact] [h : (w.hComp' w' eT eB).GuitartExact] :
+    w'.GuitartExact := by
+  dsimp [hComp'] at h
+  rw [whiskerHorizontal_iff] at h
+  exact of_hComp w w'
+
 end GuitartExact
+
+end HorizontalComposition
 
 end TwoSquare
 

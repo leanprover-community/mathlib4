@@ -7,6 +7,12 @@ import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 
 /-!
 # "Quotient" derivability structures
+
+The assumptions of `IsLeftDerivabilityStructure.mk'` are stable by
+quotients.
+
+See `DerivabilityStructure.OfLocalizedEquivalences` for a more conceptual statement.
+
 -/
 
 namespace CategoryTheory
