@@ -224,7 +224,7 @@ theorem extend_range {a b : X} (γ : Path a b) :
 
 theorem image_extend_of_subset (γ : Path x y) {s : Set ℝ} (h : I ⊆ s) :
     γ.extend '' s = range γ :=
-  Subset.antisymm (γ.extend_range ▸ image_subset_range _ _) <| range_subset_iff.mpr <| fun t ↦
+  (γ.extend_range ▸ image_subset_range _ _).antisymm <| range_subset_iff.mpr <| fun t ↦
     ⟨t, h t.2, extend_extends' _ _⟩
 
 theorem extend_of_le_zero {a b : X} (γ : Path a b) {t : ℝ}
