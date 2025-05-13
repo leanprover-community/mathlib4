@@ -3,9 +3,9 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Topology.Instances.AddCircle
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Topology.Covering.Galois
-import Mathlib.Analysis.Complex.Circle
+import Mathlib.Topology.Instances.AddCircle
 
 /-!
 # Covering maps involving `AddCircle`

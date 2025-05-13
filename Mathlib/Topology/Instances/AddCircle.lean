@@ -8,7 +8,7 @@ import Mathlib.Algebra.Ring.AddAut
 import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.Divisible
 import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.IsLocalHomeomorph
+import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.Instances.ZMultiples
 
 /-!
