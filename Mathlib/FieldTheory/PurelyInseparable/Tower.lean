@@ -206,46 +206,6 @@ theorem finInsepDegree_mul_finInsepDegree_of_isAlgebraic [Algebra.IsAlgebraic F 
   simpa only [map_mul, Cardinal.toNat_lift] using
     congr(Cardinal.toNat $(lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic F E K))
 
-lemma Module.rank_top_le_rank_of_isScalarTower
-    (R S M : Type*) [CommSemiring R] [Semiring S] [AddCommMonoid M]
-    [Module R M] [Module S M] [Algebra R S] [FaithfulSMul R S] [IsScalarTower R S M] :
-    Module.rank S M ≤ Module.rank R M := by
-  rw [Module.rank, Module.rank]
-  exact ciSup_le' fun ⟨s, hs⟩ ↦ le_ciSup_of_le (Cardinal.bddAbove_range _)
-    ⟨s, hs.restrict_scalars' R⟩ le_rfl
-
-variable {F K} in
-lemma insepDegree_top_le_insepDegree_of_isScalarTower :
-    insepDegree E K ≤ insepDegree F K := by
-  letI := (IntermediateField.inclusion (separableClosure.le_restrictScalars F E K)).toAlgebra
-  have : IsScalarTower (separableClosure F K) ((separableClosure E K).restrictScalars F) K :=
-    .of_algebraMap_eq' rfl
-  exact Module.rank_top_le_rank_of_isScalarTower
-    (separableClosure F K) ((separableClosure E K).restrictScalars F) K
-
-
-variable {F K} in
-lemma finInsepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂) :
-    insepDegree E₂ K ≤ insepDegree E₁ K := by
-  letI := (IntermediateField.inclusion H).toAlgebra
-  have : IsScalarTower E₁ E₂ K := .of_algebraMap_eq' rfl
-
-  -- have : Module.Finite E₁ E₂ := .of_injective (IsScalarTower.toAlgHom E₁ E₂ K).toLinearMap
-  --   (algebraMap E₂ K).injective
-  -- rw [← Field.finInsepDegree_mul_finInsepDegree_of_finite E₁ E₂ K]
-  -- exact Nat.le_mul_of_pos_left (finInsepDegree E₂ K) (NeZero.pos _)
-
-variable {F K} in
-lemma finInsepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂)
-    [Module.Finite E₁ K] :
-    finInsepDegree E₂ K ≤ finInsepDegree E₁ K := by
-  letI := (IntermediateField.inclusion H).toAlgebra
-  have : IsScalarTower E₁ E₂ K := .of_algebraMap_eq' rfl
-  have : Module.Finite E₁ E₂ := .of_injective (IsScalarTower.toAlgHom E₁ E₂ K).toLinearMap
-    (algebraMap E₂ K).injective
-  rw [← Field.finInsepDegree_mul_finInsepDegree_of_finite E₁ E₂ K]
-  exact Nat.le_mul_of_pos_left (finInsepDegree E₂ K) (NeZero.pos _)
-
 end Field
 
 variable {F K} in

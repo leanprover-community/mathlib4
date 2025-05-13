@@ -392,7 +392,7 @@ theorem insepDegree_bot' : insepDegree F (⊥ : IntermediateField E K) = insepDe
   insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 variable (F) in
-lemma insepDegree_top_le_insepDegree_of_isScalarTower :
+lemma _root_.Field.insepDegree_top_le_insepDegree_of_isScalarTower :
     insepDegree E K ≤ insepDegree F K := by
   letI := (IntermediateField.inclusion (separableClosure.le_restrictScalars F E K)).toAlgebra
   have : IsScalarTower (separableClosure F K) ((separableClosure E K).restrictScalars F) K :=
@@ -401,14 +401,14 @@ lemma insepDegree_top_le_insepDegree_of_isScalarTower :
     (separableClosure F K) ((separableClosure E K).restrictScalars F) K
 
 variable {K} in
-lemma insepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂) :
+lemma _root_.Field.insepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂) :
     insepDegree E₂ K ≤ insepDegree E₁ K := by
   letI := (IntermediateField.inclusion H).toAlgebra
   have : IsScalarTower E₁ E₂ K := .of_algebraMap_eq' rfl
   exact insepDegree_top_le_insepDegree_of_isScalarTower _ _ _
 
 variable (F) in
-lemma finInsepDegree_top_le_finInsepDegree_of_isScalarTower [Module.Finite F K] :
+lemma _root_.Field.finInsepDegree_top_le_finInsepDegree_of_isScalarTower [Module.Finite F K] :
     finInsepDegree E K ≤ finInsepDegree F K := by
   letI := (IntermediateField.inclusion (separableClosure.le_restrictScalars F E K)).toAlgebra
   have : IsScalarTower (separableClosure F K) ((separableClosure E K).restrictScalars F) K :=
