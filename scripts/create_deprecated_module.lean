@@ -19,6 +19,17 @@ open Lean Elab Command
 
 namespace DeprecatedModule
 
+/--
+`getHeader fname fileContent keepTrailing` takes as input two strings and a `Bool`ean.
+It uses
+* `fname`, as the path of a file (which need not exist);
+* `fileContent`, as the content of `fname` (regardless of whether the file exists and what its
+  content it);
+* `keepTrailing` a boolean.
+
+It returns the content of `fileContent` up to the final import, including trailing whitespace and
+comments if `keepTrailing = true`.
+-/
 def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := do
   let (stx, _) ← Parser.parseHeader (Parser.mkInputContext fileContent fname)
   let stx := if keepTrailing then stx.raw else stx.raw.unsetTrailing
@@ -26,9 +37,18 @@ def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := 
   let upToAllImports : Substring := {substring with startPos := 0}
   return upToAllImports.toString
 
+/--
+`getHeaderFromFileName fname keepTrailing` is similar to `getHeader`, except that it assumes that
+`fname` is the actual path of a file, and uses `fname`'s content as input to `getHeader`.
+-/
 def getHeaderFromFileName (fname : String) (keepTrailing : Bool) : IO String := do
   getHeader fname (← IO.FS.readFile fname) keepTrailing
 
+/--
+`mkDeprecation customMessage` returns the formatted syntax
+`deprecated_module "customMessage" (since := "YYYY-MM-DD")`,
+where the message is the input and the date is today's date.
+-/
 def mkDeprecation (customMessage : String := "Auto-generated deprecation") :
     CommandElabM Format := do
   let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
@@ -36,26 +56,17 @@ def mkDeprecation (customMessage : String := "Auto-generated deprecation") :
   let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
   liftCoreM <| PrettyPrinter.ppCategory `command stx
 
+/--
+Use `#create_deprecated_modules (n)? (write)?` to generate deprecated modules.
 
-def mkDeprecatedModule
-    (fname : String) (customMessage : String := "Auto-generated deprecation")
-    (keepTrailing : Bool := false) (write : Bool := false) :
-    CommandElabM Unit := do
-  let fmt ← mkDeprecation customMessage
-  let header ← getHeaderFromFileName fname keepTrailing
-  let nm := fname ++ "_deprecatedModule"
-  unless (← System.FilePath.pathExists fname) do
-    logWarning m!"The file '{fname}' was expected to exist: something went wrong!"
-    return
-  let fileContent := s!"{header.trimRight}\n\n{fmt}\n"
-  logInfo m!"The file '{fname}' exists, as expected!\n\n\
-          Its deprecated version is:\n--- Start ---\n{fileContent}--- End ---"
-  if write then
-    IO.FS.writeFile nm fileContent
-  else
-    logInfo m!"The file '{nm}' was not deprecated. Set `write := true` if you wish to deprecate it."
-  --return
-  --return s!"{header.trimRight}\n\n{fmt}\n"
+The command computes the deprecated versions of the files removed since the last `n` commits.
+
+If `write` is present, then the command, besides showing how the files would look like,
+it also creates the files in question.
+
+The number of past commits to scan is option and, by default, the command uses the previous commit,
+namely `n = 2`.
+-/
 syntax "#create_deprecated_modules" (ppSpace num)? (&" write")? : command
 
 elab_rules : command
