@@ -228,6 +228,8 @@ end PathOperations
 ### Algebraic operations on the 1-form
 -/
 
+section Algebra
+
 variable {ω ω₁ ω₂ : E → E →L[𝕜] F} {γ : Path a b} {t : ℝ}
 
 @[simp]
@@ -329,3 +331,45 @@ theorem pathIntegral_smul : pathIntegral (c • ω) γ = c • pathIntegral ω �
 
 @[simp]
 theorem pathIntegral_fun_smul : ∫ᵖ x in γ, c • ω x = c • ∫ᵖ x in γ, ω x := pathIntegral_smul
+
+end Algebra
+
+/-!
+### Derivative
+-/
+
+theorem hasFDerivWithinAt_pathIntegral_segment_target_source [CompleteSpace F]
+    {ω : E → E →L[𝕜] F} {s : Set E} (hs : Convex ℝ s) (hω : ContinuousOn ω s) (ha : a ∈ s) :
+    HasFDerivWithinAt (pathIntegral (ω · |>.restrictScalars ℝ) <| .segment a ·) (ω a) s a := by
+  simp only [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Path.segment_same,
+    pathIntegral_refl, sub_zero]
+  rw [Asymptotics.isLittleO_iff]
+  intro ε hε
+  rcases Metric.continuousWithinAt_iff.mp (hω a ha) ε hε with ⟨δ, hδ₀, hδ⟩
+  rw [eventually_nhdsWithin_iff]
+  filter_upwards [Metric.ball_mem_nhds _ hδ₀] with b hb hbs
+  have : ∫ t in (0)..1, ω a (b - a) = ω a (b - a) := by simp
+  rw [pathIntegral_segment, ← this, ← intervalIntegral.integral_sub]
+  · suffices ∀ t ∈ Ι (0 : ℝ) 1, ‖ω (lineMap a b t) (b - a) - ω a (b - a)‖ ≤ ε * ‖b - a‖ by
+      refine (intervalIntegral.norm_integral_le_of_norm_le_const this).trans_eq ?_
+      simp
+    intro t ht
+    replace ht : t ∈ I := by
+      rw [uIoc_of_le zero_le_one] at ht
+      exact Ioc_subset_Icc_self ht
+    rw [← ContinuousLinearMap.sub_apply]
+    apply ContinuousLinearMap.le_of_opNorm_le
+    refine (hδ (hs.lineMap_mem ha hbs ht) ?_).le
+    rw [dist_lineMap_left, Real.norm_of_nonneg ht.1]
+    refine lt_of_le_of_lt ?_ hb
+    rw [dist_comm]
+    exact mul_le_of_le_one_left dist_nonneg ht.2
+  · apply ContinuousOn.intervalIntegrable
+    rw [uIcc_of_le zero_le_one]
+    refine ContinuousOn.clm_apply ?_ continuousOn_const
+    apply (ContinuousLinearMap.continuous_restrictScalars _).comp_continuousOn
+    refine hω.comp ?_ ?_
+    · simp only [AffineMap.coe_lineMap]
+      fun_prop
+    · exact fun _ ↦ hs.lineMap_mem ha hbs
+  · simp
