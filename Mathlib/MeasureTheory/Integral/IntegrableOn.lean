@@ -527,6 +527,12 @@ theorem Measure.FiniteAtFilter.integrableAtFilter {f : α → E} {l : Filter α}
   rw [ae_restrict_eq hsm, eventually_inf_principal]
   exact Eventually.of_forall hC
 
+theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae_enorm {f : α → ε} {l : Filter α}
+    [IsMeasurablyGenerated l] (hfm : StronglyMeasurableAtFilter f l μ) (hμ : μ.FiniteAtFilter l) {b}
+    (hf : Tendsto f (l ⊓ ae μ) (𝓝 b)) : IntegrableAtFilter f l μ :=
+  (hμ.inf_of_left.integrableAtFilter_enorm (hfm.filter_mono inf_le_left)
+      sorry /-hf.enorm.isBoundedUnder_le-/).of_inf_ae
+
 theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae {f : α → E} {l : Filter α}
     [IsMeasurablyGenerated l] (hfm : StronglyMeasurableAtFilter f l μ) (hμ : μ.FiniteAtFilter l) {b}
     (hf : Tendsto f (l ⊓ ae μ) (𝓝 b)) : IntegrableAtFilter f l μ :=
