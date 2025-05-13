@@ -474,23 +474,6 @@ end MemLp
 
 variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
-theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) :
-    MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ := by
-  refine ⟨(hf.1.norm.aemeasurable.pow_const q.toReal).aestronglyMeasurable, ?_⟩
-  by_cases q_top : q = ∞
-  · simp [q_top]
-  by_cases q_zero : q = 0
-  · simp only [q_zero, ENNReal.toReal_zero, Real.rpow_zero]
-    by_cases p_zero : p = 0
-    · simp [p_zero]
-    rw [ENNReal.div_zero p_zero]
-    exact (memLp_top_const (1 : ℝ)).2
-  rw [eLpNorm_norm_rpow _ (ENNReal.toReal_pos q_zero q_top)]
-  apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
-  rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
-    mul_one]
-  exact hf.2.ne
-
 theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞) :
     MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ := by
   refine ⟨(hf.1.enorm.pow_const q.toReal).aestronglyMeasurable, ?_⟩
@@ -503,6 +486,23 @@ theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
     rw [ENNReal.div_zero p_zero]
     simpa only [ENNReal.rpow_zero, eLpNorm_exponent_top] using (memLp_top_const_enorm (by simp)).2
   rw [eLpNorm_enorm_rpow _ (ENNReal.toReal_pos q_zero q_top)]
+  apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
+  rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
+    mul_one]
+  exact hf.2.ne
+
+theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) :
+    MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ := by
+  refine ⟨(hf.1.norm.aemeasurable.pow_const q.toReal).aestronglyMeasurable, ?_⟩
+  by_cases q_top : q = ∞
+  · simp [q_top]
+  by_cases q_zero : q = 0
+  · simp only [q_zero, ENNReal.toReal_zero, Real.rpow_zero]
+    by_cases p_zero : p = 0
+    · simp [p_zero]
+    rw [ENNReal.div_zero p_zero]
+    exact (memLp_top_const (1 : ℝ)).2
+  rw [eLpNorm_norm_rpow _ (ENNReal.toReal_pos q_zero q_top)]
   apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
   rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
     mul_one]

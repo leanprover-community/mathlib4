@@ -64,8 +64,6 @@ theorem Integrable.aestronglyMeasurable {f : α → ε} (hf : Integrable f μ) :
     AEStronglyMeasurable f μ :=
   hf.1
 
-open TopologicalSpace
-
 @[fun_prop]
 theorem Integrable.aemeasurable [MeasurableSpace ε] [BorelSpace ε] [PseudoMetrizableSpace ε]
     {f : α → ε} (hf : Integrable f μ) : AEMeasurable f μ :=
@@ -506,8 +504,6 @@ theorem Integrable.enorm {f : α → ε} (hf : Integrable f μ) : Integrable (�
 theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun a => ‖f a‖) μ :=
   ⟨hf.aestronglyMeasurable.norm, hf.hasFiniteIntegral.norm⟩
 
--- TODO: generalise these to suitable enormed spaces: requires defining an enorm analogue
--- of `HasSolidNorm` first
 @[fun_prop]
 theorem Integrable.inf {β}
     [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]

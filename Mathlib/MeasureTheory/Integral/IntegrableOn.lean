@@ -86,7 +86,7 @@ and if the integral of its pointwise norm over `s` is less than infinity. -/
 def IntegrableOn (f : α → ε) (s : Set α) (μ : Measure α := by volume_tac) : Prop :=
   Integrable f (μ.restrict s)
 
-theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ := μ.restrict s) :=
+theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
   h
 
 variable [TopologicalSpace ε'] [ENormedAddMonoid ε']
@@ -160,8 +160,6 @@ theorem IntegrableOn.left_of_union (h : IntegrableOn f (s ∪ t) μ) : Integrabl
 
 theorem IntegrableOn.right_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f t μ :=
   h.mono_set subset_union_right
-
-open TopologicalSpace
 
 theorem IntegrableOn.union [PseudoMetrizableSpace ε]
     (hs : IntegrableOn f s μ) (ht : IntegrableOn f t μ) :
