@@ -104,9 +104,25 @@ def toNucleus (S : Sublocale X) : Nucleus X where
   idempotent' _ := by rw [S.giEmbedding.gc.l_u_l_eq_l]
   le_apply' _ := S.giEmbedding.gc.le_u_l _
 
+lemma toNucleus.range : range S.toNucleus = S.carrier := by
+  simp [Sublocale.toNucleus]
+  ext x
+  apply Iff.intro
+  . simp
+    intro x h
+    rw [← h]
+    simp
+  . simp
+    intro hx
+    obtain ⟨x', hx'⟩ := S.giAux.l_surjective ⟨x, hx⟩
+    simp [@Subtype.ext_iff_val] at hx'
+    use x'
+    exact hx'
+
+
 lemma mem_iff (x : X) : x ∈ S ↔ x ∈ S.carrier := by exact Eq.to_iff rfl
 
-lemma le_iff (s1 s2 : Sublocale X) : s1 ≤ s2 ↔ s1.carrier ⊆ s2.carrier where
+lemma le_iff' (s1 s2 : Sublocale X) : s1 ≤ s2 ↔ s1.carrier ⊆ s2.carrier where
   mp h := h
   mpr h := h
 
@@ -160,10 +176,51 @@ def orderiso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
     intro a b
     apply Iff.intro
     . intro h
-      rw [Sublocale.le_iff] at h
+      rw [Sublocale.le_iff'] at h
       rw [← @Nucleus.range_subset_iff]
       exact h
     . intro h
       rw [← Nucleus.range_subset_iff] at h
-      rw [Sublocale.le_iff]
+      rw [Sublocale.le_iff']
       apply h
+
+lemma Sublocale.le_iff (s1 s2 : Sublocale X) : s1 ≤ s2 ↔ s2.toNucleus ≤ s1.toNucleus := by
+  apply Iff.intro
+  . intro h
+    rw [← @Nucleus.range_subset_iff]
+    rw [Sublocale.le_iff'] at h
+    repeat rw [Sublocale.toNucleus.range]
+    exact h
+  . intro h
+    rw [← @Nucleus.range_subset_iff] at h
+    rw [Sublocale.le_iff']
+    repeat rw [Sublocale.toNucleus.range] at h
+    exact h
+@[ext]
+structure Open (X : Type*) [Order.Frame X] where
+  element : X
+
+instance : Coe (Open X) X where
+  coe U := U.element
+
+namespace Open
+
+def toNucleus (U : Open X) : Nucleus X where
+  toFun x := U ⇨ x
+  map_inf' _ _ := himp_inf_distrib _ _ _
+  idempotent' _ := le_of_eq himp_idem
+  le_apply' _ := le_himp
+
+instance : Coe (Open X) (Nucleus X) where
+  coe U := U.toNucleus
+
+def toSublocale (U : Open X) : Sublocale X := U.toNucleus.toSublocale
+
+instance : Coe (Open X) (Sublocale X) where
+  coe U := U.toSublocale
+
+instance : PartialOrder (Open X) where
+  le x y := x.element ≤ y.element
+  le_refl _ := le_refl _
+  le_trans _ _ _ h1 h2 := le_trans h1 h2
+  le_antisymm _ _ h1 h2 := Open.ext_iff.mpr (le_antisymm h1 h2)
