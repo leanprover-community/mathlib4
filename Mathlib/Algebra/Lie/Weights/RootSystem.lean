@@ -562,8 +562,7 @@ lemma invtSubmodule_reflection:
           (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h₁ hx))
           (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a hx₁)
         have : ⁅x, x₁⁆ = 0 := by
-          have comm_zero := (s₄ i ⟨j, h⟩ hi h₁ ⟨x₁, x₁_mem⟩ ⟨x, hx⟩)
-          rw [← neg_eq_zero, lie_skew x₁ x, comm_zero]
+          rw [← neg_eq_zero, lie_skew x₁ x, (s₄ i ⟨j, h⟩ hi h₁ ⟨x₁, x₁_mem⟩ ⟨x, hx⟩)]
         rw [this]
         exact LieSubalgebra.zero_mem I
       | zero => simp only [lie_zero, LieSubalgebra.zero_mem, I]
