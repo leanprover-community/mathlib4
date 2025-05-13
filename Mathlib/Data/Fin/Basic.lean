@@ -200,11 +200,7 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem mk_zero' (n : ℕ) [NeZero n] : (⟨0, pos_of_neZero n⟩ : Fin n) = 0 := rfl
 
-/--
-The `Fin.zero_le` in `Lean` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis.
--/
-@[simp]
+@[deprecated Fin.zero_le (since := "2025-05-13")]
 protected theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
   Nat.zero_le a.val
 
@@ -654,25 +650,18 @@ The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis. -/
 alias ⟨_, castSucc_pos'⟩ := castSucc_pos_iff
 
-/--
-The `Fin.castSucc_eq_zero_iff` in `Lean` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis.
--/
-@[simp]
+@[deprecated Fin.castSucc_eq_zero_iff (since := "2025-05-13")]
 theorem castSucc_eq_zero_iff' [NeZero n] (a : Fin n) : castSucc a = 0 ↔ a = 0 :=
   Fin.ext_iff.trans <| (Fin.ext_iff.trans <| by simp).symm
 
-/--
-The `Fin.castSucc_ne_zero_iff` in `Lean` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis.
--/
+@[deprecated Fin.castSucc_ne_zero_iff (since := "2025-05-13")]
 theorem castSucc_ne_zero_iff' [NeZero n] (a : Fin n) : castSucc a ≠ 0 ↔ a ≠ 0 :=
-  not_iff_not.mpr <| castSucc_eq_zero_iff' a
+  not_iff_not.mpr <| castSucc_eq_zero_iff
 
 theorem castSucc_ne_zero_of_lt {p i : Fin n} (h : p < i) : castSucc i ≠ 0 := by
   cases n
   · exact i.elim0
-  · rw [castSucc_ne_zero_iff', Ne, Fin.ext_iff]
+  · rw [castSucc_ne_zero_iff, Ne, Fin.ext_iff]
     exact ((zero_le _).trans_lt h).ne'
 
 theorem succ_ne_last_iff (a : Fin (n + 1)) : succ a ≠ last (n + 1) ↔ a ≠ last n :=
@@ -1241,7 +1230,7 @@ lemma predAbove_castPred_self (p : Fin (n + 1)) (hp : p ≠ last n) :
   · rw [predAbove_of_le_castSucc _ _ (zero_le _), castPred_zero]
 
 lemma predAbove_zero_succ [NeZero n] {i : Fin n} : predAbove 0 i.succ = i := by
-  rw [predAbove_succ_of_le _ _ (Fin.zero_le' _)]
+  rw [predAbove_succ_of_le _ _ (Fin.zero_le _)]
 
 @[simp] lemma predAbove_zero_of_ne_zero [NeZero n] {i : Fin (n + 1)} (hi : i ≠ 0) :
     predAbove 0 i = i.pred hi := by
