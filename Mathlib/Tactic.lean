@@ -92,6 +92,7 @@ import Mathlib.Tactic.Finiteness
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.FunProp.Attr
+import Mathlib.Tactic.FunProp.ContDiff
 import Mathlib.Tactic.FunProp.Core
 import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Differentiable
