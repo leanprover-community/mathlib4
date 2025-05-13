@@ -4982,6 +4982,7 @@ import Mathlib.RingTheory.Coalgebra.Equiv
 import Mathlib.RingTheory.Coalgebra.Hom
 import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 import Mathlib.RingTheory.Coalgebra.TensorProduct
+import Mathlib.RingTheory.CohenMacaulay.Basic
 import Mathlib.RingTheory.Complex
 import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.RingTheory.Congruence.BigOperators
