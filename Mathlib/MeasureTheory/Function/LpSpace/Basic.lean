@@ -752,7 +752,7 @@ theorem _root_.MeasureTheory.memLp_re_im_iff {f : α → K} :
       MemLp f p μ := by
   refine ⟨?_, fun hf => ⟨hf.re, hf.im⟩⟩
   rintro ⟨hre, him⟩
-  convert MeasureTheory.MemLp.add (E := K) hre.ofReal (him.ofReal.const_mul RCLike.I)
+  convert MeasureTheory.MemLp.add (ε := K) hre.ofReal (him.ofReal.const_mul RCLike.I)
   ext1 x
   rw [Pi.add_apply, mul_comm, RCLike.re_add_im]
 
