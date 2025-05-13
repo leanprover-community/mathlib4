@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.Analysis.Calculus.Deriv.AffineMap
 import Mathlib.Analysis.Calculus.Deriv.CompMul
 import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Analysis.Calculus.ContDiff.Basic
@@ -15,7 +16,7 @@ In this file we define integral of a 1-form along a path
 and prove basic properties of this operation.
 -/
 
-open MeasureTheory unitInterval Topology Set Interval
+open MeasureTheory unitInterval Topology Set Interval AffineMap
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] {a b : E}
@@ -45,6 +46,8 @@ noncomputable def pathIntegral (ω : E → E →L[ℝ] F) (γ : Path a b) : F :=
   ∫ t in (0)..1, pathIntegralFun ω γ t
 
 -- TODO: use `∈`
+-- TODO: fix priorities
+@[inherit_doc pathIntegral]
 notation3 "∫ᵖ "(...)" in " γ ", "r:60:(scoped ω => pathIntegral ω γ) => r
 
 /-- Path integral is defined using Bochner integral,
@@ -64,7 +67,7 @@ variable {c d : E} {ω : E → E →L[ℝ] F} {γ γab : Path a b} {γbc : Path 
 @[simp]
 theorem pathIntegralFun_refl (ω : E → E →L[ℝ] F) (a : E) : pathIntegralFun ω (.refl a) = 0 := by
   ext
-  simp [pathIntegralFun]
+  simp [pathIntegralFun, ← Function.const_def]
 
 @[simp]
 theorem pathIntegral_refl (ω : E → E →L[ℝ] F) (a : E) : ∫ᵖ x in .refl a, ω x = 0 := by
@@ -173,6 +176,18 @@ theorem pathIntegral_trans (h₁ : PathIntegrable ω γab) (h₂ : PathIntegrabl
     intervalIntegral.integral_comp_sub_right]
   norm_num [pathIntegral]
 
+theorem pathIntegralFun_segment (ω : E → E →L[ℝ] F) (a b : E) {t : ℝ} (ht : t ∈ I) :
+    pathIntegralFun ω (.segment a b) t = ω (lineMap a b t) (b - a) := by
+  have := Path.eqOn_extend_segment a b
+  simp only [pathIntegralFun, this ht, derivWithin_congr this (this ht),
+    (hasDerivWithinAt_lineMap ..).derivWithin (uniqueDiffOn_Icc_zero_one t ht)]
+
+theorem pathIntegral_segment (ω : E → E →L[ℝ] F) (a b : E) :
+    pathIntegral ω (.segment a b) = ∫ t in (0)..1, ω (lineMap a b t) (b - a) := by
+  refine intervalIntegral.integral_congr fun t ht ↦ ?_
+  rw [uIcc_of_le zero_le_one] at ht
+  exact pathIntegralFun_segment ω a b ht
+
 /-- If a 1-form `ω` is continuous on a set `s`,
 then it is path integrable along any $C^1$ path in this set. -/
 theorem ContinuousOn.pathIntegrable_of_contDiffOn {s : Set E} (hω : ContinuousOn ω s)
@@ -187,8 +202,6 @@ end PathOperations
 
 /-!
 ### Algebraic operations on the 1-form
-
-TODO: add `smul`
 -/
 
 variable {ω ω₁ ω₂ : E → E →L[ℝ] F} {γ : Path a b} {t : ℝ}
@@ -251,3 +264,26 @@ theorem pathIntegral_neg : pathIntegral (-ω) γ = -∫ᵖ x in γ, ω x := by
 
 @[simp]
 theorem pathIntegral_fun_neg : ∫ᵖ x in γ, -ω x = -∫ᵖ x in γ, ω x := pathIntegral_neg
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] {c : 𝕜}
+
+@[simp]
+theorem pathIntegralFun_smul : pathIntegralFun (c • ω) γ = c • pathIntegralFun ω γ := rfl
+
+nonrec theorem PathIntegrable.smul (h : PathIntegrable ω γ) : PathIntegrable (c • ω) γ :=
+  h.smul c
+
+@[simp]
+theorem PathIntegrable.smul_iff : PathIntegrable (c • ω) γ ↔ c = 0 ∨ PathIntegrable ω γ := by
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp [PathIntegrable.zero]
+  · simp only [hc, false_or]
+    refine ⟨fun h ↦ ?_, .smul⟩
+    simpa [hc] using h.smul (c := c⁻¹)
+
+@[simp]
+theorem pathIntegral_smul : pathIntegral (c • ω) γ = c • pathIntegral ω γ :=
+  intervalIntegral.integral_smul _ _
+
+@[simp]
+theorem pathIntegral_fun_smul : ∫ᵖ x in γ, c • ω x = c • ∫ᵖ x in γ, ω x := pathIntegral_smul
