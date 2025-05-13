@@ -424,44 +424,11 @@ end ContinuousSMul
 
 section LinearOrderedField
 
-variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable {𝕜 : Type*} [LinearOrder 𝕜]
   [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 
-theorem Convex.nontrivial_iff_nonempty_interior {s : Set 𝕜} (hs : Convex 𝕜 s) :
-    s.Nontrivial ↔ (interior s).Nonempty := by
-  constructor
-  · rintro ⟨x, hx, y, hy, h⟩
-    have hs' := Nonempty.mono <| interior_mono <| hs.segment_subset hx hy
-    rw [segment_eq_Icc', interior_Icc, nonempty_Ioo, inf_lt_sup] at hs'
-    exact hs' h
-  · rintro ⟨x, hx⟩
-    rcases eq_singleton_or_nontrivial (interior_subset hx) with rfl | h
-    · rw [interior_singleton] at hx
-      exact hx.elim
-    · exact h
-
-end ComplementsConnected
-
-section LinearOrderedField
-
-variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
-
 open scoped Topology
-
 open Filter
-
-theorem Convex.nontrivial_iff_nonempty_interior {s : Set 𝕜} (hs : Convex 𝕜 s) :
-    s.Nontrivial ↔ (interior s).Nonempty := by
-  constructor
-  · rintro ⟨x, hx, y, hy, h⟩
-    have hs' := Nonempty.mono <| interior_mono <| hs.segment_subset hx hy
-    rw [segment_eq_Icc', interior_Icc, nonempty_Ioo, inf_lt_sup] at hs'
-    exact hs' h
-  · rintro ⟨x, hx⟩
-    rcases eq_singleton_or_nontrivial (interior_subset hx) with rfl | h
-    · rw [interior_singleton] at hx
-      exact hx.elim
-    · exact h
 
 lemma nhdsWithin_diff_singleton_of_subsingleton {a : 𝕜} {s : Set 𝕜} (hs : s.Subsingleton) :
     𝓝[s \ {a}] a = ⊥ := by
@@ -493,6 +460,21 @@ lemma tendsto_nhdsNE_of_closure {s : Set 𝕜} (a : 𝕜) {f : 𝕜 → ℝ} {l 
     Tendsto f (𝓝[s \ {a}] a) l := by
   rw [tendsto_iff_eventually] at h ⊢
   exact fun _ hp ↦ eventually_nhdsNE_of_closure a fun hs_nontrivial has ↦ h hs_nontrivial has hp
+
+variable [Field 𝕜] [IsStrictOrderedRing 𝕜]
+
+theorem Convex.nontrivial_iff_nonempty_interior {s : Set 𝕜} (hs : Convex 𝕜 s) :
+    s.Nontrivial ↔ (interior s).Nonempty := by
+  constructor
+  · rintro ⟨x, hx, y, hy, h⟩
+    have hs' := Nonempty.mono <| interior_mono <| hs.segment_subset hx hy
+    rw [segment_eq_Icc', interior_Icc, nonempty_Ioo, inf_lt_sup] at hs'
+    exact hs' h
+  · rintro ⟨x, hx⟩
+    rcases eq_singleton_or_nontrivial (interior_subset hx) with rfl | h
+    · rw [interior_singleton] at hx
+      exact hx.elim
+    · exact h
 
 lemma Convex.Ioo_subset_of_mem_closure {s : Set 𝕜} (hs : Convex 𝕜 s) {a b : 𝕜}
     (has : a ∈ closure s) (hbs : b ∈ closure s) :
