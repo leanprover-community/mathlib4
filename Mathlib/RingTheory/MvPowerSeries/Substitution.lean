@@ -52,8 +52,8 @@ as it is discrete.
 ## TODO
 
 * `MvPowerSeries.IsNilpotent_subst` asserts that the constant coefficient
-of a legit substitution is nilpotent; prove that the converse holds when
-the kernel of `algebraMap R S` is a nilideal.
+  of a legit substitution is nilpotent; prove that the converse holds when
+  the kernel of `algebraMap R S` is a nilideal.
 -/
 
 namespace MvPowerSeries
@@ -69,6 +69,7 @@ open WithPiTopology
 attribute [local instance] DiscreteTopology.instContinuousSMul
 
 /-- Families of power series which can be substituted -/
+@[mk_iff hasSubst_def]
 structure HasSubst (a : σ → MvPowerSeries τ S) : Prop where
   const_coeff s : IsNilpotent (constantCoeff τ S (a s))
   coeff_zero d : {s | (a s).coeff S d ≠ 0}.Finite
@@ -78,18 +79,14 @@ variable {a : σ → MvPowerSeries τ S}
 lemma coeff_zero_iff [TopologicalSpace S] [DiscreteTopology S] :
     Filter.Tendsto a Filter.cofinite (nhds 0) ↔
       ∀ d : τ →₀ ℕ, {s | (a s).coeff S d ≠ 0}.Finite := by
-  simp_rw [tendsto_iff_coeff_tendsto, coeff_zero]
-  apply forall_congr'
-  simp [nhds_discrete]
+  simp [tendsto_iff_coeff_tendsto, coeff_zero, nhds_discrete]
 
 /-- A multivariate power series can be substituted if and only if
 it can be evaluated when the topology on the coefficients ring is the discrete topology. -/
 lemma hasSubst_iff_hasEval_of_discreteTopology [TopologicalSpace S] [DiscreteTopology S] :
-    HasSubst a ↔ HasEval a :=
-  ⟨fun ha ↦ ⟨fun s ↦ (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mpr (ha.const_coeff s),
-      coeff_zero_iff.mpr ha.coeff_zero⟩,
-    fun ha ↦ ⟨fun s ↦ (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mp (ha.hpow s),
-      fun d ↦ (coeff_zero_iff.mp ha.tendsto_zero) d⟩⟩
+    HasSubst a ↔ HasEval a := by
+  simp_rw [hasSubst_def, hasEval_def, coeff_zero_iff,
+    isTopologicallyNilpotent_iff_constantCoeff_isNilpotent]
 
 theorem HasSubst.hasEval [TopologicalSpace S] (ha : HasSubst a) :
     HasEval a := HasEval.mono (instTopologicalSpace_mono τ bot_le) <|
@@ -269,7 +266,7 @@ theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ �
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   have := ((hasSum_aeval ha.hasEval f).map (coeff S e) (continuous_coeff S e))
-  rw [← coe_substAlgHom ha, substAlgHom,  ← this.tsum_eq, tsum_def, dif_pos this.summable]
+  rw [← coe_substAlgHom ha, substAlgHom, ← this.tsum_eq, tsum_def, dif_pos this.summable]
   exact if_pos (coeff_subst_finite ha f e)
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
@@ -506,7 +503,8 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
   · intro hn
     simpa using hn
 
-/-- Rescale a multivariate power series, as an `AlgHom` in the scaling parameters. -/
+/-- Rescale a multivariate power series, as an `AlgHom` in the scaling parameters,
+by multiplying each variable `x` by the value `a x`. -/
 noncomputable def rescaleAlgHom (a : σ → R) :
     MvPowerSeries σ R →ₐ[R] MvPowerSeries σ R :=
   substAlgHom (HasSubst.smul_X a)

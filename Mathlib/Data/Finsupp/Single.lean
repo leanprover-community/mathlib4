@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Finitely supported functions on exactly one point
@@ -57,8 +58,7 @@ def single (a : α) (b : M) : α →₀ M where
 
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   classical
-  simp_rw [@eq_comm _ a a']
-  convert Pi.single_apply a b a'
+  simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
@@ -101,7 +101,9 @@ theorem support_single_ne_zero (a : α) (hb : b ≠ 0) : (single a b).support = 
   if_neg hb
 
 theorem support_single_subset : (single a b).support ⊆ {a} := by
-  classical show ite _ _ _ ⊆ _; split_ifs <;> [exact empty_subset _; exact Subset.refl _]
+  classical
+  simp only [single]
+  split_ifs <;> [exact empty_subset _; exact Subset.refl _]
 
 theorem single_apply_mem (x) : single a b x ∈ ({0, b} : Set M) := by
   rcases em (a = x) with (rfl | hx) <;> [simp; simp [single_eq_of_ne hx]]
@@ -154,6 +156,9 @@ theorem single_left_injective (h : b ≠ 0) : Function.Injective fun a : α => s
 
 theorem single_left_inj (h : b ≠ 0) : single a b = single a' b ↔ a = a' :=
   (single_left_injective h).eq_iff
+
+lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
+  RightInverse.surjective fun _ ↦ single_eq_same
 
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
   simpa only [support_single_ne_zero _ h] using singleton_ne_empty _
@@ -384,7 +389,7 @@ theorem erase_ne {a a' : α} {f : α →₀ M} (h : a' ≠ a) : (f.erase a) a' =
 theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
     f.erase a a' = if a' = a then 0 else f a' := by
   rw [erase, coe_mk]
-  convert rfl
+  simp only [ite_eq_ite]
 
 @[simp]
 theorem erase_single {a : α} {b : M} : erase a (single a b) = 0 := by
@@ -535,7 +540,8 @@ lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
 
-See `Finsupp.lsingle` in `LinearAlgebra/Finsupp` for the stronger version as a linear map. -/
+See `Finsupp.lsingle` in `Mathlib/LinearAlgebra/Finsupp/Defs.lean` for the stronger version as a
+linear map. -/
 @[simps]
 def singleAddHom (a : α) : M →+ α →₀ M where
   toFun := single a

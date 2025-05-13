@@ -10,6 +10,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # Taylor's theorem
@@ -32,7 +33,7 @@ which states that if `f` is sufficiently smooth, then
 * `taylor_mean_remainder_lagrange`: Taylor's theorem with the Lagrange remainder
 * `taylor_mean_remainder_cauchy`: Taylor's theorem with the Cauchy remainder
 * `exists_taylor_mean_remainder_bound`: Taylor's theorem for vector valued functions with a
-polynomial bound on the remainder
+  polynomial bound on the remainder
 
 ## TODO
 

@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.LinearAlgebra.PerfectPairing.Restrict
-import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Base change for root pairings
@@ -39,7 +39,7 @@ complementary.
 All root systems are balanced and all finite root pairings over a field are balanced. -/
 class IsBalanced {ι R M N : Type*} [AddCommGroup M] [AddCommGroup N]
     [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N) : Prop where
-  isPerfectCompl : P.toPerfectPairing.IsPerfectCompl P.rootSpan P.corootSpan
+  isPerfectCompl : P.toPerfectPairing.IsPerfectCompl (P.rootSpan R) (P.corootSpan R)
 
 instance {ι R M N : Type*} [AddCommGroup M] [AddCommGroup N]
     [CommRing R] [Module R M] [Module R N] (P : RootSystem ι R M N) :
@@ -70,7 +70,7 @@ def restrictScalars' :
       (injective_subtype _) (injective_subtype _) (by simpa using IsBalanced.isPerfectCompl)
       (fun x y ↦ LinearMap.BilinMap.apply_apply_mem_of_mem_span
         (LinearMap.range (Algebra.linearMap K L)) (range P.root) (range P.coroot)
-        ((LinearMap.restrictScalarsₗ K L _ _ _) ∘ₗ (P.toPerfectPairing.toLin.restrictScalars K))
+        (LinearMap.restrictScalarsₗ K L _ _ _ ∘ₗ P.toPerfectPairing.toLinearMap.restrictScalars K)
         (by rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩; exact hP i j) _ _ x.property y.property))
     root := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
     coroot := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩

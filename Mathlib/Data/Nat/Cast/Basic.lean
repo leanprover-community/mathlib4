@@ -111,7 +111,7 @@ section MonoidWithZeroHomClass
 variable {A F : Type*} [MulZeroOneClass A] [FunLike F ℕ A]
 
 /-- If two `MonoidWithZeroHom`s agree on the positive naturals they are equal. -/
-theorem ext_nat'' [MonoidWithZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : ℕ}, 0 < n → f n = g n) :
+theorem ext_nat'' [ZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : ℕ}, 0 < n → f n = g n) :
     f = g := by
   apply DFunLike.ext
   rintro (_ | n)
@@ -148,7 +148,7 @@ theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.At
 theorem ext_nat [FunLike F ℕ R] [RingHomClass F ℕ R] (f g : F) : f = g :=
   ext_nat' f g <| by simp
 
-theorem NeZero.nat_of_neZero {R S} [Semiring R] [Semiring S]
+theorem NeZero.nat_of_neZero {R S} [NonAssocSemiring R] [NonAssocSemiring S]
     {F} [FunLike F R S] [RingHomClass F R S] (f : F)
     {n : ℕ} [hn : NeZero (n : S)] : NeZero (n : R) :=
   .of_map (f := f) (neZero := by simp only [map_natCast, hn])

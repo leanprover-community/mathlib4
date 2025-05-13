@@ -10,7 +10,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.56" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.59" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -38,6 +38,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.lambdaSyntax, true⟩,
   ⟨`linter.style.longLine, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  ⟨`linter.style.maxHeartbeats, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
   ⟨`linter.style.missingEnd, true⟩,
   ⟨`linter.style.multiGoal, true⟩,

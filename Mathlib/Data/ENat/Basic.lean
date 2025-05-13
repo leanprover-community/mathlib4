@@ -36,8 +36,8 @@ open Function
 
 assert_not_exists Field
 
-deriving instance Zero, OrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, LinearOrderedAddCommMonoid, Sub,
+deriving instance Zero, CommSemiring, Nontrivial,
+  LinearOrder, Bot, Sub,
   LinearOrderedAddCommMonoidWithTop, WellFoundedRelation
   for ENat
 -- The `CanonicallyOrderedAdd, OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLT, CharZero`
@@ -49,6 +49,7 @@ deriving instance Zero, OrderedCommSemiring, Nontrivial,
 
 namespace ENat
 
+instance : IsOrderedRing ℕ∞ := WithTop.instIsOrderedRing
 instance : CanonicallyOrderedAdd ℕ∞ := WithTop.canonicallyOrderedAdd
 instance : OrderBot ℕ∞ := WithTop.orderBot
 instance : OrderTop ℕ∞ := WithTop.orderTop
@@ -92,7 +93,15 @@ theorem mul_top' : m * ⊤ = if m = 0 then 0 else ⊤ := WithTop.mul_top' m
 /-- A version of `top_mul` where the RHS is stated as an `ite` -/
 theorem top_mul' : ⊤ * m = if m = 0 then 0 else ⊤ := WithTop.top_mul' m
 
-theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : ℕ∞) ^ n = ⊤ := WithTop.top_pow n_pos
+@[simp] lemma top_pow {n : ℕ} (hn : n ≠ 0) : (⊤ : ℕ∞) ^ n = ⊤ := WithTop.top_pow hn
+
+@[simp] lemma pow_eq_top_iff {n : ℕ} : a ^ n = ⊤ ↔ a = ⊤ ∧ n ≠ 0 := WithTop.pow_eq_top_iff
+
+lemma pow_ne_top_iff {n : ℕ} : a ^ n ≠ ⊤ ↔ a ≠ ⊤ ∨ n = 0 := WithTop.pow_ne_top_iff
+
+@[simp] lemma pow_lt_top_iff {n : ℕ} : a ^ n < ⊤ ↔ a < ⊤ ∨ n = 0 := WithTop.pow_lt_top_iff
+
+lemma eq_top_of_pow (n : ℕ) (ha : a ^ n = ⊤) : a = ⊤ := WithTop.eq_top_of_pow n ha
 
 /-- Convert a `ℕ∞` to a `ℕ` using a proof that it is not infinite. -/
 def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff_ne_top.mp h)
@@ -159,6 +168,11 @@ theorem toNat_top : toNat ⊤ = 0 :=
 
 @[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untopD_eq_self_iff
 
+theorem lift_eq_toNat_of_lt_top {x : ℕ∞} (hx : x < ⊤) : x.lift hx = x.toNat := by
+  rcases x with ⟨⟩ | x
+  · contradiction
+  · rfl
+
 @[simp]
 theorem recTopCoe_zero {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) : @recTopCoe C d f 0 = f 0 :=
   rfl
@@ -213,8 +227,7 @@ theorem top_pos : (0 : ℕ∞) < ⊤ :=
 @[deprecated ENat.top_pos (since := "2024-10-22")]
 alias zero_lt_top := top_pos
 
-theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
-  WithTop.sub_top
+@[simp] theorem sub_top (a : ℕ∞) : a - ⊤ = 0 := WithTop.sub_top
 
 @[simp]
 theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
@@ -275,6 +288,9 @@ lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
+theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
+  lt_add_one_iff (coe_ne_top n)
+
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
@@ -313,7 +329,12 @@ lemma eq_top_iff_forall_ne : n = ⊤ ↔ ∀ m : ℕ, ↑m ≠ n := WithTop.eq_t
 lemma eq_top_iff_forall_gt : n = ⊤ ↔ ∀ m : ℕ, m < n := WithTop.eq_top_iff_forall_gt
 lemma eq_top_iff_forall_ge : n = ⊤ ↔ ∀ m : ℕ, m ≤ n := WithTop.eq_top_iff_forall_ge
 
+/-- Version of `WithTop.forall_coe_le_iff_le` using `Nat.cast` rather than `WithTop.some`. -/
 lemma forall_natCast_le_iff_le : (∀ a : ℕ, a ≤ m → a ≤ n) ↔ m ≤ n := WithTop.forall_coe_le_iff_le
+
+/-- Version of `WithTop.eq_of_forall_coe_le_iff` using `Nat.cast` rather than `WithTop.some`. -/
+lemma eq_of_forall_natCast_le_iff (hm : ∀ a : ℕ, a ≤ m ↔ a ≤ n) : m = n :=
+  WithTop.eq_of_forall_coe_le_iff hm
 
 protected lemma exists_nat_gt (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
   simp_rw [lt_iff_not_ge n]
@@ -529,7 +550,8 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]
-protected def _root_.RingHom.ENatMap {S : Type*} [OrderedCommSemiring S] [CanonicallyOrderedAdd S]
+protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder S]
+    [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
   {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
 
