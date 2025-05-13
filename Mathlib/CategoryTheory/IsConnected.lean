@@ -457,4 +457,10 @@ theorem nonempty_hom_of_preconnected_groupoid {G} [Groupoid G] [IsPreconnected G
 
 attribute [instance] nonempty_hom_of_preconnected_groupoid
 
+instance PreconnectedOfSubsingleton {J : Type*} [Category J] [Subsingleton J] :
+    IsPreconnected J where
+  iso_constant {α} F j := ⟨NatIso.ofComponents (fun x ↦ eqToIso (by simp [Subsingleton.allEq x j]))⟩
+
+instance {J : Type*} [Category J] [Nonempty J] [Subsingleton J] : IsConnected J where
+
 end CategoryTheory
