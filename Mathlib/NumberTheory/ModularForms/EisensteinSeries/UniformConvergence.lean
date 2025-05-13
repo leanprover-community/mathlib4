@@ -46,6 +46,33 @@ lemma norm_eq_max_natAbs (x : Fin 2 → ℤ) : ‖x‖ = max (x 0).natAbs (x 1).
 lemma norm_symm (x y : ℤ) : ‖![x, y]‖ = ‖![y,x]‖ := by
   simp_rw [EisensteinSeries.norm_eq_max_natAbs]
   simp [max_comm]
+
+theorem abs_le_left_of_norm (m n : ℤ) : |n| ≤ ‖![n, m]‖ := by
+  rw [EisensteinSeries.norm_eq_max_natAbs]
+  simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
+    Nat.cast_max, le_sup_iff]
+  left
+  rw [Int.abs_eq_natAbs]
+  rfl
+
+theorem le_left_of_norm (m n : ℤ) : n ≤ ‖![n, m]‖ := by
+  apply le_trans _ (abs_le_left_of_norm m n)
+  norm_cast
+  exact le_abs_self n
+
+theorem abs_le_right_of_norm (m n : ℤ) : |m| ≤ ‖![n, m]‖ := by
+  rw [EisensteinSeries.norm_eq_max_natAbs]
+  simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
+    Nat.cast_max, le_sup_iff]
+  right
+  rw [Int.abs_eq_natAbs]
+  rfl
+
+theorem le_right_of_norm (m n : ℤ) : m ≤ ‖![n, m]‖ := by
+  apply le_trans _ (abs_le_right_of_norm m n)
+  norm_cast
+  exact le_abs_self m
+
 section bounding_functions
 
 /-- Auxiliary function used for bounding Eisenstein series, defined as
