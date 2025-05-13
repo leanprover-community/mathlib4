@@ -15,6 +15,4 @@ import Mathlib.Order.Hom.Basic
 def Prod.Lex.toLexOrderHom {α β : Type*} [PartialOrder α] [Preorder β] :
     α × β →o α ×ₗ β where
   toFun := toLex
-  monotone' := by
-    rintro ⟨_, _⟩
-    simp +contextual [Prod.Lex.le_iff, ← le_iff_lt_or_eq]
+  monotone' := Prod.Lex.toLex_mono
