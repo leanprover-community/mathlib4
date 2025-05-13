@@ -162,7 +162,7 @@ lemma Padic.isHomeomorph_ofAdicCompletion (p : ℕ) [Fact p.Prime] :
   have : Isometry (Padic.ofAdicCompletion p) := by
     apply AddMonoidHomClass.isometry_of_norm
     exact fun _ ↦ Padic.valuation_ofAdicCompletionofAdicCompletion _ _
-  refine (this.isEmbedding.toHomeomorph_of_surjective ?_).isHomeomorph
+  refine (this.isEmbedding.toHomeomorphOfSurjective ?_).isHomeomorph
   rw [← Set.range_eq_univ, ← Set.univ_subset_iff, ← (Padic.denseRange_ratCast p).closure_eq,
     this.isClosedEmbedding.isClosed_range.closure_subset_iff]
   rintro _ ⟨x, rfl⟩
@@ -186,7 +186,7 @@ def PadicInt.ofAdicCompletionIntegers (p : ℕ) [Fact p.Prime] :
 
 lemma PadicInt.isHomeomorph_adicCompletionIntegers (p : ℕ) [Fact p.Prime] :
     IsHomeomorph (ofAdicCompletionIntegers p) := by
-  refine (Topology.IsEmbedding.toHomeomorph_of_surjective ?_ fun ⟨x, hx⟩ ↦ ?_).isHomeomorph
+  refine (Topology.IsEmbedding.toHomeomorphOfSurjective ?_ fun ⟨x, hx⟩ ↦ ?_).isHomeomorph
   · refine .of_comp ?_ continuous_subtype_val ?_
     · dsimp; fun_prop
     · exact (Padic.isHomeomorph_ofAdicCompletion p).isEmbedding.comp .subtypeVal
