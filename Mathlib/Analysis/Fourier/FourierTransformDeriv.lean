@@ -768,10 +768,9 @@ lemma hasDerivAt_fourierIntegral
     rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.flip_apply,
       ContinuousLinearMap.mul_apply', one_mul, ContinuousLinearMap.map_smul]
     expose_names
-    apply congr_arg
     simp only [ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_toContinuousLinearEquiv,
       ContinuousLinearMap.coe_coe]
-    change f x = (((ContinuousLinearMap.id ℝ ℝ).smulRight) (f x)) 1
+    change x • f x = x • (((ContinuousLinearMap.id ℝ ℝ).smulRight) (f x)) 1
     dsimp
     rw [one_smul]
   rw [← VectorFourier.fourierIntegral_convergent_iff continuous_fourierChar L.continuous₂ w]
