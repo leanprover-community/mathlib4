@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Cast.Order.Field
+import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # The Oxford Invariants Puzzle Challenges - Summer 2021, Week 3, Problem 1
@@ -95,7 +97,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
   · refine ⟨1, ?_, ?_⟩
     -- Check that this indeed equals the sum
     · rw [Nat.cast_one, Finset.sum_range_one]
-      norm_num
+      norm_num1
       rw [div_self]
       exact (mul_pos (a_pos 0 (Nat.zero_le _)) (a_pos 1 (Nat.zero_lt_succ _))).ne'
     -- Check the divisibility condition
