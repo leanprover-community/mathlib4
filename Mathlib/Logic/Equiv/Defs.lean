@@ -3,9 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
+import Mathlib.Data.Bool.Basic
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
-import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Subtype
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Simps.Basic
@@ -192,6 +193,12 @@ instance permUnique [Subsingleton α] : Unique (Perm α) :=
 
 theorem Perm.subsingleton_eq_refl [Subsingleton α] (e : Perm α) : e = Equiv.refl α :=
   Subsingleton.elim _ _
+
+protected theorem nontrivial {α β} (e : α ≃ β) [Nontrivial β] : Nontrivial α :=
+  e.surjective.nontrivial
+
+theorem nontrivial_congr {α β} (e : α ≃ β) : Nontrivial α ↔ Nontrivial β :=
+  ⟨fun _ ↦ e.symm.nontrivial, fun _ ↦ e.nontrivial⟩
 
 /-- Transfer `DecidableEq` across an equivalence. -/
 protected def decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
@@ -390,6 +397,7 @@ def equivEmptyEquiv (α : Sort u) : α ≃ Empty ≃ IsEmpty α :=
 def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty := @equivPEmpty p <| IsEmpty.prop_iff.2 h
 
 /-- If both `α` and `β` have a unique element, then `α ≃ β`. -/
+@[simps]
 def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   toFun := default
   invFun := default
@@ -399,6 +407,7 @@ def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
 @[deprecated (since := "2024-12-26")] alias equivOfUnique := ofUnique
 
 /-- If `α` has a unique element, then it is equivalent to any `PUnit`. -/
+@[simps!]
 def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := ofUnique α _
 
 /-- The `Sort` of proofs of a true proposition is equivalent to `PUnit`. -/
@@ -658,6 +667,19 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
 
 end Perm
 
+/-- `Function.swap` as an equivalence. -/
+@[simps -fullyApplied]
+def functionSwap (α β : Sort*) (γ : α → β → Sort*) :
+    ((a : α) → (b : β) → γ a b) ≃ ((b : β) → (a : α) → γ a b) where
+  toFun := Function.swap
+  invFun := Function.swap
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+theorem _root_.Function.swap_bijective {α β : Sort*} {γ : α → β → Sort*} :
+    Function.Bijective (@Function.swap _ _ γ) :=
+  functionSwap _ _ _ |>.bijective
+
 /-- An equivalence `f : α₁ ≃ α₂` generates an equivalence between `Σ a, β (f a)` and `Σ a, β a`. -/
 @[simps apply] def sigmaCongrLeft {α₁ α₂ : Type*} {β : α₂ → Sort _} (e : α₁ ≃ α₂) :
     (Σ a : α₁, β (e a)) ≃ Σ a : α₂, β a where
@@ -858,3 +880,24 @@ def finTwoEquiv : Fin 2 ≃ Bool where
     | 0 => by simp
     | 1 => by simp
   right_inv b := by cases b <;> simp
+
+namespace Equiv
+variable {α β : Type*}
+
+/-- The left summand of `α ⊕ β` is equivalent to `α`. -/
+@[simps]
+def sumIsLeft : {x : α ⊕ β // x.isLeft} ≃ α where
+  toFun x := x.1.getLeft x.2
+  invFun a := ⟨.inl a, Sum.isLeft_inl⟩
+  left_inv | ⟨.inl _a, _⟩ => rfl
+  right_inv _a := rfl
+
+/-- The right summand of `α ⊕ β` is equivalent to `β`. -/
+@[simps]
+def sumIsRight : {x : α ⊕ β // x.isRight} ≃ β where
+  toFun x := x.1.getRight x.2
+  invFun b := ⟨.inr b, Sum.isRight_inr⟩
+  left_inv | ⟨.inr _b, _⟩ => rfl
+  right_inv _b := rfl
+
+end Equiv

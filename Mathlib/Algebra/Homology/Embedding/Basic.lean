@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Tactic.ByContra
 
 /-! # Embeddings of complex shapes
@@ -49,6 +49,8 @@ transformation `e.ιTruncLENatTrans : e.truncGEFunctor C ⟶ 𝟭 _` which is a 
 in degrees in the image of `e.f` (TODO);
 
 -/
+
+assert_not_exists Nat.instAddMonoidWithOne Nat.instMulZeroClass
 
 variable {ι ι' : Type*} (c : ComplexShape ι) (c' : ComplexShape ι')
 

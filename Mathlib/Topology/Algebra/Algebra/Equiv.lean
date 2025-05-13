@@ -285,13 +285,13 @@ theorem preimage_symm_preimage (e : A ≃A[R] B) (S : Set A) : e ⁻¹' (e.symm 
   e.symm.symm_preimage_preimage S
 
 theorem isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂] [Ring E₁]
-    [UniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [UniformAddGroup E₂] [Algebra R E₂]
+    [IsUniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [IsUniformAddGroup E₂] [Algebra R E₂]
     (e : E₁ ≃A[R] E₂) : IsUniformEmbedding e :=
   e.toAlgEquiv.isUniformEmbedding e.toContinuousAlgHom.uniformContinuous
     e.symm.toContinuousAlgHom.uniformContinuous
 
 theorem _root_.AlgEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
-    [Ring E₁] [UniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [UniformAddGroup E₂] [Algebra R E₂]
+    [Ring E₁] [IsUniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [IsUniformAddGroup E₂] [Algebra R E₂]
     (e : E₁ ≃ₐ[R] E₂) (h₁ : Continuous e) (h₂ : Continuous e.symm) :
     IsUniformEmbedding e :=
   ContinuousAlgEquiv.isUniformEmbedding { e with continuous_toFun := h₁ }

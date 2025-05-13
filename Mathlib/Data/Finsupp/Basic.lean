@@ -341,12 +341,14 @@ variable [Zero M] (f : α →₀ M)
 namespace Nat
 
 @[simp, norm_cast]
-theorem cast_finsupp_prod [CommSemiring R] (g : α → M → ℕ) :
+theorem cast_finsuppProd [CommSemiring R] (g : α → M → ℕ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   Nat.cast_prod _ _
 
+@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
+
 @[simp, norm_cast]
-theorem cast_finsupp_sum [CommSemiring R] (g : α → M → ℕ) :
+theorem cast_finsupp_sum [AddCommMonoidWithOne R] (g : α → M → ℕ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
   Nat.cast_sum _ _
 
@@ -355,12 +357,14 @@ end Nat
 namespace Int
 
 @[simp, norm_cast]
-theorem cast_finsupp_prod [CommRing R] (g : α → M → ℤ) :
+theorem cast_finsuppProd [CommRing R] (g : α → M → ℤ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   Int.cast_prod _ _
 
+@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
+
 @[simp, norm_cast]
-theorem cast_finsupp_sum [Ring R] (g : α → M → ℤ) :
+theorem cast_finsupp_sum [AddCommGroupWithOne R] (g : α → M → ℤ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
   Int.cast_sum _ _
 
@@ -374,9 +378,11 @@ theorem cast_finsupp_sum [DivisionRing R] [CharZero R] (g : α → M → ℚ) :
   cast_sum _ _
 
 @[simp, norm_cast]
-theorem cast_finsupp_prod [Field R] [CharZero R] (g : α → M → ℚ) :
+theorem cast_finsuppProd [Field R] [CharZero R] (g : α → M → ℚ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   cast_prod _ _
+
+@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
 
 end Rat
 
@@ -467,7 +473,7 @@ theorem mapDomain_finset_sum {f : α → β} {s : Finset ι} {v : ι → α →�
 
 theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N → α →₀ M} :
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
-  map_finsupp_sum (mapDomain.addMonoidHom f : (α →₀ M) →+ β →₀ M) _ _
+  map_finsuppSum (mapDomain.addMonoidHom f : (α →₀ M) →+ β →₀ M) _ _
 
 theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
     (s.mapDomain f).support ⊆ s.support.image f :=
@@ -541,6 +547,12 @@ theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
   have : mapDomain f v₁ (f a) = mapDomain f v₂ (f a) := by rw [eq]
   rwa [mapDomain_apply hf, mapDomain_apply hf] at this
 
+theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
+    (mapDomain (M := M) f).Surjective := by
+  intro x
+  use mapDomain (surjInv hf) x
+  rw [← mapDomain_comp, (rightInverse_surjInv hf).id, mapDomain_id]
+
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
 def mapDomainEmbedding {α β : Type*} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
@@ -564,7 +576,7 @@ theorem mapDomain_mapRange [AddCommMonoid N] (f : α → β) (v : α →₀ M) (
       map_add' := hadd }
   DFunLike.congr_fun (mapDomain.addMonoidHom_comp_mapRange f g') v
 
-theorem sum_update_add [AddCommMonoid α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
+theorem sum_update_add [AddZeroClass α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
     (g : ι → α → β) (hg : ∀ i, g i 0 = 0)
     (hgg : ∀ (j : ι) (a₁ a₂ : α), g j (a₁ + a₂) = g j a₁ + g j a₂) :
     (f.update i a).sum g + g i (f i) = f.sum g + g i a := by
@@ -620,7 +632,7 @@ theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →�
   simp only [sum, comapDomain_apply, (· ∘ ·), comapDomain]
   exact Finset.sum_preimage_of_bij f _ hf fun x => g x (l x)
 
-theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β →₀ M)
+theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
   simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
@@ -697,6 +709,10 @@ theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
   conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
   rfl
 
+theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
+    comapDomain f (mapDomain f l) hf.injOn = l := by
+  ext; rw [comapDomain_apply, mapDomain_apply hf]
+
 end FInjective
 
 end ComapDomain
@@ -720,7 +736,7 @@ theorem some_zero [Zero M] : (0 : Option α →₀ M).some = 0 := by
   simp
 
 @[simp]
-theorem some_add [AddCommMonoid M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
+theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
   ext
   simp
 
@@ -737,24 +753,42 @@ theorem some_single_some [Zero M] (a : α) (m : M) :
     simp [single_apply]
 
 @[to_additive]
-theorem prod_option_index [AddCommMonoid M] [CommMonoid N] (f : Option α →₀ M)
+theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
     (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
     (h_add : ∀ o m₁ m₂, b o (m₁ + m₂) = b o m₁ * b o m₂) :
     f.prod b = b none (f none) * f.some.prod fun a => b (Option.some a) := by
   classical
-    apply induction_linear f
-    · simp [some_zero, h_zero]
-    · intro f₁ f₂ h₁ h₂
+    induction f using induction_linear with
+    | zero => simp [some_zero, h_zero]
+    | add f₁ f₂ h₁ h₂ =>
       rw [Finsupp.prod_add_index, h₁, h₂, some_add, Finsupp.prod_add_index]
       · simp only [h_add, Pi.add_apply, Finsupp.coe_add]
         rw [mul_mul_mul_comm]
       all_goals simp [h_zero, h_add]
-    · rintro (_ | a) m <;> simp [h_zero, h_add]
+    | single a m => cases a <;> simp [h_zero, h_add]
 
 theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : Option α →₀ R)
     (b : Option α → M) :
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
+
+theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m : α →₀ M} {i : M} :
+    (n = (embDomain Embedding.some m).update none i) ↔
+      n none = i ∧ n.some = m := by
+  classical
+  rw [Finsupp.ext_iff, Option.forall, Finsupp.ext_iff]
+  apply and_congr
+  · simp
+  · apply forall_congr'
+    intro
+    simp only [coe_update, ne_eq, reduceCtorEq, not_false_eq_true, update_of_ne, some_apply]
+    rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
+
+@[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
+  ext; rw [some_apply]; exact embDomain_apply _ _ _
+
+@[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some .none = 0 :=
+  embDomain_notin_range _ _ _ (by simp)
 
 end Option
 
@@ -774,7 +808,6 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   toFun a := if p a then f a else 0
   support := f.support.filter p
   mem_support_toFun a := by
-    beta_reduce -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed to activate `split_ifs`
     split_ifs with h <;>
       · simp only [h, mem_filter, mem_support_iff]
         tauto
@@ -1029,67 +1062,88 @@ theorem mem_support_finset_sum [AddCommMonoid M] {s : Finset ι} {h : ι → α 
 /-! ### Declarations about `curry` and `uncurry` -/
 
 
-section CurryUncurry
+section Uncurry
 
-variable [AddCommMonoid M] [AddCommMonoid N]
-
-/-- Given a finitely supported function `f` from a product type `α × β` to `γ`,
-`curry f` is the "curried" finitely supported function from `α` to the type of
-finitely supported functions from `β` to `γ`. -/
-protected def curry (f : α × β →₀ M) : α →₀ β →₀ M :=
-  f.sum fun p c => single p.1 (single p.2 c)
-
-@[simp]
-theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f (x, y) := by
-  classical
-    have : ∀ b : α × β, single b.fst (single b.snd (f b)) x y = if b = (x, y) then f b else 0 := by
-      rintro ⟨b₁, b₂⟩
-      simp only [ne_eq, single_apply, Prod.ext_iff, ite_and]
-      split_ifs <;> simp [single_apply, *]
-    rw [Finsupp.curry, sum_apply, sum_apply, sum_eq_single, this, if_pos rfl]
-    · intro b _ b_ne
-      rw [this b, if_neg b_ne]
-    · intro _
-      rw [single_zero, single_zero, coe_zero, Pi.zero_apply, coe_zero, Pi.zero_apply]
-
-theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg₀ : ∀ a b, g a b 0 = 0)
-    (hg₁ : ∀ a b c₀ c₁, g a b (c₀ + c₁) = g a b c₀ + g a b c₁) :
-    (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
-  rw [Finsupp.curry]
-  trans
-  · exact
-      sum_sum_index (fun a => sum_zero_index) fun a b₀ b₁ =>
-        sum_add_index' (fun a => hg₀ _ _) fun c d₀ d₁ => hg₁ _ _ _ _
-  congr; funext p c
-  trans
-  · exact sum_single_index sum_zero_index
-  exact sum_single_index (hg₀ _ _)
+variable [Zero M]
 
 /-- Given a finitely supported function `f` from `α` to the type of
 finitely supported functions from `β` to `M`,
 `uncurry f` is the "uncurried" finitely supported function from `α × β` to `M`. -/
-protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
-  f.sum fun a g => g.sum fun b c => single (a, b) c
+protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M where
+  toFun x := f x.1 x.2
+  support := f.support.disjiUnion (fun a ↦ (f a).support.map <| .sectR a _) <| by
+    intro a₁ _ a₂ _ hne
+    simp [Finset.disjoint_iff_ne, hne]
+  mem_support_toFun := by aesop
+
+protected theorem uncurry_apply (f : α →₀ β →₀ M) (x : α × β) : f.uncurry x = f x.1 x.2 := rfl
 
 @[simp]
-protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (x : α) (y : β) :
-    f.uncurry (x, y) = f x y := by
-  rw [← curry_apply (f.uncurry) x y]
-  simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
-    forall_true_iff, sum_single_index, single_zero, ← single_sum, sum_single]
+protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (a : α) (b : β) :
+    f.uncurry (a, b) = f a b :=
+  rfl
+
+@[simp]
+lemma uncurry_single (a : α) (b : β) (m : M) :
+    (single a (single b m)).uncurry = single (a, b) m := by
+  ext ⟨x, y⟩
+  rcases eq_or_ne a x with rfl | hne <;> classical simp [single_apply, *]
+
+theorem sum_uncurry_index [AddCommMonoid N] (f : α →₀ β →₀ M) (g : α × β → M → N) :
+    f.uncurry.sum (fun p c => g p c) = f.sum fun a f => f.sum fun b ↦ g (a, b) := by
+  simp only [Finsupp.sum, Finsupp.uncurry, Finset.sum_disjiUnion]
+  simp
+
+theorem sum_uncurry_index' [AddCommMonoid N] (f : α →₀ β →₀ M) (g : α → β → M → N) :
+    f.uncurry.sum (fun p c => g p.1 p.2 c) = f.sum fun a f => f.sum (g a) :=
+  sum_uncurry_index ..
+
+end Uncurry
+
+section Curry
+
+variable [DecidableEq α] [Zero M]
+
+/-- Given a finitely supported function `f` from a product type `α × β` to `γ`,
+`curry f` is the "curried" finitely supported function from `α` to the type of
+finitely supported functions from `β` to `γ`. -/
+protected def curry (f : α × β →₀ M) : α →₀ β →₀ M where
+  toFun a :=
+    { toFun b := f (a, b)
+      support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) <| by simp +contextual
+      mem_support_toFun := by simp }
+  support := f.support.image Prod.fst
+  mem_support_toFun := by simp [DFunLike.ext_iff]
+
+@[simp]
+theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f (x, y) := rfl
+
+@[simp]
+theorem support_curry (f : α × β →₀ M) : f.curry.support = f.support.image Prod.fst :=
+  rfl
 
 @[simp]
 theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
   ext a b
-  rw [curry_apply, Finsupp.uncurry_apply_pair]
+  simp
 
 @[simp]
 theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
   ext ⟨a, b⟩
-  rw [Finsupp.uncurry_apply_pair, curry_apply]
+  simp
+
+@[simp]
+lemma curry_single (a : α × β) (m : M) :
+    (single a m).curry = single a.1 (single a.2 m) := by
+  rw [← curry_uncurry (single _ _), uncurry_single]
+
+theorem sum_curry_index [AddCommMonoid N] (f : α × β →₀ M) (g : α → β → M → N) :
+    (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
+   rw [← sum_uncurry_index', uncurry_curry]
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
+@[simps]
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
@@ -1098,22 +1152,10 @@ def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
 
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
-  classical
-    rw [Finsupp.curry, Finsupp.curry, Finsupp.sum, Finsupp.sum, filter_sum, support_filter,
-      sum_filter]
-    refine Finset.sum_congr rfl ?_
-    rintro ⟨a₁, a₂⟩ _
-    split_ifs with h
-    · rw [filter_apply_pos, filter_single_of_pos] <;> exact h
-    · rwa [filter_single_of_neg]
+  ext a b
+  simp [filter_apply, apply_ite (DFunLike.coe · b)]
 
-theorem support_curry [DecidableEq α] (f : α × β →₀ M) :
-    f.curry.support ⊆ f.support.image Prod.fst := by
-  rw [← Finset.biUnion_singleton]
-  refine Finset.Subset.trans support_sum ?_
-  exact Finset.biUnion_mono fun a _ => support_single_subset
-
-end CurryUncurry
+end Curry
 
 /-! ### Declarations about finitely supported functions whose support is a `Sum` type -/
 
@@ -1377,7 +1419,7 @@ theorem split_apply (i : ι) (x : αs i) : split l i x = l ⟨i, x⟩ := by
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ (i : ι), αs i` to `β`,
 `split_support l` is the finset of indices in `ι` that appear in the support of `l`. -/
-def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
+def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
   haveI := Classical.decEq ι
   l.support.image Sigma.fst
 

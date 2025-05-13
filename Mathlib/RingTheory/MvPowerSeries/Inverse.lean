@@ -184,9 +184,6 @@ theorem map.isLocalHom : IsLocalHom (map σ f) :=
     rcases isUnit_of_map_unit f _ this with ⟨c, hc⟩
     exact isUnit_of_mul_eq_one φ (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩
 
-@[deprecated (since := "2024-10-10")]
-alias map.isLocalRingHom := map.isLocalHom
-
 end IsLocalRing
 
 section Field

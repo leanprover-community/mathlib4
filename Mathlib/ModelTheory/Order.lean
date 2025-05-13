@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Data.Rat.Encodable
+import Mathlib.Data.Finset.Sort
 import Mathlib.ModelTheory.Complexity
 import Mathlib.ModelTheory.Fraisse
 import Mathlib.Order.CountableDenseLinearOrder
@@ -364,7 +365,7 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
 -- because it will match with any `LE` typeclass search
 @[local instance]
 def decidableLEOfStructure
-    [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     letI := L.leOfStructure M
     DecidableLE M := h
 
@@ -384,12 +385,12 @@ def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
 
 /-- Any model of a theory of linear orders is a linear order. -/
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
-    [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
   __ := L.partialOrderOfModels M
   le_total := Relations.realize_total.1 ((Theory.model_iff _).1 h _
     (by simp only [linearOrderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, true_or]))
-  decidableLE := inferInstance
+  toDecidableLE := inferInstance
 
 end structure_to_order
 

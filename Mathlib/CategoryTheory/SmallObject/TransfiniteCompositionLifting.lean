@@ -45,7 +45,7 @@ F.obj j     | p
 This is constructed by transfinite induction on `j`:
 * When `j = ⊥`, this is `f`;
 * In order to pass from `j` to `Order.succ j`, we use the assumption that
-`F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
+  `F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
 * When `j` is a limit element, we use the "continuity" of `F`.
 
 -/
@@ -206,7 +206,7 @@ include hF hc
 variable {c f g} (sq : CommSq f (c.ι.app ⊥) p g)
 
 lemma hasLift : sq.HasLift := by
-  obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w }
+  obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w, .. }
   replace hs := congr_arg SqStruct.f' hs
   dsimp at hs
   let t : Cocone F := Cocone.mk X

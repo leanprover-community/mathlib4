@@ -7,10 +7,10 @@ import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Data.Finset.Density
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Average over a finset
@@ -83,13 +83,13 @@ scoped macro_rules (kind := bigexpect)
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
 open Batteries.ExtendedBinder
 
-/-- Delaborator for `Finset.expect`. The `pp.piBinderTypes` option controls whether
+/-- Delaborator for `Finset.expect`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the expect is over `Finset.univ`. -/
 @[scoped app_delab Finset.expect] def delabFinsetExpect : Delab :=
   whenPPOption getPPNotation <| withOverApp 6 <| do
   let #[_, _, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
-  let ppDomain ← getPPOption getPPPiBinderTypes
+  let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then

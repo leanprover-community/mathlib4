@@ -9,7 +9,7 @@ import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
@@ -20,13 +20,13 @@ This file defines natural or von Neumann bounded sets and proves elementary prop
 ## Main declarations
 
 * `Bornology.IsVonNBounded`: A set `s` is von Neumann-bounded if every neighborhood of zero
-absorbs `s`.
+  absorbs `s`.
 * `Bornology.vonNBornology`: The bornology made of the von Neumann-bounded sets.
 
 ## Main results
 
 * `Bornology.IsVonNBounded.of_topologicalSpace_le`: A coarser topology admits more
-von Neumann-bounded sets.
+  von Neumann-bounded sets.
 * `Bornology.IsVonNBounded.image`: A continuous linear image of a bounded set is bounded.
 * `Bornology.isVonNBounded_iff_smul_tendsto_zero`: Given any sequence `ε` of scalars which tends
   to `𝓝[≠] 0`, we have that a set `S` is bounded if and only if for any sequence `x : ℕ → S`,
@@ -364,10 +364,10 @@ end NormedField
 
 end Bornology
 
-section UniformAddGroup
+section IsUniformAddGroup
 
 variable (𝕜) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [UniformSpace E] [UniformAddGroup E] [ContinuousSMul 𝕜 E]
+variable [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
@@ -392,14 +392,14 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     haveI : BoundedSpace 𝕜 := ⟨Metric.isBounded_iff.2 ⟨1, by simp_all [dist_eq_norm]⟩⟩
     exact Bornology.IsVonNBounded.of_boundedSpace
 
-end UniformAddGroup
+end IsUniformAddGroup
 
 variable (𝕜) in
 theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f : ℕ → E} {x : E} (hf : Tendsto f atTop (𝓝 x)) : Bornology.IsVonNBounded 𝕜 (range f) :=
   letI := IsTopologicalAddGroup.toUniformSpace E
-  haveI := uniformAddGroup_of_addCommGroup (G := E)
+  haveI := isUniformAddGroup_of_addCommGroup (G := E)
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
 variable (𝕜) in

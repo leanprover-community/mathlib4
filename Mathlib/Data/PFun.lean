@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
+import Batteries.WF
 import Mathlib.Data.Part
 import Mathlib.Data.Rel
-import Batteries.WF
+import Mathlib.Tactic.GeneralizeProofs
 
 /-!
 # Partial functions
@@ -49,7 +50,6 @@ Monad operations:
 * `PFun.bind`: The monad `bind` function, pointwise `Part.bind`
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.
 -/
-
 
 open Function
 
@@ -222,13 +222,13 @@ def fix (f : α →. β ⊕ α) : α →. β := fun a =>
 
 theorem dom_of_mem_fix {f : α →. β ⊕ α} {a : α} {b : β} (h : b ∈ f.fix a) : (f a).Dom := by
   let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
-  rw [WellFounded.fixFEq] at h₂; exact h₂.fst.fst
+  rw [WellFounded.fixF_eq] at h₂; exact h₂.fst.fst
 
 theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
     b ∈ f.fix a ↔ Sum.inl b ∈ f a ∨ ∃ a', Sum.inr a' ∈ f a ∧ b ∈ f.fix a' :=
   ⟨fun h => by
     let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
-    rw [WellFounded.fixFEq] at h₂
+    rw [WellFounded.fixF_eq] at h₂
     simp only [Part.mem_assert_iff] at h₂
     obtain ⟨h₂, h₃⟩ := h₂
     split at h₃
@@ -239,7 +239,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
     rcases h with (⟨h₁, h₂⟩ | ⟨a', h, h₃⟩)
     · refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique ⟨h₁, h₂⟩ h'
-      · rw [WellFounded.fixFEq]
+      · rw [WellFounded.fixF_eq]
         -- Porting note: used to be simp [h₁, h₂]
         apply Part.mem_assert h₁
         split
@@ -253,7 +253,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
       · injection Part.mem_unique h h' with e
         exact e ▸ h₃
       · obtain ⟨h₁, h₂⟩ := h
-        rw [WellFounded.fixFEq]
+        rw [WellFounded.fixF_eq]
         -- Porting note: used to be simp [h₁, h₂, h₄]
         apply Part.mem_assert h₁
         split

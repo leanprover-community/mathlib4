@@ -117,7 +117,7 @@ noncomputable def groupSeminorm : GroupSeminorm (M ⧸ S) where
     rintro ⟨a, rfl⟩ ⟨b, rfl⟩
     refine ciInf_le_of_le ⟨0, forall_mem_range.2 fun _ ↦ dist_nonneg⟩ ⟨a * b, rfl⟩ ?_
     simpa using norm_mul_le' _ _
-  inv' x := eq_of_forall_le_iff fun r ↦  by
+  inv' x := eq_of_forall_le_iff fun r ↦ by
     simp only [le_infDist (norm_aux _)]
     exact (Equiv.inv _).forall_congr (by simp [← inv_eq_iff_eq_inv])
 
@@ -185,7 +185,7 @@ lemma norm_mk_eq_zero [hS : IsClosed (S : Set M)] : ‖(m : M ⧸ S)‖ = 0 ↔ 
 and `‖m‖ < ‖x‖ + ε`. -/
 @[to_additive "For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `mk' S m = x`
 and `‖m‖ < ‖x‖ + ε`."]
-lemma exists_norm_mk_lt (x : M ⧸ S) (hε : 0 < ε) : ∃ m : M,  m = x ∧ ‖m‖ < ‖x‖ + ε :=
+lemma exists_norm_mk_lt (x : M ⧸ S) (hε : 0 < ε) : ∃ m : M, m = x ∧ ‖m‖ < ‖x‖ + ε :=
   norm_lt_iff.1 <| lt_add_of_pos_right _ hε
 
 /-- For any `m : M` and any `0 < ε`, there is `s ∈ S` such that `‖m * s‖ < ‖mk' S m‖ + ε`. -/
