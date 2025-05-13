@@ -1,31 +1,33 @@
 #! /usr/bin/env bash
 
-# How many commits back we scan.#
+# How many commits back we scan.
 # The default is `2`, which means the commit before the current one.
 commitNumber="${1:-2}"
 
-# Retrieves the hash of the commit corresponding to `commitNumber`.
-previousHash="$(
-  git log --pretty=oneline "-${commitNumber}" | tail -1 | awk '{print $1}'
-)"
+# With input a natural number `n`, retrieves the hash of `n` commits ago, where `n = 1` is
+# the current commit.
+getHash () {
+  git log --pretty=oneline "-${1}" | tail -1 | awk '{print $1}'
+}
 
+currentHash="$(getHash 1)"
+previousHash="$(getHash "${commitNumber}")"
+
+printf 'Current hash: %s\n' "${currentHash}"
 printf 'Commit number: %s\n' "${commitNumber}"
 printf 'Previous hash: %s\n' "${previousHash}"
 
-# Lists and sorts all `.lean` files in `Mathlib/`.
+# `getAllFiles <hash>` lists and sorts all files in `Mathlib/` at the given commit hash.
 # In particular, files in `MathlibTest`, `Archive`, `scripts`,... are exempt from this check.
 getAllFiles () {
-  git ls-files 'Mathlib/*.lean' | sort
+  git ls-tree -r --name-only "${1}" Mathlib/ | sort
 }
 
-# We are on master and we store the current list of files in `currentListOfFiles.txt`.
-getAllFiles > currentListOfFiles.txt
+# We store the list of files in the current repository in `currentListOfFiles.txt`.
+getAllFiles "${currentHash}" > currentListOfFiles.txt
 
-git checkout "${previousHash}"
-# We are now on the earlier commit and we store the list of old files in `oldListOfFiles.txt`.
-getAllFiles > oldListOfFiles.txt
-# Go back to master.
-git checkout --quiet -
+# We store the list of files in the previous repository in `oldListOfFiles.txt`.
+getAllFiles "${previousHash}" > oldListOfFiles.txt
 
 # `removedFiles` are the files that are present in `oldListOfFiles.txt`,
 # but not in `currentListOfFiles.txt`.

@@ -19,14 +19,22 @@ open Lean Elab Command
 
 namespace DeprecatedModule
 
-def getHeader (fname : String) (keepTrailing : Bool) : IO String := do
-  let fil := fname
-  let fileContent ← IO.FS.readFile fil
-  let (stx, _) ← Parser.parseHeader (Parser.mkInputContext fileContent fil)
+def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := do
+  let (stx, _) ← Parser.parseHeader (Parser.mkInputContext fileContent fname)
   let stx := if keepTrailing then stx.raw else stx.raw.unsetTrailing
   let some substring := stx.getSubstring? | throw <| .userError "No substring: we have a problem!"
   let upToAllImports : Substring := {substring with startPos := 0}
   return upToAllImports.toString
+
+def getHeaderFromFileName (fname : String) (keepTrailing : Bool) : IO String := do
+  getHeader fname (← IO.FS.readFile fname) keepTrailing
+
+def mkDeprecation (customMessage : String := "auto-generated") : CommandElabM Format := do
+  let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
+  let dateStx := Syntax.mkStrLit s!"{← Std.Time.PlainDate.now}"
+  let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
+  liftCoreM <| PrettyPrinter.ppCategory `command stx
+
 
 def mkDeprecatedModule
     (fname : String) (customMessage : String := "auto-generated") (keepTrailing : Bool := false)
@@ -34,7 +42,7 @@ def mkDeprecatedModule
     CommandElabM Unit := do
   let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
   let dateStx := Syntax.mkStrLit s!"{← Std.Time.PlainDate.now}"
-  let header ← getHeader fname keepTrailing
+  let header ← getHeaderFromFileName fname keepTrailing
   let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
   let fmt ← liftCoreM <| PrettyPrinter.ppCategory `command stx
   let nm := fname ++ "_deprecatedModule"
@@ -51,13 +59,49 @@ def mkDeprecatedModule
   --return
   --return s!"{header.trimRight}\n\n{fmt}\n"
 
-elab "#create_deprecated_modules" : command => do
-  let oldFiles := Std.HashSet.ofArray (← IO.FS.lines "oldListOfFiles.txt")
-  let currentFiles := Std.HashSet.ofArray (← IO.FS.lines "currentListOfFiles.txt")
-  let onlyOld := oldFiles.filter (!currentFiles.contains ·)
-  dbg_trace onlyOld.toArray
-  for file in onlyOld do
-    mkDeprecatedModule file
+elab "#create_deprecated_modules" write:(&" write")? : command => do
+  let mut msgs := #[]
+  let getHash (n : Nat) := do
+    let log ← IO.Process.run {cmd := "git", args := #["log", "--pretty=oneline", s!"-{n}"]}
+    let some last := log.trim.splitOn "\n" |>.getLast? | throwError "Found no commits!"
+    let commitHash := last.takeWhile (!·.isWhitespace)
+    return commitHash
+  let getFilesAtHash (hash : String) := do
+    let files ← IO.Process.run
+      {cmd := "git", args := #["ls-tree", "-r", "--name-only", hash, "Mathlib/"]}
+    let h : Std.HashSet String := .ofList <| files.splitOn "\n"
+    return h
+  let currentHash ← getHash 1
+  let currentFiles ← getFilesAtHash currentHash
+  msgs := msgs.push m!"{currentFiles.size} files at the current hash {currentHash}\n"
+  let pastHash ← getHash 150
+  let pastFiles ← getFilesAtHash pastHash
+  msgs := msgs.push m!"{pastFiles.size} files at the past hash {pastHash}\n"
+  let onlyPastFiles := pastFiles.filter fun fil ↦
+    fil.takeRight ".lean".length == ".lean" &&
+    !currentFiles.contains fil
+  let noFiles := onlyPastFiles.size
+  msgs := msgs.push
+    m!"{noFiles} Lean file{if noFiles == 1 then "" else "s"} in 'Mathlib/' that no longer exist:"
+  --msgs := msgs.push "" ++ (onlyPastFiles.toArray.map (indentD m!"{·}"))
+  let deprecation ← mkDeprecation
+  msgs := msgs.push ""
+  for fname in onlyPastFiles do
+    let file ← IO.Process.run {
+      cmd := "git"
+      args := #["show", s!"{pastHash}:{fname}"]
+    }
+    let fileHeader ← getHeader fname file false
+    let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
+    --dbg_trace "\nDeprecating {fname} as:\n\n---\n{deprecatedFile}---"
+    msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
+    if write.isSome then
+      IO.FS.writeFile fname deprecatedFile
+  if write.isNone then
+    msgs :=msgs.push
+      m!"The files were not deprecated. Use '#create_deprecated_modules write' \
+        if you wish to deprecate them."
+  logInfo <| .joinSep msgs.toList "\n"
 
 #create_deprecated_modules
 
@@ -75,7 +119,7 @@ import Mathlib.Tactic.Linter.DeprecatedModule
 #guard_msgs in
 run_cmd
   let fname ← getFileName
-  let head ← getHeader fname false
+  let head ← getHeaderFromFileName fname false
   logInfo head
 
 /--
@@ -93,5 +137,5 @@ import Mathlib.Tactic.Linter.DeprecatedModule
 #guard_msgs in
 run_cmd
   let fname ← getFileName
-  let head ← getHeader fname true
+  let head ← getHeaderFromFileName fname true
   logInfo head
