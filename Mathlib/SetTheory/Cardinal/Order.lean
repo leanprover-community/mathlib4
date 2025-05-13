@@ -95,7 +95,7 @@ instance linearOrder : LinearOrder Cardinal.{u} :=
     le_total := by
       rintro ⟨α⟩ ⟨β⟩
       apply Embedding.total
-    decidableLE := Classical.decRel _ }
+    toDecidableLE := Classical.decRel _ }
 
 theorem le_def (α β : Type u) : #α ≤ #β ↔ Nonempty (α ↪ β) :=
   Iff.rfl
@@ -247,9 +247,6 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
 theorem power_natCast (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
 
-@[deprecated (since := "2024-10-16")]
-alias power_cast_right := power_natCast
-
 @[simp]
 theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
   lift_injective.eq_iff' lift_one
@@ -300,7 +297,9 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
 
-instance orderBot : OrderBot Cardinal.{u} := inferInstance
+instance orderBot : OrderBot Cardinal.{u} where
+  bot := 0
+  bot_le := zero_le
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>

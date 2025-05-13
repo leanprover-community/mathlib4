@@ -97,14 +97,6 @@ theorem IsOfFinOrder.one : IsOfFinOrder (1 : G) :=
   isOfFinOrder_iff_pow_eq_one.mpr ⟨1, Nat.one_pos, one_pow 1⟩
 
 @[to_additive]
-alias isOfFinOrder_one := IsOfFinOrder.one
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated IsOfFinOrder.one (since := "2024-10-11")] isOfFinOrder_one
-attribute [deprecated IsOfFinAddOrder.zero (since := "2024-10-11")] isOfFinAddOrder_zero
-
-@[to_additive]
 lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by
   simp_rw [isOfFinOrder_iff_pow_eq_one]
   rintro ⟨m, hm, ha⟩
@@ -698,6 +690,12 @@ lemma finEquivZPowers_symm_apply (hx : IsOfFinOrder x) (n : ℕ) :
     ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
   rw [finEquivZPowers, Equiv.symm_trans_apply]; exact finEquivPowers_symm_apply _ n
 
+@[to_additive]
+lemma pow_finEquivZPowers_symm_apply (hx : IsOfFinOrder x) (a : Subgroup.zpowers x) :
+    x ^ ((finEquivZPowers hx).symm a : ℕ) = a := by
+  simpa only [finEquivZPowers_apply] using
+    congr_arg Subtype.val ((finEquivZPowers hx).apply_symm_apply a)
+
 end Group
 
 section CommMonoid
@@ -1095,7 +1093,7 @@ variable [Monoid α] [Monoid β] {x : α × β} {a : α} {b : β}
 
 @[to_additive]
 protected theorem Prod.orderOf (x : α × β) : orderOf x = (orderOf x.1).lcm (orderOf x.2) :=
-  minimalPeriod_prod_map _ _ _
+  minimalPeriod_prodMap _ _ _
 
 @[to_additive]
 theorem orderOf_fst_dvd_orderOf : orderOf x.1 ∣ orderOf x :=

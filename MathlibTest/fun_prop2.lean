@@ -12,21 +12,21 @@ def foo (x : ℝ) := x * (Real.log x) ^ 2 - Real.exp x / x
 example : ContinuousOn foo {0}ᶜ := by
   unfold foo; fun_prop (disch:=aesop)
 
-example (y : ℝ) (hy : y≠0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
+example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
   fun_prop (disch:=aesop)
 
 
 example : DifferentiableOn ℝ foo {0}ᶜ := by
   unfold foo; fun_prop (disch:=aesop)
 
-example (y : ℝ) (hy : y≠0) :
+example (y : ℝ) (hy : y ≠ 0) :
     DifferentiableAt ℝ foo y := by
   unfold foo; fun_prop (disch:=aesop)
 
 example {n} : ContDiffOn ℝ n foo {0}ᶜ := by
   unfold foo; fun_prop (disch:=aesop)
 
-example {n} (y : ℝ) (hy : y≠0) :
+example {n} (y : ℝ) (hy : y ≠ 0) :
     ContDiffAt ℝ n foo y := by
   unfold foo; fun_prop (disch:=aesop)
 

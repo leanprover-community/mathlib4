@@ -35,9 +35,11 @@ lemma prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α}
   apply (measure_mono (subset_univ _)).trans
   rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with h | h <;> simp [h]
 
-lemma toReal_prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α} :
-    (μ s).toReal ≤ 1 :=
+lemma measureReal_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α} :
+    μ.real s ≤ 1 :=
   ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.ofReal_one.symm ▸ prob_le_one)
+
+@[deprecated (since := "2025-04-19")] alias toReal_prob_le_one := measureReal_le_one
 
 @[simp]
 theorem one_le_prob_iff {μ : Measure α} [IsZeroOrProbabilityMeasure μ] : 1 ≤ μ s ↔ μ s = 1 :=
