@@ -120,7 +120,7 @@ instance [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R] :
 
 section OrderBot
 
-variable [LinearOrderedAddCommMonoid R] [AddLeftStrictMono R]
+variable [AddCommMonoid R] [LinearOrder R] [AddLeftStrictMono R]
 
 protected lemma nonneg (d : PseudoMetric X R) (x y : X) : 0 ≤ d x y := by
   by_contra! H
@@ -134,14 +134,14 @@ instance : OrderBot (PseudoMetric X R) where
   bot_le f _ _ := f.nonneg _ _
 
 @[simp, push_cast]
-lemma coe_finsetSup {Y : Type*} {f : Y → PseudoMetric X R} {s : Finset Y}
+lemma coe_finsetSup [IsOrderedAddMonoid R] {Y : Type*} {f : Y → PseudoMetric X R} {s : Finset Y}
     (hs : s.Nonempty) :
     ⇑(s.sup f) = s.sup' hs (f ·) := by
   induction hs using Finset.Nonempty.cons_induction with
   | singleton i => simp
   | cons a s ha hs ih => funext; simp [hs, ih]
 
-lemma finsetSup_apply {Y : Type*} {f : Y → PseudoMetric X R}
+lemma finsetSup_apply [IsOrderedAddMonoid R] {Y : Type*} {f : Y → PseudoMetric X R}
     {s : Finset Y} (hs : s.Nonempty) (x y : X) :
     s.sup f x y = s.sup' hs fun i ↦ f i x y := by
   induction hs using Finset.Nonempty.cons_induction with
@@ -174,8 +174,8 @@ instance IsUltra.sup [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRig
   calc d x z ⊔ d' x z ≤ d x y ⊔ d y z ⊔ (d' x y ⊔ d' y z) := sup_le_sup le_sup le_sup
   _ ≤ d x y ⊔ d' x y ⊔ (d y z ⊔ d' y z) := by simp [sup_comm, sup_assoc, sup_left_comm]
 
-lemma IsUltra.finsetSup {Y : Type*} [LinearOrderedAddCommMonoid R] [AddLeftStrictMono R]
-    {f : Y → PseudoMetric X R} {s : Finset Y} (h : ∀ d ∈ s, IsUltra (f d)) :
+lemma IsUltra.finsetSup {Y : Type*} [AddCommMonoid R] [LinearOrder R] [AddLeftStrictMono R]
+    [IsOrderedAddMonoid R] {f : Y → PseudoMetric X R} {s : Finset Y} (h : ∀ d ∈ s, IsUltra (f d)) :
     IsUltra (s.sup f) := by
   constructor
   intro x y z
