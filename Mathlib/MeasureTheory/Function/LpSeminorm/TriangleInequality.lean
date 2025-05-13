@@ -91,7 +91,7 @@ theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
     · simpa using ENNReal.toReal_mono ENNReal.one_ne_top h'p.le
   · simpa [LpAddConst_of_one_le h'p] using eLpNorm_add_le hf hg h'p
 
-variable (μ) in
+variable (μ ε) in
 /-- Technical lemma to control the addition of functions in `L^p` even for `p < 1`: Given `δ > 0`,
 there exists `η` such that two functions bounded by `η` in `L^p` have a sum bounded by `δ`. One
 could take `η = δ / 2` for `p ≥ 1`, but the point of the lemma is that it works also for `p < 1`.
