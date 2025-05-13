@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Ring.WithAbs
+import Mathlib.FieldTheory.Separable
 
 /-!
 # WithAbs for fields
@@ -25,8 +26,20 @@ namespace WithAbs
 
 section more_instances
 
-instance normedField [Field R] (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
+variable {R' : Type*} [Field R] [Field R']
+
+instance instField (v : AbsoluteValue R S) : Field (WithAbs v) := ‹Field R›
+
+instance normedField (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
   v.toNormedField
+
+instance [Module R R'] [FiniteDimensional R R'] (v : AbsoluteValue R S) :
+    FiniteDimensional (WithAbs v) R' :=
+  ‹FiniteDimensional R R'›
+
+ instance [Algebra R R'] [Algebra.IsSeparable R R'] (v : AbsoluteValue R S) :
+    Algebra.IsSeparable (WithAbs v) R' :=
+  ‹Algebra.IsSeparable R R'›
 
 end more_instances
 
@@ -120,5 +133,31 @@ that is locally compact, then the completion of the first normed field is also l
 theorem locallyCompactSpace [LocallyCompactSpace L] (h : ∀ x, ‖f x‖ = v x) :
     LocallyCompactSpace (v.Completion) :=
   (isClosedEmbedding_extensionEmbedding_of_comp h).locallyCompactSpace
+
+variable {w : AbsoluteValue L ℝ} {σ : WithAbs v →+* WithAbs w}
+
+abbrev mapOfComp (h : ∀ x, w (σ x) = v x) :
+    v.Completion →+* w.Completion :=
+  UniformSpace.Completion.mapRingHom σ
+    (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous
+
+omit [CompleteSpace L] in
+theorem mapOfComp_coe (h : ∀ x, w (σ x) = v x) (x : WithAbs v) : mapOfComp h x = σ x :=
+  UniformSpace.Completion.mapRingHom_coe
+    (WithAbs.isUniformInducing_of_comp h).uniformContinuous x
+
+omit [CompleteSpace L] in
+theorem mapOfComp_dist_eq (h : ∀ x, w (σ x) = v x) (x y : v.Completion) :
+    dist (mapOfComp h x) (mapOfComp h y) = dist x y := by
+  refine UniformSpace.Completion.induction_on₂ x y ?_ (fun x y => ?_)
+  · refine isClosed_eq ?_ continuous_dist
+    exact continuous_iff_continuous_dist.1 UniformSpace.Completion.continuous_extension
+  · rw [mapOfComp_coe, mapOfComp_coe, UniformSpace.Completion.dist_eq]
+    exact UniformSpace.Completion.dist_eq x y ▸
+      (WithAbs.isometry_of_comp (L := WithAbs w) h).dist_eq x y
+
+omit [CompleteSpace L] in
+theorem isometry_map_of_comp (h : ∀ x, w (σ x) = v x) : Isometry (mapOfComp h) :=
+  Isometry.of_dist_eq <| mapOfComp_dist_eq h
 
 end AbsoluteValue.Completion

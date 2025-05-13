@@ -4529,6 +4529,7 @@ import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.House
 import Mathlib.NumberTheory.NumberField.Ideal
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Dimension
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex

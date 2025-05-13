@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 
 /-!
 # Ramification of infinite places of a number field
@@ -49,6 +50,14 @@ lemma comap_id (w : InfinitePlace K) : w.comap (RingHom.id K) = w := rfl
 
 lemma comap_comp (w : InfinitePlace K) (f : F →+* K) (g : k →+* F) :
     w.comap (f.comp g) = (w.comap f).comap g := rfl
+
+@[simp]
+lemma comap_apply (w : InfinitePlace K) (f : k →+* K) (x : k) :
+    w.comap f x = w (f x) := rfl
+
+theorem comp_of_comap_eq {v : InfinitePlace k} {w : InfinitePlace K} {f : k →+* K}
+    (h : w.comap f = v) (x : k) : w (f x) = v x := by
+  simp [← h]
 
 lemma comap_mk_lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
     (mk (ComplexEmbedding.lift K φ)).comap (algebraMap k K) = mk φ := by simp
@@ -162,6 +171,11 @@ An infinite place is unramified in a field extension if the restriction has the 
 -/
 def IsUnramified : Prop := mult (w.comap (algebraMap k K)) = mult w
 
+/--
+An infinite place is ramified in a field extension if it is not unramified.
+-/
+abbrev IsRamified : Prop := ¬w.IsUnramified k
+
 variable {k}
 
 lemma isUnramified_self : IsUnramified K w := rfl
@@ -212,6 +226,17 @@ lemma isUnramified_iff :
     IsUnramified k w ↔ IsReal w ∨ IsComplex (w.comap (algebraMap k K)) := by
   rw [← not_iff_not, not_isUnramified_iff, not_or,
     not_isReal_iff_isComplex, not_isComplex_iff_isReal]
+
+theorem isRamified_iff : w.IsRamified k ↔ w.IsComplex ∧ (w.comap (algebraMap k K)).IsReal :=
+  not_isUnramified_iff
+
+theorem IsRamified.ne_conjugate {w₁ w₂ : InfinitePlace K} (h : w₂.IsRamified k) :
+    w₁.embedding ≠ ComplexEmbedding.conjugate w₂.embedding := by
+  by_cases h_eq : w₁ = w₂
+  · rw [isRamified_iff, isComplex_iff] at h
+    exact Ne.symm (h_eq ▸ h.1)
+  · contrapose! h_eq
+    rw [← mk_embedding w₁, h_eq, mk_conjugate_eq, mk_embedding]
 
 variable (k)
 
@@ -479,3 +504,168 @@ lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberFie
   · exact Finset.compl_univ
   simp only [Finset.mem_univ, forall_true_left, Finset.filter_eq_empty_iff]
   exact InfinitePlace.isUnramifiedIn K
+
+section Extension
+
+namespace NumberField.InfinitePlace
+
+open ComplexEmbedding
+
+variable {K : Type*} (L : Type*) [Field K] [Field L] [Algebra K L]
+
+/--
+If `L / K` are fields and `v` is an infinite place of `K`, then we say an infinite place `w`
+of `L` _extends_ `v` if `v` is the restriction of `w` to `K`.
+-/
+abbrev Extension (v : InfinitePlace K) :=
+  { w : InfinitePlace L // w.comap (algebraMap K L) = v }
+
+namespace Extension
+
+variable {L} {v : InfinitePlace K} (w : v.Extension L)
+
+theorem isComplex_of_isComplex (hv : v.IsComplex) :
+     w.1.IsComplex := by
+   rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv ⊢
+   let ⟨x, hx⟩ := hv
+   use algebraMap K L x
+   rw [← w.2, ← mk_embedding w.1, comap_mk] at hx
+   cases embedding_mk_eq (w.1.embedding.comp (algebraMap K L)) with
+   | inl hl => simp_all
+   | inr hr => aesop
+
+theorem isReal (hw : w.1.IsReal) : v.IsReal := by
+  simp_all only [← not_isComplex_iff_isReal]
+  exact mt w.isComplex_of_isComplex hw
+
+theorem mk_embedding_comp : mk (w.1.embedding.comp (algebraMap K L)) = v := by
+  rw [← comap_mk, w.1.mk_embedding, w.2]
+
+/-- If `w : InfinitePlace L` extends `v : InfinitePlace K`, then either `w.embedding`
+extends `v.embedding` as complex embeddings, or `conjugate w.embedding` extends `v.embedding`. -/
+theorem isExtension_or_isExtension_conjugate :
+    IsExtension v.embedding w.1.embedding ∨ IsExtension v.embedding (conjugate w.1.embedding) := by
+  cases embedding_mk_eq (w.1.embedding.comp (algebraMap K L)) with
+  | inl hl =>
+    convert Or.inl <| hl ▸ congrArg InfinitePlace.embedding w.mk_embedding_comp
+  | inr hr =>
+    convert Or.inr <| hr ▸ congrArg InfinitePlace.embedding w.mk_embedding_comp
+
+theorem isExtension_conjugate_of_not_isExtension (h : ¬IsExtension v.embedding w.1.embedding) :
+     IsExtension v.embedding (conjugate w.1.embedding) :=
+   w.isExtension_or_isExtension_conjugate.resolve_left h
+
+variable (L v)
+
+/--
+If `w` is an infinite place of `L` lying above the infinite place `v` of
+`K`, then there are two possibilities:
+- `w.embedding` extends `v.embedding`.
+- `conjugate w.embedding` extends `v.embedding`.
+`IsLift` is a class encoding the first case.
+-/
+class IsLift where
+  isExtension' : IsExtension v.embedding w.1.embedding
+
+theorem IsLift.isExtension [w.IsLift L v] : IsExtension v.embedding w.1.embedding :=
+  IsLift.isExtension'
+
+/--
+If `w` is an infinite place of `L` lying above the infinite place `v` of
+`K`, then there are two possibilities:
+- `w.embedding` extends `v.embedding`.
+- `conjugate w.embedding` extends `v.embedding`.
+`IsConjugateLift` is a class encoding the second case.
+-/
+class IsConjugateLift where
+  isExtension' : IsExtension v.embedding (conjugate w.1.embedding)
+
+theorem IsConjugateLift.isExtension [w.IsConjugateLift L v] :
+    IsExtension v.embedding (conjugate w.1.embedding) := IsConjugateLift.isExtension'
+
+theorem isLift_or_isConjugateLift (v : InfinitePlace K) (w : v.Extension L) :
+    w.IsLift L v ∨ w.IsConjugateLift L v := by
+  cases isExtension_or_isExtension_conjugate w with
+  | inl hl => exact Or.inl ⟨hl⟩
+  | inr hr => exact Or.inr ⟨hr⟩
+
+end Extension
+
+/--
+Let `v : InfinitePlace K` be a fixed infinite place. `RamifiedExtension L v` is the subtype of
+all the infinite places of `L / K` that extend `v` and are ramified over `K`.
+-/
+abbrev RamifiedExtension (v : InfinitePlace K) :=
+  { w : InfinitePlace L // w.comap (algebraMap K L) = v ∧ w.IsRamified K }
+
+/--
+Let `v : InfinitePlace K` be a fixed infinite place. `UnramifiedExtension L v` is the subtype of
+all the infinite places of `L / K` that extend `v` and are unramified over `K`.
+-/
+abbrev UnramifiedExtension (v : InfinitePlace K) :=
+  { w : InfinitePlace L // w.comap (algebraMap K L) = v ∧ w.IsUnramified K }
+
+variable {L} {v : InfinitePlace K}
+
+/--
+Construct a `v.RamifiedExtension L` term from a `w : v.Extension L` such that
+`w.1.IsRamified K`.
+-/
+def Extension.toRamifiedExtension {w : v.Extension L} (h : w.1.IsRamified K) :
+    v.RamifiedExtension L := ⟨w.1, ⟨w.2, h⟩⟩
+
+/--
+Construct a `v.UnramifiedExtension L` term from a `w : v.Extension L` such that
+`w.1.IsUnramified K`.
+-/
+def Extension.toUnramifiedExtension {w : v.Extension L} (h : w.1.IsUnramified K) :
+    v.UnramifiedExtension L := ⟨w.1, ⟨w.2, h⟩⟩
+
+namespace RamifiedExtension
+
+theorem comap_eq (w : v.RamifiedExtension L) : w.1.comap (algebraMap K L) = v := w.2.1
+
+theorem isRamified (w : v.RamifiedExtension L) : w.1.IsRamified K := w.2.2
+
+theorem isReal_comap (w : v.RamifiedExtension L) : (w.1.comap (algebraMap K L)).IsReal :=
+  (isRamified_iff.1 w.isRamified).2
+
+instance : Coe (v.RamifiedExtension L) (v.Extension L) where
+  coe w := ⟨w.1, w.2.1⟩
+
+theorem isReal (w : v.RamifiedExtension L) : v.IsReal :=
+  w.comap_eq ▸ w.isReal_comap
+
+theorem isComplex (w : v.RamifiedExtension L) : (w.1 : InfinitePlace L).IsComplex :=
+  (isRamified_iff.1 w.isRamified).1
+
+end RamifiedExtension
+
+namespace UnramifiedExtension
+
+theorem comap_eq (w : UnramifiedExtension L v) : w.1.comap (algebraMap K L) = v := w.2.1
+
+theorem isUnramified (w : UnramifiedExtension L v) : w.1.IsUnramified K := w.2.2
+
+instance : Coe (v.UnramifiedExtension L) (v.Extension L) where
+  coe w := ⟨w.1, w.comap_eq⟩
+
+end UnramifiedExtension
+
+variable (K) (w : InfinitePlace L)
+
+open scoped Classical in
+/-- If `w` is unramified over `K` then the ramification index is `1`, else `2`. -/
+noncomputable abbrev ramificationIdx := if w.IsUnramified K then 1 else 2
+
+variable {w}
+
+theorem ramificationIdx_eq_one (h : w.IsUnramified K) : ramificationIdx K w = 1 := by
+  rw [ramificationIdx, if_pos h]
+
+theorem ramificationIdx_eq_two (h : w.IsRamified K) : ramificationIdx K w = 2 := by
+  rw [ramificationIdx, if_neg h]
+
+end NumberField.InfinitePlace
+
+end Extension
