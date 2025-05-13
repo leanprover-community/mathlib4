@@ -42,9 +42,6 @@ lemma eqToHom_toOrderHom {x y : SimplexCategory} (h : WithInitial.of x = WithIni
   subst h
   rfl
 
-/-- We will need to make repeated use of this lemma, so we abstract it here. -/
-private lemma eq_comm (n m : ℕ) : (n + 1) + m = n + m + 1 := by simp [Nat.add_assoc, Nat.add_comm 1]
-
 /-- An auxiliary definition for the tensor product of two objects in `AugmentedSimplexCategory`. -/
 -- (Impl. note): This definition could easily be inlined in
 -- the definition of `tensorObjOf` below, but having it type check directly as an element
@@ -78,8 +75,8 @@ def tensorHomOf {x₁ y₁ x₂ y₂: SimplexCategory} (f₁ : x₁ ⟶ y₁) (f
         · case left.right i j => omega
         · case right.left i j => omega
         · case right.right i j => exact f₂.toOrderHom.monotone h }
-  (eqToHom (congrArg _ (eq_comm _ _)).symm ≫ (SimplexCategory.mkHom f₁) ≫
-    eqToHom (congrArg _ (eq_comm _ _)) : _ ⟶ ⦋y₁.len + y₂.len + 1⦌)
+  (eqToHom (congrArg _ (Nat.succ_add _ _)).symm ≫ (SimplexCategory.mkHom f₁) ≫
+    eqToHom (congrArg _ (Nat.succ_add _ _)) : _ ⟶ ⦋y₁.len + y₂.len + 1⦌)
 
 /-- The action of the tensor product on maps of `AugmentedSimplexCategory`. -/
 def tensorHom {x₁ y₁ x₂ y₂: AugmentedSimplexCategory} (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) :
@@ -88,10 +85,10 @@ def tensorHom {x₁ y₁ x₂ y₂: AugmentedSimplexCategory} (f₁ : x₁ ⟶ y
   | .of _, .of _, .of _, .of _, f₁, f₂ => tensorHomOf f₁ f₂
   | .of _, .of y₁, .star, .of y₂, f₁, _ =>
     f₁ ≫ ((SimplexCategory.mkHom <| (Fin.castAddOrderEmb (y₂.len + 1)).toOrderHom) ≫
-      eqToHom (congrArg _ (eq_comm _ _)) : ⦋y₁.len⦌ ⟶ ⦋y₁.len + y₂.len + 1⦌)
+      eqToHom (congrArg _ (Nat.succ_add _ _)) : ⦋y₁.len⦌ ⟶ ⦋y₁.len + y₂.len + 1⦌)
   | .star, .of y₁, .of _, .of y₂, _, f₂ =>
     f₂ ≫ ((SimplexCategory.mkHom <| (Fin.natAddOrderEmb (y₁.len + 1)).toOrderHom) ≫
-      eqToHom (congrArg _ (eq_comm _ _)) : ⦋y₂.len⦌ ⟶ ⦋y₁.len + y₂.len + 1⦌)
+      eqToHom (congrArg _ (Nat.succ_add _ _)) : ⦋y₂.len⦌ ⟶ ⦋y₁.len + y₂.len + 1⦌)
   | .star, .star, .of _, .of _, _, f₂ => f₂
   | .of _, .of _, .star, .star, f₁, _ => f₁
   | .star, _, .star, _, _, _ => WithInitial.starInitial.to _
@@ -105,7 +102,7 @@ def associator (x y z : AugmentedSimplexCategory) :
   match x, y, z with
   | .of x, .of y, .of z =>
     eqToIso (congrArg (fun j ↦ WithInitial.of <| SimplexCategory.mk j)
-      (by simp [eq_comm, Nat.add_assoc]))
+      (by simp +arith))
   | .star, .star, .star => Iso.refl _
   | .star, .of _, .star => Iso.refl _
   | .star, .star, .of _ => Iso.refl _
@@ -148,6 +145,16 @@ lemma tensorHom_id {x₁ x₂ : AugmentedSimplexCategory} (y : AugmentedSimplexC
     (f : x₁ ⟶ x₂) : f ⊗ 𝟙 y = f ▷ y :=
   rfl
 
+@[local simp]
+lemma whiskerLeft_id_star {x: AugmentedSimplexCategory} : x ◁ 𝟙 WithInitial.star = 𝟙 _ := by
+  cases x <;>
+  rfl
+
+@[local simp]
+lemma id_star_whiskerRight {x: AugmentedSimplexCategory} : 𝟙 WithInitial.star ▷ x = 𝟙 _ := by
+  cases x <;>
+  rfl
+
 /-- Thanks to `tensorUnit` being initial in `AugmentedSimplexCategory`, we get
 a morhpim `Δ ⟶ Δ ⊗ Δ'` for every pair of objects `Δ, Δ'`. -/
 def φ₁ (x y : AugmentedSimplexCategory) : x ⟶ x ⊗ y :=
@@ -167,17 +174,17 @@ abbrev φ₁' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.dow
 abbrev φ₂' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| φ₂ (.of x) (.of y)
 
 lemma φ₁'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
-    (φ₁' x y).toOrderHom i = (i.castAdd _).cast (eq_comm x.len (y.len + 1)) := by
-  simp only [SimplexCategory.len_mk, φ₁', WithInitial.down, φ₁, MonoidalCategoryStruct.rightUnitor,
-    rightUnitor, tensorObj, Iso.refl_inv, MonoidalCategoryStruct.whiskerLeft, tensorHom,
-    SimplexCategory.mk_len, Nat.add_eq, SimplexCategory.mkHom, Category.id_comp,
-    SimplexCategory.comp_toOrderHom, SimplexCategory.eqToHom_toOrderHom,
-    SimplexCategory.Hom.toOrderHom_mk, OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe,
-    OrderIso.coe_toOrderEmbedding, Function.comp_apply, Fin.castOrderIso_apply, Fin.cast_inj]
+    (φ₁' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
+  simp only [φ₁', WithInitial.down, φ₁, MonoidalCategoryStruct.rightUnitor, rightUnitor, tensorObj,
+    Iso.refl_inv, MonoidalCategoryStruct.whiskerLeft, tensorHom, SimplexCategory.mk_len, Nat.add_eq,
+    SimplexCategory.mkHom, Category.id_comp, SimplexCategory.comp_toOrderHom,
+    SimplexCategory.len_mk, SimplexCategory.eqToHom_toOrderHom, SimplexCategory.Hom.toOrderHom_mk,
+    OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, OrderIso.coe_toOrderEmbedding,
+    Function.comp_apply, Fin.castOrderIso_apply, Fin.cast_inj]
   rfl
 
 lemma φ₂'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
-    (φ₂' x y).toOrderHom i = (i.natAdd _).cast (eq_comm x.len (y.len + 1)) := by
+    (φ₂' x y).toOrderHom i = (i.natAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
   simp only [SimplexCategory.len_mk, φ₂', WithInitial.down, φ₂, MonoidalCategoryStruct.leftUnitor,
     leftUnitor, tensorObj, Iso.refl_inv, MonoidalCategoryStruct.whiskerRight, tensorHom,
     SimplexCategory.mk_len, Nat.add_eq, SimplexCategory.mkHom, Category.id_comp,
@@ -188,6 +195,7 @@ lemma φ₂'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
 
 /-- We can characterize morphisms out of a tensor product via their precomposition with `φ₁` and
 `φ₂`. -/
+@[ext]
 theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ z)
     (h₁ : φ₁ _ _ ≫ f = φ₁ _ _ ≫ g)
     (h₂ : φ₂ _ _ ≫ f = φ₂ _ _ ≫ g)
@@ -198,8 +206,8 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
     change φ₁' _ _ ≫ f = φ₁' _ _ ≫ g at h₁
     change φ₂' _ _ ≫ f = φ₂' _ _ ≫ g at h₂
     ext i
-    set j : Fin ((x.len + 1) + (y.len + 1)) := i.cast (eq_comm x.len (y.len + 1)).symm
-    haveI : i = j.cast (eq_comm x.len (y.len + 1)) := rfl
+    set j : Fin ((x.len + 1) + (y.len + 1)) := i.cast (Nat.succ_add x.len (y.len + 1)).symm
+    haveI : i = j.cast (Nat.succ_add x.len (y.len + 1)) := rfl
     rw [this]
     cases j using Fin.addCases (m := x.len + 1) (n := y.len + 1) with
     | left j =>
@@ -209,26 +217,12 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
       rw [SimplexCategory.Hom.ext_iff, OrderHom.ext_iff] at h₂
       simpa [← φ₂'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₂ j
   | .of x, .star, .of z, f, g => by
-      simp only [φ₁, φ₂, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self] at h₁ h₂
-      conv at h₁ =>
-        conv =>
-          lhs
-          arg 1
-          equals 𝟙 _ => rfl
-        rhs
-        arg 1
-        equals 𝟙 _ => rfl
+      simp only [φ₁, φ₂, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
+        whiskerLeft_id_star] at h₁
       simpa [Category.id_comp f, Category.id_comp g] using h₁
   | .star, .of y, .of z, f, g => by
-      simp only [φ₁, φ₂, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self] at h₁ h₂
-      conv at h₂ =>
-        conv =>
-          lhs
-          arg 1
-          equals 𝟙 _ => rfl
-        rhs
-        arg 1
-        equals 𝟙 _ => rfl
+      simp only [φ₁, φ₂, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
+        id_star_whiskerRight] at h₂
       simpa [Category.id_comp f, Category.id_comp g] using h₂
   | .star, .star, .of z, f, g => rfl
   | .star, .star, .star, f, g => rfl
@@ -374,34 +368,21 @@ lemma φ₂_comp_φ₁_comp_associator (x y z : AugmentedSimplexCategory) :
 theorem tensor_comp {x₁ y₁ z₁ x₂ y₂ z₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) (g₁ : y₁ ⟶ z₁) (g₂ : y₂ ⟶ z₂) :
     (f₁ ≫ g₁) ⊗ (f₂ ≫ g₂) = (f₁ ⊗ f₂) ≫ (g₁ ⊗ g₂) := by
-  apply tensorObj_hom_ext <;> simp
+  aesop_cat
 
 theorem tensor_id (x y : AugmentedSimplexCategory) : (𝟙 x) ⊗ (𝟙 y) = 𝟙 (x ⊗ y) := by
-  apply tensorObj_hom_ext
+  ext
   · simpa [φ₁, MonoidalCategoryStruct.whiskerLeft, MonoidalCategoryStruct.whiskerRight] using
       (tensor_comp (𝟙 x) (WithInitial.starInitial.to y) (𝟙 x) (𝟙 y)).symm
   · simpa [φ₂, MonoidalCategoryStruct.whiskerLeft, MonoidalCategoryStruct.whiskerRight] using
       (tensor_comp (WithInitial.starInitial.to x) (𝟙 y) (𝟙 x) (𝟙 y)).symm
 
-lemma associator_naturality {x₁ x₂ x₃ y₁ y₂ y₃ : AugmentedSimplexCategory}
-    (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) (f₃ : x₃ ⟶ y₃) :
-    ((f₁ ⊗ f₂) ⊗ f₃) ≫ (α_ y₁ y₂ y₃).hom = (α_ x₁ x₂ x₃).hom ≫ (f₁ ⊗ (f₂ ⊗ f₃)) := by
-  apply tensorObj_hom_ext
-  · apply tensorObj_hom_ext <;> simp
-  · simp
-
 instance : MonoidalCategory AugmentedSimplexCategory :=
   MonoidalCategory.ofTensorHom
     (tensor_id := tensor_id)
     (tensor_comp := tensor_comp)
-    (associator_naturality := associator_naturality)
     (pentagon := fun w x y z ↦ by
-      apply tensorObj_hom_ext
-      · apply tensorObj_hom_ext
-        · apply tensorObj_hom_ext
-          · simp [← id_tensorHom, ← tensorHom_id]
-          · simp [← id_tensorHom, ← tensorHom_id]
-        · simp [← id_tensorHom, ← tensorHom_id]
-      · simp [← id_tensorHom, ← tensorHom_id])
+      ext <;>
+      simp [← id_tensorHom, ← tensorHom_id])
 
 end AugmentedSimplexCategory
