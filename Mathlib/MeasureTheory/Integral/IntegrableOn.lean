@@ -98,7 +98,7 @@ theorem integrableOn_empty : IntegrableOn f ∅ μ := by
 theorem integrableOn_univ : IntegrableOn f univ μ ↔ Integrable f μ := by
   rw [IntegrableOn, Measure.restrict_univ]
 
-theorem integrableOn_zero : IntegrableOn (fun _ => (0 : E)) s μ :=
+theorem integrableOn_zero : IntegrableOn (fun _ => (0 : ε')) s μ :=
   integrable_zero _ _ _
 
 @[simp]
@@ -169,15 +169,15 @@ theorem integrableOn_union {f : α → E} :
     IntegrableOn f (s ∪ t) μ ↔ IntegrableOn f s μ ∧ IntegrableOn f t μ :=
   ⟨fun h => ⟨h.left_of_union, h.right_of_union⟩, fun h => h.1.union h.2⟩
 
--- TODO: generalise this lemma to enorms!
 @[simp]
-theorem integrableOn_singleton_iff {f : α → E} {x : α} [MeasurableSingletonClass α] :
+theorem integrableOn_singleton_iff {f : α → ε'} {x : α} [MeasurableSingletonClass α] (hfx : ‖f x‖ₑ ≠ ⊤) :
     IntegrableOn f {x} μ ↔ f x = 0 ∨ μ {x} < ∞ := by
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
     filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
     simp only [mem_singleton_iff.1 ha]
-  rw [IntegrableOn, integrable_congr this, integrable_const_iff, isFiniteMeasure_restrict,
-    lt_top_iff_ne_top]
+  rw [IntegrableOn, integrable_congr this, integrable_const_iff_enorm, isFiniteMeasure_restrict,
+    lt_top_iff_ne_top, enorm_eq_zero]
+  exact hfx
 
 -- This lemma uses integrableOn_union, hence transitively Integrable.add_measure.
 @[simp]
@@ -218,38 +218,37 @@ theorem integrableOn_add_measure {f : α → E} :
     ⟨h.mono_measure (Measure.le_add_right le_rfl), h.mono_measure (Measure.le_add_left le_rfl)⟩,
     fun h => h.1.add_measure h.2⟩
 
--- TODO: investigate this lemma and its friends
 theorem _root_.MeasurableEmbedding.integrableOn_map_iff [MeasurableSpace β] {e : α → β}
-    (he : MeasurableEmbedding e) {f : β → E} {μ : Measure α} {s : Set β} :
+    (he : MeasurableEmbedding e) {f : β → ε} {μ : Measure α} {s : Set β} :
     IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
   simp_rw [IntegrableOn, he.restrict_map, he.integrable_map_iff]
 
 theorem _root_.MeasurableEmbedding.integrableOn_iff_comap [MeasurableSpace β] {e : α → β}
-    (he : MeasurableEmbedding e) {f : β → E} {μ : Measure β} {s : Set β} (hs : s ⊆ range e) :
+    (he : MeasurableEmbedding e) {f : β → ε} {μ : Measure β} {s : Set β} (hs : s ⊆ range e) :
     IntegrableOn f s μ ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) (μ.comap e) := by
   simp_rw [← he.integrableOn_map_iff, he.map_comap, IntegrableOn,
     Measure.restrict_restrict_of_subset hs]
 
 theorem _root_.MeasurableEmbedding.integrableOn_range_iff_comap [MeasurableSpace β] {e : α → β}
-    (he : MeasurableEmbedding e) {f : β → E} {μ : Measure β} :
+    (he : MeasurableEmbedding e) {f : β → ε} {μ : Measure β} :
     IntegrableOn f (range e) μ ↔ Integrable (f ∘ e) (μ.comap e) := by
   rw [he.integrableOn_iff_comap .rfl, preimage_range, integrableOn_univ]
 
-theorem integrableOn_iff_comap_subtypeVal {f : α → E} (hs : MeasurableSet s) :
-    IntegrableOn f s μ ↔ Integrable (f ∘ (↑) : s → E) (μ.comap (↑)) := by
+theorem integrableOn_iff_comap_subtypeVal {f : α → ε} (hs : MeasurableSet s) :
+    IntegrableOn f s μ ↔ Integrable (f ∘ (↑) : s → ε) (μ.comap (↑)) := by
   rw [← (MeasurableEmbedding.subtype_coe hs).integrableOn_range_iff_comap, Subtype.range_val]
 
-theorem integrableOn_map_equiv [MeasurableSpace β] (e : α ≃ᵐ β) {f : β → E} {μ : Measure α}
+theorem integrableOn_map_equiv [MeasurableSpace β] (e : α ≃ᵐ β) {f : β → ε} {μ : Measure α}
     {s : Set β} : IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
   simp only [IntegrableOn, e.restrict_map, integrable_map_equiv e]
 
 theorem MeasurePreserving.integrableOn_comp_preimage [MeasurableSpace β] {e : α → β} {ν}
-    (h₁ : MeasurePreserving e μ ν) (h₂ : MeasurableEmbedding e) {f : β → E} {s : Set β} :
+    (h₁ : MeasurePreserving e μ ν) (h₂ : MeasurableEmbedding e) {f : β → ε} {s : Set β} :
     IntegrableOn (f ∘ e) (e ⁻¹' s) μ ↔ IntegrableOn f s ν :=
   (h₁.restrict_preimage_emb h₂ s).integrable_comp_emb h₂
 
 theorem MeasurePreserving.integrableOn_image [MeasurableSpace β] {e : α → β} {ν}
-    (h₁ : MeasurePreserving e μ ν) (h₂ : MeasurableEmbedding e) {f : β → E} {s : Set α} :
+    (h₁ : MeasurePreserving e μ ν) (h₂ : MeasurableEmbedding e) {f : β → ε} {s : Set α} :
     IntegrableOn f (e '' s) ν ↔ IntegrableOn (f ∘ e) s μ :=
   ((h₁.restrict_image_emb h₂ s).integrable_comp_emb h₂).symm
 
@@ -277,7 +276,6 @@ theorem IntegrableOn.indicator (h : IntegrableOn f s μ) (ht : MeasurableSet t) 
     IntegrableOn (indicator t f) s μ :=
   Integrable.indicator h ht
 
--- TODO: try to generalise this lemma; start with indicatorConstLp
 theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Integrable (indicatorConstLp p hs hμs c) μ := by
@@ -286,6 +284,8 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
   exact .inr hμs
 
 end indicator
+
+-- TODO: can the following lemmas be generalised to enorms?
 
 /-- If a function is integrable on a set `s` and nonzero there, then the measurable hull of `s` is
 well behaved: the restriction of the measure to `toMeasurable μ s` coincides with its restriction
