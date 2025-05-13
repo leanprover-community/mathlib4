@@ -199,7 +199,7 @@ variable {R}
 variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, (X i).toModuleCat ⟶ M)
 
 /-- The coinduced topology on `M` from a family of continuous linear map into `M`, which is the
-finest topology that makes it into a topological module and makes every maps continuous. -/
+finest topology that makes it into a topological module and makes every map continuous. -/
 def coinduced : TopModuleCat R :=
   letI : TopologicalSpace M := sInf { t | @ContinuousSMul R M _ _ t ∧ @ContinuousAdd M t _ ∧
       ∀ i, (X i).topologicalSpace.coinduced (f i) ≤ t }
@@ -333,8 +333,8 @@ end Limit
 
 section Adjunction
 
-/-- The functor equipping a module with the finest possible topology.
-This is left adjoint to the forgetful functor. -/
+/-- The functor equipping a module over a topological ring with the finest possible
+topology making it into a topological module. This is left adjoint to the forgetful functor. -/
 def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where
   obj X :=
     letI := moduleTopology R X
