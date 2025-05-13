@@ -38,7 +38,7 @@ under the following conditions:
 * `H_zero` : If an integral point `(x,0)` lies on the hyperbola `H`, then `claim` is true.
 * `H_diag` : If an integral point `(x,x)` lies on the hyperbola `H`, then `claim` is true.
 * `H_desc` : If `(x,y)` is an integral point on the hyperbola `H`,
-with `x < y` then there exists a “smaller” point on `H`: a point `(x',y')` with `x' < y' ≤ x`.
+  with `x < y` then there exists a “smaller” point on `H`: a point `(x',y')` with `x' < y' ≤ x`.
 
 For reasons of usability, the hyperbola `H` is implemented as an arbitrary predicate.
 (In question 6 of IMO1988, where this proof technique was first developed,
