@@ -95,27 +95,25 @@ def moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom where
   map_add' x y := by aesop
   map_smul' a x := by aesop
 
-/-- The homology of `S`, defined as the quotient of the kernel of `S.g` by
-the image of `S.moduleCatToCycles` -/
-abbrev moduleCatHomology :=
-  ModuleCat.of R (LinearMap.ker S.g.hom ⧸ LinearMap.range S.moduleCatToCycles)
-
-/-- The canonical map `ModuleCat.of R (LinearMap.ker S.g) ⟶ S.moduleCatHomology`. -/
-abbrev moduleCatHomologyπ : ModuleCat.of R (LinearMap.ker S.g.hom) ⟶ S.moduleCatHomology :=
-  ModuleCat.ofHom (LinearMap.range S.moduleCatToCycles).mkQ
-
 /-- The explicit left homology data of a short complex of modules that is
-given by a kernel and a quotient given by the `LinearMap` API. -/
+given by a kernel and a quotient given by the `LinearMap` API. The projections to `K` and `H` are
+not simp lemmas because the generic lemmas about `LeftHomologyData` are more useful here. -/
 @[simps! i_hom π_hom, simps! -isSimp K H]
 def moduleCatLeftHomologyData : S.LeftHomologyData where
   K := ModuleCat.of R (LinearMap.ker S.g.hom)
-  H := S.moduleCatHomology
+  H := ModuleCat.of R (LinearMap.ker S.g.hom ⧸ LinearMap.range S.moduleCatToCycles)
   i := ModuleCat.ofHom (LinearMap.ker S.g.hom).subtype
-  π := S.moduleCatHomologyπ
+  π := ModuleCat.ofHom (LinearMap.range S.moduleCatToCycles).mkQ
   wi := by aesop
   hi := ModuleCat.kernelIsLimit _
   wπ := by aesop
   hπ := ModuleCat.cokernelIsColimit (ModuleCat.ofHom S.moduleCatToCycles)
+
+@[deprecated "This abbreviation is now inlined" (since := "2025-05-13")]
+alias moduleCatHomology := moduleCatLeftHomologyData_H
+
+@[deprecated "This abbreviation is now inlined" (since := "2025-05-13")]
+alias moduleCatHomologyπ := moduleCatLeftHomologyData_π_hom
 
 @[deprecated (since := "2025-05-09")]
 alias moduleCatLeftHomologyData_i := moduleCatLeftHomologyData_i_hom
@@ -141,9 +139,6 @@ lemma moduleCatLeftHomologyData_descH_hom {M : ModuleCat R}
 lemma moduleCatLeftHomologyData_liftK_hom {M : ModuleCat R} (φ : M ⟶ S.X₂) (h : φ ≫ S.g = 0) :
     (S.moduleCatLeftHomologyData.liftK φ h).hom =
       φ.hom.codRestrict (LinearMap.ker S.g.hom) (fun m => congr($h m)) := rfl
-
-instance : Epi S.moduleCatHomologyπ :=
-  (inferInstance : Epi S.moduleCatLeftHomologyData.π)
 
 /-- Given a short complex `S` of modules, this is the isomorphism between
 the abstract `S.cycles` of the homology API and the more concrete description as
