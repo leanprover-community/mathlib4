@@ -8,6 +8,7 @@ import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Topology.Hom.ContinuousEvalConst
 
 /-!
 # Bounded linear maps
@@ -321,19 +322,6 @@ theorem ContinuousLinearMap.mk'_isLinearMap
   · intro x y; ext z; simp[(hfx z).2]
 
 @[fun_prop]
-theorem ContinuousLinearMap.mk'_continuous
-    {R : Type*} [NormedField R]
-    {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
-    {M₂ : Type*} [TopologicalSpace M₂] [AddCommGroup M₂] [Module R M₂]
-    {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃] [Module R M₃] [IsTopologicalAddGroup M₃]
-    (f : M → M₂ → M₃)
-    (hfy : ∀ x, IsLinearMap R (f x ·))
-    (hf : Continuous ↿f) :
-    Continuous (fun x => fun y =>L[R] f x y) := by
-  constructor
-  intro s hs
-
-@[fun_prop]
 theorem ContinuousLinearMap.mk_continuous
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     {M : Type*} [TopologicalSpace M]
@@ -349,6 +337,19 @@ theorem ContinuousLinearMap.mk_continuous
         map_smul' := (hfy x).2,
         cont := by fun_prop : M₂ →L[𝕜] M₃ }) :=
   continuous_clm_apply.2 (fun y ↦ by simp; fun_prop)
+
+@[fun_prop]
+theorem ContinuousLinearMap.mk'_continuous
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {M : Type*} [TopologicalSpace M]
+    {M₂ : Type*} [NormedAddCommGroup M₂] [NormedSpace 𝕜 M₂]
+    {M₃ : Type*} [NormedAddCommGroup M₃] [NormedSpace 𝕜 M₃]
+    [FiniteDimensional 𝕜 M₂]
+    (f : M → M₂ → M₃)
+    (hfy : ∀ x, IsLinearMap 𝕜 (f x ·))
+    (hf : Continuous ↿f) :
+    Continuous (fun x => fun y =>L[𝕜] f x y) :=
+  ContinuousLinearMap.mk_continuous f hfy hf
 
 @[fun_prop]
 theorem ContinuousLinearMap.isLinearMap_apply
@@ -370,16 +371,19 @@ theorem ContinuousLinearMap.continuous_apply
     {M : Type*} [TopologicalSpace M]
     {M₂ : Type*} [TopologicalSpace M₂] [AddCommGroup M₂] [Module R M₂]
     {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃] [Module R M₃]
-    [IsTopologicalAddGroup M₃] [ContinuousConstSMul R M₃]
+    [IsTopologicalAddGroup M₃] [ContinuousEvalConst (M₂ →L[R] M₃) M₂ M₃]
     (f : M → M₂ →L[R] M₃) (y : M₂)
     (hf : Continuous f) :
     Continuous (fun x : M => f x y) := by
-  (continuous_eval_const y).comp hf
+  exact (ContinuousEvalConst.continuous_eval_const y).comp hf
 
 @[fun_prop]
-theorem ContinuousLinearMap.mk'_isBoundedLinearMap (f : E → F → G)
-    (hfy : ∀ x, IsLinearMap 𝕜 (f x ·))
-    (hfx : ∀ y, IsLinearMap 𝕜 (f · y))
+theorem ContinuousLinearMap.mk'_isBoundedLinearMap
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [FiniteDimensional 𝕜 F]
+    {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    (f : E → F → G) (hfy : ∀ x, IsLinearMap 𝕜 (f x ·)) (hfx : ∀ y, IsLinearMap 𝕜 (f · y))
     (hf : Continuous ↿f) :
     IsBoundedLinearMap 𝕜 (fun x => fun y =>L[𝕜] f x y) := by
   apply (IsBoundedLinearMap.isLinearMap_and_continuous_iff_isBoundedLinearMap _).1
