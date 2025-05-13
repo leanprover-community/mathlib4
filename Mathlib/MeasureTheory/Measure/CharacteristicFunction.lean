@@ -6,7 +6,6 @@ Authors: Jakob Stiefel, Rémy Degenne, Thomas Zhu
 import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.SpecialFunctions.Integrals
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
 import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 
