@@ -98,7 +98,7 @@ theorem IntermediateField.linearDisjoint_of_isPurelyInseparable_of_isSeparable
   have ⟨ι, ⟨b⟩⟩ := Basis.exists_basis F S
   .of_basis_left b <| b.linearIndependent.map' S.val.toLinearMap
     (LinearMap.ker_eq_bot_of_injective S.val.injective)
-    |>.map_of_isPurelyInseparable_of_isSeparable E fun i ↦ by 
+    |>.map_of_isPurelyInseparable_of_isSeparable E fun i ↦ by
       simpa only [IsSeparable, minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i)
 
 namespace Field
