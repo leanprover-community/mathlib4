@@ -98,10 +98,7 @@ elab_rules : command
   let deprecation ← mkDeprecation
   msgs := msgs.push ""
   for fname in onlyPastFiles do
-    let file ← IO.Process.run {
-      cmd := "git"
-      args := #["show", s!"{pastHash}:{fname}"]
-    }
+    let file ← IO.Process.run {cmd := "git", args := #["show", s!"{pastHash}:{fname}"]}
     let fileHeader ← getHeader fname file false
     let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
     msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
