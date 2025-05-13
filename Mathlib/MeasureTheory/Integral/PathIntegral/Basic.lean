@@ -18,13 +18,15 @@ and prove basic properties of this operation.
 
 open MeasureTheory unitInterval Topology Set Interval AffineMap
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] {a b : E}
+variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b : E}
 
 /-- The function `t ↦ ω (γ t) (γ' t)` which appears in the definition of a path integral.
 
 This definition is used to factor out common parts of lemmas about `Pa -/
-noncomputable def pathIntegralFun (ω : E → E →L[ℝ] F) (γ : Path a b) (t : ℝ) : F :=
+@[irreducible]
+noncomputable def pathIntegralFun (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) : F :=
+  letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   ω (γ.extend t) (derivWithin γ.extend I t)
 
 /-- A 1-form `ω` is *path integrable* along a path `γ`,
@@ -33,16 +35,18 @@ if the function `pathIntegralFun ω γ t = ω (γ t) (γ' t)` is integrable on `
 The actual definition uses `Path.extend γ`,
 because both interval integrals and derivatives expect globally defined functions.
 -/
-def PathIntegrable (ω : E → E →L[ℝ] F) (γ : Path a b) : Prop :=
+def PathIntegrable (ω : E → E →L[𝕜] F) (γ : Path a b) : Prop :=
   IntervalIntegrable (pathIntegralFun ω γ) volume 0 1
 
-/-- Integral of a 1-form `ω : E → E →L[ℝ] F` along a path `γ`,
+/-- Integral of a 1-form `ω : E → E →L[𝕜] F` along a path `γ`,
 defined as $\int_0^1 \omega(\gamma(t))(\gamma'(t))$.
 
 The actual definition uses `pathIntegralFun` which uses `Path.extend γ`
 and `derivWithin (Path.extend γ) (Set.Icc 0 1) t`,
 because calculus-related definitions in Mathlib expect globally defined functions as arguments. -/
-noncomputable def pathIntegral (ω : E → E →L[ℝ] F) (γ : Path a b) : F :=
+@[irreducible]
+noncomputable def pathIntegral (ω : E → E →L[𝕜] F) (γ : Path a b) : F :=
+  letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
   ∫ t in (0)..1, pathIntegralFun ω γ t
 
 -- TODO: use `∈`
@@ -52,9 +56,14 @@ notation3 "∫ᵖ "(...)" in " γ ", "r:60:(scoped ω => pathIntegral ω γ) => 
 
 /-- Path integral is defined using Bochner integral,
 thus it is defined as zero whenever the codomain is not a complete space. -/
-theorem pathIntegral_of_not_completeSpace (h : ¬CompleteSpace F) (ω : E → E →L[ℝ] F)
+theorem pathIntegral_of_not_completeSpace (h : ¬CompleteSpace F) (ω : E → E →L[𝕜] F)
     (γ : Path a b) : ∫ᵖ x in γ, ω x = 0 := by
   simp [pathIntegral, intervalIntegral, integral, h]
+
+theorem pathIntegralFun_def [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) :
+    pathIntegralFun ω γ t = ω (γ.extend t) (derivWithin γ.extend I t) := by
+  rw [pathIntegralFun]
+  congr
 
 /-!
 ### Operations on paths
@@ -62,30 +71,31 @@ theorem pathIntegral_of_not_completeSpace (h : ¬CompleteSpace F) (ω : E → E 
 
 section PathOperations
 
-variable {c d : E} {ω : E → E →L[ℝ] F} {γ γab : Path a b} {γbc : Path b c} {t : ℝ}
+variable {c d : E} {ω : E → E →L[𝕜] F} {γ γab : Path a b} {γbc : Path b c} {t : ℝ}
 
 @[simp]
-theorem pathIntegralFun_refl (ω : E → E →L[ℝ] F) (a : E) : pathIntegralFun ω (.refl a) = 0 := by
+theorem pathIntegralFun_refl (ω : E → E →L[𝕜] F) (a : E) : pathIntegralFun ω (.refl a) = 0 := by
   ext
   simp [pathIntegralFun, ← Function.const_def]
 
 @[simp]
-theorem pathIntegral_refl (ω : E → E →L[ℝ] F) (a : E) : ∫ᵖ x in .refl a, ω x = 0 := by
+theorem pathIntegral_refl (ω : E → E →L[𝕜] F) (a : E) : ∫ᵖ x in .refl a, ω x = 0 := by
   simp [pathIntegral]
 
 @[simp]
-theorem PathIntegrable.refl (ω : E → E →L[ℝ] F) (a : E) : PathIntegrable ω (.refl a) := by
+theorem PathIntegrable.refl (ω : E → E →L[𝕜] F) (a : E) : PathIntegrable ω (.refl a) := by
   simp [PathIntegrable, Pi.zero_def]
 
 @[simp]
-theorem pathIntegralFun_cast (ω : E → E →L[ℝ] F) (γ : Path a b) (hc : c = a) (hd : d = b) :
-    pathIntegralFun ω (γ.cast hc hd) = pathIntegralFun ω γ :=
-  rfl
+theorem pathIntegralFun_cast (ω : E → E →L[𝕜] F) (γ : Path a b) (hc : c = a) (hd : d = b) :
+    pathIntegralFun ω (γ.cast hc hd) = pathIntegralFun ω γ := by
+  unfold pathIntegralFun
+  rw [Path.extend_cast]
 
 @[simp]
-theorem pathIntegral_cast (ω : E → E →L[ℝ] F) (γ : Path a b) (hc : c = a) (hd : d = b) :
-    ∫ᵖ x in γ.cast hc hd, ω x = ∫ᵖ x in γ, ω x :=
-  rfl
+theorem pathIntegral_cast (ω : E → E →L[𝕜] F) (γ : Path a b) (hc : c = a) (hd : d = b) :
+    ∫ᵖ x in γ.cast hc hd, ω x = ∫ᵖ x in γ, ω x := by
+  simp [pathIntegral]
 
 @[simp]
 theorem PathIntegrable.cast_iff (hc : c = a) (hd : d = b) :
@@ -93,12 +103,12 @@ theorem PathIntegrable.cast_iff (hc : c = a) (hd : d = b) :
 
 protected alias ⟨_, PathIntegrable.cast⟩ := PathIntegrable.cast_iff
 
-theorem pathIntegralFun_symm_apply (ω : E → E →L[ℝ] F) (γ : Path a b) (t : ℝ) :
+theorem pathIntegralFun_symm_apply (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) :
     pathIntegralFun ω γ.symm t = -pathIntegralFun ω γ (1 - t) := by
   simp [pathIntegralFun, γ.extend_symm, derivWithin_comp_const_sub]
 
 @[simp]
-theorem pathIntegralFun_symm (ω : E → E →L[ℝ] F) (γ : Path a b):
+theorem pathIntegralFun_symm (ω : E → E →L[𝕜] F) (γ : Path a b):
     pathIntegralFun ω γ.symm = (-pathIntegralFun ω γ <| 1 - ·) :=
   funext <| pathIntegralFun_symm_apply ω γ
 
@@ -110,11 +120,11 @@ theorem pathIntegrable_symm : PathIntegrable ω γ.symm ↔ PathIntegrable ω γ
   ⟨fun h ↦ by simpa using h.symm, .symm⟩
 
 @[simp]
-theorem pathIntegral_symm (ω : E → E →L[ℝ] F) (γ : Path a b) :
+theorem pathIntegral_symm (ω : E → E →L[𝕜] F) (γ : Path a b) :
     ∫ᵖ x in γ.symm, ω x = -∫ᵖ x in γ, ω x := by
   simp [pathIntegral, pathIntegralFun_symm]
 
-theorem pathIntegralFun_trans_of_lt_half (ω : E → E →L[ℝ] F) (γab : Path a b) (γbc : Path b c)
+theorem pathIntegralFun_trans_of_lt_half (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c)
     (ht₀ : 0 < t) (ht : t < 1 / 2) :
     pathIntegralFun ω (γab.trans γbc) t = (2 : ℝ) • pathIntegralFun ω γab (2 * t) := by
   have : (γab.trans γbc).extend =ᶠ[𝓝 t] (fun s ↦ γab.extend (2 * s)) :=
@@ -123,14 +133,14 @@ theorem pathIntegralFun_trans_of_lt_half (ω : E → E →L[ℝ] F) (γab : Path
     derivWithin_of_mem_nhds, deriv_comp_mul_left, map_smul] <;>
     apply Icc_mem_nhds <;> linarith
 
-theorem pathIntegralFun_trans_aeeq_left (ω : E → E →L[ℝ] F) (γab : Path a b) (γbc : Path b c) :
+theorem pathIntegralFun_trans_aeeq_left (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c) :
     pathIntegralFun ω (γab.trans γbc) =ᵐ[volume.restrict (Ι (0 : ℝ) (1 / 2))]
       fun t ↦ (2 : ℝ) • pathIntegralFun ω γab (2 * t) := by
   rw [uIoc_of_le (by positivity), ← restrict_Ioo_eq_restrict_Ioc]
   filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ⟨ht₀, ht⟩
   exact pathIntegralFun_trans_of_lt_half ω γab γbc ht₀ ht
 
-theorem pathIntegralFun_trans_of_half_lt (ω : E → E →L[ℝ] F) (γab : Path a b) (γbc : Path b c)
+theorem pathIntegralFun_trans_of_half_lt (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c)
     (ht₀ : 1 / 2 < t) (ht : t < 1) :
     pathIntegralFun ω (γab.trans γbc) t = (2 : ℝ) • pathIntegralFun ω γbc (2 * t - 1) := by
   have : (γab.trans γbc).extend =ᶠ[𝓝 t] (fun s ↦ γbc.extend (2 * s - 1)) :=
@@ -139,7 +149,7 @@ theorem pathIntegralFun_trans_of_half_lt (ω : E → E →L[ℝ] F) (γab : Path
     derivWithin_of_mem_nhds, deriv_comp_mul_left _ (γbc.extend <| · - 1), deriv_comp_sub_const,
     map_smul] <;> apply Icc_mem_nhds <;> linarith
 
-theorem pathIntegralFun_trans_aeeq_right (ω : E → E →L[ℝ] F) (γab : Path a b) (γbc : Path b c) :
+theorem pathIntegralFun_trans_aeeq_right (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c) :
     pathIntegralFun ω (γab.trans γbc) =ᵐ[volume.restrict (Ι (1 / 2 : ℝ) 1)]
       fun t ↦ (2 : ℝ) • pathIntegralFun ω γbc (2 * t - 1) := by
   rw [uIoc_of_le (by linarith), ← restrict_Ioo_eq_restrict_Ioc]
@@ -176,13 +186,13 @@ theorem pathIntegral_trans (h₁ : PathIntegrable ω γab) (h₂ : PathIntegrabl
     intervalIntegral.integral_comp_sub_right]
   norm_num [pathIntegral]
 
-theorem pathIntegralFun_segment (ω : E → E →L[ℝ] F) (a b : E) {t : ℝ} (ht : t ∈ I) :
+theorem pathIntegralFun_segment (ω : E → E →L[𝕜] F) (a b : E) {t : ℝ} (ht : t ∈ I) :
     pathIntegralFun ω (.segment a b) t = ω (lineMap a b t) (b - a) := by
   have := Path.eqOn_extend_segment a b
   simp only [pathIntegralFun, this ht, derivWithin_congr this (this ht),
     (hasDerivWithinAt_lineMap ..).derivWithin (uniqueDiffOn_Icc_zero_one t ht)]
 
-theorem pathIntegral_segment (ω : E → E →L[ℝ] F) (a b : E) :
+theorem pathIntegral_segment (ω : E → E →L[𝕜] F) (a b : E) :
     pathIntegral ω (.segment a b) = ∫ t in (0)..1, ω (lineMap a b t) (b - a) := by
   refine intervalIntegral.integral_congr fun t ht ↦ ?_
   rw [uIcc_of_le zero_le_one] at ht
@@ -204,7 +214,7 @@ end PathOperations
 ### Algebraic operations on the 1-form
 -/
 
-variable {ω ω₁ ω₂ : E → E →L[ℝ] F} {γ : Path a b} {t : ℝ}
+variable {ω ω₁ ω₂ : E → E →L[𝕜] F} {γ : Path a b} {t : ℝ}
 
 @[simp]
 theorem pathIntegralFun_add :
@@ -224,22 +234,22 @@ theorem pathIntegral_fun_add (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegr
   pathIntegral_add h₁ h₂
 
 @[simp]
-theorem pathIntegralFun_zero : pathIntegralFun (0 : E → E →L[ℝ] F) γ = 0 := rfl
+theorem pathIntegralFun_zero : pathIntegralFun (0 : E → E →L[𝕜] F) γ = 0 := rfl
 
 @[simp]
-theorem pathIntegralFun_fun_zero : pathIntegralFun (fun _ ↦ 0 : E → E →L[ℝ] F) γ = 0 := rfl
+theorem pathIntegralFun_fun_zero : pathIntegralFun (fun _ ↦ 0 : E → E →L[𝕜] F) γ = 0 := rfl
 
 -- TODO: add `intervalIntegrable_zero`
-theorem PathIntegrable.zero : PathIntegrable (0 : E → E →L[ℝ] F) γ := by
+theorem PathIntegrable.zero : PathIntegrable (0 : E → E →L[𝕜] F) γ := by
   simp [PathIntegrable, intervalIntegrable_const, Pi.zero_def]
 
-theorem PathIntegrable.fun_zero : PathIntegrable (fun _ ↦ 0 : E → E →L[ℝ] F) γ := .zero
+theorem PathIntegrable.fun_zero : PathIntegrable (fun _ ↦ 0 : E → E →L[𝕜] F) γ := .zero
 
 @[simp]
-theorem pathIntegral_zero : pathIntegral (0 : E → E →L[ℝ] F) γ = 0 := by simp [pathIntegral]
+theorem pathIntegral_zero : pathIntegral (0 : E → E →L[𝕜] F) γ = 0 := by simp [pathIntegral]
 
 @[simp]
-theorem pathIntegral_fun_zero : ∫ᵖ _ in γ, (0 : E →L[ℝ] F) = 0 := pathIntegral_zero
+theorem pathIntegral_fun_zero : ∫ᵖ _ in γ, (0 : E →L[𝕜] F) = 0 := pathIntegral_zero
 
 @[simp]
 theorem pathIntegralFun_neg : pathIntegralFun (-ω) γ = -pathIntegralFun ω γ := rfl
