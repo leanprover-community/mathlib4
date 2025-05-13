@@ -45,12 +45,9 @@ theorem colimit_rep_eq_zero
     (F : J ⥤ ModuleCat.{max t w} R) [PreservesColimit F (forget (ModuleCat R))] [IsFiltered J]
     [HasColimit F] (j : J) (x : F.obj j) (hx : colimit.ι F j x = 0) :
     ∃ (j' : J) (i : j ⟶ j'), (F.map i).hom x = 0 := by
-  -- Break the abstraction barrier between homs and functions for `colimit_rep_eq_iff_exists`.
-  have : ∀ (X Y : ModuleCat R) (f : X ⟶ Y),
-    DFunLike.coe f.hom = DFunLike.coe (self := HasForget.instFunLike) f := fun _ _ _ => rfl
-  rw [show 0 = colimit.ι F j 0 by simp, this, colimit_rep_eq_iff_exists] at hx
+  rw [show 0 = colimit.ι F j 0 by simp, colimit_rep_eq_iff_exists] at hx
   obtain ⟨j', i, y, g⟩ := hx
-  exact ⟨j', i, g ▸ by simp [← this]⟩
+  exact ⟨j', i, g ▸ by simp⟩
 
 end zero
 
@@ -64,17 +61,13 @@ lemma colimit_no_zero_smul_divisor
     (F : J ⥤ ModuleCat.{max t w} R) [PreservesColimit F (forget (ModuleCat R))]
     [IsFiltered J] [HasColimit F]
     (r : R) (H : ∃ (j' : J), ∀ (j : J) (_ : j' ⟶ j), ∀ (c : F.obj j), r • c = 0 → c = 0)
-    (x : (forget (ModuleCat R)).obj (colimit F)) (hx : r • x = 0) : x = 0 := by
-
-  -- Break the abstraction barrier between homs and functions for `Concrete.colimit_exists_rep`.
-  have : ∀ (X Y : ModuleCat R) (f : X ⟶ Y),
-    DFunLike.coe f.hom = DFunLike.coe (self := HasForget.instFunLike) f := fun _ _ _ => rfl
+    (x : ToType (colimit F)) (hx : r • x = 0) : x = 0 := by
   classical
   obtain ⟨j, x, rfl⟩ := Concrete.colimit_exists_rep F x
-  rw [← this, ← map_smul (colimit.ι F j).hom] at hx
+  rw [← map_smul (colimit.ι F j).hom] at hx
   obtain ⟨j', i, h⟩ := Concrete.colimit_rep_eq_zero (hx := hx)
   obtain ⟨j'', H⟩ := H
-  simpa [elementwise_of% (colimit.w F), this, map_zero] using congr(colimit.ι F _
+  simpa [elementwise_of% (colimit.w F), map_zero] using congr(colimit.ι F _
     $(H (IsFiltered.sup {j, j', j''} { ⟨j, j', by simp, by simp, i⟩ })
       (IsFiltered.toSup _ _ <| by simp)
       (F.map (IsFiltered.toSup _ _ <| by simp) x)

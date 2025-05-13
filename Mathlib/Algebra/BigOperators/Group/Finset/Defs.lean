@@ -3,8 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+import Mathlib.Data.Fintype.Sets
+import Mathlib.Data.Multiset.Bind
 
 /-!
 # Big operators
@@ -134,20 +137,20 @@ def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
 def bigOpBindersPattern (processed : (Array (Term × Term))) :
     MacroM Term := do
   let ts := processed.map Prod.fst
-  if ts.size == 1 then
-    return ts[0]!
+  if h : ts.size = 1 then
+    return ts[0]
   else
     `(⟨$ts,*⟩)
 
 /-- Collect the terms into a product of sets. -/
 def bigOpBindersProd (processed : (Array (Term × Term))) :
     MacroM Term := do
-  if processed.isEmpty then
+  if h₀ : processed.size = 0 then
     `((Finset.univ : Finset Unit))
-  else if processed.size == 1 then
-    return processed[0]!.2
+  else if h₁ : processed.size = 1 then
+    return processed[0].2
   else
-    processed.foldrM (fun s p => `(SProd.sprod $(s.2) $p)) processed.back!.2
+    processed.foldrM (fun s p => `(SProd.sprod $(s.2) $p)) processed.back.2
       (start := processed.size - 1)
 
 /--
@@ -194,66 +197,137 @@ macro_rules (kind := bigprod)
     | some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | none => `(Finset.prod $s (fun $x ↦ $v))
 
-/-- (Deprecated, use `∑ x ∈ s, f x`)
-`∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
-where `x` ranges over the finite set `s`. -/
-syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
-macro_rules (kind := bigsumin)
-  | `(∑ $x:ident in $s, $r) => `(∑ $x:ident ∈ $s, $r)
-  | `(∑ $x:ident : $t in $s, $r) => `(∑ $x:ident ∈ ($s : Finset $t), $r)
+section deprecated -- since 2024-30-01
+open Elab Term Tactic TryThis
 
-/-- (Deprecated, use `∏ x ∈ s, f x`)
-`∏ x in s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,
-where `x` ranges over the finite set `s`. -/
+/-- Deprecated, use `∑ x ∈ s, f x` instead. -/
+syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
+
+/-- Deprecated, use `∏ x ∈ s, f x` instead. -/
 syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
-macro_rules (kind := bigprodin)
-  | `(∏ $x:ident in $s, $r) => `(∏ $x:ident ∈ $s, $r)
-  | `(∏ $x:ident : $t in $s, $r) => `(∏ $x:ident ∈ ($s : Finset $t), $r)
+
+elab_rules : term
+  | `(∑%$tk $x:ident in $s, $r) => do
+    addSuggestion tk (← `(∑ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∑ x in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
+  | `(∑%$tk $x:ident : $_t in $s, $r) => do
+    addSuggestion tk (← `(∑ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∑ x : t in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
+
+elab_rules : term
+  | `(∏%$tk $x:ident in $s, $r) => do
+    addSuggestion tk (← `(∏ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∏ x in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
+  | `(∏%$tk $x:ident : $_t in $s, $r) => do
+    addSuggestion tk (← `(∏ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∏ x : t in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
+
+end deprecated
 
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder
 
-/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
+/-- The possibilities we distinguish to delaborate the finset indexing a big operator:
+* `finset s` corresponds to `∑ x ∈ s, f x`
+* `univ` corresponds to `∑ x, f x`
+* `filter s p` corresponds to `∑ x ∈ s with p x, f x`
+* `filterUniv p` corresponds to `∑ x with p x, f x`
+-/
+private inductive FinsetResult where
+  | finset (s : Term)
+  | univ
+  | filter (s : Term) (p : Term)
+  | filterUniv (p : Term)
+
+/-- Delaborates a finset indexing a big operator. In case it is a `Finset.filter`, `i` is used for
+the binder name. -/
+private def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
+  let s ← getExpr
+  if s.isAppOfArity ``Finset.univ 2 then
+    return .univ
+  else if s.isAppOfArity ``Finset.filter 4 then
+    let #[_, _, _, t] := s.getAppArgs | failure
+    let p ←
+      withNaryArg 1 do
+        if (← getExpr).isLambda then
+          withBindingBody i.getId delab
+        else
+          let p ← delab
+          return (← `($p $i))
+    if t.isAppOfArity ``Finset.univ 2 then
+      return .filterUniv p
+    else
+      let ss ← withNaryArg 3 delab
+      return .filter ss p
+  else
+    let ss ← delab
+    return .finset ss
+
+/-- Delaborator for `Finset.prod`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
 @[app_delab Finset.prod] def delabFinsetProd : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
-  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
-  guard <| f.isLambda
-  let ppDomain ← getPPOption getPPPiBinderTypes
+  let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
+  guard f.isLambda
+  let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
-    return (i, ← delab)
-  if s.isAppOfArity ``Finset.univ 2 then
+    return (⟨i⟩, ← delab)
+  let res ← withNaryArg 3 <| delabFinsetArg i
+  match res with
+  | .finset ss => `(∏ $i:ident ∈ $ss, $body)
+  | .univ =>
     let binder ←
       if ppDomain then
         let ty ← withNaryArg 0 delab
-        `(bigOpBinder| $(.mk i):ident : $ty)
+        `(bigOpBinder| $i:ident : $ty)
       else
-        `(bigOpBinder| $(.mk i):ident)
+        `(bigOpBinder| $i:ident)
     `(∏ $binder:bigOpBinder, $body)
-  else
-    let ss ← withNaryArg 3 <| delab
-    `(∏ $(.mk i):ident ∈ $ss, $body)
+  | .filter ss p =>
+    `(∏ $i:ident ∈ $ss with $p, $body)
+  | .filterUniv p =>
+    let binder ←
+    if ppDomain then
+      let ty ← withNaryArg 0 delab
+      `(bigOpBinder| $i:ident : $ty)
+    else
+      `(bigOpBinder| $i:ident)
+    `(∏ $binder:bigOpBinder with $p, $body)
 
-/-- Delaborator for `Finset.sum`. The `pp.piBinderTypes` option controls whether
+/-- Delaborator for `Finset.sum`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
 @[app_delab Finset.sum] def delabFinsetSum : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
-  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
-  guard <| f.isLambda
-  let ppDomain ← getPPOption getPPPiBinderTypes
+  let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
+  guard f.isLambda
+  let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
-    return (i, ← delab)
-  if s.isAppOfArity ``Finset.univ 2 then
+    return ((⟨i⟩ : Ident), ← delab)
+  let res ← withNaryArg 3 <| delabFinsetArg i
+  match res with
+  | .finset ss => `(∑ $i:ident ∈ $ss, $body)
+  | .univ =>
     let binder ←
-      if ppDomain then
-        let ty ← withNaryArg 0 delab
-        `(bigOpBinder| $(.mk i):ident : $ty)
-      else
-        `(bigOpBinder| $(.mk i):ident)
+    if ppDomain then
+      let ty ← withNaryArg 0 delab
+      `(bigOpBinder| $i:ident : $ty)
+    else
+      `(bigOpBinder| $i:ident)
     `(∑ $binder:bigOpBinder, $body)
-  else
-    let ss ← withNaryArg 3 <| delab
-    `(∑ $(.mk i):ident ∈ $ss, $body)
+  | .filter ss p =>
+    `(∑ $i:ident ∈ $ss with $p, $body)
+  | .filterUniv p =>
+    let binder ←
+    if ppDomain then
+      let ty ← withNaryArg 0 delab
+      `(bigOpBinder| $i:ident : $ty)
+    else
+      `(bigOpBinder| $i:ident)
+    `(∑ $binder:bigOpBinder with $p, $body)
 
 end BigOperators
 
@@ -271,7 +345,7 @@ lemma prod_map_val [CommMonoid β] (s : Finset α) (f : α → β) : (s.1.map f)
   rfl
 
 @[simp]
-theorem sum_multiset_singleton (s : Finset α) : (s.sum fun x => {x}) = s.val := by
+theorem sum_multiset_singleton (s : Finset α) : ∑ a ∈ s, {a} = s.val := by
   simp only [sum_eq_multiset_sum, Multiset.sum_map_singleton]
 
 end Finset
@@ -297,9 +371,6 @@ theorem prod_empty : ∏ x ∈ ∅, f x = 1 :=
 theorem prod_of_isEmpty [IsEmpty α] (s : Finset α) : ∏ i ∈ s, f i = 1 := by
   rw [eq_empty_of_isEmpty s, prod_empty]
 
-@[deprecated (since := "2024-06-11")] alias prod_of_empty := prod_of_isEmpty
-@[deprecated (since := "2024-06-11")] alias sum_of_empty := sum_of_isEmpty
-
 @[to_additive (attr := simp)]
 theorem prod_const_one : (∏ _x ∈ s, (1 : β)) = 1 := by
   simp only [Finset.prod, Multiset.map_const', Multiset.prod_replicate, one_pow]
@@ -312,8 +383,16 @@ theorem prod_map (s : Finset α) (e : α ↪ γ) (f : γ → β) :
 section ToList
 
 @[to_additive (attr := simp)]
-theorem prod_to_list (s : Finset α) (f : α → β) : (s.toList.map f).prod = s.prod f := by
+theorem prod_map_toList (s : Finset α) (f : α → β) : (s.toList.map f).prod = s.prod f := by
   rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.map_coe, Finset.coe_toList]
+
+@[deprecated (since := "2025-04-09")] alias prod_to_list := prod_map_toList
+@[deprecated (since := "2025-04-09")] alias sum_to_list := sum_map_toList
+
+@[to_additive (attr := simp)]
+theorem prod_toList {α : Type*} [CommMonoid α] (s : Finset α) :
+    s.toList.prod = ∏ x ∈ s, x := by
+  simpa using s.prod_map_toList id
 
 end ToList
 
@@ -480,6 +559,16 @@ theorem prod_dite_irrel (p : Prop) [Decidable p] (s : Finset α) (f : p → α �
     ∏ x ∈ s, (if h : p then f h x else g h x) =
       if h : p then ∏ x ∈ s, f h x else ∏ x ∈ s, g h x := by
   split_ifs with h <;> rfl
+
+@[to_additive]
+theorem ite_prod_one (p : Prop) [Decidable p] (s : Finset α) (f : α → β) :
+    (if p then (∏ x ∈ s, f x) else 1) = ∏ x ∈ s, if p then f x else 1 := by
+  simp only [prod_ite_irrel, prod_const_one]
+
+@[to_additive]
+theorem ite_one_prod (p : Prop) [Decidable p] (s : Finset α) (f : α → β) :
+    (if p then 1 else (∏ x ∈ s, f x)) = ∏ x ∈ s, if p then 1 else f x := by
+  simp only [prod_ite_irrel, prod_const_one]
 
 @[to_additive]
 theorem nonempty_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : s.Nonempty :=

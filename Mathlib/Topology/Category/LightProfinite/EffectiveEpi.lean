@@ -19,8 +19,6 @@ universe u
 
 open CategoryTheory Limits CompHausLike
 
-attribute [local instance] HasForget.instFunLike
-
 namespace LightProfinite
 
 theorem effectiveEpi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :

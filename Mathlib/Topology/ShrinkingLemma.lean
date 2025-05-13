@@ -46,7 +46,6 @@ namespace ShrinkingLemma
 This type is equipped with the following partial order: `v ≤ v'` if `v.carrier ⊆ v'.carrier`
 and `v i = v' i` for `i ∈ v.carrier`. We will use Zorn's lemma to prove that this type has
 a maximal element, then show that the maximal element must have `carrier = univ`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 @[ext] structure PartialRefinement (u : ι → Set X) (s : Set X) (p : Set X → Prop) where
   /-- A family of sets that form a partial refinement of `u`. -/
   toFun : ι → Set X
@@ -150,7 +149,6 @@ def chainSup (c : Set (PartialRefinement u s p)) (hc : IsChain (· ≤ ·) c) (n
   pred_of_mem {i} hi := by
     obtain ⟨v, hv⟩ := Set.mem_iUnion.mp hi
     simp only [mem_iUnion, exists_prop] at hv
-    simp only
     rw [find_apply_of_mem hc ne hv.1 hv.2]
     exact v.pred_of_mem hv.2
   apply_eq hi := (find c ne _).apply_eq (mt (mem_find_carrier_iff _).1 hi)

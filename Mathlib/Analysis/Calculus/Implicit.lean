@@ -94,15 +94,19 @@ needs to have a complete control over the choice of the implicit function.
 * both functions are strictly differentiable at `a`;
 * the derivatives are surjective;
 * the kernels of the derivatives are complementary subspaces of `E`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported @[nolint has_nonempty_instance]
 structure ImplicitFunctionData (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] (F : Type*) [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (G : Type*) [NormedAddCommGroup G] [NormedSpace 𝕜 G]
     [CompleteSpace G] where
+  /-- Left function -/
   leftFun : E → F
+  /-- Derivative of the left function -/
   leftDeriv : E →L[𝕜] F
+  /-- Right function -/
   rightFun : E → G
+  /-- Derivative of the right function -/
   rightDeriv : E →L[𝕜] G
+  /-- The point at which `leftFun` and `rightFun` are strictly differentiable -/
   pt : E
   left_has_deriv : HasStrictFDerivAt leftFun leftDeriv pt
   right_has_deriv : HasStrictFDerivAt rightFun rightDeriv pt
@@ -131,7 +135,7 @@ protected theorem hasStrictFDerivAt :
           φ.isCompl_ker :
         E →L[𝕜] F × G)
       φ.pt :=
-  φ.left_has_deriv.prod φ.right_has_deriv
+  φ.left_has_deriv.prodMk φ.right_has_deriv
 
 /-- Implicit function theorem. If `f : E → F` and `g : E → G` are two maps strictly differentiable
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
@@ -187,9 +191,9 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
   have := φ.hasStrictFDerivAt.to_localInverse
   simp only [prodFun] at this
-  convert this.comp (φ.rightFun φ.pt) ((hasStrictFDerivAt_const _ _).prod (hasStrictFDerivAt_id _))
-  -- Porting note: added parentheses to help `simp`
-  simp only [ContinuousLinearMap.ext_iff, (ContinuousLinearMap.comp_apply)] at hg'inv hg'invf ⊢
+  convert this.comp (φ.rightFun φ.pt)
+    ((hasStrictFDerivAt_const _ _).prodMk (hasStrictFDerivAt_id _))
+  simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply] at hg'inv hg'invf ⊢
   simp [ContinuousLinearEquiv.eq_symm_apply, *]
 
 end ImplicitFunctionData
@@ -320,15 +324,13 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
     (ker f').subtypeL _ _
   swap
   · ext
-    -- Porting note: added parentheses to help `simp`
     simp only [Classical.choose_spec hker, implicitFunctionDataOfComplemented,
       ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL', Submodule.coe_subtype,
       ContinuousLinearMap.id_apply]
   swap
   · ext
-    -- Porting note: added parentheses to help `simp`
-    simp only [(ContinuousLinearMap.comp_apply), Submodule.coe_subtypeL', Submodule.coe_subtype,
-      LinearMap.map_coe_ker, (ContinuousLinearMap.zero_apply)]
+    simp only [ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL', Submodule.coe_subtype,
+      LinearMap.map_coe_ker, ContinuousLinearMap.zero_apply]
   simp only [implicitFunctionDataOfComplemented, map_sub, sub_self]
 
 end Complemented
@@ -405,7 +407,7 @@ theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f'
   refine ((hf.implicitToPartialHomeomorph f f' hf').tendsto_symm
     (hf.mem_implicitToPartialHomeomorph_source hf')).comp ?_
   rw [implicitToPartialHomeomorph_self]
-  exact h₁.prod_mk_nhds h₂
+  exact h₁.prodMk_nhds h₂
 
 alias _root_.Filter.Tendsto.implicitFunction := tendsto_implicitFunction
 

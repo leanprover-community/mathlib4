@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Finset.Preimage
 import Mathlib.ModelTheory.Semantics
 
 /-!
@@ -188,7 +187,7 @@ theorem definable_iff_finitely_definable :
     exact Definable.mono hd hA0
 
 /-- This lemma is only intended as a helper for `Definable.image_comp`. -/
-theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
+theorem Definable.image_comp_sumInl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
     (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
   obtain ⟨φ, rfl⟩ := h
   refine ⟨(BoundedFormula.relabel id φ).exs, ?_⟩
@@ -202,6 +201,9 @@ theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → 
   · rintro ⟨y, hy⟩
     exact ⟨Sum.elim x y, (congr rfl (funext finZeroElim)).mp hy, Sum.elim_comp_inl _ _⟩
 
+@[deprecated (since := "2025-02-21")] alias
+Definable.image_comp_sum_inl_fin := Definable.image_comp_sumInl_fin
+
 /-- Shows that definability is closed under finite projections. -/
 theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s) (f : α ↪ β)
     [Finite β] : A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
@@ -211,7 +213,7 @@ theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s
       (congr rfl (ext fun x => ?_)).mp
         (((h.image_comp_equiv (Equiv.Set.sumCompl (range f))).image_comp_equiv
               (Equiv.sumCongr (Equiv.ofInjective f f.injective)
-                (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sum_inl_fin
+                (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sumInl_fin
           _)
     simp only [mem_preimage, mem_image, exists_exists_and_eq_and]
     refine exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a => ?_)
@@ -226,7 +228,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
     have h :=
       (((h.image_comp_equiv (Equiv.Set.sumCompl (range f))).image_comp_equiv
                 (Equiv.sumCongr (_root_.Equiv.refl _)
-                  (Fintype.equivFin _).symm)).image_comp_sum_inl_fin
+                  (Fintype.equivFin _).symm)).image_comp_sumInl_fin
             _).preimage_comp
         (rangeSplitting f)
     have h' :

@@ -54,14 +54,14 @@ lemma summable_riemannZetaSummand (hs : 1 < s.re) :
     Summable (fun n ↦ ‖riemannZetaSummandHom (ne_zero_of_one_lt_re hs) n‖) := by
   simp only [riemannZetaSummandHom, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   convert Real.summable_nat_rpow_inv.mpr hs with n
-  rw [← ofReal_natCast, Complex.norm_eq_abs,
-    abs_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg n) <| re_neg_ne_zero_of_one_lt_re hs,
+  rw [← ofReal_natCast,
+    norm_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg n) <| re_neg_ne_zero_of_one_lt_re hs,
     neg_re, Real.rpow_neg <| Nat.cast_nonneg n]
 
 lemma tsum_riemannZetaSummand (hs : 1 < s.re) :
     ∑' (n : ℕ), riemannZetaSummandHom (ne_zero_of_one_lt_re hs) n = riemannZeta s := by
   have hsum := summable_riemannZetaSummand hs
-  rw [zeta_eq_tsum_one_div_nat_add_one_cpow hs, tsum_eq_zero_add hsum.of_norm, map_zero, zero_add]
+  rw [zeta_eq_tsum_one_div_nat_add_one_cpow hs, hsum.of_norm.tsum_eq_zero_add, map_zero, zero_add]
   simp only [riemannZetaSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     Nat.cast_add, Nat.cast_one, one_div]
 
@@ -181,7 +181,7 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
   -- convert to a form suitable for `tprod_subtype`
   have (f : Primes → ℂ) : ∏' (p : Primes), f p = ∏' (p : ↑{p : ℕ | p.Prime}), f p := rfl
   rw [this, tprod_subtype _ fun p : ℕ ↦ (1 - (changeLevel hMN χ) p * p ^ (-s))⁻¹,
-    this, tprod_subtype _ fun p : ℕ ↦ (1 - χ p * p ^ (-s))⁻¹, ← tprod_mul]
+    this, tprod_subtype _ fun p : ℕ ↦ (1 - χ p * p ^ (-s))⁻¹, ← Multipliable.tprod_mul]
   rotate_left -- deal with convergence goals first
   · exact multipliable_subtype_iff_mulIndicator.mp
       (DirichletCharacter.LSeries_eulerProduct_hasProd χ hs).multipliable

@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.BigOperators.Group.List.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Multiset.Basic
+import Mathlib.Data.Multiset.Filter
 
 /-!
 # Sums and products over multisets

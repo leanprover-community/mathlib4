@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Ideal.Cotangent
+import Mathlib.RingTheory.Localization.Defs
 
 /-!
 
@@ -92,7 +93,7 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) := (⟨_
 section Construction
 
 /-- Construct `Extension` from a surjective algebra homomorphism. -/
-@[simps (config := .lemmasOnly) Ring σ]
+@[simps -isSimp Ring σ]
 noncomputable
 def ofSurjective {P : Type w} [CommRing P] [Algebra R P] (f : P →ₐ[R] S)
     (h : Function.Surjective f) : Extension.{w} R S where
@@ -104,7 +105,7 @@ def ofSurjective {P : Type w} [CommRing P] [Algebra R P] (f : P →ₐ[R] S)
 
 variable (R S) in
 /-- The trivial extension of `S`. -/
-@[simps (config := .lemmasOnly) Ring σ]
+@[simps -isSimp Ring σ]
 noncomputable
 def self : Extension R S where
   Ring := S
@@ -227,6 +228,15 @@ lemma Hom.comp_id (f : Hom P P') : f.comp (Hom.id P) = f := by ext; simp
 lemma Hom.id_comp (f : Hom P P') : (Hom.id P').comp f = f := by
   ext; simp [Hom.id, aeval_X_left]
 
+/-- A map between extensions induce a map between kernels. -/
+@[simps]
+def Hom.mapKer (f : P.Hom P')
+    [alg : Algebra P.Ring P'.Ring] (halg : algebraMap P.Ring P'.Ring = f.toRingHom) :
+    P.ker →ₗ[P.Ring] P'.ker where
+  toFun x := ⟨f.toRingHom x, by simp [show algebraMap P.Ring S x = 0 from x.2]⟩
+  map_add' _ _ := Subtype.ext (map_add _ _ _)
+  map_smul' := by simp [Algebra.smul_def, ← halg]
+
 end
 
 end Hom
@@ -319,7 +329,7 @@ instance {R₀} [CommRing R₀] [Algebra R₀ S] : Module R₀ P.Cotangent :=
 
 instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ S] [Algebra R₂ S] [Algebra R₁ R₂]
     [IsScalarTower R₁ R₂ S] :
-  IsScalarTower R₁ R₂ P.Cotangent := by
+    IsScalarTower R₁ R₂ P.Cotangent := by
   constructor
   intros r s m
   show algebraMap R₂ S (r • s) • m = (algebraMap _ S r) • (algebraMap _ S s) • m
@@ -345,7 +355,7 @@ lemma Cotangent.val_smul'' (r : R) (x : P.Cotangent) : (r • x).val = r • x.v
   rw [← algebraMap_smul P.Ring, val_smul', algebraMap_smul]
 
 /-- The quotient map from the kernel of `P → S` onto the cotangent space. -/
-def Cotangent.mk : P.ker →ₗ[P.Ring] P.Cotangent where
+noncomputable def Cotangent.mk : P.ker →ₗ[P.Ring] P.Cotangent where
   toFun x := .of (Ideal.toCotangent _ x)
   map_add' x y := by simp
   map_smul' x y := ext <| by simp
@@ -406,6 +416,13 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
   simp only [map_mk, Hom.toAlgHom_apply, Hom.comp_toRingHom, RingHom.coe_comp, Function.comp_apply,
     val_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars]
+
+lemma Cotangent.finite (hP : P.ker.FG) :
+    Module.Finite S P.Cotangent := by
+  refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
+  rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
+    ← Submodule.map_top]
+  exact (P.ker.fg_top.mpr hP).map _
 
 end Cotangent
 
