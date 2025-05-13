@@ -32,7 +32,7 @@ as their product. -/
 @[simps!]
 def inl : α →*₀o WithZero (αˣ ×ₗ βˣ) where
   toFun a := if ha : a = 0 then 0 else WithZero.coe (toLex ⟨Units.mk0 _ ha, 1⟩)
-  map_one' := by simp
+  map_one' := by simp [← Prod.one_eq_mk]
   map_mul' x y := by
     simp only [mul_eq_zero, Units.mk0_mul, mul_dite, mul_zero, dite_mul, zero_mul]
     split_ifs with hxy
@@ -57,7 +57,7 @@ as their product. -/
 @[simps!]
 def inr : β →*₀o WithZero (αˣ ×ₗ βˣ) where
   toFun a := if ha : a = 0 then 0 else WithZero.coe (toLex ⟨1, Units.mk0 _ ha⟩)
-  map_one' := by simp
+  map_one' := by simp [← Prod.one_eq_mk]
   map_mul' x y := by
     simp only [mul_eq_zero, Units.mk0_mul, mul_dite, mul_zero, dite_mul, zero_mul]
     split_ifs with hxy

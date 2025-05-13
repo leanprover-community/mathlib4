@@ -59,7 +59,7 @@ lexicographic M ×ₗ N. -/
 homomorphism from M to the lexicographic M ×ₗ N."]
 def inlₗ : α →*o α ×ₗ β where
   __ := (Prod.Lex.toLexOrderHom).comp (inl α β)
-  map_one' := by simp [← toLex_one]
+  map_one' := by simp [← Prod.one_eq_mk]
   map_mul' := by simp [← toLex_mul]
 
 /-- Given ordered monoids M, N, the natural inclusion ordered homomorphism from N to the
@@ -68,7 +68,7 @@ lexicographic M ×ₗ N. -/
 homomorphism from N to the lexicographic M ×ₗ N."]
 def inrₗ : β →*o (α ×ₗ β) where
   __ := (Prod.Lex.toLexOrderHom).comp (inr α β)
-  map_one' := by simp [← toLex_one]
+  map_one' := by simp [← Prod.one_eq_mk]
   map_mul' := by simp [← toLex_mul]
 
 /-- Given ordered monoids M, N, the natural projection ordered homomorphism from the
