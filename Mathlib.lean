@@ -4844,7 +4844,6 @@ import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Exponential
 import Mathlib.Probability.Distributions.Gamma
-import Mathlib.Probability.Distributions.Gaussian
 import Mathlib.Probability.Distributions.Gaussian.Basic
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Probability.Distributions.Gaussian.Real
