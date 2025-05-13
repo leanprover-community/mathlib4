@@ -29,7 +29,8 @@ def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := 
 def getHeaderFromFileName (fname : String) (keepTrailing : Bool) : IO String := do
   getHeader fname (← IO.FS.readFile fname) keepTrailing
 
-def mkDeprecation (customMessage : String := "auto-generated") : CommandElabM Format := do
+def mkDeprecation (customMessage : String := "Auto-generated deprecation") :
+    CommandElabM Format := do
   let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
   let dateStx := Syntax.mkStrLit s!"{← Std.Time.PlainDate.now}"
   let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
@@ -37,14 +38,11 @@ def mkDeprecation (customMessage : String := "auto-generated") : CommandElabM Fo
 
 
 def mkDeprecatedModule
-    (fname : String) (customMessage : String := "auto-generated") (keepTrailing : Bool := false)
-    (write : Bool := false) :
+    (fname : String) (customMessage : String := "Auto-generated deprecation")
+    (keepTrailing : Bool := false) (write : Bool := false) :
     CommandElabM Unit := do
-  let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
-  let dateStx := Syntax.mkStrLit s!"{← Std.Time.PlainDate.now}"
+  let fmt ← mkDeprecation customMessage
   let header ← getHeaderFromFileName fname keepTrailing
-  let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
-  let fmt ← liftCoreM <| PrettyPrinter.ppCategory `command stx
   let nm := fname ++ "_deprecatedModule"
   unless (← System.FilePath.pathExists fname) do
     logWarning m!"The file '{fname}' was expected to exist: something went wrong!"
@@ -58,8 +56,11 @@ def mkDeprecatedModule
     logInfo m!"The file '{nm}' was not deprecated. Set `write := true` if you wish to deprecate it."
   --return
   --return s!"{header.trimRight}\n\n{fmt}\n"
+syntax "#create_deprecated_modules" (ppSpace num)? (&" write")? : command
 
-elab "#create_deprecated_modules" write:(&" write")? : command => do
+elab_rules : command
+| `(#create_deprecated_modules $[$nc:num]? $[write%$write?]?) => do
+  let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
   let mut msgs := #[]
   let getHash (n : Nat) := do
     let log ← IO.Process.run {cmd := "git", args := #["log", "--pretty=oneline", s!"-{n}"]}
@@ -74,7 +75,7 @@ elab "#create_deprecated_modules" write:(&" write")? : command => do
   let currentHash ← getHash 1
   let currentFiles ← getFilesAtHash currentHash
   msgs := msgs.push m!"{currentFiles.size} files at the current hash {currentHash}\n"
-  let pastHash ← getHash 150
+  let pastHash ← getHash n
   let pastFiles ← getFilesAtHash pastHash
   msgs := msgs.push m!"{pastFiles.size} files at the past hash {pastHash}\n"
   let onlyPastFiles := pastFiles.filter fun fil ↦
@@ -82,7 +83,7 @@ elab "#create_deprecated_modules" write:(&" write")? : command => do
     !currentFiles.contains fil
   let noFiles := onlyPastFiles.size
   msgs := msgs.push
-    m!"{noFiles} Lean file{if noFiles == 1 then "" else "s"} in 'Mathlib/' that no longer exist:"
+    m!"{noFiles} Lean file{if noFiles == 1 then "" else "s"} in 'Mathlib' that no longer exist."
   --msgs := msgs.push "" ++ (onlyPastFiles.toArray.map (indentD m!"{·}"))
   let deprecation ← mkDeprecation
   msgs := msgs.push ""
@@ -95,15 +96,16 @@ elab "#create_deprecated_modules" write:(&" write")? : command => do
     let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
     --dbg_trace "\nDeprecating {fname} as:\n\n---\n{deprecatedFile}---"
     msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
-    if write.isSome then
+    if write?.isSome then
       IO.FS.writeFile fname deprecatedFile
-  if write.isNone then
-    msgs :=msgs.push
-      m!"The files were not deprecated. Use '#create_deprecated_modules write' \
+  if write?.isNone && noFiles != 0 then
+    let stx ← `(#create_deprecated_modules $[$nc:num]? write)
+    msgs := msgs.push
+      m!"The files were not deprecated. Use '{stx}' \
         if you wish to deprecate them."
   logInfo <| .joinSep msgs.toList "\n"
 
-#create_deprecated_modules
+#create_deprecated_modules 150 --write
 
 /--
 info: /-
