@@ -25,11 +25,12 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory
 
-variable {α β ε E F : Type*} [MeasurableSpace α] [ENorm ε] [TopologicalSpace ε]
+variable {α β ε E F : Type*} [MeasurableSpace α]
 
 section
 
-variable [TopologicalSpace β] {l l' : Filter α} {f g : α → β} {μ ν : Measure α}
+variable [TopologicalSpace β] [ENorm ε] [TopologicalSpace ε]
+  {l l' : Filter α} {f g : α → β} {μ ν : Measure α}
 
 /-- A function `f` is strongly measurable at a filter `l` w.r.t. a measure `μ` if it is
 ae strongly measurable w.r.t. `μ.restrict s` for some `s ∈ l`. -/
@@ -78,6 +79,7 @@ theorem hasFiniteIntegral_restrict_of_bounded [NormedAddCommGroup E] {f : α →
   hasFiniteIntegral_of_bounded hf
 
 variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : Measure α}
+  [TopologicalSpace ε] [ContinuousENorm ε]
 
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
 and if the integral of its pointwise norm over `s` is less than infinity. -/
