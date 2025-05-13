@@ -167,7 +167,8 @@ instance instMulActionRWP : MulAction (D ≀ᵣ Q) (Λ × Q) where
 variable [FaithfulSMul D Λ]
 instance instFaithfulSMulRWP : FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
   eq_of_smul_eq_smul := by
-    simp; intro m₁ m₂ h
+    simp
+    intro m₁ m₂ h
     let ⟨a⟩ := ‹Nonempty Λ›
     let ⟨b⟩ := ‹Nonempty Q›
     ext q
