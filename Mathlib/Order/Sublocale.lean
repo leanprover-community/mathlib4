@@ -44,6 +44,9 @@ instance instHImp : HImp S where
 
 lemma coe_himp (a b : S) : a.val ⇨ b.val = (a ⇨ b).val := rfl
 
+lemma coe_himp' (a : X) (b : S) : a ⇨ b.val =
+    (⟨(a ⇨ b.val), (S.HImpClosed' _ _ b.coe_prop)⟩ : S).val := rfl
+
 instance instHeytingAlgebra : HeytingAlgebra S where
   le_himp_iff a b c := by
     simp [← Subtype.coe_le_coe, ← @Sublocale.coe_inf, himp]
@@ -72,31 +75,21 @@ private def gcAux (S : Sublocale X) : GaloisConnection S.embeddingAux Subtype.va
     apply sInf_le
     simp [h]
 
-lemma coeEmbedding (S : Sublocale X) (x : X) (h : x ∈ S) : embeddingAux S x = x := by
-  simp [Sublocale.embeddingAux, sInf]
-  apply le_antisymm
-  . apply sInf_le
-    simp [h]
-  . simp_all
+private def giAux(S : Sublocale X) : GaloisInsertion S.embeddingAux Subtype.val :=
+    GaloisInsertion.monotoneIntro S.gcAux.monotone_u S.gcAux.monotone_l S.gcAux.le_u_l (by
+    simp [embeddingAux]
+    exact fun a b ↦ le_antisymm (sInf_le (by simp)) (le_sInf (fun _ a ↦ a)))
 
 def embedding (S : Sublocale X) : FrameHom X S where
   toFun x := sInf {s : S | x ≤ s}
   map_inf' a b := by
     repeat rw [← embeddingAux]
-    apply eq_of_forall_ge_iff
-    intro s
-    symm
-    rw [@iff_eq_eq]
-    calc  (S.embeddingAux a ⊓ S.embeddingAux b ≤ s)
+    refine eq_of_forall_ge_iff (fun s ↦ Iff.symm (iff_eq_eq.mpr ?_))
+    calc
       _ = (S.embeddingAux a ≤ S.embeddingAux b ⇨ s) := by simp
-      _ = (a ≤ S.embeddingAux b ⇨ s) := by rw [S.gcAux.le_iff_le]
-      _ = (S.embeddingAux b ≤ a ⇨ s) := by
-        rw [@le_himp_comm, coe_himp]
-
-      _ = ( b ≤ a ⇨ s) := by
-        sorry
-      _ = ( a ⊓ b ≤ s ) := by simp [inf_comm]
-      _ = (S.embeddingAux (a ⊓ b) ≤ s) := sorry
+      _ = (S.embeddingAux b ≤ a ⇨ s) := by rw [S.gcAux.le_iff_le, @le_himp_comm, coe_himp]
+      _ = ( b ≤ a ⇨ s) := by rw [coe_himp', S.giAux.u_le_u_iff, S.gcAux.le_iff_le]
+      _ = (S.embeddingAux (a ⊓ b) ≤ s) := by simp [inf_comm, S.gcAux.le_iff_le]
   map_sSup' s := by rw [← embeddingAux, S.gcAux.l_sSup, sSup_image]; simp_rw [embeddingAux]
   map_top' := by
     refine le_antisymm (by simp) ?_
@@ -104,10 +97,7 @@ def embedding (S : Sublocale X) : FrameHom X S where
     simp [embeddingAux, sInf]
 
 
-def giEmbedding (S : Sublocale X) : GaloisInsertion S.embedding Subtype.val :=
-  GaloisInsertion.monotoneIntro S.gcAux.monotone_u S.gcAux.monotone_l S.gcAux.le_u_l (by
-    simp [embedding]
-    exact fun a b ↦ le_antisymm (sInf_le (by simp)) (le_sInf (fun _ a ↦ a)))
+def giEmbedding (S : Sublocale X) : GaloisInsertion S.embedding Subtype.val := giAux S
 
 def toNucleus (S : Sublocale X) : Nucleus X where
   toFun x := S.embedding x
