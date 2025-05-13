@@ -142,7 +142,13 @@ alias AnalyticAt.order_eq_zero_iff := AnalyticAt.analyticOrderAt_eq_zero
 protected lemma AnalyticAt.analyticOrderAt_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
     analyticOrderAt f z₀ ≠ 0 ↔ f z₀ = 0 := hf.analyticOrderAt_eq_zero.not_left
 
-/-- An analytic function vanishes at a point if its order is nonzero when converted to ℕ. -/
+/-- A function vanishes at a point if its analytic order is nonzero in `ℕ∞`. -/
+lemma apply_eq_zero_of_analyticOrderAt_ne_zero (hf : analyticOrderAt f z₀ ≠ 0) :
+    f z₀ = 0 := by
+  by_cases hf' : AnalyticAt 𝕜 f z₀ <;> simp_all [analyticOrderAt_eq_zero] 
+
+/-- A function vanishes at a point if its analytic order is nonzero when converted to 
+ℕ. -/
 lemma apply_eq_zero_of_analyticOrderNatAt_ne_zero (hf : analyticOrderNatAt f z₀ ≠ 0) :
     f z₀ = 0 := by
   by_cases hf' : AnalyticAt 𝕜 f z₀ <;> simp_all [analyticOrderNatAt, analyticOrderAt_eq_zero]
