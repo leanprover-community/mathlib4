@@ -372,12 +372,10 @@ theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n (1 : R) := 
 open Multiset in
 lemma nthRoots_two_unit_of_char_ne_two (hF : ringChar R ≠ 2) :
     Polynomial.nthRoots 2 (1 : R) = {-1,1} := by
-  symm
-  apply eq_of_le_of_card_le
-  · rw [insert_eq_cons,
-      cons_le_of_not_mem (not_mem_singleton_iff.mpr (Ring.neg_one_ne_one_of_char_ne_two hF))]
-    aesop
-  · exact Polynomial.card_nthRoots 2 1
+  apply (eq_of_le_of_card_le _ (Polynomial.card_nthRoots 2 1)).symm
+  rw [insert_eq_cons,
+    cons_le_of_not_mem (not_mem_singleton_iff.mpr (Ring.neg_one_ne_one_of_char_ne_two hF))]
+  aesop
 
 end NthRoots
 
