@@ -152,8 +152,6 @@ variable {X A : Type*} [NormedRing A] [StarRing A]
     [T2Space A] [IsTopologicalRing A]
 
 
-attribute [fun_prop] continuous_real_toNNReal
-
 open scoped NNReal in
 /-- A version of `continuous_cfc` over `ℝ≥0` instead of `RCLike 𝕜`. -/
 theorem continuous_cfc_nnreal [TopologicalSpace X] (s : Set ℝ≥0) (hs : IsCompact s) (f : ℝ≥0 → ℝ≥0)
@@ -241,15 +239,6 @@ section RCLike
 variable {X 𝕜 A : Type*} {p : A → Prop} [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A]
     [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] [ContinuousStar A]
     [NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p]
-
-/-- not marked as an instance because it would be a bad one in general, but it can
-be useful when working with `ContinuousMapZero` and the non-unital continuous
-functional calculus. -/
-def Set.zeroOffFactMem {X : Type*} [Zero X] (s : Set X) [Fact (0 ∈ s)] :
-    Zero s where
-  zero := ⟨0, Fact.out⟩
-
-scoped[ContinuousMapZero] attribute [instance] Set.zeroOffFactMem
 
 open scoped NonUnitalContinuousFunctionalCalculus ContinuousMapZero in
 /-- `cfcₙHomSuperset` is continuous in the variable `a : A` when `s : Set 𝕜` is compact and `a`
