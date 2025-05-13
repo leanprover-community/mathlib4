@@ -7,7 +7,6 @@ import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Covering.Galois
 import Mathlib.Analysis.Complex.Circle
 
-#trans_imports "Mathlib."
 /-!
 # Covering maps involving `AddCircle`
 
