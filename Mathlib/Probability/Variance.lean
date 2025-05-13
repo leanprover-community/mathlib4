@@ -220,7 +220,7 @@ lemma variance_const_add [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X 
     Var[fun ω ↦ c + X ω; μ] = Var[X; μ] := by
   simp_rw [add_comm c, variance_add_const hX c]
 
-lemma variance_neg [IsProbabilityMeasure μ] : Var[fun ω ↦ -X ω; μ] = Var[X; μ] := by
+lemma variance_neg : Var[fun ω ↦ -X ω; μ] = Var[X; μ] := by
   convert variance_mul (-1) X μ
   · ext; ring
   · simp
