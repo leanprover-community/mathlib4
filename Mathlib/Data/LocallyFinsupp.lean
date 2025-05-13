@@ -102,7 +102,7 @@ lemma apply_eq_zero_of_not_mem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
     D z = 0 := nmem_support.mp fun a ↦ hz (D.supportWithinDomain a)
 
 /--
-On a T1 space, the support of a functions with locally finite support within `U` is discrete within
+On a T1 space, the support of a function with locally finite support within `U` is discrete within
 `U`.
 -/
 theorem eq_zero_codiscreteWithin [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
