@@ -20,7 +20,7 @@ finite-dimensional distributions.
 
 ## Main results
 
-* `Probability.BrownianMotion.covMatrix.posSemidef`:
+* `Probability.BrownianMotion.CovMatrix.posSemidef`:
 The matrix with `(s t : ℝ) ↦ s ∧ t` is positive semidefinite.
 
 -/
@@ -38,7 +38,9 @@ namespace L2
 
 local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
 
-lemma innerProduct_eq_inter {v w : (Set α)} (hv₁ : MeasurableSet v)
+/-- In an `L2` space, the inner product of indicator functions equals the measure of the
+intersection. -/
+lemma innerProduct_eq_interMatrix {v w : (Set α)} (hv₁ : MeasurableSet v)
   (hw₁ : MeasurableSet w) (hv₂ : μ v ≠ ⊤ := by finiteness) (hw₂ : μ w ≠ ⊤ := by finiteness) :
   ⟪((indicatorConstLp 2 hv₁ hv₂ (1 : ℝ))), (indicatorConstLp 2 hw₁ hw₂ (1 : ℝ))⟫ =
     (μ.real (v ∩ w)) := by
@@ -50,11 +52,12 @@ lemma innerProduct_eq_inter {v w : (Set α)} (hv₁ : MeasurableSet v)
   rw [setIntegral_congr_ae hv₁ g, setIntegral_indicator hw₁]
   simp
 
+/-- In an `L2` space, the matrix of intersections of pairs of sets is positive semi-definite. -/
 theorem posSemidef_interMatrix [Fintype n] (μ : Measure α) (v : n → (Set α))
     (hv₁ : ∀ j, MeasurableSet (v j)) (hv₂ : ∀ j, μ (v j) ≠ ⊤) :
       PosSemidef (fun (i j : n) ↦ (μ.real (v i ∩ v j))) := by
-  conv => right; intro i j; rw [← innerProduct_eq_inter (hv₁ i) (hv₁ j) (hv₂ i) (hv₂ j)]
-  exact IsGram.PosSemidef
+  conv => right; intro i j; rw [← innerProduct_eq_interMatrix (hv₁ i) (hv₁ j) (hv₂ i) (hv₂ j)]
+  exact Gram.posSemidef
 
 end L2
 
@@ -64,11 +67,12 @@ namespace Probability
 
 namespace BrownianMotion
 
-/-- This is the covariance matrix of Brownian Motion. -/
+/-- The covariance matrix of Brownian Motion. -/
 def covMatrix (t : n → ℝ≥0) : Matrix n n ℝ := fun i j ↦ min (t i) (t j)
 
-namespace covMatrix
+namespace CovMatrix
 
+/-- The covariance matrix of Brownian Motion is positive semi-definite. -/
 theorem posSemidef [Fintype n] (t : n → ℝ≥0) :
     PosSemidef (covMatrix t) := by
   let v : n → (Set ℝ) := fun i ↦ Set.Icc 0 (t i)
@@ -78,7 +82,7 @@ theorem posSemidef [Fintype n] (t : n → ℝ≥0) :
   apply h ▸ L2.posSemidef_interMatrix _ v  (fun j ↦ measurableSet_Icc)
     (fun j ↦ IsCompact.measure_ne_top isCompact_Icc)
 
-end covMatrix
+end CovMatrix
 
 end BrownianMotion
 
