@@ -8,20 +8,17 @@ import Mathlib.Analysis.Meromorphic.Divisor
 /-!
 # Normal form of meromorphic functions and continuous extension
 
-If a function `f` is meromorphic on `U` and if `g` differs from `f` only along a
-set that is codiscrete within `U`, then `g` is likewise meromorphic. The set of
-meromorphic functions is therefore huge, and `=ᶠ[codiscreteWithin U]` defines an
-equivalence relation.
+If a function `f` is meromorphic on `U` and if `g` differs from `f` only along a set that is
+codiscrete within `U`, then `g` is likewise meromorphic. The set of meromorphic functions is
+therefore huge, and `=ᶠ[codiscreteWithin U]` defines an equivalence relation.
 
-This file implements continuous extension to provide an API that allows picking
-the 'unique best' representative of any given equivalence class, where 'best'
-means that the representative can locally near any point `x` be written 'in
-normal form', as `f =ᶠ[𝓝 x] fun z ↦ (z - x) ^ n • g` where `g` is analytic and
-does not vanish at `x`.
+This file implements continuous extension to provide an API that allows picking the 'unique best'
+representative of any given equivalence class, where 'best' means that the representative can
+locally near any point `x` be written 'in normal form', as `f =ᶠ[𝓝 x] fun z ↦ (z - x) ^ n • g`
+where `g` is analytic and does not vanish at `x`.
 
-## TODO
-
-Establish the analogous notion `MeromorphicNFOn`.
+The relevant notions are `MeromorphicNFAt` and `MeromorphicNFOn`; these guarantee normal
+form at a single point and along a set, respectively.
 -/
 
 open Topology WithTop
@@ -127,7 +124,7 @@ theorem AnalyticAt.meromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
 
 /-- Meromorphic functions have normal form outside of a discrete subset in the domain of
 meromorphicity. -/
-theorem MeromorphicOn.meromorphicNFAt_mem_codiscreteWithin [CompleteSpace E] {U : Set 𝕜}
+theorem MeromorphicOn.meromorphicNFAt_mem_codiscreteWithin {U : Set 𝕜}
     (hf : MeromorphicOn f U) :
     { x | MeromorphicNFAt f x } ∈ Filter.codiscreteWithin U := by
   filter_upwards [hf.analyticAt_mem_codiscreteWithin] with _ ha
@@ -171,7 +168,7 @@ theorem MeromorphicNFAt.order_eq_zero_iff (hf : MeromorphicNFAt f x) :
 /-- **Local identity theorem**: two meromorphic functions in normal form agree in a
 neighborhood iff they agree in a pointed neighborhood.
 
-See `ContinuousAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd` for the analogous
+See `ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE` for the analogous
 statement for continuous functions.
 -/
 theorem MeromorphicNFAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E}
@@ -427,7 +424,7 @@ theorem MeromorphicNFOn.meromorphicOn (hf : MeromorphicNFOn f U) :
 If a function is meromorphic in normal form on `U`, then its divisor is
 non-negative iff it is analytic.
 -/
-theorem MeromorphicNFOn.divisor_nonneg_iff_analyticOnNhd [CompleteSpace E]
+theorem MeromorphicNFOn.divisor_nonneg_iff_analyticOnNhd
     (h₁f : MeromorphicNFOn f U) :
     0 ≤ MeromorphicOn.divisor f U ↔ AnalyticOnNhd 𝕜 f U := by
   constructor <;> intro h x
@@ -455,7 +452,7 @@ theorem AnalyticOnNhd.meromorphicNFOn (h₁f : AnalyticOnNhd 𝕜 f U) :
 If `f` is meromorphic in normal form on `U` and nowhere locally constant zero,
 then its zero set equals the support of the associated divisor.
 -/
-theorem MeromorphicNFOn.zero_set_eq_divisor_support [CompleteSpace E] (h₁f : MeromorphicNFOn f U)
+theorem MeromorphicNFOn.zero_set_eq_divisor_support (h₁f : MeromorphicNFOn f U)
     (h₂f : ∀ u : U, (h₁f u.2).meromorphicAt.order ≠ ⊤) :
     U ∩ f⁻¹' {0} = Function.support (MeromorphicOn.divisor f U) := by
   ext u
@@ -559,7 +556,7 @@ Conversion to normal form on `U` does not change values outside of `U`.
 Conversion to normal form on `U` changes the value only along a discrete subset
 of `U`.
 -/
-theorem toMeromorphicNFOn_eqOn_codiscrete [CompleteSpace E] (hf : MeromorphicOn f U) :
+theorem toMeromorphicNFOn_eqOn_codiscrete (hf : MeromorphicOn f U) :
     f =ᶠ[Filter.codiscreteWithin U] toMeromorphicNFOn f U := by
   have : U ∈ Filter.codiscreteWithin U := by
     simp [mem_codiscreteWithin.2]
@@ -570,17 +567,20 @@ theorem toMeromorphicNFOn_eqOn_codiscrete [CompleteSpace E] (hf : MeromorphicOn 
 If `f` is meromorphic on `U` and `x ∈ U`, then `f` and its conversion to normal
 form on `U` agree in a punctured neighborhood of `x`.
 -/
-theorem MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdNE [CompleteSpace E]
+theorem MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdNE
     (hf : MeromorphicOn f U) (hx : x ∈ U) :
     toMeromorphicNFOn f U =ᶠ[𝓝[≠] x] f := by
-  filter_upwards [(hf x hx).eventually_analyticAt] with a ha
-  simp [toMeromorphicNFOn, hf, ← (toMeromorphicNFAt_eq_self.2 ha.meromorphicNFAt).symm]
+  filter_upwards [hf.eventually_analyticAt_or_mem_compl hx] with a ha
+  rcases ha with ha | ha
+  · simp [toMeromorphicNFOn, hf, ← (toMeromorphicNFAt_eq_self.2 ha.meromorphicNFAt).symm]
+  · simp only [Set.mem_compl_iff] at ha
+    simp [toMeromorphicNFOn, ha, hf]
 
 /--
 If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x`
 and conversion to normal form on `U` agree in a neighborhood of `x`.
 -/
-theorem toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhd [CompleteSpace E] (hf : MeromorphicOn f U)
+theorem toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhd (hf : MeromorphicOn f U)
     (hx : x ∈ U) :
     toMeromorphicNFOn f U =ᶠ[𝓝 x] toMeromorphicNFAt f x := by
   apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
@@ -591,7 +591,7 @@ theorem toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhd [CompleteSpace E] (hf : Me
 If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x`
 and conversion to normal form on `U` agree at `x`.
 -/
-theorem toMeromorphicNFOn_eq_toMeromorphicNFAt [CompleteSpace E] (hf : MeromorphicOn f U)
+theorem toMeromorphicNFOn_eq_toMeromorphicNFAt (hf : MeromorphicOn f U)
     (hx : x ∈ U) :
     toMeromorphicNFOn f U x = toMeromorphicNFAt f x x := by
   apply Filter.EventuallyEq.eq_of_nhds (g := toMeromorphicNFAt f x)
@@ -601,7 +601,7 @@ variable (f U) in
 /--
 After conversion to normal form on `U`, the function has normal form.
 -/
-theorem meromorphicNFOn_toMeromorphicNFOn [CompleteSpace E] :
+theorem meromorphicNFOn_toMeromorphicNFOn :
     MeromorphicNFOn (toMeromorphicNFOn f U) U := by
   by_cases hf : MeromorphicOn f U
   · intro z hz
@@ -614,7 +614,7 @@ theorem meromorphicNFOn_toMeromorphicNFOn [CompleteSpace E] :
 /--
 If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.
 -/
-@[simp] theorem toMeromorphicNFOn_eq_self [CompleteSpace E] :
+@[simp] theorem toMeromorphicNFOn_eq_self :
     toMeromorphicNFOn f U = f ↔ MeromorphicNFOn f U := by
   constructor <;> intro h
   · rw [h.symm]
@@ -628,7 +628,7 @@ If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.
 /--
 Conversion of normal form does not affect orders.
 -/
-@[simp] theorem order_toMeromorphicNFOn [CompleteSpace E] (hf : MeromorphicOn f U) (hx : x ∈ U) :
+@[simp] theorem order_toMeromorphicNFOn (hf : MeromorphicOn f U) (hx : x ∈ U) :
     ((meromorphicNFOn_toMeromorphicNFOn f U) hx).meromorphicAt.order = (hf x hx).order := by
   apply MeromorphicAt.order_congr
   exact hf.toMeromorphicNFOn_eq_self_on_nhdNE hx
@@ -636,8 +636,7 @@ Conversion of normal form does not affect orders.
 /--
 Conversion of normal form does not affect divisors.
 -/
-@[simp] theorem MeromorphicOn.divisor_of_toMeromorphicNFOn [CompleteSpace E]
-    (hf : MeromorphicOn f U) :
+@[simp] theorem MeromorphicOn.divisor_of_toMeromorphicNFOn (hf : MeromorphicOn f U) :
     divisor (toMeromorphicNFOn f U) U = divisor f U := by
   ext z
   by_cases hz : z ∈ U <;> simp [hf, (meromorphicNFOn_toMeromorphicNFOn f U).meromorphicOn, hz]

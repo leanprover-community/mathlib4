@@ -64,7 +64,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-
  If `ι` is a finite type and each space `f i`, `i : ι`, is an inner product space,
@@ -74,7 +74,7 @@ we use instead `PiLp 2 f` for the product space, which is endowed with the `L^2`
 instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     [∀ i, NormedAddCommGroup (f i)] [∀ i, InnerProductSpace 𝕜 (f i)] :
     InnerProductSpace 𝕜 (PiLp 2 f) where
-  inner x y := ∑ i, inner (x i) (y i)
+  inner x y := ∑ i, ⟪x i, y i⟫
   norm_sq_eq_re_inner x := by
     simp only [PiLp.norm_sq_eq_of_L2, map_sum, ← norm_sq_eq_re_inner, one_div]
   conj_inner_symm := by
@@ -85,10 +85,10 @@ instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     rintro z -
     apply inner_conj_symm
   add_left x y z :=
-    show (∑ i, inner (x i + y i) (z i)) = (∑ i, inner (x i) (z i)) + ∑ i, inner (y i) (z i) by
+    show (∑ i, ⟪x i + y i, z i⟫ = ∑ i, ⟪x i, z i⟫ + ∑ i, ⟪y i, z i⟫) by
       simp only [inner_add_left, Finset.sum_add_distrib]
   smul_left x y r :=
-    show (∑ i : ι, inner (r • x i) (y i)) = conj r * ∑ i, inner (x i) (y i) by
+    show (∑ i : ι, ⟪r • x i, y i⟫ = conj r * ∑ i, ⟪x i, y i⟫) by
       simp only [Finset.mul_sum, inner_smul_left]
 
 @[simp]
@@ -185,11 +185,11 @@ theorem finrank_euclideanSpace_fin {n : ℕ} :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
 
 theorem EuclideanSpace.inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
-    ⟪x, y⟫ = dotProduct (WithLp.equiv _ _ y) (star <| WithLp.equiv _ _ x) :=
+    ⟪x, y⟫ = WithLp.equiv _ _ y ⬝ᵥ star (WithLp.equiv _ _ x) :=
   rfl
 
 theorem EuclideanSpace.inner_piLp_equiv_symm (x y : ι → 𝕜) :
-    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = dotProduct y (star x) :=
+    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = y ⬝ᵥ star x :=
   rfl
 
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry
@@ -1067,7 +1067,7 @@ lemma toEuclideanLin_eq_toLin_orthonormal [Fintype m] :
 end Matrix
 
 local notation "⟪" x ", " y "⟫ₑ" =>
-  @inner 𝕜 _ _ (Equiv.symm (WithLp.equiv 2 _) x) (Equiv.symm (WithLp.equiv 2 _) y)
+  inner 𝕜 (Equiv.symm (WithLp.equiv 2 _) x) (Equiv.symm (WithLp.equiv 2 _) y)
 
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :

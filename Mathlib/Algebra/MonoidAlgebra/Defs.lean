@@ -737,7 +737,7 @@ variable [Semiring k]
 
 /-- The opposite of a `MonoidAlgebra R I` equivalent as a ring to
 the `MonoidAlgebra Rᵐᵒᵖ Iᵐᵒᵖ` over the opposite ring, taking elements to their opposite. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply]
+@[simps! +simpRhs apply symm_apply]
 protected noncomputable def opRingEquiv [Monoid G] :
     (MonoidAlgebra k G)ᵐᵒᵖ ≃+* MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ :=
   { opAddEquiv.symm.trans <|
@@ -816,10 +816,18 @@ endowed with the convolution product.
 def AddMonoidAlgebra :=
   G →₀ k
 
-@[inherit_doc]
-scoped[AddMonoidAlgebra] notation:9000 R:max "[" A "]" => AddMonoidAlgebra R A
-
 namespace AddMonoidAlgebra
+
+@[inherit_doc AddMonoidAlgebra]
+scoped syntax:max (priority := high) term noWs "[" term "]" : term
+
+macro_rules | `($k[$g]) => `(AddMonoidAlgebra $k $g)
+
+/-- Unexpander for `AddMonoidAlgebra`. -/
+@[scoped app_unexpander AddMonoidAlgebra]
+def unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $k $g) => `($k[$g])
+  | _ => throw ()
 
 instance inhabited : Inhabited k[G] :=
   inferInstanceAs (Inhabited (G →₀ k))
@@ -1377,7 +1385,7 @@ variable [Semiring k]
 
 /-- The opposite of an `R[I]` is ring equivalent to
 the `AddMonoidAlgebra Rᵐᵒᵖ I` over the opposite ring, taking elements to their opposite. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply]
+@[simps! +simpRhs apply symm_apply]
 protected noncomputable def opRingEquiv [AddCommMonoid G] :
     k[G]ᵐᵒᵖ ≃+* kᵐᵒᵖ[G] :=
   { opAddEquiv.symm.trans (mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)) with

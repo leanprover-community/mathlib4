@@ -141,7 +141,7 @@ end OperationsAndOrder
 
 section OperationsAndInfty
 
-variable {α : Type*}
+variable {α : Type*} {n : ℕ}
 
 @[simp] theorem add_eq_top : a + b = ∞ ↔ a = ∞ ∨ b = ∞ := WithTop.add_eq_top
 
@@ -186,9 +186,6 @@ theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert WithTop.top_
 
 theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
 
--- TODO: assume `n ≠ 0` instead of `0 < n`
-theorem top_pow {n : ℕ} (n_pos : 0 < n) : (∞ : ℝ≥0∞) ^ n = ∞ := WithTop.top_pow n_pos
-
 theorem mul_eq_top : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0 :=
   WithTop.mul_eq_top_iff
 
@@ -223,22 +220,20 @@ theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
 theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
   mul_pos_iff.2 ⟨pos_iff_ne_zero.2 ha, pos_iff_ne_zero.2 hb⟩
 
--- TODO: generalize to `WithTop`
-@[simp] theorem pow_eq_top_iff {n : ℕ} : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := by
-  rcases n.eq_zero_or_pos with rfl | (hn : 0 < n)
-  · simp
-  · induction a
-    · simp only [Ne, hn.ne', top_pow hn, not_false_eq_true, and_self]
-    · simp only [← coe_pow, coe_ne_top, false_and]
+@[simp] lemma top_pow {n : ℕ} (hn : n ≠ 0) : (∞ : ℝ≥0∞) ^ n = ∞ := WithTop.top_pow hn
 
-theorem pow_eq_top (n : ℕ) (h : a ^ n = ∞) : a = ∞ :=
-  (pow_eq_top_iff.1 h).1
+@[simp] lemma pow_eq_top_iff : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := WithTop.pow_eq_top_iff
 
-theorem pow_ne_top (h : a ≠ ∞) {n : ℕ} : a ^ n ≠ ∞ :=
-  mt (pow_eq_top n) h
+lemma pow_ne_top_iff : a ^ n ≠ ∞ ↔ a ≠ ∞ ∨ n = 0 := WithTop.pow_ne_top_iff
 
-theorem pow_lt_top : a < ∞ → ∀ n : ℕ, a ^ n < ∞ := by
-  simpa only [lt_top_iff_ne_top] using pow_ne_top
+@[simp] lemma pow_lt_top_iff : a ^ n < ∞ ↔ a < ∞ ∨ n = 0 := WithTop.pow_lt_top_iff
+
+lemma eq_top_of_pow (n : ℕ) (ha : a ^ n = ∞) : a = ∞ := WithTop.eq_top_of_pow n ha
+
+@[deprecated (since := "2025-04-24")] alias pow_eq_top := eq_top_of_pow
+
+lemma pow_ne_top (ha : a ≠ ∞) : a ^ n ≠ ∞ := WithTop.pow_ne_top ha
+lemma pow_lt_top (ha : a < ∞) : a ^ n < ∞ := WithTop.pow_lt_top ha
 
 end OperationsAndInfty
 
@@ -303,7 +298,7 @@ theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
 @[simp] lemma top_sub (ha : a ≠ ∞) : ∞ - a = ∞ := by lift a to ℝ≥0 using ha; exact top_sub_coe
 
 /-- This is a special case of `WithTop.sub_top` in the `ENNReal` namespace -/
-theorem sub_top : a - ∞ = 0 := WithTop.sub_top
+@[simp] theorem sub_top : a - ∞ = 0 := WithTop.sub_top
 
 @[simp] theorem sub_eq_top_iff : a - b = ∞ ↔ a = ∞ ∧ b ≠ ∞ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ∞ ↔ a ≠ ∞ ∨ b = ∞ := WithTop.sub_ne_top_iff
