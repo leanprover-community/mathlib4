@@ -7,7 +7,7 @@ Authors: Damiano Testa
 --import Mathlib.Init
 import Lean.Elab.Command
 import Mathlib.Tactic.Linter.DeprecatedModule
--- a comment here
+-- a comment here to test `keepTrailing
 
 /-!
 #  Create a deprecated module
@@ -25,7 +25,7 @@ It uses
 * `fname`, as the path of a file (which need not exist);
 * `fileContent`, as the content of `fname` (regardless of whether the file exists and what its
   content it);
-* `keepTrailing` a boolean.
+* `keepTrailing` a boolean to control whether to keep trailing whitespace and comments.
 
 It returns the content of `fileContent` up to the final import, including trailing whitespace and
 comments if `keepTrailing = true`.
@@ -47,7 +47,7 @@ def getHeaderFromFileName (fname : String) (keepTrailing : Bool) : IO String := 
 /--
 `mkDeprecation customMessage` returns the formatted syntax
 `deprecated_module "customMessage" (since := "YYYY-MM-DD")`,
-where the message is the input and the date is today's date.
+where the date is today's date.
 -/
 def mkDeprecation (customMessage : String := "Auto-generated deprecation") :
     CommandElabM Format := do
@@ -57,7 +57,7 @@ def mkDeprecation (customMessage : String := "Auto-generated deprecation") :
   liftCoreM <| PrettyPrinter.ppCategory `command stx
 
 /--
-The command `#create_deprecated_modules (n)? (comment)? (write)?` generates deprecated modules.
+The command `#create_deprecated_modules (n)? (comment)? (write)?` generates module deprecations.
 
 Writing
 ```lean
@@ -88,6 +88,7 @@ elab_rules : command
 | `(#create_deprecated_modules%$tk $[$nc:num]? $[$comment:str]? $[write%$write?]?) => do
   let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
   let mut msgs := #[]
+  -- Get the hash of the commit at `git log -n` (and throw an error if that doesn't exist).
   let getHash (n : Nat) := do
     let log ← IO.Process.run {cmd := "git", args := #["log", "--pretty=oneline", s!"-{n}"]}
     let some last := log.trim.splitOn "\n" |>.getLast? | throwError "Found no commits!"
@@ -105,13 +106,13 @@ elab_rules : command
   let pastFiles ← getFilesAtHash pastHash
   msgs := msgs.push m!"{pastFiles.size} files at the past hash {pastHash}\n"
   let onlyPastFiles := pastFiles.filter fun fil ↦
-    fil.takeRight ".lean".length == ".lean" &&
-    !currentFiles.contains fil
+    fil.endsWith ".lean" && !currentFiles.contains fil
   let noFiles := onlyPastFiles.size
   msgs := msgs.push
     m!"{noFiles} Lean file{if noFiles == 1 then "" else "s"} in 'Mathlib' that no longer exist."
-  let deprecation← if let some cmt := comment then mkDeprecation cmt.getString else mkDeprecation
+  let deprecation ← if let some cmt := comment then mkDeprecation cmt.getString else mkDeprecation
   msgs := msgs.push ""
+  -- Generate a module deprecation for each file that only existed in the past commit.
   for fname in onlyPastFiles do
     let file ← IO.Process.run {cmd := "git", args := #["show", s!"{pastHash}:{fname}"]}
     let fileHeader ← getHeader fname file false
@@ -166,7 +167,7 @@ Authors: Damiano Testa
 --import Mathlib.Init
 import Lean.Elab.Command
 import Mathlib.Tactic.Linter.DeprecatedModule
--- a comment here
+-- a comment here to test `keepTrailing
 -/
 #guard_msgs in
 run_cmd
