@@ -467,6 +467,11 @@ lemma Submodule.one_le_finrank_iff [StrongRankCondition R] [NoZeroSMulDivisors R
     1 ≤ finrank R S ↔ S ≠ ⊥ := by
   simp [← not_iff_not]
 
+@[simp]
+theorem Set.finrank_empty [Nontrivial R] :
+    Set.finrank R (∅ : Set M) = 0 := by
+  rw [Set.finrank, span_empty, finrank_bot]
+
 variable [Module.Free R M]
 
 theorem finrank_eq_zero_of_basis_imp_not_finite

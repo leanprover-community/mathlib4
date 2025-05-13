@@ -98,7 +98,7 @@ lemma _root_.LinearMap.rTensor_injective_iff_subtype {f : N →ₗ[R] P} (hf : F
       Function.Injective ((range <| e.toLinearMap ∘ₗ f).subtype.rTensor M) := by
   simp_rw [← EquivLike.injective_comp <| (LinearEquiv.ofInjective (e.toLinearMap ∘ₗ f)
     (e.injective.comp hf)).rTensor M, ← EquivLike.comp_injective _ (e.rTensor M),
-    ← LinearEquiv.coe_coe, ← coe_comp, LinearEquiv.coe_rTensor,  ← rTensor_comp]
+    ← LinearEquiv.coe_coe, ← coe_comp, LinearEquiv.coe_rTensor, ← rTensor_comp]
   rfl
 
 variable (R M) in
@@ -506,15 +506,15 @@ lemma map_injective_of_flat_flat'
   exact (Module.Flat.rTensor_preserves_injective_linearMap f hf).comp
     (Module.Flat.lTensor_preserves_injective_linearMap g hg)
 
+variable {ι κ : Type*} {v : ι → M} {w : κ → N} {s : Set ι} {t : Set κ}
+
 /-- Tensor product of linearly independent families is linearly
 independent under some flatness conditions.
 
 The flatness condition could be removed over domains.
 See `LinearIndependent.tmul_of_isDomain`. -/
-lemma _root_.LinearIndependent.tmul_of_flat_left [Module.Flat R M]
-    {ι ι' : Type*} {v : ι → M} (hv : LinearIndependent R v)
-    {w : ι' → N} (hw : LinearIndependent R w) :
-    LinearIndependent R fun i : ι × ι' ↦ v i.1 ⊗ₜ[R] w i.2 := by
+lemma _root_.LinearIndependent.tmul_of_flat_left [Module.Flat R M] (hv : LinearIndependent R v)
+    (hw : LinearIndependent R w) : LinearIndependent R fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2 := by
   rw [LinearIndependent]
   convert (TensorProduct.map_injective_of_flat_flat _ _ hv hw).comp
     (finsuppTensorFinsupp' _ _ _).symm.injective
@@ -527,14 +527,30 @@ lemma _root_.LinearIndependent.tmul_of_flat_left [Module.Flat R M]
 independent under some flatness conditions.
 
 The flatness condition could be removed over domains.
+See `LinearIndepOn.tmul_of_isDomain`. -/
+nonrec lemma LinearIndepOn.tmul_of_flat_left [Module.Flat R M] (hv : LinearIndepOn R v s)
+    (hw : LinearIndepOn R w t) : LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
+  ((hv.tmul_of_flat_left hw).comp _ (Equiv.Set.prod _ _).injective:)
+
+/-- Tensor product of linearly independent families is linearly
+independent under some flatness conditions.
+
+The flatness condition could be removed over domains.
 See `LinearIndependent.tmul_of_isDomain`. -/
-lemma _root_.LinearIndependent.tmul_of_flat_right [Module.Flat R N]
-    {ι ι' : Type*} {v : ι → M} (hv : LinearIndependent R v)
-    {w : ι' → N} (hw : LinearIndependent R w) :
-    LinearIndependent R fun i : ι × ι' ↦ v i.1 ⊗ₜ[R] w i.2 :=
+lemma _root_.LinearIndependent.tmul_of_flat_right [Module.Flat R N] (hv : LinearIndependent R v)
+    (hw : LinearIndependent R w) : LinearIndependent R fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2 :=
   (((TensorProduct.comm R N M).toLinearMap.linearIndependent_iff_of_injOn
     (TensorProduct.comm R N M).injective.injOn).mpr
       (hw.tmul_of_flat_left hv)).comp Prod.swap Prod.swap_bijective.injective
+
+/-- Tensor product of linearly independent families is linearly
+independent under some flatness conditions.
+
+The flatness condition could be removed over domains.
+See `LinearIndepOn.tmul_of_isDomain`. -/
+nonrec lemma LinearIndepOn.tmul_of_flat_right [Module.Flat R N] (hv : LinearIndepOn R v s)
+    (hw : LinearIndepOn R w t) : LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
+  ((hv.tmul_of_flat_right hw).comp _ (Equiv.Set.prod _ _).injective:)
 
 variable (p : Submodule R M) (q : Submodule R N)
 
