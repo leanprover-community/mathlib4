@@ -56,7 +56,6 @@ the vertex or edge set. This is an issue, but is likely amenable to automation.
 
 Reflecting written mathematics, we use the compact notations `V(G)` and `E(G)` to
 refer to the `vertexSet` and `edgeSet` of `G : Graph α β`.
-If `G.IsLink e x y` then we refer to `e` as `edge` and `x` and `y` as `left` and `right` in names.
 -/
 
 variable {α β : Type*} {x y z u v w : α} {e f : β}
@@ -73,15 +72,16 @@ structure Graph (α β : Type*) where
   vertexSet : Set α
   /-- The edge set. -/
   edgeSet : Set β
-  /-- The binary incidence predicate, stating that `x` and `y` are the ends of an edge `e`. -/
+  /-- The binary incidence predicate; `G.IsLink e x y` means the edge `e` has ends `x` and `y`.
+  If this holds, we refer to `e` as `edge` and `x` and `y` as `left` and `right` in lemma names. -/
   IsLink : β → α → α → Prop
   /-- If `e` goes from `x` to `y`, it goes from `y` to `x`. -/
   isLink_symm : ∀ ⦃e⦄, e ∈ edgeSet → (Symmetric <| IsLink e)
   /-- An edge is incident with at most one pair of vertices. -/
   eq_or_eq_of_isLink_of_isLink : ∀ ⦃e x y v w⦄, IsLink e x y → IsLink e v w → x = v ∨ x = w
-  /-- An edge `e` is incident to something if and only if `e` is in the edge set. -/
+  /-- An edge `e` is incident to some vertex if and only if `e` is in the edge set. -/
   edge_mem_iff_exists_isLink : ∀ e, e ∈ edgeSet ↔ ∃ x y, IsLink e x y
-  /-- If some edge `e` is incident to `x`, then `x ∈ V`. -/
+  /-- If some edge `e` is incident to the vertex `x`, then `x ∈ V`. -/
   left_mem_of_isLink : ∀ ⦃e x y⦄, IsLink e x y → x ∈ vertexSet
 
 namespace Graph
@@ -152,7 +152,8 @@ lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
 
 /-! ### Edge-vertex incidence -/
 
-/-- The unary incidence predicate of `G`. `G.Inc e x` means that `x` is one of the ends of `e`. -/
+/-- The unary incidence predicate. `G.Inc e x` means that `x` is one of the ends of `e`.
+If `G.Inc e x`, then we refer to `e` as `edge` and `x` as `vertex` in lemma names. -/
 def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.IsLink e x y
 
 @[simp]
@@ -262,7 +263,8 @@ lemma Inc.isLoopAt_or_isNonloopAt (h : G.Inc e x) : G.IsLoopAt e x ∨ G.IsNonlo
 
 /-! ### Adjacency -/
 
-/-- `G.Adj x y` means that `G` has an edge from `x` to `y`. -/
+/-- `G.Adj x y` means that `G` has an edge from `x` to `y`. We refer to `x` and `y` as `left`
+and `right` in lemma names. -/
 def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.IsLink e x y
 
 lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
