@@ -36,7 +36,7 @@ integrable
 
 noncomputable section
 
-open EMetric ENNReal Filter MeasureTheory NNReal Set
+open EMetric ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
 
 variable {α β γ δ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
 variable [NormedAddCommGroup β] [NormedAddCommGroup γ]
@@ -63,8 +63,6 @@ theorem memLp_one_iff_integrable {f : α → ε} : MemLp f 1 μ ↔ Integrable f
 theorem Integrable.aestronglyMeasurable {f : α → ε} (hf : Integrable f μ) :
     AEStronglyMeasurable f μ :=
   hf.1
-
-open TopologicalSpace
 
 @[fun_prop]
 theorem Integrable.aemeasurable [MeasurableSpace ε] [BorelSpace ε] [PseudoMetrizableSpace ε]
@@ -114,7 +112,7 @@ theorem Integrable.congr {f g : α → ε} (hf : Integrable f μ) (h : f =ᵐ[μ
 theorem integrable_congr {f g : α → ε} (h : f =ᵐ[μ] g) : Integrable f μ ↔ Integrable g μ :=
   ⟨fun hf => hf.congr h, fun hg => hg.congr h.symm⟩
 
-theorem integrable_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ⊤) :
+theorem integrable_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     Integrable (fun _ : α => c) μ ↔ ‖c‖ₑ = 0 ∨ IsFiniteMeasure μ := by
   have : AEStronglyMeasurable (fun _ : α => c) μ := aestronglyMeasurable_const
   rw [Integrable, and_iff_right this, hasFiniteIntegral_const_iff_enorm hc]
@@ -123,7 +121,7 @@ lemma integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 0 
   rw [integrable_const_iff_enorm enorm_ne_top]
   simp
 
-lemma integrable_const_iff_isFiniteMeasure_enorm {c : ε} (hc : ‖c‖ₑ ≠ 0) (hc' : ‖c‖ₑ ≠ ⊤) :
+lemma integrable_const_iff_isFiniteMeasure_enorm {c : ε} (hc : ‖c‖ₑ ≠ 0) (hc' : ‖c‖ₑ ≠ ∞) :
     Integrable (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
   simp [integrable_const_iff_enorm hc', hc, isFiniteMeasure_iff]
 
@@ -132,7 +130,7 @@ lemma integrable_const_iff_isFiniteMeasure {c : β} (hc : c ≠ 0) :
   simp [integrable_const_iff, hc, isFiniteMeasure_iff]
 
 theorem Integrable.of_mem_Icc_enorm [IsFiniteMeasure μ]
-    {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (hX : AEMeasurable X μ)
+    {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) {X : α → ℝ≥0∞} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     Integrable X μ :=
   ⟨hX.aestronglyMeasurable, .of_mem_Icc_of_ne_top ha hb h⟩
@@ -143,7 +141,7 @@ theorem Integrable.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} 
   ⟨hX.aestronglyMeasurable, .of_mem_Icc a b h⟩
 
 @[simp, fun_prop]
-theorem integrable_const_enorm [IsFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ⊤) :
+theorem integrable_const_enorm [IsFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     Integrable (fun _ : α ↦ c) μ :=
   (integrable_const_iff_enorm hc).2 <| .inr ‹_›
 
@@ -220,8 +218,6 @@ theorem Integrable.of_measure_le_smul {ε} [TopologicalSpace ε] [ENormedAddMono
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.of_measure_le_smul hc hμ'_le
 
-open TopologicalSpace
-
 @[fun_prop]
 theorem Integrable.add_measure [PseudoMetrizableSpace ε]
     {f : α → ε} (hμ : Integrable f μ) (hν : Integrable f ν) :
@@ -255,7 +251,7 @@ a Dirac measure.
 See `integrable_dirac'` for a version which requires `f` to be strongly measurable but does not
 need singletons to be measurable. -/
 @[fun_prop]
-lemma integrable_dirac [MeasurableSingletonClass α] {a : α} {f : α → ε} (hfa : ‖f a‖ₑ < ⊤) :
+lemma integrable_dirac [MeasurableSingletonClass α] {a : α} {f : α → ε} (hfa : ‖f a‖ₑ < ∞) :
     Integrable f (Measure.dirac a) :=
   ⟨aestronglyMeasurable_dirac, by simpa [HasFiniteIntegral]⟩
 
@@ -263,7 +259,7 @@ lemma integrable_dirac [MeasurableSingletonClass α] {a : α} {f : α → ε} (h
 See `integrable_dirac` for a version which requires that singletons are measurable sets but has no
 hypothesis on `f`. -/
 @[fun_prop]
-lemma integrable_dirac' {a : α} {f : α → ε} (hf : StronglyMeasurable f) (hfa : ‖f a‖ₑ < ⊤) :
+lemma integrable_dirac' {a : α} {f : α → ε} (hf : StronglyMeasurable f) (hfa : ‖f a‖ₑ < ∞) :
     Integrable f (Measure.dirac a) :=
   ⟨hf.aestronglyMeasurable, by simpa [HasFiniteIntegral, lintegral_dirac' _ hf.enorm]⟩
 
