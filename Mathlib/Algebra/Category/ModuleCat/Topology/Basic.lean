@@ -52,7 +52,6 @@ def of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Continuo
   have : IsTopologicalAddGroup M := ⟨⟩
   ⟨.of R M⟩
 
-@[simp]
 lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : (of R M) = M := rfl
 
