@@ -29,7 +29,8 @@ def getHeader (fname : String) (keepTrailing : Bool) : IO String := do
   return upToAllImports.toString
 
 def mkDeprecatedModule
-    (fname : String) (customMessage : String := "auto-generated") (keepTrailing : Bool := false) :
+    (fname : String) (customMessage : String := "auto-generated") (keepTrailing : Bool := false)
+    (write : Bool := false) :
     CommandElabM Unit := do
   let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
   let dateStx := Syntax.mkStrLit s!"{← Std.Time.PlainDate.now}"
@@ -43,7 +44,10 @@ def mkDeprecatedModule
   logInfo "Continuing"
   let fileContent := s!"{header.trimRight}\n\n{fmt}\n"
   dbg_trace fileContent
-  IO.FS.writeFile nm fileContent
+  if write then
+    IO.FS.writeFile nm fileContent
+  else
+    logInfo m!"File '{nm}' not written. Set `write := true` if you wish to create it."
   --return
   --return s!"{header.trimRight}\n\n{fmt}\n"
 #check Std.HashSet
@@ -53,9 +57,11 @@ run_cmd
   let onlyOld := oldFiles.filter (!currentFiles.contains ·)
 
   dbg_trace onlyOld.toArray
+  for file in onlyOld do
+    mkDeprecatedModule file
   --IO.Process.run {cmd := "comm", args := #["-13", "<(sort currentListOfFiles.txt)", "<(sort oldListOfFiles.txt)"]}
-run_cmd
-  mkDeprecatedModule (← getFileName)
+--run_cmd
+--  mkDeprecatedModule (← getFileName)
 
 run_cmd
   let fname := "Mathlib/Init.lean"
