@@ -24,6 +24,8 @@ getAllFiles > currentListOfFiles.txt
 git checkout "${previousHash}"
 # We are now on the earlier commit and we store the list of old files in `oldListOfFiles.txt`.
 getAllFiles > oldListOfFiles.txt
+# Go back to master.
+git checkout --quiet -
 
 # `removedFiles` are the files that are present in `oldListOfFiles.txt`,
 # but not in `currentListOfFiles.txt`.
@@ -32,5 +34,9 @@ getAllFiles > oldListOfFiles.txt
 removedFiles="$(comm -13 currentListOfFiles.txt oldListOfFiles.txt)"
 printf 'Files only in the old repository:\n---\n%s\n---\n' "${removedFiles}"
 
-# Go back to master.
-git checkout --quiet -
+# For each file that only exists in the past repository, checkout the file again.
+IFS=$'\n'
+for file in ${removedFiles}
+do
+  git checkout "${previousHash}" "${file}"
+done
