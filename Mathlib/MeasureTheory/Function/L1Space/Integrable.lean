@@ -134,7 +134,7 @@ theorem Integrable.of_mem_Icc_enorm [IsFiniteMeasure μ]
     {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     Integrable X μ :=
-  ⟨hX.aestronglyMeasurable, .of_mem_Icc_enorm ha hb h⟩
+  ⟨hX.aestronglyMeasurable, .of_mem_Icc_of_ne_top ha hb h⟩
 
 theorem Integrable.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
@@ -400,7 +400,7 @@ theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → ε'}
     (integrable_zero _ _ _) hf
 
 @[fun_prop]
-theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → β}
+theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → ε'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using integrable_finset_sum' s hf
 
@@ -618,7 +618,7 @@ lemma integrable_of_le_of_le {f g₁ g₂ : α → ℝ} (hf : AEStronglyMeasurab
     exact max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)
   exact Integrable.mono (by fun_prop) hf h_le_add
 
--- TODO: generalising this to enorms requires defining a product instance for enormed X first
+-- TODO: generalising this to enorms requires defining a product instance for enormed monoids first
 @[fun_prop]
 theorem Integrable.prodMk {f : α → β} {g : α → γ} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (fun x => (f x, g x)) μ :=
@@ -641,7 +641,7 @@ where `‖f x‖ ≥ ε` is finite for all positive `ε`. -/
 theorem Integrable.measure_enorm_ge_lt_top
     {f : α → ε} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : 0 < ε) (hε' : ε ≠ ∞):
     μ { x | ε ≤ ‖f x‖ₑ } < ∞ := by
-  refine meas_ge_le_mul_pow_eLpNorm_enorm μ one_ne_zero ENNReal.one_ne_top hf.1 hε.ne' hε'
+  refine meas_ge_le_mul_pow_eLpNorm_enorm μ one_ne_zero one_ne_top hf.1 hε.ne' (by simp [hε'])
     |>.trans_lt ?_
   apply ENNReal.mul_lt_top
   · simpa only [ENNReal.toReal_one, ENNReal.rpow_one, ENNReal.inv_lt_top, ENNReal.ofReal_pos]
@@ -664,13 +664,22 @@ theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ)
   · simpa only [ENNReal.toReal_one, ENNReal.rpow_one] using
       (memLp_one_iff_integrable.2 hf).eLpNorm_lt_top
 
--- TODO: continue generalising from here onwards!
+/-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
+where `‖f x‖ₑ > ε` is finite for all positive `ε`. -/
+lemma Integrable.measure_norm_gt_lt_top_enorm {f : α → ε} (hf : Integrable f μ)
+    {ε : ℝ≥0∞} (hε : 0 < ε) : μ {x | ε < ‖f x‖ₑ} < ∞ := by
+  by_cases hε' : ε = ∞
+  · simp [hε']
+  exact lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le))
+    (hf.measure_enorm_ge_lt_top hε hε')
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ > ε` is finite for all positive `ε`. -/
 lemma Integrable.measure_norm_gt_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     μ {x | ε < ‖f x‖} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le)) (hf.measure_norm_ge_lt_top hε)
+
+-- TODO: continue generalising from here onwards!
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
 measure. -/
