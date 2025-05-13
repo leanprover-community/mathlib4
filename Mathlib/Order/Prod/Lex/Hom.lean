@@ -12,7 +12,7 @@ import Mathlib.Order.Hom.Basic
 
 /-- `toLex` as an `OrderHom`. -/
 @[simps]
-def Prod.Lex.orderHom {α β : Type*} [PartialOrder α] [Preorder β] :
+def Prod.Lex.toLexOrderHom {α β : Type*} [PartialOrder α] [Preorder β] :
     α × β →o α ×ₗ β where
   toFun := toLex
   monotone' := by
