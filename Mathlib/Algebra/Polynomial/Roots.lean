@@ -9,6 +9,7 @@ import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Algebra.CharP.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -367,6 +368,16 @@ theorem ne_zero_of_mem_nthRootsFinset {η : R} {a : R} (ha : a ≠ 0) (hη : η 
 
 theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n (1 : R) := by
   rw [mem_nthRootsFinset hn, one_pow]
+
+open Multiset in
+lemma nthRoots_two_unit_of_char_ne_two (hF : ringChar R ≠ 2) :
+    Polynomial.nthRoots 2 (1 : R) = {-1,1} := by
+  symm
+  apply eq_of_le_of_card_le
+  · rw [insert_eq_cons,
+      cons_le_of_not_mem (not_mem_singleton_iff.mpr (Ring.neg_one_ne_one_of_char_ne_two hF))]
+    aesop
+  · exact Polynomial.card_nthRoots 2 1
 
 end NthRoots
 
