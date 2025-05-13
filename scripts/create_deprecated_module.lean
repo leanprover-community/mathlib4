@@ -130,9 +130,14 @@ elab_rules : command
         if you wish to deprecate them."
   logInfoAt tk <| .joinSep msgs.toList "\n"
 
-#create_deprecated_modules 155 "a comment here" --  155
- --write
-section
+/-
+Uncomment the `#create_deprecated_modules` line below to get started.
+* `10` should likely be some small number, though its exact value may not be too important;
+* omitting `"a comment here"` is equivalent to using `"Auto-generated deprecation"`
+  while using the empty string `""` eliminates the comment entirely;
+* uncomment `write` only when you are satisfied that the deprecations look correct!
+-/
+--#create_deprecated_modules 10 "a comment here" --write
 
 /--
 info: /-
