@@ -338,27 +338,27 @@ theorem IntegrableOn.of_ae_diff_eq_zero [PseudoMetrizableSpace ε'] {f : α → 
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
 if `t` is measurable. -/
-theorem IntegrableOn.of_forall_diff_eq_zero {f : α → E}
+theorem IntegrableOn.of_forall_diff_eq_zero [PseudoMetrizableSpace ε'] {f : α → ε'}
     (hf : IntegrableOn f s μ) (ht : MeasurableSet t)
     (h't : ∀ x ∈ t \ s, f x = 0) : IntegrableOn f t μ :=
   hf.of_ae_diff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
 
 /-- If a function is integrable on a set `s` and vanishes almost everywhere on its complement,
 then it is integrable. -/
-theorem IntegrableOn.integrable_of_ae_not_mem_eq_zero {f : α → E} (hf : IntegrableOn f s μ)
-    (h't : ∀ᵐ x ∂μ, x ∉ s → f x = 0) : Integrable f μ := by
+theorem IntegrableOn.integrable_of_ae_not_mem_eq_zero [PseudoMetrizableSpace ε']
+    {f : α → ε'} (hf : IntegrableOn f s μ) (h't : ∀ᵐ x ∂μ, x ∉ s → f x = 0) : Integrable f μ := by
   rw [← integrableOn_univ]
   apply hf.of_ae_diff_eq_zero nullMeasurableSet_univ
   filter_upwards [h't] with x hx h'x using hx h'x.2
 
 /-- If a function is integrable on a set `s` and vanishes everywhere on its complement,
 then it is integrable. -/
-theorem IntegrableOn.integrable_of_forall_not_mem_eq_zero {f : α → E} (hf : IntegrableOn f s μ)
-    (h't : ∀ x, x ∉ s → f x = 0) : Integrable f μ :=
+theorem IntegrableOn.integrable_of_forall_not_mem_eq_zero [PseudoMetrizableSpace ε']
+    {f : α → ε'} (hf : IntegrableOn f s μ) (h't : ∀ x, x ∉ s → f x = 0) : Integrable f μ :=
   hf.integrable_of_ae_not_mem_eq_zero (Eventually.of_forall fun x hx => h't x hx)
 
-theorem integrableOn_iff_integrable_of_support_subset {f : α → E} (h1s : support f ⊆ s) :
-    IntegrableOn f s μ ↔ Integrable f μ := by
+theorem integrableOn_iff_integrable_of_support_subset [PseudoMetrizableSpace ε']
+    {f : α → ε'} (h1s : support f ⊆ s) : IntegrableOn f s μ ↔ Integrable f μ := by
   refine ⟨fun h => ?_, fun h => h.integrableOn⟩
   refine h.integrable_of_forall_not_mem_eq_zero fun x hx => ?_
   contrapose! hx
@@ -390,7 +390,7 @@ def IntegrableAtFilter (f : α → ε) (l : Filter α) (μ : Measure α := by vo
 variable {l l' : Filter α}
 
 theorem _root_.MeasurableEmbedding.integrableAtFilter_map_iff [MeasurableSpace β] {e : α → β}
-    (he : MeasurableEmbedding e) {f : β → E} :
+    (he : MeasurableEmbedding e) {f : β → ε} :
     IntegrableAtFilter f (l.map e) (μ.map e) ↔ IntegrableAtFilter (f ∘ e) l μ := by
   simp_rw [IntegrableAtFilter, he.integrableOn_map_iff]
   constructor <;> rintro ⟨s, hs⟩
@@ -398,7 +398,7 @@ theorem _root_.MeasurableEmbedding.integrableAtFilter_map_iff [MeasurableSpace �
   · exact ⟨e '' s, by rwa [mem_map, he.injective.preimage_image]⟩
 
 theorem _root_.MeasurableEmbedding.integrableAtFilter_iff_comap [MeasurableSpace β] {e : α → β}
-    (he : MeasurableEmbedding e) {f : β → E} {μ : Measure β} :
+    (he : MeasurableEmbedding e) {f : β → ε} {μ : Measure β} :
     IntegrableAtFilter f (l.map e) μ ↔ IntegrableAtFilter (f ∘ e) l (μ.comap e) := by
   simp_rw [← he.integrableAtFilter_map_iff, IntegrableAtFilter, he.map_comap]
   constructor <;> rintro ⟨s, hs, int⟩
