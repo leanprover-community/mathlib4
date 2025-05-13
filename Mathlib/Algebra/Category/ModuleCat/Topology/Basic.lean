@@ -46,7 +46,7 @@ noncomputable instance : CoeSort (TopModuleCat.{v} R) (Type v) := ⟨fun M ↦ M
 attribute [instance] topologicalSpace isTopologicalAddGroup continuousSMul
 
 /-- Make an object in `TopModuleCat R` from an unbundled topological module. -/
-def of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
+abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : TopModuleCat R :=
   have : ContinuousNeg M := ⟨by convert continuous_const_smul (-1 : R) (T := M); ext; simp⟩
   have : IsTopologicalAddGroup M := ⟨⟩
@@ -364,6 +364,8 @@ def indiscrete : ModuleCat.{v} R ⥤ TopModuleCat.{v} R where
     haveI : ContinuousSMul R X := ⟨by rw [continuous_iff_coinduced_le]; exact le_top⟩
     .of R X
   map {X Y} f :=
+    letI : TopologicalSpace X := ⊤
+    letI : TopologicalSpace Y := ⊤
     ConcreteCategory.ofHom (C := TopModuleCat R)
       ⟨f.hom, by rw [continuous_iff_coinduced_le]; exact le_top⟩
 
@@ -437,16 +439,16 @@ def freeAdj : free.{max v u} R ⊣ forget₂ (TopModuleCat.{max v u} R) TopCat.{
       ext1
       apply ContinuousLinearMap.coe_injective
       refine Finsupp.lhom_ext' fun a ↦ LinearMap.ext_ring ?_
-      dsimp [freeObj, freeMap, coe_of]
+      dsimp [freeObj, freeMap]
       simp }
   left_triangle_components X := by
     ext1
     apply ContinuousLinearMap.coe_injective
     refine Finsupp.lhom_ext' fun a ↦ LinearMap.ext_ring ?_
-    simp [freeMap, freeObj, coe_of]
+    simp [freeMap, freeObj]
   right_triangle_components X := by
     ext
-    simp [freeMap, freeObj, coe_of]
+    simp [freeMap, freeObj]
 
 instance : (forget₂ (TopModuleCat.{max v u} R) TopCat).IsRightAdjoint := ⟨_, ⟨freeAdj R⟩⟩
 instance : (free.{max v u} R).IsLeftAdjoint := ⟨_, ⟨freeAdj R⟩⟩
