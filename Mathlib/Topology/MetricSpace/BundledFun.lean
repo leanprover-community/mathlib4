@@ -154,23 +154,30 @@ section IsUltra
 
 /-- A pseudometric can be nonarchimedean (or ultrametric), with a stronger triangle
 inequality such that `d x z ≤ max (d x y) (d y z)`. -/
-def IsUltra [Zero R] [Add R] [LE R] [Max R] (d : PseudoMetric X R) : Prop :=
-  ∀ x y z, d x z ≤ d x y ⊔ d y z
+class IsUltra [Zero R] [Add R] [LE R] [Max R] (d : PseudoMetric X R) : Prop where
+  /-- Strong triangle inequality of an ultrametric. -/
+  le_sup' : ∀ x y z, d x z ≤ d x y ⊔ d y z
 
-protected lemma IsUltra.bot [AddZeroClass R] [SemilatticeSup R] :
-    IsUltra (⊥ : PseudoMetric X R) := by
-  simp [IsUltra]
+lemma IsUltra.le_sup [Zero R] [Add R] [LE R] [Max R] {d : PseudoMetric X R} [hd : IsUltra d]
+    {x y z : X} : d x z ≤ d x y ⊔ d y z :=
+  hd.le_sup' x y z
 
-protected lemma IsUltra.sup [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R]
-    {d d' : PseudoMetric X R} (hd : IsUltra d) (hd' : IsUltra d') : IsUltra (d ⊔ d') := by
+instance IsUltra.bot [AddZeroClass R] [SemilatticeSup R] :
+    IsUltra (⊥ : PseudoMetric X R) where
+  le_sup' := by simp
+
+instance IsUltra.sup [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R]
+    {d d' : PseudoMetric X R} [IsUltra d] [IsUltra d'] : IsUltra (d ⊔ d') := by
+  constructor
   intro x y z
   simp only [PseudoMetric.sup_apply]
-  calc d x z ⊔ d' x z ≤ d x y ⊔ d y z ⊔ (d' x y ⊔ d' y z) := sup_le_sup (hd x y z) (hd' x y z)
+  calc d x z ⊔ d' x z ≤ d x y ⊔ d y z ⊔ (d' x y ⊔ d' y z) := sup_le_sup le_sup le_sup
   _ ≤ d x y ⊔ d' x y ⊔ (d y z ⊔ d' y z) := by simp [sup_comm, sup_assoc, sup_left_comm]
 
 lemma IsUltra.finsetSup {Y : Type*} [LinearOrderedAddCommMonoid R] [AddLeftStrictMono R]
     {f : Y → PseudoMetric X R} {s : Finset Y} (h : ∀ d ∈ s, IsUltra (f d)) :
     IsUltra (s.sup f) := by
+  constructor
   intro x y z
   rcases s.eq_empty_or_nonempty with rfl|hs
   · simp
@@ -178,7 +185,7 @@ lemma IsUltra.finsetSup {Y : Type*} [LinearOrderedAddCommMonoid R] [AddLeftStric
   apply Finset.sup'_le
   simp only [le_sup_iff, Finset.le_sup'_iff]
   intro i hi
-  specialize h i hi x y z
+  have h := (h i hi).le_sup' x y z
   simp only [le_sup_iff] at h
   refine h.imp ?_ ?_ <;>
   intro H <;>
@@ -196,15 +203,16 @@ lemma isSymmetricRel_closedBall [Add R] [Zero R] [LE R] (d : PseudoMetric X R) {
     IsSymmetricRel {xy | d xy.1 xy.2 ≤ ε} := by
   simp [IsSymmetricRel, d.symm]
 
-lemma IsUltra.isTransitiveRel_ball [Add R] [Zero R] [LinearOrder R] (d : PseudoMetric X R) {ε : R}
-    (h : d.IsUltra) :
+lemma IsUltra.isTransitiveRel_ball [Add R] [Zero R] [LinearOrder R] (d : PseudoMetric X R)
+    [d.IsUltra] {ε : R} :
     IsTransitiveRel {xy | d xy.1 xy.2 < ε} :=
-  fun x y z hxy hyz ↦ (h x y z).trans_lt (max_lt hxy hyz)
+  fun _ _ _ hxy hyz ↦ le_sup.trans_lt (max_lt hxy hyz)
 
 lemma IsUltra.isTransitiveRel_closedBall [Add R] [Zero R] [SemilatticeSup R] (d : PseudoMetric X R)
-    {ε : R} (h : d.IsUltra) :
+    [d.IsUltra] {ε : R} :
     IsTransitiveRel {xy | d xy.1 xy.2 ≤ ε} :=
-  fun x y z hxy hyz ↦ (h x y z).trans (sup_le hxy hyz)
+  fun _ _ _ hxy hyz ↦ le_sup.trans (sup_le hxy hyz)
+
 end ball
 
 end PseudoMetric
