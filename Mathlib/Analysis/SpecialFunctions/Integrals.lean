@@ -3,7 +3,9 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
+import Mathlib.Analysis.Meromorphic.FactorizedRational
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
@@ -257,6 +259,68 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
     apply Real.continuousOn_log.mono
     apply Set.not_mem_uIcc_of_lt zero_lt_one at hx
     simpa
+
+/--
+If `f` is meromorphic over `ℝ`, then functions of the form `log ‖f ·‖` are
+interval integrable.
+-/
+@[simp]
+theorem intervalIntegrable_log_norm_meromorphicOn {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {f : ℝ → E} (hf : MeromorphicOn f [[a, b]]) :
+    IntervalIntegrable (log ‖f ·‖) volume a b := by
+  by_cases t₀ : ∀ u : [[a, b]], (hf u u.2).order ≠ ⊤
+  · obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.extract_zeros_poles t₀
+      ((MeromorphicOn.divisor f [[a, b]]).finiteSupport isCompact_uIcc)
+    have h₄g := MeromorphicOn.extract_zeros_poles_log h₂g h₃g
+    rw [intervalIntegrable_congr_codiscreteWithin
+      (h₄g.filter_mono (Filter.codiscreteWithin.mono Set.uIoc_subset_uIcc))]
+    apply IntervalIntegrable.add
+    · apply IntervalIntegrable.finsum
+      intro i
+      apply IntervalIntegrable.const_mul
+      rw [(by ring : a = ((a - i) + i)), (by ring : b = ((b - i) + i))]
+      apply IntervalIntegrable.comp_sub_right (f := (log ‖·‖)) _ i
+      simp [norm_eq_abs, log_abs]
+    · apply ContinuousOn.intervalIntegrable
+      apply h₁g.continuousOn.norm.log
+      simp_all
+  · rw [← hf.exists_order_ne_top_iff_forall (isConnected_Icc inf_le_sup)] at t₀
+    push_neg at t₀
+    have : (log ‖f ·‖) =ᶠ[Filter.codiscreteWithin (Ι a b)] 0 := by
+      apply Filter.EventuallyEq.filter_mono _ (Filter.codiscreteWithin.mono Set.uIoc_subset_uIcc)
+      filter_upwards [hf.meromorphicNFAt_mem_codiscreteWithin,
+        Filter.self_mem_codiscreteWithin [[a, b]]] with x h₁x h₂x
+      simp only [Pi.zero_apply, log_eq_zero, norm_eq_zero]
+      left
+      by_contra hCon
+      simp_all [← h₁x.order_eq_zero_iff, t₀ ⟨x, h₂x⟩]
+    rw [intervalIntegrable_congr_codiscreteWithin this]
+    apply _root_.intervalIntegrable_const_iff.2
+    tauto
+
+/--
+If `f` is meromorphic over `ℝ`, then functions of the form `log ‖f⁺ ·‖` are
+interval integrable.
+-/
+@[simp]
+theorem intervalIntegrable_posLog_norm_meromorphicOn {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {f : ℝ → E} (hf : MeromorphicOn f [[a, b]]) :
+    IntervalIntegrable (log⁺ ‖f ·‖) volume a b := by
+  simp_rw [← half_mul_log_add_log_abs, mul_add]
+  apply IntervalIntegrable.add
+  · apply (intervalIntegrable_log_norm_meromorphicOn hf).const_mul
+  · apply (intervalIntegrable_log_norm_meromorphicOn hf).abs.const_mul
+
+/--
+If `f` is meromorphic over `ℝ`, then functions of the form `log ∘ f` are
+interval integrable.
+-/
+@[simp]
+theorem _root_.MeromorphicOn.intervalIntegrable_log {f : ℝ → ℝ}
+    (hf : MeromorphicOn f [[a, b]]) :
+    IntervalIntegrable (log ∘ f) volume a b := by
+  rw [(by aesop : log ∘ f = (log ‖f ·‖))]
+  exact intervalIntegrable_log_norm_meromorphicOn hf
 
 @[simp]
 theorem intervalIntegrable_sin : IntervalIntegrable sin μ a b :=

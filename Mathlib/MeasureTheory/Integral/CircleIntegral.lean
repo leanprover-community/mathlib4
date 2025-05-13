@@ -183,6 +183,22 @@ nonrec theorem add (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
     CircleIntegrable (f + g) c R :=
   hf.add hg
 
+/-- Sums of circle integrable functions are circle integrable. -/
+theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E} (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
+    CircleIntegrable (∑ i ∈ s, f i) c R := by
+  rw [CircleIntegrable, (by aesop : (fun θ ↦ (∑ i ∈ s, f i) (circleMap c R θ))
+    = ∑ i ∈ s, fun θ ↦ f i (circleMap c R θ))] at *
+  exact IntervalIntegrable.sum s h
+
+/-- Finsums of circle integrable functions are circle integrable. -/
+theorem finsum {ι : Type*} {f : ι → ℂ → E} (h : ∀ i, CircleIntegrable (f i) c R) :
+    CircleIntegrable (∑ᶠ i, f i) c R := by
+  by_cases h₁ : (Function.support f).Finite
+  · rw [finsum_eq_sum f h₁]
+    exact CircleIntegrable.sum h₁.toFinset (fun i _ ↦ h i)
+  · rw [finsum_of_infinite_support h₁]
+    apply circleIntegrable_const
+
 nonrec theorem neg (hf : CircleIntegrable f c R) : CircleIntegrable (-f) c R :=
   hf.neg
 
