@@ -218,7 +218,7 @@ jobs:
           MESSAGE+=$'### ✅ Successfully merged branches:\n\n'
           for MERGE_INFO in $SUCCESSFUL_MERGES; do
             IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
-            MESSAGE+=$(printf -- '- lean#%s ([diff](%s))\n\n' "$PR_NUMBER" "$GITHUB_DIFF")
+            MESSAGE+=$(printf -- '- lean#%s ([diff](%s))' "$PR_NUMBER" "$GITHUB_DIFF")$'\n\n'
           done
           MESSAGE+=$'\n'
         else
@@ -230,9 +230,9 @@ jobs:
           MESSAGE+=$'### ❌ Failed merges:\n\nThe following branches need to be merged manually:\n\n'
           for MERGE_INFO in $FAILED_MERGES; do
             IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
-            MESSAGE+=$(printf 'Diff: %s\n\n' "$GITHUB_DIFF")
+            MESSAGE+=$(printf 'Diff: %s' "$GITHUB_DIFF")$'\n\n'
             MESSAGE+=$'```bash\n'
-            MESSAGE+=$(printf 'scripts/merge-lean-testing-pr.sh %s\n' "$PR_NUMBER")
+            MESSAGE+=$(printf 'scripts/merge-lean-testing-pr.sh %s' "$PR_NUMBER")$'\n'
             MESSAGE+=$'```\n\n'
           done
         else
@@ -240,7 +240,7 @@ jobs:
         fi
 
         # Output the message using the correct GitHub Actions syntax
-        printf 'msg<<EOF\n%s\nEOF' "$MESSAGE" >> "$GITHUB_OUTPUT"
+        printf 'msg<<EOF\n%s\nEOF' "$MESSAGE" | tee "$GITHUB_OUTPUT"
 
     - name: Send message on Zulip
       if: env.branches_exist == 'true'

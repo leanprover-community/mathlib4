@@ -19,7 +19,7 @@ definition more commonly encountered in the literature. The reason is that in ou
 neighborhood `v` of `x` can depend on the entourage `u`; so our condition is *a priori* weaker than
 the usual one, although the two conditions are equivalent if the domain is locally compact.
 
-We adopt this weaker condition because it is more general but apppears to be sufficient for
+We adopt this weaker condition because it is more general but appears to be sufficient for
 the standard applications of locally-uniform convergence (in particular, for proving that a
 locally-uniform limit of continuous functions is continuous).
 
@@ -58,7 +58,7 @@ theorem tendstoLocallyUniformlyOn_iff_forall_tendsto :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ x ∈ s, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ˢ 𝓝[s] x) (𝓤 β) :=
   forall₂_swap.trans <| forall₄_congr fun _ _ _ _ => by
-    rw [mem_map, mem_prod_iff_right]; rfl
+    simp_rw [mem_map, mem_prod_iff_right, mem_preimage]
 
 nonrec theorem IsOpen.tendstoLocallyUniformlyOn_iff_forall_tendsto (hs : IsOpen s) :
     TendstoLocallyUniformlyOn F f p s ↔

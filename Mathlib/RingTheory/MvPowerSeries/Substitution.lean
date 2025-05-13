@@ -52,8 +52,8 @@ as it is discrete.
 ## TODO
 
 * `MvPowerSeries.IsNilpotent_subst` asserts that the constant coefficient
-of a legit substitution is nilpotent; prove that the converse holds when
-the kernel of `algebraMap R S` is a nilideal.
+  of a legit substitution is nilpotent; prove that the converse holds when
+  the kernel of `algebraMap R S` is a nilideal.
 -/
 
 namespace MvPowerSeries
@@ -266,7 +266,7 @@ theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ �
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   have := ((hasSum_aeval ha.hasEval f).map (coeff S e) (continuous_coeff S e))
-  rw [← coe_substAlgHom ha, substAlgHom,  ← this.tsum_eq, tsum_def, dif_pos this.summable]
+  rw [← coe_substAlgHom ha, substAlgHom, ← this.tsum_eq, tsum_def, dif_pos this.summable]
   exact if_pos (coeff_subst_finite ha f e)
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
