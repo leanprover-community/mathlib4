@@ -146,3 +146,4 @@ end Topology.IsQuotientMap
     IsCoveringMap (QuotientGroup.mk (s := S)) :=
   isQuotientMap_quotient_mk'.isCoveringMap_of_subgroup S fun {_ _} ↦
     Quotient.eq''.trans QuotientGroup.leftRel_apply
+
