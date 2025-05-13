@@ -457,8 +457,7 @@ theorem nonempty_hom_of_preconnected_groupoid {G} [Groupoid G] [IsPreconnected G
 
 attribute [instance] nonempty_hom_of_preconnected_groupoid
 
-instance PreconnectedOfSubsingleton [Subsingleton J] :
-    IsPreconnected J where
+instance PreconnectedOfSubsingleton [Subsingleton J] : IsPreconnected J where
   iso_constant {α} F j := ⟨NatIso.ofComponents (fun x ↦ eqToIso (by simp [Subsingleton.allEq x j]))⟩
 
 instance [Nonempty J] [Subsingleton J] : IsConnected J where
