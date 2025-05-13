@@ -136,6 +136,9 @@ variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
 instance (priority := 50) smul' : SMul M s where
   smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
 
+instance (priority := 50) : IsScalarTower M N s where
+  smul_assoc m n x := Subtype.ext (smul_assoc m n x.1)
+
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul_of_tower (r : M) (x : s) : (↑(r • x) : α) = r • (x : α) :=
   rfl
@@ -479,7 +482,7 @@ variable {M α : Type*} [Monoid M] [MulAction M α]
 
 
 /-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
-@[to_additive  "The inclusion of a SubAddAction into the ambient set, as an equivariant map."]
+@[to_additive "The inclusion of a SubAddAction into the ambient set, as an equivariant map."]
 def inclusion (s : SubMulAction M α) : s →[M] α where
 -- The inclusion map of the inclusion of a SubMulAction
   toFun := Subtype.val

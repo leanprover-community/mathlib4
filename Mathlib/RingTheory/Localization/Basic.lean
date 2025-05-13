@@ -235,6 +235,22 @@ theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
 
 end AlgEquivOfAlgEquiv
 
+section smul
+
+variable {R : Type*} [CommSemiring R] {S : Submonoid R}
+variable {R' : Type*} [CommSemiring R'] [Algebra R R'] [IsLocalization S R']
+variable {M' : Type*} [AddCommMonoid M'] [Module R' M'] [Module R M'] [IsScalarTower R R' M']
+
+/-- If `x` in a `R' = S⁻¹ R`-module `M'`, then for a submodule `N'` of `M'`,
+`s • x ∈ N'` if and only if `x ∈ N'` for some `s` in S. -/
+lemma smul_mem_iff {N' : Submodule R' M'} {x : M'} {s : S} :
+    s • x ∈ N' ↔ x ∈ N' := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Submodule.smul_of_tower_mem N' s h⟩
+  rwa [← Submodule.smul_mem_iff_of_isUnit (r := algebraMap R R' s) N' (map_units R' s),
+    algebraMap_smul]
+
+end smul
+
 section at_units
 
 variable (R M)

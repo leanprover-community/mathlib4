@@ -6,8 +6,9 @@ Authors: Xavier Roblot
 import Mathlib.Algebra.Module.ZLattice.Covolume
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
-import Mathlib.Tactic.Rify
 import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+import Mathlib.Tactic.Rify
 
 /-!
 # Number field discriminant
@@ -16,10 +17,10 @@ This file defines the discriminant of a number field.
 ## Main result
 
 * `NumberField.abs_discr_gt_two`: **Hermite-Minkowski Theorem**. A nontrivial number field has
-discriminant greater than `2`.
+  discriminant greater than `2`.
 
 * `NumberField.finite_of_discr_bdd`: **Hermite Theorem**. Let `N` be an integer. There are only
-finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
+  finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
 
 ## Tags
 number field, discriminant
@@ -79,6 +80,7 @@ theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     ZLattice.covolume (mixedEmbedding.integerLattice K) =
       (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
   rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_integerLattice K),
+    measureReal_def,
     volume_fundamentalDomain_latticeBasis, ENNReal.toReal_mul, ENNReal.toReal_pow,
     ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm,
     Int.norm_eq_abs]
@@ -89,6 +91,7 @@ theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (Fractional
       (FractionalIdeal.absNorm (I : FractionalIdeal (𝓞 K)⁰ K)) *
         (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
   rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_idealLattice K I),
+    measureReal_def,
     volume_fundamentalDomain_fractionalIdealLatticeBasis, volume_fundamentalDomain_latticeBasis,
     ENNReal.toReal_mul, ENNReal.toReal_mul, ENNReal.toReal_pow, ENNReal.toReal_inv, toReal_ofNat,
     ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm, Int.norm_eq_abs,

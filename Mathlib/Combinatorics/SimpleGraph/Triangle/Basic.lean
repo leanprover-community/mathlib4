@@ -266,7 +266,7 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
   rw [mul_assoc, mul_lt_mul_left hε₀]
   norm_cast
   calc
-    _ ≤ 2 * (⊤ : SimpleGraph α).edgeFinset.card := by gcongr; exact le_top
+    _ ≤ 2 * (completeGraph α).edgeFinset.card := by gcongr; exact le_top
     _ < card α ^ 2 := ?_
   rw [edgeFinset_top, filter_not, card_sdiff (subset_univ _), Finset.card_univ, Sym2.card]
   simp_rw [choose_two_right, Nat.add_sub_cancel, Nat.mul_comm _ (card α),

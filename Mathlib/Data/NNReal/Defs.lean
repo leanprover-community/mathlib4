@@ -63,7 +63,7 @@ namespace NNReal
 instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
 instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
-instance : OrderBot ℝ≥0 := inferInstance
+instance : OrderBot ℝ≥0 := Nonneg.orderBot
 instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
 instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 instance : Min ℝ≥0 := SemilatticeInf.toMin
@@ -453,10 +453,6 @@ theorem coe_iInf {ι : Sort*} (s : ι → ℝ≥0) : (↑(⨅ i, s i) : ℝ) = �
 instance addLeftMono : AddLeftMono ℝ≥0 := inferInstance
 instance addLeftReflectLT : AddLeftReflectLT ℝ≥0 := inferInstance
 instance mulLeftMono : MulLeftMono ℝ≥0 := inferInstance
-
-@[deprecated le_of_forall_pos_le_add (since := "2024-10-17")]
-protected theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=
-   le_of_forall_pos_le_add h
 
 theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ Real.toNNReal q < b :=

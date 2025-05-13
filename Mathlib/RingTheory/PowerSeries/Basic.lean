@@ -6,10 +6,10 @@ Authors: Johan Commelin, Kenny Lau
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.RingTheory.Ideal.Basic
 
 /-!
 # Formal power series (in one variable)
@@ -29,14 +29,9 @@ We provide the natural inclusion from polynomials to formal power series.
 Additional results can be found in:
 * `Mathlib.RingTheory.PowerSeries.Trunc`, truncation of power series;
 * `Mathlib.RingTheory.PowerSeries.Inverse`, about inverses of power series,
-and the fact that power series over a local ring form a local ring;
+  and the fact that power series over a local ring form a local ring;
 * `Mathlib.RingTheory.PowerSeries.Order`, the order of a power series at 0,
-and application to the fact that power series over an integral domain
-form an integral domain.
-
-##  Instance
-
-If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
+  and application to the fact that power series over an integral domain form an integral domain.
 
 ## Implementation notes
 
@@ -563,32 +558,6 @@ theorem X_dvd_iff {φ : R⟦X⟧} : (X : R⟦X⟧) ∣ φ ↔ constantCoeff R φ
   · intro m hm
     rwa [Nat.eq_zero_of_le_zero (Nat.le_of_succ_le_succ hm)]
 
-instance [NoZeroDivisors R] : NoZeroDivisors R⟦X⟧ where
-  eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
-    classical
-    rw [or_iff_not_imp_left]
-    intro H
-    have ex : ∃ m, coeff R m φ ≠ 0 := by
-      contrapose! H
-      exact ext H
-    let m := Nat.find ex
-    ext n
-    rw [(coeff R n).map_zero]
-    induction' n using Nat.strong_induction_on with n ih
-    replace h := congr_arg (coeff R (m + n)) h
-    rw [LinearMap.map_zero, coeff_mul, Finset.sum_eq_single (m, n)] at h
-    · simp only [mul_eq_zero] at h
-      exact Or.resolve_left h (Nat.find_spec ex)
-    · rintro ⟨i, j⟩ hij hne
-      rw [mem_antidiagonal] at hij
-      rcases trichotomy_of_add_eq_add hij with h_eq | hi_lt | hj_lt
-      · apply False.elim (hne ?_)
-        simpa using h_eq
-      · suffices coeff R i φ = 0 by rw [this, zero_mul]
-        by_contra h; exact Nat.find_min ex hi_lt h
-      · rw [ih j hj_lt, mul_zero]
-    · simp
-
 end Semiring
 
 section CommSemiring
@@ -763,45 +732,6 @@ theorem evalNegHom_X : evalNegHom (X : A⟦X⟧) = -X :=
   rescale_neg_one_X
 
 end CommRing
-
-section IsDomain
-
-instance [Ring R] [IsDomain R] : IsDomain R⟦X⟧ :=
-  NoZeroDivisors.to_isDomain _
-
-variable [CommRing R] [IsDomain R]
-
-/-- The ideal spanned by the variable in the power series ring
- over an integral domain is a prime ideal. -/
-theorem span_X_isPrime : (Ideal.span ({X} : Set R⟦X⟧)).IsPrime := by
-  suffices Ideal.span ({X} : Set R⟦X⟧) = RingHom.ker (constantCoeff R) by
-    rw [this]
-    exact RingHom.ker_isPrime _
-  apply Ideal.ext
-  intro φ
-  rw [RingHom.mem_ker, Ideal.mem_span_singleton, X_dvd_iff]
-
-/-- The variable of the power series ring over an integral domain is prime. -/
-theorem X_prime : Prime (X : R⟦X⟧) := by
-  rw [← Ideal.span_singleton_prime]
-  · exact span_X_isPrime
-  · intro h
-    simpa [map_zero (coeff R 1)] using congr_arg (coeff R 1) h
-
-/-- The variable of the power series ring over an integral domain is irreducible. -/
-theorem X_irreducible : Irreducible (X : R⟦X⟧) := X_prime.irreducible
-
-theorem rescale_injective {a : R} (ha : a ≠ 0) : Function.Injective (rescale a) := by
-  intro p q h
-  rw [PowerSeries.ext_iff] at *
-  intro n
-  specialize h n
-  rw [coeff_rescale, coeff_rescale, mul_eq_mul_left_iff] at h
-  apply h.resolve_right
-  intro h'
-  exact ha (pow_eq_zero h')
-
-end IsDomain
 
 section Algebra
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
 
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Data.Set.Card
 
 /-!
@@ -60,6 +60,9 @@ lemma ncard_inter (hrep : Represents s C) (h : c ∈ C) : (s ∩ c.supp).ncard =
   rw [Set.ncard_eq_one]
   exact exists_inter_eq_singleton hrep h
 
+lemma ncard_eq (hrep : Represents s C) : s.ncard = C.ncard :=
+  hrep.image_eq ▸ (Set.ncard_image_of_injOn hrep.injOn).symm
+
 lemma ncard_sdiff_of_mem (hrep : Represents s C) (h : c ∈ C) :
     (c.supp \ s).ncard = c.supp.ncard - 1 := by
   obtain ⟨a, ha⟩ := exists_inter_eq_singleton hrep h
@@ -70,4 +73,16 @@ lemma ncard_sdiff_of_not_mem (hrep : Represents s C) (h : c ∉ C) :
     (c.supp \ s).ncard = c.supp.ncard := by
   rw [(disjoint_supp_of_not_mem hrep h).sdiff_eq_right]
 
-end SimpleGraph.ConnectedComponent.Represents
+end ConnectedComponent.Represents
+
+lemma ConnectedComponent.even_ncard_supp_sdiff_rep {s : Set V} (K : G.ConnectedComponent)
+    (hrep : ConnectedComponent.Represents s G.oddComponents) :
+    Even (K.supp \ s).ncard := by
+  by_cases h : Even K.supp.ncard
+  · simpa [hrep.ncard_sdiff_of_not_mem
+      (by simpa [Set.ncard_image_of_injective, ← Nat.not_odd_iff_even] using h)] using h
+  · have : K.supp.ncard ≠ 0 := Nat.ne_of_odd_add (Nat.not_even_iff_odd.mp h)
+    rw [hrep.ncard_sdiff_of_mem (Nat.not_even_iff_odd.mp h), Nat.even_sub (by omega)]
+    simpa [Nat.even_sub] using Nat.not_even_iff_odd.mp h
+
+end SimpleGraph
