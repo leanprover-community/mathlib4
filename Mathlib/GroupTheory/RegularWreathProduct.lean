@@ -158,7 +158,7 @@ lemma rsmul {w : D ≀ᵣ Q} {p : Λ × Q} :
     w • p = ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩ := rfl
 
 instance instMulActionRWP : MulAction (D ≀ᵣ Q) (Λ × Q) where
-  one_smul := by simp;
+  one_smul := by simp
   mul_smul := by simp; intro x y a b; constructor
                  · rw [smul_smul]; group
                  · exact mul_assoc x.right y.right b
@@ -167,11 +167,11 @@ instance instMulActionRWP : MulAction (D ≀ᵣ Q) (Λ × Q) where
 variable [FaithfulSMul D Λ]
 instance instFaithfulSMulRWP : FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
   eq_of_smul_eq_smul := by
-    simp; intro m₁ m₂ h;
+    simp; intro m₁ m₂ h
     let ⟨a⟩ := ‹Nonempty Λ›
     let ⟨b⟩ := ‹Nonempty Q›
     ext q
-    · have hh := fun a => (h a (m₁.right⁻¹ * q)).1;
+    · have hh := fun a => (h a (m₁.right⁻¹ * q)).1
       rw [← (h a b).2] at hh
       group at hh
       apply FaithfulSMul.eq_of_smul_eq_smul at hh
@@ -261,8 +261,8 @@ lemma mu_eq {p n : ℕ} [Fact (Nat.Prime p)] :
         simp at h2
         simp at h1
         exact h2 h1
-    have h1: ∏ k ∈ S, (k + 1) ≠ 0 := by
-      apply Finset.prod_ne_zero_iff.mpr; intro x hx;
+    have h1 : ∏ k ∈ S, (k + 1) ≠ 0 := by
+      apply Finset.prod_ne_zero_iff.mpr; intro x hx
       exact Ne.symm (Nat.zero_ne_add_one x)
     have h2 : ∏ k ∈ Finset.range (p ^ (n + 1)) \ S, (k + 1) ≠ 0 := by
       apply Finset.prod_ne_zero_iff.mpr; intro x hx; exact Ne.symm (Nat.zero_ne_add_one x)
@@ -290,7 +290,7 @@ lemma mu_eq {p n : ℕ} [Fact (Nat.Prime p)] :
       have aux1 : p * (m₁ + 1) = f m₁ + 1 := Eq.symm (Nat.sub_add_cancel NeZero.one_le)
       have aux2 : p * (m₂ + 1) = f m₂ + 1 := Eq.symm (Nat.sub_add_cancel NeZero.one_le)
       have : p * (m₁ + 1) = p * (m₂ + 1) := by
-        rw [aux1, aux2];
+        rw [aux1, aux2]
         exact congrFun (congrArg HAdd.hAdd h_eq) 1
       exact Nat.succ_inj.mp (Nat.eq_of_mul_eq_mul_left (Nat.pos_of_neZero p) this)
     have hf_inj : Set.InjOn f ↑(Finset.range (p ^ n)) := fun ⦃x₁⦄ a ⦃x₂⦄ a ↦ hf_inj' x₁ x₂
@@ -309,13 +309,13 @@ lemma mu_eq {p n : ℕ} [Fact (Nat.Prime p)] :
         apply Nat.sub_one_lt_of_le aux
         exact hk1
       have x_fun : f (x-1) = k := by
-        apply Nat.eq_sub_of_add_eq at hx;
+        apply Nat.eq_sub_of_add_eq at hx
         have : f (x - 1) = p * (x - 1 + 1) - 1 := rfl
         rw [hx, this, Nat.sub_add_cancel aux]
       use (x - 1); exact ⟨List.mem_range.mpr x_bound, x_fun⟩
     have prod_reindex : ∏ m ∈ Finset.range (p^n), (p * (m + 1)) = ∏ k ∈ S, (k + 1) := by
       apply (Finset.prod_nbij f hf_mem hf_inj hf_surj)
-      intro a ha;
+      intro a ha
       apply (Nat.sub_eq_iff_eq_add NeZero.one_le ).mp; rfl
     rw [← prod_reindex] at res
     have h_prod : (∏ m ∈ Finset.range (p^n), (p * (m + 1))).factorization p =
