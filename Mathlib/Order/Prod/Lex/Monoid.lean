@@ -21,6 +21,36 @@ TODO: Create the "OrdCommMon" category.
 
 -/
 
+namespace MonoidHom
+
+variable {α β : Type*} [Monoid α] [Preorder α] [Monoid β] [Preorder β]
+
+@[to_additive]
+lemma inl_mono : Monotone (MonoidHom.inl α β) :=
+  fun _ _ ↦ by simp
+
+@[to_additive]
+lemma inl_strictMono : StrictMono (MonoidHom.inl α β) :=
+  fun _ _ ↦ by simp
+
+@[to_additive]
+lemma inr_mono : Monotone (MonoidHom.inr α β) :=
+  fun _ _ ↦ by simp
+
+@[to_additive]
+lemma inr_strictMono : StrictMono (MonoidHom.inr α β) :=
+  fun _ _ ↦ by simp
+
+@[to_additive]
+lemma fst_mono : Monotone (MonoidHom.fst α β) :=
+  fun _ _ ↦ by simp +contextual [Prod.le_def]
+
+@[to_additive]
+lemma snd_mono : Monotone (MonoidHom.snd α β) :=
+  fun _ _ ↦ by simp +contextual [Prod.le_def]
+
+end MonoidHom
+
 namespace OrderMonoidHom
 
 variable (α β : Type*) [Monoid α] [PartialOrder α] [Monoid β] [Preorder β]
@@ -30,28 +60,28 @@ variable (α β : Type*) [Monoid α] [PartialOrder α] [Monoid β] [Preorder β]
 homomorphism from M to M × N."]
 def inl : α →*o α × β where
   __ := MonoidHom.inl _ _
-  monotone' _ _ := by simp
+  monotone' := MonoidHom.inl_mono
 
 /-- Given ordered monoids M, N, the natural inclusion ordered homomorphism from N to M × N. -/
 @[to_additive (attr := simps!) "Given ordered additive monoids M, N, the natural inclusion ordered
 homomorphism from N to M × N."]
 def inr : β →*o α × β where
   __ := MonoidHom.inr _ _
-  monotone' _ _ := by simp
+  monotone' := MonoidHom.inr_mono
 
 /-- Given ordered monoids M, N, the natural projection ordered homomorphism from M × N to M. -/
 @[to_additive (attr := simps!) "Given ordered additive monoids M, N, the natural projection ordered
 homomorphism from M × N to M."]
 def fst : α × β →*o α where
   __ := MonoidHom.fst _ _
-  monotone' _ _ := by simp +contextual [Prod.le_def]
+  monotone' := MonoidHom.fst_mono
 
 /-- Given ordered monoids M, N, the natural projection ordered homomorphism from M × N to N. -/
 @[to_additive (attr := simps!) "Given ordered additive monoids M, N, the natural projection ordered
 homomorphism from M × N to N."]
 def snd : α × β →*o β where
   __ := MonoidHom.snd _ _
-  monotone' _ _ := by simp +contextual [Prod.le_def]
+  monotone' := MonoidHom.snd_mono
 
 /-- Given ordered monoids M, N, the natural inclusion ordered homomorphism from M to the
 lexicographic M ×ₗ N. -/
@@ -79,10 +109,7 @@ def fstₗ : (α ×ₗ β) →*o α where
   toFun p := (ofLex p).fst
   map_one' := by simp
   map_mul' := by simp
-  monotone' {p q} := by
-    cases p; cases q
-    simp only [Prod.Lex.le_iff, ofLex_toLex, le_iff_lt_or_eq (α := α)]
-    aesop
+  monotone' := Prod.Lex.monotone_fst_ofLex
 
 @[to_additive (attr := simp)]
 theorem fst_comp_inl : (fst α β).comp (inl α β) = .id α :=
