@@ -292,7 +292,7 @@ lemma takeUntil_takeUntil (p : G.Walk u v) (hw : w ∈ p.support)
   rw [← takeUntil_append_of_mem_left _ (p.dropUntil w hw) hx]
   simp_rw [take_spec]
 
-@[simp]
+--@[simp]
 lemma dropUntil_append_of_mem_left (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
     (p.append q).dropUntil x (subset_support_append_left _ _ hx) = (p.dropUntil x hx).append q := by
   induction p with

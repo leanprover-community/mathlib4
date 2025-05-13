@@ -124,31 +124,6 @@ lemma Walk.shortClosed_of_eq {y: α} (w : G.Walk u v) (hx : x ∈ w.support) (hy
   subst h
   rfl
 
--- lemma Walk.dropUntil_reverse_comm (w : G.Walk u v) (hx : x ∈ w.support) :
---   ((w.dropUntil _ hx).reverse.dropUntil _ (by simp)).reverse =
---   (((w.reverse.dropUntil _ (w.mem_support_reverse.2 hx)).reverse.dropUntil _ (by simp))):= by
---   by_cases hu : x = u
---   · subst x; simp
---   induction w with
---   | nil => rw [mem_support_nil_iff] at hx; exact (hu hx).elim
---   | @cons _ b _ _ p ih =>
---     simp_rw [reverse_cons]
---     rw [dropUntil_cons_ne_start hx hu]
---     rw [support_cons, List.mem_cons] at hx
---     cases hx with
---   | inl hx => contradiction
---   | inr hx =>
---     simp_rw [dropUntil_append_of_mem_left _ _ ((p.mem_support_reverse.2 hx)), reverse_append]
---     by_cases hb : x = b
---     · subst b
---       simp [hu]
---     · simpa [hu, hb] using ih _ hb
-
--- @[simp]
--- lemma Walk.shortClosed_reverse (w : G.Walk u v) (hx : x ∈ w.support) :
---     (w.reverse.shortClosed ((w.mem_support_reverse.2 hx))).reverse = w.shortClosed hx := by
---   simp [shortClosed, ← (w.dropUntil_reverse_comm hx)]
-
 @[simp]
 lemma Walk.dropUntil_spec (w : G.Walk u v) (hx : x ∈ w.support) :
     (w.shortClosed hx).append (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse =
@@ -170,7 +145,6 @@ lemma Walk.take_shortClosed_reverse_spec (w : G.Walk u v) (hx : x ∈ w.support)
     rw [← take_spec w hx]
   rw [w.dropUntil_spec hx]
 
-@[simp]
 lemma Walk.count_reverse {y : α} (w : G.Walk u v) :
     w.reverse.support.count y = w.support.count y := by
   simp
@@ -243,7 +217,6 @@ lemma Walk.shortCut_start (w : G.Walk u v) : w.shortCut w.start_mem_support =
     (w.reverse.takeUntil _ (w.mem_support_reverse.2 (by simp))).reverse:= by
   cases w <;> simp [shortCut];
 
-@[simp]
 lemma Walk.mem_support_shortCut (w : G.Walk u v) (hx : x ∈ w.support) :
     x ∈ (w.shortCut hx).support := by
   simp [shortCut]
@@ -470,9 +443,8 @@ private def Walk.cutVert {u : α} (w : G.Walk u u) : G.Walk u u  :=
 @[simp]
 lemma Walk.cutVert_of_count_le_two {u : α} (w : G.Walk u u) (h : w.support.count u ≤ 2) :
     w.cutVert = w := by
-  simp [cutVert,h]
+  simp [cutVert, h]
 
-@[simp]
 lemma Walk.cutVert_of_two_lt_count {u : α} (w : G.Walk u u) (h : 2 < w.support.count u) :
     w.cutVert = w.shorterOdd'.cutVert := by
   rw [cutVert, dif_neg]
@@ -655,45 +627,6 @@ lemma Walk.count_edge_eq {x y : α} (p : G.Walk x y) (d : G.Dart) :
     rw [List.countP_or_of_ne]
     exact Ne.symm (Dart.symm_ne d)
 
--- lemma Walk.count_support_le_count_edges {x y : α} (p : G.Walk x y) (a : α) (d : G.Dart)
---   (ha : a ∈ d.edge) :
--- FALSE: `xax` has two edges containing `a` but `xax.support.count a = 1`
---   p.edges.count d.edge ≤ p.support.count a := by
---   rw [p.count_edge_eq, ← cons_map_snd_darts ]
---   rw [List.count_cons]
---   by_cases hx : x ≠ a
---   · simp only [beq_iff_eq, hx, ↓reduceIte, add_zero]
---     rw [List.count_map_eq_countP, ← List.countP_or_of_ne (Ne.symm d.symm_ne)]
---     refine countP_mono_left ?_
-
---     sorry
---   · sorry
--- FALSE
--- oddTrailLike need not be a trail, it consists of `almost cycles` joined at a vertex,
---
--- lemma Walk.oddTrailLike_isTrail {u : α} (p : G.Walk u u) (ho : Odd p.length) :
---     p.oddTrailLike.toWalk.IsTrail := by
---   apply IsTrail.mk
---   by_contra! hc
---   rw [List.nodup_iff_count_le_one] at hc
---   push_neg at hc
---   obtain ⟨e, he⟩ := hc
---   cases e with
---   | h x y =>
---     by_cases hx : x = p.oddTrailLike.start
---     · subst x
---       have : y ≠ p.oddTrailLike.start:= by
---         rintro rfl
-
---         sorry
---       have := p.oddTrailLike_count_le_one_of_ne_start this
---       rw [Sym2.eq_swap] at he
---       have := p.oddTrailLike.toWalk.count_support_le_count_edges y p.oddTrailLike.start
---       omega
---     · have := p.oddTrailLike_count_le_one_of_ne_start hx
---       have := p.oddTrailLike.toWalk.count_support_le_count_edges x y
---       omega
-
 lemma Walk.darts_oddTrailLike_subset {u : α} (p : G.Walk u u) :
   p.oddTrailLike.toWalk.darts ⊆ p.darts := by
   induction hn : p.length using Nat.strong_induction_on generalizing p u with
@@ -702,8 +635,6 @@ lemma Walk.darts_oddTrailLike_subset {u : α} (p : G.Walk u u) :
     · obtain ⟨v, hv⟩ := hv
       rw [p.oddTrailLike_ne_nil hv]
       have hnil := (p.oddTrailLike_filter_ne hv)
-      have hm := List.head_mem hnil
-      rw [List.mem_filter, decide_eq_true_eq] at hm
       intro d hd
       exact darts_shorterOdd_subset _ _ <| ih _ (hn ▸ p.length_shorterOdd_lt_length' hnil) _ rfl hd
     · push_neg at hv

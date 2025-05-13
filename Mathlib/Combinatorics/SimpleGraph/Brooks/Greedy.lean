@@ -93,7 +93,7 @@ variable {a : α}
 lemma PartColoring.greedy_extends_not_mem (C : G.PartColoring β s) (ha : a ∉ s)
     [Fintype (G.neighborSet a)] (h) : (C.greedy a h).Extends C := C.insert_extends_not_mem _ ha
 
-@[simp]
+--@[simp]
 lemma PartColoring.greedy_extends (C : G.PartColoring β s) [Fintype (G.neighborSet a)] (h) :
   (C.greedy a h).Extends (G.partColoringOfSingleton a (min' _ h)) := C.insert_extends _
 

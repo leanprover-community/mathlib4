@@ -94,7 +94,7 @@ open PartColoring
 
 variable {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x₄} {k : ℕ}
 
-lemma Brooks1 [DecidableRel G.Adj] [LocallyFinite G] [DecidableEq α] (hk : 3 ≤ k)
+lemma Brooks1 [LocallyFinite G] [DecidableEq α] (hk : 3 ≤ k)
     (hbd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hj : xⱼ ∈ p.support) (hj2 : G.Adj xⱼ x₂)
     (h21 : G.Adj x₂ x₁) (h23 : G.Adj x₂ x₃) (hne : x₁ ≠ x₃) (h13 : ¬ G.Adj x₁ x₃)
     (h1 : x₁ ∉ p.support) (h2 : x₂ ∉ p.support) (h3 : x₃ ∉ p.support) :

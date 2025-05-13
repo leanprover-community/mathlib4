@@ -65,20 +65,16 @@ def copy (C : G.PartColoring β s) (h : s = t) : G.PartColoring β t where
     subst h
     exact C.map_rel'
 
-@[simp]
 theorem copy_rfl  (C : G.PartColoring β s)  : C.copy rfl = C := rfl
 
-@[simp]
 theorem copy_copy {s t u} (C : G.PartColoring β s) (hs : s = t) (ht : t = u) :
     (C.copy hs).copy ht = C.copy (hs.trans ht) := by
   subst_vars
   rfl
 
-@[simp]
 lemma copy_def (C: G.PartColoring β s) (h : s = t) {v : α} :
   (C.copy h) v  = C v := rfl
 
-@[simp]
 lemma copy_extends {C₂ : G.PartColoring β t} {C₁ : G.PartColoring β s} (hc : C₂.Extends C₁)
   {h : t = u} : (C₂.copy h).Extends C₁ :=
     ⟨fun _ hx ↦ h ▸ hc.1 hx, fun _ hv ↦ by rw [copy_def]; exact hc.2 hv⟩
