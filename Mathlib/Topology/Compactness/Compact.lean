@@ -18,9 +18,9 @@ import Mathlib.Topology.Defs.Ultrafilter
 * `isCompact_univ_pi`: **Tychonov's theorem** - an arbitrary product of compact sets
   is compact.
 
-* `compactSpace_generateFrom`: **Alexander's subbasis theorem** - if `X` is a topological space with
-  a subbasis `S`, then `X` is compact if any open cover of `X` with elements in `S` has a finite
-  subcover.
+* `isCompact_generateFrom`: **Alexander's subbasis theorem** - suppose `X` is a topological space
+  with a subbasis `S` and `s` is a subset of `X`, then `s` is compact if for any open cover of `s`
+  with all elements taken from `S`, there is a finite subcover.
 -/
 
 open Set Filter Topology TopologicalSpace Function
@@ -505,6 +505,28 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
   have : ¬⋂ i : ι, V i ⊆ W := by simpa [← iInter_inter, inter_compl_nonempty_iff]
   contradiction
 
+omit [TopologicalSpace X] in
+/--
+**Alexander's subbasis theorem**. Suppose `X` is a topological space with a subbasis `S` and `s` is
+a subset of `X`. Then `s` is compact if for any open cover of `s` with all elements taken from `S`,
+there is a finite subcover.
+-/
+theorem isCompact_generateFrom {S : Set (Set X)} (s : Set X)
+    (h : ∀ P ⊆ S, s ⊆ ⋃₀ P → ∃ Q ⊆ P, Q.Finite ∧ s ⊆ ⋃₀ Q) :
+    @IsCompact X (generateFrom S) s := by
+  rw [@isCompact_iff_ultrafilter_le_nhds']
+  intro F hF'
+  by_contra hF
+  have hSF : ∀ x ∈ s, ∃ t, x ∈ t ∧ t ∈ S ∧ t ∉ F := by simpa [nhds_generateFrom] using hF
+  choose! U hxU hSU hUF using hSF
+  obtain ⟨Q, hQP, hQ1, hQ2⟩ := h (U '' s) (by simpa [Set.subset_def])
+    (fun x hx ↦ Set.mem_sUnion_of_mem (hxU _ hx) (by aesop))
+  have : ∀ s ∈ Q, s ∉ F := fun s hsQ ↦ (hQP hsQ).choose_spec.2 ▸ hUF _ (hQP hsQ).choose_spec.1
+  have hQF : ⋂₀ (compl '' Q) ∈ F.sets := by simpa [Filter.biInter_mem hQ1, F.compl_mem_iff_not_mem]
+  have : ⋃₀ Q ∉ F := by
+    simpa [-Set.sInter_image, ← Set.compl_sUnion, hQ2, F.compl_mem_iff_not_mem] using hQF
+  exact this (F.mem_of_superset hF' hQ2)
+
 namespace Filter
 
 theorem hasBasis_cocompact : (cocompact X).HasBasis IsCompact compl :=
@@ -699,22 +721,15 @@ theorem compactSpace_of_finite_subfamily_closed
 
 omit [TopologicalSpace X] in
 /--
-**Alexander's Subbasis Theorem**. If `X` is a topological space with a subbasis `S`, then `X` is
-compact if any open cover of `X` with elements in `S` has a finite subcover.
+The `CompactSpace` version of **Alexander's subbasis theorem**. If `X` is a topological space with a
+subbasis `S`, then `X` is compact if for any open cover of `X` all of whose elements belong to `S`,
+there is a finite subcover.
 -/
 theorem compactSpace_generateFrom {S : Set (Set X)}
     (h : ∀ P ⊆ S, ⋃₀ P = univ → ∃ Q ⊆ P, Q.Finite ∧ ⋃₀ Q = univ) :
     @CompactSpace X (generateFrom S) := by
-  rw [← @isCompact_univ_iff, @isCompact_iff_ultrafilter_le_nhds']
-  intro F _
-  by_contra hF
-  have hSF : ∀ (x : X), ∃ s, x ∈ s ∧ s ∈ S ∧ s ∉ F := by simpa [nhds_generateFrom] using hF
-  choose U hxU hUS hUF using hSF
-  obtain ⟨Q, hQP, hQ1, hQ2⟩ := h (Set.range U) (by simpa [Set.subset_def]) (by aesop)
-  have hQF : ⋂₀ (compl '' Q) ∈ F.sets := by
-    have : ∀ s ∈ Q, s ∉ F := fun s hsQ ↦ (hQP hsQ).choose_spec ▸ hUF _
-    simpa [Filter.biInter_mem hQ1, F.compl_mem_iff_not_mem]
-  simp [-Set.sInter_image, ← Set.compl_sUnion, hQ2] at hQF
+  rw [← @isCompact_univ_iff]
+  exact isCompact_generateFrom univ <| by simpa
 
 theorem IsClosed.isCompact [CompactSpace X] (h : IsClosed s) : IsCompact s :=
   isCompact_univ.of_isClosed_subset h (subset_univ _)
