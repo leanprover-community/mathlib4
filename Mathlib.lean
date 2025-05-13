@@ -1456,6 +1456,7 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
+import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
 import Mathlib.Analysis.ConstantSpeed
@@ -3805,6 +3806,7 @@ import Mathlib.LinearAlgebra.AffineSpace.Pointwise
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
 import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.LinearAlgebra.Alternating.Basic
+import Mathlib.LinearAlgebra.Alternating.Curry
 import Mathlib.LinearAlgebra.Alternating.DomCoprod
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 import Mathlib.LinearAlgebra.Basis.Basic
@@ -4930,6 +4932,7 @@ import Mathlib.Probability.UniformOn
 import Mathlib.Probability.Variance
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Character
+import Mathlib.RepresentationTheory.Coinduced
 import Mathlib.RepresentationTheory.FDRep
 import Mathlib.RepresentationTheory.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.GroupCohomology.Functoriality

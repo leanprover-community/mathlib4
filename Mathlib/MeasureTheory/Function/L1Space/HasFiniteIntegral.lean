@@ -178,9 +178,8 @@ theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
     HasFiniteIntegral (fun _ : α => c) μ :=
   hasFiniteIntegral_const_iff.2 <| .inr ‹_›
 
-theorem HasFiniteIntegral.of_mem_Icc_enorm [IsFiniteMeasure μ]
-    {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞}
-    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+theorem HasFiniteIntegral.of_mem_Icc_of_ne_top [IsFiniteMeasure μ]
+    {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     HasFiniteIntegral X μ := by
   have : ‖max ‖a‖ₑ ‖b‖ₑ‖ₑ ≠ ⊤ := by simp [ha, hb]
   apply (hasFiniteIntegral_const_enorm this (μ := μ)).mono'_enorm
@@ -201,7 +200,7 @@ theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : �
   (hasFiniteIntegral_const C).mono' hC
 
 -- TODO: generalise this to f with codomain ε
--- requires generalising norm_le_pi_norm and friends to enorms
+-- requires generalising `norm_le_pi_norm` and friends to enorms
 theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α → β} :
     HasFiniteIntegral f μ :=
   let ⟨_⟩ := nonempty_fintype α
@@ -450,10 +449,16 @@ theorem HasFiniteIntegral.mul_const [NormedRing 𝕜] {f : α → 𝕜} (h : Has
 
 section count
 
-variable [MeasurableSingletonClass α] {f : α → β}
+variable [MeasurableSingletonClass α]
+
+/-- A function has finite integral for the counting measure iff its enorm has finite `tsum`. -/
+-- Note that asking for mere summability makes no sense, as every sequence in ℝ≥0∞ is summable.
+lemma hasFiniteIntegral_count_iff_enorm {f : α → ε} :
+    HasFiniteIntegral f Measure.count ↔ tsum (‖f ·‖ₑ) < ⊤ := by
+  simp only [hasFiniteIntegral_iff_enorm, enorm, lintegral_count]
 
 /-- A function has finite integral for the counting measure iff its norm is summable. -/
-lemma hasFiniteIntegral_count_iff :
+lemma hasFiniteIntegral_count_iff {f : α → β} :
     HasFiniteIntegral f Measure.count ↔ Summable (‖f ·‖) := by
   simp only [hasFiniteIntegral_iff_enorm, enorm, lintegral_count, lt_top_iff_ne_top,
     tsum_coe_ne_top_iff_summable, ← summable_coe, coe_nnnorm]
@@ -462,7 +467,7 @@ end count
 
 section restrict
 
-variable {E : Type*} [NormedAddCommGroup E] {f : α → E}
+variable {E : Type*} [NormedAddCommGroup E] {f : α → ε}
 
 lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
     HasFiniteIntegral f (μ.restrict s) := by
