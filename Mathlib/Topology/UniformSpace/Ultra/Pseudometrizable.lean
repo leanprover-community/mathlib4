@@ -30,17 +30,6 @@ to easily expose API of the entourages.
 
 -/
 
--- #23113
-lemma Filter.generate_image_preimage_le_comap {α β : Type*} (X : Set (Set α)) (f : β → α) :
-  .generate ((f ⁻¹' ·) '' X) ≤ Filter.comap f (.generate X) := by
-  intro s
-  simp only [Filter.mem_comap, Filter.mem_generate_iff, Set.exists_subset_image_iff,
-    Set.sInter_image]
-  rintro ⟨t, ⟨u, hu, huf, hut⟩, hts⟩
-  refine ⟨u, hu, huf.image _, subset_trans ?_ hts⟩
-  rw [← Set.preimage_sInter]
-  exact Set.preimage_mono hut
-
 open scoped Uniformity
 
 variable {X : Type*}
