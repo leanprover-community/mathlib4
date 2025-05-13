@@ -5,6 +5,7 @@ Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
@@ -446,6 +447,47 @@ def equivComma : (WithTerminal C ⥤ D) ≌ Comma (𝟭 (C ⥤ D)) (Functor.cons
     ext <;> rfl
 
 end
+
+open CategoryTheory.Limits CategoryTheory.Limits.WidePullbackShape in
+/-- In the case of a discrete category, `WithTerminal` is the same category as `WidePullbackShape`
+-/
+def widePullbackShapeEquiv {J : Type*} : WidePullbackShape J ≌ WithTerminal (Discrete J) where
+  functor := wideCospan WithTerminal.star (WithTerminal.of ∘ Discrete.mk) (fun j ↦ PUnit.unit)
+  inverse := WithTerminal.lift
+    (Discrete.functor .some) (fun x ↦ (Hom.term (Discrete.as x))) (by aesop_cat)
+  unitIso.hom.app
+  | .some x => Hom.id (.some x)
+  | .none => Hom.id (.none)
+  unitIso.inv.app
+  | .some x => Hom.id (.some x)
+  | .none => Hom.id (.none)
+  counitIso.hom.app
+  | .of x => WithTerminal.id (.of x)
+  | .star => WithTerminal.id .star
+  counitIso.hom.naturality {x y} f := match x, y with
+  | .of x, .of y => by
+    by_cases h : x = y
+    · aesop_cat
+    have f := WithTerminal.down f
+    cases f with
+    | up f =>
+      have := Discrete.ext <| PLift.down f
+      contradiction
+  | _, .star => by aesop_cat
+  | .star, .of _ => by contradiction
+  counitIso.inv.app
+  | .of _ | .star => 𝟙 _
+  counitIso.inv.naturality {x y} f := match x, y with
+  | _, .star => by aesop_cat
+  | .star, .of _ => by contradiction
+  | .of x, .of y => by
+    by_cases h : x = y
+    · aesop_cat
+    have := WithTerminal.down f
+    cases f with
+    | up f =>
+      have := Discrete.ext <| PLift.down f
+      contradiction
 
 end WithTerminal
 

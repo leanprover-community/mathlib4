@@ -47,6 +47,12 @@ instance PreservesFiniteLimits.overPost [PreservesFiniteLimits F] :
 instance PreservesLimitsOfSize.overPost [PreservesLimitsOfSize.{w', w} F] :
     PreservesLimitsOfSize.{w', w} (Over.post F (X := X)) where
 
+example {J : Type*} [PreservesLimitsOfShape (WidePullbackShape J) F] :
+    PreservesLimitsOfShape (Discrete J) (Over.post F (X := X)) := by
+    have : PreservesLimitsOfShape (WithTerminal (Discrete J)) F :=
+      Limits.preservesLimitsOfShape_of_equiv WithTerminal.widePullbackShapeEquiv F
+    infer_instance
+
 open WithInitial in
 instance PreservesColimitsOfShape.underPost
     [PreservesColimitsOfShape (WithInitial J) F] :
