@@ -103,8 +103,10 @@ theorem integrableOn_zero : IntegrableOn (fun _ => (0 : ε')) s μ :=
   integrable_zero _ _ _
 
 @[simp]
-theorem integrableOn_const {C : E} : IntegrableOn (fun _ => C) s μ ↔ C = 0 ∨ μ s < ∞ :=
-  integrable_const_iff.trans <| by rw [isFiniteMeasure_restrict, lt_top_iff_ne_top]
+theorem integrableOn_const {C : ε'} (hC : ‖C‖ₑ ≠ ∞) :
+    IntegrableOn (fun _ ↦ C) s μ ↔ C = 0 ∨ μ s < ∞ := by
+  rw [IntegrableOn, ← enorm_eq_zero, integrable_const_iff_enorm hC, isFiniteMeasure_restrict,
+    lt_top_iff_ne_top]
 
 theorem IntegrableOn.mono (h : IntegrableOn f t ν) (hs : s ⊆ t) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
   h.mono_measure <| Measure.restrict_mono hs hμ
@@ -291,30 +293,28 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
 
 end indicator
 
--- TODO: can the following lemmas be generalised to enorms?
-
 /-- If a function is integrable on a set `s` and nonzero there, then the measurable hull of `s` is
 well behaved: the restriction of the measure to `toMeasurable μ s` coincides with its restriction
 to `s`. -/
-theorem IntegrableOn.restrict_toMeasurable {f : α → E}
+theorem IntegrableOn.restrict_toMeasurable {f : α → ε'}
     (hf : IntegrableOn f s μ) (h's : ∀ x ∈ s, f x ≠ 0) :
     μ.restrict (toMeasurable μ s) = μ.restrict s := by
-  rcases exists_seq_strictAnti_tendsto (0 : ℝ) with ⟨u, _, u_pos, u_lim⟩
-  let v n := toMeasurable (μ.restrict s) { x | u n ≤ ‖f x‖ }
+  rcases exists_seq_strictAnti_tendsto' ENNReal.zero_lt_top with ⟨u, _, u_pos, u_lim⟩
+  let v n := toMeasurable (μ.restrict s) { x | u n ≤ ‖f x‖ₑ }
   have A : ∀ n, μ (s ∩ v n) ≠ ∞ := by
     intro n
     rw [inter_comm, ← Measure.restrict_apply (measurableSet_toMeasurable _ _),
       measure_toMeasurable]
-    exact (hf.measure_norm_ge_lt_top (u_pos n)).ne
+    exact (hf.measure_enorm_ge_lt_top (u_pos n).1 (u_pos n).2.ne).ne
   apply Measure.restrict_toMeasurable_of_cover _ A
   intro x hx
-  have : 0 < ‖f x‖ := by simp only [h's x hx, norm_pos_iff, Ne, not_false_iff]
-  obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖ := ((tendsto_order.1 u_lim).2 _ this).exists
+  have : 0 < ‖f x‖ₑ := by simpa only [enorm_pos] using h's _ hx
+  obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖ₑ := ((tendsto_order.1 u_lim).2 _ this).exists
   exact mem_iUnion.2 ⟨n, subset_toMeasurable _ _ hn.le⟩
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
 if `t` is null-measurable. -/
-theorem IntegrableOn.of_ae_diff_eq_zero {f : α → E}
+theorem IntegrableOn.of_ae_diff_eq_zero [PseudoMetrizableSpace ε'] {f : α → ε'}
     (hf : IntegrableOn f s μ) (ht : NullMeasurableSet t μ)
     (h't : ∀ᵐ x ∂μ, x ∈ t \ s → f x = 0) : IntegrableOn f t μ := by
   let u := { x ∈ s | f x ≠ 0 }
