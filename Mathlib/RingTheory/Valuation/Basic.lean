@@ -1128,50 +1128,17 @@ theorem LinearOrder.liftWithOrd_lt_iff {a b : α} :
 
 end
 
-instance : LinearOrderedCommGroup Γ₀ˣ where
-  mul_le_mul_left a b h c := (mul_le_mul_left c.zero_lt).mpr h
-  le_total a b := LinearOrder.le_total (a : Γ₀) b
-  decidableLE := LinearOrder.decidableLE
-  compare a b := compare (a : Γ₀) b
-  compare_eq_compareOfLessAndEq a b := by
-    change compare (a : Γ₀) b = _
-    rw [LinearOrderedCommMonoid.compare_eq_compareOfLessAndEq (a : Γ₀) b]
-    simp only [compareOfLessAndEq, LinearOrder.lift'_lt_iff, Units.eq_iff]
-    congr
+-- instance : CommGroup Γ₀ˣ := Units.instCommGroupUnits
+
+
+--  instance : LinearOrder Γ₀ˣ := instLinearOrderUnits
+
+instance : IsOrderedMonoid Γ₀ˣ where
+  mul_le_mul_left _ _ h c := (mul_le_mul_left c.zero_lt).mpr h
 
 /-- `rangeGroup`  is a linear ordered comm group -/
-instance : LinearOrderedCommGroup v.rangeGroup where
-  one_mul := by simp
-  mul_one := by simp
-  inv_mul_cancel := by simp
-  mul_comm := mul_comm
-  le_refl := _
-  le_trans _ _ _ h1 h2 := le_trans h1 h2
-  lt_iff_le_not_le a b := lt_iff_le_not_le
-  le_antisymm := @le_antisymm _ _
-  mul_le_mul_left x y h c := by
-    change ((c : Γ₀ˣ) : Γ₀) * ((x : Γ₀ˣ) : Γ₀) ≤ ((c : Γ₀ˣ) : Γ₀) * ((y : Γ₀ˣ) : Γ₀)
-    apply mul_le_mul_left'
-    exact h
-  le_total := fun a b ↦ le_total _ _
-  decidableLE := Classical.decRel (· ≤ ·)
-  min := _
-  max := _
-  min_def := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ by
-    rw [min_def]
-    simp only [Subtype.mk_le_mk]
-  max_def := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ by
-    rw [max_def]
-    simp only [Subtype.mk_le_mk]
-  compare_eq_compareOfLessAndEq := by
-    rintro ⟨a, ha⟩ ⟨b, hb⟩
-    simp only [compareOfLessAndEq, Subtype.mk_lt_mk, Subtype.mk.injEq]
-    split_ifs with h1 h2
-    · exact compare_lt_iff_lt.mpr h1
-    · simp_rw [compare_eq_iff_eq, h2]
-    · rw [compare_gt_iff_gt]
-      apply lt_of_le_of_ne (le_of_not_gt h1)
-      simpa only [Subtype.mk_lt_mk, ne_eq, ne_comm]
+instance : IsOrderedMonoid v.rangeGroup where
+  mul_le_mul_left _ _ h c := mul_le_mul_left' h _
 
 @[simp]
 lemma rangeGroup_min (x y : v.rangeGroup) : ((min x y).1 : Γ₀) = min (x.1 : Γ₀) y.1 := by
@@ -1259,6 +1226,8 @@ def range₀ : Submonoid B where
     use 1
     rw [_root_.map_one]
     exact one_ne_zero
+
+#find_home! range₀
 
 omit [ZeroHomClass F A B] in
 variable {f} in
