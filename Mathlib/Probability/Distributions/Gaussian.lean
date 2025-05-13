@@ -5,7 +5,6 @@ Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 import Mathlib.Probability.Moments.MGFAnalytic
-import Mathlib.MeasureTheory.Group.Convolution
 
 /-!
 # Gaussian distributions over ℝ
