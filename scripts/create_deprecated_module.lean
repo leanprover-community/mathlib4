@@ -24,7 +24,7 @@ namespace DeprecatedModule
 It uses
 * `fname`, as the path of a file (which need not exist);
 * `fileContent`, as the content of `fname` (regardless of whether the file exists and what its
-  content it);
+  content is);
 * `keepTrailing` a boolean.
 
 It returns the content of `fileContent` up to the final import, including trailing whitespace and
