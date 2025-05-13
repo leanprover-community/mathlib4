@@ -75,3 +75,43 @@ noncomputable def bifunctorMapCochainComplexObjMapMappingConeTriangleIso
 end
 
 end CochainComplex
+
+namespace HomotopyCategory
+
+section
+
+variable [Preadditive C₁] [Preadditive C₂] [Preadditive D] [HasBinaryBiproducts D]
+  [HasZeroObject D]
+   (F : C₁ ⥤ C₂ ⥤ D) [F.Additive]
+  [∀ (X₁ : C₁), (F.obj X₁).Additive]
+  [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), CochainComplex.HasMapBifunctor K₁ K₂ F]
+
+instance (K₁ : HomotopyCategory C₁ (.up ℤ)) [HasZeroObject C₂] [HasBinaryBiproducts C₂] :
+    ((F.bifunctorMapHomotopyCategory (.up ℤ) (.up ℤ) (.up ℤ)).obj K₁).IsTriangulated := by
+  obtain ⟨K₁, rfl⟩ := K₁.quotient_obj_surjective
+  rw [functor_from_isTriangulated_iff]
+  intro K₂ L₂ f
+  exact isomorphic_distinguished _ (mappingCone_triangleh_distinguished
+    (HomologicalComplex.mapBifunctorMap (𝟙 K₁) f F (ComplexShape.up ℤ))) _
+      ((Functor.mapTriangleCompIso _ _).symm.app _ ≪≫
+        (Functor.mapTriangleIso
+          (F.quotientCompBifunctorMapHomotopyObjIso (.up ℤ) (.up ℤ) (.up ℤ) K₁)).app _ ≪≫
+        (Functor.mapTriangleCompIso _ _).app _ ≪≫ (quotient D (.up ℤ)).mapTriangle.mapIso
+        (CochainComplex.bifunctorMapCochainComplexObjMapMappingConeTriangleIso F K₁ f))
+
+instance (K₂ : HomotopyCategory C₂ (.up ℤ)) [HasZeroObject C₁] [HasBinaryBiproducts C₁] :
+    ((F.bifunctorMapHomotopyCategory (.up ℤ) (.up ℤ) (.up ℤ)).flip.obj K₂).IsTriangulated := by
+  obtain ⟨K₂, rfl⟩ := K₂.quotient_obj_surjective
+  rw [functor_from_isTriangulated_iff]
+  intro K₁ L₁ f
+  exact isomorphic_distinguished _ (mappingCone_triangleh_distinguished
+    (HomologicalComplex.mapBifunctorMap f (𝟙 K₂) F (ComplexShape.up ℤ))) _
+      ((Functor.mapTriangleCompIso _ _).symm.app _ ≪≫
+        (Functor.mapTriangleIso
+          (F.quotientCompBifunctorMapHomotopyFlipObjIso (.up ℤ) (.up ℤ) (.up ℤ) K₂)).app _ ≪≫
+        (Functor.mapTriangleCompIso _ _).app _  ≪≫ (quotient D (.up ℤ)).mapTriangle.mapIso
+        (CochainComplex.bifunctorMapCochainComplexFlipObjMapMappingConeTriangleIso F f K₂))
+
+end
+
+end HomotopyCategory

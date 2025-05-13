@@ -251,4 +251,17 @@ noncomputable def whiskeringLeft₂BifunctorMapHomotopyCategoryIso :
         (bifunctorMapHomologicalComplex F c₁ c₂ c)) :=
   Iso.refl _
 
+noncomputable def quotientCompBifunctorMapHomotopyObjIso (K₁ : HomologicalComplex C₁ c₁) :
+    HomotopyCategory.quotient _ _ ⋙ (F.bifunctorMapHomotopyCategory c₁ c₂ c).obj
+      ((HomotopyCategory.quotient _ _).obj K₁) ≅
+        (F.bifunctorMapHomologicalComplex c₁ c₂ c).obj K₁ ⋙
+          HomotopyCategory.quotient _ _ := Iso.refl _
+
+noncomputable def quotientCompBifunctorMapHomotopyFlipObjIso
+    (K₂ : HomologicalComplex C₂ c₂) :
+    HomotopyCategory.quotient _ _ ⋙ (F.bifunctorMapHomotopyCategory c₁ c₂ c).flip.obj
+      ((HomotopyCategory.quotient _ _).obj K₂) ≅
+        (F.bifunctorMapHomologicalComplex c₁ c₂ c).flip.obj K₂ ⋙
+          HomotopyCategory.quotient _ _ := Iso.refl _
+
 end CategoryTheory.Functor

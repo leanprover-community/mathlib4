@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.BifunctorShift
+import Mathlib.Algebra.Homology.BifunctorHomotopy
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 
 /-!
@@ -68,3 +69,33 @@ lemma bifunctorMapCochainComplex_flip_obj_commShiftIso_inv_app
 end
 
 end CochainComplex
+
+namespace HomotopyCategory
+
+variable [Preadditive C₁] [Preadditive C₂] [Preadditive D]
+  (F : C₁ ⥤ C₂ ⥤ D) [F.Additive]
+  [∀ (X₁ : C₁), (F.obj X₁).Additive]
+  [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ),
+    CochainComplex.HasMapBifunctor K₁ K₂ F]
+
+noncomputable instance (K₁ : HomotopyCategory C₁ (.up ℤ)) :
+    ((F.bifunctorMapHomotopyCategory (.up ℤ) (.up ℤ) (.up ℤ)).obj K₁).CommShift ℤ :=
+  Quotient.commShiftOfFac ℤ (F.quotientCompBifunctorMapHomotopyObjIso
+    (.up ℤ) (.up ℤ) (.up ℤ) K₁.as)
+
+instance (K₁ : CochainComplex C₁ ℤ) :
+    NatTrans.CommShift (F.quotientCompBifunctorMapHomotopyObjIso
+      (.up ℤ) (.up ℤ) (.up ℤ) K₁).hom ℤ := by
+  apply Quotient.natTransCommshift_of_fac
+
+noncomputable instance (K₂ : HomotopyCategory C₂ (.up ℤ)) :
+    ((F.bifunctorMapHomotopyCategory (.up ℤ) (.up ℤ) (.up ℤ)).flip.obj K₂).CommShift ℤ :=
+  Quotient.commShiftOfFac ℤ (F.quotientCompBifunctorMapHomotopyFlipObjIso
+    (.up ℤ) (.up ℤ) (.up ℤ) K₂.as)
+
+instance (K₂ : CochainComplex C₂ ℤ) :
+    NatTrans.CommShift (F.quotientCompBifunctorMapHomotopyFlipObjIso
+      (.up ℤ) (.up ℤ) (.up ℤ) K₂).hom ℤ := by
+  apply Quotient.natTransCommshift_of_fac
+
+end HomotopyCategory
