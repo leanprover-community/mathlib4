@@ -22,7 +22,7 @@ open Filter Function
 
 open scoped Topology
 
-variable {α β ι : Type*} [CommMonoid α]  {f : ι → β → α} {g : β → α} {𝔖 : Set (Set β)}
+variable {α β ι : Type*} [CommMonoid α] {f : ι → β → α} {g : β → α} {𝔖 : Set (Set β)}
   {x : β} {s : Set β} {I : Finset ι} [UniformSpace α]
 
 /-!
@@ -75,7 +75,7 @@ theorem HasProdUniformlyOn.tprod_eqOn [T2Space α] (h : HasProdUniformlyOn f g �
 
 @[to_additive]
 theorem HasProdUniformlyOn.tprod_eq [T2Space α] (h : HasProdUniformlyOn f g 𝔖)
-    (hs :⋃₀ 𝔖 = Set.univ) : (∏' b, f b ·) = g := by
+    (hs : ⋃₀ 𝔖 = Set.univ) : (∏' b, f b ·) = g := by
   ext x
   obtain ⟨s, hs, hx⟩ := by simpa [← hs] using Set.mem_univ x
   exact h.tprod_eqOn hs hx
