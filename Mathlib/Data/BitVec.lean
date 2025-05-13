@@ -63,63 +63,7 @@ instance : CommSemiring (BitVec w) :=
     (fun _ => rfl) /- toFin_natCast -/
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
-@[simp] theorem ofFin_neg {x : Fin (2 ^ w)} : ofFin (-x) = -(ofFin x) := by
-  rfl
-
-@[simp, norm_cast] theorem ofFin_natCast (n : ℕ) : ofFin (n : Fin (2^w)) = (n : BitVec w) := by
-  rfl
-
-@[simp, norm_cast] theorem toFin_natCast (n : ℕ) : toFin (n : BitVec w) = (n : Fin (2^w)) := by
-  rfl
-
-@[simp] theorem toInt_ofFin {w : Nat} (x : Fin (2^w)) :
-    (BitVec.ofFin x).toInt = Int.bmod x (2^w) := by
-  simp [toInt_eq_toNat_bmod]
-
-@[simp] theorem toNat_intCast {w : Nat} (x : Int) : (x : BitVec w).toNat = (x % 2^w).toNat := by
-  change (BitVec.ofInt w x).toNat = _
-  simp
-
-@[simp] theorem toInt_intCast {w : Nat} (x : Int) : (x : BitVec w).toInt = Int.bmod x (2^w) := by
-  rw [toInt_eq_toNat_bmod, toNat_intCast, Int.natCast_toNat_eq_self.mpr]
-  · have h : (2 ^ w : Int) = (2 ^ w : Nat) := by simp
-    rw [h, Int.emod_bmod]
-  · apply Int.emod_nonneg
-    exact pow_ne_zero w (by decide)
-
-theorem _root_.Fin.intCast_def {n : Nat} [NeZero n] (x : Int) :
-    (x : Fin n) = if 0 ≤ x then Fin.ofNat' n x.natAbs else -Fin.ofNat' n x.natAbs := rfl
-
-theorem _root_.Int.emod_natAbs_of_nonneg {x : Int} (h : 0 ≤ x) {n : Nat} :
-    x.natAbs % n = (x % n).toNat := by
-  match x, h with
-  | (x : ℕ), _ => rw [Int.natAbs_natCast, Int.ofNat_mod_ofNat, Int.toNat_natCast]
-
-theorem _root_.Int.emod_natAbs_of_neg {x : Int} (h : x < 0) {n : Nat} (w : n ≠ 0) :
-    x.natAbs % n = if (n : Int) ∣ x then 0 else n - (x % n).toNat := by
-  match x, h with
-  | -(x + 1 : ℕ), _ =>
-    rw [Int.natAbs_neg]
-    rw [Int.natAbs_cast]
-    rw [Int.neg_emod]
-    simp only [Int.dvd_neg]
-    simp only [Int.natCast_dvd_natCast]
-    split <;> rename_i h
-    · rw [Nat.mod_eq_zero_of_dvd h]
-    · rw [← Int.natCast_emod]
-      simp only [Int.natAbs_natCast]
-      have : (x + 1) % n < n := Nat.mod_lt (x + 1) (by omega)
-      omega
-
-theorem _root_.Fin.val_neg {n : Nat} [NeZero n] (x : Fin n) :
-    (-x).val = if x = 0 then 0 else n - x.val := by
-  change (n - ↑x) % n = _
-  split <;> rename_i h
-  · simp_all
-  · rw [Nat.mod_eq_of_lt]
-    have := Fin.val_ne_zero_iff.mpr h
-    omega
-
+-- TODO: move to the Lean4 repository.
 @[simp] theorem _root_.Fin.val_intCast {n : Nat} [NeZero n] (x : Int) :
     (x : Fin n).val = (x % n).toNat := by
   rw [Fin.intCast_def]
@@ -133,6 +77,7 @@ theorem _root_.Fin.val_neg {n : Nat} [NeZero n] (x : Fin n) :
       have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; omega)
       omega
 
+-- TODO: move to the Lean4 repository.
 theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
   cases w
   case zero =>

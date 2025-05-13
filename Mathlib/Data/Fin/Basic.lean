@@ -851,20 +851,21 @@ theorem castPred_inj {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n}
     castPred i hi = castPred j hj ↔ i = j := by
   simp_rw [Fin.ext_iff, le_antisymm_iff, ← le_def, castPred_le_castPred_iff]
 
-theorem castPred_zero' [NeZero n] (h := Fin.ext_iff.not.2 last_pos'.ne) :
-    castPred (0 : Fin (n + 1)) h = 0 := rfl
+@[simp]
+theorem castPred_zero [NeZero n] :
+    castPred (0 : Fin (n + 1)) (Fin.ext_iff.not.2 last_pos'.ne) = 0 := rfl
 
-theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne) :
-    castPred (0 : Fin (n + 2)) h = 0 := rfl
+@[deprecated (since := "2025-05-11")]
+alias castPred_zero' := castPred_zero
 
 @[simp]
 theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
     Fin.castPred i h = 0 ↔ i = 0 := by
-  rw [← castPred_zero', castPred_inj]
+  rw [← castPred_zero, castPred_inj]
 
 @[simp]
-theorem castPred_one [NeZero n] (h := Fin.ext_iff.not.2 one_lt_last.ne) :
-    castPred (1 : Fin (n + 2)) h = 1 := by
+theorem castPred_one [NeZero n] :
+    castPred (1 : Fin (n + 2)) (Fin.ext_iff.not.2 one_lt_last.ne) = 1 := by
   cases n
   · exact subsingleton_one.elim _ 1
   · rfl
@@ -1372,15 +1373,6 @@ theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f
 section AddGroup
 
 open Nat Int
-
-/-- Negation on `Fin n` -/
-instance neg (n : ℕ) : Neg (Fin n) :=
-  ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
-
-theorem neg_def (a : Fin n) : -a = ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩ := rfl
-
-protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
-  rfl
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
