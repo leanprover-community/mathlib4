@@ -552,7 +552,7 @@ theorem ContDiffOn.continuousOn (h : ContDiffOn 𝕜 n f s) : ContinuousOn f s :
   (h x hx).continuousWithinAt
 
 @[fun_prop]
-theorem ContDiffOn.continuousOn' (h : ContDiffOn 𝕜 0 f s) : ContinuousOn f s := fun x hx =>
+theorem ContDiffOn.continuousOn_zero (h : ContDiffOn 𝕜 0 f s) : ContinuousOn f s := fun x hx =>
   (h x hx).continuousWithinAt
 
 theorem ContDiffOn.congr (h : ContDiffOn 𝕜 n f s) (h₁ : ∀ x ∈ s, f₁ x = f x) :
@@ -573,7 +573,7 @@ theorem ContDiffOn.differentiableOn (h : ContDiffOn 𝕜 n f s) (hn : 1 ≤ n) :
     DifferentiableOn 𝕜 f s := fun x hx => (h x hx).differentiableWithinAt hn
 
 @[fun_prop]
-theorem ContDiffOn.differentiableOn' (h : ContDiffOn 𝕜 1 f s) :
+theorem ContDiffOn.differentiableOn_one (h : ContDiffOn 𝕜 1 f s) :
     DifferentiableOn 𝕜 f s := fun x hx => (h x hx).differentiableWithinAt (le_refl 1)
 
 /-- If a function is `C^n` around each point in a set, then it is `C^n` on the set. -/
@@ -996,7 +996,7 @@ theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :
   simpa [hn, differentiableWithinAt_univ] using h.differentiableWithinAt
 
 @[fun_prop]
-theorem ContDiffAt.differentiableAt' (h : ContDiffAt 𝕜 1 f x) :
+theorem ContDiffAt.differentiableAt_one (h : ContDiffAt 𝕜 1 f x) :
     DifferentiableAt 𝕜 f x := by
   simpa [(le_refl 1), differentiableWithinAt_univ] using h.differentiableWithinAt
 
@@ -1136,7 +1136,7 @@ theorem ContDiff.continuous (h : ContDiff 𝕜 n f) : Continuous f :=
   contDiff_zero.1 (h.of_le bot_le)
 
 @[fun_prop]
-theorem ContDiff.continuous' (h : ContDiff 𝕜 0 f) : Continuous f :=
+theorem ContDiff.continuous_zero (h : ContDiff 𝕜 0 f) : Continuous f :=
   contDiff_zero.1 (h.of_le bot_le)
 
 /-- If a function is `C^n` with `n ≥ 1`, then it is differentiable. -/
@@ -1144,7 +1144,7 @@ theorem ContDiff.differentiable (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) : Differe
   differentiableOn_univ.1 <| (contDiffOn_univ.2 h).differentiableOn hn
 
 @[fun_prop]
-theorem ContDiff.differentiable' (h : ContDiff 𝕜 1 f) : Differentiable 𝕜 f :=
+theorem ContDiff.differentiable_one (h : ContDiff 𝕜 1 f) : Differentiable 𝕜 f :=
   differentiableOn_univ.1 <| (contDiffOn_univ.2 h).differentiableOn (le_refl 1)
 
 theorem contDiff_iff_forall_nat_le {n : ℕ∞} :

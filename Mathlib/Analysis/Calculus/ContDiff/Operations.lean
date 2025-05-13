@@ -730,7 +730,7 @@ theorem ContDiffOn.div {f g : E → 𝕜} {n} (hf : ContDiffOn 𝕜 n f s)
   (hf x hx).div (hg x hx) (h₀ x hx)
 
 @[fun_prop]
-theorem ContDiffOn.div' {f g : E → 𝕜} {n} (hf : ContDiffOn 𝕜 n f s)
+theorem ContDiffOn.fun_div {f g : E → 𝕜} {n} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) (h₀ : ∀ x ∈ s, g x ≠ 0) : ContDiffOn 𝕜 n (fun x => f x / g x) s :=
   ContDiffOn.div hf hg h₀
 
