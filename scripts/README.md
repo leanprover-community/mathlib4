@@ -21,7 +21,7 @@ to learn about it as well!
   It assumes that the only difference between master and the current status of the PR consists
   of renames. More precisely, any change on a line that contains a declaration name
   and is not a rename, will likely confuse the script.
-- `create_deprecated_module.lean` defines the `#create_deprecated_modules` command that
+- `create_deprecated_modules.lean` defines the `#create_deprecated_modules` command that
   automatically generates the deprecated modules, gathering information from `git`.
   The expectation is that this will be expanded to a fully automated process that happens in CI.
 
