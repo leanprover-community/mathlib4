@@ -693,6 +693,25 @@ theorem compactSpace_of_finite_subfamily_closed
     CompactSpace X where
   isCompact_univ := isCompact_of_finite_subfamily_closed fun t => by simpa using h t
 
+omit [TopologicalSpace X] in
+/--
+The Alexander Subbasis Theorem. If `X` is a topological space with a subbasis `S`, then `X` is
+compact if any open cover of `X` with elements in `S` has a finite subcover.
+-/
+theorem compactSpace.generateFrom {S : Set (Set X)}
+    (h : ∀ P ⊆ S, ⋃₀ P = .univ → ∃ Q ⊆ P, Q.Finite ∧ ⋃₀ Q = .univ) :
+    @CompactSpace X (generateFrom S) := by
+  rw [← @isCompact_univ_iff, @isCompact_iff_ultrafilter_le_nhds']
+  intro F _
+  by_contra hF
+  have hSF : ∀ (x : X), ∃ s, x ∈ s ∧ s ∈ S ∧ s ∉ F := by simpa [nhds_generateFrom] using hF
+  choose U hxU hUS hUF using hSF
+  obtain ⟨Q, hQP, hQ1, hQ2⟩ := h (Set.range U) (by simpa [Set.subset_def]) (by aesop)
+  have hQF : ⋂₀ (compl '' Q) ∈ F.sets := by
+    have : ∀ s ∈ Q, s ∉ F := fun s hsQ ↦ (hQP hsQ).choose_spec ▸ hUF _
+    simpa [Filter.biInter_mem hQ1, F.compl_mem_iff_not_mem]
+  simp [-Set.sInter_image, ← Set.compl_sUnion, hQ2] at hQF
+
 theorem IsClosed.isCompact [CompactSpace X] (h : IsClosed s) : IsCompact s :=
   isCompact_univ.of_isClosed_subset h (subset_univ _)
 
