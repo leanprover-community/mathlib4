@@ -418,7 +418,6 @@ theorem ofSubtype_apply_coe (f : Perm (Subtype p)) (x : Subtype p) : ofSubtype f
 theorem ofSubtype_apply_of_not_mem (f : Perm (Subtype p)) (ha : ¬p a) : ofSubtype f a = a :=
   extendDomain_apply_not_subtype _ _ ha
 
-@[simp]
 theorem ofSubtype_apply_mem_iff_mem (f : Perm (Subtype p)) (x : α) :
     p ((ofSubtype f : α → α) x) ↔ p x :=
   if h : p x then by
