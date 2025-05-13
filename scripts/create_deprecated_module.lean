@@ -85,7 +85,7 @@ Finally, if everything looks correct, adding a final `write` actually generates 
 syntax "#create_deprecated_modules" (ppSpace num)? (ppSpace str)? (&" write")? : command
 
 elab_rules : command
-| `(#create_deprecated_modules $[$nc:num]? $[$comment:str]? $[write%$write?]?) => do
+| `(#create_deprecated_modules%$tk $[$nc:num]? $[$comment:str]? $[write%$write?]?) => do
   let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
   let mut msgs := #[]
   let getHash (n : Nat) := do
@@ -120,13 +120,19 @@ elab_rules : command
     if write?.isSome then
       IO.FS.writeFile fname deprecatedFile
   if write?.isNone && noFiles != 0 then
-    let stx ← `(#create_deprecated_modules $[$nc:num]? write)
+    -- We strip trailing comments from `nc` and `comment` to avoid them showing up in the
+    -- regenerated syntax.
+    let nc := nc.map (⟨·.raw.unsetTrailing⟩)
+    let comment := comment.map (⟨·.raw.unsetTrailing⟩)
+    let stx ← `(command|#create_deprecated_modules $[$nc:num]? $[$comment:str]? write)
     msgs := msgs.push
       m!"The files were not deprecated. Use '{stx}' \
         if you wish to deprecate them."
-  logInfo <| .joinSep msgs.toList "\n"
+  logInfoAt tk <| .joinSep msgs.toList "\n"
 
-#create_deprecated_modules 155 --write
+#create_deprecated_modules 155 "a comment here" --  155
+ --write
+section
 
 /--
 info: /-
