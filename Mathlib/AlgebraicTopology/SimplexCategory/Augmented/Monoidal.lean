@@ -156,12 +156,12 @@ lemma id_star_whiskerRight {x: AugmentedSimplexCategory} : 𝟙 WithInitial.star
   rfl
 
 /-- Thanks to `tensorUnit` being initial in `AugmentedSimplexCategory`, we get
-a morhpim `Δ ⟶ Δ ⊗ Δ'` for every pair of objects `Δ, Δ'`. -/
+a morphism `Δ ⟶ Δ ⊗ Δ'` for every pair of objects `Δ, Δ'`. -/
 def φ₁ (x y : AugmentedSimplexCategory) : x ⟶ x ⊗ y :=
   (ρ_ x).inv ≫ _ ◁ (WithInitial.starInitial.to y)
 
 /-- Thanks to `tensorUnit` being initial in `AugmentedSimplexCategory`, we get
-a morhpim `Δ' ⟶ Δ ⊗ Δ'` for every pair of objects `Δ, Δ'`. -/
+a morphism `Δ' ⟶ Δ ⊗ Δ'` for every pair of objects `Δ, Δ'`. -/
 def φ₂ (x y : AugmentedSimplexCategory) : y ⟶ x ⊗ y :=
   (λ_ y).inv ≫ (WithInitial.starInitial.to x) ▷ _
 
