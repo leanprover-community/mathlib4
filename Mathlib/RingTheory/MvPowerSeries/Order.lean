@@ -459,7 +459,7 @@ def IsWeightedHomogeneous (f : MvPowerSeries σ R) (p : ℕ) : Prop :=
 
 variable {w} in
 theorem IsWeightedHomogeneous.coeff_eq_zero {f : MvPowerSeries σ R} {p : ℕ}
-    (hf : f.IsWeightedHomogeneous w p) {d : σ →₀ ℕ} (hd : weight w d  ≠ p) :
+    (hf : f.IsWeightedHomogeneous w p) {d : σ →₀ ℕ} (hd : weight w d ≠ p) :
     f.coeff R d = 0 := by
   simpa [Classical.not_not] using mt (@hf d) hd
 
@@ -590,7 +590,7 @@ def IsHomogeneous (f : MvPowerSeries σ R) (p : ℕ) : Prop :=
   IsWeightedHomogeneous 1 f p
 
 theorem IsHomogeneous.coeff_eq_zero {f : MvPowerSeries σ R} {p : ℕ}
-    (hf : f.IsHomogeneous p) {d : σ →₀ ℕ} (hd : degree d  ≠ p) :
+    (hf : f.IsHomogeneous p) {d : σ →₀ ℕ} (hd : degree d ≠ p) :
     f.coeff R d = 0 := by
   apply IsWeightedHomogeneous.coeff_eq_zero hf
   rwa [degree_eq_weight_one] at hd
