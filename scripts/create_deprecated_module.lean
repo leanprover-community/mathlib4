@@ -38,40 +38,28 @@ def mkDeprecatedModule
   let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
   let fmt ← liftCoreM <| PrettyPrinter.ppCategory `command stx
   let nm := fname ++ "_deprecatedModule"
-  if (← System.FilePath.pathExists nm) then
-    logWarning m!"A file called '{nm}' exists, not writing over it!"
+  unless (← System.FilePath.pathExists fname) do
+    logWarning m!"The file '{fname}' was expected to exist: something went wrong!"
     return
-  logInfo "Continuing"
   let fileContent := s!"{header.trimRight}\n\n{fmt}\n"
-  dbg_trace fileContent
+  logInfo m!"The file '{fname}' exists, as expected!\n\n\
+          Its deprecated version is:\n--- Start ---\n{fileContent}--- End ---"
   if write then
     IO.FS.writeFile nm fileContent
   else
-    logInfo m!"File '{nm}' not written. Set `write := true` if you wish to create it."
+    logInfo m!"The file '{nm}' was not deprecated. Set `write := true` if you wish to deprecate it."
   --return
   --return s!"{header.trimRight}\n\n{fmt}\n"
-#check Std.HashSet
-run_cmd
+
+elab "#create_deprecated_modules" : command => do
   let oldFiles := Std.HashSet.ofArray (← IO.FS.lines "oldListOfFiles.txt")
   let currentFiles := Std.HashSet.ofArray (← IO.FS.lines "currentListOfFiles.txt")
   let onlyOld := oldFiles.filter (!currentFiles.contains ·)
-
   dbg_trace onlyOld.toArray
   for file in onlyOld do
     mkDeprecatedModule file
-  --IO.Process.run {cmd := "comm", args := #["-13", "<(sort currentListOfFiles.txt)", "<(sort oldListOfFiles.txt)"]}
---run_cmd
---  mkDeprecatedModule (← getFileName)
 
-run_cmd
-  let fname := "Mathlib/Init.lean"
-  let fname := "/home/maskal/.elan/toolchains/leanprover--lean4---v4.20.0-rc5/src/lean/Init/System/IOError.lean"
-  let fname := "/home/maskal/.elan/toolchains/leanprover--lean4---v4.20.0-rc5/src/lean/Init/Prelude.lean"
-  let fname := "Mathlib/Tactic/Linter/CommandStart.lean"
-  let fname ← getFileName
-
-  let head ← getHeader fname false--true
-  logInfo head
+#create_deprecated_modules
 
 /--
 info: /-
