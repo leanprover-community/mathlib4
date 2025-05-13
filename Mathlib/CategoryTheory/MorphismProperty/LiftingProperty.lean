@@ -79,14 +79,14 @@ instance rlp_isMultiplicative : T.rlp.IsMultiplicative where
     have := hj _ hp
     infer_instance
 
-lemma llp_isStableUnderCoproductsOfShape (J : Type*) :
+instance llp_isStableUnderCoproductsOfShape (J : Type*) :
     T.llp.IsStableUnderCoproductsOfShape J := by
   apply IsStableUnderCoproductsOfShape.mk
   intro A B _ _ f hf X Y p hp
   have := fun j ↦ hf j _ hp
   infer_instance
 
-lemma rlp_isStableUnderProductsOfShape (J : Type*) :
+instance rlp_isStableUnderProductsOfShape (J : Type*) :
     T.rlp.IsStableUnderProductsOfShape J := by
   apply IsStableUnderProductsOfShape.mk
   intro A B _ _ f hf X Y p hp
@@ -135,9 +135,7 @@ lemma rlp_pushouts : T.pushouts.rlp = T.rlp := by
 lemma colimitsOfShape_discrete_le_llp_rlp (J : Type w) :
     T.colimitsOfShape (Discrete J) ≤ T.rlp.llp := by
   intro A B i hi
-  exact (T.rlp.llp.isStableUnderColimitsOfShape_iff_colimitsOfShape_le (Discrete J)).1
-    (llp_isStableUnderCoproductsOfShape _ _) _
-      (colimitsOfShape_monotone T.le_llp_rlp _ _ hi)
+  exact MorphismProperty.colimitsOfShape_le _ (colimitsOfShape_monotone T.le_llp_rlp _ _ hi)
 
 lemma coproducts_le_llp_rlp : (coproducts.{w} T) ≤ T.rlp.llp := by
   intro A B i hi
