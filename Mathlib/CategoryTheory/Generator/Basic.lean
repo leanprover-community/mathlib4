@@ -43,7 +43,7 @@ We
   dual);
 * show that `C` is `WellPowered` if it admits small pullbacks and a detector;
 * define corresponding typeclasses `HasSeparator`, `HasCoseparator`, `HasDetector`
-and `HasCodetector` on categories and prove analogous results for these.
+  and `HasCodetector` on categories and prove analogous results for these.
 
 ## Future work
 
@@ -631,8 +631,6 @@ theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
 
 theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) :
     WellPowered.{v₁} C :=
-  -- Porting note: added the following `haveI` to prevent universe issues
-  haveI := small_subsingleton ({G} : Set C)
   wellPowered_of_isDetecting hG
 
 theorem wellPowered_of_isSeparator [HasPullbacks C] [Balanced C] (G : C) (hG : IsSeparator G) :

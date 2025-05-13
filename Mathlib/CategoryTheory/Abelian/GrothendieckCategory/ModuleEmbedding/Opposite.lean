@@ -70,18 +70,18 @@ is faithful and preserves finite limits and colimits. Furthermore, `F ⋙ embedd
 noncomputable def embedding : Cᵒᵖ ⥤ ModuleCat.{v} (EmbeddingRing F) :=
   preadditiveCoyonedaObj (generator F)
 
-instance [Nonempty D] : (embedding F).Faithful :=
+instance faithful_embedding [Nonempty D] : (embedding F).Faithful :=
   (isSeparator_iff_faithful_preadditiveCoyonedaObj _).1 (isSeparator F)
 
-instance [Nonempty D] [F.Full] : (F ⋙ embedding F).Full :=
+instance full_embedding [Nonempty D] [F.Full] : (F ⋙ embedding F).Full :=
   full_comp_preadditiveCoyonedaObj _ (isSeparator F) (exists_epi F)
 
-instance : PreservesFiniteLimits (embedding F) := by
+instance preservesFiniteLimits_embedding : PreservesFiniteLimits (embedding F) := by
   rw [embedding]
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize
   infer_instance
 
-instance : PreservesFiniteColimits (embedding F) := by
+instance preservesFiniteColimits_embedding : PreservesFiniteColimits (embedding F) := by
   apply preservesFiniteColimits_preadditiveCoyonedaObj_of_projective
 
 end OppositeModuleEmbedding

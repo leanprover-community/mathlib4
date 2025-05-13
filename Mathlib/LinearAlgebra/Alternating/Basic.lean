@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Zhangir Azerbayev
 -/
 import Mathlib.GroupTheory.Perm.Sign
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
 import Mathlib.LinearAlgebra.Multilinear.Basis
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Alternating Maps
@@ -98,7 +99,6 @@ initialize_simps_projections AlternatingMap (toFun → apply)
 theorem toFun_eq_coe : f.toFun = f :=
   rfl
 
--- Porting note: changed statement to reflect new `mk` signature
 @[simp]
 theorem coe_mk (f : MultilinearMap R (fun _ : ι => M) N) (h) :
     ⇑(⟨f, h⟩ : M [⋀^ι]→ₗ[R] N) = f :=
@@ -134,9 +134,6 @@ theorem coe_multilinearMap_injective :
     Function.Injective ((↑) : M [⋀^ι]→ₗ[R] N → MultilinearMap R (fun _ : ι => M) N) :=
   fun _ _ h => ext <| MultilinearMap.congr_fun h
 
--- Porting note: changed statement to reflect new `mk` signature.
--- Porting note: removed `simp`
--- @[simp]
 theorem coe_multilinearMap_mk (f : (ι → M) → N) (h₁ h₂ h₃) :
     ((⟨⟨f, h₁, h₂⟩, h₃⟩ : M [⋀^ι]→ₗ[R] N) : MultilinearMap R (fun _ : ι => M) N) =
       ⟨f, @h₁, @h₂⟩ := by
@@ -386,7 +383,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) : (M →ₗ[R] N) ≃ (M [⋀^ι]�
 variable (ι) {N}
 
 /-- The constant map is alternating when `ι` is empty. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constOfIsEmpty [IsEmpty ι] (m : N) : M [⋀^ι]→ₗ[R] N :=
   { MultilinearMap.constOfIsEmpty R _ m with
     toFun := Function.const _ m
@@ -434,7 +431,7 @@ theorem compAlternatingMap_zero (g : N →ₗ[R] N₂) :
   AlternatingMap.ext fun _ => map_zero g
 
 @[simp]
-theorem zero_compAlternatingMap (f: M [⋀^ι]→ₗ[R] N) :
+theorem zero_compAlternatingMap (f : M [⋀^ι]→ₗ[R] N) :
     (0 : N →ₗ[R] N₂).compAlternatingMap f = 0 := rfl
 
 @[simp]
@@ -443,7 +440,7 @@ theorem compAlternatingMap_add (g : N →ₗ[R] N₂) (f₁ f₂ : M [⋀^ι]→
   AlternatingMap.ext fun _ => map_add g _ _
 
 @[simp]
-theorem add_compAlternatingMap (g₁ g₂ : N →ₗ[R] N₂) (f: M [⋀^ι]→ₗ[R] N) :
+theorem add_compAlternatingMap (g₁ g₂ : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N) :
     (g₁ + g₂).compAlternatingMap f = g₁.compAlternatingMap f + g₂.compAlternatingMap f := rfl
 
 @[simp]
@@ -546,6 +543,19 @@ theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
     (g₁ g₂ : M [⋀^ι]→ₗ[R] N) : g₁.compLinearMap f = g₂.compLinearMap f ↔ g₁ = g₂ :=
   (compLinearMap_injective _ hf).eq_iff
 
+/-- If two `R`-alternating maps from `R` are equal on 1, then they are equal.
+
+This is the alternating version of `LinearMap.ext_ring`. -/
+@[ext]
+theorem ext_ring {R} [CommSemiring R] [Module R N] [Finite ι] ⦃f g : R [⋀^ι]→ₗ[R] N⦄
+    (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=
+  coe_multilinearMap_injective <| MultilinearMap.ext_ring h
+
+/-- The only `R`-alternating map from two or more copies of `R` is the zero map. -/
+instance uniqueOfCommRing {R} [CommSemiring R] [Module R N] [Finite ι] [Nontrivial ι] :
+    Unique (R [⋀^ι]→ₗ[R] N) where
+  uniq f := let ⟨_, _, hij⟩ := exists_pair_ne ι; ext_ring <| f.map_eq_zero_of_eq _ rfl hij
+
 section DomLcongr
 
 variable (ι R N)
@@ -636,13 +646,9 @@ theorem map_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) : g (v ∘ Equiv.sw
 
 theorem map_perm [DecidableEq ι] [Fintype ι] (v : ι → M) (σ : Equiv.Perm ι) :
     g (v ∘ σ) = Equiv.Perm.sign σ • g v := by
-  -- Porting note: `apply` → `induction`
-  induction σ using Equiv.Perm.swap_induction_on'
-  · simp
-  · rename_i s x y hxy hI
-    -- Porting note: `← Function.comp_assoc` & `-Equiv.Perm.sign_swap'` are required.
-    simpa [← Function.comp_assoc, g.map_swap (v ∘ s) hxy,
-      Equiv.Perm.sign_swap hxy, -Equiv.Perm.sign_swap'] using hI
+  induction σ using Equiv.Perm.swap_induction_on' with
+  | one => simp
+  | mul_swap s x y hxy hI => simp_all [← Function.comp_assoc, g.map_swap]
 
 theorem map_congr_perm [DecidableEq ι] [Fintype ι] (σ : Equiv.Perm ι) :
     g v = Equiv.Perm.sign σ • g (v ∘ σ) := by
@@ -758,11 +764,9 @@ theorem map_linearDependent {K : Type*} [Ring K] {M : Type*} [AddCommGroup M] [M
   suffices f (update v i (g i • v i)) = 0 by
     rw [f.map_update_smul, Function.update_eq_self, smul_eq_zero] at this
     exact Or.resolve_left this hz
-  -- Porting note: Was `conv at h in .. => ..`.
-  rw [← (funext fun x => ite_self (c := i = x) (d := Classical.decEq ι i x) (g x • v x))] at h
-  rw [Finset.sum_ite, Finset.filter_eq, Finset.filter_ne, if_pos hi, Finset.sum_singleton,
-    add_eq_zero_iff_eq_neg] at h
-  rw [h, f.map_update_neg, f.map_update_sum, neg_eq_zero]; apply Finset.sum_eq_zero
+  rw [← Finset.insert_erase hi, Finset.sum_insert (s.not_mem_erase i), add_eq_zero_iff_eq_neg] at h
+  rw [h, f.map_update_neg, f.map_update_sum, neg_eq_zero]
+  apply Finset.sum_eq_zero
   intro j hj
   obtain ⟨hij, _⟩ := Finset.mem_erase.mp hj
   rw [f.map_update_smul, f.map_update_self _ hij.symm, smul_zero]
@@ -797,8 +801,7 @@ private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _
   rw [sum_apply]
   exact
     Finset.sum_involution (fun σ _ => swap i j * σ)
-      -- Porting note: `-Equiv.Perm.sign_swap'` is required.
-      (fun σ _ => by simp [Perm.sign_swap i_ne_j, apply_swap_eq_self hv, -Equiv.Perm.sign_swap'])
+      (fun σ _ => by simp [Perm.sign_swap i_ne_j, apply_swap_eq_self hv])
       (fun σ _ _ => (not_congr swap_mul_eq_iff).mpr i_ne_j) (fun σ _ => Finset.mem_univ _)
       fun σ _ => swap_mul_involutive i j σ
 
@@ -874,13 +877,12 @@ are distinct basis vectors. -/
 theorem Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
     (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
     f = g := by
-  classical
-    refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear e fun v => ?_)
-    by_cases hi : Function.Injective v
-    · exact h v hi
-    · have : ¬Function.Injective fun i => e (v i) := hi.imp Function.Injective.of_comp
-      rw [coe_multilinearMap, coe_multilinearMap, f.map_eq_zero_of_not_injective _ this,
-        g.map_eq_zero_of_not_injective _ this]
+  refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear (fun _ ↦ e) fun v => ?_)
+  by_cases hi : Function.Injective v
+  · exact h v hi
+  · have : ¬Function.Injective fun i => e (v i) := hi.imp Function.Injective.of_comp
+    rw [coe_multilinearMap, coe_multilinearMap, f.map_eq_zero_of_not_injective _ this,
+      g.map_eq_zero_of_not_injective _ this]
 
 end Basis
 

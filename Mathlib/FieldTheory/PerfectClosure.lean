@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.CharP.ExpChar
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.FieldTheory.Perfect
 
 /-!
@@ -229,8 +229,6 @@ See `mk_zero_right` for the lemma used to be called `mk_zero`. -/
 @[simp]
 theorem mk_zero : mk K p 0 = 0 :=
   rfl
-
-@[deprecated (since := "2024-08-16")] alias mk_zero_zero := mk_zero
 
 @[simp]
 theorem mk_zero_right (n : ℕ) : mk K p (n, 0) = 0 := by

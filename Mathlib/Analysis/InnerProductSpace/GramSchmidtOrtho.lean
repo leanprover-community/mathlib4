@@ -42,22 +42,22 @@ variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT
 
 attribute [local instance] IsWellOrder.toHasWellFounded
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- The Gram-Schmidt process takes a set of vectors as input
 and outputs a set of orthogonal vectors which have the same span. -/
 noncomputable def gramSchmidt [WellFoundedLT ι] (f : ι → E) (n : ι) : E :=
-  f n - ∑ i : Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt f i) (f n)
+  f n - ∑ i : Iio n, (𝕜 ∙ gramSchmidt f i).orthogonalProjection (f n)
 termination_by n
 decreasing_by exact mem_Iio.1 i.2
 
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :
-    gramSchmidt 𝕜 f n = f n - ∑ i ∈ Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt 𝕜 f i) (f n) := by
+    gramSchmidt 𝕜 f n = f n - ∑ i ∈ Iio n, (𝕜 ∙ gramSchmidt 𝕜 f i).orthogonalProjection (f n) := by
   rw [← sum_attach, attach_eq_univ, gramSchmidt]
 
 theorem gramSchmidt_def' (f : ι → E) (n : ι) :
-    f n = gramSchmidt 𝕜 f n + ∑ i ∈ Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt 𝕜 f i) (f n) := by
+    f n = gramSchmidt 𝕜 f n + ∑ i ∈ Iio n, (𝕜 ∙ gramSchmidt 𝕜 f i).orthogonalProjection (f n) := by
   rw [gramSchmidt_def, sub_add_cancel]
 
 theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
@@ -229,14 +229,11 @@ noncomputable def gramSchmidtBasis (b : Basis ι 𝕜 E) : Basis ι 𝕜 E :=
 theorem coe_gramSchmidtBasis (b : Basis ι 𝕜 E) : (gramSchmidtBasis b : ι → E) = gramSchmidt 𝕜 b :=
   Basis.coe_mk _ _
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- the normalized `gramSchmidt`
 (i.e each vector in `gramSchmidtNormed` has unit length.) -/
 noncomputable def gramSchmidtNormed (f : ι → E) (n : ι) : E :=
   (‖gramSchmidt 𝕜 f n‖ : 𝕜)⁻¹ • gramSchmidt 𝕜 f n
-
-variable {𝕜}
 
 theorem gramSchmidtNormed_unit_length_coe {f : ι → E} (n : ι)
     (h₀ : LinearIndependent 𝕜 (f ∘ ((↑) : Set.Iic n → ι))) : ‖gramSchmidtNormed 𝕜 f n‖ = 1 := by
@@ -353,8 +350,6 @@ theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
     ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).BlockTriangular id := fun _ _ =>
   gramSchmidtOrthonormalBasis_inv_triangular' h f
 
--- Porting note: added a `DecidableEq` argument to help with timeouts in
--- `Mathlib/Analysis/InnerProductSpace/Orientation.lean`
 theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
     (gramSchmidtOrthonormalBasis h f).toBasis.det f =
       ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by

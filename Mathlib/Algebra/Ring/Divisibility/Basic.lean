@@ -36,6 +36,23 @@ theorem MulEquiv.decompositionMonoid (f : F) [DecompositionMonoid β] : Decompos
     iterate 2 erw [(f : α ≃* β).apply_symm_apply]
     exact h
 
+/--
+If `G` is a `LeftCancelSemiGroup`, left multiplication by `g` yields an equivalence between `G`
+and the set of elements of `G` divisible by `g`.
+-/
+protected noncomputable def Equiv.dvd {G : Type*} [LeftCancelSemigroup G] (g : G) :
+    G ≃ {a : G // g ∣ a} where
+  toFun := fun a ↦ ⟨g * a, ⟨a, rfl⟩⟩
+  invFun := fun ⟨_, h⟩ ↦ h.choose
+  left_inv := fun _ ↦ by simp
+  right_inv := by
+    rintro ⟨_, ⟨_, rfl⟩⟩
+    simp
+
+@[simp]
+theorem Equiv.dvd_apply {G : Type*} [LeftCancelSemigroup G] (g a : G) :
+    Equiv.dvd g a = g * a := rfl
+
 end Semigroup
 
 section DistribSemigroup

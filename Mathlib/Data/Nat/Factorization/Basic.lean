@@ -3,7 +3,7 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Mathlib.Data.Nat.PrimeFin
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 import Mathlib.Data.Nat.Factorization.Defs
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Order.Interval.Finset.Nat
@@ -69,8 +69,7 @@ theorem Prime.factorization_self {p : ℕ} (hp : Prime p) : p.factorization p = 
 /-- If the factorization of `n` contains just one number `p` then `n` is a power of `p` -/
 theorem eq_pow_of_factorization_eq_single {n p k : ℕ} (hn : n ≠ 0)
     (h : n.factorization = Finsupp.single p k) : n = p ^ k := by
-  -- Porting note: explicitly added `Finsupp.prod_single_index`
-  rw [← Nat.factorization_prod_pow_eq_self hn, h, Finsupp.prod_single_index]
+  rw [← Nat.factorization_prod_pow_eq_self hn, h]
   simp
 
 /-- The only prime factor of prime `p` is `p` itself. -/
@@ -239,8 +238,7 @@ theorem factorization_ordCompl (n p : ℕ) :
     (ordCompl[p] n).factorization = n.factorization.erase p := by
   if hn : n = 0 then simp [hn] else
   if pp : p.Prime then ?_ else
-    -- Porting note: needed to solve side goal explicitly
-    rw [Finsupp.erase_of_not_mem_support] <;> simp [pp]
+    simp [pp]
   ext q
   rcases eq_or_ne q p with (rfl | hqp)
   · simp only [Finsupp.erase_same, factorization_eq_zero_iff, not_dvd_ordCompl pp hn]
@@ -588,7 +586,8 @@ theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : #{x ∈ Ioc 0 n | p ∣ x} = n 
   have h1 : Ioc 0 n.succ = insert n.succ (Ioc 0 n) := by
     rcases n.eq_zero_or_pos with (rfl | hn)
     · simp
-    simp_rw [← Ico_succ_succ, Ico_insert_right (succ_le_succ hn.le), Ico_succ_right]
+    simp_rw [← Ico_add_one_add_one_eq_Ioc, Ico_insert_right (add_le_add_right hn.le 1),
+      Ico_add_one_right_eq_Icc]
   simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, card_insert_eq_ite, IH,
     Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n)]
 

@@ -357,6 +357,27 @@ def compr₂ (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) : M
 theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (m : M) (n : Nₗ) :
     f.compr₂ g m n = g (f m n) := rfl
 
+/-- A version of `Function.Injective.comp` for composition of a bilinear map with a linear map. -/
+theorem injective_compr₂_of_injective (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (hf : Injective f)
+    (hg : Injective g) : Injective (f.compr₂ g) :=
+  hg.injective_linearMapComp_left.comp hf
+
+/-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
+theorem surjective_compr₂_of_exists_rightInverse (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ)
+    (hf : Surjective f) (hg : ∃ g' : Qₗ →ₗ[R] Pₗ, g.comp g' = LinearMap.id) :
+    Surjective (f.compr₂ g) := (surjective_comp_left_of_exists_rightInverse hg).comp hf
+
+/-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
+theorem surjective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ ≃ₗ[R] Qₗ) (hf : Surjective f) :
+    Surjective (f.compr₂ g.toLinearMap) :=
+  surjective_compr₂_of_exists_rightInverse f g.toLinearMap hf ⟨g.symm, by simp⟩
+
+/-- A version of `Function.Bijective.comp` for composition of a bilinear map with a linear map. -/
+theorem bijective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ ≃ₗ[R] Qₗ) (hf : Bijective f) :
+    Bijective (f.compr₂ g.toLinearMap) :=
+  ⟨injective_compr₂_of_injective f g.toLinearMap hf.1 g.bijective.1,
+  surjective_compr₂_of_equiv f g hf.2⟩
+
 variable (R M)
 
 /-- Scalar multiplication as a bilinear map `R → M → M`. -/
@@ -408,6 +429,43 @@ open Function
 
 section restrictScalarsRange
 
+variable {R S M P M' P' : Type*}
+  [CommSemiring R] [CommSemiring S] [SMul S R]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid P] [Module R P]
+  [Module S M] [Module S P]
+  [IsScalarTower S R M] [IsScalarTower S R P]
+  [AddCommMonoid M'] [Module S M'] [AddCommMonoid P'] [Module S P']
+
+variable (i : M' →ₗ[S] M) (k : P' →ₗ[S] P) (hk : Injective k)
+  (f : M →ₗ[R] P) (hf : ∀ m, f (i m) ∈ LinearMap.range k)
+
+/-- Restrict the scalars and range of a linear map. -/
+noncomputable def restrictScalarsRange :
+    M' →ₗ[S] P' :=
+  ((f.restrictScalars S).comp i).codLift k hk hf
+
+@[simp]
+lemma restrictScalarsRange_apply (m : M') :
+    k (restrictScalarsRange i k hk f hf m) = f (i m) := by
+  have : k (restrictScalarsRange i k hk f hf m) =
+      (k ∘ₗ ((f.restrictScalars S).comp i).codLift k hk hf) m :=
+    rfl
+  rw [this, comp_codLift, comp_apply, restrictScalars_apply]
+
+@[simp]
+lemma eq_restrictScalarsRange_iff (m : M') (p : P') :
+    p = restrictScalarsRange i k hk f hf m ↔ k p = f (i m) := by
+  rw [← restrictScalarsRange_apply i k hk f hf m, hk.eq_iff]
+
+@[simp]
+lemma restrictScalarsRange_apply_eq_zero_iff (m : M') :
+    restrictScalarsRange i k hk f hf m = 0 ↔ f (i m) = 0 := by
+  rw [← hk.eq_iff, restrictScalarsRange_apply, map_zero]
+
+end restrictScalarsRange
+
+section restrictScalarsRange₂
+
 variable {R S M N P M' N' P' : Type*}
   [CommSemiring R] [CommSemiring S] [SMul S R]
   [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P]
@@ -420,25 +478,25 @@ variable (i : M' →ₗ[S] M) (j : N' →ₗ[S] N) (k : P' →ₗ[S] P) (hk : In
   (B : M →ₗ[R] N →ₗ[R] P) (hB : ∀ m n, B (i m) (j n) ∈ LinearMap.range k)
 
 /-- Restrict the scalars, domains, and range of a bilinear map. -/
-noncomputable def restrictScalarsRange :
+noncomputable def restrictScalarsRange₂ :
     M' →ₗ[S] N' →ₗ[S] P' :=
   (((LinearMap.restrictScalarsₗ S R _ _ _).comp
     (B.restrictScalars S)).compl₁₂ i j).codRestrict₂ k hk hB
 
-@[simp] lemma restrictScalarsRange_apply (m : M') (n : N') :
-    k (restrictScalarsRange i j k hk B hB m n) = B (i m) (j n) := by
-  simp [restrictScalarsRange]
+@[simp] lemma restrictScalarsRange₂_apply (m : M') (n : N') :
+    k (restrictScalarsRange₂ i j k hk B hB m n) = B (i m) (j n) := by
+  simp [restrictScalarsRange₂]
 
 @[simp]
-lemma eq_restrictScalarsRange_iff (m : M') (n : N') (p : P') :
-    p = restrictScalarsRange i j k hk B hB m n ↔ k p = B (i m) (j n) := by
-  rw [← restrictScalarsRange_apply i j k hk B hB m n, hk.eq_iff]
+lemma eq_restrictScalarsRange₂_iff (m : M') (n : N') (p : P') :
+    p = restrictScalarsRange₂ i j k hk B hB m n ↔ k p = B (i m) (j n) := by
+  rw [← restrictScalarsRange₂_apply i j k hk B hB m n, hk.eq_iff]
 
 @[simp]
-lemma restrictScalarsRange_apply_eq_zero_iff (m : M') (n : N') :
-    restrictScalarsRange i j k hk B hB m n = 0 ↔ B (i m) (j n) = 0 := by
-  rw [← hk.eq_iff, restrictScalarsRange_apply, map_zero]
+lemma restrictScalarsRange₂_apply_eq_zero_iff (m : M') (n : N') :
+    restrictScalarsRange₂ i j k hk B hB m n = 0 ↔ B (i m) (j n) = 0 := by
+  rw [← hk.eq_iff, restrictScalarsRange₂_apply, map_zero]
 
-end restrictScalarsRange
+end restrictScalarsRange₂
 
 end LinearMap

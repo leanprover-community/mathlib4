@@ -90,6 +90,7 @@ variable (L) (M)
 
 /-- A substructure of a structure `M` is a set closed under application of function symbols. -/
 structure Substructure where
+  /-- The underlying set of this substructure -/
   carrier : Set M
   fun_mem : ∀ {n}, ∀ f : L.Functions n, ClosedUnder f carrier
 
@@ -128,9 +129,9 @@ variable {S : L.Substructure M}
 
 theorem Term.realize_mem {α : Type*} (t : L.Term α) (xs : α → M) (h : ∀ a, xs a ∈ S) :
     t.realize xs ∈ S := by
-  induction' t with a n f ts ih
-  · exact h a
-  · exact Substructure.fun_mem _ _ _ ih
+  induction t with
+  | var a => exact h a
+  | func f ts ih => exact Substructure.fun_mem _ _ _ ih
 
 namespace Substructure
 
@@ -313,7 +314,7 @@ lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
   rw [← SetLike.mem_coe, closure_eq_of_isRelational]
 
 theorem _root_.Set.Countable.substructure_closure
-    [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
+    [Countable (Σ l, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
   haveI : Countable s := h.to_subtype
   rw [← mk_le_aleph0_iff, ← lift_le_aleph0]
   exact lift_card_closure_le_card_term.trans mk_le_aleph0
@@ -628,6 +629,13 @@ def subtype (S : L.Substructure M) : S ↪[L] M where
   inj' := Subtype.coe_injective
 
 @[simp]
+theorem subtype_apply {S : L.Substructure M} {x : S} : subtype S x = x :=
+  rfl
+
+theorem subtype_injective (S : L.Substructure M): Function.Injective (subtype S) :=
+  Subtype.coe_injective
+
+@[simp]
 theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=
   rfl
 
@@ -709,7 +717,7 @@ namespace Substructure
 def withConstants (S : L.Substructure M) {A : Set M} (h : A ⊆ S) : L[[A]].Substructure M where
   carrier := S
   fun_mem {n} f := by
-    cases' f with f f
+    obtain f | f := f
     · exact S.fun_mem f
     · cases n
       · exact fun _ _ => h f.2
@@ -854,7 +862,6 @@ def codRestrict (p : L.Substructure N) (f : M ↪[L] N) (h : ∀ c, f c ∈ p) :
   inj' _ _ ab := f.injective (Subtype.mk_eq_mk.1 ab)
   map_fun' {_} F x := (f.toHom.codRestrict p h).map_fun' F x
   map_rel' {n} r x := by
-    simp only
     rw [← p.subtype.map_rel]
     change RelMap r (Hom.comp p.subtype.toHom (f.toHom.codRestrict p h) ∘ x) ↔ _
     rw [Hom.subtype_comp_codRestrict, ← f.map_rel]

@@ -169,7 +169,8 @@ open FaithfulSMul IsScalarTower Polynomial
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
   (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
-  variable (K L : Type*) [Field K] [Field L]
+
+variable (K L : Type*) [Field K] [Field L]
   [Algebra (A ⧸ P) K] [Algebra (B ⧸ Q) L]
   [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]
@@ -180,7 +181,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
     ∀ g : G, algebraMap B (B ⧸ Q) (g • b) = algebraMap B (B ⧸ Q) (if g • Q = Q then a else 0) := by
   obtain ⟨_⟩ := nonempty_fintype G
-  let P := ((Finset.univ : Finset G).filter (fun g ↦ g • Q ≠ Q)).inf (fun g ↦ g • Q)
+  let P := Finset.inf {g : G | g • Q ≠ Q} (fun g ↦ g • Q)
   have h1 : ¬ P ≤ Q := by
     rw [Ideal.IsPrime.inf_le' inferInstance]
     rintro ⟨g, hg1, hg2⟩

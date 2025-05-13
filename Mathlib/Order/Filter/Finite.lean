@@ -24,17 +24,17 @@ variable {α : Type u} {f g : Filter α} {s t : Set α}
 
 @[simp]
 theorem biInter_mem {β : Type v} {s : β → Set α} {is : Set β} (hf : is.Finite) :
-    (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f :=
-  Finite.induction_on _ hf (by simp) fun _ _ hs => by simp [hs]
+    (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f := by
+  induction is, hf using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ hs => simp [hs]
 
 @[simp]
 theorem biInter_finset_mem {β : Type v} {s : β → Set α} (is : Finset β) :
     (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f :=
   biInter_mem is.finite_toSet
 
-alias _root_.Finset.iInter_mem_sets := biInter_finset_mem
-
--- attribute [protected] Finset.iInter_mem_sets porting note: doesn't work
+protected alias _root_.Finset.iInter_mem_sets := biInter_finset_mem
 
 @[simp]
 theorem sInter_mem {s : Set (Set α)} (hfin : s.Finite) : ⋂₀ s ∈ f ↔ ∀ U ∈ s, U ∈ f := by
@@ -115,15 +115,34 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
   · simp only [iInter_dite, biInter_eq_iInter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
       iInter_univ, inter_univ, eq_self_iff_true, true_and]
 
-theorem exists_iInter_of_mem_iInf {ι : Type*} {α : Type*} {f : ι → Filter α} {s}
-    (hs : s ∈ ⨅ i, f i) : ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i :=
-  let ⟨_, _, V, hVs, _, _, hVU'⟩ := mem_iInf'.1 hs; ⟨V, hVs, hVU'⟩
+theorem exists_iInter_of_mem_iInf {ι : Sort*} {α : Type*} {f : ι → Filter α} {s}
+    (hs : s ∈ ⨅ i, f i) : ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i := by
+  rw [← iInf_range' (g := (·))] at hs
+  let ⟨_, _, V, hVs, _, _, hVU'⟩ := mem_iInf'.1 hs
+  use V ∘ rangeFactorization f, fun i ↦ hVs (rangeFactorization f i)
+  rw [hVU', ← surjective_onto_range.iInter_comp, comp_def]
 
-theorem mem_iInf_of_finite {ι : Type*} [Finite ι] {α : Type*} {f : ι → Filter α} (s) :
+theorem mem_iInf_of_finite {ι : Sort*} [Finite ι] {α : Type*} {f : ι → Filter α} (s) :
     (s ∈ ⨅ i, f i) ↔ ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i := by
   refine ⟨exists_iInter_of_mem_iInf, ?_⟩
   rintro ⟨t, ht, rfl⟩
   exact iInter_mem.2 fun i => mem_iInf_of_mem i (ht i)
+
+theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {t : Set α} :
+    t ∈ ⨅ (i : ι) (_ : p i), 𝓟 (s i) ↔
+      ∃ I : Set ι, I.Finite ∧ (∀ i ∈ I, p i) ∧ ⋂ i ∈ I, s i ⊆ t := by
+  constructor
+  · simp only [mem_iInf (ι := ι), mem_iInf_of_finite, mem_principal]
+    rintro ⟨I, hIf, V, hV₁, hV₂, rfl⟩
+    choose! t ht₁ ht₂ using hV₁
+    refine ⟨I ∩ {i | p i}, hIf.inter_of_left _, fun i ↦ And.right, ?_⟩
+    simp only [mem_inter_iff, iInter_and, biInter_eq_iInter, ht₂, mem_setOf_eq]
+    gcongr with i hpi
+    exact ht₁ i hpi
+  · rintro ⟨I, hIf, hpI, hst⟩
+    rw [biInter_eq_iInter] at hst
+    refine mem_iInf_of_iInter hIf (fun i ↦ ?_) hst
+    simp [hpI i i.2]
 
 /-! ### Lattice equations -/
 
@@ -207,7 +226,7 @@ theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f)
   rcases hs with ⟨is, his⟩
   induction is using Finset.induction_on generalizing s with
   | empty => rwa [mem_top.1 his]
-  | insert _ ih =>
+  | insert _ _ _ ih =>
     rw [Finset.inf_insert, mem_inf_iff] at his
     rcases his with ⟨s₁, hs₁, s₂, hs₂, rfl⟩
     exact ins hs₁ (ih hs₂)

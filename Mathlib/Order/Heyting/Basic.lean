@@ -139,7 +139,7 @@ difference operation `\` such that `(· \ a)` is left adjoint to `(· ⊔ a)`.
 
 This generalizes `CoheytingAlgebra` by not requiring a top element. -/
 class GeneralizedCoheytingAlgebra (α : Type*) extends Lattice α, OrderBot α, SDiff α where
-  /-- `(· \ a)` is right adjoint to `(· ⊔ a)` -/
+  /-- `(· \ a)` is left adjoint to `(· ⊔ a)` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
 
 /-- A Heyting algebra is a bounded lattice with an additional binary operation `⇨` called Heyting
@@ -156,7 +156,7 @@ class CoheytingAlgebra (α : Type*) extends GeneralizedCoheytingAlgebra α, Orde
 
 /-- A bi-Heyting algebra is a Heyting algebra that is also a co-Heyting algebra. -/
 class BiheytingAlgebra (α : Type*) extends HeytingAlgebra α, SDiff α, HNot α where
-  /-- `(· \ a)` is right adjoint to `(· ⊔ a)` -/
+  /-- `(· \ a)` is left adjoint to `(· ⊔ a)` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
@@ -557,6 +557,13 @@ theorem sdiff_triangle (a b c : α) : a \ c ≤ a \ b ⊔ b \ c := by
 theorem sdiff_sup_sdiff_cancel (hba : b ≤ a) (hcb : c ≤ b) : a \ b ⊔ b \ c = a \ c :=
   (sdiff_triangle _ _ _).antisymm' <| sup_le (sdiff_le_sdiff_left hcb) (sdiff_le_sdiff_right hba)
 
+/-- a version of `sdiff_sup_sdiff_cancel` with more general hypotheses. -/
+theorem sdiff_sup_sdiff_cancel' (hinf : a ⊓ c ≤ b) (hsup : b ≤ a ⊔ c) :
+    a \ b ⊔ b \ c = a \ c := by
+  refine (sdiff_triangle ..).antisymm' <| sup_le ?_ <| by simpa [sup_comm]
+  rw [← sdiff_inf_self_left (b := c)]
+  exact sdiff_le_sdiff_left hinf
+
 theorem sdiff_le_sdiff_of_sup_le_sup_left (h : c ⊔ a ≤ c ⊔ b) : a \ c ≤ b \ c := by
   rw [← sup_sdiff_left_self, ← @sup_sdiff_left_self _ _ _ b]
   exact sdiff_le_sdiff_right h
@@ -948,14 +955,12 @@ abbrev LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : Bihey
     himp := fun a b => if a ≤ b then ⊤ else b,
     compl := fun a => if a = ⊥ then ⊤ else ⊥,
     le_himp_iff := fun a b c => by
-      change _ ≤ ite _ _ _ ↔ _
       split_ifs with h
       · exact iff_of_true le_top (inf_le_of_right_le h)
       · rw [inf_le_iff, or_iff_left h],
     himp_bot := fun _ => if_congr le_bot_iff rfl rfl, sdiff := fun a b => if a ≤ b then ⊥ else a,
     hnot := fun a => if a = ⊤ then ⊥ else ⊤,
     sdiff_le_iff := fun a b c => by
-      change ite _ _ _ ≤ _ ↔ _
       split_ifs with h
       · exact iff_of_true bot_le (le_sup_of_le_left h)
       · rw [le_sup_iff, or_iff_right h],

@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Wrenna Robson
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.RingTheory.Polynomial.Basic
@@ -13,16 +13,16 @@ import Mathlib.RingTheory.Polynomial.Basic
 
 ## Main definitions
 * In everything that follows, `s : Finset ι` is a finite set of indexes, with `v : ι → F` an
-indexing of the field over some type. We call the image of v on s the interpolation nodes,
-though strictly unique nodes are only defined when v is injective on s.
+  indexing of the field over some type. We call the image of v on s the interpolation nodes,
+  though strictly unique nodes are only defined when v is injective on s.
 * `Lagrange.basisDivisor x y`, with `x y : F`. These are the normalised irreducible factors of
-the Lagrange basis polynomials. They evaluate to `1` at `x` and `0` at `y` when `x` and `y`
-are distinct.
+  the Lagrange basis polynomials. They evaluate to `1` at `x` and `0` at `y` when `x` and `y`
+  are distinct.
 * `Lagrange.basis v i` with `i : ι`: the Lagrange basis polynomial that evaluates to `1` at `v i`
-and `0` at `v j` for `i ≠ j`.
+  and `0` at `v j` for `i ≠ j`.
 * `Lagrange.interpolate v r` where `r : ι → F` is a function from the fintype to the field: the
-Lagrange interpolant that evaluates to `r i` at `x i` for all `i : ι`. The `r i` are the _values_
-associated with the _nodes_`x i`.
+  Lagrange interpolant that evaluates to `r i` at `x i` for all `i : ι`. The `r i` are the _values_
+  associated with the _nodes_`x i`.
 -/
 
 
@@ -260,7 +260,7 @@ theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
     exact Nonempty.card_pos hs
   · intro i hi
     rw [eval_finset_sum, eval_one, ← add_sum_erase _ _ hi, eval_basis_self hvs hi,
-      add_right_eq_self]
+      add_eq_left]
     refine sum_eq_zero fun j hj => ?_
     rcases mem_erase.mp hj with ⟨hij, _⟩
     rw [eval_basis_of_ne hij hi]
@@ -308,7 +308,7 @@ theorem interpolate_one (hvs : Set.InjOn v s) (hs : s.Nonempty) : interpolate s 
 theorem eval_interpolate_at_node (hvs : Set.InjOn v s) (hi : i ∈ s) :
     eval (v i) (interpolate s v r) = r i := by
   rw [interpolate_apply, eval_finset_sum, ← add_sum_erase _ _ hi]
-  simp_rw [eval_mul, eval_C, eval_basis_self hvs hi, mul_one, add_right_eq_self]
+  simp_rw [eval_mul, eval_C, eval_basis_self hvs hi, mul_one, add_eq_left]
   refine sum_eq_zero fun j H => ?_
   rw [eval_basis_of_ne (mem_erase.mp H).1 hi, mul_zero]
 
@@ -412,7 +412,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
         eval_interpolate_at_node _
           (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hi, sdiff_subset⟩)))
           (mem_insert_self _ _),
-        mul_one, add_right_eq_self]
+        mul_one, add_eq_left]
       refine sum_eq_zero fun j hj => ?_
       rcases mem_erase.mp hj with ⟨hij, _⟩
       rw [eval_basis_of_ne hij hi', mul_zero]
@@ -519,7 +519,7 @@ theorem derivative_nodal [DecidableEq ι] :
 
 theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈ s) :
     eval (v i) (derivative (nodal s v)) = eval (v i) (nodal (s.erase i) v) := by
-  rw [derivative_nodal, eval_finset_sum, ← add_sum_erase _ _ hi, add_right_eq_self]
+  rw [derivative_nodal, eval_finset_sum, ← add_sum_erase _ _ hi, add_eq_left]
   exact sum_eq_zero fun j hj => (eval_nodal_at_node (mem_erase.mpr ⟨(mem_erase.mp hj).1.symm, hi⟩))
 
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/

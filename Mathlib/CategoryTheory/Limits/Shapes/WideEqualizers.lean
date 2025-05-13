@@ -677,13 +677,13 @@ abbrev HasWideCoequalizers :=
 theorem hasWideEqualizers_of_hasLimit_parallelFamily
     [∀ {J : Type w} {X Y : C} {f : J → (X ⟶ Y)}, HasLimit (parallelFamily f)] :
     HasWideEqualizers.{w} C := fun _ =>
-  { has_limit := fun F => hasLimitOfIso (diagramIsoParallelFamily F).symm }
+  { has_limit := fun F => hasLimit_of_iso (diagramIsoParallelFamily F).symm }
 
 /-- If `C` has all colimits of diagrams `parallelFamily f`, then it has all wide coequalizers -/
 theorem hasWideCoequalizers_of_hasColimit_parallelFamily
     [∀ {J : Type w} {X Y : C} {f : J → (X ⟶ Y)}, HasColimit (parallelFamily f)] :
     HasWideCoequalizers.{w} C := fun _ =>
-  { has_colimit := fun F => hasColimitOfIso (diagramIsoParallelFamily F) }
+  { has_colimit := fun F => hasColimit_of_iso (diagramIsoParallelFamily F) }
 
 instance (priority := 10) hasEqualizers_of_hasWideEqualizers [HasWideEqualizers.{w} C] :
     HasEqualizers C :=

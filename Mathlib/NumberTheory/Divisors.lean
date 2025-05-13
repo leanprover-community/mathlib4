@@ -5,10 +5,12 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Nat.PrimeFin
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!
@@ -58,6 +60,15 @@ def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
   (Icc 1 n).filterMap (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
     fun x₁ x₂ (x, y) hx₁ hx₂ ↦ by aesop
 
+/-- Pairs of divisors of a natural number, as a list.
+
+`n.divisorsAntidiagonalList` is the list of pairs `(a, b) : ℕ × ℕ` such that `a * b = n`, ordered
+by increasing `a`. By convention, we set `Nat.divisorsAntidiagonalList 0 = []`.
+-/
+def divisorsAntidiagonalList (n : ℕ) : List (ℕ × ℕ) :=
+  (List.range' 1 n).filterMap
+    (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
+
 variable {n}
 
 @[simp]
@@ -80,7 +91,8 @@ theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n 
   simp only [and_comm, ← filter_dvd_eq_properDivisors hm, mem_filter, mem_range]
 
 theorem insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) = divisors n := by
-  rw [divisors, properDivisors, Ico_succ_right_eq_insert_Ico (one_le_iff_ne_zero.2 h),
+  rw [divisors, properDivisors,
+    ← Finset.insert_Ico_right_eq_Ico_add_one (one_le_iff_ne_zero.2 h),
     Finset.filter_insert, if_pos (dvd_refl n)]
 
 theorem cons_self_properDivisors (h : n ≠ 0) :
@@ -117,6 +129,58 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
   · rintro ⟨rfl, hab⟩
     rw [mul_ne_zero_iff] at hab
     simpa [hab.1, hab.2] using Nat.le_mul_of_pos_right _ hab.2.bot_lt
+
+@[simp] lemma divisorsAntidiagonalList_zero : divisorsAntidiagonalList 0 = [] := rfl
+@[simp] lemma divisorsAntidiagonalList_one : divisorsAntidiagonalList 1 = [(1, 1)] := rfl
+
+@[simp]
+lemma toFinset_divisorsAntidiagonalList {n : ℕ} :
+    n.divisorsAntidiagonalList.toFinset = n.divisorsAntidiagonal := by
+  rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap (f_inj := by aesop),
+    List.toFinset_range'_1_1]
+
+lemma sorted_divisorsAntidiagonalList_fst {n : ℕ} :
+    n.divisorsAntidiagonalList.Sorted (·.fst < ·.fst) := by
+  refine (List.sorted_lt_range' _ _ Nat.one_ne_zero).filterMap fun a b c d h h' ha => ?_
+  rw [Option.ite_none_right_eq_some, Option.some.injEq] at h h'
+  simpa [← h.right, ← h'.right]
+
+lemma sorted_divisorsAntidiagonalList_snd {n : ℕ} :
+    n.divisorsAntidiagonalList.Sorted (·.snd > ·.snd) := by
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  refine (List.sorted_lt_range' _ _ Nat.one_ne_zero).filterMap ?_
+  simp only [Option.ite_none_right_eq_some, Option.some.injEq, gt_iff_lt, and_imp, Prod.forall,
+    Prod.mk.injEq]
+  rintro a b _ _ _ _ ha rfl rfl hb rfl rfl hab
+  rwa [Nat.div_lt_div_left hn ⟨_, hb.symm⟩ ⟨_, ha.symm⟩]
+
+lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
+  have : IsIrrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
+  sorted_divisorsAntidiagonalList_fst.nodup
+
+/-- The `Finset` and `List` versions agree by definition. -/
+@[simp]
+theorem val_divisorsAntidiagonal (n : ℕ) :
+    (divisorsAntidiagonal n).val = divisorsAntidiagonalList n :=
+  rfl
+
+@[simp]
+lemma mem_divisorsAntidiagonalList {n : ℕ} {a : ℕ × ℕ} :
+    a ∈ n.divisorsAntidiagonalList ↔ a.1 * a.2 = n ∧ n ≠ 0 := by
+  rw [← List.mem_toFinset, toFinset_divisorsAntidiagonalList, mem_divisorsAntidiagonal]
+
+@[simp high]
+lemma swap_mem_divisorsAntidiagonalList {a : ℕ × ℕ} :
+    a.swap ∈ n.divisorsAntidiagonalList ↔ a ∈ n.divisorsAntidiagonalList := by simp [mul_comm]
+
+lemma reverse_divisorsAntidiagonalList (n : ℕ) :
+    n.divisorsAntidiagonalList.reverse = n.divisorsAntidiagonalList.map .swap := by
+  have : IsAsymm (ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
+  refine List.eq_of_perm_of_sorted ?_ sorted_divisorsAntidiagonalList_snd.reverse <|
+    sorted_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id
+  simp [List.reverse_perm', List.perm_ext_iff_of_nodup nodup_divisorsAntidiagonalList
+    (nodup_divisorsAntidiagonalList.map Prod.swap_injective), mul_comm]
 
 lemma ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
     p.1 ≠ 0 ∧ p.2 ≠ 0 := by
@@ -568,13 +632,16 @@ lemma mem_divisorsAntidiag :
     norm_cast
     aesop
   | (n : ℕ), (negSucc x, (y : ℕ)) => by
-    simp [divisorsAntidiag]
+    suffices (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a:ℤ) = -1 + -↑x) ↔ (n:ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
+      simpa [divisorsAntidiag, eq_comm, negSucc_eq]
+    simp only [← Int.neg_add, Int.add_comm 1, Int.neg_mul, Int.add_mul]
     norm_cast
-    aesop
+    match n with
+    | 0 => simp
+    | n + 1 => simp
   | .negSucc n, ((x : ℕ), (y : ℕ)) => by
     simp [divisorsAntidiag]
     norm_cast
-    aesop
   | .negSucc n, (negSucc x, negSucc y) => by
     simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
     norm_cast

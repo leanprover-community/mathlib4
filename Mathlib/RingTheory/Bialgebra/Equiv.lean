@@ -42,8 +42,8 @@ notation:50 A " ≃ₐc[" R "] " B => BialgEquiv R A B
 from `A` to `B`. -/
 class BialgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
-    extends CoalgEquivClass F R A B, MulEquivClass F A B : Prop
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B] : Prop
+    extends CoalgEquivClass F R A B, MulEquivClass F A B
 
 namespace BialgEquivClass
 
@@ -112,6 +112,7 @@ theorem toBialgHom_injective : Function.Injective (toBialgHom : (A ≃ₐc[R] B)
   fun _ _ H => toEquiv_injective <| Equiv.ext <| BialgHom.congr_fun H
 
 instance : EquivLike (A ≃ₐc[R] B) A B where
+  coe f := f.toFun
   inv := fun f => f.invFun
   coe_injective' _ _ h _ := toBialgHom_injective (DFunLike.coe_injective h)
   left_inv := fun f => f.left_inv

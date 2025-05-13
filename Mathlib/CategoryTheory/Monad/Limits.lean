@@ -262,9 +262,8 @@ variable {J : Type u} [Category.{v} J]
 
 instance comp_comparison_forget_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
     [HasLimit (F ⋙ R)] :
-    HasLimit ((F ⋙ Monad.comparison (monadicAdjunction R)) ⋙ Monad.forget _) :=
-  @hasLimitOfIso _ _ _ _ (F ⋙ R) _ _
-    (isoWhiskerLeft F (Monad.comparisonForget (monadicAdjunction R)).symm)
+    HasLimit ((F ⋙ Monad.comparison (monadicAdjunction R)) ⋙ Monad.forget _) := by
+  assumption
 
 instance comp_comparison_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
     [HasLimit (F ⋙ R)] : HasLimit (F ⋙ Monad.comparison (monadicAdjunction R)) :=
@@ -513,7 +512,7 @@ noncomputable def conePoint : Coalgebra T where
       ← show _ = _ ≫ T.map (T.map _) from T.δ.naturality _, assoc, ← Functor.map_comp, commuting,
       Functor.map_comp, ← assoc, commuting]
     simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, assoc]
-    rw [(D.obj j).coassoc,  ← assoc, ← assoc, commuting]
+    rw [(D.obj j).coassoc, ← assoc, ← assoc, commuting]
 
 /-- (Impl) Construct the lifted cone in `Coalgebra T` which will be limiting. -/
 @[simps]
@@ -588,9 +587,8 @@ end Comonad
 
 instance comp_comparison_forget_hasColimit (F : J ⥤ D) (R : D ⥤ C) [ComonadicLeftAdjoint R]
     [HasColimit (F ⋙ R)] :
-    HasColimit ((F ⋙ Comonad.comparison (comonadicAdjunction R)) ⋙ Comonad.forget _) :=
-  @hasColimitOfIso _ _ _ _ (F ⋙ R) _ _
-    (isoWhiskerLeft F (Comonad.comparisonForget (comonadicAdjunction R)).symm)
+    HasColimit ((F ⋙ Comonad.comparison (comonadicAdjunction R)) ⋙ Comonad.forget _) := by
+  assumption
 
 instance comp_comparison_hasColimit (F : J ⥤ D) (R : D ⥤ C) [ComonadicLeftAdjoint R]
     [HasColimit (F ⋙ R)] : HasColimit (F ⋙ Comonad.comparison (comonadicAdjunction R)) :=

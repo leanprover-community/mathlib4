@@ -32,9 +32,7 @@ is that some theorems about the group actions will not apply when since this
 
 -/
 
--- TODO
--- assert_not_exists GroupWithZero
-assert_not_exists Ring
+assert_not_exists MonoidWithZero
 
 variable (α M G : Type*)
 

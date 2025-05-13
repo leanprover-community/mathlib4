@@ -3,7 +3,7 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.Matroid.Restrict
+import Mathlib.Data.Matroid.Minor.Restrict
 
 /-!
 # Some constructions of matroids
@@ -81,7 +81,8 @@ end EmptyOn
 
 section LoopyOn
 
-/-- The `Matroid α` with ground set `E` whose only base is `∅` -/
+/-- The `Matroid α` with ground set `E` whose only base is `∅`.
+The elements are all 'loops' - see `Matroid.IsLoop` and `Matroid.loopyOn_isLoop_iff`. -/
 def loopyOn (E : Set α) : Matroid α := emptyOn α ↾ E
 
 @[simp] theorem loopyOn_ground (E : Set α) : (loopyOn E).E = E := rfl
@@ -223,7 +224,7 @@ theorem uniqueBaseOn_indep_iff (hIE : I ⊆ E) : (uniqueBaseOn I E).Indep J ↔ 
 theorem uniqueBaseOn_isBasis_iff (hX : X ⊆ E) : (uniqueBaseOn I E).IsBasis J X ↔ J = X ∩ I := by
   rw [isBasis_iff_maximal]
   exact maximal_iff_eq (by simp [inter_subset_left.trans hX])
-    (by simp (config := {contextual := true}))
+    (by simp +contextual)
 
 theorem uniqueBaseOn_inter_isBasis (hX : X ⊆ E) : (uniqueBaseOn I E).IsBasis (X ∩ I) X := by
   rw [uniqueBaseOn_isBasis_iff hX]

@@ -118,7 +118,7 @@ open Metric Filter Topology
 
 /-- An *increasing approximate unit* in a C⋆-algebra is an approximate unit contained in the
 closed unit ball of nonnegative elements. -/
-structure Filter.IsIncreasingApproximateUnit (l : Filter A) extends l.IsApproximateUnit : Prop where
+structure Filter.IsIncreasingApproximateUnit (l : Filter A) : Prop extends l.IsApproximateUnit where
   eventually_nonneg : ∀ᶠ x in l, 0 ≤ x
   eventually_norm : ∀ᶠ x in l, ‖x‖ ≤ 1
 

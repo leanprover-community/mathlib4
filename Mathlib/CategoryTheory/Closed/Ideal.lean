@@ -45,13 +45,13 @@ variable (i) [ChosenFiniteProducts C] [CartesianClosed C]
 `B ∈ D` implies `A ⟹ B ∈ D` for all `A`.
 -/
 class ExponentialIdeal : Prop where
-  exp_closed : ∀ {B}, B ∈ i.essImage → ∀ A, (A ⟹ B) ∈ i.essImage
+  exp_closed : ∀ {B}, i.essImage B → ∀ A, i.essImage (A ⟹ B)
 attribute [nolint docBlame] ExponentialIdeal.exp_closed
 
 /-- To show `i` is an exponential ideal it suffices to show that `A ⟹ iB` is "in" `D` for any `A` in
 `C` and `B` in `D`.
 -/
-theorem ExponentialIdeal.mk' (h : ∀ (B : D) (A : C), (A ⟹ i.obj B) ∈ i.essImage) :
+theorem ExponentialIdeal.mk' (h : ∀ (B : D) (A : C), i.essImage (A ⟹ i.obj B)) :
     ExponentialIdeal i :=
   ⟨fun hB A => by
     rcases hB with ⟨B', ⟨iB'⟩⟩
@@ -114,15 +114,25 @@ finite chosen products. -/
 -- Note: This is not an instance as one might already have a (different) `ChosenFiniteProducts`
 -- instance on `D` (as for example with sheaves).
 def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
-    ChosenFiniteProducts D where
-  product X Y :=
+    ChosenFiniteProducts D :=
+  .ofChosenFiniteProducts
+    ({  cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
+        isLimit := by
+          apply isLimitOfReflects i
+          apply isLimitChangeEmptyCone _ isTerminalTensorUnit
+          letI : IsIso ((reflectorAdjunction i).unit.app (𝟙_ C)) := by
+            have := reflective_products i
+            refine Functor.essImage.unit_isIso ⟨terminal D, ⟨PreservesTerminal.iso i |>.trans ?_⟩⟩
+            exact IsLimit.conePointUniqueUpToIso (limit.isLimit _) isTerminalTensorUnit
+          exact asIso ((reflectorAdjunction i).unit.app (𝟙_ C)) })
+  fun X Y ↦
     { cone := BinaryFan.mk
         ((reflector i).map (fst (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)
         ((reflector i).map (snd (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)
       isLimit := by
         apply isLimitOfReflects i
         apply IsLimit.equivOfNatIsoOfIso (pairComp X Y _) _ _ _|>.invFun
-          (product (i.obj X) (i.obj Y)).isLimit
+          (tensorProductIsBinaryProduct (i.obj X) (i.obj Y))
         fapply BinaryFan.ext
         · change (reflector i ⋙ i).obj (i.obj X ⊗ i.obj Y) ≅ (𝟭 C).obj (i.obj X ⊗ i.obj Y)
           letI : IsIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) := by
@@ -132,26 +142,12 @@ def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
             constructor
             apply Limits.PreservesLimitPair.iso i _ _|>.trans
             refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit (pair (i.obj X) (i.obj Y)))
-              (ChosenFiniteProducts.product _ _).isLimit
+              (tensorProductIsBinaryProduct _ _)
           exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y))|>.symm
         · simp only [BinaryFan.fst, Cones.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc, fst]
         · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc, snd] }
-  terminal :=
-    { cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
-      isLimit := by
-        apply isLimitOfReflects i
-        apply isLimitChangeEmptyCone _ ChosenFiniteProducts.terminal.isLimit
-        letI : IsIso ((reflectorAdjunction i).unit.app (𝟙_ C)) := by
-          apply Functor.essImage.unit_isIso
-          haveI := reflective_products i
-          use Limits.terminal D
-          constructor
-          apply Limits.PreservesTerminal.iso i|>.trans
-          refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit _)
-            (ChosenFiniteProducts.terminal).isLimit
-        exact asIso ((reflectorAdjunction i).unit.app (𝟙_ C)) }
 
 variable [ChosenFiniteProducts C] [Reflective i] [CartesianClosed C] [ChosenFiniteProducts D]
 
@@ -201,9 +197,7 @@ def cartesianClosedOfReflective : CartesianClosed D where
             rw [prodComparison_natural_whiskerLeft]
         · apply (exponentialIdealReflective i _).symm }
 
--- It's annoying that I need to do this.
-attribute [-instance] CategoryTheory.preservesLimit_of_createsLimit_and_hasLimit
-  CategoryTheory.preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape
+variable [BraidedCategory C]
 
 /-- We construct a bijection between morphisms `L(A ⊗ B) ⟶ X` and morphisms `LA ⊗ LB ⟶ X`.
 This bijection has two key properties:
@@ -302,11 +296,13 @@ lemma preservesBinaryProducts_of_exponentialIdeal :
 /--
 If a reflective subcategory is an exponential ideal, then the reflector preserves finite products.
 -/
-lemma preservesFiniteProducts_of_exponentialIdeal (J : Type) [Finite J] :
-    PreservesLimitsOfShape (Discrete J) (reflector i) := by
-  letI := preservesBinaryProducts_of_exponentialIdeal i
-  letI : PreservesLimitsOfShape _ (reflector i) := leftAdjoint_preservesTerminal_of_reflective.{0} i
-  apply preservesFiniteProducts_of_preserves_binary_and_terminal (reflector i) J
+lemma Limits.PreservesFiniteProducts.of_exponentialIdeal : PreservesFiniteProducts (reflector i) :=
+  have := preservesBinaryProducts_of_exponentialIdeal i
+  have : PreservesLimitsOfShape _ (reflector i) := leftAdjoint_preservesTerminal_of_reflective.{0} i
+  .of_preserves_binary_and_terminal _
+
+@[deprecated (since := "2025-04-22")]
+alias preservesFiniteProducts_of_exponentialIdeal := PreservesFiniteProducts.of_exponentialIdeal
 
 end
 

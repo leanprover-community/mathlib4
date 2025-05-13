@@ -170,7 +170,7 @@ theorem CG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
   rw [h2] at h'
   exact Hom.map_le_range h'
 
-theorem cg_iff_countable [Countable (Σl, L.Functions l)] {s : L.Substructure M} :
+theorem cg_iff_countable [Countable (Σ l, L.Functions l)] {s : L.Substructure M} :
     s.CG ↔ Countable s := by
   refine ⟨?_, fun h => ⟨s, h.to_set, s.closure_eq⟩⟩
   rintro ⟨s, h, rfl⟩
@@ -265,7 +265,7 @@ theorem CG.map_of_surjective {N : Type*} [L.Structure N] (h : CG L M) (f : M →
   rw [cg_def, ← hs]
   exact h.range f
 
-theorem cg_iff_countable [Countable (Σl, L.Functions l)] : CG L M ↔ Countable M := by
+theorem cg_iff_countable [Countable (Σ l, L.Functions l)] : CG L M ↔ Countable M := by
   rw [cg_def, Substructure.cg_iff_countable, topEquiv.toEquiv.countable_iff]
 
 theorem cg_of_countable [Countable M] : CG L M := by
