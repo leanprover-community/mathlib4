@@ -57,20 +57,35 @@ def mkDeprecation (customMessage : String := "Auto-generated deprecation") :
   liftCoreM <| PrettyPrinter.ppCategory `command stx
 
 /--
-Use `#create_deprecated_modules (n)? (write)?` to generate deprecated modules.
+The command `#create_deprecated_modules (n)? (comment)? (write)?` generates deprecated modules.
 
-The command computes the deprecated versions of the files removed since the last `n` commits.
+Writing
+```lean
+#create_deprecated_modules 5 "These files are no longer relevant"
+```
+looks at the `lean` files in `Mathlib` that existed `4` commits ago
+(i.e. the commit that you see with `git log -5`) and that are no longer present.
+It shows how the corresponding deprecated modules should look like, using
+`"These files are no longer relevant"` as the (optional) comment.
 
-If `write` is present, then the command, besides showing how the files would look like,
-it also creates the files in question.
+If the number of commits is not explicitly used, `#create_deprecated_modules` defaults to `2`,
+namely, the commit just prior to the current one.
 
-The number of past commits to scan is option and, by default, the command uses the previous commit,
-namely `n = 2`.
+If the message is not explicitly used, `#create_deprecated_modules` defaults to
+`"Auto-generated deprecation"`.
+If you wish there to be no comment, use `#create_deprecated_modules 5 ""`.
+
+Note that the command applies the *same* comment to all the files that it generates.
+
+Finally, if everything looks correct, adding a final `write` actually generates the files:
+```lean
+#create_deprecated_modules 5 "These files are no longer relevant" write
+```
 -/
-syntax "#create_deprecated_modules" (ppSpace num)? (&" write")? : command
+syntax "#create_deprecated_modules" (ppSpace num)? (ppSpace str)? (&" write")? : command
 
 elab_rules : command
-| `(#create_deprecated_modules $[$nc:num]? $[write%$write?]?) => do
+| `(#create_deprecated_modules $[$nc:num]? $[$comment:str]? $[write%$write?]?) => do
   let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
   let mut msgs := #[]
   let getHash (n : Nat) := do
@@ -95,7 +110,7 @@ elab_rules : command
   let noFiles := onlyPastFiles.size
   msgs := msgs.push
     m!"{noFiles} Lean file{if noFiles == 1 then "" else "s"} in 'Mathlib' that no longer exist."
-  let deprecation ← mkDeprecation
+  let deprecation← if let some cmt := comment then mkDeprecation cmt.getString else mkDeprecation
   msgs := msgs.push ""
   for fname in onlyPastFiles do
     let file ← IO.Process.run {cmd := "git", args := #["show", s!"{pastHash}:{fname}"]}
@@ -111,7 +126,7 @@ elab_rules : command
         if you wish to deprecate them."
   logInfo <| .joinSep msgs.toList "\n"
 
-#create_deprecated_modules 150 --write
+#create_deprecated_modules 155 --write
 
 /--
 info: /-
