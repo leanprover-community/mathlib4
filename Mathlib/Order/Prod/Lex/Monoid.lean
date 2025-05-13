@@ -23,7 +23,7 @@ TODO: Create the "OrdCommMon" category.
 
 namespace OrderMonoidHom
 
-variable (α β : Type*) [OrderedCommMonoid α] [OrderedCommMonoid β]
+variable (α β : Type*) [Monoid α] [PartialOrder α] [Monoid β] [Preorder β]
 
 /-- Given ordered monoids M, N, the natural inclusion ordered homomorphism from M to M × N. -/
 @[to_additive (attr := simps!) "Given ordered additive monoids M, N, the natural inclusion ordered
@@ -59,7 +59,7 @@ lexicographic M ×ₗ N. -/
 homomorphism from M to the lexicographic M ×ₗ N."]
 def inlₗ : α →*o α ×ₗ β where
   __ := (Prod.Lex.toLexOrderHom).comp (inl α β)
-  map_one' := by simp
+  map_one' := by simp [← toLex_one]
   map_mul' := by simp [← toLex_mul]
 
 /-- Given ordered monoids M, N, the natural inclusion ordered homomorphism from N to the
@@ -68,7 +68,7 @@ lexicographic M ×ₗ N. -/
 homomorphism from N to the lexicographic M ×ₗ N."]
 def inrₗ : β →*o (α ×ₗ β) where
   __ := (Prod.Lex.toLexOrderHom).comp (inr α β)
-  map_one' := by simp
+  map_one' := by simp [← toLex_one]
   map_mul' := by simp [← toLex_mul]
 
 /-- Given ordered monoids M, N, the natural projection ordered homomorphism from the
