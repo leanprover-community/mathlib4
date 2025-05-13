@@ -304,7 +304,7 @@ theorem support_congr (h : f.support ⊆ g.support) (h' : ∀ x ∈ g.support, f
 
 /-- If g and c commute, then g stabilizes the support of c -/
 theorem mem_support_iff_of_commute {g c : Perm α} (hgc : Commute g c) (x : α) :
-    x ∈ c.support ↔ g x ∈ c.support := by
+    g x ∈ c.support ↔ x ∈ c.support := by
   simp only [mem_support, not_iff_not, ← mul_apply]
   rw [← hgc, mul_apply, Equiv.apply_eq_iff_eq]
 
