@@ -911,8 +911,11 @@ theorem coconeOfHom_homOfCocone (s : Cocone F) : coconeOfHom h (homOfCocone h s)
     exact h.homEquiv.apply_symm_apply s_ι
 
 @[simp]
-theorem homOfCocone_cooneOfHom {Y : C} (f : X ⟶ Y) : homOfCocone h (coconeOfHom h f) = f := by
+theorem homOfCocone_coconeOfHom {Y : C} (f : X ⟶ Y) : homOfCocone h (coconeOfHom h f) = f := by
   simp [homOfCocone, coconeOfHom]
+
+@[deprecated (since := "2025-05-13")]
+alias homOfCocone_cooneOfHom := homOfCocone_coconeOfHom
 
 /-- If `F.cocones` is corepresented by `X`, the cocone corresponding to the identity morphism on `X`
 will be a colimit cocone. -/
@@ -931,7 +934,7 @@ theorem coconeOfHom_fac {Y : C} (f : X ⟶ Y) : coconeOfHom h f = (colimitCocone
 corresponding morphism. -/
 theorem cocone_fac (s : Cocone F) : (colimitCocone h).extend (homOfCocone h s) = s := by
   rw [← coconeOfHom_homOfCocone h s]
-  conv_lhs => simp only [homOfCocone_cooneOfHom]
+  conv_lhs => simp only [homOfCocone_coconeOfHom]
   apply (coconeOfHom_fac _ _).symm
 
 end OfNatIso
@@ -954,7 +957,7 @@ def ofCorepresentableBy {X : C} (h : F.cocones.CorepresentableBy X) :
     conv_rhs => rw [← h₂]
     rfl
   uniq s m w := by
-    rw [← homOfCocone_cooneOfHom h m]
+    rw [← homOfCocone_coconeOfHom h m]
     congr
     rw [coconeOfHom_fac]
     dsimp [Cocone.extend]; cases s; congr with j; exact w j
