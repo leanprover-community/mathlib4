@@ -47,7 +47,7 @@ We are only interested in Dedekind domains with Krull dimension 1.
 
 ## References
 * [G. J. Janusz, *Algebraic Number Fields*][janusz1996]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
