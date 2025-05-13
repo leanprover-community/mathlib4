@@ -136,6 +136,9 @@ theorem locallyCompactSpace [LocallyCompactSpace L] (h : ∀ x, ‖f x‖ = v x)
 
 variable {w : AbsoluteValue L ℝ} {σ : WithAbs v →+* WithAbs w}
 
+/-- If `L/K` and `w` is an absolute value on `L` factors through `K` via an embedding `σ : K →+* L`
+to give the absolute value `v` on `K`, then `mapOfComp` is natural ring homomorphism
+`v.Completion →+* w.Completion` lifting `σ`. -/
 abbrev mapOfComp (h : ∀ x, w (σ x) = v x) :
     v.Completion →+* w.Completion :=
   UniformSpace.Completion.mapRingHom σ
@@ -157,7 +160,7 @@ theorem mapOfComp_dist_eq (h : ∀ x, w (σ x) = v x) (x y : v.Completion) :
       (WithAbs.isometry_of_comp (L := WithAbs w) h).dist_eq x y
 
 omit [CompleteSpace L] in
-theorem isometry_map_of_comp (h : ∀ x, w (σ x) = v x) : Isometry (mapOfComp h) :=
+theorem isometry_mapOfComp (h : ∀ x, w (σ x) = v x) : Isometry (mapOfComp h) :=
   Isometry.of_dist_eq <| mapOfComp_dist_eq h
 
 end AbsoluteValue.Completion

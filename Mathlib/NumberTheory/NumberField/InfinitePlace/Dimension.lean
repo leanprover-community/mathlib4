@@ -7,10 +7,6 @@ import Mathlib.NumberTheory.NumberField.Completion
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 import Mathlib.Analysis.Normed.Field.WithAbs
 
---import FLT.Mathlib.Data.Subtype
-
-open scoped Classical
-
 /-!
 # Dimensions of completions at infinite places
 
@@ -19,6 +15,8 @@ In this file, we prove:
 - the sum of the ramification indices of all such places `w` is the same as `[L : K]`;
 - the `v.Completion` dimension of `w.Completion` is equal to the ramification index.
 -/
+
+open scoped Classical
 
 noncomputable section
 
