@@ -891,6 +891,38 @@ theorem initial_iff_initial_comp [Initial F] : Initial G ↔ Initial (F ⋙ G) :
 
 end
 
+section
+
+variable {C : Type u₁} [Category.{v₁} C] {c : C}
+
+lemma fromPUnit_final_of_isTerminal (hc : Limits.IsTerminal c) : (fromPUnit c).Final where
+  out c' :=
+    letI : Inhabited (StructuredArrow c' (fromPUnit c)) := ⟨.mk (Y := default) (hc.from c')⟩
+    isConnected_of_zigzag fun j j' ↦ by
+      use [default, j']
+      constructor
+      · constructor
+        · exact Zag.of_hom (StructuredArrow.homMk (eqToHom rfl) (by apply hc.hom_ext))
+        · constructor
+          · exact Zag.of_hom (StructuredArrow.homMk (eqToHom rfl) (by apply hc.hom_ext))
+          · exact List.Chain.nil
+      · rfl
+
+lemma fromPUnit_initial_of_isInitial (hc : Limits.IsInitial c) : (fromPUnit c).Initial where
+  out c' :=
+    letI : Inhabited (CostructuredArrow (fromPUnit c) c') := ⟨.mk (Y := default) (hc.to c')⟩
+    isConnected_of_zigzag fun j j' ↦ by
+      use [default, j']
+      constructor
+      · constructor
+        · exact Zag.of_hom (CostructuredArrow.homMk (eqToHom rfl) (by apply hc.hom_ext))
+        · constructor
+          · exact Zag.of_hom (CostructuredArrow.homMk (eqToHom rfl) (by apply hc.hom_ext))
+          · exact List.Chain.nil
+      · rfl
+
+end
+
 end Functor
 
 section Filtered
