@@ -365,7 +365,8 @@ theorem of_finrank_sup [FiniteDimensional F A] [FiniteDimensional F B]
     (H : finrank F ↥(A ⊔ B) = finrank F A * finrank F B) : A.LinearDisjoint B :=
   linearDisjoint_iff'.2 <| .of_finrank_sup_of_free (by rwa [← sup_toSubalgebra_of_left])
 
-/-- If `A` and `L` are linearly disjoint, one of them is algebraic, then `[L(A) : L] = [A : F]`. -/
+/-- If `A` and `L` are linearly disjoint over `F`, one of them is algebraic,
+then `[L(A) : L] = [A : F]`. -/
 theorem adjoin_rank_eq_rank_left_of_isAlgebraic (H : A.LinearDisjoint L)
     (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
     Module.rank L (adjoin L (A : Set E)) = Module.rank F A := by
@@ -394,8 +395,8 @@ theorem adjoin_rank_eq_rank_left_of_isAlgebraic_right (H : A.LinearDisjoint L)
     [Algebra.IsAlgebraic F L] : Module.rank L (adjoin L (A : Set E)) = Module.rank F A :=
   H.adjoin_rank_eq_rank_left_of_isAlgebraic (.inr ‹_›)
 
-/-- If `A` and `L` are linearly disjoint, one of them is algebraic, then `[L(A) : A] = [L : F]`.
-Note that in Lean `L(A)` is not naturally an `A`-algebra,
+/-- If `A` and `L` are linearly disjoint over `F`, one of them is algebraic,
+then `[L(A) : A] = [L : F]`. Note that in Lean `L(A)` is not naturally an `A`-algebra,
 so this result is stated in a cumbersome way. -/
 theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (H : A.LinearDisjoint L)
     (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
@@ -432,7 +433,8 @@ theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic_right (H : A.LinearDi
     Cardinal.lift.{v} (Module.rank F L) :=
   H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (.inr ‹_›)
 
-/-- If `A` and `L` are linearly disjoint, one of them is algebraic, then
+/-- If `A` is an intermediate field of `E / F`, `L` is an abstract field between `E / F`,
+such that they are linearly disjoint over `F`, and one of them is algebraic, then
 `[L : F] * [E : L(A)] = [E : A]`. -/
 theorem lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic (H : A.LinearDisjoint L)
     (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
