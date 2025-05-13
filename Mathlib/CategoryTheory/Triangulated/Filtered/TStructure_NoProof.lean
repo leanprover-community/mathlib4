@@ -8,7 +8,7 @@ import Mathlib.Algebra.Homology.ShortComplex.Abelian
 
 noncomputable section
 
-open CategoryTheory Preadditive Limits Triangulated CategoryTheory.FilteredTriangulated
+open CategoryTheory Preadditive Limits Triangulated CategoryTheory.FilteredTriangulated Category
 
 open scoped ZeroObject
 
@@ -137,18 +137,82 @@ lemma mem_filtered_heart_iff (X : C) :
 
 -- Theorem A.2.3(i):
 -- The functor is well-defined.
-abbrev FilteredToComplex_deg (n : ℤ) : C ⥤ t.Heart :=
+@[simp]
+def FilteredToComplex_deg (n : ℤ) : C ⥤ t.Heart :=
   Gr L n ⋙ t.homology n
 
-def FilteredToComplex_deg_comp_ι (n : ℤ) :
-    tF.ιHeart ⋙ FilteredToComplex_deg L t n ⋙ t.ιHeart ⋙ L.functor ≅
-    tF.ιHeart ⋙ FilteredTriangulated.truncGELE n n ⋙ shiftFunctor₂ C (-n):= sorry
+@[simp]
+def FilteredToComplex_deg_aux (n : ℤ) : C ⥤ C :=
+  FilteredTriangulated.truncGELE n n ⋙ shiftFunctor C n
 
 def FilteredToComplex_diff (n : ℤ) :
     FilteredToComplex_deg L t n ⟶ FilteredToComplex_deg L t (n + 1) where
   app X := t.homologyδ ((ForgetFiltration L).mapTriangle.obj ((truncGELE_triangle n n (n + 1)
     (le_refl _) (by simp)).obj X)) n (n + 1) rfl
   naturality f := sorry
+
+def FilteredToComplex_diff_aux (n : ℤ) :
+    FilteredToComplex_deg_aux (C := C) n ⟶ FilteredToComplex_deg_aux (n + 1) where
+  app X := ((truncGELE_δ n n (n + 1)).app X)⟦n⟧' ≫
+    (shiftFunctorAdd' C 1 n (n + 1) (add_comm _ _)).inv.app _
+  naturality X Y f := by
+    dsimp
+    slice_lhs 1 2 => rw [← Functor.map_comp, (truncGELE_δ n n (n + 1)).naturality, Functor.map_comp]
+    rw [Functor.comp_map, ← Functor.comp_map (shiftFunctor C 1) (shiftFunctor C n), assoc,
+      (shiftFunctorAdd' C 1 n (n + 1) (add_comm _ _)).inv.naturality]
+    simp only [Functor.comp_obj, assoc]
+
+@[simp]
+def FilteredToComplex_deg_comp_ι (n : ℤ) :
+    tF.ιHeart ⋙ FilteredToComplex_deg L t n ⋙ t.ιHeart ⋙ L.functor ≅
+    tF.ιHeart ⋙ FilteredToComplex_deg_aux n := by
+  refine NatIso.ofComponents (fun X ↦ ?_) ?_
+  · refine (t.homology n ⋙ t.ιHeart ⋙ L.functor).mapIso
+      ((shiftEquiv A n).unitIso.app ((Gr L n).obj (tF.ιHeart.obj X))) ≪≫ ?_
+    refine (t.ιHeart ⋙ L.functor).mapIso ((t.homology₀.shiftIso (-n) n 0 (neg_add_cancel _)).app
+      ((shiftFunctor A n).obj ((Gr L n).obj (tF.ιHeart.obj X)))) ≪≫ ?_
+    have prop : t.heart (((Gr L n).obj (tF.ιHeart.obj X))⟦n⟧) := sorry
+    set e : ((Gr L n).obj (tF.ιHeart.obj X))⟦n⟧ ≅
+      t.ιHeart.obj ⟨((Gr L n).obj (tF.ιHeart.obj X))⟦n⟧, prop⟩ := Iso.refl _
+    refine (t.homology₀.shift 0 ⋙ t.ιHeart ⋙ L.functor).mapIso e ≪≫ ?_
+    refine (t.ιHeart ⋙ L.functor).mapIso (t.ιHeartHomology_zero.app
+      ⟨((Gr L n).obj (tF.ιHeart.obj X))⟦n⟧, prop⟩) ≪≫ ?_
+    refine L.functor.mapIso e.symm ≪≫ ?_
+    refine L.functor.mapIso (((ForgetFiltration L).commShiftIso n).symm.app
+      ((FilteredTriangulated.truncGELE n n).obj (tF.ιHeart.obj X))) ≪≫ ?_
+    refine (Functor_forgetFiltration L).app ((shiftFunctor C n).obj
+      ((FilteredTriangulated.truncGELE n n).obj (tF.ιHeart.obj X))) ≪≫ ?_
+    have : FilteredTriangulated.IsLE ((shiftFunctor C n).obj
+      ((FilteredTriangulated.truncGELE n n).obj (tF.ιHeart.obj X))) 0 := sorry
+    refine (FilteredTriangulated.truncGE 0).mapIso (asIso ((truncLEπ 0).app ((shiftFunctor C n).obj
+      ((FilteredTriangulated.truncGELE n n).obj (tF.ιHeart.obj X))))).symm ≪≫ ?_
+    have : FilteredTriangulated.IsGE ((shiftFunctor C n).obj
+      ((FilteredTriangulated.truncGELE n n).obj (tF.ιHeart.obj X))) 0 := sorry
+    exact asIso ((truncGEι 0).app ((shiftFunctor C n).obj
+      ((FilteredTriangulated.truncGELE n n).obj (tF.ιHeart.obj X))))
+  · intro X Y f
+    dsimp
+    simp only [Functor.map_id, Functor.map_inv, id_comp, assoc]
+    sorry
+
+lemma FilteredToComplex_diff_comp_ι (n : ℤ) (X : tF.Heart) :
+    (FilteredToComplex_deg_comp_ι L t tF n).hom.app X ≫
+    (FilteredToComplex_diff_aux n).app (tF.ιHeart.obj X) =
+    L.functor.map (t.ιHeart.map ((FilteredToComplex_diff L t n).app (tF.ιHeart.obj X))) ≫
+    (FilteredToComplex_deg_comp_ι L t tF (n + 1)).hom.app X := by
+  dsimp
+  simp only [Functor.map_id, Functor.map_inv, id_comp, assoc]
+
+variable (X : C) (n : ℤ)
+
+example : (FilteredTriangulated.truncGELE n n ⋙ shiftFunctor C n).obj X ⟶
+    (FilteredTriangulated.truncGELE (n + 1) (n + 1) ⋙ shiftFunctor C (n + 1)).obj X :=
+  ((truncGELE_δ n n (n + 1)).app X)⟦n⟧' ≫ (shiftFunctorAdd' C 1 n (n + 1) (add_comm _ _)).inv.app _
+
+lemma FilteredToComplex_deg_comp_ι_diff (n : ℤ) (X : tF.Heart) :
+    (FilteredToComplex_deg_comp_ι L t tF n).hom.app X ≫ sorry
+    = L.functor.map (t.ιHeart.map ((FilteredToComplex_diff L t n).app (tF.ιHeart.obj X))) ≫
+      (FilteredToComplex_deg_comp_ι L t tF (n + 1)).hom.app X := sorry
 
 def FilteredToComplex_condition (n : ℤ) :
     FilteredToComplex_diff L t n ≫ FilteredToComplex_diff L t (n + 1) = 0 := by

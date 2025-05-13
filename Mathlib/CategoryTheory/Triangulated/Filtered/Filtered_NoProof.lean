@@ -848,17 +848,17 @@ end Commute
 
 -- Prop A.1.3 (ii)
 
-abbrev truncLEGE (a b : ℤ) : C ⥤ C := truncGE a ⋙ truncLE b
+def truncLEGE (a b : ℤ) : C ⥤ C := truncGE a ⋙ truncLE b
 
-abbrev truncGELE (a b : ℤ) : C ⥤ C := truncLE b ⋙ truncGE a
+def truncGELE (a b : ℤ) : C ⥤ C := truncLE b ⋙ truncGE a
 
-abbrev truncLE_onGE (n m : ℤ) :
+/-abbrev truncLE_onGE (n m : ℤ) :
     (FilteredTriangulated.GE (C := C) m).P.FullSubcategory ⥤
     (FilteredTriangulated.GE (C := C) m).P.FullSubcategory := by
   refine ObjectProperty.lift _ ?_ (fun X ↦ ?_)
   · exact ObjectProperty.ι _ ⋙ truncLE n
   · have : IsGE X.1 m := {ge := X.2}
-    exact (instIsGEObjTruncLE n m X.1).ge
+    exact (instIsGEObjTruncLE n m X.1).ge-/
 
 abbrev truncLEGEToGELE (a b : ℤ) : truncLEGE (C := C) a b ⟶ truncGELE a b :=
   commute_truncLE (truncGE a) b (fun _ _ ↦ inferInstance)
@@ -1163,10 +1163,10 @@ def Gr : C ⥤ A := truncGELE n n ⋙ ForgetFiltration L
 -- `Gr` is triangulated.
 
 instance (n : ℤ) : (Gr L n).CommShift ℤ := by
-  dsimp [Gr]; infer_instance
+  dsimp [Gr, truncGELE]; infer_instance
 
 instance (n : ℤ) : (Gr L n).IsTriangulated := by
-  dsimp [Gr]; infer_instance
+  dsimp [Gr, truncGELE]; infer_instance
 
 -- Comparison with the definition in the paper:
 def Gr_vs_Gr : Gr L n ≅ truncGELE n n ⋙ shiftFunctor₂ C (-n) ⋙ ForgetFiltration L := sorry
