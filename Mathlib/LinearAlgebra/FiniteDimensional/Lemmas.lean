@@ -36,11 +36,13 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The dimension of a strict submodule is strictly bounded by the dimension of the ambient
-space. -/
-theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s < ⊤) :
+space.
+
+See also `Submodule.length_lt`. -/
+theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s ≠ ⊤) :
     finrank K s < finrank K V := by
   rw [← s.finrank_quotient_add_finrank, add_comm]
-  exact Nat.lt_add_of_pos_right (finrank_pos_iff.mpr (Quotient.nontrivial_of_lt_top _ h))
+  exact Nat.lt_add_of_pos_right (finrank_pos_iff.mpr (Quotient.nontrivial_of_lt_top _ h.lt_top))
 
 /-- The sum of the dimensions of s + t and s ∩ t is the sum of the dimensions of s and t -/
 theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional K s]
@@ -191,7 +193,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
     finrank K s < finrank K t :=
   (comapSubtypeEquivOfLe hst.le).finrank_eq.symm.trans_lt <|
-    finrank_lt (le_top.lt_of_ne <| hst.not_le ∘ comap_subtype_eq_top.1)
+    finrank_lt <| by simp [not_le_of_lt hst]
 
 theorem finrank_strictMono [FiniteDimensional K V] :
     StrictMono fun s : Submodule K V => finrank K s := fun _ _ => finrank_lt_finrank_of_lt
@@ -217,7 +219,7 @@ theorem LinearIndependent.span_eq_top_of_card_eq_finrank' {ι : Type*}
     (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ := by
   by_contra ne_top
   rw [← finrank_span_eq_card lin_ind] at card_eq
-  exact ne_of_lt (Submodule.finrank_lt <| lt_top_iff_ne_top.2 ne_top) card_eq
+  exact ne_of_lt (Submodule.finrank_lt ne_top) card_eq
 
 theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty ι]
     [Fintype ι] {b : ι → V} (lin_ind : LinearIndependent K b)
@@ -238,6 +240,26 @@ theorem coe_basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [
     ⇑(basisOfLinearIndependentOfCardEqFinrank lin_ind card_eq) = b :=
   Basis.coe_mk _ _
 
+/-- In a vector space `ι → K`, a linear independent family indexed by `ι` is a basis. -/
+noncomputable def basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι]
+    [Decidable (Nonempty ι)] {b : ι → (ι → K)} (hb : LinearIndependent K b) : Basis ι K (ι → K) :=
+  if hι : Nonempty ι then
+    basisOfLinearIndependentOfCardEqFinrank hb (Module.finrank_fintype_fun_eq_card K).symm
+  else
+    have : IsEmpty ι := not_nonempty_iff.mp hι
+    Basis.empty _
+
+open Classical in
+@[simp]
+theorem coe_basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι]
+    {b : ι → (ι → K)} (hb : LinearIndependent K b) :
+    ⇑(basisOfPiSpaceOfLinearIndependent hb) = b := by
+  by_cases hι : Nonempty ι
+  · simp [hι, basisOfPiSpaceOfLinearIndependent]
+  · rw [basisOfPiSpaceOfLinearIndependent, dif_neg hι]
+    ext i
+    exact ((not_nonempty_iff.mp hι).false i).elim
+
 /-- A linear independent finset of `finrank K V` vectors forms a basis. -/
 @[simps! repr_apply]
 noncomputable def finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (hs : s.Nonempty)
@@ -249,9 +271,7 @@ noncomputable def finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (
 theorem coe_finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (hs : s.Nonempty)
     (lin_ind : LinearIndependent K ((↑) : s → V)) (card_eq : s.card = finrank K V) :
     ⇑(finsetBasisOfLinearIndependentOfCardEqFinrank hs lin_ind card_eq) = ((↑) : s → V) := by
-  -- Porting note: added to make the next line unify the `_`s
-  rw [finsetBasisOfLinearIndependentOfCardEqFinrank]
-  exact Basis.coe_mk _ _
+  simp [finsetBasisOfLinearIndependentOfCardEqFinrank]
 
 /-- A linear independent set of `finrank K V` vectors forms a basis. -/
 @[simps! repr_apply]
@@ -264,9 +284,7 @@ noncomputable def setBasisOfLinearIndependentOfCardEqFinrank {s : Set V} [Nonemp
 theorem coe_setBasisOfLinearIndependentOfCardEqFinrank {s : Set V} [Nonempty s] [Fintype s]
     (lin_ind : LinearIndependent K ((↑) : s → V)) (card_eq : s.toFinset.card = finrank K V) :
     ⇑(setBasisOfLinearIndependentOfCardEqFinrank lin_ind card_eq) = ((↑) : s → V) := by
-  -- Porting note: added to make the next line unify the `_`s
-  rw [setBasisOfLinearIndependentOfCardEqFinrank]
-  exact Basis.coe_mk _ _
+  simp [setBasisOfLinearIndependentOfCardEqFinrank]
 
 end Basis
 

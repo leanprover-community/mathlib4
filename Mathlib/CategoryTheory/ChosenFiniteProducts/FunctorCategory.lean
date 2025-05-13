@@ -27,7 +27,7 @@ abbrev chosenTerminal : J ⥤ C := (Functor.const J).obj (𝟙_ C)
 /-- The chosen terminal object in `J ⥤ C` is terminal. -/
 def chosenTerminalIsTerminal : IsTerminal (chosenTerminal J C) :=
   evaluationJointlyReflectsLimits _
-    (fun _ => isLimitChangeEmptyCone _ ChosenFiniteProducts.terminal.2 _ (Iso.refl _))
+    (fun _ => isLimitChangeEmptyCone _ ChosenFiniteProducts.isTerminalTensorUnit _ (.refl _))
 
 section
 
@@ -43,12 +43,10 @@ def chosenProd : J ⥤ C where
 namespace chosenProd
 
 /-- The first projection `chosenProd F₁ F₂ ⟶ F₁`. -/
-@[simps]
 def fst : chosenProd F₁ F₂ ⟶ F₁ where
   app _ := ChosenFiniteProducts.fst _ _
 
 /-- The second projection `chosenProd F₁ F₂ ⟶ F₂`. -/
-@[simps]
 def snd : chosenProd F₁ F₂ ⟶ F₂ where
   app _ := ChosenFiniteProducts.snd _ _
 
@@ -56,7 +54,8 @@ def snd : chosenProd F₁ F₂ ⟶ F₂ where
 def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
   evaluationJointlyReflectsLimits _ (fun j =>
     (IsLimit.postcomposeHomEquiv (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
-      (IsLimit.ofIsoLimit (ChosenFiniteProducts.product (X := F₁.obj j) (Y := F₂.obj j)).2
+      (IsLimit.ofIsoLimit
+        (ChosenFiniteProducts.tensorProductIsBinaryProduct (X := F₁.obj j) (Y := F₂.obj j))
         (Cones.ext (Iso.refl _) (by rintro ⟨_|_⟩; all_goals aesop_cat))))
 
 end chosenProd
@@ -64,9 +63,9 @@ end chosenProd
 end
 
 instance chosenFiniteProducts :
-    ChosenFiniteProducts (J ⥤ C) where
-  terminal := ⟨_, chosenTerminalIsTerminal J C⟩
-  product F₁ F₂ := ⟨_, chosenProd.isLimit F₁ F₂⟩
+    ChosenFiniteProducts (J ⥤ C) :=
+  .ofChosenFiniteProducts ⟨_, chosenTerminalIsTerminal J C⟩
+    fun F₁ F₂ ↦ ⟨_, chosenProd.isLimit F₁ F₂⟩
 
 namespace Monoidal
 
@@ -75,8 +74,21 @@ open ChosenFiniteProducts
 variable {J C}
 
 @[simp]
+lemma tensorObj_obj (F₁ F₂ : J ⥤ C) (j : J) : (F₁ ⊗ F₂).obj j = (F₁.obj j) ⊗ (F₂.obj j) := rfl
+
+@[simp]
+lemma tensorObj_map (F₁ F₂ : J ⥤ C) {j j' : J} (f : j ⟶ j') :
+    (F₁ ⊗ F₂).map f = (F₁.map f) ⊗ (F₂.map f) := rfl
+
+@[simp]
+lemma fst_app (F₁ F₂ : J ⥤ C) (j : J) : (fst F₁ F₂).app j = fst (F₁.obj j) (F₂.obj j) := rfl
+
+@[simp]
+lemma snd_app (F₁ F₂ : J ⥤ C) (j : J) : (snd F₁ F₂).app j = snd (F₁.obj j) (F₂.obj j) := rfl
+
+@[simp]
 lemma leftUnitor_hom_app (F : J ⥤ C) (j : J) :
-    (λ_ F).hom.app j = (λ_ (F.obj j)).hom := rfl
+    (λ_ F).hom.app j = (λ_ (F.obj j)).hom := (leftUnitor_hom _).symm
 
 @[simp]
 lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
@@ -86,7 +98,7 @@ lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
 
 @[simp]
 lemma rightUnitor_hom_app (F : J ⥤ C) (j : J) :
-    (ρ_ F).hom.app j = (ρ_ (F.obj j)).hom := rfl
+    (ρ_ F).hom.app j = (ρ_ (F.obj j)).hom := (rightUnitor_hom _).symm
 
 @[simp]
 lemma rightUnitor_inv_app (F : J ⥤ C) (j : J) :
@@ -132,19 +144,15 @@ lemma whiskerRight_app_snd {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J
 lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).hom.app j = (α_ _ _ _).hom := by
   apply hom_ext
-  · change _ ≫ (fst F₁ (F₂ ⊗ F₃)).app j = _
-    rw [← NatTrans.comp_app, associator_hom_fst]
-    erw [associator_hom_fst]
-    rfl
+  · rw [← fst_app, ← NatTrans.comp_app, associator_hom_fst]
+    simp
   · apply hom_ext
-    · change (_ ≫ (snd F₁ (F₂ ⊗ F₃)).app j) ≫ (fst F₂ F₃).app j = _
-      rw [← NatTrans.comp_app, ← NatTrans.comp_app, assoc, associator_hom_snd_fst, assoc]
-      erw [associator_hom_snd_fst]
-      rfl
-    · change (_ ≫ (snd F₁ (F₂ ⊗ F₃)).app j) ≫ (snd F₂ F₃).app j = _
-      rw [← NatTrans.comp_app, ← NatTrans.comp_app, assoc, associator_hom_snd_snd, assoc]
-      erw [associator_hom_snd_snd]
-      rfl
+    · rw [← snd_app, ← NatTrans.comp_app, ← fst_app, ← NatTrans.comp_app, Category.assoc,
+        associator_hom_snd_fst]
+      simp
+    · rw [← snd_app, ← NatTrans.comp_app, ← snd_app, ← NatTrans.comp_app, Category.assoc,
+        associator_hom_snd_snd]
+      simp
 
 @[simp]
 lemma associator_inv_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :

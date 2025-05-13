@@ -5,9 +5,11 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Lattice
-import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Order.UpperLower.Basic
+import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Order.UpperLower.Closure
+
 /-!
 # Algebraic operations on upper/lower sets
 
@@ -21,7 +23,7 @@ open Pointwise
 
 section OrderedCommMonoid
 
-variable {α : Type*} [OrderedCommMonoid α] {s : Set α} {x : α}
+variable {α : Type*} [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α} {x : α}
 
 @[to_additive]
 theorem IsUpperSet.smul_subset (hs : IsUpperSet s) (hx : 1 ≤ x) : x • s ⊆ s :=
@@ -35,7 +37,7 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable {α : Type*} [OrderedCommGroup α] {s t : Set α} {a : α}
+variable {α : Type*} [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s t : Set α} {a : α}
 
 @[to_additive]
 theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := hs.image <| OrderIso.mulLeft _
@@ -104,6 +106,7 @@ instance : Div (UpperSet α) :=
 instance : SMul α (UpperSet α) :=
   ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
+omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_one : ((1 : UpperSet α) : Set α) = Set.Ici 1 :=
   rfl
@@ -116,6 +119,7 @@ theorem coe_mul (s t : UpperSet α) : (↑(s * t) : Set α) = s * t :=
 theorem coe_div (s t : UpperSet α) : (↑(s / t) : Set α) = s / t :=
   rfl
 
+omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp)]
 theorem Ici_one : Ici (1 : α) = 1 :=
   rfl
@@ -172,6 +176,7 @@ theorem coe_mul (s t : LowerSet α) : (↑(s * t) : Set α) = s * t :=
 theorem coe_div (s t : LowerSet α) : (↑(s / t) : Set α) = s / t :=
   rfl
 
+omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp)]
 theorem Iic_one : Iic (1 : α) = 1 :=
   rfl
@@ -204,10 +209,12 @@ end LowerSet
 
 variable (a s t)
 
+omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp)]
 theorem upperClosure_one : upperClosure (1 : Set α) = 1 :=
   upperClosure_singleton _
 
+omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp)]
 theorem lowerClosure_one : lowerClosure (1 : Set α) = 1 :=
   lowerClosure_singleton _

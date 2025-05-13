@@ -23,7 +23,7 @@ This file contains one definition, and various results on boundedness in pseudo-
 * `isCompact_iff_isClosed_bounded`, the **Heine–Borel theorem**:
    in a proper space, a set is compact if and only if it is closed and bounded.
 * `cobounded_eq_cocompact`: in a proper space, cobounded and compact sets are the same
-diameter of a subset, and its relation to boundedness
+  diameter of a subset, and its relation to boundedness
 
 ## Tags
 
@@ -102,9 +102,17 @@ theorem hasBasis_cobounded_compl_closedBall (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (closedBall c r)ᶜ) :=
   ⟨compl_surjective.forall.2 fun _ ↦ (isBounded_iff_subset_closedBall c).trans <| by simp⟩
 
+theorem hasAntitoneBasis_cobounded_compl_closedBall (c : α) :
+    (cobounded α).HasAntitoneBasis (fun r ↦ (closedBall c r)ᶜ) :=
+  ⟨Metric.hasBasis_cobounded_compl_closedBall _, fun _ _ hr _ ↦ by simpa using hr.trans_lt⟩
+
 theorem hasBasis_cobounded_compl_ball (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (ball c r)ᶜ) :=
   ⟨compl_surjective.forall.2 fun _ ↦ (isBounded_iff_subset_ball c).trans <| by simp⟩
+
+theorem hasAntitoneBasis_cobounded_compl_ball (c : α) :
+    (cobounded α).HasAntitoneBasis (fun r ↦ (ball c r)ᶜ) :=
+  ⟨Metric.hasBasis_cobounded_compl_ball _, fun _ _ hr _ ↦ by simpa using hr.trans⟩
 
 @[simp]
 theorem comap_dist_right_atTop (c : α) : comap (dist · c) atTop = cobounded α :=
