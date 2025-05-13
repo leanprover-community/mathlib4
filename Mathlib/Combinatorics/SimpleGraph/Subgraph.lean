@@ -1269,35 +1269,39 @@ end DeleteVerts
 
 end Subgraph
 
-section InduceSpanningCoe
+section neighborSetIn
 
 open Subgraph
 
 variable {α : Type*} (G : SimpleGraph α)
 
-/- The set `{v | v ∈ s ∧ G.Adj a v}` i.e. the neighbors of `a` in
-  `G.induce (insert a s)` as a `Set α` -/
-abbrev neighborSetInduce (s : Set α) (a : α) :=
+/-
+The set `{v | v ∈ s ∧ G.Adj a v}` i.e. the neighbors of `a` in `s : Set α`.
+Rather than defining this directly we use `((⊤ : Subgraph G).induce (insert a s)).neighborSet a`
+-/
+abbrev neighborSetIn (s : Set α) (a : α) : Set α :=
   ((⊤ : Subgraph G).induce (insert a s)).neighborSet a
 
-lemma neighborSetInduce_eq  (s : Set α) (a : α) :
-    G.neighborSetInduce s a = {v | v ∈ s ∧ G.Adj a v} := by ext; aesop
+abbrev degreeIn (s : Set α) (a : α) [Fintype (G.neighborSetIn s a)] : ℕ :=
+  ((⊤ : Subgraph G).induce (insert a s)).degree a
+
+lemma neighborSetIn_eq  (s : Set α) (a : α) :
+    G.neighborSetIn s a = {v | v ∈ s ∧ G.Adj a v} := by ext; aesop
 
 @[simp]
-lemma neighborSetInduce_sdiff (s : Set α) (a : α) :
-    G.neighborSetInduce (s \ {a}) a = G.neighborSetInduce s a := by
+lemma neighborSetIn_sdiff (s : Set α) (a : α) :
+    G.neighborSetIn (s \ {a}) a = G.neighborSetIn s a := by
   ext
   simp
 
-lemma mem_neighborSetInduce {s : Set α} {a v : α} :
-    v ∈ G.neighborSetInduce s a ↔ v ∈ s ∧ G.Adj a v := by
-  rw [neighborSetInduce_eq]; rfl
+lemma mem_neighborSetIn {s : Set α} {a v : α} :
+    v ∈ G.neighborSetIn s a ↔ v ∈ s ∧ G.Adj a v := by
+  rw [neighborSetIn_eq]; rfl
 
 @[simp]
-lemma neighborSetInduce_subset (s : Set α) (a : α) : G.neighborSetInduce s a ⊆ s := by
-  rw [neighborSetInduce_eq]; intro x hx; simpa using hx.1
+lemma neighborSetIn_subset (s : Set α) (a : α) : G.neighborSetIn s a ⊆ s := by
+  rw [neighborSetIn_eq]; intro x hx; simpa using hx.1
 
-variable {s : Set α}
 -- An almost identical instance exists higher up this file the difference is `v : α` here
 -- while `v : G'.verts` above.
 /-- If a graph is locally finite at a vertex, then so is any subgraph of that graph. -/
@@ -1305,40 +1309,36 @@ instance Subgraph.finiteAt' {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
     [Fintype (G.neighborSet v)] : Fintype (G'.neighborSet v) := by
   apply Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
 
-abbrev degreeInduce (s : Set α) (a : α) [Fintype (G.neighborSetInduce s a)]  :=
-  ((⊤ : Subgraph G).induce (insert a s)).degree a
+lemma degreeIn_eq (s : Set α) (a : α) [Fintype (G.neighborSetIn s a)]  :
+  G.degreeIn s a = ((⊤ : Subgraph G).induce (insert a s)).degree a := rfl
 
-lemma degreeInduce_eq (s : Set α) (a : α) [Fintype (G.neighborSetInduce s a)]  :
-  G.degreeInduce s a = ((⊤ : Subgraph G).induce (insert a s)).degree a := rfl
-
-lemma degreeInduce_mono {t : Set α} {a : α} (h : s ⊆ t)  [Fintype (G.neighborSetInduce s a)]
-    [Fintype (G.neighborSetInduce t a)] : G.degreeInduce s a ≤ G.degreeInduce t a :=
+lemma degreeIn_mono {s t : Set α} {a : α} (h : s ⊆ t) [Fintype (G.neighborSetIn s a)]
+    [Fintype (G.neighborSetIn t a)] : G.degreeIn s a ≤ G.degreeIn t a :=
   (degree_le' _ _ (induce_mono_right (Set.insert_subset_insert h)) a)
 
-lemma degreeInduce_le_degree (a : α) [Fintype (G.neighborSetInduce s a)]
-    [Fintype (G.neighborSet a)] : G.degreeInduce s a ≤ G.degree a := degree_le _ _
+lemma degreeIn_le_degree {s : Set α} (a : α) [Fintype (G.neighborSetIn s a)]
+    [Fintype (G.neighborSet a)] : G.degreeIn s a ≤ G.degree a := degree_le _ _
 
-lemma neighborSet_subset_of_degree_le_degreeInduce {a : α} [Fintype (G.neighborSetInduce s a)]
-    [Fintype (G.neighborSet a)] (h : G.degree a ≤ G.degreeInduce s a) : G.neighborSet a ⊆ s := by
-  rw [degree, degreeInduce_eq, ← finset_card_neighborSet_eq_degree] at h
+lemma neighborSet_subset_of_degree_le_degreeIn {s : Set α} {a : α} [Fintype (G.neighborSetIn s a)]
+    [Fintype (G.neighborSet a)] (h : G.degree a ≤ G.degreeIn s a) : G.neighborSet a ⊆ s := by
+  rw [degree, degreeIn_eq, ← finset_card_neighborSet_eq_degree] at h
   intro v ha
-  apply G.neighborSetInduce_subset s a
+  apply G.neighborSetIn_subset s a
   apply Set.mem_toFinset.1
   simpa [Finset.eq_of_subset_of_card_le (fun v ↦ by simp) h] using ha
 
-variable (s) in
-lemma degreeInduce_lt_degree {a v : α} (ha : G.Adj a v) (hv : v ∉ s)
-    [Fintype (G.neighborSetInduce s a)] [Fintype (G.neighborSet a)] :
-    G.degreeInduce s a < G.degree a :=
-  lt_of_le_of_ne (G.degreeInduce_le_degree a)
-    fun h ↦ hv <| G.neighborSet_subset_of_degree_le_degreeInduce h.symm.le ha
+lemma degreeIn_lt_degree {a v : α} {s : Set α} (ha : G.Adj a v) (hv : v ∉ s)
+    [Fintype (G.neighborSetIn s a)] [Fintype (G.neighborSet a)] :
+    G.degreeIn s a < G.degree a :=
+  lt_of_le_of_ne (G.degreeIn_le_degree a)
+    fun h ↦ hv <| G.neighborSet_subset_of_degree_le_degreeIn h.symm.le ha
 
 @[simp]
-lemma degreeInduce_erase {a : α} {s : Finset α} [DecidableEq α] [Fintype (G.neighborSetInduce s a)]
-    [Fintype (G.neighborSetInduce (s.erase a) a)] :
-    G.degreeInduce (s.erase a) a = G.degreeInduce s a := by
-  simp_rw [degreeInduce_eq, ← finset_card_neighborSet_eq_degree]
+lemma degreeIn_erase {a : α} {s : Finset α} [DecidableEq α] [Fintype (G.neighborSetIn s a)]
+    [Fintype (G.neighborSetIn (s.erase a) a)] :
+    G.degreeIn (s.erase a) a = G.degreeIn s a := by
+  simp_rw [degreeIn_eq, ← finset_card_neighborSet_eq_degree]
   simp
 
-end InduceSpanningCoe
+end neighborSetIn
 end SimpleGraph

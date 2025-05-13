@@ -131,24 +131,24 @@ theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbd : ∀ v, G.de
     (s : Finset α) : G.ColorableOn k s := by
   induction hn : #s using Nat.strong_induction_on generalizing s with
   | h n ih =>
-  -- Case 0 : there is `v ∈ s` with `G.degreeInduce s v < k`, so we can extend a `k` - coloring of
+  -- Case 0 : there is `v ∈ s` with `G.degreeIn s v < k`, so we can extend a `k` - coloring of
   -- `s.erase v` greedily
 --  classical
-  by_cases hd : ∃ v ∈ s, G.degreeInduce s v < k
+  by_cases hd : ∃ v ∈ s, G.degreeIn s v < k
   · obtain ⟨v, hv, hlt⟩ := hd
     obtain ⟨C⟩ := ih _ ((card_erase_lt_of_mem hv).trans_le hn.le) _ rfl
-    exact ⟨(C.greedy v (C.nonempty_of_degreeInduce_lt _
+    exact ⟨(C.greedy v (C.nonempty_of_degreeIn_lt _
       (by simpa [hv] using hlt))).copy (by simp [hv])⟩
-  -- So all vertices in `s` have `G.degreeInduce s v = k` (and hence have no neighbors outside `s`)
+  -- So all vertices in `s` have `G.degreeIn s v = k` (and hence have no neighbors outside `s`)
   push_neg at hd
-  replace hd : ∀ v ∈ s, G.degreeInduce s v = k := fun v hv ↦ le_antisymm
-        ((degreeInduce_le_degree ..).trans (hbd v)) <| hd _ hv
+  replace hd : ∀ v ∈ s, G.degreeIn s v = k := fun v hv ↦ le_antisymm
+        ((degreeIn_le_degree ..).trans (hbd v)) <| hd _ hv
   have hbd' : ∀ v, v ∈ s → G.degree v = k := fun v hv ↦ le_antisymm (hbd v)
-        <| hd v hv ▸ degreeInduce_le_degree ..
+        <| hd v hv ▸ degreeIn_le_degree ..
   have hin : ∀ {v}, v ∈ s → ∀ {w}, G.Adj v w → w ∈ s := by
     by_contra! hf
     obtain ⟨v, hv, w, ha, hns⟩ := hf
-    have : G.degreeInduce s v < G.degree v := G.degreeInduce_lt_degree s ha hns
+    have : G.degreeIn s v < G.degree v := G.degreeIn_lt_degree ha (by exact hns)
     rw [hd _ hv] at this
     exact this.not_le (hbd v)
   -- `s` is either Nonempty (main case) or empty (easy)
@@ -166,7 +166,7 @@ theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbd : ∀ v, G.de
     contrapose! nc
     apply IsNClique.insert
       ⟨fun _ ha _ hb hne ↦ nc _ _ ha hb hne, by
-         rw [← hd _ hv₂, degreeInduce_eq, ← Subgraph.finset_card_neighborSet_eq_degree]; congr; ext;
+         rw [← hd _ hv₂, degreeIn_eq, ← Subgraph.finset_card_neighborSet_eq_degree]; congr; ext;
          simp [hv₂, and_comm]⟩
     intro b hb; rw [mem_inter, mem_neighborFinset] at hb
     exact hb.1
@@ -196,7 +196,7 @@ theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbd : ∀ v, G.de
       ∀ y, G.Adj vᵣ y → y ∈ ((q.append v41)).support := by
     obtain ⟨vᵣ, q, hq, hs, hnb⟩ := exists_maximal_path_subset s h41 v41s
     refine ⟨vᵣ, q, hq, hs,fun x hx ↦ ?_⟩
-    have := G.neighborSet_subset_of_degree_le_degreeInduce <|
+    have := G.neighborSet_subset_of_degree_le_degreeIn <|
       (hbd vᵣ).trans (hd vᵣ (hs _ (start_mem_support ..))).symm.le
     exact hnb x hx <| this <| (mem_neighborSet ..).2 hx
   have hdisj2 := (append_isPath_iff.1 hq).2.2

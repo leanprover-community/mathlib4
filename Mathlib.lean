@@ -2639,8 +2639,9 @@ import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Bipartite
 import Mathlib.Combinatorics.SimpleGraph.Brooks.Brooks
+import Mathlib.Combinatorics.SimpleGraph.Brooks.Greedy
 import Mathlib.Combinatorics.SimpleGraph.Brooks.OddCycles
-import Mathlib.Combinatorics.SimpleGraph.Brooks.PartColoring
+import Mathlib.Combinatorics.SimpleGraph.Brooks.ColoringOn
 import Mathlib.Combinatorics.SimpleGraph.Circulant
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
