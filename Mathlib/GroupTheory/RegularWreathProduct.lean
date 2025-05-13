@@ -26,7 +26,7 @@ This file introduces the global notation `D ≀ᵣ Q` for `RegularWreathProduct 
 group, regular wreath product, sylow p-subgroup
 -/
 
-variable (D Q: Type*) [Group D] [Group Q]
+variable (D Q : Type*) [Group D] [Group Q]
 
 /-- The regular wreath product of groups `Q` and `D`.
     It the product of sets with the group operation
@@ -47,11 +47,11 @@ instance : Mul (RegularWreathProduct D Q) where
   mul d q := ⟨d.1 * (fun x => q.1 (d.2⁻¹ * x)), d.2 * q.2⟩
 
 lemma mul_def (d q : RegularWreathProduct D Q) :
-  d * q = ⟨d.1 * (fun x => q.1 (d.2⁻¹ * x)), d.2 * q.2⟩ := rfl
+    d * q = ⟨d.1 * (fun x => q.1 (d.2⁻¹ * x)), d.2 * q.2⟩ := rfl
 
 @[simp]
 theorem mul_left (a b : D ≀ᵣ Q) :
-  (a * b).left = a.left * (((fun x => b.left (a.right⁻¹ * x)))) := rfl
+    (a * b).left = a.left * (((fun x => b.left (a.right⁻¹ * x)))) := rfl
 
 @[simp]
 theorem mul_right (a b : D ≀ᵣ Q) : (a * b).right = a.right * b.right := rfl
@@ -69,7 +69,7 @@ instance : Inv (RegularWreathProduct D Q) where
 
 @[simp]
 theorem inv_left (a : D ≀ᵣ Q) :
-  a⁻¹.left = ((fun x => a.left⁻¹ (a.right * x))) := rfl
+    a⁻¹.left = ((fun x => a.left⁻¹ (a.right * x))) := rfl
 
 @[simp]
 theorem inv_right (a : D ≀ᵣ Q) : a⁻¹.right = a.right⁻¹ := rfl
@@ -108,17 +108,17 @@ theorem rightHom_eq_right : (rightHom : D ≀ᵣ Q → Q) = right := rfl
 theorem rightHom_comp_inl_eq_id : (rightHom : D ≀ᵣ Q →* Q).comp inl = MonoidHom.id _ := by ext; simp
 
 @[simp]
-theorem fun_id (q:Q) : rightHom (inl q : D ≀ᵣ Q) = q := by simp
+theorem fun_id (q : Q) : rightHom (inl q : D ≀ᵣ Q) = q := by simp
 
 /-- The equivalence map for the representation as a product. -/
-def equivProd D Q: D ≀ᵣ Q ≃ (Q → D) × Q where
+def equivProd D Q : D ≀ᵣ Q ≃ (Q → D) × Q where
   toFun := fun ⟨d, q⟩ => ⟨d, q⟩
   invFun := fun ⟨d, q⟩ => ⟨d, q⟩
   left_inv := fun _ => rfl
   right_inv := fun _ => rfl
 
 omit [Group D] [Group Q] in
-lemma equivProdInj: Function.Injective (equivProd D Q).toFun := by
+lemma equivProdInj : Function.Injective (equivProd D Q).toFun := by
   intro a b; simp
 
 instance [Finite D] [Finite Q] : Finite (D ≀ᵣ Q) := by
@@ -127,7 +127,7 @@ instance [Finite D] [Finite Q] : Finite (D ≀ᵣ Q) := by
 
 omit [Group D] [Group Q] in
 theorem card [Finite Q] :
- Nat.card (D ≀ᵣ Q) = (Nat.card D^Nat.card Q) * Nat.card Q := by
+   Nat.card (D ≀ᵣ Q) = (Nat.card D^Nat.card Q) * Nat.card Q := by
   rw [Nat.card_congr (equivProd D Q)]
   rw [Nat.card_prod (Q → D) Q]
   rw [Nat.card_fun]
@@ -135,18 +135,18 @@ theorem card [Finite Q] :
 /-- Define an isomorphism from `D₁ ≀ᵣ Q₁` to `D₂ ≀ᵣ Q₂`
 given isomorphisms `D₁ ≀ᵣ Q₁` and `Q₁ ≃* Q₂`. -/
 def congr {D₁ Q₁ D₂ Q₂ : Type*} [Group D₁] [Group Q₁] [Group D₂] [Group Q₂]
-(f : D₁ ≃* D₂) (g : Q₁ ≃* Q₂):
-  D₁ ≀ᵣ Q₁ ≃* D₂ ≀ᵣ Q₂ where
-    toFun x := ⟨f ∘ (x.left ∘ g.symm), g x.right⟩
-    invFun x := ⟨(f.symm ∘ x.left) ∘ g, g.symm x.right⟩
-    left_inv x := by ext <;> simp
-    right_inv x := by ext <;> simp
-    map_mul' x y := by ext <;> simp
+    (f : D₁ ≃* D₂) (g : Q₁ ≃* Q₂) :
+    D₁ ≀ᵣ Q₁ ≃* D₂ ≀ᵣ Q₂ where
+      toFun x := ⟨f ∘ (x.left ∘ g.symm), g x.right⟩
+      invFun x := ⟨(f.symm ∘ x.left) ∘ g, g.symm x.right⟩
+      left_inv x := by ext <;> simp
+      right_inv x := by ext <;> simp
+      map_mul' x y := by ext <;> simp
 
 section perm
 
-variable (D: Type*) [Group D]
-variable (Q: Type*) [Group Q] [Nonempty Q]
+variable (D : Type*) [Group D]
+variable (Q : Type*) [Group Q] [Nonempty Q]
 variable (Λ : Type*) [Nonempty Λ] [MulAction D Λ]
 
 instance instSMulRWP : SMul (D ≀ᵣ Q) (Λ × Q) where
@@ -154,10 +154,10 @@ instance instSMulRWP : SMul (D ≀ᵣ Q) (Λ × Q) where
 
 omit [Nonempty Λ] [Nonempty Q] in
 @[simp]
-lemma rsmul {w: D ≀ᵣ Q} {p : Λ × Q}:
- w • p = ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩ := rfl
+lemma rsmul {w : D ≀ᵣ Q} {p : Λ × Q} :
+    w • p = ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩ := rfl
 
-instance instMulActionRWP: MulAction (D ≀ᵣ Q) (Λ × Q) where
+instance instMulActionRWP : MulAction (D ≀ᵣ Q) (Λ × Q) where
   one_smul := by simp;
   mul_smul := by simp; intro x y a b; constructor
                  · rw [smul_smul]; group
@@ -165,7 +165,7 @@ instance instMulActionRWP: MulAction (D ≀ᵣ Q) (Λ × Q) where
 
 
 variable [FaithfulSMul D Λ]
-instance instFaithfulSMulRWP: FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
+instance instFaithfulSMulRWP : FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
   eq_of_smul_eq_smul := by
     simp; intro m₁ m₂ h;
     let ⟨a⟩ := ‹Nonempty Λ›
@@ -181,9 +181,9 @@ instance instFaithfulSMulRWP: FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
 /-- The map sending the wreath product `D ≀ᵣ Q` to its representation as a permutation of `Λ × Q`
 given `D`-set `Λ`. -/
 def toPerm : D ≀ᵣ Q →* Equiv.Perm (Λ × Q) :=
-    MulAction.toPermHom (D ≀ᵣ Q) (Λ × Q)
+  MulAction.toPermHom (D ≀ᵣ Q) (Λ × Q)
 
-theorem toPermInj:
+theorem toPermInj :
   Function.Injective (toPerm D Q Λ) := MulAction.toPerm_injective
 
 end perm
@@ -194,22 +194,22 @@ end RegularWreathProduct
 section iterated
 
 /-- The wreath product of group `G` iterated `n` times. -/
-def IteratedWreathProduct (G: Type) : (n:ℕ) → Type
+def IteratedWreathProduct (G : Type) : (n : ℕ) → Type
 | Nat.zero => PUnit
 | Nat.succ n => (IteratedWreathProduct G n) ≀ᵣ G
 
 @[simp]
 lemma IteratedWreathProduct_zero (G : Type) :
-  IteratedWreathProduct G 0 = PUnit := rfl
+    IteratedWreathProduct G 0 = PUnit := rfl
 
 @[simp]
 lemma IteratedWreathProduct_succ (G : Type)(n : ℕ) :
-  IteratedWreathProduct G (n+1) = (IteratedWreathProduct G n) ≀ᵣ G := rfl
+    IteratedWreathProduct G (n+1) = (IteratedWreathProduct G n) ≀ᵣ G := rfl
 
-variable (G: Type) [inst : Group G]
-variable (n: ℕ)
+variable (G : Type) [inst : Group G]
+variable (n : ℕ)
 
-instance: Group (IteratedWreathProduct G n) := by
+instance : Group (IteratedWreathProduct G n) := by
  induction n with
  | zero => rw [IteratedWreathProduct_zero]; exact CommGroup.toGroup
  | succ n ih => rw [IteratedWreathProduct_succ]; exact RegularWreathProduct.instGroup
@@ -219,20 +219,20 @@ instance [Finite G] : Finite (IteratedWreathProduct G n) := by
   | zero => rw [IteratedWreathProduct_zero]; exact Finite.of_subsingleton
   | succ n h => rw [IteratedWreathProduct_succ]; exact RegularWreathProduct.instFinite
 
-lemma elem_P0 (p : ℕ) (P : Sylow p (Equiv.Perm (Fin (1)))) (x:P):
-  x = 1 := Subsingleton.eq_one x
+lemma elem_P0 (p : ℕ) (P : Sylow p (Equiv.Perm (Fin (1)))) (x : P):
+    x = 1 := Subsingleton.eq_one x
 
 theorem iter_wreath_card {p n : ℕ}
-  (G : Type) [Finite G] (h : Nat.card G = p) :
-  Nat.card (IteratedWreathProduct G n) = p ^ (∑ i ∈ Finset.range n, p ^ i) := by
+    (G : Type) [Finite G] (h : Nat.card G = p) :
+    Nat.card (IteratedWreathProduct G n) = p ^ (∑ i ∈ Finset.range n, p ^ i) := by
   induction n with
   | zero => simp
   | succ n h_n =>
     rw [geom_sum_succ, IteratedWreathProduct_succ]
     rw [RegularWreathProduct.card, h_n, h]; group
 
-lemma mu_eq {p n :ℕ} [Fact (Nat.Prime p)]:
-(p ^ n).factorial.factorization p = ∑ i ∈ Finset.range n, p ^ i := by
+lemma mu_eq {p n : ℕ} [Fact (Nat.Prime p)] :
+    (p ^ n).factorial.factorization p = ∑ i ∈ Finset.range n, p ^ i := by
   induction n with
   | zero => simp
   | succ n h =>
@@ -359,42 +359,42 @@ lemma aux_injective {A B : Type} (h : A ≃ B) : Function.Injective (aux h) := b
 
 /-- An auxilliary function -/
 noncomputable def f {p n : ℕ} (D : Sylow p (Equiv.Perm (Fin (p^n))))
-  (G : Type) [Finite G] [Group G] (h: Nat.card G = p):
+    (G : Type) [Finite G] [Group G] (h : Nat.card G = p) :
     D ≀ᵣ G →* Equiv.Perm (Fin (p^(n+1))) :=
-     (aux ((Equiv.prodCongrRight fun _ => (Finite.equivFinOfCardEq h)).trans finProdFinEquiv)).comp
-      (RegularWreathProduct.toPerm D G (Fin (p^n)))
+  (aux ((Equiv.prodCongrRight fun _ => (Finite.equivFinOfCardEq h)).trans finProdFinEquiv)).comp
+  (RegularWreathProduct.toPerm D G (Fin (p^n)))
 
 
 lemma f_injective {p n : ℕ} [Fact (Nat.Prime p)] (D : Sylow p (Equiv.Perm (Fin (p^n))))
-  (G : Type) [Finite G] [Group G] (h: Nat.card G = p):
+    (G : Type) [Finite G] [Group G] (h : Nat.card G = p) :
     Function.Injective (f D G h) := by
-      have : Function.Injective (RegularWreathProduct.toPerm D G (Fin (p^n))) :=
-        RegularWreathProduct.toPermInj D G (Fin (p^n))
-      exact (fun a b => Function.Injective.comp a b)
-        (aux_injective (((Equiv.prodCongrRight fun _ =>
-        (Finite.equivFinOfCardEq h)).trans finProdFinEquiv))) this
+  have : Function.Injective (RegularWreathProduct.toPerm D G (Fin (p^n))) :=
+    RegularWreathProduct.toPermInj D G (Fin (p^n))
+  exact (fun a b => Function.Injective.comp a b)
+    (aux_injective (((Equiv.prodCongrRight fun _ =>
+    (Finite.equivFinOfCardEq h)).trans finProdFinEquiv))) this
 
 /-- The Sylow p-subgroups of S_{p^n} are isomorphic to the iterated wreathproduct -/
 noncomputable def sylowIsIteratedWreathProduct (p n : ℕ) [Fact (Nat.Prime p)]
-  (Z_p : Type) [Group Z_p] [Finite Z_p] (h: Nat.card Z_p = p)
-  (P : Sylow p (Equiv.Perm (Fin (p^n)))) :
-  P ≃* (IteratedWreathProduct Z_p n) := by
-    induction n with
-    | zero => exact {
-        toFun := 1
-        invFun := 1
-        left_inv x := by rw [Pi.one_apply, elem_P0 p P x]
-        right_inv x:= by rw [Pi.one_apply]; rfl
-        map_mul' := by simp}
-    | succ n h_n =>
-        let P' : Sylow p (Equiv.Perm (Fin (p ^ n))) := Inhabited.default
-        have g: (IteratedWreathProduct Z_p (n+1)) ≃* MonoidHom.range (f P' Z_p h) :=
-          (RegularWreathProduct.congr (h_n P').symm (MulEquiv.refl Z_p)).trans
-          (MonoidHom.ofInjective (f_injective P' Z_p h))
-        have sylow_card: Nat.card (MonoidHom.range (f P' Z_p h)) =
-        p ^ (Nat.card (Equiv.Perm (Fin (p^(n+1))))).factorization p := by
-          rw [Nat.card_congr (g.symm).toEquiv, iter_wreath_card Z_p h, Nat.card_eq_fintype_card]
-          rw [Fintype.card_perm,Fintype.card_fin,mu_eq]
-        exact (P.equiv (Sylow.ofCard (MonoidHom.range (f P' Z_p h)) sylow_card)).trans (id g.symm)
+    (Z_p : Type) [Group Z_p] [Finite Z_p] (h : Nat.card Z_p = p)
+    (P : Sylow p (Equiv.Perm (Fin (p^n)))) :
+    P ≃* (IteratedWreathProduct Z_p n) := by
+  induction n with
+  | zero => exact {
+      toFun := 1
+      invFun := 1
+      left_inv x := by rw [Pi.one_apply, elem_P0 p P x]
+      right_inv x:= by rw [Pi.one_apply]; rfl
+      map_mul' := by simp}
+  | succ n h_n =>
+      let P' : Sylow p (Equiv.Perm (Fin (p ^ n))) := Inhabited.default
+      have g : (IteratedWreathProduct Z_p (n+1)) ≃* MonoidHom.range (f P' Z_p h) :=
+        (RegularWreathProduct.congr (h_n P').symm (MulEquiv.refl Z_p)).trans
+        (MonoidHom.ofInjective (f_injective P' Z_p h))
+      have sylow_card : Nat.card (MonoidHom.range (f P' Z_p h)) =
+      p ^ (Nat.card (Equiv.Perm (Fin (p^(n+1))))).factorization p := by
+        rw [Nat.card_congr (g.symm).toEquiv, iter_wreath_card Z_p h, Nat.card_eq_fintype_card]
+        rw [Fintype.card_perm,Fintype.card_fin,mu_eq]
+      exact (P.equiv (Sylow.ofCard (MonoidHom.range (f P' Z_p h)) sylow_card)).trans (id g.symm)
 
 end iterated
