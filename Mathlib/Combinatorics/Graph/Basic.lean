@@ -56,9 +56,7 @@ the vertex or edge set. This is an issue, but is likely amenable to automation.
 
 Reflecting written mathematics, we use the compact notations `V(G)` and `E(G)` to
 refer to the `vertexSet` and `edgeSet` of `G : Graph α β`.
-If `G.IsLink e x y` is true, then we refer to `e` as `edge` and `x` and `y` as `vertex_left`
-and `vertex_right` in names.
-
+If `G.IsLink e x y` then we refer to `e` as `edge` and `x` and `y` as `left` and `right` in names.
 -/
 
 variable {α β : Type*} {x y z u v w : α} {e f : β}
@@ -122,11 +120,11 @@ lemma edgeSet_eq_setOf_exists_isLink : E(G) = {e | ∃ x y, G.IsLink e x y} :=
 lemma IsLink.left_eq_or_eq_of_isLink (h : G.IsLink e x y) (h' : G.IsLink e z w) : x = z ∨ x = w :=
   G.eq_or_eq_of_isLink_of_isLink h h'
 
-lemma IsLink.left_eq_of_isLink_of_ne (h : G.IsLink e x y) (h' : G.IsLink e z w)
-    (hzx : x ≠ z) : x = w :=
+lemma IsLink.left_eq_of_isLink_of_ne (h : G.IsLink e x y) (h' : G.IsLink e z w) (hzx : x ≠ z) :
+    x = w :=
   (h.left_eq_or_eq_of_isLink h').elim (False.elim ∘ hzx) id
 
-lemma IsLink.eq_of_isLink (h : G.IsLink e x y) (h' : G.IsLink e x z) : y = z := by
+lemma IsLink.right_eq_of_isLink (h : G.IsLink e x y) (h' : G.IsLink e x z) : y = z := by
   obtain rfl | rfl := h.symm.left_eq_or_eq_of_isLink h'.symm
   · rfl
   obtain rfl | rfl := h'.symm.left_eq_or_eq_of_isLink h.symm <;> rfl
@@ -230,7 +228,8 @@ lemma IsLoopAt.vertex_mem (h : G.IsLoopAt e x) : x ∈ V(G) :=
   h.inc.vertex_mem
 
 /-- `G.IsNonloopAt e x` means that `e` is an edge from `x` to some `y ≠ x`,
-or equivalently that `e` is incident with `x` but not a loop at `x`. -/
+or equivalently that `e` is incident with `x` but not a loop at `x` -
+see `Graph.isNonloopAt_iff_inc_not_isLoopAt`. -/
 def IsNonloopAt (G : Graph α β) (e : β) (x : α) : Prop := ∃ y ≠ x, G.IsLink e x y
 
 lemma IsNonloopAt.inc (h : G.IsNonloopAt e x) : G.Inc e x :=
@@ -273,12 +272,12 @@ lemma adj_comm : G.Adj x y ↔ G.Adj y x :=
   ⟨Adj.symm, Adj.symm⟩
 
 @[simp]
-lemma Adj.mem_left (h : G.Adj x y) : x ∈ V(G) :=
+lemma Adj.left_mem (h : G.Adj x y) : x ∈ V(G) :=
   h.choose_spec.left_mem
 
 @[simp]
-lemma Adj.mem_right (h : G.Adj x y) : y ∈ V(G) :=
-  h.symm.mem_left
+lemma Adj.right_mem (h : G.Adj x y) : y ∈ V(G) :=
+  h.symm.left_mem
 
 lemma IsLink.adj (h : G.IsLink e x y) : G.Adj x y :=
   ⟨e, h⟩
@@ -286,7 +285,7 @@ lemma IsLink.adj (h : G.IsLink e x y) : G.Adj x y :=
 /-! ### Extensionality -/
 
 /-- A constructor for `Graph` in which the edge set is inferred from the incidence predicate
-rather than supplied explicitly. -/
+rather than being supplied explicitly. -/
 @[simps]
 protected def mk' (vertexSet : Set α) (IsLink : β → α → α → Prop)
     (isLink_symm : ∀ ⦃e x y⦄, IsLink e x y → IsLink e y x)
