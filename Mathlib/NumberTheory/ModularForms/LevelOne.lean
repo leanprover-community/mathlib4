@@ -31,7 +31,7 @@ lemma exists_one_half_le_im_and_norm_le (hk : k ≤ 0) (f : F) (τ : ℍ) :
   let ⟨γ, hγ, hdenom⟩ := exists_one_half_le_im_smul_and_norm_denom_le τ
   ⟨γ • τ, hγ, by simpa only [slash_action_eqn'' _ (mem_Gamma_one γ),
     norm_mul, norm_zpow] using le_mul_of_one_le_left (norm_nonneg _) <|
-      one_le_zpow_of_nonpos₀ (norm_pos_iff.2 (denom_ne_zero _ τ.im_ne_zero)) hdenom hk⟩
+      one_le_zpow_of_nonpos₀ (norm_pos_iff.2 (denom_ne_zero _ τ)) hdenom hk⟩
 
 variable (k) in
 /-- If a constant function is modular of weight `k`, then either `k = 0`, or the constant is `0`. -/

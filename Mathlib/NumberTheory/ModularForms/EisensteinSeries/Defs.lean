@@ -97,7 +97,7 @@ theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z
       (c * z + d) ^ k * ((u * a + v * c) * z + (u * b + v * d)) ^ (-k) := by
     field_simp [hc]
     ring_nf
-  simpa using h (hc := denom_ne_zero A z.im_ne_zero) ..
+  simpa using h (hc := denom_ne_zero A z) ..
 
 end eisSummand
 
@@ -110,7 +110,7 @@ lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
     eisensteinSeries a k ∣[k] γ = eisensteinSeries (a ᵥ* γ) k := by
   ext1 z
   simp_rw [SL_slash_apply, zpow_neg,
-    mul_inv_eq_iff_eq_mul₀ (zpow_ne_zero _ <| denom_ne_zero _ z.im_ne_zero),
+    mul_inv_eq_iff_eq_mul₀ (zpow_ne_zero _ <| denom_ne_zero _ z),
     eisensteinSeries, eisSummand_SL2_apply, tsum_mul_left, mul_comm (_ ^ k)]
   congr 1
   exact (gammaSetEquiv a γ).tsum_eq (eisSummand k · z)

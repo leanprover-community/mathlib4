@@ -22,13 +22,28 @@ open scoped MatrixGroups ComplexConjugate
 
 namespace UpperHalfPlane
 
+/-- The coercion first into an element of  `GL(2, ℝ)⁺`, then  `GL(2, ℝ)` and finally a 2 × 2
+matrix.
+
+This notation is scoped in namespace `UpperHalfPlane`. -/
+scoped notation:1024 "↑ₘ" A:1024 =>
+  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
+
+instance instCoeFun : CoeFun GL(2, ℝ)⁺ fun _ => Fin 2 → Fin 2 → ℝ where coe A := ↑ₘA
+
+/-- The coercion into an element of  `GL(2, R)` and finally a 2 × 2 matrix over `R`. This is
+similar to `↑ₘ`, but without positivity requirements, and allows the user to specify the ring `R`,
+which can be useful to help Lean elaborate correctly.
+
+This notation is scoped in namespace `UpperHalfPlane`. -/
+scoped notation:1024 "↑ₘ[" R "]" A:1024 =>
+  ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
+
 /-- Numerator of the formula for a fractional linear transformation -/
 def num (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := g 0 0 * z + g 0 1
 
 /-- Denominator of the formula for a fractional linear transformation -/
 def denom (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := g 1 0 * z + g 1 1
-
-lemma denom_one (z : ℂ) : denom 1 z = 1 := by simp [denom]
 
 theorem linear_ne_zero {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h : cd ≠ 0) :
     (cd 0 : ℂ) * z + cd 1 ≠ 0 := by
@@ -42,13 +57,16 @@ theorem linear_ne_zero {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h : cd 
   ext i
   fin_cases i <;> assumption
 
-theorem denom_ne_zero (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) : denom g z ≠ 0 := by
+theorem denom_ne_zero_of_im (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) : denom g z ≠ 0 := by
   refine linear_ne_zero hz fun H ↦ g.det.ne_zero ?_
   simp [Matrix.det_fin_two, H]
 
+theorem denom_ne_zero (g : GL (Fin 2) ℝ) (z : ℍ) : denom g z ≠ 0 :=
+  denom_ne_zero_of_im g z.im_ne_zero
+
 theorem normSq_denom_pos (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     0 < Complex.normSq (denom g z) :=
-  Complex.normSq_pos.mpr (denom_ne_zero g hz)
+  Complex.normSq_pos.mpr (denom_ne_zero_of_im g hz)
 
 theorem normSq_denom_ne_zero (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     Complex.normSq (denom g z) ≠ 0 :=
@@ -57,7 +75,7 @@ theorem normSq_denom_ne_zero (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
 lemma denom_cocycle (x y : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     denom (x * y) z = denom x (num y z / denom y z) * denom y z := by
   change _ = (_ * (_ / _) + _) * _
-  field_simp [denom_ne_zero y hz]
+  field_simp [denom_ne_zero_of_im y hz]
   simp only [denom, Units.val_mul, mul_apply, Fin.sum_univ_succ, Finset.univ_unique,
     Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one, Complex.ofReal_add,
     Complex.ofReal_mul, num]
@@ -128,7 +146,7 @@ private lemma denom_cocycle' (x y : GL (Fin 2) ℝ) (z : ℍ) :
     denom (x * y) z = σ y (denom x (smulAux y z)) * denom y z := by
   simp only [smulAux, smulAux₁, coe_mk, map_div₀, σ_num, σ_denom, σ_sq]
   change _ = (_ * (_ / _) + _) * _
-  field_simp [denom_ne_zero y z.im_ne_zero]
+  field_simp [denom_ne_zero y z]
   simp only [denom, Units.val_mul, mul_apply, Fin.sum_univ_succ, Finset.univ_unique,
     Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one, Complex.ofReal_add,
     Complex.ofReal_mul, num]
@@ -143,10 +161,10 @@ private theorem mul_smul' (x y : GL (Fin 2) ℝ) (z : ℍ) :
   have hu' : (num y u / denom y u).im ≠ 0 := by
     rw [moebius_im]
     exact div_ne_zero (mul_ne_zero (Units.ne_zero _) hu) (normSq_denom_ne_zero _ hu)
-  rw [div_eq_div_iff (denom_ne_zero _ hu) (denom_ne_zero _ hu'),
-    denom, mul_div, div_add' _ _ _  (denom_ne_zero _ hu), mul_div]
+  rw [div_eq_div_iff (denom_ne_zero_of_im _ hu) (denom_ne_zero_of_im _ hu'),
+    denom, mul_div, div_add' _ _ _  (denom_ne_zero_of_im _ hu), mul_div]
   conv_rhs => rw [num]
-  rw [mul_div, div_add' _ _ _  (denom_ne_zero _ hu), div_mul_eq_mul_div]
+  rw [mul_div, div_add' _ _ _  (denom_ne_zero_of_im _ hu), div_mul_eq_mul_div]
   congr 1
   simp only [num, denom, Units.val_mul, mul_apply, Fin.sum_univ_succ,
     Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one,
@@ -196,6 +214,9 @@ theorem neg_smul : -g • z = g • z := by
   simp [coe_smul, (show num (-g) z = -(num g z) by simp [num]; ring),
     (show denom (-g) z = -(denom g z) by simp [denom]; ring),
     (show σ (-g) = σ g by unfold σ; simp [det_neg])]
+
+lemma denom_one : denom 1 z = 1 := by
+  simp [denom]
 
 section SLAction
 
@@ -248,7 +269,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
     ∃ (u : { x : ℝ // 0 < x }) (v w : ℝ),
       (g • · : ℍ → ℍ) =
         (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
-  have h_denom (z : ℍ) := denom_ne_zero g z.im_ne_zero
+  have h_denom (z : ℍ) := denom_ne_zero g z
   induction g using Matrix.SpecialLinearGroup.fin_two_induction with | _ a b c d h => ?_
   replace hc : c ≠ 0 := by simpa using hc
   refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩

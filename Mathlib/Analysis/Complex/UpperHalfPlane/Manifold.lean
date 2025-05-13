@@ -82,7 +82,7 @@ lemma mdifferentiable_iff {f : ℍ → ℂ} :
       <| (Complex.continuous_im.isOpen_preimage _ isOpen_Ioi).mem_nhds hz⟩
 
 lemma contMDiff_num (g : GL (Fin 2) ℝ) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ num g τ) :=
-  (contMDiff_const.mul contMDiff_coe).add contMDiff_const
+  (contMDiff_const.smul contMDiff_coe).add contMDiff_const
 
 lemma contMDiff_denom (g : GL (Fin 2) ℝ) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ denom g τ) :=
   (contMDiff_const.smul contMDiff_coe).add contMDiff_const
@@ -90,7 +90,7 @@ lemma contMDiff_denom (g : GL (Fin 2) ℝ) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fu
 lemma contMDiff_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) :
     ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (denom g · ^ k : ℍ → ℂ) := fun τ ↦ by
   have : AnalyticAt ℂ (· ^ k) (denom g τ) := (differentiableOn_zpow k _ (by tauto)).analyticOnNhd
-    isOpen_compl_singleton _ (denom_ne_zero g τ.im_ne_zero)
+    isOpen_compl_singleton _ (denom_ne_zero g τ)
   exact this.contDiffAt.contMDiffAt.comp τ (contMDiff_denom g τ)
 
 lemma contMDiff_inv_denom (g : GL (Fin 2) ℝ) :

@@ -158,13 +158,13 @@ theorem slash_action_eq'_iff (k : ℤ) (f : ℍ → ℂ) (γ : SL(2, ℤ)) (z : 
   convert inv_mul_eq_iff_eq_mul₀ (G₀ := ℂ) _ using 2
   · simp only [mul_comm (f _), denom, zpow_neg, ofReal_one, one_zpow, mul_one]
     rfl
-  · exact zpow_ne_zero k (denom_ne_zero γ z.im_ne_zero)
+  · exact zpow_ne_zero k (denom_ne_zero γ z)
 
 theorem mul_slash (k1 k2 : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = (A.det : ℝ) • (f ∣[k1] A * g ∣[k2] A) := by
   ext1 x
   simp only [slash_apply, Pi.mul_apply, Pi.smul_apply, real_smul, map_mul, neg_add,
-    zpow_add₀ (denom_ne_zero _ x.im_ne_zero)]
+    zpow_add₀ (denom_ne_zero _ x)]
   set d := (A.det.val : ℂ)
   have h1 : d ^ (k1 + k2 - 1) = d * d ^ (k1 - 1) * d ^ (k2 - 1) := by
     have : d ≠ 0 := ofReal_ne_zero.mpr (Units.ne_zero _)
