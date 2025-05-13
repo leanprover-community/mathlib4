@@ -232,117 +232,15 @@ theorem iter_wreath_card {p n : ℕ}
     rw [geom_sum_succ, IteratedWreathProduct_succ]
     rw [RegularWreathProduct.card, h_n, h]; group
 
-lemma mu_eq {p n : ℕ} [Fact (Nat.Prime p)] :
+lemma mu_eq {p n : ℕ} [hp : Fact (Nat.Prime p)] :
     (p ^ n).factorial.factorization p = ∑ i ∈ Finset.range n, p ^ i := by
+  rw [← Nat.multiplicity_eq_factorization hp.out (p ^ n).factorial_ne_zero, ← ENat.coe_inj,
+    ← (Nat.finiteMultiplicity_iff.2
+      ⟨hp.out.ne_one, (p ^ n).factorial_pos⟩).emultiplicity_eq_multiplicity]
   induction n with
-  | zero => simp
+  | zero => simp [hp.out.emultiplicity_one]
   | succ n h =>
-    rw [Finset.sum_range_succ, ← h]
-    let S : Finset ℕ := { k ∈ Finset.range (p^(n+1)) | p ∣ (k+1)}
-    have h_disjoint : Disjoint S (Finset.range (p ^ (n + 1)) \ S) := Finset.disjoint_sdiff
-    have h_decomp : (p^(n+1)).factorial =
-      (∏ k ∈ S, (k+1)) * (∏ k ∈ (Finset.range (p^(n+1)) \ S), (k+1)) := by
-      rw [← Finset.prod_union h_disjoint]
-      rw [Finset.union_sdiff_of_subset (Finset.filter_subset (fun k ↦ p ∣ k + 1)
-        (Finset.range (p ^ (n + 1))))]
-      rw [Finset.prod_range_add_one_eq_factorial]
-    have h_compl : (∏ k ∈ (Finset.range (p^(n+1)) \ S), (k+1)).factorization p = 0 := by
-        rw [Nat.factorization_prod (fun x => (fun _ => Ne.symm (Nat.zero_ne_add_one x)))]
-        rw [Finsupp.finset_sum_apply (Finset.range (p ^ (n + 1)) \ S)
-          (fun i ↦ (i + 1).factorization) p ]
-        apply Finset.sum_eq_zero
-        intro x hx
-        apply Nat.factorization_eq_zero_of_not_dvd
-        apply Finset.mem_sdiff.mp at hx
-        have h1 := hx.left; have h2 := hx.right
-        have hhh : ¬ (x ∈ { k ∈ Finset.range (p^(n+1)) | p ∣ (k+1)}) ↔
-          ¬ (x ∈ Finset.range (p^(n+1)) ∧ (p ∣ (x+1))) :=
-          not_congr Finset.mem_filter
-        apply hhh.mp at h2
-        simp at h2
-        simp at h1
-        exact h2 h1
-    have h1 : ∏ k ∈ S, (k + 1) ≠ 0 := by
-      apply Finset.prod_ne_zero_iff.mpr; intro x hx
-      exact Ne.symm (Nat.zero_ne_add_one x)
-    have h2 : ∏ k ∈ Finset.range (p ^ (n + 1)) \ S, (k + 1) ≠ 0 := by
-      apply Finset.prod_ne_zero_iff.mpr; intro x hx; exact Ne.symm (Nat.zero_ne_add_one x)
-    have aux : ((∏ k ∈ S, (k + 1)).factorization +
-      (∏ k ∈ Finset.range (p ^ (n + 1)) \ S, (k + 1)).factorization) p =
-      (∏ k ∈ S, (k + 1)).factorization p +
-      (∏ k ∈ Finset.range (p ^ (n + 1)) \ S, (k + 1)).factorization p := rfl
-    have res : ((p^(n+1)).factorial).factorization p = (∏ k ∈ S, (k + 1)).factorization p := by
-      rw [h_decomp, Nat.factorization_mul h1 h2, aux, h_compl, Nat.add_zero]
-    let f : ℕ → ℕ := fun m => p * (m + 1) - 1
-    have hf_mem : ∀ m ∈ Finset.range (p^n), f m ∈ S := by
-      intro m hm
-      apply List.mem_range.mp at hm
-      have f_bound : f m < p ^ (n + 1) := by
-        replace hm := Nat.sub_le_sub_right (Nat.mul_le_mul_left p (Nat.succ_le_of_lt hm)) 1
-        rw [Nat.pow_succ']
-        have : p * p ^ n - 1 < p * p ^ n := Nat.sub_one_lt (Ne.symm (NeZero.ne' (p * p ^ n)))
-        exact Nat.lt_of_le_of_lt hm this
-      have dvd : p ∣ (f m + 1) := by
-        rw [Nat.sub_add_cancel NeZero.one_le]
-        exact Nat.dvd_mul_right p (m + 1)
-      exact Finset.mem_filter.mpr ⟨Finset.mem_range.mpr f_bound, dvd⟩
-    have hf_inj' : ∀ m₁ m₂ : ℕ , f m₁ = f m₂ → m₁ = m₂ := by
-      intro m₁ m₂ h_eq
-      have aux1 : p * (m₁ + 1) = f m₁ + 1 := Eq.symm (Nat.sub_add_cancel NeZero.one_le)
-      have aux2 : p * (m₂ + 1) = f m₂ + 1 := Eq.symm (Nat.sub_add_cancel NeZero.one_le)
-      have : p * (m₁ + 1) = p * (m₂ + 1) := by
-        rw [aux1, aux2]
-        exact congrFun (congrArg HAdd.hAdd h_eq) 1
-      exact Nat.succ_inj.mp (Nat.eq_of_mul_eq_mul_left (Nat.pos_of_neZero p) this)
-    have hf_inj : Set.InjOn f ↑(Finset.range (p ^ n)) := fun ⦃x₁⦄ a ⦃x₂⦄ a ↦ hf_inj' x₁ x₂
-    have hf_surj : ∀ k ∈ S, ∃ m ∈ Finset.range (p^n), f m = k := by
-      intro k hk
-      apply Finset.mem_filter.mp at hk
-      obtain ⟨x,hx⟩ := exists_eq_mul_right_of_dvd hk.2
-      have : 0 < p * x := hx ▸ (Nat.zero_lt_succ k)
-      have aux : 0 < x := by exact Nat.lt_of_mul_lt_mul_left this
-      have x_bound : x - 1 < p^n := by
-        have hk1 := Nat.add_lt_add_right (List.mem_range.mp hk.1) 1
-        rw [hx, Nat.pow_succ'] at hk1
-        apply Nat.succ_le_of_lt at hk1
-        simp at hk1
-        apply le_of_nsmul_le_nsmul_right (NeZero.ne p) at hk1
-        apply Nat.sub_one_lt_of_le aux
-        exact hk1
-      have x_fun : f (x-1) = k := by
-        apply Nat.eq_sub_of_add_eq at hx
-        have : f (x - 1) = p * (x - 1 + 1) - 1 := rfl
-        rw [hx, this, Nat.sub_add_cancel aux]
-      use (x - 1); exact ⟨List.mem_range.mpr x_bound, x_fun⟩
-    have prod_reindex : ∏ m ∈ Finset.range (p^n), (p * (m + 1)) = ∏ k ∈ S, (k + 1) := by
-      apply (Finset.prod_nbij f hf_mem hf_inj hf_surj)
-      intro a ha
-      apply (Nat.sub_eq_iff_eq_add NeZero.one_le ).mp; rfl
-    rw [← prod_reindex] at res
-    have h_prod : (∏ m ∈ Finset.range (p^n), (p * (m + 1))).factorization p =
-      ∑ m ∈ Finset.range (p^n), (p * (m + 1)).factorization p := by
-      rw [Nat.factorization_prod (fun x => (fun _ => Nat.mul_ne_zero ((NeZero.ne' p).symm)
-        (Nat.zero_ne_add_one x).symm))]
-      simp
-    rw [h_prod] at res
-    have h_each : ∀ m ∈ Finset.range (p^n), (p*(m+1)).factorization p =
-      1 + (m+1).factorization p := by
-      intro m hm
-      have aux : (p.factorization + (m + 1).factorization) p =
-        p.factorization p + (m + 1).factorization p := rfl
-      rw [Nat.factorization_mul ((NeZero.ne' p).symm) (Ne.symm (Nat.zero_ne_add_one m))]
-      rw [aux, Nat.Prime.factorization_self (Fact.out)]
-    rw [Finset.sum_congr rfl h_each] at res
-    rw [Finset.sum_add_distrib,Finset.sum_const, Finset.card_range] at res
-    have h_back : ∑ x ∈ Finset.range (p ^ n), (x + 1).factorization p =
-      (p ^ n).factorial.factorization p := by
-      have aux : ∑ x ∈ Finset.range (p ^ n), (x + 1).factorization p =
-        (∑ x ∈ Finset.range (p ^ n), (x + 1).factorization) p := by
-        simp
-      rw [← Finset.prod_range_add_one_eq_factorial]
-      rw [Nat.factorization_prod (fun x => (fun hx => (Nat.zero_ne_add_one x).symm)), aux]
-    rw [h_back] at res; simp at res; rw [Nat.add_comm (p ^ n) _] at res
-    exact res
+    rw [pow_succ', hp.out.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
 
 /-- An auxilliary function -/
 def aux {A B : Type} (h : A ≃ B) : Equiv.Perm A →* Equiv.Perm B :=
@@ -364,7 +262,6 @@ noncomputable def f {p n : ℕ} (D : Sylow p (Equiv.Perm (Fin (p^n))))
     D ≀ᵣ G →* Equiv.Perm (Fin (p^(n+1))) :=
   (aux ((Equiv.prodCongrRight fun _ => (Finite.equivFinOfCardEq h)).trans finProdFinEquiv)).comp
   (RegularWreathProduct.toPerm D G (Fin (p^n)))
-
 
 lemma f_injective {p n : ℕ} [Fact (Nat.Prime p)] (D : Sylow p (Equiv.Perm (Fin (p^n))))
     (G : Type) [Finite G] [Group G] (h : Nat.card G = p) :
