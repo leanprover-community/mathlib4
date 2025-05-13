@@ -5,7 +5,6 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.NumberTheory.NumberField.Completion
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
-import Mathlib.Analysis.Normed.Field.WithAbs
 
 /-!
 # Dimensions of completions at infinite places
