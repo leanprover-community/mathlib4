@@ -460,7 +460,7 @@ set_option linter.deprecated false in
 @[simp]
 theorem bsup_eq_sup' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → Ordinal.{max u v}) :
     bsup.{_, v} _ (bfamilyOfFamily' r f) = sup.{_, v} f := by
-  simp (config := { unfoldPartialApp := true }) only [← sup_eq_bsup' r, enum_typein,
+  simp +unfoldPartialApp only [← sup_eq_bsup' r, enum_typein,
     familyOfBFamily', bfamilyOfFamily']
 
 theorem bsup_eq_bsup {ι : Type u} (r r' : ι → ι → Prop) [IsWellOrder ι r] [IsWellOrder ι r']
@@ -708,7 +708,7 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.toType) (· < �
     (by
       by_contra! h
       -- Porting note: `nth_rw` → `conv_rhs` & `rw`
-      conv_rhs at h => rw [← type_lt o]
+      conv_rhs at h => rw [← type_toType o]
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
 set_option linter.deprecated false in
@@ -945,169 +945,15 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
   ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
     funext fun a => by
       induction a using limitRecOn with
-      | H₁ => solve_by_elim
-      | H₂ => solve_by_elim
-      | H₃ _ ho H =>
+      | zero => solve_by_elim
+      | succ => solve_by_elim
+      | isLimit _ ho H =>
         rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
         congr
         ext b hb
         exact H b hb⟩
 
-/-- A two-argument version of `Ordinal.blsub`.
-
-Deprecated. If you need this value explicitly, write it in terms of `iSup`. If you just want an
-upper bound for the image of `op`, use that `Iio a ×ˢ Iio b` is a small set. -/
-@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
-def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) :
-    Ordinal :=
-  lsub (fun x : o₁.toType × o₂.toType => op (typein_lt_self x.1) (typein_lt_self x.2))
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
-theorem lt_blsub₂ {o₁ o₂ : Ordinal}
-    (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
-    (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
-  convert lt_lsub _ (Prod.mk (enum (· < ·) ⟨a, by rwa [type_lt]⟩)
-    (enum (· < ·) ⟨b, by rwa [type_lt]⟩))
-  simp only [typein_enum]
-
 end blsub
-
-section mex
-
-/-! ### Minimum excluded ordinals -/
-
-
-/-- The minimum excluded ordinal in a family of ordinals. -/
-@[deprecated "use sInf sᶜ instead" (since := "2024-09-20")]
-def mex {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
-  sInf (Set.range f)ᶜ
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem mex_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ∉ Set.range f :=
-  csInf_mem (nonempty_compl_range.{_, v} f)
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem le_mex_of_forall {ι : Type u} {f : ι → Ordinal.{max u v}} {a : Ordinal}
-    (H : ∀ b < a, ∃ i, f i = b) : a ≤ mex.{_, v} f := by
-  by_contra! h
-  exact mex_not_mem_range f (H _ h)
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem ne_mex {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≠ mex.{_, v} f := by
-  simpa using mex_not_mem_range.{_, v} f
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem mex_le_of_ne {ι} {f : ι → Ordinal} {a} (ha : ∀ i, f i ≠ a) : mex f ≤ a :=
-  csInf_le' (by simp [ha])
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem exists_of_lt_mex {ι} {f : ι → Ordinal} {a} (ha : a < mex f) : ∃ i, f i = a := by
-  by_contra! ha'
-  exact ha.not_le (mex_le_of_ne ha')
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem mex_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ≤ lsub.{_, v} f :=
-  csInf_le' (lsub_not_mem_range f)
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem mex_monotone {α β : Type u} {f : α → Ordinal.{max u v}} {g : β → Ordinal.{max u v}}
-    (h : Set.range f ⊆ Set.range g) : mex.{_, v} f ≤ mex.{_, v} g := by
-  refine mex_le_of_ne fun i hi => ?_
-  obtain ⟨j, hj⟩ := h ⟨i, rfl⟩
-  rw [← hj] at hi
-  exact ne_mex g j hi
-
-set_option linter.deprecated false in
-@[deprecated sInf_compl_lt_ord_succ (since := "2024-09-20")]
-theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
-    mex.{_, u} f < (succ #ι).ord := by
-  by_contra! h
-  apply (lt_succ #ι).not_le
-  have H := fun a => exists_of_lt_mex ((typein_lt_self a).trans_le h)
-  let g : (succ #ι).ord.toType → ι := fun a => Classical.choose (H a)
-  have hg : Injective g := fun a b h' => by
-    have Hf : ∀ x, f (g x) =
-        typein ((· < ·) : (succ #ι).ord.toType → (succ #ι).ord.toType → Prop) x :=
-      fun a => Classical.choose_spec (H a)
-    apply_fun f at h'
-    rwa [Hf, Hf, typein_inj] at h'
-  convert Cardinal.mk_le_of_injective hg
-  rw [Cardinal.mk_ord_toType (succ #ι)]
-
-set_option linter.deprecated false in
-/-- The minimum excluded ordinal of a family of ordinals indexed by the set of ordinals less than
-    some `o : Ordinal.{u}`. This is a special case of `mex` over the family provided by
-    `familyOfBFamily`.
-
-    This is to `mex` as `bsup` is to `sup`. -/
-@[deprecated "use sInf sᶜ instead" (since := "2024-09-20")]
-def bmex (o : Ordinal) (f : ∀ a < o, Ordinal) : Ordinal :=
-  mex (familyOfBFamily o f)
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem bmex_not_mem_brange {o : Ordinal} (f : ∀ a < o, Ordinal) : bmex o f ∉ brange o f := by
-  rw [← range_familyOfBFamily]
-  apply mex_not_mem_range
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem le_bmex_of_forall {o : Ordinal} (f : ∀ a < o, Ordinal) {a : Ordinal}
-    (H : ∀ b < a, ∃ i hi, f i hi = b) : a ≤ bmex o f := by
-  by_contra! h
-  exact bmex_not_mem_brange f (H _ h)
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem ne_bmex {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {i} (hi) :
-    f i hi ≠ bmex.{_, v} o f := by
-  convert (config := {transparency := .default})
-    ne_mex.{_, v} (familyOfBFamily o f) (enum (α := o.toType) (· < ·) ⟨i, by rwa [type_lt]⟩) using 2
-  -- Porting note: `familyOfBFamily_enum` → `typein_enum`
-  rw [typein_enum]
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem bmex_le_of_ne {o : Ordinal} {f : ∀ a < o, Ordinal} {a} (ha : ∀ i hi, f i hi ≠ a) :
-    bmex o f ≤ a :=
-  mex_le_of_ne fun _i => ha _ _
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem exists_of_lt_bmex {o : Ordinal} {f : ∀ a < o, Ordinal} {a} (ha : a < bmex o f) :
-    ∃ i hi, f i hi = a := by
-  obtain ⟨i, hi⟩ := exists_of_lt_mex ha
-  exact ⟨_, typein_lt_self i, hi⟩
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem bmex_le_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
-    bmex.{_, v} o f ≤ blsub.{_, v} o f :=
-  mex_le_lsub _
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem bmex_monotone {o o' : Ordinal.{u}}
-    {f : ∀ a < o, Ordinal.{max u v}} {g : ∀ a < o', Ordinal.{max u v}}
-    (h : brange o f ⊆ brange o' g) : bmex.{_, v} o f ≤ bmex.{_, v} o' g :=
-  mex_monotone (by rwa [range_familyOfBFamily, range_familyOfBFamily])
-
-set_option linter.deprecated false in
-@[deprecated sInf_compl_lt_ord_succ (since := "2024-09-20")]
-theorem bmex_lt_ord_succ_card {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{u}) :
-    bmex.{_, u} o f < (succ o.card).ord := by
-  rw [← mk_toType]
-  exact mex_lt_ord_succ_mk (familyOfBFamily o f)
-
-end mex
 
 end Ordinal
 
@@ -1159,9 +1005,6 @@ theorem iSup_natCast : iSup Nat.cast = ω :=
 
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
-
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias IsNormal.apply_omega := IsNormal.apply_omega0
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=

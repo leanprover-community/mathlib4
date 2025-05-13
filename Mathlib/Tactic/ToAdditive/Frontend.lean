@@ -14,6 +14,7 @@ import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Match.MatcherInfo
+import Lean.Meta.AbstractNestedProofs
 import Batteries.Lean.NameMapAttribute
 import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.elements
 import Batteries.Tactic.Trans
@@ -94,11 +95,10 @@ syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
 /-- A `reorder := ...` option for `to_additive`. -/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
-syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
-/-- Options to `to_additive`. -/
-syntax toAdditiveOption := toAdditiveParenthesizedOption <|> &"existing"
+syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
 /-- Remaining arguments of `to_additive`. -/
-syntax toAdditiveRest := (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
+syntax toAdditiveRest :=
+  (ppSpace &"existing")? (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
@@ -133,6 +133,9 @@ The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
 
+Use the `to_additive existing` syntax to use an existing additive declaration, instead of
+automatically generating it.
+
 Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
 This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
 arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
@@ -164,7 +167,9 @@ The transport process generally works by taking all the names of
 identifiers appearing in the name, type, and body of a declaration and
 creating a new declaration by mapping those names to additive versions
 using a simple string-based dictionary and also using all declarations
-that have previously been labeled with `to_additive`.
+that have previously been labeled with `to_additive`. The dictionary is `ToAdditive.nameDict`
+and can be found in the `Tactic.ToAdditive.Frontend` file. If you introduce a new name which
+should be translated by `to_additive` you should add the translation to this dictionary.
 
 In the `mul_comm'` example above, `to_additive` maps:
 * `mul_comm'` to `add_comm'`,
@@ -271,8 +276,7 @@ This will allow future uses of `to_additive` to recognize that
 
 Before transporting the “main” declaration `src`, `to_additive` first
 scans its type and value for names starting with `src`, and transports
-them. This includes auxiliary definitions like `src._match_1`,
-`src._proof_1`.
+them. This includes auxiliary definitions like `src._match_1`
 
 In addition to transporting the “main” declaration, `to_additive` transports
 its equational lemmas and tags them as equational lemmas for the new declaration.
@@ -321,9 +325,9 @@ macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 * In this case, the second list should be prefix-free
   (no element can be a prefix of a later element)
 
-Todo: automate the translation from `String` to an element in this `RBMap`
+Todo: automate the translation from `String` to an element in this `TreeMap`
   (but this would require having something similar to the `rb_lmap` from Lean 3). -/
-def endCapitalNames : Lean.RBMap String (List String) compare :=
+def endCapitalNames : TreeMap String (List String) compare :=
   -- todo: we want something like
   -- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
   .ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
@@ -350,7 +354,7 @@ partial def _root_.String.splitCase (s : String) (i₀ : Pos := 0) (r : List Str
   if s.get i₀ == '_' || s.get i₁ == '_' then
     return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
   if (s.get i₁).isUpper then
-    if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
+    if let some strs := endCapitalNames[s.extract 0 i₁]? then
       if let some (pref, newS) := strs.findSome?
         fun x : String ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
@@ -599,9 +603,9 @@ where /-- Implementation of `applyReplacementFun`. -/
           /- Test if the head should not be replaced. -/
           let relevantArgId := relevantArg nm
           let gfAdditive :=
-            if relevantArgId < gAllArgs.size && gf.isConst then
+            if h : relevantArgId < gAllArgs.size ∧ gf.isConst then
               if let some fxd :=
-                additiveTest env gAllArgs[relevantArgId]! then
+                additiveTest env gAllArgs[relevantArgId] then
                 Id.run <| do
                   if trace then
                     dbg_trace s!"The application of {nm} contains the fixed type \
@@ -680,17 +684,41 @@ def expand (e : Expr) : MetaM Expr := do
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
-  if reorder == [] then
+  if let some maxReorder := reorder.flatten.max? then
+    forallBoundedTelescope src (some (maxReorder + 1)) fun xs e => do
+      if xs.size = maxReorder + 1 then
+        mkForallFVars (xs.permute! reorder) e
+      else
+        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
+          large, the type{indentExpr src}\nhas only {xs.size} arguments"
+        return src
+  else
     return src
-  forallTelescope src fun xs e => do
-    mkForallFVars (xs.permute! reorder) e
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
-  if reorder == [] then
+  if let some maxReorder := reorder.flatten.max? then
+    lambdaBoundedTelescope src (maxReorder + 1) fun xs e => do
+      if xs.size = maxReorder + 1 then
+        mkLambdaFVars (xs.permute! reorder) e
+      else
+        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
+          large, the type{indentExpr src}\nhas only {xs.size} arguments"
+        return src
+  else
     return src
-  lambdaTelescope src fun xs e => do
-    mkLambdaFVars (xs.permute! reorder) e
+
+/-- Unfold auxlemmas in the type and value. -/
+def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
+  let mut decl := decl
+  decl := decl.updateType <| ← unfoldAuxLemmas decl.type
+  if let some v := decl.value? then
+    trace[to_additive] "value before unfold:{indentExpr v}"
+    decl := decl.updateValue <| ← unfoldAuxLemmas v
+    trace[to_additive] "value after unfold:{indentExpr decl.value!}"
+  else if let .opaqueInfo info := decl then -- not covered by `value?`
+    decl := .opaqueInfo { info with value := ← unfoldAuxLemmas info.value }
+  return decl
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
 def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
@@ -698,16 +726,20 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) 
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <| ← expand
-    <| ← unfoldAuxLemmas decl.type
+  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <| ← expand decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda reorder <| ← expand
-      <| ← unfoldAuxLemmas v
+    decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda reorder <| ← expand v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand
-        <| ← unfoldAuxLemmas info.value }
+      value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand info.value }
   return decl
+
+/-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
+def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
+  if decl matches .defnInfo _ then
+    return decl.updateValue <| ← Meta.abstractNestedProofs decl.name decl.value!
+  else
+    return decl
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=
@@ -733,7 +765,10 @@ Examples include `pre.match_5` and
 `_private.Mathlib.MyFile.someOtherNamespace.someOtherDeclaration._eq_2`.
 The last two examples may or may not have been generated by this declaration.
 The last example may or may not be the equation lemma of a declaration with the `@[to_additive]`
-attribute. We will only translate it has the `@[to_additive]` attribute.
+attribute. We will only translate it if it has the `@[to_additive]` attribute.
+
+Note that this function would return `proof_nnn` aux lemmas if
+we hadn't unfolded them in `declUnfoldAuxLemmas`.
 -/
 def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
   e.foldConsts ∅ fun n l ↦
@@ -741,16 +776,6 @@ def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
       l.insert n
     else
       l
-
-/-- It's just the same as `Lean.Meta.setInlineAttribute` but with type `CoreM Unit`.
-
-TODO (https://github.com/leanprover/lean4/issues/4965): make `Lean.Meta.setInlineAttribute` a `CoreM Unit` and remove this definition. -/
-def setInlineAttribute (declName : Name) (kind := Compiler.InlineAttributeKind.inline) :
-    CoreM Unit := do
-  let env ← getEnv
-  match Compiler.setInlineAttribute env declName kind with
-  | .ok env    => setEnv env
-  | .error msg => throwError msg
 
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
@@ -781,7 +806,9 @@ partial def transformDeclAux
       trace[to_additive_detail] "Already visited {tgt} as translation of {src}."
     return
   let srcDecl ← getConstInfo src
-  -- we first transform all auxiliary declarations generated when elaborating `pre`
+  -- we first unfold all auxlemmas, since they are not always able to be additivized on their own
+  let srcDecl ← MetaM.run' do declUnfoldAuxLemmas srcDecl
+  -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
     transformDeclAux cfg pre tgt_pre n
   if let some value := srcDecl.value? then
@@ -804,13 +831,15 @@ partial def transformDeclAux
   try
     -- make sure that the type is correct,
     -- and emit a more helpful error message if it fails
-    discard <| MetaM.run' <| inferType value
+    MetaM.run' <| check value
   catch
     | Exception.error _ msg => throwError "@[to_additive] failed. \
       Type mismatch in additive declaration. For help, see the docstring \
       of `to_additive.attr`, section `Troubleshooting`. \
       Failed to add declaration\n{tgt}:\n{msg}"
     | _ => panic! "unreachable"
+  -- "Refold" all the aux lemmas that we unfolded.
+  let trgDecl ← MetaM.run' <| declAbstractNestedProofs trgDecl
   if isNoncomputable env src then
     addDecl trgDecl.toDeclaration!
     setEnv <| addNoncomputable (← getEnv) tgt
@@ -820,7 +849,7 @@ partial def transformDeclAux
     if (← getReducibilityStatus src) == .reducible then
       setReducibilityStatus tgt .reducible
     if Compiler.getInlineAttribute? (← getEnv) src == some .inline then
-      setInlineAttribute tgt
+      MetaM.run' <| Meta.setInlineAttribute tgt
   -- now add declaration ranges so jump-to-definition works
   -- note: we currently also do this for auxiliary declarations, while they are not normally
   -- generated for those. We could change that.
@@ -833,6 +862,8 @@ partial def transformDeclAux
     once https://github.com/leanprover/lean4/pull/5068 is in
     -/
     modifyEnv fun env => Match.Extension.addMatcherInfo env tgt matcherInfo
+  -- necessary so that e.g. match equations can be generated for `tgt`
+  enableRealizationsForConst tgt
 
 /-- Copy the instance attribute in a `to_additive`
 
@@ -940,45 +971,48 @@ capitalization of the input. Input and first element should therefore be lower-c
 2nd element should be capitalized properly.
 -/
 def nameDict : String → List String
-  | "one"         => ["zero"]
-  | "mul"         => ["add"]
-  | "smul"        => ["vadd"]
-  | "inv"         => ["neg"]
-  | "div"         => ["sub"]
-  | "prod"        => ["sum"]
-  | "hmul"        => ["hadd"]
-  | "hsmul"       => ["hvadd"]
-  | "hdiv"        => ["hsub"]
-  | "hpow"        => ["hsmul"]
-  | "finprod"     => ["finsum"]
-  | "tprod"       => ["tsum"]
-  | "pow"         => ["nsmul"]
-  | "npow"        => ["nsmul"]
-  | "zpow"        => ["zsmul"]
-  | "mabs"        => ["abs"]
-  | "monoid"      => ["add", "Monoid"]
-  | "submonoid"   => ["add", "Submonoid"]
-  | "group"       => ["add", "Group"]
-  | "subgroup"    => ["add", "Subgroup"]
-  | "semigroup"   => ["add", "Semigroup"]
-  | "magma"       => ["add", "Magma"]
-  | "haar"        => ["add", "Haar"]
-  | "prehaar"     => ["add", "Prehaar"]
-  | "unit"        => ["add", "Unit"]
-  | "units"       => ["add", "Units"]
-  | "cyclic"      => ["add", "Cyclic"]
-  | "rootable"    => ["divisible"]
-  | "semigrp"     => ["add", "Semigrp"]
-  | "grp"         => ["add", "Grp"]
-  | "commute"     => ["add", "Commute"]
-  | "semiconj"    => ["add", "Semiconj"]
-  | "zpowers"     => ["zmultiples"]
-  | "powers"      => ["multiples"]
-  | "multipliable"=> ["summable"]
-  | "gpfree"      => ["apfree"]
-  | "quantale"    => ["add", "Quantale"]
-  | "square"      => ["even"]
-  | x             => [x]
+  | "one"           => ["zero"]
+  | "mul"           => ["add"]
+  | "smul"          => ["vadd"]
+  | "inv"           => ["neg"]
+  | "div"           => ["sub"]
+  | "prod"          => ["sum"]
+  | "hmul"          => ["hadd"]
+  | "hsmul"         => ["hvadd"]
+  | "hdiv"          => ["hsub"]
+  | "hpow"          => ["hsmul"]
+  | "finprod"       => ["finsum"]
+  | "tprod"         => ["tsum"]
+  | "pow"           => ["nsmul"]
+  | "npow"          => ["nsmul"]
+  | "zpow"          => ["zsmul"]
+  | "mabs"          => ["abs"]
+  | "monoid"        => ["add", "Monoid"]
+  | "submonoid"     => ["add", "Submonoid"]
+  | "group"         => ["add", "Group"]
+  | "subgroup"      => ["add", "Subgroup"]
+  | "semigroup"     => ["add", "Semigroup"]
+  | "magma"         => ["add", "Magma"]
+  | "haar"          => ["add", "Haar"]
+  | "prehaar"       => ["add", "Prehaar"]
+  | "unit"          => ["add", "Unit"]
+  | "units"         => ["add", "Units"]
+  | "cyclic"        => ["add", "Cyclic"]
+  | "rootable"      => ["divisible"]
+  | "semigrp"       => ["add", "Semigrp"]
+  | "grp"           => ["add", "Grp"]
+  | "commute"       => ["add", "Commute"]
+  | "semiconj"      => ["add", "Semiconj"]
+  | "zpowers"       => ["zmultiples"]
+  | "powers"        => ["multiples"]
+  | "multipliable"  => ["summable"]
+  | "gpfree"        => ["apfree"]
+  | "quantale"      => ["add", "Quantale"]
+  | "square"        => ["even"]
+  | "mconv"         => ["conv"]
+  | "irreducible"   => ["add", "Irreducible"]
+  | "mlconvolution" => ["lconvolution"]
+  | x               => [x]
 
 /--
 Turn each element to lower-case, apply the `nameDict` and
@@ -1058,6 +1092,8 @@ def fixAbbreviation : List String → List String
   | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
   | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
   | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "is" :: "Scalar" :: "Tower" :: s  => "vaddAssocClass" :: fixAbbreviation s
+  | "Is" :: "Scalar" :: "Tower" :: s  => "VAddAssocClass" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Semiconj" :: s
                                       => "function" :: "_" :: "semiconj" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Commute" :: s
@@ -1157,18 +1193,16 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
 
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
+  | `(attr| to_additive%$tk $[?%$trace]? $[existing%$existing]?
+      $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
-    let mut existing := some false
     for stx in opts do
       match stx with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
         reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
-      | `(toAdditiveOption| existing) =>
-        existing := some true
       | _ => throwUnsupportedSyntax
     reorder := reorder.reverse
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
@@ -1178,7 +1212,7 @@ def elabToAdditive : Syntax → CoreM Config
              allowAutoName := false
              attrs
              reorder
-             existing
+             existing := some existing.isSome
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
@@ -1319,7 +1353,7 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
     elaborator := .anonymous, lctx := {}, expectedType? := none, isBinder := !alreadyExists,
     stx := cfg.ref, expr := ← mkConstWithLevelParams tgt }
   if let some doc := cfg.doc then
-    addDocString tgt doc
+    addDocStringCore tgt doc
   return nestedNames.push tgt
 
 end

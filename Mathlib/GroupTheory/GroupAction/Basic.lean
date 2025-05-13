@@ -99,11 +99,11 @@ end FixedPoints
 
 end MulAction
 
-/-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
+/-- `smul` by a `k : M` over a group is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
 The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
-theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAssocRing R]
-    [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
+theorem smul_cancel_of_non_zero_divisor {M G : Type*} [Monoid M] [AddGroup G]
+    [DistribMulAction M G] (k : M) (h : ∀ x : G, k • x = 0 → x = 0) {a b : G} (h' : k • a = k • b) :
     a = b := by
   rw [← sub_eq_zero]
   refine h _ ?_
@@ -262,7 +262,7 @@ variable {G α : Type*} [AddGroup G] [AddAction G α]
 
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
 theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
-    stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toAddMonoidHom := by
+    stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toMul.toAddMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,
     neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
@@ -273,7 +273,7 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G
     stabilizer G a ≃+ stabilizer G b :=
   let g : G := Classical.choose h
   have hg : g +ᵥ b = a := Classical.choose_spec h
-  have this : stabilizer G a = (stabilizer G b).map (AddAut.conj g).toAddMonoidHom := by
+  have this : stabilizer G a = (stabilizer G b).map (AddAut.conj g).toMul.toAddMonoidHom := by
     rw [← hg, stabilizer_vadd_eq_stabilizer_map_conj]
   (AddEquiv.addSubgroupCongr this).trans ((AddAut.conj g).addSubgroupMap <| stabilizer G b).symm
 

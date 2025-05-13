@@ -238,8 +238,7 @@ theorem iSup_plift_down (f : ι → α) : ⨆ i, f (PLift.down i) = ⨆ i, f i :
   (PLift.down_surjective.iSup_congr _) fun _ => rfl
 
 theorem iSup_range' (g : β → α) (f : ι → β) : ⨆ b : range f, g b = ⨆ i, g (f i) := by
-  rw [iSup, iSup, ← image_eq_range, ← range_comp]
-  rfl
+  rw [iSup, iSup, ← image_eq_range, ← range_comp']
 
 theorem sSup_image' {s : Set β} {f : β → α} : sSup (f '' s) = ⨆ a : s, f a := by
   rw [iSup, image_eq_range]
@@ -803,7 +802,7 @@ lemma biInf_ge_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j �
 lemma biSup_le_eq_of_monotone [Preorder β] {f : β → α} (hf : Monotone f) (b : β) :
     ⨆ (b' ≤ b), f b' = f b :=
   le_antisymm (iSup₂_le_iff.2 (fun _ hji ↦ hf hji))
-    (le_iSup_of_le b (le_of_eq (Eq.symm (iSup_pos (Preorder.le_refl b)))))
+    (le_iSup_of_le b (ge_of_eq (iSup_pos le_rfl)))
 
 lemma biInf_le_eq_of_antitone [Preorder β] {f : β → α} (hf : Antitone f) (b : β) :
     ⨅ (b' ≤ b), f b' = f b :=

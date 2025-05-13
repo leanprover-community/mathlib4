@@ -32,7 +32,7 @@ contains results on the integral of `mulExpNegMulSq g ε` with respect to a fini
 
 `dist_integral_mulExpNegMulSq_comp_le`: For a subalgebra of functions `A`, if for any `g ∈ A` the
 integral with respect to two finite measures `P, P'` coincide, then the difference of the integrals
-of `mulExpNegMulSq ε ∘ g` with respect to `P, P'` is bounded by `6 * sqrt ε`.
+of `mulExpNegMulSq ε ∘ g` with respect to `P, P'` is bounded by `6 * √ε`.
 This is a key ingredient in the proof of theorem `ext_of_forall_mem_subalgebra_integral_eq`, where
 it is shown that a subalgebra of functions that separates points separates finite measures.
 -/
@@ -46,7 +46,7 @@ variable {E : Type*} [TopologicalSpace E] [MeasurableSpace E] [BorelSpace E]
 
 theorem integrable_mulExpNegMulSq_comp (f : C(E, ℝ)) (hε : 0 < ε) :
     Integrable (fun x => mulExpNegMulSq ε (f x)) P := by
-  apply integrable P ⟨⟨fun x => mulExpNegMulSq ε (f x), by fun_prop⟩, ⟨2 * (sqrt ε)⁻¹, _⟩⟩
+  apply integrable P ⟨⟨fun x => mulExpNegMulSq ε (f x), by fun_prop⟩, ⟨2 * (√ε)⁻¹, _⟩⟩
   exact fun x y => dist_mulExpNegMulSq_le_two_mul_sqrt hε (f x) (f y)
 
 theorem integrable_mulExpNegMulSq_comp_restrict_of_isCompact {K : Set E} (hK : IsCompact K)
@@ -129,7 +129,7 @@ theorem integral_mulExpNegMulSq_comp_eq {P' : Measure E} [IsFiniteMeasure P']
 
 theorem abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt (f : C(E, ℝ))
     {K : Set E} (hK : MeasurableSet K) (hε : 0 < ε) (hKP : P Kᶜ < ε.toNNReal) :
-    |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x in K, mulExpNegMulSq ε (f x) ∂P| < sqrt ε := by
+    |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x in K, mulExpNegMulSq ε (f x) ∂P| < √ε := by
   apply lt_of_le_of_lt (norm_integral_sub_setIntegral_le
     (Eventually.of_forall (fun _ => abs_mulExpNegMulSq_le hε)) hK
     (integrable_mulExpNegMulSq_comp f hε))
@@ -142,11 +142,9 @@ theorem abs_setIntegral_mulExpNegMulSq_comp_sub_le_mul_measure {K : Set E} (hK :
     |∫ x in K, mulExpNegMulSq ε (g x) ∂P - ∫ x in K, mulExpNegMulSq ε (f x) ∂P|
       ≤ δ * (P K).toReal := by
   rw [← (integral_sub (integrable_mulExpNegMulSq_comp_restrict_of_isCompact hK hKmeas g)
-      (integrable_mulExpNegMulSq_comp_restrict_of_isCompact hK hKmeas f))]
-  apply norm_setIntegral_le_of_norm_le_const hK.measure_lt_top
+      (integrable_mulExpNegMulSq_comp_restrict_of_isCompact hK hKmeas f)), ← norm_eq_abs]
+  exact norm_setIntegral_le_of_norm_le_const hK.measure_lt_top
     (fun x hxK => le_trans (dist_mulExpNegMulSq_le_dist hε) (hfg x hxK).le)
-    (StronglyMeasurable.aestronglyMeasurable (Continuous.stronglyMeasurable
-    (Continuous.sub g.continuous.mulExpNegMulSq f.continuous.mulExpNegMulSq)))
 
 variable {E : Type*} [MeasurableSpace E] [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E]
     [SecondCountableTopology E]
@@ -154,16 +152,16 @@ variable {E : Type*} [MeasurableSpace E] [PseudoEMetricSpace E] [BorelSpace E] [
 
 /-- If for any `g ∈ A` the integrals with respect to two finite measures `P, P'` coincide, then the
 difference of the integrals of `mulExpNegMulSq ε ∘ g` with respect to `P, P'` is bounded by
-`6 * sqrt ε`. -/
+`6 * √ε`. -/
 theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     {A : Subalgebra ℝ (E →ᵇ ℝ)} (hA : (A.map (toContinuousMapₐ ℝ)).SeparatesPoints)
     (heq : ∀ g ∈ A, ∫ x, (g : E → ℝ) x ∂P = ∫ x, (g : E → ℝ) x ∂P') (hε : 0 < ε) :
-    |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x, mulExpNegMulSq ε (f x) ∂P'| ≤ 6 * sqrt ε := by
+    |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x, mulExpNegMulSq ε (f x) ∂P'| ≤ 6 * √ε := by
   -- if both measures are zero, the result is trivial
   by_cases hPP' : P = 0 ∧ P' = 0
   · simp only [hPP', integral_zero_measure, sub_self, abs_zero, gt_iff_lt, Nat.ofNat_pos,
     mul_nonneg_iff_of_pos_left, (le_of_lt (sqrt_pos_of_pos hε))]
-  let const : ℝ := (max (P Set.univ).toReal (P' Set.univ).toReal)
+  let const : ℝ := (max (P.real Set.univ) (P'.real Set.univ))
   have pos_of_measure : 0 < const := by
     rw [not_and_or] at hPP'
     rcases hPP' with hP0 | hP'0
@@ -192,30 +190,30 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
   simp only [Subalgebra.mem_map] at hg'A
   let g := hg'A.choose
   have hgA : g ∈ A := hg'A.choose_spec.1
-  have hgapprox : ∀ x ∈ K, ‖g x - f x‖ < sqrt ε * const⁻¹ := by
+  have hgapprox : ∀ x ∈ K, ‖g x - f x‖ < √ε * const⁻¹ := by
     rw [← coe_toContinuousMapₐ ℝ g, hg'A.choose_spec.2]
     exact hg'approx
   -- collect the results needed in the decomposition at the end of the proof
   have line1 : |∫ x, mulExpNegMulSq ε (f x) ∂P
-      - ∫ x in K, mulExpNegMulSq ε (f x) ∂P| < sqrt ε :=
+      - ∫ x in K, mulExpNegMulSq ε (f x) ∂P| < √ε :=
     abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt
       f (IsClosed.measurableSet hKcl) hε hKPbound
   have line3 : |∫ x in K, mulExpNegMulSq ε (g x) ∂P
-      - ∫ x, mulExpNegMulSq ε (g x) ∂P| < sqrt ε := by
+      - ∫ x, mulExpNegMulSq ε (g x) ∂P| < √ε := by
     rw [abs_sub_comm]
     exact (abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt
       g (IsClosed.measurableSet hKcl) hε hKPbound)
   have line5 : |∫ x, mulExpNegMulSq ε (g x) ∂P'
-      - ∫ x in K, mulExpNegMulSq ε (g x) ∂P'| < sqrt ε :=
+      - ∫ x in K, mulExpNegMulSq ε (g x) ∂P'| < √ε :=
     (abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt
       g (IsClosed.measurableSet hKcl) hε hKP'bound)
   have line7 : |∫ x in K, mulExpNegMulSq ε (f x) ∂P'
-      - ∫ x, mulExpNegMulSq ε (f x) ∂P'| < sqrt ε := by
+      - ∫ x, mulExpNegMulSq ε (f x) ∂P'| < √ε := by
     rw [abs_sub_comm]
     exact (abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt
       f (IsClosed.measurableSet hKcl) hε hKP'bound)
   have line2 : |∫ x in K, mulExpNegMulSq ε (f x) ∂P
-      - ∫ x in K, mulExpNegMulSq ε (g x) ∂P| ≤ sqrt ε := by
+      - ∫ x in K, mulExpNegMulSq ε (g x) ∂P| ≤ √ε := by
     rw [abs_sub_comm]
     apply le_trans (abs_setIntegral_mulExpNegMulSq_comp_sub_le_mul_measure hKco
       (IsClosed.measurableSet hKcl) f g hε hgapprox)
@@ -225,7 +223,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     exact (toReal_le_toReal (measure_ne_top P _) (measure_ne_top P _)).mpr
         (measure_mono (Set.subset_univ _))
   have line6 : |∫ x in K, mulExpNegMulSq ε (g x) ∂P'
-      - ∫ x in K, mulExpNegMulSq ε (f x) ∂P'| ≤ sqrt ε := by
+      - ∫ x in K, mulExpNegMulSq ε (f x) ∂P'| ≤ √ε := by
     apply le_trans (abs_setIntegral_mulExpNegMulSq_comp_sub_le_mul_measure hKco
       (IsClosed.measurableSet hKcl) f g hε hgapprox)
     rw [mul_assoc]
@@ -247,4 +245,4 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
       + |∫ x in K, mulExpNegMulSq ε (g x) ∂P' - ∫ x in K, mulExpNegMulSq ε (f x) ∂P'|
       + |∫ x in K, mulExpNegMulSq ε (f x) ∂P' - ∫ x, mulExpNegMulSq ε (f x) ∂P'| :=
         @dist_triangle8 ℝ _ _ _ _ _ _ _ _ _
-  _ ≤ 6 * sqrt ε := by linarith
+  _ ≤ 6 * √ε := by linarith
