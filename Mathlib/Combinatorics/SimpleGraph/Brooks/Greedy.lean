@@ -24,7 +24,7 @@ that we can use to extend `C` to `s.insert a` is:
 namespace SimpleGraph
 open Subgraph ColoringOn
 
-variable {α β : Type*} {G : SimpleGraph α} {s : Set α} [DecidablePred (· ∈ s)]
+variable {α β : Type*} {G : SimpleGraph α} {s : Set α}
 
 open Finset
 section greedy
@@ -45,55 +45,54 @@ variable [Fintype β] [DecidableEq β]
 
 section DecEq
 
-variable [DecidableEq α]
 /-- If we have a `β` - coloring of `G.induce s` and `G` has less than `|β|` neighbors in `s` then
 the set of valid colors at `a` is nonempty.
 -/
-lemma ColoringOn.nonempty_of_degreeInduce_lt [DecidableRel G.Adj] (C : G.ColoringOn β s) (a : α)
-    [Fintype (G.neighborSet a)] (h : G.degreeInduce (insert a s) a < Fintype.card β) :
-    (((G.neighborFinset a).filter (· ∈ s)).image C)ᶜ.Nonempty := by
+lemma ColoringOn.nonempty_of_degreeInduce_lt (C : G.ColoringOn β s) (a : α)
+    [Fintype (G.neighborSetInduce s a)] (h : G.degreeInduce s a < Fintype.card β) :
+    (((G.neighborSetInduce s a).toFinset).image C)ᶜ.Nonempty := by
   contrapose! h
   simp only [not_nonempty_iff_eq_empty, compl_eq_empty_iff] at h
-  have := card_image_le (f := C) (s := {x ∈ G.neighborFinset a | x ∈ s})
+  have := card_image_le (f := C) (s := (G.neighborSetInduce s a).toFinset)
   simp only [h, card_univ, Fintype.card_fin] at this
-  rwa [degreeInduce_insert_eq]
+  rwa [degreeInduce_eq, ← finset_card_neighborSet_eq_degree]
 
 /-- If we have a `β` - coloring `C` of `G.induce s` and `G` has at most `|β|` neighbors in `s` *and*
 at least two of these neighbors received the same color in `C` then the set of valid colors at `a`
 is nonempty.
 -/
-lemma ColoringOn.nonempty_of_degreeInduce_le_not_inj {u v : α} [DecidableRel G.Adj]
-    (C : G.ColoringOn β s) (a : α) [Fintype (G.neighborSet a)]
-    (h : G.degreeInduce (insert a s) a ≤ Fintype.card β) (hus : u ∈ s) (hvs : v ∈ s)
-    (hu : G.Adj a u) (hv : G.Adj a v) (hne : u ≠ v) (heq : C u = C v) :
-    (((G.neighborFinset a).filter (· ∈ s)).image C)ᶜ.Nonempty := by
+lemma ColoringOn.nonempty_of_degreeInduce_le_not_inj {u v : α} (C : G.ColoringOn β s) (a : α)
+    [Fintype (G.neighborSetInduce s a)] (h : G.degreeInduce s a ≤ Fintype.card β) (hus : u ∈ s)
+    (hvs : v ∈ s) (hu : G.Adj a u) (hv : G.Adj a v) (hne : u ≠ v) (heq : C u = C v) :
+    (((G.neighborSetInduce s a).toFinset).image C)ᶜ.Nonempty := by
   cases h.lt_or_eq with
   | inl h => exact C.nonempty_of_degreeInduce_lt a h
   | inr h =>
   contrapose! hne
   simp only [not_nonempty_iff_eq_empty, compl_eq_empty_iff] at hne
-  rw [degreeInduce_insert_eq,  ← card_univ] at h
+  rw [degreeInduce_eq,  ← card_univ, ← finset_card_neighborSet_eq_degree] at h
   exact card_image_iff.1 (h ▸ congr_arg card hne) (by simp [*]) (by simp [*]) heq
 
-variable [LinearOrder β]
+variable [LinearOrder β] [DecidablePred (· ∈ s)] [DecidableEq α]
 /-- If there is an unused color in the neighborhood of `a` under the coloring of `s` by `C` then
 we can color `insert a s` greedily. -/
-abbrev ColoringOn.greedy (C : G.ColoringOn β s) (a : α) [Fintype (G.neighborSet a)]
-    (h : (((G.neighborFinset a).filter (· ∈ s)).image C)ᶜ.Nonempty) :
+abbrev ColoringOn.greedy (C : G.ColoringOn β s) (a : α) [Fintype (G.neighborSetInduce s a)]
+    (h : (((G.neighborSetInduce s a).toFinset).image C)ᶜ.Nonempty) :
     G.ColoringOn β (insert a s) := by
   have h' : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C v ≠ (min' _ h) := by
-    intro _ hv had he
+    intro v hv had he
     apply mem_compl.1 <| min'_mem _ h
-    exact mem_image.2 ⟨_, mem_filter.2 ⟨(G.mem_neighborFinset ..).2 had, hv⟩, he⟩
+    apply mem_image.2 ⟨v, by simp [hv, had, he]⟩
   exact C.insert a h'
 
 variable {a : α}
 @[simp]
 lemma ColoringOn.greedy_extends_not_mem (C : G.ColoringOn β s) (ha : a ∉ s)
-    [Fintype (G.neighborSet a)] (h) : (C.greedy a h).Extends C := C.insert_extends_not_mem _ ha
+    [Fintype (G.neighborSetInduce s a)] (h) :
+    (C.greedy a h).Extends C := C.insert_extends_not_mem _ ha
 
 --@[simp]
-lemma ColoringOn.greedy_extends (C : G.ColoringOn β s) [Fintype (G.neighborSet a)] (h) :
+lemma ColoringOn.greedy_extends (C : G.ColoringOn β s) [Fintype (G.neighborSetInduce s a)] (h) :
   (C.greedy a h).Extends (G.partColoringOfSingleton a (min' _ h)) := C.insert_extends _
 
 end DecEq
@@ -130,7 +129,7 @@ We now look at more elaborate greedy colorings that will allow us to prove Brook
 -/
 
 open Walk List
-variable [LinearOrder β] [DecidableEq α]
+variable [LinearOrder β] [DecidableEq α] [DecidablePred (· ∈ s)] [DecidableRel G.Adj]
 /-- We can color greedily along a path to extend a coloring of `s` to a coloring of
 `s ∪ p.support.tail` if the vertices in the path have bounded degree -/
 def ColoringOn.of_tail_path {u v : α} {p : G.Walk u v} [LocallyFinite G] (C₁ : G.ColoringOn β s)
@@ -139,7 +138,6 @@ def ColoringOn.of_tail_path {u v : α} {p : G.Walk u v} [LocallyFinite G] (C₁ 
   match p with
   | .nil => exact C₁.copy (by simp)
   | .cons h p =>
-    classical
     rename_i _ v
     rw [cons_isPath_iff] at hp
     simp_rw [support_cons, List.tail, List.mem_cons] at *
@@ -150,8 +148,8 @@ def ColoringOn.of_tail_path {u v : α} {p : G.Walk u v} [LocallyFinite G] (C₁ 
       intro hf; apply hp.2
       have := hf.resolve_left (fun hu ↦ hs.not_mem_of_mem_left hu rfl)
       exact mem_of_mem_tail this
-    have h' : G.degreeInduce (insert v (s ∪ {a | a ∈ p.support.tail})) v < Fintype.card β :=
-      (G.degreeInduce_insert_lt_degree h.symm hu).trans_le (hbd v (Or.inr p.start_mem_support))
+    have h' : G.degreeInduce ((s ∪ {a | a ∈ p.support.tail})) v < Fintype.card β :=
+      (G.degreeInduce_lt_degree _ h.symm hu).trans_le (hbd v (Or.inr p.start_mem_support))
     exact (C₂.greedy v (C₂.nonempty_of_degreeInduce_lt v h')).copy (by
       ext x; rw [support_eq_cons]; simp [or_left_comm])
 

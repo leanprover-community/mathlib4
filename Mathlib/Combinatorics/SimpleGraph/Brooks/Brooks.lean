@@ -92,12 +92,11 @@ lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.
 
 open ColoringOn
 
-variable {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x₄} {k : ℕ}
-
-lemma Brooks1 [LocallyFinite G] [DecidableEq α] (hk : 3 ≤ k)
-    (hbd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hj : xⱼ ∈ p.support) (hj2 : G.Adj xⱼ x₂)
-    (h21 : G.Adj x₂ x₁) (h23 : G.Adj x₂ x₃) (hne : x₁ ≠ x₃) (h13 : ¬ G.Adj x₁ x₃)
-    (h1 : x₁ ∉ p.support) (h2 : x₂ ∉ p.support) (h3 : x₃ ∉ p.support) :
+variable {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x₄} {k : ℕ} [DecidableRel G.Adj]
+variable [LocallyFinite G] [DecidableEq α]
+lemma Brooks1 (hk : 3 ≤ k) (hbd : ∀ v, G.degree v ≤ k) (hp : p.IsPath)(hj : xⱼ ∈ p.support)
+    (hj2 : G.Adj xⱼ x₂) (h21 : G.Adj x₂ x₁) (h23 : G.Adj x₂ x₃) (hne : x₁ ≠ x₃)
+    (h13 : ¬ G.Adj x₁ x₃) (h1 : x₁ ∉ p.support) (h2 : x₂ ∉ p.support) (h3 : x₃ ∉ p.support) :
     G.ColorableOn k ({a | a ∈ p.support} ∪ {x₃, x₂, x₁}) := by
   have htp := ((concat_isPath_iff _ hj2).2 ⟨hp.takeUntil hj,
               fun a ↦ h2 ((p.support_takeUntil_subset hj) a)⟩).reverse
@@ -128,13 +127,13 @@ lemma Brooks1 [LocallyFinite G] [DecidableEq α] (hk : 3 ≤ k)
     ext; aesop))⟩
 
 open List
-theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
-    (hbd : ∀ v, G.degree v ≤ k) (s : Finset α) : G.ColorableOn k s := by
+theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbd : ∀ v, G.degree v ≤ k)
+    (s : Finset α) : G.ColorableOn k s := by
   induction hn : #s using Nat.strong_induction_on generalizing s with
   | h n ih =>
   -- Case 0 : there is `v ∈ s` with `G.degreeInduce s v < k`, so we can extend a `k` - coloring of
   -- `s.erase v` greedily
-  classical
+--  classical
   by_cases hd : ∃ v ∈ s, G.degreeInduce s v < k
   · obtain ⟨v, hv, hlt⟩ := hd
     obtain ⟨C⟩ := ih _ ((card_erase_lt_of_mem hv).trans_le hn.le) _ rfl
@@ -149,7 +148,7 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
   have hin : ∀ {v}, v ∈ s → ∀ {w}, G.Adj v w → w ∈ s := by
     by_contra! hf
     obtain ⟨v, hv, w, ha, hns⟩ := hf
-    have : G.degreeInduce s v < G.degree v := G.degreeInduce_lt_degree ⟨ha, hns⟩
+    have : G.degreeInduce s v < G.degree v := G.degreeInduce_lt_degree s ha hns
     rw [hd _ hv] at this
     exact this.not_le (hbd v)
   -- `s` is either Nonempty (main case) or empty (easy)
@@ -326,7 +325,8 @@ theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree
             Set.mem_setOf_eq, mem_coe, or_iff_right_iff_imp]
           exact fun hc ↦ hsub.1 <| List.mem_toFinset.mpr hc)⟩
 
-theorem colorable_of_cliqueFree_forall_degree_le [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k)
+omit [DecidableRel G.Adj]
+theorem colorable_of_cliqueFree_forall_degree_le (hk : 3 ≤ k)
     (hc : G.CliqueFree (k + 1)) (hbd : ∀ v, G.degree v ≤ k) : G.Colorable k := by
   apply nonempty_hom_of_forall_finite_subgraph_hom
   intro G' hf
@@ -335,6 +335,7 @@ theorem colorable_of_cliqueFree_forall_degree_le [LocallyFinite G] {k : ℕ} (hk
   haveI : Fintype ↑G'.verts := hf.fintype
   exact ((BrooksPart hk (hc.of_hom G'.hom) h' univ).some.copy coe_univ).toColoring
 
+omit [LocallyFinite G]
 lemma two_colorable_iff_no_odd_cycle :
     G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), w.IsCycle → ¬ Odd w.length := by
   rw [two_colorable_iff_forall_loop_not_odd]
