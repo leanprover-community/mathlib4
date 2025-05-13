@@ -28,7 +28,7 @@ namespace CommRingCat
 instance : CoeSort (Under R) (Type u) where
   coe A := A.right
 
-instance algebra (A : Under R) : Algebra R A := RingHom.toAlgebra A.hom.hom
+instance (A : Under R) : Algebra R A := RingHom.toAlgebra A.hom.hom
 
 /-- Turn a morphism in `Under R` into an algebra homomorphism. -/
 def toAlgHom {A B : Under R} (f : A ⟶ B) : A →ₐ[R] B where
@@ -62,10 +62,6 @@ lemma mkUnder_ext {A : Type u} [CommRing A] [Algebra R A] {B : Under R}
   ext x
   exact h x
 
-@[simp]
-lemma mkUnder_eq (A : Type u) [CommRing A] [inst : Algebra R A] :
-  algebra (R.mkUnder A) = inst := Algebra.algebra_ext _ _ (congrFun rfl)
-
 end CommRingCat
 
 namespace AlgHom
@@ -88,22 +84,6 @@ lemma toUnder_comp {A B C : Type u} [CommRing A] [CommRing B] [CommRing C]
     [Algebra R A] [Algebra R B] [Algebra R C] (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
     (g.comp f).toUnder = f.toUnder ≫ g.toUnder :=
   rfl
-
-@[simp]
-lemma toUnder_eq {A B : Type u} [CommRing A]  [CommRing B]
-  [instA : Algebra R A] [instB : Algebra R B] (f : A →ₐ[R] B) : CommRingCat.toAlgHom f.toUnder =
-      (cast <| congr_arg₂ (fun instA instB => @AlgHom R A B _ _ _ instA instB)
-      (CommRingCat.mkUnder_eq A).symm (CommRingCat.mkUnder_eq B).symm) f :=
-    have [instA : Algebra R A] [instB : Algebra R B] [instA' : Algebra R A] [instB' : Algebra R B]
-      (eqA : instA = instA') (eqB : instB = instB') (f : @AlgHom R A B _ _ _ instA instB) :
-      @OneHom.toFun A B _ _ f = @OneHom.toFun A B _ _ (
-        (cast <| congr_arg₂ (fun instA instB => @AlgHom R A B _ _ _ instA instB) eqA eqB) f
-      ) := by
-        subst eqA eqB
-        rfl
-    ext <| congrFun <| this (instA := instA) (instB := instB)
-      (instA' := CommRingCat.algebra (R.mkUnder A)) (instB' := CommRingCat.algebra (R.mkUnder B))
-      (CommRingCat.mkUnder_eq A).symm (CommRingCat.mkUnder_eq B).symm f
 
 end AlgHom
 
