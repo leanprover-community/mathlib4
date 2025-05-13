@@ -26,13 +26,15 @@ variable {A B C D : Type*} [Category A] [Category B] [Category C] [Category D]
 section LeftKanExtension
 
 /-- `G.PreservesLeftKanExtension F L` asserts that `G` preserves all left kan extensions
-of `F` along `L`. -/
+of `F` along `L`. See `PreservesLeftKanExtension.mk_of_preserves_isLeftKanExtension` for a
+constructor taking a single left Kan extension as input. -/
 class PreservesLeftKanExtension where
   preserves : ∀ (F' : C ⥤ B) (α : F ⟶ L ⋙ F') [IsLeftKanExtension F' α],
     IsLeftKanExtension (F' ⋙ G) <| whiskerRight α G ≫ (Functor.associator _ _ _).hom
 
 /-- Alternative constructor for `PreservesLeftKanExtension`, phrased in terms of
-`LeftExtension.IsUniversal` instead. -/
+`LeftExtension.IsUniversal` instead. See `PreservesLeftKanExtension.mk_of_preserves_universal`
+for a similar constructor taking as input a single `LeftExtension`. -/
 lemma PreservesLeftKanExtension.mk'
     (preserves : ∀ {E : LeftExtension L F}, E.IsUniversal →
       Nonempty (LeftExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
@@ -40,6 +42,28 @@ lemma PreservesLeftKanExtension.mk'
   preserves _ _ h :=
     ⟨⟨Limits.IsInitial.equivOfIso
         (LeftExtension.postcompose₂IsoMk _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
+
+/-- Show that `G` preserves left Kan extensions if it maps some left Kan extension to a left
+Kan extension. -/
+lemma PreservesLeftKanExtension.mk_of_preserves_isLeftKanExtension
+    (F' : C ⥤ B) (α : F ⟶ L ⋙ F') [IsLeftKanExtension F' α]
+    (h : IsLeftKanExtension (F' ⋙ G) <| whiskerRight α G ≫ (Functor.associator _ _ _).hom) :
+    G.PreservesLeftKanExtension F L :=
+  .mk fun F'' α' h ↦
+    isLeftKanExtension_of_iso
+      (isoWhiskerRight (leftKanExtensionUnique F' α F'' α') G)
+      (whiskerRight α G ≫ (Functor.associator _ _ _).hom)
+      (whiskerRight α' G ≫ (Functor.associator _ _ _).hom)
+      (by ext x; simp [← G.map_comp])
+
+/-- Show that `G` preserves left Kan extensions if it maps some left Kan extension to a left
+Kan extension, phrased in terms of `IsUniversal`. -/
+lemma PreservesLeftKanExtension.mk_of_preserves_universal (E : LeftExtension L F)
+    (hE : E.IsUniversal) (h : Nonempty (LeftExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
+    G.PreservesLeftKanExtension F L :=
+  .mk' G F L fun hE' ↦
+    ⟨Limits.IsInitial.equivOfIso
+      ((LeftExtension.postcompose₂ L F G).mapIso (Limits.IsInitial.uniqueUpToIso hE hE')) h.some⟩
 
 attribute [instance] PreservesLeftKanExtension.preserves
 
@@ -228,13 +252,15 @@ end LeftKanExtension
 section RightKanExtension
 
 /-- `G.PreservesRightKanExtension F L` asserts that `G` preserves all right kan extensions
-of `F` along `L` -/
+of `F` along `L`. See `PreservesRightKanExtension.mk_of_preserves_isRightKanExtension` for a
+constructor taking a single right Kan extension as input. -/
 class PreservesRightKanExtension where
   preserves : ∀ (F' : C ⥤ B) (α : L ⋙ F' ⟶ F) [IsRightKanExtension F' α],
     IsRightKanExtension (F' ⋙ G) <| (Functor.associator _ _ _).inv ≫ whiskerRight α G
 
 /-- Alternative constructor for `PreservesRightKanExtension`, phrased in terms of
-`RightExtension.IsUniversal` instead. -/
+`RightExtension.IsUniversal` instead. See `PreservesRightKanExtension.mk_of_preserves_universal`
+for a similar constructor taking as input a single `RightExtension`. -/
 lemma PreservesRightKanExtension.mk'
     (preserves : ∀ {E : RightExtension L F}, E.IsUniversal →
       Nonempty (RightExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
@@ -242,6 +268,28 @@ lemma PreservesRightKanExtension.mk'
   preserves _ _ h :=
     ⟨⟨Limits.IsTerminal.equivOfIso
         (RightExtension.postcompose₂IsoMk _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
+
+/-- Show that `G` preserves right Kan extensions if it maps some right Kan extension to a right
+Kan extension. -/
+lemma PreservesRightKanExtension.mk_of_preserves_isRightKanExtension
+    (F' : C ⥤ B) (α : L ⋙ F' ⟶ F) [IsRightKanExtension F' α]
+    (h : IsRightKanExtension (F' ⋙ G) <| (Functor.associator _ _ _).inv ≫ whiskerRight α G ) :
+    G.PreservesRightKanExtension F L :=
+  .mk fun F'' α' h ↦
+    isRightKanExtension_of_iso
+      (isoWhiskerRight (rightKanExtensionUnique F' α F'' α') G)
+      ((Functor.associator _ _ _).inv ≫ whiskerRight α G )
+      ((Functor.associator _ _ _).inv ≫ whiskerRight α' G)
+      (by ext x; simp [← G.map_comp])
+
+/-- Show that `G` preserves right Kan extensions if it maps some right Kan extension to a left
+Kan extension, phrased in terms of `IsUniversal`. -/
+lemma PreservesRightKanExtension.mk_of_preserves_universal (E : RightExtension L F)
+    (hE : E.IsUniversal) (h : Nonempty (RightExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
+    G.PreservesRightKanExtension F L :=
+  .mk' G F L fun hE' ↦
+    ⟨Limits.IsTerminal.equivOfIso
+      ((RightExtension.postcompose₂ L F G).mapIso (Limits.IsTerminal.uniqueUpToIso hE hE')) h.some⟩
 
 attribute [instance] PreservesRightKanExtension.preserves
 
