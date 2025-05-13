@@ -404,7 +404,7 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
       intro hc
       apply not_cancels_of_cons_hyp _ _ h2
       simp only [Cancels, cons_head, cons_toList, List.head?_cons,
-        Option.map_some', Option.some.injEq] at h
+        Option.map_some, Option.some.injEq] at h
       cases h.2
       simpa [Cancels, unitsSMulWithCancel,
         Subgroup.mul_mem_cancel_left] using hc
@@ -632,7 +632,7 @@ theorem exists_normalWord_prod_eq
           Prod.exists, exists_and_right, exists_eq_right, not_and, not_exists]
         intro hS x hx
         have hx' := congr_arg (Option.map Prod.fst) hx
-        rw [← List.head?_map, hw'2, List.head?_map, Option.map_some'] at hx'
+        rw [← List.head?_map, hw'2, List.head?_map, Option.map_some] at hx'
         have : w'.head ∈ toSubgroup A B a.fst := by
           simpa using hw'3 _ hx'
         rw [mul_mem_cancel_right this] at hS
@@ -640,7 +640,7 @@ theorem exists_normalWord_prod_eq
           have hl : l ≠ [] := by rintro rfl; simp_all
           have : a.fst = (l.head hl).fst := (List.chain'_cons'.1 chain).1 (l.head hl)
             (List.head?_eq_head _) hS
-          rwa [List.head?_eq_head hl, Option.map_some', ← this, Option.some_inj] at hx'
+          rwa [List.head?_eq_head hl, Option.map_some, ← this, Option.some_inj] at hx'
         simp at this
       rw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.group_smul_def,
         t_pow_smul_eq_unitsSMul, unitsSMul]

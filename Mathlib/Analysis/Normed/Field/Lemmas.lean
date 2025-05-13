@@ -155,7 +155,7 @@ lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedFiel
     contrapose! H
     refine H.imp ?_
     -- contextual to reuse the `a ≠ 0` hypothesis in the proof of `a ≠ 0 ∧ ‖a‖ ≠ 1`
-    simp (config := {contextual := true}) [add_comm, ne_of_lt]
+    simp +contextual [add_comm, ne_of_lt]
 
 lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
     (h : BddAbove (Set.range fun k : 𝕜 ↦ ‖k‖)) :

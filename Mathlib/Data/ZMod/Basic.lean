@@ -26,7 +26,7 @@ Definition of the integers mod n, and the field structure on the integers mod p.
   - for `a : ZMod n` with `0 < n` it is the least natural number in the equivalence class
 
 * A coercion `cast` is defined from `ZMod n` into any ring.
-This is a ring hom if the ring has characteristic dividing `n`
+  This is a ring hom if the ring has characteristic dividing `n`
 
 -/
 
@@ -106,6 +106,9 @@ instance charP (n : ℕ) : CharP (ZMod n) n where
     rcases n with - | n
     · simp [zero_dvd_iff, Int.natCast_eq_zero]
     · exact Fin.natCast_eq_zero
+
+-- Verify that `grind` can see that `ZMod n` has characteristic `n`.
+example (n : ℕ) : Lean.Grind.IsCharP (ZMod n) n := inferInstance
 
 @[simp]
 theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=
@@ -255,7 +258,7 @@ theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
   · simp; rfl
   change Fin (n + 1) at a b
   change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
-  simp only [Fin.val_add_eq_ite, Int.ofNat_succ, Int.ofNat_le]
+  simp only [Fin.val_add_eq_ite, Int.natCast_succ, Int.ofNat_le]
   norm_cast
   split_ifs with h
   · rw [Nat.cast_sub h]
