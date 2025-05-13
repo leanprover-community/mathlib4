@@ -6,6 +6,7 @@ Authors: Shing Tak Lam, Frédéric Dupuis
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Algebra.Spectrum.Basic
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Unitary elements of a star monoid
@@ -57,6 +58,10 @@ theorem star_mul_self_of_mem {U : R} (hU : U ∈ unitary R) : star U * U = 1 :=
 @[simp]
 theorem mul_star_self_of_mem {U : R} (hU : U ∈ unitary R) : U * star U = 1 :=
   hU.2
+
+@[simp]
+lemma one_mem_unitary : 1 ∈ unitary R :=
+  one_mem _
 
 theorem star_mem {U : R} (hU : U ∈ unitary R) : star U ∈ unitary R :=
   ⟨by rw [star_star, mul_star_self_of_mem hU], by rw [star_star, star_mul_self_of_mem hU]⟩
@@ -133,12 +138,26 @@ theorem _root_.IsUnit.mem_unitary_of_mul_star_self {u : R} (hu : IsUnit u)
   star_star u ▸
     (hu.star.mem_unitary_of_star_mul_self ((star_star u).symm ▸ h_mul) |> unitary.star_mem)
 
+/-- In a star monoid, the product `a * b⁻¹` of units is unitary if `star a * a = star b * b`. -/
+lemma _root_.Units.mul_inv_mem_unitary (a b : Rˣ)
+    (hab : star a * a = star b * b) : (a * b⁻¹ : R) ∈ unitary R := by
+  apply IsUnit.mem_unitary_of_star_mul_self (by aesop)
+  have : (star a : R) * a = (star b : R) * b := congr(($(hab) : R))
+  rw [star_mul, mul_assoc, ← mul_assoc (star a : R), this]
+  simp [mul_assoc, ← Units.coe_star_inv]
+
+/-- In a star monoid, the product `a⁻¹ * b` of units is unitary if `a * star a = b * star b`. -/
+lemma _root_.Units.inv_mul_mem_unitary (a b : Rˣ)
+    (hab : a * star a = b * star b) : (a⁻¹ * b : R) ∈ unitary R :=
+  inv_inv b ▸ a⁻¹.mul_inv_mem_unitary b⁻¹ (by simpa [← mul_inv_rev])
+
 instance instIsStarNormal (u : unitary R) : IsStarNormal u where
   star_comm_self := star_mul_self u |>.trans <| (mul_star_self u).symm
 
 instance coe_isStarNormal (u : unitary R) : IsStarNormal (u : R) where
   star_comm_self := congr(Subtype.val $(star_comm_self' u))
 
+@[aesop 10% apply (rule_sets := [CStarAlgebra])]
 lemma _root_.isStarNormal_of_mem_unitary {u : R} (hu : u ∈ unitary R) : IsStarNormal u :=
   coe_isStarNormal ⟨u, hu⟩
 
