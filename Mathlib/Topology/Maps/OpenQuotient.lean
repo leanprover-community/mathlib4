@@ -75,9 +75,7 @@ section Subquotient
 
 variable {A B C D : Type*}
 variable [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
-variable (f : A → B) (g : C → D) (p : A → C) (q : B → D) (h : g ∘ p = q ∘ f)
-
-include h
+variable (f : A → B) (g : C → D) (p : A → C) (q : B → D)
 
 omit [TopologicalSpace C] in
 /--
@@ -97,6 +95,7 @@ A typical application is when `K ≤ H` are subgroups of `G`, then the quotient 
 is also the subspace topology from `G/K`.
 -/
 lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
+    (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : Function.Surjective p)
     (hq : IsOpenQuotientMap q) (hg : Function.Injective g)
     (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
@@ -123,6 +122,7 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     simp_rw [← Set.preimage_comp, h]
 
 lemma isEmbedding_of_isOpenQuotientMap_of_isInducing
+    (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : IsQuotientMap p)
     (hq : IsOpenQuotientMap q) (hg : Function.Injective g)
     (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
@@ -131,6 +131,7 @@ lemma isEmbedding_of_isOpenQuotientMap_of_isInducing
     f g p q h hf hp.surjective hq hg H)⟩, hg⟩
 
 lemma isQuotientMap_of_isOpenQuotientMap_of_isInducing
+    (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : Surjective p)
     (hq : IsOpenQuotientMap q) (hg : IsEmbedding g)
     (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
