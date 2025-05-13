@@ -299,13 +299,9 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
 
 theorem extend_trans_of_le_half (γ₁ : Path x y) (γ₂ : Path y z) {t : ℝ} (ht : t ≤ 1 / 2) :
     (γ₁.trans γ₂).extend t = γ₁.extend (2 * t) := by
-  cases le_total t 0 with
-  | inl ht₀ =>
-    rw [Path.extend_of_le_zero _ ht₀,
-      Path.extend_of_le_zero _ (mul_nonpos_of_nonneg_of_nonpos zero_le_two ht₀)]
-  | inr ht₀ =>
-    rw [extend_extends _ ⟨ht₀, by linarith⟩, Path.trans_apply, dif_pos, extend_extends]
-    exact ht
+  obtain _ | ht₀ := le_total t 0
+  · repeat rw [extend_of_le_zero _ (by linarith)]
+  · rwa [extend_extends _ ⟨ht₀, by linarith⟩, trans_apply, dif_pos, extend_extends]
 
 theorem extend_trans_of_half_le (γ₁ : Path x y) (γ₂ : Path y z) {t : ℝ} (ht : 1 / 2 ≤ t) :
     (γ₁.trans γ₂).extend t = γ₂.extend (2 * t - 1) := by
