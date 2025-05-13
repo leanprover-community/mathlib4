@@ -486,6 +486,7 @@ import Mathlib.Algebra.Homology.BifunctorHomotopy
 import Mathlib.Algebra.Homology.BifunctorMappingCone
 import Mathlib.Algebra.Homology.BifunctorShift
 import Mathlib.Algebra.Homology.BifunctorSingle
+import Mathlib.Algebra.Homology.BifunctorTriangulated
 import Mathlib.Algebra.Homology.CategoryWithHomology
 import Mathlib.Algebra.Homology.CochainComplexMinus
 import Mathlib.Algebra.Homology.CommSq
