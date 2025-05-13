@@ -188,9 +188,8 @@ instance isGaussian_map (L : E →L[ℝ] F) : IsGaussian (μ.map L) where
       rw [Measure.map_map (by fun_prop) (by fun_prop)]
       simp
 
-instance isGaussian_map_equiv (L : E ≃L[ℝ] F) : IsGaussian (μ.map L) := by
-  convert isGaussian_map (L : E →L[ℝ] F)
-  infer_instance
+instance isGaussian_map_equiv (L : E ≃L[ℝ] F) : IsGaussian (μ.map L) :=
+  isGaussian_map (L : E →L[ℝ] F)
 
 lemma isCentered_conv_map_neg [SecondCountableTopology E] :
     IsCentered (μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ))) := by
