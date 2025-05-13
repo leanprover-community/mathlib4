@@ -38,5 +38,6 @@ printf 'Files only in the old repository:\n---\n%s\n---\n' "${removedFiles}"
 IFS=$'\n'
 for file in ${removedFiles}
 do
-  git checkout "${previousHash}" "${file}"
+  printf 'git checkout %s %s\n' "${previousHash}" "${file}"
+  #git checkout "${previousHash}" "${file}"
 done
