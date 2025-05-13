@@ -6,8 +6,9 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.BifunctorSingle
 import Mathlib.Algebra.Homology.BifunctorTriangulated
 import Mathlib.Algebra.Homology.BifunctorColimits
-import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
+import Mathlib.Algebra.Homology.HomotopyCategory.MonoidalTriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
+import Mathlib.Algebra.Homology.HomotopyCategory.PreservesQuasiIso
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplex
 import Mathlib.CategoryTheory.Abelian.Flat.Basic
 import Mathlib.CategoryTheory.Monoidal.KFlat
@@ -145,6 +146,21 @@ instance : (quasiIso A (.up ℤ)).kFlat.IsStableUnderShift ℤ where
     rw [kFlat_quotient_obj_iff]
     exact (HomologicalComplex.quasiIso A (.up ℤ)).kFlat.le_shift n _ hK⟩
 
+lemma kFlat_iff_preserves_acyclic (K : HomotopyCategory A (.up ℤ)) :
+    (quasiIso A (.up ℤ)).kFlat K ↔ ∀ (Z : HomotopyCategory A (.up ℤ))
+        (_ : subcategoryAcyclic A Z), subcategoryAcyclic A (K ⊗ Z) ∧
+          subcategoryAcyclic A (Z ⊗ K) := by
+  rw [kFlat_iff_preservesQuasiIso]
+  -- cf #24735
+  change preservesQuasiIso ((curriedTensor _).obj K) ∧
+    preservesQuasiIso ((curriedTensor _).flip.obj K) ↔ _
+  simp only [preservesQuasiIso_iff_preserves_acyclic]
+  constructor
+  · rintro ⟨h₁, h₂⟩ Z hZ
+    exact ⟨h₁ _ hZ, h₂ _ hZ⟩
+  · rintro hZ
+    exact ⟨fun _ hX ↦ (hZ _ hX).1, fun _ hX ↦ (hZ _ hX).2⟩
+
 end HomotopyCategory
 
 namespace CochainComplex
@@ -174,10 +190,14 @@ instance : (ObjectProperty.flat (A := A)).ContainsZero where
     apply Functor.map_isZero
     apply Limits.isZero_zero⟩
 
--- TODO: prove it
-variable [(HomotopyCategory.quasiIso A (.up ℤ)).kFlat.IsTriangulatedClosed₂]
-
 instance : (HomotopyCategory.quasiIso A (.up ℤ)).kFlat.IsTriangulated where
+  toIsTriangulatedClosed₂ := .mk' (fun T hT h₁ h₃ ↦ by
+    simp only [HomotopyCategory.kFlat_iff_preserves_acyclic] at h₁ h₃ ⊢
+    intro Z hZ
+    exact ⟨(HomotopyCategory.subcategoryAcyclic A).ext_of_isTriangulatedClosed₂ _
+      (((curriedTensor _).flip.obj Z).map_distinguished _ hT) (h₁ Z hZ).1 (h₃ Z hZ).1,
+        (HomotopyCategory.subcategoryAcyclic A).ext_of_isTriangulatedClosed₂ _
+      (((curriedTensor _).obj Z).map_distinguished _ hT) (h₁ Z hZ).2 (h₃ Z hZ).2⟩)
 
 lemma kFlat_of_bounded_of_flat (K : CochainComplex A ℤ) (a b : ℤ)
     [K.IsStrictlyGE a] [K.IsStrictlyLE b]
@@ -253,8 +273,6 @@ variable {A} {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasFini
   (Λ : LeftResolutions ι) [Λ.F.PreservesZeroMorphisms]
   (hι : ι.essImage ≤ ObjectProperty.flat)
 
--- TODO: prove it
-variable [(HomotopyCategory.quasiIso A (.up ℤ)).kFlat.IsTriangulatedClosed₂]
 variable [∀ (X : A), PreservesColimitsOfShape ℤ ((curriedTensor A).flip.obj X)]
   [∀ (X : A), PreservesColimitsOfShape ℤ ((curriedTensor A).obj X)]
 

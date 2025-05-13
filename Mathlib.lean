@@ -567,6 +567,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.Algebra.Homology.HomotopyCategory.Minus
 import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
+import Mathlib.Algebra.Homology.HomotopyCategory.MonoidalTriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 import Mathlib.Algebra.Homology.HomotopyCategory.PreservesQuasiIso
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
