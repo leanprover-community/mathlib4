@@ -498,26 +498,31 @@ theorem eLpNorm'_enorm_rpow (f : α → ε) (p q : ℝ) (hq_pos : 0 < q) :
   simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
     mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one, enorm_eq_self, ← ENNReal.rpow_mul, mul_comm]
 
-lemma foo (f : α → ℝ) (hf : ∀ x, 0 ≤ f x) : eLpNorm f p μ = eLpNorm (ENNReal.ofReal ∘ f) p μ := by
-  apply eLpNorm_congr_enorm_ae
-  filter_upwards with x
-  rw [Function.comp_apply]
-  -- Should this be added to mathlib? ENNReal.ofReal_of_nonneg
-  have {a : ℝ} (ha : 0 ≤ a) : ‖a‖ₑ = ‖ENNReal.ofReal a‖ₑ := by
-    simp only [enorm_eq_self]
-    exact Real.enorm_of_nonneg ha
-  exact this (hf x)
+-- TODO: where is a good home for this lemma? minimal imports are
+-- Mathlib.Analysis.Normed.{Group.Continuity, Ring.Basic}; #find_home! is not helpful
+lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖ₑ = ‖a‖ₑ:= by
+  simpa using (Real.enorm_of_nonneg ha).symm
 
-lemma foo' (f : α → ℝ) (hf : ∀ x, 0 ≤ f x) (p : ℝ) :
-    eLpNorm' f p μ = eLpNorm' (ENNReal.ofReal ∘ f) p μ := by
-  sorry -- similar to foo
+-- XXX: should this lemma be added?
+lemma eLpNorm'_ofReal (f : α → ℝ) (hf : ∀ᵐ x ∂μ, 0 ≤ f x) (p : ℝ) :
+    eLpNorm' (ENNReal.ofReal ∘ f) p μ = eLpNorm' f p μ :=
+  eLpNorm'_congr_enorm_ae <| hf.mono fun _x hx ↦ enorm_ofReal_of_nonneg hx
+
+/-- `f : α → ℝ` and `ENNReal.ofReal ∘ f: α → ℝ≥0∞` have the same enorm.
+Usually, you should not use this lemma (but use enorms everywhere.) -/
+lemma eLpNorm_ofReal (f : α → ℝ) (hf : ∀ᵐ x ∂μ, 0 ≤ f x) :
+    eLpNorm (ENNReal.ofReal ∘ f) p μ = eLpNorm f p μ :=
+  eLpNorm_congr_enorm_ae <| hf.mono fun _x hx ↦ enorm_ofReal_of_nonneg hx
+
+-- carleson has a similar lemma: for f : α → ℝ≥0∞, the norms of f and f.toReal are related
+-- (.toReal has norm ≤, equal if a.e. finite)
 
 theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
-  rw [← eLpNorm'_enorm_rpow _ _ _ hq_pos]
-  convert foo' (fun x ↦ ‖f x‖ ^ q) (p := p) (μ := μ) (fun _ ↦ by positivity)
-  rw [Function.comp_apply, ← ofReal_norm_eq_enorm]
-  exact ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity)
+  simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
+    mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one, ← ofReal_norm_eq_enorm,
+    Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg (norm_nonneg _) _), mul_comm p,
+    ← ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hq_pos.le, ENNReal.rpow_mul]
 
 theorem eLpNorm_enorm_rpow (f : α → ε) (hq_pos : 0 < q) :
     eLpNorm (‖f ·‖ₑ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
@@ -543,31 +548,10 @@ theorem eLpNorm_enorm_rpow (f : α → ε) (hq_pos : 0 < q) :
 theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
     eLpNorm (fun x => ‖f x‖ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
   rw [← eLpNorm_enorm_rpow f hq_pos]
-  convert foo (fun x ↦ ‖f x‖ ^ q) (p := p) (μ := μ) (fun x ↦ by positivity)
+  symm
+  convert eLpNorm_ofReal (fun x ↦ ‖f x‖ ^ q) (by filter_upwards with x using by positivity)
   rw [Function.comp_apply, ← ofReal_norm_eq_enorm]
   exact ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity)
-
--- old attempt, does not work but I don't know why!
-theorem eLpNorm_norm_rpow_old (f : α → F) (hq_pos : 0 < q) :
-    eLpNorm (fun x => ‖f x‖ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
-  rw [← eLpNorm_enorm_rpow f hq_pos]
-  -- rw [enorm_eq_nnnorm]
-  -- This should be obvious, as the enorm is never infinite.
-  apply eLpNorm_congr_enorm_ae
-  filter_upwards with x
-  simp only [enorm_eq_self]
-  simp only [enorm_eq_nnnorm]
-  set A := ‖f x‖ ^ q
-  have : 0 < ‖f x‖ ^ q := by sorry
-  have : ENNReal.ofReal ‖A‖₊ = ENNReal.ofReal A := sorry
-  -- XXX: why does this not fire? and how to debug this easily?
-  rw [this]
-
-  suffices h: ‖f x‖ ^ q = ↑‖f x‖₊ ^ q by
-    rw [h]
-    simp only [coe_nnnorm, enorm_eq_self]--congr
-    sorry--rfl
-  apply congrArg _ rfl
 
 theorem eLpNorm_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) : eLpNorm f p μ = eLpNorm g p μ :=
   eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx => hx ▸ rfl
