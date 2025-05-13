@@ -34,16 +34,16 @@ section UniformlyOn
 variable (f g 𝔖)
 
 /-- `HasProdUniformlyOn f g 𝔖` means that the (potentially infinite) product `∏' i, f i b`
-for `b : β` converges uniformly on each `s` in a family of sets `𝔖` to `g`. -/
+for `b : β` converges uniformly on each `s ∈ 𝔖` to `g`. -/
 @[to_additive "`HasSumUniformlyOn f g 𝔖` means that the (potentially infinite) sum `∑' i, f i b`
-for `b : β` converges uniformly on `s ∈ 𝔖` to `g`."]
+for `b : β` converges uniformly on each `s ∈ 𝔖` to `g`."]
 def HasProdUniformlyOn : Prop :=
   HasProd (fun i ↦ UniformOnFun.ofFun 𝔖 (f i)) (UniformOnFun.ofFun 𝔖 g)
 
-/-- `MultipliableUniformlyOn f 𝔖` means that `f` converges uniformly on `s` to some infinite
-product. -/
-@[to_additive "`SummableUniformlyOn f s` means that `f` converges uniformly on `s` to some
-infinite sum."]
+/-- `MultipliableUniformlyOn f 𝔖` means that there is some infinite product to which
+`f` converges uniformly on every `s ∈ 𝔖`. Use `fun x ↦ ∏' i, f i x` to get the product function. -/
+@[to_additive "`SummableUniformlyOn f s` means that there is some infinite sum to
+which `f` converges uniformly on every `s ∈ 𝔖`. Use fun x ↦ ∑' i, f i x to get the sum function."]
 def MultipliableUniformlyOn (f : ι → β → α) (𝔖 : Set (Set β)) : Prop :=
   Multipliable (fun i ↦ UniformOnFun.ofFun 𝔖 (f i))
 
@@ -62,7 +62,7 @@ theorem HasProdUniformlyOn.multipliableUniformlyOn (h : HasProdUniformlyOn f g �
 @[to_additive]
 lemma hasProdUniformlyOn_iff_tendstoUniformlyOn : HasProdUniformlyOn f g 𝔖 ↔
     ∀ s ∈ 𝔖, TendstoUniformlyOn (fun I b ↦ ∏ i ∈ I, f i b) g atTop s := by
-  simpa [HasProdUniformlyOn, HasProd, UniformOnFun.ofFun_prod, Finset.prod_fn] using
+  simpa [HasProdUniformlyOn, HasProd, ← UniformOnFun.ofFun_prod, Finset.prod_fn] using
     UniformOnFun.tendsto_iff_tendstoUniformlyOn
 
 @[to_additive]
@@ -74,6 +74,15 @@ theorem HasProdUniformlyOn.hasProd (h : HasProdUniformlyOn f g 𝔖) (hs : s ∈
 theorem HasProdUniformlyOn.tprod_eqOn [T2Space α] (h : HasProdUniformlyOn f g 𝔖) (hs : s ∈ 𝔖) :
     s.EqOn (∏' b, f b ·) g :=
   fun _ hx ↦ (h.hasProd hs hx).tprod_eq
+
+@[to_additive]
+theorem HasProdUniformlyOn.tprod_eqOn_univ [T2Space α] (h : HasProdUniformlyOn f g 𝔖)
+    (hs2 :⋃₀ 𝔖 = Set.univ) : (∏' b, f b ·) = g := by
+  ext1 x
+  have hx : x ∈ ⋃₀ 𝔖 := by
+    simp [hs2]
+  obtain ⟨s, hs, hx⟩ := Set.mem_sUnion.mp hx
+  refine h.tprod_eqOn hs hx
 
 @[to_additive]
 theorem MultipliableUniformlyOn.multipliable (h : MultipliableUniformlyOn f 𝔖)
@@ -95,8 +104,9 @@ section LocallyUniformlyOn
 ## Locally uniform convergence of sums and products
 -/
 
-variable (f g s) [TopologicalSpace β]
+variable [TopologicalSpace β]
 
+variable (f g s) in
 /-- `HasProdLocallyUniformlyOn f g s` means that the (potentially infinite) product `∏' i, f i b`
 for `b : β` converges locally uniformly on `s` to `g b` (in the sense of
 `TendstoLocallyUniformlyOn`). -/
@@ -106,13 +116,12 @@ for `b : β` converges locally uniformly on `s` to `g b` (in the sense of
 def HasProdLocallyUniformlyOn : Prop :=
   TendstoLocallyUniformlyOn (fun I b ↦ ∏ i ∈ I, f i b) g atTop s
 
+variable (f g s) in
 /-- `MultipliableLocallyUniformlyOn f s` means that the product `∏' i, f i b` converges locally
 uniformly on `s` to something. -/
 @[to_additive "`SummableLocallyUniformlyOn f s` means that `∑' i, f i b` converges locally
 uniformly on `s` to something."]
 def MultipliableLocallyUniformlyOn : Prop := ∃ g, HasProdLocallyUniformlyOn f g s
-
-variable {f g s}
 
 @[to_additive]
 lemma hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn :
