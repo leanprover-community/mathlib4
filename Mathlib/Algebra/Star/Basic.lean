@@ -155,7 +155,7 @@ end StarMul
 
 /-- In a commutative ring, make `simp` prefer leaving the order unchanged. -/
 @[simp]
-theorem star_mul' [CommSemigroup R] [StarMul R] (x y : R) : star (x * y) = star x * star y :=
+theorem star_mul' [CommMagma R] [StarMul R] (x y : R) : star (x * y) = star x * star y :=
   (star_mul x y).trans (mul_comm _ _)
 
 /-- `star` as a `MulEquiv` from `R` to `Rᵐᵒᵖ` -/
@@ -210,7 +210,7 @@ section
 attribute [local instance] starMulOfComm
 
 /-- Note that since `starMulOfComm` is reducible, `simp` can already prove this. -/
-theorem star_id_of_comm {R : Type*} [CommSemiring R] {x : R} : star x = x :=
+theorem star_id_of_comm {R : Type*} [CommMonoid R] {x : R} : star x = x :=
   rfl
 
 end
@@ -289,7 +289,7 @@ theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
 section
 
 @[simp, norm_cast]
-theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
+theorem star_intCast [NonAssocRing R] [StarRing R] (z : ℤ) : star (z : R) = z :=
   (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
 
 end

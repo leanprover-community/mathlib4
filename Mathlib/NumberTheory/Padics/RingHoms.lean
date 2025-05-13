@@ -125,8 +125,8 @@ theorem norm_sub_modPart (h : ‖(r : ℚ_[p])‖ ≤ 1) : ‖(⟨r, h⟩ - modP
       Int.cast_sub]
     apply Subtype.coe_injective
     simp only [coe_mul, Subtype.coe_mk, coe_natCast]
-    rw_mod_cast [@Rat.mul_den_eq_num r]
-    rfl
+    norm_cast
+    simp
   exact norm_sub_modPart_aux r h
 
 theorem exists_mem_range_of_norm_rat_le_one (h : ‖(r : ℚ_[p])‖ ≤ 1) :
@@ -189,8 +189,8 @@ theorem existsUnique_mem_range : ∃! n : ℕ, n < p ∧ x - n ∈ maximalIdeal 
 
 @[deprecated (since := "2024-12-17")] alias exists_unique_mem_range := existsUnique_mem_range
 
-/-- `zmod_repr x` is the unique natural number smaller than `p`
-satisfying `‖(x - zmod_repr x : ℤ_[p])‖ < 1`.
+/-- `zmodRepr x` is the unique natural number smaller than `p`
+satisfying `‖(x - zmodRepr x : ℤ_[p])‖ < 1`.
 -/
 def zmodRepr : ℕ :=
   Classical.choose (existsUnique_mem_range x).exists
@@ -375,7 +375,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
       lift c to ℤ_[p]ˣ using by simp [isUnit_iff, norm_eq_zpow_neg_valuation hc', hc0]
       rw [IsDiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
       exact irreducible_p
-    · simp only [Int.natAbs_ofNat, zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
+    · simp only [Int.natAbs_natCast, zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
       rw [unitCoeff_spec hc']
       exact (dvd_pow_self (p : ℤ_[p]) hc0).mul_left _
 
@@ -432,7 +432,7 @@ theorem zmod_cast_comp_toZModPow (m n : ℕ) (h : m ≤ n) :
 theorem cast_toZModPow (m n : ℕ) (h : m ≤ n) (x : ℤ_[p]) :
     ZMod.cast (toZModPow n x) = toZModPow m x := by
   rw [← zmod_cast_comp_toZModPow _ _ h]
-  rfl
+  simp
 
 theorem denseRange_natCast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
   intro x
@@ -474,8 +474,7 @@ def nthHom (r : R) : ℕ → ℤ := fun n => (f n r : ZMod (p ^ n)).val
 
 @[simp]
 theorem nthHom_zero : nthHom f 0 = 0 := by
-  simp (config := { unfoldPartialApp := true }) [nthHom]
-  rfl
+  simp +unfoldPartialApp [nthHom, Pi.zero_def]
 
 variable {f}
 variable [hp_prime : Fact p.Prime]
@@ -609,8 +608,8 @@ theorem lift_sub_val_mem_span (r : R) (n : ℕ) :
   rw [Ideal.mem_span_singleton]
   convert
     (Int.castRingHom ℤ_[p]).map_dvd (pow_dvd_nthHom_sub f_compat r n (max n k) (le_max_left _ _))
-  · rw [map_pow]; rfl
-  · rw [map_sub]; rfl
+  · simp
+  · simp [nthHom]
 
 /-- One part of the universal property of `ℤ_[p]` as a projective limit.
 See also `PadicInt.lift_unique`.
@@ -648,7 +647,7 @@ theorem ext_of_toZModPow {x y : ℤ_[p]} : (∀ n, toZModPow n x = toZModPow n y
   constructor
   · intro h
     rw [← lift_self x, ← lift_self y]
-    simp (config := { unfoldPartialApp := true }) [lift, limNthHom, nthHom, h]
+    simp +unfoldPartialApp [lift, limNthHom, nthHom, h]
   · rintro rfl _
     rfl
 

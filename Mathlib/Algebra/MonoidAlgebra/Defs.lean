@@ -182,8 +182,8 @@ theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom G R]
     (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g y)) :
     liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
   conv_rhs => rw [← sum_single a, ← sum_single b]
-  -- Porting note: `(liftNC _ g).map_finsupp_sum` → `map_finsupp_sum`
-  simp_rw [mul_def, map_finsupp_sum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
+  -- Porting note: `(liftNC _ g).map_finsuppSum` → `map_finsuppSum`
+  simp_rw [mul_def, map_finsuppSum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
   refine Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x _hx => ?_
   simp [mul_assoc, (h_comm hy).left_comm]
 
@@ -737,7 +737,7 @@ variable [Semiring k]
 
 /-- The opposite of a `MonoidAlgebra R I` equivalent as a ring to
 the `MonoidAlgebra Rᵐᵒᵖ Iᵐᵒᵖ` over the opposite ring, taking elements to their opposite. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply]
+@[simps! +simpRhs apply symm_apply]
 protected noncomputable def opRingEquiv [Monoid G] :
     (MonoidAlgebra k G)ᵐᵒᵖ ≃+* MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ :=
   { opAddEquiv.symm.trans <|
@@ -816,10 +816,18 @@ endowed with the convolution product.
 def AddMonoidAlgebra :=
   G →₀ k
 
-@[inherit_doc]
-scoped[AddMonoidAlgebra] notation:9000 R:max "[" A "]" => AddMonoidAlgebra R A
-
 namespace AddMonoidAlgebra
+
+@[inherit_doc AddMonoidAlgebra]
+scoped syntax:max (priority := high) term noWs "[" term "]" : term
+
+macro_rules | `($k[$g]) => `(AddMonoidAlgebra $k $g)
+
+/-- Unexpander for `AddMonoidAlgebra`. -/
+@[scoped app_unexpander AddMonoidAlgebra]
+def unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $k $g) => `($k[$g])
+  | _ => throw ()
 
 instance inhabited : Inhabited k[G] :=
   inferInstanceAs (Inhabited (G →₀ k))
@@ -1377,7 +1385,7 @@ variable [Semiring k]
 
 /-- The opposite of an `R[I]` is ring equivalent to
 the `AddMonoidAlgebra Rᵐᵒᵖ I` over the opposite ring, taking elements to their opposite. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply]
+@[simps! +simpRhs apply symm_apply]
 protected noncomputable def opRingEquiv [AddCommMonoid G] :
     k[G]ᵐᵒᵖ ≃+* kᵐᵒᵖ[G] :=
   { opAddEquiv.symm.trans (mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)) with

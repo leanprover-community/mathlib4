@@ -131,7 +131,7 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
 
 @[simp]
 theorem range_const (α) [MeasurableSpace α] [Nonempty α] (b : β) : (const α b).range = {b} :=
-  Finset.coe_injective <| by simp (config := { unfoldPartialApp := true }) [Function.const]
+  Finset.coe_injective <| by simp +unfoldPartialApp [Function.const]
 
 theorem range_const_subset (α) [MeasurableSpace α] (b : β) : (const α b).range ⊆ {b} :=
   Finset.coe_subset.1 <| by simp
@@ -587,6 +587,11 @@ instance instOrderBot [LE β] [OrderBot β] : OrderBot (α →ₛ β) where
 instance instOrderTop [LE β] [OrderTop β] : OrderTop (α →ₛ β) where
   top := const α ⊤
   le_top _ _ := le_top
+
+@[to_additive]
+instance [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
+    IsOrderedMonoid (α →ₛ β) where
+  mul_le_mul_left _ _ h _ _ := mul_le_mul_left' (h _) _
 
 instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (α →ₛ β) :=
   { SimpleFunc.instPartialOrder with
@@ -1091,12 +1096,12 @@ protected theorem map₂ [Zero δ] (hf : f.FinMeasSupp μ) {g : α →ₛ γ} (h
     {op : β → γ → δ} (H : op 0 0 = 0) : ((pair f g).map (Function.uncurry op)).FinMeasSupp μ :=
   (hf.pair hg).map H
 
-protected theorem add {β} [AddMonoid β] {f g : α →ₛ β} (hf : f.FinMeasSupp μ)
+protected theorem add {β} [AddZeroClass β] {f g : α →ₛ β} (hf : f.FinMeasSupp μ)
     (hg : g.FinMeasSupp μ) : (f + g).FinMeasSupp μ := by
   rw [add_eq_map₂]
   exact hf.map₂ hg (zero_add 0)
 
-protected theorem mul {β} [MonoidWithZero β] {f g : α →ₛ β} (hf : f.FinMeasSupp μ)
+protected theorem mul {β} [MulZeroClass β] {f g : α →ₛ β} (hf : f.FinMeasSupp μ)
     (hg : g.FinMeasSupp μ) : (f * g).FinMeasSupp μ := by
   rw [mul_eq_map₂]
   exact hf.map₂ hg (zero_mul 0)
@@ -1158,7 +1163,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
     convert const 0 MeasurableSet.univ
     ext x
     simp [h]
-  | @insert x s hxs ih =>
+  | insert x s hxs ih =>
     have mx := f.measurableSet_preimage {x}
     let g := SimpleFunc.piecewise (f ⁻¹' {x}) mx 0 f
     have Pg : motive g := by
@@ -1200,7 +1205,7 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
     convert const c
     ext x
     simp [h]
-  | @insert x s hxs ih =>
+  | insert x s hxs ih =>
     have mx := f.measurableSet_preimage {x}
     let g := SimpleFunc.piecewise (f ⁻¹' {x}) mx (SimpleFunc.const α c) f
     have Pg : P g := by
@@ -1221,7 +1226,7 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
 /-- In a topological vector space, the addition of a measurable function and a simple function is
 measurable. -/
 theorem _root_.Measurable.add_simpleFunc
-    {E : Type*} {_ : MeasurableSpace α} [MeasurableSpace E] [AddGroup E] [MeasurableAdd E]
+    {E : Type*} {_ : MeasurableSpace α} [MeasurableSpace E] [AddCancelMonoid E] [MeasurableAdd E]
     {g : α → E} (hg : Measurable g) (f : SimpleFunc α E) :
     Measurable (g + (f : α → E)) := by
   classical
@@ -1246,7 +1251,7 @@ theorem _root_.Measurable.add_simpleFunc
 /-- In a topological vector space, the addition of a simple function and a measurable function is
 measurable. -/
 theorem _root_.Measurable.simpleFunc_add
-    {E : Type*} {_ : MeasurableSpace α} [MeasurableSpace E] [AddGroup E] [MeasurableAdd E]
+    {E : Type*} {_ : MeasurableSpace α} [MeasurableSpace E] [AddCancelMonoid E] [MeasurableAdd E]
     {g : α → E} (hg : Measurable g) (f : SimpleFunc α E) :
     Measurable ((f : α → E) + g) := by
   classical

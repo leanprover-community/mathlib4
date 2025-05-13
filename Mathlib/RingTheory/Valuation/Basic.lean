@@ -21,7 +21,7 @@ commutative monoid with zero, that in addition satisfies the following two axiom
  * `v 0 = 0`
  * `∀ x y, v (x + y) ≤ max (v x) (v y)`
 
-`Valuation R Γ₀`is the type of valuations `R → Γ₀`, with a coercion to the underlying
+`Valuation R Γ₀` is the type of valuations `R → Γ₀`, with a coercion to the underlying
 function. If `v` is a valuation from `R` to `Γ₀` then the induced group
 homomorphism `Units(R) → Γ₀` is called `unit_map v`.
 
@@ -35,6 +35,8 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 ## Main definitions
 
 * `Valuation R Γ₀`, the type of valuations on `R` with values in `Γ₀`
+* `Valuation.IsNontrivial` is the class of non-trivial valuations, namely those for which there
+  is an element in the ring whose valuation is `≠ 0` and `≠ 1`.
 * `Valuation.IsEquiv`, the heterogeneous equivalence relation on valuations
 * `Valuation.supp`, the support of a valuation
 
@@ -72,7 +74,7 @@ variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
 structure Valuation extends R →*₀ Γ₀ where
-  /-- The valuation of a a sum is less that the sum of the valuations -/
+  /-- The valuation of a sum is less than or equal to the maximum of the valuations. -/
   map_add_le_max' : ∀ x y, toFun (x + y) ≤ max (toFun x) (toFun y)
 
 /-- `ValuationClass F α β` states that `F` is a type of valuations.
@@ -81,7 +83,7 @@ You should also extend this typeclass when you extend `Valuation`. -/
 class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
     [FunLike F R Γ₀] : Prop
   extends MonoidWithZeroHomClass F R Γ₀ where
-  /-- The valuation of a a sum is less that the sum of the valuations -/
+  /-- The valuation of a sum is less than or equal to the maximum of the valuations. -/
   map_add_le_max (f : F) (x y : R) : f (x + y) ≤ max (f x) (f y)
 
 export ValuationClass (map_add_le_max)
@@ -387,7 +389,28 @@ end Group
 
 end Basic
 
--- end of section
+section IsNontrivial
+
+variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀)
+
+/-- A valuation on a ring is nontrivial if there exists an element with valuation
+not equal to `0` or `1`. -/
+class IsNontrivial : Prop where
+  exists_val_nontrivial : ∃ x : R, v x ≠ 0 ∧ v x ≠ 1
+
+/-- For fields, being nontrivial is equivalent to the existence of a unit with valuation
+not equal to `1`. -/
+lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ₀} :
+    w.IsNontrivial ↔ ∃ x : Kˣ, w x ≠ 1 :=
+  ⟨fun ⟨x, hx0, hx1⟩ ↦
+    have : Nontrivial Γ₀ := ⟨w x, 0, hx0⟩
+    ⟨Units.mk0 x (w.ne_zero_iff.mp hx0), hx1⟩,
+    fun ⟨x, hx⟩ ↦
+    have : Nontrivial Γ₀ := ⟨w x, 1, hx⟩
+    ⟨x, w.ne_zero_iff.mpr (Units.ne_zero x), hx⟩⟩
+
+end IsNontrivial
+
 namespace IsEquiv
 
 variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
@@ -435,8 +458,8 @@ theorem isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
     (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y =>
   ⟨H.le_iff_le.mp, fun h => H.monotone h⟩
 
-theorem isEquiv_iff_val_lt_val [LinearOrderedCommGroupWithZero Γ₀]
-    [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
+theorem isEquiv_iff_val_lt_val [LinearOrderedCommMonoidWithZero Γ₀]
+    [LinearOrderedCommMonoidWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
     v.IsEquiv v' ↔ ∀ {x y : K}, v x < v y ↔ v' x < v' y := by
   simp only [IsEquiv, le_iff_le_iff_lt_iff_lt]
   exact forall_comm
@@ -625,7 +648,7 @@ section Monoid
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where
   coe v := v.toMonoidWithZeroHom.toFun
-  coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
+  coe_injective' f g := by cases f; cases g; simp +contextual
 
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀)
