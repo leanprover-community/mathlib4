@@ -514,9 +514,6 @@ lemma eLpNorm_ofReal (f : α → ℝ) (hf : ∀ᵐ x ∂μ, 0 ≤ f x) :
     eLpNorm (ENNReal.ofReal ∘ f) p μ = eLpNorm f p μ :=
   eLpNorm_congr_enorm_ae <| hf.mono fun _x hx ↦ enorm_ofReal_of_nonneg hx
 
--- carleson has a similar lemma: for f : α → ℝ≥0∞, the norms of f and f.toReal are related
--- (.toReal has norm ≤, equal if a.e. finite)
-
 theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
   simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
