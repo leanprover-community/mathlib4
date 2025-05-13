@@ -122,12 +122,9 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
   have := minimalPrimes_isPrime hp
   have : (p.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])
   suffices h : (p.map f).height ≤ 1 by
-    have h_lt : q.map f < p.map f := by
-      refine (map_mono hqp.le).lt_of_not_le fun e ↦ ?_
-      have := comap_mono (f := f) e
-      simp_rw [comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot, f, mk_ker,
-        sup_eq_left.mpr hI'q, sup_eq_left.mpr hI'p] at this
-      exact lt_irrefl _ (this.trans_lt hqp)
+    have h_lt : q.map f < p.map f := (map_mono hqp.le).lt_of_not_le fun e ↦ hqp.not_le <| by
+      simpa only [comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot, f, mk_ker,
+        sup_eq_left.mpr hI'q, sup_eq_left.mpr hI'p] using comap_mono (f := f) e
     have : (q.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])
     have : (p.map f).FiniteHeight := ⟨Or.inr (h.trans_lt (WithTop.coe_lt_top 1)).ne⟩
     rw [height_eq_primeHeight] at h
