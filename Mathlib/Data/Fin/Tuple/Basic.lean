@@ -121,21 +121,16 @@ theorem cons_one {α : Fin (n + 2) → Sort*} (x : α 0) (p : ∀ i : Fin n.succ
     cons x p 1 = p 0 := by
   rw [← cons_succ x p]; rfl
 
+@[simp]
+theorem cons_last {α : Fin (n + 2) → Sort*} (x : α 0) (p : ∀ i : Fin n.succ, α i.succ) :
+    cons x p (.last _) = p (.last _) := by
+  rw [← cons_succ x p]; rfl
+
 /-- Updating a tuple and adding an element at the beginning commute. -/
 @[simp]
 theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
   ext j
-  by_cases h : j = 0
-  · rw [h]
-    simp [Ne.symm (succ_ne_zero i)]
-  · let j' := pred j h
-    have : j'.succ = j := succ_pred j h
-    rw [← this, cons_succ]
-    by_cases h' : j' = i
-    · rw [h']
-      simp
-    · have : j'.succ ≠ i.succ := by rwa [Ne, succ_inj]
-      rw [update_of_ne h', update_of_ne this, cons_succ]
+  cases j using Fin.cases <;> simp [Ne.symm, update_apply_of_injective _ (succ_injective _)]
 
 /-- As a binary function, `Fin.cons` is injective. -/
 theorem cons_injective2 : Function.Injective2 (@cons n α) := fun x₀ y₀ x y h ↦
@@ -154,28 +149,16 @@ theorem cons_right_injective (x₀ : α 0) : Function.Injective (cons x₀) :=
 
 /-- Adding an element at the beginning of a tuple and then updating it amounts to adding it
 directly. -/
+@[simp]
 theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
   ext j
-  by_cases h : j = 0
-  · rw [h]
-    simp
-  · simp only [h, update_of_ne, Ne, not_false_iff]
-    let j' := pred j h
-    have : j'.succ = j := succ_pred j h
-    rw [← this, cons_succ, cons_succ]
+  cases j using Fin.cases <;> simp
 
 /-- Concatenating the first element of a tuple with its tail gives back the original tuple -/
 @[simp]
 theorem cons_self_tail : cons (q 0) (tail q) = q := by
   ext j
-  by_cases h : j = 0
-  · rw [h]
-    simp
-  · let j' := pred j h
-    have : j'.succ = j := succ_pred j h
-    rw [← this]
-    unfold tail
-    rw [cons_succ]
+  cases j using Fin.cases <;> simp [tail]
 
 /-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the first element of the tuple.
@@ -187,7 +170,6 @@ def consEquiv (α : Fin (n + 1) → Type*) : α 0 × (∀ i, α (succ i)) ≃ �
   invFun f := (f 0, tail f)
   left_inv f := by simp
   right_inv f := by simp
-
 
 /-- Recurse on an `n+1`-tuple by splitting it into a single element and an `n`-tuple. -/
 @[elab_as_elim]
@@ -210,21 +192,8 @@ def consInduction {α : Sort*} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
     (hx : Function.Injective x) : Function.Injective (cons x₀ x : Fin n.succ → α) := by
-  refine Fin.cases ?_ ?_
-  · refine Fin.cases ?_ ?_
-    · intro
-      rfl
-    · intro j h
-      rw [cons_zero, cons_succ] at h
-      exact hx₀.elim ⟨_, h.symm⟩
-  · intro i
-    refine Fin.cases ?_ ?_
-    · intro h
-      rw [cons_zero, cons_succ] at h
-      exact hx₀.elim ⟨_, h⟩
-    · intro j h
-      rw [cons_succ, cons_succ] at h
-      exact congr_arg _ (hx h)
+  intro i j
+  cases i using Fin.cases <;> cases j using Fin.cases <;> aesop (add simp [hx.eq_iff])
 
 theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
     Function.Injective (cons x₀ x : Fin n.succ → α) ↔ x₀ ∉ Set.range x ∧ Function.Injective x := by
@@ -507,6 +476,9 @@ theorem snoc_castSucc : snoc p x i.castSucc = p i := by
   convert cast_eq rfl (p i)
 
 @[simp]
+theorem snoc_apply_zero [NeZero n] : snoc p x 0 = p 0 := snoc_castSucc x p 0
+
+@[simp]
 theorem snoc_comp_castSucc {α : Sort*} {a : α} {f : Fin n → α} :
     (snoc f a : Fin (n + 1) → α) ∘ castSucc = f :=
   funext fun i ↦ by rw [Function.comp_apply, snoc_castSucc]
@@ -575,10 +547,7 @@ theorem snoc_left_injective (xₙ : α (last n)) : Function.Injective (snoc · x
 @[simp]
 theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
   ext j
-  by_cases h : j.val < n
-  · simp only [init, snoc, h, cast_eq, dite_true, castSucc_castLT]
-  · rw [eq_last_of_not_lt h]
-    simp
+  cases j using Fin.lastCases <;> simp [init]
 
 /-- Updating the last element of a tuple does not change the beginning. -/
 @[simp]
@@ -607,18 +576,14 @@ would involve a cast to convince Lean that the two types are equal, making it ha
 theorem cons_snoc_eq_snoc_cons {β : Sort*} (a : β) (q : Fin n → β) (b : β) :
     @cons n.succ (fun _ ↦ β) a (snoc q b) = snoc (cons a q) b := by
   ext i
-  by_cases h : i = 0
-  · simp [h, snoc, castLT]
-  set j := pred i h with ji
-  have : i = j.succ := by rw [ji, succ_pred]
-  rw [this, cons_succ]
-  by_cases h' : j.val < n
-  · set k := castLT j h' with jk
-    have : j = castSucc k := by rw [jk, castSucc_castLT]
-    rw [this, ← castSucc_fin_succ, snoc]
-    simp [pred, snoc, cons]
-  rw [eq_last_of_not_lt h', succ_last]
-  simp
+  cases i using Fin.cases with
+  | zero => simp
+  | succ j =>
+    cases j using Fin.lastCases with
+    | last => simp
+    | cast j =>
+      rw [cons_succ]
+      simp [succ_castSucc]
 
 theorem comp_snoc {α : Sort*} {β : Sort*} (g : α → β) (q : Fin n → α) (y : α) :
     g ∘ snoc q y = snoc (g ∘ q) (g y) := by
@@ -756,9 +721,9 @@ lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
     (∃ i, P i) ↔ P (last n) ∨ ∃ i : Fin n, P i.castSucc where
   mp := by
     rintro ⟨i, hi⟩
-    induction' i using lastCases
-    · exact .inl hi
-    · exact .inr ⟨_, hi⟩
+    cases i using lastCases with
+    | last => exact .inl hi
+    | cast _ => exact .inr ⟨_, hi⟩
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
 
 theorem forall_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
@@ -944,7 +909,14 @@ end Preorder
 open Set
 
 @[simp] lemma removeNth_update (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
-    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth, succAbove_ne]
+    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth]
+
+@[simp]
+lemma removeNth_update_succAbove (p : Fin (n + 1)) (i : Fin n) (x : α (p.succAbove i))
+    (f : ∀ j, α j) :
+    removeNth p (update f (p.succAbove i) x) = update (removeNth p f) i x := by
+  ext j
+  rcases eq_or_ne j i with rfl | hne <;> simp [removeNth, succAbove_right_inj, *]
 
 @[simp] lemma insertNth_removeNth (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
     insertNth p x (removeNth p f) = update f p x := by simp [Fin.insertNth_eq_iff]
@@ -955,8 +927,13 @@ lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
 @[simp]
 theorem update_insertNth (p : Fin (n + 1)) (x y : α p) (f : ∀ i, α (p.succAbove i)) :
     update (p.insertNth x f) p y = p.insertNth y f := by
-  ext i
-  cases i using p.succAboveCases <;> simp [succAbove_ne]
+  simp [eq_insertNth_iff]
+
+@[simp]
+theorem insertNth_update (p : Fin (n + 1)) (x : α p) (i : Fin n) (y : α (p.succAbove i))
+    (f : ∀ j, α (p.succAbove j)) :
+    p.insertNth x (update f i y) = update (p.insertNth x f) (p.succAbove i) y := by
+  simp [insertNth_eq_iff]
 
 /-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the `p`-th element of the tuple.

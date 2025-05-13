@@ -234,7 +234,7 @@ section Preorder
 variable [Preorder α] {s t : Set α} {a : α}
 
 theorem isWF_iff_no_descending_seq :
-    IsWF s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f (OrderDual.toDual n) ∈ s :=
+    IsWF s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f n ∈ s :=
   wellFoundedOn_iff_no_descending_seq.trans
     ⟨fun H f hf => H ⟨⟨f, hf.injective⟩, hf.lt_iff_lt⟩, fun H f => H f fun _ _ => f.map_rel_iff.2⟩
 
