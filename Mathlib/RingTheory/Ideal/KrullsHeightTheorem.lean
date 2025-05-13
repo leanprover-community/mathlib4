@@ -223,8 +223,8 @@ lemma Ideal.height_le_spanRank (I : Ideal R) (hI : I ≠ ⊤) :
   · exact I.spanRank.ofENat_toENat_le
 
 instance Ideal.finiteHeight_of_isNoetherianRing (I : Ideal R) :
-    I.FiniteHeight := finiteHeight_iff_lt.mpr <| Or.elim (em (I = ⊤)) Or.inl <|
-  fun h ↦ Or.inr <| (lt_of_le_of_lt (I.height_le_spanFinrank h) (ENat.coe_lt_top _))
+    I.FiniteHeight := finiteHeight_iff_lt.mpr <| Or.elim (em (I = ⊤)) Or.inl
+  fun h ↦ Or.inr <| (I.height_le_spanFinrank h).trans_lt (ENat.coe_lt_top _)
 
 instance [IsNoetherianRing R] [IsLocalRing R] : FiniteRingKrullDim R := by
   apply finiteRingKrullDim_iff_ne_bot_and_top.mpr
@@ -265,12 +265,11 @@ lemma Ideal.height_le_iff_exists_minimalPrimes (p : Ideal R) [p.IsPrime]
 
 /-- If `p` is a prime in a Noetherian ring `R`, there exists a `p`-primary ideal `I`
 spanned by `p.height` elements. -/
-lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing
-    (p : Ideal R) [p.IsPrime] : ∃ (I : Ideal R) (s : Finset R),
-      p ∈ I.minimalPrimes ∧ Ideal.span s = I ∧ s.card = p.height := by
+lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing (p : Ideal R) [p.IsPrime] :
+    ∃ s : Finset R, p ∈ (span s).minimalPrimes ∧ s.card = p.height := by
   obtain ⟨I, hI, hr⟩ := (p.height_le_iff_exists_minimalPrimes <| p.height).mp le_rfl
   have hs : I.generators.Finite := (IsNoetherian.noetherian I).finite_generators
-  refine ⟨I, hs.toFinset, hI, (by simpa using I.span_generators), ?_⟩
+  refine ⟨hs.toFinset, by rwa [hs.coe_toFinset, span, I.span_generators], ?_⟩
   rw [← Set.ncard_eq_toFinset_card (hs := hs), (IsNoetherian.noetherian I).generators_ncard]
   refine le_antisymm ?_ ?_
   · rw [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr (IsNoetherian.noetherian I)] at hr
