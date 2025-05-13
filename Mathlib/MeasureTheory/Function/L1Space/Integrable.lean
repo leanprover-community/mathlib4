@@ -72,7 +72,7 @@ theorem Integrable.aemeasurable [MeasurableSpace ε] [BorelSpace ε] [PseudoMetr
 theorem Integrable.hasFiniteIntegral {f : α → ε} (hf : Integrable f μ) : HasFiniteIntegral f μ :=
   hf.2
 
-theorem Integrable.mono_enorm {f : α → ε} {g : α → ε} (hg : Integrable g μ)
+theorem Integrable.mono_enorm {f : α → ε} {g : α → ε'} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ ‖g a‖ₑ) : Integrable f μ :=
   ⟨hf, hg.hasFiniteIntegral.mono_enorm h⟩
 
