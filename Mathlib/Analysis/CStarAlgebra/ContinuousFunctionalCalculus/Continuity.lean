@@ -1,17 +1,48 @@
+/-
+Copyright (c) 2025 Jireh Loreaux. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jireh Loreaux
+-/
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 import Mathlib.Topology.MetricSpace.UniformConvergence
+
+/-! # Continuity of the continuous functional calculus in each variable
+
+The continuous functional calculus is a map which takes a pair `a : A` (`A` is a C⋆-algebra) and
+a function `f : C(spectrum R a, R)` where `a` satisfies some predicate `p`, depending on `R` and
+returns another element of the algebra `A`. This is the map `cfcHom`. The class
+`ContinuousFunctionalCalculus` declares that `cfcHom` is a continuous map from `C(spectrum R a, R)`
+to `A`. However, users generally interact with the continuous functional calculus through `cfc`,
+which operates on bare functions `f : R → R` instead and takes a junk value when `f` is not
+continuous on the spectrum of `a`.  In this file we provide some lemma concerning the continuity
+of `cfc`, subject to natural hypotheses.
+
+However, the continuous functional calculus is *also* continuous in the variable `a`, but there
+are some conditions that must be satisfied. In particular, given a function `f : R → R` the map
+`a ↦ cfc f a` is continuous so long as `a` varies over a collection of elements satisfying the
+predicate `p` and their spectra are collectively contained in a compact set on which `f` is
+continuous. Moreover, it is required that the continuous functional calculus be the isometric
+variant.
+
+Finally, all of this is developed for both the unital and non-unital functional calculi.
+
+# To do
+
++ Get a version with joint continuity in both variables.
+
+-/
 
 open Filter Topology
 
 section Unital
 
-section Right
+section Left
 
 variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
     [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] [ContinuousFunctionalCalculus R A p]
 
-open scoped ContinuousFunctionalCalculus in
 /-- If `F : X → R → R` tends to `f : R → R` uniformly on the spectrum of `a`, and all
 these functions are continuous on the spectrum, then `fun x ↦ cfc (F x) a` tends
 to `cfc f a`. -/
@@ -20,6 +51,7 @@ theorem tendsto_cfc_fun {l : Filter X} (F : X → R → R) (f : R → R) (a : A)
     (hF : ∀ x, ContinuousOn (F x) (spectrum R a) := by cfc_cont_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     Tendsto (fun x ↦ cfc (F x) a) l (𝓝 (cfc f a)) := by
+  open scoped ContinuousFunctionalCalculus in
   by_cases ha : p a
   · conv =>
       enter [1, x]
@@ -40,7 +72,7 @@ theorem continuousAt_cfc_fun [TopologicalSpace X] (f : X → R → R) (a : A)
 
 open UniformOnFun in
 /-- If `f : X → R → R` is continuous in the topology on `X → R →ᵤ[{spectrum R a}] → R`,
-and each `f` is continuous on the spectrum, then `-/
+and each `f` is continuous on the spectrum, then `x ↦ cfc (f x) a` is continuous. -/
 theorem continuous_cfc_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (h_cont : Continuous (fun x ↦ ofFun {spectrum R a} (f x)))
     (hf : ∀ x, ContinuousOn (f x) (spectrum R a) := by cfc_cont_tac) :
@@ -50,21 +82,23 @@ theorem continuous_cfc_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     Set.mem_singleton_iff, toFun_ofFun, forall_eq] at h_cont
   exact fun x ↦ continuousAt_cfc_fun f a x (h_cont x)
 
-end Right
+end Left
 
-section Left
+section Right
 section RCLike
 
 variable {X 𝕜 A : Type*} {p : A → Prop} [RCLike 𝕜] [NormedRing A] [StarRing A]
     [NormedAlgebra 𝕜 A] [IsometricContinuousFunctionalCalculus 𝕜 A p]
     [ContinuousStar A]
 
-open scoped ContinuousFunctionalCalculus in
+/-- `cfcHomSuperset` is continuous in the variable `a : A` when `s : Set 𝕜` is compact and `a`
+varies over elements whose spectrum is contained in `s`, all of which satisfy the predicate `p`. -/
 theorem continuous_cfcHomSuperset_left
     [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s) (f : C(s, 𝕜))
     (a : X → A) (ha_cont : Continuous a) (ha : ∀ x, spectrum 𝕜 (a x) ⊆ s)
     (ha' : ∀ x, p (a x) := by cfc_tac) :
     Continuous (fun x ↦ cfcHomSuperset (ha' x) (ha x) f) := by
+  open scoped ContinuousFunctionalCalculus in
   have : CompactSpace s := by rwa [isCompact_iff_compactSpace] at hs
   induction f using ContinuousMap.induction_on_of_compact with
   | const r =>
@@ -91,6 +125,9 @@ theorem continuous_cfcHomSuperset_left
     rw [ContinuousMap.norm_le _ hε.le] at hg ⊢
     aesop
 
+/-- `cfc` is continuous in the variable `a : A` when `s : Set 𝕜` is compact and `a` varies over
+elements whose spectrum is contained in `s`, all of which satisfy the predicate `p`, and the
+function `f` is continuous on the spectrum of `a`. -/
 theorem continuous_cfc [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
     (a : X → A) (ha_cont : Continuous a) (ha : ∀ x, spectrum 𝕜 (a x) ⊆ s)
     (hf : ContinuousOn f s := by cfc_cont_tac) (ha' : ∀ x, p (a x) := by cfc_tac) :
@@ -101,7 +138,7 @@ theorem continuous_cfc [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s) (f
 
 theorem continuousOn_cfc {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
     (hf : ContinuousOn f s := by cfc_cont_tac) :
-    ContinuousOn (cfc f · : A → A) {a | p a ∧ spectrum 𝕜 a ⊆ s} :=
+    ContinuousOn (cfc f) {a | p a ∧ spectrum 𝕜 a ⊆ s} :=
   continuousOn_iff_continuous_restrict.mpr <|
     continuous_cfc hs f _ continuous_subtype_val (by simp)
 
@@ -118,6 +155,7 @@ variable {X A : Type*} [NormedRing A] [StarRing A]
 attribute [fun_prop] continuous_real_toNNReal
 
 open scoped NNReal in
+/-- A version of `continuous_cfc` over `ℝ≥0` instead of `RCLike 𝕜`. -/
 theorem continuous_cfc_nnreal [TopologicalSpace X] (s : Set ℝ≥0) (hs : IsCompact s) (f : ℝ≥0 → ℝ≥0)
     (hf : ContinuousOn f s := by cfc_cont_tac)
     (a : X → A) (ha_cont : Continuous a) (ha' : ∀ x, 0 ≤ a x) (ha : ∀ x, spectrum ℝ≥0 (a x) ⊆ s) :
@@ -137,20 +175,22 @@ theorem continuous_cfc_nnreal [TopologicalSpace X] (s : Set ℝ≥0) (hs : IsCom
 
 end NNReal
 
-end Left
+end Right
 
 end Unital
 
 section NonUnital
 
-section Right
+section Left
 
 variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R] [Nontrivial R]
     [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [TopologicalSpace A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
     [NonUnitalContinuousFunctionalCalculus R A p]
 
-open scoped NonUnitalContinuousFunctionalCalculus in
+/-- If `F : X → R → R` tends to `f : R → R` uniformly on the spectrum of `a`, and all
+these functions are continuous on the spectrum and map zero to itself, then
+`fun x ↦ cfcₙ (F x) a` tends to `cfcₙ f a`. -/
 theorem tendsto_cfcₙ_fun {l : Filter X} (F : X → R → R) (f : R → R) (a : A)
     (h_tendsto : TendstoUniformlyOn F f l (quasispectrum R a))
     (hF : ∀ x, ContinuousOn (F x) (quasispectrum R a) := by cfc_cont_tac)
@@ -158,6 +198,7 @@ theorem tendsto_cfcₙ_fun {l : Filter X} (F : X → R → R) (f : R → R) (a :
     (hf : ContinuousOn f (quasispectrum R a) := by cfc_cont_tac)
     (hf0 : f 0 = 0 := by cfc_zero_tac) :
     Tendsto (fun x ↦ cfcₙ (F x) a) l (𝓝 (cfcₙ f a)) := by
+  open scoped NonUnitalContinuousFunctionalCalculus in
   by_cases ha : p a
   · conv =>
       enter [1, x]
@@ -168,6 +209,9 @@ theorem tendsto_cfcₙ_fun {l : Filter X} (F : X → R → R) (f : R → R) (a :
     exact hf.tendsto_restrict_iff_tendstoUniformlyOn hF |>.mpr h_tendsto
   · simpa [cfcₙ_apply_of_not_predicate a ha] using tendsto_const_nhds
 
+/-- If `f : X → R → R` tends to `f x₀` uniformly (along `𝓝 x₀`) on the spectrum of `a`,
+and each `f x` is continuous on the spectrum of `a` and maps zero to itself, then
+`fun x ↦ cfcₙ (f x) a` is continuous at `x₀`. -/
 theorem continuousAt_cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (x₀ : X) (h_tendsto : TendstoUniformlyOn f (f x₀) (𝓝 x₀) (quasispectrum R a))
     (hf : ∀ x, ContinuousOn (f x) (quasispectrum R a) := by cfc_cont_tac)
@@ -176,6 +220,9 @@ theorem continuousAt_cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
   tendsto_cfcₙ_fun f (f x₀) a h_tendsto hf hf0 (hf x₀) (hf0 x₀)
 
 open UniformOnFun in
+/-- If `f : X → R → R` is continuous in the topology on `X → R →ᵤ[{spectrum R a}] → R`,
+and each `f` is continuous on the spectrum and maps zero to itself, then
+`x ↦ cfcₙ (f x) a` is continuous. -/
 theorem continuous_cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (h_cont : Continuous (fun x ↦ ofFun {quasispectrum R a} (f x)))
     (hf : ∀ x, ContinuousOn (f x) (quasispectrum R a) := by cfc_cont_tac)
@@ -186,9 +233,9 @@ theorem continuous_cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     Set.mem_singleton_iff, toFun_ofFun, forall_eq] at h_cont
   exact fun x ↦ continuousAt_cfcₙ_fun f a x (h_cont x)
 
-end Right
+end Left
 
-section Left
+section Right
 section RCLike
 
 variable {X 𝕜 A : Type*} {p : A → Prop} [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A]
@@ -204,9 +251,9 @@ def Set.zeroOffFactMem {X : Type*} [Zero X] (s : Set X) [Fact (0 ∈ s)] :
 
 scoped[ContinuousMapZero] attribute [instance] Set.zeroOffFactMem
 
--- This is super ugly, but it's mainly because we need to refactor
--- `cfcₙHomSuperset` not to use `letI`.
 open scoped NonUnitalContinuousFunctionalCalculus ContinuousMapZero in
+/-- `cfcₙHomSuperset` is continuous in the variable `a : A` when `s : Set 𝕜` is compact and `a`
+varies over elements whose spectrum is contained in `s`, all of which satisfy the predicate `p`. -/
 theorem continuous_cfcₙHomSuperset_left
     [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s) [hs0 : Fact (0 ∈ s)]
     (f : C(s, 𝕜)₀) (a : X → A) (ha_cont : Continuous a)
@@ -234,13 +281,16 @@ theorem continuous_cfcₙHomSuperset_left
     rw [ContinuousMapZero.norm_def, ContinuousMap.norm_le _ hε.le] at hg ⊢
     aesop
 
+/-- `cfcₙ` is continuous in the variable `a : A` when `s : Set 𝕜` is compact and `a` varies over
+elements whose spectrum is contained in `s`, all of which satisfy the predicate `p`, and the
+function `f` is continuous on the spectrum of `a` and maps zero to itself. -/
 theorem continuous_cfcₙ [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s) (hs0 : 0 ∈ s)
     (f : 𝕜 → 𝕜) (a : X → A) (ha_cont : Continuous a) (ha : ∀ x, quasispectrum 𝕜 (a x) ⊆ s)
     (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha' : ∀ x, p (a x) := by cfc_tac) :
     Continuous (fun x ↦ cfcₙ f (a x)) := by
-  convert continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.restrict⟩, hf0⟩ a ha_cont ha with x
-  rw [cfcₙHomSuperset_apply, cfcₙ_apply (hf := hf.mono (ha x))]
+  convert continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.restrict⟩, hf0⟩ a ha_cont ha
+  rw [cfcₙHomSuperset_apply, cfcₙ_apply (hf := hf.mono (ha _))]
   congr!
 
 theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (hs0 : 0 ∈ s) (f : 𝕜 → 𝕜)
@@ -260,6 +310,7 @@ variable {X A : Type*} [NonUnitalNormedRing A] [StarRing A]
     [T2Space A] [IsTopologicalRing A]
 
 open scoped NNReal in
+/-- A version of `continuous_cfcₙ` over `ℝ≥0` instead of `RCLike 𝕜`. -/
 theorem continuous_cfcₙ_nnreal [TopologicalSpace X] (s : Set ℝ≥0)
     (hs : IsCompact s) (hs0 : 0 ∈ s) (f : ℝ≥0 → ℝ≥0) (a : X → A) (ha_cont : Continuous a)
     (ha' : ∀ x, 0 ≤ a x) (ha : ∀ x, quasispectrum ℝ≥0 (a x) ⊆ s)
@@ -269,7 +320,8 @@ theorem continuous_cfcₙ_nnreal [TopologicalSpace X] (s : Set ℝ≥0)
     enter [1, x]
     rw [cfcₙ_nnreal_eq_real]
   simp only [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts, forall_and] at ha'
-  refine continuous_cfcₙ (hs.image (continuous_algebraMap ℝ≥0 ℝ)) ⟨0, hs0, map_zero _⟩ _ _ ha_cont ?hf ?hs
+  refine continuous_cfcₙ (hs.image (continuous_algebraMap ℝ≥0 ℝ))
+    ⟨0, hs0, map_zero _⟩ _ _ ha_cont ?hf ?hs
   · intro x
     rw [← ha'.2 x |>.algebraMap_image]
     exact Set.image_mono (ha x)
@@ -280,6 +332,6 @@ theorem continuous_cfcₙ_nnreal [TopologicalSpace X] (s : Set ℝ≥0)
 
 end NNReal
 
-end Left
+end Right
 
 end NonUnital
