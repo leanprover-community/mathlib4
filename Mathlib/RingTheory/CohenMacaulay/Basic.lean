@@ -77,15 +77,14 @@ lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] [IsNo
 
 variable (R)
 
-class IsLocalRing.IsCohenMacaulay [IsLocalRing R] : Prop where
+class IsCohenMacaulayLocalRing : Prop extends IsLocalRing R where
   depth_eq_dim : ringKrullDim R = IsLocalRing.depth (ModuleCat.of R R)
 
-class RingTheory.IsCohenMacaulay : Prop where
-  CM_localize : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
-    IsLocalRing.IsCohenMacaulay (Localization.AtPrime p)
+class IsCohenMacaulayRing : Prop where
+  CM_localize : ∀ p : Ideal R, ∀ (_ : p.IsPrime), IsCohenMacaulayLocalRing (Localization.AtPrime p)
 
-lemma RingTheory.IsCohenMacaulay_iff : RingTheory.IsCohenMacaulay R ↔
-    ∀ m : Ideal R, ∀ (_ : m.IsMaximal), IsLocalRing.IsCohenMacaulay (Localization.AtPrime m) := by
+lemma isCohenMacaulayRing_iff : IsCohenMacaulayRing R ↔
+    ∀ m : Ideal R, ∀ (_ : m.IsMaximal), IsCohenMacaulayLocalRing (Localization.AtPrime m) := by
   sorry
 
 --unmixedness theorem
