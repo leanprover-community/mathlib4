@@ -36,7 +36,7 @@ integrable
 
 noncomputable section
 
-open EMetric ENNReal Filter MeasureTheory NNReal Set
+open EMetric ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
 
 variable {α β γ δ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
 variable [NormedAddCommGroup β] [NormedAddCommGroup γ]
@@ -114,7 +114,7 @@ theorem Integrable.congr {f g : α → ε} (hf : Integrable f μ) (h : f =ᵐ[μ
 theorem integrable_congr {f g : α → ε} (h : f =ᵐ[μ] g) : Integrable f μ ↔ Integrable g μ :=
   ⟨fun hf => hf.congr h, fun hg => hg.congr h.symm⟩
 
-theorem integrable_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ⊤) :
+theorem integrable_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     Integrable (fun _ : α => c) μ ↔ ‖c‖ₑ = 0 ∨ IsFiniteMeasure μ := by
   have : AEStronglyMeasurable (fun _ : α => c) μ := aestronglyMeasurable_const
   rw [Integrable, and_iff_right this, hasFiniteIntegral_const_iff_enorm hc]
@@ -123,7 +123,7 @@ lemma integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 0 
   rw [integrable_const_iff_enorm enorm_ne_top]
   simp
 
-lemma integrable_const_iff_isFiniteMeasure_enorm {c : ε} (hc : ‖c‖ₑ ≠ 0) (hc' : ‖c‖ₑ ≠ ⊤) :
+lemma integrable_const_iff_isFiniteMeasure_enorm {c : ε} (hc : ‖c‖ₑ ≠ 0) (hc' : ‖c‖ₑ ≠ ∞) :
     Integrable (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
   simp [integrable_const_iff_enorm hc', hc, isFiniteMeasure_iff]
 
@@ -132,7 +132,7 @@ lemma integrable_const_iff_isFiniteMeasure {c : β} (hc : c ≠ 0) :
   simp [integrable_const_iff, hc, isFiniteMeasure_iff]
 
 theorem Integrable.of_mem_Icc_enorm [IsFiniteMeasure μ]
-    {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (hX : AEMeasurable X μ)
+    {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) {X : α → ℝ≥0∞} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     Integrable X μ :=
   ⟨hX.aestronglyMeasurable, .of_mem_Icc_of_ne_top ha hb h⟩
@@ -143,15 +143,15 @@ theorem Integrable.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} 
   ⟨hX.aestronglyMeasurable, .of_mem_Icc a b h⟩
 
 @[simp, fun_prop]
-theorem integrable_const_enorm [IsFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ⊤) :
+theorem integrable_const_enorm [IsFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     Integrable (fun _ : α ↦ c) μ :=
   (integrable_const_iff_enorm hc).2 <| .inr ‹_›
 
-@[simp, fun_prop]
+@[fun_prop]
 theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α => c) μ :=
   integrable_const_iff.2 <| .inr ‹_›
 
--- TODO: requires HasFiniteIntegral.of_finite...
+-- TODO: an `ENorm`-version of this lemma requires `HasFiniteIntegral.of_finite`
 @[simp]
 lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMeasure μ] {f : α → β} :
     Integrable f μ := ⟨.of_discrete, .of_finite⟩
@@ -253,7 +253,7 @@ a Dirac measure.
 See `integrable_dirac'` for a version which requires `f` to be strongly measurable but does not
 need singletons to be measurable. -/
 @[fun_prop]
-lemma integrable_dirac [MeasurableSingletonClass α] {a : α} {f : α → ε} (hfa : ‖f a‖ₑ < ⊤) :
+lemma integrable_dirac [MeasurableSingletonClass α] {a : α} {f : α → ε} (hfa : ‖f a‖ₑ < ∞) :
     Integrable f (Measure.dirac a) :=
   ⟨aestronglyMeasurable_dirac, by simpa [HasFiniteIntegral]⟩
 
@@ -261,7 +261,7 @@ lemma integrable_dirac [MeasurableSingletonClass α] {a : α} {f : α → ε} (h
 See `integrable_dirac` for a version which requires that singletons are measurable sets but has no
 hypothesis on `f`. -/
 @[fun_prop]
-lemma integrable_dirac' {a : α} {f : α → ε} (hf : StronglyMeasurable f) (hfa : ‖f a‖ₑ < ⊤) :
+lemma integrable_dirac' {a : α} {f : α → ε} (hf : StronglyMeasurable f) (hfa : ‖f a‖ₑ < ∞) :
     Integrable f (Measure.dirac a) :=
   ⟨hf.aestronglyMeasurable, by simpa [HasFiniteIntegral, lintegral_dirac' _ hf.enorm]⟩
 
@@ -405,8 +405,6 @@ theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → ε'}
 
 end ENormedAddCommMonoid
 
--- TODO: generalise these lemmas to an `ENormedAddCommSubMonoid`
-
 /-- If `f` is integrable, then so is `-f`.
 See `Integrable.neg'` for the same statement, but formulated with `x ↦ - f x` instead of `-f`. -/
 @[fun_prop]
@@ -491,6 +489,7 @@ lemma integrable_const_add_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
     Integrable (fun x ↦ c + f x) μ ↔ Integrable f μ :=
   integrable_add_iff_integrable_right (integrable_const _)
 
+-- TODO: generalise these lemmas to an `ENormedAddCommSubMonoid`
 @[fun_prop]
 theorem Integrable.sub {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (f - g) μ := by simpa only [sub_eq_add_neg] using hf.add hg.neg
@@ -552,6 +551,8 @@ theorem Integrable.bdd_mul {F : Type*} [NormedDivisionRing F] {f g : α → F} (
     rw [lintegral_const_mul' _ _ ENNReal.coe_ne_top]
     exact ENNReal.mul_lt_top ENNReal.coe_lt_top hint.2
 
+-- TODO: generalise the following lemmas to enorm classes
+
 /-- **Hölder's inequality for integrable functions**: the scalar multiplication of an integrable
 vector-valued function by a scalar function with finite essential supremum is integrable. -/
 theorem Integrable.essSup_smul {R : Type*} [NormedRing R] [Module R β] [IsBoundedSMul R β]
@@ -591,6 +592,7 @@ theorem integrable_norm_iff {f : α → β} (hf : AEStronglyMeasurable f μ) :
     Integrable (fun a => ‖f a‖) μ ↔ Integrable f μ := by
   simp_rw [Integrable, and_iff_right hf, and_iff_right hf.norm, hasFiniteIntegral_norm_iff]
 
+-- TODO: generalise this lemma to an `ENormedAddCommSubMonoid`
 theorem integrable_of_norm_sub_le {f₀ f₁ : α → β} {g : α → ℝ} (hf₁_m : AEStronglyMeasurable f₁ μ)
     (hf₀_i : Integrable f₀ μ) (hg_i : Integrable g μ) (h : ∀ᵐ a ∂μ, ‖f₀ a - f₁ a‖ ≤ g a) :
     Integrable f₁ μ :=
@@ -636,7 +638,7 @@ theorem MemLp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → ε} [IsFin
   memLp_one_iff_integrable.mp (hfq.mono_exponent hq1)
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
-where `‖f x‖ ≥ ε` is finite for all positive `ε`. -/
+where `‖f x‖ₑ ≥ ε` is finite for all positive `ε`. -/
 theorem Integrable.measure_enorm_ge_lt_top
     {f : α → ε} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : 0 < ε) (hε' : ε ≠ ∞):
     μ { x | ε ≤ ‖f x‖ₑ } < ∞ := by
@@ -652,16 +654,8 @@ theorem Integrable.measure_enorm_ge_lt_top
 where `‖f x‖ ≥ ε` is finite for all positive `ε`. -/
 theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     μ { x | ε ≤ ‖f x‖ } < ∞ := by
-  rw [show { x | ε ≤ ‖f x‖ } = { x | .ofReal ε ≤ ‖f x‖ₑ } by
-      simp [ENNReal.ofReal, Real.toNNReal_le_iff_le_coe]]
-  refine (meas_ge_le_mul_pow_eLpNorm_enorm μ one_ne_zero ENNReal.one_ne_top hf.1 ?_ ?_).trans_lt ?_
-  · simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hε
-  · simp
-  apply ENNReal.mul_lt_top
-  · simpa only [ENNReal.toReal_one, ENNReal.rpow_one, ENNReal.inv_lt_top, ENNReal.ofReal_pos]
-      using hε
-  · simpa only [ENNReal.toReal_one, ENNReal.rpow_one] using
-      (memLp_one_iff_integrable.2 hf).eLpNorm_lt_top
+  convert Integrable.measure_enorm_ge_lt_top hf (ofReal_pos.mpr hε) ofReal_ne_top with x
+  rw [← Real.enorm_of_nonneg hε.le, enorm_le_iff_norm_le, Real.norm_of_nonneg hε.le]
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ₑ > ε` is finite for all positive `ε`. -/
@@ -678,7 +672,7 @@ lemma Integrable.measure_norm_gt_lt_top {f : α → β} (hf : Integrable f μ) {
     μ {x | ε < ‖f x‖} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le)) (hf.measure_norm_ge_lt_top hε)
 
--- TODO: continue generalising from here onwards!
+-- TODO: try generalising all lemmas below to enorm classes
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
 measure. -/

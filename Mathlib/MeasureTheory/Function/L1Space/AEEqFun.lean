@@ -202,9 +202,8 @@ theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
   simp [toL1, Lp.norm_toLp, eLpNorm, eLpNorm'_eq_lintegral_enorm]
 
 theorem enorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ = ∫⁻ a, ‖f a‖ₑ ∂μ := by
+  simp only [Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
   simp [Integrable.toL1, eLpNorm, eLpNorm', enorm]
-  -- TODO: fix this proof, was:
-  sorry -- simpa [Integrable.toL1, eLpNorm, eLpNorm', enorm] using ENNReal.coe_toNNReal hf.2.ne
 
 @[deprecated (since := "2025-01-20")] alias nnnorm_toL1 := enorm_toL1
 
