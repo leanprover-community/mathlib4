@@ -393,6 +393,15 @@ def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
 theorem mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀ˣ} {r : R} :
     r ∈ v.ltAddSubgroup γ ↔ v r < γ := rfl.to_iff
 
+theorem ltAddSubgroup_monotone {v : Valuation R Γ₀} :
+    Monotone (v.ltAddSubgroup) := fun _ _ h _ h' ↦
+  lt_of_lt_of_le h' h
+
+theorem ltAddSubgroup_min {v : Valuation R Γ₀} {γ γ' : Γ₀ˣ} :
+    v.ltAddSubgroup (min γ γ') = v.ltAddSubgroup γ ⊓ v.ltAddSubgroup γ' := by
+  ext a
+  simp [AddSubgroup.mem_inf, mem_ltAddSubgroup_iff]
+
 end Group
 
 end Basic
@@ -1161,7 +1170,7 @@ theorem mem_rangeGroup_iff_mem_rangeGroup₀ {x : Γ₀ˣ} :
 -/
 
 theorem mem_rangeGroup₀ {a : R} : v a ∈ v.rangeGroup₀ :=
-  MonoidHomWithZero.mem_range₀ v
+  MonoidHomWithZero.mem_range₀
 
 instance : CommGroupWithZero v.rangeGroup₀ := by
   unfold rangeGroup₀
@@ -1178,6 +1187,12 @@ instance : LinearOrderedCommMonoidWithZero v.rangeGroup₀ where
   zero_le_one := zero_le_one' Γ₀
   bot := 0
   bot_le _ := zero_le'
+
+@[simp] theorem coe_min (γ γ' : v.rangeGroup₀) :
+    ((min γ γ' : v.rangeGroup₀) : Γ₀)= min ↑γ ↑γ' := rfl
+
+@[simp] theorem coe_max (γ γ' : v.rangeGroup₀) :
+    ((max γ γ' : v.rangeGroup₀) : Γ₀)= max ↑γ ↑γ' := rfl
 
 instance : LinearOrderedCommGroupWithZero v.rangeGroup₀ where
   inv_zero := inv_zero

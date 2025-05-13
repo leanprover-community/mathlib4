@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Data.NNReal.Defs
 import Mathlib.RingTheory.Valuation.Basic
--- import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Rank one valuations
@@ -52,7 +51,6 @@ variable (v : Valuation R Γ₀) [RankLeOne v]
 
 lemma strictMono : StrictMono (hom v) := strictMono'
 
-
 -- TODO : add division?
 /-- The canonical map from `v.rangeGroup₀` to `ℝ≥0` -/
 def hom_rangeGroup₀ : v.rangeGroup₀ →*₀ ℝ≥0 where
@@ -65,22 +63,12 @@ theorem strictMono_rangeGroup₀ : StrictMono (hom_rangeGroup₀ v) := by
   intro x y h
   simpa only [Units.val_lt_val, Subtype.coe_lt_coe, h] using (strictMono v h)
 
-/-- The canonical inclusion map from `v.rangeGroup` to `ℝ≥0` -/
-def hom_rangeGroup : v.rangeGroup →* ℝ≥0 where
-  toFun := (hom v ·.val)
-  map_one' := by simp
-  map_mul' := by simp
-
-/-- The canonical inclusion map from `v.rangeGroup₀` to `Γ₀`-/
+/-- The canonical inclusion map from `v.rangeGroup₀` to `Γ₀` -/
 def coe_rangeGroup₀ : v.rangeGroup₀ →*₀ Γ₀ where
   toFun := (·.val)
   map_zero' := rfl
   map_one' := rfl
   map_mul' x y := by simp only [Submonoid.coe_mul]
-
-theorem strictMono_rangeGroup : StrictMono (hom_rangeGroup v) := by
-  intro x y h
-  simpa only [Units.val_lt_val, Subtype.coe_lt_coe, h] using (strictMono v h)
 
 /-- If `v` is a valuation of rank at most one,
 and if `x : Γ₀` has image `0` under `RankLeOne.hom v`, then `x = 0`. -/
@@ -95,7 +83,8 @@ then `x : Γ₀` has image `0` under `RankLeOne.hom v` if and only if `x = 0`. -
 theorem hom_eq_zero_iff {x : Γ₀} : hom v x = 0 ↔ x = 0 :=
   ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, _root_.map_zero]⟩
 
-instance : RankLeOne (v.restriction_rangeGroup₀) where
+/-- If a valuation `v` has rank at most one, then so has restriction `v.rangeGroup₀_restrict` -/
+instance : RankLeOne (v.rangeGroup₀_restrict) where
   hom := hom_rangeGroup₀ v
   strictMono' := strictMono_rangeGroup₀ v
 
@@ -107,65 +96,56 @@ variable (v : Valuation R Γ₀) [RankOne v]
 
 lemma nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1 := nontrivial'
 
-instance : RankOne (v.restriction_rangeGroup₀) where
+/-- If a valuation `v` has rank one, then so has restriction `v.rangeGroup₀_restrict` -/
+instance : RankOne (v.rangeGroup₀_restrict) where
   nontrivial' := by
     obtain ⟨x, hx⟩ := nontrivial v
     use x
     simp only [ne_eq, ← Subtype.coe_inj]
     exact hx
 
-lemma exists_mem_ne_zero_and_lt_one : ∃ u ∈ v.rangeGroup₀, u ≠ 0 ∧ u < 1 := by
+lemma exists_mem_ne_zero_and_lt_one :
+    ∃ u ∈ v.rangeGroup₀, u ≠ 0 ∧ u < 1 := by
   obtain ⟨r, h0, h1⟩ := nontrivial v
   rcases (lt_or_gt_of_ne h1) with (h | h)
   · use v r, mem_rangeGroup₀ v, h0, h
-  · use (v r)⁻¹
-    constructor
-    · apply MonoidHomWithZero.inv_mem_range₀
-      apply mem_rangeGroup₀
-    · simp only [ne_eq, inv_eq_zero, inv_lt_one₀ h0]
-      exact ⟨h0, h⟩
+  · refine ⟨(v r)⁻¹,
+      MonoidHomWithZero.inv_mem_range₀ v.mem_rangeGroup₀,
+      by simp [h0, inv_lt_one_of_one_lt₀ h]⟩
 
 /-- A nontrivial unit of `Γ₀`, given that there exists a rank one `v : Valuation R Γ₀`. -/
 def unit : Γ₀ˣ :=
   Units.mk0 (exists_mem_ne_zero_and_lt_one v).choose
     (exists_mem_ne_zero_and_lt_one v).choose_spec.2.1
---  Units.mk0 (v (nontrivial v).choose) ((nontrivial v).choose_spec).1
 
-/-- A proof that `RankOne.unit v < 1`. -/
+/-- `RankOne.unit v < 1`. -/
 theorem unit_lt_one : unit v < 1 :=
   (exists_mem_ne_zero_and_lt_one v).choose_spec.2.2
 
-/-- A proof that `RankOne.unit v ≠ 1`. -/
+/-- `RankOne.unit v ≠ 1`. -/
 theorem unit_ne_one : unit v ≠ 1 :=
   ne_of_lt (unit_lt_one v)
 --   exact ((nontrivial v).choose_spec ).2
 
-/-- A proof that `(RankOne.univ v : Γ₀) ∈ v.rangeGroup₀` -/
+/-- `(RankOne.univ v : Γ₀) ∈ v.rangeGroup₀` -/
 theorem coe_unit_mem_rangeGroup₀ : (unit v : Γ₀) ∈ v.rangeGroup₀ :=
   (exists_mem_ne_zero_and_lt_one v).choose_spec.1
 
-/-- A proof that `RankOne.univ v ∈ v.rangeGroup` -/
-theorem unit_mem_rangeGroup : unit v ∈ v.rangeGroup := by
-  rw [mem_rangeGroup_iff_mem_rangeGroup₀]
-  exact coe_unit_mem_rangeGroup₀ v
-
-theorem rangeGroup_ne_one : v.rangeGroup ≠ ⊥ := by
-  simp only [Subgroup.ne_bot_iff_exists_ne_one, ne_eq, Subtype.exists, Submonoid.mk_eq_one,
-    exists_prop]
-  refine ⟨unit v, unit_mem_rangeGroup v, ?_⟩--, unit_ne_one v⟩
-  rw [Subgroup.mk_eq_one]
-  exact unit_ne_one v
-
-/-- Nontriviality of `v.rangeGroup` for valuations of rank 1 -/
-@[nontriviality]
-instance nontrivial_range : Nontrivial (v.rangeGroup) :=
-  (Subgroup.nontrivial_iff_ne_bot v.rangeGroup).mpr (rangeGroup_ne_one v)
+/-- `(RankOne.univ v : Γ₀) ∈ v.rangeGroup₀ˣ` -/
+theorem coe_unit_mem_rangeGroup₀_units :
+    IsUnit (⟨(unit v : Γ₀), coe_unit_mem_rangeGroup₀ v⟩ : v.rangeGroup₀):= by
+  simp only [isUnit_iff_exists_inv, Subtype.exists, Submonoid.mk_mul_mk,
+    Submonoid.mk_eq_one, exists_prop]
+  refine ⟨(unit v)⁻¹,
+    MonoidHomWithZero.inv_mem_range₀ (coe_unit_mem_rangeGroup₀ v),
+    by simp⟩
 
 /-- Nontriviality of `v.rangeGroup₀ˣ` for valuations of rank 1 -/
 @[nontriviality]
-instance nontrivial_range₀ : Nontrivial (v.rangeGroup₀ˣ) :=
-  (units_rangeGroup₀_equiv_rangeGroup v).nontrivial
-
+instance nontrivial_range₀ : Nontrivial (v.rangeGroup₀ˣ) := by
+  use (coe_unit_mem_rangeGroup₀_units v).unit, 1
+  rw [ne_eq, Units.ext_iff, ← Subtype.coe_inj, IsUnit.unit_spec]
+  simp [unit_ne_one v]
 
 -- TODO : generalize to `ValuationRing K`
 theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankOne v]
@@ -173,7 +153,7 @@ theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankOne v]
     (∃ (x : K), x ≠ 0 ∧ RankLeOne.hom v (v x) < γ) := by
   have hγ_pos : 0 < γ := pos_iff_ne_zero.mpr hγ
   obtain ⟨x, h⟩ :=
-    NNReal.exists_lt_of_strictMono (RankLeOne.strictMono v.restriction_rangeGroup₀) hγ_pos
+    NNReal.exists_lt_of_strictMono (RankLeOne.strictMono v.rangeGroup₀_restrict) hγ_pos
   have hx := x.val.prop
   simp only [mem_rangeGroup₀_iff] at hx
   obtain ⟨a, b, ha, hx⟩ := hx
@@ -208,28 +188,42 @@ end RankOne
 
 namespace RankLeOne
 
-theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankLeOne v] :
-    v.rangeGroup = ⊥ ∨
-      ∀ {γ : ℝ≥0} (_ : γ ≠ 0), ∃ (x : K), x ≠ 0 ∧ (RankLeOne.hom v) (v x) < γ := by
-  rw [Classical.or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
-  intro H
-  let hv : RankOne v := {
-    toRankLeOne := inferInstance
-    nontrivial' := by
-      rw [← nontrivial_rangeGroup_iff]
-      exact H }
-  exact @RankOne.exists_val_lt _ _ K _ v hv
+variable {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [RankLeOne v]
 
-theorem exists_val_lt' {K : Type*} [Field K] (v : Valuation K Γ₀) [RankLeOne v] :
-    v.rangeGroup = ⊥ ∨ ∀ (γ : Γ₀ˣ), ∃ (x : K), x ≠ 0 ∧ v x < γ := by
-  rw [Classical.or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
+def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
+  nontrivial' := by
+    by_contra H'
+    push_neg at H'
+    obtain ⟨x, hx, hx'⟩ := H
+    exact hx' (H' x ((ne_zero_iff v).mpr hx))
+
+def rankOne_of_nontrivial (H : Nontrivial v.rangeGroup₀ˣ) : RankOne v where
+  nontrivial' := by
+    by_contra H'
+    push_neg at H'
+    rw [nontrivial_iff_exists_ne 1] at H
+    obtain ⟨x, hx⟩ := H
+    obtain ⟨a, b, ha, hab⟩ := v.mem_rangeGroup₀_iff.mp (x : v.rangeGroup₀).prop
+    rw [ne_eq, ← Units.val_eq_one, ← OneMemClass.coe_eq_one] at hx
+    apply hx
+    rw [eq_comm, ← inv_mul_eq_iff_eq_mul₀ ha, inv_mul_eq_div, ← map_div₀] at hab
+    rw [← hab]
+    apply H'
+    simp only [map_div₀, ne_eq, div_eq_zero_iff, map_eq_zero, not_or]
+    simp only [ne_eq, map_eq_zero] at ha
+    refine ⟨fun h ↦ ?_, ha⟩
+    apply x.ne_zero
+    rw [← Subtype.coe_inj, MonoidHomWithZero.range₀_coe_zero, ← hab, h]
+    simp
+
+theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankLeOne v] :
+    Subsingleton (v.rangeGroup₀ˣ) ∨
+      ∀ {γ : ℝ≥0} (_ : γ ≠ 0), ∃ (x : K), x ≠ 0 ∧ (RankLeOne.hom v) (v x) < γ := by
+  classical
+  simp only [ne_eq, or_iff_not_imp_left, not_subsingleton_iff_nontrivial]
   intro H
-  let _ : RankOne v := {
-    toRankLeOne := inferInstance
-    nontrivial' := by
-      rw [← nontrivial_rangeGroup_iff]
-      exact H }
-  exact RankOne.exists_val_lt' v
+  let hv : RankOne v := rankOne_of_nontrivial v H
+  apply RankOne.exists_val_lt
 
 end RankLeOne
 

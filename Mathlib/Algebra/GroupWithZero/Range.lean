@@ -7,6 +7,17 @@ Authors: Antoine Chambert-Loir, Filippo Nuccio
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Tactic.NthRewrite
+import Mathlib.Algebra.Group.Units.Hom
+
+/-! # The range of a `MonoidHomWithZero`,
+  when the codomain is a `GroupWithZero`
+
+If `f : A →* B` be a monoid hom, where `B` is a `CommGroupWithZero`,
+then `f.range₀` is the smallest submonoid of `B`
+containing the image of `f` which is a `CommGroupWithZero`.
+  carrier := { b | ∃ a c, f a ≠ 0 ∧  (f a * b = f c)}
+
+-/
 
 variable {A B : Type*} [MonoidWithZero A] [CommGroupWithZero B]
   {F : Type*} [FunLike F A B] [MonoidHomClass F A B]
@@ -37,6 +48,7 @@ def range₀ : Submonoid B where
 
 variable {f}
 
+@[simp]
 theorem range₀_coe_one : ((1 : range₀ f) : B) = 1 := rfl
 
 theorem mem_range₀_iff {b : B} :
@@ -93,6 +105,7 @@ instance : CommGroupWithZero (range₀ f) where
     apply mul_inv_cancel₀
     rwa [ne_eq, ← Subtype.coe_inj] at hb
 
+@[simp]
 theorem range₀_coe_zero : ((0 : range₀ f) : B) = 0 := rfl
 
 end MonoidHomWithZero
