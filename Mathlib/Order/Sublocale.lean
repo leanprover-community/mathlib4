@@ -13,7 +13,7 @@ namespace Sublocale
 
 variable {S : Sublocale X}
 
-instance : SetLike (Sublocale X) X where
+instance instSetLike : SetLike (Sublocale X) X where
   coe x := x.carrier
   coe_injective' s1 s2 h := by cases s1; congr
 
@@ -96,7 +96,6 @@ def embedding (S : Sublocale X) : FrameHom X S where
     rw [← Subtype.coe_le_coe, ← embeddingAux, S.gcAux.u_top]
     simp [embeddingAux, sInf]
 
-
 def giEmbedding (S : Sublocale X) : GaloisInsertion S.embedding Subtype.val := giAux S
 
 def toNucleus (S : Sublocale X) : Nucleus X where
@@ -105,4 +104,66 @@ def toNucleus (S : Sublocale X) : Nucleus X where
   idempotent' _ := by rw [S.giEmbedding.gc.l_u_l_eq_l]
   le_apply' _ := S.giEmbedding.gc.le_u_l _
 
+lemma mem_iff (x : X) : x ∈ S ↔ x ∈ S.carrier := by exact Eq.to_iff rfl
+
+lemma le_iff (s1 s2 : Sublocale X) : s1 ≤ s2 ↔ s1.carrier ⊆ s2.carrier where
+  mp h := h
+  mpr h := h
+
 end Sublocale
+
+def Nucleus.toSublocale (n : Nucleus X) : Sublocale X where
+  carrier := range n
+  sInfClosed' a h := by
+    rw [@mem_range]
+    refine le_antisymm ?_ le_apply
+    simp only [le_sInf_iff]
+    intro b h1
+    rw [@subset_def] at h
+    simp_rw [mem_range] at h
+    rw [← h b h1]
+    apply n.monotone
+    exact sInf_le h1
+  HImpClosed' a b h := by rw [mem_range, ← h, @map_himp_apply] at *
+
+def orderiso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
+  toFun n := n.toSublocale
+  invFun s := s.toNucleus
+  left_inv n := by
+    rw [Nucleus.ext_iff]
+    intro a
+    simp [Nucleus.toSublocale, Sublocale.toNucleus, Sublocale.embedding, Sublocale.coe_sInf]
+    apply le_antisymm
+    . apply sInf_le
+      simp only [mem_image, mem_setOf_eq, Subtype.exists, exists_and_left, exists_prop,
+        exists_eq_right_right]
+      apply And.intro
+      . exact Nucleus.le_apply
+      . simp [Sublocale.instSetLike,← @SetLike.mem_coe, mem_range, exists_apply_eq_apply]
+    . simp [Sublocale.mem_iff]
+      intro b h1 c h2
+      subst h2
+      rw [← @n.idempotent _ _ c]
+      exact n.monotone h1
+  right_inv S := by
+    simp [Nucleus.toSublocale, Sublocale.toNucleus]
+    apply le_antisymm
+    . simp [SetLike.le_def, Sublocale.mem_iff]
+    . simp [SetLike.le_def, Sublocale.mem_iff]
+      intro x h
+      obtain ⟨x', hx'⟩ := S.giAux.l_surjective ⟨x, h⟩
+      simp [@Subtype.ext_iff_val] at hx'
+      use x'
+      exact hx'
+  map_rel_iff' := by
+    simp
+    intro a b
+    apply Iff.intro
+    . intro h
+      rw [Sublocale.le_iff] at h
+      rw [← @Nucleus.range_subset_iff]
+      exact h
+    . intro h
+      rw [← Nucleus.range_subset_iff] at h
+      rw [Sublocale.le_iff]
+      apply h
