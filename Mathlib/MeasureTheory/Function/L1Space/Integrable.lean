@@ -315,46 +315,42 @@ end
 
 section
 
-variable {α' : Type*} [MeasurableSpace α'] {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
+variable {α' : Type*} [MeasurableSpace α']
 
-theorem integrable_map_measure {f : α → α'} {g : α' → ε'}
+theorem integrable_map_measure {f : α → α'} {g : α' → ε}
     (hg : AEStronglyMeasurable g (Measure.map f μ)) (hf : AEMeasurable f μ) :
     Integrable g (Measure.map f μ) ↔ Integrable (g ∘ f) μ := by
   simp_rw [← memLp_one_iff_integrable]
   exact memLp_map_measure_iff hg hf
 
-theorem Integrable.comp_aemeasurable {f : α → α'} {g : α' → ε'}
+theorem Integrable.comp_aemeasurable {f : α → α'} {g : α' → ε}
     (hg : Integrable g (Measure.map f μ)) (hf : AEMeasurable f μ) : Integrable (g ∘ f) μ :=
   (integrable_map_measure hg.aestronglyMeasurable hf).mp hg
 
-theorem Integrable.comp_measurable {f : α → α'} {g : α' → ε'} (hg : Integrable g (Measure.map f μ))
+theorem Integrable.comp_measurable {f : α → α'} {g : α' → ε} (hg : Integrable g (Measure.map f μ))
     (hf : Measurable f) : Integrable (g ∘ f) μ :=
   hg.comp_aemeasurable hf.aemeasurable
 
 end
 
-section ENormedAddMonoid
-
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
-
 theorem _root_.MeasurableEmbedding.integrable_map_iff {f : α → δ} (hf : MeasurableEmbedding f)
-    {g : δ → ε'} : Integrable g (Measure.map f μ) ↔ Integrable (g ∘ f) μ := by
+    {g : δ → ε} : Integrable g (Measure.map f μ) ↔ Integrable (g ∘ f) μ := by
   simp_rw [← memLp_one_iff_integrable]
   exact hf.memLp_map_measure_iff
 
-theorem integrable_map_equiv (f : α ≃ᵐ δ) (g : δ → ε') :
+theorem integrable_map_equiv (f : α ≃ᵐ δ) (g : δ → ε) :
     Integrable g (Measure.map f μ) ↔ Integrable (g ∘ f) μ := by
   simp_rw [← memLp_one_iff_integrable]
   exact f.memLp_map_measure_iff
 
-theorem MeasurePreserving.integrable_comp {ν : Measure δ} {g : δ → ε'} {f : α → δ}
+theorem MeasurePreserving.integrable_comp {ν : Measure δ} {g : δ → ε} {f : α → δ}
     (hf : MeasurePreserving f μ ν) (hg : AEStronglyMeasurable g ν) :
     Integrable (g ∘ f) μ ↔ Integrable g ν := by
   rw [← hf.map_eq] at hg ⊢
   exact (integrable_map_measure hg hf.measurable.aemeasurable).symm
 
 theorem MeasurePreserving.integrable_comp_emb {f : α → δ} {ν} (h₁ : MeasurePreserving f μ ν)
-    (h₂ : MeasurableEmbedding f) {g : δ → ε'} : Integrable (g ∘ f) μ ↔ Integrable g ν :=
+    (h₂ : MeasurableEmbedding f) {g : δ → ε} : Integrable (g ∘ f) μ ↔ Integrable g ν :=
   h₁.map_eq ▸ Iff.symm h₂.integrable_map_iff
 
 theorem lintegral_edist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
@@ -363,6 +359,10 @@ theorem lintegral_edist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : In
     (ENNReal.add_lt_top.2 <| by
       simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_edist]
       exact ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩)
+
+section ENormedAddMonoid
+
+variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
 
 variable (α ε') in
 @[simp]
