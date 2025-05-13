@@ -53,7 +53,7 @@ lemma innerProduct_eq_inter {v w : (Set α)} (hv₁ : MeasurableSet v)
 theorem posSemidef_interMatrix [Fintype n] (μ : Measure α) (v : n → (Set α))
     (hv₁ : ∀ j, MeasurableSet (v j)) (hv₂ : ∀ j, μ (v j) ≠ ⊤) :
       PosSemidef (fun (i j : n) ↦ (μ.real (v i ∩ v j))) := by
-  conv => right ; intro i j ; rw [← innerProduct_eq_inter (hv₁ i) (hv₁ j) (hv₂ i) (hv₂ j)]
+  conv => right; intro i j; rw [← innerProduct_eq_inter (hv₁ i) (hv₁ j) (hv₂ i) (hv₂ j)]
   exact IsGram.PosSemidef
 
 end L2
