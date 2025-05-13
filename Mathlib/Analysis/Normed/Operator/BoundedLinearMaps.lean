@@ -295,7 +295,8 @@ open Lean.Parser.Term in
 macro:max "fun " x:funBinder " =>L[" R:term "] " b:term : term =>
   `(fun $x ↦L[$R] $b)
 
-@[app_unexpander ContinuousLinearMap.mk'] def unexpandContinuousLinearMapMk' :
+@[app_unexpander ContinuousLinearMap.mk']
+def unexpandContinuousLinearMapMk' :
     Lean.PrettyPrinter.Unexpander
   | `($(_) $R $f:term $_:term) =>
     match f with
@@ -328,7 +329,25 @@ theorem ContinuousLinearMap.mk'_continuous
     (hfy : ∀ x, IsLinearMap R (f x ·))
     (hf : Continuous ↿f) :
     Continuous (fun x => fun y =>L[R] f x y) := by
-  sorry
+  constructor
+  intro s hs
+
+@[fun_prop]
+theorem ContinuousLinearMap.mk_continuous
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {M : Type*} [TopologicalSpace M]
+    {M₂ : Type*} [NormedAddCommGroup M₂] [NormedSpace 𝕜 M₂]
+    {M₃ : Type*} [NormedAddCommGroup M₃] [NormedSpace 𝕜 M₃]
+    [FiniteDimensional 𝕜 M₂]
+    (f : M → M₂ → M₃)
+    (hfy : ∀ x, IsLinearMap 𝕜 (f x ·))
+    (hf : Continuous ↿f) :
+    Continuous (fun x =>
+      { toFun := (f x ·),
+        map_add' := (hfy x).1,
+        map_smul' := (hfy x).2,
+        cont := by fun_prop : M₂ →L[𝕜] M₃ }) :=
+  continuous_clm_apply.2 (fun y ↦ by simp; fun_prop)
 
 @[fun_prop]
 theorem ContinuousLinearMap.isLinearMap_apply
@@ -354,7 +373,7 @@ theorem ContinuousLinearMap.continuous_apply
     (f : M → M₂ →L[R] M₃) (y : M₂)
     (hf : Continuous f) :
     Continuous (fun x : M => f x y) := by
-  sorry
+  (continuous_eval_const y).comp hf
 
 @[fun_prop]
 theorem ContinuousLinearMap.mk'_isBoundedLinearMap (f : E → F → G)

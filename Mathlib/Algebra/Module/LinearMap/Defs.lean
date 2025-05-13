@@ -995,23 +995,23 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃
 variable [Module R M] [Module R M₂] [Module R M₃]
 variable {ι : Type*}
 
-variable (R) in
-abbrev mk'' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ := mk' f lin
-
 open Lean.Parser.Term in
 macro:max "fun " x:funBinder " ↦ₗ[" R:term "] " b:term : term =>
-  `(IsLinearMap.mk'' $R (fun $x => $b) (by fun_prop))
+  `(IsLinearMap.mk' (R:=$R) (fun $x => $b) (by fun_prop))
 
 open Lean.Parser.Term in
 macro:max "fun " x:funBinder " =>ₗ[" R:term "] " b:term : term =>
   `(fun $x ↦ₗ[$R] $b)
 
-@[app_unexpander IsLinearMap.mk''] def unexpandIsLinearMapMk' : Lean.PrettyPrinter.Unexpander
-  | `($(_) $R $f:term $_:term) =>
+open Lean PrettyPrinter Delaborator SubExpr in
+@[app_delab IsLinearMap.mk']
+def isLinearMapMkDelab : Delab :=
+  whenPPOption getPPNotation <| whenNotPPOption getPPExplicit do
+    let R ← withNaryArg 0 <| delab
+    let f ← withNaryArg 8 <| delab
     match f with
-    | `(fun $x:funBinder ↦ $b:term) => `(fun $x ↦ₗ[$R] $b)
-    | _ => throw ()
-  | _  => throw ()
+    | `(fun $x ↦ $b) => `(fun $x ↦ₗ[$R] $b)
+    | _ => Elab.throwUnsupportedSyntax
 
 @[fun_prop]
 theorem mk'_isLinearMap [SMulCommClass R R M₃] (f : M → M₂ → M₃)
