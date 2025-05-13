@@ -140,6 +140,10 @@ lemma mem_filtered_heart_iff (X : C) :
 abbrev FilteredToComplex_deg (n : ℤ) : C ⥤ t.Heart :=
   Gr L n ⋙ t.homology n
 
+def FilteredToComplex_deg_comp_ι (n : ℤ) :
+    tF.ιHeart ⋙ FilteredToComplex_deg L t n ⋙ t.ιHeart ⋙ L.functor ≅
+    tF.ιHeart ⋙ FilteredTriangulated.truncGELE n n ⋙ shiftFunctor₂ C (-n):= sorry
+
 def FilteredToComplex_diff (n : ℤ) :
     FilteredToComplex_deg L t n ⟶ FilteredToComplex_deg L t (n + 1) where
   app X := t.homologyδ ((ForgetFiltration L).mapTriangle.obj ((truncGELE_triangle n n (n + 1)

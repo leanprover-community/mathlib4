@@ -491,6 +491,7 @@ instance : FT.functor.IsFilteredTriangulated := FT.triang
 
 end Over
 
+namespace FilteredTriangulated
 section Truncation
 
 -- Prop A.1.3 (i)
@@ -907,6 +908,8 @@ def truncGELE_triangle (a b c : ℤ) (h : a ≤ b) (h' : b ≤ c) : C ⥤ Triang
 lemma truncGELE_triangle_distinguished (a b c : ℤ) (h : a ≤ b) (h' : b ≤ c) (X : C) :
     (truncGELE_triangle a b c h h').obj X ∈ distTriang C := sorry
 
+end Truncation
+end FilteredTriangulated
 
 -- Prop A.1.3 (iv): we need to explain what compatibilities are hidden under the
 -- adjective "canonical".
@@ -950,6 +953,7 @@ abbrev shiftFunctor₂' (n m n' : ℤ) (h : n' + m = n) :
       map_id X := (shiftFunctor₂ C m).map_id X.1
       map_comp := (shiftFunctor₂ C m).map_comp
 
+namespace FilteredTriangulated
 -- Maybe this construction and the next should use `conjugateEquiv` instead?
 def truncLE_commShift_hom (n m n' : ℤ) (h : n' + m = n) :
     shiftFunctor₂ C m ⋙ truncLE n ⟶ truncLE n' ⋙ shiftFunctor₂ C m := by
@@ -993,7 +997,7 @@ def truncGE_commShift : familyCommShift (fun n ↦ truncGE (C := C) n) where
   zero := sorry
   add := sorry
 
-end Truncation
+end FilteredTriangulated
 
 /-
 The next thing in the paper is the definition, when we have a filtered triangulated category `C`
@@ -1024,6 +1028,7 @@ structure leftCommShift (G : M → (E ⥤ E')) where
       isoWhiskerRight (shiftFunctorAdd E b' b) _ ≪≫ Functor.associator _ _ _ ≪≫
       isoWhiskerLeft _ (iso a b c h) ≪≫ iso c b' c' h'
 
+namespace FilteredTriangulated
 section Forget
 
 variable (L : isFilteredTriangulated_over C A)
@@ -1363,5 +1368,7 @@ def lifting_forgetFiltrating_comm :
     FT.functor ⋙ ForgetFiltration L₂ ≅ ForgetFiltration L₁ ⋙ T := sorry
 
 end FunctorLiftCompat
+
+end FilteredTriangulated
 
 end CategoryTheory
