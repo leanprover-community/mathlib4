@@ -531,11 +531,11 @@ lemma invtSubmodule_reflection:
       exact ⟨hr, hx₁⟩
     have x_mem_I : x ∈ I := LieSubalgebra.mem_lieSpan.mpr (fun _ a ↦ a x_in_g)
     by_contra h
-    exact hx₂ ((LieSubalgebra.eq_bot_iff I).mp h x x_mem_I)
+    exact hx₂ (I.eq_bot_iff.mp h x x_mem_I)
   have s₇ : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
     have gen : ⨆ χ : Weight K H L, (genWeightSpace L χ).toSubmodule = ⊤ := by
       simp only [LieSubmodule.iSup_toSubmodule_eq_top]
-      exact iSup_genWeightSpace_eq_top' K (↥H) L
+      exact iSup_genWeightSpace_eq_top' K H L
     intro x y hy
     have hx : x ∈ ⨆ χ : Weight K H L, (genWeightSpace L χ).toSubmodule := by
       simp only [gen, Submodule.mem_top]
@@ -558,25 +558,25 @@ lemma invtSubmodule_reflection:
           exact Set.mem_biUnion hi h₂
         exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
         rcases (Classical.em (⟨j, h⟩ ∈ Φ)) with h₁ | h₁
-        exact LieSubalgebra.lie_mem I
+        exact I.lie_mem
           (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h₁ hx))
           (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a hx₁)
         have : ⁅x, x₁⁆ = 0 := by
           rw [← neg_eq_zero, lie_skew x₁ x, (s₄ i ⟨j, h⟩ hi h₁ ⟨x₁, x₁_mem⟩ ⟨x, hx⟩)]
         rw [this]
-        exact zero_mem I
+        exact I.zero_mem
       | zero => simp only [lie_zero, zero_mem, I]
       | add _ _ _ _ e f =>
           simp only [lie_add]
           exact add_mem e f
       | smul a _ _ d =>
           simp only [lie_smul]
-          exact LieSubalgebra.smul_mem I a d
+          exact I.smul_mem a d
       | lie a b c d e f =>
           have : ⁅x, ⁅a, b⁆⁆ = ⁅⁅x, a⁆, b⁆ + ⁅a, ⁅x, b⁆⁆ := by
             simp only [lie_lie, sub_add_cancel]
           rw [this]
-          exact add_mem (LieSubalgebra.lie_mem I e d) (LieSubalgebra.lie_mem I c f)
+          exact add_mem (I.lie_mem e d) (I.lie_mem c f)
     | zero =>
       simp only [zero_lie, zero_mem]
     | add x1 y1 _ _ hx hy =>
