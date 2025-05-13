@@ -141,7 +141,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     apply IntervalIntegrable.symm
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc.le]
     rw [← Ioo_union_right hc, integrableOn_union, and_comm]; constructor
-    · refine integrableOn_singleton_iff.mpr (Or.inr ?_)
+    · refine (integrableOn_singleton_iff (by simp)).mpr (Or.inr ?_)
       exact isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact
         isCompact_singleton
     · have : ∀ x : ℝ, x ∈ Ioo c 0 → ‖Complex.exp (↑π * Complex.I * r)‖ = ‖(x : ℂ) ^ r‖ := by
