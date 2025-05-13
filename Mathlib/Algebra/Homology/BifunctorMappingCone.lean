@@ -246,4 +246,13 @@ noncomputable def mapBifunctorMappingCone₁Iso :
   hom := hom φ K₂ F
   inv := inv φ K₂ F
 
+@[reassoc (attr := simp)]
+lemma mapBifunctorMap_inr_mapBifunctorMappingCone₁Iso_hom :
+    mapBifunctorMap (mappingCone.inr φ) (𝟙 K₂) F (.up ℤ) ≫
+      mapBifunctorMappingCone₁Iso.hom φ K₂ F =
+    inr (mapBifunctorMap φ (𝟙 K₂) F (.up ℤ)) := by
+  apply (Cocycle.equivHom _ _).injective
+  ext : 1
+  simp [ext_cochain_to_iff _ 0 1 (zero_add 1)]
+
 end CochainComplex
