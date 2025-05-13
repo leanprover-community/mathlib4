@@ -259,7 +259,7 @@ lemma descChainEquivRel.isUltra_pseudoMetric
     [∀ x y, DecidablePred fun n ↦ (x, y) ∉ D n]
     [∀ x y, Decidable (∃ n, (x, y) ∉ D n)] :
     hD.PseudoMetric.IsUltra :=
-  hD.isUltra_pseudometric_aux
+  ⟨hD.isUltra_pseudometric_aux⟩
 
 lemma descChainEquivRel.pseudoMetric_apply_lt_inv_natCast_iff_of_ne_zero
     {D : ℕ → Set (X × X)} {hD : descChainEquivRel D}
