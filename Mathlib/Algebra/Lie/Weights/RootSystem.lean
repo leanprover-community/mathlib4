@@ -511,7 +511,7 @@ lemma invtSubmodule_reflection:
           obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
           have := s₄ i j hi hj
           simp only [Subtype.forall] at this
-          exact(this x hx1_mem) z hz₁
+          exact (this x hx1_mem) z hz₁
         | zero => exact zero_lie z
         | add _ _ _ _ e f => rw [add_lie, e, f, add_zero]
         | smul _ _ _ d =>
@@ -567,16 +567,16 @@ lemma invtSubmodule_reflection:
         exact I.zero_mem
       | zero => simp only [lie_zero, zero_mem, I]
       | add _ _ _ _ e f =>
-          simp only [lie_add]
-          exact add_mem e f
+        simp only [lie_add]
+        exact add_mem e f
       | smul a _ _ d =>
-          simp only [lie_smul]
-          exact I.smul_mem a d
+        simp only [lie_smul]
+        exact I.smul_mem a d
       | lie a b c d e f =>
-          have : ⁅x, ⁅a, b⁆⁆ = ⁅⁅x, a⁆, b⁆ + ⁅a, ⁅x, b⁆⁆ := by
-            simp only [lie_lie, sub_add_cancel]
-          rw [this]
-          exact add_mem (I.lie_mem e d) (I.lie_mem c f)
+        have : ⁅x, ⁅a, b⁆⁆ = ⁅⁅x, a⁆, b⁆ + ⁅a, ⁅x, b⁆⁆ := by
+          simp only [lie_lie, sub_add_cancel]
+        rw [this]
+        exact add_mem (I.lie_mem e d) (I.lie_mem c f)
     | zero =>
       simp only [zero_lie, zero_mem]
     | add x1 y1 _ _ hx hy =>
