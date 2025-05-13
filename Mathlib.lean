@@ -480,6 +480,7 @@ import Mathlib.Algebra.Homology.BicomplexRows
 import Mathlib.Algebra.Homology.Bifunctor
 import Mathlib.Algebra.Homology.BifunctorAssociator
 import Mathlib.Algebra.Homology.BifunctorColimits
+import Mathlib.Algebra.Homology.BifunctorCommShift
 import Mathlib.Algebra.Homology.BifunctorFlip
 import Mathlib.Algebra.Homology.BifunctorHomotopy
 import Mathlib.Algebra.Homology.BifunctorMappingCone

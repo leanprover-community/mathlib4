@@ -329,6 +329,11 @@ noncomputable def bifunctorMapHomologicalComplex :
   map_id _ := by ext; dsimp; simp
   map_comp _ _ := by ext; dsimp; simp
 
+noncomputable abbrev bifunctorMapCochainComplex
+  [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F (.up ℤ)] :
+    CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ :=
+  bifunctorMapHomologicalComplex F _ _ _
+
 end
 
 section
