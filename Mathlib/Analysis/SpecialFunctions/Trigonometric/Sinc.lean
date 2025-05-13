@@ -28,7 +28,7 @@ namespace Real
 
 variable {x : ℝ}
 
-/-- The function `sin x / x` mofified to take the value 1 at 0, which makes it continuous. -/
+/-- The function `sin x / x` modified to take the value 1 at 0, which makes it continuous. -/
 @[pp_nodot]
 noncomputable def sinc (x : ℝ) : ℝ := if x = 0 then 1 else sin x / x
 
