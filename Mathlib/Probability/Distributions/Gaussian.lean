@@ -100,8 +100,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
 lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPDFReal μ v x) = 1 := by
   rw [← ENNReal.toReal_eq_one_iff]
-  have hfm : AEStronglyMeasurable (gaussianPDFReal μ v) volume :=
-    (stronglyMeasurable_gaussianPDFReal μ v).aestronglyMeasurable
+  have hfm : AEStronglyMeasurable (gaussianPDFReal μ v) volume := by fun_prop
   have hf : 0 ≤ₐₛ gaussianPDFReal μ v := ae_of_all _ (gaussianPDFReal_nonneg μ v)
   rw [← integral_eq_lintegral_of_nonneg_ae hf hfm]
   simp only [gaussianPDFReal, zero_lt_two, mul_nonneg_iff_of_pos_right, one_div,
