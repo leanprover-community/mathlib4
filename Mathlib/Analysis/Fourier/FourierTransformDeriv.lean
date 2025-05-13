@@ -764,10 +764,15 @@ lemma hasDerivAt_fourierIntegral
       simpa only [fourierSMulRight, neg_smul, neg_mul, Pi.smul_apply] using this.smul (-2 * π * I)
     convert ((ContinuousLinearMap.ring_lmap_equiv_self ℝ
       E).symm.toContinuousLinearEquiv.toContinuousLinearMap).integrable_comp hf' using 2 with v
+    expose_names -- bug: convert with v does not expose the name v!
     apply ContinuousLinearMap.ext_ring
     rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.flip_apply,
       ContinuousLinearMap.mul_apply', one_mul, ContinuousLinearMap.map_smul]
-    exact congr_arg (fun x ↦ v • x) (one_smul ℝ (f v)).symm
+    simp only [ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_toContinuousLinearEquiv,
+      ContinuousLinearMap.coe_coe]
+    change x • f x = x • (((ContinuousLinearMap.id ℝ ℝ).smulRight) (f x)) 1
+    dsimp
+    rw [one_smul]
   rw [← VectorFourier.fourierIntegral_convergent_iff continuous_fourierChar L.continuous₂ w]
     at h_int
   convert (VectorFourier.hasFDerivAt_fourierIntegral L hf hf'' w).hasDerivAt using 1
