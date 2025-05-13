@@ -457,11 +457,11 @@ lemma invtSubmodule_reflection:
   have s₂' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : j.1 (coroot i) = 0 := s₁' i j h₁ h₂
   have s₃ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
     by_contra h
-    have inz : i.1.IsNonZero := by
+    have i_non_zero : i.1.IsNonZero := by
       obtain ⟨val, hval⟩ := i
       simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
       exact hval
-    have jnz : j.1.IsNonZero := by
+    have j_non_zero : j.1.IsNonZero := by
       obtain ⟨val, hval⟩ := j
       simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
       exact hval
@@ -472,13 +472,13 @@ lemma invtSubmodule_reflection:
         have := congr_arg Weight.toFun a
         simp at this; exact this)
       have := s₂ i j h₁ h₂
-      rw [h_eq, coe_neg, Pi.neg_apply, root_apply_coroot (K := K) (H := H) (L := L) jnz] at this
+      rw [h_eq, coe_neg, Pi.neg_apply, root_apply_coroot j_non_zero] at this
       field_simp at this
     have r₂ : r ∈ H.root := by simp [isNonZero_iff_ne_zero, r₁]
     cases Classical.em (⟨r, r₂⟩ ∈ Φ) with
     | inl hl =>
       have e₁ : i.1.1 (coroot j) = 0 := s₂ i j h₁ h₂
-      have e₂ : j.1.1 (coroot j) = 2 := root_apply_coroot jnz
+      have e₂ : j.1.1 (coroot j) = 2 := root_apply_coroot j_non_zero
       have : (0 : K) = 2 := calc
         0 = (i.1.1 + j.1.1) (coroot j) := (s₂ ⟨r, r₂⟩ j hl h₂).symm
         _ = i.1.1 (coroot j) + j.1.1 (coroot j) := rfl
@@ -486,7 +486,7 @@ lemma invtSubmodule_reflection:
       simp at this
     | inr hr =>
       have e₁ : j.1.1 (coroot i) = 0 := s₂' i j h₁ h₂
-      have e₂ : i.1.1 (coroot i) = 2 := root_apply_coroot inz
+      have e₂ : i.1.1 (coroot i) = 2 := root_apply_coroot i_non_zero
       have : (0 : K) = 2 := calc
         0 = (i.1.1 + j.1.1) (coroot i) := (s₂' i ⟨r, r₂⟩ h₁ hr).symm
         _ = i.1.1 (coroot i) + j.1.1 (coroot i) := rfl
@@ -506,7 +506,7 @@ lemma invtSubmodule_reflection:
     have center_element : z ∈ center K L := by
       have commutes_with_all (x : L) : ⁅x, z⁆ = 0 := by
         have x_mem_I : x ∈ I := by rw [hI]; exact trivial
-        induction x_mem_I using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
+        induction x_mem_I using LieSubalgebra.lieSpan_induction with
         | mem x hx =>
           obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
           have := s₄ i j hi hj
@@ -520,7 +520,7 @@ lemma invtSubmodule_reflection:
           exact d
         | lie _ _ _ _ e f => rw [lie_lie, e, f, lie_zero, lie_zero, sub_self]
       exact commutes_with_all
-    rw [center_eq_bot (R := K) (L := L)] at center_element
+    rw [center_eq_bot] at center_element
     exact hz₂ center_element
   have s₆ : I ≠ ⊥ := by
     obtain ⟨r, hr⟩ := Set.nonempty_def.mp hΦ₁
@@ -541,7 +541,7 @@ lemma invtSubmodule_reflection:
       simp only [gen, Submodule.mem_top]
     induction hx using Submodule.iSup_induction' with
     | mem j x hx =>
-      induction hy using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
+      induction hy using LieSubalgebra.lieSpan_induction with
       | mem x₁ hx₁ =>
         obtain ⟨i, hi, x₁_mem⟩ := Set.mem_iUnion₂.mp hx₁
         have r₁ (j : Weight K H L) : j = 0 ∨ j ∈ H.root := by
@@ -581,7 +581,7 @@ lemma invtSubmodule_reflection:
     | add x1 y1 _ _ hx hy =>
       simp only [add_lie]
       exact add_mem hx hy
-  obtain ⟨I', h⟩ := (LieSubalgebra.exists_lieIdeal_coe_eq_iff (R := K) (L := L) (K := I)).2 s₇
+  obtain ⟨I', h⟩ := (LieSubalgebra.exists_lieIdeal_coe_eq_iff (K := I)).2 s₇
   have : IsSimple K L := inferInstance
   have : I' = ⊥ ∨ I' = ⊤ := this.eq_bot_or_eq_top I'
   have c₁ : I' ≠ ⊤ := by
