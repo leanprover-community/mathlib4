@@ -339,7 +339,7 @@ theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
 
 /-- The support of a permutation is invariant -/
 theorem isInvariant_of_support_le {c : Perm α} {s : Finset α} (hcs : c.support ≤ s) (x : α) :
-    x ∈ s ↔ c x ∈ s := by
+    c x ∈ s ↔ x ∈ s := by
   by_cases hx' : x ∈ c.support
   · simp only [hcs hx', true_iff, hcs (apply_mem_support.mpr hx')]
   · rw [not_mem_support.mp hx']
@@ -347,10 +347,10 @@ theorem isInvariant_of_support_le {c : Perm α} {s : Finset α} (hcs : c.support
 /-- A permutation c is the extension of a restriction of g to s
   iff its support is contained in s and its restriction is that of g -/
 lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
-    (hg : ∀ x, x ∈ s ↔ g x ∈ s) :
+    (hg : ∀ x, g x ∈ s ↔ x ∈ s) :
     ofSubtype (g.subtypePerm hg) = c ↔
       c.support ≤ s ∧
-      ∀ (hc' : ∀ x, x ∈ s ↔ c x ∈ s), c.subtypePerm hc' = g.subtypePerm hg := by
+      ∀ (hc' : ∀ x, c x ∈ s ↔ x ∈ s), c.subtypePerm hc' = g.subtypePerm hg := by
   simp only [Equiv.ext_iff, subtypePerm_apply, Subtype.mk.injEq, Subtype.forall]
   constructor
   · intro h
@@ -652,7 +652,7 @@ end Card
 end support
 
 @[simp]
-theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
+theorem support_subtypePerm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
     (f.subtypePerm h : Perm s).support = ({x | f x ≠ x} : Finset s) := by
   ext; simp [Subtype.ext_iff]
 
