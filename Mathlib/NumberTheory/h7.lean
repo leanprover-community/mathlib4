@@ -3,11 +3,8 @@ Copyright (c) 2024 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.NumberTheory.NumberField.House
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.Analysis.Analytic.IteratedFDeriv
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Analytic.Order
+import Mathlib.NumberTheory.h7aux
+import Mathlib.NumberTheory.h7order
 
 set_option autoImplicit true
 set_option linter.style.multiGoal false
@@ -17,239 +14,9 @@ set_option linter.unusedSectionVars true
 set_option linter.style.longFile 0
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
-  Matrix Set Polynomial Finset IntermediateField Complex
+  Matrix Set Polynomial Finset IntermediateField Complex AnalyticAt
 
 noncomputable section
-
-lemma ExistsAlgInt {K : Type*} [Field K] [NumberField K] (α : K) :
-  ∃ k : ℤ, k ≠ 0 ∧ IsIntegral ℤ (k • α) := by
-  obtain ⟨y, hy, hf⟩ := exists_integral_multiples ℤ ℚ (L := K) {α}
-  refine ⟨y, hy, hf α (mem_singleton_self _)⟩
-
-def c'_both {K : Type*} [Field K] [NumberField K] (α : K) :
-   {c : ℤ | c ≠ 0 ∧ IsIntegral ℤ (c • α)} :=
-  ⟨(ExistsAlgInt α).choose, (ExistsAlgInt α).choose_spec⟩
-
-lemma adjoin_le_adjoin_more (α β : ℂ) (_ : IsAlgebraic ℚ α) (_ : IsAlgebraic ℚ β) :
-  (adjoin _ {α} ≤ adjoin ℚ {α, β}) ∧ (adjoin _ {β} ≤ adjoin ℚ {α, β}) :=
-  ⟨by apply adjoin.mono; intros x hx; left; exact hx,
-   by apply adjoin.mono; intros x hx; right; exact hx⟩
-
-lemma isNumberField_adjoin_alg_numbers (α β γ : ℂ)
-  (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ β) (hγ : IsAlgebraic ℚ γ) :
-    NumberField (adjoin ℚ {α, β, γ}) :=  {
-  to_charZero := charZero_of_injective_algebraMap (algebraMap ℚ _).injective
-  to_finiteDimensional := finiteDimensional_adjoin (fun x hx => by
-    cases' hx with ha hb; · simp_rw [ha, isAlgebraic_iff_isIntegral.1 hα]
-    cases' hb with hb hc; · simp_rw [hb, isAlgebraic_iff_isIntegral.1 hβ]
-    simp_rw [mem_singleton_iff.1 hc, isAlgebraic_iff_isIntegral.1 hγ])}
-
---#check canonicalEmbedding
-
-lemma getElemsInNF (α β γ : ℂ) (hα : IsAlgebraic ℚ α)
-    (hβ : IsAlgebraic ℚ β) (hγ : IsAlgebraic ℚ γ) :
-      ∃ (K : Type) (_ : Field K) (_ : NumberField K)
-      (σ : K →+* ℂ) (_ : DecidableEq (K →+* ℂ)),
-    ∃ (α' β' γ' : K), α = σ α' ∧ β = σ β' ∧ γ = σ γ' := by
-  have  hab := adjoin.mono ℚ {α, β} {α, β, γ}
-    fun x hxab => by cases' hxab with hxa hxb; left; exact hxa; right; left; exact hxb
-  have hac := adjoin.mono ℚ {α, γ} {α, β, γ}
-    fun x hx => by cases' hx with hsf hff; left; exact hsf; right; right; exact hff
-  use adjoin ℚ {α, β, γ}
-  constructor
-  use isNumberField_adjoin_alg_numbers α β γ hα hβ hγ
-  use { toFun := fun x => x.1, map_one' := rfl, map_mul' := fun x y => rfl
-        map_zero' := rfl, map_add' := fun x y => rfl}
-  use Classical.typeDecidableEq (↥ℚ⟮α, β, γ⟯ →+* ℂ)
-  simp only [exists_and_left, exists_and_right, RingHom.coe_mk, MonoidHom.coe_mk,
-    OneHom.coe_mk, Subtype.exists, exists_prop, exists_eq_right']
-  exact ⟨adjoin_simple_le_iff.1 fun _ hx =>
-     hab ((adjoin_le_adjoin_more α β hα hβ).1 hx),
-    adjoin_simple_le_iff.1 fun _ hx =>  hab (by
-    apply adjoin.mono; intros x hx;
-    · right; exact hx;
-    · exact hx),
-    adjoin_simple_le_iff.1 fun _ hx =>
-    hac ((adjoin_le_adjoin_more α γ hα hγ).2 hx)⟩
-
-open Differentiable AnalyticAt
-
-theorem zero_if_order_inf : ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z),
-  (∀ z, f z = 0) → AnalyticAt.order (hf z) = ⊤ := by
-  intros f z hf h0
-  rw [AnalyticAt.order_eq_top_iff]
-  refine (AnalyticAt.frequently_eq_iff_eventually_eq (hf z) ?_).mp ?_
-  · exact analyticAt_const
-  · refine Filter.Frequently.of_forall ?_
-    · intros x
-      exact h0 x
-
-theorem order_inf_if_zero : ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z),
- AnalyticAt.order (hf z) = ⊤ → (∀ z, f z = 0) := by
-  intros f z hf hr
-  have := AnalyticAt.order_eq_top_iff (hf z)
-  rw [this] at hr
-  rw [← AnalyticAt.frequently_eq_iff_eventually_eq (hf z)] at hr
-  have hfon : AnalyticOnNhd ℂ f univ := by {
-    unfold AnalyticOnNhd
-    intros x hx
-    simp_all only}
-  have :=  AnalyticOnNhd.eqOn_zero_of_preconnected_of_frequently_eq_zero (hfon) ?_ ?_ hr
-  · exact fun z ↦ this trivial
-  · exact isPreconnected_univ
-  · exact trivial
-  · exact analyticAt_const
-
-lemma zero_iff_order_inf : ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z),
-  (∀ z, f z = 0) ↔ AnalyticAt.order (hf z) = ⊤ := by
-  intros f z hf
-  constructor
-  · exact zero_if_order_inf f z hf
-  · exact order_inf_if_zero f z hf
-
-lemma analytic_iter_deriv (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z) :
-  ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z := by
-  intro z
-  rw [← Eq.symm iteratedDeriv_eq_iterate]
-  exact AnalyticAt.iterated_deriv (hf z) k
-
-lemma eq_order_sub_one (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
- (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z) :
-  ∀ z : ℂ, AnalyticAt.order (hfdev z) = AnalyticAt.order (hf z) - 1 := by {
-    intros z
-    have := AnalyticAt.iterated_deriv (hf z) k
-    by_contra H
-    sorry
-  }
-
--- lemma: if the order of f is n > 0, then the order of the *single* derivative of f is n - 1
-lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
-   (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z)  :
- (∀ z : ℂ, 0 < AnalyticAt.order (hf z)) →
-   ∀ z, AnalyticAt.order (hfdev z) = AnalyticAt.order (hf z) - 1 := by {
-    intros H
-    intros z
-    sorry
-   }
-
-lemma order_geq_k_then_deriv_n_neg_1 (f : ℂ → ℂ) (z₀ : ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
-   (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z) :
-   (∀ z : ℂ, k ≤ AnalyticAt.order (hf z)) → ∀ z, AnalyticAt.order (hfdev z) = n - k := by {
-    intros hof z
-    induction' k with k hk
-    · simp only [iteratedDeriv_zero, CharP.cast_eq_zero, tsub_zero]
-      have (z₀ : ℂ) :  (hf z).order = n ↔ ∃ g, AnalyticAt ℂ g z₀ ∧ g z₀ ≠ 0 ∧
-         ∀ᶠ (z : ℂ ) in nhds z₀, f z = (z - z₀) ^ n.toNat • g z := by {
-        rw [order_eq_nat_iff]
-        sorry
-      }
-      have this := this z₀
-      rw [this]
-      use (iteratedDeriv 0 f)
-      simp only [iteratedDeriv_zero, ne_eq, smul_eq_mul]
-      constructor
-      exact hf z₀
-      · constructor
-        · sorry
-        · sorry
-    · have hfdev_plus_one : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv (k + 1) f) z := sorry
-      simp only at hk
-      have (z₀ : ℂ) : (hfdev_plus_one z).order = n - ↑(k + 1) ↔ ∃ g, AnalyticAt ℂ g z₀ ∧ g z₀ ≠ 0 ∧
-         ∀ᶠ (z : ℂ ) in nhds z₀, f z = (z - z₀) ^(n.toNat - ↑(k + 1) : ℕ) • g z := by {
-        --rw [order_eq_nat_iff]
-        sorry
-      }
-      have this := this z₀
-      rw [this]
-      sorry
-   }
-
-#exit
--- lemma: if the order of f is n > 0, then the order of the *single* derivative of f is n - 1
---   this follows from the definition (characterization?) of the order as being (z - z₀)^n*g(z)
-
--- lemma: by induction if the order ≥ k, then the order of the k-th derivative is n - k
-
--- have hfoo : ∀ (z : ℂ), AnalyticAt ℂ (iteratedDeriv k f) z :=
- -- by {exact fun z ↦ analytic_iter_deriv k f hf z}
-
--- have := order_inf_if_zero (iteratedDeriv k f) z hfoo
-
-lemma iterated_deriv_eq_zero_iff_order_eq_n :
-  ∀ n (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z) (ho : AnalyticAt.order (hf z) ≠ ⊤)
-   (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z),
-  (∀ k < n, AnalyticAt.order (hfdev z) = 0) ∧ (iteratedDeriv k f z ≠ 0)
-    ↔ AnalyticAt.order (hf z) = n := by
-  intros n f z hf hord hfdev
-  constructor
-  · intros H
-    obtain ⟨H1, H2⟩ := H
-    sorry
-  · intros H
-    constructor
-    · intros k hk
-      sorry
-    · by_contra H
-      sorry
-
-lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ (f : ℂ → ℂ) z₀ (hf : ∀ z, AnalyticAt ℂ f z)
-   (ho : ∀ z, AnalyticAt.order (hf z) ≠ ⊤),
- (∀ k < n, iteratedDeriv k f z₀ = 0) → n ≤ AnalyticAt.order (hf z₀) := by
-
-intros f z hf ho hd
-rw [le_iff_eq_or_lt]
-left
-apply Eq.symm
-rw [← iterated_deriv_eq_zero_iff_order_eq_n]
-constructor
-· intros k hkn
-  have := hd k.toNat
-  sorry
-· sorry
-· exact ho z
-· sorry
-· sorry
-
-
-
-
-
-lemma cexp_mul : deriv (fun x => cexp (c * x)) x = c * cexp (c * x) := by
-  change deriv (fun x => exp ((fun x => c * x) x)) x = c * exp (c * x)
-  rw [deriv_cexp]
-  · rw [deriv_mul]
-    · simp only [deriv_const', zero_mul, deriv_id'', mul_one, zero_add]
-      exact CommMonoid.mul_comm (cexp (c * x)) c
-    · exact differentiableAt_const c
-    · exact differentiableAt_id'
-  · apply mul <| differentiable_const _; exact differentiable_id'
-
-lemma IsIntegral_assoc (K : Type) [Field K]
-{x y : ℤ} (z : ℤ) (α : K) (ha : IsIntegral ℤ (z • α)) :
-  IsIntegral ℤ ((x * y * z : ℤ) • α) := by
-  have : ((x * y * z : ℤ) • α) = (x * y) • (z • α) := by
-    simp only [Int.cast_mul, zsmul_eq_mul, mul_assoc (↑x * ↑y : K) z α]
-  conv => enter [2]; rw [this]
-  apply IsIntegral.smul _ ha
-
--- lemma IsIntegral_assoc' (K : Type) [Field K]
--- {x y : ℤ} (z : ℤ) (α : K) (ha : IsIntegral ℤ (z • α)) :
---   IsIntegral ℤ (abs (x * y * z : ℤ) • α) := by
---   have : ((x * y * z : ℤ) • α) = (x * y) • (z • α) := by
---     simp only [Int.cast_mul, zsmul_eq_mul, mul_assoc (↑x * ↑y : K) z α]
---   conv => enter [2]; rw [this]
---   apply IsIntegral.smul _ ha
-
-lemma IsIntegral.Cast(K : Type) [Field K]  (a : ℤ) : IsIntegral ℤ (a : K) :=
-  map_isIntegral_int (algebraMap ℤ K) (Algebra.IsIntegral.isIntegral _)
-
-lemma IsIntegral.Nat (K : Type) [Field K] (a : ℕ) : IsIntegral ℤ (a : K) := by
-  have : (a : K) = ((a : ℤ) : K) := by simp only [Int.cast_natCast]
-  rw [this]; apply IsIntegral.Cast
-
-lemma triple_comm (K : Type) [Field K]  (a b c : ℤ) (x y z : K) :
- ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z := by
-  simp only [zsmul_eq_mul, Int.cast_mul]; ring
 
 variable (α β : ℂ) (hirr : ∀ i j : ℤ, β ≠ i / j) (htriv : α ≠ 0 ∧ α ≠ 1)
 
@@ -291,14 +58,15 @@ def c' (α : K) : ℤ := c'_both α
 
 lemma c'_IsIntegral (α : K) : IsIntegral ℤ (c' K α • α) := (c'_both α).2.2
 
-def c₁ := abs ((c' K α') * (c' K β') * (c' K γ'))
+def c₁ := (abs ((c' K α') * (c' K β') * (c' K γ')))
 
 lemma c₁_α : IsIntegral ℤ (c₁ K α' β' γ' • α') := by
   have h := IsIntegral_assoc (x := c' K γ') (y := c' K β') K (c' K α') α' (c'_IsIntegral K α')
   rw [c₁]
   conv => enter [2]; rw [mul_comm, mul_comm (c' K α') (c' K β'), ← mul_assoc]
   cases' abs_choice (c' K γ' * c' K β' * c' K α') with H1 H2
-  · rw [H1]; exact h
+  · rw [H1];
+    exact h
   · rw [H2]
     simp_all only [zsmul_eq_mul, Int.cast_mul, abs_eq_neg_self, neg_smul, IsIntegral.neg_iff]
 
@@ -1047,10 +815,6 @@ lemma R_nonzero (k : ℕ) :
   exact HC
 
 
-
-
-
-
 --order (IsAnalyticRAtl α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).choose
 --variable (hdistinct : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j)
 
@@ -1168,7 +932,6 @@ lemma sys_coeffs_foo :
   simp only [mul_eq_mul_left_iff, map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff]
   left
   exact sys_coeffs_bar α β htriv K σ α' β' γ' habc q u t}
-
 
 include α β σ hq0 h2mq hd hirr htriv σ α' β' γ' habc h2mq  in
 lemma iteratedDeriv_vanishes :
@@ -1414,9 +1177,7 @@ lemma order_neq_top :
   unfold _root_.order
   intros H
   rw [order_eq_top_iff] at H
-
-
-}
+  sorry}
 
 include α β σ K σ α' β' γ' u in
 def r : ℕ := by
@@ -1518,7 +1279,6 @@ lemma exists_nonzero_iteratedFDeriv :
   · exact analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   · sorry
   }
-
 
 -- you want somewhere a lemma that the order of R in each l is ≥ n
 -- this follows from the fact that the R^(k)(l) = 0 for each k < n
@@ -1816,12 +1576,9 @@ lemma eq5 :
         apply one_lt_pow₀
         simp only [lt_sup_iff, Nat.one_lt_ofNat, true_or]
         sorry
-    · trans
-      · have : (0 : ℝ) < 1 := by {simp only [zero_lt_one]}
-        apply this
-      · apply one_lt_pow₀
-        · sorry
-        · sorry
+    · have : 1 ≤ (c₁) ^ (↑(h K) * ((↑r) + 2 * ↑(m K) * (↑q))) := sorry
+      calc (0 : ℝ) < 1 := sorry
+           (1 : ℝ) ≤ c₁ ^ (↑(h K) * ((↑r) + 2 * ↑(m K) * (↑q))) := sorry
   · unfold _root_.cρ
     rw [← pow_add]
     simp only [neg_mul, zpow_neg, abs_pow, norm_pow]
@@ -2006,7 +1763,9 @@ lemma eq6 :
           unfold _root_.c₄
           simp only [le_sup_iff, zero_le_one, true_or, pow_nonneg]
         · apply pow_nonneg
-          sorry
+          apply mul_nonneg
+          · sorry
+          · exact Nat.cast_nonneg' q
     · apply mul_nonneg
       · unfold c₄
         unfold _root_.c₄
@@ -2026,14 +1785,6 @@ lemma eq6 :
     · simp_all only [Nat.cast_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]
   · sorry
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -2079,7 +1830,8 @@ lemma holS :
         intros x HX
         rw [sub_eq_zero] at HX
         sorry
-    · sorry}
+    · sorry
+}
 
 lemma hcauchy :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
@@ -2178,7 +1930,7 @@ lemma abs_R :
       rw [← this]
       exact lemma82
     · have : ∀ i, ‖cexp (_root_.ρ α β q i * z)‖ ≤
-         (Real.exp ((q+q*(norm β))* m K *(1+r/q))*(norm α)) := sorry
+         (Real.exp ((q+q*(norm β))* m K *(1+r/q)) * (norm α)) := sorry
       apply this
     · apply norm_nonneg
     · unfold c₄
@@ -2442,7 +2194,7 @@ lemma use6and8 :
 
   intros r l₀ S
 
-  have : (((h K -1) : ℤ) * (r + 3/2 : ℤ) + (3-m K) * r * 1/2 + 3/2) =
+  have : (((h K - 1) : ℤ) * (r + 3/2 : ℤ) + (3 - m K) * r * 1/2 + 3/2) =
     ((-r : ℤ)/2 + 3 * h K/2) := by {
       sorry
     }
@@ -2450,7 +2202,7 @@ lemma use6and8 :
   calc _ ≤ ((c₁₄)^r) * r^ ((h K -1) * (r + 3/2 : ℤ) + (3-m K) * r * 1/2 + 3/2) := ?_
        _ = ((c₁₄)^r) * r^ ((-r : ℤ)/2 + 3 * h K/2) := ?_
   · sorry
-  · rw [← this]
+  · sorry --rw [← this]
 
 def c₁₅ : ℝ := c₁₄ * c₅ K α' β' γ' q
 
@@ -2510,12 +2262,6 @@ theorem hilbert7 (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ
   apply absurd main
   simp only [ge_iff_le, not_le]
   exact use5
-
-
-
-
-
-
 
 
 
