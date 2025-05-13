@@ -433,7 +433,7 @@ open LieModule Module
 open LieModule Weight
 
 lemma invtSubmodule_reflection:
-   ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
+   ∀ (q : Submodule K (Dual K H)), (∀ (i : H.root), q ∈ End.invtSubmodule
       ((rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
   have _i := nontrivial_of_isIrreducible K L L
   let S := rootSystem H
@@ -492,18 +492,18 @@ lemma invtSubmodule_reflection:
         _ = i.1.1 (coroot i) + j.1.1 (coroot i) := rfl
         _ = 2 := by rw [e₁, e₂, add_zero]
       simp at this
-  have s₄ (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1)
-      (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
-    have h₃ := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace li.2 lj.2
+  have s₄ (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : rootSpace H i.1.1)
+      (lj : rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
+    have h₃ := lie_mem_genWeightSpace_of_mem_genWeightSpace li.2 lj.2
     rw [s₃ i j h1 h2] at h₃
     exact h₃
-  let g := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
+  let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
   let I := LieSubalgebra.lieSpan K L g
   have s₅ : I ≠ ⊤ := by
     obtain ⟨j, hj⟩ := (Set.ne_univ_iff_exists_not_mem Φ).mp hc
-    obtain ⟨z, hz₁, hz₂⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
+    obtain ⟨z, hz₁, hz₂⟩ := exists_ne_zero (R := K) (L := H) (M := L) j
     by_contra! hI
-    have center_element : z ∈ LieAlgebra.center K L := by
+    have center_element : z ∈ center K L := by
       have commutes_with_all (x : L) : ⁅x, z⁆ = 0 := by
         have x_mem_I : x ∈ I := by rw [hI]; exact trivial
         induction x_mem_I using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
@@ -520,11 +520,11 @@ lemma invtSubmodule_reflection:
           exact d
         | lie _ _ _ _ e f => rw [lie_lie, e, f, lie_zero, lie_zero, sub_self]
       exact commutes_with_all
-    rw [LieAlgebra.center_eq_bot (R := K) (L := L)] at center_element
+    rw [center_eq_bot (R := K) (L := L)] at center_element
     exact hz₂ center_element
   have s₆ : I ≠ ⊥ := by
     obtain ⟨r, hr⟩ := Set.nonempty_def.mp hΦ₁
-    obtain ⟨x, hx₁, hx₂⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) r
+    obtain ⟨x, hx₁, hx₂⟩ := exists_ne_zero (R := K) (L := H) (M := L) r
     have x_in_g : x ∈ g := by
       apply Set.mem_iUnion_of_mem r
       simp only [Set.mem_iUnion]
@@ -533,27 +533,27 @@ lemma invtSubmodule_reflection:
     by_contra h
     exact hx₂ ((LieSubalgebra.eq_bot_iff I).mp h x x_mem_I)
   have s₇ : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
-    have gen : ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule = ⊤ := by
+    have gen : ⨆ χ : Weight K H L, (genWeightSpace L χ).toSubmodule = ⊤ := by
       simp only [LieSubmodule.iSup_toSubmodule_eq_top]
       exact iSup_genWeightSpace_eq_top' K (↥H) L
     intro x y hy
-    have hx : x ∈ ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule := by
+    have hx : x ∈ ⨆ χ : Weight K H L, (genWeightSpace L χ).toSubmodule := by
       simp only [gen, Submodule.mem_top]
     induction hx using Submodule.iSup_induction' with
     | mem j x hx =>
       induction hy using LieSubalgebra.lieSpan_induction (R := K) (L := L) with
       | mem x₁ hx₁ =>
         obtain ⟨i, hi, x₁_mem⟩ := Set.mem_iUnion₂.mp hx₁
-        have r₁ (j : LieModule.Weight K H L) : j = 0 ∨ j ∈ H.root := by
+        have r₁ (j : Weight K H L) : j = 0 ∨ j ∈ H.root := by
           rcases (eq_or_ne j 0) with h | h
           · left
             exact h
           · right
             refine Finset.mem_filter.mpr ?_
-            exact ⟨Finset.mem_univ j, LieModule.Weight.isNonZero_iff_ne_zero.mpr h⟩
+            exact ⟨Finset.mem_univ j, isNonZero_iff_ne_zero.mpr h⟩
         rcases (r₁ j) with h | h
         have h₁ : ⁅x, x₁⁆ ∈ g := by
-          have h₂ := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
+          have h₂ := lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
           rw [h, coe_zero, zero_add] at h₂
           exact Set.mem_biUnion hi h₂
         exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
@@ -564,11 +564,11 @@ lemma invtSubmodule_reflection:
         have : ⁅x, x₁⁆ = 0 := by
           rw [← neg_eq_zero, lie_skew x₁ x, (s₄ i ⟨j, h⟩ hi h₁ ⟨x₁, x₁_mem⟩ ⟨x, hx⟩)]
         rw [this]
-        exact LieSubalgebra.zero_mem I
-      | zero => simp only [lie_zero, LieSubalgebra.zero_mem, I]
+        exact zero_mem I
+      | zero => simp only [lie_zero, zero_mem, I]
       | add _ _ _ _ e f =>
           simp only [lie_add]
-          exact LieSubalgebra.add_mem I e f
+          exact add_mem e f
       | smul a _ _ d =>
           simp only [lie_smul]
           exact LieSubalgebra.smul_mem I a d
@@ -576,14 +576,14 @@ lemma invtSubmodule_reflection:
           have : ⁅x, ⁅a, b⁆⁆ = ⁅⁅x, a⁆, b⁆ + ⁅a, ⁅x, b⁆⁆ := by
             simp only [lie_lie, sub_add_cancel]
           rw [this]
-          exact LieSubalgebra.add_mem I (LieSubalgebra.lie_mem I e d) (LieSubalgebra.lie_mem I c f)
+          exact add_mem (LieSubalgebra.lie_mem I e d) (LieSubalgebra.lie_mem I c f)
     | zero =>
-      simp only [zero_lie, LieSubalgebra.zero_mem]
+      simp only [zero_lie, zero_mem]
     | add x1 y1 _ _ hx hy =>
       simp only [add_lie]
-      exact LieSubalgebra.add_mem I hx hy
+      exact add_mem hx hy
   obtain ⟨I', h⟩ := (LieSubalgebra.exists_lieIdeal_coe_eq_iff (R := K) (L := L) (K := I)).2 s₇
-  have : LieAlgebra.IsSimple K L := inferInstance
+  have : IsSimple K L := inferInstance
   have : I' = ⊥ ∨ I' = ⊤ := this.eq_bot_or_eq_top I'
   have c₁ : I' ≠ ⊤ := by
     rw [← h] at s₅
@@ -596,7 +596,7 @@ lemma invtSubmodule_reflection:
   · contradiction
 
 instance : (rootSystem H).IsIrreducible := by
-  have _i := LieModule.nontrivial_of_isIrreducible K L L
+  have _i := nontrivial_of_isIrreducible K L L
   exact RootPairing.IsIrreducible.mk' (rootSystem H).toRootPairing (invtSubmodule_reflection K L H)
 
 end LieAlgebra.IsKilling
