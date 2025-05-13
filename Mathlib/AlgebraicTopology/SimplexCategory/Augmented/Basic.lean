@@ -3,7 +3,6 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-
 import Mathlib.CategoryTheory.WithTerminal
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
@@ -17,9 +16,9 @@ object to `SimplexCategory` (using `CategoryTheory.WithInitial`).
 This definition provides a canonical full and faithful inclusion functor
 `inclusion : SimplexCategory ⥤ AugmentedSimplexCategory`.
 
-We prove that functors out of `AugmentedSimplexCategory` are equivalent to cosimplicial objects
-and that functors out of `AugmentedSimplexCategoryᵒᵖ` are equivalent to simplicial objects,
-and we provide a translation of the main constrcutions on (co)simplicial objects
+We prove that functors out of `AugmentedSimplexCategory` are equivalent to augmented cosimplicial
+objects and that functors out of `AugmentedSimplexCategoryᵒᵖ` are equivalent to augmented simplicial
+objects, and we provide a translation of the main constrcutions on augmented (co)simplicial objects
 (i.e `drop`, `point` and `toArrow`) in terms of these equivalences.
 
 -/
@@ -42,7 +41,7 @@ instance : inclusion.Full := inferInstanceAs WithInitial.incl.Full
 instance : inclusion.Faithful := inferInstanceAs WithInitial.incl.Faithful
 
 instance : Limits.HasInitial AugmentedSimplexCategory :=
-    inferInstanceAs <| Limits.HasInitial <| WithInitial _
+  inferInstanceAs <| Limits.HasInitial <| WithInitial _
 
 /-- The equivalence between functors out of `AugmentedSimplexCategory` and augmented
 cosimplicial objects. -/
@@ -58,15 +57,15 @@ dropping the augmentation corresponds to precomposition with
 def equivAugmentedCosimplicialObjectDrop :
     equivAugmentedCosimplicialObject.functor ⋙ CosimplicialObject.Augmented.drop ≅
     (whiskeringLeft _ _ C).obj inclusion :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  .refl _
 
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 taking the point of the augmentation corresponds to evaluation at the initial object. -/
 @[simps!]
 def equivAugmentedCosimplicialObjectPoint :
     equivAugmentedCosimplicialObject.functor ⋙ CosimplicialObject.Augmented.point ≅
-    ((evaluation _ _).obj (.star) : ((AugmentedSimplexCategory ⥤ C) ⥤ C)) :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+    ((evaluation _ _).obj .star : (AugmentedSimplexCategory ⥤ C) ⥤ C) :=
+  .refl _
 
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 the arrow attached to the cosimplicial object is the one obtained by evaluation at the unique arrow
@@ -76,7 +75,7 @@ def equivAugmentedCosimplicialObjectToArrow :
     equivAugmentedCosimplicialObject.functor ⋙ CosimplicialObject.Augmented.toArrow ≅
     Functor.mapArrowFunctor _ C ⋙
       (evaluation _ _ |>.obj <| .mk <| WithInitial.homTo <| .mk 0) :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  .refl _
 
 /-- The equivalence between functors out of `AugmentedSimplexCategory` and augmented simplicial
 objects. -/
@@ -92,7 +91,7 @@ dropping the augmentation corresponds to precomposition with
 def equivAugmentedSimplicialObjectDrop :
     equivAugmentedSimplicialObject.functor ⋙ SimplicialObject.Augmented.drop ≅
     (whiskeringLeft _ _ C).obj inclusion.op :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  .refl _
 
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 taking the point of the augmentation corresponds to evaluation at the initial object. -/
@@ -100,7 +99,7 @@ taking the point of the augmentation corresponds to evaluation at the initial ob
 def equivAugmentedSimplicialObjectPoint :
     equivAugmentedSimplicialObject.functor ⋙ SimplicialObject.Augmented.point ≅
     (evaluation _ C).obj (.op .star) :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  .refl _
 
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 the arrow attached to the cosimplicial object is the one obtained by evaluation at the unique arrow
@@ -110,6 +109,6 @@ def equivAugmentedSimplicialObjectToArrow :
     equivAugmentedSimplicialObject.functor ⋙ SimplicialObject.Augmented.toArrow ≅
     Functor.mapArrowFunctor _ C ⋙
       (evaluation _ _ |>.obj <| .mk <| .op <| WithInitial.homTo <| .mk 0) :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  .refl _
 
 end AugmentedSimplexCategory
