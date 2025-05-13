@@ -896,30 +896,18 @@ section
 variable {C : Type u₁} [Category.{v₁} C] {c : C}
 
 lemma fromPUnit_final_of_isTerminal (hc : Limits.IsTerminal c) : (fromPUnit c).Final where
-  out c' :=
+  out c' := by
     letI : Inhabited (StructuredArrow c' (fromPUnit c)) := ⟨.mk (Y := default) (hc.from c')⟩
-    isConnected_of_zigzag fun j j' ↦ by
-      use [default, j']
-      constructor
-      · constructor
-        · exact Zag.of_hom (StructuredArrow.homMk (eqToHom rfl) (by apply hc.hom_ext))
-        · constructor
-          · exact Zag.of_hom (StructuredArrow.homMk (eqToHom rfl) (by apply hc.hom_ext))
-          · exact List.Chain.nil
-      · rfl
+    letI : Subsingleton (StructuredArrow c' (fromPUnit c)) :=
+      ⟨fun i j ↦ StructuredArrow.obj_ext _ _ (by aesop_cat) (IsTerminal.hom_ext hc _ _)⟩
+    infer_instance
 
 lemma fromPUnit_initial_of_isInitial (hc : Limits.IsInitial c) : (fromPUnit c).Initial where
-  out c' :=
+  out c' := by
     letI : Inhabited (CostructuredArrow (fromPUnit c) c') := ⟨.mk (Y := default) (hc.to c')⟩
-    isConnected_of_zigzag fun j j' ↦ by
-      use [default, j']
-      constructor
-      · constructor
-        · exact Zag.of_hom (CostructuredArrow.homMk (eqToHom rfl) (by apply hc.hom_ext))
-        · constructor
-          · exact Zag.of_hom (CostructuredArrow.homMk (eqToHom rfl) (by apply hc.hom_ext))
-          · exact List.Chain.nil
-      · rfl
+    letI : Subsingleton (CostructuredArrow (fromPUnit c) c') :=
+      ⟨fun i j ↦ CostructuredArrow.obj_ext _ _ (by aesop_cat) (IsInitial.hom_ext hc _ _)⟩
+    infer_instance
 
 end
 
