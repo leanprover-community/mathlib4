@@ -95,7 +95,6 @@ elab_rules : command
   let noFiles := onlyPastFiles.size
   msgs := msgs.push
     m!"{noFiles} Lean file{if noFiles == 1 then "" else "s"} in 'Mathlib' that no longer exist."
-  --msgs := msgs.push "" ++ (onlyPastFiles.toArray.map (indentD m!"{·}"))
   let deprecation ← mkDeprecation
   msgs := msgs.push ""
   for fname in onlyPastFiles do
@@ -105,7 +104,6 @@ elab_rules : command
     }
     let fileHeader ← getHeader fname file false
     let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
-    --dbg_trace "\nDeprecating {fname} as:\n\n---\n{deprecatedFile}---"
     msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
     if write?.isSome then
       IO.FS.writeFile fname deprecatedFile
@@ -132,7 +130,7 @@ import Mathlib.Tactic.Linter.DeprecatedModule
 #guard_msgs in
 run_cmd
   let fname ← getFileName
-  let head ← getHeaderFromFileName fname false
+  let head ← getHeader fname (← getFileMap).source false
   logInfo head
 
 /--
@@ -150,5 +148,5 @@ import Mathlib.Tactic.Linter.DeprecatedModule
 #guard_msgs in
 run_cmd
   let fname ← getFileName
-  let head ← getHeaderFromFileName fname true
+  let head ← getHeader fname (← getFileMap).source true
   logInfo head
