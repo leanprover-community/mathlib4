@@ -44,7 +44,7 @@ variable (f g 𝔖) in
 `f` converges uniformly on every `s ∈ 𝔖`. Use `fun x ↦ ∏' i, f i x` to get the product function. -/
 @[to_additive "`SummableUniformlyOn f s` means that there is some infinite sum to
 which `f` converges uniformly on every `s ∈ 𝔖`. Use fun x ↦ ∑' i, f i x to get the sum function."]
-def MultipliableUniformlyOn (f : ι → β → α) (𝔖 : Set (Set β)) : Prop :=
+def MultipliableUniformlyOn : Prop :=
   Multipliable (fun i ↦ UniformOnFun.ofFun 𝔖 (f i))
 
 @[to_additive]
