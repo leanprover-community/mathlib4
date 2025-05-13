@@ -25,7 +25,7 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory
 
-variable {α β ε E F : Type*} [MeasurableSpace α] [TopologicalSpace ε] [ContinuousENorm ε]
+variable {α β ε ε' E F : Type*} [MeasurableSpace α] [TopologicalSpace ε] [ContinuousENorm ε]
 
 section
 
@@ -87,8 +87,7 @@ def IntegrableOn (f : α → ε) (s : Set α) (μ : Measure α := by volume_tac)
 theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ := μ.restrict s) :=
   h
 
-variable {ε ε' : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
-  [TopologicalSpace ε'] [ENormedAddMonoid ε']
+variable [TopologicalSpace ε'] [ENormedAddMonoid ε']
 
 @[simp]
 theorem integrableOn_empty : IntegrableOn f ∅ μ := by
@@ -160,17 +159,21 @@ theorem IntegrableOn.left_of_union (h : IntegrableOn f (s ∪ t) μ) : Integrabl
 theorem IntegrableOn.right_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f t μ :=
   h.mono_set subset_union_right
 
-theorem IntegrableOn.union {f : α → E} (hs : IntegrableOn f s μ) (ht : IntegrableOn f t μ) :
+open TopologicalSpace
+
+theorem IntegrableOn.union [PseudoMetrizableSpace ε]
+    (hs : IntegrableOn f s μ) (ht : IntegrableOn f t μ) :
     IntegrableOn f (s ∪ t) μ :=
   (hs.add_measure ht).mono_measure <| Measure.restrict_union_le _ _
 
 @[simp]
-theorem integrableOn_union {f : α → E} :
+theorem integrableOn_union [PseudoMetrizableSpace ε] :
     IntegrableOn f (s ∪ t) μ ↔ IntegrableOn f s μ ∧ IntegrableOn f t μ :=
   ⟨fun h => ⟨h.left_of_union, h.right_of_union⟩, fun h => h.1.union h.2⟩
 
 @[simp]
-theorem integrableOn_singleton_iff {f : α → ε'} {x : α} [MeasurableSingletonClass α] (hfx : ‖f x‖ₑ ≠ ⊤) :
+theorem integrableOn_singleton_iff {f : α → ε'} {x : α}
+    [MeasurableSingletonClass α] (hfx : ‖f x‖ₑ ≠ ⊤) :
     IntegrableOn f {x} μ ↔ f x = 0 ∨ μ {x} < ∞ := by
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
     filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
@@ -179,25 +182,27 @@ theorem integrableOn_singleton_iff {f : α → ε'} {x : α} [MeasurableSingleto
     lt_top_iff_ne_top, enorm_eq_zero]
   exact hfx
 
--- This lemma uses integrableOn_union, hence transitively Integrable.add_measure.
 @[simp]
-theorem integrableOn_finite_biUnion {f : α → E} {s : Set β} (hs : s.Finite) {t : β → Set α} :
+theorem integrableOn_finite_biUnion [PseudoMetrizableSpace ε]
+    {s : Set β} (hs : s.Finite) {t : β → Set α} :
     IntegrableOn f (⋃ i ∈ s, t i) μ ↔ ∀ i ∈ s, IntegrableOn f (t i) μ := by
   induction s, hs using Set.Finite.induction_on with
   | empty => simp
   | insert _ _ hf => simp [hf, or_imp, forall_and]
 
 @[simp]
-theorem integrableOn_finset_iUnion {f : α → E} {s : Finset β} {t : β → Set α} :
+theorem integrableOn_finset_iUnion [PseudoMetrizableSpace ε] {s : Finset β} {t : β → Set α} :
     IntegrableOn f (⋃ i ∈ s, t i) μ ↔ ∀ i ∈ s, IntegrableOn f (t i) μ :=
   integrableOn_finite_biUnion s.finite_toSet
 
 @[simp]
-theorem integrableOn_finite_iUnion {f : α → E} [Finite β] {t : β → Set α} :
+theorem integrableOn_finite_iUnion [PseudoMetrizableSpace ε] [Finite β] {t : β → Set α} :
     IntegrableOn f (⋃ i, t i) μ ↔ ∀ i, IntegrableOn f (t i) μ := by
   cases nonempty_fintype β
   simpa using integrableOn_finset_iUnion (f := f) (μ := μ) (s := Finset.univ) (t := t)
 
+-- TODO: generalise this lemma and the next to enorm classes; this entails assuming that
+-- f is integrable on each singleton, i.e. finite almost everywhere...
 lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
     {s : Finset α} {f : α → E} : IntegrableOn f s μ := by
   rw [← s.toSet.biUnion_of_singleton]
@@ -207,12 +212,13 @@ lemma IntegrableOn.of_finite [MeasurableSingletonClass α] {μ : Measure α} [Is
     {s : Set α} (hs : s.Finite) {f : α → E} : IntegrableOn f s μ := by
   simpa using IntegrableOn.finset (s := hs.toFinset)
 
-theorem IntegrableOn.add_measure {f : α → E} (hμ : IntegrableOn f s μ) (hν : IntegrableOn f s ν) :
+theorem IntegrableOn.add_measure [PseudoMetrizableSpace ε]
+    (hμ : IntegrableOn f s μ) (hν : IntegrableOn f s ν) :
     IntegrableOn f s (μ + ν) := by
   delta IntegrableOn; rw [Measure.restrict_add]; exact hμ.integrable.add_measure hν
 
 @[simp]
-theorem integrableOn_add_measure {f : α → E} :
+theorem integrableOn_add_measure [PseudoMetrizableSpace ε] :
     IntegrableOn f s (μ + ν) ↔ IntegrableOn f s μ ∧ IntegrableOn f s ν :=
   ⟨fun h =>
     ⟨h.mono_measure (Measure.le_add_right le_rfl), h.mono_measure (Measure.le_add_left le_rfl)⟩,

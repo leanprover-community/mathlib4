@@ -64,9 +64,11 @@ theorem Integrable.aestronglyMeasurable {f : α → ε} (hf : Integrable f μ) :
     AEStronglyMeasurable f μ :=
   hf.1
 
+open TopologicalSpace
+
 @[fun_prop]
-theorem Integrable.aemeasurable [MeasurableSpace β] [BorelSpace β] {f : α → β}
-    (hf : Integrable f μ) : AEMeasurable f μ :=
+theorem Integrable.aemeasurable [MeasurableSpace ε] [BorelSpace ε] [PseudoMetrizableSpace ε]
+    {f : α → ε} (hf : Integrable f μ) : AEMeasurable f μ :=
   hf.aestronglyMeasurable.aemeasurable
 
 theorem Integrable.hasFiniteIntegral {f : α → ε} (hf : Integrable f μ) : HasFiniteIntegral f μ :=
@@ -96,9 +98,8 @@ theorem Integrable.congr' {f : α → β} {g : α → γ} (hf : Integrable f μ)
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) : Integrable g μ :=
   ⟨hg, hf.hasFiniteIntegral.congr' h⟩
 
-theorem integrable_congr'_enorm
-    {f : α → ε} {g : α → ε'} (hf : AEStronglyMeasurable f μ)
-    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
+theorem integrable_congr'_enorm {f : α → ε} {g : α → ε'}
+    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
     Integrable f μ ↔ Integrable g μ :=
   ⟨fun h2f => h2f.congr'_enorm hg h, fun h2g => h2g.congr'_enorm hf <| EventuallyEq.symm h⟩
 
@@ -192,7 +193,7 @@ lemma MemLp.integrable_norm_pow {f : α → β} {p : ℕ} (hf : MemLp f p μ) (h
     Integrable (fun x : α => ‖f x‖ ^ p) μ := by
   simpa using hf.integrable_norm_rpow (mod_cast hp) (by simp)
 
-lemma MemLp.integrable_enorm_pow' [IsFiniteMeasure μ] {f : α → β} {p : ℕ} (hf : MemLp f p μ) :
+lemma MemLp.integrable_enorm_pow' [IsFiniteMeasure μ] {f : α → ε} {p : ℕ} (hf : MemLp f p μ) :
     Integrable (fun x : α ↦ ‖f x‖ₑ ^ p) μ := by simpa using hf.integrable_enorm_rpow'
 
 lemma MemLp.integrable_norm_pow' [IsFiniteMeasure μ] {f : α → β} {p : ℕ} (hf : MemLp f p μ) :
@@ -219,10 +220,9 @@ theorem Integrable.of_measure_le_smul {ε} [TopologicalSpace ε] [ENormedAddMono
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.of_measure_le_smul hc hμ'_le
 
--- TODO: AEStronglyMeasurable.add_measure requires β to be pseudo-metrizable,
--- otherwise this lemma would generalise
 @[fun_prop]
-theorem Integrable.add_measure {f : α → β} (hμ : Integrable f μ) (hν : Integrable f ν) :
+theorem Integrable.add_measure [PseudoMetrizableSpace ε]
+    {f : α → ε} (hμ : Integrable f μ) (hν : Integrable f ν) :
     Integrable f (μ + ν) := by
   simp_rw [← memLp_one_iff_integrable] at hμ hν ⊢
   refine ⟨hμ.aestronglyMeasurable.add_measure hν.aestronglyMeasurable, ?_⟩
@@ -238,9 +238,8 @@ theorem Integrable.right_of_add_measure {f : α → ε} (h : Integrable f (μ + 
   rw [← memLp_one_iff_integrable] at h ⊢
   exact h.right_of_add_measure
 
--- NB: this depends on Integrable.add_measure, otherwise would also generalise
 @[simp]
-theorem integrable_add_measure {f : α → β} :
+theorem integrable_add_measure [PseudoMetrizableSpace ε] {f : α → ε} :
     Integrable f (μ + ν) ↔ Integrable f μ ∧ Integrable f ν :=
   ⟨fun h => ⟨h.left_of_add_measure, h.right_of_add_measure⟩, fun h => h.1.add_measure h.2⟩
 
@@ -254,20 +253,20 @@ a Dirac measure.
 See `integrable_dirac'` for a version which requires `f` to be strongly measurable but does not
 need singletons to be measurable. -/
 @[fun_prop]
-lemma integrable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
+lemma integrable_dirac [MeasurableSingletonClass α] {a : α} {f : α → ε} (hfa : ‖f a‖ₑ < ⊤) :
     Integrable f (Measure.dirac a) :=
-  ⟨aestronglyMeasurable_dirac, by simp [HasFiniteIntegral]⟩
+  ⟨aestronglyMeasurable_dirac, by simpa [HasFiniteIntegral]⟩
 
 /-- Every strongly measurable function is integrable with respect to a Dirac measure.
 See `integrable_dirac` for a version which requires that singletons are measurable sets but has no
 hypothesis on `f`. -/
 @[fun_prop]
-lemma integrable_dirac' {a : α} {f : α → β} (hf : StronglyMeasurable f) :
+lemma integrable_dirac' {a : α} {f : α → ε} (hf : StronglyMeasurable f) (hfa : ‖f a‖ₑ < ⊤) :
     Integrable f (Measure.dirac a) :=
-  ⟨hf.aestronglyMeasurable, by simp [HasFiniteIntegral, lintegral_dirac' _ hf.enorm]⟩
+  ⟨hf.aestronglyMeasurable, by simpa [HasFiniteIntegral, lintegral_dirac' _ hf.enorm]⟩
 
--- TODO: this uses integrable_add_measure, hence doesn't generalise directly to enorms
-theorem integrable_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → β} {μ : ι → Measure α}
+theorem integrable_finset_sum_measure [PseudoMetrizableSpace ε]
+    {ι} {m : MeasurableSpace α} {f : α → ε} {μ : ι → Measure α}
     {s : Finset ι} : Integrable f (∑ i ∈ s, μ i) ↔ ∀ i ∈ s, Integrable f (μ i) := by
   classical
   induction s using Finset.induction_on <;> simp [*]
