@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.BifunctorSingle
-import Mathlib.Algebra.Homology.BifunctorShift
+import Mathlib.Algebra.Homology.BifunctorTriangulated
 import Mathlib.Algebra.Homology.BifunctorColimits
 import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
 import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
