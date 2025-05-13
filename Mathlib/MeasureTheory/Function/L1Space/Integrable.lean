@@ -146,7 +146,7 @@ theorem integrable_const_enorm [IsFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ �
     Integrable (fun _ : α ↦ c) μ :=
   (integrable_const_iff_enorm hc).2 <| .inr ‹_›
 
-@[simp, fun_prop]
+@[fun_prop]
 theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α => c) μ :=
   integrable_const_iff.2 <| .inr ‹_›
 
