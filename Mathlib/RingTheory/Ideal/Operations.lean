@@ -1272,7 +1272,7 @@ instance {R} [Semiring R] : NonUnitalSubsemiringClass (Ideal R) R where
   mul_mem _ hb := Ideal.mul_mem_left _ _ hb
 instance {R} [Ring R] : NonUnitalSubringClass (Ideal R) R where
 
-lemma Ideal.exists_subset_radical_span_sup_span_of_subset_radical_sup {R : Type*} [CommSemiring R]
+lemma Ideal.exists_subset_radical_span_sup_of_subset_radical_sup {R : Type*} [CommSemiring R]
     (s : Set R) (I J : Ideal R) (hs : s ⊆ (I ⊔ J).radical) :
     ∃ (t : s → R), Set.range t ⊆ I ∧ s ⊆ (span (Set.range t) ⊔ J).radical := by
   replace hs : ∀ z : s, ∃ (m : ℕ) (a b : R) (ha : a ∈ I) (hb : b ∈ J), a + b = z ^ m := by

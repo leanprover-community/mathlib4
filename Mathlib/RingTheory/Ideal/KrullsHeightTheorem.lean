@@ -192,8 +192,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
         have := hp.1.2.trans this
         rw [span_le, Finset.coe_insert, Set.insert_subset_iff] at this
         exact this.2
-      obtain ⟨t, ht, hspan⟩ :=
-        exists_subset_radical_span_sup_span_of_subset_radical_sup _ _ _ h
+      obtain ⟨t, ht, hspan⟩ := exists_subset_radical_span_sup_of_subset_radical_sup _ _ _ h
       let t := Finset.univ.image t
       suffices hq : q ∈ (span t).minimalPrimes from
         have tcard : t.card ≤ n := Nat.le_of_lt_succ ((Finset.card_image_le.trans_lt <| by
