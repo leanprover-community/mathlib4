@@ -654,16 +654,8 @@ theorem Integrable.measure_enorm_ge_lt_top
 where `‖f x‖ ≥ ε` is finite for all positive `ε`. -/
 theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     μ { x | ε ≤ ‖f x‖ } < ∞ := by
-  rw [show { x | ε ≤ ‖f x‖ } = { x | .ofReal ε ≤ ‖f x‖ₑ } by
-      simp [ENNReal.ofReal, Real.toNNReal_le_iff_le_coe]]
-  refine (meas_ge_le_mul_pow_eLpNorm_enorm μ one_ne_zero ENNReal.one_ne_top hf.1 ?_ ?_).trans_lt ?_
-  · simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hε
-  · simp
-  apply ENNReal.mul_lt_top
-  · simpa only [ENNReal.toReal_one, ENNReal.rpow_one, ENNReal.inv_lt_top, ENNReal.ofReal_pos]
-      using hε
-  · simpa only [ENNReal.toReal_one, ENNReal.rpow_one] using
-      (memLp_one_iff_integrable.2 hf).eLpNorm_lt_top
+  convert Integrable.measure_enorm_ge_lt_top hf (ofReal_pos.mpr hε) ofReal_ne_top with x
+  rw [← Real.enorm_of_nonneg hε.le, enorm_le_iff_norm_le, Real.norm_of_nonneg hε.le]
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ₑ > ε` is finite for all positive `ε`. -/
