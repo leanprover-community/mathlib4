@@ -98,6 +98,7 @@ lemma isPrimitive_stdAddChar (N : ℕ) [NeZero N] :
   refine AddChar.zmod_char_primitive_of_eq_one_only_at_zero _ _ (fun t ht ↦ ?_)
   rwa [← (stdAddChar (N := N)).map_zero_eq_one, injective_stdAddChar.eq_iff] at ht
 
+/-- `ZMod.toCircle` as an `AddChar` into `rootsOfUnity n Circle`. -/
 noncomputable def expHom (n : ℕ) [NeZero n] : AddChar (ZMod n) (rootsOfUnity n Circle) where
   toFun x := ⟨toUnits (ZMod.toCircle x), by
     have e1 : ↑n * (2 * π * (↑x.val / ↑n)) = ↑x.val * (2 * π) := by
