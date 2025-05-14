@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
+Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, Antoine Chambert-Loir
 -/
 import Mathlib.Data.Fin.Rev
 import Mathlib.Data.Nat.Find
-
+import Mathlib.Order.Fin.Basic
+import Init.Data.Nat.Basic
 /-!
 # Operation on tuples
 
@@ -409,6 +410,41 @@ theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
     append (fun i ↦ f (castAdd n i)) (fun i ↦ f (natAdd m i)) = f := by
   unfold append addCases
   simp
+
+theorem append_injective_iff {α : Type*} {m n : ℕ} {x : Fin m → α} {y : Fin n → α} :
+  Function.Injective (Fin.append x y) ↔
+    Function.Injective x ∧ Function.Injective y ∧ Disjoint (Set.range x) (Set.range y) := by
+  constructor
+  · intro H
+    constructor
+    · intro i j h
+      rwa [← Fin.castAdd_inj, ← H.eq_iff, Fin.append_left, Fin.append_left]
+    constructor
+    · intro i j h
+      rwa [← Fin.natAdd_inj, ← H.eq_iff, Fin.append_right, Fin.append_right]
+    · rw [Set.disjoint_iff_forall_ne]
+      rintro _ ⟨i, rfl⟩ _ ⟨j, rfl⟩
+      rw [← Fin.append_left x y i, ← Fin.append_right x y j, H.ne_iff]
+      apply Fin.ne_of_lt
+      simp only [lt_iff_val_lt_val, coe_castAdd, coe_natAdd]
+      exact lt_of_lt_of_le i.prop (Nat.le_add_right m ↑j)
+  · rintro ⟨Hx, Hy, H⟩
+    intro i j h
+    induction i using Fin.addCases with
+    | left i =>
+      induction j using Fin.addCases with
+      | left j => simpa [castAdd_inj, Hx.eq_iff] using h
+      | right j =>
+        simp only [append_left, append_right] at h
+        rw [Set.disjoint_iff_forall_ne] at H
+        exact False.elim (H (Set.mem_range_self i) (Set.mem_range_self j) h)
+    | right i =>
+      induction j using Fin.addCases with
+      | left j =>
+        simp only [append_left, append_right] at h
+        rw [Set.disjoint_iff_forall_ne] at H
+        exact False.elim (H (Set.mem_range_self j) (Set.mem_range_self i) h.symm)
+      | right j => simpa [append_right, Hy.eq_iff] using h
 
 end Append
 
