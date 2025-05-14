@@ -5,8 +5,8 @@ Authors: Damiano Testa
 -/
 
 --import Mathlib.Init
-import Lean.Elab.Command
 import Mathlib.Tactic.Linter.DeprecatedModule
+import Std.Time.Zoned
 -- a comment here to test `keepTrailing
 
 /-!
@@ -54,7 +54,7 @@ def mkDeprecation (customMessage : String := "Auto-generated deprecation") :
     CommandElabM Format := do
   let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
   -- Get the current date in UTC: we don't want this to depend on the user computer's time zone.
-  let dateStx := Syntax.mkStrLit s!"{(← DateTime.now (tz := .UTC)).toPlainDate}"
+  let dateStx := Syntax.mkStrLit s!"{(← Std.Time.DateTime.now (tz := .UTC)).toPlainDate}"
   let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
   liftCoreM <| PrettyPrinter.ppCategory `command stx
 
@@ -148,8 +148,8 @@ Authors: Damiano Testa
 -/
 
 --import Mathlib.Init
-import Lean.Elab.Command
 import Mathlib.Tactic.Linter.DeprecatedModule
+import Std.Time.Zoned
 -/
 #guard_msgs in
 run_cmd
@@ -165,8 +165,8 @@ Authors: Damiano Testa
 -/
 
 --import Mathlib.Init
-import Lean.Elab.Command
 import Mathlib.Tactic.Linter.DeprecatedModule
+import Std.Time.Zoned
 -- a comment here to test `keepTrailing
 -/
 #guard_msgs in
