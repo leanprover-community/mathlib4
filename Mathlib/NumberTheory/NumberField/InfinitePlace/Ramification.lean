@@ -162,6 +162,11 @@ An infinite place is unramified in a field extension if the restriction has the 
 -/
 def IsUnramified : Prop := mult (w.comap (algebraMap k K)) = mult w
 
+/--
+An infinite place is ramified in a field extension if it is not unramified.
+-/
+abbrev IsRamified : Prop := ¬w.IsUnramified k
+
 variable {k}
 
 lemma isUnramified_self : IsUnramified K w := rfl
@@ -212,6 +217,17 @@ lemma isUnramified_iff :
     IsUnramified k w ↔ IsReal w ∨ IsComplex (w.comap (algebraMap k K)) := by
   rw [← not_iff_not, not_isUnramified_iff, not_or,
     not_isReal_iff_isComplex, not_isComplex_iff_isReal]
+
+theorem isRamified_iff : w.IsRamified k ↔ w.IsComplex ∧ (w.comap (algebraMap k K)).IsReal :=
+  not_isUnramified_iff
+
+theorem IsRamified.ne_conjugate {w₁ w₂ : InfinitePlace K} (h : w₂.IsRamified k) :
+    w₁.embedding ≠ ComplexEmbedding.conjugate w₂.embedding := by
+  by_cases h_eq : w₁ = w₂
+  · rw [isRamified_iff, isComplex_iff] at h
+    exact Ne.symm (h_eq ▸ h.1)
+  · contrapose! h_eq
+    rw [← mk_embedding w₁, h_eq, mk_conjugate_eq, mk_embedding]
 
 variable (k)
 
