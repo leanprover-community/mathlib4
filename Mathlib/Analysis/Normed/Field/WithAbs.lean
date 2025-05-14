@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Ring.WithAbs
+import Mathlib.FieldTheory.Separable
 
 /-!
 # WithAbs for fields
