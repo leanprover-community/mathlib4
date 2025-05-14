@@ -865,11 +865,6 @@ theorem castPred_zero [NeZero n] :
 @[deprecated (since := "2025-05-11")]
 alias castPred_zero' := castPred_zero
 
-theorem castPred_ne_zero {j : Fin (n + 2)} (h₁ : j ≠ Fin.last (n + 1)) (h₂ : j ≠ 0) :
-    Fin.castPred j h₁ ≠ 0 := by
-  contrapose! h₂
-  rwa [← Fin.castPred_zero, Fin.castPred_inj] at h₂
-
 @[simp]
 theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
     Fin.castPred i h = 0 ↔ i = 0 := by
