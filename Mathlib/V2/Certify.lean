@@ -230,13 +230,25 @@ lemma Nat.prime_83 : Nat.Prime 83 := by norm_num
 lemma Nat.prime_89 : Nat.Prime 89 := by norm_num
 lemma Nat.prime_97 : Nat.Prime 97 := by norm_num
 
+def recognisedPrimeMap : Std.TreeMap ℕ Name :=
+  {(2, ``Nat.prime_2), (3, ``Nat.prime_3), (5, ``Nat.prime_5),
+    (7, ``Nat.prime_7), (11, ``Nat.prime_11), (13, ``Nat.prime_13),
+    (17, ``Nat.prime_17), (19, ``Nat.prime_19), (23, ``Nat.prime_23),
+    (29, ``Nat.prime_29), (31, ``Nat.prime_31), (37, ``Nat.prime_37),
+    (41, ``Nat.prime_41), (43, ``Nat.prime_43), (47, ``Nat.prime_47),
+    (53, ``Nat.prime_53), (59, ``Nat.prime_59), (61, ``Nat.prime_61),
+    (67, ``Nat.prime_67), (71, ``Nat.prime_71), (73, ``Nat.prime_73),
+    (79, ``Nat.prime_79), (83, ``Nat.prime_83), (89, ``Nat.prime_89),
+    (97, ``Nat.prime_97)}
+
 def processEntry (m : Std.TreeMap ℕ PrattProofEntry) :
     PrattEntry → MetaM (Std.TreeMap ℕ PrattProofEntry)
   | .small p => do
+    let some nm := recognisedPrimeMap.get? p | throwError "{p} is not a recognised small prime"
     let mv ← mkFreshExprMVar
       (some (← mkAppM ``Nat.Prime #[mkNatLit p]))
       (userName := .mkSimple s!"prime_{p}")
-    let pf := mkConst (.str `Tactic.Prime.Nat s!"prime_{p}")
+    let pf := mkConst nm
     return insert (p, ⟨mv, ∅, pf⟩) m
   | .big p root factors => do
     unless p ≥ 2 do
@@ -261,10 +273,9 @@ def prove_prime (cert : PrattCertificate) (n : ℕ) : MetaM Expr := do
   let some ent := data.get? n | throwError "the certificate doesn't prove {n} is prime"
   ent.uses.foldrM (init := ent.pf) fun q pf => do
     let some entq := data.get? q | throwError "internal error 1"
+    -- entq.metaVar.mvarId! |>.assign entq.pf
+    -- return pf
     mkLetFun entq.metaVar entq.pf pf
-
-  -- ent.uses.foldrM (init := ent.pf) fun _ (hmq, hpq) pf =>
-  --   mkLetFun hmq hpq pf
 
 elab "pratt" ppSpace certificate:pratt_certificate : tactic => liftMetaFinishingTactic fun goal ↦ do
   match certificate with
@@ -310,24 +321,6 @@ structure SageError where
 /-- The result of a sage call. -/
 def SageResult := Except SageError SageSuccess
 
-/-- Parse a `SageResult` from the raw SageMath API output. -/
-instance : FromJson SageResult where fromJson? j := do
-  -- we expect the output has either "success": true and contains "stdout",
-  -- or has "success": false and error information under "execute_reply"
-  if let .ok true := j.getObjValAs? Bool "success" then
-    -- parse SageSuccess from stdout, which is formatted as SageCoeffAndPower
-    -- (see sageCreateQuery for the format of stdout)
-    let stdout ← j.getObjValAs? String "stdout"
-    let coeffAndPower ← Json.parse stdout >>= fromJson?
-    let sageSuccess := { data := coeffAndPower }
-    return .ok sageSuccess
-  else
-    -- parse SageError from execute_reply
-    let executeReply ← j.getObjVal? "execute_reply"
-    let errorName ← executeReply.getObjValAs? String "ename"
-    let errorValue ← executeReply.getObjValAs? String "evalue"
-    return .error { name := errorName, value := errorValue }
-
 def extractCertificate (env : Environment) (out : String) : Except String Syntax := do
   let out ← Json.parse out
   if let .ok true := out.getObjValAs? Bool "success" then
@@ -347,7 +340,7 @@ def makeCertificate (n : ℕ) (gen : Primality.Generator) : MetaM PrattCertifica
     let apiUrl := "https://sagecell.sagemath.org/service"
     let curlArgs := #["-X", "POST", "--data-raw", data, apiUrl]
     let out ← IO.Process.output {cmd := "curl", args := curlArgs}
-    if out.exitCode ≠ 0 then
+    if out.exitCode != 0 then
       IO.throwServerError <|
         "Could not send API request to SageMath. " ++
         s!"curl exited with code {out.exitCode}:\n{out.stderr}"
@@ -402,10 +395,11 @@ end
 
 end Tactic.Prime
 
-example : Nat.Prime 101 := by?
-  pratt [2, (5, 2, [2]), (101, 2, [2, 5])]
+-- example : Nat.Prime 683 := by prime (generator := .sage)
+example : Nat.Prime 101 := by pratt [2, 5, (101, 2, [2, 5])]
+-- example : Nat.Prime 683 := by prime (generator := .mathematica)
 
-example : Nat.Prime 214499 := by? pratt
+example : Nat.Prime 214499 := by pratt
     [2, 3, 7, 23, 37, (4663, 3, [2, 3, 7, 37]), (214499, 2, [2, 23, 4663])]
 
 example : Nat.Prime 47867742232066880047611079 := by pratt
@@ -414,6 +408,28 @@ example : Nat.Prime 47867742232066880047611079 := by pratt
       (214499, 2, [2, 23, 4663]), (1123145497, 7, [2, 3, 11, 283, 5011]),
       (90101681149415123, 2, [2, 11, 17, 214499, 1123145497]),
       (47867742232066880047611079, 3, [2, 3, 7, 29, 62311, 90101681149415123])]
+
+-- set_option profiler true
+lemma test : Nat.Prime 1871326486211461011031931945323874719289347729538762174157135451276879 := by
+  pratt
+      [2, 3, 5, 7, 11, 13, 17, 19, 29, 41, 43, 47, 83, 89, (113, 3, [2, 7]), (137, 3, [2, 17]),
+        (173, 2, [2, 43]), (179, 2, [2, 89]), (193, 5, [2, 3]), (359, 7, [2, 179]),
+        (443, 2, [2, 13, 17]), (463, 3, [2, 3, 7, 11]), (613, 2, [2, 3, 17]), (701, 2, [2, 5, 7]),
+        (719, 11, [2, 359]), (761, 6, [2, 5, 19]), (773, 2, [2, 193]), (1439, 7, [2, 719]),
+        (1523, 2, [2, 761]), (2879, 7, [2, 1439]), (5557, 2, [2, 3, 463]), (11519, 7, [2, 13, 443]),
+        (22433, 3, [2, 701]), (27799, 7, [2, 3, 41, 113]), (212099, 2, [2, 173, 613]),
+        (977359, 3, [2, 3, 29, 41, 137]), (3255877, 2, [2, 3, 13, 773]),
+        (4447841, 3, [2, 5, 27799]), (15573689, 3, [2, 13, 11519]),
+        (93323561, 3, [2, 5, 11, 212099]), (311473781, 2, [2, 5, 15573689]),
+        (433314067369, 11, [2, 3, 7, 13, 29, 977359]),
+        (53539802496967, 5, [2, 3, 47, 1523, 5557, 22433]),
+        (336828023987944771, 2, [2, 3, 5, 2879, 433314067369]),
+        (2414990925857902095950321353657774391, 43, [2, 5, 3255877, 4447841, 311473781,
+          53539802496967]),
+        (308651819811240699707531581076318075717983737694501, 2, [2, 3, 5, 11, 83, 93323561,
+          2414990925857902095950321353657774391]),
+        (1871326486211461011031931945323874719289347729538762174157135451276879, 3, [2, 3,
+          336828023987944771, 308651819811240699707531581076318075717983737694501])]
 
 -- set_option exponentiation.threshold 3913 in
 -- example : Nat.Prime (3 * 2 ^ 3912 + 1) := by
