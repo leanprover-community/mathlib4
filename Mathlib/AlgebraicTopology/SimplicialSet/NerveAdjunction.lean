@@ -260,18 +260,18 @@ def toStrictSegal₂.mk : X ⟶ Y where
 /-- A computation about `toStrictSegal₂.mk`. -/
 theorem oneTruncation₂_toStrictSegal₂Mk :
     oneTruncation₂.map (toStrictSegal₂.mk sy F hyp) = F := by
-  refine ReflPrefunctor.ext (fun _ ↦ rfl) (fun _ _ f ↦ ?_)
+  refine ReflPrefunctor.ext' (fun _ ↦ rfl) (fun X Y f ↦ ?_)
   · dsimp
     unfold oneTruncation₂
     dsimp
     ext
-    simp
-
-    sorry
-  -- refine ReflPrefunctor.ext (fun _ ↦ ComposableArrows.ext₀ rfl)
-  --   (fun X Y g ↦ eq_of_heq (heq_eqRec_iff_heq.2 <| heq_eqRec_iff_heq.2 ?_))
-  -- simp [oneTruncation₂]
-  -- refine Quiver.heq_of_homOfEq_ext ?_ ?_ (f' := F.map g) ?_
+    dsimp
+    refine
+      ReflPrefunctor.congr_map_edge F { edge := f.edge, src_eq := rfl, tgt_eq := rfl } f ?_ ?_ ?_
+    · rw [f.src_eq]
+    · rw [f.tgt_eq]
+    · simp only [OneTruncation₂.Quiver_homOfEq]
+      rfl
 
 end
 
