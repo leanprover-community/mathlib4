@@ -6,7 +6,7 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, A
 import Mathlib.Data.Fin.Rev
 import Mathlib.Data.Nat.Find
 import Mathlib.Order.Fin.Basic
-import Init.Data.Nat.Basic
+
 /-!
 # Operation on tuples
 
