@@ -1270,6 +1270,12 @@ def rangeGroup₀_restrict : Valuation R v.rangeGroup₀ where
   map_mul' x y := by simp [← Subtype.coe_inj]
   map_add_le_max' x y := v.map_add x y
 
+lemma coe_rangeGroup₀_restrict (x : R) :
+    (v.rangeGroup₀_restrict x : Γ₀) = v x := rfl
+
+theorem coe_comp_rangeGroup₀_restrict :
+    v = v.rangeGroup₀.subtype ∘ v.rangeGroup₀_restrict := rfl
+
 /-
 /-- The equiv between units of rangeGroup₀ and those of rangeGroup -/
 def units_rangeGroup₀_equiv_rangeGroup :

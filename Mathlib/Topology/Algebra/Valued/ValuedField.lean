@@ -107,18 +107,20 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
 
 section
 
+
+-- This is false, the zero topology on Γ₀ is too fine in general
+-- if the valuation is not surjective
+
 open WithZeroTopology
 
 open Valued
 
-lemma continuous_iff_restrictionRangeGroup_continuous [Valued K Γ₀] :
+lemma continuous_iff_rangeGroup₀_restrict_continuous [Valued K Γ₀] :
     Continuous (Valued.v : K → Γ₀) ↔
-      Continuous (Valued.v.restrictionRangeGroup (R := K) ) := by
-  -- set H := v.rangeGroup (R := K) with rfl--this needs to change, it shows outParams are needed
-  -- have := @continuous_coinduced_dom K (v.rangeGroupWithZero (R := K)) Γ₀
-  --   (Valued.v.restrictionRangeGroup (R := K)) ?_ ?_ ?_
-  sorry
+      Continuous (Valued.v.rangeGroup₀_restrict (R := K)) := by
+  simp [v.coe_comp_rangeGroup₀_restrict, continuous_induced_rng]
 
+-- This should be false if the valuation is not surjective
 theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ₀) := by
   rw [continuous_iff_continuousAt]
   intro x
@@ -126,6 +128,8 @@ theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ�
   · rw [ContinuousAt, map_zero, WithZeroTopology.tendsto_zero]
     intro γ hγ
     rw [Filter.Eventually, Valued.mem_nhds_zero]
+    simp only [Units.coe_map, Submonoid.subtype_apply, setOf_subset_setOf]
+    -- no hope if γ is infinitesimally small wrt v.rangeGroup₀
     sorry
     -- use Units.mk0 γ hγ; rfl
   · have v_ne : (v x : Γ₀) ≠ 0 := (Valuation.ne_zero_iff _).mpr h
