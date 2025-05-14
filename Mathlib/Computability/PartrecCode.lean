@@ -217,7 +217,6 @@ theorem primrec₂_pair : Primrec₂ pair :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-alias primrec_pair := primrec₂_pair
 @[deprecated (since := "2025-05-12")] alias pair_prim := primrec₂_pair
 
 theorem primrec₂_comp : Primrec₂ comp :=
@@ -230,7 +229,6 @@ theorem primrec₂_comp : Primrec₂ comp :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-alias primrec_comp := primrec₂_comp
 @[deprecated (since := "2025-05-12")] alias comp_prim := primrec₂_comp
 
 theorem primrec₂_prec : Primrec₂ prec :=
@@ -243,7 +241,6 @@ theorem primrec₂_prec : Primrec₂ prec :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-alias primrec_prec := primrec₂_prec
 @[deprecated (since := "2025-05-12")] alias prec_prim := primrec₂_prec
 
 theorem primrec_rfind' : Primrec rfind' :=
@@ -254,7 +251,6 @@ theorem primrec_rfind' : Primrec rfind' :=
           encode_iff.2 <| Primrec.ofNat Code)
         (const 4)
 
-alias primrec_rfind := primrec_rfind'
 @[deprecated (since := "2025-05-12")] alias rfind_prim := primrec_rfind'
 
 theorem primrec_recOn' {α σ}
@@ -517,17 +513,16 @@ theorem eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by si
 
 theorem primrec_const : Primrec Code.const :=
   (_root_.Primrec.id.nat_iterate (_root_.Primrec.const zero)
-    (primrec_comp.comp (_root_.Primrec.const succ) Primrec.snd).to₂).of_eq
+    (primrec₂_comp.comp (_root_.Primrec.const succ) Primrec.snd).to₂).of_eq
     fun n => by simp; induction n <;>
       simp [*, Code.const, Function.iterate_succ', -Function.iterate_succ]
 
 @[deprecated (since := "2025-05-12")] alias const_prim := primrec_const
 
 theorem primrec₂_curry : Primrec₂ curry :=
-  primrec_comp.comp Primrec.fst <| primrec₂_pair.comp (primrec_const.comp Primrec.snd)
+  primrec₂_comp.comp Primrec.fst <| primrec₂_pair.comp (primrec_const.comp Primrec.snd)
     (_root_.Primrec.const Code.id)
 
-alias primrec_curry := primrec₂_curry
 @[deprecated (since := "2025-05-12")] alias curry_prim := primrec₂_curry
 
 theorem curry_inj {c₁ c₂ n₁ n₂} (h : curry c₁ n₁ = curry c₂ n₂) : c₁ = c₂ ∧ n₁ = n₂ :=
@@ -542,7 +537,7 @@ program and a ℕ `n`, and returns a new program using `n` as the first argument
 -/
 theorem smn :
     ∃ f : Code → ℕ → Code, Computable₂ f ∧ ∀ c n x, eval (f c n) x = eval c (Nat.pair n x) :=
-  ⟨curry, Primrec₂.to_comp primrec_curry, eval_curry⟩
+  ⟨curry, Primrec₂.to_comp primrec₂_curry, eval_curry⟩
 
 /-- A function is partial recursive if and only if there is a code implementing it. Therefore,
 `eval` is a **universal partial recursive function**. -/
@@ -1019,7 +1014,7 @@ theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval
   have eg' : ∀ a n, eval cg (Nat.pair a n) = Part.map encode (g a n) := by simp [eg]
   let F (x : ℕ) : Code := f (curry cg x)
   have : Computable F :=
-    hf.comp (primrec_curry.comp (_root_.Primrec.const cg) _root_.Primrec.id).to_comp
+    hf.comp (primrec₂_curry.comp (_root_.Primrec.const cg) _root_.Primrec.id).to_comp
   let ⟨cF, eF⟩ := exists_code.1 this
   have eF' : eval cF (encode cF) = Part.some (encode (F (encode cF))) := by simp [eF]
   ⟨curry cg (encode cF),
@@ -1030,8 +1025,8 @@ theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval
 /-- **Kleene's second recursion theorem** -/
 theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c : Code, eval c = f c :=
   let ⟨cf, ef⟩ := exists_code.1 hf
-  (fixed_point (primrec_curry.comp (_root_.Primrec.const cf) Primrec.encode).to_comp).imp fun c e =>
-    funext fun n => by simp [e.symm, ef, Part.map_id']
+  (fixed_point (primrec₂_curry.comp (_root_.Primrec.const cf) Primrec.encode).to_comp).imp
+    fun c e => funext fun n => by simp [e.symm, ef, Part.map_id']
 
 end
 
