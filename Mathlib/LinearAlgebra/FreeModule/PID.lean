@@ -25,13 +25,13 @@ it would be equal to `finrank R M` if `R` is a field and `M` is a vector space.
 In this section, `M` is a free and finitely generated `R`-module, and
 `N` is a submodule of `M`.
 
- - `Submodule.inductionOnRank`: if `P` holds for `⊥ : Submodule R M` and if
+- `Submodule.inductionOnRank`: if `P` holds for `⊥ : Submodule R M` and if
   `P N` follows from `P N'` for all `N'` that are of lower rank, then `P` holds
-   on all submodules
+  on all submodules
 
- - `Submodule.exists_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
-   free and finitely generated. This is the first part of the structure theorem
-   for modules.
+- `Submodule.exists_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
+  free and finitely generated. This is the first part of the structure theorem
+  for modules.
 
 - `Submodule.smithNormalForm`: if `R` is a PID, then `M` has a basis
   `bM` and `N` has a basis `bN` such that `bN i = a i • bM i`.

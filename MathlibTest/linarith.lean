@@ -687,20 +687,6 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     False := by
   intros; linarith
 
--- TODO: still broken with Fourier-Motzkin
-/--
-error: linarith failed to find a contradiction
-case h1.h
-a b c d e : ℚ
-ha : 2 * a + b + c + d + e = 4
-hb : a + 2 * b + c + d + e = 5
-hc : a + b + 2 * c + d + e = 6
-hd : a + b + c + 2 * d + e = 7
-he : a + b + c + d + 2 * e = 8
-a✝ : e < 3
-⊢ False
-failed
--/
 #guard_msgs in
 /-- https://github.com/leanprover-community/mathlib4/issues/8875 -/
 example (a b c d e : ℚ)
@@ -712,24 +698,6 @@ example (a b c d e : ℚ)
     e = 3 := by
   linarith (config := { oracle := .fourierMotzkin })
 
-set_option linter.unusedTactic false in
--- TODO: still broken with Fourier-Motzkin
-/--
-error: linarith failed to find a contradiction
-x1 x2 x3 x4 x5 x6 x7 x8 : ℚ
-a✝⁹ : 3 * x4 - x3 - x2 - x1 < 0
-a✝⁸ : x5 - x4 < 0
-a✝⁷ : 2 * (x5 - x4) < 0
-a✝⁶ : -x6 + x3 < 0
-a✝⁵ : -x6 + x2 < 0
-a✝⁴ : 2 * (x6 - x5) < 0
-a✝³ : x8 - x7 < 0
-a✝² : -x8 + x2 < 0
-a✝¹ : -x8 + x7 - x5 + x1 < 0
-a✝ : x7 - x5 < 0
-⊢ False
-failed
--/
 #guard_msgs in
 /-- https://github.com/leanprover-community/mathlib4/issues/2717 -/
 example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
@@ -745,7 +713,6 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     x7 - x5 < 0 → False := by
   intros
   linarith (config := { oracle := .fourierMotzkin })
-
 section findSquares
 
 private abbrev wrapped (z : ℤ) : ℤ := z
