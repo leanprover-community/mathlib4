@@ -243,24 +243,19 @@ lemma mu_eq {p n : ℕ} [hp : Fact (Nat.Prime p)] :
     rw [pow_succ', hp.out.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
 
 /-- An auxilliary function -/
-def aux {A B : Type} (h : A ≃ B) : Equiv.Perm A →* Equiv.Perm B :=
-  MonoidHom.mk'
-    (fun k => h.symm.trans (k.trans h))
-    (by intro a b; ext x; simp)
-
-lemma aux_injective {A B : Type} (h : A ≃ B) : Function.Injective (aux h) := by
-  intro x y h_eq; ext a
-  replace h_eq : h.symm.trans (x.trans h) = h.symm.trans (y.trans h) := h_eq
-  have eq_fun := Equiv.ext_iff.mp h_eq
-  specialize eq_fun (h a)
-  simp at eq_fun
-  exact eq_fun
+def aux {A B : Type} (h : A ≃ B) : Equiv.Perm A ≃* Equiv.Perm B where
+  toFun x := h.symm.trans (x.trans h)
+  invFun y := h.trans (y.trans h.symm)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+  map_mul' _ _ := by ext; simp
 
 /-- An auxilliary function -/
 noncomputable def f {p n : ℕ} (D : Sylow p (Equiv.Perm (Fin (p^n))))
     (G : Type) [Finite G] [Group G] (h : Nat.card G = p) :
     D ≀ᵣ G →* Equiv.Perm (Fin (p^(n+1))) :=
-  (aux ((Equiv.prodCongrRight fun _ => (Finite.equivFinOfCardEq h)).trans finProdFinEquiv)).comp
+  (aux ((Equiv.prodCongrRight fun _ =>
+  (Finite.equivFinOfCardEq h)).trans finProdFinEquiv)).toMonoidHom.comp
   (RegularWreathProduct.toPerm D G (Fin (p^n)))
 
 lemma f_injective {p n : ℕ} [Fact (Nat.Prime p)] (D : Sylow p (Equiv.Perm (Fin (p^n))))
@@ -269,8 +264,8 @@ lemma f_injective {p n : ℕ} [Fact (Nat.Prime p)] (D : Sylow p (Equiv.Perm (Fin
   have : Function.Injective (RegularWreathProduct.toPerm D G (Fin (p^n))) :=
     RegularWreathProduct.toPermInj D G (Fin (p^n))
   exact (fun a b => Function.Injective.comp a b)
-    (aux_injective (((Equiv.prodCongrRight fun _ =>
-    (Finite.equivFinOfCardEq h)).trans finProdFinEquiv))) this
+    (aux (((Equiv.prodCongrRight fun _ =>
+    (Finite.equivFinOfCardEq h)).trans finProdFinEquiv))).injective this
 
 /-- The Sylow p-subgroups of S_{p^n} are isomorphic to the iterated wreathproduct -/
 noncomputable def sylowIsIteratedWreathProduct (p n : ℕ) [Fact (Nat.Prime p)]
