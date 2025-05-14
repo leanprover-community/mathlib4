@@ -42,8 +42,9 @@ namespace leftExactFunctorForgetEquivalence
 attribute [local instance] hasFiniteProducts_of_hasFiniteBiproducts
 attribute [local instance] AddCommGrp.chosenFiniteProductsAddCommGrp
 
-private noncomputable local instance : ChosenFiniteProducts C :=
-  ChosenFiniteProducts.ofFiniteProducts _
+private noncomputable local instance : ChosenFiniteProducts C := .ofHasFiniteProducts
+
+private noncomputable local instance : BraidedCategory C := .ofChosenFiniteProducts
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverseAux : (C ⥤ₗ Type v) ⥤ C ⥤ AddCommGrp.{v} :=

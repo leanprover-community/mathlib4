@@ -24,12 +24,12 @@ We define the trace / Killing form in this file and prove some basic properties.
 
 ## Main definitions
 
- * `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
-   on `L` called the trace Form.
- * `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
-   representation of a Lie algebra vanishes.
- * `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
-   form on `L` via the trace form construction.
+* `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
+  on `L` called the trace Form.
+* `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
+  representation of a Lie algebra vanishes.
+* `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
+  form on `L` via the trace form construction.
 -/
 
 variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]

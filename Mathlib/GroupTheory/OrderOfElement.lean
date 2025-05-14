@@ -114,6 +114,13 @@ lemma isOfFinOrder_pow {n : ℕ} : IsOfFinOrder (a ^ n) ↔ IsOfFinOrder a ∨ n
   · simp
   · exact ⟨fun h ↦ .inl <| h.of_pow hn, fun h ↦ (h.resolve_right hn).pow⟩
 
+@[to_additive]
+lemma not_isOfFinOrder_of_isMulTorsionFree [IsMulTorsionFree G] (ha : a ≠ 1) :
+    ¬ IsOfFinOrder a := by
+  rw [isOfFinOrder_iff_pow_eq_one]
+  rintro ⟨n, hn, han⟩
+  exact ha <| pow_left_injective hn.ne' <| by simpa using han
+
 /-- Elements of finite order are of finite order in submonoids. -/
 @[to_additive "Elements of finite order are of finite order in submonoids."]
 theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
@@ -690,6 +697,12 @@ lemma finEquivZPowers_symm_apply (hx : IsOfFinOrder x) (n : ℕ) :
     ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
   rw [finEquivZPowers, Equiv.symm_trans_apply]; exact finEquivPowers_symm_apply _ n
 
+@[to_additive]
+lemma pow_finEquivZPowers_symm_apply (hx : IsOfFinOrder x) (a : Subgroup.zpowers x) :
+    x ^ ((finEquivZPowers hx).symm a : ℕ) = a := by
+  simpa only [finEquivZPowers_apply] using
+    congr_arg Subtype.val ((finEquivZPowers hx).apply_symm_apply a)
+
 end Group
 
 section CommMonoid
@@ -702,6 +715,29 @@ theorem IsOfFinOrder.mul (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) : IsOfFinOr
   (Commute.all x y).isOfFinOrder_mul hx hy
 
 end CommMonoid
+
+section CommGroup
+variable [CommGroup G]
+
+@[to_additive]
+lemma isMulTorsionFree_iff_not_isOfFinOrder :
+    IsMulTorsionFree G ↔ ∀ ⦃a : G⦄, a ≠ 1 → ¬ IsOfFinOrder a where
+  mp _ _ := not_isOfFinOrder_of_isMulTorsionFree
+  mpr hG := by
+    refine ⟨fun n hn a b hab ↦ ?_⟩
+    rw [← div_eq_one] at hab ⊢
+    simp only [← div_pow, isOfFinOrder_iff_pow_eq_one] at hab hG
+    exact of_not_not fun hab' ↦ hG hab' ⟨n, hn.bot_lt, hab⟩
+
+@[to_additive]
+alias ⟨_, IsMulTorsionFree.of_not_isOfFinOrder⟩ := isMulTorsionFree_iff_not_isOfFinOrder
+
+@[to_additive]
+lemma not_isMulTorsionFree_iff_isOfFinOrder :
+    ¬ IsMulTorsionFree G ↔ ∃ a ≠ (1 : G), IsOfFinOrder a := by
+  simp [isMulTorsionFree_iff_not_isOfFinOrder]
+
+end CommGroup
 
 section FiniteMonoid
 
