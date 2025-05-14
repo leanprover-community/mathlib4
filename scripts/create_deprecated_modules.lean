@@ -60,29 +60,26 @@ def mkDeprecation (customMessage : String := "Auto-generated deprecation") :
   liftCoreM <| PrettyPrinter.ppCategory `command stx
 
 /--
-The command `#create_deprecated_modules (n)? (comment)? (write)?` generates module deprecations.
+The command `#create_deprecated_module filePath (comment)? (write)?` generates a module deprecation.
 
 Writing
 ```lean
-#create_deprecated_modules 5 "These files are no longer relevant"
+#create_deprecated_module path/To/DeletedFile.lean "This file is no longer relevant"
 ```
-looks at the `lean` files in `Mathlib` that existed `4` commits ago
-(i.e. the commit that you see with `git log -5`) and that are no longer present.
-It shows how the corresponding deprecated modules should look like, using
-`"These files are no longer relevant"` as the (optional) comment.
+checks that `path/To/DeletedFile.lean` is not currently present, but was present in `Mathlib/`
+at some point.
 
-If the number of commits is not explicitly used, `#create_deprecated_modules` defaults to `2`,
-namely, the commit just prior to the current one.
+If the check is successful, then it reports on its findings, shows how the corresponding
+deprecated module should look like, using `"This file is no longer relevant"` as the (optional)
+comment.
 
-If the message is not explicitly used, `#create_deprecated_modules` defaults to
+If the message is not explicitly used, `#create_deprecated_module` defaults to
 `"Auto-generated deprecation"`.
-If you wish there to be no comment, use `#create_deprecated_modules 5 ""`.
+If you wish there to be no comment, use `#create_deprecated_module path/To/DeletedFile.lean ""`.
 
-Note that the command applies the *same* comment to all the files that it generates.
-
-Finally, if everything looks correct, adding a final `write` actually generates the files:
+Finally, if everything looks correct, adding a final `write` actually generates the file:
 ```lean
-#create_deprecated_modules 5 "These files are no longer relevant" write
+#create_deprecated_module path/To/DeletedFile.lean "This file is no longer relevant" write
 ```
 -/
 syntax "#create_deprecated_module " str (ppSpace str)? (&" write")? ppLine :
@@ -161,28 +158,30 @@ elab_rules : command
     liftTermElabM do Meta.liftMetaM do
       Meta.Tactic.TryThis.addSuggestion tk
         { preInfo? := "Confirm that you are happy with the information below before continuing!\n\n"
-          suggestion := stx}
+          suggestion := stx
+          postInfo? :=
+            if comment.isNone
+            then "\nYou can add a reason for the removal after the file name, as a string."
+            else ""}
   logInfoAt tk <| .joinSep msgs.toList "\n"
 
-/-
-Uncomment the `#create_deprecated_modules` line below to get started.
-* `10` should likely be some small number, though its exact value may not be too important;
-* omitting `"a comment here"` is equivalent to using `"Auto-generated deprecation"`
-  while using the empty string `""` eliminates the comment entirely;
-* uncomment `write` only when you are satisfied that the deprecations look correct!
+/--
+`#find_deleted_files (nc)?` takes an optional natural number input `nc`.
+
+Using `#find_deleted_files 5`
+It looks at the `lean` files in `Mathlib` that existed `4` commits ago
+(i.e. the commit that you see with `git log -5`) and that are no longer present.
+It then proposes `Try these:` suggestions calling the `#create_deprecated_module`
+to finalize the deprecation.
+
+Unlike what usually happens with `Try these:`, the original `#find_deleted_files` does not get
+replaced by the suggestion, which means that you can click multiple suggestions and proceed with
+the deprecations later on.
+
+If the number of commits is not explicitly used, `#find_deleted_files` defaults to `2`,
+namely, the commit just prior to the current one.
 -/
-#create_deprecated_module "Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean"  "a comment here" --write
-
-run_cmd
-  let (msgs, _file) ← deprecateFilePath "Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean" (some "J")
-  --logInfo file
-  logInfo <| .joinSep msgs.toList "\n"
-
 elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
---| `(#create_deprecated_modules%$tk $id:ident $nc:num) => do
---  throwErrorAt tk m!"You can only pass either the module name {id} or \
---              the number {nc} of commits to crawl back, but not both!"
---| `(#create_deprecated_modules%$tk $[$nc:num]? $[$comment:str]? $[write%$write?]?) => do
   let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
   let mut msgs : Array MessageData := #[]
   -- Get the hash and the commit message of the commit at `git log -n`
@@ -209,73 +208,46 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
   msgs := msgs.push
     m!"{noFiles} Lean file{if noFiles == 1 then "" else "s"} in 'Mathlib' that no longer exist:"
   msgs := msgs.push "" ++ onlyPastFiles.toArray.map (m!"  {·}") |>.push ""
-  --let deprecation ← if let some cmt := comment then mkDeprecation cmt.getString else mkDeprecation
-  --msgs := msgs.push ""
-  -- Generate a module deprecation for each file that only existed in the past commit.
+  if onlyPastFiles.isEmpty then
+    logWarningAt (nc.getD ⟨tk⟩)
+      m!"All Lean files in Mathlib that existed {n} commits ago are still present.  \
+      Increase {n} to search further back!"
+    return
+  let mut suggestions : Array Meta.Tactic.TryThis.Suggestion := #[]
+  let ref := .ofRange {tk.getRange?.get! with stop := tk.getPos?.get!}
   for fname in onlyPastFiles do
-    --let file ← IO.Process.run {cmd := "git", args := #["show", s!"{pastHash}:{fname}"]}
-    --let fileHeader ← getHeader fname file false
-    --let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
-    --msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
-    --if write?.isSome then
-    --  IO.FS.writeFile fname deprecatedFile
-  --if write?.isNone && noFiles != 0 then
-    -- We strip trailing comments from `nc` and `comment` to avoid them showing up in the
-    -- regenerated syntax.
-    --let nc := nc.map (⟨·.raw.unsetTrailing⟩)
-    --let comment := comment.map (⟨·.raw.unsetTrailing⟩)
     let fnameStx := Syntax.mkStrLit fname
-    let cmtStx := Syntax.mkStrLit "Reason for removal"
-    let stx ← `(command|-- hi
-    #create_deprecated_module $fnameStx)
-
-    let stxWithCmt ← `(command|#create_deprecated_module $fnameStx $cmtStx)
-    --let ref ← getRef
-    --let stx1 : Syntax :=  if let .node si k args := stx.raw then
-    --                      if let .original hs hp ts tp := ref.getHeadInfo then
-    --                        dbg_trace "here! '{(hs.startPos, hs.stopPos, ref.getTailPos?.get!)}'"
-    --                        .node (.original {hs with stopPos := ref.getTailPos?.get!} hp ts tp) k args else stx.raw
-    --                      else
-    --                      --let info := ref.getTailInfo
-    --                      --if let .node orinfo _ _ :=
-    --                        stx.raw
-    --logInfo <| InspectSyntax.viewTreeWithBars stx1
-    --logInfo stx1
-    --dbg_trace stx1
-    --dbg_trace stx.raw.updateTrailing "hello".toSubstring
-    let ref := .ofRange {tk.getRange?.get! with stop := tk.getPos?.get!}
-
-    liftTermElabM do Meta.liftMetaM do
-      Meta.Tactic.TryThis.addSuggestions
-        (origSpan? := some ref)
-        --(header := "Try these: Clicking on the suggestions below will *not* remove the \
-        --          `#find_delete_files` command, so you can click several of them.")
-        tk #[
-          { preInfo? := s!"Deprecate with 'Auto-generated deprecation' as a comment.\n\n"
+    let stx ← `(command|#create_deprecated_module $fnameStx)
+    suggestions := suggestions.push {
             suggestion := (⟨stx.raw.updateTrailing "hello".toSubstring⟩ : TSyntax `command)
-            postInfo? := "\n"},
-          { preInfo? := s!"Deprecate with a custom comment (use `\"\"` for no comment).\n\n"
-            suggestion := stxWithCmt
-            postInfo? := "\nClicking on the suggestions above will *not* remove the \
-                          `#find_delete_files` command, so you can click several of them."},
-        ]
-
-    msgs := msgs.push
-      m!"The file was not deprecated. Use{indentD stx}\nor{indentD stxWithCmt}\n\
-        if you wish to deprecate this file."
+            }
+  liftTermElabM do Meta.liftMetaM do
+    Meta.Tactic.TryThis.addSuggestions (origSpan? := some ref) (header := "Try these:\n\n\
+          Clicking on the suggestions below will *not* remove the \
+          `#find_delete_files` command, so you can click several of them.\n") tk suggestions
   logInfoAt tk <| .joinSep msgs.toList "\n"
 
-#create_deprecated_module "Mathlib/Algebra/Polynomial/ofFn.lean"
-  #find_deleted_files 1500
+/-!
+If you already know the name of the file that you want to deprecate, then uncomment the
+`#create_deprecated_module` line below to get started, writing the file path as a string.
+* omitting `"a comment here"` is equivalent to using `"Auto-generated deprecation"`
+  while using the empty string `""` eliminates the comment entirely;
+* uncomment `write` only when you are satisfied that the deprecations look correct!
+  The command will also suggested this as a `Try this`.
+-/
+--#create_deprecated_module "Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean"  "a comment here" --write
 
-#create_deprecated_module "Mathlib/Algebra/Polynomial/ofFn.lean" "Reason for removal"
-#create_deprecated_module "Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean"
-#create_deprecated_module "Mathlib/Algebra/Polynomial/ofFn.lean"
+/-!
+If, instead, you are looking for a file to be deprecated, uncomment the
+`#find_deleted_files 10` line below to start scanning.
 
---git log --pretty=oneline --all -1 -- Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean
---#check System.FilePath.pathExists
---#check moduleNameOfFileName
---#check SearchPath.findModuleWithExt
+You can play around with `10`: it represents the number of past commits that the command considers
+to find files that existed then and do not exist now.
+The exact valueis not too important: we are essentially after a file name.
+Once you found what you were looking for, click on all the relevant `Try these:` suggestions
+and continue following the instructions on these commands.
+-/
+--#find_deleted_files 10
 
 /--
 info: /-
@@ -287,6 +259,7 @@ Authors: Damiano Testa
 --import Mathlib.Init
 import Mathlib.Tactic.Linter.DeprecatedModule
 import Std.Time.Zoned
+import Lean.Meta.Tactic.TryThis
 -/
 #guard_msgs in
 run_cmd
@@ -304,6 +277,7 @@ Authors: Damiano Testa
 --import Mathlib.Init
 import Mathlib.Tactic.Linter.DeprecatedModule
 import Std.Time.Zoned
+import Lean.Meta.Tactic.TryThis
 -- a comment here to test `keepTrailing
 -/
 #guard_msgs in
