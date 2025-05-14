@@ -19,64 +19,9 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
   complex numbers of the form `exp (2 * π * I * (i / n))` for some `i < n`.
 * `Complex.card_rootsOfUnity`: the number of `n`-th roots of unity is exactly `n`.
 * `Complex.norm_rootOfUnity_eq_one`: A complex root of unity has norm `1`.
-* `Units.expHom`: The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂˣ`,
-  considered as a homomorphism of groups.
-* `rootsOfUnity.expHom`: The map `fun k => exp ((2 * π * (k.val / n)) * I)` from `ZMod n` to the
-  `n`th roots of unity in `ℂ`, considered as a homomorphism of groups.
+
 -/
 
-
-section Units.exp
-
-namespace Units
-
-open Complex in
-/-- The map `fun t => exp (t * I)` from `ℝ` to `ℂˣ`. -/
-noncomputable def exp : ℝ → ℂˣ := Circle.toUnits ∘ Circle.exp
-
-@[simp, norm_cast]
-theorem coe_exp (t : ℝ) : exp t = Complex.exp (t * Complex.I) := rfl
-
-@[simp]
-theorem exp_zero : exp 0 = 1 := by
-  ext : 1
-  rw [coe_exp, Complex.ofReal_zero, zero_mul, Complex.exp_zero, val_one]
-
-@[simp]
-theorem exp_add (x y : ℝ) : exp (x + y) = exp x * exp y := by
-  ext
-  simp only [coe_exp, Submonoid.coe_mul, Complex.ofReal_add, add_mul, Complex.exp_add, val_mul,
-    coe_exp]
-
-lemma exp_iff (t s : ℝ) :
-    exp s = exp t ↔ Complex.exp (t * Complex.I) = Complex.exp (s * Complex.I) := by
-  constructor <;> intro h
-  · simp [exp, exp] at h
-    simp_all only
-  · ext : 1
-    simp_all only [coe_exp]
-
-open Real in
-/-- `exp` is `2π`-periodic. -/
-theorem periodic_exp : Function.Periodic (exp) (2 * π) := fun θ => by
-  simp only [exp_iff, Complex.ofReal_add, Complex.ofReal_mul, Complex.ofReal_ofNat, add_mul,
-    Complex.exp_periodic _]
-
-open Real in
-lemma exp_2pi_mul_add_ZMod (n : ℕ) [NeZero n] (j k : ZMod n) :
-  Units.exp (2 * π * ((j + k).val / n)) = Units.exp (2 * π * (j.val/n) + 2 * π * (k.val/n)) := by
-  rcases (Nat.lt_or_ge _ _) with h1 | h2
-  · rw [ZMod.val_add_of_lt h1, Nat.cast_add, add_div, mul_add]
-  · rw [ZMod.val_add_of_le h2, Nat.cast_sub h2, sub_div, div_self ((NeZero.ne' _).symm), mul_sub,
-      mul_one, Units.periodic_exp.sub_eq, Nat.cast_add, add_div, mul_add]
-
-/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂˣ`,
-considered as a homomorphism of groups. -/
-noncomputable def expHom : ℝ →+ Additive ℂˣ := Circle.toUnits.toAdditive.comp Circle.expHom
-
-end Units
-
-end Units.exp
 
 namespace Complex
 
@@ -139,14 +84,6 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
     rw [← H, ← exp_nat_mul, exp_eq_one_iff]
     use i
     field_simp [hn0, mul_comm ((n : ℕ) : ℂ), mul_comm (i : ℂ)]
-
--- Rework `mem_rootsOfUnity` into a more usable form
-nonrec theorem mem_rootsOfUnity' (n : ℕ) [NeZero n] (x : Units ℂ) :
-    x ∈ rootsOfUnity n ℂ ↔ ∃ i < n, Units.exp (2 * π * (i / n)) = x := by
-  simp_rw [mem_rootsOfUnity, Units.exp]
-  simp only [Function.comp_apply, Circle.toUnits_apply, Circle.coe_exp, ofReal_mul, ofReal_ofNat,
-    ofReal_div, ofReal_natCast, ← Units.eq_iff, Units.val_mk0]
-  constructor <;> ({ intro ⟨i, hi1, hi2⟩; exact ⟨i, ⟨hi1, by rw [← hi2]; ring_nf⟩ ⟩})
 
 theorem card_rootsOfUnity (n : ℕ) [NeZero n] : Fintype.card (rootsOfUnity n ℂ) = n :=
   (isPrimitiveRoot_exp n NeZero.out).card_rootsOfUnity
@@ -239,38 +176,3 @@ theorem Complex.conj_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n] (hζ : ζ �
     (starRingEnd ℂ) ζ = ζ⁻¹ := by
   rw [← Units.mul_eq_one_iff_eq_inv, conj_mul', norm_eq_one_of_mem_rootsOfUnity hζ, ofReal_one,
     one_pow]
-
-namespace rootsOfUnity
-
-open Real in
-/-- The map `fun k => exp ((2 * π * (k.val / n)) * I)` from `ZMod n` to the `n`th roots of unity in
-`ℂ`. -/
-noncomputable def exp (n : ℕ) [NeZero n] : ZMod n → rootsOfUnity n ℂ :=
-  fun k => ⟨Units.exp (2 * π * (k.val / n)),by
-    rw [Complex.mem_rootsOfUnity']
-    exact ⟨k.val, ⟨k.val_lt, by congr⟩⟩⟩
-
-variable (n : ℕ) [NeZero n]
-
-@[simp]
-theorem exp_zero : exp n 0 = 1 := by
-  ext : 1
-  simp only [exp, ZMod.val_zero, CharP.cast_eq_zero, zero_div, mul_zero, Units.exp_zero,
-    OneMemClass.coe_one]
-
-@[simp]
-theorem exp_add (x y : ZMod n) : exp n (x + y) = exp n x * exp n y := by
-  simp_rw [exp,Units.exp_2pi_mul_add_ZMod]
-  simp_all only [Units.exp_add, ZMod.natCast_val, Units.val_mul, Units.coe_exp, Complex.ofReal_mul,
-    Complex.ofReal_ofNat, Complex.ofReal_div, Complex.ofReal_natCast, MulMemClass.mk_mul_mk]
-
-/-- The map `fun k => exp ((2 * π * (k.val / n)) * I)` from `ZMod n` to the `n`th roots of unity in
-`ℂ`, considered as a homomorphism of groups. -/
-@[simps]
-noncomputable def expHom (n : ℕ) [NeZero n] :
-    ZMod n  →+ Additive (rootsOfUnity n ℂ) where
-  toFun :=  rootsOfUnity.exp n
-  map_zero' := exp_zero n
-  map_add' := exp_add n
-
-end rootsOfUnity

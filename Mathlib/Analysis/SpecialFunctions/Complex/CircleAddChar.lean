@@ -70,11 +70,6 @@ lemma toCircle_eq_circleExp (j : ZMod N) :
   push_cast
   ring_nf
 
-lemma rootsOfUnity_exp_eq (k : ZMod N) : rootsOfUnity.exp N k = (ZMod.toCircle k).toUnits := by
-  rw [rootsOfUnity.exp]
-  simp only
-  rw [Units.exp, comp_apply, toCircle_eq_circleExp]
-
 lemma injective_toCircle : Injective (toCircle : ZMod N → Circle) :=
   (AddCircle.injective_toCircle one_ne_zero).comp (toAddCircle_injective N)
 
