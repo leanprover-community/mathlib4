@@ -256,7 +256,7 @@ lemma isLocalizedEquivalence_of_iso {Φ' : LocalizerMorphism W₁ W₂} (e : Φ.
     ⟨isoWhiskerRight e.symm _ ≪≫ CatCommSq.iso Φ.functor W₁.Q W₂.Q G⟩
   exact IsLocalizedEquivalence.mk' Φ' W₁.Q W₂.Q G
 
-lemma isLocalizedEquibalence_of_precomp (Ψ : LocalizerMorphism W₂ W₃)
+lemma isLocalizedEquivalence_of_precomp (Ψ : LocalizerMorphism W₂ W₃)
     [Φ.IsLocalizedEquivalence] [(Φ.comp Ψ).IsLocalizedEquivalence] :
     Ψ.IsLocalizedEquivalence := by
   let G₁₂ := Φ.localizedFunctor W₁.Q W₂.Q

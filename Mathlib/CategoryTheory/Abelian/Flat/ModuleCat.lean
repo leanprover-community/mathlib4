@@ -12,6 +12,7 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.RingTheory.Flat.CategoryTheory
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 
 /-!
 # Flat objects in ModuleCat
@@ -65,7 +66,14 @@ instance : AB5OfSize.{0, 0} (ModuleCat.{u} R) := AB5OfSize_shrink.{0, 0, u, u, u
 example : (HomologicalComplex.quasiIso (ModuleCat.{u} R)
   (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure := inferInstance
 
-/-noncomputable example [HasDerivedCategory (ModuleCat.{u} R)] :
-    MonoidalCategory (DerivedCategory (ModuleCat.{u} R)) := inferInstance-/
+variable [HasDerivedCategory (ModuleCat.{u} R)]
+
+noncomputable example : MonoidalCategory (DerivedCategory (ModuleCat.{u} R)) :=
+  inferInstance
+
+open DerivedCategory.TStructure
+
+protected noncomputable def tor (P Q : ModuleCat.{u} R) (n : ℤ) : ModuleCat.{u} R :=
+  (t.homology (-n)).obj ((t.ιHeart.obj P ⊗ t.ιHeart.obj Q))
 
 end ModuleCat

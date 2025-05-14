@@ -34,7 +34,7 @@ lemma isLocalizerEquivalence [T.IsLocalizedEquivalence] [L.IsLocalizedEquivalenc
     [R.IsLocalizedEquivalence] : B.IsLocalizedEquivalence := by
   have : (L.comp B).IsLocalizedEquivalence :=
     LocalizerMorphism.isLocalizedEquivalence_of_iso (Φ := T.comp R) (Φ' := L.comp B) iso
-  exact LocalizerMorphism.isLocalizedEquibalence_of_precomp L B
+  exact LocalizerMorphism.isLocalizedEquivalence_of_precomp L B
 
 @[simps]
 def leftResolutionComparison [Wₕ.IsMultiplicative] [Wₕ.RespectsIso] (X : C) :

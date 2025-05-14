@@ -46,7 +46,7 @@ variable {C₀ C H₀ H : Type*} [Category C₀] [Category C] [Category H₀] [C
 namespace GuitartExact
 
 lemma quotient (e : T ⋙ R ≅ L ⋙ B)
-    (h : ∀ ⦃X₀ : C₀⦄ ⦃Y : C⦄ (f₀ f₁ : L.obj X₀ ⟶ Y),
+    (h : ∀ ⦃X₀ : C₀⦄ ⦃Y : C⦄ (f₀ f₁ : L.obj X₀ ⟶ Y) (_ : B.map f₀ = B.map f₁),
       ∃ (Cyl : C₀) (i₀ i₁ : X₀ ⟶ Cyl) (_ : T.map i₀ = T.map i₁)
           (φ : L.obj Cyl ⟶ Y), L.map i₀ ≫ φ = f₀ ∧
         L.map i₁ ≫ φ = f₁) : GuitartExact e.hom := by
@@ -61,7 +61,7 @@ lemma quotient (e : T ⋙ R ≅ L ⋙ B)
       CostructuredArrowDownwards.mk _ _ X₀ e₀.inv s.1 (by rw [s.2]; simp)
   have : Nonempty (CostructuredArrowDownwards e.hom g) := ⟨Z (Classical.arbitrary _)⟩
   have hZ₀ (s₀ s₁) : Zigzag (Z s₀) (Z s₁) := by
-    obtain ⟨Cyl, i₀, i₁, hi, φ, fac₀, fac₁⟩ := h s₀.1 s₁.1
+    obtain ⟨Cyl, i₀, i₁, hi, φ, fac₀, fac₁⟩ := h s₀.1 s₁.1 (s₀.2.trans s₁.2.symm)
     let Z' : CostructuredArrowDownwards e.hom g :=
       CostructuredArrowDownwards.mk _ _ Cyl (e₀.inv ≫ T.map i₀) φ (by
         have := e.hom.naturality i₀
