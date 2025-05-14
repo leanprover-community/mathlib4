@@ -5,6 +5,7 @@ Authors: Jakob Stiefel, Rémy Degenne, Thomas Zhu
 -/
 import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 import Mathlib.Analysis.Fourier.FourierTransform
+import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 
@@ -243,6 +244,11 @@ lemma charFun_map_eq_charFunCLM_smul [OpensMeasurableSpace E] (L : E →L[ℝ] �
     · exact Measurable.aestronglyMeasurable <| by fun_prop
   rw [this, charFun_apply]
   simp
+
+lemma charFun_eq_charFunCLM_toDualMap {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    {mE : MeasurableSpace E} {μ : Measure E} (t : E) :
+    charFun μ t = charFunCLM μ (InnerProductSpace.toDualMap ℝ E t) := by
+  simp [charFunCLM_apply, charFun_apply, real_inner_comm]
 
 lemma charFunCLM_map [OpensMeasurableSpace E] [BorelSpace F] (L : E →L[ℝ] F) (L' : F →L[ℝ] ℝ) :
     charFunCLM (μ.map L) L' = charFunCLM μ (L'.comp L) := by
