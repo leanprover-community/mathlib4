@@ -566,6 +566,67 @@ theorem isLift_or_isConjugateLift (v : InfinitePlace K) (w : v.Extension L) :
 
 end Extension
 
+/--
+Let `v : InfinitePlace K` be a fixed infinite place. `RamifiedExtension L v` is the subtype of
+all the infinite places of `L / K` that extend `v` and are ramified over `K`.
+-/
+abbrev RamifiedExtension (v : InfinitePlace K) :=
+  { w : InfinitePlace L // w.comap (algebraMap K L) = v ∧ w.IsRamified K }
+
+/--
+Let `v : InfinitePlace K` be a fixed infinite place. `UnramifiedExtension L v` is the subtype of
+all the infinite places of `L / K` that extend `v` and are unramified over `K`.
+-/
+abbrev UnramifiedExtension (v : InfinitePlace K) :=
+  { w : InfinitePlace L // w.comap (algebraMap K L) = v ∧ w.IsUnramified K }
+
+variable {L} {v : InfinitePlace K}
+
+/--
+Construct a `v.RamifiedExtension L` term from a `w : v.Extension L` such that
+`w.1.IsRamified K`.
+-/
+def Extension.toRamifiedExtension {w : v.Extension L} (h : w.1.IsRamified K) :
+    v.RamifiedExtension L := ⟨w.1, ⟨w.2, h⟩⟩
+
+/--
+Construct a `v.UnramifiedExtension L` term from a `w : v.Extension L` such that
+`w.1.IsUnramified K`.
+-/
+def Extension.toUnramifiedExtension {w : v.Extension L} (h : w.1.IsUnramified K) :
+    v.UnramifiedExtension L := ⟨w.1, ⟨w.2, h⟩⟩
+
+namespace RamifiedExtension
+
+theorem comap_eq (w : v.RamifiedExtension L) : w.1.comap (algebraMap K L) = v := w.2.1
+
+theorem isRamified (w : v.RamifiedExtension L) : w.1.IsRamified K := w.2.2
+
+theorem isReal_comap (w : v.RamifiedExtension L) : (w.1.comap (algebraMap K L)).IsReal :=
+  (isRamified_iff.1 w.isRamified).2
+
+instance : Coe (v.RamifiedExtension L) (v.Extension L) where
+  coe w := ⟨w.1, w.2.1⟩
+
+theorem isReal (w : v.RamifiedExtension L) : v.IsReal :=
+  w.comap_eq ▸ w.isReal_comap
+
+theorem isComplex (w : v.RamifiedExtension L) : (w.1 : InfinitePlace L).IsComplex :=
+  (isRamified_iff.1 w.isRamified).1
+
+end RamifiedExtension
+
+namespace UnramifiedExtension
+
+theorem comap_eq (w : UnramifiedExtension L v) : w.1.comap (algebraMap K L) = v := w.2.1
+
+theorem isUnramified (w : UnramifiedExtension L v) : w.1.IsUnramified K := w.2.2
+
+instance : Coe (v.UnramifiedExtension L) (v.Extension L) where
+  coe w := ⟨w.1, w.comap_eq⟩
+
+end UnramifiedExtension
+
 end NumberField.InfinitePlace
 
 end Extension
