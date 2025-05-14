@@ -162,6 +162,28 @@ lemma kFlat_iff_preserves_acyclic (K : HomotopyCategory A (.up ℤ)) :
   · rintro hZ
     exact ⟨fun _ hX ↦ (hZ _ hX).1, fun _ hX ↦ (hZ _ hX).2⟩
 
+instance : (HomotopyCategory.quasiIso A (.up ℤ)).kFlat.IsTriangulated where
+  toIsTriangulatedClosed₂ := .mk' (fun T hT h₁ h₃ ↦ by
+    simp only [HomotopyCategory.kFlat_iff_preserves_acyclic] at h₁ h₃ ⊢
+    intro Z hZ
+    exact ⟨(HomotopyCategory.subcategoryAcyclic A).ext_of_isTriangulatedClosed₂ _
+      (((curriedTensor _).flip.obj Z).map_distinguished _ hT) (h₁ Z hZ).1 (h₃ Z hZ).1,
+        (HomotopyCategory.subcategoryAcyclic A).ext_of_isTriangulatedClosed₂ _
+      (((curriedTensor _).obj Z).map_distinguished _ hT) (h₁ Z hZ).2 (h₃ Z hZ).2⟩)
+
+variable (A) in
+lemma closedUnderLimitsOfShape_discrete_kFlat (J : Type) [Finite J] :
+    ClosedUnderLimitsOfShape (Discrete J) (quasiIso A (.up ℤ)).kFlat := by
+  apply ObjectProperty.closedUnderLimitsOfShape_discrete_of_isTriangulated
+
+instance : (quasiIso A (.up ℤ)).kFlat.IsClosedUnderRetracts where
+  of_retract {K L} e hL := by
+    have : (subcategoryAcyclic A).IsClosedUnderRetracts := inferInstance
+    rw [kFlat_iff_preserves_acyclic] at hL ⊢
+    intro Z hZ
+    exact ⟨ObjectProperty.prop_of_retract _ (e.map (tensorRight Z)) (hL Z hZ).1,
+      ObjectProperty.prop_of_retract _ (e.map (tensorLeft Z)) (hL Z hZ).2⟩
+
 end HomotopyCategory
 
 namespace CochainComplex
@@ -169,6 +191,23 @@ namespace CochainComplex
 variable {A}
 
 open HomologicalComplex
+
+instance : (quasiIso A (.up ℤ)).kFlat.IsClosedUnderRetracts where
+  of_retract e h := by
+    rw [← HomotopyCategory.kFlat_quotient_obj_iff] at h ⊢
+    exact ObjectProperty.prop_of_retract _ (e.map (HomotopyCategory.quotient _ _)) h
+
+variable (A) in
+lemma closedUnderLimitsOfShape_discrete_kFlat (J : Type) [Finite J] :
+    ClosedUnderLimitsOfShape (Discrete J) (quasiIso A (.up ℤ)).kFlat := by
+  intro F c hc hF
+  rw [← HomotopyCategory.kFlat_quotient_obj_iff]
+  apply HomotopyCategory.closedUnderLimitsOfShape_discrete_kFlat A J
+    (isLimitOfPreserves (HomotopyCategory.quotient _ _) hc)
+  rintro j
+  dsimp
+  rw [HomotopyCategory.kFlat_quotient_obj_iff]
+  exact hF j
 
 lemma kFlat_single_obj_iff_flat (X : A) (n : ℤ) :
     (quasiIso A (.up ℤ)).kFlat ((single _ _ n).obj X) ↔ ObjectProperty.flat X := by
@@ -191,14 +230,38 @@ instance : (ObjectProperty.flat (A := A)).ContainsZero where
     apply Functor.map_isZero
     apply Limits.isZero_zero⟩
 
-instance : (HomotopyCategory.quasiIso A (.up ℤ)).kFlat.IsTriangulated where
-  toIsTriangulatedClosed₂ := .mk' (fun T hT h₁ h₃ ↦ by
-    simp only [HomotopyCategory.kFlat_iff_preserves_acyclic] at h₁ h₃ ⊢
-    intro Z hZ
-    exact ⟨(HomotopyCategory.subcategoryAcyclic A).ext_of_isTriangulatedClosed₂ _
-      (((curriedTensor _).flip.obj Z).map_distinguished _ hT) (h₁ Z hZ).1 (h₃ Z hZ).1,
-        (HomotopyCategory.subcategoryAcyclic A).ext_of_isTriangulatedClosed₂ _
-      (((curriedTensor _).obj Z).map_distinguished _ hT) (h₁ Z hZ).2 (h₃ Z hZ).2⟩)
+variable (A) in
+lemma closedUnderLimitsOfShape_discrete_flat (J : Type) [Finite J] :
+    ClosedUnderLimitsOfShape (Discrete J) (ObjectProperty.flat (A := A)) := by
+  intro F c hc hF
+  simp only [← kFlat_single_obj_iff_flat _ 0] at hF ⊢
+  apply closedUnderLimitsOfShape_discrete_kFlat A J
+    (isLimitOfPreserves (single _ (.up ℤ) 0) hc)
+  exact hF
+
+instance : HasFiniteProducts (ObjectProperty.flat (A := A)).FullSubcategory where
+  out n := by
+    apply hasLimitsOfShape_of_closedUnderLimits
+    apply closedUnderLimitsOfShape_discrete_flat
+
+instance : HasFiniteBiproducts (ObjectProperty.flat (A := A)).FullSubcategory :=
+  HasFiniteBiproducts.of_hasFiniteProducts
+
+instance : (ObjectProperty.flat (A := A)).IsClosedUnderRetracts where
+  of_retract e h := by
+    rw [← kFlat_single_obj_iff_flat _ 0] at h ⊢
+    exact ObjectProperty.prop_of_retract _ (e.map ((single _ (.up ℤ) 0))) h
+
+variable (A) in
+lemma closedUnderColimitsOfShape_flat (J : Type*) [Category J]
+    [HasColimitsOfShape J A] [HasExactColimitsOfShape J A]
+    [∀ (X : A), PreservesColimitsOfShape J ((curriedTensor A).flip.obj X)]
+    [∀ (X : A), PreservesColimitsOfShape J ((curriedTensor A).obj X)] :
+    ClosedUnderColimitsOfShape J (ObjectProperty.flat (A := A)) := by
+  intro F c hc hF
+  simp only [← kFlat_single_obj_iff_flat _ 0] at hF ⊢
+  apply closedUnderColimitsOfShape_kFlat A J (isColimitOfPreserves (single _ (.up ℤ) 0) hc)
+  exact hF
 
 lemma kFlat_of_bounded_of_flat (K : CochainComplex A ℤ) (a b : ℤ)
     [K.IsStrictlyGE a] [K.IsStrictlyLE b]
@@ -213,6 +276,7 @@ lemma kFlat_of_bounded_of_flat (K : CochainComplex A ℤ) (a b : ℤ)
   exact ObjectProperty.prop_of_iso _
     ((HomotopyCategory.singleFunctorPostcompQuotientIso A 0).symm.app (K.X n)) hK
 
+-- to be moved
 section
 
 variable (K : CochainComplex A ℤ)
@@ -317,15 +381,12 @@ lemma cochainComplex_kFlat_isLeftDerivabilityStructure :
 
 end LeftResolutions
 
-/-instance : IsIdempotentComplete (ObjectProperty.flat (A := A)).FullSubcategory := sorry
-instance : HasFiniteCoproducts (ObjectProperty.flat (A := A)).FullSubcategory := sorry
-
 instance [HasFunctorialFlatResolutions A] :
     (HomologicalComplex.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure := by
   let Λ : LeftResolutions (ObjectProperty.flat.ι : _ ⥤ A) := Classical.arbitrary _
   exact Λ.reduced.cochainComplex_kFlat_isLeftDerivabilityStructure (by simp)
 
-instance [HasFunctorialFlatResolutions A] :
+/-instance [HasFunctorialFlatResolutions A] :
     (HomotopyCategory.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure := by
   let Λ : LeftResolutions (ObjectProperty.flat.ι : _ ⥤ A) := Classical.arbitrary _
   exact Λ.reduced.homotopyCategory_kFlat_isLeftDerivabilityStructure (by simp)-/

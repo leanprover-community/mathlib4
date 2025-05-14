@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.ObjectProperty.Retracts
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.Shift.ShiftSequence
 import Mathlib.CategoryTheory.Triangulated.Functor
@@ -109,6 +110,25 @@ variable [F.IsHomological]
 
 instance : F.homologicalKernel.IsClosedUnderIsomorphisms where
   of_iso e hX n := (hX n).of_iso ((shiftFunctor C n ⋙ F).mapIso e.symm)
+
+
+-- to be moved
+lemma _root_.CategoryTheory.Retract.isZero {C : Type*} [Category C] {X Y : C}
+    (e : Retract X Y) (hY : IsZero Y) : IsZero X := by
+  constructor
+  · intro Z
+    rw [unique_iff_existsUnique]
+    refine ⟨e.i ≫ hY.to_ Z, by simp, fun f _ ↦ ?_⟩
+    rw [← cancel_epi e.r]
+    apply hY.eq_of_src
+  · intro Z
+    rw [unique_iff_existsUnique]
+    refine ⟨hY.from_ Z ≫ e.r, by simp, fun f _ ↦ ?_⟩
+    rw [← cancel_mono e.i]
+    apply hY.eq_of_tgt
+
+instance : F.homologicalKernel.IsClosedUnderRetracts where
+  of_retract e h n := (e.map (shiftFunctor _ n ⋙ F)).isZero (h n)
 
 instance : F.homologicalKernel.IsTriangulated where
   exists_zero := ⟨0, isZero_zero C,

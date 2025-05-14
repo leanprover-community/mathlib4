@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Localization.Triangulated
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 
@@ -378,6 +379,16 @@ instance [P.IsTriangulated] : P.trW.IsStableUnderFiniteProducts := by
     exact trW.mk _ (productTriangle_distinguished _
       (fun j => (hf j).choose_spec.choose_spec.choose_spec.choose))
       (pi_finite_stable _ _ (fun j => (hf j).choose_spec.choose_spec.choose_spec.choose_spec))⟩
+
+lemma closedUnderLimitsOfShape_discrete_of_isTriangulated
+    [P.IsTriangulated] [P.IsClosedUnderIsomorphisms] (J : Type) [Finite J] :
+    ClosedUnderLimitsOfShape (Discrete J) P := by
+  intro F c hc hF
+  let G (j : J) : C := F.obj ⟨j⟩
+  have e : Discrete.functor G ≅ F := Discrete.natIso (fun _ ↦ Iso.refl _)
+  have := IsLimit.conePointUniqueUpToIso (limit.isLimit _)
+    ((IsLimit.postcomposeInvEquiv e c).2 hc)
+  exact P.prop_of_iso this (P.pi_finite_stable G (fun j ↦ hF _))
 
 section
 

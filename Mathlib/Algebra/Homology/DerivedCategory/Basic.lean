@@ -81,6 +81,10 @@ instance : (subcategoryAcyclic C).IsClosedUnderIsomorphisms := by
   dsimp [subcategoryAcyclic]
   infer_instance
 
+instance : (subcategoryAcyclic C).IsClosedUnderRetracts := by
+  dsimp [subcategoryAcyclic]
+  infer_instance
+
 variable {C}
 
 lemma mem_subcategoryAcyclic_iff (X : HomotopyCategory C (ComplexShape.up ℤ)) :

@@ -2492,6 +2492,7 @@ import Mathlib.CategoryTheory.ObjectProperty.Extensions
 import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory
 import Mathlib.CategoryTheory.ObjectProperty.Opposite
+import Mathlib.CategoryTheory.ObjectProperty.Retracts
 import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.PEmpty

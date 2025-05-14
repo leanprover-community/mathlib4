@@ -6,6 +6,8 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory
+import Mathlib.CategoryTheory.ObjectProperty.Retracts
+import Mathlib.CategoryTheory.Monoidal.Subcategory
 import Mathlib.Algebra.Homology.LeftResolutions.Basic
 
 /-!
@@ -15,7 +17,7 @@ import Mathlib.Algebra.Homology.LeftResolutions.Basic
 
 namespace CategoryTheory
 
-open MonoidalCategory
+open MonoidalCategory Limits
 
 variable {A : Type*} [Category A]
   [MonoidalCategory A]
@@ -26,12 +28,14 @@ def flat : ObjectProperty A := fun X ↦
   ObjectProperty.exactFunctor (tensorLeft X) ∧
     ObjectProperty.exactFunctor (tensorRight X)
 
+namespace flat
+
 variable {X : A}
 
-lemma flat.tensorLeft (hX : flat X) :
+protected lemma tensorLeft (hX : flat X) :
     ObjectProperty.exactFunctor (tensorLeft X) := hX.1
 
-lemma flat.tensorRight (hX : flat X) :
+protected lemma tensorRight (hX : flat X) :
     ObjectProperty.exactFunctor (tensorRight X) := hX.2
 
 instance : (flat (A := A)).IsClosedUnderIsomorphisms where
@@ -40,6 +44,26 @@ instance : (flat (A := A)).IsClosedUnderIsomorphisms where
       ((curriedTensor A).mapIso e) h.1,
       ObjectProperty.exactFunctor.prop_of_iso
         ((curriedTensor A).flip.mapIso e) h.2⟩
+
+attribute [local instance] comp_preservesFiniteLimits
+  comp_preservesFiniteColimits
+
+instance : (flat (A := A)).IsMonoidal where
+  prop_unit := by
+    constructor <;> constructor
+    · exact preservesFiniteLimits_of_natIso (leftUnitorNatIso A).symm
+    · exact preservesFiniteColimits_of_natIso (leftUnitorNatIso A).symm
+    · exact preservesFiniteLimits_of_natIso (rightUnitorNatIso A).symm
+    · exact preservesFiniteColimits_of_natIso (rightUnitorNatIso A).symm
+  prop_tensor := by
+    rintro X Y ⟨⟨_, _⟩, ⟨_, _⟩⟩ ⟨⟨_, _⟩, ⟨_, _⟩⟩
+    constructor <;> constructor
+    · exact preservesFiniteLimits_of_natIso (tensorLeftTensor X Y).symm
+    · exact preservesFiniteColimits_of_natIso (tensorLeftTensor X Y).symm
+    · exact preservesFiniteLimits_of_natIso (tensorRightTensor X Y).symm
+    · exact preservesFiniteColimits_of_natIso (tensorRightTensor X Y).symm
+
+end flat
 
 end ObjectProperty
 
