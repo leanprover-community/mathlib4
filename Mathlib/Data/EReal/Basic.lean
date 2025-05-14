@@ -828,7 +828,7 @@ def evalRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `EReal`. -/
 @[positivity ENNReal.toEReal _]
-def evalENNRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
+def evalENNRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q(ENNReal.toEReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
