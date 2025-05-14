@@ -67,7 +67,7 @@ lemma functorEquiv_unitIso_inv_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A') :
 def functorEquivFunctorCompFstIso :
     (functorEquiv A A' B).functor ⋙ Prod.fst (A ⥤ B) (A' ⥤ B) ≅
     (whiskeringLeft A (A ⊕ A') B).obj (inl_ A A') :=
- NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- Composing the forward direction of `functorEquiv` with the second projection is the same as
  precomposition with `inr_ A A'`. -/
