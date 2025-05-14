@@ -136,8 +136,8 @@ variable [Ring α] {a x y : α}
 @[simp] lemma intCast_mul_left (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy (n * a) x y :=
   SemiconjBy.mul_left (Int.cast_commute _ _) h
 
-@[simp] lemma intCast_mul_intCast_mul (h : SemiconjBy a x y) (m n : ℤ) :
-    SemiconjBy (m * a) (n * x) (n * y) := (h.intCast_mul_left m).intCast_mul_right n
+lemma intCast_mul_intCast_mul (h : SemiconjBy a x y) (m n : ℤ) :
+    SemiconjBy (m * a) (n * x) (n * y) := by simp [h]
 
 end SemiconjBy
 
@@ -154,11 +154,11 @@ end NonAssocRing
 section Ring
 variable [Ring α] {a b : α}
 
-@[simp] lemma intCast_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b) :=
-  SemiconjBy.intCast_mul_right h m
+lemma intCast_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b) := by
+  simp [h]
 
-@[simp] lemma intCast_mul_left (h : Commute a b) (m : ℤ) : Commute (m  * a) b :=
-  SemiconjBy.intCast_mul_left h m
+lemma intCast_mul_left (h : Commute a b) (m : ℤ) : Commute (m * a) b := by
+  simp [h]
 
 lemma intCast_mul_intCast_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) (n * b) :=
   SemiconjBy.intCast_mul_intCast_mul h m n

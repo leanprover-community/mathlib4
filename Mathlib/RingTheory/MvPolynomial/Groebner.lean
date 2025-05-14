@@ -33,7 +33,7 @@ The proof is done by induction, using two standard constructions
 * `MonomialOrder.subLTerm f` deletes the leading term of a polynomial `f`
 
 * `MonomialOrder.reduce hb f` subtracts from `f` the appropriate multiple of `b : MvPolynomial σ R`,
-provided `IsUnit (m.leadingCoeff b)`.
+  provided `IsUnit (m.leadingCoeff b)`.
 
 * `MonomialOrder.div_set` is the variant of `MonomialOrder.div` for a set of polynomials.
 
