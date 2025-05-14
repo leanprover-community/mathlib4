@@ -85,8 +85,4 @@ lemma lift_apply (f : M →* G) (x : GrothendieckGroup M) :
     lift f x = f ((monoidOf ⊤).sec x).1 / f ((monoidOf ⊤).sec x).2 := by
   simp [lift, (monoidOf ⊤).lift_apply, div_eq_mul_inv]; congr
 
-/-- The Grothendieck group of a finitely generated monoid is finitely generated. -/
-@[to_additive "The Grothendieck group of a finitely generated monoid is finitely generated."]
-instance instFG [Monoid.FG M] : Monoid.FG <| GrothendieckGroup M := fg Monoid.FG.fg_top
-
 end Algebra.GrothendieckGroup
