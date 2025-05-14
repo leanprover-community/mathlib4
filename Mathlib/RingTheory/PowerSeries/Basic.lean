@@ -766,10 +766,9 @@ open Finsupp Polynomial
 section Semiring
 variable {R : Type*} [Semiring R] (φ ψ : R[X])
 
--- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from polynomials into formal power series. -/
 @[coe]
-def toPowerSeries : R[X] → (PowerSeries R) := fun φ =>
+def toPowerSeries : R[X] → PowerSeries R := fun φ =>
   PowerSeries.mk fun n => coeff φ n
 
 @[deprecated (since := "2024-10-27")] alias ToPowerSeries := toPowerSeries
@@ -830,10 +829,9 @@ theorem constantCoeff_coe : PowerSeries.constantCoeff R φ = φ.coeff 0 :=
 
 variable (R)
 
-theorem coe_injective : Function.Injective (Coe.coe : R[X] → PowerSeries R) := fun x y h => by
+theorem coe_injective : Function.Injective ((↑) : R[X] → PowerSeries R) := fun x y h => by
   ext
-  simp_rw [← coeff_coe]
-  congr
+  simp_rw [← coeff_coe, h]
 
 variable {R φ ψ}
 
@@ -851,7 +849,7 @@ theorem coe_eq_one_iff : (φ : PowerSeries R) = 1 ↔ φ = 1 := by rw [← coe_o
 as a ring homomorphism.
 -/
 def coeToPowerSeries.ringHom : R[X] →+* PowerSeries R where
-  toFun := (Coe.coe : R[X] → PowerSeries R)
+  toFun := (↑)
   map_zero' := coe_zero
   map_one' := coe_one
   map_add' := coe_add
