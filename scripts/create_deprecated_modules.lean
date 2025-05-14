@@ -87,9 +87,10 @@ Finally, if everything looks correct, adding a final `write` actually generates 
 syntax "#create_deprecated_modules" (ppSpace ident)? (ppSpace num)? (ppSpace str)? (&" write")? :
   command
 
---git log --pretty=oneline --all -1 -- Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean
-
 elab_rules : command
+| `(#create_deprecated_modules%$tk $id:ident $nc:num) => do
+  throwErrorAt tk m!"You can only pass either the module name {id} or \
+              the number {nc} of commits to crawl back, but not both!"
 | `(#create_deprecated_modules%$tk $[$nc:num]? $[$comment:str]? $[write%$write?]?) => do
   let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
   let mut msgs : Array MessageData := #[]
@@ -135,6 +136,49 @@ elab_rules : command
     msgs := msgs.push
       m!"The files were not deprecated. Use '{stx}' if you wish to deprecate them."
   logInfoAt tk <| .joinSep msgs.toList "\n"
+| `(#create_deprecated_modules%$tk $id:ident $[$comment:str]? $[write%$write?]?) => do
+  let mut msgs : Array MessageData := #[]
+  let modName := id.getId
+  let srcPath ← getSrcSearchPath
+  if let some path := ← srcPath.findModuleWithExt "lean" modName then
+    logWarningAt id m!"The file {path} exists: I cannot deprecate it!"
+    return
+  -- Get the hash and the commit message of the commit at `git log -n`
+  -- (and throw an error if that doesn't exist).
+  --let getHashAndMessage (n : Nat) : CommandElabM (String × MessageData) := do
+  let fname := System.mkFilePath (modName.components.map (·.toString)) |>.addExtension "lean" |>.toString
+  let log ← IO.Process.run {cmd := "git", args := #["log", "--pretty=oneline", "--all", "-2", "--", fname]}
+  let [deleted, lastModified] := log.trim.splitOn "\n" | throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2!"
+  let deleteHash := deleted.takeWhile (!·.isWhitespace)
+  let deletePRdescr := (deleted.drop deleteHash.length).trim
+  let pastHash := lastModified.takeWhile (!·.isWhitespace)
+  let PRdescr := (lastModified.drop pastHash.length).trim
+  msgs := msgs.push <| m!"The file {fname} was\n"
+  msgs := msgs.push <| .trace {cls := `Commit} m!"last modified in the PR {PRdescr}" #[m!"{pastHash}"]
+  msgs := msgs.push <| .trace {cls := `Commit} m!"deleted in the PR {deletePRdescr}" #[m!"{deleteHash}"]
+  let deprecation ← if let some cmt := comment then mkDeprecation cmt.getString else mkDeprecation
+  msgs := msgs.push ""
+  -- Generate a module deprecation for the file `fname`.
+  let file ← IO.Process.run {cmd := "git", args := #["show", s!"{pastHash}:{fname}"]}
+  let fileHeader ← getHeader fname file false
+  let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
+  msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
+  if write?.isSome then
+    IO.FS.writeFile fname deprecatedFile
+  if write?.isNone then
+    -- We strip trailing comments from `id` and `comment` to avoid them showing up in the
+    -- regenerated syntax.
+    let id := ⟨id.raw.unsetTrailing⟩
+    let comment := comment.map (⟨·.raw.unsetTrailing⟩)
+    let stx ← `(command|#create_deprecated_modules $id:ident $[$comment:str]? write)
+    msgs := msgs.push
+      m!"The file {fname} was not deprecated. Use '{stx}' if you wish to deprecate it."
+  logInfoAt tk <| .joinSep msgs.toList "\n"
+
+--git log --pretty=oneline --all -1 -- Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean
+--#check System.FilePath.pathExists
+--#check moduleNameOfFileName
+--#check SearchPath.findModuleWithExt
 
 /-
 Uncomment the `#create_deprecated_modules` line below to get started.
@@ -143,7 +187,7 @@ Uncomment the `#create_deprecated_modules` line below to get started.
   while using the empty string `""` eliminates the comment entirely;
 * uncomment `write` only when you are satisfied that the deprecations look correct!
 -/
-#create_deprecated_modules 510 "a comment here" --write
+#create_deprecated_modules Mathlib.LinearAlgebra.RootSystem.Finite.g2  "a comment here" --write
 
 /--
 info: /-
