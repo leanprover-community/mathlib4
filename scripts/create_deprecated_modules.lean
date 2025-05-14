@@ -84,7 +84,10 @@ Finally, if everything looks correct, adding a final `write` actually generates 
 #create_deprecated_modules 5 "These files are no longer relevant" write
 ```
 -/
-syntax "#create_deprecated_modules" (ppSpace num)? (ppSpace str)? (&" write")? : command
+syntax "#create_deprecated_modules" (ppSpace ident)? (ppSpace num)? (ppSpace str)? (&" write")? :
+  command
+
+--git log --pretty=oneline --all -1 -- Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean
 
 elab_rules : command
 | `(#create_deprecated_modules%$tk $[$nc:num]? $[$comment:str]? $[write%$write?]?) => do
@@ -140,7 +143,7 @@ Uncomment the `#create_deprecated_modules` line below to get started.
   while using the empty string `""` eliminates the comment entirely;
 * uncomment `write` only when you are satisfied that the deprecations look correct!
 -/
---#create_deprecated_modules 10 "a comment here" --write
+#create_deprecated_modules 510 "a comment here" --write
 
 /--
 info: /-
