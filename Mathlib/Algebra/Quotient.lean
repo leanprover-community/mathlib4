@@ -46,12 +46,11 @@ class HasQuotient (A : outParam <| Type u) (B : Type v) where
   quotient' : B → Type max u v
 
 -- Will be provided by e.g. `Ideal.Quotient.inhabited`
-/-- `HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient
- of the type `A` by `b`.
+/--
+`HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient of the type `A` by `b`.
 
-This differs from `HasQuotient.quotient'` in that the `A` argument is
- explicit, which is necessary to make Lean show the notation in the
- goal state.
+This differs from `HasQuotient.quotient'` in that the `A` argument is explicit,
+which is necessary to make Lean show the notation in the goal state.
 -/
 abbrev HasQuotient.Quotient (A : outParam <| Type u) {B : Type v}
     [HasQuotient A B] (b : B) : Type max u v :=
