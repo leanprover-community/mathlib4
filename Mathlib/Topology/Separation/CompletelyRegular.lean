@@ -92,7 +92,9 @@ lemma Topology.IsInducing.completelyRegularSpace
     {Y : Type v} [TopologicalSpace Y] [CompletelyRegularSpace Y]
     {f : X → Y} (hf : IsInducing f) : CompletelyRegularSpace X where
   completely_regular x K hK hxK := by
-    rw [hf.isClosed_iff] at hK; obtain ⟨K, hK, rfl⟩ := hK; rw [mem_preimage] at hxK
+    rw [hf.isClosed_iff] at hK
+    obtain ⟨K, hK, rfl⟩ := hK
+    rw [mem_preimage] at hxK
     obtain ⟨g, hcf, egfx, hgK⟩ := CompletelyRegularSpace.completely_regular _ _ hK hxK
     refine ⟨g ∘ f, hcf.comp hf.continuous, egfx, ?_⟩
     conv => arg 2; equals (1 : Y → ↥I) ∘ f => rfl
