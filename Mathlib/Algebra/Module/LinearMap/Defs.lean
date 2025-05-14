@@ -996,6 +996,8 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 variable {ι : Type*}
 
 open Lean.Parser.Term in
+/-- Lambda notation for linear map, `fun x ↦ₗ[R] f x` constructs `R` linear map for `f : M → M₂`
+for which `IsLinearMap R f` is provable with `fun_prop`. -/
 syntax:max (name:=linearMapLambdaStx) "fun " funBinder+ " ↦ₗ[" term "] " term : term
 
 open Lean.Parser.Term in
@@ -1006,10 +1008,12 @@ macro_rules (kind:=linearMapLambdaStx)
   `(IsLinearMap.mk' (R:=$R) (fun $x => fun $xs* ↦ₗ[$R] $b) (by fun_prop))
 
 open Lean.Parser.Term in
+@[inherit_doc linearMapLambdaStx]
 macro:max "fun " xs:funBinder+ " =>ₗ[" R:term "] " b:term : term =>
   `(fun $xs* ↦ₗ[$R] $b)
 
 open Lean PrettyPrinter Delaborator SubExpr in
+/-- Delaborator for `IsLinearMap.mk' which prints linear map as `fun x ↦ₗ[R] f x`. -/
 @[app_delab IsLinearMap.mk']
 def isLinearMapMkDelab : Delab :=
   whenPPOption getPPNotation <| whenNotPPOption getPPExplicit do

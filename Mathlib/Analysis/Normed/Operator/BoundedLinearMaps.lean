@@ -282,18 +282,28 @@ open IsBoundedLinearMap in
 /-- Tactic that proves `IsLinearMap 𝕜 f ∧ Continuous f` by first trying to call `fun_prop` for
 `IsBoundedLinearMap 𝕜 f` and if that fails it calls `fun_prop` on `IsLinearMap 𝕜 f` and
 `Continuous f` separately. -/
-macro "is_clm_map" : tactic =>
+macro "is_clm" : tactic =>
   `(tactic| (
      first | apply (isLinearMap_and_continuous_iff_isBoundedLinearMap _).2 (by fun_prop)
            | apply And.intro (by fun_prop) (by fun_prop)))
 
-open Lean.Parser.Term in
-/-- Lambda function notation for `ContinuousLinearMap`. -/
-macro:max "fun " x:funBinder " ↦L[" R:term "] " b:term : term =>
-  `(ContinuousLinearMap.mk' $R (fun $x => $b) (by is_clm_map))
 
 open Lean.Parser.Term in
-/-- Lambda function notation for `ContinuousLinearMap`. -/
+/-- Lambda notation for continuous linear map, `fun x ↦L[R] f x` constructs `R` continuous
+linear map for `f : M → M₂` for which either
+  - `IsBoundedLinearMap R f` is provable with `fun_prop`
+  - `IsLinearMap R f` and `Continuous f` is provable with `fun_prop` -/
+syntax:max (name:=clmLambdaStx) "fun " funBinder+ " ↦L[" term "] " term : term
+
+open Lean.Parser.Term in
+macro_rules (kind:=clmLambdaStx)
+| `(fun $x:funBinder ↦L[ $R:term ] $b:term) =>
+  `(ContinuousLinearMap.mk' (R:=$R) (fun $x => $b) (by is_clm))
+| `(fun $x:funBinder $xs:funBinder* ↦L[ $R:term ] $b:term) =>
+  `(fun $x =>L[$R] fun $xs* ↦L[$R] $b)
+
+open Lean.Parser.Term in
+@[inherit_doc clmLambdaStx]
 macro:max "fun " x:funBinder " =>L[" R:term "] " b:term : term =>
   `(fun $x ↦L[$R] $b)
 
@@ -339,19 +349,6 @@ theorem ContinuousLinearMap.mk_continuous
         map_smul' := (hfy x).2,
         cont := by fun_prop : M₂ →L[𝕜] M₃ }) :=
   continuous_clm_apply.2 (fun y ↦ by simp; fun_prop)
-
--- @[fun_prop]
--- theorem ContinuousLinearMap.mk'_continuous
---     {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
---     {M : Type*} [TopologicalSpace M]
---     {M₂ : Type*} [NormedAddCommGroup M₂] [NormedSpace 𝕜 M₂]
---     {M₃ : Type*} [NormedAddCommGroup M₃] [NormedSpace 𝕜 M₃]
---     [FiniteDimensional 𝕜 M₂]
---     (f : M → M₂ → M₃)
---     (hfy : ∀ x, IsLinearMap 𝕜 (f x ·))
---     (hf : Continuous ↿f) :
---     Continuous (fun x => fun y =>L[𝕜] f x y) :=
---   ContinuousLinearMap.mk_continuous f hfy hf
 
 @[fun_prop]
 theorem ContinuousLinearMap.isLinearMap_apply
