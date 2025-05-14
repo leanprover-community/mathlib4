@@ -365,7 +365,7 @@ where
 
 lemma primrec_pappAck_step : Primrec pappAck.step := by
   apply_rules
-    [Code.primrec_curry.comp, Code.primrec_prec.comp, Code.primrec_comp.comp,
+    [Code.primrec₂_curry.comp, Code.primrec₂_prec.comp, Code.primrec₂_comp.comp,
       _root_.Primrec.id, Primrec.const]
 
 @[simp]
