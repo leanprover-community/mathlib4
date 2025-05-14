@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.AbsoluteValue.Equivalence
+import Mathlib.Analysis.Normed.Field.WithAbs
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
