@@ -262,8 +262,8 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
     simpa
 
 /--
-If `f` is meromorphic over `ℝ`, then functions of the form `log ‖f ·‖` are
-interval integrable.
+If `f` is meromorphic on a compact interval, then functions of the form `log ‖f ·‖` are
+interval integrable on this interval.
 -/
 @[simp]
 theorem intervalIntegrable_log_norm_meromorphicOn {E : Type*} [NormedAddCommGroup E]
