@@ -101,7 +101,6 @@ noncomputable def expHom (n : ℕ) [NeZero n] : AddChar (ZMod n) (rootsOfUnity n
   map_zero_eq_one' := by
     simp only [AddChar.map_zero_eq_one, map_one, Subgroup.mk_eq_one]
   map_add_eq_mul' _ _:= by
-    simp_rw [AddChar.map_add_eq_mul]
-    simp_all only [map_mul, MulMemClass.mk_mul_mk]
+    simp_rw [AddChar.map_add_eq_mul, map_mul, MulMemClass.mk_mul_mk]
 
 end ZMod
