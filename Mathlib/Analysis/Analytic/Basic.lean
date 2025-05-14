@@ -994,8 +994,8 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     (hf : HasFPowerSeriesOnBall f p x r) (h : (r' : ℝ≥0∞) < r) :
     ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
       ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n := by
-   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
-   simpa using hf.uniform_geometric_approx' h
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  simpa using hf.uniform_geometric_approx' h
 
 /-- If a function admits a power series expansion within a set in a ball, then it is exponentially
 close to the partial sums of this power series on strict subdisks of the disk of convergence. -/

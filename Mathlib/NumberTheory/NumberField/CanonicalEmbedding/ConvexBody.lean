@@ -18,19 +18,19 @@ associated to a number field of signature `K` and proves several existence theor
 ## Main definitions and results
 
 * `NumberField.mixedEmbedding.convexBodyLT`: The set of points `x` such that `‖x w‖ < f w` for all
-infinite places `w` with `f : InfinitePlace K → ℝ≥0`.
+  infinite places `w` with `f : InfinitePlace K → ℝ≥0`.
 
 * `NumberField.mixedEmbedding.convexBodySum`: The set of points `x` such that
-`∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`
+  `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`
 
 * `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_lt`: Let `I` be a fractional ideal of `K`.
-Assume that `f` is such that `minkowskiBound K I < volume (convexBodyLT K f)`, then there exists a
-nonzero algebraic number `a` in `I` such that `w a < f w` for all infinite places `w`.
+  Assume that `f` is such that `minkowskiBound K I < volume (convexBodyLT K f)`, then there exists a
+  nonzero algebraic number `a` in `I` such that `w a < f w` for all infinite places `w`.
 
 * `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_of_norm_le`: Let `I` be a fractional ideal
-of `K`. Assume that `B` is such that `minkowskiBound K I < volume (convexBodySum K B)` (see
-`convexBodySum_volume` for the computation of this volume), then there exists a nonzero algebraic
-number `a` in `I` such that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`.
+  of `K`. Assume that `B` is such that `minkowskiBound K I < volume (convexBodySum K B)` (see
+  `convexBodySum_volume` for the computation of this volume), then there exists a nonzero algebraic
+  number `a` in `I` such that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`.
 
 ## Tags
 
@@ -256,7 +256,7 @@ norm and it used to define `convexBodySum`. -/
 noncomputable abbrev convexBodySumFun (x : mixedSpace K) : ℝ := ∑ w, mult w * normAtPlace w x
 
 theorem convexBodySumFun_apply (x : mixedSpace K) :
-    convexBodySumFun x = ∑ w,  mult w * normAtPlace w x := rfl
+    convexBodySumFun x = ∑ w, mult w * normAtPlace w x := rfl
 
 open scoped Classical in
 theorem convexBodySumFun_apply' (x : mixedSpace K) :
@@ -602,7 +602,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   obtain ⟨a, ha, rfl⟩ := hx
   refine ⟨a, ha, by simpa using h_nz, ?_⟩
   rw [← rpow_natCast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
-      (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
+      (rpow_nonneg h2 _) h1, ← rpow_mul h2, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
       (ne_of_gt finrank_pos)), rpow_one, le_div_iff₀' (Nat.cast_pos.mpr finrank_pos)]
   refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
   rw [← le_div_iff₀' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]

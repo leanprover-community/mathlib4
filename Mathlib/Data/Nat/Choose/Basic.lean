@@ -25,12 +25,12 @@ see `Fintype.card_powersetCard` in `Mathlib.Data.Finset.Powerset`.
   factorial. This is used to prove `Nat.choose_le_pow` and variants. We provide similar statements
   for the ascending factorial.
 * `Nat.multichoose`: whereas `choose` counts combinations, `multichoose` counts multicombinations.
-The fact that this is indeed the correct counting function for multisets is proved in
-`Sym.card_sym_eq_multichoose` in `Data.Sym.Card`.
+  The fact that this is indeed the correct counting function for multisets is proved in
+  `Sym.card_sym_eq_multichoose` in `Data.Sym.Card`.
 * `Nat.multichoose_eq` : a proof that `multichoose n k = (n + k - 1).choose k`.
-This is central to the "stars and bars" technique in informal mathematics, where we switch between
-counting multisets of size `k` over an alphabet of size `n` to counting strings of `k` elements
-("stars") separated by `n-1` dividers ("bars").  See `Data.Sym.Card` for more detail.
+  This is central to the "stars and bars" technique in informal mathematics, where we switch between
+  counting multisets of size `k` over an alphabet of size `n` to counting strings of `k` elements
+  ("stars") separated by `n-1` dividers ("bars").  See `Data.Sym.Card` for more detail.
 
 ## Tags
 

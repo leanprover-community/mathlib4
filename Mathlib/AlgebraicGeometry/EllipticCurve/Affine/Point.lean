@@ -33,29 +33,29 @@ This file defines the group law on nonsingular points `W⟮F⟯` in affine coord
 
 ## Main definitions
 
- * `WeierstrassCurve.Affine.CoordinateRing`: the affine coordinate ring `F[W]`.
- * `WeierstrassCurve.Affine.CoordinateRing.basis`: the power basis of `F[W]` over `F[X]`.
- * `WeierstrassCurve.Affine.Point`: a nonsingular point in affine coordinates.
- * `WeierstrassCurve.Affine.Point.neg`: the negation of a nonsingular point in affine coordinates.
- * `WeierstrassCurve.Affine.Point.add`: the addition of a nonsingular point in affine coordinates.
+* `WeierstrassCurve.Affine.CoordinateRing`: the affine coordinate ring `F[W]`.
+* `WeierstrassCurve.Affine.CoordinateRing.basis`: the power basis of `F[W]` over `F[X]`.
+* `WeierstrassCurve.Affine.Point`: a nonsingular point in affine coordinates.
+* `WeierstrassCurve.Affine.Point.neg`: the negation of a nonsingular point in affine coordinates.
+* `WeierstrassCurve.Affine.Point.add`: the addition of a nonsingular point in affine coordinates.
 
 ## Main statements
 
- * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the affine coordinate ring
+* `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the affine coordinate ring
     of a Weierstrass curve is an integral domain.
- * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
+* `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
     element in the affine coordinate ring in terms of its power basis.
- * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
+* `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
     coordinates forms an abelian group under addition.
 
 ## Notations
 
- * `W⟮K⟯`: the group of nonsingular points on `W` base changed to `K`.
+* `W⟮K⟯`: the group of nonsingular points on `W` base changed to `K`.
 
 ## References
 
- * [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
- * https://drops.dagstuhl.de/storage/00lipics/lipics-vol268-itp2023/LIPIcs.ITP.2023.6/LIPIcs.ITP.2023.6.pdf
+* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+* https://drops.dagstuhl.de/storage/00lipics/lipics-vol268-itp2023/LIPIcs.ITP.2023.6/LIPIcs.ITP.2023.6.pdf
 
 ## Tags
 

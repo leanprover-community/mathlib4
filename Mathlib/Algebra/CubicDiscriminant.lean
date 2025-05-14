@@ -13,18 +13,18 @@ This file defines cubic polynomials over a semiring and their discriminants over
 
 ## Main definitions
 
- * `Cubic`: the structure representing a cubic polynomial.
- * `Cubic.disc`: the discriminant of a cubic polynomial.
+* `Cubic`: the structure representing a cubic polynomial.
+* `Cubic.disc`: the discriminant of a cubic polynomial.
 
 ## Main statements
 
- * `Cubic.disc_ne_zero_iff_roots_nodup`: the cubic discriminant is not equal to zero if and only if
+* `Cubic.disc_ne_zero_iff_roots_nodup`: the cubic discriminant is not equal to zero if and only if
     the cubic has no duplicate roots.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Cubic_equation
- * https://en.wikipedia.org/wiki/Discriminant
+* https://en.wikipedia.org/wiki/Cubic_equation
+* https://en.wikipedia.org/wiki/Discriminant
 
 ## Tags
 

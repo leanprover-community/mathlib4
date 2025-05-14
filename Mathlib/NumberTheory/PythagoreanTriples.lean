@@ -80,8 +80,8 @@ theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
 
 /-- A Pythagorean triple `x, y, z` is “classified” if there exist integers `k, m, n` such that
 either
- * `x = k * (m ^ 2 - n ^ 2)` and `y = k * (2 * m * n)`, or
- * `x = k * (2 * m * n)` and `y = k * (m ^ 2 - n ^ 2)`. -/
+* `x = k * (m ^ 2 - n ^ 2)` and `y = k * (2 * m * n)`, or
+* `x = k * (2 * m * n)` and `y = k * (m ^ 2 - n ^ 2)`. -/
 @[nolint unusedArguments]
 def IsClassified (_ : PythagoreanTriple x y z) :=
   ∃ k m n : ℤ,
@@ -91,8 +91,8 @@ def IsClassified (_ : PythagoreanTriple x y z) :=
 
 /-- A primitive Pythagorean triple `x, y, z` is a Pythagorean triple with `x` and `y` coprime.
  Such a triple is “primitively classified” if there exist coprime integers `m, n` such that either
- * `x = m ^ 2 - n ^ 2` and `y = 2 * m * n`, or
- * `x = 2 * m * n` and `y = m ^ 2 - n ^ 2`.
+* `x = m ^ 2 - n ^ 2` and `y = 2 * m * n`, or
+* `x = 2 * m * n` and `y = m ^ 2 - n ^ 2`.
 -/
 @[nolint unusedArguments]
 def IsPrimitiveClassified (_ : PythagoreanTriple x y z) :=

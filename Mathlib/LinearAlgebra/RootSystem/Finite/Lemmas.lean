@@ -16,14 +16,14 @@ root pairings.
 
 ## Main results:
 
- * `RootPairing.coxeterWeightIn_mem_set_of_isCrystallographic`: the Coxeter weights of a finite
-   crystallographic root pairing belong to the set `{0, 1, 2, 3, 4}`.
- * `RootPairing.root_sub_root_mem_of_pairingIn_pos`: if `α ≠ β` are both roots of a finite
-   crystallographic root pairing, and the pairing of `α` with `β` is positive, then `α - β` is also
-   a root.
- * `RootPairing.root_add_root_mem_of_pairingIn_neg`: if `α ≠ -β` are both roots of a finite
-   crystallographic root pairing, and the pairing of `α` with `β` is negative, then `α + β` is also
-   a root.
+* `RootPairing.coxeterWeightIn_mem_set_of_isCrystallographic`: the Coxeter weights of a finite
+  crystallographic root pairing belong to the set `{0, 1, 2, 3, 4}`.
+* `RootPairing.root_sub_root_mem_of_pairingIn_pos`: if `α ≠ β` are both roots of a finite
+  crystallographic root pairing, and the pairing of `α` with `β` is positive, then `α - β` is also
+  a root.
+* `RootPairing.root_add_root_mem_of_pairingIn_neg`: if `α ≠ -β` are both roots of a finite
+  crystallographic root pairing, and the pairing of `α` with `β` is negative, then `α + β` is also
+  a root.
 
 -/
 

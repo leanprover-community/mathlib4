@@ -15,7 +15,7 @@ This file contains basics about the separable degree of a polynomial.
 ## Main results
 
 - `IsSeparableContraction`: is the condition that, for `g` a separable polynomial, we have that
-   `g(x^(q^m)) = f(x)` for some `m : ℕ`.
+  `g(x^(q^m)) = f(x)` for some `m : ℕ`.
 - `HasSeparableContraction`: the condition of having a separable contraction
 - `HasSeparableContraction.degree`: the separable degree, defined as the degree of some
   separable contraction

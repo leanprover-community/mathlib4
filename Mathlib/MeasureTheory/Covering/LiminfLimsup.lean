@@ -13,13 +13,13 @@ carrying a uniformly locally doubling measure.
 
 ## Main results:
 
- * `blimsup_cthickening_mul_ae_eq`: the limsup of the closed thickening of a sequence of subsets
-   of a metric space is unchanged almost everywhere for a uniformly locally doubling measure if the
-   sequence of distances is multiplied by a positive scale factor. This is a generalisation of a
-   result of Cassels, appearing as Lemma 9 on page 217 of
-   [J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*](cassels1950).
- * `blimsup_thickening_mul_ae_eq`: a variant of `blimsup_cthickening_mul_ae_eq` for thickenings
-   rather than closed thickenings.
+* `blimsup_cthickening_mul_ae_eq`: the limsup of the closed thickening of a sequence of subsets
+  of a metric space is unchanged almost everywhere for a uniformly locally doubling measure if the
+  sequence of distances is multiplied by a positive scale factor. This is a generalisation of a
+  result of Cassels, appearing as Lemma 9 on page 217 of
+  [J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*](cassels1950).
+* `blimsup_thickening_mul_ae_eq`: a variant of `blimsup_cthickening_mul_ae_eq` for thickenings
+  rather than closed thickenings.
 
 -/
 

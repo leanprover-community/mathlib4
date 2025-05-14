@@ -188,11 +188,11 @@ This needs choice, since it can be used to prove that every vector space has a b
     have hchoose : ∀ e, e ∈ J → ∃ I, I ∈ Is ∧ (e : α) ∈ I := fun _ he ↦ mem_sUnion.1 <| hJ he
     choose! f hf using hchoose
     refine J.eq_empty_or_nonempty.elim (fun hJ ↦ hJ ▸ indep_empty) (fun hne ↦ ?_)
-    obtain ⟨x, hxJ, hxmax⟩ := Finite.exists_maximal_wrt f _ hJfin hne
+    obtain ⟨x, hxJ, hxmax⟩ := Finite.exists_maximalFor f _ hJfin hne
     refine indep_subset (hIs (hf x hxJ).1).1 fun y hyJ ↦ ?_
     obtain (hle | hle) := hchain.total (hf _ hxJ).1 (hf _ hyJ).1
-    · rw [hxmax _ hyJ hle]; exact (hf _ hyJ).2
-    exact hle (hf _ hyJ).2
+    · exact hxmax hyJ hle <| (hf _ hyJ).2
+    · exact hle (hf _ hyJ).2
   subset_ground := subset_ground
 
 @[simp] theorem ofFinitary_indep (E : Set α) (Indep : Set α → Prop)
@@ -262,7 +262,7 @@ provided independence is determined by its behaviour on finite sets. -/
       have hE₀fin : E₀.Finite := (hI₀fin.union hB₀fin).insert e
 
       -- Extend `B₀` to a maximal independent subset of `I₀ ∪ B₀ + e`
-      obtain ⟨J, ⟨hB₀J, hJ, hJss⟩, hJmax⟩ := Finite.exists_maximal_wrt (f := id)
+      obtain ⟨J, ⟨hB₀J, hJ, hJss⟩, hJmax⟩ := Finite.exists_maximalFor (f := id)
         (s := {J | B₀ ⊆ J ∧ Indep J ∧ J ⊆ E₀})
         (hE₀fin.finite_subsets.subset (by simp))
         ⟨B₀, Subset.rfl, hB₀, subset_union_right.trans (subset_insert _ _)⟩
@@ -279,8 +279,8 @@ provided independence is determined by its behaviour on finite sets. -/
         refine not_lt.1 fun hlt ↦ ?_
         obtain ⟨f, hfI, hfJ, hfi⟩ := indep_aug hJ hJfin heI₀i (hI₀fin.insert e) hlt
         have hfE₀ : f ∈ E₀ := mem_of_mem_of_subset hfI (insert_subset_insert subset_union_left)
-        refine hfJ (insert_eq_self.1 <| Eq.symm (hJmax _
-          ⟨hB₀J.trans <| subset_insert _ _,hfi,insert_subset hfE₀ hJss⟩ (subset_insert _ _)))
+        exact hfJ <| insert_eq_self.1 <| le_imp_eq_iff_le_imp_le.2 (hJmax
+          ⟨hB₀J.trans <| subset_insert _ _, hfi, insert_subset hfE₀ hJss⟩) (subset_insert _ _)
 
       -- But this means `|I₀| < |J|`, and extending `I₀` into `J` gives a contradiction
       rw [ncard_insert_of_not_mem heI₀ hI₀fin, ← Nat.lt_iff_add_one_le] at hcard
@@ -314,13 +314,13 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
     obtain ⟨n₀, heq, hle⟩ := hP Y hY
     rwa [ncard_def, heq, ENat.toNat_coe]
   obtain ⟨Y, ⟨hY, hIY, hYX⟩, hY'⟩ :=
-    Finite.exists_maximal_wrt' ncard _ hfin ⟨I, hI, rfl.subset, hIX⟩
+    Finite.exists_maximalFor' ncard _ hfin ⟨I, hI, rfl.subset, hIX⟩
 
   refine ⟨Y, hIY, ⟨hY, hYX⟩, fun K ⟨hPK, hKX⟩ hYK ↦ ?_⟩
   have hKfin : K.Finite := finite_of_encard_le_coe (hP K hPK)
 
   refine (eq_of_subset_of_ncard_le hYK ?_ hKfin).symm.subset
-  rw [hY' K ⟨hPK, hIY.trans hYK, hKX⟩ (ncard_le_ncard hYK hKfin)]
+  exact hY' ⟨hPK, hIY.trans hYK, hKX⟩ (ncard_le_ncard hYK hKfin)
 
 /-- If there is an absolute upper bound on the size of an independent set, then the maximality axiom
   isn't needed to define a matroid by independent sets. -/

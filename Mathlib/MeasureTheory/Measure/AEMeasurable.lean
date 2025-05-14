@@ -29,12 +29,11 @@ theorem Subsingleton.aemeasurable [Subsingleton α] : AEMeasurable f μ :=
 theorem aemeasurable_of_subsingleton_codomain [Subsingleton β] : AEMeasurable f μ :=
   (measurable_of_subsingleton_codomain f).aemeasurable
 
-@[simp, measurability]
+@[simp, fun_prop, measurability]
 theorem aemeasurable_zero_measure : AEMeasurable f (0 : Measure α) := by
   nontriviality α; inhabit α
   exact ⟨fun _ => f default, measurable_const, rfl⟩
 
-@[fun_prop]
 theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤ m0) :
     @AEMeasurable α α m m0 id μ :=
   @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
@@ -170,12 +169,12 @@ theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurab
     map_apply_of_aemeasurable (hg.comp_aemeasurable hf) hs, preimage_comp]
 
 @[fun_prop, measurability]
-protected theorem fst {f : α → β × γ} (hf :AEMeasurable f μ) :
+protected theorem fst {f : α → β × γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x ↦ (f x).1) μ :=
   measurable_fst.comp_aemeasurable hf
 
 @[fun_prop, measurability]
-protected theorem snd {f : α → β × γ} (hf :AEMeasurable f μ) :
+protected theorem snd {f : α → β × γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x ↦ (f x).2) μ :=
   measurable_snd.comp_aemeasurable hf
 
