@@ -22,9 +22,9 @@ additionally have the following data:
 
 * `F` should be a topological space;
 * There should be a topology on `Bundle.TotalSpace F E`, for which the projection to `B` is
-a fiber bundle with fiber `F` (in particular, each fiber `E x` is homeomorphic to `F`);
+  a fiber bundle with fiber `F` (in particular, each fiber `E x` is homeomorphic to `F`);
 * For each `x`, the fiber `E x` should be a topological space, and the injection
-from `E x` to `Bundle.TotalSpace F E` should be an embedding;
+  from `E x` to `Bundle.TotalSpace F E` should be an embedding;
 * There should be a distinguished set of bundle trivializations, the "trivialization atlas"
 * There should be a choice of bundle trivialization at each point, which belongs to this atlas.
 
@@ -126,10 +126,10 @@ gluing and quotienting construction above, and to declare above each `x` that th
 but thinking that it corresponds to the `F` coming from the choice of one trivialization around `x`.
 This has several practical advantages:
 * without any work, one gets a topological space structure on the fiber. And if `F` has more
-structure it is inherited for free by the fiber.
+  structure it is inherited for free by the fiber.
 * In the case of the tangent bundle of manifolds, this implies that on vector spaces the derivative
-(from `F` to `F`) and the manifold derivative (from `TangentSpace I x` to `TangentSpace I' (f x)`)
-are equal.
+  (from `F` to `F`) and the manifold derivative (from `TangentSpace I x` to `TangentSpace I' (f x)`)
+  are equal.
 
 A drawback is that some silly constructions will typecheck: in the case of the tangent bundle, one
 can add two vectors in different tangent spaces (as they both are elements of `F` from the point of
