@@ -214,24 +214,33 @@ end HeightOneSpectrum
 
 section TrivialOnConstants
 
-variable {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ] {v : Valuation (RatFunc K) Γ}
+variable {Γ : Type*}
 
 open Valuation
 
 /-- If a valuation `v` is trivial on constants then for every `n : ℕ` the valuation of
-`(monomial n a)` is equal to `(v (RatFunc.X)) ^ n`. -/
-lemma valuation_monomial_eq_valuation_X_pow
-    (hv : ∀ a : K, a ≠ 0 → v (algebraMap K (RatFunc K) a) = 1) (n : ℕ) {a : K} (ha : a ≠ 0) :
-    v (monomial n a) = v RatFunc.X ^ n := by
+`(monomial n a)` is equal to `(v RatFunc.X) ^ n`. -/
+lemma valuation_monomial_eq_valuation_X_pow [LinearOrderedCommMonoidWithZero Γ]
+    {v : Valuation (RatFunc K) Γ} (hv : ∀ a : K, a ≠ 0 → v (algebraMap K (RatFunc K) a) = 1)
+    (n : ℕ) {a : K} (ha : a ≠ 0) : v (monomial n a) = v RatFunc.X ^ n := by
   have h : algebraMap _ (RatFunc K) (C a) = algebraMap _ _ a := rfl
   simp only [RatFunc.coePolynomial, ← C_mul_X_pow_eq_monomial, _root_.map_mul, _root_.map_pow,
     RatFunc.algebraMap_X, h, hv a ha, one_mul]
+
+/-- If a valuation `v` is trivial on constants then for every `n : ℕ` the valuation of
+`1 / (monomial n a)` (as an element of the field of rational functions) is equal
+to `(v RatFunc.X) ^ (- n)`. -/
+lemma valuation_inv_monomial_eq_valuation_X_zpow [LinearOrderedCommGroupWithZero Γ]
+    {v : Valuation (RatFunc K) Γ} (hv : ∀ a : K, a ≠ 0 → v (algebraMap K (RatFunc K) a) = 1)
+    (n : ℕ) {a : K} (ha : a ≠ 0) : v (1 / monomial n a) = v RatFunc.X ^ (- (n : ℤ)) := by
+  simpa using valuation_monomial_eq_valuation_X_pow _ hv n ha
 
 /-- If a valuation `v` is trivial on constants and `1 < v RatFunc.X` then for every polynomial `p`,
 `v p = v RatFunc.X ^ p.natDegree`.
 
 Note: The condition `1 < v RatFunc.X` is typically satisfied by the valuation at infinity. -/
 theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X
+    [LinearOrderedCommMonoidWithZero Γ] {v : Valuation (RatFunc K) Γ}
     [Nontrivial Γ] [PosMulStrictMono Γ] (hlt : 1 < v RatFunc.X)
     (h : ∀ a : K, a ≠ 0 → v (algebraMap K (RatFunc K) a) = 1) {p : Polynomial K} (hp : p ≠ 0) :
     v p = v RatFunc.X ^ p.natDegree := by
@@ -252,9 +261,9 @@ theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X
 
 /-- If a valuation `v` is trivial on constants and `v RatFunc.X ≤ 1` then `for every polynomial `p`,
 `v p ≤ 1`. -/
-theorem valuation_le_one_of_valuation_X_le_one
-    (h : ∀ a : K, a ≠ 0 → v (algebraMap K (RatFunc K) a) = 1) (hle : v RatFunc.X ≤ 1) (p : K[X]) :
-    v p ≤ 1 := by
+theorem valuation_le_one_of_valuation_X_le_one [LinearOrderedCommMonoidWithZero Γ]
+    {v : Valuation (RatFunc K) Γ} (h : ∀ a : K, a ≠ 0 → v (algebraMap K (RatFunc K) a) = 1)
+    (hle : v RatFunc.X ≤ 1) (p : K[X]) : v p ≤ 1 := by
   rw [as_sum_range p, RatFunc.coePolynomial, map_sum]
   apply map_sum_le v
   intro i _
