@@ -113,7 +113,7 @@ theorem ofFinsupp_injective :
     Function.Injective (ofFinsupp : Finsupp _ _ → SkewMonoidAlgebra k G) :=
   fun _ _ ↦ congr_arg toFinsupp
 
-/-- A more convenient spelling of `SkewMonoidAlgebra.ofFinsupp_injective` in terms of `Iff`. -/
+/-- A variant of `SkewMonoidAlgebra.ofFinsupp_injective` in terms of `Iff`. -/
 theorem ofFinsupp_inj {a b} : (⟨a⟩ : SkewMonoidAlgebra k G) = ⟨b⟩ ↔ a = b :=
   ofFinsupp_injective.eq_iff
 
@@ -491,10 +491,10 @@ theorem mapDomain_add {G' : Type*} {f : G → G'} {v₁ v₂ : SkewMonoidAlgebra
 theorem mapDomain_sum {k' G' : Type*} [AddCommMonoid k'] {f : G → G'} {s : SkewMonoidAlgebra k' G}
     {v : G → k' → SkewMonoidAlgebra k G} :
     mapDomain f (s.sum v) = s.sum fun a b ↦ mapDomain f (v a b) :=
-    map_sum
-    { toFun := mapDomain f
-      map_zero' := mapDomain_zero
-      map_add' _ _ := mapDomain_add: SkewMonoidAlgebra k G →+ SkewMonoidAlgebra k G'} _ _
+  map_sum
+  { toFun := mapDomain f
+    map_zero' := mapDomain_zero
+    map_add' _ _ := mapDomain_add: SkewMonoidAlgebra k G →+ SkewMonoidAlgebra k G'} _ _
 
 theorem sum_mapDomain_index {G G' k' : Type*}
     [AddCommMonoid k'] {f : G → G'} {s : SkewMonoidAlgebra k G} {h : G' → k → k'}
