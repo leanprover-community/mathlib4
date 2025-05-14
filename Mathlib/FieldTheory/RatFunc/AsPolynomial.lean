@@ -240,7 +240,7 @@ Note: The condition `1 < v RatFunc.X` is typically satisfied by the valuation at
 theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X
     [LinearOrderedCommMonoidWithZero Γ] {v : Valuation (RatFunc K) Γ}
     [Nontrivial Γ] [PosMulStrictMono Γ] (hlt : 1 < v RatFunc.X)
-    (h : ∀ a : K, a ≠ 0 → v (C a) = 1) {p : Polynomial K} (hp : p ≠ 0) :
+    (h : ∀ a : K, a ≠ 0 → v (C a) = 1) {p : K[X]} (hp : p ≠ 0) :
     v p = v RatFunc.X ^ p.natDegree := by
   replace h : ∀ a : K, a ≠ 0 → v (RatFunc.C a) = 1 := h
   rw [RatFunc.coePolynomial,
