@@ -76,6 +76,13 @@ theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Modu
     exact hinj congr($this i)
   simpa [Finsupp.linearCombination, f, Finsupp.sum_mapRange_index]
 
+variable (R) in
+theorem LinearIndependent.restrict_scalars' [Semiring K] [SMulWithZero R K] [Module K M]
+    [IsScalarTower R K M] [FaithfulSMul R K] [IsScalarTower R K K] [IsScalarTower R K M]
+    {v : ι → M} (li : LinearIndependent K v) :
+    LinearIndependent R v :=
+  restrict_scalars ((faithfulSMul_iff_injective_smul_one R K).mp inferInstance) li
+
 /-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
     spans a submodule disjoint from the kernel of `f`.
 TODO : `LinearIndepOn` version. -/
