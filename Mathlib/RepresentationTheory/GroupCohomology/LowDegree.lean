@@ -225,9 +225,13 @@ theorem comp_dTwo_eq :
 theorem dZero_comp_dOne : dZero A ≫ dOne A = 0 := by
   simp [(Iso.eq_inv_comp _).2 (comp_dOne_eq A), (Iso.eq_inv_comp _).2 (comp_dZero_eq A)]
 
+@[deprecated (since := "2025-05-14")] alias dOne_comp_dZero := dZero_comp_dOne
+
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem dOne_comp_dTwo : dOne A ≫ dTwo A = 0 := by
   simp [(Iso.eq_inv_comp _).2 (comp_dOne_eq A), (Iso.eq_inv_comp _).2 (comp_dTwo_eq A)]
+
+@[deprecated (since := "2025-05-14")] alias dTwo_comp_dOne := dOne_comp_dTwo
 
 open ShortComplex
 
