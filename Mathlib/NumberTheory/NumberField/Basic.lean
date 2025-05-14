@@ -13,10 +13,10 @@ import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 This file defines a number field and the ring of integers corresponding to it.
 
 ## Main definitions
- - `NumberField` defines a number field as a field which has characteristic zero and is finite
-    dimensional over ℚ.
- - `RingOfIntegers` defines the ring of integers (or number ring) corresponding to a number field
-    as the integral closure of ℤ in the number field.
+- `NumberField` defines a number field as a field which has characteristic zero and is finite
+  dimensional over ℚ.
+- `RingOfIntegers` defines the ring of integers (or number ring) corresponding to a number field
+  as the integral closure of ℤ in the number field.
 
 ## Implementation notes
 The definitions that involve a field of fractions choose a canonical field of fractions,
