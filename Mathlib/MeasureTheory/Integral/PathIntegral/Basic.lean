@@ -314,7 +314,7 @@ theorem pathIntegralFun_zero : pathIntegralFun (0 : E → E →L[𝕜] F) γ = 0
   ext; simp [pathIntegralFun]
 
 @[simp]
-theorem pathIntegralFun_fun_zero : pathIntegralFun (fun _ ↦ 0 : E → E →L[𝕜] F) γ = 0 := 
+theorem pathIntegralFun_fun_zero : pathIntegralFun (fun _ ↦ 0 : E → E →L[𝕜] F) γ = 0 :=
   pathIntegralFun_zero
 
 theorem PathIntegrable.zero : PathIntegrable (0 : E → E →L[𝕜] F) γ := by
