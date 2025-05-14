@@ -59,7 +59,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 abbrev Dual : Type _ := E →L[𝕜] 𝕜
 
 /-- The inclusion of a normed space in its double (topological) dual, considered
-   as a bounded linear map. -/
+as a bounded linear map. -/
 def inclusionInDoubleDual : E →L[𝕜] Dual 𝕜 (Dual 𝕜 E) :=
   ContinuousLinearMap.apply 𝕜 𝕜
 

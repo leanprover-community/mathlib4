@@ -17,14 +17,14 @@ some convenience lemmas for characterising closed intervals in certain concrete 
 `ℕ`, and `Fin n`.
 
 ## Main results:
- * `Set.ordConnected_iff_disjoint_Ioo_empty`: a characterisation of `Set.OrdConnected` for
-   locally-finite linear orders.
- * `Set.Nonempty.ordConnected_iff_of_bdd`: a characterisation of closed intervals for locally-finite
-   conditionally complete linear orders.
- * `Set.Nonempty.ordConnected_iff_of_bdd'`: a characterisation of closed intervals for
-   locally-finite complete linear orders (convenient for `Fin n`).
- * `Set.Nonempty.eq_Icc_iff_nat`: characterisation of closed intervals for `ℕ`.
- * `Set.Nonempty.eq_Icc_iff_int`: characterisation of closed intervals for `ℤ`.
+* `Set.ordConnected_iff_disjoint_Ioo_empty`: a characterisation of `Set.OrdConnected` for
+  locally-finite linear orders.
+* `Set.Nonempty.ordConnected_iff_of_bdd`: a characterisation of closed intervals for locally-finite
+  conditionally complete linear orders.
+* `Set.Nonempty.ordConnected_iff_of_bdd'`: a characterisation of closed intervals for
+  locally-finite complete linear orders (convenient for `Fin n`).
+* `Set.Nonempty.eq_Icc_iff_nat`: characterisation of closed intervals for `ℕ`.
+* `Set.Nonempty.eq_Icc_iff_int`: characterisation of closed intervals for `ℤ`.
 -/
 
 variable {α : Type*} {I : Set α}
