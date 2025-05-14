@@ -84,16 +84,27 @@ theorem intervalIntegrable_iff : IntervalIntegrable f μ a b ↔ IntegrableOn f 
 theorem IntervalIntegrable.def' (h : IntervalIntegrable f μ a b) : IntegrableOn f (Ι a b) μ :=
   intervalIntegrable_iff.mp h
 
-theorem IntervalIntegrable.congr {g : ℝ → E} (hf : IntervalIntegrable f μ a b)
+theorem intervalIntegrable_congr_ae {g : ℝ → E} (h : f =ᵐ[μ.restrict (Ι a b)] g) :
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b := by
+  rw [intervalIntegrable_iff, integrableOn_congr_fun_ae h, intervalIntegrable_iff]
+
+theorem IntervalIntegrable.congr_ae {g : ℝ → E} (hf : IntervalIntegrable f μ a b)
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     IntervalIntegrable g μ a b := by
-  rwa [intervalIntegrable_iff, ← integrableOn_congr_fun_ae h, ← intervalIntegrable_iff]
+  rwa [← intervalIntegrable_congr_ae h]
+
+@[deprecated (since := "2025-05-13")]
+alias IntervalIntegrable.congr := IntervalIntegrable.congr_ae
+
+theorem intervalIntegrable_congr {g : ℝ → E} (h : EqOn f g (Ι a b)) :
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b :=
+  intervalIntegrable_congr_ae <| (ae_restrict_mem measurableSet_uIoc).mono h
 
 /-- Interval integrability is invariant when functions change along discrete sets. -/
 theorem IntervalIntegrable.congr_codiscreteWithin {g : ℝ → E} [NoAtoms μ]
     (h : f =ᶠ[codiscreteWithin (Ι a b)] g) (hf : IntervalIntegrable f μ a b) :
     IntervalIntegrable g μ a b :=
-  hf.congr (ae_restrict_le_codiscreteWithin measurableSet_Ioc h)
+  hf.congr_ae (ae_restrict_le_codiscreteWithin measurableSet_Ioc h)
 
 /-- Interval integrability is invariant when functions change along discrete sets. -/
 theorem intervalIntegrable_congr_codiscreteWithin {g : ℝ → E} [NoAtoms μ]
@@ -141,6 +152,9 @@ theorem intervalIntegrable_const_iff {c : E} :
 theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ] {c : E} :
     IntervalIntegrable (fun _ => c) μ a b :=
   intervalIntegrable_const_iff.2 <| Or.inr measure_Ioc_lt_top
+
+protected theorem IntervalIntegrable.zero : IntervalIntegrable (0 : ℝ → E) μ a b :=
+  intervalIntegrable_const_iff.mpr <| .inl rfl
 
 end
 
