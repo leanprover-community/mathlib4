@@ -7,6 +7,7 @@ Authors: Damiano Testa
 --import Mathlib.Init
 import Mathlib.Tactic.Linter.DeprecatedModule
 import Std.Time.Zoned
+import Lean.Meta.Tactic.TryThis
 -- a comment here to test `keepTrailing
 
 /-!
@@ -84,7 +85,7 @@ Finally, if everything looks correct, adding a final `write` actually generates 
 #create_deprecated_modules 5 "These files are no longer relevant" write
 ```
 -/
-syntax "#create_deprecated_modules" (ppSpace ident)? (ppSpace num)? (ppSpace str)? (&" write")? :
+syntax "#create_deprecated_module " str (ppSpace str)? (&" write")? ppLine :
   command
 
 /-- `processPrettyOneLine log msg` takes as input two strings `log` and `msg`.
@@ -141,16 +142,47 @@ def deprecateFilePath (fname : String) (comment : Option String) :
   msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
   return (msgs, deprecatedFile)
 
+elab_rules : command
+| `(#create_deprecated_module%$tk $fnameStx:str $[$comment:str]? $[write%$write?]?) => do
+  let fname := fnameStx.getString
+  if ← System.FilePath.pathExists fname then
+    logWarningAt fnameStx m!"The file {fname} exists: I cannot deprecate it!"
+    return
+  let (msgs, deprecatedFile) ← deprecateFilePath fname (comment.map (·.getString))
+  let mut msgs : Array MessageData := msgs
+  if write?.isSome then
+    IO.FS.writeFile fname deprecatedFile
+  if write?.isNone then
+    -- We strip trailing comments from `fnameStx` and `comment` to avoid them showing up in the
+    -- regenerated syntax.
+    let fnameStx := ⟨fnameStx.raw.unsetTrailing⟩
+    let comment := comment.map (⟨·.raw.unsetTrailing⟩)
+    let stx ← `(command|#create_deprecated_module $fnameStx:str $[$comment:str]? write)
+    liftTermElabM do Meta.liftMetaM do
+      Meta.Tactic.TryThis.addSuggestion tk
+        { preInfo? := "Confirm that you are happy with the information below before continuing!\n\n"
+          suggestion := stx}
+  logInfoAt tk <| .joinSep msgs.toList "\n"
+
+/-
+Uncomment the `#create_deprecated_modules` line below to get started.
+* `10` should likely be some small number, though its exact value may not be too important;
+* omitting `"a comment here"` is equivalent to using `"Auto-generated deprecation"`
+  while using the empty string `""` eliminates the comment entirely;
+* uncomment `write` only when you are satisfied that the deprecations look correct!
+-/
+#create_deprecated_module "Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean"  "a comment here" --write
+
 run_cmd
   let (msgs, _file) ← deprecateFilePath "Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean" (some "J")
   --logInfo file
   logInfo <| .joinSep msgs.toList "\n"
 
-elab_rules : command
-| `(#create_deprecated_modules%$tk $id:ident $nc:num) => do
-  throwErrorAt tk m!"You can only pass either the module name {id} or \
-              the number {nc} of commits to crawl back, but not both!"
-| `(#create_deprecated_modules%$tk $[$nc:num]? $[$comment:str]? $[write%$write?]?) => do
+elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
+--| `(#create_deprecated_modules%$tk $id:ident $nc:num) => do
+--  throwErrorAt tk m!"You can only pass either the module name {id} or \
+--              the number {nc} of commits to crawl back, but not both!"
+--| `(#create_deprecated_modules%$tk $[$nc:num]? $[$comment:str]? $[write%$write?]?) => do
   let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
   let mut msgs : Array MessageData := #[]
   -- Get the hash and the commit message of the commit at `git log -n`
@@ -175,60 +207,75 @@ elab_rules : command
   let onlyPastFiles := pastFiles.filter fun fil ↦ fil.endsWith ".lean" && !currentFiles.contains fil
   let noFiles := onlyPastFiles.size
   msgs := msgs.push
-    m!"{noFiles} Lean file{if noFiles == 1 then "" else "s"} in 'Mathlib' that no longer exist."
-  let deprecation ← if let some cmt := comment then mkDeprecation cmt.getString else mkDeprecation
-  msgs := msgs.push ""
+    m!"{noFiles} Lean file{if noFiles == 1 then "" else "s"} in 'Mathlib' that no longer exist:"
+  msgs := msgs.push "" ++ onlyPastFiles.toArray.map (m!"  {·}") |>.push ""
+  --let deprecation ← if let some cmt := comment then mkDeprecation cmt.getString else mkDeprecation
+  --msgs := msgs.push ""
   -- Generate a module deprecation for each file that only existed in the past commit.
   for fname in onlyPastFiles do
-    let file ← IO.Process.run {cmd := "git", args := #["show", s!"{pastHash}:{fname}"]}
-    let fileHeader ← getHeader fname file false
-    let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
-    msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
-    if write?.isSome then
-      IO.FS.writeFile fname deprecatedFile
-  if write?.isNone && noFiles != 0 then
+    --let file ← IO.Process.run {cmd := "git", args := #["show", s!"{pastHash}:{fname}"]}
+    --let fileHeader ← getHeader fname file false
+    --let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
+    --msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
+    --if write?.isSome then
+    --  IO.FS.writeFile fname deprecatedFile
+  --if write?.isNone && noFiles != 0 then
     -- We strip trailing comments from `nc` and `comment` to avoid them showing up in the
     -- regenerated syntax.
-    let nc := nc.map (⟨·.raw.unsetTrailing⟩)
-    let comment := comment.map (⟨·.raw.unsetTrailing⟩)
-    let stx ← `(command|#create_deprecated_modules $[$nc:num]? $[$comment:str]? write)
+    --let nc := nc.map (⟨·.raw.unsetTrailing⟩)
+    --let comment := comment.map (⟨·.raw.unsetTrailing⟩)
+    let fnameStx := Syntax.mkStrLit fname
+    let cmtStx := Syntax.mkStrLit "Reason for removal"
+    let stx ← `(command|-- hi
+    #create_deprecated_module $fnameStx)
+
+    let stxWithCmt ← `(command|#create_deprecated_module $fnameStx $cmtStx)
+    --let ref ← getRef
+    --let stx1 : Syntax :=  if let .node si k args := stx.raw then
+    --                      if let .original hs hp ts tp := ref.getHeadInfo then
+    --                        dbg_trace "here! '{(hs.startPos, hs.stopPos, ref.getTailPos?.get!)}'"
+    --                        .node (.original {hs with stopPos := ref.getTailPos?.get!} hp ts tp) k args else stx.raw
+    --                      else
+    --                      --let info := ref.getTailInfo
+    --                      --if let .node orinfo _ _ :=
+    --                        stx.raw
+    --logInfo <| InspectSyntax.viewTreeWithBars stx1
+    --logInfo stx1
+    --dbg_trace stx1
+    --dbg_trace stx.raw.updateTrailing "hello".toSubstring
+    let ref := .ofRange {tk.getRange?.get! with stop := tk.getPos?.get!}
+
+    liftTermElabM do Meta.liftMetaM do
+      Meta.Tactic.TryThis.addSuggestions
+        (origSpan? := some ref)
+        --(header := "Try these: Clicking on the suggestions below will *not* remove the \
+        --          `#find_delete_files` command, so you can click several of them.")
+        tk #[
+          { preInfo? := s!"Deprecate with 'Auto-generated deprecation' as a comment.\n\n"
+            suggestion := (⟨stx.raw.updateTrailing "hello".toSubstring⟩ : TSyntax `command)
+            postInfo? := "\n"},
+          { preInfo? := s!"Deprecate with a custom comment (use `\"\"` for no comment).\n\n"
+            suggestion := stxWithCmt
+            postInfo? := "\nClicking on the suggestions above will *not* remove the \
+                          `#find_delete_files` command, so you can click several of them."},
+        ]
+
     msgs := msgs.push
-      m!"The files were not deprecated. Use '{stx}' if you wish to deprecate them."
+      m!"The file was not deprecated. Use{indentD stx}\nor{indentD stxWithCmt}\n\
+        if you wish to deprecate this file."
   logInfoAt tk <| .joinSep msgs.toList "\n"
-| `(#create_deprecated_modules%$tk $id:ident $[$comment:str]? $[write%$write?]?) => do
-  let modName := id.getId
-  let srcPath ← getSrcSearchPath
-  if let some path := ← srcPath.findModuleWithExt "lean" modName then
-    logWarningAt id m!"The file {path} exists: I cannot deprecate it!"
-    return
-  let fname := System.mkFilePath (modName.components.map (·.toString)) |>.addExtension "lean" |>.toString
-  let (msgs, deprecatedFile) ← deprecateFilePath fname (comment.map (·.getString))
-  let mut msgs : Array MessageData := msgs
-  if write?.isSome then
-    IO.FS.writeFile fname deprecatedFile
-  if write?.isNone then
-    -- We strip trailing comments from `id` and `comment` to avoid them showing up in the
-    -- regenerated syntax.
-    let id := ⟨id.raw.unsetTrailing⟩
-    let comment := comment.map (⟨·.raw.unsetTrailing⟩)
-    let stx ← `(command|#create_deprecated_modules $id:ident $[$comment:str]? write)
-    msgs := msgs.push
-      m!"The file {fname} was not deprecated. Use '{stx}' if you wish to deprecate it."
-  logInfoAt tk <| .joinSep msgs.toList "\n"
+
+#create_deprecated_module "Mathlib/Algebra/Polynomial/ofFn.lean"
+  #find_deleted_files 1500
+
+#create_deprecated_module "Mathlib/Algebra/Polynomial/ofFn.lean" "Reason for removal"
+#create_deprecated_module "Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean"
+#create_deprecated_module "Mathlib/Algebra/Polynomial/ofFn.lean"
 
 --git log --pretty=oneline --all -1 -- Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean
 --#check System.FilePath.pathExists
 --#check moduleNameOfFileName
 --#check SearchPath.findModuleWithExt
-
-/-
-Uncomment the `#create_deprecated_modules` line below to get started.
-* `10` should likely be some small number, though its exact value may not be too important;
-* omitting `"a comment here"` is equivalent to using `"Auto-generated deprecation"`
-  while using the empty string `""` eliminates the comment entirely;
-* uncomment `write` only when you are satisfied that the deprecations look correct!
--/
-#create_deprecated_modules Mathlib.LinearAlgebra.RootSystem.Finite.g2  "a comment here" --write
 
 /--
 info: /-
