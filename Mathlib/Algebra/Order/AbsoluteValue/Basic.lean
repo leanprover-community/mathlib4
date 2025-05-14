@@ -351,6 +351,17 @@ lemma not_isNontrivial_apply {v : AbsoluteValue R S} (hv : ¬ v.IsNontrivial) {x
     v x = 1 :=
   v.not_isNontrivial_iff.mp hv _ hx
 
+omit [IsOrderedRing S] in
+theorem one_add_pow_le [IsDomain S] [Nontrivial R]
+    (a : R) (n : ℕ) (v : AbsoluteValue R S) :
+    v (1 + a ^ n) ≤ 1 + v a ^ n :=
+  le_trans (v.add_le _ _) (by rw [map_one, map_pow])
+
+theorem one_sub_pow_le {R S : Type*} [CommRing S] [PartialOrder S] [IsOrderedRing S] [Ring R]
+    [NoZeroDivisors S] [IsDomain S] [Nontrivial R] (a : R) (n : ℕ) (v : AbsoluteValue R S) :
+    1 - v a ^ n ≤ v (1 + a ^ n) :=
+  le_trans (by rw [map_one, map_pow]) (v.le_add 1 (a ^ n))
+
 end OrderedSemiring
 
 section LinearOrderedSemifield
@@ -387,7 +398,7 @@ theorem isNontrivial_iff_exists_abv_one_lt :
   · simpa only [ne_eq, inv_eq_zero] using ne_zero_of_one_lt hx
   · simpa only [map_inv₀, ne_eq, inv_eq_one] using ne_of_gt hx
 
-omit [ExistsAddOfLE S] in
+omit [ExistsAddOfLE S] [IsStrictOrderedRing S] in
 theorem nonpos_iff {x : R} : v x ≤ 0 ↔ v x = 0 := by
   simp [le_antisymm_iff, v.nonneg _]
 
@@ -421,21 +432,11 @@ theorem eq_one_iff_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) (x : R) : v x 
 
 variable (w)
 
-omit [ExistsAddOfLE S] in
+omit [ExistsAddOfLE S] [IsStrictOrderedRing S] in
 theorem pos_of_pos {a : R} (hv : 0 < v a) : 0 < w a := by
   rwa [AbsoluteValue.pos_iff] at hv ⊢
 
 end LinearOrderedSemifield
-
-theorem one_add_pow_le {R S : Type*} [OrderedRing S] [Semiring R] [IsDomain S] [Nontrivial R]
-    (a : R) (n : ℕ) (v : AbsoluteValue R S) :
-    v (1 + a ^ n) ≤ 1 + v a ^ n :=
-  le_trans (v.add_le _ _) (by rw [map_one, map_pow])
-
-theorem one_sub_pow_le {R S : Type*} [OrderedCommRing S] [Ring R] [NoZeroDivisors S] [IsDomain S]
-    [Nontrivial R] (a : R) (n : ℕ) (v : AbsoluteValue R S) :
-    1 - v a ^ n ≤ v (1 + a ^ n) :=
-  le_trans (by rw [map_one, map_pow]) (v.le_add 1 (a ^ n))
 
 end nontrivial
 
