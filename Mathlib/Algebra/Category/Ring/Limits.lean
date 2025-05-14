@@ -424,7 +424,7 @@ All we need to do is notice that the limit point has a `CommRing` instance avail
 and then reuse the existing limit.
 -/
 instance :
-   CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
+  CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
   /-
     A terse solution here would be
     ```
