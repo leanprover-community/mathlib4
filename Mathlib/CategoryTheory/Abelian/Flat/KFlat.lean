@@ -11,6 +11,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 import Mathlib.Algebra.Homology.HomotopyCategory.PreservesQuasiIso
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplex
 import Mathlib.Algebra.Homology.LeftResolutions.Reduced
+import Mathlib.Algebra.Homology.DerivedCategory.Monoidal
 import Mathlib.CategoryTheory.Abelian.Flat.Basic
 import Mathlib.CategoryTheory.Monoidal.KFlat
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
@@ -389,6 +390,9 @@ instance [HasFunctorialFlatResolutions A] :
 /-instance [HasFunctorialFlatResolutions A] :
     (HomotopyCategory.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure := by
   let Λ : LeftResolutions (ObjectProperty.flat.ι : _ ⥤ A) := Classical.arbitrary _
-  exact Λ.reduced.homotopyCategory_kFlat_isLeftDerivabilityStructure (by simp)-/
+  exact Λ.reduced.homotopyCategory_kFlat_isLeftDerivabilityStructure (by simp)
+
+noncomputable example [HasFunctorialFlatResolutions A] [HasDerivedCategory A] :
+    MonoidalCategory (DerivedCategory A) := inferInstance-/
 
 end CategoryTheory.Abelian

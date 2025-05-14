@@ -65,4 +65,7 @@ instance : AB5OfSize.{0, 0} (ModuleCat.{u} R) := AB5OfSize_shrink.{0, 0, u, u, u
 example : (HomologicalComplex.quasiIso (ModuleCat.{u} R)
   (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure := inferInstance
 
+/-noncomputable example [HasDerivedCategory (ModuleCat.{u} R)] :
+    MonoidalCategory (DerivedCategory (ModuleCat.{u} R)) := inferInstance-/
+
 end ModuleCat
