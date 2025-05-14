@@ -801,49 +801,35 @@ def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
 
 end EReal
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
-/-
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 
-open Positivity
-
-private theorem ereal_coe_ne_zero {r : ℝ} : r ≠ 0 → (r : EReal) ≠ 0 :=
-  EReal.coe_ne_zero.2
-
-private theorem ereal_coe_nonneg {r : ℝ} : 0 ≤ r → 0 ≤ (r : EReal) :=
-  EReal.coe_nonneg.2
-
-private theorem ereal_coe_pos {r : ℝ} : 0 < r → 0 < (r : EReal) :=
-  EReal.coe_pos.2
-
-private theorem ereal_coe_ennreal_pos {r : ℝ≥0∞} : 0 < r → 0 < (r : EReal) :=
-  EReal.coe_ennreal_pos.2
+open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: cast from `ℝ` to `EReal`. -/
-@[positivity]
-unsafe def positivity_coe_real_ereal : expr → tactic strictness
-  | q(@coe _ _ $(inst) $(a)) => do
-    unify inst q(@coeToLift _ _ <| @coeBase _ _ EReal.hasCoe)
-    let strictness_a ← core a
-    match strictness_a with
-      | positive p => positive <$> mk_app `` ereal_coe_pos [p]
-      | nonnegative p => nonnegative <$> mk_mapp `` ereal_coe_nonneg [a, p]
-      | nonzero p => nonzero <$> mk_mapp `` ereal_coe_ne_zero [a, p]
-  | e =>
-    pp e >>= fail ∘ format.bracket "The expression " " is not of the form `(r : ereal)` for `r : ℝ`"
+@[positivity Real.toEReal _]
+def evalRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q(Real.toEReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(EReal.coe_pos.2 $pa))
+    | .nonnegative pa => pure (.nonnegative q(EReal.coe_nonneg.2 $pa))
+    | .nonzero pa => pure (.nonzero q(EReal.coe_ne_zero.2 $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "not Real.toEReal"
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `EReal`. -/
-@[positivity]
-unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
-  | q(@coe _ _ $(inst) $(a)) => do
-    unify inst q(@coeToLift _ _ <| @coeBase _ _ EReal.hasCoeENNReal)
-    let strictness_a ← core a
-    match strictness_a with
-      | positive p => positive <$> mk_app `` ereal_coe_ennreal_pos [p]
-      | _ => nonnegative <$> mk_mapp `ereal.coe_ennreal_nonneg [a]
-  | e =>
-    pp e >>=
-      fail ∘ format.bracket "The expression " " is not of the form `(r : ereal)` for `r : ℝ≥0∞`"
+@[positivity ENNReal.toEReal _]
+def evalENNRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q(ENNReal.toEReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(EReal.coe_ennreal_pos.2 $pa))
+    | .nonzero pa => pure (.nonzero q(EReal.coe_ennreal_ne_zero.2 $pa))
+    | _ => pure (.nonnegative q(EReal.coe_ennreal_nonneg $a))
+  | _, _, _ => throwError "not ENNReal.toEReal"
 
-end Tactic
--/
+end Mathlib.Meta.Positivity
