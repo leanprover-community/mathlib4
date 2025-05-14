@@ -1188,15 +1188,79 @@ instance : LinearOrderedCommMonoidWithZero v.rangeGroup₀ where
   bot := 0
   bot_le _ := zero_le'
 
+/-- Define a unit of `v.rangeGroup₀` from an element of nonzero valuation. -/
+def mk_rangeGroup₀_unit {a : R} (ha : v a ≠ 0) : v.rangeGroup₀ˣ :=
+  IsUnit.unit  (a := ⟨v a, v.mem_rangeGroup₀⟩) (by
+    rwa [isUnit_iff_ne_zero, ne_eq, ← Subtype.coe_inj])
+
+@[simp]
+lemma coe_mk_rangeGroup₀_unit {a : R} (ha : v a ≠ 0) :
+    (v.mk_rangeGroup₀_unit ha : Γ₀) = v a := rfl
+
 @[simp] theorem coe_min (γ γ' : v.rangeGroup₀) :
     ((min γ γ' : v.rangeGroup₀) : Γ₀)= min ↑γ ↑γ' := rfl
 
 @[simp] theorem coe_max (γ γ' : v.rangeGroup₀) :
     ((max γ γ' : v.rangeGroup₀) : Γ₀)= max ↑γ ↑γ' := rfl
 
+lemma units_min_eq (γ₀ γ₁ : v.rangeGroup₀ˣ) :
+    (min γ₀ γ₁).map v.rangeGroup₀.subtype =
+      min (γ₀.map v.rangeGroup₀.subtype) (γ₁.map v.rangeGroup₀.subtype) := by
+  simp [Units.ext_iff]
+
+lemma units_max_eq (γ₀ γ₁ : v.rangeGroup₀ˣ) :
+    (max γ₀ γ₁).map v.rangeGroup₀.subtype =
+      max (γ₀.map v.rangeGroup₀.subtype) (γ₁.map v.rangeGroup₀.subtype) := by
+  simp [Units.ext_iff]
+
 instance : LinearOrderedCommGroupWithZero v.rangeGroup₀ where
   inv_zero := inv_zero
   mul_inv_cancel := GroupWithZero.mul_inv_cancel
+
+lemma exists_iff_exists (motive : Γ₀ → Prop) :
+    (∃ u : v.rangeGroup₀ˣ, motive u) ↔
+      ∃ γ ∈ v.rangeGroup₀, γ ≠ 0 ∧ motive γ := by
+  constructor
+  · rintro ⟨u, h⟩
+    refine ⟨u.val, u.val.prop, fun h' ↦ ?_, h⟩
+    apply u.ne_zero
+    rw [← Subtype.coe_inj, h', MonoidHomWithZero.range₀_coe_zero]
+  · rintro ⟨γ, hγ, h, h'⟩
+    have hγ' : IsUnit (⟨γ, hγ⟩ : v.rangeGroup₀) := by
+      simp [← Subtype.coe_inj, h]
+    exact ⟨hγ'.unit, h'⟩
+
+lemma isNontrivial_iff :
+    v.IsNontrivial ↔ Nontrivial v.rangeGroup₀ˣ := by
+  constructor
+  · rintro ⟨x, h0, h1⟩
+    use v.mk_rangeGroup₀_unit h0, 1
+    rwa [ne_eq, Units.ext_iff, Units.val_one, ← Subtype.coe_inj,
+      v.coe_mk_rangeGroup₀_unit]
+  · rintro ⟨x, y, h⟩
+    obtain ⟨a, b, hab⟩ := v.mem_rangeGroup₀_iff.mp x.val.prop
+    obtain ⟨c, d, hcd⟩ := v.mem_rangeGroup₀_iff.mp y.val.prop
+    by_cases ha : v a = 1
+    · by_cases hb : v b = 1
+      · simp only [ha, hb, one_mul] at hab
+        by_cases hc : v c = 1
+        · refine ⟨d, ?_, ?_⟩
+          · intro hd
+            apply y.ne_zero
+            simp only [hc, hd, one_mul] at hcd
+            simpa only [← Subtype.coe_inj, MonoidHomWithZero.range₀_coe_zero] using hcd.2
+          · intro hd
+            apply h
+            rw [hc, hd, one_mul, eq_comm] at hcd
+            simpa only [Units.ext_iff, ← Subtype.coe_inj, hab.2] using hcd.2
+        · exact ⟨c, hcd.1, hc⟩
+      · refine ⟨b, ?_, hb⟩
+        intro hb'
+        rw [ha, hb', one_mul] at hab
+        apply x.ne_zero
+        simp only [← Subtype.coe_inj, hab.2, MonoidHomWithZero.range₀_coe_zero]
+    · exact ⟨a, hab.1, ha⟩
+
 
 /-- The same valuation, with codomain restricted to `v.rangeGroup₀` -/
 def rangeGroup₀_restrict : Valuation R v.rangeGroup₀ where

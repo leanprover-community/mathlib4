@@ -43,16 +43,6 @@ instance {M : Type*} [Monoid M] [LT M]
   exact fun a ↦ mul_lt_mul_left' a m
   ⟩
 
-lemma units_min_eq (γ₀ γ₁ : v.rangeGroup₀ˣ) :
-    (min γ₀ γ₁).map v.rangeGroup₀.subtype =
-      min (γ₀.map v.rangeGroup₀.subtype) (γ₁.map v.rangeGroup₀.subtype) := by
-  simp [Units.ext_iff]
-
-lemma units_max_eq (γ₀ γ₁ : v.rangeGroup₀ˣ) :
-    (max γ₀ γ₁).map v.rangeGroup₀.subtype =
-      max (γ₀.map v.rangeGroup₀.subtype) (γ₁.map v.rangeGroup₀.subtype) := by
-  simp [Units.ext_iff]
-
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
 theorem subgroups_basis :
     RingSubgroupsBasis fun γ : v.rangeGroup₀ˣ ↦
@@ -76,9 +66,7 @@ theorem subgroups_basis :
         simp only [mem_preimage, SetLike.mem_coe, mem_ltAddSubgroup_iff, map_mul, Hx, zero_mul,
           Units.coe_map, Submonoid.subtype_apply]
         apply γ.zero_lt
-      · have Hx' : IsUnit (⟨v x, mem_rangeGroup₀ v⟩ : v.rangeGroup₀) := by
-          simp [isUnit_iff_ne_zero, ne_eq, ← Subtype.coe_inj, Hx]
-        use Hx'.unit⁻¹ * γ
+      · use (v.mk_rangeGroup₀_unit (Hx.symm ▸ γx.ne_zero))⁻¹ * γ
         intro y vy_lt
         simp only [mem_preimage, SetLike.mem_coe, mem_ltAddSubgroup_iff, _root_.map_mul, Hx]
         simpa [mem_ltAddSubgroup_iff, mul_comm, Hx, lt_mul_inv_iff₀' γx.zero_lt] using vy_lt
@@ -89,9 +77,7 @@ theorem subgroups_basis :
         simp only [mem_preimage, SetLike.mem_coe, mem_ltAddSubgroup_iff]
         rw [Valuation.map_mul, Hx, mul_zero]
         exact Units.zero_lt _
-      · have Hx' : IsUnit (⟨v x, mem_rangeGroup₀ v⟩ : v.rangeGroup₀) := by
-          simp [isUnit_iff_ne_zero, ne_eq, ← Subtype.coe_inj, Hx]
-        use Hx'.unit⁻¹ * γ
+      · use (v.mk_rangeGroup₀_unit (a := x) (Hx.symm ▸ γx.ne_zero))⁻¹ * γ
         rintro y vy_lt
         simp only [mem_preimage, SetLike.mem_coe, mem_ltAddSubgroup_iff, _root_.map_mul, Hx]
         simpa [mem_ltAddSubgroup_iff, mul_comm, Hx, lt_mul_inv_iff₀' γx.zero_lt] using vy_lt }
@@ -113,19 +99,6 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
     ∃ γ ∈ v.rangeGroup₀, γ ≠ 0 ∧ { x : R | v x < γ } ⊆ s
 
 namespace Valued
-
-lemma exists_iff_exists (v : Valuation R Γ₀) (motive : Γ₀ → Prop) :
-    (∃ u : v.rangeGroup₀ˣ, motive u) ↔
-      ∃ γ ∈ v.rangeGroup₀, γ ≠ 0 ∧ motive γ := by
-  constructor
-  · rintro ⟨u, h⟩
-    refine ⟨u.val, u.val.prop, fun h' ↦ ?_, h⟩
-    apply u.ne_zero
-    rw [← Subtype.coe_inj, h', MonoidHomWithZero.range₀_coe_zero]
-  · rintro ⟨γ, hγ, h, h'⟩
-    have hγ' : IsUnit (⟨γ, hγ⟩ : v.rangeGroup₀) := by
-      simp [← Subtype.coe_inj, h]
-    exact ⟨hγ'.unit, h'⟩
 
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=

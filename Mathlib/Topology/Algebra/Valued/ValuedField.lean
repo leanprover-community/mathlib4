@@ -82,18 +82,19 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
       intro x x_ne s s_in
       obtain ⟨γ, hs⟩ := Valued.mem_nhds.mp s_in; clear s_in
       rw [mem_map, Valued.mem_nhds]
-      change ∃ γ : v.rangeGroup, { y : K | (v (y - x)) < γ.1 } ⊆ { x : K | x⁻¹ ∈ s }
+      simp only [Units.coe_map, Submonoid.subtype_apply, inv_preimage] at ⊢ hs
+      change ∃ γ : v.rangeGroup₀ˣ, _ ⊆ { x : K | x⁻¹ ∈ s }
       have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
-      let γ' : v.rangeGroup := ⟨Units.mk0 _ vx_ne, v.mem_rangeGroup rfl⟩
+      let γ' : v.rangeGroup₀ˣ := v.mk_rangeGroup₀_unit vx_ne
       use min (γ * γ' * γ') γ'
       intro y y_in
       apply hs
-      apply Valuation.inversion_estimate _ x_ne
-      convert y_in
-      simp only [lt_min_iff, mul_assoc, v.rangeGroup_min, Submonoid.coe_mul,
-        Subgroup.coe_toSubmonoid, Units.val_mul, Units.val_mk0, mem_setOf_eq,
-        Subgroup.coe_mul, Units.val_mul, Units.val_mk0]
-        }
+      simp only [mem_setOf_eq]
+      apply Valuation.inversion_estimate v (x := y) (y := x)
+        (γ := γ.map v.rangeGroup₀.subtype) x_ne
+      simp only [Units.coe_map, Submonoid.subtype_apply, lt_inf_iff, ← mul_assoc]
+      simpa only [Units.min_val, Units.val_mul, Valuation.coe_min, Submonoid.coe_mul, lt_inf_iff,
+        mem_setOf_eq, γ', v.coe_mk_rangeGroup₀_unit] using y_in }
 
 /-- A valued division ring is separated. -/
 instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := by
@@ -102,9 +103,7 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
   intro x x_ne
   refine ⟨{ k | v k < v x }, ?_, fun h => lt_irrefl _ h⟩
   rw [Valued.mem_nhds]
-  have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
-  let γ' : v.rangeGroup := ⟨Units.mk0 _ vx_ne, v.mem_rangeGroup rfl⟩
-  exact ⟨γ', fun y hy => by simpa using hy⟩
+  exact ⟨v.mk_rangeGroup₀_unit (v.ne_zero_iff.mpr x_ne), fun y hy => by simpa using hy⟩
 
 section
 
