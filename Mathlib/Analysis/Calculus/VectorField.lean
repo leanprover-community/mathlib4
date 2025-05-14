@@ -145,9 +145,9 @@ lemma lieBracketWithin_fmul_left {f : E → 𝕜}
     (hs: UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (fun y => f y • V y) W s x =
       - (fderivWithin 𝕜 f s x) (W x) • (V x)  + (f x) • lieBracketWithin 𝕜 V W s x := by
-  rw [lieBracketWithin_swap, Pi.neg_apply, lieBracketWithin_fmul_right hf hV hs, lieBracketWithin_swap]
-  rw [neg_add, Pi.neg_apply, smul_neg, neg_neg, neg_smul]
-
+  rw [lieBracketWithin, lieBracketWithin, fderivWithin_smul hs hf hV, ContinuousLinearMap.add_apply]
+  rw [map_smul, ContinuousLinearMap.smulRight_apply, sub_add_eq_sub_sub]
+  rw [ContinuousLinearMap.smul_apply, ← smul_sub, add_comm, neg_smul, sub_eq_add_neg]
 
 /--
 Product rule for Lie Brackets: given two vector fields `V W : E → E` and a function `f : E → 𝕜`,
