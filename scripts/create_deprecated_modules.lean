@@ -53,7 +53,8 @@ where the date is today's date.
 def mkDeprecation (customMessage : String := "Auto-generated deprecation") :
     CommandElabM Format := do
   let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
-  let dateStx := Syntax.mkStrLit s!"{← Std.Time.PlainDate.now}"
+  -- Get the current date in UTC: we don't want this to depend on the user computer's time zone.
+  let dateStx := Syntax.mkStrLit s!"{(← DateTime.now (tz := .UTC)).toPlainDate}"
   let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
   liftCoreM <| PrettyPrinter.ppCategory `command stx
 
