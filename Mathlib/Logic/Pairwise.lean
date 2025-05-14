@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
-import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Set.Defs
 
 /-!
@@ -86,10 +85,5 @@ theorem Pairwise.on_injective (hs : s.Pairwise r) (hf : Function.Injective f) (h
 end Set
 
 theorem Pairwise.set_pairwise (h : Pairwise r) (s : Set α) : s.Pairwise r := fun _ _ _ _ w => h w
-
-theorem Pairwise.forall_fin_two {n : ℕ} {r : Fin (n + 2) → Fin (n + 2) → Prop} (h : Pairwise r) :
-     Pairwise (r.onFun ![0, Fin.last _]) := by
-   apply Pairwise.comp_of_injective h
-   simp [Function.Injective, Fin.forall_fin_two]
 
 end Pairwise

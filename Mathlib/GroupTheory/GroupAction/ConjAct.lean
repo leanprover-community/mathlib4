@@ -32,9 +32,7 @@ is that some theorems about the group actions will not apply when since this
 
 -/
 
--- TODO
--- assert_not_exists GroupWithZero
-assert_not_exists Ring
+assert_not_exists MonoidWithZero
 
 variable (α M G : Type*)
 
@@ -250,7 +248,6 @@ theorem _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) 
   rw [inv_inv]
   rfl
 
-@[simp]
 theorem _root_.MulAut.conjNormal_inv_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑((MulAut.conjNormal g)⁻¹ h) = g⁻¹ * h * g :=
   MulAut.conjNormal_symm_apply g h

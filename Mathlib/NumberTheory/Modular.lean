@@ -3,7 +3,7 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 import Mathlib.Topology.Instances.Matrix
@@ -520,7 +520,7 @@ lemma exists_one_half_le_im_smul_and_norm_denom_le (τ : ℍ) :
   · refine (exists_one_half_le_im_smul τ).imp (fun γ hγ ↦ ⟨hγ, ?_⟩)
     have h1 : τ.im ≤ (γ • τ).im := h.trans hγ
     rw [im_smul_eq_div_normSq, le_div_iff₀ (normSq_denom_pos (↑γ) τ), normSq_eq_norm_sq] at h1
-    simpa only [norm_eq_abs, sq_le_one_iff_abs_le_one, Complex.abs_abs] using
+    simpa only [sq_le_one_iff_abs_le_one, abs_norm] using
       (mul_le_iff_le_one_right τ.2).mp h1
 
 end ModularGroup

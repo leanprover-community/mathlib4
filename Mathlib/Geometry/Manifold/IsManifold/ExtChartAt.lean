@@ -3,6 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 /-!
@@ -16,7 +17,7 @@ in general, but we can still register them as `PartialEquiv`.
 ## Main definitions
 
 * `PartialHomeomorph.extend`: compose a partial homeomorphism into `H` with the model `I`,
-to obtain a `PartialEquiv` into `E`. Extended charts are an example of this.
+  to obtain a `PartialEquiv` into `E`. Extended charts are an example of this.
 * `extChartAt I x`: the extended chart at `x`, obtained by composing the `chartAt H x` with `I`.
   Since the target is in general not open, this is not a partial homeomorphism in general, but
   we register them as `PartialEquiv`s.
@@ -30,11 +31,11 @@ to obtain a `PartialEquiv` into `E`. Extended charts are an example of this.
 `(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
 
 * `Manifold.locallyCompact_of_finiteDimensional`: a finite-dimensional manifold
-modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact
+  modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact
 * `LocallyCompactSpace.of_locallyCompact_manifold`: a locally compact manifold must be modelled
-on a locally compact space.
+  on a locally compact space.
 * `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifolds must be modelled
-on a finite-dimensional space
+  on a finite-dimensional space
 
 -/
 

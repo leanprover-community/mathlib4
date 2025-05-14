@@ -208,7 +208,7 @@ def isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
   IsInitial.ofUnique (h := fun R ↦ ⟨⟨ofHom <| (Int.castRingHom R).comp ULift.ringEquiv.toRingHom⟩,
     fun _ ↦ by
       ext : 1
-      rw [← RingHom.cancel_right (f := (ULift.ringEquiv.{0, u} (α := ℤ)).symm.toRingHom)
+      rw [← RingHom.cancel_right (f := (ULift.ringEquiv.{0, u} (R := ℤ)).symm.toRingHom)
         (hf := ULift.ringEquiv.symm.surjective)]
       apply RingHom.ext_int⟩)
 
@@ -325,23 +325,19 @@ theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
   change IsLocalHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _).hom
   infer_instance
 
-@[deprecated (since := "2024-10-10")]
-alias equalizer_ι_isLocalRingHom := equalizer_ι_isLocalHom
-
 open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
 
-instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
+instance equalizer_ι_isLocalHom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)).hom := by
-  have : _ = limit.π F (walkingParallelPairOpEquiv.functor.obj _) :=
-    (limit.isoLimitCone_inv_π
-        ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩
-        WalkingParallelPair.zero :)
-  erw [← this]
+  have := limit.isoLimitCone_inv_π
+    ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩
+        WalkingParallelPair.zero
+  dsimp at this
+  rw [← this]
   -- note: this was not needed before https://github.com/leanprover-community/mathlib4/pull/19757
-  haveI : IsLocalHom (limit.π (walkingParallelPairOpEquiv.functor ⋙ F) zero).hom := by
-    infer_instance
+  have : IsLocalHom (limit.π (walkingParallelPairOp ⋙ F) zero).hom := by infer_instance
   infer_instance
 
 end Equalizer

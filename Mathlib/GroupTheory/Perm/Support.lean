@@ -3,9 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
+import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.Group.End
 import Mathlib.Data.Finset.NoncommProd
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # support of a permutation
@@ -115,7 +116,7 @@ theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g)
   induction' l with g l ih
   · exact disjoint_one_right _
   · rw [List.prod_cons]
-    exact (h _ (List.mem_cons_self _ _)).mul_right (ih fun g hg => h g (List.mem_cons_of_mem _ hg))
+    exact (h _ List.mem_cons_self).mul_right (ih fun g hg => h g (List.mem_cons_of_mem _ hg))
 
 theorem disjoint_noncommProd_right {ι : Type*} {k : ι → Perm α} {s : Finset ι}
     (hs : Set.Pairwise s fun i j ↦ Commute (k i) (k j))
@@ -434,7 +435,7 @@ theorem support_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert i s hi hrec =>
+  | insert i s hi hrec =>
     have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
       hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
     rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.biUnion_insert]

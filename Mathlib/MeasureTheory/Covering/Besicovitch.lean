@@ -4,12 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Covering.Differentiation
-import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.MeasureTheory.Integral.Lebesgue
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # Besicovitch covering theorems
@@ -124,7 +118,9 @@ Finally, the last ball is chosen after all the other ones, meaning that `h` can 
 by keeping only one side of the alternative in `hlast`.
 -/
 structure Besicovitch.SatelliteConfig (α : Type*) [MetricSpace α] (N : ℕ) (τ : ℝ) where
+  /-- Centers of the balls -/
   c : Fin N.succ → α
+  /-- Radii of the balls -/
   r : Fin N.succ → ℝ
   rpos : ∀ i, 0 < r i
   h : Pairwise fun i j =>
@@ -193,9 +189,12 @@ end SatelliteConfig
 
 /-- A ball package is a family of balls in a metric space with positive bounded radii. -/
 structure BallPackage (β : Type*) (α : Type*) where
+  /-- Centers of the balls -/
   c : β → α
+  /-- Radii of the balls -/
   r : β → ℝ
   rpos : ∀ b, 0 < r b
+  /-- Bound on the radii of the balls -/
   r_bound : ℝ
   r_le : ∀ b, r b ≤ r_bound
 
@@ -215,6 +214,7 @@ together with enough data to proceed with the Besicovitch greedy algorithm. We r
 a single structure to make sure that all our constructions in this algorithm only depend on
 one variable. -/
 structure TauPackage (β : Type*) (α : Type*) extends BallPackage β α where
+  /-- Parameter used by the Besicovitch greedy algorithm -/
   τ : ℝ
   one_lt_tau : 1 < τ
 

@@ -197,7 +197,7 @@ do
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
     match t with
     | none => do
-      let v := vars.get! (shape.length - 1)
+      let v := vars[shape.length - 1]!
       let mv ← mvar''.existsi (List.init si)
       mv.assign v
     | some n => do

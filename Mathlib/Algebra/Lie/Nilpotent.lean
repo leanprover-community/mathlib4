@@ -304,7 +304,7 @@ theorem _root_.LieSubmodule.isNilpotent_iff_exists_lcs_eq_bot (N : LieSubmodule 
 variable (R L M)
 
 instance (priority := 100) trivialIsNilpotent [IsTrivial L M] : IsNilpotent L M :=
-  ⟨by use 1; change ⁅⊤, ⊤⁆ = ⊥; simp⟩
+  ⟨by use 1; simp⟩
 
 instance instIsNilpotentSup (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [IsNilpotent L M₂] :
     IsNilpotent L (M₁ ⊔ M₂ : LieSubmodule R L M) := by
@@ -325,7 +325,7 @@ theorem exists_forall_pow_toEnd_eq_zero [IsNilpotent L M] :
   obtain ⟨k, hM⟩ := IsNilpotent.nilpotent R L M
   use k
   intro x; ext m
-  rw [LinearMap.pow_apply, LinearMap.zero_apply, ← @LieSubmodule.mem_bot R L M, ← hM]
+  rw [Module.End.pow_apply, LinearMap.zero_apply, ← @LieSubmodule.mem_bot R L M, ← hM]
   exact iterate_toEnd_mem_lowerCentralSeries R L M x m k
 
 theorem isNilpotent_toEnd_of_isNilpotent [IsNilpotent L M] (x : L) :
@@ -341,7 +341,7 @@ theorem isNilpotent_toEnd_of_isNilpotent₂ [IsNilpotent L M] (x y : L) :
     rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by omega)
   use k
   ext m
-  rw [LinearMap.pow_apply, LinearMap.zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]
+  rw [Module.End.pow_apply, LinearMap.zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]
   exact iterate_toEnd_mem_lowerCentralSeries₂ R L M x y m k
 
 @[simp] lemma maxGenEigenSpace_toEnd_eq_top [IsNilpotent L M] (x : L) :
@@ -926,6 +926,12 @@ theorem coe_lcs_eq [LieModule R L M] :
     · rintro ⟨⟨x, hx⟩, m, hm, rfl⟩
       exact ⟨x, hx, m, hm, rfl⟩
 
+instance [IsNilpotent L I] : LieRing.IsNilpotent I := by
+  let f : I →ₗ⁅R⁆ L := I.incl
+  let g : I →ₗ⁅R⁆ I := LieHom.id
+  have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by aesop
+  exact Function.injective_id.lieModuleIsNilpotent hfg
+
 end LieIdeal
 
 section OfAssociative
@@ -947,7 +953,7 @@ theorem _root_.LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad {L : Type v} [LieR
     IsNilpotent (LieAlgebra.ad R K x) := by
   obtain ⟨n, hn⟩ := h
   use n
-  exact LinearMap.submodule_pow_eq_zero_of_pow_eq_zero (K.ad_comp_incl_eq x) hn
+  exact Module.End.submodule_pow_eq_zero_of_pow_eq_zero (K.ad_comp_incl_eq x) hn
 
 theorem _root_.LieAlgebra.isNilpotent_ad_of_isNilpotent {L : LieSubalgebra R A} {x : L}
     (h : IsNilpotent (x : A)) : IsNilpotent (LieAlgebra.ad R L x) :=
@@ -1000,6 +1006,9 @@ theorem LieIdeal.isNilpotent_iff_le_maxNilpotentIdeal [IsNoetherian R L] (I : Li
 
 theorem center_le_maxNilpotentIdeal : center R L ≤ maxNilpotentIdeal R L :=
   le_sSup (trivialIsNilpotent L (center R L))
+
+theorem maxNilpotentIdeal_le_radical : maxNilpotentIdeal R L ≤ radical R L :=
+  sSup_le_sSup fun I (_ : IsNilpotent L I) ↦ isSolvable_of_isNilpotent I
 
 @[simp] lemma maxNilpotentIdeal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
     maxNilpotentIdeal R L = ⊤ :=

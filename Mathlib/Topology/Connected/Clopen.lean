@@ -35,7 +35,7 @@ theorem IsPreconnected.subset_isClopen {s t : Set α} (hs : IsPreconnected s) (h
     (hne : (s ∩ t).Nonempty) : s ⊆ t :=
   hs.subset_left_of_subset_union ht.isOpen ht.compl.isOpen disjoint_compl_right (by simp) hne
 
-theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (π i)] {s : Set (Σi, π i)} :
+theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (π i)] {s : Set (Σ i, π i)} :
     IsConnected s ↔ ∃ i t, IsConnected t ∧ s = Sigma.mk i '' t := by
   refine ⟨fun hs => ?_, ?_⟩
   · obtain ⟨⟨i, x⟩, hx⟩ := hs.nonempty
@@ -47,7 +47,7 @@ theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (π i)] {s : Set (Σi, π
     exact ht.image _ continuous_sigmaMk.continuousOn
 
 theorem Sigma.isPreconnected_iff [hι : Nonempty ι] [∀ i, TopologicalSpace (π i)]
-    {s : Set (Σi, π i)} : IsPreconnected s ↔ ∃ i t, IsPreconnected t ∧ s = Sigma.mk i '' t := by
+    {s : Set (Σ i, π i)} : IsPreconnected s ↔ ∃ i t, IsPreconnected t ∧ s = Sigma.mk i '' t := by
   refine ⟨fun hs => ?_, ?_⟩
   · obtain rfl | h := s.eq_empty_or_nonempty
     · exact ⟨Classical.choice hι, ∅, isPreconnected_empty, (Set.image_empty _).symm⟩
@@ -282,7 +282,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
   refine ⟨fun ⟨hne, h⟩ U hU hUo hsU => ?_, fun h => ⟨?_, fun u v hu hv hs hsuv => ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
-    | @insert u U uU IH =>
+    | insert u U uU IH =>
       simp only [← forall_cond_comm, Finset.forall_mem_insert, Finset.exists_mem_insert,
         Finset.coe_insert, sUnion_insert, implies_true, true_and] at *
       refine (h _ hUo.1 (⋃₀ ↑U) (isOpen_sUnion hUo.2) hsU ?_).imp_right ?_
@@ -293,8 +293,6 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
   · rw [← not_nonempty_iff_eq_empty] at hsuv
     have := hsuv; rw [inter_comm u] at this
     simpa [*, or_imp, forall_and] using h {u, v}
-
--- Porting note: `IsPreconnected.subset_isClopen` moved up from here
 
 /-- Preconnected sets are either contained in or disjoint to any given clopen set. -/
 theorem disjoint_or_subset_of_isClopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t) :
@@ -565,3 +563,16 @@ theorem preconnectedSpace_of_forall_constant
     (hs : ∀ f : α → Bool, Continuous f → ∀ x y, f x = f y) : PreconnectedSpace α :=
   ⟨isPreconnected_of_forall_constant fun f hf x _ y _ =>
       hs f (continuous_iff_continuousOn_univ.mpr hf) x y⟩
+
+theorem preconnectedSpace_iff_clopen :
+    PreconnectedSpace α ↔ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by
+  refine ⟨fun _ _ => isClopen_iff.mp, fun h ↦ ?_⟩
+  refine preconnectedSpace_of_forall_constant fun f hf x y ↦ ?_
+  have : f ⁻¹' {false} = (f ⁻¹' {true})ᶜ := by
+    rw [← Set.preimage_compl, Bool.compl_singleton, Bool.not_true]
+  obtain (h | h) := h _ ((isClopen_discrete {true}).preimage hf) <;> simp_all
+
+theorem connectedSpace_iff_clopen :
+    ConnectedSpace α ↔ Nonempty α ∧ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by
+  rw [connectedSpace_iff_univ, IsConnected, ← preconnectedSpace_iff_univ,
+    preconnectedSpace_iff_clopen, Set.nonempty_iff_univ_nonempty]

@@ -29,8 +29,8 @@ This defines a vector bundle `TangentBundle` with fibers `TangentSpace`.
 * `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 
 * When `M` is a `C^{n+1}` manifold, `TangentBundle I M` has a `C^n` vector bundle
-structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
-and a `C^n` manifold.
+  structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
+  and a `C^n` manifold.
 -/
 
 
@@ -87,7 +87,6 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
   coordChange i j x :=
     fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I) (i.1.extend I x)
   coordChange_self i x hx v := by
-    dsimp only
     rw [Filter.EventuallyEq.fderivWithin_eq, fderivWithin_id', ContinuousLinearMap.id_apply]
     · exact I.uniqueDiffWithinAt_image
     · filter_upwards [i.1.extend_target_mem_nhdsWithin hx] with y hy
@@ -411,7 +410,7 @@ theorem tangentBundleModelSpaceHomeomorph_coe_symm :
       (TotalSpace.toProd H E).symm :=
   rfl
 
-theorem contMDiff_tangentBundleModelSpaceHomeomorph {n : ℕ∞} :
+theorem contMDiff_tangentBundleModelSpaceHomeomorph :
     ContMDiff I.tangent (I.prod 𝓘(𝕜, E)) n
     (tangentBundleModelSpaceHomeomorph I : TangentBundle I H → ModelProd H E) := by
   apply contMDiff_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
@@ -421,7 +420,7 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph {n : ℕ∞} :
   rintro a b x rfl
   simp [PartialEquiv.prod]
 
-theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm {n : ℕ∞} :
+theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm :
     ContMDiff (I.prod 𝓘(𝕜, E)) I.tangent n
     ((tangentBundleModelSpaceHomeomorph I).symm : ModelProd H E → TangentBundle I H) := by
   apply contMDiff_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
@@ -434,7 +433,7 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm {n : ℕ∞} :
 
 variable (H I) in
 /-- In the tangent bundle to the model space, the second projection is `C^n`. -/
-lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
+lemma contMDiff_snd_tangentBundle_modelSpace :
     ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.2) := by
   change ContMDiff I.tangent 𝓘(𝕜, E) n
     ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
@@ -447,7 +446,7 @@ lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
-    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} {x : E} :
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} {x : E} :
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) s x ↔
       ContDiffWithinAt 𝕜 n V s x := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -461,7 +460,7 @@ lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiffAt_vectorSpace_iff_contDiffAt
-    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {x : E} :
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {x : E} :
     ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) x ↔
       ContDiffAt 𝕜 n V x := by
   simp only [← contMDiffWithinAt_univ, ← contDiffWithinAt_univ,
@@ -470,7 +469,7 @@ lemma contMDiffAt_vectorSpace_iff_contDiffAt
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiffOn_vectorSpace_iff_contDiffOn
-    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} :
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} :
     ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) s ↔
       ContDiffOn 𝕜 n V s := by
   simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt ]
@@ -478,7 +477,7 @@ lemma contMDiffOn_vectorSpace_iff_contDiffOn
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiff_vectorSpace_iff_contDiff
-    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} :
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} :
     ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) ↔
       ContDiff 𝕜 n V := by
   simp only [← contMDiffOn_univ, ← contDiffOn_univ, contMDiffOn_vectorSpace_iff_contDiffOn]
@@ -511,7 +510,7 @@ def inTangentCoordinates (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E
 
 theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N → E →L[𝕜] E') (x₀ : N) :
     inTangentCoordinates I I' f g ϕ x₀ = ϕ := by
-  simp (config := { unfoldPartialApp := true }) only [inTangentCoordinates,
+  simp +unfoldPartialApp only [inTangentCoordinates,
     inCoordinates_tangent_bundle_core_model_space]
 
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and

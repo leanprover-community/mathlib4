@@ -155,7 +155,4 @@ theorem rightAdjointUniq_refl {F : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) :
 
 end Adjunction
 
-@[deprecated (since := "2024-10-07")] alias Adjunction.natTransEquiv := conjugateEquiv
-@[deprecated (since := "2024-10-07")] alias Adjunction.natIsoEquiv := conjugateIsoEquiv
-
 end CategoryTheory

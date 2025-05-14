@@ -3,13 +3,11 @@ Copyright (c) 2023 Junyan Xu, Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
-import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Subgroup of `Equiv.Perm α` preserving a function
@@ -69,8 +67,7 @@ def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a // f a = i}) : Perm α where
     rw [stabilizerEquiv_invFun_eq _ (comp_stabilizerEquiv_invFun _ a)]
     exact congr_arg Subtype.val ((g <| f a).right_inv _)
 
-variable (f)
-
+variable (f) in
 /-- The `MulEquiv` from the `MulOpposite` of `MulAction.stabilizer (Perm α)ᵈᵐᵃ f`
   to the product of the `Equiv.Perm {a // f a = i}` -/
 def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ ≃* (∀ i, Perm {a // f a = i}) where
@@ -83,8 +80,6 @@ def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ ≃* (∀ i,
   left_inv _ := rfl
   right_inv g := by ext i a; apply stabilizerEquiv_invFun_eq
   map_mul' _ _ := rfl
-
-variable {f}
 
 lemma stabilizerMulEquiv_apply (g : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ) {a : α} {i : ι} (h : f a = i) :
     ((stabilizerMulEquiv f)) g i ⟨a, h⟩ = (mk.symm g.unop : Equiv.Perm α) a := rfl

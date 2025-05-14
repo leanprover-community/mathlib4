@@ -172,7 +172,11 @@ theorem mem_prod_eq : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) := rfl
 theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
 
 @[mfld_simps]
-theorem prod_mk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) := rfl
+theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :=
+  rfl
+
+@[deprecated (since := "2025-02-21")]
+alias prod_mk_mem_set_prod_eq := prodMk_mem_set_prod_eq
 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
 
@@ -247,10 +251,10 @@ def SurjOn (f : α → β) (s : Set α) (t : Set β) : Prop := t ⊆ f '' s
 def BijOn (f : α → β) (s : Set α) (t : Set β) : Prop := MapsTo f s t ∧ InjOn f s ∧ SurjOn f s t
 
 /-- `g` is a left inverse to `f` on `s` means that `g (f x) = x` for all `x ∈ s`. -/
-def LeftInvOn (f' : β → α) (f : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → f' (f x) = x
+def LeftInvOn (g : β → α) (f : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → g (f x) = x
 
 /-- `g` is a right inverse to `f` on `t` if `f (g x) = x` for all `x ∈ t`. -/
-abbrev RightInvOn (f' : β → α) (f : α → β) (t : Set β) : Prop := LeftInvOn f f' t
+abbrev RightInvOn (g : β → α) (f : α → β) (t : Set β) : Prop := LeftInvOn f g t
 
 /-- `g` is an inverse to `f` viewed as a map from `s` to `t` -/
 def InvOn (g : β → α) (f : α → β) (s : Set α) (t : Set β) : Prop :=

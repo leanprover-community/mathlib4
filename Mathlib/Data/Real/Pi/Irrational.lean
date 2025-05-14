@@ -233,7 +233,7 @@ The integrand in the definition of `I` is nonnegative and takes a positive value
 so the integral is positive.
 -/
 private lemma I_pos : 0 < I n (π / 2) := by
-  refine integral_pos (by norm_num) (Continuous.continuousOn (by continuity)) ?_ ⟨0, by simp⟩
+  refine integral_pos (by norm_num) (by fun_prop) ?_ ⟨0, by simp⟩
   refine fun x hx => mul_nonneg (pow_nonneg ?_ _) ?_
   · rw [sub_nonneg, sq_le_one_iff_abs_le_one, abs_le]
     exact ⟨hx.1.le, hx.2⟩
@@ -274,7 +274,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   exact ⟨q.num, q.den, q.pos, by exact_mod_cast (Rat.num_div_den _).symm⟩
 
 @[simp] theorem irrational_pi : Irrational π := by
-  apply Irrational.of_div_nat 2
+  apply Irrational.of_div_natCast 2
   rw [Nat.cast_two]
   by_contra h'
   obtain ⟨a, b, hb, h⟩ := not_irrational_exists_rep h'

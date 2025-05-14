@@ -51,11 +51,11 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
   simp only [dom_iff_mem, Code.evaln_complete, Option.mem_def] at h
   obtain ⟨x, k, e⟩ | ⟨x, k, e⟩ := h
   · refine ⟨k, x, ?_⟩
-    simp only [e, Option.some_orElse, Option.mem_def]
+    simp only [e, Option.some_orElse, Option.mem_def, Option.orElse_eq_orElse]
   · refine ⟨k, ?_⟩
     rcases cf.evaln k n with - | y
-    · exact ⟨x, by simp only [e, Option.mem_def, Option.none_orElse]⟩
-    · exact ⟨y, by simp only [Option.some_orElse, Option.mem_def]⟩
+    · exact ⟨x, by simp only [e, Option.mem_def, Option.orElse_eq_orElse, Option.none_orElse]⟩
+    · exact ⟨y, by simp only [Option.orElse_eq_orElse, Option.some_orElse, Option.mem_def]⟩
 
 end Nat.Partrec
 
@@ -120,13 +120,15 @@ theorem cond {c : α → Bool} {f : α →. σ} {g : α →. σ} (hc : Computabl
     ((@Computable.decode σ _).comp snd).ofOption.to₂).of_eq
     fun a => by cases c a <;> simp [ef, eg, encodek]
 
-nonrec theorem sum_casesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α → γ →. σ} (hf : Computable f)
+nonrec theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α → γ →. σ} (hf : Computable f)
     (hg : Partrec₂ g) (hh : Partrec₂ h) : @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) (h a) :=
   option_some_iff.1 <|
-    (cond (sum_casesOn hf (const true).to₂ (const false).to₂)
-          (sum_casesOn_left hf (option_some_iff.2 hg).to₂ (const Option.none).to₂)
-          (sum_casesOn_right hf (const Option.none).to₂ (option_some_iff.2 hh).to₂)).of_eq
+    (cond (sumCasesOn hf (const true).to₂ (const false).to₂)
+          (sumCasesOn_left hf (option_some_iff.2 hg).to₂ (const Option.none).to₂)
+          (sumCasesOn_right hf (const Option.none).to₂ (option_some_iff.2 hh).to₂)).of_eq
       fun a => by cases f a <;> simp only [Bool.cond_true, Bool.cond_false]
+
+@[deprecated (since := "2025-02-21")] alias sum_casesOn := Partrec.sumCasesOn
 
 end Partrec
 
@@ -135,7 +137,7 @@ def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
   ∃ _ : DecidablePred p, Computable fun a => decide (p a)
 
 /-- A recursively enumerable predicate is one which is the domain of a computable partial function.
- -/
+-/
 def REPred {α} [Primcodable α] (p : α → Prop) :=
   Partrec fun a => Part.assert (p a) fun _ => Part.some ()
 

@@ -55,6 +55,29 @@ class Fintype (α : Type*) where
   /-- A proof that `elems` contains every element of the type -/
   complete : ∀ x : α, x ∈ elems
 
+/-! ### Preparatory lemmas -/
+
+namespace Finset
+
+theorem nodup_map_iff_injOn {f : α → β} {s : Finset α} :
+    (Multiset.map f s.val).Nodup ↔ Set.InjOn f s := by
+  simp [Multiset.nodup_map_iff_inj_on s.nodup, Set.InjOn]
+
+end Finset
+
+namespace List
+
+variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
+
+instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
+  -- Use custom implementation for better performance.
+  decidable_of_iff ((Multiset.map f s.val).Nodup) Finset.nodup_map_iff_injOn
+
+instance [DecidableEq β] : Decidable (Set.BijOn f s t') :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
+
+end List
+
 namespace Finset
 
 variable [Fintype α] {s t : Finset α}
@@ -87,7 +110,7 @@ theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
 end Finset
 
 namespace Mathlib.Meta
-open Lean Elab Term Meta Batteries.ExtendedBinder
+open Lean Elab Term Meta Batteries.ExtendedBinder Parser.Term PrettyPrinter.Delaborator SubExpr
 
 /-- Elaborate set builder notation for `Finset`.
 
@@ -108,8 +131,6 @@ See also
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
 * `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator handling syntax of the
   form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
-
-TODO: Write a delaborator
 -/
 @[term_elab setBuilder]
 def elabFinsetBuilderSetOf : TermElab
@@ -138,6 +159,34 @@ def elabFinsetBuilderSetOf : TermElab
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
     elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (singleton $a)ᶜ)) expectedType?
   | _, _ => throwUnsupportedSyntax
+
+/-- Delaborator for `Finset.filter`. The `pp.funBinderTypes` option controls whether
+to show the domain type when the filter is over `Finset.univ`. -/
+@[app_delab Finset.filter] def delabFinsetFilter : Delab :=
+  whenPPOption getPPNotation do
+  let #[_, p, _, t] := (← getExpr).getAppArgs | failure
+  guard p.isLambda
+  let i ← withNaryArg 1 <| withBindingBodyUnusedName (pure ⟨·⟩)
+  let p ← withNaryArg 1 <| withBindingBody i.getId delab
+  if t.isAppOfArity ``Finset.univ 2 then
+    if ← getPPOption getPPFunBinderTypes then
+      let ty ← withNaryArg 0 delab
+      `({$i:ident : $ty | $p})
+    else
+      `({$i:ident | $p})
+  -- check if `t` is of the form `s₀ᶜ`, in which case we display `x ∉ s₀` instead
+  else if t.isAppOfArity ``HasCompl.compl 3 then
+    let #[_, _, s₀] := t.getAppArgs | failure
+    -- if `s₀` is a singleton, we can even use the notation `x ≠ a`
+    if s₀.isAppOfArity ``Singleton.singleton 4 then
+      let t ← withNaryArg 3 <| withNaryArg 2 <| withNaryArg 3 delab
+      `({$i:ident ≠ $t | $p})
+    else
+      let t ← withNaryArg 3 <| withNaryArg 2 delab
+      `({$i:ident ∉ $t | $p})
+  else
+    let t ← withNaryArg 3 delab
+    `({$i:ident ∈ $t | $p})
 
 end Mathlib.Meta
 
@@ -217,6 +266,9 @@ end Fintype
 
 instance Bool.fintype : Fintype Bool :=
   ⟨⟨{true, false}, by simp⟩, fun x => by cases x <;> simp⟩
+
+instance Ordering.fintype : Fintype Ordering :=
+  ⟨⟨{.lt, .eq, .gt}, by simp⟩, fun x => by cases x <;> simp⟩
 
 instance OrderDual.fintype (α : Type*) [Fintype α] : Fintype αᵒᵈ :=
   ‹Fintype α›

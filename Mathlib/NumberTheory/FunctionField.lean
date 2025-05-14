@@ -3,7 +3,6 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Ashvni Narayanan
 -/
-import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.FieldTheory.RatFunc.Degree
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
@@ -32,8 +31,8 @@ adding them back in lemmas when they are needed.
 
 ## References
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1970algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
 function field, ring of integers
@@ -64,7 +63,7 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     intro c x
     rw [Algebra.smul_def, Algebra.smul_def]
     congr
-    refine congr_fun (f := fun c => algebraMap Fqt F (e c)) ?_ c -- Porting note: Added `(f := _)`
+    refine congr_fun (f := fun c => algebraMap Fqt F (e c)) ?_ c
     refine IsLocalization.ext (nonZeroDivisors Fq[X]) _ _ ?_ ?_ ?_ ?_ ?_ <;> intros <;>
       simp only [map_one, map_mul, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h
@@ -74,12 +73,15 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 
+namespace FunctionField
+
 theorem algebraMap_injective [Algebra Fq[X] F] [Algebra (RatFunc Fq) F]
     [IsScalarTower Fq[X] (RatFunc Fq) F] : Function.Injective (⇑(algebraMap Fq[X] F)) := by
   rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]
   exact (algebraMap (RatFunc Fq) F).injective.comp (IsFractionRing.injective Fq[X] (RatFunc Fq))
 
-namespace FunctionField
+@[deprecated (since := "2025-03-03")]
+alias _root_.algebraMap_injective := FunctionField.algebraMap_injective
 
 /-- The function field analogue of `NumberField.ringOfIntegers`:
 `FunctionField.ringOfIntegers Fq Fqt F` is the integral closure of `Fq[t]` in `F`.
@@ -197,11 +199,9 @@ def inftyValuation : Valuation (RatFunc Fq) ℤₘ₀ where
 theorem inftyValuation_apply {x : RatFunc Fq} : inftyValuation Fq x = inftyValuationDef Fq x :=
   rfl
 
-@[simp]
 theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
     inftyValuationDef Fq (RatFunc.C k) = Multiplicative.ofAdd (0 : ℤ) := by
-  have hCk : RatFunc.C k ≠ 0 := (map_ne_zero _).mpr hk
-  rw [inftyValuationDef, if_neg hCk, RatFunc.intDegree_C]
+  simp [hk]
 
 @[simp]
 theorem inftyValuation.X : inftyValuationDef Fq RatFunc.X = Multiplicative.ofAdd (1 : ℤ) := by

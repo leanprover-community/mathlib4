@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Ring.Multiset
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Rat.Init
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
@@ -25,6 +25,9 @@ open Fintype
 variable {ι ι' α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
 
 namespace Finset
+
+lemma prod_neg [CommMonoid α] [HasDistribNeg α] : ∏ x ∈ s, -f x = (-1) ^ #s * ∏ x ∈ s, f x := by
+  simpa using (s.1.map f).prod_map_neg
 
 section AddCommMonoidWithOne
 variable [AddCommMonoidWithOne α]
@@ -115,8 +118,7 @@ lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → �
   classical
   induction s using Finset.induction with
   | empty => simp
-  | insert ha ih =>
-    rename_i a s
+  | insert a s ha ih =>
     have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
       Disjoint (image (Pi.cons s a x) (pi s t)) (image (Pi.cons s a y) (pi s t)) := by
       intro x _ y _ h
@@ -157,7 +159,7 @@ lemma sum_pow' (s : Finset ι') (f : ι' → α) (n : ℕ) :
   convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
 /-- The product of `f a + g a` over all of `s` is the sum over the powerset of `s` of the product of
-`f` over a subset `t` times the product of `g` over the complement of `t`  -/
+`f` over a subset `t` times the product of `g` over the complement of `t` -/
 theorem prod_add (f g : ι → α) (s : Finset ι) :
     ∏ i ∈ s, (f i + g i) = ∑ t ∈ s.powerset, (∏ i ∈ t, f i) * ∏ i ∈ s \ t, g i := by
   classical
@@ -243,7 +245,7 @@ variable [CommRing α]
 `g` over a subset `t` times the product of `f` over the complement of `t` times `(-1) ^ #t`. -/
 lemma prod_sub [DecidableEq ι] (f g : ι → α) (s : Finset ι) :
     ∏ i ∈ s, (f i - g i) = ∑ t ∈ s.powerset, (-1) ^ #t * (∏ i ∈ s \ t, f i) * ∏ i ∈ t, g i := by
-  simp [sub_eq_neg_add, prod_add, ← prod_const, ← prod_mul_distrib, mul_right_comm]
+  simp [sub_eq_neg_add, prod_add, prod_neg, mul_right_comm]
 
 /-- `∏ i, (f i - g i) = (∏ i, f i) - ∑ i, g i * (∏ j < i, f j - g j) * (∏ j > i, f j)`. -/
 lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :

@@ -47,8 +47,7 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
     -- Because `X × X` is compactly generated, to show that f is proper
     -- it is enough to show that the preimage of a compact set `K` is compact.
     refine isProperMap_iff_isCompact_preimage.2
-      ⟨(continuous_prod_mk.2
-      ⟨continuous_prod_of_discrete_left.2 continuous_const_smul, by fun_prop⟩),
+      ⟨(continuous_prod_of_discrete_left.2 continuous_const_smul).prodMk (by fun_prop),
       fun K hK ↦ ?_⟩
     -- We set `K' := pr₁(K) ∪ pr₂(K)`, which is compact because `K` is compact and `pr₁` and
     -- `pr₂` are continuous. We halso have that `K ⊆ K' × K'`, and `K` is closed because `X` is T2.
@@ -81,8 +80,7 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
         isCompact_singleton.prod <| (hK'.image <| continuous_const_smul _).inter hK'
     -- We conclude as explained above.
     exact this.of_isClosed_subset (hK.isClosed.preimage <|
-      continuous_prod_mk.2
-      ⟨continuous_prod_of_discrete_left.2 continuous_const_smul, by fun_prop⟩) <|
+      (continuous_prod_of_discrete_left.2 continuous_const_smul).prodMk (by fun_prop)) <|
       preimage_mono fun x hx ↦ ⟨Or.inl ⟨x, hx, rfl⟩, Or.inr ⟨x, hx, rfl⟩⟩
   · intro h; constructor
     intro K L hK hL

@@ -19,7 +19,7 @@ doesn't rely on the definition of the adjoint, which allows it to be stated in n
 ## Main definitions
 
 * `LinearMap.IsSymmetric`: a (not necessarily bounded) operator on an inner product space is
-symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
+  symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
 
 ## Main statements
 
@@ -41,7 +41,7 @@ section Seminormed
 variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace LinearMap
 
@@ -75,12 +75,8 @@ theorem IsSymmetric.apply_clm {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →�
 protected theorem IsSymmetric.zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
   (inner_zero_right x : ⟪x, 0⟫ = 0).symm ▸ (inner_zero_left y : ⟪0, y⟫ = 0)
 
-@[deprecated (since := "2024-09-30")] alias isSymmetric_zero := IsSymmetric.zero
-
 @[simp]
 protected theorem IsSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
-
-@[deprecated (since := "2024-09-30")] alias isSymmetric_id := IsSymmetric.id
 
 @[aesop safe apply]
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
@@ -103,12 +99,12 @@ theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT
 @[aesop 30% apply]
 lemma IsSymmetric.mul_of_commute {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : T.IsSymmetric)
     (hST : Commute S T) : (S * T).IsSymmetric :=
-  fun _ _ ↦ by rw [mul_apply, hS, hT, hST, mul_apply]
+  fun _ _ ↦ by rw [Module.End.mul_apply, hS, hT, hST, Module.End.mul_apply]
 
 @[aesop safe apply]
 lemma IsSymmetric.pow {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
-  refine Nat.le_induction (by simp [one_eq_id]) (fun k _ ih ↦ ?_) n n.zero_le
-  rw [iterate_succ, ← mul_eq_comp]
+  refine Nat.le_induction (by simp [Module.End.one_eq_id]) (fun k _ ih ↦ ?_) n n.zero_le
+  rw [Module.End.iterate_succ, ← Module.End.mul_eq_comp]
   exact ih.mul_of_commute hT <| .pow_left rfl k
 
 /-- For a symmetric operator `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
@@ -187,7 +183,7 @@ section Normed
 variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace LinearMap
 

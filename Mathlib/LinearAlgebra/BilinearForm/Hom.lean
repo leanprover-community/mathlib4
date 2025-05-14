@@ -3,10 +3,10 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
 -/
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.BilinearForm.Basic
+import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Bilinear form and linear maps
