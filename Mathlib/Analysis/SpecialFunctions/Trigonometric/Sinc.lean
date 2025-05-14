@@ -13,7 +13,8 @@ This file contains the definition of the sinc function and some of its propertie
 
 ## Main definitions
 
-* `Real.sinc`: the sinc function, defined as `sinc x = sin x / x` for `x ≠ 0` and `1` for `x = 0`.
+* `Real.sinc`: the (unnormalized) sinc function, defined as `sinc x = sin x / x` for `x ≠ 0`
+  and `1` for `x = 0`.
 
 ## Main statements
 
