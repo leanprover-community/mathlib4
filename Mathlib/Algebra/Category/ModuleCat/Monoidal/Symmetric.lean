@@ -83,12 +83,14 @@ instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
 
 @[simp]
 theorem braiding_hom_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
-    ((β_ M N).hom : M ⊗ N ⟶ N ⊗ M) (m ⊗ₜ n) = n ⊗ₜ m :=
+    DFunLike.coe (F := TensorProduct R M N →ₗ[R] TensorProduct R N M)
+      (β_ M N).hom.hom (m ⊗ₜ n) = n ⊗ₜ m :=
   rfl
 
 @[simp]
 theorem braiding_inv_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
-    ((β_ M N).inv : N ⊗ M ⟶ M ⊗ N) (n ⊗ₜ m) = m ⊗ₜ n :=
+    DFunLike.coe (F := TensorProduct R N M →ₗ[R] TensorProduct R M N)
+      (β_ M N).inv.hom (n ⊗ₜ m) = m ⊗ₜ n :=
   rfl
 
 theorem tensorμ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
@@ -99,7 +101,9 @@ theorem tensorμ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
 @[simp]
 theorem tensorμ_apply
     {A B C D : ModuleCat R} (x : A) (y : B) (z : C) (w : D) :
-    tensorμ A B C D ((x ⊗ₜ y) ⊗ₜ (z ⊗ₜ w)) = (x ⊗ₜ z) ⊗ₜ (y ⊗ₜ w) := rfl
+    DFunLike.coe (F := TensorProduct R (TensorProduct R A B) (TensorProduct R C D) →ₗ[R]
+      TensorProduct R (TensorProduct R A C) (TensorProduct R B D))
+    (tensorμ A B C D).hom ((x ⊗ₜ y) ⊗ₜ (z ⊗ₜ w)) = (x ⊗ₜ z) ⊗ₜ (y ⊗ₜ w) := rfl
 
 end MonoidalCategory
 

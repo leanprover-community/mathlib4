@@ -286,7 +286,8 @@ noncomputable def tensorLift : M₁ ⊗ M₂ ⟶ M₃ :=
 
 @[simp]
 lemma tensorLift_tmul (m : M₁) (n : M₂) :
-    tensorLift f h₁ h₂ h₃ h₄ (m ⊗ₜ n) = f m n := rfl
+    DFunLike.coe (F := TensorProduct R M₁ M₂ →ₗ[R] M₃) (tensorLift f h₁ h₂ h₃ h₄).hom (m ⊗ₜ n) =
+      f m n := rfl
 
 end
 

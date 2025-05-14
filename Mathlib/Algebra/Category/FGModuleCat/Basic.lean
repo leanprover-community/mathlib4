@@ -212,8 +212,7 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
 -/
 @[simp]
 theorem FGModuleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
-    DFunLike.coe
-      (F := ((ModuleCat.of K (Module.Dual K V) ⊗ V.obj).carrier →ₗ[K] (𝟙_ (ModuleCat K))))
+    DFunLike.coe (F := TensorProduct K (Module.Dual K V) V →ₗ[K] K)
       (FGModuleCatEvaluation K V).hom (f ⊗ₜ x) = f.toFun x :=
   contractLeft_apply f x
 

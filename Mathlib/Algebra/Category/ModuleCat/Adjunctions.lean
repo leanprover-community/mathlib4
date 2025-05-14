@@ -200,20 +200,24 @@ instance : (free R).Monoidal :=
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
 @[simp]
-lemma free_ε_one : ε (free R) 1 = freeMk PUnit.unit := rfl
+lemma free_ε_one :
+    DFunLike.coe (F := R →ₗ[R] 𝟙_ (Type u) →₀ R) (ε (free R)).hom 1 = freeMk PUnit.unit := rfl
 
 @[simp]
-lemma free_η_freeMk (x : PUnit) : η (free R) (freeMk x) = 1 := by
+lemma free_η_freeMk (x : PUnit) :
+    DFunLike.coe (F := (𝟙_ (Type u) →₀ R) →ₗ[R] R) (η (free R)).hom (freeMk x) = 1 := by
   apply FreeMonoidal.εIso_inv_freeMk
 
 @[simp]
 lemma free_μ_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
-    μ (free R) _ _ (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
+    DFunLike.coe (F := TensorProduct R (X →₀ R) (Y →₀ R) →ₗ[R] X ⊗ Y →₀ R)
+      (μ (free R) _ _).hom (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
   apply FreeMonoidal.μIso_hom_freeMk_tmul_freeMk
 
 @[simp]
 lemma free_δ_freeMk {X Y : Type u} (z : X ⊗ Y) :
-    δ (free R) _ _ (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
+    DFunLike.coe (F := (X ⊗ Y →₀ R) →ₗ[R] TensorProduct R (X →₀ R) (Y →₀ R))
+      (δ (free R) _ _).hom (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
   apply FreeMonoidal.μIso_inv_freeMk
 
 end Free
