@@ -1,19 +1,19 @@
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.Data.Fintype.Card
 
-variable {α : Type*} (G : SimpleGraph α)
+variable {α : Type*} {a : α} (f : Set α → Set α)
 
-namespace SimpleGraph
+abbrev cardOf (s : Set α) [Fintype (f s)] : ℕ :=
+  Fintype.card (f s)
 
-abbrev edgesIn (s : Set α) [Fintype (G.induce s).edgeSet] : ℕ :=
-  (G.induce s).edgeSet.toFinset.card
+lemma cardOf_set (s : Set α) (h : a ∈ s) [Fintype (f s)] :
+    cardOf f s = Fintype.card (f s) := rfl
 
-lemma edgesIn_eq (s : Set α) (h : ∃ a, a ∈ s) [Fintype (G.induce s).edgeSet] :
-    G.edgesIn s = (G.induce s).edgeSet.toFinset.card := rfl
+lemma cardOf_finset (s : Finset α) [Fintype (f s)] (h : a ∈ s) :
+    cardOf f s = Fintype.card (f s) :=
+  cardOf_set f _ h -- failed to synthesize Fintype ↑(f (Membership.mem s.val))
+  -- cardOf_set f s h -- works
+  -- cardOf_set f _ (by exact h) -- works
 
-lemma edgesIn_eq' (s : Finset α) (h : ∃ a, a ∈ s) [Fintype (G.induce s).edgeSet] :
-    G.edgesIn s = (G.induce s).edgeSet.toFinset.card :=
-  G.edgesIn_eq _ (by exact h)
-  -- failed to synthesize Fintype ↑(induce (Membership.mem s.val) G).edgeSet
-  --  G.degreeIn_eq' s h -- Goals accomplished!
-
-end SimpleGraph
+variable {t : Finset α}
+#check (t : Set α)
+#check (t.val : Multiset α)
