@@ -6,6 +6,8 @@ Authors: Amelia Livingston
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.OreLocalization.Basic
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.GroupTheory.Finiteness
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
@@ -1296,6 +1298,36 @@ theorem mulEquivOfQuotient_symm_mk (x y) : (mulEquivOfQuotient f).symm (f.mk' x 
 theorem mulEquivOfQuotient_symm_monoidOf (x) :
     (mulEquivOfQuotient f).symm (f.toMap x) = (monoidOf S).toMap x :=
   f.lift_eq (monoidOf S).map_units _
+
+/-- The localization of a finitely generated monoid at a finitely generated submonoid is
+finitely generated. -/
+@[to_additive "The localization of a finitely generated monoid at a finitely generated submonoid is
+finitely generated."]
+lemma fg [Monoid.FG M] (hS : S.FG) : Monoid.FG <| Localization S := by
+  rw [← Monoid.fg_iff_submonoid_fg] at hS
+  let antidiag : M × S →* Localization S := {
+    toFun x := mk x.1 ⟨x.2, x.2.2⟩
+    map_one' := mk_one
+    map_mul' x y := (mk_mul ..).symm
+  }
+  refine Monoid.fg_of_surjective antidiag ?_
+  rintro ⟨x, y⟩
+  exact ⟨⟨x, y⟩, rfl⟩
+
+/-- The localization of a torsion-free monoid is torsion-free. -/
+@[to_additive "The localization of a torsion-free monoid is torsion-free."]
+instance instIsMulTorsionFree [IsMulTorsionFree M] : IsMulTorsionFree <| Localization S where
+  pow_left_injective n hn a b hab := by
+    dsimp at hab
+    induction' a using Localization.induction_on with a
+    induction' b using Localization.induction_on with b
+    simp only [mk_pow, mk_eq_mk_iff, r_iff_exists, SubmonoidClass.coe_pow, Subtype.exists,
+      exists_prop] at hab ⊢
+    obtain ⟨c, hc, hab⟩ := hab
+    refine ⟨c, hc, pow_left_injective hn ?_⟩
+    obtain _ | n := n
+    · simp
+    · simp [mul_pow, pow_succ c, mul_assoc, hab]
 
 end Localization
 
