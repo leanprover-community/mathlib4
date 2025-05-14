@@ -90,49 +90,7 @@ theorem equiv_apply (hp : ¬ ↑p ∣ index θ) (Q : ℤ[X]) :
   erw [this]
   rfl
 
-open UniqueFactorizationMonoid Ideal in
-def Ideal.primesOverSpanEquivMonicFactorsMod (hp : ¬ ↑p ∣ index θ) :
-    primesOver (span {(p : ℤ)}) (𝓞 K) ≃ monicFactorsMod p (minpoly ℤ θ) := by
-  refine Equiv.trans (Equiv.setCongr ?_)
-    ((normalizedFactorsEquivOfQuotEquiv (equiv hp) ?_ ?_).symm.trans ?_)
-  · ext P
-    rw [primesOver, Set.mem_setOf_eq, Set.mem_setOf_eq, mem_normalizedFactors_iff', liesOver_iff]
-    rw [under_def, normalize_eq, irreducible_iff_prime, prime_iff_isPrime, dvd_iff_le]
-    rw [algebraMap_int_eq]
-    simp only [true_and, and_congr_right_iff]
-    intro hP
-    sorry
-    sorry
-    sorry
-  ·
-    sorry
-  · sorry
-  · unfold monicFactorsMod
-    simp_rw [← normalize_eq_self_iff_monic sorry, ← mem_normalizedFactors_iff' sorry]
-    refine (normalizedFactorsEquivSpanNormalizedFactors ?_).symm
-    sorry
 
-#exit
-
-  erw [quotMapEquivQuotQuotMap_symm_apply]
-  simp?
-  simp only [algebraMap_int_eq, AlgEquiv.toRingEquiv_eq_coe, AlgEquiv.coe_ringEquiv,
-    quotientEquivAlgOfEq_mk, quotientEquiv_symm_apply, quotientMap_mk, RingHom.coe_coe,
-    mapEquiv_symm_apply]
-#exit
-
-    RingEquiv.symm_symm,
-    quotMapEquivQuotQuotMap_symm_apply]
-  simp only [AlgEquiv.toRingEquiv_eq_coe, algebraMap_int_eq, RingEquiv.coe_trans,
-    AlgEquiv.coe_ringEquiv, Function.comp_apply, quotientEquivAlgOfEq_mk,
-    RingEquiv.symm_trans_apply, quotientEquiv_symm_apply, quotientMap_mk, RingHom.coe_coe,
-    mapEquiv_symm_apply, RingEquiv.symm_symm]
-
-  sorry
-
-
-
-#exit
 
 
 
@@ -203,49 +161,9 @@ example (hp : ¬ ↑p ∣ index θ) (Q : ℤ[X]) :
 
 
 
-#exit
-
-example (hp : ¬ ↑p ∣ index θ) :
-    (ZMod p)[X] ⧸ span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)} ≃+*
-      (𝓞 K) ⧸ span {(p : 𝓞 K)} := by
-  refine RingEquiv.trans (quotientEquiv _ _ (mapEquiv (Int.quotientSpanNatEquivZMod p).symm) rfl) ?_
-
-  let k := quotAdjoinEquivQuotMap (S := 𝓞 K) (I := span {(p : ℤ)})
-    (not_dvd_index_iff.mp hp) (FaithfulSMul.algebraMap_injective _ _)
-  rw [Ideal.map_span, Ideal.map_span, Set.image_singleton, Set.image_singleton, map_natCast,
-    map_natCast] at k
-  refine RingEquiv.trans ?_ k
-
-  let s := (minpoly.equivAdjoin (R := ℤ) θ.isIntegral).toRingEquiv.symm
-  let t := AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot (R := ℤ) (span {(p : ℤ)})
-    (minpoly ℤ θ)
-  rw [Ideal.map_span, Set.image_singleton, map_natCast] at t
---  let J := (map (Quotient.mk (span {↑↑p})) (span {(aeval θ) Q}))
---  let I := Ideal.map ↑k.symm J
---  let A := quotientEquiv J _ k.symm rfl
---  let e := polynomialQuotientEquivQuotientPolynomial (span {(p : ℤ)})
-  let e := mapEquiv (Int.quotientSpanNatEquivZMod p).symm
 
 
-  refine RingEquiv.trans ?_ (quotientEquiv _ _ s rfl).symm
-  have : Ideal.map (↑s) (span {↑↑p}) = span {↑↑p} := by
-    simp [s, map_span]
-  erw [this]  ---simp only [RingHom.coe_coe]
-  refine RingEquiv.trans ?_ t.symm
-  rw [map_span, Set.image_singleton]
---  unfold e
-  rw [RingHom.coe_coe, mapEquiv_apply, Polynomial.map_map]
-  have : RingHom.comp ((Int.quotientSpanNatEquivZMod p).symm) (Int.castRingHom (ZMod p)) =
-      Ideal.Quotient.mk (span {(p : ℤ)}) := by
-    ext; simp
-  rw [this]
 
-#exit
-
-  refine RingEquiv.trans ?_ (quotientEquiv _ _ k.symm rfl).symm
-  let s' := quotientEquiv (span {↑↑p}) _ s rfl
-  refine RingEquiv.trans ?_ (quotientEquiv _ _ s' rfl).symm
-  sorry
 
 
 
@@ -314,7 +232,7 @@ theorem Ideal.primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ ↑p ∣ in
     (hQ : Q ∈ monicFactorsMod p (minpoly ℤ θ)) :
     ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) =
       (KummerDedekind.normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
-        inferInstance (by simp) (max_comap_conductor_span_eq_top hp) θ.isIntegral).symm
+        inferInstance (by simp?) (max_comap_conductor_span_eq_top hp) θ.isIntegral).symm
         ⟨Q.map (Int.quotientSpanNatEquivZMod p).symm, by
           rw [Set.mem_setOf, ← mapEquiv_apply, ← primesOverSpanEquivMonicFactorsModAux_apply hQ]
           exact Subtype.prop _⟩ := rfl
