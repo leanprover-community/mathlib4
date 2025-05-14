@@ -561,7 +561,7 @@ private theorem index_of_fixingSubgroup_aux
       simp only [Set.mem_singleton_iff]
       rw [← hb']
     have htcard : t.ncard = k := by
-      rw [← Nat.succ_inj', Nat.succ_eq_add_one, Nat.succ_eq_add_one, ← hs, hscard, add_comm]
+      rw [← Nat.succ_inj, Nat.succ_eq_add_one, Nat.succ_eq_add_one, ← hs, hscard, add_comm]
     suffices (fixingSubgroup (stabilizer G a) t).index *
       (Nat.card α - 1 - t.ncard).factorial =
         (Nat.card α - 1).factorial by

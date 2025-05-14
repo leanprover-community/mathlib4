@@ -147,7 +147,7 @@ theorem _root_.SubMulAction.ofStabilizer.isMultiplyPreprimitive_iff_succ
           rw [← Set.nonempty_def, Set.nonempty_iff_ne_empty]
           intro h
           apply not_lt.mpr hn
-          rw [h, Set.encard_empty, zero_add, ← Nat.cast_one, Nat.cast_inj, Nat.succ_inj'] at hs
+          rw [h, Set.encard_empty, zero_add, ← Nat.cast_one, Nat.cast_inj, Nat.succ_inj] at hs
           simp only [← hs, zero_lt_one]
         obtain ⟨b, hb⟩ := this
         obtain ⟨g, hg : g • b = a⟩ := exists_smul_eq M b a
