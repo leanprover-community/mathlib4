@@ -909,7 +909,14 @@ end Preorder
 open Set
 
 @[simp] lemma removeNth_update (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
-    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth, succAbove_ne]
+    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth]
+
+@[simp]
+lemma removeNth_update_succAbove (p : Fin (n + 1)) (i : Fin n) (x : α (p.succAbove i))
+    (f : ∀ j, α j) :
+    removeNth p (update f (p.succAbove i) x) = update (removeNth p f) i x := by
+  ext j
+  rcases eq_or_ne j i with rfl | hne <;> simp [removeNth, succAbove_right_inj, *]
 
 @[simp] lemma insertNth_removeNth (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
     insertNth p x (removeNth p f) = update f p x := by simp [Fin.insertNth_eq_iff]
@@ -920,8 +927,13 @@ lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
 @[simp]
 theorem update_insertNth (p : Fin (n + 1)) (x y : α p) (f : ∀ i, α (p.succAbove i)) :
     update (p.insertNth x f) p y = p.insertNth y f := by
-  ext i
-  cases i using p.succAboveCases <;> simp [succAbove_ne]
+  simp [eq_insertNth_iff]
+
+@[simp]
+theorem insertNth_update (p : Fin (n + 1)) (x : α p) (i : Fin n) (y : α (p.succAbove i))
+    (f : ∀ j, α (p.succAbove j)) :
+    p.insertNth x (update f i y) = update (p.insertNth x f) (p.succAbove i) y := by
+  simp [insertNth_eq_iff]
 
 /-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the `p`-th element of the tuple.

@@ -538,9 +538,6 @@ end AddCircle
 
 section UnitAddCircle
 
-instance instZeroLTOne [Semiring 𝕜] [PartialOrder 𝕜] [IsStrictOrderedRing 𝕜] : Fact ((0 : 𝕜) < 1) :=
-  ⟨zero_lt_one⟩
-
 /-- The unit circle `ℝ ⧸ ℤ`. -/
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)
@@ -694,9 +691,8 @@ variable (N) in
 lemma toAddCircle_injective : Function.Injective (toAddCircle : ZMod N → _) := by
   intro x y hxy
   have : (0 : ℝ) < N := Nat.cast_pos.mpr (NeZero.pos _)
-  rwa [toAddCircle_apply, toAddCircle_apply, AddCircle.coe_eq_coe_iff_of_mem_Ico
-    (hp := Real.fact_zero_lt_one) (a := 0), div_left_inj' this.ne', Nat.cast_inj,
-    (val_injective N).eq_iff] at hxy <;>
+  rwa [toAddCircle_apply, toAddCircle_apply, AddCircle.coe_eq_coe_iff_of_mem_Ico,
+    div_left_inj' this.ne', Nat.cast_inj, (val_injective N).eq_iff] at hxy <;>
   exact ⟨by positivity, by simpa only [zero_add, div_lt_one this, Nat.cast_lt] using val_lt _⟩
 
 @[simp] lemma toAddCircle_inj {j k : ZMod N} : toAddCircle j = toAddCircle k ↔ j = k :=

@@ -169,12 +169,12 @@ theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurab
     map_apply_of_aemeasurable (hg.comp_aemeasurable hf) hs, preimage_comp]
 
 @[fun_prop, measurability]
-protected theorem fst {f : α → β × γ} (hf :AEMeasurable f μ) :
+protected theorem fst {f : α → β × γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x ↦ (f x).1) μ :=
   measurable_fst.comp_aemeasurable hf
 
 @[fun_prop, measurability]
-protected theorem snd {f : α → β × γ} (hf :AEMeasurable f μ) :
+protected theorem snd {f : α → β × γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x ↦ (f x).2) μ :=
   measurable_snd.comp_aemeasurable hf
 
