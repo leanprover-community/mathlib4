@@ -87,6 +87,66 @@ Finally, if everything looks correct, adding a final `write` actually generates 
 syntax "#create_deprecated_modules" (ppSpace ident)? (ppSpace num)? (ppSpace str)? (&" write")? :
   command
 
+/-- `processPrettyOneLine log msg` takes as input two strings `log` and `msg`.
+It expects `log` to be a line in the output of `git log --pretty=oneline`:
+it should look like `<hash> <PRdescr>`.
+
+It also expects `log` to be either `last modified` or `deleted` and
+it returns the pair `(<hash>, <msg> in <PRdescr> <hash>)`, formatted as a collapsible message.
+-/
+def processPrettyOneLine (log msg : String) : String × MessageData :=
+  let hash := log.takeWhile (!·.isWhitespace)
+  let PRdescr := (log.drop hash.length).trim
+  (hash, m!"{msg} in " ++
+        .trace {cls := .str .anonymous ("_" ++ hash.take 7)} m!"{PRdescr}" #[m!"{hash}"])
+  --(hash, .trace {cls := `Commit} m!"{msg} in the PR {PRdescr}" #[m!"{hash}"])
+
+/--
+`deprecateFilePath fname comment` takes as input
+* the path `fname` of a file that was deleted;
+* an optional comment to add in the `deprecated module` syntax.
+
+It returns a pair consisting of
+* an array of `MessageData` giving details about the last time that `fname` was modified
+  and when it was deleted;
+* the content of the deprecated file, matching the original `fname` up to the last import command
+  followed by the `deprecated_module` command with the optional `comment` input, defaulting to
+  `Auto-generated deprecation` if `comment = none`.
+-/
+def deprecateFilePath (fname : String) (comment : Option String) :
+    CommandElabM (Array MessageData × String) := do
+  let mut msgs : Array MessageData := #[]
+  -- Check that the input `fname` is a file that currently does not exist.
+  if ← System.FilePath.pathExists fname then
+    throwError m!"The file {fname} exists: I cannot deprecate it!"
+  -- Retrieve the last two commits that modified `fname`:
+  -- the last one is the deletion, the previous one is the last file modification.
+  let log ← IO.Process.run {
+      cmd := "git"
+      args := #["log", "--pretty=oneline", "--all", "-2", "--", fname]
+    }
+  let [deleted, lastModified] := log.trim.splitOn "\n" |
+    throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2!"
+  let (_deleteHash, deletedMsg) := processPrettyOneLine deleted "deleted"
+  let (modifiedHash, modifiedMsg) := processPrettyOneLine lastModified "last modified"
+  msgs := msgs.push <| m!"The file {fname} was\n"
+  msgs := msgs.push modifiedMsg
+  msgs := msgs.push deletedMsg
+  let deprecation ← if let some cmt := comment then mkDeprecation cmt else mkDeprecation
+  msgs := msgs.push ""
+  -- Retrieves the final version of the file, before it was deleted.
+  let file ← IO.Process.run {cmd := "git", args := #["show", s!"{modifiedHash}:{fname}"]}
+  -- Generate a module deprecation for the file `fname`.
+  let fileHeader ← getHeader fname file false
+  let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
+  msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
+  return (msgs, deprecatedFile)
+
+run_cmd
+  let (msgs, file) ← deprecateFilePath "Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean" (some "J")
+  logInfo file
+  logInfo <| .joinSep msgs.toList "\n"
+
 elab_rules : command
 | `(#create_deprecated_modules%$tk $id:ident $nc:num) => do
   throwErrorAt tk m!"You can only pass either the module name {id} or \
