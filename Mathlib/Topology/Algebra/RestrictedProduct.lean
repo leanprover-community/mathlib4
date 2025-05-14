@@ -932,9 +932,6 @@ variable (R₁ : ι₁ → Type*) (R₂ : ι₂ → Type*)
 variable [∀ i, TopologicalSpace (R₁ i)] [∀ i, TopologicalSpace (R₂ i)]
 variable {𝓕₁ : Filter ι₁} {𝓕₂ : Filter ι₂}
 variable {A₁ : (i : ι₁) → Set (R₁ i)} {A₂ : (i : ι₂) → Set (R₂ i)}
-variable {S₁ : ι₁ → Type*} {S₂ : ι₂ → Type*}
-variable [Π i, SetLike (S₁ i) (R₁ i)] [Π j, SetLike (S₂ j) (R₂ j)]
-variable {B₁ : Π i, S₁ i} {B₂ : Π j, S₂ j}
 variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
 
 variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, A₁ (f j) ⊆ φ j ⁻¹' A₂ j)
