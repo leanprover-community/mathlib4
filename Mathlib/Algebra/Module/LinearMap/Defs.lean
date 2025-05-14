@@ -996,12 +996,18 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 variable {ι : Type*}
 
 open Lean.Parser.Term in
-macro:max "fun " x:funBinder " ↦ₗ[" R:term "] " b:term : term =>
-  `(IsLinearMap.mk' (R:=$R) (fun $x => $b) (by fun_prop))
+syntax:max (name:=linearMapLambdaStx) "fun " funBinder+ " ↦ₗ[" term "] " term : term
 
 open Lean.Parser.Term in
-macro:max "fun " x:funBinder " =>ₗ[" R:term "] " b:term : term =>
-  `(fun $x ↦ₗ[$R] $b)
+macro_rules (kind:=linearMapLambdaStx)
+| `(fun $x:funBinder ↦ₗ[ $R:term ] $b:term) =>
+  `(IsLinearMap.mk' (R:=$R) (fun $x => $b) (by fun_prop))
+| `(fun $x:funBinder $xs:funBinder* ↦ₗ[ $R:term ] $b:term) =>
+  `(IsLinearMap.mk' (R:=$R) (fun $x => fun $xs* ↦ₗ[$R] $b) (by fun_prop))
+
+open Lean.Parser.Term in
+macro:max "fun " xs:funBinder+ " =>ₗ[" R:term "] " b:term : term =>
+  `(fun $xs* ↦ₗ[$R] $b)
 
 open Lean PrettyPrinter Delaborator SubExpr in
 @[app_delab IsLinearMap.mk']
@@ -1019,6 +1025,15 @@ theorem mk'_isLinearMap [SMulCommClass R R M₃] (f : M → M₂ → M₃)
     (hfx : ∀ y, IsLinearMap R (f · y)) :
     IsLinearMap R (fun x => fun y =>ₗ[R] f x y) := by
   apply IsLinearMap.mk <;> (intro x y; ext z; simp[(hfx z).1, (hfx z).2])
+
+@[fun_prop]
+theorem apply_isLinearMap
+    {S : Type*} [Semiring S] [Module S M₂] [SMulCommClass R S M₂]
+    {M₃ : Type*} [AddCommMonoid M₃] [Module S M₃]
+    (f : M₃ → M →ₗ[R] M₂) (y)
+    (hf : IsLinearMap S f) :
+    IsLinearMap S (fun x : M₃ => f x y) := by
+  constructor <;> simp [hf.1,hf.2]
 
 @[fun_prop]
 theorem isLinearMap_id : IsLinearMap R (fun x : M => x) := LinearMap.id.isLinear

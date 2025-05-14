@@ -297,6 +297,8 @@ open Lean.Parser.Term in
 macro:max "fun " x:funBinder " =>L[" R:term "] " b:term : term =>
   `(fun $x ↦L[$R] $b)
 
+/-- Unexpander for `ContinuousLinearMap.mk'` that pretty prints continuous linear maps as
+`fun x ↦L[R] f x` -/
 @[app_unexpander ContinuousLinearMap.mk']
 def unexpandContinuousLinearMapMk' :
     Lean.PrettyPrinter.Unexpander
@@ -309,7 +311,7 @@ def unexpandContinuousLinearMapMk' :
 @[fun_prop]
 theorem ContinuousLinearMap.mk'_isLinearMap
     {R : Type*} [CommRing R]
-    {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+    {M : Type*} [AddCommMonoid M] [Module R M]
     {M₂ : Type*} [TopologicalSpace M₂] [AddCommGroup M₂] [Module R M₂]
     {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃] [Module R M₃]
     [IsTopologicalAddGroup M₃] [ContinuousConstSMul R M₃]
@@ -338,23 +340,23 @@ theorem ContinuousLinearMap.mk_continuous
         cont := by fun_prop : M₂ →L[𝕜] M₃ }) :=
   continuous_clm_apply.2 (fun y ↦ by simp; fun_prop)
 
-@[fun_prop]
-theorem ContinuousLinearMap.mk'_continuous
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    {M : Type*} [TopologicalSpace M]
-    {M₂ : Type*} [NormedAddCommGroup M₂] [NormedSpace 𝕜 M₂]
-    {M₃ : Type*} [NormedAddCommGroup M₃] [NormedSpace 𝕜 M₃]
-    [FiniteDimensional 𝕜 M₂]
-    (f : M → M₂ → M₃)
-    (hfy : ∀ x, IsLinearMap 𝕜 (f x ·))
-    (hf : Continuous ↿f) :
-    Continuous (fun x => fun y =>L[𝕜] f x y) :=
-  ContinuousLinearMap.mk_continuous f hfy hf
+-- @[fun_prop]
+-- theorem ContinuousLinearMap.mk'_continuous
+--     {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+--     {M : Type*} [TopologicalSpace M]
+--     {M₂ : Type*} [NormedAddCommGroup M₂] [NormedSpace 𝕜 M₂]
+--     {M₃ : Type*} [NormedAddCommGroup M₃] [NormedSpace 𝕜 M₃]
+--     [FiniteDimensional 𝕜 M₂]
+--     (f : M → M₂ → M₃)
+--     (hfy : ∀ x, IsLinearMap 𝕜 (f x ·))
+--     (hf : Continuous ↿f) :
+--     Continuous (fun x => fun y =>L[𝕜] f x y) :=
+--   ContinuousLinearMap.mk_continuous f hfy hf
 
 @[fun_prop]
 theorem ContinuousLinearMap.isLinearMap_apply
     {R : Type*} [CommRing R]
-    {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+    {M : Type*} [AddCommMonoid M] [Module R M]
     {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
     {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃] [Module R M₃]
     [IsTopologicalAddGroup M₃] [ContinuousConstSMul R M₃]

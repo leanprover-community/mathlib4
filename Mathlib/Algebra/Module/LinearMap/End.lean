@@ -333,6 +333,10 @@ lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivi
   rw [smul_eq_zero] at h
   tauto
 
+@[fun_prop]
+lemma _root_.IsLinearMap_smul_right (x : M) : IsLinearMap R (fun s : S => s • x) :=
+  ⟨(smulRight (id (R:=R)) x).1.2, (smulRight id x).2⟩
+
 end SMulRight
 
 end AddCommMonoid
@@ -354,6 +358,10 @@ def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
       map_smul' := fun x f => f.smul_apply x v }
   map_zero' := LinearMap.ext fun f => f.map_zero
   map_add' _ _ := LinearMap.ext fun f => f.map_add _ _
+
+@[fun_prop]
+lemma _root_.IsLinearMap_smul_left (s : S) : IsLinearMap R (fun x : M₂ => s • x) := by
+  constructor <;> simp [smul_assoc, smul_comm]
 
 end Module
 
