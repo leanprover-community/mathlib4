@@ -106,7 +106,7 @@ scoped notation "E(" G ")" => Graph.edgeSet G
 lemma IsLink.edge_mem (h : G.IsLink e x y) : e ∈ E(G) :=
   (edge_mem_iff_exists_isLink ..).2 ⟨x, y, h⟩
 
-lemma IsLink.symm (h : G.IsLink e x y) : G.IsLink e y x :=
+protected lemma IsLink.symm (h : G.IsLink e x y) : G.IsLink e y x :=<
   G.isLink_symm h.edge_mem h
 
 lemma IsLink.left_mem (h : G.IsLink e x y) : x ∈ V(G) :=
