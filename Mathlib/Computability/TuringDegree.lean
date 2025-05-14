@@ -9,9 +9,9 @@ import Mathlib.Order.Antisymmetrization
 /-!
 # Oracle Computability and Turing Degrees
 
-This file defines a model of oracle computability, introduces Turing reducibility and equivalence,
-proves that Turing equivalence is an equivalence relation, and defines Turing degrees as the
-quotient under this relation.
+This file defines a model of oracle computability using partial recursive functions.
+THis file introduces Turing reducibility and equivalence, prove that Turing equivalence is an
+equivalence relation, and define Turing degrees as the quotient under this relation.
 
 ## Main Definitions
 
@@ -36,14 +36,9 @@ pairing, composition, primitive recursion, and μ-recursion.
 
 ## References
 
-* [Carneiro2018] Carneiro, Mario.
-  *Formalizing Computability Theory via Partial Recursive Functions*.
-  arXiv preprint arXiv:1810.08380, 2018.
 * [Odifreddi1989] Odifreddi, Piergiorgio.
   *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers,
   Vol. I*. Springer-Verlag, 1989.
-* [Soare1987] Soare, Robert I. *Recursively Enumerable Sets and Degrees*. Springer-Verlag, 1987.
-* [Gu2015] Gu, Yi-Zhi. *Turing Degrees*. Institute for Advanced Study, 2015.
 
 ## Tags
 
@@ -79,7 +74,7 @@ inductive RecursiveIn (O : Set (ℕ →. ℕ)) : (ℕ →. ℕ) → Prop
       RecursiveIn O fun a =>
         Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a n)
 /--
-`f` is turing reducible to `g` if `f` is partial recursive given access to the oracle `g`
+`f` is Turing reducible to `g` if `f` is partial recursive given access to the oracle `g`
 -/
 abbrev TuringReducible (f g : ℕ →. ℕ) : Prop :=
   RecursiveIn {g} f
@@ -205,10 +200,3 @@ instance TuringDegree.instPartialOrder : PartialOrder TuringDegree :=
       apply RecursiveIn.prec ih₁ ih₂
     · case rfind =>
       apply RecursiveIn.rfind ih
-
-/--
-An alternative definition of partial recursive in terms of oracle computability:
-A partial recursive function is a function which is recursive in the empty set
--/
-example (f : ℕ →. ℕ) : Prop :=
-  RecursiveIn {} f
