@@ -14,12 +14,12 @@ import Mathlib.Data.Matrix.Diagonal
 This file defines vector and matrix multiplication
 
 ## Main definitions
- * `dotProduct`: the dot product between two vectors
- * `Matrix.mul`: multiplication of two matrices
- * `Matrix.mulVec`: multiplication of a matrix with a vector
- * `Matrix.vecMul`: multiplication of a vector with a matrix
- * `Matrix.vecMulVec`: multiplication of a vector with a vector to get a matrix
- * `Matrix.instRing`: square matrices form a ring
+* `dotProduct`: the dot product between two vectors
+* `Matrix.mul`: multiplication of two matrices
+* `Matrix.mulVec`: multiplication of a matrix with a vector
+* `Matrix.vecMul`: multiplication of a vector with a matrix
+* `Matrix.vecMulVec`: multiplication of a vector with a vector to get a matrix
+* `Matrix.instRing`: square matrices form a ring
 
 ## Notation
 
