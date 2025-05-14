@@ -38,7 +38,7 @@ theorem prod_map_le_pow_card {F L : Type*} [MulPosMono R] [FunLike F L R] {f : F
     {t : Multiset L} (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x ∈ t, f x ≤ r) :
     (map f t).prod ≤ r ^ card t := by
   induction t using Quotient.inductionOn
-  simp_all [List.prod_map_le_pow_length]
+  simp_all [List.prod_map_le_pow_length₀]
 
 omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]
