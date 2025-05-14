@@ -851,4 +851,28 @@ def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
     | _ => pure .none
   | _, _, _ => throwError "not a sum of 2 `EReal`s"
 
+/-- Extension for the `positivity` tactic: product of two `EReal`s. -/
+@[positivity (_ * _ : EReal)]
+def evalERealMul : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a * $b) =>
+    assertInstancesCommute
+    match ← core zα pα a with
+    | .positive pa =>
+      match ← core zα pα b with
+      | .positive pb => pure <| .positive q(EReal.mul_pos $pa $pb)
+      | .nonnegative pb => pure <| .nonnegative q(EReal.mul_nonneg (le_of_lt $pa) $pb)
+      | .nonzero pb => pure <| .nonzero q(mul_ne_zero (ne_of_gt $pa) $pb)
+      | _ => pure .none
+    | .nonnegative pa =>
+      match (← core zα pα b).toNonneg with
+      | .some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
+      | .none => pure .none
+    | .nonzero pa =>
+      match (← core zα pα b).toNonzero with
+      | .some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
+      | none => pure .none
+    | _ => pure .none
+  | _, _, _ => throwError "not a product of 2 `EReal`s"
+
 end Mathlib.Meta.Positivity

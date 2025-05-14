@@ -839,25 +839,24 @@ def evalENNRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure (.nonnegative q(EReal.coe_ennreal_nonneg $a))
   | _, _, _ => throwError "not ENNReal.toEReal"
 
+/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ`. -/
 @[positivity EReal.toReal _]
 def evalERealToReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(Real), ~q(EReal.toReal $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
-    match ra with
-    | .positive pa => pure (.nonnegative q(EReal.toReal_nonneg (le_of_lt $pa)))
-    | .nonnegative pa => pure (.nonnegative q(EReal.toReal_nonneg $pa))
+    match (← core q(inferInstance) q(inferInstance) a).toNonneg with
+    | .some pa => pure (.nonnegative q(EReal.toReal_nonneg $pa))
     | _ => pure .none
   | _, _, _ => throwError "not EReal.toReal"
 
+/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ≥0∞`. -/
 @[positivity EReal.toENNReal _]
 def evalERealToENNReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ENNReal), ~q(EReal.toENNReal $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
-    match ra with
+    match ← core q(inferInstance) q(inferInstance) a with
     | .positive pa => pure (.positive q(EReal.toENNReal_pos_iff.2 $pa))
     | _ => pure (.nonnegative q(zero_le $e))
   | _, _, _ => throwError "not EReal.toENNReal"
