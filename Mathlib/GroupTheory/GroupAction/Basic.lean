@@ -345,8 +345,6 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
 end AddAction
 
 attribute [to_additive existing] MulAction.stabilizerEquivStabilizer
-attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_apply
-attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_symm_apply
 attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_trans
 attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_one
 attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_inv
