@@ -106,7 +106,7 @@ scoped notation "E(" G ")" => Graph.edgeSet G
 lemma IsLink.edge_mem (h : G.IsLink e x y) : e ∈ E(G) :=
   (edge_mem_iff_exists_isLink ..).2 ⟨x, y, h⟩
 
-protected lemma IsLink.symm (h : G.IsLink e x y) : G.IsLink e y x :=<
+protected lemma IsLink.symm (h : G.IsLink e x y) : G.IsLink e y x :=
   G.isLink_symm h.edge_mem h
 
 lemma IsLink.left_mem (h : G.IsLink e x y) : x ∈ V(G) :=
@@ -116,7 +116,7 @@ lemma IsLink.right_mem (h : G.IsLink e x y) : y ∈ V(G) :=
   h.symm.left_mem
 
 lemma isLink_comm : G.IsLink e x y ↔ G.IsLink e y x :=
-  ⟨IsLink.symm, IsLink.symm⟩
+  ⟨.symm, .symm⟩
 
 lemma exists_isLink_of_mem_edgeSet (h : e ∈ E(G)) : ∃ x y, G.IsLink e x y :=
   (edge_mem_iff_exists_isLink ..).1 h
@@ -124,30 +124,33 @@ lemma exists_isLink_of_mem_edgeSet (h : e ∈ E(G)) : ∃ x y, G.IsLink e x y :=
 lemma edgeSet_eq_setOf_exists_isLink : E(G) = {e | ∃ x y, G.IsLink e x y} :=
   Set.ext G.edge_mem_iff_exists_isLink
 
-lemma IsLink.left_eq_or_eq_of_isLink (h : G.IsLink e x y) (h' : G.IsLink e z w) : x = z ∨ x = w :=
+lemma IsLink.left_eq_or_eq (h : G.IsLink e x y) (h' : G.IsLink e z w) : x = z ∨ x = w :=
   G.eq_or_eq_of_isLink_of_isLink h h'
 
-lemma IsLink.left_eq_of_isLink_of_ne (h : G.IsLink e x y) (h' : G.IsLink e z w) (hzx : x ≠ z) :
+lemma IsLink.right_eq_or_eq (h : G.IsLink e x y) (h' : G.IsLink e z w) : y = z ∨ y = w :=
+  h.symm.left_eq_or_eq h'
+
+lemma IsLink.left_eq_of_right_ne (h : G.IsLink e x y) (h' : G.IsLink e z w) (hzx : x ≠ z) :
     x = w :=
-  (h.left_eq_or_eq_of_isLink h').elim (False.elim ∘ hzx) id
+  (h.left_eq_or_eq h').elim (False.elim ∘ hzx) id
 
 lemma IsLink.right_unique (h : G.IsLink e x y) (h' : G.IsLink e x z) : y = z := by
-  obtain rfl | rfl := h.symm.left_eq_or_eq_of_isLink h'.symm
+  obtain rfl | rfl := h.right_eq_or_eq h'.symm
   · rfl
-  obtain rfl | rfl := h'.symm.left_eq_or_eq_of_isLink h.symm <;> rfl
+  obtain rfl | rfl := h'.right_eq_or_eq h.symm <;> rfl
 
 lemma IsLink.left_unique (h : G.IsLink e x z) (h' : G.IsLink e y z) : x = y :=
   h.symm.right_unique h'.symm
 
-lemma IsLink.eq_and_eq_or_eq_and_eq_of_isLink {x' y' : α} (h : G.IsLink e x y)
+lemma IsLink.eq_and_eq_or_eq_and_eq {x' y' : α} (h : G.IsLink e x y)
     (h' : G.IsLink e x' y') : (x = x' ∧ y = y') ∨ (x = y' ∧ y = x') := by
-  obtain rfl | rfl := h.left_eq_or_eq_of_isLink h'
+  obtain rfl | rfl := h.left_eq_or_eq h'
   · simp [h.right_unique h']
   simp [h'.symm.right_unique h]
 
 lemma IsLink.isLink_iff (h : G.IsLink e x y) {x' y' : α} :
     G.IsLink e x' y' ↔ (x = x' ∧ y = y') ∨ (x = y' ∧ y = x') := by
-  refine ⟨h.eq_and_eq_or_eq_and_eq_of_isLink, ?_⟩
+  refine ⟨h.eq_and_eq_or_eq_and_eq, ?_⟩
   rintro (⟨rfl, rfl⟩ | ⟨rfl,rfl⟩)
   · assumption
   exact h.symm
@@ -159,7 +162,8 @@ lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
 /-! ### Edge-vertex incidence -/
 
 /-- The unary incidence predicate of `G`. `G.Inc e x` means that the vertex `x`
-is one or both of the ends of the edge `e`. -/
+is one or both of the ends of the edge `e`.
+In the `Inc` namespace, we use `edge` and `vertex` to refer to `e` and `x`. -/
 def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.IsLink e x y
 
 @[simp]
@@ -179,7 +183,7 @@ lemma IsLink.inc_right (h : G.IsLink e x y) : G.Inc e y :=
   ⟨x, h.symm⟩
 
 lemma Inc.eq_or_eq_of_isLink (h : G.Inc e x) (h' : G.IsLink e y z) : x = y ∨ x = z :=
-  h.choose_spec.left_eq_or_eq_of_isLink h'
+  h.choose_spec.left_eq_or_eq h'
 
 lemma Inc.eq_of_isLink_of_ne_left (h : G.Inc e x) (h' : G.IsLink e y z) (hxy : x ≠ y) : x = z :=
   (h.eq_or_eq_of_isLink h').elim (False.elim ∘ hxy) id
@@ -189,14 +193,14 @@ lemma isLink_iff_inc : G.IsLink e x y ↔ G.Inc e x ∧ G.Inc e y ∧ ∀ z, G.I
   refine ⟨fun h ↦ ⟨h.inc_left, h.inc_right, fun z h' ↦ h'.eq_or_eq_of_isLink h⟩, ?_⟩
   rintro ⟨⟨x', hx'⟩, ⟨y', hy'⟩, h⟩
   obtain rfl | rfl := h _ hx'.inc_right
-  · obtain rfl | rfl := hx'.left_eq_or_eq_of_isLink hy'
+  · obtain rfl | rfl := hx'.left_eq_or_eq hy'
     · assumption
     exact hy'.symm
   assumption
 
 /-- Given a proof that the edge `e` is incident with the vertex `x` in `G`,
 noncomputably find the other end of `e`. (If `e` is a loop, this is equal to `x` itself). -/
-noncomputable def Inc.other (h : G.Inc e x) : α := h.choose
+protected noncomputable def Inc.other (h : G.Inc e x) : α := h.choose
 
 @[simp]
 lemma Inc.isLink_other (h : G.Inc e x) : G.IsLink e x h.other :=
@@ -206,7 +210,7 @@ lemma Inc.isLink_other (h : G.Inc e x) : G.IsLink e x h.other :=
 lemma Inc.inc_other (h : G.Inc e x) : G.Inc e h.other :=
   h.isLink_other.inc_right
 
-lemma Inc.eq_or_eq_or_eq_of_inc_of_inc (hx : G.Inc e x) (hy : G.Inc e y) (hz : G.Inc e z) :
+lemma Inc.eq_or_eq_or_eq (hx : G.Inc e x) (hy : G.Inc e y) (hz : G.Inc e z) :
     x = y ∨ x = z ∨ y = z := by
   by_contra! hcon
   obtain ⟨x', hx'⟩ := hx
@@ -250,13 +254,13 @@ lemma IsNonloopAt.edge_mem (h : G.IsNonloopAt e x) : e ∈ E(G) :=
 lemma IsNonloopAt.vertex_mem (h : G.IsNonloopAt e x) : x ∈ V(G) :=
   h.inc.vertex_mem
 
-lemma IsLoopAt.not_isNonloop_at (h : G.IsLoopAt e x) (y : α) : ¬ G.IsNonloopAt e y := by
+lemma IsLoopAt.not_isNonloopAt (h : G.IsLoopAt e x) (y : α) : ¬ G.IsNonloopAt e y := by
   rintro ⟨z, hyz, hy⟩
   rw [← h.eq_of_inc hy.inc_left, ← h.eq_of_inc hy.inc_right] at hyz
   exact hyz rfl
 
 lemma IsNonloopAt.not_isLoopAt (h : G.IsNonloopAt e x) (y : α) : ¬ G.IsLoopAt e y :=
-  fun h' ↦ h'.not_isNonloop_at x h
+  fun h' ↦ h'.not_isNonloopAt x h
 
 lemma isNonloopAt_iff_inc_not_isLoopAt : G.IsNonloopAt e x ↔ G.Inc e x ∧ ¬ G.IsLoopAt e x :=
   ⟨fun h ↦ ⟨h.inc, h.not_isLoopAt _⟩, fun ⟨⟨y, hy⟩, hn⟩ ↦ ⟨y, mt (fun h ↦ h ▸ hy) hn, hy⟩⟩
@@ -272,7 +276,7 @@ lemma Inc.isLoopAt_or_isNonloopAt (h : G.Inc e x) : G.IsLoopAt e x ∨ G.IsNonlo
 /-- `G.Adj x y` means that `G` has an edge whose ends are the vertices `x` and `y`. -/
 def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.IsLink e x y
 
-lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
+protected lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
   ⟨_, h.choose_spec.symm⟩
 
 lemma adj_comm : G.Adj x y ↔ G.Adj y x :=
@@ -298,7 +302,7 @@ lemma mk_eq_self (G : Graph α β) {E : Set β} (hE : ∀ e, e ∈ E ↔ ∃ x y
     Graph.mk V(G) G.IsLink E
     (by simpa [show E = E(G) by simp [Set.ext_iff, hE, G.edge_mem_iff_exists_isLink]]
       using G.isLink_symm)
-    (fun _ _ _ _ _ h h' ↦ h.left_eq_or_eq_of_isLink h') hE
+    (fun _ _ _ _ _ h h' ↦ h.left_eq_or_eq h') hE
     (fun _ _ _ ↦ IsLink.left_mem) = G := by
   obtain rfl : E = E(G) := by simp [Set.ext_iff, hE, G.edge_mem_iff_exists_isLink]
   cases G with | _ _ _ _ _ _ h _ => simp [← h]
