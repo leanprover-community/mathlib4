@@ -3,6 +3,7 @@ name: automatically assign reviewers
 on:
   schedule:
     - cron: "37 0 * * *" # At 00:37 UTC every day
+  push:
 
 jobs:
   autoassign-reviewers:
