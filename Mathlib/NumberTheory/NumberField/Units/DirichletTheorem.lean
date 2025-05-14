@@ -79,7 +79,7 @@ variable (K) in
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
 def _root_.NumberField.Units.logEmbedding :
     Additive ((𝓞 K)ˣ) →+ logSpace K :=
-{ toFun := fun x w => mult w.val * Real.log (w.val ↑x.toMul)
+{ toFun := fun x w ↦ mult w.val * Real.log (w.val ↑x.toMul)
   map_zero' := by simp; rfl
   map_add' := fun _ _ ↦ by simp [Real.log_mul, mul_add]; rfl }
 
@@ -131,7 +131,7 @@ open scoped Classical in
 theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
     (h : ‖logEmbedding K (Additive.ofMul x)‖ ≤ r) (w : InfinitePlace K) :
     |Real.log (w x)| ≤ (Fintype.card (InfinitePlace K)) * r := by
-  have tool : ∀ x : ℝ, 0 ≤ x → x ≤ mult w * x := fun x hx => by
+  have tool : ∀ x : ℝ, 0 ≤ x → x ≤ mult w * x := fun x hx ↦ by
     nth_rw 1 [← one_mul x]
     refine mul_le_mul ?_ le_rfl hx ?_
     all_goals { rw [mult]; split_ifs <;> norm_num }
@@ -172,7 +172,7 @@ theorem unitLattice_inter_ball_finite (r : ℝ) :
         ∀ (φ : K →+* ℂ), ‖φ x‖ ≤ Real.exp ((Fintype.card (InfinitePlace K)) * r)}.Finite by
       refine (Set.Finite.image (logEmbedding K) this).subset ?_
       rintro _ ⟨⟨x, ⟨_, rfl⟩⟩, hx⟩
-      refine ⟨x, ⟨x.val.prop, (le_iff_le _ _).mp (fun w => (Real.log_le_iff_le_exp ?_).mp ?_)⟩, rfl⟩
+      refine ⟨x, ⟨x.val.prop, (le_iff_le _ _).mp (fun w ↦ (Real.log_le_iff_le_exp ?_).mp ?_)⟩, rfl⟩
       · exact pos_iff.mpr (coe_ne_zero x)
       · rw [mem_closedBall_zero_iff] at hx
         exact (le_abs_self _).trans (log_le_of_logEmbedding_le hr hx w)
@@ -210,12 +210,12 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
       |Algebra.norm ℚ (y : K)| ≤ B := by
   have hx' := RingOfIntegers.coe_ne_zero_iff.mpr hx
   let f : InfinitePlace K → ℝ≥0 :=
-    fun w => ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
+    fun w ↦ ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt K (f := g)
       (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑) : NNReal → ENNReal) h_gprod)
-    refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
+    refine ⟨y, h_ynz, fun w hw ↦ (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
       calc
         _ = ∏ w : InfinitePlace K, w (algebraMap _ K y) ^ mult w :=
@@ -284,9 +284,9 @@ theorem exists_unit (w₁ : InfinitePlace K) :
   rsuffices ⟨n, m, hnm, h⟩ : ∃ n m, n < m ∧
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
-    refine ⟨hu.choose, fun w hw => Real.log_neg (pos_at_place (Exists.choose hu) w) ?_⟩
+    refine ⟨hu.choose, fun w hw ↦ Real.log_neg (pos_at_place hu.choose w) ?_⟩
     calc
-       _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
+      _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
          rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
           ← mul_assoc, inv_mul_cancel₀ (seq_ne_zero K w₁ hB n), one_mul]
       _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
@@ -306,7 +306,7 @@ theorem unitLattice_span_eq_top :
   -- The standard basis
   let B := Pi.basisFun ℝ {w : InfinitePlace K // w ≠ w₀}
   -- The image by log_embedding of the family of units constructed above
-  let v := fun w : { w : InfinitePlace K // w ≠ w₀ } =>
+  let v := fun w : { w : InfinitePlace K // w ≠ w₀ } ↦
     logEmbedding K (Additive.ofMul (exists_unit K w).choose)
   -- To prove the result, it is enough to prove that the family `v` is linearly independent
   suffices B.det v ≠ 0 by
@@ -315,9 +315,9 @@ theorem unitLattice_span_eq_top :
     refine  Submodule.span_monotone fun _ ⟨w, hw⟩ ↦ ⟨(exists_unit K w).choose, trivial, hw⟩
   rw [Basis.det_apply]
   -- We use a specific lemma to prove that this determinant is nonzero
-  refine det_ne_zero_of_sum_col_lt_diag (fun w => ?_)
+  refine det_ne_zero_of_sum_col_lt_diag (fun w ↦ ?_)
   simp_rw [Real.norm_eq_abs, B, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
-  rw [← sub_pos, sum_congr rfl (fun x hx => abs_of_neg ?_), sum_neg_distrib, sub_neg_eq_add,
+  rw [← sub_pos, sum_congr rfl (fun x hx ↦ abs_of_neg ?_), sum_neg_distrib, sub_neg_eq_add,
     sum_erase_eq_sub (mem_univ _), ← add_comm_sub]
   · refine add_pos_of_nonneg_of_pos ?_ ?_
     · rw [sub_nonneg]
@@ -453,7 +453,7 @@ def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
 units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
-  fun i => Quotient.out ((basisModTorsion K i).toMul:)
+  fun i ↦ Quotient.out ((basisModTorsion K i).toMul:)
 
 theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul (QuotientGroup.mk (fundSystem K i)) = (basisModTorsion K i) := by
