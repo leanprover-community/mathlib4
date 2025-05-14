@@ -27,7 +27,6 @@ import Mathlib.Data.Fintype.Card
 
 namespace SimpleGraph
 
-universe u
 variable {V : Type*} {G G' : SimpleGraph V} {u x v' w : V}
 
 /-- A set certifying non-existence of a perfect matching -/
@@ -37,27 +36,21 @@ def IsTutteViolator (G : SimpleGraph V) (u : Set V) : Prop :=
 /-- This lemma shows an alternating cycle exists in a specific subcase of the proof
 of Tutte's theorem. -/
 private lemma tutte_exists_isAlternating_isCycles {x b a c : V} {M : Subgraph (G ⊔ edge a c)}
-    (hM2 : M.IsPerfectMatching) (p : G'.Walk a x) (hp : p.IsPath)
-    (hcalt : G'.IsAlternating M.spanningCoe) (hM2nadj : ¬M.Adj x a)
-    (hpac : p.toSubgraph.Adj a c) (hnpxb : ¬p.toSubgraph.Adj x b) (hM2ac : M.Adj a c)
-    (hgadj : G.Adj x a) (hnxc : x ≠ c) (hnab : a ≠ b)
+    (p : G'.Walk a x) (hp : p.IsPath) (hcalt : G'.IsAlternating M.spanningCoe)
+    (hM2nadj : ¬M.Adj x a) (hpac : p.toSubgraph.Adj a c) (hnpxb : ¬p.toSubgraph.Adj x b)
+    (hM2ac : M.Adj a c) (hgadj : G.Adj x a) (hnxc : x ≠ c) (hnab : a ≠ b)
     (hle : p.toSubgraph.spanningCoe ≤ G ⊔ edge a c)
     (aux : (c' : V) → c' ≠ a → p.toSubgraph.Adj c' x → M.Adj c' x) :
     ∃ G', G'.IsAlternating M.spanningCoe ∧ G'.IsCycles ∧
-    ¬G'.Adj x b ∧ G'.Adj a c ∧ G' ≤ G ⊔ edge a c := by
-  use p.toSubgraph.spanningCoe ⊔ edge x a
-  refine ⟨IsAlternating.sup_edge (hcalt.spanningCoe p.toSubgraph) (by simp_all)
-    (fun u' hu'x hadj ↦ by simpa [← hp.snd_of_toSubgraph_adj hadj, hp.snd_of_toSubgraph_adj hpac])
-      (fun c' hc'a hadj ↦ aux _ hc'a hadj), ?_⟩
-  refine ⟨by
-    refine fun v hv ↦ hp.isCycles_spanningCoe_toSubgraph_sup_edge hgadj.ne.symm (fun hadj ↦ ?_) hv
+      ¬ G'.Adj x b ∧ G'.Adj a c ∧ G' ≤ G ⊔ edge a c := by
+  refine ⟨p.toSubgraph.spanningCoe ⊔ edge x a, (hcalt.spanningCoe p.toSubgraph).sup_edge (by simpa)
+    (fun u' hu'x hadj ↦ ?_) aux, ?_, ?_, by aesop, sup_le_iff.mpr ⟨hle, fun v w hvw ↦ ?_⟩⟩
+  · simpa [← hp.snd_of_toSubgraph_adj hadj, hp.snd_of_toSubgraph_adj hpac]
+  · refine hp.isCycles_spanningCoe_toSubgraph_sup_edge hgadj.ne.symm fun hadj ↦ ?_
     rw [← Walk.mem_edges_toSubgraph, Subgraph.mem_edgeSet] at hadj
-    simp [← hp.snd_of_toSubgraph_adj hadj.symm, hp.snd_of_toSubgraph_adj hpac] at hnxc, ?_⟩
-  exact ⟨by
-    simp only [sup_adj, Subgraph.spanningCoe_adj, hnpxb, edge_adj]; aesop, by aesop,
-    sup_le_iff.mpr ⟨hle, fun v w hvw ↦ by
-      simpa [sup_adj, edge_adj,
-        adj_congr_of_sym2 _ ((adj_edge _ _).mp hvw).1.symm] using .inl hgadj⟩⟩
+    simp [← hp.snd_of_toSubgraph_adj hadj.symm, hp.snd_of_toSubgraph_adj hpac] at hnxc
+  · simp +contextual [hnpxb, edge_adj, hnab.symm]
+  · simpa [edge_adj, adj_congr_of_sym2 _ ((adj_edge _ _).mp hvw).1.symm] using .inl hgadj
 
 variable [Fintype V]
 
@@ -77,7 +70,7 @@ it is strictly weaker than `IsPerfectMatching.exists_of_isClique_supp`. -/
 private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     (h : ¬IsTutteViolator G G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
-    G.deleteUniversalVerts.coe.IsClique K.supp) :
+      G.deleteUniversalVerts.coe.IsClique K.supp) :
     ∃ M : Subgraph G, M.IsMatching ∧ M.vertsᶜ ⊆ G.universalVerts := by
   classical
   have hrep := ConnectedComponent.Represents.image_out G.deleteUniversalVerts.coe.oddComponents
@@ -215,33 +208,30 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     rw [M2.adj_comm]
     exact hM2.1.not_adj_left_of_ne h.symm hM2ac
   -- Else we construct a path that contain the edge `a c`, but not the edge `x b`
-  have : ∃ x' ∈ ({x, b} : Finset V), ∃ (p : cycles.Walk a x'), p.IsPath ∧
-    p.toSubgraph.Adj a c ∧ ¬p.toSubgraph.Adj x b := by
-      obtain ⟨p, hp⟩ := hcycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp hacc
-        (Set.nonempty_of_mem hcac)
-      obtain ⟨p', hp'⟩ := hp.1.exists_isCycle_snd_verts_eq (by
-        rwa [hp.1.adj_toSubgraph_iff_of_isCycles hcycles (hp.2 ▸ hacc)])
-      obtain ⟨x', hx', hx'p, htw⟩ :=
-        Walk.exists_mem_support_forall_mem_support_imp_eq {x, b} (by
-        use x
-        simp only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton, true_or, true_and,
-          cycles]
-        rwa [← @Walk.mem_verts_toSubgraph, hp'.2.2, hp.2])
-      use x', hx', p'.takeUntil x' hx'p
-      refine ⟨hp'.1.isPath_takeUntil hx'p, ?_, (fun h ↦ by
-        simp [htw _ (by simp) (Walk.mem_support_of_adj_toSubgraph h.symm),
-          htw _ (by simp) (Walk.mem_support_of_adj_toSubgraph h)] at hnxb)⟩
-      have : (p'.takeUntil x' hx'p).toSubgraph.Adj a (p'.takeUntil x' hx'p).snd := by
-        apply SimpleGraph.Walk.toSubgraph_adj_snd
-        rw [Walk.nil_takeUntil]
-        aesop
-      rwa [Walk.snd_takeUntil (by
-        simp only [Finset.mem_insert, Finset.mem_singleton, cycles] at hx'
-        obtain h1 | h2 := hx'
-        · subst h1; exact hxa.ne
-        · subst h2; exact hab.ne.symm), hp'.2.1] at this
+  obtain ⟨x', hx', p, hp, hpac, hnpxb⟩ :
+      ∃ x' ∈ ({x, b} : Finset V), ∃ (p : cycles.Walk a x'), p.IsPath ∧
+        p.toSubgraph.Adj a c ∧ ¬p.toSubgraph.Adj x b := by
+    obtain ⟨p, hp⟩ := hcycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp hacc
+      ⟨_, hcac⟩
+    obtain ⟨p', hp'⟩ := hp.1.exists_isCycle_snd_verts_eq (by
+      rwa [hp.1.adj_toSubgraph_iff_of_isCycles hcycles (hp.2 ▸ hacc)])
+    obtain ⟨x', hx', hx'p, htw⟩ := Walk.exists_mem_support_forall_mem_support_imp_eq {x, b} <| by
+      use x
+      simp only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton, true_or, true_and,
+        cycles]
+      rwa [← @Walk.mem_verts_toSubgraph, hp'.2.2, hp.2]
+    refine ⟨x', hx', p'.takeUntil x' hx'p, hp'.1.isPath_takeUntil hx'p, ?_, fun h ↦ ?_⟩; swap
+    · simp [htw _ (by simp) (Walk.mem_support_of_adj_toSubgraph h.symm),
+        htw _ (by simp) (Walk.mem_support_of_adj_toSubgraph h)] at hnxb
+    have : (p'.takeUntil x' hx'p).toSubgraph.Adj a (p'.takeUntil x' hx'p).snd := by
+      apply Walk.toSubgraph_adj_snd
+      rw [Walk.nil_takeUntil]
+      aesop
+    rwa [Walk.snd_takeUntil, hp'.2.1] at this
+    simp only [Finset.mem_insert, Finset.mem_singleton, cycles] at hx'
+    obtain rfl | rfl := hx'
+    exacts [hxa.ne, hab.ne.symm]
   -- We show this path satisfies all requirements
-  obtain ⟨x', hx', p, hp, hpac, hnpxb⟩ := this
   have hle : p.toSubgraph.spanningCoe ≤ G ⊔ edge a c := by
     rw [← sdiff_edge _ (by simpa : ¬p.toSubgraph.spanningCoe.Adj x b), sdiff_le_iff']
     intro v w hvw
@@ -250,30 +240,25 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     simp only [cycles, symmDiff_def] at this
     aesop
   -- Helper condition to show that `p` ends with an edge in `M2`
-  have aux {x' : V} (hx' : x' ∈ ({x, b} : Set V)) (c' : V) : c' ≠ a → p.toSubgraph.Adj c' x' →
-      M2.Adj c' x' := by
-    intro hc hadj
-    have := hadj.adj_sub
-    simp only [cycles, symmDiff_def] at this
-    refine (this.resolve_left fun hl ↦ ?_).1
-    obtain ⟨w, hw⟩ := hM1.1 (hM1.2 x')
-    apply hnpxb
-    obtain h1 | h2 := hx'
-    · subst h1
-      rw [hw.2 _ hM1xb, ← hw.2 _ hl.1.symm]
+  have aux {x' : V} (hx' : x' ∈ ({x, b} : Set V)) (c' : V) (hc : c' ≠ a)
+      (hadj : p.toSubgraph.Adj c' x') : M2.Adj c' x' := by
+    refine (hadj.adj_sub.resolve_left fun hl ↦ hnpxb ?_).1
+    obtain ⟨w, -, hw⟩ := hM1.1 (hM1.2 x')
+    obtain rfl | rfl := hx'
+    · rw [hw _ hM1xb, ← hw _ hl.1.symm]
       exact hadj.symm
     · subst h2
       rw [hw.2 _ hM1xb.symm, ← hw.2 _ hl.1.symm]
       exact hadj
   simp only [Finset.mem_insert, Finset.mem_singleton, cycles] at hx'
   obtain rfl | rfl := hx'
-  · exact tutte_exists_isAlternating_isCycles hM2 p hp hcalt (hnM2 x' hnxc) hpac hnpxb hM2ac
+  · exact tutte_exists_isAlternating_isCycles p hp hcalt (hnM2 x' hnxc) hpac hnpxb hM2ac
       hxa hnxc hab.ne hle (aux (by simp))
   · conv =>
       enter [1, G', 2, 2, 1, 1]
       rw [adj_comm]
     rw [Subgraph.adj_comm] at hnpxb
-    apply tutte_exists_isAlternating_isCycles hM2 p hp hcalt (hnM2 _ hnbc) hpac hnpxb hM2ac
+    exact tutte_exists_isAlternating_isCycles p hp hcalt (hnM2 _ hnbc) hpac hnpxb hM2ac
       hab.symm hnbc hxa.ne.symm hle (aux (by simp))
 
 /-- From a graph on an even number of vertices with no perfect matching, we can remove an odd number
@@ -302,9 +287,9 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     push_neg at h'
     obtain ⟨K, hK⟩ := h'
     obtain ⟨x, y, hxy⟩ := (not_isClique_iff _).mp hK
-    obtain ⟨p , hp⟩ := SimpleGraph.Reachable.exists_path_of_dist (K.connected_induce_supp x y)
+    obtain ⟨p , hp⟩ := Reachable.exists_path_of_dist (K.connected_induce_supp x y)
     obtain ⟨x, a, b, hxa, hxb, hnadjxb, hnxb⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
-      (Reachable.one_lt_dist_of_ne_of_not_adj (Walk.reachable p) hxy.1 hxy.2)
+      (p.reachable.one_lt_dist_of_ne_of_not_adj hxy.1 hxy.2)
     simp only [deleteUniversalVerts, universalVerts, ne_eq, Subgraph.induce_verts,
       Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype, Subgraph.coe_adj,
       Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and] at hxa hxb hnadjxb
