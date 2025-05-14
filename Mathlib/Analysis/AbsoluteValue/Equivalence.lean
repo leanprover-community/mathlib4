@@ -61,7 +61,8 @@ lemma eq_trivial_of_isEquiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroD
   · simp only [ne_eq, hx, not_false_eq_true, trivial_apply] at hc ⊢
     exact (Real.rpow_left_inj (f.nonneg x) zero_le_one hc₀.ne').mp <| (Real.one_rpow c).symm ▸ hc
 
-variable {F S : Type*} [Field F] [LinearOrderedField S] {v w : AbsoluteValue F S}
+variable {F S : Type*} [Field F] [Field S] [LinearOrder S] [IsStrictOrderedRing S]
+  {v w : AbsoluteValue F S}
 
 open Filter in
 theorem lt_one_iff_of_lt_one_imp [Archimedean S] [TopologicalSpace S] [OrderTopology S]
