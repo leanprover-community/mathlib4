@@ -28,13 +28,13 @@ for group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Form
 
 ## Main definitions
 
- * `WeierstrassCurve.Projective.PointClass`: the equivalence class of a point representative.
- * `WeierstrassCurve.Projective.Nonsingular`: the nonsingular condition on a point representative.
- * `WeierstrassCurve.Projective.NonsingularLift`: the nonsingular condition on a point class.
+* `WeierstrassCurve.Projective.PointClass`: the equivalence class of a point representative.
+* `WeierstrassCurve.Projective.Nonsingular`: the nonsingular condition on a point representative.
+* `WeierstrassCurve.Projective.NonsingularLift`: the nonsingular condition on a point class.
 
 ## Main statements
 
- * `WeierstrassCurve.Projective.polynomial_relation`: Euler's homogeneous function theorem.
+* `WeierstrassCurve.Projective.polynomial_relation`: Euler's homogeneous function theorem.
 
 ## Implementation notes
 

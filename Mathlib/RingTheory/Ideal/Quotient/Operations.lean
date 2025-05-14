@@ -13,16 +13,16 @@ import Mathlib.RingTheory.Ideal.Quotient.Basic
 
 ## Main results:
 
- - `RingHom.quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
- - `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
+- `RingHom.quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
+- `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
   for a morphism from a commutative ring to a semiring.
- - `AlgHom.quotientKerEquivRange` : the **first isomorphism theorem**
+- `AlgHom.quotientKerEquivRange` : the **first isomorphism theorem**
   for a morphism of algebras (over a commutative semiring)
- - `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
+- `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
   for a morphism from a commutative ring to a semiring.
- - `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**, version for coprime
-   ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
-   `ZMod`).
+- `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**, version for coprime
+  ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
+  `ZMod`).
 -/
 
 universe u v w

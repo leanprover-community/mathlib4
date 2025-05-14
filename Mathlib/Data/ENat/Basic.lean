@@ -255,7 +255,7 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rw [top_sub_coe, toNat_top, zero_tsub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
-theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
+@[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b <;> simp
   · rename_i b; cases b <;> simp
   · rename_i a; cases a <;> simp
