@@ -5588,6 +5588,7 @@ import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.ExtractGoal
+import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
@@ -5630,6 +5631,7 @@ import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Lift
+import Mathlib.Tactic.LiftLets
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Linarith.Frontend
