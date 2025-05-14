@@ -119,7 +119,7 @@ prove that `𝓞 K` is principal, see [marcus1977number], discussion after Theor
 
 The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
 to deal with the finite number of primes `p` in the interval. -/
-theorem isPrincipalIdealRing_of_isPrincipal_of_le_pow_inertiaDeg_of_mem_primesOver_of_mem_Icc
+theorem isPrincipalIdealRing_of_isPrincipal_of_pow_inertiaDeg_le_of_mem_primesOver_of_mem_Icc
     (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, p.Prime → ∀ (P : Ideal (𝓞 K)),
       P ∈ Ideal.primesOver (span {(p : ℤ)}) (𝓞 K) →
       p ^ ((span ({↑p} : Set ℤ)).inertiaDeg P) ≤ ⌊(M K)⌋₊ →
