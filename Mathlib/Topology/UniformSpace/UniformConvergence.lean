@@ -365,7 +365,7 @@ lemma uniformity_tendstoUniformlyOnFilter_iff {F : X → α → β} {f : α → 
   rw [TendstoUniformlyOnFilter, hβ.forall_iff]
   exact fun _ _ _ h ↦ h.mp <| .of_forall <| by aesop
 
-/-- An anologue of `Filter.HasBasis.tendsto_right_iff` for `TendstoUniformlyOn`. -/
+/-- An anologue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformlyOnFilter`. -/
 lemma tendstoUniformlyOnFilter_iff {F : X → α → β} {f : α → β}
     {l : Filter X} {l' : Filter α} {pX : ιX → Prop} {sX : ιX → Set X}
     {pα : ια → Prop} {sα : ια → Set α} {pβ : ιβ → Prop} {sβ : ιβ → Set (β × β)}
@@ -375,7 +375,7 @@ lemma tendstoUniformlyOnFilter_iff {F : X → α → β} {f : α → β}
       (∀ i, pβ i → ∃ j k, (pX j ∧ pα k) ∧ ∀ x a, x ∈ sX j → a ∈ sα k → (f a, F x a) ∈ sβ i) := by
   simp [hβ.uniformity_tendstoUniformlyOnFilter_iff, (hl.prod hl').eventually_iff]
 
-/-- An anologue of `Filter.HasBasis.tendsto_right_iff` for `TendstoUniformly`. -/
+/-- An anologue of `Filter.HasBasis.tendsto_right_iff` for `TendstoUniformlyOn`. -/
 lemma uniformity_tendstoUniformlyOn_iff {F : X → α → β} {f : α → β}
     {l : Filter X} {s : Set α} {pβ : ιβ → Prop} {sβ : ιβ → Set (β × β)}
     (hβ : (uniformity β).HasBasis pβ sβ) :
@@ -384,7 +384,7 @@ lemma uniformity_tendstoUniformlyOn_iff {F : X → α → β} {f : α → β}
   rw [TendstoUniformlyOn, hβ.forall_iff]
   exact fun _ _ _ h ↦ h.mp <| .of_forall <| by aesop
 
-/-- An anologue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformlyOnFilter`. -/
+/-- An anologue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformlyOn`. -/
 lemma tendstoUniformlyOn_iff {F : X → α → β} {f : α → β}
     {l : Filter X} {s : Set α} {pX : ιX → Prop} {sX : ιX → Set X} {pβ : ιβ → Prop}
     {sβ : ιβ → Set (β × β)} (hl : l.HasBasis pX sX) (hβ : (uniformity β).HasBasis pβ sβ) :
@@ -392,7 +392,7 @@ lemma tendstoUniformlyOn_iff {F : X → α → β} {f : α → β}
       (∀ i, pβ i → ∃ j, pX j ∧ ∀ ⦃x⦄, x ∈ sX j → ∀ a ∈ s, (f a, F x a) ∈ sβ i) := by
   simp [hβ.uniformity_tendstoUniformlyOn_iff, hl.eventually_iff]
 
-/-- An anologue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformlyOn`. -/
+/-- An anologue of `Filter.HasBasis.tendsto_right_iff` for `TendstoUniformly`. -/
 lemma uniformity_tendstoUniformly_iff {F : X → α → β} {f : α → β}
     {l : Filter X} {pβ : ιβ → Prop} {sβ : ιβ → Set (β × β)}
     (hβ : (uniformity β).HasBasis pβ sβ) :
