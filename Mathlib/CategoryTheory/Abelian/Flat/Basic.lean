@@ -73,6 +73,14 @@ variable (A) in
 abbrev HasFunctorialFlatResolutions : Prop :=
   Nonempty (LeftResolutions (ObjectProperty.flat.ι : _ ⥤ A))
 
+lemma HasFunctorialFlatResolutions.mk {C : Type*} [Category C] {ι : C ⥤ A}
+    [ι.Full] [ι.Faithful] (Λ : LeftResolutions ι) (hι : ι.essImage ≤ ObjectProperty.flat) :
+    HasFunctorialFlatResolutions A := ⟨{
+        F := ObjectProperty.lift _ (Λ.F ⋙ ι) (fun _ ↦ hι _ (ι.obj_mem_essImage _))
+        π := Λ.π
+        hπ := Λ.hπ
+    }⟩
+
 end Abelian
 
 end CategoryTheory
