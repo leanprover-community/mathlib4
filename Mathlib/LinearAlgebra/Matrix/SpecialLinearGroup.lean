@@ -18,9 +18,9 @@ the group structure on `SpecialLinearGroup n R` and the embedding into the gener
 
 ## Main definitions
 
- * `Matrix.SpecialLinearGroup` is the type of matrices with determinant 1
- * `Matrix.SpecialLinearGroup.group` gives the group structure (under multiplication)
- * `Matrix.SpecialLinearGroup.toGL` is the embedding `SLₙ(R) → GLₙ(R)`
+* `Matrix.SpecialLinearGroup` is the type of matrices with determinant 1
+* `Matrix.SpecialLinearGroup.group` gives the group structure (under multiplication)
+* `Matrix.SpecialLinearGroup.toGL` is the embedding `SLₙ(R) → GLₙ(R)`
 
 ## Notation
 
@@ -41,7 +41,7 @@ of a regular `↑` coercion.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Special_linear_group
+* https://en.wikipedia.org/wiki/Special_linear_group
 
 ## Tags
 
