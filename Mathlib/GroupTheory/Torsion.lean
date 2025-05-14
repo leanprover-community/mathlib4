@@ -345,7 +345,7 @@ theorem not_isTorsionFree_iff : ¬IsTorsionFree G ↔ ∃ g : G, g ≠ 1 ∧ IsO
   simp_rw [IsTorsionFree, Ne, not_forall, Classical.not_not, exists_prop]
 
 set_option linter.deprecated false in
-@[to_additive (attr := deprecated IsMulTorsionFree.of_subsingleton (since := "2025-04-23"))]
+@[to_additive (attr := deprecated Subsingleton.to_isMulTorsionFree (since := "2025-04-23"))]
 lemma isTorsionFree_of_subsingleton [Subsingleton G] : IsTorsionFree G :=
   fun _a ha _ => ha <| Subsingleton.elim _ _
 
@@ -411,17 +411,6 @@ variable (G) [CommGroup G]
 @[to_additive
 "Quotienting a group by its additive torsion subgroup yields an additive torsion-free group."]
 instance _root_.QuotientGroup.instIsMulTorsionFree : IsMulTorsionFree <| G ⧸ torsion G := by
-  refine .of_not_isOfFinOrder fun g hne hfin ↦ hne ?_
-  induction' g using QuotientGroup.induction_on with g
-  obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one
-  obtain ⟨n, npos, hn⟩ := ((QuotientGroup.eq_one_iff _).mp hm).exists_pow_eq_one
-  exact (QuotientGroup.eq_one_iff g).mpr
-    (isOfFinOrder_iff_pow_eq_one.mpr ⟨m * n, mul_pos mpos npos, (pow_mul g m n).symm ▸ hn⟩)
-
-/-- Quotienting a group by its torsion subgroup yields a torsion free group. -/
-@[to_additive
-"Quotienting a group by its additive torsion subgroup yields an additive torsion free group."]
-theorem _root_.QuotientGroup.instIsMulTorsionFree : IsMulTorsionFree <| G ⧸ torsion G := by
   refine .of_not_isOfFinOrder fun g hne hfin ↦ hne ?_
   induction' g using QuotientGroup.induction_on with g
   obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one

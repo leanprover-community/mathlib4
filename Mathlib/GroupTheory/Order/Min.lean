@@ -47,11 +47,11 @@ lemma minOrder_le_orderOf (ha : a ≠ 1) (ha' : IsOfFinOrder a) : minOrder α �
 end Monoid
 
 section Group
-variable [Group α] {s : Subgroup α}
+variable [Group G] {s : Subgroup G}
 
 @[to_additive]
 lemma le_minOrder_iff_forall_subgroup {n : ℕ∞} :
-    n ≤ minOrder α ↔ ∀ ⦃s : Subgroup α⦄, s ≠ ⊥ → (s : Set α).Finite → n ≤ Nat.card s := by
+    n ≤ minOrder G ↔ ∀ ⦃s : Subgroup G⦄, s ≠ ⊥ → (s : Set G).Finite → n ≤ Nat.card s := by
   rw [le_minOrder]
   refine ⟨fun h s hs hs' ↦ ?_, fun h a ha ha' ↦ ?_⟩
   · obtain ⟨a, has, ha⟩ := s.bot_or_exists_ne_one.resolve_left hs
@@ -61,8 +61,12 @@ lemma le_minOrder_iff_forall_subgroup {n : ℕ∞} :
   · simpa using h (zpowers_ne_bot.2 ha) ha'.finite_zpowers
 
 @[to_additive]
-lemma minOrder_le_natCard (hs : s ≠ ⊥) (hs' : (s : Set α).Finite) : minOrder α ≤ Nat.card s :=
+lemma minOrder_le_natCard (hs : s ≠ ⊥) (hs' : (s : Set G).Finite) : minOrder G ≤ Nat.card s :=
   le_minOrder_iff_forall_subgroup.1 le_rfl hs hs'
+
+@[to_additive (attr := simp)]
+lemma minOrder_eq_top [IsMulTorsionFree G] : minOrder G = ⊤ := by
+  simpa [minOrder] using fun _ ↦ not_isOfFinOrder_of_isMulTorsionFree
 
 end Group
 
@@ -72,9 +76,6 @@ variable [CommGroup G] {s : Subgroup G}
 @[to_additive (attr := simp)]
 lemma minOrder_eq_top_iff : minOrder G = ⊤ ↔ IsMulTorsionFree G := by
   simp [minOrder, isMulTorsionFree_iff_not_isOfFinOrder]
-
-@[to_additive (attr := simp)]
-lemma minOrder_eq_top [IsMulTorsionFree G] : minOrder G = ⊤ := minOrder_eq_top_iff.2 ‹_›
 
 end CommGroup
 end Monoid
