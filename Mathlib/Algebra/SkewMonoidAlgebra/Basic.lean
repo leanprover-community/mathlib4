@@ -457,6 +457,13 @@ theorem induction_on' [instNonempty : Nonempty G] {p : SkewMonoidAlgebra k G →
     SkewMonoidAlgebra k G, p f → p g → p (f + g)) : p f :=
   induction_on _ (by simpa using single (Classical.choice instNonempty) 0) single add
 
+/-- If two additive homomorphisms from `SkewMonoidAlgebra k G ` are equal on each `single a b`,
+then they are equal. -/
+@[ext high]
+theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : SkewMonoidAlgebra k G →+ M}
+    (h : ∀ a b, f (single a b) = g (single a b)) : f = g := by
+  ext p; induction p using SkewMonoidAlgebra.induction_on <;> simp_all
+
 end sum
 
 section mapDomain
@@ -529,6 +536,10 @@ def liftNC {R : Type*} [NonUnitalNonAssocSemiring R] (f : k →+ R) (g : G → R
 @[simp] theorem liftNC_single {R : Type*} [NonUnitalNonAssocSemiring R] (f : k →+ R)
     (g : G → R) (a : G) (b : k) : liftNC f g (single a b) = f b * g a :=
   Finsupp.liftAddHom_apply_single _ _ _
+
+theorem eq_liftNC {R : Type*} [NonUnitalNonAssocSemiring R] (f : k →+ R) (g : G → R)
+    (l : SkewMonoidAlgebra k G →+ R) (h : ∀ a b, l (single a b) = f b * g a) : l = liftNC f g := by
+  ext a b; simp_all
 
 end mapDomain
 
