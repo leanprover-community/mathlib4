@@ -17,20 +17,20 @@ The file contains definitions and results about roots of Lie algebras with non-d
 forms.
 
 ## Main definitions
- * `LieAlgebra.IsKilling.ker_restrict_eq_bot_of_isCartanSubalgebra`: if the Killing form of
-   a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
- * `LieAlgebra.IsKilling.instIsLieAbelianOfIsCartanSubalgebra`: if the Killing form of a Lie
-   algebra is non-singular, then its Cartan subalgebras are Abelian.
- * `LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra`: over a perfect field, if a Lie
-   algebra has non-degenerate Killing form, Cartan subalgebras contain only semisimple elements.
- * `LieAlgebra.IsKilling.span_weight_eq_top`: given a splitting Cartan subalgebra `H` of a
-   finite-dimensional Lie algebra with non-singular Killing form, the corresponding roots span the
-   dual space of `H`.
- * `LieAlgebra.IsKilling.coroot`: the coroot corresponding to a root.
- * `LieAlgebra.IsKilling.isCompl_ker_weight_span_coroot`: given a root `α` with respect to a Cartan
-   subalgebra `H`, we have a natural decomposition of `H` as the kernel of `α` and the span of the
-   coroot corresponding to `α`.
- * `LieAlgebra.IsKilling.finrank_rootSpace_eq_one`: root spaces are one-dimensional.
+* `LieAlgebra.IsKilling.ker_restrict_eq_bot_of_isCartanSubalgebra`: if the Killing form of
+  a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
+* `LieAlgebra.IsKilling.instIsLieAbelianOfIsCartanSubalgebra`: if the Killing form of a Lie
+  algebra is non-singular, then its Cartan subalgebras are Abelian.
+* `LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra`: over a perfect field, if a Lie
+  algebra has non-degenerate Killing form, Cartan subalgebras contain only semisimple elements.
+* `LieAlgebra.IsKilling.span_weight_eq_top`: given a splitting Cartan subalgebra `H` of a
+  finite-dimensional Lie algebra with non-singular Killing form, the corresponding roots span the
+  dual space of `H`.
+* `LieAlgebra.IsKilling.coroot`: the coroot corresponding to a root.
+* `LieAlgebra.IsKilling.isCompl_ker_weight_span_coroot`: given a root `α` with respect to a Cartan
+  subalgebra `H`, we have a natural decomposition of `H` as the kernel of `α` and the span of the
+  coroot corresponding to `α`.
+* `LieAlgebra.IsKilling.finrank_rootSpace_eq_one`: root spaces are one-dimensional.
 
 -/
 

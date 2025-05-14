@@ -32,7 +32,7 @@ implemented as `spanFinrank` and `spanRank`.
 
 * `rank_eq_spanRank_of_free` : For a ring `R` (not necessarily commutative) satisfying
   `StrongRankCondition R`, if `M` is a free `R`-module, then the `spanRank` of `M` equals to the
-   rank of M.
+  rank of M.
 
 * `rank_le_spanRank` : For a ring `R` (not necessarily commutative) satisfying
   `StrongRankCondition R`, if `M` is an `R`-module, then the `spanRank` of `M` is less than or equal
