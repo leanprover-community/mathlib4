@@ -409,8 +409,8 @@ theorem star_mul [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] (M N :
 end Star
 
 @[simp]
-theorem conjTranspose_submatrix [Star α] (A : Matrix m n α) (r_reindex : l → m)
-    (c_reindex : o → n) : (A.submatrix r_reindex c_reindex)ᴴ = Aᴴ.submatrix c_reindex r_reindex :=
+theorem conjTranspose_submatrix [Star α] (A : Matrix m n α) (r : l → m)
+    (c : o → n) : (A.submatrix r c)ᴴ = Aᴴ.submatrix c r :=
   ext fun _ _ => rfl
 
 theorem conjTranspose_reindex [Star α] (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
