@@ -27,7 +27,9 @@ It uses
   content is);
 * `keepTrailing` a boolean to control whether to keep trailing comments.
 
-It returns the content of `fileContent` up to the final import, including trailing comments if `keepTrailing = true` (the command always trims trailing whitespace after the last comment).
+It returns the content of `fileContent` up to the final import,
+including trailing comments if `keepTrailing = true`
+(the command always trims trailing whitespace after the last comment).
 -/
 def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := do
   let (stx, _) ← Parser.parseHeader (Parser.mkInputContext fileContent fname)
