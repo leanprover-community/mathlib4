@@ -13,10 +13,10 @@ This file defines the conversion between bilinear forms and matrices.
 
 ## Main definitions
 
- * `Matrix.toBilin` given a basis define a bilinear form
- * `Matrix.toBilin'` define the bilinear form on `n → R`
- * `BilinForm.toMatrix`: calculate the matrix coefficients of a bilinear form
- * `BilinForm.toMatrix'`: calculate the matrix coefficients of a bilinear form on `n → R`
+* `Matrix.toBilin` given a basis define a bilinear form
+* `Matrix.toBilin'` define the bilinear form on `n → R`
+* `BilinForm.toMatrix`: calculate the matrix coefficients of a bilinear form
+* `BilinForm.toMatrix'`: calculate the matrix coefficients of a bilinear form on `n → R`
 
 ## Notations
 
