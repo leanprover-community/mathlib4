@@ -251,9 +251,7 @@ theorem single_zero (a : G) : (single a 0 : SkewMonoidAlgebra k G) = 0 := by
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := by
   simp [← toFinsupp_inj]
 
-/-- Group isomorphism between `SkewMonoidAlgebra k G` and `G →₀ k`. This is an
-implementation detail, but it can be useful to transfer results from `Finsupp`
-to `SkewMonoidAlgebra`. -/
+/-- Group isomorphism between `SkewMonoidAlgebra k G` and `G →₀ k`. -/
 @[simps apply symm_apply]
 def toFinsuppAddEquiv : SkewMonoidAlgebra k G ≃+ (G →₀ k) where
   toFun        := toFinsupp
@@ -775,9 +773,7 @@ section Module.Free
 
 variable [Semiring S]
 
-/-- Linear equivalence between `SkewMonoidAlgebra k G` and `G →₀ k`. This is an
-implementation detail, but it can be useful to transfer results from `Finsupp`
-to `SkewMonoidAlgebra`. -/
+/-- Linear equivalence between `SkewMonoidAlgebra k G` and `G →₀ k`. -/
 def toFinsuppLinearEquiv [AddCommMonoid k] [Module S k] : SkewMonoidAlgebra k G ≃ₗ[S] (G →₀ k) :=
   AddEquiv.toLinearEquiv toFinsuppAddEquiv
       (by simp only [toFinsuppAddEquiv_apply, toFinsupp_smul, forall_const])
