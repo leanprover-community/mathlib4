@@ -19,14 +19,14 @@ to connect 1 and 2.
 
 ## Main definitions
 
- * `PerfectPairing`
- * `PerfectPairing.flip`
- * `PerfectPairing.dual`
- * `PerfectPairing.toDualLeft`
- * `PerfectPairing.toDualRight`
- * `LinearEquiv.flip`
- * `LinearEquiv.isReflexive_of_equiv_dual_of_isReflexive`
- * `LinearEquiv.toPerfectPairing`
+* `PerfectPairing`
+* `PerfectPairing.flip`
+* `PerfectPairing.dual`
+* `PerfectPairing.toDualLeft`
+* `PerfectPairing.toDualRight`
+* `LinearEquiv.flip`
+* `LinearEquiv.isReflexive_of_equiv_dual_of_isReflexive`
+* `LinearEquiv.toPerfectPairing`
 
 -/
 

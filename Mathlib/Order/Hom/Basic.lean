@@ -16,9 +16,9 @@ homomorphism `f : α →o β` is a function `α → β` along with a proof that 
 ## Main definitions
 
 In this file we define the following bundled monotone maps:
- * `OrderHom α β` a.k.a. `α →o β`: Preorder homomorphism.
+* `OrderHom α β` a.k.a. `α →o β`: Preorder homomorphism.
     An `OrderHom α β` is a function `f : α → β` such that `a₁ ≤ a₂ → f a₁ ≤ f a₂`
- * `OrderEmbedding α β` a.k.a. `α ↪o β`: Relation embedding.
+* `OrderEmbedding α β` a.k.a. `α ↪o β`: Relation embedding.
     An `OrderEmbedding α β` is an embedding `f : α ↪ β` such that `a ≤ b ↔ f a ≤ f b`.
     Defined as an abbreviation of `@RelEmbedding α β (≤) (≤)`.
 * `OrderIso`: Relation isomorphism.
