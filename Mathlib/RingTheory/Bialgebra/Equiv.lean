@@ -282,8 +282,9 @@ theorem ofBialgHom_symm (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
   rfl
 
 /-- Promotes a bijective coalgebra homomorphism to a coalgebra equivalence. -/
-noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Function.Bijective f) : A ≃ₐc[R] B :=
-  { AlgEquiv.ofBijective (f : A →ₐ[R] B) hf, f with }
+noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Function.Bijective f) : A ≃ₐc[R] B where
+  __ := f
+  __ := AlgEquiv.ofBijective (f : A →ₐ[R] B) hf
 
 @[simp]
 theorem coe_ofBijective {f : A →ₐc[R] B} {hf : Function.Bijective f} :
