@@ -118,8 +118,8 @@ lemma lieBracketWithin_fmul_right {f : E → 𝕜}
     lieBracketWithin 𝕜 V (fun y => f y • W y) s x =
       (fderivWithin 𝕜 f s x) (V x) • (W x)  + (f x) • lieBracketWithin 𝕜 V W s x := by
   rw [lieBracketWithin, lieBracketWithin, fderivWithin_smul hs hf hW, ContinuousLinearMap.add_apply]
-  rw [map_smul, ContinuousLinearMap.smulRight_apply, add_comm, ContinuousLinearMap.coe_smul']
-  simp only [Pi.smul_apply, smul_sub, add_sub_assoc]
+  rw [map_smul, ContinuousLinearMap.smulRight_apply, add_comm, smul_sub]
+  rw [ContinuousLinearMap.smul_apply, add_sub_assoc]
 
 /--
 Product rule for Lie Brackets: given two vector fields `V W : E → E` and a function `f : E → 𝕜`,
