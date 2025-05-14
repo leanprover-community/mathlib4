@@ -385,7 +385,6 @@ theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
   rw [← hh, vadd_vadd, vadd_vadd]
   simp
 
-@[to_additive existing]
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (H.map (MulAut.conj g).toMonoidHom) (g • B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
@@ -728,9 +727,9 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     exact fun hb ↦ hB' (Nat.mul_le_mul_right _ hb)
 
 /- The assumption `B.Finite` is necessary :
-   For G = ℤ acting on itself, a = 0 and B = ℕ, the translates `k • B` of the statement
-   are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
-   (Remark by Thomas Browning) -/
+  For G = ℤ acting on itself, a = 0 and B = ℕ, the translates `k • B` of the statement
+  are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
+  (Remark by Thomas Browning) -/
 /-- The intersection of the translates of a *finite* subset which contain a given point
 is a block (Wielandt, th. 7.3). -/
 @[to_additive

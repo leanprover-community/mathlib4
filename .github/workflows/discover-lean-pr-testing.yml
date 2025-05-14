@@ -215,22 +215,22 @@ jobs:
 
         # Report successful merges
         if [ -n "$SUCCESSFUL_MERGES" ]; then
-          MESSAGE+=$'### ✅ Successfully merged branches:\n\n'
+          MESSAGE+=$'### ✅ Successfully merged branches into \'nightly-testing\':\n\n'
           for MERGE_INFO in $SUCCESSFUL_MERGES; do
             IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
-            MESSAGE+=$(printf -- '- lean#%s ([diff](%s))' "$PR_NUMBER" "$GITHUB_DIFF")$'\n\n'
+            MESSAGE+=$(printf -- '- [lean-pr-testing-%s](%s) (adaptations for lean#%s)' "$PR_NUMBER" "$GITHUB_DIFF" "$PR_NUMBER")$'\n\n'
           done
           MESSAGE+=$'\n'
         else
-          MESSAGE+=$'No branches were successfully merged.\n\n'
+          MESSAGE+=$'No branches were successfully merged into \'nightly-testing\'. 🤷‍♂️\n\n'
         fi
 
         # Report failed merges
         if [ -n "$FAILED_MERGES" ]; then
-          MESSAGE+=$'### ❌ Failed merges:\n\nThe following branches need to be merged manually:\n\n'
+          MESSAGE+=$'### ❌ Failed merges:\n\nThe following branches need to be merged manually into \'nightly-testing\':\n\n'
           for MERGE_INFO in $FAILED_MERGES; do
             IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
-            MESSAGE+=$(printf 'Diff: %s' "$GITHUB_DIFF")$'\n\n'
+            MESSAGE+=$(printf '- [lean-pr-testing-%s](%s) (adaptations for lean#%s)' "$PR_NUMBER" "$GITHUB_DIFF" "$PR_NUMBER")$'\n\n'
             MESSAGE+=$'```bash\n'
             MESSAGE+=$(printf 'scripts/merge-lean-testing-pr.sh %s' "$PR_NUMBER")$'\n'
             MESSAGE+=$'```\n\n'
