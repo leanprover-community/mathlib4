@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.Analysis.Complex.Circle
 
 /-!
 # Complex roots of unity
