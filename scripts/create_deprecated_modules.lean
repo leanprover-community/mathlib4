@@ -25,10 +25,9 @@ It uses
 * `fname`, as the path of a file (which need not exist);
 * `fileContent`, as the content of `fname` (regardless of whether the file exists and what its
   content is);
-* `keepTrailing` a boolean to control whether to keep trailing whitespace and comments.
+* `keepTrailing` a boolean to control whether to keep trailing comments.
 
-It returns the content of `fileContent` up to the final import, including trailing whitespace and
-comments if `keepTrailing = true`.
+It returns the content of `fileContent` up to the final import, including trailing comments if `keepTrailing = true` (the command always trims trailing whitespace after the last comment).
 -/
 def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := do
   let (stx, _) ← Parser.parseHeader (Parser.mkInputContext fileContent fname)
@@ -105,8 +104,7 @@ elab_rules : command
   let pastHash ← getHash n
   let pastFiles ← getFilesAtHash pastHash
   msgs := msgs.push m!"{pastFiles.size} files at the past hash {pastHash}\n"
-  let onlyPastFiles := pastFiles.filter fun fil ↦
-    fil.endsWith ".lean" && !currentFiles.contains fil
+  let onlyPastFiles := pastFiles.filter fun fil ↦ fil.endsWith ".lean" && !currentFiles.contains fil
   let noFiles := onlyPastFiles.size
   msgs := msgs.push
     m!"{noFiles} Lean file{if noFiles == 1 then "" else "s"} in 'Mathlib' that no longer exist."
@@ -127,8 +125,7 @@ elab_rules : command
     let comment := comment.map (⟨·.raw.unsetTrailing⟩)
     let stx ← `(command|#create_deprecated_modules $[$nc:num]? $[$comment:str]? write)
     msgs := msgs.push
-      m!"The files were not deprecated. Use '{stx}' \
-        if you wish to deprecate them."
+      m!"The files were not deprecated. Use '{stx}' if you wish to deprecate them."
   logInfoAt tk <| .joinSep msgs.toList "\n"
 
 /-
