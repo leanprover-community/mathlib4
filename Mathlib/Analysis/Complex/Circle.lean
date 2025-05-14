@@ -182,6 +182,18 @@ protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace �
     ‖u • v‖ = ‖v‖ := by
   rw [Submonoid.smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
 
+lemma exp_nat_mul (n : ℕ) ( b : ℝ) : exp (n * b) = (exp b)^n := by
+  simp only [exp, ContinuousMap.coe_mk, ofReal_mul, ofReal_natCast, mul_assoc, Complex.exp_nat_mul]
+  rfl
+
+open Real in
+lemma exp_nat_mul_two_pi_mul_I (m : ℕ) : exp (m * (2 * π)) = 1 := by
+      have e1 : ↑m * (2 * ↑π) * I = ↑m * (2 * π * I) := by
+        ring_nf
+      simp only [exp, ContinuousMap.coe_mk, ofReal_mul, ofReal_natCast, ofReal_ofNat, e1,
+        Complex.exp_nat_mul_two_pi_mul_I]
+      rfl
+
 end Circle
 
 namespace Real
